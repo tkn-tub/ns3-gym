@@ -229,6 +229,20 @@ Examples:
 {\tt int sum1;}\\
 {\tt int loopCount10;}
 
+\item {\bf Class Member and Global Variables}. To be able to distinguish 
+local variables from class member and global variables, prepend the
+\code{m\_} prefix to class member variables and the \code{g\_} prefix
+to global variables.
+
+Examples:
+\begin{verbatim}
+class Foo {
+private:
+    int m_myPrivateVar;
+};
+static int g_myGlobalVar;
+\end{verbatim}
+
 \item {\bf Subroutine Names}.  All subroutine names, including global
 routines and member functions in classes, will start with an upper case
 letter, and consist of only alphabetic characters and numeric digits
