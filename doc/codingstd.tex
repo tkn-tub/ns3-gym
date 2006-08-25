@@ -6,19 +6,75 @@
 \setlength{\evensidemargin}{0.0in}
 \setlength{\topmargin}{-0.5in}
 \def\nst{{\em ns--3}}
+\newcommand{\code}[1]{\texttt{#1}}
+
 \begin{document}
 \begin{center}
 {\Large Coding Standard for ns--3}\\
-Revision A \\
 August 22, 2005
 
 \end{center}
 \section{Introduction}
-This document describes the coding standard to be used by the \nst\
-project.  All contributed software for \nst\ should follow this
-style, which will result in consistent and easy to read code.  A set
-of emacs macros and a emacs startup file will be provided to assist
-with creating software following this standard.
+
+The purpose of the \nst\ project is to build software which will last
+many years: making sure that the code is readable and stays so is 
+one of the most important items required to achieve this goal. This
+document thus outlines guidelines we plan to enforce on each component
+integrated in \nst to ensure uniformity of the codebase which is
+a first step towards readable code.
+
+\section{Recommendations}
+
+The following recommendations are not strict rules and some of them
+are conflicting but the point here is to outline the fact that we
+value more common-sense than strict adherence to the coding style
+defined in this document.
+
+\subsection{naming}
+
+Types, methods, functions and variable names should be self-descriptive. 
+Avoid using acronyms, expand them, do not hesitate to use long names,
+Avoid shortcuts such as \code{sz} for \code{size}. Long names sometimes get in the 
+way of being able to read the code:
+\begin{verbatim}
+for (int loopCount = 0; loopCount < max; loopCount++) 
+  {
+    // code
+  }
+\end{verbatim}
+loopCount should be renamed to something shorter such as 
+\code{i}, \code{j}, \code{k}, \code{l}, \code{m}, and \code{n} 
+which are widely used names which identify loop counters:
+\begin{verbatim}
+for (int i = 0; i < max; i++) 
+  {
+    // code
+  }
+\end{verbatim}
+Similarly, \code{tmp} is a common way to denote temporary variables. On
+the other hand, \code{foo} is not an appropriate name: it says nothing
+about the purpose of the variable.
+
+If you use predicates (that is, functions, variables or methods
+which return a single boolean value), prefix the 
+name with \code{is} or \code{has}.
+
+\subsection{Memory management}
+
+As much as possible, try to pass around objects
+by value and allocate them on the stack. If you need to allocate
+objects on the heap with new, make sure that the corresponding
+call to delete happens where the new took place. i.e., avoid
+passing around pointer ownership.
+Avoid the use of reference counting and, more generaly, strive to
+keep the memory-management model simple.
+
+\subsection{Templates}
+
+For now, templates are defined only in the simulator
+core and are used everywhere else. Try to keep it that way by 
+avoiding defining new templates in model-specific code.
+
 
 \section{Standards}
 \subsection{General}
@@ -165,10 +221,6 @@ lower case letter, and consist of only alphabetic characters and numeric
 digits.  Capital letters are to be used when appropriate between words
 in a variable name for increased readability.  
 Variable names should not contain the underscore character.
-The variable name should
-be descriptive of the use of the variable, excepting for temporary
-local variables where the function is obvious from the context (for example
-loop index variables are commonly a single letter such as {\tt i}).
 
 Examples:
 
@@ -472,15 +524,17 @@ Example:
 \end{tt}
 
 \item All header files should have an ``include guard'' to prevent accidental
-inclusion of the file multiple times in a single compilation unit.
+inclusion of the file multiple times in a single compilation unit. The include
+guard should be named after the file name. If the file name is \code{foo-bar.h}, then the
+include guard should be named \code{FOO\_BAR\_H}
 
 Example:
 
 \begin{tt}
-\#ifndef \_\_tcp\_h\_\_  \\
-\#define \_\_tcp\_h\_\_ \\
+\#ifndef FOO\_BAR\_H  \\
+\#define FOO\_BAR\_H \\
 
-// (Contents of tcp.h here
+// (Contents of foo-bar.h here
 
 \#endif
 \end{tt}
