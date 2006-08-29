@@ -555,13 +555,9 @@ common.add_sources ([
 	'position.cc',
 	'trace-stream-test.cc',
 	'ipv4-network-interface.cc',
-	'random-uniform-mrg32k3a.cc',
 	'utils.cc',
 	'llc-snap-encapsulation.cc',
-	'rng-mrg32k3a.cc',
-	'mac-address.cc',
-	'timeout.cc',
-	'seed-generator-mrg32k3a.cc'
+	'mac-address.cc'
 	])
 common.add_inst_headers ([
 	'ipv4-address.h',
@@ -585,8 +581,6 @@ common.add_inst_headers ([
 	'mac-network-interface.h',
 	'population-analysis.h',
 	'position.h',
-	'random-uniform.h',
-	'timeout.h',
 	'trace-stream.h',
 	'pcap-writer.h',
 	'mac-address-factory.h',
@@ -596,8 +590,6 @@ common.add_inst_headers ([
 common.add_headers ([
 	'chunk-llc-snap.h',
 	'ref-ptr.h',
-	'rng-mrg32k3a.h',
-	'seed-generator.h',
 	'static-speed-position.h'
 	])
 
@@ -606,7 +598,7 @@ common.add_headers ([
 run_tests = Ns3Module ('run-tests', 'utils')
 ns3.add (run_tests)
 run_tests.set_executable ()
-run_tests.add_deps (['core', 'simulator', 'common', 'ipv4', 'arp', 'ethernet', '80211'])
+run_tests.add_deps (['core', 'simulator', 'common'])
 run_tests.add_source ('run-tests.cc')
 
 bench_packets = Ns3Module ('bench-packets', 'utils')
