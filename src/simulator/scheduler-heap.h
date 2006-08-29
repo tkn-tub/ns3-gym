@@ -26,7 +26,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace yans {
+namespace ns3 {
 
 class Event;
 class EventHolder;
@@ -65,7 +65,7 @@ private:
 	BinaryHeap m_heap;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #endif /* SCHEDULER_HEAP_H */

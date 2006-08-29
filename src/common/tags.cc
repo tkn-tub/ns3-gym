@@ -21,7 +21,7 @@
 #include "tags.h"
 #include <string.h>
 
-namespace yans {
+namespace ns3 {
 
 TagsPrettyPrinterRegistry::PrettyPrinters TagsPrettyPrinterRegistry::g_pretty_printers;
 
@@ -174,7 +174,7 @@ Tags::pretty_print (std::ostream &os)
 }
 
 
-}; // namespace yans
+}; // namespace ns3
 
 #ifdef RUN_SELF_TESTS
 
@@ -182,7 +182,7 @@ Tags::pretty_print (std::ostream &os)
 #include <iomanip>
 #include <iostream>
 
-namespace yans {
+namespace ns3 {
 
 class TagsTest : Test {
 public:
@@ -316,7 +316,7 @@ TagsTest::run_tests (void)
 static TagsTest g_tags_test;
 
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* RUN_SELF_TESTS */
 

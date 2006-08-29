@@ -24,7 +24,7 @@
 #include <utility>
 #include <cassert>
 
-namespace yans {
+namespace ns3 {
 
 SchedulerList::SchedulerList ()
 {}
@@ -104,4 +104,4 @@ SchedulerList::remove (Event const ev)
 	return key;
 }
 
-}; // namespace yans
+}; // namespace ns3

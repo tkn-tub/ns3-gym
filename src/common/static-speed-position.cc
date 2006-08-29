@@ -21,7 +21,7 @@
 #include "static-speed-position.h"
 #include "ns3/simulator.h"
 
-namespace yans {
+namespace ns3 {
 
 StaticSpeedPosition::StaticSpeedPosition ()
 	: m_x (0.0),
@@ -65,4 +65,4 @@ StaticSpeedPosition::real_get (double &x, double &y, double &z) const
 	z = m_z;
 }
 
-}; // namespace yans
+}; // namespace ns3

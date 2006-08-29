@@ -25,7 +25,7 @@
 #include "ns3/callback.h"
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class FTracedVariableBase {
 public:
@@ -53,6 +53,6 @@ private:
 };
 
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* F_TRACED_VARIABLE_TCC */

@@ -26,7 +26,7 @@
 #include <stdint.h>
 #include "packet.h"
 
-namespace yans {
+namespace ns3 {
 
 class SystemFile;
 
@@ -68,6 +68,6 @@ private:
 	Callback<void,uint8_t *,uint32_t> m_write_callback;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* PCAP_WRITER_H */

@@ -22,7 +22,7 @@
 #include "chunk.h"
 #include <cassert>
 
-namespace yans {
+namespace ns3 {
 
 Chunk::Chunk ()
 	: m_must_peek_before_remove (false) {}
@@ -62,4 +62,4 @@ std::ostream& operator<< (std::ostream& os, Chunk const& chunk)
 	return os;
 }
 
-}; // namespace yans
+}; // namespace ns3

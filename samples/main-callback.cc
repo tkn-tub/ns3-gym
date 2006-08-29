@@ -3,7 +3,7 @@
 #include <cassert>
 #include <iostream>
 
-using namespace yans;
+using namespace ns3;
 
 static double 
 cb_one (double a, double b)

@@ -4,7 +4,7 @@
 #include "ns3/simulator.h"
 #include <iostream>
 
-using namespace yans;
+using namespace ns3;
 
 class MyModel {
 public:

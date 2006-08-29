@@ -24,15 +24,15 @@
 
 #include "ns3/callback.h"
 
-namespace yans {
+namespace ns3 {
 
 class CallbackLoggerBase {};
 
 /**
- * \brief log arbitrary number of parameters to a matching yans:Callback
+ * \brief log arbitrary number of parameters to a matching ns3::Callback
  *
  * Whenever operator () is invoked on this class, the call and its arguments
- * are forwarded to the internal matching yans::Callback.
+ * are forwarded to the internal matching ns3::Callback.
  */
 template<typename T1 = empty, typename T2 = empty, 
 	 typename T3 = empty, typename T4 = empty,
@@ -79,6 +79,6 @@ private:
 	Callback<void,T1,T2,T3,T4,T5> m_callback;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* CALLBACK_LOGGER_H */

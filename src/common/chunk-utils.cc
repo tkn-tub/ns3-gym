@@ -20,7 +20,7 @@
  */
 #include "chunk-utils.h"
 
-namespace yans {
+namespace ns3 {
 
 void write_to (Buffer::Iterator &i, Ipv4Address ad)
 {
@@ -46,4 +46,4 @@ void read_from (Buffer::Iterator &i, MacAddress &ad)
 
 
 
-}; // namespace yans
+}; // namespace ns3

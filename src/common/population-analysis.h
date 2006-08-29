@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class PopulationAnalysis {
 public:
@@ -49,7 +49,7 @@ private:
 	uint32_t m_n;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #endif /* POPULATION_ANALYSIS_H */

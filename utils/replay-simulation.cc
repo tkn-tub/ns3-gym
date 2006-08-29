@@ -28,7 +28,7 @@
 #include <fstream>
 #include <iostream>
 
-using namespace yans;
+using namespace ns3;
 
 class LogReader {
 public:

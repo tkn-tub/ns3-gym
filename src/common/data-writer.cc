@@ -42,7 +42,7 @@ std::cout << "DATA WRITER TRACE " << this << " " << x << std::endl;
 #define BUFFER_SIZE (4096)
 
 
-namespace yans {
+namespace ns3 {
 
 class DataWriterPrivate {
 public:

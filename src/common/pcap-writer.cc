@@ -30,7 +30,7 @@
 #include "packet.h"
 
 
-namespace yans {
+namespace ns3 {
 
 enum {
 	PCAP_ETHERNET = 1
@@ -96,4 +96,4 @@ PcapWriter::write_16 (uint16_t data)
 	m_writer->write ((uint8_t*)&data, 2);
 }
 
-}; // namespace yans
+}; // namespace ns3

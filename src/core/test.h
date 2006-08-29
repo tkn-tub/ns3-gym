@@ -29,7 +29,7 @@
 
 #ifdef RUN_SELF_TESTS
 
-namespace yans {
+namespace ns3 {
 
 class TestManager;
 
@@ -68,7 +68,7 @@ private:
 	Tests m_tests;
 	bool m_verbose;
 };
-}; // namespace yans 
+}; // namespace ns3 
 
 #endif /* RUN_SELF_TESTS */
 

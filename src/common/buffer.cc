@@ -25,7 +25,7 @@
 //#define TRACE(x) std::cout << x << std::endl;
 #define TRACE(x)
 
-namespace yans {
+namespace ns3 {
 
 Buffer::BufferDataList  Buffer::m_free_list;
 uint32_t Buffer::m_max_total_add_start = 0;
@@ -109,12 +109,12 @@ Buffer::create (void)
 }
 #endif
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #include <cassert>
 
-namespace yans {
+namespace ns3 {
 
 
 void 
@@ -372,7 +372,7 @@ Buffer::peek_data (void) const
 
 
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #ifdef RUN_SELF_TESTS
@@ -380,7 +380,7 @@ Buffer::peek_data (void) const
 #include "ns3/test.h"
 #include <iomanip>
 
-namespace yans {
+namespace ns3 {
 
 class BufferTest: public Test {
 private:
@@ -588,7 +588,7 @@ BufferTest::run_tests (void)
 
 static BufferTest g_buffer_test;
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* RUN_SELF_TESTS */
 

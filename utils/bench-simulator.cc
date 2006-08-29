@@ -27,7 +27,7 @@
 #include <fstream>
 #include <vector>
 
-using namespace yans;
+using namespace ns3;
 
 
 bool g_debug = false;

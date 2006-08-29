@@ -20,7 +20,7 @@
  */
 #include "static-position.h"
 
-namespace yans {
+namespace ns3 {
 
 StaticPosition::StaticPosition ()
 	: m_x (0.0), m_y (0.0), m_z (0.0)
@@ -43,4 +43,4 @@ StaticPosition::real_get (double &x, double &y, double &z) const
 	z = m_z;
 }
 
-}; // namespace yans
+}; // namespace ns3

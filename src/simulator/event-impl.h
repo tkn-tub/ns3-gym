@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class EventImpl {
 public:
@@ -44,6 +44,6 @@ private:
 	uint32_t m_running : 1;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* EVENT_IMPL_H */

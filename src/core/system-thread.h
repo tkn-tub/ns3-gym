@@ -21,7 +21,7 @@
 #ifndef SYSTEM_THREAD_H
 #define SYSTEM_THREAD_H
 
-namespace yans {
+namespace ns3 {
 
 class SystemThreadPrivate;
 
@@ -35,7 +35,7 @@ private:
 	virtual void real_run (void) = 0;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #endif /* SYSTEM_THREAD_H */

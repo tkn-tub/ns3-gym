@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include "event.h"
 
-namespace yans {
+namespace ns3 {
 
 class SimulatorPrivate;
 class ParallelSimulatorQueuePrivate;
@@ -226,6 +226,6 @@ private:
 	} m_list_type;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* SIMULATOR_H */

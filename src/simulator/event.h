@@ -25,7 +25,7 @@
 #include <algorithm>
 #include "event-impl.h"
 
-namespace yans {
+namespace ns3 {
 
 
 class EventImpl;
@@ -135,6 +135,6 @@ private:
 	EventImpl *m_impl;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* EVENT_H */

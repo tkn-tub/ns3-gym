@@ -27,7 +27,7 @@
 #include <map>
 #include <utility>
 
-namespace yans {
+namespace ns3 {
 
 class SchedulerMap : public Scheduler {
 public:
@@ -53,7 +53,7 @@ private:
 	uint32_t m_uid;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #endif /* SCHEDULER_MAP_H */

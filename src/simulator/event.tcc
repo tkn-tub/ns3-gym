@@ -26,9 +26,9 @@
 #include "event-impl.h"
 
 /**
- * yans namespace
+ * ns3 namespace
  */
-namespace yans {
+namespace ns3 {
 
 /**
  * \defgroup make_event make_event
@@ -449,6 +449,6 @@ Event make_event(void (*f) (T1, T2, T3, T4, T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 
 }
 
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* EVENT_TCC */

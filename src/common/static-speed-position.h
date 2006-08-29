@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include "position.h"
 
-namespace yans {
+namespace ns3 {
 
 class StaticSpeedPosition : public Position {
 public:
@@ -46,6 +46,6 @@ private:
 	mutable uint64_t m_prev_us;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* STATIC_SPEED_POSITION */

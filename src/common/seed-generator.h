@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class SeedGeneratorPrivate;
 
@@ -35,6 +35,6 @@ private:
 	SeedGenerator ();
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* SEED_GENERATOR_H */

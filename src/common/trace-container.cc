@@ -25,7 +25,7 @@
 #include <utility>
 #include <cassert>
 
-namespace yans {
+namespace ns3 {
 
 TraceContainer::TraceContainer ()
 {}
@@ -158,11 +158,11 @@ TraceContainer::register_callback (char const *name, CallbackLoggerBase *logger)
 
 
 
-}; // namespace yans
+}; // namespace ns3
 
 #include <iostream>
 void 
-yans::TraceContainer::print_debug (void)
+ns3::TraceContainer::print_debug (void)
 {
 	if (!m_ui_list.empty ()) {
 		std::cout << "ui var: " << std::endl;

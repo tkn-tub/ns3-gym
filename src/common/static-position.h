@@ -23,7 +23,7 @@
 
 #include "position.h"
 
-namespace yans {
+namespace ns3 {
 
 class StaticPosition : public Position {
 public:
@@ -38,6 +38,6 @@ private:
 	double m_z;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* STATIC_POSITION_H */

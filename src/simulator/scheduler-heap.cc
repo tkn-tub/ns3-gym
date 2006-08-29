@@ -49,7 +49,7 @@ std::cout << "HEAP TRACE " << x << std::endl;
 
 
 
-namespace yans {
+namespace ns3 {
 
 SchedulerHeap::SchedulerHeap ()
 {
@@ -240,4 +240,4 @@ SchedulerHeap::remove (Event const ev)
 	return key;
 }
 
-}; // namespace yans
+}; // namespace ns3

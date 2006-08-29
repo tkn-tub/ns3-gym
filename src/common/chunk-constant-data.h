@@ -25,7 +25,7 @@
 #include "chunk.h"
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 
 class ChunkConstantData : public Chunk {
@@ -42,6 +42,6 @@ private:
 	uint8_t m_data;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* CHUNK_CONSTANT_DATA_H */

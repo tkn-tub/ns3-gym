@@ -27,7 +27,7 @@
 #include "tags.h"
 #include "ns3/callback.h"
 
-namespace yans {
+namespace ns3 {
 
 class Packet {
 public:
@@ -60,9 +60,9 @@ private:
 	Tags m_tags;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
-namespace yans {
+namespace ns3 {
 
 template <typename T>
 void Packet::add_tag (T const*tag)
@@ -85,6 +85,6 @@ bool Packet::update_tag (T const*tag)
 	return m_tags.update (tag);
 }
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* PACKET_H */

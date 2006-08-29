@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class SystemMutexPrivate;
 
@@ -37,6 +37,6 @@ public:
 	SystemMutexPrivate *m_priv;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* SYSTEM_MUTEX_H */

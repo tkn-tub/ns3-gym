@@ -26,7 +26,7 @@
 #include "mac-address.h"
 #include "packet.h"
 
-namespace yans {
+namespace ns3 {
 
 class MacNetworkInterface;
 
@@ -47,6 +47,6 @@ private:
 	MacNetworkInterface *m_interface;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* LLC_SNAP_ENCAPSULATION */

@@ -35,7 +35,7 @@ std::cout << "MAP TRACE " << x << std::endl;
 #endif /* TRACE_MAP */
 
 
-namespace yans {
+namespace ns3 {
 
 
 SchedulerMap::SchedulerMap ()
@@ -109,4 +109,4 @@ SchedulerMap::remove (Event const ev)
 }
 
 
-}; // namespace yans
+}; // namespace ns3

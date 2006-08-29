@@ -31,7 +31,7 @@
 #include <list>
 #include <string>
 
-namespace yans {
+namespace ns3 {
 
 class PacketLogger;
 class TraceStream;
@@ -45,12 +45,12 @@ class TraceStream;
  * model trace event sources.
  *
  * TraceContainer can be used to register the following event sources:
- *   - yans::PacketLogger : can be connected to yans::PcapWriter
- *   - yans::TraceStream : can be connected to any std::ostream
- *   - yans::CallbackLogger: can be connected to yans::Callback
- *   - yans::UiTracedVariable
- *   - yans::SiTracedVariable
- *   - yans::FTracedVariable
+ *   - ns3::PacketLogger : can be connected to ns3::PcapWriter
+ *   - ns3::TraceStream : can be connected to any std::ostream
+ *   - ns3::CallbackLogger: can be connected to ns3::Callback
+ *   - ns3::UiTracedVariable
+ *   - ns3::SiTracedVariable
+ *   - ns3::FTracedVariable
  *
  * The following sample code shows how you can:
  *   - create trace event sources
@@ -214,13 +214,13 @@ private:
 	CallbackList m_callback_list;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #ifndef NDEBUG
 #include <cassert>
 #endif
 
-namespace yans {
+namespace ns3 {
 
 template <typename T1>
 void 
@@ -294,6 +294,6 @@ TraceContainer::set_callback (char const *name, Callback<void,T1,T2,T3,T4,T5> ca
 }
 
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* TRACED_VARIABLE_CONTAINER_H */

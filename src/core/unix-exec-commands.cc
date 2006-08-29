@@ -47,7 +47,7 @@ std::cout << "COMMAND TRACE " << x << std::endl;
 #endif /* TRACE_COMMAND */
 
 
-namespace yans {
+namespace ns3 {
 
 class LogThread : public SystemThread {
 public:
@@ -446,7 +446,7 @@ ExecCommands::get_size (void)
 	return m_priv->get_size ();
 }
 
-}; // namespace yans
+}; // namespace ns3
 
 #ifdef RUN_SELF_TESTS
 
@@ -454,7 +454,7 @@ ExecCommands::get_size (void)
 #include <iomanip>
 #include <iostream>
 
-namespace yans {
+namespace ns3 {
 
 class ExecCommandsTest: public Test {
 public:
@@ -509,7 +509,7 @@ ExecCommandsTest::run_tests (void)
 
 static ExecCommandsTest g_exec_commands_test;
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* RUN_SELF_TESTS */
 

@@ -25,7 +25,7 @@
 #include "ns3/callback.h"
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class SiTracedVariableBase {
 public:
@@ -66,12 +66,12 @@ class UiTracedVariable;
  *
  * To instantiate a 32-bit signed variable (to store
  * a TCP counter for example), you would create a variable of type
- * yans::UiTracedVariable<int32_t> :
+ * ns3::UiTracedVariable<int32_t> :
  \code
  #include <stdint.h>
  #include "ns3/si-traced-variable.tcc"
 
- yans::SiTracedVariable<uint16_t> var;
+ ns3::SiTracedVariable<uint16_t> var;
  \endcode
  * and you would use it like any other variable of type int32_t:
  \code
@@ -232,6 +232,6 @@ SiTracedVariable<T> &operator ^= (SiTracedVariable<T> &lhs, U const &rhs) {
 	return lhs;
 }
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* TRACED_VARIABLE_TCC */

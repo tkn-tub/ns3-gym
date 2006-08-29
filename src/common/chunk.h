@@ -26,7 +26,7 @@
 #include <ostream>
 #include "buffer.h"
 
-namespace yans {
+namespace ns3 {
 
 /**
  * \brief Protocol header serialization and deserialization.
@@ -84,6 +84,6 @@ private:
 
 std::ostream& operator<< (std::ostream& os, Chunk const& chunk);
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* CHUNK_H */

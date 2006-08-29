@@ -25,7 +25,7 @@
 #include "ns3/callback.h"
 
 
-namespace yans {
+namespace ns3 {
 
 class Foo {
 public:
@@ -247,6 +247,6 @@ TracedVariableTest::TracedVariableTest ()
 
 static TracedVariableTest g_traced_variable_test;
 
-}; // namespace yans
+}; // namespace ns3
 
 

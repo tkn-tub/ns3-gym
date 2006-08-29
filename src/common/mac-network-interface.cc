@@ -20,7 +20,7 @@
  */
 #include "mac-network-interface.h"
 
-namespace yans {
+namespace ns3 {
 
 MacNetworkInterface::MacNetworkInterface (MacAddress self, uint16_t max_mtu)
 	: m_self (self), m_max_mtu (max_mtu), m_mtu (max_mtu)
@@ -93,4 +93,4 @@ MacNetworkInterface::notify_status_change (void)
 	m_status_change_callback (this);
 }
 
-}; // namespace yans
+}; // namespace ns3

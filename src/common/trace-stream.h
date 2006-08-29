@@ -23,7 +23,7 @@
 
 #include <ostream>
 
-namespace yans {
+namespace ns3 {
 
 /**
  * \brief log arbitrary data to std::ostreams
@@ -67,7 +67,7 @@ private:
 	std::ostream *m_os;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #endif /* TRACE_STREAM_H */

@@ -25,7 +25,7 @@
 #include "chunk.h"
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class ChunkLlcSnap : public Chunk {
  public:
@@ -50,6 +50,6 @@ private:
 	uint16_t m_ether_type;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* CHUNK_LLC_SNAP_H */

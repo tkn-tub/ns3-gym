@@ -25,7 +25,7 @@
 #include "mac-network-interface.h"
 #include <cassert>
 
-namespace yans {
+namespace ns3 {
 
 uint32_t
 LlcSnapEncapsulation::get_overhead (void) const
@@ -86,4 +86,4 @@ LlcSnapEncapsulation::receive (Packet packet, MacNetworkInterface *interface)
 	}
 }
 
-}; // namespace yans
+}; // namespace ns3

@@ -24,7 +24,7 @@
 #include <pthread.h>
 #include <cassert>
 
-namespace yans {
+namespace ns3 {
 
 class SystemMutexPrivate {
 public:
@@ -79,4 +79,4 @@ SystemMutex::unlock (void)
 
 
 
-}; // namespace yans
+}; // namespace ns3

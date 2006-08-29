@@ -23,7 +23,7 @@
 #include <windows.h>
 #include <cassert>
 
-namespace yans {
+namespace ns3 {
 
 class SystemThreadPrivate {
 public:
@@ -62,5 +62,5 @@ SystemThread::~SystemThread ()
 	delete m_priv;
 }
 
-}; // namespace yans
+}; // namespace ns3
 

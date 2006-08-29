@@ -25,7 +25,7 @@
 #include <ostream>
 #include <vector>
 
-namespace yans {
+namespace ns3 {
 
 template <typename T>
 class TagPrettyPrinter;
@@ -110,13 +110,13 @@ private:
 };
 
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #include <cassert>
 #include <string.h>
 
-namespace yans {
+namespace ns3 {
 
 /**
  * The TypeUid class is used to create a mapping Type --> uid
@@ -287,6 +287,6 @@ Tags::remove_all (void)
 }
 
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* TAGS_H */

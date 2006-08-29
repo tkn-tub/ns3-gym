@@ -24,7 +24,7 @@
 
 #include "reference-list.h"
 
-namespace yans {
+namespace ns3 {
 
 /***
  * \internal
@@ -512,7 +512,7 @@ Callback<R,T1,T2,T3,T4,T5> make_bound_callback (R (*fn_ptr) (TX,T1,T2,T3,T4,T5),
 }
 
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #endif /* CALLBACK_H */

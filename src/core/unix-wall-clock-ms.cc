@@ -22,7 +22,7 @@
 #include "wall-clock-ms.h"
 #include <sys/time.h>
 
-namespace yans {
+namespace ns3 {
 
 class WallClockMsPrivate {
 public:
@@ -71,4 +71,4 @@ WallClockMs::end (void)
 	return m_priv->end ();
 }
 
-}; // namespace yans
+}; // namespace ns3

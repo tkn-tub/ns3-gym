@@ -24,8 +24,8 @@
 int main (int argc, char *argv[])
 {
 #ifdef RUN_SELF_TESTS
-	yans::TestManager::enable_verbose ();
-	yans::TestManager::run_tests ();
+	ns3::TestManager::enable_verbose ();
+	ns3::TestManager::run_tests ();
 #endif /* RUN_SELF_TESTS */
 
 	return 0;

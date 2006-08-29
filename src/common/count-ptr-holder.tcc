@@ -22,7 +22,7 @@
 #ifndef COUNT_PTR_HOLDER_TCC
 #define COUNT_PTR_HOLDER_TCC
 
-namespace yans {
+namespace ns3 {
 
 template <typename T>
 class CountPtrHolder {
@@ -65,6 +65,6 @@ make_const_count_ptr_holder (T *t) {
 	return CountPtrHolder<T const> (t);
 }
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* REF_HOLDER_TCC */

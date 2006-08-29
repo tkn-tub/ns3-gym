@@ -25,7 +25,7 @@
 #include "ns3/chunk-ipv4.h"
 #include <iostream>
 
-using namespace yans;
+using namespace ns3;
 
 static void 
 bench_ptr_a (uint32_t n)

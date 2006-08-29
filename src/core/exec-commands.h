@@ -26,7 +26,7 @@
 #include <vector>
 #include "callback.h"
 
-namespace yans {
+namespace ns3 {
 
 class ExecCommandsPrivate;
 

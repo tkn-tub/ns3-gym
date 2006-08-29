@@ -24,7 +24,7 @@
 #ifdef RUN_SELF_TESTS
 #include <iostream>
 
-namespace yans {
+namespace ns3 {
 
 TestManager *
 TestManager::get (void)
@@ -102,6 +102,6 @@ Test::failure (void)
 	return TestManager::failure ();
 }
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* RUN_SELF_TESTS */

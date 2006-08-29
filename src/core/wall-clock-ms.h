@@ -22,7 +22,7 @@
 #ifndef WALL_CLOCK_MS_H
 #define WALL_CLOCK_MS_H
 
-namespace yans {
+namespace ns3 {
 
 class WallClockMs {
 public:
@@ -35,6 +35,6 @@ private:
 	class WallClockMsPrivate *m_priv;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* WALL_CLOCK_MS_H */

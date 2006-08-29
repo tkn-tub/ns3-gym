@@ -23,7 +23,7 @@
 #include <cassert>
 
 
-yans::Scheduler::~Scheduler () 
+ns3::Scheduler::~Scheduler () 
 {}
 
 /* Note the invariants which this function must provide:
@@ -32,7 +32,7 @@ yans::Scheduler::~Scheduler ()
  * - transitivity: f(x,y) and f(y,z) => f(x,z)
  */
 bool
-yans::Scheduler::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
+ns3::Scheduler::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
 {
 	assert (a.m_uid != b.m_uid);
 	if (a.m_time < b.m_time) {

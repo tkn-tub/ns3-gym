@@ -25,7 +25,7 @@
 #include "ns3/callback.h"
 #include "packet.h"
 
-namespace yans {
+namespace ns3 {
 
 class Packet;
 
@@ -54,6 +54,6 @@ private:
 	Ipv4Mask m_mask;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* IPV4_NETWORK_INTERFACE */

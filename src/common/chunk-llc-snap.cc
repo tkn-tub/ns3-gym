@@ -34,7 +34,7 @@ std::cout << "CHUNK LLCSNAP TRACE " << Simulator::now_s () << " " << x << std::e
 #endif /* TRACE_CHUNK_LLC_SNAP */
 
 
-namespace yans {
+namespace ns3 {
 
 ChunkLlcSnap::ChunkLlcSnap ()
 {}
@@ -91,4 +91,4 @@ ChunkLlcSnap::remove_from (Buffer *buffer)
 
 
 
-}; // namespace yans
+}; // namespace ns3

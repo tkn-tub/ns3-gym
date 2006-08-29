@@ -25,7 +25,7 @@
 #include "ipv4-address.h"
 #include "mac-address.h"
 
-namespace yans {
+namespace ns3 {
 
 void write_to (Buffer::Iterator &i, Ipv4Address ad);
 void write_to (Buffer::Iterator &i, MacAddress ad);

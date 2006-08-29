@@ -21,7 +21,7 @@
 #include "packet.h"
 #include <cassert>
 
-namespace yans {
+namespace ns3 {
 
 Packet::Packet ()
 	: m_buffer () {}
@@ -124,4 +124,4 @@ Packet::remove_all_tags (void)
 	m_tags.remove_all ();
 }
 
-}; // namespace yans
+}; // namespace ns3

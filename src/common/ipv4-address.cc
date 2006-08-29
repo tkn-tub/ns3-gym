@@ -22,7 +22,7 @@
 #include "utils.h"
 #include "ipv4-address.h"
 
-namespace yans {
+namespace ns3 {
 
 Ipv4Mask::Ipv4Mask ()
 	: m_mask (0x66666666)
@@ -200,4 +200,4 @@ std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask)
 }
 
 
-}; // namespace yans
+}; // namespace ns3

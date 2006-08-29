@@ -21,7 +21,7 @@
 #include "seed-generator.h"
 #include "rng-mrg32k3a.h"
 
-namespace yans {
+namespace ns3 {
 
 class SeedGeneratorPrivate {
 public:
@@ -58,4 +58,4 @@ SeedGenerator::get (void)
 	return SeedGeneratorPrivate::get ();
 }
 
-}; // namespace yans
+}; // namespace ns3

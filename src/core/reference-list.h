@@ -29,7 +29,7 @@
  */
 
 
-namespace yans {
+namespace ns3 {
 
 template <typename OBJ_PTR>
 class ReferenceList;
@@ -112,6 +112,6 @@ private:
 	mutable ReferenceList const*m_next;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* REFERENCE_LIST_H */

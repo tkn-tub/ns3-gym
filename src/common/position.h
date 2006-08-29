@@ -21,7 +21,7 @@
 #ifndef POSITION_H
 #define POSITION_H
 
-namespace yans {
+namespace ns3 {
 
 class Position {
 public:
@@ -33,6 +33,6 @@ private:
 	virtual void real_get (double &x, double &y, double &z) const = 0;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* POSITION_H */

@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <ostream>
 
-namespace yans {
+namespace ns3 {
 
 class MacAddress {
 public:
@@ -67,6 +67,6 @@ bool operator < (MacAddress const&a, MacAddress const&b);
 
 std::ostream& operator<< (std::ostream& os, MacAddress const& address);
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* MAC_ADDRESS_H */

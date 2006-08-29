@@ -23,7 +23,7 @@
 
 #include "mac-address.h"
 
-namespace yans {
+namespace ns3 {
 
 class MacAddressFactory {
 public:
@@ -35,6 +35,6 @@ private:
 	uint8_t m_index;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* MAC_ADDRESS_FACTORY_H */

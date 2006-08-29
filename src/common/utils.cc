@@ -21,7 +21,7 @@
 
 #include "utils.h"
 
-namespace yans {
+namespace ns3 {
 
 uint16_t 
 utils_hton_16 (uint16_t v)
@@ -156,12 +156,12 @@ utils_checksum_complete (uint16_t checksum)
 }
 
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #ifdef RUN_SELF_TESTS
 #include "ns3/test.h"
-namespace yans {
+namespace ns3 {
 
 class UtilsTest : public Test {
 public:
@@ -289,5 +289,5 @@ UtilsTest::run_tests (void)
 	return ok;
 }
 static UtilsTest g_utils_test;
-}; //namespace yans
+}; //namespace ns3
 #endif /* RUN_SELF_TESTS */

@@ -20,7 +20,7 @@
  */
 #include "ipv4-network-interface.h"
 
-namespace yans {
+namespace ns3 {
 
 Ipv4NetworkInterface::~Ipv4NetworkInterface ()
 {}
@@ -79,4 +79,4 @@ Ipv4NetworkInterface::forward_up (Packet packet)
 
 
 
-}; // namespace yans
+}; // namespace ns3

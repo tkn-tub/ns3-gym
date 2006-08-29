@@ -21,7 +21,7 @@
 #include "event-impl.h"
 #include "event.h"
 
-namespace yans {
+namespace ns3 {
 
 class EventFunctionImpl0 : public EventImpl {
 public:
@@ -44,4 +44,4 @@ Event make_event(void (*f) (void))
 	return Event (new EventFunctionImpl0 (f));
 }
 
-}; // namespace yans
+}; // namespace ns3

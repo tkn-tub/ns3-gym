@@ -66,7 +66,7 @@ void five_cb (int a,int b,int c,int d,int e)
 
 };
 
-namespace yans {
+namespace ns3 {
 class EventTest : public Test {
 public:
 	EventTest ();
@@ -82,17 +82,17 @@ EventTest::run_tests (void)
 {
 	Event ev;
 
-	ev = yans::make_event (&null_cb);
+	ev = ns3::make_event (&null_cb);
 	ev ();
-	ev = yans::make_event (&one_cb, 1);
+	ev = ns3::make_event (&one_cb, 1);
 	ev ();
-	ev = yans::make_event (&two_cb, 1, 2);
+	ev = ns3::make_event (&two_cb, 1, 2);
 	ev ();
-	ev = yans::make_event (&three_cb, 1, 2, 3);
+	ev = ns3::make_event (&three_cb, 1, 2, 3);
 	ev ();
-	ev = yans::make_event (&four_cb, 1, 2, 3, 4);
+	ev = ns3::make_event (&four_cb, 1, 2, 3, 4);
 	ev ();
-	ev = yans::make_event (&five_cb, 1, 2, 3, 4, 5);
+	ev = ns3::make_event (&five_cb, 1, 2, 3, 4, 5);
 	ev ();
 
 	if (g_error) {

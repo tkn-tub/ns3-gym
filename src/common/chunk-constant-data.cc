@@ -21,7 +21,7 @@
 
 #include "chunk-constant-data.h"
 
-namespace yans {
+namespace ns3 {
 
 ChunkConstantData::ChunkConstantData (uint32_t len, uint8_t data)
 	: m_len (len), m_data (data)
@@ -60,4 +60,4 @@ ChunkConstantData::remove_from (Buffer *buffer)
 }
 
 
-}; // namespace yans
+}; // namespace ns3

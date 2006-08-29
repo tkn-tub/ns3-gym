@@ -27,7 +27,7 @@
 #include <utility>
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class Event;
 
@@ -51,7 +51,7 @@ class SchedulerList : public Scheduler {
 	Events m_events;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #endif /* SCHEDULER_LIST_H */

@@ -27,7 +27,7 @@
 #include "errno.h"
 #include "string.h"
 
-namespace yans {
+namespace ns3 {
 
 class SystemSemaphorePrivate {
 public:
@@ -111,4 +111,4 @@ SystemSemaphore::wait (uint32_t n)
 
 
 
-}; // namespace yans
+}; // namespace ns3

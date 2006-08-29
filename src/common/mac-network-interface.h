@@ -26,7 +26,7 @@
 #include "mac-address.h"
 #include "packet.h"
 
-namespace yans {
+namespace ns3 {
 
 class MacNetworkInterface {
 public:
@@ -63,6 +63,6 @@ private:
 	bool m_is_down;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* MAC_NETWORK_INTERFACE_H */

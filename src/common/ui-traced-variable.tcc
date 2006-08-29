@@ -25,7 +25,7 @@
 #include "ns3/callback.h"
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class UiTracedVariableBase {
 public:
@@ -69,12 +69,12 @@ class SiTracedVariable;
  *
  * To instantiate a 32-bit unsigned variable (to store
  * a TCP counter for example), you would create a variable of type
- * yans::UiTracedVariable<uint32_t> :
+ * ns3::UiTracedVariable<uint32_t> :
  \code
  #include <stdint.h>
  #include "ns3/ui-traced-variable.tcc"
 
- yans::UiTracedVariable<uint32_t> var;
+ ns3::UiTracedVariable<uint32_t> var;
  \endcode
  * and you would use it like any other variable of type uint32_t:
  \code
@@ -234,6 +234,6 @@ UiTracedVariable<T> &operator ^= (UiTracedVariable<T> &lhs, U const &rhs) {
 	return lhs;
 }
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* UI_TRACED_VARIABLE_TCC */

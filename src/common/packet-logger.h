@@ -25,7 +25,7 @@
 #include "ns3/callback.h"
 #include "packet.h"
 
-namespace yans {
+namespace ns3 {
 
 /**
  * \brief log packets
@@ -48,6 +48,6 @@ private:
 	PacketLoggerCallback m_callback;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* PACKET_LOGGER_H */

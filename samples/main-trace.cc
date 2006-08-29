@@ -6,7 +6,7 @@
 #include "ns3/pcap-writer.h"
 #include <iostream>
 
-using namespace yans;
+using namespace ns3;
 
 PacketLogger a;
 UiTracedVariable<unsigned short> b;

@@ -22,7 +22,7 @@
 #include "event-impl.h"
 
 
-namespace yans {
+namespace ns3 {
 
 
 EventImpl::~EventImpl ()
@@ -64,4 +64,4 @@ EventImpl::is_running (void)
 	return (m_running == 1);
 }
 
-}; // namespace yans
+}; // namespace ns3

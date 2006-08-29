@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include <ostream>
 
-namespace yans {
+namespace ns3 {
 
 /* Ipv4 addresses are stored in host order in
  * this class.
@@ -102,6 +102,6 @@ public:
 };
 bool operator != (Ipv4Address const &a, Ipv4Address const &b);
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* IPV4_ADDRESS_H */

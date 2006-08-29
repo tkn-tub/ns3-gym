@@ -3,7 +3,7 @@
 #include "ns3/event.tcc"
 #include <iostream>
 
-using namespace yans;
+using namespace ns3;
 
 class MyModel {
 public:

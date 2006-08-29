@@ -22,7 +22,7 @@
 #ifndef REF_PTR_H
 #define REF_PTR_H
 
-namespace yans {
+namespace ns3 {
 
 template <typename T>
 class RefPtr {
@@ -134,6 +134,6 @@ public:
 	}
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* REF_PTR_H */

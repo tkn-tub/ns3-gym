@@ -3,7 +3,7 @@
 #include "ns3/chunk.h"
 #include <iostream>
 
-using namespace yans;
+using namespace ns3;
 
 /* A sample Chunk implementation
  */

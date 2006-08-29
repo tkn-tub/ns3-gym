@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace yans {
+namespace ns3 {
 
 /**
  * \brief automatically resized byte buffer
@@ -257,7 +257,7 @@ public:
 	 * byte buffer.
 	 *
 	 * The returned pointer points to an area of
-	 * memory which is yans::Buffer::get_size () bytes big.
+	 * memory which is ns3::Buffer::get_size () bytes big.
 	 * Please, try to never ever use this method. It is really
 	 * evil and is present only for a few specific uses.
 	 */
@@ -353,11 +353,11 @@ private:
 	uint32_t m_size;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #include <cassert>
 
-namespace yans {
+namespace ns3 {
 
 Buffer::Buffer ()
 	: m_data (Buffer::create ()),
@@ -684,7 +684,7 @@ Buffer::Iterator::read (uint8_t *buffer, uint16_t size)
 	m_current += size;
 }
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #endif /* BUFFER_H */

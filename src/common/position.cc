@@ -21,7 +21,7 @@
 #include "position.h"
 #include <math.h>
 
-namespace yans {
+namespace ns3 {
 
 Position::~Position ()
 {}
@@ -44,4 +44,4 @@ Position::get_distance_from (Position const*position) const
 	return sqrt (dx*dx+dy*dy+dz*dz);
 }
 
-}; // namespace yans
+}; // namespace ns3

@@ -24,7 +24,7 @@
 
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class DataWriterPrivate;
 
@@ -39,6 +39,6 @@ private:
 	DataWriterPrivate *m_priv;
 };
 
-}; //namespace yans
+}; //namespace ns3
 
 #endif /* DATA_WRITER_H */

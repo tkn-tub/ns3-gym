@@ -26,7 +26,7 @@
 
 namespace {
 
-class TestTraceStream : public yans::Test {
+class TestTraceStream : public ns3::Test {
 public:
 	TestTraceStream ();
 	virtual bool run_tests (void);
@@ -42,7 +42,7 @@ bool
 TestTraceStream::run_tests (void)
 {
 	bool ok = true;
-	yans::TraceStream trace;
+	ns3::TraceStream trace;
 	//trace.set_stream (&std::cout);
 	trace << 1;
 	trace << " X ";
@@ -63,6 +63,6 @@ TestTraceStream::run_tests (void)
 }
 
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* RUN_SELF_TESTS */

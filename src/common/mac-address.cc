@@ -22,7 +22,7 @@
 #include "mac-address.h"
 #include "utils.h"
 
-namespace yans {
+namespace ns3 {
 
 MacAddress::MacAddress ()
 {
@@ -184,4 +184,4 @@ std::ostream& operator<< (std::ostream& os, MacAddress const& address)
 }
 
 
-}; // namespace yans
+}; // namespace ns3

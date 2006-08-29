@@ -24,7 +24,7 @@
 
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class SystemFilePrivate;
 
@@ -39,6 +39,6 @@ private:
 	SystemFilePrivate *m_priv;
 };
 
-}; //namespace yans
+}; //namespace ns3
 
 #endif /* SYSTEM_FILE_H */

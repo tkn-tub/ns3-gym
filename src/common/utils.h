@@ -24,7 +24,7 @@
 
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 uint16_t utils_hton_16 (uint16_t v);
 uint32_t utils_hton_32 (uint32_t v);
@@ -38,6 +38,6 @@ void ascii_to_mac_network (char const *str, uint8_t address[6]);
 uint16_t utils_checksum_calculate (uint16_t checksum, uint8_t *buffer, uint16_t size);
 uint16_t utils_checksum_complete (uint16_t checksum);
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* UTILS_H */

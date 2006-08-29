@@ -48,20 +48,20 @@ public:
 	}
 };
 
-class RefTest : public yans::Test {
+class RefTest : public ns3::Test {
 public:
 	RefTest ();
 	virtual bool run_tests (void);
 private:
-	void test (yans::ReferenceList<A *>);
+	void test (ns3::ReferenceList<A *>);
 };
 
 RefTest::RefTest ()
-	: yans::Test ("ReferenceList")
+	: ns3::Test ("ReferenceList")
 {}
 
 void
-RefTest::test (yans::ReferenceList<A *> a) 
+RefTest::test (ns3::ReferenceList<A *> a) 
 {
 	a->trace ();
 }
@@ -72,9 +72,9 @@ RefTest::run_tests (void)
 	bool ok = true;
 
 	{
-		yans::ReferenceList<A *> tmp;
+		ns3::ReferenceList<A *> tmp;
 		{
-			yans::ReferenceList<A *> a (new A ());
+			ns3::ReferenceList<A *> a (new A ());
 			
 			test (a);
 			tmp = a;
@@ -88,22 +88,22 @@ RefTest::run_tests (void)
 	}
 
 	{
-		yans::ReferenceList<A *> tmp;
+		ns3::ReferenceList<A *> tmp;
 	}
 
 	{
-		yans::ReferenceList<A *> tmp (new A ());
+		ns3::ReferenceList<A *> tmp (new A ());
 	}
 
 	{
-		yans::ReferenceList<A *> tmp;
+		ns3::ReferenceList<A *> tmp;
 		tmp.set (new A ());
 	}
 
 	{
 		TRACE ("test assignement");
-		yans::ReferenceList<A *> a0 (new A ());
-		yans::ReferenceList<A *> a1 (new A ());
+		ns3::ReferenceList<A *> a0 (new A ());
+		ns3::ReferenceList<A *> a1 (new A ());
 		a0 = a1;
 	}
 

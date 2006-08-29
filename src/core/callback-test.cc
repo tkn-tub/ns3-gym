@@ -25,7 +25,7 @@
 
 #ifdef RUN_SELF_TESTS
 
-namespace yans {
+namespace ns3 {
 
 static bool g_test5 = false;
 static bool g_test6 = false;
@@ -47,7 +47,7 @@ int test7 (int a)
 	return a;
 }
 
-class CallbackTest : public yans::Test {
+class CallbackTest : public ns3::Test {
 private:
 	bool m_test1;
 	bool m_test2;
@@ -66,7 +66,7 @@ public:
 };
 
 CallbackTest::CallbackTest ()
-	: yans::Test ("Callback"),
+	: ns3::Test ("Callback"),
 	  m_test1 (false),
 	  m_test2 (false),
 	  m_test3 (false),
@@ -133,13 +133,13 @@ CallbackTest::run_tests (void)
 {
 	bool ok = true;
 
-	typedef yans::Callback<void> A;
-	typedef yans::Callback<int> B;
-	typedef yans::Callback<void, double> C;
-	typedef yans::Callback<int, double, int> D;
-	typedef yans::Callback<void> E;
-	typedef yans::Callback<void,int> F;
-	typedef yans::Callback<int,int> G;
+	typedef ns3::Callback<void> A;
+	typedef ns3::Callback<int> B;
+	typedef ns3::Callback<void, double> C;
+	typedef ns3::Callback<int, double, int> D;
+	typedef ns3::Callback<void> E;
+	typedef ns3::Callback<void,int> F;
+	typedef ns3::Callback<int,int> G;
 	
 	A a0 (this, &CallbackTest::test1);
 	B b0;
@@ -164,13 +164,13 @@ CallbackTest::run_tests (void)
 
 	reset ();
 
-	A a1 = yans::make_callback (&CallbackTest::test1, this);
-	B b1 = yans::make_callback (&CallbackTest::test2, this);
-	C c1 = yans::make_callback (&CallbackTest::test3, this);
-	D d1 = yans::make_callback (&CallbackTest::test4, this);
-	E e1 = yans::make_callback (&test5);
-	F f1 = yans::make_callback (&test6);
-	G g1 = yans::make_callback (&test7);
+	A a1 = ns3::make_callback (&CallbackTest::test1, this);
+	B b1 = ns3::make_callback (&CallbackTest::test2, this);
+	C c1 = ns3::make_callback (&CallbackTest::test3, this);
+	D d1 = ns3::make_callback (&CallbackTest::test4, this);
+	E e1 = ns3::make_callback (&test5);
+	F f1 = ns3::make_callback (&test6);
+	G g1 = ns3::make_callback (&test7);
 	
 	a1 ();
 	b1 ();

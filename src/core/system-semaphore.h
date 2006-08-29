@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 
-namespace yans {
+namespace ns3 {
 
 class SystemSemaphorePrivate;
 
@@ -39,6 +39,6 @@ private:
 	SystemSemaphorePrivate *m_priv;
 };
 
-}; // namespace yans
+}; // namespace ns3
 
 #endif /* SYSTEM_SEMAPHORE_H */

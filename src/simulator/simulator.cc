@@ -46,7 +46,7 @@ std::cout << "SIMU TRACE " << x << std::endl;
 #endif /* TRACE_SIMU */
 
 
-namespace yans {
+namespace ns3 {
 
 class ParallelSimulatorQueuePrivate {
 public:
@@ -362,7 +362,7 @@ SimulatorPrivate::remove (Event const ev)
 }
 
 
-}; // namespace yans
+}; // namespace ns3
 
 
 #include "scheduler-list.h"
@@ -370,7 +370,7 @@ SimulatorPrivate::remove (Event const ev)
 #include "scheduler-map.h"
 
 
-namespace yans {
+namespace ns3 {
 
 SimulatorPrivate *Simulator::m_priv = 0;
 Simulator::ListType Simulator::m_list_type = LINKED_LIST;
@@ -520,10 +520,10 @@ Simulator::remove (Event const ev)
 	return get_priv ()->remove (ev);
 }
 
-}; // namespace yans
+}; // namespace ns3
 
 
-namespace yans {
+namespace ns3 {
 
 ParallelSimulatorQueue::ParallelSimulatorQueue ()
 {}

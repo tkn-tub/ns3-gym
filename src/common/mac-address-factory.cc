@@ -20,7 +20,7 @@
  */
 #include "mac-address-factory.h"
 
-namespace yans {
+namespace ns3 {
 
 MacAddressFactory::MacAddressFactory ()
 {
@@ -43,4 +43,4 @@ MacAddressFactory::get_next (void)
 	return MacAddress (m_addr);
 }
 
-}; // namespace yans
+}; // namespace ns3

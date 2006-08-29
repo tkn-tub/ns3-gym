@@ -21,7 +21,7 @@
 
 #include "packet-logger.h"
 
-namespace yans {
+namespace ns3 {
 
 PacketLogger::PacketLogger ()
 {}
@@ -38,5 +38,5 @@ PacketLogger::set_callback (PacketLoggerCallback callback)
 	m_callback = callback;
 }
 
-}; // namespace yans
+}; // namespace ns3
 

@@ -34,7 +34,7 @@ std::cout << "SYS FILE TRACE " << this << " " << x << std::endl;
 #define BUFFER_SIZE (4096)
 
 
-namespace yans {
+namespace ns3 {
 
 class SystemFilePrivate {
 public:
