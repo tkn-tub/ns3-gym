@@ -576,7 +576,6 @@ common.add_inst_headers ([
 	'chunk-constant-data.h',
 	'mac-address.h',
 	'chunk-utils.h',
-	'sgi-hashmap.h',
 	'llc-snap-encapsulation.h',
 	'mac-network-interface.h',
 	'population-analysis.h',
