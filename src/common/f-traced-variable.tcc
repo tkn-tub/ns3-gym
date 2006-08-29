@@ -1,0 +1,58 @@
+/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/*
+ * Copyright (c) 2006 INRIA
+ * All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+
+#ifndef F_TRACED_VARIABLE_TCC
+#define F_TRACED_VARIABLE_TCC
+
+#include "yans/callback.h"
+#include <stdint.h>
+
+namespace yans {
+
+class FTracedVariableBase {
+public:
+	typedef Callback<void,double, double> ChangeNotifyCallback;
+
+	FTracedVariableBase () {}
+	FTracedVariableBase (FTracedVariableBase const &o) {}
+	FTracedVariableBase &operator = (FTracedVariableBase const &o) {
+		return *this;
+	}
+
+	~FTracedVariableBase () {}
+
+	void set_callback(ChangeNotifyCallback callback) {
+		m_callback = callback;
+	}
+protected:
+	void notify (double old_val, double new_val) {
+		if (old_val != new_val && !m_callback.is_null ()) {
+			m_callback (old_val, new_val);
+		}
+	}
+private:
+	ChangeNotifyCallback m_callback;
+};
+
+
+}; // namespace yans
+
+#endif /* F_TRACED_VARIABLE_TCC */
