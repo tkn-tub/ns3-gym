@@ -222,7 +222,7 @@ class Ns3:
 				if env['PLATFORM'] == 'posix':
 					module_builder = env.Program (target = filename, source = objects,
 								      LIBPATH=lib_path, LIBS=libs, 
-									RPATH=lib_path)
+								      RPATH=lib_path)
 				else:
 					module_builder = env.Program (target = filename, source = objects,
 								      LIBPATH=lib_path, LIBS=libs)
