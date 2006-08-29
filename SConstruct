@@ -468,7 +468,7 @@ core.add_sources ([
         'test.cc'
 	])
 env = Environment ()
-if env['PLATFORM'] == 'posix':
+if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin':
 	core.add_external_dep ('pthread')
 	core.add_sources ([
 		'unix-system-semaphore.cc',
