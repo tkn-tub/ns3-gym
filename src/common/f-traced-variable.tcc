@@ -22,7 +22,7 @@
 #ifndef F_TRACED_VARIABLE_TCC
 #define F_TRACED_VARIABLE_TCC
 
-#include "yans/callback.h"
+#include "ns3/callback.h"
 #include <stdint.h>
 
 namespace yans {

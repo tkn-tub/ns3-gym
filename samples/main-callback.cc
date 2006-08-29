@@ -1,5 +1,5 @@
 /* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
-#include "yans/callback.h"
+#include "ns3/callback.h"
 #include <cassert>
 #include <iostream>
 

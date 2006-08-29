@@ -21,8 +21,8 @@
 
 #include "ui-traced-variable.tcc"
 #include "si-traced-variable.tcc"
-#include "yans/test.h"
-#include "yans/callback.h"
+#include "ns3/test.h"
+#include "ns3/callback.h"
 
 
 namespace yans {

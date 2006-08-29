@@ -22,7 +22,7 @@
 #ifndef UI_TRACED_VARIABLE_TCC
 #define UI_TRACED_VARIABLE_TCC
 
-#include "yans/callback.h"
+#include "ns3/callback.h"
 #include <stdint.h>
 
 namespace yans {
@@ -72,7 +72,7 @@ class SiTracedVariable;
  * yans::UiTracedVariable<uint32_t> :
  \code
  #include <stdint.h>
- #include "yans/ui-traced-variable.tcc"
+ #include "ns3/ui-traced-variable.tcc"
 
  yans::UiTracedVariable<uint32_t> var;
  \endcode

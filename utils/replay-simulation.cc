@@ -19,10 +19,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "yans/simulator.h"
-#include "yans/event.h"
-#include "yans/event.tcc"
-#include "yans/wall-clock-ms.h"
+#include "ns3/simulator.h"
+#include "ns3/event.h"
+#include "ns3/event.tcc"
+#include "ns3/wall-clock-ms.h"
 #include <vector>
 #include <deque>
 #include <fstream>

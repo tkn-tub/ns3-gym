@@ -22,7 +22,7 @@
 #ifndef PCAP_WRITER_H
 #define PCAP_WRITER_H
 
-#include "yans/callback.h"
+#include "ns3/callback.h"
 #include <stdint.h>
 #include "packet.h"
 

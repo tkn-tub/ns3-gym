@@ -26,7 +26,7 @@
 #include "si-traced-variable.tcc"
 #include "f-traced-variable.tcc"
 #include "callback-logger.h"
-#include "yans/callback.h"
+#include "ns3/callback.h"
 #include "packet.h"
 #include <list>
 #include <string>

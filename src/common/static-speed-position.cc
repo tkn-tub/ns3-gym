@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "static-speed-position.h"
-#include "yans/simulator.h"
+#include "ns3/simulator.h"
 
 namespace yans {
 

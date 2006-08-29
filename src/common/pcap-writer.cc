@@ -24,8 +24,8 @@
  * http://wiki.ethereal.com/Development/LibpcapFileFormat
  */
 
-#include "yans/simulator.h"
-#include "yans/system-file.h"
+#include "ns3/simulator.h"
+#include "ns3/system-file.h"
 #include "pcap-writer.h"
 #include "packet.h"
 

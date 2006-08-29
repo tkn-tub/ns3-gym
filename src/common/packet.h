@@ -25,7 +25,7 @@
 #include "buffer.h"
 #include "chunk.h"
 #include "tags.h"
-#include "yans/callback.h"
+#include "ns3/callback.h"
 
 namespace yans {
 

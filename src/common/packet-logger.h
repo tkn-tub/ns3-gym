@@ -22,7 +22,7 @@
 #ifndef PACKET_LOGGER_H
 #define PACKET_LOGGER_H
 
-#include "yans/callback.h"
+#include "ns3/callback.h"
 #include "packet.h"
 
 namespace yans {

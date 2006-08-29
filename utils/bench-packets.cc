@@ -18,11 +18,11 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "yans/wall-clock-ms.h"
-#include "yans/packet.h"
-#include "yans/chunk-constant-data.h"
-#include "yans/chunk-udp.h"
-#include "yans/chunk-ipv4.h"
+#include "ns3/wall-clock-ms.h"
+#include "ns3/packet.h"
+#include "ns3/chunk-constant-data.h"
+#include "ns3/chunk-udp.h"
+#include "ns3/chunk-ipv4.h"
 #include <iostream>
 
 using namespace yans;

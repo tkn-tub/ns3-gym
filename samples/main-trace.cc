@@ -1,9 +1,9 @@
 /* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
-#include "yans/trace-container.h"
-#include "yans/ui-traced-variable.tcc"
-#include "yans/packet-logger.h"
-#include "yans/trace-stream.h"
-#include "yans/pcap-writer.h"
+#include "ns3/trace-container.h"
+#include "ns3/ui-traced-variable.tcc"
+#include "ns3/packet-logger.h"
+#include "ns3/trace-stream.h"
+#include "ns3/pcap-writer.h"
 #include <iostream>
 
 using namespace yans;

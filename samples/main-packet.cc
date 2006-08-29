@@ -1,6 +1,6 @@
 /* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
-#include "yans/packet.h"
-#include "yans/chunk.h"
+#include "ns3/packet.h"
+#include "ns3/chunk.h"
 #include <iostream>
 
 using namespace yans;

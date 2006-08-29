@@ -22,7 +22,7 @@
 #define MAC_NETWORK_INTERFACE_H
 
 #include <stdint.h>
-#include "yans/callback.h"
+#include "ns3/callback.h"
 #include "mac-address.h"
 #include "packet.h"
 

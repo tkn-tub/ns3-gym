@@ -22,7 +22,7 @@
 #ifndef CALLBACK_LOGGER_H
 #define CALLBACK_LOGGER_H
 
-#include "yans/callback.h"
+#include "ns3/callback.h"
 
 namespace yans {
 
