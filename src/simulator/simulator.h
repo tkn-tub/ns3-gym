@@ -35,7 +35,7 @@ class SimulatorPrivate;
  * The internal simulation clock is maintained
  * as a 64-bit integer in microsecond units. This means that it is
  * not possible to specify event expiration times with anything better
- * than microsecond accuracy. Events which whose expiration time is
+ * than microsecond accuracy. Events whose expiration time is
  * the same are scheduled in FIFO order: the first event inserted in the
  * Scheduling queue is scheduled to expire first.
  */
