@@ -48,19 +48,6 @@ std::cout << "SIMU TRACE " << x << std::endl;
 
 namespace ns3 {
 
-class ParallelSimulatorQueuePrivate {
-public:
-	ParallelSimulatorQueuePrivate (SimulatorPrivate *priv);
-	~ParallelSimulatorQueuePrivate ();
-	void set_queue (ParallelSimulatorQueue *queue);
-	void schedule_abs_us (Event ev, uint64_t at);
-	void send_null_message (void);
-private:
-	void remove_event (Event ev);
-	uint32_t m_n;
-	SimulatorPrivate *m_simulator;
-	ParallelSimulatorQueue *m_queue;
-};
 
 class SimulatorPrivate {
 public:
@@ -69,16 +56,9 @@ public:
 
 	void enable_log_to (char const *filename);
 
-	void add_queue (ParallelSimulatorQueuePrivate *queue);
-	void notify_queue_not_empty (void);
-	void notify_queue_empty (void);
-	void wait_until_no_queue_empty (void);
-	bool is_parallel (void);
-
 	bool is_finished (void) const;
 	uint64_t next_us (void) const;
 	void run_serial (void);
-	void run_parallel (void);
 	void stop (void);
 	void stop_at_us (uint64_t at);
 	Event schedule_rel_us (Event event, uint64_t delta);
@@ -95,8 +75,6 @@ private:
 	void process_one_event (void);
 
 	typedef std::list<std::pair<Event,uint32_t> > Events;
-	typedef std::vector<ParallelSimulatorQueuePrivate *> Queues;
-	typedef std::vector<ParallelSimulatorQueuePrivate *>::iterator QueuesI;
 	Events m_destroy;
 	uint64_t m_stop_at;
 	bool m_stop;
@@ -107,48 +85,7 @@ private:
 	std::ofstream m_log;
 	std::ifstream m_input_log;
 	bool m_log_enable;
-	uint32_t m_n_full_queues;
-	uint32_t m_n_queues;
-	SystemSemaphore *m_all_queues;
-	Queues m_queues;
 };
-
-
-ParallelSimulatorQueuePrivate::ParallelSimulatorQueuePrivate (SimulatorPrivate *simulator)
-	: m_simulator (simulator)
-{}
-ParallelSimulatorQueuePrivate::~ParallelSimulatorQueuePrivate ()
-{}
-void 
-ParallelSimulatorQueuePrivate::schedule_abs_us (Event ev, uint64_t at)
-{
-	m_n++;
-	if (m_n == 1) {
-		m_simulator->notify_queue_not_empty ();
-	}
-	m_simulator->schedule_abs_us (make_event (&ParallelSimulatorQueuePrivate::remove_event, this, ev), at);
-}
-void
-ParallelSimulatorQueuePrivate::remove_event (Event ev)
-{
-	m_n--;
-	if (m_n == 0) {
-		m_simulator->notify_queue_empty ();
-	}
-	ev ();
-}
-
-void
-ParallelSimulatorQueuePrivate::set_queue (ParallelSimulatorQueue *queue)
-{
-	m_queue = queue;
-}
-
-void 
-ParallelSimulatorQueuePrivate::send_null_message (void)
-{
-	m_queue->send_null_message ();
-}
 
 
 
@@ -161,9 +98,6 @@ SimulatorPrivate::SimulatorPrivate (Scheduler *events)
 	m_uid = 0;	
 	m_log_enable = false;
 	m_current_us = 0;
-	m_all_queues = new SystemSemaphore (0);
-	m_n_queues = 0;
-	m_n_full_queues = 0;
 }
 
 SimulatorPrivate::~SimulatorPrivate ()
@@ -176,49 +110,14 @@ SimulatorPrivate::~SimulatorPrivate ()
 	}
 	delete m_events;
 	m_events = (Scheduler *)0xdeadbeaf;
-	delete m_all_queues;
-	m_queues.erase (m_queues.begin (), m_queues.end ());
 }
 
-bool 
-SimulatorPrivate::is_parallel (void)
-{
-	return (m_n_queues > 0);
-}
 
 void
 SimulatorPrivate::enable_log_to (char const *filename)
 {
 	m_log.open (filename);
 	m_log_enable = true;
-}
-
-void 
-SimulatorPrivate::notify_queue_not_empty (void)
-{
-	m_n_full_queues++;
-	if (m_n_full_queues == m_n_queues) {
-		m_all_queues->post ();
-	}
-}
-void 
-SimulatorPrivate::notify_queue_empty (void)
-{
-	m_n_full_queues--;
-}
-void
-SimulatorPrivate::wait_until_no_queue_empty (void)
-{
-	while (m_n_full_queues < m_n_queues) {
-		m_all_queues->wait ();
-	}
-}
-
-void
-SimulatorPrivate::add_queue (ParallelSimulatorQueuePrivate *queue)
-{
-	m_n_queues++;
-	m_queues.push_back (queue);
 }
 
 void
@@ -260,25 +159,6 @@ SimulatorPrivate::run_serial (void)
 	m_log.close ();
 }
 
-void
-SimulatorPrivate::run_parallel (void)
-{
-	TRACE ("run parallel");
-	while (!m_stop && 
-	       (m_stop_at == 0 || m_stop_at >= next_us ())) {
-		TRACE ("send null messages");
-		for (QueuesI i = m_queues.begin (); i != m_queues.end (); i++) {
-			(*i)->send_null_message ();
-		}
-		TRACE ("sent null messages");
-		wait_until_no_queue_empty ();
-		TRACE ("no queue empty");
-		process_one_event();
-		TRACE ("processed event");
-	}
-	m_log.close ();
-	TRACE ("done run parallel");
-}
 
 void 
 SimulatorPrivate::stop (void)
@@ -426,14 +306,6 @@ Simulator::destroy (void)
 	m_priv = 0;
 }
 
-void
-Simulator::add_parallel_queue (ParallelSimulatorQueue *queue)
-{
-	ParallelSimulatorQueuePrivate *priv = new ParallelSimulatorQueuePrivate (get_priv ());
-	priv->set_queue (queue);
-	queue->set_priv (priv);
-	return get_priv ()->add_queue (priv);
-}
 
 bool 
 Simulator::is_finished (void)
@@ -450,11 +322,7 @@ Simulator::next_us (void)
 void 
 Simulator::run (void)
 {
-	if (get_priv ()->is_parallel ()) {
-		get_priv ()->run_parallel ();
-	} else {
-		get_priv ()->run_serial ();
-	}
+	get_priv ()->run_serial ();
 }
 void 
 Simulator::stop (void)
@@ -525,20 +393,4 @@ Simulator::remove (Event const ev)
 
 namespace ns3 {
 
-ParallelSimulatorQueue::ParallelSimulatorQueue ()
-{}
-ParallelSimulatorQueue::~ParallelSimulatorQueue ()
-{
-	delete m_priv;
-}
-void 
-ParallelSimulatorQueue::schedule_abs_us (uint64_t at, Event ev)
-{
-	m_priv->schedule_abs_us (ev, at);
-}
-void
-ParallelSimulatorQueue::set_priv (ParallelSimulatorQueuePrivate *priv)
-{
-	m_priv = priv;
-}
 };

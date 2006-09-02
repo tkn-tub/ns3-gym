@@ -28,22 +28,6 @@
 namespace ns3 {
 
 class SimulatorPrivate;
-class ParallelSimulatorQueuePrivate;
-
-class ParallelSimulatorQueue {
-public:
-	virtual ~ParallelSimulatorQueue () = 0;
-	void schedule_abs_us (uint64_t at, Event ev);
-private:
-	friend class Simulator;
-	friend class ParallelSimulatorQueuePrivate;
-
-	void set_priv (ParallelSimulatorQueuePrivate *priv);
-	virtual void send_null_message (void) = 0;
-	ParallelSimulatorQueuePrivate *m_priv;
-protected:
-	ParallelSimulatorQueue ();
-};
 
 /**
  * \brief Control the scheduling of simulation events. 
@@ -109,16 +93,6 @@ public:
 	 */
 	static void destroy (void);
 
-	/**
-	 * Register a new source of events from a remote simulation engine.
-	 * This new source of events is used by the parallel scheduler
-	 * to synchronize with the remote simulation engine by sending and
-	 * receiving null messages. The synchronization algorithm used
-	 * here is the classic Chandy/Misra/Bryant null-message algorithm.
-	 * This method must be invoked bfore any call to Simulator::run.
-	 * @param queue the queue to add to the list of event sources.
-	 */
-	static void add_parallel_queue (ParallelSimulatorQueue *queue);
 
 	/**
 	 * If there any any events lefts to be scheduled, return
