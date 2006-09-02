@@ -58,7 +58,6 @@ public:
 
 	bool is_finished (void) const;
 	uint64_t next_us (void) const;
-	void run_serial (void);
 	void stop (void);
 	void stop_at_us (uint64_t at);
 	Event schedule_rel_us (Event event, uint64_t delta);
@@ -150,7 +149,7 @@ SimulatorPrivate::next_us (void) const
 
 
 void
-SimulatorPrivate::run_serial (void)
+SimulatorPrivate::run (void)
 {
 	while (!m_events->is_empty () && !m_stop && 
 	       (m_stop_at == 0 || m_stop_at > next_us ())) {
@@ -322,7 +321,7 @@ Simulator::next_us (void)
 void 
 Simulator::run (void)
 {
-	get_priv ()->run_serial ();
+	get_priv ()->run ();
 }
 void 
 Simulator::stop (void)
