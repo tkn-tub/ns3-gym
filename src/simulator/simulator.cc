@@ -65,6 +65,7 @@ public:
 	Event schedule_abs_us (Event event, uint64_t time);
 	Event schedule_abs_s (Event event, double time);
 	Event remove (Event const ev);
+	void run (void);
 	uint64_t now_us (void);
 	double now_s (void);
 	void schedule_now (Event event);
