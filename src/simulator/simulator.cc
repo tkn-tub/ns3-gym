@@ -351,5 +351,35 @@ Simulator::is_expired (EventId id)
 }; // namespace ns3
 
 
+#ifdef RUN_SELF_TESTS
+
+#include "ns3/test.h"
+
+namespace ns3 {
+
+class SimulatorTests : public Test {
+public:
+	SimulatorTests ();
+	virtual ~SimulatorTests ();
+	virtual bool run_tests (void);
+};
+
+SimulatorTests::SimulatorTests ()
+	: Test ("Simulator")
+{}
+SimulatorTests::~SimulatorTests ()
+{}
+bool 
+SimulatorTests::run_tests (void)
+{
+	bool ok = true;
+	return ok;
+}
+
+SimulatorTests g_simulator_tests;
+
+}; // namespace ns3
+
+#endif /* RUN_SELF_TESTS */
 
 
