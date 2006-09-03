@@ -179,7 +179,7 @@ public:
 			T* m_obj;
 			F m_function;
 			T1 m_a1;
-		} *ev = new EventMemberImpl1 (f, t, a1);
+		} *ev = new EventMemberImpl1 (t, f, a1);
 		return schedule (time, ev);
 	}
 	template <typename T, typename T1, typename T2>
