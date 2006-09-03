@@ -351,10 +351,5 @@ Simulator::is_expired (EventId id)
 }; // namespace ns3
 
 
-namespace ns3 {
-
-};
-
-
 
 
