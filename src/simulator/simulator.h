@@ -23,9 +23,12 @@
 #define SIMULATOR_H
 
 #include <stdint.h>
-#include "event.h"
+#include "event-id.h"
+#include "event-impl.h"
+#include "time.h"
 
 namespace ns3 {
+
 
 class SimulatorPrivate;
 
@@ -104,7 +107,7 @@ public:
 	 * method is undefined. Otherwise, it returns the microsecond-based
 	 * time of the next event expected to be scheduled.
 	 */
-	static uint64_t next_us (void);
+	static Time next (void);
 
 	/**
 	 * Run the simulation until one of:
@@ -127,75 +130,100 @@ public:
 	 * is greater than or equal to the stop time.
 	 * @param at the stop time.
 	 */
-	static void stop_at_us (uint64_t at);
+	static void stop_at (Time time);
 
 	/**
-	 * Schedule an event to expire at delta, relative to the
-	 * current time.
-	 * @param delta the expiration time relative to the current
-	 *        time. Expressed in microsecond units.
+	 * Schedule an event to expire at time.
+	 *
+	 * @param delta the expiration time of the event.
 	 * @param event the event to schedule.
+	 * @returns an id for the scheduled event.
 	 */
-	static Event schedule_rel_us (uint64_t delta, Event event);
-	/**
-	 * Schedule an event to expire at delta, relative to the
-	 * current time.
-	 * @param delta the expiration time, relative to the current
-	 *        time. Expressed in second units.
-	 * @param event the event to schedule.
-	 */
-	static Event schedule_rel_s (double delta, Event event);
-	/**
-	 * Schedule an event to expire at an absolute time.
-	 * @param time the expiration time. Expressed in 
-	 *             microsecond units.
-	 * @param event the event to schedule.
-	 */
-	static Event schedule_abs_us (uint64_t time, Event event);
-	/**
-	 * Schedule an event to expire at an absolute time.
-	 * @param time the expiration time. Expressed in 
-	 *             second units.
-	 * @param event the event to schedule.
-	 */
-	static Event schedule_abs_s (double time, Event event);
+	template <typename T>
+	static EventId schedule (Time time, void (T::*mem_ptr) (void), T *obj) {
+		class EventMemberImpl0 : public EventImpl {
+		public:
+			typedef void (T::*F)(void);
+			EventMemberImpl0 (T *obj, F function) 
+				: m_obj (obj), 
+				  m_function (function)
+			{}
+			virtual ~EventMemberImpl0 () {}
+		private:
+			virtual void notify (void) { 
+				(m_obj->*m_function) (); 
+			}
+			T* m_obj;
+			F m_function;
+		} *ev = new EventMemberImpl0 (obj, mem_ptr);
+		return schedule (time, ev);
+	}
+	static EventId schedule (Time time, void (*f) (void)) {
+		class EventFunctionImpl0 : public EventImpl {
+		public:
+			typedef void (*F)(void);
+			
+			EventFunctionImpl0 (F function) 
+				: m_function (function)
+			{}
+		protected:
+			virtual void notify (void) { 
+				(*m_function) (); 
+			}
+		private:
+			virtual ~EventFunctionImpl0 () {}
+			F m_function;
+		} *ev = new EventFunctionImpl0 (f);
+		return schedule (time, ev);
+	}
+	template <typename T1>
+	static EventId schedule (Time time, void (*f) (T1), T1 a1) {
+		class EventFunctionImpl1 : public EventImpl {
+		public:
+			typedef void (*F)(T1);
+			
+			EventFunctionImpl1 (F function, T1 a1) 
+				: m_function (function),
+				  m_a1 (a1)
+				{ }
+		protected:
+			virtual ~EventFunctionImpl1 () {}
+		private:
+			virtual void notify (void) { 
+				(*m_function) (m_a1);
+			}
+			F m_function;
+			T1 m_a1;
+		} *ev = new EventFunctionImpl1(f, a1);
+		return schedule (time, ev);
+	}
 	/**
 	 * Unschedule the event. i.e.: the removed event never expires.
 	 * @param id the event to remove from the list of scheduled events.
 	 */
-	static Event remove (Event const id);
-	/**
-	 * Return the "current time" in microsecond units.
+	static void remove (EventId id);
+	/*
+	  XXX
 	 */
-	static uint64_t now_us (void);
-	/**
-	 * Return the "current time" in second units.
+	static void cancel (EventId id);
+	/*
+	  XXX
 	 */
-	static double now_s (void);
+	static bool is_expired (EventId id);
 	/**
-	 * Schedule an event to expire right now. i.e., it will
-	 * expire after the currently-executing event is executed.
-	 * If multiple events are scheduled with this method, 
-	 * they are executed in FIFO order: the events scheduled first
-	 * are executed first.
-	 * @param event the event to schedule now.
+	 * Return the "current time".
 	 */
-	static void schedule_now (Event event);
-	/**
-	 * Schedule an event to expire when the Simulator::destroy method
-	 * is invoked. Events are executed in FIFO order: the events
-	 * scheduled first are executed first.
-	 * @param event the event to schedule.
-	 */
-	static void schedule_destroy (Event event);
+	static Time now (void);
 private:
 	Simulator ();
 	~Simulator ();
 	static SimulatorPrivate *get_priv (void);
+	static EventId schedule (Time time, EventImpl *event);
 	static SimulatorPrivate *m_priv;
 	static enum ListType {
 		LINKED_LIST,
 		BINARY_HEAP,
+
 		STD_MAP
 	} m_list_type;
 };

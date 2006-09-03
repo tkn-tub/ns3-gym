@@ -20,8 +20,6 @@
  */
 
 #include "ns3/simulator.h"
-#include "ns3/event.h"
-#include "ns3/event.tcc"
 #include "ns3/wall-clock-ms.h"
 #include <iostream>
 #include <fstream>
@@ -75,7 +73,7 @@ Bench::bench (void)
 	time.start ();
 	for (std::vector<uint64_t>::const_iterator i = m_distribution.begin ();
 	     i != m_distribution.end (); i++) {
-		Simulator::schedule_rel_us (*i, make_event (&Bench::cb, this));
+		Simulator::schedule (AbsTimeUs (*i), &Bench::cb, this);
 	}
 	init = time.end ();
 
@@ -105,9 +103,9 @@ Bench::cb (void)
 		m_current = m_distribution.begin ();
 	}
 	if (g_debug) {
-		std::cerr << "event at " << Simulator::now_s () << std::endl;
+		std::cerr << "event at " << Simulator::now ().s () << std::endl;
 	}
-	Simulator::schedule_rel_us (*m_current, make_event (&Bench::cb, this));
+	Simulator::schedule (AbsTimeUs (*m_current), &Bench::cb, this);
 	m_current++;
 	m_n++;
 }

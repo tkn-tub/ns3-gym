@@ -18,40 +18,47 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-
-#ifndef SCHEDULER_H
-#define SCHEDULER_H
-
-#include <stdint.h>
 #include "event-id.h"
+#include "simulator.h"
 
 namespace ns3 {
 
-class EventImpl;
+EventId::EventId ()
+	: m_event_impl (0),
+	  m_time (0),
+	  m_uid (0)
+{}
+    
+EventId::EventId (EventImpl *impl, uint64_t time, uint32_t uid)
+	: m_event_impl (impl),
+	  m_time (time),
+	  m_uid (uid)
+{}
+void 
+EventId::cancel (void)
+{
+	Simulator::cancel (*this);
+}
+bool 
+EventId::is_expired (void)
+{
+	return Simulator::is_expired (*this);
+}
+EventImpl *
+EventId::get_event_impl (void) const
+{
+	return m_event_impl;
+}
+uint64_t 
+EventId::get_time (void) const
+{
+	return m_time;
+}
+uint32_t 
+EventId::get_uid (void) const
+{
+	return m_uid;
+}
 
-class Scheduler {
- public:
-	struct EventKey {
-		uint64_t m_time;
-		uint32_t m_uid;
-	};
-	class EventKeyCompare {
-	public:
-		bool operator () (struct EventKey a, struct EventKey b);
-	};
-
-	virtual ~Scheduler () = 0;
-	virtual EventId insert (EventImpl *event, EventKey key) = 0;
-	virtual bool is_empty (void) const = 0;
-	virtual EventImpl *peek_next (void) const = 0;
-	virtual EventKey peek_next_key (void) const = 0;
-	virtual void remove_next (void) = 0;
-	virtual EventImpl *remove (EventId id, EventKey *key) = 0;
-	virtual bool is_valid (EventId id) = 0;
-
-};
 
 }; // namespace ns3
-
-
-#endif /* SCHEDULER_H */

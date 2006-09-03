@@ -29,39 +29,30 @@ EventImpl::~EventImpl ()
 {}
 
 EventImpl::EventImpl ()
-	: m_id (0),
-	  m_count (1),
-	  m_cancel (0),
-	  m_running (1)
+	: m_internal_iterator (0),
+	  m_cancel (false)
 {}
 void 
 EventImpl::invoke (void)
 {
-	if (m_cancel == 0) {
+	if (!m_cancel) {
 		notify ();
 	}
-	m_running = 0;
 }
 void 
-EventImpl::set_tag (void *tag)
+EventImpl::set_internal_iterator (void *tag)
 {
-	m_id = tag;
+	m_internal_iterator = tag;
 }
 void *
-EventImpl::get_tag (void) const
+EventImpl::get_internal_iterator (void) const
 {
-	return m_id;
+	return m_internal_iterator;
 }
 void 
 EventImpl::cancel (void)
 {
-	m_cancel = 1;
-	m_running = 0;
-}
-bool 
-EventImpl::is_running (void)
-{
-	return (m_running == 1);
+	m_cancel = true;
 }
 
 }; // namespace ns3

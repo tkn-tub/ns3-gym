@@ -23,31 +23,32 @@
 #define SCHEDULER_LIST_H
 
 #include "scheduler.h"
+#include "event-id.h"
 #include <list>
 #include <utility>
 #include <stdint.h>
 
 namespace ns3 {
 
-class Event;
+class EventImpl;
 
 class SchedulerList : public Scheduler {
  public:
 	SchedulerList ();
 	virtual ~SchedulerList ();
 
-	virtual Event insert (Event event, EventKey key);
+	virtual EventId insert (EventImpl *event, EventKey key);
 	virtual bool is_empty (void) const;
-	virtual Event peek_next (void) const;
+	virtual EventImpl *peek_next (void) const;
 	virtual Scheduler::EventKey peek_next_key (void) const;
 	virtual void remove_next (void);
-	virtual Scheduler::EventKey remove (Event const ev);
-
+	virtual EventImpl *remove (EventId ev, Scheduler::EventKey *key);
+	virtual bool is_valid (EventId id);
  private:
-	typedef std::list<std::pair<Event, EventKey> > Events;
-	typedef std::list<std::pair<Event, EventKey> >::iterator EventsI;
-	void store_in_event (Event ev, EventsI i);
-	EventsI get_from_event (Event const ev);
+	typedef std::list<std::pair<EventImpl*, EventKey> > Events;
+	typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
+	EventId get_event_id (Scheduler::EventKey key, EventsI i);
+	EventsI get_iterator (EventId id);
 	Events m_events;
 };
 

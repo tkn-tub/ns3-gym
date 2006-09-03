@@ -18,40 +18,35 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-
-#ifndef SCHEDULER_H
-#define SCHEDULER_H
+#ifndef EVENT_ID_H
+#define EVENT_ID_H
 
 #include <stdint.h>
-#include "event-id.h"
 
 namespace ns3 {
 
 class EventImpl;
 
-class Scheduler {
- public:
-	struct EventKey {
-		uint64_t m_time;
-		uint32_t m_uid;
-	};
-	class EventKeyCompare {
-	public:
-		bool operator () (struct EventKey a, struct EventKey b);
-	};
-
-	virtual ~Scheduler () = 0;
-	virtual EventId insert (EventImpl *event, EventKey key) = 0;
-	virtual bool is_empty (void) const = 0;
-	virtual EventImpl *peek_next (void) const = 0;
-	virtual EventKey peek_next_key (void) const = 0;
-	virtual void remove_next (void) = 0;
-	virtual EventImpl *remove (EventId id, EventKey *key) = 0;
-	virtual bool is_valid (EventId id) = 0;
-
+class EventId {
+public:
+        EventId ();
+        EventId (EventImpl *impl, uint64_t time, uint32_t uid);
+	void cancel (void);
+	bool is_expired (void);
+public:
+	/* The following methods are semi-private
+	 * they are supposed to be invoked only by
+	 * subclasses of the Scheduler base class.
+	 */
+	EventImpl *get_event_impl (void) const;
+	uint64_t get_time (void) const;
+	uint32_t get_uid (void) const;
+private:
+	EventImpl *m_event_impl;
+	uint64_t m_time;
+	uint32_t m_uid;
 };
 
 }; // namespace ns3
 
-
-#endif /* SCHEDULER_H */
+#endif /* EVENT_ID_H */

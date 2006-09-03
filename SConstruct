@@ -511,13 +511,13 @@ simu = Ns3Module ('simulator', 'src/simulator')
 ns3.add (simu)
 simu.add_dep ('core')
 simu.add_sources ([
+	'time.cc',
+	'event-id.cc',
 	'scheduler.cc', 
 	'scheduler-list.cc',
-        'scheduler-heap.cc',
-        'scheduler-map.cc',
+	'scheduler-heap.cc',
+	'scheduler-map.cc',
         'event-impl.cc',
-        'event-tcc.cc',
-        'event-tcc-test.cc',
         'simulator.cc',
 	])
 simu.add_headers ([
@@ -527,10 +527,10 @@ simu.add_headers ([
 	'scheduler-list.h'
 	])
 simu.add_inst_headers ([
-	'event.h',
+	'time.h',
+	'event-id.h',
 	'event-impl.h',
 	'simulator.h',
-	'event.tcc'
 	])
 
 #
@@ -624,12 +624,6 @@ main_callback.set_executable ()
 ns3.add (main_callback)
 main_callback.add_dep ('core')
 main_callback.add_source ('main-callback.cc')
-
-main_event = Ns3Module ('main-event', 'samples')
-main_event.set_executable ()
-ns3.add (main_event)
-main_event.add_dep ('simulator')
-main_event.add_source ('main-event.cc')
 
 main_trace = Ns3Module ('main-trace', 'samples')
 ns3.add (main_trace)

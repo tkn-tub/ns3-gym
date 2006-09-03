@@ -54,7 +54,7 @@ StaticSpeedPosition::set_delta (double dx, double dy, double dz)
 void 
 StaticSpeedPosition::real_get (double &x, double &y, double &z) const
 {
-	uint64_t now_us = Simulator::now_us ();
+	uint64_t now_us = Simulator::now ().us ();
 	uint64_t delta_us = now_us - m_prev_us;
 	m_x += m_dx * delta_us;
 	m_y += m_dy * delta_us;

@@ -30,18 +30,15 @@ public:
 	EventImpl ();
 	virtual ~EventImpl () = 0;
 	void invoke (void);
-	void set_tag (void *tag);
-	void *get_tag (void) const;
 	void cancel (void);
-	bool is_running (void);
+	void set_internal_iterator (void *iterator);
+	void *get_internal_iterator (void) const;
 protected:
 	virtual void notify (void) = 0;
 private:
 	friend class Event;
-	void *m_id;
-	uint32_t m_count;
-	uint32_t m_cancel : 1;
-	uint32_t m_running : 1;
+	void *m_internal_iterator;
+	bool m_cancel;
 };
 
 }; // namespace ns3

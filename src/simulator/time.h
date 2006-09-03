@@ -1,6 +1,6 @@
 /* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,30 +18,59 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "event-impl.h"
-#include "event.h"
+#ifndef TIME_H
+#define TIME_H
+
+#include <stdint.h>
 
 namespace ns3 {
 
-class EventFunctionImpl0 : public EventImpl {
+class Time {
 public:
-	typedef void (*F)(void);
-
-	EventFunctionImpl0 (F function) 
-		: m_function (function)
-	{}
-	virtual ~EventFunctionImpl0 () {}
+	Time (Time const &o);
+	Time &operator = (Time const &o);
+	double s (void) const;
+	uint64_t us (void) const;
+	bool is_destroy (void) const;
+protected:
+	Time (uint64_t us);
+	Time ();
 private:
-	virtual void notify (void) { 
-		(*m_function) (); 
-	}
-private:
-	F m_function;
+	uint64_t m_us;
+	bool m_is_destroy;
 };
 
-Event make_event(void (*f) (void)) 
-{
-	return Event (new EventFunctionImpl0 (f));
-}
+Time operator + (Time const &lhs, uint64_t delta);
+Time operator + (Time const &lhs, double delta);
+
+
+class AbsTimeS : public Time {
+public:
+	AbsTimeS (double s);
+};
+class AbsTimeUs : public Time {
+public:
+	AbsTimeUs (uint64_t us);
+};
+class RelTimeS : public Time {
+public:
+	RelTimeS (double s);
+};
+class RelTimeUs : public Time {
+public:
+	RelTimeUs (uint64_t us);
+};
+
+class NowTime : public Time {
+public:
+	NowTime ();
+};
+
+class DestroyTime : public Time {
+public:
+	DestroyTime ();
+};
 
 }; // namespace ns3
+
+#endif /* TIME_H */

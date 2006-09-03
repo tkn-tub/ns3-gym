@@ -29,25 +29,27 @@
 
 namespace ns3 {
 
+class EventImpl;
+
 class SchedulerMap : public Scheduler {
 public:
 	SchedulerMap ();
 	virtual ~SchedulerMap ();
 
-	virtual Event insert (Event event, Scheduler::EventKey key);
+	virtual EventId insert (EventImpl *event, Scheduler::EventKey key);
 	virtual bool is_empty (void) const;
-	virtual Event peek_next (void) const;
+	virtual EventImpl *peek_next (void) const;
 	virtual Scheduler::EventKey peek_next_key (void) const;
 	virtual void remove_next (void);
-	virtual Scheduler::EventKey remove (Event const ev);
+	virtual EventImpl *remove (EventId ev, Scheduler::EventKey *key);
+	virtual bool is_valid (EventId id);
 private:
-	typedef std::map<Scheduler::EventKey, Event, Scheduler::EventKeyCompare> EventMap;
-	typedef std::map<Scheduler::EventKey, Event, Scheduler::EventKeyCompare>::iterator EventMapI;
-	typedef std::map<Scheduler::EventKey, Event, Scheduler::EventKeyCompare>::const_iterator EventMapCI;
+	typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare> EventMap;
+	typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::iterator EventMapI;
+	typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::const_iterator EventMapCI;
 
-	void store_in_event (Event ev, EventMapI i) const;
-	EventMapI get_from_event (Event const ev) const;
-
+	void store_in_event (EventImpl *ev, EventMapI i) const;
+	SchedulerMap::EventMapI get_from_event (EventImpl *ev) const;
 
 	EventMap m_list;
 	uint32_t m_uid;
