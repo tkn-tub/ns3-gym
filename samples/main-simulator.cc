@@ -9,7 +9,7 @@ class MyModel {
 public:
 	void start (void);
 private:
-	void deal_with_event (void);
+	void deal_with_event (double event_value);
 };
 
 void 
@@ -17,12 +17,12 @@ MyModel::start (void)
 {
 	Simulator::schedule (RelTimeS (10.0), 
 			     &MyModel::deal_with_event, 
-			     this);
+			     this, Simulator::now ().s ());
 }
 void
-MyModel::deal_with_event (void)
+MyModel::deal_with_event (double value)
 {
-	std::cout << "Member method received event at " << Simulator::now ().s () << " started at " << std::endl;
+	std::cout << "Member method received event at " << Simulator::now ().s () << " started at " << value << std::endl;
 }
 
 static void 
