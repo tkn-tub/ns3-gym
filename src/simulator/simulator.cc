@@ -366,9 +366,11 @@ private:
 	void a (int a);
 	void b (int b);
 	void c (int c);
+	void d (int d);
 	bool m_b;
 	bool m_a;
 	bool m_c;
+	bool m_d;
 	EventId m_id_c;
 };
 
@@ -391,11 +393,21 @@ SimulatorTests::b (int b)
 		m_b = true;
 	}
 	Simulator::remove (m_id_c);
+	Simulator::schedule (RelTimeUs (10), &SimulatorTests::d, this, 4);
 }
 void
 SimulatorTests::c (int c)
 {
 	m_c = false;
+}
+void
+SimulatorTests::d (int d)
+{
+	if (d != 4) {
+		m_d = false;
+	} else {
+		m_d = true;
+	}
 }
 bool 
 SimulatorTests::run_tests (void)
@@ -404,6 +416,7 @@ SimulatorTests::run_tests (void)
 	m_a = true;
 	m_b = false;
 	m_c = true;
+	m_d = false;
 	EventId a = Simulator::schedule (AbsTimeUs (10), &SimulatorTests::a, this, 1);
 	EventId b = Simulator::schedule (AbsTimeUs (11), &SimulatorTests::b, this, 2);
 	m_id_c = Simulator::schedule (AbsTimeUs (12), &SimulatorTests::c, this, 3);
@@ -411,7 +424,7 @@ SimulatorTests::run_tests (void)
 	Simulator::cancel (a);
 	Simulator::run ();
 
-	if (!m_a || !m_b || !m_c) {
+	if (!m_a || !m_b || !m_c || !m_d) {
 		ok = false;
 	}
 
