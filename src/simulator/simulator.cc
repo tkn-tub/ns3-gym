@@ -362,6 +362,14 @@ public:
 	SimulatorTests ();
 	virtual ~SimulatorTests ();
 	virtual bool run_tests (void);
+private:
+	void a (int a);
+	void b (int b);
+	void c (int c);
+	bool m_b;
+	bool m_a;
+	bool m_c;
+	EventId m_id_c;
 };
 
 SimulatorTests::SimulatorTests ()
@@ -369,10 +377,44 @@ SimulatorTests::SimulatorTests ()
 {}
 SimulatorTests::~SimulatorTests ()
 {}
+void
+SimulatorTests::a (int a)
+{
+	m_a = false;
+}
+void
+SimulatorTests::b (int b)
+{
+	if (b != 2) {
+		m_b = false;
+	} else {
+		m_b = true;
+	}
+	Simulator::remove (m_id_c);
+}
+void
+SimulatorTests::c (int c)
+{
+	m_c = false;
+}
 bool 
 SimulatorTests::run_tests (void)
 {
 	bool ok = true;
+	m_a = true;
+	m_b = false;
+	m_c = true;
+	EventId a = Simulator::schedule (AbsTimeUs (10), &SimulatorTests::a, this, 1);
+	EventId b = Simulator::schedule (AbsTimeUs (11), &SimulatorTests::b, this, 2);
+	m_id_c = Simulator::schedule (AbsTimeUs (12), &SimulatorTests::c, this, 3);
+
+	Simulator::cancel (a);
+	Simulator::run ();
+
+	if (!m_a || !m_b || !m_c) {
+		ok = false;
+	}
+
 	return ok;
 }
 
