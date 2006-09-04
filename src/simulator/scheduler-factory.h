@@ -25,11 +25,23 @@ namespace ns3 {
 
 class Scheduler;
 
+/**
+ * \brief a base class to create event schedulers
+ *
+ * If you want to make the core simulation engine use a new
+ * event scheduler without editing the code of the simulator,
+ * you need to create a subclass of this base class and implement
+ * the ns3::SchedulerFactory::real_create method.
+ */
 class SchedulerFactory {
 public:
 	virtual ~SchedulerFactory ();
 	Scheduler *create (void) const;
 private:
+	/**
+	 * \returns a newly-created scheduler. The caller takes 
+	 *          ownership of the returned pointer.
+	 */
 	virtual Scheduler *real_create (void) const = 0;
 };
 
