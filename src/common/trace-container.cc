@@ -20,7 +20,6 @@
  */
 
 #include "trace-container.h"
-#include "packet-logger.h"
 #include "trace-stream.h"
 #include <utility>
 #include <cassert>
@@ -64,17 +63,6 @@ TraceContainer::set_f_variable_callback (char const *name, Callback<void,double,
 	assert (false);
 }
 void 
-TraceContainer::set_packet_logger_callback (char const *name, Callback<void,Packet const> callback)
-{
-	for (PacketLoggerListI i = m_packet_logger_list.begin (); i != m_packet_logger_list.end (); i++) {
-		if ((*i).second == name) {
-			(*i).first->set_callback (callback);
-			return;
-		}
-	}
-	assert (false);	
-}
-void 
 TraceContainer::set_stream (char const *name, std::ostream *os)
 {
 	for (TraceStreamListI i = m_trace_stream_list.begin (); i != m_trace_stream_list.end (); i++) {
@@ -114,19 +102,6 @@ void
 TraceContainer::register_f_variable (char const *name, FTracedVariableBase *var)
 {
 	assert (false);
-}
-
-void 
-TraceContainer::register_packet_logger (char const *name, PacketLogger *logger)
-{
-	// ensure unicity
-	for (PacketLoggerListI i = m_packet_logger_list.begin (); i != m_packet_logger_list.end (); i++) {
-		if (i->second == name) {
-			m_packet_logger_list.erase (i);
-			break;
-		}
-	}
-	m_packet_logger_list.push_back (std::make_pair (logger, name));
 }
 
 void 
@@ -179,12 +154,6 @@ ns3::TraceContainer::print_debug (void)
 	if (!m_f_list.empty ()) {
 		std::cout << "f var: " << std::endl;
 		for (FListI i = m_f_list.begin (); i != m_f_list.end (); i++) {
-			std::cout << "    \"" << (*i).second << "\""<<std::endl;
-		}
-	}
-	if (!m_packet_logger_list.empty ()) {		
-		std::cout << "packet logger: " << std::endl;
-		for (PacketLoggerListI i = m_packet_logger_list.begin (); i != m_packet_logger_list.end (); i++) {
 			std::cout << "    \"" << (*i).second << "\""<<std::endl;
 		}
 	}

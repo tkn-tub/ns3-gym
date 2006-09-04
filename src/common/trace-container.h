@@ -27,13 +27,11 @@
 #include "f-traced-variable.tcc"
 #include "callback-logger.h"
 #include "ns3/callback.h"
-#include "packet.h"
 #include <list>
 #include <string>
 
 namespace ns3 {
 
-class PacketLogger;
 class TraceStream;
 
 /**
@@ -45,9 +43,8 @@ class TraceStream;
  * model trace event sources.
  *
  * TraceContainer can be used to register the following event sources:
- *   - ns3::PacketLogger : can be connected to ns3::PcapWriter
  *   - ns3::TraceStream : can be connected to any std::ostream
- *   - ns3::CallbackLogger: can be connected to ns3::Callback
+ *   - ns3::CallbackLogger: can be connected to any ns3::Callback
  *   - ns3::UiTracedVariable
  *   - ns3::SiTracedVariable
  *   - ns3::FTracedVariable
@@ -88,13 +85,6 @@ public:
 	 * This method targets only event sources which are variables of any double type.
 	 */
 	void set_f_variable_callback (char const *name, Callback<void,double, double> callback);
-	/**
-	 * \param name the name of the target event source
-	 * \param callback the callback being connected to the target event source
-	 *
-	 * This method targets only event sources which are of type PacketLogger.
-	 */
-	void set_packet_logger_callback (char const *name, Callback<void,Packet const> callback);
 	/**
 	 * \param name the name of the target event source
 	 * \param os the output stream being connected to the source trace stream
@@ -167,13 +157,6 @@ public:
 	void register_f_variable (char const *name, FTracedVariableBase *var);
 	/**
 	 * \param name the name of the registered event source
-	 * \param logger the event source being registered
-	 *
-	 * This method registers only event sources of type PacketLogger.
-	 */
-	void register_packet_logger (char const *name, PacketLogger *logger);
-	/**
-	 * \param name the name of the registered event source
 	 * \param stream the event source being registered
 	 *
 	 * This method registers only event sources of type TraceStream.
@@ -199,8 +182,6 @@ private:
 	typedef std::list<std::pair<SiTracedVariableBase *, std::string> >::iterator SiListI;
 	typedef std::list<std::pair<FTracedVariableBase *, std::string> > FList;
 	typedef std::list<std::pair<FTracedVariableBase *, std::string> >::iterator FListI;
-	typedef std::list<std::pair<PacketLogger *, std::string> > PacketLoggerList;
-	typedef std::list<std::pair<PacketLogger *, std::string> >::iterator PacketLoggerListI;
 	typedef std::list<std::pair<TraceStream *, std::string> > TraceStreamList;
 	typedef std::list<std::pair<TraceStream *, std::string> >::iterator TraceStreamListI;
 	typedef std::list<std::pair<CallbackLoggerBase *, std::string> > CallbackList;
@@ -209,7 +190,6 @@ private:
 	UiList m_ui_list;
 	SiList m_si_list;
 	FList m_f_list;
-	PacketLoggerList m_packet_logger_list;
 	TraceStreamList m_trace_stream_list;
 	CallbackList m_callback_list;
 };
