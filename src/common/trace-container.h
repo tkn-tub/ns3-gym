@@ -22,9 +22,9 @@
 #ifndef TRACE_CONTAINER_H
 #define TRACE_CONTAINER_H
 
-#include "ui-traced-variable.tcc"
-#include "si-traced-variable.tcc"
-#include "f-traced-variable.tcc"
+#include "ui-variable-tracer.h"
+#include "si-variable-tracer.h"
+#include "f-variable-tracer.h"
 #include "callback-tracer.h"
 #include "ns3/callback.h"
 #include <list>

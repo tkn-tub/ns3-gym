@@ -1,6 +1,6 @@
 /* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
 #include "ns3/trace-container.h"
-#include "ns3/ui-traced-variable.tcc"
+#include "ns3/ui-variable-tracer.h"
 #include "ns3/callback-tracer.h"
 #include "ns3/stream-tracer.h"
 #include "ns3/pcap-writer.h"

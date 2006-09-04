@@ -536,7 +536,7 @@ common.add_sources ([
 	'tags.cc',
 	'pcap-writer.cc',
 	'trace-container.cc',
-	'traced-variable-test.cc',
+	'variable-tracer-test.cc',
 	'stream-tracer-test.cc',
 	])
 common.add_inst_headers ([
@@ -545,9 +545,9 @@ common.add_inst_headers ([
 	'tags.h',
 	'packet.h',
 	'count-ptr-holder.tcc',
-	'ui-traced-variable.tcc',
-	'si-traced-variable.tcc',
-	'f-traced-variable.tcc',
+	'ui-variable-tracer.h',
+	'si-variable-tracer.h',
+	'f-variable-tracer.h',
 	'callback-tracer.h',
 	'stream-tracer.h',
 	'trace-container.h',

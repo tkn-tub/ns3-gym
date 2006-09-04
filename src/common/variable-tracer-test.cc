@@ -19,8 +19,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ui-traced-variable.tcc"
-#include "si-traced-variable.tcc"
+#include "ui-variable-tracer.h"
+#include "si-variable-tracer.h"
 #include "ns3/test.h"
 #include "ns3/callback.h"
 
