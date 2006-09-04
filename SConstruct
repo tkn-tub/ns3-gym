@@ -531,10 +531,8 @@ ns3.add (common)
 common.add_sources ([
 	'buffer.cc',
 	'mac-address-factory.cc',
-	'static-position.cc',
 	'chunk.cc',
 	'mac-network-interface.cc',
-	'static-speed-position.cc',
 	'chunk-constant-data.cc',
 	'packet.cc',
 	'tags.cc',
@@ -543,10 +541,8 @@ common.add_sources ([
 	'chunk-utils.cc',
 	'pcap-writer.cc',
 	'trace-container.cc',
-	'population-analysis.cc',
 	'traced-variable-test.cc',
 	'ipv4-address.cc',
-	'position.cc',
 	'trace-stream-test.cc',
 	'ipv4-network-interface.cc',
 	'utils.cc',
@@ -572,18 +568,14 @@ common.add_inst_headers ([
 	'chunk-utils.h',
 	'llc-snap-encapsulation.h',
 	'mac-network-interface.h',
-	'population-analysis.h',
-	'position.h',
 	'trace-stream.h',
 	'pcap-writer.h',
 	'mac-address-factory.h',
-	'static-position.h',
 	'utils.h'
 	])
 common.add_headers ([
 	'chunk-llc-snap.h',
 	'ref-ptr.h',
-	'static-speed-position.h'
 	])
 
 

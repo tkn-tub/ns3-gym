@@ -19,12 +19,12 @@
  * Author: Mathieu Lacage <mathieu.lacage.inria.fr>
  */
 
-#include "wall-clock-ms.h"
+#include "system-wall-clock-ms.h"
 #include <sys/time.h>
 
 namespace ns3 {
 
-class WallClockMsPrivate {
+class SystemWallClockMsPrivate {
 public:
 	void start (void);
 	unsigned long long end (void);
@@ -34,14 +34,14 @@ private:
 };
 
 void 
-WallClockMsPrivate::start (void)
+SystemWallClockMsPrivate::start (void)
 {
 	struct timezone tz;
 	gettimeofday (&m_start_tv, &tz);
 }
 
 unsigned long long 
-WallClockMsPrivate::end (void)
+SystemWallClockMsPrivate::end (void)
 {
 	struct timezone tz;
 	gettimeofday (&m_end_tv, &tz);
@@ -50,23 +50,23 @@ WallClockMsPrivate::end (void)
 	return end - start;
 }
 
-WallClockMs::WallClockMs ()
-	: m_priv (new WallClockMsPrivate ())
+SystemWallClockMs::SystemWallClockMs ()
+	: m_priv (new SystemWallClockMsPrivate ())
 {}
 
-WallClockMs::~WallClockMs ()
+SystemWallClockMs::~SystemWallClockMs ()
 {
 	delete m_priv;
 	m_priv = 0;
 }
 
 void
-WallClockMs::start (void)
+SystemWallClockMs::start (void)
 {
 	m_priv->start ();
 }
 unsigned long long
-WallClockMs::end (void)
+SystemWallClockMs::end (void)
 {
 	return m_priv->end ();
 }

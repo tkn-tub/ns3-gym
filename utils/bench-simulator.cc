@@ -20,7 +20,7 @@
  */
 
 #include "ns3/simulator.h"
-#include "ns3/wall-clock-ms.h"
+#include "ns3/system-wall-clock-ms.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -68,7 +68,7 @@ Bench::read_distribution (std::istream &input)
 void
 Bench::bench (void) 
 {
-	WallClockMs time;
+	SystemWallClockMs time;
 	double init, simu;
 	time.start ();
 	for (std::vector<uint64_t>::const_iterator i = m_distribution.begin ();

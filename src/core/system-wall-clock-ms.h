@@ -19,22 +19,22 @@
  * Author: Mathieu Lacage <mathieu.lacage.inria.fr>
  */
 
-#ifndef WALL_CLOCK_MS_H
-#define WALL_CLOCK_MS_H
+#ifndef SYSTEM_WALL_CLOCK_MS_H
+#define SYSTEM_WALL_CLOCK_MS_H
 
 namespace ns3 {
 
-class WallClockMs {
+class SystemWallClockMs {
 public:
-	WallClockMs ();
-	~WallClockMs ();
+	SystemWallClockMs ();
+	~SystemWallClockMs ();
 
 	void start (void);
 	unsigned long long end (void);
 private:
-	class WallClockMsPrivate *m_priv;
+	class SystemWallClockMsPrivate *m_priv;
 };
 
 }; // namespace ns3
 
-#endif /* WALL_CLOCK_MS_H */
+#endif /* SYSTEM_WALL_CLOCK_MS_H */
