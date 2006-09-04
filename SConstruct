@@ -530,32 +530,21 @@ common.add_deps (['core', 'simulator'])
 ns3.add (common)
 common.add_sources ([
 	'buffer.cc',
-	'mac-address-factory.cc',
 	'chunk.cc',
-	'mac-network-interface.cc',
 	'chunk-constant-data.cc',
 	'packet.cc',
 	'tags.cc',
-	'chunk-llc-snap.cc',
 	'packet-logger.cc',
-	'chunk-utils.cc',
 	'pcap-writer.cc',
 	'trace-container.cc',
 	'traced-variable-test.cc',
-	'ipv4-address.cc',
 	'trace-stream-test.cc',
-	'ipv4-network-interface.cc',
-	'utils.cc',
-	'llc-snap-encapsulation.cc',
-	'mac-address.cc'
 	])
 common.add_inst_headers ([
-	'ipv4-address.h',
 	'buffer.h',
 	'chunk.h',
 	'tags.h',
 	'packet.h',
-	'ipv4-network-interface.h',
 	'count-ptr-holder.tcc',
 	'ui-traced-variable.tcc',
 	'si-traced-variable.tcc',
@@ -564,17 +553,10 @@ common.add_inst_headers ([
 	'trace-container.h',
 	'packet-logger.h',
 	'chunk-constant-data.h',
-	'mac-address.h',
-	'chunk-utils.h',
-	'llc-snap-encapsulation.h',
-	'mac-network-interface.h',
 	'trace-stream.h',
 	'pcap-writer.h',
-	'mac-address-factory.h',
-	'utils.h'
 	])
 common.add_headers ([
-	'chunk-llc-snap.h',
 	'ref-ptr.h',
 	])
 
