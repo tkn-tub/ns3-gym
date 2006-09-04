@@ -387,13 +387,13 @@ SimulatorTests::a (int a)
 void
 SimulatorTests::b (int b)
 {
-	if (b != 2) {
+	if (b != 2 || Simulator::now ().us () != 11) {
 		m_b = false;
 	} else {
 		m_b = true;
 	}
 	Simulator::remove (m_id_c);
-	Simulator::schedule (RelTimeUs (10), &SimulatorTests::d, this, 4);
+	Simulator::schedule (Time::rel_us (10), &SimulatorTests::d, this, 4);
 }
 void
 SimulatorTests::c (int c)
@@ -403,7 +403,7 @@ SimulatorTests::c (int c)
 void
 SimulatorTests::d (int d)
 {
-	if (d != 4) {
+	if (d != 4 || Simulator::now ().us () != (11+10)) {
 		m_d = false;
 	} else {
 		m_d = true;
@@ -417,9 +417,9 @@ SimulatorTests::run_tests (void)
 	m_b = false;
 	m_c = true;
 	m_d = false;
-	EventId a = Simulator::schedule (AbsTimeUs (10), &SimulatorTests::a, this, 1);
-	EventId b = Simulator::schedule (AbsTimeUs (11), &SimulatorTests::b, this, 2);
-	m_id_c = Simulator::schedule (AbsTimeUs (12), &SimulatorTests::c, this, 3);
+	EventId a = Simulator::schedule (Time::abs_us (10), &SimulatorTests::a, this, 1);
+	EventId b = Simulator::schedule (Time::abs_us (11), &SimulatorTests::b, this, 2);
+	m_id_c = Simulator::schedule (Time::abs_us (12), &SimulatorTests::c, this, 3);
 
 	Simulator::cancel (a);
 	Simulator::run ();
@@ -436,5 +436,6 @@ SimulatorTests g_simulator_tests;
 }; // namespace ns3
 
 #endif /* RUN_SELF_TESTS */
+
 
 
