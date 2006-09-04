@@ -24,36 +24,43 @@
 namespace ns3 {
 
 Time::Time ()
-	: m_us (0),
+	: m_ns (0),
 	  m_is_destroy (true)
 {}
 Time::Time (Time const &o)
-	: m_us (o.m_us),
+	: m_ns (o.m_ns),
 	  m_is_destroy (o.m_is_destroy)
 {}
 Time &
 Time::operator = (Time const &o)
 {
-	m_us = o.m_us;
+	m_ns = o.m_ns;
 	m_is_destroy = o.m_is_destroy;
 	return *this;
 }
-Time::Time (uint64_t us)
-	: m_us (us),
+Time::Time (uint64_t ns)
+	: m_ns (ns),
 	  m_is_destroy (false)
 {}
 
 double 
 Time::s (void) const
 {
-	double us = m_us;
-	us /= 1000000;
-	return us;
+	double ns = m_ns;
+	ns /= 1000000000;
+	return ns;
 }
 uint64_t 
 Time::us (void) const
 {
-	return m_us;
+	uint64_t us = m_ns / 1000;
+	return us;
+}
+
+uint64_t 
+Time::ns (void) const
+{
+	return m_ns;
 }
 
 bool
@@ -62,34 +69,67 @@ Time::is_destroy (void) const
 	return m_is_destroy;
 }
 
-Time
-operator + (Time const &lhs, uint64_t delta_us)
+Time 
+Time::abs_s (double s)
 {
-	return AbsTimeUs (lhs.us () + delta_us);
+	int64_t ns = (int64_t)(s * 1000000000.0);
+	return Time (ns);
 }
-Time
-operator + (Time const &lhs, double delta_s)
+Time 
+Time::abs_us (uint64_t us)
 {
-	uint64_t delta_us = (uint64_t)(int64_t)(delta_s * 1000000.0);
-	return AbsTimeUs (lhs.us () + delta_us);
+	int64_t ns = us * 1000;
+	return Time (ns);
+}
+Time 
+Time::abs_ns (uint64_t ns)
+{
+	return Time (ns);
+}
+Time 
+Time::rel_s (double s)
+{
+	int64_t ns = (int64_t)(s * 1000000000.0);
+	return Time (Simulator::now ().ns () + ns);
+}
+Time 
+Time::rel_us (uint64_t us)
+{
+	return Time (Simulator::now ().ns () + us * 1000);
+}
+Time 
+Time::rel_ns (uint64_t ns)
+{
+	return Time (Simulator::now ().ns () + ns);
+}
+
+Time 
+Time::now (void)
+{
+	return Time (Simulator::now ().ns ());
+}
+Time 
+Time::destroy (void)
+{
+	return Time ();
 }
 
 
 AbsTimeS::AbsTimeS (double s)
-	: Time ((uint64_t)(int64_t)(s * 1000000.0))
+	: Time ((uint64_t)(int64_t)(s * 1000000000.0))
 {}
 AbsTimeUs::AbsTimeUs (uint64_t us)
-	: Time (us)
+	: Time (us*1000)
 {}
 RelTimeS::RelTimeS (double s)
-	: Time (Simulator::now () + s)
+	: Time (Simulator::now ().ns () + (int64_t)(s * 1000000000.0))
 {}
 RelTimeUs::RelTimeUs (uint64_t us)
-	: Time (Simulator::now () + us)
+	: Time (Simulator::now ().ns () + us*1000)
 {}
 
 NowTime::NowTime ()
-	: Time (Simulator::now ().us ())
+	: Time (Simulator::now ().ns ())
 {}
 
 DestroyTime::DestroyTime ()

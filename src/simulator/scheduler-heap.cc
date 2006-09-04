@@ -197,7 +197,7 @@ SchedulerHeap::insert (EventImpl *event, Scheduler::EventKey key)
 	m_heap.push_back (std::make_pair (event, key));
 	bottom_up ();
 	store_in_event (event, last ());
-	return EventId (event, key.m_time, key.m_uid);
+	return EventId (event, key.m_ns, key.m_uid);
 }
 
 EventImpl *
@@ -240,7 +240,7 @@ SchedulerHeap::is_valid (EventId id)
 	EventImpl *ev = id.get_event_impl ();
 	uint32_t i = get_from_event (ev);
 	Scheduler::EventKey key = m_heap[i].second;
-	return (key.m_time == id.get_time () &&
+	return (key.m_ns == id.get_ns () &&
 		key.m_uid == id.get_uid ());
 }
 }; // namespace ns3

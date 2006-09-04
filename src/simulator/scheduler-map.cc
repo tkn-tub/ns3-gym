@@ -66,7 +66,7 @@ SchedulerMap::insert (EventImpl *event, Scheduler::EventKey key)
 	std::pair<EventMapI,bool> result = m_list.insert (std::make_pair (key, event));
 	assert (result.second);
 	store_in_event (event, result.first);
-	return EventId (event, key.m_time, key.m_uid);
+	return EventId (event, key.m_ns, key.m_uid);
 }
 
 bool
@@ -113,7 +113,7 @@ SchedulerMap::is_valid (EventId id)
 {
 	EventMapI i = get_from_event (id.get_event_impl ());
 	Scheduler::EventKey key = i->first;
-	return (key.m_time == id.get_time () &&
+	return (key.m_ns == id.get_ns () &&
 		key.m_uid == id.get_uid ());
 }
 

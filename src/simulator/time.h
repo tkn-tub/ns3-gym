@@ -31,18 +31,23 @@ public:
 	Time &operator = (Time const &o);
 	double s (void) const;
 	uint64_t us (void) const;
+	uint64_t ns (void) const;
 	bool is_destroy (void) const;
+	static Time abs_s (double s);
+	static Time abs_us (uint64_t us);
+	static Time abs_ns (uint64_t ns);
+	static Time rel_s (double s);
+	static Time rel_us (uint64_t us);
+	static Time rel_ns (uint64_t ns);
+	static Time now (void);
+	static Time destroy (void);
 protected:
-	Time (uint64_t us);
+	Time (uint64_t ns);
 	Time ();
 private:
-	uint64_t m_us;
+	uint64_t m_ns;
 	bool m_is_destroy;
 };
-
-Time operator + (Time const &lhs, uint64_t delta);
-Time operator + (Time const &lhs, double delta);
-
 
 class AbsTimeS : public Time {
 public:

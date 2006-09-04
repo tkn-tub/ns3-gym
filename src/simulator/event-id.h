@@ -30,7 +30,7 @@ class EventImpl;
 class EventId {
 public:
         EventId ();
-        EventId (EventImpl *impl, uint64_t time, uint32_t uid);
+        EventId (EventImpl *impl, uint64_t ns, uint32_t uid);
 	void cancel (void);
 	bool is_expired (void);
 public:
@@ -39,11 +39,11 @@ public:
 	 * subclasses of the Scheduler base class.
 	 */
 	EventImpl *get_event_impl (void) const;
-	uint64_t get_time (void) const;
+	uint64_t get_ns (void) const;
 	uint32_t get_uid (void) const;
 private:
 	EventImpl *m_event_impl;
-	uint64_t m_time;
+	uint64_t m_ns;
 	uint32_t m_uid;
 };
 

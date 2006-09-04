@@ -45,7 +45,7 @@ SchedulerList::get_event_id (Scheduler::EventKey key, EventsI i)
 	memcpy ((char *)&(internal_iterator), (char *)&i, sizeof (void *));
 	EventImpl *ev = i->first;
 	ev->set_internal_iterator (internal_iterator);
-	return EventId (ev, key.m_time, key.m_uid);
+	return EventId (ev, key.m_ns, key.m_uid);
 }
 SchedulerList::EventsI 
 SchedulerList::get_iterator (EventId id)
@@ -101,7 +101,7 @@ SchedulerList::remove (EventId id, Scheduler::EventKey *key)
 {
 	EventsI i = get_iterator (id);
 	*key = i->second;
-	assert (key->m_time == id.get_time () &&
+	assert (key->m_ns == id.get_ns () &&
 		key->m_uid == id.get_uid ());
 	EventImpl *ev = i->first;
 	m_events.erase (i);
@@ -113,7 +113,7 @@ SchedulerList::is_valid (EventId id)
 {
 	EventsI i = get_iterator (id);
 	Scheduler::EventKey key = i->second;
-	return (key.m_time == id.get_time () &&
+	return (key.m_ns == id.get_ns () &&
 		key.m_uid == id.get_uid ());
 	
 }

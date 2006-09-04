@@ -75,7 +75,7 @@ private:
 	Scheduler *m_events;
 	uint32_t m_uid;
 	uint32_t m_current_uid;
-	uint64_t m_current_us;
+	uint64_t m_current_ns;
 	std::ofstream m_log;
 	std::ifstream m_input_log;
 	bool m_log_enable;
@@ -91,7 +91,7 @@ SimulatorPrivate::SimulatorPrivate (Scheduler *events)
 	m_events = events;
 	m_uid = 0;	
 	m_log_enable = false;
-	m_current_us = 0;
+	m_current_ns = 0;
 }
 
 SimulatorPrivate::~SimulatorPrivate ()
@@ -122,10 +122,10 @@ SimulatorPrivate::process_one_event (void)
 	Scheduler::EventKey next_key = m_events->peek_next_key ();
 	m_events->remove_next ();
 	TRACE ("handle " << next_ev);
-	m_current_us = next_key.m_time;
+	m_current_ns = next_key.m_ns;
 	m_current_uid = next_key.m_uid;
 	if (m_log_enable) {
-		m_log << "e "<<next_key.m_uid << " " << next_key.m_time << std::endl;
+		m_log << "e "<<next_key.m_uid << " " << next_key.m_ns << std::endl;
 	}
 	next_ev->invoke ();
 	delete next_ev;
@@ -141,7 +141,7 @@ SimulatorPrivate::next (void) const
 {
 	assert (!m_events->is_empty ());
 	Scheduler::EventKey next_key = m_events->peek_next_key ();
-	return AbsTimeUs (next_key.m_time);
+	return AbsTimeUs (next_key.m_ns);
 }
 
 
@@ -149,7 +149,7 @@ void
 SimulatorPrivate::run (void)
 {
 	while (!m_events->is_empty () && !m_stop && 
-	       (m_stop_at == 0 || m_stop_at > next ().us ())) {
+	       (m_stop_at == 0 || m_stop_at > next ().ns ())) {
 		process_one_event ();
 	}
 	m_log.close ();
@@ -164,7 +164,7 @@ SimulatorPrivate::stop (void)
 void 
 SimulatorPrivate::stop_at (Time at)
 {
-	m_stop_at = at.us ();
+	m_stop_at = at.ns ();
 }
 EventId
 SimulatorPrivate::schedule (Time time, EventImpl *event)
@@ -172,18 +172,18 @@ SimulatorPrivate::schedule (Time time, EventImpl *event)
 	if (time.is_destroy ()) {
 		m_destroy.push_back (std::make_pair (event, m_uid));
 		if (m_log_enable) {
-			m_log << "id " << m_current_uid << " " << now ().us () << " "
+			m_log << "id " << m_current_uid << " " << now ().ns () << " "
 			      << m_uid << std::endl;
 		}
 		m_uid++;
 		//XXX
 		return EventId ();
 	}
-	assert (time.us () >= now ().us ());
-	Scheduler::EventKey key = {time.us (), m_uid};
+	assert (time.ns () >= now ().ns ());
+	Scheduler::EventKey key = {time.ns (), m_uid};
 	if (m_log_enable) {
-		m_log << "i "<<m_current_uid<<" "<<now ().us ()<<" "
-		      <<m_uid<<" "<<time.us () << std::endl;
+		m_log << "i "<<m_current_uid<<" "<<now ().ns ()<<" "
+		      <<m_uid<<" "<<time.ns () << std::endl;
 	}
 	m_uid++;
 	return m_events->insert (event, key);
@@ -191,7 +191,7 @@ SimulatorPrivate::schedule (Time time, EventImpl *event)
 Time
 SimulatorPrivate::now (void) const
 {
-	return AbsTimeUs (m_current_us);
+	return Time::abs_ns (m_current_ns);
 }
 
 void
@@ -201,8 +201,8 @@ SimulatorPrivate::remove (EventId ev)
 	EventImpl *impl = m_events->remove (ev, &key);
 	delete impl;
 	if (m_log_enable) {
-		m_log << "r " << m_current_uid << " " << now ().us () << " "
-		      << key.m_uid << " " << key.m_time << std::endl;
+		m_log << "r " << m_current_uid << " " << now ().ns () << " "
+		      << key.m_uid << " " << key.m_ns << std::endl;
 	}
 }
 
@@ -218,7 +218,7 @@ bool
 SimulatorPrivate::is_expired (EventId ev)
 {
 	if (ev.get_event_impl () != 0 &&
-	    ev.get_time () <= now ().us () &&
+	    ev.get_ns () <= now ().ns () &&
 	    ev.get_uid () < m_current_uid) {
 		return false;
 	}

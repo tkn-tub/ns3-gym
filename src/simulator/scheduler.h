@@ -32,7 +32,7 @@ class EventImpl;
 class Scheduler {
  public:
 	struct EventKey {
-		uint64_t m_time;
+		uint64_t m_ns;
 		uint32_t m_uid;
 	};
 	class EventKeyCompare {
