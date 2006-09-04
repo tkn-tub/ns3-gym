@@ -55,8 +55,8 @@ Bench::read_distribution (std::istream &input)
 	double data;
 	while (!input.eof ()) {
 		if (input >> data) {
-			uint64_t us = (uint64_t) (data * 1000000);
-			m_distribution.push_back (us);
+			uint64_t ns = (uint64_t) (data * 1000000000);
+			m_distribution.push_back (ns);
 		} else {
 			input.clear ();
 			std::string line;
@@ -73,7 +73,7 @@ Bench::bench (void)
 	time.start ();
 	for (std::vector<uint64_t>::const_iterator i = m_distribution.begin ();
 	     i != m_distribution.end (); i++) {
-		Simulator::schedule (AbsTimeUs (*i), &Bench::cb, this);
+		Simulator::schedule (Time::abs_ns (*i), &Bench::cb, this);
 	}
 	init = time.end ();
 
@@ -103,9 +103,9 @@ Bench::cb (void)
 		m_current = m_distribution.begin ();
 	}
 	if (g_debug) {
-		std::cerr << "event at " << Simulator::now ().s () << std::endl;
+		std::cerr << "event at " << Simulator::now ().s () << "s" << std::endl;
 	}
-	Simulator::schedule (AbsTimeUs (*m_current), &Bench::cb, this);
+	Simulator::schedule (Time::abs_ns (*m_current), &Bench::cb, this);
 	m_current++;
 	m_n++;
 }

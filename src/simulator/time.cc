@@ -114,6 +114,33 @@ Time::destroy (void)
 	return Time ();
 }
 
+class AbsTimeS : public Time {
+public:
+	AbsTimeS (double s);
+};
+class AbsTimeUs : public Time {
+public:
+	AbsTimeUs (uint64_t us);
+};
+class RelTimeS : public Time {
+public:
+	RelTimeS (double s);
+};
+class RelTimeUs : public Time {
+public:
+	RelTimeUs (uint64_t us);
+};
+
+class NowTime : public Time {
+public:
+	NowTime ();
+};
+
+class DestroyTime : public Time {
+public:
+	DestroyTime ();
+};
+
 
 AbsTimeS::AbsTimeS (double s)
 	: Time ((uint64_t)(int64_t)(s * 1000000000.0))

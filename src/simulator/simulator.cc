@@ -141,7 +141,7 @@ SimulatorPrivate::next (void) const
 {
 	assert (!m_events->is_empty ());
 	Scheduler::EventKey next_key = m_events->peek_next_key ();
-	return AbsTimeUs (next_key.m_ns);
+	return Time::abs_ns (next_key.m_ns);
 }
 
 
