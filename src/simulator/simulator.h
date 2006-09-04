@@ -31,6 +31,7 @@ namespace ns3 {
 
 
 class SimulatorPrivate;
+class SchedulerFactory;
 
 /**
  * \brief Control the scheduling of simulation events. 
@@ -68,6 +69,13 @@ public:
 	 *   - remove: O(log(n))
 	 */
 	static void set_std_map (void);
+
+	/**
+	 * Force the use of a user-provided event scheduler.
+	 * This method must be invoked before any other method exported
+	 * by the Simulator class.
+	 */
+	static void set_external (SchedulerFactory const*factory);
 
 	/**
 	 * Enable logging to the file identified by filename. If the file
@@ -472,11 +480,12 @@ private:
 	static SimulatorPrivate *get_priv (void);
 	static EventId schedule (Time time, EventImpl *event);
 	static SimulatorPrivate *m_priv;
+	static SchedulerFactory const*m_sched_factory;
 	static enum ListType {
 		LINKED_LIST,
 		BINARY_HEAP,
-
-		STD_MAP
+		STD_MAP,
+		EXTERNAL
 	} m_list_type;
 };
 

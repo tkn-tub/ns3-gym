@@ -232,12 +232,14 @@ SimulatorPrivate::is_expired (EventId ev)
 #include "scheduler-list.h"
 #include "scheduler-heap.h"
 #include "scheduler-map.h"
+#include "scheduler-factory.h"
 
 
 namespace ns3 {
 
 SimulatorPrivate *Simulator::m_priv = 0;
 Simulator::ListType Simulator::m_list_type = LINKED_LIST;
+SchedulerFactory const*Simulator::m_sched_factory = 0;
 
 void Simulator::set_linked_list (void)
 {
@@ -250,6 +252,13 @@ void Simulator::set_binary_heap (void)
 void Simulator::set_std_map (void)
 {
 	m_list_type = STD_MAP;
+}
+void 
+Simulator::set_external (SchedulerFactory const*factory)
+{
+	assert (factory != 0);
+	m_sched_factory = factory;
+	m_list_type = EXTERNAL;
 }
 void Simulator::enable_log_to (char const *filename)
 {
@@ -272,6 +281,8 @@ Simulator::get_priv (void)
 		case STD_MAP:
 			events = new SchedulerMap ();
 			break;
+		case EXTERNAL:
+			events = m_sched_factory->create ();
 		default: // not reached
 			events = 0;
 			assert (false); 

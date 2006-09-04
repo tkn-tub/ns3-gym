@@ -502,7 +502,8 @@ simu.add_dep ('core')
 simu.add_sources ([
 	'time.cc',
 	'event-id.cc',
-	'scheduler.cc', 
+	'scheduler.cc',
+	'scheduler-factory.cc',
 	'scheduler-list.cc',
 	'scheduler-heap.cc',
 	'scheduler-map.cc',
@@ -510,7 +511,6 @@ simu.add_sources ([
         'simulator.cc',
 	])
 simu.add_headers ([
-	'scheduler.h',
 	'scheduler-heap.h',
 	'scheduler-map.h',
 	'scheduler-list.h'
@@ -520,6 +520,8 @@ simu.add_inst_headers ([
 	'event-id.h',
 	'event-impl.h',
 	'simulator.h',
+	'scheduler.h',
+	'scheduler-factory.h',
 	])
 
 #
