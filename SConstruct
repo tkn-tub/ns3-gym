@@ -476,28 +476,17 @@ env = Environment ()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin':
 	core.add_external_dep ('pthread')
 	core.add_sources ([
-		'unix-system-semaphore.cc',
-		'unix-system-thread.cc',
-		'unix-system-mutex.cc',
-		'unix-exec-commands.cc',
-		'unix-wall-clock-ms.cc',
+		'unix-system-wall-clock-ms.cc',
 		'unix-system-file.cc'
 		])
 elif env['PLATFORM'] == 'win32':
 	core.add_sources ([
-		'win32-system-semaphore.cc',
-		'win32-system-thread.cc',
-		'win32-system-mutex.cc',
-		'win32-wall-clock-ms.cc',
+		'win32-system-wall-clock-ms.cc',
 		'win32-system-file.cc'
 		])
 core.add_inst_headers ([
-	'system-semaphore.h',
-        'system-thread.h',
-        'system-mutex.h',
 	'system-file.h',
-        'exec-commands.h',
-        'wall-clock-ms.h',
+        'system-wall-clock-ms.h',
         'reference-list.h',
         'callback.h',
         'test.h'
