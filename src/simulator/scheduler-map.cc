@@ -61,7 +61,7 @@ SchedulerMap::get_from_event (EventImpl *ev) const
 }
 
 EventId
-SchedulerMap::insert (EventImpl *event, Scheduler::EventKey key)
+SchedulerMap::real_insert (EventImpl *event, Scheduler::EventKey key)
 {
 	std::pair<EventMapI,bool> result = m_list.insert (std::make_pair (key, event));
 	assert (result.second);
@@ -70,38 +70,34 @@ SchedulerMap::insert (EventImpl *event, Scheduler::EventKey key)
 }
 
 bool
-SchedulerMap::is_empty (void) const
+SchedulerMap::real_is_empty (void) const
 {
 	return m_list.empty ();
 }
 
 EventImpl *
-SchedulerMap::peek_next (void) const
+SchedulerMap::real_peek_next (void) const
 {
-	assert (!is_empty ());
 	EventMapCI i = m_list.begin ();
 	assert (i != m_list.end ());
 	return (*i).second;
 }
 Scheduler::EventKey
-SchedulerMap::peek_next_key (void) const
+SchedulerMap::real_peek_next_key (void) const
 {
-	assert (!is_empty ());
 	EventMapCI i = m_list.begin ();
 	assert (i != m_list.end ());
 	return (*i).first;
 }
 void
-SchedulerMap::remove_next (void)
+SchedulerMap::real_remove_next (void)
 {
-	assert (!is_empty ());
 	m_list.erase (m_list.begin ());
 }
 
 EventImpl *
-SchedulerMap::remove (EventId id, Scheduler::EventKey *key)
+SchedulerMap::real_remove (EventId id, Scheduler::EventKey *key)
 {
-	assert (!is_empty ());
 	EventMapI i = get_from_event (id.get_event_impl ());
 	*key = i->first;
 	m_list.erase (i);
@@ -109,7 +105,7 @@ SchedulerMap::remove (EventId id, Scheduler::EventKey *key)
 }
 
 bool
-SchedulerMap::is_valid (EventId id)
+SchedulerMap::real_is_valid (EventId id)
 {
 	EventMapI i = get_from_event (id.get_event_impl ());
 	Scheduler::EventKey key = i->first;

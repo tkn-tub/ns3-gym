@@ -145,7 +145,7 @@ SchedulerHeap::smallest (uint32_t a, uint32_t b)
 }
 
 bool
-SchedulerHeap::is_empty (void) const
+SchedulerHeap::real_is_empty (void) const
 {
 	return (m_heap.size () == 1)?true:false;
 }
@@ -192,7 +192,7 @@ SchedulerHeap::top_down (void)
 
 
 EventId
-SchedulerHeap::insert (EventImpl *event, Scheduler::EventKey key)
+SchedulerHeap::real_insert (EventImpl *event, Scheduler::EventKey key)
 {
 	m_heap.push_back (std::make_pair (event, key));
 	bottom_up ();
@@ -201,21 +201,18 @@ SchedulerHeap::insert (EventImpl *event, Scheduler::EventKey key)
 }
 
 EventImpl *
-SchedulerHeap::peek_next (void) const
+SchedulerHeap::real_peek_next (void) const
 {
-	assert (!is_empty ());
 	return m_heap[root ()].first;
 }
 Scheduler::EventKey
-SchedulerHeap::peek_next_key (void) const
+SchedulerHeap::real_peek_next_key (void) const
 {
-	assert (!is_empty ());
 	return m_heap[root ()].second;
 }
 void     
-SchedulerHeap::remove_next (void)
+SchedulerHeap::real_remove_next (void)
 {
-	assert (!is_empty ());
 	exch (root (), last ());
 	m_heap.pop_back ();
 	top_down ();
@@ -223,7 +220,7 @@ SchedulerHeap::remove_next (void)
 
 
 EventImpl *
-SchedulerHeap::remove (EventId id, Scheduler::EventKey *key)
+SchedulerHeap::real_remove (EventId id, Scheduler::EventKey *key)
 {
 	EventImpl *ev = id.get_event_impl ();
 	uint32_t i = get_from_event (ev);
@@ -235,7 +232,7 @@ SchedulerHeap::remove (EventId id, Scheduler::EventKey *key)
 }
 
 bool 
-SchedulerHeap::is_valid (EventId id)
+SchedulerHeap::real_is_valid (EventId id)
 {
 	EventImpl *ev = id.get_event_impl ();
 	uint32_t i = get_from_event (ev);

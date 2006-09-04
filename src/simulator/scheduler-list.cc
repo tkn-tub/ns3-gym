@@ -60,7 +60,7 @@ SchedulerList::get_iterator (EventId id)
 
 
 EventId
-SchedulerList::insert (EventImpl *event, Scheduler::EventKey key)
+SchedulerList::real_insert (EventImpl *event, Scheduler::EventKey key)
 {
 	Scheduler::EventKeyCompare compare;
 	for (EventsI i = m_events.begin (); i != m_events.end (); i++) {
@@ -73,31 +73,29 @@ SchedulerList::insert (EventImpl *event, Scheduler::EventKey key)
 	return get_event_id (key, --(m_events.end ()));
 }
 bool 
-SchedulerList::is_empty (void) const
+SchedulerList::real_is_empty (void) const
 {
 	return m_events.empty ();
 }
 EventImpl *
-SchedulerList::peek_next (void) const
+SchedulerList::real_peek_next (void) const
 {
-	assert (!is_empty ());
 	return m_events.front ().first;
 }
 Scheduler::EventKey
-SchedulerList::peek_next_key (void) const
+SchedulerList::real_peek_next_key (void) const
 {
-	assert (!is_empty ());
 	return m_events.front ().second;
 }
 
 void
-SchedulerList::remove_next (void)
+SchedulerList::real_remove_next (void)
 {
 	m_events.pop_front ();
 }
 
 EventImpl *
-SchedulerList::remove (EventId id, Scheduler::EventKey *key)
+SchedulerList::real_remove (EventId id, Scheduler::EventKey *key)
 {
 	EventsI i = get_iterator (id);
 	*key = i->second;
@@ -109,7 +107,7 @@ SchedulerList::remove (EventId id, Scheduler::EventKey *key)
 }
 
 bool 
-SchedulerList::is_valid (EventId id)
+SchedulerList::real_is_valid (EventId id)
 {
 	EventsI i = get_iterator (id);
 	Scheduler::EventKey key = i->second;

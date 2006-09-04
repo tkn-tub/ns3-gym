@@ -41,14 +41,23 @@ class Scheduler {
 	};
 
 	virtual ~Scheduler () = 0;
-	virtual EventId insert (EventImpl *event, EventKey key) = 0;
-	virtual bool is_empty (void) const = 0;
-	virtual EventImpl *peek_next (void) const = 0;
-	virtual EventKey peek_next_key (void) const = 0;
-	virtual void remove_next (void) = 0;
-	virtual EventImpl *remove (EventId id, EventKey *key) = 0;
-	virtual bool is_valid (EventId id) = 0;
 
+	EventId insert (EventImpl *event, EventKey key);
+	bool is_empty (void) const;
+	EventImpl *peek_next (void) const;
+	Scheduler::EventKey peek_next_key (void) const ;
+	void remove_next (void);
+	EventImpl *remove (EventId id, EventKey *key);
+	bool is_valid (EventId id);
+
+private:
+	virtual EventId real_insert (EventImpl *event, EventKey key) = 0;
+	virtual bool real_is_empty (void) const = 0;
+	virtual EventImpl *real_peek_next (void) const = 0;
+	virtual Scheduler::EventKey real_peek_next_key (void) const = 0;
+	virtual void real_remove_next (void) = 0;
+	virtual EventImpl *real_remove (EventId id, EventKey *key) = 0;
+	virtual bool real_is_valid (EventId id) = 0;
 };
 
 }; // namespace ns3

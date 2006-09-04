@@ -36,14 +36,15 @@ public:
 	SchedulerMap ();
 	virtual ~SchedulerMap ();
 
-	virtual EventId insert (EventImpl *event, Scheduler::EventKey key);
-	virtual bool is_empty (void) const;
-	virtual EventImpl *peek_next (void) const;
-	virtual Scheduler::EventKey peek_next_key (void) const;
-	virtual void remove_next (void);
-	virtual EventImpl *remove (EventId ev, Scheduler::EventKey *key);
-	virtual bool is_valid (EventId id);
 private:
+	virtual EventId real_insert (EventImpl *event, Scheduler::EventKey key);
+	virtual bool real_is_empty (void) const;
+	virtual EventImpl *real_peek_next (void) const;
+	virtual Scheduler::EventKey real_peek_next_key (void) const;
+	virtual void real_remove_next (void);
+	virtual EventImpl *real_remove (EventId ev, Scheduler::EventKey *key);
+	virtual bool real_is_valid (EventId id);
+
 	typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare> EventMap;
 	typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::iterator EventMapI;
 	typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::const_iterator EventMapCI;
