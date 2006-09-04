@@ -1,6 +1,7 @@
 /* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
 #include "ns3/trace-container.h"
 #include "ns3/ui-traced-variable.tcc"
+#include "ns3/callback-tracer.h"
 #include "ns3/trace-stream.h"
 #include "ns3/pcap-writer.h"
 #include "ns3/packet.h"
@@ -8,10 +9,10 @@
 
 using namespace ns3;
 
-CallbackLogger<Packet> a;
+CallbackTracer<Packet> a;
 UiTracedVariable<unsigned short> b;
 TraceStream c;
-CallbackLogger<double, int> d;
+CallbackTracer<double, int> d;
 
 void
 register_all_trace_sources (TraceContainer *container)

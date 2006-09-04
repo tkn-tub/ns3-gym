@@ -119,7 +119,7 @@ TraceContainer::register_stream (char const *name, TraceStream *stream)
 }
 
 void 
-TraceContainer::register_callback (char const *name, CallbackLoggerBase *logger)
+TraceContainer::register_callback (char const *name, CallbackTracerBase *tracer)
 {
 	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
 		if (i->second == name) {
@@ -127,7 +127,7 @@ TraceContainer::register_callback (char const *name, CallbackLoggerBase *logger)
 			break;
 		}
 	}
-	m_callback_list.push_back (std::make_pair (logger, name));
+	m_callback_list.push_back (std::make_pair (tracer, name));
 }
 
 

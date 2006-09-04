@@ -25,7 +25,7 @@
 #include "ui-traced-variable.tcc"
 #include "si-traced-variable.tcc"
 #include "f-traced-variable.tcc"
-#include "callback-logger.h"
+#include "callback-tracer.h"
 #include "ns3/callback.h"
 #include <list>
 #include <string>
@@ -44,7 +44,7 @@ class TraceStream;
  *
  * TraceContainer can be used to register the following event sources:
  *   - ns3::TraceStream : can be connected to any std::ostream
- *   - ns3::CallbackLogger: can be connected to any ns3::Callback
+ *   - ns3::CallbackTracer: can be connected to any ns3::Callback
  *   - ns3::UiTracedVariable
  *   - ns3::SiTracedVariable
  *   - ns3::FTracedVariable
@@ -97,7 +97,7 @@ public:
 	 * \param name the name of the target event source
 	 * \param callback the callback being connected to the target event source.
 	 *
-	 * This method targets only event sources which are of type CallbackLogger<T1>
+	 * This method targets only event sources which are of type CallbackTracer<T1>
 	 */
 	template <typename T1>
 	void set_callback (char const *name, Callback<void,T1> callback);
@@ -105,7 +105,7 @@ public:
 	 * \param name the name of the target event source
 	 * \param callback the callback being connected to the target event source.
 	 *
-	 * This method targets only event sources which are of type CallbackLogger<T1,T2>
+	 * This method targets only event sources which are of type CallbackTracer<T1,T2>
 	 */
 	template <typename T1, typename T2>
 	void set_callback (char const *name, Callback<void,T1,T2> callback);
@@ -113,7 +113,7 @@ public:
 	 * \param name the name of the target event source
 	 * \param callback the callback being connected to the target event source.
 	 *
-	 * This method targets only event sources which are of type CallbackLogger<T1,T2,T3>
+	 * This method targets only event sources which are of type CallbackTracer<T1,T2,T3>
 	 */
 	template <typename T1, typename T2, typename T3>
 	void set_callback (char const *name, Callback<void,T1,T2,T3> callback);
@@ -121,7 +121,7 @@ public:
 	 * \param name the name of the target event source
 	 * \param callback the callback being connected to the target event source.
 	 *
-	 * This method targets only event sources which are of type CallbackLogger<T1,T2,T3,T4>
+	 * This method targets only event sources which are of type CallbackTracer<T1,T2,T3,T4>
 	 */
 	template <typename T1, typename T2, typename T3, typename T4>
 	void set_callback (char const *name, Callback<void,T1,T2,T3,T4> callback);
@@ -129,7 +129,7 @@ public:
 	 * \param name the name of the target event source
 	 * \param callback the callback being connected to the target event source.
 	 *
-	 * This method targets only event sources which are of type CallbackLogger<T1,T2,T3,T4,T5>
+	 * This method targets only event sources which are of type CallbackTracer<T1,T2,T3,T4,T5>
 	 */
 	template <typename T1, typename T2, typename T3, typename T4, typename T5>
 	void set_callback (char const *name, Callback<void,T1,T2,T3,T4,T5> callback);
@@ -165,11 +165,11 @@ public:
 
 	/**
 	 * \param name the name of the registeref event source
-	 * \param logger the callback logger being registered.
+	 * \param tracer the callback tracer being registered.
 	 *
-	 * This method registers only event sources of type CallbackLogger
+	 * This method registers only event sources of type CallbackTracer
 	 */
-	void register_callback (char const *name, CallbackLoggerBase*logger);
+	void register_callback (char const *name, CallbackTracerBase*tracer);
 
 	/**
 	 * Print the list of registered event sources in this container only.
@@ -184,8 +184,8 @@ private:
 	typedef std::list<std::pair<FTracedVariableBase *, std::string> >::iterator FListI;
 	typedef std::list<std::pair<TraceStream *, std::string> > TraceStreamList;
 	typedef std::list<std::pair<TraceStream *, std::string> >::iterator TraceStreamListI;
-	typedef std::list<std::pair<CallbackLoggerBase *, std::string> > CallbackList;
-	typedef std::list<std::pair<CallbackLoggerBase *, std::string> >::iterator CallbackListI;
+	typedef std::list<std::pair<CallbackTracerBase *, std::string> > CallbackList;
+	typedef std::list<std::pair<CallbackTracerBase *, std::string> >::iterator CallbackListI;
 
 	UiList m_ui_list;
 	SiList m_si_list;
@@ -208,7 +208,7 @@ TraceContainer::set_callback (char const *name, Callback<void,T1> callback)
 {
 	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
 		if (i->second == name) {
-			static_cast<CallbackLogger<T1> *> (i->first)->set_callback (callback);
+			static_cast<CallbackTracer<T1> *> (i->first)->set_callback (callback);
 			return;
 		}
 	}
@@ -222,7 +222,7 @@ TraceContainer::set_callback (char const *name, Callback<void,T1,T2> callback)
 {
 	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
 		if (i->second == name) {
-			static_cast<CallbackLogger<T1,T2> *> (i->first)->set_callback (callback);
+			static_cast<CallbackTracer<T1,T2> *> (i->first)->set_callback (callback);
 			return;
 		}
 	}
@@ -236,7 +236,7 @@ TraceContainer::set_callback (char const *name, Callback<void,T1,T2,T3> callback
 {
 	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
 		if (i->second == name) {
-			static_cast<CallbackLogger<T1,T2,T3> *> (i->first)->set_callback (callback);
+			static_cast<CallbackTracer<T1,T2,T3> *> (i->first)->set_callback (callback);
 			return;
 		}
 	}
@@ -250,7 +250,7 @@ TraceContainer::set_callback (char const *name, Callback<void,T1,T2,T3,T4> callb
 {
 	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
 		if (i->second == name) {
-			static_cast<CallbackLogger<T1,T2,T3,T4> *> (i->first)->set_callback (callback);
+			static_cast<CallbackTracer<T1,T2,T3,T4> *> (i->first)->set_callback (callback);
 			return;
 		}
 	}
@@ -264,7 +264,7 @@ TraceContainer::set_callback (char const *name, Callback<void,T1,T2,T3,T4,T5> ca
 {
 	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
 		if (i->second == name) {
-			static_cast<CallbackLogger<T1,T2,T3,T4,T5> *> (i->first)->set_callback (callback);
+			static_cast<CallbackTracer<T1,T2,T3,T4,T5> *> (i->first)->set_callback (callback);
 			return;
 		}
 	}
