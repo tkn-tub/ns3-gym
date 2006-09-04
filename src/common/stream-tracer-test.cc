@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "trace-stream.h"
+#include "stream-tracer.h"
 #include "ns3/test.h"
 #include <iostream>
 
@@ -26,23 +26,23 @@
 
 namespace {
 
-class TestTraceStream : public ns3::Test {
+class TestStreamTracer : public ns3::Test {
 public:
-	TestTraceStream ();
+	TestStreamTracer ();
 	virtual bool run_tests (void);
 };
 
-static TestTraceStream g_test_stream;
+static TestStreamTracer g_test_stream;
 
-TestTraceStream::TestTraceStream ()
-	: Test ("TraceStream")
+TestStreamTracer::TestStreamTracer ()
+	: Test ("StreamTracer")
 {}
 
 bool
-TestTraceStream::run_tests (void)
+TestStreamTracer::run_tests (void)
 {
 	bool ok = true;
-	ns3::TraceStream trace;
+	ns3::StreamTracer trace;
 	//trace.set_stream (&std::cout);
 	trace << 1;
 	trace << " X ";

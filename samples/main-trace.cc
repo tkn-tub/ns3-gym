@@ -2,7 +2,7 @@
 #include "ns3/trace-container.h"
 #include "ns3/ui-traced-variable.tcc"
 #include "ns3/callback-tracer.h"
-#include "ns3/trace-stream.h"
+#include "ns3/stream-tracer.h"
 #include "ns3/pcap-writer.h"
 #include "ns3/packet.h"
 #include <iostream>
@@ -11,7 +11,7 @@ using namespace ns3;
 
 CallbackTracer<Packet> a;
 UiTracedVariable<unsigned short> b;
-TraceStream c;
+StreamTracer c;
 CallbackTracer<double, int> d;
 
 void

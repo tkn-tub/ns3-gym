@@ -32,7 +32,7 @@
 
 namespace ns3 {
 
-class TraceStream;
+class StreamTracer;
 
 /**
  * \brief register every source of trace events
@@ -43,7 +43,7 @@ class TraceStream;
  * model trace event sources.
  *
  * TraceContainer can be used to register the following event sources:
- *   - ns3::TraceStream : can be connected to any std::ostream
+ *   - ns3::StreamTracer : can be connected to any std::ostream
  *   - ns3::CallbackTracer: can be connected to any ns3::Callback
  *   - ns3::UiTracedVariable
  *   - ns3::SiTracedVariable
@@ -89,7 +89,7 @@ public:
 	 * \param name the name of the target event source
 	 * \param os the output stream being connected to the source trace stream
 	 *
-	 * This method targets only event sources which are of type TraceStream.
+	 * This method targets only event sources which are of type StreamTracer.
 	 */
 	void set_stream (char const *name, std::ostream *os);
 
@@ -159,9 +159,9 @@ public:
 	 * \param name the name of the registered event source
 	 * \param stream the event source being registered
 	 *
-	 * This method registers only event sources of type TraceStream.
+	 * This method registers only event sources of type StreamTracer.
 	 */
-	void register_stream (char const *name, TraceStream *stream);
+	void register_stream (char const *name, StreamTracer *stream);
 
 	/**
 	 * \param name the name of the registeref event source
@@ -182,15 +182,15 @@ private:
 	typedef std::list<std::pair<SiTracedVariableBase *, std::string> >::iterator SiListI;
 	typedef std::list<std::pair<FTracedVariableBase *, std::string> > FList;
 	typedef std::list<std::pair<FTracedVariableBase *, std::string> >::iterator FListI;
-	typedef std::list<std::pair<TraceStream *, std::string> > TraceStreamList;
-	typedef std::list<std::pair<TraceStream *, std::string> >::iterator TraceStreamListI;
+	typedef std::list<std::pair<StreamTracer *, std::string> > StreamTracerList;
+	typedef std::list<std::pair<StreamTracer *, std::string> >::iterator StreamTracerListI;
 	typedef std::list<std::pair<CallbackTracerBase *, std::string> > CallbackList;
 	typedef std::list<std::pair<CallbackTracerBase *, std::string> >::iterator CallbackListI;
 
 	UiList m_ui_list;
 	SiList m_si_list;
 	FList m_f_list;
-	TraceStreamList m_trace_stream_list;
+	StreamTracerList m_trace_stream_list;
 	CallbackList m_callback_list;
 };
 

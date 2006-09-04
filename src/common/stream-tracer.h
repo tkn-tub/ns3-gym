@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef TRACE_STREAM_H
-#define TRACE_STREAM_H
+#ifndef STREAM_TRACER_H
+#define STREAM_TRACER_H
 
 #include <ostream>
 
@@ -32,25 +32,25 @@ namespace ns3 {
  * it is forwarded to the stored std::ostream output
  * stream (if there is one).
  */
-class TraceStream {
+class StreamTracer {
 public:
-	TraceStream ()
+	StreamTracer ()
 		: m_os (0) {}
 	template <typename T>
-	TraceStream &operator << (T const&v) {
+	StreamTracer &operator << (T const&v) {
 		if (m_os != 0) {
 			(*m_os) << v;
 		}
 		return *this;
 	}
 	template <typename T>
-	TraceStream &operator << (T &v) {
+	StreamTracer &operator << (T &v) {
 		if (m_os != 0) {
 			(*m_os) << v;
 		}
 		return *this;
 	}
-	TraceStream &operator << (std::ostream &(*v) (std::ostream &)) {
+	StreamTracer &operator << (std::ostream &(*v) (std::ostream &)) {
 		if (m_os != 0) {
 			(*m_os) << v;
 		}
@@ -70,4 +70,4 @@ private:
 }; // namespace ns3
 
 
-#endif /* TRACE_STREAM_H */
+#endif /* TRACER_STREAM_H */
