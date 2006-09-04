@@ -19,25 +19,25 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef F_TRACED_VARIABLE_TCC
-#define F_TRACED_VARIABLE_TCC
+#ifndef F_VARIABLE_TRACER_H
+#define F_VARIABLE_TRACER_H
 
 #include "ns3/callback.h"
 #include <stdint.h>
 
 namespace ns3 {
 
-class FTracedVariableBase {
+class FVariableTracerBase {
 public:
 	typedef Callback<void,double, double> ChangeNotifyCallback;
 
-	FTracedVariableBase () {}
-	FTracedVariableBase (FTracedVariableBase const &o) {}
-	FTracedVariableBase &operator = (FTracedVariableBase const &o) {
+	FVariableTracerBase () {}
+	FVariableTracerBase (FVariableTracerBase const &o) {}
+	FVariableTracerBase &operator = (FVariableTracerBase const &o) {
 		return *this;
 	}
 
-	~FTracedVariableBase () {}
+	~FVariableTracerBase () {}
 
 	void set_callback(ChangeNotifyCallback callback) {
 		m_callback = callback;
@@ -55,4 +55,4 @@ private:
 
 }; // namespace ns3
 
-#endif /* F_TRACED_VARIABLE_TCC */
+#endif /* F_VARIABLE_TRACER_H */

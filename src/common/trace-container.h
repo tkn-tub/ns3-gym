@@ -45,8 +45,8 @@ class StreamTracer;
  * TraceContainer can be used to register the following event sources:
  *   - ns3::StreamTracer : can be connected to any std::ostream
  *   - ns3::CallbackTracer: can be connected to any ns3::Callback
- *   - ns3::UiTracedVariable
- *   - ns3::SiTracedVariable
+ *   - ns3::UiVariableTracer
+ *   - ns3::SiVariableTracer
  *   - ns3::FTracedVariable
  *
  * The following sample code shows how you can:
@@ -140,21 +140,21 @@ public:
 	 *
 	 * This method registers only event sources of type "unsigned integer".
 	 */
-	void register_ui_variable (char const *name, UiTracedVariableBase *var);
+	void register_ui_variable (char const *name, UiVariableTracerBase *var);
 	/**
 	 * \param name the name of the registered event source
 	 * \param var the event source being registered
 	 *
 	 * This method registers only event sources of type "signed integer".
 	 */
-	void register_si_variable (char const *name, SiTracedVariableBase *var);
+	void register_si_variable (char const *name, SiVariableTracerBase *var);
 	/**
 	 * \param name the name of the registered event source
 	 * \param var the event source being registered
 	 *
 	 * This method registers only event sources of type "double".
 	 */
-	void register_f_variable (char const *name, FTracedVariableBase *var);
+	void register_f_variable (char const *name, FVariableTracerBase *var);
 	/**
 	 * \param name the name of the registered event source
 	 * \param stream the event source being registered
@@ -176,12 +176,12 @@ public:
 	 */
 	void print_debug (void);
 private:
-	typedef std::list<std::pair<UiTracedVariableBase *, std::string> > UiList;
-	typedef std::list<std::pair<UiTracedVariableBase *, std::string> >::iterator UiListI;
-	typedef std::list<std::pair<SiTracedVariableBase *, std::string> > SiList;
-	typedef std::list<std::pair<SiTracedVariableBase *, std::string> >::iterator SiListI;
-	typedef std::list<std::pair<FTracedVariableBase *, std::string> > FList;
-	typedef std::list<std::pair<FTracedVariableBase *, std::string> >::iterator FListI;
+	typedef std::list<std::pair<UiVariableTracerBase *, std::string> > UiList;
+	typedef std::list<std::pair<UiVariableTracerBase *, std::string> >::iterator UiListI;
+	typedef std::list<std::pair<SiVariableTracerBase *, std::string> > SiList;
+	typedef std::list<std::pair<SiVariableTracerBase *, std::string> >::iterator SiListI;
+	typedef std::list<std::pair<FVariableTracerBase *, std::string> > FList;
+	typedef std::list<std::pair<FVariableTracerBase *, std::string> >::iterator FListI;
 	typedef std::list<std::pair<StreamTracer *, std::string> > StreamTracerList;
 	typedef std::list<std::pair<StreamTracer *, std::string> >::iterator StreamTracerListI;
 	typedef std::list<std::pair<CallbackTracerBase *, std::string> > CallbackList;

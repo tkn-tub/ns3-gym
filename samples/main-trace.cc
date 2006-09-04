@@ -10,7 +10,7 @@
 using namespace ns3;
 
 CallbackTracer<Packet> a;
-UiTracedVariable<unsigned short> b;
+UiVariableTracer<unsigned short> b;
 StreamTracer c;
 CallbackTracer<double, int> d;
 

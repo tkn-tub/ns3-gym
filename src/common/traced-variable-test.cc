@@ -32,17 +32,17 @@ public:
 	void notify (uint64_t old_val, uint64_t new_val) {}
 };
 
-class TracedVariableTest: public Test {
+class VariableTracerTest: public Test {
 public:
-	TracedVariableTest ();
+	VariableTracerTest ();
 	void run_unsigned_tests (void);
 	void run_signed_unsigned_tests (void);
 	virtual bool run_tests (void);
 };
 void
-TracedVariableTest::run_unsigned_tests (void)
+VariableTracerTest::run_unsigned_tests (void)
 {
-	UiTracedVariable<uint32_t> var, ovar, tmp;
+	UiVariableTracer<uint32_t> var, ovar, tmp;
 	uint32_t utmp;
 	Foo *foo = new Foo ();
 	
@@ -198,7 +198,7 @@ TracedVariableTest::run_unsigned_tests (void)
 }
 
 void
-TracedVariableTest::run_signed_unsigned_tests (void)
+VariableTracerTest::run_signed_unsigned_tests (void)
 {
 	unsigned short utmp = 10;
 	unsigned int uitmp = 7;
@@ -208,10 +208,10 @@ TracedVariableTest::run_signed_unsigned_tests (void)
 	uitmp = utmp;
 	utmp = uitmp;
 
-	UiTracedVariable<unsigned short> uvar = 10;
-	UiTracedVariable<unsigned int> uivar = 5;
-	SiTracedVariable<short> svar = 5;
-	SiTracedVariable<int> sivar = 5;
+	UiVariableTracer<unsigned short> uvar = 10;
+	UiVariableTracer<unsigned int> uivar = 5;
+	SiVariableTracer<short> svar = 5;
+	SiVariableTracer<int> sivar = 5;
 	uvar = svar;
 	svar = uvar;
 	uvar += svar;
@@ -234,7 +234,7 @@ TracedVariableTest::run_signed_unsigned_tests (void)
 }
 
 bool 
-TracedVariableTest::run_tests (void)
+VariableTracerTest::run_tests (void)
 {
 	run_unsigned_tests ();
 	run_signed_unsigned_tests ();
@@ -242,10 +242,10 @@ TracedVariableTest::run_tests (void)
 	return true;
 }
 
-TracedVariableTest::TracedVariableTest ()
-	: Test ("TracedVariable") {}
+VariableTracerTest::VariableTracerTest ()
+	: Test ("VariableTracer") {}
 
-static TracedVariableTest g_traced_variable_test;
+static VariableTracerTest g_variable_tracer_test;
 
 }; // namespace ns3
 

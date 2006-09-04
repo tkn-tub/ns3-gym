@@ -75,7 +75,7 @@ TraceContainer::set_stream (char const *name, std::ostream *os)
 }
 
 void 
-TraceContainer::register_ui_variable (char const *name, UiTracedVariableBase *var)
+TraceContainer::register_ui_variable (char const *name, UiVariableTracerBase *var)
 {
 	// ensure unicity
 	for (UiListI i = m_ui_list.begin (); i != m_ui_list.end (); i++) {
@@ -87,7 +87,7 @@ TraceContainer::register_ui_variable (char const *name, UiTracedVariableBase *va
 	m_ui_list.push_back (std::make_pair (var, name));
 }
 void 
-TraceContainer::register_si_variable (char const *name, SiTracedVariableBase *var)
+TraceContainer::register_si_variable (char const *name, SiVariableTracerBase *var)
 {
 	// ensure unicity
 	for (SiListI i = m_si_list.begin (); i != m_si_list.end (); i++) {
@@ -99,7 +99,7 @@ TraceContainer::register_si_variable (char const *name, SiTracedVariableBase *va
 	m_si_list.push_back (std::make_pair (var, name));
 }
 void 
-TraceContainer::register_f_variable (char const *name, FTracedVariableBase *var)
+TraceContainer::register_f_variable (char const *name, FVariableTracerBase *var)
 {
 	assert (false);
 }
