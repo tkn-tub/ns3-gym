@@ -114,6 +114,11 @@ Time::destroy (void)
 	return Time ();
 }
 
+/***
+ * XXX
+ * API proposal: I don't really like it but it is equivalent
+ * what the above API.
+ */
 class AbsTimeS : public Time {
 public:
 	AbsTimeS (double s);
