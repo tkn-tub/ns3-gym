@@ -94,6 +94,7 @@ class Ns3:
 		self.build_dir = 'build'
 		self.version = '0.0.1'
 		self.name = 'noname'
+		self.doxygen_config = ''
 	def add (self, module):
 		self.__modules.append (module)
 	def add_extra_dist (self, dist):
@@ -418,7 +419,7 @@ class Ns3:
 				for f in module.extra_dist:
 					dist_list.append (os.path.join (module.dir, f))
 			for f in self.extra_dist:
-				dist_list.append (tag, f)
+				dist_list.append (f)
 			dist_list.append ('SConstruct')
 
 			targets = []
@@ -454,12 +455,19 @@ class Ns3:
 							 ['cd ' + scons_dir + ' && scons'])
 			env.AlwaysBuild (distcheck_builder)
 			env.Alias ('distcheck', distcheck_builder)
+		if self.doxygen_config != '':
+			doxy = env.Command ('doc/html/*', self.doxygen_config,
+					    ['doxygen ' + self.doxygen_config])
+			env.AlwaysBuild (doxy)
+			env.Alias ('doc', doxy)
 
 
 ns3 = Ns3 ()
 ns3.build_dir = 'build-dir'
 ns3.version = '0.0.1'
 ns3.name = 'ns3'
+ns3.doxygen_config = os.path.join ('doc', 'doxygen.conf')
+ns3.add_extra_dist (os.path.join ('doc', 'main.txt'))
 
 
 #
