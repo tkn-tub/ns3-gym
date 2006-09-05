@@ -544,6 +544,7 @@ common.add_sources ([
 common.add_inst_headers ([
 	'buffer.h',
 	'chunk.h',
+	'chunk-constant-data.h',
 	'tags.h',
 	'packet.h',
 	'ui-variable-tracer.h',
@@ -552,7 +553,6 @@ common.add_inst_headers ([
 	'callback-tracer.h',
 	'stream-tracer.h',
 	'trace-container.h',
-	'chunk-constant-data.h',
 	'pcap-writer.h',
 	])
 common.add_headers ([
