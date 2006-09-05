@@ -39,7 +39,7 @@ enum {
 PcapWriter::PcapWriter ()
 {
 	m_writer = 0;
-	m_write_callback = make_callback (&PcapWriter::write_data, this);
+	m_writeCallback = make_callback (&PcapWriter::write_data, this);
 }
 PcapWriter::~PcapWriter ()
 {
@@ -76,7 +76,7 @@ PcapWriter::write_packet (Packet const packet)
 		write_32 (us & 0xffffffff);
 		write_32 (packet.get_size ());
 		write_32 (packet.get_size ());
-		packet.write (m_write_callback);
+		packet.write (m_writeCallback);
 	}
 }
 

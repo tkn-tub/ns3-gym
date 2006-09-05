@@ -42,7 +42,7 @@ public:
 	uint64_t get_ns (void) const;
 	uint32_t get_uid (void) const;
 private:
-	EventImpl *m_event_impl;
+	EventImpl *m_eventImpl;
 	uint64_t m_ns;
 	uint32_t m_uid;
 };

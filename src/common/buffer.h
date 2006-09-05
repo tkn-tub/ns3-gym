@@ -240,9 +240,9 @@ public:
 		friend class Buffer;
 		inline Iterator (Buffer const*buffer, uint32_t m_current);
 		inline uint32_t get_index (uint32_t n);
-		uint32_t m_zero_start;
-		uint32_t m_zero_end;
-		uint32_t m_data_end;
+		uint32_t m_zeroStart;
+		uint32_t m_zeroEnd;
+		uint32_t m_dataEnd;
 		uint32_t m_current;
 		uint8_t *m_data;
 	};
@@ -329,26 +329,26 @@ private:
 	struct BufferData {
 		uint32_t m_count;
 		uint32_t m_size;
-		uint32_t m_initial_start;
-		uint32_t m_dirty_start;
-		uint32_t m_dirty_size;
+		uint32_t m_initialStart;
+		uint32_t m_dirtyStart;
+		uint32_t m_dirtySize;
 		uint8_t m_data[1];
 	};
 	typedef std::vector<struct Buffer::BufferData*> BufferDataList;
 
 	inline uint8_t *get_start (void) const;
-	void transform_into_real_buffer (void) const;
+	void transform_intoRealBuffer (void) const;
 	static void recycle (struct Buffer::BufferData *data);
 	static struct Buffer::BufferData *create (void);
 	static struct Buffer::BufferData *allocate (uint32_t size, uint32_t start);
 	static void deallocate (struct Buffer::BufferData *data);
 
-	static BufferDataList m_free_list;
-	static uint32_t m_max_total_add_start;
-	static uint32_t m_max_total_add_end;
+	static BufferDataList m_freeList;
+	static uint32_t m_maxTotalAddStart;
+	static uint32_t m_maxTotalAddEnd;
 
 	struct BufferData *m_data;
-	uint32_t m_zero_area_size;
+	uint32_t m_zeroAreaSize;
 	uint32_t m_start;
 	uint32_t m_size;
 };
@@ -361,8 +361,8 @@ namespace ns3 {
 
 Buffer::Buffer ()
 	: m_data (Buffer::create ()),
-	  m_zero_area_size (0),
-	  m_start (m_max_total_add_start),
+	  m_zeroAreaSize (0),
+	  m_start (m_maxTotalAddStart),
 	  m_size (0)
 {
 	if (m_start > m_data->m_size) {
@@ -373,8 +373,8 @@ Buffer::Buffer ()
 
 Buffer::Buffer (uint32_t data_size)
 	: m_data (Buffer::create ()),
-	  m_zero_area_size (data_size),
-	  m_start (m_max_total_add_start),
+	  m_zeroAreaSize (data_size),
+	  m_start (m_maxTotalAddStart),
 	  m_size (0)
 {
 	if (m_start > m_data->m_size) {
@@ -386,7 +386,7 @@ Buffer::Buffer (uint32_t data_size)
 
 Buffer::Buffer (Buffer const&o)
 	: m_data (o.m_data),
-	  m_zero_area_size (o.m_zero_area_size),
+	  m_zeroAreaSize (o.m_zeroAreaSize),
 	  m_start (o.m_start),
 	  m_size (o.m_size)
 {
@@ -406,7 +406,7 @@ Buffer::operator = (Buffer const&o)
 		m_data = o.m_data;
 		m_data->m_count++;
 	}
-	m_zero_area_size = o.m_zero_area_size;
+	m_zeroAreaSize = o.m_zeroAreaSize;
 	m_start = o.m_start;
 	m_size = o.m_size;
 	assert (m_start <= m_data->m_size);
@@ -431,7 +431,7 @@ Buffer::get_start (void) const
 uint32_t 
 Buffer::get_size (void) const
 {
-	return m_size + m_zero_area_size;
+	return m_size + m_zeroAreaSize;
 }
 
 Buffer::Iterator 
@@ -447,16 +447,16 @@ Buffer::end (void) const
 
 
 Buffer::Iterator::Iterator ()
-	: m_zero_start (0),
-	  m_zero_end (0),
-	  m_data_end (0),
+	: m_zeroStart (0),
+	  m_zeroEnd (0),
+	  m_dataEnd (0),
 	  m_current (0),
 	  m_data (0)
 {}
 Buffer::Iterator::Iterator (Buffer const*buffer, uint32_t current)
-	: m_zero_start (buffer->m_data->m_initial_start-buffer->m_start),
-	  m_zero_end (m_zero_start+buffer->m_zero_area_size),
-	  m_data_end (buffer->get_size ()),
+	: m_zeroStart (buffer->m_data->m_initialStart-buffer->m_start),
+	  m_zeroEnd (m_zeroStart+buffer->m_zeroAreaSize),
+	  m_dataEnd (buffer->get_size ()),
 	  m_current (current),
 	  m_data (buffer->m_data->m_data+buffer->m_start)
 {}
@@ -464,7 +464,7 @@ Buffer::Iterator::Iterator (Buffer const*buffer, uint32_t current)
 void 
 Buffer::Iterator::next (void)
 {
-	assert (m_current + 1 <= m_data_end);
+	assert (m_current + 1 <= m_dataEnd);
 	m_current++;
 }
 void 
@@ -476,7 +476,7 @@ Buffer::Iterator::prev (void)
 void 
 Buffer::Iterator::next (uint32_t delta)
 {
-	assert (m_current + delta <= m_data_end);
+	assert (m_current + delta <= m_dataEnd);
 	m_current += delta;
 }
 void 
@@ -497,7 +497,7 @@ Buffer::Iterator::get_distance_from (Iterator const &o) const
 bool 
 Buffer::Iterator::is_end (void) const
 {
-	return m_current == m_data_end;
+	return m_current == m_dataEnd;
 }
 bool 
 Buffer::Iterator::is_start (void) const
@@ -509,15 +509,15 @@ uint32_t
 Buffer::Iterator::get_index (uint32_t n)
 {
 	assert ( 
-		(m_current + n <= m_data_end) &&
-		((m_current + n <= m_zero_start) ||
-		 (m_current >= m_zero_end))
+		(m_current + n <= m_dataEnd) &&
+		((m_current + n <= m_zeroStart) ||
+		 (m_current >= m_zeroEnd))
 		);
 	uint32_t index;
-	if (m_current < m_zero_start) {
+	if (m_current < m_zeroStart) {
 		index = m_current;
 	} else {
-		index = m_current - (m_zero_end-m_zero_start);
+		index = m_current - (m_zeroEnd-m_zeroStart);
 	}
 	return index;
 }

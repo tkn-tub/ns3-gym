@@ -187,11 +187,11 @@ private:
 	typedef std::list<std::pair<CallbackTracerBase *, std::string> > CallbackList;
 	typedef std::list<std::pair<CallbackTracerBase *, std::string> >::iterator CallbackListI;
 
-	UiList m_ui_list;
-	SiList m_si_list;
-	FList m_f_list;
-	StreamTracerList m_trace_stream_list;
-	CallbackList m_callback_list;
+	UiList m_uiList;
+	SiList m_siList;
+	FList m_fList;
+	StreamTracerList m_traceStreamList;
+	CallbackList m_callbackList;
 };
 
 }; // namespace ns3
@@ -206,7 +206,7 @@ template <typename T1>
 void 
 TraceContainer::set_callback (char const *name, Callback<void,T1> callback)
 {
-	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
+	for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
 		if (i->second == name) {
 			static_cast<CallbackTracer<T1> *> (i->first)->set_callback (callback);
 			return;
@@ -220,7 +220,7 @@ template <typename T1, typename T2>
 void 
 TraceContainer::set_callback (char const *name, Callback<void,T1,T2> callback)
 {
-	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
+	for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
 		if (i->second == name) {
 			static_cast<CallbackTracer<T1,T2> *> (i->first)->set_callback (callback);
 			return;
@@ -234,7 +234,7 @@ template <typename T1, typename T2, typename T3>
 void 
 TraceContainer::set_callback (char const *name, Callback<void,T1,T2,T3> callback)
 {
-	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
+	for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
 		if (i->second == name) {
 			static_cast<CallbackTracer<T1,T2,T3> *> (i->first)->set_callback (callback);
 			return;
@@ -248,7 +248,7 @@ template <typename T1, typename T2, typename T3, typename T4>
 void 
 TraceContainer::set_callback (char const *name, Callback<void,T1,T2,T3,T4> callback)
 {
-	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
+	for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
 		if (i->second == name) {
 			static_cast<CallbackTracer<T1,T2,T3,T4> *> (i->first)->set_callback (callback);
 			return;
@@ -262,7 +262,7 @@ template <typename T1, typename T2, typename T3, typename T4, typename T5>
 void 
 TraceContainer::set_callback (char const *name, Callback<void,T1,T2,T3,T4,T5> callback)
 {
-	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
+	for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
 		if (i->second == name) {
 			static_cast<CallbackTracer<T1,T2,T3,T4,T5> *> (i->first)->set_callback (callback);
 			return;

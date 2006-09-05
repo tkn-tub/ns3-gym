@@ -25,22 +25,22 @@ namespace ns3 {
 
 Time::Time ()
 	: m_ns (0),
-	  m_is_destroy (true)
+	  m_isDestroy (true)
 {}
 Time::Time (Time const &o)
 	: m_ns (o.m_ns),
-	  m_is_destroy (o.m_is_destroy)
+	  m_isDestroy (o.m_isDestroy)
 {}
 Time &
 Time::operator = (Time const &o)
 {
 	m_ns = o.m_ns;
-	m_is_destroy = o.m_is_destroy;
+	m_isDestroy = o.m_isDestroy;
 	return *this;
 }
 Time::Time (uint64_t ns)
 	: m_ns (ns),
-	  m_is_destroy (false)
+	  m_isDestroy (false)
 {}
 
 double 
@@ -66,7 +66,7 @@ Time::ns (void) const
 bool
 Time::is_destroy (void) const
 {
-	return m_is_destroy;
+	return m_isDestroy;
 }
 
 Time 

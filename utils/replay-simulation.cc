@@ -48,15 +48,15 @@ private:
 		union {
 			struct {
 				// time at which the event is supposed to expire
-				uint64_t m_ev_us;
+				uint64_t m_evUs;
 			} insert;
 			struct {
 				// location in the array of events to remove where
 				// to insert this event once it is inserted in 
 				// the scheduler.
-				uint32_t m_ev_loc; 
+				uint32_t m_evLoc; 
 				// time at which the event is supposed to expire
-				uint64_t m_ev_us;
+				uint64_t m_evUs;
 			} insert_remove;
 		};
 	};
@@ -69,7 +69,7 @@ private:
 
 	Commands m_commands;
 	CommandsI m_command;
-	RemoveEvents m_remove_events;
+	RemoveEvents m_removeEvents;
 	uint32_t m_uid;
 };
 
@@ -93,7 +93,7 @@ LogReader::read_from_filename (char const *filename)
 			struct Command cmd;
 			cmd.m_type = Command::INSERT;
 			cmd.m_uid = now_uid;
-			cmd.insert.m_ev_us = ev_us;
+			cmd.insert.m_evUs = ev_us;
 			m_commands.push_back (cmd);
 		} else if (type == "r") {
 			uint32_t now_uid, ev_uid;
@@ -122,12 +122,12 @@ LogReader::read_from_filename (char const *filename)
 			for (RemovesI j = removes.begin (); j != removes.end (); j++) {
 				if (j->second == i->m_uid) {
 					// this insert will be removed later.
-					uint64_t us = i->insert.m_ev_us;
+					uint64_t us = i->insert.m_evUs;
 					uint32_t uid = i->m_uid;
 					i->m_type = Command::INSERT_REMOVE;
 					i->m_uid = uid;
-					i->insert_remove.m_ev_us = us;
-					i->insert_remove.m_ev_loc = j->first;
+					i->insert_remove.m_evUs = us;
+					i->insert_remove.m_evLoc = j->first;
 					break;
 				}
 			}
@@ -140,8 +140,8 @@ LogReader::read_from_filename (char const *filename)
 			uint32_t loc = 0;
 			for (CommandsI tmp = i; tmp != m_commands.end (); tmp++) {
 				if (tmp->m_type == Command::REMOVE &&
-				    tmp->m_uid == i->insert_remove.m_ev_loc) {
-					i->insert_remove.m_ev_loc = loc;
+				    tmp->m_uid == i->insert_remove.m_evLoc) {
+					i->insert_remove.m_evLoc = loc;
 					break;
 				}
 				loc++;
@@ -163,8 +163,8 @@ LogReader::execute_log_commands (uint32_t uid)
 		switch (cmd.m_type) {
 		case Command::INSERT:
 			//std::cout << "exec insert now=" << Simulator::now_us ()
-			//<< ", time=" << cmd.insert.m_ev_us << std::endl;
-			Simulator::schedule_abs_us (cmd.insert.m_ev_us, 
+			//<< ", time=" << cmd.insert.m_evUs << std::endl;
+			Simulator::schedule_abs_us (cmd.insert.m_evUs, 
 						 make_event (&LogReader::execute_log_commands, this, m_uid));
 			m_uid++;
 			break;
@@ -175,15 +175,15 @@ LogReader::execute_log_commands (uint32_t uid)
 			break;
 		case Command::REMOVE: {
 			//std::cout << "exec remove" << std::endl;
-			Event ev = m_remove_events.front ();
-			m_remove_events.pop_front ();
+			Event ev = m_removeEvents.front ();
+			m_removeEvents.pop_front ();
 			Simulator::remove (ev);
 		} break;
 		case Command::INSERT_REMOVE: {
 			//std::cout << "exec insert remove" << std::endl;
 			Event ev = make_event (&LogReader::execute_log_commands, this, m_uid);
-			Simulator::schedule_abs_us (cmd.insert_remove.m_ev_us, ev);
-			m_remove_events[cmd.insert_remove.m_ev_loc] = ev;
+			Simulator::schedule_abs_us (cmd.insert_remove.m_evUs, ev);
+			m_removeEvents[cmd.insert_remove.m_evLoc] = ev;
 			m_uid++;
 		} break;
 		}

@@ -38,7 +38,7 @@ template <typename OBJ_PTR>
 class ReferenceList {
 public:
 	ReferenceList () 
-		:  m_obj_ptr (),
+		:  m_objPtr (),
 		   m_prev (), 
 		   m_next () 
 	{
@@ -46,7 +46,7 @@ public:
 		m_next = this;
 	}
 	ReferenceList (ReferenceList &o) 
-		: m_obj_ptr (),
+		: m_objPtr (),
 		  m_prev (), 
 		  m_next ()
 	{
@@ -55,7 +55,7 @@ public:
 		insert_self_in_other (o);
 	}
 	ReferenceList (ReferenceList const&o) 
-		: m_obj_ptr (),
+		: m_objPtr (),
 		  m_prev (), 
 		  m_next ()
 	{
@@ -64,7 +64,7 @@ public:
 		insert_self_in_other (o);
 	}
 	ReferenceList (OBJ_PTR const &obj_ptr)
-		: m_obj_ptr (obj_ptr), 
+		: m_objPtr (obj_ptr), 
 		  m_prev (), 
 		  m_next ()
 	{
@@ -80,15 +80,15 @@ public:
 		return *this;
 	}
 	OBJ_PTR operator-> () {
-		return m_obj_ptr;
+		return m_objPtr;
 	}
 	void set (OBJ_PTR obj_ptr) {
 		remove_from_list ();
-		m_obj_ptr = obj_ptr;
+		m_objPtr = obj_ptr;
 	}
 	OBJ_PTR get (void) {
 		// explicit conversion to raw pointer type.
-		return m_obj_ptr;
+		return m_objPtr;
 	}
 private:
 	void insert_self_in_other (ReferenceList const&o) {
@@ -96,18 +96,18 @@ private:
 		m_next = o.m_next;
 		m_next->m_prev = this;
 		o.m_next = this;
-		m_obj_ptr = o.m_obj_ptr;
+		m_objPtr = o.m_objPtr;
 	}
 	void remove_from_list (void) {
 		if (m_prev == this) {
 			//assert (m_next == this);
-			delete m_obj_ptr;
-			m_obj_ptr = OBJ_PTR ();
+			delete m_objPtr;
+			m_objPtr = OBJ_PTR ();
 		}
 		m_prev->m_next = m_next;
 		m_next->m_prev = m_prev;
 	}
-	OBJ_PTR m_obj_ptr;
+	OBJ_PTR m_objPtr;
 	mutable ReferenceList const*m_prev;
 	mutable ReferenceList const*m_next;
 };

@@ -27,9 +27,9 @@
 
 namespace ns3 {
 
-Buffer::BufferDataList  Buffer::m_free_list;
-uint32_t Buffer::m_max_total_add_start = 0;
-uint32_t Buffer::m_max_total_add_end = 0;
+Buffer::BufferDataList  Buffer::m_freeList;
+uint32_t Buffer::m_maxTotalAddStart = 0;
+uint32_t Buffer::m_maxTotalAddEnd = 0;
 
 struct Buffer::BufferData *
 Buffer::allocate (uint32_t req_size, uint32_t req_start)
@@ -42,9 +42,9 @@ Buffer::allocate (uint32_t req_size, uint32_t req_start)
 	uint8_t *b = new uint8_t [size];
 	struct BufferData *data = reinterpret_cast<struct Buffer::BufferData*>(b);
 	data->m_size = req_size;
-	data->m_initial_start = req_start;
-	data->m_dirty_start = req_start;
-	data->m_dirty_size = 0;
+	data->m_initialStart = req_start;
+	data->m_dirtyStart = req_start;
+	data->m_dirtySize = 0;
 	data->m_count = 1;
 	return data;
 }
@@ -61,15 +61,15 @@ Buffer::recycle (struct Buffer::BufferData *data)
 {
 	assert (data->m_count == 0);
 	/* get rid of it if it is too small for later reuse. */
-	if (data->m_size < (Buffer::m_max_total_add_start + Buffer::m_max_total_add_end)) {
+	if (data->m_size < (Buffer::m_maxTotalAddStart + Buffer::m_maxTotalAddEnd)) {
 		Buffer::deallocate (data);
 		return; 
 	}
 	/* feed into free list */
-	if (Buffer::m_free_list.size () > 1000) {
+	if (Buffer::m_freeList.size () > 1000) {
 		Buffer::deallocate (data);
 	} else {
-		Buffer::m_free_list.push_back (data);
+		Buffer::m_freeList.push_back (data);
 	}
 }
 
@@ -77,20 +77,20 @@ Buffer::BufferData *
 Buffer::create (void)
 {
 	/* try to find a buffer correctly sized. */
-	while (!Buffer::m_free_list.empty ()) {
-		struct Buffer::BufferData *data = Buffer::m_free_list.back ();
-		Buffer::m_free_list.pop_back ();
-		if (data->m_size >= (m_max_total_add_start + m_max_total_add_end)) {
-			data->m_initial_start = m_max_total_add_start;
-			data->m_dirty_start = m_max_total_add_start;
-			data->m_dirty_size = 0;
+	while (!Buffer::m_freeList.empty ()) {
+		struct Buffer::BufferData *data = Buffer::m_freeList.back ();
+		Buffer::m_freeList.pop_back ();
+		if (data->m_size >= (m_maxTotalAddStart + m_maxTotalAddEnd)) {
+			data->m_initialStart = m_maxTotalAddStart;
+			data->m_dirtyStart = m_maxTotalAddStart;
+			data->m_dirtySize = 0;
 			data->m_count = 1;
 			return data;
 		}
 		Buffer::deallocate (data);
 	}
-	struct Buffer::BufferData *data = Buffer::allocate (m_max_total_add_start+m_max_total_add_end,
-							    m_max_total_add_start);
+	struct Buffer::BufferData *data = Buffer::allocate (m_maxTotalAddStart+m_maxTotalAddEnd,
+							    m_maxTotalAddStart);
 	assert (data->m_count == 1);
 	return data;
 }
@@ -104,8 +104,8 @@ Buffer::recycle (struct Buffer::BufferData *data)
 Buffer::BufferData *
 Buffer::create (void)
 {
-	return Buffer::allocate (m_max_total_add_start+m_max_total_add_end,
-				 m_max_total_add_start);
+	return Buffer::allocate (m_maxTotalAddStart+m_maxTotalAddEnd,
+				 m_maxTotalAddStart);
 }
 #endif
 
@@ -120,8 +120,8 @@ namespace ns3 {
 void 
 Buffer::add_at_start (uint32_t start)
 {
-	assert (m_start <= m_data->m_initial_start);
-	bool is_dirty = m_data->m_count > 1 && m_start > m_data->m_dirty_start;
+	assert (m_start <= m_data->m_initialStart);
+	bool is_dirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
 	if (m_start >= start && !is_dirty) {
 		/* enough space in the buffer and not dirty. */
 		m_start -= start;
@@ -130,7 +130,7 @@ Buffer::add_at_start (uint32_t start)
 		/* enough space but need to move data around to fit new data */
                 memmove (m_data->m_data + start, get_start (), m_size);
 		assert (start > m_start);
-		m_data->m_initial_start += start;
+		m_data->m_initialStart += start;
                 m_start = 0;
                 m_size += start;
 	} else if (m_start < start) {
@@ -138,7 +138,7 @@ Buffer::add_at_start (uint32_t start)
 		uint32_t new_size = m_size + start;
 		struct Buffer::BufferData *new_data = Buffer::allocate (new_size, 0);
 		memcpy (new_data->m_data + start, get_start (), m_size);
-		new_data->m_initial_start = m_data->m_initial_start + start;
+		new_data->m_initialStart = m_data->m_initialStart + start;
 		m_data->m_count--;
 		if (m_data->m_count == 0) {
 			Buffer::deallocate (m_data);
@@ -151,7 +151,7 @@ Buffer::add_at_start (uint32_t start)
 		assert (is_dirty);
 		struct Buffer::BufferData *new_data = Buffer::create ();
 		memcpy (new_data->m_data + m_start, get_start (), m_size);
-		new_data->m_initial_start = m_data->m_initial_start;
+		new_data->m_initialStart = m_data->m_initialStart;
 		m_data->m_count--;
 		if (m_data->m_count == 0) {
 			recycle (m_data);
@@ -161,28 +161,28 @@ Buffer::add_at_start (uint32_t start)
 		m_size += start;
 	} 
 	// update dirty area
-	m_data->m_dirty_start = m_start;
-	m_data->m_dirty_size = m_size;
-	// update m_max_total_add_start
+	m_data->m_dirtyStart = m_start;
+	m_data->m_dirtySize = m_size;
+	// update m_maxTotalAddStart
 	uint32_t added_at_start;
-	if (m_data->m_initial_start > m_start) {
-		added_at_start = m_data->m_initial_start - m_start;
+	if (m_data->m_initialStart > m_start) {
+		added_at_start = m_data->m_initialStart - m_start;
 	} else {
 		added_at_start = 0;
 	}
-	if (added_at_start > m_max_total_add_start) {
-		m_max_total_add_start = added_at_start;
+	if (added_at_start > m_maxTotalAddStart) {
+		m_maxTotalAddStart = added_at_start;
 	}
-	TRACE ("start add="<<start<<", start="<<m_start<<", size="<<m_size<<", zero="<<m_zero_area_size<<
-	       ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initial_start<<
-	       ", dirty start="<<m_data->m_dirty_start<<", dirty size="<<m_data->m_dirty_size); 
+	TRACE ("start add="<<start<<", start="<<m_start<<", size="<<m_size<<", zero="<<m_zeroAreaSize<<
+	       ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initialStart<<
+	       ", dirty start="<<m_data->m_dirtyStart<<", dirty size="<<m_data->m_dirtySize); 
 }
 void 
 Buffer::add_at_end (uint32_t end)
 {
-	assert (m_start <= m_data->m_initial_start);
+	assert (m_start <= m_data->m_initialStart);
 	bool is_dirty = m_data->m_count > 1 &&
-		m_start + m_size < m_data->m_dirty_start + m_data->m_dirty_size;
+		m_start + m_size < m_data->m_dirtyStart + m_data->m_dirtySize;
 	if (m_start + m_size + end <= m_data->m_size && !is_dirty) {
 		/* enough space in buffer and not dirty */
 		m_size += end;
@@ -191,7 +191,7 @@ Buffer::add_at_end (uint32_t end)
                 uint32_t new_start = m_data->m_size - (m_size + end);
                 memmove (m_data->m_data + new_start, get_start (), m_size);
 		assert (new_start < m_start);
-		m_data->m_initial_start -= m_start - new_start;
+		m_data->m_initialStart -= m_start - new_start;
                 m_start = new_start;
                 m_size += end;
 	} else if (m_start + m_size + end > m_data->m_size) {
@@ -199,7 +199,7 @@ Buffer::add_at_end (uint32_t end)
 		uint32_t new_size = m_size + end;
 		struct Buffer::BufferData *new_data = Buffer::allocate (new_size, 0);
 		memcpy (new_data->m_data, get_start (), m_size);
-		new_data->m_initial_start = m_data->m_initial_start;
+		new_data->m_initialStart = m_data->m_initialStart;
 		m_data->m_count--;
 		if (m_data->m_count == 0) {
 			Buffer::deallocate (m_data);
@@ -212,7 +212,7 @@ Buffer::add_at_end (uint32_t end)
 		assert (is_dirty);
 		struct Buffer::BufferData *new_data = Buffer::create ();
 		memcpy (new_data->m_data + m_start, get_start (), m_size);
-		new_data->m_initial_start = m_data->m_initial_start;
+		new_data->m_initialStart = m_data->m_initialStart;
 		m_data->m_count--;
 		if (m_data->m_count == 0) {
 			recycle (m_data);
@@ -221,28 +221,28 @@ Buffer::add_at_end (uint32_t end)
 		m_size += end;
 	} 
 	// update dirty area
-	m_data->m_dirty_start = m_start;
-	m_data->m_dirty_size = m_size;
-	// update m_max_total_add_end
+	m_data->m_dirtyStart = m_start;
+	m_data->m_dirtySize = m_size;
+	// update m_maxTotalAddEnd
 	uint32_t end_loc = m_start + m_size;
 	uint32_t added_at_end;
-	if (m_data->m_initial_start < end_loc) {
-		added_at_end = end_loc - m_data->m_initial_start;
+	if (m_data->m_initialStart < end_loc) {
+		added_at_end = end_loc - m_data->m_initialStart;
 	} else {
 		added_at_end = 0;
 	}
-	if (added_at_end > m_max_total_add_end) {
-		m_max_total_add_end = added_at_end;
+	if (added_at_end > m_maxTotalAddEnd) {
+		m_maxTotalAddEnd = added_at_end;
 	}
-	TRACE ("end add="<<end<<", start="<<m_start<<", size="<<m_size<<", zero="<<m_zero_area_size<<
-	       ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initial_start<<
-	       ", dirty start="<<m_data->m_dirty_start<<", dirty size="<<m_data->m_dirty_size); 
+	TRACE ("end add="<<end<<", start="<<m_start<<", size="<<m_size<<", zero="<<m_zeroAreaSize<<
+	       ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initialStart<<
+	       ", dirty start="<<m_data->m_dirtyStart<<", dirty size="<<m_data->m_dirtySize); 
 }
 
 void 
 Buffer::remove_at_start (uint32_t start)
 {
-	if (m_zero_area_size == 0) {
+	if (m_zeroAreaSize == 0) {
 		if (m_size <= start) {
 			m_start += m_size;
 			m_size = 0;
@@ -251,10 +251,10 @@ Buffer::remove_at_start (uint32_t start)
 			m_size -= start;
 		}
 	} else {
-		assert (m_data->m_initial_start >= m_start);
-		uint32_t zero_start = m_data->m_initial_start - m_start;
-		uint32_t zero_end = zero_start + m_zero_area_size;
-		uint32_t data_end = m_size + m_zero_area_size;
+		assert (m_data->m_initialStart >= m_start);
+		uint32_t zero_start = m_data->m_initialStart - m_start;
+		uint32_t zero_end = zero_start + m_zeroAreaSize;
+		uint32_t data_end = m_size + m_zeroAreaSize;
 		if (start <= zero_start) {
 			/* only remove start of buffer */
 			m_start += start;
@@ -263,76 +263,76 @@ Buffer::remove_at_start (uint32_t start)
 			/* remove start of buffer _and_ start of zero area */
 			m_start += zero_start;
 			uint32_t zero_delta = start - zero_start;
-			m_zero_area_size -= zero_delta;
+			m_zeroAreaSize -= zero_delta;
 			assert (zero_delta <= start);
 			m_size -= zero_start;
 		} else if (start <= data_end) {
 			/* remove start of buffer, complete zero area, and part
 			 * of end of buffer */
-			m_start += start - m_zero_area_size;
-			m_size -= start - m_zero_area_size;
-			m_zero_area_size = 0;
+			m_start += start - m_zeroAreaSize;
+			m_size -= start - m_zeroAreaSize;
+			m_zeroAreaSize = 0;
 		} else {
 			/* remove all buffer */
 			m_start += m_size;
 			m_size = 0;
-			m_zero_area_size = 0;
+			m_zeroAreaSize = 0;
 		}
 	}
-	TRACE ("start remove="<<start<<", start="<<m_start<<", size="<<m_size<<", zero="<<m_zero_area_size<<
-	       ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initial_start<<
-	       ", dirty start="<<m_data->m_dirty_start<<", dirty size="<<m_data->m_dirty_size); 
+	TRACE ("start remove="<<start<<", start="<<m_start<<", size="<<m_size<<", zero="<<m_zeroAreaSize<<
+	       ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initialStart<<
+	       ", dirty start="<<m_data->m_dirtyStart<<", dirty size="<<m_data->m_dirtySize); 
 }
 void 
 Buffer::remove_at_end (uint32_t end)
 {
-	if (m_zero_area_size == 0) {
+	if (m_zeroAreaSize == 0) {
 		if (m_size <= end) {
 			m_size = 0;
 		} else {
 			m_size -= end;
 		} 
 	} else {
-		assert (m_data->m_initial_start >= m_start);
-		uint32_t zero_start = m_data->m_initial_start - m_start;
-		uint32_t zero_end = zero_start + m_zero_area_size;
-		uint32_t data_end = m_size + m_zero_area_size;
+		assert (m_data->m_initialStart >= m_start);
+		uint32_t zero_start = m_data->m_initialStart - m_start;
+		uint32_t zero_end = zero_start + m_zeroAreaSize;
+		uint32_t data_end = m_size + m_zeroAreaSize;
 		assert (zero_start <= m_size);
-		assert (zero_end <= m_size + m_zero_area_size);
+		assert (zero_end <= m_size + m_zeroAreaSize);
 		if (data_end <= end) {
 			/* remove all buffer */
-			m_zero_area_size = 0;
+			m_zeroAreaSize = 0;
 			m_start += m_size;
 			m_size = 0;
 		} else if (data_end - zero_start <= end) {
 			/* remove end of buffer, zero area, part of start of buffer */
-			assert (end >= m_zero_area_size);
-			m_size -= end - m_zero_area_size;
-			m_zero_area_size = 0;
+			assert (end >= m_zeroAreaSize);
+			m_size -= end - m_zeroAreaSize;
+			m_zeroAreaSize = 0;
 		} else if (data_end - zero_end <= end) {
 			/* remove end of buffer, part of zero area */
 			uint32_t zero_delta = end - (data_end - zero_end);
-			m_zero_area_size -= zero_delta;
+			m_zeroAreaSize -= zero_delta;
 			m_size -= end - zero_delta;
 		} else {
 			/* remove part of end of buffer */
 			m_size -= end;
 		}
 	}
-	TRACE ("end remove="<<end<<", start="<<m_start<<", size="<<m_size<<", zero="<<m_zero_area_size<<
-	       ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initial_start<<
-	       ", dirty start="<<m_data->m_dirty_start<<", dirty size="<<m_data->m_dirty_size); 
+	TRACE ("end remove="<<end<<", start="<<m_start<<", size="<<m_size<<", zero="<<m_zeroAreaSize<<
+	       ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initialStart<<
+	       ", dirty start="<<m_data->m_dirtyStart<<", dirty size="<<m_data->m_dirtySize); 
 }
 
 Buffer 
 Buffer::create_fragment (uint32_t start, uint32_t length) const
 {
-	uint32_t zero_start = m_data->m_initial_start - m_start;
-	uint32_t zero_end = zero_start + m_zero_area_size;
-	if (m_zero_area_size != 0 &&
+	uint32_t zero_start = m_data->m_initialStart - m_start;
+	uint32_t zero_end = zero_start + m_zeroAreaSize;
+	if (m_zeroAreaSize != 0 &&
 	    start + length > zero_start &&
 	    start <= zero_end) {
-		transform_into_real_buffer ();
+		transform_intoRealBuffer ();
 	}
 	Buffer tmp = *this;
 	tmp.remove_at_start (start);
@@ -341,22 +341,22 @@ Buffer::create_fragment (uint32_t start, uint32_t length) const
 }
 
 void
-Buffer::transform_into_real_buffer (void) const
+Buffer::transform_intoRealBuffer (void) const
 {
-	if (m_zero_area_size != 0) {
-		assert (m_data->m_initial_start >= m_start);
-		assert (m_size >= (m_data->m_initial_start - m_start));
+	if (m_zeroAreaSize != 0) {
+		assert (m_data->m_initialStart >= m_start);
+		assert (m_size >= (m_data->m_initialStart - m_start));
 		Buffer tmp;
-		tmp.add_at_start (m_zero_area_size);
-		tmp.begin ().write_u8 (0, m_zero_area_size);
-		uint32_t data_start = m_data->m_initial_start - m_start;
+		tmp.add_at_start (m_zeroAreaSize);
+		tmp.begin ().write_u8 (0, m_zeroAreaSize);
+		uint32_t data_start = m_data->m_initialStart - m_start;
 		tmp.add_at_start (data_start);
 		tmp.begin ().write (m_data->m_data+m_start, data_start);
-		uint32_t data_end = m_size - (m_data->m_initial_start - m_start);
+		uint32_t data_end = m_size - (m_data->m_initialStart - m_start);
 		tmp.add_at_end (data_end);
 		Buffer::Iterator i = tmp.end ();
 		i.prev (data_end);
-		i.write (m_data->m_data+m_data->m_initial_start,data_end);
+		i.write (m_data->m_data+m_data->m_initialStart,data_end);
 		*const_cast<Buffer *> (this) = tmp;
 	}
 }
@@ -365,7 +365,7 @@ Buffer::transform_into_real_buffer (void) const
 uint8_t *
 Buffer::peek_data (void) const
 {
-	transform_into_real_buffer ();
+	transform_intoRealBuffer ();
 	return m_data->m_data + m_start;
 }
 

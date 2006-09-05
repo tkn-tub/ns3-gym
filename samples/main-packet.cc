@@ -69,7 +69,7 @@ MyChunk::get_data (void) const
 /* A sample Tag implementation
  */
 struct MyTag {
-	uint16_t m_stream_id;
+	uint16_t m_streamId;
 };
 
 
@@ -93,7 +93,7 @@ int main (int argc, char *argv[])
 	std::cout << "send data=2" << std::endl;
 	p.add (&my);
 	struct MyTag my_tag;
-	my_tag.m_stream_id = 5;
+	my_tag.m_streamId = 5;
 	p.add_tag (&my_tag);
 	receive (p);
 	return 0;

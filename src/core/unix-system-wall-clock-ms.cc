@@ -29,24 +29,24 @@ public:
 	void start (void);
 	unsigned long long end (void);
 private:
-	struct timeval m_start_tv;
-	struct timeval m_end_tv;
+	struct timeval m_startTv;
+	struct timeval m_endTv;
 };
 
 void 
 SystemWallClockMsPrivate::start (void)
 {
 	struct timezone tz;
-	gettimeofday (&m_start_tv, &tz);
+	gettimeofday (&m_startTv, &tz);
 }
 
 unsigned long long 
 SystemWallClockMsPrivate::end (void)
 {
 	struct timezone tz;
-	gettimeofday (&m_end_tv, &tz);
-	unsigned long long end = m_end_tv.tv_sec *1000 + m_end_tv.tv_usec / 1000;
-	unsigned long long start = m_start_tv.tv_sec *1000 + m_start_tv.tv_usec / 1000;
+	gettimeofday (&m_endTv, &tz);
+	unsigned long long end = m_endTv.tv_sec *1000 + m_endTv.tv_usec / 1000;
+	unsigned long long start = m_startTv.tv_sec *1000 + m_startTv.tv_usec / 1000;
 	return end - start;
 }
 

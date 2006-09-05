@@ -169,29 +169,29 @@ template <typename OBJ_PTR, typename MEM_PTR, typename R, typename T1, typename 
 class MemPtrCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5> {
 public:
 	MemPtrCallbackImpl (OBJ_PTR const&obj_ptr, MEM_PTR mem_ptr)
-		: m_obj_ptr (obj_ptr), m_mem_ptr (mem_ptr) {}
+		: m_objPtr (obj_ptr), m_memPtr (mem_ptr) {}
 	virtual ~MemPtrCallbackImpl () {}
 	R operator() (void) {
-		return ((*m_obj_ptr).*m_mem_ptr) ();
+		return ((*m_objPtr).*m_memPtr) ();
 	}
 	R operator() (T1 a1) {
-		return ((*m_obj_ptr).*m_mem_ptr) (a1);
+		return ((*m_objPtr).*m_memPtr) (a1);
 	}
 	R operator() (T1 a1,T2 a2) {
-		return ((*m_obj_ptr).*m_mem_ptr) (a1,a2);
+		return ((*m_objPtr).*m_memPtr) (a1,a2);
 	}
 	R operator() (T1 a1,T2 a2,T3 a3) {
-		return ((*m_obj_ptr).*m_mem_ptr) (a1,a2,a3);
+		return ((*m_objPtr).*m_memPtr) (a1,a2,a3);
 	}
 	R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
-		return ((*m_obj_ptr).*m_mem_ptr) (a1,a2,a3,a4);
+		return ((*m_objPtr).*m_memPtr) (a1,a2,a3,a4);
 	}
 	R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
-		return ((*m_obj_ptr).*m_mem_ptr) (a1,a2,a3,a4,a5);
+		return ((*m_objPtr).*m_memPtr) (a1,a2,a3,a4,a5);
 	}
 private:
-	OBJ_PTR const m_obj_ptr;
-	MEM_PTR m_mem_ptr;
+	OBJ_PTR const m_objPtr;
+	MEM_PTR m_memPtr;
 };
 
 /**

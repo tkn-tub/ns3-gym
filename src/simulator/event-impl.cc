@@ -29,7 +29,7 @@ EventImpl::~EventImpl ()
 {}
 
 EventImpl::EventImpl ()
-	: m_internal_iterator (0),
+	: m_internalIterator (0),
 	  m_cancel (false)
 {}
 void 
@@ -42,12 +42,12 @@ EventImpl::invoke (void)
 void 
 EventImpl::set_internal_iterator (void *tag)
 {
-	m_internal_iterator = tag;
+	m_internalIterator = tag;
 }
 void *
 EventImpl::get_internal_iterator (void) const
 {
-	return m_internal_iterator;
+	return m_internalIterator;
 }
 void 
 EventImpl::cancel (void)

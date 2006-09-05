@@ -25,7 +25,7 @@
 namespace ns3 {
 
 Chunk::Chunk ()
-	: m_must_peek_before_remove (false) {}
+	: m_mustPeekBeforeRemove (false) {}
 
 void 
 Chunk::print (std::ostream &os) const
@@ -41,14 +41,14 @@ void
 Chunk::peek (Buffer const *buffer)
 {
 	peek_from (buffer);
-	m_must_peek_before_remove = true;
+	m_mustPeekBeforeRemove = true;
 }
 void 
 Chunk::remove (Buffer *buffer)
 {
-	assert (m_must_peek_before_remove);
+	assert (m_mustPeekBeforeRemove);
 	remove_from (buffer);
-	m_must_peek_before_remove = false;
+	m_mustPeekBeforeRemove = false;
 }
 
 

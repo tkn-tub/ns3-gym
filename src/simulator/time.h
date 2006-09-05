@@ -46,7 +46,7 @@ protected:
 	Time ();
 private:
 	uint64_t m_ns;
-	bool m_is_destroy;
+	bool m_isDestroy;
 };
 
 

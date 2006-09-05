@@ -24,13 +24,13 @@
 namespace ns3 {
 
 EventId::EventId ()
-	: m_event_impl (0),
+	: m_eventImpl (0),
 	  m_ns (0),
 	  m_uid (0)
 {}
     
 EventId::EventId (EventImpl *impl, uint64_t ns, uint32_t uid)
-	: m_event_impl (impl),
+	: m_eventImpl (impl),
 	  m_ns (ns),
 	  m_uid (uid)
 {}
@@ -47,7 +47,7 @@ EventId::is_expired (void)
 EventImpl *
 EventId::get_event_impl (void) const
 {
-	return m_event_impl;
+	return m_eventImpl;
 }
 uint64_t 
 EventId::get_ns (void) const

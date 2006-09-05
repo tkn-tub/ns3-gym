@@ -37,7 +37,7 @@ protected:
 	virtual void notify (void) = 0;
 private:
 	friend class Event;
-	void *m_internal_iterator;
+	void *m_internalIterator;
 	bool m_cancel;
 };
 

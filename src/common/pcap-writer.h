@@ -65,7 +65,7 @@ private:
 	void write_32 (uint32_t data);
 	void write_16 (uint16_t data);
 	SystemFile *m_writer;
-	Callback<void,uint8_t *,uint32_t> m_write_callback;
+	Callback<void,uint8_t *,uint32_t> m_writeCallback;
 };
 
 }; // namespace ns3

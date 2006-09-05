@@ -480,13 +480,13 @@ private:
 	static SimulatorPrivate *get_priv (void);
 	static EventId schedule (Time time, EventImpl *event);
 	static SimulatorPrivate *m_priv;
-	static SchedulerFactory const*m_sched_factory;
+	static SchedulerFactory const*m_schedFactory;
 	static enum ListType {
 		LINKED_LIST,
 		BINARY_HEAP,
 		STD_MAP,
 		EXTERNAL
-	} m_list_type;
+	} m_listType;
 };
 
 }; // namespace ns3

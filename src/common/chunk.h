@@ -49,7 +49,7 @@ public:
 	void peek (Buffer const *buffer);
 	void remove (Buffer *buffer);
 private:
-	bool m_must_peek_before_remove;
+	bool m_mustPeekBeforeRemove;
 	/**
 	 * \param os the std output stream in which this 
 	 *           protocol header must print itself.

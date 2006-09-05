@@ -70,15 +70,15 @@ private:
 
 	typedef std::list<std::pair<EventImpl *,uint32_t> > Events;
 	Events m_destroy;
-	uint64_t m_stop_at;
+	uint64_t m_stopAt;
 	bool m_stop;
 	Scheduler *m_events;
 	uint32_t m_uid;
-	uint32_t m_current_uid;
-	uint64_t m_current_ns;
+	uint32_t m_currentUid;
+	uint64_t m_currentNs;
 	std::ofstream m_log;
-	std::ifstream m_input_log;
-	bool m_log_enable;
+	std::ifstream m_inputLog;
+	bool m_logEnable;
 };
 
 
@@ -87,11 +87,11 @@ private:
 SimulatorPrivate::SimulatorPrivate (Scheduler *events)
 {
 	m_stop = false;
-	m_stop_at = 0;
+	m_stopAt = 0;
 	m_events = events;
 	m_uid = 0;	
-	m_log_enable = false;
-	m_current_ns = 0;
+	m_logEnable = false;
+	m_currentNs = 0;
 }
 
 SimulatorPrivate::~SimulatorPrivate ()
@@ -112,7 +112,7 @@ void
 SimulatorPrivate::enable_log_to (char const *filename)
 {
 	m_log.open (filename);
-	m_log_enable = true;
+	m_logEnable = true;
 }
 
 void
@@ -122,9 +122,9 @@ SimulatorPrivate::process_one_event (void)
 	Scheduler::EventKey next_key = m_events->peek_next_key ();
 	m_events->remove_next ();
 	TRACE ("handle " << next_ev);
-	m_current_ns = next_key.m_ns;
-	m_current_uid = next_key.m_uid;
-	if (m_log_enable) {
+	m_currentNs = next_key.m_ns;
+	m_currentUid = next_key.m_uid;
+	if (m_logEnable) {
 		m_log << "e "<<next_key.m_uid << " " << next_key.m_ns << std::endl;
 	}
 	next_ev->invoke ();
@@ -149,7 +149,7 @@ void
 SimulatorPrivate::run (void)
 {
 	while (!m_events->is_empty () && !m_stop && 
-	       (m_stop_at == 0 || m_stop_at > next ().ns ())) {
+	       (m_stopAt == 0 || m_stopAt > next ().ns ())) {
 		process_one_event ();
 	}
 	m_log.close ();
@@ -164,15 +164,15 @@ SimulatorPrivate::stop (void)
 void 
 SimulatorPrivate::stop_at (Time at)
 {
-	m_stop_at = at.ns ();
+	m_stopAt = at.ns ();
 }
 EventId
 SimulatorPrivate::schedule (Time time, EventImpl *event)
 {
 	if (time.is_destroy ()) {
 		m_destroy.push_back (std::make_pair (event, m_uid));
-		if (m_log_enable) {
-			m_log << "id " << m_current_uid << " " << now ().ns () << " "
+		if (m_logEnable) {
+			m_log << "id " << m_currentUid << " " << now ().ns () << " "
 			      << m_uid << std::endl;
 		}
 		m_uid++;
@@ -181,8 +181,8 @@ SimulatorPrivate::schedule (Time time, EventImpl *event)
 	}
 	assert (time.ns () >= now ().ns ());
 	Scheduler::EventKey key = {time.ns (), m_uid};
-	if (m_log_enable) {
-		m_log << "i "<<m_current_uid<<" "<<now ().ns ()<<" "
+	if (m_logEnable) {
+		m_log << "i "<<m_currentUid<<" "<<now ().ns ()<<" "
 		      <<m_uid<<" "<<time.ns () << std::endl;
 	}
 	m_uid++;
@@ -191,7 +191,7 @@ SimulatorPrivate::schedule (Time time, EventImpl *event)
 Time
 SimulatorPrivate::now (void) const
 {
-	return Time::abs_ns (m_current_ns);
+	return Time::abs_ns (m_currentNs);
 }
 
 void
@@ -200,8 +200,8 @@ SimulatorPrivate::remove (EventId ev)
 	Scheduler::EventKey key;
 	EventImpl *impl = m_events->remove (ev, &key);
 	delete impl;
-	if (m_log_enable) {
-		m_log << "r " << m_current_uid << " " << now ().ns () << " "
+	if (m_logEnable) {
+		m_log << "r " << m_currentUid << " " << now ().ns () << " "
 		      << key.m_uid << " " << key.m_ns << std::endl;
 	}
 }
@@ -219,7 +219,7 @@ SimulatorPrivate::is_expired (EventId ev)
 {
 	if (ev.get_event_impl () != 0 &&
 	    ev.get_ns () <= now ().ns () &&
-	    ev.get_uid () < m_current_uid) {
+	    ev.get_uid () < m_currentUid) {
 		return false;
 	}
 	return true;
@@ -238,27 +238,27 @@ SimulatorPrivate::is_expired (EventId ev)
 namespace ns3 {
 
 SimulatorPrivate *Simulator::m_priv = 0;
-Simulator::ListType Simulator::m_list_type = LINKED_LIST;
-SchedulerFactory const*Simulator::m_sched_factory = 0;
+Simulator::ListType Simulator::m_listType = LINKED_LIST;
+SchedulerFactory const*Simulator::m_schedFactory = 0;
 
 void Simulator::set_linked_list (void)
 {
-	m_list_type = LINKED_LIST;
+	m_listType = LINKED_LIST;
 }
 void Simulator::set_binary_heap (void)
 {
-	m_list_type = BINARY_HEAP;
+	m_listType = BINARY_HEAP;
 }
 void Simulator::set_std_map (void)
 {
-	m_list_type = STD_MAP;
+	m_listType = STD_MAP;
 }
 void 
 Simulator::set_external (SchedulerFactory const*factory)
 {
 	assert (factory != 0);
-	m_sched_factory = factory;
-	m_list_type = EXTERNAL;
+	m_schedFactory = factory;
+	m_listType = EXTERNAL;
 }
 void Simulator::enable_log_to (char const *filename)
 {
@@ -271,7 +271,7 @@ Simulator::get_priv (void)
 {
 	if (m_priv == 0) {
 		Scheduler *events;
-		switch (m_list_type) {
+		switch (m_listType) {
 		case LINKED_LIST:
 			events = new SchedulerList ();
 			break;
@@ -282,7 +282,7 @@ Simulator::get_priv (void)
 			events = new SchedulerMap ();
 			break;
 		case EXTERNAL:
-			events = m_sched_factory->create ();
+			events = m_schedFactory->create ();
 		default: // not reached
 			events = 0;
 			assert (false); 
@@ -382,7 +382,7 @@ private:
 	bool m_a;
 	bool m_c;
 	bool m_d;
-	EventId m_id_c;
+	EventId m_idC;
 };
 
 SimulatorTests::SimulatorTests ()
@@ -403,7 +403,7 @@ SimulatorTests::b (int b)
 	} else {
 		m_b = true;
 	}
-	Simulator::remove (m_id_c);
+	Simulator::remove (m_idC);
 	Simulator::schedule (Time::rel_us (10), &SimulatorTests::d, this, 4);
 }
 void
@@ -430,7 +430,7 @@ SimulatorTests::run_tests (void)
 	m_d = false;
 	EventId a = Simulator::schedule (Time::abs_us (10), &SimulatorTests::a, this, 1);
 	EventId b = Simulator::schedule (Time::abs_us (11), &SimulatorTests::b, this, 2);
-	m_id_c = Simulator::schedule (Time::abs_us (12), &SimulatorTests::c, this, 3);
+	m_idC = Simulator::schedule (Time::abs_us (12), &SimulatorTests::c, this, 3);
 
 	Simulator::cancel (a);
 	Simulator::run ();
