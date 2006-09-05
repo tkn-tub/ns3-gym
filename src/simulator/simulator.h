@@ -52,7 +52,7 @@ public:
 	 *   - insert: O(n)
 	 *   - remove: O(1)
 	 */
-	static void set_linked_list (void);
+	static void setLinkedList (void);
 	/**
 	 * Force the use of an event scheduler based on a binary heap.
 	 * This method must be invoked before any other method exported
@@ -60,7 +60,7 @@ public:
 	 *   - insert: O(log(n))
 	 *   - remove: O(log(n))
 	 */
-	static void set_binary_heap (void);
+	static void setBinaryHeap (void);
 	/**
 	 * Force the use of an event scheduler based on a std::map.
 	 * This method must be invoked before any other method exported
@@ -68,14 +68,14 @@ public:
 	 *   - insert: O(log(n))
 	 *   - remove: O(log(n))
 	 */
-	static void set_std_map (void);
+	static void setStdMap (void);
 
 	/**
 	 * Force the use of a user-provided event scheduler.
 	 * This method must be invoked before any other method exported
 	 * by the Simulator class.
 	 */
-	static void set_external (SchedulerFactory const*factory);
+	static void setExternal (SchedulerFactory const*factory);
 
 	/**
 	 * Enable logging to the file identified by filename. If the file
@@ -90,10 +90,10 @@ public:
 	 * This method must be invoked before any call to Simulator::run
 	 * @param filename the name of the file to log to 
 	 */
-	static void enable_log_to (char const *filename);
+	static void enableLogTo (char const *filename);
 
 	/**
-	 * Every event scheduled by the Simulator::insert_at_destroy method is
+	 * Every event scheduled by the Simulator::insertAtDestroy method is
 	 * invoked. Then, we ensure that any memory allocated by the 
 	 * Simulator is freed.
 	 * This method is typically invoked at the end of a simulation
@@ -109,9 +109,9 @@ public:
 	 * If there any any events lefts to be scheduled, return
 	 * true. Return false otherwise.
 	 */
-	static bool is_finished (void);
+	static bool isFinished (void);
 	/**
-	 * If Simulator::is_finished returns true, the behavior of this
+	 * If Simulator::isFinished returns true, the behavior of this
 	 * method is undefined. Otherwise, it returns the microsecond-based
 	 * time of the next event expected to be scheduled.
 	 */
@@ -121,7 +121,7 @@ public:
 	 * Run the simulation until one of:
 	 *   - no events are present anymore
 	 *   - the user called Simulator::stop
-	 *   - the user called Simulator::stop_at_us and the
+	 *   - the user called Simulator::stopAtUs and the
 	 *     expiration time of the next event to be processed
 	 *     is greater than or equal to the stop time.
 	 */
@@ -138,7 +138,7 @@ public:
 	 * is greater than or equal to the stop time.
 	 * @param at the stop time.
 	 */
-	static void stop_at (Time time);
+	static void stopAt (Time time);
 
 	/**
 	 * Schedule an event to expire at time.
@@ -469,7 +469,7 @@ public:
 	/*
 	  XXX
 	 */
-	static bool is_expired (EventId id);
+	static bool isExpired (EventId id);
 	/**
 	 * Return the "current time".
 	 */
@@ -477,7 +477,7 @@ public:
 private:
 	Simulator ();
 	~Simulator ();
-	static SimulatorPrivate *get_priv (void);
+	static SimulatorPrivate *getPriv (void);
 	static EventId schedule (Time time, EventImpl *event);
 	static SimulatorPrivate *m_priv;
 	static SchedulerFactory const*m_schedFactory;

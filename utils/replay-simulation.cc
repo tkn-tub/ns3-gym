@@ -32,9 +32,9 @@ using namespace ns3;
 
 class LogReader {
 public:
-	void read_from_filename (char const *filename);
+	void readFrom_filename (char const *filename);
 	void run (void);
-	void print_stats (void);
+	void printStats (void);
 private:
 	struct Command {
 		enum {
@@ -57,10 +57,10 @@ private:
 				uint32_t m_evLoc; 
 				// time at which the event is supposed to expire
 				uint64_t m_evUs;
-			} insert_remove;
+			} insertRemove;
 		};
 	};
-	void execute_log_commands (uint32_t uid);
+	void executeLogCommands (uint32_t uid);
 
 	typedef std::deque<struct Command> Commands;
 	typedef std::deque<struct Command>::iterator CommandsI;
@@ -77,7 +77,7 @@ typedef std::vector<std::pair<uint32_t, uint32_t> > Removes;
 typedef std::vector<std::pair<uint32_t, uint32_t> >::iterator RemovesI;
 
 void
-LogReader::read_from_filename (char const *filename)
+LogReader::readFrom_filename (char const *filename)
 {
 	std::ifstream log;
 	std::cout << "read log..." << std::endl;
@@ -87,30 +87,30 @@ LogReader::read_from_filename (char const *filename)
 		std::string type;
 		log >> type;
 		if (type == "i") {
-			uint32_t now_uid, ev_uid;
-			uint64_t now_us, ev_us;
-			log >> now_uid >> now_us >> ev_uid >> ev_us;
+			uint32_t nowUid, evUid;
+			uint64_t nowUs, evUs;
+			log >> nowUid >> nowUs >> evUid >> evUs;
 			struct Command cmd;
 			cmd.m_type = Command::INSERT;
-			cmd.m_uid = now_uid;
-			cmd.insert.m_evUs = ev_us;
+			cmd.m_uid = nowUid;
+			cmd.insert.m_evUs = evUs;
 			m_commands.push_back (cmd);
 		} else if (type == "r") {
-			uint32_t now_uid, ev_uid;
-			uint64_t now_us, ev_us;
-			log >> now_uid >> now_us >> ev_uid >> ev_us;
+			uint32_t nowUid, evUid;
+			uint64_t nowUs, evUs;
+			log >> nowUid >> nowUs >> evUid >> evUs;
 			struct Command cmd;
 			cmd.m_type = Command::REMOVE;
-			cmd.m_uid = now_uid;
+			cmd.m_uid = nowUid;
 			m_commands.push_back (cmd);
-			removes.push_back (std::make_pair (now_uid, ev_uid));
+			removes.push_back (std::make_pair (nowUid, evUid));
 		} else if (type == "il") {
-			uint32_t now_uid, ev_uid;
-			uint64_t now_us, ev_us;
-			log >> now_uid >> now_us >> ev_uid >> ev_us;
+			uint32_t nowUid, evUid;
+			uint64_t nowUs, evUs;
+			log >> nowUid >> nowUs >> evUid >> evUs;
 			struct Command cmd;
 			cmd.m_type = Command::INSERT_LATER;
-			cmd.m_uid = now_uid;
+			cmd.m_uid = nowUid;
 			m_commands.push_back (cmd);
 		}
 	}
@@ -126,8 +126,8 @@ LogReader::read_from_filename (char const *filename)
 					uint32_t uid = i->m_uid;
 					i->m_type = Command::INSERT_REMOVE;
 					i->m_uid = uid;
-					i->insert_remove.m_evUs = us;
-					i->insert_remove.m_evLoc = j->first;
+					i->insertRemove.m_evUs = us;
+					i->insertRemove.m_evLoc = j->first;
 					break;
 				}
 			}
@@ -140,8 +140,8 @@ LogReader::read_from_filename (char const *filename)
 			uint32_t loc = 0;
 			for (CommandsI tmp = i; tmp != m_commands.end (); tmp++) {
 				if (tmp->m_type == Command::REMOVE &&
-				    tmp->m_uid == i->insert_remove.m_evLoc) {
-					i->insert_remove.m_evLoc = loc;
+				    tmp->m_uid == i->insertRemove.m_evLoc) {
+					i->insertRemove.m_evLoc = loc;
 					break;
 				}
 				loc++;
@@ -150,7 +150,7 @@ LogReader::read_from_filename (char const *filename)
 	}
 }
 void
-LogReader::execute_log_commands (uint32_t uid)
+LogReader::executeLogCommands (uint32_t uid)
 {
 	if (m_command == m_commands.end ()) {
 		return;
@@ -162,15 +162,15 @@ LogReader::execute_log_commands (uint32_t uid)
 		m_command++;
 		switch (cmd.m_type) {
 		case Command::INSERT:
-			//std::cout << "exec insert now=" << Simulator::now_us ()
+			//std::cout << "exec insert now=" << Simulator::nowUs ()
 			//<< ", time=" << cmd.insert.m_evUs << std::endl;
-			Simulator::schedule_abs_us (cmd.insert.m_evUs, 
-						 make_event (&LogReader::execute_log_commands, this, m_uid));
+			Simulator::scheduleAbsUs (cmd.insert.m_evUs, 
+						 makeEvent (&LogReader::executeLogCommands, this, m_uid));
 			m_uid++;
 			break;
 		case Command::INSERT_LATER:
 			//std::cout << "exec insert later" << std::endl;
-			Simulator::schedule_now (make_event (&LogReader::execute_log_commands, this, m_uid));
+			Simulator::scheduleNow (makeEvent (&LogReader::executeLogCommands, this, m_uid));
 			m_uid++;
 			break;
 		case Command::REMOVE: {
@@ -181,9 +181,9 @@ LogReader::execute_log_commands (uint32_t uid)
 		} break;
 		case Command::INSERT_REMOVE: {
 			//std::cout << "exec insert remove" << std::endl;
-			Event ev = make_event (&LogReader::execute_log_commands, this, m_uid);
-			Simulator::schedule_abs_us (cmd.insert_remove.m_evUs, ev);
-			m_removeEvents[cmd.insert_remove.m_evLoc] = ev;
+			Event ev = makeEvent (&LogReader::executeLogCommands, this, m_uid);
+			Simulator::scheduleAbsUs (cmd.insertRemove.m_evUs, ev);
+			m_removeEvents[cmd.insertRemove.m_evLoc] = ev;
 			m_uid++;
 		} break;
 		}
@@ -192,27 +192,27 @@ LogReader::execute_log_commands (uint32_t uid)
 }
 
 void
-LogReader::print_stats (void)
+LogReader::printStats (void)
 {
-	uint32_t n_inserts = 0;
-	uint32_t n_removes = 0;
+	uint32_t nInserts = 0;
+	uint32_t nRemoves = 0;
 	for (CommandsI i = m_commands.begin (); i != m_commands.end (); i++) {
 		switch (i->m_type) {
 		case Command::INSERT:
-			n_inserts++;
+			nInserts++;
 			break;
 		case Command::INSERT_LATER:
-			n_inserts++;
+			nInserts++;
 			break;
 		case Command::INSERT_REMOVE:
-			n_inserts++;
+			nInserts++;
 			break;
 		case Command::REMOVE:
-			n_removes++;
+			nRemoves++;
 			break;
 		}
 	}
-	std::cout << "inserts="<<n_inserts<<", removes="<<n_removes<<std::endl;
+	std::cout << "inserts="<<nInserts<<", removes="<<nRemoves<<std::endl;
 	std::cout << "run simulation..."<<std::endl;
 }
 
@@ -223,7 +223,7 @@ LogReader::run (void)
 	WallClockMs time;
 	time.start ();
 	m_command = m_commands.begin ();
-	execute_log_commands (m_uid);
+	executeLogCommands (m_uid);
 	Simulator::run ();
 	unsigned long long delta = time.end ();
 	double delay = ((double)delta)/1000;
@@ -237,18 +237,18 @@ int main (int argc, char *argv[])
 	uint32_t n = 1;
 	while (argc > 0) {
 		if (strcmp ("--list", argv[0]) == 0) {
-			Simulator::set_linked_list ();
+			Simulator::setLinkedList ();
 		} else if (strcmp ("--heap", argv[0]) == 0) {
-			Simulator::set_binary_heap ();
+			Simulator::setBinaryHeap ();
 		} else if (strcmp ("--map", argv[0]) == 0) {
-			Simulator::set_std_map ();
+			Simulator::setStdMap ();
 		} else if (strncmp ("--n=", argv[0], strlen("--n=")) == 0) {
 			n = atoi (argv[0]+strlen ("--n="));
 		} else if (strncmp ("--input=", argv[0],strlen ("--input=")) == 0) {
 			input = argv[0] + strlen ("--input=");
 		} else if (strncmp ("--log=", argv[0],strlen ("--log=")) == 0) {
 			char const *filename = argv[0] + strlen ("--log=");
-			Simulator::enable_log_to (filename);
+			Simulator::enableLogTo (filename);
 		}
 		argc--;
 		argv++;
@@ -258,7 +258,7 @@ int main (int argc, char *argv[])
 		return 1;
 	}
 	LogReader log;
-	log.read_from_filename (input);
+	log.readFrom_filename (input);
 	for (uint32_t i = 0; i < n; i++) {
 		log.run ();
 	}

@@ -40,12 +40,12 @@ EventImpl::invoke (void)
 	}
 }
 void 
-EventImpl::set_internal_iterator (void *tag)
+EventImpl::setInternalIterator (void *tag)
 {
 	m_internalIterator = tag;
 }
 void *
-EventImpl::get_internal_iterator (void) const
+EventImpl::getInternalIterator (void) const
 {
 	return m_internalIterator;
 }

@@ -31,8 +31,8 @@ public:
 	virtual ~EventImpl () = 0;
 	void invoke (void);
 	void cancel (void);
-	void set_internal_iterator (void *iterator);
-	void *get_internal_iterator (void) const;
+	void setInternalIterator (void *iterator);
+	void *getInternalIterator (void) const;
 protected:
 	virtual void notify (void) = 0;
 private:

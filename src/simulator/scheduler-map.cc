@@ -45,72 +45,72 @@ SchedulerMap::~SchedulerMap ()
 
 
 void 
-SchedulerMap::store_in_event (EventImpl *ev, EventMapI i) const
+SchedulerMap::storeInEvent (EventImpl *ev, EventMapI i) const
 {
 	void *tag;
 	memcpy (&(tag), &i, sizeof (tag));
-	ev->set_internal_iterator (tag);
+	ev->setInternalIterator (tag);
 }
 SchedulerMap::EventMapI
-SchedulerMap::get_from_event (EventImpl *ev) const
+SchedulerMap::getFrom_event (EventImpl *ev) const
 {
 	EventMapI i;
-	void *tag = ev->get_internal_iterator ();
+	void *tag = ev->getInternalIterator ();
 	memcpy (&i, &(tag), sizeof (i));
  	return i;
 }
 
 EventId
-SchedulerMap::real_insert (EventImpl *event, Scheduler::EventKey key)
+SchedulerMap::realInsert (EventImpl *event, Scheduler::EventKey key)
 {
 	std::pair<EventMapI,bool> result = m_list.insert (std::make_pair (key, event));
 	assert (result.second);
-	store_in_event (event, result.first);
+	storeInEvent (event, result.first);
 	return EventId (event, key.m_ns, key.m_uid);
 }
 
 bool
-SchedulerMap::real_is_empty (void) const
+SchedulerMap::realIsEmpty (void) const
 {
 	return m_list.empty ();
 }
 
 EventImpl *
-SchedulerMap::real_peek_next (void) const
+SchedulerMap::realPeekNext (void) const
 {
 	EventMapCI i = m_list.begin ();
 	assert (i != m_list.end ());
 	return (*i).second;
 }
 Scheduler::EventKey
-SchedulerMap::real_peek_next_key (void) const
+SchedulerMap::realPeekNextKey (void) const
 {
 	EventMapCI i = m_list.begin ();
 	assert (i != m_list.end ());
 	return (*i).first;
 }
 void
-SchedulerMap::real_remove_next (void)
+SchedulerMap::realRemoveNext (void)
 {
 	m_list.erase (m_list.begin ());
 }
 
 EventImpl *
-SchedulerMap::real_remove (EventId id, Scheduler::EventKey *key)
+SchedulerMap::realRemove (EventId id, Scheduler::EventKey *key)
 {
-	EventMapI i = get_from_event (id.get_event_impl ());
+	EventMapI i = getFrom_event (id.getEventImpl ());
 	*key = i->first;
 	m_list.erase (i);
 	return i->second;
 }
 
 bool
-SchedulerMap::real_is_valid (EventId id)
+SchedulerMap::realIsValid (EventId id)
 {
-	EventMapI i = get_from_event (id.get_event_impl ());
+	EventMapI i = getFrom_event (id.getEventImpl ());
 	Scheduler::EventKey key = i->first;
-	return (key.m_ns == id.get_ns () &&
-		key.m_uid == id.get_uid ());
+	return (key.m_ns == id.getNs () &&
+		key.m_uid == id.getUid ());
 }
 
 

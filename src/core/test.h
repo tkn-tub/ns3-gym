@@ -38,7 +38,7 @@ public:
 	Test (char const *name);
 	virtual ~Test ();
 
-	virtual bool run_tests (void) = 0;
+	virtual bool runTests (void) = 0;
 
 protected:
 	std::ostream &failure (void);
@@ -48,15 +48,15 @@ class TestManager {
 public:
 	// main methods the test runner is supposed to
 	// invoke.
-	static void enable_verbose (void);
-	static bool run_tests (void);
+	static void enableVerbose (void);
+	static bool runTests (void);
 
 	// helper methods
 	static void add (Test *test, char const *name);
 	static std::ostream &failure (void);
 private:
 	static TestManager *get (void);
-	bool real_run_tests (void);
+	bool realRunTests (void);
 
 	TestManager ();
 	~TestManager ();

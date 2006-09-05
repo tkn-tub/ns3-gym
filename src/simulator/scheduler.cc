@@ -49,41 +49,41 @@ Scheduler::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
 EventId 
 Scheduler::insert (EventImpl *event, struct EventKey key)
 {
-	return real_insert (event, key);
+	return realInsert (event, key);
 }
 bool 
-Scheduler::is_empty (void) const
+Scheduler::isEmpty (void) const
 {
-	return real_is_empty ();
+	return realIsEmpty ();
 }
 EventImpl *
-Scheduler::peek_next (void) const
+Scheduler::peekNext (void) const
 {
-	assert (!real_is_empty ());
-	return real_peek_next ();
+	assert (!realIsEmpty ());
+	return realPeekNext ();
 }
 Scheduler::EventKey 
-Scheduler::peek_next_key (void) const 
+Scheduler::peekNextKey (void) const 
 {
-	assert (!real_is_empty ());
-	return real_peek_next_key ();
+	assert (!realIsEmpty ());
+	return realPeekNextKey ();
 }
 void 
-Scheduler::remove_next (void)
+Scheduler::removeNext (void)
 {
-	assert (!real_is_empty ());
-	return real_remove_next ();
+	assert (!realIsEmpty ());
+	return realRemoveNext ();
 }
 EventImpl *
 Scheduler::remove (EventId id, EventKey *key)
 {
-	assert (!real_is_empty ());
-	return real_remove (id, key);
+	assert (!realIsEmpty ());
+	return realRemove (id, key);
 }
 bool 
-Scheduler::is_valid (EventId id)
+Scheduler::isValid (EventId id)
 {
-	return real_is_valid (id);
+	return realIsValid (id);
 }
 
 }; // namespace ns3

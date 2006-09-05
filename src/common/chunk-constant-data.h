@@ -35,9 +35,9 @@ public:
 
 private:
 	virtual void print (std::ostream *os) const;
-	virtual void add_to (Buffer *buffer) const;
-	virtual void peek_from (Buffer const *buffer);
-	virtual void remove_from (Buffer *buffer);
+	virtual void addTo (Buffer *buffer) const;
+	virtual void peekFrom (Buffer const *buffer);
+	virtual void removeFrom (Buffer *buffer);
 	uint32_t m_len;
 	uint8_t m_data;
 };

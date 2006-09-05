@@ -64,41 +64,41 @@ Time::ns (void) const
 }
 
 bool
-Time::is_destroy (void) const
+Time::isDestroy (void) const
 {
 	return m_isDestroy;
 }
 
 Time 
-Time::abs_s (double s)
+Time::absS (double s)
 {
 	int64_t ns = (int64_t)(s * 1000000000.0);
 	return Time (ns);
 }
 Time 
-Time::abs_us (uint64_t us)
+Time::absUs (uint64_t us)
 {
 	int64_t ns = us * 1000;
 	return Time (ns);
 }
 Time 
-Time::abs_ns (uint64_t ns)
+Time::absNs (uint64_t ns)
 {
 	return Time (ns);
 }
 Time 
-Time::rel_s (double s)
+Time::relS (double s)
 {
 	int64_t ns = (int64_t)(s * 1000000000.0);
 	return Time (Simulator::now ().ns () + ns);
 }
 Time 
-Time::rel_us (uint64_t us)
+Time::relUs (uint64_t us)
 {
 	return Time (Simulator::now ().ns () + us * 1000);
 }
 Time 
-Time::rel_ns (uint64_t ns)
+Time::relNs (uint64_t ns)
 {
 	return Time (Simulator::now ().ns () + ns);
 }

@@ -39,7 +39,7 @@ enum {
 PcapWriter::PcapWriter ()
 {
 	m_writer = 0;
-	m_writeCallback = make_callback (&PcapWriter::write_data, this);
+	m_writeCallback = makeCallback (&PcapWriter::writeData, this);
 }
 PcapWriter::~PcapWriter ()
 {
@@ -54,7 +54,7 @@ PcapWriter::open (char const *name)
 }
 
 void 
-PcapWriter::write_header_ethernet (void)
+PcapWriter::writeHeaderEthernet (void)
 {
 	write_32 (0xa1b2c3d4);
 	write_16 (2);
@@ -66,7 +66,7 @@ PcapWriter::write_header_ethernet (void)
 }
 
 void 
-PcapWriter::write_packet (Packet const packet)
+PcapWriter::writePacket (Packet const packet)
 {
 	if (m_writer != 0) {
 		uint64_t current = Simulator::now ().us ();
@@ -74,14 +74,14 @@ PcapWriter::write_packet (Packet const packet)
 		uint64_t us = current % 1000000;
 		write_32 (s & 0xffffffff);
 		write_32 (us & 0xffffffff);
-		write_32 (packet.get_size ());
-		write_32 (packet.get_size ());
+		write_32 (packet.getSize ());
+		write_32 (packet.getSize ());
 		packet.write (m_writeCallback);
 	}
 }
 
 void
-PcapWriter::write_data (uint8_t *buffer, uint32_t size)
+PcapWriter::writeData (uint8_t *buffer, uint32_t size)
 {
 	m_writer->write (buffer, size);
 }

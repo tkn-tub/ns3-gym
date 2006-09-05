@@ -39,13 +39,13 @@ public:
 
 	~FVariableTracerBase () {}
 
-	void set_callback(ChangeNotifyCallback callback) {
+	void setCallback(ChangeNotifyCallback callback) {
 		m_callback = callback;
 	}
 protected:
-	void notify (double old_val, double new_val) {
-		if (old_val != new_val && !m_callback.is_null ()) {
-			m_callback (old_val, new_val);
+	void notify (double oldVal, double newVal) {
+		if (oldVal != newVal && !m_callback.isNull ()) {
+			m_callback (oldVal, newVal);
 		}
 	}
 private:

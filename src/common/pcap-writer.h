@@ -53,15 +53,15 @@ public:
 	 * that the content of the file will Packets with
 	 * Ethernet/LLC/SNAP encapsulation.
 	 */
-	void write_header_ethernet (void);
+	void writeHeaderEthernet (void);
 
 	/**
 	 * \param packet packet to write to output file
 	 */
-	void write_packet (Packet const packet);
+	void writePacket (Packet const packet);
 
 private:
-	void write_data (uint8_t *buffer, uint32_t size);
+	void writeData (uint8_t *buffer, uint32_t size);
 	void write_32 (uint32_t data);
 	void write_16 (uint16_t data);
 	SystemFile *m_writer;

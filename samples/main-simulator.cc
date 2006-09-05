@@ -9,18 +9,18 @@ class MyModel {
 public:
 	void start (void);
 private:
-	void deal_with_event (double event_value);
+	void dealWithEvent (double eventValue);
 };
 
 void 
 MyModel::start (void)
 {
-	Simulator::schedule (Time::rel_s (10.0), 
-			     &MyModel::deal_with_event, 
+	Simulator::schedule (Time::relS (10.0), 
+			     &MyModel::dealWithEvent, 
 			     this, Simulator::now ().s ());
 }
 void
-MyModel::deal_with_event (double value)
+MyModel::dealWithEvent (double value)
 {
 	std::cout << "Member method received event at " << Simulator::now ().s () << 
 		"s started at " << value << "s" << std::endl;
@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
 {
 	MyModel model;
 
-	Simulator::schedule (Time::abs_s (10.0), &random_function, &model);
+	Simulator::schedule (Time::absS (10.0), &random_function, &model);
 
 	Simulator::run ();
 

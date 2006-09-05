@@ -32,18 +32,18 @@ uint32_t Buffer::m_maxTotalAddStart = 0;
 uint32_t Buffer::m_maxTotalAddEnd = 0;
 
 struct Buffer::BufferData *
-Buffer::allocate (uint32_t req_size, uint32_t req_start)
+Buffer::allocate (uint32_t reqSize, uint32_t reqStart)
 {
-	if (req_size == 0) {
-		req_size = 1;
+	if (reqSize == 0) {
+		reqSize = 1;
 	}
-	assert (req_size >= 1);
-	uint32_t size = req_size - 1 + sizeof (struct Buffer::BufferData);
+	assert (reqSize >= 1);
+	uint32_t size = reqSize - 1 + sizeof (struct Buffer::BufferData);
 	uint8_t *b = new uint8_t [size];
 	struct BufferData *data = reinterpret_cast<struct Buffer::BufferData*>(b);
-	data->m_size = req_size;
-	data->m_initialStart = req_start;
-	data->m_dirtyStart = req_start;
+	data->m_size = reqSize;
+	data->m_initialStart = reqStart;
+	data->m_dirtyStart = reqStart;
 	data->m_dirtySize = 0;
 	data->m_count = 1;
 	return data;
@@ -118,45 +118,45 @@ namespace ns3 {
 
 
 void 
-Buffer::add_at_start (uint32_t start)
+Buffer::addAtStart (uint32_t start)
 {
 	assert (m_start <= m_data->m_initialStart);
-	bool is_dirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
-	if (m_start >= start && !is_dirty) {
+	bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
+	if (m_start >= start && !isDirty) {
 		/* enough space in the buffer and not dirty. */
 		m_start -= start;
 		m_size += start;
-	} else if (m_size + start <= m_data->m_size && !is_dirty) {
+	} else if (m_size + start <= m_data->m_size && !isDirty) {
 		/* enough space but need to move data around to fit new data */
-                memmove (m_data->m_data + start, get_start (), m_size);
+                memmove (m_data->m_data + start, getStart (), m_size);
 		assert (start > m_start);
 		m_data->m_initialStart += start;
                 m_start = 0;
                 m_size += start;
 	} else if (m_start < start) {
 		/* not enough space in buffer */
-		uint32_t new_size = m_size + start;
-		struct Buffer::BufferData *new_data = Buffer::allocate (new_size, 0);
-		memcpy (new_data->m_data + start, get_start (), m_size);
-		new_data->m_initialStart = m_data->m_initialStart + start;
+		uint32_t newSize = m_size + start;
+		struct Buffer::BufferData *newData = Buffer::allocate (newSize, 0);
+		memcpy (newData->m_data + start, getStart (), m_size);
+		newData->m_initialStart = m_data->m_initialStart + start;
 		m_data->m_count--;
 		if (m_data->m_count == 0) {
 			Buffer::deallocate (m_data);
 		}
-		m_data = new_data;
+		m_data = newData;
 		m_start = 0;
-		m_size = new_size;
+		m_size = newSize;
 	} else {
 		/* enough space in the buffer but it is dirty ! */
-		assert (is_dirty);
-		struct Buffer::BufferData *new_data = Buffer::create ();
-		memcpy (new_data->m_data + m_start, get_start (), m_size);
-		new_data->m_initialStart = m_data->m_initialStart;
+		assert (isDirty);
+		struct Buffer::BufferData *newData = Buffer::create ();
+		memcpy (newData->m_data + m_start, getStart (), m_size);
+		newData->m_initialStart = m_data->m_initialStart;
 		m_data->m_count--;
 		if (m_data->m_count == 0) {
 			recycle (m_data);
 		}
-		m_data = new_data;
+		m_data = newData;
 		m_start -= start;
 		m_size += start;
 	} 
@@ -164,75 +164,75 @@ Buffer::add_at_start (uint32_t start)
 	m_data->m_dirtyStart = m_start;
 	m_data->m_dirtySize = m_size;
 	// update m_maxTotalAddStart
-	uint32_t added_at_start;
+	uint32_t addedAtStart;
 	if (m_data->m_initialStart > m_start) {
-		added_at_start = m_data->m_initialStart - m_start;
+		addedAtStart = m_data->m_initialStart - m_start;
 	} else {
-		added_at_start = 0;
+		addedAtStart = 0;
 	}
-	if (added_at_start > m_maxTotalAddStart) {
-		m_maxTotalAddStart = added_at_start;
+	if (addedAtStart > m_maxTotalAddStart) {
+		m_maxTotalAddStart = addedAtStart;
 	}
 	TRACE ("start add="<<start<<", start="<<m_start<<", size="<<m_size<<", zero="<<m_zeroAreaSize<<
 	       ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initialStart<<
 	       ", dirty start="<<m_data->m_dirtyStart<<", dirty size="<<m_data->m_dirtySize); 
 }
 void 
-Buffer::add_at_end (uint32_t end)
+Buffer::addAtEnd (uint32_t end)
 {
 	assert (m_start <= m_data->m_initialStart);
-	bool is_dirty = m_data->m_count > 1 &&
+	bool isDirty = m_data->m_count > 1 &&
 		m_start + m_size < m_data->m_dirtyStart + m_data->m_dirtySize;
-	if (m_start + m_size + end <= m_data->m_size && !is_dirty) {
+	if (m_start + m_size + end <= m_data->m_size && !isDirty) {
 		/* enough space in buffer and not dirty */
 		m_size += end;
-	} else if (m_size + end <= m_data->m_size && !is_dirty) {
+	} else if (m_size + end <= m_data->m_size && !isDirty) {
 		/* enough space but need to move data around to fit the extra data */
-                uint32_t new_start = m_data->m_size - (m_size + end);
-                memmove (m_data->m_data + new_start, get_start (), m_size);
-		assert (new_start < m_start);
-		m_data->m_initialStart -= m_start - new_start;
-                m_start = new_start;
+                uint32_t newStart = m_data->m_size - (m_size + end);
+                memmove (m_data->m_data + newStart, getStart (), m_size);
+		assert (newStart < m_start);
+		m_data->m_initialStart -= m_start - newStart;
+                m_start = newStart;
                 m_size += end;
 	} else if (m_start + m_size + end > m_data->m_size) {
 		/* not enough space in buffer */
-		uint32_t new_size = m_size + end;
-		struct Buffer::BufferData *new_data = Buffer::allocate (new_size, 0);
-		memcpy (new_data->m_data, get_start (), m_size);
-		new_data->m_initialStart = m_data->m_initialStart;
+		uint32_t newSize = m_size + end;
+		struct Buffer::BufferData *newData = Buffer::allocate (newSize, 0);
+		memcpy (newData->m_data, getStart (), m_size);
+		newData->m_initialStart = m_data->m_initialStart;
 		m_data->m_count--;
 		if (m_data->m_count == 0) {
 			Buffer::deallocate (m_data);
 		}
-		m_data = new_data;
-		m_size = new_size;
+		m_data = newData;
+		m_size = newSize;
 		m_start = 0;
 	} else {
 		/* enough space in the buffer but it is dirty ! */
-		assert (is_dirty);
-		struct Buffer::BufferData *new_data = Buffer::create ();
-		memcpy (new_data->m_data + m_start, get_start (), m_size);
-		new_data->m_initialStart = m_data->m_initialStart;
+		assert (isDirty);
+		struct Buffer::BufferData *newData = Buffer::create ();
+		memcpy (newData->m_data + m_start, getStart (), m_size);
+		newData->m_initialStart = m_data->m_initialStart;
 		m_data->m_count--;
 		if (m_data->m_count == 0) {
 			recycle (m_data);
 		}
-		m_data = new_data;
+		m_data = newData;
 		m_size += end;
 	} 
 	// update dirty area
 	m_data->m_dirtyStart = m_start;
 	m_data->m_dirtySize = m_size;
 	// update m_maxTotalAddEnd
-	uint32_t end_loc = m_start + m_size;
-	uint32_t added_at_end;
-	if (m_data->m_initialStart < end_loc) {
-		added_at_end = end_loc - m_data->m_initialStart;
+	uint32_t endLoc = m_start + m_size;
+	uint32_t addedAtEnd;
+	if (m_data->m_initialStart < endLoc) {
+		addedAtEnd = endLoc - m_data->m_initialStart;
 	} else {
-		added_at_end = 0;
+		addedAtEnd = 0;
 	}
-	if (added_at_end > m_maxTotalAddEnd) {
-		m_maxTotalAddEnd = added_at_end;
+	if (addedAtEnd > m_maxTotalAddEnd) {
+		m_maxTotalAddEnd = addedAtEnd;
 	}
 	TRACE ("end add="<<end<<", start="<<m_start<<", size="<<m_size<<", zero="<<m_zeroAreaSize<<
 	       ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initialStart<<
@@ -240,7 +240,7 @@ Buffer::add_at_end (uint32_t end)
 }
 
 void 
-Buffer::remove_at_start (uint32_t start)
+Buffer::removeAtStart (uint32_t start)
 {
 	if (m_zeroAreaSize == 0) {
 		if (m_size <= start) {
@@ -252,21 +252,21 @@ Buffer::remove_at_start (uint32_t start)
 		}
 	} else {
 		assert (m_data->m_initialStart >= m_start);
-		uint32_t zero_start = m_data->m_initialStart - m_start;
-		uint32_t zero_end = zero_start + m_zeroAreaSize;
-		uint32_t data_end = m_size + m_zeroAreaSize;
-		if (start <= zero_start) {
+		uint32_t zeroStart = m_data->m_initialStart - m_start;
+		uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
+		uint32_t dataEnd = m_size + m_zeroAreaSize;
+		if (start <= zeroStart) {
 			/* only remove start of buffer */
 			m_start += start;
 			m_size -= start;
-		} else if (start <= zero_end) {
+		} else if (start <= zeroEnd) {
 			/* remove start of buffer _and_ start of zero area */
-			m_start += zero_start;
-			uint32_t zero_delta = start - zero_start;
-			m_zeroAreaSize -= zero_delta;
-			assert (zero_delta <= start);
-			m_size -= zero_start;
-		} else if (start <= data_end) {
+			m_start += zeroStart;
+			uint32_t zeroDelta = start - zeroStart;
+			m_zeroAreaSize -= zeroDelta;
+			assert (zeroDelta <= start);
+			m_size -= zeroStart;
+		} else if (start <= dataEnd) {
 			/* remove start of buffer, complete zero area, and part
 			 * of end of buffer */
 			m_start += start - m_zeroAreaSize;
@@ -284,7 +284,7 @@ Buffer::remove_at_start (uint32_t start)
 	       ", dirty start="<<m_data->m_dirtyStart<<", dirty size="<<m_data->m_dirtySize); 
 }
 void 
-Buffer::remove_at_end (uint32_t end)
+Buffer::removeAtEnd (uint32_t end)
 {
 	if (m_zeroAreaSize == 0) {
 		if (m_size <= end) {
@@ -294,26 +294,26 @@ Buffer::remove_at_end (uint32_t end)
 		} 
 	} else {
 		assert (m_data->m_initialStart >= m_start);
-		uint32_t zero_start = m_data->m_initialStart - m_start;
-		uint32_t zero_end = zero_start + m_zeroAreaSize;
-		uint32_t data_end = m_size + m_zeroAreaSize;
-		assert (zero_start <= m_size);
-		assert (zero_end <= m_size + m_zeroAreaSize);
-		if (data_end <= end) {
+		uint32_t zeroStart = m_data->m_initialStart - m_start;
+		uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
+		uint32_t dataEnd = m_size + m_zeroAreaSize;
+		assert (zeroStart <= m_size);
+		assert (zeroEnd <= m_size + m_zeroAreaSize);
+		if (dataEnd <= end) {
 			/* remove all buffer */
 			m_zeroAreaSize = 0;
 			m_start += m_size;
 			m_size = 0;
-		} else if (data_end - zero_start <= end) {
+		} else if (dataEnd - zeroStart <= end) {
 			/* remove end of buffer, zero area, part of start of buffer */
 			assert (end >= m_zeroAreaSize);
 			m_size -= end - m_zeroAreaSize;
 			m_zeroAreaSize = 0;
-		} else if (data_end - zero_end <= end) {
+		} else if (dataEnd - zeroEnd <= end) {
 			/* remove end of buffer, part of zero area */
-			uint32_t zero_delta = end - (data_end - zero_end);
-			m_zeroAreaSize -= zero_delta;
-			m_size -= end - zero_delta;
+			uint32_t zeroDelta = end - (dataEnd - zeroEnd);
+			m_zeroAreaSize -= zeroDelta;
+			m_size -= end - zeroDelta;
 		} else {
 			/* remove part of end of buffer */
 			m_size -= end;
@@ -325,18 +325,18 @@ Buffer::remove_at_end (uint32_t end)
 }
 
 Buffer 
-Buffer::create_fragment (uint32_t start, uint32_t length) const
+Buffer::createFragment (uint32_t start, uint32_t length) const
 {
-	uint32_t zero_start = m_data->m_initialStart - m_start;
-	uint32_t zero_end = zero_start + m_zeroAreaSize;
+	uint32_t zeroStart = m_data->m_initialStart - m_start;
+	uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
 	if (m_zeroAreaSize != 0 &&
-	    start + length > zero_start &&
-	    start <= zero_end) {
+	    start + length > zeroStart &&
+	    start <= zeroEnd) {
 		transform_intoRealBuffer ();
 	}
 	Buffer tmp = *this;
-	tmp.remove_at_start (start);
-	tmp.remove_at_end (get_size () - (start + length));
+	tmp.removeAtStart (start);
+	tmp.removeAtEnd (getSize () - (start + length));
 	return tmp;
 }
 
@@ -347,23 +347,23 @@ Buffer::transform_intoRealBuffer (void) const
 		assert (m_data->m_initialStart >= m_start);
 		assert (m_size >= (m_data->m_initialStart - m_start));
 		Buffer tmp;
-		tmp.add_at_start (m_zeroAreaSize);
-		tmp.begin ().write_u8 (0, m_zeroAreaSize);
-		uint32_t data_start = m_data->m_initialStart - m_start;
-		tmp.add_at_start (data_start);
-		tmp.begin ().write (m_data->m_data+m_start, data_start);
-		uint32_t data_end = m_size - (m_data->m_initialStart - m_start);
-		tmp.add_at_end (data_end);
+		tmp.addAtStart (m_zeroAreaSize);
+		tmp.begin ().writeU8 (0, m_zeroAreaSize);
+		uint32_t dataStart = m_data->m_initialStart - m_start;
+		tmp.addAtStart (dataStart);
+		tmp.begin ().write (m_data->m_data+m_start, dataStart);
+		uint32_t dataEnd = m_size - (m_data->m_initialStart - m_start);
+		tmp.addAtEnd (dataEnd);
 		Buffer::Iterator i = tmp.end ();
-		i.prev (data_end);
-		i.write (m_data->m_data+m_data->m_initialStart,data_end);
+		i.prev (dataEnd);
+		i.write (m_data->m_data+m_data->m_initialStart,dataEnd);
 		*const_cast<Buffer *> (this) = tmp;
 	}
 }
 
 
 uint8_t *
-Buffer::peek_data (void) const
+Buffer::peekData (void) const
 {
 	transform_intoRealBuffer ();
 	return m_data->m_data + m_start;
@@ -384,9 +384,9 @@ namespace ns3 {
 
 class BufferTest: public Test {
 private:
-  bool ensure_written_bytes (Buffer b, uint32_t n, uint8_t array[]);
+  bool ensureWrittenBytes (Buffer b, uint32_t n, uint8_t array[]);
 public:
-  virtual bool run_tests (void);
+  virtual bool runTests (void);
   BufferTest ();
 };
 
@@ -395,12 +395,12 @@ BufferTest::BufferTest ()
 	: Test ("Buffer") {}
 
 bool
-BufferTest::ensure_written_bytes (Buffer b, uint32_t n, uint8_t array[])
+BufferTest::ensureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
 {
 	bool success = true;
 	uint8_t *expected = array;
 	uint8_t *got;
-	got = b.peek_data ();
+	got = b.peekData ();
 	for (uint32_t j = 0; j < n; j++) {
 		if (got[j] != expected[j]) {
 			success = false;
@@ -432,75 +432,75 @@ BufferTest::ensure_written_bytes (Buffer b, uint32_t n, uint8_t array[])
 #define ENSURE_WRITTEN_BYTES(buffer, n, ...) \
 { \
 	uint8_t bytes[] = {__VA_ARGS__}; \
-	if (!ensure_written_bytes (buffer, n , bytes)) { \
+	if (!ensureWrittenBytes (buffer, n , bytes)) { \
 		ok = false; \
 	} \
 }
 
 bool
-BufferTest::run_tests (void)
+BufferTest::runTests (void)
 {
 	bool ok = true;
 	Buffer buffer;
 	Buffer::Iterator i;
-	buffer.add_at_start (6);
+	buffer.addAtStart (6);
 	i = buffer.begin ();
-	i.write_u8 (0x66);
+	i.writeU8 (0x66);
 	ENSURE_WRITTEN_BYTES (buffer, 1, 0x66);
 	i = buffer.begin ();
-	i.write_u8 (0x67);
+	i.writeU8 (0x67);
 	ENSURE_WRITTEN_BYTES (buffer, 1, 0x67);
-	i.write_hton_u16 (0x6568);
+	i.writeHtonU16 (0x6568);
 	i = buffer.begin ();
 	ENSURE_WRITTEN_BYTES (buffer, 3, 0x67, 0x65, 0x68);
-	i.write_hton_u16 (0x6369);
+	i.writeHtonU16 (0x6369);
 	ENSURE_WRITTEN_BYTES (buffer, 3, 0x63, 0x69, 0x68);
-	i.write_hton_u32 (0xdeadbeaf);
+	i.writeHtonU32 (0xdeadbeaf);
 	ENSURE_WRITTEN_BYTES (buffer, 6, 0x63, 0x69, 0xde, 0xad, 0xbe, 0xaf);
-	buffer.add_at_start (2);
+	buffer.addAtStart (2);
 	i = buffer.begin ();
-	i.write_u16 (0);
+	i.writeU16 (0);
 	ENSURE_WRITTEN_BYTES (buffer, 8, 0, 0, 0x63, 0x69, 0xde, 0xad, 0xbe, 0xaf);
-	buffer.add_at_end (2);
+	buffer.addAtEnd (2);
 	i = buffer.begin ();
 	i.next (8);
-	i.write_u16 (0);
+	i.writeU16 (0);
 	ENSURE_WRITTEN_BYTES (buffer, 10, 0, 0, 0x63, 0x69, 0xde, 0xad, 0xbe, 0xaf, 0, 0);
-	buffer.remove_at_start (3);
+	buffer.removeAtStart (3);
 	i = buffer.begin ();
 	ENSURE_WRITTEN_BYTES (buffer, 7, 0x69, 0xde, 0xad, 0xbe, 0xaf, 0, 0);
-	buffer.remove_at_end (4);
+	buffer.removeAtEnd (4);
 	i = buffer.begin ();
 	ENSURE_WRITTEN_BYTES (buffer, 3, 0x69, 0xde, 0xad);
-	buffer.add_at_start (1);
+	buffer.addAtStart (1);
 	i = buffer.begin ();
-	i.write_u8 (0xff);
+	i.writeU8 (0xff);
 	ENSURE_WRITTEN_BYTES (buffer, 4, 0xff, 0x69, 0xde, 0xad);
-	buffer.add_at_end (1);
+	buffer.addAtEnd (1);
 	i = buffer.begin ();
 	i.next (4);
-	i.write_u8 (0xff);
+	i.writeU8 (0xff);
 	i.prev (2);
-	uint16_t saved = i.read_u16 ();
+	uint16_t saved = i.readU16 ();
 	i.prev (2);
-	i.write_hton_u16 (0xff00);
+	i.writeHtonU16 (0xff00);
 	i.prev (2);
-	if (i.read_ntoh_u16 () != 0xff00) {
+	if (i.readNtohU16 () != 0xff00) {
 		ok = false;
 	}
 	i.prev (2);
-	i.write_u16 (saved);
+	i.writeU16 (saved);
 	ENSURE_WRITTEN_BYTES (buffer, 5, 0xff, 0x69, 0xde, 0xad, 0xff);
 	Buffer o = buffer;
 	ENSURE_WRITTEN_BYTES (o, 5, 0xff, 0x69, 0xde, 0xad, 0xff);
-	o.add_at_start (1);
+	o.addAtStart (1);
 	i = o.begin ();
-	i.write_u8 (0xfe);
+	i.writeU8 (0xfe);
 	ENSURE_WRITTEN_BYTES (o, 6, 0xfe, 0xff, 0x69, 0xde, 0xad, 0xff);
-	buffer.add_at_start (2);
+	buffer.addAtStart (2);
 	i = buffer.begin ();
-	i.write_u8 (0xfd);
-	i.write_u8 (0xfd);
+	i.writeU8 (0xfd);
+	i.writeU8 (0xfd);
 	ENSURE_WRITTEN_BYTES (o, 6, 0xfe, 0xff, 0x69, 0xde, 0xad, 0xff);
 	ENSURE_WRITTEN_BYTES (buffer, 7, 0xfd, 0xfd, 0xff, 0x69, 0xde, 0xad, 0xff);
 
@@ -513,68 +513,68 @@ BufferTest::run_tests (void)
 	// test remove start.
 	buffer = Buffer (5);
 	ENSURE_WRITTEN_BYTES (buffer, 5, 0, 0, 0, 0, 0);
-	buffer.remove_at_start (1);
+	buffer.removeAtStart (1);
 	ENSURE_WRITTEN_BYTES (buffer, 4, 0, 0, 0, 0);
-	buffer.add_at_start (1);
-	buffer.begin ().write_u8 (0xff);
+	buffer.addAtStart (1);
+	buffer.begin ().writeU8 (0xff);
 	ENSURE_WRITTEN_BYTES (buffer, 5, 0xff, 0, 0, 0, 0);
-	buffer.remove_at_start(3);
+	buffer.removeAtStart(3);
 	ENSURE_WRITTEN_BYTES (buffer, 2, 0, 0);
-	buffer.add_at_start (4);
-	buffer.begin ().write_hton_u32 (0xdeadbeaf);
+	buffer.addAtStart (4);
+	buffer.begin ().writeHtonU32 (0xdeadbeaf);
 	ENSURE_WRITTEN_BYTES (buffer, 6,  0xde, 0xad, 0xbe, 0xaf, 0, 0);
-	buffer.remove_at_start (2);
+	buffer.removeAtStart (2);
 	ENSURE_WRITTEN_BYTES (buffer, 4,  0xbe, 0xaf, 0, 0);
-	buffer.add_at_end (4);
+	buffer.addAtEnd (4);
 	i = buffer.begin ();
 	i.next (4);
-	i.write_hton_u32 (0xdeadbeaf);
+	i.writeHtonU32 (0xdeadbeaf);
 	ENSURE_WRITTEN_BYTES (buffer, 8,  0xbe, 0xaf, 0, 0, 0xde, 0xad, 0xbe, 0xaf);
-	buffer.remove_at_start (5);
+	buffer.removeAtStart (5);
 	ENSURE_WRITTEN_BYTES (buffer, 3,  0xad, 0xbe, 0xaf);
 	// test remove end
 	buffer = Buffer (5);
 	ENSURE_WRITTEN_BYTES (buffer, 5, 0, 0, 0, 0, 0);
-	buffer.remove_at_end (1);
+	buffer.removeAtEnd (1);
 	ENSURE_WRITTEN_BYTES (buffer, 4, 0, 0, 0, 0);
-	buffer.add_at_end (2);
+	buffer.addAtEnd (2);
 	i = buffer.begin ();
 	i.next (4);
-	i.write_u8 (0xab);
-	i.write_u8 (0xac);
+	i.writeU8 (0xab);
+	i.writeU8 (0xac);
 	ENSURE_WRITTEN_BYTES (buffer, 6, 0, 0, 0, 0, 0xab, 0xac);
-	buffer.remove_at_end (1);
+	buffer.removeAtEnd (1);
 	ENSURE_WRITTEN_BYTES (buffer, 5, 0, 0, 0, 0, 0xab);
-	buffer.remove_at_end (3);
+	buffer.removeAtEnd (3);
 	ENSURE_WRITTEN_BYTES (buffer, 2, 0, 0);
-	buffer.add_at_end (6);
+	buffer.addAtEnd (6);
 	i = buffer.begin ();
 	i.next (2);
-	i.write_u8 (0xac);
-	i.write_u8 (0xad);
-	i.write_u8 (0xae);
-	i.write_u8 (0xaf);
-	i.write_u8 (0xba);
-	i.write_u8 (0xbb);
+	i.writeU8 (0xac);
+	i.writeU8 (0xad);
+	i.writeU8 (0xae);
+	i.writeU8 (0xaf);
+	i.writeU8 (0xba);
+	i.writeU8 (0xbb);
 	ENSURE_WRITTEN_BYTES (buffer, 8, 0, 0, 0xac, 0xad, 0xae, 0xaf, 0xba, 0xbb);
-	buffer.add_at_start (3);
+	buffer.addAtStart (3);
 	i = buffer.begin ();
-	i.write_u8 (0x30);
-	i.write_u8 (0x31);
-	i.write_u8 (0x32);
+	i.writeU8 (0x30);
+	i.writeU8 (0x31);
+	i.writeU8 (0x32);
 	ENSURE_WRITTEN_BYTES (buffer, 11, 0x30, 0x31, 0x32, 0, 0, 0xac, 0xad, 0xae, 0xaf, 0xba, 0xbb);
-	buffer.remove_at_end (9);
+	buffer.removeAtEnd (9);
 	ENSURE_WRITTEN_BYTES (buffer, 2, 0x30, 0x31);
 	buffer = Buffer (3);
-	buffer.add_at_end (2);
+	buffer.addAtEnd (2);
 	i = buffer.begin ();
 	i.next (3);
-	i.write_hton_u16 (0xabcd);
-	buffer.add_at_start (1);
-	buffer.begin ().write_u8 (0x21);
+	i.writeHtonU16 (0xabcd);
+	buffer.addAtStart (1);
+	buffer.begin ().writeU8 (0x21);
 	ENSURE_WRITTEN_BYTES (buffer, 6, 0x21, 0, 0, 0, 0xab, 0xcd);
-	buffer.remove_at_end (8);
-	if (buffer.get_size () != 0) {
+	buffer.removeAtEnd (8);
+	if (buffer.getSize () != 0) {
 		ok = false;
 	}
 	
@@ -586,7 +586,7 @@ BufferTest::run_tests (void)
 
 
 
-static BufferTest g_buffer_test;
+static BufferTest gBufferTest;
 
 }; // namespace ns3
 

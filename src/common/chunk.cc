@@ -35,19 +35,19 @@ Chunk::print (std::ostream &os) const
 void 
 Chunk::add (Buffer *buffer) const
 {
-	add_to (buffer);
+	addTo (buffer);
 }
 void 
 Chunk::peek (Buffer const *buffer)
 {
-	peek_from (buffer);
+	peekFrom (buffer);
 	m_mustPeekBeforeRemove = true;
 }
 void 
 Chunk::remove (Buffer *buffer)
 {
 	assert (m_mustPeekBeforeRemove);
-	remove_from (buffer);
+	removeFrom (buffer);
 	m_mustPeekBeforeRemove = false;
 }
 

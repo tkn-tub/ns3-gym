@@ -23,25 +23,25 @@
 
 namespace ns3 {
 
-TagsPrettyPrinterRegistry::PrettyPrinters TagsPrettyPrinterRegistry::g_pretty_printers;
+TagsPrettyPrinterRegistry::PrettyPrinters TagsPrettyPrinterRegistry::gPrettyPrinters;
 
 void 
 TagsPrettyPrinterRegistry::record (uint32_t uid, void (*cb) (uint8_t [Tags::SIZE], std::ostream &))
 {
-	for (PrettyPrintersI i = g_pretty_printers.begin (); 
-	     i != g_pretty_printers.end (); i++) {
+	for (PrettyPrintersI i = gPrettyPrinters.begin (); 
+	     i != gPrettyPrinters.end (); i++) {
 		if (i->first == uid) {
 			i->second = cb;
 			return;
 		}
 	}
-	g_pretty_printers.push_back (std::make_pair (uid, cb));
+	gPrettyPrinters.push_back (std::make_pair (uid, cb));
 }
 void 
-TagsPrettyPrinterRegistry::pretty_print (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os)
+TagsPrettyPrinterRegistry::prettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os)
 {
-	for (PrettyPrintersI i = g_pretty_printers.begin (); 
-	     i != g_pretty_printers.end (); i++) {
+	for (PrettyPrintersI i = gPrettyPrinters.begin (); 
+	     i != gPrettyPrinters.end (); i++) {
 		if (i->first == uid) {
 			if (i->second == 0) {
 				os << "tag uid="<<uid<<" null pretty printer."<<std::endl;
@@ -67,17 +67,17 @@ Tags::UidFactory::create (void)
 
 #ifdef USE_FREE_LIST
 
-struct Tags::TagData *Tags::g_free = 0;
-uint32_t Tags::g_n_free = 0;
+struct Tags::TagData *Tags::gFree = 0;
+uint32_t Tags::gN_free = 0;
 
 struct Tags::TagData *
-Tags::alloc_data (void)
+Tags::allocData (void)
 {
 	struct Tags::TagData *retval;
-	if (g_free != 0) {
-		retval = g_free;
-		g_free = g_free->m_next;
-		g_n_free--;
+	if (gFree != 0) {
+		retval = gFree;
+		gFree = gFree->m_next;
+		gN_free--;
 	} else {
 		retval = new struct Tags::TagData ();
 	}
@@ -85,19 +85,19 @@ Tags::alloc_data (void)
 }
 
 void
-Tags::free_data (struct TagData *data)
+Tags::freeData (struct TagData *data)
 {
-	if (g_n_free > 1000) {
+	if (gN_free > 1000) {
 		delete data;
 		return;
 	}
-	g_n_free++;
-	data->m_next = g_free;
-	g_free = data;
+	gN_free++;
+	data->m_next = gFree;
+	gFree = data;
 }
 #else
 struct Tags::TagData *
-Tags::alloc_data (void)
+Tags::allocData (void)
 {
 	struct Tags::TagData *retval;
 	retval = new struct Tags::TagData ();
@@ -105,7 +105,7 @@ Tags::alloc_data (void)
 }
 
 void
-Tags::free_data (struct TagData *data)
+Tags::freeData (struct TagData *data)
 {
 	delete data;
 }
@@ -124,7 +124,7 @@ Tags::remove (uint32_t id)
 		return false;
 	}
 	struct TagData *start = 0;
-	struct TagData **prev_next = &start;
+	struct TagData **prevNext = &start;
 	for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
 		if (cur->m_id == id) {
 			/**
@@ -135,16 +135,16 @@ Tags::remove (uint32_t id)
 			 */
 			continue;
 		}
-		struct TagData *copy = alloc_data ();
+		struct TagData *copy = allocData ();
 		copy->m_id = cur->m_id;
 		copy->m_count = 1;
 		copy->m_next = 0;
 		memcpy (copy->m_data, cur->m_data, Tags::SIZE);
-		*prev_next = copy;
-		prev_next = &copy->m_next;
+		*prevNext = copy;
+		prevNext = &copy->m_next;
 	}
-	*prev_next = 0;
-	remove_all ();
+	*prevNext = 0;
+	removeAll ();
 	m_next = start;
 	return true;
 }
@@ -155,21 +155,21 @@ Tags::update (uint8_t const*buffer, uint32_t id)
 	if (!remove (id)) {
 		return false;
 	}
-	struct TagData *new_start = alloc_data ();
-	new_start->m_count = 1;
-	new_start->m_next = 0;
-	new_start->m_id = id;
-	memcpy (new_start->m_data, buffer, Tags::SIZE);
-	new_start->m_next = m_next;
-	m_next = new_start;
+	struct TagData *newStart = allocData ();
+	newStart->m_count = 1;
+	newStart->m_next = 0;
+	newStart->m_id = id;
+	memcpy (newStart->m_data, buffer, Tags::SIZE);
+	newStart->m_next = m_next;
+	m_next = newStart;
 	return true;
 }
 
 void 
-Tags::pretty_print (std::ostream &os)
+Tags::prettyPrint (std::ostream &os)
 {
 	for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
-		TagsPrettyPrinterRegistry::pretty_print (cur->m_id, cur->m_data, os);
+		TagsPrettyPrinterRegistry::prettyPrint (cur->m_id, cur->m_data, os);
 	}
 }
 
@@ -188,42 +188,42 @@ class TagsTest : Test {
 public:
 	TagsTest ();
 	virtual ~TagsTest ();
-	virtual bool run_tests (void);
+	virtual bool runTests (void);
 };
 
-struct my_tag_a {
+struct myTagA {
 	uint8_t a;
 };
-struct my_tag_b {
+struct myTagB {
 	uint32_t b;
 };
-struct my_tag_c {
+struct myTagC {
 	uint8_t c [Tags::SIZE];
 };
-struct my_invalid_tag {
+struct myInvalidTag {
 	uint8_t invalid [Tags::SIZE+1];
 };
 
 static void 
-my_tag_a_pretty_printer_cb (struct my_tag_a *a, std::ostream &os)
+myTagAPrettyPrinterCb (struct myTagA *a, std::ostream &os)
 {
-	os << "struct my_tag_a, a="<<(uint32_t)a->a<<std::endl;
+	os << "struct myTagA, a="<<(uint32_t)a->a<<std::endl;
 }
 static void 
-my_tag_b_pretty_printer_cb (struct my_tag_b *b, std::ostream &os)
+myTagBPrettyPrinterCb (struct myTagB *b, std::ostream &os)
 {
-	os << "struct my_tag_b, b="<<b->b<<std::endl;
+	os << "struct myTagB, b="<<b->b<<std::endl;
 }
 static void 
-my_tag_c_pretty_printer_cb (struct my_tag_c *c, std::ostream &os)
+myTagCPrettyPrinterCb (struct myTagC *c, std::ostream &os)
 {
-	os << "struct my_tag_c, c="<<(uint32_t)c->c[0]<<std::endl;
+	os << "struct myTagC, c="<<(uint32_t)c->c[0]<<std::endl;
 }
 
 
-static TagPrettyPrinter<struct my_tag_a> g_my_tag_a_pretty_printer (&my_tag_a_pretty_printer_cb);
-static TagPrettyPrinter<struct my_tag_b> g_my_tag_b_pretty_printer (&my_tag_b_pretty_printer_cb);
-static TagPrettyPrinter<struct my_tag_c> g_my_tag_c_pretty_printer (&my_tag_c_pretty_printer_cb);
+static TagPrettyPrinter<struct myTagA> gMyTagAPrettyPrinter (&myTagAPrettyPrinterCb);
+static TagPrettyPrinter<struct myTagB> gMyTagBPrettyPrinter (&myTagBPrettyPrinterCb);
+static TagPrettyPrinter<struct myTagC> gMyTagCPrettyPrinter (&myTagCPrettyPrinterCb);
 
 
 TagsTest::TagsTest ()
@@ -233,13 +233,13 @@ TagsTest::~TagsTest ()
 {}
 
 bool 
-TagsTest::run_tests (void)
+TagsTest::runTests (void)
 {
 	bool ok = true;
 
 	// build initial tag.
 	Tags tags;
-	struct my_tag_a a;
+	struct myTagA a;
 	a.a = 10;
 	tags.add (&a);
 	a.a = 0;
@@ -247,8 +247,8 @@ TagsTest::run_tests (void)
 	if (a.a != 10) {
 		ok = false;
 	}
-	//tags.pretty_print (std::cout);
-	struct my_tag_b b;
+	//tags.prettyPrint (std::cout);
+	struct myTagB b;
 	b.b = 0xff;
 	tags.add (&b);
 	b.b = 0;
@@ -256,43 +256,43 @@ TagsTest::run_tests (void)
 	if (b.b != 0xff) {
 		ok = false;
 	}
-	//tags.pretty_print (std::cout);
+	//tags.prettyPrint (std::cout);
 
 	// make sure copy contains copy.
 	Tags other = tags;
-	//other.pretty_print (std::cout);
-	//tags.pretty_print (std::cout);
-	struct my_tag_a o_a;
-	o_a.a = 0;
-	other.peek (&o_a);
-	if (o_a.a != 10) {
+	//other.prettyPrint (std::cout);
+	//tags.prettyPrint (std::cout);
+	struct myTagA oA;
+	oA.a = 0;
+	other.peek (&oA);
+	if (oA.a != 10) {
 		ok = false;
 	}
-	struct my_tag_b o_b;
-	other.peek (&o_b);
-	if (o_b.b != 0xff) {
+	struct myTagB oB;
+	other.peek (&oB);
+	if (oB.b != 0xff) {
 		ok = false;
 	}
 	// remove data.
-	other.remove (&o_a);
-	if (other.peek (&o_a)) {
+	other.remove (&oA);
+	if (other.peek (&oA)) {
 		ok = false;
 	}
-	//other.pretty_print (std::cout);
-	if (!tags.peek (&o_a)) {
+	//other.prettyPrint (std::cout);
+	if (!tags.peek (&oA)) {
 		ok = false;
 	}
-	other.remove (&o_b);
-	if (other.peek (&o_b)) {
+	other.remove (&oB);
+	if (other.peek (&oB)) {
 		ok = false;
 	}
-	if (!tags.peek (&o_b)) {
+	if (!tags.peek (&oB)) {
 		ok = false;
 	}
 
 	other = tags;
 	Tags another = other;
-	struct my_tag_c c;
+	struct myTagC c;
 	c.c[0] = 0x66;
 	another.add (&c);
 	c.c[0] = 0;
@@ -305,15 +305,15 @@ TagsTest::run_tests (void)
 	}
 
 	other = other;
-	//other.pretty_print (std::cout);
+	//other.prettyPrint (std::cout);
 
-	//struct my_invalid_tag invalid;
+	//struct myInvalidTag invalid;
 	//tags.add (&invalid);
 
 	return ok;
 }
 
-static TagsTest g_tags_test;
+static TagsTest gTagsTest;
 
 
 }; // namespace ns3

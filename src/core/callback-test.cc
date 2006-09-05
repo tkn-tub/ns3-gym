@@ -27,23 +27,23 @@
 
 namespace ns3 {
 
-static bool g_test5 = false;
-static bool g_test6 = false;
-static bool g_test7 = false;
+static bool gTest5 = false;
+static bool gTest6 = false;
+static bool gTest7 = false;
 
 void test5 (void)
 {
-	g_test5 = true;
+	gTest5 = true;
 }
 
 void test6 (int)
 {
-	g_test6 = true;
+	gTest6 = true;
 }
 
 int test7 (int a)
 {
-	g_test7 = true;
+	gTest7 = true;
 	return a;
 }
 
@@ -55,9 +55,9 @@ private:
 	bool m_test4;
 public:
 	CallbackTest ();
-	virtual bool run_tests (void);
+	virtual bool runTests (void);
 	void reset (void);
-	bool is_wrong (void);
+	bool isWrong (void);
 	void test1 (void);
 	int test2 (void);
 	void test3 (double a);
@@ -101,15 +101,15 @@ CallbackTest::test8 (Callback<void,int> callback)
 	callback (3);
 }
 bool
-CallbackTest::is_wrong (void)
+CallbackTest::isWrong (void)
 {
 	if (!m_test1 ||
 	    !m_test2 ||
 	    !m_test3 ||
 	    !m_test4 ||
-	    !g_test5 ||
-	    !g_test6 ||
-	    !g_test7) {
+	    !gTest5 ||
+	    !gTest6 ||
+	    !gTest7) {
 		return true;
 	}
 	return false;
@@ -122,14 +122,14 @@ CallbackTest::reset (void)
 	m_test2 = false;
 	m_test3 = false;
 	m_test4 = false;
-	g_test5 = false;
-	g_test6 = false;
-	g_test7 = false;
+	gTest5 = false;
+	gTest6 = false;
+	gTest7 = false;
 }
 
   
 bool 
-CallbackTest::run_tests (void)
+CallbackTest::runTests (void)
 {
 	bool ok = true;
 
@@ -158,19 +158,19 @@ CallbackTest::run_tests (void)
 	f0 (1);
 	g0 (1);
 
-	if (is_wrong ()) {
+	if (isWrong ()) {
 		ok = false;
 	}
 
 	reset ();
 
-	A a1 = ns3::make_callback (&CallbackTest::test1, this);
-	B b1 = ns3::make_callback (&CallbackTest::test2, this);
-	C c1 = ns3::make_callback (&CallbackTest::test3, this);
-	D d1 = ns3::make_callback (&CallbackTest::test4, this);
-	E e1 = ns3::make_callback (&test5);
-	F f1 = ns3::make_callback (&test6);
-	G g1 = ns3::make_callback (&test7);
+	A a1 = ns3::makeCallback (&CallbackTest::test1, this);
+	B b1 = ns3::makeCallback (&CallbackTest::test2, this);
+	C c1 = ns3::makeCallback (&CallbackTest::test3, this);
+	D d1 = ns3::makeCallback (&CallbackTest::test4, this);
+	E e1 = ns3::makeCallback (&test5);
+	F f1 = ns3::makeCallback (&test6);
+	G g1 = ns3::makeCallback (&test7);
 	
 	a1 ();
 	b1 ();
@@ -184,13 +184,13 @@ CallbackTest::run_tests (void)
 
 	Callback<void, int64_t,int64_t> a2;
 
-	if (is_wrong ()) {
+	if (isWrong ()) {
 		ok = false;
 	}
 	return ok;
 }
 
-static CallbackTest g_callback_test;
+static CallbackTest gCallbackTest;
 
 }; // namespace
 

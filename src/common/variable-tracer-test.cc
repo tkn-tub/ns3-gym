@@ -29,24 +29,24 @@ namespace ns3 {
 
 class Foo {
 public:
-	void notify (uint64_t old_val, uint64_t new_val) {}
+	void notify (uint64_t oldVal, uint64_t newVal) {}
 };
 
 class VariableTracerTest: public Test {
 public:
 	VariableTracerTest ();
-	void run_unsigned_tests (void);
-	void run_signed_unsigned_tests (void);
-	virtual bool run_tests (void);
+	void runUnsignedTests (void);
+	void runSignedUnsignedTests (void);
+	virtual bool runTests (void);
 };
 void
-VariableTracerTest::run_unsigned_tests (void)
+VariableTracerTest::runUnsignedTests (void)
 {
 	UiVariableTracer<uint32_t> var, ovar, tmp;
 	uint32_t utmp;
 	Foo *foo = new Foo ();
 	
-	var.set_callback (make_callback (&Foo::notify, foo));
+	var.setCallback (makeCallback (&Foo::notify, foo));
 
 	var = 10;
 	ovar = var;
@@ -198,7 +198,7 @@ VariableTracerTest::run_unsigned_tests (void)
 }
 
 void
-VariableTracerTest::run_signed_unsigned_tests (void)
+VariableTracerTest::runSignedUnsignedTests (void)
 {
 	unsigned short utmp = 10;
 	unsigned int uitmp = 7;
@@ -234,10 +234,10 @@ VariableTracerTest::run_signed_unsigned_tests (void)
 }
 
 bool 
-VariableTracerTest::run_tests (void)
+VariableTracerTest::runTests (void)
 {
-	run_unsigned_tests ();
-	run_signed_unsigned_tests ();
+	runUnsignedTests ();
+	runSignedUnsignedTests ();
 
 	return true;
 }
@@ -245,7 +245,7 @@ VariableTracerTest::run_tests (void)
 VariableTracerTest::VariableTracerTest ()
 	: Test ("VariableTracer") {}
 
-static VariableTracerTest g_variable_tracer_test;
+static VariableTracerTest gVariableTracerTest;
 
 }; // namespace ns3
 

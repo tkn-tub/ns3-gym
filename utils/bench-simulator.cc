@@ -28,12 +28,12 @@
 using namespace ns3;
 
 
-bool g_debug = false;
+bool gDebug = false;
 
 class Bench {
 public:
-	void read_distribution (std::istream &istream);
-	void set_total (uint32_t total);
+	void readDistribution (std::istream &istream);
+	void setTotal (uint32_t total);
 	void bench (void);
 private:
 	void cb (void);
@@ -44,13 +44,13 @@ private:
 };
 
 void 
-Bench::set_total (uint32_t total)
+Bench::setTotal (uint32_t total)
 {
 	m_total = total;
 }
 
 void
-Bench::read_distribution (std::istream &input)
+Bench::readDistribution (std::istream &input)
 {
 	double data;
 	while (!input.eof ()) {
@@ -73,7 +73,7 @@ Bench::bench (void)
 	time.start ();
 	for (std::vector<uint64_t>::const_iterator i = m_distribution.begin ();
 	     i != m_distribution.end (); i++) {
-		Simulator::schedule (Time::abs_ns (*i), &Bench::cb, this);
+		Simulator::schedule (Time::absNs (*i), &Bench::cb, this);
 	}
 	init = time.end ();
 
@@ -102,10 +102,10 @@ Bench::cb (void)
 	if (m_current == m_distribution.end ()) {
 		m_current = m_distribution.begin ();
 	}
-	if (g_debug) {
+	if (gDebug) {
 		std::cerr << "event at " << Simulator::now ().s () << "s" << std::endl;
 	}
-	Simulator::schedule (Time::abs_ns (*m_current), &Bench::cb, this);
+	Simulator::schedule (Time::absNs (*m_current), &Bench::cb, this);
 	m_current++;
 	m_n++;
 }
@@ -123,23 +123,23 @@ int main (int argc, char *argv[])
 	}
 	while (argc > 0) {
 		if (strcmp ("--list", argv[0]) == 0) {
-			Simulator::set_linked_list ();
+			Simulator::setLinkedList ();
 		} else if (strcmp ("--heap", argv[0]) == 0) {
-			Simulator::set_binary_heap ();
+			Simulator::setBinaryHeap ();
 		} else if (strcmp ("--map", argv[0]) == 0) {
-			Simulator::set_std_map ();
+			Simulator::setStdMap ();
 		} else if (strcmp ("--debug", argv[0]) == 0) {
-			g_debug = true;
+			gDebug = true;
 		} else if (strncmp ("--log=", argv[0],strlen ("--log=")) == 0) {
 			char const *filename = argv[0] + strlen ("--log=");
-			Simulator::enable_log_to (filename);
+			Simulator::enableLogTo (filename);
 		}
 		argc--;
 		argv++;
 	}
 	Bench *bench = new Bench ();
-	bench->read_distribution (*input);
-	bench->set_total (20000);
+	bench->readDistribution (*input);
+	bench->setTotal (20000);
 	bench->bench ();
 
 	return 0;

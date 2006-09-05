@@ -51,7 +51,7 @@ TestManager::add (Test *test, char const *name)
 	get ()->m_tests.push_back (std::make_pair (test, new std::string (name)));
 }
 void
-TestManager::enable_verbose (void)
+TestManager::enableVerbose (void)
 {
 	get ()->m_verbose = true;
 }
@@ -61,31 +61,31 @@ TestManager::failure (void)
 	return std::cerr;
 }
 bool 
-TestManager::run_tests (void)
+TestManager::runTests (void)
 {
-	return get ()->real_run_tests ();
+	return get ()->realRunTests ();
 }
 bool 
-TestManager::real_run_tests (void)
+TestManager::realRunTests (void)
 {
-	bool is_success = true;
+	bool isSuccess = true;
 	for (TestsCI i = m_tests.begin (); i != m_tests.end (); i++) {
-		std::string *test_name = (*i).second;
-		if (!(*i).first->run_tests ()) {
-			is_success = false;
+		std::string *testName = (*i).second;
+		if (!(*i).first->runTests ()) {
+			isSuccess = false;
 			if (m_verbose) {
-				std::cerr << "FAIL " << *test_name << std::endl;
+				std::cerr << "FAIL " << *testName << std::endl;
 			}
 		} else {
 			if (m_verbose) {
-				std::cerr << "PASS "<<*test_name << std::endl;
+				std::cerr << "PASS "<<*testName << std::endl;
 			}
 		}
 	}
-	if (!is_success) {
+	if (!isSuccess) {
 		std::cerr << "FAIL" << std::endl;
 	}
-	return is_success;
+	return isSuccess;
 }
 
 Test::Test (char const *name)

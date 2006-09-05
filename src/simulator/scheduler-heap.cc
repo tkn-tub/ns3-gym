@@ -56,22 +56,22 @@ SchedulerHeap::SchedulerHeap ()
 	// we purposedly waste an item at the start of
 	// the array to make sure the indexes in the
 	// array start at one.
-	Scheduler::EventKey empty_key = {0,0};
-	m_heap.push_back (std::make_pair (static_cast<EventImpl *>(0), empty_key));
+	Scheduler::EventKey emptyKey = {0,0};
+	m_heap.push_back (std::make_pair (static_cast<EventImpl *>(0), emptyKey));
 }
 
 SchedulerHeap::~SchedulerHeap ()
 {}
 
 void
-SchedulerHeap::store_in_event (EventImpl *ev, uint32_t index) const
+SchedulerHeap::storeInEvent (EventImpl *ev, uint32_t index) const
 {
-	ev->set_internal_iterator ((void *)index);
+	ev->setInternalIterator ((void *)index);
 }
 uint32_t
-SchedulerHeap::get_from_event (EventImpl *ev) const
+SchedulerHeap::getFrom_event (EventImpl *ev) const
 {
-       return (uint32_t)ev->get_internal_iterator ();
+       return (uint32_t)ev->getInternalIterator ();
 }
 uint32_t 
 SchedulerHeap::parent (uint32_t id) const
@@ -84,12 +84,12 @@ SchedulerHeap::sibling (uint32_t id) const
 	return id + 1;
 }
 uint32_t 
-SchedulerHeap::left_child (uint32_t id) const
+SchedulerHeap::leftChild (uint32_t id) const
 {
 	return id * 2;
 }
 uint32_t 
-SchedulerHeap::right_child (uint32_t id) const
+SchedulerHeap::rightChild (uint32_t id) const
 {
 	return id * 2 + 1;
 }
@@ -101,7 +101,7 @@ SchedulerHeap::root (void) const
 }
 
 bool
-SchedulerHeap::is_root (uint32_t id) const
+SchedulerHeap::isRoot (uint32_t id) const
 {
 	return (id == root ())?true:false;
 }
@@ -114,7 +114,7 @@ SchedulerHeap::last (void) const
 
 
 bool
-SchedulerHeap::is_bottom (uint32_t id) const
+SchedulerHeap::isBottom (uint32_t id) const
 {
 	return (id >= m_heap.size ())?true:false;
 }
@@ -127,12 +127,12 @@ SchedulerHeap::exch (uint32_t a, uint32_t b)
 	std::pair<EventImpl*, Scheduler::EventKey> tmp (m_heap[a]);
 	m_heap[a] = m_heap[b];
 	m_heap[b] = tmp;
-	store_in_event (m_heap[a].first, a);
-	store_in_event (m_heap[b].first, b);
+	storeInEvent (m_heap[a].first, a);
+	storeInEvent (m_heap[b].first, b);
 }
 
 bool
-SchedulerHeap::is_less (uint32_t a, uint32_t b)
+SchedulerHeap::isLess (uint32_t a, uint32_t b)
 {
 	Scheduler::EventKeyCompare compare;
 	return compare (m_heap[a].second, m_heap[b].second);
@@ -141,11 +141,11 @@ SchedulerHeap::is_less (uint32_t a, uint32_t b)
 uint32_t 
 SchedulerHeap::smallest (uint32_t a, uint32_t b)
 {
-	return is_less (a,b)?a:b;
+	return isLess (a,b)?a:b;
 }
 
 bool
-SchedulerHeap::real_is_empty (void) const
+SchedulerHeap::realIsEmpty (void) const
 {
 	return (m_heap.size () == 1)?true:false;
 }
@@ -154,37 +154,37 @@ void
 SchedulerHeap::bottom_up (void)
 {
 	uint32_t index = last ();
-	while (!is_root (index) && 
-	       is_less (index, parent (index))) { 
+	while (!isRoot (index) && 
+	       isLess (index, parent (index))) { 
 		exch(index, parent (index)); 
 		index = parent (index); 
 	}
 }
 
 void
-SchedulerHeap::top_down (void)
+SchedulerHeap::topDown (void)
 {
 	uint32_t index = root ();
-	uint32_t right = right_child (index);
-	while (!is_bottom (right)) {
-		uint32_t left = left_child (index);
+	uint32_t right = rightChild (index);
+	while (!isBottom (right)) {
+		uint32_t left = leftChild (index);
 		uint32_t tmp = smallest (left, right);
-		if (is_less (index, tmp)) {
+		if (isLess (index, tmp)) {
 			return;
 		}
 		exch (index, tmp);
 		index = tmp;
-		right = right_child (index);
+		right = rightChild (index);
 	}
-	if (is_bottom (index)) {
+	if (isBottom (index)) {
 		return;
 	}
-	assert (!is_bottom (index));
-	uint32_t left = left_child (index);
-	if (is_bottom (left)) {
+	assert (!isBottom (index));
+	uint32_t left = leftChild (index);
+	if (isBottom (left)) {
 		return;
 	}
-	if (is_less (index, left)) {
+	if (isLess (index, left)) {
 		return;
 	}
 	exch (index, left);
@@ -192,52 +192,52 @@ SchedulerHeap::top_down (void)
 
 
 EventId
-SchedulerHeap::real_insert (EventImpl *event, Scheduler::EventKey key)
+SchedulerHeap::realInsert (EventImpl *event, Scheduler::EventKey key)
 {
 	m_heap.push_back (std::make_pair (event, key));
 	bottom_up ();
-	store_in_event (event, last ());
+	storeInEvent (event, last ());
 	return EventId (event, key.m_ns, key.m_uid);
 }
 
 EventImpl *
-SchedulerHeap::real_peek_next (void) const
+SchedulerHeap::realPeekNext (void) const
 {
 	return m_heap[root ()].first;
 }
 Scheduler::EventKey
-SchedulerHeap::real_peek_next_key (void) const
+SchedulerHeap::realPeekNextKey (void) const
 {
 	return m_heap[root ()].second;
 }
 void     
-SchedulerHeap::real_remove_next (void)
+SchedulerHeap::realRemoveNext (void)
 {
 	exch (root (), last ());
 	m_heap.pop_back ();
-	top_down ();
+	topDown ();
 }
 
 
 EventImpl *
-SchedulerHeap::real_remove (EventId id, Scheduler::EventKey *key)
+SchedulerHeap::realRemove (EventId id, Scheduler::EventKey *key)
 {
-	EventImpl *ev = id.get_event_impl ();
-	uint32_t i = get_from_event (ev);
+	EventImpl *ev = id.getEventImpl ();
+	uint32_t i = getFrom_event (ev);
 	*key = m_heap[i].second;
 	exch (i, last ());
 	m_heap.pop_back ();
-	top_down ();
+	topDown ();
 	return ev;
 }
 
 bool 
-SchedulerHeap::real_is_valid (EventId id)
+SchedulerHeap::realIsValid (EventId id)
 {
-	EventImpl *ev = id.get_event_impl ();
-	uint32_t i = get_from_event (ev);
+	EventImpl *ev = id.getEventImpl ();
+	uint32_t i = getFrom_event (ev);
 	Scheduler::EventKey key = m_heap[i].second;
-	return (key.m_ns == id.get_ns () &&
-		key.m_uid == id.get_uid ());
+	return (key.m_ns == id.getNs () &&
+		key.m_uid == id.getUid ());
 }
 }; // namespace ns3

@@ -51,7 +51,7 @@ public:
 class RefTest : public ns3::Test {
 public:
 	RefTest ();
-	virtual bool run_tests (void);
+	virtual bool runTests (void);
 private:
 	void test (ns3::ReferenceList<A *>);
 };
@@ -67,7 +67,7 @@ RefTest::test (ns3::ReferenceList<A *> a)
 }
 
 bool 
-RefTest::run_tests (void)
+RefTest::runTests (void)
 {
 	bool ok = true;
 
@@ -113,7 +113,7 @@ RefTest::run_tests (void)
 }
 
 
-static RefTest g_ref_test = RefTest ();
+static RefTest gRefTest = RefTest ();
 
 }; // namespace
 

@@ -39,13 +39,13 @@ public:
 
 	~SiVariableTracerBase () {}
 
-	void set_callback(ChangeNotifyCallback callback) {
+	void setCallback(ChangeNotifyCallback callback) {
 		m_callback = callback;
 	}
 protected:
-	void notify (int64_t old_val, int64_t new_val) {
-		if (old_val != new_val && !m_callback.is_null ()) {
-			m_callback (old_val, new_val);
+	void notify (int64_t oldVal, int64_t newVal) {
+		if (oldVal != newVal && !m_callback.isNull ()) {
+			m_callback (oldVal, newVal);
 		}
 	}
 private:

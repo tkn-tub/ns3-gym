@@ -29,21 +29,21 @@ namespace {
 class TestStreamTracer : public ns3::Test {
 public:
 	TestStreamTracer ();
-	virtual bool run_tests (void);
+	virtual bool runTests (void);
 };
 
-static TestStreamTracer g_test_stream;
+static TestStreamTracer gTestStream;
 
 TestStreamTracer::TestStreamTracer ()
 	: Test ("StreamTracer")
 {}
 
 bool
-TestStreamTracer::run_tests (void)
+TestStreamTracer::runTests (void)
 {
 	bool ok = true;
 	ns3::StreamTracer trace;
-	//trace.set_stream (&std::cout);
+	//trace.setStream (&std::cout);
 	trace << 1;
 	trace << " X ";
 	trace << 1.0;

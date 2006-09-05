@@ -38,81 +38,81 @@ SchedulerList::~SchedulerList ()
  * member variable, a pointer.
  */
 EventId
-SchedulerList::get_event_id (Scheduler::EventKey key, EventsI i)
+SchedulerList::getEventId (Scheduler::EventKey key, EventsI i)
 {
 	assert (sizeof (i) <= sizeof (void *));
-	void *internal_iterator;
-	memcpy ((char *)&(internal_iterator), (char *)&i, sizeof (void *));
+	void *internalIterator;
+	memcpy ((char *)&(internalIterator), (char *)&i, sizeof (void *));
 	EventImpl *ev = i->first;
-	ev->set_internal_iterator (internal_iterator);
+	ev->setInternalIterator (internalIterator);
 	return EventId (ev, key.m_ns, key.m_uid);
 }
 SchedulerList::EventsI 
-SchedulerList::get_iterator (EventId id)
+SchedulerList::getIterator (EventId id)
 {
 	SchedulerList::EventsI i;
 	assert (sizeof (i) <= sizeof (void *));
-	EventImpl *ev = id.get_event_impl ();
-	void *internal_iterator = ev->get_internal_iterator ();
-	memcpy ((char *)&i, (char *)&(internal_iterator), sizeof (void *));
+	EventImpl *ev = id.getEventImpl ();
+	void *internalIterator = ev->getInternalIterator ();
+	memcpy ((char *)&i, (char *)&(internalIterator), sizeof (void *));
 	return i;
 }
 
 
 EventId
-SchedulerList::real_insert (EventImpl *event, Scheduler::EventKey key)
+SchedulerList::realInsert (EventImpl *event, Scheduler::EventKey key)
 {
 	Scheduler::EventKeyCompare compare;
 	for (EventsI i = m_events.begin (); i != m_events.end (); i++) {
 		if (compare (key, i->second)) {
 			m_events.insert (i, std::make_pair (event, key));
-			return get_event_id (key, i);
+			return getEventId (key, i);
 		}
 	}
 	m_events.push_back (std::make_pair (event, key));
-	return get_event_id (key, --(m_events.end ()));
+	return getEventId (key, --(m_events.end ()));
 }
 bool 
-SchedulerList::real_is_empty (void) const
+SchedulerList::realIsEmpty (void) const
 {
 	return m_events.empty ();
 }
 EventImpl *
-SchedulerList::real_peek_next (void) const
+SchedulerList::realPeekNext (void) const
 {
 	return m_events.front ().first;
 }
 Scheduler::EventKey
-SchedulerList::real_peek_next_key (void) const
+SchedulerList::realPeekNextKey (void) const
 {
 	return m_events.front ().second;
 }
 
 void
-SchedulerList::real_remove_next (void)
+SchedulerList::realRemoveNext (void)
 {
 	m_events.pop_front ();
 }
 
 EventImpl *
-SchedulerList::real_remove (EventId id, Scheduler::EventKey *key)
+SchedulerList::realRemove (EventId id, Scheduler::EventKey *key)
 {
-	EventsI i = get_iterator (id);
+	EventsI i = getIterator (id);
 	*key = i->second;
-	assert (key->m_ns == id.get_ns () &&
-		key->m_uid == id.get_uid ());
+	assert (key->m_ns == id.getNs () &&
+		key->m_uid == id.getUid ());
 	EventImpl *ev = i->first;
 	m_events.erase (i);
 	return ev;
 }
 
 bool 
-SchedulerList::real_is_valid (EventId id)
+SchedulerList::realIsValid (EventId id)
 {
-	EventsI i = get_iterator (id);
+	EventsI i = getIterator (id);
 	Scheduler::EventKey key = i->second;
-	return (key.m_ns == id.get_ns () &&
-		key.m_uid == id.get_uid ());
+	return (key.m_ns == id.getNs () &&
+		key.m_uid == id.getUid ());
 	
 }
 

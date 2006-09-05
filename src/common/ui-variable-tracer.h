@@ -33,7 +33,7 @@ public:
 
 	UiVariableTracerBase ()
 		: m_callback () {}
-	/* We don't want to copy the base callback. Only set_callback on
+	/* We don't want to copy the base callback. Only setCallback on
 	 * a specific instance will do something to it. */
 	UiVariableTracerBase (UiVariableTracerBase const &o) 
 		: m_callback () {}
@@ -42,13 +42,13 @@ public:
 	}
 	~UiVariableTracerBase () {}
 
-	void set_callback(ChangeNotifyCallback callback) {
+	void setCallback(ChangeNotifyCallback callback) {
 		m_callback = callback;
 	}
 protected:
-	void notify (uint64_t old_val, uint64_t new_val) {
-		if (old_val != new_val && !m_callback.is_null ()) {
-			m_callback (old_val, new_val);
+	void notify (uint64_t oldVal, uint64_t newVal) {
+		if (oldVal != newVal && !m_callback.isNull ()) {
+			m_callback (oldVal, newVal);
 		}
 	}
 private:

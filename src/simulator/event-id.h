@@ -32,15 +32,15 @@ public:
         EventId ();
         EventId (EventImpl *impl, uint64_t ns, uint32_t uid);
 	void cancel (void);
-	bool is_expired (void);
+	bool isExpired (void);
 public:
 	/* The following methods are semi-private
 	 * they are supposed to be invoked only by
 	 * subclasses of the Scheduler base class.
 	 */
-	EventImpl *get_event_impl (void) const;
-	uint64_t get_ns (void) const;
-	uint32_t get_uid (void) const;
+	EventImpl *getEventImpl (void) const;
+	uint64_t getNs (void) const;
+	uint32_t getUid (void) const;
 private:
 	EventImpl *m_eventImpl;
 	uint64_t m_ns;

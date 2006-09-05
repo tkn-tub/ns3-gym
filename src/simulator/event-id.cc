@@ -40,22 +40,22 @@ EventId::cancel (void)
 	Simulator::cancel (*this);
 }
 bool 
-EventId::is_expired (void)
+EventId::isExpired (void)
 {
-	return Simulator::is_expired (*this);
+	return Simulator::isExpired (*this);
 }
 EventImpl *
-EventId::get_event_impl (void) const
+EventId::getEventImpl (void) const
 {
 	return m_eventImpl;
 }
 uint64_t 
-EventId::get_ns (void) const
+EventId::getNs (void) const
 {
 	return m_ns;
 }
 uint32_t 
-EventId::get_uid (void) const
+EventId::getUid (void) const
 {
 	return m_uid;
 }

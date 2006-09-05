@@ -36,16 +36,16 @@ Packet::Packet (Buffer buffer, Tags tags)
 
 
 Packet 
-Packet::create_fragment (uint32_t start, uint32_t length) const
+Packet::createFragment (uint32_t start, uint32_t length) const
 {
-	Buffer tmp = m_buffer.create_fragment (start, length);
+	Buffer tmp = m_buffer.createFragment (start, length);
 	return Packet (tmp, m_tags);
 }
 
 uint32_t 
-Packet::get_size (void) const
+Packet::getSize (void) const
 {
-	return m_buffer.get_size ();
+	return m_buffer.getSize ();
 }
 
 void 
@@ -70,58 +70,58 @@ Packet::remove (Chunk *chunk)
 void 
 Packet::write (PacketReadWriteCallback callback) const
 {
-	uint8_t *data = m_buffer.peek_data ();
-	uint32_t to_write = get_size ();
-	callback (data, to_write);
+	uint8_t *data = m_buffer.peekData ();
+	uint32_t toWrite = getSize ();
+	callback (data, toWrite);
 }
 
 
 void 
-Packet::add_at_end (Packet packet)
+Packet::addAtEnd (Packet packet)
 {
 	Buffer src = packet.m_buffer;
-	m_buffer.add_at_end (src.get_size ());
-	Buffer::Iterator dest_start = m_buffer.end ();
-	dest_start.prev (src.get_size ());
-	dest_start.write (src.begin (), src.end ());
+	m_buffer.addAtEnd (src.getSize ());
+	Buffer::Iterator destStart = m_buffer.end ();
+	destStart.prev (src.getSize ());
+	destStart.write (src.begin (), src.end ());
 	/**
 	 * XXX: we might need to merge the tag list of the
 	 * other packet into the current packet.
 	 */
 }
 void 
-Packet::add_at_end (Packet packet, uint32_t start, uint32_t size)
+Packet::addAtEnd (Packet packet, uint32_t start, uint32_t size)
 {
-	assert (packet.get_size () <= start + size);
+	assert (packet.getSize () <= start + size);
 	Buffer src = packet.m_buffer;
-	m_buffer.add_at_end (src.get_size ());
-	Buffer::Iterator dest_start = m_buffer.end ();
-	dest_start.prev (size);
-	Buffer::Iterator src_start = src.begin ();
-	src_start.next (start);
-	Buffer::Iterator src_end = src_start;
-	src_end.next (size);
-	dest_start.write (src_start, src_end);
+	m_buffer.addAtEnd (src.getSize ());
+	Buffer::Iterator destStart = m_buffer.end ();
+	destStart.prev (size);
+	Buffer::Iterator srcStart = src.begin ();
+	srcStart.next (start);
+	Buffer::Iterator srcEnd = srcStart;
+	srcEnd.next (size);
+	destStart.write (srcStart, srcEnd);
 	/**
 	 * XXX: we might need to merge the tag list of the
 	 * other packet into the current packet.
 	 */
 }
 void 
-Packet::remove_at_end (uint32_t size)
+Packet::removeAtEnd (uint32_t size)
 {
-	m_buffer.remove_at_end (size);
+	m_buffer.removeAtEnd (size);
 }
 void 
-Packet::remove_at_start (uint32_t size)
+Packet::removeAtStart (uint32_t size)
 {
-	m_buffer.remove_at_start (size);
+	m_buffer.removeAtStart (size);
 }
 
 void 
-Packet::remove_all_tags (void)
+Packet::removeAllTags (void)
 {
-	m_tags.remove_all ();
+	m_tags.removeAll ();
 }
 
 }; // namespace ns3

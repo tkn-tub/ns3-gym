@@ -49,9 +49,9 @@ public:
 	template <typename T>
 	bool update (T const*tag);
 
-	void pretty_print (std::ostream &os);
+	void prettyPrint (std::ostream &os);
 
-	inline void remove_all (void);
+	inline void removeAll (void);
 
 	enum {
 		SIZE = 16
@@ -70,11 +70,11 @@ private:
 
 	bool remove (uint32_t id);
 	bool update (uint8_t const*buffer, uint32_t id);
-	struct Tags::TagData *alloc_data (void);
-	void free_data (struct TagData *data);
+	struct Tags::TagData *allocData (void);
+	void freeData (struct TagData *data);
 
-	static struct Tags::TagData *g_free;
-	static uint32_t g_n_free;
+	static struct Tags::TagData *gFree;
+	static uint32_t gN_free;
 
 	struct TagData *m_next;
 };
@@ -95,18 +95,18 @@ public:
 	TagPrettyPrinter<T> (void(*) (T *, std::ostream &));
 private:
 	TagPrettyPrinter<T> ();
-	static void pretty_print_cb (uint8_t *buf, std::ostream &os);
-	static void(*g_pretty_printer) (T *, std::ostream &);
+	static void prettyPrintCb (uint8_t *buf, std::ostream &os);
+	static void(*gPrettyPrinter) (T *, std::ostream &);
 };
 
 class TagsPrettyPrinterRegistry {
 public:
 	static void record (uint32_t uid, void (*cb) (uint8_t buf[Tags::SIZE], std::ostream &os));
-	static void pretty_print (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
+	static void prettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
 private:
 	typedef std::vector<std::pair<uint32_t, void (*) (uint8_t [Tags::SIZE], std::ostream &)> > PrettyPrinters;
 	typedef std::vector<std::pair<uint32_t, void (*) (uint8_t [Tags::SIZE], std::ostream &)> >::iterator PrettyPrintersI;
-	static PrettyPrinters g_pretty_printers;
+	static PrettyPrinters gPrettyPrinters;
 };
 
 
@@ -138,13 +138,13 @@ namespace ns3 {
 template <typename T>
 class TypeUid {
 public:
-	static const uint32_t get_uid (void);
+	static const uint32_t getUid (void);
 private:
-	T real_type;
+	T realType;
 };
 
 template <typename T>
-const uint32_t TypeUid<T>::get_uid (void)
+const uint32_t TypeUid<T>::getUid (void)
 {
 	static const uint32_t uid = Tags::UidFactory::create ();
 	return uid;
@@ -159,23 +159,23 @@ const uint32_t TypeUid<T>::get_uid (void)
  * the call to the user-provided function.
  */
 template <typename T>
-TagPrettyPrinter<T>::TagPrettyPrinter (void(*pretty_printer) (T *, std::ostream &))
+TagPrettyPrinter<T>::TagPrettyPrinter (void(*prettyPrinter) (T *, std::ostream &))
 {
-	g_pretty_printer  = pretty_printer;
-	TagsPrettyPrinterRegistry::record (TypeUid<T>::get_uid (),
-					  &TagPrettyPrinter<T>::pretty_print_cb);
+	gPrettyPrinter  = prettyPrinter;
+	TagsPrettyPrinterRegistry::record (TypeUid<T>::getUid (),
+					  &TagPrettyPrinter<T>::prettyPrintCb);
 }
 template <typename T>
 void 
-TagPrettyPrinter<T>::pretty_print_cb (uint8_t buf[Tags::SIZE], std::ostream &os)
+TagPrettyPrinter<T>::prettyPrintCb (uint8_t buf[Tags::SIZE], std::ostream &os)
 {
 	assert (sizeof (T) <= Tags::SIZE);
 	T *tag = reinterpret_cast<T *> (buf);
-	(*g_pretty_printer) (tag, os);
+	(*gPrettyPrinter) (tag, os);
 }
 
 template <typename T>
-void (*TagPrettyPrinter<T>::g_pretty_printer) (T *, std::ostream &) = 0;
+void (*TagPrettyPrinter<T>::gPrettyPrinter) (T *, std::ostream &) = 0;
 
 
 
@@ -188,15 +188,15 @@ Tags::add (T const*tag)
 	uint8_t const*buf = reinterpret_cast<uint8_t const*> (tag);
 	// ensure this id was not yet added
 	for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
-		assert (cur->m_id != TypeUid<T>::get_uid ());
+		assert (cur->m_id != TypeUid<T>::getUid ());
 	}
-	struct TagData *new_start = alloc_data ();
-	new_start->m_count = 1;
-	new_start->m_next = 0;
-	new_start->m_id = TypeUid<T>::get_uid ();
-	memcpy (new_start->m_data, buf, sizeof (T));
-	new_start->m_next = m_next;
-	m_next = new_start;
+	struct TagData *newStart = allocData ();
+	newStart->m_count = 1;
+	newStart->m_next = 0;
+	newStart->m_id = TypeUid<T>::getUid ();
+	memcpy (newStart->m_data, buf, sizeof (T));
+	newStart->m_next = m_next;
+	m_next = newStart;
 }
 
 template <typename T>
@@ -204,7 +204,7 @@ bool
 Tags::remove (T *tag)
 {
 	assert (sizeof (T) <= Tags::SIZE);
-	return remove (TypeUid<T>::get_uid ());
+	return remove (TypeUid<T>::getUid ());
 }
 
 template <typename T>
@@ -214,7 +214,7 @@ Tags::peek (T *tag) const
 	assert (sizeof (T) <= Tags::SIZE);
 	uint8_t *buf = reinterpret_cast<uint8_t *> (tag);
 	for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
-		if (cur->m_id == TypeUid<T>::get_uid ()) {
+		if (cur->m_id == TypeUid<T>::getUid ()) {
 			/* found tag */
 			memcpy (buf, cur->m_data, sizeof (T));
 			return true;
@@ -230,7 +230,7 @@ Tags::update (T const*tag)
 {
 	assert (sizeof (T) <= Tags::SIZE);
 	uint8_t const*buf = reinterpret_cast<uint8_t const*> (tag);
-	return update (buf, TypeUid<T>::get_uid ());
+	return update (buf, TypeUid<T>::getUid ());
 }
 
 
@@ -253,7 +253,7 @@ Tags::operator = (Tags const &o)
 	if (m_next == o.m_next) {
 		return *this;
 	}
-	remove_all ();
+	removeAll ();
 	m_next = o.m_next;
 	if (m_next != 0) {
 		m_next->m_count++;
@@ -263,11 +263,11 @@ Tags::operator = (Tags const &o)
 
 Tags::~Tags ()
 {
-	remove_all ();
+	removeAll ();
 }
 
 void
-Tags::remove_all (void)
+Tags::removeAll (void)
 {
 	struct TagData *prev = 0;
 	for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
@@ -276,12 +276,12 @@ Tags::remove_all (void)
 			break;
 		}
 		if (prev != 0) {
-			free_data (prev);
+			freeData (prev);
 		}
 		prev = cur;
 	}
 	if (prev != 0) {
-		free_data (prev);
+		freeData (prev);
 	}
 	m_next = 0;
 }
