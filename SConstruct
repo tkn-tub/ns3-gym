@@ -546,7 +546,6 @@ common.add_inst_headers ([
 	'chunk.h',
 	'tags.h',
 	'packet.h',
-	'count-ptr-holder.tcc',
 	'ui-variable-tracer.h',
 	'si-variable-tracer.h',
 	'f-variable-tracer.h',
