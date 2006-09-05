@@ -1,6 +1,6 @@
 /* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
 /*
- * Copyright (c) 2006 INRIA
+ * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,41 +18,38 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+#ifndef TIME_H
+#define TIME_H
 
-#ifndef F_TRACED_VARIABLE_TCC
-#define F_TRACED_VARIABLE_TCC
-
-#include "ns3/callback.h"
 #include <stdint.h>
 
 namespace ns3 {
 
-class FTracedVariableBase {
+class Time {
 public:
-	typedef Callback<void,double, double> ChangeNotifyCallback;
-
-	FTracedVariableBase () {}
-	FTracedVariableBase (FTracedVariableBase const &o) {}
-	FTracedVariableBase &operator = (FTracedVariableBase const &o) {
-		return *this;
-	}
-
-	~FTracedVariableBase () {}
-
-	void set_callback(ChangeNotifyCallback callback) {
-		m_callback = callback;
-	}
+	Time (Time const &o);
+	Time &operator = (Time const &o);
+	double s (void) const;
+	uint64_t us (void) const;
+	uint64_t ns (void) const;
+	bool is_destroy (void) const;
+	static Time abs_s (double s);
+	static Time abs_us (uint64_t us);
+	static Time abs_ns (uint64_t ns);
+	static Time rel_s (double s);
+	static Time rel_us (uint64_t us);
+	static Time rel_ns (uint64_t ns);
+	static Time now (void);
+	static Time destroy (void);
 protected:
-	void notify (double old_val, double new_val) {
-		if (old_val != new_val && !m_callback.is_null ()) {
-			m_callback (old_val, new_val);
-		}
-	}
+	Time (uint64_t ns);
+	Time ();
 private:
-	ChangeNotifyCallback m_callback;
+	uint64_t m_ns;
+	bool m_is_destroy;
 };
 
 
 }; // namespace ns3
 
-#endif /* F_TRACED_VARIABLE_TCC */
+#endif /* TIME_H */

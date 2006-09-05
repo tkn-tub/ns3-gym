@@ -20,8 +20,7 @@
  */
 
 #include "trace-container.h"
-#include "packet-logger.h"
-#include "trace-stream.h"
+#include "stream-tracer.h"
 #include <utility>
 #include <cassert>
 
@@ -64,20 +63,9 @@ TraceContainer::set_f_variable_callback (char const *name, Callback<void,double,
 	assert (false);
 }
 void 
-TraceContainer::set_packet_logger_callback (char const *name, Callback<void,Packet const> callback)
-{
-	for (PacketLoggerListI i = m_packet_logger_list.begin (); i != m_packet_logger_list.end (); i++) {
-		if ((*i).second == name) {
-			(*i).first->set_callback (callback);
-			return;
-		}
-	}
-	assert (false);	
-}
-void 
 TraceContainer::set_stream (char const *name, std::ostream *os)
 {
-	for (TraceStreamListI i = m_trace_stream_list.begin (); i != m_trace_stream_list.end (); i++) {
+	for (StreamTracerListI i = m_trace_stream_list.begin (); i != m_trace_stream_list.end (); i++) {
 		if ((*i).second == name) {
 			(*i).first->set_stream (os);
 			return;
@@ -87,7 +75,7 @@ TraceContainer::set_stream (char const *name, std::ostream *os)
 }
 
 void 
-TraceContainer::register_ui_variable (char const *name, UiTracedVariableBase *var)
+TraceContainer::register_ui_variable (char const *name, UiVariableTracerBase *var)
 {
 	// ensure unicity
 	for (UiListI i = m_ui_list.begin (); i != m_ui_list.end (); i++) {
@@ -99,7 +87,7 @@ TraceContainer::register_ui_variable (char const *name, UiTracedVariableBase *va
 	m_ui_list.push_back (std::make_pair (var, name));
 }
 void 
-TraceContainer::register_si_variable (char const *name, SiTracedVariableBase *var)
+TraceContainer::register_si_variable (char const *name, SiVariableTracerBase *var)
 {
 	// ensure unicity
 	for (SiListI i = m_si_list.begin (); i != m_si_list.end (); i++) {
@@ -111,29 +99,16 @@ TraceContainer::register_si_variable (char const *name, SiTracedVariableBase *va
 	m_si_list.push_back (std::make_pair (var, name));
 }
 void 
-TraceContainer::register_f_variable (char const *name, FTracedVariableBase *var)
+TraceContainer::register_f_variable (char const *name, FVariableTracerBase *var)
 {
 	assert (false);
 }
 
 void 
-TraceContainer::register_packet_logger (char const *name, PacketLogger *logger)
+TraceContainer::register_stream (char const *name, StreamTracer *stream)
 {
 	// ensure unicity
-	for (PacketLoggerListI i = m_packet_logger_list.begin (); i != m_packet_logger_list.end (); i++) {
-		if (i->second == name) {
-			m_packet_logger_list.erase (i);
-			break;
-		}
-	}
-	m_packet_logger_list.push_back (std::make_pair (logger, name));
-}
-
-void 
-TraceContainer::register_stream (char const *name, TraceStream *stream)
-{
-	// ensure unicity
-	for (TraceStreamListI i = m_trace_stream_list.begin (); i != m_trace_stream_list.end (); i++) {
+	for (StreamTracerListI i = m_trace_stream_list.begin (); i != m_trace_stream_list.end (); i++) {
 		if (i->second == name) {
 			m_trace_stream_list.erase (i);
 			break;
@@ -144,7 +119,7 @@ TraceContainer::register_stream (char const *name, TraceStream *stream)
 }
 
 void 
-TraceContainer::register_callback (char const *name, CallbackLoggerBase *logger)
+TraceContainer::register_callback (char const *name, CallbackTracerBase *tracer)
 {
 	for (CallbackListI i = m_callback_list.begin (); i != m_callback_list.end (); i++) {
 		if (i->second == name) {
@@ -152,7 +127,7 @@ TraceContainer::register_callback (char const *name, CallbackLoggerBase *logger)
 			break;
 		}
 	}
-	m_callback_list.push_back (std::make_pair (logger, name));
+	m_callback_list.push_back (std::make_pair (tracer, name));
 }
 
 
@@ -179,12 +154,6 @@ ns3::TraceContainer::print_debug (void)
 	if (!m_f_list.empty ()) {
 		std::cout << "f var: " << std::endl;
 		for (FListI i = m_f_list.begin (); i != m_f_list.end (); i++) {
-			std::cout << "    \"" << (*i).second << "\""<<std::endl;
-		}
-	}
-	if (!m_packet_logger_list.empty ()) {		
-		std::cout << "packet logger: " << std::endl;
-		for (PacketLoggerListI i = m_packet_logger_list.begin (); i != m_packet_logger_list.end (); i++) {
 			std::cout << "    \"" << (*i).second << "\""<<std::endl;
 		}
 	}

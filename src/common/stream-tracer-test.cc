@@ -18,25 +18,51 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+#include "stream-tracer.h"
+#include "ns3/test.h"
+#include <iostream>
 
-#include "packet-logger.h"
+#ifdef RUN_SELF_TESTS
 
-namespace ns3 {
+namespace {
 
-PacketLogger::PacketLogger ()
+class TestStreamTracer : public ns3::Test {
+public:
+	TestStreamTracer ();
+	virtual bool run_tests (void);
+};
+
+static TestStreamTracer g_test_stream;
+
+TestStreamTracer::TestStreamTracer ()
+	: Test ("StreamTracer")
 {}
-void 
-PacketLogger::log (Packet const packet)
+
+bool
+TestStreamTracer::run_tests (void)
 {
-	if (!m_callback.is_null ()) {
-		m_callback (packet);
-	}
+	bool ok = true;
+	ns3::StreamTracer trace;
+	//trace.set_stream (&std::cout);
+	trace << 1;
+	trace << " X ";
+	trace << 1.0;
+	trace << std::endl;
+	trace << "test ";
+	trace << 1 << " test";
+	trace << "test "
+	      << 1.0 << " "
+	      << 0xdeadbead
+	      << std::endl;
+	trace << "0x" << std::hex 
+	      << 0xdeadbeaf 
+	      << std::dec << " "
+	      << 0xdeadbeaf
+	      << std::endl;
+	return ok;
 }
-void 
-PacketLogger::set_callback (PacketLoggerCallback callback)
-{
-	m_callback = callback;
-}
+
 
 }; // namespace ns3
 
+#endif /* RUN_SELF_TESTS */

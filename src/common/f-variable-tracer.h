@@ -1,6 +1,6 @@
 /* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2006 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,25 +16,43 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage.inria.fr>
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef WALL_CLOCK_MS_H
-#define WALL_CLOCK_MS_H
+#ifndef F_VARIABLE_TRACER_H
+#define F_VARIABLE_TRACER_H
+
+#include "ns3/callback.h"
+#include <stdint.h>
 
 namespace ns3 {
 
-class WallClockMs {
+class FVariableTracerBase {
 public:
-	WallClockMs ();
-	~WallClockMs ();
+	typedef Callback<void,double, double> ChangeNotifyCallback;
 
-	void start (void);
-	unsigned long long end (void);
+	FVariableTracerBase () {}
+	FVariableTracerBase (FVariableTracerBase const &o) {}
+	FVariableTracerBase &operator = (FVariableTracerBase const &o) {
+		return *this;
+	}
+
+	~FVariableTracerBase () {}
+
+	void set_callback(ChangeNotifyCallback callback) {
+		m_callback = callback;
+	}
+protected:
+	void notify (double old_val, double new_val) {
+		if (old_val != new_val && !m_callback.is_null ()) {
+			m_callback (old_val, new_val);
+		}
+	}
 private:
-	class WallClockMsPrivate *m_priv;
+	ChangeNotifyCallback m_callback;
 };
+
 
 }; // namespace ns3
 
-#endif /* WALL_CLOCK_MS_H */
+#endif /* F_VARIABLE_TRACER_H */

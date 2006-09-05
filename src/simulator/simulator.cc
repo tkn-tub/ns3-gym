@@ -21,9 +21,7 @@
 
 #include "simulator.h"
 #include "scheduler.h"
-#include "event.h"
-#include "event.tcc"
-#include "ns3/system-semaphore.h"
+#include "event-impl.h"
 
 #include <math.h>
 #include <cassert>
@@ -48,19 +46,6 @@ std::cout << "SIMU TRACE " << x << std::endl;
 
 namespace ns3 {
 
-class ParallelSimulatorQueuePrivate {
-public:
-	ParallelSimulatorQueuePrivate (SimulatorPrivate *priv);
-	~ParallelSimulatorQueuePrivate ();
-	void set_queue (ParallelSimulatorQueue *queue);
-	void schedule_abs_us (Event ev, uint64_t at);
-	void send_null_message (void);
-private:
-	void remove_event (Event ev);
-	uint32_t m_n;
-	SimulatorPrivate *m_simulator;
-	ParallelSimulatorQueue *m_queue;
-};
 
 class SimulatorPrivate {
 public:
@@ -69,86 +54,32 @@ public:
 
 	void enable_log_to (char const *filename);
 
-	void add_queue (ParallelSimulatorQueuePrivate *queue);
-	void notify_queue_not_empty (void);
-	void notify_queue_empty (void);
-	void wait_until_no_queue_empty (void);
-	bool is_parallel (void);
-
 	bool is_finished (void) const;
-	uint64_t next_us (void) const;
-	void run_serial (void);
-	void run_parallel (void);
+	Time next (void) const;
 	void stop (void);
-	void stop_at_us (uint64_t at);
-	Event schedule_rel_us (Event event, uint64_t delta);
-	Event schedule_rel_s (Event event, double delta);
-	Event schedule_abs_us (Event event, uint64_t time);
-	Event schedule_abs_s (Event event, double time);
-	Event remove (Event const ev);
-	uint64_t now_us (void);
-	double now_s (void);
-	void schedule_now (Event event);
-	void schedule_destroy (Event event);
+	void stop_at (Time time);
+	EventId schedule (Time time, EventImpl *event);
+	void remove (EventId ev);
+	void cancel (EventId ev);
+	bool is_expired (EventId ev);
+	void run (void);
+	Time now (void) const;
 
 private:
 	void process_one_event (void);
 
-	typedef std::list<std::pair<Event,uint32_t> > Events;
-	typedef std::vector<ParallelSimulatorQueuePrivate *> Queues;
-	typedef std::vector<ParallelSimulatorQueuePrivate *>::iterator QueuesI;
+	typedef std::list<std::pair<EventImpl *,uint32_t> > Events;
 	Events m_destroy;
 	uint64_t m_stop_at;
 	bool m_stop;
 	Scheduler *m_events;
 	uint32_t m_uid;
 	uint32_t m_current_uid;
-	uint64_t m_current_us;
+	uint64_t m_current_ns;
 	std::ofstream m_log;
 	std::ifstream m_input_log;
 	bool m_log_enable;
-	uint32_t m_n_full_queues;
-	uint32_t m_n_queues;
-	SystemSemaphore *m_all_queues;
-	Queues m_queues;
 };
-
-
-ParallelSimulatorQueuePrivate::ParallelSimulatorQueuePrivate (SimulatorPrivate *simulator)
-	: m_simulator (simulator)
-{}
-ParallelSimulatorQueuePrivate::~ParallelSimulatorQueuePrivate ()
-{}
-void 
-ParallelSimulatorQueuePrivate::schedule_abs_us (Event ev, uint64_t at)
-{
-	m_n++;
-	if (m_n == 1) {
-		m_simulator->notify_queue_not_empty ();
-	}
-	m_simulator->schedule_abs_us (make_event (&ParallelSimulatorQueuePrivate::remove_event, this, ev), at);
-}
-void
-ParallelSimulatorQueuePrivate::remove_event (Event ev)
-{
-	m_n--;
-	if (m_n == 0) {
-		m_simulator->notify_queue_empty ();
-	}
-	ev ();
-}
-
-void
-ParallelSimulatorQueuePrivate::set_queue (ParallelSimulatorQueue *queue)
-{
-	m_queue = queue;
-}
-
-void 
-ParallelSimulatorQueuePrivate::send_null_message (void)
-{
-	m_queue->send_null_message ();
-}
 
 
 
@@ -160,31 +91,22 @@ SimulatorPrivate::SimulatorPrivate (Scheduler *events)
 	m_events = events;
 	m_uid = 0;	
 	m_log_enable = false;
-	m_current_us = 0;
-	m_all_queues = new SystemSemaphore (0);
-	m_n_queues = 0;
-	m_n_full_queues = 0;
+	m_current_ns = 0;
 }
 
 SimulatorPrivate::~SimulatorPrivate ()
 {
 	while (!m_destroy.empty ()) {
-		Event ev = m_destroy.front ().first;
+		EventImpl *ev = m_destroy.front ().first;
 		m_destroy.pop_front ();
 		TRACE ("handle destroy " << ev);
-		ev ();
+		ev->invoke ();
+		delete ev;
 	}
 	delete m_events;
 	m_events = (Scheduler *)0xdeadbeaf;
-	delete m_all_queues;
-	m_queues.erase (m_queues.begin (), m_queues.end ());
 }
 
-bool 
-SimulatorPrivate::is_parallel (void)
-{
-	return (m_n_queues > 0);
-}
 
 void
 SimulatorPrivate::enable_log_to (char const *filename)
@@ -193,47 +115,20 @@ SimulatorPrivate::enable_log_to (char const *filename)
 	m_log_enable = true;
 }
 
-void 
-SimulatorPrivate::notify_queue_not_empty (void)
-{
-	m_n_full_queues++;
-	if (m_n_full_queues == m_n_queues) {
-		m_all_queues->post ();
-	}
-}
-void 
-SimulatorPrivate::notify_queue_empty (void)
-{
-	m_n_full_queues--;
-}
-void
-SimulatorPrivate::wait_until_no_queue_empty (void)
-{
-	while (m_n_full_queues < m_n_queues) {
-		m_all_queues->wait ();
-	}
-}
-
-void
-SimulatorPrivate::add_queue (ParallelSimulatorQueuePrivate *queue)
-{
-	m_n_queues++;
-	m_queues.push_back (queue);
-}
-
 void
 SimulatorPrivate::process_one_event (void)
 {
-	Event next_ev = m_events->peek_next ();
+	EventImpl *next_ev = m_events->peek_next ();
 	Scheduler::EventKey next_key = m_events->peek_next_key ();
 	m_events->remove_next ();
 	TRACE ("handle " << next_ev);
-	m_current_us = next_key.m_time;
+	m_current_ns = next_key.m_ns;
 	m_current_uid = next_key.m_uid;
 	if (m_log_enable) {
-		m_log << "e "<<next_key.m_uid << " " << next_key.m_time << std::endl;
+		m_log << "e "<<next_key.m_uid << " " << next_key.m_ns << std::endl;
 	}
-	next_ev ();
+	next_ev->invoke ();
+	delete next_ev;
 }
 
 bool 
@@ -241,44 +136,25 @@ SimulatorPrivate::is_finished (void) const
 {
 	return m_events->is_empty ();
 }
-uint64_t 
-SimulatorPrivate::next_us (void) const
+Time
+SimulatorPrivate::next (void) const
 {
 	assert (!m_events->is_empty ());
 	Scheduler::EventKey next_key = m_events->peek_next_key ();
-	return next_key.m_time;
+	return Time::abs_ns (next_key.m_ns);
 }
 
 
 void
-SimulatorPrivate::run_serial (void)
+SimulatorPrivate::run (void)
 {
 	while (!m_events->is_empty () && !m_stop && 
-	       (m_stop_at == 0 || m_stop_at > next_us ())) {
+	       (m_stop_at == 0 || m_stop_at > next ().ns ())) {
 		process_one_event ();
 	}
 	m_log.close ();
 }
 
-void
-SimulatorPrivate::run_parallel (void)
-{
-	TRACE ("run parallel");
-	while (!m_stop && 
-	       (m_stop_at == 0 || m_stop_at >= next_us ())) {
-		TRACE ("send null messages");
-		for (QueuesI i = m_queues.begin (); i != m_queues.end (); i++) {
-			(*i)->send_null_message ();
-		}
-		TRACE ("sent null messages");
-		wait_until_no_queue_empty ();
-		TRACE ("no queue empty");
-		process_one_event();
-		TRACE ("processed event");
-	}
-	m_log.close ();
-	TRACE ("done run parallel");
-}
 
 void 
 SimulatorPrivate::stop (void)
@@ -286,79 +162,67 @@ SimulatorPrivate::stop (void)
 	m_stop = true;
 }
 void 
-SimulatorPrivate::stop_at_us (uint64_t at)
+SimulatorPrivate::stop_at (Time at)
 {
-	m_stop_at = at;
+	m_stop_at = at.ns ();
 }
-Event   
-SimulatorPrivate::schedule_rel_us (Event event, uint64_t delta)
+EventId
+SimulatorPrivate::schedule (Time time, EventImpl *event)
 {
-	uint64_t current = now_us ();
-	return schedule_abs_us (event, current+delta);
-}
-Event  
-SimulatorPrivate::schedule_abs_us (Event event, uint64_t time)
-{
-	assert (time >= now_us ());
-	Scheduler::EventKey key = {time, m_uid};
+	if (time.is_destroy ()) {
+		m_destroy.push_back (std::make_pair (event, m_uid));
+		if (m_log_enable) {
+			m_log << "id " << m_current_uid << " " << now ().ns () << " "
+			      << m_uid << std::endl;
+		}
+		m_uid++;
+		//XXX
+		return EventId ();
+	}
+	assert (time.ns () >= now ().ns ());
+	Scheduler::EventKey key = {time.ns (), m_uid};
 	if (m_log_enable) {
-		m_log << "i "<<m_current_uid<<" "<<now_us ()<<" "
-		      <<m_uid<<" "<<time << std::endl;
+		m_log << "i "<<m_current_uid<<" "<<now ().ns ()<<" "
+		      <<m_uid<<" "<<time.ns () << std::endl;
 	}
 	m_uid++;
 	return m_events->insert (event, key);
 }
-uint64_t 
-SimulatorPrivate::now_us (void)
+Time
+SimulatorPrivate::now (void) const
 {
-	return m_current_us;
-}
-Event  
-SimulatorPrivate::schedule_rel_s (Event event, double delta)
-{
-	int64_t delta_us = (int64_t)(delta * 1000000.0);
-	uint64_t us = now_us () + delta_us;
-	return schedule_abs_us (event, us);
-}
-Event  
-SimulatorPrivate::schedule_abs_s (Event event, double time)
-{
-	int64_t us = (int64_t)(time * 1000000.0);
-	assert (us >= 0);
-	return schedule_abs_us (event, (uint64_t)us);
-}
-double 
-SimulatorPrivate::now_s (void)
-{
-	double us = m_current_us;
-	us /= 1000000;
-	return us;
-}
-void
-SimulatorPrivate::schedule_now (Event event)
-{
-	schedule_abs_us (event, now_us ());
-}
-void
-SimulatorPrivate::schedule_destroy (Event event)
-{
-	m_destroy.push_back (std::make_pair (event, m_uid));
-	if (m_log_enable) {
-		m_log << "id " << m_current_uid << " " << now_us () << " "
-		      << m_uid << std::endl;
-	}
-	m_uid++;
+	return Time::abs_ns (m_current_ns);
 }
 
-Event 
-SimulatorPrivate::remove (Event const ev)
+void
+SimulatorPrivate::remove (EventId ev)
 {
-	Scheduler::EventKey key = m_events->remove (ev);
+	Scheduler::EventKey key;
+	EventImpl *impl = m_events->remove (ev, &key);
+	delete impl;
 	if (m_log_enable) {
-		m_log << "r " << m_current_uid << " " << now_us () << " "
-		      << key.m_uid << " " << key.m_time << std::endl;
+		m_log << "r " << m_current_uid << " " << now ().ns () << " "
+		      << key.m_uid << " " << key.m_ns << std::endl;
 	}
-	return Event (ev);
+}
+
+void
+SimulatorPrivate::cancel (EventId id)
+{
+	assert (m_events->is_valid (id));
+	EventImpl *ev = id.get_event_impl ();
+	ev->cancel ();
+}
+
+bool
+SimulatorPrivate::is_expired (EventId ev)
+{
+	if (ev.get_event_impl () != 0 &&
+	    ev.get_ns () <= now ().ns () &&
+	    ev.get_uid () < m_current_uid) {
+		return false;
+	}
+	return true;
 }
 
 
@@ -368,12 +232,14 @@ SimulatorPrivate::remove (Event const ev)
 #include "scheduler-list.h"
 #include "scheduler-heap.h"
 #include "scheduler-map.h"
+#include "scheduler-factory.h"
 
 
 namespace ns3 {
 
 SimulatorPrivate *Simulator::m_priv = 0;
 Simulator::ListType Simulator::m_list_type = LINKED_LIST;
+SchedulerFactory const*Simulator::m_sched_factory = 0;
 
 void Simulator::set_linked_list (void)
 {
@@ -386,6 +252,13 @@ void Simulator::set_binary_heap (void)
 void Simulator::set_std_map (void)
 {
 	m_list_type = STD_MAP;
+}
+void 
+Simulator::set_external (SchedulerFactory const*factory)
+{
+	assert (factory != 0);
+	m_sched_factory = factory;
+	m_list_type = EXTERNAL;
 }
 void Simulator::enable_log_to (char const *filename)
 {
@@ -408,6 +281,8 @@ Simulator::get_priv (void)
 		case STD_MAP:
 			events = new SchedulerMap ();
 			break;
+		case EXTERNAL:
+			events = m_sched_factory->create ();
 		default: // not reached
 			events = 0;
 			assert (false); 
@@ -426,35 +301,23 @@ Simulator::destroy (void)
 	m_priv = 0;
 }
 
-void
-Simulator::add_parallel_queue (ParallelSimulatorQueue *queue)
-{
-	ParallelSimulatorQueuePrivate *priv = new ParallelSimulatorQueuePrivate (get_priv ());
-	priv->set_queue (queue);
-	queue->set_priv (priv);
-	return get_priv ()->add_queue (priv);
-}
 
 bool 
 Simulator::is_finished (void)
 {
 	return get_priv ()->is_finished ();
 }
-uint64_t 
-Simulator::next_us (void)
+Time
+Simulator::next (void)
 {
-	return get_priv ()->next_us ();
+	return get_priv ()->next ();
 }
 
 
 void 
 Simulator::run (void)
 {
-	if (get_priv ()->is_parallel ()) {
-		get_priv ()->run_parallel ();
-	} else {
-		get_priv ()->run_serial ();
-	}
+	get_priv ()->run ();
 }
 void 
 Simulator::stop (void)
@@ -463,82 +326,127 @@ Simulator::stop (void)
 	get_priv ()->stop ();
 }
 void 
-Simulator::stop_at_us (uint64_t at)
+Simulator::stop_at (Time at)
 {
-	get_priv ()->stop_at_us (at);
+	get_priv ()->stop_at (at);
 }
-Event 
-Simulator::schedule_rel_us (uint64_t delta, Event event)
+Time
+Simulator::now (void)
 {
-	TRACE ("insert " << event << " in " << delta << "us");
-	return get_priv ()->schedule_rel_us (event, delta);
-}
-Event 
-Simulator::schedule_abs_us (uint64_t time, Event event)
-{
-	TRACE ("insert " << event << " at " << time << "us");
-	return get_priv ()->schedule_abs_us (event, time);
-}
-uint64_t 
-Simulator::now_us (void)
-{
-	return get_priv ()->now_us ();
-}
-Event  
-Simulator::schedule_rel_s (double delta, Event event)
-{
-	TRACE ("insert " << event << " in " << delta << "s");
-	return get_priv ()->schedule_rel_s (event, delta);
-}
-Event  
-Simulator::schedule_abs_s (double time, Event event)
-{
-	TRACE ("insert " << event << " at " << time << "s");
-	return get_priv ()->schedule_abs_s (event, time);
-}
-double 
-Simulator::now_s (void)
-{
-	return get_priv ()->now_s ();
-}
-void
-Simulator::schedule_now (Event event)
-{
-	TRACE ("insert later " << event);
-	return get_priv ()->schedule_now (event);
-}
-void 
-Simulator::schedule_destroy (Event event)
-{
-	TRACE ("insert at destroy " << event);
-	return get_priv ()->schedule_destroy (event);
+	return get_priv ()->now ();
 }
 
-Event 
-Simulator::remove (Event const ev)
+EventId
+Simulator::schedule (Time time, EventImpl *ev)
+{
+	return get_priv ()->schedule (time, ev);
+}
+
+void
+Simulator::remove (EventId ev)
 {
 	return get_priv ()->remove (ev);
+}
+
+void
+Simulator::cancel (EventId ev)
+{
+	return get_priv ()->cancel (ev);
+}
+bool 
+Simulator::is_expired (EventId id)
+{
+	return get_priv ()->is_expired (id);
 }
 
 }; // namespace ns3
 
 
+#ifdef RUN_SELF_TESTS
+
+#include "ns3/test.h"
+
 namespace ns3 {
 
-ParallelSimulatorQueue::ParallelSimulatorQueue ()
+class SimulatorTests : public Test {
+public:
+	SimulatorTests ();
+	virtual ~SimulatorTests ();
+	virtual bool run_tests (void);
+private:
+	void a (int a);
+	void b (int b);
+	void c (int c);
+	void d (int d);
+	bool m_b;
+	bool m_a;
+	bool m_c;
+	bool m_d;
+	EventId m_id_c;
+};
+
+SimulatorTests::SimulatorTests ()
+	: Test ("Simulator")
 {}
-ParallelSimulatorQueue::~ParallelSimulatorQueue ()
+SimulatorTests::~SimulatorTests ()
+{}
+void
+SimulatorTests::a (int a)
 {
-	delete m_priv;
-}
-void 
-ParallelSimulatorQueue::schedule_abs_us (uint64_t at, Event ev)
-{
-	m_priv->schedule_abs_us (ev, at);
+	m_a = false;
 }
 void
-ParallelSimulatorQueue::set_priv (ParallelSimulatorQueuePrivate *priv)
+SimulatorTests::b (int b)
 {
-	m_priv = priv;
+	if (b != 2 || Simulator::now ().us () != 11) {
+		m_b = false;
+	} else {
+		m_b = true;
+	}
+	Simulator::remove (m_id_c);
+	Simulator::schedule (Time::rel_us (10), &SimulatorTests::d, this, 4);
 }
-};
+void
+SimulatorTests::c (int c)
+{
+	m_c = false;
+}
+void
+SimulatorTests::d (int d)
+{
+	if (d != 4 || Simulator::now ().us () != (11+10)) {
+		m_d = false;
+	} else {
+		m_d = true;
+	}
+}
+bool 
+SimulatorTests::run_tests (void)
+{
+	bool ok = true;
+	m_a = true;
+	m_b = false;
+	m_c = true;
+	m_d = false;
+	EventId a = Simulator::schedule (Time::abs_us (10), &SimulatorTests::a, this, 1);
+	EventId b = Simulator::schedule (Time::abs_us (11), &SimulatorTests::b, this, 2);
+	m_id_c = Simulator::schedule (Time::abs_us (12), &SimulatorTests::c, this, 3);
+
+	Simulator::cancel (a);
+	Simulator::run ();
+
+	if (!m_a || !m_b || !m_c || !m_d) {
+		ok = false;
+	}
+
+	return ok;
+}
+
+SimulatorTests g_simulator_tests;
+
+}; // namespace ns3
+
+#endif /* RUN_SELF_TESTS */
+
+
+

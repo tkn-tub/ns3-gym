@@ -22,8 +22,9 @@
 #include "scheduler.h"
 #include <cassert>
 
+namespace ns3 {
 
-ns3::Scheduler::~Scheduler () 
+Scheduler::~Scheduler () 
 {}
 
 /* Note the invariants which this function must provide:
@@ -32,15 +33,57 @@ ns3::Scheduler::~Scheduler ()
  * - transitivity: f(x,y) and f(y,z) => f(x,z)
  */
 bool
-ns3::Scheduler::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
+Scheduler::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
 {
 	assert (a.m_uid != b.m_uid);
-	if (a.m_time < b.m_time) {
+	if (a.m_ns < b.m_ns) {
 		return true;
-	} else if (a.m_time == b.m_time && a.m_uid < b.m_uid) {
+	} else if (a.m_ns == b.m_ns && a.m_uid < b.m_uid) {
 		return true;
 	} else {
 		return false;
 	}
 }
 
+
+EventId 
+Scheduler::insert (EventImpl *event, struct EventKey key)
+{
+	return real_insert (event, key);
+}
+bool 
+Scheduler::is_empty (void) const
+{
+	return real_is_empty ();
+}
+EventImpl *
+Scheduler::peek_next (void) const
+{
+	assert (!real_is_empty ());
+	return real_peek_next ();
+}
+Scheduler::EventKey 
+Scheduler::peek_next_key (void) const 
+{
+	assert (!real_is_empty ());
+	return real_peek_next_key ();
+}
+void 
+Scheduler::remove_next (void)
+{
+	assert (!real_is_empty ());
+	return real_remove_next ();
+}
+EventImpl *
+Scheduler::remove (EventId id, EventKey *key)
+{
+	assert (!real_is_empty ());
+	return real_remove (id, key);
+}
+bool 
+Scheduler::is_valid (EventId id)
+{
+	return real_is_valid (id);
+}
+
+}; // namespace ns3

@@ -20,7 +20,7 @@
  */
 
 #include "scheduler-list.h"
-#include "event.h"
+#include "event-impl.h"
 #include <utility>
 #include <cassert>
 
@@ -37,71 +37,83 @@ SchedulerList::~SchedulerList ()
  * it relies on the fact that a std::list<>::iterator has a single
  * member variable, a pointer.
  */
-void 
-SchedulerList::store_in_event (Event ev, EventsI i)
+EventId
+SchedulerList::get_event_id (Scheduler::EventKey key, EventsI i)
 {
-	assert (sizeof (i) <= sizeof (Event));
-	void *tag;
-	strncpy ((char *)&(tag), (char *)&i, sizeof (void *));
-	ev.set_tag (tag);
+	assert (sizeof (i) <= sizeof (void *));
+	void *internal_iterator;
+	memcpy ((char *)&(internal_iterator), (char *)&i, sizeof (void *));
+	EventImpl *ev = i->first;
+	ev->set_internal_iterator (internal_iterator);
+	return EventId (ev, key.m_ns, key.m_uid);
 }
 SchedulerList::EventsI 
-SchedulerList::get_from_event (Event const ev)
+SchedulerList::get_iterator (EventId id)
 {
 	SchedulerList::EventsI i;
-	assert (sizeof (i) <= sizeof (Event));
-	void *tag = ev.get_tag ();
-	strncpy ((char *)&i, (char *)&(tag), sizeof (void *));
+	assert (sizeof (i) <= sizeof (void *));
+	EventImpl *ev = id.get_event_impl ();
+	void *internal_iterator = ev->get_internal_iterator ();
+	memcpy ((char *)&i, (char *)&(internal_iterator), sizeof (void *));
 	return i;
 }
 
 
-Event  
-SchedulerList::insert (Event event, Scheduler::EventKey key)
+EventId
+SchedulerList::real_insert (EventImpl *event, Scheduler::EventKey key)
 {
 	Scheduler::EventKeyCompare compare;
 	for (EventsI i = m_events.begin (); i != m_events.end (); i++) {
 		if (compare (key, i->second)) {
 			m_events.insert (i, std::make_pair (event, key));
-			store_in_event (event, i);
-			return event;
+			return get_event_id (key, i);
 		}
 	}
 	m_events.push_back (std::make_pair (event, key));
-	store_in_event (event, --(m_events.end ()));
-	return event;
+	return get_event_id (key, --(m_events.end ()));
 }
 bool 
-SchedulerList::is_empty (void) const
+SchedulerList::real_is_empty (void) const
 {
 	return m_events.empty ();
 }
-Event 
-SchedulerList::peek_next (void) const
+EventImpl *
+SchedulerList::real_peek_next (void) const
 {
-	assert (!is_empty ());
 	return m_events.front ().first;
 }
 Scheduler::EventKey
-SchedulerList::peek_next_key (void) const
+SchedulerList::real_peek_next_key (void) const
 {
-	assert (!is_empty ());
 	return m_events.front ().second;
 }
 
 void
-SchedulerList::remove_next (void)
+SchedulerList::real_remove_next (void)
 {
 	m_events.pop_front ();
 }
 
-Scheduler::EventKey
-SchedulerList::remove (Event const ev)
+EventImpl *
+SchedulerList::real_remove (EventId id, Scheduler::EventKey *key)
 {
-	EventsI i = get_from_event (ev);
-	EventKey key = (*i).second;
-	m_events.erase (get_from_event (ev));
-	return key;
+	EventsI i = get_iterator (id);
+	*key = i->second;
+	assert (key->m_ns == id.get_ns () &&
+		key->m_uid == id.get_uid ());
+	EventImpl *ev = i->first;
+	m_events.erase (i);
+	return ev;
+}
+
+bool 
+SchedulerList::real_is_valid (EventId id)
+{
+	EventsI i = get_iterator (id);
+	Scheduler::EventKey key = i->second;
+	return (key.m_ns == id.get_ns () &&
+		key.m_uid == id.get_uid ());
+	
 }
 
 }; // namespace ns3

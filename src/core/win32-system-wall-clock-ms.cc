@@ -16,28 +16,50 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mathieu Lacage <mathieu.lacage.inria.fr>
  */
 
-#ifndef UTILS_H
-#define UTILS_H
-
-#include <stdint.h>
+#include "system-wall-clock-ms.h"
 
 namespace ns3 {
 
-uint16_t utils_hton_16 (uint16_t v);
-uint32_t utils_hton_32 (uint32_t v);
-uint16_t utils_ntoh_16 (uint16_t v);
-uint32_t utils_ntoh_32 (uint32_t v);
+class SystemWallClockMsPrivate {
+public:
+	void start (void);
+	unsigned long long end (void);
+private:
+};
 
-uint32_t ascii_to_ipv4_host (char const *address);
-void ascii_to_mac_network (char const *str, uint8_t address[6]);
+void 
+SystemWallClockMsPrivate::start (void)
+{
+}
 
-/* call with checksum = 0 the first time. */
-uint16_t utils_checksum_calculate (uint16_t checksum, uint8_t *buffer, uint16_t size);
-uint16_t utils_checksum_complete (uint16_t checksum);
+unsigned long long 
+SystemWallClockMsPrivate::end (void)
+{
+	return 0;
+}
+
+SystemWallClockMs::SystemWallClockMs ()
+	: m_priv (new SystemWallClockMsPrivate ())
+{}
+
+SystemWallClockMs::~SystemWallClockMs ()
+{
+	delete m_priv;
+	m_priv = 0;
+}
+
+void
+SystemWallClockMs::start (void)
+{
+	m_priv->start ();
+}
+unsigned long long
+SystemWallClockMs::end (void)
+{
+	return m_priv->end ();
+}
 
 }; // namespace ns3
-
-#endif /* UTILS_H */

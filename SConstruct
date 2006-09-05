@@ -476,28 +476,17 @@ env = Environment ()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin':
 	core.add_external_dep ('pthread')
 	core.add_sources ([
-		'unix-system-semaphore.cc',
-		'unix-system-thread.cc',
-		'unix-system-mutex.cc',
-		'unix-exec-commands.cc',
-		'unix-wall-clock-ms.cc',
+		'unix-system-wall-clock-ms.cc',
 		'unix-system-file.cc'
 		])
 elif env['PLATFORM'] == 'win32':
 	core.add_sources ([
-		'win32-system-semaphore.cc',
-		'win32-system-thread.cc',
-		'win32-system-mutex.cc',
-		'win32-wall-clock-ms.cc',
+		'win32-system-wall-clock-ms.cc',
 		'win32-system-file.cc'
 		])
 core.add_inst_headers ([
-	'system-semaphore.h',
-        'system-thread.h',
-        'system-mutex.h',
 	'system-file.h',
-        'exec-commands.h',
-        'wall-clock-ms.h',
+        'system-wall-clock-ms.h',
         'reference-list.h',
         'callback.h',
         'test.h'
@@ -511,26 +500,28 @@ simu = Ns3Module ('simulator', 'src/simulator')
 ns3.add (simu)
 simu.add_dep ('core')
 simu.add_sources ([
-	'scheduler.cc', 
+	'time.cc',
+	'event-id.cc',
+	'scheduler.cc',
+	'scheduler-factory.cc',
 	'scheduler-list.cc',
-        'scheduler-heap.cc',
-        'scheduler-map.cc',
+	'scheduler-heap.cc',
+	'scheduler-map.cc',
         'event-impl.cc',
-        'event-tcc.cc',
-        'event-tcc-test.cc',
         'simulator.cc',
 	])
 simu.add_headers ([
-	'scheduler.h',
 	'scheduler-heap.h',
 	'scheduler-map.h',
 	'scheduler-list.h'
 	])
 simu.add_inst_headers ([
-	'event.h',
+	'time.h',
+	'event-id.h',
 	'event-impl.h',
 	'simulator.h',
-	'event.tcc'
+	'scheduler.h',
+	'scheduler-factory.h',
 	])
 
 #
@@ -541,60 +532,32 @@ common.add_deps (['core', 'simulator'])
 ns3.add (common)
 common.add_sources ([
 	'buffer.cc',
-	'mac-address-factory.cc',
-	'static-position.cc',
 	'chunk.cc',
-	'mac-network-interface.cc',
-	'static-speed-position.cc',
 	'chunk-constant-data.cc',
 	'packet.cc',
 	'tags.cc',
-	'chunk-llc-snap.cc',
-	'packet-logger.cc',
-	'chunk-utils.cc',
 	'pcap-writer.cc',
 	'trace-container.cc',
-	'population-analysis.cc',
-	'traced-variable-test.cc',
-	'ipv4-address.cc',
-	'position.cc',
-	'trace-stream-test.cc',
-	'ipv4-network-interface.cc',
-	'utils.cc',
-	'llc-snap-encapsulation.cc',
-	'mac-address.cc'
+	'variable-tracer-test.cc',
+	'stream-tracer-test.cc',
 	])
 common.add_inst_headers ([
-	'ipv4-address.h',
 	'buffer.h',
 	'chunk.h',
 	'tags.h',
 	'packet.h',
-	'ipv4-network-interface.h',
 	'count-ptr-holder.tcc',
-	'ui-traced-variable.tcc',
-	'si-traced-variable.tcc',
-	'f-traced-variable.tcc',
-	'callback-logger.h',
+	'ui-variable-tracer.h',
+	'si-variable-tracer.h',
+	'f-variable-tracer.h',
+	'callback-tracer.h',
+	'stream-tracer.h',
 	'trace-container.h',
-	'packet-logger.h',
 	'chunk-constant-data.h',
-	'mac-address.h',
-	'chunk-utils.h',
-	'llc-snap-encapsulation.h',
-	'mac-network-interface.h',
-	'population-analysis.h',
-	'position.h',
-	'trace-stream.h',
 	'pcap-writer.h',
-	'mac-address-factory.h',
-	'static-position.h',
-	'utils.h'
 	])
 common.add_headers ([
-	'chunk-llc-snap.h',
 	'ref-ptr.h',
-	'static-speed-position.h'
 	])
 
 
@@ -624,12 +587,6 @@ main_callback.set_executable ()
 ns3.add (main_callback)
 main_callback.add_dep ('core')
 main_callback.add_source ('main-callback.cc')
-
-main_event = Ns3Module ('main-event', 'samples')
-main_event.set_executable ()
-ns3.add (main_event)
-main_event.add_dep ('simulator')
-main_event.add_source ('main-event.cc')
 
 main_trace = Ns3Module ('main-trace', 'samples')
 ns3.add (main_trace)

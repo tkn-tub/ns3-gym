@@ -16,40 +16,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Mathieu Lacage <mathieu.lacage.inria.fr>
  */
 
-#ifndef CHUNK_LLC_SNAP_H
-#define CHUNK_LLC_SNAP_H
-
-#include "chunk.h"
-#include <stdint.h>
+#ifndef SYSTEM_WALL_CLOCK_MS_H
+#define SYSTEM_WALL_CLOCK_MS_H
 
 namespace ns3 {
 
-class ChunkLlcSnap : public Chunk {
- public:
-	ChunkLlcSnap ();
-	virtual ~ChunkLlcSnap ();
+class SystemWallClockMs {
+public:
+	SystemWallClockMs ();
+	~SystemWallClockMs ();
 
-	enum Type {
-		TYPE_IPV4 = 0x0800,
-		TYPE_ARP  = 0x0806
-	};
-
-	void set_type (enum Type type);
-	enum Type get_type (void);
-
-	uint32_t get_size (void) const;
-
+	void start (void);
+	unsigned long long end (void);
 private:
-	virtual void print (std::ostream *os) const;
-	virtual void add_to (Buffer *buffer) const;
-	virtual void peek_from (Buffer const *buffer);
-	virtual void remove_from (Buffer *buffer);
-	uint16_t m_ether_type;
+	class SystemWallClockMsPrivate *m_priv;
 };
 
 }; // namespace ns3
 
-#endif /* CHUNK_LLC_SNAP_H */
+#endif /* SYSTEM_WALL_CLOCK_MS_H */

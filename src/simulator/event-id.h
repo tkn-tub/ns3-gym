@@ -1,6 +1,6 @@
 /* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
 /*
- * Copyright (c) 2006 INRIA
+ * Copyright (c) 2005 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,41 +18,35 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef EXEC_COMMANDS_H
-#define EXEC_COMMANDS_H
+#ifndef EVENT_ID_H
+#define EVENT_ID_H
 
 #include <stdint.h>
-#include <string>
-#include <vector>
-#include "callback.h"
 
 namespace ns3 {
 
-class ExecCommandsPrivate;
+class EventImpl;
 
-class Command {
+class EventId {
 public:
-	void reset (void);
-	void append (std::string arg);
-	uint32_t get_n (void);
-	char const *get (uint32_t i);
-private:
-	typedef std::vector<std::string> Args;
-	Args m_args;
-};
-
-class ExecCommands {
+        EventId ();
+        EventId (EventImpl *impl, uint64_t ns, uint32_t uid);
+	void cancel (void);
+	bool is_expired (void);
 public:
-	typedef Callback<void,char const *,uint32_t> CommandCallback;
-	ExecCommands (uint32_t pool_size);
-	void enable_log (char const *main_log);
-	void add (Command command, char const *id);
-	void start (void);
-	uint32_t get_size (void);
+	/* The following methods are semi-private
+	 * they are supposed to be invoked only by
+	 * subclasses of the Scheduler base class.
+	 */
+	EventImpl *get_event_impl (void) const;
+	uint64_t get_ns (void) const;
+	uint32_t get_uid (void) const;
 private:
-	ExecCommandsPrivate *m_priv;
+	EventImpl *m_event_impl;
+	uint64_t m_ns;
+	uint32_t m_uid;
 };
 
-};
+}; // namespace ns3
 
-#endif /* EXEC_COMMANDS_H */
+#endif /* EVENT_ID_H */

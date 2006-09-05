@@ -19,14 +19,14 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef CALLBACK_LOGGER_H
-#define CALLBACK_LOGGER_H
+#ifndef CALLBACK_TRACER_H
+#define CALLBACK_TRACER_H
 
 #include "ns3/callback.h"
 
 namespace ns3 {
 
-class CallbackLoggerBase {};
+class CallbackTracerBase {};
 
 /**
  * \brief log arbitrary number of parameters to a matching ns3::Callback
@@ -37,9 +37,9 @@ class CallbackLoggerBase {};
 template<typename T1 = empty, typename T2 = empty, 
 	 typename T3 = empty, typename T4 = empty,
 	 typename T5 = empty>
-class CallbackLogger : public CallbackLoggerBase{
+class CallbackTracer : public CallbackTracerBase{
 public:
-	CallbackLogger ()
+	CallbackTracer ()
 		: m_callback () {}
 	void set_callback (Callback<void,T1,T2,T3,T4,T5> callback) {
 		m_callback = callback;
@@ -81,4 +81,4 @@ private:
 
 }; // namespace ns3
 
-#endif /* CALLBACK_LOGGER_H */
+#endif /* CALLBACK_TRACER_H */

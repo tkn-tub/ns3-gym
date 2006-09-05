@@ -19,45 +19,54 @@
  * Author: Mathieu Lacage <mathieu.lacage.inria.fr>
  */
 
-#include "wall-clock-ms.h"
+#include "system-wall-clock-ms.h"
+#include <sys/time.h>
 
 namespace ns3 {
 
-class WallClockMsPrivate {
+class SystemWallClockMsPrivate {
 public:
 	void start (void);
 	unsigned long long end (void);
 private:
+	struct timeval m_start_tv;
+	struct timeval m_end_tv;
 };
 
 void 
-WallClockMsPrivate::start (void)
+SystemWallClockMsPrivate::start (void)
 {
+	struct timezone tz;
+	gettimeofday (&m_start_tv, &tz);
 }
 
 unsigned long long 
-WallClockMsPrivate::end (void)
+SystemWallClockMsPrivate::end (void)
 {
-	return 0;
+	struct timezone tz;
+	gettimeofday (&m_end_tv, &tz);
+	unsigned long long end = m_end_tv.tv_sec *1000 + m_end_tv.tv_usec / 1000;
+	unsigned long long start = m_start_tv.tv_sec *1000 + m_start_tv.tv_usec / 1000;
+	return end - start;
 }
 
-WallClockMs::WallClockMs ()
-	: m_priv (new WallClockMsPrivate ())
+SystemWallClockMs::SystemWallClockMs ()
+	: m_priv (new SystemWallClockMsPrivate ())
 {}
 
-WallClockMs::~WallClockMs ()
+SystemWallClockMs::~SystemWallClockMs ()
 {
 	delete m_priv;
 	m_priv = 0;
 }
 
 void
-WallClockMs::start (void)
+SystemWallClockMs::start (void)
 {
 	m_priv->start ();
 }
 unsigned long long
-WallClockMs::end (void)
+SystemWallClockMs::end (void)
 {
 	return m_priv->end ();
 }

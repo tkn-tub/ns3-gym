@@ -33,7 +33,7 @@
  */
 
 #include "scheduler-heap.h"
-#include "event.h"
+#include "event-impl.h"
 #include <cassert>
 
 #define noTRACE_HEAP 1
@@ -57,25 +57,22 @@ SchedulerHeap::SchedulerHeap ()
 	// the array to make sure the indexes in the
 	// array start at one.
 	Scheduler::EventKey empty_key = {0,0};
-	m_heap.push_back (std::make_pair ((Event )0, empty_key));
+	m_heap.push_back (std::make_pair (static_cast<EventImpl *>(0), empty_key));
 }
 
 SchedulerHeap::~SchedulerHeap ()
 {}
 
- 
-void 
-SchedulerHeap::store_in_event (Event ev, uint32_t index) const
+void
+SchedulerHeap::store_in_event (EventImpl *ev, uint32_t index) const
 {
-	ev.set_tag ((void *)index);
+	ev->set_internal_iterator ((void *)index);
 }
-uint32_t 
-SchedulerHeap::get_from_event (Event const ev) const
+uint32_t
+SchedulerHeap::get_from_event (EventImpl *ev) const
 {
- 	return (uint32_t)ev.get_tag ();
+       return (uint32_t)ev->get_internal_iterator ();
 }
-
-
 uint32_t 
 SchedulerHeap::parent (uint32_t id) const
 {
@@ -127,14 +124,9 @@ SchedulerHeap::exch (uint32_t a, uint32_t b)
 {
 	assert (b < m_heap.size () && a < m_heap.size ());
 	TRACE ("exch " << a << ", " << b);
-#if 1
-	std::swap (m_heap[a].second, m_heap[b].second);
-	std::swap (m_heap[a].first.m_impl, m_heap[b].first.m_impl);
-#else
-	std::pair<Event , Scheduler::EventKey> tmp (m_heap[a]);
+	std::pair<EventImpl*, Scheduler::EventKey> tmp (m_heap[a]);
 	m_heap[a] = m_heap[b];
 	m_heap[b] = tmp;
-#endif
 	store_in_event (m_heap[a].first, a);
 	store_in_event (m_heap[b].first, b);
 }
@@ -153,7 +145,7 @@ SchedulerHeap::smallest (uint32_t a, uint32_t b)
 }
 
 bool
-SchedulerHeap::is_empty (void) const
+SchedulerHeap::real_is_empty (void) const
 {
 	return (m_heap.size () == 1)?true:false;
 }
@@ -199,45 +191,53 @@ SchedulerHeap::top_down (void)
 }
 
 
-Event  
-SchedulerHeap::insert (Event event, Scheduler::EventKey key)
+EventId
+SchedulerHeap::real_insert (EventImpl *event, Scheduler::EventKey key)
 {
 	m_heap.push_back (std::make_pair (event, key));
-	store_in_event (event, last ());
 	bottom_up ();
-	return event;
+	store_in_event (event, last ());
+	return EventId (event, key.m_ns, key.m_uid);
 }
 
-Event
-SchedulerHeap::peek_next (void) const
+EventImpl *
+SchedulerHeap::real_peek_next (void) const
 {
-	assert (!is_empty ());
 	return m_heap[root ()].first;
 }
 Scheduler::EventKey
-SchedulerHeap::peek_next_key (void) const
+SchedulerHeap::real_peek_next_key (void) const
 {
-	assert (!is_empty ());
 	return m_heap[root ()].second;
 }
 void     
-SchedulerHeap::remove_next (void)
+SchedulerHeap::real_remove_next (void)
 {
-	assert (!is_empty ());
 	exch (root (), last ());
 	m_heap.pop_back ();
 	top_down ();
 }
 
-Scheduler::EventKey
-SchedulerHeap::remove (Event const ev)
+
+EventImpl *
+SchedulerHeap::real_remove (EventId id, Scheduler::EventKey *key)
 {
+	EventImpl *ev = id.get_event_impl ();
 	uint32_t i = get_from_event (ev);
-	EventKey key = m_heap[i].second;
+	*key = m_heap[i].second;
 	exch (i, last ());
 	m_heap.pop_back ();
 	top_down ();
-	return key;
+	return ev;
 }
 
+bool 
+SchedulerHeap::real_is_valid (EventId id)
+{
+	EventImpl *ev = id.get_event_impl ();
+	uint32_t i = get_from_event (ev);
+	Scheduler::EventKey key = m_heap[i].second;
+	return (key.m_ns == id.get_ns () &&
+		key.m_uid == id.get_uid ());
+}
 }; // namespace ns3

@@ -1,6 +1,6 @@
 /* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
 /*
- * Copyright (c) 2005 INRIA
+ * Copyright (c) 2006 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,38 +18,17 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-
-
-#ifndef POPULATION_ANALYSIS_H
-#define POPULATION_ANALYSIS_H
-
-#include <stdint.h>
+#include "scheduler-factory.h"
 
 namespace ns3 {
 
-class PopulationAnalysis {
-public:
-	PopulationAnalysis ();
-	~PopulationAnalysis ();
+SchedulerFactory::~SchedulerFactory ()
+{}
 
-	void reset (void);
-
-	void add_term (double term);
-
-	uint32_t get_n (void);
-	double get_total (void);
-	double get_mean (void);
-	double get_standard_deviation (void);
-	double get_unbiased_variance (void);
-
-private:
-	double m_mean;
-	double m_square_sum;
-	double m_sum;
-	uint32_t m_n;
-};
+Scheduler *
+SchedulerFactory::create (void) const
+{
+	return real_create ();
+}
 
 }; // namespace ns3
-
-
-#endif /* POPULATION_ANALYSIS_H */

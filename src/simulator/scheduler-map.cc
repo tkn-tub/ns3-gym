@@ -21,7 +21,7 @@
  */
 
 #include "scheduler-map.h"
-#include "event.h"
+#include "event-impl.h"
 #include <cassert>
 
 #define noTRACE_MAP 1
@@ -45,67 +45,72 @@ SchedulerMap::~SchedulerMap ()
 
 
 void 
-SchedulerMap::store_in_event (Event ev, EventMapI i) const
+SchedulerMap::store_in_event (EventImpl *ev, EventMapI i) const
 {
 	void *tag;
 	memcpy (&(tag), &i, sizeof (tag));
-	ev.set_tag (tag);
+	ev->set_internal_iterator (tag);
 }
 SchedulerMap::EventMapI
-SchedulerMap::get_from_event (Event const ev) const
+SchedulerMap::get_from_event (EventImpl *ev) const
 {
 	EventMapI i;
-	void *tag = ev.get_tag ();
+	void *tag = ev->get_internal_iterator ();
 	memcpy (&i, &(tag), sizeof (i));
  	return i;
 }
 
-Event  
-SchedulerMap::insert (Event event, Scheduler::EventKey key)
+EventId
+SchedulerMap::real_insert (EventImpl *event, Scheduler::EventKey key)
 {
 	std::pair<EventMapI,bool> result = m_list.insert (std::make_pair (key, event));
 	assert (result.second);
 	store_in_event (event, result.first);
-	return event;
+	return EventId (event, key.m_ns, key.m_uid);
 }
 
 bool
-SchedulerMap::is_empty (void) const
+SchedulerMap::real_is_empty (void) const
 {
 	return m_list.empty ();
 }
 
-Event 
-SchedulerMap::peek_next (void) const
+EventImpl *
+SchedulerMap::real_peek_next (void) const
 {
-	assert (!is_empty ());
 	EventMapCI i = m_list.begin ();
 	assert (i != m_list.end ());
 	return (*i).second;
 }
 Scheduler::EventKey
-SchedulerMap::peek_next_key (void) const
+SchedulerMap::real_peek_next_key (void) const
 {
-	assert (!is_empty ());
 	EventMapCI i = m_list.begin ();
 	assert (i != m_list.end ());
 	return (*i).first;
 }
 void
-SchedulerMap::remove_next (void)
+SchedulerMap::real_remove_next (void)
 {
-	assert (!is_empty ());
 	m_list.erase (m_list.begin ());
 }
 
-Scheduler::EventKey
-SchedulerMap::remove (Event const ev)
+EventImpl *
+SchedulerMap::real_remove (EventId id, Scheduler::EventKey *key)
 {
-	assert (!is_empty ());
-	EventMapI i = get_from_event (ev);
-	EventKey key = (*i).first;
+	EventMapI i = get_from_event (id.get_event_impl ());
+	*key = i->first;
 	m_list.erase (i);
-	return key;
+	return i->second;
+}
+
+bool
+SchedulerMap::real_is_valid (EventId id)
+{
+	EventMapI i = get_from_event (id.get_event_impl ());
+	Scheduler::EventKey key = i->first;
+	return (key.m_ns == id.get_ns () &&
+		key.m_uid == id.get_uid ());
 }
 
 

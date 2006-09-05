@@ -18,44 +18,56 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "seed-generator.h"
-#include "rng-mrg32k3a.h"
+#ifndef STREAM_TRACER_H
+#define STREAM_TRACER_H
+
+#include <ostream>
 
 namespace ns3 {
 
-class SeedGeneratorPrivate {
+/**
+ * \brief log arbitrary data to std::ostreams
+ * 
+ * Whenever operator << is invoked on this class,
+ * it is forwarded to the stored std::ostream output
+ * stream (if there is one).
+ */
+class StreamTracer {
 public:
-	static void destroy (void);
-	static void reset (uint32_t seed);
-	static uint32_t get (void);
+	StreamTracer ()
+		: m_os (0) {}
+	template <typename T>
+	StreamTracer &operator << (T const&v) {
+		if (m_os != 0) {
+			(*m_os) << v;
+		}
+		return *this;
+	}
+	template <typename T>
+	StreamTracer &operator << (T &v) {
+		if (m_os != 0) {
+			(*m_os) << v;
+		}
+		return *this;
+	}
+	StreamTracer &operator << (std::ostream &(*v) (std::ostream &)) {
+		if (m_os != 0) {
+			(*m_os) << v;
+		}
+		return *this;
+	}
+
+	/**
+	 * \param os the output stream to store
+	 */
+	void set_stream (std::ostream * os) {
+		m_os = os;
+	}
 private:
-	static RngMrg32k3a m_generator;
+	std::ostream *m_os;
 };
 
-RngMrg32k3a SeedGeneratorPrivate::m_generator;
-
-void 
-SeedGeneratorPrivate::reset (uint32_t seed)
-{
-	m_generator.reset (seed);
-}
-uint32_t 
-SeedGeneratorPrivate::get (void)
-{
-	return m_generator.get_uint ();
-}
-
-
-
-void 
-SeedGenerator::reset (uint32_t seed)
-{
-	SeedGeneratorPrivate::reset (seed);
-}
-uint32_t 
-SeedGenerator::get (void)
-{
-	return SeedGeneratorPrivate::get ();
-}
-
 }; // namespace ns3
+
+
+#endif /* TRACER_STREAM_H */

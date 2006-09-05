@@ -19,31 +19,34 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef SI_TRACED_VARIABLE_TCC
-#define SI_TRACED_VARIABLE_TCC
+#ifndef UI_VARIABLE_TRACER_H
+#define UI_VARIABLE_TRACER_H
 
 #include "ns3/callback.h"
 #include <stdint.h>
 
 namespace ns3 {
 
-class SiTracedVariableBase {
+class UiVariableTracerBase {
 public:
-	typedef Callback<void,int64_t, int64_t> ChangeNotifyCallback;
+	typedef Callback<void, uint64_t, uint64_t> ChangeNotifyCallback;
 
-	SiTracedVariableBase () {}
-	SiTracedVariableBase (SiTracedVariableBase const &o) {}
-	SiTracedVariableBase &operator = (SiTracedVariableBase const &o) {
+	UiVariableTracerBase ()
+		: m_callback () {}
+	/* We don't want to copy the base callback. Only set_callback on
+	 * a specific instance will do something to it. */
+	UiVariableTracerBase (UiVariableTracerBase const &o) 
+		: m_callback () {}
+	UiVariableTracerBase &operator = (UiVariableTracerBase const &o) {
 		return *this;
 	}
-
-	~SiTracedVariableBase () {}
+	~UiVariableTracerBase () {}
 
 	void set_callback(ChangeNotifyCallback callback) {
 		m_callback = callback;
 	}
 protected:
-	void notify (int64_t old_val, int64_t new_val) {
+	void notify (uint64_t old_val, uint64_t new_val) {
 		if (old_val != new_val && !m_callback.is_null ()) {
 			m_callback (old_val, new_val);
 		}
@@ -53,72 +56,71 @@ private:
 };
 
 template <typename T>
-class UiTracedVariable;
+class SiVariableTracer;
 
 
 /**
- * \brief trace variables of type "signed integer"
+ * \brief trace variables of type "unsigned integer"
  *
  * This template class implements a POD type: it
- * behaves like any other variable of type "signed integer"
+ * behaves like any other variable of type "unsigned integer"
  * except that it also reports any changes to its
  * value with its internal callback.
  *
- * To instantiate a 32-bit signed variable (to store
+ * To instantiate a 32-bit unsigned variable (to store
  * a TCP counter for example), you would create a variable of type
- * ns3::UiTracedVariable<int32_t> :
+ * ns3::UiVariableTracer<uint32_t> :
  \code
  #include <stdint.h>
- #include "ns3/si-traced-variable.tcc"
+ #include "ns3/ui-traced-variable.tcc"
 
- ns3::SiTracedVariable<uint16_t> var;
+ ns3::UiVariableTracer<uint32_t> var;
  \endcode
- * and you would use it like any other variable of type int32_t:
+ * and you would use it like any other variable of type uint32_t:
  \code
  var += 12;
  var = 10;
- var = -10;
  \endcode
  */
 template <typename T>
-class SiTracedVariable : public SiTracedVariableBase {
+class UiVariableTracer : public UiVariableTracerBase {
 public:
-	SiTracedVariable ()
-		: m_var (0)
+	UiVariableTracer ()
+		: m_var ()
 	{}
-	SiTracedVariable (T const &var) 
+	UiVariableTracer (T const &var) 
 		: m_var (var)
 	{}
 
-	SiTracedVariable &operator = (SiTracedVariable const &o) {
+	UiVariableTracer &operator = (UiVariableTracer const &o) {
 		assign (o.get ());
 		return *this;
 	}
 	template <typename TT>
-	SiTracedVariable &operator = (SiTracedVariable<TT> const &o) {
+	UiVariableTracer &operator = (UiVariableTracer<TT> const &o) {
 		assign (o.get ());
 		return *this;
 	}
 	template <typename TT>
-	SiTracedVariable &operator = (UiTracedVariable<TT> const &o) {
+	UiVariableTracer &operator = (SiVariableTracer<TT> const &o) {
 		assign (o.get ());
 		return *this;
 	}
-	SiTracedVariable &operator++ () {
+	UiVariableTracer &operator++ () {
 		assign (get () + 1);
 		return *this;
 	}
-	SiTracedVariable &operator-- () {
+	UiVariableTracer &operator-- () {
 		assign (get () - 1);
 		return *this;
 	}
-	SiTracedVariable operator++ (int) {
-		SiTracedVariable old (*this);
+	UiVariableTracer operator++ (int) {
+		UiVariableTracer old (*this);
 		++*this;
 		return old;
 	}
-	SiTracedVariable operator-- (int) {
-		SiTracedVariable old (*this);
+	UiVariableTracer operator-- (int) {
+		UiVariableTracer old (*this);
 		--*this;
 		return old;
 	}
@@ -140,98 +142,98 @@ private:
 };
 
 template <typename T>
-SiTracedVariable<T> &operator += (SiTracedVariable<T> &lhs, SiTracedVariable<T> const &rhs) {
+UiVariableTracer<T> &operator += (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
 	lhs.assign (lhs.get () + rhs.get ());
 	return lhs;
 }
 template <typename T>
-SiTracedVariable<T> &operator -= (SiTracedVariable<T> &lhs, SiTracedVariable<T> const &rhs) {
+UiVariableTracer<T> &operator -= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
 	lhs.assign (lhs.get () - rhs.get ());
 	return lhs;
 }
 template <typename T>
-SiTracedVariable<T> &operator *= (SiTracedVariable<T> &lhs, SiTracedVariable<T> const &rhs) {
+UiVariableTracer<T> &operator *= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
 	lhs.assign (lhs.get () * rhs.get ());
 	return lhs;
 }
 template <typename T>
-SiTracedVariable<T> &operator /= (SiTracedVariable<T> &lhs, SiTracedVariable<T> const &rhs) {
+UiVariableTracer<T> &operator /= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
 	lhs.assign (lhs.get () / rhs.get ());
 	return lhs;
 }
 template <typename T>
-SiTracedVariable<T> &operator <<= (SiTracedVariable<T> &lhs, SiTracedVariable<T> const &rhs) {
+UiVariableTracer<T> &operator <<= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
 	lhs.assign (lhs.get () << rhs.get ());
 	return lhs;
 }
 template <typename T>
-SiTracedVariable<T> &operator >>= (SiTracedVariable<T> &lhs, SiTracedVariable<T> const &rhs) {
+UiVariableTracer<T> &operator >>= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
 	lhs.assign (lhs.get () >> rhs.get ());
 	return lhs;
 }
 template <typename T>
-SiTracedVariable<T> &operator &= (SiTracedVariable<T> &lhs, SiTracedVariable<T> const &rhs) {
+UiVariableTracer<T> &operator &= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
 	lhs.assign (lhs.get () & rhs.get ());
 	return lhs;
 }
 template <typename T>
-SiTracedVariable<T> &operator |= (SiTracedVariable<T> &lhs, SiTracedVariable<T> const &rhs) {
+UiVariableTracer<T> &operator |= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
 	lhs.assign (lhs.get () | rhs.get ());
 	return lhs;
 }
 template <typename T>
-SiTracedVariable<T> &operator ^= (SiTracedVariable<T> &lhs, SiTracedVariable<T> const &rhs) {
+UiVariableTracer<T> &operator ^= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
 	lhs.assign (lhs.get () ^ rhs.get ());
 	return lhs;
 }
 
 
 template <typename T, typename U>
-SiTracedVariable<T> &operator += (SiTracedVariable<T> &lhs, U const &rhs) {
+UiVariableTracer<T> &operator += (UiVariableTracer<T> &lhs, U const &rhs) {
 	lhs.assign (lhs.get () + rhs);
 	return lhs;
 }
 template <typename T, typename U>
-SiTracedVariable<T> &operator -= (SiTracedVariable<T> &lhs, U const &rhs) {
+UiVariableTracer<T> &operator -= (UiVariableTracer<T> &lhs, U const &rhs) {
 	lhs.assign (lhs.get () - rhs);
 	return lhs;
 }
 template <typename T, typename U>
-SiTracedVariable<T> &operator *= (SiTracedVariable<T> &lhs, U const &rhs) {
+UiVariableTracer<T> &operator *= (UiVariableTracer<T> &lhs, U const &rhs) {
 	lhs.assign (lhs.get () * rhs);
 	return lhs;
 }
 template <typename T, typename U>
-SiTracedVariable<T> &operator /= (SiTracedVariable<T> &lhs, U const &rhs) {
+UiVariableTracer<T> &operator /= (UiVariableTracer<T> &lhs, U const &rhs) {
 	lhs.assign (lhs.get () / rhs);
 	return lhs;
 }
 template <typename T, typename U>
-SiTracedVariable<T> &operator <<= (SiTracedVariable<T> &lhs, U const &rhs) {
+UiVariableTracer<T> &operator <<= (UiVariableTracer<T> &lhs, U const &rhs) {
 	lhs.assign (lhs.get () << rhs);
 	return lhs;
 }
 template <typename T, typename U>
-SiTracedVariable<T> &operator >>= (SiTracedVariable<T> &lhs, U const &rhs) {
+UiVariableTracer<T> &operator >>= (UiVariableTracer<T> &lhs, U const &rhs) {
 	lhs.assign (lhs.get () >> rhs);
 	return lhs;
 }
 template <typename T, typename U>
-SiTracedVariable<T> &operator &= (SiTracedVariable<T> &lhs, U const &rhs) {
+UiVariableTracer<T> &operator &= (UiVariableTracer<T> &lhs, U const &rhs) {
 	lhs.assign (lhs.get () & rhs);
 	return lhs;
 }
 template <typename T, typename U>
-SiTracedVariable<T> &operator |= (SiTracedVariable<T> &lhs, U const &rhs) {
+UiVariableTracer<T> &operator |= (UiVariableTracer<T> &lhs, U const &rhs) {
 	lhs.assign (lhs.get () | rhs);
 	return lhs;
 }
 template <typename T, typename U>
-SiTracedVariable<T> &operator ^= (SiTracedVariable<T> &lhs, U const &rhs) {
+UiVariableTracer<T> &operator ^= (UiVariableTracer<T> &lhs, U const &rhs) {
 	lhs.assign (lhs.get () ^ rhs);
 	return lhs;
 }
 
 }; // namespace ns3
 
-#endif /* TRACED_VARIABLE_TCC */
+#endif /* UI_VARIABLE_TRACER_H */
