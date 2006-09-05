@@ -555,9 +555,6 @@ common.add_inst_headers ([
 	'trace-container.h',
 	'pcap-writer.h',
 	])
-common.add_headers ([
-	'ref-ptr.h',
-	])
 
 
 # utils
