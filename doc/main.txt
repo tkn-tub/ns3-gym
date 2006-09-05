@@ -1,0 +1,35 @@
+/**
+ * \mainpage An Introduction to ns-3
+ *
+ * The ns-3 library is split across multiple modules:
+ *     - core: located in src/core and contains a number of facilities which
+ *       do not depend on any other module. Some of these facilities are
+ *       OS-dependent.
+ *     - simulator: located in src/simulator and contains event scheduling
+ *       facilities.
+ *     - common: located in src/common and contains facilities specific
+ *       to network simulations but shared by pretty much every model
+ *       of a network component.
+ *
+ * The "core" module contains:
+ *    - a Functor class: ns3::Callback
+ *    - an os-independent interface to get write-only access to a file: ns3::SystemFile
+ *    - an os-independent interface to get access to the elapsed wall clock time: ns3:SystemWallClockMs
+ *    - a class to register regression tests with the test manager: ns3::Test and ns3::TestManager
+ *
+ * The "simulator" module contains:
+ *    - a time management class to hold a time and convert between various time units: ns3::Time
+ *    - a scheduler base class used to implement new simulation event schedulers: 
+ *      ns3::Scheduler and ns3::SchedulerFactory
+ *    - a simulator class used to create, schedule and cancel events: ns3::Simulator
+ *
+ * The "common" module contains:
+ *    - a packet class to create and manipulate simulation packets: ns3::Packet and ns3::Chunk
+ *    - a trace container class to hold lists of trace sources: ns3::TraceContainer
+ *    - a Pcap file serializer which can generate pcap files from simulation packets: ns3::PcapWriter
+ */
+/**
+ * \namespace ns3
+ * \brief Every class exported by the ns3 library is enclosed in the
+ * ns3 namespace.
+ */
