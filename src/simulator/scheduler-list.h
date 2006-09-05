@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -34,23 +34,23 @@ class EventImpl;
 
 class SchedulerList : public Scheduler {
  public:
-	SchedulerList ();
-	virtual ~SchedulerList ();
+    SchedulerList ();
+    virtual ~SchedulerList ();
 
  private:
-	virtual EventId realInsert (EventImpl *event, EventKey key);
-	virtual bool realIsEmpty (void) const;
-	virtual EventImpl *realPeekNext (void) const;
-	virtual Scheduler::EventKey realPeekNextKey (void) const;
-	virtual void realRemoveNext (void);
-	virtual EventImpl *realRemove (EventId ev, Scheduler::EventKey *key);
-	virtual bool realIsValid (EventId id);
+    virtual EventId realInsert (EventImpl *event, EventKey key);
+    virtual bool realIsEmpty (void) const;
+    virtual EventImpl *realPeekNext (void) const;
+    virtual Scheduler::EventKey realPeekNextKey (void) const;
+    virtual void realRemoveNext (void);
+    virtual EventImpl *realRemove (EventId ev, Scheduler::EventKey *key);
+    virtual bool realIsValid (EventId id);
 
-	typedef std::list<std::pair<EventImpl*, EventKey> > Events;
-	typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
-	EventId getEventId (Scheduler::EventKey key, EventsI i);
-	EventsI getIterator (EventId id);
-	Events m_events;
+    typedef std::list<std::pair<EventImpl*, EventKey> > Events;
+    typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
+    EventId getEventId (Scheduler::EventKey key, EventsI i);
+    EventsI getIterator (EventId id);
+    Events m_events;
 };
 
 }; // namespace ns3

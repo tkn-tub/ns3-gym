@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -24,40 +24,40 @@
 namespace ns3 {
 
 EventId::EventId ()
-	: m_eventImpl (0),
-	  m_ns (0),
-	  m_uid (0)
+    : m_eventImpl (0),
+      m_ns (0),
+      m_uid (0)
 {}
     
 EventId::EventId (EventImpl *impl, uint64_t ns, uint32_t uid)
-	: m_eventImpl (impl),
-	  m_ns (ns),
-	  m_uid (uid)
+    : m_eventImpl (impl),
+      m_ns (ns),
+      m_uid (uid)
 {}
 void 
 EventId::cancel (void)
 {
-	Simulator::cancel (*this);
+    Simulator::cancel (*this);
 }
 bool 
 EventId::isExpired (void)
 {
-	return Simulator::isExpired (*this);
+    return Simulator::isExpired (*this);
 }
 EventImpl *
 EventId::getEventImpl (void) const
 {
-	return m_eventImpl;
+    return m_eventImpl;
 }
 uint64_t 
 EventId::getNs (void) const
 {
-	return m_ns;
+    return m_ns;
 }
 uint32_t 
 EventId::getUid (void) const
 {
-	return m_uid;
+    return m_uid;
 }
 
 

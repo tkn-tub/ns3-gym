@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -46,32 +46,32 @@ namespace ns3 {
 
 class DataWriterPrivate {
 public:
-	DataWriterPrivate ();
-	~DataWriterPrivate ();
+    DataWriterPrivate ();
+    ~DataWriterPrivate ();
 
-	void open (char const *filename);
-	void write (uint8_t *buffer, uint32_t size);
+    void open (char const *filename);
+    void write (uint8_t *buffer, uint32_t size);
 private:
-	uint8_t m_data[BUFFER_SIZE];
-	uint32_t m_current;
-	int m_fd;
+    uint8_t m_data[BUFFER_SIZE];
+    uint32_t m_current;
+    int m_fd;
 };
 
 DataWriterPrivate::DataWriterPrivate ()
-	: m_current (0)
+    : m_current (0)
 {}
 DataWriterPrivate::~DataWriterPrivate ()
 {
-	::write (m_fd, m_data, m_current);
-	::close (m_fd);
+    ::write (m_fd, m_data, m_current);
+    ::close (m_fd);
 }
 
 
 void
 DataWriterPrivate::open (char const *filename)
 {
-	m_fd = ::open (filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-	assert (m_fd != -1);
+    m_fd = ::open (filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    assert (m_fd != -1);
 }
 
 #ifndef min
@@ -81,39 +81,39 @@ DataWriterPrivate::open (char const *filename)
 void
 DataWriterPrivate::write (uint8_t *buffer, uint32_t size)
 {
-	while (size > 0) {
-		uint32_t toCopy = min (BUFFER_SIZE - m_current, size);
-		memcpy (m_data + m_current, buffer, toCopy);
-		size -= toCopy;
-		m_current += toCopy;
-		buffer += toCopy;
-		if (m_current == BUFFER_SIZE) {
-			ssize_t written = 0;
-			written = ::write (m_fd, m_data, BUFFER_SIZE);
-			assert (written == BUFFER_SIZE);
-			m_current = 0;
-		}
-	}
+    while (size > 0) {
+        uint32_t toCopy = min (BUFFER_SIZE - m_current, size);
+        memcpy (m_data + m_current, buffer, toCopy);
+        size -= toCopy;
+        m_current += toCopy;
+        buffer += toCopy;
+        if (m_current == BUFFER_SIZE) {
+            ssize_t written = 0;
+            written = ::write (m_fd, m_data, BUFFER_SIZE);
+            assert (written == BUFFER_SIZE);
+            m_current = 0;
+        }
+    }
 }
 
 DataWriter::DataWriter ()
-	: m_priv (new DataWriterPrivate ())
+    : m_priv (new DataWriterPrivate ())
 {}
 DataWriter::~DataWriter ()
 {
-	delete m_priv;
-	m_priv = 0;
+    delete m_priv;
+    m_priv = 0;
 }
 
 void 
 DataWriter::open (char const *filename)
 {
-	m_priv->open (filename);
+    m_priv->open (filename);
 }
 void 
 DataWriter::write (uint8_t *buffer, uint32_t size)
 {
-	m_priv->write (buffer, size);
+    m_priv->write (buffer, size);
 }
 
 }; // namespace

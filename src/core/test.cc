@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -29,68 +29,68 @@ namespace ns3 {
 TestManager *
 TestManager::get (void)
 {
-	static TestManager manager;
-	return &manager;
+    static TestManager manager;
+    return &manager;
 }
 
 TestManager::TestManager ()
-	: m_verbose (false)
+    : m_verbose (false)
 {}
 
 TestManager::~TestManager ()
 {
-	TestsI i = m_tests.begin ();
-	while (i != m_tests.end ()) {
-		delete (*i).second;
-		i = m_tests.erase (i);
-	}
+    TestsI i = m_tests.begin ();
+    while (i != m_tests.end ()) {
+        delete (*i).second;
+        i = m_tests.erase (i);
+    }
 }
 void
 TestManager::add (Test *test, char const *name)
 {
-	get ()->m_tests.push_back (std::make_pair (test, new std::string (name)));
+    get ()->m_tests.push_back (std::make_pair (test, new std::string (name)));
 }
 void
 TestManager::enableVerbose (void)
 {
-	get ()->m_verbose = true;
+    get ()->m_verbose = true;
 }
 std::ostream &
 TestManager::failure (void)
 {
-	return std::cerr;
+    return std::cerr;
 }
 bool 
 TestManager::runTests (void)
 {
-	return get ()->realRunTests ();
+    return get ()->realRunTests ();
 }
 bool 
 TestManager::realRunTests (void)
 {
-	bool isSuccess = true;
-	for (TestsCI i = m_tests.begin (); i != m_tests.end (); i++) {
-		std::string *testName = (*i).second;
-		if (!(*i).first->runTests ()) {
-			isSuccess = false;
-			if (m_verbose) {
-				std::cerr << "FAIL " << *testName << std::endl;
-			}
-		} else {
-			if (m_verbose) {
-				std::cerr << "PASS "<<*testName << std::endl;
-			}
-		}
-	}
-	if (!isSuccess) {
-		std::cerr << "FAIL" << std::endl;
-	}
-	return isSuccess;
+    bool isSuccess = true;
+    for (TestsCI i = m_tests.begin (); i != m_tests.end (); i++) {
+        std::string *testName = (*i).second;
+        if (!(*i).first->runTests ()) {
+            isSuccess = false;
+            if (m_verbose) {
+                std::cerr << "FAIL " << *testName << std::endl;
+            }
+        } else {
+            if (m_verbose) {
+                std::cerr << "PASS "<<*testName << std::endl;
+            }
+        }
+    }
+    if (!isSuccess) {
+        std::cerr << "FAIL" << std::endl;
+    }
+    return isSuccess;
 }
 
 Test::Test (char const *name)
 {
-	TestManager::add (this, name);
+    TestManager::add (this, name);
 }
 
 Test::~Test ()
@@ -99,7 +99,7 @@ Test::~Test ()
 std::ostream &
 Test::failure (void)
 {
-	return TestManager::failure ();
+    return TestManager::failure ();
 }
 
 }; // namespace ns3

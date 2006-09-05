@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -40,80 +40,80 @@ SchedulerList::~SchedulerList ()
 EventId
 SchedulerList::getEventId (Scheduler::EventKey key, EventsI i)
 {
-	assert (sizeof (i) <= sizeof (void *));
-	void *internalIterator;
-	memcpy ((char *)&(internalIterator), (char *)&i, sizeof (void *));
-	EventImpl *ev = i->first;
-	ev->setInternalIterator (internalIterator);
-	return EventId (ev, key.m_ns, key.m_uid);
+    assert (sizeof (i) <= sizeof (void *));
+    void *internalIterator;
+    memcpy ((char *)&(internalIterator), (char *)&i, sizeof (void *));
+    EventImpl *ev = i->first;
+    ev->setInternalIterator (internalIterator);
+    return EventId (ev, key.m_ns, key.m_uid);
 }
 SchedulerList::EventsI 
 SchedulerList::getIterator (EventId id)
 {
-	SchedulerList::EventsI i;
-	assert (sizeof (i) <= sizeof (void *));
-	EventImpl *ev = id.getEventImpl ();
-	void *internalIterator = ev->getInternalIterator ();
-	memcpy ((char *)&i, (char *)&(internalIterator), sizeof (void *));
-	return i;
+    SchedulerList::EventsI i;
+    assert (sizeof (i) <= sizeof (void *));
+    EventImpl *ev = id.getEventImpl ();
+    void *internalIterator = ev->getInternalIterator ();
+    memcpy ((char *)&i, (char *)&(internalIterator), sizeof (void *));
+    return i;
 }
 
 
 EventId
 SchedulerList::realInsert (EventImpl *event, Scheduler::EventKey key)
 {
-	Scheduler::EventKeyCompare compare;
-	for (EventsI i = m_events.begin (); i != m_events.end (); i++) {
-		if (compare (key, i->second)) {
-			m_events.insert (i, std::make_pair (event, key));
-			return getEventId (key, i);
-		}
-	}
-	m_events.push_back (std::make_pair (event, key));
-	return getEventId (key, --(m_events.end ()));
+    Scheduler::EventKeyCompare compare;
+    for (EventsI i = m_events.begin (); i != m_events.end (); i++) {
+        if (compare (key, i->second)) {
+            m_events.insert (i, std::make_pair (event, key));
+            return getEventId (key, i);
+        }
+    }
+    m_events.push_back (std::make_pair (event, key));
+    return getEventId (key, --(m_events.end ()));
 }
 bool 
 SchedulerList::realIsEmpty (void) const
 {
-	return m_events.empty ();
+    return m_events.empty ();
 }
 EventImpl *
 SchedulerList::realPeekNext (void) const
 {
-	return m_events.front ().first;
+    return m_events.front ().first;
 }
 Scheduler::EventKey
 SchedulerList::realPeekNextKey (void) const
 {
-	return m_events.front ().second;
+    return m_events.front ().second;
 }
 
 void
 SchedulerList::realRemoveNext (void)
 {
-	m_events.pop_front ();
+    m_events.pop_front ();
 }
 
 EventImpl *
 SchedulerList::realRemove (EventId id, Scheduler::EventKey *key)
 {
-	EventsI i = getIterator (id);
-	*key = i->second;
-	assert (key->m_ns == id.getNs () &&
-		key->m_uid == id.getUid ());
-	EventImpl *ev = i->first;
-	m_events.erase (i);
-	return ev;
+    EventsI i = getIterator (id);
+    *key = i->second;
+    assert (key->m_ns == id.getNs () &&
+        key->m_uid == id.getUid ());
+    EventImpl *ev = i->first;
+    m_events.erase (i);
+    return ev;
 }
 
 bool 
 SchedulerList::realIsValid (EventId id)
 {
-	EventsI i = getIterator (id);
-	Scheduler::EventKey key = i->second;
-	return (key.m_ns == id.getNs () &&
-		key.m_uid == id.getUid ());
-	
+    EventsI i = getIterator (id);
+    Scheduler::EventKey key = i->second;
+    return (key.m_ns == id.getNs () &&
+        key.m_uid == id.getUid ());
+    
 }
 
 }; // namespace ns3

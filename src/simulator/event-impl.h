@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -27,18 +27,18 @@ namespace ns3 {
 
 class EventImpl {
 public:
-	EventImpl ();
-	virtual ~EventImpl () = 0;
-	void invoke (void);
-	void cancel (void);
-	void setInternalIterator (void *iterator);
-	void *getInternalIterator (void) const;
+    EventImpl ();
+    virtual ~EventImpl () = 0;
+    void invoke (void);
+    void cancel (void);
+    void setInternalIterator (void *iterator);
+    void *getInternalIterator (void) const;
 protected:
-	virtual void notify (void) = 0;
+    virtual void notify (void) = 0;
 private:
-	friend class Event;
-	void *m_internalIterator;
-	bool m_cancel;
+    friend class Event;
+    void *m_internalIterator;
+    bool m_cancel;
 };
 
 }; // namespace ns3

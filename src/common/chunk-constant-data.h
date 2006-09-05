@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -30,16 +30,16 @@ namespace ns3 {
 
 class ChunkConstantData : public Chunk {
 public:
-	ChunkConstantData (uint32_t len, uint8_t data);
-	~ChunkConstantData ();
+    ChunkConstantData (uint32_t len, uint8_t data);
+    ~ChunkConstantData ();
 
 private:
-	virtual void print (std::ostream *os) const;
-	virtual void addTo (Buffer *buffer) const;
-	virtual void peekFrom (Buffer const *buffer);
-	virtual void removeFrom (Buffer *buffer);
-	uint32_t m_len;
-	uint8_t m_data;
+    virtual void print (std::ostream *os) const;
+    virtual void addTo (Buffer *buffer) const;
+    virtual void peekFrom (Buffer const *buffer);
+    virtual void removeFrom (Buffer *buffer);
+    uint32_t m_len;
+    uint8_t m_data;
 };
 
 }; // namespace ns3

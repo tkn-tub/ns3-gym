@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -24,104 +24,104 @@
 namespace ns3 {
 
 Packet::Packet ()
-	: m_buffer () {}
+    : m_buffer () {}
 
 Packet::Packet (uint32_t size)
-	: m_buffer (size)
+    : m_buffer (size)
 {}
 Packet::Packet (Buffer buffer, Tags tags)
-	: m_buffer (buffer),
-	  m_tags (tags)
+    : m_buffer (buffer),
+      m_tags (tags)
 {}
 
 
 Packet 
 Packet::createFragment (uint32_t start, uint32_t length) const
 {
-	Buffer tmp = m_buffer.createFragment (start, length);
-	return Packet (tmp, m_tags);
+    Buffer tmp = m_buffer.createFragment (start, length);
+    return Packet (tmp, m_tags);
 }
 
 uint32_t 
 Packet::getSize (void) const
 {
-	return m_buffer.getSize ();
+    return m_buffer.getSize ();
 }
 
 void 
 Packet::add (Chunk *chunk)
 {
-	chunk->add (&m_buffer);
+    chunk->add (&m_buffer);
 }
 
 void 
 Packet::peek (Chunk *chunk) const
 {
-	chunk->peek (&m_buffer);
+    chunk->peek (&m_buffer);
 }
 
 void 
 Packet::remove (Chunk *chunk)
 {
-	chunk->remove (&m_buffer);
+    chunk->remove (&m_buffer);
 }
 
 
 void 
 Packet::write (PacketReadWriteCallback callback) const
 {
-	uint8_t *data = m_buffer.peekData ();
-	uint32_t toWrite = getSize ();
-	callback (data, toWrite);
+    uint8_t *data = m_buffer.peekData ();
+    uint32_t toWrite = getSize ();
+    callback (data, toWrite);
 }
 
 
 void 
 Packet::addAtEnd (Packet packet)
 {
-	Buffer src = packet.m_buffer;
-	m_buffer.addAtEnd (src.getSize ());
-	Buffer::Iterator destStart = m_buffer.end ();
-	destStart.prev (src.getSize ());
-	destStart.write (src.begin (), src.end ());
-	/**
-	 * XXX: we might need to merge the tag list of the
-	 * other packet into the current packet.
-	 */
+    Buffer src = packet.m_buffer;
+    m_buffer.addAtEnd (src.getSize ());
+    Buffer::Iterator destStart = m_buffer.end ();
+    destStart.prev (src.getSize ());
+    destStart.write (src.begin (), src.end ());
+    /**
+     * XXX: we might need to merge the tag list of the
+     * other packet into the current packet.
+     */
 }
 void 
 Packet::addAtEnd (Packet packet, uint32_t start, uint32_t size)
 {
-	assert (packet.getSize () <= start + size);
-	Buffer src = packet.m_buffer;
-	m_buffer.addAtEnd (src.getSize ());
-	Buffer::Iterator destStart = m_buffer.end ();
-	destStart.prev (size);
-	Buffer::Iterator srcStart = src.begin ();
-	srcStart.next (start);
-	Buffer::Iterator srcEnd = srcStart;
-	srcEnd.next (size);
-	destStart.write (srcStart, srcEnd);
-	/**
-	 * XXX: we might need to merge the tag list of the
-	 * other packet into the current packet.
-	 */
+    assert (packet.getSize () <= start + size);
+    Buffer src = packet.m_buffer;
+    m_buffer.addAtEnd (src.getSize ());
+    Buffer::Iterator destStart = m_buffer.end ();
+    destStart.prev (size);
+    Buffer::Iterator srcStart = src.begin ();
+    srcStart.next (start);
+    Buffer::Iterator srcEnd = srcStart;
+    srcEnd.next (size);
+    destStart.write (srcStart, srcEnd);
+    /**
+     * XXX: we might need to merge the tag list of the
+     * other packet into the current packet.
+     */
 }
 void 
 Packet::removeAtEnd (uint32_t size)
 {
-	m_buffer.removeAtEnd (size);
+    m_buffer.removeAtEnd (size);
 }
 void 
 Packet::removeAtStart (uint32_t size)
 {
-	m_buffer.removeAtStart (size);
+    m_buffer.removeAtStart (size);
 }
 
 void 
 Packet::removeAllTags (void)
 {
-	m_tags.removeAll ();
+    m_tags.removeAll ();
 }
 
 }; // namespace ns3

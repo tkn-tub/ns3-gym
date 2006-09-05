@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -29,30 +29,30 @@ EventImpl::~EventImpl ()
 {}
 
 EventImpl::EventImpl ()
-	: m_internalIterator (0),
-	  m_cancel (false)
+    : m_internalIterator (0),
+      m_cancel (false)
 {}
 void 
 EventImpl::invoke (void)
 {
-	if (!m_cancel) {
-		notify ();
-	}
+    if (!m_cancel) {
+        notify ();
+    }
 }
 void 
 EventImpl::setInternalIterator (void *tag)
 {
-	m_internalIterator = tag;
+    m_internalIterator = tag;
 }
 void *
 EventImpl::getInternalIterator (void) const
 {
-	return m_internalIterator;
+    return m_internalIterator;
 }
 void 
 EventImpl::cancel (void)
 {
-	m_cancel = true;
+    m_cancel = true;
 }
 
 }; // namespace ns3

@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -33,27 +33,27 @@ class EventImpl;
 
 class SchedulerMap : public Scheduler {
 public:
-	SchedulerMap ();
-	virtual ~SchedulerMap ();
+    SchedulerMap ();
+    virtual ~SchedulerMap ();
 
 private:
-	virtual EventId realInsert (EventImpl *event, Scheduler::EventKey key);
-	virtual bool realIsEmpty (void) const;
-	virtual EventImpl *realPeekNext (void) const;
-	virtual Scheduler::EventKey realPeekNextKey (void) const;
-	virtual void realRemoveNext (void);
-	virtual EventImpl *realRemove (EventId ev, Scheduler::EventKey *key);
-	virtual bool realIsValid (EventId id);
+    virtual EventId realInsert (EventImpl *event, Scheduler::EventKey key);
+    virtual bool realIsEmpty (void) const;
+    virtual EventImpl *realPeekNext (void) const;
+    virtual Scheduler::EventKey realPeekNextKey (void) const;
+    virtual void realRemoveNext (void);
+    virtual EventImpl *realRemove (EventId ev, Scheduler::EventKey *key);
+    virtual bool realIsValid (EventId id);
 
-	typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare> EventMap;
-	typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::iterator EventMapI;
-	typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::const_iterator EventMapCI;
+    typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare> EventMap;
+    typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::iterator EventMapI;
+    typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::const_iterator EventMapCI;
 
-	void storeInEvent (EventImpl *ev, EventMapI i) const;
-	SchedulerMap::EventMapI getFrom_event (EventImpl *ev) const;
+    void storeInEvent (EventImpl *ev, EventMapI i) const;
+    SchedulerMap::EventMapI getFrom_event (EventImpl *ev) const;
 
-	EventMap m_list;
-	uint32_t m_uid;
+    EventMap m_list;
+    uint32_t m_uid;
 };
 
 }; // namespace ns3

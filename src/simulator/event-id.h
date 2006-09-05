@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -29,22 +29,22 @@ class EventImpl;
 
 class EventId {
 public:
-        EventId ();
-        EventId (EventImpl *impl, uint64_t ns, uint32_t uid);
-	void cancel (void);
-	bool isExpired (void);
+    EventId ();
+    EventId (EventImpl *impl, uint64_t ns, uint32_t uid);
+    void cancel (void);
+    bool isExpired (void);
 public:
-	/* The following methods are semi-private
-	 * they are supposed to be invoked only by
-	 * subclasses of the Scheduler base class.
-	 */
-	EventImpl *getEventImpl (void) const;
-	uint64_t getNs (void) const;
-	uint32_t getUid (void) const;
+    /* The following methods are semi-private
+     * they are supposed to be invoked only by
+     * subclasses of the Scheduler base class.
+     */
+    EventImpl *getEventImpl (void) const;
+    uint64_t getNs (void) const;
+    uint32_t getUid (void) const;
 private:
-	EventImpl *m_eventImpl;
-	uint64_t m_ns;
-	uint32_t m_uid;
+    EventImpl *m_eventImpl;
+    uint64_t m_ns;
+    uint32_t m_uid;
 };
 
 }; // namespace ns3

@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -24,94 +24,94 @@
 namespace ns3 {
 
 Time::Time ()
-	: m_ns (0),
-	  m_isDestroy (true)
+    : m_ns (0),
+      m_isDestroy (true)
 {}
 Time::Time (Time const &o)
-	: m_ns (o.m_ns),
-	  m_isDestroy (o.m_isDestroy)
+    : m_ns (o.m_ns),
+      m_isDestroy (o.m_isDestroy)
 {}
 Time &
 Time::operator = (Time const &o)
 {
-	m_ns = o.m_ns;
-	m_isDestroy = o.m_isDestroy;
-	return *this;
+    m_ns = o.m_ns;
+    m_isDestroy = o.m_isDestroy;
+    return *this;
 }
 Time::Time (uint64_t ns)
-	: m_ns (ns),
-	  m_isDestroy (false)
+    : m_ns (ns),
+      m_isDestroy (false)
 {}
 
 double 
 Time::s (void) const
 {
-	double ns = m_ns;
-	ns /= 1000000000;
-	return ns;
+    double ns = m_ns;
+    ns /= 1000000000;
+    return ns;
 }
 uint64_t 
 Time::us (void) const
 {
-	uint64_t us = m_ns / 1000;
-	return us;
+    uint64_t us = m_ns / 1000;
+    return us;
 }
 
 uint64_t 
 Time::ns (void) const
 {
-	return m_ns;
+    return m_ns;
 }
 
 bool
 Time::isDestroy (void) const
 {
-	return m_isDestroy;
+    return m_isDestroy;
 }
 
 Time 
 Time::absS (double s)
 {
-	int64_t ns = (int64_t)(s * 1000000000.0);
-	return Time (ns);
+    int64_t ns = (int64_t)(s * 1000000000.0);
+    return Time (ns);
 }
 Time 
 Time::absUs (uint64_t us)
 {
-	int64_t ns = us * 1000;
-	return Time (ns);
+    int64_t ns = us * 1000;
+    return Time (ns);
 }
 Time 
 Time::absNs (uint64_t ns)
 {
-	return Time (ns);
+    return Time (ns);
 }
 Time 
 Time::relS (double s)
 {
-	int64_t ns = (int64_t)(s * 1000000000.0);
-	return Time (Simulator::now ().ns () + ns);
+    int64_t ns = (int64_t)(s * 1000000000.0);
+    return Time (Simulator::now ().ns () + ns);
 }
 Time 
 Time::relUs (uint64_t us)
 {
-	return Time (Simulator::now ().ns () + us * 1000);
+    return Time (Simulator::now ().ns () + us * 1000);
 }
 Time 
 Time::relNs (uint64_t ns)
 {
-	return Time (Simulator::now ().ns () + ns);
+    return Time (Simulator::now ().ns () + ns);
 }
 
 Time 
 Time::now (void)
 {
-	return Time (Simulator::now ().ns ());
+    return Time (Simulator::now ().ns ());
 }
 Time 
 Time::destroy (void)
 {
-	return Time ();
+    return Time ();
 }
 
 /***
@@ -121,51 +121,51 @@ Time::destroy (void)
  */
 class AbsTimeS : public Time {
 public:
-	AbsTimeS (double s);
+    AbsTimeS (double s);
 };
 class AbsTimeUs : public Time {
 public:
-	AbsTimeUs (uint64_t us);
+    AbsTimeUs (uint64_t us);
 };
 class RelTimeS : public Time {
 public:
-	RelTimeS (double s);
+    RelTimeS (double s);
 };
 class RelTimeUs : public Time {
 public:
-	RelTimeUs (uint64_t us);
+    RelTimeUs (uint64_t us);
 };
 
 class NowTime : public Time {
 public:
-	NowTime ();
+    NowTime ();
 };
 
 class DestroyTime : public Time {
 public:
-	DestroyTime ();
+    DestroyTime ();
 };
 
 
 AbsTimeS::AbsTimeS (double s)
-	: Time ((uint64_t)(int64_t)(s * 1000000000.0))
+    : Time ((uint64_t)(int64_t)(s * 1000000000.0))
 {}
 AbsTimeUs::AbsTimeUs (uint64_t us)
-	: Time (us*1000)
+    : Time (us*1000)
 {}
 RelTimeS::RelTimeS (double s)
-	: Time (Simulator::now ().ns () + (int64_t)(s * 1000000000.0))
+    : Time (Simulator::now ().ns () + (int64_t)(s * 1000000000.0))
 {}
 RelTimeUs::RelTimeUs (uint64_t us)
-	: Time (Simulator::now ().ns () + us*1000)
+    : Time (Simulator::now ().ns () + us*1000)
 {}
 
 NowTime::NowTime ()
-	: Time (Simulator::now ().ns ())
+    : Time (Simulator::now ().ns ())
 {}
 
 DestroyTime::DestroyTime ()
-	: Time ()
+    : Time ()
 {}
 
 }; // namespace ns3

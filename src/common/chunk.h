@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -37,49 +37,49 @@ namespace ns3 {
  */
 class Chunk {
 public:
-	Chunk ();
-	/**
-	 * Derived classes must provided an explicit virtual destructor
-	 */
-	virtual ~Chunk () = 0;
+    Chunk ();
+    /**
+     * Derived classes must provided an explicit virtual destructor
+     */
+    virtual ~Chunk () = 0;
 
-	void print (std::ostream &os) const;
+    void print (std::ostream &os) const;
 
-	void add (Buffer *buffer) const;
-	void peek (Buffer const *buffer);
-	void remove (Buffer *buffer);
+    void add (Buffer *buffer) const;
+    void peek (Buffer const *buffer);
+    void remove (Buffer *buffer);
 private:
-	bool m_mustPeekBeforeRemove;
-	/**
-	 * \param os the std output stream in which this 
-	 *           protocol header must print itself.
-	 */
-	virtual void print (std::ostream *os) const = 0;
+    bool m_mustPeekBeforeRemove;
+    /**
+     * \param os the std output stream in which this 
+     *       protocol header must print itself.
+     */
+    virtual void print (std::ostream *os) const = 0;
 
-	/**
-	 * \param buffer the buffer in which the protocol header
-	 *        must serialize itself.
-	 *
-	 * This method must:
-	 *   - reserve room for its serialized representation in the input buffer
-	 *   - serialize itself in this reserved room
-	 */
-	virtual void addTo (Buffer *buffer) const = 0;
-	/**
-	 * \param buffer the buffer from which the protocol header must
-	 *        deserialize itself.
-	 *
-	 */
-	virtual void peekFrom (Buffer const *buffer) = 0;
-	/**
-	 * \param buffer the buffer from which the protocol header
-	 *        must remove itself.
-	 *
-	 * This method must remove its serialized representation 
-	 * from the input buffer. This method does not need to deserialize
-	 * the data itself.
-	 */
-	virtual void removeFrom (Buffer *buffer) = 0;
+    /**
+     * \param buffer the buffer in which the protocol header
+     *    must serialize itself.
+     *
+     * This method must:
+     *   - reserve room for its serialized representation in the input buffer
+     *   - serialize itself in this reserved room
+     */
+    virtual void addTo (Buffer *buffer) const = 0;
+    /**
+     * \param buffer the buffer from which the protocol header must
+     *    deserialize itself.
+     *
+     */
+    virtual void peekFrom (Buffer const *buffer) = 0;
+    /**
+     * \param buffer the buffer from which the protocol header
+     *    must remove itself.
+     *
+     * This method must remove its serialized representation 
+     * from the input buffer. This method does not need to deserialize
+     * the data itself.
+     */
+    virtual void removeFrom (Buffer *buffer) = 0;
 };
 
 std::ostream& operator<< (std::ostream& os, Chunk const& chunk);

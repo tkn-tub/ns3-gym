@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -37,79 +37,79 @@ class ReferenceList;
 template <typename OBJ_PTR>
 class ReferenceList {
 public:
-	ReferenceList () 
-		:  m_objPtr (),
-		   m_prev (), 
-		   m_next () 
-	{
-		m_prev = this;
-		m_next = this;
-	}
-	ReferenceList (ReferenceList &o) 
-		: m_objPtr (),
-		  m_prev (), 
-		  m_next ()
-	{
-		m_prev = this;
-		m_next = this;
-		insertSelfInOther (o);
-	}
-	ReferenceList (ReferenceList const&o) 
-		: m_objPtr (),
-		  m_prev (), 
-		  m_next ()
-	{
-		m_prev = this;
-		m_next = this;
-		insertSelfInOther (o);
-	}
-	ReferenceList (OBJ_PTR const &objPtr)
-		: m_objPtr (objPtr), 
-		  m_prev (), 
-		  m_next ()
-	{
-		m_prev = this;
-		m_next = this;
-	}
-	~ReferenceList () {
-		removeFrom_list ();
-	}
-	ReferenceList & operator= (ReferenceList const&o) {
-		removeFrom_list ();
-		insertSelfInOther (o);
-		return *this;
-	}
-	OBJ_PTR operator-> () {
-		return m_objPtr;
-	}
-	void set (OBJ_PTR objPtr) {
-		removeFrom_list ();
-		m_objPtr = objPtr;
-	}
-	OBJ_PTR get (void) {
-		// explicit conversion to raw pointer type.
-		return m_objPtr;
-	}
+    ReferenceList () 
+        :  m_objPtr (),
+           m_prev (), 
+           m_next () 
+    {
+        m_prev = this;
+        m_next = this;
+    }
+    ReferenceList (ReferenceList &o) 
+        : m_objPtr (),
+          m_prev (), 
+          m_next ()
+    {
+        m_prev = this;
+        m_next = this;
+        insertSelfInOther (o);
+    }
+    ReferenceList (ReferenceList const&o) 
+        : m_objPtr (),
+          m_prev (), 
+          m_next ()
+    {
+        m_prev = this;
+        m_next = this;
+        insertSelfInOther (o);
+    }
+    ReferenceList (OBJ_PTR const &objPtr)
+        : m_objPtr (objPtr), 
+          m_prev (), 
+          m_next ()
+    {
+        m_prev = this;
+        m_next = this;
+    }
+    ~ReferenceList () {
+        removeFrom_list ();
+    }
+    ReferenceList & operator= (ReferenceList const&o) {
+        removeFrom_list ();
+        insertSelfInOther (o);
+        return *this;
+    }
+    OBJ_PTR operator-> () {
+        return m_objPtr;
+    }
+    void set (OBJ_PTR objPtr) {
+        removeFrom_list ();
+        m_objPtr = objPtr;
+    }
+    OBJ_PTR get (void) {
+        // explicit conversion to raw pointer type.
+        return m_objPtr;
+    }
 private:
-	void insertSelfInOther (ReferenceList const&o) {
-		m_prev = &o;
-		m_next = o.m_next;
-		m_next->m_prev = this;
-		o.m_next = this;
-		m_objPtr = o.m_objPtr;
-	}
-	void removeFrom_list (void) {
-		if (m_prev == this) {
-			//assert (m_next == this);
-			delete m_objPtr;
-			m_objPtr = OBJ_PTR ();
-		}
-		m_prev->m_next = m_next;
-		m_next->m_prev = m_prev;
-	}
-	OBJ_PTR m_objPtr;
-	mutable ReferenceList const*m_prev;
-	mutable ReferenceList const*m_next;
+    void insertSelfInOther (ReferenceList const&o) {
+        m_prev = &o;
+        m_next = o.m_next;
+        m_next->m_prev = this;
+        o.m_next = this;
+        m_objPtr = o.m_objPtr;
+    }
+    void removeFrom_list (void) {
+        if (m_prev == this) {
+            //assert (m_next == this);
+            delete m_objPtr;
+            m_objPtr = OBJ_PTR ();
+        }
+        m_prev->m_next = m_next;
+        m_next->m_prev = m_prev;
+    }
+    OBJ_PTR m_objPtr;
+    mutable ReferenceList const*m_prev;
+    mutable ReferenceList const*m_next;
 };
 
 }; // namespace ns3

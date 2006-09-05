@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -29,30 +29,30 @@ namespace ns3 {
 
 class UiVariableTracerBase {
 public:
-	typedef Callback<void, uint64_t, uint64_t> ChangeNotifyCallback;
+    typedef Callback<void, uint64_t, uint64_t> ChangeNotifyCallback;
 
-	UiVariableTracerBase ()
-		: m_callback () {}
-	/* We don't want to copy the base callback. Only setCallback on
-	 * a specific instance will do something to it. */
-	UiVariableTracerBase (UiVariableTracerBase const &o) 
-		: m_callback () {}
-	UiVariableTracerBase &operator = (UiVariableTracerBase const &o) {
-		return *this;
-	}
-	~UiVariableTracerBase () {}
+    UiVariableTracerBase ()
+        : m_callback () {}
+    /* We don't want to copy the base callback. Only setCallback on
+     * a specific instance will do something to it. */
+    UiVariableTracerBase (UiVariableTracerBase const &o) 
+        : m_callback () {}
+    UiVariableTracerBase &operator = (UiVariableTracerBase const &o) {
+        return *this;
+    }
+    ~UiVariableTracerBase () {}
 
-	void setCallback(ChangeNotifyCallback callback) {
-		m_callback = callback;
-	}
+    void setCallback(ChangeNotifyCallback callback) {
+        m_callback = callback;
+    }
 protected:
-	void notify (uint64_t oldVal, uint64_t newVal) {
-		if (oldVal != newVal && !m_callback.isNull ()) {
-			m_callback (oldVal, newVal);
-		}
-	}
+    void notify (uint64_t oldVal, uint64_t newVal) {
+        if (oldVal != newVal && !m_callback.isNull ()) {
+            m_callback (oldVal, newVal);
+        }
+    }
 private:
-	ChangeNotifyCallback m_callback;
+    ChangeNotifyCallback m_callback;
 };
 
 template <typename T>
@@ -85,153 +85,153 @@ class SiVariableTracer;
 template <typename T>
 class UiVariableTracer : public UiVariableTracerBase {
 public:
-	UiVariableTracer ()
-		: m_var ()
-	{}
-	UiVariableTracer (T const &var) 
-		: m_var (var)
-	{}
+    UiVariableTracer ()
+        : m_var ()
+    {}
+    UiVariableTracer (T const &var) 
+        : m_var (var)
+    {}
 
-	UiVariableTracer &operator = (UiVariableTracer const &o) {
-		assign (o.get ());
-		return *this;
-	}
-	template <typename TT>
-	UiVariableTracer &operator = (UiVariableTracer<TT> const &o) {
-		assign (o.get ());
-		return *this;
-	}
-	template <typename TT>
-	UiVariableTracer &operator = (SiVariableTracer<TT> const &o) {
-		assign (o.get ());
-		return *this;
-	}
-	UiVariableTracer &operator++ () {
-		assign (get () + 1);
-		return *this;
-	}
-	UiVariableTracer &operator-- () {
-		assign (get () - 1);
-		return *this;
-	}
-	UiVariableTracer operator++ (int) {
-		UiVariableTracer old (*this);
-		++*this;
-		return old;
-	}
-	UiVariableTracer operator-- (int) {
-		UiVariableTracer old (*this);
-		--*this;
-		return old;
-	}
-	operator T () const {
-		return get ();
-	}
+    UiVariableTracer &operator = (UiVariableTracer const &o) {
+        assign (o.get ());
+        return *this;
+    }
+    template <typename TT>
+    UiVariableTracer &operator = (UiVariableTracer<TT> const &o) {
+        assign (o.get ());
+        return *this;
+    }
+    template <typename TT>
+    UiVariableTracer &operator = (SiVariableTracer<TT> const &o) {
+        assign (o.get ());
+        return *this;
+    }
+    UiVariableTracer &operator++ () {
+        assign (get () + 1);
+        return *this;
+    }
+    UiVariableTracer &operator-- () {
+        assign (get () - 1);
+        return *this;
+    }
+    UiVariableTracer operator++ (int) {
+        UiVariableTracer old (*this);
+        ++*this;
+        return old;
+    }
+    UiVariableTracer operator-- (int) {
+        UiVariableTracer old (*this);
+        --*this;
+        return old;
+    }
+    operator T () const {
+        return get ();
+    }
 
 
-	void assign (T var) {
-		notify (m_var, var);
-		m_var = var;
-	}
-        T get (void) const {
-		return m_var;
-	}
+    void assign (T var) {
+        notify (m_var, var);
+        m_var = var;
+    }
+    T get (void) const {
+        return m_var;
+    }
 
 private:
-	T m_var;
+    T m_var;
 };
 
 template <typename T>
 UiVariableTracer<T> &operator += (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
-	lhs.assign (lhs.get () + rhs.get ());
-	return lhs;
+    lhs.assign (lhs.get () + rhs.get ());
+    return lhs;
 }
 template <typename T>
 UiVariableTracer<T> &operator -= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
-	lhs.assign (lhs.get () - rhs.get ());
-	return lhs;
+    lhs.assign (lhs.get () - rhs.get ());
+    return lhs;
 }
 template <typename T>
 UiVariableTracer<T> &operator *= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
-	lhs.assign (lhs.get () * rhs.get ());
-	return lhs;
+    lhs.assign (lhs.get () * rhs.get ());
+    return lhs;
 }
 template <typename T>
 UiVariableTracer<T> &operator /= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
-	lhs.assign (lhs.get () / rhs.get ());
-	return lhs;
+    lhs.assign (lhs.get () / rhs.get ());
+    return lhs;
 }
 template <typename T>
 UiVariableTracer<T> &operator <<= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
-	lhs.assign (lhs.get () << rhs.get ());
-	return lhs;
+    lhs.assign (lhs.get () << rhs.get ());
+    return lhs;
 }
 template <typename T>
 UiVariableTracer<T> &operator >>= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
-	lhs.assign (lhs.get () >> rhs.get ());
-	return lhs;
+    lhs.assign (lhs.get () >> rhs.get ());
+    return lhs;
 }
 template <typename T>
 UiVariableTracer<T> &operator &= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
-	lhs.assign (lhs.get () & rhs.get ());
-	return lhs;
+    lhs.assign (lhs.get () & rhs.get ());
+    return lhs;
 }
 template <typename T>
 UiVariableTracer<T> &operator |= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
-	lhs.assign (lhs.get () | rhs.get ());
-	return lhs;
+    lhs.assign (lhs.get () | rhs.get ());
+    return lhs;
 }
 template <typename T>
 UiVariableTracer<T> &operator ^= (UiVariableTracer<T> &lhs, UiVariableTracer<T> const &rhs) {
-	lhs.assign (lhs.get () ^ rhs.get ());
-	return lhs;
+    lhs.assign (lhs.get () ^ rhs.get ());
+    return lhs;
 }
 
 
 template <typename T, typename U>
 UiVariableTracer<T> &operator += (UiVariableTracer<T> &lhs, U const &rhs) {
-	lhs.assign (lhs.get () + rhs);
-	return lhs;
+    lhs.assign (lhs.get () + rhs);
+    return lhs;
 }
 template <typename T, typename U>
 UiVariableTracer<T> &operator -= (UiVariableTracer<T> &lhs, U const &rhs) {
-	lhs.assign (lhs.get () - rhs);
-	return lhs;
+    lhs.assign (lhs.get () - rhs);
+    return lhs;
 }
 template <typename T, typename U>
 UiVariableTracer<T> &operator *= (UiVariableTracer<T> &lhs, U const &rhs) {
-	lhs.assign (lhs.get () * rhs);
-	return lhs;
+    lhs.assign (lhs.get () * rhs);
+    return lhs;
 }
 template <typename T, typename U>
 UiVariableTracer<T> &operator /= (UiVariableTracer<T> &lhs, U const &rhs) {
-	lhs.assign (lhs.get () / rhs);
-	return lhs;
+    lhs.assign (lhs.get () / rhs);
+    return lhs;
 }
 template <typename T, typename U>
 UiVariableTracer<T> &operator <<= (UiVariableTracer<T> &lhs, U const &rhs) {
-	lhs.assign (lhs.get () << rhs);
-	return lhs;
+    lhs.assign (lhs.get () << rhs);
+    return lhs;
 }
 template <typename T, typename U>
 UiVariableTracer<T> &operator >>= (UiVariableTracer<T> &lhs, U const &rhs) {
-	lhs.assign (lhs.get () >> rhs);
-	return lhs;
+    lhs.assign (lhs.get () >> rhs);
+    return lhs;
 }
 template <typename T, typename U>
 UiVariableTracer<T> &operator &= (UiVariableTracer<T> &lhs, U const &rhs) {
-	lhs.assign (lhs.get () & rhs);
-	return lhs;
+    lhs.assign (lhs.get () & rhs);
+    return lhs;
 }
 template <typename T, typename U>
 UiVariableTracer<T> &operator |= (UiVariableTracer<T> &lhs, U const &rhs) {
-	lhs.assign (lhs.get () | rhs);
-	return lhs;
+    lhs.assign (lhs.get () | rhs);
+    return lhs;
 }
 template <typename T, typename U>
 UiVariableTracer<T> &operator ^= (UiVariableTracer<T> &lhs, U const &rhs) {
-	lhs.assign (lhs.get () ^ rhs);
-	return lhs;
+    lhs.assign (lhs.get () ^ rhs);
+    return lhs;
 }
 
 }; // namespace ns3

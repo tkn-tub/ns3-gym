@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -25,30 +25,30 @@
 namespace ns3 {
 
 Chunk::Chunk ()
-	: m_mustPeekBeforeRemove (false) {}
+    : m_mustPeekBeforeRemove (false) {}
 
 void 
 Chunk::print (std::ostream &os) const
 {
-	print (&os);
+    print (&os);
 }
 void 
 Chunk::add (Buffer *buffer) const
 {
-	addTo (buffer);
+    addTo (buffer);
 }
 void 
 Chunk::peek (Buffer const *buffer)
 {
-	peekFrom (buffer);
-	m_mustPeekBeforeRemove = true;
+    peekFrom (buffer);
+    m_mustPeekBeforeRemove = true;
 }
 void 
 Chunk::remove (Buffer *buffer)
 {
-	assert (m_mustPeekBeforeRemove);
-	removeFrom (buffer);
-	m_mustPeekBeforeRemove = false;
+    assert (m_mustPeekBeforeRemove);
+    removeFrom (buffer);
+    m_mustPeekBeforeRemove = false;
 }
 
 
@@ -58,8 +58,8 @@ Chunk::~Chunk ()
 
 std::ostream& operator<< (std::ostream& os, Chunk const& chunk)
 {
-	chunk.print (os);
-	return os;
+    chunk.print (os);
+    return os;
 }
 
 }; // namespace ns3

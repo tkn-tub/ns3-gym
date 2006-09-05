@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -32,38 +32,38 @@ class EventHolder;
 
 class SchedulerHeap : public Scheduler {
 public:
-	SchedulerHeap ();
-	virtual ~SchedulerHeap ();
+    SchedulerHeap ();
+    virtual ~SchedulerHeap ();
 
 private:
-	virtual EventId realInsert (EventImpl *event, Scheduler::EventKey key);
-	virtual bool realIsEmpty (void) const;
-	virtual EventImpl *realPeekNext (void) const;
-	virtual Scheduler::EventKey realPeekNextKey (void) const;
-	virtual void realRemoveNext (void);
-	virtual EventImpl *realRemove (EventId ev, Scheduler::EventKey *key);
-	virtual bool realIsValid (EventId id);
+    virtual EventId realInsert (EventImpl *event, Scheduler::EventKey key);
+    virtual bool realIsEmpty (void) const;
+    virtual EventImpl *realPeekNext (void) const;
+    virtual Scheduler::EventKey realPeekNextKey (void) const;
+    virtual void realRemoveNext (void);
+    virtual EventImpl *realRemove (EventId ev, Scheduler::EventKey *key);
+    virtual bool realIsValid (EventId id);
 
-	typedef std::vector<std::pair<EventImpl *, Scheduler::EventKey> > BinaryHeap;
-	inline void storeInEvent (EventImpl *ev, uint32_t index) const;
-	uint32_t getFrom_event (EventImpl *ev) const;
+    typedef std::vector<std::pair<EventImpl *, Scheduler::EventKey> > BinaryHeap;
+    inline void storeInEvent (EventImpl *ev, uint32_t index) const;
+    uint32_t getFrom_event (EventImpl *ev) const;
 
-	inline uint32_t parent (uint32_t id) const;
-	uint32_t sibling (uint32_t id) const;
-	inline uint32_t leftChild (uint32_t id) const;
-	inline uint32_t rightChild (uint32_t id) const;
-	inline uint32_t root (void) const;
-	uint32_t last (void) const;
-	inline bool isRoot (uint32_t id) const;
-	inline bool isBottom (uint32_t id) const;
-	inline bool isLess (uint32_t a, uint32_t b);
-	inline uint32_t smallest (uint32_t a, uint32_t b);
+    inline uint32_t parent (uint32_t id) const;
+    uint32_t sibling (uint32_t id) const;
+    inline uint32_t leftChild (uint32_t id) const;
+    inline uint32_t rightChild (uint32_t id) const;
+    inline uint32_t root (void) const;
+    uint32_t last (void) const;
+    inline bool isRoot (uint32_t id) const;
+    inline bool isBottom (uint32_t id) const;
+    inline bool isLess (uint32_t a, uint32_t b);
+    inline uint32_t smallest (uint32_t a, uint32_t b);
 
-	inline void exch (uint32_t a, uint32_t b);
-	void bottom_up (void);
-	void topDown (void);
+    inline void exch (uint32_t a, uint32_t b);
+    void bottom_up (void);
+    void topDown (void);
 
-	BinaryHeap m_heap;
+    BinaryHeap m_heap;
 };
 
 }; // namespace ns3

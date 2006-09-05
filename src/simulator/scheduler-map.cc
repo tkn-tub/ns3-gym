@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -47,70 +47,70 @@ SchedulerMap::~SchedulerMap ()
 void 
 SchedulerMap::storeInEvent (EventImpl *ev, EventMapI i) const
 {
-	void *tag;
-	memcpy (&(tag), &i, sizeof (tag));
-	ev->setInternalIterator (tag);
+    void *tag;
+    memcpy (&(tag), &i, sizeof (tag));
+    ev->setInternalIterator (tag);
 }
 SchedulerMap::EventMapI
 SchedulerMap::getFrom_event (EventImpl *ev) const
 {
-	EventMapI i;
-	void *tag = ev->getInternalIterator ();
-	memcpy (&i, &(tag), sizeof (i));
- 	return i;
+    EventMapI i;
+    void *tag = ev->getInternalIterator ();
+    memcpy (&i, &(tag), sizeof (i));
+     return i;
 }
 
 EventId
 SchedulerMap::realInsert (EventImpl *event, Scheduler::EventKey key)
 {
-	std::pair<EventMapI,bool> result = m_list.insert (std::make_pair (key, event));
-	assert (result.second);
-	storeInEvent (event, result.first);
-	return EventId (event, key.m_ns, key.m_uid);
+    std::pair<EventMapI,bool> result = m_list.insert (std::make_pair (key, event));
+    assert (result.second);
+    storeInEvent (event, result.first);
+    return EventId (event, key.m_ns, key.m_uid);
 }
 
 bool
 SchedulerMap::realIsEmpty (void) const
 {
-	return m_list.empty ();
+    return m_list.empty ();
 }
 
 EventImpl *
 SchedulerMap::realPeekNext (void) const
 {
-	EventMapCI i = m_list.begin ();
-	assert (i != m_list.end ());
-	return (*i).second;
+    EventMapCI i = m_list.begin ();
+    assert (i != m_list.end ());
+    return (*i).second;
 }
 Scheduler::EventKey
 SchedulerMap::realPeekNextKey (void) const
 {
-	EventMapCI i = m_list.begin ();
-	assert (i != m_list.end ());
-	return (*i).first;
+    EventMapCI i = m_list.begin ();
+    assert (i != m_list.end ());
+    return (*i).first;
 }
 void
 SchedulerMap::realRemoveNext (void)
 {
-	m_list.erase (m_list.begin ());
+    m_list.erase (m_list.begin ());
 }
 
 EventImpl *
 SchedulerMap::realRemove (EventId id, Scheduler::EventKey *key)
 {
-	EventMapI i = getFrom_event (id.getEventImpl ());
-	*key = i->first;
-	m_list.erase (i);
-	return i->second;
+    EventMapI i = getFrom_event (id.getEventImpl ());
+    *key = i->first;
+    m_list.erase (i);
+    return i->second;
 }
 
 bool
 SchedulerMap::realIsValid (EventId id)
 {
-	EventMapI i = getFrom_event (id.getEventImpl ());
-	Scheduler::EventKey key = i->first;
-	return (key.m_ns == id.getNs () &&
-		key.m_uid == id.getUid ());
+    EventMapI i = getFrom_event (id.getEventImpl ());
+    Scheduler::EventKey key = i->first;
+    return (key.m_ns == id.getNs () &&
+        key.m_uid == id.getUid ());
 }
 
 

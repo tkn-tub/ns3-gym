@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -28,38 +28,38 @@ namespace {
 
 class TestStreamTracer : public ns3::Test {
 public:
-	TestStreamTracer ();
-	virtual bool runTests (void);
+    TestStreamTracer ();
+    virtual bool runTests (void);
 };
 
 static TestStreamTracer gTestStream;
 
 TestStreamTracer::TestStreamTracer ()
-	: Test ("StreamTracer")
+    : Test ("StreamTracer")
 {}
 
 bool
 TestStreamTracer::runTests (void)
 {
-	bool ok = true;
-	ns3::StreamTracer trace;
-	//trace.setStream (&std::cout);
-	trace << 1;
-	trace << " X ";
-	trace << 1.0;
-	trace << std::endl;
-	trace << "test ";
-	trace << 1 << " test";
-	trace << "test "
-	      << 1.0 << " "
-	      << 0xdeadbead
-	      << std::endl;
-	trace << "0x" << std::hex 
-	      << 0xdeadbeaf 
-	      << std::dec << " "
-	      << 0xdeadbeaf
-	      << std::endl;
-	return ok;
+    bool ok = true;
+    ns3::StreamTracer trace;
+    //trace.setStream (&std::cout);
+    trace << 1;
+    trace << " X ";
+    trace << 1.0;
+    trace << std::endl;
+    trace << "test ";
+    trace << 1 << " test";
+    trace << "test "
+          << 1.0 << " "
+          << 0xdeadbead
+          << std::endl;
+    trace << "0x" << std::hex 
+          << 0xdeadbeaf 
+          << std::dec << " "
+          << 0xdeadbeaf
+          << std::endl;
+    return ok;
 }
 
 

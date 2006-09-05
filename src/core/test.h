@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -35,38 +35,38 @@ class TestManager;
 
 class Test {
 public:
-	Test (char const *name);
-	virtual ~Test ();
+    Test (char const *name);
+    virtual ~Test ();
 
-	virtual bool runTests (void) = 0;
+    virtual bool runTests (void) = 0;
 
 protected:
-	std::ostream &failure (void);
+    std::ostream &failure (void);
 };
 
 class TestManager {
 public:
-	// main methods the test runner is supposed to
-	// invoke.
-	static void enableVerbose (void);
-	static bool runTests (void);
+    // main methods the test runner is supposed to
+    // invoke.
+    static void enableVerbose (void);
+    static bool runTests (void);
 
-	// helper methods
-	static void add (Test *test, char const *name);
-	static std::ostream &failure (void);
+    // helper methods
+    static void add (Test *test, char const *name);
+    static std::ostream &failure (void);
 private:
-	static TestManager *get (void);
-	bool realRunTests (void);
+    static TestManager *get (void);
+    bool realRunTests (void);
 
-	TestManager ();
-	~TestManager ();
+    TestManager ();
+    ~TestManager ();
 
-	typedef std::list<std::pair<Test *,std::string *> > Tests;
-	typedef std::list<std::pair<Test *,std::string *> >::iterator TestsI;
-	typedef std::list<std::pair<Test *,std::string *> >::const_iterator TestsCI;
+    typedef std::list<std::pair<Test *,std::string *> > Tests;
+    typedef std::list<std::pair<Test *,std::string *> >::iterator TestsI;
+    typedef std::list<std::pair<Test *,std::string *> >::const_iterator TestsCI;
 
-	Tests m_tests;
-	bool m_verbose;
+    Tests m_tests;
+    bool m_verbose;
 };
 }; // namespace ns3 
 

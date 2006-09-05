@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -24,9 +24,9 @@
 int main (int argc, char *argv[])
 {
 #ifdef RUN_SELF_TESTS
-	ns3::TestManager::enableVerbose ();
-	ns3::TestManager::runTests ();
+    ns3::TestManager::enableVerbose ();
+    ns3::TestManager::runTests ();
 #endif /* RUN_SELF_TESTS */
 
-	return 0;
+    return 0;
 }

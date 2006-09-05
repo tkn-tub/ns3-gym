@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -38,11 +38,11 @@ namespace ns3 {
 
 class SystemFilePrivate {
 public:
-	SystemFilePrivate ();
-	~SystemFilePrivate ();
+    SystemFilePrivate ();
+    ~SystemFilePrivate ();
 
-	void open (char const *filename);
-	void write (uint8_t *buffer, uint32_t size);
+    void open (char const *filename);
+    void write (uint8_t *buffer, uint32_t size);
 private:
 };
 
@@ -64,23 +64,23 @@ SystemFilePrivate::write (uint8_t *buffer, uint32_t size)
 }
 
 SystemFile::SystemFile ()
-	: m_priv (new SystemFilePrivate ())
+    : m_priv (new SystemFilePrivate ())
 {}
 SystemFile::~SystemFile ()
 {
-	delete m_priv;
-	m_priv = 0;
+    delete m_priv;
+    m_priv = 0;
 }
 
 void 
 SystemFile::open (char const *filename)
 {
-	m_priv->open (filename);
+    m_priv->open (filename);
 }
 void 
 SystemFile::write (uint8_t *buffer, uint32_t size)
 {
-	m_priv->write (buffer, size);
+    m_priv->write (buffer, size);
 }
 
 }; // namespace

@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -30,13 +30,13 @@ class DataWriterPrivate;
 
 class DataWriter {
 public:
-	DataWriter ();
-	~DataWriter ();
+    DataWriter ();
+    ~DataWriter ();
 
-	void open (char const *filename);
-	void write (uint8_t *buffer, uint32_t size);
+    void open (char const *filename);
+    void write (uint8_t *buffer, uint32_t size);
 private:
-	DataWriterPrivate *m_priv;
+    DataWriterPrivate *m_priv;
 };
 
 }; //namespace ns3

@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -24,7 +24,7 @@
 namespace ns3 {
 
 ChunkConstantData::ChunkConstantData (uint32_t len, uint8_t data)
-	: m_len (len), m_data (data)
+    : m_len (len), m_data (data)
 {}
 
 ChunkConstantData::~ChunkConstantData ()
@@ -34,29 +34,29 @@ ChunkConstantData::~ChunkConstantData ()
 void 
 ChunkConstantData::print (std::ostream *os) const
 {
-	*os << "(constant data)"
-	    << " len=" << m_len
-	    << ", data=" << m_data;
+    *os << "(constant data)"
+        << " len=" << m_len
+        << ", data=" << m_data;
 }
 
 void 
 ChunkConstantData::addTo (Buffer *buffer) const
 {
-	buffer->addAtStart (m_len);
+    buffer->addAtStart (m_len);
 #ifndef NDEBUG
-	buffer->begin ().writeU8 (m_data, m_len);
+    buffer->begin ().writeU8 (m_data, m_len);
 #endif
 }
 void 
 ChunkConstantData::peekFrom (Buffer const *buffer)
 {
-	m_len = buffer->getSize ();
-	m_data = buffer->begin ().readU8 ();
+    m_len = buffer->getSize ();
+    m_data = buffer->begin ().readU8 ();
 }
 void 
 ChunkConstantData::removeFrom (Buffer *buffer)
 {
-	buffer->removeAtStart (m_len);
+    buffer->removeAtStart (m_len);
 }
 
 

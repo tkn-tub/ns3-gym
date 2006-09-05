@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -31,33 +31,33 @@ namespace ns3 {
 
 class Packet {
 public:
-	typedef Callback<void,uint8_t *,uint32_t> PacketReadWriteCallback;
-	Packet ();
-	Packet (uint32_t size);
-	Packet createFragment (uint32_t start, uint32_t length) const;
-	uint32_t getSize (void) const;
-	void add (Chunk *chunk);
-	void peek (Chunk *chunk) const;
-	void remove (Chunk *chunk);
-	template <typename T>
-	void addTag (T const *tag);
-	template <typename T>
-	bool removeTag (T *tag);
-	template <typename T>
-	bool peekTag (T *tag) const;
-	template <typename T>
-	bool updateTag (T const*tag);
-	void removeAllTags (void);
-	void write (PacketReadWriteCallback callback) const;
-	void addAtEnd (Packet packet);
-	void addAtEnd (Packet packet, uint32_t offset, uint32_t size);
-	void removeAtEnd (uint32_t size);
-	void removeAtStart (uint32_t size);
+    typedef Callback<void,uint8_t *,uint32_t> PacketReadWriteCallback;
+    Packet ();
+    Packet (uint32_t size);
+    Packet createFragment (uint32_t start, uint32_t length) const;
+    uint32_t getSize (void) const;
+    void add (Chunk *chunk);
+    void peek (Chunk *chunk) const;
+    void remove (Chunk *chunk);
+    template <typename T>
+    void addTag (T const *tag);
+    template <typename T>
+    bool removeTag (T *tag);
+    template <typename T>
+    bool peekTag (T *tag) const;
+    template <typename T>
+    bool updateTag (T const*tag);
+    void removeAllTags (void);
+    void write (PacketReadWriteCallback callback) const;
+    void addAtEnd (Packet packet);
+    void addAtEnd (Packet packet, uint32_t offset, uint32_t size);
+    void removeAtEnd (uint32_t size);
+    void removeAtStart (uint32_t size);
 
 private:
-	Packet (Buffer buffer, Tags tags);
-	Buffer m_buffer;
-	Tags m_tags;
+    Packet (Buffer buffer, Tags tags);
+    Buffer m_buffer;
+    Tags m_tags;
 };
 
 }; // namespace ns3
@@ -67,22 +67,22 @@ namespace ns3 {
 template <typename T>
 void Packet::addTag (T const*tag)
 {
-	m_tags.add (tag);
+    m_tags.add (tag);
 }
 template <typename T>
 bool Packet::removeTag (T *tag)
 {
-	return m_tags.remove (tag);
+    return m_tags.remove (tag);
 }
 template <typename T>
 bool Packet::peekTag (T *tag) const
 {
-	return m_tags.peek (tag);
+    return m_tags.peek (tag);
 }
 template <typename T>
 bool Packet::updateTag (T const*tag)
 {
-	return m_tags.update (tag);
+    return m_tags.update (tag);
 }
 
 }; // namespace ns3

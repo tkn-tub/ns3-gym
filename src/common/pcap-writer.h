@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -38,34 +38,34 @@ class SystemFile;
  */
 class PcapWriter {
 public:
-	PcapWriter ();
-	~PcapWriter ();
+    PcapWriter ();
+    ~PcapWriter ();
 
-	/**
-	 * \param name the name of the file to store packet log into.
-	 * This method creates the file if it does not exist. If it
-	 * exists, the file is emptied.
-	 */
-	void open (char const *name);
+    /**
+     * \param name the name of the file to store packet log into.
+     * This method creates the file if it does not exist. If it
+     * exists, the file is emptied.
+     */
+    void open (char const *name);
 
-	/**
-	 * Write a pcap header in the output file which specifies
-	 * that the content of the file will Packets with
-	 * Ethernet/LLC/SNAP encapsulation.
-	 */
-	void writeHeaderEthernet (void);
+    /**
+     * Write a pcap header in the output file which specifies
+     * that the content of the file will Packets with
+     * Ethernet/LLC/SNAP encapsulation.
+     */
+    void writeHeaderEthernet (void);
 
-	/**
-	 * \param packet packet to write to output file
-	 */
-	void writePacket (Packet const packet);
+    /**
+     * \param packet packet to write to output file
+     */
+    void writePacket (Packet const packet);
 
 private:
-	void writeData (uint8_t *buffer, uint32_t size);
-	void write_32 (uint32_t data);
-	void write_16 (uint16_t data);
-	SystemFile *m_writer;
-	Callback<void,uint8_t *,uint32_t> m_writeCallback;
+    void writeData (uint8_t *buffer, uint32_t size);
+    void write_32 (uint32_t data);
+    void write_16 (uint16_t data);
+    SystemFile *m_writer;
+    Callback<void,uint8_t *,uint32_t> m_writeCallback;
 };
 
 }; // namespace ns3

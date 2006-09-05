@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -33,67 +33,67 @@
 namespace ns3 {
 
 enum {
-	PCAP_ETHERNET = 1
+    PCAP_ETHERNET = 1
 };
 
 PcapWriter::PcapWriter ()
 {
-	m_writer = 0;
-	m_writeCallback = makeCallback (&PcapWriter::writeData, this);
+    m_writer = 0;
+    m_writeCallback = makeCallback (&PcapWriter::writeData, this);
 }
 PcapWriter::~PcapWriter ()
 {
-	delete m_writer;
+    delete m_writer;
 }
 
 void
 PcapWriter::open (char const *name)
 {
-	m_writer = new SystemFile ();
-	m_writer->open (name);
+    m_writer = new SystemFile ();
+    m_writer->open (name);
 }
 
 void 
 PcapWriter::writeHeaderEthernet (void)
 {
-	write_32 (0xa1b2c3d4);
-	write_16 (2);
-	write_16 (4);
-	write_32 (0);
-	write_32 (0);
-	write_32 (0xffff);
-	write_32 (PCAP_ETHERNET);
+    write_32 (0xa1b2c3d4);
+    write_16 (2);
+    write_16 (4);
+    write_32 (0);
+    write_32 (0);
+    write_32 (0xffff);
+    write_32 (PCAP_ETHERNET);
 }
 
 void 
 PcapWriter::writePacket (Packet const packet)
 {
-	if (m_writer != 0) {
-		uint64_t current = Simulator::now ().us ();
-		uint64_t s = current / 1000000;
-		uint64_t us = current % 1000000;
-		write_32 (s & 0xffffffff);
-		write_32 (us & 0xffffffff);
-		write_32 (packet.getSize ());
-		write_32 (packet.getSize ());
-		packet.write (m_writeCallback);
-	}
+    if (m_writer != 0) {
+        uint64_t current = Simulator::now ().us ();
+        uint64_t s = current / 1000000;
+        uint64_t us = current % 1000000;
+        write_32 (s & 0xffffffff);
+        write_32 (us & 0xffffffff);
+        write_32 (packet.getSize ());
+        write_32 (packet.getSize ());
+        packet.write (m_writeCallback);
+    }
 }
 
 void
 PcapWriter::writeData (uint8_t *buffer, uint32_t size)
 {
-	m_writer->write (buffer, size);
+    m_writer->write (buffer, size);
 }
 void
 PcapWriter::write_32 (uint32_t data)
 {
-	m_writer->write ((uint8_t*)&data, 4);
+    m_writer->write ((uint8_t*)&data, 4);
 }
 void
 PcapWriter::write_16 (uint16_t data)
 {
-	m_writer->write ((uint8_t*)&data, 2);
+    m_writer->write ((uint8_t*)&data, 2);
 }
 
 }; // namespace ns3

@@ -1,4 +1,4 @@
-/* -*-	Mode:C++; c-basic-offset:8; tab-width:8; indent-tabs-mode:t -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -35,55 +35,55 @@ Scheduler::~Scheduler ()
 bool
 Scheduler::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
 {
-	assert (a.m_uid != b.m_uid);
-	if (a.m_ns < b.m_ns) {
-		return true;
-	} else if (a.m_ns == b.m_ns && a.m_uid < b.m_uid) {
-		return true;
-	} else {
-		return false;
-	}
+    assert (a.m_uid != b.m_uid);
+    if (a.m_ns < b.m_ns) {
+        return true;
+    } else if (a.m_ns == b.m_ns && a.m_uid < b.m_uid) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 
 EventId 
 Scheduler::insert (EventImpl *event, struct EventKey key)
 {
-	return realInsert (event, key);
+    return realInsert (event, key);
 }
 bool 
 Scheduler::isEmpty (void) const
 {
-	return realIsEmpty ();
+    return realIsEmpty ();
 }
 EventImpl *
 Scheduler::peekNext (void) const
 {
-	assert (!realIsEmpty ());
-	return realPeekNext ();
+    assert (!realIsEmpty ());
+    return realPeekNext ();
 }
 Scheduler::EventKey 
 Scheduler::peekNextKey (void) const 
 {
-	assert (!realIsEmpty ());
-	return realPeekNextKey ();
+    assert (!realIsEmpty ());
+    return realPeekNextKey ();
 }
 void 
 Scheduler::removeNext (void)
 {
-	assert (!realIsEmpty ());
-	return realRemoveNext ();
+    assert (!realIsEmpty ());
+    return realRemoveNext ();
 }
 EventImpl *
 Scheduler::remove (EventId id, EventKey *key)
 {
-	assert (!realIsEmpty ());
-	return realRemove (id, key);
+    assert (!realIsEmpty ());
+    return realRemove (id, key);
 }
 bool 
 Scheduler::isValid (EventId id)
 {
-	return realIsValid (id);
+    return realIsValid (id);
 }
 
 }; // namespace ns3
