@@ -355,6 +355,12 @@ private:
 
 }; // namespace ns3
 
+
+/**************************************************
+   Start of implementation of methods which 
+   need to be inline for performance reasons.
+ *************************************************/
+
 #include <cassert>
 
 namespace ns3 {
