@@ -31,6 +31,13 @@ namespace ns3 {
 
 /**
  * \brief network packets
+ *
+ * Each network packet contains a byte buffer and a list of tags.
+ * The byte buffer stores the serialized content of the chunks added 
+ * to a packet. The serialized representation of these chunks is expected
+ * to match that of real network packets bit for bit (although nothing
+ * forces you to do this) which means that the content of a packet buffer
+ * is expected to be that of a real packet.
  */
 class Packet {
 public:
