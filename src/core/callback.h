@@ -133,37 +133,6 @@ private:
     T m_functor;
 };
 
-// an impl for Bound Functors:
-template <typename T, typename R, typename TX, typename T1, typename T2, typename T3, typename T4,typename T5>
-class BoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5> {
-public:
-    BoundFunctorCallbackImpl (T const &functor, TX a)
-        : m_functor (functor), m_a (a) {}
-    virtual ~BoundFunctorCallbackImpl () {}
-    R operator() (void) {
-        return m_functor (m_a);
-    }
-    R operator() (T1 a1) {
-        return m_functor (m_a,a1);
-    }
-    R operator() (T1 a1,T2 a2) {
-        return m_functor (m_a,a1,a2);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3) {
-        return m_functor (m_a,a1,a2,a3);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
-        return m_functor (m_a,a1,a2,a3,a4);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
-        return m_functor (m_a,a1,a2,a3,a4,a5);
-    }
-private:
-    T m_functor;
-    TX m_a;
-};
-
-
 // an impl for pointer to member functions
 template <typename OBJ_PTR, typename MEM_PTR, typename R, typename T1, typename T2, typename T3, typename T4, typename T5>
 class MemPtrCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5> {
@@ -476,6 +445,42 @@ template <typename R, typename T1, typename T2,typename T3,typename T4,typename 
 Callback<R,T1,T2,T3,T4,T5> makeNullCallback (void) {
     return Callback<R,T1,T2,T3,T4,T5> ();
 }
+
+
+/**
+ * The following is experimental code. It works but we have
+ * not yet determined whether or not it is really useful and whether
+ * or not we really want to use it.
+ */
+// an impl for Bound Functors:
+template <typename T, typename R, typename TX, typename T1, typename T2, typename T3, typename T4,typename T5>
+class BoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5> {
+public:
+    BoundFunctorCallbackImpl (T const &functor, TX a)
+        : m_functor (functor), m_a (a) {}
+    virtual ~BoundFunctorCallbackImpl () {}
+    R operator() (void) {
+        return m_functor (m_a);
+    }
+    R operator() (T1 a1) {
+        return m_functor (m_a,a1);
+    }
+    R operator() (T1 a1,T2 a2) {
+        return m_functor (m_a,a1,a2);
+    }
+    R operator() (T1 a1,T2 a2,T3 a3) {
+        return m_functor (m_a,a1,a2,a3);
+    }
+    R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
+        return m_functor (m_a,a1,a2,a3,a4);
+    }
+    R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
+        return m_functor (m_a,a1,a2,a3,a4,a5);
+    }
+private:
+    T m_functor;
+    TX m_a;
+};
 
 template <typename R, typename TX, typename T1>
 Callback<R,T1> makeBoundCallback (R (*fnPtr) (TX,T1), TX a) {
