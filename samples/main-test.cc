@@ -6,6 +6,7 @@ using namespace ns3;
 
 #ifndef RUN_SELF_TESTS
 
+// declare subclass of base class Test
 class MyTest : public Test {
 public:
 	MyTest (bool ok);
@@ -15,6 +16,7 @@ private:
 	bool m_ok;
 };
 
+// implement MyTest
 MyTest::MyTest (bool ok)
 	: Test ("My"),
 	  m_ok (ok)
@@ -27,12 +29,14 @@ MyTest::runTests (void)
 	return m_ok;
 }
 
-MyTest g_my_test = MyTest (false);
+// instantiate MyTest once
+static MyTest g_my_test = MyTest (false);
 
 #endif /* RUN_SELF_TESTS */
 
 int main (int argc, char *argv[])
 {
+	// run tests
 	TestManager::enableVerbose ();
 	TestManager::runTests ();
 	return 0;
