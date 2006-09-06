@@ -4,7 +4,7 @@
 
 using namespace ns3;
 
-#ifndef RUN_SELF_TESTS
+#ifdef RUN_SELF_TESTS
 
 // declare subclass of base class Test
 class MyTest : public Test {
@@ -30,7 +30,7 @@ MyTest::runTests (void)
 }
 
 // instantiate MyTest once
-static MyTest g_my_test = MyTest (false);
+static MyTest g_my_test = MyTest (true);
 
 #endif /* RUN_SELF_TESTS */
 
