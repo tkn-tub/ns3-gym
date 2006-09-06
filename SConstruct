@@ -610,6 +610,12 @@ main_packet.set_executable ()
 main_packet.add_dep ('common')
 main_packet.add_source ('main-packet.cc')
 
+sample_test = Ns3Module ('sample-test', 'samples')
+sample_test.set_executable ()
+ns3.add (sample_test)
+sample_test.add_dep ('core')
+sample_test.add_source ('main-test.cc')
+
 
 ns3.generate_dependencies ()
 
