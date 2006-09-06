@@ -556,6 +556,8 @@ public:
 	 * ns3::Simulator::cancel method or the ns3::EventId::cancel method
 	 * but its algorithmic complexity is much higher: it has often 
 	 * O(log(n)) complexity, sometimes O(n), sometimes worse.
+	 * Note that it is not possible to remove events which were scheduled
+	 * for the "destroy" time. Doing so will result in a program error (crash).
 	 *
      * @param id the event to remove from the list of scheduled events.
      */
@@ -567,12 +569,17 @@ public:
 	 * ns3::Simulator::remove method but its algorithmic complexity is 
 	 * much lower: it has O(1) complexity.
 	 * This method has the exact same semantics as ns3::EventId::cancel.
+	 * Note that it is not possible to cancel events which were scheduled
+	 * for the "destroy" time. Doing so will result in a program error (crash).
 	 * 
 	 * @param id the event to cancel
      */
     static void cancel (EventId id);
     /**
-	 * This method has O(1) complexity
+	 * This method has O(1) complexity.
+	 * Note that it is not possible to test for the expiration of
+	 * events which were scheduled for the "destroy" time. Doing so
+	 * will result in a program error (crash).
 	 *
 	 * @param id the event to test for expiration
 	 * @returns true if the event has expired, false otherwise.
