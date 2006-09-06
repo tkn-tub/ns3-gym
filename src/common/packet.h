@@ -62,6 +62,12 @@ private:
 
 }; // namespace ns3
 
+
+/**************************************************
+    Start of implementation of templates defined
+    above
+ *************************************************/
+
 namespace ns3 {
 
 template <typename T>
