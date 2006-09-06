@@ -80,6 +80,8 @@ private:
 };
 
 /**
+ * \brief pretty print packet tags
+ * 
  * This class is used to register a pretty-printer
  * callback function to print in a nice user-friendly
  * way the content of the target type. To register
@@ -92,7 +94,11 @@ private:
 template <typename T>
 class TagPrettyPrinter {
 public:
-    TagPrettyPrinter<T> (void(*) (T *, std::ostream &));
+	/**
+	 * \param fn a function which can pretty-print an instance
+	 *        of type T in the output stream.
+	 */
+    TagPrettyPrinter<T> (void(*fn) (T *, std::ostream &));
 private:
     TagPrettyPrinter<T> ();
     static void prettyPrintCb (uint8_t *buf, std::ostream &os);
@@ -113,6 +119,10 @@ private:
 }; // namespace ns3
 
 
+
+/**************************************************************
+     An implementation of the templates defined above
+ *************************************************************/
 #include <cassert>
 #include <string.h>
 
@@ -161,13 +171,14 @@ const uint32_t TypeUid<T>::getUid (void)
 template <typename T>
 TagPrettyPrinter<T>::TagPrettyPrinter (void(*prettyPrinter) (T *, std::ostream &))
 {
+    assert (sizeof (T) <= Tags::SIZE);
     gPrettyPrinter  = prettyPrinter;
     TagsPrettyPrinterRegistry::record (TypeUid<T>::getUid (),
                       &TagPrettyPrinter<T>::prettyPrintCb);
 }
 template <typename T>
 void 
-TagPrettyPrinter<T>::prettyPrintCb (uint8_t buf[Tags::SIZE], std::ostream &os)
+TagPrettyPrinter<T>::prettyPrintCb (uint8_t *buf, std::ostream &os)
 {
     assert (sizeof (T) <= Tags::SIZE);
     T *tag = reinterpret_cast<T *> (buf);
