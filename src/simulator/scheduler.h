@@ -48,6 +48,9 @@ class EventImpl;
  * editing the main simulator class, you need to also implement
  * a subclass of the ns3::SchedulerFactory base class and
  * feed it to ns3::Simulator::setExternal.
+ * The simplest example of a scheduler is the linked-list
+ * scheduler included in ns3: see the files 
+ * src/simulator/scheduler-list.h and src/simulator/scheduler-list.cc
  */
 class Scheduler {
  public:
