@@ -136,15 +136,16 @@ public:
      * Force the Simulator::run method to return to the caller
      * when the expiration time of the next event to be processed 
      * is greater than or equal to the stop time.
-     * @param at the stop time.
+     * @param time the stop time.
      */
     static void stopAt (Time time);
 
     /**
      * Schedule an event to expire at time.
      *
-     * @param delta the expiration time of the event.
-     * @param event the event to schedule.
+     * @param time the expiration time of the event.
+     * @param mem_ptr member method pointer to invoke
+	 * @param obj the object on which to invoke the member method
      * @returns an id for the scheduled event.
      */
     template <typename T>
