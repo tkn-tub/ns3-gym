@@ -141,7 +141,9 @@ public:
     static void stopAt (Time time);
 
     /**
-     * Schedule an event to expire at time.
+     * Schedule an event to expire when time is reached.
+	 * When the event expires, the input method will be invoked
+	 * on the input object.
      *
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -168,8 +170,15 @@ public:
         } *ev = new EventMemberImpl0 (obj, mem_ptr);
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param mem_ptr member method pointer to invoke
+	 * @param obj the object on which to invoke the member method
+	 * @param a1 the first argument to pass to the invoked method
+     * @returns an id for the scheduled event.
+     */
     template <typename T, typename T1>
-    static EventId schedule (Time time, void (T::*f) (T1), T* t, T1 a1) {
+    static EventId schedule (Time time, void (T::*mem_ptr) (T1), T* obj, T1 a1) {
         // one argument version
         class EventMemberImpl1 : public EventImpl {
         public:
@@ -188,11 +197,19 @@ public:
             T* m_obj;
             F m_function;
             T1 m_a1;
-        } *ev = new EventMemberImpl1 (t, f, a1);
+        } *ev = new EventMemberImpl1 (obj, mem_ptr, a1);
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param mem_ptr member method pointer to invoke
+	 * @param obj the object on which to invoke the member method
+	 * @param a1 the first argument to pass to the invoked method
+	 * @param a2 the second argument to pass to the invoked method
+     * @returns an id for the scheduled event.
+     */
     template <typename T, typename T1, typename T2>
-    static EventId schedule (Time time, void (T::*f) (T1), T* t, T1 a1, T2 a2) {
+    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2) {
         // two argument version
         class EventMemberImpl2 : public EventImpl {
         public:
@@ -214,12 +231,21 @@ public:
             F m_function;
             T1 m_a1;
             T2 m_a2;
-        } *ev = new EventMemberImpl2 (t, f, a1, a2);
+        } *ev = new EventMemberImpl2 (obj, mem_ptr, a1, a2);
 
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param mem_ptr member method pointer to invoke
+	 * @param obj the object on which to invoke the member method
+	 * @param a1 the first argument to pass to the invoked method
+	 * @param a2 the second argument to pass to the invoked method
+	 * @param a3 the third argument to pass to the invoked method
+     * @returns an id for the scheduled event.
+     */
     template <typename T, typename T1, typename T2, typename T3>
-    static EventId schedule (Time time, void (T::*f) (T1), T* t, T1 a1, T2 a2, T3 a3) {
+    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3) {
         // three argument version
         class EventMemberImpl3 : public EventImpl {
         public:
@@ -243,11 +269,21 @@ public:
             T1 m_a1;
             T2 m_a2;
             T3 m_a3;
-        } *ev = new EventMemberImpl3 (t, f, a1, a2, a3);
+        } *ev = new EventMemberImpl3 (obj, mem_ptr, a1, a2, a3);
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param mem_ptr member method pointer to invoke
+	 * @param obj the object on which to invoke the member method
+	 * @param a1 the first argument to pass to the invoked method
+	 * @param a2 the second argument to pass to the invoked method
+	 * @param a3 the third argument to pass to the invoked method
+	 * @param a4 the fourth argument to pass to the invoked method
+     * @returns an id for the scheduled event.
+     */
     template <typename T, typename T1, typename T2, typename T3, typename T4>
-    static EventId schedule (Time time, void (T::*f) (T1), T* t, T1 a1, T2 a2, T3 a3, T4 a4) {
+    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4) {
         // four argument version
         class EventMemberImpl4 : public EventImpl {
         public:
@@ -273,11 +309,22 @@ public:
             T2 m_a2;
             T3 m_a3;
             T4 m_a4;
-        } *ev = new EventMemberImpl4 (t, f, a1, a2, a3, a4);
+        } *ev = new EventMemberImpl4 (obj, mem_ptr, a1, a2, a3, a4);
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param mem_ptr member method pointer to invoke
+	 * @param obj the object on which to invoke the member method
+	 * @param a1 the first argument to pass to the invoked method
+	 * @param a2 the second argument to pass to the invoked method
+	 * @param a3 the third argument to pass to the invoked method
+	 * @param a4 the fourth argument to pass to the invoked method
+	 * @param a5 the fifth argument to pass to the invoked method
+     * @returns an id for the scheduled event.
+     */
     template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-    static EventId schedule (Time time, void (T::*f) (T1), T* t, 
+    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
                  T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) {
         // five argument version
         class EventMemberImpl5 : public EventImpl {
@@ -306,9 +353,14 @@ public:
             T3 m_a3;
             T4 m_a4;
             T5 m_a5;
-        } *ev = new EventMemberImpl5 (t, f, a1, a2, a3, a4, a5);
+        } *ev = new EventMemberImpl5 (obj, mem_ptr, a1, a2, a3, a4, a5);
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param f the function to invoke
+     * @returns an id for the scheduled event.
+     */
     static EventId schedule (Time time, void (*f) (void)) {
         // zero arg version
         class EventFunctionImpl0 : public EventImpl {
@@ -328,6 +380,12 @@ public:
         } *ev = new EventFunctionImpl0 (f);
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param f the function to invoke
+	 * @param a1 the first argument to pass to the function to invoke
+     * @returns an id for the scheduled event.
+     */
     template <typename T1>
     static EventId schedule (Time time, void (*f) (T1), T1 a1) {
         // one arg version
@@ -350,8 +408,15 @@ public:
         } *ev = new EventFunctionImpl1(f, a1);
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param f the function to invoke
+	 * @param a1 the first argument to pass to the function to invoke
+	 * @param a2 the second argument to pass to the function to invoke
+     * @returns an id for the scheduled event.
+     */
     template <typename T1, typename T2>
-    static EventId schedule (Time time, void (*f) (T1), T1 a1, T2 a2) {
+    static EventId schedule (Time time, void (*f) (T1,T2), T1 a1, T2 a2) {
         // two arg version
         class EventFunctionImpl2 : public EventImpl {
         public:
@@ -374,8 +439,16 @@ public:
         } *ev = new EventFunctionImpl2 (f, a1, a2);
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param f the function to invoke
+	 * @param a1 the first argument to pass to the function to invoke
+	 * @param a2 the second argument to pass to the function to invoke
+	 * @param a3 the third argument to pass to the function to invoke
+     * @returns an id for the scheduled event.
+     */
     template <typename T1, typename T2, typename T3>
-    static EventId schedule (Time time, void (*f) (T1), T1 a1, T2 a2, T3 a3) {
+    static EventId schedule (Time time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3) {
         // three arg version
         class EventFunctionImpl3 : public EventImpl {
         public:
@@ -400,8 +473,17 @@ public:
         } *ev = new EventFunctionImpl3 (f, a1, a2, a3);
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param f the function to invoke
+	 * @param a1 the first argument to pass to the function to invoke
+	 * @param a2 the second argument to pass to the function to invoke
+	 * @param a3 the third argument to pass to the function to invoke
+	 * @param a4 the fourth argument to pass to the function to invoke
+     * @returns an id for the scheduled event.
+     */
     template <typename T1, typename T2, typename T3, typename T4>
-    static EventId schedule (Time time, void (*f) (T1), T1 a1, T2 a2, T3 a3, T4 a4) {
+    static EventId schedule (Time time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) {
         // four arg version
         class EventFunctionImpl4 : public EventImpl {
         public:
@@ -428,8 +510,18 @@ public:
         } *ev = new EventFunctionImpl4 (f, a1, a2, a3, a4);
         return schedule (time, ev);
     }
+    /**
+     * @param time the expiration time of the event.
+     * @param f the function to invoke
+	 * @param a1 the first argument to pass to the function to invoke
+	 * @param a2 the second argument to pass to the function to invoke
+	 * @param a3 the third argument to pass to the function to invoke
+	 * @param a4 the fourth argument to pass to the function to invoke
+	 * @param a5 the fifth argument to pass to the function to invoke
+     * @returns an id for the scheduled event.
+     */
     template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    static EventId schedule (Time time, void (*f) (T1), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) {
+    static EventId schedule (Time time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) {
         // five arg version
         class EventFunctionImpl5 : public EventImpl {
         public:
