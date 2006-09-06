@@ -33,6 +33,9 @@ namespace ns3 {
 
 class TestManager;
 
+/**
+ * \brief base class for new regressions tests
+ */
 class Test {
 public:
     Test (char const *name);
@@ -44,10 +47,11 @@ protected:
     std::ostream &failure (void);
 };
 
+/**
+ * 
+ */
 class TestManager {
 public:
-    // main methods the test runner is supposed to
-    // invoke.
     static void enableVerbose (void);
     static bool runTests (void);
 

@@ -22,6 +22,10 @@ scons verbose=y
 2) Targets
 ----------
 
+- doc: build the doxygen documentation.
+Example:
+scons doc
+
 - dbg-shared: a debug build using shared libraries.
   The files are built in 'build-dir/dbg-shared/'.
 Example:
