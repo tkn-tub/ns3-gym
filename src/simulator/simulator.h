@@ -151,25 +151,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T>
-    static EventId schedule (Time time, void (T::*mem_ptr) (void), T *obj) {
-        // zero argument version
-        class EventMemberImpl0 : public EventImpl {
-        public:
-            typedef void (T::*F)(void);
-            EventMemberImpl0 (T *obj, F function) 
-                : m_obj (obj), 
-                  m_function (function)
-            {}
-            virtual ~EventMemberImpl0 () {}
-        private:
-            virtual void notify (void) { 
-                (m_obj->*m_function) (); 
-            }
-            T* m_obj;
-            F m_function;
-        } *ev = new EventMemberImpl0 (obj, mem_ptr);
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (T::*mem_ptr) (void), T *obj);
     /**
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -178,28 +160,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T, typename T1>
-    static EventId schedule (Time time, void (T::*mem_ptr) (T1), T* obj, T1 a1) {
-        // one argument version
-        class EventMemberImpl1 : public EventImpl {
-        public:
-            typedef void (T::*F)(T1);
-            EventMemberImpl1 (T *obj, F function, T1 a1) 
-                : m_obj (obj), 
-                  m_function (function),
-                  m_a1 (a1)
-            {}
-        protected:
-            virtual ~EventMemberImpl1 () {}
-        private:
-            virtual void notify (void) { 
-                (m_obj->*m_function) (m_a1);
-            }
-            T* m_obj;
-            F m_function;
-            T1 m_a1;
-        } *ev = new EventMemberImpl1 (obj, mem_ptr, a1);
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (T::*mem_ptr) (T1), T* obj, T1 a1);
     /**
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -209,32 +170,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T, typename T1, typename T2>
-    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2) {
-        // two argument version
-        class EventMemberImpl2 : public EventImpl {
-        public:
-            typedef void (T::*F)(T1, T2);
-            
-            EventMemberImpl2 (T *obj, F function, T1 a1, T2 a2) 
-                : m_obj (obj), 
-                  m_function (function),
-                  m_a1 (a1),
-                  m_a2 (a2)
-            { }
-        protected:
-            virtual ~EventMemberImpl2 () {}
-        private:
-            virtual void notify (void) { 
-                (m_obj->*m_function) (m_a1, m_a2);
-            }
-            T* m_obj;
-            F m_function;
-            T1 m_a1;
-            T2 m_a2;
-        } *ev = new EventMemberImpl2 (obj, mem_ptr, a1, a2);
-
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2);
     /**
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -245,33 +181,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T, typename T1, typename T2, typename T3>
-    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3) {
-        // three argument version
-        class EventMemberImpl3 : public EventImpl {
-        public:
-            typedef void (T::*F)(T1, T2, T3);
-            
-            EventMemberImpl3 (T *obj, F function, T1 a1, T2 a2, T3 a3) 
-                : m_obj (obj), 
-                  m_function (function),
-                  m_a1 (a1),
-          m_a2 (a2),
-                  m_a3 (a3)
-            { }
-        protected:
-            virtual ~EventMemberImpl3 () {}
-        private:
-            virtual void notify (void) { 
-                (m_obj->*m_function) (m_a1, m_a2, m_a3);
-            }
-            T* m_obj;
-            F m_function;
-            T1 m_a1;
-            T2 m_a2;
-            T3 m_a3;
-        } *ev = new EventMemberImpl3 (obj, mem_ptr, a1, a2, a3);
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3);
     /**
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -283,35 +193,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T, typename T1, typename T2, typename T3, typename T4>
-    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4) {
-        // four argument version
-        class EventMemberImpl4 : public EventImpl {
-        public:
-            typedef void (T::*F)(T1, T2, T3, T4);
-            
-            EventMemberImpl4 (T *obj, F function, T1 a1, T2 a2, T3 a3, T4 a4) 
-                : m_obj (obj), 
-                  m_function (function),
-                  m_a1 (a1),
-                  m_a2 (a2),
-                  m_a3 (a3),
-                  m_a4 (a4)
-            { }
-        protected:
-            virtual ~EventMemberImpl4 () {}
-        private:
-            virtual void notify (void) { 
-                (m_obj->*m_function) (m_a1, m_a2, m_a3, m_a4);
-            }
-            T* m_obj;
-            F m_function;
-            T1 m_a1;
-            T2 m_a2;
-            T3 m_a3;
-            T4 m_a4;
-        } *ev = new EventMemberImpl4 (obj, mem_ptr, a1, a2, a3, a4);
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4);
     /**
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -325,61 +207,13 @@ public:
      */
     template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
     static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
-                 T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) {
-        // five argument version
-        class EventMemberImpl5 : public EventImpl {
-        public:
-            typedef void (T::*F)(T1, T2, T3, T4, T5);
-            
-            EventMemberImpl5 (T *obj, F function, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
-                : m_obj (obj), 
-                  m_function (function),
-                  m_a1 (a1),
-                  m_a2 (a2),
-                  m_a3 (a3),
-                  m_a4 (a4),
-                  m_a5 (a5)
-            { }
-        protected:
-            virtual ~EventMemberImpl5 () {}
-        private:
-            virtual void notify (void) { 
-                (m_obj->*m_function) (m_a1, m_a2, m_a3, m_a4, m_a5);
-            }
-            T* m_obj;
-            F m_function;
-            T1 m_a1;
-            T2 m_a2;
-            T3 m_a3;
-            T4 m_a4;
-            T5 m_a5;
-        } *ev = new EventMemberImpl5 (obj, mem_ptr, a1, a2, a3, a4, a5);
-        return schedule (time, ev);
-    }
-    /**
+							 T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+	/**
      * @param time the expiration time of the event.
      * @param f the function to invoke
      * @returns an id for the scheduled event.
      */
-    static EventId schedule (Time time, void (*f) (void)) {
-        // zero arg version
-        class EventFunctionImpl0 : public EventImpl {
-        public:
-            typedef void (*F)(void);
-            
-            EventFunctionImpl0 (F function) 
-                : m_function (function)
-            {}
-        protected:
-            virtual void notify (void) { 
-                (*m_function) (); 
-            }
-        private:
-            virtual ~EventFunctionImpl0 () {}
-            F m_function;
-        } *ev = new EventFunctionImpl0 (f);
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (*f) (void));
     /**
      * @param time the expiration time of the event.
      * @param f the function to invoke
@@ -387,27 +221,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T1>
-    static EventId schedule (Time time, void (*f) (T1), T1 a1) {
-        // one arg version
-        class EventFunctionImpl1 : public EventImpl {
-        public:
-            typedef void (*F)(T1);
-            
-            EventFunctionImpl1 (F function, T1 a1) 
-                : m_function (function),
-                  m_a1 (a1)
-                { }
-        protected:
-            virtual ~EventFunctionImpl1 () {}
-        private:
-            virtual void notify (void) { 
-                (*m_function) (m_a1);
-            }
-            F m_function;
-            T1 m_a1;
-        } *ev = new EventFunctionImpl1(f, a1);
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (*f) (T1), T1 a1);
     /**
      * @param time the expiration time of the event.
      * @param f the function to invoke
@@ -416,29 +230,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T1, typename T2>
-    static EventId schedule (Time time, void (*f) (T1,T2), T1 a1, T2 a2) {
-        // two arg version
-        class EventFunctionImpl2 : public EventImpl {
-        public:
-            typedef void (*F)(T1, T2);
-            
-            EventFunctionImpl2 (F function, T1 a1, T2 a2) 
-                : m_function (function),
-                  m_a1 (a1),
-                  m_a2 (a2)
-            { }
-        protected:
-            virtual ~EventFunctionImpl2 () {}
-        private:
-            virtual void notify (void) { 
-                (*m_function) (m_a1, m_a2);
-            }
-            F m_function;
-            T1 m_a1;
-            T2 m_a2;
-        } *ev = new EventFunctionImpl2 (f, a1, a2);
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (*f) (T1,T2), T1 a1, T2 a2);
     /**
      * @param time the expiration time of the event.
      * @param f the function to invoke
@@ -448,31 +240,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T1, typename T2, typename T3>
-    static EventId schedule (Time time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3) {
-        // three arg version
-        class EventFunctionImpl3 : public EventImpl {
-        public:
-            typedef void (*F)(T1, T2, T3);
-            
-            EventFunctionImpl3 (F function, T1 a1, T2 a2, T3 a3) 
-                : m_function (function),
-                  m_a1 (a1),
-                  m_a2 (a2),
-                  m_a3 (a3)
-            { }
-        protected:
-            virtual ~EventFunctionImpl3 () {}
-        private:
-            virtual void notify (void) { 
-                (*m_function) (m_a1, m_a2, m_a3);
-            }
-            F m_function;
-            T1 m_a1;
-            T2 m_a2;
-            T3 m_a3;
-        } *ev = new EventFunctionImpl3 (f, a1, a2, a3);
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
     /**
      * @param time the expiration time of the event.
      * @param f the function to invoke
@@ -483,33 +251,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T1, typename T2, typename T3, typename T4>
-    static EventId schedule (Time time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) {
-        // four arg version
-        class EventFunctionImpl4 : public EventImpl {
-        public:
-            typedef void (*F)(T1, T2, T3, T4);
-            
-            EventFunctionImpl4 (F function, T1 a1, T2 a2, T3 a3, T4 a4) 
-                : m_function (function),
-                  m_a1 (a1),
-                  m_a2 (a2),
-                  m_a3 (a3),
-                  m_a4 (a4)
-            { }
-        protected:
-            virtual ~EventFunctionImpl4 () {}
-        private:
-            virtual void notify (void) { 
-                (*m_function) (m_a1, m_a2, m_a3, m_a4);
-            }
-            F m_function;
-            T1 m_a1;
-            T2 m_a2;
-            T3 m_a3;
-            T4 m_a4;
-        } *ev = new EventFunctionImpl4 (f, a1, a2, a3, a4);
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
     /**
      * @param time the expiration time of the event.
      * @param f the function to invoke
@@ -521,35 +263,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    static EventId schedule (Time time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) {
-        // five arg version
-        class EventFunctionImpl5 : public EventImpl {
-        public:
-            typedef void (*F)(T1, T2, T3, T4, T5);
-            
-            EventFunctionImpl5 (F function, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
-                : m_function (function),
-                  m_a1 (a1),
-                  m_a2 (a2),
-                  m_a3 (a3),
-                  m_a4 (a4),
-                  m_a5 (a5)
-            { }
-        protected:
-            virtual ~EventFunctionImpl5 () {}
-        private:
-            virtual void notify (void) { 
-                (*m_function) (m_a1, m_a2, m_a3, m_a4, m_a5);
-            }
-            F m_function;
-            T1 m_a1;
-            T2 m_a2;
-            T3 m_a3;
-            T4 m_a4;
-            T5 m_a5;
-        } *ev = new EventFunctionImpl5 (f, a1, a2, a3, a4, a5);
-        return schedule (time, ev);
-    }
+    static EventId schedule (Time time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
     /**
      * Remove an event from the event list. 
 	 * This method has the same visible effect as the 
@@ -603,6 +317,325 @@ private:
         EXTERNAL
     } m_listType;
 };
+
+}; // namespace ns3
+
+
+namespace ns3 {
+
+template <typename T>
+EventId Simulator::schedule (Time time, void (T::*mem_ptr) (void), T *obj) 
+{
+	// zero argument version
+	class EventMemberImpl0 : public EventImpl {
+	public:
+		typedef void (T::*F)(void);
+		EventMemberImpl0 (T *obj, F function) 
+			: m_obj (obj), 
+			  m_function (function)
+		{}
+		virtual ~EventMemberImpl0 () {}
+	private:
+		virtual void notify (void) { 
+			(m_obj->*m_function) (); 
+		}
+		T* m_obj;
+		F m_function;
+	} *ev = new EventMemberImpl0 (obj, mem_ptr);
+	return schedule (time, ev);
+}
+
+
+template <typename T, typename T1>
+EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1), T* obj, T1 a1) 
+{
+	// one argument version
+	class EventMemberImpl1 : public EventImpl {
+	public:
+		typedef void (T::*F)(T1);
+		EventMemberImpl1 (T *obj, F function, T1 a1) 
+			: m_obj (obj), 
+			  m_function (function),
+			  m_a1 (a1)
+		{}
+	protected:
+		virtual ~EventMemberImpl1 () {}
+	private:
+		virtual void notify (void) { 
+			(m_obj->*m_function) (m_a1);
+		}
+		T* m_obj;
+		F m_function;
+		T1 m_a1;
+	} *ev = new EventMemberImpl1 (obj, mem_ptr, a1);
+	return schedule (time, ev);
+}
+
+template <typename T, typename T1, typename T2>
+EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2) 
+{
+	// two argument version
+	class EventMemberImpl2 : public EventImpl {
+	public:
+		typedef void (T::*F)(T1, T2);
+        
+		EventMemberImpl2 (T *obj, F function, T1 a1, T2 a2) 
+			: m_obj (obj), 
+			  m_function (function),
+			  m_a1 (a1),
+			  m_a2 (a2)
+		{ }
+	protected:
+		virtual ~EventMemberImpl2 () {}
+	private:
+		virtual void notify (void) { 
+			(m_obj->*m_function) (m_a1, m_a2);
+		}
+		T* m_obj;
+		F m_function;
+		T1 m_a1;
+		T2 m_a2;
+	} *ev = new EventMemberImpl2 (obj, mem_ptr, a1, a2);
+
+	return schedule (time, ev);
+}
+
+template <typename T, typename T1, typename T2, typename T3>
+EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3) 
+{
+	// three argument version
+	class EventMemberImpl3 : public EventImpl {
+	public:
+		typedef void (T::*F)(T1, T2, T3);
+        
+		EventMemberImpl3 (T *obj, F function, T1 a1, T2 a2, T3 a3) 
+			: m_obj (obj), 
+			  m_function (function),
+			  m_a1 (a1),
+			  m_a2 (a2),
+			  m_a3 (a3)
+		{ }
+	protected:
+		virtual ~EventMemberImpl3 () {}
+	private:
+		virtual void notify (void) { 
+			(m_obj->*m_function) (m_a1, m_a2, m_a3);
+		}
+		T* m_obj;
+		F m_function;
+		T1 m_a1;
+		T2 m_a2;
+		T3 m_a3;
+	} *ev = new EventMemberImpl3 (obj, mem_ptr, a1, a2, a3);
+	return schedule (time, ev);
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+{
+	// four argument version
+	class EventMemberImpl4 : public EventImpl {
+	public:
+		typedef void (T::*F)(T1, T2, T3, T4);
+            
+		EventMemberImpl4 (T *obj, F function, T1 a1, T2 a2, T3 a3, T4 a4) 
+			: m_obj (obj), 
+			  m_function (function),
+			  m_a1 (a1),
+			  m_a2 (a2),
+			  m_a3 (a3),
+			  m_a4 (a4)
+		{ }
+	protected:
+		virtual ~EventMemberImpl4 () {}
+	private:
+		virtual void notify (void) { 
+			(m_obj->*m_function) (m_a1, m_a2, m_a3, m_a4);
+		}
+		T* m_obj;
+		F m_function;
+		T1 m_a1;
+		T2 m_a2;
+		T3 m_a3;
+		T4 m_a4;
+	} *ev = new EventMemberImpl4 (obj, mem_ptr, a1, a2, a3, a4);
+	return schedule (time, ev);
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
+							 T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+{
+	// five argument version
+	class EventMemberImpl5 : public EventImpl {
+	public:
+		typedef void (T::*F)(T1, T2, T3, T4, T5);
+        
+		EventMemberImpl5 (T *obj, F function, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+			: m_obj (obj), 
+			  m_function (function),
+			  m_a1 (a1),
+			  m_a2 (a2),
+			  m_a3 (a3),
+			  m_a4 (a4),
+			  m_a5 (a5)
+		{ }
+	protected:
+		virtual ~EventMemberImpl5 () {}
+	private:
+		virtual void notify (void) { 
+			(m_obj->*m_function) (m_a1, m_a2, m_a3, m_a4, m_a5);
+		}
+		T* m_obj;
+		F m_function;
+		T1 m_a1;
+		T2 m_a2;
+		T3 m_a3;
+		T4 m_a4;
+		T5 m_a5;
+	} *ev = new EventMemberImpl5 (obj, mem_ptr, a1, a2, a3, a4, a5);
+	return schedule (time, ev);
+}
+
+template <typename T1>
+EventId Simulator::schedule (Time time, void (*f) (T1), T1 a1) 
+{
+	// one arg version
+	class EventFunctionImpl1 : public EventImpl {
+	public:
+		typedef void (*F)(T1);
+        
+		EventFunctionImpl1 (F function, T1 a1) 
+			: m_function (function),
+			  m_a1 (a1)
+		{ }
+	protected:
+		virtual ~EventFunctionImpl1 () {}
+	private:
+		virtual void notify (void) { 
+			(*m_function) (m_a1);
+		}
+		F m_function;
+		T1 m_a1;
+	} *ev = new EventFunctionImpl1(f, a1);
+	return schedule (time, ev);
+}
+
+template <typename T1, typename T2>
+EventId Simulator::schedule (Time time, void (*f) (T1,T2), T1 a1, T2 a2) 
+{
+	// two arg version
+	class EventFunctionImpl2 : public EventImpl {
+	public:
+		typedef void (*F)(T1, T2);
+        
+		EventFunctionImpl2 (F function, T1 a1, T2 a2) 
+			: m_function (function),
+			  m_a1 (a1),
+			  m_a2 (a2)
+		{ }
+	protected:
+		virtual ~EventFunctionImpl2 () {}
+	private:
+		virtual void notify (void) { 
+			(*m_function) (m_a1, m_a2);
+		}
+		F m_function;
+		T1 m_a1;
+		T2 m_a2;
+	} *ev = new EventFunctionImpl2 (f, a1, a2);
+	return schedule (time, ev);
+}
+
+template <typename T1, typename T2, typename T3>
+EventId Simulator::schedule (Time time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3)
+{
+	// three arg version
+	class EventFunctionImpl3 : public EventImpl {
+	public:
+		typedef void (*F)(T1, T2, T3);
+        
+		EventFunctionImpl3 (F function, T1 a1, T2 a2, T3 a3) 
+			: m_function (function),
+			  m_a1 (a1),
+			  m_a2 (a2),
+			  m_a3 (a3)
+		{ }
+	protected:
+		virtual ~EventFunctionImpl3 () {}
+	private:
+		virtual void notify (void) { 
+			(*m_function) (m_a1, m_a2, m_a3);
+		}
+		F m_function;
+		T1 m_a1;
+		T2 m_a2;
+		T3 m_a3;
+	} *ev = new EventFunctionImpl3 (f, a1, a2, a3);
+	return schedule (time, ev);
+}
+
+template <typename T1, typename T2, typename T3, typename T4>
+EventId Simulator::schedule (Time time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) 
+{
+	// four arg version
+	class EventFunctionImpl4 : public EventImpl {
+	public:
+		typedef void (*F)(T1, T2, T3, T4);
+        
+		EventFunctionImpl4 (F function, T1 a1, T2 a2, T3 a3, T4 a4) 
+			: m_function (function),
+			  m_a1 (a1),
+			  m_a2 (a2),
+			  m_a3 (a3),
+			  m_a4 (a4)
+		{ }
+	protected:
+		virtual ~EventFunctionImpl4 () {}
+	private:
+		virtual void notify (void) { 
+			(*m_function) (m_a1, m_a2, m_a3, m_a4);
+		}
+		F m_function;
+		T1 m_a1;
+		T2 m_a2;
+		T3 m_a3;
+		T4 m_a4;
+	} *ev = new EventFunctionImpl4 (f, a1, a2, a3, a4);
+	return schedule (time, ev);
+}
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+static EventId schedule (Time time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+{
+	// five arg version
+	class EventFunctionImpl5 : public EventImpl {
+	public:
+		typedef void (*F)(T1, T2, T3, T4, T5);
+        
+		EventFunctionImpl5 (F function, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+			: m_function (function),
+			  m_a1 (a1),
+			  m_a2 (a2),
+			  m_a3 (a3),
+			  m_a4 (a4),
+			  m_a5 (a5)
+		{ }
+	protected:
+		virtual ~EventFunctionImpl5 () {}
+	private:
+		virtual void notify (void) { 
+			(*m_function) (m_a1, m_a2, m_a3, m_a4, m_a5);
+		}
+		F m_function;
+		T1 m_a1;
+		T2 m_a2;
+		T3 m_a3;
+		T4 m_a4;
+		T5 m_a5;
+	} *ev = new EventFunctionImpl5 (f, a1, a2, a3, a4, a5);
+	return schedule (time, ev);
+}
 
 }; // namespace ns3
 

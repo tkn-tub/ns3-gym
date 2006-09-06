@@ -341,6 +341,28 @@ Simulator::schedule (Time time, EventImpl *ev)
 {
     return getPriv ()->schedule (time, ev);
 }
+EventId
+Simulator::schedule (Time time, void (*f) (void))
+{
+	// zero arg version
+	class EventFunctionImpl0 : public EventImpl {
+	public:
+		typedef void (*F)(void);
+        
+		EventFunctionImpl0 (F function) 
+			: m_function (function)
+		{}
+	protected:
+		virtual void notify (void) { 
+			(*m_function) (); 
+            }
+	private:
+		virtual ~EventFunctionImpl0 () {}
+		F m_function;
+	} *ev = new EventFunctionImpl0 (f);
+	return schedule (time, ev);
+}
+
 
 void
 Simulator::remove (EventId ev)
