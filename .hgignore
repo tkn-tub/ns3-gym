@@ -1,4 +1,7 @@
+.*.orig$
 .*\.o$
 .*~$
 build-dir
 .*\.sconsign
+doc/html.*
+doc/latex.*
