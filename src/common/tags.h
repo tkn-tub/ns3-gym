@@ -46,9 +46,6 @@ public:
     template <typename T>
     bool peek (T *tag) const;
 
-    template <typename T>
-    bool update (T const*tag);
-
     void prettyPrint (std::ostream &os);
 
     inline void removeAll (void);
@@ -69,7 +66,6 @@ private:
     };
 
     bool remove (uint32_t id);
-    bool update (uint8_t const*buffer, uint32_t id);
     struct Tags::TagData *allocData (void);
     void freeData (struct TagData *data);
 
@@ -234,16 +230,6 @@ Tags::peek (T *tag) const
     /* no tag found */
     return false;
 }
-
-template <typename T>
-bool
-Tags::update (T const*tag)
-{
-    assert (sizeof (T) <= Tags::SIZE);
-    uint8_t const*buf = reinterpret_cast<uint8_t const*> (tag);
-    return update (buf, TypeUid<T>::getUid ());
-}
-
 
 Tags::Tags ()
     : m_next ()

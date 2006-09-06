@@ -149,22 +149,6 @@ Tags::remove (uint32_t id)
     return true;
 }
 
-bool
-Tags::update (uint8_t const*buffer, uint32_t id)
-{
-    if (!remove (id)) {
-        return false;
-    }
-    struct TagData *newStart = allocData ();
-    newStart->m_count = 1;
-    newStart->m_next = 0;
-    newStart->m_id = id;
-    memcpy (newStart->m_data, buffer, Tags::SIZE);
-    newStart->m_next = m_next;
-    m_next = newStart;
-    return true;
-}
-
 void 
 Tags::prettyPrint (std::ostream &os)
 {

@@ -33,7 +33,11 @@ namespace ns3 {
  *
  * Every Protocol header which needs to be inserted and removed
  * from a Packet instance must derive from this abstract base class
- * and implement the private pure virtual methods defined here.
+ * and implement the private pure virtual methods listed below:
+ *   - ns3::Chunk::addTo
+ *   - ns3::Chunk::removeFrom
+ *   - ns3::Chunk::peekFrom
+ *   - ns3::Chunk::print
  */
 class Chunk {
 public:
