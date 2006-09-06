@@ -27,11 +27,23 @@ namespace ns3 {
 
 class EventImpl;
 
+/**
+ * \brief an identifier for simulation events.
+ */
 class EventId {
 public:
     EventId ();
     EventId (EventImpl *impl, uint64_t ns, uint32_t uid);
+	/**
+	 * This method is syntactic sugar for the ns3::Simulator::cancel
+	 * method.
+	 */
     void cancel (void);
+	/**
+	 * This method is syntactic sugar for the ns3::Simulator::isExpired
+	 * method.
+	 * \returns true if the event has expired, false otherwise.
+	 */
     bool isExpired (void);
 public:
     /* The following methods are semi-private

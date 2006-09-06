@@ -551,20 +551,35 @@ public:
         return schedule (time, ev);
     }
     /**
-     * Unschedule the event. i.e.: the removed event never expires.
+     * Remove an event from the event list. 
+	 * This method has the same visible effect as the 
+	 * ns3::Simulator::cancel method or the ns3::EventId::cancel method
+	 * but its algorithmic complexity is much higher: it has often 
+	 * O(log(n)) complexity, sometimes O(n), sometimes worse.
+	 *
      * @param id the event to remove from the list of scheduled events.
      */
     static void remove (EventId id);
-    /*
-      XXX
+    /**
+	 * Set the cancel bit on this event: the event's associated function
+	 * will not be invoked when it expires. 
+	 * This method has the same visible effect as the 
+	 * ns3::Simulator::remove method but its algorithmic complexity is 
+	 * much lower: it has O(1) complexity.
+	 * This method has the exact same semantics as ns3::EventId::cancel.
+	 * 
+	 * @param id the event to cancel
      */
     static void cancel (EventId id);
-    /*
-      XXX
+    /**
+	 * This method has O(1) complexity
+	 *
+	 * @param id the event to test for expiration
+	 * @returns true if the event has expired, false otherwise.
      */
     static bool isExpired (EventId id);
     /**
-     * Return the "current time".
+     * Return the "current simulation time".
      */
     static Time now (void);
 private:
