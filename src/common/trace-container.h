@@ -47,7 +47,7 @@ class StreamTracer;
  *   - ns3::CallbackTracer: can be connected to any ns3::Callback
  *   - ns3::UiVariableTracer
  *   - ns3::SiVariableTracer
- *   - ns3::FTracedVariable
+ *   - ns3::FVariableTracer
  *
  * The following sample code shows how you can:
  *   - create trace event sources
