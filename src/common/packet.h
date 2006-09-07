@@ -57,14 +57,14 @@ namespace ns3 {
  *
  * Dirty operations:
  *   - ns3::Packet::removeTag
- *   - ns3::Packet::addChunk
+ *   - ns3::Packet::add
  *   - both versions of ns3::Packet::addAtEnd
  * Non-dirty operations:
  *   - ns3::Packet::addTag
  *   - ns3::Packet::removeAllTags
  *   - ns3::Packet::peekTag
- *   - ns3::Packet::peekChunk
- *   - ns3::Packet::removeChunk
+ *   - ns3::Packet::peek
+ *   - ns3::Packet::remove
  *   - ns3::Packet::createFragment
  *   - ns3::Packet::removeAtStart
  *   - ns3::Packet::removeAtEnd
