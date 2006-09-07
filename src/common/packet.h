@@ -33,11 +33,47 @@ namespace ns3 {
  * \brief network packets
  *
  * Each network packet contains a byte buffer and a list of tags.
- * The byte buffer stores the serialized content of the chunks added 
+ * - The byte buffer stores the serialized content of the chunks added 
  * to a packet. The serialized representation of these chunks is expected
  * to match that of real network packets bit for bit (although nothing
  * forces you to do this) which means that the content of a packet buffer
  * is expected to be that of a real packet.
+ * - The list of tags stores an arbitrarily large set of arbitrary 
+ * user-provided data structures in the packet: only one instance of
+ * each type of data structure is allowed in a list of tags. 
+ * These tags typically contain per-packet cross-layer information or 
+ * flow identifiers. Each tag stored in the tag list can be at most
+ * 16 bytes big. Trying to attach bigger data structures will trigger
+ * crashes at runtime.
+ *
+ * The current implementation of the byte buffers and tag list is based
+ * on COW (Copy On Write). An introduction to COW can be found in Scott 
+ * Meyer's "More Effective C++", items 17 and 29. What this means is that
+ * copying packets without modifying them is very cheap (in terms of cpu
+ * and memory usage). What is key for proper COW implementations is being
+ * able to detect when a given modification of the state of a packet triggers
+ * a full copy of the data prior to the modification: COW systems need
+ * to detect when an operation is "dirty".
+ *
+ * Dirty operations:
+ *   - ns3::Packet::removeTag
+ *   - ns3::Packet::addChunk
+ *   - both versions of ns3::Packet::addAtEnd
+ * Non-dirty operations:
+ *   - ns3::Packet::addTag
+ *   - ns3::Packet::removeAllTags
+ *   - ns3::Packet::peekTag
+ *   - ns3::Packet::peekChunk
+ *   - ns3::Packet::removeChunk
+ *   - ns3::Packet::createFragment
+ *   - ns3::Packet::removeAtStart
+ *   - ns3::Packet::removeAtEnd
+ *
+ * Dirty operations will always be slower than non-dirty operations,
+ * sometimes by several orders of magnitude. However, even the
+ * dirty operations have been optimized for common use-cases which
+ * means that most of the time, these operations will not trigger
+ * data copies and will thus be still very fast.
  */
 class Packet {
 public:
