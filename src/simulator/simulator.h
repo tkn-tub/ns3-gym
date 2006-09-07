@@ -42,6 +42,10 @@ class SchedulerFactory;
  * than microsecond accuracy. Events whose expiration time is
  * the same are scheduled in FIFO order: the first event inserted in the
  * Scheduling queue is scheduled to expire first.
+ * 
+ * A simple example of how to use the Simulator class to schedule events
+ * is shown below:
+ * \include samples/main-simulator.cc
  */
 class Simulator {
 public:

@@ -46,11 +46,19 @@ namespace ns3 {
  * 16 bytes big. Trying to attach bigger data structures will trigger
  * crashes at runtime.
  *
+ * Implementing a new type of Chunk for a new protocol is pretty easy
+ * and is a matter of creating a subclass of the ns3::Chunk base class,
+ * and implementing the 4 pure virtual methods defined in ns3::Chunk.
+ * Sample code which shows how to create such a new Chunk, how to use
+ * it, and how to manipulate tags is shown below:
+ * \include samples/main-packet.cc
+ *
  * The current implementation of the byte buffers and tag list is based
- * on COW (Copy On Write). An introduction to COW can be found in Scott 
- * Meyer's "More Effective C++", items 17 and 29. What this means is that
+ * on COW (Copy On Write. An introduction to COW can be found in Scott 
+ * Meyer's "More Effective C++", items 17 and 29). What this means is that
  * copying packets without modifying them is very cheap (in terms of cpu
- * and memory usage). What is key for proper COW implementations is being
+ * and memory usage) and modifying them can be also very cheap. What is 
+ * key for proper COW implementations is being
  * able to detect when a given modification of the state of a packet triggers
  * a full copy of the data prior to the modification: COW systems need
  * to detect when an operation is "dirty".
@@ -59,6 +67,7 @@ namespace ns3 {
  *   - ns3::Packet::removeTag
  *   - ns3::Packet::add
  *   - both versions of ns3::Packet::addAtEnd
+ *
  * Non-dirty operations:
  *   - ns3::Packet::addTag
  *   - ns3::Packet::removeAllTags
