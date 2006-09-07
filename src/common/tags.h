@@ -101,17 +101,6 @@ private:
     static void(*gPrettyPrinter) (T *, std::ostream &);
 };
 
-class TagsPrettyPrinterRegistry {
-public:
-    static void record (uint32_t uid, void (*cb) (uint8_t buf[Tags::SIZE], std::ostream &os));
-    static void prettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
-private:
-    typedef std::vector<std::pair<uint32_t, void (*) (uint8_t [Tags::SIZE], std::ostream &)> > PrettyPrinters;
-    typedef std::vector<std::pair<uint32_t, void (*) (uint8_t [Tags::SIZE], std::ostream &)> >::iterator PrettyPrintersI;
-    static PrettyPrinters gPrettyPrinters;
-};
-
-
 }; // namespace ns3
 
 
@@ -123,6 +112,21 @@ private:
 #include <string.h>
 
 namespace ns3 {
+
+/**
+ * This class holds a type <--> pretty_printer_cb mapping
+ */
+class TagsPrettyPrinterRegistry {
+public:
+    static void record (uint32_t uid, void (*cb) (uint8_t buf[Tags::SIZE], std::ostream &os));
+    static void prettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
+private:
+    typedef std::vector<std::pair<uint32_t, void (*) (uint8_t [Tags::SIZE], std::ostream &)> > PrettyPrinters;
+    typedef std::vector<std::pair<uint32_t, void (*) (uint8_t [Tags::SIZE], std::ostream &)> >::iterator PrettyPrintersI;
+    static PrettyPrinters gPrettyPrinters;
+};
+
+
 
 /**
  * The TypeUid class is used to create a mapping Type --> uid
