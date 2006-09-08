@@ -87,7 +87,8 @@ namespace ns3 {
 class Packet {
 public:
 	/**
-	 * Create an empty packet.
+	 * Create an empty packet with a new uid (as returned
+	 * by getUid).
 	 */
     Packet ();
 	/**
@@ -95,14 +96,15 @@ public:
 	 * The memory necessary for the payload is not allocated:
 	 * it will be allocated at any later point if you attempt
 	 * to fragment this packet or to access the zero-filled
-	 * bytes.
+	 * bytes. The packet is allocated with a new uid (as 
+	 * returned by getUid).
 	 * 
 	 * \param size the size of the zero-filled payload
 	 */
     Packet (uint32_t size);
 	/**
 	 * Create a new packet which contains a fragment of the original
-	 * packet.
+	 * packet. The returned packet shares the same uid as this packet.
 	 *
 	 * \param start offset from start of packet to start of fragment to create
 	 * \param length length of fragment to create
@@ -183,7 +185,7 @@ public:
     void removeAllTags (void);
 	/**
 	 * Concatenate the input packet at the end of the current
-	 * packet.
+	 * packet. This does not alter the uid of either packet.
 	 *
 	 * \param packet packet to concatenate
 	 */
@@ -191,7 +193,7 @@ public:
 	/**
 	 * Concatenate the fragment of the input packet identified
 	 * by the offset and size parameters at the end of the current
-	 * packet.
+	 * packet. This does not alter the uid of either packet.
 	 *
 	 * \param packet to concatenate
 	 * \param offset offset of fragment to copy from the start of the input packet
@@ -223,9 +225,16 @@ public:
 	 */
 	uint8_t const *peekData (void) const;
 
+	/**
+	 * A packet is allocated a new uid when it is created
+	 * empty or with zero-filled payload.
+	 *
+	 * \returns an integer identifier which uniquely
+	 *          identifies this packet.
+	 */
 	uint32_t getUid (void) const;
 private:
-    Packet (Buffer buffer, Tags tags);
+    Packet (Buffer buffer, Tags tags, uint32_t uid);
     Buffer m_buffer;
     Tags m_tags;
 	uint32_t m_uid;

@@ -38,16 +38,17 @@ Packet::Packet (uint32_t size)
 {
 	m_global_uid++;
 }
-Packet::Packet (Buffer buffer, Tags tags)
+Packet::Packet (Buffer buffer, Tags tags, uint32_t uid)
     : m_buffer (buffer),
-      m_tags (tags)
+      m_tags (tags),
+	  m_uid (uid)
 {}
 
 Packet 
 Packet::createFragment (uint32_t start, uint32_t length) const
 {
     Buffer tmp = m_buffer.createFragment (start, length);
-    return Packet (tmp, m_tags);
+    return Packet (tmp, m_tags, m_uid);
 }
 
 uint32_t 
@@ -129,7 +130,7 @@ Packet::peekData (void) const
 }
 
 uint32_t 
-Packet::getUid (void)
+Packet::getUid (void) const
 {
 	return m_uid;
 }
