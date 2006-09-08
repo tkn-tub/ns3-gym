@@ -452,6 +452,7 @@ class Ns3:
 			for f in self.extra_dist:
 				dist_list.append (f)
 			dist_list.append ('SConstruct')
+			dist_list.append ('build.py')
 
 			targets = []
 			basename = self.name + '-' + self.version
