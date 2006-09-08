@@ -222,10 +222,14 @@ public:
 	 * \returns a pointer to the internal buffer of the packet.
 	 */
 	uint8_t const *peekData (void) const;
+
+	uint32_t getUid (void) const;
 private:
     Packet (Buffer buffer, Tags tags);
     Buffer m_buffer;
     Tags m_tags;
+	uint32_t m_uid;
+	static uint32_t m_global_uid;
 };
 
 }; // namespace ns3

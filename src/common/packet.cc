@@ -23,17 +23,25 @@
 
 namespace ns3 {
 
+uint32_t Packet::m_global_uid = 0;
+
 Packet::Packet ()
-    : m_buffer () {}
+    : m_buffer (),
+	  m_uid (m_global_uid)
+{
+	m_global_uid++;
+}
 
 Packet::Packet (uint32_t size)
-    : m_buffer (size)
-{}
+    : m_buffer (size),
+	  m_uid (m_global_uid)
+{
+	m_global_uid++;
+}
 Packet::Packet (Buffer buffer, Tags tags)
     : m_buffer (buffer),
       m_tags (tags)
 {}
-
 
 Packet 
 Packet::createFragment (uint32_t start, uint32_t length) const
@@ -118,6 +126,12 @@ uint8_t const *
 Packet::peekData (void) const
 {
 	return m_buffer.peekData ();
+}
+
+uint32_t 
+Packet::getUid (void)
+{
+	return m_uid;
 }
 
 }; // namespace ns3
