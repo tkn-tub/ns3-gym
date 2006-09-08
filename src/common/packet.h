@@ -86,7 +86,6 @@ namespace ns3 {
  */
 class Packet {
 public:
-    typedef Callback<void,uint8_t *,uint32_t> PacketReadWriteCallback;
 	/**
 	 * Create an empty packet.
 	 */
@@ -122,7 +121,7 @@ public:
 	 *
 	 * \param chunk a pointer to the chunk to add to this packet.
 	 */
-    void add (Chunk *chunk);
+    void add (Chunk const&chunk);
 	/**
 	 * Deserialize chunk from this packet. This method invokes the
 	 * ns3::Chunk::peekFrom method to request the chunk to deserialize
@@ -131,7 +130,7 @@ public:
 	 *
 	 * \param chunk a pointer to the chunk to deserialize from the buffer
 	 */
-    void peek (Chunk *chunk) const;
+    void peek (Chunk &chunk) const;
 	/**
 	 * Remove a deserialized chunk from the internal buffer.
 	 * This method invokes ns3::Chunk::removeFrom to complete
@@ -139,7 +138,7 @@ public:
 	 *
 	 * \param chunk a pointer to the chunk to remove from the internal buffer.
 	 */
-    void remove (Chunk *chunk);
+    void remove (Chunk &chunk);
 	/**
 	 * Attach a tag to this packet. The tag is fully copied
 	 * in a packet-specific internal buffer. This operation 
@@ -148,7 +147,7 @@ public:
 	 * \param tag a pointer to the tag to attach to this packet.
 	 */
     template <typename T>
-    void addTag (T const *tag);
+    void addTag (T const &tag);
 	/**
 	 * Remove a tag from this packet. The data stored internally
 	 * for this tag is copied in the input tag if an instance
@@ -166,7 +165,7 @@ public:
 	 *          in this packet, false otherwise.
 	 */
     template <typename T>
-    bool removeTag (T *tag);
+    bool removeTag (T &tag);
 	/**
 	 * Copy a tag stored internally to the input tag. If no instance
 	 * of this tag is present internally, the input tag is not modified.
@@ -176,13 +175,12 @@ public:
 	 *          in this packet, false otherwise.
 	 */
     template <typename T>
-    bool peekTag (T *tag) const;
+    bool peekTag (T &tag) const;
 	/**
 	 * Remove all the tags stored in this packet. This operation is
 	 * much much faster than invoking removeTag n times.
 	 */
     void removeAllTags (void);
-    void write (PacketReadWriteCallback callback) const;
 	/**
 	 * Concatenate the input packet at the end of the current
 	 * packet.
@@ -216,7 +214,14 @@ public:
 	 * \param size number of bytes from remove
 	 */
     void removeAtStart (uint32_t size);
-
+	
+	/**
+	 * If you try to change the content of the buffer
+	 * returned by this method, you will die.
+	 *
+	 * \returns a pointer to the internal buffer of the packet.
+	 */
+	uint8_t const *peekData (void) const;
 private:
     Packet (Buffer buffer, Tags tags);
     Buffer m_buffer;
@@ -234,17 +239,17 @@ private:
 namespace ns3 {
 
 template <typename T>
-void Packet::addTag (T const*tag)
+void Packet::addTag (T const& tag)
 {
     m_tags.add (tag);
 }
 template <typename T>
-bool Packet::removeTag (T *tag)
+bool Packet::removeTag (T & tag)
 {
     return m_tags.remove (tag);
 }
 template <typename T>
-bool Packet::peekTag (T *tag) const
+bool Packet::peekTag (T & tag) const
 {
     return m_tags.peek (tag);
 }

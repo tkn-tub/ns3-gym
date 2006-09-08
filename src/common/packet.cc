@@ -49,32 +49,22 @@ Packet::getSize (void) const
 }
 
 void 
-Packet::add (Chunk *chunk)
+Packet::add (Chunk const&chunk)
 {
-    chunk->add (&m_buffer);
+    chunk.add (&m_buffer);
 }
 
 void 
-Packet::peek (Chunk *chunk) const
+Packet::peek (Chunk &chunk) const
 {
-    chunk->peek (&m_buffer);
+    chunk.peek (&m_buffer);
 }
 
 void 
-Packet::remove (Chunk *chunk)
+Packet::remove (Chunk &chunk)
 {
-    chunk->remove (&m_buffer);
+    chunk.remove (&m_buffer);
 }
-
-
-void 
-Packet::write (PacketReadWriteCallback callback) const
-{
-    uint8_t *data = m_buffer.peekData ();
-    uint32_t toWrite = getSize ();
-    callback (data, toWrite);
-}
-
 
 void 
 Packet::addAtEnd (Packet packet)
@@ -122,6 +112,12 @@ void
 Packet::removeAllTags (void)
 {
     m_tags.removeAll ();
+}
+
+uint8_t const *
+Packet::peekData (void) const
+{
+	return m_buffer.peekData ();
 }
 
 }; // namespace ns3

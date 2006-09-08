@@ -261,7 +261,7 @@ public:
      * Please, try to never ever use this method. It is really
      * evil and is present only for a few specific uses.
      */
-    uint8_t *peekData (void) const;
+    uint8_t const*peekData (void) const;
 
     /**
      * \param start size to reserve
@@ -337,7 +337,7 @@ private:
     typedef std::vector<struct Buffer::BufferData*> BufferDataList;
 
     inline uint8_t *getStart (void) const;
-    void transform_intoRealBuffer (void) const;
+    void transformIntoRealBuffer (void) const;
     static void recycle (struct Buffer::BufferData *data);
     static struct Buffer::BufferData *create (void);
     static struct Buffer::BufferData *allocate (uint32_t size, uint32_t start);

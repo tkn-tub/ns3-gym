@@ -332,7 +332,7 @@ Buffer::createFragment (uint32_t start, uint32_t length) const
     if (m_zeroAreaSize != 0 &&
         start + length > zeroStart &&
         start <= zeroEnd) {
-        transform_intoRealBuffer ();
+        transformIntoRealBuffer ();
     }
     Buffer tmp = *this;
     tmp.removeAtStart (start);
@@ -341,7 +341,7 @@ Buffer::createFragment (uint32_t start, uint32_t length) const
 }
 
 void
-Buffer::transform_intoRealBuffer (void) const
+Buffer::transformIntoRealBuffer (void) const
 {
     if (m_zeroAreaSize != 0) {
         assert (m_data->m_initialStart >= m_start);
@@ -362,10 +362,10 @@ Buffer::transform_intoRealBuffer (void) const
 }
 
 
-uint8_t *
+uint8_t const*
 Buffer::peekData (void) const
 {
-    transform_intoRealBuffer ();
+    transformIntoRealBuffer ();
     return m_data->m_data + m_start;
 }
 
@@ -399,7 +399,7 @@ BufferTest::ensureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
 {
     bool success = true;
     uint8_t *expected = array;
-    uint8_t *got;
+    uint8_t const*got;
     got = b.peekData ();
     for (uint32_t j = 0; j < n; j++) {
         if (got[j] != expected[j]) {

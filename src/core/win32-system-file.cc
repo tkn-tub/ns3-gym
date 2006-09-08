@@ -42,7 +42,7 @@ public:
     ~SystemFilePrivate ();
 
     void open (char const *filename);
-    void write (uint8_t *buffer, uint32_t size);
+    void write (uint8_t const*buffer, uint32_t size);
 private:
 };
 
@@ -59,7 +59,7 @@ SystemFilePrivate::open (char const *filename)
 }
 
 void
-SystemFilePrivate::write (uint8_t *buffer, uint32_t size)
+SystemFilePrivate::write (uint8_t const*buffer, uint32_t size)
 {
 }
 
@@ -78,7 +78,7 @@ SystemFile::open (char const *filename)
     m_priv->open (filename);
 }
 void 
-SystemFile::write (uint8_t *buffer, uint32_t size)
+SystemFile::write (uint8_t const*buffer, uint32_t size)
 {
     m_priv->write (buffer, size);
 }

@@ -38,13 +38,13 @@ public:
     inline ~Tags ();
 
     template <typename T>
-    void add (T const*tag);
+    void add (T const&tag);
 
     template <typename T>
-    bool remove (T *tag);
+    bool remove (T &tag);
 
     template <typename T>
-    bool peek (T *tag) const;
+    bool peek (T &tag) const;
 
     void prettyPrint (std::ostream &os);
 
@@ -193,10 +193,10 @@ void (*TagPrettyPrinter<T>::gPrettyPrinter) (T *, std::ostream &) = 0;
 
 template <typename T>
 void 
-Tags::add (T const*tag)
+Tags::add (T const&tag)
 {
     assert (sizeof (T) <= Tags::SIZE);
-    uint8_t const*buf = reinterpret_cast<uint8_t const*> (tag);
+    uint8_t const*buf = reinterpret_cast<uint8_t const*> (&tag);
     // ensure this id was not yet added
     for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
         assert (cur->m_id != TypeUid<T>::getUid ());
@@ -212,7 +212,7 @@ Tags::add (T const*tag)
 
 template <typename T>
 bool
-Tags::remove (T *tag)
+Tags::remove (T &tag)
 {
     assert (sizeof (T) <= Tags::SIZE);
     return remove (TypeUid<T>::getUid ());
@@ -220,10 +220,10 @@ Tags::remove (T *tag)
 
 template <typename T>
 bool
-Tags::peek (T *tag) const
+Tags::peek (T &tag) const
 {
     assert (sizeof (T) <= Tags::SIZE);
-    uint8_t *buf = reinterpret_cast<uint8_t *> (tag);
+    uint8_t *buf = reinterpret_cast<uint8_t *> (&tag);
     for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
         if (cur->m_id == TypeUid<T>::getUid ()) {
             /* found tag */

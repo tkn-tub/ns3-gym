@@ -225,18 +225,18 @@ TagsTest::runTests (void)
     Tags tags;
     struct myTagA a;
     a.a = 10;
-    tags.add (&a);
+    tags.add (a);
     a.a = 0;
-    tags.peek (&a);
+    tags.peek (a);
     if (a.a != 10) {
         ok = false;
     }
     //tags.prettyPrint (std::cout);
     struct myTagB b;
     b.b = 0xff;
-    tags.add (&b);
+    tags.add (b);
     b.b = 0;
-    tags.peek (&b);
+    tags.peek (b);
     if (b.b != 0xff) {
         ok = false;
     }
@@ -248,29 +248,29 @@ TagsTest::runTests (void)
     //tags.prettyPrint (std::cout);
     struct myTagA oA;
     oA.a = 0;
-    other.peek (&oA);
+    other.peek (oA);
     if (oA.a != 10) {
         ok = false;
     }
     struct myTagB oB;
-    other.peek (&oB);
+    other.peek (oB);
     if (oB.b != 0xff) {
         ok = false;
     }
     // remove data.
-    other.remove (&oA);
-    if (other.peek (&oA)) {
+    other.remove (oA);
+    if (other.peek (oA)) {
         ok = false;
     }
     //other.prettyPrint (std::cout);
-    if (!tags.peek (&oA)) {
+    if (!tags.peek (oA)) {
         ok = false;
     }
-    other.remove (&oB);
-    if (other.peek (&oB)) {
+    other.remove (oB);
+    if (other.peek (oB)) {
         ok = false;
     }
-    if (!tags.peek (&oB)) {
+    if (!tags.peek (oB)) {
         ok = false;
     }
 
@@ -278,13 +278,13 @@ TagsTest::runTests (void)
     Tags another = other;
     struct myTagC c;
     c.c[0] = 0x66;
-    another.add (&c);
+    another.add (c);
     c.c[0] = 0;
-    another.peek (&c);
-    if (!another.peek (&c)) {
+    another.peek (c);
+    if (!another.peek (c)) {
         ok = false;
     }
-    if (tags.peek (&c)) {
+    if (tags.peek (c)) {
         ok = false;
     }
 

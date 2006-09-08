@@ -67,7 +67,7 @@ public:
 	 * To make sure the data is written to disk, destroy 
 	 * this object.
 	 */
-    void write (uint8_t *buffer, uint32_t size);
+    void write (uint8_t const*buffer, uint32_t size);
 private:
     SystemFilePrivate *m_priv;
 };

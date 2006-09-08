@@ -77,11 +77,11 @@ static void
 receive (Packet p)
 {
     MyChunk my;
-    p.peek (&my);
-    p.remove (&my);
+    p.peek (my);
+    p.remove (my);
     std::cout << "received data=" << my.getData () << std::endl;
     struct MyTag myTag;
-    p.peekTag (&myTag);
+    p.peekTag (myTag);
 }
 
 
@@ -91,10 +91,10 @@ int main (int argc, char *argv[])
     MyChunk my;
     my.setData (2);
     std::cout << "send data=2" << std::endl;
-    p.add (&my);
+    p.add (my);
     struct MyTag myTag;
     myTag.m_streamId = 5;
-    p.addTag (&myTag);
+    p.addTag (myTag);
     receive (p);
     return 0;
 }

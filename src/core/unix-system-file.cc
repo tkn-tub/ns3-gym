@@ -50,7 +50,7 @@ public:
     ~SystemFilePrivate ();
 
     void open (char const *filename);
-    void write (uint8_t *buffer, uint32_t size);
+    void write (uint8_t const*buffer, uint32_t size);
 private:
     uint8_t m_data[BUFFER_SIZE];
     uint32_t m_current;
@@ -79,7 +79,7 @@ SystemFilePrivate::open (char const *filename)
 #endif /* min */
 
 void
-SystemFilePrivate::write (uint8_t *buffer, uint32_t size)
+SystemFilePrivate::write (uint8_t const*buffer, uint32_t size)
 {
     while (size > 0) {
         uint32_t toCopy = min (BUFFER_SIZE - m_current, size);
@@ -111,7 +111,7 @@ SystemFile::open (char const *filename)
     m_priv->open (filename);
 }
 void 
-SystemFile::write (uint8_t *buffer, uint32_t size)
+SystemFile::write (uint8_t const*buffer, uint32_t size)
 {
     m_priv->write (buffer, size);
 }
