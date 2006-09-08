@@ -11,6 +11,10 @@ in the directory 'build-dir/dbg-shared/bin' and
 
 All builds are built with debugging symbols. Debugging
 builds enable asserts while optimized builds disable them.
+On platforms which support it, rpath is used which means that
+the executable binaries generated link explicitely against
+the right libraries. This saves you the pain of having to
+setup environment variables to point to the right libraries.
 
 1) Options
 ----------
