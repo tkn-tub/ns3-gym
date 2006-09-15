@@ -23,45 +23,45 @@
 
 namespace ns3 {
 
-TagsPrettyPrinterRegistry::PrettyPrinters TagsPrettyPrinterRegistry::gPrettyPrinters;
+bool TagRegistry::m_sorted;
+TagRegistry::TagsData TagRegistry::m_registry;
+
 
 void 
-TagsPrettyPrinterRegistry::record (uint32_t uid, void (*cb) (uint8_t [Tags::SIZE], std::ostream &))
+TagRegistry::record (std::string uuid, PrettyPrinter prettyPrinter)
 {
-    for (PrettyPrintersI i = gPrettyPrinters.begin (); 
-         i != gPrettyPrinters.end (); i++) {
-        if (i->first == uid) {
-            i->second = cb;
-            return;
-        }
-    }
-    gPrettyPrinters.push_back (std::make_pair (uid, cb));
+	assert (!m_sorted);
+	m_registry.push_back (make_pair (uuid, prettyPrinter));
+}
+uint32_t 
+TagRegistry::lookupUid (std::string uuid)
+{
+	if (!m_sorted) {
+		std::sort (m_registry.begin (), m_registry.end ());
+		m_sorted = true;
+	}
+	assert (m_sorted);
+	uint32_t uid = 0;
+	for (TagsDataCI i = m_registry.begin (); i != m_registry.end (); i++) {
+		if (i->first == uuid) {
+			return uid;
+		}
+		uid++;
+	}
+	// someone asked for a uid for an unregistered uuid.
+	bool tried_to_use_unregistered_tag = false;
+	assert (tried_to_use_unregistered_tag);
+	// quiet compiler
+	return 0;
 }
 void 
-TagsPrettyPrinterRegistry::prettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os)
+TagRegistry::prettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os)
 {
-    for (PrettyPrintersI i = gPrettyPrinters.begin (); 
-         i != gPrettyPrinters.end (); i++) {
-        if (i->first == uid) {
-            if (i->second == 0) {
-                os << "tag uid="<<uid<<" null pretty printer."<<std::endl;
-            } else {
-                (*(i->second)) (buf, os);
-            }
-            return;
-        }
-    }
-    os << "tag uid="<<uid<<" no pretty printer registered."<< std::endl;
-}
-
-
-
-uint32_t
-Tags::UidFactory::create (void)
-{
-    static uint32_t uid = 0;
-    uid++;
-    return uid;
+	assert (m_registry.size () > uid);
+	PrettyPrinter prettyPrinter = m_registry[uid].second;
+	if (prettyPrinter != 0) {
+		prettyPrinter (buf, os);
+	}
 }
 
 
@@ -153,7 +153,7 @@ void
 Tags::prettyPrint (std::ostream &os)
 {
     for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
-        TagsPrettyPrinterRegistry::prettyPrint (cur->m_id, cur->m_data, os);
+        TagRegistry::prettyPrint (cur->m_id, cur->m_data, os);
     }
 }
 
@@ -205,9 +205,9 @@ myTagCPrettyPrinterCb (struct myTagC *c, std::ostream &os)
 }
 
 
-static TagPrettyPrinter<struct myTagA> gMyTagAPrettyPrinter (&myTagAPrettyPrinterCb);
-static TagPrettyPrinter<struct myTagB> gMyTagBPrettyPrinter (&myTagBPrettyPrinterCb);
-static TagPrettyPrinter<struct myTagC> gMyTagCPrettyPrinter (&myTagCPrettyPrinterCb);
+static TagRegistration<struct myTagA> gMyTagARegistration ("A", &myTagAPrettyPrinterCb);
+static TagRegistration<struct myTagB> gMyTagBRegistration ("B", &myTagBPrettyPrinterCb);
+static TagRegistration<struct myTagC> gMyTagCRegistration ("C", &myTagCPrettyPrinterCb);
 
 
 TagsTest::TagsTest ()

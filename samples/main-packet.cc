@@ -72,6 +72,8 @@ struct MyTag {
     uint16_t m_streamId;
 };
 
+static TagRegistration<struct MyTag> g_MyTagRegistration ("ns3::MyTag", 0);
+
 
 static void
 receive (Packet p)
