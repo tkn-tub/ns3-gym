@@ -30,6 +30,14 @@ namespace ns3 {
 template <typename T>
 class TagPrettyPrinter;
 
+/**
+ * \ingroup constants
+ * \brief Tag maximum size
+ * The maximum size (in bytes) of a Tag is stored
+ * in this constant.
+ */
+#define TAGS_MAX_SIZE 16
+
 class Tags {
 public:
     inline Tags ();
@@ -51,7 +59,7 @@ public:
     inline void removeAll (void);
 
     enum {
-        SIZE = 16
+        SIZE = TAGS_MAX_SIZE
     };
 private:
     struct TagData {

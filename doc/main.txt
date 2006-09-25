@@ -33,3 +33,7 @@
  * \brief Every class exported by the ns3 library is enclosed in the
  * ns3 namespace.
  */
+/**
+ * \defgroup constants
+ * \brief Constants you can change
+ */
