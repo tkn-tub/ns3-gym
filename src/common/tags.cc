@@ -49,8 +49,8 @@ TagRegistry::lookupUid (std::string uuid)
 		uid++;
 	}
 	// someone asked for a uid for an unregistered uuid.
-	bool tried_to_use_unregistered_tag = false;
-	assert (tried_to_use_unregistered_tag);
+	assert ("You tried to use unregistered tag: make sure you create an "
+			"instance of type TagRegistration<YouTagType>.");
 	// quiet compiler
 	return 0;
 }
