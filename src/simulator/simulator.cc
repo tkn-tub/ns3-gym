@@ -57,8 +57,8 @@ public:
     bool isFinished (void) const;
     Time next (void) const;
     void stop (void);
-    void stopAt (Time time);
-    EventId schedule (Time time, EventImpl *event);
+    void stopAt (Time const &time);
+    EventId schedule (Time const &time, EventImpl *event);
     void remove (EventId ev);
     void cancel (EventId ev);
     bool isExpired (EventId ev);
@@ -162,12 +162,12 @@ SimulatorPrivate::stop (void)
     m_stop = true;
 }
 void 
-SimulatorPrivate::stopAt (Time at)
+SimulatorPrivate::stopAt (Time const &at)
 {
     m_stopAt = at.ns ();
 }
 EventId
-SimulatorPrivate::schedule (Time time, EventImpl *event)
+SimulatorPrivate::schedule (Time const &time, EventImpl *event)
 {
     if (time.isDestroy ()) {
         m_destroy.push_back (std::make_pair (event, m_uid));
@@ -326,7 +326,7 @@ Simulator::stop (void)
     getPriv ()->stop ();
 }
 void 
-Simulator::stopAt (Time at)
+Simulator::stopAt (Time const &at)
 {
     getPriv ()->stopAt (at);
 }
@@ -337,12 +337,12 @@ Simulator::now (void)
 }
 
 EventId
-Simulator::schedule (Time time, EventImpl *ev)
+Simulator::schedule (Time const &time, EventImpl *ev)
 {
     return getPriv ()->schedule (time, ev);
 }
 EventId
-Simulator::schedule (Time time, void (*f) (void))
+Simulator::schedule (Time const &time, void (*f) (void))
 {
 	// zero arg version
 	class EventFunctionImpl0 : public EventImpl {

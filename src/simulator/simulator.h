@@ -142,7 +142,7 @@ public:
      * is greater than or equal to the stop time.
      * @param time the stop time.
      */
-    static void stopAt (Time time);
+    static void stopAt (Time const &time);
 
     /**
      * Schedule an event to expire when time is reached.
@@ -155,7 +155,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T>
-    static EventId schedule (Time time, void (T::*mem_ptr) (void), T *obj);
+    static EventId schedule (Time const &time, void (T::*mem_ptr) (void), T *obj);
     /**
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -164,7 +164,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T, typename T1>
-    static EventId schedule (Time time, void (T::*mem_ptr) (T1), T* obj, T1 a1);
+    static EventId schedule (Time const &time, void (T::*mem_ptr) (T1), T* obj, T1 a1);
     /**
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -174,7 +174,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T, typename T1, typename T2>
-    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2);
+    static EventId schedule (Time const &time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2);
     /**
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -185,7 +185,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T, typename T1, typename T2, typename T3>
-    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3);
+    static EventId schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3);
     /**
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -197,7 +197,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T, typename T1, typename T2, typename T3, typename T4>
-    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4);
+    static EventId schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4);
     /**
      * @param time the expiration time of the event.
      * @param mem_ptr member method pointer to invoke
@@ -210,14 +210,14 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-    static EventId schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
+    static EventId schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
 							 T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 	/**
      * @param time the expiration time of the event.
      * @param f the function to invoke
      * @returns an id for the scheduled event.
      */
-    static EventId schedule (Time time, void (*f) (void));
+    static EventId schedule (Time const &time, void (*f) (void));
     /**
      * @param time the expiration time of the event.
      * @param f the function to invoke
@@ -225,7 +225,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T1>
-    static EventId schedule (Time time, void (*f) (T1), T1 a1);
+    static EventId schedule (Time const &time, void (*f) (T1), T1 a1);
     /**
      * @param time the expiration time of the event.
      * @param f the function to invoke
@@ -234,7 +234,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T1, typename T2>
-    static EventId schedule (Time time, void (*f) (T1,T2), T1 a1, T2 a2);
+    static EventId schedule (Time const &time, void (*f) (T1,T2), T1 a1, T2 a2);
     /**
      * @param time the expiration time of the event.
      * @param f the function to invoke
@@ -244,7 +244,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T1, typename T2, typename T3>
-    static EventId schedule (Time time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
+    static EventId schedule (Time const &time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
     /**
      * @param time the expiration time of the event.
      * @param f the function to invoke
@@ -255,7 +255,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T1, typename T2, typename T3, typename T4>
-    static EventId schedule (Time time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
+    static EventId schedule (Time const &time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
     /**
      * @param time the expiration time of the event.
      * @param f the function to invoke
@@ -267,7 +267,7 @@ public:
      * @returns an id for the scheduled event.
      */
     template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    static EventId schedule (Time time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+    static EventId schedule (Time const &time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
     /**
      * Remove an event from the event list. 
 	 * This method has the same visible effect as the 
@@ -311,7 +311,7 @@ private:
     Simulator ();
     ~Simulator ();
     static SimulatorPrivate *getPriv (void);
-    static EventId schedule (Time time, EventImpl *event);
+    static EventId schedule (Time const &time, EventImpl *event);
     static SimulatorPrivate *m_priv;
     static SchedulerFactory const*m_schedFactory;
     static enum ListType {
@@ -332,7 +332,7 @@ private:
 namespace ns3 {
 
 template <typename T>
-EventId Simulator::schedule (Time time, void (T::*mem_ptr) (void), T *obj) 
+EventId Simulator::schedule (Time const &time, void (T::*mem_ptr) (void), T *obj) 
 {
 	// zero argument version
 	class EventMemberImpl0 : public EventImpl {
@@ -355,7 +355,7 @@ EventId Simulator::schedule (Time time, void (T::*mem_ptr) (void), T *obj)
 
 
 template <typename T, typename T1>
-EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1), T* obj, T1 a1) 
+EventId Simulator::schedule (Time const &time, void (T::*mem_ptr) (T1), T* obj, T1 a1) 
 {
 	// one argument version
 	class EventMemberImpl1 : public EventImpl {
@@ -380,7 +380,7 @@ EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1), T* obj, T1 a1)
 }
 
 template <typename T, typename T1, typename T2>
-EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2) 
+EventId Simulator::schedule (Time const &time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2) 
 {
 	// two argument version
 	class EventMemberImpl2 : public EventImpl {
@@ -409,7 +409,7 @@ EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a
 }
 
 template <typename T, typename T1, typename T2, typename T3>
-EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3) 
+EventId Simulator::schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3) 
 {
 	// three argument version
 	class EventMemberImpl3 : public EventImpl {
@@ -439,7 +439,7 @@ EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4>
-EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+EventId Simulator::schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
 	// four argument version
 	class EventMemberImpl4 : public EventImpl {
@@ -471,7 +471,7 @@ EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
+EventId Simulator::schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
 							 T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
 	// five argument version
@@ -506,7 +506,7 @@ EventId Simulator::schedule (Time time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* 
 }
 
 template <typename T1>
-EventId Simulator::schedule (Time time, void (*f) (T1), T1 a1) 
+EventId Simulator::schedule (Time const &time, void (*f) (T1), T1 a1) 
 {
 	// one arg version
 	class EventFunctionImpl1 : public EventImpl {
@@ -530,7 +530,7 @@ EventId Simulator::schedule (Time time, void (*f) (T1), T1 a1)
 }
 
 template <typename T1, typename T2>
-EventId Simulator::schedule (Time time, void (*f) (T1,T2), T1 a1, T2 a2) 
+EventId Simulator::schedule (Time const &time, void (*f) (T1,T2), T1 a1, T2 a2) 
 {
 	// two arg version
 	class EventFunctionImpl2 : public EventImpl {
@@ -556,7 +556,7 @@ EventId Simulator::schedule (Time time, void (*f) (T1,T2), T1 a1, T2 a2)
 }
 
 template <typename T1, typename T2, typename T3>
-EventId Simulator::schedule (Time time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3)
+EventId Simulator::schedule (Time const &time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3)
 {
 	// three arg version
 	class EventFunctionImpl3 : public EventImpl {
@@ -584,7 +584,7 @@ EventId Simulator::schedule (Time time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a
 }
 
 template <typename T1, typename T2, typename T3, typename T4>
-EventId Simulator::schedule (Time time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) 
+EventId Simulator::schedule (Time const &time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
 	// four arg version
 	class EventFunctionImpl4 : public EventImpl {
@@ -614,7 +614,7 @@ EventId Simulator::schedule (Time time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-static EventId schedule (Time time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+static EventId schedule (Time const &time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
 	// five arg version
 	class EventFunctionImpl5 : public EventImpl {
