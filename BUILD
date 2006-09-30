@@ -72,3 +72,82 @@ foo-0.0.10.zip
 - distcheck: generate a release tarball and zipfile and 
   attempt to run the 'all' target for the release tarball.
 Example: scons distcheck
+
+3) How the build system works
+-----------------------------
+
+The current build system defines what I call "ns3 modules": each module
+is a set of source files, normal header files and installable header
+files. Each module also depends on a set of other modules. We build
+modules automatically in the correct order. That is, we always start
+from the module which does not depend on any other module (core) and
+proceed with the other modules and make sure that when a module is
+built, all the modules it depends upon have already been built.
+
+To build a module, we:
+1) generate the .o files
+2) link the .o files together 
+3) install the installable headers in the common directory
+top_build_dir/include/ns3.
+
+This means that if you want to use a header from your own module, you
+should just include it: #include "foo.h" but if you want to include a
+header from another module, you need to include it with #include
+"ns3/bar.h". This allows you to make sure that our "public" ns3 headers
+do not conflict with existing system-level headers. The time.h header
+issue you raise above is an example of this problem and it is worked
+around by asking each user of the ns3 time.h header to include
+"ns3/time.h" rather than "time.h".
+
+4) How to add files to a module ?
+---------------------------------
+
+In the main SConstruct file, you can add source code
+to the add_sources method. For example, to add a foo.cc
+file to the core module, we coud do this:
+core.add_sources ('foo.cc')
+Of course, if this file implements public API, its 
+header should be installable:
+core.add_inst_headers ('foo.h')
+
+5) How to create a new module ?
+-------------------------------
+
+# create a new module. First arg is the name of
+# the new module. Second arg is the directory in
+# which all source files for this module reside.
+my_module = Ns3Module ('my', 'src/my_dir')
+# add it to build system
+ns3.add (my_module)
+# specify module dependencies. Here, depends
+# on the 'ipv4' and 'core' modules
+my_module.add_deps (['core', 'ipv4']) 
+# add source code to build located in 
+# src/my_dir
+my_module.add_sources ([
+	'my_a.cc',
+	'my_b.cc',
+	'my_c.cc'
+])
+my_module.add_sources ([
+	'my_d.cc'
+])
+# add headers which are not public
+my_module.add_headers ([
+	'my_a.h',
+	'my_c.h'
+])
+# add headers which are public
+my_module.add_inst_headers ([
+	'my_b.h'
+])
+my_module.add_inst_headers ([
+	'my_d.h'
+])
+# if you need to link against an external library,
+# you must add 'external' dependencies. Here, the 
+# pthread library
+my_module.add_external_dep ('pthread')
+# by default, a module is conceptually a library. If you
+# want to generate an executable from a module you need to:
+my_module.set_executable ()
