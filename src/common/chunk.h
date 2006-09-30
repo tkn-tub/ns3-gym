@@ -43,7 +43,7 @@ class Chunk {
 public:
     Chunk ();
     /**
-     * Derived classes must provided an explicit virtual destructor
+     * Derived classes must provide an explicit virtual destructor
      */
     virtual ~Chunk () = 0;
 
