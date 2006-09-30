@@ -15,7 +15,7 @@ public:
     void setData (uint16_t data);
     uint16_t getData (void) const;
 private:
-    virtual void print (std::ostream *os) const;
+    virtual void printTo (std::ostream &os) const;
     virtual void addTo (Buffer *buffer) const;
     virtual void peekFrom (Buffer const *buffer);
     virtual void removeFrom (Buffer *buffer);
@@ -28,9 +28,9 @@ MyChunk::MyChunk ()
 MyChunk::~MyChunk ()
 {}
 void 
-MyChunk::print (std::ostream *os) const
+MyChunk::printTo (std::ostream &os) const
 {
-    *os << "MyChunk data=" << m_data << std::endl;
+    os << "MyChunk data=" << m_data << std::endl;
 }
 void 
 MyChunk::addTo (Buffer *buffer) const

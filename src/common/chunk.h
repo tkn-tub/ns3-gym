@@ -58,7 +58,7 @@ private:
      * \param os the std output stream in which this 
      *       protocol header must print itself.
      */
-    virtual void print (std::ostream *os) const = 0;
+    virtual void printTo (std::ostream &os) const = 0;
 
     /**
      * \param buffer the buffer in which the protocol header

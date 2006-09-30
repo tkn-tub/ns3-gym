@@ -30,7 +30,7 @@ Chunk::Chunk ()
 void 
 Chunk::print (std::ostream &os) const
 {
-    print (&os);
+    printTo (os);
 }
 void 
 Chunk::add (Buffer *buffer) const
