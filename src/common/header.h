@@ -68,16 +68,11 @@ private:
     /**
      * \param start the buffer iterator in which the protocol header
      *    must serialize itself.
-     *
-     * This method must:
-     *   - reserve room for its serialized representation in the input buffer
-     *   - serialize itself in this reserved room
      */
     virtual void serializeTo (Buffer::Iterator start) const = 0;
     /**
      * \param start the buffer iterator from which the protocol header must
      *    deserialize itself.
-     *
      */
     virtual void deserializeFrom (Buffer::Iterator start) = 0;
 };
