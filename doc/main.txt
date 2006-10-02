@@ -24,7 +24,8 @@
  *    - a simulator class used to create, schedule and cancel events: ns3::Simulator
  *
  * The "common" module contains:
- *    - a packet class to create and manipulate simulation packets: ns3::Packet and ns3::Chunk
+ *    - a packet class to create and manipulate simulation packets: ns3::Packet, ns3::Header, 
+ *      and ns3::Trailer
  *    - a trace container class to hold lists of trace sources: ns3::TraceContainer
  *    - a Pcap file serializer which can generate pcap files from simulation packets: ns3::PcapWriter
  */
