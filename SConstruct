@@ -63,7 +63,7 @@ simu.add_headers ([
 	'scheduler-list.h'
 	])
 simu.add_inst_headers ([
-	'time.h',
+	'nstime.h',
 	'event-id.h',
 	'event-impl.h',
 	'simulator.h',

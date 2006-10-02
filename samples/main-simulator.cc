@@ -1,6 +1,6 @@
 /* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 #include "ns3/simulator.h"
-#include "ns3/time.h"
+#include "ns3/nstime.h"
 #include <iostream>
 
 using namespace ns3;

@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include "event-id.h"
 #include "event-impl.h"
-#include "time.h"
+#include "nstime.h"
 
 namespace ns3 {
 
