@@ -91,12 +91,12 @@ private:
 template <typename T>
 class TagRegistration {
 public:
-	/**
-	 * \param uuid a uuid generated with uuidgen
-	 * \param fn a function which can pretty-print an instance
-	 *        of type T in the output stream.
-	 */
-	TagRegistration<T> (std::string uuid, void(*fn) (T *, std::ostream &));
+    /**
+     * \param uuid a uuid generated with uuidgen
+     * \param fn a function which can pretty-print an instance
+     *        of type T in the output stream.
+     */
+    TagRegistration<T> (std::string uuid, void(*fn) (T *, std::ostream &));
 private:
     static void prettyPrinterCb (uint8_t *buf, std::ostream &os);
     static void(*m_prettyPrinter) (T *, std::ostream &);
@@ -116,15 +116,15 @@ namespace ns3 {
 
 class TagRegistry {
 public:
-	typedef void (*PrettyPrinter) (uint8_t [Tags::SIZE], std::ostream &);
-	static void record (std::string uuid, PrettyPrinter prettyPrinter);
-	static uint32_t lookupUid (std::string uuid);
-	static void prettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
+    typedef void (*PrettyPrinter) (uint8_t [Tags::SIZE], std::ostream &);
+    static void record (std::string uuid, PrettyPrinter prettyPrinter);
+    static uint32_t lookupUid (std::string uuid);
+    static void prettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
 private:
-	typedef std::vector<std::pair<std::string,PrettyPrinter> > TagsData;
-	typedef std::vector<std::pair<std::string,PrettyPrinter> >::const_iterator TagsDataCI;
-	static bool m_sorted;
-	static TagsData m_registry;
+    typedef std::vector<std::pair<std::string,PrettyPrinter> > TagsData;
+    typedef std::vector<std::pair<std::string,PrettyPrinter> >::const_iterator TagsDataCI;
+    static bool m_sorted;
+    static TagsData m_registry;
 };
 /**
  * The TypeUid class is used to create a mapping Type --> uid
@@ -137,17 +137,17 @@ private:
 template <typename T>
 class TypeUid {
 public:
-	static void record (std::string uuid);
-	static const uint32_t getUid (void);
+    static void record (std::string uuid);
+    static const uint32_t getUid (void);
 private:
-	static std::string *getUuid (void);
-	T m_realType;
+    static std::string *getUuid (void);
+    T m_realType;
 };
 
 template <typename T>
 void TypeUid<T>::record (std::string uuid)
 {
-	*(getUuid ()) = uuid;
+    *(getUuid ()) = uuid;
 }
 
 template <typename T>
@@ -160,8 +160,8 @@ const uint32_t TypeUid<T>::getUid (void)
 template <typename T>
 std::string *TypeUid<T>::getUuid (void)
 {
-	static std::string uuid;
-	return &uuid;
+    static std::string uuid;
+    return &uuid;
 }
 
 
@@ -177,8 +177,8 @@ TagRegistration<T>::TagRegistration (std::string uuid, void (*prettyPrinter) (T 
 {
     assert (sizeof (T) <= Tags::SIZE);
     m_prettyPrinter  = prettyPrinter;
-	TagRegistry::record (uuid, &TagRegistration<T>::prettyPrinterCb);
-	TypeUid<T>::record (uuid);
+    TagRegistry::record (uuid, &TagRegistration<T>::prettyPrinterCb);
+    TypeUid<T>::record (uuid);
 }
 template <typename T>
 void 

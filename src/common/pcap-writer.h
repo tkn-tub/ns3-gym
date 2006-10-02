@@ -52,8 +52,8 @@ public:
      * Write a pcap header in the output file which specifies
      * that the content of the file will Packets with
      * Ethernet/LLC/SNAP encapsulation. This method should
-	 * be invoked before ns3::PcapWriter::writePacket and after
-	 * ns3::PcapWriter::open.
+     * be invoked before ns3::PcapWriter::writePacket and after
+     * ns3::PcapWriter::open.
      */
     void writeHeaderEthernet (void);
 

@@ -27,21 +27,21 @@ uint32_t Packet::m_global_uid = 0;
 
 Packet::Packet ()
     : m_buffer (),
-	  m_uid (m_global_uid)
+      m_uid (m_global_uid)
 {
-	m_global_uid++;
+    m_global_uid++;
 }
 
 Packet::Packet (uint32_t size)
     : m_buffer (size),
-	  m_uid (m_global_uid)
+      m_uid (m_global_uid)
 {
-	m_global_uid++;
+    m_global_uid++;
 }
 Packet::Packet (Buffer buffer, Tags tags, uint32_t uid)
     : m_buffer (buffer),
       m_tags (tags),
-	  m_uid (uid)
+      m_uid (uid)
 {}
 
 Packet 
@@ -60,40 +60,40 @@ Packet::getSize (void) const
 void 
 Packet::add (Header const &header)
 {
-	m_buffer.addAtStart (header.getSize ());
-	header.serialize (m_buffer.begin ());
+    m_buffer.addAtStart (header.getSize ());
+    header.serialize (m_buffer.begin ());
 }
 void 
 Packet::peek (Header &header)
 {
-	header.deserialize (m_buffer.begin ());
+    header.deserialize (m_buffer.begin ());
 }
 void 
 Packet::remove (Header const &header)
 {
-	assert (header.isDeserialized ());
-	m_buffer.removeAtStart (header.getSize ());
+    assert (header.isDeserialized ());
+    m_buffer.removeAtStart (header.getSize ());
 }
 void 
 Packet::add (Trailer const &trailer)
 {
-	m_buffer.addAtEnd (trailer.getSize ());
-	Buffer::Iterator start = m_buffer.end ();
-	start.prev (trailer.getSize ());
-	trailer.serialize (start);
+    m_buffer.addAtEnd (trailer.getSize ());
+    Buffer::Iterator start = m_buffer.end ();
+    start.prev (trailer.getSize ());
+    trailer.serialize (start);
 }
 void 
 Packet::peek (Trailer &trailer)
 {
-	Buffer::Iterator start = m_buffer.end ();
-	start.prev (trailer.getSize ());
-	trailer.deserialize (start);
+    Buffer::Iterator start = m_buffer.end ();
+    start.prev (trailer.getSize ());
+    trailer.deserialize (start);
 }
 void 
 Packet::remove (Trailer const &trailer)
 {
-	assert (trailer.isDeserialized ());
-	m_buffer.removeAtEnd (trailer.getSize ());
+    assert (trailer.isDeserialized ());
+    m_buffer.removeAtEnd (trailer.getSize ());
 }
 
 
@@ -148,13 +148,13 @@ Packet::removeAllTags (void)
 uint8_t const *
 Packet::peekData (void) const
 {
-	return m_buffer.peekData ();
+    return m_buffer.peekData ();
 }
 
 uint32_t 
 Packet::getUid (void) const
 {
-	return m_uid;
+    return m_uid;
 }
 
 }; // namespace ns3

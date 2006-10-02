@@ -46,22 +46,22 @@ class TestManager;
  */
 class Test {
 public:
-	/**
-	 * \param name the name of the test
-	 */
+    /**
+     * \param name the name of the test
+     */
     Test (char const *name);
     virtual ~Test ();
 
-	/**
-	 * \returns true if the test was successful, false otherwise.
-	 */
+    /**
+     * \returns true if the test was successful, false otherwise.
+     */
     virtual bool runTests (void) = 0;
 
 protected:
-	/**
-	 * \returns an output stream which base classes can write to
-	 *          to return extra information on test errors.
-	 */
+    /**
+     * \returns an output stream which base classes can write to
+     *          to return extra information on test errors.
+     */
     std::ostream &failure (void);
 };
 
@@ -70,20 +70,20 @@ protected:
  */
 class TestManager {
 public:
-	/**
-	 * Enable verbose output. If you do not enable verbose output,
-	 * nothing is printed on screen during the test runs.
-	 */
+    /**
+     * Enable verbose output. If you do not enable verbose output,
+     * nothing is printed on screen during the test runs.
+     */
     static void enableVerbose (void);
-	/**
-	 * \returns true if all tests passed, false otherwise.
-	 *
-	 * run all registered regression tests
-	 */
+    /**
+     * \returns true if all tests passed, false otherwise.
+     *
+     * run all registered regression tests
+     */
     static bool runTests (void);
 
 private:
-	friend class Test;
+    friend class Test;
     static void add (Test *test, char const *name);
     static std::ostream &failure (void);
     static TestManager *get (void);

@@ -35,7 +35,7 @@ Header::print (std::ostream &os) const
 uint32_t
 Header::getSize (void) const
 {
-	return getSerializedSize ();
+    return getSerializedSize ();
 }
 void 
 Header::serialize (Buffer::Iterator start) const
@@ -51,7 +51,7 @@ Header::deserialize (Buffer::Iterator start)
 bool 
 Header::isDeserialized (void) const
 {
-	return m_isDeserialized;
+    return m_isDeserialized;
 }
 
 

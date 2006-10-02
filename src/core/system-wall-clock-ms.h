@@ -32,17 +32,17 @@ public:
     SystemWallClockMs ();
     ~SystemWallClockMs ();
 
-	/**
-	 * Start a measure.
-	 */
+    /**
+     * Start a measure.
+     */
     void start (void);
-	/**
-	 * \returns the measured elapsed wall clock time since 
-	 *          ns3::SystemWallClockMs::start was invoked.
-	 *
-	 * It is possible to start a new measurement with ns3::SystemWallClockMs::start
-	 * after this method returns.
-	 */
+    /**
+     * \returns the measured elapsed wall clock time since 
+     *          ns3::SystemWallClockMs::start was invoked.
+     *
+     * It is possible to start a new measurement with ns3::SystemWallClockMs::start
+     * after this method returns.
+     */
     unsigned long long end (void);
 private:
     class SystemWallClockMsPrivate *m_priv;

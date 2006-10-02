@@ -48,10 +48,10 @@ public:
     virtual ~Header () = 0;
 
     void print (std::ostream &os) const;
-	uint32_t getSize (void) const;
+    uint32_t getSize (void) const;
     void serialize (Buffer::Iterator start) const;
     void deserialize (Buffer::Iterator start);
-	bool isDeserialized (void) const;
+    bool isDeserialized (void) const;
 private:
     bool m_isDeserialized;
     /**
@@ -60,10 +60,10 @@ private:
      */
     virtual void printTo (std::ostream &os) const = 0;
 
-	/**
-	 * \returns the size of the serialized Header.
-	 */
-	virtual uint32_t getSerializedSize (void) const = 0;
+    /**
+     * \returns the size of the serialized Header.
+     */
+    virtual uint32_t getSerializedSize (void) const = 0;
 
     /**
      * \param start the buffer iterator in which the protocol header

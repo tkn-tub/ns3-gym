@@ -87,184 +87,184 @@ namespace ns3 {
  */
 class Packet {
 public:
-	/**
-	 * Create an empty packet with a new uid (as returned
-	 * by getUid).
-	 */
+    /**
+     * Create an empty packet with a new uid (as returned
+     * by getUid).
+     */
     Packet ();
-	/**
-	 * Create a packet with a zero-filled payload.
-	 * The memory necessary for the payload is not allocated:
-	 * it will be allocated at any later point if you attempt
-	 * to fragment this packet or to access the zero-filled
-	 * bytes. The packet is allocated with a new uid (as 
-	 * returned by getUid).
-	 * 
-	 * \param size the size of the zero-filled payload
-	 */
+    /**
+     * Create a packet with a zero-filled payload.
+     * The memory necessary for the payload is not allocated:
+     * it will be allocated at any later point if you attempt
+     * to fragment this packet or to access the zero-filled
+     * bytes. The packet is allocated with a new uid (as 
+     * returned by getUid).
+     * 
+     * \param size the size of the zero-filled payload
+     */
     Packet (uint32_t size);
-	/**
-	 * Create a new packet which contains a fragment of the original
-	 * packet. The returned packet shares the same uid as this packet.
-	 *
-	 * \param start offset from start of packet to start of fragment to create
-	 * \param length length of fragment to create
-	 * \returns a fragment of the original packet
-	 */
+    /**
+     * Create a new packet which contains a fragment of the original
+     * packet. The returned packet shares the same uid as this packet.
+     *
+     * \param start offset from start of packet to start of fragment to create
+     * \param length length of fragment to create
+     * \returns a fragment of the original packet
+     */
     Packet createFragment (uint32_t start, uint32_t length) const;
-	/**
-	 * \returns the size in bytes of the packet (including the zero-filled
-	 *          initial payload)
-	 */
+    /**
+     * \returns the size in bytes of the packet (including the zero-filled
+     *          initial payload)
+     */
     uint32_t getSize (void) const;
-	/**
-	 * Add header to this packet. This method invokes the
-	 * ns3::Header::serializeTo method to request the header to serialize
-	 * itself in the packet buffer.
-	 *
-	 * \param header a reference to the header to add to this packet.
-	 */
-	void add (Header const &header);
-	/**
-	 * Deserialize header from this packet. This method invokes the
-	 * ns3::Header::deserializeFrom method to request the header to deserialize
-	 * itself from the packet buffer. This method does not remove
-	 * the data from the buffer. It merely reads it.
-	 *
-	 * \param header a reference to the header to deserialize from the buffer
-	 */
-	void peek (Header &header);
-	/**
-	 * Remove a deserialized header from the internal buffer.
-	 * This method removes the bytes read by Packet::peek from
-	 * the packet buffer.
-	 *
-	 * \param header a reference to the header to remove from the internal buffer.
-	 */
-	void remove (Header const &header);
-	/**
-	 * Add trailer to this packet. This method invokes the
-	 * ns3::Trailer::serializeTo method to request the trailer to serialize
-	 * itself in the packet buffer.
-	 *
-	 * \param trailer a reference to the trailer to add to this packet.
-	 */
-	void add (Trailer const &trailer);
-	/**
-	 * Deserialize trailer from this packet. This method invokes the
-	 * ns3::Trailer::deserializeFrom method to request the trailer to deserialize
-	 * itself from the packet buffer. This method does not remove
-	 * the data from the buffer. It merely reads it.
-	 *
-	 * \param trailer a reference to the trailer to deserialize from the buffer
-	 */
-	void peek (Trailer &trailer);
-	/**
-	 * Remove a deserialized trailer from the internal buffer.
-	 * This method removes the bytes read by Packet::peek from
-	 * the packet buffer.
-	 *
-	 * \param trailer a reference to the trailer to remove from the internal buffer.
-	 */
-	void remove (Trailer const &trailer);
-	/**
-	 * Attach a tag to this packet. The tag is fully copied
-	 * in a packet-specific internal buffer. This operation 
-	 * is expected to be really fast.
-	 *
-	 * \param tag a pointer to the tag to attach to this packet.
-	 */
+    /**
+     * Add header to this packet. This method invokes the
+     * ns3::Header::serializeTo method to request the header to serialize
+     * itself in the packet buffer.
+     *
+     * \param header a reference to the header to add to this packet.
+     */
+    void add (Header const &header);
+    /**
+     * Deserialize header from this packet. This method invokes the
+     * ns3::Header::deserializeFrom method to request the header to deserialize
+     * itself from the packet buffer. This method does not remove
+     * the data from the buffer. It merely reads it.
+     *
+     * \param header a reference to the header to deserialize from the buffer
+     */
+    void peek (Header &header);
+    /**
+     * Remove a deserialized header from the internal buffer.
+     * This method removes the bytes read by Packet::peek from
+     * the packet buffer.
+     *
+     * \param header a reference to the header to remove from the internal buffer.
+     */
+    void remove (Header const &header);
+    /**
+     * Add trailer to this packet. This method invokes the
+     * ns3::Trailer::serializeTo method to request the trailer to serialize
+     * itself in the packet buffer.
+     *
+     * \param trailer a reference to the trailer to add to this packet.
+     */
+    void add (Trailer const &trailer);
+    /**
+     * Deserialize trailer from this packet. This method invokes the
+     * ns3::Trailer::deserializeFrom method to request the trailer to deserialize
+     * itself from the packet buffer. This method does not remove
+     * the data from the buffer. It merely reads it.
+     *
+     * \param trailer a reference to the trailer to deserialize from the buffer
+     */
+    void peek (Trailer &trailer);
+    /**
+     * Remove a deserialized trailer from the internal buffer.
+     * This method removes the bytes read by Packet::peek from
+     * the packet buffer.
+     *
+     * \param trailer a reference to the trailer to remove from the internal buffer.
+     */
+    void remove (Trailer const &trailer);
+    /**
+     * Attach a tag to this packet. The tag is fully copied
+     * in a packet-specific internal buffer. This operation 
+     * is expected to be really fast.
+     *
+     * \param tag a pointer to the tag to attach to this packet.
+     */
     template <typename T>
     void addTag (T const &tag);
-	/**
-	 * Remove a tag from this packet. The data stored internally
-	 * for this tag is copied in the input tag if an instance
-	 * of this tag type is present in the internal buffer. If this
-	 * tag type is not present, the input tag is not modified. 
-	 *
-	 * This operation can be potentially slow and might trigger
-	 * unexpectedly large memory allocations. It is thus
-	 * usually a better idea to create a copy of this packet,
-	 * and invoke removeAllTags on the copy to remove all 
-	 * tags rather than remove the tags one by one from a packet.
-	 *
-	 * \param tag a pointer to the tag to remove from this packet
-	 * \returns true if an instance of this tag type is stored
-	 *          in this packet, false otherwise.
-	 */
+    /**
+     * Remove a tag from this packet. The data stored internally
+     * for this tag is copied in the input tag if an instance
+     * of this tag type is present in the internal buffer. If this
+     * tag type is not present, the input tag is not modified. 
+     *
+     * This operation can be potentially slow and might trigger
+     * unexpectedly large memory allocations. It is thus
+     * usually a better idea to create a copy of this packet,
+     * and invoke removeAllTags on the copy to remove all 
+     * tags rather than remove the tags one by one from a packet.
+     *
+     * \param tag a pointer to the tag to remove from this packet
+     * \returns true if an instance of this tag type is stored
+     *          in this packet, false otherwise.
+     */
     template <typename T>
     bool removeTag (T &tag);
-	/**
-	 * Copy a tag stored internally to the input tag. If no instance
-	 * of this tag is present internally, the input tag is not modified.
-	 *
-	 * \param tag a pointer to the tag to read from this packet
-	 * \returns true if an instance of this tag type is stored
-	 *          in this packet, false otherwise.
-	 */
+    /**
+     * Copy a tag stored internally to the input tag. If no instance
+     * of this tag is present internally, the input tag is not modified.
+     *
+     * \param tag a pointer to the tag to read from this packet
+     * \returns true if an instance of this tag type is stored
+     *          in this packet, false otherwise.
+     */
     template <typename T>
     bool peekTag (T &tag) const;
-	/**
-	 * Remove all the tags stored in this packet. This operation is
-	 * much much faster than invoking removeTag n times.
-	 */
+    /**
+     * Remove all the tags stored in this packet. This operation is
+     * much much faster than invoking removeTag n times.
+     */
     void removeAllTags (void);
-	/**
-	 * Concatenate the input packet at the end of the current
-	 * packet. This does not alter the uid of either packet.
-	 *
-	 * \param packet packet to concatenate
-	 */
+    /**
+     * Concatenate the input packet at the end of the current
+     * packet. This does not alter the uid of either packet.
+     *
+     * \param packet packet to concatenate
+     */
     void addAtEnd (Packet packet);
-	/**
-	 * Concatenate the fragment of the input packet identified
-	 * by the offset and size parameters at the end of the current
-	 * packet. This does not alter the uid of either packet.
-	 *
-	 * \param packet to concatenate
-	 * \param offset offset of fragment to copy from the start of the input packet
-	 * \param size size of fragment of input packet to copy.
-	 */
+    /**
+     * Concatenate the fragment of the input packet identified
+     * by the offset and size parameters at the end of the current
+     * packet. This does not alter the uid of either packet.
+     *
+     * \param packet to concatenate
+     * \param offset offset of fragment to copy from the start of the input packet
+     * \param size size of fragment of input packet to copy.
+     */
     void addAtEnd (Packet packet, uint32_t offset, uint32_t size);
-	/** 
-	 * Remove size bytes from the end of the current packet
-	 * It is safe to remove more bytes that what is present in
-	 * the packet.
-	 *
-	 * \param size number of bytes from remove
-	 */
+    /** 
+     * Remove size bytes from the end of the current packet
+     * It is safe to remove more bytes that what is present in
+     * the packet.
+     *
+     * \param size number of bytes from remove
+     */
     void removeAtEnd (uint32_t size);
-	/** 
-	 * Remove size bytes from the start of the current packet.
-	 * It is safe to remove more bytes that what is present in
-	 * the packet.
-	 *
-	 * \param size number of bytes from remove
-	 */
+    /** 
+     * Remove size bytes from the start of the current packet.
+     * It is safe to remove more bytes that what is present in
+     * the packet.
+     *
+     * \param size number of bytes from remove
+     */
     void removeAtStart (uint32_t size);
-	
-	/**
-	 * If you try to change the content of the buffer
-	 * returned by this method, you will die.
-	 *
-	 * \returns a pointer to the internal buffer of the packet.
-	 */
-	uint8_t const *peekData (void) const;
+    
+    /**
+     * If you try to change the content of the buffer
+     * returned by this method, you will die.
+     *
+     * \returns a pointer to the internal buffer of the packet.
+     */
+    uint8_t const *peekData (void) const;
 
-	/**
-	 * A packet is allocated a new uid when it is created
-	 * empty or with zero-filled payload.
-	 *
-	 * \returns an integer identifier which uniquely
-	 *          identifies this packet.
-	 */
-	uint32_t getUid (void) const;
+    /**
+     * A packet is allocated a new uid when it is created
+     * empty or with zero-filled payload.
+     *
+     * \returns an integer identifier which uniquely
+     *          identifies this packet.
+     */
+    uint32_t getUid (void) const;
 private:
     Packet (Buffer buffer, Tags tags, uint32_t uid);
     Buffer m_buffer;
     Tags m_tags;
-	uint32_t m_uid;
-	static uint32_t m_global_uid;
+    uint32_t m_uid;
+    static uint32_t m_global_uid;
 };
 
 }; // namespace ns3

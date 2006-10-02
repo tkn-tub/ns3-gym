@@ -75,7 +75,7 @@ PcapWriter::writePacket (Packet const packet)
         write_32 (us & 0xffffffff);
         write_32 (packet.getSize ());
         write_32 (packet.getSize ());
-		m_writer->write (packet.peekData (), packet.getSize ());
+    	m_writer->write (packet.peekData (), packet.getSize ());
     }
 }
 

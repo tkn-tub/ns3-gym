@@ -35,7 +35,7 @@ MyHeader::printTo (std::ostream &os) const
 uint32_t
 MyHeader::getSerializedSize (void) const
 {
-	return 2;
+    return 2;
 }
 void 
 MyHeader::serializeTo (Buffer::Iterator start) const

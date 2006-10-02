@@ -35,7 +35,7 @@ Trailer::print (std::ostream &os) const
 uint32_t
 Trailer::getSize (void) const
 {
-	return getSerializedSize ();
+    return getSerializedSize ();
 }
 void 
 Trailer::serialize (Buffer::Iterator start) const
@@ -51,7 +51,7 @@ Trailer::deserialize (Buffer::Iterator start)
 bool 
 Trailer::isDeserialized (void) const
 {
-	return m_isDeserialized;
+    return m_isDeserialized;
 }
 
 

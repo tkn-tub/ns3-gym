@@ -35,67 +35,67 @@ class Time {
 public:
     Time (Time const &o);
     Time &operator = (Time const &o);
-	/**
-	 * \returns the time stored in this
-	 *          instance as seconds.
-	 */
+    /**
+     * \returns the time stored in this
+     *          instance as seconds.
+     */
     double s (void) const;
-	/**
-	 * \returns the time stored in this
-	 *          instance as microseconds.
-	 */
+    /**
+     * \returns the time stored in this
+     *          instance as microseconds.
+     */
     uint64_t us (void) const;
-	/**
-	 * \returns the time stored in this
-	 *          instance as nanoseconds.
-	 */
+    /**
+     * \returns the time stored in this
+     *          instance as nanoseconds.
+     */
     uint64_t ns (void) const;
-	/**
-	 * \returns true if this instance represents
-	 *          the "destroy" time.
-	 */
+    /**
+     * \returns true if this instance represents
+     *          the "destroy" time.
+     */
     bool isDestroy (void) const;
-	/**
-	 * \param s absolute time in seconds
-	 * \returns a constructed Time object
-	 */
+    /**
+     * \param s absolute time in seconds
+     * \returns a constructed Time object
+     */
     static Time absS (double s);
-	/**
-	 * \param us absolute time in microseconds
-	 * \returns a constructed Time object
-	 */
+    /**
+     * \param us absolute time in microseconds
+     * \returns a constructed Time object
+     */
     static Time absUs (uint64_t us);
-	/**
-	 * \param ns absolute time in nanoseconds
-	 * \returns a constructed Time object
-	 */
+    /**
+     * \param ns absolute time in nanoseconds
+     * \returns a constructed Time object
+     */
     static Time absNs (uint64_t ns);
-	/**
-	 * \param s relative time in seconds
-	 * \returns a constructed Time object
-	 */
+    /**
+     * \param s relative time in seconds
+     * \returns a constructed Time object
+     */
     static Time relS (double s);
-	/**
-	 * \param us relative time in microseconds
-	 * \returns a constructed Time object
-	 */
+    /**
+     * \param us relative time in microseconds
+     * \returns a constructed Time object
+     */
     static Time relUs (uint64_t us);
-	/**
-	 * \param ns relative time in nanoseconds
-	 * \returns a constructed Time object
-	 */
+    /**
+     * \param ns relative time in nanoseconds
+     * \returns a constructed Time object
+     */
     static Time relNs (uint64_t ns);
-	/**
-	 * \returns a constructed Time object which represents
-	 *          the current simulation time
-	 */
+    /**
+     * \returns a constructed Time object which represents
+     *          the current simulation time
+     */
     static Time now (void);
-	/**
-	 * \returns a constructed Time object which represents
-	 *          the current "destroy" simulation time, that
-	 *          is, the time when Simulator::destroy is
-	 *          invoked by the user.
-	 */
+    /**
+     * \returns a constructed Time object which represents
+     *          the current "destroy" simulation time, that
+     *          is, the time when Simulator::destroy is
+     *          invoked by the user.
+     */
     static Time destroy (void);
 private:
     Time (uint64_t ns);
