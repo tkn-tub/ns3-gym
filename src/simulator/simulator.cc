@@ -396,6 +396,7 @@ public:
     virtual ~SimulatorTests ();
     virtual bool runTests (void);
 private:
+    bool runOneTest (void);
     void a (int a);
     void b (int b);
     void c (int c);
@@ -442,14 +443,15 @@ SimulatorTests::d (int d)
         m_d = true;
     }
 }
-bool 
-SimulatorTests::runTests (void)
+bool
+SimulatorTests::runOneTest (void)
 {
     bool ok = true;
     m_a = true;
     m_b = false;
     m_c = true;
     m_d = false;
+
     EventId a = Simulator::schedule (Time::absUs (10), &SimulatorTests::a, this, 1);
     EventId b = Simulator::schedule (Time::absUs (11), &SimulatorTests::b, this, 2);
     m_idC = Simulator::schedule (Time::absUs (12), &SimulatorTests::c, this, 3);
@@ -460,6 +462,28 @@ SimulatorTests::runTests (void)
     if (!m_a || !m_b || !m_c || !m_d) {
         ok = false;
     }
+    return ok;
+}
+bool 
+SimulatorTests::runTests (void)
+{
+    bool ok = true;
+
+    Simulator::setLinkedList ();
+    if (!runOneTest ()) {
+        ok = false;
+    }
+    Simulator::destroy ();
+    Simulator::setBinaryHeap ();
+    if (!runOneTest ()) {
+        ok = false;
+    }
+    Simulator::destroy ();
+    Simulator::setStdMap ();
+    if (!runOneTest ()) {
+        ok = false;
+    }
+    Simulator::destroy ();
 
     return ok;
 }
