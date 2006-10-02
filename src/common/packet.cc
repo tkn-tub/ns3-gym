@@ -74,6 +74,24 @@ Packet::remove (Chunk &chunk)
 {
     chunk.remove (&m_buffer);
 }
+void 
+Packet::add (Header const &header)
+{
+	m_buffer.addAtStart (header.getSize ());
+	header.serialize (m_buffer.begin ());
+}
+void 
+Packet::peek (Header &header)
+{
+	header.deserialize (m_buffer.begin ());
+}
+void 
+Packet::remove (Header const &header)
+{
+	assert (header.isDeserialized ());
+	m_buffer.removeAtStart (header.getSize ());
+}
+
 
 void 
 Packet::addAtEnd (Packet packet)

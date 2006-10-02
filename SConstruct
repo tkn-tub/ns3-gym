@@ -79,6 +79,7 @@ common.add_deps (['core', 'simulator'])
 ns3.add (common)
 common.add_sources ([
 	'buffer.cc',
+	'header.cc',
 	'chunk.cc',
 	'chunk-constant-data.cc',
 	'packet.cc',
@@ -91,6 +92,7 @@ common.add_sources ([
 common.add_inst_headers ([
 	'buffer.h',
 	'chunk.h',
+	'header.h',
 	'chunk-constant-data.h',
 	'tags.h',
 	'packet.h',

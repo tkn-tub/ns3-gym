@@ -1,67 +1,62 @@
 /* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
 #include "ns3/packet.h"
-#include "ns3/chunk.h"
+#include "ns3/header.h"
 #include <iostream>
 
 using namespace ns3;
 
 /* A sample Chunk implementation
  */
-class MyChunk : public Chunk {
+class MyHeader : public Header {
 public:
-    MyChunk ();
-    virtual ~MyChunk ();
+    MyHeader ();
+    virtual ~MyHeader ();
 
     void setData (uint16_t data);
     uint16_t getData (void) const;
 private:
     virtual void printTo (std::ostream &os) const;
-    virtual void addTo (Buffer *buffer) const;
-    virtual void peekFrom (Buffer const *buffer);
-    virtual void removeFrom (Buffer *buffer);
+    virtual void serializeTo (Buffer::Iterator start) const;
+    virtual void deserializeFrom (Buffer::Iterator start);
+    virtual uint32_t getSerializedSize (void) const;
 
     uint16_t m_data;
 };
 
-MyChunk::MyChunk ()
+MyHeader::MyHeader ()
 {}
-MyChunk::~MyChunk ()
+MyHeader::~MyHeader ()
 {}
 void 
-MyChunk::printTo (std::ostream &os) const
+MyHeader::printTo (std::ostream &os) const
 {
-    os << "MyChunk data=" << m_data << std::endl;
+    os << "MyHeader data=" << m_data << std::endl;
+}
+uint32_t
+MyHeader::getSerializedSize (void) const
+{
+	return 2;
 }
 void 
-MyChunk::addTo (Buffer *buffer) const
+MyHeader::serializeTo (Buffer::Iterator start) const
 {
-    // reserve 2 bytes at head of buffer
-    buffer->addAtStart (2);
-    Buffer::Iterator i = buffer->begin ();
     // serialize in head of buffer
-    i.writeHtonU16 (m_data);
+    start.writeHtonU16 (m_data);
 }
 void 
-MyChunk::peekFrom (Buffer const *buffer)
+MyHeader::deserializeFrom (Buffer::Iterator start)
 {
-    Buffer::Iterator i = buffer->begin ();
     // deserialize from head of buffer
-    m_data = i.readNtohU16 ();
-}
-void 
-MyChunk::removeFrom (Buffer *buffer)
-{
-    // remove deserialized data
-    buffer->removeAtStart (2);
+    m_data = start.readNtohU16 ();
 }
 
 void 
-MyChunk::setData (uint16_t data)
+MyHeader::setData (uint16_t data)
 {
     m_data = data;
 }
 uint16_t 
-MyChunk::getData (void) const
+MyHeader::getData (void) const
 {
     return m_data;
 }
@@ -78,7 +73,7 @@ static TagRegistration<struct MyTag> g_MyTagRegistration ("ns3::MyTag", 0);
 static void
 receive (Packet p)
 {
-    MyChunk my;
+    MyHeader my;
     p.peek (my);
     p.remove (my);
     std::cout << "received data=" << my.getData () << std::endl;
@@ -90,7 +85,7 @@ receive (Packet p)
 int main (int argc, char *argv[])
 {
     Packet p;
-    MyChunk my;
+    MyHeader my;
     my.setData (2);
     std::cout << "send data=2" << std::endl;
     p.add (my);

@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "buffer.h"
 #include "chunk.h"
+#include "header.h"
 #include "tags.h"
 #include "ns3/callback.h"
 
@@ -141,6 +142,9 @@ public:
 	 * \param chunk a pointer to the chunk to remove from the internal buffer.
 	 */
     void remove (Chunk &chunk);
+	void add (Header const &header);
+	void peek (Header &header);
+	void remove (Header const &header);
 	/**
 	 * Attach a tag to this packet. The tag is fully copied
 	 * in a packet-specific internal buffer. This operation 
