@@ -49,6 +49,12 @@ class SchedulerFactory;
  */
 class Simulator {
 public:
+	/**
+	 * Enable ParallelSimulation.
+	 * This method must be invoked before every other method exported
+	 * by the Simulator class.
+	 */
+	static void enableParallelSimulation (void);
     /**
      * Force the use of an event scheduler based on a linked-list.
      * This method must be invoked before any other method exported
