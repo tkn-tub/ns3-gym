@@ -1,4 +1,4 @@
-/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:f -*- */
+/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:nil -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
