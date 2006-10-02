@@ -23,7 +23,6 @@
 
 #include <stdint.h>
 #include "buffer.h"
-#include "chunk.h"
 #include "header.h"
 #include "tags.h"
 #include "ns3/callback.h"
@@ -34,8 +33,8 @@ namespace ns3 {
  * \brief network packets
  *
  * Each network packet contains a byte buffer and a list of tags.
- * - The byte buffer stores the serialized content of the chunks added 
- * to a packet. The serialized representation of these chunks is expected
+ * - The byte buffer stores the serialized content of the headers and trailers 
+ * added to a packet. The serialized representation of these headers is expected
  * to match that of real network packets bit for bit (although nothing
  * forces you to do this) which means that the content of a packet buffer
  * is expected to be that of a real packet.
@@ -47,10 +46,10 @@ namespace ns3 {
  * 16 bytes big. Trying to attach bigger data structures will trigger
  * crashes at runtime.
  *
- * Implementing a new type of Chunk for a new protocol is pretty easy
- * and is a matter of creating a subclass of the ns3::Chunk base class,
- * and implementing the 4 pure virtual methods defined in ns3::Chunk.
- * Sample code which shows how to create such a new Chunk, how to use
+ * Implementing a new type of Header for a new protocol is pretty easy
+ * and is a matter of creating a subclass of the ns3::Header base class,
+ * and implementing the 4 pure virtual methods defined in ns3::Header.
+ * Sample code which shows how to create such a new Header, how to use
  * it, and how to manipulate tags is shown below:
  * \include samples/main-packet.cc
  *
@@ -118,32 +117,29 @@ public:
 	 */
     uint32_t getSize (void) const;
 	/**
-	 * Add chunk to this packet. This method invokes the
-	 * ns3::Chunk::addTo method to request the chunk to serialize
+	 * Add header to this packet. This method invokes the
+	 * ns3::Header::serializeTo method to request the header to serialize
 	 * itself in the packet buffer.
 	 *
-	 * \param chunk a pointer to the chunk to add to this packet.
+	 * \param header a reference to the header to add to this packet.
 	 */
-    void add (Chunk const&chunk);
-	/**
-	 * Deserialize chunk from this packet. This method invokes the
-	 * ns3::Chunk::peekFrom method to request the chunk to deserialize
-	 * itself from the packet buffer. This method does not remove
-	 * the chunk from the buffer.
-	 *
-	 * \param chunk a pointer to the chunk to deserialize from the buffer
-	 */
-    void peek (Chunk &chunk) const;
-	/**
-	 * Remove a deserialized chunk from the internal buffer.
-	 * This method invokes ns3::Chunk::removeFrom to complete
-	 * the work initiated by Packet::peek and ns3::Chunk::peekFrom.
-	 *
-	 * \param chunk a pointer to the chunk to remove from the internal buffer.
-	 */
-    void remove (Chunk &chunk);
 	void add (Header const &header);
+	/**
+	 * Deserialize header from this packet. This method invokes the
+	 * ns3::Header::deserializeFrom method to request the header to deserialize
+	 * itself from the packet buffer. This method does not remove
+	 * the data from the buffer. It merely reads it.
+	 *
+	 * \param header a reference to the header to deserialize from the buffer
+	 */
 	void peek (Header &header);
+	/**
+	 * Remove a deserialized header from the internal buffer.
+	 * This method removes the bytes read by Packet::peek from
+	 * the packet buffer.
+	 *
+	 * \param header a reference to the header to remove from the internal buffer.
+	 */
 	void remove (Header const &header);
 	/**
 	 * Attach a tag to this packet. The tag is fully copied

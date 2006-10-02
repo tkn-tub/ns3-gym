@@ -58,23 +58,6 @@ Packet::getSize (void) const
 }
 
 void 
-Packet::add (Chunk const&chunk)
-{
-    chunk.add (&m_buffer);
-}
-
-void 
-Packet::peek (Chunk &chunk) const
-{
-    chunk.peek (&m_buffer);
-}
-
-void 
-Packet::remove (Chunk &chunk)
-{
-    chunk.remove (&m_buffer);
-}
-void 
 Packet::add (Header const &header)
 {
 	m_buffer.addAtStart (header.getSize ());
