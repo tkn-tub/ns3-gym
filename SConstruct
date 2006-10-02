@@ -80,6 +80,7 @@ ns3.add (common)
 common.add_sources ([
 	'buffer.cc',
 	'header.cc',
+	'trailer.cc',
 	'packet.cc',
 	'tags.cc',
 	'pcap-writer.cc',
@@ -90,6 +91,7 @@ common.add_sources ([
 common.add_inst_headers ([
 	'buffer.h',
 	'header.h',
+	'trailer.h',
 	'tags.h',
 	'packet.h',
 	'ui-variable-tracer.h',

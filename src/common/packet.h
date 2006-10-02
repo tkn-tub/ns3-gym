@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "buffer.h"
 #include "header.h"
+#include "trailer.h"
 #include "tags.h"
 #include "ns3/callback.h"
 
@@ -141,6 +142,31 @@ public:
 	 * \param header a reference to the header to remove from the internal buffer.
 	 */
 	void remove (Header const &header);
+	/**
+	 * Add trailer to this packet. This method invokes the
+	 * ns3::Trailer::serializeTo method to request the trailer to serialize
+	 * itself in the packet buffer.
+	 *
+	 * \param trailer a reference to the trailer to add to this packet.
+	 */
+	void add (Trailer const &trailer);
+	/**
+	 * Deserialize trailer from this packet. This method invokes the
+	 * ns3::Trailer::deserializeFrom method to request the trailer to deserialize
+	 * itself from the packet buffer. This method does not remove
+	 * the data from the buffer. It merely reads it.
+	 *
+	 * \param trailer a reference to the trailer to deserialize from the buffer
+	 */
+	void peek (Trailer &trailer);
+	/**
+	 * Remove a deserialized trailer from the internal buffer.
+	 * This method removes the bytes read by Packet::peek from
+	 * the packet buffer.
+	 *
+	 * \param trailer a reference to the trailer to remove from the internal buffer.
+	 */
+	void remove (Trailer const &trailer);
 	/**
 	 * Attach a tag to this packet. The tag is fully copied
 	 * in a packet-specific internal buffer. This operation 

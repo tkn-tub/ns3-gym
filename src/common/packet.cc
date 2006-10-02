@@ -74,6 +74,27 @@ Packet::remove (Header const &header)
 	assert (header.isDeserialized ());
 	m_buffer.removeAtStart (header.getSize ());
 }
+void 
+Packet::add (Trailer const &trailer)
+{
+	m_buffer.addAtEnd (trailer.getSize ());
+	Buffer::Iterator start = m_buffer.end ();
+	start.prev (trailer.getSize ());
+	trailer.serialize (start);
+}
+void 
+Packet::peek (Trailer &trailer)
+{
+	Buffer::Iterator start = m_buffer.end ();
+	start.prev (trailer.getSize ());
+	trailer.deserialize (start);
+}
+void 
+Packet::remove (Trailer const &trailer)
+{
+	assert (trailer.isDeserialized ());
+	m_buffer.removeAtEnd (trailer.getSize ());
+}
 
 
 void 
