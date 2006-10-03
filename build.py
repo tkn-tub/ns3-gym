@@ -30,9 +30,12 @@ import SCons
 # to get an ARGUMENTS defined correctly
 try:
 	ARGUMENTS = SCons.Script.ARGUMENTS
+	COMMAND_LINE_TARGETS = SCons.Script.COMMAND_LINE_TARGETS
 except AttributeError:
 	from SCons.Script.SConscript import Arguments
+	from SCons.Script.SConscript import CommandLineTargets
 	ARGUMENTS = Arguments
+	COMMAND_LINE_TARGETS = CommandLineTargets
 
 class Ns3Module:
 	def __init__ (self, name, dir):
@@ -350,14 +353,18 @@ class Ns3:
 		gcov_env.Alias ('lcov-report')
 		if 'lcov-report' in COMMAND_LINE_TARGETS:
 			lcov_report_dir = os.path.join (self.build_dir, 'lcov-report')
-			create_dir_command = "rm -rf " + lcov_report_dir +
-			" && mkdir " + lcov_report_dir + ";"
+			create_dir_command = "rm -rf " + lcov_report_dir
+			create_dir_command += " && mkdir " + lcov_report_dir + ";"
 			gcov_env.Execute (create_dir_command)
 			info_file = os.path.join (lcov_report_dir, 'ns3.info')
-			lcov_command = "utils/lcov/lcov -c -d . -o " info_file
+			lcov_command = "utils/lcov/lcov -c -d . -o " + info_file
+			lcov_command += " --source-dirs=" + os.getcwd ()
+			lcov_command += ":" + os.path.join (os.getcwd (),
+							    variant.build_root,
+							    'include')
 			gcov_env.Execute (lcov_command)
-			genhtml_command = "utils/lcov/genhtml -o " + lcov_report_data +
-			" " + info_file 
+			genhtml_command = "utils/lcov/genhtml -o " + lcov_report_dir
+			genhtml_command += " " + info_file
 			gcov_env.Execute (genhtml_command)
 
 

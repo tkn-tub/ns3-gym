@@ -96,6 +96,7 @@ our $graph_file_extension;
 our $data_file_extension;
 our @data_directory;
 our $test_name = "";
+our $source_dirs = "";
 our $quiet;
 our $help;
 our $output_filename;
@@ -141,6 +142,7 @@ if ($config)
 # Parse command line options
 if (!GetOptions("test-name=s" => \$test_name,
 		"output-filename=s" => \$output_filename,
+		"source-dirs=s" => \$source_dirs,
 		"no-checksum" => \$nochecksum,
 		"version" =>\$version,
 		"quiet" => \$quiet,
@@ -705,6 +707,28 @@ sub process_dafile($)
 }
 
 
+# cleanup_path (path)
+sub cleanup_path($@)
+{
+	my $result = shift @_;
+
+	# Remove //
+	$result =~ s/\/\//\//g;
+
+	# Remove .
+	$result =~ s/\/\.\//\//g;
+
+	# Solve ..
+	while ($result =~ s/\/[^\/]+\/\.\.\//\//)
+	{
+	}
+
+	# Remove preceding ..
+	$result =~ s/^\/\.\.\//\//g;
+
+	return $result;
+}
+
 #
 # solve_relative_path(path, dir)
 #
@@ -724,19 +748,17 @@ sub solve_relative_path($$)
 		$result = "$path/$result";
 	}
 
-	# Remove //
-	$result =~ s/\/\//\//g;
+	$result = cleanup_path ($result);
 
-	# Remove .
-	$result =~ s/\/\.\//\//g;
-
-	# Solve ..
-	while ($result =~ s/\/[^\/]+\/\.\.\//\//)
-	{
+	if (-f $result) {
+	    return $result;
 	}
-
-	# Remove preceding ..
-	$result =~ s/^\/\.\.\//\//g;
+	for my $prefix (split (':', $source_dirs)) {
+	    $result = cleanup_path ("$prefix/$dir");
+	    if (-f $result) {
+		return $result;
+	    }
+	}
 
 	return $result;
 }
