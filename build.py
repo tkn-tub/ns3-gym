@@ -347,6 +347,19 @@ class Ns3:
 		builders = self.gen_mod_dep (variant)
 		for builder in builders:
 			gcov_env.Alias ('gcov', builder)
+		gcov_env.Alias ('lcov-report')
+		if 'lcov-report' in COMMAND_LINE_TARGETS:
+			lcov_report_dir = os.path.join (self.build_dir, 'lcov-report')
+			create_dir_command = "rm -rf " + lcov_report_dir +
+			" && mkdir " + lcov_report_dir + ";"
+			gcov_env.Execute (create_dir_command)
+			info_file = os.path.join (lcov_report_dir, 'ns3.info')
+			lcov_command = "utils/lcov/lcov -c -d . -o " info_file
+			gcov_env.Execute (lcov_command)
+			genhtml_command = "utils/lcov/genhtml -o " + lcov_report_data +
+			" " + info_file 
+			gcov_env.Execute (genhtml_command)
+
 
 
 		opt_env = env.Copy ()

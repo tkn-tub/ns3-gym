@@ -62,6 +62,9 @@ Example: scons opt
   and opt-static
 Example: scons all
 
+- gcov: code coverage analysis. Build a debugging version of
+  the code for code coverage analysis in 'build-dir/gcov'.
+
 - dist: generate a release tarball and zipfile from the 
   source tree. The tarball and zipfile name are generated
   according to the version number stored in the SConstruct
