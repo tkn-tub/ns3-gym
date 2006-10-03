@@ -63,7 +63,13 @@ Example: scons opt
 Example: scons all
 
 - gcov: code coverage analysis. Build a debugging version of
-  the code for code coverage analysis in 'build-dir/gcov'.
+  the code for code coverage analysis in 'build-dir/gcov'. Once
+  the code has been built, you can run various applications to
+  exercise the code paths. To generate an html report from
+  the gcov data, use the lcov-report target
+
+- lcov-report: generate html report of gcov data. The output
+  is stored in 'build-dir/lcov-report/'.
 
 - dist: generate a release tarball and zipfile from the 
   source tree. The tarball and zipfile name are generated
