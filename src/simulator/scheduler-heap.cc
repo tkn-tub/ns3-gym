@@ -66,12 +66,14 @@ SchedulerHeap::~SchedulerHeap ()
 void
 SchedulerHeap::storeInEvent (EventImpl *ev, uint32_t index) const
 {
-    ev->setInternalIterator ((void *)index);
+    long tmp = index;
+    ev->setInternalIterator ((void *)tmp);
 }
 uint32_t
 SchedulerHeap::getFrom_event (EventImpl *ev) const
 {
-       return (uint32_t)ev->getInternalIterator ();
+    long tmp = (long)ev->getInternalIterator ();
+    return (uint32_t)tmp;
 }
 uint32_t 
 SchedulerHeap::parent (uint32_t id) const
