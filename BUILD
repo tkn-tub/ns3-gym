@@ -23,6 +23,12 @@ setup environment variables to point to the right libraries.
   the default build output is terse. To get a more verbose 
   output, you need to set the 'verbose' variable to 'y'.
 Example: scons verbose=y
+- cflags: flags for the C compiler.
+Example: scons cflags="-O3 -ffast-math"
+- cxxflags: flags for the C++ compiler.
+Example: scons cxxflags="-O3 -ffast-math"
+- ldflags: flags for the linker:
+Example: scons ldflags="-L/foo -L/bar"
 
 2) Targets
 ----------

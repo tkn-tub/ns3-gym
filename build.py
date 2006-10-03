@@ -304,22 +304,26 @@ class Ns3:
 		self.gen_mod_config (env)
 		cc = env['CC']
 		cxx = env.subst (env['CXX'])
+		common_flags = ARGUMENTS.get('cflags', '').split (' ')
+		cxxflags = ARGUMENTS.get('cxxflags', '').split (' ')
+		ldflags = ARGUMENTS.get('ldflags', '').split (' ')
 		if cc == 'cl' and cxx == 'cl':
 			env = Environment (tools = ['mingw'])
 			cc = env['CC']
 			cxx = env.subst (env['CXX'])
 		if cc == 'gcc' and cxx == 'g++':
-			common_flags = ['-g3', '-Wall', '-Werror']
+			common_flags.extend (['-g3', '-Wall', '-Werror'])
 			debug_flags = []
 			opti_flags = ['-O3']
 		elif cc == 'cl' and cxx == 'cl':
 			env = Environment (ENV = os.environ)
-			common_flags = []
 			debug_flags = ['-W1', '-GX', '-EHsc', '-D_DEBUG', '/MDd']
 			opti_flags = ['-O2', '-EHsc', '-DNDEBUG', '/MD']
 		env.Append (CCFLAGS=common_flags,
 			    CPPDEFINES=['RUN_SELF_TESTS'],
-			    TARFLAGS='-c -z')
+			    TARFLAGS='-c -z',
+			    CPPFLAGS=cxxflags,
+			    LINKFLAGS=ldflags)
 		verbose = ARGUMENTS.get('verbose', 'n')
 		if verbose == 'n':
 			env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
