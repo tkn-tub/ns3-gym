@@ -453,7 +453,7 @@ SimulatorTests::runOneTest (void)
     m_d = false;
 
     EventId a = Simulator::schedule (Time::absUs (10), &SimulatorTests::a, this, 1);
-    EventId b = Simulator::schedule (Time::absUs (11), &SimulatorTests::b, this, 2);
+    Simulator::schedule (Time::absUs (11), &SimulatorTests::b, this, 2);
     m_idC = Simulator::schedule (Time::absUs (12), &SimulatorTests::c, this, 3);
 
     Simulator::cancel (a);
