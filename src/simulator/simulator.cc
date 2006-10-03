@@ -352,12 +352,12 @@ Simulator::schedule (Time const &time, void (*f) (void))
     	EventFunctionImpl0 (F function) 
     		: m_function (function)
     	{}
+    	virtual ~EventFunctionImpl0 () {}
     protected:
     	virtual void notify (void) { 
     		(*m_function) (); 
             }
     private:
-    	virtual ~EventFunctionImpl0 () {}
     	F m_function;
     } *ev = new EventFunctionImpl0 (f);
     return schedule (time, ev);
