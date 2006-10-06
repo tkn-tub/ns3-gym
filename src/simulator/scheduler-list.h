@@ -38,18 +38,18 @@ class SchedulerList : public Scheduler {
     virtual ~SchedulerList ();
 
  private:
-    virtual EventId realInsert (EventImpl *event, EventKey key);
-    virtual bool realIsEmpty (void) const;
-    virtual EventImpl *realPeekNext (void) const;
-    virtual Scheduler::EventKey realPeekNextKey (void) const;
-    virtual void realRemoveNext (void);
-    virtual EventImpl *realRemove (EventId ev, Scheduler::EventKey *key);
-    virtual bool realIsValid (EventId id);
+    virtual EventId RealInsert (EventImpl *event, EventKey key);
+    virtual bool RealIsEmpty (void) const;
+    virtual EventImpl *RealPeekNext (void) const;
+    virtual Scheduler::EventKey RealPeekNextKey (void) const;
+    virtual void RealRemoveNext (void);
+    virtual EventImpl *RealRemove (EventId ev, Scheduler::EventKey *key);
+    virtual bool RealIsValid (EventId id);
 
     typedef std::list<std::pair<EventImpl*, EventKey> > Events;
     typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
-    EventId getEventId (Scheduler::EventKey key, EventsI i);
-    EventsI getIterator (EventId id);
+    EventId GetEventId (Scheduler::EventKey key, EventsI i);
+    EventsI GetIterator (EventId id);
     Events m_events;
 };
 

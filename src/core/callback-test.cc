@@ -31,17 +31,17 @@ static bool gTest5 = false;
 static bool gTest6 = false;
 static bool gTest7 = false;
 
-void test5 (void)
+void Test5 (void)
 {
     gTest5 = true;
 }
 
-void test6 (int)
+void Test6 (int)
 {
     gTest6 = true;
 }
 
-int test7 (int a)
+int Test7 (int a)
 {
     gTest7 = true;
     return a;
@@ -55,14 +55,14 @@ private:
     bool m_test4;
 public:
     CallbackTest ();
-    virtual bool runTests (void);
-    void reset (void);
-    bool isWrong (void);
-    void test1 (void);
-    int test2 (void);
-    void test3 (double a);
-    int test4 (double a, int b);
-    void test8 (Callback<void, int> callback);
+    virtual bool RunTests (void);
+    void Reset (void);
+    bool IsWrong (void);
+    void Test1 (void);
+    int Test2 (void);
+    void Test3 (double a);
+    int Test4 (double a, int b);
+    void Test8 (Callback<void, int> callback);
 };
 
 CallbackTest::CallbackTest ()
@@ -74,34 +74,34 @@ CallbackTest::CallbackTest ()
 {}
 
 void 
-CallbackTest::test1 (void)
+CallbackTest::Test1 (void)
 {
     m_test1 = true;
 }
 int 
-CallbackTest::test2 (void)
+CallbackTest::Test2 (void)
 {
     m_test2 = true;
     return 2;
 }
 void 
-CallbackTest::test3 (double a)
+CallbackTest::Test3 (double a)
 {
     m_test3 = true;
 }
 int 
-CallbackTest::test4 (double a, int b)
+CallbackTest::Test4 (double a, int b)
 {
     m_test4 = true;
     return 4;
 }
 void
-CallbackTest::test8 (Callback<void,int> callback)
+CallbackTest::Test8 (Callback<void,int> callback)
 {
     callback (3);
 }
 bool
-CallbackTest::isWrong (void)
+CallbackTest::IsWrong (void)
 {
     if (!m_test1 ||
         !m_test2 ||
@@ -116,7 +116,7 @@ CallbackTest::isWrong (void)
 }
 
 void
-CallbackTest::reset (void)
+CallbackTest::Reset (void)
 {
     m_test1 = false;
     m_test2 = false;
@@ -129,7 +129,7 @@ CallbackTest::reset (void)
 
   
 bool 
-CallbackTest::runTests (void)
+CallbackTest::RunTests (void)
 {
     bool ok = true;
 
@@ -141,14 +141,14 @@ CallbackTest::runTests (void)
     typedef ns3::Callback<void,int> F;
     typedef ns3::Callback<int,int> G;
     
-    A a0 (this, &CallbackTest::test1);
+    A a0 (this, &CallbackTest::Test1);
     B b0;
-    b0 = B (this, &CallbackTest::test2);
-    C c0 = C (this, &CallbackTest::test3);
-    D d0 = D (this, &CallbackTest::test4);
-    E e0 = E (&test5);
-    F f0 = F (&test6);
-    G g0 = G (&test7);
+    b0 = B (this, &CallbackTest::Test2);
+    C c0 = C (this, &CallbackTest::Test3);
+    D d0 = D (this, &CallbackTest::Test4);
+    E e0 = E (&Test5);
+    F f0 = F (&Test6);
+    G g0 = G (&Test7);
 
     a0 ();
     b0 ();
@@ -158,19 +158,19 @@ CallbackTest::runTests (void)
     f0 (1);
     g0 (1);
 
-    if (isWrong ()) {
+    if (IsWrong ()) {
         ok = false;
     }
 
-    reset ();
+    Reset ();
 
-    A a1 = ns3::makeCallback (&CallbackTest::test1, this);
-    B b1 = ns3::makeCallback (&CallbackTest::test2, this);
-    C c1 = ns3::makeCallback (&CallbackTest::test3, this);
-    D d1 = ns3::makeCallback (&CallbackTest::test4, this);
-    E e1 = ns3::makeCallback (&test5);
-    F f1 = ns3::makeCallback (&test6);
-    G g1 = ns3::makeCallback (&test7);
+    A a1 = ns3::MakeCallback (&CallbackTest::Test1, this);
+    B b1 = ns3::MakeCallback (&CallbackTest::Test2, this);
+    C c1 = ns3::MakeCallback (&CallbackTest::Test3, this);
+    D d1 = ns3::MakeCallback (&CallbackTest::Test4, this);
+    E e1 = ns3::MakeCallback (&Test5);
+    F f1 = ns3::MakeCallback (&Test6);
+    G g1 = ns3::MakeCallback (&Test7);
     
     a1 ();
     b1 ();
@@ -180,11 +180,11 @@ CallbackTest::runTests (void)
     f1 (1);
     g1 (2);
 
-    test8 (f1);
+    Test8 (f1);
 
     Callback<void, int64_t,int64_t> a2;
 
-    if (isWrong ()) {
+    if (IsWrong ()) {
         ok = false;
     }
     return ok;

@@ -6,7 +6,7 @@
 using namespace ns3;
 
 static double 
-cbOne (double a, double b)
+CbOne (double a, double b)
 {
     std::cout << "invoke cbOne a=" << a << ", b=" << b << std::endl;
     return a;
@@ -14,7 +14,7 @@ cbOne (double a, double b)
 
 class MyCb {
 public:
-    int cbTwo (double a) {
+    int CbTwo (double a) {
         std::cout << "invoke cbTwo a=" << a << std::endl;
         return -5;
     }
@@ -28,9 +28,9 @@ int main (int argc, char *argv[])
     // second arg type: double
     Callback<double, double, double> one;
     // build callback instance which points to cbOne function
-    one = makeCallback (&cbOne);
+    one = MakeCallback (&CbOne);
     // this is not a null callback
-    assert (!one.isNull ());
+    assert (!one.IsNull ());
     // invoke cbOne function through callback instance
     double retOne;
     retOne = one (10.0, 20.0);
@@ -40,19 +40,19 @@ int main (int argc, char *argv[])
     Callback<int, double> two;
     MyCb cb;
     // build callback instance which points to MyCb::cbTwo
-    two = makeCallback (&MyCb::cbTwo, &cb);
+    two = MakeCallback (&MyCb::CbTwo, &cb);
     // this is not a null callback
-    assert (!two.isNull ());
+    assert (!two.IsNull ());
     // invoke MyCb::cbTwo through callback instance
     int retTwo;
     retTwo = two (10.0);    
 
-    two = makeNullCallback<int, double> ();
+    two = MakeNullCallback<int, double> ();
     // invoking a null callback is just like
     // invoking a null function pointer:
     // it will crash.
     //int retTwoNull = two (20.0);
-    assert (two.isNull ());
+    assert (two.IsNull ());
 
     return 0;
 }

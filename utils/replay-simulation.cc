@@ -77,7 +77,7 @@ typedef std::vector<std::pair<uint32_t, uint32_t> > Removes;
 typedef std::vector<std::pair<uint32_t, uint32_t> >::iterator RemovesI;
 
 void
-LogReader::readFrom_filename (char const *filename)
+LogReader::ReadFrom_filename (char const *filename)
 {
     std::ifstream log;
     std::cout << "read log..." << std::endl;
@@ -103,7 +103,7 @@ LogReader::readFrom_filename (char const *filename)
             cmd.m_type = Command::REMOVE;
             cmd.m_uid = nowUid;
             m_commands.push_back (cmd);
-            removes.push_back (std::make_pair (nowUid, evUid));
+            removes.push_back (std::Make_pair (nowUid, evUid));
         } else if (type == "il") {
             uint32_t nowUid, evUid;
             uint64_t nowUs, evUs;
@@ -150,7 +150,7 @@ LogReader::readFrom_filename (char const *filename)
     }
 }
 void
-LogReader::executeLogCommands (uint32_t uid)
+LogReader::ExecuteLogCommands (uint32_t uid)
 {
     if (m_command == m_commands.end ()) {
         return;
@@ -162,27 +162,27 @@ LogReader::executeLogCommands (uint32_t uid)
         m_command++;
         switch (cmd.m_type) {
         case Command::INSERT:
-            //std::cout << "exec insert now=" << Simulator::nowUs ()
+            //std::Cout << "exec insert now=" << Simulator::nowUs ()
             //<< ", time=" << cmd.insert.m_evUs << std::endl;
-            Simulator::scheduleAbsUs (cmd.insert.m_evUs, 
+            Simulator::ScheduleAbsUs (cmd.insert.m_evUs, 
                          makeEvent (&LogReader::executeLogCommands, this, m_uid));
             m_uid++;
             break;
         case Command::INSERT_LATER:
             //std::cout << "exec insert later" << std::endl;
-            Simulator::scheduleNow (makeEvent (&LogReader::executeLogCommands, this, m_uid));
+            Simulator::ScheduleNow (makeEvent (&LogReader::executeLogCommands, this, m_uid));
             m_uid++;
             break;
         case Command::REMOVE: {
             //std::cout << "exec remove" << std::endl;
             Event ev = m_removeEvents.front ();
             m_removeEvents.pop_front ();
-            Simulator::remove (ev);
+            Simulator::Remove (ev);
         } break;
         case Command::INSERT_REMOVE: {
             //std::cout << "exec insert remove" << std::endl;
             Event ev = makeEvent (&LogReader::executeLogCommands, this, m_uid);
-            Simulator::scheduleAbsUs (cmd.insertRemove.m_evUs, ev);
+            Simulator::ScheduleAbsUs (cmd.insertRemove.m_evUs, ev);
             m_removeEvents[cmd.insertRemove.m_evLoc] = ev;
             m_uid++;
         } break;
@@ -192,7 +192,7 @@ LogReader::executeLogCommands (uint32_t uid)
 }
 
 void
-LogReader::printStats (void)
+LogReader::PrintStats (void)
 {
     uint32_t nInserts = 0;
     uint32_t nRemoves = 0;
@@ -217,14 +217,14 @@ LogReader::printStats (void)
 }
 
 void
-LogReader::run (void)
+LogReader::Run (void)
 {
     m_uid = 0;
     WallClockMs time;
     time.start ();
     m_command = m_commands.begin ();
     executeLogCommands (m_uid);
-    Simulator::run ();
+    Simulator::Run ();
     unsigned long long delta = time.end ();
     double delay = ((double)delta)/1000;
     std::cout << "runtime="<<delay<<"s"<<std::endl;
@@ -237,18 +237,18 @@ int main (int argc, char *argv[])
     uint32_t n = 1;
     while (argc > 0) {
         if (strcmp ("--list", argv[0]) == 0) {
-            Simulator::setLinkedList ();
+            Simulator::SetLinkedList ();
         } else if (strcmp ("--heap", argv[0]) == 0) {
-            Simulator::setBinaryHeap ();
+            Simulator::SetBinaryHeap ();
         } else if (strcmp ("--map", argv[0]) == 0) {
-            Simulator::setStdMap ();
+            Simulator::SetStdMap ();
         } else if (strncmp ("--n=", argv[0], strlen("--n=")) == 0) {
             n = atoi (argv[0]+strlen ("--n="));
         } else if (strncmp ("--input=", argv[0],strlen ("--input=")) == 0) {
             input = argv[0] + strlen ("--input=");
         } else if (strncmp ("--log=", argv[0],strlen ("--log=")) == 0) {
             char const *filename = argv[0] + strlen ("--log=");
-            Simulator::enableLogTo (filename);
+            Simulator::EnableLogTo (filename);
         }
         argc--;
         argv++;

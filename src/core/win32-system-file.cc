@@ -54,12 +54,12 @@ SystemFilePrivate::~SystemFilePrivate ()
 
 
 void
-SystemFilePrivate::open (char const *filename)
+SystemFilePrivate::Open (char const *filename)
 {
 }
 
 void
-SystemFilePrivate::write (uint8_t const*buffer, uint32_t size)
+SystemFilePrivate::Write (uint8_t const*buffer, uint32_t size)
 {
 }
 
@@ -73,14 +73,14 @@ SystemFile::~SystemFile ()
 }
 
 void 
-SystemFile::open (char const *filename)
+SystemFile::Open (char const *filename)
 {
-    m_priv->open (filename);
+    m_priv->Open (filename);
 }
 void 
-SystemFile::write (uint8_t const*buffer, uint32_t size)
+SystemFile::Write (uint8_t const*buffer, uint32_t size)
 {
-    m_priv->write (buffer, size);
+    m_priv->Write (buffer, size);
 }
 
 }; // namespace

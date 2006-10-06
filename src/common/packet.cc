@@ -45,114 +45,114 @@ Packet::Packet (Buffer buffer, Tags tags, uint32_t uid)
 {}
 
 Packet 
-Packet::createFragment (uint32_t start, uint32_t length) const
+Packet::CreateFragment (uint32_t start, uint32_t length) const
 {
-    Buffer tmp = m_buffer.createFragment (start, length);
+    Buffer tmp = m_buffer.CreateFragment (start, length);
     return Packet (tmp, m_tags, m_uid);
 }
 
 uint32_t 
-Packet::getSize (void) const
+Packet::GetSize (void) const
 {
-    return m_buffer.getSize ();
+    return m_buffer.GetSize ();
 }
 
 void 
-Packet::add (Header const &header)
+Packet::Add (Header const &header)
 {
-    m_buffer.addAtStart (header.getSize ());
-    header.serialize (m_buffer.begin ());
+    m_buffer.AddAtStart (header.GetSize ());
+    header.Serialize (m_buffer.Begin ());
 }
 void 
-Packet::peek (Header &header)
+Packet::Peek (Header &header)
 {
-    header.deserialize (m_buffer.begin ());
+    header.Deserialize (m_buffer.Begin ());
 }
 void 
-Packet::remove (Header const &header)
+Packet::Remove (Header const &header)
 {
-    assert (header.isDeserialized ());
-    m_buffer.removeAtStart (header.getSize ());
+    assert (header.IsDeserialized ());
+    m_buffer.RemoveAtStart (header.GetSize ());
 }
 void 
-Packet::add (Trailer const &trailer)
+Packet::Add (Trailer const &trailer)
 {
-    m_buffer.addAtEnd (trailer.getSize ());
-    Buffer::Iterator start = m_buffer.end ();
-    start.prev (trailer.getSize ());
-    trailer.serialize (start);
+    m_buffer.AddAtEnd (trailer.GetSize ());
+    Buffer::Iterator start = m_buffer.End ();
+    start.Prev (trailer.GetSize ());
+    trailer.Serialize (start);
 }
 void 
-Packet::peek (Trailer &trailer)
+Packet::Peek (Trailer &trailer)
 {
-    Buffer::Iterator start = m_buffer.end ();
-    start.prev (trailer.getSize ());
-    trailer.deserialize (start);
+    Buffer::Iterator start = m_buffer.End ();
+    start.Prev (trailer.GetSize ());
+    trailer.Deserialize (start);
 }
 void 
-Packet::remove (Trailer const &trailer)
+Packet::Remove (Trailer const &trailer)
 {
-    assert (trailer.isDeserialized ());
-    m_buffer.removeAtEnd (trailer.getSize ());
+    assert (trailer.IsDeserialized ());
+    m_buffer.RemoveAtEnd (trailer.GetSize ());
 }
 
 
 void 
-Packet::addAtEnd (Packet packet)
+Packet::AddAtEnd (Packet packet)
 {
     Buffer src = packet.m_buffer;
-    m_buffer.addAtEnd (src.getSize ());
-    Buffer::Iterator destStart = m_buffer.end ();
-    destStart.prev (src.getSize ());
-    destStart.write (src.begin (), src.end ());
+    m_buffer.AddAtEnd (src.GetSize ());
+    Buffer::Iterator destStart = m_buffer.End ();
+    destStart.Prev (src.GetSize ());
+    destStart.Write (src.Begin (), src.End ());
     /**
      * XXX: we might need to merge the tag list of the
      * other packet into the current packet.
      */
 }
 void 
-Packet::addAtEnd (Packet packet, uint32_t start, uint32_t size)
+Packet::AddAtEnd (Packet packet, uint32_t start, uint32_t size)
 {
-    assert (packet.getSize () <= start + size);
+    assert (packet.GetSize () <= start + size);
     Buffer src = packet.m_buffer;
-    m_buffer.addAtEnd (src.getSize ());
-    Buffer::Iterator destStart = m_buffer.end ();
-    destStart.prev (size);
-    Buffer::Iterator srcStart = src.begin ();
-    srcStart.next (start);
+    m_buffer.AddAtEnd (src.GetSize ());
+    Buffer::Iterator destStart = m_buffer.End ();
+    destStart.Prev (size);
+    Buffer::Iterator srcStart = src.Begin ();
+    srcStart.Next (start);
     Buffer::Iterator srcEnd = srcStart;
-    srcEnd.next (size);
-    destStart.write (srcStart, srcEnd);
+    srcEnd.Next (size);
+    destStart.Write (srcStart, srcEnd);
     /**
      * XXX: we might need to merge the tag list of the
      * other packet into the current packet.
      */
 }
 void 
-Packet::removeAtEnd (uint32_t size)
+Packet::RemoveAtEnd (uint32_t size)
 {
-    m_buffer.removeAtEnd (size);
+    m_buffer.RemoveAtEnd (size);
 }
 void 
-Packet::removeAtStart (uint32_t size)
+Packet::RemoveAtStart (uint32_t size)
 {
-    m_buffer.removeAtStart (size);
+    m_buffer.RemoveAtStart (size);
 }
 
 void 
-Packet::removeAllTags (void)
+Packet::RemoveAllTags (void)
 {
-    m_tags.removeAll ();
+    m_tags.RemoveAll ();
 }
 
 uint8_t const *
-Packet::peekData (void) const
+Packet::PeekData (void) const
 {
-    return m_buffer.peekData ();
+    return m_buffer.PeekData ();
 }
 
 uint32_t 
-Packet::getUid (void) const
+Packet::GetUid (void) const
 {
     return m_uid;
 }

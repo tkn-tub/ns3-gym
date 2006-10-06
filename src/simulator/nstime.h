@@ -39,64 +39,64 @@ public:
      * \returns the time stored in this
      *          instance as seconds.
      */
-    double s (void) const;
+    double S (void) const;
     /**
      * \returns the time stored in this
      *          instance as microseconds.
      */
-    uint64_t us (void) const;
+    uint64_t Us (void) const;
     /**
      * \returns the time stored in this
      *          instance as nanoseconds.
      */
-    uint64_t ns (void) const;
+    uint64_t Ns (void) const;
     /**
      * \returns true if this instance represents
      *          the "destroy" time.
      */
-    bool isDestroy (void) const;
+    bool IsDestroy (void) const;
     /**
      * \param s absolute time in seconds
      * \returns a constructed Time object
      */
-    static Time absS (double s);
+    static Time AbsS (double s);
     /**
      * \param us absolute time in microseconds
      * \returns a constructed Time object
      */
-    static Time absUs (uint64_t us);
+    static Time AbsUs (uint64_t us);
     /**
      * \param ns absolute time in nanoseconds
      * \returns a constructed Time object
      */
-    static Time absNs (uint64_t ns);
+    static Time AbsNs (uint64_t ns);
     /**
      * \param s relative time in seconds
      * \returns a constructed Time object
      */
-    static Time relS (double s);
+    static Time RelS (double s);
     /**
      * \param us relative time in microseconds
      * \returns a constructed Time object
      */
-    static Time relUs (uint64_t us);
+    static Time RelUs (uint64_t us);
     /**
      * \param ns relative time in nanoseconds
      * \returns a constructed Time object
      */
-    static Time relNs (uint64_t ns);
+    static Time RelNs (uint64_t ns);
     /**
      * \returns a constructed Time object which represents
      *          the current simulation time
      */
-    static Time now (void);
+    static Time Now (void);
     /**
      * \returns a constructed Time object which represents
      *          the current "destroy" simulation time, that
      *          is, the time when Simulator::destroy is
      *          invoked by the user.
      */
-    static Time destroy (void);
+    static Time Destroy (void);
 private:
     Time (uint64_t ns);
     Time ();

@@ -46,7 +46,7 @@ public:
      * This method creates the file if it does not exist. If it
      * exists, the file is emptied.
      */
-    void open (char const *name);
+    void Open (char const *name);
 
     /**
      * Write a pcap header in the output file which specifies
@@ -55,17 +55,17 @@ public:
      * be invoked before ns3::PcapWriter::writePacket and after
      * ns3::PcapWriter::open.
      */
-    void writeHeaderEthernet (void);
+    void WriteHeaderEthernet (void);
 
     /**
      * \param packet packet to write to output file
      */
-    void writePacket (Packet const packet);
+    void WritePacket (Packet const packet);
 
 private:
-    void writeData (uint8_t *buffer, uint32_t size);
-    void write_32 (uint32_t data);
-    void write_16 (uint16_t data);
+    void WriteData (uint8_t *buffer, uint32_t size);
+    void Write32 (uint32_t data);
+    void Write16 (uint16_t data);
     SystemFile *m_writer;
     Callback<void,uint8_t *,uint32_t> m_writeCallback;
 };

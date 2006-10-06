@@ -12,13 +12,13 @@ public:
     MyHeader ();
     virtual ~MyHeader ();
 
-    void setData (uint16_t data);
-    uint16_t getData (void) const;
+    void SetData (uint16_t data);
+    uint16_t GetData (void) const;
 private:
-    virtual void printTo (std::ostream &os) const;
-    virtual void serializeTo (Buffer::Iterator start) const;
-    virtual void deserializeFrom (Buffer::Iterator start);
-    virtual uint32_t getSerializedSize (void) const;
+    virtual void PrintTo (std::ostream &os) const;
+    virtual void SerializeTo (Buffer::Iterator start) const;
+    virtual void DeserializeFrom (Buffer::Iterator start);
+    virtual uint32_t GetSerializedSize (void) const;
 
     uint16_t m_data;
 };
@@ -28,35 +28,35 @@ MyHeader::MyHeader ()
 MyHeader::~MyHeader ()
 {}
 void 
-MyHeader::printTo (std::ostream &os) const
+MyHeader::PrintTo (std::ostream &os) const
 {
     os << "MyHeader data=" << m_data << std::endl;
 }
 uint32_t
-MyHeader::getSerializedSize (void) const
+MyHeader::GetSerializedSize (void) const
 {
     return 2;
 }
 void 
-MyHeader::serializeTo (Buffer::Iterator start) const
+MyHeader::SerializeTo (Buffer::Iterator start) const
 {
     // serialize in head of buffer
-    start.writeHtonU16 (m_data);
+    start.WriteHtonU16 (m_data);
 }
 void 
-MyHeader::deserializeFrom (Buffer::Iterator start)
+MyHeader::DeserializeFrom (Buffer::Iterator start)
 {
     // deserialize from head of buffer
-    m_data = start.readNtohU16 ();
+    m_data = start.ReadNtohU16 ();
 }
 
 void 
-MyHeader::setData (uint16_t data)
+MyHeader::SetData (uint16_t data)
 {
     m_data = data;
 }
 uint16_t 
-MyHeader::getData (void) const
+MyHeader::GetData (void) const
 {
     return m_data;
 }
@@ -71,14 +71,14 @@ static TagRegistration<struct MyTag> g_MyTagRegistration ("ns3::MyTag", 0);
 
 
 static void
-receive (Packet p)
+Receive (Packet p)
 {
     MyHeader my;
-    p.peek (my);
-    p.remove (my);
-    std::cout << "received data=" << my.getData () << std::endl;
+    p.Peek (my);
+    p.Remove (my);
+    std::cout << "received data=" << my.GetData () << std::endl;
     struct MyTag myTag;
-    p.peekTag (myTag);
+    p.PeekTag (myTag);
 }
 
 
@@ -86,12 +86,12 @@ int main (int argc, char *argv[])
 {
     Packet p;
     MyHeader my;
-    my.setData (2);
+    my.SetData (2);
     std::cout << "send data=2" << std::endl;
-    p.add (my);
+    p.Add (my);
     struct MyTag myTag;
     myTag.m_streamId = 5;
-    p.addTag (myTag);
-    receive (p);
+    p.AddTag (myTag);
+    Receive (p);
     return 0;
 }

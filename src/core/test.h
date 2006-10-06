@@ -55,14 +55,14 @@ public:
     /**
      * \returns true if the test was successful, false otherwise.
      */
-    virtual bool runTests (void) = 0;
+    virtual bool RunTests (void) = 0;
 
 protected:
     /**
      * \returns an output stream which base classes can write to
      *          to return extra information on test errors.
      */
-    std::ostream &failure (void);
+    std::ostream &Failure (void);
 };
 
 /**
@@ -74,20 +74,20 @@ public:
      * Enable verbose output. If you do not enable verbose output,
      * nothing is printed on screen during the test runs.
      */
-    static void enableVerbose (void);
+    static void EnableVerbose (void);
     /**
      * \returns true if all tests passed, false otherwise.
      *
      * run all registered regression tests
      */
-    static bool runTests (void);
+    static bool RunTests (void);
 
 private:
     friend class Test;
-    static void add (Test *test, char const *name);
-    static std::ostream &failure (void);
-    static TestManager *get (void);
-    bool realRunTests (void);
+    static void Add (Test *test, char const *name);
+    static std::ostream &Failure (void);
+    static TestManager *Get (void);
+    bool RealRunTests (void);
 
     TestManager ();
     ~TestManager ();

@@ -37,20 +37,20 @@ public:
     virtual ~SchedulerMap ();
 
 private:
-    virtual EventId realInsert (EventImpl *event, Scheduler::EventKey key);
-    virtual bool realIsEmpty (void) const;
-    virtual EventImpl *realPeekNext (void) const;
-    virtual Scheduler::EventKey realPeekNextKey (void) const;
-    virtual void realRemoveNext (void);
-    virtual EventImpl *realRemove (EventId ev, Scheduler::EventKey *key);
-    virtual bool realIsValid (EventId id);
+    virtual EventId RealInsert (EventImpl *event, Scheduler::EventKey key);
+    virtual bool RealIsEmpty (void) const;
+    virtual EventImpl *RealPeekNext (void) const;
+    virtual Scheduler::EventKey RealPeekNextKey (void) const;
+    virtual void RealRemoveNext (void);
+    virtual EventImpl *RealRemove (EventId ev, Scheduler::EventKey *key);
+    virtual bool RealIsValid (EventId id);
 
     typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare> EventMap;
     typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::iterator EventMapI;
     typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::const_iterator EventMapCI;
 
-    void storeInEvent (EventImpl *ev, EventMapI i) const;
-    SchedulerMap::EventMapI getFrom_event (EventImpl *ev) const;
+    void StoreInEvent (EventImpl *ev, EventMapI i) const;
+    SchedulerMap::EventMapI GetFromEvent (EventImpl *ev) const;
 
     EventMap m_list;
     uint32_t m_uid;

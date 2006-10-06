@@ -32,11 +32,11 @@ bool gDebug = false;
 
 class Bench {
 public:
-    void readDistribution (std::istream &istream);
-    void setTotal (uint32_t total);
-    void bench (void);
+    void ReadDistribution (std::istream &istream);
+    void SetTotal (uint32_t total);
+    void RunBench (void);
 private:
-    void cb (void);
+    void Cb (void);
     std::vector<uint64_t> m_distribution;
     std::vector<uint64_t>::const_iterator m_current;
     uint32_t m_n;
@@ -44,13 +44,13 @@ private:
 };
 
 void 
-Bench::setTotal (uint32_t total)
+Bench::SetTotal (uint32_t total)
 {
     m_total = total;
 }
 
 void
-Bench::readDistribution (std::istream &input)
+Bench::ReadDistribution (std::istream &input)
 {
     double data;
     while (!input.eof ()) {
@@ -66,22 +66,22 @@ Bench::readDistribution (std::istream &input)
 }
 
 void
-Bench::bench (void) 
+Bench::RunBench (void) 
 {
     SystemWallClockMs time;
     double init, simu;
-    time.start ();
+    time.Start ();
     for (std::vector<uint64_t>::const_iterator i = m_distribution.begin ();
          i != m_distribution.end (); i++) {
-        Simulator::schedule (Time::absNs (*i), &Bench::cb, this);
+        Simulator::Schedule (Time::AbsNs (*i), &Bench::Cb, this);
     }
-    init = time.end ();
+    init = time.End ();
 
     m_current = m_distribution.begin ();
 
-    time.start ();
-    Simulator::run ();
-    simu = time.end ();
+    time.Start ();
+    Simulator::Run ();
+    simu = time.End ();
 
     std::cout <<
         "init n=" << m_distribution.size () << ", time=" << init << "s" << std::endl <<
@@ -94,7 +94,7 @@ Bench::bench (void)
 }
 
 void
-Bench::cb (void)
+Bench::Cb (void)
 {
     if (m_n > m_total) {
         return;
@@ -103,9 +103,9 @@ Bench::cb (void)
         m_current = m_distribution.begin ();
     }
     if (gDebug) {
-        std::cerr << "event at " << Simulator::now ().s () << "s" << std::endl;
+        std::cerr << "event at " << Simulator::Now ().S () << "s" << std::endl;
     }
-    Simulator::schedule (Time::absNs (*m_current), &Bench::cb, this);
+    Simulator::Schedule (Time::AbsNs (*m_current), &Bench::Cb, this);
     m_current++;
     m_n++;
 }
@@ -123,24 +123,24 @@ int main (int argc, char *argv[])
     }
     while (argc > 0) {
         if (strcmp ("--list", argv[0]) == 0) {
-            Simulator::setLinkedList ();
+            Simulator::SetLinkedList ();
         } else if (strcmp ("--heap", argv[0]) == 0) {
-            Simulator::setBinaryHeap ();
+            Simulator::SetBinaryHeap ();
         } else if (strcmp ("--map", argv[0]) == 0) {
-            Simulator::setStdMap ();
+            Simulator::SetStdMap ();
         } else if (strcmp ("--debug", argv[0]) == 0) {
             gDebug = true;
         } else if (strncmp ("--log=", argv[0],strlen ("--log=")) == 0) {
             char const *filename = argv[0] + strlen ("--log=");
-            Simulator::enableLogTo (filename);
+            Simulator::EnableLogTo (filename);
         }
         argc--;
         argv++;
     }
     Bench *bench = new Bench ();
-    bench->readDistribution (*input);
-    bench->setTotal (20000);
-    bench->bench ();
+    bench->ReadDistribution (*input);
+    bench->SetTotal (20000);
+    bench->RunBench ();
 
     return 0;
 }

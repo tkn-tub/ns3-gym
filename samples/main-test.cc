@@ -11,7 +11,7 @@ class MyTest : public Test {
 public:
     MyTest (bool ok);
     virtual ~MyTest ();
-    virtual bool runTests (void);
+    virtual bool RunTests (void);
 private:
     bool m_ok;
 };
@@ -24,7 +24,7 @@ MyTest::MyTest (bool ok)
 MyTest::~MyTest ()
 {}
 bool
-MyTest::runTests (void)
+MyTest::RunTests (void)
 {
     return m_ok;
 }
@@ -37,7 +37,7 @@ static MyTest g_my_test = MyTest (true);
 int main (int argc, char *argv[])
 {
     // run tests
-    TestManager::enableVerbose ();
-    TestManager::runTests ();
+    TestManager::EnableVerbose ();
+    TestManager::RunTests ();
     return 0;
 }

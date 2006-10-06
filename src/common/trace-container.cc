@@ -36,38 +36,38 @@ TraceContainer::~TraceContainer ()
 }
 
 void 
-TraceContainer::setUiVariableCallback (char const *name, Callback<void,uint64_t, uint64_t> callback)
+TraceContainer::SetUiVariableCallback (char const *name, Callback<void,uint64_t, uint64_t> callback)
 {
     for (UiListI i = m_uiList.begin (); i != m_uiList.end (); i++) {
         if ((*i).second == name) {
-            (*i).first->setCallback (callback);
+            (*i).first->SetCallback (callback);
             return;
         }
     }
     assert (false);
 }
 void 
-TraceContainer::setSiVariableCallback (char const *name, Callback<void,int64_t, int64_t> callback)
+TraceContainer::SetSiVariableCallback (char const *name, Callback<void,int64_t, int64_t> callback)
 {
     for (SiListI i = m_siList.begin (); i != m_siList.end (); i++) {
         if ((*i).second == name) {
-            (*i).first->setCallback (callback);
+            (*i).first->SetCallback (callback);
             return;
         }
     }
     assert (false);
 }
 void 
-TraceContainer::setFVariableCallback (char const *name, Callback<void,double, double> callback)
+TraceContainer::SetFVariableCallback (char const *name, Callback<void,double, double> callback)
 {
     assert (false);
 }
 void 
-TraceContainer::setStream (char const *name, std::ostream *os)
+TraceContainer::SetStream (char const *name, std::ostream *os)
 {
     for (StreamTracerListI i = m_traceStreamList.begin (); i != m_traceStreamList.end (); i++) {
         if ((*i).second == name) {
-            (*i).first->setStream (os);
+            (*i).first->SetStream (os);
             return;
         }
     }
@@ -75,7 +75,7 @@ TraceContainer::setStream (char const *name, std::ostream *os)
 }
 
 void 
-TraceContainer::registerUiVariable (char const *name, UiVariableTracerBase *var)
+TraceContainer::RegisterUiVariable (char const *name, UiVariableTracerBase *var)
 {
     // ensure unicity
     for (UiListI i = m_uiList.begin (); i != m_uiList.end (); i++) {
@@ -87,7 +87,7 @@ TraceContainer::registerUiVariable (char const *name, UiVariableTracerBase *var)
     m_uiList.push_back (std::make_pair (var, name));
 }
 void 
-TraceContainer::registerSiVariable (char const *name, SiVariableTracerBase *var)
+TraceContainer::RegisterSiVariable (char const *name, SiVariableTracerBase *var)
 {
     // ensure unicity
     for (SiListI i = m_siList.begin (); i != m_siList.end (); i++) {
@@ -99,13 +99,13 @@ TraceContainer::registerSiVariable (char const *name, SiVariableTracerBase *var)
     m_siList.push_back (std::make_pair (var, name));
 }
 void 
-TraceContainer::registerFVariable (char const *name, FVariableTracerBase *var)
+TraceContainer::RegisterFVariable (char const *name, FVariableTracerBase *var)
 {
     assert (false);
 }
 
 void 
-TraceContainer::registerStream (char const *name, StreamTracer *stream)
+TraceContainer::RegisterStream (char const *name, StreamTracer *stream)
 {
     // ensure unicity
     for (StreamTracerListI i = m_traceStreamList.begin (); i != m_traceStreamList.end (); i++) {
@@ -119,7 +119,7 @@ TraceContainer::registerStream (char const *name, StreamTracer *stream)
 }
 
 void 
-TraceContainer::registerCallback (char const *name, CallbackTracerBase *tracer)
+TraceContainer::RegisterCallback (char const *name, CallbackTracerBase *tracer)
 {
     for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
         if (i->second == name) {
@@ -137,7 +137,7 @@ TraceContainer::registerCallback (char const *name, CallbackTracerBase *tracer)
 
 #include <iostream>
 void 
-ns3::TraceContainer::printDebug (void)
+ns3::TraceContainer::PrintDebug (void)
 {
     if (!m_uiList.empty ()) {
         std::cout << "ui var: " << std::endl;

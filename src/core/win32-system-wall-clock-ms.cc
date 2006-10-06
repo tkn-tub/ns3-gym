@@ -31,12 +31,12 @@ private:
 };
 
 void 
-SystemWallClockMsPrivate::start (void)
+SystemWallClockMsPrivate::Start (void)
 {
 }
 
 unsigned long long 
-SystemWallClockMsPrivate::end (void)
+SystemWallClockMsPrivate::End (void)
 {
     return 0;
 }
@@ -52,14 +52,14 @@ SystemWallClockMs::~SystemWallClockMs ()
 }
 
 void
-SystemWallClockMs::start (void)
+SystemWallClockMs::Start (void)
 {
-    m_priv->start ();
+    m_priv->Start ();
 }
 unsigned long long
-SystemWallClockMs::end (void)
+SystemWallClockMs::End (void)
 {
-    return m_priv->end ();
+    return m_priv->End ();
 }
 
 }; // namespace ns3

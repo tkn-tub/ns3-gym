@@ -65,13 +65,13 @@ class Scheduler {
 
     virtual ~Scheduler () = 0;
 
-    EventId insert (EventImpl *event, EventKey key);
-    bool isEmpty (void) const;
-    EventImpl *peekNext (void) const;
-    Scheduler::EventKey peekNextKey (void) const ;
-    void removeNext (void);
-    EventImpl *remove (EventId id, EventKey *key);
-    bool isValid (EventId id);
+    EventId Insert (EventImpl *event, EventKey key);
+    bool IsEmpty (void) const;
+    EventImpl *PeekNext (void) const;
+    Scheduler::EventKey PeekNextKey (void) const ;
+    void RemoveNext (void);
+    EventImpl *Remove (EventId id, EventKey *key);
+    bool IsValid (EventId id);
 
 private:
     /**
@@ -81,29 +81,29 @@ private:
      *
      * This method takes ownership of the event pointer.
      */
-    virtual EventId realInsert (EventImpl *event, EventKey key) = 0;
+    virtual EventId RealInsert (EventImpl *event, EventKey key) = 0;
     /**
      * \returns true if the event list is empty and false otherwise.
      */
-    virtual bool realIsEmpty (void) const = 0;
+    virtual bool RealIsEmpty (void) const = 0;
     /**
      * \returns a pointer to the next earliest event. The caller
      *      takes ownership of the returned pointer.
      *
      * This method cannot be invoked if the list is empty.
      */
-    virtual EventImpl *realPeekNext (void) const = 0;
+    virtual EventImpl *RealPeekNext (void) const = 0;
     /**
      * \returns the timecode associated with the next earliest event.
      *
      * This method cannot be invoked if the list is empty.
      */
-    virtual Scheduler::EventKey realPeekNextKey (void) const = 0;
+    virtual Scheduler::EventKey RealPeekNextKey (void) const = 0;
     /**
      * This method cannot be invoked if the list is empty.
      * Remove the next earliest event from the event list.
      */
-    virtual void realRemoveNext (void) = 0;
+    virtual void RealRemoveNext (void) = 0;
     /**
      * \param id the id of the event to remove
      * \param key the timecode of the event removed
@@ -112,13 +112,13 @@ private:
      *
      * This methods cannot be invoked if the list is empty.
      */
-    virtual EventImpl *realRemove (EventId id, EventKey *key) = 0;
+    virtual EventImpl *RealRemove (EventId id, EventKey *key) = 0;
     /**
      * \param id event id to validate
      * \returns true if the event id identifies an existing valid
      *      event stored in the event list and false otherwise.
      */
-    virtual bool realIsValid (EventId id) = 0;
+    virtual bool RealIsValid (EventId id) = 0;
 };
 
 }; // namespace ns3

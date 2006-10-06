@@ -52,7 +52,7 @@ public:
     {
         m_prev = this;
         m_next = this;
-        insertSelfInOther (o);
+        InsertSelfInOther (o);
     }
     ReferenceList (ReferenceList const&o) 
         : m_objPtr (),
@@ -61,7 +61,7 @@ public:
     {
         m_prev = this;
         m_next = this;
-        insertSelfInOther (o);
+        InsertSelfInOther (o);
     }
     ReferenceList (OBJ_PTR const &objPtr)
         : m_objPtr (objPtr), 
@@ -72,33 +72,33 @@ public:
         m_next = this;
     }
     ~ReferenceList () {
-        removeFrom_list ();
+        RemoveFromList ();
     }
     ReferenceList & operator= (ReferenceList const&o) {
-        removeFrom_list ();
-        insertSelfInOther (o);
+        RemoveFromList ();
+        InsertSelfInOther (o);
         return *this;
     }
     OBJ_PTR operator-> () {
         return m_objPtr;
     }
-    void set (OBJ_PTR objPtr) {
-        removeFrom_list ();
+    void Set (OBJ_PTR objPtr) {
+        RemoveFromList ();
         m_objPtr = objPtr;
     }
-    OBJ_PTR get (void) {
+    OBJ_PTR Get (void) {
         // explicit conversion to raw pointer type.
         return m_objPtr;
     }
 private:
-    void insertSelfInOther (ReferenceList const&o) {
+    void InsertSelfInOther (ReferenceList const&o) {
         m_prev = &o;
         m_next = o.m_next;
         m_next->m_prev = this;
         o.m_next = this;
         m_objPtr = o.m_objPtr;
     }
-    void removeFrom_list (void) {
+    void RemoveFromList (void) {
         if (m_prev == this) {
             //assert (m_next == this);
             delete m_objPtr;

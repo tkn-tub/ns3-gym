@@ -47,43 +47,43 @@ Scheduler::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
 
 
 EventId 
-Scheduler::insert (EventImpl *event, struct EventKey key)
+Scheduler::Insert (EventImpl *event, struct EventKey key)
 {
-    return realInsert (event, key);
+    return RealInsert (event, key);
 }
 bool 
-Scheduler::isEmpty (void) const
+Scheduler::IsEmpty (void) const
 {
-    return realIsEmpty ();
+    return RealIsEmpty ();
 }
 EventImpl *
-Scheduler::peekNext (void) const
+Scheduler::PeekNext (void) const
 {
-    assert (!realIsEmpty ());
-    return realPeekNext ();
+    assert (!RealIsEmpty ());
+    return RealPeekNext ();
 }
 Scheduler::EventKey 
-Scheduler::peekNextKey (void) const 
+Scheduler::PeekNextKey (void) const 
 {
-    assert (!realIsEmpty ());
-    return realPeekNextKey ();
+    assert (!RealIsEmpty ());
+    return RealPeekNextKey ();
 }
 void 
-Scheduler::removeNext (void)
+Scheduler::RemoveNext (void)
 {
-    assert (!realIsEmpty ());
-    return realRemoveNext ();
+    assert (!RealIsEmpty ());
+    return RealRemoveNext ();
 }
 EventImpl *
-Scheduler::remove (EventId id, EventKey *key)
+Scheduler::Remove (EventId id, EventKey *key)
 {
-    assert (!realIsEmpty ());
-    return realRemove (id, key);
+    assert (!RealIsEmpty ());
+    return RealRemove (id, key);
 }
 bool 
-Scheduler::isValid (EventId id)
+Scheduler::IsValid (EventId id)
 {
-    return realIsValid (id);
+    return RealIsValid (id);
 }
 
 }; // namespace ns3

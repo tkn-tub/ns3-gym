@@ -44,7 +44,7 @@ public:
     }
 protected:
     void notify (double oldVal, double newVal) {
-        if (oldVal != newVal && !m_callback.isNull ()) {
+        if (oldVal != newVal && !m_callback.IsNull ()) {
             m_callback (oldVal, newVal);
         }
     }

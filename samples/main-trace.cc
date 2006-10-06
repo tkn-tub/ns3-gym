@@ -15,15 +15,15 @@ StreamTracer c;
 CallbackTracer<double, int> d;
 
 void
-registerAllTraceSources (TraceContainer *container)
+RegisterAllTraceSources (TraceContainer *container)
 {
-    container->registerCallback ("source-a", &a);
-    container->registerUiVariable ("source-b", &b);
-    container->registerStream ("source-c", &c);
-    container->registerCallback ("source-d", &d);
+    container->RegisterCallback ("source-a", &a);
+    container->RegisterUiVariable ("source-b", &b);
+    container->RegisterStream ("source-c", &c);
+    container->RegisterCallback ("source-d", &d);
 }
 void
-generateTraceEvents (void)
+GenerateTraceEvents (void)
 {
     // log en empty packet
     a (Packet ());
@@ -36,26 +36,26 @@ generateTraceEvents (void)
 }
 
 void
-variableEvent (uint64_t old, uint64_t cur)
+VariableEvent (uint64_t old, uint64_t cur)
 {}
 
 void
-callbackEvent (double a, int b)
+CallbackEvent (double a, int b)
 {}
 
 
 int main (int argc, char *argv[])
 {
     TraceContainer traces;
-    registerAllTraceSources (&traces);
+    RegisterAllTraceSources (&traces);
     PcapWriter pcap;
-    pcap.open ("trace-test.log");
-    pcap.writeHeaderEthernet ();
-    traces.setCallback ("source-a", 
-                 makeCallback (&PcapWriter::writePacket, &pcap));
-    traces.setUiVariableCallback ("source-b", makeCallback (&variableEvent));
-    traces.setStream ("source-c", &std::cout);
-    traces.setCallback ("source-d", makeCallback (&callbackEvent));
-    generateTraceEvents ();
+    pcap.Open ("trace-test.log");
+    pcap.WriteHeaderEthernet ();
+    traces.SetCallback ("source-a", 
+                        MakeCallback (&PcapWriter::WritePacket, &pcap));
+    traces.SetUiVariableCallback ("source-b", MakeCallback (&VariableEvent));
+    traces.SetStream ("source-c", &std::cout);
+    traces.SetCallback ("source-d", MakeCallback (&CallbackEvent));
+    GenerateTraceEvents ();
     return 0;
 }

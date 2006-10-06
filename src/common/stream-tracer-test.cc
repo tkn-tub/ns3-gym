@@ -29,7 +29,7 @@ namespace {
 class TestStreamTracer : public ns3::Test {
 public:
     TestStreamTracer ();
-    virtual bool runTests (void);
+    virtual bool RunTests (void);
 };
 
 static TestStreamTracer gTestStream;
@@ -39,7 +39,7 @@ TestStreamTracer::TestStreamTracer ()
 {}
 
 bool
-TestStreamTracer::runTests (void)
+TestStreamTracer::RunTests (void)
 {
     bool ok = true;
     ns3::StreamTracer trace;

@@ -35,27 +35,27 @@ EventId::EventId (EventImpl *impl, uint64_t ns, uint32_t uid)
       m_uid (uid)
 {}
 void 
-EventId::cancel (void)
+EventId::Cancel (void)
 {
-    Simulator::cancel (*this);
+    Simulator::Cancel (*this);
 }
 bool 
-EventId::isExpired (void)
+EventId::IsExpired (void)
 {
-    return Simulator::isExpired (*this);
+    return Simulator::IsExpired (*this);
 }
 EventImpl *
-EventId::getEventImpl (void) const
+EventId::GetEventImpl (void) const
 {
     return m_eventImpl;
 }
 uint64_t 
-EventId::getNs (void) const
+EventId::GetNs (void) const
 {
     return m_ns;
 }
 uint32_t 
-EventId::getUid (void) const
+EventId::GetUid (void) const
 {
     return m_uid;
 }

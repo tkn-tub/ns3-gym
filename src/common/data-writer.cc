@@ -62,15 +62,15 @@ DataWriterPrivate::DataWriterPrivate ()
 {}
 DataWriterPrivate::~DataWriterPrivate ()
 {
-    ::write (m_fd, m_data, m_current);
-    ::close (m_fd);
+    ::Write (m_fd, m_data, m_current);
+    ::Close (m_fd);
 }
 
 
 void
-DataWriterPrivate::open (char const *filename)
+DataWriterPrivate::Open (char const *filename)
 {
-    m_fd = ::open (filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+    m_fd = ::Open (filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     assert (m_fd != -1);
 }
 
@@ -79,7 +79,7 @@ DataWriterPrivate::open (char const *filename)
 #endif /* min */
 
 void
-DataWriterPrivate::write (uint8_t *buffer, uint32_t size)
+DataWriterPrivate::Write (uint8_t *buffer, uint32_t size)
 {
     while (size > 0) {
         uint32_t toCopy = min (BUFFER_SIZE - m_current, size);
@@ -89,7 +89,7 @@ DataWriterPrivate::write (uint8_t *buffer, uint32_t size)
         buffer += toCopy;
         if (m_current == BUFFER_SIZE) {
             ssize_t written = 0;
-            written = ::write (m_fd, m_data, BUFFER_SIZE);
+            written = ::Write (m_fd, m_data, BUFFER_SIZE);
             assert (written == BUFFER_SIZE);
             m_current = 0;
         }
@@ -106,14 +106,14 @@ DataWriter::~DataWriter ()
 }
 
 void 
-DataWriter::open (char const *filename)
+DataWriter::Open (char const *filename)
 {
-    m_priv->open (filename);
+    m_priv->Open (filename);
 }
 void 
-DataWriter::write (uint8_t *buffer, uint32_t size)
+DataWriter::Write (uint8_t *buffer, uint32_t size)
 {
-    m_priv->write (buffer, size);
+    m_priv->Write (buffer, size);
 }
 
 }; // namespace

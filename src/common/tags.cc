@@ -28,13 +28,13 @@ TagRegistry::TagsData TagRegistry::m_registry;
 
 
 void 
-TagRegistry::record (std::string uuid, PrettyPrinter prettyPrinter)
+TagRegistry::Record (std::string uuid, PrettyPrinter prettyPrinter)
 {
     assert (!m_sorted);
     m_registry.push_back (make_pair (uuid, prettyPrinter));
 }
 uint32_t 
-TagRegistry::lookupUid (std::string uuid)
+TagRegistry::LookupUid (std::string uuid)
 {
     if (!m_sorted) {
     	std::sort (m_registry.begin (), m_registry.end ());
@@ -55,7 +55,7 @@ TagRegistry::lookupUid (std::string uuid)
     return 0;
 }
 void 
-TagRegistry::prettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os)
+TagRegistry::PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os)
 {
     assert (m_registry.size () > uid);
     PrettyPrinter prettyPrinter = m_registry[uid].second;
@@ -71,7 +71,7 @@ struct Tags::TagData *Tags::gFree = 0;
 uint32_t Tags::gN_free = 0;
 
 struct Tags::TagData *
-Tags::allocData (void)
+Tags::AllocData (void)
 {
     struct Tags::TagData *retval;
     if (gFree != 0) {
@@ -85,7 +85,7 @@ Tags::allocData (void)
 }
 
 void
-Tags::freeData (struct TagData *data)
+Tags::FreeData (struct TagData *data)
 {
     if (gN_free > 1000) {
         delete data;
@@ -97,7 +97,7 @@ Tags::freeData (struct TagData *data)
 }
 #else
 struct Tags::TagData *
-Tags::allocData (void)
+Tags::AllocData (void)
 {
     struct Tags::TagData *retval;
     retval = new struct Tags::TagData ();
@@ -105,14 +105,14 @@ Tags::allocData (void)
 }
 
 void
-Tags::freeData (struct TagData *data)
+Tags::FreeData (struct TagData *data)
 {
     delete data;
 }
 #endif
 
 bool
-Tags::remove (uint32_t id)
+Tags::Remove (uint32_t id)
 {
     bool found = false;
     for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
@@ -135,7 +135,7 @@ Tags::remove (uint32_t id)
              */
             continue;
         }
-        struct TagData *copy = allocData ();
+        struct TagData *copy = AllocData ();
         copy->m_id = cur->m_id;
         copy->m_count = 1;
         copy->m_next = 0;
@@ -144,16 +144,16 @@ Tags::remove (uint32_t id)
         prevNext = &copy->m_next;
     }
     *prevNext = 0;
-    removeAll ();
+    RemoveAll ();
     m_next = start;
     return true;
 }
 
 void 
-Tags::prettyPrint (std::ostream &os)
+Tags::PrettyPrint (std::ostream &os)
 {
     for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
-        TagRegistry::prettyPrint (cur->m_id, cur->m_data, os);
+        TagRegistry::PrettyPrint (cur->m_id, cur->m_data, os);
     }
 }
 
@@ -172,7 +172,7 @@ class TagsTest : Test {
 public:
     TagsTest ();
     virtual ~TagsTest ();
-    virtual bool runTests (void);
+    virtual bool RunTests (void);
 };
 
 struct myTagA {
@@ -217,7 +217,7 @@ TagsTest::~TagsTest ()
 {}
 
 bool 
-TagsTest::runTests (void)
+TagsTest::RunTests (void)
 {
     bool ok = true;
 
@@ -225,18 +225,18 @@ TagsTest::runTests (void)
     Tags tags;
     struct myTagA a;
     a.a = 10;
-    tags.add (a);
+    tags.Add (a);
     a.a = 0;
-    tags.peek (a);
+    tags.Peek (a);
     if (a.a != 10) {
         ok = false;
     }
     //tags.prettyPrint (std::cout);
     struct myTagB b;
     b.b = 0xff;
-    tags.add (b);
+    tags.Add (b);
     b.b = 0;
-    tags.peek (b);
+    tags.Peek (b);
     if (b.b != 0xff) {
         ok = false;
     }
@@ -248,29 +248,29 @@ TagsTest::runTests (void)
     //tags.prettyPrint (std::cout);
     struct myTagA oA;
     oA.a = 0;
-    other.peek (oA);
+    other.Peek (oA);
     if (oA.a != 10) {
         ok = false;
     }
     struct myTagB oB;
-    other.peek (oB);
+    other.Peek (oB);
     if (oB.b != 0xff) {
         ok = false;
     }
     // remove data.
-    other.remove (oA);
-    if (other.peek (oA)) {
+    other.Remove (oA);
+    if (other.Peek (oA)) {
         ok = false;
     }
     //other.prettyPrint (std::cout);
-    if (!tags.peek (oA)) {
+    if (!tags.Peek (oA)) {
         ok = false;
     }
-    other.remove (oB);
-    if (other.peek (oB)) {
+    other.Remove (oB);
+    if (other.Peek (oB)) {
         ok = false;
     }
-    if (!tags.peek (oB)) {
+    if (!tags.Peek (oB)) {
         ok = false;
     }
 
@@ -278,13 +278,13 @@ TagsTest::runTests (void)
     Tags another = other;
     struct myTagC c;
     c.c[0] = 0x66;
-    another.add (c);
+    another.Add (c);
     c.c[0] = 0;
-    another.peek (c);
-    if (!another.peek (c)) {
+    another.Peek (c);
+    if (!another.Peek (c)) {
         ok = false;
     }
-    if (tags.peek (c)) {
+    if (tags.Peek (c)) {
         ok = false;
     }
 

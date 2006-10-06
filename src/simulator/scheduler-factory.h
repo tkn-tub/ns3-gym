@@ -36,13 +36,13 @@ class Scheduler;
 class SchedulerFactory {
 public:
     virtual ~SchedulerFactory ();
-    Scheduler *create (void) const;
+    Scheduler *Create (void) const;
 private:
     /**
      * \returns a newly-created scheduler. The caller takes 
      *      ownership of the returned pointer.
      */
-    virtual Scheduler *realCreate (void) const = 0;
+    virtual Scheduler *RealCreate (void) const = 0;
 };
 
 }; // namespace ns3

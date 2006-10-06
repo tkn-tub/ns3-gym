@@ -43,7 +43,7 @@ public:
     ~A () {
         TRACE ("destructor");
     }
-    void trace (void) {
+    void Trace (void) {
         TRACE ("trace");
     }
 };
@@ -51,9 +51,9 @@ public:
 class RefTest : public ns3::Test {
 public:
     RefTest ();
-    virtual bool runTests (void);
+    virtual bool RunTests (void);
 private:
-    void test (ns3::ReferenceList<A *>);
+    void OneTest (ns3::ReferenceList<A *>);
 };
 
 RefTest::RefTest ()
@@ -61,13 +61,13 @@ RefTest::RefTest ()
 {}
 
 void
-RefTest::test (ns3::ReferenceList<A *> a) 
+RefTest::OneTest (ns3::ReferenceList<A *> a) 
 {
-    a->trace ();
+    a->Trace ();
 }
 
 bool 
-RefTest::runTests (void)
+RefTest::RunTests (void)
 {
     bool ok = true;
 
@@ -76,14 +76,14 @@ RefTest::runTests (void)
         {
             ns3::ReferenceList<A *> a (new A ());
             
-            test (a);
+            OneTest (a);
             tmp = a;
-            test (tmp);
+            OneTest (tmp);
             a = tmp;
-            test (a);
+            OneTest (a);
             TRACE ("leave inner scope");
         }
-        test (tmp);
+        OneTest (tmp);
         TRACE ("leave outer scope");
     }
 
@@ -97,7 +97,7 @@ RefTest::runTests (void)
 
     {
         ns3::ReferenceList<A *> tmp;
-        tmp.set (new A ());
+        tmp.Set (new A ());
     }
 
     {

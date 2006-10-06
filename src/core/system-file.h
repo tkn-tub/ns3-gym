@@ -53,7 +53,7 @@ public:
      * exist, it is created. If it exists, it is 
      * emptied first.
      */
-    void open (char const *filename);
+    void Open (char const *filename);
     /**
      * \param buffer data to write
      * \param size size of data to write
@@ -67,7 +67,7 @@ public:
      * To make sure the data is written to disk, destroy 
      * this object.
      */
-    void write (uint8_t const*buffer, uint32_t size);
+    void Write (uint8_t const*buffer, uint32_t size);
 private:
     SystemFilePrivate *m_priv;
 };

@@ -29,12 +29,12 @@ class EventImpl {
 public:
     EventImpl ();
     virtual ~EventImpl () = 0;
-    void invoke (void);
-    void cancel (void);
-    void setInternalIterator (void *iterator);
-    void *getInternalIterator (void) const;
+    void Invoke (void);
+    void Cancel (void);
+    void SetInternalIterator (void *iterator);
+    void *GetInternalIterator (void) const;
 protected:
-    virtual void notify (void) = 0;
+    virtual void Notify (void) = 0;
 private:
     friend class Event;
     void *m_internalIterator;

@@ -60,7 +60,7 @@ public:
     /**
      * \param os the output stream to store
      */
-    void setStream (std::ostream * os) {
+    void SetStream (std::ostream * os) {
         m_os = os;
     }
 private:

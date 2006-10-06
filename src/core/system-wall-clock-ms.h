@@ -35,7 +35,7 @@ public:
     /**
      * Start a measure.
      */
-    void start (void);
+    void Start (void);
     /**
      * \returns the measured elapsed wall clock time since 
      *          ns3::SystemWallClockMs::start was invoked.
@@ -43,7 +43,7 @@ public:
      * It is possible to start a new measurement with ns3::SystemWallClockMs::start
      * after this method returns.
      */
-    unsigned long long end (void);
+    unsigned long long End (void);
 private:
     class SystemWallClockMsPrivate *m_priv;
 };

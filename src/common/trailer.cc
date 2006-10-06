@@ -28,28 +28,28 @@ Trailer::Trailer ()
     : m_isDeserialized (false) {}
 
 void 
-Trailer::print (std::ostream &os) const
+Trailer::Print (std::ostream &os) const
 {
-    printTo (os);
+    PrintTo (os);
 }
 uint32_t
-Trailer::getSize (void) const
+Trailer::GetSize (void) const
 {
-    return getSerializedSize ();
+    return GetSerializedSize ();
 }
 void 
-Trailer::serialize (Buffer::Iterator start) const
+Trailer::Serialize (Buffer::Iterator start) const
 {
-    serializeTo (start);
+    SerializeTo (start);
 }
 void 
-Trailer::deserialize (Buffer::Iterator start)
+Trailer::Deserialize (Buffer::Iterator start)
 {
-    deserializeFrom (start);
+    DeserializeFrom (start);
     m_isDeserialized = true;
 }
 bool 
-Trailer::isDeserialized (void) const
+Trailer::IsDeserialized (void) const
 {
     return m_isDeserialized;
 }
@@ -61,7 +61,7 @@ Trailer::~Trailer ()
 
 std::ostream& operator<< (std::ostream& os, Trailer const& trailer)
 {
-    trailer.print (os);
+    trailer.Print (os);
     return os;
 }
 

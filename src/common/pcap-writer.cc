@@ -46,53 +46,53 @@ PcapWriter::~PcapWriter ()
 }
 
 void
-PcapWriter::open (char const *name)
+PcapWriter::Open (char const *name)
 {
     m_writer = new SystemFile ();
-    m_writer->open (name);
+    m_writer->Open (name);
 }
 
 void 
-PcapWriter::writeHeaderEthernet (void)
+PcapWriter::WriteHeaderEthernet (void)
 {
-    write_32 (0xa1b2c3d4);
-    write_16 (2);
-    write_16 (4);
-    write_32 (0);
-    write_32 (0);
-    write_32 (0xffff);
-    write_32 (PCAP_ETHERNET);
+    Write32 (0xa1b2c3d4);
+    Write16 (2);
+    Write16 (4);
+    Write32 (0);
+    Write32 (0);
+    Write32 (0xffff);
+    Write32 (PCAP_ETHERNET);
 }
 
 void 
-PcapWriter::writePacket (Packet const packet)
+PcapWriter::WritePacket (Packet const packet)
 {
     if (m_writer != 0) {
-        uint64_t current = Simulator::now ().us ();
+        uint64_t current = Simulator::Now ().Us ();
         uint64_t s = current / 1000000;
         uint64_t us = current % 1000000;
-        write_32 (s & 0xffffffff);
-        write_32 (us & 0xffffffff);
-        write_32 (packet.getSize ());
-        write_32 (packet.getSize ());
-    	m_writer->write (packet.peekData (), packet.getSize ());
+        Write32 (s & 0xffffffff);
+        Write32 (us & 0xffffffff);
+        Write32 (packet.GetSize ());
+        Write32 (packet.GetSize ());
+    	m_writer->Write (packet.PeekData (), packet.GetSize ());
     }
 }
 
 void
-PcapWriter::writeData (uint8_t *buffer, uint32_t size)
+PcapWriter::WriteData (uint8_t *buffer, uint32_t size)
 {
-    m_writer->write (buffer, size);
+    m_writer->Write (buffer, size);
 }
 void
-PcapWriter::write_32 (uint32_t data)
+PcapWriter::Write32 (uint32_t data)
 {
-    m_writer->write ((uint8_t*)&data, 4);
+    m_writer->Write ((uint8_t*)&data, 4);
 }
 void
-PcapWriter::write_16 (uint16_t data)
+PcapWriter::Write16 (uint16_t data)
 {
-    m_writer->write ((uint8_t*)&data, 2);
+    m_writer->Write ((uint8_t*)&data, 2);
 }
 
 }; // namespace ns3

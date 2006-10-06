@@ -49,8 +49,8 @@ public:
     SystemFilePrivate ();
     ~SystemFilePrivate ();
 
-    void open (char const *filename);
-    void write (uint8_t const*buffer, uint32_t size);
+    void Open (char const *filename);
+    void Write (uint8_t const*buffer, uint32_t size);
 private:
     uint8_t m_data[BUFFER_SIZE];
     uint32_t m_current;
@@ -68,7 +68,7 @@ SystemFilePrivate::~SystemFilePrivate ()
 
 
 void
-SystemFilePrivate::open (char const *filename)
+SystemFilePrivate::Open (char const *filename)
 {
     m_fd = ::open (filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
     assert (m_fd != -1);
@@ -79,7 +79,7 @@ SystemFilePrivate::open (char const *filename)
 #endif /* min */
 
 void
-SystemFilePrivate::write (uint8_t const*buffer, uint32_t size)
+SystemFilePrivate::Write (uint8_t const*buffer, uint32_t size)
 {
     while (size > 0) {
         uint32_t toCopy = min (BUFFER_SIZE - m_current, size);
@@ -106,14 +106,14 @@ SystemFile::~SystemFile ()
 }
 
 void 
-SystemFile::open (char const *filename)
+SystemFile::Open (char const *filename)
 {
-    m_priv->open (filename);
+    m_priv->Open (filename);
 }
 void 
-SystemFile::write (uint8_t const*buffer, uint32_t size)
+SystemFile::Write (uint8_t const*buffer, uint32_t size)
 {
-    m_priv->write (buffer, size);
+    m_priv->Write (buffer, size);
 }
 
 }; // namespace

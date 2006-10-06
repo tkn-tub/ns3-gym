@@ -36,32 +36,32 @@ public:
     virtual ~SchedulerHeap ();
 
 private:
-    virtual EventId realInsert (EventImpl *event, Scheduler::EventKey key);
-    virtual bool realIsEmpty (void) const;
-    virtual EventImpl *realPeekNext (void) const;
-    virtual Scheduler::EventKey realPeekNextKey (void) const;
-    virtual void realRemoveNext (void);
-    virtual EventImpl *realRemove (EventId ev, Scheduler::EventKey *key);
-    virtual bool realIsValid (EventId id);
+    virtual EventId RealInsert (EventImpl *event, Scheduler::EventKey key);
+    virtual bool RealIsEmpty (void) const;
+    virtual EventImpl *RealPeekNext (void) const;
+    virtual Scheduler::EventKey RealPeekNextKey (void) const;
+    virtual void RealRemoveNext (void);
+    virtual EventImpl *RealRemove (EventId ev, Scheduler::EventKey *key);
+    virtual bool RealIsValid (EventId id);
 
     typedef std::vector<std::pair<EventImpl *, Scheduler::EventKey> > BinaryHeap;
-    inline void storeInEvent (EventImpl *ev, uint32_t index) const;
-    uint32_t getFrom_event (EventImpl *ev) const;
+    inline void StoreInEvent (EventImpl *ev, uint32_t index) const;
+    uint32_t GetFromEvent (EventImpl *ev) const;
 
-    inline uint32_t parent (uint32_t id) const;
-    uint32_t sibling (uint32_t id) const;
-    inline uint32_t leftChild (uint32_t id) const;
-    inline uint32_t rightChild (uint32_t id) const;
-    inline uint32_t root (void) const;
-    uint32_t last (void) const;
-    inline bool isRoot (uint32_t id) const;
-    inline bool isBottom (uint32_t id) const;
-    inline bool isLess (uint32_t a, uint32_t b);
-    inline uint32_t smallest (uint32_t a, uint32_t b);
+    inline uint32_t Parent (uint32_t id) const;
+    uint32_t Sibling (uint32_t id) const;
+    inline uint32_t LeftChild (uint32_t id) const;
+    inline uint32_t RightChild (uint32_t id) const;
+    inline uint32_t Root (void) const;
+    uint32_t Last (void) const;
+    inline bool IsRoot (uint32_t id) const;
+    inline bool IsBottom (uint32_t id) const;
+    inline bool IsLess (uint32_t a, uint32_t b);
+    inline uint32_t Smallest (uint32_t a, uint32_t b);
 
-    inline void exch (uint32_t a, uint32_t b);
-    void bottom_up (void);
-    void topDown (void);
+    inline void Exch (uint32_t a, uint32_t b);
+    void BottomUp (void);
+    void TopDown (void);
 
     BinaryHeap m_heap;
 };

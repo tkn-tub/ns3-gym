@@ -28,28 +28,28 @@ Header::Header ()
     : m_isDeserialized (false) {}
 
 void 
-Header::print (std::ostream &os) const
+Header::Print (std::ostream &os) const
 {
-    printTo (os);
+    PrintTo (os);
 }
 uint32_t
-Header::getSize (void) const
+Header::GetSize (void) const
 {
-    return getSerializedSize ();
+    return GetSerializedSize ();
 }
 void 
-Header::serialize (Buffer::Iterator start) const
+Header::Serialize (Buffer::Iterator start) const
 {
-    serializeTo (start);
+    SerializeTo (start);
 }
 void 
-Header::deserialize (Buffer::Iterator start)
+Header::Deserialize (Buffer::Iterator start)
 {
-    deserializeFrom (start);
+    DeserializeFrom (start);
     m_isDeserialized = true;
 }
 bool 
-Header::isDeserialized (void) const
+Header::IsDeserialized (void) const
 {
     return m_isDeserialized;
 }
@@ -61,7 +61,7 @@ Header::~Header ()
 
 std::ostream& operator<< (std::ostream& os, Header const& header)
 {
-    header.print (os);
+    header.Print (os);
     return os;
 }
 

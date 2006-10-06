@@ -34,10 +34,10 @@ namespace ns3 {
  * Every Protocol header which needs to be inserted and removed
  * from a Packet instance must derive from this abstract base class
  * and implement the private pure virtual methods listed below:
- *   - ns3::Header::serializeTo
- *   - ns3::Header::deserializeFrom
- *   - ns3::Header::getSerializedSize
- *   - ns3::Header::printTo
+ *   - ns3::Header::SerializeTo
+ *   - ns3::Header::DeserializeFrom
+ *   - ns3::Header::GetSerializedSize
+ *   - ns3::Header::PrintTo
  */
 class Header {
 public:
@@ -47,34 +47,34 @@ public:
      */
     virtual ~Header () = 0;
 
-    void print (std::ostream &os) const;
-    uint32_t getSize (void) const;
-    void serialize (Buffer::Iterator start) const;
-    void deserialize (Buffer::Iterator start);
-    bool isDeserialized (void) const;
+    void Print (std::ostream &os) const;
+    uint32_t GetSize (void) const;
+    void Serialize (Buffer::Iterator start) const;
+    void Deserialize (Buffer::Iterator start);
+    bool IsDeserialized (void) const;
 private:
     bool m_isDeserialized;
     /**
      * \param os the std output stream in which this 
      *       protocol header must print itself.
      */
-    virtual void printTo (std::ostream &os) const = 0;
+    virtual void PrintTo (std::ostream &os) const = 0;
 
     /**
      * \returns the size of the serialized Header.
      */
-    virtual uint32_t getSerializedSize (void) const = 0;
+    virtual uint32_t GetSerializedSize (void) const = 0;
 
     /**
      * \param start the buffer iterator in which the protocol header
      *    must serialize itself.
      */
-    virtual void serializeTo (Buffer::Iterator start) const = 0;
+    virtual void SerializeTo (Buffer::Iterator start) const = 0;
     /**
      * \param start the buffer iterator from which the protocol header must
      *    deserialize itself.
      */
-    virtual void deserializeFrom (Buffer::Iterator start) = 0;
+    virtual void DeserializeFrom (Buffer::Iterator start) = 0;
 };
 
 std::ostream& operator<< (std::ostream& os, Header const& header);

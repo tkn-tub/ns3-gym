@@ -65,19 +65,19 @@ namespace ns3 {
  * to detect when an operation is "dirty".
  *
  * Dirty operations:
- *   - ns3::Packet::removeTag
- *   - ns3::Packet::add
- *   - both versions of ns3::Packet::addAtEnd
+ *   - ns3::Packet::RemoveTag
+ *   - ns3::Packet::Add
+ *   - both versions of ns3::Packet::AddAtEnd
  *
  * Non-dirty operations:
- *   - ns3::Packet::addTag
- *   - ns3::Packet::removeAllTags
- *   - ns3::Packet::peekTag
- *   - ns3::Packet::peek
- *   - ns3::Packet::remove
- *   - ns3::Packet::createFragment
- *   - ns3::Packet::removeAtStart
- *   - ns3::Packet::removeAtEnd
+ *   - ns3::Packet::AddTag
+ *   - ns3::Packet::RemoveAllTags
+ *   - ns3::Packet::PeekTag
+ *   - ns3::Packet::Peek
+ *   - ns3::Packet::Remove
+ *   - ns3::Packet::CreateFragment
+ *   - ns3::Packet::RemoveAtStart
+ *   - ns3::Packet::RemoveAtEnd
  *
  * Dirty operations will always be slower than non-dirty operations,
  * sometimes by several orders of magnitude. However, even the
@@ -111,12 +111,12 @@ public:
      * \param length length of fragment to create
      * \returns a fragment of the original packet
      */
-    Packet createFragment (uint32_t start, uint32_t length) const;
+    Packet CreateFragment (uint32_t start, uint32_t length) const;
     /**
      * \returns the size in bytes of the packet (including the zero-filled
      *          initial payload)
      */
-    uint32_t getSize (void) const;
+    uint32_t GetSize (void) const;
     /**
      * Add header to this packet. This method invokes the
      * ns3::Header::serializeTo method to request the header to serialize
@@ -124,7 +124,7 @@ public:
      *
      * \param header a reference to the header to add to this packet.
      */
-    void add (Header const &header);
+    void Add (Header const &header);
     /**
      * Deserialize header from this packet. This method invokes the
      * ns3::Header::deserializeFrom method to request the header to deserialize
@@ -133,7 +133,7 @@ public:
      *
      * \param header a reference to the header to deserialize from the buffer
      */
-    void peek (Header &header);
+    void Peek (Header &header);
     /**
      * Remove a deserialized header from the internal buffer.
      * This method removes the bytes read by Packet::peek from
@@ -141,7 +141,7 @@ public:
      *
      * \param header a reference to the header to remove from the internal buffer.
      */
-    void remove (Header const &header);
+    void Remove (Header const &header);
     /**
      * Add trailer to this packet. This method invokes the
      * ns3::Trailer::serializeTo method to request the trailer to serialize
@@ -149,7 +149,7 @@ public:
      *
      * \param trailer a reference to the trailer to add to this packet.
      */
-    void add (Trailer const &trailer);
+    void Add (Trailer const &trailer);
     /**
      * Deserialize trailer from this packet. This method invokes the
      * ns3::Trailer::deserializeFrom method to request the trailer to deserialize
@@ -158,7 +158,7 @@ public:
      *
      * \param trailer a reference to the trailer to deserialize from the buffer
      */
-    void peek (Trailer &trailer);
+    void Peek (Trailer &trailer);
     /**
      * Remove a deserialized trailer from the internal buffer.
      * This method removes the bytes read by Packet::peek from
@@ -166,7 +166,7 @@ public:
      *
      * \param trailer a reference to the trailer to remove from the internal buffer.
      */
-    void remove (Trailer const &trailer);
+    void Remove (Trailer const &trailer);
     /**
      * Attach a tag to this packet. The tag is fully copied
      * in a packet-specific internal buffer. This operation 
@@ -175,7 +175,7 @@ public:
      * \param tag a pointer to the tag to attach to this packet.
      */
     template <typename T>
-    void addTag (T const &tag);
+    void AddTag (T const &tag);
     /**
      * Remove a tag from this packet. The data stored internally
      * for this tag is copied in the input tag if an instance
@@ -193,7 +193,7 @@ public:
      *          in this packet, false otherwise.
      */
     template <typename T>
-    bool removeTag (T &tag);
+    bool RemoveTag (T &tag);
     /**
      * Copy a tag stored internally to the input tag. If no instance
      * of this tag is present internally, the input tag is not modified.
@@ -203,19 +203,19 @@ public:
      *          in this packet, false otherwise.
      */
     template <typename T>
-    bool peekTag (T &tag) const;
+    bool PeekTag (T &tag) const;
     /**
      * Remove all the tags stored in this packet. This operation is
      * much much faster than invoking removeTag n times.
      */
-    void removeAllTags (void);
+    void RemoveAllTags (void);
     /**
      * Concatenate the input packet at the end of the current
      * packet. This does not alter the uid of either packet.
      *
      * \param packet packet to concatenate
      */
-    void addAtEnd (Packet packet);
+    void AddAtEnd (Packet packet);
     /**
      * Concatenate the fragment of the input packet identified
      * by the offset and size parameters at the end of the current
@@ -225,7 +225,7 @@ public:
      * \param offset offset of fragment to copy from the start of the input packet
      * \param size size of fragment of input packet to copy.
      */
-    void addAtEnd (Packet packet, uint32_t offset, uint32_t size);
+    void AddAtEnd (Packet packet, uint32_t offset, uint32_t size);
     /** 
      * Remove size bytes from the end of the current packet
      * It is safe to remove more bytes that what is present in
@@ -233,7 +233,7 @@ public:
      *
      * \param size number of bytes from remove
      */
-    void removeAtEnd (uint32_t size);
+    void RemoveAtEnd (uint32_t size);
     /** 
      * Remove size bytes from the start of the current packet.
      * It is safe to remove more bytes that what is present in
@@ -241,7 +241,7 @@ public:
      *
      * \param size number of bytes from remove
      */
-    void removeAtStart (uint32_t size);
+    void RemoveAtStart (uint32_t size);
     
     /**
      * If you try to change the content of the buffer
@@ -249,7 +249,7 @@ public:
      *
      * \returns a pointer to the internal buffer of the packet.
      */
-    uint8_t const *peekData (void) const;
+    uint8_t const *PeekData (void) const;
 
     /**
      * A packet is allocated a new uid when it is created
@@ -258,7 +258,7 @@ public:
      * \returns an integer identifier which uniquely
      *          identifies this packet.
      */
-    uint32_t getUid (void) const;
+    uint32_t GetUid (void) const;
 private:
     Packet (Buffer buffer, Tags tags, uint32_t uid);
     Buffer m_buffer;
@@ -278,19 +278,19 @@ private:
 namespace ns3 {
 
 template <typename T>
-void Packet::addTag (T const& tag)
+void Packet::AddTag (T const& tag)
 {
-    m_tags.add (tag);
+    m_tags.Add (tag);
 }
 template <typename T>
-bool Packet::removeTag (T & tag)
+bool Packet::RemoveTag (T & tag)
 {
-    return m_tags.remove (tag);
+    return m_tags.Remove (tag);
 }
 template <typename T>
-bool Packet::peekTag (T & tag) const
+bool Packet::PeekTag (T & tag) const
 {
-    return m_tags.peek (tag);
+    return m_tags.Peek (tag);
 }
 }; // namespace ns3
 

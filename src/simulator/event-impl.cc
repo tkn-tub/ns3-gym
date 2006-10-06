@@ -33,24 +33,24 @@ EventImpl::EventImpl ()
       m_cancel (false)
 {}
 void 
-EventImpl::invoke (void)
+EventImpl::Invoke (void)
 {
     if (!m_cancel) {
-        notify ();
+        Notify ();
     }
 }
 void 
-EventImpl::setInternalIterator (void *tag)
+EventImpl::SetInternalIterator (void *tag)
 {
     m_internalIterator = tag;
 }
 void *
-EventImpl::getInternalIterator (void) const
+EventImpl::GetInternalIterator (void) const
 {
     return m_internalIterator;
 }
 void 
-EventImpl::cancel (void)
+EventImpl::Cancel (void)
 {
     m_cancel = true;
 }

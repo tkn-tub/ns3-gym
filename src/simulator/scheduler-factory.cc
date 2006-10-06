@@ -26,9 +26,9 @@ SchedulerFactory::~SchedulerFactory ()
 {}
 
 Scheduler *
-SchedulerFactory::create (void) const
+SchedulerFactory::Create (void) const
 {
-    return realCreate ();
+    return RealCreate ();
 }
 
 }; // namespace ns3

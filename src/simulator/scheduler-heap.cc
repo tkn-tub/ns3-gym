@@ -64,182 +64,182 @@ SchedulerHeap::~SchedulerHeap ()
 {}
 
 void
-SchedulerHeap::storeInEvent (EventImpl *ev, uint32_t index) const
+SchedulerHeap::StoreInEvent (EventImpl *ev, uint32_t index) const
 {
     long tmp = index;
-    ev->setInternalIterator ((void *)tmp);
+    ev->SetInternalIterator ((void *)tmp);
 }
 uint32_t
-SchedulerHeap::getFrom_event (EventImpl *ev) const
+SchedulerHeap::GetFromEvent (EventImpl *ev) const
 {
-    long tmp = (long)ev->getInternalIterator ();
+    long tmp = (long)ev->GetInternalIterator ();
     return (uint32_t)tmp;
 }
 uint32_t 
-SchedulerHeap::parent (uint32_t id) const
+SchedulerHeap::Parent (uint32_t id) const
 {
     return id / 2;
 }
 uint32_t 
-SchedulerHeap::sibling (uint32_t id) const
+SchedulerHeap::Sibling (uint32_t id) const
 {
     return id + 1;
 }
 uint32_t 
-SchedulerHeap::leftChild (uint32_t id) const
+SchedulerHeap::LeftChild (uint32_t id) const
 {
     return id * 2;
 }
 uint32_t 
-SchedulerHeap::rightChild (uint32_t id) const
+SchedulerHeap::RightChild (uint32_t id) const
 {
     return id * 2 + 1;
 }
 
 uint32_t
-SchedulerHeap::root (void) const
+SchedulerHeap::Root (void) const
 {
     return 1;
 }
 
 bool
-SchedulerHeap::isRoot (uint32_t id) const
+SchedulerHeap::IsRoot (uint32_t id) const
 {
-    return (id == root ())?true:false;
+    return (id == Root ())?true:false;
 }
 
 uint32_t
-SchedulerHeap::last (void) const
+SchedulerHeap::Last (void) const
 {
     return m_heap.size () - 1;
 }
 
 
 bool
-SchedulerHeap::isBottom (uint32_t id) const
+SchedulerHeap::IsBottom (uint32_t id) const
 {
     return (id >= m_heap.size ())?true:false;
 }
 
 void
-SchedulerHeap::exch (uint32_t a, uint32_t b) 
+SchedulerHeap::Exch (uint32_t a, uint32_t b) 
 {
     assert (b < m_heap.size () && a < m_heap.size ());
-    TRACE ("exch " << a << ", " << b);
+    TRACE ("Exch " << a << ", " << b);
     std::pair<EventImpl*, Scheduler::EventKey> tmp (m_heap[a]);
     m_heap[a] = m_heap[b];
     m_heap[b] = tmp;
-    storeInEvent (m_heap[a].first, a);
-    storeInEvent (m_heap[b].first, b);
+    StoreInEvent (m_heap[a].first, a);
+    StoreInEvent (m_heap[b].first, b);
 }
 
 bool
-SchedulerHeap::isLess (uint32_t a, uint32_t b)
+SchedulerHeap::IsLess (uint32_t a, uint32_t b)
 {
     Scheduler::EventKeyCompare compare;
     return compare (m_heap[a].second, m_heap[b].second);
 }
 
 uint32_t 
-SchedulerHeap::smallest (uint32_t a, uint32_t b)
+SchedulerHeap::Smallest (uint32_t a, uint32_t b)
 {
-    return isLess (a,b)?a:b;
+    return IsLess (a,b)?a:b;
 }
 
 bool
-SchedulerHeap::realIsEmpty (void) const
+SchedulerHeap::RealIsEmpty (void) const
 {
     return (m_heap.size () == 1)?true:false;
 }
 
 void
-SchedulerHeap::bottom_up (void)
+SchedulerHeap::BottomUp (void)
 {
-    uint32_t index = last ();
-    while (!isRoot (index) && 
-           isLess (index, parent (index))) { 
-        exch(index, parent (index)); 
-        index = parent (index); 
+    uint32_t index = Last ();
+    while (!IsRoot (index) && 
+           IsLess (index, Parent (index))) { 
+        Exch(index, Parent (index)); 
+        index = Parent (index); 
     }
 }
 
 void
-SchedulerHeap::topDown (void)
+SchedulerHeap::TopDown (void)
 {
-    uint32_t index = root ();
-    uint32_t right = rightChild (index);
-    while (!isBottom (right)) {
-        uint32_t left = leftChild (index);
-        uint32_t tmp = smallest (left, right);
-        if (isLess (index, tmp)) {
+    uint32_t index = Root ();
+    uint32_t right = RightChild (index);
+    while (!IsBottom (right)) {
+        uint32_t left = LeftChild (index);
+        uint32_t tmp = Smallest (left, right);
+        if (IsLess (index, tmp)) {
             return;
         }
-        exch (index, tmp);
+        Exch (index, tmp);
         index = tmp;
-        right = rightChild (index);
+        right = RightChild (index);
     }
-    if (isBottom (index)) {
+    if (IsBottom (index)) {
         return;
     }
-    assert (!isBottom (index));
-    uint32_t left = leftChild (index);
-    if (isBottom (left)) {
+    assert (!IsBottom (index));
+    uint32_t left = LeftChild (index);
+    if (IsBottom (left)) {
         return;
     }
-    if (isLess (index, left)) {
+    if (IsLess (index, left)) {
         return;
     }
-    exch (index, left);
+    Exch (index, left);
 }
 
 
 EventId
-SchedulerHeap::realInsert (EventImpl *event, Scheduler::EventKey key)
+SchedulerHeap::RealInsert (EventImpl *event, Scheduler::EventKey key)
 {
     m_heap.push_back (std::make_pair (event, key));
-    bottom_up ();
-    storeInEvent (event, last ());
+    BottomUp ();
+    StoreInEvent (event, Last ());
     return EventId (event, key.m_ns, key.m_uid);
 }
 
 EventImpl *
-SchedulerHeap::realPeekNext (void) const
+SchedulerHeap::RealPeekNext (void) const
 {
-    return m_heap[root ()].first;
+    return m_heap[Root ()].first;
 }
 Scheduler::EventKey
-SchedulerHeap::realPeekNextKey (void) const
+SchedulerHeap::RealPeekNextKey (void) const
 {
-    return m_heap[root ()].second;
+    return m_heap[Root ()].second;
 }
 void     
-SchedulerHeap::realRemoveNext (void)
+SchedulerHeap::RealRemoveNext (void)
 {
-    exch (root (), last ());
+    Exch (Root (), Last ());
     m_heap.pop_back ();
-    topDown ();
+    TopDown ();
 }
 
 
 EventImpl *
-SchedulerHeap::realRemove (EventId id, Scheduler::EventKey *key)
+SchedulerHeap::RealRemove (EventId id, Scheduler::EventKey *key)
 {
-    EventImpl *ev = id.getEventImpl ();
-    uint32_t i = getFrom_event (ev);
+    EventImpl *ev = id.GetEventImpl ();
+    uint32_t i = GetFromEvent (ev);
     *key = m_heap[i].second;
-    exch (i, last ());
+    Exch (i, Last ());
     m_heap.pop_back ();
-    topDown ();
+    TopDown ();
     return ev;
 }
 
 bool 
-SchedulerHeap::realIsValid (EventId id)
+SchedulerHeap::RealIsValid (EventId id)
 {
-    EventImpl *ev = id.getEventImpl ();
-    uint32_t i = getFrom_event (ev);
+    EventImpl *ev = id.GetEventImpl ();
+    uint32_t i = GetFromEvent (ev);
     Scheduler::EventKey key = m_heap[i].second;
-    return (key.m_ns == id.getNs () &&
-        key.m_uid == id.getUid ());
+    return (key.m_ns == id.GetNs () &&
+            key.m_uid == id.GetUid ());
 }
 }; // namespace ns3

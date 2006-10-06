@@ -44,72 +44,72 @@ Time::Time (uint64_t ns)
 {}
 
 double 
-Time::s (void) const
+Time::S (void) const
 {
     double ns = m_ns;
     ns /= 1000000000;
     return ns;
 }
 uint64_t 
-Time::us (void) const
+Time::Us (void) const
 {
     uint64_t us = m_ns / 1000;
     return us;
 }
 
 uint64_t 
-Time::ns (void) const
+Time::Ns (void) const
 {
     return m_ns;
 }
 
 bool
-Time::isDestroy (void) const
+Time::IsDestroy (void) const
 {
     return m_isDestroy;
 }
 
 Time 
-Time::absS (double s)
+Time::AbsS (double s)
 {
     int64_t ns = (int64_t)(s * 1000000000.0);
     return Time (ns);
 }
 Time 
-Time::absUs (uint64_t us)
+Time::AbsUs (uint64_t us)
 {
     int64_t ns = us * 1000;
     return Time (ns);
 }
 Time 
-Time::absNs (uint64_t ns)
+Time::AbsNs (uint64_t ns)
 {
     return Time (ns);
 }
 Time 
-Time::relS (double s)
+Time::RelS (double s)
 {
     int64_t ns = (int64_t)(s * 1000000000.0);
-    return Time (Simulator::now ().ns () + ns);
+    return Time (Simulator::Now ().Ns () + ns);
 }
 Time 
-Time::relUs (uint64_t us)
+Time::RelUs (uint64_t us)
 {
-    return Time (Simulator::now ().ns () + us * 1000);
+    return Time (Simulator::Now ().Ns () + us * 1000);
 }
 Time 
-Time::relNs (uint64_t ns)
+Time::RelNs (uint64_t ns)
 {
-    return Time (Simulator::now ().ns () + ns);
+    return Time (Simulator::Now ().Ns () + ns);
 }
 
 Time 
-Time::now (void)
+Time::Now (void)
 {
-    return Time (Simulator::now ().ns ());
+    return Time (Simulator::Now ().Ns ());
 }
 Time 
-Time::destroy (void)
+Time::Destroy (void)
 {
     return Time ();
 }

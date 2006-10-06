@@ -26,22 +26,22 @@ namespace ns3 {
 
 class SystemWallClockMsPrivate {
 public:
-    void start (void);
-    unsigned long long end (void);
+    void Start (void);
+    unsigned long long End (void);
 private:
     struct timeval m_startTv;
     struct timeval m_endTv;
 };
 
 void 
-SystemWallClockMsPrivate::start (void)
+SystemWallClockMsPrivate::Start (void)
 {
     struct timezone tz;
     gettimeofday (&m_startTv, &tz);
 }
 
 unsigned long long 
-SystemWallClockMsPrivate::end (void)
+SystemWallClockMsPrivate::End (void)
 {
     struct timezone tz;
     gettimeofday (&m_endTv, &tz);
@@ -61,14 +61,14 @@ SystemWallClockMs::~SystemWallClockMs ()
 }
 
 void
-SystemWallClockMs::start (void)
+SystemWallClockMs::Start (void)
 {
-    m_priv->start ();
+    m_priv->Start ();
 }
 unsigned long long
-SystemWallClockMs::end (void)
+SystemWallClockMs::End (void)
 {
-    return m_priv->end ();
+    return m_priv->End ();
 }
 
 }; // namespace ns3

@@ -29,24 +29,24 @@ namespace ns3 {
 
 class Foo {
 public:
-    void notify (uint64_t oldVal, uint64_t newVal) {}
+    void Notify (uint64_t oldVal, uint64_t newVal) {}
 };
 
 class VariableTracerTest: public Test {
 public:
     VariableTracerTest ();
-    void runUnsignedTests (void);
-    void runSignedUnsignedTests (void);
-    virtual bool runTests (void);
+    void RunUnsignedTests (void);
+    void RunSignedUnsignedTests (void);
+    virtual bool RunTests (void);
 };
 void
-VariableTracerTest::runUnsignedTests (void)
+VariableTracerTest::RunUnsignedTests (void)
 {
     UiVariableTracer<uint32_t> var, ovar, tmp;
     uint32_t utmp;
     Foo *foo = new Foo ();
     
-    var.setCallback (makeCallback (&Foo::notify, foo));
+    var.SetCallback (MakeCallback (&Foo::Notify, foo));
 
     var = 10;
     ovar = var;
@@ -198,7 +198,7 @@ VariableTracerTest::runUnsignedTests (void)
 }
 
 void
-VariableTracerTest::runSignedUnsignedTests (void)
+VariableTracerTest::RunSignedUnsignedTests (void)
 {
     unsigned short utmp = 10;
     unsigned int uitmp = 7;
@@ -234,10 +234,10 @@ VariableTracerTest::runSignedUnsignedTests (void)
 }
 
 bool 
-VariableTracerTest::runTests (void)
+VariableTracerTest::RunTests (void)
 {
-    runUnsignedTests ();
-    runSignedUnsignedTests ();
+    RunUnsignedTests ();
+    RunSignedUnsignedTests ();
 
     return true;
 }

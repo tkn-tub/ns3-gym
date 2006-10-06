@@ -38,21 +38,21 @@ public:
      * This method is syntactic sugar for the ns3::Simulator::cancel
      * method.
      */
-    void cancel (void);
+    void Cancel (void);
     /**
      * This method is syntactic sugar for the ns3::Simulator::isExpired
      * method.
      * \returns true if the event has expired, false otherwise.
      */
-    bool isExpired (void);
+    bool IsExpired (void);
 public:
     /* The following methods are semi-private
      * they are supposed to be invoked only by
      * subclasses of the Scheduler base class.
      */
-    EventImpl *getEventImpl (void) const;
-    uint64_t getNs (void) const;
-    uint32_t getUid (void) const;
+    EventImpl *GetEventImpl (void) const;
+    uint64_t GetNs (void) const;
+    uint32_t GetUid (void) const;
 private:
     EventImpl *m_eventImpl;
     uint64_t m_ns;
