@@ -304,6 +304,9 @@ public:
      * Note that it is not possible to test for the expiration of
      * events which were scheduled for the "destroy" time. Doing so
      * will result in a program error (crash).
+     * An event is said to "expire" when it starts being scheduled
+     * which means that if the code executed by the event calls
+     * this function, it will get true.
      *
      * @param id the event to test for expiration
      * @returns true if the event has expired, false otherwise.
