@@ -1,3 +1,4 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 # Copyright (c) 2006 INRIA
 # All rights reserved.
 #
