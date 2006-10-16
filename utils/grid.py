@@ -264,7 +264,7 @@ class TopLegendRenderer:
             x = line_used - item_width
         total_height += line_height
         self.__height = total_height
-            
+
     def get_height (self):
         return self.__height
     def draw (self, ctx):
@@ -405,7 +405,7 @@ class TimelinesRenderer:
                 last_x_drawn = x_end
 
         self.grey_background += 1
-        
+
     def draw (self, ctx):
         timeline_top = 0
         top_y = self.padding / 2
@@ -497,7 +497,7 @@ class ScaleRenderer:
         self.max_text_height = max_text_height
         height = max_text_height + 10
         self.__height = height
-    
+
     def get_height (self):
         return self.__height
     def draw (self, ctx):
@@ -537,8 +537,8 @@ class ScaleRenderer:
                 ctx.line_to (real_x, 3*s)
                 ctx.close_path ()
                 ctx.stroke ()
-        
-        
+
+
 
 class GraphicRenderer:
     def __init__(self, start, end):
@@ -602,7 +602,7 @@ class GraphicRenderer:
     def __x_pixel (self, x, width):
         new_x = (x - self.__start) * width / (self.__end - self.__start)
         return new_x
-    
+
     def draw (self, ctx):
         # default background is white
         ctx.save ()
@@ -611,7 +611,7 @@ class GraphicRenderer:
         ctx.rectangle (0,0,self.__width,self.__height)
         ctx.fill ()
 
-        # top legend 
+        # top legend
         ctx.save ()
         self.__top_legend.draw (ctx)
         top_legend_height = self.__top_legend.get_height ()
@@ -697,7 +697,7 @@ class GraphicRenderer:
                        self.__width - unused_end,
                        unused_height)
         ctx.set_source_rgb (0.9,0.9,0.9)
-        ctx.fill ()        
+        ctx.fill ()
 
         # border line around bottom scale
         ctx.move_to (unused_end, height_used)
@@ -1010,7 +1010,7 @@ def read_data(filename):
             event.at = int (m.group (4))
             ev.add_event (event)
             continue
-        
+
         m = m4.match (line)
         if m:
             r = int (m.group (2), 16)
