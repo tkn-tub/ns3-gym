@@ -1,4 +1,4 @@
-/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:nil -*- */
+/* -*- Mode:NS3; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -96,13 +96,14 @@ SimulatorPrivate::SimulatorPrivate (Scheduler *events)
 
 SimulatorPrivate::~SimulatorPrivate ()
 {
-    while (!m_destroy.empty ()) {
+    while (!m_destroy.empty ()) 
+      {
         EventImpl *ev = m_destroy.front ().first;
         m_destroy.pop_front ();
         TRACE ("handle destroy " << ev);
         ev->Invoke ();
         delete ev;
-    }
+      }
     delete m_events;
     m_events = (Scheduler *)0xdeadbeaf;
 }
@@ -124,9 +125,10 @@ SimulatorPrivate::ProcessOneEvent (void)
     TRACE ("handle " << nextEv);
     m_currentNs = nextKey.m_ns;
     m_currentUid = nextKey.m_uid;
-    if (m_logEnable) {
+    if (m_logEnable) 
+      {
         m_log << "e "<<nextKey.m_uid << " " << nextKey.m_ns << std::endl;
-    }
+      }
     nextEv->Invoke ();
     delete nextEv;
 }
@@ -149,9 +151,10 @@ void
 SimulatorPrivate::Run (void)
 {
     while (!m_events->IsEmpty () && !m_stop && 
-           (m_stopAt == 0 || m_stopAt > Next ().Ns ())) {
+           (m_stopAt == 0 || m_stopAt > Next ().Ns ())) 
+      {
         ProcessOneEvent ();
-    }
+      }
     m_log.close ();
 }
 
@@ -169,22 +172,25 @@ SimulatorPrivate::StopAt (Time const &at)
 EventId
 SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
 {
-    if (time.IsDestroy ()) {
+    if (time.IsDestroy ()) 
+      {
         m_destroy.push_back (std::make_pair (event, m_uid));
-        if (m_logEnable) {
+        if (m_logEnable) 
+          {
             m_log << "id " << m_currentUid << " " << Now ().Ns () << " "
                   << m_uid << std::endl;
-        }
+          }
         m_uid++;
         //XXX
         return EventId ();
-    }
+      }
     assert (time.Ns () >= Now ().Ns ());
     Scheduler::EventKey key = {time.Ns (), m_uid};
-    if (m_logEnable) {
+    if (m_logEnable) 
+      {
         m_log << "i "<<m_currentUid<<" "<<Now ().Ns ()<<" "
               <<m_uid<<" "<<time.Ns () << std::endl;
-    }
+      }
     m_uid++;
     return m_events->Insert (event, key);
 }
@@ -200,10 +206,11 @@ SimulatorPrivate::Remove (EventId ev)
     Scheduler::EventKey key;
     EventImpl *impl = m_events->Remove (ev, &key);
     delete impl;
-    if (m_logEnable) {
+    if (m_logEnable) 
+      {
         m_log << "r " << m_currentUid << " " << Now ().Ns () << " "
               << key.m_uid << " " << key.m_ns << std::endl;
-    }
+      }
 }
 
 void
@@ -219,9 +226,10 @@ SimulatorPrivate::IsExpired (EventId ev)
 {
     if (ev.GetEventImpl () != 0 &&
         ev.GetNs () <= Now ().Ns () &&
-        ev.GetUid () < m_currentUid) {
+        ev.GetUid () < m_currentUid) 
+      {
         return false;
-    }
+      }
     return true;
 }
 
@@ -269,7 +277,8 @@ void Simulator::EnableLogTo (char const *filename)
 SimulatorPrivate *
 Simulator::GetPriv (void)
 {
-    if (m_priv == 0) {
+    if (m_priv == 0) 
+      {
         Scheduler *events;
         switch (m_listType) {
         case LINKED_LIST:
@@ -289,7 +298,7 @@ Simulator::GetPriv (void)
             break;
         }
         m_priv = new SimulatorPrivate (events);
-    }
+      }
     TRACE_S ("priv " << m_priv);
     return m_priv;
 }
@@ -421,11 +430,14 @@ SimulatorTests::A (int a)
 void
 SimulatorTests::B (int b)
 {
-    if (b != 2 || Simulator::Now ().Us () != 11) {
+    if (b != 2 || Simulator::Now ().Us () != 11) 
+      {
         m_b = false;
-    } else {
+      } 
+    else 
+      {
         m_b = true;
-    }
+      }
     Simulator::Remove (m_idC);
     Simulator::Schedule (Time::RelUs (10), &SimulatorTests::D, this, 4);
 }
@@ -437,11 +449,14 @@ SimulatorTests::C (int c)
 void
 SimulatorTests::D (int d)
 {
-    if (d != 4 || Simulator::Now ().Us () != (11+10)) {
+    if (d != 4 || Simulator::Now ().Us () != (11+10)) 
+      {
         m_d = false;
-    } else {
+      } 
+    else 
+      {
         m_d = true;
-    }
+      }
 }
 bool
 SimulatorTests::RunOneTest (void)
@@ -459,9 +474,10 @@ SimulatorTests::RunOneTest (void)
     Simulator::Cancel (a);
     Simulator::Run ();
 
-    if (!m_a || !m_b || !m_c || !m_d) {
+    if (!m_a || !m_b || !m_c || !m_d) 
+      {
         ok = false;
-    }
+      }
     return ok;
 }
 bool 
@@ -470,19 +486,22 @@ SimulatorTests::RunTests (void)
     bool ok = true;
 
     Simulator::SetLinkedList ();
-    if (!RunOneTest ()) {
+    if (!RunOneTest ()) 
+      {
         ok = false;
-    }
+      }
     Simulator::Destroy ();
     Simulator::SetBinaryHeap ();
-    if (!RunOneTest ()) {
+    if (!RunOneTest ()) 
+      {
         ok = false;
-    }
+      }
     Simulator::Destroy ();
     Simulator::SetStdMap ();
-    if (!RunOneTest ()) {
+    if (!RunOneTest ()) 
+      {
         ok = false;
-    }
+      }
     Simulator::Destroy ();
 
     return ok;
