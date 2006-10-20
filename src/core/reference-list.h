@@ -99,11 +99,12 @@ private:
         m_objPtr = o.m_objPtr;
     }
     void RemoveFromList (void) {
-        if (m_prev == this) {
+        if (m_prev == this) 
+          {
             //assert (m_next == this);
             delete m_objPtr;
             m_objPtr = OBJ_PTR ();
-        }
+          }
         m_prev->m_next = m_next;
         m_next->m_prev = m_prev;
     }

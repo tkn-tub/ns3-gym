@@ -109,9 +109,10 @@ CallbackTest::IsWrong (void)
         !m_test4 ||
         !gTest5 ||
         !gTest6 ||
-        !gTest7) {
+        !gTest7) 
+      {
         return true;
-    }
+      }
     return false;
 }
 
@@ -158,9 +159,10 @@ CallbackTest::RunTests (void)
     f0 (1);
     g0 (1);
 
-    if (IsWrong ()) {
+    if (IsWrong ()) 
+      {
         ok = false;
-    }
+      }
 
     Reset ();
 
@@ -184,9 +186,10 @@ CallbackTest::RunTests (void)
 
     Callback<void, int64_t,int64_t> a2;
 
-    if (IsWrong ()) {
+    if (IsWrong ()) 
+      {
         ok = false;
-    }
+      }
     return ok;
 }
 

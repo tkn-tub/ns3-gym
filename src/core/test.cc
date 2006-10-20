@@ -40,10 +40,11 @@ TestManager::TestManager ()
 TestManager::~TestManager ()
 {
     TestsI i = m_tests.begin ();
-    while (i != m_tests.end ()) {
+    while (i != m_tests.end ()) 
+      {
         delete (*i).second;
         i = m_tests.erase (i);
-    }
+      }
 }
 void
 TestManager::Add (Test *test, char const *name)
@@ -69,22 +70,29 @@ bool
 TestManager::RealRunTests (void)
 {
     bool isSuccess = true;
-    for (TestsCI i = m_tests.begin (); i != m_tests.end (); i++) {
+    for (TestsCI i = m_tests.begin (); i != m_tests.end (); i++) 
+      {
         std::string *testName = (*i).second;
-        if (!(*i).first->RunTests ()) {
+        if (!(*i).first->RunTests ()) 
+          {
             isSuccess = false;
-            if (m_verbose) {
+            if (m_verbose) 
+              {
                 std::cerr << "FAIL " << *testName << std::endl;
-            }
-        } else {
-            if (m_verbose) {
+              }
+          } 
+        else 
+          {
+            if (m_verbose) 
+              {
                 std::cerr << "PASS "<<*testName << std::endl;
-            }
-        }
-    }
-    if (!isSuccess) {
+              }
+          }
+      }
+    if (!isSuccess) 
+      {
         std::cerr << "FAIL" << std::endl;
-    }
+      }
     return isSuccess;
 }
 
