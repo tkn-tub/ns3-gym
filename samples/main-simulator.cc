@@ -1,4 +1,4 @@
-/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:nil -*- */
+/* -*- Mode:NS3; -*- */
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include <iostream>

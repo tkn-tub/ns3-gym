@@ -1,4 +1,4 @@
-/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:nil -*- */
+/* -*- Mode:NS3; -*- */
 #include "ns3/trace-container.h"
 #include "ns3/ui-variable-tracer.h"
 #include "ns3/callback-tracer.h"
