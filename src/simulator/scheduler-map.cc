@@ -57,7 +57,7 @@ SchedulerMap::GetFromEvent (EventImpl *ev) const
     EventMapI i;
     void *tag = ev->GetInternalIterator ();
     memcpy (&i, &(tag), sizeof (i));
-     return i;
+    return i;
 }
 
 EventId

@@ -35,9 +35,10 @@ EventImpl::EventImpl ()
 void 
 EventImpl::Invoke (void)
 {
-    if (!m_cancel) {
+    if (!m_cancel) 
+      {
         Notify ();
-    }
+      }
 }
 void 
 EventImpl::SetInternalIterator (void *tag)

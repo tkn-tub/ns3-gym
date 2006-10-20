@@ -63,12 +63,14 @@ EventId
 SchedulerList::RealInsert (EventImpl *event, Scheduler::EventKey key)
 {
     Scheduler::EventKeyCompare compare;
-    for (EventsI i = m_events.begin (); i != m_events.end (); i++) {
-        if (compare (key, i->second)) {
+    for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
+      {
+        if (compare (key, i->second)) 
+          {
             m_events.insert (i, std::make_pair (event, key));
             return GetEventId (key, i);
-        }
-    }
+          }
+      }
     m_events.push_back (std::make_pair (event, key));
     return GetEventId (key, --(m_events.end ()));
 }

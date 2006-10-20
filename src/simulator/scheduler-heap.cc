@@ -157,10 +157,11 @@ SchedulerHeap::BottomUp (void)
 {
     uint32_t index = Last ();
     while (!IsRoot (index) && 
-           IsLess (index, Parent (index))) { 
+           IsLess (index, Parent (index))) 
+      { 
         Exch(index, Parent (index)); 
         index = Parent (index); 
-    }
+      }
 }
 
 void
@@ -168,27 +169,32 @@ SchedulerHeap::TopDown (void)
 {
     uint32_t index = Root ();
     uint32_t right = RightChild (index);
-    while (!IsBottom (right)) {
+    while (!IsBottom (right)) 
+      {
         uint32_t left = LeftChild (index);
         uint32_t tmp = Smallest (left, right);
-        if (IsLess (index, tmp)) {
+        if (IsLess (index, tmp)) 
+          {
             return;
-        }
+          }
         Exch (index, tmp);
         index = tmp;
         right = RightChild (index);
-    }
-    if (IsBottom (index)) {
+      }
+    if (IsBottom (index)) 
+      {
         return;
-    }
+      }
     assert (!IsBottom (index));
     uint32_t left = LeftChild (index);
-    if (IsBottom (left)) {
+    if (IsBottom (left)) 
+      {
         return;
-    }
-    if (IsLess (index, left)) {
+      }
+    if (IsLess (index, left)) 
+      {
         return;
-    }
+      }
     Exch (index, left);
 }
 
