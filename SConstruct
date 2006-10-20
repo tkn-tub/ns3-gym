@@ -19,26 +19,26 @@ core.add_sources ([
         'reference-list-test.cc',
         'callback-test.cc',
         'test.cc'
-	])
+        ])
 env = Environment ()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin':
-	core.add_external_dep ('pthread')
-	core.add_sources ([
-		'unix-system-wall-clock-ms.cc',
-		'unix-system-file.cc'
-		])
+    core.add_external_dep ('pthread')
+    core.add_sources ([
+            'unix-system-wall-clock-ms.cc',
+            'unix-system-file.cc'
+            ])
 elif env['PLATFORM'] == 'win32':
-	core.add_sources ([
-		'win32-system-wall-clock-ms.cc',
-		'win32-system-file.cc'
-		])
+    core.add_sources ([
+            'win32-system-wall-clock-ms.cc',
+            'win32-system-file.cc'
+            ])
 core.add_inst_headers ([
-	'system-file.h',
+        'system-file.h',
         'system-wall-clock-ms.h',
         'reference-list.h',
         'callback.h',
         'test.h'
-	])
+        ])
 
 
 #
@@ -48,29 +48,29 @@ simu = build.Ns3Module ('simulator', 'src/simulator')
 ns3.add (simu)
 simu.add_dep ('core')
 simu.add_sources ([
-	'time.cc',
-	'event-id.cc',
-	'scheduler.cc',
-	'scheduler-factory.cc',
-	'scheduler-list.cc',
-	'scheduler-heap.cc',
-	'scheduler-map.cc',
+        'time.cc',
+        'event-id.cc',
+        'scheduler.cc',
+        'scheduler-factory.cc',
+        'scheduler-list.cc',
+        'scheduler-heap.cc',
+        'scheduler-map.cc',
         'event-impl.cc',
         'simulator.cc',
-	])
+        ])
 simu.add_headers ([
-	'scheduler-heap.h',
-	'scheduler-map.h',
-	'scheduler-list.h'
-	])
+        'scheduler-heap.h',
+        'scheduler-map.h',
+        'scheduler-list.h'
+        ])
 simu.add_inst_headers ([
-	'nstime.h',
-	'event-id.h',
-	'event-impl.h',
-	'simulator.h',
-	'scheduler.h',
-	'scheduler-factory.h',
-	])
+        'nstime.h',
+        'event-id.h',
+        'event-impl.h',
+        'simulator.h',
+        'scheduler.h',
+        'scheduler-factory.h',
+        ])
 
 #
 # The Common module
@@ -79,30 +79,30 @@ common = build.Ns3Module ('common', 'src/common')
 common.add_deps (['core', 'simulator'])
 ns3.add (common)
 common.add_sources ([
-	'buffer.cc',
-	'header.cc',
-	'trailer.cc',
-	'packet.cc',
-	'tags.cc',
-	'pcap-writer.cc',
-	'trace-container.cc',
-	'variable-tracer-test.cc',
-	'stream-tracer-test.cc',
-	])
+        'buffer.cc',
+        'header.cc',
+        'trailer.cc',
+        'packet.cc',
+        'tags.cc',
+        'pcap-writer.cc',
+        'trace-container.cc',
+        'variable-tracer-test.cc',
+        'stream-tracer-test.cc',
+        ])
 common.add_inst_headers ([
-	'buffer.h',
-	'header.h',
-	'trailer.h',
-	'tags.h',
-	'packet.h',
-	'ui-variable-tracer.h',
-	'si-variable-tracer.h',
-	'f-variable-tracer.h',
-	'callback-tracer.h',
-	'stream-tracer.h',
-	'trace-container.h',
-	'pcap-writer.h',
-	])
+        'buffer.h',
+        'header.h',
+        'trailer.h',
+        'tags.h',
+        'packet.h',
+        'ui-variable-tracer.h',
+        'si-variable-tracer.h',
+        'f-variable-tracer.h',
+        'callback-tracer.h',
+        'stream-tracer.h',
+        'trace-container.h',
+        'pcap-writer.h',
+        ])
 
 
 # utils
@@ -158,6 +158,3 @@ sample_test.add_source ('main-test.cc')
 
 
 ns3.generate_dependencies ()
-
-
-

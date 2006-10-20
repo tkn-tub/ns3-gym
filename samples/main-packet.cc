@@ -5,7 +5,7 @@
 
 using namespace ns3;
 
-/* A sample Chunk implementation
+/* A sample Header implementation
  */
 class MyHeader : public Header {
 public:

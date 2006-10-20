@@ -91,7 +91,7 @@ Example: scons distcheck
 3) How the build system works
 -----------------------------
 
-The current build system defines what I call "ns3 modules": each module
+The current build system defines what are called "ns3 modules": each module
 is a set of source files, normal header files and installable header
 files. Each module also depends on a set of other modules. We build
 modules automatically in the correct order. That is, we always start
@@ -109,10 +109,10 @@ This means that if you want to use a header from your own module, you
 should just include it: #include "foo.h" but if you want to include a
 header from another module, you need to include it with #include
 "ns3/bar.h". This allows you to make sure that our "public" ns3 headers
-do not conflict with existing system-level headers. The time.h header
-issue you raise above is an example of this problem and it is worked
-around by asking each user of the ns3 time.h header to include
-"ns3/time.h" rather than "time.h".
+do not conflict with existing system-level headers.   For instance,
+if you were to define a header called queue.h, you would include
+ns3/queue.h rather than queue.h, when including from a separate module,
+since many systems provide a queue.h system include file.  
 
 4) How to add files to a module ?
 ---------------------------------
