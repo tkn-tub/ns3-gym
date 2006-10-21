@@ -202,9 +202,10 @@ Tags::Add (T const&tag)
     assert (sizeof (T) <= Tags::SIZE);
     uint8_t const*buf = reinterpret_cast<uint8_t const*> (&tag);
     // ensure this id was not yet added
-    for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
+    for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
+      {
         assert (cur->m_id != TypeUid<T>::GetUid ());
-    }
+      }
     struct TagData *newStart = AllocData ();
     newStart->m_count = 1;
     newStart->m_next = 0;
@@ -228,13 +229,15 @@ Tags::Peek (T &tag) const
 {
     assert (sizeof (T) <= Tags::SIZE);
     uint8_t *buf = reinterpret_cast<uint8_t *> (&tag);
-    for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
-        if (cur->m_id == TypeUid<T>::GetUid ()) {
+    for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
+      {
+        if (cur->m_id == TypeUid<T>::GetUid ()) 
+          {
             /* found tag */
             memcpy (buf, cur->m_data, sizeof (T));
             return true;
-        }
-    }
+          }
+      }
     /* no tag found */
     return false;
 }
@@ -246,23 +249,26 @@ Tags::Tags ()
 Tags::Tags (Tags const &o)
     : m_next (o.m_next)
 {
-    if (m_next != 0) {
+    if (m_next != 0) 
+      {
         m_next->m_count++;
-    }
+      }
 }
 
 Tags &
 Tags::operator = (Tags const &o)
 {
     // self assignment
-    if (m_next == o.m_next) {
+    if (m_next == o.m_next) 
+      {
         return *this;
-    }
+      }
     RemoveAll ();
     m_next = o.m_next;
-    if (m_next != 0) {
+    if (m_next != 0) 
+      {
         m_next->m_count++;
-    }
+      }
     return *this;
 }
 
@@ -275,19 +281,23 @@ void
 Tags::RemoveAll (void)
 {
     struct TagData *prev = 0;
-    for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) {
+    for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
+      {
         cur->m_count--;
-        if (cur->m_count > 0) {
+        if (cur->m_count > 0) 
+          {
             break;
-        }
-        if (prev != 0) {
+          }
+        if (prev != 0) 
+          {
             FreeData (prev);
-        }
+          }
         prev = cur;
-    }
-    if (prev != 0) {
+      }
+    if (prev != 0) 
+      {
         FreeData (prev);
-    }
+      }
     m_next = 0;
 }
 

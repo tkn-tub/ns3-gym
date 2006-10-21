@@ -38,22 +38,25 @@ public:
         : m_os (0) {}
     template <typename T>
     StreamTracer &operator << (T const&v) {
-        if (m_os != 0) {
+        if (m_os != 0) 
+          {
             (*m_os) << v;
-        }
+          }
         return *this;
     }
     template <typename T>
     StreamTracer &operator << (T &v) {
-        if (m_os != 0) {
+        if (m_os != 0) 
+          {
             (*m_os) << v;
-        }
+          }
         return *this;
     }
     StreamTracer &operator << (std::ostream &(*v) (std::ostream &)) {
-        if (m_os != 0) {
+        if (m_os != 0) 
+          {
             (*m_os) << v;
-        }
+          }
         return *this;
     }
 

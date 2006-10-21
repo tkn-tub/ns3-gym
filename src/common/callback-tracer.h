@@ -45,34 +45,40 @@ public:
         m_callback = callback;
     }
     void operator() (void) {
-        if (!m_callback.IsNull ()) {
+        if (!m_callback.IsNull ()) 
+          {
             m_callback ();
-        }
+          }
     }
     void operator() (T1 a1) {
-        if (!m_callback.IsNull ()) {
+        if (!m_callback.IsNull ()) 
+          {
             m_callback (a1);
-        }
+          }
     }
     void operator() (T1 a1, T2 a2) {
-        if (!m_callback.IsNull ()) {
+        if (!m_callback.IsNull ()) 
+          {
             m_callback (a1,a2);
-        }
+          }
     }
     void operator() (T1 a1, T2 a2, T3 a3) {
-        if (!m_callback.IsNull ()) {
+        if (!m_callback.IsNull ()) 
+          {
             m_callback (a1,a2,a3);
-        }
+          }
     }
     void operator() (T1 a1, T2 a2, T3 a3, T4 a4) {
-        if (!m_callback.IsNull ()) {
+        if (!m_callback.IsNull ()) 
+          {
             m_callback (a1,a2,a3,a4);
-        }
+          }
     }
     void operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5) {
-        if (!m_callback.IsNull ()) {
+        if (!m_callback.IsNull ()) 
+          {
             m_callback (a1,a2,a3,a4,a5);
-        }
+          }
     }
 
 private:

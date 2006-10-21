@@ -371,9 +371,10 @@ Buffer::Buffer ()
       m_start (m_maxTotalAddStart),
       m_size (0)
 {
-    if (m_start > m_data->m_size) {
+    if (m_start > m_data->m_size) 
+      {
         m_start = 0;
-    }
+      }
     assert (m_start <= m_data->m_size);
 }
 
@@ -383,9 +384,10 @@ Buffer::Buffer (uint32_t dataSize)
       m_start (m_maxTotalAddStart),
       m_size (0)
 {
-    if (m_start > m_data->m_size) {
+    if (m_start > m_data->m_size) 
+      {
         m_start = 0;
-    }
+      }
     assert (m_start <= m_data->m_size);
 }
 
@@ -403,15 +405,17 @@ Buffer::Buffer (Buffer const&o)
 Buffer &
 Buffer::operator = (Buffer const&o)
 {
-    if (m_data != o.m_data) {
+    if (m_data != o.m_data) 
+      {
         // not assignment to self.
         m_data->m_count--;
-        if (m_data->m_count == 0) {
+        if (m_data->m_count == 0) 
+          {
             Recycle (m_data);
-        }
+          }
         m_data = o.m_data;
         m_data->m_count++;
-    }
+      }
     m_zeroAreaSize = o.m_zeroAreaSize;
     m_start = o.m_start;
     m_size = o.m_size;
@@ -422,9 +426,10 @@ Buffer::operator = (Buffer const&o)
 Buffer::~Buffer ()
 {
     m_data->m_count--;
-    if (m_data->m_count == 0) {
+    if (m_data->m_count == 0) 
+      {
         Recycle (m_data);
-    }
+      }
 }
 
 
@@ -520,11 +525,14 @@ Buffer::Iterator::GetIndex (uint32_t n)
          (m_current >= m_zeroEnd))
         );
     uint32_t index;
-    if (m_current < m_zeroStart) {
+    if (m_current < m_zeroStart) 
+      {
         index = m_current;
-    } else {
+      } 
+    else 
+      {
         index = m_current - (m_zeroEnd-m_zeroStart);
-    }
+      }
     return index;
 }
 

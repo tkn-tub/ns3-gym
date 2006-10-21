@@ -81,19 +81,21 @@ DataWriterPrivate::Open (char const *filename)
 void
 DataWriterPrivate::Write (uint8_t *buffer, uint32_t size)
 {
-    while (size > 0) {
+    while (size > 0) 
+      {
         uint32_t toCopy = min (BUFFER_SIZE - m_current, size);
         memcpy (m_data + m_current, buffer, toCopy);
         size -= toCopy;
         m_current += toCopy;
         buffer += toCopy;
-        if (m_current == BUFFER_SIZE) {
+        if (m_current == BUFFER_SIZE) 
+          {
             ssize_t written = 0;
             written = ::Write (m_fd, m_data, BUFFER_SIZE);
             assert (written == BUFFER_SIZE);
             m_current = 0;
-        }
-    }
+          }
+      }
 }
 
 DataWriter::DataWriter ()

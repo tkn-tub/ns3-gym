@@ -51,44 +51,61 @@ VariableTracerTest::RunUnsignedTests (void)
     var = 10;
     ovar = var;
 
-    if (var == ovar) {
-    }
-    if (var != ovar) {
-    }
-    if (var > ovar) {
-    }
-    if (var >= ovar) {
-    }
-    if (var < ovar) {
-    }
-    if (var <= ovar) {
-    }
+    if (var == ovar) 
+      {
+      }
+    if (var != ovar) 
+      {
+      }
+    if (var > ovar) 
+      {
+      }
+    if (var >= ovar) 
+      {
+      }
+    if (var < ovar)
+      {
+      }
+    
+    if (var <= ovar)
 
-    if (var == 1) {
-    }
-    if (var != 1) {
-    }
-    if (var > 1) {
-    }
-    if (var >= 1) {
-    }
-    if (var < 1) {
-    }
-    if (var <= 1) {
-    }
+    if (var == 1)
+      {
+      }
+    if (var != 1)
+      {
+      }
+    if (var > 1)
+      {
+      }
+    if (var >= 1)
+      {
+      }
+    if (var < 1)
+      {
+      }
+    if (var <= 1)
+      {
+      }
 
-    if (1 == ovar) {
-    }
-    if (1 != ovar) {
-    }
-    if (1 > ovar) {
-    }
-    if (1 >= ovar) {
-    }
-    if (1 < ovar) {
-    }
-    if (1 <= ovar) {
-    }
+    if (1 == ovar)
+      {
+      }
+    if (1 != ovar)
+      {
+      }
+    if (1 > ovar)
+      {
+      }
+    if (1 >= ovar)
+      {
+      }
+    if (1 < ovar)
+      {
+      }
+    if (1 <= ovar)
+      {
+      }
 
     var++;
     ++var;

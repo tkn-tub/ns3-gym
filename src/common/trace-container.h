@@ -206,12 +206,14 @@ template <typename T1>
 void 
 TraceContainer::SetCallback (char const *name, Callback<void,T1> callback)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
-        if (i->second == name) {
+    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+      {
+        if (i->second == name) 
+          {
             static_cast<CallbackTracer<T1> *> (i->first)->SetCallback (callback);
             return;
-        }
-    }
+          }
+      }
 #ifndef NDEBUG
     assert (false);
 #endif
@@ -220,12 +222,14 @@ template <typename T1, typename T2>
 void 
 TraceContainer::SetCallback (char const *name, Callback<void,T1,T2> callback)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
-        if (i->second == name) {
+    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+      {
+        if (i->second == name) 
+          {
             static_cast<CallbackTracer<T1,T2> *> (i->first)->SetCallback (callback);
             return;
-        }
-    }
+          }
+      }
 #ifndef NDEBUG
     assert (false);
 #endif
@@ -234,12 +238,14 @@ template <typename T1, typename T2, typename T3>
 void 
 TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3> callback)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
-        if (i->second == name) {
+    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+      {
+        if (i->second == name) 
+          {
             static_cast<CallbackTracer<T1,T2,T3> *> (i->first)->SetCallback (callback);
             return;
-        }
-    }
+          }
+      }
 #ifndef NDEBUG
     assert (false);
 #endif
@@ -248,12 +254,14 @@ template <typename T1, typename T2, typename T3, typename T4>
 void 
 TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3,T4> callback)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
-        if (i->second == name) {
+    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+      {
+        if (i->second == name) 
+          {
             static_cast<CallbackTracer<T1,T2,T3,T4> *> (i->first)->SetCallback (callback);
             return;
-        }
-    }
+          }
+      }
 #ifndef NDEBUG
     assert (false);
 #endif
@@ -262,12 +270,14 @@ template <typename T1, typename T2, typename T3, typename T4, typename T5>
 void 
 TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3,T4,T5> callback)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) {
-        if (i->second == name) {
+    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+      {
+        if (i->second == name) 
+          {
             static_cast<CallbackTracer<T1,T2,T3,T4,T5> *> (i->first)->SetCallback (callback);
             return;
-        }
-    }
+          }
+      }
 #ifndef NDEBUG
     assert (false);
 #endif

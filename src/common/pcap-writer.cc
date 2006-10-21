@@ -67,7 +67,8 @@ PcapWriter::WriteHeaderEthernet (void)
 void 
 PcapWriter::WritePacket (Packet const packet)
 {
-    if (m_writer != 0) {
+    if (m_writer != 0) 
+      {
         uint64_t current = Simulator::Now ().Us ();
         uint64_t s = current / 1000000;
         uint64_t us = current % 1000000;
@@ -76,7 +77,7 @@ PcapWriter::WritePacket (Packet const packet)
         Write32 (packet.GetSize ());
         Write32 (packet.GetSize ());
     	m_writer->Write (packet.PeekData (), packet.GetSize ());
-    }
+      }
 }
 
 void
