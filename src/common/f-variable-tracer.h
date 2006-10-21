@@ -44,9 +44,10 @@ public:
     }
 protected:
     void notify (double oldVal, double newVal) {
-        if (oldVal != newVal && !m_callback.IsNull ()) {
+        if (oldVal != newVal && !m_callback.IsNull ()) 
+          {
             m_callback (oldVal, newVal);
-        }
+          }
     }
 private:
     ChangeNotifyCallback m_callback;
