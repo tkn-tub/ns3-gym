@@ -255,13 +255,8 @@ class Ns3:
 
             filename = self.get_mod_output(module, variant)
             if module.executable:
-                if env['PLATFORM'] == 'posix':
-                    module_builder = env.Program(target=filename, source=objects, 
-                                                 LIBPATH=lib_path, LIBS=libs, 
-                                                 RPATH=lib_path)
-                else:
-                    module_builder = env.Program(target=filename, source=objects, 
-                                                 LIBPATH=lib_path, LIBS=libs)
+                module_builder = env.Program(target=filename, source=objects, 
+                                             LIBPATH=lib_path, LIBS=libs)
             else:
                 if variant.static:
                     module_builder = env.StaticLibrary(target=filename, source=objects)
@@ -328,6 +323,9 @@ class Ns3:
                     TARFLAGS = '-c -z', 
                     CPPFLAGS = cxxflags, 
                     LINKFLAGS = ldflags)
+        if env['PLATFORM'] == 'posix':
+            env.Append(LINKFLAGS = ' -z origin')
+            env.Append(RPATH=env.Literal(os.path.join('\\$$ORIGIN', os.pardir, 'lib')))
         verbose = ARGUMENTS.get('verbose', 'n')
         if verbose == 'n':
             env['PRINT_CMD_LINE_FUNC'] = print_cmd_line
