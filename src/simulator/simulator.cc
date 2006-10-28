@@ -197,12 +197,26 @@ SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
 void 
 SimulatorPrivate::ScheduleNow (EventImpl *event)
 {
-    //XXX
+    uint64_t ns = m_currentNs;
+    Scheduler::EventKey key = {ns, m_uid};
+    if (m_logEnable) 
+      {
+        m_log << "i "<<m_currentUid<<" "<<m_currentNs<<" "
+              <<m_uid<<" "<<time.ApproximateToNanoSeconds () << std::endl;
+      }
+    m_uid++;
+    return m_events->Insert (event, key);
 }
 void 
 SimulatorPrivate::ScheduleDestroy (EventImpl *event)
 {
-    //XXX
+  m_destroy.push_back (std::make_pair (event, m_uid));  
+  if (m_logEnable) 
+    {
+      m_log << "id " << m_currentUid << " " << Now ().Ns () << " "
+            << m_uid << std::endl;
+    }
+  m_uid++;
 }
 
 Time
