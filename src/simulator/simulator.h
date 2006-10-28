@@ -274,6 +274,7 @@ public:
      */
     template <typename T1, typename T2, typename T3, typename T4, typename T5>
     static EventId Schedule (Time const &time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+
     /**
      * Remove an event from the event list. 
      * This method has the same visible effect as the 
@@ -319,6 +320,31 @@ public:
 private:
     Simulator ();
     ~Simulator ();
+    template <typename T>
+    static EventImpl *MakeEvent (void (T::*mem_ptr) (void), T *obj);
+    template <typename T, typename T1>
+    static EventImpl *MakeEvent (void (T::*mem_ptr) (T1), T* obj, T1 a1);
+    template <typename T, typename T1, typename T2>
+    static EventImpl *MakeEvent (void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2);
+    template <typename T, typename T1, typename T2, typename T3>
+    static EventImpl *MakeEvent (void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3);
+    template <typename T, typename T1, typename T2, typename T3, typename T4>
+    static EventImpl *MakeEvent (void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4);
+    template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+    static EventImpl *MakeEvent (void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
+                          T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+    static EventImpl *MakeEvent (void (*f) (void));
+    template <typename T1>
+    static EventImpl *MakeEvent (void (*f) (T1), T1 a1);
+    template <typename T1, typename T2>
+    static EventImpl *MakeEvent (void (*f) (T1,T2), T1 a1, T2 a2);
+    template <typename T1, typename T2, typename T3>
+    static EventImpl *MakeEvent (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
+    template <typename T1, typename T2, typename T3, typename T4>
+    static EventImpl *MakeEvent (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
+    static EventImpl *MakeEvent (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+
     static SimulatorPrivate *GetPriv (void);
     static EventId Schedule (Time const &time, EventImpl *event);
     static SimulatorPrivate *m_priv;
@@ -341,7 +367,7 @@ private:
 namespace ns3 {
 
 template <typename T>
-EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (void), T *obj) 
+EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (void), T *obj) 
 {
     // zero argument version
     class EventMemberImpl0 : public EventImpl {
@@ -359,12 +385,12 @@ EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (void), T *obj
     	T* m_obj;
     	F m_function;
     } *ev = new EventMemberImpl0 (obj, mem_ptr);
-    return Schedule (time, ev);
+    return ev;
 }
 
 
 template <typename T, typename T1>
-EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1), T* obj, T1 a1) 
+EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1), T* obj, T1 a1) 
 {
     // one argument version
     class EventMemberImpl1 : public EventImpl {
@@ -385,11 +411,11 @@ EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1), T* obj, 
     	F m_function;
     	T1 m_a1;
     } *ev = new EventMemberImpl1 (obj, mem_ptr, a1);
-    return Schedule (time, ev);
+    return ev;
 }
 
 template <typename T, typename T1, typename T2>
-EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2) 
+EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2) 
 {
     // two argument version
     class EventMemberImpl2 : public EventImpl {
@@ -413,12 +439,11 @@ EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2), T* ob
     	T1 m_a1;
     	T2 m_a2;
     } *ev = new EventMemberImpl2 (obj, mem_ptr, a1, a2);
-
-    return Schedule (time, ev);
+    return ev;
 }
 
 template <typename T, typename T1, typename T2, typename T3>
-EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3) 
+EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3) 
 {
     // three argument version
     class EventMemberImpl3 : public EventImpl {
@@ -444,11 +469,11 @@ EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3), T*
     	T2 m_a2;
     	T3 m_a3;
     } *ev = new EventMemberImpl3 (obj, mem_ptr, a1, a2, a3);
-    return Schedule (time, ev);
+    return ev;
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4>
-EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
     // four argument version
     class EventMemberImpl4 : public EventImpl {
@@ -476,11 +501,11 @@ EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4),
     	T3 m_a3;
     	T4 m_a4;
     } *ev = new EventMemberImpl4 (obj, mem_ptr, a1, a2, a3, a4);
-    return Schedule (time, ev);
+    return ev;
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
+EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
     						 T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
     // five argument version
@@ -511,11 +536,11 @@ EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4,T
     	T4 m_a4;
     	T5 m_a5;
     } *ev = new EventMemberImpl5 (obj, mem_ptr, a1, a2, a3, a4, a5);
-    return Schedule (time, ev);
+    return ev;
 }
 
 template <typename T1>
-EventId Simulator::Schedule (Time const &time, void (*f) (T1), T1 a1) 
+EventImpl *Simulator::MakeEvent (void (*f) (T1), T1 a1) 
 {
     // one arg version
     class EventFunctionImpl1 : public EventImpl {
@@ -535,11 +560,11 @@ EventId Simulator::Schedule (Time const &time, void (*f) (T1), T1 a1)
     	F m_function;
     	T1 m_a1;
     } *ev = new EventFunctionImpl1(f, a1);
-    return Schedule (time, ev);
+    return ev;
 }
 
 template <typename T1, typename T2>
-EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2), T1 a1, T2 a2) 
+EventImpl *Simulator::MakeEvent (void (*f) (T1,T2), T1 a1, T2 a2) 
 {
     // two arg version
     class EventFunctionImpl2 : public EventImpl {
@@ -561,11 +586,11 @@ EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2), T1 a1, T2 a2)
     	T1 m_a1;
     	T2 m_a2;
     } *ev = new EventFunctionImpl2 (f, a1, a2);
-    return Schedule (time, ev);
+    return ev;
 }
 
 template <typename T1, typename T2, typename T3>
-EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3)
+EventImpl *Simulator::MakeEvent (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3)
 {
     // three arg version
     class EventFunctionImpl3 : public EventImpl {
@@ -589,11 +614,11 @@ EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2,T3), T1 a1, T2 a
     	T2 m_a2;
     	T3 m_a3;
     } *ev = new EventFunctionImpl3 (f, a1, a2, a3);
-    return Schedule (time, ev);
+    return ev;
 }
 
 template <typename T1, typename T2, typename T3, typename T4>
-EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) 
+EventImpl *Simulator::MakeEvent (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
     // four arg version
     class EventFunctionImpl4 : public EventImpl {
@@ -619,11 +644,11 @@ EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2,T3,T4), T1 a1, T
     	T3 m_a3;
     	T4 m_a4;
     } *ev = new EventFunctionImpl4 (f, a1, a2, a3, a4);
-    return Schedule (time, ev);
+    return ev;
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-static EventId Schedule (Time const &time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+EventImpl *Simulator::MakeEvent (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
     // five arg version
     class EventFunctionImpl5 : public EventImpl {
@@ -651,7 +676,75 @@ static EventId Schedule (Time const &time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2
     	T4 m_a4;
     	T5 m_a5;
     } *ev = new EventFunctionImpl5 (f, a1, a2, a3, a4, a5);
-    return Schedule (time, ev);
+    return ev; 
+}
+
+template <typename T>
+EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (void), T *obj) 
+{
+    return Schedule (time, MakeEvent (mem_ptr, obj));
+}
+
+
+template <typename T, typename T1>
+EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1), T* obj, T1 a1) 
+{
+    return Schedule (time, MakeEvent (mem_ptr, obj, a1));
+}
+
+template <typename T, typename T1, typename T2>
+EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2) 
+{
+    return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2));
+}
+
+template <typename T, typename T1, typename T2, typename T3>
+EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3) 
+{
+    return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3));
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+{
+    return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
+    						 T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+{
+    return Schedule (time, MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+}
+
+template <typename T1>
+EventId Simulator::Schedule (Time const &time, void (*f) (T1), T1 a1) 
+{
+    return Schedule (time, MakeEvent (f, a1));
+}
+
+template <typename T1, typename T2>
+EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2), T1 a1, T2 a2) 
+{
+    return Schedule (time, MakeEvent (f, a1, a2));
+}
+
+template <typename T1, typename T2, typename T3>
+EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3)
+{
+    return Schedule (time, MakeEvent (f, a1, a2, a3));
+}
+
+template <typename T1, typename T2, typename T3, typename T4>
+EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) 
+{
+    return Schedule (time, MakeEvent (f, a1, a2, a3, a4));
+}
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+static EventId Schedule (Time const &time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+{
+    return Schedule (time, MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 }; // namespace ns3
