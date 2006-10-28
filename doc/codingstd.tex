@@ -292,8 +292,7 @@ Examples:
 \subsection{Statement Formatting}
 \begin{enumerate}
 \item {\bf Indention}.  The basic indention level for all code
-is four character positions.  In some cases, indention to ``one--half''
-level, is required as described below.
+is two character positions. 
 \item {\bf Continuation statements}.  Frequently a single statement
 is too long to fit within a single 80 column line.  In this case, the
 statement is simply continued on the next one or more lines.  Each
@@ -328,12 +327,10 @@ for (\=LongTypeName\_t longLoopIndexName = aLongExpression; \\
 
 \item {\bf {\tt IF} Statements}.
 The open curly brace following an {\tt IF} statement must be on the
-following line, indented by one--half indention level.
-The subsequent lines must
-indented an additional one--half indention level.
-{\tt IF} statements with only
-one statement in either the {\tt TRUE} of {\tt FALSE} sub--blocks
-may omit the curly braces.  The {\tt ELSE} statement (if present)
+following line, indented by one  indention level.
+The subsequent lines must be
+indented by an additional one indention level.
+The {\tt ELSE} statement (if present)
 must be on a line by itself.
 
 Examples:
@@ -345,7 +342,7 @@ if (someCondition) \\
 \>\{ // Describe TRUE condition here\\
 \>\>i = k;\\
 \>\>k = i + 2;\\
-\>\} // Right, curly block indented one-half, statements one-half more
+\>\} // Right, curly block indented one indent level, statements one indent more
 \end{tabbing}
 \end{tt}
 
@@ -373,14 +370,11 @@ if (someCondition) // Describe TRUE condition here\\
 \end{tabbing}
 \end{tt}
 
-\begin{tt}
-if (someCondition) i = k; // Right, single statement may be on same line
-\end{tt}
 
 \item {\bf {\tt FOR} Statements}.
 The open brace following a {\tt for} statement is indented
-one-half level from the {\tt for} statement itself.  Each statement
-in the sub--block is indented one--half level from the curly brace.
+one level from the {\tt for} statement itself.  Each statement
+in the sub--block is indented one level from the curly brace.
 If the sub--block is a single statement, the curly braces can be 
 omitted and the statement indented one level, or optionally appear
 on the same line as the {\tt for} statement.
@@ -391,21 +385,17 @@ Example:
 \begin{tabbing}
 aa\=aa\=aa\= \kill
 for (int i = 0; i < MAX\_COUNT; ++i) \\
-\>\{             // Curly brace indented one-half level \\
-\>\>sum += i;    // Statements indented another one-half level \\
+\>\{             // Curly brace indented one level \\
+\>\>sum += i;    // Statements indented another one level \\
 \>\>prod *= i;                                          \\
 \>\}             // Close brace on same column as open brace \\
 \end{tabbing}
 \end{tt}
 
-\begin{tt}
-for (int i = 0; i < MAX\_COUNT; ++i) Sub1(i); // Right, single statement\\
-\end{tt}
-
 \item {\bf {\tt WHILE} Statements}.
 {\tt While} statements are formatted similarly to {\tt IF} statements,
-with curly braces indented one-half level on separate lines, and the
-inner statements indented another half-level. If the sub--block has only
+with curly braces indented one level on separate lines, and the
+inner statements indented another level. If the sub--block has only
 a single line, the curly braces can be omitted, and the statement may
 appear on the same line as the {\tt WHILE} statement.
 
@@ -415,15 +405,11 @@ Examples:
 \begin{tabbing}
 aa\=aa\=aa\= \kill
 while (someCondition) \\
-\>\{ // Right, open brace indented one-half level \\
-\>\>i = k; // Right, statements indented one-half level from open brace \\
+\>\{ // Right, open brace indented one level \\
+\>\>i = k; // Right, statements indented one level from open brace \\
 \>\>k = i + 2;\\
 \>\}       // Right, close brace lines up with open brace
 \end{tabbing}
-\end{tt}
-
-\begin{tt}
-while (someCondition) i = i + 2; // Right, single stmt on same line
 \end{tt}
 
 \item {\bf Infinite Loops}.
@@ -466,13 +452,7 @@ switch(someCondition) \{ Right, open brace on same line as switch\\
 \item {\bf Functions}.  Since C and C++ do not allow nested functions,
 all functions start with no indentation at column 0.  The open curly
 brace is on a line by itself immediately following the function header
-and formal parameters, also in column 0.  Any local variable declarations
-immediately following the open curly brace also start at column 0.
-One blank line follows the initial local variable declarations (if any).
-The statements in the function body are indented one-half  level 
-from the curly brace.  Any variable declarations after the start of the
-statements are indented at the same level as the preceding statement.
-The closing brace is at column 0.
+and formal parameters, also in column 0.  
 
 Example:
 
@@ -481,8 +461,8 @@ Example:
 aa\=aa\=aa\=aa\= \kill
 void Function1(int arg1, double arg2)\\
 \{               // Right, curly brace at column 0\\
-int local1 = 0;  // Right, local variable at column 0\\
-int local2;\\
+\>int local1 = 0;  // Right, local variable at column 2\\
+\>int local2;\\
 \>\\
 \>local2 = local1 + arg1 + arg2;   // Right, indented two columns\\
 \>int local3;                      // Right, variable at same level\\
