@@ -202,10 +202,10 @@ SimulatorPrivate::ScheduleNow (EventImpl *event)
     if (m_logEnable) 
       {
         m_log << "i "<<m_currentUid<<" "<<m_currentNs<<" "
-              <<m_uid<<" "<<time.ApproximateToNanoSeconds () << std::endl;
+              <<m_uid<<" "<<ns << std::endl;
       }
     m_uid++;
-    return m_events->Insert (event, key);
+    m_events->Insert (event, key);
 }
 void 
 SimulatorPrivate::ScheduleDestroy (EventImpl *event)
@@ -213,7 +213,7 @@ SimulatorPrivate::ScheduleDestroy (EventImpl *event)
   m_destroy.push_back (std::make_pair (event, m_uid));  
   if (m_logEnable) 
     {
-      m_log << "id " << m_currentUid << " " << Now ().Ns () << " "
+      m_log << "id " << m_currentUid << " " << Now ().ApproximateToNanoSeconds () << " "
             << m_uid << std::endl;
     }
   m_uid++;
