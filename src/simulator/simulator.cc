@@ -356,26 +356,10 @@ Simulator::Now (void)
     return GetPriv ()->Now ();
 }
 
-EventId
-Simulator::Schedule (Time const &time, EventImpl *ev)
+EventImpl *
+Simulator::MakeEvent (void (*f) (void))
 {
-    return GetPriv ()->Schedule (time, ev);
-}
-void
-Simulator::ScheduleNow (EventImpl *ev)
-{
-    GetPriv ()->ScheduleNow (ev);
-}
-void
-Simulator::ScheduleDestroy (EventImpl *ev)
-{
-    GetPriv ()->ScheduleDestroy (ev);
-}
-  
-EventId
-Simulator::Schedule (Time const &time, void (*f) (void))
-{
-    // zero arg version
+      // zero arg version
     class EventFunctionImpl0 : public EventImpl {
     public:
     	typedef void (*F)(void);
@@ -391,7 +375,37 @@ Simulator::Schedule (Time const &time, void (*f) (void))
     private:
     	F m_function;
     } *ev = new EventFunctionImpl0 (f);
-    return Schedule (time, ev);
+    return ev;
+}
+EventId
+Simulator::Schedule (Time const &time, EventImpl *ev)
+{
+    return GetPriv ()->Schedule (time, ev);
+}
+void
+Simulator::ScheduleNow (EventImpl *ev)
+{
+    GetPriv ()->ScheduleNow (ev);
+}
+void
+Simulator::ScheduleDestroy (EventImpl *ev)
+{
+    GetPriv ()->ScheduleDestroy (ev);
+}  
+EventId
+Simulator::Schedule (Time const &time, void (*f) (void))
+{
+    return Schedule (time, MakeEvent (f));
+}
+void
+Simulator::ScheduleNow (void (*f) (void))
+{
+    return ScheduleNow (MakeEvent (f));
+}
+void
+Simulator::ScheduleDestroy (void (*f) (void))
+{
+    return ScheduleDestroy (MakeEvent (f));
 }
 
 
@@ -421,6 +435,20 @@ Simulator::IsExpired (EventId id)
 
 namespace ns3 {
 
+static void foo0 (void)
+{}
+static void foo1 (int)
+{}
+static void foo2 (int, int)
+{}
+static void foo3 (int, int, int)
+{}
+static void foo4 (int, int, int, int)
+{}
+static void foo5 (int, int, int, int, int)
+{}  
+  
+
 class SimulatorTests : public Test {
 public:
     SimulatorTests ();
@@ -433,6 +461,13 @@ private:
     void B (int b);
     void C (int c);
     void D (int d);
+    void bar0 (void);
+    void bar1 (int);
+    void bar2 (int, int);
+    void bar3 (int, int, int);
+    void bar4 (int, int, int, int);
+    void bar5 (int, int, int, int, int);
+  
     bool m_b;
     bool m_a;
     bool m_c;
@@ -487,6 +522,25 @@ SimulatorTests::D (int d)
         m_d = true;
       }
 }
+void 
+SimulatorTests::bar0 (void)
+{}
+void 
+SimulatorTests::bar1 (int)
+{}
+void 
+SimulatorTests::bar2 (int, int)
+{}
+void 
+SimulatorTests::bar3 (int, int, int)
+{}
+void 
+SimulatorTests::bar4 (int, int, int, int)
+{}
+void 
+SimulatorTests::bar5 (int, int, int, int, int)
+{}
+
 bool
 SimulatorTests::RunOneTest (void)
 {
@@ -532,6 +586,45 @@ SimulatorTests::RunTests (void)
         ok = false;
       }
     Simulator::Destroy ();
+
+
+    Simulator::Schedule (Seconds (0.0), &foo0);
+    Simulator::Schedule (Seconds (0.0), &foo1, 0);
+    Simulator::Schedule (Seconds (0.0), &foo2, 0, 0);
+    Simulator::Schedule (Seconds (0.0), &foo3, 0, 0, 0);
+    Simulator::Schedule (Seconds (0.0), &foo4, 0, 0, 0, 0);
+    Simulator::Schedule (Seconds (0.0), &foo5, 0, 0, 0, 0, 0);
+    Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar0, this);
+    Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar1, this, 0);
+    Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar2, this, 0, 0);
+    Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar3, this, 0, 0, 0);
+    Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar4, this, 0, 0, 0, 0);
+    Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+    Simulator::ScheduleNow (&foo0);
+    Simulator::ScheduleNow (&foo1, 0);
+    Simulator::ScheduleNow (&foo2, 0, 0);
+    Simulator::ScheduleNow (&foo3, 0, 0, 0);
+    Simulator::ScheduleNow (&foo4, 0, 0, 0, 0);
+    Simulator::ScheduleNow (&foo5, 0, 0, 0, 0, 0);
+    Simulator::ScheduleNow (&SimulatorTests::bar0, this);
+    Simulator::ScheduleNow (&SimulatorTests::bar1, this, 0);
+    Simulator::ScheduleNow (&SimulatorTests::bar2, this, 0, 0);
+    Simulator::ScheduleNow (&SimulatorTests::bar3, this, 0, 0, 0);
+    Simulator::ScheduleNow (&SimulatorTests::bar4, this, 0, 0, 0, 0);
+    Simulator::ScheduleNow (&SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+    Simulator::ScheduleDestroy (&foo0);
+    Simulator::ScheduleDestroy (&foo1, 0);
+    Simulator::ScheduleDestroy (&foo2, 0, 0);
+    Simulator::ScheduleDestroy (&foo3, 0, 0, 0);
+    Simulator::ScheduleDestroy (&foo4, 0, 0, 0, 0);
+    Simulator::ScheduleDestroy (&foo5, 0, 0, 0, 0, 0);
+    Simulator::ScheduleDestroy (&SimulatorTests::bar0, this);
+    Simulator::ScheduleDestroy (&SimulatorTests::bar1, this, 0);
+    Simulator::ScheduleDestroy (&SimulatorTests::bar2, this, 0, 0);
+    Simulator::ScheduleDestroy (&SimulatorTests::bar3, this, 0, 0, 0);
+    Simulator::ScheduleDestroy (&SimulatorTests::bar4, this, 0, 0, 0, 0);
+    Simulator::ScheduleDestroy (&SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+    
 
     return ok;
 }

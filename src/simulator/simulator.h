@@ -275,6 +275,215 @@ public:
     template <typename T1, typename T2, typename T3, typename T4, typename T5>
     static EventId Schedule (Time const &time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
+
+    /**
+     * Schedule an event to expire Now. All events scheduled to
+     * to expire "Now" are scheduled FIFO, after all normal events
+     * have expired. 
+     *
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     */
+    template <typename T>
+    static void ScheduleNow (void (T::*mem_ptr) (void), T *obj);
+    /**
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     * @param a1 the first argument to pass to the invoked method
+     */
+    template <typename T, typename T1>
+    static void ScheduleNow (void (T::*mem_ptr) (T1), T* obj, T1 a1);
+    /**
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     * @param a1 the first argument to pass to the invoked method
+     * @param a2 the second argument to pass to the invoked method
+     */
+    template <typename T, typename T1, typename T2>
+    static void ScheduleNow (void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2);
+    /**
+     * @param time the expiration time of the event.
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     * @param a1 the first argument to pass to the invoked method
+     * @param a2 the second argument to pass to the invoked method
+     * @param a3 the third argument to pass to the invoked method
+     */
+    template <typename T, typename T1, typename T2, typename T3>
+    static void ScheduleNow (void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3);
+    /**
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     * @param a1 the first argument to pass to the invoked method
+     * @param a2 the second argument to pass to the invoked method
+     * @param a3 the third argument to pass to the invoked method
+     * @param a4 the fourth argument to pass to the invoked method
+     */
+    template <typename T, typename T1, typename T2, typename T3, typename T4>
+    static void ScheduleNow (void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, 
+                             T1 a1, T2 a2, T3 a3, T4 a4);
+    /**
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     * @param a1 the first argument to pass to the invoked method
+     * @param a2 the second argument to pass to the invoked method
+     * @param a3 the third argument to pass to the invoked method
+     * @param a4 the fourth argument to pass to the invoked method
+     * @param a5 the fifth argument to pass to the invoked method
+     */
+    template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+    static void ScheduleNow (void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
+                             T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+    /**
+     * @param f the function to invoke
+     */
+    static void ScheduleNow (void (*f) (void));
+    /**
+     * @param f the function to invoke
+     * @param a1 the first argument to pass to the function to invoke
+     */
+    template <typename T1>
+    static void ScheduleNow (void (*f) (T1), T1 a1);
+    /**
+     * @param f the function to invoke
+     * @param a1 the first argument to pass to the function to invoke
+     * @param a2 the second argument to pass to the function to invoke
+     */
+    template <typename T1, typename T2>
+    static void ScheduleNow (void (*f) (T1,T2), T1 a1, T2 a2);
+    /**
+     * @param f the function to invoke
+     * @param a1 the first argument to pass to the function to invoke
+     * @param a2 the second argument to pass to the function to invoke
+     * @param a3 the third argument to pass to the function to invoke
+     */
+    template <typename T1, typename T2, typename T3>
+    static void ScheduleNow (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
+    /**
+     * @param f the function to invoke
+     * @param a1 the first argument to pass to the function to invoke
+     * @param a2 the second argument to pass to the function to invoke
+     * @param a3 the third argument to pass to the function to invoke
+     * @param a4 the fourth argument to pass to the function to invoke
+     */
+    template <typename T1, typename T2, typename T3, typename T4>
+    static void ScheduleNow (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
+    /**
+     * @param f the function to invoke
+     * @param a1 the first argument to pass to the function to invoke
+     * @param a2 the second argument to pass to the function to invoke
+     * @param a3 the third argument to pass to the function to invoke
+     * @param a4 the fourth argument to pass to the function to invoke
+     * @param a5 the fifth argument to pass to the function to invoke
+     */
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
+    static void ScheduleNow (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+
+
+    /**
+     * Schedule an event to expire at Destroy time. All events 
+     * scheduled to expire at "Destroy" time are scheduled FIFO, 
+     * after all normal events have expired and only when 
+     * Simulator::Destroy is invoked.
+     *
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     */
+    template <typename T>
+    static void ScheduleDestroy (void (T::*mem_ptr) (void), T *obj);
+    /**
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     * @param a1 the first argument to pass to the invoked method
+     */
+    template <typename T, typename T1>
+    static void ScheduleDestroy (void (T::*mem_ptr) (T1), T* obj, T1 a1);
+    /**
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     * @param a1 the first argument to pass to the invoked method
+     * @param a2 the second argument to pass to the invoked method
+     */
+    template <typename T, typename T1, typename T2>
+    static void ScheduleDestroy (void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2);
+    /**
+     * @param time the expiration time of the event.
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     * @param a1 the first argument to pass to the invoked method
+     * @param a2 the second argument to pass to the invoked method
+     * @param a3 the third argument to pass to the invoked method
+     */
+    template <typename T, typename T1, typename T2, typename T3>
+    static void ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3);
+    /**
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     * @param a1 the first argument to pass to the invoked method
+     * @param a2 the second argument to pass to the invoked method
+     * @param a3 the third argument to pass to the invoked method
+     * @param a4 the fourth argument to pass to the invoked method
+     */
+    template <typename T, typename T1, typename T2, typename T3, typename T4>
+    static void ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, 
+                             T1 a1, T2 a2, T3 a3, T4 a4);
+    /**
+     * @param mem_ptr member method pointer to invoke
+     * @param obj the object on which to invoke the member method
+     * @param a1 the first argument to pass to the invoked method
+     * @param a2 the second argument to pass to the invoked method
+     * @param a3 the third argument to pass to the invoked method
+     * @param a4 the fourth argument to pass to the invoked method
+     * @param a5 the fifth argument to pass to the invoked method
+     */
+    template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+    static void ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
+                             T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+    /**
+     * @param f the function to invoke
+     */
+    static void ScheduleDestroy (void (*f) (void));
+    /**
+     * @param f the function to invoke
+     * @param a1 the first argument to pass to the function to invoke
+     */
+    template <typename T1>
+    static void ScheduleDestroy (void (*f) (T1), T1 a1);
+    /**
+     * @param f the function to invoke
+     * @param a1 the first argument to pass to the function to invoke
+     * @param a2 the second argument to pass to the function to invoke
+     */
+    template <typename T1, typename T2>
+    static void ScheduleDestroy (void (*f) (T1,T2), T1 a1, T2 a2);
+    /**
+     * @param f the function to invoke
+     * @param a1 the first argument to pass to the function to invoke
+     * @param a2 the second argument to pass to the function to invoke
+     * @param a3 the third argument to pass to the function to invoke
+     */
+    template <typename T1, typename T2, typename T3>
+    static void ScheduleDestroy (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
+    /**
+     * @param f the function to invoke
+     * @param a1 the first argument to pass to the function to invoke
+     * @param a2 the second argument to pass to the function to invoke
+     * @param a3 the third argument to pass to the function to invoke
+     * @param a4 the fourth argument to pass to the function to invoke
+     */
+    template <typename T1, typename T2, typename T3, typename T4>
+    static void ScheduleDestroy (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
+    /**
+     * @param f the function to invoke
+     * @param a1 the first argument to pass to the function to invoke
+     * @param a2 the second argument to pass to the function to invoke
+     * @param a3 the third argument to pass to the function to invoke
+     * @param a4 the fourth argument to pass to the function to invoke
+     * @param a5 the fifth argument to pass to the function to invoke
+     */
+    template <typename T1, typename T2, typename T3, typename T4, typename T5>
+    static void ScheduleDestroy (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+
     /**
      * Remove an event from the event list. 
      * This method has the same visible effect as the 
@@ -744,9 +953,172 @@ EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2,T3,T4), T1 a1, T
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-static EventId Schedule (Time const &time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
     return Schedule (time, MakeEvent (f, a1, a2, a3, a4, a5));
+}
+
+
+
+
+template <typename T>
+void
+Simulator::ScheduleNow (void (T::*mem_ptr) (void), T *obj) 
+{
+    ScheduleNow (MakeEvent (mem_ptr, obj));
+}
+
+
+template <typename T, typename T1>
+void
+Simulator::ScheduleNow (void (T::*mem_ptr) (T1), T* obj, T1 a1) 
+{
+    ScheduleNow (MakeEvent (mem_ptr, obj, a1));
+}
+
+template <typename T, typename T1, typename T2>
+void
+Simulator::ScheduleNow (void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2) 
+{
+    ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2));
+}
+
+template <typename T, typename T1, typename T2, typename T3>
+void
+Simulator::ScheduleNow (void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3) 
+{
+    ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3));
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+void
+Simulator::ScheduleNow (void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+{
+    ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+void
+Simulator::ScheduleNow (void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
+    						 T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+{
+    ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+}
+
+template <typename T1>
+void
+Simulator::ScheduleNow (void (*f) (T1), T1 a1) 
+{
+    ScheduleNow (MakeEvent (f, a1));
+}
+
+template <typename T1, typename T2>
+void
+Simulator::ScheduleNow (void (*f) (T1,T2), T1 a1, T2 a2) 
+{
+    ScheduleNow (MakeEvent (f, a1, a2));
+}
+
+template <typename T1, typename T2, typename T3>
+void
+Simulator::ScheduleNow (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3)
+{
+    ScheduleNow (MakeEvent (f, a1, a2, a3));
+}
+
+template <typename T1, typename T2, typename T3, typename T4>
+void
+Simulator::ScheduleNow (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) 
+{
+    ScheduleNow (MakeEvent (f, a1, a2, a3, a4));
+}
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+void
+Simulator::ScheduleNow (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+{
+    ScheduleNow (MakeEvent (f, a1, a2, a3, a4, a5));
+}
+
+
+
+template <typename T>
+void
+Simulator::ScheduleDestroy (void (T::*mem_ptr) (void), T *obj) 
+{
+    ScheduleDestroy (MakeEvent (mem_ptr, obj));
+}
+
+
+template <typename T, typename T1>
+void
+Simulator::ScheduleDestroy (void (T::*mem_ptr) (T1), T* obj, T1 a1) 
+{
+    ScheduleDestroy (MakeEvent (mem_ptr, obj, a1));
+}
+
+template <typename T, typename T1, typename T2>
+void
+Simulator::ScheduleDestroy (void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2) 
+{
+    ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2));
+}
+
+template <typename T, typename T1, typename T2, typename T3>
+void
+Simulator::ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3) 
+{
+    ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3));
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+void
+Simulator::ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4) 
+{
+    ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+void
+Simulator::ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
+    						 T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+{
+    ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+}
+
+template <typename T1>
+void
+Simulator::ScheduleDestroy (void (*f) (T1), T1 a1) 
+{
+    ScheduleDestroy (MakeEvent (f, a1));
+}
+
+template <typename T1, typename T2>
+void
+Simulator::ScheduleDestroy (void (*f) (T1,T2), T1 a1, T2 a2) 
+{
+    ScheduleDestroy (MakeEvent (f, a1, a2));
+}
+
+template <typename T1, typename T2, typename T3>
+void
+Simulator::ScheduleDestroy (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3)
+{
+    ScheduleDestroy (MakeEvent (f, a1, a2, a3));
+}
+
+template <typename T1, typename T2, typename T3, typename T4>
+void
+Simulator::ScheduleDestroy (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) 
+{
+    ScheduleDestroy (MakeEvent (f, a1, a2, a3, a4));
+}
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+void
+Simulator::ScheduleDestroy (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
+{
+    ScheduleDestroy (MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 }; // namespace ns3
