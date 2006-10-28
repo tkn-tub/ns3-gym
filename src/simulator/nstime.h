@@ -46,12 +46,10 @@ class Time {
     Time operator -= (Time const &o);
 
     double ApproximateToSeconds (void) const;
-    uint64_t ApproximateToMilliSeconds (void) const;  
-    uint64_t ApproximateToMicroSeconds (void) const;
-    uint64_t ApproximateToNanoSeconds (void) const;
+    int64_t ApproximateToMilliSeconds (void) const;  
+    int64_t ApproximateToMicroSeconds (void) const;
+    int64_t ApproximateToNanoSeconds (void) const;
   
-    /* semi-public method. */
-    uint64_t Get (void) const;
  protected:
     Time (int64_t ns);
  private:

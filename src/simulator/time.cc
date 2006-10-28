@@ -89,21 +89,21 @@ Time::ApproximateToSeconds (void) const
   s /= 1000000000;
   return s;
 }
-uint64_t 
+int64_t 
 Time::ApproximateToMilliSeconds (void) const
 {
-  uint64_t ms = m_ns;
+  int64_t ms = m_ns;
   ms /= 1000000;
   return ms;
 }
-uint64_t 
+int64_t 
 Time::ApproximateToMicroSeconds (void) const
 {
-  uint64_t us = m_ns;
+  int64_t us = m_ns;
   us /= 1000;
   return us;
 }
-uint64_t 
+int64_t 
 Time::ApproximateToNanoSeconds (void) const
 {
   return m_ns;

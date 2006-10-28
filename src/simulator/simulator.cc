@@ -174,13 +174,16 @@ SimulatorPrivate::Stop (void)
 void 
 SimulatorPrivate::StopAt (Time const &at)
 {
+    assert (at.IsPositive ());
     m_stopAt = at.ApproximateToNanoSeconds ();
 }
 EventId
 SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
 {
-    assert (time.ApproximateToNanoSeconds () >= m_currentNs);
-    Scheduler::EventKey key = {time.ApproximateToNanoSeconds (), m_uid};
+    assert (time.IsPositive ());
+    assert (time >= NanoSeconds (m_currentNs));
+    uint64_t ns = (uint64_t) time.ApproximateToNanoSeconds ();
+    Scheduler::EventKey key = {ns, m_uid};
     if (m_logEnable) 
       {
         m_log << "i "<<m_currentUid<<" "<<m_currentNs<<" "
