@@ -73,7 +73,7 @@ Bench::RunBench (void)
     time.Start ();
     for (std::vector<uint64_t>::const_iterator i = m_distribution.begin ();
          i != m_distribution.end (); i++) {
-        Simulator::Schedule (Time::AbsNs (*i), &Bench::Cb, this);
+        Simulator::Schedule (Now () + NanoSeconds (*i), &Bench::Cb, this);
     }
     init = time.End ();
 
@@ -103,9 +103,9 @@ Bench::Cb (void)
         m_current = m_distribution.begin ();
     }
     if (gDebug) {
-        std::cerr << "event at " << Simulator::Now ().S () << "s" << std::endl;
+        std::cerr << "event at " << Simulator::Now ().ApproximateToSeconds () << "s" << std::endl;
     }
-    Simulator::Schedule (Time::AbsNs (*m_current), &Bench::Cb, this);
+    Simulator::Schedule (Now () + NanoSeconds (*m_current), &Bench::Cb, this);
     m_current++;
     m_n++;
 }

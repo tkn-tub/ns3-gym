@@ -32,78 +32,68 @@ namespace ns3 {
  * is expected to expire (see ns3::Simulator::schedule).
  */
 class Time {
-public:
+ public:
     Time (Time const &o);
     Time &operator = (Time const &o);
-    /**
-     * \returns the time stored in this
-     *          instance as seconds.
-     */
-    double S (void) const;
-    /**
-     * \returns the time stored in this
-     *          instance as microseconds.
-     */
-    uint64_t Us (void) const;
-    /**
-     * \returns the time stored in this
-     *          instance as nanoseconds.
-     */
-    uint64_t Ns (void) const;
-    /**
-     * \returns true if this instance represents
-     *          the "destroy" time.
-     */
-    bool IsDestroy (void) const;
-    /**
-     * \param s absolute time in seconds
-     * \returns a constructed Time object
-     */
-    static Time AbsS (double s);
-    /**
-     * \param us absolute time in microseconds
-     * \returns a constructed Time object
-     */
-    static Time AbsUs (uint64_t us);
-    /**
-     * \param ns absolute time in nanoseconds
-     * \returns a constructed Time object
-     */
-    static Time AbsNs (uint64_t ns);
-    /**
-     * \param s relative time in seconds
-     * \returns a constructed Time object
-     */
-    static Time RelS (double s);
-    /**
-     * \param us relative time in microseconds
-     * \returns a constructed Time object
-     */
-    static Time RelUs (uint64_t us);
-    /**
-     * \param ns relative time in nanoseconds
-     * \returns a constructed Time object
-     */
-    static Time RelNs (uint64_t ns);
-    /**
-     * \returns a constructed Time object which represents
-     *          the current simulation time
-     */
-    static Time Now (void);
-    /**
-     * \returns a constructed Time object which represents
-     *          the current "destroy" simulation time, that
-     *          is, the time when Simulator::destroy is
-     *          invoked by the user.
-     */
-    static Time Destroy (void);
-private:
-    Time (uint64_t ns);
+
+    bool IsNegative (void) const;
+    bool IsPositive (void) const;
+    bool IsStrictlyNegative (void) const;
+    bool IsStrictlyPositive (void) const;
+    bool IsZero (void) const;
+
+    Time operator += (Time const &o);
+    Time operator -= (Time const &o);
+
+    double ApproximateToSeconds (void) const;
+    uint64_t ApproximateToMilliSeconds (void) const;  
+    uint64_t ApproximateToMicroSeconds (void) const;
+    uint64_t ApproximateToNanoSeconds (void) const;
+  
+    /* semi-public method. */
+    uint64_t Get (void) const;
+ protected:
+    Time (int64_t ns);
+ private:
     Time ();
-    uint64_t m_ns;
-    bool m_isDestroy;
+    int64_t m_ns;
 };
 
+Time operator + (Time const &lhs, Time const &rhs);
+Time operator - (Time const &lhs, Time const &rhs);
+bool operator == (Time const &lhs, Time const &rhs);
+bool operator != (Time const &lhs, Time const &rhs);
+bool operator <  (Time const &lhs, Time const &rhs);
+bool operator <= (Time const &lhs, Time const &rhs);
+bool operator >  (Time const &lhs, Time const &rhs);
+bool operator >= (Time const &lhs, Time const &rhs);
+
+
+class Now : public Time {
+public:
+    Now ();
+};
+
+class Seconds : public Time 
+{
+public:
+    Seconds (double s);
+};
+class MilliSeconds : public Time 
+{
+public:
+    MilliSeconds (int32_t ms);
+};
+class MicroSeconds : public Time 
+{
+public:
+    MicroSeconds (int32_t us);
+};
+class NanoSeconds : public Time 
+{
+public:
+    NanoSeconds (int64_t ns);
+};
 
 }; // namespace ns3
 

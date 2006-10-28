@@ -24,94 +24,151 @@
 namespace ns3 {
 
 Time::Time ()
-    : m_ns (0),
-      m_isDestroy (true)
+    : m_ns (0)
 {}
 Time::Time (Time const &o)
-    : m_ns (o.m_ns),
-      m_isDestroy (o.m_isDestroy)
+    : m_ns (o.m_ns)
 {}
 Time &
 Time::operator = (Time const &o)
 {
-    m_ns = o.m_ns;
-    m_isDestroy = o.m_isDestroy;
-    return *this;
+  m_ns = o.m_ns;
+  return *this;
 }
-Time::Time (uint64_t ns)
-    : m_ns (ns),
-      m_isDestroy (false)
+Time::Time (int64_t ns)
+    : m_ns (ns)
 {}
 
+
+bool 
+Time::IsNegative (void) const
+{
+  return m_ns <= 0;
+}
+  
+bool 
+Time::IsPositive (void) const
+{
+  return m_ns >= 0;
+}
+  
+bool 
+Time::IsStrictlyNegative (void) const
+{
+  return m_ns < 0;
+}
+bool 
+Time::IsStrictlyPositive (void) const
+{
+  return m_ns > 0;
+}
+bool 
+Time::IsZero (void) const
+{
+  return m_ns == 0;
+}
+
+Time 
+Time::operator += (Time const &o)
+{
+  m_ns += o.m_ns;
+  return *this;
+}
+  
+Time 
+Time::operator -= (Time const &o)
+{
+  m_ns -= o.m_ns;
+  return *this;
+}
+
 double 
-Time::S (void) const
+Time::ApproximateToSeconds (void) const
 {
-    double ns = m_ns;
-    ns /= 1000000000;
-    return ns;
+  double s = m_ns;
+  s /= 1000000000;
+  return s;
 }
 uint64_t 
-Time::Us (void) const
+Time::ApproximateToMilliSeconds (void) const
 {
-    uint64_t us = m_ns / 1000;
-    return us;
+  uint64_t ms = m_ns;
+  ms /= 1000000;
+  return ms;
 }
-
 uint64_t 
-Time::Ns (void) const
+Time::ApproximateToMicroSeconds (void) const
 {
-    return m_ns;
+  uint64_t us = m_ns;
+  us /= 1000;
+  return us;
+}
+uint64_t 
+Time::ApproximateToNanoSeconds (void) const
+{
+  return m_ns;
 }
 
-bool
-Time::IsDestroy (void) const
+
+/* To decrease the number of keystrokes
+ */
+static uint64_t 
+GetNs (Time const &time)
 {
-    return m_isDestroy;
+  return time.ApproximateToNanoSeconds ();
 }
 
-Time 
-Time::AbsS (double s)
+Time operator + (Time const &lhs, Time const &rhs)
 {
-    int64_t ns = (int64_t)(s * 1000000000.0);
-    return Time (ns);
+  return NanoSeconds (GetNs (lhs) + GetNs (rhs));
+}  
+Time operator - (Time const &lhs, Time const &rhs)
+{
+  return NanoSeconds (GetNs (lhs) - GetNs (rhs));
 }
-Time 
-Time::AbsUs (uint64_t us)
+bool operator == (Time const &lhs, Time const &rhs)
 {
-    int64_t ns = us * 1000;
-    return Time (ns);
-}
-Time 
-Time::AbsNs (uint64_t ns)
-{
-    return Time (ns);
-}
-Time 
-Time::RelS (double s)
-{
-    int64_t ns = (int64_t)(s * 1000000000.0);
-    return Time (Simulator::Now ().Ns () + ns);
-}
-Time 
-Time::RelUs (uint64_t us)
-{
-    return Time (Simulator::Now ().Ns () + us * 1000);
-}
-Time 
-Time::RelNs (uint64_t ns)
-{
-    return Time (Simulator::Now ().Ns () + ns);
+  return GetNs (lhs) == GetNs (rhs);
 }
 
-Time 
-Time::Now (void)
+bool operator != (Time const &lhs, Time const &rhs)
 {
-    return Time (Simulator::Now ().Ns ());
+  return GetNs (lhs) != GetNs (rhs);
 }
-Time 
-Time::Destroy (void)
+bool operator <  (Time const &lhs, Time const &rhs)
 {
-    return Time ();
+  return GetNs (lhs) < GetNs (rhs);
 }
+bool operator <= (Time const &lhs, Time const &rhs)
+{
+  return GetNs (lhs) <= GetNs (rhs);
+}
+bool operator >  (Time const &lhs, Time const &rhs)
+{
+  return GetNs (lhs) > GetNs (rhs);
+}
+bool operator >= (Time const &lhs, Time const &rhs)
+{
+  return GetNs (lhs) >= GetNs (rhs);
+}
+
+Now::Now ()
+    : Time (Simulator::Now ())
+{}
+Seconds::Seconds (double s)
+    : Time ((int64_t)(s * 1000000000))
+{}
+MilliSeconds::MilliSeconds (int32_t ms)
+    : Time ((int64_t)(ms * 1000000))
+{}
+MicroSeconds::MicroSeconds (int32_t us)
+    : Time ((int64_t)(us * 1000))
+{}
+NanoSeconds::NanoSeconds (int64_t ns)
+    : Time (ns)
+{}
+  
+
+
 
 }; // namespace ns3

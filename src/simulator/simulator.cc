@@ -67,6 +67,7 @@ public:
 
 private:
     void ProcessOneEvent (void);
+    uint64_t NextNs (void) const;
 
     typedef std::list<std::pair<EventImpl *,uint32_t> > Events;
     Events m_destroy;
@@ -138,20 +139,26 @@ SimulatorPrivate::IsFinished (void) const
 {
     return m_events->IsEmpty ();
 }
-Time
-SimulatorPrivate::Next (void) const
+uint64_t
+SimulatorPrivate::NextNs (void) const
 {
     assert (!m_events->IsEmpty ());
     Scheduler::EventKey nextKey = m_events->PeekNextKey ();
-    return Time::AbsNs (nextKey.m_ns);
+    return nextKey.m_ns;
+}
+Time
+SimulatorPrivate::Next (void) const
+{
+    return NanoSeconds (NextNs ());
 }
 
 
 void
 SimulatorPrivate::Run (void)
 {
+
     while (!m_events->IsEmpty () && !m_stop && 
-           (m_stopAt == 0 || m_stopAt > Next ().Ns ())) 
+           (m_stopAt == 0 || m_stopAt > NextNs ())) 
       {
         ProcessOneEvent ();
       }
@@ -167,29 +174,17 @@ SimulatorPrivate::Stop (void)
 void 
 SimulatorPrivate::StopAt (Time const &at)
 {
-    m_stopAt = at.Ns ();
+    m_stopAt = at.ApproximateToNanoSeconds ();
 }
 EventId
 SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
 {
-    if (time.IsDestroy ()) 
-      {
-        m_destroy.push_back (std::make_pair (event, m_uid));
-        if (m_logEnable) 
-          {
-            m_log << "id " << m_currentUid << " " << Now ().Ns () << " "
-                  << m_uid << std::endl;
-          }
-        m_uid++;
-        //XXX
-        return EventId ();
-      }
-    assert (time.Ns () >= Now ().Ns ());
-    Scheduler::EventKey key = {time.Ns (), m_uid};
+    assert (time.ApproximateToNanoSeconds () >= m_currentNs);
+    Scheduler::EventKey key = {time.ApproximateToNanoSeconds (), m_uid};
     if (m_logEnable) 
       {
-        m_log << "i "<<m_currentUid<<" "<<Now ().Ns ()<<" "
-              <<m_uid<<" "<<time.Ns () << std::endl;
+        m_log << "i "<<m_currentUid<<" "<<m_currentNs<<" "
+              <<m_uid<<" "<<time.ApproximateToNanoSeconds () << std::endl;
       }
     m_uid++;
     return m_events->Insert (event, key);
@@ -197,7 +192,7 @@ SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
 Time
 SimulatorPrivate::Now (void) const
 {
-    return Time::AbsNs (m_currentNs);
+    return NanoSeconds (m_currentNs);
 }
 
 void
@@ -208,7 +203,7 @@ SimulatorPrivate::Remove (EventId ev)
     delete impl;
     if (m_logEnable) 
       {
-        m_log << "r " << m_currentUid << " " << Now ().Ns () << " "
+        m_log << "r " << m_currentUid << " " << m_currentNs << " "
               << key.m_uid << " " << key.m_ns << std::endl;
       }
 }
@@ -225,7 +220,7 @@ bool
 SimulatorPrivate::IsExpired (EventId ev)
 {
     if (ev.GetEventImpl () != 0 &&
-        ev.GetNs () <= Now ().Ns () &&
+        ev.GetNs () <= m_currentNs &&
         ev.GetUid () < m_currentUid) 
       {
         return false;
@@ -405,6 +400,7 @@ public:
     virtual ~SimulatorTests ();
     virtual bool RunTests (void);
 private:
+    uint64_t NowUs ();
     bool RunOneTest (void);
     void A (int a);
     void B (int b);
@@ -422,6 +418,12 @@ SimulatorTests::SimulatorTests ()
 {}
 SimulatorTests::~SimulatorTests ()
 {}
+uint64_t
+SimulatorTests::NowUs (void)
+{
+    uint64_t ns = Now ().ApproximateToNanoSeconds ();
+    return ns / 1000;
+}  
 void
 SimulatorTests::A (int a)
 {
@@ -430,7 +432,7 @@ SimulatorTests::A (int a)
 void
 SimulatorTests::B (int b)
 {
-    if (b != 2 || Simulator::Now ().Us () != 11) 
+    if (b != 2 || NowUs () != 11) 
       {
         m_b = false;
       } 
@@ -439,7 +441,7 @@ SimulatorTests::B (int b)
         m_b = true;
       }
     Simulator::Remove (m_idC);
-    Simulator::Schedule (Time::RelUs (10), &SimulatorTests::D, this, 4);
+    Simulator::Schedule (Now () + MicroSeconds (10), &SimulatorTests::D, this, 4);
 }
 void
 SimulatorTests::C (int c)
@@ -449,7 +451,7 @@ SimulatorTests::C (int c)
 void
 SimulatorTests::D (int d)
 {
-    if (d != 4 || Simulator::Now ().Us () != (11+10)) 
+    if (d != 4 || NowUs () != (11+10)) 
       {
         m_d = false;
       } 
@@ -467,9 +469,9 @@ SimulatorTests::RunOneTest (void)
     m_c = true;
     m_d = false;
 
-    EventId a = Simulator::Schedule (Time::AbsUs (10), &SimulatorTests::A, this, 1);
-    Simulator::Schedule (Time::AbsUs (11), &SimulatorTests::B, this, 2);
-    m_idC = Simulator::Schedule (Time::AbsUs (12), &SimulatorTests::C, this, 3);
+    EventId a = Simulator::Schedule (Now () + MicroSeconds (10), &SimulatorTests::A, this, 1);
+    Simulator::Schedule (Now () + MicroSeconds (11), &SimulatorTests::B, this, 2);
+    m_idC = Simulator::Schedule (Now () + MicroSeconds (12), &SimulatorTests::C, this, 3);
 
     Simulator::Cancel (a);
     Simulator::Run ();
