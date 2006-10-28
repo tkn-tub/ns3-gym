@@ -59,6 +59,8 @@ public:
     void Stop (void);
     void StopAt (Time const &time);
     EventId Schedule (Time const &time, EventImpl *event);
+    void ScheduleNow (EventImpl *event);
+    void ScheduleDestroy (EventImpl *event);
     void Remove (EventId ev);
     void Cancel (EventId ev);
     bool IsExpired (EventId ev);
@@ -192,6 +194,17 @@ SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
     m_uid++;
     return m_events->Insert (event, key);
 }
+void 
+SimulatorPrivate::ScheduleNow (EventImpl *event)
+{
+    //XXX
+}
+void 
+SimulatorPrivate::ScheduleDestroy (EventImpl *event)
+{
+    //XXX
+}
+
 Time
 SimulatorPrivate::Now (void) const
 {
@@ -348,6 +361,17 @@ Simulator::Schedule (Time const &time, EventImpl *ev)
 {
     return GetPriv ()->Schedule (time, ev);
 }
+void
+Simulator::ScheduleNow (EventImpl *ev)
+{
+    GetPriv ()->ScheduleNow (ev);
+}
+void
+Simulator::ScheduleDestroy (EventImpl *ev)
+{
+    GetPriv ()->ScheduleDestroy (ev);
+}
+  
 EventId
 Simulator::Schedule (Time const &time, void (*f) (void))
 {

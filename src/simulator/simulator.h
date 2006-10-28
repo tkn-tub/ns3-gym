@@ -347,6 +347,8 @@ private:
 
     static SimulatorPrivate *GetPriv (void);
     static EventId Schedule (Time const &time, EventImpl *event);
+    static void ScheduleDestroy (EventImpl *event);
+    static void ScheduleNow (EventImpl *event);
     static SimulatorPrivate *m_priv;
     static SchedulerFactory const*m_schedFactory;
     static enum ListType {
