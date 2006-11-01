@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -30,118 +30,118 @@ TraceContainer::TraceContainer ()
 {}
 TraceContainer::~TraceContainer ()
 {
-    m_uiList.erase (m_uiList.begin (), m_uiList.end ());
-    m_siList.erase (m_siList.begin (), m_siList.end ());
-    m_fList.erase (m_fList.begin (), m_fList.end ());
+  m_uiList.erase (m_uiList.begin (), m_uiList.end ());
+  m_siList.erase (m_siList.begin (), m_siList.end ());
+  m_fList.erase (m_fList.begin (), m_fList.end ());
 }
 
 void 
 TraceContainer::SetUiVariableCallback (char const *name, Callback<void,uint64_t, uint64_t> callback)
 {
-    for (UiListI i = m_uiList.begin (); i != m_uiList.end (); i++) 
-      {
-        if ((*i).second == name) 
-          {
-            (*i).first->SetCallback (callback);
-            return;
-          }
-      }
-    assert (false);
+  for (UiListI i = m_uiList.begin (); i != m_uiList.end (); i++) 
+    {
+      if ((*i).second == name) 
+        {
+          (*i).first->SetCallback (callback);
+          return;
+        }
+    }
+  assert (false);
 }
 void 
 TraceContainer::SetSiVariableCallback (char const *name, Callback<void,int64_t, int64_t> callback)
 {
-    for (SiListI i = m_siList.begin (); i != m_siList.end (); i++) 
-      {
-        if ((*i).second == name) 
-          {
-            (*i).first->SetCallback (callback);
-            return;
-          }
-      }
-    assert (false);
+  for (SiListI i = m_siList.begin (); i != m_siList.end (); i++) 
+    {
+      if ((*i).second == name) 
+        {
+          (*i).first->SetCallback (callback);
+          return;
+        }
+    }
+  assert (false);
 }
 void 
 TraceContainer::SetFVariableCallback (char const *name, Callback<void,double, double> callback)
 {
-    assert (false);
+  assert (false);
 }
 void 
 TraceContainer::SetStream (char const *name, std::ostream *os)
 {
-    for (StreamTracerListI i = m_traceStreamList.begin (); i != m_traceStreamList.end (); i++) 
-      {
-        if ((*i).second == name) 
-          {
-            (*i).first->SetStream (os);
-            return;
-          }
-      }
-    assert (false);
+  for (StreamTracerListI i = m_traceStreamList.begin (); i != m_traceStreamList.end (); i++) 
+    {
+      if ((*i).second == name) 
+        {
+          (*i).first->SetStream (os);
+          return;
+        }
+    }
+  assert (false);
 }
 
 void 
 TraceContainer::RegisterUiVariable (char const *name, UiVariableTracerBase *var)
 {
-    // ensure unicity
-    for (UiListI i = m_uiList.begin (); i != m_uiList.end (); i++) 
-      {
-        if (i->second == name) 
-          {
-            m_uiList.erase (i);
-            break;
-          }
-      }
-    m_uiList.push_back (std::make_pair (var, name));
+  // ensure unicity
+  for (UiListI i = m_uiList.begin (); i != m_uiList.end (); i++) 
+    {
+      if (i->second == name) 
+        {
+          m_uiList.erase (i);
+          break;
+        }
+    }
+  m_uiList.push_back (std::make_pair (var, name));
 }
 void 
 TraceContainer::RegisterSiVariable (char const *name, SiVariableTracerBase *var)
 {
-    // ensure unicity
-    for (SiListI i = m_siList.begin (); i != m_siList.end (); i++) 
-      {
-        if (i->second == name) 
-          {
-            m_siList.erase (i);
-            break;
-          }
-      }
-    m_siList.push_back (std::make_pair (var, name));
+  // ensure unicity
+  for (SiListI i = m_siList.begin (); i != m_siList.end (); i++) 
+    {
+      if (i->second == name) 
+        {
+          m_siList.erase (i);
+          break;
+        }
+    }
+  m_siList.push_back (std::make_pair (var, name));
 }
 void 
 TraceContainer::RegisterFVariable (char const *name, FVariableTracerBase *var)
 {
-    assert (false);
+  assert (false);
 }
 
 void 
 TraceContainer::RegisterStream (char const *name, StreamTracer *stream)
 {
-    // ensure unicity
-    for (StreamTracerListI i = m_traceStreamList.begin (); i != m_traceStreamList.end (); i++) 
-      {
-        if (i->second == name) 
-          {
-            m_traceStreamList.erase (i);
-            break;
-          }
-      }
-    m_traceStreamList.push_back (std::make_pair (stream,name));
+  // ensure unicity
+  for (StreamTracerListI i = m_traceStreamList.begin (); i != m_traceStreamList.end (); i++) 
+    {
+      if (i->second == name) 
+        {
+          m_traceStreamList.erase (i);
+          break;
+        }
+    }
+  m_traceStreamList.push_back (std::make_pair (stream,name));
 
 }
 
 void 
 TraceContainer::RegisterCallback (char const *name, CallbackTracerBase *tracer)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
-      {
-        if (i->second == name) 
-          {
-            m_callbackList.erase (i);
-            break;
-          }
-      }
-    m_callbackList.push_back (std::make_pair (tracer, name));
+  for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+    {
+      if (i->second == name) 
+        {
+          m_callbackList.erase (i);
+          break;
+        }
+    }
+  m_callbackList.push_back (std::make_pair (tracer, name));
 }
 
 
@@ -153,36 +153,36 @@ TraceContainer::RegisterCallback (char const *name, CallbackTracerBase *tracer)
 void 
 ns3::TraceContainer::PrintDebug (void)
 {
-    if (!m_uiList.empty ()) 
-      {
-        std::cout << "ui var: " << std::endl;
-        for (UiListI i = m_uiList.begin (); i != m_uiList.end (); i++) 
-          {
-            std::cout << "    \"" << (*i).second << "\""<<std::endl;
-          }
-      }
-    if (!m_siList.empty ()) 
-      {
-        std::cout << "si var: " << std::endl;
-        for (SiListI i = m_siList.begin (); i != m_siList.end (); i++) 
-          {
-            std::cout << "    \"" << (*i).second << "\""<<std::endl;
-          }
-      }
-    if (!m_fList.empty ()) 
-      {
-        std::cout << "f var: " << std::endl;
-        for (FListI i = m_fList.begin (); i != m_fList.end (); i++) 
-          {
-            std::cout << "    \"" << (*i).second << "\""<<std::endl;
-          }
-      }
-    if (!m_callbackList.empty ()) 
-      {
-        std::cout << "callback list: "<<std::endl;
-        for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
-          {
-            std::cout << "    \"" << i->second << "\""<<std::endl;
-          }
-      }
+  if (!m_uiList.empty ()) 
+    {
+      std::cout << "ui var: " << std::endl;
+      for (UiListI i = m_uiList.begin (); i != m_uiList.end (); i++) 
+        {
+          std::cout << "    \"" << (*i).second << "\""<<std::endl;
+        }
+    }
+  if (!m_siList.empty ()) 
+    {
+      std::cout << "si var: " << std::endl;
+      for (SiListI i = m_siList.begin (); i != m_siList.end (); i++) 
+        {
+          std::cout << "    \"" << (*i).second << "\""<<std::endl;
+        }
+    }
+  if (!m_fList.empty ()) 
+    {
+      std::cout << "f var: " << std::endl;
+      for (FListI i = m_fList.begin (); i != m_fList.end (); i++) 
+        {
+          std::cout << "    \"" << (*i).second << "\""<<std::endl;
+        }
+    }
+  if (!m_callbackList.empty ()) 
+    {
+      std::cout << "callback list: "<<std::endl;
+      for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+        {
+          std::cout << "    \"" << i->second << "\""<<std::endl;
+        }
+    }
 }

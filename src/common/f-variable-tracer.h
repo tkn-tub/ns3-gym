@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -29,28 +29,28 @@ namespace ns3 {
 
 class FVariableTracerBase {
 public:
-    typedef Callback<void,double, double> ChangeNotifyCallback;
+  typedef Callback<void,double, double> ChangeNotifyCallback;
 
-    FVariableTracerBase () {}
-    FVariableTracerBase (FVariableTracerBase const &o) {}
-    FVariableTracerBase &operator = (FVariableTracerBase const &o) {
-        return *this;
-    }
+  FVariableTracerBase () {}
+  FVariableTracerBase (FVariableTracerBase const &o) {}
+  FVariableTracerBase &operator = (FVariableTracerBase const &o) {
+      return *this;
+  }
 
-    ~FVariableTracerBase () {}
+  ~FVariableTracerBase () {}
 
-    void setCallback(ChangeNotifyCallback callback) {
-        m_callback = callback;
-    }
+  void setCallback(ChangeNotifyCallback callback) {
+      m_callback = callback;
+  }
 protected:
-    void notify (double oldVal, double newVal) {
-        if (oldVal != newVal && !m_callback.IsNull ()) 
-          {
-            m_callback (oldVal, newVal);
-          }
-    }
+  void notify (double oldVal, double newVal) {
+      if (oldVal != newVal && !m_callback.IsNull ()) 
+        {
+          m_callback (oldVal, newVal);
+        }
+  }
 private:
-    ChangeNotifyCallback m_callback;
+  ChangeNotifyCallback m_callback;
 };
 
 

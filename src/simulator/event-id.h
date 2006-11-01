@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -32,31 +32,31 @@ class EventImpl;
  */
 class EventId {
 public:
-    EventId ();
-    EventId (EventImpl *impl, uint64_t ns, uint32_t uid);
-    /**
-     * This method is syntactic sugar for the ns3::Simulator::cancel
-     * method.
-     */
-    void Cancel (void);
-    /**
-     * This method is syntactic sugar for the ns3::Simulator::isExpired
-     * method.
-     * \returns true if the event has expired, false otherwise.
-     */
-    bool IsExpired (void);
+  EventId ();
+  EventId (EventImpl *impl, uint64_t ns, uint32_t uid);
+  /**
+   * This method is syntactic sugar for the ns3::Simulator::cancel
+   * method.
+   */
+  void Cancel (void);
+  /**
+   * This method is syntactic sugar for the ns3::Simulator::isExpired
+   * method.
+   * \returns true if the event has expired, false otherwise.
+   */
+  bool IsExpired (void);
 public:
-    /* The following methods are semi-private
-     * they are supposed to be invoked only by
-     * subclasses of the Scheduler base class.
-     */
-    EventImpl *GetEventImpl (void) const;
-    uint64_t GetNs (void) const;
-    uint32_t GetUid (void) const;
+  /* The following methods are semi-private
+   * they are supposed to be invoked only by
+   * subclasses of the Scheduler base class.
+   */
+  EventImpl *GetEventImpl (void) const;
+  uint64_t GetNs (void) const;
+  uint32_t GetUid (void) const;
 private:
-    EventImpl *m_eventImpl;
-    uint64_t m_ns;
-    uint32_t m_uid;
+  EventImpl *m_eventImpl;
+  uint64_t m_ns;
+  uint32_t m_uid;
 };
 
 }; // namespace ns3

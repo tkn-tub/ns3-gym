@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -30,13 +30,13 @@ class DataWriterPrivate;
 
 class DataWriter {
 public:
-    DataWriter ();
-    ~DataWriter ();
+  DataWriter ();
+  ~DataWriter ();
 
-    void open (char const *filename);
-    void write (uint8_t *buffer, uint32_t size);
+  void open (char const *filename);
+  void write (uint8_t *buffer, uint32_t size);
 private:
-    DataWriterPrivate *m_priv;
+  DataWriterPrivate *m_priv;
 };
 
 }; //namespace ns3

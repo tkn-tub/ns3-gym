@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -34,23 +34,23 @@ class EventImpl;
 
 class SchedulerList : public Scheduler {
  public:
-    SchedulerList ();
-    virtual ~SchedulerList ();
+  SchedulerList ();
+  virtual ~SchedulerList ();
 
  private:
-    virtual EventId RealInsert (EventImpl *event, EventKey key);
-    virtual bool RealIsEmpty (void) const;
-    virtual EventImpl *RealPeekNext (void) const;
-    virtual Scheduler::EventKey RealPeekNextKey (void) const;
-    virtual void RealRemoveNext (void);
-    virtual EventImpl *RealRemove (EventId ev, Scheduler::EventKey *key);
-    virtual bool RealIsValid (EventId id);
+  virtual EventId RealInsert (EventImpl *event, EventKey key);
+  virtual bool RealIsEmpty (void) const;
+  virtual EventImpl *RealPeekNext (void) const;
+  virtual Scheduler::EventKey RealPeekNextKey (void) const;
+  virtual void RealRemoveNext (void);
+  virtual EventImpl *RealRemove (EventId ev, Scheduler::EventKey *key);
+  virtual bool RealIsValid (EventId id);
 
-    typedef std::list<std::pair<EventImpl*, EventKey> > Events;
-    typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
-    EventId GetEventId (Scheduler::EventKey key, EventsI i);
-    EventsI GetIterator (EventId id);
-    Events m_events;
+  typedef std::list<std::pair<EventImpl*, EventKey> > Events;
+  typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
+  EventId GetEventId (Scheduler::EventKey key, EventsI i);
+  EventsI GetIterator (EventId id);
+  Events m_events;
 };
 
 }; // namespace ns3

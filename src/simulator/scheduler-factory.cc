@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -28,7 +28,7 @@ SchedulerFactory::~SchedulerFactory ()
 Scheduler *
 SchedulerFactory::Create (void) const
 {
-    return RealCreate ();
+  return RealCreate ();
 }
 
 }; // namespace ns3

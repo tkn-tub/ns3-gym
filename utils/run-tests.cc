@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -24,9 +24,9 @@
 int main (int argc, char *argv[])
 {
 #ifdef RUN_SELF_TESTS
-    ns3::TestManager::EnableVerbose ();
-    ns3::TestManager::RunTests ();
+  ns3::TestManager::EnableVerbose ();
+  ns3::TestManager::RunTests ();
 #endif /* RUN_SELF_TESTS */
 
-    return 0;
+  return 0;
 }

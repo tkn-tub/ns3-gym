@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -38,36 +38,36 @@ class SystemFile;
  */
 class PcapWriter {
 public:
-    PcapWriter ();
-    ~PcapWriter ();
+  PcapWriter ();
+  ~PcapWriter ();
 
-    /**
-     * \param name the name of the file to store packet log into.
-     * This method creates the file if it does not exist. If it
-     * exists, the file is emptied.
-     */
-    void Open (char const *name);
+  /**
+   * \param name the name of the file to store packet log into.
+   * This method creates the file if it does not exist. If it
+   * exists, the file is emptied.
+   */
+  void Open (char const *name);
 
-    /**
-     * Write a pcap header in the output file which specifies
-     * that the content of the file will Packets with
-     * Ethernet/LLC/SNAP encapsulation. This method should
-     * be invoked before ns3::PcapWriter::writePacket and after
-     * ns3::PcapWriter::open.
-     */
-    void WriteHeaderEthernet (void);
+  /**
+   * Write a pcap header in the output file which specifies
+   * that the content of the file will Packets with
+   * Ethernet/LLC/SNAP encapsulation. This method should
+   * be invoked before ns3::PcapWriter::writePacket and after
+   * ns3::PcapWriter::open.
+   */
+  void WriteHeaderEthernet (void);
 
-    /**
-     * \param packet packet to write to output file
-     */
-    void WritePacket (Packet const packet);
+  /**
+   * \param packet packet to write to output file
+   */
+  void WritePacket (Packet const packet);
 
 private:
-    void WriteData (uint8_t *buffer, uint32_t size);
-    void Write32 (uint32_t data);
-    void Write16 (uint16_t data);
-    SystemFile *m_writer;
-    Callback<void,uint8_t *,uint32_t> m_writeCallback;
+  void WriteData (uint8_t *buffer, uint32_t size);
+  void Write32 (uint32_t data);
+  void Write16 (uint16_t data);
+  SystemFile *m_writer;
+  Callback<void,uint8_t *,uint32_t> m_writeCallback;
 };
 
 }; // namespace ns3

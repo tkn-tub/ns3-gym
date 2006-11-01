@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 #include "ns3/trace-container.h"
 #include "ns3/ui-variable-tracer.h"
 #include "ns3/callback-tracer.h"
@@ -17,22 +17,22 @@ CallbackTracer<double, int> d;
 void
 RegisterAllTraceSources (TraceContainer *container)
 {
-    container->RegisterCallback ("source-a", &a);
-    container->RegisterUiVariable ("source-b", &b);
-    container->RegisterStream ("source-c", &c);
-    container->RegisterCallback ("source-d", &d);
+  container->RegisterCallback ("source-a", &a);
+  container->RegisterUiVariable ("source-b", &b);
+  container->RegisterStream ("source-c", &c);
+  container->RegisterCallback ("source-d", &d);
 }
 void
 GenerateTraceEvents (void)
 {
-    // log en empty packet
-    a (Packet ());
-    b = 10;
-    b += 100;
-    b += 50;
-    b = (unsigned short) -20;
-    c << "this is a simple test b=" << b << std::endl;
-    d (3.1415, 3);
+  // log en empty packet
+  a (Packet ());
+  b = 10;
+  b += 100;
+  b += 50;
+  b = (unsigned short) -20;
+  c << "this is a simple test b=" << b << std::endl;
+  d (3.1415, 3);
 }
 
 void
@@ -46,16 +46,16 @@ CallbackEvent (double a, int b)
 
 int main (int argc, char *argv[])
 {
-    TraceContainer traces;
-    RegisterAllTraceSources (&traces);
-    PcapWriter pcap;
-    pcap.Open ("trace-test.log");
-    pcap.WriteHeaderEthernet ();
-    traces.SetCallback ("source-a", 
-                        MakeCallback (&PcapWriter::WritePacket, &pcap));
-    traces.SetUiVariableCallback ("source-b", MakeCallback (&VariableEvent));
-    traces.SetStream ("source-c", &std::cout);
-    traces.SetCallback ("source-d", MakeCallback (&CallbackEvent));
-    GenerateTraceEvents ();
-    return 0;
+  TraceContainer traces;
+  RegisterAllTraceSources (&traces);
+  PcapWriter pcap;
+  pcap.Open ("trace-test.log");
+  pcap.WriteHeaderEthernet ();
+  traces.SetCallback ("source-a", 
+                      MakeCallback (&PcapWriter::WritePacket, &pcap));
+  traces.SetUiVariableCallback ("source-b", MakeCallback (&VariableEvent));
+  traces.SetStream ("source-c", &std::cout);
+  traces.SetCallback ("source-d", MakeCallback (&CallbackEvent));
+  GenerateTraceEvents ();
+  return 0;
 }

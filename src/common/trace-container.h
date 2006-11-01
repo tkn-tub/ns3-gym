@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -58,140 +58,140 @@ class StreamTracer;
  */
 class TraceContainer {
 public:
-    TraceContainer ();
-    ~TraceContainer ();
+  TraceContainer ();
+  ~TraceContainer ();
 
-    /**
-     * \param name the name of the target event source
-     * \param callback the callback being connected to the target event source
-     *
-     * This method targets only event sources which are variables of any unsigned
-     * integer type.
-     */
-    void SetUiVariableCallback (char const *name, 
-                       Callback<void,uint64_t, uint64_t> callback);
-    /**
-     * \param name the name of the target event source
-     * \param callback the callback being connected to the target event source
-     *
-     * This method targets only event sources which are variables of any signed
-     * integer type.
-     */
-    void SetSiVariableCallback (char const *name, Callback<void,int64_t, int64_t> callback);
-    /**
-     * \param name the name of the target event source
-     * \param callback the callback being connected to the target event source
-     *
-     * This method targets only event sources which are variables of any double type.
-     */
-    void SetFVariableCallback (char const *name, Callback<void,double, double> callback);
-    /**
-     * \param name the name of the target event source
-     * \param os the output stream being connected to the source trace stream
-     *
-     * This method targets only event sources which are of type StreamTracer.
-     */
-    void SetStream (char const *name, std::ostream *os);
+  /**
+   * \param name the name of the target event source
+   * \param callback the callback being connected to the target event source
+   *
+   * This method targets only event sources which are variables of any unsigned
+   * integer type.
+   */
+  void SetUiVariableCallback (char const *name, 
+                     Callback<void,uint64_t, uint64_t> callback);
+  /**
+   * \param name the name of the target event source
+   * \param callback the callback being connected to the target event source
+   *
+   * This method targets only event sources which are variables of any signed
+   * integer type.
+   */
+  void SetSiVariableCallback (char const *name, Callback<void,int64_t, int64_t> callback);
+  /**
+   * \param name the name of the target event source
+   * \param callback the callback being connected to the target event source
+   *
+   * This method targets only event sources which are variables of any double type.
+   */
+  void SetFVariableCallback (char const *name, Callback<void,double, double> callback);
+  /**
+   * \param name the name of the target event source
+   * \param os the output stream being connected to the source trace stream
+   *
+   * This method targets only event sources which are of type StreamTracer.
+   */
+  void SetStream (char const *name, std::ostream *os);
 
-    /**
-     * \param name the name of the target event source
-     * \param callback the callback being connected to the target event source.
-     *
-     * This method targets only event sources which are of type CallbackTracer<T1>
-     */
-    template <typename T1>
-    void SetCallback (char const *name, Callback<void,T1> callback);
-    /**
-     * \param name the name of the target event source
-     * \param callback the callback being connected to the target event source.
-     *
-     * This method targets only event sources which are of type CallbackTracer<T1,T2>
-     */
-    template <typename T1, typename T2>
-    void SetCallback (char const *name, Callback<void,T1,T2> callback);
-    /**
-     * \param name the name of the target event source
-     * \param callback the callback being connected to the target event source.
-     *
-     * This method targets only event sources which are of type CallbackTracer<T1,T2,T3>
-     */
-    template <typename T1, typename T2, typename T3>
-    void SetCallback (char const *name, Callback<void,T1,T2,T3> callback);
-    /**
-     * \param name the name of the target event source
-     * \param callback the callback being connected to the target event source.
-     *
-     * This method targets only event sources which are of type CallbackTracer<T1,T2,T3,T4>
-     */
-    template <typename T1, typename T2, typename T3, typename T4>
-    void SetCallback (char const *name, Callback<void,T1,T2,T3,T4> callback);
-    /**
-     * \param name the name of the target event source
-     * \param callback the callback being connected to the target event source.
-     *
-     * This method targets only event sources which are of type CallbackTracer<T1,T2,T3,T4,T5>
-     */
-    template <typename T1, typename T2, typename T3, typename T4, typename T5>
-    void SetCallback (char const *name, Callback<void,T1,T2,T3,T4,T5> callback);
+  /**
+   * \param name the name of the target event source
+   * \param callback the callback being connected to the target event source.
+   *
+   * This method targets only event sources which are of type CallbackTracer<T1>
+   */
+  template <typename T1>
+  void SetCallback (char const *name, Callback<void,T1> callback);
+  /**
+   * \param name the name of the target event source
+   * \param callback the callback being connected to the target event source.
+   *
+   * This method targets only event sources which are of type CallbackTracer<T1,T2>
+   */
+  template <typename T1, typename T2>
+  void SetCallback (char const *name, Callback<void,T1,T2> callback);
+  /**
+   * \param name the name of the target event source
+   * \param callback the callback being connected to the target event source.
+   *
+   * This method targets only event sources which are of type CallbackTracer<T1,T2,T3>
+   */
+  template <typename T1, typename T2, typename T3>
+  void SetCallback (char const *name, Callback<void,T1,T2,T3> callback);
+  /**
+   * \param name the name of the target event source
+   * \param callback the callback being connected to the target event source.
+   *
+   * This method targets only event sources which are of type CallbackTracer<T1,T2,T3,T4>
+   */
+  template <typename T1, typename T2, typename T3, typename T4>
+  void SetCallback (char const *name, Callback<void,T1,T2,T3,T4> callback);
+  /**
+   * \param name the name of the target event source
+   * \param callback the callback being connected to the target event source.
+   *
+   * This method targets only event sources which are of type CallbackTracer<T1,T2,T3,T4,T5>
+   */
+  template <typename T1, typename T2, typename T3, typename T4, typename T5>
+  void SetCallback (char const *name, Callback<void,T1,T2,T3,T4,T5> callback);
 
-    /**
-     * \param name the name of the registered event source
-     * \param var the event source being registered
-     *
-     * This method registers only event sources of type "unsigned integer".
-     */
-    void RegisterUiVariable (char const *name, UiVariableTracerBase *var);
-    /**
-     * \param name the name of the registered event source
-     * \param var the event source being registered
-     *
-     * This method registers only event sources of type "signed integer".
-     */
-    void RegisterSiVariable (char const *name, SiVariableTracerBase *var);
-    /**
-     * \param name the name of the registered event source
-     * \param var the event source being registered
-     *
-     * This method registers only event sources of type "double".
-     */
-    void RegisterFVariable (char const *name, FVariableTracerBase *var);
-    /**
-     * \param name the name of the registered event source
-     * \param stream the event source being registered
-     *
-     * This method registers only event sources of type StreamTracer.
-     */
-    void RegisterStream (char const *name, StreamTracer *stream);
+  /**
+   * \param name the name of the registered event source
+   * \param var the event source being registered
+   *
+   * This method registers only event sources of type "unsigned integer".
+   */
+  void RegisterUiVariable (char const *name, UiVariableTracerBase *var);
+  /**
+   * \param name the name of the registered event source
+   * \param var the event source being registered
+   *
+   * This method registers only event sources of type "signed integer".
+   */
+  void RegisterSiVariable (char const *name, SiVariableTracerBase *var);
+  /**
+   * \param name the name of the registered event source
+   * \param var the event source being registered
+   *
+   * This method registers only event sources of type "double".
+   */
+  void RegisterFVariable (char const *name, FVariableTracerBase *var);
+  /**
+   * \param name the name of the registered event source
+   * \param stream the event source being registered
+   *
+   * This method registers only event sources of type StreamTracer.
+   */
+  void RegisterStream (char const *name, StreamTracer *stream);
 
-    /**
-     * \param name the name of the registeref event source
-     * \param tracer the callback tracer being registered.
-     *
-     * This method registers only event sources of type CallbackTracer
-     */
-    void RegisterCallback (char const *name, CallbackTracerBase*tracer);
+  /**
+   * \param name the name of the registeref event source
+   * \param tracer the callback tracer being registered.
+   *
+   * This method registers only event sources of type CallbackTracer
+   */
+  void RegisterCallback (char const *name, CallbackTracerBase*tracer);
 
-    /**
-     * Print the list of registered event sources in this container only.
-     */
-    void PrintDebug (void);
+  /**
+   * Print the list of registered event sources in this container only.
+   */
+  void PrintDebug (void);
 private:
-    typedef std::list<std::pair<UiVariableTracerBase *, std::string> > UiList;
-    typedef std::list<std::pair<UiVariableTracerBase *, std::string> >::iterator UiListI;
-    typedef std::list<std::pair<SiVariableTracerBase *, std::string> > SiList;
-    typedef std::list<std::pair<SiVariableTracerBase *, std::string> >::iterator SiListI;
-    typedef std::list<std::pair<FVariableTracerBase *, std::string> > FList;
-    typedef std::list<std::pair<FVariableTracerBase *, std::string> >::iterator FListI;
-    typedef std::list<std::pair<StreamTracer *, std::string> > StreamTracerList;
-    typedef std::list<std::pair<StreamTracer *, std::string> >::iterator StreamTracerListI;
-    typedef std::list<std::pair<CallbackTracerBase *, std::string> > CallbackList;
-    typedef std::list<std::pair<CallbackTracerBase *, std::string> >::iterator CallbackListI;
+  typedef std::list<std::pair<UiVariableTracerBase *, std::string> > UiList;
+  typedef std::list<std::pair<UiVariableTracerBase *, std::string> >::iterator UiListI;
+  typedef std::list<std::pair<SiVariableTracerBase *, std::string> > SiList;
+  typedef std::list<std::pair<SiVariableTracerBase *, std::string> >::iterator SiListI;
+  typedef std::list<std::pair<FVariableTracerBase *, std::string> > FList;
+  typedef std::list<std::pair<FVariableTracerBase *, std::string> >::iterator FListI;
+  typedef std::list<std::pair<StreamTracer *, std::string> > StreamTracerList;
+  typedef std::list<std::pair<StreamTracer *, std::string> >::iterator StreamTracerListI;
+  typedef std::list<std::pair<CallbackTracerBase *, std::string> > CallbackList;
+  typedef std::list<std::pair<CallbackTracerBase *, std::string> >::iterator CallbackListI;
 
-    UiList m_uiList;
-    SiList m_siList;
-    FList m_fList;
-    StreamTracerList m_traceStreamList;
-    CallbackList m_callbackList;
+  UiList m_uiList;
+  SiList m_siList;
+  FList m_fList;
+  StreamTracerList m_traceStreamList;
+  CallbackList m_callbackList;
 };
 
 }; // namespace ns3
@@ -206,80 +206,80 @@ template <typename T1>
 void 
 TraceContainer::SetCallback (char const *name, Callback<void,T1> callback)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
-      {
-        if (i->second == name) 
-          {
-            static_cast<CallbackTracer<T1> *> (i->first)->SetCallback (callback);
-            return;
-          }
-      }
+  for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+    {
+      if (i->second == name) 
+        {
+          static_cast<CallbackTracer<T1> *> (i->first)->SetCallback (callback);
+          return;
+        }
+    }
 #ifndef NDEBUG
-    assert (false);
+  assert (false);
 #endif
 }
 template <typename T1, typename T2>
 void 
 TraceContainer::SetCallback (char const *name, Callback<void,T1,T2> callback)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
-      {
-        if (i->second == name) 
-          {
-            static_cast<CallbackTracer<T1,T2> *> (i->first)->SetCallback (callback);
-            return;
-          }
-      }
+  for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+    {
+      if (i->second == name) 
+        {
+          static_cast<CallbackTracer<T1,T2> *> (i->first)->SetCallback (callback);
+          return;
+        }
+    }
 #ifndef NDEBUG
-    assert (false);
+  assert (false);
 #endif
 }
 template <typename T1, typename T2, typename T3>
 void 
 TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3> callback)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
-      {
-        if (i->second == name) 
-          {
-            static_cast<CallbackTracer<T1,T2,T3> *> (i->first)->SetCallback (callback);
-            return;
-          }
-      }
+  for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+    {
+      if (i->second == name) 
+        {
+          static_cast<CallbackTracer<T1,T2,T3> *> (i->first)->SetCallback (callback);
+          return;
+        }
+    }
 #ifndef NDEBUG
-    assert (false);
+  assert (false);
 #endif
 }
 template <typename T1, typename T2, typename T3, typename T4>
 void 
 TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3,T4> callback)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
-      {
-        if (i->second == name) 
-          {
-            static_cast<CallbackTracer<T1,T2,T3,T4> *> (i->first)->SetCallback (callback);
-            return;
-          }
-      }
+  for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+    {
+      if (i->second == name) 
+        {
+          static_cast<CallbackTracer<T1,T2,T3,T4> *> (i->first)->SetCallback (callback);
+          return;
+        }
+    }
 #ifndef NDEBUG
-    assert (false);
+  assert (false);
 #endif
 }
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 void 
 TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3,T4,T5> callback)
 {
-    for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
-      {
-        if (i->second == name) 
-          {
-            static_cast<CallbackTracer<T1,T2,T3,T4,T5> *> (i->first)->SetCallback (callback);
-            return;
-          }
-      }
+  for (CallbackListI i = m_callbackList.begin (); i != m_callbackList.end (); i++) 
+    {
+      if (i->second == name) 
+        {
+          static_cast<CallbackTracer<T1,T2,T3,T4,T5> *> (i->first)->SetCallback (callback);
+          return;
+        }
+    }
 #ifndef NDEBUG
-    assert (false);
+  assert (false);
 #endif
 }
 

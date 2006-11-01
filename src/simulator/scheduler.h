@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -54,71 +54,71 @@ class EventImpl;
  */
 class Scheduler {
  public:
-    struct EventKey {
-        uint64_t m_ns;
-        uint32_t m_uid;
-    };
-    class EventKeyCompare {
-    public:
-        bool operator () (struct EventKey a, struct EventKey b);
-    };
+  struct EventKey {
+      uint64_t m_ns;
+      uint32_t m_uid;
+  };
+  class EventKeyCompare {
+  public:
+      bool operator () (struct EventKey a, struct EventKey b);
+  };
 
-    virtual ~Scheduler () = 0;
+  virtual ~Scheduler () = 0;
 
-    EventId Insert (EventImpl *event, EventKey key);
-    bool IsEmpty (void) const;
-    EventImpl *PeekNext (void) const;
-    Scheduler::EventKey PeekNextKey (void) const ;
-    void RemoveNext (void);
-    EventImpl *Remove (EventId id, EventKey *key);
-    bool IsValid (EventId id);
+  EventId Insert (EventImpl *event, EventKey key);
+  bool IsEmpty (void) const;
+  EventImpl *PeekNext (void) const;
+  Scheduler::EventKey PeekNextKey (void) const ;
+  void RemoveNext (void);
+  EventImpl *Remove (EventId id, EventKey *key);
+  bool IsValid (EventId id);
 
 private:
-    /**
-     * \param event event to store in the event list
-     * \param key timecode associated to this new event
-     * \returns an event id which identifies the event inserted
-     *
-     * This method takes ownership of the event pointer.
-     */
-    virtual EventId RealInsert (EventImpl *event, EventKey key) = 0;
-    /**
-     * \returns true if the event list is empty and false otherwise.
-     */
-    virtual bool RealIsEmpty (void) const = 0;
-    /**
-     * \returns a pointer to the next earliest event. The caller
-     *      takes ownership of the returned pointer.
-     *
-     * This method cannot be invoked if the list is empty.
-     */
-    virtual EventImpl *RealPeekNext (void) const = 0;
-    /**
-     * \returns the timecode associated with the next earliest event.
-     *
-     * This method cannot be invoked if the list is empty.
-     */
-    virtual Scheduler::EventKey RealPeekNextKey (void) const = 0;
-    /**
-     * This method cannot be invoked if the list is empty.
-     * Remove the next earliest event from the event list.
-     */
-    virtual void RealRemoveNext (void) = 0;
-    /**
-     * \param id the id of the event to remove
-     * \param key the timecode of the event removed
-     * \returns a pointer to the event removed. The caller
-     *      takes ownership of the returned pointer.
-     *
-     * This methods cannot be invoked if the list is empty.
-     */
-    virtual EventImpl *RealRemove (EventId id, EventKey *key) = 0;
-    /**
-     * \param id event id to validate
-     * \returns true if the event id identifies an existing valid
-     *      event stored in the event list and false otherwise.
-     */
-    virtual bool RealIsValid (EventId id) = 0;
+  /**
+   * \param event event to store in the event list
+   * \param key timecode associated to this new event
+   * \returns an event id which identifies the event inserted
+   *
+   * This method takes ownership of the event pointer.
+   */
+  virtual EventId RealInsert (EventImpl *event, EventKey key) = 0;
+  /**
+   * \returns true if the event list is empty and false otherwise.
+   */
+  virtual bool RealIsEmpty (void) const = 0;
+  /**
+   * \returns a pointer to the next earliest event. The caller
+   *      takes ownership of the returned pointer.
+   *
+   * This method cannot be invoked if the list is empty.
+   */
+  virtual EventImpl *RealPeekNext (void) const = 0;
+  /**
+   * \returns the timecode associated with the next earliest event.
+   *
+   * This method cannot be invoked if the list is empty.
+   */
+  virtual Scheduler::EventKey RealPeekNextKey (void) const = 0;
+  /**
+   * This method cannot be invoked if the list is empty.
+   * Remove the next earliest event from the event list.
+   */
+  virtual void RealRemoveNext (void) = 0;
+  /**
+   * \param id the id of the event to remove
+   * \param key the timecode of the event removed
+   * \returns a pointer to the event removed. The caller
+   *      takes ownership of the returned pointer.
+   *
+   * This methods cannot be invoked if the list is empty.
+   */
+  virtual EventImpl *RealRemove (EventId id, EventKey *key) = 0;
+  /**
+   * \param id event id to validate
+   * \returns true if the event id identifies an existing valid
+   *      event stored in the event list and false otherwise.
+   */
+  virtual bool RealIsValid (EventId id) = 0;
 };
 
 }; // namespace ns3

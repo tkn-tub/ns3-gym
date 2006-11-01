@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -34,40 +34,40 @@ namespace ns3 {
  */
 class StreamTracer {
 public:
-    StreamTracer ()
-        : m_os (0) {}
-    template <typename T>
-    StreamTracer &operator << (T const&v) {
-        if (m_os != 0) 
-          {
-            (*m_os) << v;
-          }
-        return *this;
-    }
-    template <typename T>
-    StreamTracer &operator << (T &v) {
-        if (m_os != 0) 
-          {
-            (*m_os) << v;
-          }
-        return *this;
-    }
-    StreamTracer &operator << (std::ostream &(*v) (std::ostream &)) {
-        if (m_os != 0) 
-          {
-            (*m_os) << v;
-          }
-        return *this;
-    }
+  StreamTracer ()
+      : m_os (0) {}
+  template <typename T>
+  StreamTracer &operator << (T const&v) {
+      if (m_os != 0) 
+        {
+          (*m_os) << v;
+        }
+      return *this;
+  }
+  template <typename T>
+  StreamTracer &operator << (T &v) {
+      if (m_os != 0) 
+        {
+          (*m_os) << v;
+        }
+      return *this;
+  }
+  StreamTracer &operator << (std::ostream &(*v) (std::ostream &)) {
+      if (m_os != 0) 
+        {
+          (*m_os) << v;
+        }
+      return *this;
+  }
 
-    /**
-     * \param os the output stream to store
-     */
-    void SetStream (std::ostream * os) {
-        m_os = os;
-    }
+  /**
+   * \param os the output stream to store
+   */
+  void SetStream (std::ostream * os) {
+      m_os = os;
+  }
 private:
-    std::ostream *m_os;
+  std::ostream *m_os;
 };
 
 }; // namespace ns3

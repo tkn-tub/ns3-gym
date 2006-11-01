@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -46,32 +46,32 @@ namespace ns3 {
 
 class SystemFilePrivate {
 public:
-    SystemFilePrivate ();
-    ~SystemFilePrivate ();
+  SystemFilePrivate ();
+  ~SystemFilePrivate ();
 
-    void Open (char const *filename);
-    void Write (uint8_t const*buffer, uint32_t size);
+  void Open (char const *filename);
+  void Write (uint8_t const*buffer, uint32_t size);
 private:
-    uint8_t m_data[BUFFER_SIZE];
-    uint32_t m_current;
-    int m_fd;
+  uint8_t m_data[BUFFER_SIZE];
+  uint32_t m_current;
+  int m_fd;
 };
 
 SystemFilePrivate::SystemFilePrivate ()
-    : m_current (0)
+  : m_current (0)
 {}
 SystemFilePrivate::~SystemFilePrivate ()
 {
-    ::write (m_fd, m_data, m_current);
-    ::close (m_fd);
+  ::write (m_fd, m_data, m_current);
+  ::close (m_fd);
 }
 
 
 void
 SystemFilePrivate::Open (char const *filename)
 {
-    m_fd = ::open (filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-    assert (m_fd != -1);
+  m_fd = ::open (filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
+  assert (m_fd != -1);
 }
 
 #ifndef min
@@ -81,41 +81,41 @@ SystemFilePrivate::Open (char const *filename)
 void
 SystemFilePrivate::Write (uint8_t const*buffer, uint32_t size)
 {
-    while (size > 0) 
-      {
-        uint32_t toCopy = min (BUFFER_SIZE - m_current, size);
-        memcpy (m_data + m_current, buffer, toCopy);
-        size -= toCopy;
-        m_current += toCopy;
-        buffer += toCopy;
-        if (m_current == BUFFER_SIZE) 
-          {
-            ssize_t written = 0;
-            written = ::write (m_fd, m_data, BUFFER_SIZE);
-            assert (written == BUFFER_SIZE);
-            m_current = 0;
-          }
-      }
+  while (size > 0) 
+    {
+      uint32_t toCopy = min (BUFFER_SIZE - m_current, size);
+      memcpy (m_data + m_current, buffer, toCopy);
+      size -= toCopy;
+      m_current += toCopy;
+      buffer += toCopy;
+      if (m_current == BUFFER_SIZE) 
+        {
+          ssize_t written = 0;
+          written = ::write (m_fd, m_data, BUFFER_SIZE);
+          assert (written == BUFFER_SIZE);
+          m_current = 0;
+        }
+    }
 }
 
 SystemFile::SystemFile ()
-    : m_priv (new SystemFilePrivate ())
+  : m_priv (new SystemFilePrivate ())
 {}
 SystemFile::~SystemFile ()
 {
-    delete m_priv;
-    m_priv = 0;
+  delete m_priv;
+  m_priv = 0;
 }
 
 void 
 SystemFile::Open (char const *filename)
 {
-    m_priv->Open (filename);
+  m_priv->Open (filename);
 }
 void 
 SystemFile::Write (uint8_t const*buffer, uint32_t size)
 {
-    m_priv->Write (buffer, size);
+  m_priv->Write (buffer, size);
 }
 
 }; // namespace

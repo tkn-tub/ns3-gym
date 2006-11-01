@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -35,14 +35,14 @@ class Scheduler;
  */
 class SchedulerFactory {
 public:
-    virtual ~SchedulerFactory ();
-    Scheduler *Create (void) const;
+  virtual ~SchedulerFactory ();
+  Scheduler *Create (void) const;
 private:
-    /**
-     * \returns a newly-created scheduler. The caller takes 
-     *      ownership of the returned pointer.
-     */
-    virtual Scheduler *RealCreate (void) const = 0;
+  /**
+   * \returns a newly-created scheduler. The caller takes 
+   *      ownership of the returned pointer.
+   */
+  virtual Scheduler *RealCreate (void) const = 0;
 };
 
 }; // namespace ns3

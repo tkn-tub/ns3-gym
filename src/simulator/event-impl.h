@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -27,18 +27,18 @@ namespace ns3 {
 
 class EventImpl {
 public:
-    EventImpl ();
-    virtual ~EventImpl () = 0;
-    void Invoke (void);
-    void Cancel (void);
-    void SetInternalIterator (void *iterator);
-    void *GetInternalIterator (void) const;
+  EventImpl ();
+  virtual ~EventImpl () = 0;
+  void Invoke (void);
+  void Cancel (void);
+  void SetInternalIterator (void *iterator);
+  void *GetInternalIterator (void) const;
 protected:
-    virtual void Notify (void) = 0;
+  virtual void Notify (void) = 0;
 private:
-    friend class Event;
-    void *m_internalIterator;
-    bool m_cancel;
+  friend class Event;
+  void *m_internalIterator;
+  bool m_cancel;
 };
 
 }; // namespace ns3

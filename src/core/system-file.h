@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -35,41 +35,41 @@ class SystemFilePrivate;
  */
 class SystemFile {
 public:
-    /**
-     * This method does not create or open any
-     * file on disk.
-     */
-    SystemFile ();
-    /**
-     * If a file has been opened, it is closed by
-     * this destructor.
-     */
-    ~SystemFile ();
+  /**
+   * This method does not create or open any
+   * file on disk.
+   */
+  SystemFile ();
+  /**
+   * If a file has been opened, it is closed by
+   * this destructor.
+   */
+  ~SystemFile ();
 
-    /**
-     * \param filename name of file to open
-     *
-     * Open a file for writing. If the file does not
-     * exist, it is created. If it exists, it is 
-     * emptied first.
-     */
-    void Open (char const *filename);
-    /**
-     * \param buffer data to write
-     * \param size size of data to write
-     *
-     * Write data in file on disk. This method cannot fail:
-     * it will write _all_ the data to disk. This method does not
-     * perform any data caching and forwards the data
-     * to the OS through a direct syscall. However, 
-     * it is not possible to rely on the data being
-     * effectively written to disk after this method returns.
-     * To make sure the data is written to disk, destroy 
-     * this object.
-     */
-    void Write (uint8_t const*buffer, uint32_t size);
+  /**
+   * \param filename name of file to open
+   *
+   * Open a file for writing. If the file does not
+   * exist, it is created. If it exists, it is 
+   * emptied first.
+   */
+  void Open (char const *filename);
+  /**
+   * \param buffer data to write
+   * \param size size of data to write
+   *
+   * Write data in file on disk. This method cannot fail:
+   * it will write _all_ the data to disk. This method does not
+   * perform any data caching and forwards the data
+   * to the OS through a direct syscall. However, 
+   * it is not possible to rely on the data being
+   * effectively written to disk after this method returns.
+   * To make sure the data is written to disk, destroy 
+   * this object.
+   */
+  void Write (uint8_t const*buffer, uint32_t size);
 private:
-    SystemFilePrivate *m_priv;
+  SystemFilePrivate *m_priv;
 };
 
 }; //namespace ns3

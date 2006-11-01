@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -35,60 +35,60 @@ Scheduler::~Scheduler ()
 bool
 Scheduler::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
 {
-    assert (a.m_uid != b.m_uid);
-    if (a.m_ns < b.m_ns) 
-      {
-        return true;
-      } 
-    else if (a.m_ns == b.m_ns && a.m_uid < b.m_uid) 
-      {
-        return true;
-      } 
-    else 
-      {
-        return false;
-      }
+  assert (a.m_uid != b.m_uid);
+  if (a.m_ns < b.m_ns) 
+    {
+      return true;
+    } 
+  else if (a.m_ns == b.m_ns && a.m_uid < b.m_uid) 
+    {
+      return true;
+    } 
+  else 
+    {
+      return false;
+    }
 }
 
 
 EventId 
 Scheduler::Insert (EventImpl *event, struct EventKey key)
 {
-    return RealInsert (event, key);
+  return RealInsert (event, key);
 }
 bool 
 Scheduler::IsEmpty (void) const
 {
-    return RealIsEmpty ();
+  return RealIsEmpty ();
 }
 EventImpl *
 Scheduler::PeekNext (void) const
 {
-    assert (!RealIsEmpty ());
-    return RealPeekNext ();
+  assert (!RealIsEmpty ());
+  return RealPeekNext ();
 }
 Scheduler::EventKey 
 Scheduler::PeekNextKey (void) const 
 {
-    assert (!RealIsEmpty ());
-    return RealPeekNextKey ();
+  assert (!RealIsEmpty ());
+  return RealPeekNextKey ();
 }
 void 
 Scheduler::RemoveNext (void)
 {
-    assert (!RealIsEmpty ());
-    return RealRemoveNext ();
+  assert (!RealIsEmpty ());
+  return RealRemoveNext ();
 }
 EventImpl *
 Scheduler::Remove (EventId id, EventKey *key)
 {
-    assert (!RealIsEmpty ());
-    return RealRemove (id, key);
+  assert (!RealIsEmpty ());
+  return RealRemove (id, key);
 }
 bool 
 Scheduler::IsValid (EventId id)
 {
-    return RealIsValid (id);
+  return RealIsValid (id);
 }
 
 }; // namespace ns3

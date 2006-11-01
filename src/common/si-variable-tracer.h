@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -29,28 +29,28 @@ namespace ns3 {
 
 class SiVariableTracerBase {
 public:
-    typedef Callback<void,int64_t, int64_t> ChangeNotifyCallback;
+  typedef Callback<void,int64_t, int64_t> ChangeNotifyCallback;
 
-    SiVariableTracerBase () {}
-    SiVariableTracerBase (SiVariableTracerBase const &o) {}
-    SiVariableTracerBase &operator = (SiVariableTracerBase const &o) {
-        return *this;
-    }
+  SiVariableTracerBase () {}
+  SiVariableTracerBase (SiVariableTracerBase const &o) {}
+  SiVariableTracerBase &operator = (SiVariableTracerBase const &o) {
+      return *this;
+  }
 
-    ~SiVariableTracerBase () {}
+  ~SiVariableTracerBase () {}
 
-    void SetCallback(ChangeNotifyCallback callback) {
-        m_callback = callback;
-    }
+  void SetCallback(ChangeNotifyCallback callback) {
+      m_callback = callback;
+  }
 protected:
-    void Notify (int64_t oldVal, int64_t newVal) {
-        if (oldVal != newVal && !m_callback.IsNull ()) 
-          {
-            m_callback (oldVal, newVal);
-          }
-    }
+  void Notify (int64_t oldVal, int64_t newVal) {
+      if (oldVal != newVal && !m_callback.IsNull ()) 
+        {
+          m_callback (oldVal, newVal);
+        }
+  }
 private:
-    ChangeNotifyCallback m_callback;
+  ChangeNotifyCallback m_callback;
 };
 
 template <typename T>
@@ -84,153 +84,153 @@ class UiVariableTracer;
 template <typename T>
 class SiVariableTracer : public SiVariableTracerBase {
 public:
-    SiVariableTracer ()
-        : m_var (0)
-    {}
-    SiVariableTracer (T const &var) 
-        : m_var (var)
-    {}
+  SiVariableTracer ()
+      : m_var (0)
+  {}
+  SiVariableTracer (T const &var) 
+      : m_var (var)
+  {}
 
-    SiVariableTracer &operator = (SiVariableTracer const &o) {
-        Assign (o.Get ());
-        return *this;
-    }
-    template <typename TT>
-    SiVariableTracer &operator = (SiVariableTracer<TT> const &o) {
-        Assign (o.Get ());
-        return *this;
-    }
-    template <typename TT>
-    SiVariableTracer &operator = (UiVariableTracer<TT> const &o) {
-        Assign (o.Get ());
-        return *this;
-    }
-    SiVariableTracer &operator++ () {
-        Assign (Get () + 1);
-        return *this;
-    }
-    SiVariableTracer &operator-- () {
-        Assign (Get () - 1);
-        return *this;
-    }
-    SiVariableTracer operator++ (int) {
-        SiVariableTracer old (*this);
-        ++*this;
-        return old;
-    }
-    SiVariableTracer operator-- (int) {
-        SiVariableTracer old (*this);
-        --*this;
-        return old;
-    }
-    operator T () const {
-        return Get ();
-    }
+  SiVariableTracer &operator = (SiVariableTracer const &o) {
+      Assign (o.Get ());
+      return *this;
+  }
+  template <typename TT>
+  SiVariableTracer &operator = (SiVariableTracer<TT> const &o) {
+      Assign (o.Get ());
+      return *this;
+  }
+  template <typename TT>
+  SiVariableTracer &operator = (UiVariableTracer<TT> const &o) {
+      Assign (o.Get ());
+      return *this;
+  }
+  SiVariableTracer &operator++ () {
+      Assign (Get () + 1);
+      return *this;
+  }
+  SiVariableTracer &operator-- () {
+      Assign (Get () - 1);
+      return *this;
+  }
+  SiVariableTracer operator++ (int) {
+      SiVariableTracer old (*this);
+      ++*this;
+      return old;
+  }
+  SiVariableTracer operator-- (int) {
+      SiVariableTracer old (*this);
+      --*this;
+      return old;
+  }
+  operator T () const {
+      return Get ();
+  }
 
 
-    void Assign (T var) {
-        Notify (m_var, var);
-        m_var = var;
-    }
-    T Get (void) const {
-        return m_var;
-    }
+  void Assign (T var) {
+      Notify (m_var, var);
+      m_var = var;
+  }
+  T Get (void) const {
+      return m_var;
+  }
 
 private:
-    T m_var;
+  T m_var;
 };
 
 template <typename T>
 SiVariableTracer<T> &operator += (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
-    lhs.Assign (lhs.Get () + rhs.Get ());
-    return lhs;
+  lhs.Assign (lhs.Get () + rhs.Get ());
+  return lhs;
 }
 template <typename T>
 SiVariableTracer<T> &operator -= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
-    lhs.Assign (lhs.Get () - rhs.Get ());
-    return lhs;
+  lhs.Assign (lhs.Get () - rhs.Get ());
+  return lhs;
 }
 template <typename T>
 SiVariableTracer<T> &operator *= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
-    lhs.Assign (lhs.Get () * rhs.Get ());
-    return lhs;
+  lhs.Assign (lhs.Get () * rhs.Get ());
+  return lhs;
 }
 template <typename T>
 SiVariableTracer<T> &operator /= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
-    lhs.Assign (lhs.Get () / rhs.Get ());
-    return lhs;
+  lhs.Assign (lhs.Get () / rhs.Get ());
+  return lhs;
 }
 template <typename T>
 SiVariableTracer<T> &operator <<= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
-    lhs.Assign (lhs.Get () << rhs.Get ());
-    return lhs;
+  lhs.Assign (lhs.Get () << rhs.Get ());
+  return lhs;
 }
 template <typename T>
 SiVariableTracer<T> &operator >>= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
-    lhs.Assign (lhs.Get () >> rhs.Get ());
-    return lhs;
+  lhs.Assign (lhs.Get () >> rhs.Get ());
+  return lhs;
 }
 template <typename T>
 SiVariableTracer<T> &operator &= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
-    lhs.Assign (lhs.Get () & rhs.Get ());
-    return lhs;
+  lhs.Assign (lhs.Get () & rhs.Get ());
+  return lhs;
 }
 template <typename T>
 SiVariableTracer<T> &operator |= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
-    lhs.Assign (lhs.Get () | rhs.Get ());
-    return lhs;
+  lhs.Assign (lhs.Get () | rhs.Get ());
+  return lhs;
 }
 template <typename T>
 SiVariableTracer<T> &operator ^= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
-    lhs.Assign (lhs.Get () ^ rhs.Get ());
-    return lhs;
+  lhs.Assign (lhs.Get () ^ rhs.Get ());
+  return lhs;
 }
 
 
 template <typename T, typename U>
 SiVariableTracer<T> &operator += (SiVariableTracer<T> &lhs, U const &rhs) {
-    lhs.Assign (lhs.Get () + rhs);
-    return lhs;
+  lhs.Assign (lhs.Get () + rhs);
+  return lhs;
 }
 template <typename T, typename U>
 SiVariableTracer<T> &operator -= (SiVariableTracer<T> &lhs, U const &rhs) {
-    lhs.Assign (lhs.Get () - rhs);
-    return lhs;
+  lhs.Assign (lhs.Get () - rhs);
+  return lhs;
 }
 template <typename T, typename U>
 SiVariableTracer<T> &operator *= (SiVariableTracer<T> &lhs, U const &rhs) {
-    lhs.Assign (lhs.Get () * rhs);
-    return lhs;
+  lhs.Assign (lhs.Get () * rhs);
+  return lhs;
 }
 template <typename T, typename U>
 SiVariableTracer<T> &operator /= (SiVariableTracer<T> &lhs, U const &rhs) {
-    lhs.Assign (lhs.Get () / rhs);
-    return lhs;
+  lhs.Assign (lhs.Get () / rhs);
+  return lhs;
 }
 template <typename T, typename U>
 SiVariableTracer<T> &operator <<= (SiVariableTracer<T> &lhs, U const &rhs) {
-    lhs.Assign (lhs.Get () << rhs);
-    return lhs;
+  lhs.Assign (lhs.Get () << rhs);
+  return lhs;
 }
 template <typename T, typename U>
 SiVariableTracer<T> &operator >>= (SiVariableTracer<T> &lhs, U const &rhs) {
-    lhs.Assign (lhs.Get () >> rhs);
-    return lhs;
+  lhs.Assign (lhs.Get () >> rhs);
+  return lhs;
 }
 template <typename T, typename U>
 SiVariableTracer<T> &operator &= (SiVariableTracer<T> &lhs, U const &rhs) {
-    lhs.Assign (lhs.Get () & rhs);
-    return lhs;
+  lhs.Assign (lhs.Get () & rhs);
+  return lhs;
 }
 template <typename T, typename U>
 SiVariableTracer<T> &operator |= (SiVariableTracer<T> &lhs, U const &rhs) {
-    lhs.Assign (lhs.Get () | rhs);
-    return lhs;
+  lhs.Assign (lhs.Get () | rhs);
+  return lhs;
 }
 template <typename T, typename U>
 SiVariableTracer<T> &operator ^= (SiVariableTracer<T> &lhs, U const &rhs) {
-    lhs.Assign (lhs.Get () ^ rhs);
-    return lhs;
+  lhs.Assign (lhs.Get () ^ rhs);
+  return lhs;
 }
 
 }; // namespace ns3

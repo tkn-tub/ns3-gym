@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -26,49 +26,49 @@ namespace ns3 {
 
 class SystemWallClockMsPrivate {
 public:
-    void Start (void);
-    unsigned long long End (void);
+  void Start (void);
+  unsigned long long End (void);
 private:
-    struct timeval m_startTv;
-    struct timeval m_endTv;
+  struct timeval m_startTv;
+  struct timeval m_endTv;
 };
 
 void 
 SystemWallClockMsPrivate::Start (void)
 {
-    struct timezone tz;
-    gettimeofday (&m_startTv, &tz);
+  struct timezone tz;
+  gettimeofday (&m_startTv, &tz);
 }
 
 unsigned long long 
 SystemWallClockMsPrivate::End (void)
 {
-    struct timezone tz;
-    gettimeofday (&m_endTv, &tz);
-    unsigned long long end = m_endTv.tv_sec *1000 + m_endTv.tv_usec / 1000;
-    unsigned long long start = m_startTv.tv_sec *1000 + m_startTv.tv_usec / 1000;
-    return end - start;
+  struct timezone tz;
+  gettimeofday (&m_endTv, &tz);
+  unsigned long long end = m_endTv.tv_sec *1000 + m_endTv.tv_usec / 1000;
+  unsigned long long start = m_startTv.tv_sec *1000 + m_startTv.tv_usec / 1000;
+  return end - start;
 }
 
 SystemWallClockMs::SystemWallClockMs ()
-    : m_priv (new SystemWallClockMsPrivate ())
+  : m_priv (new SystemWallClockMsPrivate ())
 {}
 
 SystemWallClockMs::~SystemWallClockMs ()
 {
-    delete m_priv;
-    m_priv = 0;
+  delete m_priv;
+  m_priv = 0;
 }
 
 void
 SystemWallClockMs::Start (void)
 {
-    m_priv->Start ();
+  m_priv->Start ();
 }
 unsigned long long
 SystemWallClockMs::End (void)
 {
-    return m_priv->End ();
+  return m_priv->End ();
 }
 
 }; // namespace ns3

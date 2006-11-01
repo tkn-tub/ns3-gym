@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -46,23 +46,23 @@ class TestManager;
  */
 class Test {
 public:
-    /**
-     * \param name the name of the test
-     */
-    Test (char const *name);
-    virtual ~Test ();
+  /**
+   * \param name the name of the test
+   */
+  Test (char const *name);
+  virtual ~Test ();
 
-    /**
-     * \returns true if the test was successful, false otherwise.
-     */
-    virtual bool RunTests (void) = 0;
+  /**
+   * \returns true if the test was successful, false otherwise.
+   */
+  virtual bool RunTests (void) = 0;
 
 protected:
-    /**
-     * \returns an output stream which base classes can write to
-     *          to return extra information on test errors.
-     */
-    std::ostream &Failure (void);
+  /**
+   * \returns an output stream which base classes can write to
+   *          to return extra information on test errors.
+   */
+  std::ostream &Failure (void);
 };
 
 /**
@@ -70,34 +70,34 @@ protected:
  */
 class TestManager {
 public:
-    /**
-     * Enable verbose output. If you do not enable verbose output,
-     * nothing is printed on screen during the test runs.
-     */
-    static void EnableVerbose (void);
-    /**
-     * \returns true if all tests passed, false otherwise.
-     *
-     * run all registered regression tests
-     */
-    static bool RunTests (void);
+  /**
+   * Enable verbose output. If you do not enable verbose output,
+   * nothing is printed on screen during the test runs.
+   */
+  static void EnableVerbose (void);
+  /**
+   * \returns true if all tests passed, false otherwise.
+   *
+   * run all registered regression tests
+   */
+  static bool RunTests (void);
 
 private:
-    friend class Test;
-    static void Add (Test *test, char const *name);
-    static std::ostream &Failure (void);
-    static TestManager *Get (void);
-    bool RealRunTests (void);
+  friend class Test;
+  static void Add (Test *test, char const *name);
+  static std::ostream &Failure (void);
+  static TestManager *Get (void);
+  bool RealRunTests (void);
 
-    TestManager ();
-    ~TestManager ();
+  TestManager ();
+  ~TestManager ();
 
-    typedef std::list<std::pair<Test *,std::string *> > Tests;
-    typedef std::list<std::pair<Test *,std::string *> >::iterator TestsI;
-    typedef std::list<std::pair<Test *,std::string *> >::const_iterator TestsCI;
+  typedef std::list<std::pair<Test *,std::string *> > Tests;
+  typedef std::list<std::pair<Test *,std::string *> >::iterator TestsI;
+  typedef std::list<std::pair<Test *,std::string *> >::const_iterator TestsCI;
 
-    Tests m_tests;
-    bool m_verbose;
+  Tests m_tests;
+  bool m_verbose;
 };
 }; // namespace ns3 
 

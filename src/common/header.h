@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -41,40 +41,40 @@ namespace ns3 {
  */
 class Header {
 public:
-    Header ();
-    /**
-     * Derived classes must provide an explicit virtual destructor
-     */
-    virtual ~Header () = 0;
+  Header ();
+  /**
+   * Derived classes must provide an explicit virtual destructor
+   */
+  virtual ~Header () = 0;
 
-    void Print (std::ostream &os) const;
-    uint32_t GetSize (void) const;
-    void Serialize (Buffer::Iterator start) const;
-    void Deserialize (Buffer::Iterator start);
-    bool IsDeserialized (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  void Deserialize (Buffer::Iterator start);
+  bool IsDeserialized (void) const;
 private:
-    bool m_isDeserialized;
-    /**
-     * \param os the std output stream in which this 
-     *       protocol header must print itself.
-     */
-    virtual void PrintTo (std::ostream &os) const = 0;
+  bool m_isDeserialized;
+  /**
+   * \param os the std output stream in which this 
+   *       protocol header must print itself.
+   */
+  virtual void PrintTo (std::ostream &os) const = 0;
 
-    /**
-     * \returns the size of the serialized Header.
-     */
-    virtual uint32_t GetSerializedSize (void) const = 0;
+  /**
+   * \returns the size of the serialized Header.
+   */
+  virtual uint32_t GetSerializedSize (void) const = 0;
 
-    /**
-     * \param start the buffer iterator in which the protocol header
-     *    must serialize itself.
-     */
-    virtual void SerializeTo (Buffer::Iterator start) const = 0;
-    /**
-     * \param start the buffer iterator from which the protocol header must
-     *    deserialize itself.
-     */
-    virtual void DeserializeFrom (Buffer::Iterator start) = 0;
+  /**
+   * \param start the buffer iterator in which the protocol header
+   *    must serialize itself.
+   */
+  virtual void SerializeTo (Buffer::Iterator start) const = 0;
+  /**
+   * \param start the buffer iterator from which the protocol header must
+   *    deserialize itself.
+   */
+  virtual void DeserializeFrom (Buffer::Iterator start) = 0;
 };
 
 std::ostream& operator<< (std::ostream& os, Header const& header);

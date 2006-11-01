@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -25,8 +25,8 @@ namespace ns3 {
 
 class SystemWallClockMsPrivate {
 public:
-    void start (void);
-    unsigned long long end (void);
+  void start (void);
+  unsigned long long end (void);
 private:
 };
 
@@ -38,28 +38,28 @@ SystemWallClockMsPrivate::Start (void)
 unsigned long long 
 SystemWallClockMsPrivate::End (void)
 {
-    return 0;
+  return 0;
 }
 
 SystemWallClockMs::SystemWallClockMs ()
-    : m_priv (new SystemWallClockMsPrivate ())
+  : m_priv (new SystemWallClockMsPrivate ())
 {}
 
 SystemWallClockMs::~SystemWallClockMs ()
 {
-    delete m_priv;
-    m_priv = 0;
+  delete m_priv;
+  m_priv = 0;
 }
 
 void
 SystemWallClockMs::Start (void)
 {
-    m_priv->Start ();
+  m_priv->Start ();
 }
 unsigned long long
 SystemWallClockMs::End (void)
 {
-    return m_priv->End ();
+  return m_priv->End ();
 }
 
 }; // namespace ns3

@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -30,42 +30,42 @@ TagRegistry::TagsData TagRegistry::m_registry;
 void 
 TagRegistry::Record (std::string uuid, PrettyPrinter prettyPrinter)
 {
-    assert (!m_sorted);
-    m_registry.push_back (make_pair (uuid, prettyPrinter));
+  assert (!m_sorted);
+  m_registry.push_back (make_pair (uuid, prettyPrinter));
 }
 uint32_t 
 TagRegistry::LookupUid (std::string uuid)
 {
-    if (!m_sorted) 
-      {
-    	std::sort (m_registry.begin (), m_registry.end ());
-    	m_sorted = true;
-      }
-    assert (m_sorted);
-    uint32_t uid = 0;
-    for (TagsDataCI i = m_registry.begin (); i != m_registry.end (); i++) 
-      {
-    	if (i->first == uuid) 
-          {
-    		return uid;
-          }
-    	uid++;
-      }
-    // someone asked for a uid for an unregistered uuid.
-    assert ("You tried to use unregistered tag: make sure you create an "
-    		"instance of type TagRegistration<YouTagType>.");
-    // quiet compiler
-    return 0;
+  if (!m_sorted) 
+    {
+  	std::sort (m_registry.begin (), m_registry.end ());
+  	m_sorted = true;
+    }
+  assert (m_sorted);
+  uint32_t uid = 0;
+  for (TagsDataCI i = m_registry.begin (); i != m_registry.end (); i++) 
+    {
+  	if (i->first == uuid) 
+        {
+  		return uid;
+        }
+  	uid++;
+    }
+  // someone asked for a uid for an unregistered uuid.
+  assert ("You tried to use unregistered tag: make sure you create an "
+  		"instance of type TagRegistration<YouTagType>.");
+  // quiet compiler
+  return 0;
 }
 void 
 TagRegistry::PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os)
 {
-    assert (m_registry.size () > uid);
-    PrettyPrinter prettyPrinter = m_registry[uid].second;
-    if (prettyPrinter != 0) 
-      {
-    	prettyPrinter (buf, os);
-      }
+  assert (m_registry.size () > uid);
+  PrettyPrinter prettyPrinter = m_registry[uid].second;
+  if (prettyPrinter != 0) 
+    {
+  	prettyPrinter (buf, os);
+    }
 }
 
 
@@ -77,98 +77,98 @@ uint32_t Tags::gN_free = 0;
 struct Tags::TagData *
 Tags::AllocData (void)
 {
-    struct Tags::TagData *retval;
-    if (gFree != 0) 
-      {
-        retval = gFree;
-        gFree = gFree->m_next;
-        gN_free--;
-      } 
-    else 
-      {
-        retval = new struct Tags::TagData ();
-      }
-    return retval;
+  struct Tags::TagData *retval;
+  if (gFree != 0) 
+    {
+      retval = gFree;
+      gFree = gFree->m_next;
+      gN_free--;
+    } 
+  else 
+    {
+      retval = new struct Tags::TagData ();
+    }
+  return retval;
 }
 
 void
 Tags::FreeData (struct TagData *data)
 {
-    if (gN_free > 1000) 
-      {
-        delete data;
-        return;
-      }
-    gN_free++;
-    data->m_next = gFree;
-    gFree = data;
+  if (gN_free > 1000) 
+    {
+      delete data;
+      return;
+    }
+  gN_free++;
+  data->m_next = gFree;
+  gFree = data;
 }
 #else
 struct Tags::TagData *
 Tags::AllocData (void)
 {
-    struct Tags::TagData *retval;
-    retval = new struct Tags::TagData ();
-    return retval;
+  struct Tags::TagData *retval;
+  retval = new struct Tags::TagData ();
+  return retval;
 }
 
 void
 Tags::FreeData (struct TagData *data)
 {
-    delete data;
+  delete data;
 }
 #endif
 
 bool
 Tags::Remove (uint32_t id)
 {
-    bool found = false;
-    for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
-      {
-        if (cur->m_id == id) 
-          {
-            found = true;
-          }
-      }
-    if (!found) 
-      {
-        return false;
-      }
-    struct TagData *start = 0;
-    struct TagData **prevNext = &start;
-    for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
-      {
-        if (cur->m_id == id) 
-          {
-            /**
-             * XXX
-             * Note: I believe that we could optimize this to
-             * avoid copying each TagData located after the target id
-             * and just link the already-copied list to the next tag.
-             */
-            continue;
-          }
-        struct TagData *copy = AllocData ();
-        copy->m_id = cur->m_id;
-        copy->m_count = 1;
-        copy->m_next = 0;
-        memcpy (copy->m_data, cur->m_data, Tags::SIZE);
-        *prevNext = copy;
-        prevNext = &copy->m_next;
-      }
-    *prevNext = 0;
-    RemoveAll ();
-    m_next = start;
-    return true;
+  bool found = false;
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
+    {
+      if (cur->m_id == id) 
+        {
+          found = true;
+        }
+    }
+  if (!found) 
+    {
+      return false;
+    }
+  struct TagData *start = 0;
+  struct TagData **prevNext = &start;
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
+    {
+      if (cur->m_id == id) 
+        {
+          /**
+           * XXX
+           * Note: I believe that we could optimize this to
+           * avoid copying each TagData located after the target id
+           * and just link the already-copied list to the next tag.
+           */
+          continue;
+        }
+      struct TagData *copy = AllocData ();
+      copy->m_id = cur->m_id;
+      copy->m_count = 1;
+      copy->m_next = 0;
+      memcpy (copy->m_data, cur->m_data, Tags::SIZE);
+      *prevNext = copy;
+      prevNext = &copy->m_next;
+    }
+  *prevNext = 0;
+  RemoveAll ();
+  m_next = start;
+  return true;
 }
 
 void 
 Tags::PrettyPrint (std::ostream &os)
 {
-    for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
-      {
-        TagRegistry::PrettyPrint (cur->m_id, cur->m_data, os);
-      }
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
+    {
+      TagRegistry::PrettyPrint (cur->m_id, cur->m_data, os);
+    }
 }
 
 
@@ -184,38 +184,38 @@ namespace ns3 {
 
 class TagsTest : Test {
 public:
-    TagsTest ();
-    virtual ~TagsTest ();
-    virtual bool RunTests (void);
+  TagsTest ();
+  virtual ~TagsTest ();
+  virtual bool RunTests (void);
 };
 
 struct myTagA {
-    uint8_t a;
+  uint8_t a;
 };
 struct myTagB {
-    uint32_t b;
+  uint32_t b;
 };
 struct myTagC {
-    uint8_t c [Tags::SIZE];
+  uint8_t c [Tags::SIZE];
 };
 struct myInvalidTag {
-    uint8_t invalid [Tags::SIZE+1];
+  uint8_t invalid [Tags::SIZE+1];
 };
 
 static void 
 myTagAPrettyPrinterCb (struct myTagA *a, std::ostream &os)
 {
-    os << "struct myTagA, a="<<(uint32_t)a->a<<std::endl;
+  os << "struct myTagA, a="<<(uint32_t)a->a<<std::endl;
 }
 static void 
 myTagBPrettyPrinterCb (struct myTagB *b, std::ostream &os)
 {
-    os << "struct myTagB, b="<<b->b<<std::endl;
+  os << "struct myTagB, b="<<b->b<<std::endl;
 }
 static void 
 myTagCPrettyPrinterCb (struct myTagC *c, std::ostream &os)
 {
-    os << "struct myTagC, c="<<(uint32_t)c->c[0]<<std::endl;
+  os << "struct myTagC, c="<<(uint32_t)c->c[0]<<std::endl;
 }
 
 
@@ -225,7 +225,7 @@ static TagRegistration<struct myTagC> gMyTagCRegistration ("C", &myTagCPrettyPri
 
 
 TagsTest::TagsTest ()
-    : Test ("Tags")
+  : Test ("Tags")
 {}
 TagsTest::~TagsTest ()
 {}
@@ -233,92 +233,92 @@ TagsTest::~TagsTest ()
 bool 
 TagsTest::RunTests (void)
 {
-    bool ok = true;
+  bool ok = true;
 
-    // build initial tag.
-    Tags tags;
-    struct myTagA a;
-    a.a = 10;
-    tags.Add (a);
-    a.a = 0;
-    tags.Peek (a);
-    if (a.a != 10) 
-      {
-        ok = false;
-      }
-    //tags.prettyPrint (std::cout);
-    struct myTagB b;
-    b.b = 0xff;
-    tags.Add (b);
-    b.b = 0;
-    tags.Peek (b);
-    if (b.b != 0xff) 
-      {
-        ok = false;
-      }
-    //tags.prettyPrint (std::cout);
+  // build initial tag.
+  Tags tags;
+  struct myTagA a;
+  a.a = 10;
+  tags.Add (a);
+  a.a = 0;
+  tags.Peek (a);
+  if (a.a != 10) 
+    {
+      ok = false;
+    }
+  //tags.prettyPrint (std::cout);
+  struct myTagB b;
+  b.b = 0xff;
+  tags.Add (b);
+  b.b = 0;
+  tags.Peek (b);
+  if (b.b != 0xff) 
+    {
+      ok = false;
+    }
+  //tags.prettyPrint (std::cout);
 
-    // make sure copy contains copy.
-    Tags other = tags;
-    //other.prettyPrint (std::cout);
-    //tags.prettyPrint (std::cout);
-    struct myTagA oA;
-    oA.a = 0;
-    other.Peek (oA);
-    if (oA.a != 10) 
-      {
-        ok = false;
-      }
-    struct myTagB oB;
-    other.Peek (oB);
-    if (oB.b != 0xff) 
-      {
-        ok = false;
-      }
-    // remove data.
-    other.Remove (oA);
-    if (other.Peek (oA)) 
-      {
-        ok = false;
-      }
-    //other.prettyPrint (std::cout);
-    if (!tags.Peek (oA)) 
-      {
-        ok = false;
-      }
-    other.Remove (oB);
-    if (other.Peek (oB)) 
-      {
-        ok = false;
-      }
-    if (!tags.Peek (oB)) 
-      {
-        ok = false;
-      }
+  // make sure copy contains copy.
+  Tags other = tags;
+  //other.prettyPrint (std::cout);
+  //tags.prettyPrint (std::cout);
+  struct myTagA oA;
+  oA.a = 0;
+  other.Peek (oA);
+  if (oA.a != 10) 
+    {
+      ok = false;
+    }
+  struct myTagB oB;
+  other.Peek (oB);
+  if (oB.b != 0xff) 
+    {
+      ok = false;
+    }
+  // remove data.
+  other.Remove (oA);
+  if (other.Peek (oA)) 
+    {
+      ok = false;
+    }
+  //other.prettyPrint (std::cout);
+  if (!tags.Peek (oA)) 
+    {
+      ok = false;
+    }
+  other.Remove (oB);
+  if (other.Peek (oB)) 
+    {
+      ok = false;
+    }
+  if (!tags.Peek (oB)) 
+    {
+      ok = false;
+    }
 
-    other = tags;
-    Tags another = other;
-    struct myTagC c;
-    c.c[0] = 0x66;
-    another.Add (c);
-    c.c[0] = 0;
-    another.Peek (c);
-    if (!another.Peek (c)) 
-      {
-        ok = false;
-      }
-    if (tags.Peek (c)) 
-      {
-        ok = false;
-      }
+  other = tags;
+  Tags another = other;
+  struct myTagC c;
+  c.c[0] = 0x66;
+  another.Add (c);
+  c.c[0] = 0;
+  another.Peek (c);
+  if (!another.Peek (c)) 
+    {
+      ok = false;
+    }
+  if (tags.Peek (c)) 
+    {
+      ok = false;
+    }
 
-    other = other;
-    //other.prettyPrint (std::cout);
+  other = other;
+  //other.prettyPrint (std::cout);
 
-    //struct myInvalidTag invalid;
-    //tags.add (&invalid);
+  //struct myInvalidTag invalid;
+  //tags.add (&invalid);
 
-    return ok;
+  return ok;
 }
 
 static TagsTest gTagsTest;

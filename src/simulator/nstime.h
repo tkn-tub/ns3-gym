@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -33,28 +33,28 @@ namespace ns3 {
  */
 class Time {
  public:
-    Time (Time const &o);
-    Time &operator = (Time const &o);
+  Time (Time const &o);
+  Time &operator = (Time const &o);
 
-    bool IsNegative (void) const;
-    bool IsPositive (void) const;
-    bool IsStrictlyNegative (void) const;
-    bool IsStrictlyPositive (void) const;
-    bool IsZero (void) const;
+  bool IsNegative (void) const;
+  bool IsPositive (void) const;
+  bool IsStrictlyNegative (void) const;
+  bool IsStrictlyPositive (void) const;
+  bool IsZero (void) const;
 
-    Time operator += (Time const &o);
-    Time operator -= (Time const &o);
+  Time operator += (Time const &o);
+  Time operator -= (Time const &o);
 
-    double ApproximateToSeconds (void) const;
-    int64_t ApproximateToMilliSeconds (void) const;  
-    int64_t ApproximateToMicroSeconds (void) const;
-    int64_t ApproximateToNanoSeconds (void) const;
+  double ApproximateToSeconds (void) const;
+  int64_t ApproximateToMilliSeconds (void) const;  
+  int64_t ApproximateToMicroSeconds (void) const;
+  int64_t ApproximateToNanoSeconds (void) const;
   
  protected:
-    Time (int64_t ns);
+  Time (int64_t ns);
  private:
-    Time ();
-    int64_t m_ns;
+  Time ();
+  int64_t m_ns;
 };
 
 Time operator + (Time const &lhs, Time const &rhs);
@@ -69,28 +69,28 @@ bool operator >= (Time const &lhs, Time const &rhs);
 
 class Now : public Time {
 public:
-    Now ();
+  Now ();
 };
 
 class Seconds : public Time 
 {
 public:
-    Seconds (double s);
+  Seconds (double s);
 };
 class MilliSeconds : public Time 
 {
 public:
-    MilliSeconds (int32_t ms);
+  MilliSeconds (int32_t ms);
 };
 class MicroSeconds : public Time 
 {
 public:
-    MicroSeconds (int32_t us);
+  MicroSeconds (int32_t us);
 };
 class NanoSeconds : public Time 
 {
 public:
-    NanoSeconds (int64_t ns);
+  NanoSeconds (int64_t ns);
 };
 
 }; // namespace ns3

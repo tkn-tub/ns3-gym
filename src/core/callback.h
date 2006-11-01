@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -64,43 +64,43 @@ class CallbackImpl;
 template <typename R>
 class CallbackImpl<R,empty,empty,empty,empty,empty> {
 public:
-    virtual ~CallbackImpl () {}
-    virtual R operator() (void) = 0;
+  virtual ~CallbackImpl () {}
+  virtual R operator() (void) = 0;
 };
 // define CallbackImpl for 1 params
 template <typename R, typename T1>
 class CallbackImpl<R,T1,empty,empty,empty,empty> {
 public:
-    virtual ~CallbackImpl () {}
-    virtual R operator() (T1) = 0;
+  virtual ~CallbackImpl () {}
+  virtual R operator() (T1) = 0;
 };
 // define CallbackImpl for 2 params
 template <typename R, typename T1, typename T2>
 class CallbackImpl<R,T1,T2,empty,empty,empty> {
 public:
-    virtual ~CallbackImpl () {}
-    virtual R operator() (T1, T2) = 0;
+  virtual ~CallbackImpl () {}
+  virtual R operator() (T1, T2) = 0;
 };
 // define CallbackImpl for 3 params
 template <typename R, typename T1, typename T2, typename T3>
 class CallbackImpl<R,T1,T2,T3,empty,empty> {
 public:
-    virtual ~CallbackImpl () {}
-    virtual R operator() (T1, T2, T3) = 0;
+  virtual ~CallbackImpl () {}
+  virtual R operator() (T1, T2, T3) = 0;
 };
 // define CallbackImpl for 4 params
 template <typename R, typename T1, typename T2, typename T3, typename T4>
 class CallbackImpl<R,T1,T2,T3,T4,empty> {
 public:
-    virtual ~CallbackImpl () {}
-    virtual R operator() (T1, T2, T3, T4) = 0;
+  virtual ~CallbackImpl () {}
+  virtual R operator() (T1, T2, T3, T4) = 0;
 };
 // define CallbackImpl for 5 params
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5>
 class CallbackImpl {
 public:
-    virtual ~CallbackImpl () {}
-    virtual R operator() (T1, T2, T3, T4, T5) = 0;
+  virtual ~CallbackImpl () {}
+  virtual R operator() (T1, T2, T3, T4, T5) = 0;
 };
 
 
@@ -108,59 +108,59 @@ public:
 template <typename T, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
 class FunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5> {
 public:
-    FunctorCallbackImpl (T const &functor)
-        : m_functor (functor) {}
-    virtual ~FunctorCallbackImpl () {}
-    R operator() (void) {
-        return m_functor ();
-    }
-    R operator() (T1 a1) {
-        return m_functor (a1);
-    }
-    R operator() (T1 a1,T2 a2) {
-        return m_functor (a1,a2);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3) {
-        return m_functor (a1,a2,a3);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
-        return m_functor (a1,a2,a3,a4);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
-        return m_functor (a1,a2,a3,a4,a5);
-    }
+  FunctorCallbackImpl (T const &functor)
+      : m_functor (functor) {}
+  virtual ~FunctorCallbackImpl () {}
+  R operator() (void) {
+      return m_functor ();
+  }
+  R operator() (T1 a1) {
+      return m_functor (a1);
+  }
+  R operator() (T1 a1,T2 a2) {
+      return m_functor (a1,a2);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3) {
+      return m_functor (a1,a2,a3);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
+      return m_functor (a1,a2,a3,a4);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
+      return m_functor (a1,a2,a3,a4,a5);
+  }
 private:
-    T m_functor;
+  T m_functor;
 };
 
 // an impl for pointer to member functions
 template <typename OBJ_PTR, typename MEM_PTR, typename R, typename T1, typename T2, typename T3, typename T4, typename T5>
 class MemPtrCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5> {
 public:
-    MemPtrCallbackImpl (OBJ_PTR const&objPtr, MEM_PTR mem_ptr)
-        : m_objPtr (objPtr), m_memPtr (mem_ptr) {}
-    virtual ~MemPtrCallbackImpl () {}
-    R operator() (void) {
-        return ((*m_objPtr).*m_memPtr) ();
-    }
-    R operator() (T1 a1) {
-        return ((*m_objPtr).*m_memPtr) (a1);
-    }
-    R operator() (T1 a1,T2 a2) {
-        return ((*m_objPtr).*m_memPtr) (a1,a2);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3) {
-        return ((*m_objPtr).*m_memPtr) (a1,a2,a3);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
-        return ((*m_objPtr).*m_memPtr) (a1,a2,a3,a4);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
-        return ((*m_objPtr).*m_memPtr) (a1,a2,a3,a4,a5);
-    }
+  MemPtrCallbackImpl (OBJ_PTR const&objPtr, MEM_PTR mem_ptr)
+      : m_objPtr (objPtr), m_memPtr (mem_ptr) {}
+  virtual ~MemPtrCallbackImpl () {}
+  R operator() (void) {
+      return ((*m_objPtr).*m_memPtr) ();
+  }
+  R operator() (T1 a1) {
+      return ((*m_objPtr).*m_memPtr) (a1);
+  }
+  R operator() (T1 a1,T2 a2) {
+      return ((*m_objPtr).*m_memPtr) (a1,a2);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3) {
+      return ((*m_objPtr).*m_memPtr) (a1,a2,a3);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
+      return ((*m_objPtr).*m_memPtr) (a1,a2,a3,a4);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
+      return ((*m_objPtr).*m_memPtr) (a1,a2,a3,a4,a5);
+  }
 private:
-    OBJ_PTR const m_objPtr;
-    MEM_PTR m_memPtr;
+  OBJ_PTR const m_objPtr;
+  MEM_PTR m_memPtr;
 };
 
 /**
@@ -192,50 +192,50 @@ private:
  * \include samples/main-callback.cc
  */
 template<typename R, 
-     typename T1 = empty, typename T2 = empty, 
-     typename T3 = empty, typename T4 = empty,
-     typename T5 = empty>
+   typename T1 = empty, typename T2 = empty, 
+   typename T3 = empty, typename T4 = empty,
+   typename T5 = empty>
 class Callback {
 public:
-    template <typename FUNCTOR>
-    Callback (FUNCTOR const &functor) 
-        : m_impl (new FunctorCallbackImpl<FUNCTOR,R,T1,T2,T3,T4,T5> (functor))
-    {}
+  template <typename FUNCTOR>
+  Callback (FUNCTOR const &functor) 
+      : m_impl (new FunctorCallbackImpl<FUNCTOR,R,T1,T2,T3,T4,T5> (functor))
+  {}
 
-    template <typename OBJ_PTR, typename MEM_PTR>
-    Callback (OBJ_PTR const &objPtr, MEM_PTR mem_ptr)
-        : m_impl (new MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5> (objPtr, mem_ptr))
-    {}
+  template <typename OBJ_PTR, typename MEM_PTR>
+  Callback (OBJ_PTR const &objPtr, MEM_PTR mem_ptr)
+      : m_impl (new MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5> (objPtr, mem_ptr))
+  {}
 
-    Callback (ReferenceList<CallbackImpl<R,T1,T2,T3,T4,T5> *> const &impl)
-        : m_impl (impl)
-    {}
+  Callback (ReferenceList<CallbackImpl<R,T1,T2,T3,T4,T5> *> const &impl)
+      : m_impl (impl)
+  {}
 
-    bool IsNull (void) {
-        return (m_impl.Get () == 0)?true:false;
-    }
+  bool IsNull (void) {
+      return (m_impl.Get () == 0)?true:false;
+  }
 
-    Callback () : m_impl () {}
-    R operator() (void) {
-        return (*(m_impl.Get ())) ();
-    }
-    R operator() (T1 a1) {
-        return (*(m_impl.Get ())) (a1);
-    }
-    R operator() (T1 a1, T2 a2) {
-        return (*(m_impl).Get ()) (a1,a2);
-    }
-    R operator() (T1 a1, T2 a2, T3 a3) {
-        return (*(m_impl).Get ()) (a1,a2,a3);
-    }
-    R operator() (T1 a1, T2 a2, T3 a3, T4 a4) {
-        return (*(m_impl).Get ()) (a1,a2,a3,a4);
-    }
-    R operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5) {
-        return (*(m_impl).Get ()) (a1,a2,a3,a4,a5);
-    }
+  Callback () : m_impl () {}
+  R operator() (void) {
+      return (*(m_impl.Get ())) ();
+  }
+  R operator() (T1 a1) {
+      return (*(m_impl.Get ())) (a1);
+  }
+  R operator() (T1 a1, T2 a2) {
+      return (*(m_impl).Get ()) (a1,a2);
+  }
+  R operator() (T1 a1, T2 a2, T3 a3) {
+      return (*(m_impl).Get ()) (a1,a2,a3);
+  }
+  R operator() (T1 a1, T2 a2, T3 a3, T4 a4) {
+      return (*(m_impl).Get ()) (a1,a2,a3,a4);
+  }
+  R operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5) {
+      return (*(m_impl).Get ()) (a1,a2,a3,a4,a5);
+  }
 private:
-    ReferenceList<CallbackImpl<R,T1,T2,T3,T4,T5>*> m_impl;
+  ReferenceList<CallbackImpl<R,T1,T2,T3,T4,T5>*> m_impl;
 };
 
 /**
@@ -253,7 +253,7 @@ private:
  */
 template <typename OBJ, typename R>
 Callback<R> MakeCallback (R (OBJ::*mem_ptr) (), OBJ *const objPtr) {
-    return Callback<R> (objPtr, mem_ptr);
+  return Callback<R> (objPtr, mem_ptr);
 }
 /**
  * \ingroup MakeCallback
@@ -265,7 +265,7 @@ Callback<R> MakeCallback (R (OBJ::*mem_ptr) (), OBJ *const objPtr) {
  */
 template <typename OBJ, typename R, typename T1>
 Callback<R,T1> MakeCallback (R (OBJ::*mem_ptr) (T1), OBJ *const objPtr) {
-    return Callback<R,T1> (objPtr, mem_ptr);
+  return Callback<R,T1> (objPtr, mem_ptr);
 }
 /**
  * \ingroup MakeCallback
@@ -277,7 +277,7 @@ Callback<R,T1> MakeCallback (R (OBJ::*mem_ptr) (T1), OBJ *const objPtr) {
  */
 template <typename OBJ, typename R, typename T1, typename T2>
 Callback<R,T1,T2> MakeCallback (R (OBJ::*mem_ptr) (T1,T2), OBJ *const objPtr) {
-    return Callback<R,T1,T2> (objPtr, mem_ptr);
+  return Callback<R,T1,T2> (objPtr, mem_ptr);
 }
 /**
  * \ingroup MakeCallback
@@ -289,7 +289,7 @@ Callback<R,T1,T2> MakeCallback (R (OBJ::*mem_ptr) (T1,T2), OBJ *const objPtr) {
  */
 template <typename OBJ, typename R, typename T1,typename T2, typename T3>
 Callback<R,T1,T2,T3> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3), OBJ *const objPtr) {
-    return Callback<R,T1,T2,T3> (objPtr, mem_ptr);
+  return Callback<R,T1,T2,T3> (objPtr, mem_ptr);
 }
 /**
  * \ingroup MakeCallback
@@ -301,7 +301,7 @@ Callback<R,T1,T2,T3> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3), OBJ *const objP
  */
 template <typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4>
 Callback<R,T1,T2,T3,T4> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4), OBJ *const objPtr) {
-    return Callback<R,T1,T2,T3,T4> (objPtr, mem_ptr);
+  return Callback<R,T1,T2,T3,T4> (objPtr, mem_ptr);
 }
 /**
  * \ingroup MakeCallback
@@ -313,7 +313,7 @@ Callback<R,T1,T2,T3,T4> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4), OBJ *cons
  */
 template <typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
 Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4,T5), OBJ *const objPtr) {
-    return Callback<R,T1,T2,T3,T4,T5> (objPtr, mem_ptr);
+  return Callback<R,T1,T2,T3,T4,T5> (objPtr, mem_ptr);
 }
 
 /**
@@ -325,7 +325,7 @@ Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4,T5), OBJ
  */
 template <typename R>
 Callback<R> MakeCallback (R (*fnPtr) ()) {
-    return Callback<R> (fnPtr);
+  return Callback<R> (fnPtr);
 }
 /**
  * \ingroup MakeCallback
@@ -336,7 +336,7 @@ Callback<R> MakeCallback (R (*fnPtr) ()) {
  */
 template <typename R, typename T1>
 Callback<R,T1> MakeCallback (R (*fnPtr) (T1)) {
-    return Callback<R,T1> (fnPtr);
+  return Callback<R,T1> (fnPtr);
 }
 /**
  * \ingroup MakeCallback
@@ -347,7 +347,7 @@ Callback<R,T1> MakeCallback (R (*fnPtr) (T1)) {
  */
 template <typename R, typename T1, typename T2>
 Callback<R,T1,T2> MakeCallback (R (*fnPtr) (T1,T2)) {
-    return Callback<R,T1,T2> (fnPtr);
+  return Callback<R,T1,T2> (fnPtr);
 }
 /**
  * \ingroup MakeCallback
@@ -358,7 +358,7 @@ Callback<R,T1,T2> MakeCallback (R (*fnPtr) (T1,T2)) {
  */
 template <typename R, typename T1, typename T2,typename T3>
 Callback<R,T1,T2,T3> MakeCallback (R (*fnPtr) (T1,T2,T3)) {
-    return Callback<R,T1,T2,T3> (fnPtr);
+  return Callback<R,T1,T2,T3> (fnPtr);
 }
 /**
  * \ingroup MakeCallback
@@ -369,7 +369,7 @@ Callback<R,T1,T2,T3> MakeCallback (R (*fnPtr) (T1,T2,T3)) {
  */
 template <typename R, typename T1, typename T2,typename T3,typename T4>
 Callback<R,T1,T2,T3,T4> MakeCallback (R (*fnPtr) (T1,T2,T3,T4)) {
-    return Callback<R,T1,T2,T3,T4> (fnPtr);
+  return Callback<R,T1,T2,T3,T4> (fnPtr);
 }
 /**
  * \ingroup MakeCallback
@@ -380,7 +380,7 @@ Callback<R,T1,T2,T3,T4> MakeCallback (R (*fnPtr) (T1,T2,T3,T4)) {
  */
 template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5>
 Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (*fnPtr) (T1,T2,T3,T4,T5)) {
-    return Callback<R,T1,T2,T3,T4,T5> (fnPtr);
+  return Callback<R,T1,T2,T3,T4,T5> (fnPtr);
 }
 
 
@@ -393,7 +393,7 @@ Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (*fnPtr) (T1,T2,T3,T4,T5)) {
  */
 template <typename R>
 Callback<R> MakeNullCallback (void) {
-    return Callback<R> ();
+  return Callback<R> ();
 }
 /**
  * \ingroup MakeCallback
@@ -403,7 +403,7 @@ Callback<R> MakeNullCallback (void) {
  */
 template <typename R, typename T1>
 Callback<R,T1> MakeNullCallback (void) {
-    return Callback<R,T1> ();
+  return Callback<R,T1> ();
 }
 /**
  * \ingroup MakeCallback
@@ -413,7 +413,7 @@ Callback<R,T1> MakeNullCallback (void) {
  */
 template <typename R, typename T1, typename T2>
 Callback<R,T1,T2> MakeNullCallback (void) {
-    return Callback<R,T1,T2> ();
+  return Callback<R,T1,T2> ();
 }
 /**
  * \ingroup MakeCallback
@@ -423,7 +423,7 @@ Callback<R,T1,T2> MakeNullCallback (void) {
  */
 template <typename R, typename T1, typename T2,typename T3>
 Callback<R,T1,T2,T3> MakeNullCallback (void) {
-    return Callback<R,T1,T2,T3> ();
+  return Callback<R,T1,T2,T3> ();
 }
 /**
  * \ingroup MakeCallback
@@ -433,7 +433,7 @@ Callback<R,T1,T2,T3> MakeNullCallback (void) {
  */
 template <typename R, typename T1, typename T2,typename T3,typename T4>
 Callback<R,T1,T2,T3,T4> MakeNullCallback (void) {
-    return Callback<R,T1,T2,T3,T4> ();
+  return Callback<R,T1,T2,T3,T4> ();
 }
 /**
  * \ingroup MakeCallback
@@ -443,7 +443,7 @@ Callback<R,T1,T2,T3,T4> MakeNullCallback (void) {
  */
 template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5>
 Callback<R,T1,T2,T3,T4,T5> MakeNullCallback (void) {
-    return Callback<R,T1,T2,T3,T4,T5> ();
+  return Callback<R,T1,T2,T3,T4,T5> ();
 }
 
 
@@ -456,64 +456,64 @@ Callback<R,T1,T2,T3,T4,T5> MakeNullCallback (void) {
 template <typename T, typename R, typename TX, typename T1, typename T2, typename T3, typename T4,typename T5>
 class BoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5> {
 public:
-    BoundFunctorCallbackImpl (T const &functor, TX a)
-        : m_functor (functor), m_a (a) {}
-    virtual ~BoundFunctorCallbackImpl () {}
-    R operator() (void) {
-        return m_functor (m_a);
-    }
-    R operator() (T1 a1) {
-        return m_functor (m_a,a1);
-    }
-    R operator() (T1 a1,T2 a2) {
-        return m_functor (m_a,a1,a2);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3) {
-        return m_functor (m_a,a1,a2,a3);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
-        return m_functor (m_a,a1,a2,a3,a4);
-    }
-    R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
-        return m_functor (m_a,a1,a2,a3,a4,a5);
-    }
+  BoundFunctorCallbackImpl (T const &functor, TX a)
+      : m_functor (functor), m_a (a) {}
+  virtual ~BoundFunctorCallbackImpl () {}
+  R operator() (void) {
+      return m_functor (m_a);
+  }
+  R operator() (T1 a1) {
+      return m_functor (m_a,a1);
+  }
+  R operator() (T1 a1,T2 a2) {
+      return m_functor (m_a,a1,a2);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3) {
+      return m_functor (m_a,a1,a2,a3);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
+      return m_functor (m_a,a1,a2,a3,a4);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
+      return m_functor (m_a,a1,a2,a3,a4,a5);
+  }
 private:
-    T m_functor;
-    TX m_a;
+  T m_functor;
+  TX m_a;
 };
 
 template <typename R, typename TX, typename T1>
 Callback<R,T1> MakeBoundCallback (R (*fnPtr) (TX,T1), TX a) {
-    ReferenceList<CallbackImpl<R,T1,empty,empty,empty,empty>*> impl =
-    ReferenceList<CallbackImpl<R,T1,empty,empty,empty,empty>*> (
-    new BoundFunctorCallbackImpl<R (*) (TX,T1),R,TX,T1,empty,empty,empty,empty> (fnPtr, a)
-    );
-    return Callback<R,T1> (impl);
+  ReferenceList<CallbackImpl<R,T1,empty,empty,empty,empty>*> impl =
+  ReferenceList<CallbackImpl<R,T1,empty,empty,empty,empty>*> (
+  new BoundFunctorCallbackImpl<R (*) (TX,T1),R,TX,T1,empty,empty,empty,empty> (fnPtr, a)
+  );
+  return Callback<R,T1> (impl);
 }
 template <typename R, typename TX, typename T1, typename T2>
 Callback<R,T1,T2> MakeBoundCallback (R (*fnPtr) (TX,T1,T2), TX a) {
-    ReferenceList<CallbackImpl<R,T1,T2,empty,empty,empty>*> impl =
-    ReferenceList<CallbackImpl<R,T1,T2,empty,empty,empty>*> (
-    new BoundFunctorCallbackImpl<R (*) (TX,T1,T2),R,TX,T1,T2,empty,empty,empty> (fnPtr, a)
-    );
-    return Callback<R,T1,T2> (impl);
+  ReferenceList<CallbackImpl<R,T1,T2,empty,empty,empty>*> impl =
+  ReferenceList<CallbackImpl<R,T1,T2,empty,empty,empty>*> (
+  new BoundFunctorCallbackImpl<R (*) (TX,T1,T2),R,TX,T1,T2,empty,empty,empty> (fnPtr, a)
+  );
+  return Callback<R,T1,T2> (impl);
 }
 template <typename R, typename TX, typename T1, typename T2,typename T3,typename T4>
 Callback<R,T1,T2,T3,T4> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4), TX a) {
-    ReferenceList<CallbackImpl<R,T1,T2,T3,T4,empty>*> impl =
-    ReferenceList<CallbackImpl<R,T1,T2,T3,T4,empty>*> (
-    new BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4),R,TX,T1,T2,T3,T4,empty> (fnPtr, a)
-    );
-    return Callback<R,T1,T2,T3,T4> (impl);
+  ReferenceList<CallbackImpl<R,T1,T2,T3,T4,empty>*> impl =
+  ReferenceList<CallbackImpl<R,T1,T2,T3,T4,empty>*> (
+  new BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4),R,TX,T1,T2,T3,T4,empty> (fnPtr, a)
+  );
+  return Callback<R,T1,T2,T3,T4> (impl);
 }
 
 template <typename R, typename TX, typename T1, typename T2,typename T3,typename T4,typename T5>
 Callback<R,T1,T2,T3,T4,T5> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4,T5), TX a) {
-    ReferenceList<CallbackImpl<R,T1,T2,T3,T4,T5>*> impl =
-    ReferenceList<CallbackImpl<R,T1,T2,T3,T4,T5>*> (
-    new BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4,T5),R,TX,T1,T2,T3,T4,T5> (fnPtr, a)
-    );
-    return Callback<R,T1,T2,T3,T4,T5> (impl);
+  ReferenceList<CallbackImpl<R,T1,T2,T3,T4,T5>*> impl =
+  ReferenceList<CallbackImpl<R,T1,T2,T3,T4,T5>*> (
+  new BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4,T5),R,TX,T1,T2,T3,T4,T5> (fnPtr, a)
+  );
+  return Callback<R,T1,T2,T3,T4,T5> (impl);
 }
 
 

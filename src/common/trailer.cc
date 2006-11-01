@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -25,33 +25,33 @@
 namespace ns3 {
 
 Trailer::Trailer ()
-    : m_isDeserialized (false) {}
+  : m_isDeserialized (false) {}
 
 void 
 Trailer::Print (std::ostream &os) const
 {
-    PrintTo (os);
+  PrintTo (os);
 }
 uint32_t
 Trailer::GetSize (void) const
 {
-    return GetSerializedSize ();
+  return GetSerializedSize ();
 }
 void 
 Trailer::Serialize (Buffer::Iterator start) const
 {
-    SerializeTo (start);
+  SerializeTo (start);
 }
 void 
 Trailer::Deserialize (Buffer::Iterator start)
 {
-    DeserializeFrom (start);
-    m_isDeserialized = true;
+  DeserializeFrom (start);
+  m_isDeserialized = true;
 }
 bool 
 Trailer::IsDeserialized (void) const
 {
-    return m_isDeserialized;
+  return m_isDeserialized;
 }
 
 
@@ -61,8 +61,8 @@ Trailer::~Trailer ()
 
 std::ostream& operator<< (std::ostream& os, Trailer const& trailer)
 {
-    trailer.Print (os);
-    return os;
+  trailer.Print (os);
+  return os;
 }
 
 }; // namespace ns3

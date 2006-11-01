@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -29,23 +29,23 @@ namespace ns3 {
  */
 class SystemWallClockMs {
 public:
-    SystemWallClockMs ();
-    ~SystemWallClockMs ();
+  SystemWallClockMs ();
+  ~SystemWallClockMs ();
 
-    /**
-     * Start a measure.
-     */
-    void Start (void);
-    /**
-     * \returns the measured elapsed wall clock time since 
-     *          ns3::SystemWallClockMs::start was invoked.
-     *
-     * It is possible to start a new measurement with ns3::SystemWallClockMs::start
-     * after this method returns.
-     */
-    unsigned long long End (void);
+  /**
+   * Start a measure.
+   */
+  void Start (void);
+  /**
+   * \returns the measured elapsed wall clock time since 
+   *          ns3::SystemWallClockMs::start was invoked.
+   *
+   * It is possible to start a new measurement with ns3::SystemWallClockMs::start
+   * after this method returns.
+   */
+  unsigned long long End (void);
 private:
-    class SystemWallClockMsPrivate *m_priv;
+  class SystemWallClockMsPrivate *m_priv;
 };
 
 }; // namespace ns3

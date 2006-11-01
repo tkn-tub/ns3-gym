@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -25,33 +25,33 @@
 namespace ns3 {
 
 Header::Header ()
-    : m_isDeserialized (false) {}
+  : m_isDeserialized (false) {}
 
 void 
 Header::Print (std::ostream &os) const
 {
-    PrintTo (os);
+  PrintTo (os);
 }
 uint32_t
 Header::GetSize (void) const
 {
-    return GetSerializedSize ();
+  return GetSerializedSize ();
 }
 void 
 Header::Serialize (Buffer::Iterator start) const
 {
-    SerializeTo (start);
+  SerializeTo (start);
 }
 void 
 Header::Deserialize (Buffer::Iterator start)
 {
-    DeserializeFrom (start);
-    m_isDeserialized = true;
+  DeserializeFrom (start);
+  m_isDeserialized = true;
 }
 bool 
 Header::IsDeserialized (void) const
 {
-    return m_isDeserialized;
+  return m_isDeserialized;
 }
 
 
@@ -61,8 +61,8 @@ Header::~Header ()
 
 std::ostream& operator<< (std::ostream& os, Header const& header)
 {
-    header.Print (os);
-    return os;
+  header.Print (os);
+  return os;
 }
 
 }; // namespace ns3

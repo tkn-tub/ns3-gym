@@ -1,4 +1,4 @@
-/* -*- Mode:NS3; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
  * All rights reserved.
@@ -24,10 +24,10 @@
 namespace ns3 {
 
 Time::Time ()
-    : m_ns (0)
+  : m_ns (0)
 {}
 Time::Time (Time const &o)
-    : m_ns (o.m_ns)
+  : m_ns (o.m_ns)
 {}
 Time &
 Time::operator = (Time const &o)
@@ -36,7 +36,7 @@ Time::operator = (Time const &o)
   return *this;
 }
 Time::Time (int64_t ns)
-    : m_ns (ns)
+  : m_ns (ns)
 {}
 
 
@@ -153,19 +153,19 @@ bool operator >= (Time const &lhs, Time const &rhs)
 }
 
 Now::Now ()
-    : Time (Simulator::Now ())
+  : Time (Simulator::Now ())
 {}
 Seconds::Seconds (double s)
-    : Time ((int64_t)(s * 1000000000))
+  : Time ((int64_t)(s * 1000000000))
 {}
 MilliSeconds::MilliSeconds (int32_t ms)
-    : Time ((int64_t)(ms * 1000000))
+  : Time ((int64_t)(ms * 1000000))
 {}
 MicroSeconds::MicroSeconds (int32_t us)
-    : Time ((int64_t)(us * 1000))
+  : Time ((int64_t)(us * 1000))
 {}
 NanoSeconds::NanoSeconds (int64_t ns)
-    : Time (ns)
+  : Time (ns)
 {}
   
 
