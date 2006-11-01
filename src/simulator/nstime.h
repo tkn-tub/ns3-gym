@@ -57,6 +57,12 @@ class Time {
   int64_t m_ns;
 };
 
+Time Scale (Time const &time, double scale);
+Time Abs (Time const &time);
+Time Max (Time const &a, Time const &b);
+Time Min (Time const &a, Time const &b);
+
+
 Time operator + (Time const &lhs, Time const &rhs);
 Time operator - (Time const &lhs, Time const &rhs);
 bool operator == (Time const &lhs, Time const &rhs);

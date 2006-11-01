@@ -118,6 +118,32 @@ GetNs (Time const &time)
   return time.ApproximateToNanoSeconds ();
 }
 
+Time Scale (Time const &time, double scale)
+{
+  return NanoSeconds ((int64_t) (GetNs (time) * scale));
+}
+Time Abs (Time const &time)
+{
+  int64_t retval = GetNs (time);
+  retval = (retval<0)?(-retval):(retval);
+  return NanoSeconds (retval);
+}
+Time Max (Time const &ta, Time const &tb)
+{
+  int64_t a = GetNs (ta);
+  int64_t b = GetNs (tb);
+  int64_t retval = (a>b)?(a):(b);
+  return NanoSeconds (retval);
+}
+Time Min (Time const &ta, Time const &tb)
+{
+  int64_t a = GetNs (ta);
+  int64_t b = GetNs (tb);
+  int64_t retval = (a<b)?(a):(b);
+  return NanoSeconds (retval);
+}
+
+
 Time operator + (Time const &lhs, Time const &rhs)
 {
   return NanoSeconds (GetNs (lhs) + GetNs (rhs));
