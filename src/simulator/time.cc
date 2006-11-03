@@ -146,6 +146,11 @@ bool TimeTests::RunTests (void)
   Scalar s0 = t0 / t1;
   Scalar s1;
   s1 = t0 * t1 / (t2 * t0);
+  TimeUnit<0> tu0 = s0;
+  TimeUnit<1> tu1 = t0;
+  TimeUnit<2> tu2 = t0 * t1;
+  TimeUnit<3> tu3 = t0 * tu2;
+  TimeUnit<-2> tu4 = t0 / tu3;
 
   Time t3 = Seconds (10.0) * Scalar (1.5);
   //std::cout << "10.0s * 1.5 = " << t3.ApproximateToSeconds () << "s" << std::endl;
