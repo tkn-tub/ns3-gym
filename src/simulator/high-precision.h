@@ -54,7 +54,6 @@ private:
   int64_t m_low;
 };
 
-
 #else /* HIGH_PRECISION_I128 */
 
 /**
@@ -87,6 +86,10 @@ private:
 };
 
 #endif /* HIGH_PRECISION_I128 */
+
+HighPrecision Abs (HighPrecision const &value);
+HighPrecision Max (HighPrecision const &a, HighPrecision const &b);
+HighPrecision Min (HighPrecision const &a, HighPrecision const &b);
 
 }; /* namespace ns3 */
 

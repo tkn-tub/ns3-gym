@@ -159,4 +159,38 @@ HighPrecision::Zero (void)
 
 #endif /* HIGH_PRECISION_I128 */
 
+HighPrecision Abs (HighPrecision const &value)
+{
+  if (value.Compare (HighPrecision::Zero ()) <= 0)
+    {
+      return HighPrecision::Zero ().Sub (value);
+    }
+  else
+    {
+      return value;
+    }
+}
+HighPrecision Max (HighPrecision const &a, HighPrecision const &b)
+{
+  if (a.Compare (b) >= 0)
+    {
+      return a;
+    }
+  else
+    {
+      return b;
+    }
+}
+HighPrecision Min (HighPrecision const &a, HighPrecision const &b)
+{
+  if (a.Compare (b) <= 0)
+    {
+      return a;
+    }
+  else
+    {
+      return b;
+    }
+}
+
 }; /* namespace ns3 */
