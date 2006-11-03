@@ -302,7 +302,6 @@ public:
   template <typename T, typename T1, typename T2>
   static void ScheduleNow (void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2);
   /**
-   * @param time the expiration time of the event.
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
@@ -407,7 +406,6 @@ public:
   template <typename T, typename T1, typename T2>
   static void ScheduleDestroy (void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2);
   /**
-   * @param time the expiration time of the event.
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
