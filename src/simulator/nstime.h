@@ -22,82 +22,230 @@
 #define TIME_H
 
 #include <stdint.h>
+#include <cassert>
+#include "high-precision.h"
 
 namespace ns3 {
 
-/**
- * \brief simulation time
- *
- * This class is used by the user to specify when a scheduled event
- * is expected to expire (see ns3::Simulator::schedule).
- */
-class Time {
- public:
-  Time (Time const &o);
-  Time &operator = (Time const &o);
+template <int N>
+class TimeUnit
+{
+public:
+  TimeUnit ();
+  TimeUnit (TimeUnit const &o);
+  TimeUnit operator = (TimeUnit const &o);
+  TimeUnit (HighPrecision data);
+  HighPrecision GetHighPrecision (void) const;
 
+  bool IsZero (void) const;
   bool IsNegative (void) const;
   bool IsPositive (void) const;
   bool IsStrictlyNegative (void) const;
   bool IsStrictlyPositive (void) const;
-  bool IsZero (void) const;
 
-  Time operator += (Time const &o);
-  Time operator -= (Time const &o);
-
-  double ApproximateToSeconds (void) const;
-  int64_t ApproximateToMilliSeconds (void) const;  
-  int64_t ApproximateToMicroSeconds (void) const;
-  int64_t ApproximateToNanoSeconds (void) const;
-  
- protected:
-  Time (int64_t ns);
- private:
-  Time ();
-  int64_t m_ns;
+private:
+  HighPrecision m_data;
 };
 
-Time Scale (Time const &time, double scale);
-Time Abs (Time const &time);
-Time Max (Time const &a, Time const &b);
-Time Min (Time const &a, Time const &b);
+template <int N>
+TimeUnit<N>::TimeUnit ()
+  : m_data ()
+{}
+template <int N>
+TimeUnit<N>::TimeUnit (TimeUnit const &o)
+  : m_data (o.m_data)
+{}
+template <int N>
+TimeUnit<N>
+TimeUnit<N>::operator = (TimeUnit const &o)
+{
+  m_data = o.m_data;
+  return *this;
+}
+template <int N>
+TimeUnit<N>::TimeUnit (HighPrecision data)
+  : m_data (data)
+{}
+
+template <int N>
+HighPrecision
+TimeUnit<N>::GetHighPrecision (void) const
+{
+  return m_data;
+}
+template <int N>
+bool
+TimeUnit<N>::IsZero (void) const
+{
+  return m_data.Compare (HighPrecision::Zero ()) == 0;
+}
+template <int N>
+bool 
+TimeUnit<N>::IsNegative (void) const
+{
+  return m_data.Compare (HighPrecision::Zero ()) <= 0;
+}
+template <int N>
+bool 
+TimeUnit<N>::IsPositive (void) const
+{
+  return m_data.Compare (HighPrecision::Zero ()) >= 0;
+}
+template <int N>
+bool 
+TimeUnit<N>::IsStrictlyNegative (void) const
+{
+  return m_data.Compare (HighPrecision::Zero ()) < 0;
+}
+template <int N>
+bool 
+TimeUnit<N>::IsStrictlyPositive (void) const
+{
+  return m_data.Compare (HighPrecision::Zero ()) > 0;
+}
+
+template <int N>
+bool 
+operator == (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
+{
+  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) == 0;
+}
+template <int N>
+bool 
+operator <= (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
+{
+  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) <= 0;
+}
+template <int N>
+bool 
+operator >= (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
+{
+  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) >= 0;
+}
+template <int N>
+bool 
+operator < (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
+{
+  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) < 0;
+}
+template <int N>
+bool 
+operator > (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
+{
+  return lhs.GetHighPrecision ().Compare (rhs.GetHighPrecision ()) > 0;
+}
+template <int N>
+TimeUnit<N> operator + (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
+{
+  HighPrecision retval = lhs.GetHighPrecision ();
+  bool overflow = retval.Add (rhs.GetHighPrecision ());
+  assert (!overflow);
+  return TimeUnit<N> (retval);
+}
+template <int N>
+TimeUnit<N> operator - (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
+{
+  HighPrecision retval = lhs.GetHighPrecision ();
+  bool overflow = retval.Sub (rhs.GetHighPrecision ());
+  assert (!overflow);
+  return TimeUnit<N> (retval);
+}
+template <int N1, int N2>
+TimeUnit<N1+N2> operator * (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
+{
+  HighPrecision retval = lhs.GetHighPrecision ();
+  bool overflow = retval.Mul (rhs.GetHighPrecision ());
+  assert (!overflow);
+  return TimeUnit<N1+N2> (retval);
+}
+template <int N1, int N2>
+TimeUnit<N1-N2> operator / (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
+{
+  HighPrecision retval = lhs.GetHighPrecision ();
+  bool underflow = retval.Div (rhs.GetHighPrecision ());
+  assert (!underflow);
+  return TimeUnit<N1-N2> (retval);
+}
+
+template <int N>
+TimeUnit<N> Abs (TimeUnit<N> const &time)
+{
+  return TimeUnit<N> (Abs (time.GetHighPrecision ()));
+}
+template <int N>
+TimeUnit<N> Max (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
+{
+  HighPrecision a = ta.GetHighPrecision ();
+  HighPrecision b = tb.GetHighPrecision ();  
+  return TimeUnit<N> (Max (a, b));
+}
+template <int N>
+TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
+{
+  HighPrecision a = ta.GetHighPrecision ();
+  HighPrecision b = tb.GetHighPrecision ();  
+  return TimeUnit<N> (Max (a, b));
+}
 
 
-Time operator + (Time const &lhs, Time const &rhs);
-Time operator - (Time const &lhs, Time const &rhs);
-bool operator == (Time const &lhs, Time const &rhs);
-bool operator != (Time const &lhs, Time const &rhs);
-bool operator <  (Time const &lhs, Time const &rhs);
-bool operator <= (Time const &lhs, Time const &rhs);
-bool operator >  (Time const &lhs, Time const &rhs);
-bool operator >= (Time const &lhs, Time const &rhs);
+class Time : public TimeUnit<1>
+{
+public:
+  Time ();
+  Time (TimeUnit<1> time);
+
+  double ApproximateToSeconds (void) const;
+  int32_t ApproximateToMilliSeconds (void) const;
+  int64_t ApproximateToMicroSeconds (void) const;
+  int64_t ApproximateToNanoSeconds (void) const;
+};
 
 
-class Now : public Time {
+class Seconds : public TimeUnit<1>
+{
+public:
+  Seconds ();
+  Seconds (double seconds);
+};
+
+class MilliSeconds : public TimeUnit<1>
+{
+public:
+  MilliSeconds ();
+  MilliSeconds (uint32_t ms);
+};
+class MicroSeconds : public TimeUnit<1>
+{
+public:
+  MicroSeconds ();
+  MicroSeconds (uint32_t ms);
+};
+class NanoSeconds : public TimeUnit<1>
+{
+public:
+  NanoSeconds ();
+  NanoSeconds (uint32_t ms);
+};
+
+class Now : public Time
+{
 public:
   Now ();
 };
 
-class Seconds : public Time 
+
+class Scalar : public TimeUnit<0>
 {
 public:
-  Seconds (double s);
+  Scalar ();
+  Scalar (double scalar);
+  Scalar (TimeUnit<0> scalar);
+  double Get (void) const;
 };
-class MilliSeconds : public Time 
-{
-public:
-  MilliSeconds (int32_t ms);
-};
-class MicroSeconds : public Time 
-{
-public:
-  MicroSeconds (int32_t us);
-};
-class NanoSeconds : public Time 
-{
-public:
-  NanoSeconds (int64_t ns);
-};
+
+typedef TimeUnit<-1> TimeInvert;
+typedef TimeUnit<2> TimeSquare;
+
 
 }; // namespace ns3
 
