@@ -101,3 +101,56 @@ Scalar::Scalar (double scalar)
 }; // namespace ns3
 
 
+#ifdef RUN_SELF_TESTS
+
+#include "ns3/test.h"
+
+namespace ns3 {
+
+class TimeTests : public Test
+{
+public:
+  TimeTests ();
+  virtual ~TimeTests ();
+  virtual bool RunTests (void);
+};
+
+TimeTests::TimeTests ()
+  : Test ("Time")
+{}
+TimeTests::~TimeTests ()
+{}
+bool TimeTests::RunTests (void)
+{
+  bool ok = true;
+  Time t0 = Seconds (10.0);
+  Time t1 = Seconds (11.0);
+  Time t2;
+  t2 = t0 - t1;
+  t2 = t0 * t1 / t2;
+  t2 = t0 * (t1 / t2);
+  t2 = (t0 * t1) / t2;
+  t2 = t0 / t1 * t2;
+  t2 = (t0 / t1) * t2;
+  TimeInvert ti0 = t0 / (t1 * t2);
+  t2 = t0 * Scalar (10.0);
+  t2 = Scalar (10.0) * t0;
+  t2 = Scalar (10.0) * t0 / t2 * t1;
+  t2 = (Scalar (10.0) * t0 ) / t2 * t1;
+  Scalar s0 = t0 / t1;
+  Scalar s1;
+  s1 = t0 * t1 / (t2 * t0);
+
+  Time t3 = Seconds (10.0) * Scalar (1.5);
+  //std::cout << "10.0s * 1.5 = " << t3.ApproximateToSeconds () << "s" << std::endl;
+  Time t4 = NanoSeconds (10) * Scalar (1.5);
+  //std::cout << "10ns * 1.5 = " << t4.ApproximateToNanoSeconds () << "ns" << std::endl;
+
+  return ok;
+}
+
+static TimeTests g_time_tests;
+  
+};
+
+#endif /* RUN_SELF_TESTS */
