@@ -23,6 +23,8 @@
 
 #include <stdint.h>
 
+namespace ns3 {
+
 #ifdef HIGH_PRECISION_I128
 
 /**
@@ -86,6 +88,6 @@ private:
 
 #endif /* HIGH_PRECISION_I128 */
 
-
+}; /* namespace ns3 */
 
 #endif /* HIGH_PRECISION_H */

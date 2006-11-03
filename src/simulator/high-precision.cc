@@ -20,8 +20,13 @@
  */
 #include "high-precision.h"
 
-#ifdef HIGH_PRECISION_I128
+#include <cmath>
+#include <cassert>
 
+
+namespace ns3 {
+
+#ifdef HIGH_PRECISION_I128
 
 HighPrecision::HighPrecision ()
   : m_high (0),
@@ -86,9 +91,6 @@ HighPrecision::Zero (void)
 }
 
 #else /* HIGH_PRECISION_I128 */
-
-#include <cmath>
-#include <cassert>
 
 const double HighPrecision::MAX_64 = 18446744073709551615.0;
 
@@ -156,3 +158,5 @@ HighPrecision::Zero (void)
 }
 
 #endif /* HIGH_PRECISION_I128 */
+
+}; /* namespace ns3 */
