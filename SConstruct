@@ -48,6 +48,7 @@ simu = build.Ns3Module('simulator', 'src/simulator')
 ns3.add(simu)
 simu.add_dep('core')
 simu.add_sources([
+    'high-precision.cc',
     'time.cc',
     'event-id.cc',
     'scheduler.cc',
@@ -64,6 +65,7 @@ simu.add_headers([
     'scheduler-list.h'
     ])
 simu.add_inst_headers([
+    'high-precision.h',
     'nstime.h',
     'event-id.h',
     'event-impl.h',
