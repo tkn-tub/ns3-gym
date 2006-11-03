@@ -27,6 +27,51 @@
 
 namespace ns3 {
 
+/**
+ * \brief keep track of time unit.
+ *
+ * This template class is used to keep track of the value 
+ * of a specific time unit: the type TimeUnit<1> is used to 
+ * keep track of seconds, the type TimeUnit<2> is used to keep
+ * track of seconds squared, the type TimeUnit<-1> is used to
+ * keep track of 1/seconds, etc.
+ *
+ * This base class defines all the functionality shared by all
+ * these time unit objects: it defines all the classic arithmetic
+ * operators +, -, *, /, and all the classic comparison operators:
+ * ==, !=, <, >, <=, >=. It is thus easy to add, substract, or 
+ * multiply multiple TimeUnit objects. The return type of any such
+ * arithmetic expression is always a TimeUnit object.
+ *
+ * The ns3::Scalar, ns3::Time, ns3::TimeSquare, and ns3::TimeInvert classes 
+ * are aliases for the TimeUnit<0>, TimeUnit<1>, TimeUnit<2> and TimeUnit<-1>
+ * types respectively.
+ *
+ * For example:
+ * \code
+ * Time<1> t1 = Seconds (10.0);
+ * Time<1> t2 = Seconds (10.0);
+ * Time<2> t3 = t1 * t2;
+ * Time<0> t4 = t1 / t2;
+ * Time<3> t5 = t3 * t1;
+ * Time<-2> t6 = t1 / t5;
+ * TimeSquare t7 = t3;
+ * Scalar s = t4;
+ * \endcode
+ *
+ * If you try to assign the result of an expression which does not 
+ * match the type of the variable it is assigned to, you will get a
+ * compiler error. For example, the following will not compile:
+ * \code
+ * Time<1> = Seconds (10.0) * Seconds (1.5);
+ * \endcode
+ *
+ * You can also use the following non-member functions to manipulate
+ * any of these ns3::TimeUnit object:
+ *  - \ref ns3-Time-Abs ns3::Abs
+ *  - \ref ns3-Time-Max ns3::Max
+ *  - \ref ns3-Time-Min ns3::Min
+ */
 template <int N>
 class TimeUnit
 {
@@ -35,12 +80,32 @@ public:
   TimeUnit (TimeUnit const &o);
   TimeUnit operator = (TimeUnit const &o);
   TimeUnit (HighPrecision data);
+
+  /**
+   * \return the ns3::HighPrecision object which holds the value 
+   *         stored in this Time<N> type.
+   */
   HighPrecision GetHighPrecision (void) const;
 
+  /**
+   * \return true if the time is zero, false otherwise.
+   */
   bool IsZero (void) const;
+  /**
+   * \return true if the time is negative or zero, false otherwise.
+   */
   bool IsNegative (void) const;
+  /**
+   * \return true if the time is positive or zero, false otherwise.
+   */
   bool IsPositive (void) const;
+  /**
+   * \return true if the time is strictly negative, false otherwise.
+   */
   bool IsStrictlyNegative (void) const;
+  /**
+   * \return true if the time is strictly positive, false otherwise.
+   */
   bool IsStrictlyPositive (void) const;
 
 private:
@@ -167,11 +232,24 @@ TimeUnit<N1-N2> operator / (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
   return TimeUnit<N1-N2> (retval);
 }
 
+/**
+ * \anchor ns3-Time-Abs
+ * \relates ns3::TimeUnit
+ * \param time the input value
+ * \returns the absolute value of the input value.
+ */
 template <int N>
 TimeUnit<N> Abs (TimeUnit<N> const &time)
 {
   return TimeUnit<N> (Abs (time.GetHighPrecision ()));
 }
+/**
+ * \anchor ns3-Time-Max
+ * \relates ns3::TimeUnit
+ * \param ta the first value
+ * \param tb the seconds value
+ * \returns the max of the two input values.
+ */
 template <int N>
 TimeUnit<N> Max (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
 {
@@ -179,6 +257,13 @@ TimeUnit<N> Max (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
   HighPrecision b = tb.GetHighPrecision ();  
   return TimeUnit<N> (Max (a, b));
 }
+/**
+ * \anchor ns3-Time-Min
+ * \relates ns3::TimeUnit
+ * \param ta the first value
+ * \param tb the seconds value
+ * \returns the min of the two input values.
+ */
 template <int N>
 TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
 {
@@ -187,20 +272,68 @@ TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
   return TimeUnit<N> (Max (a, b));
 }
 
-
+/**
+ * \brief keep track of seconds.
+ *
+ * This is an instance of type ns3::TimeUnit<1>: it is
+ * the return value of the ns3::Simulator::Now method
+ * and is needed for the Simulator::Schedule methods
+ *
+ * Time instances can be created through any of the following classes:
+ *  - ns3::Seconds
+ *  - ns3::MilliSeconds
+ *  - ns3::MicroSeconds
+ *  - ns3::NanoSeconds
+ *  - ns3::Now
+ *
+ * Time instances can be added, substracted, multipled and divided using
+ * the standard C++ operators (if you make sure to obey the rules
+ * of the ns3::TimeUnit class template)
+ * To scale a Time instance, you can multiply it with an instance of
+ * the ns3::Scalar class.
+ * Time instances can also be manipulated through the following non-member 
+ * functions:
+ *  - \ref ns3-Time-Abs ns3::Abs
+ *  - \ref ns3-Time-Max ns3::Max
+ *  - \ref ns3-Time-Min ns3::Min
+ */
 class Time : public TimeUnit<1>
 {
 public:
   Time ();
   Time (TimeUnit<1> time);
 
+  /**
+   * \returns an approximation in seconds of the time stored in this
+   *          instance.
+   */
   double ApproximateToSeconds (void) const;
+  /**
+   * \returns an approximation in milliseconds of the time stored in this
+   *          instance.
+   */
   int32_t ApproximateToMilliSeconds (void) const;
+  /**
+   * \returns an approximation in microseconds of the time stored in this
+   *          instance.
+   */
   int64_t ApproximateToMicroSeconds (void) const;
+  /**
+   * \returns an approximation in nanoseconds of the time stored in this
+   *          instance.
+   */
   int64_t ApproximateToNanoSeconds (void) const;
 };
 
-
+/**
+ * \brief create ns3::Time instances in units of seconds.
+ *
+ * For example:
+ * \code
+ * Time t = Seconds (2.0);
+ * Simulator::Schedule (Now () + NanoSeconds (5.0), ...);
+ * \endcode
+ */
 class Seconds : public TimeUnit<1>
 {
 public:
@@ -208,18 +341,45 @@ public:
   Seconds (double seconds);
 };
 
+/**
+ * \brief create ns3::Time instances in units of milliseconds.
+ *
+ * For example:
+ * \code
+ * Time t = MilliSeconds (2);
+ * Simulator::Schedule (Now () + MilliSeconds (5), ...);
+ * \endcode
+ */
 class MilliSeconds : public TimeUnit<1>
 {
 public:
   MilliSeconds ();
   MilliSeconds (uint32_t ms);
 };
+/**
+ * \brief create ns3::Time instances in units of microseconds.
+ *
+ * For example:
+ * \code
+ * Time t = MicroSeconds (2);
+ * Simulator::Schedule (Now () + MicroSeconds (5), ...);
+ * \endcode
+ */
 class MicroSeconds : public TimeUnit<1>
 {
 public:
   MicroSeconds ();
   MicroSeconds (uint32_t ms);
 };
+/**
+ * \brief create ns3::Time instances in units of nanoseconds.
+ *
+ * For example:
+ * \code
+ * Time t = NanoSeconds (2);
+ * Simulator::Schedule (Now () + NanoSeconds (5), ...);
+ * \endcode
+ */
 class NanoSeconds : public TimeUnit<1>
 {
 public:
@@ -227,13 +387,38 @@ public:
   NanoSeconds (uint32_t ms);
 };
 
+/**
+ * \brief create an ns3::Time instance which contains the
+ *        current simulation time.
+ *
+ * This is really a shortcut for the ns3::Simulator::Now method.
+ * It is typically used as shown below to schedule an event
+ * which expires in 2 seconds from now:
+ * \code
+ * Simulator::Schedule (Now () + Seconds (2.0), &my_function);
+ * \endcode
+ */
 class Now : public Time
 {
 public:
   Now ();
 };
 
-
+/**
+ * \brief hold scalar values
+ *
+ * This class is used both to construct scalar values to multiply
+ * ns3::Time instances and to hold the return value of
+ * an expression which returns a scalar. For example, the 
+ * following code will output on your terminal 1.5:
+ * \code
+ * Scalar s0 = Scalar (1.5);
+ * Time t1 = Seconds (10.0) * s0;
+ * Time t2 = Seconds (10.0) * Scalar (2.5);
+ * Scalar s1 = Seconds (15.0) / Seconds (10.0);
+ * std::cout << s1.GetDouble () << std::endl;
+ * \endcode
+ */
 class Scalar : public TimeUnit<0>
 {
 public:
