@@ -98,6 +98,12 @@ Scalar::Scalar (double scalar)
   : TimeUnit<0> (HighPrecision (scalar))
 {}
 
+double
+Scalar::GetDouble (void) const
+{
+  return GetHighPrecision ().GetDouble ();
+}
+
 }; // namespace ns3
 
 

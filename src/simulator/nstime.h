@@ -240,7 +240,7 @@ public:
   Scalar ();
   Scalar (double scalar);
   Scalar (TimeUnit<0> scalar);
-  double Get (void) const;
+  double GetDouble (void) const;
 };
 
 typedef TimeUnit<-1> TimeInvert;
