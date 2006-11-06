@@ -29,6 +29,10 @@ Example: scons cflags="-O3 -ffast-math"
 Example: scons cxxflags="-O3 -ffast-math"
 - ldflags: flags for the linker:
 Example: scons ldflags="-L/foo -L/bar"
+- inheritenv: set to 'y' if you want to make your compiler
+  execute within the same environment (env vars) as your own
+  shell. This is typically used to make colorgcc work.
+Example: scons inheritenv=y
 
 2) Targets
 ----------
