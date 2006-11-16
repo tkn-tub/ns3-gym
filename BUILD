@@ -135,7 +135,7 @@ core.add_inst_headers ('foo.h')
 # create a new module. First arg is the name of
 # the new module. Second arg is the directory in
 # which all source files for this module reside.
-my_module = Ns3Module ('my', 'src/my_dir')
+my_module = build.Ns3Module ('my', 'src/my_dir')
 # add it to build system
 ns3.add (my_module)
 # specify module dependencies. Here, depends
