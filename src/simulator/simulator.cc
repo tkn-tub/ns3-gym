@@ -394,7 +394,7 @@ Simulator::MakeEvent (void (*f) (void))
 EventId
 Simulator::Schedule (Time const &time, EventImpl *ev)
 {
-  return GetPriv ()->Schedule (time, ev);
+  return GetPriv ()->Schedule (Now () + time, ev);
 }
 void
 Simulator::ScheduleNow (EventImpl *ev)
@@ -517,7 +517,7 @@ SimulatorTests::B (int b)
       m_b = true;
     }
   Simulator::Remove (m_idC);
-  Simulator::Schedule (Now () + MicroSeconds (10), &SimulatorTests::D, this, 4);
+  Simulator::Schedule (MicroSeconds (10), &SimulatorTests::D, this, 4);
 }
 void
 SimulatorTests::C (int c)
@@ -564,9 +564,9 @@ SimulatorTests::RunOneTest (void)
   m_c = true;
   m_d = false;
 
-  EventId a = Simulator::Schedule (Now () + MicroSeconds (10), &SimulatorTests::A, this, 1);
-  Simulator::Schedule (Now () + MicroSeconds (11), &SimulatorTests::B, this, 2);
-  m_idC = Simulator::Schedule (Now () + MicroSeconds (12), &SimulatorTests::C, this, 3);
+  EventId a = Simulator::Schedule (MicroSeconds (10), &SimulatorTests::A, this, 1);
+  Simulator::Schedule (MicroSeconds (11), &SimulatorTests::B, this, 2);
+  m_idC = Simulator::Schedule (MicroSeconds (12), &SimulatorTests::C, this, 3);
 
   Simulator::Cancel (a);
   Simulator::Run ();

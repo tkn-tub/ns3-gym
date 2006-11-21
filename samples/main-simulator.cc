@@ -15,7 +15,7 @@ private:
 void 
 MyModel::Start (void)
 {
-  Simulator::Schedule (Now () + Seconds (10.0), 
+  Simulator::Schedule (Seconds (10.0), 
                        &MyModel::DealWithEvent, 
                        this, Simulator::Now ().ApproximateToSeconds ());
 }
@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
 {
   MyModel model;
 
-  Simulator::Schedule (Now () + Seconds (10.0), &random_function, &model);
+  Simulator::Schedule (Seconds (10.0), &random_function, &model);
 
   Simulator::Run ();
 

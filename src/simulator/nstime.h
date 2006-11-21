@@ -331,7 +331,7 @@ public:
  * For example:
  * \code
  * Time t = Seconds (2.0);
- * Simulator::Schedule (Now () + NanoSeconds (5.0), ...);
+ * Simulator::Schedule (NanoSeconds (5.0), ...);
  * \endcode
  */
 class Seconds : public TimeUnit<1>
@@ -347,7 +347,7 @@ public:
  * For example:
  * \code
  * Time t = MilliSeconds (2);
- * Simulator::Schedule (Now () + MilliSeconds (5), ...);
+ * Simulator::Schedule (MilliSeconds (5), ...);
  * \endcode
  */
 class MilliSeconds : public TimeUnit<1>
@@ -362,7 +362,7 @@ public:
  * For example:
  * \code
  * Time t = MicroSeconds (2);
- * Simulator::Schedule (Now () + MicroSeconds (5), ...);
+ * Simulator::Schedule (MicroSeconds (5), ...);
  * \endcode
  */
 class MicroSeconds : public TimeUnit<1>
@@ -377,7 +377,7 @@ public:
  * For example:
  * \code
  * Time t = NanoSeconds (2);
- * Simulator::Schedule (Now () + NanoSeconds (5), ...);
+ * Simulator::Schedule (NanoSeconds (5), ...);
  * \endcode
  */
 class NanoSeconds : public TimeUnit<1>
@@ -395,7 +395,7 @@ public:
  * It is typically used as shown below to schedule an event
  * which expires in 2 seconds from now:
  * \code
- * Simulator::Schedule (Now () + Seconds (2.0), &my_function);
+ * Simulator::Schedule (Seconds (2.0), &my_function);
  * \endcode
  */
 class Now : public Time
