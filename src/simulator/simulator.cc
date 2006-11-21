@@ -177,19 +177,19 @@ void
 SimulatorPrivate::StopAt (Time const &at)
 {
   assert (at.IsPositive ());
-  m_stopAt = at.ApproximateToNanoSeconds ();
+  m_stopAt = at.GetNanoSeconds ();
 }
 EventId
 SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
 {
   assert (time.IsPositive ());
   assert (time >= NanoSeconds (m_currentNs));
-  uint64_t ns = (uint64_t) time.ApproximateToNanoSeconds ();
+  uint64_t ns = (uint64_t) time.GetNanoSeconds ();
   Scheduler::EventKey key = {ns, m_uid};
   if (m_logEnable) 
     {
       m_log << "i "<<m_currentUid<<" "<<m_currentNs<<" "
-            <<m_uid<<" "<<time.ApproximateToNanoSeconds () << std::endl;
+            <<m_uid<<" "<<time.GetSeconds () << std::endl;
     }
   m_uid++;
   return m_events->Insert (event, key);
@@ -213,7 +213,7 @@ SimulatorPrivate::ScheduleDestroy (EventImpl *event)
   m_destroy.push_back (std::make_pair (event, m_uid));  
   if (m_logEnable) 
   {
-    m_log << "id " << m_currentUid << " " << Now ().ApproximateToNanoSeconds () << " "
+    m_log << "id " << m_currentUid << " " << Now ().GetNanoSeconds () << " "
           << m_uid << std::endl;
   }
   m_uid++;
@@ -497,7 +497,7 @@ SimulatorTests::~SimulatorTests ()
 uint64_t
 SimulatorTests::NowUs (void)
 {
-  uint64_t ns = Now ().ApproximateToNanoSeconds ();
+  uint64_t ns = Now ().GetNanoSeconds ();
   return ns / 1000;
 }  
 void

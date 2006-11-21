@@ -307,22 +307,22 @@ public:
    * \returns an approximation in seconds of the time stored in this
    *          instance.
    */
-  double ApproximateToSeconds (void) const;
+  double GetSeconds (void) const;
   /**
    * \returns an approximation in milliseconds of the time stored in this
    *          instance.
    */
-  int32_t ApproximateToMilliSeconds (void) const;
+  int32_t GetMilliSeconds (void) const;
   /**
    * \returns an approximation in microseconds of the time stored in this
    *          instance.
    */
-  int64_t ApproximateToMicroSeconds (void) const;
+  int64_t GetMicroSeconds (void) const;
   /**
    * \returns an approximation in nanoseconds of the time stored in this
    *          instance.
    */
-  int64_t ApproximateToNanoSeconds (void) const;
+  int64_t GetNanoSeconds (void) const;
 };
 
 /**

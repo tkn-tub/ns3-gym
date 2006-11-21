@@ -69,7 +69,7 @@ PcapWriter::WritePacket (Packet const packet)
 {
   if (m_writer != 0) 
     {
-      uint64_t current = Simulator::Now ().ApproximateToMicroSeconds ();
+      uint64_t current = Simulator::Now ().GetMicroSeconds ();
       uint64_t s = current / 1000000;
       uint64_t us = current % 1000000;
       Write32 (s & 0xffffffff);

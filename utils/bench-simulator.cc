@@ -103,7 +103,7 @@ Bench::Cb (void)
       m_current = m_distribution.begin ();
   }
   if (gDebug) {
-      std::cerr << "event at " << Simulator::Now ().ApproximateToSeconds () << "s" << std::endl;
+      std::cerr << "event at " << Simulator::Now ().GetSeconds () << "s" << std::endl;
   }
   Simulator::Schedule (NanoSeconds (*m_current), &Bench::Cb, this);
   m_current++;

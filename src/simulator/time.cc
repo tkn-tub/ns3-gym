@@ -31,28 +31,28 @@ Time::Time (TimeUnit<1> time)
 {}
 
 double 
-Time::ApproximateToSeconds (void) const
+Time::GetSeconds (void) const
 {
   HighPrecision seconds = GetHighPrecision ();
   seconds.Div (HighPrecision (1000000000, 0));
   return seconds.GetDouble ();
 }
 int32_t 
-Time::ApproximateToMilliSeconds (void) const
+Time::GetMilliSeconds (void) const
 {
   HighPrecision ms = GetHighPrecision ();
   ms.Div (HighPrecision (1000000, 0));
   return (int32_t) ms.GetHigh ();
 }
 int64_t 
-Time::ApproximateToMicroSeconds (void) const
+Time::GetMicroSeconds (void) const
 {
   HighPrecision us = GetHighPrecision ();
   us.Div (HighPrecision (1000, 0));
   return us.GetHigh ();
 }
 int64_t 
-Time::ApproximateToNanoSeconds (void) const
+Time::GetNanoSeconds (void) const
 {
   return GetHighPrecision ().GetHigh ();
 }
