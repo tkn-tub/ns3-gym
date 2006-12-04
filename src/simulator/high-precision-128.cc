@@ -19,64 +19,93 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "high-precision-128.h"
+#include <math.h>
 
 namespace ns3 {
 
-HighPrecision::HighPrecision ()
-  : m_high (0),
-    m_low (0)
-{}
+const double HighPrecision::MAX_64 = 18446744073709551615.0;
 
-HighPrecision::HighPrecision (int64_t high, int64_t low)
-  : m_high (high),
-    m_low (low)
-{}
+HighPrecision::HighPrecision ()
+{
+  m_value = _cairo_int32_to_int128 (0);
+  m_value = _cairo_int128_lsl (m_value, 64);
+}
+
+HighPrecision::HighPrecision (int64_t value, bool dummy)
+{
+  m_value = _cairo_int64_to_int128 (value);
+  m_value = _cairo_int128_lsl (m_value, 64);
+}
 
 HighPrecision::HighPrecision (double value)
-  : m_high (0), // XXX
-    m_low (0) // XXX
-{}
+{
+  int64_t hi = (int64_t) floor (value);
+  uint64_t lo = (uint64_t) ((value - floor (value)) * MAX_64);
+  m_value = _cairo_int64_to_int128 (hi);
+  m_value = _cairo_int128_lsl (m_value, 64);
+  cairo_int128_t clo = _cairo_uint128_to_int128 (_cairo_uint64_to_uint128 (lo));
+  m_value = _cairo_int128_add (m_value, clo);
+}
 
 int64_t
-HighPrecision::GetHigh (void) const
+HighPrecision::GetInteger (void) const
 {
-  return m_high;
-}
-int64_t
-HighPrecision::GetLow (void) const
-{
-  return m_low;
+  cairo_int128_t value = _cairo_int128_rsa (m_value, 64);
+  return _cairo_int128_to_int64 (value);
 }
 
 double 
 HighPrecision::GetDouble (void) const
 {
-  return 0.0;
+  cairo_int128_t value = _cairo_int128_rsa (m_value, 64);
+  cairo_int128_t rem = _cairo_int128_sub (m_value, value);
+  double frem = _cairo_int128_to_int64 (rem);
+  frem /= MAX_64;
+  double retval = _cairo_int128_to_int64 (value);
+  retval += frem;
+  return retval;
 }
 bool 
 HighPrecision::Add (HighPrecision const &o)
 {
+  m_value = _cairo_int128_add (m_value, o.m_value);
   return false;
 }
 bool 
 HighPrecision::Sub (HighPrecision const &o)
 {
+  m_value = _cairo_int128_sub (m_value, o.m_value);
   return false;
 }
 bool 
 HighPrecision::Mul (HighPrecision const &o)
 {
+  m_value = _cairo_int128_mul (m_value, o.m_value);
   return false;
 }
 bool 
 HighPrecision::Div (HighPrecision const &o)
 {
+  cairo_quorem128_t qr;
+  qr = _cairo_int128_divrem (m_value, o.m_value);
+  m_value = qr.quo;
   return false;
 }
 int 
 HighPrecision::Compare (HighPrecision const &o) const
 {
-  return 0;
+  if (_cairo_int128_lt (m_value, o.m_value))
+    {
+      return -1;
+    }
+  else if (_cairo_int128_eq (m_value, o.m_value))
+    {
+      return 0;
+    }
+  else
+    {
+      return 1;
+    }
 }
 HighPrecision 
 HighPrecision::Zero (void)

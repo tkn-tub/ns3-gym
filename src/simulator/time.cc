@@ -34,27 +34,27 @@ double
 Time::GetSeconds (void) const
 {
   HighPrecision seconds = GetHighPrecision ();
-  seconds.Div (HighPrecision (1000000000, 0));
+  seconds.Div (HighPrecision (1000000000, false));
   return seconds.GetDouble ();
 }
 int32_t 
 Time::GetMilliSeconds (void) const
 {
   HighPrecision ms = GetHighPrecision ();
-  ms.Div (HighPrecision (1000000, 0));
-  return (int32_t) ms.GetHigh ();
+  ms.Div (HighPrecision (1000000, false));
+  return (int32_t) ms.GetInteger ();
 }
 int64_t 
 Time::GetMicroSeconds (void) const
 {
   HighPrecision us = GetHighPrecision ();
-  us.Div (HighPrecision (1000, 0));
-  return us.GetHigh ();
+  us.Div (HighPrecision (1000, false));
+  return us.GetInteger ();
 }
 int64_t 
 Time::GetNanoSeconds (void) const
 {
-  return GetHighPrecision ().GetHigh ();
+  return GetHighPrecision ().GetInteger ();
 }
 
 
@@ -68,19 +68,19 @@ MilliSeconds::MilliSeconds ()
   : TimeUnit<1> ()
 {}
 MilliSeconds::MilliSeconds (uint32_t ms)
-  : TimeUnit<1> (HighPrecision (ms * 1000000, 0))
+  : TimeUnit<1> (HighPrecision (ms * 1000000, false))
 {}
 MicroSeconds::MicroSeconds ()
   : TimeUnit<1> ()
 {}
 MicroSeconds::MicroSeconds (uint32_t us)
-  : TimeUnit<1> (HighPrecision (us * 1000, 0))
+  : TimeUnit<1> (HighPrecision (us * 1000, false))
 {}
 NanoSeconds::NanoSeconds ()
   : TimeUnit<1> ()
 {}
 NanoSeconds::NanoSeconds (uint32_t ns)
-  : TimeUnit<1> (HighPrecision (ns, 0))
+  : TimeUnit<1> (HighPrecision (ns, false))
 {}
 
 Now::Now ()

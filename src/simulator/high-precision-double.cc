@@ -26,14 +26,12 @@
 
 namespace ns3 {
 
-const double HighPrecision::MAX_64 = 18446744073709551615.0;
-
 HighPrecision::HighPrecision ()
   : m_value (0.0)
 {}
 
-HighPrecision::HighPrecision (int64_t high, int64_t low)
-  : m_value (((double)high) + (((double)low)/MAX_64))
+HighPrecision::HighPrecision (int64_t value, bool dummy)
+  : m_value ((double)value)
 {}
 
 HighPrecision::HighPrecision (double value)
@@ -41,14 +39,9 @@ HighPrecision::HighPrecision (double value)
 {}
 
 int64_t
-HighPrecision::GetHigh (void) const
+HighPrecision::GetInteger (void) const
 {
   return (int64_t)floor (m_value);
-}
-int64_t
-HighPrecision::GetLow (void) const
-{
-  return (int64_t)((m_value - floor (m_value)) * MAX_64);
 }
 
 double 

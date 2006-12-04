@@ -30,7 +30,9 @@ HighPrecision Abs (HighPrecision const &value)
 {
   if (value.Compare (HighPrecision::Zero ()) <= 0)
     {
-      return HighPrecision::Zero ().Sub (value);
+      HighPrecision v = HighPrecision::Zero ();
+      v.Sub (value);
+      return v;
     }
   else
     {

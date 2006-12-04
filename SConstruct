@@ -49,7 +49,6 @@ ns3.add(simu)
 simu.add_dep('core')
 simu.add_sources([
     'high-precision.cc',
-    'cairo-wideint.c',
     'time.cc',
     'event-id.cc',
     'scheduler.cc',
@@ -61,7 +60,6 @@ simu.add_sources([
     'simulator.cc',
     ])
 simu.add_headers([
-    'cairo-wideint-private.h',
     'scheduler-heap.h',
     'scheduler-map.h',
     'scheduler-list.h'
@@ -76,12 +74,16 @@ simu.add_inst_headers([
     'scheduler-factory.h',
     ])
 high_precision_as_double = ARGUMENTS.get('high-precision-as-double', 'n')
-if high_precision_as_double == 1:
+if high_precision_as_double == 'y':
     simu.add_inst_header ('high-precision-double.h')
     simu.add_source ('high-precision-double.cc')
 else:
     simu.add_inst_header ('high-precision-128.h')
-    simu.add_source ('high-precision-128.cc')
+    simu.add_header ('cairo-wideint-private.h')
+    simu.add_sources ([
+        'high-precision-128.cc',
+        'cairo-wideint.c',
+        ])
 
 def config_simulator (env, config):
     retval = []

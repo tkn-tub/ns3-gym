@@ -82,12 +82,6 @@ public:
   TimeUnit (HighPrecision data);
 
   /**
-   * \return the ns3::HighPrecision object which holds the value 
-   *         stored in this Time<N> type.
-   */
-  HighPrecision GetHighPrecision (void) const;
-
-  /**
    * \return true if the time is zero, false otherwise.
    */
   bool IsZero (void) const;
@@ -107,6 +101,15 @@ public:
    * \return true if the time is strictly positive, false otherwise.
    */
   bool IsStrictlyPositive (void) const;
+
+  /**
+   * This is really an internal method exported for the needs of
+   * the implementation. Please, Do not try to use this method, ever.
+   *
+   * \return the ns3::HighPrecision object which holds the value 
+   *         stored in this Time<N> type.
+   */
+  HighPrecision GetHighPrecision (void) const;
 
 private:
   HighPrecision m_data;

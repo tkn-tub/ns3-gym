@@ -22,6 +22,7 @@
 #define HIGH_PRECISION_128_H
 
 #include <stdint.h>
+#include "cairo-wideint-private.h"
 
 namespace ns3 {
 
@@ -34,11 +35,10 @@ class HighPrecision
 {
 public:
   HighPrecision ();
-  HighPrecision (int64_t high, int64_t low);
+  HighPrecision (int64_t value, bool dummy);
   HighPrecision (double value);
   
-  int64_t GetHigh (void) const;
-  int64_t GetLow (void) const;
+  int64_t GetInteger (void) const;
   double GetDouble (void) const;
   bool Add (HighPrecision const &o);
   bool Sub (HighPrecision const &o);
@@ -48,8 +48,8 @@ public:
   int Compare (HighPrecision const &o) const;
   static HighPrecision Zero (void);
 private:
-  int64_t m_high;
-  int64_t m_low;
+  static const double MAX_64;
+  cairo_int128_t m_value;
 };
 
 }; // namespace ns3

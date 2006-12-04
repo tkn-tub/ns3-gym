@@ -36,11 +36,10 @@ class HighPrecision
 {
 public:
   HighPrecision ();
-  HighPrecision (int64_t high, int64_t low);
+  HighPrecision (int64_t value, bool dummy);
   HighPrecision (double value);
   
-  int64_t GetHigh (void) const;
-  int64_t GetLow (void) const;
+  int64_t GetInteger (void) const;
   double GetDouble (void) const;
   bool Add (HighPrecision const &o);
   bool Sub (HighPrecision const &o);
