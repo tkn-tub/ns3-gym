@@ -299,7 +299,11 @@ class Ns3:
                     outfile.write('#endif /*' + config_file_guard + '*/\n')
                     config.Finish()
     def generate_dependencies(self):
-        env = Environment()
+        inheritenv = (ARGUMENTS.get('inheritenv', 'n') in 'yY1')
+        if inheritenv:
+            env = Environment(ENV=os.environ)
+        else:
+            env = Environment()
         self.gen_mod_config(env)
         cc = env['CC']
         cxx = env.subst(env['CXX'])
