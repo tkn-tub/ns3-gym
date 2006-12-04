@@ -29,6 +29,11 @@ Example: scons cflags="-O3 -ffast-math"
 Example: scons cxxflags="-O3 -ffast-math"
 - ldflags: flags for the linker:
 Example: scons ldflags="-L/foo -L/bar"
+- high-precision-as-double: set to 'y' to make sure that the
+  high-precision arithmetics performed by the Time class on
+  behalf of the user will use doubles. By default, the code
+  uses 128 integers.
+Example: scons high-precision-as-double=y
 
 2) Targets
 ----------
@@ -166,3 +171,4 @@ my_module.add_external_dep ('pthread')
 # by default, a module is conceptually a library. If you
 # want to generate an executable from a module you need to:
 my_module.set_executable ()
+

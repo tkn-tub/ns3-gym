@@ -48,8 +48,8 @@ simu = build.Ns3Module('simulator', 'src/simulator')
 ns3.add(simu)
 simu.add_dep('core')
 simu.add_sources([
-    'cairo-wideint.c',
     'high-precision.cc',
+    'cairo-wideint.c',
     'time.cc',
     'event-id.cc',
     'scheduler.cc',
@@ -75,8 +75,21 @@ simu.add_inst_headers([
     'scheduler.h',
     'scheduler-factory.h',
     ])
+high_precision_as_double = ARGUMENTS.get('high-precision-as-double', 'n')
+if high_precision_as_double == 1:
+    simu.add_inst_header ('high-precision-double.h')
+    simu.add_source ('high-precision-double.cc')
+else:
+    simu.add_inst_header ('high-precision-128.h')
+    simu.add_source ('high-precision-128.cc')
+
 def config_simulator (env, config):
     retval = []
+    high_precision_as_double = ARGUMENTS.get('high-precision-as-double', 'n')
+    if high_precision_as_double == 'y':
+        retval.append ('#define USE_HIGH_PRECISION_DOUBLE 1')
+    else:
+        retval.append ('#undef USE_HIGH_PRECISION_DOUBLE')
     if config.CheckCHeader ('stdint.h') == 1:
         retval.append ('#define HAVE_STDINT_H 1')
     elif config.CheckCHeader ('inttypes.h') == 1:

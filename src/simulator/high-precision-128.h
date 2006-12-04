@@ -18,24 +18,40 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef HIGH_PRECISION_H
-#define HIGH_PRECISION_H
+#ifndef HIGH_PRECISION_128_H
+#define HIGH_PRECISION_128_H
 
 #include <stdint.h>
-#include "ns3/simulator-config.h"
-
-#ifdef USE_HIGH_PRECISION_DOUBLE
-#include "high-precision-double.h"
-#else /* USE_HIGH_PRECISION_DOUBLE */
-#include "high-precision-128.h"
-#endif /* USE_HIGH_PRECISION_DOUBLE */
 
 namespace ns3 {
 
-HighPrecision Abs (HighPrecision const &value);
-HighPrecision Max (HighPrecision const &a, HighPrecision const &b);
-HighPrecision Min (HighPrecision const &a, HighPrecision const &b);
+/**
+ * This should be a high-precision 128bit integer version of
+ * HighPrecision class. It should also be able to report 
+ * overflow and underflow.
+ */
+class HighPrecision 
+{
+public:
+  HighPrecision ();
+  HighPrecision (int64_t high, int64_t low);
+  HighPrecision (double value);
+  
+  int64_t GetHigh (void) const;
+  int64_t GetLow (void) const;
+  double GetDouble (void) const;
+  bool Add (HighPrecision const &o);
+  bool Sub (HighPrecision const &o);
+  bool Mul (HighPrecision const &o);
+  bool Div (HighPrecision const &o);
 
-}; /* namespace ns3 */
+  int Compare (HighPrecision const &o) const;
+  static HighPrecision Zero (void);
+private:
+  int64_t m_high;
+  int64_t m_low;
+};
 
-#endif /* HIGH_PRECISION_H */
+}; // namespace ns3
+
+#endif /* HIGH_PRECISION_128_H */
