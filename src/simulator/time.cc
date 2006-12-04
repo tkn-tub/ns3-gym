@@ -129,20 +129,50 @@ TimeTests::~TimeTests ()
 bool TimeTests::RunTests (void)
 {
   bool ok = true;
+
   Time t0 = Seconds (10.0);
+  //std::cout << "t0="<<t0.GetSeconds ()<<" (expected 10.0)"<<std::endl;
   Time t1 = Seconds (11.0);
-  Time t2;
+  //std::cout << "t1="<<t1.GetSeconds ()<<" (expected 11.0)"<<std::endl;
+  t0 = Seconds (1.5);
+  //std::cout << "t0="<<t0.GetSeconds ()<<" (expected +1.5)"<<std::endl;
+  t0 = Seconds (-1.5);
+  //std::cout << "t0="<<t0.GetSeconds ()<<" (expected -1.5)"<<std::endl;
+
+  t0 = Seconds (10.0);
+  t1 = Seconds (11.0);
+
+  Time t2, t3;
+
+  t2 = t1 - t0;
+  if (!t2.IsStrictlyPositive ())
+    {
+      ok = false;
+    }
+  t2 = t1 - t1;
+  if (!t2.IsZero ())
+    {
+      ok = false;
+    }
   t2 = t0 - t1;
-  t2 = t0 * t1 / t2;
-  t2 = t0 * (t1 / t2);
-  t2 = (t0 * t1) / t2;
-  t2 = t0 / t1 * t2;
-  t2 = (t0 / t1) * t2;
+  if (!t2.IsStrictlyNegative ())
+    {
+      ok = false;
+    }
+
+  t2 = t0 - t1;
+  t3 = t2 * t0 / t1;
+  t3 = t0 * t2 / t1;
+  t3 = t0 * t1 / t2;
+  t3 = t0 * (t1 / t2);
+  t3 = (t0 * t1) / t2;
+  t3 = t0 / t1 * t2;
+  t3 = (t0 / t1) * t2;
   TimeInvert ti0 = t0 / (t1 * t2);
-  t2 = t0 * Scalar (10.0);
-  t2 = Scalar (10.0) * t0;
-  t2 = Scalar (10.0) * t0 / t2 * t1;
-  t2 = (Scalar (10.0) * t0 ) / t2 * t1;
+  t3 = t0 * Scalar (10.0);
+  t3 = Scalar (10.0) * t0;
+  t3 = Scalar (10.0) * t0 / t2 * t1;
+  t3 = (Scalar (10.0) * t0 ) / t2 * t1;
   Scalar s0 = t0 / t1;
   Scalar s1;
   s1 = t0 * t1 / (t2 * t0);
@@ -152,10 +182,10 @@ bool TimeTests::RunTests (void)
   TimeUnit<3> tu3 = t0 * tu2;
   TimeUnit<-2> tu4 = t0 / tu3;
 
-  Time t3 = Seconds (10.0) * Scalar (1.5);
-  //std::cout << "10.0s * 1.5 = " << t3.ApproximateToSeconds () << "s" << std::endl;
-  Time t4 = NanoSeconds (10) * Scalar (1.5);
-  //std::cout << "10ns * 1.5 = " << t4.ApproximateToNanoSeconds () << "ns" << std::endl;
+  Time t4 = Seconds (10.0) * Scalar (1.5);
+  //std::cout << "10.0s * 1.5 = " << t4.ApproximateToSeconds () << "s" << std::endl;
+  Time t5 = NanoSeconds (10) * Scalar (1.5);
+  //std::cout << "10ns * 1.5 = " << t5.ApproximateToNanoSeconds () << "ns" << std::endl;
 
   return ok;
 }
