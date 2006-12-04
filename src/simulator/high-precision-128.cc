@@ -28,6 +28,9 @@ const double HighPrecision::MAX_64 = 18446744073709551615.0;
 HighPrecision::HighPrecision ()
 {
   m_value = _cairo_int32_to_int128 (0);
+  // the following statement is not really needed but it 
+  // is here for the sake of symetry. I doubt we will
+  // ever see this code in the profiles...
   m_value = _cairo_int128_lsl (m_value, 64);
 }
 
@@ -81,6 +84,7 @@ bool
 HighPrecision::Mul (HighPrecision const &o)
 {
   m_value = _cairo_int128_mul (m_value, o.m_value);
+  m_value = _cairo_int128_rsa (m_value, 64);
   return false;
 }
 bool 
@@ -89,6 +93,7 @@ HighPrecision::Div (HighPrecision const &o)
   cairo_quorem128_t qr;
   qr = _cairo_int128_divrem (m_value, o.m_value);
   m_value = qr.quo;
+  m_value = _cairo_int128_lsl (m_value, 64);
   return false;
 }
 int 
