@@ -66,7 +66,7 @@ _cairo_int32_to_int64 (int32_t i)
     return q;
 }
 
-static const cairo_uint64_t
+static cairo_uint64_t
 _cairo_uint32s_to_uint64 (uint32_t h, uint32_t l)
 {
     cairo_uint64_t	q;
@@ -402,7 +402,7 @@ _cairo_uint128_sub (cairo_uint128_t a, cairo_uint128_t b)
 #define uint64_lo32(i)	((i).lo)
 #define uint64_hi32(i)	((i).hi)
 
-static const cairo_uint64_t
+static cairo_uint64_t
 uint64_lo (cairo_uint64_t i)
 {
     cairo_uint64_t  s;
@@ -412,7 +412,7 @@ uint64_lo (cairo_uint64_t i)
     return s;
 }
 
-static const cairo_uint64_t
+static cairo_uint64_t
 uint64_hi (cairo_uint64_t i)
 {
     cairo_uint64_t  s;
@@ -422,7 +422,7 @@ uint64_hi (cairo_uint64_t i)
     return s;
 }
 
-static const cairo_uint64_t
+static cairo_uint64_t
 uint64_shift32 (cairo_uint64_t i)
 {
     cairo_uint64_t  s;
