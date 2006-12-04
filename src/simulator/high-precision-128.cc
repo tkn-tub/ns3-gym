@@ -60,12 +60,15 @@ HighPrecision::GetInteger (void) const
 double 
 HighPrecision::GetDouble (void) const
 {
-  cairo_int128_t value = _cairo_int128_rsa (m_value, 64);
-  cairo_int128_t rem = _cairo_int128_sub (m_value, value);
-  double frem = _cairo_int128_to_int64 (rem);
-  frem /= MAX_64;
-  double retval = _cairo_int128_to_int64 (value);
-  retval += frem;
+  bool is_negative = _cairo_int128_negative (m_value);
+  cairo_int128_t value = is_negative?_cairo_int128_negate (m_value):m_value;
+  cairo_int128_t hi = _cairo_int128_rsa (value, 64);
+  cairo_uint128_t lo = _cairo_int128_sub (value, _cairo_uint128_lsl (hi, 64));
+  double flo = _cairo_uint128_to_uint64 (lo);
+  flo /= MAX_64;
+  double retval = _cairo_uint128_to_uint64 (hi);
+  retval += flo;
+  retval *= is_negative?-1.0:1.0;
   return retval;
 }
 bool 
@@ -90,10 +93,19 @@ HighPrecision::Mul (HighPrecision const &o)
 bool 
 HighPrecision::Div (HighPrecision const &o)
 {
+#if 1
+  cairo_int128_t div = _cairo_int128_rsa (o.m_value, 64);
+  cairo_quorem128_t qr;
+  qr = _cairo_int128_divrem (m_value, div);
+  m_value = qr.quo;
+#else
   cairo_quorem128_t qr;
   qr = _cairo_int128_divrem (m_value, o.m_value);
   m_value = qr.quo;
   m_value = _cairo_int128_lsl (m_value, 64);
+  cairo_int128_t rem = _cairo_int128_rsa (qr.rem, 64);
+  m_value = _cairo_int128_add (m_value, rem);
+#endif
   return false;
 }
 int 
