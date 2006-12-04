@@ -132,3 +132,143 @@ HighPrecision::Zero (void)
 
 
 }; // namespace ns3
+
+
+#ifdef RUN_SELF_TESTS
+#include "ns3/test.h"
+
+namespace ns3 {
+
+class HighPrecision128Tests : public Test
+{
+public:
+  HighPrecision128Tests ();
+  virtual ~HighPrecision128Tests ();
+  virtual bool RunTests (void);
+};
+
+HighPrecision128Tests::HighPrecision128Tests ()
+  : Test ("Int128")
+{}
+HighPrecision128Tests::~HighPrecision128Tests ()
+{}
+
+#define CHECK_EXPECTED(v,expected) \
+{ \
+  if (v.GetInteger () != expected) \
+    { \
+      Failure () << "file="<<__FILE__<<", line="<<__LINE__<<", expected: "<<expected<<", got: "<< v.GetInteger ()<<std::endl; \
+      ok = false; \
+    } \
+}
+
+#define V(v) \
+  HighPrecision (v, false)
+
+bool
+HighPrecision128Tests::RunTests (void)
+{
+  bool ok = true;
+
+  HighPrecision a, b;
+  a = HighPrecision (1, false);
+  b = HighPrecision (1, false);
+
+  a.Sub (b);
+  CHECK_EXPECTED (a, 0);
+
+  a = V (1);
+  a.Sub (V(2));
+  CHECK_EXPECTED (a, -1);
+
+  a = V (1);
+  a.Sub (V(3));
+  CHECK_EXPECTED (a, -2);
+
+  a = V (1);
+  a.Sub (V(-1));
+  CHECK_EXPECTED (a, 2);
+
+  a = V (1);
+  a.Sub (V(-2));
+  CHECK_EXPECTED (a, 3);
+
+  a = V (-3);
+  a.Sub (V(-4));
+  CHECK_EXPECTED (a, 1);
+
+  a = V (-2);
+  a.Sub (V(3));
+  CHECK_EXPECTED (a, -5);
+
+  a = V (1);
+  a.Add (V(2));
+  CHECK_EXPECTED (a, 3);
+
+  a = V (1);
+  a.Add (V(-3));
+  CHECK_EXPECTED (a, -2);
+
+  a = V (0);
+  a.Add (V(0));
+  CHECK_EXPECTED (a, 0);
+
+  a = V (0);
+  a.Mul (V(0));
+  CHECK_EXPECTED (a, 0);
+  a = V (0);
+  a.Mul (V(1));
+  CHECK_EXPECTED (a, 0);
+  a = V (0);
+  a.Mul (V(-1));
+  CHECK_EXPECTED (a, 0);
+  a = V (1);
+  a.Mul (V(0));
+  CHECK_EXPECTED (a, 0);
+  a = V (1);
+  a.Mul (V(1));
+  CHECK_EXPECTED (a, 1);
+  a = V (1);
+  a.Mul (V(-1));
+  CHECK_EXPECTED (a, -1);
+  a = V (-1);
+  a.Mul (V(-1));
+  CHECK_EXPECTED (a, 1);
+
+  a = V (0);
+  a.Mul (V(1));
+  CHECK_EXPECTED (a, 0);
+  a = V (0);
+  a.Mul (V(-1));
+  CHECK_EXPECTED (a, 0);
+  a = V (1);
+  a.Mul (V(1));
+  CHECK_EXPECTED (a, 1);
+  a = V (1);
+  a.Mul (V(-1));
+  CHECK_EXPECTED (a, -1);
+  a = V (-1);
+  a.Mul (V(1));
+  CHECK_EXPECTED (a, -1);
+  a = V (-1);
+  a.Mul (V(-1));
+  CHECK_EXPECTED (a, 1);
+
+
+
+  a = V (2);
+  a.Div (V(3));
+  a.Mul (V(3));
+  CHECK_EXPECTED (a, 2);
+
+
+
+  return ok;
+}
+
+static HighPrecision128Tests g_int128_tests;
+
+
+}; // namespace ns3
+
+#endif /* RUN_SELF_TESTS */
