@@ -48,6 +48,7 @@ simu = build.Ns3Module('simulator', 'src/simulator')
 ns3.add(simu)
 simu.add_dep('core')
 simu.add_sources([
+    'cairo-wideint.c',
     'high-precision.cc',
     'time.cc',
     'event-id.cc',
@@ -60,6 +61,7 @@ simu.add_sources([
     'simulator.cc',
     ])
 simu.add_headers([
+    'cairo-wideint-private.h',
     'scheduler-heap.h',
     'scheduler-map.h',
     'scheduler-list.h'
@@ -73,6 +75,17 @@ simu.add_inst_headers([
     'scheduler.h',
     'scheduler-factory.h',
     ])
+def config_simulator (env, config):
+    retval = []
+    if config.CheckCHeader ('stdint.h') == 1:
+        retval.append ('#define HAVE_STDINT_H 1')
+    elif config.CheckCHeader ('inttypes.h') == 1:
+        retval.append ('#define HAVE_INTTYPES_H 1')
+    elif config.CheckCHeader ('sys/inttypes.h') == 1:
+        retval.append ('#define HAVE_SYS_INT_TYPES_H 1')
+    return retval
+simu.add_config (config_simulator)
+    
 
 #
 # The Common module

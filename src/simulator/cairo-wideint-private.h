@@ -32,6 +32,9 @@
 #ifndef CAIRO_WIDEINT_H
 #define CAIRO_WIDEINT_H
 
+#include "ns3/simulator-config.h"
+#define cairo_private 
+
 #if   HAVE_STDINT_H
 # include <stdint.h>
 #elif HAVE_INTTYPES_H
@@ -61,6 +64,10 @@
 # endif
 #else
 #error Cannot find definitions for fixed-width integral types (uint8_t, uint32_t, etc.)
+#endif
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 /*
@@ -312,5 +319,10 @@ _cairo_int_96by64_32x64_divrem (cairo_int128_t num,
 #define			_cairo_int128_gt(a,b)	    _cairo_int128_lt(b,a)
 
 #undef I
+
+#ifdef __cplusplus
+};
+#endif
+
 
 #endif /* CAIRO_WIDEINT_H */
