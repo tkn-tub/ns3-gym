@@ -86,8 +86,8 @@ HighPrecision::Sub (HighPrecision const &o)
 bool 
 HighPrecision::Mul (HighPrecision const &o)
 {
-  m_value = _cairo_int128_mul (m_value, o.m_value);
-  m_value = _cairo_int128_rsa (m_value, 64);
+  cairo_int128_t other = _cairo_int128_rsa (o.m_value, 64);
+  m_value = _cairo_int128_mul (m_value, other);
   return false;
 }
 bool 
