@@ -257,9 +257,26 @@ HighPrecision128Tests::RunTests (void)
 
 
   a = V (2);
+  a.Mul (V(3));
+  a.Div (V(3));
+  CHECK_EXPECTED (a, 2);
+
+  // Below, the division loses precision because 2/3 is not
+  // representable exactly in 64.64 integers. So, we got
+  // something super close but the final rounding kills us.
+  a = V (2);
   a.Div (V(3));
   a.Mul (V(3));
-  CHECK_EXPECTED (a, 2);
+  CHECK_EXPECTED (a, 1);
+
+  // The example below shows that we really do not lose
+  // much precision internally: it is almost always the
+  // final conversion which loses precision.
+  a = V (2000000000);
+  a.Div (V(3));
+  a.Mul (V(3));
+  CHECK_EXPECTED (a, 1999999999);
+  
 
 
 
