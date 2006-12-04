@@ -47,6 +47,7 @@ core.add_inst_headers([
 simu = build.Ns3Module('simulator', 'src/simulator')
 ns3.add(simu)
 simu.add_dep('core')
+simu.add_external_dep('m')
 simu.add_sources([
     'high-precision.cc',
     'time.cc',
