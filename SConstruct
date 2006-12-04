@@ -78,8 +78,10 @@ if high_precision_as_double == 'y':
     simu.add_inst_header ('high-precision-double.h')
     simu.add_source ('high-precision-double.cc')
 else:
-    simu.add_inst_header ('high-precision-128.h')
-    simu.add_header ('cairo-wideint-private.h')
+    simu.add_inst_headers ([
+        'high-precision-128.h',
+        'cairo-wideint-private.h'
+        ])
     simu.add_sources ([
         'high-precision-128.cc',
         'cairo-wideint.c',
