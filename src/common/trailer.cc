@@ -25,7 +25,11 @@
 namespace ns3 {
 
 Trailer::Trailer ()
-  : m_isDeserialized (false) {}
+  : m_isDeserialized (false) 
+{}
+
+Trailer::~Trailer ()
+{}
 
 void 
 Trailer::Print (std::ostream &os) const
@@ -53,11 +57,6 @@ Trailer::IsDeserialized (void) const
 {
   return m_isDeserialized;
 }
-
-
-
-Trailer::~Trailer ()
-{}
 
 std::ostream& operator<< (std::ostream& os, Trailer const& trailer)
 {

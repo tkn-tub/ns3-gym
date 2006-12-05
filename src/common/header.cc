@@ -25,7 +25,11 @@
 namespace ns3 {
 
 Header::Header ()
-  : m_isDeserialized (false) {}
+  : m_isDeserialized (false) 
+{}
+
+Header::~Header ()
+{}
 
 void 
 Header::Print (std::ostream &os) const
@@ -53,11 +57,6 @@ Header::IsDeserialized (void) const
 {
   return m_isDeserialized;
 }
-
-
-
-Header::~Header ()
-{}
 
 std::ostream& operator<< (std::ostream& os, Header const& header)
 {

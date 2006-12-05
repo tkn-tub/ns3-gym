@@ -42,10 +42,7 @@ namespace ns3 {
 class Header {
 public:
   Header ();
-  /**
-   * Derived classes must provide an explicit virtual destructor
-   */
-  virtual ~Header () = 0;
+  virtual ~Header ();
 
   void Print (std::ostream &os) const;
   uint32_t GetSize (void) const;

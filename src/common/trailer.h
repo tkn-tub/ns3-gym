@@ -42,10 +42,7 @@ namespace ns3 {
 class Trailer {
 public:
   Trailer ();
-  /**
-   * Derived classes must provide an explicit virtual destructor
-   */
-  virtual ~Trailer () = 0;
+  virtual ~Trailer ();
 
   void Print (std::ostream &os) const;
   uint32_t GetSize (void) const;
