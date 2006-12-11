@@ -71,7 +71,6 @@ class Scheduler {
   Scheduler::EventKey PeekNextKey (void) const ;
   void RemoveNext (void);
   EventImpl *Remove (EventId id, EventKey *key);
-  bool IsValid (EventId id);
 
 private:
   /**
@@ -113,12 +112,6 @@ private:
    * This methods cannot be invoked if the list is empty.
    */
   virtual EventImpl *RealRemove (EventId id, EventKey *key) = 0;
-  /**
-   * \param id event id to validate
-   * \returns true if the event id identifies an existing valid
-   *      event stored in the event list and false otherwise.
-   */
-  virtual bool RealIsValid (EventId id) = 0;
 };
 
 }; // namespace ns3

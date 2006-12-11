@@ -241,7 +241,6 @@ SimulatorPrivate::Remove (EventId ev)
 void
 SimulatorPrivate::Cancel (EventId id)
 {
-  assert (m_events->IsValid (id));
   EventImpl *ev = id.GetEventImpl ();
   ev->Cancel ();
 }

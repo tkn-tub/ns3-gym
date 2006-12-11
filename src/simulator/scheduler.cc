@@ -84,10 +84,5 @@ Scheduler::Remove (EventId id, EventKey *key)
   assert (!RealIsEmpty ());
   return RealRemove (id, key);
 }
-bool 
-Scheduler::IsValid (EventId id)
-{
-  return RealIsValid (id);
-}
 
 }; // namespace ns3
