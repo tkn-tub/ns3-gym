@@ -78,6 +78,8 @@ SchedulerList::RealRemove (EventId id, Scheduler::EventKey *key)
         {
           EventImpl *retval = i->first;
           assert (id.GetEventImpl () == retval);
+          key->m_ns = id.GetNs ();
+          key->m_uid = id.GetUid ();
           m_events.erase (i);
           return retval;
         }
