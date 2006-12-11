@@ -35,7 +35,6 @@ Scheduler::~Scheduler ()
 bool
 Scheduler::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
 {
-  assert (a.m_uid != b.m_uid);
   if (a.m_ns < b.m_ns) 
     {
       return true;
