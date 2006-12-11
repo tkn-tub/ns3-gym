@@ -31,33 +31,6 @@ SchedulerList::SchedulerList ()
 SchedulerList::~SchedulerList ()
 {}
 
-/*  !! WARNING !! 
- * This is a very nasty piece of code but it really should work
- * with pretty much any implementation of a std::list.
- * it relies on the fact that a std::list<>::iterator has a single
- * member variable, a pointer.
- */
-EventId
-SchedulerList::GetEventId (Scheduler::EventKey key, EventsI i)
-{
-  assert (sizeof (i) <= sizeof (void *));
-  void *internalIterator;
-  memcpy ((char *)&(internalIterator), (char *)&i, sizeof (void *));
-  EventImpl *ev = i->first;
-  ev->SetInternalIterator (internalIterator);
-  return EventId (ev, key.m_ns, key.m_uid);
-}
-SchedulerList::EventsI 
-SchedulerList::GetIterator (EventId id)
-{
-  SchedulerList::EventsI i;
-  assert (sizeof (i) <= sizeof (void *));
-  EventImpl *ev = id.GetEventImpl ();
-  void *internalIterator = ev->GetInternalIterator ();
-  memcpy ((char *)&i, (char *)&(internalIterator), sizeof (void *));
-  return i;
-}
-
 
 EventId
 SchedulerList::RealInsert (EventImpl *event, Scheduler::EventKey key)
@@ -68,11 +41,11 @@ SchedulerList::RealInsert (EventImpl *event, Scheduler::EventKey key)
       if (compare (key, i->second)) 
         {
           m_events.insert (i, std::make_pair (event, key));
-          return GetEventId (key, i);
+          return EventId (event, key.m_ns, key.m_uid);
         }
     }
   m_events.push_back (std::make_pair (event, key));
-  return GetEventId (key, --(m_events.end ()));
+  return EventId (event, key.m_ns, key.m_uid);
 }
 bool 
 SchedulerList::RealIsEmpty (void) const
@@ -99,23 +72,24 @@ SchedulerList::RealRemoveNext (void)
 EventImpl *
 SchedulerList::RealRemove (EventId id, Scheduler::EventKey *key)
 {
-  EventsI i = GetIterator (id);
-  *key = i->second;
-  assert (key->m_ns == id.GetNs () &&
-          key->m_uid == id.GetUid ());
-  EventImpl *ev = i->first;
-  m_events.erase (i);
-  return ev;
+  for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
+    {
+      if (i->second.m_uid == id.GetUid ())
+        {
+          EventImpl *retval = i->first;
+          assert (id.GetEventImpl () == retval);
+          m_events.erase (i);
+          return retval;
+        }
+    }
+  assert (false);
+  return 0;
 }
 
 bool 
 SchedulerList::RealIsValid (EventId id)
 {
-  EventsI i = GetIterator (id);
-  Scheduler::EventKey key = i->second;
-  return (key.m_ns == id.GetNs () &&
-          key.m_uid == id.GetUid ());
-  
+  return true;
 }
 
 }; // namespace ns3

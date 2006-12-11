@@ -48,8 +48,6 @@ class SchedulerList : public Scheduler {
 
   typedef std::list<std::pair<EventImpl*, EventKey> > Events;
   typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
-  EventId GetEventId (Scheduler::EventKey key, EventsI i);
-  EventsI GetIterator (EventId id);
   Events m_events;
 };
 
