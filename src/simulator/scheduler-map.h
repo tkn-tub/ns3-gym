@@ -49,9 +49,6 @@ private:
   typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::iterator EventMapI;
   typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::const_iterator EventMapCI;
 
-  void StoreInEvent (EventImpl *ev, EventMapI i) const;
-  SchedulerMap::EventMapI GetFromEvent (EventImpl *ev) const;
-
   EventMap m_list;
   uint32_t m_uid;
 };

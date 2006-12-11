@@ -44,28 +44,11 @@ SchedulerMap::~SchedulerMap ()
 {}
 
 
-void 
-SchedulerMap::StoreInEvent (EventImpl *ev, EventMapI i) const
-{
-  void *tag;
-  memcpy (&(tag), &i, sizeof (tag));
-  ev->SetInternalIterator (tag);
-}
-SchedulerMap::EventMapI
-SchedulerMap::GetFromEvent (EventImpl *ev) const
-{
-  EventMapI i;
-  void *tag = ev->GetInternalIterator ();
-  memcpy (&i, &(tag), sizeof (i));
-  return i;
-}
-
 EventId
 SchedulerMap::RealInsert (EventImpl *event, Scheduler::EventKey key)
 {
   std::pair<EventMapI,bool> result = m_list.insert (std::make_pair (key, event));
   assert (result.second);
-  StoreInEvent (event, result.first);
   return EventId (event, key.m_ns, key.m_uid);
 }
 
@@ -98,19 +81,18 @@ SchedulerMap::RealRemoveNext (void)
 EventImpl *
 SchedulerMap::RealRemove (EventId id, Scheduler::EventKey *key)
 {
-  EventMapI i = GetFromEvent (id.GetEventImpl ());
-  *key = i->first;
+  key->m_ns = id.GetNs ();
+  key->m_uid = id.GetUid ();
+  EventMapI i = m_list.find (*key);
+  EventImpl *retval = i->second;
   m_list.erase (i);
-  return i->second;
+  return retval;
 }
 
 bool
 SchedulerMap::RealIsValid (EventId id)
 {
-  EventMapI i = GetFromEvent (id.GetEventImpl ());
-  Scheduler::EventKey key = i->first;
-  return (key.m_ns == id.GetNs () &&
-          key.m_uid == id.GetUid ());
+  return true;
 }
 
 
