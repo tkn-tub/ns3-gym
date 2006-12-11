@@ -212,6 +212,8 @@ VariableTracerTest::RunUnsignedTests (void)
   utmp &= 1;
   utmp |= 1;
   utmp ^= 1;
+
+  delete foo;
 }
 
 void

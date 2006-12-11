@@ -638,7 +638,9 @@ SimulatorTests::RunTests (void)
   Simulator::ScheduleDestroy (&SimulatorTests::bar3, this, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar4, this, 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
-  
+
+  Simulator::Run ();
+  Simulator::Destroy ();
 
   return ok;
 }
