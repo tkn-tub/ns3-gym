@@ -45,8 +45,6 @@ private:
   virtual bool RealIsValid (EventId id);
 
   typedef std::vector<std::pair<EventImpl *, Scheduler::EventKey> > BinaryHeap;
-  inline void StoreInEvent (EventImpl *ev, uint32_t index) const;
-  uint32_t GetFromEvent (EventImpl *ev) const;
 
   inline uint32_t Parent (uint32_t id) const;
   uint32_t Sibling (uint32_t id) const;

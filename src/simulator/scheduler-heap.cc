@@ -63,18 +63,6 @@ SchedulerHeap::SchedulerHeap ()
 SchedulerHeap::~SchedulerHeap ()
 {}
 
-void
-SchedulerHeap::StoreInEvent (EventImpl *ev, uint32_t index) const
-{
-  long tmp = index;
-  ev->SetInternalIterator ((void *)tmp);
-}
-uint32_t
-SchedulerHeap::GetFromEvent (EventImpl *ev) const
-{
-  long tmp = (long)ev->GetInternalIterator ();
-  return (uint32_t)tmp;
-}
 uint32_t 
 SchedulerHeap::Parent (uint32_t id) const
 {
@@ -129,8 +117,6 @@ SchedulerHeap::Exch (uint32_t a, uint32_t b)
   std::pair<EventImpl*, Scheduler::EventKey> tmp (m_heap[a]);
   m_heap[a] = m_heap[b];
   m_heap[b] = tmp;
-  StoreInEvent (m_heap[a].first, a);
-  StoreInEvent (m_heap[b].first, b);
 }
 
 bool
@@ -204,7 +190,6 @@ SchedulerHeap::RealInsert (EventImpl *event, Scheduler::EventKey key)
 {
   m_heap.push_back (std::make_pair (event, key));
   BottomUp ();
-  StoreInEvent (event, Last ());
   return EventId (event, key.m_ns, key.m_uid);
 }
 
@@ -230,22 +215,37 @@ SchedulerHeap::RealRemoveNext (void)
 EventImpl *
 SchedulerHeap::RealRemove (EventId id, Scheduler::EventKey *key)
 {
-  EventImpl *ev = id.GetEventImpl ();
-  uint32_t i = GetFromEvent (ev);
-  *key = m_heap[i].second;
-  Exch (i, Last ());
+  Scheduler::EventKeyCompare compare;
+  uint32_t top;
+  uint32_t bottom;
+  bottom = 1;
+  top = Last ();
+  key->m_ns = id.GetNs ();
+  key->m_uid = id.GetUid ();
+  while (top != bottom)
+    {
+      uint32_t i = bottom + (top - bottom) / 2;
+      if (compare (*key, m_heap[i].second))
+        {
+          top = i;
+        }
+      else
+        {
+          bottom = i;
+        }
+    }
+  assert (top == bottom);
+  assert (m_heap[top].second.m_uid == id.GetUid ());
+  EventImpl *retval = m_heap[top].first;
+  Exch (top, Last ());
   m_heap.pop_back ();
   TopDown ();
-  return ev;
+  return retval;
 }
 
 bool 
 SchedulerHeap::RealIsValid (EventId id)
 {
-  EventImpl *ev = id.GetEventImpl ();
-  uint32_t i = GetFromEvent (ev);
-  Scheduler::EventKey key = m_heap[i].second;
-  return (key.m_ns == id.GetNs () &&
-          key.m_uid == id.GetUid ());
+  return true;
 }
 }; // namespace ns3
