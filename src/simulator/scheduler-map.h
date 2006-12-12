@@ -47,7 +47,7 @@ private:
 
   class EventKeyCompare {
   public:
-    bool operator () (struct EventKey a, struct EventKey b);
+    bool operator () (struct EventKey const&a, struct EventKey const&b);
   };
 
   typedef std::map<Scheduler::EventKey, EventImpl*, SchedulerMap::EventKeyCompare> EventMap;

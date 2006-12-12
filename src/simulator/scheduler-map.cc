@@ -49,16 +49,20 @@ SchedulerMap::~SchedulerMap ()
  * - transitivity: f(x,y) and f(y,z) => f(x,z)
  */
 bool
-SchedulerMap::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
+SchedulerMap::EventKeyCompare::operator () (struct EventKey const&a, struct EventKey const&b)
 {
   if (a.m_ns < b.m_ns) 
     {
       return true;
     } 
-  else if (a.m_ns == b.m_ns && a.m_uid < b.m_uid) 
+  else if (a.m_ns > b.m_ns)
+    {
+      return false;
+    } 
+  else if (a.m_uid < b.m_uid)
     {
       return true;
-    } 
+    }
   else 
     {
       return false;
