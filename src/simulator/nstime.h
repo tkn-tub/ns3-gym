@@ -206,32 +206,28 @@ template <int N>
 TimeUnit<N> operator + (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
 {
   HighPrecision retval = lhs.GetHighPrecision ();
-  bool overflow = retval.Add (rhs.GetHighPrecision ());
-  assert (!overflow);
+  retval.Add (rhs.GetHighPrecision ());
   return TimeUnit<N> (retval);
 }
 template <int N>
 TimeUnit<N> operator - (TimeUnit<N> const &lhs, TimeUnit<N> const &rhs)
 {
   HighPrecision retval = lhs.GetHighPrecision ();
-  bool overflow = retval.Sub (rhs.GetHighPrecision ());
-  assert (!overflow);
+  retval.Sub (rhs.GetHighPrecision ());
   return TimeUnit<N> (retval);
 }
 template <int N1, int N2>
 TimeUnit<N1+N2> operator * (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
 {
   HighPrecision retval = lhs.GetHighPrecision ();
-  bool overflow = retval.Mul (rhs.GetHighPrecision ());
-  assert (!overflow);
+  retval.Mul (rhs.GetHighPrecision ());
   return TimeUnit<N1+N2> (retval);
 }
 template <int N1, int N2>
 TimeUnit<N1-N2> operator / (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
 {
   HighPrecision retval = lhs.GetHighPrecision ();
-  bool underflow = retval.Div (rhs.GetHighPrecision ());
-  assert (!underflow);
+  retval.Div (rhs.GetHighPrecision ());
   return TimeUnit<N1-N2> (retval);
 }
 
