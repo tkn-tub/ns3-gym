@@ -126,8 +126,11 @@ SchedulerHeap::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b
     {
       return true;
     }
-  else if (a->m_ns == b->m_ns &&
-           a->m_uid < b->m_uid)
+  else if (a->m_ns > b->m_ns)
+    {
+      return false;
+    } 
+  else if (a->m_uid < b->m_uid)
     {
       return true;
     }
