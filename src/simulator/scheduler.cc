@@ -27,29 +27,6 @@ namespace ns3 {
 Scheduler::~Scheduler () 
 {}
 
-/* Note the invariants which this function must provide:
- * - irreflexibility: f (x,x) is false)
- * - antisymmetry: f(x,y) = !f(y,x)
- * - transitivity: f(x,y) and f(y,z) => f(x,z)
- */
-bool
-Scheduler::EventKeyCompare::operator () (struct EventKey a, struct EventKey b)
-{
-  if (a.m_ns < b.m_ns) 
-    {
-      return true;
-    } 
-  else if (a.m_ns == b.m_ns && a.m_uid < b.m_uid) 
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
-}
-
-
 EventId 
 Scheduler::Insert (EventImpl *event, struct EventKey key)
 {

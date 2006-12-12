@@ -54,8 +54,9 @@ private:
   uint32_t Last (void) const;
   inline bool IsRoot (uint32_t id) const;
   inline bool IsBottom (uint32_t id) const;
-  inline bool IsLess (uint32_t a, uint32_t b);
-  inline uint32_t Smallest (uint32_t a, uint32_t b);
+  inline bool IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const;
+  inline bool IsLess (uint32_t a, uint32_t b) const;
+  inline uint32_t Smallest (uint32_t a, uint32_t b) const;
 
   inline void Exch (uint32_t a, uint32_t b);
   void BottomUp (void);

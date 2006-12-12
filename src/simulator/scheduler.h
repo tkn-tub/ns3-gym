@@ -58,10 +58,6 @@ class Scheduler {
       uint64_t m_ns;
       uint32_t m_uid;
   };
-  class EventKeyCompare {
-  public:
-      bool operator () (struct EventKey a, struct EventKey b);
-  };
 
   virtual ~Scheduler () = 0;
 

@@ -45,9 +45,15 @@ private:
   virtual EventImpl *RealRemove (EventId ev, Scheduler::EventKey *key);
   virtual bool RealIsValid (EventId id);
 
-  typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare> EventMap;
-  typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::iterator EventMapI;
-  typedef std::map<Scheduler::EventKey, EventImpl*, Scheduler::EventKeyCompare>::const_iterator EventMapCI;
+  class EventKeyCompare {
+  public:
+    bool operator () (struct EventKey a, struct EventKey b);
+  };
+
+  typedef std::map<Scheduler::EventKey, EventImpl*, SchedulerMap::EventKeyCompare> EventMap;
+  typedef std::map<Scheduler::EventKey, EventImpl*, SchedulerMap::EventKeyCompare>::iterator EventMapI;
+  typedef std::map<Scheduler::EventKey, EventImpl*, SchedulerMap::EventKeyCompare>::const_iterator EventMapCI;
+
 
   EventMap m_list;
   uint32_t m_uid;

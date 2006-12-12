@@ -31,14 +31,30 @@ SchedulerList::SchedulerList ()
 SchedulerList::~SchedulerList ()
 {}
 
+bool 
+SchedulerList::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
+{
+  if (a->m_ns < b->m_ns)
+    {
+      return true;
+    }
+  else if (a->m_ns == b->m_ns &&
+           a->m_uid < b->m_uid)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
 
 EventId
 SchedulerList::RealInsert (EventImpl *event, Scheduler::EventKey key)
 {
-  Scheduler::EventKeyCompare compare;
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
-      if (compare (key, i->second)) 
+      if (IsLower (&key, &i->second))
         {
           m_events.insert (i, std::make_pair (event, key));
           return EventId (event, key.m_ns, key.m_uid);

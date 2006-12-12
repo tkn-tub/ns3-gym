@@ -46,6 +46,8 @@ class SchedulerList : public Scheduler {
   virtual EventImpl *RealRemove (EventId ev, Scheduler::EventKey *key);
   virtual bool RealIsValid (EventId id);
 
+  inline bool IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const;
+
   typedef std::list<std::pair<EventImpl*, EventKey> > Events;
   typedef std::list<std::pair<EventImpl*, EventKey> >::iterator EventsI;
   Events m_events;
