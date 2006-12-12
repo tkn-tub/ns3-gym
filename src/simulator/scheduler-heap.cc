@@ -120,14 +120,31 @@ SchedulerHeap::Exch (uint32_t a, uint32_t b)
 }
 
 bool
-SchedulerHeap::IsLess (uint32_t a, uint32_t b)
+SchedulerHeap::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
 {
-  Scheduler::EventKeyCompare compare;
-  return compare (m_heap[a].second, m_heap[b].second);
+  if (a->m_ns < b->m_ns)
+    {
+      return true;
+    }
+  else if (a->m_ns == b->m_ns &&
+           a->m_uid < b->m_uid)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+bool
+SchedulerHeap::IsLess (uint32_t a, uint32_t b) const
+{
+  return IsLower (&m_heap[a].second, &m_heap[b].second);
 }
 
 uint32_t 
-SchedulerHeap::Smallest (uint32_t a, uint32_t b)
+SchedulerHeap::Smallest (uint32_t a, uint32_t b) const
 {
   return IsLess (a,b)?a:b;
 }
@@ -215,7 +232,6 @@ SchedulerHeap::RealRemoveNext (void)
 EventImpl *
 SchedulerHeap::RealRemove (EventId id, Scheduler::EventKey *key)
 {
-  Scheduler::EventKeyCompare compare;
   uint32_t top;
   uint32_t bottom;
   bottom = 1;
@@ -225,7 +241,7 @@ SchedulerHeap::RealRemove (EventId id, Scheduler::EventKey *key)
   while (top != bottom)
     {
       uint32_t i = bottom + (top - bottom) / 2;
-      if (compare (*key, m_heap[i].second))
+      if (IsLower (key, &m_heap[i].second))
         {
           top = i;
         }
