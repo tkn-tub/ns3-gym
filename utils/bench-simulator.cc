@@ -28,9 +28,10 @@
 using namespace ns3;
 
 
-bool gDebug = false;
+bool g_debug = false;
 
-class Bench {
+class Bench 
+{
 public:
   void ReadDistribution (std::istream &istream);
   void SetTotal (uint32_t total);
@@ -53,16 +54,20 @@ void
 Bench::ReadDistribution (std::istream &input)
 {
   double data;
-  while (!input.eof ()) {
-      if (input >> data) {
+  while (!input.eof ()) 
+    {
+      if (input >> data) 
+        {
           uint64_t ns = (uint64_t) (data * 1000000000);
           m_distribution.push_back (ns);
-      } else {
+        } 
+      else 
+        {
           input.clear ();
           std::string line;
           input >> line;
-      }
-  }
+        }
+    }
 }
 
 void
@@ -72,9 +77,10 @@ Bench::RunBench (void)
   double init, simu;
   time.Start ();
   for (std::vector<uint64_t>::const_iterator i = m_distribution.begin ();
-       i != m_distribution.end (); i++) {
+       i != m_distribution.end (); i++) 
+    {
       Simulator::Schedule (NanoSeconds (*i), &Bench::Cb, this);
-  }
+    }
   init = time.End ();
 
   m_current = m_distribution.begin ();
@@ -96,15 +102,18 @@ Bench::RunBench (void)
 void
 Bench::Cb (void)
 {
-  if (m_n > m_total) {
+  if (m_n > m_total) 
+    {
       return;
-  }
-  if (m_current == m_distribution.end ()) {
+    }
+  if (m_current == m_distribution.end ()) 
+    {
       m_current = m_distribution.begin ();
-  }
-  if (gDebug) {
+    }
+  if (g_debug) 
+    {
       std::cerr << "event at " << Simulator::Now ().GetSeconds () << "s" << std::endl;
-  }
+    }
   Simulator::Schedule (NanoSeconds (*m_current), &Bench::Cb, this);
   m_current++;
   m_n++;
@@ -134,24 +143,37 @@ int main (int argc, char *argv[])
     }
   argc-=2;
   argv+= 2;
-  if (strcmp (filename, "-") == 0) {
+  if (strcmp (filename, "-") == 0) 
+    {
       input = &std::cin;
-  } else {
+    } 
+  else 
+    {
       input = new std::ifstream (filename);
-  }
-  while (argc > 0) {
-      if (strcmp ("--list", argv[0]) == 0) {
+    }
+  while (argc > 0) 
+    {
+      if (strcmp ("--list", argv[0]) == 0) 
+        {
           Simulator::SetLinkedList ();
-      } else if (strcmp ("--heap", argv[0]) == 0) {
+        } 
+      else if (strcmp ("--heap", argv[0]) == 0) 
+        {
           Simulator::SetBinaryHeap ();
-      } else if (strcmp ("--map", argv[0]) == 0) {
+        } 
+      else if (strcmp ("--map", argv[0]) == 0) 
+        {
           Simulator::SetStdMap ();
-      } else if (strcmp ("--debug", argv[0]) == 0) {
-          gDebug = true;
-      } else if (strncmp ("--log=", argv[0],strlen ("--log=")) == 0) {
+        } 
+      else if (strcmp ("--debug", argv[0]) == 0) 
+        {
+          g_debug = true;
+        } 
+      else if (strncmp ("--log=", argv[0],strlen ("--log=")) == 0) 
+        {
           char const *filename = argv[0] + strlen ("--log=");
           Simulator::EnableLogTo (filename);
-      }
+        }
       argc--;
       argv++;
   }
