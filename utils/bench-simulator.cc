@@ -110,10 +110,28 @@ Bench::Cb (void)
   m_n++;
 }
 
+void
+PrintHelp (void)
+{
+  std::cout << "bench-simulator filename [options]"<<std::endl;
+  std::cout << "  filename: a string which identifies the input distribution. \"-\" represents stdin." << std::endl;
+  std::cout << "  Options:"<<std::endl;
+  std::cout << "      --list: use std::list scheduler"<<std::endl;
+  std::cout << "      --map: use std::map cheduler"<<std::endl;
+  std::cout << "      --heap: use Binary Heap scheduler"<<std::endl;
+  std::cout << "      --log=filename: log scheduler events for the event replay utility."<<std::endl;
+  std::cout << "      --debug: enable some debugging"<<std::endl;
+}
+
 int main (int argc, char *argv[])
 {
   char const *filename = argv[1];
   std::istream *input;
+  if (argc == 1)
+    {
+      PrintHelp ();
+      return 0;
+    }
   argc-=2;
   argv+= 2;
   if (strcmp (filename, "-") == 0) {
