@@ -157,6 +157,12 @@ bench_simu.set_executable()
 bench_simu.add_dep('simulator')
 bench_simu.add_source('bench-simulator.cc')
 
+replay_simu = build.Ns3Module('replay-simulation', 'utils')
+ns3.add(replay_simu)
+replay_simu.set_executable()
+replay_simu.add_dep('simulator')
+replay_simu.add_source('replay-simulation.cc')
+
 
 # samples
 sample_callback = build.Ns3Module('sample-callback', 'samples')
