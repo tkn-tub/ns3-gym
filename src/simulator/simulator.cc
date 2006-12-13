@@ -189,7 +189,7 @@ SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
   if (m_logEnable) 
     {
       m_log << "i "<<m_currentUid<<" "<<m_currentNs<<" "
-            <<m_uid<<" "<<time.GetSeconds () << std::endl;
+            <<m_uid<<" "<<time.GetNanoSeconds () << std::endl;
     }
   m_uid++;
   return m_events->Insert (event, key);
