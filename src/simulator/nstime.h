@@ -368,7 +368,7 @@ class MicroSeconds : public TimeUnit<1>
 {
 public:
   MicroSeconds ();
-  MicroSeconds (uint32_t ms);
+  MicroSeconds (uint64_t ms);
 };
 /**
  * \brief create ns3::Time instances in units of nanoseconds.
@@ -383,7 +383,7 @@ class NanoSeconds : public TimeUnit<1>
 {
 public:
   NanoSeconds ();
-  NanoSeconds (uint32_t ms);
+  NanoSeconds (uint64_t ms);
 };
 
 /**

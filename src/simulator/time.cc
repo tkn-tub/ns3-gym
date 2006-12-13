@@ -73,13 +73,13 @@ MilliSeconds::MilliSeconds (uint32_t ms)
 MicroSeconds::MicroSeconds ()
   : TimeUnit<1> ()
 {}
-MicroSeconds::MicroSeconds (uint32_t us)
+MicroSeconds::MicroSeconds (uint64_t us)
   : TimeUnit<1> (HighPrecision (us * 1000, false))
 {}
 NanoSeconds::NanoSeconds ()
   : TimeUnit<1> ()
 {}
-NanoSeconds::NanoSeconds (uint32_t ns)
+NanoSeconds::NanoSeconds (uint64_t ns)
   : TimeUnit<1> (HighPrecision (ns, false))
 {}
 
