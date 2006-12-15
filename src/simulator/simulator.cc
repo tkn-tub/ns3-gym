@@ -92,7 +92,10 @@ SimulatorPrivate::SimulatorPrivate (Scheduler *events)
   m_stop = false;
   m_stopAt = 0;
   m_events = events;
-  m_uid = 0;    
+  // uids are allocated from 1.
+  m_uid = 1; 
+  // before ::Run is entered, the m_currentUid will be zero
+  m_currentUid = 0;
   m_logEnable = false;
   m_currentNs = 0;
 }
