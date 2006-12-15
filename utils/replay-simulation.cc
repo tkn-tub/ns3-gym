@@ -37,7 +37,7 @@ public:
 private:
   struct Command {
       enum {
-          REMOVE,
+          REMOVE = 100,
           INSERT,
           INSERT_LATER,
           INSERT_REMOVE
@@ -46,30 +46,33 @@ private:
       uint32_t m_uid;
       union {
           struct {
-              // time at which the event is supposed to expire
-              uint64_t m_evUs;
+            // time at which the event is supposed to expire
+            uint64_t m_evNs;
+            uint32_t m_evUid;
           } insert;
           struct {
-              // location in the array of events to remove where
-              // to insert this event once it is inserted in 
-              // the scheduler.
-              uint32_t m_evLoc; 
-              // time at which the event is supposed to expire
-              uint64_t m_evUs;
+            // location in the array of events to remove where
+            // to insert this event once it is inserted in 
+            // the scheduler.
+            uint32_t m_evLoc; 
+            // time at which the event is supposed to expire
+            uint64_t m_evNs;
           } insertRemove;
       };
   };
   void ExecuteLogCommands (uint32_t uid);
 
-  typedef std::deque<struct Command> Commands;
-  typedef std::deque<struct Command>::iterator CommandsI;
-  typedef std::deque<EventId> RemoveEvents;
+  typedef std::vector<struct Command> Commands;
+  typedef std::vector<struct Command>::iterator CommandsI;
+  typedef std::vector<EventId> RemoveEvents;
+  typedef std::vector<EventId>::iterator RemoveEventsI;
   
 
   Commands m_commands;
   CommandsI m_command;
   RemoveEvents m_removeEvents;
   uint32_t m_uid;
+  uint32_t m_currentUid;
 };
 
 typedef std::vector<std::pair<uint32_t, uint32_t> > Removes;
@@ -89,19 +92,20 @@ LogReader::ReadFromFilename (char const *filename)
       if (type == "i") 
         {
           uint32_t nowUid, evUid;
-          uint64_t nowUs, evUs;
-          log >> nowUid >> nowUs >> evUid >> evUs;
+          uint64_t nowNs, evNs;
+          log >> nowUid >> nowNs >> evUid >> evNs;
           struct Command cmd;
           cmd.m_type = Command::INSERT;
           cmd.m_uid = nowUid;
-          cmd.insert.m_evUs = evUs;
+          cmd.insert.m_evNs = evNs;
+          cmd.insert.m_evUid = evUid;
           m_commands.push_back (cmd);
         } 
       else if (type == "r") 
         {
           uint32_t nowUid, evUid;
-          uint64_t nowUs, evUs;
-          log >> nowUid >> nowUs >> evUid >> evUs;
+          uint64_t nowNs, evNs;
+          log >> nowUid >> nowNs >> evUid >> evNs;
           struct Command cmd;
           cmd.m_type = Command::REMOVE;
           cmd.m_uid = nowUid;
@@ -111,8 +115,8 @@ LogReader::ReadFromFilename (char const *filename)
       else if (type == "il") 
         {
           uint32_t nowUid, evUid;
-          uint64_t nowUs, evUs;
-          log >> nowUid >> nowUs >> evUid >> evUs;
+          uint64_t nowNs, evNs;
+          log >> nowUid >> nowNs >> evUid >> evNs;
           struct Command cmd;
           cmd.m_type = Command::INSERT_LATER;
           cmd.m_uid = nowUid;
@@ -121,21 +125,22 @@ LogReader::ReadFromFilename (char const *filename)
     }
   log.close ();
 
-  std::cout << "gather insert removes..." << std::endl;
+  std::cout << "gather insert/removes, commands="<<m_commands.size () 
+            << ", removes=" << removes.size () << "..." << std::endl;
   for (CommandsI i = m_commands.begin (); i != m_commands.end (); i++) 
     {
       if (i->m_type == Command::INSERT) 
         {
           for (RemovesI j = removes.begin (); j != removes.end (); j++) 
             {
-              if (j->second == i->m_uid) 
+              if (j->second == i->insert.m_evUid) 
                 {
                   // this insert will be removed later.
-                  uint64_t us = i->insert.m_evUs;
+                  uint64_t ns = i->insert.m_evNs;
                   uint32_t uid = i->m_uid;
                   i->m_type = Command::INSERT_REMOVE;
                   i->m_uid = uid;
-                  i->insertRemove.m_evUs = us;
+                  i->insertRemove.m_evNs = ns;
                   i->insertRemove.m_evLoc = j->first;
                   break;
                 }
@@ -151,13 +156,15 @@ LogReader::ReadFromFilename (char const *filename)
           uint32_t loc = 0;
           for (CommandsI tmp = i; tmp != m_commands.end (); tmp++) 
             {
-              if (tmp->m_type == Command::REMOVE &&
-                  tmp->m_uid == i->insertRemove.m_evLoc) 
+              if (tmp->m_type == Command::REMOVE) 
                 {
-                  i->insertRemove.m_evLoc = loc;
-                  break;
+                  if (tmp->m_uid == i->insertRemove.m_evLoc) 
+                    {
+                      i->insertRemove.m_evLoc = loc;
+                      break;
+                    }
+                  loc++;
                 }
-              loc++;
             }
         }
     }
@@ -177,9 +184,9 @@ LogReader::ExecuteLogCommands (uint32_t uid)
       m_command++;
       switch (cmd.m_type) {
       case Command::INSERT:
-        //std::Cout << "exec insert now=" << Simulator::nowUs ()
-        //<< ", time=" << cmd.insert.m_evUs << std::endl;
-        Simulator::Schedule (MicroSeconds (cmd.insert.m_evUs) - Now (), 
+        //std::Cout << "exec insert now=" << Simulator::Now ().GetNanoSeconds ()
+        //<< ", time=" << cmd.insert.m_evNs << std::endl;
+        Simulator::Schedule (NanoSeconds (cmd.insert.m_evNs) - Now (), 
                              &LogReader::ExecuteLogCommands, this, m_uid);
         m_uid++;
         break;
@@ -191,18 +198,29 @@ LogReader::ExecuteLogCommands (uint32_t uid)
       case Command::REMOVE: 
         {
           //std::cout << "exec remove" << std::endl;
-          EventId id = m_removeEvents.front ();
-          m_removeEvents.pop_front ();
+          EventId id = m_removeEvents.back ();
+          m_removeEvents.pop_back ();
           Simulator::Remove (id);
         } break;
       case Command::INSERT_REMOVE: 
         {
           //std::cout << "exec insert remove" << std::endl;
-          EventId id = Simulator::Schedule (MicroSeconds (cmd.insertRemove.m_evUs) - Now (),
+          EventId id = Simulator::Schedule (NanoSeconds (cmd.insertRemove.m_evNs) - Now (),
                                             &LogReader::ExecuteLogCommands, this, m_uid);
-          m_removeEvents[cmd.insertRemove.m_evLoc] = id;
+          assert (id.GetUid () == m_uid);
+          if (cmd.insertRemove.m_evLoc + 1 > m_removeEvents.size ())
+            {
+              uint32_t missing = cmd.insertRemove.m_evLoc + 1 - m_removeEvents.size ();
+              m_removeEvents.insert (m_removeEvents.begin (),
+                                     missing, id);
+            }
+          uint32_t index = m_removeEvents.size () - cmd.insertRemove.m_evLoc - 1;
+          m_removeEvents[index] = id;
           m_uid++;
         } break;
+      default:
+        assert (false);
+        break;
       }
       cmd = *m_command;
   }
@@ -237,11 +255,11 @@ LogReader::PrintStats (void)
 void
 LogReader::Run (void)
 {
-  m_uid = 0;
+  m_uid = 1;
   SystemWallClockMs time;
   time.Start ();
   m_command = m_commands.begin ();
-  ExecuteLogCommands (m_uid);
+  ExecuteLogCommands (0);
   Simulator::Run ();
   unsigned long long delta = time.End ();
   double delay = ((double)delta)/1000;
