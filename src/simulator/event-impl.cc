@@ -29,8 +29,7 @@ EventImpl::~EventImpl ()
 {}
 
 EventImpl::EventImpl ()
-  : m_internalIterator (0),
-    m_cancel (false)
+  : m_cancel (false)
 {}
 void 
 EventImpl::Invoke (void)
@@ -39,16 +38,6 @@ EventImpl::Invoke (void)
     {
       Notify ();
     }
-}
-void 
-EventImpl::SetInternalIterator (void *tag)
-{
-  m_internalIterator = tag;
-}
-void *
-EventImpl::GetInternalIterator (void) const
-{
-  return m_internalIterator;
 }
 void 
 EventImpl::Cancel (void)

@@ -31,13 +31,10 @@ public:
   virtual ~EventImpl () = 0;
   void Invoke (void);
   void Cancel (void);
-  void SetInternalIterator (void *iterator);
-  void *GetInternalIterator (void) const;
 protected:
   virtual void Notify (void) = 0;
 private:
   friend class Event;
-  void *m_internalIterator;
   bool m_cancel;
 };
 
