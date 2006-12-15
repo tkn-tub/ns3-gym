@@ -82,12 +82,14 @@ Bench::RunBench (void)
       Simulator::Schedule (NanoSeconds (*i), &Bench::Cb, this);
     }
   init = time.End ();
+  init /= 1000;
 
   m_current = m_distribution.begin ();
 
   time.Start ();
   Simulator::Run ();
   simu = time.End ();
+  simu /= 1000;
 
   std::cout <<
       "init n=" << m_distribution.size () << ", time=" << init << "s" << std::endl <<
@@ -136,6 +138,8 @@ int main (int argc, char *argv[])
 {
   char const *filename = argv[1];
   std::istream *input;
+  uint32_t n = 1;
+  uint32_t total = 20000;
   if (argc == 1)
     {
       PrintHelp ();
@@ -174,13 +178,25 @@ int main (int argc, char *argv[])
           char const *filename = argv[0] + strlen ("--log=");
           Simulator::EnableLogTo (filename);
         }
+      else if (strncmp ("--total=", argv[0], strlen("--total=")) == 0) 
+        {
+          total = atoi (argv[0]+strlen ("--total="));
+        } 
+      else if (strncmp ("--n=", argv[0], strlen("--n=")) == 0) 
+        {
+          n = atoi (argv[0]+strlen ("--n="));
+        } 
+
       argc--;
       argv++;
   }
   Bench *bench = new Bench ();
   bench->ReadDistribution (*input);
-  bench->SetTotal (20000);
-  bench->RunBench ();
+  bench->SetTotal (total);
+  for (uint32_t i = 0; i < n; i++)
+    {
+      bench->RunBench ();
+    }
 
   return 0;
 }
