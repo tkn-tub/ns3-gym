@@ -72,7 +72,6 @@ private:
   CommandsI m_command;
   RemoveEvents m_removeEvents;
   uint32_t m_uid;
-  uint32_t m_currentUid;
 };
 
 typedef std::vector<std::pair<uint32_t, uint32_t> > Removes;
@@ -271,19 +270,22 @@ int main (int argc, char *argv[])
 {
   char const *input = 0;
   uint32_t n = 1;
+  bool is_map = false;
+  bool is_list = false;
+  bool is_heap = false;
   while (argc > 0) 
     {
       if (strcmp ("--list", argv[0]) == 0) 
         {
-          Simulator::SetLinkedList ();
+          is_list = true;
         } 
       else if (strcmp ("--heap", argv[0]) == 0) 
         {
-          Simulator::SetBinaryHeap ();
+          is_heap = true;
         } 
       else if (strcmp ("--map", argv[0]) == 0) 
         {
-          Simulator::SetStdMap ();
+          is_map = true;
         } 
       else if (strncmp ("--n=", argv[0], strlen("--n=")) == 0) 
         {
@@ -308,8 +310,22 @@ int main (int argc, char *argv[])
     }
   LogReader log;
   log.ReadFromFilename (input);
+  std::cout << "start runs..." << std::endl;
   for (uint32_t i = 0; i < n; i++) 
     {
+      if (is_map)
+        {
+          Simulator::SetStdMap ();
+        }
+      else if (is_list)
+        {
+          Simulator::SetLinkedList ();
+        }
+      else if (is_heap)
+        {
+          Simulator::SetBinaryHeap ();
+        }
       log.Run ();
+      Simulator::Destroy ();
     }
 }
