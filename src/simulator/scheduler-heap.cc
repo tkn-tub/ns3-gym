@@ -269,36 +269,3 @@ SchedulerHeap::RealIsValid (EventId id)
 }
 }; // namespace ns3
 
-#ifdef RUN_SELF_TESTS
-
-#include "ns3/test.h"
-
-namespace ns3 {
-
-class SchedulerHeapTest : public Test 
-{
-public:
-  SchedulerHeapTest ();
-  virtual ~SchedulerHeapTest ();
-  virtual bool RunTests (void);
-};
-
-SchedulerHeapTest::SchedulerHeapTest ()
-  : Test ("SchedulerHeap")
-{}
-SchedulerHeapTest::~SchedulerHeapTest ()
-{}
-
-bool 
-SchedulerHeapTest::RunTests (void)
-{
-  bool ok = true;
-  return ok;
-}
-
-static SchedulerHeapTest g_schedulerHeapTest;
-
-}; // namespace ns3
-
-
-#endif /* RUN_SELF_TESTS */
