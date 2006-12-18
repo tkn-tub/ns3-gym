@@ -51,7 +51,8 @@ public:
   virtual bool RunTests (void);
 private:
   void DestroyNotify (void);
-  bool m_destroyed;
+  Ptr<NoCount> CallTest (Ptr<NoCount> p);
+  uint32_t m_nDestroyed;
 };
 
 PtrTest::PtrTest ()
@@ -64,9 +65,13 @@ PtrTest::~PtrTest ()
 void 
 PtrTest::DestroyNotify (void)
 {
-  m_destroyed = true;
+  m_nDestroyed++;
 }
-
+Ptr<NoCount> 
+PtrTest::CallTest (Ptr<NoCount> p)
+{
+  return p;
+}
 
 bool
 PtrTest::RunTests (void)
@@ -74,20 +79,118 @@ PtrTest::RunTests (void)
   bool ok = true;
 
   Callback<void> cb = MakeCallback (&PtrTest::DestroyNotify, this);
-  m_destroyed = false;
+  m_nDestroyed = false;
   {
     Ptr<NoCount> p = new NoCount (cb);
   }
-  if (!m_destroyed)
+  if (m_nDestroyed != 1)
     {
       ok = false;
     }
-  m_destroyed = false;
+
+  m_nDestroyed = 0;
   {
     Ptr<NoCount> p;
     p = new NoCount (cb);
   }
-  if (!m_destroyed)
+  if (m_nDestroyed != 1)
+    {
+      ok = false;
+    }
+
+  m_nDestroyed = 0;
+  {
+    Ptr<NoCount> p1;
+    p1 = new NoCount (cb);
+    Ptr<NoCount> p2 = p1;
+  }
+  if (m_nDestroyed != 1)
+    {
+      ok = false;
+    }
+
+  m_nDestroyed = 0;
+  {
+    Ptr<NoCount> p1;
+    p1 = new NoCount (cb);
+    Ptr<NoCount> p2;
+    p2 = p1;
+  }
+  if (m_nDestroyed != 1)
+    {
+      ok = false;
+    }
+
+  m_nDestroyed = 0;
+  {
+    Ptr<NoCount> p1;
+    p1 = new NoCount (cb);
+    Ptr<NoCount> p2 = new NoCount (cb);
+    p2 = p1;
+  }
+  if (m_nDestroyed != 2)
+    {
+      ok = false;
+    }
+
+  m_nDestroyed = 0;
+  {
+    Ptr<NoCount> p1;
+    p1 = new NoCount (cb);
+    Ptr<NoCount> p2;
+    p2 = new NoCount (cb);
+    p2 = p1;
+  }
+  if (m_nDestroyed != 2)
+    {
+      ok = false;
+    }
+
+  m_nDestroyed = 0;
+  {
+    Ptr<NoCount> p1;
+    p1 = new NoCount (cb);
+    p1 = new NoCount (cb);
+  }
+  if (m_nDestroyed != 2)
+    {
+      ok = false;
+    }
+
+  m_nDestroyed = 0;
+  {
+    Ptr<NoCount> p1;
+    {
+      Ptr<NoCount> p2;
+      p1 = new NoCount (cb);
+      p2 = new NoCount (cb);
+      p2 = p1;
+    }
+    if (m_nDestroyed != 1)
+      {
+        ok = false;
+      }
+  }
+  if (m_nDestroyed != 2)
+    {
+      ok = false;
+    }
+
+  m_nDestroyed = 0;
+  {
+    Ptr<NoCount> p1;
+    {
+      Ptr<NoCount> p2;
+      p1 = new NoCount (cb);
+      p2 = new NoCount (cb);
+      p2 = CallTest (p1);
+    }
+    if (m_nDestroyed != 1)
+      {
+        ok = false;
+      }
+  }
+  if (m_nDestroyed != 2)
     {
       ok = false;
     }
