@@ -18,6 +18,7 @@ ns3.add(core)
 core.add_sources([
     'reference-list-test.cc',
     'callback-test.cc',
+    'ptr.cc',
     'test.cc'
     ])
 env = Environment()
@@ -37,6 +38,7 @@ core.add_inst_headers([
     'system-wall-clock-ms.h',
     'reference-list.h',
     'callback.h',
+    'ptr.h',
     'test.h'
     ])
 
