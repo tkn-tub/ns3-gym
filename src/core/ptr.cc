@@ -52,6 +52,7 @@ public:
 private:
   void DestroyNotify (void);
   Ptr<NoCount> CallTest (Ptr<NoCount> p);
+  Ptr<NoCount> const CallTestConst (Ptr<NoCount> const p);
   uint32_t m_nDestroyed;
 };
 
@@ -69,6 +70,12 @@ PtrTest::DestroyNotify (void)
 }
 Ptr<NoCount> 
 PtrTest::CallTest (Ptr<NoCount> p)
+{
+  return p;
+}
+
+Ptr<NoCount> const 
+PtrTest::CallTestConst (Ptr<NoCount> const p)
 {
   return p;
 }
@@ -92,6 +99,7 @@ PtrTest::RunTests (void)
   {
     Ptr<NoCount> p;
     p = new NoCount (cb);
+    p = p;
   }
   if (m_nDestroyed != 1)
     {
@@ -194,6 +202,48 @@ PtrTest::RunTests (void)
     {
       ok = false;
     }
+
+  {
+    Ptr<NoCount> p1;
+    Ptr<NoCount> const p2 = CallTest (p1);
+    Ptr<NoCount> const p3 = CallTestConst (p1);
+    Ptr<NoCount> p4 = CallTestConst (p1);
+    Ptr<NoCount const> p5 = p4;
+    //p4 = p5; You cannot make a const pointer be a non-const pointer.
+    // but if you use const_pointer_cast, you can.
+    p4 = const_pointer_cast<NoCount> (p5);
+    p5 = p1;
+    Ptr<NoCount> p;
+    if (p == 0)
+      {}
+    if (p != 0)
+      {}
+    if (0 == p)
+      {}
+    if (0 != p)
+      {}
+    if (p)
+      {}
+    if (!p)
+      {}
+  }
+
+  m_nDestroyed = 0;
+  {
+    NoCount *raw;
+    {
+      Ptr<NoCount> p = new NoCount (cb);
+      {
+        Ptr<NoCount const> p1 = p;
+      }
+      raw = p.Remove ();
+    }
+    if (m_nDestroyed != 0)
+      {
+        ok = false;
+      }
+    delete raw;
+  }
   
 
   return ok;

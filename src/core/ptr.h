@@ -53,6 +53,7 @@ private:
   };
   static uint32_t *AllocCount (void);
   static void DeallocCount (uint32_t *count);
+  friend class Ptr<const T>;
 public:
   /**
    * Create an empty smart pointer
@@ -92,6 +93,10 @@ public:
   // allow if (0 != sp)
   template <typename T1, typename T2>
   inline friend bool operator != (T1 const *lhs, Ptr<T2> &rhs);
+
+  template <typename T1, typename T2>
+  inline friend Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
+
 
   /**
    * \returns raw pointer
@@ -233,7 +238,7 @@ template <typename T>
 T *
 Ptr<T>::Remove (void) 
 {
-  assert (m_ptr.m_count == 1);
+  assert ((*m_count) == 1);
   T *retval = m_ptr;
   m_ptr = 0;
   return retval;
@@ -264,6 +269,14 @@ operator != (T1 const *lhs, Ptr<T2> &rhs)
 {
   return lhs != rhs.m_ptr;
 }
+
+template <typename T1, typename T2>
+Ptr<T1>
+const_pointer_cast (Ptr<T2> const&p)
+{
+  return Ptr<T1> (const_cast<T1 *> (p.m_ptr));
+}
+
 
 }; // namespace ns3
 
