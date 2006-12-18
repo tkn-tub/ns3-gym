@@ -51,16 +51,17 @@ private:
   inline uint32_t LeftChild (uint32_t id) const;
   inline uint32_t RightChild (uint32_t id) const;
   inline uint32_t Root (void) const;
+  /* Return the position in the array of the last element included in it. */
   uint32_t Last (void) const;
   inline bool IsRoot (uint32_t id) const;
   inline bool IsBottom (uint32_t id) const;
-  inline bool IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const;
-  inline bool IsLess (uint32_t a, uint32_t b) const;
+  inline bool IsLowerStrictly (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const;
+  inline bool IsLessStrictly (uint32_t a, uint32_t b) const;
   inline uint32_t Smallest (uint32_t a, uint32_t b) const;
 
   inline void Exch (uint32_t a, uint32_t b);
   void BottomUp (void);
-  void TopDown (void);
+  void TopDown (uint32_t start);
 
   BinaryHeap m_heap;
 };

@@ -120,7 +120,7 @@ SchedulerHeap::Exch (uint32_t a, uint32_t b)
 }
 
 bool
-SchedulerHeap::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
+SchedulerHeap::IsLowerStrictly (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
 {
   if (a->m_ns < b->m_ns)
     {
@@ -141,15 +141,15 @@ SchedulerHeap::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b
 }
 
 bool
-SchedulerHeap::IsLess (uint32_t a, uint32_t b) const
+SchedulerHeap::IsLessStrictly (uint32_t a, uint32_t b) const
 {
-  return IsLower (&m_heap[a].second, &m_heap[b].second);
+  return IsLowerStrictly (&m_heap[a].second, &m_heap[b].second);
 }
 
 uint32_t 
 SchedulerHeap::Smallest (uint32_t a, uint32_t b) const
 {
-  return IsLess (a,b)?a:b;
+  return IsLessStrictly (a,b)?a:b;
 }
 
 bool
@@ -163,7 +163,7 @@ SchedulerHeap::BottomUp (void)
 {
   uint32_t index = Last ();
   while (!IsRoot (index) && 
-         IsLess (index, Parent (index))) 
+         IsLessStrictly (index, Parent (index))) 
     { 
       Exch(index, Parent (index)); 
       index = Parent (index); 
@@ -171,15 +171,15 @@ SchedulerHeap::BottomUp (void)
 }
 
 void
-SchedulerHeap::TopDown (void)
+SchedulerHeap::TopDown (uint32_t start)
 {
-  uint32_t index = Root ();
+  uint32_t index = start;
   uint32_t right = RightChild (index);
   while (!IsBottom (right)) 
     {
       uint32_t left = LeftChild (index);
       uint32_t tmp = Smallest (left, right);
-      if (IsLess (index, tmp)) 
+      if (IsLessStrictly (index, tmp)) 
         {
           return;
         }
@@ -197,7 +197,7 @@ SchedulerHeap::TopDown (void)
     {
       return;
     }
-  if (IsLess (index, left)) 
+  if (IsLessStrictly (index, left)) 
     {
       return;
     }
@@ -228,38 +228,29 @@ SchedulerHeap::RealRemoveNext (void)
 {
   Exch (Root (), Last ());
   m_heap.pop_back ();
-  TopDown ();
+  TopDown (Root ());
 }
 
 
 EventImpl *
 SchedulerHeap::RealRemove (EventId id, Scheduler::EventKey *key)
 {
-  uint32_t top;
-  uint32_t bottom;
-  bottom = 1;
-  top = Last ();
   key->m_ns = id.GetNs ();
   key->m_uid = id.GetUid ();
-  while (top != bottom)
+  for (uint32_t i = 1; i < m_heap.size (); i++)
     {
-      uint32_t i = bottom + (top - bottom) / 2;
-      if (IsLower (key, &m_heap[i].second))
+      if (key->m_uid == m_heap[i].second.m_uid)
         {
-          top = i;
-        }
-      else
-        {
-          bottom = i;
+          EventImpl *retval = m_heap[i].first;
+          Exch (i, Last ());
+          m_heap.pop_back ();
+          TopDown (i);
+          return retval;
         }
     }
-  assert (top == bottom);
-  assert (m_heap[top].second.m_uid == id.GetUid ());
-  EventImpl *retval = m_heap[top].first;
-  Exch (top, Last ());
-  m_heap.pop_back ();
-  TopDown ();
-  return retval;
+  assert (false);
+  // quiet compiler
+  return 0;
 }
 
 bool 
