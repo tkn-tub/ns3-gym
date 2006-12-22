@@ -173,6 +173,12 @@ ns3.add(sample_callback)
 sample_callback.add_dep('core')
 sample_callback.add_source('main-callback.cc')
 
+sample_ptr = build.Ns3Module('sample-ptr', 'samples')
+sample_ptr.set_executable()
+ns3.add(sample_ptr)
+sample_ptr.add_dep('core')
+sample_ptr.add_source('main-ptr.cc')
+
 sample_trace = build.Ns3Module('sample-trace', 'samples')
 ns3.add(sample_trace)
 sample_trace.add_dep('common')
