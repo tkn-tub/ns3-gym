@@ -75,6 +75,7 @@ public:
   Ptr (Ptr<U> const &o);
   ~Ptr () ;
   Ptr<T> &operator = (Ptr const& o);
+  T const& operator * () const;
   T *operator -> () const;
   T *operator -> ();
   // allow if (!sp)
@@ -200,6 +201,13 @@ Ptr<T>::operator = (Ptr const& o)
   m_ptr = o.m_ptr;
   m_count = o.m_count;
   return *this;
+}
+
+template <typename T>
+T const& 
+Ptr<T>::operator * () const
+{
+  return *m_ptr;
 }
 
 template <typename T>

@@ -32,6 +32,7 @@ class NoCount
 public:
   NoCount (Callback<void> cb);
   ~NoCount ();
+  void Nothing () const;
 private:
   Callback<void> m_cb;
 };
@@ -42,6 +43,9 @@ NoCount::~NoCount ()
 {
   m_cb ();
 }
+void
+NoCount::Nothing () const
+{}
 
 class PtrTest : Test
 {
@@ -244,6 +248,20 @@ PtrTest::RunTests (void)
       }
     delete raw;
   }
+
+
+  m_nDestroyed = 0;
+  {
+    Ptr<NoCount> p = new NoCount (cb);
+    NoCount const&v1 = *p;
+    NoCount v2 = *p;
+    v1.Nothing ();
+    v2.Nothing ();
+  }
+  if (m_nDestroyed != 2)
+    {
+      ok = false;
+    }
   
 
   return ok;
