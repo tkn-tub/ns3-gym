@@ -96,10 +96,10 @@ public:
    * \param fn a function which can pretty-print an instance
    *        of type T in the output stream.
    */
-  TagRegistration<T> (std::string uuid, void(*fn) (T *, std::ostream &));
+  TagRegistration<T> (std::string uuid, void(*fn) (T const*, std::ostream &));
 private:
   static void PrettyPrinterCb (uint8_t *buf, std::ostream &os);
-  static void(*m_prettyPrinter) (T *, std::ostream &);
+  static void(*m_prettyPrinter) (T const*, std::ostream &);
 };
 
 }; // namespace ns3
@@ -118,6 +118,10 @@ class TagRegistry {
 public:
   typedef void (*PrettyPrinter) (uint8_t [Tags::SIZE], std::ostream &);
   static void Record (std::string uuid, PrettyPrinter prettyPrinter);
+  /**
+   * returns a numeric integer which uniquely identifies the input string.
+   * that integer cannot be zero which is a reserved value.
+   */
   static uint32_t LookupUid (std::string uuid);
   static void PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
 private:
@@ -173,7 +177,7 @@ std::string *TypeUid<T>::GetUuid (void)
  * the call to the user-provided function.
  */
 template <typename T>
-TagRegistration<T>::TagRegistration (std::string uuid, void (*prettyPrinter) (T *, std::ostream &))
+TagRegistration<T>::TagRegistration (std::string uuid, void (*prettyPrinter) (T const*, std::ostream &))
 {
   assert (sizeof (T) <= Tags::SIZE);
   m_prettyPrinter  = prettyPrinter;
@@ -190,7 +194,7 @@ TagRegistration<T>::PrettyPrinterCb (uint8_t *buf, std::ostream &os)
 }
 
 template <typename T>
-void (*TagRegistration<T>::m_prettyPrinter) (T *, std::ostream &) = 0;
+void (*TagRegistration<T>::m_prettyPrinter) (T const*, std::ostream &) = 0;
 
 
 

@@ -42,7 +42,7 @@ TagRegistry::LookupUid (std::string uuid)
   	m_sorted = true;
     }
   assert (m_sorted);
-  uint32_t uid = 0;
+  uint32_t uid = 1;
   for (TagsDataCI i = m_registry.begin (); i != m_registry.end (); i++) 
     {
   	if (i->first == uuid) 
@@ -52,8 +52,7 @@ TagRegistry::LookupUid (std::string uuid)
   	uid++;
     }
   // someone asked for a uid for an unregistered uuid.
-  assert ("You tried to use unregistered tag: make sure you create an "
-  		"instance of type TagRegistration<YouTagType>.");
+  assert (!"You tried to use unregistered tag: make sure you create an instance of type TagRegistration<YouTagType>.");
   // quiet compiler
   return 0;
 }
@@ -101,6 +100,7 @@ Tags::FreeData (struct TagData *data)
     }
   gN_free++;
   data->m_next = gFree;
+  data->m_id = 0;
   gFree = data;
 }
 #else
@@ -203,17 +203,17 @@ struct myInvalidTag {
 };
 
 static void 
-myTagAPrettyPrinterCb (struct myTagA *a, std::ostream &os)
+myTagAPrettyPrinterCb (struct myTagA const*a, std::ostream &os)
 {
   os << "struct myTagA, a="<<(uint32_t)a->a<<std::endl;
 }
 static void 
-myTagBPrettyPrinterCb (struct myTagB *b, std::ostream &os)
+myTagBPrettyPrinterCb (struct myTagB const*b, std::ostream &os)
 {
   os << "struct myTagB, b="<<b->b<<std::endl;
 }
 static void 
-myTagCPrettyPrinterCb (struct myTagC *c, std::ostream &os)
+myTagCPrettyPrinterCb (struct myTagC const*c, std::ostream &os)
 {
   os << "struct myTagC, c="<<(uint32_t)c->c[0]<<std::endl;
 }
