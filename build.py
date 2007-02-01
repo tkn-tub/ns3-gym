@@ -51,6 +51,8 @@ class Ns3Module:
         self.dir = dir
         self.executable = False
         self.library = True
+        self.ldflags = []
+        self.header_inst_dir = ''
     def set_library(self):
         self.library = True
         self.executable = False
@@ -79,6 +81,13 @@ class Ns3Module:
         self.inst_headers.append(header)
     def add_inst_headers(self, headers):
         self.inst_headers.extend(headers)
+    def add_ldflags (self, ldflags):
+        self.ldflags.extend (ldflags)
+    def add_ldflag (self, ldflag):
+        self.add_ldflags ([ldflag])
+    def set_header_inst_dir (self, inst_dir):
+        self.header_inst_dir = inst_dir
+        
 
 def MyCopyAction(target, source, env):
     try:
@@ -157,12 +166,20 @@ class Ns3:
                                      prefix + module.name + suffix)
         return filename
     def get_obj_builders(self, variant, module):
-        env = variant.env
+        env = variant.env.Copy ()
         objects = []
+        hash = {}
+        self.get_internal_deps (module, hash)
+        for dep in hash.values ():
+            if dep.header_inst_dir != '':
+                inc_dir = os.path.join(variant.build_root, 'include', 
+                                       self.name, dep.header_inst_dir)
+                env.Append (CPPPATH = [inc_dir])
+                
         if len(module.config) > 0:
             src_config_file = os.path.join(self.build_dir, 'config', module.name + '-config.h')
             tgt_config_file = os.path.join(variant.build_root, 'include', 
-                                           'ns3', module.name + '-config.h')
+                                           self.name, module.name + '-config.h')
 
         for source in module.sources:
             obj_file = os.path.splitext(source)[0] + '.o'
@@ -174,7 +191,7 @@ class Ns3:
                 obj_builder = env.SharedObject(target = tgt, source = src)
             if len(module.config) > 0:
                 config_file = env.MyCopyBuilder(target = [tgt_config_file], 
-                                                 source = [src_config_file])
+                                                    source = [src_config_file])
                 env.Depends(obj_builder, config_file)
             if variant.gcxx_deps:
                 gcno_tgt = os.path.join(variant.build_root, module.dir, 
@@ -246,34 +263,39 @@ class Ns3:
         cpp_path = os.path.join(variant.build_root, 'include')
         env = variant.env
         env.Append(CPPPATH = [cpp_path])
-        header_dir = os.path.join(build_root, 'include', 'ns3')
+        header_dir = os.path.join(build_root, 'include', self.name)
         lib_path = os.path.join(build_root, 'lib')
+        env.Append (LIBPATH = [lib_path])
         module_builders = []
         for module in self.__modules:
+            my_env = env.Copy ();
             objects = self.get_obj_builders(variant, module)
             libs = self.get_sorted_deps(module)
+            my_env.Append (LIBS = libs)
+            my_env.Append (LINKFLAGS = module.ldflags)
 
             filename = self.get_mod_output(module, variant)
             if module.executable:
-                module_builder = env.Program(target=filename, source=objects, 
-                                             LIBPATH=lib_path, LIBS=libs)
+                module_builder = my_env.Program(target=filename, source=objects)
             else:
                 if variant.static:
-                    module_builder = env.StaticLibrary(target=filename, source=objects)
+                    module_builder = my_env.StaticLibrary(target=filename, source=objects)
                 else:
-                    module_builder = env.SharedLibrary(target=filename, source=objects, 
-                                                       LIBPATH=lib_path, LIBS=libs)
+                    module_builder = my_env.SharedLibrary(target=filename, source=objects)
 
             for dep_name in module.deps:
                 dep = self.__get_module(dep_name)
-                env.Depends(module_builder, self.get_mod_output(dep, variant))
+                my_env.Depends(module_builder, self.get_mod_output(dep, variant))
 
             for header in module.inst_headers:
-                tgt = os.path.join(header_dir, header)
+                if module.header_inst_dir != '':
+                    tgt = os.path.join(header_dir, module.header_inst_dir, header)
+                else:
+                    tgt = os.path.join(header_dir, header)
                 src = os.path.join(module.dir, header)
                 #builder = env.Install(target = tgt, source = src)
-                header_builder = env.MyCopyBuilder(target=tgt, source=src)
-                env.Depends(module_builder, header_builder)
+                header_builder = my_env.MyCopyBuilder(target=tgt, source=src)
+                my_env.Depends(module_builder, header_builder)
 
             module_builders.append(module_builder)
         return module_builders
@@ -359,7 +381,7 @@ class Ns3:
             create_dir_command = "rm -rf " + lcov_report_dir
             create_dir_command += " && mkdir " + lcov_report_dir + ";"
             gcov_env.Execute(create_dir_command)
-            info_file = os.path.join(lcov_report_dir, 'ns3.info')
+            info_file = os.path.join(lcov_report_dir, self.name + '.info')
             lcov_command = "utils/lcov/lcov -c -d . -o " + info_file
             lcov_command += " --source-dirs=" + os.getcwd()
             lcov_command += ":" + os.path.join(os.getcwd(), 
