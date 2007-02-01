@@ -44,6 +44,11 @@ EventId::IsExpired (void)
 {
   return Simulator::IsExpired (*this);
 }
+bool 
+EventId::IsRunning (void)
+{
+  return !IsExpired ();
+}
 EventImpl *
 EventId::GetEventImpl (void) const
 {

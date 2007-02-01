@@ -45,6 +45,7 @@ public:
    * \returns true if the event has expired, false otherwise.
    */
   bool IsExpired (void);
+  bool IsRunning (void);
 public:
   /* The following methods are semi-private
    * they are supposed to be invoked only by

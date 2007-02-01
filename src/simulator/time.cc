@@ -29,6 +29,15 @@ Time::Time ()
 Time::Time (TimeUnit<1> time)
   : TimeUnit<1> (time)
 {}
+Time::Time (HighPrecision const& value)
+  : TimeUnit<1> (value)
+{}
+
+Time 
+Time::Seconds (double seconds)
+{
+  return Seconds (seconds);
+}
 
 double 
 Time::GetSeconds (void) const
@@ -57,35 +66,33 @@ Time::GetNanoSeconds (void) const
   return GetHighPrecision ().GetInteger ();
 }
 
+std::ostream& 
+operator<< (std::ostream& os, Time const& time)
+{
+  os << time.GetNanoSeconds () << "ns";
+  return os;
+}
 
-Seconds::Seconds ()
-  : TimeUnit<1> ()
-{}
-Seconds::Seconds (double seconds)
-  : TimeUnit<1> (HighPrecision (seconds * 1000000000.0))
-{}
-MilliSeconds::MilliSeconds ()
-  : TimeUnit<1> ()
-{}
-MilliSeconds::MilliSeconds (uint32_t ms)
-  : TimeUnit<1> (HighPrecision (ms * 1000000, false))
-{}
-MicroSeconds::MicroSeconds ()
-  : TimeUnit<1> ()
-{}
-MicroSeconds::MicroSeconds (uint64_t us)
-  : TimeUnit<1> (HighPrecision (us * 1000, false))
-{}
-NanoSeconds::NanoSeconds ()
-  : TimeUnit<1> ()
-{}
-NanoSeconds::NanoSeconds (uint64_t ns)
-  : TimeUnit<1> (HighPrecision (ns, false))
-{}
-
-Now::Now ()
-  : Time (Simulator::Now ())
-{}
+Time Seconds (double seconds)
+{
+  return Time (HighPrecision (seconds * 1000000000.0));
+}
+Time MilliSeconds (uint32_t ms)
+{
+  return Time (HighPrecision (ms * 1000000, false));
+}
+Time MicroSeconds (uint64_t us)
+{
+  return Time (HighPrecision (us * 1000, false));
+}
+Time NanoSeconds (uint64_t ns)
+{
+  return Time (HighPrecision (ns, false));
+}
+Time Now (void)
+{
+  return Time (Simulator::Now ());
+}
 
 Scalar::Scalar ()
   : TimeUnit<0> ()

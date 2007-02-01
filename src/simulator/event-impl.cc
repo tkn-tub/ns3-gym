@@ -45,4 +45,10 @@ EventImpl::Cancel (void)
   m_cancel = true;
 }
 
+bool 
+EventImpl::IsCancelled (void)
+{
+  return m_cancel;
+}
+
 }; // namespace ns3

@@ -31,6 +31,7 @@ public:
   virtual ~EventImpl () = 0;
   void Invoke (void);
   void Cancel (void);
+  bool IsCancelled (void);
 protected:
   virtual void Notify (void) = 0;
 private:
