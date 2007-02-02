@@ -110,7 +110,7 @@ public:
    * \return the ns3::HighPrecision object which holds the value 
    *         stored in this Time<N> type.
    */
-  HighPrecision GetHighPrecision (void) const;
+  HighPrecision const &GetHighPrecision (void) const;
   HighPrecision *PeekHighPrecision (void);
 
 private:
@@ -138,7 +138,7 @@ TimeUnit<N>::TimeUnit (HighPrecision data)
 {}
 
 template <int N>
-HighPrecision
+HighPrecision const &
 TimeUnit<N>::GetHighPrecision (void) const
 {
   return m_data;

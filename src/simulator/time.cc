@@ -36,23 +36,21 @@ Time::Time (HighPrecision const& value)
 double 
 Time::GetSeconds (void) const
 {
-  HighPrecision seconds = GetHighPrecision ();
-  seconds.Div (HighPrecision (1000000000, false));
-  return seconds.GetDouble ();
+  double ns = GetHighPrecision ().GetDouble ();
+  return ns/1000000000.0;
 }
 int32_t 
 Time::GetMilliSeconds (void) const
 {
-  HighPrecision ms = GetHighPrecision ();
-  ms.Div (HighPrecision (1000000, false));
-  return (int32_t) ms.GetInteger ();
+  int64_t ns = GetHighPrecision ().GetInteger ();
+  ns /= 1000000;
+  return ns;
 }
 int64_t 
 Time::GetMicroSeconds (void) const
 {
-  HighPrecision us = GetHighPrecision ();
-  us.Div (HighPrecision (1000, false));
-  return us.GetInteger ();
+  int64_t ns = GetHighPrecision ().GetInteger ();
+  return ns/1000;
 }
 int64_t 
 Time::GetNanoSeconds (void) const
