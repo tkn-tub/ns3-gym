@@ -35,7 +35,7 @@
 #ifdef TRACE_SIMU
 #include <iostream>
 # define TRACE(x) \
-std::Cout << "SIMU TRACE " << Simulator::nowS () << " " << x << std::endl;
+std::cout << "SIMU TRACE " << Simulator::Now () << " " << x << std::endl;
 # define TRACE_S(x) \
 std::cout << "SIMU TRACE " << x << std::endl;
 #else /* TRACE_SIMU */
