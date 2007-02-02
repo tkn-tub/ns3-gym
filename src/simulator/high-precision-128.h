@@ -24,6 +24,33 @@
 #include <stdint.h>
 #include "cairo-wideint-private.h"
 
+/**
+ * This file contains an implementation of the HighPrecision class.
+ * Each instance of the Time class also contains an instance of this
+ * class which is used to perform all the arithmetic operations of
+ * the Time class.
+ *
+ * This code is a bit ugly with a lot of inline methods for speed:
+ * profiling this code on anything but the simplest scenarios shows
+ * that it is a big bottleneck if great care in its implementation
+ * is not performed. My observations are that what dominates are 
+ * Division operations (there are really really super costly)
+ * and Comparison operations (because there are typically a lot of
+ * these in any complex timekeeping code).
+ *
+ * So, the code tries really hard to perform any of these 128 bit 
+ * operations by doing all arithmetic on 64 bit integers when possible
+ * (i.e., when there is no fractional part. This is a very common case).
+ * Hence, the following code has a m_fastValue (64 bits) and a 
+ * m_slowValue (128 bits). m_fastValue is used by default and the code
+ * converts it to a m_slowValue when needed.
+ *
+ * If you want to monitor the efficiency of this strategy, you can 
+ * enable the macro HP128INC below and call the HighPrecision::PrintStats
+ * method at the end of the simulation.
+ */
+
+
 #define HP128INC(x)
 //#define HP128INC(x) x++
 
