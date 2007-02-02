@@ -330,8 +330,6 @@ public:
   Time (TimeUnit<1> time);
   Time (HighPrecision const& value);
 
-  static Time Seconds (double seconds);
-
   /**
    * \returns an approximation in seconds of the time stored in this
    *          instance.

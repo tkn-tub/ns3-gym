@@ -33,12 +33,6 @@ Time::Time (HighPrecision const& value)
   : TimeUnit<1> (value)
 {}
 
-Time 
-Time::Seconds (double seconds)
-{
-  return Seconds (seconds);
-}
-
 double 
 Time::GetSeconds (void) const
 {
