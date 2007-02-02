@@ -117,6 +117,7 @@ Scalar::GetDouble (void) const
 #ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
+//#include <iostream>
 
 namespace ns3 {
 
@@ -189,10 +190,18 @@ bool TimeTests::RunTests (void)
   TimeUnit<3> tu3 = t0 * tu2;
   TimeUnit<-2> tu4 = t0 / tu3;
 
+  Time tmp = MilliSeconds (0);
+  if ((tmp != NanoSeconds (0)) ||
+      (tmp > NanoSeconds (0)) ||
+      (tmp < NanoSeconds (0)))
+    {
+      ok = false;
+    }
+
   Time t4 = Seconds (10.0) * Scalar (1.5);
-  //std::cout << "10.0s * 1.5 = " << t4.ApproximateToSeconds () << "s" << std::endl;
+  //std::cout << "10.0s * 1.5 = " << t4.GetSeconds () << "s" << std::endl;
   Time t5 = NanoSeconds (10) * Scalar (1.5);
-  //std::cout << "10ns * 1.5 = " << t5.ApproximateToNanoSeconds () << "ns" << std::endl;
+  //std::cout << "10ns * 1.5 = " << t5.GetNanoSeconds () << "ns" << std::endl;
 
   return ok;
 }
