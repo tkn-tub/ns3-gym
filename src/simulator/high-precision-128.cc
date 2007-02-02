@@ -20,48 +20,101 @@
  */
 #include "high-precision-128.h"
 #include <math.h>
+#include <iostream>
 
 namespace ns3 {
 
+int HighPrecision::m_nfastadds = 0;
+int HighPrecision::m_nfastsubs = 0;
+int HighPrecision::m_nfastmuls = 0;
+int HighPrecision::m_nfastcmps = 0;
+int HighPrecision::m_nfastgets = 0;
+int HighPrecision::m_nslowadds = 0;
+int HighPrecision::m_nslowsubs = 0;
+int HighPrecision::m_nslowmuls = 0;
+int HighPrecision::m_nslowcmps = 0;
+int HighPrecision::m_nslowgets = 0;
+int HighPrecision::m_ndivs = 0;
+int HighPrecision::m_nconversions = 0;
+
+void 
+HighPrecision::PrintStats (void)
+{
+  double nadds = m_nfastadds + m_nslowadds;
+  double nsubs = m_nfastsubs + m_nslowsubs;
+  double ncmps = m_nfastcmps + m_nslowcmps;
+  double nmuls = m_nfastmuls + m_nslowmuls;
+  double ngets = m_nfastgets + m_nslowgets;
+  double fast_add_ratio = m_nfastadds / nadds;
+  double fast_sub_ratio = m_nfastsubs / nsubs;
+  double fast_cmp_ratio = m_nfastcmps / ncmps;
+  double fast_mul_ratio = m_nfastmuls / nmuls;
+  double fast_get_ratio = m_nfastgets / ngets;
+
+  std::cout <<
+    "add="<<fast_add_ratio<<std::endl<<
+    "sub="<<fast_sub_ratio<<std::endl<<
+    "cmp="<<fast_cmp_ratio<<std::endl<<
+    "mul="<<fast_mul_ratio<<std::endl<<
+    "get="<<fast_get_ratio<<std::endl<<
+    "nadds="<<nadds<<std::endl<<
+    "nsubs="<<nsubs<<std::endl<<
+    "ncmps="<<ncmps<<std::endl<<
+    "nmuls="<<nmuls<<std::endl<<
+    "ngets="<<ngets<<std::endl<<
+    "ndivs="<<m_ndivs<<std::endl<<
+    "nconversions="<<m_nconversions<<std::endl
+    ;
+}
+
+
 const double HighPrecision::MAX_64 = 18446744073709551615.0;
 
-HighPrecision::HighPrecision ()
-{
-  m_value = _cairo_int32_to_int128 (0);
-  // the following statement is not really needed but it 
-  // is here for the sake of symetry. I doubt we will
-  // ever see this code in the profiles...
-  m_value = _cairo_int128_lsl (m_value, 64);
-}
-
-HighPrecision::HighPrecision (int64_t value, bool dummy)
-{
-  m_value = _cairo_int64_to_int128 (value);
-  m_value = _cairo_int128_lsl (m_value, 64);
-}
 
 HighPrecision::HighPrecision (double value)
 {
   int64_t hi = (int64_t) floor (value);
   uint64_t lo = (uint64_t) ((value - floor (value)) * MAX_64);
-  m_value = _cairo_int64_to_int128 (hi);
-  m_value = _cairo_int128_lsl (m_value, 64);
-  cairo_int128_t clo = _cairo_uint128_to_int128 (_cairo_uint64_to_uint128 (lo));
-  m_value = _cairo_int128_add (m_value, clo);
+  if (lo == 0)
+    {
+      m_isFast = true;
+      m_fastValue = hi;
+      return;
+    }
+  else
+    {
+      m_isFast = false;
+      m_slowValue = _cairo_int64_to_int128 (hi);
+      m_slowValue = _cairo_int128_lsl (m_slowValue, 64);
+      cairo_int128_t clo = _cairo_uint128_to_int128 (_cairo_uint64_to_uint128 (lo));
+      m_slowValue = _cairo_int128_add (m_slowValue, clo);
+    }
+}
+
+void
+HighPrecision::EnsureSlow (void)
+{
+  if (m_isFast)
+    {
+      HP128INC (m_nconversions++);
+      m_slowValue = _cairo_int64_to_int128 (m_fastValue);
+      m_slowValue = _cairo_int128_lsl (m_slowValue, 64);
+      m_isFast = false;
+    }
 }
 
 int64_t
-HighPrecision::GetInteger (void) const
+HighPrecision::SlowGetInteger (void) const
 {
-  cairo_int128_t value = _cairo_int128_rsa (m_value, 64);
+  cairo_int128_t value = _cairo_int128_rsa (m_slowValue, 64);
   return _cairo_int128_to_int64 (value);
 }
 
 double 
-HighPrecision::GetDouble (void) const
+HighPrecision::SlowGetDouble (void) const
 {
-  bool is_negative = _cairo_int128_negative (m_value);
-  cairo_int128_t value = is_negative?_cairo_int128_negate (m_value):m_value;
+  bool is_negative = _cairo_int128_negative (m_slowValue);
+  cairo_int128_t value = is_negative?_cairo_int128_negate (m_slowValue):m_slowValue;
   cairo_int128_t hi = _cairo_int128_rsa (value, 64);
   cairo_uint128_t lo = _cairo_int128_sub (value, _cairo_uint128_lsl (hi, 64));
   double flo = _cairo_uint128_to_uint64 (lo);
@@ -72,50 +125,52 @@ HighPrecision::GetDouble (void) const
   return retval;
 }
 bool 
-HighPrecision::Add (HighPrecision const &o)
+HighPrecision::SlowAdd (HighPrecision const &o)
 {
-  m_value = _cairo_int128_add (m_value, o.m_value);
+  EnsureSlow ();
+  const_cast<HighPrecision &> (o).EnsureSlow ();
+  m_slowValue = _cairo_int128_add (m_slowValue, o.m_slowValue);
   return false;
 }
 bool 
-HighPrecision::Sub (HighPrecision const &o)
+HighPrecision::SlowSub (HighPrecision const &o)
 {
-  m_value = _cairo_int128_sub (m_value, o.m_value);
+  EnsureSlow ();
+  const_cast<HighPrecision &> (o).EnsureSlow ();
+  m_slowValue = _cairo_int128_sub (m_slowValue, o.m_slowValue);
   return false;
 }
 bool 
-HighPrecision::Mul (HighPrecision const &o)
+HighPrecision::SlowMul (HighPrecision const &o)
 {
-  cairo_int128_t other = _cairo_int128_rsa (o.m_value, 64);
-  m_value = _cairo_int128_mul (m_value, other);
+  EnsureSlow ();
+  const_cast<HighPrecision &> (o).EnsureSlow ();
+  cairo_int128_t other = _cairo_int128_rsa (o.m_slowValue, 64);
+  m_slowValue = _cairo_int128_mul (m_slowValue, other);
   return false;
 }
 bool 
 HighPrecision::Div (HighPrecision const &o)
 {
-#if 1
-  cairo_int128_t div = _cairo_int128_rsa (o.m_value, 64);
+  HP128INC (m_ndivs++);
+  EnsureSlow ();
+  const_cast<HighPrecision &> (o).EnsureSlow ();
+  cairo_int128_t div = _cairo_int128_rsa (o.m_slowValue, 64);
   cairo_quorem128_t qr;
-  qr = _cairo_int128_divrem (m_value, div);
-  m_value = qr.quo;
-#else
-  cairo_quorem128_t qr;
-  qr = _cairo_int128_divrem (m_value, o.m_value);
-  m_value = qr.quo;
-  m_value = _cairo_int128_lsl (m_value, 64);
-  cairo_int128_t rem = _cairo_int128_rsa (qr.rem, 64);
-  m_value = _cairo_int128_add (m_value, rem);
-#endif
+  qr = _cairo_int128_divrem (m_slowValue, div);
+  m_slowValue = qr.quo;
   return false;
 }
 int 
-HighPrecision::Compare (HighPrecision const &o) const
+HighPrecision::SlowCompare (HighPrecision const &o) const
 {
-  if (_cairo_int128_lt (m_value, o.m_value))
+  const_cast<HighPrecision *> (this)->EnsureSlow ();
+  const_cast<HighPrecision &> (o).EnsureSlow ();
+  if (_cairo_int128_lt (m_slowValue, o.m_slowValue))
     {
       return -1;
     }
-  else if (_cairo_int128_eq (m_value, o.m_value))
+  else if (_cairo_int128_eq (m_slowValue, o.m_slowValue))
     {
       return 0;
     }
@@ -124,12 +179,6 @@ HighPrecision::Compare (HighPrecision const &o) const
       return 1;
     }
 }
-HighPrecision 
-HighPrecision::Zero (void)
-{
-  return HighPrecision (0,0);
-}
-
 
 }; // namespace ns3
 
@@ -283,7 +332,7 @@ HighPrecision128Tests::RunTests (void)
   return ok;
 }
 
-static HighPrecision128Tests g_int128_tests;
+static HighPrecision128Tests g_int128Tests;
 
 
 }; // namespace ns3
