@@ -196,9 +196,7 @@ private:
 
 }; // namespace ns3
 
-#ifndef NDEBUG
 #include <cassert>
-#endif
 
 namespace ns3 {
 
@@ -210,13 +208,18 @@ TraceContainer::SetCallback (char const *name, Callback<void,T1> callback)
     {
       if (i->second == name) 
         {
-          static_cast<CallbackTracer<T1> *> (i->first)->SetCallback (callback);
-          return;
+          if (i->first->CheckCallbackType (callback))
+            {
+              static_cast<CallbackTracer<T1> *> (i->first)->SetCallback (callback);
+              return;
+            }
+          else
+            {
+              assert (!"non-matching callback");
+            }
         }
     }
-#ifndef NDEBUG
   assert (false);
-#endif
 }
 template <typename T1, typename T2>
 void 
@@ -226,13 +229,18 @@ TraceContainer::SetCallback (char const *name, Callback<void,T1,T2> callback)
     {
       if (i->second == name) 
         {
-          static_cast<CallbackTracer<T1,T2> *> (i->first)->SetCallback (callback);
-          return;
+          if (i->first->CheckCallbackType (callback))
+            {
+              static_cast<CallbackTracer<T1,T2> *> (i->first)->SetCallback (callback);
+              return;
+            }
+          else
+            {
+              assert (!"non-matching callback");
+            }
         }
     }
-#ifndef NDEBUG
   assert (false);
-#endif
 }
 template <typename T1, typename T2, typename T3>
 void 
@@ -242,13 +250,18 @@ TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3> callback)
     {
       if (i->second == name) 
         {
-          static_cast<CallbackTracer<T1,T2,T3> *> (i->first)->SetCallback (callback);
-          return;
+          if (i->first->CheckCallbackType (callback))
+            {
+              static_cast<CallbackTracer<T1,T2,T3> *> (i->first)->SetCallback (callback);
+              return;
+            }
+          else
+            {
+              assert (!"non-matching callback");
+            }
         }
     }
-#ifndef NDEBUG
   assert (false);
-#endif
 }
 template <typename T1, typename T2, typename T3, typename T4>
 void 
@@ -258,13 +271,18 @@ TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3,T4> callba
     {
       if (i->second == name) 
         {
-          static_cast<CallbackTracer<T1,T2,T3,T4> *> (i->first)->SetCallback (callback);
-          return;
+          if (i->first->CheckCallbackType (callback))
+            {
+              static_cast<CallbackTracer<T1,T2,T3,T4> *> (i->first)->SetCallback (callback);
+              return;
+            }
+          else
+            {
+              assert (!"non-matching callback");
+            }
         }
     }
-#ifndef NDEBUG
   assert (false);
-#endif
 }
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 void 
@@ -274,13 +292,18 @@ TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3,T4,T5> cal
     {
       if (i->second == name) 
         {
-          static_cast<CallbackTracer<T1,T2,T3,T4,T5> *> (i->first)->SetCallback (callback);
-          return;
+          if (i->first->CheckCallbackType (callback))
+            {
+              static_cast<CallbackTracer<T1,T2,T3,T4,T5> *> (i->first)->SetCallback (callback);
+              return;
+            }
+          else
+            {
+              assert (!"non-matching callback");
+            }
         }
     }
-#ifndef NDEBUG
   assert (false);
-#endif
 }
 
 
