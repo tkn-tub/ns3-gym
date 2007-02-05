@@ -26,7 +26,17 @@
 
 namespace ns3 {
 
-class CallbackTracerBase {};
+class CallbackTracerBase {
+public:
+  virtual ~CallbackTracerBase () {}
+  bool CheckCallbackType (CallbackBase const&callback)
+  {
+    return CheckType (callback);
+  }
+private:
+  virtual bool CheckType (CallbackBase const&callback) = 0;
+};
+
 
 /**
  * \brief log arbitrary number of parameters to a matching ns3::Callback
@@ -35,46 +45,53 @@ class CallbackTracerBase {};
  * are forwarded to the internal matching ns3::Callback.
  */
 template<typename T1 = empty, typename T2 = empty, 
-   typename T3 = empty, typename T4 = empty,
-   typename T5 = empty>
-class CallbackTracer : public CallbackTracerBase{
+         typename T3 = empty, typename T4 = empty,
+         typename T5 = empty>
+class CallbackTracer : public CallbackTracerBase {
 public:
   CallbackTracer ()
       : m_callback () {}
-  void SetCallback (Callback<void,T1,T2,T3,T4,T5> callback) {
-      m_callback = callback;
+  void SetCallback (Callback<void,T1,T2,T3,T4,T5> callback)
+  {
+    m_callback = callback;
   }
-  void operator() (void) {
+  void operator() (void) 
+  {
       if (!m_callback.IsNull ()) 
         {
           m_callback ();
         }
   }
-  void operator() (T1 a1) {
+  void operator() (T1 a1) 
+  {
       if (!m_callback.IsNull ()) 
         {
           m_callback (a1);
         }
   }
-  void operator() (T1 a1, T2 a2) {
+  void operator() (T1 a1, T2 a2) 
+  {
       if (!m_callback.IsNull ()) 
         {
           m_callback (a1,a2);
         }
   }
-  void operator() (T1 a1, T2 a2, T3 a3) {
+  void operator() (T1 a1, T2 a2, T3 a3) 
+  {
       if (!m_callback.IsNull ()) 
         {
           m_callback (a1,a2,a3);
         }
   }
-  void operator() (T1 a1, T2 a2, T3 a3, T4 a4) {
+  void operator() (T1 a1, T2 a2, T3 a3, T4 a4) 
+  {
       if (!m_callback.IsNull ()) 
         {
           m_callback (a1,a2,a3,a4);
         }
   }
-  void operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5) {
+  void operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5) 
+  {
       if (!m_callback.IsNull ()) 
         {
           m_callback (a1,a2,a3,a4,a5);
@@ -82,6 +99,10 @@ public:
   }
 
 private:
+  virtual bool CheckType (CallbackBase const&callback)
+  {
+    return m_callback.CheckType (callback);
+  }
   Callback<void,T1,T2,T3,T4,T5> m_callback;
 };
 
