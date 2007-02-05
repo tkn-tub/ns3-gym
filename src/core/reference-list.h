@@ -79,14 +79,14 @@ public:
       InsertSelfInOther (o);
       return *this;
   }
-  OBJ_PTR operator-> () {
+  OBJ_PTR operator-> () const {
       return m_objPtr;
   }
   void Set (OBJ_PTR objPtr) {
       RemoveFromList ();
       m_objPtr = objPtr;
   }
-  OBJ_PTR Get (void) {
+  OBJ_PTR Get (void) const {
       // explicit conversion to raw pointer type.
       return m_objPtr;
   }
