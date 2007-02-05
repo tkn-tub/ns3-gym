@@ -26,9 +26,21 @@ class EventInt:
         self.at = at
         self.value = value
 def ranges_cmp(a, b):
-    return a.start - b.start
+    diff = a.start - b.start
+    if diff < 0:
+        return -1
+    elif diff > 0:
+        return +1
+    else:
+        return 0
 def events_cmp(a, b):
-    return a.at - b.at
+    diff = a.at - b.at
+    if diff < 0:
+        return -1
+    elif diff > 0:
+        return +1
+    else:
+        return 0
 class TimelineDataRange:
     def __init__(self, name = ''):
         self.name = name
