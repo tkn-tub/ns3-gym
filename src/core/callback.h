@@ -57,47 +57,52 @@ namespace ns3 {
  */
 class empty {};
 
+class CallbackImplBase {
+public:
+  virtual ~CallbackImplBase () {}
+};
+
 // declare the CallbackImpl class
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5>
 class CallbackImpl;
 // define CallbackImpl for 0 params
 template <typename R>
-class CallbackImpl<R,empty,empty,empty,empty,empty> {
+class CallbackImpl<R,empty,empty,empty,empty,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (void) = 0;
 };
 // define CallbackImpl for 1 params
 template <typename R, typename T1>
-class CallbackImpl<R,T1,empty,empty,empty,empty> {
+class CallbackImpl<R,T1,empty,empty,empty,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1) = 0;
 };
 // define CallbackImpl for 2 params
 template <typename R, typename T1, typename T2>
-class CallbackImpl<R,T1,T2,empty,empty,empty> {
+class CallbackImpl<R,T1,T2,empty,empty,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2) = 0;
 };
 // define CallbackImpl for 3 params
 template <typename R, typename T1, typename T2, typename T3>
-class CallbackImpl<R,T1,T2,T3,empty,empty> {
+class CallbackImpl<R,T1,T2,T3,empty,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3) = 0;
 };
 // define CallbackImpl for 4 params
 template <typename R, typename T1, typename T2, typename T3, typename T4>
-class CallbackImpl<R,T1,T2,T3,T4,empty> {
+class CallbackImpl<R,T1,T2,T3,T4,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3, T4) = 0;
 };
 // define CallbackImpl for 5 params
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5>
-class CallbackImpl {
+class CallbackImpl : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3, T4, T5) = 0;
@@ -163,6 +168,12 @@ private:
   MEM_PTR m_memPtr;
 };
 
+class CallbackBase {
+public:
+  virtual ~CallbackBase () {}
+  virtual CallbackImplBase *PeekImpl (void) const = 0;
+};
+
 /**
  * \brief Callback template class
  *
@@ -195,7 +206,7 @@ template<typename R,
    typename T1 = empty, typename T2 = empty, 
    typename T3 = empty, typename T4 = empty,
    typename T5 = empty>
-class Callback {
+class Callback : public CallbackBase {
 public:
   template <typename FUNCTOR>
   Callback (FUNCTOR const &functor) 
@@ -234,7 +245,22 @@ public:
   R operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5) {
       return (*(m_impl).Get ()) (a1,a2,a3,a4,a5);
   }
+
+  bool CheckType (CallbackBase const& other) {
+    CallbackImplBase *otherBase = other.PeekImpl ();
+    if (dynamic_cast<CallbackImpl<R,T1,T2,T3,T4,T5> *> (otherBase) != 0)
+      {
+        return true;
+      }
+    else
+      {
+        return false;
+      }
+  }
 private:
+  virtual CallbackImplBase *PeekImpl (void) const {
+    return m_impl.Get ();
+  }
   ReferenceList<CallbackImpl<R,T1,T2,T3,T4,T5>*> m_impl;
 };
 
