@@ -168,7 +168,8 @@ bool TimeTests::RunTests (void)
   t3 = (t0 * t1) / t2;
   t3 = t0 / t1 * t2;
   t3 = (t0 / t1) * t2;
-  TimeInvert ti0 = t0 / (t1 * t2);
+  TimeInvert ti0;
+  ti0 = t0 / (t1 * t2);
   t3 = t0 * Scalar (10.0);
   t3 = Scalar (10.0) * t0;
   t3 = Scalar (10.0) * t0 / t2 * t1;
@@ -176,11 +177,16 @@ bool TimeTests::RunTests (void)
   Scalar s0 = t0 / t1;
   Scalar s1;
   s1 = t0 * t1 / (t2 * t0);
-  TimeUnit<0> tu0 = s0;
-  TimeUnit<1> tu1 = t0;
-  TimeUnit<2> tu2 = t0 * t1;
-  TimeUnit<3> tu3 = t0 * tu2;
-  TimeUnit<-2> tu4 = t0 / tu3;
+  TimeUnit<0> tu0;
+  tu0 = s0;
+  TimeUnit<1> tu1;
+  tu1 = t0;
+  TimeUnit<2> tu2;
+  tu2 = t0 * t1;
+  TimeUnit<3> tu3;
+  tu3 = t0 * tu2;
+  TimeUnit<-2> tu4;
+  tu4 = t0 / tu3;
 
   Time tmp = MilliSeconds (0);
   if ((tmp != NanoSeconds (0)) ||
@@ -190,9 +196,11 @@ bool TimeTests::RunTests (void)
       ok = false;
     }
 
-  Time t4 = Seconds (10.0) * Scalar (1.5);
+  Time t4;
+  t4 = Seconds (10.0) * Scalar (1.5);
   //std::cout << "10.0s * 1.5 = " << t4.GetSeconds () << "s" << std::endl;
-  Time t5 = NanoSeconds (10) * Scalar (1.5);
+  Time t5;
+  t5 = NanoSeconds (10) * Scalar (1.5);
   //std::cout << "10ns * 1.5 = " << t5.GetNanoSeconds () << "ns" << std::endl;
 
   return ok;
