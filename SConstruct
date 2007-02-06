@@ -18,6 +18,7 @@ ns3.add(core)
 core.add_sources([
     'reference-list-test.cc',
     'callback-test.cc',
+    'ptr.cc',
     'test.cc'
     ])
 env = Environment()
@@ -37,6 +38,7 @@ core.add_inst_headers([
     'system-wall-clock-ms.h',
     'reference-list.h',
     'callback.h',
+    'ptr.h',
     'test.h'
     ])
 
@@ -170,6 +172,12 @@ sample_callback.set_executable()
 ns3.add(sample_callback)
 sample_callback.add_dep('core')
 sample_callback.add_source('main-callback.cc')
+
+sample_ptr = build.Ns3Module('sample-ptr', 'samples')
+sample_ptr.set_executable()
+ns3.add(sample_ptr)
+sample_ptr.add_dep('core')
+sample_ptr.add_source('main-ptr.cc')
 
 sample_trace = build.Ns3Module('sample-trace', 'samples')
 ns3.add(sample_trace)
