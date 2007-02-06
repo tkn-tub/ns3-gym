@@ -28,7 +28,6 @@ namespace ns3 {
 
 void DebugComponentEnable (char const *name);
 void DebugComponentDisable (char const *name);
-void DebugComponentEnableEnvVar (void);
 void DebugComponentPrintList (void);
 
 class DebugComponent {

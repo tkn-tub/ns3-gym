@@ -35,6 +35,48 @@ typedef std::list<std::pair <std::string, DebugComponent *> > ComponentList;
 typedef std::list<std::pair <std::string, DebugComponent *> >::iterator ComponentListI;
 
 static ComponentList g_components;
+static bool g_firstDebug = true;
+
+void
+DebugComponentEnableEnvVar (void)
+{
+#ifdef HAVE_GETENV
+  char *envVar = getenv("NS3_DEBUG");
+  if (envVar == 0)
+    {
+      return;
+    }
+  std::string env = envVar;
+  std::string::size_type cur = 0;
+  std::string::size_type next = 0;
+  while (true)
+    {
+      next = env.find_first_of (";", cur);
+      if (next == std::string::npos) 
+	{
+	  std::string tmp = env.substr (cur, next);
+          bool found = false;
+          for (ComponentListI i = g_components.begin ();
+               i != g_components.end ();
+               i++)
+            {
+              if (i->first.compare (tmp) == 0)
+                {
+                  found = true;
+                  i->second->Enable ();
+                  break;
+                }
+            }
+          if (!found)
+            {
+              std::cout << "No debug component named=\"" << tmp << "\"" << std::endl;
+            }
+	}
+      cur = next;
+    }
+#endif
+}
+
 
 DebugComponent::DebugComponent (std::string name)
   : m_isEnabled (false)
@@ -55,6 +97,10 @@ DebugComponent::IsEnabled (void)
 void 
 DebugComponent::Enable (void)
 {
+  if (g_firstDebug) {
+    DebugComponentEnableEnvVar ();
+    g_firstDebug = false;
+  }
   m_isEnabled = true;
 }
 void 
@@ -92,30 +138,6 @@ DebugComponentDisable (char const *name)
     }  
 }
 
-void
-DebugComponentEnableEnvVar (void)
-{
-#ifdef HAVE_GETENV
-  char *envVar = getenv("NS3_DEBUG");
-  if (envVar == 0)
-    {
-      return;
-    }
-  std::string env = envVar;
-  std::string::size_type cur = 0;
-  std::string::size_type next = 0;
-  while (true)
-    {
-      next = env.find_first_of (";", cur);
-      if (next == std::string::npos) 
-	{
-	  std::string tmp = env.substr (cur, next);
-	  DebugComponentEnable (tmp.c_str ());
-	}
-      cur = next;
-    }
-#endif
-}
 
 void 
 DebugComponentPrintList (void)
