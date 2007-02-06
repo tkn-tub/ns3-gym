@@ -18,6 +18,7 @@ ns3.add(core)
 core.add_sources([
     'reference-list-test.cc',
     'callback-test.cc',
+    'debug.cc',
     'ptr.cc',
     'test.cc'
     ])
@@ -39,8 +40,23 @@ core.add_inst_headers([
     'reference-list.h',
     'callback.h',
     'ptr.h',
+    'debug.h',
     'test.h'
     ])
+
+def config_core (env, config):
+    retval = []
+    # XXX This check is primitive but it should be
+    # good enough for now.
+    if config.CheckCHeader ('stdlib.h') == 1:
+        retval.append ('#define HAVE_STDLIB_H 1')
+        retval.append ('#define HAVE_GETENV 1')
+    else:
+        retval.append ('#undef HAVE_STDLIB_H')
+        retval.append ('#undef HAVE_GETENV')
+    return retval
+core.add_config (config_core)
+
 
 
 #
