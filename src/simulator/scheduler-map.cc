@@ -74,7 +74,8 @@ SchedulerMap::EventKeyCompare::operator () (struct EventKey const&a, struct Even
 EventId
 SchedulerMap::RealInsert (EventImpl *event, Scheduler::EventKey key)
 {
-  std::pair<EventMapI,bool> result = m_list.insert (std::make_pair (key, event));
+  std::pair<EventMapI,bool> result;
+  result = m_list.insert (std::make_pair (key, event));
   assert (result.second);
   return EventId (event, key.m_ns, key.m_uid);
 }
