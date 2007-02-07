@@ -458,8 +458,9 @@ class Ns3:
 
 
         dbg_env = env.Copy()
-        env.Append(CFLAGS = debug_flags, 
-                    CXXFLAGS = debug_flags, )
+        dbg_env.Append(CFLAGS = debug_flags, 
+                       CXXFLAGS = debug_flags,
+                       CPPDEFINES = ['NS3_DEBUG_ENABLE'])
         # debug static support
         variant.static = True
         variant.env = dbg_env
@@ -469,8 +470,9 @@ class Ns3:
             dbg_env.Alias('dbg-static', builder)
 
         dbg_env = env.Copy()
-        env.Append(CFLAGS=debug_flags, 
-                    CXXFLAGS=debug_flags, )
+        dbg_env.Append(CFLAGS=debug_flags, 
+                       CXXFLAGS=debug_flags,
+                       CPPDEFINES = ['NS3_DEBUG_ENABLE'])
         # debug shared support
         variant.static = False
         variant.env = dbg_env
