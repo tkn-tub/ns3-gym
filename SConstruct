@@ -183,6 +183,13 @@ replay_simu.add_source('replay-simulation.cc')
 
 
 # samples
+sample_debug = build.Ns3Module('sample-debug', 'samples')
+sample_debug.set_executable()
+ns3.add(sample_debug)
+sample_debug.add_dep('core')
+sample_debug.add_source('main-debug.cc')
+sample_debug.add_source('main-debug-other.cc')
+
 sample_callback = build.Ns3Module('sample-callback', 'samples')
 sample_callback.set_executable()
 ns3.add(sample_callback)

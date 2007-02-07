@@ -45,18 +45,18 @@ private:
 
 #ifdef NS3_DEBUG_ENABLE
 
-#define DEBUG_COMPONENT_DEFINE(name)			\
-  static DebugComponent g_debug = DebugComponent (name);
+#define NS3_DEBUG_COMPONENT_DEFINE(name)                                \
+  static ns3::DebugComponent g_debug = ns3::DebugComponent (name);
 
-#define DEBUG(x)				\
+#define NS3_DEBUG(x)				\
   if (g_debug.IsEnabled ())			\
     {						\
       std::cout << x << std::endl;		\
     }
 #else /* NS3_DEBUG_ENABLE */
 
-#define DEBUG_COMPONENT_DEFINE(name)
-#define DEBUG(x)
+#define NS3_DEBUG_COMPONENT_DEFINE(name)
+#define NS3_DEBUG(x)
 
 #endif /* NS3_DEBUG_ENABLE */
 

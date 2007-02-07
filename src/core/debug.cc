@@ -52,27 +52,45 @@ DebugComponentEnableEnvVar (void)
   while (true)
     {
       next = env.find_first_of (";", cur);
-      if (next == std::string::npos) 
-	{
-	  std::string tmp = env.substr (cur, next);
-          bool found = false;
-          for (ComponentListI i = g_components.begin ();
-               i != g_components.end ();
-               i++)
+      std::string tmp = std::string (env, cur, next);
+      {
+        /* The following code is a workaround for a bug in the g++
+         * c++ string library. Its goal is to remove any trailing ';'
+         * from the string even though there should not be any in
+         * it. This code should be safe even if the bug is not there.
+         */
+        std::string::size_type trailing = tmp.find_first_of (";");
+        tmp = tmp.substr (0, trailing);
+      }
+      if (tmp.size () == 0)
+        {
+          break;
+        }
+      bool found = false;
+      for (ComponentListI i = g_components.begin ();
+           i != g_components.end ();
+           i++)
+        {
+          if (i->first.compare (tmp) == 0)
             {
-              if (i->first.compare (tmp) == 0)
-                {
-                  found = true;
-                  i->second->Enable ();
-                  break;
-                }
+              found = true;
+              i->second->Enable ();
+              break;
             }
-          if (!found)
-            {
-              std::cout << "No debug component named=\"" << tmp << "\"" << std::endl;
-            }
-	}
-      cur = next;
+        }
+      if (!found)
+        {
+          std::cout << "No debug component named=\"" << tmp << "\"" << std::endl;
+        }
+      if (next == std::string::npos)
+        {
+          break;
+        }
+      cur = next + 1;
+      if (cur >= env.size ()) 
+        {
+          break;
+        }
     }
 #endif
 }
@@ -92,15 +110,15 @@ DebugComponent::DebugComponent (std::string name)
 bool 
 DebugComponent::IsEnabled (void)
 {
+  if (g_firstDebug) {
+    DebugComponentEnableEnvVar ();
+    g_firstDebug = false;
+  }
   return m_isEnabled;
 }
 void 
 DebugComponent::Enable (void)
 {
-  if (g_firstDebug) {
-    DebugComponentEnableEnvVar ();
-    g_firstDebug = false;
-  }
   m_isEnabled = true;
 }
 void 
@@ -153,3 +171,5 @@ DebugComponentPrintList (void)
 
 
 }; // namespace ns3
+
+
