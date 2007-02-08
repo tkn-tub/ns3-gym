@@ -139,6 +139,16 @@ common.add_inst_headers([
     'pcap-writer.h',
     ])
 
+node = build.Ns3Module ('node', 'src/node')
+ns3.add (node)
+node.add_deps (['core'])
+node.add_sources ([
+    'node.cc',
+    ])
+node.add_inst_headers ([
+    'node.h',
+    ])
+
 
 # utils
 run_tests = build.Ns3Module('run-tests', 'utils')
