@@ -1,4 +1,4 @@
-// -*- Mode:NS3 -*-
+// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
 // All rights reserved.
@@ -121,7 +121,7 @@ public:
   
 private:
   Id_t         m_id;         // Node id for this node
-  SystemId_t       m_sid;        // System id for this node
+  SystemId_t   m_sid;        // System id for this node
 };
 
 }; //namespace ns3

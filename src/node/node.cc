@@ -1,4 +1,4 @@
-// -*- Mode:NS3 -*-
+// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
 // All rights reserved.
