@@ -150,10 +150,16 @@ node.add_sources ([
     'ipv4-address.cc',
     'internet-node.cc',
     'net-device.cc',
-    'mac-address.cc'
+    'mac-address.cc',
+    'ipv4-header.cc',
+    'udp-header.cc',
+    'ipv4-checksum.cc',
     ])
 node.add_headers ([
     'ipv4-address.h',
+    'ipv4-header.h',
+    'udp-header.h',
+    'ipv4-checksum.h',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -165,7 +171,7 @@ node.add_inst_headers ([
     'net-device-list.h',
     'internet-node.h',
     'net-device.h',
-    'mac-address.h'
+    'mac-address.h',
     ])
 
 
