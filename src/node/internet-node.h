@@ -18,49 +18,37 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
+// Define a basic "Internet" node, with a protocol stack (l3 and l4),
+// network device list, process list, and routing.
 
-// Implement the basic Node object for ns3.
-// George F. Riley, Georgia Tech, Fall 2006
+#ifndef INTERNET_NODE_H
+#define INTERNET_NODE_H
+
+#include <list>
 
 #include "node.h"
 
-namespace ns3{
+namespace ns3 {
 
-Node::Node()
-  : m_id(-1), m_sid(0)
-{}
-  
-Node::~Node ()
-{}
 
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
-
-void   
-Node::SetSystemId(SystemId_t s )
+class InternetNode : public Node 
 {
-  m_sid = s;
-}
+public:
+  InternetNode();
+  InternetNode(const InternetNode&); // Copy constructor 
+  virtual InternetNode* Copy() const;// Make a copy of this node
+  // Capability access
+  virtual NetDeviceList*   GetNetDevices() const;
+  virtual L3Demux*         GetL3Demux() const;
+  virtual Ipv4L4Demux*     GetIpv4L4Demux() const;
 
-L3Demux*
-Node::GetL3Demux() const
-{
-  return 0;
-}
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
-{
-  return 0;
-}
-
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
-
+private:
+  // Capabilities
+  NetDeviceList*   m_netDevices;
+  L3Demux*         m_l3Demux;
+  Ipv4L4Demux*     m_ipv4L4Demux;
+ };
 
 }//namespace ns3
+
+#endif /* INTERNET_NODE_H */

@@ -18,49 +18,16 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
-
-// Implement the basic Node object for ns3.
+// Define the base class for all node capabilities.
 // George F. Riley, Georgia Tech, Fall 2006
 
-#include "node.h"
+#include "capability.h"
 
-namespace ns3{
+namespace ns3 {
 
-Node::Node()
-  : m_id(-1), m_sid(0)
+Capability::~Capability ()
 {}
-  
-Node::~Node ()
-{}
-
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
-
-void   
-Node::SetSystemId(SystemId_t s )
-{
-  m_sid = s;
-}
-
-L3Demux*
-Node::GetL3Demux() const
-{
-  return 0;
-}
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
-{
-  return 0;
-}
-
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
-
 
 }//namespace ns3
+
+

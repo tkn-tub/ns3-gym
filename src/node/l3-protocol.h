@@ -19,48 +19,44 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// Implement the basic Node object for ns3.
-// George F. Riley, Georgia Tech, Fall 2006
+// NS3 - Layer 3 Protocol base class
+// George F. Riley, Georgia Tech, Spring 2007
 
-#include "node.h"
+#ifndef L3_PROTOCOL_H
+#define L3_PROTOCOL_H
 
-namespace ns3{
+namespace ns3 {
 
-Node::Node()
-  : m_id(-1), m_sid(0)
-{}
-  
-Node::~Node ()
-{}
-
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
-
-void   
-Node::SetSystemId(SystemId_t s )
-{
-  m_sid = s;
-}
-
-L3Demux*
-Node::GetL3Demux() const
-{
-  return 0;
-}
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
-{
-  return 0;
-}
-
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
+class Packet;
+class NetDevice;
 
 
-}//namespace ns3
+/**
+ * ::Send is always defined in subclasses.
+ */
+class L3Protocol {
+public:
+  L3Protocol(int protocolNumber, int version);
+  virtual ~L3Protocol ();
+    
+  int GetProtocolNumber (void) const;
+  int GetVersion() const;
+
+  virtual L3Protocol* Copy() const = 0;
+  /**
+   * Lower layer calls this method after calling L3Demux::Lookup
+   * The ARP subclass needs to know from which NetDevice this
+   * packet is coming to:
+   *    - implement a per-NetDevice ARP cache
+   *    - send back arp replies on the right device
+   */
+  virtual void Receive(Packet& p, NetDevice &device) = 0;
+
+ private:
+  int m_protocolNumber;
+  int m_version;
+};
+
+} // Namespace ns3
+
+#endif

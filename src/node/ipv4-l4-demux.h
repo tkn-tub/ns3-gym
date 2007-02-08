@@ -19,48 +19,32 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// Implement the basic Node object for ns3.
+// Define the layer 4 demultiplexer object for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
-#include "node.h"
+#ifndef IPV4_L4_DEMUX_H
+#define IPV4_L4_DEMUX_H
 
-namespace ns3{
-
-Node::Node()
-  : m_id(-1), m_sid(0)
-{}
-  
-Node::~Node ()
-{}
-
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
-
-void   
-Node::SetSystemId(SystemId_t s )
-{
-  m_sid = s;
-}
-
-L3Demux*
-Node::GetL3Demux() const
-{
-  return 0;
-}
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
-{
-  return 0;
-}
-
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
+#include <list>
 
 
-}//namespace ns3
+namespace ns3 {
+
+class Ipv4L4Protocol;
+
+class Ipv4L4Demux {
+public:
+  Ipv4L4Demux ();
+  Ipv4L4Demux(Ipv4L4Demux const&o);
+  virtual ~Ipv4L4Demux();
+  virtual Ipv4L4Demux* Copy() const;
+  Ipv4L4Protocol* Insert(const Ipv4L4Protocol&);
+  Ipv4L4Protocol* Lookup(int protocolNumber);
+  void        Erase(Ipv4L4Protocol*);
+private:
+  typedef std::list<Ipv4L4Protocol*> L4List_t;
+  L4List_t m_protocols;
+};
+
+} //namespace ns3
+#endif

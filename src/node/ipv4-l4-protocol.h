@@ -19,48 +19,41 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// Implement the basic Node object for ns3.
-// George F. Riley, Georgia Tech, Fall 2006
+// NS3 - Layer 4 Protocol base class
+// George F. Riley, Georgia Tech, Spring 2007
 
-#include "node.h"
+#ifndef IPV4_L4_PROTOCOL_H
+#define IPV4_L4_PROTOCOL_H
 
-namespace ns3{
 
-Node::Node()
-  : m_id(-1), m_sid(0)
-{}
+namespace ns3 {
+
+class Node;
+class Packet;
+class Ipv4Address;
   
-Node::~Node ()
-{}
+class Ipv4L4Protocol {
+public:
+  Ipv4L4Protocol(int protocolNumber, int version, int layer);
+  virtual ~Ipv4L4Protocol ();
 
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
+  int GetProtocolNumber (void) const;
+  int GetVersion() const;
 
-void   
-Node::SetSystemId(SystemId_t s )
-{
-  m_sid = s;
-}
+  virtual Ipv4L4Protocol* Copy() const = 0;
+  /**
+   * Called from lower-level layers to send the packet up
+   * in the stack. 
+   */
+  virtual void Receive(Packet& p, 
+                       Ipv4Address const &source,
+                       Ipv4Address const &destination) = 0;
 
-L3Demux*
-Node::GetL3Demux() const
-{
-  return 0;
-}
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
-{
-  return 0;
-}
+ private:
+  int m_protocolNumber;
+  int m_version;
+};
 
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
+} // Namespace ns3
 
-
-}//namespace ns3
+#endif

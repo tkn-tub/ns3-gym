@@ -18,49 +18,26 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
-
-// Implement the basic Node object for ns3.
+// Define the base class for all node capabilities.
 // George F. Riley, Georgia Tech, Fall 2006
 
-#include "node.h"
+#ifndef CAPABILITY_H
+#define CAPABILITY_H
 
-namespace ns3{
+// All capabilities must implement a copy method, to allow node subclasses
+// to have a pointer to any subclass of the capability and still copy
+// correctly.
 
-Node::Node()
-  : m_id(-1), m_sid(0)
-{}
-  
-Node::~Node ()
-{}
+namespace ns3 {
 
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
+class Node;
 
-void   
-Node::SetSystemId(SystemId_t s )
+class Capability 
 {
-  m_sid = s;
-}
-
-L3Demux*
-Node::GetL3Demux() const
-{
-  return 0;
-}
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
-{
-  return 0;
-}
-
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
-
+public:
+  virtual ~Capability();
+  virtual Capability* Copy() const = 0;
+};
 
 }//namespace ns3
+#endif

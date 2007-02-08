@@ -94,7 +94,7 @@
 namespace ns3 {
 
 class L3Demux;
-class L4Demux;
+class Ipv4L4Demux;
 class NetDeviceList;
 
 class Node {
@@ -116,7 +116,7 @@ public:
   // of the correct type if one exists, or the nil pointer if no
   // null capability exists.
   virtual L3Demux*         GetL3Demux() const;
-  virtual L4Demux*         GetL4Demux() const;
+  virtual Ipv4L4Demux*     GetIpv4L4Demux() const;
   virtual NetDeviceList*   GetNetDeviceList() const;
   
 private:

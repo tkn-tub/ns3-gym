@@ -19,48 +19,30 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// Implement the basic Node object for ns3.
-// George F. Riley, Georgia Tech, Fall 2006
+// NS3 - Layer 3 Protocol base class
+// George F. Riley, Georgia Tech, Spring 2007
 
-#include "node.h"
+#include "l3-protocol.h"
 
-namespace ns3{
 
-Node::Node()
-  : m_id(-1), m_sid(0)
+namespace ns3 {
+
+L3Protocol::L3Protocol(int protocolNumber, int version)
+    : m_protocolNumber (protocolNumber),
+      m_version (version)
 {}
-  
-Node::~Node ()
+L3Protocol::~L3Protocol ()
 {}
-
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
-
-void   
-Node::SetSystemId(SystemId_t s )
+    
+int 
+L3Protocol::GetProtocolNumber (void) const
 {
-  m_sid = s;
+  return m_protocolNumber;
 }
-
-L3Demux*
-Node::GetL3Demux() const
+int 
+L3Protocol::GetVersion() const
 {
-  return 0;
+  return m_version;
 }
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
-{
-  return 0;
-}
-
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
-
 
 }//namespace ns3

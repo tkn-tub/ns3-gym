@@ -18,49 +18,41 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
-
-// Implement the basic Node object for ns3.
+// Define the L3Protocols capability for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
-#include "node.h"
+// This object manages the different layer 3 protocols for any ns3
+// node that has this capability.  
 
-namespace ns3{
+#ifndef L3_DEMUX_H
+#define L3_DEMUX_H
 
-Node::Node()
-  : m_id(-1), m_sid(0)
-{}
-  
-Node::~Node ()
-{}
+#include <map>
 
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
+namespace ns3 {
 
-void   
-Node::SetSystemId(SystemId_t s )
+class L3Protocol;
+
+class L3Demux
 {
-  m_sid = s;
-}
+public:
+  L3Demux() {};
+  L3Demux(const L3Demux&);
+  virtual ~L3Demux();
+  virtual L3Demux* Copy() const;
 
-L3Demux*
-Node::GetL3Demux() const
-{
-  return 0;
-}
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
-{
-  return 0;
-}
+  // Insert a new protocol
+  ns3::L3Protocol* Insert(const ns3::L3Protocol&);
+  // Look up a protocol by protocol number
+  ns3::L3Protocol* Lookup(int);
+  // Erase an entry
+  void        Erase(ns3::L3Protocol*);
+private:
+  typedef std::map<int, ns3::L3Protocol*> L3Map_t;
 
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
+  L3Map_t m_protocols;
+};
 
+} //namespace ns3
+#endif
 
-}//namespace ns3

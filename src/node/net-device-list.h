@@ -1,4 +1,4 @@
-// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
+// -*- Mode:NS3 -*-
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
 // All rights reserved.
@@ -18,49 +18,35 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
+// Manages the list of network device interfaces associated with a node.
+// George F. Riley, Georgia Tech, Spring 2007
 
-// Implement the basic Node object for ns3.
-// George F. Riley, Georgia Tech, Fall 2006
+#ifndef NET_DEVICE_LIST_H
+#define NET_DEVICE_LIST_H
 
-#include "node.h"
+#include <vector>
+#include "capability.h"
 
 namespace ns3{
 
-Node::Node()
-  : m_id(-1), m_sid(0)
-{}
-  
-Node::~Node ()
-{}
+class NetDevice;
 
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
+class NetDeviceList : public Capability {
+public:
+  typedef std::vector<NetDevice *>::iterator Iterator;
 
-void   
-Node::SetSystemId(SystemId_t s )
-{
-  m_sid = s;
-}
+  NetDeviceList();
+  ~NetDeviceList();
+  NetDeviceList* Copy() const;
+  // Manage the list
+  NetDevice* Add(const NetDevice&);      // Add a new netdevice
+  NetDeviceList::Iterator Begin () const;
+  NetDeviceList::Iterator End () const;
+public:
+  typedef std::vector<NetDevice *>::iterator NetDevices_t;
+  NetDevices_t m_netdevices;
+};
 
-L3Demux*
-Node::GetL3Demux() const
-{
-  return 0;
-}
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
-{
-  return 0;
-}
+} //namespace ns3
+#endif
 
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
-
-
-}//namespace ns3

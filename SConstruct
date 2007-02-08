@@ -144,9 +144,28 @@ ns3.add (node)
 node.add_deps (['core'])
 node.add_sources ([
     'node.cc',
+    'capability.cc',
+    'l3-demux.cc',
+    'ipv4-l4-demux.cc',
+    'ipv4-address.cc',
+    'internet-node.cc',
+    'net-device.cc',
+    'mac-address.cc'
+    ])
+node.add_headers ([
+    'ipv4-address.h',
     ])
 node.add_inst_headers ([
     'node.h',
+    'capability.h',
+    'l3-demux.h',
+    'l3-protocol.h',
+    'ipv4-l4-demux.h',
+    'ipv4-l4-protocol.h',
+    'net-device-list.h',
+    'internet-node.h',
+    'net-device.h',
+    'mac-address.h'
     ])
 
 

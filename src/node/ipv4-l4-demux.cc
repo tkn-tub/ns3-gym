@@ -19,48 +19,56 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// Implement the basic Node object for ns3.
+// Define the layer 4 demultiplexer object for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
-#include "node.h"
+#include "ipv4-l4-demux.h"
+#include "ipv4-l4-protocol.h"
 
-namespace ns3{
+namespace ns3 {
 
-Node::Node()
-  : m_id(-1), m_sid(0)
-{}
-  
-Node::~Node ()
+Ipv4L4Demux::Ipv4L4Demux ()
 {}
 
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
-
-void   
-Node::SetSystemId(SystemId_t s )
+Ipv4L4Demux::Ipv4L4Demux(Ipv4L4Demux const &o)
 {
-  m_sid = s;
+  for (L4List_t::const_iterator i = o.m_protocols.begin(); i != o.m_protocols.end(); ++i)
+    {
+      Insert(*(*i));
+    }
 }
-
-L3Demux*
-Node::GetL3Demux() const
+Ipv4L4Demux::~Ipv4L4Demux()
+{}
+Ipv4L4Demux* 
+Ipv4L4Demux::Copy() const
 {
+  return new Ipv4L4Demux(*this);
+}
+Ipv4L4Protocol* 
+Ipv4L4Demux::Insert(const Ipv4L4Protocol&protocol)
+{
+  Ipv4L4Protocol* copy = protocol.Copy(); // Make a copy of the protocol
+  m_protocols.push_back (copy);
+  return copy;
+}
+Ipv4L4Protocol* 
+Ipv4L4Demux::Lookup(int protocolNumber)
+{
+  for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+    {
+      if ((*i)->GetProtocolNumber () == protocolNumber)
+	{
+	  return *i;
+	}
+    }
   return 0;
 }
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
+void
+Ipv4L4Demux::Erase(Ipv4L4Protocol*protocol)
 {
-  return 0;
+  m_protocols.remove (protocol);
 }
 
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
 
 
 }//namespace ns3
