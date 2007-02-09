@@ -157,6 +157,8 @@ node.add_sources ([
     'ipv4-route.cc',
     'ipv4-interface.cc',
     'ipv4-l3-protocol.cc',
+    'ipv4-end-point.cc',
+    'udp-end-point.cc',
     ])
 node.add_headers ([
     'ipv4-address.h',
@@ -177,7 +179,7 @@ node.add_inst_headers ([
     'net-device.h',
     'mac-address.h',
     'ipv4-route.h',
-    'ipv4-interface.h'
+    'ipv4-interface.h',
     ])
 
 
