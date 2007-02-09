@@ -99,9 +99,10 @@ public:
    */
   virtual void Receive(Packet& p, NetDevice &device);
 
- private:
   void Send (Packet const &packet, Ipv4Address source, 
 	     Ipv4Address destination, uint8_t protocol);
+
+ private:
   void SendRealOut (Packet const &packet, Ipv4Header const &ip, Ipv4Route const &route);
   bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device);
   void ForwardUp (Packet p, Ipv4Header const&ip);
