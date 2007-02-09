@@ -37,6 +37,7 @@ class NetDevice;
 class L3Protocol {
 public:
   L3Protocol(int protocolNumber, int version);
+  L3Protocol (L3Protocol const &o);
   virtual ~L3Protocol ();
     
   int GetProtocolNumber (void) const;

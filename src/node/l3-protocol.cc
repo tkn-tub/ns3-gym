@@ -31,6 +31,10 @@ L3Protocol::L3Protocol(int protocolNumber, int version)
     : m_protocolNumber (protocolNumber),
       m_version (version)
 {}
+L3Protocol::L3Protocol (L3Protocol const &o)
+  : m_protocolNumber (o.m_protocolNumber),
+    m_version (o.m_version)
+{}
 L3Protocol::~L3Protocol ()
 {}
     
