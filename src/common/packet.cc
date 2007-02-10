@@ -38,6 +38,16 @@ Packet::Packet (uint32_t size)
 {
   m_global_uid++;
 }
+Packet::Packet (uint8_t const*buffer, uint32_t size)
+  : m_buffer (),
+    m_uid (m_global_uid)
+{
+  m_global_uid++;
+  m_buffer.AddAtStart (size);
+  Buffer::Iterator i = m_buffer.Begin ();
+  i.Write (buffer, size);
+}
+
 Packet::Packet (Buffer buffer, Tags tags, uint32_t uid)
   : m_buffer (buffer),
     m_tags (tags),

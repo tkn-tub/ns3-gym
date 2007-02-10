@@ -104,6 +104,15 @@ public:
    */
   Packet (uint32_t size);
   /**
+   * Create a packet with payload filled with the content
+   * of this buffer. The input data is copied: the input
+   * buffer is untouched.
+   *
+   * \param buffer the data to store in the packet.
+   * \param size the size of the input buffer.
+   */
+  Packet (uint8_t const*buffer, uint32_t size);
+  /**
    * Create a new packet which contains a fragment of the original
    * packet. The returned packet shares the same uid as this packet.
    *
