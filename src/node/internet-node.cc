@@ -25,6 +25,8 @@
 #include "l3-demux.h"
 #include "ipv4-l4-demux.h"
 #include "internet-node.h"
+#include "udp.h"
+#include "ipv4.h"
 
 namespace ns3 {
 
@@ -34,12 +36,12 @@ InternetNode::InternetNode()
   m_netDevices = new NetDeviceList();
   m_l3Demux = new L3Demux();
   m_ipv4L4Demux = new Ipv4L4Demux();
-  // Configure the capabilities
-  // Insert an IPv4 protocol at layer 3
-  //m_l3Protocols->Insert(ns3::IPV4());
-  // L4 protocols (instances of TCP or UDP layer 4 objects)
-  // are inserted as created by process socket creations
-  // or bind calls.
+  // add an ipv4 protocol handler.
+  Ipv4 ipv4;
+  m_l3Demux->Insert (ipv4);
+  // add a udp protocol handler.
+  Udp udp = Udp (this);
+  m_ipv4L4Demux->Insert (udp);
 }
 
 InternetNode::InternetNode(const InternetNode& rhs)

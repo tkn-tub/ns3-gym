@@ -147,6 +147,7 @@ node.add_sources ([
     'capability.cc',
     'l3-demux.cc',
     'ipv4-l4-demux.cc',
+    'ipv4-l4-protocol.cc',
     'ipv4-address.cc',
     'internet-node.cc',
     'net-device.cc',
@@ -156,16 +157,19 @@ node.add_sources ([
     'ipv4-checksum.cc',
     'ipv4-route.cc',
     'ipv4-interface.cc',
-    'ipv4-l3-protocol.cc',
+    'ipv4.cc',
     'ipv4-end-point.cc',
     'udp-end-point.cc',
+    'udp-socket.cc',
+    'udp.cc',
     ])
 node.add_headers ([
     'ipv4-address.h',
     'ipv4-header.h',
     'udp-header.h',
     'ipv4-checksum.h',
-    'ipv4-l3-protocol.h',
+    'ipv4.h',
+    'udp.h',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -180,6 +184,7 @@ node.add_inst_headers ([
     'mac-address.h',
     'ipv4-route.h',
     'ipv4-interface.h',
+    'udp-socket.h',
     ])
 
 

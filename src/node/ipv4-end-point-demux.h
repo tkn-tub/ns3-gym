@@ -24,7 +24,7 @@
 
 #include <stdint.h>
 #include <list>
-#include "ns3/ipv4-address.h"
+#include "ipv4-address.h"
 
 namespace ns3 {
 
@@ -45,6 +45,7 @@ public:
 
   T *Allocate (void);
   T *Allocate (Ipv4Address address);
+  T *Allocate (uint16_t port);
   T *Allocate (Ipv4Address address, uint16_t port);
   T *Allocate (Ipv4Address localAddress, 
                uint16_t localPort,
@@ -54,7 +55,7 @@ public:
  private:
   uint16_t AllocateEphemeralPort (void);
   typedef std::list<T *> EndPoints;
-  typedef std::list<T *>::iterator EndPointsI;
+  typedef typename std::list<T *>::iterator EndPointsI;
 
   uint16_t m_ephemeral;
   EndPoints m_endPoints;
@@ -125,9 +126,14 @@ Ipv4EndPointDemux<T>::Allocate (Ipv4Address address)
       return 0;
     }
   T *endPoint = new T (address, port);
-  endPoint->SetDestroyCallback (MakeCallback (&Ipv4EndPointDemux::DestroyEndPoint, this));
   m_endPoints.push_back (endPoint);
   return endPoint;
+}
+template <typename T>
+T *
+Ipv4EndPointDemux<T>::Allocate (uint16_t port)
+{
+  return Allocate (Ipv4Address::GetAny (), port);
 }
 template <typename T>
 T *
@@ -138,7 +144,6 @@ Ipv4EndPointDemux<T>::Allocate (Ipv4Address address, uint16_t port)
       return 0;
     }
   T *endPoint = new T (address, port);
-  endPoint->SetDestroyCallback (MakeCallback (&Ipv4EndPointDemux::DestroyEndPoint, this));
   m_endPoints.push_back (endPoint);
   return endPoint;
 }
@@ -161,7 +166,6 @@ Ipv4EndPointDemux<T>::Allocate (Ipv4Address localAddress, uint16_t localPort,
     }
   T *endPoint = new T (localAddress, localPort);
   endPoint->SetPeer (peerAddress, peerPort);
-  endPoint->SetDestroyCallback (MakeCallback (&Ipv4EndPointDemux::DestroyEndPoint, this));
   m_endPoints.push_back (endPoint);
   return endPoint;
 }

@@ -25,15 +25,27 @@
 #include "udp-header.h"
 #include "ipv4-end-point-demux.h"
 #include "udp-end-point.h"
+#include "udp-socket.h"
+#include "node.h"
+#include "ipv4.h"
+#include "l3-demux.h"
 
 namespace ns3 {
 
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t Udp::UDP_PROTOCOL = 17;
 
-Udp::Udp ()
+Udp::Udp (Node *node)
+  : Ipv4L4Protocol (UDP_PROTOCOL, 2),
+    m_node (node),
+    m_endPoints (new Ipv4EndPointDemux<UdpEndPoint> ())
+{}
+Udp::Udp (Udp const &o)
+  : Ipv4L4Protocol (UDP_PROTOCOL, 2),
+    m_node (o.m_node),
+    m_endPoints (new Ipv4EndPointDemux<UdpEndPoint> ())
 {
-  m_endPoints = new Ipv4EndPoints ();
+  // we do not copy the udp endpoints on purpose.
 }
 
 Udp::~Udp ()
@@ -52,6 +64,11 @@ Udp::Allocate (Ipv4Address address)
   return m_endPoints->Allocate (address);
 }
 UdpEndPoint *
+Udp::Allocate (uint16_t port)
+{
+  return m_endPoints->Allocate (port);
+}
+UdpEndPoint *
 Udp::Allocate (Ipv4Address address, uint16_t port)
 {
   return m_endPoints->Allocate (address, port);
@@ -64,12 +81,17 @@ Udp::Allocate (Ipv4Address localAddress, uint16_t localPort,
                                 peerAddress, peerPort);
 }
 
+Udp* 
+Udp::Copy() const
+{
+  return new Udp (*this);
+}
+
 void 
-Udp::Receive(Packet& p, 
+Udp::Receive(Packet& packet, 
              Ipv4Address const &source,
              Ipv4Address const &destination)
 {
-  m_recvLogger (packet);
   UdpHeader udpHeader;
   packet.Peek (udpHeader);
   packet.Remove (udpHeader);
@@ -79,7 +101,8 @@ Udp::Receive(Packet& p,
     {
       return;
     }
-  UdpSocket *socket = endPoint->GetSocket (packet, &udpHeader);
+  UdpSocket *socket = endPoint->GetSocket ();
+  socket->ForwardUp (packet, source, udpHeader.GetSource ());
   assert (socket != 0);
 }
 
@@ -98,9 +121,15 @@ Udp::Send (Packet packet,
 
   packet.Add (udpHeader);
 
-  //XXX
   // Send to ipv4 layer.
-  ip.Send (p, saddr, daddr, UDP_PROTOCOL);
+  if (m_node->GetL3Demux () != 0 )
+    {
+      Ipv4 *ipv4 = static_cast<Ipv4 *> (m_node->GetL3Demux ()->Lookup (0x0800));
+      if (ipv4 != 0)
+        {
+          ipv4->Send (packet, saddr, daddr, UDP_PROTOCOL);
+        }
+    }
 }
 
 

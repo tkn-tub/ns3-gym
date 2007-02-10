@@ -19,8 +19,8 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-#ifndef IPV4_L3_PROTOCOL_H
-#define IPV4_L3_PROTOCOL_H
+#ifndef IPV4_H
+#define IPV4_H
 
 #include <list>
 #include <stdint.h>
@@ -41,11 +41,11 @@ class Node;
 /**
  * ::Send is always defined in subclasses.
  */
-class Ipv4L3Protocol : public L3Protocol {
+class Ipv4 : public L3Protocol {
 public:
-  Ipv4L3Protocol();
-  Ipv4L3Protocol(Ipv4L3Protocol const &o);
-  virtual ~Ipv4L3Protocol ();
+  Ipv4();
+  Ipv4(Ipv4 const &o);
+  virtual ~Ipv4 ();
 
   void SetDefaultTtl (uint8_t ttl);
     
@@ -89,7 +89,7 @@ public:
   uint32_t GetNInterfaces (void) const;
   
 
-  virtual Ipv4L3Protocol* Copy() const;
+  virtual Ipv4* Copy() const;
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
    * The ARP subclass needs to know from which NetDevice this

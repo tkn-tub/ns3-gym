@@ -24,34 +24,41 @@
 
 #include <stdint.h>
 
-#include "ns3/ipv4-address.h"
 #include "ns3/packet.h"
+#include "ipv4-address.h"
 #include "ipv4-l4-protocol.h"
 #include "ipv4-end-point-demux.h"
 #include "udp-end-point.h"
 
 namespace ns3 {
 
+class Node;
+
 class Udp : public Ipv4L4Protocol {
 public:
-  Udp ();
+  Udp (Node *node);
+  Udp (Udp const &o);
   virtual ~Udp ();
 
   UdpEndPoint *Allocate (void);
   UdpEndPoint *Allocate (Ipv4Address address);
+  UdpEndPoint *Allocate (uint16_t port);
   UdpEndPoint *Allocate (Ipv4Address address, uint16_t port);
   UdpEndPoint *Allocate (Ipv4Address localAddress, uint16_t localPort,
                          Ipv4Address peerAddress, uint16_t peerPort);
 
-  void Send (Packet packet);
+  // called by UdpSocket.
+  void Send (Packet packet,
+             Ipv4Address saddr, Ipv4Address daddr, 
+             uint16_t sport, uint16_t dport);
   // inherited from Ipv4L4Protocol
-  virtual Ipv4L4Protocol* Copy() const;
+  virtual Udp* Copy() const;
   virtual void Receive(Packet& p, 
                        Ipv4Address const &source,
                        Ipv4Address const &destination);
  private:
   static const uint8_t UDP_PROTOCOL;
-  //Ipv4 *m_ipv4;
+  Node *m_node;
   Ipv4EndPointDemux<UdpEndPoint> *m_endPoints;
 };
 

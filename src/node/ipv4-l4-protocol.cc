@@ -22,38 +22,27 @@
 // NS3 - Layer 4 Protocol base class
 // George F. Riley, Georgia Tech, Spring 2007
 
-#ifndef IPV4_L4_PROTOCOL_H
-#define IPV4_L4_PROTOCOL_H
-
+#include "ipv4-l4-protocol.h"
 
 namespace ns3 {
 
-class Node;
-class Packet;
-class Ipv4Address;
-  
-class Ipv4L4Protocol {
-public:
-  Ipv4L4Protocol(int protocolNumber, int version);
-  virtual ~Ipv4L4Protocol ();
 
-  int GetProtocolNumber (void) const;
-  int GetVersion() const;
+Ipv4L4Protocol::Ipv4L4Protocol(int protocolNumber, int version)
+  : m_protocolNumber (protocolNumber),
+    m_version (version)
+{}
+Ipv4L4Protocol::~Ipv4L4Protocol ()
+{}
 
-  virtual Ipv4L4Protocol* Copy() const = 0;
-  /**
-   * Called from lower-level layers to send the packet up
-   * in the stack. 
-   */
-  virtual void Receive(Packet& p, 
-                       Ipv4Address const &source,
-                       Ipv4Address const &destination) = 0;
+int 
+Ipv4L4Protocol::GetProtocolNumber (void) const
+{
+  return m_protocolNumber;
+}
+int 
+Ipv4L4Protocol::GetVersion() const
+{
+  return m_version;
+}
 
- private:
-  int m_protocolNumber;
-  int m_version;
-};
-
-} // Namespace ns3
-
-#endif
+}//namespace ns3

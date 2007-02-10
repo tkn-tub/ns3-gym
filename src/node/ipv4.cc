@@ -21,13 +21,13 @@
 
 #include "ns3/packet.h"
 
-#include "ipv4-l3-protocol.h"
+#include "ipv4.h"
 #include "ipv4-l4-protocol.h"
 #include "ipv4-address.h"
 #include "ipv4-header.h"
 #include "ipv4-interface.h"
 #include "ipv4-route.h"
-// the two following headers are needed for Ipv4L3Protocol::ForwardUp
+// the two following headers are needed for Ipv4::ForwardUp
 #include "node.h"
 #include "ipv4-l4-demux.h"
 
@@ -35,14 +35,14 @@
 
 namespace ns3 {
 
-Ipv4L3Protocol::Ipv4L3Protocol()
+Ipv4::Ipv4()
   : L3Protocol (0x0800, 4),
     m_nInterfaces (0),
     m_defaultTtl (64),
     m_identification (0),
     m_defaultRoute (0)
 {}
-Ipv4L3Protocol::Ipv4L3Protocol(Ipv4L3Protocol const &o)
+Ipv4::Ipv4(Ipv4 const &o)
   : L3Protocol (o),
     m_nInterfaces (0),
     m_defaultTtl (o.m_defaultTtl),
@@ -52,7 +52,7 @@ Ipv4L3Protocol::Ipv4L3Protocol(Ipv4L3Protocol const &o)
   // We do not copy the list of interfaces or the routes
   // purposedly.
 }
-Ipv4L3Protocol::~Ipv4L3Protocol ()
+Ipv4::~Ipv4 ()
 {
   // XXX I am not sure we are really allowed to do this here.
   for (Ipv4InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
@@ -75,14 +75,14 @@ Ipv4L3Protocol::~Ipv4L3Protocol ()
 }
 
 void 
-Ipv4L3Protocol::SetDefaultTtl (uint8_t ttl)
+Ipv4::SetDefaultTtl (uint8_t ttl)
 {
   m_defaultTtl = ttl;
 }
     
 
 void 
-Ipv4L3Protocol::AddHostRouteTo (Ipv4Address dest, 
+Ipv4::AddHostRouteTo (Ipv4Address dest, 
 				Ipv4Address nextHop, 
 				uint32_t interface)
 {
@@ -91,7 +91,7 @@ Ipv4L3Protocol::AddHostRouteTo (Ipv4Address dest,
   m_hostRoutes.push_back (route);
 }
 void 
-Ipv4L3Protocol::AddHostRouteTo (Ipv4Address dest, 
+Ipv4::AddHostRouteTo (Ipv4Address dest, 
 				uint32_t interface)
 {
   Ipv4Route *route = new Ipv4Route ();
@@ -99,7 +99,7 @@ Ipv4L3Protocol::AddHostRouteTo (Ipv4Address dest,
   m_hostRoutes.push_back (route);
 }
 void 
-Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network, 
+Ipv4::AddNetworkRouteTo (Ipv4Address network, 
 				   Ipv4Mask networkMask, 
 				   Ipv4Address nextHop, 
 				   uint32_t interface)
@@ -112,7 +112,7 @@ Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network,
   m_networkRoutes.push_back (route);
 }
 void 
-Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network, 
+Ipv4::AddNetworkRouteTo (Ipv4Address network, 
 				   Ipv4Mask networkMask, 
 				   uint32_t interface)
 {
@@ -123,7 +123,7 @@ Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network,
   m_networkRoutes.push_back (route);
 }
 void 
-Ipv4L3Protocol::SetDefaultRoute (Ipv4Address nextHop, 
+Ipv4::SetDefaultRoute (Ipv4Address nextHop, 
 				 uint32_t interface)
 {
   Ipv4Route *route = new Ipv4Route ();
@@ -133,7 +133,7 @@ Ipv4L3Protocol::SetDefaultRoute (Ipv4Address nextHop,
 }
 
 Ipv4Route *
-Ipv4L3Protocol::Lookup (Ipv4Address dest)
+Ipv4::Lookup (Ipv4Address dest)
 {
   for (HostRoutesCI i = m_hostRoutes.begin (); 
        i != m_hostRoutes.end (); 
@@ -166,7 +166,7 @@ Ipv4L3Protocol::Lookup (Ipv4Address dest)
 }
 
 uint32_t 
-Ipv4L3Protocol::GetNRoutes (void)
+Ipv4::GetNRoutes (void)
 {
   uint32_t n = 0;
   if (m_defaultRoute != 0)
@@ -178,7 +178,7 @@ Ipv4L3Protocol::GetNRoutes (void)
   return n;
 }
 Ipv4Route *
-Ipv4L3Protocol::GetRoute (uint32_t index)
+Ipv4::GetRoute (uint32_t index)
 {
   if (index == 0 && m_defaultRoute != 0)
     {
@@ -216,7 +216,7 @@ Ipv4L3Protocol::GetRoute (uint32_t index)
   return 0;
 }
 void 
-Ipv4L3Protocol::RemoveRoute (uint32_t index)
+Ipv4::RemoveRoute (uint32_t index)
 {
   if (index == 0 && m_defaultRoute != 0)
     {
@@ -259,7 +259,7 @@ Ipv4L3Protocol::RemoveRoute (uint32_t index)
 
 
 uint32_t 
-Ipv4L3Protocol::AddInterface (Ipv4Interface *interface)
+Ipv4::AddInterface (Ipv4Interface *interface)
 {
   uint32_t index = m_nInterfaces;
   m_interfaces.push_back (interface);
@@ -267,7 +267,7 @@ Ipv4L3Protocol::AddInterface (Ipv4Interface *interface)
   return index;
 }
 Ipv4Interface *
-Ipv4L3Protocol::GetInterface (uint32_t index)
+Ipv4::GetInterface (uint32_t index)
 {
   uint32_t tmp = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
@@ -281,20 +281,20 @@ Ipv4L3Protocol::GetInterface (uint32_t index)
   return 0;
 }
 uint32_t 
-Ipv4L3Protocol::GetNInterfaces (void) const
+Ipv4::GetNInterfaces (void) const
 {
   return m_nInterfaces;
 }
 
   
 
-Ipv4L3Protocol* 
-Ipv4L3Protocol::Copy() const
+Ipv4* 
+Ipv4::Copy() const
 {
-  return new Ipv4L3Protocol (*this);
+  return new Ipv4 (*this);
 }
 void 
-Ipv4L3Protocol::Receive(Packet& packet, NetDevice &device)
+Ipv4::Receive(Packet& packet, NetDevice &device)
 {
   // XXX trace here.
   Ipv4Header ipHeader;
@@ -315,7 +315,7 @@ Ipv4L3Protocol::Receive(Packet& packet, NetDevice &device)
 }
 
 void 
-Ipv4L3Protocol::Send (Packet const &packet, 
+Ipv4::Send (Packet const &packet, 
                       Ipv4Address source, 
                       Ipv4Address destination,
                       uint8_t protocol)
@@ -351,7 +351,7 @@ Ipv4L3Protocol::Send (Packet const &packet,
 }
 
 void
-Ipv4L3Protocol::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route)
+Ipv4::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route)
 {
   Packet packet = p;
   packet.Add (ip);
@@ -370,7 +370,7 @@ Ipv4L3Protocol::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route co
 
 
 bool
-Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
+Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
 {
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
@@ -428,7 +428,7 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevic
 
 
 void
-Ipv4L3Protocol::ForwardUp (Packet p, Ipv4Header const&ip)
+Ipv4::ForwardUp (Packet p, Ipv4Header const&ip)
 {
   Ipv4L4Protocol *protocol = m_node->GetIpv4L4Demux ()->Lookup (ip.GetProtocol ());
   protocol->Receive (p, ip.GetSource (), ip.GetDestination ());
