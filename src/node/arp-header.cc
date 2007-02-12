@@ -114,12 +114,13 @@ void
 ArpHeader::SerializeTo (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
+  assert (m_macSource.GetLength () == m_macDest.GetLength ());
 
   /* ethernet */
   i.WriteHtonU16 (0x0001);
   /* ipv4 */
   i.WriteHtonU16 (0x0800);
-  i.WriteU8 (6);
+  i.WriteU8 (m_macSource.GetLength ());
   i.WriteU8 (4);
   i.WriteHtonU16 (m_type);
   WriteTo (i, m_macSource);
