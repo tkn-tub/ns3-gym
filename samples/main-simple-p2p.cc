@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 #include "ns3/internet-node.h"
 #include "ns3/simulator.h"
@@ -8,6 +9,7 @@
 #include "ns3/p2p-net-device.h"
 #include "ns3/ipv4.h"
 #include "ns3/arp-ipv4-interface.h"
+#include "ns3/ipv4-route.h"
 
 using namespace ns3;
 
@@ -41,7 +43,20 @@ DestroyP2PNetDevice (P2PNetDevice *dev)
   delete dev;
 }
 
-void
+static void
+PrintRoutingTable (InternetNode *a, std::string name)
+{
+  Ipv4 *ipv4 = a->GetIpv4 ();
+  std::cout << "routing table start node=" << name << std::endl;
+  for (uint32_t i = 0; i < ipv4->GetNRoutes (); i++)
+    {
+      Ipv4Route *route = ipv4->GetRoute (i);
+      std::cout << (*route) << std::endl;
+    }
+  std::cout << "routing table end" << std::endl;
+}
+
+static void
 AddP2PLink (InternetNode *a, InternetNode *b)
 {
   P2PChannel * channel = new P2PChannel (MilliSeconds (20), 1000);
@@ -55,6 +70,8 @@ AddP2PLink (InternetNode *a, InternetNode *b)
   Ipv4Address ipb = Ipv4Address ("192.168.0.3");
   a->GetIpv4 ()->AddHostRouteTo (ipb, indexA);
   b->GetIpv4 ()->AddHostRouteTo (ipa, indexB);
+  PrintRoutingTable (a, "a");
+  PrintRoutingTable (b, "b");
 }
 
 int main (int argc, char *argv[])
@@ -68,7 +85,7 @@ int main (int argc, char *argv[])
   UdpSocket *sink = new UdpSocket (a);
   sink->Bind (80);
   UdpSocket *source = new UdpSocket (b);
-  source->SetDefaultDestination (Ipv4Address::GetLoopback (), 80);
+  source->SetDefaultDestination (Ipv4Address ("192.168.0.2"), 80);
 
   GenerateTraffic (source, 500);
   PrintTraffic (sink);

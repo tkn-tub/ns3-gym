@@ -193,7 +193,6 @@ node.add_headers ([
     'l3-protocol.h',
     'ipv4-l4-demux.h',
     'net-device-list.h',
-    'ipv4-route.h',
     'llc-snap-header.h',
     'header-utils.h',
     ])
@@ -209,6 +208,7 @@ node.add_inst_headers ([
     'ipv4-interface.h',
     'mac-address.h',
     'ipv4.h',
+    'ipv4-route.h',
     ])
 
 
