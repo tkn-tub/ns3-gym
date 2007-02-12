@@ -169,6 +169,8 @@ node.add_sources ([
     'arp-cache.cc',
     'arp-ipv4-interface.cc',
     'arp.cc',
+    'p2p-net-device.cc',
+    'p2p-channel.cc'
     ])
 node.add_headers ([
     'ipv4-address.h',
@@ -185,6 +187,8 @@ node.add_headers ([
     'arp-cache-cache.h',
     'arp-ipv4-interface.h',
     'arp.h',
+    'p2p-net-device.h',
+    'p2p-channel.h'
     ])
 node.add_inst_headers ([
     'node.h',
