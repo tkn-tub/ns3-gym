@@ -46,6 +46,7 @@ public:
   virtual Arp *            GetArp (void) const;
 
 private:
+  void SetupLoopback (void);
   // Capabilities
   NetDeviceList*   m_netDevices;
   L3Demux*         m_l3Demux;

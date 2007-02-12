@@ -141,7 +141,7 @@ common.add_inst_headers([
 
 node = build.Ns3Module ('node', 'src/node')
 ns3.add (node)
-node.add_deps (['core'])
+node.add_deps (['core', 'common', 'simulator'])
 node.add_sources ([
     'node.cc',
     'l3-demux.cc',
@@ -170,7 +170,11 @@ node.add_sources ([
     'arp-ipv4-interface.cc',
     'arp.cc',
     'p2p-net-device.cc',
-    'p2p-channel.cc'
+    'p2p-channel.cc',
+    'ipv4-loopback-interface.cc',
+    'llc-snap-header.cc',
+    'header-utils.cc',
+    'net-device-list.cc'
     ])
 node.add_headers ([
     'ipv4-address.h',
@@ -188,20 +192,23 @@ node.add_headers ([
     'arp-ipv4-interface.h',
     'arp.h',
     'p2p-net-device.h',
-    'p2p-channel.h'
-    ])
-node.add_inst_headers ([
-    'node.h',
+    'p2p-channel.h',
+    'ipv4-loopback-interface.h',
     'l3-demux.h',
     'l3-protocol.h',
     'ipv4-l4-demux.h',
     'net-device-list.h',
-    'internet-node.h',
     'net-device.h',
     'mac-address.h',
     'ipv4-route.h',
     'ipv4-interface.h',
     'udp-socket.h',
+    'llc-snap-header.h',
+    'header-utils.h',
+    ])
+node.add_inst_headers ([
+    'node.h',
+    'internet-node.h',
     ])
 
 
@@ -267,6 +274,13 @@ sample_test.set_executable()
 ns3.add(sample_test)
 sample_test.add_dep('core')
 sample_test.add_source('main-test.cc')
+
+sample_simple = build.Ns3Module('sample-simple', 'samples')
+sample_simple.set_executable()
+ns3.add(sample_simple)
+sample_simple.add_deps(['core', 'simulator', 'node'])
+sample_simple.add_source('main-simple.cc')
+
 
 
 ns3.generate_dependencies()

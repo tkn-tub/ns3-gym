@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-P2PNetDevice::P2PNetDevice (Node &node, MacAddress const &addr)
+P2PNetDevice::P2PNetDevice (Node *node, MacAddress const &addr)
   : NetDevice (node, addr)
 {}
 

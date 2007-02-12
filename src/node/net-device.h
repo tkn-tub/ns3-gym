@@ -56,7 +56,7 @@ class NetDevice {
   /**
    * \param node base class node pointer of device's node 
    */
-  NetDevice(Node& node, const MacAddress& addr);
+  NetDevice(Node* node, const MacAddress& addr);
   virtual ~NetDevice() {}
   /**
    * \return the current MacAddress of this interface.
@@ -177,7 +177,7 @@ class NetDevice {
    * base class to print the nodeid for example, it can invoke
    * this method.
    */
-  Node& GetNode (void) const;
+  Node* GetNode (void) const;
 
   /**
    * \param p packet sent from below up to Network Device
@@ -204,7 +204,7 @@ class NetDevice {
    * MUST override this method.
    */
   virtual bool SendTo (Packet& p, const MacAddress& dest) = 0;
-  Node&         m_node;
+  Node*         m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
   MacAddress    m_address;

@@ -33,7 +33,7 @@ class P2PChannel;
 
 class P2PNetDevice : public NetDevice {
 public:
-  P2PNetDevice(Node &node, MacAddress const &addr);
+  P2PNetDevice(Node *node, MacAddress const &addr);
   virtual ~P2PNetDevice();
 
   void SetRate (double Rate);

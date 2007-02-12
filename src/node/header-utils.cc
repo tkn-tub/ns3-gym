@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "chunk-utils.h"
+#include "header-utils.h"
 
 namespace ns3 {
 
@@ -30,7 +30,7 @@ void WriteTo (Buffer::Iterator &i, MacAddress ad)
 {
   uint8_t mac[MacAddress::MAX_LEN];
   ad.Peek (mac);
-  i.Write (mac, ad.GetLen ());
+  i.Write (mac, ad.GetLength ());
 }
 
 void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad)

@@ -30,7 +30,7 @@
 
 namespace ns3 {
 
-NetDevice::NetDevice(Node& node, const MacAddress& addr) : 
+NetDevice::NetDevice(Node *node, const MacAddress& addr) : 
   m_node (node), 
   m_name(""), 
   m_ifIndex (0), 
@@ -40,8 +40,7 @@ NetDevice::NetDevice(Node& node, const MacAddress& addr) :
   m_isBroadcast (false), 
   m_isMulticast (false), 
   m_isPointToPoint (false)
-{
-}
+{}
 
 MacAddress 
 NetDevice::GetAddress (void) const
@@ -172,9 +171,9 @@ NetDevice::ForwardUp (Packet& packet)
   LlcSnapHeader llc;
   packet.Peek (llc);
   packet.Remove (llc);
-  if (GetNode().GetL3Demux() != 0)
+  if (GetNode()->GetL3Demux() != 0)
     {
-      L3Protocol *target = GetNode().GetL3Demux()->Lookup(llc.GetType ());
+      L3Protocol *target = GetNode()->GetL3Demux()->Lookup(llc.GetType ());
       if (target != 0) 
         {
           target->Receive(packet, *this);
@@ -204,7 +203,7 @@ NetDevice::NotifyLinkDown (void)
     }
 }
 
-Node&
+Node *
 NetDevice::GetNode (void) const
 {
   return m_node;

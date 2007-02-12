@@ -1,4 +1,4 @@
-// -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*-
+// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
 // All rights reserved.
@@ -18,39 +18,33 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
-
-// Definition of a simple point-to-point channel
+// Manages the list of network device interfaces associated with a node.
 // George F. Riley, Georgia Tech, Spring 2007
 
-#ifndef P2P_CHANNEL_H
-#define P2P_CHANNEL_H
-
-#include "ns3/nstime.h"
-#include "mac-address.h"
+#include "net-device-list.h"
 
 namespace ns3 {
 
-class P2PNetDevice;
-class NetDevice;
-class Node;
-class Packet;
-
-class P2PChannel  {
-public:
-  P2PChannel(const Time& delay, double maxRate /* bits/s */);
-  ~P2PChannel();
-
-  P2PNetDevice* CreateNetDevice(Node *node, MacAddress address);
-  void       RemoveNetDevice (NetDevice *device);
-  void       Send (P2PNetDevice *device, Packet&p, double rate /* bits/s */);
-private:
-  // The two endpoints of this channel
-  P2PNetDevice* m_nd1;
-  P2PNetDevice* m_nd2;
-  Time          m_delay;
-  double        m_maxRate;
-};
+NetDeviceList::NetDeviceList()
+{}
+NetDeviceList::~NetDeviceList()
+{
+  // XXX shall I delete each NetDevice ?
+}
+void
+NetDeviceList::Add(NetDevice *device)
+{
+  m_netdevices.push_back (device);
+}
+NetDeviceList::Iterator 
+NetDeviceList::Begin () const
+{
+  return m_netdevices.begin ();
+}
+NetDeviceList::Iterator 
+NetDeviceList::End () const
+{
+  return m_netdevices.end ();
+}
 
 }//namespace ns3
-
-#endif

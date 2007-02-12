@@ -37,8 +37,11 @@ P2PChannel::P2PChannel(const Time& delay, double maxRate)
 {
 }
 
+P2PChannel::~P2PChannel ()
+{}
+
 // Channels create compatible net devices
-P2PNetDevice* P2PChannel::CreateNetDevice(Node &node, MacAddress address)
+P2PNetDevice* P2PChannel::CreateNetDevice(Node *node, MacAddress address)
 {
   // Create a new point-to-point network device
   P2PNetDevice* nd = new P2PNetDevice(node, address);

@@ -1,4 +1,4 @@
-// -*- Mode:NS3 -*-
+// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
 //
 // Copyright (c) 2006 Georgia Tech Research Corporation
 // All rights reserved.
@@ -32,16 +32,16 @@ class NetDevice;
 
 class NetDeviceList {
 public:
-  typedef std::vector<NetDevice *>::iterator Iterator;
+  typedef std::vector<NetDevice *>::const_iterator Iterator;
 
   NetDeviceList();
   ~NetDeviceList();
   // Manage the list
-  NetDevice* Add(const NetDevice&);      // Add a new netdevice
+  void Add(NetDevice *device);
   NetDeviceList::Iterator Begin () const;
   NetDeviceList::Iterator End () const;
 public:
-  typedef std::vector<NetDevice *>::iterator NetDevices_t;
+  typedef std::vector<NetDevice *> NetDevices_t;
   NetDevices_t m_netdevices;
 };
 
