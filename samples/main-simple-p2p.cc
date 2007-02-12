@@ -64,12 +64,24 @@ AddP2PLink (InternetNode *a, InternetNode *b)
   P2PNetDevice *devB = channel->CreateNetDevice (b, MacAddress ("00:00:00:00:00:02"));
   Simulator::ScheduleDestroy (&DestroyP2PNetDevice, devA);
   Simulator::ScheduleDestroy (&DestroyP2PNetDevice, devB);
-  uint32_t indexA = a->GetIpv4 ()->AddInterface (new ArpIpv4Interface (a, devA));
-  uint32_t indexB = b->GetIpv4 ()->AddInterface (new ArpIpv4Interface (b, devB));
+  Ipv4Interface *interfA = new ArpIpv4Interface (a, devA);
+  Ipv4Interface *interfB = new ArpIpv4Interface (b, devB);
+  uint32_t indexA = a->GetIpv4 ()->AddInterface (interfA);
+  uint32_t indexB = b->GetIpv4 ()->AddInterface (interfB);
   Ipv4Address ipa = Ipv4Address ("192.168.0.2");
   Ipv4Address ipb = Ipv4Address ("192.168.0.3");
+  Ipv4Mask netmask = Ipv4Mask ("255.255.255.0");
   a->GetIpv4 ()->AddHostRouteTo (ipb, indexA);
   b->GetIpv4 ()->AddHostRouteTo (ipa, indexB);
+
+  interfA->SetAddress (ipa);
+  interfA->SetNetworkMask (netmask);
+  interfA->SetUp ();
+
+  interfB->SetAddress (ipb);
+  interfB->SetNetworkMask (netmask);
+  interfB->SetUp ();
+
   PrintRoutingTable (a, "a");
   PrintRoutingTable (b, "b");
 }
