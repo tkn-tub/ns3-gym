@@ -35,6 +35,14 @@ Arp::Arp (Node *node)
   : m_node (node)
 {}
 
+Arp::~Arp ()
+{
+  for (CacheList::const_iterator i = m_cacheList.begin (); i != m_cacheList.end (); i++)
+    {
+      delete *i;
+    }
+}
+
 Arp *
 Arp::Copy (Node *node)
 {

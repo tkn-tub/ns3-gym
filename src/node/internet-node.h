@@ -35,8 +35,9 @@ class InternetNode : public Node
 {
 public:
   InternetNode();
-  InternetNode(const InternetNode&); // Copy constructor 
-  virtual InternetNode* Copy() const;// Make a copy of this node
+  InternetNode(const InternetNode&);
+  virtual ~InternetNode ();
+  virtual InternetNode* Copy() const;
   // Capability access
   virtual NetDeviceList*   GetNetDevices() const;
   virtual L3Demux*         GetL3Demux() const;

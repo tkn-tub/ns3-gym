@@ -61,6 +61,16 @@ InternetNode::InternetNode (InternetNode const &o)
   SetupLoopback ();
 }
 
+InternetNode::~InternetNode ()
+{
+  delete m_netDevices;
+  delete m_l3Demux;
+  delete m_ipv4L4Demux;
+  delete m_udp;
+  delete m_ipv4;
+  delete m_arp;
+}
+
 void
 InternetNode::SetupLoopback (void)
 {

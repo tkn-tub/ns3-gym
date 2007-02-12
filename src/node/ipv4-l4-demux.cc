@@ -32,7 +32,12 @@ Ipv4L4Demux::Ipv4L4Demux (Node *node)
 {}
 
 Ipv4L4Demux::~Ipv4L4Demux()
-{}
+{
+  for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+    {
+      delete *i;
+    }
+}
 Ipv4L4Demux* 
 Ipv4L4Demux::Copy(Node *node) const
 {
