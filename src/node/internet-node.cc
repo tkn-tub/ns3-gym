@@ -23,6 +23,7 @@
 
 #include "net-device-list.h"
 #include "l3-demux.h"
+#include "ipv4-l3-protocol.h"
 #include "ipv4-l4-demux.h"
 #include "internet-node.h"
 #include "udp.h"
@@ -34,31 +35,21 @@ InternetNode::InternetNode()
 {
   // Instantiate the capabilities
   m_netDevices = new NetDeviceList();
-  m_l3Demux = new L3Demux();
-  m_ipv4L4Demux = new Ipv4L4Demux();
-  // add an ipv4 protocol handler.
-  Ipv4 ipv4;
-  m_l3Demux->Insert (ipv4);
+  m_l3Demux = new L3Demux(this);
+  m_ipv4L4Demux = new Ipv4L4Demux(this);
+  m_udp = new Udp (this);
+  m_ipv4 = new Ipv4 (this);
+  m_l3Demux->Insert (Ipv4L3Protocol (this));
   // add a udp protocol handler.
-  Udp udp = Udp (this);
-  m_ipv4L4Demux->Insert (udp);
-}
-
-InternetNode::InternetNode(const InternetNode& rhs)
-{ // Copy constructor
-  // Note we do not copy the contents of the process list or
-  // the interfaces list, as these are added later.
-  m_netDevices = new NetDeviceList();
-  // Make a copy of each capability
-  m_l3Demux  = rhs.GetL3Demux()->Copy();
-  m_ipv4L4Demux  = rhs.GetIpv4L4Demux()->Copy();
+  //m_ipv4L4Demux->Insert (udp);
 }
 
 // Copy this node
 InternetNode* 
 InternetNode::Copy() const
 {
-  return new InternetNode(*this);
+  //return new InternetNode(*this);
+  return 0;
 }
 
 

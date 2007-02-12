@@ -32,14 +32,14 @@
 namespace ns3 {
 
 class L3Protocol;
+class Node;
 
 class L3Demux
 {
 public:
-  L3Demux() {};
-  L3Demux(const L3Demux&);
+  L3Demux(Node *node);
   virtual ~L3Demux();
-  virtual L3Demux* Copy() const;
+  L3Demux* Copy(Node *node) const;
 
   // Insert a new protocol
   ns3::L3Protocol* Insert(const ns3::L3Protocol&);
@@ -50,6 +50,7 @@ public:
 private:
   typedef std::map<int, ns3::L3Protocol*> L3Map_t;
 
+  Node *m_node;
   L3Map_t m_protocols;
 };
 

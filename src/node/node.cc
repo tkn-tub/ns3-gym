@@ -62,5 +62,17 @@ Node::GetNetDeviceList() const
   return 0;
 }
 
+Ipv4 *
+Node::GetIpv4 (void) const
+{
+  return 0;
+}
+Udp *
+Node::GetUdp (void) const
+{
+  return 0;
+}
+
+
 
 }//namespace ns3

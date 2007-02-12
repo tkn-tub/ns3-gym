@@ -19,30 +19,40 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// NS3 - Layer 3 Protocol base class
+// NS3 - Layer 4 Protocol base class
 // George F. Riley, Georgia Tech, Spring 2007
 
-#include "l3-protocol.h"
-
+#include "udp-ipv4-l4-protocol.h"
+#include "node.h"
+#include "udp.h"
 
 namespace ns3 {
 
-L3Protocol::L3Protocol(int protocolNumber, int version)
-    : m_protocolNumber (protocolNumber),
-      m_version (version)
+/* see http://www.iana.org/assignments/protocol-numbers */
+const uint8_t UdpIpv4L4Protocol::UDP_PROTOCOL = 17;
+
+
+UdpIpv4L4Protocol::UdpIpv4L4Protocol(Node *node)
+  : Ipv4L4Protocol (UDP_PROTOCOL, 2),
+    m_node (node)
 {}
-L3Protocol::~L3Protocol ()
+UdpIpv4L4Protocol::~UdpIpv4L4Protocol ()
 {}
-    
-int 
-L3Protocol::GetProtocolNumber (void) const
+
+UdpIpv4L4Protocol*
+UdpIpv4L4Protocol::Copy(Node *node) const
 {
-  return m_protocolNumber;
+  return new UdpIpv4L4Protocol (node);
 }
-int 
-L3Protocol::GetVersion() const
+void 
+UdpIpv4L4Protocol::Receive(Packet& p, 
+                           Ipv4Address const &source,
+                           Ipv4Address const &destination)
 {
-  return m_version;
+  if (m_node->GetUdp () != 0)
+    {
+      m_node->GetUdp ()->Receive (p, source, destination);
+    }
 }
 
 }//namespace ns3

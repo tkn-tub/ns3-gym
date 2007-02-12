@@ -31,19 +31,20 @@
 namespace ns3 {
 
 class Ipv4L4Protocol;
+class Node;
 
 class Ipv4L4Demux {
 public:
-  Ipv4L4Demux ();
-  Ipv4L4Demux(Ipv4L4Demux const&o);
+  Ipv4L4Demux (Node *node);
   virtual ~Ipv4L4Demux();
-  virtual Ipv4L4Demux* Copy() const;
+  Ipv4L4Demux* Copy(Node *node) const;
   Ipv4L4Protocol* Insert(const Ipv4L4Protocol&);
   Ipv4L4Protocol* Lookup(int protocolNumber);
   void        Erase(Ipv4L4Protocol*);
 private:
   typedef std::list<Ipv4L4Protocol*> L4List_t;
   L4List_t m_protocols;
+  Node *m_node;
 };
 
 } //namespace ns3

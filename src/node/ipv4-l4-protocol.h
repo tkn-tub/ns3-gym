@@ -40,7 +40,7 @@ public:
   int GetProtocolNumber (void) const;
   int GetVersion() const;
 
-  virtual Ipv4L4Protocol* Copy() const = 0;
+  virtual Ipv4L4Protocol* Copy(Node *node) const = 0;
   /**
    * Called from lower-level layers to send the packet up
    * in the stack. 

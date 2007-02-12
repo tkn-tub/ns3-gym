@@ -35,23 +35,13 @@
 
 namespace ns3 {
 
-Ipv4::Ipv4()
-  : L3Protocol (0x0800, 4),
-    m_nInterfaces (0),
+Ipv4::Ipv4(Node *node)
+  : m_nInterfaces (0),
     m_defaultTtl (64),
     m_identification (0),
-    m_defaultRoute (0)
+    m_defaultRoute (0),
+    m_node (node)
 {}
-Ipv4::Ipv4(Ipv4 const &o)
-  : L3Protocol (o),
-    m_nInterfaces (0),
-    m_defaultTtl (o.m_defaultTtl),
-    m_identification (o.m_identification),
-    m_defaultRoute (0)
-{
-  // We do not copy the list of interfaces or the routes
-  // purposedly.
-}
 Ipv4::~Ipv4 ()
 {
   // XXX I am not sure we are really allowed to do this here.
@@ -289,9 +279,11 @@ Ipv4::GetNInterfaces (void) const
   
 
 Ipv4* 
-Ipv4::Copy() const
+Ipv4::Copy(Node *node) const
 {
-  return new Ipv4 (*this);
+  Ipv4 *ipv4 = new Ipv4 (node);
+  ipv4->SetDefaultTtl (m_defaultTtl);
+  return ipv4;
 }
 void 
 Ipv4::Receive(Packet& packet, NetDevice &device)

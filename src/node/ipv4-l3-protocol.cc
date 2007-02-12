@@ -16,33 +16,41 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// Author: George F. Riley<riley@ece.gatech.edu>
+// Author: George F. Riley <riley@ece.gatech.edu>
 //
 
 // NS3 - Layer 3 Protocol base class
 // George F. Riley, Georgia Tech, Spring 2007
 
-#include "l3-protocol.h"
-
+#include "ipv4-l3-protocol.h"
+#include "ipv4.h"
+#include "node.h"
 
 namespace ns3 {
 
-L3Protocol::L3Protocol(int protocolNumber, int version)
-    : m_protocolNumber (protocolNumber),
-      m_version (version)
+Ipv4L3Protocol::Ipv4L3Protocol (Node *node)
+  : L3Protocol (0x0800, 4),
+    m_node (node)
 {}
-L3Protocol::~L3Protocol ()
+Ipv4L3Protocol::~Ipv4L3Protocol ()
 {}
-    
-int 
-L3Protocol::GetProtocolNumber (void) const
+
+Ipv4L3Protocol *
+Ipv4L3Protocol::Copy (Node *node) const
 {
-  return m_protocolNumber;
+  Ipv4L3Protocol *copy = new Ipv4L3Protocol (node);
+  return copy;
 }
-int 
-L3Protocol::GetVersion() const
+void 
+Ipv4L3Protocol::Receive(Packet& p, NetDevice &device)
 {
-  return m_version;
+  Ipv4 *ipv4 = m_node->GetIpv4 ();
+  if (ipv4 != 0)
+    {
+      ipv4->Receive (p, device);
+    }
 }
+
+
 
 }//namespace ns3

@@ -25,19 +25,17 @@
 #define NET_DEVICE_LIST_H
 
 #include <vector>
-#include "capability.h"
 
 namespace ns3{
 
 class NetDevice;
 
-class NetDeviceList : public Capability {
+class NetDeviceList {
 public:
   typedef std::vector<NetDevice *>::iterator Iterator;
 
   NetDeviceList();
   ~NetDeviceList();
-  NetDeviceList* Copy() const;
   // Manage the list
   NetDevice* Add(const NetDevice&);      // Add a new netdevice
   NetDeviceList::Iterator Begin () const;

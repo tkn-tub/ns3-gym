@@ -161,12 +161,7 @@ UdpSocket::ForwardUp (Packet &p, Ipv4Address saddr, uint16_t sport)
 Udp *
 UdpSocket::GetUdp (void) const
 {
-  if (m_node->GetIpv4L4Demux () != 0)
-    {
-      // udp protocol number
-      return static_cast<Udp *> (m_node->GetIpv4L4Demux ()->Lookup (17));
-    }
-  return 0;
+  return m_node->GetUdp ();
 }
 
 }//namespace ns3

@@ -29,6 +29,7 @@ namespace ns3 {
 
 class Packet;
 class NetDevice;
+class Node;
 
 
 /**
@@ -37,13 +38,12 @@ class NetDevice;
 class L3Protocol {
 public:
   L3Protocol(int protocolNumber, int version);
-  L3Protocol (L3Protocol const &o);
   virtual ~L3Protocol ();
     
   int GetProtocolNumber (void) const;
   int GetVersion() const;
 
-  virtual L3Protocol* Copy() const = 0;
+  virtual L3Protocol* Copy(Node *node) const = 0;
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
    * The ARP subclass needs to know from which NetDevice this

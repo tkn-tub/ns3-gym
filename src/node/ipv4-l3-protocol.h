@@ -16,18 +16,32 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-// Author: George F. Riley<riley@ece.gatech.edu>
+// Author: George F. Riley <riley@ece.gatech.edu>
 //
-// Define the base class for all node capabilities.
-// George F. Riley, Georgia Tech, Fall 2006
 
-#include "capability.h"
+// NS3 - Layer 3 Protocol base class
+// George F. Riley, Georgia Tech, Spring 2007
+
+#ifndef IPV4_L3_PROTOCOL_H
+#define IPV4_L3_PROTOCOL_H
+
+#include "l3-protocol.h"
 
 namespace ns3 {
 
-Capability::~Capability ()
-{}
+class Ipv4L3Protocol : public L3Protocol 
+{
+public:
+  Ipv4L3Protocol (Node *node);
+  virtual ~Ipv4L3Protocol ();
+
+  virtual Ipv4L3Protocol *Copy (Node *node) const;
+  virtual void Receive (Packet& p, NetDevice &device);
+private:
+  Node *m_node;
+};
 
 }//namespace ns3
 
 
+#endif /* IPV4_L3_PROTOCOL_H */

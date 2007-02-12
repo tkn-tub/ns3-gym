@@ -27,27 +27,26 @@
 
 namespace ns3 {
 
-Ipv4L4Demux::Ipv4L4Demux ()
+Ipv4L4Demux::Ipv4L4Demux (Node *node)
+  : m_node (node)
 {}
 
-Ipv4L4Demux::Ipv4L4Demux(Ipv4L4Demux const &o)
-{
-  for (L4List_t::const_iterator i = o.m_protocols.begin(); i != o.m_protocols.end(); ++i)
-    {
-      Insert(*(*i));
-    }
-}
 Ipv4L4Demux::~Ipv4L4Demux()
 {}
 Ipv4L4Demux* 
-Ipv4L4Demux::Copy() const
+Ipv4L4Demux::Copy(Node *node) const
 {
-  return new Ipv4L4Demux(*this);
+  Ipv4L4Demux * copy = new Ipv4L4Demux(node);
+  for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+    {
+      copy->Insert(*(*i));
+    }
+  return copy;
 }
 Ipv4L4Protocol* 
 Ipv4L4Demux::Insert(const Ipv4L4Protocol&protocol)
 {
-  Ipv4L4Protocol* copy = protocol.Copy(); // Make a copy of the protocol
+  Ipv4L4Protocol* copy = protocol.Copy(m_node); // Make a copy of the protocol
   m_protocols.push_back (copy);
   return copy;
 }

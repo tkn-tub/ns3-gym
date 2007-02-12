@@ -18,26 +18,41 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
-// Define the base class for all node capabilities.
-// George F. Riley, Georgia Tech, Fall 2006
 
-#ifndef CAPABILITY_H
-#define CAPABILITY_H
+// NS3 - Layer 4 Protocol base class
+// George F. Riley, Georgia Tech, Spring 2007
 
-// All capabilities must implement a copy method, to allow node subclasses
-// to have a pointer to any subclass of the capability and still copy
-// correctly.
+#ifndef UDP_IPV4_L4_PROTOCOL_H
+#define UDP_IPV4_L4_PROTOCOL_H
+
+#include <stdint.h>
+#include "ipv4-l4-protocol.h"
 
 namespace ns3 {
 
 class Node;
-
-class Capability 
-{
+class Packet;
+class Ipv4Address;
+  
+class UdpIpv4L4Protocol : Ipv4L4Protocol {
 public:
-  virtual ~Capability();
-  virtual Capability* Copy() const = 0;
+  UdpIpv4L4Protocol(Node *node);
+  virtual ~UdpIpv4L4Protocol ();
+
+  virtual UdpIpv4L4Protocol* Copy(Node *node) const;
+  /**
+   * Called from lower-level layers to send the packet up
+   * in the stack. 
+   */
+  virtual void Receive(Packet& p, 
+                       Ipv4Address const &source,
+                       Ipv4Address const &destination);
+
+ private:
+  Node *m_node;
+  static const uint8_t UDP_PROTOCOL;
 };
 
-}//namespace ns3
-#endif
+} // Namespace ns3
+
+#endif /* UDP_IPV4_L4_PROTOCOL */

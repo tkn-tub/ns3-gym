@@ -96,6 +96,8 @@ namespace ns3 {
 class L3Demux;
 class Ipv4L4Demux;
 class NetDeviceList;
+class Ipv4;
+class Udp;
 
 class Node {
 public:
@@ -118,6 +120,8 @@ public:
   virtual L3Demux*         GetL3Demux() const;
   virtual Ipv4L4Demux*     GetIpv4L4Demux() const;
   virtual NetDeviceList*   GetNetDeviceList() const;
+  virtual Ipv4 *           GetIpv4 (void) const;
+  virtual Udp *            GetUdp (void) const;
   
 private:
   Id_t         m_id;         // Node id for this node

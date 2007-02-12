@@ -26,6 +26,10 @@
 
 namespace ns3 {
 
+L3Demux::L3Demux (Node *node)
+  : m_node (node)
+{}
+
 L3Demux::~L3Demux()
 { // Delete each protocol in the map
   for (L3Map_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
@@ -33,23 +37,21 @@ L3Demux::~L3Demux()
       delete i->second;
     }
 }
-
-L3Demux::L3Demux(const L3Demux& rhs)
-{ // Copy constructor, copy each protocol
-  for (L3Map_t::const_iterator i = rhs.m_protocols.begin(); i != rhs.m_protocols.end(); ++i)
-    {
-      Insert(*i->second);
-    }
-}
   
-L3Demux* L3Demux::Copy() const
-{ // Return a copy of this protocol manager
-  return new L3Demux(*this);
+L3Demux* L3Demux::Copy(Node *node) const
+{
+  L3Demux *copy = new L3Demux (node);
+  for (L3Map_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+    {
+      copy->Insert(*i->second);
+    }
+
+  return copy;
 }
   
 L3Protocol* L3Demux::Insert(const L3Protocol& l3p)
 {
-  L3Protocol* l = l3p.Copy(); // Make a copy of the protocol
+  L3Protocol* l = l3p.Copy(m_node); // Make a copy of the protocol
   m_protocols.insert(L3Map_t::value_type(l3p.GetProtocolNumber (), l));
   return l;
 }

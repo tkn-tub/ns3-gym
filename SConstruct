@@ -144,10 +144,12 @@ ns3.add (node)
 node.add_deps (['core'])
 node.add_sources ([
     'node.cc',
-    'capability.cc',
     'l3-demux.cc',
+    'l3-protocol.cc',
+    'ipv4-l3-protocol.cc',
     'ipv4-l4-demux.cc',
     'ipv4-l4-protocol.cc',
+    'udp-ipv4-l4-protocol.cc',
     'ipv4-address.cc',
     'internet-node.cc',
     'net-device.cc',
@@ -173,7 +175,6 @@ node.add_headers ([
     ])
 node.add_inst_headers ([
     'node.h',
-    'capability.h',
     'l3-demux.h',
     'l3-protocol.h',
     'ipv4-l4-demux.h',

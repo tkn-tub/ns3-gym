@@ -26,7 +26,6 @@
 
 #include "ns3/packet.h"
 #include "ipv4-address.h"
-#include "ipv4-l4-protocol.h"
 #include "ipv4-end-point-demux.h"
 #include "udp-end-point.h"
 
@@ -34,10 +33,9 @@ namespace ns3 {
 
 class Node;
 
-class Udp : public Ipv4L4Protocol {
+class Udp {
 public:
   Udp (Node *node);
-  Udp (Udp const &o);
   virtual ~Udp ();
 
   UdpEndPoint *Allocate (void);
@@ -52,10 +50,10 @@ public:
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport);
   // inherited from Ipv4L4Protocol
-  virtual Udp* Copy() const;
-  virtual void Receive(Packet& p, 
-                       Ipv4Address const &source,
-                       Ipv4Address const &destination);
+  Udp* Copy(Node *node) const;
+  void Receive(Packet& p, 
+               Ipv4Address const &source,
+               Ipv4Address const &destination);
  private:
   static const uint8_t UDP_PROTOCOL;
   Node *m_node;

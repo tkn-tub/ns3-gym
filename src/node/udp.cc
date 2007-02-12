@@ -36,17 +36,9 @@ namespace ns3 {
 const uint8_t Udp::UDP_PROTOCOL = 17;
 
 Udp::Udp (Node *node)
-  : Ipv4L4Protocol (UDP_PROTOCOL, 2),
-    m_node (node),
+  : m_node (node),
     m_endPoints (new Ipv4EndPointDemux<UdpEndPoint> ())
 {}
-Udp::Udp (Udp const &o)
-  : Ipv4L4Protocol (UDP_PROTOCOL, 2),
-    m_node (o.m_node),
-    m_endPoints (new Ipv4EndPointDemux<UdpEndPoint> ())
-{
-  // we do not copy the udp endpoints on purpose.
-}
 
 Udp::~Udp ()
 {
@@ -82,9 +74,9 @@ Udp::Allocate (Ipv4Address localAddress, uint16_t localPort,
 }
 
 Udp* 
-Udp::Copy() const
+Udp::Copy(Node *node) const
 {
-  return new Udp (*this);
+  return new Udp (node);
 }
 
 void 
@@ -121,14 +113,10 @@ Udp::Send (Packet packet,
 
   packet.Add (udpHeader);
 
-  // Send to ipv4 layer.
-  if (m_node->GetL3Demux () != 0 )
+  Ipv4 *ipv4 = m_node->GetIpv4 ();
+  if (ipv4 != 0)
     {
-      Ipv4 *ipv4 = static_cast<Ipv4 *> (m_node->GetL3Demux ()->Lookup (0x0800));
-      if (ipv4 != 0)
-        {
-          ipv4->Send (packet, saddr, daddr, UDP_PROTOCOL);
-        }
+      ipv4->Send (packet, saddr, daddr, UDP_PROTOCOL);
     }
 }
 
