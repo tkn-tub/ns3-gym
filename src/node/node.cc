@@ -26,21 +26,31 @@
 
 namespace ns3{
 
+uint32_t Node::m_nodeId = 0;
+
 Node::Node()
-  : m_id(-1), m_sid(0)
-{}
+  : m_id(m_nodeId), m_sid(0)
+{
+  m_nodeId++;
+}
   
 Node::~Node ()
 {}
 
-void 
-Node::SetNodeId(Id_t id)
-{ 
-  m_id = id;
-} 
+
+uint32_t 
+Node::GetId (void) const
+{
+  return m_id;
+}
+uint32_t 
+Node::GetSystemId (void) const
+{
+  return m_sid;
+}
 
 void   
-Node::SetSystemId(SystemId_t s )
+Node::SetSystemId(uint32_t s )
 {
   m_sid = s;
 }

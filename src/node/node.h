@@ -102,14 +102,14 @@ class Arp;
 
 class Node {
 public:
-  typedef int32_t Id_t;       // For identifying nodes
-  typedef int32_t SystemId_t;     // Iidentifies which processor (distributed sim)
 
   Node();
   virtual ~Node();
   virtual Node* Copy() const = 0;// Make a copy of this node
-  void SetNodeId(Id_t id);
-  void SetSystemId(SystemId_t s);
+
+  uint32_t GetId (void) const;
+  uint32_t GetSystemId (void) const;
+  void SetSystemId(uint32_t s);
 
   // Virtual "Getters" for each capability.
   // These exist to allow owners of a generic Node pointer to get
@@ -126,8 +126,9 @@ public:
   virtual Arp *            GetArp (void) const;
   
 private:
-  Id_t         m_id;         // Node id for this node
-  SystemId_t   m_sid;        // System id for this node
+  static uint32_t m_nodeId;
+  uint32_t    m_id;         // Node id for this node
+  uint32_t    m_sid;        // System id for this node
 };
 
 }; //namespace ns3
