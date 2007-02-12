@@ -177,7 +177,6 @@ node.add_sources ([
     'net-device-list.cc'
     ])
 node.add_headers ([
-    'ipv4-address.h',
     'ipv4-header.h',
     'udp-header.h',
     'ipv4-checksum.h',
@@ -202,13 +201,14 @@ node.add_headers ([
     'mac-address.h',
     'ipv4-route.h',
     'ipv4-interface.h',
-    'udp-socket.h',
     'llc-snap-header.h',
     'header-utils.h',
     ])
 node.add_inst_headers ([
     'node.h',
     'internet-node.h',
+    'udp-socket.h',
+    'ipv4-address.h',
     ])
 
 
