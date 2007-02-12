@@ -36,7 +36,7 @@ public:
   P2PNetDevice(Node *node, MacAddress const &addr);
   virtual ~P2PNetDevice();
 
-  void SetRate (double Rate);
+  void SetRate (double rate);
   void Connect (P2PChannel *channel);
   void Receive(Packet p);
   void TxComplete (void);
