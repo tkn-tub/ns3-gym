@@ -24,7 +24,6 @@
 #include "ns3/simulator.h"
 
 #include "arp-cache.h"
-#include "arp-cache-entry.h"
 #include "arp-header.h"
 
 #ifdef TRACE_ARP
