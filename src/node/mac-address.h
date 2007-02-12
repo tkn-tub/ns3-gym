@@ -62,7 +62,7 @@ public:
   
   uint8_t GetLength() const;  
   void Peek (uint8_t ad[MAX_LEN]) const;
-  void Set (uint8_t const ad[MAX_LEN]);
+  void Set (uint8_t const ad[MAX_LEN], uint8_t len);
 
 private:
   uint8_t m_address[MAX_LEN];

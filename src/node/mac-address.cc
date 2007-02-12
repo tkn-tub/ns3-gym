@@ -142,9 +142,10 @@ MacAddress::Peek (uint8_t ad[MacAddress::MAX_LEN]) const
 	memcpy (ad, m_address, MacAddress::MAX_LEN);
 }
 void
-MacAddress::Set (uint8_t const ad[MacAddress::MAX_LEN])
+MacAddress::Set (uint8_t const ad[MacAddress::MAX_LEN], uint8_t len)
 {
 	memcpy (m_address, ad, MacAddress::MAX_LEN);
+        m_len = len;
 }
 
 bool operator == (MacAddress const&a, MacAddress const&b)

@@ -41,7 +41,7 @@ void ReadFrom (Buffer::Iterator &i, MacAddress &ad, uint32_t len)
 {
   uint8_t mac[MacAddress::MAX_LEN];
   i.Read (mac, len);
-  ad.Set (mac);
+  ad.Set (mac, len);
 }
 
 
