@@ -174,7 +174,10 @@ Ipv4::GetRoute (uint32_t index)
     {
       return m_defaultRoute;
     }
-  index--;
+  if (index > 0 && m_defaultRoute != 0)
+    {
+      index--;
+    }
   if (index < m_hostRoutes.size ())
     {
       uint32_t tmp = 0;
@@ -213,7 +216,10 @@ Ipv4::RemoveRoute (uint32_t index)
       delete m_defaultRoute;
       m_defaultRoute = 0;
     }
-  index--;
+  if (index > 0 && m_defaultRoute != 0)
+    {
+      index--;
+    }
   if (index < m_hostRoutes.size ())
     {
       uint32_t tmp = 0;
