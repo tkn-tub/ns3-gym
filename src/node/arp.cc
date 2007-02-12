@@ -168,7 +168,7 @@ Arp::Lookup (Packet &packet, Ipv4Address destination,
   else
     {
       // This is our first attempt to transmit data to this destination.
-      TRACE ("no entry for " << to << " -- send arp request");
+      TRACE ("no entry for " << destination << " -- send arp request");
       entry = cache->Add (destination);
       entry->MarkWaitReply (packet);
       SendArpRequest (cache, destination);
