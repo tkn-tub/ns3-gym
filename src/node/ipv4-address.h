@@ -52,7 +52,7 @@ public:
   void SetHostOrder (uint32_t ip);
   void Serialize (uint8_t buf[4]) const;
 
-  void Print (std::ostream *os) const;
+  void Print (std::ostream &os) const;
 
   bool IsBroadcast (void);
   bool IsMulticast (void);
@@ -83,7 +83,7 @@ public:
   uint32_t GetHostOrder (void) const;
   void SetHostOrder (uint32_t value);
 
-  void Print (std::ostream *os) const;
+  void Print (std::ostream &os) const;
 
   static Ipv4Mask GetLoopback (void);
   static Ipv4Mask GetZero (void);

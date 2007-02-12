@@ -97,12 +97,12 @@ Ipv4Mask::SetHostOrder (uint32_t value)
 }
 
 void 
-Ipv4Mask::Print (std::ostream *os) const
+Ipv4Mask::Print (std::ostream &os) const
 {
-  *os << ((m_mask >> 24) & 0xff) << "."
-      << ((m_mask >> 16) & 0xff) << "."
-      << ((m_mask >> 8) & 0xff) << "."
-      << ((m_mask >> 0) & 0xff);
+  os << ((m_mask >> 24) & 0xff) << "."
+     << ((m_mask >> 16) & 0xff) << "."
+     << ((m_mask >> 8) & 0xff) << "."
+     << ((m_mask >> 0) & 0xff);
 }
 
 
@@ -168,12 +168,12 @@ Ipv4Address::Serialize (uint8_t buf[4]) const
 }
 
 void 
-Ipv4Address::Print (std::ostream *os) const
+Ipv4Address::Print (std::ostream &os) const
 {
-  *os << ((m_address >> 24) & 0xff) << "."
-      << ((m_address >> 16) & 0xff) << "."
-      << ((m_address >> 8) & 0xff) << "."
-      << ((m_address >> 0) & 0xff);
+  os << ((m_address >> 24) & 0xff) << "."
+     << ((m_address >> 16) & 0xff) << "."
+     << ((m_address >> 8) & 0xff) << "."
+     << ((m_address >> 0) & 0xff);
 }
 
 
@@ -218,12 +218,12 @@ size_t Ipv4AddressHash::operator()(Ipv4Address const &x) const
 
 std::ostream& operator<< (std::ostream& os, Ipv4Address const& address)
 {
-  address.Print (&os);
+  address.Print (os);
   return os;
 }
 std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask)
 {
-  mask.Print (&os);
+  mask.Print (os);
   return os;
 }
 
