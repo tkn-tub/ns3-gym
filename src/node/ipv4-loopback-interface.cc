@@ -53,7 +53,8 @@ Ipv4DummyNetDevice::SendTo (Packet& p, const MacAddress& dest)
 
 
 Ipv4LoopbackInterface::Ipv4LoopbackInterface (Node *node)
-  : Ipv4Interface (new Ipv4DummyNetDevice (node))
+  : Ipv4Interface (new Ipv4DummyNetDevice (node)),
+    m_node (node)
 {
 }
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
@@ -64,7 +65,7 @@ Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
 Node *
 Ipv4LoopbackInterface::GetNode (void) const
 {
-  return static_cast<Ipv4DummyNetDevice *> (GetDevice ())->PeekNode ();
+  return m_node;
 }
 
 void 

@@ -79,6 +79,7 @@ InternetNode::SetupLoopback (void)
   interface->SetNetworkMask (Ipv4Mask::GetLoopback ());
   uint32_t index = m_ipv4->AddInterface (interface);
   m_ipv4->AddHostRouteTo (Ipv4Address::GetLoopback (), index);
+  interface->SetUp ();
 }
 
 // Copy this node
