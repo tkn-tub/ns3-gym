@@ -98,6 +98,7 @@ class Ipv4L4Demux;
 class NetDeviceList;
 class Ipv4;
 class Udp;
+class Arp;
 
 class Node {
 public:
@@ -122,6 +123,7 @@ public:
   virtual NetDeviceList*   GetNetDeviceList() const;
   virtual Ipv4 *           GetIpv4 (void) const;
   virtual Udp *            GetUdp (void) const;
+  virtual Arp *            GetArp (void) const;
   
 private:
   Id_t         m_id;         // Node id for this node

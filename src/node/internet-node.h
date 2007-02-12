@@ -43,6 +43,7 @@ public:
   virtual Ipv4L4Demux*     GetIpv4L4Demux() const;
   virtual Ipv4 *           GetIpv4 (void) const;
   virtual Udp *            GetUdp (void) const;
+  virtual Arp *            GetArp (void) const;
 
 private:
   // Capabilities
@@ -51,7 +52,8 @@ private:
   Ipv4L4Demux*     m_ipv4L4Demux;
   Ipv4 *           m_ipv4;
   Udp *            m_udp;
- };
+  Arp *            m_arp;
+};
 
 }//namespace ns3
 

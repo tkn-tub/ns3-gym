@@ -19,40 +19,35 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// NS3 - Layer 4 Protocol base class
+// NS3 - Layer 3 Protocol base class
 // George F. Riley, Georgia Tech, Spring 2007
 
-#ifndef UDP_IPV4_L4_PROTOCOL_H
-#define UDP_IPV4_L4_PROTOCOL_H
-
-#include <stdint.h>
-#include "ipv4-l4-protocol.h"
+#include "arp-l3-protocol.h"
+#include "arp.h"
+#include "node.h"
 
 namespace ns3 {
 
-class Node;
-class Packet;
-class Ipv4Address;
-  
-class UdpIpv4L4Protocol : public Ipv4L4Protocol {
-public:
-  UdpIpv4L4Protocol(Node *node);
-  virtual ~UdpIpv4L4Protocol ();
+ArpL3Protocol::ArpL3Protocol (Node *node)
+  : L3Protocol (0x0806, 0/* XXX: correct version number ? */ ),
+    m_node (node)
+{}
+ArpL3Protocol::~ArpL3Protocol ()
+{}
 
-  virtual UdpIpv4L4Protocol* Copy(Node *node) const;
-  /**
-   * Called from lower-level layers to send the packet up
-   * in the stack. 
-   */
-  virtual void Receive(Packet& p, 
-                       Ipv4Address const &source,
-                       Ipv4Address const &destination);
+ArpL3Protocol *
+ArpL3Protocol::Copy (Node *node) const
+{
+  return new ArpL3Protocol (node);
+}
+void 
+ArpL3Protocol::Receive(Packet& p, NetDevice &device)
+{
+  Arp * arp = m_node->GetArp ();
+  if (arp != 0)
+    {
+      arp->Receive (p, &device);
+    }
+}
 
- private:
-  Node *m_node;
-  static const uint8_t UDP_PROTOCOL;
-};
-
-} // Namespace ns3
-
-#endif /* UDP_IPV4_L4_PROTOCOL */
+}//namespace ns3

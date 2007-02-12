@@ -48,7 +48,7 @@ AsciiToLowCase (char c)
 
 MacAddress::MacAddress () : m_len(0)
 {
-  for (int i=0; i < MAX_ADDR_LEN; i++) 
+  for (int i=0; i < MacAddress::MAX_LEN; i++) 
     {
       m_address[i] = 0;
     }
@@ -56,22 +56,22 @@ MacAddress::MacAddress () : m_len(0)
 
 MacAddress::MacAddress (uint8_t const *address, uint8_t len)
 {
-    assert(len <= MAX_ADDR_LEN);
-    for (int i=0; i < len; i++) 
-      {
-        m_address[i] = address[i];
-      }
-    for (int i=len; i < MAX_ADDR_LEN; i++) 
-      {
-        m_address[i] = 0;
-      } 
-    m_len = len;
+  assert(len <= MacAddress::MAX_LEN);
+  for (int i=0; i < len; i++) 
+    {
+      m_address[i] = address[i];
+    }
+  for (int i=len; i < MacAddress::MAX_LEN; i++) 
+    {
+      m_address[i] = 0;
+    } 
+  m_len = len;
 }
 
 MacAddress::MacAddress (char const *str)
 {       
   int i = 0;
-  while (*str != 0 && i < MAX_ADDR_LEN) {
+  while (*str != 0 && i < MacAddress::MAX_LEN) {
     uint8_t byte = 0;
     while (*str != ASCII_COLON && *str != 0) {
       byte <<= 4;
@@ -137,14 +137,14 @@ MacAddress::GetLength () const
 }
 
 void
-MacAddress::Peek (uint8_t ad[MAX_ADDR_LEN]) const
+MacAddress::Peek (uint8_t ad[MacAddress::MAX_LEN]) const
 {
-	memcpy (ad, m_address, MAX_ADDR_LEN);
+	memcpy (ad, m_address, MacAddress::MAX_LEN);
 }
 void
-MacAddress::Set (uint8_t const ad[MAX_ADDR_LEN])
+MacAddress::Set (uint8_t const ad[MacAddress::MAX_LEN])
 {
-	memcpy (m_address, ad, MAX_ADDR_LEN);
+	memcpy (m_address, ad, MacAddress::MAX_LEN);
 }
 
 bool operator == (MacAddress const&a, MacAddress const&b)
@@ -159,8 +159,8 @@ bool operator != (MacAddress const&a, MacAddress const&b)
 
 bool operator < (MacAddress const&a, MacAddress const&b)
 {
-        uint8_t a_p[MAX_ADDR_LEN];
-        uint8_t b_p[MAX_ADDR_LEN];
+        uint8_t a_p[MacAddress::MAX_LEN];
+        uint8_t b_p[MacAddress::MAX_LEN];
         a.Peek (a_p);
         b.Peek (b_p);
         assert(a.GetLength() == b.GetLength());

@@ -31,8 +31,6 @@
 
 namespace ns3 {
 
-const int MAX_ADDR_LEN = 32;
-
 /**
  * \brief base class for Network Device addresses
  *
@@ -43,6 +41,9 @@ const int MAX_ADDR_LEN = 32;
  */
 class MacAddress {
 public:
+  enum {
+    MAX_LEN = 32
+  };
   MacAddress (void);
   /* 
    * low byte should be first.
@@ -60,11 +61,11 @@ public:
   void Print (std::ostream &os) const;
   
   uint8_t GetLength() const;  
-  void Peek (uint8_t ad[MAX_ADDR_LEN]) const;
-  void Set (uint8_t const ad[MAX_ADDR_LEN]);
-  
+  void Peek (uint8_t ad[MAX_LEN]) const;
+  void Set (uint8_t const ad[MAX_LEN]);
+
 private:
-  uint8_t m_address[MAX_ADDR_LEN];
+  uint8_t m_address[MAX_LEN];
   uint8_t m_len;
 };
 

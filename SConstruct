@@ -164,6 +164,11 @@ node.add_sources ([
     'udp-end-point.cc',
     'udp-socket.cc',
     'udp.cc',
+    'arp-header.cc',
+    'arp-l3-protocol.cc',
+    'arp-cache.cc',
+    'arp-ipv4-interface.cc',
+    'arp.cc',
     ])
 node.add_headers ([
     'ipv4-address.h',
@@ -172,13 +177,20 @@ node.add_headers ([
     'ipv4-checksum.h',
     'ipv4.h',
     'udp.h',
+    'ipv4-l4-protocol.h',
+    'udp-ipv4-l4-protocol.h',
+    'ipv4-l3-protocol.h',
+    'arp-l3-protocol.h',
+    'arp-header.h',
+    'arp-cache-cache.h',
+    'arp-ipv4-interface.h',
+    'arp.h',
     ])
 node.add_inst_headers ([
     'node.h',
     'l3-demux.h',
     'l3-protocol.h',
     'ipv4-l4-demux.h',
-    'ipv4-l4-protocol.h',
     'net-device-list.h',
     'internet-node.h',
     'net-device.h',

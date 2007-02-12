@@ -28,6 +28,9 @@
 #include "internet-node.h"
 #include "udp.h"
 #include "ipv4.h"
+#include "arp.h"
+#include "udp-ipv4-l4-protocol.h"
+#include "arp-l3-protocol.h"
 
 namespace ns3 {
 
@@ -39,17 +42,28 @@ InternetNode::InternetNode()
   m_ipv4L4Demux = new Ipv4L4Demux(this);
   m_udp = new Udp (this);
   m_ipv4 = new Ipv4 (this);
+  m_arp = new Arp (this);
   m_l3Demux->Insert (Ipv4L3Protocol (this));
-  // add a udp protocol handler.
-  //m_ipv4L4Demux->Insert (udp);
+  m_l3Demux->Insert (ArpL3Protocol (this));
+  m_ipv4L4Demux->Insert (UdpIpv4L4Protocol (this));
+}
+
+InternetNode::InternetNode (InternetNode const &o)
+{
+  m_netDevices = new NetDeviceList ();
+  m_l3Demux = o.m_l3Demux->Copy (this);
+  m_ipv4L4Demux = o.m_ipv4L4Demux->Copy (this);
+  m_udp = o.m_udp->Copy (this);
+  m_ipv4 = o.m_ipv4->Copy (this);
+  m_arp = o.m_arp->Copy (this);
 }
 
 // Copy this node
 InternetNode* 
 InternetNode::Copy() const
 {
-  //return new InternetNode(*this);
-  return 0;
+  InternetNode *copy = new InternetNode (*this);
+   return copy;
 }
 
 

@@ -85,6 +85,7 @@ public:
   uint32_t AddInterface (Ipv4Interface *interface);
   Ipv4Interface * GetInterface (uint32_t i);
   uint32_t GetNInterfaces (void) const;
+  Ipv4Interface *FindInterfaceForDevice (NetDevice const*device);
   
 
   Ipv4* Copy(Node *node) const;

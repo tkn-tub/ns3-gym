@@ -276,7 +276,18 @@ Ipv4::GetNInterfaces (void) const
   return m_nInterfaces;
 }
 
-  
+Ipv4Interface *
+Ipv4::FindInterfaceForDevice (NetDevice const*device)
+{
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
+    {
+      if ((*i)->GetDevice () == device)
+        {
+          return *i;
+        }
+    }
+  return 0;
+}  
 
 Ipv4* 
 Ipv4::Copy(Node *node) const
