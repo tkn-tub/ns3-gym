@@ -29,7 +29,7 @@ namespace ns3 {
 
 P2PNetDevice::P2PNetDevice (Node *node, MacAddress const &addr)
   : NetDevice (node, addr),
-    m_rate (500)
+    m_rate (1000000)
 {
   SetMtu (2300);
   EnableBroadcast (MacAddress ("ff:ff:ff:ff:ff:ff"));

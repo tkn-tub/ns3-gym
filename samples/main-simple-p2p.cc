@@ -59,7 +59,7 @@ PrintRoutingTable (InternetNode *a, std::string name)
 static void
 AddP2PLink (InternetNode *a, InternetNode *b)
 {
-  P2PChannel * channel = new P2PChannel (MilliSeconds (20), 1000);
+  P2PChannel * channel = new P2PChannel (MilliSeconds (20), 10000);
   P2PNetDevice *devA = channel->CreateNetDevice (a, MacAddress ("00:00:00:00:00:01"));
   P2PNetDevice *devB = channel->CreateNetDevice (b, MacAddress ("00:00:00:00:00:02"));
   Simulator::ScheduleDestroy (&DestroyP2PNetDevice, devA);
