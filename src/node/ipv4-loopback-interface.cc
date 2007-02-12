@@ -37,7 +37,9 @@ private:
 
 Ipv4DummyNetDevice::Ipv4DummyNetDevice (Node *node)
   : NetDevice (node, MacAddress ())
-{}
+{
+  SetMtu (10000);
+}
 Node *
 Ipv4DummyNetDevice::PeekNode (void) const
 {

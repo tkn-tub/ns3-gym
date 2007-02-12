@@ -33,8 +33,12 @@ SmallTests (void)
 static void
 GenerateTraffic (UdpSocket *socket, uint32_t size)
 {
+  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
   socket->SendDummy (size);
-  Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
+  if (size > 0)
+    {
+      Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
+    }
 }
 
 static void
