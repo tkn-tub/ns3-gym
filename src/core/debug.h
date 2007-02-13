@@ -41,9 +41,9 @@
  *     send information out on screen only in debugging builds.
  *     All debug messages are disabled by default. To enable 
  *     selected debug messages, use the ns3::DebugComponentEnable
- *     function. Alternatively, you can use the NS3_DEBUG 
+ *     function. Alternatively, you can use the NS_DEBUG 
  *     environment variable to define a ';'-separated list of
- *     messages to enable. For example, NS3_DEBUG=a;b;c;DAFD;GH
+ *     messages to enable. For example, NS_DEBUG=a;b;c;DAFD;GH
  *     would enable the components 'a', 'b', 'c', 'DAFD', and, 'GH'.
  */
 
@@ -86,7 +86,7 @@ private:
 /**
  * \ingroup debugging
  *
- * When an NS3_ASSERT cannot verify its condition, 
+ * When an NS_ASSERT cannot verify its condition, 
  * this function is called. This is where you should
  * be able to put a breakpoint with a debugger if
  * you want to catch assertions before the program 
@@ -105,13 +105,13 @@ void AssertBreakpoint (void);
  *
  * Define a Debug component with a specific name. This macro
  * should be used at the top of every file in which you want 
- * to use the NS3_DEBUG macro. This macro defines a new
+ * to use the NS_DEBUG macro. This macro defines a new
  * "debug component" which can be later selectively enabled
  * or disabled with the ns3::DebugComponentEnable and 
- * ns3::DebugComponentDisable functions or with the NS3_DEBUG
+ * ns3::DebugComponentDisable functions or with the NS_DEBUG
  * environment variable.
  */
-#define NS3_DEBUG_COMPONENT_DEFINE(name)                                \
+#define NS_DEBUG_COMPONENT_DEFINE(name)                                \
   static ns3::DebugComponent g_debug = ns3::DebugComponent (name);
 
 /**
@@ -119,12 +119,12 @@ void AssertBreakpoint (void);
  * \param msg message to output
  *
  * Generate debugging output in the "debug component" of the 
- * current file. i.e., every call to NS3_DEBUG from within
+ * current file. i.e., every call to NS_DEBUG from within
  * a file implicitely generates out within the component
- * defined with the NS3_DEBUG_COMPONENT_DEFINE macro in the
+ * defined with the NS_DEBUG_COMPONENT_DEFINE macro in the
  * same file.
  */
-#define NS3_DEBUG(msg)				\
+#define NS_DEBUG(msg)				\
   if (g_debug.IsEnabled ())			\
     {						\
       std::cout << msg << std::endl;		\
@@ -139,7 +139,7 @@ void AssertBreakpoint (void);
  * unverified condition and halts in the ns3::AssertBreakpoint 
  * function.
  */
-#define NS3_ASSERT(condition)                                   \
+#define NS_ASSERT(condition)                                   \
   if (!(condition))                                             \
     {                                                           \
       std::cout << "assert failed. file=" << __FILE__ <<        \
@@ -157,7 +157,7 @@ void AssertBreakpoint (void);
  * true, the program prints the message to output and
  * halts in the ns3::AssertBreakpoint function.
  */
-#define NS3_ASSERT_MSG(condition, message) \
+#define NS_ASSERT_MSG(condition, message) \
   if (!(condition))                        \
     {                                      \
       std::cout << message << std::endl;   \
@@ -166,10 +166,10 @@ void AssertBreakpoint (void);
 
 #else /* NS3_DEBUG_ENABLE */
 
-#define NS3_DEBUG_COMPONENT_DEFINE(name)
-#define NS3_DEBUG(x)
-#define NS3_ASSERT(cond)
-#define NS3_ASSERT_MSG(cond,msg)
+#define NS_DEBUG_COMPONENT_DEFINE(name)
+#define NS_DEBUG(x)
+#define NS_ASSERT(cond)
+#define NS_ASSERT_MSG(cond,msg)
 
 #endif /* NS3_DEBUG_ENABLE */
 
