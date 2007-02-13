@@ -172,7 +172,15 @@ void
 AssertBreakpoint (void)
 {
   int *a = 0;
-  *a = 0;
+  /**
+   * we test here to allow a debugger to change the value of
+   * the variable 'a' to allow the debugger to avoid the 
+   * subsequent segfault.
+   */
+  if (a == 0)
+    {
+      *a = 0;
+    }
 }
 
 
