@@ -40,6 +40,8 @@ private:
   bool m_isEnabled;
 };
 
+void AssertBreakpoint (void);
+
 }; // namespace ns3
 
 
@@ -53,10 +55,29 @@ private:
     {						\
       std::cout << x << std::endl;		\
     }
+
+#define NS3_ASSERT(condition)                                   \
+  if (!(condition))                                             \
+    {                                                           \
+      std::cout << "assert failed. file=" << __FILE__ <<        \
+        ", line=" << __LINE__ << ", cond=\""#condition <<       \
+        "\"" << std::endl;                                      \
+      ns3::AssertBreakpoint ();                                 \
+    }
+
+#define NS3_ASSERT_MSG(condition, message) \
+  if (!(condition))                        \
+    {                                      \
+      std::cout << message << std::endl;   \
+      ns3::AssertBreakpoint ();            \
+    }
+
 #else /* NS3_DEBUG_ENABLE */
 
 #define NS3_DEBUG_COMPONENT_DEFINE(name)
 #define NS3_DEBUG(x)
+#define NS3_ASSERT(cond)
+#define NS3_ASSERT_MSG(cond)
 
 #endif /* NS3_DEBUG_ENABLE */
 

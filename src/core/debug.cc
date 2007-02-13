@@ -168,6 +168,12 @@ DebugComponentPrintList (void)
     }
 }
 
+void
+AssertBreakpoint (void)
+{
+  int *a = 0;
+  a = 0;
+}
 
 
 }; // namespace ns3
