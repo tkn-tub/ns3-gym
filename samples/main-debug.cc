@@ -16,7 +16,8 @@ int main (int argc, int argv)
 
   NS3_DEBUG ("other debug output");
 
-  int a = 0;
+  int a;
+  a = 0;
 
   NS3_ASSERT (a == 0);
   NS3_ASSERT_MSG (a == 0, "my msg");
