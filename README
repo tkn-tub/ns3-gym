@@ -1,7 +1,29 @@
-empty README
+Mercurial cheat sheet
 
-random test
+clone this repository:
+----------------------
+hg clone http://code.nsnam.org/ns-3-dev
 
-tomh test
+pull development tree changes to your local repository:
+------------------------------------------------------
+hg pull http://code.nsnam.org/ns-3-dev
+hg update (apply the changes)  OR
+hg merge (if you've made local changes)
 
-raj test
+commit locally:
+--------------
+hg status
+hg add <new files, if any>
+hg ci -m "message"
+
+push upwards (developers access only):
+--------------------------------------
+hg push ssh://code@code.nsnam.org//home/code/repos/ns-3-dev
+
+view the change log:
+--------------
+hg log <file>
+
+doing a scons make clean:
+------------------------
+scons -c
