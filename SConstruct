@@ -18,6 +18,8 @@ ns3.add(core)
 core.add_sources([
     'reference-list-test.cc',
     'callback-test.cc',
+    'debug.cc',
+    'assert.cc',
     'ptr.cc',
     'debug.cc',
     'test.cc'
@@ -41,8 +43,24 @@ core.add_inst_headers([
     'callback.h',
     'ptr.h',
     'debug.h',
+    'assert.h',
+    'fatal-error.h',
     'test.h'
     ])
+
+def config_core (env, config):
+    retval = []
+    # XXX This check is primitive but it should be
+    # good enough for now.
+    if config.CheckCHeader ('stdlib.h') == 1:
+        retval.append ('#define HAVE_STDLIB_H 1')
+        retval.append ('#define HAVE_GETENV 1')
+    else:
+        retval.append ('#undef HAVE_STDLIB_H')
+        retval.append ('#undef HAVE_GETENV')
+    return retval
+core.add_config (config_core)
+
 
 
 #
@@ -247,6 +265,13 @@ replay_simu.add_source('replay-simulation.cc')
 
 
 # samples
+sample_debug = build.Ns3Module('sample-debug', 'samples')
+sample_debug.set_executable()
+ns3.add(sample_debug)
+sample_debug.add_dep('core')
+sample_debug.add_source('main-debug.cc')
+sample_debug.add_source('main-debug-other.cc')
+
 sample_callback = build.Ns3Module('sample-callback', 'samples')
 sample_callback.set_executable()
 ns3.add(sample_callback)
