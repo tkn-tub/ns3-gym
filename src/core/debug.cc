@@ -96,7 +96,7 @@ DebugComponentEnableEnvVar (void)
 }
 
 
-DebugComponent::DebugComponent (std::string name)
+DebugComponent::DebugComponent (char const * name)
   : m_isEnabled (false)
 {
   for (ComponentListI i = g_components.begin ();
@@ -167,22 +167,6 @@ DebugComponentPrintList (void)
       std::cout << i->first << "=" << (i->second->IsEnabled ()?"enabled":"disabled") << std::endl;
     }
 }
-
-void
-AssertBreakpoint (void)
-{
-  int *a = 0;
-  /**
-   * we test here to allow a debugger to change the value of
-   * the variable 'a' to allow the debugger to avoid the 
-   * subsequent segfault.
-   */
-  if (a == 0)
-    {
-      *a = 0;
-    }
-}
-
 
 }; // namespace ns3
 

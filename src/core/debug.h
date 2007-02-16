@@ -21,21 +21,9 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#include <string>
-#include <iostream>
-
 /**
  * \defgroup debugging
  * \brief Debugging functions and macros
- *
- * The ns3 debugging support provides a few simple macros
- * for debugging and sending out messages to the user. There
- * two classes of functionality:
- *   - ASSERT functionality: macros which are used to verify
- *     at runtime that a certain condition is true. If it is
- *     not true, the program halts. These checks are built
- *     into the program only in debugging builds. They are
- *     removed in optimized builds.
  *
  *   - DEBUG functionality: macros which allow developers to
  *     send information out on screen only in debugging builds.
@@ -75,7 +63,7 @@ void DebugComponentPrintList (void);
 
 class DebugComponent {
 public:
-  DebugComponent (std::string name);
+  DebugComponent (char const *name);
   bool IsEnabled (void);
   void Enable (void);
   void Disable (void);
@@ -83,21 +71,14 @@ private:
   bool m_isEnabled;
 };
 
-/**
- * \ingroup debugging
- *
- * When an NS_ASSERT cannot verify its condition, 
- * this function is called. This is where you should
- * be able to put a breakpoint with a debugger if
- * you want to catch assertions before the program 
- * halts.
- */
-void AssertBreakpoint (void);
-
 }; // namespace ns3
 
 
 #ifdef NS3_DEBUG_ENABLE
+
+#include <string>
+#include <iostream>
+
 
 /**
  * \ingroup debugging
@@ -130,46 +111,10 @@ void AssertBreakpoint (void);
       std::cout << msg << std::endl;		\
     }
 
-/**
- * \ingroup debugging
- * \param condition condition to verifiy.
- *
- * At runtime, in debugging builds, if this condition is not
- * true, the program prints the source file, line number and 
- * unverified condition and halts in the ns3::AssertBreakpoint 
- * function.
- */
-#define NS_ASSERT(condition)                                   \
-  if (!(condition))                                             \
-    {                                                           \
-      std::cout << "assert failed. file=" << __FILE__ <<        \
-        ", line=" << __LINE__ << ", cond=\""#condition <<       \
-        "\"" << std::endl;                                      \
-      ns3::AssertBreakpoint ();                                 \
-    }
-
-/**
- * \ingroup debugging
- * \param condition condition to verifiy.
- * \param message message to output
- *
- * At runtime, in debugging builds, if this condition is not
- * true, the program prints the message to output and
- * halts in the ns3::AssertBreakpoint function.
- */
-#define NS_ASSERT_MSG(condition, message) \
-  if (!(condition))                        \
-    {                                      \
-      std::cout << message << std::endl;   \
-      ns3::AssertBreakpoint ();            \
-    }
-
 #else /* NS3_DEBUG_ENABLE */
 
 #define NS_DEBUG_COMPONENT_DEFINE(name)
 #define NS_DEBUG(x)
-#define NS_ASSERT(cond)
-#define NS_ASSERT_MSG(cond,msg)
 
 #endif /* NS3_DEBUG_ENABLE */
 

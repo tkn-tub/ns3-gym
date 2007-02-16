@@ -19,6 +19,7 @@ core.add_sources([
     'reference-list-test.cc',
     'callback-test.cc',
     'debug.cc',
+    'assert.cc',
     'ptr.cc',
     'test.cc'
     ])
@@ -41,6 +42,7 @@ core.add_inst_headers([
     'callback.h',
     'ptr.h',
     'debug.h',
+    'assert.h',
     'test.h'
     ])
 
