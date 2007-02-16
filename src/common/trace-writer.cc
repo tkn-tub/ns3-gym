@@ -24,13 +24,11 @@
 #include "ns3/debug.h"
 #include "trace-writer.h"
 
+NS_DEBUG_COMPONENT_DEFINE ("TraceWriter");
+
 namespace ns3 {
 
-namespace {
-  int twDebug = 0;
-}
-
-  void
+void
 TraceWriter::Init (const char *filename)
 {
   NS_DEBUG("TraceWriter()::Init(" << filename << ")")

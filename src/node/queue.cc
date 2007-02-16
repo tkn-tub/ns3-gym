@@ -20,11 +20,9 @@
 #include "ns3/debug.h"
 #include "queue.h"
 
-namespace ns3 {
+NS_DEBUG_COMPONENT_DEFINE ("Queue");
 
-namespace {
-  int qDebug = 0;
-}
+namespace ns3 {
 
 Queue::Queue() : 
   m_nBytes(0), 

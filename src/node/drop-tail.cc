@@ -20,11 +20,9 @@
 #include "ns3/debug.h"
 #include "drop-tail.h"
 
-namespace ns3 {
+NS_DEBUG_COMPONENT_DEFINE ("DropTailQueue");
 
-namespace {
-  int dtqDebug = 0;
-}
+namespace ns3 {
 
 DropTailQueue::DropTailQueue () :
     m_packets (),
