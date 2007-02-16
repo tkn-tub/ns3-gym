@@ -21,7 +21,6 @@ core.add_sources([
     'debug.cc',
     'assert.cc',
     'ptr.cc',
-    'debug.cc',
     'test.cc'
     ])
 env = Environment()
