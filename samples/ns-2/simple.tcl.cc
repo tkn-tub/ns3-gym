@@ -23,21 +23,26 @@
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
+#include "ns3/internet-node.h"
 
 using namespace ns3;
 
 int main (int argc, char *argv[])
 {
     // set ns [new Simulator]
-    // ** not needed, Simulator is static object **
+    // ** not needed, Simulator is static object 
 
     // set n0 [$ns node]
     // set n1 [$ns node]
     // set n2 [$ns node]
     // set n3 [$ns node]
 
-    // ** Here, topology object instantiates four identical nodes **
-    // ** InternetNode n0, n1, n2, n3;
+    // ** Here, some kind of factory or topology object will instantiates 
+    // ** four identical nodes; for now, we just explicitly create them
+    InternetNode *n0 = new InternetNode();
+    InternetNode *n1 = new InternetNode();
+    InternetNode *n2 = new InternetNode();
+    InternetNode *n3 = new InternetNode();
  
     // set f [open out.tr w]
     // $ns trace-all $f 
@@ -110,5 +115,10 @@ int main (int argc, char *argv[])
     // $ns run
     Simulator::Run ();
     
+    // The below deletes will be managed by future topology object
+    delete n0;
+    delete n1;
+    delete n2;
+    delete n3;
     Simulator::Destroy ();
 }
