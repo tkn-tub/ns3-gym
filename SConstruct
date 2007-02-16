@@ -19,11 +19,10 @@ core.add_sources([
     'reference-list-test.cc',
     'callback-test.cc',
     'ptr.cc',
-    'debug.cc',
     'test.cc'
     ])
 env = Environment()
-if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] == 'cygwin':
+if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin':
     core.add_external_dep('pthread')
     core.add_sources([
         'unix-system-wall-clock-ms.cc',
@@ -40,7 +39,6 @@ core.add_inst_headers([
     'reference-list.h',
     'callback.h',
     'ptr.h',
-    'debug.h',
     'test.h'
     ])
 
@@ -122,7 +120,6 @@ common.add_sources([
     'packet.cc',
     'tags.cc',
     'pcap-writer.cc',
-    'trace-writer.cc',
     'trace-container.cc',
     'variable-tracer-test.cc',
     'stream-tracer-test.cc',
@@ -138,7 +135,6 @@ common.add_inst_headers([
     'f-variable-tracer.h',
     'callback-tracer.h',
     'stream-tracer.h',
-    'trace-writer.h',
     'trace-container.h',
     'pcap-writer.h',
     ])
@@ -148,8 +144,6 @@ ns3.add (node)
 node.add_deps (['core', 'common', 'simulator'])
 node.add_sources ([
     'node.cc',
-    'queue.cc',
-    'drop-tail.cc',
     'l3-demux.cc',
     'l3-protocol.cc',
     'ipv4-l3-protocol.cc',
@@ -204,8 +198,6 @@ node.add_headers ([
     ])
 node.add_inst_headers ([
     'node.h',
-    'queue.h',
-    'drop-tail.h',
     'internet-node.h',
     'udp-socket.h',
     'ipv4-address.h',
@@ -295,10 +287,11 @@ ns3.add(sample_sp2p)
 sample_sp2p.add_deps(['core', 'simulator', 'node'])
 sample_sp2p.add_source('main-simple-p2p.cc')
 
-sample_tw = build.Ns3Module('sample-tw', 'samples')
-sample_tw.set_executable()
-ns3.add(sample_tw)
-sample_tw.add_deps(['core', 'common'])
-sample_tw.add_source('main-tw.cc')
+sample_simple_tcl = build.Ns3Module('sample-simple.tcl', 'samples')
+sample_simple_tcl.set_executable()
+ns3.add(sample_simple_tcl)
+sample_simple_tcl.add_deps(['core', 'simulator', 'node'])
+sample_simple_tcl.add_source('ns-2/simple.tcl.cc')
+
 
 ns3.generate_dependencies()

@@ -21,6 +21,8 @@
 // Corresponding ns-2 otcl commands are commented out above the 
 // replacement ns-3 code, to highlight the change in design
 
+#include "ns3/simulator.h"
+
 using namespace ns3;
 
 int main (int argc, char *argv[])
@@ -90,7 +92,7 @@ int main (int argc, char *argv[])
     // puts [$cbr0 set interval_]
     // 
     // $ns at 3.0 "finish"
-    Simulator::StopAt (3.0);
+    // Simulator::StopAt (3.0);
     // 
     // proc finish {} {
     //         global ns f nf
