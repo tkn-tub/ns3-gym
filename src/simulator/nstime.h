@@ -22,7 +22,7 @@
 #define TIME_H
 
 #include <stdint.h>
-#include <cassert>
+#include "ns3/assert.h"
 #include <ostream>
 #include "high-precision.h"
 

@@ -101,7 +101,7 @@ private:
   void RemoveFromList (void) {
       if (m_prev == this) 
         {
-          //assert (m_next == this);
+          //NS_ASSERT (m_next == this);
           delete m_objPtr;
           m_objPtr = OBJ_PTR ();
         }

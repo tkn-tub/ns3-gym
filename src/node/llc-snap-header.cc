@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cassert>
+#include "ns3/assert.h"
 
 #include "llc-snap-header.h"
 

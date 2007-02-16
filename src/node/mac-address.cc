@@ -21,7 +21,7 @@
 
 #include <iostream>
 #include <iomanip>
-#include <cassert>
+#include "ns3/assert.h"
 #include "mac-address.h"
 
 #define ASCII_a (0x41)
@@ -56,7 +56,7 @@ MacAddress::MacAddress () : m_len(0)
 
 MacAddress::MacAddress (uint8_t const *address, uint8_t len)
 {
-  assert(len <= MacAddress::MAX_LEN);
+  NS_ASSERT (len <= MacAddress::MAX_LEN);
   for (int i=0; i < len; i++) 
     {
       m_address[i] = address[i];
@@ -164,7 +164,7 @@ bool operator < (MacAddress const&a, MacAddress const&b)
         uint8_t b_p[MacAddress::MAX_LEN];
         a.Peek (a_p);
         b.Peek (b_p);
-        assert(a.GetLength() == b.GetLength());
+        NS_ASSERT (a.GetLength() == b.GetLength());
         for (uint8_t i = 0; i < a.GetLength(); i++) 
           {
             if (a_p[i] < b_p[i]) 

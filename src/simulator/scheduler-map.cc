@@ -22,7 +22,7 @@
 
 #include "scheduler-map.h"
 #include "event-impl.h"
-#include <cassert>
+#include "ns3/assert.h"
 
 #define noTRACE_MAP 1
 
@@ -76,7 +76,7 @@ SchedulerMap::RealInsert (EventImpl *event, Scheduler::EventKey key)
 {
   std::pair<EventMapI,bool> result;
   result = m_list.insert (std::make_pair (key, event));
-  assert (result.second);
+  NS_ASSERT (result.second);
   return EventId (event, key.m_ns, key.m_uid);
 }
 
@@ -90,14 +90,14 @@ EventImpl *
 SchedulerMap::RealPeekNext (void) const
 {
   EventMapCI i = m_list.begin ();
-  assert (i != m_list.end ());
+  NS_ASSERT (i != m_list.end ());
   return (*i).second;
 }
 Scheduler::EventKey
 SchedulerMap::RealPeekNextKey (void) const
 {
   EventMapCI i = m_list.begin ();
-  assert (i != m_list.end ());
+  NS_ASSERT (i != m_list.end ());
   return (*i).first;
 }
 void

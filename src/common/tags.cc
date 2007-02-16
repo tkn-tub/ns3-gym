@@ -30,7 +30,7 @@ TagRegistry::TagsData TagRegistry::m_registry;
 void 
 TagRegistry::Record (std::string uuid, PrettyPrinter prettyPrinter)
 {
-  assert (!m_sorted);
+  NS_ASSERT (!m_sorted);
   m_registry.push_back (make_pair (uuid, prettyPrinter));
 }
 uint32_t 
@@ -41,7 +41,7 @@ TagRegistry::LookupUid (std::string uuid)
   	std::sort (m_registry.begin (), m_registry.end ());
   	m_sorted = true;
     }
-  assert (m_sorted);
+  NS_ASSERT (m_sorted);
   uint32_t uid = 1;
   for (TagsDataCI i = m_registry.begin (); i != m_registry.end (); i++) 
     {
@@ -52,14 +52,14 @@ TagRegistry::LookupUid (std::string uuid)
   	uid++;
     }
   // someone asked for a uid for an unregistered uuid.
-  assert (!"You tried to use unregistered tag: make sure you create an instance of type TagRegistration<YouTagType>.");
+  NS_ASSERT (!"You tried to use unregistered tag: make sure you create an instance of type TagRegistration<YouTagType>.");
   // quiet compiler
   return 0;
 }
 void 
 TagRegistry::PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os)
 {
-  assert (m_registry.size () > uid);
+  NS_ASSERT (m_registry.size () > uid);
   PrettyPrinter prettyPrinter = m_registry[uid].second;
   if (prettyPrinter != 0) 
     {

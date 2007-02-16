@@ -20,7 +20,7 @@
  */
 
 #include "ipv4-route.h"
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -180,7 +180,7 @@ std::ostream& operator<< (std::ostream& os, Ipv4Route const& route)
 {
   if (route.IsDefault ())
     {
-      assert (route.IsGateway ());
+      NS_ASSERT (route.IsGateway ());
       os << "default out=" << route.GetInterface () << ", next hop=" << route.GetGateway ();
     }
   else if (route.IsHost ())
@@ -215,7 +215,7 @@ std::ostream& operator<< (std::ostream& os, Ipv4Route const& route)
     }
   else
     {
-      assert (false);
+      NS_ASSERT (false);
     }
   return os;
 }

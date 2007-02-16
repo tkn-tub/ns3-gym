@@ -18,11 +18,11 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include <cassert>
 #include <list>
 #include <utility>
 #include <iostream>
 #include "debug.h"
+#include "assert.h"
 #include "ns3/core-config.h"
 
 #ifdef HAVE_STDLIB_H
@@ -103,7 +103,7 @@ DebugComponent::DebugComponent (char const * name)
        i != g_components.end ();
        i++)
     {
-      assert (i->first.compare (name) != 0);
+      NS_ASSERT (i->first.compare (name) != 0);
     }
   g_components.push_back (std::make_pair (name, this));
 }

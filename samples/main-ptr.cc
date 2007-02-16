@@ -51,7 +51,7 @@ int main (int argc, char *argv[])
     Ptr<A> a = new A ();
     a->Method ();
     Ptr<A> prev = StoreA (a);
-    assert (prev == 0);
+    NS_ASSERT (prev == 0);
   }
 
   {

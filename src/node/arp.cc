@@ -61,7 +61,7 @@ Arp::FindCache (NetDevice *device)
     }
   Ipv4Interface *interface = m_node->GetIpv4 ()->FindInterfaceForDevice (device);
   ArpCache * cache = new ArpCache (device, interface);
-  assert (device->IsBroadcast ());
+  NS_ASSERT (device->IsBroadcast ());
   device->SetLinkChangeCallback (MakeCallback (&ArpCache::Flush, cache));
   m_cacheList.push_back (cache);
   return cache;

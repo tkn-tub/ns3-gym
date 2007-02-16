@@ -34,7 +34,7 @@
 
 #include "scheduler-heap.h"
 #include "event-impl.h"
-#include <cassert>
+#include "ns3/assert.h"
 
 #define noTRACE_HEAP 1
 
@@ -112,7 +112,7 @@ SchedulerHeap::IsBottom (uint32_t id) const
 void
 SchedulerHeap::Exch (uint32_t a, uint32_t b) 
 {
-  assert (b < m_heap.size () && a < m_heap.size ());
+  NS_ASSERT (b < m_heap.size () && a < m_heap.size ());
   TRACE ("Exch " << a << ", " << b);
   std::pair<EventImpl*, Scheduler::EventKey> tmp (m_heap[a]);
   m_heap[a] = m_heap[b];
@@ -191,7 +191,7 @@ SchedulerHeap::TopDown (uint32_t start)
     {
       return;
     }
-  assert (!IsBottom (index));
+  NS_ASSERT (!IsBottom (index));
   uint32_t left = LeftChild (index);
   if (IsBottom (left)) 
     {
@@ -248,7 +248,7 @@ SchedulerHeap::RealRemove (EventId id, Scheduler::EventKey *key)
           return retval;
         }
     }
-  assert (false);
+  NS_ASSERT (false);
   // quiet compiler
   return 0;
 }

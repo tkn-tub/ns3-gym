@@ -129,7 +129,7 @@ Ipv4::Lookup (Ipv4Address dest)
        i != m_hostRoutes.end (); 
        i++) 
     {
-      assert ((*i)->IsHost ());
+      NS_ASSERT ((*i)->IsHost ());
       if ((*i)->GetDest ().IsEqual (dest)) 
         {
           return (*i);
@@ -139,7 +139,7 @@ Ipv4::Lookup (Ipv4Address dest)
        j != m_networkRoutes.end (); 
        j++) 
     {
-      assert ((*j)->IsNetwork ());
+      NS_ASSERT ((*j)->IsNetwork ());
       Ipv4Mask mask = (*j)->GetDestNetworkMask ();
       Ipv4Address entry = (*j)->GetDestNetwork ();
       if (mask.IsMatch (dest, entry)) 
@@ -149,7 +149,7 @@ Ipv4::Lookup (Ipv4Address dest)
     }
   if (m_defaultRoute != 0) 
     {
-      assert (m_defaultRoute->IsDefault ());
+      NS_ASSERT (m_defaultRoute->IsDefault ());
       return m_defaultRoute;
     }
   return 0;
@@ -204,7 +204,7 @@ Ipv4::GetRoute (uint32_t index)
         }
       tmp++;
     }
-  assert (false);
+  NS_ASSERT (false);
   // quiet compiler.
   return 0;
 }
@@ -250,7 +250,7 @@ Ipv4::RemoveRoute (uint32_t index)
         }
       tmp++;
     }
-  assert (false);
+  NS_ASSERT (false);
 }
 
 
@@ -365,7 +365,7 @@ Ipv4::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route
   Packet packet = p;
   packet.Add (ip);
   Ipv4Interface *outInterface = GetInterface (route.GetInterface ());
-  assert (packet.GetSize () <= outInterface->GetMtu ());
+  NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
   // XXX log trace here.
   if (route.IsGateway ()) 
     {

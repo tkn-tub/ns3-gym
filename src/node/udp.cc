@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cassert>
+#include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "udp.h"
 #include "udp-header.h"
@@ -95,7 +95,7 @@ Udp::Receive(Packet& packet,
     }
   UdpSocket *socket = endPoint->GetSocket ();
   socket->ForwardUp (packet, source, udpHeader.GetSource ());
-  assert (socket != 0);
+  NS_ASSERT (socket != 0);
 }
 
 void

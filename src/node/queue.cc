@@ -69,8 +69,8 @@ Queue::Deque (Packet &p)
       m_nBytes -= p.GetSize ();
       m_nPackets--;
 
-      assert(m_nBytes >= 0);
-      assert(m_nPackets >= 0);
+      NS_ASSERT (m_nBytes >= 0);
+      NS_ASSERT (m_nPackets >= 0);
 
       NS_DEBUG("Queue::Deque (): m_traceDeque (p)")
       m_traceDeque ("+ <timestamp> ", static_cast<const Packet &>(p));
@@ -84,7 +84,7 @@ Queue::DequeAll (void)
 {
   NS_DEBUG("Queue::DequeAll ()")
 
-  assert (!"Don't know what to do with dequeued packets!");
+  NS_ASSERT (!"Don't know what to do with dequeued packets!");
 }
 
   uint32_t 

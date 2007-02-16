@@ -20,7 +20,7 @@
  */
 
 #include "scheduler.h"
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -40,25 +40,25 @@ Scheduler::IsEmpty (void) const
 EventImpl *
 Scheduler::PeekNext (void) const
 {
-  assert (!RealIsEmpty ());
+  NS_ASSERT (!RealIsEmpty ());
   return RealPeekNext ();
 }
 Scheduler::EventKey 
 Scheduler::PeekNextKey (void) const 
 {
-  assert (!RealIsEmpty ());
+  NS_ASSERT (!RealIsEmpty ());
   return RealPeekNextKey ();
 }
 void 
 Scheduler::RemoveNext (void)
 {
-  assert (!RealIsEmpty ());
+  NS_ASSERT (!RealIsEmpty ());
   return RealRemoveNext ();
 }
 EventImpl *
 Scheduler::Remove (EventId id, EventKey *key)
 {
-  assert (!RealIsEmpty ());
+  NS_ASSERT (!RealIsEmpty ());
   return RealRemove (id, key);
 }
 

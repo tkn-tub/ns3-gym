@@ -20,7 +20,7 @@
  */
 
 #include <iostream>
-#include <cassert>
+#include "ns3/assert.h"
 
 #include "net-device.h"
 #include "l3-demux.h"
@@ -93,7 +93,7 @@ NetDevice::IsBroadcast (void) const
 MacAddress const &
 NetDevice::GetBroadcast (void) const
 {
-  assert (m_isBroadcast);
+  NS_ASSERT (m_isBroadcast);
   return m_broadcast;
 }
 

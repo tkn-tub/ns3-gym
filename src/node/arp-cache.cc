@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include <cassert>
+#include "ns3/assert.h"
 
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
@@ -153,14 +153,14 @@ void
 ArpCache::Entry::MarkDead (void) 
 {
   m_state = DEAD;
-  //assert (m_waiting != 0);
+  //NS_ASSERT (m_waiting != 0);
   UpdateSeen ();
 }
 Packet 
 ArpCache::Entry::MarkAlive (MacAddress macAddress) 
 {
-  assert (m_state == WAIT_REPLY);
-  //assert (m_waiting != 0);
+  NS_ASSERT (m_state == WAIT_REPLY);
+  //NS_ASSERT (m_waiting != 0);
   m_macAddress = macAddress;
   m_state = ALIVE;
   UpdateSeen ();
@@ -172,7 +172,7 @@ ArpCache::Entry::MarkAlive (MacAddress macAddress)
 Packet 
 ArpCache::Entry::UpdateWaitReply (Packet waiting)
 {
-  assert (m_state == WAIT_REPLY);
+  NS_ASSERT (m_state == WAIT_REPLY);
   /* We are already waiting for an answer so
    * we dump the previously waiting packet and
    * replace it with this one.
@@ -184,8 +184,8 @@ ArpCache::Entry::UpdateWaitReply (Packet waiting)
 void 
 ArpCache::Entry::MarkWaitReply (Packet waiting)
 {
-  assert (m_state == ALIVE || m_state == DEAD);
-  //assert (m_waiting == 0);
+  NS_ASSERT (m_state == ALIVE || m_state == DEAD);
+  //NS_ASSERT (m_waiting == 0);
   m_state = WAIT_REPLY;
   m_waiting = waiting;
   UpdateSeen ();
@@ -194,7 +194,7 @@ ArpCache::Entry::MarkWaitReply (Packet waiting)
 MacAddress
 ArpCache::Entry::GetMacAddress (void)
 {
-  assert (m_state == ALIVE);
+  NS_ASSERT (m_state == ALIVE);
   return m_macAddress;
 }
 bool 
@@ -212,7 +212,7 @@ ArpCache::Entry::IsExpired (void)
     timeout = m_arp->GetAliveTimeout ();
     break;
   default:
-    assert (false);
+    NS_ASSERT (false);
     timeout = Seconds (0);
     /* NOTREACHED */
     break;

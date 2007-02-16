@@ -21,7 +21,7 @@
 #include "high-precision-double.h"
 
 #include <cmath>
-#include <cassert>
+#include "ns3/assert.h"
 
 
 namespace ns3 {
