@@ -20,6 +20,7 @@
 //
 
 #include "ns3/packet.h"
+#include "ns3/debug.h"
 
 #include "ipv4.h"
 #include "ipv4-l4-protocol.h"
@@ -31,7 +32,7 @@
 #include "node.h"
 #include "ipv4-l4-demux.h"
 
-#define TRACE(x)
+NS_DEBUG_COMPONENT_DEFINE ("Ipv4");
 
 namespace ns3 {
 
@@ -352,7 +353,7 @@ Ipv4::Send (Packet const &packet,
   Ipv4Route *route = Lookup (ipHeader.GetDestination ());
   if (route == 0) 
     {
-      TRACE ("not for me -- forwarding but no route to host. drop.");
+      NS_DEBUG ("not for me -- forwarding but no route to host. drop.");
       return;
     }
 
@@ -386,7 +387,7 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
     {
       if ((*i)->GetAddress ().IsEqual (ipHeader.GetDestination ())) 
         {
-          TRACE ("for me 1");
+          NS_DEBUG ("for me 1");
           return false;
         }
     }
@@ -399,7 +400,7 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
 	{
 	  if (ipHeader.GetDestination ().IsEqual (interface->GetBroadcast ())) 
 	    {
-	      TRACE ("for me 2");
+	      NS_DEBUG ("for me 2");
 	      return false;
 	    }
 	  break;
@@ -408,29 +409,29 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
       
   if (ipHeader.GetDestination ().IsEqual (Ipv4Address::GetBroadcast ())) 
     {
-      TRACE ("for me 3");
+      NS_DEBUG ("for me 3");
       return false;
     }
   if (ipHeader.GetDestination ().IsEqual (Ipv4Address::GetAny ())) 
     {
-      TRACE ("for me 4");
+      NS_DEBUG ("for me 4");
       return false;
     }
   if (ipHeader.GetTtl () == 1) 
     {
       // Should send ttl expired here
       // XXX
-      TRACE ("not for me -- ttl expired. drop.");
+      NS_DEBUG ("not for me -- ttl expired. drop.");
       return true;
     }
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
   Ipv4Route *route = Lookup (ipHeader.GetDestination ());
   if (route == 0) 
     {
-      TRACE ("not for me -- forwarding but no route to host. drop.");
+      NS_DEBUG ("not for me -- forwarding but no route to host. drop.");
       return true;
     }
-  TRACE ("not for me -- forwarding.");
+  NS_DEBUG ("not for me -- forwarding.");
   SendRealOut (packet, ipHeader, *route);
   return true;
 }

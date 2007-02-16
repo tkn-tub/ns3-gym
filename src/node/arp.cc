@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/packet.h"
+#include "ns3/debug.h"
 #include "arp.h"
 #include "arp-header.h"
 #include "arp-cache.h"
@@ -27,7 +28,7 @@
 #include "node.h"
 #include "ipv4.h"
 
-#define TRACE(x)
+NS_DEBUG_COMPONENT_DEFINE ("Arp");
 
 namespace ns3 {
 
@@ -77,7 +78,7 @@ Arp::Receive(Packet& packet, NetDevice *device)
   if (arp.IsRequest () && 
       arp.GetDestinationIpv4Address () == cache->GetInterface ()->GetAddress ()) 
     {
-      TRACE ("got request from " << arp.GetSourceIpv4Address () << " -- send reply");
+      NS_DEBUG ("got request from " << arp.GetSourceIpv4Address () << " -- send reply");
       SendArpReply (cache, arp.GetSourceIpv4Address (),
                     arp.GetSourceHardwareAddress ());
     } 
@@ -91,7 +92,7 @@ Arp::Receive(Packet& packet, NetDevice *device)
         {
           if (entry->IsWaitReply ()) 
             {
-              TRACE ("got reply from " << arp.GetSourceIpv4Address ()
+              NS_DEBUG ("got reply from " << arp.GetSourceIpv4Address ()
                      << " for waiting entry -- flush");
               MacAddress from_mac = arp.GetSourceHardwareAddress ();
               Packet waiting = entry->MarkAlive (from_mac);
@@ -101,14 +102,14 @@ Arp::Receive(Packet& packet, NetDevice *device)
             {
               // ignore this reply which might well be an attempt 
               // at poisening my arp cache.
-              TRACE ("got reply from " << arp.GetSourceIpv4Address () << 
+              NS_DEBUG ("got reply from " << arp.GetSourceIpv4Address () << 
                      " for non-waiting entry -- drop");
 	      // XXX report packet as dropped.
             }
         } 
       else 
         {
-          TRACE ("got reply for unknown entry -- drop");
+          NS_DEBUG ("got reply for unknown entry -- drop");
 	  // XXX report packet as dropped.
         }
     }
@@ -126,19 +127,19 @@ Arp::Lookup (Packet &packet, Ipv4Address destination,
         {
           if (entry->IsDead ()) 
             {
-              TRACE ("dead entry for " << destination << " expired -- send arp request");
+              NS_DEBUG ("dead entry for " << destination << " expired -- send arp request");
               entry->MarkWaitReply (packet);
               SendArpRequest (cache, destination);
             } 
           else if (entry->IsAlive ()) 
             {
-              TRACE ("alive entry for " << destination << " expired -- send arp request");
+              NS_DEBUG ("alive entry for " << destination << " expired -- send arp request");
               entry->MarkWaitReply (packet);
               SendArpRequest (cache, destination);
             } 
           else if (entry->IsWaitReply ()) 
             {
-              TRACE ("wait reply for " << destination << " expired -- drop");
+              NS_DEBUG ("wait reply for " << destination << " expired -- drop");
               entry->MarkDead ();
 	      // XXX report packet as 'dropped'
             }
@@ -147,18 +148,18 @@ Arp::Lookup (Packet &packet, Ipv4Address destination,
         {
           if (entry->IsDead ()) 
             {
-              TRACE ("dead entry for " << destination << " valid -- drop");
+              NS_DEBUG ("dead entry for " << destination << " valid -- drop");
 	      // XXX report packet as 'dropped'
             } 
           else if (entry->IsAlive ()) 
             {
-              TRACE ("alive entry for " << destination << " valid -- send");
+              NS_DEBUG ("alive entry for " << destination << " valid -- send");
 	      *hardwareDestination = entry->GetMacAddress ();
               return true;
             } 
           else if (entry->IsWaitReply ()) 
             {
-              TRACE ("wait reply for " << destination << " valid -- drop previous");
+              NS_DEBUG ("wait reply for " << destination << " valid -- drop previous");
               Packet old = entry->UpdateWaitReply (packet);
 	      // XXX report 'old' packet as 'dropped'
             }
@@ -168,7 +169,7 @@ Arp::Lookup (Packet &packet, Ipv4Address destination,
   else
     {
       // This is our first attempt to transmit data to this destination.
-      TRACE ("no entry for " << destination << " -- send arp request");
+      NS_DEBUG ("no entry for " << destination << " -- send arp request");
       entry = cache->Add (destination);
       entry->MarkWaitReply (packet);
       SendArpRequest (cache, destination);

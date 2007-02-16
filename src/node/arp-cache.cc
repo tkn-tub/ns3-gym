@@ -26,17 +26,6 @@
 #include "arp-cache.h"
 #include "arp-header.h"
 
-#ifdef TRACE_ARP
-#include <iostream>
-#include "simulator.h"
-# define TRACE(x) \
-std::cout << "ARP TRACE " << Simulator::Now () << " " \
-    << x << std::endl;
-#else /* TRACE_ARP */
-# define TRACE(format,...)
-#endif /* TRACE_ARP */
-
-
 namespace ns3 {
 
 ArpCache::ArpCache (NetDevice *device, Ipv4Interface *interface)

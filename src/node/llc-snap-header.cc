@@ -23,18 +23,6 @@
 
 #include "llc-snap-header.h"
 
-#define noTRACE_LLC_SNAP_HEADER 1
-
-#ifdef TRACE_LLC_SNAP_HEADER
-#include <iostream>
-#include "ns3/simulator.h"
-# define TRACE(x) \
-std::cout << "LLCSNAP HEAD TRACE " << Simulator::Now () << " " << x << std::endl;
-#else /* TRACE_LLC_SNAP_HEADER */
-# define TRACE(format,...)
-#endif /* TRACE_LLC_SNAP_HEADER */
-
-
 namespace ns3 {
 
 LlcSnapHeader::LlcSnapHeader ()
