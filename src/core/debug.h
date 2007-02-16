@@ -111,10 +111,21 @@ private:
       std::cout << msg << std::endl;		\
     }
 
+/**
+ * \ingroup debugging
+ * \param msg message to output
+ *
+ * Generate debugging output unconditionally in all
+ * debug builds.
+ */
+#define NS_DEBUG_UNCOND (msg) \
+    std::cout << msg << std::endl;
+
 #else /* NS3_DEBUG_ENABLE */
 
 #define NS_DEBUG_COMPONENT_DEFINE(name)
 #define NS_DEBUG(x)
+#define NS_DEBUG_UNCOND(msg)
 
 #endif /* NS3_DEBUG_ENABLE */
 
