@@ -118,7 +118,7 @@ private:
  * Generate debugging output unconditionally in all
  * debug builds.
  */
-#define NS_DEBUG_UNCOND (msg) \
+#define NS_DEBUG_UNCOND(msg) \
     std::cout << msg << std::endl;
 
 #else /* NS3_DEBUG_ENABLE */
