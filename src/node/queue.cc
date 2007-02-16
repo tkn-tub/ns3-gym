@@ -34,20 +34,20 @@ Queue::Queue() :
   m_nTotalDroppedBytes(0),
   m_nTotalDroppedPackets(0)
 {
-  NS3_TRACE(qDebug, "Queue::Queue ()")
+  NS_DEBUG("Queue::Queue ()")
 }
 
 Queue::~Queue()
 {
-  NS3_TRACE(qDebug, "Queue::~Queue ()")
+  NS_DEBUG("Queue::~Queue ()")
 }
 
   bool 
 Queue::Enque (const Packet& p)
 {
-  NS3_TRACE(qDebug, "Queue::Enque (" << &p << ")")
+  NS_DEBUG("Queue::Enque (" << &p << ")")
 
-  NS3_TRACE(qDebug, "Queue::Enque (): m_traceEnque (p)")
+  NS_DEBUG("Queue::Enque (): m_traceEnque (p)")
   m_traceEnque ("+ <timestamp> ", p);
 
   bool retval = DoEnque (p);
@@ -62,7 +62,7 @@ Queue::Enque (const Packet& p)
   bool
 Queue::Deque (Packet &p)
 {
-  NS3_TRACE(qDebug, "Queue::Deque (" << &p << ")")
+  NS_DEBUG("Queue::Deque (" << &p << ")")
 
   bool retval = DoDeque (p);
 
@@ -74,7 +74,7 @@ Queue::Deque (Packet &p)
       assert(m_nBytes >= 0);
       assert(m_nPackets >= 0);
 
-      NS3_TRACE(qDebug, "Queue::Deque (): m_traceDeque (p)")
+      NS_DEBUG("Queue::Deque (): m_traceDeque (p)")
       m_traceDeque ("+ <timestamp> ", static_cast<const Packet &>(p));
     }
 
@@ -84,7 +84,7 @@ Queue::Deque (Packet &p)
   void
 Queue::DequeAll (void)
 {
-  NS3_TRACE(qDebug, "Queue::DequeAll ()")
+  NS_DEBUG("Queue::DequeAll ()")
 
   assert (!"Don't know what to do with dequeued packets!");
 }
@@ -92,7 +92,7 @@ Queue::DequeAll (void)
   uint32_t 
 Queue::GetNPackets (void)
 {
-  NS3_TRACE(qDebug, "Queue::GetNPackets () <= " << m_nPackets)
+  NS_DEBUG("Queue::GetNPackets () <= " << m_nPackets)
 
   return m_nPackets;
 }
@@ -100,7 +100,7 @@ Queue::GetNPackets (void)
   uint32_t
 Queue::GetNBytes (void)
 {
-  NS3_TRACE(qDebug, "Queue::GetNBytes () <= " << m_nBytes)
+  NS_DEBUG("Queue::GetNBytes () <= " << m_nBytes)
 
   return m_nBytes;
 }
@@ -109,14 +109,14 @@ Queue::GetNBytes (void)
   bool
 Queue::IsEmpty (void)
 {
-  NS3_TRACE(qDebug, "Queue::IsEmpty () <= " << (m_nPackets == 0))
+  NS_DEBUG("Queue::IsEmpty () <= " << (m_nPackets == 0))
   return m_nPackets == 0;
 }
 
   void
 Queue::RegisterTraces (TraceContainer &container)
 {
-  NS3_TRACE(qDebug, "Queue::RegisterTraces (" << &container << ")")
+  NS_DEBUG("Queue::RegisterTraces (" << &container << ")")
 
   container.RegisterCallback ("Queue::Enque", &m_traceEnque);
   container.RegisterCallback ("Queue::Deque", &m_traceDeque);
@@ -126,7 +126,7 @@ Queue::RegisterTraces (TraceContainer &container)
   uint32_t
 Queue::GetTotalReceivedBytes (void)
 {
-  NS3_TRACE(qDebug, 
+  NS_DEBUG(
     "Queue::GetTotalReceivedBytes () <= " << m_nTotalReceivedBytes)
 
   return m_nTotalReceivedBytes;
@@ -135,7 +135,7 @@ Queue::GetTotalReceivedBytes (void)
   uint32_t
 Queue::GetTotalReceivedPackets (void)
 {
-  NS3_TRACE(qDebug, 
+  NS_DEBUG(
     "Queue::GetTotalReceivedPackets () <= " << m_nTotalReceivedPackets)
 
   return m_nTotalReceivedPackets;
@@ -144,7 +144,7 @@ Queue::GetTotalReceivedPackets (void)
   uint32_t
 Queue:: GetTotalDroppedBytes (void)
 {
-  NS3_TRACE(qDebug, 
+  NS_DEBUG(
     "Queue::GetTotalDroppedBytes () <= " << m_nTotalDroppedBytes
 )
   return m_nTotalDroppedBytes;
@@ -153,7 +153,7 @@ Queue:: GetTotalDroppedBytes (void)
   uint32_t
 Queue::GetTotalDroppedPackets (void)
 {
-  NS3_TRACE(qDebug, 
+  NS_DEBUG(
     "Queue::GetTotalDroppedPackets () <= " << m_nTotalDroppedPackets)
 
   return m_nTotalDroppedPackets;
@@ -162,7 +162,7 @@ Queue::GetTotalDroppedPackets (void)
   void 
 Queue::ResetStatistics (void)
 {
-  NS3_TRACE(qDebug, "Queue::ResetStatistics ()")
+  NS_DEBUG("Queue::ResetStatistics ()")
 
   m_nTotalReceivedBytes = 0;
   m_nTotalReceivedPackets = 0;
@@ -173,12 +173,12 @@ Queue::ResetStatistics (void)
   void
 Queue::Drop (const Packet& p)
 {
-  NS3_TRACE(qDebug, "Queue::Drop (" << &p << ")")
+  NS_DEBUG("Queue::Drop (" << &p << ")")
 
   m_nTotalDroppedPackets++;
   m_nTotalDroppedBytes += p.GetSize ();
 
-  NS3_TRACE(qDebug, "Queue::Drop (): m_traceDrop (p)")
+  NS_DEBUG("Queue::Drop (): m_traceDrop (p)")
   m_traceEnque ("d <timestamp> ", p);
 }
 

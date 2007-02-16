@@ -33,7 +33,7 @@ namespace {
   void
 TraceWriter::Init (const char *filename)
 {
-  NS3_TRACE(twDebug, "TraceWriter()::Init(" << filename << ")")
+  NS_DEBUG("TraceWriter()::Init(" << filename << ")")
 
   std::streambuf *sb = m_filestr.rdbuf();
   rdbuf(sb);
@@ -47,7 +47,7 @@ TraceWriter::Init (const char *filename)
 TraceWriter::TraceWriter () :
   m_filestr()
 {
-  NS3_TRACE(twDebug, "TraceWriter()::TraceWriter()")
+  NS_DEBUG("TraceWriter()::TraceWriter()")
 
   Init (0);
 }
@@ -55,7 +55,7 @@ TraceWriter::TraceWriter () :
 TraceWriter::TraceWriter (std::string const &filename) :
   m_filestr()
 {
-  NS3_TRACE(twDebug, "TraceWriter()::TraceWriter (\"" << filename << "\")")
+  NS_DEBUG("TraceWriter()::TraceWriter (\"" << filename << "\")")
 
   Init (filename.c_str());
 }
@@ -63,7 +63,7 @@ TraceWriter::TraceWriter (std::string const &filename) :
 TraceWriter::TraceWriter (char const *filename) :
   m_filestr()
 {
-  NS3_TRACE(twDebug, "TraceWriter()::TraceWriter (\"" << filename << "\")")
+  NS_DEBUG("TraceWriter()::TraceWriter (\"" << filename << "\")")
 
   Init (filename);
 }
@@ -71,13 +71,13 @@ TraceWriter::TraceWriter (char const *filename) :
 
 TraceWriter::~TraceWriter ()
 {
-  NS3_TRACE(twDebug, "TraceWriter()::~TraceWriter()")
+  NS_DEBUG("TraceWriter()::~TraceWriter()")
 }
 
   void
 TraceWriter::Open (std::string const &filename)
 {
-  NS3_TRACE(twDebug, "TraceWriter()::Open (\"" << filename << "\")")
+  NS_DEBUG("TraceWriter()::Open (\"" << filename << "\")")
 
   Init(filename.c_str());
 }
@@ -85,7 +85,7 @@ TraceWriter::Open (std::string const &filename)
   void
 TraceWriter::Open (char const *filename)
 {
-  NS3_TRACE(twDebug, "TraceWriter()::Open (\"" << filename << "\")")
+  NS_DEBUG("TraceWriter()::Open (\"" << filename << "\")")
 
   Init(filename);
 }
@@ -93,7 +93,7 @@ TraceWriter::Open (char const *filename)
   void
 TraceWriter::Close ()
 {
-  NS3_TRACE(twDebug, "TraceWriter()::Close ()")
+  NS_DEBUG("TraceWriter()::Close ()")
 
   m_filestr.close ();
 }
@@ -101,7 +101,7 @@ TraceWriter::Close ()
   void
 TraceWriter::Write (std::string const &str)
 {
-  NS3_TRACE(twDebug, "TraceWriter()::Write (\"" << str << "\")")
+  NS_DEBUG("TraceWriter()::Write (\"" << str << "\")")
 
   m_filestr << str;
 }
