@@ -25,7 +25,7 @@ using namespace ns3;
 
 int main (int argc, char *argv[])
 {
-  NS3_TRACEALL("TraceWriter Test")
+  NS_DEBUG_UNCOND("TraceWriter Test")
 
   TraceWriter writer1;
   writer1.Open("trace-writer-test.txt");
