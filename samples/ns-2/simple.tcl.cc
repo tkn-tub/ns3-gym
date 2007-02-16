@@ -24,8 +24,14 @@
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/internet-node.h"
+#include "ns3/serial-channel.h"
 
 using namespace ns3;
+
+static SerialChannel* AddDuplexLink(InternetNode* a, InternetNode* b) {
+    SerialChannel* channel = new SerialChannel();
+    return channel;
+}
 
 int main (int argc, char *argv[])
 {
@@ -54,6 +60,8 @@ int main (int argc, char *argv[])
     // $ns duplex-link $n1 $n2 5Mb 2ms DropTail
     // $ns duplex-link $n2 $n3 1.5Mb 10ms DropTail
     // ** part of topology creation object? **
+    SerialChannel* ch = AddDuplexLink(n0,n1);
+    delete ch;
 
     // $ns duplex-link-op $n0 $n2 orient right-up
     // $ns duplex-link-op $n1 $n2 orient right-down

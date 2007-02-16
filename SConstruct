@@ -19,7 +19,8 @@ core.add_sources([
     'reference-list-test.cc',
     'callback-test.cc',
     'ptr.cc',
-    'test.cc'
+    'test.cc',
+    'debug.cc'
     ])
 env = Environment()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin':
@@ -39,7 +40,8 @@ core.add_inst_headers([
     'reference-list.h',
     'callback.h',
     'ptr.h',
-    'test.h'
+    'test.h',
+    'debug.h'
     ])
 
 
@@ -153,6 +155,7 @@ node.add_sources ([
     'ipv4-address.cc',
     'internet-node.cc',
     'net-device.cc',
+    'net-device-serial.cc',
     'mac-address.cc',
     'ipv4-header.cc',
     'udp-header.cc',
@@ -174,7 +177,10 @@ node.add_sources ([
     'ipv4-loopback-interface.cc',
     'llc-snap-header.cc',
     'header-utils.cc',
-    'net-device-list.cc'
+    'net-device-list.cc',
+    'serial-channel.cc',
+    'queue.cc',
+    'drop-tail.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
@@ -193,8 +199,14 @@ node.add_headers ([
     'l3-protocol.h',
     'ipv4-l4-demux.h',
     'net-device-list.h',
+    'net-device-serial.h',
     'llc-snap-header.h',
     'header-utils.h',
+    'protocol.h',
+    'demux.h',
+    'serial-channel.h',
+    'queue.h',
+    'drop-tail.h'
     ])
 node.add_inst_headers ([
     'node.h',
@@ -209,6 +221,9 @@ node.add_inst_headers ([
     'mac-address.h',
     'ipv4.h',
     'ipv4-route.h',
+    'serial-channel.h',
+    'queue.h',
+    'net-device-serial.h'
     ])
 
 
