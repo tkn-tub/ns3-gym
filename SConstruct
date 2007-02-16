@@ -43,6 +43,7 @@ core.add_inst_headers([
     'ptr.h',
     'debug.h',
     'assert.h',
+    'fatal-error.h',
     'test.h'
     ])
 
