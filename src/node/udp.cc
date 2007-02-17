@@ -33,10 +33,11 @@
 namespace ns3 {
 
 /* see http://www.iana.org/assignments/protocol-numbers */
-const uint8_t Udp::UDP_PROTOCOL = 17;
+const uint8_t Udp::PROT_NUMBER = 17;
 
 Udp::Udp (Node *node)
-  : m_node (node),
+  : Ipv4L4Protocol (PROT_NUMBER, 2),
+    m_node (node),
     m_endPoints (new Ipv4EndPointDemux<UdpEndPoint> ())
 {}
 
@@ -109,14 +110,14 @@ Udp::Send (Packet packet,
   udpHeader.SetPayloadSize (packet.GetSize ());
   udpHeader.InitializeChecksum (saddr,
                                daddr,
-                               UDP_PROTOCOL);
+                               PROT_NUMBER);
 
   packet.Add (udpHeader);
 
   Ipv4 *ipv4 = m_node->GetIpv4 ();
   if (ipv4 != 0)
     {
-      ipv4->Send (packet, saddr, daddr, UDP_PROTOCOL);
+      ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
     }
 }
 

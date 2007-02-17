@@ -52,8 +52,6 @@ private:
   NetDeviceList*   m_netDevices;
   L3Demux*         m_l3Demux;
   Ipv4L4Demux*     m_ipv4L4Demux;
-  Udp *            m_udp;
-  Arp *            m_arp;
 };
 
 }//namespace ns3

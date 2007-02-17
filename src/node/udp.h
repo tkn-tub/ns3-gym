@@ -28,13 +28,16 @@
 #include "ipv4-address.h"
 #include "ipv4-end-point-demux.h"
 #include "udp-end-point.h"
+#include "ipv4-l4-protocol.h"
 
 namespace ns3 {
 
 class Node;
 
-class Udp {
+class Udp : public Ipv4L4Protocol {
 public:
+  static const uint8_t PROT_NUMBER;
+
   Udp (Node *node);
   virtual ~Udp ();
 
@@ -50,12 +53,11 @@ public:
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport);
   // inherited from Ipv4L4Protocol
-  Udp* Copy(Node *node) const;
-  void Receive(Packet& p, 
-               Ipv4Address const &source,
-               Ipv4Address const &destination);
+  virtual Udp* Copy(Node *node) const;
+  virtual void Receive(Packet& p, 
+                       Ipv4Address const &source,
+                       Ipv4Address const &destination);
  private:
-  static const uint8_t UDP_PROTOCOL;
   Node *m_node;
   Ipv4EndPointDemux<UdpEndPoint> *m_endPoints;
 };
