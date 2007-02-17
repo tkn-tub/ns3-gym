@@ -32,8 +32,11 @@ NS_DEBUG_COMPONENT_DEFINE ("Arp");
 
 namespace ns3 {
 
+const uint16_t Arp::PROT_NUMBER = 0x0806;
+
 Arp::Arp (Node *node)
-  : m_node (node)
+  : L3Protocol (PROT_NUMBER, 0/* XXX: correct version number ? */ ),
+    m_node (node)
 {}
 
 Arp::~Arp ()
@@ -45,7 +48,7 @@ Arp::~Arp ()
 }
 
 Arp *
-Arp::Copy (Node *node)
+Arp::Copy (Node *node) const
 {
   return new Arp (node);
 }
@@ -69,9 +72,9 @@ Arp::FindCache (NetDevice *device)
 }
 
 void 
-Arp::Receive(Packet& packet, NetDevice *device)
+Arp::Receive(Packet& packet, NetDevice &device)
 {
-  ArpCache *cache = FindCache (device);
+  ArpCache *cache = FindCache (&device);
   ArpHeader arp;
   packet.Peek (arp);
   packet.Remove (arp);
@@ -84,7 +87,7 @@ Arp::Receive(Packet& packet, NetDevice *device)
     } 
   else if (arp.IsReply () &&
            arp.GetDestinationIpv4Address ().IsEqual (cache->GetInterface ()->GetAddress ()) &&
-           arp.GetDestinationHardwareAddress ().IsEqual (device->GetAddress ())) 
+           arp.GetDestinationHardwareAddress ().IsEqual (device.GetAddress ())) 
     {
       Ipv4Address from = arp.GetSourceIpv4Address ();
       ArpCache::Entry *entry = cache->Lookup (from);
@@ -187,7 +190,7 @@ Arp::SendArpRequest (ArpCache const *cache, Ipv4Address to)
                   to);
   Packet packet;
   packet.Add (arp);
-  cache->GetDevice ()->Send (packet, cache->GetDevice ()->GetBroadcast (), 0x0806);
+  cache->GetDevice ()->Send (packet, cache->GetDevice ()->GetBroadcast (), PROT_NUMBER);
 }
 
 void
@@ -199,7 +202,7 @@ Arp::SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac)
                 toMac, toIp);
   Packet packet;
   packet.Add (arp);
-  cache->GetDevice ()->Send (packet, toMac, 0x0806);
+  cache->GetDevice ()->Send (packet, toMac, PROT_NUMBER);
 }
 
 }//namespace ns3

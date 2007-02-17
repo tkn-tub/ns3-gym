@@ -29,7 +29,6 @@
 #include "ipv4.h"
 #include "arp.h"
 #include "udp-ipv4-l4-protocol.h"
-#include "arp-l3-protocol.h"
 #include "ipv4-loopback-interface.h"
 
 namespace ns3 {
@@ -41,9 +40,8 @@ InternetNode::InternetNode()
   m_l3Demux = new L3Demux(this);
   m_ipv4L4Demux = new Ipv4L4Demux(this);
   m_udp = new Udp (this);
-  m_arp = new Arp (this);
   m_l3Demux->Insert (Ipv4 (this));
-  m_l3Demux->Insert (ArpL3Protocol (this));
+  m_l3Demux->Insert (Arp (this));
   m_ipv4L4Demux->Insert (UdpIpv4L4Protocol (this));
   SetupLoopback ();
 }
@@ -54,7 +52,6 @@ InternetNode::InternetNode (InternetNode const &o)
   m_l3Demux = o.m_l3Demux->Copy (this);
   m_ipv4L4Demux = o.m_ipv4L4Demux->Copy (this);
   m_udp = o.m_udp->Copy (this);
-  m_arp = o.m_arp->Copy (this);
   SetupLoopback ();
 }
 
@@ -64,7 +61,6 @@ InternetNode::~InternetNode ()
   delete m_l3Demux;
   delete m_ipv4L4Demux;
   delete m_udp;
-  delete m_arp;
 }
 
 void
@@ -119,7 +115,7 @@ InternetNode::GetUdp (void) const
 Arp *
 InternetNode::GetArp (void) const
 {
-  return m_arp;
+  return static_cast<Arp*> (m_l3Demux->Lookup (Arp::PROT_NUMBER));
 }
 
 
