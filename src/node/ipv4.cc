@@ -36,8 +36,11 @@ NS_DEBUG_COMPONENT_DEFINE ("Ipv4");
 
 namespace ns3 {
 
+const uint16_t Ipv4::PROT_NUMBER = 0x0800;
+
 Ipv4::Ipv4(Node *node)
-  : m_nInterfaces (0),
+  : L3Protocol (PROT_NUMBER, 4),
+    m_nInterfaces (0),
     m_defaultTtl (64),
     m_identification (0),
     m_defaultRoute (0),
