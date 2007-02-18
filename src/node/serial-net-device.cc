@@ -28,18 +28,15 @@
 #include "serial-net-device.h"
 #include "serial-channel.h"
 
+NS_DEBUG_COMPONENT_DEFINE ("SerialNetDevice");
+
 namespace ns3 {
 
-const int IPv4ProtocolNumber = 4;
-
-namespace {
-  int sndDebug = 0;
-}
 
 SerialNetDevice::SerialNetDevice(Node* node, const MacAddress& addr) : 
   NetDevice(node, addr)
 {
-  NS3_TRACE(sndDebug, 
+  NS_DEBUG (
     "SerialNetDevice::SerialNetDevice (" << node << ", " << &addr << ")")
 
   // BUGBUG FIXME
@@ -53,7 +50,7 @@ SerialNetDevice::SerialNetDevice(Node* node, const MacAddress& addr) :
 
 SerialNetDevice::~SerialNetDevice()
 {
-  NS3_TRACE(sndDebug, 
+  NS_DEBUG (
     "SerialNetDevice::~SerialNetDevice ()")
 }
 
@@ -61,7 +58,7 @@ SerialNetDevice::~SerialNetDevice()
   bool
 SerialNetDevice::SendTo (Packet& p, const MacAddress& dest)
 {
-  NS3_TRACE(sndDebug, 
+  NS_DEBUG (
     "SerialNetDevice::SendTo (" << &p << ", " << &dest << ")")
 
   assert (IsLinkUp ());
@@ -82,7 +79,7 @@ SerialNetDevice::SendTo (Packet& p, const MacAddress& dest)
   bool
 SerialNetDevice::Attach (SerialChannel* ch)
 {
-  NS3_TRACE(sndDebug, 
+  NS_DEBUG (
     "SerialNetDevice::Attach (" << &ch << ")")
 
   m_channel = ch;
@@ -101,7 +98,7 @@ SerialNetDevice::Attach (SerialChannel* ch)
 void
 SerialNetDevice::AddQueue (Queue* q)
 {
-  NS3_TRACE(sndDebug, 
+  NS_DEBUG (
     "SerialNetDevice::AddQueue (" << q << ")")
 
   m_queue = q;
@@ -111,7 +108,7 @@ void
 SerialNetDevice::Receive (Packet& p)
 {
   // ignore return value for now.
-  NS3_TRACE(sndDebug, 
+  NS_DEBUG (
     "SerialNetDevice::Receive (" << &p << ")")
 
   ForwardUp (p);
@@ -120,7 +117,7 @@ SerialNetDevice::Receive (Packet& p)
 void
 SerialNetDevice::NotifyDataAvailable(void)
 {
-  NS3_TRACE(sndDebug, 
+  NS_DEBUG (
     "SerialNetDevice::NotifyDataAvailable ()")
 
   Packet p;
@@ -132,7 +129,7 @@ SerialNetDevice::NotifyDataAvailable(void)
       p.PeekTag (tag);
       // send packet to address tag.address
 #endif
-      NS3_TRACE(sndDebug, 
+      NS_DEBUG (
         "SerialNetDevice::NotifyDataAvailable (): Dequeued")
       m_channel->Send(p, this);
     }

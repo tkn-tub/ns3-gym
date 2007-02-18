@@ -24,26 +24,24 @@
 #include "ns3/debug.h"
 #include "channel.h"
 
-namespace ns3 {
+NS_DEBUG_COMPONENT_DEFINE ("Channel");
 
-namespace {
-  int chDebug = 1;
-};
+namespace ns3 {
 
 Channel::Channel ()
 {
-  NS3_TRACE(chDebug, "Channel::Channel ()")
+  NS_DEBUG ("Channel::Channel ()")
 }
 
 Channel::~Channel ()
 {
-  NS3_TRACE(chDebug, "Channel::~Channel ()")
+  NS_DEBUG ("Channel::~Channel ()")
 }
 
   bool
 Channel::Connect (PhysicalLayer &phys)
 {
-  NS3_TRACE(chDebug, "Channel::Connect (" << &phys << ")")
+  NS_DEBUG ("Channel::Connect (" << &phys << ")")
   m_physList.push_back(static_cast<PhysicalLayer *>(&phys));
   return true;
 }
@@ -51,7 +49,7 @@ Channel::Connect (PhysicalLayer &phys)
   bool
 Channel::Propagate (Propagator &propagator)
 {
-  NS3_TRACE(chDebug, "Channel::Propagate (" << &propagator << ")")
+  NS_DEBUG ("Channel::Propagate (" << &propagator << ")")
 
   for (PhysicalLayerList::const_iterator i = m_physList.begin ();
        i != m_physList.end (); 
