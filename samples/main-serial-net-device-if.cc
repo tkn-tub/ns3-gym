@@ -44,18 +44,18 @@ class Logger : public TraceWriter{
 public:
   Logger ()
   {
-    NS3_TRACEALL("**** Logger()")
+    NS_DEBUG_UNCOND("**** Logger()")
   };
 
   Logger (std::string const &filename) 
   {
-    NS3_TRACEALL("**** Logger(string const &)")
+    NS_DEBUG_UNCOND("**** Logger(string const &)")
     Open(filename);
   };
 
   Logger (char const *filename) : m_tracer(filename)
   {
-    NS3_TRACEALL("**** Logger(char const *)")
+    NS_DEBUG_UNCOND("**** Logger(char const *)")
     Open(filename);
   };
 
@@ -63,7 +63,7 @@ public:
 
   void Log (const char *s, const Packet &p)
   {
-    NS3_TRACEALL("**** LogEnque ("<< s << &p << ")")
+    NS_DEBUG_UNCOND("**** LogEnque ("<< s << &p << ")")
     m_filestr << s << &p << std::endl;
   }
 
@@ -73,7 +73,7 @@ protected:
 
 int main (int argc, char *argv[])
 {
-  NS3_TRACEALL("Serial Net Device Test")
+  NS_DEBUG_UNCOND("Serial Net Device Test")
 
   TraceContainer traceContainerA;
   TraceContainer traceContainerB;
@@ -113,12 +113,10 @@ int main (int argc, char *argv[])
   ch.Attach(&netb);
 
   // Some simple prints to see whether it is working
-  NS3_TRACEALL("neta.GetMtu() <= " << neta.GetMtu())
-  NS3_TRACEALL("netb.GetMtu() <= " << netb.GetMtu())
-  NS3_DEBUG (MacAddress addr = neta.GetAddress();)
-  NS3_TRACEALL("neta.GetAddress() <= " << addr)
-  NS3_DEBUG (addr = netb.GetAddress();)
-  NS3_TRACEALL("netb.GetAddress() <= " << addr)
+  NS_DEBUG_UNCOND("neta.GetMtu() <= " << neta.GetMtu())
+  NS_DEBUG_UNCOND("netb.GetMtu() <= " << netb.GetMtu())
+  NS_DEBUG_UNCOND("neta.GetAddress() <= " << neta.GetAddress())
+  NS_DEBUG_UNCOND("netb.GetAddress() <= " << netb.GetAddress())
 
   // Note:  InternetNode constructor instantiates multiple Layer-3
   // protocols and registers them with the L3Demux object.
@@ -136,38 +134,38 @@ int main (int argc, char *argv[])
   // ii) add the Ipv4ArpInterface object to the InternetNode's internal
   //     vector of Ipv4Interfaces (keyed off of ifIndex)
 
-  NS3_TRACEALL("Adding ARP Interface to InternetNode a")
+  NS_DEBUG_UNCOND("Adding ARP Interface to InternetNode a")
   ArpIpv4Interface* arpipv4interfacep = new ArpIpv4Interface(&a, &neta);
   uint32_t indexA = (&a)->GetIpv4 ()->AddInterface (arpipv4interfacep);
-  NS3_TRACEALL("Adding Interface " << indexA);
+  NS_DEBUG_UNCOND("Adding Interface " << indexA);
 
 
   // iii) give the interface an IP address
 
-  NS3_TRACEALL("Giving IP address to ARP Interface")
+  NS_DEBUG_UNCOND("Giving IP address to ARP Interface")
   arpipv4interfacep->SetAddress(Ipv4Address("10.1.1.1"));
   arpipv4interfacep->SetNetworkMask(Ipv4Mask("255.255.255.0"));
 
   // iv) set the interface's state to "UP"
 
-  NS3_TRACEALL("Setting ARP interface to UP")
+  NS_DEBUG_UNCOND("Setting ARP interface to UP")
   arpipv4interfacep->SetUp();
 
-  NS3_TRACEALL("Adding ARP Interface to InternetNode b")
+  NS_DEBUG_UNCOND("Adding ARP Interface to InternetNode b")
   ArpIpv4Interface* arpipv4interfacepb = new ArpIpv4Interface(&b, &netb);
   uint32_t indexB = (&b)->GetIpv4 ()->AddInterface (arpipv4interfacepb);
-  NS3_TRACEALL("Adding Interface " << indexB);
+  NS_DEBUG_UNCOND("Adding Interface " << indexB);
 
 
   // iii) give the interface an IP address
 
-  NS3_TRACEALL("Giving IP address to ARP Interface")
+  NS_DEBUG_UNCOND("Giving IP address to ARP Interface")
   arpipv4interfacepb->SetAddress(Ipv4Address("10.1.1.2"));
   arpipv4interfacepb->SetNetworkMask(Ipv4Mask("255.255.255.0"));
 
   // iv) set the interface's state to "UP"
 
-  NS3_TRACEALL("Setting ARP interface to UP")
+  NS_DEBUG_UNCOND("Setting ARP interface to UP")
   arpipv4interfacepb->SetUp();
 
   Logger logger("serial-net-test.log");
@@ -179,7 +177,7 @@ int main (int argc, char *argv[])
   // on the other node
   Packet p;
 
-  NS3_TRACEALL("Sending Packet " << &p)
+  NS_DEBUG_UNCOND("Sending Packet " << &p)
   arpipv4interfacep->Send(p, Ipv4Address("10.1.1.2"));
 
   //neta.Send(p, MacAddress());  // Test that all-zero's MacAddress used
