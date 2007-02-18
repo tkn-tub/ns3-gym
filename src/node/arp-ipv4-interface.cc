@@ -40,6 +40,7 @@ void
 ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
 {
   Arp * arp = m_node->GetArp ();
+  printf("Arp %p\n", arp);
   MacAddress hardwareDestination;
   bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
   if (found)

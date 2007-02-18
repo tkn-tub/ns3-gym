@@ -23,7 +23,7 @@
 namespace ns3 {
 
 namespace {
-  int dtqDebug = 0;
+  int dtqDebug = 1;
 }
 
 DropTailQueue::DropTailQueue () :

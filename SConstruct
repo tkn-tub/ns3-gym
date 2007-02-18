@@ -122,6 +122,7 @@ common.add_sources([
     'packet.cc',
     'tags.cc',
     'pcap-writer.cc',
+    'trace-writer.cc',
     'trace-container.cc',
     'variable-tracer-test.cc',
     'stream-tracer-test.cc',
@@ -137,6 +138,7 @@ common.add_inst_headers([
     'f-variable-tracer.h',
     'callback-tracer.h',
     'stream-tracer.h',
+    'trace-writer.h',
     'trace-container.h',
     'pcap-writer.h',
     ])
@@ -155,7 +157,7 @@ node.add_sources ([
     'ipv4-address.cc',
     'internet-node.cc',
     'net-device.cc',
-    'net-device-serial.cc',
+    'serial-net-device.cc',
     'mac-address.cc',
     'ipv4-header.cc',
     'udp-header.cc',
@@ -199,14 +201,13 @@ node.add_headers ([
     'l3-protocol.h',
     'ipv4-l4-demux.h',
     'net-device-list.h',
-    'net-device-serial.h',
+    'serial-net-device.h',
     'llc-snap-header.h',
     'header-utils.h',
     'protocol.h',
     'demux.h',
     'serial-channel.h',
     'queue.h',
-    'drop-tail.h'
     ])
 node.add_inst_headers ([
     'node.h',
@@ -223,7 +224,8 @@ node.add_inst_headers ([
     'ipv4-route.h',
     'serial-channel.h',
     'queue.h',
-    'net-device-serial.h'
+    'drop-tail.h',
+    'serial-net-device.h'
     ])
 
 
@@ -289,6 +291,13 @@ sample_test.set_executable()
 ns3.add(sample_test)
 sample_test.add_dep('core')
 sample_test.add_source('main-test.cc')
+
+sample_serial_net_device_if = build.Ns3Module ('sample-serial-net-device-if', 'samples')
+sample_serial_net_device_if.set_executable ()
+ns3.add (sample_serial_net_device_if)
+sample_serial_net_device_if.add_dep ('common')
+sample_serial_net_device_if.add_dep ('node')
+sample_serial_net_device_if.add_source ('main-serial-net-device-if.cc')
 
 sample_simple = build.Ns3Module('sample-simple', 'samples')
 sample_simple.set_executable()

@@ -26,7 +26,7 @@
 #define CHANNEL_SERIAL_H
 
 #include <list>
-#include "net-device-serial.h"
+#include "serial-net-device.h"
 #include "ns3/packet.h"
 
 namespace ns3 {

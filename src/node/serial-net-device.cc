@@ -25,7 +25,7 @@
 #include "protocol.h"
 #include "demux.h"
 #include "queue.h"
-#include "net-device-serial.h"
+#include "serial-net-device.h"
 #include "serial-channel.h"
 
 namespace ns3 {

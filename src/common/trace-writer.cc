@@ -18,7 +18,7 @@
  *
  * Author: Craig Dowell <craigdo@ee.washingon.edu>
  *
- *      Thu Feb  8 10:42:52 PST 2007 craigdo:  Created
+ *      Thu Feb  8 10:42:52 PST 2007 craigdo:  Created from pcap-writer.c
  */
 
 #include "ns3/debug.h"
@@ -27,21 +27,7 @@
 namespace ns3 {
 
 namespace {
-  int twDebug = 0;
-}
-
-  void
-TraceWriter::Init (const char *filename)
-{
-  NS3_TRACE(twDebug, "TraceWriter()::Init(" << filename << ")")
-
-  std::streambuf *sb = m_filestr.rdbuf();
-  rdbuf(sb);
-
-  if (filename) 
-    {
-      m_filestr.open (filename, std::ios::out | std::ios::app);
-    }
+  int twDebug = 1;
 }
 
 TraceWriter::TraceWriter () :
@@ -49,15 +35,27 @@ TraceWriter::TraceWriter () :
 {
   NS3_TRACE(twDebug, "TraceWriter()::TraceWriter()")
 
-  Init (0);
+  std::streambuf *sb = m_filestr.rdbuf();
+
+  NS3_TRACE(twDebug, "TraceWriter()::TraceWriter():  rdbuf ()")
+  rdbuf(sb);
+
+  NS3_TRACE(twDebug, "TraceWriter()::TraceWriter():  done")
 }
 
-TraceWriter::TraceWriter (std::string const &filename) :
+  TraceWriter::TraceWriter (std::string const &filename) :
   m_filestr()
 {
   NS3_TRACE(twDebug, "TraceWriter()::TraceWriter (\"" << filename << "\")")
 
-  Init (filename.c_str());
+  m_filestr.open (filename.c_str(), std::ios::out | std::ios::app);
+
+  std::streambuf *sb = m_filestr.rdbuf();
+
+  NS3_TRACE(twDebug, "TraceWriter()::TraceWriter():  rdbuf ()")
+  rdbuf(sb);
+
+  NS3_TRACE(twDebug, "TraceWriter()::TraceWriter():  done")
 }
 
 TraceWriter::TraceWriter (char const *filename) :
@@ -65,7 +63,14 @@ TraceWriter::TraceWriter (char const *filename) :
 {
   NS3_TRACE(twDebug, "TraceWriter()::TraceWriter (\"" << filename << "\")")
 
-  Init (filename);
+  m_filestr.open (filename, std::ios::out | std::ios::app);
+
+  std::streambuf *sb = m_filestr.rdbuf();
+
+  NS3_TRACE(twDebug, "TraceWriter()::TraceWriter():  rdbuf ()")
+  rdbuf(sb);
+
+  NS3_TRACE(twDebug, "TraceWriter()::TraceWriter():  done")
 }
 
 
@@ -79,7 +84,7 @@ TraceWriter::Open (std::string const &filename)
 {
   NS3_TRACE(twDebug, "TraceWriter()::Open (\"" << filename << "\")")
 
-  Init(filename.c_str());
+  m_filestr.open (filename.c_str(), std::ios::out | std::ios::app);
 }
 
   void
@@ -87,7 +92,7 @@ TraceWriter::Open (char const *filename)
 {
   NS3_TRACE(twDebug, "TraceWriter()::Open (\"" << filename << "\")")
 
-  Init(filename);
+  m_filestr.open (filename, std::ios::out | std::ios::app);
 }
 
   void

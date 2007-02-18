@@ -180,6 +180,7 @@ void
 Arp::SendArpRequest (ArpCache const *cache, Ipv4Address to)
 {
   ArpHeader arp;
+  printf("%p %p %p %p\n", cache->GetDevice(), cache->GetInterface(), cache->GetDevice(), &to);
   arp.SetRequest (cache->GetDevice ()->GetAddress (),
 		  cache->GetInterface ()->GetAddress (), 
                   cache->GetDevice ()->GetBroadcast (),

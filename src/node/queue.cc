@@ -23,7 +23,7 @@
 namespace ns3 {
 
 namespace {
-  int qDebug = 0;
+  int qDebug = 1;
 }
 
 Queue::Queue() : 
