@@ -25,7 +25,7 @@
 #include <sys/poll.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <cassert>
+#include "ns3/assert.h"
 #include <string.h>
 #include <list>
 
@@ -71,7 +71,7 @@ void
 DataWriterPrivate::Open (char const *filename)
 {
   m_fd = ::Open (filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-  assert (m_fd != -1);
+  NS_ASSERT (m_fd != -1);
 }
 
 #ifndef min
@@ -92,7 +92,7 @@ DataWriterPrivate::Write (uint8_t *buffer, uint32_t size)
         {
           ssize_t written = 0;
           written = ::Write (m_fd, m_data, BUFFER_SIZE);
-          assert (written == BUFFER_SIZE);
+          NS_ASSERT (written == BUFFER_SIZE);
           m_current = 0;
         }
     }

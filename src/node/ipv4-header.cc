@@ -19,20 +19,12 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cassert>
+#include "ns3/assert.h"
+#include "ns3/debug.h"
 #include "ns3/header.h"
 #include "ipv4-header.h"
 
-#define TRACE_CHUNK_IPV4 1
-
-#ifdef TRACE_CHUNK_IPV4
-#include <iostream>
-#include "ns3/simulator.h"
-# define TRACE(x) \
-std::cout << "CHUNK IPV4 TRACE " << Simulator::Now () << " " << x << std::endl;
-#else /* TRACE_CHUNK_IPV4 */
-# define TRACE(format,...)
-#endif /* TRACE_CHUNK_IPV4 */
+NS_DEBUG_COMPONENT_DEFINE ("Ipv4Header");
 
 namespace ns3 {
 
@@ -137,13 +129,13 @@ Ipv4Header::IsDontFragment (void) const
 void 
 Ipv4Header::SetFragmentOffset (uint16_t offset)
 {
-  assert (!(offset & (~0x3fff)));
+  NS_ASSERT (!(offset & (~0x3fff)));
   m_fragmentOffset = offset;
 }
 uint16_t 
 Ipv4Header::GetFragmentOffset (void) const
 {
-  assert (!(m_fragmentOffset & (~0x3fff)));
+  NS_ASSERT (!(m_fragmentOffset & (~0x3fff)));
   return m_fragmentOffset;
 }
 
@@ -225,7 +217,6 @@ Ipv4Header::SerializeTo (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   
-  //TRACE ("init ipv4 current="<<buffer->GetCurrent ());
   uint8_t verIhl = (4 << 4) | (5);
   i.WriteU8 (verIhl);
   i.WriteU8 (m_tos);
@@ -255,10 +246,9 @@ Ipv4Header::SerializeTo (Buffer::Iterator start) const
 #if 0
       // XXX we need to add Buffer::Iterator::PeekData method
       uint8_t *data = start.PeekData ();
-      //TRACE ("fini ipv4 current="<<state->GetCurrent ());
       uint16_t checksum = UtilsChecksumCalculate (0, data, GetSize ());
       checksum = UtilsChecksumComplete (checksum);
-      //TRACE ("checksum=" <<checksum);
+      NS_DEBUG ("checksum=" <<checksum);
       i = start;
       i.Next (10);
       i.WriteU16 (checksum);
@@ -272,7 +262,7 @@ Ipv4Header::DeserializeFrom (Buffer::Iterator start)
   uint8_t verIhl = i.ReadU8 ();
   uint8_t ihl = verIhl & 0x0f; 
   uint16_t headerSize = ihl * 4;
-  assert ((verIhl >> 4) == 4);
+  NS_ASSERT ((verIhl >> 4) == 4);
   m_tos = i.ReadU8 ();
   uint16_t size = i.ReadNtohU16 ();
   m_payloadSize = size - headerSize;
@@ -301,7 +291,6 @@ Ipv4Header::DeserializeFrom (Buffer::Iterator start)
     {
 #if 0
       uint8_t *data = start.PeekData ();
-      //TRACE ("fini ipv4 current="<<state->GetCurrent ());
       uint16_t localChecksum = UtilsChecksumCalculate (0, data, headerSize);
       if (localChecksum == 0xffff) 
         {

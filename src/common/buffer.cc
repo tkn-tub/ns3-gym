@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "buffer.h"
-#include <cassert>
+#include "ns3/assert.h"
 
 #include <iostream>
 //#define TRACE(x) std::cout << x << std::endl;
@@ -38,7 +38,7 @@ Buffer::Allocate (uint32_t reqSize, uint32_t reqStart)
     {
       reqSize = 1;
     }
-  assert (reqSize >= 1);
+  NS_ASSERT (reqSize >= 1);
   uint32_t size = reqSize - 1 + sizeof (struct Buffer::BufferData);
   uint8_t *b = new uint8_t [size];
   struct BufferData *data = reinterpret_cast<struct Buffer::BufferData*>(b);
@@ -60,7 +60,7 @@ Buffer::Deallocate (struct Buffer::BufferData *data)
 void
 Buffer::Recycle (struct Buffer::BufferData *data)
 {
-  assert (data->m_count == 0);
+  NS_ASSERT (data->m_count == 0);
   /* get rid of it if it is too small for later reuse. */
   if (data->m_size < (Buffer::m_maxTotalAddStart + Buffer::m_maxTotalAddEnd)) 
     {
@@ -98,7 +98,7 @@ Buffer::Create (void)
     }
   struct Buffer::BufferData *data = Buffer::Allocate (m_maxTotalAddStart+m_maxTotalAddEnd,
                               m_maxTotalAddStart);
-  assert (data->m_count == 1);
+  NS_ASSERT (data->m_count == 1);
   return data;
 }
 #else
@@ -119,7 +119,7 @@ Buffer::Create (void)
 }; // namespace ns3
 
 
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -127,7 +127,7 @@ namespace ns3 {
 void 
 Buffer::AddAtStart (uint32_t start)
 {
-  assert (m_start <= m_data->m_initialStart);
+  NS_ASSERT (m_start <= m_data->m_initialStart);
   bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
   if (m_start >= start && !isDirty) 
     {
@@ -139,7 +139,7 @@ Buffer::AddAtStart (uint32_t start)
     {
       /* enough space but need to move data around to fit new data */
       memmove (m_data->m_data + start, GetStart (), m_size);
-      assert (start > m_start);
+      NS_ASSERT (start > m_start);
       m_data->m_initialStart += start;
       m_start = 0;
       m_size += start;
@@ -163,7 +163,7 @@ Buffer::AddAtStart (uint32_t start)
   else 
     {
       /* enough space in the buffer but it is dirty ! */
-      assert (isDirty);
+      NS_ASSERT (isDirty);
       struct Buffer::BufferData *newData = Buffer::Create ();
       memcpy (newData->m_data + m_start, GetStart (), m_size);
       newData->m_initialStart = m_data->m_initialStart;
@@ -200,7 +200,7 @@ Buffer::AddAtStart (uint32_t start)
 void 
 Buffer::AddAtEnd (uint32_t end)
 {
-  assert (m_start <= m_data->m_initialStart);
+  NS_ASSERT (m_start <= m_data->m_initialStart);
   bool isDirty = m_data->m_count > 1 &&
       m_start + m_size < m_data->m_dirtyStart + m_data->m_dirtySize;
   if (m_start + m_size + end <= m_data->m_size && !isDirty) 
@@ -213,7 +213,7 @@ Buffer::AddAtEnd (uint32_t end)
       /* enough space but need to move data around to fit the extra data */
       uint32_t newStart = m_data->m_size - (m_size + end);
       memmove (m_data->m_data + newStart, GetStart (), m_size);
-      assert (newStart < m_start);
+      NS_ASSERT (newStart < m_start);
       m_data->m_initialStart -= m_start - newStart;
       m_start = newStart;
       m_size += end;
@@ -237,7 +237,7 @@ Buffer::AddAtEnd (uint32_t end)
   else 
     {
       /* enough space in the buffer but it is dirty ! */
-      assert (isDirty);
+      NS_ASSERT (isDirty);
       struct Buffer::BufferData *newData = Buffer::Create ();
       memcpy (newData->m_data + m_start, GetStart (), m_size);
       newData->m_initialStart = m_data->m_initialStart;
@@ -290,7 +290,7 @@ Buffer::RemoveAtStart (uint32_t start)
     } 
   else 
     {
-      assert (m_data->m_initialStart >= m_start);
+      NS_ASSERT (m_data->m_initialStart >= m_start);
       uint32_t zeroStart = m_data->m_initialStart - m_start;
       uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
       uint32_t dataEnd = m_size + m_zeroAreaSize;
@@ -306,7 +306,7 @@ Buffer::RemoveAtStart (uint32_t start)
           m_start += zeroStart;
           uint32_t zeroDelta = start - zeroStart;
           m_zeroAreaSize -= zeroDelta;
-          assert (zeroDelta <= start);
+          NS_ASSERT (zeroDelta <= start);
           m_size -= zeroStart;
         } 
       else if (start <= dataEnd) 
@@ -346,12 +346,12 @@ Buffer::RemoveAtEnd (uint32_t end)
     } 
   else 
     {
-      assert (m_data->m_initialStart >= m_start);
+      NS_ASSERT (m_data->m_initialStart >= m_start);
       uint32_t zeroStart = m_data->m_initialStart - m_start;
       uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
       uint32_t dataEnd = m_size + m_zeroAreaSize;
-      assert (zeroStart <= m_size);
-      assert (zeroEnd <= m_size + m_zeroAreaSize);
+      NS_ASSERT (zeroStart <= m_size);
+      NS_ASSERT (zeroEnd <= m_size + m_zeroAreaSize);
       if (dataEnd <= end) 
         {
           /* remove all buffer */
@@ -362,7 +362,7 @@ Buffer::RemoveAtEnd (uint32_t end)
       else if (dataEnd - zeroStart <= end) 
         {
           /* remove end of buffer, zero area, part of start of buffer */
-          assert (end >= m_zeroAreaSize);
+          NS_ASSERT (end >= m_zeroAreaSize);
           m_size -= end - m_zeroAreaSize;
           m_zeroAreaSize = 0;
         } 
@@ -406,8 +406,8 @@ Buffer::TransformIntoRealBuffer (void) const
 {
   if (m_zeroAreaSize != 0) 
     {
-      assert (m_data->m_initialStart >= m_start);
-      assert (m_size >= (m_data->m_initialStart - m_start));
+      NS_ASSERT (m_data->m_initialStart >= m_start);
+      NS_ASSERT (m_size >= (m_data->m_initialStart - m_start));
       Buffer tmp;
       tmp.AddAtStart (m_zeroAreaSize);
       tmp.Begin ().WriteU8 (0, m_zeroAreaSize);

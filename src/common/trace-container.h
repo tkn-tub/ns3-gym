@@ -196,7 +196,7 @@ private:
 
 }; // namespace ns3
 
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -215,11 +215,11 @@ TraceContainer::SetCallback (char const *name, Callback<void,T1> callback)
             }
           else
             {
-              assert (!"non-matching callback");
+              NS_ASSERT (!"non-matching callback");
             }
         }
     }
-  assert (false);
+  NS_ASSERT (false);
 }
 template <typename T1, typename T2>
 void 
@@ -236,11 +236,11 @@ TraceContainer::SetCallback (char const *name, Callback<void,T1,T2> callback)
             }
           else
             {
-              assert (!"non-matching callback");
+              NS_ASSERT (!"non-matching callback");
             }
         }
     }
-  assert (false);
+  NS_ASSERT (false);
 }
 template <typename T1, typename T2, typename T3>
 void 
@@ -257,11 +257,11 @@ TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3> callback)
             }
           else
             {
-              assert (!"non-matching callback");
+              NS_ASSERT (!"non-matching callback");
             }
         }
     }
-  assert (false);
+  NS_ASSERT (false);
 }
 template <typename T1, typename T2, typename T3, typename T4>
 void 
@@ -278,11 +278,11 @@ TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3,T4> callba
             }
           else
             {
-              assert (!"non-matching callback");
+              NS_ASSERT (!"non-matching callback");
             }
         }
     }
-  assert (false);
+  NS_ASSERT (false);
 }
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
 void 
@@ -299,11 +299,11 @@ TraceContainer::SetCallback (char const *name, Callback<void,T1,T2,T3,T4,T5> cal
             }
           else
             {
-              assert (!"non-matching callback");
+              NS_ASSERT (!"non-matching callback");
             }
         }
     }
-  assert (false);
+  NS_ASSERT (false);
 }
 
 

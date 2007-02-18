@@ -23,7 +23,7 @@
 #define PTR_H
 
 #include <stdint.h>
-#include <cassert>
+#include "assert.h"
 
 namespace ns3 {
 
@@ -246,7 +246,7 @@ template <typename T>
 T *
 Ptr<T>::Remove (void) 
 {
-  assert ((*m_count) == 1);
+  NS_ASSERT ((*m_count) == 1);
   T *retval = m_ptr;
   m_ptr = 0;
   return retval;

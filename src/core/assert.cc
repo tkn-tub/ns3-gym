@@ -18,48 +18,24 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "high-precision.h"
 
-#include <cmath>
-#include "ns3/assert.h"
-
+#include "assert.h"
 
 namespace ns3 {
 
-HighPrecision Abs (HighPrecision const &value)
+void
+AssertBreakpoint (void)
 {
-  if (value.Compare (HighPrecision::Zero ()) <= 0)
+  int *a = 0;
+  /**
+   * we test here to allow a debugger to change the value of
+   * the variable 'a' to allow the debugger to avoid the 
+   * subsequent segfault.
+   */
+  if (a == 0)
     {
-      HighPrecision v = HighPrecision::Zero ();
-      v.Sub (value);
-      return v;
-    }
-  else
-    {
-      return value;
-    }
-}
-HighPrecision Max (HighPrecision const &a, HighPrecision const &b)
-{
-  if (a.Compare (b) >= 0)
-    {
-      return a;
-    }
-  else
-    {
-      return b;
-    }
-}
-HighPrecision Min (HighPrecision const &a, HighPrecision const &b)
-{
-  if (a.Compare (b) <= 0)
-    {
-      return a;
-    }
-  else
-    {
-      return b;
+      *a = 0;
     }
 }
 
-}; /* namespace ns3 */
+}//namespace ns3

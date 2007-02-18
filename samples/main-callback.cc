@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 #include "ns3/callback.h"
-#include <cassert>
+#include "ns3/assert.h"
 #include <iostream>
 
 using namespace ns3;
@@ -30,7 +30,7 @@ int main (int argc, char *argv[])
   // build callback instance which points to cbOne function
   one = MakeCallback (&CbOne);
   // this is not a null callback
-  assert (!one.IsNull ());
+  NS_ASSERT (!one.IsNull ());
   // invoke cbOne function through callback instance
   double retOne;
   retOne = one (10.0, 20.0);
@@ -42,7 +42,7 @@ int main (int argc, char *argv[])
   // build callback instance which points to MyCb::cbTwo
   two = MakeCallback (&MyCb::CbTwo, &cb);
   // this is not a null callback
-  assert (!two.IsNull ());
+  NS_ASSERT (!two.IsNull ());
   // invoke MyCb::cbTwo through callback instance
   int retTwo;
   retTwo = two (10.0);    
@@ -52,7 +52,7 @@ int main (int argc, char *argv[])
   // invoking a null function pointer:
   // it will crash.
   //int retTwoNull = two (20.0);
-  assert (two.IsNull ());
+  NS_ASSERT (two.IsNull ());
 
   return 0;
 }

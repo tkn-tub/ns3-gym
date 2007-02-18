@@ -20,7 +20,7 @@
  */
 
 #include "trailer.h"
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 

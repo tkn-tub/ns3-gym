@@ -206,7 +206,7 @@ LogReader::ExecuteLogCommands (uint32_t uid)
           //std::cout << "exec insert remove" << std::endl;
           EventId id = Simulator::Schedule (NanoSeconds (cmd.insertRemove.m_evNs) - Now (),
                                             &LogReader::ExecuteLogCommands, this, m_uid);
-          assert (id.GetUid () == m_uid);
+          NS_ASSERT (id.GetUid () == m_uid);
           if (cmd.insertRemove.m_evLoc + 1 > m_removeEvents.size ())
             {
               uint32_t missing = cmd.insertRemove.m_evLoc + 1 - m_removeEvents.size ();
@@ -218,7 +218,7 @@ LogReader::ExecuteLogCommands (uint32_t uid)
           m_uid++;
         } break;
       default:
-        assert (false);
+        NS_ASSERT (false);
         break;
       }
       cmd = *m_command;

@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cassert>
+#include "ns3/assert.h"
 #include "arp-header.h"
 #include "header-utils.h"
 
@@ -96,7 +96,7 @@ ArpHeader::PrintTo (std::ostream &os) const
     } 
   else 
     {
-      assert (IsReply ());
+      NS_ASSERT (IsReply ());
       os << " source mac: " << m_macSource
           << " source ipv4: " << m_ipv4Source
           << " dest mac: " << m_macDest
@@ -114,7 +114,7 @@ void
 ArpHeader::SerializeTo (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
-  assert (m_macSource.GetLength () == m_macDest.GetLength ());
+  NS_ASSERT (m_macSource.GetLength () == m_macDest.GetLength ());
 
   /* ethernet */
   i.WriteHtonU16 (0x0001);

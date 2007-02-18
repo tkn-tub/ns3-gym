@@ -23,14 +23,11 @@
 
 #include "net-device-list.h"
 #include "l3-demux.h"
-#include "ipv4-l3-protocol.h"
 #include "ipv4-l4-demux.h"
 #include "internet-node.h"
 #include "udp.h"
 #include "ipv4.h"
 #include "arp.h"
-#include "udp-ipv4-l4-protocol.h"
-#include "arp-l3-protocol.h"
 #include "ipv4-loopback-interface.h"
 
 namespace ns3 {
@@ -41,12 +38,9 @@ InternetNode::InternetNode()
   m_netDevices = new NetDeviceList();
   m_l3Demux = new L3Demux(this);
   m_ipv4L4Demux = new Ipv4L4Demux(this);
-  m_udp = new Udp (this);
-  m_ipv4 = new Ipv4 (this);
-  m_arp = new Arp (this);
-  m_l3Demux->Insert (Ipv4L3Protocol (this));
-  m_l3Demux->Insert (ArpL3Protocol (this));
-  m_ipv4L4Demux->Insert (UdpIpv4L4Protocol (this));
+  m_l3Demux->Insert (Ipv4 (this));
+  m_l3Demux->Insert (Arp (this));
+  m_ipv4L4Demux->Insert (Udp (this));
   SetupLoopback ();
 }
 
@@ -55,9 +49,6 @@ InternetNode::InternetNode (InternetNode const &o)
   m_netDevices = new NetDeviceList ();
   m_l3Demux = o.m_l3Demux->Copy (this);
   m_ipv4L4Demux = o.m_ipv4L4Demux->Copy (this);
-  m_udp = o.m_udp->Copy (this);
-  m_ipv4 = o.m_ipv4->Copy (this);
-  m_arp = o.m_arp->Copy (this);
   SetupLoopback ();
 }
 
@@ -66,9 +57,6 @@ InternetNode::~InternetNode ()
   delete m_netDevices;
   delete m_l3Demux;
   delete m_ipv4L4Demux;
-  delete m_udp;
-  delete m_ipv4;
-  delete m_arp;
 }
 
 void
@@ -77,8 +65,8 @@ InternetNode::SetupLoopback (void)
   Ipv4LoopbackInterface * interface = new Ipv4LoopbackInterface (this);
   interface->SetAddress (Ipv4Address::GetLoopback ());
   interface->SetNetworkMask (Ipv4Mask::GetLoopback ());
-  uint32_t index = m_ipv4->AddInterface (interface);
-  m_ipv4->AddHostRouteTo (Ipv4Address::GetLoopback (), index);
+  uint32_t index = GetIpv4 ()->AddInterface (interface);
+  GetIpv4 ()->AddHostRouteTo (Ipv4Address::GetLoopback (), index);
   interface->SetUp ();
 }
 
@@ -112,18 +100,18 @@ InternetNode::GetIpv4L4Demux() const
 Ipv4 *
 InternetNode::GetIpv4 (void) const
 {
-  return m_ipv4;
+  return static_cast<Ipv4*> (m_l3Demux->Lookup (Ipv4::PROT_NUMBER));
 }
 Udp *
 InternetNode::GetUdp (void) const
 {
-  return m_udp;
+  return static_cast<Udp*> (m_ipv4L4Demux->Lookup (Udp::PROT_NUMBER));
 }
 
 Arp *
 InternetNode::GetArp (void) const
 {
-  return m_arp;
+  return static_cast<Arp*> (m_l3Demux->Lookup (Arp::PROT_NUMBER));
 }
 
 

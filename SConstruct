@@ -18,9 +18,10 @@ ns3.add(core)
 core.add_sources([
     'reference-list-test.cc',
     'callback-test.cc',
+    'debug.cc',
+    'assert.cc',
     'ptr.cc',
     'test.cc',
-    'debug.cc'
     ])
 env = Environment()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin':
@@ -40,9 +41,25 @@ core.add_inst_headers([
     'reference-list.h',
     'callback.h',
     'ptr.h',
-    'test.h',
-    'debug.h'
+    'debug.h',
+    'assert.h',
+    'fatal-error.h',
+    'test.h'
     ])
+
+def config_core (env, config):
+    retval = []
+    # XXX This check is primitive but it should be
+    # good enough for now.
+    if config.CheckCHeader ('stdlib.h') == 1:
+        retval.append ('#define HAVE_STDLIB_H 1')
+        retval.append ('#define HAVE_GETENV 1')
+    else:
+        retval.append ('#undef HAVE_STDLIB_H')
+        retval.append ('#undef HAVE_GETENV')
+    return retval
+core.add_config (config_core)
+
 
 
 #
@@ -150,10 +167,8 @@ node.add_sources ([
     'node.cc',
     'l3-demux.cc',
     'l3-protocol.cc',
-    'ipv4-l3-protocol.cc',
     'ipv4-l4-demux.cc',
     'ipv4-l4-protocol.cc',
-    'udp-ipv4-l4-protocol.cc',
     'ipv4-address.cc',
     'internet-node.cc',
     'net-device.cc',
@@ -170,7 +185,6 @@ node.add_sources ([
     'udp-socket.cc',
     'udp.cc',
     'arp-header.cc',
-    'arp-l3-protocol.cc',
     'arp-cache.cc',
     'arp-ipv4-interface.cc',
     'arp.cc',
@@ -190,15 +204,11 @@ node.add_headers ([
     'ipv4-checksum.h',
     'udp.h',
     'ipv4-l4-protocol.h',
-    'udp-ipv4-l4-protocol.h',
-    'ipv4-l3-protocol.h',
-    'arp-l3-protocol.h',
     'arp-header.h',
     'arp-cache-cache.h',
     'arp.h',
     'ipv4-loopback-interface.h',
     'l3-demux.h',
-    'l3-protocol.h',
     'ipv4-l4-demux.h',
     'net-device-list.h',
     'serial-net-device.h',
@@ -221,6 +231,7 @@ node.add_inst_headers ([
     'ipv4-interface.h',
     'mac-address.h',
     'ipv4.h',
+    'l3-protocol.h',
     'ipv4-route.h',
     'serial-channel.h',
     'queue.h',
@@ -256,6 +267,13 @@ replay_simu.add_source('replay-simulation.cc')
 
 
 # samples
+sample_debug = build.Ns3Module('sample-debug', 'samples')
+sample_debug.set_executable()
+ns3.add(sample_debug)
+sample_debug.add_dep('core')
+sample_debug.add_source('main-debug.cc')
+sample_debug.add_source('main-debug-other.cc')
+
 sample_callback = build.Ns3Module('sample-callback', 'samples')
 sample_callback.set_executable()
 ns3.add(sample_callback)

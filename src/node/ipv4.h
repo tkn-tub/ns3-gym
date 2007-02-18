@@ -25,6 +25,7 @@
 #include <list>
 #include <stdint.h>
 #include "ipv4-address.h"
+#include "l3-protocol.h"
 
 namespace ns3 {
 
@@ -40,8 +41,11 @@ class Node;
 /**
  * ::Send is always defined in subclasses.
  */
-class Ipv4 {
+class Ipv4 : public L3Protocol 
+{
 public:
+  static const uint16_t PROT_NUMBER;
+
   Ipv4(Node *node);
   virtual ~Ipv4 ();
 
@@ -88,7 +92,7 @@ public:
   Ipv4Interface *FindInterfaceForDevice (NetDevice const*device);
   
 
-  Ipv4* Copy(Node *node) const;
+  virtual Ipv4* Copy(Node *node) const;
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
    * The ARP subclass needs to know from which NetDevice this
@@ -96,7 +100,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  void Receive(Packet& p, NetDevice &device);
+  virtual void Receive(Packet& p, NetDevice &device);
 
   void Send (Packet const &packet, Ipv4Address source, 
 	     Ipv4Address destination, uint8_t protocol);

@@ -22,7 +22,7 @@
 #include "trace-container.h"
 #include "stream-tracer.h"
 #include <utility>
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -46,7 +46,7 @@ TraceContainer::SetUiVariableCallback (char const *name, Callback<void,uint64_t,
           return;
         }
     }
-  assert (false);
+  NS_ASSERT (false);
 }
 void 
 TraceContainer::SetSiVariableCallback (char const *name, Callback<void,int64_t, int64_t> callback)
@@ -59,12 +59,12 @@ TraceContainer::SetSiVariableCallback (char const *name, Callback<void,int64_t, 
           return;
         }
     }
-  assert (false);
+  NS_ASSERT (false);
 }
 void 
 TraceContainer::SetFVariableCallback (char const *name, Callback<void,double, double> callback)
 {
-  assert (false);
+  NS_ASSERT (false);
 }
 void 
 TraceContainer::SetStream (char const *name, std::ostream *os)
@@ -77,7 +77,7 @@ TraceContainer::SetStream (char const *name, std::ostream *os)
           return;
         }
     }
-  assert (false);
+  NS_ASSERT (false);
 }
 
 void 
@@ -111,7 +111,7 @@ TraceContainer::RegisterSiVariable (char const *name, SiVariableTracerBase *var)
 void 
 TraceContainer::RegisterFVariable (char const *name, FVariableTracerBase *var)
 {
-  assert (false);
+  NS_ASSERT (false);
 }
 
 void 

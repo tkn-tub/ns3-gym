@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "packet.h"
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -81,7 +81,7 @@ Packet::Peek (Header &header)
 void 
 Packet::Remove (Header const &header)
 {
-  assert (header.IsDeserialized ());
+  NS_ASSERT (header.IsDeserialized ());
   m_buffer.RemoveAtStart (header.GetSize ());
 }
 void 
@@ -102,7 +102,7 @@ Packet::Peek (Trailer &trailer)
 void 
 Packet::Remove (Trailer const &trailer)
 {
-  assert (trailer.IsDeserialized ());
+  NS_ASSERT (trailer.IsDeserialized ());
   m_buffer.RemoveAtEnd (trailer.GetSize ());
 }
 
@@ -123,7 +123,7 @@ Packet::AddAtEnd (Packet packet)
 void 
 Packet::AddAtEnd (Packet packet, uint32_t start, uint32_t size)
 {
-  assert (packet.GetSize () <= start + size);
+  NS_ASSERT (packet.GetSize () <= start + size);
   Buffer src = packet.m_buffer;
   m_buffer.AddAtEnd (src.GetSize ());
   Buffer::Iterator destStart = m_buffer.End ();

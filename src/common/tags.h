@@ -109,7 +109,7 @@ private:
 /**************************************************************
    An implementation of the templates defined above
  *************************************************************/
-#include <cassert>
+#include "ns3/assert.h"
 #include <string>
 
 namespace ns3 {
@@ -179,7 +179,7 @@ std::string *TypeUid<T>::GetUuid (void)
 template <typename T>
 TagRegistration<T>::TagRegistration (std::string uuid, void (*prettyPrinter) (T const*, std::ostream &))
 {
-  assert (sizeof (T) <= Tags::SIZE);
+  NS_ASSERT (sizeof (T) <= Tags::SIZE);
   m_prettyPrinter  = prettyPrinter;
   TagRegistry::Record (uuid, &TagRegistration<T>::PrettyPrinterCb);
   TypeUid<T>::Record (uuid);
@@ -188,7 +188,7 @@ template <typename T>
 void 
 TagRegistration<T>::PrettyPrinterCb (uint8_t *buf, std::ostream &os)
 {
-  assert (sizeof (T) <= Tags::SIZE);
+  NS_ASSERT (sizeof (T) <= Tags::SIZE);
   T *tag = reinterpret_cast<T *> (buf);
   (*m_prettyPrinter) (tag, os);
 }
@@ -203,12 +203,12 @@ template <typename T>
 void 
 Tags::Add (T const&tag)
 {
-  assert (sizeof (T) <= Tags::SIZE);
+  NS_ASSERT (sizeof (T) <= Tags::SIZE);
   uint8_t const*buf = reinterpret_cast<uint8_t const*> (&tag);
   // ensure this id was not yet added
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
-      assert (cur->m_id != TypeUid<T>::GetUid ());
+      NS_ASSERT (cur->m_id != TypeUid<T>::GetUid ());
     }
   struct TagData *newStart = AllocData ();
   newStart->m_count = 1;
@@ -223,7 +223,7 @@ template <typename T>
 bool
 Tags::Remove (T &tag)
 {
-  assert (sizeof (T) <= Tags::SIZE);
+  NS_ASSERT (sizeof (T) <= Tags::SIZE);
   return Remove (TypeUid<T>::GetUid ());
 }
 
@@ -231,7 +231,7 @@ template <typename T>
 bool
 Tags::Peek (T &tag) const
 {
-  assert (sizeof (T) <= Tags::SIZE);
+  NS_ASSERT (sizeof (T) <= Tags::SIZE);
   uint8_t *buf = reinterpret_cast<uint8_t *> (&tag);
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {

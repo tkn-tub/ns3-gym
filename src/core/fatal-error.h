@@ -18,48 +18,26 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "high-precision.h"
+#ifndef FATAL_ERROR_H
+#define FATAL_ERROR_H
 
-#include <cmath>
-#include "ns3/assert.h"
+#include "assert.h"
+
+/**
+ * \defgroup error
+ * \brief fatal error handling
+ *
+ * \param msg message to output when this macro is hit.
+ *
+ * When this macro is hit at runtime, the user-specified 
+ * error message is output and the program is halted by calling
+ * the ns3::AssertBreakpoint function. This macro is enabled
+ * unconditionally in all builds, including debug and optimized 
+ * builds.
+ */
+#define NS_FATAL_ERROR(msg)				\
+  std::cout << msg << std::endl;			\
+  ns3::AssertBreakpoint ();
 
 
-namespace ns3 {
-
-HighPrecision Abs (HighPrecision const &value)
-{
-  if (value.Compare (HighPrecision::Zero ()) <= 0)
-    {
-      HighPrecision v = HighPrecision::Zero ();
-      v.Sub (value);
-      return v;
-    }
-  else
-    {
-      return value;
-    }
-}
-HighPrecision Max (HighPrecision const &a, HighPrecision const &b)
-{
-  if (a.Compare (b) >= 0)
-    {
-      return a;
-    }
-  else
-    {
-      return b;
-    }
-}
-HighPrecision Min (HighPrecision const &a, HighPrecision const &b)
-{
-  if (a.Compare (b) <= 0)
-    {
-      return a;
-    }
-  else
-    {
-      return b;
-    }
-}
-
-}; /* namespace ns3 */
+#endif /* FATAL_ERROR_H */

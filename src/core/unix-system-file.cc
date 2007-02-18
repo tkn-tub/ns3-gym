@@ -25,9 +25,10 @@
 #include <sys/poll.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <cassert>
 #include <string.h>
 #include <list>
+
+#include "assert.h"
 
 #define noTRACE_SYS_FILE 1
 
@@ -71,7 +72,7 @@ void
 SystemFilePrivate::Open (char const *filename)
 {
   m_fd = ::open (filename, O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR);
-  assert (m_fd != -1);
+  NS_ASSERT (m_fd != -1);
 }
 
 #ifndef min
@@ -92,7 +93,7 @@ SystemFilePrivate::Write (uint8_t const*buffer, uint32_t size)
         {
           ssize_t written = 0;
           written = ::write (m_fd, m_data, BUFFER_SIZE);
-          assert (written == BUFFER_SIZE);
+          NS_ASSERT (written == BUFFER_SIZE);
           m_current = 0;
         }
     }

@@ -24,6 +24,7 @@
 #include <list>
 #include "ipv4-address.h"
 #include "mac-address.h"
+#include "l3-protocol.h"
 
 namespace ns3 {
 
@@ -32,14 +33,16 @@ class NetDevice;
 class Node;
 class Packet;
 
-class Arp 
+class Arp : public L3Protocol
 {
 public:
+  static const uint16_t PROT_NUMBER;
+
   Arp (Node *node);
   ~Arp ();
-  Arp *Copy (Node *node);
+  virtual Arp *Copy (Node *node) const;
 
-  void Receive(Packet& p, NetDevice *device);
+  virtual void Receive(Packet& p, NetDevice &device);
   bool Lookup (Packet &p, Ipv4Address destination, 
 	       NetDevice *device,
 	       MacAddress *hardwareDestination);

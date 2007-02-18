@@ -22,7 +22,7 @@
 #include "scheduler-list.h"
 #include "event-impl.h"
 #include <utility>
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -93,14 +93,14 @@ SchedulerList::RealRemove (EventId id, Scheduler::EventKey *key)
       if (i->second.m_uid == id.GetUid ())
         {
           EventImpl *retval = i->first;
-          assert (id.GetEventImpl () == retval);
+          NS_ASSERT (id.GetEventImpl () == retval);
           key->m_ns = id.GetNs ();
           key->m_uid = id.GetUid ();
           m_events.erase (i);
           return retval;
         }
     }
-  assert (false);
+  NS_ASSERT (false);
   return 0;
 }
 

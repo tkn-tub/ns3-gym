@@ -20,17 +20,15 @@
 #include "ns3/debug.h"
 #include "drop-tail.h"
 
-namespace ns3 {
+NS_DEBUG_COMPONENT_DEFINE ("DropTailQueue");
 
-namespace {
-  int dtqDebug = 1;
-}
+namespace ns3 {
 
 DropTailQueue::DropTailQueue () :
     m_packets (),
     m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
 {
-  NS3_TRACE(dtqDebug, 
+  NS_DEBUG(
     "DropTailQueue::DropTailQueue ()")
 }
 
@@ -38,7 +36,7 @@ DropTailQueue::DropTailQueue (TraceContainer &traceContainer) :
     m_packets(),
     m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
 {
-  NS3_TRACE(dtqDebug, 
+  NS_DEBUG(
     "DropTailQueue::DropTailQueue (" << &traceContainer << ")")
 
   RegisterTraces(traceContainer);
@@ -46,14 +44,14 @@ DropTailQueue::DropTailQueue (TraceContainer &traceContainer) :
 
 DropTailQueue::~DropTailQueue ()
 {
-  NS3_TRACE(dtqDebug, 
+  NS_DEBUG(
     "DropTailQueue::~DropTailQueue ()")
 }
 
   void 
 DropTailQueue::SetMaxPackets (uint32_t npackets)
 {
-  NS3_TRACE(dtqDebug, 
+  NS_DEBUG(
     "DropTailQueue::SetMaxPackets (" << npackets << ")")
 
   m_maxPackets = npackets;
@@ -62,7 +60,7 @@ DropTailQueue::SetMaxPackets (uint32_t npackets)
   uint32_t 
 DropTailQueue::GetMaxPackets (void)
 {
-  NS3_TRACE(dtqDebug, 
+  NS_DEBUG(
     "DropTailQueue::GetMaxPackets () <= " << m_maxPackets)
 
   return m_maxPackets;
@@ -71,12 +69,12 @@ DropTailQueue::GetMaxPackets (void)
   bool 
 DropTailQueue::DoEnque (const Packet& p)
 {
-  NS3_TRACE(dtqDebug, 
+  NS_DEBUG(
     "DropTailQueue::DoEnque (" << &p << ")")
 
   if (m_nPackets >= m_maxPackets)
     {
-      NS3_TRACE(dtqDebug, 
+      NS_DEBUG(
         "DropTailQueue::DoEnque (): Queue full -- droppping pkt")
       Drop (p);
       return false;
@@ -89,12 +87,12 @@ DropTailQueue::DoEnque (const Packet& p)
   bool
 DropTailQueue::DoDeque (Packet& p)
 {
-  NS3_TRACE(dtqDebug, 
+  NS_DEBUG(
     "DropTailQueue::DoDeque (" << &p << ")")
 
   if (m_packets.empty()) 
     {
-      NS3_TRACE(dtqDebug, 
+      NS_DEBUG(
         "DropTailQueue::DoDeque (): Queue empty")
       return false;
     }
@@ -102,7 +100,7 @@ DropTailQueue::DoDeque (Packet& p)
   p = m_packets.front ();
   m_packets.pop ();
 
-  NS3_TRACE(dtqDebug, 
+  NS_DEBUG(
     "DropTailQueue::DoDeque (): Popped " << &p << " <= true")
 
   return true;

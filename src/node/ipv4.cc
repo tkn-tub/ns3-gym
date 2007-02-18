@@ -20,6 +20,7 @@
 //
 
 #include "ns3/packet.h"
+#include "ns3/debug.h"
 
 #include "ipv4.h"
 #include "ipv4-l4-protocol.h"
@@ -31,12 +32,15 @@
 #include "node.h"
 #include "ipv4-l4-demux.h"
 
-#define TRACE(x)
+NS_DEBUG_COMPONENT_DEFINE ("Ipv4");
 
 namespace ns3 {
 
+const uint16_t Ipv4::PROT_NUMBER = 0x0800;
+
 Ipv4::Ipv4(Node *node)
-  : m_nInterfaces (0),
+  : L3Protocol (PROT_NUMBER, 4),
+    m_nInterfaces (0),
     m_defaultTtl (64),
     m_identification (0),
     m_defaultRoute (0),
@@ -129,7 +133,7 @@ Ipv4::Lookup (Ipv4Address dest)
        i != m_hostRoutes.end (); 
        i++) 
     {
-      assert ((*i)->IsHost ());
+      NS_ASSERT ((*i)->IsHost ());
       if ((*i)->GetDest ().IsEqual (dest)) 
         {
           return (*i);
@@ -139,7 +143,7 @@ Ipv4::Lookup (Ipv4Address dest)
        j != m_networkRoutes.end (); 
        j++) 
     {
-      assert ((*j)->IsNetwork ());
+      NS_ASSERT ((*j)->IsNetwork ());
       Ipv4Mask mask = (*j)->GetDestNetworkMask ();
       Ipv4Address entry = (*j)->GetDestNetwork ();
       if (mask.IsMatch (dest, entry)) 
@@ -149,7 +153,7 @@ Ipv4::Lookup (Ipv4Address dest)
     }
   if (m_defaultRoute != 0) 
     {
-      assert (m_defaultRoute->IsDefault ());
+      NS_ASSERT (m_defaultRoute->IsDefault ());
       return m_defaultRoute;
     }
   return 0;
@@ -204,7 +208,7 @@ Ipv4::GetRoute (uint32_t index)
         }
       tmp++;
     }
-  assert (false);
+  NS_ASSERT (false);
   // quiet compiler.
   return 0;
 }
@@ -250,7 +254,7 @@ Ipv4::RemoveRoute (uint32_t index)
         }
       tmp++;
     }
-  assert (false);
+  NS_ASSERT (false);
 }
 
 
@@ -352,7 +356,7 @@ Ipv4::Send (Packet const &packet,
   Ipv4Route *route = Lookup (ipHeader.GetDestination ());
   if (route == 0) 
     {
-      TRACE ("not for me -- forwarding but no route to host. drop.");
+      NS_DEBUG ("not for me -- forwarding but no route to host. drop.");
       return;
     }
 
@@ -365,7 +369,7 @@ Ipv4::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route
   Packet packet = p;
   packet.Add (ip);
   Ipv4Interface *outInterface = GetInterface (route.GetInterface ());
-  assert (packet.GetSize () <= outInterface->GetMtu ());
+  NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
   // XXX log trace here.
   if (route.IsGateway ()) 
     {
@@ -386,7 +390,7 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
     {
       if ((*i)->GetAddress ().IsEqual (ipHeader.GetDestination ())) 
         {
-          TRACE ("for me 1");
+          NS_DEBUG ("for me 1");
           return false;
         }
     }
@@ -399,7 +403,7 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
 	{
 	  if (ipHeader.GetDestination ().IsEqual (interface->GetBroadcast ())) 
 	    {
-	      TRACE ("for me 2");
+	      NS_DEBUG ("for me 2");
 	      return false;
 	    }
 	  break;
@@ -408,29 +412,29 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
       
   if (ipHeader.GetDestination ().IsEqual (Ipv4Address::GetBroadcast ())) 
     {
-      TRACE ("for me 3");
+      NS_DEBUG ("for me 3");
       return false;
     }
   if (ipHeader.GetDestination ().IsEqual (Ipv4Address::GetAny ())) 
     {
-      TRACE ("for me 4");
+      NS_DEBUG ("for me 4");
       return false;
     }
   if (ipHeader.GetTtl () == 1) 
     {
       // Should send ttl expired here
       // XXX
-      TRACE ("not for me -- ttl expired. drop.");
+      NS_DEBUG ("not for me -- ttl expired. drop.");
       return true;
     }
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
   Ipv4Route *route = Lookup (ipHeader.GetDestination ());
   if (route == 0) 
     {
-      TRACE ("not for me -- forwarding but no route to host. drop.");
+      NS_DEBUG ("not for me -- forwarding but no route to host. drop.");
       return true;
     }
-  TRACE ("not for me -- forwarding.");
+  NS_DEBUG ("not for me -- forwarding.");
   SendRealOut (packet, ipHeader, *route);
   return true;
 }

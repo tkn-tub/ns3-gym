@@ -26,6 +26,7 @@
 #include "arp.h"
 #include "node.h"
 #include "net-device.h"
+#include "ipv4.h"
 
 namespace ns3 {
 
@@ -45,7 +46,7 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
   bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
   if (found)
     {
-      GetDevice ()->Send (p, hardwareDestination, 0x0800 /* XXX */);
+      GetDevice ()->Send (p, hardwareDestination, Ipv4::PROT_NUMBER);
     }
 }
 

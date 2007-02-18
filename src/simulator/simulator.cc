@@ -24,7 +24,7 @@
 #include "event-impl.h"
 
 #include <math.h>
-#include <cassert>
+#include "ns3/assert.h"
 #include <fstream>
 #include <list>
 #include <vector>
@@ -147,7 +147,7 @@ SimulatorPrivate::IsFinished (void) const
 uint64_t
 SimulatorPrivate::NextNs (void) const
 {
-  assert (!m_events->IsEmpty ());
+  NS_ASSERT (!m_events->IsEmpty ());
   Scheduler::EventKey nextKey = m_events->PeekNextKey ();
   return nextKey.m_ns;
 }
@@ -179,14 +179,14 @@ SimulatorPrivate::Stop (void)
 void 
 SimulatorPrivate::StopAt (Time const &at)
 {
-  assert (at.IsPositive ());
+  NS_ASSERT (at.IsPositive ());
   m_stopAt = at.GetNanoSeconds ();
 }
 EventId
 SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
 {
-  assert (time.IsPositive ());
-  assert (time >= NanoSeconds (m_currentNs));
+  NS_ASSERT (time.IsPositive ());
+  NS_ASSERT (time >= NanoSeconds (m_currentNs));
   uint64_t ns = (uint64_t) time.GetNanoSeconds ();
   Scheduler::EventKey key = {ns, m_uid};
   if (m_logEnable) 
@@ -296,7 +296,7 @@ void Simulator::SetStdMap (void)
 void 
 Simulator::SetExternal (SchedulerFactory const*factory)
 {
-  assert (factory != 0);
+  NS_ASSERT (factory != 0);
   m_schedFactory = factory;
   m_listType = EXTERNAL;
 }
@@ -326,7 +326,7 @@ Simulator::GetPriv (void)
           events = m_schedFactory->Create ();
       default: // not reached
           events = 0;
-          assert (false); 
+          NS_ASSERT (false); 
           break;
       }
       m_priv = new SimulatorPrivate (events);

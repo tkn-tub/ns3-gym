@@ -361,7 +361,7 @@ private:
    need to be inline for performance reasons.
  *************************************************/
 
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -375,7 +375,7 @@ Buffer::Buffer ()
     {
       m_start = 0;
     }
-  assert (m_start <= m_data->m_size);
+  NS_ASSERT (m_start <= m_data->m_size);
 }
 
 Buffer::Buffer (uint32_t dataSize)
@@ -388,7 +388,7 @@ Buffer::Buffer (uint32_t dataSize)
     {
       m_start = 0;
     }
-  assert (m_start <= m_data->m_size);
+  NS_ASSERT (m_start <= m_data->m_size);
 }
 
 
@@ -399,7 +399,7 @@ Buffer::Buffer (Buffer const&o)
     m_size (o.m_size)
 {
   m_data->m_count++;
-  assert (m_start <= m_data->m_size);
+  NS_ASSERT (m_start <= m_data->m_size);
 }
 
 Buffer &
@@ -419,7 +419,7 @@ Buffer::operator = (Buffer const&o)
   m_zeroAreaSize = o.m_zeroAreaSize;
   m_start = o.m_start;
   m_size = o.m_size;
-  assert (m_start <= m_data->m_size);
+  NS_ASSERT (m_start <= m_data->m_size);
   return *this;
 }
 
@@ -475,31 +475,31 @@ Buffer::Iterator::Iterator (Buffer const*buffer, uint32_t current)
 void 
 Buffer::Iterator::Next (void)
 {
-  assert (m_current + 1 <= m_dataEnd);
+  NS_ASSERT (m_current + 1 <= m_dataEnd);
   m_current++;
 }
 void 
 Buffer::Iterator::Prev (void)
 {
-  assert (m_current >= 1);
+  NS_ASSERT (m_current >= 1);
   m_current--;
 }
 void 
 Buffer::Iterator::Next (uint32_t delta)
 {
-  assert (m_current + delta <= m_dataEnd);
+  NS_ASSERT (m_current + delta <= m_dataEnd);
   m_current += delta;
 }
 void 
 Buffer::Iterator::Prev (uint32_t delta)
 {
-  assert (m_current >= delta);
+  NS_ASSERT (m_current >= delta);
   m_current -= delta;
 }
 int32_t
 Buffer::Iterator::GetDistanceFrom (Iterator const &o) const
 {
-  assert (m_data == o.m_data);
+  NS_ASSERT (m_data == o.m_data);
   int32_t start = m_current;
   int32_t end = o.m_current;
   return end - start;
@@ -519,7 +519,7 @@ Buffer::Iterator::IsStart (void) const
 uint32_t
 Buffer::Iterator::GetIndex (uint32_t n)
 {
-  assert ( 
+  NS_ASSERT ( 
       (m_current + n <= m_dataEnd) &&
       ((m_current + n <= m_zeroStart) ||
        (m_current >= m_zeroEnd))
@@ -540,9 +540,9 @@ Buffer::Iterator::GetIndex (uint32_t n)
 void 
 Buffer::Iterator::Write (Iterator start, Iterator end)
 {
-  assert (start.m_data == end.m_data);
-  assert (start.m_current <= end.m_current);
-  assert (m_data != start.m_data);
+  NS_ASSERT (start.m_data == end.m_data);
+  NS_ASSERT (start.m_current <= end.m_current);
+  NS_ASSERT (m_data != start.m_data);
   uint32_t size = end.m_current - start.m_current;
   uint8_t *src = start.m_data + start.GetIndex (size);
   uint8_t *dest = m_data + GetIndex (size);

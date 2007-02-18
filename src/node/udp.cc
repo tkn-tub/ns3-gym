@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cassert>
+#include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "udp.h"
 #include "udp-header.h"
@@ -33,10 +33,11 @@
 namespace ns3 {
 
 /* see http://www.iana.org/assignments/protocol-numbers */
-const uint8_t Udp::UDP_PROTOCOL = 17;
+const uint8_t Udp::PROT_NUMBER = 17;
 
 Udp::Udp (Node *node)
-  : m_node (node),
+  : Ipv4L4Protocol (PROT_NUMBER, 2),
+    m_node (node),
     m_endPoints (new Ipv4EndPointDemux<UdpEndPoint> ())
 {}
 
@@ -95,7 +96,7 @@ Udp::Receive(Packet& packet,
     }
   UdpSocket *socket = endPoint->GetSocket ();
   socket->ForwardUp (packet, source, udpHeader.GetSource ());
-  assert (socket != 0);
+  NS_ASSERT (socket != 0);
 }
 
 void
@@ -109,14 +110,14 @@ Udp::Send (Packet packet,
   udpHeader.SetPayloadSize (packet.GetSize ());
   udpHeader.InitializeChecksum (saddr,
                                daddr,
-                               UDP_PROTOCOL);
+                               PROT_NUMBER);
 
   packet.Add (udpHeader);
 
   Ipv4 *ipv4 = m_node->GetIpv4 ();
   if (ipv4 != 0)
     {
-      ipv4->Send (packet, saddr, daddr, UDP_PROTOCOL);
+      ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
     }
 }
 

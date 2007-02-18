@@ -30,7 +30,7 @@ UdpSocket::UdpSocket (Node *node)
   : m_endPoint (0),
     m_node (node)
 {
-  assert (GetUdp () != 0);
+  NS_ASSERT (GetUdp () != 0);
 }
 UdpSocket::~UdpSocket ()
 {
