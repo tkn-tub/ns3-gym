@@ -21,6 +21,10 @@
 // Corresponding ns-2 otcl commands are commented out above the 
 // replacement ns-3 code, to highlight the change in design
 
+#include <iostream>
+#include <string>
+
+#include "ns3/debug.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/internet-node.h"
@@ -30,17 +34,60 @@
 #include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4.h"
 #include "ns3/udp-socket.h"
+#include "ns3/ipv4-route.h"
+#include "ns3/drop-tail.h"
 
 using namespace ns3;
+
+static void
+GenerateTraffic (UdpSocket *socket, uint32_t size)
+{
+  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
+  socket->SendDummy (size);
+  if (size > 0)
+    {
+      Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
+    }
+}
+
+static void
+UdpSocketPrinter (UdpSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
+{
+  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << size << std::endl;
+}
+
+static void
+PrintTraffic (UdpSocket *socket)
+{
+  socket->SetDummyRxCallback (MakeCallback (&UdpSocketPrinter));
+}
+
+#if 0
+static void
+PrintRoutingTable (InternetNode *a, std::string name)
+{
+  Ipv4 *ipv4 = a->GetIpv4 ();
+  std::cout << "routing table start node=" << name << std::endl;
+  for (uint32_t i = 0; i < ipv4->GetNRoutes (); i++)
+    {
+      Ipv4Route *route = ipv4->GetRoute (i);
+      std::cout << (*route) << std::endl;
+    }
+  std::cout << "routing table end" << std::endl;
+}
+#endif
 
 static SerialChannel* AddDuplexLink(InternetNode* a, const Ipv4Address& addra,
   const MacAddress& macaddra, InternetNode* b, const Ipv4Address& addrb,
   const MacAddress& macaddrb, const Ipv4Mask& netmask 
 /*, const Rate& rate, const Time& delay */) {
 
+
     SerialChannel* channel = new SerialChannel();
 
+    DropTailQueue* dtqa = new DropTailQueue();
     SerialNetDevice* neta = new SerialNetDevice(a, macaddra);
+    neta->AddQueue(dtqa);
     Ipv4Interface *interfA = new ArpIpv4Interface (a, neta);
     uint32_t indexA = a->GetIpv4 ()->AddInterface (interfA);
     channel->Attach (neta);
@@ -50,7 +97,9 @@ static SerialChannel* AddDuplexLink(InternetNode* a, const Ipv4Address& addra,
     interfA->SetNetworkMask (netmask);
     interfA->SetUp ();
 
+    DropTailQueue* dtqb = new DropTailQueue();
     SerialNetDevice* netb = new SerialNetDevice(b, macaddrb);
+    netb->AddQueue(dtqb);
     Ipv4Interface *interfB = new ArpIpv4Interface (b, netb);
     uint32_t indexB = b->GetIpv4 ()->AddInterface (interfB);
     channel->Attach (netb);
@@ -62,6 +111,12 @@ static SerialChannel* AddDuplexLink(InternetNode* a, const Ipv4Address& addra,
 
     a->GetIpv4 ()->AddHostRouteTo (addrb, indexA);
     b->GetIpv4 ()->AddHostRouteTo (addra, indexB);
+
+    NS_DEBUG_UNCOND("Adding interface " << indexA << " to node " << a->GetId())
+    NS_DEBUG_UNCOND("Adding interface " << indexB << " to node " << b->GetId())
+
+    //PrintRoutingTable (a, "a");
+    //PrintRoutingTable (b, "b");
 
     return channel;
 }
@@ -87,7 +142,7 @@ int main (int argc, char *argv[])
     // $ns trace-all $f 
     // set nf [open out.nam w]
     // $ns namtrace-all $nf
-    // ** tracing configuration occurs below **
+    // ** tracing configuration occurs later **
     
     // $ns duplex-link $n0 $n2 5Mb 2ms DropTail
     // $ns duplex-link $n1 $n2 5Mb 2ms DropTail
@@ -140,14 +195,22 @@ int main (int argc, char *argv[])
     UdpSocket *sink1 = new UdpSocket(n1);
 
     // $ns connect $udp0 $null0
-    // source0->SetDefaultDestination (Ipv4Address ("10.0."), 80);
+    source0->SetDefaultDestination (Ipv4Address ("10.1.3.2"), 80);
     // $ns connect $udp1 $null1
+    source3->SetDefaultDestination (Ipv4Address ("10.1.2.1"), 80);
 
     // Here, finish off packet routing configuration
+    n0->GetIpv4()->AddHostRouteTo (Ipv4Address ("10.1.3.2"), 1);
+    n3->GetIpv4()->AddHostRouteTo (Ipv4Address ("10.1.2.1"), 1);
 
     // $ns at 1.0 "$cbr0 start"
     // $ns at 1.1 "$cbr1 start"
-    // ** above are part of sockets code **
+ 
+    GenerateTraffic (source0, 100);
+    PrintTraffic (sink3);
+
+    GenerateTraffic (source3, 100);
+    PrintTraffic (sink1);
     // 
     // set tcp [new Agent/TCP]
     // $tcp set class_ 2
