@@ -22,6 +22,7 @@
  */
 
 #include "ns3/debug.h"
+#include "ns3/assert.h"
 #include "layer-connector.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("LayerConnector");
@@ -52,7 +53,7 @@ LayerConnectorUpper::DoConnectToLower (LayerConnectorLower &partner)
   NS_DEBUG("LayerConnectorUpper::DoConnectToLower (" << &partner << ")")
 
   m_lowerPartner = &partner;
-  assert(m_lowerPartner);
+  NS_ASSERT (m_lowerPartner);
   return true;
 }
 
@@ -77,7 +78,7 @@ LayerConnectorUpper::UpperNotify ()
 {
   NS_DEBUG("LayerConnectorUpper::UpperNotify ()")
 
-  assert(m_lowerPartner);
+  NS_ASSERT (m_lowerPartner);
   return m_lowerPartner->LowerNotify(this);
 }
 
@@ -105,7 +106,7 @@ LayerConnectorLower::DoConnectToUpper (LayerConnectorUpper &partner)
   NS_DEBUG("LayerConnectorLower::DoConnectToUpper (" << &partner << ")")
 
   m_upperPartner = &partner;
-  assert(m_upperPartner);
+  NS_ASSERT (m_upperPartner);
   return true;
 }
 
@@ -114,7 +115,7 @@ LayerConnectorLower::LowerSendUp (Packet &p)
 {
   NS_DEBUG("LayerConnectorLower::LowerSendUp (" << &p << ")")
 
-  assert(m_upperPartner);
+  NS_ASSERT (m_upperPartner);
   return m_upperPartner->UpperSendUp(p);
 }
 
@@ -123,7 +124,7 @@ LayerConnectorLower::LowerPull (Packet &p)
 {
   NS_DEBUG("LayerConnectorLower::LowerPull (" << &p << ")")
 
-  assert(m_upperPartner);
+  NS_ASSERT (m_upperPartner);
   return m_upperPartner->UpperPull(p);
 }
 

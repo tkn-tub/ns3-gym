@@ -19,6 +19,7 @@
 
 #include <string>
 #include "ns3/debug.h"
+#include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/drop-tail.h"
 #include "ns3/layer-connector.h"
@@ -123,14 +124,14 @@ FakePhysicalLayer::LowerDoNotify (LayerConnectorUpper *upper)
 
   NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify (): Starting pull")
 
-  assert(m_upperPartner);
+  NS_ASSERT(m_upperPartner);
   m_upperPartner->UpperPull(p);
 
   m_dtqOutbound.Enque(p);
 
   NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify (): Got bits,  Notify lower")
 
-  assert(m_lowerPartner);
+  NS_ASSERT(m_lowerPartner);
   return m_lowerPartner->LowerNotify(this);
 }
 
@@ -139,7 +140,7 @@ FakePhysicalLayer::UpperDoSendUp (Packet &p)
 {
   NS_DEBUG_UNCOND("FakePhysicalLayer::UpperDoSendUp (" << &p << ")")
 
-  assert(m_upperPartner);
+  NS_ASSERT(m_upperPartner);
   return m_upperPartner->UpperSendUp(p);
 }
 
