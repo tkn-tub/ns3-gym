@@ -29,6 +29,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4.h"
+#include "ns3/udp-socket.h"
 
 using namespace ns3;
 
@@ -113,22 +114,37 @@ int main (int argc, char *argv[])
     // $ns duplex-link-op $n2 $n3 queuePos 0.5
     // ** nam commands-- not supported **
 
+    // set udp0 [new Agent/UDP]
+    // $ns attach-agent $n0 $udp0
+    UdpSocket *source0 = new UdpSocket (n0);
+
+    // set cbr0 [new Application/Traffic/CBR]
+    // $cbr0 attach-agent $udp0
+
     // set udp1 [new Agent/UDP]
     // $ns attach-agent $n3 $udp1
+    UdpSocket *source3 = new UdpSocket (n3);
+
     // $udp1 set class_ 1
+    // ** class_ is for nam **
+
     // set cbr1 [new Application/Traffic/CBR]
     // $cbr1 attach-agent $udp1
     // 
     // set null0 [new Agent/Null]
     // $ns attach-agent $n3 $null0
-    // 
+    UdpSocket *sink3 = new UdpSocket(n3);
+   
     // set null1 [new Agent/Null]
     // $ns attach-agent $n1 $null1
-    // ** above are part of node configuration **
-    // 
+    UdpSocket *sink1 = new UdpSocket(n1);
+
     // $ns connect $udp0 $null0
+    // source0->SetDefaultDestination (Ipv4Address ("10.0."), 80);
     // $ns connect $udp1 $null1
-    // 
+
+    // Here, finish off packet routing configuration
+
     // $ns at 1.0 "$cbr0 start"
     // $ns at 1.1 "$cbr1 start"
     // ** above are part of sockets code **
@@ -176,6 +192,10 @@ int main (int argc, char *argv[])
     delete ch1;
     delete ch2;
     delete ch3;
+    delete source3;
+    delete source0;
+    delete sink3;
+    delete sink1;
 
     Simulator::Destroy ();
 }
