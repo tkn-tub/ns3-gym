@@ -1,4 +1,4 @@
-/* -*-    Mode:C++; c-basic-offset:4; tab-width:4; indent-tabs-mode:nil -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -62,18 +62,27 @@ PrintTraffic (UdpSocket *socket)
   socket->SetDummyRxCallback (MakeCallback (&UdpSocketPrinter));
 }
 
-#if 0
+#if 1
 static void
 PrintRoutingTable (InternetNode *a, std::string name)
 {
   Ipv4 *ipv4 = a->GetIpv4 ();
-  std::cout << "routing table start node=" << name << std::endl;
+  std::cout << "interfaces node="<<name<<std::endl;
+  for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++)
+    {
+      Ipv4Interface *interface = ipv4->GetInterface (i);
+      std::cout << "interface addr="<<interface->GetAddress () 
+                << ", netmask="<<interface->GetNetworkMask ()
+                << std::endl;
+    }
+
+  std::cout << "routing table:" << std::endl;
   for (uint32_t i = 0; i < ipv4->GetNRoutes (); i++)
     {
       Ipv4Route *route = ipv4->GetRoute (i);
       std::cout << (*route) << std::endl;
     }
-  std::cout << "routing table end" << std::endl;
+  std::cout << "node end" << std::endl;
 }
 #endif
 
@@ -105,7 +114,7 @@ static SerialChannel* AddDuplexLink(InternetNode* a, const Ipv4Address& addra,
     channel->Attach (netb);
     netb->Attach (channel);
 
-    interfB->SetAddress (addra);
+    interfB->SetAddress (addrb);
     interfB->SetNetworkMask (netmask);
     interfB->SetUp ();
 
@@ -202,8 +211,13 @@ int main (int argc, char *argv[])
     source3->SetDefaultDestination (Ipv4Address ("10.1.2.1"), 80);
 
     // Here, finish off packet routing configuration
-    n0->GetIpv4()->AddHostRouteTo (Ipv4Address ("10.1.3.2"), 1);
-    n3->GetIpv4()->AddHostRouteTo (Ipv4Address ("10.1.2.1"), 1);
+    n0->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
+    n3->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
+
+    //PrintRoutingTable (n0, "n0");
+    //PrintRoutingTable (n1, "n1");
+    //PrintRoutingTable (n2, "n2");
+    //PrintRoutingTable (n3, "n3");
 
     // $ns at 1.0 "$cbr0 start"
     // $ns at 1.1 "$cbr1 start"
