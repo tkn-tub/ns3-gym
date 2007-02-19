@@ -24,7 +24,7 @@ core.add_sources([
     'test.cc',
     ])
 env = Environment()
-if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin':
+if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] == 'cygwin':
     core.add_external_dep('pthread')
     core.add_sources([
         'unix-system-wall-clock-ms.cc',
@@ -197,6 +197,8 @@ node.add_sources ([
     'serial-channel.cc',
     'queue.cc',
     'drop-tail.cc',
+    'layer-connector.cc',
+    'channel.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
@@ -236,6 +238,8 @@ node.add_inst_headers ([
     'serial-channel.h',
     'queue.h',
     'drop-tail.h',
+    'layer-connector.h',
+    'channel.h',
     'serial-net-device.h'
     ])
 
@@ -335,5 +339,12 @@ ns3.add(sample_simple_tcl)
 sample_simple_tcl.add_deps(['core', 'simulator', 'node'])
 sample_simple_tcl.add_source('ns-2/simple.tcl.cc')
 
+sample_channel = build.Ns3Module('sample-channel', 'samples')
+sample_channel.set_executable()
+ns3.add(sample_channel)
+sample_channel.add_dep ('common')
+sample_channel.add_dep ('node')
+sample_channel.add_dep ('core')
+sample_channel.add_source('main-channel.cc')
 
 ns3.generate_dependencies()

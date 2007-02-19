@@ -30,32 +30,49 @@ namespace ns3 {
 
 Channel::Channel ()
 {
-  NS_DEBUG ("Channel::Channel ()")
+  NS_DEBUG("Channel::Channel ()")
 }
 
 Channel::~Channel ()
 {
-  NS_DEBUG ("Channel::~Channel ()")
+  NS_DEBUG("Channel::~Channel ()")
 }
 
   bool
-Channel::Connect (PhysicalLayer &phys)
+Channel::DoConnectToUpper (LayerConnectorUpper &upper)
 {
-  NS_DEBUG ("Channel::Connect (" << &phys << ")")
-  m_physList.push_back(static_cast<PhysicalLayer *>(&phys));
+  NS_DEBUG("Channel::DoConnectToUpper (" << &upper << ")")
+  m_connectorList.push_back(&upper);
+
   return true;
 }
 
   bool
-Channel::Propagate (Propagator &propagator)
+Channel::LowerDoNotify (LayerConnectorUpper *upper)
 {
-  NS_DEBUG ("Channel::Propagate (" << &propagator << ")")
+  NS_DEBUG("Channel::LowerDoNotify ()")
 
-  for (PhysicalLayerList::const_iterator i = m_physList.begin ();
-       i != m_physList.end (); 
+  Packet p;
+
+  NS_DEBUG("Channel::LowerDoNotify (): Starting pull")
+
+  upper->UpperPull(p);
+
+  NS_DEBUG("Channel::LowerDoNotify (): Got bits,  Propagate()")
+
+  return Propagate(p);
+}
+
+  bool
+Channel::Propagate (Packet &p)
+{
+  NS_DEBUG("Channel::Propagate (" << &p << ")")
+
+  for (ConnectorList::const_iterator i = m_connectorList.begin ();
+       i != m_connectorList.end (); 
        i++)
     {
-      (*i)->Receive (propagator);
+      (*i)->UpperSendUp (p);
     }
 
   return true;

@@ -22,36 +22,33 @@
  */
 
 #include <list>
-#include "physical-layer.h"
+#include "ns3/packet.h"
+#include "layer-connector.h"
 
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
 namespace ns3 {
 
-class Propagator;
-
-class Channel
+class Channel : public LayerConnectorLower
 {
 public:
   Channel ();
   virtual ~Channel ();
 
-  // called by the builderto introduce the channel and the physical layer
-  // of the node.
-  bool Connect (PhysicalLayer &phys);
-
   // Called by the physical layer to cause bits to propagate along the channel
   // The channel will call Receive on each of the phys.
-  bool Propagate (Propagator &p);
+  bool Propagate (Packet &p);
+  bool DoConnectToUpper (LayerConnectorUpper &upper);
+  bool LowerDoNotify (LayerConnectorUpper *upper);
 
 protected:
-  typedef std::list<PhysicalLayer *> PhysicalLayerList;
-  PhysicalLayerList m_physList;
+  typedef std::list<LayerConnectorUpper *> ConnectorList;
+  ConnectorList m_connectorList;
 
 private:
 };
 
 }; // namespace ns3
 
-#endif /* SERIAL_PHY_H */
+#endif /* CHANNEL_H */
