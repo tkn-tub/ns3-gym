@@ -44,7 +44,7 @@ GenerateTraffic (UdpSocket *socket, uint32_t size)
 {
   std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
   socket->SendDummy (size);
-  if (size > 0)
+  if (size > 50)
     {
       Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
     }
