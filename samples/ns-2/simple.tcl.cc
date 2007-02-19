@@ -189,10 +189,12 @@ int main (int argc, char *argv[])
     // set null0 [new Agent/Null]
     // $ns attach-agent $n3 $null0
     UdpSocket *sink3 = new UdpSocket(n3);
+    sink3->Bind (80);
    
     // set null1 [new Agent/Null]
     // $ns attach-agent $n1 $null1
     UdpSocket *sink1 = new UdpSocket(n1);
+    sink1->Bind (80);
 
     // $ns connect $udp0 $null0
     source0->SetDefaultDestination (Ipv4Address ("10.1.3.2"), 80);
