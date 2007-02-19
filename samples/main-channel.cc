@@ -175,10 +175,12 @@ int main (int argc, char *argv[])
 {
   NS_DEBUG_UNCOND("Channel Hackorama")
 
+#if 0
   DebugComponentEnable("Queue");
   DebugComponentEnable("DropTailQueue");
   DebugComponentEnable("LayerConnector");
   DebugComponentEnable("Channel");
+#endif
 
   FakeInternetNode      node1, node2, node3, node4;
   FakePhysicalLayer     phys1, phys2, phys3, phys4;
