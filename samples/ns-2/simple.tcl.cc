@@ -25,11 +25,43 @@
 #include "ns3/nstime.h"
 #include "ns3/internet-node.h"
 #include "ns3/serial-channel.h"
+#include "ns3/mac-address.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/arp-ipv4-interface.h"
+#include "ns3/ipv4.h"
 
 using namespace ns3;
 
-static SerialChannel* AddDuplexLink(InternetNode* a, InternetNode* b) {
+static SerialChannel* AddDuplexLink(InternetNode* a, const Ipv4Address& addra,
+  const MacAddress& macaddra, InternetNode* b, const Ipv4Address& addrb,
+  const MacAddress& macaddrb, const Ipv4Mask& netmask 
+/*, const Rate& rate, const Time& delay */) {
+
     SerialChannel* channel = new SerialChannel();
+
+    SerialNetDevice* neta = new SerialNetDevice(a, macaddra);
+    Ipv4Interface *interfA = new ArpIpv4Interface (a, neta);
+    uint32_t indexA = a->GetIpv4 ()->AddInterface (interfA);
+    channel->Attach (neta);
+    neta->Attach (channel);
+
+    interfA->SetAddress (addra);
+    interfA->SetNetworkMask (netmask);
+    interfA->SetUp ();
+
+    SerialNetDevice* netb = new SerialNetDevice(b, macaddrb);
+    Ipv4Interface *interfB = new ArpIpv4Interface (b, netb);
+    uint32_t indexB = b->GetIpv4 ()->AddInterface (interfB);
+    channel->Attach (netb);
+    netb->Attach (channel);
+
+    interfB->SetAddress (addra);
+    interfB->SetNetworkMask (netmask);
+    interfB->SetUp ();
+
+    a->GetIpv4 ()->AddHostRouteTo (addrb, indexA);
+    b->GetIpv4 ()->AddHostRouteTo (addra, indexB);
+
     return channel;
 }
 
@@ -60,8 +92,20 @@ int main (int argc, char *argv[])
     // $ns duplex-link $n1 $n2 5Mb 2ms DropTail
     // $ns duplex-link $n2 $n3 1.5Mb 10ms DropTail
     // ** part of topology creation object? **
-    SerialChannel* ch = AddDuplexLink(n0,n1);
-    delete ch;
+    SerialChannel* ch1 = AddDuplexLink (
+      n0, Ipv4Address("10.1.1.1"), MacAddress("00:00:00:00:00:01"), 
+      n2, Ipv4Address("10.1.1.2"), MacAddress("00:00:00:00:00:02"), 
+      Ipv4Mask("255.255.255.0"));
+
+    SerialChannel* ch2 = AddDuplexLink (
+      n1, Ipv4Address("10.1.2.1"), MacAddress("00:00:00:00:00:03"), 
+      n2, Ipv4Address("10.1.2.2"), MacAddress("00:00:00:00:00:04"), 
+      Ipv4Mask("255.255.255.0"));
+
+    SerialChannel* ch3 = AddDuplexLink (
+      n2, Ipv4Address("10.1.3.1"), MacAddress("00:00:00:00:00:05"), 
+      n3, Ipv4Address("10.1.3.2"), MacAddress("00:00:00:00:00:06"), 
+      Ipv4Mask("255.255.255.0"));
 
     // $ns duplex-link-op $n0 $n2 orient right-up
     // $ns duplex-link-op $n1 $n2 orient right-down
@@ -100,7 +144,7 @@ int main (int argc, char *argv[])
     // $ns at 1.2 "$ftp start"
     // 
     // $ns at 1.35 "$ns detach-agent $n0 $tcp ; $ns detach-agent $n3 $sink"
-    // ** TCP may not be in this release **
+    // ** TCP may not be in this snapshot **
     // 
     // puts [$cbr0 set packetSize_]
     // puts [$cbr0 set interval_]
@@ -123,10 +167,15 @@ int main (int argc, char *argv[])
     // $ns run
     Simulator::Run ();
     
-    // The below deletes will be managed by future topology object
+    // The below deletes will be managed by future topology objects
+    // or containers or smart pointers
     delete n0;
     delete n1;
     delete n2;
     delete n3;
+    delete ch1;
+    delete ch2;
+    delete ch3;
+
     Simulator::Destroy ();
 }
