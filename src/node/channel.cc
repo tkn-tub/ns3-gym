@@ -30,18 +30,18 @@ namespace ns3 {
 
 Channel::Channel ()
 {
-  NS_DEBUG("Channel::Channel ()")
+  NS_DEBUG("Channel::Channel ()");
 }
 
 Channel::~Channel ()
 {
-  NS_DEBUG("Channel::~Channel ()")
+  NS_DEBUG("Channel::~Channel ()");
 }
 
   bool
 Channel::DoConnectToUpper (LayerConnectorUpper &upper)
 {
-  NS_DEBUG("Channel::DoConnectToUpper (" << &upper << ")")
+  NS_DEBUG("Channel::DoConnectToUpper (" << &upper << ")");
   m_connectorList.push_back(&upper);
 
   return true;
@@ -50,15 +50,15 @@ Channel::DoConnectToUpper (LayerConnectorUpper &upper)
   bool
 Channel::LowerDoNotify (LayerConnectorUpper *upper)
 {
-  NS_DEBUG("Channel::LowerDoNotify ()")
+  NS_DEBUG("Channel::LowerDoNotify ()");
 
   Packet p;
 
-  NS_DEBUG("Channel::LowerDoNotify (): Starting pull")
+  NS_DEBUG("Channel::LowerDoNotify (): Starting pull");
 
   upper->UpperPull(p);
 
-  NS_DEBUG("Channel::LowerDoNotify (): Got bits,  Propagate()")
+  NS_DEBUG("Channel::LowerDoNotify (): Got bits,  Propagate()");
 
   return Propagate(p);
 }
@@ -66,7 +66,7 @@ Channel::LowerDoNotify (LayerConnectorUpper *upper)
   bool
 Channel::Propagate (Packet &p)
 {
-  NS_DEBUG("Channel::Propagate (" << &p << ")")
+  NS_DEBUG("Channel::Propagate (" << &p << ")");
 
   for (ConnectorList::const_iterator i = m_connectorList.begin ();
        i != m_connectorList.end (); 

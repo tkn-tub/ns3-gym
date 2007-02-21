@@ -31,18 +31,18 @@ namespace ns3 {
 
 LayerConnectorUpper::LayerConnectorUpper ()
 {
-  NS_DEBUG("LayerConnectorUpper::LayerConnectorUpper ()")
+  NS_DEBUG("LayerConnectorUpper::LayerConnectorUpper ()");
 }
 
 LayerConnectorUpper::~LayerConnectorUpper ()
 {
-  NS_DEBUG("LayerConnectorUpper::~LayerConnectorUpper ()")
+  NS_DEBUG("LayerConnectorUpper::~LayerConnectorUpper ()");
 }
 
   bool
 LayerConnectorUpper::ConnectToLower (LayerConnectorLower &partner)
 {
-  NS_DEBUG("LayerConnectorUpper::ConnectToLower (" << &partner << ")")
+  NS_DEBUG("LayerConnectorUpper::ConnectToLower (" << &partner << ")");
 
   return DoConnectToLower(partner);
 }
@@ -50,7 +50,7 @@ LayerConnectorUpper::ConnectToLower (LayerConnectorLower &partner)
   bool
 LayerConnectorUpper::DoConnectToLower (LayerConnectorLower &partner)
 {
-  NS_DEBUG("LayerConnectorUpper::DoConnectToLower (" << &partner << ")")
+  NS_DEBUG("LayerConnectorUpper::DoConnectToLower (" << &partner << ")");
 
   m_lowerPartner = &partner;
   NS_ASSERT (m_lowerPartner);
@@ -60,7 +60,7 @@ LayerConnectorUpper::DoConnectToLower (LayerConnectorLower &partner)
   bool
 LayerConnectorUpper::UpperSendUp (Packet &p)
 {
-  NS_DEBUG("LayerConnectorUpper::UpperSendUp (" << &p << ")")
+  NS_DEBUG("LayerConnectorUpper::UpperSendUp (" << &p << ")");
 
   return UpperDoSendUp(p);
 }
@@ -68,7 +68,7 @@ LayerConnectorUpper::UpperSendUp (Packet &p)
   bool
 LayerConnectorUpper::UpperPull (Packet &p)
 {
-  NS_DEBUG("LayerConnectorUpper::UpperPull (" << &p << ")")
+  NS_DEBUG("LayerConnectorUpper::UpperPull (" << &p << ")");
 
   return UpperDoPull(p);
 }
@@ -76,7 +76,7 @@ LayerConnectorUpper::UpperPull (Packet &p)
   bool
 LayerConnectorUpper::UpperNotify ()
 {
-  NS_DEBUG("LayerConnectorUpper::UpperNotify ()")
+  NS_DEBUG("LayerConnectorUpper::UpperNotify ()");
 
   NS_ASSERT (m_lowerPartner);
   return m_lowerPartner->LowerNotify(this);
@@ -84,18 +84,18 @@ LayerConnectorUpper::UpperNotify ()
 
 LayerConnectorLower::LayerConnectorLower ()
 {
-  NS_DEBUG("LayerConnectorLower::LayerConnectorLower ()")
+  NS_DEBUG("LayerConnectorLower::LayerConnectorLower ()");
 }
 
 LayerConnectorLower::~LayerConnectorLower ()
 {
-  NS_DEBUG("LayerConnectorLower::~LayerConnectorLower ()")
+  NS_DEBUG("LayerConnectorLower::~LayerConnectorLower ()");
 }
 
   bool
 LayerConnectorLower::ConnectToUpper (LayerConnectorUpper &partner)
 {
-  NS_DEBUG("LayerConnectorLower::ConnectToUpper (" << &partner << ")")
+  NS_DEBUG("LayerConnectorLower::ConnectToUpper (" << &partner << ")");
 
   return DoConnectToUpper(partner);
 }
@@ -103,7 +103,7 @@ LayerConnectorLower::ConnectToUpper (LayerConnectorUpper &partner)
   bool
 LayerConnectorLower::DoConnectToUpper (LayerConnectorUpper &partner)
 {
-  NS_DEBUG("LayerConnectorLower::DoConnectToUpper (" << &partner << ")")
+  NS_DEBUG("LayerConnectorLower::DoConnectToUpper (" << &partner << ")");
 
   m_upperPartner = &partner;
   NS_ASSERT (m_upperPartner);
@@ -113,7 +113,7 @@ LayerConnectorLower::DoConnectToUpper (LayerConnectorUpper &partner)
   bool
 LayerConnectorLower::LowerSendUp (Packet &p)
 {
-  NS_DEBUG("LayerConnectorLower::LowerSendUp (" << &p << ")")
+  NS_DEBUG("LayerConnectorLower::LowerSendUp (" << &p << ")");
 
   NS_ASSERT (m_upperPartner);
   return m_upperPartner->UpperSendUp(p);
@@ -122,7 +122,7 @@ LayerConnectorLower::LowerSendUp (Packet &p)
   bool
 LayerConnectorLower::LowerPull (Packet &p)
 {
-  NS_DEBUG("LayerConnectorLower::LowerPull (" << &p << ")")
+  NS_DEBUG("LayerConnectorLower::LowerPull (" << &p << ")");
 
   NS_ASSERT (m_upperPartner);
   return m_upperPartner->UpperPull(p);
@@ -131,7 +131,7 @@ LayerConnectorLower::LowerPull (Packet &p)
   bool
 LayerConnectorLower::LowerNotify (LayerConnectorUpper *upper)
 {
-  NS_DEBUG("LayerConnectorLower::LowerNotify ()")
+  NS_DEBUG("LayerConnectorLower::LowerNotify ()");
   return LowerDoNotify(upper);
 }
 

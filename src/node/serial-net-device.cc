@@ -37,8 +37,7 @@ namespace ns3 {
 SerialNetDevice::SerialNetDevice(Node* node, const MacAddress& addr) : 
   NetDevice(node, addr)
 {
-  NS_DEBUG (
-    "SerialNetDevice::SerialNetDevice (" << node << ", " << &addr << ")")
+  NS_DEBUG ("SerialNetDevice::SerialNetDevice (" << node << ", " << &addr << ")");
 
   // BUGBUG FIXME
   //
@@ -53,16 +52,14 @@ SerialNetDevice::SerialNetDevice(Node* node, const MacAddress& addr) :
 
 SerialNetDevice::~SerialNetDevice()
 {
-  NS_DEBUG (
-    "SerialNetDevice::~SerialNetDevice ()")
+  NS_DEBUG ("SerialNetDevice::~SerialNetDevice ()");
 }
 
 
   bool
 SerialNetDevice::SendTo (Packet& p, const MacAddress& dest)
 {
-  NS_DEBUG (
-    "SerialNetDevice::SendTo (" << &p << ", " << &dest << ")")
+  NS_DEBUG ("SerialNetDevice::SendTo (" << &p << ", " << &dest << ")");
 
   assert (IsLinkUp ());
 
@@ -82,8 +79,7 @@ SerialNetDevice::SendTo (Packet& p, const MacAddress& dest)
   bool
 SerialNetDevice::Attach (SerialChannel* ch)
 {
-  NS_DEBUG (
-    "SerialNetDevice::Attach (" << &ch << ")")
+  NS_DEBUG ("SerialNetDevice::Attach (" << &ch << ")");
 
   m_channel = ch;
   /* 
@@ -101,8 +97,7 @@ SerialNetDevice::Attach (SerialChannel* ch)
 void
 SerialNetDevice::AddQueue (Queue* q)
 {
-  NS_DEBUG (
-    "SerialNetDevice::AddQueue (" << q << ")")
+  NS_DEBUG ("SerialNetDevice::AddQueue (" << q << ")");
 
   m_queue = q;
 }
@@ -111,8 +106,7 @@ void
 SerialNetDevice::Receive (Packet& p)
 {
   // ignore return value for now.
-  NS_DEBUG (
-    "SerialNetDevice::Receive (" << &p << ")")
+  NS_DEBUG ("SerialNetDevice::Receive (" << &p << ")");
 
   // Dispatch this to SerialPhy::Receive
   m_phy->Receive (p);
@@ -121,8 +115,7 @@ SerialNetDevice::Receive (Packet& p)
 void
 SerialNetDevice::NotifyDataAvailable(void)
 {
-  NS_DEBUG (
-    "SerialNetDevice::NotifyDataAvailable ()")
+  NS_DEBUG ("SerialNetDevice::NotifyDataAvailable ()");
 
   Packet p;
   bool found = GetQueue ()->Deque (p);
@@ -133,8 +126,7 @@ SerialNetDevice::NotifyDataAvailable(void)
       p.PeekTag (tag);
       // send packet to address tag.address
 #endif
-      NS_DEBUG (
-        "SerialNetDevice::NotifyDataAvailable (): Dequeued")
+      NS_DEBUG ("SerialNetDevice::NotifyDataAvailable (): Dequeued");
       m_channel->Send(p, this);
     }
 }

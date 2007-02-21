@@ -31,56 +31,56 @@ namespace ns3 {
 TraceWriter::TraceWriter () :
   m_filestr()
 {
-  NS_DEBUG ("TraceWriter()::TraceWriter()")
+  NS_DEBUG ("TraceWriter()::TraceWriter()");
 
   std::streambuf *sb = m_filestr.rdbuf();
 
-  NS_DEBUG ("TraceWriter()::TraceWriter():  rdbuf ()")
+  NS_DEBUG ("TraceWriter()::TraceWriter():  rdbuf ()");
   rdbuf(sb);
 
-  NS_DEBUG ("TraceWriter()::TraceWriter():  done")
+  NS_DEBUG ("TraceWriter()::TraceWriter():  done");
 }
 
   TraceWriter::TraceWriter (std::string const &filename) :
   m_filestr()
 {
-  NS_DEBUG ("TraceWriter()::TraceWriter (\"" << filename << "\")")
+  NS_DEBUG ("TraceWriter()::TraceWriter (\"" << filename << "\")");
 
   m_filestr.open (filename.c_str(), std::ios::out | std::ios::app);
 
   std::streambuf *sb = m_filestr.rdbuf();
 
-  NS_DEBUG ("TraceWriter()::TraceWriter():  rdbuf ()")
+  NS_DEBUG ("TraceWriter()::TraceWriter():  rdbuf ()");
   rdbuf(sb);
 
-  NS_DEBUG ("TraceWriter()::TraceWriter():  done")
+  NS_DEBUG ("TraceWriter()::TraceWriter():  done");
 }
 
 TraceWriter::TraceWriter (char const *filename) :
   m_filestr()
 {
-  NS_DEBUG ("TraceWriter()::TraceWriter (\"" << filename << "\")")
+  NS_DEBUG ("TraceWriter()::TraceWriter (\"" << filename << "\")");
 
   m_filestr.open (filename, std::ios::out | std::ios::app);
 
   std::streambuf *sb = m_filestr.rdbuf();
 
-  NS_DEBUG ("TraceWriter()::TraceWriter():  rdbuf ()")
+  NS_DEBUG ("TraceWriter()::TraceWriter():  rdbuf ()");
   rdbuf(sb);
 
-  NS_DEBUG ("TraceWriter()::TraceWriter():  done")
+  NS_DEBUG ("TraceWriter()::TraceWriter():  done");
 }
 
 
 TraceWriter::~TraceWriter ()
 {
-  NS_DEBUG ("TraceWriter()::~TraceWriter()")
+  NS_DEBUG ("TraceWriter()::~TraceWriter()");
 }
 
   void
 TraceWriter::Open (std::string const &filename)
 {
-  NS_DEBUG ("TraceWriter()::Open (\"" << filename << "\")")
+  NS_DEBUG ("TraceWriter()::Open (\"" << filename << "\")");
 
   m_filestr.open (filename.c_str(), std::ios::out | std::ios::app);
 }
@@ -88,7 +88,7 @@ TraceWriter::Open (std::string const &filename)
   void
 TraceWriter::Open (char const *filename)
 {
-  NS_DEBUG ("TraceWriter()::Open (\"" << filename << "\")")
+  NS_DEBUG ("TraceWriter()::Open (\"" << filename << "\")");
 
   m_filestr.open (filename, std::ios::out | std::ios::app);
 }
@@ -96,7 +96,7 @@ TraceWriter::Open (char const *filename)
   void
 TraceWriter::Close ()
 {
-  NS_DEBUG ("TraceWriter()::Close ()")
+  NS_DEBUG ("TraceWriter()::Close ()");
 
   m_filestr.close ();
 }
@@ -104,7 +104,7 @@ TraceWriter::Close ()
   void
 TraceWriter::Write (std::string const &str)
 {
-  NS_DEBUG ("TraceWriter()::Write (\"" << str << "\")")
+  NS_DEBUG ("TraceWriter()::Write (\"" << str << "\")");
 
   m_filestr << str;
 }

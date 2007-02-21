@@ -91,14 +91,14 @@ DropTailQueue::DoDeque (Packet& p)
 
   if (m_packets.empty()) 
     {
-      NS_DEBUG("DropTailQueue::DoDeque (): Queue empty")
+      NS_DEBUG("DropTailQueue::DoDeque (): Queue empty");
       return false;
     }
 
   p = m_packets.front ();
   m_packets.pop ();
 
-  NS_DEBUG("DropTailQueue::DoDeque (): Popped " << &p << " <= true")
+  NS_DEBUG("DropTailQueue::DoDeque (): Popped " << &p << " <= true");
 
   return true;
 }

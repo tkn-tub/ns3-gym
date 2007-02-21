@@ -165,7 +165,7 @@ Queue::GetTotalDroppedPackets (void)
 void 
 Queue::ResetStatistics (void)
 {
-  NS_DEBUG("Queue::ResetStatistics ()")
+  NS_DEBUG("Queue::ResetStatistics ()");
 
   m_nTotalReceivedBytes = 0;
   m_nTotalReceivedPackets = 0;

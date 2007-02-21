@@ -48,19 +48,19 @@ protected:
 
 FakeInternetNode::FakeInternetNode ()
 {
-  NS_DEBUG_UNCOND("FakeInternetNode::FakeInternetNode ()")
+  NS_DEBUG_UNCOND("FakeInternetNode::FakeInternetNode ()");
 }
 
 FakeInternetNode::~FakeInternetNode ()
 {
-  NS_DEBUG_UNCOND("FakeInternetNode::~FakeInternetNode ()")
+  NS_DEBUG_UNCOND("FakeInternetNode::~FakeInternetNode ()");
 }
 
   void
 FakeInternetNode::Doit (void)
 {
-  NS_DEBUG_UNCOND("FakeInternetNode::Doit ()")
-  NS_DEBUG_UNCOND("FakeInternetNode::Doit (): **** Send outbound packet")
+  NS_DEBUG_UNCOND("FakeInternetNode::Doit ()");
+  NS_DEBUG_UNCOND("FakeInternetNode::Doit (): **** Send outbound packet");
   Packet p;
 
   m_dtqOutbound.Enque(p);
@@ -70,9 +70,9 @@ FakeInternetNode::Doit (void)
   bool
 FakeInternetNode::UpperDoSendUp (Packet &p)
 {
-  NS_DEBUG_UNCOND("FakeInternetNode::UpperDoSendUp (" << &p << ")")
+  NS_DEBUG_UNCOND("FakeInternetNode::UpperDoSendUp (" << &p << ")");
 
-  NS_DEBUG_UNCOND("FakeInternetNode::UpperDoSendUp (): **** Receive inbound packet")
+  NS_DEBUG_UNCOND("FakeInternetNode::UpperDoSendUp (): **** Receive inbound packet");
   m_dtqInbound.Enque(p);
   return m_dtqInbound.Deque(p);
 }
@@ -80,7 +80,7 @@ FakeInternetNode::UpperDoSendUp (Packet &p)
   bool
 FakeInternetNode::UpperDoPull (Packet &p)
 {
-  NS_DEBUG_UNCOND("FakeInternetNode::DoPull (" << &p << ")")
+  NS_DEBUG_UNCOND("FakeInternetNode::DoPull (" << &p << ")");
 
   return m_dtqOutbound.Deque(p);
 }
@@ -107,29 +107,29 @@ protected:
 
 FakePhysicalLayer::FakePhysicalLayer ()
 {
-  NS_DEBUG_UNCOND("FakePhysicalLayer::FakePhysicalLayer ()")
+  NS_DEBUG_UNCOND("FakePhysicalLayer::FakePhysicalLayer ()");
 }
 
 FakePhysicalLayer::~FakePhysicalLayer ()
 {
-  NS_DEBUG_UNCOND("FakePhysicalLayer::~FakePhysicalLayer ()")
+  NS_DEBUG_UNCOND("FakePhysicalLayer::~FakePhysicalLayer ()");
 }
 
   bool
 FakePhysicalLayer::LowerDoNotify (LayerConnectorUpper *upper)
 {
-  NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify ()")
+  NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify ()");
 
   Packet p;
 
-  NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify (): Starting pull")
+  NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify (): Starting pull");
 
   NS_ASSERT(m_upperPartner);
   m_upperPartner->UpperPull(p);
 
   m_dtqOutbound.Enque(p);
 
-  NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify (): Got bits,  Notify lower")
+  NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify (): Got bits,  Notify lower");
 
   NS_ASSERT(m_lowerPartner);
   return m_lowerPartner->LowerNotify(this);
@@ -138,7 +138,7 @@ FakePhysicalLayer::LowerDoNotify (LayerConnectorUpper *upper)
   bool
 FakePhysicalLayer::UpperDoSendUp (Packet &p)
 {
-  NS_DEBUG_UNCOND("FakePhysicalLayer::UpperDoSendUp (" << &p << ")")
+  NS_DEBUG_UNCOND("FakePhysicalLayer::UpperDoSendUp (" << &p << ")");
 
   NS_ASSERT(m_upperPartner);
   return m_upperPartner->UpperSendUp(p);
@@ -147,7 +147,7 @@ FakePhysicalLayer::UpperDoSendUp (Packet &p)
   bool
 FakePhysicalLayer::UpperDoPull (Packet &p)
 {
-  NS_DEBUG_UNCOND("FakePhysicalLayer::DoPull (" << &p << ")")
+  NS_DEBUG_UNCOND("FakePhysicalLayer::DoPull (" << &p << ")");
 
   return m_dtqOutbound.Deque(p);
 }
@@ -164,17 +164,17 @@ public:
 
 FakeChannel::FakeChannel ()
 {
-  NS_DEBUG_UNCOND("FakeChannel::FakeChannel ()")
+  NS_DEBUG_UNCOND("FakeChannel::FakeChannel ()");
 }
 
 FakeChannel::~FakeChannel ()
 {
-  NS_DEBUG_UNCOND("FakeChannel::~FakeChannel ()")
+  NS_DEBUG_UNCOND("FakeChannel::~FakeChannel ()");
 }
 
 int main (int argc, char *argv[])
 {
-  NS_DEBUG_UNCOND("Channel Hackorama")
+  NS_DEBUG_UNCOND("Channel Hackorama");
 
 #if 0
   DebugComponentEnable("Queue");

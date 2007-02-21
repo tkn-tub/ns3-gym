@@ -32,21 +32,18 @@ namespace ns3 {
 SerialPhy::SerialPhy(Node* node, SerialNetDevice* netdevice) :
   m_node(node), m_netdevice(netdevice)
 {
-  NS_DEBUG (
-    "SerialPhy::SerialPhy (" << node << ", " << netdevice << ")")
+  NS_DEBUG ("SerialPhy::SerialPhy (" << node << ", " << netdevice << ")");
 }
 
 SerialPhy::~SerialPhy()
 {
-  NS_DEBUG (
-    "SerialPhy::~SerialPhy ()")
+  NS_DEBUG ("SerialPhy::~SerialPhy ()");
 }
 
 void
 SerialPhy::NotifyDataAvailable(void)
 {
-  NS_DEBUG (
-    "SerialPhy::NotifyDataAvailable ()")
+  NS_DEBUG ("SerialPhy::NotifyDataAvailable ()");
 
   Packet p;
   bool found = m_netdevice->GetQueue ()->Deque (p);
@@ -57,8 +54,7 @@ SerialPhy::NotifyDataAvailable(void)
       p.PeekTag (tag);
       // send packet to address tag.address
 #endif
-      NS_DEBUG (
-        "SerialPhy::NotifyDataAvailable (): Dequeued")
+      NS_DEBUG ("SerialPhy::NotifyDataAvailable (): Dequeued");
       m_netdevice->GetChannel()->Send(p, m_netdevice);
     }
 }
@@ -66,8 +62,7 @@ SerialPhy::NotifyDataAvailable(void)
 void
 SerialPhy::Receive (Packet& p)
 {
-  NS_DEBUG (
-    "SerialPhy::Receive (" << &p << ")")
+  NS_DEBUG ("SerialPhy::Receive (" << &p << ")");
 
   m_netdevice->ForwardUp (p);
 }

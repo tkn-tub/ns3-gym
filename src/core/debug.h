@@ -93,7 +93,7 @@ private:
  * environment variable.
  */
 #define NS_DEBUG_COMPONENT_DEFINE(name)                                \
-  static ns3::DebugComponent g_debug = ns3::DebugComponent (name);
+  static ns3::DebugComponent g_debug = ns3::DebugComponent (name)
 
 /**
  * \ingroup debugging
@@ -106,10 +106,14 @@ private:
  * same file.
  */
 #define NS_DEBUG(msg)				\
-  if (g_debug.IsEnabled ())			\
-    {						\
-      std::cout << msg << std::endl;		\
-    }
+  do                                            \
+    {                                           \
+      if (g_debug.IsEnabled ())			\
+        {                                       \
+          std::cout << msg << std::endl;        \
+        }                                       \
+    }                                           \
+  while (false)
 
 /**
  * \ingroup debugging
@@ -118,8 +122,12 @@ private:
  * Generate debugging output unconditionally in all
  * debug builds.
  */
-#define NS_DEBUG_UNCOND(msg) \
-    std::cout << msg << std::endl;
+#define NS_DEBUG_UNCOND(msg)         \
+  do                                 \
+    {                                \
+      std::cout << msg << std::endl; \
+    }                                \
+  while (false)
 
 #else /* NS3_DEBUG_ENABLE */
 
