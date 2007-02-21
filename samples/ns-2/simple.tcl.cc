@@ -58,9 +58,18 @@ public:
 
   ~Tracer () {};
 
-  void Log (const char *s, const Packet &p)
+  void LogEnque (std::string const &name, const Packet &p)
   {
-    m_filestr << s << &p << std::endl;
+    m_filestr << name << " que " << &p << std::endl;
+  }
+
+  void LogDeque (std::string const &name, const Packet &p)
+  {
+    m_filestr << name << " deq " << &p << std::endl;
+  }
+  void LogDrop (std::string const &name, const Packet &p)
+  {
+    m_filestr << name << " dro " << &p << std::endl;
   }
 
 protected:
@@ -115,7 +124,7 @@ PrintRoutingTable (InternetNode *a, std::string name)
 }
 #endif
 
-  static SerialChannel * 
+static SerialChannel * 
 AddDuplexLink(
   InternetNode* a, 
   const Ipv4Address& addra,
@@ -283,30 +292,23 @@ int main (int argc, char *argv[])
 
     Tracer tracer("serial-net-test.log");
 
-    char buffer[80];
-
     for (int i = 1; i <= 3; ++i) {
       for (int j = 0; j < 2; ++j) {
-        sprintf(buffer, "Channel %d::Queue %c::Queue::Enque", i, 'A' + j);
-        
-        NS_DEBUG_UNCOND("tracing event " << buffer)
+        char c = 'A' + j;
+        NS_DEBUG_UNCOND("tracing event enque channel="<<i<<", queue=" << c);
 
-        traceContainer.SetCallback (buffer,
-          MakeCallback (&Tracer::Log, &tracer));
+        traceContainer.SetCallback ("Queue::Enque",
+                                    MakeCallback (&Tracer::LogEnque, &tracer));
 
-        sprintf(buffer, "Channel %d::Queue %c::Queue::Deque", i, 'A' + j);
+        NS_DEBUG_UNCOND("tracing event deque channel="<<i<<", queue=" << c);
 
-        NS_DEBUG_UNCOND("tracing event " << buffer)
+        traceContainer.SetCallback ("Queue::Deque",
+                                    MakeCallback (&Tracer::LogDeque, &tracer));
 
-        traceContainer.SetCallback (buffer,
-          MakeCallback (&Tracer::Log, &tracer));
+        NS_DEBUG_UNCOND("tracing event drop channel="<<i<<", queue=" << c);
 
-        sprintf(buffer, "Channel %d::Queue %c::Queue::Drop", i, 'A' + j);
-
-        NS_DEBUG_UNCOND("tracing event " << buffer)
-
-        traceContainer.SetCallback (buffer,
-          MakeCallback (&Tracer::Log, &tracer));
+        traceContainer.SetCallback ("Queue::Drop",
+                                    MakeCallback (&Tracer::LogDrop, &tracer));
       }
     }
 
