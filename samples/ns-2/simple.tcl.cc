@@ -36,8 +36,37 @@
 #include "ns3/udp-socket.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/drop-tail.h"
+#include "ns3/trace-writer.h"
 
 using namespace ns3;
+
+class Tracer : public TraceWriter{
+public:
+  Tracer ()
+  {
+  };
+
+  Tracer (std::string const &filename) 
+  {
+    Open(filename);
+  };
+
+  Tracer (char const *filename) : m_tracer(filename)
+  {
+    Open(filename);
+  };
+
+  ~Tracer () {};
+
+  void Log (const char *s, const Packet &p)
+  {
+    m_filestr << s << &p << std::endl;
+  }
+
+protected:
+  TraceWriter m_tracer;
+};
+
 
 static void
 GenerateTraffic (UdpSocket *socket, uint32_t size)
@@ -62,7 +91,7 @@ PrintTraffic (UdpSocket *socket)
   socket->SetDummyRxCallback (MakeCallback (&UdpSocketPrinter));
 }
 
-#if 1
+#if 0
 static void
 PrintRoutingTable (InternetNode *a, std::string name)
 {
@@ -86,15 +115,26 @@ PrintRoutingTable (InternetNode *a, std::string name)
 }
 #endif
 
-static SerialChannel* AddDuplexLink(InternetNode* a, const Ipv4Address& addra,
-  const MacAddress& macaddra, InternetNode* b, const Ipv4Address& addrb,
-  const MacAddress& macaddrb, const Ipv4Mask& netmask 
-/*, const Rate& rate, const Time& delay */) {
-
-
+  static SerialChannel * 
+AddDuplexLink(
+  InternetNode* a, 
+  const Ipv4Address& addra,
+  const MacAddress& macaddra, 
+  InternetNode* b, 
+  const Ipv4Address& addrb,
+  const MacAddress& macaddrb, 
+  const Ipv4Mask& netmask,
+  // const Rate& rate, 
+  // const Time& delay,
+  TraceContainer &traceContainer,
+  std::string &name) 
+{
+    std::string qName;
     SerialChannel* channel = new SerialChannel();
 
-    DropTailQueue* dtqa = new DropTailQueue();
+    qName = name + "::Queue A";
+    DropTailQueue* dtqa = new DropTailQueue(qName, traceContainer);
+
     SerialNetDevice* neta = new SerialNetDevice(a, macaddra);
     neta->AddQueue(dtqa);
     Ipv4Interface *interfA = new ArpIpv4Interface (a, neta);
@@ -106,7 +146,9 @@ static SerialChannel* AddDuplexLink(InternetNode* a, const Ipv4Address& addra,
     interfA->SetNetworkMask (netmask);
     interfA->SetUp ();
 
-    DropTailQueue* dtqb = new DropTailQueue();
+    qName = name + "::Queue B";
+    DropTailQueue* dtqb = new DropTailQueue(qName, traceContainer);
+
     SerialNetDevice* netb = new SerialNetDevice(b, macaddrb);
     netb->AddQueue(dtqb);
     Ipv4Interface *interfB = new ArpIpv4Interface (b, netb);
@@ -146,6 +188,13 @@ int main (int argc, char *argv[])
     InternetNode *n1 = new InternetNode();
     InternetNode *n2 = new InternetNode();
     InternetNode *n3 = new InternetNode();
+
+    TraceContainer traceContainer;
+
+    n0->SetName(std::string("Node 0"));
+    n1->SetName(std::string("Node 1"));
+    n2->SetName(std::string("Node 2"));
+    n3->SetName(std::string("Node 3"));
  
     // set f [open out.tr w]
     // $ns trace-all $f 
@@ -157,20 +206,28 @@ int main (int argc, char *argv[])
     // $ns duplex-link $n1 $n2 5Mb 2ms DropTail
     // $ns duplex-link $n2 $n3 1.5Mb 10ms DropTail
     // ** part of topology creation object? **
+    std::string channelName;
+
+    channelName = "Channel 1";
     SerialChannel* ch1 = AddDuplexLink (
       n0, Ipv4Address("10.1.1.1"), MacAddress("00:00:00:00:00:01"), 
       n2, Ipv4Address("10.1.1.2"), MacAddress("00:00:00:00:00:02"), 
-      Ipv4Mask("255.255.255.0"));
+      Ipv4Mask("255.255.255.0"), 
+      traceContainer, channelName);
 
+    channelName = "Channel 2";
     SerialChannel* ch2 = AddDuplexLink (
       n1, Ipv4Address("10.1.2.1"), MacAddress("00:00:00:00:00:03"), 
       n2, Ipv4Address("10.1.2.2"), MacAddress("00:00:00:00:00:04"), 
-      Ipv4Mask("255.255.255.0"));
+      Ipv4Mask("255.255.255.0"), 
+      traceContainer, channelName);
 
+    channelName = "Channel 3";
     SerialChannel* ch3 = AddDuplexLink (
       n2, Ipv4Address("10.1.3.1"), MacAddress("00:00:00:00:00:05"), 
       n3, Ipv4Address("10.1.3.2"), MacAddress("00:00:00:00:00:06"), 
-      Ipv4Mask("255.255.255.0"));
+      Ipv4Mask("255.255.255.0"), 
+      traceContainer, channelName);
 
     // $ns duplex-link-op $n0 $n2 orient right-up
     // $ns duplex-link-op $n1 $n2 orient right-down
@@ -221,7 +278,36 @@ int main (int argc, char *argv[])
 
     // $ns at 1.0 "$cbr0 start"
     // $ns at 1.1 "$cbr1 start"
- 
+
+    Tracer tracer("serial-net-test.log");
+
+    char buffer[80];
+
+    for (int i = 1; i <= 3; ++i) {
+      for (int j = 0; j < 2; ++j) {
+        sprintf(buffer, "Channel %d::Queue %c::Queue::Enque", i, 'A' + j);
+        
+        NS_DEBUG_UNCOND("tracing event " << buffer)
+
+        traceContainer.SetCallback (buffer,
+          MakeCallback (&Tracer::Log, &tracer));
+
+        sprintf(buffer, "Channel %d::Queue %c::Queue::Deque", i, 'A' + j);
+
+        NS_DEBUG_UNCOND("tracing event " << buffer)
+
+        traceContainer.SetCallback (buffer,
+          MakeCallback (&Tracer::Log, &tracer));
+
+        sprintf(buffer, "Channel %d::Queue %c::Queue::Drop", i, 'A' + j);
+
+        NS_DEBUG_UNCOND("tracing event " << buffer)
+
+        traceContainer.SetCallback (buffer,
+          MakeCallback (&Tracer::Log, &tracer));
+      }
+    }
+
     GenerateTraffic (source0, 100);
     PrintTraffic (sink3);
 

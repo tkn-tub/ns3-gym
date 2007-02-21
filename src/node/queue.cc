@@ -46,7 +46,9 @@ Queue::Enque (const Packet& p)
   NS_DEBUG("Queue::Enque (" << &p << ")")
 
   NS_DEBUG("Queue::Enque (): m_traceEnque (p)")
-  m_traceEnque ("+ <timestamp> ", p);
+
+  std::string buffer = m_name + " + <timestamp> ";
+  m_traceEnque (buffer.c_str(), p);
 
   bool retval = DoEnque (p);
   if (retval)
@@ -73,7 +75,9 @@ Queue::Deque (Packet &p)
       NS_ASSERT (m_nPackets >= 0);
 
       NS_DEBUG("Queue::Deque (): m_traceDeque (p)")
-      m_traceDeque ("+ <timestamp> ", static_cast<const Packet &>(p));
+
+      std::string buffer = m_name + " - <timestamp> ";
+      m_traceDeque (buffer.c_str(), static_cast<const Packet &>(p));
     }
 
   return retval;
@@ -116,9 +120,15 @@ Queue::RegisterTraces (TraceContainer &container)
 {
   NS_DEBUG("Queue::RegisterTraces (" << &container << ")")
 
-  container.RegisterCallback ("Queue::Enque", &m_traceEnque);
-  container.RegisterCallback ("Queue::Deque", &m_traceDeque);
-  container.RegisterCallback ("Queue::Drop", &m_traceDrop);
+  container.RegisterCallback (
+    std::string(m_name + "::Queue::Enque").c_str(),
+    &m_traceEnque);
+  container.RegisterCallback (
+    std::string(m_name + "::Queue::Deque").c_str(),
+    &m_traceDeque);
+  container.RegisterCallback (
+    std::string(m_name + "::Queue::Drop").c_str(),
+    &m_traceDrop);
 }
 
   uint32_t
@@ -177,7 +187,8 @@ Queue::Drop (const Packet& p)
   m_nTotalDroppedBytes += p.GetSize ();
 
   NS_DEBUG("Queue::Drop (): m_traceDrop (p)")
-  m_traceEnque ("d <timestamp> ", p);
+  std::string buffer = m_name + " d <timestamp> ";
+  m_traceEnque (buffer.c_str(), p);
 }
 
 }; // namespace ns3

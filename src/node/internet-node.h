@@ -25,6 +25,7 @@
 #define INTERNET_NODE_H
 
 #include <list>
+#include <string>
 
 #include "node.h"
 
@@ -46,12 +47,14 @@ public:
   virtual Udp *            GetUdp (void) const;
   virtual Arp *            GetArp (void) const;
 
+  void SetName(std::string name);
 private:
   void SetupLoopback (void);
   // Capabilities
   NetDeviceList*   m_netDevices;
   L3Demux*         m_l3Demux;
   Ipv4L4Demux*     m_ipv4L4Demux;
+  std::string      m_name;
 };
 
 }//namespace ns3

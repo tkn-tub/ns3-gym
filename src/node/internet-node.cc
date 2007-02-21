@@ -59,6 +59,12 @@ InternetNode::~InternetNode ()
   delete m_ipv4L4Demux;
 }
 
+  void
+InternetNode::SetName (std::string name)
+{
+  m_name = name;
+}
+
 void
 InternetNode::SetupLoopback (void)
 {

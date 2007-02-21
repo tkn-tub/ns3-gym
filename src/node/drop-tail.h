@@ -33,6 +33,7 @@ public:
   DropTailQueue ();
 
   DropTailQueue (TraceContainer &traceContainer);
+  DropTailQueue (std::string &name, TraceContainer &traceContainer);
 
   virtual ~DropTailQueue();
 

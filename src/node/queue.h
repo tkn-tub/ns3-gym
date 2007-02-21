@@ -93,6 +93,7 @@ protected:
   uint32_t m_nTotalReceivedPackets;
   uint32_t m_nTotalDroppedBytes;
   uint32_t m_nTotalDroppedPackets;
+  std::string m_name;
 
 private:
   CallbackTracer<const char *, const Packet &> m_traceEnque;

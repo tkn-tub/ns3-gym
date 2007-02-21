@@ -42,6 +42,20 @@ DropTailQueue::DropTailQueue (TraceContainer &traceContainer) :
   RegisterTraces(traceContainer);
 }
 
+DropTailQueue::DropTailQueue (
+    std::string &name, 
+    TraceContainer &traceContainer)
+  :
+    m_packets(),
+    m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
+{
+  NS_DEBUG(
+    "DropTailQueue::DropTailQueue (" << &traceContainer << ")")
+
+  m_name = name;
+  RegisterTraces(traceContainer);
+}
+
 DropTailQueue::~DropTailQueue ()
 {
   NS_DEBUG(
