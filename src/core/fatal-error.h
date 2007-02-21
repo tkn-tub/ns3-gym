@@ -36,8 +36,12 @@
  * builds.
  */
 #define NS_FATAL_ERROR(msg)				\
-  std::cout << msg << std::endl;			\
-  ns3::AssertBreakpoint ();
+  do                                                    \
+    {                                                   \
+      std::cout << msg << std::endl;			\
+      ns3::AssertBreakpoint ();                         \
+    }                                                   \
+  while (false)
 
 
 #endif /* FATAL_ERROR_H */

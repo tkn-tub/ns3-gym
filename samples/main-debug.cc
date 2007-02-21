@@ -22,6 +22,6 @@ int main (int argc, int argv)
 
   NS_ASSERT (a == 0);
   NS_ASSERT_MSG (a == 0, "my msg");
-  NS_ASSERT (a != 0)
+  NS_ASSERT (a != 0);
   NS_ASSERT_MSG (a != 0, "my 2 msg");
 }

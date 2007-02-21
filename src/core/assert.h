@@ -60,14 +60,19 @@ void AssertBreakpoint (void);
  * unverified condition and halts in the ns3::AssertBreakpoint 
  * function.
  */
-#define NS_ASSERT(condition)                                   \
-  if (!(condition))                                             \
+#define NS_ASSERT(condition)                                    \
+  do                                                            \
     {                                                           \
-      std::cout << "assert failed. file=" << __FILE__ <<        \
-        ", line=" << __LINE__ << ", cond=\""#condition <<       \
-        "\"" << std::endl;                                      \
-      ns3::AssertBreakpoint ();                                 \
-    }
+      if (!(condition))                                         \
+        {                                                       \
+          std::cout << "assert failed. file=" << __FILE__ <<    \
+            ", line=" << __LINE__ << ", cond=\""#condition <<   \
+            "\"" << std::endl;                                  \
+          ns3::AssertBreakpoint ();                             \
+        }                                                       \
+    }                                                           \
+  while (false)
+
 
 /**
  * \ingroup assert
@@ -78,12 +83,16 @@ void AssertBreakpoint (void);
  * true, the program prints the message to output and
  * halts in the ns3::AssertBreakpoint function.
  */
-#define NS_ASSERT_MSG(condition, message) \
-  if (!(condition))                        \
-    {                                      \
-      std::cout << message << std::endl;   \
-      ns3::AssertBreakpoint ();            \
-    }
+#define NS_ASSERT_MSG(condition, message)       \
+  do                                            \
+    {                                           \
+      if (!(condition))                         \
+        {                                       \
+          std::cout << message << std::endl;    \
+          ns3::AssertBreakpoint ();             \
+        }                                       \
+    }                                           \
+  while (false)
 
 #else /* NS3_ASSERT_ENABLE */
 
