@@ -71,7 +71,7 @@ protected:
 static void
 GenerateTraffic (UdpSocket *socket, uint32_t size)
 {
-  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
+  std::cout << "Node: " << socket->GetNode()->GetId () << " at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
   socket->SendDummy (size);
   if (size > 50)
     {
@@ -82,7 +82,7 @@ GenerateTraffic (UdpSocket *socket, uint32_t size)
 static void
 UdpSocketPrinter (UdpSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
 {
-  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << size << std::endl;
+  std::cout << "Node: " << socket->GetNode()->GetId () << " at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << size << std::endl;
 }
 
 static void

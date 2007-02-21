@@ -114,6 +114,10 @@ public:
    * to keep track of it.
    */
   void SetRxCallback (Callback<void,UdpSocket*,uint8_t const*,uint32_t,Ipv4Address,uint16_t> cb);
+  /** 
+   * Return pointer to node
+   */ 
+   Node* GetNode(void) const;
 
 private:
   friend class Udp;

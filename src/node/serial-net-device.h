@@ -32,9 +32,11 @@
 namespace ns3 {
 
 class SerialChannel;
+class SerialPhy;
 class Queue;
 
 class SerialNetDevice : public NetDevice {
+friend class SerialPhy;
 public:
   SerialNetDevice(Node* node, const MacAddress& addr);
   virtual ~SerialNetDevice();
@@ -52,13 +54,16 @@ public:
 
 protected:
   Queue* GetQueue(void) const { return m_queue;};
+  SerialChannel* GetChannel(void) const { return m_channel;};
 
 private:
   virtual void NotifyDataAvailable (void);
   virtual bool SendTo (Packet& p, const MacAddress& dest);
 
+  SerialPhy* m_phy;
   SerialChannel* m_channel;
   Queue* m_queue;
+
 };
 
 }; // namespace ns3

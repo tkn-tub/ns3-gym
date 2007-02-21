@@ -27,6 +27,7 @@
 #include "queue.h"
 #include "serial-net-device.h"
 #include "serial-channel.h"
+#include "serial-phy.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("SerialNetDevice");
 
@@ -46,6 +47,8 @@ SerialNetDevice::SerialNetDevice(Node* node, const MacAddress& addr) :
   EnableMulticast();
   EnablePointToPoint();
   SetMtu(512); // bytes
+
+  m_phy = new SerialPhy(node, this);
 }
 
 SerialNetDevice::~SerialNetDevice()

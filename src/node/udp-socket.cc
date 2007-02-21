@@ -164,4 +164,10 @@ UdpSocket::GetUdp (void) const
   return m_node->GetUdp ();
 }
 
+Node *
+UdpSocket::GetNode (void) const
+{
+  return m_node;
+}
+
 }//namespace ns3
