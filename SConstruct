@@ -216,7 +216,6 @@ node.add_headers ([
     'net-device-list.h',
     'serial-net-device.h',
     'serial-phy.h',
-    'llc-snap-header.h',
     'header-utils.h',
     'protocol.h',
     'demux.h',
@@ -242,7 +241,11 @@ node.add_inst_headers ([
     'drop-tail.h',
     'layer-connector.h',
     'channel.h',
-    'serial-net-device.h'
+    'serial-net-device.h',
+    'llc-snap-header.h',
+    'arp-header.h',
+    'ipv4-header.h',
+    'udp-header.h',
     ])
 
 

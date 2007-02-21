@@ -37,6 +37,10 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/drop-tail.h"
 #include "ns3/trace-writer.h"
+#include "ns3/llc-snap-header.h"
+#include "ns3/arp-header.h"
+#include "ns3/ipv4-header.h"
+#include "ns3/udp-header.h"
 
 using namespace ns3;
 
@@ -60,16 +64,62 @@ public:
 
   void LogEnque (std::string const &name, const Packet &p)
   {
-    m_filestr << name << " que " << &p << std::endl;
+    m_filestr << name << " que ";
+    PrintLlcPacket (p, m_filestr);
+    m_filestr << std::endl;
   }
 
   void LogDeque (std::string const &name, const Packet &p)
   {
-    m_filestr << name << " deq " << &p << std::endl;
+    m_filestr << name << " deq ";
+    PrintLlcPacket (p, m_filestr);
+    m_filestr << std::endl;
   }
   void LogDrop (std::string const &name, const Packet &p)
   {
-    m_filestr << name << " dro " << &p << std::endl;
+    m_filestr << name << " dro ";
+    PrintLlcPacket (p, m_filestr);
+    m_filestr << std::endl;
+  }
+
+  void PrintLlcPacket (Packet p, std::ostream &os)
+  {
+    LlcSnapHeader llc;
+    p.Peek (llc);
+    p.Remove (llc);
+    switch (llc.GetType ())
+      {
+      case 0x0800: {
+        Ipv4Header ipv4;
+        p.Peek (ipv4);
+        p.Remove (ipv4);
+        if (ipv4.GetProtocol () == 17)
+          {
+            UdpHeader udp;
+            p.Peek (udp);
+            p.Remove (udp);
+            os << "udp payload=" << p.GetSize () 
+               << " from="<< ipv4.GetSource () << ":" << udp.GetSource ()
+               << " to="<< ipv4.GetDestination () << ":" << udp.GetDestination ();
+          }
+      } break;
+      case 0x0806: {
+        ArpHeader arp;
+        p.Peek (arp);
+        p.Remove (arp);
+        os << "arp ";
+        if (arp.IsRequest ())
+          {
+            os << "request from=" << arp.GetSourceIpv4Address ()
+               << ", for=" << arp.GetDestinationIpv4Address ();
+          }
+        else
+          {
+            os << "reply from=" << arp.GetSourceIpv4Address ()
+               << ", for=" << arp.GetDestinationIpv4Address ();
+          }
+      } break;
+      }
   }
 
 protected:
