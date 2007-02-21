@@ -183,6 +183,20 @@ AddDuplexLink(
     return channel;
 }
 
+static void
+SetupTrace (TraceContainer &container, Tracer &tracer)
+{
+  container.SetCallback ("Queue::Enque",
+                         MakeCallback (&Tracer::LogEnque, &tracer));
+  
+  container.SetCallback ("Queue::Deque",
+                         MakeCallback (&Tracer::LogDeque, &tracer));
+  
+  container.SetCallback ("Queue::Drop",
+                         MakeCallback (&Tracer::LogDrop, &tracer));
+
+}
+
 int main (int argc, char *argv[])
 {
     // set ns [new Simulator]
@@ -212,6 +226,8 @@ int main (int argc, char *argv[])
     // set nf [open out.nam w]
     // $ns namtrace-all $nf
     // ** tracing configuration occurs later **
+
+    Tracer tracer("serial-net-test.log");
     
     // $ns duplex-link $n0 $n2 5Mb 2ms DropTail
     // $ns duplex-link $n1 $n2 5Mb 2ms DropTail
@@ -225,6 +241,7 @@ int main (int argc, char *argv[])
       n2, Ipv4Address("10.1.1.2"), MacAddress("00:00:00:00:00:02"), 
       Ipv4Mask("255.255.255.0"), 
       traceContainer, channelName);
+    SetupTrace (traceContainer, tracer);
 
     channelName = "Channel 2";
     SerialChannel* ch2 = AddDuplexLink (
@@ -232,6 +249,7 @@ int main (int argc, char *argv[])
       n2, Ipv4Address("10.1.2.2"), MacAddress("00:00:00:00:00:04"), 
       Ipv4Mask("255.255.255.0"), 
       traceContainer, channelName);
+    SetupTrace (traceContainer, tracer);
 
     channelName = "Channel 3";
     SerialChannel* ch3 = AddDuplexLink (
@@ -239,6 +257,7 @@ int main (int argc, char *argv[])
       n3, Ipv4Address("10.1.3.2"), MacAddress("00:00:00:00:00:06"), 
       Ipv4Mask("255.255.255.0"), 
       traceContainer, channelName);
+    SetupTrace (traceContainer, tracer);
 
     // $ns duplex-link-op $n0 $n2 orient right-up
     // $ns duplex-link-op $n1 $n2 orient right-down
@@ -290,27 +309,6 @@ int main (int argc, char *argv[])
     // $ns at 1.0 "$cbr0 start"
     // $ns at 1.1 "$cbr1 start"
 
-    Tracer tracer("serial-net-test.log");
-
-    for (int i = 1; i <= 3; ++i) {
-      for (int j = 0; j < 2; ++j) {
-        char c = 'A' + j;
-        NS_DEBUG_UNCOND("tracing event enque channel="<<i<<", queue=" << c);
-
-        traceContainer.SetCallback ("Queue::Enque",
-                                    MakeCallback (&Tracer::LogEnque, &tracer));
-
-        NS_DEBUG_UNCOND("tracing event deque channel="<<i<<", queue=" << c);
-
-        traceContainer.SetCallback ("Queue::Deque",
-                                    MakeCallback (&Tracer::LogDeque, &tracer));
-
-        NS_DEBUG_UNCOND("tracing event drop channel="<<i<<", queue=" << c);
-
-        traceContainer.SetCallback ("Queue::Drop",
-                                    MakeCallback (&Tracer::LogDrop, &tracer));
-      }
-    }
 
     GenerateTraffic (source0, 100);
     PrintTraffic (sink3);
