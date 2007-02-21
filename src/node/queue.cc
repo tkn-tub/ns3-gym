@@ -121,13 +121,13 @@ Queue::RegisterTraces (TraceContainer &container)
   NS_DEBUG("Queue::RegisterTraces (" << &container << ")")
 
   container.RegisterCallback (
-    std::string(m_name + "::Queue::Enque").c_str(),
+    std::string(m_name + "::Queue::Enque"),
     &m_traceEnque);
   container.RegisterCallback (
-    std::string(m_name + "::Queue::Deque").c_str(),
+    std::string(m_name + "::Queue::Deque"),
     &m_traceDeque);
   container.RegisterCallback (
-    std::string(m_name + "::Queue::Drop").c_str(),
+    std::string(m_name + "::Queue::Drop"),
     &m_traceDrop);
 }
 
@@ -178,7 +178,7 @@ Queue::ResetStatistics (void)
   m_nTotalDroppedPackets = 0;
 }
 
-  void
+void
 Queue::Drop (const Packet& p)
 {
   NS_DEBUG("Queue::Drop (" << &p << ")")
