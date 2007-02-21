@@ -314,11 +314,11 @@ int main (int argc, char *argv[])
   // $ns at 1.1 "$cbr1 start"
 
 
-  GenerateTraffic (source0, 100);
   PrintTraffic (sink3);
+  GenerateTraffic (source0, 100);
 
-  GenerateTraffic (source3, 100);
   PrintTraffic (sink1);
+  GenerateTraffic (source3, 100);
   // 
   // set tcp [new Agent/TCP]
   // $tcp set class_ 2
