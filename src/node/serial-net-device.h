@@ -53,8 +53,8 @@ public:
   void Receive (Packet& p);
 
 protected:
-  Queue* GetQueue(void) const { return m_queue;};
-  SerialChannel* GetChannel(void) const { return m_channel;};
+  Queue* GetQueue(void) const; 
+  SerialChannel* GetChannel(void) const;
 
 private:
   virtual void NotifyDataAvailable (void);

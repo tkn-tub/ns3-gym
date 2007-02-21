@@ -138,4 +138,16 @@ SerialNetDevice::NotifyDataAvailable(void)
     }
 }
 
+Queue* 
+SerialNetDevice::GetQueue(void) const 
+{ 
+    return m_queue;
+}
+
+SerialChannel* 
+SerialNetDevice::GetChannel(void) const 
+{ 
+    return m_channel;
+}
+
 } // namespace ns3
