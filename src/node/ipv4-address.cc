@@ -18,6 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+#include "ns3/debug.h"
+NS_DEBUG_COMPONENT_DEFINE("Ipv4Address")                                \
 
 #include "ipv4-address.h"
 
