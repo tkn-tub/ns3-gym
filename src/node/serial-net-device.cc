@@ -114,7 +114,8 @@ SerialNetDevice::Receive (Packet& p)
   NS_DEBUG (
     "SerialNetDevice::Receive (" << &p << ")")
 
-  ForwardUp (p);
+  // Dispatch this to SerialPhy::Receive
+  m_phy->Receive (p);
 }
 
 void
