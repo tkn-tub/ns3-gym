@@ -25,48 +25,37 @@ NS_DEBUG_COMPONENT_DEFINE ("DropTailQueue");
 namespace ns3 {
 
 DropTailQueue::DropTailQueue () :
-    m_packets (),
-    m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
+  Queue (""),
+  m_packets (),
+  m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
 {
-  NS_DEBUG(
-    "DropTailQueue::DropTailQueue ()")
+  NS_DEBUG("DropTailQueue::DropTailQueue ()");
 }
 
-DropTailQueue::DropTailQueue (TraceContainer &traceContainer) :
+
+DropTailQueue::DropTailQueue (std::string const&name)
+  : Queue (name),
     m_packets(),
     m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
 {
-  NS_DEBUG(
-    "DropTailQueue::DropTailQueue (" << &traceContainer << ")")
-
-  RegisterTraces(traceContainer);
-}
-
-DropTailQueue::DropTailQueue (
-    std::string &name, 
-    TraceContainer &traceContainer)
-  :
-    m_packets(),
-    m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
-{
-  NS_DEBUG(
-    "DropTailQueue::DropTailQueue (" << &traceContainer << ")")
-
-  m_name = name;
-  RegisterTraces(traceContainer);
+  NS_DEBUG("DropTailQueue::DropTailQueue");
 }
 
 DropTailQueue::~DropTailQueue ()
 {
-  NS_DEBUG(
-    "DropTailQueue::~DropTailQueue ()")
+  NS_DEBUG("DropTailQueue::~DropTailQueue ()");
+}
+
+void 
+DropTailQueue::RegisterTraces (TraceContainer &traceContainer)
+{
+  Queue::QueueRegisterTraces (traceContainer);
 }
 
   void 
 DropTailQueue::SetMaxPackets (uint32_t npackets)
 {
-  NS_DEBUG(
-    "DropTailQueue::SetMaxPackets (" << npackets << ")")
+  NS_DEBUG("DropTailQueue::SetMaxPackets (" << npackets << ")");
 
   m_maxPackets = npackets;
 }
@@ -74,8 +63,7 @@ DropTailQueue::SetMaxPackets (uint32_t npackets)
   uint32_t 
 DropTailQueue::GetMaxPackets (void)
 {
-  NS_DEBUG(
-    "DropTailQueue::GetMaxPackets () <= " << m_maxPackets)
+  NS_DEBUG("DropTailQueue::GetMaxPackets () <= " << m_maxPackets);
 
   return m_maxPackets;
 }
@@ -83,13 +71,11 @@ DropTailQueue::GetMaxPackets (void)
   bool 
 DropTailQueue::DoEnque (const Packet& p)
 {
-  NS_DEBUG(
-    "DropTailQueue::DoEnque (" << &p << ")")
+  NS_DEBUG("DropTailQueue::DoEnque (" << &p << ")");
 
-  if (m_nPackets >= m_maxPackets)
+  if (GetNPackets () >= m_maxPackets)
     {
-      NS_DEBUG(
-        "DropTailQueue::DoEnque (): Queue full -- droppping pkt")
+      NS_DEBUG("DropTailQueue::DoEnque (): Queue full -- droppping pkt");
       Drop (p);
       return false;
     }
@@ -101,21 +87,18 @@ DropTailQueue::DoEnque (const Packet& p)
   bool
 DropTailQueue::DoDeque (Packet& p)
 {
-  NS_DEBUG(
-    "DropTailQueue::DoDeque (" << &p << ")")
+  NS_DEBUG("DropTailQueue::DoDeque (" << &p << ")");
 
   if (m_packets.empty()) 
     {
-      NS_DEBUG(
-        "DropTailQueue::DoDeque (): Queue empty")
+      NS_DEBUG("DropTailQueue::DoDeque (): Queue empty")
       return false;
     }
 
   p = m_packets.front ();
   m_packets.pop ();
 
-  NS_DEBUG(
-    "DropTailQueue::DoDeque (): Popped " << &p << " <= true")
+  NS_DEBUG("DropTailQueue::DoDeque (): Popped " << &p << " <= true")
 
   return true;
 }

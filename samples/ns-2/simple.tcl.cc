@@ -133,7 +133,8 @@ AddDuplexLink(
     SerialChannel* channel = new SerialChannel();
 
     qName = name + "::Queue A";
-    DropTailQueue* dtqa = new DropTailQueue(qName, traceContainer);
+    DropTailQueue* dtqa = new DropTailQueue(qName);
+    dtqa->RegisterTraces (traceContainer);
 
     SerialNetDevice* neta = new SerialNetDevice(a, macaddra);
     neta->AddQueue(dtqa);
@@ -147,7 +148,8 @@ AddDuplexLink(
     interfA->SetUp ();
 
     qName = name + "::Queue B";
-    DropTailQueue* dtqb = new DropTailQueue(qName, traceContainer);
+    DropTailQueue* dtqb = new DropTailQueue(qName);
+    dtqb->RegisterTraces (traceContainer);
 
     SerialNetDevice* netb = new SerialNetDevice(b, macaddrb);
     netb->AddQueue(dtqb);

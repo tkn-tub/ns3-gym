@@ -26,23 +26,25 @@
 
 namespace ns3 {
 
+class TraceContainer;
+
 const int DTQ_NPACKETS_MAX_DEFAULT = 100;
 
 class DropTailQueue : public Queue {
 public:
   DropTailQueue ();
+  DropTailQueue (std::string const &name);
 
-  DropTailQueue (TraceContainer &traceContainer);
-  DropTailQueue (std::string &name, TraceContainer &traceContainer);
+  void RegisterTraces (TraceContainer &traceContainer);
 
   virtual ~DropTailQueue();
 
   void SetMaxPackets (uint32_t npackets);
   uint32_t GetMaxPackets (void);
 
-protected:
-  bool DoEnque (const Packet& p);
-  bool DoDeque (Packet &p);
+private:
+  virtual bool DoEnque (const Packet& p);
+  virtual bool DoDeque (Packet &p);
 
 private:
   std::queue<Packet> m_packets;

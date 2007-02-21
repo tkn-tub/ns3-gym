@@ -25,6 +25,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+#include <string>
 #include "ns3/packet.h"
 #include "ns3/callback-tracer.h"
 #include "ns3/trace-container.h"
@@ -34,7 +35,7 @@ namespace ns3 {
 class Queue
 {
 public:
-  Queue ();
+  Queue (std::string const &name);
   virtual ~Queue ();
 
   bool Enque (const Packet& p);
@@ -45,8 +46,6 @@ public:
   uint32_t GetNBytes (void);
 
   bool IsEmpty (void);
-
-  void RegisterTraces (TraceContainer &container);
 
   uint32_t GetTotalReceivedBytes (void);
   uint32_t GetTotalReceivedPackets (void);
@@ -86,6 +85,12 @@ private:
 protected:
   // called by subclasses to notify parent of packet drops.
   void Drop (const Packet& p);
+  void QueueRegisterTraces (TraceContainer &container);
+
+private:
+  CallbackTracer<std::string const &, const Packet &> m_traceEnque;
+  CallbackTracer<std::string const &, const Packet &> m_traceDeque;
+  CallbackTracer<std::string const &, const Packet &> m_traceDrop;
 
   uint32_t m_nBytes;
   uint32_t m_nTotalReceivedBytes;
@@ -93,12 +98,9 @@ protected:
   uint32_t m_nTotalReceivedPackets;
   uint32_t m_nTotalDroppedBytes;
   uint32_t m_nTotalDroppedPackets;
+
   std::string m_name;
 
-private:
-  CallbackTracer<const char *, const Packet &> m_traceEnque;
-  CallbackTracer<const char *, const Packet &> m_traceDeque;
-  CallbackTracer<const char *, const Packet &> m_traceDrop;
 
 #if 0
   // Static methods to manage queue default
