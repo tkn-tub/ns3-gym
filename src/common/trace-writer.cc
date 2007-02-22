@@ -82,7 +82,7 @@ TraceWriter::Open (std::string const &filename)
 {
   NS_DEBUG ("TraceWriter()::Open (\"" << filename << "\")");
 
-  m_filestr.open (filename.c_str(), std::ios::out | std::ios::app);
+  m_filestr.open (filename.c_str(), std::ios::out);
 }
 
   void
@@ -90,7 +90,7 @@ TraceWriter::Open (char const *filename)
 {
   NS_DEBUG ("TraceWriter()::Open (\"" << filename << "\")");
 
-  m_filestr.open (filename, std::ios::out | std::ios::app);
+  m_filestr.open (filename, std::ios::out);
 }
 
   void
