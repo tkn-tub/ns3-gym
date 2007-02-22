@@ -23,10 +23,14 @@
 
 #include <iostream>
 #include <string>
+#include <cassert>
 
 #include "ns3/debug.h"
+
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
+#include "ns3/trace-writer.h"
+
 #include "ns3/internet-node.h"
 #include "ns3/serial-channel.h"
 #include "ns3/mac-address.h"
@@ -186,7 +190,6 @@ AddDuplexLink(
   InternetNode* b, 
   const Ipv4Address& addrb,
   const MacAddress& macaddrb, 
-  const Ipv4Mask& netmask,
   // const Rate& rate, 
   // const Time& delay,
   TraceContainer &traceContainer,
@@ -194,6 +197,11 @@ AddDuplexLink(
 {
   std::string qName;
   SerialChannel* channel = new SerialChannel();
+
+  // Duplex link is assumed to be subnetted as a /30
+  // May run this unnumbered in the future?
+  Ipv4Mask netmask("255.255.255.252");
+  assert(netmask.IsMatch(addra,addrb));
 
   qName = name + "::Queue A";
   DropTailQueue* dtqa = new DropTailQueue(qName);
@@ -293,7 +301,6 @@ int main (int argc, char *argv[])
   SerialChannel* ch1 = AddDuplexLink (
       n0, Ipv4Address("10.1.1.1"), MacAddress("00:00:00:00:00:01"), 
       n2, Ipv4Address("10.1.1.2"), MacAddress("00:00:00:00:00:02"), 
-      Ipv4Mask("255.255.255.0"), 
       traceContainer, channelName);
   SetupTrace (traceContainer, tracer);
 
@@ -301,7 +308,6 @@ int main (int argc, char *argv[])
   SerialChannel* ch2 = AddDuplexLink (
       n1, Ipv4Address("10.1.2.1"), MacAddress("00:00:00:00:00:03"), 
       n2, Ipv4Address("10.1.2.2"), MacAddress("00:00:00:00:00:04"), 
-      Ipv4Mask("255.255.255.0"), 
       traceContainer, channelName);
   SetupTrace (traceContainer, tracer);
 
@@ -309,7 +315,6 @@ int main (int argc, char *argv[])
   SerialChannel* ch3 = AddDuplexLink (
       n2, Ipv4Address("10.1.3.1"), MacAddress("00:00:00:00:00:05"), 
       n3, Ipv4Address("10.1.3.2"), MacAddress("00:00:00:00:00:06"), 
-      Ipv4Mask("255.255.255.0"), 
       traceContainer, channelName);
   SetupTrace (traceContainer, tracer);
   
