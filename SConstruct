@@ -172,8 +172,6 @@ node.add_sources ([
     'ipv4-address.cc',
     'internet-node.cc',
     'net-device.cc',
-    'serial-net-device.cc',
-    'serial-phy.cc',
     'mac-address.cc',
     'ipv4-header.cc',
     'udp-header.cc',
@@ -193,11 +191,8 @@ node.add_sources ([
     'llc-snap-header.cc',
     'header-utils.cc',
     'net-device-list.cc',
-    'serial-channel.cc',
     'queue.cc',
     'drop-tail.cc',
-    'layer-connector.cc',
-    'channel.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
@@ -212,12 +207,8 @@ node.add_headers ([
     'l3-demux.h',
     'ipv4-l4-demux.h',
     'net-device-list.h',
-    'serial-net-device.h',
-    'serial-phy.h',
     'header-utils.h',
     'protocol.h',
-    'demux.h',
-    'serial-channel.h',
     'queue.h',
     ])
 node.add_inst_headers ([
@@ -232,12 +223,8 @@ node.add_inst_headers ([
     'ipv4.h',
     'l3-protocol.h',
     'ipv4-route.h',
-    'serial-channel.h',
     'queue.h',
     'drop-tail.h',
-    'layer-connector.h',
-    'channel.h',
-    'serial-net-device.h',
     'llc-snap-header.h',
     'arp-header.h',
     'ipv4-header.h',
@@ -254,6 +241,26 @@ p2p.add_sources ([
 p2p.add_inst_headers ([
     'p2p-net-device.h',
     'p2p-channel.h',
+    ])
+
+serial = build.Ns3Module ('serial', 'src/devices/serial')
+ns3.add (serial)
+serial.add_deps (['node'])
+serial.add_sources ([
+    'serial-net-device.cc',
+    'serial-channel.cc',
+    'serial-phy.cc',
+    'layer-connector.cc',
+    'channel.cc',
+    ])
+serial.add_headers ([
+    'propagator.h',
+    ])
+serial.add_inst_headers ([
+    'serial-net-device.h',
+    'serial-channel.h',
+    'layer-connector.h',
+    'channel.h',
     ])
 
 
@@ -330,8 +337,7 @@ sample_test.add_source('main-test.cc')
 sample_serial_net_device_if = build.Ns3Module ('sample-serial-net-device-if', 'samples')
 sample_serial_net_device_if.set_executable ()
 ns3.add (sample_serial_net_device_if)
-sample_serial_net_device_if.add_dep ('common')
-sample_serial_net_device_if.add_dep ('node')
+sample_serial_net_device_if.add_deps (['common', 'node', 'serial'])
 sample_serial_net_device_if.add_source ('main-serial-net-device-if.cc')
 
 sample_simple = build.Ns3Module('sample-simple', 'samples')
@@ -349,7 +355,7 @@ sample_sp2p.add_source('main-simple-p2p.cc')
 sample_simple_tcl = build.Ns3Module('sample-simple.tcl', 'samples')
 sample_simple_tcl.set_executable()
 ns3.add(sample_simple_tcl)
-sample_simple_tcl.add_deps(['core', 'simulator', 'node'])
+sample_simple_tcl.add_deps(['core', 'simulator', 'node', 'serial'])
 sample_simple_tcl.add_source('ns-2/simple.tcl.cc')
 
 sample_channel = build.Ns3Module('sample-channel', 'samples')
@@ -358,6 +364,7 @@ ns3.add(sample_channel)
 sample_channel.add_dep ('common')
 sample_channel.add_dep ('node')
 sample_channel.add_dep ('core')
+sample_channel.add_dep ('serial')
 sample_channel.add_source('main-channel.cc')
 
 ns3.generate_dependencies()

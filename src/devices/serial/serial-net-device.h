@@ -19,28 +19,54 @@
  * Author: Craig Dowell <craigdo@ee.washington.edu>
  */
 
-#ifndef SERIAL_PHY_H
-#define SERIAL_PHY_H
+#ifndef SERIAL_NET_DEVICE_H
+#define SERIAL_NET_DEVICE_H
 
 #include <string.h>
-#include "internet-node.h"
-#include "serial-net-device.h"
+#include "ns3/mac-address.h"
+#include "ns3/internet-node.h"
+#include "ns3/net-device.h"
+#include "ns3/callback.h"
 #include "ns3/packet.h"
 
 namespace ns3 {
 
-class SerialPhy {
+class SerialChannel;
+class SerialPhy;
+class Queue;
+
+class SerialNetDevice : public NetDevice {
+friend class SerialPhy;
 public:
-  SerialPhy(Node* node, SerialNetDevice* netdevice);
-  virtual ~SerialPhy();
-  virtual void NotifyDataAvailable (void);
-  void Receive (Packet& p);
+  SerialNetDevice(Node* node, const MacAddress& addr);
+  virtual ~SerialNetDevice();
 
 private:
-  Node* m_node;
-  SerialNetDevice* m_netdevice;
+  // Don't let the compiler slip in copy and assignment construction
+  SerialNetDevice(const SerialNetDevice&);
+  SerialNetDevice&operator=(const SerialNetDevice&);
+
+public:
+  bool Attach(SerialChannel* ch);
+  void AddQueue(Queue *);
+  // called by ChannelSerial
+  void Receive (Packet& p);
+
+protected:
+  Queue* GetQueue(void) const; 
+  SerialChannel* GetChannel(void) const;
+
+private:
+  virtual void NotifyDataAvailable (void);
+  virtual bool SendTo (Packet& p, const MacAddress& dest);
+
+  SerialPhy* m_phy;
+  SerialChannel* m_channel;
+  Queue* m_queue;
+
 };
 
-} // namespace ns3
+}; // namespace ns3
 
-#endif // SERIAL_PHY_H
+#endif // SERIAL_NET_DEVICE_H
+

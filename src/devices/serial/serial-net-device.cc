@@ -22,9 +22,7 @@
 #include <iostream>
 #include <cassert>
 #include "ns3/debug.h"
-#include "protocol.h"
-#include "demux.h"
-#include "queue.h"
+#include "ns3/queue.h"
 #include "serial-net-device.h"
 #include "serial-channel.h"
 #include "serial-phy.h"

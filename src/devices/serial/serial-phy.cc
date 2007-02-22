@@ -20,10 +20,10 @@
  */
 
 #include "ns3/debug.h"
+#include "ns3/queue.h"
 #include "serial-phy.h"
 #include "serial-net-device.h"
 #include "serial-channel.h"
-#include "queue.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("SerialPhy");
 
