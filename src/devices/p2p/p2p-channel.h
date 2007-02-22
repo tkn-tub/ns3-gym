@@ -19,34 +19,38 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// Definition for a Point-to-Point network device
+// Definition of a simple point-to-point channel
 // George F. Riley, Georgia Tech, Spring 2007
 
-#ifndef P2P_NET_DEVICE_H
-#define P2P_NET_DEVICE_H
+#ifndef P2P_CHANNEL_H
+#define P2P_CHANNEL_H
 
-#include "net-device.h"
+#include "ns3/nstime.h"
+#include "ns3/mac-address.h"
 
 namespace ns3 {
 
-class P2PChannel;
+class P2PNetDevice;
+class NetDevice;
+class Node;
+class Packet;
 
-class P2PNetDevice : public NetDevice {
+class P2PChannel  {
 public:
-  P2PNetDevice(Node *node, MacAddress const &addr);
-  virtual ~P2PNetDevice();
+  P2PChannel(const Time& delay, double maxRate /* bits/s */);
+  ~P2PChannel();
 
-  void SetRate (double rate);
-  void Connect (P2PChannel *channel);
-  void Receive(Packet p);
-  void TxComplete (void);
- private:
-  virtual bool SendTo (Packet& p, const MacAddress& dest);
-  double m_rate;
-  P2PChannel *m_channel;
+  P2PNetDevice* CreateNetDevice(Node *node, MacAddress address);
+  void       RemoveNetDevice (NetDevice *device);
+  void       Send (P2PNetDevice *device, Packet&p, double rate /* bits/s */);
+private:
+  // The two endpoints of this channel
+  P2PNetDevice* m_nd1;
+  P2PNetDevice* m_nd2;
+  Time          m_delay;
+  double        m_maxRate;
 };
 
 }//namespace ns3
 
-#endif /* P2P_NET_DEVICE_H */
-
+#endif

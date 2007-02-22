@@ -189,8 +189,6 @@ node.add_sources ([
     'arp-cache.cc',
     'arp-ipv4-interface.cc',
     'arp.cc',
-    'p2p-net-device.cc',
-    'p2p-channel.cc',
     'ipv4-loopback-interface.cc',
     'llc-snap-header.cc',
     'header-utils.cc',
@@ -228,8 +226,6 @@ node.add_inst_headers ([
     'udp-socket.h',
     'ipv4-address.h',
     'net-device.h',
-    'p2p-net-device.h',
-    'p2p-channel.h',
     'arp-ipv4-interface.h',
     'ipv4-interface.h',
     'mac-address.h',
@@ -246,6 +242,18 @@ node.add_inst_headers ([
     'arp-header.h',
     'ipv4-header.h',
     'udp-header.h',
+    ])
+
+p2p = build.Ns3Module ('p2p', 'src/devices/p2p')
+ns3.add (p2p)
+p2p.add_deps (['node'])
+p2p.add_sources ([
+    'p2p-net-device.cc',
+    'p2p-channel.cc',
+    ])
+p2p.add_inst_headers ([
+    'p2p-net-device.h',
+    'p2p-channel.h',
     ])
 
 
@@ -335,7 +343,7 @@ sample_simple.add_source('main-simple.cc')
 sample_sp2p = build.Ns3Module('sample-simple-p2p', 'samples')
 sample_sp2p.set_executable()
 ns3.add(sample_sp2p)
-sample_sp2p.add_deps(['core', 'simulator', 'node'])
+sample_sp2p.add_deps(['core', 'simulator', 'node', 'p2p'])
 sample_sp2p.add_source('main-simple-p2p.cc')
 
 sample_simple_tcl = build.Ns3Module('sample-simple.tcl', 'samples')

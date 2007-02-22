@@ -24,9 +24,9 @@
 
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
+#include "ns3/node.h"
 #include "p2p-channel.h"
 #include "p2p-net-device.h"
-#include "node.h"
 
 namespace ns3 {
 
