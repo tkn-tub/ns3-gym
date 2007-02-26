@@ -37,6 +37,7 @@ class InternetNode : public Node
 public:
   InternetNode();
   InternetNode(const InternetNode&);
+  InternetNode const &operator = (InternetNode const &o);
   virtual ~InternetNode ();
   virtual InternetNode* Copy() const;
   // Capability access

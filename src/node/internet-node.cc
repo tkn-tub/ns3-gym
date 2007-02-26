@@ -49,7 +49,19 @@ InternetNode::InternetNode (InternetNode const &o)
   m_netDevices = new NetDeviceList ();
   m_l3Demux = o.m_l3Demux->Copy (this);
   m_ipv4L4Demux = o.m_ipv4L4Demux->Copy (this);
-  SetupLoopback ();
+  SetupLoopback ();  
+}
+InternetNode const &
+InternetNode::operator = (InternetNode const &o)
+{
+  delete m_netDevices;
+  delete m_l3Demux;
+  delete m_ipv4L4Demux;
+  m_netDevices = new NetDeviceList ();
+  m_l3Demux = o.m_l3Demux->Copy (this);
+  m_ipv4L4Demux = o.m_ipv4L4Demux->Copy (this);
+  SetupLoopback ();  
+  return *this;
 }
 
 InternetNode::~InternetNode ()
