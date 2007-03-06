@@ -82,6 +82,9 @@ private:
   std::ofstream m_log;
   std::ifstream m_inputLog;
   bool m_logEnable;
+  // number of events that have been inserted but not yet scheduled,
+  // not counting the "destroy" events; this is used for validation
+  int m_unscheduledEvents;
 };
 
 
@@ -98,6 +101,7 @@ SimulatorPrivate::SimulatorPrivate (Scheduler *events)
   m_currentUid = 0;
   m_logEnable = false;
   m_currentNs = 0;
+  m_unscheduledEvents = 0;
 }
 
 SimulatorPrivate::~SimulatorPrivate ()
@@ -128,6 +132,10 @@ SimulatorPrivate::ProcessOneEvent (void)
   EventImpl *nextEv = m_events->PeekNext ();
   Scheduler::EventKey nextKey = m_events->PeekNextKey ();
   m_events->RemoveNext ();
+
+  NS_ASSERT (nextKey.m_ns >= m_currentNs);
+  --m_unscheduledEvents;
+
   TRACE ("handle " << nextEv);
   m_currentNs = nextKey.m_ns;
   m_currentUid = nextKey.m_uid;
@@ -167,6 +175,11 @@ SimulatorPrivate::Run (void)
     {
       ProcessOneEvent ();
     }
+
+  // If the simulator stopped naturally by lack of events, make a
+  // consistency test to check that we didn't lose any events along the way.
+  NS_ASSERT(!m_events->IsEmpty () || m_unscheduledEvents == 0);
+
   m_log.close ();
 }
 
@@ -195,6 +208,7 @@ SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
             <<m_uid<<" "<<time.GetNanoSeconds () << std::endl;
     }
   m_uid++;
+  ++m_unscheduledEvents;
   return m_events->Insert (event, key);
 }
 void 
@@ -208,6 +222,7 @@ SimulatorPrivate::ScheduleNow (EventImpl *event)
             <<m_uid<<" "<<ns << std::endl;
     }
   m_uid++;
+  ++m_unscheduledEvents;
   m_events->Insert (event, key);
 }
 void 
@@ -239,6 +254,7 @@ SimulatorPrivate::Remove (EventId ev)
       m_log << "r " << m_currentUid << " " << m_currentNs << " "
             << key.m_uid << " " << key.m_ns << std::endl;
     }
+  --m_unscheduledEvents;
 }
 
 void
