@@ -42,15 +42,15 @@ Queue::~Queue()
 }
 
 bool 
-Queue::Enque (const Packet& p)
+Queue::Enqueue (const Packet& p)
 {
-  NS_DEBUG("Queue::Enque (" << &p << ")");
+  NS_DEBUG("Queue::Enqueue (" << &p << ")");
 
-  NS_DEBUG("Queue::Enque (): m_traceEnque (p)");
+  NS_DEBUG("Queue::Enqueue (): m_traceEnqueue (p)");
 
-  m_traceEnque (m_name, p);
+  m_traceEnqueue (m_name, p);
 
-  bool retval = DoEnque (p);
+  bool retval = DoEnqueue (p);
   if (retval)
     {
       m_nBytes += p.GetSize ();
@@ -60,11 +60,11 @@ Queue::Enque (const Packet& p)
 }
 
 bool
-Queue::Deque (Packet &p)
+Queue::Dequeue (Packet &p)
 {
-  NS_DEBUG("Queue::Deque (" << &p << ")");
+  NS_DEBUG("Queue::Dequeue (" << &p << ")");
 
-  bool retval = DoDeque (p);
+  bool retval = DoDequeue (p);
 
   if (retval)
     {
@@ -74,19 +74,19 @@ Queue::Deque (Packet &p)
       NS_ASSERT (m_nBytes >= 0);
       NS_ASSERT (m_nPackets >= 0);
 
-      NS_DEBUG("Queue::Deque (): m_traceDeque (p)");
+      NS_DEBUG("Queue::Dequeue (): m_traceDequeue (p)");
 
       const Packet packet = p;
-      m_traceDeque (m_name, packet);
+      m_traceDequeue (m_name, packet);
     }
 
   return retval;
 }
 
 void
-Queue::DequeAll (void)
+Queue::DequeueAll (void)
 {
-  NS_DEBUG("Queue::DequeAll ()");
+  NS_DEBUG("Queue::DequeueAll ()");
 
   NS_ASSERT (!"Don't know what to do with dequeued packets!");
 }
@@ -120,10 +120,10 @@ Queue::QueueRegisterTraces (TraceContainer &container)
 {
   NS_DEBUG("Queue::RegisterTraces (" << &container << ")");
 
-  container.RegisterCallback ("Queue::Enque",
-                              &m_traceEnque);
-  container.RegisterCallback ("Queue::Deque",
-                              &m_traceDeque);
+  container.RegisterCallback ("Queue::Enqueue",
+                              &m_traceEnqueue);
+  container.RegisterCallback ("Queue::Dequeue",
+                              &m_traceDequeue);
   container.RegisterCallback ("Queue::Drop",
                               &m_traceDrop);
 }

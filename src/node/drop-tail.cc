@@ -69,13 +69,13 @@ DropTailQueue::GetMaxPackets (void)
 }
 
   bool 
-DropTailQueue::DoEnque (const Packet& p)
+DropTailQueue::DoEnqueue (const Packet& p)
 {
-  NS_DEBUG("DropTailQueue::DoEnque (" << &p << ")");
+  NS_DEBUG("DropTailQueue::DoEnqueue (" << &p << ")");
 
   if (GetNPackets () >= m_maxPackets)
     {
-      NS_DEBUG("DropTailQueue::DoEnque (): Queue full -- droppping pkt");
+      NS_DEBUG("DropTailQueue::DoEnqueue (): Queue full -- droppping pkt");
       Drop (p);
       return false;
     }
@@ -85,20 +85,20 @@ DropTailQueue::DoEnque (const Packet& p)
 }
 
   bool
-DropTailQueue::DoDeque (Packet& p)
+DropTailQueue::DoDequeue (Packet& p)
 {
-  NS_DEBUG("DropTailQueue::DoDeque (" << &p << ")");
+  NS_DEBUG("DropTailQueue::DoDequeue (" << &p << ")");
 
   if (m_packets.empty()) 
     {
-      NS_DEBUG("DropTailQueue::DoDeque (): Queue empty");
+      NS_DEBUG("DropTailQueue::DoDequeue (): Queue empty");
       return false;
     }
 
   p = m_packets.front ();
   m_packets.pop ();
 
-  NS_DEBUG("DropTailQueue::DoDeque (): Popped " << &p << " <= true");
+  NS_DEBUG("DropTailQueue::DoDequeue (): Popped " << &p << " <= true");
 
   return true;
 }

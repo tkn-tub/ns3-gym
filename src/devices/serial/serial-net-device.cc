@@ -66,7 +66,7 @@ SerialNetDevice::SendTo (Packet& p, const MacAddress& dest)
     tag.address = address;
     p.AddTag (tag);
 #endif
-    if (m_queue->Enque(p) )
+    if (m_queue->Enqueue(p) )
       {
         NotifyDataAvailable ();
         return true;
@@ -116,7 +116,7 @@ SerialNetDevice::NotifyDataAvailable(void)
   NS_DEBUG ("SerialNetDevice::NotifyDataAvailable ()");
 
   Packet p;
-  bool found = GetQueue ()->Deque (p);
+  bool found = GetQueue ()->Dequeue (p);
   if (found)
     {
 #ifdef NOTYET

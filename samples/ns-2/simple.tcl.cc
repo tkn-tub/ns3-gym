@@ -66,14 +66,14 @@ public:
 
   ~Tracer () {};
 
-  void LogEnque (std::string const &name, const Packet &p)
+  void LogEnqueue (std::string const &name, const Packet &p)
   {
     m_filestr << name << " que ";
     PrintLlcPacket (p, m_filestr);
     m_filestr << std::endl;
   }
 
-  void LogDeque (std::string const &name, const Packet &p)
+  void LogDequeue (std::string const &name, const Packet &p)
   {
     m_filestr << name << " deq ";
     PrintLlcPacket (p, m_filestr);
@@ -248,11 +248,11 @@ AddDuplexLink(
 static void
 SetupTrace (TraceContainer &container, Tracer &tracer)
 {
-  container.SetCallback ("Queue::Enque",
-                         MakeCallback (&Tracer::LogEnque, &tracer));
+  container.SetCallback ("Queue::Enqueue",
+                         MakeCallback (&Tracer::LogEnqueue, &tracer));
   
-  container.SetCallback ("Queue::Deque",
-                         MakeCallback (&Tracer::LogDeque, &tracer));
+  container.SetCallback ("Queue::Dequeue",
+                         MakeCallback (&Tracer::LogDequeue, &tracer));
   
   container.SetCallback ("Queue::Drop",
                          MakeCallback (&Tracer::LogDrop, &tracer));

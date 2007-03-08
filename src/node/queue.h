@@ -38,10 +38,10 @@ public:
   Queue (std::string const &name);
   virtual ~Queue ();
 
-  bool Enque (const Packet& p);
-  bool Deque (Packet &p);
+  bool Enqueue (const Packet& p);
+  bool Dequeue (Packet &p);
 
-  void DequeAll (void);
+  void DequeueAll (void);
   uint32_t GetNPackets (void);
   uint32_t GetNBytes (void);
 
@@ -79,8 +79,8 @@ public:
 #endif
 
 private:
-  virtual bool DoEnque (const Packet& p) = 0;
-  virtual bool DoDeque (Packet &p) = 0;
+  virtual bool DoEnqueue (const Packet& p) = 0;
+  virtual bool DoDequeue (Packet &p) = 0;
 
 protected:
   // called by subclasses to notify parent of packet drops.
@@ -88,8 +88,8 @@ protected:
   void QueueRegisterTraces (TraceContainer &container);
 
 private:
-  CallbackTracer<std::string const &, const Packet &> m_traceEnque;
-  CallbackTracer<std::string const &, const Packet &> m_traceDeque;
+  CallbackTracer<std::string const &, const Packet &> m_traceEnqueue;
+  CallbackTracer<std::string const &, const Packet &> m_traceDequeue;
   CallbackTracer<std::string const &, const Packet &> m_traceDrop;
 
   uint32_t m_nBytes;

@@ -63,7 +63,7 @@ FakeInternetNode::Doit (void)
   NS_DEBUG_UNCOND("FakeInternetNode::Doit (): **** Send outbound packet");
   Packet p;
 
-  m_dtqOutbound.Enque(p);
+  m_dtqOutbound.Enqueue(p);
   UpperNotify();
 }
 
@@ -73,8 +73,8 @@ FakeInternetNode::UpperDoSendUp (Packet &p)
   NS_DEBUG_UNCOND("FakeInternetNode::UpperDoSendUp (" << &p << ")");
 
   NS_DEBUG_UNCOND("FakeInternetNode::UpperDoSendUp (): **** Receive inbound packet");
-  m_dtqInbound.Enque(p);
-  return m_dtqInbound.Deque(p);
+  m_dtqInbound.Enqueue(p);
+  return m_dtqInbound.Dequeue(p);
 }
 
   bool
@@ -82,7 +82,7 @@ FakeInternetNode::UpperDoPull (Packet &p)
 {
   NS_DEBUG_UNCOND("FakeInternetNode::DoPull (" << &p << ")");
 
-  return m_dtqOutbound.Deque(p);
+  return m_dtqOutbound.Dequeue(p);
 }
 
 // ===========================================================================
@@ -127,7 +127,7 @@ FakePhysicalLayer::LowerDoNotify (LayerConnectorUpper *upper)
   NS_ASSERT(m_upperPartner);
   m_upperPartner->UpperPull(p);
 
-  m_dtqOutbound.Enque(p);
+  m_dtqOutbound.Enqueue(p);
 
   NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify (): Got bits,  Notify lower");
 
@@ -149,7 +149,7 @@ FakePhysicalLayer::UpperDoPull (Packet &p)
 {
   NS_DEBUG_UNCOND("FakePhysicalLayer::DoPull (" << &p << ")");
 
-  return m_dtqOutbound.Deque(p);
+  return m_dtqOutbound.Dequeue(p);
 }
 
 // ===========================================================================

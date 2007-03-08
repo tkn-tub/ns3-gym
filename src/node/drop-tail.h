@@ -43,8 +43,8 @@ public:
   uint32_t GetMaxPackets (void);
 
 private:
-  virtual bool DoEnque (const Packet& p);
-  virtual bool DoDeque (Packet &p);
+  virtual bool DoEnqueue (const Packet& p);
+  virtual bool DoDequeue (Packet &p);
 
 private:
   std::queue<Packet> m_packets;

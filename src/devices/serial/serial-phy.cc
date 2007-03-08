@@ -46,7 +46,7 @@ SerialPhy::NotifyDataAvailable(void)
   NS_DEBUG ("SerialPhy::NotifyDataAvailable ()");
 
   Packet p;
-  bool found = m_netdevice->GetQueue ()->Deque (p);
+  bool found = m_netdevice->GetQueue ()->Dequeue (p);
   if (found)
     {
 #ifdef NOTYET
