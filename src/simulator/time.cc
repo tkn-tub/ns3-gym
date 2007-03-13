@@ -23,37 +23,27 @@
 
 namespace ns3 {
 
-Time::Time ()
-  : TimeUnit<1> ()
-{}
-Time::Time (TimeUnit<1> time)
-  : TimeUnit<1> (time)
-{}
-Time::Time (HighPrecision const& value)
-  : TimeUnit<1> (value)
-{}
-
 double 
-Time::GetSeconds (void) const
+TimeUnit<1>::GetSeconds (void) const
 {
   double ns = GetHighPrecision ().GetDouble ();
   return ns/1000000000.0;
 }
 int32_t 
-Time::GetMilliSeconds (void) const
+TimeUnit<1>::GetMilliSeconds (void) const
 {
   int64_t ns = GetHighPrecision ().GetInteger ();
   ns /= 1000000;
   return ns;
 }
 int64_t 
-Time::GetMicroSeconds (void) const
+TimeUnit<1>::GetMicroSeconds (void) const
 {
   int64_t ns = GetHighPrecision ().GetInteger ();
   return ns/1000;
 }
 int64_t 
-Time::GetNanoSeconds (void) const
+TimeUnit<1>::GetNanoSeconds (void) const
 {
   return GetHighPrecision ().GetInteger ();
 }
@@ -86,19 +76,12 @@ Time Now (void)
   return Time (Simulator::Now ());
 }
 
-Scalar::Scalar ()
-  : TimeUnit<0> ()
-{}
-Scalar::Scalar (TimeUnit<0> scalar)
-  : TimeUnit<0> (scalar)
-{}
-
-Scalar::Scalar (double scalar)
-  : TimeUnit<0> (HighPrecision (scalar))
+TimeUnit<0>::TimeUnit (double scalar)
+  : m_data (HighPrecision (scalar))
 {}
 
 double
-Scalar::GetDouble (void) const
+TimeUnit<0>::GetDouble (void) const
 {
   return GetHighPrecision ().GetDouble ();
 }
@@ -201,7 +184,13 @@ bool TimeTests::RunTests (void)
   //std::cout << "10.0s * 1.5 = " << t4.GetSeconds () << "s" << std::endl;
   Time t5;
   t5 = NanoSeconds (10) * Scalar (1.5);
-  //std::cout << "10ns * 1.5 = " << t5.GetNanoSeconds () << "ns" << std::endl;
+  //std::cout << "10ns * 1.5 = " << t5.GetNanoSeconds () << "ns" <<
+  //std::endl;
+
+  double foo = (t1 + t2).GetSeconds ();
+  foo += (t4 == t5)? 1 : 0;
+
+  foo = (t1/t2).GetDouble ();
 
   return ok;
 }

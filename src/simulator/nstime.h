@@ -298,6 +298,75 @@ TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
   return TimeUnit<N> (Max (a, b));
 }
 
+// Explicit instatiation of the TimeUnit template for N=1, with a few
+// additional methods that should not be available for N!=1
+// \class TimeUnit<1>
+
+template <>
+class TimeUnit<1>
+{
+  // -*- New methods -*-
+public:
+
+  /**
+   * \returns an approximation in seconds of the time stored in this
+   *          instance.
+   */
+  double GetSeconds (void) const;
+  /**
+   * \returns an approximation in milliseconds of the time stored in this
+   *          instance.
+   */
+  int32_t GetMilliSeconds (void) const;
+  /**
+   * \returns an approximation in microseconds of the time stored in this
+   *          instance.
+   */
+  int64_t GetMicroSeconds (void) const;
+  /**
+   * \returns an approximation in nanoseconds of the time stored in this
+   *          instance.
+   */
+  int64_t GetNanoSeconds (void) const;
+
+  // -*- The rest is the the same as in the generic template class -*-
+public:
+  TimeUnit ()
+    : m_data () 
+  {}
+  TimeUnit (TimeUnit const &o)
+    : m_data (o.m_data) {}
+  TimeUnit operator = (TimeUnit const &o) {
+    m_data = o.m_data;
+    return *this;
+  }
+  TimeUnit (HighPrecision data)
+    : m_data (data) {}
+  bool IsZero (void) const {
+    return m_data.Compare (HighPrecision::Zero ()) == 0;
+  }
+  bool IsNegative (void) const {
+    return m_data.Compare (HighPrecision::Zero ()) <= 0;
+  }
+  bool IsPositive (void) const {
+    return m_data.Compare (HighPrecision::Zero ()) >= 0;
+  }
+  bool IsStrictlyNegative (void) const {
+    return m_data.Compare (HighPrecision::Zero ()) < 0;
+  }
+  bool IsStrictlyPositive (void) const {
+    return m_data.Compare (HighPrecision::Zero ()) > 0;
+  }
+  HighPrecision const &GetHighPrecision (void) const {
+    return m_data;
+  }
+  HighPrecision *PeekHighPrecision (void) {
+    return &m_data;
+  }
+private:
+  HighPrecision m_data;
+};
+
 /**
  * \brief keep track of seconds.
  *
@@ -322,35 +391,36 @@ TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
  *  - \ref ns3-Time-Abs ns3::Abs
  *  - \ref ns3-Time-Max ns3::Max
  *  - \ref ns3-Time-Min ns3::Min
+ *
+ * The Time class has the following additional methods not available in
+ * the generic TimeUnit template:
+ * 
+ * \code
+ * double GetSeconds (void) const;
+ * \endcode
+ * returns an approximation in seconds of the time stored in this
+ *          instance.
+ *
+ * \code
+ * int32_t GetMilliSeconds (void) const;
+ * \endcode
+ * returns an approximation in milliseconds of the time stored in this
+ *          instance.
+ *
+ * \code
+ * int64_t GetMicroSeconds (void) const;
+ * \endcode
+ * returns an approximation in microseconds of the time stored in this
+ *          instance.
+ *
+ * \code
+ * int64_t GetNanoSeconds (void) const;
+ * \endcode
+ * returns an approximation in nanoseconds of the time stored in this
+ *          instance.
  */
-class Time : public TimeUnit<1>
-{
-public:
-  Time ();
-  Time (TimeUnit<1> time);
-  Time (HighPrecision const& value);
+typedef TimeUnit<1> Time;
 
-  /**
-   * \returns an approximation in seconds of the time stored in this
-   *          instance.
-   */
-  double GetSeconds (void) const;
-  /**
-   * \returns an approximation in milliseconds of the time stored in this
-   *          instance.
-   */
-  int32_t GetMilliSeconds (void) const;
-  /**
-   * \returns an approximation in microseconds of the time stored in this
-   *          instance.
-   */
-  int64_t GetMicroSeconds (void) const;
-  /**
-   * \returns an approximation in nanoseconds of the time stored in this
-   *          instance.
-   */
-  int64_t GetNanoSeconds (void) const;
-};
 
 std::ostream& operator<< (std::ostream& os, Time const& time);
 
@@ -409,6 +479,55 @@ Time NanoSeconds (uint64_t ns);
  */
 Time Now (void);
 
+
+// Explicit instatiation of the TimeUnit template for N=0, with a few
+// additional methods that should not be available for N != 0
+template <>
+class TimeUnit<0>
+{
+  // -*- New methods -*-
+public:
+  double GetDouble (void) const;
+  TimeUnit<0> (double scalar);
+
+  // -*- The rest is the the same as in the generic template class -*-
+public:
+  TimeUnit ()
+    : m_data () 
+  {};
+  TimeUnit (TimeUnit const &o)
+    : m_data (o.m_data) {}
+  TimeUnit operator = (TimeUnit const &o) {
+    m_data = o.m_data;
+    return *this;
+  }
+  TimeUnit (HighPrecision data)
+    : m_data (data) {}
+  bool IsZero (void) const {
+    return m_data.Compare (HighPrecision::Zero ()) == 0;
+  }
+  bool IsNegative (void) const {
+    return m_data.Compare (HighPrecision::Zero ()) <= 0;
+  }
+  bool IsPositive (void) const {
+    return m_data.Compare (HighPrecision::Zero ()) >= 0;
+  }
+  bool IsStrictlyNegative (void) const {
+    return m_data.Compare (HighPrecision::Zero ()) < 0;
+  }
+  bool IsStrictlyPositive (void) const {
+    return m_data.Compare (HighPrecision::Zero ()) > 0;
+  }
+  HighPrecision const &GetHighPrecision (void) const {
+    return m_data;
+  }
+  HighPrecision *PeekHighPrecision (void) {
+    return &m_data;
+  }
+private:
+  HighPrecision m_data;
+};
+
 /**
  * \brief hold scalar values
  *
@@ -423,15 +542,20 @@ Time Now (void);
  * Scalar s1 = Seconds (15.0) / Seconds (10.0);
  * std::cout << s1.GetDouble () << std::endl;
  * \endcode
+ *
+ * The Scalar class has the following additional methods not available in
+ * the generic TimeUnit template:
+ * \code
+ * double GetDouble (void) const;
+ * \endcode
+ * returns the C double contained in the Scalar instance
+ *
+ * \code
+ * Scalar(double scalar);
+ * \endcode
+ * Constructs a Scalar instance from a C double.
  */
-class Scalar : public TimeUnit<0>
-{
-public:
-  Scalar ();
-  Scalar (double scalar);
-  Scalar (TimeUnit<0> scalar);
-  double GetDouble (void) const;
-};
+typedef TimeUnit<0> Scalar;
 
 typedef TimeUnit<-1> TimeInvert;
 typedef TimeUnit<2> TimeSquare;
