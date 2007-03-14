@@ -329,6 +329,12 @@ class Ns3:
         self.gen_mod_config(env)
         cc = env['CC']
         cxx = env.subst(env['CXX'])
+        if cc == '':
+            print "Missing C compiler."
+            env.Exit (1);
+        if cxx == '':
+            print "Missing C++ compiler."
+            env.Exit (1);
         common_flags = ARGUMENTS.get('cflags', '').split(' ')
         cxxflags = ARGUMENTS.get('cxxflags', '').split(' ')
         ldflags = ARGUMENTS.get('ldflags', '').split(' ')
