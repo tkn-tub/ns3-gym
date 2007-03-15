@@ -41,7 +41,7 @@ public:
   virtual ~InternetNode ();
   virtual InternetNode* Copy() const;
   // Capability access
-  virtual NetDeviceList*   GetNetDevices() const;
+  virtual NetDeviceList*   GetNetDeviceList() const;
   virtual L3Demux*         GetL3Demux() const;
   virtual Ipv4L4Demux*     GetIpv4L4Demux() const;
   virtual Ipv4 *           GetIpv4 (void) const;

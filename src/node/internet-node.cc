@@ -98,7 +98,7 @@ InternetNode::Copy() const
 
 
 NetDeviceList*   
-InternetNode::GetNetDevices() const
+InternetNode::GetNetDeviceList() const
 {
   return m_netDevices;
 }
