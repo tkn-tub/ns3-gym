@@ -259,6 +259,7 @@ serial.add_headers ([
 serial.add_inst_headers ([
     'serial-net-device.h',
     'serial-channel.h',
+    'serial-phy.h',
     'layer-connector.h',
     'channel.h',
     ])

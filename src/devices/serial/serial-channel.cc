@@ -36,7 +36,7 @@ namespace ns3 {
 SerialChannel::SerialChannel()
 : 
   Channel ("Serial Channel"), 
-  m_bps (UINT64_MAX), 
+  m_bps (0),
   m_delay (Seconds(0)),
   m_nDevices(0)
 {
