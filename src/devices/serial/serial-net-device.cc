@@ -23,6 +23,7 @@
 #include <cassert>
 #include "ns3/debug.h"
 #include "ns3/queue.h"
+#include "ns3/composite-trace-resolver.h"
 #include "serial-net-device.h"
 #include "serial-channel.h"
 #include "serial-phy.h"
@@ -51,10 +52,11 @@ SerialNetDevice::SerialNetDevice(Node* node, const MacAddress& addr) :
 SerialNetDevice::~SerialNetDevice()
 {
   NS_DEBUG ("SerialNetDevice::~SerialNetDevice ()");
+  delete m_phy;
 }
 
 
-  bool
+bool
 SerialNetDevice::SendTo (Packet& p, const MacAddress& dest)
 {
   NS_DEBUG ("SerialNetDevice::SendTo (" << &p << ", " << &dest << ")");
@@ -74,12 +76,23 @@ SerialNetDevice::SendTo (Packet& p, const MacAddress& dest)
     return false;
 }
 
-  bool
+TraceResolver *
+SerialNetDevice::DoCreateTraceResolver (TraceContext const &context)
+{
+  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  resolver->Add ("queue", 
+                 MakeCallback (&Queue::CreateTraceResolver, m_queue),
+                 SerialNetDevice::QUEUE);
+  return resolver;
+}
+
+bool
 SerialNetDevice::Attach (SerialChannel* ch)
 {
   NS_DEBUG ("SerialNetDevice::Attach (" << &ch << ")");
 
   m_channel = ch;
+  m_phy->Attach (m_channel);
   /* 
    * For now, this device is up whenever a channel is attached to it.
    * In fact, it should become up only when the second device
@@ -106,8 +119,7 @@ SerialNetDevice::Receive (Packet& p)
   // ignore return value for now.
   NS_DEBUG ("SerialNetDevice::Receive (" << &p << ")");
 
-  // Dispatch this to SerialPhy::Receive
-  m_phy->Receive (p);
+  ForwardUp (p);
 }
 
 void
@@ -125,7 +137,7 @@ SerialNetDevice::NotifyDataAvailable(void)
       // send packet to address tag.address
 #endif
       NS_DEBUG ("SerialNetDevice::NotifyDataAvailable (): Dequeued");
-      m_channel->Propagate(p, this);
+      m_phy->Send(p);
     }
 }
 

@@ -25,20 +25,11 @@ NS_DEBUG_COMPONENT_DEFINE ("DropTailQueue");
 namespace ns3 {
 
 DropTailQueue::DropTailQueue () :
-  Queue (""),
+  Queue (),
   m_packets (),
   m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
 {
   NS_DEBUG("DropTailQueue::DropTailQueue ()");
-}
-
-
-DropTailQueue::DropTailQueue (std::string const&name)
-  : Queue (name),
-    m_packets(),
-    m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
-{
-  NS_DEBUG("DropTailQueue::DropTailQueue");
 }
 
 DropTailQueue::~DropTailQueue ()
@@ -47,12 +38,6 @@ DropTailQueue::~DropTailQueue ()
 }
 
 void 
-DropTailQueue::RegisterTraces (TraceContainer &traceContainer)
-{
-  Queue::QueueRegisterTraces (traceContainer);
-}
-
-  void 
 DropTailQueue::SetMaxPackets (uint32_t npackets)
 {
   NS_DEBUG("DropTailQueue::SetMaxPackets (" << npackets << ")");
@@ -60,7 +45,7 @@ DropTailQueue::SetMaxPackets (uint32_t npackets)
   m_maxPackets = npackets;
 }
 
-  uint32_t 
+uint32_t 
 DropTailQueue::GetMaxPackets (void)
 {
   NS_DEBUG("DropTailQueue::GetMaxPackets () <= " << m_maxPackets);
@@ -68,12 +53,12 @@ DropTailQueue::GetMaxPackets (void)
   return m_maxPackets;
 }
 
-  bool 
+bool 
 DropTailQueue::DoEnqueue (const Packet& p)
 {
   NS_DEBUG("DropTailQueue::DoEnqueue (" << &p << ")");
 
-  if (GetNPackets () >= m_maxPackets)
+  if (m_packets.size () >= m_maxPackets)
     {
       NS_DEBUG("DropTailQueue::DoEnqueue (): Queue full -- droppping pkt");
       Drop (p);
@@ -84,7 +69,7 @@ DropTailQueue::DoEnqueue (const Packet& p)
   return true;
 }
 
-  bool
+bool
 DropTailQueue::DoDequeue (Packet& p)
 {
   NS_DEBUG("DropTailQueue::DoDequeue (" << &p << ")");

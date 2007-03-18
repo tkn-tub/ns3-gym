@@ -22,10 +22,9 @@
 #define FATAL_ERROR_H
 
 #include "assert.h"
-#include <iostream>
 
 /**
- * \defgroup error
+ * \defgroup error Error
  * \brief fatal error handling
  *
  * \param msg message to output when this macro is hit.

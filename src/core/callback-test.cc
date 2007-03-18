@@ -47,6 +47,16 @@ int Test7 (int a)
   return a;
 }
 
+void *Test9 (bool *a)
+{
+  return a;
+}
+
+void *Test10 (bool *a, int const & b)
+{
+  return a;
+}
+
 class CallbackTest : public ns3::Test {
 private:
   bool m_test1;
@@ -147,9 +157,9 @@ CallbackTest::RunTests (void)
   b0 = B (this, &CallbackTest::Test2);
   C c0 = C (this, &CallbackTest::Test3);
   D d0 = D (this, &CallbackTest::Test4);
-  E e0 = E (&Test5);
-  F f0 = F (&Test6);
-  G g0 = G (&Test7);
+  E e0 = E (&Test5, true, true);
+  F f0 = F (&Test6, true, true);
+  G g0 = G (&Test7, true, true);
 
   a0 ();
   b0 ();
@@ -190,6 +200,13 @@ CallbackTest::RunTests (void)
     {
       ok = false;
     }
+
+
+  MakeBoundCallback (&Test7, 0);
+  bool v;
+  MakeBoundCallback (&Test9, &v);
+  MakeBoundCallback (&Test10, &v);
+
   return ok;
 }
 

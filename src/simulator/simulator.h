@@ -151,11 +151,11 @@ public:
   static void StopAt (Time const &time);
 
   /**
-   * Schedule an event to expire when time is reached.
-   * When the event expires, the input method will be invoked
-   * on the input object.
+   * Schedule an event to expire when the time "now + time" 
+   * is reached. When the event expires, the input method 
+   * will be invoked on the input object.
    *
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @returns an id for the scheduled event.
@@ -163,7 +163,7 @@ public:
   template <typename T>
   static EventId Schedule (Time const &time, void (T::*mem_ptr) (void), T *obj);
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
@@ -172,7 +172,7 @@ public:
   template <typename T, typename T1>
   static EventId Schedule (Time const &time, void (T::*mem_ptr) (T1), T* obj, T1 a1);
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
@@ -182,7 +182,7 @@ public:
   template <typename T, typename T1, typename T2>
   static EventId Schedule (Time const &time, void (T::*mem_ptr) (T1,T2), T* obj, T1 a1, T2 a2);
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
@@ -193,7 +193,7 @@ public:
   template <typename T, typename T1, typename T2, typename T3>
   static EventId Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3), T* obj, T1 a1, T2 a2, T3 a3);
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
@@ -205,7 +205,7 @@ public:
   template <typename T, typename T1, typename T2, typename T3, typename T4>
   static EventId Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4), T* obj, T1 a1, T2 a2, T3 a3, T4 a4);
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
@@ -219,13 +219,13 @@ public:
   static EventId Schedule (Time const &time, void (T::*mem_ptr) (T1,T2,T3,T4,T5), T* obj, 
   						 T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param f the function to invoke
    * @returns an id for the scheduled event.
    */
   static EventId Schedule (Time const &time, void (*f) (void));
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    * @returns an id for the scheduled event.
@@ -233,7 +233,7 @@ public:
   template <typename T1>
   static EventId Schedule (Time const &time, void (*f) (T1), T1 a1);
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    * @param a2 the second argument to pass to the function to invoke
@@ -242,7 +242,7 @@ public:
   template <typename T1, typename T2>
   static EventId Schedule (Time const &time, void (*f) (T1,T2), T1 a1, T2 a2);
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    * @param a2 the second argument to pass to the function to invoke
@@ -252,7 +252,7 @@ public:
   template <typename T1, typename T2, typename T3>
   static EventId Schedule (Time const &time, void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    * @param a2 the second argument to pass to the function to invoke
@@ -263,7 +263,7 @@ public:
   template <typename T1, typename T2, typename T3, typename T4>
   static EventId Schedule (Time const &time, void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
   /**
-   * @param time the expiration time of the event.
+   * @param time the relative expiration time of the event.
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    * @param a2 the second argument to pass to the function to invoke

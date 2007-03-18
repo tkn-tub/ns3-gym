@@ -19,32 +19,39 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef SI_VARIABLE_TRACER_H
-#define SI_VARIABLE_TRACER_H
+#ifndef UV_TRACE_SOURCE_H
+#define UV_TRACE_SOURCE_H
 
-#include "ns3/callback.h"
+#include "callback-trace-source.h"
 #include <stdint.h>
 
 namespace ns3 {
 
-class SiVariableTracerBase {
+class UVTraceSourceBase {
 public:
-  typedef Callback<void,int64_t, int64_t> ChangeNotifyCallback;
+  typedef CallbackTraceSource<uint64_t, uint64_t> ChangeNotifyCallback;
 
-  SiVariableTracerBase () {}
-  SiVariableTracerBase (SiVariableTracerBase const &o) {}
-  SiVariableTracerBase &operator = (SiVariableTracerBase const &o) {
+  UVTraceSourceBase ()
+      : m_callback () {}
+  /* We don't want to copy the base callback. Only setCallback on
+   * a specific instance will do something to it. */
+  UVTraceSourceBase (UVTraceSourceBase const &o) 
+      : m_callback () {}
+  UVTraceSourceBase &operator = (UVTraceSourceBase const &o) {
       return *this;
   }
+  ~UVTraceSourceBase () {}
 
-  ~SiVariableTracerBase () {}
-
-  void SetCallback(ChangeNotifyCallback callback) {
-      m_callback = callback;
+  void AddCallback (CallbackBase const & callback, TraceContext const & context) {
+    m_callback.AddCallback (callback, context);
   }
+  void RemoveCallback (CallbackBase const & callback) {
+    m_callback.RemoveCallback (callback);
+  }
+
 protected:
-  void Notify (int64_t oldVal, int64_t newVal) {
-      if (oldVal != newVal && !m_callback.IsNull ()) 
+  void Notify (uint64_t oldVal, uint64_t newVal) {
+      if (oldVal != newVal) 
         {
           m_callback (oldVal, newVal);
         }
@@ -54,72 +61,72 @@ private:
 };
 
 template <typename T>
-class UiVariableTracer;
+class SVTraceSource;
 
 
 /**
- * \brief trace variables of type "signed integer"
+ * \brief trace variables of type "unsigned integer"
+ * \ingroup tracing
  *
  * This template class implements a POD type: it
- * behaves like any other variable of type "signed integer"
+ * behaves like any other variable of type "unsigned integer"
  * except that it also reports any changes to its
  * value with its internal callback.
  *
- * To instantiate a 32-bit signed variable (to store
+ * To instantiate a 32-bit unsigned variable (to store
  * a TCP counter for example), you would create a variable of type
- * ns3::UiVariableTracer<int32_t> :
+ * ns3::UVTraceSource<uint32_t> :
  \code
  #include <stdint.h>
- #include "ns3/si-traced-variable.tcc"
+ #include "ns3/uv-trace-source.h"
 
- ns3::SiVariableTracer<uint16_t> var;
+ ns3::UVTraceSource<uint32_t> var;
  \endcode
- * and you would use it like any other variable of type int32_t:
+ * and you would use it like any other variable of type uint32_t:
  \code
  var += 12;
  var = 10;
- var = -10;
  \endcode
  */
 template <typename T>
-class SiVariableTracer : public SiVariableTracerBase {
+class UVTraceSource : public UVTraceSourceBase {
 public:
-  SiVariableTracer ()
-      : m_var (0)
+  UVTraceSource ()
+      : m_var ()
   {}
-  SiVariableTracer (T const &var) 
+  UVTraceSource (T const &var) 
       : m_var (var)
   {}
 
-  SiVariableTracer &operator = (SiVariableTracer const &o) {
+  UVTraceSource &operator = (UVTraceSource const &o) {
       Assign (o.Get ());
       return *this;
   }
   template <typename TT>
-  SiVariableTracer &operator = (SiVariableTracer<TT> const &o) {
+  UVTraceSource &operator = (UVTraceSource<TT> const &o) {
       Assign (o.Get ());
       return *this;
   }
   template <typename TT>
-  SiVariableTracer &operator = (UiVariableTracer<TT> const &o) {
+  UVTraceSource &operator = (SVTraceSource<TT> const &o) {
       Assign (o.Get ());
       return *this;
   }
-  SiVariableTracer &operator++ () {
+  UVTraceSource &operator++ () {
       Assign (Get () + 1);
       return *this;
   }
-  SiVariableTracer &operator-- () {
+  UVTraceSource &operator-- () {
       Assign (Get () - 1);
       return *this;
   }
-  SiVariableTracer operator++ (int) {
-      SiVariableTracer old (*this);
+  UVTraceSource operator++ (int) {
+      UVTraceSource old (*this);
       ++*this;
       return old;
   }
-  SiVariableTracer operator-- (int) {
-      SiVariableTracer old (*this);
+  UVTraceSource operator-- (int) {
+      UVTraceSource old (*this);
       --*this;
       return old;
   }
@@ -141,98 +148,98 @@ private:
 };
 
 template <typename T>
-SiVariableTracer<T> &operator += (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
+UVTraceSource<T> &operator += (UVTraceSource<T> &lhs, UVTraceSource<T> const &rhs) {
   lhs.Assign (lhs.Get () + rhs.Get ());
   return lhs;
 }
 template <typename T>
-SiVariableTracer<T> &operator -= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
+UVTraceSource<T> &operator -= (UVTraceSource<T> &lhs, UVTraceSource<T> const &rhs) {
   lhs.Assign (lhs.Get () - rhs.Get ());
   return lhs;
 }
 template <typename T>
-SiVariableTracer<T> &operator *= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
+UVTraceSource<T> &operator *= (UVTraceSource<T> &lhs, UVTraceSource<T> const &rhs) {
   lhs.Assign (lhs.Get () * rhs.Get ());
   return lhs;
 }
 template <typename T>
-SiVariableTracer<T> &operator /= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
+UVTraceSource<T> &operator /= (UVTraceSource<T> &lhs, UVTraceSource<T> const &rhs) {
   lhs.Assign (lhs.Get () / rhs.Get ());
   return lhs;
 }
 template <typename T>
-SiVariableTracer<T> &operator <<= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
+UVTraceSource<T> &operator <<= (UVTraceSource<T> &lhs, UVTraceSource<T> const &rhs) {
   lhs.Assign (lhs.Get () << rhs.Get ());
   return lhs;
 }
 template <typename T>
-SiVariableTracer<T> &operator >>= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
+UVTraceSource<T> &operator >>= (UVTraceSource<T> &lhs, UVTraceSource<T> const &rhs) {
   lhs.Assign (lhs.Get () >> rhs.Get ());
   return lhs;
 }
 template <typename T>
-SiVariableTracer<T> &operator &= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
+UVTraceSource<T> &operator &= (UVTraceSource<T> &lhs, UVTraceSource<T> const &rhs) {
   lhs.Assign (lhs.Get () & rhs.Get ());
   return lhs;
 }
 template <typename T>
-SiVariableTracer<T> &operator |= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
+UVTraceSource<T> &operator |= (UVTraceSource<T> &lhs, UVTraceSource<T> const &rhs) {
   lhs.Assign (lhs.Get () | rhs.Get ());
   return lhs;
 }
 template <typename T>
-SiVariableTracer<T> &operator ^= (SiVariableTracer<T> &lhs, SiVariableTracer<T> const &rhs) {
+UVTraceSource<T> &operator ^= (UVTraceSource<T> &lhs, UVTraceSource<T> const &rhs) {
   lhs.Assign (lhs.Get () ^ rhs.Get ());
   return lhs;
 }
 
 
 template <typename T, typename U>
-SiVariableTracer<T> &operator += (SiVariableTracer<T> &lhs, U const &rhs) {
+UVTraceSource<T> &operator += (UVTraceSource<T> &lhs, U const &rhs) {
   lhs.Assign (lhs.Get () + rhs);
   return lhs;
 }
 template <typename T, typename U>
-SiVariableTracer<T> &operator -= (SiVariableTracer<T> &lhs, U const &rhs) {
+UVTraceSource<T> &operator -= (UVTraceSource<T> &lhs, U const &rhs) {
   lhs.Assign (lhs.Get () - rhs);
   return lhs;
 }
 template <typename T, typename U>
-SiVariableTracer<T> &operator *= (SiVariableTracer<T> &lhs, U const &rhs) {
+UVTraceSource<T> &operator *= (UVTraceSource<T> &lhs, U const &rhs) {
   lhs.Assign (lhs.Get () * rhs);
   return lhs;
 }
 template <typename T, typename U>
-SiVariableTracer<T> &operator /= (SiVariableTracer<T> &lhs, U const &rhs) {
+UVTraceSource<T> &operator /= (UVTraceSource<T> &lhs, U const &rhs) {
   lhs.Assign (lhs.Get () / rhs);
   return lhs;
 }
 template <typename T, typename U>
-SiVariableTracer<T> &operator <<= (SiVariableTracer<T> &lhs, U const &rhs) {
+UVTraceSource<T> &operator <<= (UVTraceSource<T> &lhs, U const &rhs) {
   lhs.Assign (lhs.Get () << rhs);
   return lhs;
 }
 template <typename T, typename U>
-SiVariableTracer<T> &operator >>= (SiVariableTracer<T> &lhs, U const &rhs) {
+UVTraceSource<T> &operator >>= (UVTraceSource<T> &lhs, U const &rhs) {
   lhs.Assign (lhs.Get () >> rhs);
   return lhs;
 }
 template <typename T, typename U>
-SiVariableTracer<T> &operator &= (SiVariableTracer<T> &lhs, U const &rhs) {
+UVTraceSource<T> &operator &= (UVTraceSource<T> &lhs, U const &rhs) {
   lhs.Assign (lhs.Get () & rhs);
   return lhs;
 }
 template <typename T, typename U>
-SiVariableTracer<T> &operator |= (SiVariableTracer<T> &lhs, U const &rhs) {
+UVTraceSource<T> &operator |= (UVTraceSource<T> &lhs, U const &rhs) {
   lhs.Assign (lhs.Get () | rhs);
   return lhs;
 }
 template <typename T, typename U>
-SiVariableTracer<T> &operator ^= (SiVariableTracer<T> &lhs, U const &rhs) {
+UVTraceSource<T> &operator ^= (UVTraceSource<T> &lhs, U const &rhs) {
   lhs.Assign (lhs.Get () ^ rhs);
   return lhs;
 }
 
 }; // namespace ns3
 
-#endif /* SI_VARIABLE_TRACER_H */
+#endif /* UV_TRACE_SOURCE_H */

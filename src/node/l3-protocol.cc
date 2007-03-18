@@ -33,7 +33,7 @@ L3Protocol::L3Protocol(int protocolNumber, int version)
 {}
 L3Protocol::~L3Protocol ()
 {}
-    
+
 int 
 L3Protocol::GetProtocolNumber (void) const
 {

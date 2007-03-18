@@ -19,8 +19,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ui-variable-tracer.h"
-#include "si-variable-tracer.h"
+#include "uv-trace-source.h"
+#include "sv-trace-source.h"
+#include "trace-context.h"
 #include "ns3/test.h"
 #include "ns3/callback.h"
 
@@ -29,7 +30,7 @@ namespace ns3 {
 
 class Foo {
 public:
-  void Notify (uint64_t oldVal, uint64_t newVal) {}
+  void Notify (TraceContext const &contex, uint64_t oldVal, uint64_t newVal) {}
 };
 
 class VariableTracerTest: public Test {
@@ -42,11 +43,11 @@ public:
 void
 VariableTracerTest::RunUnsignedTests (void)
 {
-  UiVariableTracer<uint32_t> var, ovar, tmp;
+  UVTraceSource<uint32_t> var, ovar, tmp;
   uint32_t utmp;
   Foo *foo = new Foo ();
   
-  var.SetCallback (MakeCallback (&Foo::Notify, foo));
+  var.AddCallback (MakeCallback (&Foo::Notify, foo), TraceContext ());
 
   var = 10;
   ovar = var;
@@ -227,10 +228,10 @@ VariableTracerTest::RunSignedUnsignedTests (void)
   uitmp = utmp;
   utmp = uitmp;
 
-  UiVariableTracer<unsigned short> uvar = 10;
-  UiVariableTracer<unsigned int> uivar = 5;
-  SiVariableTracer<short> svar = 5;
-  SiVariableTracer<int> sivar = 5;
+  UVTraceSource<unsigned short> uvar = 10;
+  UVTraceSource<unsigned int> uivar = 5;
+  SVTraceSource<short> svar = 5;
+  SVTraceSource<int> sivar = 5;
   uvar = svar;
   svar = uvar;
   uvar += svar;

@@ -30,6 +30,8 @@ namespace ns3 {
 
 class NetDevice;
 class Packet;
+class TraceResolver;
+class TraceContext;
 
 /**
  * \brief The IPv4 representation of a network interface
@@ -62,6 +64,7 @@ public:
   Ipv4Interface (NetDevice *nd);
   virtual ~Ipv4Interface();
 
+  TraceResolver *CreateTraceResolver (TraceContext const &context);
   NetDevice *GetDevice (void) const;
 
   void SetAddress (Ipv4Address a);
@@ -96,6 +99,7 @@ public:
 
  private:
   virtual void SendTo (Packet p, Ipv4Address dest) = 0;
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
   NetDevice* m_netdevice;
   bool m_ifup;
   Ipv4Address m_address;

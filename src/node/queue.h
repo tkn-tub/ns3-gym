@@ -27,25 +27,31 @@
 
 #include <string>
 #include "ns3/packet.h"
-#include "ns3/callback-tracer.h"
-#include "ns3/trace-container.h"
+#include "ns3/callback-trace-source.h"
+#include "ns3/trace-resolver.h"
 
 namespace ns3 {
 
 class Queue
 {
 public:
-  Queue (std::string const &name);
+  enum TraceType {
+    ENQUEUE,
+    DEQUEUE,
+    DROP,
+  };
+  Queue ();
   virtual ~Queue ();
 
+  TraceResolver *CreateTraceResolver (TraceContext const &context);
+
+  bool IsEmpty (void);
   bool Enqueue (const Packet& p);
   bool Dequeue (Packet &p);
 
   void DequeueAll (void);
   uint32_t GetNPackets (void);
   uint32_t GetNBytes (void);
-
-  bool IsEmpty (void);
 
   uint32_t GetTotalReceivedBytes (void);
   uint32_t GetTotalReceivedPackets (void);
@@ -85,12 +91,11 @@ private:
 protected:
   // called by subclasses to notify parent of packet drops.
   void Drop (const Packet& p);
-  void QueueRegisterTraces (TraceContainer &container);
 
 private:
-  CallbackTracer<std::string const &, const Packet &> m_traceEnqueue;
-  CallbackTracer<std::string const &, const Packet &> m_traceDequeue;
-  CallbackTracer<std::string const &, const Packet &> m_traceDrop;
+  CallbackTraceSource<const Packet &> m_traceEnqueue;
+  CallbackTraceSource<const Packet &> m_traceDequeue;
+  CallbackTraceSource<const Packet &> m_traceDrop;
 
   uint32_t m_nBytes;
   uint32_t m_nTotalReceivedBytes;
@@ -98,9 +103,6 @@ private:
   uint32_t m_nTotalReceivedPackets;
   uint32_t m_nTotalDroppedBytes;
   uint32_t m_nTotalDroppedPackets;
-
-  std::string m_name;
-
 
 #if 0
   // Static methods to manage queue default

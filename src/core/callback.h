@@ -60,6 +60,7 @@ class empty {};
 class CallbackImplBase {
 public:
   virtual ~CallbackImplBase () {}
+  virtual bool IsEqual (CallbackImplBase const *other) const = 0;
 };
 
 // declare the CallbackImpl class
@@ -134,6 +135,19 @@ public:
   R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
       return m_functor (a1,a2,a3,a4,a5);
   }
+  virtual bool IsEqual (CallbackImplBase const *other) const {
+    FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5> const *otherDerived = 
+      dynamic_cast<FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5> const *> (other);
+    if (otherDerived == 0)
+      {
+        return false;
+      }
+    else if (otherDerived->m_functor != m_functor)
+      {
+        return false;
+      }
+    return true;
+  }
 private:
   T m_functor;
 };
@@ -162,6 +176,20 @@ public:
   }
   R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
       return ((*m_objPtr).*m_memPtr) (a1,a2,a3,a4,a5);
+  }
+  virtual bool IsEqual (CallbackImplBase const *other) const {
+    MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5> const *otherDerived = 
+      dynamic_cast<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5> const *> (other);
+    if (otherDerived == 0)
+      {
+        return false;
+      }
+    else if (otherDerived->m_objPtr != m_objPtr ||
+             otherDerived->m_memPtr != m_memPtr)
+      {
+        return false;
+      }
+    return true;
   }
 private:
   OBJ_PTR const m_objPtr;
@@ -202,14 +230,17 @@ public:
  * as well as the function templates \ref MakeCallback :
  * \include samples/main-callback.cc
  */
+
 template<typename R, 
    typename T1 = empty, typename T2 = empty, 
    typename T3 = empty, typename T4 = empty,
    typename T5 = empty>
 class Callback : public CallbackBase {
 public:
+  // There are two dummy args below to ensure that this constructor is
+  // always properly disambiguited by the c++ compiler
   template <typename FUNCTOR>
-  Callback (FUNCTOR const &functor) 
+  Callback (FUNCTOR const &functor, bool, bool) 
       : m_impl (new FunctorCallbackImpl<FUNCTOR,R,T1,T2,T3,T4,T5> (functor))
   {}
 
@@ -227,23 +258,27 @@ public:
   }
 
   Callback () : m_impl () {}
-  R operator() (void) {
+  R operator() (void) const {
       return (*(m_impl.Get ())) ();
   }
-  R operator() (T1 a1) {
+  R operator() (T1 a1) const {
       return (*(m_impl.Get ())) (a1);
   }
-  R operator() (T1 a1, T2 a2) {
+  R operator() (T1 a1, T2 a2) const {
       return (*(m_impl).Get ()) (a1,a2);
   }
-  R operator() (T1 a1, T2 a2, T3 a3) {
+  R operator() (T1 a1, T2 a2, T3 a3) const {
       return (*(m_impl).Get ()) (a1,a2,a3);
   }
-  R operator() (T1 a1, T2 a2, T3 a3, T4 a4) {
+  R operator() (T1 a1, T2 a2, T3 a3, T4 a4) const {
       return (*(m_impl).Get ()) (a1,a2,a3,a4);
   }
-  R operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5) {
+  R operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5) const {
       return (*(m_impl).Get ()) (a1,a2,a3,a4,a5);
+  }
+
+  bool IsEqual (CallbackBase const &other) {
+    return PeekImpl ()->IsEqual (other.PeekImpl ());
   }
 
   bool CheckType (CallbackBase const& other) {
@@ -351,7 +386,7 @@ Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4,T5), OBJ
  */
 template <typename R>
 Callback<R> MakeCallback (R (*fnPtr) ()) {
-  return Callback<R> (fnPtr);
+  return Callback<R> (fnPtr, true, true);
 }
 /**
  * \ingroup MakeCallback
@@ -362,7 +397,7 @@ Callback<R> MakeCallback (R (*fnPtr) ()) {
  */
 template <typename R, typename T1>
 Callback<R,T1> MakeCallback (R (*fnPtr) (T1)) {
-  return Callback<R,T1> (fnPtr);
+  return Callback<R,T1> (fnPtr, true, true);
 }
 /**
  * \ingroup MakeCallback
@@ -373,7 +408,7 @@ Callback<R,T1> MakeCallback (R (*fnPtr) (T1)) {
  */
 template <typename R, typename T1, typename T2>
 Callback<R,T1,T2> MakeCallback (R (*fnPtr) (T1,T2)) {
-  return Callback<R,T1,T2> (fnPtr);
+  return Callback<R,T1,T2> (fnPtr, true, true);
 }
 /**
  * \ingroup MakeCallback
@@ -384,7 +419,7 @@ Callback<R,T1,T2> MakeCallback (R (*fnPtr) (T1,T2)) {
  */
 template <typename R, typename T1, typename T2,typename T3>
 Callback<R,T1,T2,T3> MakeCallback (R (*fnPtr) (T1,T2,T3)) {
-  return Callback<R,T1,T2,T3> (fnPtr);
+  return Callback<R,T1,T2,T3> (fnPtr, true, true);
 }
 /**
  * \ingroup MakeCallback
@@ -395,7 +430,7 @@ Callback<R,T1,T2,T3> MakeCallback (R (*fnPtr) (T1,T2,T3)) {
  */
 template <typename R, typename T1, typename T2,typename T3,typename T4>
 Callback<R,T1,T2,T3,T4> MakeCallback (R (*fnPtr) (T1,T2,T3,T4)) {
-  return Callback<R,T1,T2,T3,T4> (fnPtr);
+  return Callback<R,T1,T2,T3,T4> (fnPtr, true, true);
 }
 /**
  * \ingroup MakeCallback
@@ -406,7 +441,7 @@ Callback<R,T1,T2,T3,T4> MakeCallback (R (*fnPtr) (T1,T2,T3,T4)) {
  */
 template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5>
 Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (*fnPtr) (T1,T2,T3,T4,T5)) {
-  return Callback<R,T1,T2,T3,T4,T5> (fnPtr);
+  return Callback<R,T1,T2,T3,T4,T5> (fnPtr, true, true);
 }
 
 
@@ -503,10 +538,33 @@ public:
   R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
       return m_functor (m_a,a1,a2,a3,a4,a5);
   }
+  virtual bool IsEqual (CallbackImplBase const *other) const {
+    BoundFunctorCallbackImpl<T,R,TX,T1,T2,T3,T4,T5> const *otherDerived = 
+      dynamic_cast<BoundFunctorCallbackImpl<T,R,TX,T1,T2,T3,T4,T5> const *> (other);
+    if (otherDerived == 0)
+      {
+        return false;
+      }
+    else if (otherDerived->m_functor != m_functor ||
+             otherDerived->m_a != m_a)
+      {
+        return false;
+      }
+    return true;
+  }
 private:
   T m_functor;
   TX m_a;
 };
+
+template <typename R, typename TX>
+Callback<R> MakeBoundCallback (R (*fnPtr) (TX), TX a) {
+  ReferenceList<CallbackImpl<R,empty,empty,empty,empty,empty>*> impl =
+  ReferenceList<CallbackImpl<R,empty,empty,empty,empty,empty>*> (
+  new BoundFunctorCallbackImpl<R (*) (TX),R,TX,empty,empty,empty,empty,empty> (fnPtr, a)
+  );
+  return Callback<R> (impl);
+}
 
 template <typename R, typename TX, typename T1>
 Callback<R,T1> MakeBoundCallback (R (*fnPtr) (TX,T1), TX a) {

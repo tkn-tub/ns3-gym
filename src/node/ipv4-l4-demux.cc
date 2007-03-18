@@ -22,6 +22,8 @@
 // Define the layer 4 demultiplexer object for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
+#include <sstream>
+#include "ns3/composite-trace-resolver.h"
 #include "ipv4-l4-demux.h"
 #include "ipv4-l4-protocol.h"
 
@@ -47,6 +49,23 @@ Ipv4L4Demux::Copy(Node *node) const
       copy->Insert(*(*i));
     }
   return copy;
+}
+TraceResolver *
+Ipv4L4Demux::CreateTraceResolver (TraceContext const &context)
+{
+  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+    {
+      Ipv4L4Protocol *protocol = *i;
+      std::string protValue;
+      std::ostringstream oss (protValue);
+      oss << (*i)->GetProtocolNumber ();
+      Ipv4L4ProtocolTraceType protocolNumber = (*i)->GetProtocolNumber ();
+      resolver->Add (protValue,
+                     MakeCallback (&Ipv4L4Protocol::CreateTraceResolver, protocol),
+                     protocolNumber);
+    }
+  return resolver;
 }
 Ipv4L4Protocol* 
 Ipv4L4Demux::Insert(const Ipv4L4Protocol&protocol)

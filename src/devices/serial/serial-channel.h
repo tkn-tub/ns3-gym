@@ -20,8 +20,7 @@
 #define SERIAL_CHANNEL_H
 
 #include <list>
-#include "channel.h"
-#include "serial-phy.h"
+#include "ns3/channel.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
 
@@ -29,6 +28,8 @@ namespace ns3 {
 
 // temporary until Raj's code makes it into the dev tree
 typedef uint64_t DataRate;
+class SerialPhy;
+class NetDevice;
 
 /**
  * \brief Simple Serial Channel.
@@ -60,11 +61,15 @@ public:
   SerialChannel ();
   SerialChannel (std::string name, DataRate bps, Time delay);
 
-  void Attach (SerialNetDevice* nd);
-  bool Propagate (Packet& p, SerialNetDevice *src);
+  void Attach (SerialPhy* phy);
+  bool Propagate (Packet& p, SerialPhy *src);
 
-protected:
-  void TransmitCompleteEvent (Packet &p, SerialNetDevice *src);
+  virtual uint32_t GetNDevices (void) const;
+  virtual NetDevice *GetDevice (uint32_t i) const;
+
+
+private:
+  void TransmitCompleteEvent (Packet p, SerialPhy *src);
 
   std::string   m_name;
   DataRate      m_bps;
@@ -83,9 +88,9 @@ protected:
   {
   public:
     Link() : m_state (INITIALIZING), m_src (0), m_dst (0) {}
-    WireState        m_state;    
-    SerialNetDevice *m_src;
-    SerialNetDevice *m_dst;
+    WireState        m_state;
+    SerialPhy *m_src;
+    SerialPhy *m_dst;
   };
     
   Link    m_link[N_DEVICES];

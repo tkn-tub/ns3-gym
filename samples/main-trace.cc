@@ -9,10 +9,10 @@
 
 using namespace ns3;
 
-CallbackTracer<Packet> a;
+CallbackTraceSourcer<Packet> a;
 UiVariableTracer<unsigned short> b;
 StreamTracer c;
-CallbackTracer<double, int> d;
+CallbackTraceSourcer<double, int> d;
 
 void
 RegisterAllTraceSources (TraceContainer *container)

@@ -20,6 +20,7 @@
  */
 #include "ns3/packet.h"
 #include "ns3/debug.h"
+#include "ns3/empty-trace-resolver.h"
 #include "arp.h"
 #include "arp-header.h"
 #include "arp-cache.h"
@@ -51,6 +52,12 @@ Arp *
 Arp::Copy (Node *node) const
 {
   return new Arp (node);
+}
+
+TraceResolver *
+Arp::CreateTraceResolver (TraceContext const &context)
+{
+  return new EmptyTraceResolver (context);
 }
 
 ArpCache *

@@ -33,9 +33,6 @@ const int DTQ_NPACKETS_MAX_DEFAULT = 100;
 class DropTailQueue : public Queue {
 public:
   DropTailQueue ();
-  DropTailQueue (std::string const &name);
-
-  void RegisterTraces (TraceContainer &traceContainer);
 
   virtual ~DropTailQueue();
 

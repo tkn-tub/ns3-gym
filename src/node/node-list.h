@@ -19,30 +19,40 @@
  * Authors: 
  *  Mathieu Lacage <mathieu.lacage@sophia.inria.fr>,
  */
-#ifndef IPV4_LOOPBACK_INTERFACE_H
-#define IPV4_LOOPBACK_INTERFACE_H
+#ifndef NODE_LIST_H
+#define NODE_LIST_H
 
-#include "ipv4-interface.h"
+#include <vector>
+#include <string>
+#include "ns3/array-trace-resolver.h"
 
 namespace ns3 {
 
 class Node;
+class CallbackBase;
+class TraceResolver;
+class TraceContext;
 
-class Ipv4LoopbackInterface : public Ipv4Interface 
+class NodeList
 {
- public:
-  Ipv4LoopbackInterface (Node *node);
-  virtual ~Ipv4LoopbackInterface ();
+public:
+  typedef ArrayTraceResolver<Node>::Index NodeIndex;
+  typedef std::vector<Node *>::iterator Iterator;
 
- private:
-  virtual void SendTo (Packet p, Ipv4Address dest);
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
-  Node *GetNode (void) const;
+  static void Add (Node *node);
+  static Iterator Begin (void);
+  static Iterator End (void);
+  static TraceResolver *CreateTraceResolver (TraceContext const &context);
 
-  Node *m_node;
+  static Node *GetNode (uint32_t n);
+
+private:
+  static std::vector<Node *> *GetNodes (void);
+  static uint32_t GetNNodes (void);
+  
 };
 
 }//namespace ns3
 
 
-#endif /* IPV4_LOOPBACK_INTERFACE_H */
+#endif /* NODE_LIST_H */

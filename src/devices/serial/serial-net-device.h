@@ -35,8 +35,10 @@ class SerialPhy;
 class Queue;
 
 class SerialNetDevice : public NetDevice {
-friend class SerialPhy;
 public:
+  enum TraceType {
+    QUEUE,
+  };
   SerialNetDevice(Node* node, const MacAddress& addr);
   virtual ~SerialNetDevice();
 
@@ -48,7 +50,7 @@ private:
 public:
   bool Attach(SerialChannel* ch);
   void AddQueue(Queue *);
-  // called by ChannelSerial
+  // called by SerialPhy
   void Receive (Packet& p);
 
 protected:
@@ -58,6 +60,7 @@ protected:
 private:
   virtual void NotifyDataAvailable (void);
   virtual bool SendTo (Packet& p, const MacAddress& dest);
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
 
   SerialPhy* m_phy;
   SerialChannel* m_channel;

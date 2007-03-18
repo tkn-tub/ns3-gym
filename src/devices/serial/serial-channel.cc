@@ -21,6 +21,7 @@
 
 #include "serial-channel.h"
 #include "serial-net-device.h"
+#include "serial-phy.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/debug.h"
@@ -32,7 +33,8 @@ namespace ns3 {
 //
 // By default, you get a channel with the name "Serial Channel" that has an
 // "infitely" fast transmission speed and zero delay.
-//
+// XXX: this does not work because m_bps = 0 results in infinitely slow transmission
+// speed. 
 SerialChannel::SerialChannel()
 : 
   Channel ("Serial Channel"), 
@@ -58,13 +60,13 @@ SerialChannel::SerialChannel(
 }
 
   void
-SerialChannel::Attach(SerialNetDevice *device)
+SerialChannel::Attach(SerialPhy *phy)
 {
-  NS_DEBUG("SerialChannel::Attach (" << device << ")");
+  NS_DEBUG("SerialChannel::Attach (" << phy << ")");
   NS_ASSERT(m_nDevices < N_DEVICES && "Only two devices permitted");
-  NS_ASSERT(device);
+  NS_ASSERT(phy);
 
-  m_link[m_nDevices].m_src = device;
+  m_link[m_nDevices].m_src = phy;
   ++m_nDevices;
 //
 // If we have both devices connected to the channel, then finish introducing
@@ -79,8 +81,8 @@ SerialChannel::Attach(SerialNetDevice *device)
     }
 }
 
-  void
-SerialChannel::TransmitCompleteEvent(Packet &p, SerialNetDevice *src)
+void
+SerialChannel::TransmitCompleteEvent(Packet p, SerialPhy *src)
 {
   NS_DEBUG("SerialChannel::TransmitCompleteEvent (" << &p << ", " << 
     src << ")");
@@ -97,8 +99,8 @@ SerialChannel::TransmitCompleteEvent(Packet &p, SerialNetDevice *src)
   m_link[wire].m_dst->Receive (p);
 }
 
-  bool
-SerialChannel::Propagate(Packet& p, SerialNetDevice* src)
+bool
+SerialChannel::Propagate(Packet& p, SerialPhy* src)
 {
   NS_DEBUG("SerialChannel::DoPropagate (" << &p << ", " << src << ")");
 
@@ -119,19 +121,27 @@ SerialChannel::Propagate(Packet& p, SerialNetDevice* src)
 // I believe Raj has a method in the DataRate class to do this.  Should use
 // it when it is available.
 //
-  Time tEvent = Simulator::Now () + 
-    Seconds (static_cast<double> (p.GetSize() * 8) / 
-    static_cast<double> (m_bps)) + m_delay;
+  Time tEvent =  Seconds (static_cast<double> (p.GetSize() * 8) / 
+                          static_cast<double> (m_bps)) + m_delay;
 
-  NS_DEBUG("SerialChannel::DoSend (): Schedule Receive at " << tEvent);
+  NS_DEBUG("SerialChannel::DoSend (): Schedule Receive delay " << tEvent);
 
-#if 0
+  Packet packet = p;
   Simulator::Schedule (tEvent, &SerialChannel::TransmitCompleteEvent, this, 
-    p, src);
-#else
-  TransmitCompleteEvent (p, src);
-#endif
+                       p, src);
   return true;
 }
+
+uint32_t 
+SerialChannel::GetNDevices (void) const
+{
+  return m_nDevices;
+}
+NetDevice *
+SerialChannel::GetDevice (uint32_t i) const
+{
+  return m_link[i].m_src->GetDevice ();
+}
+
 
 } // namespace ns3

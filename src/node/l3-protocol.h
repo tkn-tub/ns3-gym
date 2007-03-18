@@ -30,7 +30,8 @@ namespace ns3 {
 class Packet;
 class NetDevice;
 class Node;
-
+class TraceResolver;
+class TraceContext;
 
 /**
  * ::Send is always defined in subclasses.
@@ -44,6 +45,8 @@ public:
   int GetVersion() const;
 
   virtual L3Protocol* Copy(Node *node) const = 0;
+
+  virtual TraceResolver *CreateTraceResolver (TraceContext const &context) = 0;
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
    * The ARP subclass needs to know from which NetDevice this

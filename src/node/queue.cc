@@ -18,20 +18,20 @@
  */
 
 #include "ns3/debug.h"
+#include "ns3/composite-trace-resolver.h"
 #include "queue.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
-  Queue::Queue(std::string const &name) : 
+Queue::Queue() : 
   m_nBytes(0), 
   m_nTotalReceivedBytes(0),
   m_nPackets(0), 
   m_nTotalReceivedPackets(0),
   m_nTotalDroppedBytes(0),
-  m_nTotalDroppedPackets(0),
-  m_name (name)
+  m_nTotalDroppedPackets(0)
 {
   NS_DEBUG("Queue::Queue ()");
 }
@@ -41,6 +41,16 @@ Queue::~Queue()
   NS_DEBUG("Queue::~Queue ()");
 }
 
+TraceResolver *
+Queue::CreateTraceResolver (TraceContext const &context)
+{
+  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  resolver->Add ("enqueue", m_traceEnqueue, Queue::ENQUEUE);
+  resolver->Add ("dequeue", m_traceDequeue, Queue::DEQUEUE);
+  resolver->Add ("drop", m_traceDrop, Queue::DROP);
+  return resolver;
+}
+
 bool 
 Queue::Enqueue (const Packet& p)
 {
@@ -48,7 +58,7 @@ Queue::Enqueue (const Packet& p)
 
   NS_DEBUG("Queue::Enqueue (): m_traceEnqueue (p)");
 
-  m_traceEnqueue (m_name, p);
+  m_traceEnqueue (p);
 
   bool retval = DoEnqueue (p);
   if (retval)
@@ -77,7 +87,7 @@ Queue::Dequeue (Packet &p)
       NS_DEBUG("Queue::Dequeue (): m_traceDequeue (p)");
 
       const Packet packet = p;
-      m_traceDequeue (m_name, packet);
+      m_traceDequeue (packet);
     }
 
   return retval;
@@ -113,19 +123,6 @@ Queue::IsEmpty (void)
 {
   NS_DEBUG("Queue::IsEmpty () <= " << (m_nPackets == 0));
   return m_nPackets == 0;
-}
-
-void
-Queue::QueueRegisterTraces (TraceContainer &container)
-{
-  NS_DEBUG("Queue::RegisterTraces (" << &container << ")");
-
-  container.RegisterCallback ("Queue::Enqueue",
-                              &m_traceEnqueue);
-  container.RegisterCallback ("Queue::Dequeue",
-                              &m_traceDequeue);
-  container.RegisterCallback ("Queue::Drop",
-                              &m_traceDrop);
 }
 
 uint32_t
@@ -182,7 +179,7 @@ Queue::Drop (const Packet& p)
   m_nTotalDroppedBytes += p.GetSize ();
 
   NS_DEBUG("Queue::Drop (): m_traceDrop (p)");
-  m_traceDrop (m_name, p);
+  m_traceDrop (p);
 }
 
 }; // namespace ns3

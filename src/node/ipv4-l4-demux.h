@@ -32,12 +32,16 @@ namespace ns3 {
 
 class Ipv4L4Protocol;
 class Node;
+class TraceResolver;
+class TraceContext;
 
 class Ipv4L4Demux {
 public:
+  typedef int Ipv4L4ProtocolTraceType;
   Ipv4L4Demux (Node *node);
   virtual ~Ipv4L4Demux();
   Ipv4L4Demux* Copy(Node *node) const;
+  TraceResolver *CreateTraceResolver (TraceContext const &context);
   Ipv4L4Protocol* Insert(const Ipv4L4Protocol&);
   Ipv4L4Protocol* Lookup(int protocolNumber);
   void        Erase(Ipv4L4Protocol*);

@@ -21,6 +21,7 @@
  */
 
 #include "ns3/packet.h"
+#include "ns3/composite-trace-resolver.h"
 
 #include "arp-ipv4-interface.h"
 #include "arp.h"
@@ -36,6 +37,20 @@ ArpIpv4Interface::ArpIpv4Interface (Node *node, NetDevice *device)
 {}
 ArpIpv4Interface::~ArpIpv4Interface ()
 {}
+
+TraceResolver *
+ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
+{
+  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  if (GetDevice () != 0)
+    {
+      resolver->Add ("netdevice",
+                     MakeCallback (&NetDevice::CreateTraceResolver, GetDevice ()),
+                     ArpIpv4Interface::NETDEVICE);
+    }
+  
+  return resolver;
+}
 
 void 
 ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)

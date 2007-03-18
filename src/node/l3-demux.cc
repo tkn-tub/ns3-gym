@@ -20,7 +20,9 @@
 //
 // Implement the L3Protocols capability for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
-
+#include <sstream>
+#include <string>
+#include "ns3/composite-trace-resolver.h"
 #include "l3-demux.h"
 #include "l3-protocol.h"
 
@@ -36,6 +38,23 @@ L3Demux::~L3Demux()
     {
       delete i->second;
     }
+}
+
+TraceResolver *
+L3Demux::CreateTraceResolver (TraceContext const &context)
+{
+  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  for (L3Map_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+    {
+      std::string protValue;
+      std::ostringstream oss (protValue);
+      oss << (i->second)->GetProtocolNumber ();
+      ProtocolTraceType context = (i->second)->GetProtocolNumber ();
+      resolver->Add (protValue, 
+                     MakeCallback (&L3Protocol::CreateTraceResolver, i->second),
+                     context);
+    }
+  return resolver;
 }
   
 L3Demux* L3Demux::Copy(Node *node) const

@@ -21,6 +21,8 @@
 
 #include "ns3/assert.h"
 #include "ns3/packet.h"
+#include "ns3/empty-trace-resolver.h"
+
 #include "udp.h"
 #include "udp-header.h"
 #include "ipv4-end-point-demux.h"
@@ -44,6 +46,12 @@ Udp::Udp (Node *node)
 Udp::~Udp ()
 {
   delete m_endPoints;
+}
+
+TraceResolver *
+Udp::CreateTraceResolver (TraceContext const &context)
+{
+  return new EmptyTraceResolver (context);
 }
 
 UdpEndPoint *

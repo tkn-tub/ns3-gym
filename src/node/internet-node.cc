@@ -21,6 +21,8 @@
 // Implementation of the InternetNode class for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
+#include "ns3/composite-trace-resolver.h"
+
 #include "net-device-list.h"
 #include "l3-demux.h"
 #include "ipv4-l4-demux.h"
@@ -94,6 +96,22 @@ InternetNode::Copy() const
 {
   InternetNode *copy = new InternetNode (*this);
    return copy;
+}
+
+TraceResolver *
+InternetNode::CreateTraceResolver (TraceContext const &context)
+{
+  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  resolver->Add ("ipv4",
+                 MakeCallback (&Ipv4::CreateTraceResolver, GetIpv4 ()),
+                 InternetNode::IPV4);
+  resolver->Add ("arp",
+                 MakeCallback (&Arp::CreateTraceResolver, GetArp ()),
+                 InternetNode::ARP);
+  resolver->Add ("udp",
+                 MakeCallback (&Udp::CreateTraceResolver, GetUdp ()),
+                 InternetNode::UDP);
+  return resolver;
 }
 
 

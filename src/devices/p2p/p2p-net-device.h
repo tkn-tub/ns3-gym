@@ -42,6 +42,8 @@ public:
   void TxComplete (void);
  private:
   virtual bool SendTo (Packet& p, const MacAddress& dest);
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
+
   double m_rate;
   P2PChannel *m_channel;
 };

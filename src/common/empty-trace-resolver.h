@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2006 INRIA
+ * Copyright (c) 2007 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,42 +18,35 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+#ifndef EMPTY_TRACE_RESOLVER_H
+#define EMPTY_TRACE_RESOLVER_H
 
-#ifndef F_VARIABLE_TRACER_H
-#define F_VARIABLE_TRACER_H
-
-#include "ns3/callback.h"
-#include <stdint.h>
+#include "trace-resolver.h"
 
 namespace ns3 {
 
-class FVariableTracerBase {
+class TraceContext;
+
+/**
+ * \brief a TraceResolver instance which does not resolve anything.
+ * \ingroup tracing
+ *
+ * Trying to resolve against this class will yield no matches and no
+ * connections. Returning an instance of this class from a 
+ * CreateTraceResolver method is a hand way of not implementing
+ * any Tracing code.
+ */
+class EmptyTraceResolver : public TraceResolver
+{
 public:
-  typedef Callback<void,double, double> ChangeNotifyCallback;
-
-  FVariableTracerBase () {}
-  FVariableTracerBase (FVariableTracerBase const &o) {}
-  FVariableTracerBase &operator = (FVariableTracerBase const &o) {
-      return *this;
-  }
-
-  ~FVariableTracerBase () {}
-
-  void setCallback(ChangeNotifyCallback callback) {
-      m_callback = callback;
-  }
-protected:
-  void notify (double oldVal, double newVal) {
-      if (oldVal != newVal && !m_callback.IsNull ()) 
-        {
-          m_callback (oldVal, newVal);
-        }
-  }
-private:
-  ChangeNotifyCallback m_callback;
+  /**
+   * \param o necessary context for this class.
+   *
+   * The only constructor exported by this class.
+   */
+  EmptyTraceResolver (TraceContext const &o);
 };
 
+}//namespace ns3
 
-}; // namespace ns3
-
-#endif /* F_VARIABLE_TRACER_H */
+#endif /* EMPTY_TRACE_RESOLVER_H */

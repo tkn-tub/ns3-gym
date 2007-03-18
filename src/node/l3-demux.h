@@ -33,13 +33,18 @@ namespace ns3 {
 
 class L3Protocol;
 class Node;
+class TraceResolver;
+class TraceContext;
 
 class L3Demux
 {
 public:
+  typedef int ProtocolTraceType;
   L3Demux(Node *node);
   virtual ~L3Demux();
   L3Demux* Copy(Node *node) const;
+
+  TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   // Insert a new protocol
   ns3::L3Protocol* Insert(const ns3::L3Protocol&);

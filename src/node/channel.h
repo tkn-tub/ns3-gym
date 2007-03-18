@@ -15,36 +15,45 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Craig Dowell <craigdo@ee.washington.edu>
+ * Author: Craig Dowell <craigdo@ee.washingon.edu>
+ *
+ *      Wed Feb 14 16:05:46 PST 2007 craigdo:  Created
  */
+#ifndef CHANNEL_H
+#define CHANNEL_H
 
-#ifndef SERIAL_PHY_H
-#define SERIAL_PHY_H
+#include <string>
+#include <stdint.h>
 
 namespace ns3 {
 
-class SerialNetDevice;
-class SerialChannel;
-class Node;
-class Packet;
+class NetDevice;
 
-class SerialPhy {
+/**
+ * \brief Abstract Channel Base Class.
+ *
+ * A channel is a logical path over which information flows.  The path can
+ * be as simple as a short piece of wire, or as complicated as space-time.
+ */
+class Channel
+{
 public:
-  SerialPhy(Node* node, SerialNetDevice* netdevice);
-  virtual ~SerialPhy();
+  Channel ();
+  Channel (std::string name);
+  virtual ~Channel ();
 
-  void Send (Packet &p);
-  void Receive (Packet& p);
-  void Attach (SerialChannel *channel);
+  void SetName(std::string);
+  std::string GetName(void);
 
-  SerialNetDevice *GetDevice (void);
+  virtual uint32_t GetNDevices (void) const = 0;
+  virtual NetDevice *GetDevice (uint32_t i) const = 0;
+
+protected:
+  std::string m_name;
 
 private:
-  Node* m_node;
-  SerialChannel *m_channel;
-  SerialNetDevice* m_netdevice;
 };
 
-} // namespace ns3
+}; // namespace ns3
 
-#endif // SERIAL_PHY_H
+#endif /* CHANNEL_H */

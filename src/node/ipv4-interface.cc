@@ -45,6 +45,12 @@ Ipv4Interface::GetDevice (void) const
   return m_netdevice;
 }
 
+TraceResolver *
+Ipv4Interface::CreateTraceResolver (TraceContext const &context)
+{
+  return DoCreateTraceResolver (context);
+}
+
 void 
 Ipv4Interface::SetAddress (Ipv4Address a)
 {

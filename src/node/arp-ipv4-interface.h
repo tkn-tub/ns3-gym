@@ -31,11 +31,16 @@ class Node;
 class ArpIpv4Interface : public Ipv4Interface
 {
  public:
+  enum TraceType {
+    NETDEVICE,
+    ARP,
+  };
   ArpIpv4Interface (Node *node, NetDevice *device);
   virtual ~ArpIpv4Interface ();
 
  private:
   virtual void SendTo (Packet p, Ipv4Address dest);
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
   Node *m_node;
 };
 

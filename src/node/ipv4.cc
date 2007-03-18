@@ -21,6 +21,9 @@
 
 #include "ns3/packet.h"
 #include "ns3/debug.h"
+#include "ns3/composite-trace-resolver.h"
+#include "ns3/array-trace-resolver.h"
+#include "ns3/callback.h"
 
 #include "ipv4.h"
 #include "ipv4-l4-protocol.h"
@@ -68,6 +71,30 @@ Ipv4::~Ipv4 ()
   delete m_defaultRoute;
 }
 
+TraceResolver *
+Ipv4::CreateTraceResolver (TraceContext const &context)
+{
+  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  resolver->Add ("tx", m_txTrace, Ipv4::TX);
+  resolver->Add ("rx", m_rxTrace, Ipv4::RX);
+  resolver->Add ("drop", m_dropTrace, Ipv4::DROP);
+  resolver->Add ("interfaces", 
+                 MakeCallback (&Ipv4::InterfacesCreateTraceResolver, this), 
+                 Ipv4::INTERFACES);
+  return resolver;
+}
+
+TraceResolver *
+Ipv4::InterfacesCreateTraceResolver (TraceContext const &context)
+{
+  ArrayTraceResolver<Ipv4Interface> *resolver = 
+    new ArrayTraceResolver<Ipv4Interface> 
+    (context,
+     MakeCallback (&Ipv4::GetNInterfaces, this),
+     MakeCallback (&Ipv4::GetInterface, this));
+  return resolver;
+}
+
 void 
 Ipv4::SetDefaultTtl (uint8_t ttl)
 {
@@ -77,8 +104,8 @@ Ipv4::SetDefaultTtl (uint8_t ttl)
 
 void 
 Ipv4::AddHostRouteTo (Ipv4Address dest, 
-				Ipv4Address nextHop, 
-				uint32_t interface)
+                      Ipv4Address nextHop, 
+                      uint32_t interface)
 {
   Ipv4Route *route = new Ipv4Route ();
   *route = Ipv4Route::CreateHostRouteTo (dest, nextHop, interface);
@@ -281,7 +308,7 @@ Ipv4::GetInterface (uint32_t index)
   return 0;
 }
 uint32_t 
-Ipv4::GetNInterfaces (void) const
+Ipv4::GetNInterfaces (void)
 {
   return m_nInterfaces;
 }
@@ -309,7 +336,7 @@ Ipv4::Copy(Node *node) const
 void 
 Ipv4::Receive(Packet& packet, NetDevice &device)
 {
-  // XXX trace here.
+  m_rxTrace (packet);
   Ipv4Header ipHeader;
   packet.Peek (ipHeader);
   packet.Remove (ipHeader);
@@ -357,6 +384,7 @@ Ipv4::Send (Packet const &packet,
   if (route == 0) 
     {
       NS_DEBUG ("not for me -- forwarding but no route to host. drop.");
+      m_dropTrace (packet);
       return;
     }
 
@@ -370,7 +398,7 @@ Ipv4::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route
   packet.Add (ip);
   Ipv4Interface *outInterface = GetInterface (route.GetInterface ());
   NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
-  // XXX log trace here.
+  m_txTrace (packet);
   if (route.IsGateway ()) 
     {
       outInterface->Send (packet, route.GetGateway ());
@@ -425,6 +453,7 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
       // Should send ttl expired here
       // XXX
       NS_DEBUG ("not for me -- ttl expired. drop.");
+      m_dropTrace (packet);
       return true;
     }
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
@@ -432,6 +461,7 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
   if (route == 0) 
     {
       NS_DEBUG ("not for me -- forwarding but no route to host. drop.");
+      m_dropTrace (packet);
       return true;
     }
   NS_DEBUG ("not for me -- forwarding.");

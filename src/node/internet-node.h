@@ -35,11 +35,17 @@ namespace ns3 {
 class InternetNode : public Node 
 {
 public:
+  enum TraceType {
+    IPV4,
+    UDP,
+    ARP,
+  };
   InternetNode();
   InternetNode(const InternetNode&);
   InternetNode const &operator = (InternetNode const &o);
   virtual ~InternetNode ();
   virtual InternetNode* Copy() const;
+  virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
   // Capability access
   virtual NetDeviceList*   GetNetDeviceList() const;
   virtual L3Demux*         GetL3Demux() const;

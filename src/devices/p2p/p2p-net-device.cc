@@ -22,6 +22,7 @@
 // Implementation of a point-to-point network device
 // George F. Riley, Georgia Tech, Spring 2007
 
+#include "ns3/empty-trace-resolver.h"
 #include "p2p-net-device.h"
 #include "p2p-channel.h"
 
@@ -58,6 +59,12 @@ P2PNetDevice::SendTo (Packet& p, const MacAddress&)
 {
   m_channel->Send (this, p, m_rate);
   return true;
+}
+
+TraceResolver *
+P2PNetDevice::DoCreateTraceResolver (TraceContext const &context)
+{
+  return new EmptyTraceResolver (context);
 }
 
 void

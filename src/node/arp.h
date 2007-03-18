@@ -32,6 +32,8 @@ class ArpCache;
 class NetDevice;
 class Node;
 class Packet;
+class TraceResolver;
+class TraceContext;
 
 class Arp : public L3Protocol
 {
@@ -41,6 +43,8 @@ public:
   Arp (Node *node);
   ~Arp ();
   virtual Arp *Copy (Node *node) const;
+
+  virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   virtual void Receive(Packet& p, NetDevice &device);
   bool Lookup (Packet &p, Ipv4Address destination, 

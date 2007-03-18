@@ -48,6 +48,7 @@
 
 #include "ns3/internet-node.h"
 #include "ns3/serial-channel.h"
+#include "ns3/serial-net-device.h"
 #include "ns3/mac-address.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/arp-ipv4-interface.h"
@@ -60,6 +61,8 @@
 #include "ns3/arp-header.h"
 #include "ns3/ipv4-header.h"
 #include "ns3/udp-header.h"
+#include "ns3/node-list.h"
+#include "ns3/trace-root.h"
 
 using namespace ns3;
 
@@ -81,23 +84,37 @@ public:
 
   ~Tracer () {};
 
-  void LogEnqueue (std::string const &name, const Packet &p)
+  void LogNodeInterface (TraceContext const &context)
   {
-    m_filestr << name << " que ";
-    PrintLlcPacket (p, m_filestr);
+    NodeList::NodeIndex nodeIndex;
+    context.Get (nodeIndex);
+    m_filestr << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
+    Ipv4::InterfaceIndex interfaceIndex;
+    context.Get (interfaceIndex);
+    m_filestr << "interface=" << interfaceIndex << " ";
+  }
+
+
+  void LogEnqueue (TraceContext const &context, const Packet &p)
+  {
+    LogNodeInterface (context);
+    m_filestr << " que p=" << p.GetUid ();
+    //PrintLlcPacket (p, m_filestr);
     m_filestr << std::endl;
   }
 
-  void LogDequeue (std::string const &name, const Packet &p)
+  void LogDequeue (TraceContext const &context, const Packet &p)
   {
-    m_filestr << name << " deq ";
-    PrintLlcPacket (p, m_filestr);
+    LogNodeInterface (context);
+    m_filestr << " deq p=" << p.GetUid ();
+    //PrintLlcPacket (p, m_filestr);
     m_filestr << std::endl;
   }
-  void LogDrop (std::string const &name, const Packet &p)
+  void LogDrop (TraceContext const &context, const Packet &p)
   {
-    m_filestr << name << " dro ";
-    PrintLlcPacket (p, m_filestr);
+    LogNodeInterface (context);
+    m_filestr << " dro p=" << p.GetUid ();
+    //PrintLlcPacket (p, m_filestr);
     m_filestr << std::endl;
   }
 
@@ -199,7 +216,7 @@ PrintRoutingTable (InternetNode *a, std::string name)
 
 static SerialChannel * 
 AddDuplexLink(
-  std::string &name,
+  std::string name,
   uint64_t bps,
   uint32_t delay,
   InternetNode* a, 
@@ -207,12 +224,8 @@ AddDuplexLink(
   const MacAddress& macaddra, 
   InternetNode* b, 
   const Ipv4Address& addrb,
-  const MacAddress& macaddrb, 
-  // const Rate& rate, 
-  // const Time& delay,
-  TraceContainer &traceContainer)
+  const MacAddress& macaddrb)
 {
-  std::string qName;
   SerialChannel* channel = new SerialChannel(name, bps, MilliSeconds(delay));
 
   // Duplex link is assumed to be subnetted as a /30
@@ -220,30 +233,24 @@ AddDuplexLink(
   Ipv4Mask netmask("255.255.255.252");
   assert(netmask.IsMatch(addra,addrb));
 
-  qName = name + "::Queue A";
-  DropTailQueue* dtqa = new DropTailQueue(qName);
-  dtqa->RegisterTraces (traceContainer);
+  DropTailQueue* dtqa = new DropTailQueue();
 
   SerialNetDevice* neta = new SerialNetDevice(a, macaddra);
   neta->AddQueue(dtqa);
   Ipv4Interface *interfA = new ArpIpv4Interface (a, neta);
   uint32_t indexA = a->GetIpv4 ()->AddInterface (interfA);
-  channel->Attach (neta);
   neta->Attach (channel);
   
   interfA->SetAddress (addra);
   interfA->SetNetworkMask (netmask);
   interfA->SetUp ();
 
-  qName = name + "::Queue B";
-  DropTailQueue* dtqb = new DropTailQueue(qName);
-  dtqb->RegisterTraces (traceContainer);
+  DropTailQueue* dtqb = new DropTailQueue();
 
   SerialNetDevice* netb = new SerialNetDevice(b, macaddrb);
   netb->AddQueue(dtqb);
   Ipv4Interface *interfB = new ArpIpv4Interface (b, netb);
   uint32_t indexB = b->GetIpv4 ()->AddInterface (interfB);
-  channel->Attach (netb);
   netb->Attach (channel);
 
   interfB->SetAddress (addrb);
@@ -262,19 +269,6 @@ AddDuplexLink(
   return channel;
 }
 
-static void
-SetupTrace (TraceContainer &container, Tracer &tracer)
-{
-  container.SetCallback ("Queue::Enqueue",
-                         MakeCallback (&Tracer::LogEnqueue, &tracer));
-  
-  container.SetCallback ("Queue::Dequeue",
-                         MakeCallback (&Tracer::LogDequeue, &tracer));
-  
-  container.SetCallback ("Queue::Drop",
-                         MakeCallback (&Tracer::LogDrop, &tracer));
-
-}
 
 int main (int argc, char *argv[])
 {
@@ -295,37 +289,27 @@ int main (int argc, char *argv[])
   InternetNode *n2 = new InternetNode();
   InternetNode *n3 = new InternetNode();
 
-  TraceContainer traceContainer;
+  NodeList::Add (n0);
+  NodeList::Add (n1);
+  NodeList::Add (n2);
+  NodeList::Add (n3);
 
   n0->SetName(std::string("Node 0"));
   n1->SetName(std::string("Node 1"));
   n2->SetName(std::string("Node 2"));
   n3->SetName(std::string("Node 3"));
   
-  Tracer tracer("serial-net-test.log");
-    
-  std::string channelName;
-    
-  channelName = "Channel 1";
-  SerialChannel* ch1 = AddDuplexLink (channelName, 5000000, 2,
+  SerialChannel* ch1 = AddDuplexLink ("Channel 1", 5000000, 2,
       n0, Ipv4Address("10.1.1.1"), MacAddress("00:00:00:00:00:01"), 
-      n2, Ipv4Address("10.1.1.2"), MacAddress("00:00:00:00:00:02"), 
-      traceContainer);
-  SetupTrace (traceContainer, tracer);
-
-  channelName = "Channel 2";
-  SerialChannel* ch2 = AddDuplexLink (channelName, 5000000, 2,
+      n2, Ipv4Address("10.1.1.2"), MacAddress("00:00:00:00:00:02"));
+  
+  SerialChannel* ch2 = AddDuplexLink ("Channel 2", 5000000, 2,
       n1, Ipv4Address("10.1.2.1"), MacAddress("00:00:00:00:00:03"), 
-      n2, Ipv4Address("10.1.2.2"), MacAddress("00:00:00:00:00:04"), 
-      traceContainer);
-  SetupTrace (traceContainer, tracer);
+      n2, Ipv4Address("10.1.2.2"), MacAddress("00:00:00:00:00:04"));
 
-  channelName = "Channel 3";
-  SerialChannel* ch3 = AddDuplexLink (channelName, 1500000, 10,
+  SerialChannel* ch3 = AddDuplexLink ("Channel 3", 1500000, 10,
       n2, Ipv4Address("10.1.3.1"), MacAddress("00:00:00:00:00:05"), 
-      n3, Ipv4Address("10.1.3.2"), MacAddress("00:00:00:00:00:06"), 
-      traceContainer);
-  SetupTrace (traceContainer, tracer);
+      n3, Ipv4Address("10.1.3.2"), MacAddress("00:00:00:00:00:06"));
   
   UdpSocket *source0 = new UdpSocket (n0);
   UdpSocket *source3 = new UdpSocket (n3);
@@ -340,6 +324,15 @@ int main (int argc, char *argv[])
   // Here, finish off packet routing configuration
   n0->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
   n3->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
+
+  Tracer tracer("serial-net-test.log");
+  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/enqueue",
+                      MakeCallback (&Tracer::LogEnqueue, &tracer));
+  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/dequeue",
+                      MakeCallback (&Tracer::LogDequeue, &tracer));
+  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/drop",
+                      MakeCallback (&Tracer::LogDrop, &tracer));
+
 
   PrintTraffic (sink3);
   GenerateTraffic (source0, 100);

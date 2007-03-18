@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005,2006 INRIA
+ * Copyright (c) 2007 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,53 +18,37 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-
-#include "ns3/debug.h"
-#include "ns3/queue.h"
-#include "serial-phy.h"
-#include "serial-net-device.h"
-#include "serial-channel.h"
-
-NS_DEBUG_COMPONENT_DEFINE ("SerialPhy");
+#include "trace-root.h"
+#include "ns3/composite-trace-resolver.h"
+#include "ns3/trace-context.h"
 
 namespace ns3 {
 
-SerialPhy::SerialPhy(Node* node, SerialNetDevice* netdevice) :
-  m_node(node), m_netdevice(netdevice)
-{
-  NS_DEBUG ("SerialPhy::SerialPhy (" << node << ", " << netdevice << ")");
-}
-
-SerialPhy::~SerialPhy()
-{
-  NS_DEBUG ("SerialPhy::~SerialPhy ()");
-}
-
 void 
-SerialPhy::Send (Packet &p)
+TraceRoot::Connect (std::string path, CallbackBase const &cb)
 {
-  m_channel->Propagate (p, this);
+  TraceResolver *resolver = GetComposite ();
+  resolver->Connect (path, cb);
 }
 void 
-SerialPhy::Attach (SerialChannel *channel)
+TraceRoot::Disconnect (std::string path, CallbackBase const &cb)
 {
-  m_channel = channel;
-  m_channel->Attach (this);
+  TraceResolver *resolver = GetComposite ();
+  resolver->Disconnect (path, cb);
+}
+void 
+TraceRoot::Register (std::string name, 
+                     Callback<TraceResolver *,TraceContext const &> createResolver)
+{
+  CompositeTraceResolver *resolver = GetComposite ();
+  resolver->Add (name, createResolver, TraceRoot::NOTHING);
 }
 
-SerialNetDevice *
-SerialPhy::GetDevice (void)
+CompositeTraceResolver *
+TraceRoot::GetComposite (void)
 {
-  return m_netdevice;
-}
-
-
-
-void
-SerialPhy::Receive (Packet& p)
-{
-  NS_DEBUG ("SerialPhy::Receive (" << &p << ")");
-  m_netdevice->Receive (p);
+  static CompositeTraceResolver resolver = CompositeTraceResolver (TraceContext ());
+  return &resolver;
 }
 
 } // namespace ns3

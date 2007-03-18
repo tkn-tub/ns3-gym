@@ -140,9 +140,15 @@ common.add_sources([
     'tags.cc',
     'pcap-writer.cc',
     'trace-writer.cc',
-    'trace-container.cc',
     'variable-tracer-test.cc',
-    'stream-tracer-test.cc',
+    'trace-context.cc',
+    'trace-resolver.cc',
+    'callback-trace-source.cc',
+    'empty-trace-resolver.cc',
+    'composite-trace-resolver.cc',
+    'trace-root.cc',
+    ])
+common.add_headers ([
     ])
 common.add_inst_headers([
     'buffer.h',
@@ -150,14 +156,19 @@ common.add_inst_headers([
     'trailer.h',
     'tags.h',
     'packet.h',
-    'ui-variable-tracer.h',
-    'si-variable-tracer.h',
-    'f-variable-tracer.h',
-    'callback-tracer.h',
-    'stream-tracer.h',
+    'uv-trace-source.h',
+    'sv-trace-source.h',
+    'fv-trace-source.h',
     'trace-writer.h',
-    'trace-container.h',
     'pcap-writer.h',
+    'callback-trace-source.h',
+    'trace-context.h',
+    'trace-resolver.h',
+    'empty-trace-resolver.h',
+    'composite-trace-resolver.h',
+    'array-trace-resolver.h',
+    'trace-root.h',
+    'terminal-trace-resolver.h',
     ])
 
 node = build.Ns3Module ('node', 'src/node')
@@ -193,6 +204,8 @@ node.add_sources ([
     'net-device-list.cc',
     'queue.cc',
     'drop-tail.cc',
+    'channel.cc',
+    'node-list.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
@@ -229,10 +242,12 @@ node.add_inst_headers ([
     'arp-header.h',
     'ipv4-header.h',
     'udp-header.h',
+    'channel.h',
+    'node-list.h',
     ])
 
 p2p = build.Ns3Module ('p2p', 'src/devices/p2p')
-ns3.add (p2p)
+#ns3.add (p2p)
 p2p.add_deps (['node'])
 p2p.add_sources ([
     'p2p-net-device.cc',
@@ -251,7 +266,6 @@ serial.add_sources ([
     'serial-channel.cc',
     'serial-phy.cc',
     'layer-connector.cc',
-    'channel.cc',
     ])
 serial.add_headers ([
     'propagator.h',
@@ -261,7 +275,6 @@ serial.add_inst_headers ([
     'serial-channel.h',
     'serial-phy.h',
     'layer-connector.h',
-    'channel.h',
     ])
 
 
@@ -312,7 +325,7 @@ sample_ptr.add_dep('core')
 sample_ptr.add_source('main-ptr.cc')
 
 sample_trace = build.Ns3Module('sample-trace', 'samples')
-ns3.add(sample_trace)
+#ns3.add(sample_trace)
 sample_trace.add_dep('common')
 sample_trace.set_executable()
 sample_trace.add_source('main-trace.cc')
@@ -349,7 +362,7 @@ sample_simple.add_source('main-simple.cc')
 
 sample_sp2p = build.Ns3Module('sample-simple-p2p', 'samples')
 sample_sp2p.set_executable()
-ns3.add(sample_sp2p)
+#n3.add(sample_sp2p)
 sample_sp2p.add_deps(['core', 'simulator', 'node', 'p2p'])
 sample_sp2p.add_source('main-simple-p2p.cc')
 

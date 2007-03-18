@@ -17,40 +17,43 @@
  *
  * Author: Craig Dowell <craigdo@ee.washingon.edu>
  *
- *      Wed Feb 14 16:05:46 PST 2007 craigdo:  Created
+ *	Thu Feb 15 14:50:46 PST 2007 craigdo: Created.
  */
 
-#include <list>
-#include "ns3/packet.h"
-#include "layer-connector.h"
+#include "ns3/debug.h"
+#include "channel.h"
 
-#ifndef CHANNEL_H
-#define CHANNEL_H
+NS_DEBUG_COMPONENT_DEFINE ("Channel");
 
 namespace ns3 {
 
-/**
- * \brief Abstract Channel Base Class.
- *
- * A channel is a logical path over which information flows.  The path can
- * be as simple as a short piece of wire, or as complicated as space-time.
- */
-class Channel
+Channel::Channel ()
+  : m_name("Channel")
 {
-public:
-  Channel ();
-  Channel (std::string name);
-  virtual ~Channel ();
+  NS_DEBUG("Channel::Channel ()");
+}
 
-  virtual void SetName(std::string);
-  virtual std::string GetName(void);
+Channel::Channel (std::string name)
+  : m_name(name)
+{
+  NS_DEBUG("Channel::Channel (" << name << ")");
+}
 
-protected:
-  std::string m_name;
+Channel::~Channel ()
+{
+  NS_DEBUG("Channel::~Channel ()");
+}
 
-private:
-};
+  void
+Channel::SetName(std::string name)
+{
+  m_name = name;
+}
 
-}; // namespace ns3
+  std::string
+Channel::GetName(void)
+{
+  return m_name;
+}
 
-#endif /* CHANNEL_H */
+} // namespace ns3

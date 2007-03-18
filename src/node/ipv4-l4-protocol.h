@@ -31,6 +31,8 @@ namespace ns3 {
 class Node;
 class Packet;
 class Ipv4Address;
+class TraceResolver;
+class TraceContext;
   
 class Ipv4L4Protocol {
 public:
@@ -41,6 +43,7 @@ public:
   int GetVersion() const;
 
   virtual Ipv4L4Protocol* Copy(Node *node) const = 0;
+  virtual TraceResolver *CreateTraceResolver (TraceContext const &context) = 0;
   /**
    * Called from lower-level layers to send the packet up
    * in the stack. 

@@ -24,6 +24,8 @@
 
 #include <list>
 #include <stdint.h>
+#include "ns3/callback-trace-source.h"
+#include "ns3/array-trace-resolver.h"
 #include "ipv4-address.h"
 #include "l3-protocol.h"
 
@@ -36,6 +38,8 @@ class Ipv4Address;
 class Ipv4Header;
 class Ipv4Route;
 class Node;
+class TraceResolver;
+class TraceContext;
 
 
 /**
@@ -46,8 +50,18 @@ class Ipv4 : public L3Protocol
 public:
   static const uint16_t PROT_NUMBER;
 
+  enum TraceType {
+    TX,
+    RX,
+    DROP,
+    INTERFACES,
+  };
+  typedef ArrayTraceResolver<Ipv4Interface>::Index InterfaceIndex;
+
   Ipv4(Node *node);
   virtual ~Ipv4 ();
+
+  virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   void SetDefaultTtl (uint8_t ttl);
     
@@ -88,7 +102,7 @@ public:
   
   uint32_t AddInterface (Ipv4Interface *interface);
   Ipv4Interface * GetInterface (uint32_t i);
-  uint32_t GetNInterfaces (void) const;
+  uint32_t GetNInterfaces (void);
   Ipv4Interface *FindInterfaceForDevice (NetDevice const*device);
   
 
@@ -109,6 +123,7 @@ public:
   void SendRealOut (Packet const &packet, Ipv4Header const &ip, Ipv4Route const &route);
   bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device);
   void ForwardUp (Packet p, Ipv4Header const&ip);
+  TraceResolver *InterfacesCreateTraceResolver (TraceContext const &context);
 
   typedef std::list<Ipv4Interface*> Ipv4InterfaceList;
   typedef std::list<Ipv4Route *> HostRoutes;
@@ -126,6 +141,9 @@ public:
   NetworkRoutes m_networkRoutes;
   Ipv4Route *m_defaultRoute;
   Node *m_node;
+  CallbackTraceSource<Packet const &> m_txTrace;
+  CallbackTraceSource<Packet const &> m_rxTrace;
+  CallbackTraceSource<Packet const &> m_dropTrace;
 };
 
 } // Namespace ns3

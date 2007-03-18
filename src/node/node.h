@@ -99,6 +99,8 @@ class NetDeviceList;
 class Ipv4;
 class Udp;
 class Arp;
+class TraceContext;
+class TraceResolver;
 
 class Node {
 public:
@@ -106,6 +108,8 @@ public:
   Node();
   virtual ~Node();
   virtual Node* Copy() const = 0;// Make a copy of this node
+
+  virtual TraceResolver *CreateTraceResolver (TraceContext const &context) = 0;
 
   uint32_t GetId (void) const;
   uint32_t GetSystemId (void) const;

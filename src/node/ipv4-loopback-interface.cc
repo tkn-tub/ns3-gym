@@ -19,6 +19,7 @@
  * Authors: 
  *  Mathieu Lacage <mathieu.lacage@sophia.inria.fr>,
  */
+#include "ns3/empty-trace-resolver.h"
 #include "ipv4-loopback-interface.h"
 #include "net-device.h"
 #include "node.h"
@@ -33,6 +34,7 @@ public:
   Node *PeekNode (void) const;
 private:
   virtual bool SendTo (Packet& p, const MacAddress& dest);
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
 };
 
 Ipv4DummyNetDevice::Ipv4DummyNetDevice (Node *node)
@@ -50,6 +52,11 @@ Ipv4DummyNetDevice::SendTo (Packet& p, const MacAddress& dest)
 {
   return false;
 }
+TraceResolver *
+Ipv4DummyNetDevice::DoCreateTraceResolver (TraceContext const &context)
+{
+  return new EmptyTraceResolver (context);
+}
 
 
 Ipv4LoopbackInterface::Ipv4LoopbackInterface (Node *node)
@@ -66,6 +73,12 @@ Node *
 Ipv4LoopbackInterface::GetNode (void) const
 {
   return m_node;
+}
+
+TraceResolver *
+Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
+{
+  return new EmptyTraceResolver (context);
 }
 
 void 

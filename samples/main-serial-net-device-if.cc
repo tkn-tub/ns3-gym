@@ -31,12 +31,15 @@
 #include "ns3/serial-channel.h"
 #include "ns3/serial-net-device.h"
 #include "ns3/trace-writer.h"
-#include "ns3/trace-container.h"
 #include "ns3/drop-tail.h"
 #include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4.h"
+#include "ns3/trace-context.h"
+#include "ns3/udp-socket.h"
+#include "ns3/simulator.h"
+#include "ns3/node-list.h"
+#include "ns3/trace-root.h"
 
-#include "ns3/pcap-writer.h"
 
 using namespace ns3;
 
@@ -61,27 +64,74 @@ public:
 
   ~Logger () {}
 
-  void Log (std::string const &name, const Packet &p)
+  void Log (TraceContext const &context, const Packet &p)
   {
-    NS_DEBUG_UNCOND("**** LogEnque ("<< name << " " << &p << ")");
-    m_filestr << name << " " << &p << std::endl;
+    NodeList::NodeIndex nodeIndex;
+    context.Get (nodeIndex);
+    m_filestr << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
+    Ipv4::InterfaceIndex interfaceIndex;
+    context.Get (interfaceIndex);
+    m_filestr << "interface=" << interfaceIndex << " ";
+    enum Queue::TraceType type;
+    context.Get (type);
+    switch (type) 
+      {
+      case Queue::ENQUEUE:
+        m_filestr << "enqueue";
+        break;
+      case Queue::DEQUEUE:
+        m_filestr << "dequeue";
+        break;
+      case Queue::DROP:
+        m_filestr << "drop";
+        break;
+      }
+    m_filestr << " bytes=" << p.GetSize () << std::endl;
   }
 
 protected:
   TraceWriter m_tracer;
 };
 
+static void
+GenerateTraffic (UdpSocket *socket, uint32_t size)
+{
+  std::cout << "Node: " << socket->GetNode()->GetId () 
+            << " at=" << Simulator::Now ().GetSeconds () << "s,"
+            << " tx bytes=" << size << std::endl;
+  socket->SendDummy (size);
+  if (size > 50)
+    {
+      Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
+    }
+}
+
+static void
+UdpSocketPrinter (UdpSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
+{
+  std::cout << "Node: " << socket->GetNode()->GetId () 
+            << " at=" << Simulator::Now ().GetSeconds () << "s,"
+            << " rx bytes=" << size << std::endl;
+}
+
+static void
+PrintTraffic (UdpSocket *socket)
+{
+  socket->SetDummyRxCallback (MakeCallback (&UdpSocketPrinter));
+}
+
+
 int main (int argc, char *argv[])
 {
   NS_DEBUG_UNCOND("Serial Net Device Test");
 
-  TraceContainer traceContainerA;
-  TraceContainer traceContainerB;
-  
   // create two nodes and a simple SerialChannel
   InternetNode a;
   InternetNode b;
-  SerialChannel ch;
+  SerialChannel ch = SerialChannel ("Test Channel", 1000, Seconds (0.1));
+
+  NodeList::Add (&a);
+  NodeList::Add (&b);
 
   // create two NetDevices and assign one to each node
   // Note:  this would normally be done also in conjunction with
@@ -94,8 +144,7 @@ int main (int argc, char *argv[])
   MacAddress addra("00:00:00:00:00:01");
   SerialNetDevice neta(&a, addra);
 
-  DropTailQueue dtqa ("a");
-  dtqa.RegisterTraces (traceContainerA);
+  DropTailQueue dtqa;
 
   neta.AddQueue(&dtqa);
   neta.SetName("a.eth0"); 
@@ -103,16 +152,15 @@ int main (int argc, char *argv[])
   MacAddress addrb("00:00:00:00:00:02");
   SerialNetDevice netb(&b, addrb);
 
-  DropTailQueue dtqb ("b");
-  dtqb.RegisterTraces (traceContainerB);
+  DropTailQueue dtqb;
 
   netb.AddQueue(&dtqb);
   netb.SetName("b.eth0"); 
 
   // bind the two NetDevices together by using a simple Channel
   // this method changed to do a bidirectional binding
-  ch.Attach(&neta);
-  ch.Attach(&netb);
+  neta.Attach (&ch);
+  netb.Attach (&ch);
 
   // Some simple prints to see whether it is working
   NS_DEBUG_UNCOND("neta.GetMtu() <= " << neta.GetMtu());
@@ -153,6 +201,9 @@ int main (int argc, char *argv[])
   NS_DEBUG_UNCOND("Setting ARP interface to UP");
   arpipv4interfacep->SetUp();
 
+  a.GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
+
+
   NS_DEBUG_UNCOND("Adding ARP Interface to InternetNode b");
   ArpIpv4Interface* arpipv4interfacepb = new ArpIpv4Interface(&b, &netb);
   uint32_t indexB = (&b)->GetIpv4 ()->AddInterface (arpipv4interfacepb);
@@ -170,20 +221,28 @@ int main (int argc, char *argv[])
   NS_DEBUG_UNCOND("Setting ARP interface to UP");
   arpipv4interfacepb->SetUp();
 
+  b.GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.1"), 1);
+
+
+  UdpSocket *source = new UdpSocket (&a);
+  UdpSocket *sink = new UdpSocket(&b);
+  sink->Bind (80);
+  source->SetDefaultDestination (Ipv4Address ("10.1.1.2"), 80);
+
   Logger logger("serial-net-test.log");
 
-  traceContainerA.SetCallback ("Queue::Enque", 
-                               MakeCallback (&Logger::Log, &logger));
+  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/*", 
+                      MakeCallback (&Logger::Log, &logger));
 
-  // create a packet on one node and send it through, reading it
-  // on the other node
-  Packet p;
+  PrintTraffic (sink);
+  GenerateTraffic (source, 100);
 
-  NS_DEBUG_UNCOND("Sending Packet " << &p);
-  arpipv4interfacep->Send(p, Ipv4Address("10.1.1.2"));
+  Simulator::Run ();
 
-  //neta.Send(p, MacAddress());  // Test that all-zero's MacAddress used
-  //netb.Send(p, "00:01:02:03:04:05");  // Dummy function call
+  Simulator::Destroy ();
+
+  delete source;
+  delete sink;
 
   return 0;
 }

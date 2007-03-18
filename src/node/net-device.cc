@@ -163,6 +163,11 @@ NetDevice::Send(Packet& p, const MacAddress& dest, uint16_t protocolNumber)
     }
 }
 
+TraceResolver *
+NetDevice::CreateTraceResolver (TraceContext const &context)
+{
+  return DoCreateTraceResolver (context);
+}
 
 // Receive packet from below
 bool

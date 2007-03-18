@@ -31,6 +31,8 @@ namespace ns3 {
 
 class Ipv4L4Demux;
 class Node;
+class TraceResolver;
+class TraceContext;
 
 /**
  * \brief Network layer to device interface
@@ -58,6 +60,9 @@ class NetDevice {
    */
   NetDevice(Node* node, const MacAddress& addr);
   virtual ~NetDevice() {}
+
+  TraceResolver *CreateTraceResolver (TraceContext const &context);
+
   /**
    * \return the current MacAddress of this interface.
    */
@@ -204,6 +209,7 @@ class NetDevice {
    * MUST override this method.
    */
   virtual bool SendTo (Packet& p, const MacAddress& dest) = 0;
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
   Node*         m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
