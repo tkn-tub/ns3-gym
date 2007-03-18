@@ -52,7 +52,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4.h"
-#include "ns3/udp-socket.h"
+#include "ns3/datagram-socket.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/drop-tail.h"
 #include "ns3/trace-writer.h"
@@ -147,7 +147,7 @@ protected:
 
 
 static void
-GenerateTraffic (UdpSocket *socket, uint32_t size)
+GenerateTraffic (DatagramSocket *socket, uint32_t size)
 {
   std::cout << "Node: " << socket->GetNode()->GetId () 
             << " at=" << Simulator::Now ().GetSeconds () << "s,"
@@ -160,7 +160,7 @@ GenerateTraffic (UdpSocket *socket, uint32_t size)
 }
 
 static void
-UdpSocketPrinter (UdpSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
+DatagramSocketPrinter (DatagramSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
 {
   std::cout << "Node: " << socket->GetNode()->GetId () 
             << " at=" << Simulator::Now ().GetSeconds () << "s,"
@@ -168,9 +168,9 @@ UdpSocketPrinter (UdpSocket *socket, uint32_t size, Ipv4Address from, uint16_t f
 }
 
 static void
-PrintTraffic (UdpSocket *socket)
+PrintTraffic (DatagramSocket *socket)
 {
-  socket->SetDummyRxCallback (MakeCallback (&UdpSocketPrinter));
+  socket->SetDummyRxCallback (MakeCallback (&DatagramSocketPrinter));
 }
 
 #if 0
@@ -315,11 +315,11 @@ int main (int argc, char *argv[])
       traceContainer, channelName);
   SetupTrace (traceContainer, tracer);
   
-  UdpSocket *source0 = new UdpSocket (n0);
-  UdpSocket *source3 = new UdpSocket (n3);
-  UdpSocket *sink3 = new UdpSocket(n3);
+  DatagramSocket *source0 = new DatagramSocket (n0);
+  DatagramSocket *source3 = new DatagramSocket (n3);
+  DatagramSocket *sink3 = new DatagramSocket(n3);
   sink3->Bind (80);
-  UdpSocket *sink1 = new UdpSocket(n1);
+  DatagramSocket *sink1 = new DatagramSocket(n1);
   sink1->Bind (80);
 
   source3->SetDefaultDestination (Ipv4Address ("10.1.2.1"), 80);

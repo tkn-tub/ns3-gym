@@ -3,7 +3,7 @@
 
 #include "ns3/internet-node.h"
 #include "ns3/simulator.h"
-#include "ns3/udp-socket.h"
+#include "ns3/datagram-socket.h"
 #include "ns3/nstime.h"
 #include "ns3/p2p-channel.h"
 #include "ns3/p2p-net-device.h"
@@ -15,7 +15,7 @@ using namespace ns3;
 
 
 static void
-GenerateTraffic (UdpSocket *socket, uint32_t size)
+GenerateTraffic (DatagramSocket *socket, uint32_t size)
 {
   std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
   socket->SendDummy (size);
@@ -26,15 +26,15 @@ GenerateTraffic (UdpSocket *socket, uint32_t size)
 }
 
 static void
-UdpSocketPrinter (UdpSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
+DatagramSocketPrinter (DatagramSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
 {
   std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << size << std::endl;
 }
 
 static void
-PrintTraffic (UdpSocket *socket)
+PrintTraffic (DatagramSocket *socket)
 {
-  socket->SetDummyRxCallback (MakeCallback (&UdpSocketPrinter));
+  socket->SetDummyRxCallback (MakeCallback (&DatagramSocketPrinter));
 }
 
 static void
@@ -94,9 +94,9 @@ int main (int argc, char *argv[])
 
   AddP2PLink (a, b);
   
-  UdpSocket *sink = new UdpSocket (a);
+  DatagramSocket *sink = new DatagramSocket (a);
   sink->Bind (80);
-  UdpSocket *source = new UdpSocket (b);
+  DatagramSocket *source = new DatagramSocket (b);
   source->SetDefaultDestination (Ipv4Address ("192.168.0.2"), 80);
 
   GenerateTraffic (source, 500);

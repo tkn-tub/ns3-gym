@@ -185,7 +185,7 @@ node.add_sources ([
     'ipv4.cc',
     'ipv4-end-point.cc',
     'udp-end-point.cc',
-    'udp-socket.cc',
+    'datagram-socket.cc',
     'udp.cc',
     'arp-header.cc',
     'application.cc',
@@ -220,7 +220,7 @@ node.add_headers ([
 node.add_inst_headers ([
     'node.h',
     'internet-node.h',
-    'udp-socket.h',
+    'datagram-socket.h',
     'ipv4-address.h',
     'net-device.h',
     'arp-ipv4-interface.h',

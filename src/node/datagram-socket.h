@@ -39,14 +39,14 @@ class Udp;
  * one of the ::Send methods, the socket is implicitely
  * bound to a random port and to all interfaces.
  */
-class UdpSocket 
+class DatagramSocket 
 {
 public:
   /**
    * Create an unbound udp socket.
    */
-  UdpSocket (Node *node);
-  ~UdpSocket ();
+  DatagramSocket (Node *node);
+  ~DatagramSocket ();
 
   /** 
    * Allocate a free port number and
@@ -106,14 +106,14 @@ public:
    * forwards to the application the number of bytes received and from who they
    * were received.
    */
-  void SetDummyRxCallback (Callback<void,UdpSocket*,uint32_t,Ipv4Address,uint16_t> cb);
+  void SetDummyRxCallback (Callback<void,DatagramSocket*,uint32_t,Ipv4Address,uint16_t> cb);
   /**
    * When a packet is received by this socket, it invokes the "normal callback" which
    * forwards to the application the buffer of bytes received and from who they
    * were received. The application is responsible for copying that buffer if it wants 
    * to keep track of it.
    */
-  void SetRxCallback (Callback<void,UdpSocket*,uint8_t const*,uint32_t,Ipv4Address,uint16_t> cb);
+  void SetRxCallback (Callback<void,DatagramSocket*,uint8_t const*,uint32_t,Ipv4Address,uint16_t> cb);
   /** 
    * Return pointer to node
    */ 
@@ -129,8 +129,8 @@ private:
   Node *m_node;
   Ipv4Address m_defaultAddress;
   uint16_t m_defaultPort;
-  Callback<void,UdpSocket*,uint32_t,Ipv4Address,uint16_t> m_dummyRxCallback;
-  Callback<void,UdpSocket*,uint8_t const*,uint32_t,Ipv4Address,uint16_t> m_rxCallback;
+  Callback<void,DatagramSocket*,uint32_t,Ipv4Address,uint16_t> m_dummyRxCallback;
+  Callback<void,DatagramSocket*,uint8_t const*,uint32_t,Ipv4Address,uint16_t> m_rxCallback;
 };
 
 }//namespace ns3
