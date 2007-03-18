@@ -199,6 +199,9 @@ PrintRoutingTable (InternetNode *a, std::string name)
 
 static SerialChannel * 
 AddDuplexLink(
+  std::string &name,
+  uint64_t bps,
+  uint32_t delay,
   InternetNode* a, 
   const Ipv4Address& addra,
   const MacAddress& macaddra, 
@@ -207,11 +210,10 @@ AddDuplexLink(
   const MacAddress& macaddrb, 
   // const Rate& rate, 
   // const Time& delay,
-  TraceContainer &traceContainer,
-  std::string &name) 
+  TraceContainer &traceContainer)
 {
   std::string qName;
-  SerialChannel* channel = new SerialChannel();
+  SerialChannel* channel = new SerialChannel(name, bps, MilliSeconds(delay));
 
   // Duplex link is assumed to be subnetted as a /30
   // May run this unnumbered in the future?
@@ -276,6 +278,16 @@ SetupTrace (TraceContainer &container, Tracer &tracer)
 
 int main (int argc, char *argv[])
 {
+
+#if 0
+  DebugComponentEnable("Queue");
+  DebugComponentEnable("DropTailQueue");
+  DebugComponentEnable("Channel");
+  DebugComponentEnable("SerialChannel");
+  DebugComponentEnable("SerialNetDevice");
+  DebugComponentEnable("SerialPhy");
+#endif
+
   // ** Here, some kind of factory or topology object will instantiates 
   // ** four identical nodes; for now, we just explicitly create them
   InternetNode *n0 = new InternetNode();
@@ -295,24 +307,24 @@ int main (int argc, char *argv[])
   std::string channelName;
     
   channelName = "Channel 1";
-  SerialChannel* ch1 = AddDuplexLink (
+  SerialChannel* ch1 = AddDuplexLink (channelName, 5000000, 2,
       n0, Ipv4Address("10.1.1.1"), MacAddress("00:00:00:00:00:01"), 
       n2, Ipv4Address("10.1.1.2"), MacAddress("00:00:00:00:00:02"), 
-      traceContainer, channelName);
+      traceContainer);
   SetupTrace (traceContainer, tracer);
 
   channelName = "Channel 2";
-  SerialChannel* ch2 = AddDuplexLink (
+  SerialChannel* ch2 = AddDuplexLink (channelName, 5000000, 2,
       n1, Ipv4Address("10.1.2.1"), MacAddress("00:00:00:00:00:03"), 
       n2, Ipv4Address("10.1.2.2"), MacAddress("00:00:00:00:00:04"), 
-      traceContainer, channelName);
+      traceContainer);
   SetupTrace (traceContainer, tracer);
 
   channelName = "Channel 3";
-  SerialChannel* ch3 = AddDuplexLink (
+  SerialChannel* ch3 = AddDuplexLink (channelName, 1500000, 10,
       n2, Ipv4Address("10.1.3.1"), MacAddress("00:00:00:00:00:05"), 
       n3, Ipv4Address("10.1.3.2"), MacAddress("00:00:00:00:00:06"), 
-      traceContainer, channelName);
+      traceContainer);
   SetupTrace (traceContainer, tracer);
   
   UdpSocket *source0 = new UdpSocket (n0);

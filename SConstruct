@@ -358,13 +358,4 @@ ns3.add(sample_ns2_simple)
 sample_ns2_simple.add_deps(['core', 'simulator', 'node', 'serial'])
 sample_ns2_simple.add_source('ns-2/simple.cc')
 
-sample_channel = build.Ns3Module('sample-channel', 'samples')
-sample_channel.set_executable()
-ns3.add(sample_channel)
-sample_channel.add_dep ('common')
-sample_channel.add_dep ('node')
-sample_channel.add_dep ('core')
-sample_channel.add_dep ('serial')
-sample_channel.add_source('main-channel.cc')
-
 ns3.generate_dependencies()

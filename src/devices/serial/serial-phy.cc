@@ -55,7 +55,7 @@ SerialPhy::NotifyDataAvailable(void)
       // send packet to address tag.address
 #endif
       NS_DEBUG ("SerialPhy::NotifyDataAvailable (): Dequeued");
-      m_netdevice->GetChannel()->Send(p, m_netdevice);
+      m_netdevice->GetChannel()->Propagate(p, m_netdevice);
     }
 }
 
@@ -63,7 +63,6 @@ void
 SerialPhy::Receive (Packet& p)
 {
   NS_DEBUG ("SerialPhy::Receive (" << &p << ")");
-
   m_netdevice->ForwardUp (p);
 }
 

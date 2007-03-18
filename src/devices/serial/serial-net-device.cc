@@ -125,7 +125,7 @@ SerialNetDevice::NotifyDataAvailable(void)
       // send packet to address tag.address
 #endif
       NS_DEBUG ("SerialNetDevice::NotifyDataAvailable (): Dequeued");
-      m_channel->Send(p, this);
+      m_channel->Propagate(p, this);
     }
 }
 

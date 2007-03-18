@@ -1,7 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 University of Washington
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -30,21 +29,24 @@
 
 namespace ns3 {
 
-class Channel : public LayerConnectorLower
+/**
+ * \brief Abstract Channel Base Class.
+ *
+ * A channel is a logical path over which information flows.  The path can
+ * be as simple as a short piece of wire, or as complicated as space-time.
+ */
+class Channel
 {
 public:
   Channel ();
+  Channel (std::string name);
   virtual ~Channel ();
 
-  // Called by the physical layer to cause bits to propagate along the channel
-  // The channel will call Receive on each of the phys.
-  bool Propagate (Packet &p);
-  bool DoConnectToUpper (LayerConnectorUpper &upper);
-  bool LowerDoNotify (LayerConnectorUpper *upper);
+  virtual void SetName(std::string);
+  virtual std::string GetName(void);
 
 protected:
-  typedef std::list<LayerConnectorUpper *> ConnectorList;
-  ConnectorList m_connectorList;
+  std::string m_name;
 
 private:
 };
