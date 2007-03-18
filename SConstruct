@@ -22,6 +22,8 @@ core.add_sources([
     'assert.cc',
     'ptr.cc',
     'test.cc',
+    'random-variable.cc',
+    'rng-stream.cc',
     ])
 env = Environment()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] == 'cygwin':
@@ -44,7 +46,9 @@ core.add_inst_headers([
     'debug.h',
     'assert.h',
     'fatal-error.h',
-    'test.h'
+    'test.h',
+    'random-variable.h',
+    'rng-stream.h'
     ])
 
 def config_core (env, config):
@@ -184,6 +188,7 @@ node.add_sources ([
     'udp-socket.cc',
     'udp.cc',
     'arp-header.cc',
+    'application.cc',
     'arp-cache.cc',
     'arp-ipv4-interface.cc',
     'arp.cc',
@@ -200,6 +205,7 @@ node.add_headers ([
     'ipv4-checksum.h',
     'udp.h',
     'ipv4-l4-protocol.h',
+    'application.h',
     'arp-header.h',
     'arp-cache-cache.h',
     'arp.h',
