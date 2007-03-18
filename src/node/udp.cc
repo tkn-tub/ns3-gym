@@ -27,7 +27,7 @@
 #include "udp-header.h"
 #include "ipv4-end-point-demux.h"
 #include "udp-end-point.h"
-#include "udp-socket.h"
+#include "datagram-socket.h"
 #include "node.h"
 #include "ipv4.h"
 #include "l3-demux.h"
@@ -102,7 +102,7 @@ Udp::Receive(Packet& packet,
     {
       return;
     }
-  UdpSocket *socket = endPoint->GetSocket ();
+  DatagramSocket *socket = endPoint->GetSocket ();
   socket->ForwardUp (packet, source, udpHeader.GetSource ());
   NS_ASSERT (socket != 0);
 }

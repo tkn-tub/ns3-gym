@@ -27,17 +27,17 @@
 
 namespace ns3 {
 
-class UdpSocket;
+class DatagramSocket;
 
 class UdpEndPoint : public Ipv4EndPoint
 {
 public:
   UdpEndPoint (Ipv4Address address, uint16_t port);
 
-  void SetSocket (UdpSocket *socket);
-  UdpSocket *GetSocket (void) const;
+  void SetSocket (DatagramSocket *socket);
+  DatagramSocket *GetSocket (void) const;
 private:
-  UdpSocket *m_socket;
+  DatagramSocket *m_socket;
 };
 
 }//namespace ns3

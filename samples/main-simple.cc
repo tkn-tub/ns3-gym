@@ -2,7 +2,7 @@
 
 #include "ns3/internet-node.h"
 #include "ns3/simulator.h"
-#include "ns3/udp-socket.h"
+#include "ns3/datagram-socket.h"
 #include "ns3/nstime.h"
 
 using namespace ns3;
@@ -31,7 +31,7 @@ SmallTests (void)
 }
 
 static void
-GenerateTraffic (UdpSocket *socket, uint32_t size)
+GenerateTraffic (DatagramSocket *socket, uint32_t size)
 {
   std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
   socket->SendDummy (size);
@@ -42,15 +42,15 @@ GenerateTraffic (UdpSocket *socket, uint32_t size)
 }
 
 static void
-UdpSocketPrinter (UdpSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
+DatagramSocketPrinter (DatagramSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
 {
   std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << size << std::endl;
 }
 
 static void
-PrintTraffic (UdpSocket *socket)
+PrintTraffic (DatagramSocket *socket)
 {
-  socket->SetDummyRxCallback (MakeCallback (&UdpSocketPrinter));
+  socket->SetDummyRxCallback (MakeCallback (&DatagramSocketPrinter));
 }
 
 int main (int argc, char *argv[])
@@ -59,10 +59,10 @@ int main (int argc, char *argv[])
 
   InternetNode *a = new InternetNode ();
   
-  UdpSocket *sink = new UdpSocket (a);
+  DatagramSocket *sink = new DatagramSocket (a);
   sink->Bind (80);
 
-  UdpSocket *source = new UdpSocket (a);
+  DatagramSocket *source = new DatagramSocket (a);
   source->SetDefaultDestination (Ipv4Address::GetLoopback (), 80);
 
   GenerateTraffic (source, 500);

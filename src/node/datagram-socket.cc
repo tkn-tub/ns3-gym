@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "udp-socket.h"
+#include "datagram-socket.h"
 #include "udp.h"
 #include "udp-end-point.h"
 #include "node.h"
@@ -26,19 +26,19 @@
 
 namespace ns3 {
 
-UdpSocket::UdpSocket (Node *node)
+DatagramSocket::DatagramSocket (Node *node)
   : m_endPoint (0),
     m_node (node)
 {
   NS_ASSERT (GetUdp () != 0);
 }
-UdpSocket::~UdpSocket ()
+DatagramSocket::~DatagramSocket ()
 {
   delete m_endPoint;
 }
 
 int
-UdpSocket::Bind (void)
+DatagramSocket::Bind (void)
 {
   m_endPoint = GetUdp ()->Allocate ();
   if (m_endPoint == 0)
@@ -49,7 +49,7 @@ UdpSocket::Bind (void)
   return 0;
 }
 int 
-UdpSocket::Bind (Ipv4Address address)
+DatagramSocket::Bind (Ipv4Address address)
 {
   m_endPoint = GetUdp ()->Allocate (address);
   if (m_endPoint == 0)
@@ -60,7 +60,7 @@ UdpSocket::Bind (Ipv4Address address)
   return 0;
 }
 int 
-UdpSocket::Bind (uint16_t port)
+DatagramSocket::Bind (uint16_t port)
 {
   m_endPoint = GetUdp ()->Allocate (port);
   if (m_endPoint == 0)
@@ -71,7 +71,7 @@ UdpSocket::Bind (uint16_t port)
   return 0;
 }
 int 
-UdpSocket::Bind (Ipv4Address address, uint16_t port)
+DatagramSocket::Bind (Ipv4Address address, uint16_t port)
 {
   m_endPoint = GetUdp ()->Allocate (address, port);
   if (m_endPoint == 0)
@@ -83,18 +83,18 @@ UdpSocket::Bind (Ipv4Address address, uint16_t port)
 }
 
 void 
-UdpSocket::SetDefaultDestination (Ipv4Address daddr, uint16_t dport)
+DatagramSocket::SetDefaultDestination (Ipv4Address daddr, uint16_t dport)
 {
   m_defaultAddress = daddr;
   m_defaultPort = dport;
 }
 void 
-UdpSocket::SendDummy (uint32_t size)
+DatagramSocket::SendDummy (uint32_t size)
 {
   SendDummyTo (size, m_defaultAddress, m_defaultPort);
 }
 void 
-UdpSocket::SendDummyTo (uint32_t size, Ipv4Address daddr, uint16_t dport)
+DatagramSocket::SendDummyTo (uint32_t size, Ipv4Address daddr, uint16_t dport)
 {
   if (m_endPoint == 0)
     {
@@ -110,12 +110,12 @@ UdpSocket::SendDummyTo (uint32_t size, Ipv4Address daddr, uint16_t dport)
 }
 
 void 
-UdpSocket::Send (uint8_t const*buffer, uint32_t size)
+DatagramSocket::Send (uint8_t const*buffer, uint32_t size)
 {
   SendTo (buffer, size, m_defaultAddress, m_defaultPort);
 }
 void 
-UdpSocket::SendTo (uint8_t const*buffer, uint32_t size,
+DatagramSocket::SendTo (uint8_t const*buffer, uint32_t size,
 		   Ipv4Address daddr, uint16_t dport)
 {
   if (m_endPoint == 0)
@@ -131,14 +131,14 @@ UdpSocket::SendTo (uint8_t const*buffer, uint32_t size,
 		   m_endPoint->GetLocalPort (), dport);
 }
 void 
-UdpSocket::SetDummyRxCallback (Callback<void,UdpSocket*,
+DatagramSocket::SetDummyRxCallback (Callback<void,DatagramSocket*,
 			       uint32_t,
 			       Ipv4Address,uint16_t> cb)
 {
   m_dummyRxCallback = cb;
 }
 void 
-UdpSocket::SetRxCallback (Callback<void,UdpSocket*,
+DatagramSocket::SetRxCallback (Callback<void,DatagramSocket*,
 			  uint8_t const*,uint32_t,
 			  Ipv4Address,uint16_t> cb)
 {
@@ -146,7 +146,7 @@ UdpSocket::SetRxCallback (Callback<void,UdpSocket*,
 }
 
 void 
-UdpSocket::ForwardUp (Packet &p, Ipv4Address saddr, uint16_t sport)
+DatagramSocket::ForwardUp (Packet &p, Ipv4Address saddr, uint16_t sport)
 {
   if (!m_dummyRxCallback.IsNull ())
     {
@@ -159,13 +159,13 @@ UdpSocket::ForwardUp (Packet &p, Ipv4Address saddr, uint16_t sport)
 }
 
 Udp *
-UdpSocket::GetUdp (void) const
+DatagramSocket::GetUdp (void) const
 {
   return m_node->GetUdp ();
 }
 
 Node *
-UdpSocket::GetNode (void) const
+DatagramSocket::GetNode (void) const
 {
   return m_node;
 }
