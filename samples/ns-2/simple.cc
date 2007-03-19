@@ -64,6 +64,8 @@
 #include "ns3/node-list.h"
 #include "ns3/trace-root.h"
 
+#include "ns3/serial-topology.h"
+
 using namespace ns3;
 
 class Tracer : public TraceWriter{
@@ -217,59 +219,6 @@ PrintRoutingTable (InternetNode *a, std::string name)
 }
 #endif
 
-static SerialChannel * 
-AddDuplexLink(
-  InternetNode* a, 
-  const Ipv4Address& addra,
-  InternetNode* b, 
-  const Ipv4Address& addrb,
-  uint64_t bps,
-  const Time& delay)
-{
-  SerialChannel* channel = new SerialChannel(bps, delay);
-
-  // Duplex link is assumed to be subnetted as a /30
-  // May run this unnumbered in the future?
-  Ipv4Mask netmask("255.255.255.252");
-  assert(netmask.IsMatch(addra,addrb));
-
-  DropTailQueue* dtqa = new DropTailQueue();
-
-  SerialNetDevice* neta = new SerialNetDevice(a);
-  neta->AddQueue(dtqa);
-  Ipv4Interface *interfA = new ArpIpv4Interface (a, neta);
-  uint32_t indexA = a->GetIpv4 ()->AddInterface (interfA);
-  neta->Attach (channel);
-  
-  interfA->SetAddress (addra);
-  interfA->SetNetworkMask (netmask);
-  interfA->SetUp ();
-
-  DropTailQueue* dtqb = new DropTailQueue();
-
-  SerialNetDevice* netb = new SerialNetDevice(b);
-  netb->AddQueue(dtqb);
-  Ipv4Interface *interfB = new ArpIpv4Interface (b, netb);
-  uint32_t indexB = b->GetIpv4 ()->AddInterface (interfB);
-  netb->Attach (channel);
-
-  interfB->SetAddress (addrb);
-  interfB->SetNetworkMask (netmask);
-  interfB->SetUp ();
-
-  a->GetIpv4 ()->AddHostRouteTo (addrb, indexA);
-  b->GetIpv4 ()->AddHostRouteTo (addra, indexB);
-
-  NS_DEBUG_UNCOND("Adding interface " << indexA << " to node " << a->GetId());
-  NS_DEBUG_UNCOND("Adding interface " << indexB << " to node " << b->GetId());
-
-  //PrintRoutingTable (a, "a");
-  //PrintRoutingTable (b, "b");
-
-  return channel;
-}
-
-
 int main (int argc, char *argv[])
 {
 #if 0
@@ -298,14 +247,20 @@ int main (int argc, char *argv[])
   n2->SetName(std::string("Node 2"));
   n3->SetName(std::string("Node 3"));
   
-  SerialChannel* ch1 = AddDuplexLink (n0, Ipv4Address("10.1.1.1"), 
-      n2, Ipv4Address("10.1.1.2"), 5000000, MilliSeconds(2));
+  SerialChannel* ch1 = SerialTopology::AddSerialLink (
+      n0, Ipv4Address("10.1.1.1"), 
+      n2, Ipv4Address("10.1.1.2"), 
+      5000000, MilliSeconds(2));
   
-  SerialChannel* ch2 = AddDuplexLink (n1, Ipv4Address("10.1.2.1"), 
-      n2, Ipv4Address("10.1.2.2"), 5000000, MilliSeconds(2));
+  SerialChannel* ch2 = SerialTopology::AddSerialLink (
+      n1, Ipv4Address("10.1.2.1"), 
+      n2, Ipv4Address("10.1.2.2"), 
+      5000000, MilliSeconds(2));
 
-  SerialChannel* ch3 = AddDuplexLink (n2, Ipv4Address("10.1.3.1"), 
-      n3, Ipv4Address("10.1.3.2"), 1500000, MilliSeconds(10));
+  SerialChannel* ch3 = SerialTopology::AddSerialLink (
+      n2, Ipv4Address("10.1.3.1"), 
+      n3, Ipv4Address("10.1.3.2"), 
+      1500000, MilliSeconds(10));
   
   DatagramSocket *source0 = new DatagramSocket (n0);
   DatagramSocket *source3 = new DatagramSocket (n3);

@@ -270,6 +270,7 @@ serial.add_deps (['node'])
 serial.add_sources ([
     'serial-net-device.cc',
     'serial-channel.cc',
+    'serial-topology.cc',
     'serial-phy.cc',
     'layer-connector.cc',
     ])
@@ -279,6 +280,7 @@ serial.add_headers ([
 serial.add_inst_headers ([
     'serial-net-device.h',
     'serial-channel.h',
+    'serial-topology.h',
     'serial-phy.h',
     'layer-connector.h',
     ])
