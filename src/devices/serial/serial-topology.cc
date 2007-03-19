@@ -23,6 +23,7 @@
 // George F. Riley, Georgia Tech, Spring 2007
 
 #include "ns3/debug.h"
+#include "ns3/assert.h"
 
 #include "ns3/nstime.h"
 
@@ -54,7 +55,7 @@ SerialTopology::AddSerialLink(
   // Duplex link is assumed to be subnetted as a /30
   // May run this unnumbered in the future?
   Ipv4Mask netmask("255.255.255.252");
-  assert(netmask.IsMatch(addra,addrb));
+  NS_ASSERT (netmask.IsMatch(addra,addrb));
 
   DropTailQueue* dtqa = new DropTailQueue();
 

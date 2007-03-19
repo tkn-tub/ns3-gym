@@ -27,6 +27,7 @@
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
+#include "ns3/callback-trace-source.h"
 
 namespace ns3 {
 
@@ -38,6 +39,7 @@ class SerialNetDevice : public NetDevice {
 public:
   enum TraceType {
     QUEUE,
+    RX,
   };
   SerialNetDevice(Node* node);
   virtual ~SerialNetDevice();
@@ -65,7 +67,7 @@ private:
   SerialPhy* m_phy;
   SerialChannel* m_channel;
   Queue* m_queue;
-
+  CallbackTraceSource<Packet &> m_rxTrace;
 };
 
 }; // namespace ns3

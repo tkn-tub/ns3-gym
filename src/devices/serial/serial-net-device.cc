@@ -83,6 +83,9 @@ SerialNetDevice::DoCreateTraceResolver (TraceContext const &context)
   resolver->Add ("queue", 
                  MakeCallback (&Queue::CreateTraceResolver, m_queue),
                  SerialNetDevice::QUEUE);
+  resolver->Add ("rx",
+                 m_rxTrace,
+                 SerialNetDevice::RX);
   return resolver;
 }
 
@@ -119,6 +122,7 @@ SerialNetDevice::Receive (Packet& p)
   // ignore return value for now.
   NS_DEBUG ("SerialNetDevice::Receive (" << &p << ")");
 
+  m_rxTrace (p);
   ForwardUp (p);
 }
 
