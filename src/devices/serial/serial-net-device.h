@@ -39,7 +39,7 @@ public:
   enum TraceType {
     QUEUE,
   };
-  SerialNetDevice(Node* node, const MacAddress& addr);
+  SerialNetDevice(Node* node);
   virtual ~SerialNetDevice();
 
 private:

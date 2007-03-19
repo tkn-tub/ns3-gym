@@ -34,7 +34,7 @@
 // - FTP/TCP flow from n0 to n3, starting at time 1.2 to time 1.35 sec.
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 // - DropTail queues 
-// - Tracing of queues and packet receptions to file out.tr
+// - Tracing of queues and packet receptions to file "out.tr"
 
 #include <iostream>
 #include <string>
@@ -97,23 +97,26 @@ public:
 
   void LogEnqueue (TraceContext const &context, const Packet &p)
   {
+    m_filestr << "+ " << Simulator::Now().GetSeconds() << " ";
     LogNodeInterface (context);
-    m_filestr << " que p=" << p.GetUid ();
+    m_filestr << "pkt-uid=" << p.GetUid () << " ";
     //PrintLlcPacket (p, m_filestr);
     m_filestr << std::endl;
   }
 
   void LogDequeue (TraceContext const &context, const Packet &p)
   {
+    m_filestr << "- " << Simulator::Now().GetSeconds() << " ";
     LogNodeInterface (context);
-    m_filestr << " deq p=" << p.GetUid ();
+    m_filestr << "pkt-uid=" << p.GetUid () << " ";
     //PrintLlcPacket (p, m_filestr);
     m_filestr << std::endl;
   }
   void LogDrop (TraceContext const &context, const Packet &p)
   {
+    m_filestr << "d " << Simulator::Now().GetSeconds() << " ";
     LogNodeInterface (context);
-    m_filestr << " dro p=" << p.GetUid ();
+    m_filestr << "pkt-uid=" << p.GetUid () << " ";
     //PrintLlcPacket (p, m_filestr);
     m_filestr << std::endl;
   }
@@ -216,17 +219,14 @@ PrintRoutingTable (InternetNode *a, std::string name)
 
 static SerialChannel * 
 AddDuplexLink(
-  std::string name,
-  uint64_t bps,
-  uint32_t delay,
   InternetNode* a, 
   const Ipv4Address& addra,
-  const MacAddress& macaddra, 
   InternetNode* b, 
   const Ipv4Address& addrb,
-  const MacAddress& macaddrb)
+  uint64_t bps,
+  const Time& delay)
 {
-  SerialChannel* channel = new SerialChannel(name, bps, MilliSeconds(delay));
+  SerialChannel* channel = new SerialChannel(bps, delay);
 
   // Duplex link is assumed to be subnetted as a /30
   // May run this unnumbered in the future?
@@ -235,7 +235,7 @@ AddDuplexLink(
 
   DropTailQueue* dtqa = new DropTailQueue();
 
-  SerialNetDevice* neta = new SerialNetDevice(a, macaddra);
+  SerialNetDevice* neta = new SerialNetDevice(a);
   neta->AddQueue(dtqa);
   Ipv4Interface *interfA = new ArpIpv4Interface (a, neta);
   uint32_t indexA = a->GetIpv4 ()->AddInterface (interfA);
@@ -247,7 +247,7 @@ AddDuplexLink(
 
   DropTailQueue* dtqb = new DropTailQueue();
 
-  SerialNetDevice* netb = new SerialNetDevice(b, macaddrb);
+  SerialNetDevice* netb = new SerialNetDevice(b);
   netb->AddQueue(dtqb);
   Ipv4Interface *interfB = new ArpIpv4Interface (b, netb);
   uint32_t indexB = b->GetIpv4 ()->AddInterface (interfB);
@@ -272,7 +272,6 @@ AddDuplexLink(
 
 int main (int argc, char *argv[])
 {
-
 #if 0
   DebugComponentEnable("Queue");
   DebugComponentEnable("DropTailQueue");
@@ -299,17 +298,14 @@ int main (int argc, char *argv[])
   n2->SetName(std::string("Node 2"));
   n3->SetName(std::string("Node 3"));
   
-  SerialChannel* ch1 = AddDuplexLink ("Channel 1", 5000000, 2,
-      n0, Ipv4Address("10.1.1.1"), MacAddress("00:00:00:00:00:01"), 
-      n2, Ipv4Address("10.1.1.2"), MacAddress("00:00:00:00:00:02"));
+  SerialChannel* ch1 = AddDuplexLink (n0, Ipv4Address("10.1.1.1"), 
+      n2, Ipv4Address("10.1.1.2"), 5000000, MilliSeconds(2));
   
-  SerialChannel* ch2 = AddDuplexLink ("Channel 2", 5000000, 2,
-      n1, Ipv4Address("10.1.2.1"), MacAddress("00:00:00:00:00:03"), 
-      n2, Ipv4Address("10.1.2.2"), MacAddress("00:00:00:00:00:04"));
+  SerialChannel* ch2 = AddDuplexLink (n1, Ipv4Address("10.1.2.1"), 
+      n2, Ipv4Address("10.1.2.2"), 5000000, MilliSeconds(2));
 
-  SerialChannel* ch3 = AddDuplexLink ("Channel 3", 1500000, 10,
-      n2, Ipv4Address("10.1.3.1"), MacAddress("00:00:00:00:00:05"), 
-      n3, Ipv4Address("10.1.3.2"), MacAddress("00:00:00:00:00:06"));
+  SerialChannel* ch3 = AddDuplexLink (n2, Ipv4Address("10.1.3.1"), 
+      n3, Ipv4Address("10.1.3.2"), 1500000, MilliSeconds(10));
   
   DatagramSocket *source0 = new DatagramSocket (n0);
   DatagramSocket *source3 = new DatagramSocket (n3);
@@ -325,13 +321,17 @@ int main (int argc, char *argv[])
   n0->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
   n3->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
 
-  Tracer tracer("serial-net-test.log");
+  Tracer tracer("out.tr");
   TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/enqueue",
                       MakeCallback (&Tracer::LogEnqueue, &tracer));
   TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/dequeue",
                       MakeCallback (&Tracer::LogDequeue, &tracer));
   TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/drop",
                       MakeCallback (&Tracer::LogDrop, &tracer));
+#if 0
+  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/receive",
+                      MakeCallback (&Tracer::LogReceive, &tracer));
+#endif
 
 
   PrintTraffic (sink3);

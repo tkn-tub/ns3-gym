@@ -24,7 +24,6 @@
 
 #include "ns3/debug.h"
 #include "ns3/internet-node.h"
-#include "ns3/mac-address.h"
 #include "ns3/packet.h"
 #include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4-address.h"
@@ -136,21 +135,15 @@ int main (int argc, char *argv[])
   // create two NetDevices and assign one to each node
   // Note:  this would normally be done also in conjunction with
   //        creating a Channel
-  //        Here, we do not care about the Device Address (point-to-point)
-  //        but more generally, we would use a subclass such as MacAddress
-  //        as follows:    MacAddress addra("00:00:00:00:00:01");
-  //        so we'll pretend and give them simple MacAddresses here
    
-  MacAddress addra("00:00:00:00:00:01");
-  SerialNetDevice neta(&a, addra);
+  SerialNetDevice neta(&a);
 
   DropTailQueue dtqa;
 
   neta.AddQueue(&dtqa);
   neta.SetName("a.eth0"); 
 
-  MacAddress addrb("00:00:00:00:00:02");
-  SerialNetDevice netb(&b, addrb);
+  SerialNetDevice netb(&b);
 
   DropTailQueue dtqb;
 

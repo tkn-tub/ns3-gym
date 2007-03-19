@@ -33,10 +33,10 @@ NS_DEBUG_COMPONENT_DEFINE ("SerialNetDevice");
 namespace ns3 {
 
 
-SerialNetDevice::SerialNetDevice(Node* node, const MacAddress& addr) : 
-  NetDevice(node, addr)
+SerialNetDevice::SerialNetDevice(Node* node) : 
+  NetDevice(node, MacAddress("00:00:00:00:00:00"))
 {
-  NS_DEBUG ("SerialNetDevice::SerialNetDevice (" << node << ", " << &addr << ")");
+  NS_DEBUG ("SerialNetDevice::SerialNetDevice (" << node << ")");
 
   // BUGBUG FIXME
   //

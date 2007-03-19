@@ -46,11 +46,24 @@ SerialChannel::SerialChannel()
 }
 
 SerialChannel::SerialChannel(
-  std::string name, 
   DataRate bps, 
   Time delay)
 : 
-  Channel (name), 
+  Channel ("Serial Channel"), 
+  m_bps (bps), 
+  m_delay (delay),
+  m_nDevices(0)
+{
+  NS_DEBUG("SerialChannel::SerialChannel (" << Channel::GetName() << ", " << bps << ", " << 
+    delay << ")");
+}
+
+SerialChannel::SerialChannel(
+  std::string name,
+  DataRate bps, 
+  Time delay)
+: 
+  Channel (name),
   m_bps (bps), 
   m_delay (delay),
   m_nDevices(0)

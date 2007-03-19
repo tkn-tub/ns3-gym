@@ -59,6 +59,7 @@ public:
   static const int N_DEVICES = 2;
 
   SerialChannel ();
+  SerialChannel (DataRate bps, Time delay);
   SerialChannel (std::string name, DataRate bps, Time delay);
 
   void Attach (SerialPhy* phy);
@@ -71,7 +72,6 @@ public:
 private:
   void TransmitCompleteEvent (Packet p, SerialPhy *src);
 
-  std::string   m_name;
   DataRate      m_bps;
   Time          m_delay;
 
