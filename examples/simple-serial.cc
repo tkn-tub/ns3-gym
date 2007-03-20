@@ -209,7 +209,6 @@ int main (int argc, char *argv[])
 
   ObjectContainer container;
 
-#ifdef NOTYET
   // The node factory is designed to allow user specification
   // of the "type" of node desired for each node creation.  This
   // is done by creating a node object (the inNode below), configuring
@@ -225,30 +224,6 @@ int main (int argc, char *argv[])
   Node* n2 = Node::Create(); 
   Node* n3 = Node::Create(); 
 
-#else
-  // ** Here, some kind of factory or topology object will instantiates 
-  // ** four identical nodes; for now, we just explicitly create them
-  InternetNode *n0 = new InternetNode();
-  InternetNode *n1 = new InternetNode();
-  InternetNode *n2 = new InternetNode();
-  InternetNode *n3 = new InternetNode();
-
-  container.Acquire (n0);
-  container.Acquire (n1);
-  container.Acquire (n2);
-  container.Acquire (n3);
-
-  NodeList::Add (n0);
-  NodeList::Add (n1);
-  NodeList::Add (n2);
-  NodeList::Add (n3);
-
-  n0->SetName(std::string("Node 0"));
-  n1->SetName(std::string("Node 1"));
-  n2->SetName(std::string("Node 2"));
-  n3->SetName(std::string("Node 3"));
-#endif
-  
   SerialChannel* ch1;
   ch1 = SerialTopology::AddSerialLink (
       n0, Ipv4Address("10.1.1.1"), 

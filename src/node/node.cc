@@ -24,6 +24,7 @@
 
 #include "node.h"
 #include "internet-node.h"
+#include "node-list.h"
 
 namespace ns3{
 
@@ -70,7 +71,8 @@ Node* Node::Create()
   if (g_prototypes.Empty()) CreateDefaultPrototype();
   Node* n = g_prototypes.Back()->Copy(); // Copy the top of the stack
   n->m_id = g_nextId++;                  // Set unique node id
-  g_nodes.Add(n);                        // Add to list of known nodes
+  g_nodes.Add(n);                        // Add to smart vector (mem mgmt)
+  NodeList::Add (n);                     // Add to global list of nodes
   return n;
 }
 
