@@ -268,7 +268,7 @@ int main (int argc, char *argv[])
   n0->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
   n3->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
 
-  AsciiTrace trace ("out.tr");
+  AsciiTrace trace ("simple-serial.tr");
   trace.TraceAllQueues ();
   trace.TraceAllNetDeviceRx ();
 

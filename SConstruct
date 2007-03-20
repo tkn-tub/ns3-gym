@@ -376,10 +376,11 @@ sample_sp2p.set_executable()
 sample_sp2p.add_deps(['core', 'simulator', 'node', 'p2p'])
 sample_sp2p.add_source('main-simple-p2p.cc')
 
-sample_ns2_simple = build.Ns3Module('sample-ns2-simple', 'samples')
-sample_ns2_simple.set_executable()
-ns3.add(sample_ns2_simple)
-sample_ns2_simple.add_deps(['core', 'simulator', 'node', 'serial'])
-sample_ns2_simple.add_source('ns-2/simple.cc')
+# examples
+example_simple_serial = build.Ns3Module('simple-serial', 'examples')
+example_simple_serial.set_executable()
+ns3.add(example_simple_serial)
+example_simple_serial.add_deps(['core', 'simulator', 'node', 'serial'])
+example_simple_serial.add_source('simple-serial.cc')
 
 ns3.generate_dependencies()
