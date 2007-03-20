@@ -175,6 +175,8 @@ common.add_inst_headers([
     'array-trace-resolver.h',
     'trace-root.h',
     'terminal-trace-resolver.h',
+    'smartvector.h',
+    'smartset.h',
     ])
 
 node = build.Ns3Module ('node', 'src/node')

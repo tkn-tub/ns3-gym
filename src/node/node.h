@@ -91,6 +91,8 @@
 #include <vector>
 #include <list>
 
+#include "ns3/smartvector.h"
+
 namespace ns3 {
 
 class L3Demux;
@@ -104,8 +106,9 @@ class TraceResolver;
 
 class Node {
 public:
-
+  typedef SmartVector<Node*> SmartNodeVec_t;
   Node();
+  Node(uint32_t); // Specify which system for a distributed simulation
   virtual ~Node();
   virtual Node* Copy() const = 0;// Make a copy of this node
 
@@ -115,6 +118,36 @@ public:
   uint32_t GetSystemId (void) const;
   void SetSystemId(uint32_t s);
 
+  // Static methods for creating nodes and managing the node stack
+
+  // Create a new node.  The node will be a copy of the top of the
+  // node prototype list
+  static Node* Create();
+  // Create with a uint32_t is used by distributed simulations to
+  // indicate system ownership of the new node.
+  static Node* Create(uint32_t);
+  static Node* GetNodePrototype(); // Get the current node prototype
+  // Specifies the type of node to be returned by Create()
+  // This version specifies a pre-configured node to use as the prototype
+  // Of course the passed object can be any subclass of Node.
+  static Node* PushNodePrototype(const Node&); 
+  // THis version replicates the top of the prototype stack
+  static Node* PushNodePrototype();
+  // Remove the top of the prototype stack
+  static void PopNodePrototype();
+  // Node access
+  static const SmartNodeVec_t& Nodes(); // Get a vector of all nodes
+  static void  ClearAll();          // Delete all nodes for memory leak checking
+  static void  ClearAllPrototypes();// Delete the prototype stack
+private: 
+  static void  CreateDefaultPrototype(); // Create a "typical" prototype node
+  // Global static variables
+private: 
+  static uint32_t       g_nextId;     // Next available ID
+  static SmartNodeVec_t g_nodes;      // Vector of all nodes created
+  static SmartNodeVec_t g_prototypes; // Node prototype stack
+
+public:
   // Virtual "Getters" for each capability.
   // These exist to allow owners of a generic Node pointer to get
   // a pointer to the underlying capability, a pointer to a "NULL"
@@ -135,5 +168,5 @@ private:
   uint32_t    m_sid;        // System id for this node
 };
 
-}; //namespace ns3
+} //namespace ns3
 #endif
