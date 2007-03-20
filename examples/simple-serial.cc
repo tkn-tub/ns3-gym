@@ -209,6 +209,23 @@ int main (int argc, char *argv[])
 
   ObjectContainer container;
 
+#ifdef NOTYET
+  // The node factory is designed to allow user specification
+  // of the "type" of node desired for each node creation.  This
+  // is done by creating a node object (the inNode below), configuring
+  // the object with the desired capabilities, and pushing the node
+  // object on the prototype stack.  In this simple example, the
+  // default behavior of an InternetNode is adequate, so we don't
+  // do any configuration in this simple example.
+  InternetNode inNode;
+  Node::PushNodePrototype(inNode);
+  // Next create the physical node topology using the node factory
+  Node* n0 = Node::Create(); 
+  Node* n1 = Node::Create(); 
+  Node* n2 = Node::Create(); 
+  Node* n3 = Node::Create(); 
+
+#else
   // ** Here, some kind of factory or topology object will instantiates 
   // ** four identical nodes; for now, we just explicitly create them
   InternetNode *n0 = new InternetNode();
@@ -230,6 +247,7 @@ int main (int argc, char *argv[])
   n1->SetName(std::string("Node 1"));
   n2->SetName(std::string("Node 2"));
   n3->SetName(std::string("Node 3"));
+#endif
   
   SerialChannel* ch1;
   ch1 = SerialTopology::AddSerialLink (
