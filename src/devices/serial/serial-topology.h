@@ -29,7 +29,7 @@
 namespace ns3 {
 
 class SerialChannel;
-class InternetNode;
+class Node;
 class IpvrAddress;
 //class SerialNetDevice;
 //class Queue;
@@ -44,8 +44,8 @@ public:
   // with the specified IP addresses,  with specified maximum transmission rate
   // and propagation delay.
   static SerialChannel* AddSerialLink(
-    InternetNode*, const Ipv4Address&, 
-    InternetNode*, const Ipv4Address&,
+    Node*, const Ipv4Address&, 
+    Node*, const Ipv4Address&,
     // const Rate&,
     uint64_t,
     const Time&);

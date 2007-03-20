@@ -43,9 +43,9 @@ namespace ns3 {
 
 SerialChannel *
 SerialTopology::AddSerialLink(
-  InternetNode* a,
+  Node* a,
   const Ipv4Address& addra,
-  InternetNode* b,
+  Node* b,
   const Ipv4Address& addrb,
   uint64_t bps,
   const Time& delay)
