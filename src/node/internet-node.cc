@@ -34,6 +34,13 @@
 
 namespace ns3 {
 
+static class NodeStackInitializationClass {
+public:
+  NodeStackInitializationClass () {
+    Node::PushNodePrototype (InternetNode ());
+  }
+} node_stack_initialization_class;
+
 InternetNode::InternetNode()
 {
   // Instantiate the capabilities

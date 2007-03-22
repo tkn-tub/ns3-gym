@@ -204,6 +204,7 @@ node.add_sources ([
     'udp.cc',
     'arp-header.cc',
     'application.cc',
+    'onoff-application.cc',
     'arp-cache.cc',
     'arp-ipv4-interface.cc',
     'arp.cc',
@@ -223,6 +224,7 @@ node.add_headers ([
     'udp.h',
     'ipv4-l4-protocol.h',
     'application.h',
+    'onoff-application.h',
     'arp-header.h',
     'arp-cache-cache.h',
     'arp.h',
@@ -254,6 +256,8 @@ node.add_inst_headers ([
     'udp-header.h',
     'channel.h',
     'node-list.h',
+    'application.h',
+    'onoff-application.h',
     ])
 
 p2p = build.Ns3Module ('p2p', 'src/devices/p2p')

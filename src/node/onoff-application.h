@@ -28,89 +28,49 @@
 #define __onoff_application_h__
 
 #include "application.h"
-#include "udp.h"
 #include "ns3/event-id.h"
 
 #define nil 0
 
 namespace ns3 {
 
-class IPAddr;
-class L4Protocol;
+class Ipv4Address;
 class RandomVariable;
-class Socket;
+class DatagramSocket;
 
-#if 0
-class Time;
-
-//Doc:ClassXRef
 class OnOffApplication : public Application {
-  //Doc:Class Defines an application that uses the on--off data generator
-  //Doc:Class model.
 
 public:
-  // Define a number of constructors for different needs
-  // Endpoints, on/off rng, l4 protocol
-  //Doc:Method
-  OnOffApplication(const IPAddr&,    // Peer IP Address
-                   PortId_t,         // Peer port
+  OnOffApplication(const Node& n,
+                   const Ipv4Address,  // Peer IP address
+                   uint16_t,           // Peer port
                    const RandomVariable&,     // Random variable for On time
                    const RandomVariable&,     // Random variable for Off time
                    double   = g_defaultRate,  // Data rate when on
-                   uint32_t = g_defaultSize,  // Size of packets
-                   const L4Protocol& = Udp(nil));// Layer 4 protocol to use
-    //Doc:Desc Constructor specifying destination IP/Port, a single random
-    //Doc:Desc number generator for both the {\em On} and {\em Off}
-    //Doc:Desc distributions, and a layer 4 protocol object.  Optionally
-    //Doc:Desc specifies bit rate (when {\em On} (defaults to a globally
-    //Doc:Desc specified default rate), and optionally a packet size
-    //Doc:Desc (defaults to a globally specified default size).  See
-    //Doc:Desc {\tt SetDefaultRate} and {\tt SetDefaultSize} below.
-    //Doc:Arg1 IPAddress of remote  endpoint (destination)
-    //Doc:Arg2 Port number for remote endpoing (destination)
-    //Doc:Arg3 Random number generator to use for {\em On} time period.
-    //Doc:Arg4 Random number generator to use for both {\em Off} time period.
-    //Doc:Arg5 Data rate to generate when {\em On}.
-    //Doc:Arg6 Packet size.
-    //Doc:Arg7 A layer 4 protocol object to copy.
+                   uint32_t = g_defaultSize);  // Size of packets
 
-  OnOffApplication(const OnOffApplication&); // Copy constructor
+  OnOffApplication(const Node& n, const OnOffApplication&); // Copy constructor
   virtual ~OnOffApplication();               // Destructor
-  virtual void StartApp();    // Called at time specified by Start
-  virtual void StopApp();     // Called at time specified by Stop
+  virtual void StartApplication();    // Called at time specified by Start
+  virtual void StopApplication();     // Called at time specified by Stop
   virtual OnOffApplication* Copy() const;// Make a copy of the application
-  virtual L4Protocol* GetL4() const { return m_l4Proto;}
 
   // Event handlers
   void StartSending();
   void StopSending();
   void SendPacket();
 
-  //Doc:Method
   virtual void MaxBytes(uint32_t m) { m_maxBytes = m;}
-    //Doc:Desc Specify a maximum number of bytes to send, after which the
-    //Doc:Desc application shuts down.
-    //Doc:Arg1 Maximum number of bytes to send.
 
 public: // Static methods
-  //Doc:Method
   static void DefaultRate(double r) { g_defaultRate = r;}
-    //Doc:Desc Specify a default data rate to use for all On/Off applications
-    //Doc:Desc by default
-    //Doc:Arg1 The default data rate (when the application is {\em On}.
 
-  //Doc:Method
   static void DefaultSize(uint32_t s) { g_defaultSize = s;}
-    //Doc:Desc Specifies a default packet size to use for all
-    //Doc:Desc On/Off applcations
-    //Doc:Desc by default.
-    //Doc:Arg1 The default packet size.
 
 public:
-  L4Protocol*     m_l4Proto;      // Points to the specified Layer 4 protocol
-  Socket*         m_socket;       // Associated socket
-  IPAddr*         m_peerIP;       // PeerIP
-  PortId_t        m_peerPort;     // Peer port
+  DatagramSocket*         m_socket;       // Associated socket
+  Ipv4Address     m_peerIP;       // Peer IP address
+  uint16_t        m_peerPort;     // Peer port
   bool            m_connected;    // True if connected
   RandomVariable* m_onTime;       // rng for On Time
   RandomVariable* m_offTime;      // rng for Off Time
@@ -134,13 +94,11 @@ private:
   void ScheduleNextTx();
   void ScheduleStartEvent();
   void ScheduleStopEvent();
-  void ConnectionSucceeded(Socket*);
-  void ConnectionFailed(Socket*);
-  void Ignore(Socket*);
+  void ConnectionSucceeded(DatagramSocket*);
+  void ConnectionFailed(DatagramSocket*);
+  void Ignore(DatagramSocket*);
 protected:
 };
-
-#endif
 
 } // namespace ns3
 

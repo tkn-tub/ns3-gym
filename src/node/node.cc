@@ -23,25 +23,21 @@
 // George F. Riley, Georgia Tech, Fall 2006
 
 #include "node.h"
-#include "internet-node.h"
 #include "node-list.h"
 
 namespace ns3{
 
-uint32_t Node::g_nextId = 0;
 Node::SmartNodeVec_t Node::g_prototypes;  // The node prototypes stack
 Node::SmartNodeVec_t Node::g_nodes;       // All nodes
 
 Node::Node()
-  : m_id(g_nextId), m_sid(0)
+  : m_id(0), m_sid(0)
 {
-  g_nextId++;
 }
 
 Node::Node(uint32_t sid)
-  : m_id(g_nextId), m_sid(sid)
+  : m_id(0), m_sid(sid)
 { 
-  g_nextId++;
 }
   
 Node::~Node ()
@@ -53,6 +49,13 @@ Node::GetId (void) const
 {
   return m_id;
 }
+
+void   
+Node::SetId(uint32_t id )
+{
+  m_id = id;
+}
+
 uint32_t 
 Node::GetSystemId (void) const
 {
@@ -68,11 +71,9 @@ Node::SetSystemId(uint32_t s )
 // Node stack creation and management routines.
 Node* Node::Create()
 {
-  if (g_prototypes.Empty()) CreateDefaultPrototype();
   Node* n = g_prototypes.Back()->Copy(); // Copy the top of the stack
-  n->m_id = g_nextId++;                  // Set unique node id
   g_nodes.Add(n);                        // Add to smart vector (mem mgmt)
-  NodeList::Add (n);                     // Add to global list of nodes
+  NodeList::Add (n);           // Add to global list of nodes
   return n;
 }
 
@@ -86,7 +87,6 @@ Node* Node::Create(uint32_t sid)
 
 Node* Node::GetNodePrototype()
 { // Get node* to top of prototypes stack
-  if (g_prototypes.Empty()) CreateDefaultPrototype();
   return g_prototypes.Back();
 }
 
@@ -98,7 +98,6 @@ Node* Node::PushNodePrototype(const Node& n)
 
 Node* Node::PushNodePrototype() 
 { // Replicate the top of the prototype stack
-  if (g_prototypes.Empty()) CreateDefaultPrototype();
   g_prototypes.Add(GetNodePrototype()->Copy());
   return g_prototypes.Back();
 }
@@ -112,13 +111,6 @@ void Node::ClearAll()
 { // Delete all nodes for memory leak checking, including prototypes
   g_nodes.Clear();
   g_prototypes.Clear();
-}
-
-// Private method to ceate a reasonable default if stack is empty
-void Node::CreateDefaultPrototype()
-{
-  Node* n = new InternetNode();
-  g_prototypes.Add(n);
 }
 
 L3Demux*

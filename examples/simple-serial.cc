@@ -66,6 +66,8 @@
 #include "ns3/trace-root.h"
 #include "ns3/object-container.h"
 #include "ns3/serial-topology.h"
+#include "ns3/onoff-application.h"
+#include "ns3/random-variable.h"
 
 using namespace ns3;
 
@@ -242,12 +244,25 @@ int main (int argc, char *argv[])
       n3, Ipv4Address("10.1.3.2"), 
       1500000, MilliSeconds(10));
   
+  // To Do:
+  // avoid "new" calls, instead use application list
+  // OnOffSink
+  // use of rate and time objects
   DatagramSocket *source0 = new DatagramSocket (n0);
   DatagramSocket *source3 = new DatagramSocket (n3);
   DatagramSocket *sink3 = new DatagramSocket(n3);
   sink3->Bind (80);
   DatagramSocket *sink1 = new DatagramSocket(n1);
   sink1->Bind (80);
+
+#ifdef NOTYET
+  // This is functional and could soon replace the above DatagramSockets,
+  // but needs tuning
+  OnOffApplication* ooff = new OnOffApplication(*n0, Ipv4Address("10.1.2.2"), 
+  80, ConstantVariable(1), ConstantVariable(0), 1000, 210);
+  container.Acquire (ooff);
+  ooff->Start(Seconds(1.0));
+#endif
 
   container.Acquire (source0);
   container.Acquire (source3);
@@ -271,7 +286,7 @@ int main (int argc, char *argv[])
   PrintTraffic (sink1);
   GenerateTraffic (source3, 100);
 
-  Simulator::StopAt (Seconds(3.0));
+  Simulator::StopAt (Seconds(10.0));
 
   Simulator::Run ();
     

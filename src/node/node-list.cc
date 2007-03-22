@@ -27,10 +27,13 @@
 
 namespace ns3 {
 
-void 
+uint32_t NodeList::g_nextId = 0;
+
+void
 NodeList::Add (Node *node)
 {
   GetNodes ()->push_back (node);
+  node->SetId(g_nextId++);
 }
 NodeList::Iterator 
 NodeList::Begin (void)

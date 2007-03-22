@@ -53,12 +53,12 @@
 namespace ns3 {
 
 class Node;
-class NodeReference;
 class RandomVariable;
+class NodeReference;
   
 class Application {
 public:
-  Application();
+  Application(const Node&);
   Application(const Application&);  // Copy constructor
   Application& operator=(const Application&); // Assignment operator
   virtual ~Application();

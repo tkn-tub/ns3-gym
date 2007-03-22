@@ -103,8 +103,10 @@ class Udp;
 class Arp;
 class TraceContext;
 class TraceResolver;
+class NodeList;
 
 class Node {
+friend class NodeList;
 public:
   typedef SmartVector<Node*> SmartNodeVec_t;
   Node();
@@ -139,13 +141,15 @@ public:
   static const SmartNodeVec_t& Nodes(); // Get a vector of all nodes
   static void  ClearAll();          // Delete all nodes for memory leak checking
   static void  ClearAllPrototypes();// Delete the prototype stack
-private: 
-  static void  CreateDefaultPrototype(); // Create a "typical" prototype node
+
   // Global static variables
 private: 
   static uint32_t       g_nextId;     // Next available ID
   static SmartNodeVec_t g_nodes;      // Vector of all nodes created
   static SmartNodeVec_t g_prototypes; // Node prototype stack
+
+protected:
+  void SetId(uint32_t);            // NodeList::Add() calls this
 
 public:
   // Virtual "Getters" for each capability.
@@ -163,7 +167,6 @@ public:
   virtual Arp *            GetArp (void) const;
   
 private:
-  static uint32_t m_nodeId;
   uint32_t    m_id;         // Node id for this node
   uint32_t    m_sid;        // System id for this node
 };

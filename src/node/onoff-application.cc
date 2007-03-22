@@ -22,24 +22,19 @@
 // George F. Riley, Georgia Tech, Spring 2007
 // Adapted from ApplicationOnOff in GTNetS.
 
-#include "ipaddr.h"
-#include "l4protocol.h"
+#include "ipv4-address.h"
 #include "node.h"
 #include "node-reference.h"
 #include "ns3/nstime.h"
 #include "onoff-application.h"
 #include "ns3/random-variable.h"
-#include "socket.h"
-#include "udp.h"
-//#include "tcp.h"
+#include "datagram-socket.h"
 #include "ns3/simulator.h"
 
 using namespace std;
 
 namespace ns3 {
 
-#if 0
-  
 // Defaults for rate/size
 double   OnOffApplication::g_defaultRate = 500000.0;
 uint32_t OnOffApplication::g_defaultSize = 512;
@@ -48,16 +43,16 @@ uint32_t OnOffApplication::g_defaultSize = 512;
 
 // Constructors
 
-  OnOffApplication::OnOffApplication(const IPAddr&  rip,   // Remote IP addr
-                                     PortId_t       rport, // Remote port
+  OnOffApplication::OnOffApplication(const Node& n, 
+                                     const Ipv4Address  rip,   // Remote IP addr
+                                     uint16_t       rport, // Remote port
                                      const  RandomVariable& ontime,
                                      const  RandomVariable& offtime,
                                      double   rate,
-                                     uint32_t size,
-                                     const  L4Protocol& l4p)
-    : m_l4Proto(l4p.Copy()),
+                                     uint32_t size)
+    :  Application(n), 
       m_socket(nil),      // Socket allocated on Start
-      m_peerIP(rip.Copy()),
+      m_peerIP(rip),
       m_peerPort(rport),
       m_connected(false),
       m_onTime(ontime.Copy()),
@@ -73,10 +68,10 @@ uint32_t OnOffApplication::g_defaultSize = 512;
 {
 }
 
-OnOffApplication::OnOffApplication(const OnOffApplication& c)
-  : m_l4Proto(c.m_l4Proto->Copy()),
+OnOffApplication::OnOffApplication(const Node& n, const OnOffApplication& c)
+  : Application(n), 
     m_socket(nil),
-    m_peerIP(c.m_peerIP->Copy()),
+    m_peerIP(c.m_peerIP),
     m_peerPort(c.m_peerPort),
     m_connected(c.m_connected),
     m_onTime(c.m_onTime->Copy()),
@@ -94,9 +89,7 @@ OnOffApplication::OnOffApplication(const OnOffApplication& c)
 
 OnOffApplication::~OnOffApplication()
 {
-  delete m_l4Proto;
   delete m_socket;
-  delete m_peerIP;
   delete m_onTime;
   delete m_offTime;
 }
@@ -149,29 +142,31 @@ void OnOffApplication::Handle(Event* e, Time_t t)
 #endif
 
 // Application Methods
-void OnOffApplication::StartApp()    // Called at time specified by Start
+void OnOffApplication::StartApplication()    // Called at time specified by Start
 {
   // Create the socket if not already
   if (!m_socket)
     { // Create the socket using the specified layer 4 protocol
 #ifdef NOTYET
       m_socket = GetNode()->GetKernel()->CreateGenericSocket(*m_l4Proto);
-#endif
       m_socket->Bind();  // Choose any available port local port
       m_socket->Connect(*m_peerIP, m_peerPort,
                         MakeCallback(&OnOffApplication::ConnectionSucceeded,
                                      this),
                         MakeCallback(&OnOffApplication::ConnectionFailed,
                                      this));
+#endif
+      m_socket = new DatagramSocket (GetNode());
+      m_socket->SetDefaultDestination(m_peerIP, m_peerPort);
     }
-  StopApp();                         // Insure no pending event
+  StopApplication();                         // Insure no pending event
   // If we are not yet connected, there is nothing to do here
   // The ConnectionComplete upcall will start timers at that time
-  if (!m_connected) return;
+  //if (!m_connected) return;
   ScheduleStartEvent();
 }
 
-void OnOffApplication::StopApp()     // Called at time specified by Stop
+void OnOffApplication::StopApplication()     // Called at time specified by Stop
 {
   if (m_startStopScheduled)
     { // Cancel the startStop event
@@ -217,7 +212,7 @@ void OnOffApplication::ScheduleNextTx()
     }
   else
     { // All done, cancel any pending events
-      StopApp();
+      StopApplication();
     }
 }
 
@@ -239,24 +234,25 @@ void OnOffApplication::ScheduleStopEvent()
 void OnOffApplication::SendPacket()
 {
   m_sendScheduled = false;
+  m_socket->SendDummy(m_pktSize);
+#ifdef NOTYET
   m_socket->Send(0, m_pktSize); // Send the packet
+#endif
   m_totBytes += m_pktSize;
   m_lastStartTime = Simulator::Now();
   m_residualBits = 0;
   ScheduleNextTx();
 }
 
-void OnOffApplication::ConnectionSucceeded(Socket*)
+void OnOffApplication::ConnectionSucceeded(DatagramSocket*)
 {
   m_connected = true;
   ScheduleStartEvent();
 }
   
-void OnOffApplication::ConnectionFailed(Socket*)
+void OnOffApplication::ConnectionFailed(DatagramSocket*)
 {
   cout << "OnOffApplication, Connection Failed" << endl;
 }
-
-#endif
 
 } // Namespace ns3

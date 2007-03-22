@@ -47,6 +47,7 @@ public:
   static Node *GetNode (uint32_t n);
 
 private:
+  static uint32_t g_nextId;	// becomes Node::m_id
   static std::vector<Node *> *GetNodes (void);
   static uint32_t GetNNodes (void);
   
