@@ -23,13 +23,10 @@
 
 namespace ns3{
 
-/**
- * \brief RngStream by Pierre L'Ecuyer, University of Montreal
- * Adapted to NS3 by Rajib Bhattacharjea, Georgia Tech.
- */
 class RngStream {
 public:  //public api
   RngStream ();
+  RngStream (const RngStream&);
   void InitializeStream(); // Separate initialization
   void ResetStartStream ();
   void ResetStartSubstream ();

@@ -88,6 +88,11 @@ public:
   RandomVariable();
   
   /**
+   * \brief Copy constructor
+   */  
+  RandomVariable(const RandomVariable&);
+  
+  /**
    * \brief Destructor for a random number generator with a random seed.
    */
   virtual ~RandomVariable();
@@ -145,6 +150,7 @@ public:
 
    /**
    * \brief Use the global seed to force precisely reproducible results.
+   *
    * It is often desirable to create a simulation that uses random
    * numbers, while at the same time is completely reproducible.
    * Specifying this set of six random seeds initializes the
@@ -210,6 +216,7 @@ private:
 
 /**
  * \brief A random variable that returns a constant
+ *
  * Class ConstantVariable defines a random number generator that
  * returns the same value every sample.
  */
@@ -217,7 +224,7 @@ class ConstantVariable : public RandomVariable {
 
 public:
   /**
-   * \brief Construct a ConstantVariable RNG that returns zero every sample
+   * Construct a ConstantVariable RNG that returns zero every sample
    */
   ConstantVariable();
   
@@ -249,6 +256,7 @@ private:
 
 /**
  * \brief Return a sequential list of values
+ *
  * Class SequentialVariable defines a random number generator that
  * returns a sequential sequence.  The sequence monotonically
  * increases for a period, then wraps around to the low value 
@@ -259,6 +267,7 @@ class SequentialVariable : public RandomVariable {
 public:
   /**
    * \brief Constructor for the SequentialVariable RNG.
+   *
    * The four parameters define the sequence.  For example
    * SequentialVariable(0,5,1,2) creates a RNG that has the sequence
    * 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 0, 0 ...
@@ -271,16 +280,19 @@ public:
 
   /**
    * \brief Constructor for the SequentialVariable RNG.
+   *
    * Differs from the first only in that the increment parameter is a
    * random variable
    * \param f First value of the sequence.
    * \param l One more than the last value of the sequence.
-   * \param i Reference to a Random variable for the sequence increment
+   * \param i Reference to a RandomVariable for the sequence increment
    * \param c Number of times each member of the sequence is repeated
    */
   SequentialVariable(double f, double l, const RandomVariable& i, uint32_t c = 1);
 
   SequentialVariable(const SequentialVariable& c);
+  
+  ~SequentialVariable();
   /**
    * \return The next value in the Sequence
    */
@@ -297,6 +309,7 @@ private:
 
 /**
  * \brief Exponentially Distributed random var
+ *
  * ExponentialVariable defines a random variable with an exponential distribution
  */
 class ExponentialVariable : public RandomVariable { 
@@ -316,6 +329,7 @@ public:
   /**
    * \brief Constructs an exponential random variable with spefified
    * \brief mean and upper limit.
+   *
    * Since exponential distributions can theoretically return unbounded values,
    * it is sometimes useful to specify a fixed upper limit.  Note however when
    * the upper limit is specified, the true mean of the distribution is 
@@ -492,6 +506,7 @@ public:
 
 /**
  * \brief EmpiricalVariable distribution random var
+ *
  * Defines a random variable  that has a specified, empirical 
  * distribution.  The distribution is specified by a
  * series of calls the the CDF member function, specifying a
@@ -531,14 +546,14 @@ private:
 
 /**
  * Defines an empirical distribution where all values are integers.
- * Indentical to {\tt EmpiricalVariable}, but with slightly different
+ * Indentical to EmpiricalVariable, but with slightly different
  * interpolation between points.
  */
 class IntEmpiricalVariable : public EmpiricalVariable {
 public:
 
   IntEmpiricalVariable();
-
+  
   virtual RandomVariable* Copy() const;
   /**
    * \return An integer value from this empirical distribution
@@ -558,6 +573,7 @@ class DeterministicVariable : public RandomVariable {
 public:
   /**
    * \brief Constructor
+   *
    * Creates a generator that returns successive elements of the d array
    * on successive calls to ::Value().  Note that the d pointer is copied
    * for use by the generator (shallow-copy), not its contents, so the 

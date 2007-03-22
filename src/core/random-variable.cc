@@ -103,6 +103,12 @@ RandomVariable::RandomVariable()
   m_generator->InitializeStream();
 }
 
+RandomVariable::RandomVariable(const RandomVariable& r)
+{
+  m_generator = new RngStream(*r.m_generator);
+  RandomVariable::Initialize();
+}
+
 RandomVariable::~RandomVariable()
 {
   delete m_generator;
@@ -237,7 +243,7 @@ UniformVariable::UniformVariable(double s, double l)
   : m_min(s), m_max(l) { }
 
 UniformVariable::UniformVariable(const UniformVariable& c) 
-  : m_min(c.m_min), m_max(c.m_max) { }
+  : RandomVariable(c), m_min(c.m_min), m_max(c.m_max) { }
 
 double UniformVariable::GetValue()
 {
@@ -258,7 +264,7 @@ ConstantVariable::ConstantVariable(double c)
   : m_const(c) { };
   
 ConstantVariable::ConstantVariable(const ConstantVariable& c) 
-  : m_const(c.m_const) { }
+  : RandomVariable(c), m_const(c.m_const) { }
 
 void ConstantVariable::NewConstant(double c) 
   { m_const = c;}
@@ -293,10 +299,15 @@ SequentialVariable::SequentialVariable(double f, double l, const RandomVariable&
 }
 
 SequentialVariable::SequentialVariable(const SequentialVariable& c)
-  : m_min(c.m_min), m_max(c.m_max),
+  : RandomVariable(c), m_min(c.m_min), m_max(c.m_max),
     m_increment(c.m_increment->Copy()), m_consecutive(c.m_consecutive),
     m_current(c.m_current), m_currentConsecutive(c.m_currentConsecutive)
 {
+}
+
+SequentialVariable::~SequentialVariable()
+{
+  delete m_increment;
 }
 
 double SequentialVariable::GetValue()
@@ -329,7 +340,7 @@ ExponentialVariable::ExponentialVariable(double m, double b)
   : m_mean(m), m_bound(b) { }
   
 ExponentialVariable::ExponentialVariable(const ExponentialVariable& c) 
-  : m_mean(c.m_mean), m_bound(c.m_bound) { }
+  : RandomVariable(c), m_mean(c.m_mean), m_bound(c.m_bound) { }
 
 double ExponentialVariable::GetValue()
 {
@@ -358,7 +369,8 @@ ParetoVariable::ParetoVariable(double m, double s, double b)
   : m_mean(m), m_shape(s), m_bound(b) { }
 
 ParetoVariable::ParetoVariable(const ParetoVariable& c) 
-  : m_mean(c.m_mean), m_shape(c.m_shape), m_bound(c.m_bound) { }
+  : RandomVariable(c), m_mean(c.m_mean), m_shape(c.m_shape), 
+    m_bound(c.m_bound) { }
 
 double ParetoVariable::GetValue()
 {
@@ -383,7 +395,8 @@ WeibullVariable::WeibullVariable(double m, double s)
 WeibullVariable::WeibullVariable(double m, double s, double b) 
   : m_mean(m), m_alpha(s), m_bound(b) { };
 WeibullVariable::WeibullVariable(const WeibullVariable& c) 
-  : m_mean(c.m_mean), m_alpha(c.m_alpha), m_bound(c.m_bound) { }
+  : RandomVariable(c), m_mean(c.m_mean), m_alpha(c.m_alpha),
+    m_bound(c.m_bound) { }
 
 double WeibullVariable::GetValue()
 {
@@ -407,7 +420,8 @@ NormalVariable::NormalVariable(double m, double v, double b)
   : m_mean(m), m_variance(v), m_bound(b), m_nextValid(false) { }
 
 NormalVariable::NormalVariable(const NormalVariable& c)
-  : m_mean(c.m_mean), m_variance(c.m_variance), m_bound(c.m_bound) { }
+  : RandomVariable(c), m_mean(c.m_mean), m_variance(c.m_variance),
+    m_bound(c.m_bound) { }
 
 double NormalVariable::GetValue()
 {
@@ -458,8 +472,8 @@ ValueCDF::ValueCDF(const ValueCDF& c)
 EmpiricalVariable::EmpiricalVariable() 
   : validated(false) { }
 
-EmpiricalVariable::EmpiricalVariable(const EmpiricalVariable& c) 
-  : validated(c.validated), emp(c.emp) { }
+EmpiricalVariable::EmpiricalVariable(const EmpiricalVariable& c)
+  : RandomVariable(c), validated(c.validated), emp(c.emp) { }
 
 EmpiricalVariable::~EmpiricalVariable() { }
 
@@ -540,7 +554,6 @@ RandomVariable* IntEmpiricalVariable::Copy() const
 {
   return new IntEmpiricalVariable(*this);
 }
-
 
 double IntEmpiricalVariable::Interpolate(double c1, double c2,
                                    double v1, double v2, double r)

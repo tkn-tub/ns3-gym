@@ -316,6 +316,18 @@ RngStream::RngStream ()
    // Stream initialization moved to separate method.
 }
 
+RngStream::RngStream(const RngStream& r)
+{
+   anti = r.anti;
+   incPrec = r.incPrec;
+   for (int i = 0; i < 6; ++i) {
+      Cg[i] = r.Cg[i];
+      Bg[i] = r.Bg[i];
+      Ig[i] = r.Ig[i];
+   }
+}
+      
+
 void RngStream::InitializeStream()
 { // Moved from the RngStream constructor above to allow seeding
   // AFTER the global package seed has been set in the Random
