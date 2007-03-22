@@ -44,8 +44,8 @@ public:
   // with the specified IP addresses,  with specified maximum transmission rate
   // and propagation delay.
   static SerialChannel* AddSerialLink(
-    Node*, const IPAddr&, 
-    Node*, const IPAddr&,
+    Node*, const Ipv4Address&, 
+    Node*, const Ipv4Address&,
     // const Rate&,
     uint64_t,
     const Time&);
