@@ -51,7 +51,7 @@ private:
 
 public:
   bool Attach(SerialChannel* ch);
-  void AddQueue(Queue *);
+  void AddQueue(Queue*);
   // called by SerialPhy
   void Receive (Packet& p);
 

@@ -58,17 +58,7 @@
 // 3) If needed, implement a destructor.  Again, this is typically only
 //    needed if you use dynamic memory.
 // 4) Implement a Copy() method that returns a copy of your capability.
-// 5) Where possible Create a "Null" capability subclass of your capability
-//    that does nothing.  For example, the basic energy model provides the
-//    NullEnergyModel that is returned by the node base class "GetEnergyModel()"
-//    call when the energy model does not exist.  This Null capability of course
-//    has the same API as all energy models, but does nothing.  THis allows
-//    users of the energy model to use the pointer returned by GetEnergyModel()
-//    without having to check for the nil return.
-// 6) Implement a static GetNullCapability() method that returns either a
-//     pointer to the Null capability (see 5 above) of a nil pointer if no
-//     null capability exists.
-// 7) Implement a "Get*" virtual method in the node base that returns
+// 5) Implement a "Get*" virtual method in the node base that returns
 //    the null capability.
 //
 // To implement a variation on an existing capability, perform
@@ -85,13 +75,14 @@
 // and those modifying ns3 for their own uses are encouraged to subclass
 // an existing capability where possible.
 
-#ifndef NODE_H
-#define NODE_H
+#ifndef __NODE_H__
+#define __NODE_H__
 
 #include <vector>
 #include <list>
 
 #include "ns3/smartvector.h"
+#include "ns3/smartset.h"
 
 namespace ns3 {
 
@@ -107,6 +98,9 @@ class NodeList;
 
 class Node {
 friend class NodeList;
+friend class SmartVector<Node*>;
+friend class SmartSet<Node*>;
+
 public:
   typedef SmartVector<Node*> SmartNodeVec_t;
   Node();
@@ -120,6 +114,18 @@ public:
   uint32_t GetSystemId (void) const;
   void SetSystemId(uint32_t s);
 
+#ifdef REMOVE_FOR_NOW
+  // Define a protected delete operator. This will prevent users
+  // from attempting to delete Node objects.  The deletion of
+  // Nodes is completely the responsibility of the Node class,
+  // and in no case should be deleted by users.
+protected:
+  void operator delete(void* a)
+  { // Just call the normal delete
+    ::delete (Node*)a;
+  }
+#endif
+public:
   // Static methods for creating nodes and managing the node stack
 
   // Create a new node.  The node will be a copy of the top of the

@@ -29,7 +29,8 @@ namespace ns3 {
 // Define a "smart" vector container to be used by any ns3 object
 // maintaining a collection of pointers, which must be freed at
 // a later time.  The template parameter T must be a pointer, or an
-// object supporting the delete operator.  The vector implementation
+// object supporting the delete operator, and the dereferenced object
+// must support the Copy() operation.  The vector implementation
 // has in inefficient "Remove" operation, that removes and deletes
 // a single element in the container.  If frequent "Remove" operations
 // are needed, the SmartSet is likey a better choice.

@@ -1,0 +1,22 @@
+
+file /Users/riley/lib/scons/SCons/Environment.py,line 1019:
+	Configure( confdir = .sconf_temp )
+
+Checking for C header file stdlib.h... .sconf_temp/conftest_0.c <- 
+  |
+  |#include "stdlib.h"
+  |
+  |
+gcc -c -o .sconf_temp/conftest_0.o .sconf_temp/conftest_0.c
+yes
+
+file /Users/riley/lib/scons/SCons/Environment.py,line 1019:
+	Configure( confdir = .sconf_temp )
+
+Checking for C header file stdint.h... .sconf_temp/conftest_1.c <- 
+  |
+  |#include "stdint.h"
+  |
+  |
+gcc -c -o .sconf_temp/conftest_1.o .sconf_temp/conftest_1.c
+yes

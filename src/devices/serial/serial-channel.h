@@ -59,8 +59,9 @@ public:
   static const int N_DEVICES = 2;
 
   SerialChannel ();
-  SerialChannel (DataRate bps, Time delay);
-  SerialChannel (std::string name, DataRate bps, Time delay);
+  SerialChannel (const DataRate& bps, const Time& delay);
+  SerialChannel (const std::string& name,
+                 const DataRate& bps, const Time& delay);
 
   void Attach (SerialPhy* phy);
   bool Propagate (Packet& p, SerialPhy *src);

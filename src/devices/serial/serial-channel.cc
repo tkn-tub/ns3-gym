@@ -46,8 +46,8 @@ SerialChannel::SerialChannel()
 }
 
 SerialChannel::SerialChannel(
-  DataRate bps, 
-  Time delay)
+  const DataRate& bps, 
+  const Time& delay)
 : 
   Channel ("Serial Channel"), 
   m_bps (bps), 
@@ -59,9 +59,9 @@ SerialChannel::SerialChannel(
 }
 
 SerialChannel::SerialChannel(
-  std::string name,
-  DataRate bps, 
-  Time delay)
+  const std::string& name,
+  const DataRate& bps, 
+  const Time& delay)
 : 
   Channel (name),
   m_bps (bps), 

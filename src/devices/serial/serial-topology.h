@@ -30,7 +30,7 @@ namespace ns3 {
 
 class SerialChannel;
 class Node;
-class IpvrAddress;
+class IPAddr;
 //class SerialNetDevice;
 //class Queue;
 //class Rate;
@@ -44,13 +44,12 @@ public:
   // with the specified IP addresses,  with specified maximum transmission rate
   // and propagation delay.
   static SerialChannel* AddSerialLink(
-    Node*, const Ipv4Address&, 
-    Node*, const Ipv4Address&,
+    Node*, const IPAddr&, 
+    Node*, const IPAddr&,
     // const Rate&,
     uint64_t,
     const Time&);
 
-#if 0
   // Get the connecting node n1 to node n2
   static Channel* GetChannel(Node*, Node*);
   // Get the NetDevice connecting node n1 to n2
@@ -59,7 +58,6 @@ public:
   static Queue* GetQueue(Node*, Node*);
   // Set the queue associated with a link between two nodes
   static Queue* SetQueue(Node*, Node*, const Queue&);
-#endif
 };
 
 } // namespace ns3
