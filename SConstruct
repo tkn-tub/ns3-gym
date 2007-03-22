@@ -153,6 +153,7 @@ common.add_sources([
     'empty-trace-resolver.cc',
     'composite-trace-resolver.cc',
     'trace-root.cc',
+    'data-rate.cc',
     ])
 common.add_headers ([
     ])
@@ -177,6 +178,7 @@ common.add_inst_headers([
     'terminal-trace-resolver.h',
     'smartvector.h',
     'smartset.h',
+    'data-rate.h',
     ])
 
 node = build.Ns3Module ('node', 'src/node')
