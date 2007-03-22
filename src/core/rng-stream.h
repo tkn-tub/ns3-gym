@@ -31,6 +31,7 @@ public:  //public api
   void ResetStartStream ();
   void ResetStartSubstream ();
   void ResetNextSubstream ();
+  void ResetNthSubstream(uint32_t N);
   void SetAntithetic (bool a);
   void IncreasedPrecis (bool incp);
   bool SetSeeds (const uint32_t seed[6]);

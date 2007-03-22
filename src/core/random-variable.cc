@@ -89,6 +89,7 @@ ConstantSeed::ConstantSeed(uint32_t s0, uint32_t s1, uint32_t s2,
 //-----------------------------------------------------------------------------
 // RandomVariable methods
 
+uint32_t      RandomVariable::runNumber = 0;
 bool          RandomVariable::initialized = false;   // True if RngStream seed set 
 bool          RandomVariable::useDevRandom = false;  // True if use /dev/random desired
 bool          RandomVariable::globalSeedSet = false; // True if GlobalSeed called
@@ -101,12 +102,12 @@ RandomVariable::RandomVariable()
   m_generator = new RngStream();
   RandomVariable::Initialize(); // sets the seed for the static object
   m_generator->InitializeStream();
+  m_generator->ResetNthSubstream(RandomVariable::runNumber);
 }
 
 RandomVariable::RandomVariable(const RandomVariable& r)
 {
   m_generator = new RngStream(*r.m_generator);
-  RandomVariable::Initialize();
 }
 
 RandomVariable::~RandomVariable()
@@ -124,29 +125,9 @@ void RandomVariable::UseDevRandom(bool udr)
   RandomVariable::useDevRandom = udr;
 }
 
-bool RandomVariable::SetSeed(const Seed& s)
+void RandomVariable::GetSeed(uint32_t seed[6])
 {
-  // Seed this stream with the specified seed
-  if (s.IsRandom())
-    {
-      uint32_t seeds[6];
-      while(true)
-        { // Insure seeds are valid
-          GetRandomSeeds(seeds);
-          if (RngStream::CheckSeed(seeds)) break;
-        }
-      m_generator->SetSeeds(seeds);
-      return true;
-    }
-  // Not random seed, use specified
-  const ConstantSeed& cs = (ConstantSeed&)s;
-  if (!RngStream::CheckSeed(cs.seeds))
-    {
-      cout << "Constant seed failed valid check" << endl;
-      return false; // Seed is not valid
-    }
-  m_generator->SetSeeds(cs.seeds);
-  return true;
+  m_generator->GetState(seed);
 }
 
 //-----------------------------------------------------------------------------
@@ -231,6 +212,11 @@ void RandomVariable::GetRandomSeeds(uint32_t seeds[6])
           if (RngStream::CheckSeed(seeds)) break; // Got a valid one
         }
     }
+}
+
+void RandomVariable::SetRunNumber(uint32_t n)
+{
+  runNumber = n;
 }
 
 //-----------------------------------------------------------------------------

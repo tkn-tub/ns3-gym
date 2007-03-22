@@ -113,22 +113,17 @@ public:
    * \return A copy of this object
    */  
   virtual RandomVariable*   Copy() const = 0;
-
+  
   /**
-   * \brief Use a private seed and private stream for this generator.
-   * 
-   * This function explicitly overrides all other seeding behavior for
-   * this object.  For example, even if another seeding method has been
-   * used (either by default or calls to UseDevRandom, UseGlobalSeed, etc.)
-   * a call to SetSeed explicitly re-seeds this generator. Example:
-   * \code
-   * UniformVariable x(0,10);//with no other code, defaults to time of day seed
-   * x.SetSeed(...); //overrides time of day seed
-   * \endcode
-   * \param s Seed to use.  Can either be a RandomSeed or ConstantSeed.
-   * \return true if valid seed.
+   * \brief Get the internal state of the RNG
+   *
+   * This function is for power users who understand the inner workings
+   * of the underlying RngStream method used.  It returns the internal
+   * state of the RNG via the input parameter.
+   * \param seed Output parameter; gets overwritten with the internal state of
+   * of the RNG.
    */
-  bool SetSeed(const Seed& s);
+  virtual void GetSeed(uint32_t seed[6]);
   
   /**
    * \brief Set seeding behavior
@@ -168,16 +163,49 @@ public:
    * \return True if seed is valid.
    */ 
   static void UseGlobalSeed(const Seed& s);
-
+  
+  /**
+   * \brief Set the run number of this simulation
+   *
+   * These RNGs have the ability to give independent sets of trials for a fixed
+   * global seed.  For example, suppose one sets up a simulation with
+   * RandomVariables with a given global seed.  Suppose the user wanted to
+   * retry the same simulation with different random values for validity,
+   * statistical rigor, etc.  The user could either change the global seed and
+   * re-run the simulation, or could use this facility to increment all of the
+   * RNGs to a next substream state.  This predictably advances the internal
+   * state of all RandomVariables n steps.  This should be called immediately
+   * after the global seed is set, and before the creation of any
+   * RandomVariables.  For example:
+   * \code
+   * RandomVariable::UseGlobalSeed(ConstantSeed(1,2,3,4,5,6));
+   * int N = atol(argv[1]); //read in run number from command line
+   * RandomVariable::SetRunNumber(N);
+   * UniformVariable x(0,10);
+   * ExponentialVariable y(2902);
+   * \endcode
+   * In this example, N could successivly be equal to 1,2,3, etc. and the user
+   * would continue to get independent runs out of the single simulation.  For
+   * this simple example, the following might work:
+   * \code
+   * ./simulation 0
+   * ...Results for run 0:...
+   *
+   * ./simulation 1
+   * ...Results for run 1:...
+   * \endcode
+   */
+  static void SetRunNumber(uint32_t n);
 private:
-  static bool initialized;     // True if package seed is set 
   static void Initialize();    // Initialize  the RNG system
   static void GetRandomSeeds(uint32_t seeds[6]);
 private:
+  static bool initialized;     // True if package seed is set 
   static bool useDevRandom;    // True if using /dev/random desired
   static bool globalSeedSet;   // True if global seed has been specified
   static int  devRandom;       // File handle for /dev/random
   static uint32_t globalSeed[6]; // The global seed to use
+  static uint32_t runNumber;
 protected:
   static unsigned long heuristic_sequence;
   RngStream* m_generator;  //underlying generator being wrapped
