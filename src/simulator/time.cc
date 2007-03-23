@@ -20,9 +20,43 @@
  */
 #include "time.h"
 #include "simulator.h"
+#include "ns3/fatal-error.h"
 
 namespace ns3 {
 
+TimeUnit<1>::TimeUnit<1>(const std::string& s)
+{
+  std::string::size_type n = s.find_first_not_of("0123456789.");
+  if (n != std::string::npos)
+  { // Found non-numeric
+    double r = atof(s.substr(0, n).c_str());
+    std::string trailer = s.substr(n, std::string::npos);
+    if (trailer == std::string("s"))
+    {
+      m_data = HighPrecision (r * 1000000000.0);
+      return;
+    }
+    if (trailer == std::string("ms"))
+    {
+      m_data = HighPrecision ((int64_t)(r * 1000000), false);
+      return;
+    }
+    if (trailer == std::string("us"))
+    {
+      m_data = HighPrecision ((int64_t)(r * 1000), false);
+      return;
+    }
+    if (trailer == std::string("ns"))
+    {
+      m_data = HighPrecision ((int64_t)r, false);
+      return;
+    }
+    NS_FATAL_ERROR("Can't Parse Time "<<s);
+  }
+  //else
+  //they didn't provide units, assume seconds
+  m_data = HighPrecision (atof(s.c_str()) * 1000000000.0);
+}
 double 
 TimeUnit<1>::GetSeconds (void) const
 {
