@@ -44,7 +44,6 @@ PointToPointNetDevice::PointToPointNetDevice(Node* node) :
   EnableBroadcast (MacAddress ("ff:ff:ff:ff:ff:ff"));
   EnableMulticast();
   EnablePointToPoint();
-  SetMtu(512); // bytes
 
   m_phy = new PointToPointPhy(node, this);
 }

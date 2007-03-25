@@ -35,7 +35,7 @@ NetDevice::NetDevice(Node *node, const MacAddress& addr) :
   m_name(""), 
   m_ifIndex (0), 
   m_address (addr),
-  m_mtu (0), 
+  m_mtu (0xffff), 
   m_isUp (false), 
   m_isBroadcast (false), 
   m_isMulticast (false), 
