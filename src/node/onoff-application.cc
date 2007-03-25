@@ -60,7 +60,7 @@ uint32_t OnOffApplication::g_defaultSize = 512;
       m_cbrRate(rate),
       m_pktSize(size), 
       m_residualBits(0),
-      m_lastStartTime(0),
+      m_lastStartTime((HighPrecision)0),
       m_maxBytes(0xffffffff),
       m_totBytes(0),
       m_startStopScheduled(false),
