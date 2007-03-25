@@ -47,7 +47,7 @@ PointToPointTopology::AddPointToPointLink(
   const Ipv4Address& addra,
   Node* b,
   const Ipv4Address& addrb,
-  uint64_t bps,
+  const DataRate& bps,
   const Time& delay)
 {
   PointToPointChannel* channel = new PointToPointChannel(bps, delay);

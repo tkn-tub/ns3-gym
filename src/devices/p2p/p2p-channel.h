@@ -23,11 +23,10 @@
 #include "ns3/channel.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
+#include "ns3/data-rate.h"
 
 namespace ns3 {
 
-// temporary until Raj's code makes it into the dev tree
-typedef uint64_t DataRate;
 class PointToPointPhy;
 class NetDevice;
 

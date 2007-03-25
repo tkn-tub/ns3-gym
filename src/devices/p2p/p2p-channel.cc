@@ -36,7 +36,7 @@ namespace ns3 {
 PointToPointChannel::PointToPointChannel()
 : 
   Channel ("PointToPoint Channel"), 
-  m_bps (0xffffffff),
+  m_bps (DataRate(0xffffffff)),
   m_delay (Seconds(0)),
   m_nDevices(0)
 {
@@ -48,12 +48,12 @@ PointToPointChannel::PointToPointChannel(
   const Time& delay)
 : 
   Channel ("PointToPoint Channel"), 
-  m_bps (bps), 
+  m_bps (bps),
   m_delay (delay),
   m_nDevices(0)
 {
   NS_DEBUG("PointToPointChannel::PointToPointChannel (" << Channel::GetName() 
-    << ", " << bps << ", " << delay << ")");
+    << ", " << bps.GetBitRate() << ", " << delay << ")");
 }
 
 PointToPointChannel::PointToPointChannel(
@@ -67,7 +67,7 @@ PointToPointChannel::PointToPointChannel(
   m_nDevices(0)
 {
   NS_DEBUG("PointToPointChannel::PointToPointChannel (" << name << ", " << 
-    bps << ", " << delay << ")");
+    bps.GetBitRate() << ", " << delay << ")");
 }
 
   void
@@ -128,14 +128,12 @@ PointToPointChannel::Propagate(Packet& p, PointToPointPhy* src)
 
   m_link[wire].m_state = TRANSMITTING;
 
-//
-// I believe Raj has a method in the DataRate class to do this.  Should use
-// it when it is available.
-//
-  Time tEvent =  Seconds (static_cast<double> (p.GetSize() * 8) / 
-                          static_cast<double> (m_bps)) + m_delay;
+  Time txTime = Seconds (m_bps.CalculateTxTime(p.GetSize()));
+  Time tEvent = txTime + m_delay;
 
-  NS_DEBUG("PointToPointChannel::DoSend (): Schedule Receive delay " << tEvent);
+  NS_DEBUG("PointToPointChannel::DoSend (): Schedule bps " << 
+    m_bps.GetBitRate() << " txTime " << m_bps.CalculateTxTime(p.GetSize()) << 
+    " prop delay " << m_delay << " Recv. delay " << tEvent);
 
   Simulator::Schedule (tEvent, &PointToPointChannel::TransmitCompleteEvent, 
                        this, p, src);

@@ -19,6 +19,9 @@
 // Author: Rajib Bhattacharjea<raj.b@gatech.edu>
 //
 
+#ifndef DATA_RATE_H
+#define DATA_RATE_H
+
 #include "ns3/fatal-error.h"
 #include <string>
 #include <iostream>
@@ -95,3 +98,5 @@ double operator*(const DataRate& lhs, const TimeUnit<1>& rhs);
 double operator*(const TimeUnit<1>& lhs, const DataRate& rhs);
 
 };//namespace ns3
+
+#endif /* DATA_RATE_H */

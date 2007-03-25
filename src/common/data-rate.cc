@@ -80,7 +80,7 @@ uint64_t DataRate::Parse(const std::string s)
 
 double DataRate::CalculateTxTime(uint32_t bytes) const
 {
-  return bytes*8/m_bps;
+  return static_cast<double>(bytes)*8/m_bps;
 }
 
 uint64_t DataRate::GetBitRate() const

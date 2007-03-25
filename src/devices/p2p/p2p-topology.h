@@ -31,9 +31,9 @@ namespace ns3 {
 class PointToPointChannel;
 class Node;
 class IPAddr;
+class DataRate;
 //class PointToPointNetDevice;
 //class Queue;
-//class Rate;
 //class Time;
   
 class PointToPointTopology {
@@ -46,8 +46,7 @@ public:
   static PointToPointChannel* AddPointToPointLink(
     Node*, const Ipv4Address&, 
     Node*, const Ipv4Address&,
-    // const Rate&,
-    uint64_t,
+    const DataRate&,
     const Time&);
 
   // Get the connecting node n1 to node n2

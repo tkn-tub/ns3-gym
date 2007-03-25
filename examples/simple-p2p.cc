@@ -45,6 +45,7 @@
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
+#include "ns3/data-rate.h"
 #include "ns3/trace-writer.h"
 
 #include "ns3/internet-node.h"
@@ -236,13 +237,13 @@ int main (int argc, char *argv[])
   ch2 = PointToPointTopology::AddPointToPointLink (
       n1, Ipv4Address("10.1.2.1"), 
       n2, Ipv4Address("10.1.2.2"), 
-      5000000, MilliSeconds(2));
+      DataRate(5000000), MilliSeconds(2));
 
   PointToPointChannel* ch3;
   ch3 = PointToPointTopology::AddPointToPointLink (
       n2, Ipv4Address("10.1.3.1"), 
       n3, Ipv4Address("10.1.3.2"), 
-      1500000, MilliSeconds(10));
+      DataRate(1500000), MilliSeconds(10));
   
   // To Do:
   // avoid "new" calls, instead use application list
