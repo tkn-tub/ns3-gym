@@ -309,21 +309,6 @@ class TimeUnit<1>
 public:
 
   /**
-   * \brief String constructor
-   * Construct TimeUnit<1> object from common time expressions like "
-   * 1ms" or "10s".  Supported units include:
-   * - s  (seconds)
-   * - ms (milliseconds)
-   * - us (microseconds)
-   * - ns (nanoseconds)
-   *
-   * There can be no white space between the numerical portion
-   * and the units.  Any otherwise malformed string causes a fatal error to
-   * occur.
-   * \param s The string to parse into a TimeUnit<1>
-   */
-  TimeUnit<1>(const std::string& s);
-  /**
    * \returns an approximation in seconds of the time stored in this
    *          instance.
    */
