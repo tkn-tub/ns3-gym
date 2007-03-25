@@ -34,7 +34,8 @@ namespace ns3 {
 
 
 PointToPointNetDevice::PointToPointNetDevice(Node* node) : 
-  NetDevice(node, MacAddress("00:00:00:00:00:00"))
+  NetDevice(node, MacAddress("00:00:00:00:00:00")), m_phy(0), m_channel(0), 
+  m_queue(0)
 {
   NS_DEBUG ("PointToPointNetDevice::PointToPointNetDevice (" << node << ")");
 
