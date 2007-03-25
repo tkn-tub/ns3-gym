@@ -122,12 +122,13 @@ PrintTraffic (DatagramSocket *socket)
 
 int main (int argc, char *argv[])
 {
-  NS_DEBUG_UNCOND("Serial Net Device Test");
+  NS_DEBUG_UNCOND("PointToPoint Net Device Test");
 
-  // create two nodes and a simple SerialChannel
+  // create two nodes and a simple PointToPointChannel
   InternetNode a;
   InternetNode b;
-  SerialChannel ch = SerialChannel ("Test Channel", 1000, Seconds (0.1));
+  PointToPointChannel ch = PointToPointChannel ("Test Channel", 1000, 
+    Seconds (0.1));
 
   NodeList::Add (&a);
   NodeList::Add (&b);
@@ -136,14 +137,14 @@ int main (int argc, char *argv[])
   // Note:  this would normally be done also in conjunction with
   //        creating a Channel
    
-  SerialNetDevice neta(&a);
+  PointToPointNetDevice neta(&a);
 
   DropTailQueue dtqa;
 
   neta.AddQueue(&dtqa);
   neta.SetName("a.eth0"); 
 
-  SerialNetDevice netb(&b);
+  PointToPointNetDevice netb(&b);
 
   DropTailQueue dtqb;
 

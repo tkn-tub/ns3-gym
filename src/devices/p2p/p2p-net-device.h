@@ -18,8 +18,8 @@
  * Author: Craig Dowell <craigdo@ee.washington.edu>
  */
 
-#ifndef SERIAL_NET_DEVICE_H
-#define SERIAL_NET_DEVICE_H
+#ifndef POINT_TO_POINT_NET_DEVICE_H
+#define POINT_TO_POINT_NET_DEVICE_H
 
 #include <string.h>
 #include "ns3/mac-address.h"
@@ -31,46 +31,46 @@
 
 namespace ns3 {
 
-class SerialChannel;
-class SerialPhy;
+class PointToPointChannel;
+class PointToPointPhy;
 class Queue;
 
-class SerialNetDevice : public NetDevice {
+class PointToPointNetDevice : public NetDevice {
 public:
   enum TraceType {
     QUEUE,
     RX,
   };
-  SerialNetDevice(Node* node);
-  virtual ~SerialNetDevice();
+  PointToPointNetDevice(Node* node);
+  virtual ~PointToPointNetDevice();
 
 private:
   // Don't let the compiler slip in copy and assignment construction
-  SerialNetDevice(const SerialNetDevice&);
-  SerialNetDevice&operator=(const SerialNetDevice&);
+  PointToPointNetDevice(const PointToPointNetDevice&);
+  PointToPointNetDevice&operator=(const PointToPointNetDevice&);
 
 public:
-  bool Attach(SerialChannel* ch);
+  bool Attach(PointToPointChannel* ch);
   void AddQueue(Queue*);
-  // called by SerialPhy
+  // called by PointToPointPhy
   void Receive (Packet& p);
 
 protected:
   Queue* GetQueue(void) const; 
-  SerialChannel* GetChannel(void) const;
+  PointToPointChannel* GetChannel(void) const;
 
 private:
   virtual void NotifyDataAvailable (void);
   virtual bool SendTo (Packet& p, const MacAddress& dest);
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
 
-  SerialPhy* m_phy;
-  SerialChannel* m_channel;
+  PointToPointPhy* m_phy;
+  PointToPointChannel* m_channel;
   Queue* m_queue;
   CallbackTraceSource<Packet &> m_rxTrace;
 };
 
 }; // namespace ns3
 
-#endif // SERIAL_NET_DEVICE_H
+#endif // POINT_TO_POINT_NET_DEVICE_H
 

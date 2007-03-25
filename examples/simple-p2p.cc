@@ -204,9 +204,9 @@ int main (int argc, char *argv[])
   DebugComponentEnable("Queue");
   DebugComponentEnable("DropTailQueue");
   DebugComponentEnable("Channel");
-  DebugComponentEnable("SerialChannel");
-  DebugComponentEnable("SerialNetDevice");
-  DebugComponentEnable("SerialPhy");
+  DebugComponentEnable("PointToPointChannel");
+  DebugComponentEnable("PointToPointNetDevice");
+  DebugComponentEnable("PointToPointPhy");
 #endif
 
   ObjectContainer container;
@@ -226,20 +226,20 @@ int main (int argc, char *argv[])
   Node* n2 = Node::Create(); 
   Node* n3 = Node::Create(); 
 
-  SerialChannel* ch1;
-  ch1 = SerialTopology::AddSerialLink (
+  PointToPointChannel* ch1;
+  ch1 = PointToPointTopology::AddPointToPointLink (
       n0, Ipv4Address("10.1.1.1"), 
       n2, Ipv4Address("10.1.1.2"), 
       5000000, MilliSeconds(2));
   
-  SerialChannel* ch2;
-  ch2 = SerialTopology::AddSerialLink (
+  PointToPointChannel* ch2;
+  ch2 = PointToPointTopology::AddPointToPointLink (
       n1, Ipv4Address("10.1.2.1"), 
       n2, Ipv4Address("10.1.2.2"), 
       5000000, MilliSeconds(2));
 
-  SerialChannel* ch3;
-  ch3 = SerialTopology::AddSerialLink (
+  PointToPointChannel* ch3;
+  ch3 = PointToPointTopology::AddPointToPointLink (
       n2, Ipv4Address("10.1.3.1"), 
       n3, Ipv4Address("10.1.3.2"), 
       1500000, MilliSeconds(10));

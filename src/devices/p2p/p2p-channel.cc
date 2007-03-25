@@ -26,39 +26,37 @@
 #include "ns3/simulator.h"
 #include "ns3/debug.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("SerialChannel");
+NS_DEBUG_COMPONENT_DEFINE ("PointToPointChannel");
 
 namespace ns3 {
 
 //
-// By default, you get a channel with the name "Serial Channel" that has an
-// "infitely" fast transmission speed and zero delay.
-// XXX: this does not work because m_bps = 0 results in infinitely slow transmission
-// speed. 
-SerialChannel::SerialChannel()
+// By default, you get a channel with the name "PointToPoint Channel" that 
+// has an "infitely" fast transmission speed and zero delay.
+PointToPointChannel::PointToPointChannel()
 : 
-  Channel ("Serial Channel"), 
-  m_bps (0),
+  Channel ("PointToPoint Channel"), 
+  m_bps (0xffffffff),
   m_delay (Seconds(0)),
   m_nDevices(0)
 {
-  NS_DEBUG("SerialChannel::SerialChannel ()");
+  NS_DEBUG("PointToPointChannel::PointToPointChannel ()");
 }
 
-SerialChannel::SerialChannel(
+PointToPointChannel::PointToPointChannel(
   const DataRate& bps, 
   const Time& delay)
 : 
-  Channel ("Serial Channel"), 
+  Channel ("PointToPoint Channel"), 
   m_bps (bps), 
   m_delay (delay),
   m_nDevices(0)
 {
-  NS_DEBUG("SerialChannel::SerialChannel (" << Channel::GetName() << ", " << bps << ", " << 
-    delay << ")");
+  NS_DEBUG("PointToPointChannel::PointToPointChannel (" << Channel::GetName() 
+    << ", " << bps << ", " << delay << ")");
 }
 
-SerialChannel::SerialChannel(
+PointToPointChannel::PointToPointChannel(
   const std::string& name,
   const DataRate& bps, 
   const Time& delay)
@@ -68,14 +66,14 @@ SerialChannel::SerialChannel(
   m_delay (delay),
   m_nDevices(0)
 {
-  NS_DEBUG("SerialChannel::SerialChannel (" << name << ", " << bps << ", " << 
-    delay << ")");
+  NS_DEBUG("PointToPointChannel::PointToPointChannel (" << name << ", " << 
+    bps << ", " << delay << ")");
 }
 
   void
-SerialChannel::Attach(SerialPhy *phy)
+PointToPointChannel::Attach(PointToPointPhy *phy)
 {
-  NS_DEBUG("SerialChannel::Attach (" << phy << ")");
+  NS_DEBUG("PointToPointChannel::Attach (" << phy << ")");
   NS_ASSERT(m_nDevices < N_DEVICES && "Only two devices permitted");
   NS_ASSERT(phy);
 
@@ -95,9 +93,9 @@ SerialChannel::Attach(SerialPhy *phy)
 }
 
 void
-SerialChannel::TransmitCompleteEvent(Packet p, SerialPhy *src)
+PointToPointChannel::TransmitCompleteEvent(Packet p, PointToPointPhy *src)
 {
-  NS_DEBUG("SerialChannel::TransmitCompleteEvent (" << &p << ", " << 
+  NS_DEBUG("PointToPointChannel::TransmitCompleteEvent (" << &p << ", " << 
     src << ")");
 
   NS_ASSERT(m_link[0].m_state != INITIALIZING);
@@ -107,15 +105,15 @@ SerialChannel::TransmitCompleteEvent(Packet p, SerialPhy *src)
 
   m_link[wire].m_state = IDLE;
   
-  NS_DEBUG("SerialChannel::TransmitCompleteEvent (): Receive()");
+  NS_DEBUG("PointToPointChannel::TransmitCompleteEvent (): Receive()");
 
   m_link[wire].m_dst->Receive (p);
 }
 
 bool
-SerialChannel::Propagate(Packet& p, SerialPhy* src)
+PointToPointChannel::Propagate(Packet& p, PointToPointPhy* src)
 {
-  NS_DEBUG("SerialChannel::DoPropagate (" << &p << ", " << src << ")");
+  NS_DEBUG("PointToPointChannel::DoPropagate (" << &p << ", " << src << ")");
 
   NS_ASSERT(m_link[0].m_state != INITIALIZING);
   NS_ASSERT(m_link[1].m_state != INITIALIZING);
@@ -124,7 +122,7 @@ SerialChannel::Propagate(Packet& p, SerialPhy* src)
 
   if (m_link[wire].m_state == TRANSMITTING)
     {
-      NS_DEBUG("SerialChannel::DoPropagate (): TRANSMITTING, return");
+      NS_DEBUG("PointToPointChannel::DoPropagate (): TRANSMITTING, return");
       return false;
     }
 
@@ -137,21 +135,20 @@ SerialChannel::Propagate(Packet& p, SerialPhy* src)
   Time tEvent =  Seconds (static_cast<double> (p.GetSize() * 8) / 
                           static_cast<double> (m_bps)) + m_delay;
 
-  NS_DEBUG("SerialChannel::DoSend (): Schedule Receive delay " << tEvent);
+  NS_DEBUG("PointToPointChannel::DoSend (): Schedule Receive delay " << tEvent);
 
-  Packet packet = p;
-  Simulator::Schedule (tEvent, &SerialChannel::TransmitCompleteEvent, this, 
-                       p, src);
+  Simulator::Schedule (tEvent, &PointToPointChannel::TransmitCompleteEvent, 
+                       this, p, src);
   return true;
 }
 
 uint32_t 
-SerialChannel::GetNDevices (void) const
+PointToPointChannel::GetNDevices (void) const
 {
   return m_nDevices;
 }
 NetDevice *
-SerialChannel::GetDevice (uint32_t i) const
+PointToPointChannel::GetDevice (uint32_t i) const
 {
   return m_link[i].m_src->GetDevice ();
 }

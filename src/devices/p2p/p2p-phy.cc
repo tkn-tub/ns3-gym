@@ -25,35 +25,36 @@
 #include "p2p-net-device.h"
 #include "p2p-channel.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("SerialPhy");
+NS_DEBUG_COMPONENT_DEFINE ("PointToPointPhy");
 
 namespace ns3 {
 
-SerialPhy::SerialPhy(Node* node, SerialNetDevice* netdevice) :
+PointToPointPhy::PointToPointPhy(Node* node, PointToPointNetDevice* netdevice) :
   m_node(node), m_netdevice(netdevice)
 {
-  NS_DEBUG ("SerialPhy::SerialPhy (" << node << ", " << netdevice << ")");
+  NS_DEBUG ("PointToPointPhy::PointToPointPhy (" << node << ", " << 
+    netdevice << ")");
 }
 
-SerialPhy::~SerialPhy()
+PointToPointPhy::~PointToPointPhy()
 {
-  NS_DEBUG ("SerialPhy::~SerialPhy ()");
+  NS_DEBUG ("PointToPointPhy::~PointToPointPhy ()");
 }
 
 void 
-SerialPhy::Send (Packet &p)
+PointToPointPhy::Send (Packet &p)
 {
   m_channel->Propagate (p, this);
 }
 void 
-SerialPhy::Attach (SerialChannel *channel)
+PointToPointPhy::Attach (PointToPointChannel *channel)
 {
   m_channel = channel;
   m_channel->Attach (this);
 }
 
-SerialNetDevice *
-SerialPhy::GetDevice (void)
+PointToPointNetDevice *
+PointToPointPhy::GetDevice (void)
 {
   return m_netdevice;
 }
@@ -61,9 +62,9 @@ SerialPhy::GetDevice (void)
 
 
 void
-SerialPhy::Receive (Packet& p)
+PointToPointPhy::Receive (Packet& p)
 {
-  NS_DEBUG ("SerialPhy::Receive (" << &p << ")");
+  NS_DEBUG ("PointToPointPhy::Receive (" << &p << ")");
   m_netdevice->Receive (p);
 }
 

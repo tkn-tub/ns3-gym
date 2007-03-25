@@ -28,15 +28,15 @@
 #include "p2p-channel.h"
 #include "p2p-phy.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("SerialNetDevice");
+NS_DEBUG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 namespace ns3 {
 
 
-SerialNetDevice::SerialNetDevice(Node* node) : 
+PointToPointNetDevice::PointToPointNetDevice(Node* node) : 
   NetDevice(node, MacAddress("00:00:00:00:00:00"))
 {
-  NS_DEBUG ("SerialNetDevice::SerialNetDevice (" << node << ")");
+  NS_DEBUG ("PointToPointNetDevice::PointToPointNetDevice (" << node << ")");
 
   // BUGBUG FIXME
   //
@@ -46,20 +46,20 @@ SerialNetDevice::SerialNetDevice(Node* node) :
   EnablePointToPoint();
   SetMtu(512); // bytes
 
-  m_phy = new SerialPhy(node, this);
+  m_phy = new PointToPointPhy(node, this);
 }
 
-SerialNetDevice::~SerialNetDevice()
+PointToPointNetDevice::~PointToPointNetDevice()
 {
-  NS_DEBUG ("SerialNetDevice::~SerialNetDevice ()");
+  NS_DEBUG ("PointToPointNetDevice::~PointToPointNetDevice ()");
   delete m_phy;
 }
 
 
 bool
-SerialNetDevice::SendTo (Packet& p, const MacAddress& dest)
+PointToPointNetDevice::SendTo (Packet& p, const MacAddress& dest)
 {
-  NS_DEBUG ("SerialNetDevice::SendTo (" << &p << ", " << &dest << ")");
+  NS_DEBUG ("PointToPointNetDevice::SendTo (" << &p << ", " << &dest << ")");
 
   assert (IsLinkUp ());
 
@@ -77,22 +77,22 @@ SerialNetDevice::SendTo (Packet& p, const MacAddress& dest)
 }
 
 TraceResolver *
-SerialNetDevice::DoCreateTraceResolver (TraceContext const &context)
+PointToPointNetDevice::DoCreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   resolver->Add ("queue", 
                  MakeCallback (&Queue::CreateTraceResolver, m_queue),
-                 SerialNetDevice::QUEUE);
+                 PointToPointNetDevice::QUEUE);
   resolver->Add ("rx",
                  m_rxTrace,
-                 SerialNetDevice::RX);
+                 PointToPointNetDevice::RX);
   return resolver;
 }
 
 bool
-SerialNetDevice::Attach (SerialChannel* ch)
+PointToPointNetDevice::Attach (PointToPointChannel* ch)
 {
-  NS_DEBUG ("SerialNetDevice::Attach (" << &ch << ")");
+  NS_DEBUG ("PointToPointNetDevice::Attach (" << &ch << ")");
 
   m_channel = ch;
   m_phy->Attach (m_channel);
@@ -100,7 +100,7 @@ SerialNetDevice::Attach (SerialChannel* ch)
    * For now, this device is up whenever a channel is attached to it.
    * In fact, it should become up only when the second device
    * is attached to the channel. So, there should be a way for
-   * a SerialChannel to notify both of its attached devices
+   * a PointToPointChannel to notify both of its attached devices
    * that the channel is 'complete', hence that the devices are
    * up, hence that they can call NotifyLinkUp. 
    */
@@ -109,27 +109,27 @@ SerialNetDevice::Attach (SerialChannel* ch)
 }
 
 void
-SerialNetDevice::AddQueue (Queue* q)
+PointToPointNetDevice::AddQueue (Queue* q)
 {
-  NS_DEBUG ("SerialNetDevice::AddQueue (" << q << ")");
+  NS_DEBUG ("PointToPointNetDevice::AddQueue (" << q << ")");
 
   m_queue = q;
 }
 
 void
-SerialNetDevice::Receive (Packet& p)
+PointToPointNetDevice::Receive (Packet& p)
 {
   // ignore return value for now.
-  NS_DEBUG ("SerialNetDevice::Receive (" << &p << ")");
+  NS_DEBUG ("PointToPointNetDevice::Receive (" << &p << ")");
 
   m_rxTrace (p);
   ForwardUp (p);
 }
 
 void
-SerialNetDevice::NotifyDataAvailable(void)
+PointToPointNetDevice::NotifyDataAvailable(void)
 {
-  NS_DEBUG ("SerialNetDevice::NotifyDataAvailable ()");
+  NS_DEBUG ("PointToPointNetDevice::NotifyDataAvailable ()");
 
   Packet p;
   bool found = GetQueue ()->Dequeue (p);
@@ -140,19 +140,19 @@ SerialNetDevice::NotifyDataAvailable(void)
       p.PeekTag (tag);
       // send packet to address tag.address
 #endif
-      NS_DEBUG ("SerialNetDevice::NotifyDataAvailable (): Dequeued");
+      NS_DEBUG ("PointToPointNetDevice::NotifyDataAvailable (): Dequeued");
       m_phy->Send(p);
     }
 }
 
 Queue* 
-SerialNetDevice::GetQueue(void) const 
+PointToPointNetDevice::GetQueue(void) const 
 { 
     return m_queue;
 }
 
-SerialChannel* 
-SerialNetDevice::GetChannel(void) const 
+PointToPointChannel* 
+PointToPointNetDevice::GetChannel(void) const 
 { 
     return m_channel;
 }

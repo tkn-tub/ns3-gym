@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef SERIAL_CHANNEL_H
-#define SERIAL_CHANNEL_H
+#ifndef POINT_TO_POINT_CHANNEL_H
+#define POINT_TO_POINT_CHANNEL_H
 
 #include <list>
 #include "ns3/channel.h"
@@ -28,7 +28,7 @@ namespace ns3 {
 
 // temporary until Raj's code makes it into the dev tree
 typedef uint64_t DataRate;
-class SerialPhy;
+class PointToPointPhy;
 class NetDevice;
 
 /**
@@ -49,7 +49,7 @@ class NetDevice;
  * [0] wire to transmit on.  The second device gets the [1] wire.  There is a
  * state (IDLE, TRANSMITTING) associated with each wire.
  */
-class SerialChannel : public Channel {
+class PointToPointChannel : public Channel {
 public:
 //
 // This is really kidding myself, since just setting N_DEVICES to 3 isn't
@@ -58,20 +58,20 @@ public:
 //
   static const int N_DEVICES = 2;
 
-  SerialChannel ();
-  SerialChannel (const DataRate& bps, const Time& delay);
-  SerialChannel (const std::string& name,
+  PointToPointChannel ();
+  PointToPointChannel (const DataRate& bps, const Time& delay);
+  PointToPointChannel (const std::string& name,
                  const DataRate& bps, const Time& delay);
 
-  void Attach (SerialPhy* phy);
-  bool Propagate (Packet& p, SerialPhy *src);
+  void Attach (PointToPointPhy* phy);
+  bool Propagate (Packet& p, PointToPointPhy *src);
 
   virtual uint32_t GetNDevices (void) const;
   virtual NetDevice *GetDevice (uint32_t i) const;
 
 
 private:
-  void TransmitCompleteEvent (Packet p, SerialPhy *src);
+  void TransmitCompleteEvent (Packet p, PointToPointPhy *src);
 
   DataRate      m_bps;
   Time          m_delay;
@@ -90,8 +90,8 @@ private:
   public:
     Link() : m_state (INITIALIZING), m_src (0), m_dst (0) {}
     WireState        m_state;
-    SerialPhy *m_src;
-    SerialPhy *m_dst;
+    PointToPointPhy *m_src;
+    PointToPointPhy *m_dst;
   };
     
   Link    m_link[N_DEVICES];
@@ -99,4 +99,4 @@ private:
 
 } // namespace ns3
 
-#endif /* SERIAL_CHANNEL_H */
+#endif /* POINT_TO_POINT_CHANNEL_H */

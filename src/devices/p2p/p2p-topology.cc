@@ -41,8 +41,8 @@
 
 namespace ns3 {
 
-SerialChannel *
-SerialTopology::AddSerialLink(
+PointToPointChannel *
+PointToPointTopology::AddPointToPointLink(
   Node* a,
   const Ipv4Address& addra,
   Node* b,
@@ -50,7 +50,7 @@ SerialTopology::AddSerialLink(
   uint64_t bps,
   const Time& delay)
 {
-  SerialChannel* channel = new SerialChannel(bps, delay);
+  PointToPointChannel* channel = new PointToPointChannel(bps, delay);
 
   // Duplex link is assumed to be subnetted as a /30
   // May run this unnumbered in the future?
@@ -59,7 +59,7 @@ SerialTopology::AddSerialLink(
 
   DropTailQueue* dtqa = new DropTailQueue();
 
-  SerialNetDevice* neta = new SerialNetDevice(a);
+  PointToPointNetDevice* neta = new PointToPointNetDevice(a);
   neta->AddQueue(dtqa);
   Ipv4Interface *interfA = new ArpIpv4Interface (a, neta);
   uint32_t indexA = a->GetIpv4 ()->AddInterface (interfA);
@@ -71,7 +71,7 @@ SerialTopology::AddSerialLink(
 
   DropTailQueue* dtqb = new DropTailQueue();
 
-  SerialNetDevice* netb = new SerialNetDevice(b);
+  PointToPointNetDevice* netb = new PointToPointNetDevice(b);
   netb->AddQueue(dtqb);
   Ipv4Interface *interfB = new ArpIpv4Interface (b, netb);
   uint32_t indexB = b->GetIpv4 ()->AddInterface (interfB);

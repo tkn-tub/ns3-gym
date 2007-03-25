@@ -20,30 +20,30 @@
 // Topology helper for ns3.
 // George F. Riley, Georgia Tech, Spring 2007
 
-#ifndef __TOPOLOGY_H__
-#define __TOPOLOGY_H__
+#ifndef __POINT_TO_POINT_TOPOLOGY_H__
+#define __POINT_TO_POINT_TOPOLOGY_H__
 
 // The topology class consists of only static methods thar are used to
 // create the topology and data flows for an ns3 simulation
 
 namespace ns3 {
 
-class SerialChannel;
+class PointToPointChannel;
 class Node;
 class IPAddr;
-//class SerialNetDevice;
+//class PointToPointNetDevice;
 //class Queue;
 //class Rate;
 //class Time;
   
-class SerialTopology {
+class PointToPointTopology {
 public:
   // Manage point to point links
 
   // Add a full-duplex point-to-point link between two nodes
   // with the specified IP addresses,  with specified maximum transmission rate
   // and propagation delay.
-  static SerialChannel* AddSerialLink(
+  static PointToPointChannel* AddPointToPointLink(
     Node*, const Ipv4Address&, 
     Node*, const Ipv4Address&,
     // const Rate&,

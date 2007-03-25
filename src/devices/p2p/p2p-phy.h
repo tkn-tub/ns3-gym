@@ -18,33 +18,33 @@
  * Author: Craig Dowell <craigdo@ee.washington.edu>
  */
 
-#ifndef SERIAL_PHY_H
-#define SERIAL_PHY_H
+#ifndef POINT_TO_POINT_PHY_H
+#define POINT_TO_POINT_PHY_H
 
 namespace ns3 {
 
-class SerialNetDevice;
-class SerialChannel;
+class PointToPointNetDevice;
+class PointToPointChannel;
 class Node;
 class Packet;
 
-class SerialPhy {
+class PointToPointPhy {
 public:
-  SerialPhy(Node* node, SerialNetDevice* netdevice);
-  virtual ~SerialPhy();
+  PointToPointPhy(Node* node, PointToPointNetDevice* netdevice);
+  virtual ~PointToPointPhy();
 
   void Send (Packet &p);
   void Receive (Packet& p);
-  void Attach (SerialChannel *channel);
+  void Attach (PointToPointChannel *channel);
 
-  SerialNetDevice *GetDevice (void);
+  PointToPointNetDevice *GetDevice (void);
 
 private:
   Node* m_node;
-  SerialChannel *m_channel;
-  SerialNetDevice* m_netdevice;
+  PointToPointChannel *m_channel;
+  PointToPointNetDevice* m_netdevice;
 };
 
 } // namespace ns3
 
-#endif // SERIAL_PHY_H
+#endif // POINT_TO_POINT_PHY_H
