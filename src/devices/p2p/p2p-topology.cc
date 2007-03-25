@@ -33,9 +33,9 @@
 #include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4.h"
 
-#include "serial-channel.h"
-#include "serial-net-device.h"
-#include "serial-topology.h"
+#include "p2p-channel.h"
+#include "p2p-net-device.h"
+#include "p2p-topology.h"
 
 #define nil 0
 

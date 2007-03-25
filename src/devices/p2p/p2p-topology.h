@@ -40,7 +40,7 @@ class SerialTopology {
 public:
   // Manage point to point links
 
-  // Add a full-duplex point-to-point serial link between two nodes
+  // Add a full-duplex point-to-point link between two nodes
   // with the specified IP addresses,  with specified maximum transmission rate
   // and propagation delay.
   static SerialChannel* AddSerialLink(

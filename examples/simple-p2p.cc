@@ -29,7 +29,7 @@
 //     / 5 Mb/s, 2ms
 //   n1
 //
-// - all links are serial links with indicated one-way BW/delay
+// - all links are p2p links with indicated one-way BW/delay
 // - CBR/UDP flows from n0 to n3, and from n3 to n1
 // - FTP/TCP flow from n0 to n3, starting at time 1.2 to time 1.35 sec.
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
@@ -48,8 +48,8 @@
 #include "ns3/trace-writer.h"
 
 #include "ns3/internet-node.h"
-#include "ns3/serial-channel.h"
-#include "ns3/serial-net-device.h"
+#include "ns3/p2p-channel.h"
+#include "ns3/p2p-net-device.h"
 #include "ns3/mac-address.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/arp-ipv4-interface.h"
@@ -65,7 +65,7 @@
 #include "ns3/node-list.h"
 #include "ns3/trace-root.h"
 #include "ns3/object-container.h"
-#include "ns3/serial-topology.h"
+#include "ns3/p2p-topology.h"
 #include "ns3/onoff-application.h"
 #include "ns3/random-variable.h"
 
@@ -276,7 +276,7 @@ int main (int argc, char *argv[])
   n0->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
   n3->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
 
-  AsciiTrace trace ("simple-serial.tr");
+  AsciiTrace trace ("simple-p2p.tr");
   trace.TraceAllQueues ();
   trace.TraceAllNetDeviceRx ();
 

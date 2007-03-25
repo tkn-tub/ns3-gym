@@ -27,8 +27,8 @@
 #include "ns3/packet.h"
 #include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/serial-channel.h"
-#include "ns3/serial-net-device.h"
+#include "ns3/p2p-channel.h"
+#include "ns3/p2p-net-device.h"
 #include "ns3/trace-writer.h"
 #include "ns3/drop-tail.h"
 #include "ns3/arp-ipv4-interface.h"
@@ -222,7 +222,7 @@ int main (int argc, char *argv[])
   sink->Bind (80);
   source->SetDefaultDestination (Ipv4Address ("10.1.1.2"), 80);
 
-  Logger logger("serial-net-test.log");
+  Logger logger("p2p-net-test.log");
 
   TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/*", 
                       MakeCallback (&Logger::Log, &logger));

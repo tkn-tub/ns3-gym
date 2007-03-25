@@ -274,24 +274,24 @@ p2p.add_inst_headers ([
     'p2p-channel.h',
     ])
 
-serial = build.Ns3Module ('serial', 'src/devices/serial')
-ns3.add (serial)
-serial.add_deps (['node'])
-serial.add_sources ([
-    'serial-net-device.cc',
-    'serial-channel.cc',
-    'serial-topology.cc',
-    'serial-phy.cc',
+p2p = build.Ns3Module ('p2p', 'src/devices/p2p')
+ns3.add (p2p)
+p2p.add_deps (['node'])
+p2p.add_sources ([
+    'p2p-net-device.cc',
+    'p2p-channel.cc',
+    'p2p-topology.cc',
+    'p2p-phy.cc',
     'layer-connector.cc',
     ])
-serial.add_headers ([
+p2p.add_headers ([
     'propagator.h',
     ])
-serial.add_inst_headers ([
-    'serial-net-device.h',
-    'serial-channel.h',
-    'serial-topology.h',
-    'serial-phy.h',
+p2p.add_inst_headers ([
+    'p2p-net-device.h',
+    'p2p-channel.h',
+    'p2p-topology.h',
+    'p2p-phy.h',
     'layer-connector.h',
     ])
 
@@ -366,11 +366,11 @@ ns3.add(sample_test)
 sample_test.add_dep('core')
 sample_test.add_source('main-test.cc')
 
-sample_serial_net_device_if = build.Ns3Module ('sample-serial-net-device-if', 'samples')
-sample_serial_net_device_if.set_executable ()
-ns3.add (sample_serial_net_device_if)
-sample_serial_net_device_if.add_deps (['common', 'node', 'serial'])
-sample_serial_net_device_if.add_source ('main-serial-net-device-if.cc')
+sample_p2p_net_device_if = build.Ns3Module ('sample-p2p-net-device-if', 'samples')
+sample_p2p_net_device_if.set_executable ()
+ns3.add (sample_p2p_net_device_if)
+sample_p2p_net_device_if.add_deps (['common', 'node', 'p2p'])
+sample_p2p_net_device_if.add_source ('main-p2p-net-device-if.cc')
 
 sample_simple = build.Ns3Module('sample-simple', 'samples')
 sample_simple.set_executable()
@@ -385,10 +385,10 @@ sample_sp2p.add_deps(['core', 'simulator', 'node', 'p2p'])
 sample_sp2p.add_source('main-simple-p2p.cc')
 
 # examples
-example_simple_serial = build.Ns3Module('simple-serial', 'examples')
-example_simple_serial.set_executable()
-ns3.add(example_simple_serial)
-example_simple_serial.add_deps(['core', 'simulator', 'node', 'serial'])
-example_simple_serial.add_source('simple-serial.cc')
+example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')
+example_simple_p2p.set_executable()
+ns3.add(example_simple_p2p)
+example_simple_p2p.add_deps(['core', 'simulator', 'node', 'p2p'])
+example_simple_p2p.add_source('simple-p2p.cc')
 
 ns3.generate_dependencies()
