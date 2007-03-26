@@ -32,6 +32,7 @@
 #include "ns3/drop-tail.h"
 #include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4.h"
+#include "ns3/net-device-list.h"
 
 #include "p2p-channel.h"
 #include "p2p-net-device.h"
@@ -43,48 +44,79 @@ namespace ns3 {
 
 PointToPointChannel *
 PointToPointTopology::AddPointToPointLink(
-  Node* a,
-  const Ipv4Address& addra,
-  Node* b,
-  const Ipv4Address& addrb,
+  Node* n1,
+  const Ipv4Address& addr1,
+  Node* n2,
+  const Ipv4Address& addr2,
   const DataRate& bps,
   const Time& delay)
 {
-  PointToPointChannel* channel = new PointToPointChannel(bps, delay);
+  // First get the NetDeviceList capability from each node
+  NetDeviceList* ndl1 = n1->GetNetDeviceList();
+  NetDeviceList* ndl2 = n2->GetNetDeviceList();
+  if (!ndl1 || !ndl2) return nil;  // Both ends must have NetDeviceList
 
   // Duplex link is assumed to be subnetted as a /30
   // May run this unnumbered in the future?
   Ipv4Mask netmask("255.255.255.252");
-  NS_ASSERT (netmask.IsMatch(addra,addrb));
+  NS_ASSERT (netmask.IsMatch(addr1,addr2));
 
-  PointToPointNetDevice* neta = new PointToPointNetDevice(a);
-  neta->AddQueue(Queue::Default().Copy());
-  Ipv4Interface *interfA = new ArpIpv4Interface (a, neta);
-  uint32_t indexA = a->GetIpv4 ()->AddInterface (interfA);
-  neta->Attach (channel);
+  // create channel expicitly (XXX no reference counting here yet)
+  PointToPointChannel* channel = new PointToPointChannel(bps, delay);
 
-  interfA->SetAddress (addra);
-  interfA->SetNetworkMask (netmask);
-  interfA->SetUp ();
+  PointToPointNetDevice* net1 = new PointToPointNetDevice(n1);
+  net1->AddQueue(Queue::Default().Copy());
+  ndl1->Add(net1);
+  Ipv4Interface *interf1 = new ArpIpv4Interface (n1, net1);
+  uint32_t index1 = n1->GetIpv4 ()->AddInterface (interf1);
+  net1->Attach (channel);
 
-  PointToPointNetDevice* netb = new PointToPointNetDevice(b);
-  netb->AddQueue(Queue::Default().Copy());
-  Ipv4Interface *interfB = new ArpIpv4Interface (b, netb);
-  uint32_t indexB = b->GetIpv4 ()->AddInterface (interfB);
-  netb->Attach (channel);
+  interf1->SetAddress (addr1);
+  interf1->SetNetworkMask (netmask);
+  interf1->SetUp ();
 
-  interfB->SetAddress (addrb);
-  interfB->SetNetworkMask (netmask);
-  interfB->SetUp ();
+  PointToPointNetDevice* net2 = new PointToPointNetDevice(n2);
+  net2->AddQueue(Queue::Default().Copy());
+  ndl2->Add(net2);
+  Ipv4Interface *interf2 = new ArpIpv4Interface (n2, net2);
+  uint32_t index2 = n2->GetIpv4 ()->AddInterface (interf2);
+  net2->Attach (channel);
 
-  a->GetIpv4 ()->AddHostRouteTo (addrb, indexA);
-  b->GetIpv4 ()->AddHostRouteTo (addra, indexB);
+  interf2->SetAddress (addr2);
+  interf2->SetNetworkMask (netmask);
+  interf2->SetUp ();
+
+  n1->GetIpv4 ()->AddHostRouteTo (addr2, index1);
+  n2->GetIpv4 ()->AddHostRouteTo (addr1, index2);
 
   return channel;
 }
 
-
 #if 0
+// Get the channel connecting node n1 to node n2
+Channel* Topology::GetChannel(Node* n1, Node* n2)
+{
+  NetDevice* nd = GetNetDevice(n1, n2);
+  if (!nd) return 0; // No net device, so no channel
+  return nd->GetChannel();
+}
+
+Queue* Topology::GetQueue(Node* n1, Node* n2)
+{
+  NetDevice* nd = GetNetDevice(n1, n2);
+  if (!nd) return 0; // No net device, so in queue
+  return nd->GetQueue();
+}
+
+Queue* Topology::SetQueue(Node* n1, Node* n2, const Queue& q)
+{
+  NetDevice* nd = GetNetDevice(n1, n2);
+  if (!nd) return 0; // No net device, can't set queue
+  // Add the specified queue to the netdevice
+  return nd->SetQueue(q);
+}
+
+
 P2PChannel* Topology::AddDuplexLink(Node* n1, const IPAddr& ip1, 
                                     Node* n2, const IPAddr& ip2,
                                     const Rate& rate, const Time& delay)

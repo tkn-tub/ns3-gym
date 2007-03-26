@@ -244,6 +244,7 @@ node.add_inst_headers ([
     'datagram-socket.h',
     'ipv4-address.h',
     'net-device.h',
+    'net-device-list.h',
     'arp-ipv4-interface.h',
     'ipv4-interface.h',
     'mac-address.h',
