@@ -32,8 +32,7 @@ class PointToPointChannel;
 class Node;
 class IPAddr;
 class DataRate;
-//class PointToPointNetDevice;
-//class Queue;
+class Queue;
 //class Time;
   
 class PointToPointTopology {
@@ -50,9 +49,9 @@ public:
     const Time&);
 
   // Get the connecting node n1 to node n2
-  static Channel* GetChannel(Node*, Node*);
+  static PointToPointChannel* GetChannel(Node*, Node*);
   // Get the NetDevice connecting node n1 to n2
-  static NetDevice* GetNetDevice(Node*, Node*);
+  static PointToPointNetDevice* GetNetDevice(Node*, Node*);
   /// Get the queue associated with a link between two nodes
   static Queue* GetQueue(Node*, Node*);
   // Set the queue associated with a link between two nodes

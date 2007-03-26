@@ -92,23 +92,49 @@ PointToPointTopology::AddPointToPointLink(
   return channel;
 }
 
-#if 0
+#ifdef NOTYET
+
+// Get the net device connecting node n1 to n2.  For topologies where
+// there are possibly multiple devices connecting n1 and n2 (for example
+// wireless with two devices on different channels) this will return
+// the first one found.
+PointToPointNetDevice* PointToPointTopology::GetNetDevice(Node* n1, Node* n2)
+{
+  // First get the NetDeviceList capability from node 1
+  NetDeviceList* ndl1 = n1->GetNetDeviceList();
+  if (!ndl1) return 0; // No devices, return nil
+  // Get the list of devices
+  const NetDeviceList::NetDevices_t& dlist = ndl1->GetAll();
+  for (NetDeviceList::NetDevices_t::const_iterator i = dlist.Begin();
+       i != dlist.End(); ++i)
+    { // Check each device
+      NetDevice* nd = *i; // next device
+      Channel* c = nd->GetChannel();
+      if (!c) continue; // No channel
+      if (c->NodeIsPeer(n2)) return nd; // found it
+    }
+  return 0; // None found
+}
+  
 // Get the channel connecting node n1 to node n2
-Channel* Topology::GetChannel(Node* n1, Node* n2)
+PointToPointChannel* PointToPointTopology::GetChannel(
+  Node* n1, 
+  Node* n2
+)
 {
   NetDevice* nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, so no channel
   return nd->GetChannel();
 }
 
-Queue* Topology::GetQueue(Node* n1, Node* n2)
+Queue* PointToPointTopology::GetQueue(Node* n1, Node* n2)
 {
   NetDevice* nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, so in queue
   return nd->GetQueue();
 }
 
-Queue* Topology::SetQueue(Node* n1, Node* n2, const Queue& q)
+Queue* PointToPointTopology::SetQueue(Node* n1, Node* n2, const Queue& q)
 {
   NetDevice* nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, can't set queue
@@ -116,7 +142,9 @@ Queue* Topology::SetQueue(Node* n1, Node* n2, const Queue& q)
   return nd->SetQueue(q);
 }
 
+#endif
 
+#ifdef GFR
 P2PChannel* Topology::AddDuplexLink(Node* n1, const IPAddr& ip1, 
                                     Node* n2, const IPAddr& ip2,
                                     const Rate& rate, const Time& delay)
@@ -148,28 +176,6 @@ P2PChannel* Topology::AddDuplexLink(Node* n1, const IPAddr& ip1,
   return dynamic_cast<P2PChannel*>(nd1->GetChannel());  // Always succeeds
 }
 
-// Get the net device connecting node n1 to n2.  For topologies where
-// there are possibly multiple devices connecting n1 and n2 (for example
-// wireless with two devices on different channels) this will return
-// the first one found.
-NetDevice* Topology::GetNetDevice(Node* n1, Node* n2)
-{
-  // First get the NetDeviceList capability from node 1
-  NetDeviceList* ndl1 = n1->GetNetDeviceList();
-  if (!ndl1) return 0; // No devices, return nil
-  // Get the list of devices
-  const NetDeviceList::NetDevices_t& dlist = ndl1->GetAll();
-  for (NetDeviceList::NetDevices_t::const_iterator i = dlist.Begin();
-       i != dlist.End(); ++i)
-    { // Check each device
-      NetDevice* nd = *i; // next device
-      Channel* c = nd->GetChannel();
-      if (!c) continue; // No channel
-      if (c->NodeIsPeer(n2)) return nd; // found it
-    }
-  return 0; // None found
-}
-  
 // Get the channel connecting node n1 to node n2
 Channel* Topology::GetChannel(Node* n1, Node* n2)
 {
