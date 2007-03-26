@@ -209,8 +209,16 @@ int main (int argc, char *argv[])
   DebugComponentEnable("PointToPointNetDevice");
   DebugComponentEnable("PointToPointPhy");
 #endif
-
   ObjectContainer container;
+
+  // Optionally, specify some default values for Queue objects.
+  // For this example, we specify that we want each queue to
+  // be a DropTail queue, with a limit of 30 packets.
+  // Specify DropTail for default queue type (note. this is actually
+  // the default, but included here as an example).
+  Queue::Default(DropTailQueue());
+  // Specify limit of 30 in units of packets.
+  //  Queue::Default().SetLimitPackets(30);
 
   // The node factory is designed to allow user specification
   // of the "type" of node desired for each node creation.  This

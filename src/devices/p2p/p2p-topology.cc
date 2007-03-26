@@ -57,10 +57,8 @@ PointToPointTopology::AddPointToPointLink(
   Ipv4Mask netmask("255.255.255.252");
   NS_ASSERT (netmask.IsMatch(addra,addrb));
 
-  DropTailQueue* dtqa = new DropTailQueue();
-
   PointToPointNetDevice* neta = new PointToPointNetDevice(a);
-  neta->AddQueue(dtqa);
+  neta->AddQueue(Queue::Default().Copy());
   Ipv4Interface *interfA = new ArpIpv4Interface (a, neta);
   uint32_t indexA = a->GetIpv4 ()->AddInterface (interfA);
   neta->Attach (channel);
@@ -69,10 +67,8 @@ PointToPointTopology::AddPointToPointLink(
   interfA->SetNetworkMask (netmask);
   interfA->SetUp ();
 
-  DropTailQueue* dtqb = new DropTailQueue();
-
   PointToPointNetDevice* netb = new PointToPointNetDevice(b);
-  netb->AddQueue(dtqb);
+  netb->AddQueue(Queue::Default().Copy());
   Ipv4Interface *interfB = new ArpIpv4Interface (b, netb);
   uint32_t indexB = b->GetIpv4 ()->AddInterface (interfB);
   netb->Attach (channel);

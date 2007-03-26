@@ -35,6 +35,7 @@ public:
   DropTailQueue ();
 
   virtual ~DropTailQueue();
+  virtual DropTailQueue* Copy() const;
 
   void SetMaxPackets (uint32_t npackets);
   uint32_t GetMaxPackets (void);

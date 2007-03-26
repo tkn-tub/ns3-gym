@@ -25,6 +25,8 @@ NS_DEBUG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
+Queue* Queue::defaultQueue = 0;
+
 Queue::Queue() : 
   m_nBytes(0), 
   m_nTotalReceivedBytes(0),
@@ -180,6 +182,22 @@ Queue::Drop (const Packet& p)
 
   NS_DEBUG("Queue::Drop (): m_traceDrop (p)");
   m_traceDrop (p);
+}
+
+// Static methods for managing default queue
+
+// Set new default
+void Queue::Default(const Queue& q)
+{
+  delete defaultQueue;      // delete previous (if any)
+  defaultQueue = q.Copy();  // set new default
+}
+
+// Get current default
+Queue& Queue::Default()
+{
+  // ! Need to schedule an "at end" event to delete the default
+  return *defaultQueue;
 }
 
 }; // namespace ns3

@@ -43,6 +43,8 @@ public:
   Queue ();
   virtual ~Queue ();
 
+  virtual Queue* Copy() const = 0;
+
   TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   bool IsEmpty (void);
@@ -104,7 +106,7 @@ private:
   uint32_t m_nTotalDroppedBytes;
   uint32_t m_nTotalDroppedPackets;
 
-#if 0
+public:
   // Static methods to manage queue default
   // Set desired queue default
   static void    Default(const Queue& q);
@@ -112,7 +114,6 @@ private:
   static Queue&  Default();
   // Static variable pointing to current default queue
   static Queue* defaultQueue;
-#endif
 };
 
 }; // namespace ns3

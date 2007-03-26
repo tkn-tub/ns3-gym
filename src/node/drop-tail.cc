@@ -24,6 +24,14 @@ NS_DEBUG_COMPONENT_DEFINE ("DropTailQueue");
 
 namespace ns3 {
 
+static class QueueStackInitializationClass {
+public:
+  QueueStackInitializationClass () {
+    Queue::Default (DropTailQueue ());
+  }
+} queue_stack_initialization_class;
+
+
 DropTailQueue::DropTailQueue () :
   Queue (),
   m_packets (),
@@ -35,6 +43,11 @@ DropTailQueue::DropTailQueue () :
 DropTailQueue::~DropTailQueue ()
 {
   NS_DEBUG("DropTailQueue::~DropTailQueue ()");
+}
+
+DropTailQueue* DropTailQueue::Copy() const
+{
+  return new DropTailQueue(*this);
 }
 
 void 
