@@ -27,22 +27,22 @@
 
 namespace ns3 {
 
-class PointToPointPhy;
-class NetDevice;
+class PointToPointNetDevice;
 
 /**
  * \brief Simple Point To Point Channel.
  *
- * This class represents a very simple serial channel.  Think full duplex
- * RS-232 or RS-422 with null modem and no handshaking.  There is no multi-
- * drop capability on this channel -- there can be a maximum of two serial 
- * net devices connected.  Once we start talking about multi-drop, or CSMA, 
- * or some other sharing mechanism, things begin getting complicated quickly.
- * Rather than invent some ad-hoc mechanism, we just Keep It Simple everywhere.
+ * This class represents a very simple point to point channel.  Think full
+ * duplex RS-232 or RS-422 with null modem and no handshaking.  There is no
+ * multi-drop capability on this channel -- there can be a maximum of two 
+ * point-to-point net devices connected.  Once we start talking about multi-
+ * drop, or CSMA, or some other sharing mechanism, things begin getting 
+ * complicated quickly.  Rather than invent some ad-hoc mechanism, we just
+ * Keep It Simple everywhere.
  *
  * When the channel is instaniated, the constructor takes parameters for
- * a single channel speed, in bits per second, and a delay time as a Time
- * object.  Both directions use the same speed and delay time.
+ * a single speed, in bits per second, and a speed-of-light delay time as a
+ * Time object.  Both directions use the same speed and delay time.
  *
  * There are two "wires" in the channel.  The first device connected gets the
  * [0] wire to transmit on.  The second device gets the [1] wire.  There is a
@@ -62,16 +62,18 @@ public:
   PointToPointChannel (const std::string& name,
                  const DataRate& bps, const Time& delay);
 
-  void Attach (PointToPointPhy* phy);
-  bool Propagate (Packet& p, PointToPointPhy *src);
+  void Attach (PointToPointNetDevice* device);
+  bool TransmitStart (Packet& p, PointToPointNetDevice *src);
+  bool TransmitEnd (Packet &p, PointToPointNetDevice *src);
+  void PropagationCompleteEvent(Packet p, PointToPointNetDevice *src);
 
   virtual uint32_t GetNDevices (void) const;
   virtual NetDevice *GetDevice (uint32_t i) const;
 
+  virtual DataRate GetDataRate (void);
+  virtual Time GetDelay (void);
 
 private:
-  void TransmitCompleteEvent (Packet p, PointToPointPhy *src);
-
   DataRate      m_bps;
   Time          m_delay;
 
@@ -81,16 +83,17 @@ private:
     {
       INITIALIZING,
       IDLE,
-      TRANSMITTING
+      TRANSMITTING,
+      PROPAGATING
     };
 
   class Link
   {
   public:
     Link() : m_state (INITIALIZING), m_src (0), m_dst (0) {}
-    WireState        m_state;
-    PointToPointPhy *m_src;
-    PointToPointPhy *m_dst;
+    WireState              m_state;
+    PointToPointNetDevice *m_src;
+    PointToPointNetDevice *m_dst;
   };
     
   Link    m_link[N_DEVICES];

@@ -21,7 +21,6 @@
 
 #include "p2p-channel.h"
 #include "p2p-net-device.h"
-#include "p2p-phy.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/debug.h"
@@ -71,13 +70,13 @@ PointToPointChannel::PointToPointChannel(
 }
 
   void
-PointToPointChannel::Attach(PointToPointPhy *phy)
+PointToPointChannel::Attach(PointToPointNetDevice *device)
 {
-  NS_DEBUG("PointToPointChannel::Attach (" << phy << ")");
+  NS_DEBUG("PointToPointChannel::Attach (" << device << ")");
   NS_ASSERT(m_nDevices < N_DEVICES && "Only two devices permitted");
-  NS_ASSERT(phy);
+  NS_ASSERT(device);
 
-  m_link[m_nDevices].m_src = phy;
+  m_link[m_nDevices].m_src = device;
   ++m_nDevices;
 //
 // If we have both devices connected to the channel, then finish introducing
@@ -92,28 +91,13 @@ PointToPointChannel::Attach(PointToPointPhy *phy)
     }
 }
 
-void
-PointToPointChannel::TransmitCompleteEvent(Packet p, PointToPointPhy *src)
-{
-  NS_DEBUG("PointToPointChannel::TransmitCompleteEvent (" << &p << ", " << 
-    src << ")");
-
-  NS_ASSERT(m_link[0].m_state != INITIALIZING);
-  NS_ASSERT(m_link[1].m_state != INITIALIZING);
-  uint32_t wire = src == m_link[0].m_src ? 0 : 1;
-  NS_ASSERT(m_link[wire].m_state == TRANSMITTING);
-
-  m_link[wire].m_state = IDLE;
-  
-  NS_DEBUG("PointToPointChannel::TransmitCompleteEvent (): Receive()");
-
-  m_link[wire].m_dst->Receive (p);
-}
-
 bool
-PointToPointChannel::Propagate(Packet& p, PointToPointPhy* src)
+PointToPointChannel::TransmitStart(Packet& p, PointToPointNetDevice* src)
 {
-  NS_DEBUG("PointToPointChannel::DoPropagate (" << &p << ", " << src << ")");
+  NS_DEBUG ("PointToPointChannel::TransmitStart (" << &p << ", " << src << 
+            ")");
+  NS_DEBUG ("PointToPointChannel::TransmitStart (): UID is " << 
+            p.GetUid () << ")");
 
   NS_ASSERT(m_link[0].m_state != INITIALIZING);
   NS_ASSERT(m_link[1].m_state != INITIALIZING);
@@ -122,33 +106,86 @@ PointToPointChannel::Propagate(Packet& p, PointToPointPhy* src)
 
   if (m_link[wire].m_state == TRANSMITTING)
     {
-      NS_DEBUG("PointToPointChannel::DoPropagate (): TRANSMITTING, return");
+      NS_DEBUG("PointToPointChannel::TransmitStart (): **** ERROR ****");
+      NS_DEBUG("PointToPointChannel::TransmitStart (): state TRANSMITTING");
       return false;
     }
 
+  NS_DEBUG("PointToPointChannel::TransmitStart (): switch to TRANSMITTING");
   m_link[wire].m_state = TRANSMITTING;
-
-  Time txTime = Seconds (m_bps.CalculateTxTime(p.GetSize()));
-  Time tEvent = txTime + m_delay;
-
-  NS_DEBUG("PointToPointChannel::DoSend (): Schedule bps " << 
-    m_bps.GetBitRate() << " txTime " << m_bps.CalculateTxTime(p.GetSize()) << 
-    " prop delay " << m_delay << " Recv. delay " << tEvent);
-
-  Simulator::Schedule (tEvent, &PointToPointChannel::TransmitCompleteEvent, 
-                       this, p, src);
   return true;
 }
+
+bool
+PointToPointChannel::TransmitEnd(Packet& p, PointToPointNetDevice* src)
+{
+  NS_DEBUG("PointToPointChannel::TransmitEnd (" << &p << ", " << src << ")");
+  NS_DEBUG ("PointToPointChannel::TransmitEnd (): UID is " << 
+            p.GetUid () << ")");
+
+  NS_ASSERT(m_link[0].m_state != INITIALIZING);
+  NS_ASSERT(m_link[1].m_state != INITIALIZING);
+
+  uint32_t wire = src == m_link[0].m_src ? 0 : 1;
+
+  NS_ASSERT(m_link[wire].m_state == TRANSMITTING);
+
+  m_link[wire].m_state = PROPAGATING;
+//
+// The sender is going to free the packet as soon as it has been transmitted.
+// We need to copy it to get a reference so it won't e deleted.
+//
+  Packet packet = p;
+  NS_DEBUG ("PointToPointChannel::TransmitEnd (): Schedule event in " << 
+            m_delay.GetSeconds () << "sec");
+  Simulator::Schedule (m_delay,
+                       &PointToPointChannel::PropagationCompleteEvent,
+                       this, packet, src);
+  return true;
+}
+
+void
+PointToPointChannel::PropagationCompleteEvent(
+  Packet p, 
+  PointToPointNetDevice *src)
+{
+  NS_DEBUG("PointToPointChannel::PropagationCompleteEvent (" << &p << ", " << 
+    src << ")");
+  NS_DEBUG ("PointToPointChannel::PropagationCompleteEvent (): UID is " << 
+    p.GetUid () << ")");
+
+  uint32_t wire = src == m_link[0].m_src ? 0 : 1;
+  NS_ASSERT(m_link[wire].m_state == PROPAGATING);
+  m_link[wire].m_state = IDLE;
+
+  NS_DEBUG ("PointToPointChannel::PropagationCompleteEvent (): Receive");
+  m_link[wire].m_dst->Receive (p);
+}
+
 
 uint32_t 
 PointToPointChannel::GetNDevices (void) const
 {
   return m_nDevices;
 }
+
 NetDevice *
 PointToPointChannel::GetDevice (uint32_t i) const
 {
-  return m_link[i].m_src->GetDevice ();
+  NS_ASSERT(i < 2);
+  return m_link[i].m_src;
+}
+
+  DataRate
+PointToPointChannel::GetDataRate (void)
+{
+  return m_bps;
+}
+
+  Time
+PointToPointChannel::GetDelay (void)
+{
+  return m_delay;
 }
 
 

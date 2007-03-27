@@ -50,7 +50,7 @@ class TraceContext;
  * constructed with destination MAC address already selected).
  * 
  * If you want to write a new MAC layer, you need to subclass
- * this base class and implement your own version of the 
+ * this base class and implement your own version of the
  * NetDevice::SendTo method.
  */
 class NetDevice {
@@ -190,7 +190,7 @@ class NetDevice {
    * \returns true if the packet was forwarded successfully,
    *          false otherwise.
    *
-   * When a subclass gets a packet from the PHY layer, it 
+   * When a subclass gets a packet from the channel, it 
    * forwards it to the higher layers by calling this method
    * which is responsible for passing it up to the Rx callback.
    */
@@ -205,10 +205,10 @@ class NetDevice {
    *
    * This is the private virtual target function of the public Send()
    * method.  When the link is Up, this method is invoked to ask 
-   * subclasses to forward packets down to the PHY layer. Subclasses 
-   * MUST override this method.
+   * subclasses to forward packets. Subclasses MUST override this method.
    */
   virtual bool SendTo (Packet& p, const MacAddress& dest) = 0;
+
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
   Node*         m_node;
   std::string   m_name;

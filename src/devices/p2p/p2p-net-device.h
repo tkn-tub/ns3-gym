@@ -28,11 +28,12 @@
 #include "ns3/callback.h"
 #include "ns3/packet.h"
 #include "ns3/callback-trace-source.h"
+#include "ns3/nstime.h"
+#include "ns3/data-rate.h"
 
 namespace ns3 {
 
 class PointToPointChannel;
-class PointToPointPhy;
 class Queue;
 
 class PointToPointNetDevice : public NetDevice {
@@ -41,9 +42,13 @@ public:
     QUEUE,
     RX,
   };
+
   PointToPointNetDevice(Node* node);
   virtual ~PointToPointNetDevice();
 
+  void SetDataRate(DataRate bps);
+  void SetInterframeGap(Time t);
+  
 private:
   // Don't let the compiler slip in copy and assignment construction
   PointToPointNetDevice(const PointToPointNetDevice&);
@@ -52,7 +57,6 @@ private:
 public:
   bool Attach(PointToPointChannel* ch);
   void AddQueue(Queue*);
-  // called by PointToPointPhy
   void Receive (Packet& p);
 
 protected:
@@ -60,11 +64,25 @@ protected:
   PointToPointChannel* GetChannel(void) const;
 
 private:
-  virtual void NotifyDataAvailable (void);
   virtual bool SendTo (Packet& p, const MacAddress& dest);
+
+  bool TransmitStart (Packet &p);
+  void TransmitCompleteEvent (void);
+  void TransmitReadyEvent (void);
+
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
 
-  PointToPointPhy* m_phy;
+  enum TxMachineState
+    {
+      READY,
+      BUSY,
+      GAP
+    };
+
+  TxMachineState m_txMachineState;
+  DataRate       m_bps;
+  Time           m_tInterframeGap;
+
   PointToPointChannel* m_channel;
   Queue* m_queue;
   CallbackTraceSource<Packet &> m_rxTrace;

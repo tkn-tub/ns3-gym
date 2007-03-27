@@ -50,6 +50,7 @@ public:
   bool IsEmpty (void);
   bool Enqueue (const Packet& p);
   bool Dequeue (Packet &p);
+  bool Peek (Packet &p);
 
   void DequeueAll (void);
   uint32_t GetNPackets (void);
@@ -89,6 +90,7 @@ public:
 private:
   virtual bool DoEnqueue (const Packet& p) = 0;
   virtual bool DoDequeue (Packet &p) = 0;
+  virtual bool DoPeek (Packet &p) = 0;
 
 protected:
   // called by subclasses to notify parent of packet drops.

@@ -103,6 +103,15 @@ Queue::DequeueAll (void)
   NS_ASSERT (!"Don't know what to do with dequeued packets!");
 }
 
+bool
+Queue::Peek (Packet &p)
+{
+  NS_DEBUG("Queue::Peek (" << &p << ")");
+
+  return DoPeek (p);
+}
+
+
 uint32_t 
 Queue::GetNPackets (void)
 {

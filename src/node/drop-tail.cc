@@ -101,4 +101,20 @@ DropTailQueue::DoDequeue (Packet& p)
   return true;
 }
 
+bool
+DropTailQueue::DoPeek (Packet& p)
+{
+  NS_DEBUG("DropTailQueue::DoPeek (" << &p << ")");
+
+  if (m_packets.empty()) 
+    {
+      NS_DEBUG("DropTailQueue::DoPeek (): Queue empty");
+      return false;
+    }
+
+  p = m_packets.front ();
+
+  return true;
+}
+
 }; // namespace ns3

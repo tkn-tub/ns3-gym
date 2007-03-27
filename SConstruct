@@ -282,8 +282,6 @@ p2p.add_sources ([
     'p2p-net-device.cc',
     'p2p-channel.cc',
     'p2p-topology.cc',
-    'p2p-phy.cc',
-    'layer-connector.cc',
     ])
 p2p.add_headers ([
     'propagator.h',
@@ -292,8 +290,6 @@ p2p.add_inst_headers ([
     'p2p-net-device.h',
     'p2p-channel.h',
     'p2p-topology.h',
-    'p2p-phy.h',
-    'layer-connector.h',
     ])
 
 

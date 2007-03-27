@@ -207,7 +207,6 @@ int main (int argc, char *argv[])
   DebugComponentEnable("Channel");
   DebugComponentEnable("PointToPointChannel");
   DebugComponentEnable("PointToPointNetDevice");
-  DebugComponentEnable("PointToPointPhy");
 #endif
   ObjectContainer container;
 
