@@ -201,7 +201,7 @@ PrintRoutingTable (InternetNode *a, std::string name)
 
 int main (int argc, char *argv[])
 {
-#if 1
+#if 0
   DebugComponentEnable("Object");
   DebugComponentEnable("Queue");
   DebugComponentEnable("DropTailQueue");
