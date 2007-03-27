@@ -32,13 +32,15 @@ NS_DEBUG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 namespace ns3 {
 
-PointToPointNetDevice::PointToPointNetDevice(Node* node) 
+PointToPointNetDevice::PointToPointNetDevice (Node* node) 
 : 
-  NetDevice(node, MacAddress("00:00:00:00:00:00")), 
-  m_txMachineState(READY),
-  m_bps (DataRate(0xffffffff)),
-  m_channel(0), 
-  m_queue(0)
+  NetDevice(node, MacAddress ("00:00:00:00:00:00")), 
+  m_txMachineState (READY),
+  m_bps (DataRate (0xffffffff)),
+  m_tInterframeGap (Seconds(0)),
+  m_channel (0), 
+  m_queue (0),
+  m_rxTrace ()
 {
   NS_DEBUG ("PointToPointNetDevice::PointToPointNetDevice (" << node << ")");
 
@@ -53,6 +55,67 @@ PointToPointNetDevice::PointToPointNetDevice(Node* node)
 PointToPointNetDevice::~PointToPointNetDevice()
 {
   NS_DEBUG ("PointToPointNetDevice::~PointToPointNetDevice ()");
+
+  if (m_channel)
+    {
+      m_channel->Unref ();
+      m_channel = 0;
+    }
+}
+
+//
+// Copy constructor for PointToPointNetDevice.
+//
+// We use the underlying NetDevice copy constructor to get the base class
+// copied.  These just remain as is (e.g. you get the same name, the same
+// MAC address).  If you need to fix them up, YOU, the copier need to do 
+// that.
+// 
+// The things we need to be careful of are the channel, the queue and the
+// trace callback.  If the channel pointer is non-zero, we copy the pointer 
+// and add a reference.  If the queue is non-zero, we copy it using the queue
+// assignment operator.  We don't mess with the trace -- we just reset it.
+// We're assuming that the tracing will be set up after the topology creation
+// phase and this won't actually matter.
+//
+PointToPointNetDevice::PointToPointNetDevice (const PointToPointNetDevice& nd)
+: 
+  NetDevice(nd), 
+  m_txMachineState(READY),
+  m_bps (nd.m_bps),
+  m_tInterframeGap (nd.m_tInterframeGap),
+  m_channel(0), 
+  m_queue(0),
+  m_rxTrace ()
+{
+  NS_DEBUG ("PointToPointNetDevice::PointToPointNetDevice (" << &nd << ")");
+
+  if (nd.m_channel)
+    {
+      m_channel = nd.m_channel;
+      m_channel->Ref ();
+    }
+
+  if (nd.m_queue)
+    {
+      m_queue = nd.m_queue;
+    }
+    
+}
+
+//
+// Assignment operator for PointToPointNetDevice.
+//
+// This uses the non-obvious trick of taking the source net device passed by
+// value instead of by reference.  This causes the copy constructor to be
+// invoked (where the real work is done -- see above).  All we have to do
+// here is to return the newly constructed net device.
+//
+  PointToPointNetDevice&
+PointToPointNetDevice::operator= (const PointToPointNetDevice nd)
+{
+  NS_DEBUG ("PointToPointNetDevice::operator= (" << &nd << ")");
+  return *this;
 }
 
   void 
@@ -236,7 +299,14 @@ PointToPointNetDevice::Attach (PointToPointChannel* ch)
 {
   NS_DEBUG ("PointToPointNetDevice::Attach (" << &ch << ")");
 
+  if (m_channel)
+    {
+      m_channel->Unref ();
+      m_channel = 0;
+    }
+
   m_channel = ch;
+  m_channel->Ref ();
 
   m_channel->Attach(this);
   m_bps = m_channel->GetDataRate ();

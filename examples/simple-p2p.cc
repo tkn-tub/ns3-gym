@@ -201,7 +201,8 @@ PrintRoutingTable (InternetNode *a, std::string name)
 
 int main (int argc, char *argv[])
 {
-#if 0
+#if 1
+  DebugComponentEnable("Object");
   DebugComponentEnable("Queue");
   DebugComponentEnable("DropTailQueue");
   DebugComponentEnable("Channel");
@@ -302,4 +303,8 @@ int main (int argc, char *argv[])
   // or containers or smart pointers
 
   Simulator::Destroy ();
+
+  ch1->Unref ();
+  ch2->Unref ();
+  ch3->Unref ();
 }

@@ -43,17 +43,16 @@ public:
     RX,
   };
 
-  PointToPointNetDevice(Node* node);
+  PointToPointNetDevice (Node* node);
+  PointToPointNetDevice (const PointToPointNetDevice& nd);
+
   virtual ~PointToPointNetDevice();
+
+  PointToPointNetDevice& operator= (PointToPointNetDevice nd);
 
   void SetDataRate(DataRate bps);
   void SetInterframeGap(Time t);
   
-private:
-  // Don't let the compiler slip in copy and assignment construction
-  PointToPointNetDevice(const PointToPointNetDevice&);
-  PointToPointNetDevice&operator=(const PointToPointNetDevice&);
-
 public:
   bool Attach(PointToPointChannel* ch);
   void AddQueue(Queue*);

@@ -21,6 +21,7 @@ core.add_sources([
     'debug.cc',
     'assert.cc',
     'ptr.cc',
+    'object.cc',
     'test.cc',
     'random-variable.cc',
     'rng-stream.cc',
@@ -44,6 +45,7 @@ core.add_inst_headers([
     'reference-list.h',
     'callback.h',
     'ptr.h',
+    'object.h',
     'debug.h',
     'assert.h',
     'fatal-error.h',
@@ -65,8 +67,6 @@ def config_core (env, config):
         retval.append ('#undef HAVE_GETENV')
     return retval
 core.add_config (config_core)
-
-
 
 #
 # The Simu module
