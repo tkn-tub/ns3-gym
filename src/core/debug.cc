@@ -34,7 +34,14 @@ namespace ns3 {
 typedef std::list<std::pair <std::string, DebugComponent *> > ComponentList;
 typedef std::list<std::pair <std::string, DebugComponent *> >::iterator ComponentListI;
 
-static ComponentList g_components;
+static 
+ComponentList *GetComponentList (void)
+{
+  static ComponentList components;
+  return &components;
+}
+
+
 static bool g_firstDebug = true;
 
 void
@@ -67,8 +74,9 @@ DebugComponentEnableEnvVar (void)
           break;
         }
       bool found = false;
-      for (ComponentListI i = g_components.begin ();
-           i != g_components.end ();
+      ComponentList *components = GetComponentList ();
+      for (ComponentListI i = components->begin ();
+           i != components->end ();
            i++)
         {
           if (i->first.compare (tmp) == 0)
@@ -99,13 +107,14 @@ DebugComponentEnableEnvVar (void)
 DebugComponent::DebugComponent (char const * name)
   : m_isEnabled (false)
 {
-  for (ComponentListI i = g_components.begin ();
-       i != g_components.end ();
+  ComponentList *components = GetComponentList ();
+  for (ComponentListI i = components->begin ();
+       i != components->end ();
        i++)
     {
       NS_ASSERT (i->first != name);
     }
-  g_components.push_back (std::make_pair (name, this));
+  components->push_back (std::make_pair (name, this));
 }
 bool 
 DebugComponent::IsEnabled (void)
@@ -130,8 +139,9 @@ DebugComponent::Disable (void)
 void 
 DebugComponentEnable (char const *name)
 {
-  for (ComponentListI i = g_components.begin ();
-       i != g_components.end ();
+  ComponentList *components = GetComponentList ();
+  for (ComponentListI i = components->begin ();
+       i != components->end ();
        i++)
     {
       if (i->first.compare (name) == 0) 
@@ -144,8 +154,9 @@ DebugComponentEnable (char const *name)
 void 
 DebugComponentDisable (char const *name)
 {
-  for (ComponentListI i = g_components.begin ();
-       i != g_components.end ();
+  ComponentList *components = GetComponentList ();
+  for (ComponentListI i = components->begin ();
+       i != components->end ();
        i++)
     {
       if (i->first.compare (name) == 0) 
@@ -160,8 +171,9 @@ DebugComponentDisable (char const *name)
 void 
 DebugComponentPrintList (void)
 {
-  for (ComponentListI i = g_components.begin ();
-       i != g_components.end ();
+  ComponentList *components = GetComponentList ();
+  for (ComponentListI i = components->begin ();
+       i != components->end ();
        i++)
     {
       std::cout << i->first << "=" << (i->second->IsEnabled ()?"enabled":"disabled") << std::endl;
