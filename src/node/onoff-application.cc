@@ -37,7 +37,7 @@ using namespace std;
 namespace ns3 {
 
 // Defaults for rate/size
-DataRate OnOffApplication::g_defaultRate = DataRate(500000.0);
+DataRate OnOffApplication::g_defaultRate = DataRate(500000);
 uint32_t OnOffApplication::g_defaultSize = 512;
 
 #define nil 0

@@ -64,7 +64,7 @@ public:
   virtual void MaxBytes(uint32_t m) { m_maxBytes = m;}
 
 public: // Static methods
-  static void DefaultRate(double r) { g_defaultRate = r;}
+  static void DefaultRate(uint64_t r) { g_defaultRate = r;}
 
   static void DefaultSize(uint32_t s) { g_defaultSize = s;}
 
