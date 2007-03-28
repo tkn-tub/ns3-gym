@@ -271,24 +271,13 @@ node.add_inst_headers ([
     ])
 
 p2p = build.Ns3Module ('p2p', 'src/devices/p2p')
-#ns3.add (p2p)
-p2p.add_deps (['node'])
-p2p.add_sources ([
-    'p2p-net-device.cc',
-    'p2p-channel.cc',
-    ])
-p2p.add_inst_headers ([
-    'p2p-net-device.h',
-    'p2p-channel.h',
-    ])
-
-p2p = build.Ns3Module ('p2p', 'src/devices/p2p')
 ns3.add (p2p)
 p2p.add_deps (['node'])
 p2p.add_sources ([
     'p2p-net-device.cc',
     'p2p-channel.cc',
     'p2p-topology.cc',
+    'p2p-ipv4-interface.cc',
     ])
 p2p.add_headers ([
     'propagator.h',
@@ -297,6 +286,7 @@ p2p.add_inst_headers ([
     'p2p-net-device.h',
     'p2p-channel.h',
     'p2p-topology.h',
+    'p2p-ipv4-interface.h',
     ])
 
 
