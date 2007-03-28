@@ -24,6 +24,7 @@
 #include "ns3/composite-trace-resolver.h"
 
 #include "net-device-list.h"
+#include "application-list.h"
 #include "l3-demux.h"
 #include "ipv4-l4-demux.h"
 #include "internet-node.h"
@@ -45,6 +46,7 @@ InternetNode::InternetNode()
 {
   // Instantiate the capabilities
   m_netDevices = new NetDeviceList();
+  m_applicationList = new ApplicationList();
   m_l3Demux = new L3Demux(this);
   m_ipv4L4Demux = new Ipv4L4Demux(this);
   m_l3Demux->Insert (Ipv4 (this));
@@ -56,6 +58,7 @@ InternetNode::InternetNode()
 InternetNode::InternetNode (InternetNode const &o)
 {
   m_netDevices = new NetDeviceList ();
+  m_applicationList = new ApplicationList();
   m_l3Demux = o.m_l3Demux->Copy (this);
   m_ipv4L4Demux = o.m_ipv4L4Demux->Copy (this);
   SetupLoopback ();  
@@ -64,6 +67,7 @@ InternetNode const &
 InternetNode::operator = (InternetNode const &o)
 {
   delete m_netDevices;
+  delete m_applicationList;
   delete m_l3Demux;
   delete m_ipv4L4Demux;
   m_netDevices = new NetDeviceList ();
@@ -76,6 +80,7 @@ InternetNode::operator = (InternetNode const &o)
 InternetNode::~InternetNode ()
 {
   delete m_netDevices;
+  delete m_applicationList;
   delete m_l3Demux;
   delete m_ipv4L4Demux;
 }
@@ -127,6 +132,12 @@ InternetNode::GetNetDeviceList() const
 {
   return m_netDevices;
 }
+
+ApplicationList* 
+InternetNode::GetApplicationList() const
+{ 
+  return m_applicationList;
+} 
 
 L3Demux*     
 InternetNode::GetL3Demux() const

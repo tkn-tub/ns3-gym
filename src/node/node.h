@@ -86,15 +86,20 @@
 
 namespace ns3 {
 
+class NodeList;
+
+class NetDeviceList;
+class ApplicationList;
+
+// The below five may be encapsulated/abstracted in a Kernel or Stack class
 class L3Demux;
 class Ipv4L4Demux;
-class NetDeviceList;
 class Ipv4;
 class Udp;
 class Arp;
+
 class TraceContext;
 class TraceResolver;
-class NodeList;
 
 class Node {
 friend class NodeList;
@@ -168,6 +173,7 @@ public:
   virtual L3Demux*         GetL3Demux() const;
   virtual Ipv4L4Demux*     GetIpv4L4Demux() const;
   virtual NetDeviceList*   GetNetDeviceList() const;
+  virtual ApplicationList* GetApplicationList() const;
   virtual Ipv4 *           GetIpv4 (void) const;
   virtual Udp *            GetUdp (void) const;
   virtual Arp *            GetArp (void) const;

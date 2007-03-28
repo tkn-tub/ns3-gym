@@ -68,6 +68,7 @@
 #include "ns3/object-container.h"
 #include "ns3/p2p-topology.h"
 #include "ns3/onoff-application.h"
+#include "ns3/application-list.h"
 #include "ns3/random-variable.h"
 
 using namespace ns3;
@@ -265,6 +266,13 @@ int main (int argc, char *argv[])
   sink1->Bind (80);
 
 #ifdef NOTYET
+  // The arguments to ApplicationTCPSend constructor are the IPAddress
+  // of the server, port number for the server, and a random variable
+  // specifying the amount of data to send.
+  OnOffApplication* ooff = n1->GetApplicationList()->
+    Add(OnOffApplication(*n0, Ipv4Address("10.1.2.2"), 
+  80, ConstantVariable(1), ConstantVariable(0), 1000, 210));
+
   // This is functional and could soon replace the above DatagramSockets,
   // but needs tuning
   OnOffApplication* ooff = new OnOffApplication(*n0, Ipv4Address("10.1.2.2"), 

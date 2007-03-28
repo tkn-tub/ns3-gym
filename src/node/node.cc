@@ -124,6 +124,11 @@ Node::GetIpv4L4Demux() const
   return 0;
 }
 
+ApplicationList* Node::GetApplicationList() const
+{
+  return 0;
+}
+
 NetDeviceList*
 Node::GetNetDeviceList() const
 {

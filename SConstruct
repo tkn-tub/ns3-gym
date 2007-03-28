@@ -204,8 +204,10 @@ node.add_sources ([
     'udp-end-point.cc',
     'datagram-socket.cc',
     'udp.cc',
+    'capability.cc',
     'arp-header.cc',
     'application.cc',
+    'application-list.cc',
     'onoff-application.cc',
     'arp-cache.cc',
     'arp-ipv4-interface.cc',
@@ -226,6 +228,7 @@ node.add_headers ([
     'udp.h',
     'ipv4-l4-protocol.h',
     'application.h',
+    'application-list.h',
     'onoff-application.h',
     'arp-header.h',
     'arp-cache-cache.h',
@@ -259,7 +262,9 @@ node.add_inst_headers ([
     'udp-header.h',
     'channel.h',
     'node-list.h',
+    'capability.h',
     'application.h',
+    'application-list.h',
     'onoff-application.h',
     ])
 
