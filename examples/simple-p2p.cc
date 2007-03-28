@@ -186,7 +186,7 @@ int main (int argc, char *argv[])
   PointToPointTopology::AddPointToPointLink (
       n0, Ipv4Address("10.1.1.1"), 
       n2, Ipv4Address("10.1.1.2"), 
-      5000000, MilliSeconds(2));
+      DataRate(5000000), MilliSeconds(2));
   
   PointToPointTopology::AddPointToPointLink (
       n1, Ipv4Address("10.1.2.1"), 
