@@ -119,10 +119,11 @@ DebugComponent::DebugComponent (char const * name)
 bool 
 DebugComponent::IsEnabled (void)
 {
-  if (g_firstDebug) {
-    DebugComponentEnableEnvVar ();
-    g_firstDebug = false;
-  }
+  if (g_firstDebug) 
+    {
+      DebugComponentEnableEnvVar ();
+      g_firstDebug = false;
+    }
   return m_isEnabled;
 }
 void 
