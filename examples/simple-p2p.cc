@@ -33,8 +33,9 @@
 // - CBR/UDP flows from n0 to n3, and from n3 to n1
 // - FTP/TCP flow from n0 to n3, starting at time 1.2 to time 1.35 sec.
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
+//   (i.e., DataRate of 448,000 bps)
 // - DropTail queues 
-// - Tracing of queues and packet receptions to file "out.tr"
+// - Tracing of queues and packet receptions to file "simple-p2p.tr"
 
 #include <iostream>
 #include <fstream>
@@ -65,7 +66,6 @@
 #include "ns3/udp-header.h"
 #include "ns3/node-list.h"
 #include "ns3/trace-root.h"
-#include "ns3/object-container.h"
 #include "ns3/p2p-topology.h"
 #include "ns3/onoff-application.h"
 #include "ns3/application-list.h"
@@ -148,58 +148,6 @@ AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
   m_os << std::endl;  
 }
 
-
-static void
-GenerateTraffic (DatagramSocket *socket, uint32_t size)
-{
-  std::cout << "Node: " << socket->GetNode()->GetId () 
-            << " at=" << Simulator::Now ().GetSeconds () << "s,"
-            << " tx bytes=" << size << std::endl;
-  socket->SendDummy (size);
-  if (size > 50)
-    {
-      Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
-    }
-}
-
-static void
-DatagramSocketPrinter (DatagramSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
-{
-  std::cout << "Node: " << socket->GetNode()->GetId () 
-            << " at=" << Simulator::Now ().GetSeconds () << "s,"
-            << " rx bytes=" << size << std::endl;
-}
-
-static void
-PrintTraffic (DatagramSocket *socket)
-{
-  socket->SetDummyRxCallback (MakeCallback (&DatagramSocketPrinter));
-}
-
-#if 0
-static void
-PrintRoutingTable (InternetNode *a, std::string name)
-{
-  Ipv4 *ipv4 = a->GetIpv4 ();
-  std::cout << "interfaces node="<<name<<std::endl;
-  for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++)
-    {
-      Ipv4Interface *interface = ipv4->GetInterface (i);
-      std::cout << "interface addr="<<interface->GetAddress () 
-                << ", netmask="<<interface->GetNetworkMask ()
-                << std::endl;
-    }
-
-  std::cout << "routing table:" << std::endl;
-  for (uint32_t i = 0; i < ipv4->GetNRoutes (); i++)
-    {
-      Ipv4Route *route = ipv4->GetRoute (i);
-      std::cout << (*route) << std::endl;
-    }
-  std::cout << "node end" << std::endl;
-}
-#endif
-
 int main (int argc, char *argv[])
 {
 #if 0
@@ -210,7 +158,6 @@ int main (int argc, char *argv[])
   DebugComponentEnable("PointToPointChannel");
   DebugComponentEnable("PointToPointNetDevice");
 #endif
-  ObjectContainer container;
 
   // Optionally, specify some default values for Queue objects.
   // For this example, we specify that we want each queue to
@@ -218,7 +165,7 @@ int main (int argc, char *argv[])
   // Specify DropTail for default queue type (note. this is actually
   // the default, but included here as an example).
   Queue::Default(DropTailQueue());
-  // Specify limit of 30 in units of packets.
+  // Specify limit of 30 in units of packets (not implemented).
   //  Queue::Default().SetLimitPackets(30);
 
   // The node factory is designed to allow user specification
@@ -236,83 +183,64 @@ int main (int argc, char *argv[])
   Node* n2 = Node::Create(); 
   Node* n3 = Node::Create(); 
 
-  PointToPointChannel* ch1;
-  ch1 = PointToPointTopology::AddPointToPointLink (
+  PointToPointTopology::AddPointToPointLink (
       n0, Ipv4Address("10.1.1.1"), 
       n2, Ipv4Address("10.1.1.2"), 
       5000000, MilliSeconds(2));
   
-  PointToPointChannel* ch2;
-  ch2 = PointToPointTopology::AddPointToPointLink (
+  PointToPointTopology::AddPointToPointLink (
       n1, Ipv4Address("10.1.2.1"), 
       n2, Ipv4Address("10.1.2.2"), 
       DataRate(5000000), MilliSeconds(2));
 
-  PointToPointChannel* ch3;
-  ch3 = PointToPointTopology::AddPointToPointLink (
+  PointToPointTopology::AddPointToPointLink (
       n2, Ipv4Address("10.1.3.1"), 
       n3, Ipv4Address("10.1.3.2"), 
       DataRate(1500000), MilliSeconds(10));
   
-  // To Do:
-  // avoid "new" calls, instead use application list
-  // OnOffSink
-  // use of rate and time objects
-  DatagramSocket *source0 = new DatagramSocket (n0);
-  DatagramSocket *source3 = new DatagramSocket (n3);
-  DatagramSocket *sink3 = new DatagramSocket(n3);
-  sink3->Bind (80);
-  DatagramSocket *sink1 = new DatagramSocket(n1);
-  sink1->Bind (80);
+  // Create the OnOff application to send UDP datagrams of size
+  // 210 bytes at a rate of 448 Kb/s
+  OnOffApplication* ooff0 = new OnOffApplication(
+    *n0, 
+    Ipv4Address("10.1.3.2"), 
+    80, 
+    ConstantVariable(1), 
+    ConstantVariable(0), 
+    DataRate(448000), 
+    210);
+  // Add to Node's ApplicationList (takes ownership of pointer)
+  n0->GetApplicationList()->Add(ooff0);
+  // Start the application
+  ooff0->Start(Seconds(1.0));
 
-#ifdef NOTYET
-  // The arguments to ApplicationTCPSend constructor are the IPAddress
-  // of the server, port number for the server, and a random variable
-  // specifying the amount of data to send.
-  OnOffApplication* ooff = n1->GetApplicationList()->
-    Add(OnOffApplication(*n0, Ipv4Address("10.1.2.2"), 
-  80, ConstantVariable(1), ConstantVariable(0), 1000, 210));
-
-  // This is functional and could soon replace the above DatagramSockets,
-  // but needs tuning
-  OnOffApplication* ooff = new OnOffApplication(*n0, Ipv4Address("10.1.2.2"), 
-  80, ConstantVariable(1), ConstantVariable(0), 1000, 210);
-  container.Acquire (ooff);
-  ooff->Start(Seconds(1.0));
-#endif
-
-  container.Acquire (source0);
-  container.Acquire (source3);
-  container.Acquire (sink3);
-  container.Acquire (sink1);
-
-  source3->SetDefaultDestination (Ipv4Address ("10.1.2.1"), 80);
-  source0->SetDefaultDestination (Ipv4Address ("10.1.3.2"), 80);
+  // Create a similar flow from n3 to n1, starting at time 1.1 seconds
+  OnOffApplication* ooff1 = new OnOffApplication(
+    *n3, 
+    Ipv4Address("10.1.2.1"), 
+    80, 
+    ConstantVariable(1), 
+    ConstantVariable(0), 
+    DataRate(448000), 
+    210);
+  // Add to Node's ApplicationList (takes ownership of pointer)
+  n3->GetApplicationList()->Add(ooff1);
+  // Start the application
+  ooff1->Start(Seconds(1.1));
 
   // Here, finish off packet routing configuration
+  // This will likely set by some global StaticRouting object in the future
   n0->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
   n3->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
 
+  // Configure tracing of all enqueue, dequeue, and NetDevice receive events
+  // Trace output will be sent to the simple-p2p.tr file
   AsciiTrace trace ("simple-p2p.tr");
   trace.TraceAllQueues ();
   trace.TraceAllNetDeviceRx ();
-
-  PrintTraffic (sink3);
-  GenerateTraffic (source0, 100);
-
-  PrintTraffic (sink1);
-  GenerateTraffic (source3, 100);
 
   Simulator::StopAt (Seconds(10.0));
 
   Simulator::Run ();
     
-  // The below deletes will be managed by future topology objects
-  // or containers or smart pointers
-
   Simulator::Destroy ();
-
-  ch1->Unref ();
-  ch2->Unref ();
-  ch3->Unref ();
 }

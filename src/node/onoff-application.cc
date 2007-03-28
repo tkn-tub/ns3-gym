@@ -26,6 +26,7 @@
 #include "node.h"
 #include "node-reference.h"
 #include "ns3/nstime.h"
+#include "ns3/data-rate.h"
 #include "onoff-application.h"
 #include "ns3/random-variable.h"
 #include "datagram-socket.h"
@@ -36,7 +37,7 @@ using namespace std;
 namespace ns3 {
 
 // Defaults for rate/size
-double   OnOffApplication::g_defaultRate = 500000.0;
+DataRate OnOffApplication::g_defaultRate = DataRate(500000.0);
 uint32_t OnOffApplication::g_defaultSize = 512;
 
 #define nil 0
@@ -48,7 +49,7 @@ uint32_t OnOffApplication::g_defaultSize = 512;
                                      uint16_t       rport, // Remote port
                                      const  RandomVariable& ontime,
                                      const  RandomVariable& offtime,
-                                     double   rate,
+                                     DataRate  rate,
                                      uint32_t size)
     :  Application(n), 
       m_socket(nil),      // Socket allocated on Start
@@ -179,7 +180,7 @@ void OnOffApplication::StopApplication()     // Called at time specified by Stop
       m_sendScheduled = false;
       // Calculate residual bits since last packet sent
       Time delta(Simulator::Now() - m_lastStartTime);
-      m_residualBits += (uint32_t)(m_cbrRate * delta.GetSeconds());
+      m_residualBits += (uint32_t)(m_cbrRate.GetBitRate() * delta.GetSeconds());
     }
 }
 
@@ -192,7 +193,9 @@ OnOffApplication* OnOffApplication::Copy() const
 void OnOffApplication::StartSending()
 {
   m_startStopScheduled = true;
-  ScheduleNextTx();  // Schedule the send packet event
+// commented out by tomh-- I think you want to start sending immediately
+//  ScheduleNextTx();  // Schedule the send packet event
+  SendPacket();
 }
 
 void OnOffApplication::StopSending()
@@ -207,7 +210,8 @@ void OnOffApplication::ScheduleNextTx()
   if (m_totBytes < m_maxBytes)
     {
       uint32_t bits = m_pktSize * 8 - m_residualBits;
-      Time nextTime(Seconds (bits / m_cbrRate)); // Time till next packet
+      Time nextTime(Seconds (bits / 
+        static_cast<double>(m_cbrRate.GetBitRate()))); // Time till next packet
       Simulator::Schedule(nextTime, &OnOffApplication::SendPacket, this);
     }
   else

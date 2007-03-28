@@ -49,6 +49,12 @@ ApplicationList* ApplicationList::Copy(Node& n) const
   return r;
 }
 
+void
+ApplicationList::Add(Application* a)
+{
+  m_apps.Add(a);
+}
+
 void ApplicationList::SetNode(Node& n)
 {
   Capability::SetNode(n);

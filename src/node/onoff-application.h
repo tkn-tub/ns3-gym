@@ -37,6 +37,7 @@ namespace ns3 {
 class Ipv4Address;
 class RandomVariable;
 class DatagramSocket;
+class DataRate;
 
 class OnOffApplication : public Application {
 
@@ -46,7 +47,7 @@ public:
                    uint16_t,           // Peer port
                    const RandomVariable&,     // Random variable for On time
                    const RandomVariable&,     // Random variable for Off time
-                   double   = g_defaultRate,  // Data rate when on
+                   DataRate  = g_defaultRate,  // Data rate when on
                    uint32_t = g_defaultSize);  // Size of packets
 
   OnOffApplication(const Node& n, const OnOffApplication&); // Copy constructor
@@ -68,13 +69,13 @@ public: // Static methods
   static void DefaultSize(uint32_t s) { g_defaultSize = s;}
 
 public:
-  DatagramSocket*         m_socket;       // Associated socket
+  DatagramSocket* m_socket;       // Associated socket
   Ipv4Address     m_peerIP;       // Peer IP address
   uint16_t        m_peerPort;     // Peer port
   bool            m_connected;    // True if connected
   RandomVariable* m_onTime;       // rng for On Time
   RandomVariable* m_offTime;      // rng for Off Time
-  double          m_cbrRate;      // Rate that data is generated
+  DataRate        m_cbrRate;      // Rate that data is generated
   uint32_t        m_pktSize;      // Size of packets
   uint32_t        m_residualBits; // Number of generated, but not sent, bits
   Time            m_lastStartTime;// Time last packet sent
@@ -87,7 +88,7 @@ public:
   bool            m_sending;      // True if currently in sending state
   
 public:
-  static double   g_defaultRate;  // Default sending rate when on
+  static DataRate   g_defaultRate;  // Default sending rate when on
   static uint32_t g_defaultSize;  // Default packet size
 
 private:

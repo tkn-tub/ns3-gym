@@ -39,8 +39,9 @@ public:
   // Inherited from Capabilty
   virtual ApplicationList* Copy(Node&) const;
   virtual void SetNode(Node&);              // Sets the node for all apps
+  virtual void Add(Application*);      // Add an already new'ed app
   // Manage the list
-  template <typename T> T* Add(const T& t)  // Add a new application
+  template <typename T> T* AddCopy(const T& t)  // Add a new application
   {
     T* a = t.Copy();
     m_apps.Add(a);
