@@ -103,7 +103,7 @@ DebugComponent::DebugComponent (char const * name)
        i != g_components.end ();
        i++)
     {
-      NS_ASSERT (i->first.compare (name) != 0);
+      NS_ASSERT (i->first != name);
     }
   g_components.push_back (std::make_pair (name, this));
 }
