@@ -81,6 +81,7 @@ public:
   void TraceAllQueues (void);
   void TraceAllNetDeviceRx (void);
 private:
+  void PrintType (Packet const &p);
   void LogDevQueue (TraceContext const &context, const Packet &p);
   void LogDevRx (TraceContext const &context, Packet &p);
   std::ofstream m_os;
@@ -107,8 +108,46 @@ AsciiTrace::TraceAllNetDeviceRx (void)
                       MakeCallback (&AsciiTrace::LogDevRx, this));
 }
 
+void
+AsciiTrace::PrintType (Packet const &packet)
+{
+  Packet p = packet;
+  LlcSnapHeader llc;
+  p.Peek (llc);
+  p.Remove (llc);
+  switch (llc.GetType ())
+    {
+    case 0x0800: {
+      Ipv4Header ipv4;
+      p.Peek (ipv4);
+      p.Remove (ipv4);
+      if (ipv4.GetProtocol () == 17)
+        {
+          UdpHeader udp;
+          p.Peek (udp);
+          p.Remove (udp);
+          m_os << "udp size=" << p.GetSize ();
+        }
+    } break;
+    case 0x0806: {
+      ArpHeader arp;
+      p.Peek (arp);
+      p.Remove (arp);
+      m_os << "arp ";
+      if (arp.IsRequest ())
+        {
+          m_os << "request";
+        }
+      else
+        {
+          m_os << "reply ";
+        }
+    } break;
+    }
+} 
+
 void 
-AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &p)
+AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
 {
   enum Queue::TraceType type;
   context.Get (type);
@@ -131,7 +170,8 @@ AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &p)
   Ipv4::InterfaceIndex interfaceIndex;
   context.Get (interfaceIndex);
   m_os << "interface=" << interfaceIndex << " ";
-  m_os << "pkt-uid=" << p.GetUid () << " ";
+  m_os << "pkt-uid=" << packet.GetUid () << " ";
+  PrintType (packet);
   m_os << std::endl;
 }
 void 
@@ -145,6 +185,7 @@ AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
   context.Get (interfaceIndex);
   m_os << "interface=" << interfaceIndex << " ";
   m_os << "pkt-uid=" << p.GetUid () << " ";
+  PrintType (p);
   m_os << std::endl;  
 }
 
