@@ -55,7 +55,9 @@ public:
    * be invoked before ns3::PcapWriter::writePacket and after
    * ns3::PcapWriter::open.
    */
-  void WriteHeaderEthernet (void);
+  void WriteEthernetHeader (void);
+
+  void WriteIpHeader (void);
 
   /**
    * \param packet packet to write to output file
@@ -66,6 +68,7 @@ private:
   void WriteData (uint8_t *buffer, uint32_t size);
   void Write32 (uint32_t data);
   void Write16 (uint16_t data);
+  void WriteHeader (uint32_t network);
   SystemFile *m_writer;
   Callback<void,uint8_t *,uint32_t> m_writeCallback;
 };
