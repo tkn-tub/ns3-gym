@@ -36,6 +36,11 @@ namespace ns3 {
 class Queue;
 class PointToPointChannel;
 
+/**
+ * \brief A duplex link
+ *
+ * XXX: Add small description of model implemented in this subclass of NetDevice.
+ */
 class PointToPointNetDevice : public NetDevice {
 public:
   enum TraceType {
@@ -50,6 +55,10 @@ public:
 
   PointToPointNetDevice& operator= (PointToPointNetDevice nd);
 
+  /**
+   * \param bps the number of bits per second
+   *        which this interface can achieve.
+   */
   void SetDataRate(DataRate bps);
   void SetInterframeGap(Time t);
   
