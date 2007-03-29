@@ -240,7 +240,8 @@ PointToPointNetDevice::TransmitCompleteEvent (void)
   NS_ASSERT(m_txMachineState == BUSY && "Must be BUSY if transmitting");
   m_txMachineState = GAP;
   Packet p;
-  bool found = m_queue->Dequeue (p);
+  bool found;
+  found = m_queue->Dequeue (p);
   NS_ASSERT(found && "Packet must be on queue if transmitted");
   NS_DEBUG ("PointToPointNetDevice::TransmitCompleteEvent (): Pkt UID is " << 
             p.GetUid () << ")");
@@ -275,7 +276,8 @@ PointToPointNetDevice::TransmitReadyEvent (void)
   else
     {
       Packet p;
-      bool found = m_queue->Peek (p);
+      bool found;
+      found = m_queue->Peek (p);
       NS_ASSERT(found && "IsEmpty false but no Packet on queue?");
       TransmitStart (p);
     }

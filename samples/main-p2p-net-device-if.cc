@@ -180,7 +180,8 @@ int main (int argc, char *argv[])
 
   NS_DEBUG_UNCOND("Adding ARP Interface to InternetNode a");
   ArpIpv4Interface* arpipv4interfacep = new ArpIpv4Interface(&a, &neta);
-  uint32_t indexA = (&a)->GetIpv4 ()->AddInterface (arpipv4interfacep);
+  uint32_t indexA;
+  indexA = (&a)->GetIpv4 ()->AddInterface (arpipv4interfacep);
   NS_DEBUG_UNCOND("Adding Interface " << indexA);
 
 
@@ -200,7 +201,8 @@ int main (int argc, char *argv[])
 
   NS_DEBUG_UNCOND("Adding ARP Interface to InternetNode b");
   ArpIpv4Interface* arpipv4interfacepb = new ArpIpv4Interface(&b, &netb);
-  uint32_t indexB = (&b)->GetIpv4 ()->AddInterface (arpipv4interfacepb);
+  uint32_t indexB;
+  indexB = (&b)->GetIpv4 ()->AddInterface (arpipv4interfacepb);
   NS_DEBUG_UNCOND("Adding Interface " << indexB);
 
 
