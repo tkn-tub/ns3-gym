@@ -25,6 +25,11 @@
 #include <algorithm>
 
 
+/**
+ * \defgroup randomvariable Random Variable Distributions
+ *
+ */
+
 #define INFINITE_VALUE 1e307
 namespace ns3{
 
@@ -67,6 +72,7 @@ public:
 
 /**
  * \brief The basic RNG for NS-3.
+ * \ingroup randomvariable
  *
  * Note: The underlying random number generation method used
  * by NS-3 is the RngStream code by Pierre L'Ecuyer at
@@ -214,6 +220,7 @@ protected:
 
 /**
  * \brief The uniform distribution RNG for NS-3.
+ * \ingroup randomvariable
  */
 class UniformVariable : public RandomVariable {
 public:
@@ -244,6 +251,7 @@ private:
 
 /**
  * \brief A random variable that returns a constant
+ * \ingroup randomvariable
  *
  * Class ConstantVariable defines a random number generator that
  * returns the same value every sample.
@@ -284,6 +292,7 @@ private:
 
 /**
  * \brief Return a sequential list of values
+ * \ingroup randomvariable
  *
  * Class SequentialVariable defines a random number generator that
  * returns a sequential sequence.  The sequence monotonically
@@ -337,6 +346,7 @@ private:
 
 /**
  * \brief Exponentially Distributed random var
+ * \ingroup randomvariable
  *
  * ExponentialVariable defines a random variable with an exponential distribution
  */
@@ -381,6 +391,7 @@ private:
 
 /**
  * \brief ParetoVariable distributed random var
+ * \ingroup randomvariable
  */
 class ParetoVariable : public RandomVariable { // 
 public:
@@ -433,6 +444,7 @@ private:
 
 /**
  * \brief WeibullVariable distributed random var
+ * \ingroup randomvariable
  */
 class WeibullVariable : public RandomVariable {
 public:
@@ -485,8 +497,9 @@ private:
 };
 
 /**
- * Class NormalVariable defines a random variable with a
+ * \brief Class NormalVariable defines a random variable with a
  * normal (Gaussian) distribution.
+ * \ingroup randomvariable
  */
 class NormalVariable : public RandomVariable { // Normally Distributed random var
 
@@ -534,6 +547,7 @@ public:
 
 /**
  * \brief EmpiricalVariable distribution random var
+ * \ingroup randomvariable
  *
  * Defines a random variable  that has a specified, empirical 
  * distribution.  The distribution is specified by a
@@ -573,6 +587,9 @@ private:
 };
 
 /**
+ * \brief Integer-based empirical distribution
+ * \ingroup randomvariable
+ *
  * Defines an empirical distribution where all values are integers.
  * Indentical to EmpiricalVariable, but with slightly different
  * interpolation between points.
@@ -591,11 +608,14 @@ public:
 };
 
 /**
-  * Defines a random variable  that has a specified, predetermined
-  * sequence.  This would be useful when trying to force
-  * the RNG to return a known sequence, perhaps to
-  * compare NS-3 to some other simulator
-  */
+ * \brief a non-random variable
+ * \ingroup randomvariable
+ *
+ * Defines a random variable  that has a specified, predetermined
+ * sequence.  This would be useful when trying to force
+ * the RNG to return a known sequence, perhaps to
+ * compare NS-3 to some other simulator
+ */
 class DeterministicVariable : public RandomVariable {
 
 public:
