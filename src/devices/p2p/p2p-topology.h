@@ -34,27 +34,43 @@ class IPAddr;
 class DataRate;
 class Queue;
 //class Time;
-  
+
+/**
+ * \brief A helper class to create Topologies based on the ns3::PointToPointNetDevice and 
+ *        ns3::PointToPointChannel objects.
+ *
+ * XXX ??
+ * I think that some of the methods below are not implemented.
+ * If so, remove them.
+ */
 class PointToPointTopology {
 public:
-  // Manage point to point links
-
-  // Add a full-duplex point-to-point link between two nodes
-  // with the specified IP addresses,  with specified maximum transmission rate
-  // and propagation delay.
+  /** 
+   * Add a full-duplex point-to-point link between two nodes
+   * with the specified IP addresses,  with specified maximum transmission rate
+   * and propagation delay.
+   */
   static PointToPointChannel* AddPointToPointLink(
     Node*, const Ipv4Address&, 
     Node*, const Ipv4Address&,
     const DataRate&,
     const Time&);
 
-  // Get the connecting node n1 to node n2
+  /**
+   * Get the connecting node n1 to node n2
+   */
   static PointToPointChannel* GetChannel(Node*, Node*);
-  // Get the NetDevice connecting node n1 to n2
+  /**
+   * Get the NetDevice connecting node n1 to n2
+   */
   static PointToPointNetDevice* GetNetDevice(Node*, Node*);
-  /// Get the queue associated with a link between two nodes
+  /**
+   * Get the queue associated with a link between two nodes
+   */
   static Queue* GetQueue(Node*, Node*);
-  // Set the queue associated with a link between two nodes
+  /**
+   * Set the queue associated with a link between two nodes
+   */
   static Queue* SetQueue(Node*, Node*, const Queue&);
 };
 
