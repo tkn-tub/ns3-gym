@@ -24,8 +24,9 @@
  * http://wiki.ethereal.com/Development/LibpcapFileFormat
  */
 
+#include <fstream>
+
 #include "ns3/simulator.h"
-#include "ns3/system-file.h"
 #include "pcap-writer.h"
 #include "packet.h"
 
@@ -50,8 +51,8 @@ PcapWriter::~PcapWriter ()
 void
 PcapWriter::Open (std::string const &name)
 {
-  m_writer = new SystemFile ();
-  m_writer->Open (name.c_str ());
+  m_writer = new std::ofstream ();
+  m_writer->open (name.c_str ());
 }
 
 void 
@@ -99,24 +100,24 @@ PcapWriter::WritePacket (Packet const packet)
       Write32 (us & 0xffffffff);
       Write32 (packet.GetSize ());
       Write32 (packet.GetSize ());
-  	m_writer->Write (packet.PeekData (), packet.GetSize ());
+      WriteData (packet.PeekData (), packet.GetSize ());
     }
 }
 
 void
-PcapWriter::WriteData (uint8_t *buffer, uint32_t size)
+PcapWriter::WriteData (uint8_t const*buffer, uint32_t size)
 {
-  m_writer->Write (buffer, size);
+  m_writer->write ((char const *)buffer, size);
 }
 void
 PcapWriter::Write32 (uint32_t data)
 {
-  m_writer->Write ((uint8_t*)&data, 4);
+  WriteData ((uint8_t*)&data, 4);
 }
 void
 PcapWriter::Write16 (uint16_t data)
 {
-  m_writer->Write ((uint8_t*)&data, 2);
+  WriteData((uint8_t*)&data, 2);
 }
 
 }; // namespace ns3

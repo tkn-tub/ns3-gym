@@ -28,8 +28,6 @@
 
 namespace ns3 {
 
-class SystemFile;
-
 /**
  * \brief Pcap output for Packet logger
  *
@@ -67,11 +65,11 @@ public:
   void WritePacket (Packet const packet);
 
 private:
-  void WriteData (uint8_t *buffer, uint32_t size);
+  void WriteData (uint8_t const*buffer, uint32_t size);
   void Write32 (uint32_t data);
   void Write16 (uint16_t data);
   void WriteHeader (uint32_t network);
-  SystemFile *m_writer;
+  std::ofstream *m_writer;
   Callback<void,uint8_t *,uint32_t> m_writeCallback;
 };
 
