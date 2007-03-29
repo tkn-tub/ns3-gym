@@ -48,10 +48,10 @@ PcapWriter::~PcapWriter ()
 }
 
 void
-PcapWriter::Open (char const *name)
+PcapWriter::Open (std::string const &name)
 {
   m_writer = new SystemFile ();
-  m_writer->Open (name);
+  m_writer->Open (name.c_str ());
 }
 
 void 

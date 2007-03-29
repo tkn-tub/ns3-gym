@@ -46,7 +46,7 @@ public:
    * This method creates the file if it does not exist. If it
    * exists, the file is emptied.
    */
-  void Open (char const *name);
+  void Open (std::string const &name);
 
   /**
    * Write a pcap header in the output file which specifies

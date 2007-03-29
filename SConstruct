@@ -219,6 +219,7 @@ node.add_sources ([
     'channel.cc',
     'node-list.cc',
     'ascii-trace.cc',
+    'pcap-trace.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
@@ -266,6 +267,7 @@ node.add_inst_headers ([
     'application-list.h',
     'onoff-application.h',
     'ascii-trace.h',
+    'pcap-trace.h',
     ])
 
 p2p = build.Ns3Module ('p2p', 'src/devices/p2p')
