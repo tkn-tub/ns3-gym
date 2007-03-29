@@ -59,6 +59,8 @@ public:
 
   void WriteIpHeader (void);
 
+  void WriteWifiHeader (void);
+
   /**
    * \param packet packet to write to output file
    */

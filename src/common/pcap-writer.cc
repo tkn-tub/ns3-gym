@@ -35,6 +35,7 @@ namespace ns3 {
 enum {
   PCAP_ETHERNET = 1,
   PCAP_RAW_IP   = 101,
+  PCAP_80211    = 105,
 };
 
 PcapWriter::PcapWriter ()
@@ -63,6 +64,12 @@ void
 PcapWriter::WriteIpHeader (void)
 {
   WriteHeader (PCAP_RAW_IP);
+}
+
+void
+PcapWriter::WriteWifiHeader (void)
+{
+  WriteHeader (PCAP_80211);
 }
 
 void 
