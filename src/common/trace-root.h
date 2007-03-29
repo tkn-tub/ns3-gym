@@ -25,10 +25,9 @@
 #include "ns3/callback.h"
 
 /**
- * \defgroup tracing Tracing
+ * \defgroup lowleveltracing Low-level tracing
  *
- * The low-level tracing framework is built around a few very simple
- * concepts:
+ * This low-level API is built around a few concepts:
  *   - There can be any number of trace source objects. Each trace source
  *     object can generate any number of trace events. The current
  *     trace source objects are: ns3::CallbackTraceSourceSource, ns3::UVTraceSource,
@@ -41,27 +40,78 @@
  *     a trace sink which is connected to multiple trace sources to identify
  *     from which source each event is coming from.
  *
- * To allow the user to connect his own trace sinks to each trace source
- * defined by any of the models he is using, the tracing framework defines
- * a hierarchical namespace. The root of this namespace is accessed through
- * the ns3::TraceRoot class. The namespace is represented as a string made
- * of multiple elements, each of which is separated from the other elements
- * by the '/' character. A namespace string always starts with a '/'.
+ * To define new trace sources, a model author needs to instante one trace source
+ * object for each kind of tracing event he wants to export. The trace source objects
+ * currently defined are:
+ *  - ns3::CallbackTraceSourceSource: this trace source can be used to convey any kind of 
+ *    trace event to the user. It is a functor, that is, it is a variable
+ *    which behaves like a function which will forward every event to every
+ *    connected trace sink (i.e., ns3::Callback). This trace source takes
+ *    up to four arguments and forwards these 4 arguments together with the
+ *    ns3::TraceContext which identifies this trace source to the connected
+ *    trace sinks.
+ *  - ns3::UVTraceSource: this trace source is used to convey key state variable
+ *    changes to the user. It behaves like a normal integer unsigned variable:
+ *    you can apply every normal arithmetic operator to it. It will forward
+ *    every change in the value of the variable back to every connected trace 
+ *    sink by providing a TraceContext, the old value and the new value.
+ *  - ns3::SVTraceSource: this is the signed integer equivalent of 
+ *    ns3::UVTraceSource.
+ *  - ns3::FVTraceSource: this is the floating point equivalent of 
+ *    ns3::UVTraceSource and ns3::SVTraceSource.
  *
- * By default, the simulation models provide a '/nodes' tracing root. This
- * '/nodes' namespace is structured as follows:
+ * For example, to define a trace source which notifies you of a new packet
+ * being transmitted, you would have to:
  * \code
+ * class MyModel
+ * {
+ *  public:
+ *   void Tx (Packet const &p);
+ *  private:
+ *   CallbackTraceSource<Packet const &> m_txTrace;
+ * };
+ *
+ * void
+ * MyModel::Tx (Packet const &p)
+ * {
+ *   // trace packet tx event.
+ *   m_txTrace (p);
+ *   // ... send the packet for real.
+ * }
+ * \endcode
+ *
+ * Once the model author has instantiated these objects and has wired them 
+ * in his simulation code (that is, he calls them wherever he wants to trigger 
+ * a trace event), he needs to make these trace sources available to users
+ * to allow them to connect any number of trace sources to any number
+ * of user trace sinks. While it would be possible to make each model
+ * export directly each of his trace source instances and request users to
+ * invoke a source->Connect (callback) method to perform the connection
+ * explicitely, it was felt that this was a bit cumbersome to do.
+ *
+ * As such, the ``connection'' between a set of sources and a sink is 
+ * performed through a third-party class, the TraceResolver, which
+ * can be used to automate the connection of multiple matching trace sources
+ * to a single sink. This TraceResolver works by defining a hierarchical 
+ * tracing namespace: the root of this namespace is accessed through the 
+ * ns3::TraceRoot class. The namespace is represented as a string made of 
+ * multiple elements, each of which is separated from the other elements 
+ * by the '/' character. A namespace string always starts with a '/'.
+ * 
+ * By default, the current simulation models provide a '/nodes' tracing root. 
+ * This '/nodes' namespace is structured as follows:
+ * \code
+ *  /nodes/n/arp
  *  /nodes/n/udp
  *  /nodes/n/ipv4
  *               /tx
  *               /rx
  *               /drop
  *               /interfaces/n/netdevice
- *                 (NetDevice only)    /queue/
- *                                           /enque
- *                                           /deque
- *                                           /drop
- *  /nodes/n/arp
+ *                                      /queue/
+ *                                            /enque
+ *                                            /deque
+ *                                            /drop
  * \endcode
  *
  * The 'n' element which follows the /nodes and /interfaces namespace elements
@@ -120,57 +170,73 @@
  * }
  * \endcode
  *
- * To define new trace sources, a model author needs to instante one trace source
- * object for each kind of tracing event he wants to export. The trace source objects
- * currently defined are:
- *  - ns3::CallbackTraceSourceSource: this trace source can be used to convey any kind of 
- *    trace event to the user. It is a functor, that is, it is a variable
- *    which behaves like a function which will forward every event to every
- *    connected trace sink (i.e., ns3::Callback). This trace source takes
- *    up to four arguments and forwards these 4 arguments together with the
- *    ns3::TraceContext which identifies this trace source to the connected
- *    trace sinks.
- *  - ns3::UVTraceSource: this trace source is used to convey key state variable
- *    changes to the user. It behaves like a normal integer unsigned variable:
- *    you can apply every normal arithmetic operator to it. It will forward
- *    every change in the value of the variable back to every connected trace 
- *    sink by providing a TraceContext, the old value and the new value.
- *  - ns3::SVTraceSource: this is the signed integer equivalent of 
- *    ns3::UVTraceSource.
- *  - ns3::FVTraceSource: this is the floating point equivalent of 
- *    ns3::UVTraceSource and ns3::SVTraceSource.
+ * The hierarchical global namespace described here is not implemented
+ * in a single central location: it was felt that doing this would make
+ * it too hard to introduce user-specific models which could hook
+ * automatically into the overal tracing system. If the tracing
+ * namespace was implemented in a single central location, every model
+ * author would have had to modify this central component to make
+ * his own model available to trace users.
  *
- * Once the model author has instantiated these objects and has wired them
- * in his simulation code (that is, he calls them wherever he wants to
- * trigger a trace event), he needs to hook these trace sources into the
- * global tracing namespace. The first step to do this is to define a method
- * which returns a pointer to a ns3::TraceResolver object and which takes
- * as argument a reference to a const ns3::TraceContext. The name of this method
- * depends on how you will hook into the global tracing namespace. Before
- * we get there, you need to implement this method. To do this, you could
- * attempt to do everything by hand: define a subclass of the 
- * ns3::TraceResolver base class and implement its DoConnect, DoDisconnect
- * and DoLookup methods. Because doing this can be a bit tedious, our
- * tracing framework provides a number of helper template classes which
- * should save you from having to implement your own in most cases:
- *   - ns3::CompositeTraceResolver: this subclass of ns3::TraceResolver
- *     can be used to aggregate together multiple trace sources and
- *     multiple other ns3::TraceResolver instances.
- *   - ns3::ArrayTraceResolver: this subclass of ns3::TraceResolver
- *     can be used to match any number of elements within an array
- *     where every element is identified by its index.
+ * Instead, the handling of the namespace is distributed across every relevant
+ * model: every model implements only the part of the namespace it is
+ * really responsible for. To do this, every model is expected
+ * to provide an instance of a TraceResolver whose
+ * responsability is to recursively provide access to the trace sources
+ * defined in its model. Each TraceResolver instance should be a subclass
+ * of the TraceResolver base class which implements either the DoLookup
+ * or the DoConnect and DoDisconnect methods. Because implementing these
+ * methods can be a bit tedious, our tracing framework provides a number 
+ * of helper template classes which should save the model author from 
+ * having to implement his own in most cases:
+ *    - ns3::CompositeTraceResolver: this subclass of ns3::TraceResolver can 
+ *      be used to aggregate together multiple trace sources and multiple other 
+ *      ns3::TraceResolver instances.
+ *    - ns3::ArrayTraceResolver: this subclass of ns3::TraceResolver can be 
+ *      used to match any number of elements within an array where every element 
+ *      is identified by its index.
  *
- * Once you can instantiate your own ns3::TraceResolver object instance,
- * you have to hook it up into the global namespace. There are two ways 
- * to do this:
+ * Once you can instantiate your own ns3::TraceResolver object instance, you 
+ * have to hook it up into the global namespace. There are two ways to do this:
  *   - you can hook your ns3::TraceResolver creation method as a new trace 
  *     root by using the ns3::TraceRoot::Register method
- *   - you can hook your new ns3::TraceResolver creation method into 
- *     the container of your model.
- *     For example, if you wrote a new l3 protocol, all you have to do
- *     to hook into your container L3Demux class is to implement
- *     the pure virtual method inherited from the L3Protocol class
- *     whose name is ns3::L3protocol::CreateTraceResolver.
+ *   - you can hook your new ns3::TraceResolver creation method into the 
+ *     container of your model. This step will obvsiouly depend on which model
+ *     contains your own model but, if you wrote a new l3 protocol, all you
+ *     would have to do to hook into your container L3Demux class is to implement 
+ *     the pure virtual method inherited from the L3Protocol class whose name is 
+ *     ns3::L3protocol::CreateTraceResolver.
+ *
+ * So, in most cases, exporting a model's trace sources is a matter of 
+ * implementing a method CreateTraceResolver as shown below:
+ * \code
+ * class MyModel
+ * {
+ * public:
+ *   enum TraceType {
+ *    TX,
+ *    RX,
+ *    ...
+ *   };
+ *   TraceResolver *CreateTraceResolver (TraceContext const &context);
+ *   void Tx (Packet const &p);
+ * private:
+ *   CallbackTraceSource<Packet const &> m_txTrace;
+ * };
+ *
+ * TraceResolver *
+ * MyModel::CreateTraceResolver (TraceContext const &context)
+ * {
+ *   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+ *   resolver->Add ("tx", m_txTrace, MyModel::TX);
+ *   return resolver;
+ * }
+ * void 
+ * MyModel::Tx (Packet const &p)
+ * {
+ *   m_txTrace (p);
+ * }
+ * \endcode
  *
  * If you really want to have fun and implement your own ns3::TraceResolver 
  * subclass, you need to understand the basic Connection and Disconnection
@@ -189,38 +255,55 @@
  * the following call traces:
  *
  * \code
- * TraceRoot::Connect (/nodes/ * /ipv4/interfaces/ * /netdevice/queue/ *);
- * resolver = NodeList::CreateTraceResolver ();
- * resolver->Connect (/nodes/ * /ipv4/interfaces/ * /netdevice/queue/ *);
- * list = CompositeTraceResolver::DoLookup ('nodes');
- * resolver->Connect (/ * /ipv4/interfaces/ * /netdevice/queue/ *);
- * list = ArrayTraceResolver::DoLookup ('*');
- * resolver->Connect ('/ipv4/interfaces/ * /netdevice/queue/ *');
- * list = CompositeTraceResolver::DoLookup ('ipv4');
- * resolver->Connect ('/interfaces/ * /netdevice/queue/ *');
- * list = CompositeTraceResolver::DoLookup ('interfaces');
- * resolver->Connect ('/ * /netdevice/queue/ *');
- * list = ArrayTraceResolver::DoLookup ('*');
- * resolver->Connect ('/netdevice/queue/ *');
- * list = CompositeTraceResolver::DoLookup ('netdevice');
- * resolver->Connect ('/queue/ *');
- * list = CompositeTraceResolver::DoLookup ('queue');
- * resolver->Connect ('/ *');
- * list = CompositeTraceResolver::DoLookup ('*');
- * resolver->DoConnect ();
+ * TraceRoot::Connect ("/nodes/ * /ipv4/interfaces/ * /netdevice/queue/ *", callback);
+ * traceContext = TraceContext ();
+ * rootResolver = CompositeTraceResolver (traceContext);
+ * rootResolver->Connect ("/nodes/ * /ipv4/interfaces/ * /netdevice/queue/ *", callback);
+ *   resolver = CompositeTraceResolver::DoLookup ("nodes");
+ *     return NodeList::CreateTraceResolver (GetContext ());
+ *       return ArrayTraceResolver (context);
+ *   resolver->Connect ("/ * /ipv4/interfaces/ * /netdevice/queue/ *", callback);
+ *     ArrayTraceResolver::DoLookup ("*");
+ *       for (i = 0; i < n_nodes; i++)
+ *         resolver = nodes[i]->CreateTraceResolver (GetContext ());
+ *           return CompositeTraceResolver (context);
+ *         resolvers.add (resolver);
+ *       return resolvers;
+ *     for resolver in (resolvers)
+ *       resolver->Connect ("/ipv4/interfaces/ * /netdevice/queue/ *", callback);
+ *         CompositeTraceResolver::DoLookup ("ipv4");
+ *           resolver = ipv4->CreateTraceResolver (GetContext ());
+ *             return CompositeTraceResolver (context);
+ *           return resolver;
+ *         resolver->Connect ("/interfaces/ * /netdevice/queue/ *", callback);
+ *           CompositeTraceResolver::DoLookup ("interfaces");
+ *             resolver = ArrayTraceResolver (GetContext ());
+ *           resolver->Connect ("/ * /netdevice/queue/ *", callback);
+ *             ArrayTraceResolver::DoLookup ("*");
+ *               for (i = 0; i < n_interfaces; i++)
+ *                  resolver = interfaces[i]->CreateTraceResolver (GetContext ());
+ *                    return CompositeTraceResolver ()
+ *                  resolvers.add (resolver);
+ *               return resolvers;
+ *             resolver->Connect ("/netdevice/queue/ *", callback);
+ *               CompositeTraceResolver::DoLookup ("netdevice");
+ *                 resolver = NetDevice::CreateTraceResolver (GetContext ());
+ *                   return CompositeTraceResolver ();
+ *                 return resolver;
+ *               resolver->Connect ("/queue/ *", callback);
+ *                 CompositeTraceResolver::DoLookup ("queue");
+ *                   resolver = Queue::CreateTraceResolver (GetContext ());
+ *                     return CompositeTraceResolver ();
+ *                   return resolver
+ *                 resolver->Connect ("*", callback);
+ *                   CompositeTraceResolver::DoLookup ("*");
+ *                     for match in (matches)
+ *                       resolver = TerminalTraceResolver ("match");
+ *                       resolvers.add (resolver)
+ *                     return resolvers;
+ *                   for resolver in (resolvers)
+ *                     TerminalTraceResolver->DoConnect (callback);
  * \endcode
- *
- * This namespace resolution algorithm makes sure that each subpart of the
- * namespace is resolved separately by each component. It allows you to
- * never have to know the entire namespace structure to resolve a namespace
- * string. All namespace knowledge is local which makes it very easy to plug
- * in new components and have them extend the global tracing namespace.
- *
- * What is central to this namespace parsing and resolution algorithm is the
- * construction of an ns3::TraceContext for each trace source during the 
- * connection process. The root trace context is intialized to be empty and
- * TraceResolver::DoLookup method is responsible for incrementally constructing
- * the TraceContext assigned to each terminal TraceSource object.
  */
 
 namespace ns3 {
@@ -234,7 +317,7 @@ class CallbackBase;
  * \brief The main class used to access tracing functionality for
  * a user.
  *
- * \ingroup tracing
+ * \ingroup lowleveltracing
  */
 class TraceRoot
 {

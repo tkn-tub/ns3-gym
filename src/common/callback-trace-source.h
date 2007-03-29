@@ -32,7 +32,7 @@ namespace ns3 {
 
 /**
  * \brief log arbitrary number of parameters to a matching ns3::Callback
- * \ingroup tracing
+ * \ingroup lowleveltracing
  *
  * Whenever operator () is invoked on this class, the call and its arguments
  * are forwarded to the internal matching ns3::Callback.

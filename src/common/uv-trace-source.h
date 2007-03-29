@@ -66,7 +66,7 @@ class SVTraceSource;
 
 /**
  * \brief trace variables of type "unsigned integer"
- * \ingroup tracing
+ * \ingroup lowleveltracing
  *
  * This template class implements a POD type: it
  * behaves like any other variable of type "unsigned integer"
