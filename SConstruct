@@ -32,15 +32,12 @@ if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] 
     core.add_external_dep('pthread')
     core.add_sources([
         'unix-system-wall-clock-ms.cc',
-        'unix-system-file.cc'
         ])
 elif env['PLATFORM'] == 'win32':
     core.add_sources([
         'win32-system-wall-clock-ms.cc',
-        'win32-system-file.cc'
         ])
 core.add_inst_headers([
-    'system-file.h',
     'system-wall-clock-ms.h',
     'reference-list.h',
     'callback.h',
