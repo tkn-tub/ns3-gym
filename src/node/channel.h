@@ -45,7 +45,18 @@ public:
   void SetName(std::string);
   std::string GetName(void);
 
+  /**
+   * \returns the number of NetDevices connected to this Channel.
+   *
+   * This method must be implemented by subclasses.
+   */
   virtual uint32_t GetNDevices (void) const = 0;
+  /**
+   * \param i index of NetDevice to retrieve
+   * \returns one of the NetDevices connected to this channel.
+   *
+   * This method must be implemented by subclasses.
+   */
   virtual NetDevice *GetDevice (uint32_t i) const = 0;
 
 protected:
