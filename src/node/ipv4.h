@@ -228,8 +228,8 @@ public:
   NetworkRoutes m_networkRoutes;
   Ipv4Route *m_defaultRoute;
   Node *m_node;
-  CallbackTraceSource<Packet const &> m_txTrace;
-  CallbackTraceSource<Packet const &> m_rxTrace;
+  CallbackTraceSource<Packet const &, uint32_t> m_txTrace;
+  CallbackTraceSource<Packet const &, uint32_t> m_rxTrace;
   CallbackTraceSource<Packet const &> m_dropTrace;
 };
 

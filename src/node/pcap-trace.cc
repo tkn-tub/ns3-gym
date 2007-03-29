@@ -50,7 +50,7 @@ PcapTrace::~PcapTrace ()
 void 
 PcapTrace::TraceAllIp (void)
 {
-  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/(tx|rx)",
+  TraceRoot::Connect ("/nodes/*/ipv4/(tx|rx)",
 		      MakeCallback (&PcapTrace::LogIp, this));
 }
 
@@ -80,13 +80,11 @@ PcapTrace::GetStream (uint32_t nodeId, uint32_t interfaceId)
 }
 
 void 
-PcapTrace::LogIp (TraceContext const &context, Packet &p)
+PcapTrace::LogIp (TraceContext const &context, Packet const &p, uint32_t interfaceIndex)
 {
   NodeList::NodeIndex nodeIndex;
   context.Get (nodeIndex);
   uint32_t nodeId = NodeList::GetNode (nodeIndex)->GetId ();
-  Ipv4::InterfaceIndex interfaceIndex;
-  context.Get (interfaceIndex);
   PcapWriter *writer = GetStream (nodeId, interfaceIndex);
   writer->WritePacket (p);
 }
