@@ -61,6 +61,9 @@ PointToPointNetDevice::~PointToPointNetDevice()
       m_channel->Unref ();
       m_channel = 0;
     }
+
+  delete m_queue;
+  m_queue = 0;
 }
 
 //
@@ -136,7 +139,7 @@ PointToPointNetDevice::SendTo (Packet& p, const MacAddress& dest)
   NS_DEBUG ("PointToPointNetDevice::SendTo (" << &p << ", " << &dest << ")");
   NS_DEBUG ("PointToPointNetDevice::SendTo (): UID is " << p.GetUid () << ")");
 
-  assert (IsLinkUp ());
+  NS_ASSERT (IsLinkUp ());
 
 #ifdef NOTYET
     struct NetDevicePacketDestAddress tag;
@@ -206,14 +209,15 @@ PointToPointNetDevice::SendTo (Packet& p, const MacAddress& dest)
 PointToPointNetDevice::TransmitStart (Packet &p)
 {
   NS_DEBUG ("PointToPointNetDevice::TransmitStart (" << &p << ")");
-  NS_DEBUG ("PointToPointNetDevice::TransmitStart (): UID is " << p.GetUid () << ")");
+  NS_DEBUG (
+    "PointToPointNetDevice::TransmitStart (): UID is " << p.GetUid () << ")");
 //
 // This function is called to start the process of transmitting a packet.
 // We need to tell the channel that we've started wiggling the wire and
 // schedule an event that will be executed when it's time to tell the 
 // channel that we're done wiggling the wire.
 //
-  NS_ASSERT(m_txMachineState == READY && "Must be READY to transmit");
+  NS_ASSERT_MSG(m_txMachineState == READY, "Must be READY to transmit");
   m_txMachineState = BUSY;
   Time tEvent = Seconds (m_bps.CalculateTxTime(p.GetSize()));
 
@@ -237,12 +241,12 @@ PointToPointNetDevice::TransmitCompleteEvent (void)
 // schedule an event that will be executed when it's time to re-enable
 // the transmitter after the interframe gap.
 //
-  NS_ASSERT(m_txMachineState == BUSY && "Must be BUSY if transmitting");
+  NS_ASSERT_MSG(m_txMachineState == BUSY, "Must be BUSY if transmitting");
   m_txMachineState = GAP;
   Packet p;
   bool found;
   found = m_queue->Dequeue (p);
-  NS_ASSERT(found && "Packet must be on queue if transmitted");
+  NS_ASSERT_MSG(found, "Packet must be on queue if transmitted");
   NS_DEBUG ("PointToPointNetDevice::TransmitCompleteEvent (): Pkt UID is " << 
             p.GetUid () << ")");
   m_channel->TransmitEnd (p, this); 
@@ -266,7 +270,7 @@ PointToPointNetDevice::TransmitReadyEvent (void)
 // gap has passed.  If there are pending transmissions, we use this opportunity
 // to start the next transmit.
 //
-  NS_ASSERT(m_txMachineState == GAP && "Must be in interframe gap");
+  NS_ASSERT_MSG(m_txMachineState == GAP, "Must be in interframe gap");
   m_txMachineState = READY;
 
   if (m_queue->IsEmpty())
@@ -278,7 +282,7 @@ PointToPointNetDevice::TransmitReadyEvent (void)
       Packet p;
       bool found;
       found = m_queue->Peek (p);
-      NS_ASSERT(found && "IsEmpty false but no Packet on queue?");
+      NS_ASSERT_MSG(found, "IsEmpty false but no Packet on queue?");
       TransmitStart (p);
     }
 }
