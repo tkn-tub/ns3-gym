@@ -169,6 +169,12 @@ NetDevice::CreateTraceResolver (TraceContext const &context)
   return DoCreateTraceResolver (context);
 }
 
+Channel *
+NetDevice::GetChannel (void) const
+{
+  return DoGetChannel ();
+}
+
 // Receive packet from below
 bool
 NetDevice::ForwardUp (Packet& packet)

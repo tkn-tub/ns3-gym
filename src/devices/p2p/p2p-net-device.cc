@@ -350,8 +350,8 @@ PointToPointNetDevice::GetQueue(void) const
     return m_queue;
 }
 
-PointToPointChannel* 
-PointToPointNetDevice::GetChannel(void) const 
+Channel* 
+PointToPointNetDevice::DoGetChannel(void) const 
 { 
     return m_channel;
 }

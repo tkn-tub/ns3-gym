@@ -33,8 +33,8 @@
 
 namespace ns3 {
 
-class PointToPointChannel;
 class Queue;
+class PointToPointChannel;
 
 class PointToPointNetDevice : public NetDevice {
 public:
@@ -60,7 +60,6 @@ public:
 
 protected:
   Queue* GetQueue(void) const; 
-  PointToPointChannel* GetChannel(void) const;
 
 private:
   virtual bool SendTo (Packet& p, const MacAddress& dest);
@@ -70,6 +69,8 @@ private:
   void TransmitReadyEvent (void);
 
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
+  virtual Channel *DoGetChannel(void) const;
+
 
   enum TxMachineState
     {

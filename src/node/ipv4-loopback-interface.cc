@@ -27,40 +27,8 @@
 
 namespace ns3 {
 
-class Ipv4DummyNetDevice : public NetDevice
-{
-public:
-  Ipv4DummyNetDevice (Node *node);
-  Node *PeekNode (void) const;
-private:
-  virtual bool SendTo (Packet& p, const MacAddress& dest);
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
-};
-
-Ipv4DummyNetDevice::Ipv4DummyNetDevice (Node *node)
-  : NetDevice (node, MacAddress ())
-{
-  SetMtu (10000);
-}
-Node *
-Ipv4DummyNetDevice::PeekNode (void) const
-{
-  return GetNode ();
-}
-bool 
-Ipv4DummyNetDevice::SendTo (Packet& p, const MacAddress& dest)
-{
-  return false;
-}
-TraceResolver *
-Ipv4DummyNetDevice::DoCreateTraceResolver (TraceContext const &context)
-{
-  return new EmptyTraceResolver (context);
-}
-
-
 Ipv4LoopbackInterface::Ipv4LoopbackInterface (Node *node)
-  : Ipv4Interface (new Ipv4DummyNetDevice (node)),
+  : Ipv4Interface (0),
     m_node (node)
 {
 }
