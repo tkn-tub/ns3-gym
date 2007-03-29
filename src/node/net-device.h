@@ -57,10 +57,18 @@ class NetDevice {
  public:
   /**
    * \param node base class node pointer of device's node 
+   * \param addr MAC address of this device.
    */
   NetDevice(Node* node, const MacAddress& addr);
   virtual ~NetDevice() {}
 
+  /**
+   * \param context the trace context to use to construct the
+   *        TraceResolver to return
+   * \returns a TraceResolver which can resolve all traces
+   *          performed in this object. The caller must
+   *          delete the returned object.
+   */
   TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   /**
