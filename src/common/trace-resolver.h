@@ -32,7 +32,7 @@ class CallbackBase;
 /**
  * \brief the base class which is used to incremental perform trace
  *        namespace resolution.
- * \ingroup tracing
+ * \ingroup lowleveltracing
  *
  * This class provides a public API to the ns3::TraceRoot object:
  *   - ns3::TraceResolver::Connect
