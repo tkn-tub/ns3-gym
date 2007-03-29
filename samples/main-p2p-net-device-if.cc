@@ -21,6 +21,7 @@
 #include <list>
 #include <cassert>
 #endif
+#include <fstream>
 
 #include "ns3/debug.h"
 #include "ns3/internet-node.h"
@@ -29,7 +30,6 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/p2p-channel.h"
 #include "ns3/p2p-net-device.h"
-#include "ns3/trace-writer.h"
 #include "ns3/drop-tail.h"
 #include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4.h"
@@ -42,23 +42,13 @@
 
 using namespace ns3;
 
-class Logger : public TraceWriter{
+class Logger {
 public:
-  Logger ()
-  {
-    NS_DEBUG_UNCOND("**** Logger()");
-  }
 
   Logger (std::string const &filename) 
   {
+    m_filestr.open (filename.c_str ());
     NS_DEBUG_UNCOND("**** Logger(string const &)");
-    Open(filename);
-  }
-
-  Logger (char const *filename) : m_tracer(filename)
-  {
-    NS_DEBUG_UNCOND("**** Logger(char const *)");
-    Open(filename);
   }
 
   ~Logger () {}
@@ -89,7 +79,7 @@ public:
   }
 
 protected:
-  TraceWriter m_tracer;
+  std::ofstream m_filestr;;
 };
 
 static void
