@@ -534,17 +534,6 @@ private:
   double m_next;      // The algorithm produces two values at a time
 };
 
-// Value/CDF pair class for Emiprical Distributions
-//Doc:ClassXRef
-class ValueCDF {
-public:
-  ValueCDF();
-  ValueCDF(double v, double c);
-  ValueCDF(const ValueCDF& c);
-  double value;
-  double    cdf;
-};
-
 /**
  * \brief EmpiricalVariable distribution random var
  * \ingroup randomvariable
@@ -580,6 +569,14 @@ public:
   virtual void CDF(double v, double c);  // Value, prob <= Value
 
 private:
+  class ValueCDF {
+  public:
+    ValueCDF();
+    ValueCDF(double v, double c);
+    ValueCDF(const ValueCDF& c);
+    double value;
+    double    cdf;
+  };
   virtual void Validate();  // Insure non-decreasing emiprical values
   virtual double Interpolate(double, double, double, double, double);
   bool validated; // True if non-decreasing validated

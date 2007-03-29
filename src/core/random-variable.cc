@@ -445,11 +445,11 @@ RandomVariable* NormalVariable::Copy() const
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // ValueCDF methods
-ValueCDF::ValueCDF() 
+EmpiricalVariable::ValueCDF::ValueCDF() 
   : value(0.0), cdf(0.0){ }
-ValueCDF::ValueCDF(double v, double c) 
+EmpiricalVariable::ValueCDF::ValueCDF(double v, double c) 
   : value(v), cdf(c) { }
-ValueCDF::ValueCDF(const ValueCDF& c) 
+EmpiricalVariable::ValueCDF::ValueCDF(const ValueCDF& c) 
   : value(c.value), cdf(c.cdf) { }
 
 //-----------------------------------------------------------------------------
