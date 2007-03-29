@@ -35,6 +35,9 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
+/**
+ * \brief L4 Ipv4 Demux
+ */
 class Ipv4L4Demux {
 public:
   typedef int Ipv4L4ProtocolTraceType;

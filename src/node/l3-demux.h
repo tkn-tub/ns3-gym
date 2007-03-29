@@ -36,22 +36,60 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
+/**
+ * \brief L3 Demux 
+ */
 class L3Demux
 {
 public:
   typedef int ProtocolTraceType;
   L3Demux(Node *node);
   virtual ~L3Demux();
+
+  /**
+   * \param node the node on which the returned copy will run.
+   * \returns a deep copy of this L3 Demux.
+   */
   L3Demux* Copy(Node *node) const;
 
+  /**
+   * \param context the trace context to use to construct the
+   *        TraceResolver to return
+   * \returns a TraceResolver which can resolve all traces
+   *          performed in this object. The caller must
+   *          delete the returned object.
+   */
   TraceResolver *CreateTraceResolver (TraceContext const &context);
 
-  // Insert a new protocol
-  ns3::L3Protocol* Insert(const ns3::L3Protocol&);
-  // Look up a protocol by protocol number
+
+  /**
+   * \param protocol a template for the protocol to add to this L3 Demux.
+   * \returns the L3Protocol effectively added.
+   *
+   * Invoke Copy on the input template to get a copy of the input
+   * protocol which can be used on the Node on which this L3 Demux 
+   * is running. The new L3Protocol is registered internally as
+   * a working L3 Protocol and returned from this method.
+   * The caller does not get ownership of the returned pointer.
+   */
+  ns3::L3Protocol* Insert(const ns3::L3Protocol& protocol);
+  /**
+   * \param protocolNumber number of protocol to lookup
+   *        in this L4 Demux
+   * \returns a matching L3 Protocol
+   *
+   * This method is typically called by lower layers
+   * to forward packets up the stack to the right protocol.
+   * It is also called from InternetNode::GetIpv4 for example.
+   */
   ns3::L3Protocol* Lookup(int);
-  // Erase an entry
-  void        Erase(ns3::L3Protocol*);
+  /**
+   * \param protocol protocol to remove from this demux.
+   *
+   * The input value to this method should be the value
+   * returned from the L3Protocol::Insert method.
+   */
+  void Erase(ns3::L3Protocol*protocol);
 private:
   typedef std::map<int, ns3::L3Protocol*> L3Map_t;
 
