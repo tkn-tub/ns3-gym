@@ -22,6 +22,7 @@
 #define FATAL_ERROR_H
 
 #include "assert.h"
+#include <iostream>
 
 /**
  * \defgroup error Error
