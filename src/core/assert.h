@@ -22,7 +22,7 @@
 #define ASSERT_H
 
 /**
- * \defgroup assert
+ * \defgroup assert Assert
  * \brief assert functions and macros
  *
  * The assert macros are used to verify

@@ -55,6 +55,6 @@
  * ns3 namespace.
  */
 /**
- * \defgroup constants
+ * \defgroup constants Constants
  * \brief Constants you can change
  */
