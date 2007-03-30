@@ -399,6 +399,7 @@ RandomVariable* WeibullVariable::Copy() const
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // NormalVariable methods
+const double NormalVariable::INFINITE_VALUE = 1e307;
 NormalVariable::NormalVariable() 
   : m_mean(0.0), m_variance(1.0), m_bound(INFINITE_VALUE), m_nextValid(false){}
 

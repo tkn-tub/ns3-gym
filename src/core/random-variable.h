@@ -30,7 +30,6 @@
  *
  */
 
-#define INFINITE_VALUE 1e307
 namespace ns3{
 
 class RngStream;
@@ -504,6 +503,7 @@ private:
 class NormalVariable : public RandomVariable { // Normally Distributed random var
 
 public:
+   static const double INFINITE_VALUE;
   /**
    * Constructs an normal random variable  with a mean
    * value of 0 and variance of 1.
