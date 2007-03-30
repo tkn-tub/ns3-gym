@@ -233,7 +233,6 @@ private:
    *
    * @see PointToPointChannel::TransmitEnd ()
    * @see TransmitReadyEvent ()
-   * @param p a reference to the packet to send
    * @returns true if success, false on failure
    */
   void TransmitCompleteEvent (void);
