@@ -201,7 +201,6 @@ class NetDevice {
 
   /**
    * \param p packet sent from below up to Network Device
-   * \param from source mac address of the sender 
    * \returns true if the packet was forwarded successfully,
    *          false otherwise.
    *

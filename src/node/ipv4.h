@@ -81,6 +81,7 @@ public:
   /**
    * \param dest destination address
    * \param nextHop address of next hop.
+   * \param interface interface of next hop.
    *
    * add route to host dest through host nextHop 
    * on interface.
