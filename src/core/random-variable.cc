@@ -37,54 +37,7 @@
 using namespace std;
 
 namespace ns3{
-// Seed methods
 
-Seed::~Seed()
-{
-}
-
-RandomSeed::RandomSeed()
-{
-}
-
-RandomSeed::~RandomSeed()
-{
-}
-
-bool RandomSeed::IsRandom() const 
-{
-  return true;
-}
-
-ConstantSeed::~ConstantSeed()
-{
-}
-
-bool ConstantSeed::IsRandom() const 
-{
-  return false;
-}
-
-ConstantSeed::ConstantSeed(uint32_t s)
-{
-  seeds[0] = s;
-  seeds[1] = s;
-  seeds[2] = s;
-  seeds[3] = s;
-  seeds[4] = s;
-  seeds[5] = s;
-}
-
-ConstantSeed::ConstantSeed(uint32_t s0, uint32_t s1, uint32_t s2,
-                           uint32_t s3, uint32_t s4, uint32_t s5)
-{
-  seeds[0] = s0;
-  seeds[1] = s1;
-  seeds[2] = s2;
-  seeds[3] = s3;
-  seeds[4] = s4;
-  seeds[5] = s5;
-}
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // RandomVariable methods
@@ -133,7 +86,8 @@ void RandomVariable::GetSeed(uint32_t seed[6])
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // RandomVariable static methods
-void RandomVariable::UseGlobalSeed(const Seed& s)
+void RandomVariable::UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2, 
+                                   uint32_t s3, uint32_t s4, uint32_t s5)
 {
   if (RandomVariable::globalSeedSet)
     {
@@ -141,16 +95,14 @@ void RandomVariable::UseGlobalSeed(const Seed& s)
       cout << "Call to RandomVariable::UseGlobalSeed() ignored" << endl;
       return;
     }
-  if (s.IsRandom()) return; // Random seed is the default
-  const ConstantSeed& cs = (ConstantSeed&)s;
-  RandomVariable::globalSeed[0] = cs.seeds[0];
-  RandomVariable::globalSeed[1] = cs.seeds[1];
-  RandomVariable::globalSeed[2] = cs.seeds[2];
-  RandomVariable::globalSeed[3] = cs.seeds[3];
-  RandomVariable::globalSeed[4] = cs.seeds[4];
-  RandomVariable::globalSeed[5] = cs.seeds[5];
+  RandomVariable::globalSeed[0] = s0;
+  RandomVariable::globalSeed[1] = s1;
+  RandomVariable::globalSeed[2] = s2;
+  RandomVariable::globalSeed[3] = s3;
+  RandomVariable::globalSeed[4] = s4;
+  RandomVariable::globalSeed[5] = s5;
   if (!RngStream::CheckSeed(RandomVariable::globalSeed))
-  	NS_FATAL_ERROR("Invalid seed");
+    NS_FATAL_ERROR("Invalid seed");
   
   RandomVariable::globalSeedSet = true;
 }
