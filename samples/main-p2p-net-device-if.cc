@@ -125,16 +125,12 @@ int main (int argc, char *argv[])
    
   PointToPointNetDevice neta(&a);
 
-  DropTailQueue dtqa;
-
-  neta.AddQueue(&dtqa);
+  neta.AddQueue(new DropTailQueue () );
   neta.SetName("a.eth0"); 
 
   PointToPointNetDevice netb(&b);
 
-  DropTailQueue dtqb;
-
-  netb.AddQueue(&dtqb);
+  neta.AddQueue(new DropTailQueue () );
   netb.SetName("b.eth0"); 
 
   // bind the two NetDevices together by using a simple Channel
