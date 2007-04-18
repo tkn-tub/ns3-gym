@@ -201,6 +201,9 @@ struct myTagC {
 struct myInvalidTag {
   uint8_t invalid [Tags::SIZE+1];
 };
+struct myTagZ {
+  uint8_t z;
+};
 
 static void 
 myTagAPrettyPrinterCb (struct myTagA const*a, std::ostream &os)
@@ -217,11 +220,18 @@ myTagCPrettyPrinterCb (struct myTagC const*c, std::ostream &os)
 {
   os << "struct myTagC, c="<<(uint32_t)c->c[0]<<std::endl;
 }
+static void 
+myTagZPrettyPrinterCb (struct myTagZ const*z, std::ostream &os)
+{
+  os << "struct myTagZ" << std::endl;
+}
 
 
 static TagRegistration<struct myTagA> gMyTagARegistration ("A", &myTagAPrettyPrinterCb);
 static TagRegistration<struct myTagB> gMyTagBRegistration ("B", &myTagBPrettyPrinterCb);
 static TagRegistration<struct myTagC> gMyTagCRegistration ("C", &myTagCPrettyPrinterCb);
+static TagRegistration<struct myTagZ> g_myTagZRegistration ("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", 
+                                                            &myTagZPrettyPrinterCb);
 
 
 TagsTest::TagsTest ()
@@ -317,6 +327,11 @@ TagsTest::RunTests (void)
 
   //struct myInvalidTag invalid;
   //tags.add (&invalid);
+
+  struct myTagZ tagZ;
+  Tags testLastTag;
+  testLastTag.Add (tagZ);
+  testLastTag.PrettyPrint (std::cout);
 
   return ok;
 }
