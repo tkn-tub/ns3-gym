@@ -59,8 +59,10 @@ TagRegistry::LookupUid (std::string uuid)
 void 
 TagRegistry::PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os)
 {
-  NS_ASSERT (m_registry.size () > uid);
-  PrettyPrinter prettyPrinter = m_registry[uid].second;
+  NS_ASSERT (uid > 0);
+  uint32_t index = uid - 1;
+  NS_ASSERT (m_registry.size () > index);
+  PrettyPrinter prettyPrinter = m_registry[index].second;
   if (prettyPrinter != 0) 
     {
   	prettyPrinter (buf, os);
@@ -223,7 +225,7 @@ myTagCPrettyPrinterCb (struct myTagC const*c, std::ostream &os)
 static void 
 myTagZPrettyPrinterCb (struct myTagZ const*z, std::ostream &os)
 {
-  os << "struct myTagZ" << std::endl;
+  //os << "struct myTagZ" << std::endl;
 }
 
 
