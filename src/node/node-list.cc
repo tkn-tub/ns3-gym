@@ -53,6 +53,7 @@ NodeList::GetNodes (void)
   if (firstTime)
     {
       TraceRoot::Register ("nodes", MakeCallback (&NodeList::CreateTraceResolver));
+      firstTime = false;
     }
   static std::vector<Node *> nodes;
   return &nodes;
