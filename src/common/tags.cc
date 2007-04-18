@@ -38,18 +38,18 @@ TagRegistry::LookupUid (std::string uuid)
 {
   if (!m_sorted) 
     {
-  	std::sort (m_registry.begin (), m_registry.end ());
-  	m_sorted = true;
+      std::sort (m_registry.begin (), m_registry.end ());
+      m_sorted = true;
     }
   NS_ASSERT (m_sorted);
   uint32_t uid = 1;
   for (TagsDataCI i = m_registry.begin (); i != m_registry.end (); i++) 
     {
-  	if (i->first == uuid) 
+      if (i->first == uuid) 
         {
-  		return uid;
+          return uid;
         }
-  	uid++;
+      uid++;
     }
   // someone asked for a uid for an unregistered uuid.
   NS_ASSERT (!"You tried to use unregistered tag: make sure you create an instance of type TagRegistration<YouTagType>.");
@@ -65,7 +65,7 @@ TagRegistry::PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &o
   PrettyPrinter prettyPrinter = m_registry[index].second;
   if (prettyPrinter != 0) 
     {
-  	prettyPrinter (buf, os);
+      prettyPrinter (buf, os);
     }
 }
 
