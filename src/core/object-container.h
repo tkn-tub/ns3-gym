@@ -29,18 +29,58 @@
 namespace ns3 {
 
 
+/**
+ * \brief Store objects for delayed deletion.
+ *
+ * This class can store any type of object provided it can be deleted.
+ * There is no requirement that the destructor of these objects be
+ * virtual. When the ObjectContainer::Cleanup method is invoked,
+ * all the objects still left in the container will be deleted.
+ * Alternatively, Cleanup is called automatically. when this object is
+ * destroyed.
+ */
 class ObjectContainer 
 {
 public:
+  /**
+   * Invoke ObjectContainer::Cleanup if the user has not invoked it
+   * himself.
+   */
   ~ObjectContainer ();
+  /**
+   * Delete all objects stored in this container.
+   */
   void Cleanup (void);
 
+  /**
+   * \param object object to store in the container.
+   *
+   * Take ownership of the input pointer: the object
+   * will be deleted when ObjectContainer::Cleanup is invoked.
+   */
   template <typename T>
   void Acquire (T *object);
 
+  /**
+   * \param object template of the object to store in the 
+   *        container.
+   *
+   * Invoke the Copy method of the input object. This method is
+   * expected to return a pointer of similar type and that
+   * pointer will be returned. Furthermore, the pointer will
+   * be stored internally to delete it when ObjectContainer::Cleanup
+   * is invoked.
+   */
   template <typename T>
   T *Add (T const &object);
 
+  /**
+   * \param object object to remove from container.
+   *
+   * Remove the object from the container: it will not
+   * be deleted when the ObjectContainer::Cleanup method
+   * is invoked.
+   */
   template <typename T>
   void Remove (T *object);
 

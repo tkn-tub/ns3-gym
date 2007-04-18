@@ -30,7 +30,7 @@ namespace ns3 {
 
 /**
  * \brief a helper class to offer trace resolution for an array of objects.
- * \ingroup tracing
+ * \ingroup lowleveltracing
  */
 template <typename T>
 class ArrayTraceResolver : public TraceResolver

@@ -1,0 +1,35 @@
+ns-3.0.1 snapshot release, March 2007
+
+1.  Tested platforms:
+
+- Windows XP 32-bit Cygwin
+
+- Linux Fedora Core 5 x86
+
+- OS X 10.4.7 or later with XCode 2.4 or later 
+
+2.  Prerequisites:
+
+- The SCons build system (http://www.scons.org) version 0.96.1 or later
+
+- gcc (version 3.4 or later)
+
+3.  Installing into your current directory:
+
+tar xvfz ns-3.0.1.tar.gz
+cd ns-3.0.1
+scons
+cd build-dir/dbg-shared/bin/
+./simple-p2p
+
+The above steps will run a simple program whose source is found in
+ns-3.0.1/examples/simple-p2p.cc
+Some minimal trace output is found in simple-p2p.tr.
+
+Note:  OS X users may need to set the following env. variable from
+the bin/ directory above:
+setenv DYLD_LIBRARY_PATH `pwd`/../lib
+
+4.  For more information, read
+ns-3.0.1-documentation.pdf
+ 

@@ -25,48 +25,18 @@
 #include <algorithm>
 
 
-#define INFINITE_VALUE 1e307
+/**
+ * \defgroup randomvariable Random Variable Distributions
+ *
+ */
+
 namespace ns3{
 
 class RngStream;
 
 /**
- * \brief Pure virtual base class for RNG seeds
- */
-class Seed {
-  // Seed is used to seed the random number generator(s)
-  // This is a base class for RandomSeed and ConstantSeed
-public:
-  virtual ~Seed();
-  virtual bool IsRandom() const = 0;
-};
-
-/**
- * \brief random RNG seeds
- */
-class RandomSeed : public Seed {
-public:
-  RandomSeed();
-  ~RandomSeed();
-  bool IsRandom() const;
-};
-
-/**
- * \brief constant RNG seeds
- */
-class ConstantSeed : public Seed 
-{
-public:
-  ConstantSeed(uint32_t); // Use six copies of the specified value
-  ConstantSeed(uint32_t,uint32_t,uint32_t,uint32_t,uint32_t,uint32_t);  // Six seeds
-  bool IsRandom() const;
-  ~ConstantSeed();
-public:
-  uint32_t seeds[6];
-};
-
-/**
  * \brief The basic RNG for NS-3.
+ * \ingroup randomvariable
  *
  * Note: The underlying random number generation method used
  * by NS-3 is the RngStream code by Pierre L'Ecuyer at
@@ -159,10 +129,16 @@ public:
    * UniformVariable x(2,3);     //these will give the same output everytime
    * ExponentialVariable y(120); //as long as the seed stays the same
    * \endcode
-   * \param s
+   * \param s0
+   * \param s1
+   * \param s2
+   * \param s3
+   * \param s4
+   * \param s5
    * \return True if seed is valid.
    */ 
-  static void UseGlobalSeed(const Seed& s);
+  static void UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2, 
+                            uint32_t s3, uint32_t s4, uint32_t s5);
   
   /**
    * \brief Set the run number of this simulation
@@ -178,7 +154,7 @@ public:
    * after the global seed is set, and before the creation of any
    * RandomVariables.  For example:
    * \code
-   * RandomVariable::UseGlobalSeed(ConstantSeed(1,2,3,4,5,6));
+   * RandomVariable::UseGlobalSeed(1,2,3,4,5,6);
    * int N = atol(argv[1]); //read in run number from command line
    * RandomVariable::SetRunNumber(N);
    * UniformVariable x(0,10);
@@ -214,6 +190,7 @@ protected:
 
 /**
  * \brief The uniform distribution RNG for NS-3.
+ * \ingroup randomvariable
  */
 class UniformVariable : public RandomVariable {
 public:
@@ -244,6 +221,7 @@ private:
 
 /**
  * \brief A random variable that returns a constant
+ * \ingroup randomvariable
  *
  * Class ConstantVariable defines a random number generator that
  * returns the same value every sample.
@@ -284,6 +262,7 @@ private:
 
 /**
  * \brief Return a sequential list of values
+ * \ingroup randomvariable
  *
  * Class SequentialVariable defines a random number generator that
  * returns a sequential sequence.  The sequence monotonically
@@ -337,6 +316,7 @@ private:
 
 /**
  * \brief Exponentially Distributed random var
+ * \ingroup randomvariable
  *
  * ExponentialVariable defines a random variable with an exponential distribution
  */
@@ -381,6 +361,7 @@ private:
 
 /**
  * \brief ParetoVariable distributed random var
+ * \ingroup randomvariable
  */
 class ParetoVariable : public RandomVariable { // 
 public:
@@ -433,6 +414,7 @@ private:
 
 /**
  * \brief WeibullVariable distributed random var
+ * \ingroup randomvariable
  */
 class WeibullVariable : public RandomVariable {
 public:
@@ -485,12 +467,14 @@ private:
 };
 
 /**
- * Class NormalVariable defines a random variable with a
+ * \brief Class NormalVariable defines a random variable with a
  * normal (Gaussian) distribution.
+ * \ingroup randomvariable
  */
 class NormalVariable : public RandomVariable { // Normally Distributed random var
 
 public:
+   static const double INFINITE_VALUE;
   /**
    * Constructs an normal random variable  with a mean
    * value of 0 and variance of 1.
@@ -521,19 +505,9 @@ private:
   double m_next;      // The algorithm produces two values at a time
 };
 
-// Value/CDF pair class for Emiprical Distributions
-//Doc:ClassXRef
-class ValueCDF {
-public:
-  ValueCDF();
-  ValueCDF(double v, double c);
-  ValueCDF(const ValueCDF& c);
-  double value;
-  double    cdf;
-};
-
 /**
  * \brief EmpiricalVariable distribution random var
+ * \ingroup randomvariable
  *
  * Defines a random variable  that has a specified, empirical 
  * distribution.  The distribution is specified by a
@@ -566,6 +540,14 @@ public:
   virtual void CDF(double v, double c);  // Value, prob <= Value
 
 private:
+  class ValueCDF {
+  public:
+    ValueCDF();
+    ValueCDF(double v, double c);
+    ValueCDF(const ValueCDF& c);
+    double value;
+    double    cdf;
+  };
   virtual void Validate();  // Insure non-decreasing emiprical values
   virtual double Interpolate(double, double, double, double, double);
   bool validated; // True if non-decreasing validated
@@ -573,6 +555,9 @@ private:
 };
 
 /**
+ * \brief Integer-based empirical distribution
+ * \ingroup randomvariable
+ *
  * Defines an empirical distribution where all values are integers.
  * Indentical to EmpiricalVariable, but with slightly different
  * interpolation between points.
@@ -591,11 +576,14 @@ public:
 };
 
 /**
-  * Defines a random variable  that has a specified, predetermined
-  * sequence.  This would be useful when trying to force
-  * the RNG to return a known sequence, perhaps to
-  * compare NS-3 to some other simulator
-  */
+ * \brief a non-random variable
+ * \ingroup randomvariable
+ *
+ * Defines a random variable  that has a specified, predetermined
+ * sequence.  This would be useful when trying to force
+ * the RNG to return a known sequence, perhaps to
+ * compare NS-3 to some other simulator
+ */
 class DeterministicVariable : public RandomVariable {
 
 public:

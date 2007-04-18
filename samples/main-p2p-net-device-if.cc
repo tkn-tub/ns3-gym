@@ -17,10 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#if 0
-#include <list>
-#include <cassert>
-#endif
+#include <fstream>
 
 #include "ns3/debug.h"
 #include "ns3/internet-node.h"
@@ -29,7 +26,6 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/p2p-channel.h"
 #include "ns3/p2p-net-device.h"
-#include "ns3/trace-writer.h"
 #include "ns3/drop-tail.h"
 #include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4.h"
@@ -42,23 +38,13 @@
 
 using namespace ns3;
 
-class Logger : public TraceWriter{
+class Logger {
 public:
-  Logger ()
-  {
-    NS_DEBUG_UNCOND("**** Logger()");
-  }
 
   Logger (std::string const &filename) 
   {
+    m_filestr.open (filename.c_str ());
     NS_DEBUG_UNCOND("**** Logger(string const &)");
-    Open(filename);
-  }
-
-  Logger (char const *filename) : m_tracer(filename)
-  {
-    NS_DEBUG_UNCOND("**** Logger(char const *)");
-    Open(filename);
   }
 
   ~Logger () {}
@@ -89,7 +75,7 @@ public:
   }
 
 protected:
-  TraceWriter m_tracer;
+  std::ofstream m_filestr;;
 };
 
 static void
@@ -139,16 +125,12 @@ int main (int argc, char *argv[])
    
   PointToPointNetDevice neta(&a);
 
-  DropTailQueue dtqa;
-
-  neta.AddQueue(&dtqa);
+  neta.AddQueue(new DropTailQueue () );
   neta.SetName("a.eth0"); 
 
   PointToPointNetDevice netb(&b);
 
-  DropTailQueue dtqb;
-
-  netb.AddQueue(&dtqb);
+  neta.AddQueue(new DropTailQueue () );
   netb.SetName("b.eth0"); 
 
   // bind the two NetDevices together by using a simple Channel
@@ -180,7 +162,8 @@ int main (int argc, char *argv[])
 
   NS_DEBUG_UNCOND("Adding ARP Interface to InternetNode a");
   ArpIpv4Interface* arpipv4interfacep = new ArpIpv4Interface(&a, &neta);
-  uint32_t indexA = (&a)->GetIpv4 ()->AddInterface (arpipv4interfacep);
+  uint32_t indexA;
+  indexA = (&a)->GetIpv4 ()->AddInterface (arpipv4interfacep);
   NS_DEBUG_UNCOND("Adding Interface " << indexA);
 
 
@@ -200,7 +183,8 @@ int main (int argc, char *argv[])
 
   NS_DEBUG_UNCOND("Adding ARP Interface to InternetNode b");
   ArpIpv4Interface* arpipv4interfacepb = new ArpIpv4Interface(&b, &netb);
-  uint32_t indexB = (&b)->GetIpv4 ()->AddInterface (arpipv4interfacepb);
+  uint32_t indexB;
+  indexB = (&b)->GetIpv4 ()->AddInterface (arpipv4interfacepb);
   NS_DEBUG_UNCOND("Adding Interface " << indexB);
 
 

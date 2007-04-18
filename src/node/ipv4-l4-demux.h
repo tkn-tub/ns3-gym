@@ -35,16 +35,57 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
+/**
+ * \brief L4 Ipv4 Demux
+ */
 class Ipv4L4Demux {
 public:
   typedef int Ipv4L4ProtocolTraceType;
   Ipv4L4Demux (Node *node);
   virtual ~Ipv4L4Demux();
+
+  /**
+   * \param node the node on which the returned copy will run.
+   * \returns a deep copy of this L4 Demux.
+   */
   Ipv4L4Demux* Copy(Node *node) const;
+
+  /**
+   * \param context the trace context to use to construct the
+   *        TraceResolver to return
+   * \returns a TraceResolver which can resolve all traces
+   *          performed in this object. The caller must
+   *          delete the returned object.
+   */
   TraceResolver *CreateTraceResolver (TraceContext const &context);
-  Ipv4L4Protocol* Insert(const Ipv4L4Protocol&);
+  /**
+   * \param protocol a template for the protocol to add to this L4 Demux.
+   * \returns the L4Protocol effectively added.
+   *
+   * Invoke Copy on the input template to get a copy of the input
+   * protocol which can be used on the Node on which this L4 Demux 
+   * is running. The new L4Protocol is registered internally as
+   * a working L4 Protocol and returned from this method.
+   * The caller does not get ownership of the returned pointer.
+   */
+  Ipv4L4Protocol* Insert(const Ipv4L4Protocol&protocol);
+  /**
+   * \param protocolNumber number of protocol to lookup
+   *        in this L4 Demux
+   * \returns a matching L4 Protocol
+   *
+   * This method is typically called by lower layers
+   * to forward packets up the stack to the right protocol.
+   * It is also called from InternetNode::GetUdp for example.
+   */
   Ipv4L4Protocol* Lookup(int protocolNumber);
-  void        Erase(Ipv4L4Protocol*);
+  /**
+   * \param protocol protocol to remove from this demux.
+   *
+   * The input value to this method should be the value
+   * returned from the Ipv4L4Protocol::Insert method.
+   */
+  void Erase(Ipv4L4Protocol*protocol);
 private:
   typedef std::list<Ipv4L4Protocol*> L4List_t;
   L4List_t m_protocols;

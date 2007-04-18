@@ -130,39 +130,38 @@ Ptr<T>::DeallocCount (uint32_t *count)
 
 template <typename T>
 Ptr<T>::Ptr ()
-  : m_ptr (0),
-    m_count (Ptr::AllocCount ())
+  : m_ptr (0)
 {}
 
 template <typename T>
 Ptr<T>::Ptr (T *ptr) 
-  : m_ptr (ptr),
-    m_count (Ptr::AllocCount ())
+  : m_ptr (ptr)
 {
   if (m_ptr != 0)
     {
+      m_count = Ptr::AllocCount ();
       *m_count = 1;
     }
 }
 
 template <typename T>
 Ptr<T>::Ptr (Ptr const&o) 
-  : m_ptr (o.m_ptr),
-    m_count (o.m_count)
+  : m_ptr (o.m_ptr)
 {
   if (m_ptr != 0) 
     {
+      m_count = o.m_count;
       (*m_count)++;
     }
 }
 template <typename T>
 template <typename U>
 Ptr<T>::Ptr (Ptr<U> const &o)
-  : m_ptr (o.m_ptr),
-    m_count (o.m_count)
+  : m_ptr (o.m_ptr)
 {
   if (m_ptr != 0) 
     {
+      m_count = o.m_count;
       (*m_count)++;
     }
 }
@@ -185,10 +184,8 @@ template <typename T>
 Ptr<T> &
 Ptr<T>::operator = (Ptr const& o) 
 {
-  if (o.m_ptr != 0) 
-    {
-      (*(o.m_count))++;
-    }
+  if (&o == this)
+    return *this;
   if (m_ptr != 0) 
     {
       (*m_count)--;
@@ -199,7 +196,11 @@ Ptr<T>::operator = (Ptr const& o)
         }
     }
   m_ptr = o.m_ptr;
-  m_count = o.m_count;
+  if (m_ptr != 0) 
+    {
+      m_count = o.m_count;
+      (*m_count)++;
+    }
   return *this;
 }
 
@@ -246,10 +247,18 @@ template <typename T>
 T *
 Ptr<T>::Remove (void) 
 {
-  NS_ASSERT ((*m_count) == 1);
-  T *retval = m_ptr;
-  m_ptr = 0;
-  return retval;
+  if (m_ptr == 0)
+    {
+      return (T *) 0;
+    }
+  else
+    {
+      NS_ASSERT ((*m_count) == 1);
+      Ptr::DeallocCount (m_count);
+      T *retval = m_ptr;
+      m_ptr = 0;
+      return retval;
+    }
 }
 
 // non-member friend functions.

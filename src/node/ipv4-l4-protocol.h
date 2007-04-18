@@ -33,18 +33,45 @@ class Packet;
 class Ipv4Address;
 class TraceResolver;
 class TraceContext;
-  
+
+/**
+ * \brief L4 Protocol base class 
+ *
+ * All subclasses must implement:
+ *   - Ipv4L4Protocol::Copy
+ *   - Ipv4L4Protocol::CreateTraceResolver
+ *
+ * If you want to implement a new L4 protocol, all you have to do is
+ * implement a subclass of this base class and add it to an L4Demux.
+ */  
 class Ipv4L4Protocol {
 public:
   Ipv4L4Protocol(int protocolNumber, int version);
   virtual ~Ipv4L4Protocol ();
 
+  /**
+   * \returns the protocol number of this protocol.
+   */
   int GetProtocolNumber (void) const;
+  /**
+   * \returns the version number of this protocol.
+   */
   int GetVersion() const;
 
+  /**
+   * \param node the node on which the copy should be running
+   * \returns a new instance of this L4 Protocol.
+   *
+   * Perform a deep copy of the L4 Protocol
+   */
   virtual Ipv4L4Protocol* Copy(Node *node) const = 0;
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context) = 0;
+
   /**
+   * \param p packet to forward up
+   * \param source source address of packet received
+   * \param destination address of packet received
+   * 
    * Called from lower-level layers to send the packet up
    * in the stack. 
    */

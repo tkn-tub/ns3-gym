@@ -1,0 +1,11 @@
+
+		ns-3 RELEASE NOTES
+
+This file contains ns-3  release notes (most recent releases first).
+
+Release 0.1 (2007/03/31)
+========================
+
+  - First public release; not yet pre-alpha.
+
+  - Simple UDP-based simulation script (examples/simple-p2p.cc)

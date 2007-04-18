@@ -53,7 +53,7 @@ public:
    * bind this socket to this port number on all
    * interfaces of this system.
    *
-   * return 0 on success, -1 on failure.
+   * \returns 0 on success, -1 on failure.
    */
   int Bind (void);
   /** 
@@ -61,7 +61,8 @@ public:
    * bind this socket to this port number on the
    * specified interface.
    *
-   * return 0 on success, -1 on failure.
+   * \param address address of interface to bind to.
+   * \returns 0 on success, -1 on failure.
    */
   int Bind (Ipv4Address address);
 
@@ -69,7 +70,8 @@ public:
    * Bind this socket to this port number
    * on all interfaces of this system.
    *
-   * return 0 on success, -1 on failure.
+   * \param port port to bind to on all interfaces
+   * \returns 0 on success, -1 on failure.
    */
   int Bind (uint16_t port); 
 
@@ -77,37 +79,66 @@ public:
    * Bind this socket to this port number
    * on the interface specified by address.
    *
-   * return 0 on success, -1 on failure.
+   * \param address address of interface to bind to.
+   * \param port port to bind to on specified interface
+   * \returns 0 on success, -1 on failure.
    */
   int Bind (Ipv4Address address, uint16_t port);
 
 
   /**
+   * \param daddr destination address
+   * \param dport destination port
+   * 
    * Set the default destination address and port
    * number for all packets outgoing from this socket.
    */
   void SetDefaultDestination (Ipv4Address daddr, uint16_t dport);
 
   /**
+   * \param size size of dummy data to send.
+   *
    * Send dummy data to default destination
    */
   void SendDummy (uint32_t size);
   /**
-   * Send dummy data to specified destination
+   * \param size size of dummy data to send
+   * \param daddr destination address of dummy data
+   * \param dport destination port of dummy data
+   * 
+   * Send dummy data to specified destination, ignore any default
+   * destination specified with DatagramSocket::SetDefaultDestination
    */
   void SendDummyTo (uint32_t size, Ipv4Address daddr, uint16_t dport);
 
+  /**
+   * \param buffer data buffer to send
+   * \param size size of data buffer to send
+   */
   void Send (uint8_t const*buffer, uint32_t size);
+  /**
+   * \param buffer data buffer to send
+   * \param size size of data buffer to send
+   * \param daddr destination address
+   * \param dport destination port
+   *
+   * Send data to specified destination, ignore any default
+   * destination specified with DatagramSocket::SetDefaultDestination
+   */
   void SendTo (uint8_t const*buffer, uint32_t size,
                Ipv4Address daddr, uint16_t dport);
 
   /**
+   * \param cb callback to invoke
+   *
    * When a packet is received by this socket, it invokes the "dummy callback" which
    * forwards to the application the number of bytes received and from who they
    * were received.
    */
   void SetDummyRxCallback (Callback<void,DatagramSocket*,uint32_t,Ipv4Address,uint16_t> cb);
   /**
+   * \param cb callback to invoke
+   *
    * When a packet is received by this socket, it invokes the "normal callback" which
    * forwards to the application the buffer of bytes received and from who they
    * were received. The application is responsible for copying that buffer if it wants 
@@ -115,7 +146,7 @@ public:
    */
   void SetRxCallback (Callback<void,DatagramSocket*,uint8_t const*,uint32_t,Ipv4Address,uint16_t> cb);
   /** 
-   * Return pointer to node
+   * \returns pointer to node
    */ 
    Node* GetNode(void) const;
 

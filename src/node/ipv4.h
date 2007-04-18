@@ -61,52 +61,131 @@ public:
   Ipv4(Node *node);
   virtual ~Ipv4 ();
 
+  /**
+   * \param context the trace context to use to construct the
+   *        TraceResolver to return
+   * \returns a TraceResolver which can resolve all traces
+   *          performed in this object. The caller must
+   *          delete the returned object.
+   */
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
+  /**
+   * \param ttl default ttl to use
+   *
+   * When we need to send an ipv4 packet, we use this default
+   * ttl value.
+   */
   void SetDefaultTtl (uint8_t ttl);
     
-  /* add route to host dest through host nextHop 
+  /**
+   * \param dest destination address
+   * \param nextHop address of next hop.
+   * \param interface interface of next hop.
+   *
+   * add route to host dest through host nextHop 
    * on interface.
    */
   void AddHostRouteTo (Ipv4Address dest, 
                        Ipv4Address nextHop, 
                        uint32_t interface);
-  /* add route to host dest on interface.
+  /**
+   * \param dest destination address
+   * \param interface of next hop
+   *
+   * add route to host dest on interface.
    */
   void AddHostRouteTo (Ipv4Address dest, 
                        uint32_t interface);
-  /* add route to network dest with netmask 
+
+  /**
+   * \param network destination network
+   * \param networkMask netmask of destination network
+   * \param nextHop address of next hop
+   * \param interface interface of next hop
+   * 
+   * add route to network dest with netmask 
    * through host nextHop on interface
    */
   void AddNetworkRouteTo (Ipv4Address network, 
                           Ipv4Mask networkMask, 
                           Ipv4Address nextHop, 
                           uint32_t interface);
-  /* add route to network dest with netmask 
+
+  /**
+   * \param network destination network
+   * \param networkMask netmask of destination network
+   * \param interface interface of next hop
+   *
+   * add route to network dest with netmask 
    * on interface
    */
   void AddNetworkRouteTo (Ipv4Address network, 
                           Ipv4Mask networkMask, 
                           uint32_t interface);
-  /* set the default route to host nextHop on
+  /**
+   * \param nextHop address of default next hop
+   * \param interface interface of default next hop.
+   * 
+   * set the default route to host nextHop on
    * interface. 
    */
   void SetDefaultRoute (Ipv4Address nextHop, 
                         uint32_t interface);
 
+  /**
+   * \param dest destination address
+   * \returns the route to the destination address
+   *
+   * Lookup the route for this destination address.
+   */
   Ipv4Route *Lookup (Ipv4Address dest);
 
+  /**
+   * \returns the number of entries in the routing table.
+   */
   uint32_t GetNRoutes (void);
+  /**
+   * \param i index of route to return
+   * \returns the route whose index is i
+   */
   Ipv4Route *GetRoute (uint32_t i);
+  /**
+   * \param i index of route to remove from routing table.
+   */
   void RemoveRoute (uint32_t i);
   
+  /**
+   * \param interface interface to add to the list of ipv4 interfaces
+   * which can be used as output interfaces during packet forwarding.
+   * \returns the index of the interface added.
+   *
+   * Once an interface has been added, it can never be removed: if you want
+   * to disable it, you can invoke Ipv4Interface::SetDown which will
+   * make sure that it is never used during packet forwarding.
+   */
   uint32_t AddInterface (Ipv4Interface *interface);
+  /**
+   * \param i index of interface to return
+   * \returns the requested interface
+   */
   Ipv4Interface * GetInterface (uint32_t i);
+  /**
+   * \returns the number of interfaces added by the user.
+   */
   uint32_t GetNInterfaces (void);
+  /**
+   * \param device the device to match
+   * \returns the matching interface, zero if not found.
+   *
+   * Try to find an Ipv4Interface whose NetDevice is equal to
+   * the input NetDevice.
+   */
   Ipv4Interface *FindInterfaceForDevice (NetDevice const*device);
   
 
   virtual Ipv4* Copy(Node *node) const;
+
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
    * The ARP subclass needs to know from which NetDevice this
@@ -116,6 +195,15 @@ public:
    */
   virtual void Receive(Packet& p, NetDevice &device);
 
+  /**
+   * \param packet packet to send
+   * \param source source address of packet
+   * \param destination address of packet
+   * \param protocol number of packet
+   *
+   * Higher-level layers call this method to send a packet
+   * down the stack to the MAC and PHY layers.
+   */
   void Send (Packet const &packet, Ipv4Address source, 
 	     Ipv4Address destination, uint8_t protocol);
 

@@ -29,10 +29,10 @@
 
 namespace ns3 {
 
-class Ipv4L4Demux;
 class Node;
 class TraceResolver;
 class TraceContext;
+class Channel;
 
 /**
  * \brief Network layer to device interface
@@ -57,11 +57,26 @@ class NetDevice {
  public:
   /**
    * \param node base class node pointer of device's node 
+   * \param addr MAC address of this device.
    */
   NetDevice(Node* node, const MacAddress& addr);
   virtual ~NetDevice() {}
 
+  /**
+   * \param context the trace context to use to construct the
+   *        TraceResolver to return
+   * \returns a TraceResolver which can resolve all traces
+   *          performed in this object. The caller must
+   *          delete the returned object.
+   */
   TraceResolver *CreateTraceResolver (TraceContext const &context);
+
+  /**
+   * \return the channel this NetDevice is connected to. The value
+   *         returned can be zero if the NetDevice is not yet connected
+   *         to any channel.
+   */
+  Channel *GetChannel (void) const;
 
   /**
    * \return the current MacAddress of this interface.
@@ -186,7 +201,6 @@ class NetDevice {
 
   /**
    * \param p packet sent from below up to Network Device
-   * \param from source mac address of the sender 
    * \returns true if the packet was forwarded successfully,
    *          false otherwise.
    *
@@ -210,6 +224,7 @@ class NetDevice {
   virtual bool SendTo (Packet& p, const MacAddress& dest) = 0;
 
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
+  virtual Channel *DoGetChannel (void) const = 0;
   Node*         m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;

@@ -458,6 +458,7 @@ Callback<R> MakeNullCallback (void) {
 }
 /**
  * \ingroup MakeCallback
+ * \overload Callback<R> MakeNullCallback (void)
  * \return a wrapper Callback
  * Build a null callback which takes one argument
  * and potentially return a value.
@@ -468,6 +469,7 @@ Callback<R,T1> MakeNullCallback (void) {
 }
 /**
  * \ingroup MakeCallback
+ * \overload Callback<R> MakeNullCallback (void)
  * \return a wrapper Callback
  * Build a null callback which takes two arguments
  * and potentially return a value.
@@ -478,6 +480,7 @@ Callback<R,T1,T2> MakeNullCallback (void) {
 }
 /**
  * \ingroup MakeCallback
+ * \overload Callback<R> MakeNullCallback (void)
  * \return a wrapper Callback
  * Build a null callback which takes three arguments
  * and potentially return a value.
@@ -488,6 +491,7 @@ Callback<R,T1,T2,T3> MakeNullCallback (void) {
 }
 /**
  * \ingroup MakeCallback
+ * \overload Callback<R> MakeNullCallback (void)
  * \return a wrapper Callback
  * Build a null callback which takes four arguments
  * and potentially return a value.
@@ -498,6 +502,7 @@ Callback<R,T1,T2,T3,T4> MakeNullCallback (void) {
 }
 /**
  * \ingroup MakeCallback
+ * \overload Callback<R> MakeNullCallback (void)
  * \return a wrapper Callback
  * Build a null callback which takes five arguments
  * and potentially return a value.

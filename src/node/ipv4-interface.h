@@ -51,32 +51,70 @@ class TraceContext;
  *    subclass typically contains the Ipv4 <-> MAC address
  *    translation logic which will use most of the time the
  *    ARP/RARP protocols.
+ *
+ * By default, Ipv4 interface are created in the "down" state
+ * with ip address 192.168.0.1 and a matching mask. Before
+ * becoming useable, the user must invoke SetUp on them
+ * once the final Ipv4 address and mask has been set.
+ *
+ * Subclasses must implement the two methods:
+ *   - Ipv4Interface::SendTo
+ *   - Ipv4Interface::DoCreateTraceResolver
  */
 class Ipv4Interface 
 {
 public:
   /**
-   * By default, Ipv4 interface are created in the "down" state
-   * with ip address 192.168.0.1 and a matching mask. Before
-   * becoming useable, the user must invoke SetUp on them
-   * once the final Ipv4 address and mask has been set.
+   * \param nd the NetDevice associated to this Ipv4Interface.
+   *           This value can be zero in which case the MTU
+   *           of this interface will be 2^(16-1).
    */
   Ipv4Interface (NetDevice *nd);
   virtual ~Ipv4Interface();
 
+  /**
+   * \param context the trace context to use to construct the
+   *        TraceResolver to return
+   * \returns a TraceResolver which can resolve all traces
+   *          performed in this object. The caller must
+   *          delete the returned object.
+   *
+   * This method will delegate the work to the private DoCreateTraceResolver 
+   * method which is supposed to be implemented by subclasses.
+   */
   TraceResolver *CreateTraceResolver (TraceContext const &context);
+  /**
+   * \returns the underlying NetDevice. This method can return
+   *          zero if this interface has no associated NetDevice.
+   */
   NetDevice *GetDevice (void) const;
 
+  /**
+   * \param a set the ipv4 address of this interface.
+   */
   void SetAddress (Ipv4Address a);
+  /**
+   * \param mask set the ipv4 netmask of this interface.
+   */
   void SetNetworkMask (Ipv4Mask mask);
 
+  /**
+   * \returns the broadcast ipv4 address associated to this interface
+   */
   Ipv4Address GetBroadcast (void) const;
+  /**
+   * \returns the ipv4 netmask of this interface
+   */
   Ipv4Mask GetNetworkMask (void) const;
+  /**
+   * \returns the ipv4 address of this interface
+   */
   Ipv4Address GetAddress (void) const;
 
   /**
    * This function a pass-through to NetDevice GetMtu, modulo
    * the  LLC/SNAP header i.e., ipv4MTU = NetDeviceMtu - LLCSNAPSIZE
+   * \returns the Maximum Transmission Unit associated to this interface.
    */
   uint16_t GetMtu (void) const;
 
@@ -85,14 +123,29 @@ public:
    * NetDevice states, such as found in real implementations
    * (where the device may be down but IP interface state is still up).
    */
+  /**
+   * \returns true if this interface is enabled, false otherwise.
+   */
   bool IsUp (void) const;
+  /**
+   * \returns true if this interface is disabled, false otherwise.
+   */
   bool IsDown (void) const;
+  /**
+   * Enable this interface
+   */
   void SetUp (void);
+  /**
+   * Disable this interface
+   */
   void SetDown (void);
 
   /**
-   * Packet typically received from above will require some
-   * handling before calling SendTo()
+   * \param p packet to send
+   * \param dest next hop address of packet.
+   *
+   * This method will eventually call the private
+   * SendTo method which must be implemented by subclasses.
    */ 
   void Send(Packet p, Ipv4Address dest);
 

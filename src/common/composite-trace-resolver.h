@@ -33,7 +33,7 @@ namespace ns3 {
 
 /**
  * \brief a helper class to aggregate contained TraceResolver and other trace sources.
- * \ingroup tracing
+ * \ingroup lowleveltracing
  */
 class CompositeTraceResolver : public TraceResolver
 {

@@ -10,12 +10,18 @@
  *     - common: located in src/common and contains facilities specific
  *       to network simulations but shared by pretty much every model
  *       of a network component.
+ *     - node: located in src/node. Contains an ipv4/udp model.
+ *     - devices: located in src/devices. Contains a set of MAC-level models
  *
  * The "core" module contains:
  *    - a Functor class: ns3::Callback
  *    - an os-independent interface to get write-only access to a file: ns3::SystemFile
  *    - an os-independent interface to get access to the elapsed wall clock time: ns3::SystemWallClockMs
  *    - a class to register regression tests with the test manager: ns3::Test and ns3::TestManager
+ *    - debugging facilities: \ref debugging, \ref assert, \ref error
+ *    - \ref randomvariable
+ *    - a class to handle automatic deletion of multiple sets of objects of different types: 
+ *      ns3::ObjectContainer
  *
  * The "simulator" module contains:
  *    - a time management class to hold a time and convert between various time units: ns3::Time
@@ -26,8 +32,22 @@
  * The "common" module contains:
  *    - a packet class to create and manipulate simulation packets: ns3::Packet, ns3::Header, 
  *      and ns3::Trailer
- *    - a trace container class to hold lists of trace sources: ns3::TraceContainer
- *    - a Pcap file serializer which can generate pcap files from simulation packets: ns3::PcapWriter
+ *    - a set of low-level trace facilities: \ref lowleveltracing
+ *
+ * The "node" module contains:
+ *    - a ns3::Node base class and an ns3::InternetNode implementation which model
+ *      network nodes.
+ *    - a set of models contained in InternetNode: ns3::Ipv4, ns3::Udp, ns3::L3Demux,
+ *      ns3::L3Protocol, ns3::Ipv4L4Demux, ns3::Ipv4L4Protocol, ns3::Ipv4Interface,
+ *      ns3::DatagramSocket
+ *    - models which abstract the MAC-layer from the IP layer protocols:
+ *      ns3::NetDevice and ns3::Channel.
+ *    - an Arp model if the underlying NetDevice object needs it: ns3::ArpIpv4Interface
+ *    - a set of traffic generation models: ns3::OnOffApplication
+ *
+ * The "devices" module contains:
+ *    - a PointToPoint MAC device: ns3::PointToPointNetDevice, ns3::PointToPointChannel,
+ *      and ns3::PointToPointTopology.
  */
 /**
  * \namespace ns3
@@ -35,6 +55,6 @@
  * ns3 namespace.
  */
 /**
- * \defgroup constants
+ * \defgroup constants Constants
  * \brief Constants you can change
  */

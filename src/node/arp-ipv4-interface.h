@@ -28,6 +28,13 @@ namespace ns3 {
 
 class Node;
 
+/**
+ * \brief an Ipv4 Interface which uses ARP
+ *
+ * If you need to use ARP on top of a specific NetDevice, you
+ * can use this Ipv4Interface subclass to wrap it for the Ipv4 class
+ * when calling Ipv4::AddInterface.
+ */
 class ArpIpv4Interface : public Ipv4Interface
 {
  public:

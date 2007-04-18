@@ -22,7 +22,7 @@
 #define DEBUG_H
 
 /**
- * \defgroup debugging
+ * \defgroup debugging Debugging
  * \brief Debugging functions and macros
  *
  *   - DEBUG functionality: macros which allow developers to
