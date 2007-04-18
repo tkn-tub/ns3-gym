@@ -184,6 +184,11 @@ Tags::PrettyPrint (std::ostream &os)
 
 namespace ns3 {
 
+static bool g_a;
+static bool g_b;
+static bool g_c;
+static bool g_z;
+
 class TagsTest : Test {
 public:
   TagsTest ();
@@ -210,22 +215,26 @@ struct myTagZ {
 static void 
 myTagAPrettyPrinterCb (struct myTagA const*a, std::ostream &os)
 {
-  os << "struct myTagA, a="<<(uint32_t)a->a<<std::endl;
+  //os << "struct myTagA, a="<<(uint32_t)a->a<<std::endl;
+  g_a = true;
 }
 static void 
 myTagBPrettyPrinterCb (struct myTagB const*b, std::ostream &os)
 {
-  os << "struct myTagB, b="<<b->b<<std::endl;
+  //os << "struct myTagB, b="<<b->b<<std::endl;
+  g_b = true;
 }
 static void 
 myTagCPrettyPrinterCb (struct myTagC const*c, std::ostream &os)
 {
-  os << "struct myTagC, c="<<(uint32_t)c->c[0]<<std::endl;
+  //os << "struct myTagC, c="<<(uint32_t)c->c[0]<<std::endl;
+  g_c = true;
 }
 static void 
 myTagZPrettyPrinterCb (struct myTagZ const*z, std::ostream &os)
 {
   //os << "struct myTagZ" << std::endl;
+  g_z = true;
 }
 
 
@@ -258,7 +267,12 @@ TagsTest::RunTests (void)
     {
       ok = false;
     }
-  //tags.prettyPrint (std::cout);
+  g_a = false;
+  tags.PrettyPrint (std::cout);
+  if (!g_a)
+    {
+      ok = false;
+    }
   struct myTagB b;
   b.b = 0xff;
   tags.Add (b);
@@ -268,12 +282,29 @@ TagsTest::RunTests (void)
     {
       ok = false;
     }
-  //tags.prettyPrint (std::cout);
-
+  g_b = false;
+  g_a = false;
+  tags.PrettyPrint (std::cout);
+  if (!g_a || !g_b)
+    {
+      ok = false;
+    }
   // make sure copy contains copy.
   Tags other = tags;
-  //other.prettyPrint (std::cout);
-  //tags.prettyPrint (std::cout);
+  g_b = false;
+  g_a = false;
+  other.PrettyPrint (std::cout);
+  if (!g_a || !g_b)
+    {
+      ok = false;
+    }
+  g_b = false;
+  g_a = false;
+  tags.PrettyPrint (std::cout);
+  if (!g_a || !g_b)
+    {
+      ok = false;
+    }
   struct myTagA oA;
   oA.a = 0;
   other.Peek (oA);
@@ -293,7 +324,13 @@ TagsTest::RunTests (void)
     {
       ok = false;
     }
-  //other.prettyPrint (std::cout);
+  g_b = false;
+  g_a = false;
+  other.PrettyPrint (std::cout);
+  if (g_a || !g_b)
+    {
+      ok = false;
+    }
   if (!tags.Peek (oA)) 
     {
       ok = false;
@@ -333,7 +370,12 @@ TagsTest::RunTests (void)
   struct myTagZ tagZ;
   Tags testLastTag;
   testLastTag.Add (tagZ);
+  g_z = false;
   testLastTag.PrettyPrint (std::cout);
+  if (!g_z)
+    {
+      ok = false;
+    }
 
   return ok;
 }
