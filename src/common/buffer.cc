@@ -140,7 +140,7 @@ Buffer::AddAtStart (uint32_t start)
       /* enough space but need to move data around to fit new data */
       memmove (m_data->m_data + start, GetStart (), m_size);
       NS_ASSERT (start > m_start);
-      m_data->m_initialStart += start;
+      m_data->m_initialStart += start - m_start;
       m_start = 0;
       m_size += start;
     } 
@@ -647,9 +647,13 @@ BufferTest::RunTests (void)
     {
       ok = false;
     }
-  
-  
-  
+
+  buffer = Buffer (6);
+  buffer.AddAtStart (9);
+  buffer.AddAtEnd (3);
+  i = buffer.End ();
+  i.Prev (1);
+  i.WriteU8 (1, 1);
 
   return ok;
 }
