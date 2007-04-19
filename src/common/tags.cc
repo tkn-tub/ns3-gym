@@ -245,19 +245,19 @@ class MySmartTag
 public:
   MySmartTag ()
   {
-    std::cout << "construct" << std::endl;
+    //std::cout << "construct" << std::endl;
   }
   MySmartTag (const MySmartTag &o)
   {
-    std::cout << "copy" << std::endl;
+    //std::cout << "copy" << std::endl;
   }
   ~MySmartTag ()
   {
-    std::cout << "destruct" << std::endl;
+    //std::cout << "destruct" << std::endl;
   }
   MySmartTag &operator = (const MySmartTag &o)
   {
-    std::cout << "assign" << std::endl;
+    //std::cout << "assign" << std::endl;
     return *this;
   }
   static void PrettyPrinterCb (const MySmartTag *a, std::ostream &os)
