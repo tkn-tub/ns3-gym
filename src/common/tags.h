@@ -63,10 +63,10 @@ public:
   };
 private:
   struct TagData {
+      uint8_t m_data[Tags::SIZE];
       struct TagData *m_next;
       uint32_t m_id;
       uint32_t m_count;
-      uint8_t m_data[Tags::SIZE];
   };
 
   bool Remove (uint32_t id);
@@ -99,6 +99,7 @@ public:
   TagRegistration<T> (std::string uuid, void(*fn) (T const*, std::ostream &));
 private:
   static void PrettyPrinterCb (uint8_t *buf, std::ostream &os);
+  static void DestructorCb (uint8_t *buf);
   static void(*m_prettyPrinter) (T const*, std::ostream &);
 };
 
@@ -117,16 +118,25 @@ namespace ns3 {
 class TagRegistry {
 public:
   typedef void (*PrettyPrinter) (uint8_t [Tags::SIZE], std::ostream &);
-  static void Record (std::string uuid, PrettyPrinter prettyPrinter);
+  typedef void (*Destructor) (uint8_t [Tags::SIZE]);
+  static void Record (std::string uuid, PrettyPrinter prettyPrinter, Destructor destructor);
   /**
    * returns a numeric integer which uniquely identifies the input string.
    * that integer cannot be zero which is a reserved value.
    */
   static uint32_t LookupUid (std::string uuid);
   static void PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
+  static void Destruct (uint32_t uid, uint8_t buf[Tags::SIZE]);
 private:
-  typedef std::vector<std::pair<std::string,PrettyPrinter> > TagsData;
-  typedef std::vector<std::pair<std::string,PrettyPrinter> >::const_iterator TagsDataCI;
+  struct TagInfoItem
+  {
+    std::string uuid;
+    PrettyPrinter printer;
+    Destructor destructor;
+  };
+  typedef std::vector<struct TagInfoItem> TagsData;
+  typedef std::vector<struct TagInfoItem>::const_iterator TagsDataCI;
+  static bool CompareItem (const struct TagInfoItem &a, const struct TagInfoItem &b);
   static bool m_sorted;
   static TagsData m_registry;
 };
@@ -181,7 +191,7 @@ TagRegistration<T>::TagRegistration (std::string uuid, void (*prettyPrinter) (T 
 {
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
   m_prettyPrinter  = prettyPrinter;
-  TagRegistry::Record (uuid, &TagRegistration<T>::PrettyPrinterCb);
+  TagRegistry::Record (uuid, &TagRegistration<T>::PrettyPrinterCb, &TagRegistration<T>::DestructorCb);
   TypeUid<T>::Record (uuid);
 }
 template <typename T>
@@ -192,7 +202,13 @@ TagRegistration<T>::PrettyPrinterCb (uint8_t *buf, std::ostream &os)
   T *tag = reinterpret_cast<T *> (buf);
   (*m_prettyPrinter) (tag, os);
 }
-
+template <typename T>
+void
+TagRegistration<T>::DestructorCb (uint8_t *buf)
+{
+  T *tag = reinterpret_cast<T *> (buf);
+  tag->~T ();
+}
 template <typename T>
 void (*TagRegistration<T>::m_prettyPrinter) (T const*, std::ostream &) = 0;
 
@@ -204,7 +220,6 @@ void
 Tags::Add (T const&tag)
 {
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
-  uint8_t const*buf = reinterpret_cast<uint8_t const*> (&tag);
   // ensure this id was not yet added
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
@@ -214,7 +229,8 @@ Tags::Add (T const&tag)
   newStart->m_count = 1;
   newStart->m_next = 0;
   newStart->m_id = TypeUid<T>::GetUid ();
-  memcpy (newStart->m_data, buf, sizeof (T));
+  void *buf = &newStart->m_data;
+  new (buf) T (tag);
   newStart->m_next = m_next;
   m_next = newStart;
 }
@@ -232,13 +248,13 @@ bool
 Tags::Peek (T &tag) const
 {
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
-  uint8_t *buf = reinterpret_cast<uint8_t *> (&tag);
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
       if (cur->m_id == TypeUid<T>::GetUid ()) 
         {
           /* found tag */
-          memcpy (buf, cur->m_data, sizeof (T));
+          T *data = reinterpret_cast<T *> (&cur->m_data);
+          tag = T (*data);
           return true;
         }
     }
@@ -294,12 +310,14 @@ Tags::RemoveAll (void)
         }
       if (prev != 0) 
         {
+          TagRegistry::Destruct (prev->m_id, prev->m_data);
           FreeData (prev);
         }
       prev = cur;
     }
   if (prev != 0) 
     {
+      TagRegistry::Destruct (prev->m_id, prev->m_data);
       FreeData (prev);
     }
   m_next = 0;

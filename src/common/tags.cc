@@ -28,24 +28,33 @@ TagRegistry::TagsData TagRegistry::m_registry;
 
 
 void 
-TagRegistry::Record (std::string uuid, PrettyPrinter prettyPrinter)
+TagRegistry::Record (std::string uuid, PrettyPrinter prettyPrinter, Destructor destructor)
 {
   NS_ASSERT (!m_sorted);
-  m_registry.push_back (make_pair (uuid, prettyPrinter));
+  struct TagInfoItem item;
+  item.uuid = uuid;
+  item.printer = prettyPrinter;
+  item.destructor = destructor;
+  m_registry.push_back (item);
+}
+bool 
+TagRegistry::CompareItem (const struct TagInfoItem &a, const struct TagInfoItem &b)
+{
+  return a.uuid < b.uuid;
 }
 uint32_t 
 TagRegistry::LookupUid (std::string uuid)
 {
   if (!m_sorted) 
     {
-      std::sort (m_registry.begin (), m_registry.end ());
+      std::sort (m_registry.begin (), m_registry.end (), &TagRegistry::CompareItem);
       m_sorted = true;
     }
   NS_ASSERT (m_sorted);
   uint32_t uid = 1;
   for (TagsDataCI i = m_registry.begin (); i != m_registry.end (); i++) 
     {
-      if (i->first == uuid) 
+      if (i->uuid == uuid) 
         {
           return uid;
         }
@@ -62,12 +71,23 @@ TagRegistry::PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &o
   NS_ASSERT (uid > 0);
   uint32_t index = uid - 1;
   NS_ASSERT (m_registry.size () > index);
-  PrettyPrinter prettyPrinter = m_registry[index].second;
+  PrettyPrinter prettyPrinter = m_registry[index].printer;
   if (prettyPrinter != 0) 
     {
       prettyPrinter (buf, os);
     }
 }
+void 
+TagRegistry::Destruct (uint32_t uid, uint8_t buf[Tags::SIZE])
+{
+  NS_ASSERT (uid > 0);
+  uint32_t index = uid - 1;
+  NS_ASSERT (m_registry.size () > index);
+  Destructor destructor = m_registry[index].destructor;
+  NS_ASSERT (destructor != 0);
+  destructor (buf);
+}
+
 
 
 #ifdef USE_FREE_LIST
@@ -212,6 +232,30 @@ struct myTagZ {
   uint8_t z;
 };
 
+class MySmartTag 
+{
+public:
+  MySmartTag ()
+  {
+    std::cout << "construct" << std::endl;
+  }
+  MySmartTag (const MySmartTag &o)
+  {
+    std::cout << "copy" << std::endl;
+  }
+  ~MySmartTag ()
+  {
+    std::cout << "destruct" << std::endl;
+  }
+  MySmartTag &operator = (const MySmartTag &o)
+  {
+    std::cout << "assign" << std::endl;
+    return *this;
+  }
+  static void PrettyPrinterCb (const MySmartTag *a, std::ostream &os)
+  {}
+};
+
 static void 
 myTagAPrettyPrinterCb (struct myTagA const*a, std::ostream &os)
 {
@@ -243,6 +287,7 @@ static TagRegistration<struct myTagB> gMyTagBRegistration ("B", &myTagBPrettyPri
 static TagRegistration<struct myTagC> gMyTagCRegistration ("C", &myTagCPrettyPrinterCb);
 static TagRegistration<struct myTagZ> g_myTagZRegistration ("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", 
                                                             &myTagZPrettyPrinterCb);
+static TagRegistration<MySmartTag> g_myTagSmartRegistration ("SmartTag", &MySmartTag::PrettyPrinterCb);
 
 
 TagsTest::TagsTest ()
@@ -313,6 +358,7 @@ TagsTest::RunTests (void)
       ok = false;
     }
   struct myTagB oB;
+  oB.b = 1;
   other.Peek (oB);
   if (oB.b != 0xff) 
     {
@@ -348,7 +394,7 @@ TagsTest::RunTests (void)
   other = tags;
   Tags another = other;
   struct myTagC c;
-  c.c[0] = 0x66;
+  memset (c.c, 0x66, 16);
   another.Add (c);
   c.c[0] = 0;
   another.Peek (c);
@@ -369,6 +415,7 @@ TagsTest::RunTests (void)
 
   struct myTagZ tagZ;
   Tags testLastTag;
+  tagZ.z = 0;
   testLastTag.Add (tagZ);
   g_z = false;
   testLastTag.PrettyPrint (std::cout);
@@ -376,6 +423,14 @@ TagsTest::RunTests (void)
     {
       ok = false;
     }
+
+  MySmartTag smartTag;
+  {
+    Tags tmp;
+    tmp.Add (smartTag);
+    tmp.Peek (smartTag);
+    tmp.Remove (smartTag);
+  }
 
   return ok;
 }
