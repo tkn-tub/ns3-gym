@@ -23,8 +23,16 @@
 
 namespace ns3 {
 
-bool TagRegistry::m_sorted;
-TagRegistry::TagsData TagRegistry::m_registry;
+TagRegistry *
+TagRegistry::GetInstance (void)
+{
+  static TagRegistry registry;
+  return &registry;
+}
+
+TagRegistry::TagRegistry ()
+  : m_sorted (false)
+{}
 
 
 void 
@@ -189,7 +197,7 @@ Tags::PrettyPrint (std::ostream &os)
 {
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
-      TagRegistry::PrettyPrint (cur->m_id, cur->m_data, os);
+      TagRegistry::GetInstance ()->PrettyPrint (cur->m_id, cur->m_data, os);
     }
 }
 

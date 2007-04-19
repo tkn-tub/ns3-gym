@@ -119,15 +119,18 @@ class TagRegistry {
 public:
   typedef void (*PrettyPrinter) (uint8_t [Tags::SIZE], std::ostream &);
   typedef void (*Destructor) (uint8_t [Tags::SIZE]);
-  static void Record (std::string uuid, PrettyPrinter prettyPrinter, Destructor destructor);
+  void Record (std::string uuid, PrettyPrinter prettyPrinter, Destructor destructor);
   /**
    * returns a numeric integer which uniquely identifies the input string.
    * that integer cannot be zero which is a reserved value.
    */
-  static uint32_t LookupUid (std::string uuid);
-  static void PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
-  static void Destruct (uint32_t uid, uint8_t buf[Tags::SIZE]);
+  uint32_t LookupUid (std::string uuid);
+  void PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
+  void Destruct (uint32_t uid, uint8_t buf[Tags::SIZE]);
+
+  static TagRegistry *GetInstance (void);
 private:
+  TagRegistry ();
   struct TagInfoItem
   {
     std::string uuid;
@@ -137,8 +140,8 @@ private:
   typedef std::vector<struct TagInfoItem> TagsData;
   typedef std::vector<struct TagInfoItem>::const_iterator TagsDataCI;
   static bool CompareItem (const struct TagInfoItem &a, const struct TagInfoItem &b);
-  static bool m_sorted;
-  static TagsData m_registry;
+  bool m_sorted;
+  TagsData m_registry;
 };
 /**
  * The TypeUid class is used to create a mapping Type --> uid
@@ -167,7 +170,8 @@ void TypeUid<T>::Record (std::string uuid)
 template <typename T>
 const uint32_t TypeUid<T>::GetUid (void)
 {
-  static const uint32_t uid = TagRegistry::LookupUid (*(GetUuid ()));
+  static const uint32_t uid = TagRegistry::GetInstance ()->
+    LookupUid (*(GetUuid ()));
   return uid;
 }
 
@@ -191,7 +195,8 @@ TagRegistration<T>::TagRegistration (std::string uuid, void (*prettyPrinter) (T 
 {
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
   m_prettyPrinter  = prettyPrinter;
-  TagRegistry::Record (uuid, &TagRegistration<T>::PrettyPrinterCb, &TagRegistration<T>::DestructorCb);
+  TagRegistry::GetInstance ()->
+    Record (uuid, &TagRegistration<T>::PrettyPrinterCb, &TagRegistration<T>::DestructorCb);
   TypeUid<T>::Record (uuid);
 }
 template <typename T>
@@ -310,14 +315,16 @@ Tags::RemoveAll (void)
         }
       if (prev != 0) 
         {
-          TagRegistry::Destruct (prev->m_id, prev->m_data);
+          TagRegistry::GetInstance ()->
+            Destruct (prev->m_id, prev->m_data);
           FreeData (prev);
         }
       prev = cur;
     }
   if (prev != 0) 
     {
-      TagRegistry::Destruct (prev->m_id, prev->m_data);
+      TagRegistry::GetInstance ()->
+        Destruct (prev->m_id, prev->m_data);
       FreeData (prev);
     }
   m_next = 0;
