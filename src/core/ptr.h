@@ -130,12 +130,14 @@ Ptr<T>::DeallocCount (uint32_t *count)
 
 template <typename T>
 Ptr<T>::Ptr ()
-  : m_ptr (0)
+  : m_ptr (0),
+    m_count (0)
 {}
 
 template <typename T>
 Ptr<T>::Ptr (T *ptr) 
-  : m_ptr (ptr)
+  : m_ptr (ptr),
+    m_count (0)
 {
   if (m_ptr != 0)
     {
@@ -146,7 +148,8 @@ Ptr<T>::Ptr (T *ptr)
 
 template <typename T>
 Ptr<T>::Ptr (Ptr const&o) 
-  : m_ptr (o.m_ptr)
+  : m_ptr (o.m_ptr),
+    m_count (0)
 {
   if (m_ptr != 0) 
     {
@@ -157,10 +160,12 @@ Ptr<T>::Ptr (Ptr const&o)
 template <typename T>
 template <typename U>
 Ptr<T>::Ptr (Ptr<U> const &o)
-  : m_ptr (o.m_ptr)
+  : m_ptr (o.m_ptr),
+    m_count (0)
 {
   if (m_ptr != 0) 
     {
+      NS_ASSERT (o.m_ptr != 0);
       m_count = o.m_count;
       (*m_count)++;
     }
