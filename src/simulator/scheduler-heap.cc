@@ -33,6 +33,7 @@
  */
 
 #include "scheduler-heap.h"
+#include "scheduler-factory.h"
 #include "event-impl.h"
 #include "ns3/assert.h"
 
@@ -50,6 +51,21 @@ std::cout << "HEAP TRACE " << x << std::endl;
 
 
 namespace ns3 {
+
+static class SchedulerHeapFactory : public SchedulerFactory 
+{
+public:
+  SchedulerHeapFactory ()
+  {
+    SchedulerFactory::Add (this, "BinaryHeap");
+  }
+private:
+  virtual Scheduler *DoCreate (void) const
+  {
+    return new SchedulerHeap ();
+  }
+} g_schedulerHeapFactory;
+
 
 SchedulerHeap::SchedulerHeap ()
 {

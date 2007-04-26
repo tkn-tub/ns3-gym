@@ -26,6 +26,9 @@ core.add_sources([
     'random-variable.cc',
     'rng-stream.cc',
     'object-container.cc',
+    'default-value.cc',
+    'command-line.cc',
+    'type-name.cc',
     ])
 env = Environment()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] == 'cygwin':
@@ -52,7 +55,10 @@ core.add_inst_headers([
     'test.h',
     'random-variable.h',
     'rng-stream.h',
-    'object-container.h'
+    'object-container.h',
+    'default-value.h',
+    'command-line.h',
+    'type-name.h',
     ])
 
 def config_core (env, config):
