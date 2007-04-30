@@ -30,6 +30,7 @@
 #include "udp.h"
 #include "ipv4.h"
 #include "arp.h"
+#include "net-device.h"
 
 namespace ns3 {
 
@@ -144,7 +145,20 @@ InternetNode::GetArp (void) const
 void 
 InternetNode::DoAddDevice (NetDevice *device) const
 {
-  //XXX
+  device->SetReceiveCallback (MakeCallback (&InternetNode::ReceiveFromDevice, this));
+}
+
+bool
+InternetNode::ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const
+{
+  L3Protocol *target = GetL3Demux()->Lookup(protocolNumber);
+  if (target != 0) 
+    {
+      Packet packet = p;
+      target->Receive(packet, *device);
+      return true;
+    }
+  return false;
 }
 
 

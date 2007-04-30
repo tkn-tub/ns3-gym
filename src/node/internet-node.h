@@ -31,6 +31,7 @@
 
 namespace ns3 {
 
+class Packet;
 
 class InternetNode : public Node 
 {
@@ -57,6 +58,7 @@ public:
   void SetName(std::string name);
 private:
   virtual void DoAddDevice (NetDevice *device) const;
+  bool ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const;
   // Capabilities
   ApplicationList* m_applicationList;
   L3Demux*         m_l3Demux;

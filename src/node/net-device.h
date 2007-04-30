@@ -154,6 +154,8 @@ class NetDevice {
 
   bool NeedsArp (void) const;
 
+  void SetReceiveCallback (Callback<bool,NetDevice *,const Packet &,uint16_t> cb);
+
  protected:
   /**
    * Enable broadcast support. This method should be
@@ -238,6 +240,7 @@ class NetDevice {
   bool          m_isMulticast;
   bool          m_isPointToPoint;
   Callback<void> m_linkChangeCallback;
+  Callback<bool,NetDevice *,const Packet &,uint16_t> m_receiveCallback;
 };
 
 }; // namespace ns3
