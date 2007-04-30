@@ -31,6 +31,8 @@
 #include "ipv4-header.h"
 #include "ipv4-interface.h"
 #include "ipv4-route.h"
+#include "ipv4-loopback-interface.h"
+#include "arp-ipv4-interface.h"
 // the two following headers are needed for Ipv4::ForwardUp
 #include "node.h"
 #include "ipv4-l4-demux.h"
@@ -48,10 +50,11 @@ Ipv4::Ipv4(Node *node)
     m_identification (0),
     m_defaultRoute (0),
     m_node (node)
-{}
+{
+  SetupLoopback ();
+}
 Ipv4::~Ipv4 ()
 {
-  // XXX I am not sure we are really allowed to do this here.
   for (Ipv4InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
       delete (*i);
@@ -71,6 +74,17 @@ Ipv4::~Ipv4 ()
   delete m_defaultRoute;
 }
 
+void
+Ipv4::SetupLoopback (void)
+{
+  Ipv4LoopbackInterface * interface = new Ipv4LoopbackInterface (m_node);
+  interface->SetAddress (Ipv4Address::GetLoopback ());
+  interface->SetNetworkMask (Ipv4Mask::GetLoopback ());
+  uint32_t index = AddIpv4Interface (interface);
+  AddHostRouteTo (Ipv4Address::GetLoopback (), index);
+  interface->SetUp ();
+}
+
 TraceResolver *
 Ipv4::CreateTraceResolver (TraceContext const &context)
 {
@@ -85,7 +99,7 @@ Ipv4::CreateTraceResolver (TraceContext const &context)
 }
 
 TraceResolver *
-Ipv4::InterfacesCreateTraceResolver (TraceContext const &context)
+Ipv4::InterfacesCreateTraceResolver (TraceContext const &context) const
 {
   ArrayTraceResolver<Ipv4Interface> *resolver = 
     new ArrayTraceResolver<Ipv4Interface> 
@@ -286,7 +300,13 @@ Ipv4::RemoveRoute (uint32_t index)
 
 
 uint32_t 
-Ipv4::AddInterface (Ipv4Interface *interface)
+Ipv4::AddInterface (NetDevice *device)
+{
+  Ipv4Interface *interface = new ArpIpv4Interface (m_node, device);
+  return AddIpv4Interface (interface);
+}
+uint32_t 
+Ipv4::AddIpv4Interface (Ipv4Interface *interface)
 {
   uint32_t index = m_nInterfaces;
   m_interfaces.push_back (interface);
@@ -294,7 +314,7 @@ Ipv4::AddInterface (Ipv4Interface *interface)
   return index;
 }
 Ipv4Interface *
-Ipv4::GetInterface (uint32_t index)
+Ipv4::GetInterface (uint32_t index) const
 {
   uint32_t tmp = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
@@ -308,7 +328,7 @@ Ipv4::GetInterface (uint32_t index)
   return 0;
 }
 uint32_t 
-Ipv4::GetNInterfaces (void)
+Ipv4::GetNInterfaces (void) const
 {
   return m_nInterfaces;
 }
@@ -476,5 +496,55 @@ Ipv4::ForwardUp (Packet p, Ipv4Header const&ip)
   Ipv4L4Protocol *protocol = m_node->GetIpv4L4Demux ()->Lookup (ip.GetProtocol ());
   protocol->Receive (p, ip.GetSource (), ip.GetDestination ());
 }
+
+void 
+Ipv4::SetAddress (uint32_t i, Ipv4Address address)
+{
+  Ipv4Interface *interface = GetInterface (i);
+  interface->SetAddress (address);
+}
+void 
+Ipv4::SetNetworkMask (uint32_t i, Ipv4Mask mask)
+{
+  Ipv4Interface *interface = GetInterface (i);
+  interface->SetNetworkMask (mask);
+}
+Ipv4Mask 
+Ipv4::GetNetworkMask (uint32_t i) const
+{
+  Ipv4Interface *interface = GetInterface (i);
+  return interface->GetNetworkMask ();
+}
+Ipv4Address 
+Ipv4::GetAddress (uint32_t i) const
+{
+  Ipv4Interface *interface = GetInterface (i);
+  return interface->GetAddress ();
+}
+uint16_t 
+Ipv4::GetMtu (uint32_t i) const
+{
+  Ipv4Interface *interface = GetInterface (i);
+  return interface->GetMtu ();
+}
+bool 
+Ipv4::IsUp (uint32_t i) const
+{
+  Ipv4Interface *interface = GetInterface (i);
+  return interface->IsUp ();
+}
+void 
+Ipv4::SetUp (uint32_t i)
+{
+  Ipv4Interface *interface = GetInterface (i);
+  interface->SetUp ();
+}
+void 
+Ipv4::SetDown (uint32_t i)
+{
+  Ipv4Interface *interface = GetInterface (i);
+  interface->SetDown ();
+}
+
 
 }//namespace ns3

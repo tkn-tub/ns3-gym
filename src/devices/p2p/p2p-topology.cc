@@ -33,7 +33,6 @@
 #include "ns3/ipv4.h"
 #include "ns3/net-device-list.h"
 
-#include "p2p-ipv4-interface.h"
 #include "p2p-channel.h"
 #include "p2p-net-device.h"
 #include "p2p-topology.h"
@@ -67,27 +66,27 @@ PointToPointTopology::AddPointToPointLink(
   PointToPointNetDevice* net1 = new PointToPointNetDevice(n1);
   net1->AddQueue(Queue::Default().Copy());
   ndl1->Add(net1);
-  Ipv4Interface *interf1 = new PointToPointIpv4Interface (n1, net1);
-  uint32_t index1 = n1->GetIpv4 ()->AddInterface (interf1);
+  Ipv4 *ip1 = n1->GetIpv4 ();
+  uint32_t index1 = ip1->AddInterface (net1);
   net1->Attach (channel);
 
-  interf1->SetAddress (addr1);
-  interf1->SetNetworkMask (netmask);
-  interf1->SetUp ();
+  ip1->SetAddress (index1, addr1);
+  ip1->SetNetworkMask (index1, netmask);
+  ip1->SetUp (index1);
 
   PointToPointNetDevice* net2 = new PointToPointNetDevice(n2);
   net2->AddQueue(Queue::Default().Copy());
   ndl2->Add(net2);
-  Ipv4Interface *interf2 = new PointToPointIpv4Interface (n2, net2);
-  uint32_t index2 = n2->GetIpv4 ()->AddInterface (interf2);
+  Ipv4 *ip2 = n2->GetIpv4 ();
+  uint32_t index2 = ip2->AddInterface (net2);
   net2->Attach (channel);
 
-  interf2->SetAddress (addr2);
-  interf2->SetNetworkMask (netmask);
-  interf2->SetUp ();
+  ip2->SetAddress (index2, addr2);
+  ip2->SetNetworkMask (index2, netmask);
+  ip2->SetUp (index2);
 
-  n1->GetIpv4 ()->AddHostRouteTo (addr2, index1);
-  n2->GetIpv4 ()->AddHostRouteTo (addr1, index2);
+  ip1->AddHostRouteTo (addr2, index1);
+  ip2->AddHostRouteTo (addr1, index2);
 
   return channel;
 }

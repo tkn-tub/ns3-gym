@@ -164,16 +164,16 @@ public:
    * to disable it, you can invoke Ipv4Interface::SetDown which will
    * make sure that it is never used during packet forwarding.
    */
-  uint32_t AddInterface (Ipv4Interface *interface);
+  uint32_t AddInterface (NetDevice *device);
   /**
    * \param i index of interface to return
    * \returns the requested interface
    */
-  Ipv4Interface * GetInterface (uint32_t i);
+  Ipv4Interface * GetInterface (uint32_t i) const;
   /**
    * \returns the number of interfaces added by the user.
    */
-  uint32_t GetNInterfaces (void);
+  uint32_t GetNInterfaces (void) const;
   /**
    * \param device the device to match
    * \returns the matching interface, zero if not found.
@@ -207,11 +207,23 @@ public:
   void Send (Packet const &packet, Ipv4Address source, 
 	     Ipv4Address destination, uint8_t protocol);
 
+  void SetAddress (uint32_t i, Ipv4Address address);
+  void SetNetworkMask (uint32_t i, Ipv4Mask mask);
+  Ipv4Mask GetNetworkMask (uint32_t t) const;
+  Ipv4Address GetAddress (uint32_t i) const;
+  uint16_t GetMtu (uint32_t i) const;
+  bool IsUp (uint32_t i) const;
+  void SetUp (uint32_t i);
+  void SetDown (uint32_t i);
+
+
  private:
   void SendRealOut (Packet const &packet, Ipv4Header const &ip, Ipv4Route const &route);
   bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device);
   void ForwardUp (Packet p, Ipv4Header const&ip);
-  TraceResolver *InterfacesCreateTraceResolver (TraceContext const &context);
+  uint32_t AddIpv4Interface (Ipv4Interface *interface);
+  void SetupLoopback (void);
+  TraceResolver *InterfacesCreateTraceResolver (TraceContext const &context) const;
 
   typedef std::list<Ipv4Interface*> Ipv4InterfaceList;
   typedef std::list<Ipv4Route *> HostRoutes;

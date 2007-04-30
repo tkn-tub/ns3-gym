@@ -31,7 +31,6 @@
 #include "udp.h"
 #include "ipv4.h"
 #include "arp.h"
-#include "ipv4-loopback-interface.h"
 
 namespace ns3 {
 
@@ -52,7 +51,6 @@ InternetNode::InternetNode()
   m_l3Demux->Insert (Ipv4 (this));
   m_l3Demux->Insert (Arp (this));
   m_ipv4L4Demux->Insert (Udp (this));
-  SetupLoopback ();
 }
 
 InternetNode::InternetNode (InternetNode const &o)
@@ -61,7 +59,6 @@ InternetNode::InternetNode (InternetNode const &o)
   m_applicationList = new ApplicationList();
   m_l3Demux = o.m_l3Demux->Copy (this);
   m_ipv4L4Demux = o.m_ipv4L4Demux->Copy (this);
-  SetupLoopback ();  
 }
 InternetNode const &
 InternetNode::operator = (InternetNode const &o)
@@ -73,7 +70,6 @@ InternetNode::operator = (InternetNode const &o)
   m_netDevices = new NetDeviceList ();
   m_l3Demux = o.m_l3Demux->Copy (this);
   m_ipv4L4Demux = o.m_ipv4L4Demux->Copy (this);
-  SetupLoopback ();  
   return *this;
 }
 
@@ -89,17 +85,6 @@ InternetNode::~InternetNode ()
 InternetNode::SetName (std::string name)
 {
   m_name = name;
-}
-
-void
-InternetNode::SetupLoopback (void)
-{
-  Ipv4LoopbackInterface * interface = new Ipv4LoopbackInterface (this);
-  interface->SetAddress (Ipv4Address::GetLoopback ());
-  interface->SetNetworkMask (Ipv4Mask::GetLoopback ());
-  uint32_t index = GetIpv4 ()->AddInterface (interface);
-  GetIpv4 ()->AddHostRouteTo (Ipv4Address::GetLoopback (), index);
-  interface->SetUp ();
 }
 
 // Copy this node

@@ -22,12 +22,10 @@
 #include "ns3/debug.h"
 #include "ns3/internet-node.h"
 #include "ns3/packet.h"
-#include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/p2p-channel.h"
 #include "ns3/p2p-net-device.h"
 #include "ns3/drop-tail.h"
-#include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4.h"
 #include "ns3/trace-context.h"
 #include "ns3/datagram-socket.h"
@@ -161,45 +159,43 @@ int main (int argc, char *argv[])
   //     vector of Ipv4Interfaces (keyed off of ifIndex)
 
   NS_DEBUG_UNCOND("Adding ARP Interface to InternetNode a");
-  ArpIpv4Interface* arpipv4interfacep = new ArpIpv4Interface(&a, &neta);
-  uint32_t indexA;
-  indexA = (&a)->GetIpv4 ()->AddInterface (arpipv4interfacep);
+  Ipv4 *ipa = (&a)->GetIpv4 ();
+  uint32_t indexA = ipa->AddInterface (&neta);
   NS_DEBUG_UNCOND("Adding Interface " << indexA);
 
 
   // iii) give the interface an IP address
 
   NS_DEBUG_UNCOND("Giving IP address to ARP Interface");
-  arpipv4interfacep->SetAddress(Ipv4Address("10.1.1.1"));
-  arpipv4interfacep->SetNetworkMask(Ipv4Mask("255.255.255.0"));
+  ipa->SetAddress(indexA, Ipv4Address("10.1.1.1"));
+  ipa->SetNetworkMask(indexA, Ipv4Mask("255.255.255.0"));
 
   // iv) set the interface's state to "UP"
 
   NS_DEBUG_UNCOND("Setting ARP interface to UP");
-  arpipv4interfacep->SetUp();
+  ipa->SetUp(indexA);
 
-  a.GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
+  ipa->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
 
 
   NS_DEBUG_UNCOND("Adding ARP Interface to InternetNode b");
-  ArpIpv4Interface* arpipv4interfacepb = new ArpIpv4Interface(&b, &netb);
-  uint32_t indexB;
-  indexB = (&b)->GetIpv4 ()->AddInterface (arpipv4interfacepb);
+  Ipv4 *ipb = (&b)->GetIpv4 ();
+  uint32_t indexB = ipb->AddInterface (&netb);
   NS_DEBUG_UNCOND("Adding Interface " << indexB);
 
 
   // iii) give the interface an IP address
 
   NS_DEBUG_UNCOND("Giving IP address to ARP Interface");
-  arpipv4interfacepb->SetAddress(Ipv4Address("10.1.1.2"));
-  arpipv4interfacepb->SetNetworkMask(Ipv4Mask("255.255.255.0"));
+  ipb->SetAddress(indexB, Ipv4Address("10.1.1.2"));
+  ipb->SetNetworkMask(indexB, Ipv4Mask("255.255.255.0"));
 
   // iv) set the interface's state to "UP"
 
   NS_DEBUG_UNCOND("Setting ARP interface to UP");
-  arpipv4interfacepb->SetUp();
+  ipb->SetUp(indexB);
 
-  b.GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.1"), 1);
+  ipb->SetDefaultRoute (Ipv4Address ("10.1.1.1"), 1);
 
 
   DatagramSocket *source = new DatagramSocket (&a);

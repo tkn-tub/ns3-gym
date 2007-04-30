@@ -41,15 +41,15 @@ L3Demux::~L3Demux()
 }
 
 TraceResolver *
-L3Demux::CreateTraceResolver (TraceContext const &context)
+L3Demux::CreateTraceResolver (TraceContext const &context) const
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   for (L3Map_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       std::string protValue;
       std::ostringstream oss (protValue);
-      oss << (i->second)->GetProtocolNumber ();
-      ProtocolTraceType context = (i->second)->GetProtocolNumber ();
+      oss << i->second->GetProtocolNumber ();
+      ProtocolTraceType context = i->second->GetProtocolNumber ();
       resolver->Add (protValue, 
                      MakeCallback (&L3Protocol::CreateTraceResolver, i->second),
                      context);

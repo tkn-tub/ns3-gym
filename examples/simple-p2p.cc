@@ -54,7 +54,6 @@
 #include "ns3/p2p-net-device.h"
 #include "ns3/mac-address.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/arp-ipv4-interface.h"
 #include "ns3/ipv4.h"
 #include "ns3/datagram-socket.h"
 #include "ns3/ipv4-route.h"

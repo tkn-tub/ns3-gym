@@ -59,7 +59,7 @@ public:
    *          performed in this object. The caller must
    *          delete the returned object.
    */
-  TraceResolver *CreateTraceResolver (TraceContext const &context);
+  TraceResolver *CreateTraceResolver (TraceContext const &context) const;
 
 
   /**

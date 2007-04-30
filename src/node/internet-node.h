@@ -57,7 +57,6 @@ public:
 
   void SetName(std::string name);
 private:
-  void SetupLoopback (void);
   // Capabilities
   NetDeviceList*   m_netDevices;
   ApplicationList* m_applicationList;

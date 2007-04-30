@@ -239,6 +239,7 @@ node.add_headers ([
     'header-utils.h',
     'protocol.h',
     'queue.h',
+    'arp-ipv4-interface.h',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -247,7 +248,6 @@ node.add_inst_headers ([
     'ipv4-address.h',
     'net-device.h',
     'net-device-list.h',
-    'arp-ipv4-interface.h',
     'ipv4-interface.h',
     'mac-address.h',
     'ipv4.h',
@@ -275,7 +275,6 @@ p2p.add_sources ([
     'p2p-net-device.cc',
     'p2p-channel.cc',
     'p2p-topology.cc',
-    'p2p-ipv4-interface.cc',
     ])
 p2p.add_headers ([
     'propagator.h',
@@ -284,7 +283,6 @@ p2p.add_inst_headers ([
     'p2p-net-device.h',
     'p2p-channel.h',
     'p2p-topology.h',
-    'p2p-ipv4-interface.h',
     ])
 
 
