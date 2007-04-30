@@ -55,12 +55,20 @@ ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
 void 
 ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
 {
-  Arp * arp = m_node->GetArp ();
-  MacAddress hardwareDestination;
-  bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
-  if (found)
+  NS_ASSERT (GetDevice () != 0);
+  if (GetDevice ()->NeedsArp ())
     {
-      GetDevice ()->Send (p, hardwareDestination, Ipv4::PROT_NUMBER);
+      Arp * arp = m_node->GetArp ();
+      MacAddress hardwareDestination;
+      bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
+      if (found)
+        {
+          GetDevice ()->Send (p, hardwareDestination, Ipv4::PROT_NUMBER);
+        }
+    }
+  else
+    {
+      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), Ipv4::PROT_NUMBER);
     }
 }
 
