@@ -153,5 +153,11 @@ InternetNode::GetArp (void) const
   return static_cast<Arp*> (m_l3Demux->Lookup (Arp::PROT_NUMBER));
 }
 
+void 
+InternetNode::DoAddDevice (NetDevice *device) const
+{
+  //XXX
+}
+
 
 }//namespace ns3

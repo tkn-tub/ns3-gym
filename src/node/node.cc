@@ -68,6 +68,25 @@ Node::SetSystemId(uint32_t s )
   m_sid = s;
 }
 
+uint32_t 
+Node::AddDevice (NetDevice *device)
+{
+  uint32_t index = m_devices.size ();
+  m_devices.push_back (device);
+  DoAddDevice (device);
+  return index;
+}
+NetDevice *
+Node::GetDevice (uint32_t index) const
+{
+  return m_devices[index];
+}
+uint32_t 
+Node::GetNDevices (void) const
+{
+  return m_devices.size ();
+}
+
 // Node stack creation and management routines.
 Node* Node::Create()
 {

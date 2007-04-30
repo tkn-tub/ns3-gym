@@ -57,6 +57,7 @@ public:
 
   void SetName(std::string name);
 private:
+  virtual void DoAddDevice (NetDevice *device) const;
   // Capabilities
   NetDeviceList*   m_netDevices;
   ApplicationList* m_applicationList;
