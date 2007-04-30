@@ -23,7 +23,6 @@
 
 #include "ns3/composite-trace-resolver.h"
 
-#include "net-device-list.h"
 #include "application-list.h"
 #include "l3-demux.h"
 #include "ipv4-l4-demux.h"
