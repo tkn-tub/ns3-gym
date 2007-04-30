@@ -316,6 +316,10 @@ template <typename OBJ, typename R>
 Callback<R> MakeCallback (R (OBJ::*mem_ptr) (), OBJ *const objPtr) {
   return Callback<R> (objPtr, mem_ptr);
 }
+template <typename OBJ, typename R>
+Callback<R> MakeCallback (R (OBJ::*mem_ptr) () const, OBJ const *const objPtr) {
+  return Callback<R> (objPtr, mem_ptr);
+}
 /**
  * \ingroup MakeCallback
  * \param mem_ptr class method member pointer
@@ -326,6 +330,10 @@ Callback<R> MakeCallback (R (OBJ::*mem_ptr) (), OBJ *const objPtr) {
  */
 template <typename OBJ, typename R, typename T1>
 Callback<R,T1> MakeCallback (R (OBJ::*mem_ptr) (T1), OBJ *const objPtr) {
+  return Callback<R,T1> (objPtr, mem_ptr);
+}
+template <typename OBJ, typename R, typename T1>
+Callback<R,T1> MakeCallback (R (OBJ::*mem_ptr) (T1) const, OBJ const *const objPtr) {
   return Callback<R,T1> (objPtr, mem_ptr);
 }
 /**
@@ -340,6 +348,10 @@ template <typename OBJ, typename R, typename T1, typename T2>
 Callback<R,T1,T2> MakeCallback (R (OBJ::*mem_ptr) (T1,T2), OBJ *const objPtr) {
   return Callback<R,T1,T2> (objPtr, mem_ptr);
 }
+template <typename OBJ, typename R, typename T1, typename T2>
+Callback<R,T1,T2> MakeCallback (R (OBJ::*mem_ptr) (T1,T2) const, OBJ const*const objPtr) {
+  return Callback<R,T1,T2> (objPtr, mem_ptr);
+}
 /**
  * \ingroup MakeCallback
  * \param mem_ptr class method member pointer
@@ -350,6 +362,10 @@ Callback<R,T1,T2> MakeCallback (R (OBJ::*mem_ptr) (T1,T2), OBJ *const objPtr) {
  */
 template <typename OBJ, typename R, typename T1,typename T2, typename T3>
 Callback<R,T1,T2,T3> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3), OBJ *const objPtr) {
+  return Callback<R,T1,T2,T3> (objPtr, mem_ptr);
+}
+template <typename OBJ, typename R, typename T1,typename T2, typename T3>
+Callback<R,T1,T2,T3> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3) const, OBJ const*const objPtr) {
   return Callback<R,T1,T2,T3> (objPtr, mem_ptr);
 }
 /**
@@ -364,6 +380,10 @@ template <typename OBJ, typename R, typename T1, typename T2, typename T3, typen
 Callback<R,T1,T2,T3,T4> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4), OBJ *const objPtr) {
   return Callback<R,T1,T2,T3,T4> (objPtr, mem_ptr);
 }
+template <typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4>
+Callback<R,T1,T2,T3,T4> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4) const, OBJ const*const objPtr) {
+  return Callback<R,T1,T2,T3,T4> (objPtr, mem_ptr);
+}
 /**
  * \ingroup MakeCallback
  * \param mem_ptr class method member pointer
@@ -374,6 +394,10 @@ Callback<R,T1,T2,T3,T4> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4), OBJ *cons
  */
 template <typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
 Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4,T5), OBJ *const objPtr) {
+  return Callback<R,T1,T2,T3,T4,T5> (objPtr, mem_ptr);
+}
+template <typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
+Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4,T5) const, OBJ const*const objPtr) {
   return Callback<R,T1,T2,T3,T4,T5> (objPtr, mem_ptr);
 }
 
