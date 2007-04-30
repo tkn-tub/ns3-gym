@@ -122,11 +122,13 @@ int main (int argc, char *argv[])
   //        creating a Channel
    
   PointToPointNetDevice neta(&a);
+  a.AddDevice (&neta);
 
   neta.AddQueue(new DropTailQueue () );
   neta.SetName("a.eth0"); 
 
   PointToPointNetDevice netb(&b);
+  b.AddDevice (&netb);
 
   neta.AddQueue(new DropTailQueue () );
   netb.SetName("b.eth0"); 
