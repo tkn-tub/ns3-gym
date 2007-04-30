@@ -88,7 +88,6 @@ namespace ns3 {
 
 class NodeList;
 
-class NetDeviceList;
 class ApplicationList;
 
 // The below five may be encapsulated/abstracted in a Kernel or Stack class
@@ -180,7 +179,6 @@ public:
   // null capability exists.
   virtual L3Demux*         GetL3Demux() const;
   virtual Ipv4L4Demux*     GetIpv4L4Demux() const;
-  virtual NetDeviceList*   GetNetDeviceList() const;
   virtual ApplicationList* GetApplicationList() const;
   virtual Ipv4 *           GetIpv4 (void) const;
   virtual Udp *            GetUdp (void) const;

@@ -148,12 +148,6 @@ ApplicationList* Node::GetApplicationList() const
   return 0;
 }
 
-NetDeviceList*
-Node::GetNetDeviceList() const
-{
-  return 0;
-}
-
 Ipv4 *
 Node::GetIpv4 (void) const
 {

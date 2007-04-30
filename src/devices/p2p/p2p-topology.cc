@@ -31,7 +31,6 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/drop-tail.h"
 #include "ns3/ipv4.h"
-#include "ns3/net-device-list.h"
 
 #include "p2p-channel.h"
 #include "p2p-net-device.h"
@@ -50,11 +49,6 @@ PointToPointTopology::AddPointToPointLink(
   const DataRate& bps,
   const Time& delay)
 {
-  // First get the NetDeviceList capability from each node
-  NetDeviceList* ndl1 = n1->GetNetDeviceList();
-  NetDeviceList* ndl2 = n2->GetNetDeviceList();
-  if (!ndl1 || !ndl2) return nil;  // Both ends must have NetDeviceList
-
   // Duplex link is assumed to be subnetted as a /30
   // May run this unnumbered in the future?
   Ipv4Mask netmask("255.255.255.252");
@@ -65,7 +59,7 @@ PointToPointTopology::AddPointToPointLink(
 
   PointToPointNetDevice* net1 = new PointToPointNetDevice(n1);
   net1->AddQueue(Queue::Default().Copy());
-  ndl1->Add(net1);
+  n1->AddDevice (net1);
   Ipv4 *ip1 = n1->GetIpv4 ();
   uint32_t index1 = ip1->AddInterface (net1);
   net1->Attach (channel);
@@ -76,7 +70,7 @@ PointToPointTopology::AddPointToPointLink(
 
   PointToPointNetDevice* net2 = new PointToPointNetDevice(n2);
   net2->AddQueue(Queue::Default().Copy());
-  ndl2->Add(net2);
+  n2->AddDevice (net2);
   Ipv4 *ip2 = n2->GetIpv4 ();
   uint32_t index2 = ip2->AddInterface (net2);
   net2->Attach (channel);
