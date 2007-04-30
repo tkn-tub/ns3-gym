@@ -36,7 +36,7 @@ namespace ns3 {
 
 class Ipv4Address;
 class RandomVariable;
-class DatagramSocket;
+class Socket;
 class DataRate;
 
 class OnOffApplication : public Application {
@@ -69,7 +69,7 @@ public: // Static methods
   static void DefaultSize(uint32_t s) { g_defaultSize = s;}
 
 public:
-  DatagramSocket* m_socket;       // Associated socket
+  Socket        * m_socket;       // Associated socket
   Ipv4Address     m_peerIP;       // Peer IP address
   uint16_t        m_peerPort;     // Peer port
   bool            m_connected;    // True if connected
@@ -95,9 +95,9 @@ private:
   void ScheduleNextTx();
   void ScheduleStartEvent();
   void ScheduleStopEvent();
-  void ConnectionSucceeded(DatagramSocket*);
-  void ConnectionFailed(DatagramSocket*);
-  void Ignore(DatagramSocket*);
+  void ConnectionSucceeded(Socket*);
+  void ConnectionFailed(Socket*);
+  void Ignore(Socket*);
 protected:
 };
 

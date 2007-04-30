@@ -28,11 +28,11 @@ UdpEndPoint::UdpEndPoint (Ipv4Address address, uint16_t port)
 {}
 
 void 
-UdpEndPoint::SetSocket (DatagramSocket *socket)
+UdpEndPoint::SetSocket (UdpSocket *socket)
 {
   m_socket = socket;
 }
-DatagramSocket *
+UdpSocket *
 UdpEndPoint::GetSocket (void) const
 {
   return m_socket;

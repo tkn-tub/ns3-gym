@@ -29,8 +29,9 @@
 #include "ns3/data-rate.h"
 #include "onoff-application.h"
 #include "ns3/random-variable.h"
-#include "datagram-socket.h"
+#include "socket.h"
 #include "ns3/simulator.h"
+#include "udp.h"
 
 using namespace std;
 
@@ -157,8 +158,8 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
                         MakeCallback(&OnOffApplication::ConnectionFailed,
                                      this));
 #endif
-      m_socket = new DatagramSocket (GetNode());
-      m_socket->SetDefaultDestination(m_peerIP, m_peerPort);
+      m_socket = GetNode ()->GetUdp ()->CreateSocket ();
+      m_socket->Connect (m_peerIP, m_peerPort);
     }
   StopApplication();                         // Insure no pending event
   // If we are not yet connected, there is nothing to do here
@@ -238,7 +239,7 @@ void OnOffApplication::ScheduleStopEvent()
 void OnOffApplication::SendPacket()
 {
   m_sendScheduled = false;
-  m_socket->SendDummy(m_pktSize);
+  m_socket->Send(0, m_pktSize);
 #ifdef NOTYET
   m_socket->Send(0, m_pktSize); // Send the packet
 #endif
@@ -248,13 +249,13 @@ void OnOffApplication::SendPacket()
   ScheduleNextTx();
 }
 
-void OnOffApplication::ConnectionSucceeded(DatagramSocket*)
+void OnOffApplication::ConnectionSucceeded(Socket*)
 {
   m_connected = true;
   ScheduleStartEvent();
 }
   
-void OnOffApplication::ConnectionFailed(DatagramSocket*)
+void OnOffApplication::ConnectionFailed(Socket*)
 {
   cout << "OnOffApplication, Connection Failed" << endl;
 }

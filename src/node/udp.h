@@ -35,6 +35,7 @@ namespace ns3 {
 class Node;
 class TraceResolver;
 class TraceContext;
+class Socket;
 
 class Udp : public Ipv4L4Protocol {
 public:
@@ -44,6 +45,8 @@ public:
   virtual ~Udp ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
+
+  Socket *CreateSocket (void);
 
   UdpEndPoint *Allocate (void);
   UdpEndPoint *Allocate (Ipv4Address address);

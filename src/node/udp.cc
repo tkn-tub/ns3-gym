@@ -27,10 +27,10 @@
 #include "udp-header.h"
 #include "ipv4-end-point-demux.h"
 #include "udp-end-point.h"
-#include "datagram-socket.h"
 #include "node.h"
 #include "ipv4.h"
 #include "l3-demux.h"
+#include "udp-socket.h"
 
 namespace ns3 {
 
@@ -52,6 +52,12 @@ TraceResolver *
 Udp::CreateTraceResolver (TraceContext const &context)
 {
   return new EmptyTraceResolver (context);
+}
+
+Socket *
+Udp::CreateSocket (void)
+{
+  return new UdpSocket (m_node);
 }
 
 UdpEndPoint *
@@ -102,7 +108,7 @@ Udp::Receive(Packet& packet,
     {
       return;
     }
-  DatagramSocket *socket = endPoint->GetSocket ();
+  UdpSocket *socket = endPoint->GetSocket ();
   socket->ForwardUp (packet, source, udpHeader.GetSource ());
   NS_ASSERT (socket != 0);
 }

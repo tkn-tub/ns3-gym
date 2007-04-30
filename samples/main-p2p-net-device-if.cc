@@ -27,8 +27,9 @@
 #include "ns3/p2p-net-device.h"
 #include "ns3/drop-tail.h"
 #include "ns3/ipv4.h"
+#include "ns3/udp.h"
 #include "ns3/trace-context.h"
-#include "ns3/datagram-socket.h"
+#include "ns3/socket.h"
 #include "ns3/simulator.h"
 #include "ns3/node-list.h"
 #include "ns3/trace-root.h"
@@ -77,12 +78,12 @@ protected:
 };
 
 static void
-GenerateTraffic (DatagramSocket *socket, uint32_t size)
+GenerateTraffic (Socket *socket, uint32_t size)
 {
   std::cout << "Node: " << socket->GetNode()->GetId () 
             << " at=" << Simulator::Now ().GetSeconds () << "s,"
             << " tx bytes=" << size << std::endl;
-  socket->SendDummy (size);
+  socket->Send (0, size);
   if (size > 50)
     {
       Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
@@ -90,7 +91,7 @@ GenerateTraffic (DatagramSocket *socket, uint32_t size)
 }
 
 static void
-DatagramSocketPrinter (DatagramSocket *socket, uint32_t size, Ipv4Address from, uint16_t fromPort)
+SocketPrinter (Socket *socket, uint32_t size, const Ipv4Address &from, uint16_t fromPort)
 {
   std::cout << "Node: " << socket->GetNode()->GetId () 
             << " at=" << Simulator::Now ().GetSeconds () << "s,"
@@ -98,9 +99,9 @@ DatagramSocketPrinter (DatagramSocket *socket, uint32_t size, Ipv4Address from, 
 }
 
 static void
-PrintTraffic (DatagramSocket *socket)
+PrintTraffic (Socket *socket)
 {
-  socket->SetDummyRxCallback (MakeCallback (&DatagramSocketPrinter));
+  socket->RecvDummy (MakeCallback (&SocketPrinter));
 }
 
 
@@ -200,10 +201,10 @@ int main (int argc, char *argv[])
   ipb->SetDefaultRoute (Ipv4Address ("10.1.1.1"), 1);
 
 
-  DatagramSocket *source = new DatagramSocket (&a);
-  DatagramSocket *sink = new DatagramSocket(&b);
+  Socket *source = a.GetUdp ()->CreateSocket ();
+  Socket *sink = b.GetUdp ()->CreateSocket ();
   sink->Bind (80);
-  source->SetDefaultDestination (Ipv4Address ("10.1.1.2"), 80);
+  source->Connect (Ipv4Address ("10.1.1.2"), 80);
 
   Logger logger("p2p-net-test.log");
 

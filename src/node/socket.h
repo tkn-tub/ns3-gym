@@ -18,187 +18,244 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// Define the Sockets API for ns3.
-// George F. Riley, Georgia Tech, Fall 2006
-
-// The Socket class defines an API based on the well-known
-// BSD sockets.  However, in a simulation environment, it is difficult
-// to implement the semantics "blocking" calls, such as recv.
-// The ns3 API will always return immediately from the blocking calls,
-// with an upcall at a later time when the call would unblock.
-// All blocking calls have a parameters with callbacks
-// to the desired upcall.  However, the design supports the upcall
-// even if the owner of the socket has not posted the corresponding
-// blocking call, which eases implementation slightly.
-//
-// The ns3 class "Process"is anticipated to be a common way to create
-// and manipulate sockets, so a set of member functions are provided
-// in class Process to give a syntactically easy way to access the
-// sockets with default upcall virtual functions for each of the
-// defined blocking calls.  See the definition and implementation
-// Process in process.h for details.
-//
-// As designed, the Socket class is a virtual base class, which defines
-// the services that each layer 4 protocol must provide.
-
 #ifndef __SOCKET_H__
 #define __SOCKET_H__
 
 #include "ns3/callback.h"
-#include "protocol.h"
+#include "ipv4-address.h"
+#include <stdint.h>
 
-namespace ns3{
+namespace ns3 {
 
-class IPAddr;
-class L4Protocol;
-class Process;
+class Node;
 
-// \brief Define the BSD Sockets API
+/**
+ * \brief Define a Socket API based on the BSD Socket API.
+ *
+ * Contrary to the original BSD socket API, this API is asynchronous:
+ * it does not contain blocking calls. This API also does not use
+ * the dreaded BSD sockaddr_t type. Other than that, it tries to stick
+ * to the BSD API to make it easier those who know the BSD API to use
+ * this API.
+ */
 class Socket {
 public:
-  Socket();  // Constructor
-  virtual ~Socket() {}
+  virtual ~Socket();
+
+  enum SocketErrno {
+    ENOTERROR,
+    EISCONN,
+    ENOTCONN,
+    EMSGSIZE,
+    EAGAIN,
+    ESHUTDOWN,
+    EOPNOTSUPP,
+    SOCKET_ERRNO_LAST
+  };
+
+  /**
+   * \return the errno associated to the last call which failed in this
+   *         socket. Each socket's errno is initialized to zero
+   *         when the socket is created.
+   */
+  virtual enum Socket::SocketErrno GetErrno (void) const = 0;
+
+  /**
+   * \returns the node this socket is associated with.
+   */
+  virtual Node *GetNode (void) const = 0;
+
+  /** 
+   * Allocate a free port number and
+   * bind this socket to this port number on all
+   * interfaces of this system.
+   *
+   * \returns 0 on success, -1 on failure.
+   */
+  virtual int Bind (void) = 0;
+
+  /** 
+   * Allocate a free port number and
+   * bind this socket to this port number on the
+   * specified interface.
+   *
+   * \param address address of interface to bind to.
+   * \returns 0 on success, -1 on failure.
+   */
+  virtual int Bind (Ipv4Address address) = 0;
+
+  /**
+   * Bind this socket to this port number
+   * on all interfaces of this system.
+   *
+   * \param port port to bind to on all interfaces
+   * \returns 0 on success, -1 on failure.
+   */
+  virtual int Bind (uint16_t port) = 0; 
+
+  /**
+   * Bind this socket to this port number
+   * on the interface specified by address.
+   *
+   * \param address address of interface to bind to.
+   * \param port port to bind to on specified interface
+   * \returns 0 on success, -1 on failure.
+   */
+  virtual int Bind (Ipv4Address address, uint16_t port) = 0;
+
+  /** 
+   * \brief Close a socket.
+   * \param closeCompleted Callback invoked when the close operation is
+   *        completed.
+   *
+   * After the Close call, the socket is no longer valid, and cannot
+   * safely be used for subsequent operations.
+   */
+  void Close(Callback<void, Socket*> closeCompleted = MakeCallback (&Socket::DummyCallbackVoidSocket));
+
+  /**
+   * \returns zero on success, -1 on failure.
+   *
+   * Do not allow any further Send calls. This method is typically
+   * implemented for Tcp sockets by a half close.
+   */
+  virtual int ShutdownSend (void) = 0;
+
+  /**
+   * \returns zero on success, -1 on failure.
+   *
+   * Do not allow any further Recv calls. This method is typically
+   * implemented for Tcp sockets by a half close.
+   */
+  virtual int ShutdownRecv (void) = 0;
+
+  /**
+   * \brief Initiate a connection to a remote host
+   * \param address IP Address of remote.
+   * \param portNumber Port number of remote
+   * \param connectionSucceeded this callback is invoked when the connection request
+   *        initiated by the user is successfully completed. The callback is passed
+   *        back a pointer to the same socket object.
+   * \param connectionFailed this callback is invoked when the connection request
+   *        initiated by the user is unsuccessfully completed. The callback is passed
+   *        back a pointer to the same socket object. 
+   * \param halfClose XXX When exactly is this callback invoked ? If it invoked when the
+   *        other side closes the connection ? Or when I call Close ?
+   */
+  void Connect(const Ipv4Address & address,
+               uint16_t portNumber,
+               Callback<void, Socket*> connectionSucceeded = MakeCallback(&Socket::DummyCallbackVoidSocket),
+               Callback<void, Socket*> connectionFailed = MakeCallback(&Socket::DummyCallbackVoidSocket),
+               Callback<void, Socket*> halfClose = MakeCallback(&Socket::DummyCallbackVoidSocket));
+    
+  /**
+   * \brief Accept connection requests from remote hosts
+   * \param connectionRequest Callback for connection request from peer. 
+   *        This user callback is passed a pointer to this socket, the 
+   *        ip address and the port number of the connection originator. 
+   *        This callback must return true to accept the incoming connection,
+   *        false otherwise. If the connection is accepted, the 
+   *        "newConnectionCreated" callback will be invoked later to give access
+   *        to the user to the socket created to match this new connection. If the
+   *        user does not explicitely specify this callback, all incoming 
+   *        connections will be refused.
+   * \param newConnectionCreated Callback for new connection: when a new
+   *        is accepted, it is created and the corresponding socket is passed
+   *        back to the user through this callback. This user callback is passed
+   *        a pointer to the new socket, and the ip address and port number
+   *        of the connection originator.
+   * \param closeRequested Callback for connection close request from peer.
+   *        XXX: when is this callback invoked ?
+   */
+  int Accept(Callback<bool, Socket*, const Ipv4Address&, uint16_t> connectionRequest = 
+             MakeCallback(&Socket::RefuseAllConnections),
+             Callback<void, Socket*, const Ipv4Address&, uint16_t> newConnectionCreated = 
+             MakeCallback (&Socket::DummyCallbackVoidSocketIpv4AddressUi16),
+             Callback<void, Socket*> closeRequested = MakeCallback (&Socket::DummyCallbackVoidSocket));
+
+  /**
+   * \brief Send data (or dummy data) to the remote host
+   * \param buffer Data to send (nil if dummy data).
+   * \param size Number of bytes to send.
+   * \param dataSent Data sent callback.
+   * \returns -1 in case of error or the number of bytes copied in the 
+   *          internal buffer and accepted for transmission.
+   */
+  int Send (const uint8_t* buffer,
+            uint32_t size,
+            Callback<void, Socket*, uint32_t> dataSent = MakeCallback (&Socket::DummyCallbackVoidSocketUi32));
+  
+  /**
+   * \brief Send data to a specified peer.
+   * \param address IP Address of remote host
+   * \param port port number
+   * \param buffer Data to send (nil if dummy data).
+   * \param size Number of bytes to send.
+   * \param dataSent Data sent callback.
+   * \returns -1 in case of error or the number of bytes copied in the 
+   *          internal buffer and accepted for transmission.
+   */
+  int SendTo(const Ipv4Address &address,
+             uint16_t port,
+             const uint8_t *buffer,
+             uint32_t size,
+             Callback<void, Socket*, uint32_t> dataSent = MakeCallback (&Socket::DummyCallbackVoidSocketUi32));
+  
+  /**
+   * \brief Receive data
+   * \param Received data callback. Invoked whenever new data is received.
+   *
+   * If you wish to transport only dummy packets, this method is not a very
+   * efficient way to receive these dummy packets: it will trigger a memory
+   * allocation to hold the dummy memory into a buffer which can be passed
+   * to the user. Instead, consider using the RecvDummy method.
+   */
+  void Recv(Callback<void, Socket*, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> = 
+            MakeCallback (&Socket::DummyCallbackVoidSocketBufferUi32Ipv4AddressUi16));
+  
+  /**
+   * \brief Receive data
+   * \param Received data callback. Invoked whenever new data is received.
+   *
+   * This method is included because it is vastly more efficient than the 
+   * Recv method when you use dummy payload.
+   */
+  void RecvDummy(Callback<void, Socket*, uint32_t,const Ipv4Address&, uint16_t> = 
+                 MakeCallback (&Socket::DummyCallbackVoidSocketUi32Ipv4AddressUi16));
+
 private:
-  // These static methods are default, do-nothing callbacks.  They are
-  // provided as default arguments to the various socket calls, so callers who
-  // are not interested in a particular callback can ignore the
-  // parameters.  Since these are used as formal parameters to MakeCallbac,
-  // each must have a unique name (they can't be disambiguated by argument
-  // list).  The naming convention is a single letter indicating the
-  // return type (V = void for example) and a single letter for each
-  // argument type (S = Socket for exampls).
-  static void CBIgnoreVS(Socket*) {}
-  static void CBIgnoreVSIP(Socket*, const IPAddr&, PortId_t) {}
-  static void CBIgnoreVSU(Socket*, uint32_t) {}
-  static void CBIgnoreVSCU(Socket*, char*, uint32_t) {}
-  static bool CBIgnoreBSIP(Socket*, const IPAddr&, PortId_t){ return true;}
-  static void CBIgnoreVSCUIP(Socket*, char*, uint32_t, const IPAddr&, PortId_t);
-  
-public:
-  // Define the BSD Socket API, with some slight variations.
+  virtual void DoClose(Callback<void, Socket*> closeCompleted) = 0;
+  virtual void DoConnect(const Ipv4Address & address,
+                         uint16_t portNumber,
+                         Callback<void, Socket*> connectionSucceeded,
+                         Callback<void, Socket*> connectionFailed,
+                         Callback<void, Socket*> halfClose) = 0;
+  virtual int DoAccept(Callback<bool, Socket*, const Ipv4Address&, uint16_t> connectionRequest,
+                       Callback<void, Socket*, const Ipv4Address&, uint16_t> newConnectionCreated,
+                       Callback<void, Socket*> closeRequested) = 0;
+  virtual int DoSend (const uint8_t* buffer,
+                    uint32_t size,
+                    Callback<void, Socket*, uint32_t> dataSent) = 0;
+  virtual int DoSendTo(const Ipv4Address &address,
+                       uint16_t port,
+                       const uint8_t *buffer,
+                       uint32_t size,
+                       Callback<void, Socket*, uint32_t> dataSent) = 0;
+  virtual void DoRecv(Callback<void, Socket*, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> receive) = 0;
+  virtual void DoRecvDummy(Callback<void, Socket*, uint32_t,const Ipv4Address&, uint16_t>) = 0;
 
-  // \brief Bind the socket to a particular port number
-  // \param Port number to bind. If zero is specified, an available
-  // transient port is assigned.
-  // \return Port number assigned, or -1 if port already in use.
 
-  virtual PortId_t Bind(PortId_t = 0);
-
-  // \brief Close a socket.
-  // After the Close call, the socket is no longer valid, and cannot
-  // safely be used for subsequent operations.
-  // \param Callback for close completed.
-  virtual void Close(ns3::Callback<void, Socket*>
-                     = MakeCallback(&Socket::CBIgnoreVS));
-
-  // \brief Initiate a connection to a remote host
-  // \param IP Address of remote.
-  // \param Port number of remote
-  // \param Callback for connection succeeded
-  // \param Callback for connection failed
-  // \param Callback for connection close requested by peer
-  virtual void Connect(const IPAddr&,          // IPAddress of peer
-               PortId_t,                       // Port number
-               ns3::Callback<void, Socket*> =  // COnnection succeeded callback,
-                       MakeCallback(&Socket::CBIgnoreVS),
-               ns3::Callback<void, Socket*> =  // Connection failed callback
-                       MakeCallback(&Socket::CBIgnoreVS),
-               ns3::Callback<void, Socket*> =  // CloseRequested callback
-                       MakeCallback(&Socket::CBIgnoreVS));
-  
-  // \brief Specify the number of pending connections to buffer
-  // while not blocked on accept.  We include this for completeness,
-  // but with the callback approach to connection acceptance this
-  // does nothing.
-  virtual void Listen(uint32_t);
-  
-  // \brief Accept connection requests from remote hosts
-  // \param Callback for connection request from peer
-  // \param Callback for new connection
-  // \param Callback for connection close request from peer
-  virtual void Accept(
-      // Connection request callback
-      ns3::Callback<bool, Socket*, const IPAddr&, PortId_t> = 
-           MakeCallback(&Socket::CBIgnoreBSIP),
-      // New connection callback
-      ns3::Callback<void, Socket*, const IPAddr&, PortId_t> = 
-           MakeCallback(&Socket::CBIgnoreVSIP),
-      // CloseRequested callback
-      ns3::Callback<void, Socket*> = 
-           MakeCallback(&Socket::CBIgnoreVS));
-
-  // \brief Send data (or dummy data) to the remote host
-  // \param Data to send (nil if dummy data).
-  // NOTE.  The data (if any) is copied by this call, so pointers
-  // to local data is allowed and processed correctly.
-  // \param Number of bytes to send.
-  // \param Data sent callback.  A suitable "ignore" callback
-  // is used if not specified.
-  virtual void Send(char*,                   // Data to send
-                    uint32_t,                // Number of bytes
-                    ns3::Callback<void, Socket*, uint32_t> = 
-                         MakeCallback(&CBIgnoreVSU)); // Sent cb
-
-  // \brief Send data to a specified peer.
-  // \param IP Address of remote host
-  // \param port number
-  // \param Data to send (nil if dummy data).
-  // NOTE.  The data (if any) is copied by this call, so pointers
-  // to local data is allowed and processed correctly.
-  // \param Number of bytes to send.
-  // \param Data sent callback
-  virtual void SendTo(const IPAddr&,           // IP Address of remote peer
-                      PortId_t,                // Port number of remote peer
-                      char*,                   // Data to send
-                      uint32_t,                // Number of bytes
-                      ns3::Callback<void, Socket*, uint32_t> = 
-                      MakeCallback(&Socket::CBIgnoreVSU)); // Sent cb
-
-  // \brief Receive data
-  // Note that due to the callback nature of the ns3 implementation,
-  // there is no data pointer provided here.  Rather, the callback
-  // will specify where the data can be found, and the callback should
-  // copy it to a local buffer if needed at that time.
-  // \param Received data callback.
-  virtual void Recv(ns3::Callback<void, Socket*, char*, uint32_t,
-                    const IPAddr&, PortId_t> = 
-                    MakeCallback(&Socket::CBIgnoreVSCUIP));
-
-private:
-// upcalls
-// The members below are all callbacks, created with MakeCallback,
-  ns3::Callback<void, Socket*> m_cbCloseComplete;      // Socket Closed upcall
-  ns3::Callback<void, Socket*> m_cbCloseRequested;     // Close req by peer
-  ns3::Callback<void, Socket*> m_cbConnectionSucceeded;// Connection successful
-  ns3::Callback<void, Socket*> m_cbConnectionFailed;   // Connection failed
-
-  // \brief For TCP sockets, the cbSent upcall call is made when the data packet
-  // is sent, but not acknowledged.  For UDP sockets, it is called
-  // immediately.
-  ns3::Callback<void, Socket*, uint32_t> m_cbSent;       // Data delivered
-
-  // \brief For the cbRecv callback, the char* to the data may be nil if
-  // no actual data is present.
-  ns3::Callback<void, Socket*, char*, uint32_t,
-                const IPAddr&, PortId_t> m_cbRecv;
-
-  // \brief The cbConnectionRequest callback is called when a socket has
-  // called Listen, and indicates a remote peer has sent a connection
-  // request.  The callback can return false to indicate the connection
-  // is to be rejected, for example in a peer-to-peer application that
-  // wants to limit the number of connections at any one time.
-  ns3::Callback<bool, Socket*, const IPAddr&, PortId_t> m_cbConnectionRequest;
-
-  // \brief The cbNewConnection callback is called when a connection request
-  // from a peer has been received and accepted by the process owning
-  // this socket.  Note the Socket* passed to the upcall is a new
-  // socket.  The original socket using accept is still accepting connections.
-  ns3::Callback<void, Socket*, const IPAddr&, PortId_t> m_cbNewConnection;
-
+  static bool RefuseAllConnections (Socket* socket, const Ipv4Address& address, uint16_t port);
+  static void DummyCallbackVoidSocket (Socket *socket);
+  static void DummyCallbackVoidSocketUi32 (Socket *socket, uint32_t);
+  static void DummyCallbackVoidSocketUi32Ipv4AddressUi16 (Socket *socket, uint32_t, const Ipv4Address &, uint16_t);
+  static void DummyCallbackVoidSocketBufferUi32Ipv4AddressUi16 (Socket *socket, const uint8_t *, uint32_t, 
+                                                                const Ipv4Address &, uint16_t);
+  static void DummyCallbackVoidSocketIpv4AddressUi16 (Socket *socket, const Ipv4Address &, uint16_t);
 };
 
 } //namespace ns3
 
-#endif
+#endif /* SOCKET_H */
 
 

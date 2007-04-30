@@ -200,7 +200,6 @@ node.add_sources ([
     'ipv4.cc',
     'ipv4-end-point.cc',
     'udp-end-point.cc',
-    'datagram-socket.cc',
     'udp.cc',
     'capability.cc',
     'arp-header.cc',
@@ -218,13 +217,13 @@ node.add_sources ([
     'channel.cc',
     'node-list.cc',
     'ascii-trace.cc',
+    'socket.cc',
+    'udp-socket.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
     'udp-header.h',
     'ipv4-checksum.h',
-    'udp.h',
-    'ipv4-l4-protocol.h',
     'application.h',
     'application-list.h',
     'onoff-application.h',
@@ -233,16 +232,15 @@ node.add_headers ([
     'arp.h',
     'ipv4-loopback-interface.h',
     'l3-demux.h',
-    'ipv4-l4-demux.h',
     'header-utils.h',
     'protocol.h',
     'queue.h',
     'arp-ipv4-interface.h',
+    'udp-socket.h',
     ])
 node.add_inst_headers ([
     'node.h',
     'internet-node.h',
-    'datagram-socket.h',
     'ipv4-address.h',
     'net-device.h',
     'ipv4-interface.h',
@@ -263,6 +261,13 @@ node.add_inst_headers ([
     'application-list.h',
     'onoff-application.h',
     'ascii-trace.h',
+    'socket.h',
+    'udp.h',
+    'ipv4-l4-protocol.h',
+    'ipv4-l4-demux.h',
+    'udp-end-point.h',
+    'ipv4-end-point-demux.h',
+    'ipv4-end-point.h',
     ])
 
 p2p = build.Ns3Module ('p2p', 'src/devices/p2p')
