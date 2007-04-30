@@ -152,6 +152,8 @@ class NetDevice {
    */
   bool Send(Packet& p, const MacAddress& dest, uint16_t protocolNumber);
 
+  bool NeedsArp (void) const;
+
  protected:
   /**
    * Enable broadcast support. This method should be
@@ -222,7 +224,7 @@ class NetDevice {
    * subclasses to forward packets. Subclasses MUST override this method.
    */
   virtual bool SendTo (Packet& p, const MacAddress& dest) = 0;
-
+  virtual bool DoNeedsArp (void) const = 0;
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
   virtual Channel *DoGetChannel (void) const = 0;
   Node*         m_node;

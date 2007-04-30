@@ -360,4 +360,10 @@ PointToPointNetDevice::DoGetChannel(void) const
     return m_channel;
 }
 
+bool 
+PointToPointNetDevice::DoNeedsArp (void) const
+{
+  return false;
+}
+
 } // namespace ns3

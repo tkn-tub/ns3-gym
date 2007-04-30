@@ -254,6 +254,7 @@ private:
    * @see class TraceResolver
    */
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
+  virtual bool DoNeedsArp (void) const;
   /**
    * Enumeration of the states of the transmit machine of the net device.
    */

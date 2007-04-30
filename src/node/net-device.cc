@@ -220,4 +220,10 @@ NetDevice::GetNode (void) const
   return m_node;
 }
 
+bool
+NetDevice::NeedsArp (void) const
+{
+  return DoNeedsArp ();
+}
+
 }; // namespace ns3
