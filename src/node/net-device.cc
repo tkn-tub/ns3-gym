@@ -23,8 +23,6 @@
 #include "ns3/assert.h"
 
 #include "net-device.h"
-#include "l3-demux.h"
-#include "l3-protocol.h"
 #include "llc-snap-header.h"
 #include "node.h"
 
