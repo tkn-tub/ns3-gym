@@ -155,7 +155,7 @@ int main (int argc, char *argv[])
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-p2p.tr file
-#if 0
+#if 1
   AsciiTrace trace ("simple-p2p.tr");
   trace.TraceAllQueues ();
   trace.TraceAllNetDeviceRx ();
