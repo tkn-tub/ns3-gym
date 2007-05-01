@@ -212,7 +212,7 @@ Ipv4Header::GetSerializedSize (void) const
   return 5 * 4;
 }
 
-void 
+void
 Ipv4Header::SerializeTo (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
@@ -255,7 +255,7 @@ Ipv4Header::SerializeTo (Buffer::Iterator start) const
 #endif
     }
 }
-void 
+uint32_t
 Ipv4Header::DeserializeFrom (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
@@ -302,6 +302,7 @@ Ipv4Header::DeserializeFrom (Buffer::Iterator start)
         }
 #endif
     }
+  return GetSerializedSize ();
 }
 
 }; // namespace ns3

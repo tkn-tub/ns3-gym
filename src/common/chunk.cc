@@ -1,4 +1,4 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
  * All rights reserved.
@@ -19,31 +19,42 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef LLC_SNAP_HEADER_H
-#define LLC_SNAP_HEADER_H
-
-#include <stdint.h>
-#include "ns3/header.h"
+#include "chunk.h"
+#include "ns3/assert.h"
 
 namespace ns3 {
 
-class LlcSnapHeader : public Header {
- public:
-  LlcSnapHeader ();
-  virtual ~LlcSnapHeader ();
+Chunk::Chunk ()
+{}
 
+Chunk::~Chunk ()
+{}
 
-  void SetType (uint16_t type);
-  uint16_t GetType (void);
-
-private:
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
-  uint16_t m_etherType;
-};
+void 
+Chunk::Print (std::ostream &os) const
+{
+  PrintTo (os);
+}
+uint32_t
+Chunk::GetSize (void) const
+{
+  return GetSerializedSize ();
+}
+void
+Chunk::Serialize (Buffer::Iterator start) const
+{
+  SerializeTo (start);
+}
+uint32_t
+Chunk::Deserialize (Buffer::Iterator start)
+{
+  uint32_t deserialized = DeserializeFrom (start);
+  return deserialized;
+}
+std::ostream& operator<< (std::ostream& os, Chunk const& chunk)
+{
+  chunk.Print (os);
+  return os;
+}
 
 }; // namespace ns3
-
-#endif /* LLC_SNAP_HEADER_H */

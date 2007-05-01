@@ -61,26 +61,22 @@ AsciiTrace::PrintType (Packet const &packet)
 {
   Packet p = packet;
   LlcSnapHeader llc;
-  p.Peek (llc);
-  p.Remove (llc);
+  p.RemoveHeader (llc);
   switch (llc.GetType ())
     {
     case 0x0800: {
       Ipv4Header ipv4;
-      p.Peek (ipv4);
-      p.Remove (ipv4);
+      p.RemoveHeader (ipv4);
       if (ipv4.GetProtocol () == 17)
         {
           UdpHeader udp;
-          p.Peek (udp);
-          p.Remove (udp);
+          p.RemoveHeader (udp);
           m_os << "udp size=" << p.GetSize ();
         }
     } break;
     case 0x0806: {
       ArpHeader arp;
-      p.Peek (arp);
-      p.Remove (arp);
+      p.RemoveHeader (arp);
       m_os << "arp ";
       if (arp.IsRequest ())
         {

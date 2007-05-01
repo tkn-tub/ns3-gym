@@ -367,8 +367,7 @@ Ipv4::Receive(Packet& packet, NetDevice &device)
       index++;
     }
   Ipv4Header ipHeader;
-  packet.Peek (ipHeader);
-  packet.Remove (ipHeader);
+  packet.RemoveHeader (ipHeader);
 
   if (!ipHeader.IsChecksumOk ()) 
     {
@@ -424,7 +423,7 @@ void
 Ipv4::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route)
 {
   Packet packet = p;
-  packet.Add (ip);
+  packet.AddHeader (ip);
   Ipv4Interface *outInterface = GetInterface (route.GetInterface ());
   NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
   m_txTrace (packet, route.GetInterface ());

@@ -27,6 +27,7 @@
 #include "trailer.h"
 #include "tags.h"
 #include "ns3/callback.h"
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -128,54 +129,42 @@ public:
   uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
-   * ns3::Header::serializeTo method to request the header to serialize
-   * itself in the packet buffer.
+   * ns3::Chunk::GetSerializedSize and ns3::Chunk::SerializeTo 
+   * methods to reserve space in the buffer and request the 
+   * header to serialize itself in the packet buffer.
    *
    * \param header a reference to the header to add to this packet.
    */
-  void Add (Header const &header);
+  template <typename T>
+  void AddHeader (T const &header);
   /**
-   * Deserialize header from this packet. This method invokes the
-   * ns3::Header::deserializeFrom method to request the header to deserialize
-   * itself from the packet buffer. This method does not remove
-   * the data from the buffer. It merely reads it.
-   *
-   * \param header a reference to the header to deserialize from the buffer
-   */
-  void Peek (Header &header);
-  /**
-   * Remove a deserialized header from the internal buffer.
-   * This method removes the bytes read by Packet::peek from
-   * the packet buffer.
+   * Deserialize and remove the header from the internal buffer.
+   * This method invokes ns3::Chunk::DeserializeFrom.
    *
    * \param header a reference to the header to remove from the internal buffer.
+   * \returns the number of bytes removed from the packet.
    */
-  void Remove (Header const &header);
+  template <typename T>
+  uint32_t RemoveHeader (T &header);
   /**
    * Add trailer to this packet. This method invokes the
-   * ns3::Trailer::serializeTo method to request the trailer to serialize
-   * itself in the packet buffer.
+   * ns3::Chunk::GetSerializedSize and ns3::Trailer::serializeTo 
+   * methods to reserve space in the buffer and request the trailer 
+   * to serialize itself in the packet buffer.
    *
    * \param trailer a reference to the trailer to add to this packet.
    */
-  void Add (Trailer const &trailer);
-  /**
-   * Deserialize trailer from this packet. This method invokes the
-   * ns3::Trailer::deserializeFrom method to request the trailer to deserialize
-   * itself from the packet buffer. This method does not remove
-   * the data from the buffer. It merely reads it.
-   *
-   * \param trailer a reference to the trailer to deserialize from the buffer
-   */
-  void Peek (Trailer &trailer);
+  template <typename T>
+  void AddTrailer (T const &trailer);
   /**
    * Remove a deserialized trailer from the internal buffer.
-   * This method removes the bytes read by Packet::peek from
-   * the packet buffer.
+   * This method invokes the ns3::Chunk::DeserializeFrom method.
    *
    * \param trailer a reference to the trailer to remove from the internal buffer.
+   * \returns the number of bytes removed from the end of the packet.
    */
-  void Remove (Trailer const &trailer);
+  template <typename T>
+  uint32_t RemoveTrailer (T &trailer);
   /**
    * Attach a tag to this packet. The tag is fully copied
    * in a packet-specific internal buffer. This operation 
@@ -226,15 +215,9 @@ public:
    */
   void AddAtEnd (Packet packet);
   /**
-   * Concatenate the fragment of the input packet identified
-   * by the offset and size parameters at the end of the current
-   * packet. This does not alter the uid of either packet.
-   *
-   * \param packet to concatenate
-   * \param offset offset of fragment to copy from the start of the input packet
-   * \param size size of fragment of input packet to copy.
+   * \param size number of padding bytes to add.
    */
-  void AddAtEnd (Packet packet, uint32_t offset, uint32_t size);
+  void AddPaddingAtEnd (uint32_t size);
   /** 
    * Remove size bytes from the end of the current packet
    * It is safe to remove more bytes that what is present in
@@ -268,12 +251,14 @@ public:
    *          identifies this packet.
    */
   uint32_t GetUid (void) const;
+
+  void Print (std::ostream &os) const;
 private:
   Packet (Buffer buffer, Tags tags, uint32_t uid);
   Buffer m_buffer;
   Tags m_tags;
   uint32_t m_uid;
-  static uint32_t m_global_uid;
+  static uint32_t m_globalUid;
 };
 
 }; // namespace ns3
@@ -285,6 +270,50 @@ private:
  *************************************************/
 
 namespace ns3 {
+
+template <typename T>
+void
+Packet::AddHeader (T const &header)
+{
+  NS_ASSERT_MSG (dynamic_cast<Header const *> (&header) != 0, 
+                 "Must pass Header subclass to Packet::AddHeader");
+  uint32_t size = header.GetSize ();
+  m_buffer.AddAtStart (size);
+  header.Serialize (m_buffer.Begin ());
+}
+template <typename T>
+uint32_t
+Packet::RemoveHeader (T &header)
+{
+  NS_ASSERT_MSG (dynamic_cast<Header const *> (&header) != 0, 
+                 "Must pass Header subclass to Packet::RemoveHeader");
+  uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
+  m_buffer.RemoveAtStart (deserialized);
+  return deserialized;
+}
+template <typename T>
+void
+Packet::AddTrailer (T const &trailer)
+{
+  NS_ASSERT_MSG (dynamic_cast<Trailer const *> (&trailer) != 0, 
+                 "Must pass Trailer subclass to Packet::AddTrailer");
+  uint32_t size = trailer.GetSize ();
+  m_buffer.AddAtEnd (size);
+  Buffer::Iterator start = m_buffer.End ();
+  start.Prev (size);
+  trailer.Serialize (start);
+}
+template <typename T>
+uint32_t
+Packet::RemoveTrailer (T &trailer)
+{
+  NS_ASSERT_MSG (dynamic_cast<Trailer const *> (&trailer) != 0, 
+                 "Must pass Trailer subclass to Packet::RemoveTrailer");
+  uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
+  m_buffer.RemoveAtEnd (deserialized);
+  return deserialized;
+}
+
 
 template <typename T>
 void Packet::AddTag (T const& tag)

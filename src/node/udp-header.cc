@@ -108,7 +108,7 @@ UdpHeader::GetSerializedSize (void) const
   return 8;
 }
 
-void 
+void
 UdpHeader::SerializeTo (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
@@ -131,7 +131,7 @@ UdpHeader::SerializeTo (Buffer::Iterator start) const
 #endif
     }
 }
-void 
+uint32_t
 UdpHeader::DeserializeFrom (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
@@ -142,6 +142,7 @@ UdpHeader::DeserializeFrom (Buffer::Iterator start)
     {
       // XXX verify checksum.
     }
+  return GetSerializedSize ();
 }
 
 

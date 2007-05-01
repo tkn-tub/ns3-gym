@@ -137,6 +137,7 @@ common.add_deps(['core', 'simulator'])
 ns3.add(common)
 common.add_sources([
     'buffer.cc',
+    'chunk.cc',
     'header.cc',
     'trailer.cc',
     'packet.cc',
@@ -155,6 +156,7 @@ common.add_headers ([
     ])
 common.add_inst_headers([
     'buffer.h',
+    'chunk.h',
     'header.h',
     'trailer.h',
     'tags.h',

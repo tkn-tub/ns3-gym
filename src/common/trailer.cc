@@ -20,48 +20,10 @@
  */
 
 #include "trailer.h"
-#include "ns3/assert.h"
 
 namespace ns3 {
 
-Trailer::Trailer ()
-  : m_isDeserialized (false) 
-{}
-
 Trailer::~Trailer ()
 {}
-
-void 
-Trailer::Print (std::ostream &os) const
-{
-  PrintTo (os);
-}
-uint32_t
-Trailer::GetSize (void) const
-{
-  return GetSerializedSize ();
-}
-void 
-Trailer::Serialize (Buffer::Iterator start) const
-{
-  SerializeTo (start);
-}
-void 
-Trailer::Deserialize (Buffer::Iterator start)
-{
-  DeserializeFrom (start);
-  m_isDeserialized = true;
-}
-bool 
-Trailer::IsDeserialized (void) const
-{
-  return m_isDeserialized;
-}
-
-std::ostream& operator<< (std::ostream& os, Trailer const& trailer)
-{
-  trailer.Print (os);
-  return os;
-}
 
 }; // namespace ns3

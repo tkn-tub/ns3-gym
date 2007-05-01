@@ -152,7 +152,7 @@ NetDevice::Send(Packet& p, const MacAddress& dest, uint16_t protocolNumber)
     {
       LlcSnapHeader llc;
       llc.SetType (protocolNumber);
-      p.Add (llc);
+      p.AddHeader (llc);
       return SendTo(p, dest);
     }
   else
@@ -179,8 +179,7 @@ NetDevice::ForwardUp (Packet& packet)
 {
   bool retval = false;
   LlcSnapHeader llc;
-  packet.Peek (llc);
-  packet.Remove (llc);
+  packet.RemoveHeader (llc);
   if (!m_receiveCallback.IsNull ())
     {
       retval = m_receiveCallback (this, packet, llc.GetType ());

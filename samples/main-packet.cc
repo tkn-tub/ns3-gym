@@ -17,7 +17,7 @@ public:
 private:
   virtual void PrintTo (std::ostream &os) const;
   virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual void DeserializeFrom (Buffer::Iterator start);
+  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
   virtual uint32_t GetSerializedSize (void) const;
 
   uint16_t m_data;
@@ -37,17 +37,18 @@ MyHeader::GetSerializedSize (void) const
 {
   return 2;
 }
-void 
+void
 MyHeader::SerializeTo (Buffer::Iterator start) const
 {
   // serialize in head of buffer
   start.WriteHtonU16 (m_data);
 }
-void 
+uint32_t
 MyHeader::DeserializeFrom (Buffer::Iterator start)
 {
   // deserialize from head of buffer
   m_data = start.ReadNtohU16 ();
+  return GetSerializedSize ();
 }
 
 void 
@@ -74,8 +75,7 @@ static void
 Receive (Packet p)
 {
   MyHeader my;
-  p.Peek (my);
-  p.Remove (my);
+  p.RemoveHeader (my);
   std::cout << "received data=" << my.GetData () << std::endl;
   struct MyTag myTag;
   p.PeekTag (myTag);
@@ -88,7 +88,7 @@ int main (int argc, char *argv[])
   MyHeader my;
   my.SetData (2);
   std::cout << "send data=2" << std::endl;
-  p.Add (my);
+  p.AddHeader (my);
   struct MyTag myTag;
   myTag.m_streamId = 5;
   p.AddTag (myTag);

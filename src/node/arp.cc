@@ -83,8 +83,7 @@ Arp::Receive(Packet& packet, NetDevice &device)
 {
   ArpCache *cache = FindCache (&device);
   ArpHeader arp;
-  packet.Peek (arp);
-  packet.Remove (arp);
+  packet.RemoveHeader (arp);
   if (arp.IsRequest () && 
       arp.GetDestinationIpv4Address () == cache->GetInterface ()->GetAddress ()) 
     {
@@ -206,7 +205,7 @@ Arp::SendArpRequest (ArpCache const *cache, Ipv4Address to)
                   cache->GetDevice ()->GetBroadcast (),
                   to);
   Packet packet;
-  packet.Add (arp);
+  packet.AddHeader (arp);
   cache->GetDevice ()->Send (packet, cache->GetDevice ()->GetBroadcast (), PROT_NUMBER);
 }
 
@@ -218,7 +217,7 @@ Arp::SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac)
                 cache->GetInterface ()->GetAddress (),
                 toMac, toIp);
   Packet packet;
-  packet.Add (arp);
+  packet.AddHeader (arp);
   cache->GetDevice ()->Send (packet, toMac, PROT_NUMBER);
 }
 

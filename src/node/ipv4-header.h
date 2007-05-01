@@ -65,7 +65,7 @@ private:
   virtual void PrintTo (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual void DeserializeFrom (Buffer::Iterator start);
+  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
 
   enum FlagsE {
     DONT_FRAGMENT = (1<<0),

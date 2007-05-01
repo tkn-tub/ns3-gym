@@ -100,8 +100,7 @@ Udp::Receive(Packet& packet,
              Ipv4Address const &destination)
 {
   UdpHeader udpHeader;
-  packet.Peek (udpHeader);
-  packet.Remove (udpHeader);
+  packet.RemoveHeader (udpHeader);
   UdpEndPoint *endPoint = m_endPoints->Lookup (destination, udpHeader.GetDestination (),
                                                source, udpHeader.GetSource ());
   if (endPoint == 0)
@@ -126,7 +125,7 @@ Udp::Send (Packet packet,
                                daddr,
                                PROT_NUMBER);
 
-  packet.Add (udpHeader);
+  packet.AddHeader (udpHeader);
 
   Ipv4 *ipv4 = m_node->GetIpv4 ();
   if (ipv4 != 0)

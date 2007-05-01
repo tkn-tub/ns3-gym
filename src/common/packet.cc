@@ -23,26 +23,26 @@
 
 namespace ns3 {
 
-uint32_t Packet::m_global_uid = 0;
+uint32_t Packet::m_globalUid = 0;
 
 Packet::Packet ()
   : m_buffer (),
-    m_uid (m_global_uid)
+    m_uid (m_globalUid)
 {
-  m_global_uid++;
+  m_globalUid++;
 }
 
 Packet::Packet (uint32_t size)
   : m_buffer (size),
-    m_uid (m_global_uid)
+    m_uid (m_globalUid)
 {
-  m_global_uid++;
+  m_globalUid++;
 }
 Packet::Packet (uint8_t const*buffer, uint32_t size)
   : m_buffer (),
-    m_uid (m_global_uid)
+    m_uid (m_globalUid)
 {
-  m_global_uid++;
+  m_globalUid++;
   m_buffer.AddAtStart (size);
   Buffer::Iterator i = m_buffer.Begin ();
   i.Write (buffer, size);
@@ -57,8 +57,8 @@ Packet::Packet (Buffer buffer, Tags tags, uint32_t uid)
 Packet 
 Packet::CreateFragment (uint32_t start, uint32_t length) const
 {
-  Buffer tmp = m_buffer.CreateFragment (start, length);
-  return Packet (tmp, m_tags, m_uid);
+  Buffer buffer = m_buffer.CreateFragment (start, length);
+  return Packet (buffer, m_tags, m_uid);
 }
 
 uint32_t 
@@ -66,46 +66,6 @@ Packet::GetSize (void) const
 {
   return m_buffer.GetSize ();
 }
-
-void 
-Packet::Add (Header const &header)
-{
-  m_buffer.AddAtStart (header.GetSize ());
-  header.Serialize (m_buffer.Begin ());
-}
-void 
-Packet::Peek (Header &header)
-{
-  header.Deserialize (m_buffer.Begin ());
-}
-void 
-Packet::Remove (Header const &header)
-{
-  NS_ASSERT (header.IsDeserialized ());
-  m_buffer.RemoveAtStart (header.GetSize ());
-}
-void 
-Packet::Add (Trailer const &trailer)
-{
-  m_buffer.AddAtEnd (trailer.GetSize ());
-  Buffer::Iterator start = m_buffer.End ();
-  start.Prev (trailer.GetSize ());
-  trailer.Serialize (start);
-}
-void 
-Packet::Peek (Trailer &trailer)
-{
-  Buffer::Iterator start = m_buffer.End ();
-  start.Prev (trailer.GetSize ());
-  trailer.Deserialize (start);
-}
-void 
-Packet::Remove (Trailer const &trailer)
-{
-  NS_ASSERT (trailer.IsDeserialized ());
-  m_buffer.RemoveAtEnd (trailer.GetSize ());
-}
-
 
 void 
 Packet::AddAtEnd (Packet packet)
@@ -120,23 +80,10 @@ Packet::AddAtEnd (Packet packet)
    * other packet into the current packet.
    */
 }
-void 
-Packet::AddAtEnd (Packet packet, uint32_t start, uint32_t size)
+void
+Packet::AddPaddingAtEnd (uint32_t size)
 {
-  NS_ASSERT (packet.GetSize () <= start + size);
-  Buffer src = packet.m_buffer;
-  m_buffer.AddAtEnd (src.GetSize ());
-  Buffer::Iterator destStart = m_buffer.End ();
-  destStart.Prev (size);
-  Buffer::Iterator srcStart = src.Begin ();
-  srcStart.Next (start);
-  Buffer::Iterator srcEnd = srcStart;
-  srcEnd.Next (size);
-  destStart.Write (srcStart, srcEnd);
-  /**
-   * XXX: we might need to merge the tag list of the
-   * other packet into the current packet.
-   */
+  m_buffer.AddAtEnd (size);
 }
 void 
 Packet::RemoveAtEnd (uint32_t size)
@@ -166,5 +113,9 @@ Packet::GetUid (void) const
 {
   return m_uid;
 }
+
+void 
+Packet::Print (std::ostream &os) const
+{}
 
 }; // namespace ns3

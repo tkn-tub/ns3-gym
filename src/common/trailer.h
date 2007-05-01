@@ -22,59 +22,14 @@
 #ifndef TRAILER_H
 #define TRAILER_H
 
-#include <stdint.h>
-#include <ostream>
-#include "buffer.h"
+#include "chunk.h"
 
 namespace ns3 {
 
-/**
- * \brief Protocol trailer serialization and deserialization.
- *
- * Every Protocol trailer which needs to be inserted and removed
- * from a Packet instance must derive from this abstract base class
- * and implement the private pure virtual methods listed below:
- *   - ns3::Trailer::SerializeTo
- *   - ns3::Trailer::DeserializeFrom
- *   - ns3::Trailer::GetSerializedSize
- *   - ns3::Trailer::PrintTo
- */
-class Trailer {
+class Trailer : public Chunk {
 public:
-  Trailer ();
   virtual ~Trailer ();
-
-  void Print (std::ostream &os) const;
-  uint32_t GetSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  void Deserialize (Buffer::Iterator start);
-  bool IsDeserialized (void) const;
-private:
-  bool m_isDeserialized;
-  /**
-   * \param os the std output stream in which this 
-   *       protocol trailer must print itself.
-   */
-  virtual void PrintTo (std::ostream &os) const = 0;
-
-  /**
-   * \returns the size of the serialized Trailer.
-   */
-  virtual uint32_t GetSerializedSize (void) const = 0;
-
-  /**
-   * \param start the buffer iterator in which the protocol trailer
-   *    must serialize itself.
-   */
-  virtual void SerializeTo (Buffer::Iterator start) const = 0;
-  /**
-   * \param start the buffer iterator from which the protocol trailer must
-   *    deserialize itself.
-   */
-  virtual void DeserializeFrom (Buffer::Iterator start) = 0;
 };
-
-std::ostream& operator<< (std::ostream& os, Trailer const& trailer);
 
 }; // namespace ns3
 

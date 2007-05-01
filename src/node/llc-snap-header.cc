@@ -57,7 +57,7 @@ LlcSnapHeader::PrintTo (std::ostream &os) const
   os.setf (std::ios::dec, std::ios::basefield);
 }
 
-void 
+void
 LlcSnapHeader::SerializeTo (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
@@ -65,12 +65,13 @@ LlcSnapHeader::SerializeTo (Buffer::Iterator start) const
   i.Write (buf, 6);
   i.WriteHtonU16 (m_etherType);
 }
-void 
+uint32_t
 LlcSnapHeader::DeserializeFrom (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   i.Next (5+1);
   m_etherType = i.ReadNtohU16 ();
+  return GetSerializedSize ();
 }
 
 

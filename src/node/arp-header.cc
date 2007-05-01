@@ -110,7 +110,7 @@ ArpHeader::GetSerializedSize (void) const
   return 28;
 }
 
-void 
+void
 ArpHeader::SerializeTo (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
@@ -128,7 +128,7 @@ ArpHeader::SerializeTo (Buffer::Iterator start) const
   WriteTo (i, m_macDest);
   WriteTo (i, m_ipv4Dest);
 }
-void 
+uint32_t
 ArpHeader::DeserializeFrom (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
@@ -140,6 +140,7 @@ ArpHeader::DeserializeFrom (Buffer::Iterator start)
   ReadFrom (i, m_ipv4Source);
   ReadFrom (i, m_macDest, hardwareAddressLen);
   ReadFrom (i, m_ipv4Dest);
+  return GetSerializedSize ();
 }
 
 }; // namespace ns3

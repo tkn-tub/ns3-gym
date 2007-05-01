@@ -20,48 +20,10 @@
  */
 
 #include "header.h"
-#include "ns3/assert.h"
 
 namespace ns3 {
 
-Header::Header ()
-  : m_isDeserialized (false) 
-{}
-
 Header::~Header ()
 {}
-
-void 
-Header::Print (std::ostream &os) const
-{
-  PrintTo (os);
-}
-uint32_t
-Header::GetSize (void) const
-{
-  return GetSerializedSize ();
-}
-void 
-Header::Serialize (Buffer::Iterator start) const
-{
-  SerializeTo (start);
-}
-void 
-Header::Deserialize (Buffer::Iterator start)
-{
-  DeserializeFrom (start);
-  m_isDeserialized = true;
-}
-bool 
-Header::IsDeserialized (void) const
-{
-  return m_isDeserialized;
-}
-
-std::ostream& operator<< (std::ostream& os, Header const& header)
-{
-  header.Print (os);
-  return os;
-}
 
 }; // namespace ns3
