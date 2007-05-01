@@ -299,9 +299,8 @@ Packet::AddTrailer (T const &trailer)
                  "Must pass Trailer subclass to Packet::AddTrailer");
   uint32_t size = trailer.GetSize ();
   m_buffer.AddAtEnd (size);
-  Buffer::Iterator start = m_buffer.End ();
-  start.Prev (size);
-  trailer.Serialize (start);
+  Buffer::Iterator end = m_buffer.End ();
+  trailer.Serialize (end);
 }
 template <typename T>
 uint32_t
