@@ -28,8 +28,6 @@
 
 namespace ns3 {
 
-class SystemFile;
-
 /**
  * \brief Pcap output for Packet logger
  *
@@ -46,7 +44,7 @@ public:
    * This method creates the file if it does not exist. If it
    * exists, the file is emptied.
    */
-  void Open (char const *name);
+  void Open (std::string const &name);
 
   /**
    * Write a pcap header in the output file which specifies
@@ -55,7 +53,11 @@ public:
    * be invoked before ns3::PcapWriter::writePacket and after
    * ns3::PcapWriter::open.
    */
-  void WriteHeaderEthernet (void);
+  void WriteEthernetHeader (void);
+
+  void WriteIpHeader (void);
+
+  void WriteWifiHeader (void);
 
   /**
    * \param packet packet to write to output file
@@ -63,10 +65,11 @@ public:
   void WritePacket (Packet const packet);
 
 private:
-  void WriteData (uint8_t *buffer, uint32_t size);
+  void WriteData (uint8_t const*buffer, uint32_t size);
   void Write32 (uint32_t data);
   void Write16 (uint16_t data);
-  SystemFile *m_writer;
+  void WriteHeader (uint32_t network);
+  std::ofstream *m_writer;
   Callback<void,uint8_t *,uint32_t> m_writeCallback;
 };
 

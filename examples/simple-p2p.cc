@@ -49,6 +49,7 @@
 #include "ns3/data-rate.h"
 
 #include "ns3/ascii-trace.h"
+#include "ns3/pcap-trace.h"
 #include "ns3/internet-node.h"
 #include "ns3/p2p-channel.h"
 #include "ns3/p2p-net-device.h"
@@ -154,9 +155,14 @@ int main (int argc, char *argv[])
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-p2p.tr file
+#if 0
   AsciiTrace trace ("simple-p2p.tr");
   trace.TraceAllQueues ();
   trace.TraceAllNetDeviceRx ();
+#else
+  PcapTrace trace ("simple-p2p.tr");
+  trace.TraceAllIp ();
+#endif
 
   Simulator::StopAt (Seconds(10.0));
 

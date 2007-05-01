@@ -32,15 +32,12 @@ if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] 
     core.add_external_dep('pthread')
     core.add_sources([
         'unix-system-wall-clock-ms.cc',
-        'unix-system-file.cc'
         ])
 elif env['PLATFORM'] == 'win32':
     core.add_sources([
         'win32-system-wall-clock-ms.cc',
-        'win32-system-file.cc'
         ])
 core.add_inst_headers([
-    'system-file.h',
     'system-wall-clock-ms.h',
     'reference-list.h',
     'callback.h',
@@ -219,6 +216,7 @@ node.add_sources ([
     'ascii-trace.cc',
     'socket.cc',
     'udp-socket.cc',
+    'pcap-trace.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
@@ -268,6 +266,7 @@ node.add_inst_headers ([
     'udp-end-point.h',
     'ipv4-end-point-demux.h',
     'ipv4-end-point.h',
+    'pcap-trace.h',
     ])
 
 p2p = build.Ns3Module ('p2p', 'src/devices/p2p')

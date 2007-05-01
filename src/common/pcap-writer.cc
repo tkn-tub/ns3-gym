@@ -24,8 +24,9 @@
  * http://wiki.ethereal.com/Development/LibpcapFileFormat
  */
 
+#include <fstream>
+
 #include "ns3/simulator.h"
-#include "ns3/system-file.h"
 #include "pcap-writer.h"
 #include "packet.h"
 
@@ -33,7 +34,9 @@
 namespace ns3 {
 
 enum {
-  PCAP_ETHERNET = 1
+  PCAP_ETHERNET = 1,
+  PCAP_RAW_IP   = 101,
+  PCAP_80211    = 105,
 };
 
 PcapWriter::PcapWriter ()
@@ -46,14 +49,32 @@ PcapWriter::~PcapWriter ()
 }
 
 void
-PcapWriter::Open (char const *name)
+PcapWriter::Open (std::string const &name)
 {
-  m_writer = new SystemFile ();
-  m_writer->Open (name);
+  m_writer = new std::ofstream ();
+  m_writer->open (name.c_str ());
 }
 
 void 
-PcapWriter::WriteHeaderEthernet (void)
+PcapWriter::WriteEthernetHeader (void)
+{
+  WriteHeader (PCAP_ETHERNET);
+}
+
+void 
+PcapWriter::WriteIpHeader (void)
+{
+  WriteHeader (PCAP_RAW_IP);
+}
+
+void
+PcapWriter::WriteWifiHeader (void)
+{
+  WriteHeader (PCAP_80211);
+}
+
+void 
+PcapWriter::WriteHeader (uint32_t network)
 {
   Write32 (0xa1b2c3d4);
   Write16 (2);
@@ -61,8 +82,11 @@ PcapWriter::WriteHeaderEthernet (void)
   Write32 (0);
   Write32 (0);
   Write32 (0xffff);
-  Write32 (PCAP_ETHERNET);
+  Write32 (network);
 }
+
+
+
 
 void 
 PcapWriter::WritePacket (Packet const packet)
@@ -76,24 +100,24 @@ PcapWriter::WritePacket (Packet const packet)
       Write32 (us & 0xffffffff);
       Write32 (packet.GetSize ());
       Write32 (packet.GetSize ());
-  	m_writer->Write (packet.PeekData (), packet.GetSize ());
+      WriteData (packet.PeekData (), packet.GetSize ());
     }
 }
 
 void
-PcapWriter::WriteData (uint8_t *buffer, uint32_t size)
+PcapWriter::WriteData (uint8_t const*buffer, uint32_t size)
 {
-  m_writer->Write (buffer, size);
+  m_writer->write ((char const *)buffer, size);
 }
 void
 PcapWriter::Write32 (uint32_t data)
 {
-  m_writer->Write ((uint8_t*)&data, 4);
+  WriteData ((uint8_t*)&data, 4);
 }
 void
 PcapWriter::Write16 (uint16_t data)
 {
-  m_writer->Write ((uint8_t*)&data, 2);
+  WriteData((uint8_t*)&data, 2);
 }
 
 }; // namespace ns3

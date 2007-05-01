@@ -356,7 +356,16 @@ Ipv4::Copy(Node *node) const
 void 
 Ipv4::Receive(Packet& packet, NetDevice &device)
 {
-  m_rxTrace (packet);
+  uint32_t index = 0;
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
+    {
+      if ((*i)->GetDevice () == &device)
+        {
+          m_rxTrace (packet, index);
+          break;
+        }
+      index++;
+    }
   Ipv4Header ipHeader;
   packet.Peek (ipHeader);
   packet.Remove (ipHeader);
@@ -376,9 +385,9 @@ Ipv4::Receive(Packet& packet, NetDevice &device)
 
 void 
 Ipv4::Send (Packet const &packet, 
-                      Ipv4Address source, 
-                      Ipv4Address destination,
-                      uint8_t protocol)
+            Ipv4Address source, 
+            Ipv4Address destination,
+            uint8_t protocol)
 {
   Ipv4Header ipHeader;
 
@@ -418,7 +427,7 @@ Ipv4::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route
   packet.Add (ip);
   Ipv4Interface *outInterface = GetInterface (route.GetInterface ());
   NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
-  m_txTrace (packet);
+  m_txTrace (packet, route.GetInterface ());
   if (route.IsGateway ()) 
     {
       outInterface->Send (packet, route.GetGateway ());
