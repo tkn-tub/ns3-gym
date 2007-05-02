@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include "ns3/callback.h"
 #include "ns3/packet.h"
+#include "ns3/object.h"
 #include "mac-address.h"
 
 namespace ns3 {
@@ -53,8 +54,9 @@ class Channel;
  * this base class and implement your own version of the
  * NetDevice::SendTo method.
  */
-class NetDevice {
- public:
+class NetDevice : public Object 
+{
+public:
   /**
    * \param node base class node pointer of device's node 
    * \param addr MAC address of this device.
