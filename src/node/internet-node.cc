@@ -108,9 +108,8 @@ InternetNode::CreateTraceResolver (TraceContext const &context)
 
 void InternetNode::Dispose()
 {
-  for(uint32_t i=0;i<GetNDevices();++i)
-    GetDevice(i)->Dispose();
-  
+  // chain up.
+  Node::Dispose ();
 }
 
 ApplicationList* 
