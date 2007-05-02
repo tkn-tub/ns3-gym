@@ -25,11 +25,11 @@
 #include "node.h"
 #include "node-list.h"
 #include "net-device.h"
+#include "ns3/simulator.h"
 
 namespace ns3{
 
 Node::SmartNodeVec_t Node::g_prototypes;  // The node prototypes stack
-Node::SmartNodeVec_t Node::g_nodes;       // All nodes
 
 Node::Node()
   : m_id(0), m_sid(0)
@@ -101,11 +101,31 @@ void Node::Dispose()
   m_devices.erase (m_devices.begin (), m_devices.end ());
 }
 
+Node::SmartNodeVec_t **
+Node::GetNodeVector (void)
+{
+  static SmartNodeVec_t *vector = 0;
+  if (vector == 0)
+    {
+      vector = new SmartNodeVec_t ();
+      Simulator::ScheduleDestroy (&Node::DestroyNodes);
+    }
+  return &vector;
+}
+
+void
+Node::DestroyNodes (void)
+{
+  SmartNodeVec_t **vector = GetNodeVector ();
+  delete *vector;
+  *vector = 0;
+}
+
 // Node stack creation and management routines.
 Node* Node::Create()
 {
   Node* n = g_prototypes.Back()->Copy(); // Copy the top of the stack
-  g_nodes.Add(n);                        // Add to smart vector (mem mgmt)
+  (*GetNodeVector ())->Add (n);
   NodeList::Add (n);           // Add to global list of nodes
   return n;
 }
@@ -142,7 +162,7 @@ void Node::PopNodePrototype()
 
 void Node::ClearAll()
 { // Delete all nodes for memory leak checking, including prototypes
-  g_nodes.Clear();
+  (*GetNodeVector ())->Clear ();
   g_prototypes.Clear();
 }
 
