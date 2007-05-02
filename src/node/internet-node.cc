@@ -34,12 +34,6 @@
 
 namespace ns3 {
 
-static class NodeStackInitializationClass {
-public:
-  NodeStackInitializationClass () {
-    Node::PushNodePrototype (InternetNode ());
-  }
-} node_stack_initialization_class;
 
 InternetNode::InternetNode()
 {
@@ -50,23 +44,6 @@ InternetNode::InternetNode()
   m_l3Demux->Insert (Ipv4 (this));
   m_l3Demux->Insert (Arp (this));
   m_ipv4L4Demux->Insert (Udp (this));
-}
-
-InternetNode::InternetNode (InternetNode const &o)
-{
-  m_applicationList = new ApplicationList();
-  m_l3Demux = o.m_l3Demux->Copy (this);
-  m_ipv4L4Demux = o.m_ipv4L4Demux->Copy (this);
-}
-InternetNode const &
-InternetNode::operator = (InternetNode const &o)
-{
-  delete m_applicationList;
-  delete m_l3Demux;
-  delete m_ipv4L4Demux;
-  m_l3Demux = o.m_l3Demux->Copy (this);
-  m_ipv4L4Demux = o.m_ipv4L4Demux->Copy (this);
-  return *this;
 }
 
 InternetNode::~InternetNode ()
@@ -82,13 +59,6 @@ InternetNode::SetName (std::string name)
   m_name = name;
 }
 
-// Copy this node
-InternetNode* 
-InternetNode::Copy() const
-{
-  InternetNode *copy = new InternetNode (*this);
-   return copy;
-}
 
 TraceResolver *
 InternetNode::CreateTraceResolver (TraceContext const &context)

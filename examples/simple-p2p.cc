@@ -89,20 +89,10 @@ int main (int argc, char *argv[])
   // Specify limit of 30 in units of packets (not implemented).
   //  Queue::Default().SetLimitPackets(30);
 
-  // The node factory is designed to allow user specification
-  // of the "type" of node desired for each node creation.  This
-  // is done by creating a node object (the inNode below), configuring
-  // the object with the desired capabilities, and pushing the node
-  // object on the prototype stack.  In this simple example, the
-  // default behavior of an InternetNode is adequate, so we don't
-  // do any configuration in this simple example.
-  InternetNode inNode;
-  Node::PushNodePrototype(inNode);
-  // Next create the physical node topology using the node factory
-  Node* n0 = Node::Create(); 
-  Node* n1 = Node::Create(); 
-  Node* n2 = Node::Create(); 
-  Node* n3 = Node::Create(); 
+  Node* n0 = new InternetNode ();
+  Node* n1 = new InternetNode (); 
+  Node* n2 = new InternetNode (); 
+  Node* n3 = new InternetNode ();
 
   PointToPointChannel *channel0 = 
     PointToPointTopology::AddPointToPointLink (
@@ -178,6 +168,11 @@ int main (int argc, char *argv[])
   n1->Dispose ();
   n2->Dispose ();
   n3->Dispose ();
+
+  delete n0;
+  delete n1;
+  delete n2;
+  delete n3;
     
   Simulator::Destroy ();
 }

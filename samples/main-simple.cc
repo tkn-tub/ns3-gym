@@ -8,29 +8,6 @@
 
 using namespace ns3;
 
-static void TestOne (void)
-{
-  InternetNode *a = new InternetNode ();
-
-  delete a;
-}
-
-static void TestTwo (void)
-{
-  InternetNode a = InternetNode ();
-
-  InternetNode *b = a.Copy ();
-
-  delete b;
-}
-
-static void
-SmallTests (void)
-{
-  TestOne ();
-  TestTwo ();
-}
-
 static void
 GenerateTraffic (Socket *socket, uint32_t size)
 {
@@ -56,8 +33,6 @@ PrintTraffic (Socket *socket)
 
 int main (int argc, char *argv[])
 {
-  SmallTests ();
-
   InternetNode *a = new InternetNode ();
 
   Socket *sink = a->GetUdp ()->CreateSocket ();

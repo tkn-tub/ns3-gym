@@ -42,10 +42,7 @@ public:
     ARP,
   };
   InternetNode();
-  InternetNode(const InternetNode&);
-  InternetNode const &operator = (InternetNode const &o);
   virtual ~InternetNode ();
-  virtual InternetNode* Copy() const;
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
   virtual void Dispose();
   // Capability access
