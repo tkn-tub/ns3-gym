@@ -56,16 +56,6 @@ Ipv4L4Demux::Dispose (void)
     }
 }
 
-Ipv4L4Demux* 
-Ipv4L4Demux::Copy(Node *node) const
-{
-  Ipv4L4Demux * copy = new Ipv4L4Demux(node);
-  for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
-    {
-      copy->Insert(*(*i));
-    }
-  return copy;
-}
 TraceResolver *
 Ipv4L4Demux::CreateTraceResolver (TraceContext const &context)
 {
@@ -83,12 +73,11 @@ Ipv4L4Demux::CreateTraceResolver (TraceContext const &context)
     }
   return resolver;
 }
-Ipv4L4Protocol* 
-Ipv4L4Demux::Insert(const Ipv4L4Protocol&protocol)
+void
+Ipv4L4Demux::Insert(Ipv4L4Protocol *protocol)
 {
-  Ipv4L4Protocol* copy = protocol.Copy(m_node); // Make a copy of the protocol
-  m_protocols.push_back (copy);
-  return copy;
+  protocol->Ref ();
+  m_protocols.push_back (protocol);
 }
 Ipv4L4Protocol* 
 Ipv4L4Demux::PeekProtocol(int protocolNumber)

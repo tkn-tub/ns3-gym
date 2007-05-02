@@ -62,13 +62,6 @@ public:
    */
   int GetVersion() const;
 
-  /**
-   * \param node the node on which the copy should be running
-   * \returns a new instance of this L4 Protocol.
-   *
-   * Perform a deep copy of the L4 Protocol
-   */
-  virtual Ipv4L4Protocol* Copy(Node *node) const = 0;
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context) = 0;
 
   /**

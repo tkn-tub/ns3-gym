@@ -48,12 +48,6 @@ public:
   void Dispose (void);
 
   /**
-   * \param node the node on which the returned copy will run.
-   * \returns a deep copy of this L4 Demux.
-   */
-  Ipv4L4Demux* Copy(Node *node) const;
-
-  /**
    * \param context the trace context to use to construct the
    *        TraceResolver to return
    * \returns a TraceResolver which can resolve all traces
@@ -71,7 +65,7 @@ public:
    * a working L4 Protocol and returned from this method.
    * The caller does not get ownership of the returned pointer.
    */
-  Ipv4L4Protocol* Insert(const Ipv4L4Protocol&protocol);
+  void Insert(Ipv4L4Protocol *protocol);
   /**
    * \param protocolNumber number of protocol to lookup
    *        in this L4 Demux

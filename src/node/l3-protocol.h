@@ -48,8 +48,6 @@ public:
 
   virtual void Dispose (void) = 0;
 
-  virtual L3Protocol* Copy(Node *node) const = 0;
-
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context) = 0;
   /**
    * Lower layer calls this method after calling L3Demux::Lookup

@@ -73,22 +73,10 @@ L3Demux::CreateTraceResolver (TraceContext const &context) const
   return resolver;
 }
   
-L3Demux* L3Demux::Copy(Node *node) const
+void L3Demux::Insert(L3Protocol *p)
 {
-  L3Demux *copy = new L3Demux (node);
-  for (L3Map_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
-    {
-      copy->Insert(*i->second);
-    }
-
-  return copy;
-}
-  
-L3Protocol* L3Demux::Insert(const L3Protocol& l3p)
-{
-  L3Protocol* l = l3p.Copy(m_node); // Make a copy of the protocol
-  m_protocols.insert(L3Map_t::value_type(l3p.GetProtocolNumber (), l));
-  return l;
+  p->Ref ();
+  m_protocols.insert(L3Map_t::value_type(p->GetProtocolNumber (), p));
 }
 
 L3Protocol* 

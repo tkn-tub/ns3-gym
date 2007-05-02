@@ -34,8 +34,8 @@ UdpSocket::UdpSocket (Node *node)
     m_shutdownRecv (false),
     m_connected (false)
 {
-  NS_ASSERT (m_node->GetUdp () != 0);
   m_udp = m_node->GetUdp ();
+  NS_ASSERT (m_udp != 0);
   m_node->Ref ();
 }
 UdpSocket::~UdpSocket ()

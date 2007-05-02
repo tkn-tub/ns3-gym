@@ -84,6 +84,9 @@ PointToPointTopology::AddPointToPointLink(
   ip1->AddHostRouteTo (addr2, index1);
   ip2->AddHostRouteTo (addr1, index2);
 
+  ip1->Unref ();
+  ip2->Unref ();
+
   return channel;
 }
 

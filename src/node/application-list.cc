@@ -56,6 +56,7 @@ ApplicationList* ApplicationList::Copy(Node * n) const
 void
 ApplicationList::Add(Application* a)
 {
+  a->Ref ();
   m_apps.push_back(a);
 }
 

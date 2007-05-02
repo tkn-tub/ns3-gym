@@ -126,10 +126,13 @@ int main (int argc, char *argv[])
     DataRate(448000), 
     210);
   // Add to Node's ApplicationList (takes ownership of pointer)
-  n0->GetApplicationList()->Add(ooff0);
+  ApplicationList *apl0 = n0->GetApplicationList();
+  apl0->Add(ooff0);
+  apl0->Unref ();
   // Start the application
   ooff0->Start(Seconds(1.0));
   ooff0->Stop (Seconds(10.0));
+  ooff0->Unref ();
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   OnOffApplication* ooff1 = new OnOffApplication(
@@ -141,15 +144,23 @@ int main (int argc, char *argv[])
     DataRate(448000), 
     210);
   // Add to Node's ApplicationList (takes ownership of pointer)
-  n3->GetApplicationList()->Add(ooff1);
+  ApplicationList *apl3 = n3->GetApplicationList();
+  apl3->Add(ooff1);
+  apl3->Unref ();
   // Start the application
   ooff1->Start(Seconds(1.1));
   ooff1->Stop (Seconds(10.0));
+  ooff1->Unref ();
 
   // Here, finish off packet routing configuration
   // This will likely set by some global StaticRouting object in the future
-  n0->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
-  n3->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
+  Ipv4 *ipv4;
+  ipv4 = n0->GetIpv4();
+  ipv4->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
+  ipv4->Unref ();
+  ipv4 = n3->GetIpv4();
+  ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
+  ipv4->Unref ();
 
   n0->Unref ();
   n1->Unref ();

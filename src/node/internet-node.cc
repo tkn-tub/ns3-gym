@@ -41,9 +41,17 @@ InternetNode::InternetNode()
   m_applicationList = new ApplicationList(this);
   m_l3Demux = new L3Demux(this);
   m_ipv4L4Demux = new Ipv4L4Demux(this);
-  m_l3Demux->Insert (Ipv4 (this));
-  m_l3Demux->Insert (Arp (this));
-  m_ipv4L4Demux->Insert (Udp (this));
+  Ipv4 *ipv4 = new Ipv4 (this);
+  Arp *arp = new Arp (this);
+  Udp *udp = new Udp (this);
+
+  m_l3Demux->Insert (ipv4);
+  m_l3Demux->Insert (arp);
+  m_ipv4L4Demux->Insert (udp);
+
+  ipv4->Unref ();
+  arp->Unref ();
+  udp->Unref ();
 }
 
 InternetNode::~InternetNode ()
@@ -161,7 +169,9 @@ InternetNode::DoAddDevice (NetDevice *device) const
 bool
 InternetNode::ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const
 {
-  L3Protocol *target = GetL3Demux()->PeekProtocol (protocolNumber);
+  L3Demux *demux = GetL3Demux();
+  L3Protocol *target = demux->PeekProtocol (protocolNumber);
+  demux->Unref ();
   if (target != 0) 
     {
       Packet packet = p;

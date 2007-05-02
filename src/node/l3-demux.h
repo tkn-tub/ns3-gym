@@ -50,12 +50,6 @@ public:
   void Dispose (void);
 
   /**
-   * \param node the node on which the returned copy will run.
-   * \returns a deep copy of this L3 Demux.
-   */
-  L3Demux* Copy(Node *node) const;
-
-  /**
    * \param context the trace context to use to construct the
    *        TraceResolver to return
    * \returns a TraceResolver which can resolve all traces
@@ -67,7 +61,6 @@ public:
 
   /**
    * \param protocol a template for the protocol to add to this L3 Demux.
-   * \returns the L3Protocol effectively added.
    *
    * Invoke Copy on the input template to get a copy of the input
    * protocol which can be used on the Node on which this L3 Demux 
@@ -75,7 +68,7 @@ public:
    * a working L3 Protocol and returned from this method.
    * The caller does not get ownership of the returned pointer.
    */
-  ns3::L3Protocol* Insert(const ns3::L3Protocol& protocol);
+  void Insert(ns3::L3Protocol * protocol);
   /**
    * \param protocolNumber number of protocol to lookup
    *        in this L4 Demux
