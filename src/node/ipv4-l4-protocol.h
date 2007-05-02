@@ -49,6 +49,8 @@ public:
   Ipv4L4Protocol(int protocolNumber, int version);
   virtual ~Ipv4L4Protocol ();
 
+  virtual void Dispose (void) = 0;
+
   /**
    * \returns the protocol number of this protocol.
    */

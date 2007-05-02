@@ -44,11 +44,22 @@ Arp::Arp (Node *node)
 
 Arp::~Arp ()
 {
+  Dispose ();
+}
+
+void 
+Arp::Dispose (void)
+{
   for (CacheList::const_iterator i = m_cacheList.begin (); i != m_cacheList.end (); i++)
     {
       delete *i;
     }
-  m_node->Unref ();
+  m_cacheList.clear ();
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+      m_node = 0;
+    }
 }
 
 Arp *

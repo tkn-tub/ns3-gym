@@ -43,6 +43,8 @@ public:
   Udp (Node *node);
   virtual ~Udp ();
 
+  virtual void Dispose (void);
+
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   Socket *CreateSocket (void);

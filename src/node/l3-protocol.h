@@ -44,6 +44,8 @@ public:
   int GetProtocolNumber (void) const;
   int GetVersion() const;
 
+  virtual void Dispose (void) = 0;
+
   virtual L3Protocol* Copy(Node *node) const = 0;
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context) = 0;

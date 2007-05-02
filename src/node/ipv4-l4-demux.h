@@ -44,6 +44,8 @@ public:
   Ipv4L4Demux (Node *node);
   virtual ~Ipv4L4Demux();
 
+  void Dispose (void);
+
   /**
    * \param node the node on which the returned copy will run.
    * \returns a deep copy of this L4 Demux.

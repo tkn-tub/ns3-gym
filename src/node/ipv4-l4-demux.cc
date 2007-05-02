@@ -38,13 +38,24 @@ Ipv4L4Demux::Ipv4L4Demux (Node *node)
 
 Ipv4L4Demux::~Ipv4L4Demux()
 {
+  Dispose ();
+}
+void
+Ipv4L4Demux::Dispose (void)
+{
   for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
+      (*i)->Dispose ();
       delete *i;
     }
-  m_node->Unref ();
-  m_node = 0;
+  m_protocols.clear ();
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+      m_node = 0;
+    }
 }
+
 Ipv4L4Demux* 
 Ipv4L4Demux::Copy(Node *node) const
 {

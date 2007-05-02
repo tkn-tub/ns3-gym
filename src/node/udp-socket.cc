@@ -39,8 +39,7 @@ UdpSocket::UdpSocket (Node *node)
 }
 UdpSocket::~UdpSocket ()
 {
-  m_node->Unref ();
-  m_node = 0;
+  Destroy ();
 }
 
 Node *
@@ -50,15 +49,20 @@ UdpSocket::PeekNode (void) const
 }
 
 void 
-UdpSocket::DestroyEndPoint (void)
+UdpSocket::Destroy (void)
 {
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+      m_node = 0;
+    }
   m_endPoint = 0;
 }
 int
 UdpSocket::FinishBind (void)
 {
   m_endPoint->SetRxCallback (MakeCallback (&UdpSocket::ForwardUp, this));
-  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocket::DestroyEndPoint, this));
+  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocket::Destroy, this));
   if (m_endPoint == 0)
     {
       return -1;

@@ -59,7 +59,6 @@ InternetNode::SetName (std::string name)
   m_name = name;
 }
 
-
 TraceResolver *
 InternetNode::CreateTraceResolver (TraceContext const &context)
 {
@@ -78,6 +77,9 @@ InternetNode::CreateTraceResolver (TraceContext const &context)
 
 void InternetNode::Dispose()
 {
+  m_l3Demux->Dispose ();
+  m_ipv4L4Demux->Dispose ();
+
   // chain up.
   Node::Dispose ();
 }

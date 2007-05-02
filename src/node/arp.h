@@ -44,6 +44,8 @@ public:
   ~Arp ();
   virtual Arp *Copy (Node *node) const;
 
+  virtual void Dispose (void);
+
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   virtual void Receive(Packet& p, NetDevice *device);

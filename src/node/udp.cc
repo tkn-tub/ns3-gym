@@ -47,15 +47,28 @@ Udp::Udp (Node *node)
 
 Udp::~Udp ()
 {
-  delete m_endPoints;
-  m_node->Unref ();
-  m_node = 0;
+  Dispose ();
 }
 
 TraceResolver *
 Udp::CreateTraceResolver (TraceContext const &context)
 {
   return new EmptyTraceResolver (context);
+}
+
+void
+Udp::Dispose (void)
+{
+  if (m_endPoints != 0)
+    {
+      delete m_endPoints;
+      m_endPoints = 0;
+    }
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+      m_node = 0;
+    }
 }
 
 Socket *

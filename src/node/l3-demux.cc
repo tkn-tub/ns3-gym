@@ -36,13 +36,24 @@ L3Demux::L3Demux (Node *node)
 }
 
 L3Demux::~L3Demux()
-{ // Delete each protocol in the map
+{
+  Dispose ();
+}
+
+void
+L3Demux::Dispose (void)
+{
   for (L3Map_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
+      i->second->Dispose ();
       delete i->second;
     }
-  m_node->Unref ();
-  m_node = 0;
+  m_protocols.clear ();
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+      m_node = 0;
+    }
 }
 
 TraceResolver *

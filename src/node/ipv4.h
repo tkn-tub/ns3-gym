@@ -61,6 +61,8 @@ public:
   Ipv4(Node *node);
   virtual ~Ipv4 ();
 
+  virtual void Dispose (void);
+
   /**
    * \param context the trace context to use to construct the
    *        TraceResolver to return

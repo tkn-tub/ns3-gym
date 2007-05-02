@@ -56,10 +56,17 @@ Ipv4::Ipv4(Node *node)
 }
 Ipv4::~Ipv4 ()
 {
+  Dispose ();
+}
+
+void 
+Ipv4::Dispose (void)
+{
   for (Ipv4InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
       delete (*i);
     }
+  m_interfaces.clear ();
   for (HostRoutesI i = m_hostRoutes.begin (); 
        i != m_hostRoutes.end (); 
        i = m_hostRoutes.erase (i)) 
@@ -72,8 +79,16 @@ Ipv4::~Ipv4 ()
     {
       delete (*j);
     }
-  delete m_defaultRoute;
-  m_node->Unref ();
+  if (m_defaultRoute != 0)
+    {
+      delete m_defaultRoute;
+      m_defaultRoute = 0;
+    }
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+      m_node = 0;
+    }
 }
 
 void

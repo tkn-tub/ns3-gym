@@ -46,6 +46,8 @@ public:
   L3Demux(Node *node);
   virtual ~L3Demux();
 
+  void Dispose (void);
+
   /**
    * \param node the node on which the returned copy will run.
    * \returns a deep copy of this L3 Demux.
