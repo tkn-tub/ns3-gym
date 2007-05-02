@@ -20,6 +20,7 @@
 #include "ns3/debug.h"
 #include "ns3/composite-trace-resolver.h"
 #include "queue.h"
+#include "ns3/default-value.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("Queue");
 
@@ -208,5 +209,48 @@ Queue& Queue::Default()
   // ! Need to schedule an "at end" event to delete the default
   return *defaultQueue;
 }
+
+
+Queue *
+Queue::CreateDefault (void)
+{
+  std::string defaultValue = GetDefault ()->GetValue ();
+  for (List::iterator i = GetList ()->begin ();
+       i != GetList ()->end (); i++)
+    {
+      if (i->second == defaultValue)
+        {
+          return i->first->Copy ();
+        }
+    }
+  NS_ASSERT (false);
+  // quiet compiler
+  return 0;
+}
+void 
+Queue::Add (Queue &queue, const std::string &name)
+{
+  GetDefault ()->AddPossibleValue (name);
+  GetList ()->push_back (std::make_pair (&queue, name));
+}
+void 
+Queue::AddDefault (Queue &queue, const std::string &name)
+{
+  GetDefault ()->AddDefaultValue (name);
+  GetList ()->push_back (std::make_pair (&queue, name));
+}
+StringEnumDefaultValue *
+Queue::GetDefault (void)
+{
+  static StringEnumDefaultValue value ("queue", "Packet Queue");
+  return &value;
+}
+Queue::List *
+Queue::GetList (void)
+{
+  static List list;
+  return &list;
+}
+
 
 }; // namespace ns3

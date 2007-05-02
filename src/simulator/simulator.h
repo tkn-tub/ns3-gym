@@ -85,7 +85,7 @@ public:
    * This method must be invoked before any other method exported
    * by the Simulator class.
    */
-  static void SetExternal (SchedulerFactory const*factory);
+  static void SetExternal (const std::string &name);
 
   /**
    * Enable logging to the file identified by filename. If the file
@@ -557,13 +557,6 @@ private:
   static void ScheduleDestroy (EventImpl *event);
   static void ScheduleNow (EventImpl *event);
   static SimulatorPrivate *m_priv;
-  static SchedulerFactory const*m_schedFactory;
-  static enum ListType {
-      LINKED_LIST,
-      BINARY_HEAP,
-      STD_MAP,
-      EXTERNAL
-  } m_listType;
 };
 
 }; // namespace ns3

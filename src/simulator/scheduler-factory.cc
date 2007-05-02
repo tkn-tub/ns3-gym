@@ -19,6 +19,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "scheduler-factory.h"
+#include "ns3/assert.h"
+#include "ns3/fatal-error.h"
+#include "ns3/default-value.h"
 
 namespace ns3 {
 
@@ -28,7 +31,73 @@ SchedulerFactory::~SchedulerFactory ()
 Scheduler *
 SchedulerFactory::Create (void) const
 {
-  return RealCreate ();
+  return DoCreate ();
 }
+
+Scheduler *
+SchedulerFactory::CreateDefault (void)
+{
+  NS_ASSERT_MSG (!GetList ()->empty (), "No Scheduler factory registered");
+  std::string defaultValue = GetDefault ()->GetValue ();
+  for (List::const_iterator i = GetList ()->begin ();
+       i != GetList ()->end (); i++)
+    {
+      if (i->second == defaultValue)
+        {
+          return i->first->Create ();
+        }
+    }
+  NS_ASSERT (false);
+  // quiet compiler
+  return 0;
+}
+
+Scheduler *
+SchedulerFactory::Create (const std::string &name)
+{
+  for (List::iterator i = GetList ()->begin ();
+       i != GetList ()->end (); i++)
+    {
+      if (i->second == name)
+        {
+          return i->first->Create ();
+        }
+    }
+  NS_ASSERT_MSG (false, "Tried to create non-existant scheduler: " << name);
+  // quiet compiler.
+  return 0;
+}
+
+void 
+SchedulerFactory::AddDefault (const SchedulerFactory *factory,
+                              const std::string &name)
+{
+  GetDefault ()->AddDefaultValue (name);
+  GetList ()->push_back (std::make_pair (factory, name));
+}
+
+
+void 
+SchedulerFactory::Add (const SchedulerFactory *factory,
+                       const std::string &name)
+{
+  GetDefault ()->AddPossibleValue (name);
+  GetList ()->push_back (std::make_pair (factory, name));
+}
+
+StringEnumDefaultValue *
+SchedulerFactory::GetDefault (void)
+{
+  static StringEnumDefaultValue value ("scheduler", "Event Scheduler algorithm");
+  return &value;
+}
+
+SchedulerFactory::List *
+SchedulerFactory::GetList (void)
+{
+  static SchedulerFactory::List list;
+  return &list;
+}
+
 
 }; // namespace ns3

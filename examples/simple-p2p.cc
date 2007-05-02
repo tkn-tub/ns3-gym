@@ -43,6 +43,8 @@
 #include <cassert>
 
 #include "ns3/debug.h"
+#include "ns3/command-line.h"
+#include "ns3/default-value.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -70,6 +72,7 @@ using namespace ns3;
 
 int main (int argc, char *argv[])
 {
+  CommandLine::Parse (argc, argv);
 #if 0
   DebugComponentEnable("Object");
   DebugComponentEnable("Queue");
@@ -84,7 +87,7 @@ int main (int argc, char *argv[])
   // be a DropTail queue, with a limit of 30 packets.
   // Specify DropTail for default queue type (note. this is actually
   // the default, but included here as an example).
-  Queue::Default(DropTailQueue());
+  Bind ("queue", "DropTail"); //Queue::Default(DropTailQueue());
   // Specify limit of 30 in units of packets (not implemented).
   //  Queue::Default().SetLimitPackets(30);
 
