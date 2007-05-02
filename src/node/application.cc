@@ -23,7 +23,6 @@
 
 #include "application.h"
 #include "node.h"
-#include "node-reference.h"
 #include "ns3/nstime.h"
 #include "ns3/random-variable.h"
 #include "ns3/simulator.h"
@@ -35,19 +34,20 @@ namespace ns3 {
 // Application Methods
 
 // \brief Application Constructor
-  Application::Application(const Node& n) 
-    : m_node (0),
+Application::Application(Node * n) 
+    : m_node (n),
       m_startVar(0), m_stopVar(0),
       m_start(false), m_stop(false)
 {
-  SetNode(n);
+  m_node->Ref ();
 }
 
 Application::Application(const Application& o)
     : m_node(0), m_startVar(0), m_stopVar(0),
       m_start(false), m_stop(false)
 { // Copy constructor
-  if (o.GetNode())m_node = new NodeReference(*o.GetNode());
+  m_node = o.m_node;
+  m_node->Ref ();
   // Copy the start and stop random variables if they exist
   if (o.m_startVar) m_startVar = o.m_startVar->Copy();
   if (o.m_stopVar)  m_stopVar  = o.m_stopVar->Copy();
@@ -59,7 +59,7 @@ Application::Application(const Application& o)
 // \brief Application Destructor
 Application::~Application()
 {
-  delete m_node;
+  m_node->Unref ();
   // Cancel the start/stop events if scheduled
   if (m_start) Simulator::Cancel(m_startEvent);
   if (m_stop)  Simulator::Cancel(m_stopEvent);
@@ -71,9 +71,10 @@ Application::~Application()
 Application& Application::operator=(const Application& rhs)
 {
   if (this == &rhs) return *this; // Self assignment
-  delete m_node;
+  m_node->Unref ();
   m_node = 0;
-  if (rhs.GetNode())m_node = new NodeReference(*rhs.GetNode());
+  m_node = rhs.m_node;
+  m_node->Ref ();
 
   delete m_startVar;
   m_startVar = 0;
@@ -130,15 +131,19 @@ void Application::Stop(const RandomVariable& stopVar)
 // \brief Assign this application to a given node
 // Called by the application manager capability when adding
 // an application to a node.
-void Application::SetNode(const Node& n)
+void Application::SetNode(Node * n)
 {
-  delete m_node;
-  m_node = new NodeReference(n);
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+    }
+  m_node = n;
+  m_node->Ref ();
 }
   
-Node* Application::GetNode() const
+Node* Application::PeekNode() const
 {
-  return m_node->GetNode();
+  return m_node;
 }
 
 // Protected methods

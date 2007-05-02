@@ -23,7 +23,6 @@
 
 #include "capability.h"
 #include "node.h"
-#include "node-reference.h"
 
 namespace ns3 {
   
@@ -33,47 +32,67 @@ Capability::Capability()
 }
 
 Capability::Capability(Node* n)
+  : m_node (n)
 {
-  m_node = new NodeReference(*n);
+  m_node->Ref ();
+}
+
+Capability::~Capability ()
+{
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+    }
 }
 
 // Copy constructor
 Capability::Capability(const Capability& o)
+  : m_node (o.m_node)
 {
-  m_node = new NodeReference(*o.GetNode());
+  if (m_node != 0)
+    {
+      m_node->Ref ();
+    }
 }
-
 
 // Assignment operator
 Capability& Capability::operator=(const Capability& rhs)
 {
   if (this == &rhs) return *this;  // Self assignment
-  delete m_node;
-  m_node = new NodeReference(*rhs.GetNode());
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+    }
+  m_node = rhs.m_node;
+  if (m_node != 0)
+    {
+      m_node->Ref ();
+    }
   return *this;
-}
-
-
-  
-Capability::~Capability()
-{
-  delete m_node;
 }
 
 // SetNode should be overridden by any capability subclass
 // that manages other objects needing node information, such
 // as the ApplicationList.
-void Capability::SetNode(Node& n)
+void Capability::SetNode(Node *node)
 {
-  delete m_node;
-  m_node = new NodeReference(n);
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+    }
+  m_node = node;
+  if (m_node != 0)
+    {
+      m_node->Ref ();
+    }
 }
 
 
 Node* Capability::GetNode() const
 {
   if (!m_node) return 0;
-  return m_node->GetNode();
+  m_node->Ref ();
+  return m_node;
 }
 
 } // namespace ns3

@@ -118,7 +118,7 @@ int main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   OnOffApplication* ooff0 = new OnOffApplication(
-    *n0, 
+    n0, 
     Ipv4Address("10.1.3.2"), 
     80, 
     ConstantVariable(1), 
@@ -133,7 +133,7 @@ int main (int argc, char *argv[])
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   OnOffApplication* ooff1 = new OnOffApplication(
-    *n3, 
+    n3, 
     Ipv4Address("10.1.2.1"), 
     80, 
     ConstantVariable(1), 

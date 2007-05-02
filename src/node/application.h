@@ -54,11 +54,10 @@ namespace ns3 {
 
 class Node;
 class RandomVariable;
-class NodeReference;
   
 class Application {
 public:
-  Application(const Node&);
+  Application(Node *);
   Application(const Application&);  // Copy constructor
   Application& operator=(const Application&); // Assignment operator
   virtual ~Application();
@@ -99,13 +98,13 @@ void Start(const RandomVariable&);
   // \brief Attaches an application to a specific node
   // Specifies which node object this application is associated with.
   // \param Node object to associate with this application.
-  void SetNode(const Node&);
+  void SetNode(Node *);
 
   // \brief Returns the pointer to the attached node.
-  Node* GetNode() const;
+  Node* PeekNode() const;
   
   // Members
-  NodeReference*  m_node;      // All applications have an associated node
+  Node          * m_node;      // All applications have an associated node
   RandomVariable* m_startVar;  // Random variable for start time
   RandomVariable* m_stopVar;   // Random variable for stop time
   EventId         m_startEvent;// Event identifier for start event

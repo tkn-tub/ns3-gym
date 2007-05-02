@@ -40,7 +40,7 @@ ApplicationList::~ApplicationList()
 { // Destructor, nothing needed as the SmartSet destroys itself
 }
 
-ApplicationList* ApplicationList::Copy(Node& n) const 
+ApplicationList* ApplicationList::Copy(Node * n) const 
 { // Copy this app list
   ApplicationList* r = new ApplicationList();
   r->SetNode(n);
@@ -53,7 +53,7 @@ ApplicationList::Add(Application* a)
   m_apps.Add(a);
 }
 
-void ApplicationList::SetNode(Node& n)
+void ApplicationList::SetNode(Node * n)
 {
   Capability::SetNode(n);
   // Set the node pointer in each application

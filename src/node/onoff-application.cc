@@ -43,7 +43,7 @@ uint32_t OnOffApplication::g_defaultSize = 512;
 
 // Constructors
 
-  OnOffApplication::OnOffApplication(const Node& n, 
+  OnOffApplication::OnOffApplication(Node * n, 
                                      const Ipv4Address  rip,   // Remote IP addr
                                      uint16_t       rport, // Remote port
                                      const  RandomVariable& ontime,
@@ -68,7 +68,7 @@ uint32_t OnOffApplication::g_defaultSize = 512;
 {
 }
 
-OnOffApplication::OnOffApplication(const Node& n, const OnOffApplication& c)
+OnOffApplication::OnOffApplication(Node * n, const OnOffApplication& c)
   : Application(n), 
     m_socket(0),
     m_peerIP(c.m_peerIP),
@@ -148,7 +148,7 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
   if (!m_socket)
     { // Create the socket using the specified layer 4 protocol
 #ifdef NOTYET
-      m_socket = GetNode()->GetKernel()->CreateGenericSocket(*m_l4Proto);
+      m_socket = PeekNode()->GetKernel()->CreateGenericSocket(*m_l4Proto);
       m_socket->Bind();  // Choose any available port local port
       m_socket->Connect(*m_peerIP, m_peerPort,
                         MakeCallback(&OnOffApplication::ConnectionSucceeded,
@@ -156,7 +156,7 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
                         MakeCallback(&OnOffApplication::ConnectionFailed,
                                      this));
 #endif
-      m_socket = GetNode ()->GetUdp ()->CreateSocket ();
+      m_socket = PeekNode ()->GetUdp ()->CreateSocket ();
       m_socket->Connect (m_peerIP, m_peerPort);
     }
   StopApplication();                         // Insure no pending event

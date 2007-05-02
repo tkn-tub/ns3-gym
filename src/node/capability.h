@@ -42,11 +42,11 @@ public:
   Capability(const Capability&); // Copy constructor
   virtual Capability& operator=(const Capability&); // Assignment operator
   virtual ~Capability();
-  virtual Capability* Copy(Node&) const = 0;
-  virtual void SetNode(Node&);
+  virtual Capability* Copy(Node *node) const = 0;
+  virtual void SetNode(Node *node);
   virtual Node* GetNode() const;
 private:
-  NodeReference*   m_node;  // Node on which this capability is assigned
+  Node*   m_node;  // Node on which this capability is assigned
 };
 
 }  //namespace ns3
