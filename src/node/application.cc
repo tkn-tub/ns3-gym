@@ -32,21 +32,19 @@ using namespace std;
 
 namespace ns3 {
 
-#define nil 0
-
 // Application Methods
 
 // \brief Application Constructor
   Application::Application(const Node& n) 
     : m_node (0),
-      m_startVar(nil), m_stopVar(nil),
+      m_startVar(0), m_stopVar(0),
       m_start(false), m_stop(false)
 {
   SetNode(n);
 }
 
 Application::Application(const Application& o)
-    : m_node(nil), m_startVar(nil), m_stopVar(nil),
+    : m_node(0), m_startVar(0), m_stopVar(0),
       m_start(false), m_stop(false)
 { // Copy constructor
   if (o.GetNode())m_node = new NodeReference(*o.GetNode());
@@ -74,15 +72,15 @@ Application& Application::operator=(const Application& rhs)
 {
   if (this == &rhs) return *this; // Self assignment
   delete m_node;
-  m_node = nil;
+  m_node = 0;
   if (rhs.GetNode())m_node = new NodeReference(*rhs.GetNode());
 
   delete m_startVar;
-  m_startVar = nil;
+  m_startVar = 0;
   if (rhs.m_startVar) m_startVar = rhs.m_startVar->Copy();
   
   delete m_stopVar;
-  m_stopVar = nil;
+  m_stopVar = 0;
   if (rhs.m_stopVar) m_stopVar = rhs.m_stopVar->Copy();
   
   m_start = false;
