@@ -167,6 +167,11 @@ int main (int argc, char *argv[])
   Simulator::StopAt (Seconds(10.0));
 
   Simulator::Run ();
+
+  n0->Dispose ();
+  n1->Dispose ();
+  n2->Dispose ();
+  n3->Dispose ();
     
   Simulator::Destroy ();
 }
