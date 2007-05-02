@@ -42,7 +42,7 @@ public:
   static Iterator End (void);
   static TraceResolver *CreateTraceResolver (TraceContext const &context);
 
-  static Node *GetNode (uint32_t n);
+  static Node *PeekNode (uint32_t n);
 };
 
 }//namespace ns3

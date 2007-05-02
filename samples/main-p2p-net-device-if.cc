@@ -52,7 +52,7 @@ public:
   {
     NodeList::NodeIndex nodeIndex;
     context.Get (nodeIndex);
-    m_filestr << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
+    m_filestr << "node=" << NodeList::PeekNode (nodeIndex)->GetId () << " ";
     Ipv4::InterfaceIndex interfaceIndex;
     context.Get (interfaceIndex);
     m_filestr << "interface=" << interfaceIndex << " ";

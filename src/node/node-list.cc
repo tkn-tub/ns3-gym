@@ -69,6 +69,7 @@ NodeListPriv::~NodeListPriv ()
        i != m_nodes.end (); i++)
     {
       Node *node = *i;
+      node->Dispose ();
       node->Unref ();
     }
   m_nodes.erase (m_nodes.begin (), m_nodes.end ());
@@ -93,13 +94,6 @@ NodeList::Iterator
 NodeListPriv::End (void)
 {
   return m_nodes.end ();
-}
-Node *
-NodeListPriv::GetNode (uint32_t n)
-{
-  Node *node = m_nodes[n];
-  node->Ref ();
-  return node;
 }
 uint32_t 
 NodeListPriv::GetNNodes (void)
@@ -153,9 +147,9 @@ NodeList::CreateTraceResolver (TraceContext const &context)
   return SimulationSingleton<NodeListPriv>::Get ()->CreateTraceResolver (context);
 }
 Node *
-NodeList::GetNode (uint32_t n)
+NodeList::PeekNode (uint32_t n)
 {
-  return SimulationSingleton<NodeListPriv>::Get ()->GetNode (n);
+  return SimulationSingleton<NodeListPriv>::Get ()->PeekNode (n);
 }
 
 
