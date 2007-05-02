@@ -25,7 +25,9 @@ int main (int argc, char *argv[])
 {
 #ifdef RUN_SELF_TESTS
   ns3::TestManager::EnableVerbose ();
-  ns3::TestManager::RunTests ();
+  bool success = ns3::TestManager::RunTests ();
+  if (!success)
+    return 1;
 #endif /* RUN_SELF_TESTS */
 
   return 0;
