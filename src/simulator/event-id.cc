@@ -20,6 +20,7 @@
  */
 #include "event-id.h"
 #include "simulator.h"
+#include "event-impl.h"
 
 namespace ns3 {
 
@@ -37,7 +38,11 @@ EventId::EventId (EventImpl *impl, uint64_t ns, uint32_t uid)
 void 
 EventId::Cancel (void)
 {
-  Simulator::Cancel (*this);
+  if (!IsExpired ())
+    {
+      m_eventImpl->Cancel ();
+      m_eventImpl = 0;
+    }
 }
 bool 
 EventId::IsExpired (void)

@@ -485,7 +485,7 @@ public:
   /**
    * Remove an event from the event list. 
    * This method has the same visible effect as the 
-   * ns3::Simulator::cancel method or the ns3::EventId::cancel method
+   * ns3::EventId::Cancel method
    * but its algorithmic complexity is much higher: it has often 
    * O(log(n)) complexity, sometimes O(n), sometimes worse.
    * Note that it is not possible to remove events which were scheduled
@@ -506,7 +506,7 @@ public:
    * 
    * @param id the event to cancel
    */
-  static void Cancel (EventId id);
+  static void Cancel (EventId &id);
   /**
    * This method has O(1) complexity.
    * Note that it is not possible to test for the expiration of

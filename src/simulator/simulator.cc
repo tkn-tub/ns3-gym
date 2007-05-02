@@ -62,7 +62,7 @@ public:
   void ScheduleNow (EventImpl *event);
   void ScheduleDestroy (EventImpl *event);
   void Remove (EventId ev);
-  void Cancel (EventId ev);
+  void Cancel (EventId &ev);
   bool IsExpired (EventId ev);
   void Run (void);
   Time Now (void) const;
@@ -258,10 +258,9 @@ SimulatorPrivate::Remove (EventId ev)
 }
 
 void
-SimulatorPrivate::Cancel (EventId id)
+SimulatorPrivate::Cancel (EventId &id)
 {
-  EventImpl *ev = id.GetEventImpl ();
-  ev->Cancel ();
+  id.Cancel ();
 }
 
 bool
@@ -453,7 +452,7 @@ Simulator::Remove (EventId ev)
 }
 
 void
-Simulator::Cancel (EventId ev)
+Simulator::Cancel (EventId &ev)
 {
   return GetPriv ()->Cancel (ev);
 }
