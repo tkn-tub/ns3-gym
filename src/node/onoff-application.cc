@@ -24,7 +24,6 @@
 
 #include "ipv4-address.h"
 #include "node.h"
-#include "node-reference.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
 #include "onoff-application.h"
