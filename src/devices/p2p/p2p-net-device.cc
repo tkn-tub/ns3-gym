@@ -106,6 +106,16 @@ PointToPointNetDevice::PointToPointNetDevice (const PointToPointNetDevice& nd)
     
 }
 
+void PointToPointNetDevice::Dispose()
+{
+ if (m_channel != 0)
+ {
+   m_channel->Unref ();
+   m_channel = 0;
+ }
+ NetDevice::Dispose ();
+}
+
 //
 // Assignment operator for PointToPointNetDevice.
 //
@@ -357,6 +367,7 @@ PointToPointNetDevice::GetQueue(void) const
 Channel* 
 PointToPointNetDevice::DoGetChannel(void) const 
 { 
+    m_channel->Ref();
     return m_channel;
 }
 

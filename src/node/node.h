@@ -122,6 +122,8 @@ public:
   uint32_t AddDevice (NetDevice *device);
   NetDevice *GetDevice (uint32_t index) const;
   uint32_t GetNDevices (void) const;
+  
+  virtual void Dispose();
 
 private:
   virtual void DoAddDevice (NetDevice *device) const = 0;

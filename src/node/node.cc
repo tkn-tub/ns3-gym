@@ -87,6 +87,10 @@ Node::GetNDevices (void) const
   return m_devices.size ();
 }
 
+void Node::Dispose()
+{
+}
+
 // Node stack creation and management routines.
 Node* Node::Create()
 {

@@ -47,6 +47,7 @@ public:
   virtual ~InternetNode ();
   virtual InternetNode* Copy() const;
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
+  virtual void Dispose();
   // Capability access
   virtual ApplicationList* GetApplicationList() const;
   virtual L3Demux*         GetL3Demux() const;

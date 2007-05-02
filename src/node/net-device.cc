@@ -25,6 +25,7 @@
 #include "net-device.h"
 #include "llc-snap-header.h"
 #include "node.h"
+#include "ns3/channel.h"
 
 namespace ns3 {
 
@@ -223,6 +224,11 @@ void
 NetDevice::SetReceiveCallback (Callback<bool,NetDevice *,const Packet &,uint16_t> cb)
 {
   m_receiveCallback = cb;
+}
+
+void
+NetDevice::Dispose()
+{
 }
 
 }; // namespace ns3

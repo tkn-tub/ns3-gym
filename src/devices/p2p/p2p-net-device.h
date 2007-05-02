@@ -97,6 +97,10 @@ public:
    */
   virtual ~PointToPointNetDevice();
   /**
+   *Dispose method for refcounting
+   */
+  virtual void Dispose();
+  /**
    * Assignment Operator for a PointToPointNetDevice
    *
    * This is the assignment operator for the PointToPointNetDevice.  This is
