@@ -133,6 +133,7 @@ int main (int argc, char *argv[])
   n0->GetApplicationList()->Add(ooff0);
   // Start the application
   ooff0->Start(Seconds(1.0));
+  ooff0->Stop (Seconds(10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   OnOffApplication* ooff1 = new OnOffApplication(
@@ -147,6 +148,7 @@ int main (int argc, char *argv[])
   n3->GetApplicationList()->Add(ooff1);
   // Start the application
   ooff1->Start(Seconds(1.1));
+  ooff1->Stop (Seconds(10.0));
 
   // Here, finish off packet routing configuration
   // This will likely set by some global StaticRouting object in the future
@@ -163,8 +165,6 @@ int main (int argc, char *argv[])
   PcapTrace trace ("simple-p2p.tr");
   trace.TraceAllIp ();
 #endif
-
-  Simulator::StopAt (Seconds(10.0));
 
   Simulator::Run ();
 
