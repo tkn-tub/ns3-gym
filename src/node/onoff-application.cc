@@ -41,8 +41,6 @@ namespace ns3 {
 DataRate OnOffApplication::g_defaultRate = DataRate(500000);
 uint32_t OnOffApplication::g_defaultSize = 512;
 
-#define nil 0
-
 // Constructors
 
   OnOffApplication::OnOffApplication(const Node& n, 
@@ -53,7 +51,7 @@ uint32_t OnOffApplication::g_defaultSize = 512;
                                      DataRate  rate,
                                      uint32_t size)
     :  Application(n), 
-      m_socket(nil),      // Socket allocated on Start
+      m_socket(0),      // Socket allocated on Start
       m_peerIP(rip),
       m_peerPort(rport),
       m_connected(false),
@@ -72,7 +70,7 @@ uint32_t OnOffApplication::g_defaultSize = 512;
 
 OnOffApplication::OnOffApplication(const Node& n, const OnOffApplication& c)
   : Application(n), 
-    m_socket(nil),
+    m_socket(0),
     m_peerIP(c.m_peerIP),
     m_peerPort(c.m_peerPort),
     m_connected(c.m_connected),
@@ -134,7 +132,7 @@ void OnOffApplication::Handle(Event* e, Time_t t)
             residualBits += (uint32_t)(cbrRate*(Simulator::Now()-lastStartTime));
             Simulator::Cancel(pendingEvent);
             delete pendingEvent;
-            pendingEvent = nil;
+            pendingEvent = 0;
           }
         return;
       }
