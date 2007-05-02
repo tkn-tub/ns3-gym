@@ -51,8 +51,13 @@
  */
 
 
+#define noGATHER_STATISTICS 1
+
+#ifdef GATHER_STATISTICS
+#define HP128INC(x) x++
+#else
 #define HP128INC(x)
-//#define HP128INC(x) x++
+#endif
 
 namespace ns3 {
 
@@ -88,6 +93,7 @@ private:
   int64_t m_fastValue;
   cairo_int128_t m_slowValue;
 
+#ifdef GATHER_STATISTICS
   static int m_nfastadds;
   static int m_nfastsubs;
   static int m_nfastmuls;
@@ -100,6 +106,7 @@ private:
   static int m_nslowgets;
   static int m_ndivs;
   static int m_nconversions;
+#endif /* GATHER_STATISTICS */
 };
 
 }; // namespace ns3

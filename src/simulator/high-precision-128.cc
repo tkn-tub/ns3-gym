@@ -24,6 +24,7 @@
 
 namespace ns3 {
 
+#ifdef GATHER_STATISTICS
 int HighPrecision::m_nfastadds = 0;
 int HighPrecision::m_nfastsubs = 0;
 int HighPrecision::m_nfastmuls = 0;
@@ -66,6 +67,11 @@ HighPrecision::PrintStats (void)
     "nconversions="<<m_nconversions<<std::endl
     ;
 }
+#else
+void 
+HighPrecision::PrintStats (void)
+{}
+#endif /* GATHER_STATISTICS */
 
 
 const double HighPrecision::MAX_64 = 18446744073709551615.0;
