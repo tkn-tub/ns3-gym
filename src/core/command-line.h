@@ -68,7 +68,7 @@ template <typename T>
 bool
 CommandLine::UserDefaultValue<T>::DoParseValue (const std::string &value)
 {
-  std::ostringstream iss;
+  std::istringstream iss;
   iss.str (value);
   T v;
   iss >> v;
