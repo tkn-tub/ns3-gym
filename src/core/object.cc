@@ -35,7 +35,7 @@ Object::~Object ()
 }
 
 void 
-Object::Ref (void)
+Object::Ref (void) const
 {
   NS_DEBUG("Object::Ref (): this == 0x" << this);
   m_count++;
@@ -43,7 +43,7 @@ Object::Ref (void)
 }
 
 void 
-Object::Unref (void)
+Object::Unref (void) const
 {
   NS_DEBUG("Object::Unref (): this == 0x" << this);
   m_count--;
@@ -57,7 +57,7 @@ Object::Unref (void)
 }
 
 bool 
-Object::IsSingle (void)
+Object::IsSingle (void) const
 {
   NS_DEBUG("Object::IsSingle (): m_count == " << m_count);
   return m_count == 1;

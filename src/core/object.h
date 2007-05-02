@@ -30,12 +30,12 @@ class Object
 public:
   Object ();
   virtual ~Object ();
-  void Ref (void);
-  void Unref (void);
-  bool IsSingle (void);
+  void Ref (void) const;
+  void Unref (void) const;
+  bool IsSingle (void) const;
   virtual void Dispose (void);
 private:
-  uint32_t m_count;
+  mutable uint32_t m_count;
 };
 
 }//namespace ns3
