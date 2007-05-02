@@ -30,8 +30,6 @@
 #include "application.h"
 #include "ns3/event-id.h"
 
-#define nil 0
-
 namespace ns3 {
 
 class Ipv4Address;

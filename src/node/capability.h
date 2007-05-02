@@ -30,8 +30,6 @@
 // The node pointer is not owned by the capability, and is not deleted
 // by the capability destructor.
 
-#define nil 0
-
 namespace ns3 {
 class Node;
 class NodeReference;

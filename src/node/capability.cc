@@ -25,12 +25,10 @@
 #include "node.h"
 #include "node-reference.h"
 
-#define nil 0
-
 namespace ns3 {
   
 Capability::Capability()
-  : m_node(nil)
+  : m_node(0)
 { // Nothing else needed
 }
 
@@ -74,7 +72,7 @@ void Capability::SetNode(Node& n)
 
 Node* Capability::GetNode() const
 {
-  if (!m_node) return nil;
+  if (!m_node) return 0;
   return m_node->GetNode();
 }
 
