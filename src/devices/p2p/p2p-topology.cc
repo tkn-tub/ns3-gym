@@ -63,6 +63,7 @@ PointToPointTopology::AddPointToPointLink(
   Ipv4 *ip1 = n1->GetIpv4 ();
   uint32_t index1 = ip1->AddInterface (net1);
   net1->Attach (channel);
+  net1->Unref ();
 
   ip1->SetAddress (index1, addr1);
   ip1->SetNetworkMask (index1, netmask);
@@ -74,6 +75,7 @@ PointToPointTopology::AddPointToPointLink(
   Ipv4 *ip2 = n2->GetIpv4 ();
   uint32_t index2 = ip2->AddInterface (net2);
   net2->Attach (channel);
+  net2->Unref ();
 
   ip2->SetAddress (index2, addr2);
   ip2->SetNetworkMask (index2, netmask);
