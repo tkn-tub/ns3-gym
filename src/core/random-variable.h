@@ -612,5 +612,44 @@ private:
   double* data;
 };
 
+
+/**
+ * \brief Log-normal Distributed random var
+ * \ingroup randomvariable
+ * LogNormalVariable defines a random variable with log-normal
+ * distribution.  If one takes the natural logarithm of random
+ * variable following the log-normal distribution, the obtained values
+ * follow a normal distribution.
+ */
+class LogNormalVariable : public RandomVariable { 
+public:
+  /**
+   * \param mu Mean value of the underlying normal distribution.
+   * \param sigma Standard deviation of the underlying normal distribution.
+   *
+   * Notice: the parameters mu and sigma are _not_ the mean and standard
+   * deviation of the log-normal distribution.  To obtain the
+   * parameters mu and sigma for a given mean and standard deviation
+   * of the log-normal distribution the following convertion can be
+   * used:
+   * \code
+   * double tmp = log (1 + pow (stddev/mean, 2));
+   * double sigma = sqrt (tmp);
+   * double mu = log (mean) - 0.5*tmp;
+   * \endcode
+   */
+  LogNormalVariable (double mu, double sigma);
+
+  /**
+   * \return A random value from this distribution
+   */
+  virtual double GetValue ();
+  virtual RandomVariable* Copy() const;
+private:
+  double m_mu;
+  double m_sigma;
+};
+
+
 }//namespace ns3
 #endif

@@ -522,5 +522,71 @@ RandomVariable* DeterministicVariable::Copy() const
   return new DeterministicVariable(*this);
 }
 
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// LogNormalVariable
+
+RandomVariable* LogNormalVariable::Copy () const
+{
+  return new LogNormalVariable (m_mu, m_sigma);
+}
+
+LogNormalVariable::LogNormalVariable (double mu, double sigma)
+{
+  m_mu = mu;
+  m_sigma = sigma;
+}
+
+// The code from this function was adapted from the GNU Scientific
+// Library 1.8:
+/* randist/lognormal.c
+ * 
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000 James Theiler, Brian Gough
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+/* The lognormal distribution has the form 
+
+   p(x) dx = 1/(x * sqrt(2 pi sigma^2)) exp(-(ln(x) - zeta)^2/2 sigma^2) dx
+
+   for x > 0. Lognormal random numbers are the exponentials of
+   gaussian random numbers */
+double
+LogNormalVariable::GetValue ()
+{
+  double u, v, r2, normal, z;
+
+  do
+    {
+      /* choose x,y in uniform square (-1,-1) to (+1,+1) */
+
+      u = -1 + 2 * m_generator->RandU01 ();
+      v = -1 + 2 * m_generator->RandU01 ();
+
+      /* see if it is in the unit circle */
+      r2 = u * u + v * v;
+    }
+  while (r2 > 1.0 || r2 == 0);
+
+  normal = u * sqrt (-2.0 * log (r2) / r2);
+
+  z =  exp (m_sigma * normal + m_mu);
+
+  return z;
+}
+
 }//namespace ns3
 
