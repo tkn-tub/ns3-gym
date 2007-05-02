@@ -77,7 +77,6 @@ private:
   int FinishBind (void);
   void ForwardUp (const Packet &p, Ipv4Address saddr, uint16_t sport);
   void Destroy (void);
-  Udp *GetUdp (void) const;
   int DoSendPacketTo (const Packet &p, Ipv4Address daddr, uint16_t dport,
 		      ns3::Callback<void, Socket*, uint32_t> dataSent);
 
