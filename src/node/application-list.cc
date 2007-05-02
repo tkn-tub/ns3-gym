@@ -24,12 +24,10 @@
 #include "application.h"
 #include "application-list.h"
 
-#define nil 0
-
 namespace ns3{
 
 ApplicationList::ApplicationList()
-    : Capability(nil)
+    : Capability(0)
 {
 }
   
@@ -78,11 +76,11 @@ SmartSet<Application*>::size_type ApplicationList::Count() const
 
 Application* ApplicationList::Get(SmartSet<Application*>::size_type i) const
 { // Get the i'th application. Note, this is linear time in N
-  if (m_apps.Empty()) return nil;        // List is empty
+  if (m_apps.Empty()) return 0;        // List is empty
   SmartSet<Application*>::const_iterator k = m_apps.Begin();
   while(i > 0)
     {
-      if (k == m_apps.End()) return nil; // Not found
+      if (k == m_apps.End()) return 0; // Not found
       --i;
       ++k;
     }
