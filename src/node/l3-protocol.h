@@ -25,6 +25,8 @@
 #ifndef L3_PROTOCOL_H
 #define L3_PROTOCOL_H
 
+#include "ns3/object.h"
+
 namespace ns3 {
 
 class Packet;
@@ -36,7 +38,7 @@ class TraceContext;
 /**
  * ::Send is always defined in subclasses.
  */
-class L3Protocol {
+class L3Protocol : public Object {
 public:
   L3Protocol(int protocolNumber, int version);
   virtual ~L3Protocol ();

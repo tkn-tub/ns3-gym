@@ -78,20 +78,20 @@ void InternetNode::Dispose()
   if (m_l3Demux != 0)
     {
       m_l3Demux->Dispose ();
-      delete m_l3Demux;
+      m_l3Demux->Unref ();
       m_l3Demux = 0;
     }
   if (m_ipv4L4Demux != 0)
     {
       m_ipv4L4Demux->Dispose ();
-      delete m_ipv4L4Demux;
+      m_ipv4L4Demux->Unref ();
       m_ipv4L4Demux = 0;
     }
 
   if (m_applicationList != 0)
     {
       m_applicationList->Dispose ();
-      delete m_applicationList;
+      m_applicationList->Unref ();
       m_applicationList = 0;
     }
 

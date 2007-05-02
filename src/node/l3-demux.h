@@ -28,6 +28,7 @@
 #define L3_DEMUX_H
 
 #include <map>
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -39,7 +40,7 @@ class TraceContext;
 /**
  * \brief L3 Demux 
  */
-class L3Demux
+class L3Demux : public Object
 {
 public:
   typedef int ProtocolTraceType;

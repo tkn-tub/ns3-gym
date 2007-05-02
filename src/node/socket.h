@@ -23,6 +23,7 @@
 
 #include "ns3/callback.h"
 #include "ipv4-address.h"
+#include "ns3/object.h"
 #include <stdint.h>
 
 namespace ns3 {
@@ -38,7 +39,8 @@ class Node;
  * to the BSD API to make it easier those who know the BSD API to use
  * this API.
  */
-class Socket {
+class Socket : public Object
+{
 public:
   virtual ~Socket();
 

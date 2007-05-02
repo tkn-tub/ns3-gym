@@ -46,7 +46,7 @@ L3Demux::Dispose (void)
   for (L3Map_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       i->second->Dispose ();
-      delete i->second;
+      i->second->Unref ();
     }
   m_protocols.clear ();
   if (m_node != 0)

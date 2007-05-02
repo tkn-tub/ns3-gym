@@ -95,11 +95,14 @@ OnOffApplication::~OnOffApplication()
 void
 OnOffApplication::Dispose (void)
 {
-  delete m_socket;
+  if (m_socket != 0)
+    {
+      m_socket->Unref ();
+      m_socket = 0;
+    }
   delete m_onTime;
   delete m_offTime;
 
-  m_socket = 0;
   m_onTime = 0;
   m_offTime = 0;
 

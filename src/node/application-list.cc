@@ -37,7 +37,7 @@ ApplicationList::Dispose (void)
     {
       Application *app = *i;
       app->Dispose ();
-      delete app;
+      app->Unref ();
     }
   m_apps.clear ();
 }

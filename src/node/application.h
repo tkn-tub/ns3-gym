@@ -49,13 +49,15 @@
 
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
 class Node;
 class RandomVariable;
   
-class Application {
+class Application : public Object
+{
 public:
   Application(Node *);
   Application(const Application&);  // Copy constructor

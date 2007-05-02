@@ -26,7 +26,7 @@
 #define IPV4_L4_DEMUX_H
 
 #include <list>
-
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -38,7 +38,8 @@ class TraceContext;
 /**
  * \brief L4 Ipv4 Demux
  */
-class Ipv4L4Demux {
+class Ipv4L4Demux : public Object
+{
 public:
   typedef int Ipv4L4ProtocolTraceType;
   Ipv4L4Demux (Node *node);

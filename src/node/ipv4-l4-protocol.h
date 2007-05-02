@@ -25,6 +25,7 @@
 #ifndef IPV4_L4_PROTOCOL_H
 #define IPV4_L4_PROTOCOL_H
 
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -44,7 +45,8 @@ class TraceContext;
  * If you want to implement a new L4 protocol, all you have to do is
  * implement a subclass of this base class and add it to an L4Demux.
  */  
-class Ipv4L4Protocol {
+class Ipv4L4Protocol : public Object
+{
 public:
   Ipv4L4Protocol(int protocolNumber, int version);
   virtual ~Ipv4L4Protocol ();

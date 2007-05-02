@@ -46,7 +46,7 @@ Ipv4L4Demux::Dispose (void)
   for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       (*i)->Dispose ();
-      delete *i;
+      (*i)->Unref ();
     }
   m_protocols.clear ();
   if (m_node != 0)

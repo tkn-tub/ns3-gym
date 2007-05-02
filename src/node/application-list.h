@@ -25,17 +25,19 @@
 #define __APPLICATION_LIST_H__
 
 #include "application.h"
+#include "ns3/object.h"
 #include <vector>
 
 namespace ns3 {
 
-class ApplicationList  {
+class ApplicationList : public Object
+{
 public:
   ApplicationList(Node*);
   // Copy constructor not needed, default one is correct
   virtual ~ApplicationList();
   // Inherited from Capabilty
-  void Dispose (void);
+  virtual void Dispose (void);
   virtual ApplicationList* Copy(Node*) const;
   virtual void SetNode(Node *);              // Sets the node for all apps
   virtual void Add(Application*);      // Add an already new'ed app
