@@ -33,6 +33,7 @@ public:
   void Ref (void);
   void Unref (void);
   bool IsSingle (void);
+  virtual void Dispose (void);
 private:
   uint32_t m_count;
 };

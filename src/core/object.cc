@@ -63,4 +63,8 @@ Object::IsSingle (void)
   return m_count == 1;
 }
 
+void
+Object::Dispose (void)
+{}
+
 }//namespace ns3
