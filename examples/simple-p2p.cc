@@ -104,20 +104,26 @@ int main (int argc, char *argv[])
   Node* n2 = Node::Create(); 
   Node* n3 = Node::Create(); 
 
-  PointToPointTopology::AddPointToPointLink (
+  PointToPointChannel *channel0 = 
+    PointToPointTopology::AddPointToPointLink (
       n0, Ipv4Address("10.1.1.1"), 
       n2, Ipv4Address("10.1.1.2"), 
       DataRate(5000000), MilliSeconds(2));
+  channel0->Unref ();
   
-  PointToPointTopology::AddPointToPointLink (
+  PointToPointChannel *channel1 = 
+    PointToPointTopology::AddPointToPointLink (
       n1, Ipv4Address("10.1.2.1"), 
       n2, Ipv4Address("10.1.2.2"), 
       DataRate(5000000), MilliSeconds(2));
+  channel1->Unref ();
 
-  PointToPointTopology::AddPointToPointLink (
+  PointToPointChannel *channel2 = 
+    PointToPointTopology::AddPointToPointLink (
       n2, Ipv4Address("10.1.3.1"), 
       n3, Ipv4Address("10.1.3.2"), 
       DataRate(1500000), MilliSeconds(10));
+  channel2->Unref ();
   
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
