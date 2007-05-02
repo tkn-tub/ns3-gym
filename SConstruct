@@ -199,7 +199,6 @@ node.add_sources ([
     'ipv4-interface.cc',
     'ipv4.cc',
     'ipv4-end-point.cc',
-    'udp-end-point.cc',
     'udp.cc',
     'capability.cc',
     'arp-header.cc',
@@ -220,6 +219,7 @@ node.add_sources ([
     'socket.cc',
     'udp-socket.cc',
     'pcap-trace.cc',
+    'ipv4-end-point-demux.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
@@ -266,7 +266,6 @@ node.add_inst_headers ([
     'udp.h',
     'ipv4-l4-protocol.h',
     'ipv4-l4-demux.h',
-    'udp-end-point.h',
     'ipv4-end-point-demux.h',
     'ipv4-end-point.h',
     'pcap-trace.h',

@@ -20,7 +20,7 @@
  */
 #include "udp-socket.h"
 #include "udp.h"
-#include "udp-end-point.h"
+#include "ipv4-end-point.h"
 #include "node.h"
 #include "ipv4-l4-demux.h"
 
@@ -39,7 +39,6 @@ UdpSocket::UdpSocket (Node *node)
 }
 UdpSocket::~UdpSocket ()
 {
-  delete m_endPoint;
   m_node->Unref ();
   m_node = 0;
 }
@@ -50,49 +49,46 @@ UdpSocket::PeekNode (void) const
   return m_node;
 }
 
-int
-UdpSocket::Bind (void)
+void 
+UdpSocket::DestroyEndPoint (void)
 {
-  m_endPoint = GetUdp ()->Allocate ();
+  m_endPoint = 0;
+}
+int
+UdpSocket::FinishBind (void)
+{
+  m_endPoint->SetRxCallback (MakeCallback (&UdpSocket::ForwardUp, this));
+  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocket::DestroyEndPoint, this));
   if (m_endPoint == 0)
     {
       return -1;
     }
-  m_endPoint->SetSocket (this);
   return 0;
+}
+
+int
+UdpSocket::Bind (void)
+{
+  m_endPoint = GetUdp ()->Allocate ();
+  return FinishBind ();
 }
 int 
 UdpSocket::Bind (Ipv4Address address)
 {
   m_endPoint = GetUdp ()->Allocate (address);
-  if (m_endPoint == 0)
-    {
-      return -1;
-    }
-  m_endPoint->SetSocket (this);
-  return 0;
+  return FinishBind ();
 }
 int 
 UdpSocket::Bind (uint16_t port)
 {
   m_endPoint = GetUdp ()->Allocate (port);
-  if (m_endPoint == 0)
-    {
-      return -1;
-    }
-  m_endPoint->SetSocket (this);
-  return 0;
+  return FinishBind ();
 }
 int 
 UdpSocket::Bind (Ipv4Address address, uint16_t port)
 {
   m_endPoint = GetUdp ()->Allocate (address, port);
-  if (m_endPoint == 0)
-    {
-      return -1;
-    }
-  m_endPoint->SetSocket (this);
-  return 0;
+  return FinishBind ();
 }
 
 enum Socket::SocketErrno
@@ -228,12 +224,13 @@ UdpSocket::DoRecvDummy(ns3::Callback<void, Socket*, uint32_t,const Ipv4Address&,
 }
 
 void 
-UdpSocket::ForwardUp (Packet &p, Ipv4Address saddr, uint16_t sport)
+UdpSocket::ForwardUp (const Packet &packet, Ipv4Address saddr, uint16_t sport)
 {
   if (m_shutdownRecv)
     {
       return;
     }
+  Packet p = packet;
   if (!m_dummyRxCallback.IsNull ())
     {
       m_dummyRxCallback (this, p.GetSize (), saddr, sport);

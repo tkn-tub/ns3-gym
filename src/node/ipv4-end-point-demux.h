@@ -30,7 +30,6 @@ namespace ns3 {
 
 class Ipv4EndPoint;
 
-template <typename T>
 class Ipv4EndPointDemux {
 public:
   Ipv4EndPointDemux ();
@@ -38,216 +37,29 @@ public:
 
   bool LookupPortLocal (uint16_t port);
   bool LookupLocal (Ipv4Address addr, uint16_t port);
-  T *Lookup (Ipv4Address daddr, 
-             uint16_t dport, 
-             Ipv4Address saddr, 
-             uint16_t sport);
+  Ipv4EndPoint *Lookup (Ipv4Address daddr, 
+                        uint16_t dport, 
+                        Ipv4Address saddr, 
+                        uint16_t sport);
 
-  T *Allocate (void);
-  T *Allocate (Ipv4Address address);
-  T *Allocate (uint16_t port);
-  T *Allocate (Ipv4Address address, uint16_t port);
-  T *Allocate (Ipv4Address localAddress, 
-               uint16_t localPort,
-               Ipv4Address peerAddress, 
-               uint16_t peerPort);
+  Ipv4EndPoint *Allocate (void);
+  Ipv4EndPoint *Allocate (Ipv4Address address);
+  Ipv4EndPoint *Allocate (uint16_t port);
+  Ipv4EndPoint *Allocate (Ipv4Address address, uint16_t port);
+  Ipv4EndPoint *Allocate (Ipv4Address localAddress, 
+                          uint16_t localPort,
+                          Ipv4Address peerAddress, 
+                          uint16_t peerPort);
 
  private:
   uint16_t AllocateEphemeralPort (void);
-  typedef std::list<T *> EndPoints;
-  typedef typename std::list<T *>::iterator EndPointsI;
+  typedef std::list<Ipv4EndPoint *> EndPoints;
+  typedef std::list<Ipv4EndPoint *>::iterator EndPointsI;
 
   uint16_t m_ephemeral;
   EndPoints m_endPoints;
 };
 
-}; // namespace ns3
-
-namespace ns3{
-
-template <typename T>
-Ipv4EndPointDemux<T>::Ipv4EndPointDemux ()
-  : m_ephemeral (1025)
-{}
-
-template <typename T>
-Ipv4EndPointDemux<T>::~Ipv4EndPointDemux ()
-{}
-
-template <typename T>
-bool
-Ipv4EndPointDemux<T>::LookupPortLocal (uint16_t port)
-{
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
-    {
-      if ((*i)->GetLocalPort  () == port) 
-        {
-          return true;
-        }
-    }
-  return false;
-}
-
-template <typename T>
-bool
-Ipv4EndPointDemux<T>::LookupLocal (Ipv4Address addr, uint16_t port)
-{
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
-    {
-      if ((*i)->GetLocalPort () == port &&
-          (*i)->GetLocalAddress () == addr) 
-        {
-          return true;
-        }
-    }
-  return false;
-}
-
-template <typename T>
-T *
-Ipv4EndPointDemux<T>::Allocate (void)
-{
-  uint16_t port = AllocateEphemeralPort ();
-  if (port == 0) 
-    {
-      return 0;
-    }
-  T *endPoint = new T (Ipv4Address::GetAny (), port);
-  m_endPoints.push_back (endPoint);
-  return endPoint;
-}
-template <typename T>
-T *
-Ipv4EndPointDemux<T>::Allocate (Ipv4Address address)
-{
-  uint16_t port = AllocateEphemeralPort ();
-  if (port == 0) 
-    {
-      return 0;
-    }
-  T *endPoint = new T (address, port);
-  m_endPoints.push_back (endPoint);
-  return endPoint;
-}
-template <typename T>
-T *
-Ipv4EndPointDemux<T>::Allocate (uint16_t port)
-{
-  return Allocate (Ipv4Address::GetAny (), port);
-}
-template <typename T>
-T *
-Ipv4EndPointDemux<T>::Allocate (Ipv4Address address, uint16_t port)
-{
-  if (LookupLocal (address, port)) 
-    {
-      return 0;
-    }
-  T *endPoint = new T (address, port);
-  m_endPoints.push_back (endPoint);
-  return endPoint;
-}
-
-template <typename T>
-T *
-Ipv4EndPointDemux<T>::Allocate (Ipv4Address localAddress, uint16_t localPort,
-                                Ipv4Address peerAddress, uint16_t peerPort)
-{
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
-    {
-      if ((*i)->GetLocalPort () == localPort &&
-          (*i)->GetLocalAddress () == localAddress &&
-          (*i)->GetPeerPort () == peerPort &&
-          (*i)->GetPeerAddress () == peerAddress) 
-        {
-          /* no way we can allocate this end-point. */
-          return 0;
-        }
-    }
-  T *endPoint = new T (localAddress, localPort);
-  endPoint->SetPeer (peerAddress, peerPort);
-  m_endPoints.push_back (endPoint);
-  return endPoint;
-}
-
-
-/*
- * If we have an exact match, we return it.
- * Otherwise, if we find a generic match, we return it.
- * Otherwise, we return 0.
- */
-template <typename T>
-T *
-Ipv4EndPointDemux<T>::Lookup (Ipv4Address daddr, uint16_t dport, 
-                              Ipv4Address saddr, uint16_t sport)
-{
-  uint32_t genericity = 3;
-  T *generic = 0;
-  //TRACE ("lookup " << daddr << ":" << dport << " " << saddr << ":" << sport);
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
-    {
-#if 0
-      TRACE ("against " << 
-             (*i)->GetLocalAddress ()
-             << ":" << 
-             (*i)->GetLocalPort () 
-             << " " << 
-             (*i)->GetPeerAddress () 
-             << ":" 
-             << (*i)->GetPeerPort ());
-#endif
-      if ((*i)->GetLocalPort () != dport) 
-        {
-          continue;
-        }
-      if ((*i)->GetLocalAddress () == daddr &&
-          (*i)->GetPeerPort () == sport &&
-          (*i)->GetPeerAddress () == saddr) 
-        {
-          /* this is an exact match. */
-          return *i;
-        }
-      uint32_t tmp = 0;
-      if ((*i)->GetLocalAddress () == Ipv4Address::GetAny ()) 
-        {
-          tmp ++;
-        }
-      if ((*i)->GetPeerAddress () == Ipv4Address::GetAny ()) 
-        {
-          tmp ++;
-        }
-      if (tmp < genericity) 
-        {
-          generic = (*i);
-          genericity = tmp;
-        }
-    }
-  return generic;
-}
-
-template <typename T>
-uint16_t
-Ipv4EndPointDemux<T>::AllocateEphemeralPort (void)
-{
-  uint16_t port = m_ephemeral;
-  do 
-    {
-      port++;
-      if (port > 5000) 
-        {
-          port = 1024;
-        }
-      if (!LookupPortLocal (port)) 
-        {
-          return port;
-        }
-  } while (port != m_ephemeral);
-  return 0;
-}
-
-
-
-}//namespace ns3
-
+} // namespace ns3
 
 #endif /* IPV4_END_POINTS_H */

@@ -30,7 +30,12 @@ Ipv4EndPoint::Ipv4EndPoint (Ipv4Address address, uint16_t port)
     m_peerPort (0)
 {}
 Ipv4EndPoint::~Ipv4EndPoint ()
-{}
+{
+  if (!m_destroyCallback.IsNull ())
+    {
+      m_destroyCallback ();
+    }
+}
 
 Ipv4Address 
 Ipv4EndPoint::GetLocalAddress (void)
@@ -58,6 +63,28 @@ Ipv4EndPoint::SetPeer (Ipv4Address address, uint16_t port)
   m_peerAddr = address;
   m_peerPort = port;
 }
+
+void 
+Ipv4EndPoint::SetRxCallback (Callback<void,const Packet &, Ipv4Address, uint16_t> callback)
+{
+  m_rxCallback = callback;
+}
+
+void 
+Ipv4EndPoint::SetDestroyCallback (Callback<void> callback)
+{
+  m_destroyCallback = callback;
+}
+
+void 
+Ipv4EndPoint::ForwardUp (const Packet &p, Ipv4Address saddr, uint16_t sport)
+{
+  if (!m_rxCallback.IsNull ())
+  {
+    m_rxCallback (p, saddr, sport);
+  }
+}
+
 
 
 }; // namespace ns3

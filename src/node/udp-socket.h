@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-class UdpEndPoint;
+class Ipv4EndPoint;
 class Node;
 class Packet;
 class Udp;
@@ -74,12 +74,14 @@ private:
 private:
   friend class Udp;
   // invoked by Udp class
-  void ForwardUp (Packet &p, Ipv4Address saddr, uint16_t sport);
+  int FinishBind (void);
+  void ForwardUp (const Packet &p, Ipv4Address saddr, uint16_t sport);
+  void DestroyEndPoint (void);
   Udp *GetUdp (void) const;
   int DoSendPacketTo (const Packet &p, Ipv4Address daddr, uint16_t dport,
 		      ns3::Callback<void, Socket*, uint32_t> dataSent);
 
-  UdpEndPoint *m_endPoint;
+  Ipv4EndPoint *m_endPoint;
   Node *m_node;
   Ipv4Address m_defaultAddress;
   uint16_t m_defaultPort;

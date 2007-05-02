@@ -26,7 +26,7 @@
 #include "udp.h"
 #include "udp-header.h"
 #include "ipv4-end-point-demux.h"
-#include "udp-end-point.h"
+#include "ipv4-end-point.h"
 #include "node.h"
 #include "ipv4.h"
 #include "l3-demux.h"
@@ -40,7 +40,7 @@ const uint8_t Udp::PROT_NUMBER = 17;
 Udp::Udp (Node *node)
   : Ipv4L4Protocol (PROT_NUMBER, 2),
     m_node (node),
-    m_endPoints (new Ipv4EndPointDemux<UdpEndPoint> ())
+    m_endPoints (new Ipv4EndPointDemux ())
 {
   m_node->Ref ();
 }
@@ -64,27 +64,27 @@ Udp::CreateSocket (void)
   return new UdpSocket (m_node);
 }
 
-UdpEndPoint *
+Ipv4EndPoint *
 Udp::Allocate (void)
 {
   return m_endPoints->Allocate ();
 }
-UdpEndPoint *
+Ipv4EndPoint *
 Udp::Allocate (Ipv4Address address)
 {
   return m_endPoints->Allocate (address);
 }
-UdpEndPoint *
+Ipv4EndPoint *
 Udp::Allocate (uint16_t port)
 {
   return m_endPoints->Allocate (port);
 }
-UdpEndPoint *
+Ipv4EndPoint *
 Udp::Allocate (Ipv4Address address, uint16_t port)
 {
   return m_endPoints->Allocate (address, port);
 }
-UdpEndPoint *
+Ipv4EndPoint *
 Udp::Allocate (Ipv4Address localAddress, uint16_t localPort,
                Ipv4Address peerAddress, uint16_t peerPort)
 {
@@ -105,15 +105,13 @@ Udp::Receive(Packet& packet,
 {
   UdpHeader udpHeader;
   packet.RemoveHeader (udpHeader);
-  UdpEndPoint *endPoint = m_endPoints->Lookup (destination, udpHeader.GetDestination (),
-                                               source, udpHeader.GetSource ());
+  Ipv4EndPoint *endPoint = m_endPoints->Lookup (destination, udpHeader.GetDestination (),
+                                                source, udpHeader.GetSource ());
   if (endPoint == 0)
     {
       return;
     }
-  UdpSocket *socket = endPoint->GetSocket ();
-  socket->ForwardUp (packet, source, udpHeader.GetSource ());
-  NS_ASSERT (socket != 0);
+  endPoint->ForwardUp (packet, source, udpHeader.GetSource ());
 }
 
 void

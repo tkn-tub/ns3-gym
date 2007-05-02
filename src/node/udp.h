@@ -27,7 +27,6 @@
 #include "ns3/packet.h"
 #include "ipv4-address.h"
 #include "ipv4-end-point-demux.h"
-#include "udp-end-point.h"
 #include "ipv4-l4-protocol.h"
 
 namespace ns3 {
@@ -48,11 +47,11 @@ public:
 
   Socket *CreateSocket (void);
 
-  UdpEndPoint *Allocate (void);
-  UdpEndPoint *Allocate (Ipv4Address address);
-  UdpEndPoint *Allocate (uint16_t port);
-  UdpEndPoint *Allocate (Ipv4Address address, uint16_t port);
-  UdpEndPoint *Allocate (Ipv4Address localAddress, uint16_t localPort,
+  Ipv4EndPoint *Allocate (void);
+  Ipv4EndPoint *Allocate (Ipv4Address address);
+  Ipv4EndPoint *Allocate (uint16_t port);
+  Ipv4EndPoint *Allocate (Ipv4Address address, uint16_t port);
+  Ipv4EndPoint *Allocate (Ipv4Address localAddress, uint16_t localPort,
                          Ipv4Address peerAddress, uint16_t peerPort);
 
   // called by UdpSocket.
@@ -66,7 +65,7 @@ public:
                        Ipv4Address const &destination);
  private:
   Node *m_node;
-  Ipv4EndPointDemux<UdpEndPoint> *m_endPoints;
+  Ipv4EndPointDemux *m_endPoints;
 };
 
 }; // namespace ns3
