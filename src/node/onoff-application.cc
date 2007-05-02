@@ -194,9 +194,7 @@ OnOffApplication* OnOffApplication::Copy() const
 void OnOffApplication::StartSending()
 {
   m_startStopScheduled = true;
-// commented out by tomh-- I think you want to start sending immediately
-//  ScheduleNextTx();  // Schedule the send packet event
-  SendPacket();
+  ScheduleNextTx();  // Schedule the send packet event
 }
 
 void OnOffApplication::StopSending()
@@ -213,7 +211,8 @@ void OnOffApplication::ScheduleNextTx()
       uint32_t bits = m_pktSize * 8 - m_residualBits;
       Time nextTime(Seconds (bits / 
         static_cast<double>(m_cbrRate.GetBitRate()))); // Time till next packet
-      Simulator::Schedule(nextTime, &OnOffApplication::SendPacket, this);
+      m_sendScheduled = true;
+      m_sendEvent = Simulator::Schedule(nextTime, &OnOffApplication::SendPacket, this);
     }
   else
     { // All done, cancel any pending events
@@ -224,7 +223,7 @@ void OnOffApplication::ScheduleNextTx()
 void OnOffApplication::ScheduleStartEvent()
 {  // Schedules the event to start sending data (switch to the "On" state)
   Time offInterval = Seconds(m_offTime->GetValue());
-  Simulator::Schedule(offInterval, &OnOffApplication::StartSending, this);
+  m_startStopEvent = Simulator::Schedule(offInterval, &OnOffApplication::StartSending, this);
   m_startStopScheduled = true;
 }
 
@@ -238,6 +237,7 @@ void OnOffApplication::ScheduleStopEvent()
   
 void OnOffApplication::SendPacket()
 {
+  NS_ASSERT (m_sendScheduled);
   m_sendScheduled = false;
   m_socket->Send(0, m_pktSize);
 #ifdef NOTYET
