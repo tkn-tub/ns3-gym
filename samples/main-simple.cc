@@ -17,6 +17,10 @@ GenerateTraffic (Socket *socket, uint32_t size)
     {
       Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
     }
+  else
+    {
+      socket->Close ();
+    }
 }
 
 static void
@@ -35,11 +39,16 @@ int main (int argc, char *argv[])
 {
   InternetNode *a = new InternetNode ();
 
-  Socket *sink = a->GetUdp ()->CreateSocket ();
+  Udp *udp;
+  udp = a->GetUdp ();
+
+  Socket *sink = udp->CreateSocket ();
   sink->Bind (80);
 
-  Socket *source = a->GetUdp ()->CreateSocket ();
+  Socket *source = udp->CreateSocket ();
   source->Connect (Ipv4Address::GetLoopback (), 80);
+
+  udp->Unref ();
 
   GenerateTraffic (source, 500);
   PrintTraffic (sink);
@@ -49,10 +58,9 @@ int main (int argc, char *argv[])
 
   Simulator::Destroy ();
 
-
-  delete a;
-  delete source;
-  delete sink;
+  sink->Unref ();
+  source->Unref ();
+  a->Unref ();
 
   return 0;
 }
