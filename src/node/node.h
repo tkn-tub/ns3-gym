@@ -165,10 +165,11 @@ public:
   // Global static variables
 private: 
   static uint32_t       g_nextId;     // Next available ID
-  static SmartNodeVec_t g_prototypes; // Node prototype stack
 
   static Node::SmartNodeVec_t **GetNodeVector (void);
+  static Node::SmartNodeVec_t **GetPrototypeVector (void);
   static void DestroyNodes (void);
+  static void DestroyPrototypes (void);
 
 protected:
   void SetId(uint32_t);            // NodeList::Add() calls this

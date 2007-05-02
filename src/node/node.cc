@@ -29,8 +29,6 @@
 
 namespace ns3{
 
-Node::SmartNodeVec_t Node::g_prototypes;  // The node prototypes stack
-
 Node::Node()
   : m_id(0), m_sid(0)
 {
@@ -113,6 +111,18 @@ Node::GetNodeVector (void)
   return &vector;
 }
 
+Node::SmartNodeVec_t **
+Node::GetPrototypeVector (void)
+{
+  static SmartNodeVec_t *vector = 0;
+  if (vector == 0)
+    {
+      vector = new SmartNodeVec_t ();
+      Simulator::ScheduleDestroy (&Node::DestroyPrototypes);
+    }
+  return &vector;
+}
+
 void
 Node::DestroyNodes (void)
 {
@@ -120,11 +130,18 @@ Node::DestroyNodes (void)
   delete *vector;
   *vector = 0;
 }
+void
+Node::DestroyPrototypes (void)
+{
+  SmartNodeVec_t **vector = GetPrototypeVector ();
+  delete *vector;
+  *vector = 0;
+}
 
 // Node stack creation and management routines.
 Node* Node::Create()
 {
-  Node* n = g_prototypes.Back()->Copy(); // Copy the top of the stack
+  Node* n = (*GetPrototypeVector ())->Back()->Copy(); // Copy the top of the stack
   (*GetNodeVector ())->Add (n);
   NodeList::Add (n);           // Add to global list of nodes
   return n;
@@ -140,30 +157,30 @@ Node* Node::Create(uint32_t sid)
 
 Node* Node::GetNodePrototype()
 { // Get node* to top of prototypes stack
-  return g_prototypes.Back();
+  return (*GetPrototypeVector ())->Back();
 }
 
 Node* Node::PushNodePrototype(const Node& n)
 { // Add a new node to the top of the prototypes stack
-  g_prototypes.Add(n.Copy());
-  return g_prototypes.Back();
+  (*GetPrototypeVector ())->Add(n.Copy());
+  return (*GetPrototypeVector ())->Back();
 }
 
 Node* Node::PushNodePrototype() 
 { // Replicate the top of the prototype stack
-  g_prototypes.Add(GetNodePrototype()->Copy());
-  return g_prototypes.Back();
+  (*GetPrototypeVector ())->Add(GetNodePrototype()->Copy());
+  return (*GetPrototypeVector ())->Back();
 }
 
 void Node::PopNodePrototype()
 { 
-  if (!g_prototypes.Empty()) g_prototypes.Remove();
+  if (!(*GetPrototypeVector ())->Empty()) (*GetPrototypeVector ())->Remove();
 }
 
 void Node::ClearAll()
 { // Delete all nodes for memory leak checking, including prototypes
   (*GetNodeVector ())->Clear ();
-  g_prototypes.Clear();
+  (*GetPrototypeVector ())->Clear();
 }
 
 L3Demux*
