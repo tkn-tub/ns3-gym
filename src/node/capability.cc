@@ -25,11 +25,6 @@
 #include "node.h"
 
 namespace ns3 {
-  
-Capability::Capability()
-  : m_node(0)
-{ // Nothing else needed
-}
 
 Capability::Capability(Node* n)
   : m_node (n)

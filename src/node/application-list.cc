@@ -26,11 +26,6 @@
 
 namespace ns3{
 
-ApplicationList::ApplicationList()
-    : Capability(0)
-{
-}
-  
 ApplicationList::ApplicationList(Node* n)
     : Capability(n)
 {
@@ -42,8 +37,7 @@ ApplicationList::~ApplicationList()
 
 ApplicationList* ApplicationList::Copy(Node * n) const 
 { // Copy this app list
-  ApplicationList* r = new ApplicationList();
-  r->SetNode(n);
+  ApplicationList* r = new ApplicationList(n);
   return r;
 }
 

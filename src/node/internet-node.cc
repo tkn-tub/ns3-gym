@@ -38,7 +38,7 @@ namespace ns3 {
 InternetNode::InternetNode()
 {
   // Instantiate the capabilities
-  m_applicationList = new ApplicationList();
+  m_applicationList = new ApplicationList(this);
   m_l3Demux = new L3Demux(this);
   m_ipv4L4Demux = new Ipv4L4Demux(this);
   m_l3Demux->Insert (Ipv4 (this));

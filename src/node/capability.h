@@ -37,7 +37,6 @@ class NodeReference;
 class Capability 
 {
 public:
-  Capability();
   Capability(Node* n);
   Capability(const Capability&); // Copy constructor
   virtual Capability& operator=(const Capability&); // Assignment operator
