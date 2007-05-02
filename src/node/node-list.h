@@ -23,13 +23,11 @@
 #define NODE_LIST_H
 
 #include <vector>
-#include <string>
 #include "ns3/array-trace-resolver.h"
 
 namespace ns3 {
 
 class Node;
-class CallbackBase;
 class TraceResolver;
 class TraceContext;
 
@@ -39,18 +37,12 @@ public:
   typedef ArrayTraceResolver<Node>::Index NodeIndex;
   typedef std::vector<Node *>::iterator Iterator;
 
-  static void Add (Node *node);
+  static uint32_t Add (Node *node);
   static Iterator Begin (void);
   static Iterator End (void);
   static TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   static Node *GetNode (uint32_t n);
-
-private:
-  static uint32_t g_nextId;	// becomes Node::m_id
-  static std::vector<Node *> *GetNodes (void);
-  static uint32_t GetNNodes (void);
-  
 };
 
 }//namespace ns3

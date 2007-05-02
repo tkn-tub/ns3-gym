@@ -29,6 +29,7 @@
 #include <list>
 
 #include "ns3/smartset.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -47,7 +48,8 @@ class TraceContext;
 class TraceResolver;
 class NetDevice;
 
-class Node  {
+class Node : public Object
+{
 friend class NodeList;
 friend class SmartSet<Node*>;
 
@@ -71,9 +73,6 @@ public:
 private:
   virtual void DoAddDevice (NetDevice *device) const = 0;
 
-protected:
-  void SetId(uint32_t);            // NodeList::Add() calls this
-
 public:
   // Virtual "Getters" for each capability.
   // These exist to allow owners of a generic Node pointer to get
@@ -90,7 +89,6 @@ public:
   virtual Arp *            GetArp (void) const;
   
 private:
-  static uint32_t       g_nextId;     // Next available ID
   uint32_t    m_id;         // Node id for this node
   uint32_t    m_sid;        // System id for this node
   std::vector<NetDevice *> m_devices;

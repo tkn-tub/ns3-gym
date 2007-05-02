@@ -97,6 +97,7 @@ simu.add_inst_headers([
     'simulator.h',
     'scheduler.h',
     'scheduler-factory.h',
+    'simulation-singleton.h',
     ])
 high_precision_as_double = ARGUMENTS.get('high-precision-as-double', 'n')
 if high_precision_as_double == 'y':

@@ -22,62 +22,142 @@
 
 #include "ns3/array-trace-resolver.h"
 #include "ns3/trace-root.h"
+#include "ns3/simulator.h"
+#include "ns3/simulation-singleton.h"
 #include "node-list.h"
 #include "node.h"
 
+namespace {
+static class Initialization 
+{
+public:
+  Initialization ()
+  {
+    ns3::TraceRoot::Register ("nodes", ns3::MakeCallback (&ns3::NodeList::CreateTraceResolver));
+  }
+} g_initialization;
+}
+
 namespace ns3 {
 
-uint32_t NodeList::g_nextId = 0;
+/**
+ * The private node list used by the static-based API
+ */
+class NodeListPriv
+{
+public:
+  NodeListPriv ();
+  ~NodeListPriv ();
 
-void
-NodeList::Add (Node *node)
-{
-  GetNodes ()->push_back (node);
-  node->SetId(g_nextId++);
-}
-NodeList::Iterator 
-NodeList::Begin (void)
-{
-  return GetNodes ()->begin ();
-}
-NodeList::Iterator 
-NodeList::End (void)
-{
-  return GetNodes ()->end ();
-}
+  uint32_t Add (Node *node);
+  NodeList::Iterator Begin (void);
+  NodeList::Iterator End (void);
+  TraceResolver *CreateTraceResolver (TraceContext const &context);
+  Node *GetNode (uint32_t n);
+  Node *PeekNode (uint32_t n);
+  uint32_t GetNNodes (void);
 
-std::vector<Node *> *
-NodeList::GetNodes (void)
+private:
+  std::vector<Node *> m_nodes;
+};
+
+NodeListPriv::NodeListPriv ()
+{}
+NodeListPriv::~NodeListPriv ()
 {
-  static bool firstTime = true;
-  if (firstTime)
+  for (std::vector<Node *>::iterator i = m_nodes.begin ();
+       i != m_nodes.end (); i++)
     {
-      TraceRoot::Register ("nodes", MakeCallback (&NodeList::CreateTraceResolver));
-      firstTime = false;
+      Node *node = *i;
+      node->Unref ();
     }
-  static std::vector<Node *> nodes;
-  return &nodes;
+  m_nodes.erase (m_nodes.begin (), m_nodes.end ());
 }
-uint32_t 
-NodeList::GetNNodes (void)
+
+
+uint32_t
+NodeListPriv::Add (Node *node)
 {
-  return GetNodes ()->size ();
+  uint32_t index = m_nodes.size ();
+  node->Ref ();
+  m_nodes.push_back (node);
+  return index;
+  
+}
+NodeList::Iterator 
+NodeListPriv::Begin (void)
+{
+  return m_nodes.begin ();
+}
+NodeList::Iterator 
+NodeListPriv::End (void)
+{
+  return m_nodes.end ();
 }
 Node *
-NodeList::GetNode (uint32_t n)
+NodeListPriv::GetNode (uint32_t n)
 {
-  return (*GetNodes ())[n];
+  Node *node = m_nodes[n];
+  node->Ref ();
+  return node;
+}
+uint32_t 
+NodeListPriv::GetNNodes (void)
+{
+  return m_nodes.size ();
+}
+Node *
+NodeListPriv::PeekNode (uint32_t n)
+{
+  return m_nodes[n];
 }
 
 TraceResolver *
-NodeList::CreateTraceResolver (TraceContext const &context)
+NodeListPriv::CreateTraceResolver (TraceContext const &context)
 {
   ArrayTraceResolver<Node> *resolver =
     new ArrayTraceResolver<Node>
     (context, 
-     MakeCallback (&NodeList::GetNNodes),
-     MakeCallback (&NodeList::GetNode));
+     MakeCallback (&NodeListPriv::GetNNodes, this),
+     MakeCallback (&NodeListPriv::PeekNode, this));
   return resolver;
 }
+
+}
+
+/**
+ * The implementation of the public static-based API
+ * which calls into the private implementation through
+ * the simulation singleton.
+ */
+namespace ns3 {
+
+uint32_t
+NodeList::Add (Node *node)
+{
+  return SimulationSingleton<NodeListPriv>::Get ()->Add (node);
+}
+NodeList::Iterator 
+NodeList::Begin (void)
+{
+  return SimulationSingleton<NodeListPriv>::Get ()->Begin ();
+}
+NodeList::Iterator 
+NodeList::End (void)
+{
+  return SimulationSingleton<NodeListPriv>::Get ()->End ();
+}
+TraceResolver *
+NodeList::CreateTraceResolver (TraceContext const &context)
+{
+  return SimulationSingleton<NodeListPriv>::Get ()->CreateTraceResolver (context);
+}
+Node *
+NodeList::GetNode (uint32_t n)
+{
+  return SimulationSingleton<NodeListPriv>::Get ()->GetNode (n);
+}
+
+
 
 }//namespace ns3

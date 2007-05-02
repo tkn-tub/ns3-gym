@@ -151,6 +151,11 @@ int main (int argc, char *argv[])
   n0->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
   n3->GetIpv4()->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
 
+  n0->Unref ();
+  n1->Unref ();
+  n2->Unref ();
+  n3->Unref ();
+
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-p2p.tr file
 #if 1
@@ -163,16 +168,6 @@ int main (int argc, char *argv[])
 #endif
 
   Simulator::Run ();
-
-  n0->Dispose ();
-  n1->Dispose ();
-  n2->Dispose ();
-  n3->Dispose ();
-
-  delete n0;
-  delete n1;
-  delete n2;
-  delete n3;
     
   Simulator::Destroy ();
 }

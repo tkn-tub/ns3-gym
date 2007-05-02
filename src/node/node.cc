@@ -30,13 +30,17 @@
 namespace ns3{
 
 Node::Node()
-  : m_id(0), m_sid(0)
+  : m_id(0), 
+    m_sid(0)
 {
+  m_id = NodeList::Add (this);
 }
 
 Node::Node(uint32_t sid)
-  : m_id(0), m_sid(sid)
+  : m_id(0), 
+    m_sid(sid)
 { 
+  m_id = NodeList::Add (this);
 }
   
 Node::~Node ()
@@ -47,12 +51,6 @@ uint32_t
 Node::GetId (void) const
 {
   return m_id;
-}
-
-void   
-Node::SetId(uint32_t id )
-{
-  m_id = id;
 }
 
 uint32_t 
