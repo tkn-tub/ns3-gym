@@ -56,11 +56,7 @@ PointToPointNetDevice::~PointToPointNetDevice()
 {
   NS_DEBUG ("PointToPointNetDevice::~PointToPointNetDevice ()");
 
-  if (m_channel)
-    {
-      m_channel->Unref ();
-      m_channel = 0;
-    }
+  Dispose ();
 
   delete m_queue;
   m_queue = 0;
