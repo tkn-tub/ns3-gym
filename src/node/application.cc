@@ -59,13 +59,31 @@ Application::Application(const Application& o)
 // \brief Application Destructor
 Application::~Application()
 {
-  m_node->Unref ();
-  // Cancel the start/stop events if scheduled
-  if (m_start) Simulator::Cancel(m_startEvent);
-  if (m_stop)  Simulator::Cancel(m_stopEvent);
-  // Delete the random variablse
+  Dispose ();
+}
+
+void
+Application::Dispose (void)
+{
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+      m_node = 0;
+    }
+  if (m_start) 
+    {
+      Simulator::Cancel(m_startEvent);
+      m_start = false;
+    }
+  if (m_stop) 
+    {
+      Simulator::Cancel(m_stopEvent);
+      m_stop = false;
+    }
   delete m_startVar;
+  m_startVar = 0;
   delete m_stopVar;
+  m_stopVar = 0;
 }
   
 Application& Application::operator=(const Application& rhs)

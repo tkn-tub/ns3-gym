@@ -25,17 +25,17 @@
 #define __APPLICATION_LIST_H__
 
 #include "application.h"
-#include "ns3/smartset.h"
-#include "capability.h"
+#include <vector>
 
 namespace ns3 {
 
-class ApplicationList : public Capability {
+class ApplicationList  {
 public:
   ApplicationList(Node*);
   // Copy constructor not needed, default one is correct
-  ~ApplicationList();
+  virtual ~ApplicationList();
   // Inherited from Capabilty
+  void Dispose (void);
   virtual ApplicationList* Copy(Node*) const;
   virtual void SetNode(Node *);              // Sets the node for all apps
   virtual void Add(Application*);      // Add an already new'ed app
@@ -43,16 +43,15 @@ public:
   template <typename T> T* AddCopy(const T& t)  // Add a new application
   {
     T* a = t.Copy();
-    m_apps.Add(a);
+    m_apps.push_back(a);
     return a;
   }
   void Remove(Application*);                // Application has finished
-  SmartSet<Application*>::size_type Count() const;  // Number of applications
-  Application* Get(SmartSet<Application*>::size_type) const; // Get app by index
-  const SmartSet<Application*>& GetAll() const;     // Get the entire app list
+  uint32_t Count() const;  // Number of applications
+  Application* Get(uint32_t i) const; // Get app by index
   
 private:
-  SmartSet<Application*> m_apps;
+  std::vector<Application*> m_apps;
 };
 
 }//namespace ns3

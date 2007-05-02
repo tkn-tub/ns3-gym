@@ -89,9 +89,22 @@ OnOffApplication::OnOffApplication(Node * n, const OnOffApplication& c)
 
 OnOffApplication::~OnOffApplication()
 {
+  Dispose ();
+}
+
+void
+OnOffApplication::Dispose (void)
+{
   delete m_socket;
   delete m_onTime;
   delete m_offTime;
+
+  m_socket = 0;
+  m_onTime = 0;
+  m_offTime = 0;
+
+  // chain up
+  Application::Dispose ();
 }
 
 #ifdef REMOVE_THIS

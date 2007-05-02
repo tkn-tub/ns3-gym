@@ -48,12 +48,10 @@ InternetNode::InternetNode()
 
 InternetNode::~InternetNode ()
 {
-  delete m_applicationList;
-  delete m_l3Demux;
-  delete m_ipv4L4Demux;
+  Dispose ();
 }
 
-  void
+void
 InternetNode::SetName (std::string name)
 {
   m_name = name;
@@ -77,8 +75,25 @@ InternetNode::CreateTraceResolver (TraceContext const &context)
 
 void InternetNode::Dispose()
 {
-  m_l3Demux->Dispose ();
-  m_ipv4L4Demux->Dispose ();
+  if (m_l3Demux != 0)
+    {
+      m_l3Demux->Dispose ();
+      delete m_l3Demux;
+      m_l3Demux = 0;
+    }
+  if (m_ipv4L4Demux != 0)
+    {
+      m_ipv4L4Demux->Dispose ();
+      delete m_ipv4L4Demux;
+      m_ipv4L4Demux = 0;
+    }
+
+  if (m_applicationList != 0)
+    {
+      m_applicationList->Dispose ();
+      delete m_applicationList;
+      m_applicationList = 0;
+    }
 
   // chain up.
   Node::Dispose ();

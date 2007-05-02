@@ -54,6 +54,8 @@ public:
   virtual void StopApplication();     // Called at time specified by Stop
   virtual OnOffApplication* Copy() const;// Make a copy of the application
 
+  virtual void Dispose (void);
+
   // Event handlers
   void StartSending();
   void StopSending();

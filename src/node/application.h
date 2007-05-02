@@ -61,6 +61,8 @@ public:
   Application(const Application&);  // Copy constructor
   Application& operator=(const Application&); // Assignment operator
   virtual ~Application();
+
+  virtual void Dispose (void);
   
   virtual Application* Copy() const = 0; // All applications must provide
   

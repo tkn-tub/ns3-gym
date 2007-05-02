@@ -27,12 +27,24 @@
 namespace ns3{
 
 ApplicationList::ApplicationList(Node* n)
-    : Capability(n)
+{}
+
+void 
+ApplicationList::Dispose (void)
 {
+  for (std::vector<Application*>::const_iterator i = m_apps.begin();
+       i != m_apps.end(); ++i)
+    {
+      Application *app = *i;
+      app->Dispose ();
+      delete app;
+    }
+  m_apps.clear ();
 }
   
 ApplicationList::~ApplicationList()
 { // Destructor, nothing needed as the SmartSet destroys itself
+  Dispose ();
 }
 
 ApplicationList* ApplicationList::Copy(Node * n) const 
@@ -44,46 +56,29 @@ ApplicationList* ApplicationList::Copy(Node * n) const
 void
 ApplicationList::Add(Application* a)
 {
-  m_apps.Add(a);
+  m_apps.push_back(a);
 }
 
 void ApplicationList::SetNode(Node * n)
 {
-  Capability::SetNode(n);
   // Set the node pointer in each application
-  for (SmartSet<Application*>::const_iterator i = m_apps.Begin();
-       i != m_apps.End(); ++i)
+  for (std::vector<Application *>::const_iterator i = m_apps.begin();
+       i != m_apps.end(); ++i)
     { // Set correct node pointer in each app
       (*i)->SetNode(n);
     }
 }
   
-void ApplicationList::Remove(Application* a)
-{ // Remove the specified application from the list
-  m_apps.Remove(a);
-}
 
-SmartSet<Application*>::size_type ApplicationList::Count() const
+uint32_t ApplicationList::Count() const
 {
-  return m_apps.Size();
+  return m_apps.size();
 }
 
-Application* ApplicationList::Get(SmartSet<Application*>::size_type i) const
+Application* ApplicationList::Get(uint32_t i) const
 { // Get the i'th application. Note, this is linear time in N
-  if (m_apps.Empty()) return 0;        // List is empty
-  SmartSet<Application*>::const_iterator k = m_apps.Begin();
-  while(i > 0)
-    {
-      if (k == m_apps.End()) return 0; // Not found
-      --i;
-      ++k;
-    }
-  return *k;
-}
-
-const SmartSet<Application*>& ApplicationList::GetAll() const
-{
-  return m_apps;
+  if (m_apps.empty()) return 0;        // List is empty
+  return m_apps[i];
 }
   
 }//namespace ns3
