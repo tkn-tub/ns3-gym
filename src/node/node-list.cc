@@ -53,7 +53,6 @@ public:
   NodeList::Iterator Begin (void);
   NodeList::Iterator End (void);
   TraceResolver *CreateTraceResolver (TraceContext const &context);
-  Node *GetNode (uint32_t n);
   Node *PeekNode (uint32_t n);
   uint32_t GetNNodes (void);
 
