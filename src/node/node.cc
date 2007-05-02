@@ -24,6 +24,7 @@
 
 #include "node.h"
 #include "node-list.h"
+#include "net-device.h"
 
 namespace ns3{
 
@@ -89,6 +90,14 @@ Node::GetNDevices (void) const
 
 void Node::Dispose()
 {
+  for (std::vector<NetDevice *>::iterator i = m_devices.begin ();
+       i != m_devices.end (); i++)
+    {
+      NetDevice *device = *i;
+      device->Dispose ();
+      device->Unref ();
+    }
+  m_devices.erase (m_devices.begin (), m_devices.end ());
 }
 
 // Node stack creation and management routines.
