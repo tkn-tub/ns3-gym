@@ -61,7 +61,6 @@ public:
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport);
   // inherited from Ipv4L4Protocol
-  virtual Udp* Copy(Node *node) const;
   virtual void Receive(Packet& p, 
                        Ipv4Address const &source,
                        Ipv4Address const &destination);

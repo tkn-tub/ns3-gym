@@ -186,8 +186,6 @@ public:
   Ipv4Interface *FindInterfaceForDevice (NetDevice const*device);
   
 
-  virtual Ipv4* Copy(Node *node) const;
-
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
    * The ARP subclass needs to know from which NetDevice this

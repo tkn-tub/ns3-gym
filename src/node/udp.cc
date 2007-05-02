@@ -105,12 +105,6 @@ Udp::Allocate (Ipv4Address localAddress, uint16_t localPort,
                                 peerAddress, peerPort);
 }
 
-Udp* 
-Udp::Copy(Node *node) const
-{
-  return new Udp (node);
-}
-
 void 
 Udp::Receive(Packet& packet, 
              Ipv4Address const &source,

@@ -363,13 +363,6 @@ Ipv4::FindInterfaceForDevice (NetDevice const*device)
   return 0;
 }  
 
-Ipv4* 
-Ipv4::Copy(Node *node) const
-{
-  Ipv4 *ipv4 = new Ipv4 (node);
-  ipv4->SetDefaultTtl (m_defaultTtl);
-  return ipv4;
-}
 void 
 Ipv4::Receive(Packet& packet, NetDevice *device)
 {

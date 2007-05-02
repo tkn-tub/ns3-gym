@@ -62,12 +62,6 @@ Arp::Dispose (void)
     }
 }
 
-Arp *
-Arp::Copy (Node *node) const
-{
-  return new Arp (node);
-}
-
 TraceResolver *
 Arp::CreateTraceResolver (TraceContext const &context)
 {

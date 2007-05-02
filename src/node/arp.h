@@ -42,7 +42,6 @@ public:
 
   Arp (Node *node);
   ~Arp ();
-  virtual Arp *Copy (Node *node) const;
 
   virtual void Dispose (void);
 
