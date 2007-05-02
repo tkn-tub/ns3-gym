@@ -35,6 +35,7 @@ UdpSocket::UdpSocket (Node *node)
     m_connected (false)
 {
   NS_ASSERT (GetUdp () != 0);
+  m_udp = m_node->GetUdp ();
   m_node->Ref ();
 }
 UdpSocket::~UdpSocket ()
@@ -57,6 +58,11 @@ UdpSocket::Destroy (void)
       m_node = 0;
     }
   m_endPoint = 0;
+  if (m_udp != 0)
+    {
+      m_udp->Unref ();
+      m_udp = 0;
+    }
 }
 int
 UdpSocket::FinishBind (void)
@@ -73,25 +79,25 @@ UdpSocket::FinishBind (void)
 int
 UdpSocket::Bind (void)
 {
-  m_endPoint = GetUdp ()->Allocate ();
+  m_endPoint = m_udp->Allocate ();
   return FinishBind ();
 }
 int 
 UdpSocket::Bind (Ipv4Address address)
 {
-  m_endPoint = GetUdp ()->Allocate (address);
+  m_endPoint = m_udp->Allocate (address);
   return FinishBind ();
 }
 int 
 UdpSocket::Bind (uint16_t port)
 {
-  m_endPoint = GetUdp ()->Allocate (port);
+  m_endPoint = m_udp->Allocate (port);
   return FinishBind ();
 }
 int 
 UdpSocket::Bind (Ipv4Address address, uint16_t port)
 {
-  m_endPoint = GetUdp ()->Allocate (address, port);
+  m_endPoint = m_udp->Allocate (address, port);
   return FinishBind ();
 }
 
@@ -185,7 +191,7 @@ UdpSocket::DoSendPacketTo (const Packet &p, Ipv4Address daddr, uint16_t dport,
       m_errno = ESHUTDOWN;
       return -1;
     }
-  GetUdp ()->Send (p, m_endPoint->GetLocalAddress (), daddr,
+  m_udp->Send (p, m_endPoint->GetLocalAddress (), daddr,
 		   m_endPoint->GetLocalPort (), dport);
   if (!dataSent.IsNull ())
     {
@@ -244,12 +250,5 @@ UdpSocket::ForwardUp (const Packet &packet, Ipv4Address saddr, uint16_t sport)
       m_rxCallback (this, p.PeekData (), p.GetSize (), saddr, sport);
     }
 }
-
-Udp *
-UdpSocket::GetUdp (void) const
-{
-  return m_node->GetUdp ();
-}
-
 
 }//namespace ns3

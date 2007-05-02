@@ -81,7 +81,7 @@ public:
    * to forward packets up the stack to the right protocol.
    * It is also called from InternetNode::GetUdp for example.
    */
-  Ipv4L4Protocol* Lookup(int protocolNumber);
+  Ipv4L4Protocol* PeekProtocol(int protocolNumber);
   /**
    * \param protocol protocol to remove from this demux.
    *

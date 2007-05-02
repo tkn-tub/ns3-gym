@@ -83,6 +83,7 @@ private:
 
   Ipv4EndPoint *m_endPoint;
   Node *m_node;
+  Udp *m_udp;
   Ipv4Address m_defaultAddress;
   uint16_t m_defaultPort;
   Callback<void,Socket*,uint32_t,const Ipv4Address &,uint16_t> m_dummyRxCallback;

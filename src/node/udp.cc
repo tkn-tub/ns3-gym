@@ -146,6 +146,7 @@ Udp::Send (Packet packet,
   if (ipv4 != 0)
     {
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
+      ipv4->Unref ();
     }
 }
 

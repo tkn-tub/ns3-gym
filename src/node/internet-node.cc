@@ -61,15 +61,24 @@ TraceResolver *
 InternetNode::CreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  Ipv4 *ipv4 = GetIpv4 ();
   resolver->Add ("ipv4",
-                 MakeCallback (&Ipv4::CreateTraceResolver, GetIpv4 ()),
+                 MakeCallback (&Ipv4::CreateTraceResolver, ipv4),
                  InternetNode::IPV4);
+  ipv4->Unref ();
+
+  Arp *arp = GetArp ();
   resolver->Add ("arp",
-                 MakeCallback (&Arp::CreateTraceResolver, GetArp ()),
+                 MakeCallback (&Arp::CreateTraceResolver, arp),
                  InternetNode::ARP);
+  arp->Unref ();
+
+  Udp *udp = GetUdp ();
   resolver->Add ("udp",
-                 MakeCallback (&Udp::CreateTraceResolver, GetUdp ()),
+                 MakeCallback (&Udp::CreateTraceResolver, udp),
                  InternetNode::UDP);
+  udp->Unref ();
+
   return resolver;
 }
 
@@ -102,36 +111,45 @@ void InternetNode::Dispose()
 ApplicationList* 
 InternetNode::GetApplicationList() const
 { 
+  m_applicationList->Ref ();
   return m_applicationList;
 } 
 
 L3Demux*     
 InternetNode::GetL3Demux() const
 {
+  m_l3Demux->Ref ();
   return m_l3Demux;
 }
 
 Ipv4L4Demux*     
 InternetNode::GetIpv4L4Demux() const
 {
+  m_ipv4L4Demux->Ref ();
   return m_ipv4L4Demux;
 }
 
 Ipv4 *
 InternetNode::GetIpv4 (void) const
 {
-  return static_cast<Ipv4*> (m_l3Demux->Lookup (Ipv4::PROT_NUMBER));
+  Ipv4 *ipv4 = static_cast<Ipv4*> (m_l3Demux->PeekProtocol (Ipv4::PROT_NUMBER));
+  ipv4->Ref ();
+  return ipv4;
 }
 Udp *
 InternetNode::GetUdp (void) const
 {
-  return static_cast<Udp*> (m_ipv4L4Demux->Lookup (Udp::PROT_NUMBER));
+  Udp *udp = static_cast<Udp*> (m_ipv4L4Demux->PeekProtocol (Udp::PROT_NUMBER));
+  udp->Ref ();
+  return udp;
 }
 
 Arp *
 InternetNode::GetArp (void) const
 {
-  return static_cast<Arp*> (m_l3Demux->Lookup (Arp::PROT_NUMBER));
+  Arp *arp = static_cast<Arp*> (m_l3Demux->PeekProtocol (Arp::PROT_NUMBER));
+  arp->Ref ();
+  return arp;
 }
 
 void 
@@ -143,7 +161,7 @@ InternetNode::DoAddDevice (NetDevice *device) const
 bool
 InternetNode::ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const
 {
-  L3Protocol *target = GetL3Demux()->Lookup(protocolNumber);
+  L3Protocol *target = GetL3Demux()->PeekProtocol (protocolNumber);
   if (target != 0) 
     {
       Packet packet = p;

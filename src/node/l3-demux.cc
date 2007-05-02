@@ -91,7 +91,8 @@ L3Protocol* L3Demux::Insert(const L3Protocol& l3p)
   return l;
 }
 
-L3Protocol* L3Demux::Lookup(int p)
+L3Protocol* 
+L3Demux::PeekProtocol (int p)
 { // Look up a protocol by protocol number
   L3Map_t::iterator i = m_protocols.find(p);
   if (i == m_protocols.end()) return 0;  // Not found

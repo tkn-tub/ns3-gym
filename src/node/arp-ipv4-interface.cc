@@ -69,6 +69,7 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
         {
           PeekDevice ()->Send (p, hardwareDestination, Ipv4::PROT_NUMBER);
         }
+      arp->Unref ();
     }
   else
     {

@@ -91,7 +91,7 @@ Ipv4L4Demux::Insert(const Ipv4L4Protocol&protocol)
   return copy;
 }
 Ipv4L4Protocol* 
-Ipv4L4Demux::Lookup(int protocolNumber)
+Ipv4L4Demux::PeekProtocol(int protocolNumber)
 {
   for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {

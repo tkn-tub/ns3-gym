@@ -47,7 +47,9 @@ Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
 void 
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {
-  m_node->GetIpv4 ()->Receive (packet, PeekDevice ());
+  Ipv4 *ipv4 = m_node->GetIpv4 ();
+  ipv4->Receive (packet, PeekDevice ());
+  ipv4->Unref ();
 }
 
 }//namespace ns3

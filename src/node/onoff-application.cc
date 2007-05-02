@@ -172,7 +172,10 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
                         MakeCallback(&OnOffApplication::ConnectionFailed,
                                      this));
 #endif
-      m_socket = PeekNode ()->GetUdp ()->CreateSocket ();
+      
+      Udp *udp = PeekNode ()->GetUdp ();
+      m_socket = udp->CreateSocket ();
+      udp->Unref ();
       m_socket->Connect (m_peerIP, m_peerPort);
     }
   StopApplication();                         // Insure no pending event
