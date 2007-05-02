@@ -46,7 +46,7 @@ public:
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
-  virtual void Receive(Packet& p, NetDevice &device);
+  virtual void Receive(Packet& p, NetDevice *device);
   bool Lookup (Packet &p, Ipv4Address destination, 
 	       NetDevice *device,
 	       MacAddress *hardwareDestination);

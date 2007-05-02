@@ -33,9 +33,7 @@ Ipv4LoopbackInterface::Ipv4LoopbackInterface (Node *node)
 {
 }
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
-{
-  delete GetDevice ();
-}
+{}
 
 Node *
 Ipv4LoopbackInterface::GetNode (void) const
@@ -52,7 +50,7 @@ Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
 void 
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {
-  m_node->GetIpv4 ()->Receive (packet, *(this->GetDevice ()));
+  m_node->GetIpv4 ()->Receive (packet, PeekDevice ());
 }
 
 }//namespace ns3

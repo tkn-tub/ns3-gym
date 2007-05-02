@@ -54,7 +54,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  virtual void Receive(Packet& p, NetDevice &device) = 0;
+  virtual void Receive(Packet& p, NetDevice *device) = 0;
 
  private:
   int m_protocolNumber;

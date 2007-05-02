@@ -42,10 +42,10 @@ TraceResolver *
 ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
-  if (GetDevice () != 0)
+  if (PeekDevice () != 0)
     {
       resolver->Add ("netdevice",
-                     MakeCallback (&NetDevice::CreateTraceResolver, GetDevice ()),
+                     MakeCallback (&NetDevice::CreateTraceResolver, PeekDevice ()),
                      ArpIpv4Interface::NETDEVICE);
     }
   
@@ -55,20 +55,20 @@ ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
 void 
 ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
 {
-  NS_ASSERT (GetDevice () != 0);
-  if (GetDevice ()->NeedsArp ())
+  NS_ASSERT (PeekDevice () != 0);
+  if (PeekDevice ()->NeedsArp ())
     {
       Arp * arp = m_node->GetArp ();
       MacAddress hardwareDestination;
-      bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
+      bool found = arp->Lookup (p, dest, PeekDevice (), &hardwareDestination);
       if (found)
         {
-          GetDevice ()->Send (p, hardwareDestination, Ipv4::PROT_NUMBER);
+          PeekDevice ()->Send (p, hardwareDestination, Ipv4::PROT_NUMBER);
         }
     }
   else
     {
-      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), Ipv4::PROT_NUMBER);
+      PeekDevice ()->Send (p, PeekDevice ()->GetBroadcast (), Ipv4::PROT_NUMBER);
     }
 }
 

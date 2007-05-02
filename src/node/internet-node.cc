@@ -160,7 +160,7 @@ InternetNode::ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t pr
   if (target != 0) 
     {
       Packet packet = p;
-      target->Receive(packet, *device);
+      target->Receive(packet, device);
       return true;
     }
   return false;

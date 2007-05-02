@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
+#include "net-device.h"
 #include "ipv4-address.h"
 #include "mac-address.h"
 #include "sgi-hashmap.h"
@@ -40,7 +41,7 @@ public:
   ArpCache (NetDevice *device, Ipv4Interface *interface);
   ~ArpCache ();
 
-  NetDevice *GetDevice (void) const;
+  NetDevice *PeekDevice (void) const;
   Ipv4Interface *GetInterface (void) const;
 
   void SetAliveTimeout (Time aliveTimeout);

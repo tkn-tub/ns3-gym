@@ -34,15 +34,18 @@ ArpCache::ArpCache (NetDevice *device, Ipv4Interface *interface)
     m_aliveTimeout (Seconds (120)),
     m_deadTimeout (Seconds (100)),
     m_waitReplyTimeout (Seconds (1))
-{}
+{
+  m_device->Ref ();
+}
 
 ArpCache::~ArpCache ()
 {
+  m_device->Unref ();
   Flush ();
 }
 
 NetDevice *
-ArpCache::GetDevice (void) const
+ArpCache::PeekDevice (void) const
 {
   return m_device;
 }

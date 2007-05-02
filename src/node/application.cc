@@ -37,8 +37,10 @@ namespace ns3 {
 // Application Methods
 
 // \brief Application Constructor
-  Application::Application(const Node& n) : m_startVar(nil), m_stopVar(nil),
-                               m_start(false), m_stop(false)
+  Application::Application(const Node& n) 
+    : m_node (0),
+      m_startVar(nil), m_stopVar(nil),
+      m_start(false), m_stop(false)
 {
   SetNode(n);
 }

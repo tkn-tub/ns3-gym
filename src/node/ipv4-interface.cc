@@ -34,13 +34,23 @@ namespace ns3 {
 Ipv4Interface::Ipv4Interface (NetDevice *nd) 
   : m_netdevice (nd), 
     m_ifup(false)
-{}
+{
+  if (m_netdevice != 0)
+    {
+      m_netdevice->Ref ();
+    }
+}
 
 Ipv4Interface::~Ipv4Interface ()
-{}
+{
+  if (m_netdevice != 0)
+    {
+      m_netdevice->Unref ();
+    }
+}
 
 NetDevice*
-Ipv4Interface::GetDevice (void) const
+Ipv4Interface::PeekDevice (void) const
 {
   return m_netdevice;
 }

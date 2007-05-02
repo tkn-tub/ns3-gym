@@ -87,7 +87,7 @@ public:
    * \returns the underlying NetDevice. This method can return
    *          zero if this interface has no associated NetDevice.
    */
-  NetDevice *GetDevice (void) const;
+  NetDevice *PeekDevice (void) const;
 
   /**
    * \param a set the ipv4 address of this interface.

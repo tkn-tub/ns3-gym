@@ -193,7 +193,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  virtual void Receive(Packet& p, NetDevice &device);
+  virtual void Receive(Packet& p, NetDevice *device);
 
   /**
    * \param packet packet to send
@@ -219,7 +219,7 @@ public:
 
  private:
   void SendRealOut (Packet const &packet, Ipv4Header const &ip, Ipv4Route const &route);
-  bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device);
+  bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice *device);
   void ForwardUp (Packet p, Ipv4Header const&ip);
   uint32_t AddIpv4Interface (Ipv4Interface *interface);
   void SetupLoopback (void);

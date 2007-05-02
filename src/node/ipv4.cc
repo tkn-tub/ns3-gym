@@ -338,7 +338,7 @@ Ipv4::FindInterfaceForDevice (NetDevice const*device)
 {
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
-      if ((*i)->GetDevice () == device)
+      if ((*i)->PeekDevice () == device)
         {
           return *i;
         }
@@ -354,12 +354,12 @@ Ipv4::Copy(Node *node) const
   return ipv4;
 }
 void 
-Ipv4::Receive(Packet& packet, NetDevice &device)
+Ipv4::Receive(Packet& packet, NetDevice *device)
 {
   uint32_t index = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
-      if ((*i)->GetDevice () == &device)
+      if ((*i)->PeekDevice () == device)
         {
           m_rxTrace (packet, index);
           break;
@@ -439,7 +439,7 @@ Ipv4::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route
 
 
 bool
-Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
+Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice *device)
 {
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
@@ -455,7 +455,7 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice &device)
        i != m_interfaces.end (); i++) 
     {
       Ipv4Interface *interface = *i;
-      if (interface->GetDevice () == &device)
+      if (interface->PeekDevice () == device)
 	{
 	  if (ipHeader.GetDestination ().IsEqual (interface->GetBroadcast ())) 
 	    {

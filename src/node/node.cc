@@ -72,6 +72,7 @@ Node::SetSystemId(uint32_t s )
 uint32_t 
 Node::AddDevice (NetDevice *device)
 {
+  device->Ref ();
   uint32_t index = m_devices.size ();
   m_devices.push_back (device);
   DoAddDevice (device);
