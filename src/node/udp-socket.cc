@@ -35,14 +35,17 @@ UdpSocket::UdpSocket (Node *node)
     m_connected (false)
 {
   NS_ASSERT (GetUdp () != 0);
+  m_node->Ref ();
 }
 UdpSocket::~UdpSocket ()
 {
   delete m_endPoint;
+  m_node->Unref ();
+  m_node = 0;
 }
 
 Node *
-UdpSocket::GetNode (void) const
+UdpSocket::PeekNode (void) const
 {
   return m_node;
 }

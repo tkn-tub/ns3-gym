@@ -26,12 +26,15 @@
 #include "ns3/composite-trace-resolver.h"
 #include "ipv4-l4-demux.h"
 #include "ipv4-l4-protocol.h"
+#include "node.h"
 
 namespace ns3 {
 
 Ipv4L4Demux::Ipv4L4Demux (Node *node)
   : m_node (node)
-{}
+{
+  m_node->Ref ();
+}
 
 Ipv4L4Demux::~Ipv4L4Demux()
 {
@@ -39,6 +42,8 @@ Ipv4L4Demux::~Ipv4L4Demux()
     {
       delete *i;
     }
+  m_node->Unref ();
+  m_node = 0;
 }
 Ipv4L4Demux* 
 Ipv4L4Demux::Copy(Node *node) const

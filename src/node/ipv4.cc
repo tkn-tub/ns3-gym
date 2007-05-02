@@ -52,6 +52,7 @@ Ipv4::Ipv4(Node *node)
     m_node (node)
 {
   SetupLoopback ();
+  m_node->Ref ();
 }
 Ipv4::~Ipv4 ()
 {
@@ -72,6 +73,7 @@ Ipv4::~Ipv4 ()
       delete (*j);
     }
   delete m_defaultRoute;
+  m_node->Unref ();
 }
 
 void

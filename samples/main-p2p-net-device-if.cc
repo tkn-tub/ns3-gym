@@ -80,7 +80,7 @@ protected:
 static void
 GenerateTraffic (Socket *socket, uint32_t size)
 {
-  std::cout << "Node: " << socket->GetNode()->GetId () 
+  std::cout << "Node: " << socket->PeekNode()->GetId () 
             << " at=" << Simulator::Now ().GetSeconds () << "s,"
             << " tx bytes=" << size << std::endl;
   socket->Send (0, size);
@@ -93,7 +93,7 @@ GenerateTraffic (Socket *socket, uint32_t size)
 static void
 SocketPrinter (Socket *socket, uint32_t size, const Ipv4Address &from, uint16_t fromPort)
 {
-  std::cout << "Node: " << socket->GetNode()->GetId () 
+  std::cout << "Node: " << socket->PeekNode()->GetId () 
             << " at=" << Simulator::Now ().GetSeconds () << "s,"
             << " rx bytes=" << size << std::endl;
 }

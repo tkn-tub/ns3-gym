@@ -62,7 +62,7 @@ public:
    * \param addr MAC address of this device.
    */
   NetDevice(Node* node, const MacAddress& addr);
-  virtual ~NetDevice() {}
+  virtual ~NetDevice();
 
   /**
    * \param context the trace context to use to construct the
@@ -205,7 +205,7 @@ public:
    * base class to print the nodeid for example, it can invoke
    * this method.
    */
-  Node* GetNode (void) const;
+  Node* PeekNode (void) const;
 
   /**
    * \param p packet sent from below up to Network Device

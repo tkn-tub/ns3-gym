@@ -31,14 +31,11 @@ Ipv4LoopbackInterface::Ipv4LoopbackInterface (Node *node)
   : Ipv4Interface (0),
     m_node (node)
 {
+  m_node->Ref ();
 }
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
-{}
-
-Node *
-Ipv4LoopbackInterface::GetNode (void) const
 {
-  return m_node;
+  m_node->Unref ();
 }
 
 TraceResolver *

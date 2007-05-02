@@ -25,12 +25,15 @@
 #include "ns3/composite-trace-resolver.h"
 #include "l3-demux.h"
 #include "l3-protocol.h"
+#include "node.h"
 
 namespace ns3 {
 
 L3Demux::L3Demux (Node *node)
   : m_node (node)
-{}
+{
+  m_node->Ref ();
+}
 
 L3Demux::~L3Demux()
 { // Delete each protocol in the map
@@ -38,6 +41,8 @@ L3Demux::~L3Demux()
     {
       delete i->second;
     }
+  m_node->Unref ();
+  m_node = 0;
 }
 
 TraceResolver *

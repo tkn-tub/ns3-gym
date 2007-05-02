@@ -39,7 +39,15 @@ NetDevice::NetDevice(Node *node, const MacAddress& addr) :
   m_isBroadcast (false), 
   m_isMulticast (false), 
   m_isPointToPoint (false)
-{}
+{
+  m_node->Ref ();
+}
+
+NetDevice::~NetDevice ()
+{
+  m_node->Unref ();
+  m_node = 0;
+}
 
 MacAddress 
 NetDevice::GetAddress (void) const
@@ -209,7 +217,7 @@ NetDevice::NotifyLinkDown (void)
 }
 
 Node *
-NetDevice::GetNode (void) const
+NetDevice::PeekNode (void) const
 {
   return m_node;
 }

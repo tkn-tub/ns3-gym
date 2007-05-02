@@ -63,7 +63,7 @@ public:
   /**
    * \returns the node this socket is associated with.
    */
-  virtual Node *GetNode (void) const = 0;
+  virtual Node *PeekNode (void) const = 0;
 
   /** 
    * Allocate a free port number and

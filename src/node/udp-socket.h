@@ -42,7 +42,7 @@ public:
   virtual ~UdpSocket ();
 
   virtual enum SocketErrno GetErrno (void) const;
-  virtual Node *GetNode (void) const;
+  virtual Node *PeekNode (void) const;
   virtual int Bind (void);
   virtual int Bind (Ipv4Address address);
   virtual int Bind (uint16_t port); 

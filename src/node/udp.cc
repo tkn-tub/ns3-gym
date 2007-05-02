@@ -41,11 +41,15 @@ Udp::Udp (Node *node)
   : Ipv4L4Protocol (PROT_NUMBER, 2),
     m_node (node),
     m_endPoints (new Ipv4EndPointDemux<UdpEndPoint> ())
-{}
+{
+  m_node->Ref ();
+}
 
 Udp::~Udp ()
 {
   delete m_endPoints;
+  m_node->Unref ();
+  m_node = 0;
 }
 
 TraceResolver *

@@ -38,7 +38,9 @@ const uint16_t Arp::PROT_NUMBER = 0x0806;
 Arp::Arp (Node *node)
   : L3Protocol (PROT_NUMBER, 0/* XXX: correct version number ? */ ),
     m_node (node)
-{}
+{
+  m_node->Ref ();
+}
 
 Arp::~Arp ()
 {
@@ -46,6 +48,7 @@ Arp::~Arp ()
     {
       delete *i;
     }
+  m_node->Unref ();
 }
 
 Arp *
