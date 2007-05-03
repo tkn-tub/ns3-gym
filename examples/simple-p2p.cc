@@ -126,7 +126,7 @@ int main (int argc, char *argv[])
     DataRate(448000), 
     210);
   // Add to Node's ApplicationList (takes ownership of pointer)
-  ApplicationList *apl0 = n0->GetApplicationList();
+  ApplicationList *apl0 = n0->QueryInterface<ApplicationList> (ApplicationList::iid);
   apl0->Add(ooff0);
   apl0->Unref ();
   // Start the application
@@ -144,7 +144,7 @@ int main (int argc, char *argv[])
     DataRate(448000), 
     210);
   // Add to Node's ApplicationList (takes ownership of pointer)
-  ApplicationList *apl3 = n3->GetApplicationList();
+  ApplicationList *apl3 = n3->QueryInterface<ApplicationList> (ApplicationList::iid);
   apl3->Add(ooff1);
   apl3->Unref ();
   // Start the application

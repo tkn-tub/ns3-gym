@@ -38,10 +38,11 @@ namespace ns3 {
 InternetNode::InternetNode()
 {
   // Instantiate the capabilities
-  m_applicationList = new ApplicationList(this);
+  ApplicationList *applicationList = new ApplicationList(this);
   L3Demux *l3Demux = new L3Demux(this);
   Ipv4L4Demux *ipv4L4Demux = new Ipv4L4Demux(this);
 
+  NsUnknown::AddInterface (applicationList);
   NsUnknown::AddInterface (l3Demux);
   NsUnknown::AddInterface (ipv4L4Demux);
 
@@ -53,6 +54,7 @@ InternetNode::InternetNode()
   l3Demux->Insert (arp);
   ipv4L4Demux->Insert (udp);
 
+  applicationList->Unref ();
   l3Demux->Unref ();
   ipv4L4Demux->Unref ();
   ipv4->Unref ();
@@ -97,23 +99,8 @@ InternetNode::CreateTraceResolver (TraceContext const &context)
 void 
 InternetNode::DoDispose()
 {
-  if (m_applicationList != 0)
-    {
-      m_applicationList->Dispose ();
-      m_applicationList->Unref ();
-      m_applicationList = 0;
-    }
-
   Node::DoDispose ();
 }
-
-ApplicationList* 
-InternetNode::GetApplicationList() const
-{ 
-  m_applicationList->Ref ();
-  return m_applicationList;
-} 
-
 
 Ipv4 *
 InternetNode::GetIpv4 (void) const

@@ -31,7 +31,6 @@
 
 namespace ns3 {
 
-class ApplicationList;
 class Ipv4;
 class Udp;
 class Arp;
@@ -72,7 +71,6 @@ public:
   // Each of these has a default behavior of returning a null capability
   // of the correct type if one exists, or the nil pointer if no
   // null capability exists.
-  virtual ApplicationList* GetApplicationList() const;
   virtual Ipv4 *           GetIpv4 (void) const;
   virtual Udp *            GetUdp (void) const;
   virtual Arp *            GetArp (void) const;

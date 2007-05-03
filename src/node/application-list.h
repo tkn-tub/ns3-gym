@@ -25,14 +25,15 @@
 #define __APPLICATION_LIST_H__
 
 #include "application.h"
-#include "ns3/object.h"
+#include "ns3/ns-unknown.h"
 #include <vector>
 
 namespace ns3 {
 
-class ApplicationList : public Object
+class ApplicationList : public NsUnknown
 {
 public:
+  static const uint32_t iid;
   ApplicationList(Node*);
   // Copy constructor not needed, default one is correct
   virtual ~ApplicationList();

@@ -45,7 +45,6 @@ public:
   virtual ~InternetNode ();
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
   // Capability access
-  virtual ApplicationList* GetApplicationList() const;
   virtual Ipv4 *           GetIpv4 (void) const;
   virtual Udp *            GetUdp (void) const;
   virtual Arp *            GetArp (void) const;
@@ -57,7 +56,6 @@ private:
   virtual void DoAddDevice (NetDevice *device) const;
   bool ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const;
   // Capabilities
-  ApplicationList* m_applicationList;
   std::string      m_name;
 };
 

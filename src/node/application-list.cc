@@ -23,10 +23,14 @@
 
 #include "application.h"
 #include "application-list.h"
+#include "ns3/iid-manager.h"
 
 namespace ns3{
 
+const uint32_t ApplicationList::iid = IidManager::Allocate ("ApplicationList");
+
 ApplicationList::ApplicationList(Node* n)
+  : NsUnknown (ApplicationList::iid)
 {}
 
 void 
