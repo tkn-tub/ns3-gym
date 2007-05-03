@@ -26,18 +26,12 @@
 #define __NODE_H__
 
 #include <vector>
-#include <list>
 
-#include "ns3/smartset.h"
-#include "ns3/object.h"
+#include "ns3/ns-unknown.h"
 
 namespace ns3 {
 
-class NodeList;
-
 class ApplicationList;
-
-// The below five may be encapsulated/abstracted in a Kernel or Stack class
 class L3Demux;
 class Ipv4L4Demux;
 class Ipv4;
@@ -48,12 +42,11 @@ class TraceContext;
 class TraceResolver;
 class NetDevice;
 
-class Node : public Object
+class Node : public NsUnknown
 {
-friend class NodeList;
-friend class SmartSet<Node*>;
-
 public:
+  static const uint32_t iid;
+
   Node();
   Node(uint32_t); // Specify which system for a distributed simulation
   virtual ~Node();

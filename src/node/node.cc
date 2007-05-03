@@ -26,18 +26,23 @@
 #include "node-list.h"
 #include "net-device.h"
 #include "ns3/simulator.h"
+#include "ns3/iid-manager.h"
 
 namespace ns3{
 
+const uint32_t Node::iid = IidManager::Allocate ("Node");
+
 Node::Node()
-  : m_id(0), 
+  : NsUnknown (Node::iid),
+    m_id(0), 
     m_sid(0)
 {
   m_id = NodeList::Add (this);
 }
 
 Node::Node(uint32_t sid)
-  : m_id(0), 
+  : NsUnknown (Node::iid),
+    m_id(0), 
     m_sid(sid)
 { 
   m_id = NodeList::Add (this);
