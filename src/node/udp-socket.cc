@@ -26,16 +26,16 @@
 
 namespace ns3 {
 
-UdpSocket::UdpSocket (Node *node)
+UdpSocket::UdpSocket (Node *node, Udp *udp)
   : m_endPoint (0),
     m_node (node),
+    m_udp (udp),
     m_errno (ENOTERROR),
     m_shutdownSend (false),
     m_shutdownRecv (false),
     m_connected (false)
 {
-  m_udp = m_node->GetUdp ();
-  NS_ASSERT (m_udp != 0);
+  m_udp->Ref ();
   m_node->Ref ();
 }
 UdpSocket::~UdpSocket ()

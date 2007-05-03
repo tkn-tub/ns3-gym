@@ -38,7 +38,7 @@ public:
   /**
    * Create an unbound udp socket.
    */
-  UdpSocket (Node *node);
+  UdpSocket (Node *node, Udp *udp);
   virtual ~UdpSocket ();
 
   virtual enum SocketErrno GetErrno (void) const;

@@ -32,7 +32,6 @@
 namespace ns3 {
 
 class Ipv4;
-class Udp;
 class Arp;
 
 class TraceContext;
@@ -72,7 +71,6 @@ public:
   // of the correct type if one exists, or the nil pointer if no
   // null capability exists.
   virtual Ipv4 *           GetIpv4 (void) const;
-  virtual Udp *            GetUdp (void) const;
   virtual Arp *            GetArp (void) const;
   
 private:

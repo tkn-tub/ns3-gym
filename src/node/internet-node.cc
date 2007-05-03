@@ -94,12 +94,6 @@ InternetNode::CreateTraceResolver (TraceContext const &context)
                  InternetNode::ARP);
   arp->Unref ();
 
-  Udp *udp = GetUdp ();
-  resolver->Add ("udp",
-                 MakeCallback (&Udp::CreateTraceResolver, udp),
-                 InternetNode::UDP);
-  udp->Unref ();
-
   return resolver;
 }
 
@@ -117,15 +111,6 @@ InternetNode::GetIpv4 (void) const
   l3Demux->Unref ();
   ipv4->Ref ();
   return ipv4;
-}
-Udp *
-InternetNode::GetUdp (void) const
-{
-  Ipv4L4Demux *demux = QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
-  Udp *udp = static_cast<Udp*> (demux->PeekProtocol (Udp::PROT_NUMBER));
-  demux->Unref ();
-  udp->Ref ();
-  return udp;
 }
 
 Arp *

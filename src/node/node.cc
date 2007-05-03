@@ -107,11 +107,6 @@ Node::GetIpv4 (void) const
 {
   return 0;
 }
-Udp *
-Node::GetUdp (void) const
-{
-  return 0;
-}
 
 Arp *
 Node::GetArp (void) const
