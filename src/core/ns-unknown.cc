@@ -136,6 +136,12 @@ NsUnknown::Unref (void)
   m_impl->Unref ();
 }
 
+void 
+NsUnknown::Dispose (void)
+{
+  // we do not do anything by default.
+}
+
 void
 NsUnknown::RefInternal (void)
 {

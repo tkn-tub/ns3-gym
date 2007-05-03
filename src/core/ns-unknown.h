@@ -58,6 +58,8 @@ public:
    * will be found by the same reference count.
    */
   void AddInterface (NsUnknown *interface);
+
+  virtual void Dispose (void);
 protected:
   /**
    * \param iid the Interface Id of the interface defined by a direct subclass
