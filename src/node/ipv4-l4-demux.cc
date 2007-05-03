@@ -24,24 +24,27 @@
 
 #include <sstream>
 #include "ns3/composite-trace-resolver.h"
+#include "ns3/iid-manager.h"
 #include "ipv4-l4-demux.h"
 #include "ipv4-l4-protocol.h"
 #include "node.h"
 
 namespace ns3 {
 
+const uint32_t Ipv4L4Demux::iid = IidManager::Allocate ("Ipv4L4Demux");
+
 Ipv4L4Demux::Ipv4L4Demux (Node *node)
-  : m_node (node)
+  : NsUnknown (Ipv4L4Demux::iid),
+    m_node (node)
 {
   m_node->Ref ();
 }
 
 Ipv4L4Demux::~Ipv4L4Demux()
-{
-  Dispose ();
-}
+{}
+
 void
-Ipv4L4Demux::Dispose (void)
+Ipv4L4Demux::DoDispose (void)
 {
   for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
@@ -54,6 +57,7 @@ Ipv4L4Demux::Dispose (void)
       m_node->Unref ();
       m_node = 0;
     }
+  NsUnknown::DoDispose ();
 }
 
 TraceResolver *

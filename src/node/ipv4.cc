@@ -512,7 +512,7 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice *device)
 void
 Ipv4::ForwardUp (Packet p, Ipv4Header const&ip)
 {
-  Ipv4L4Demux *demux = m_node->GetIpv4L4Demux ();
+  Ipv4L4Demux *demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
   Ipv4L4Protocol *protocol = demux->PeekProtocol (ip.GetProtocol ());
   demux->Unref ();
   protocol->Receive (p, ip.GetSource (), ip.GetDestination ());

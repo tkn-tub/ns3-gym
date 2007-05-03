@@ -46,7 +46,6 @@ public:
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
   // Capability access
   virtual ApplicationList* GetApplicationList() const;
-  virtual Ipv4L4Demux*     GetIpv4L4Demux() const;
   virtual Ipv4 *           GetIpv4 (void) const;
   virtual Udp *            GetUdp (void) const;
   virtual Arp *            GetArp (void) const;
@@ -59,7 +58,6 @@ private:
   bool ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const;
   // Capabilities
   ApplicationList* m_applicationList;
-  Ipv4L4Demux*     m_ipv4L4Demux;
   std::string      m_name;
 };
 

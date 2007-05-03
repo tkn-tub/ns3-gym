@@ -40,17 +40,21 @@ InternetNode::InternetNode()
   // Instantiate the capabilities
   m_applicationList = new ApplicationList(this);
   L3Demux *l3Demux = new L3Demux(this);
+  Ipv4L4Demux *ipv4L4Demux = new Ipv4L4Demux(this);
+
   NsUnknown::AddInterface (l3Demux);
-  m_ipv4L4Demux = new Ipv4L4Demux(this);
+  NsUnknown::AddInterface (ipv4L4Demux);
+
   Ipv4 *ipv4 = new Ipv4 (this);
   Arp *arp = new Arp (this);
   Udp *udp = new Udp (this);
 
   l3Demux->Insert (ipv4);
   l3Demux->Insert (arp);
-  m_ipv4L4Demux->Insert (udp);
+  ipv4L4Demux->Insert (udp);
 
   l3Demux->Unref ();
+  ipv4L4Demux->Unref ();
   ipv4->Unref ();
   arp->Unref ();
   udp->Unref ();
@@ -93,13 +97,6 @@ InternetNode::CreateTraceResolver (TraceContext const &context)
 void 
 InternetNode::DoDispose()
 {
-  if (m_ipv4L4Demux != 0)
-    {
-      m_ipv4L4Demux->Dispose ();
-      m_ipv4L4Demux->Unref ();
-      m_ipv4L4Demux = 0;
-    }
-
   if (m_applicationList != 0)
     {
       m_applicationList->Dispose ();
@@ -117,12 +114,6 @@ InternetNode::GetApplicationList() const
   return m_applicationList;
 } 
 
-Ipv4L4Demux*     
-InternetNode::GetIpv4L4Demux() const
-{
-  m_ipv4L4Demux->Ref ();
-  return m_ipv4L4Demux;
-}
 
 Ipv4 *
 InternetNode::GetIpv4 (void) const
@@ -136,7 +127,9 @@ InternetNode::GetIpv4 (void) const
 Udp *
 InternetNode::GetUdp (void) const
 {
-  Udp *udp = static_cast<Udp*> (m_ipv4L4Demux->PeekProtocol (Udp::PROT_NUMBER));
+  Ipv4L4Demux *demux = QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
+  Udp *udp = static_cast<Udp*> (demux->PeekProtocol (Udp::PROT_NUMBER));
+  demux->Unref ();
   udp->Ref ();
   return udp;
 }

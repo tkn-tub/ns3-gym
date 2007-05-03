@@ -26,7 +26,7 @@
 #define IPV4_L4_DEMUX_H
 
 #include <list>
-#include "ns3/object.h"
+#include "ns3/ns-unknown.h"
 
 namespace ns3 {
 
@@ -38,14 +38,13 @@ class TraceContext;
 /**
  * \brief L4 Ipv4 Demux
  */
-class Ipv4L4Demux : public Object
+class Ipv4L4Demux : public NsUnknown
 {
 public:
+  static const uint32_t iid;
   typedef int Ipv4L4ProtocolTraceType;
   Ipv4L4Demux (Node *node);
   virtual ~Ipv4L4Demux();
-
-  void Dispose (void);
 
   /**
    * \param context the trace context to use to construct the
@@ -84,6 +83,7 @@ public:
    */
   void Erase(Ipv4L4Protocol*protocol);
 private:
+  virtual void DoDispose (void);
   typedef std::list<Ipv4L4Protocol*> L4List_t;
   L4List_t m_protocols;
   Node *m_node;

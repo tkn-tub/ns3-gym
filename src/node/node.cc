@@ -103,12 +103,6 @@ void Node::DoDispose()
   NsUnknown::DoDispose ();
 }
 
-Ipv4L4Demux*
-Node::GetIpv4L4Demux() const
-{
-  return 0;
-}
-
 ApplicationList* Node::GetApplicationList() const
 {
   return 0;
