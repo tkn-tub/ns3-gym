@@ -27,7 +27,7 @@
 #include "net-device.h"
 #include "ipv4-interface.h"
 #include "node.h"
-#include "ipv4.h"
+#include "i-ipv4-private.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("Arp");
 
@@ -79,7 +79,7 @@ Arp::FindCache (NetDevice *device)
 	  return *i;
 	}
     }
-  Ipv4 *ipv4 = m_node->GetIpv4 ();
+  IIpv4Private *ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
   Ipv4Interface *interface = ipv4->FindInterfaceForDevice (device);
   ipv4->Unref ();
   ArpCache * cache = new ArpCache (device, interface);

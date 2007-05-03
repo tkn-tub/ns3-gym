@@ -30,7 +30,7 @@
 #include "ns3/internet-node.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/drop-tail.h"
-#include "ns3/ipv4.h"
+#include "ns3/i-ipv4.h"
 
 #include "p2p-channel.h"
 #include "p2p-net-device.h"
@@ -60,7 +60,7 @@ PointToPointTopology::AddPointToPointLink(
   PointToPointNetDevice* net1 = new PointToPointNetDevice(n1);
   net1->AddQueue(Queue::Default().Copy());
   n1->AddDevice (net1);
-  Ipv4 *ip1 = n1->GetIpv4 ();
+  IIpv4 *ip1 = n1->QueryInterface<IIpv4> (IIpv4::iid);
   uint32_t index1 = ip1->AddInterface (net1);
   net1->Attach (channel);
   net1->Unref ();
@@ -72,7 +72,7 @@ PointToPointTopology::AddPointToPointLink(
   PointToPointNetDevice* net2 = new PointToPointNetDevice(n2);
   net2->AddQueue(Queue::Default().Copy());
   n2->AddDevice (net2);
-  Ipv4 *ip2 = n2->GetIpv4 ();
+  IIpv4 *ip2 = n2->QueryInterface<IIpv4> (IIpv4::iid);
   uint32_t index2 = ip2->AddInterface (net2);
   net2->Attach (channel);
   net2->Unref ();

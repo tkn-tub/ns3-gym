@@ -33,6 +33,8 @@
 #include "net-device.h"
 #include "i-udp-impl.h"
 #include "i-arp-private.h"
+#include "i-ipv4-impl.h"
+#include "i-ipv4-private.h"
 
 namespace ns3 {
 
@@ -53,7 +55,11 @@ InternetNode::InternetNode()
 
   IUdpImpl *udpImpl = new IUdpImpl (udp);
   IArpPrivate *arpPrivate = new IArpPrivate (arp);
+  IIpv4Impl *ipv4Impl = new IIpv4Impl (ipv4);
+  IIpv4Private *ipv4Private = new IIpv4Private (ipv4);
 
+  NsUnknown::AddInterface (ipv4Private);
+  NsUnknown::AddInterface (ipv4Impl);
   NsUnknown::AddInterface (arpPrivate);
   NsUnknown::AddInterface (udpImpl);
   NsUnknown::AddInterface (applicationList);
@@ -64,11 +70,13 @@ InternetNode::InternetNode()
   applicationList->Unref ();
   l3Demux->Unref ();
   ipv4L4Demux->Unref ();
-  ipv4->Unref ();
   arp->Unref ();
+  ipv4->Unref ();
   udp->Unref ();
   udpImpl->Unref ();
   arpPrivate->Unref ();
+  ipv4Impl->Unref ();
+  ipv4Private->Unref ();
 }
 
 InternetNode::~InternetNode ()
@@ -84,12 +92,11 @@ TraceResolver *
 InternetNode::CreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
-  Ipv4 *ipv4 = GetIpv4 ();
+  IIpv4Private *ipv4 = QueryInterface<IIpv4Private> (IIpv4Private::iid);
   resolver->Add ("ipv4",
-                 MakeCallback (&Ipv4::CreateTraceResolver, ipv4),
+                 MakeCallback (&IIpv4Private::CreateTraceResolver, ipv4),
                  InternetNode::IPV4);
   ipv4->Unref ();
-
 
   return resolver;
 }
@@ -98,16 +105,6 @@ void
 InternetNode::DoDispose()
 {
   Node::DoDispose ();
-}
-
-Ipv4 *
-InternetNode::GetIpv4 (void) const
-{
-  L3Demux *l3Demux = QueryInterface<L3Demux> (L3Demux::iid);
-  Ipv4 *ipv4 = static_cast<Ipv4*> (l3Demux->PeekProtocol (Ipv4::PROT_NUMBER));
-  l3Demux->Unref ();
-  ipv4->Ref ();
-  return ipv4;
 }
 
 void 

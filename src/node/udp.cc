@@ -29,6 +29,7 @@
 #include "ipv4-end-point.h"
 #include "node.h"
 #include "ipv4.h"
+#include "i-ipv4-private.h"
 #include "l3-demux.h"
 #include "udp-socket.h"
 
@@ -141,7 +142,7 @@ Udp::Send (Packet packet,
 
   packet.AddHeader (udpHeader);
 
-  Ipv4 *ipv4 = m_node->GetIpv4 ();
+  IIpv4Private *ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
   if (ipv4 != 0)
     {
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER);

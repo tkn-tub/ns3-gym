@@ -224,6 +224,9 @@ node.add_sources ([
     'i-udp.cc',
     'i-udp-impl.cc',
     'i-arp-private.cc',
+    'i-ipv4.cc',
+    'i-ipv4-impl.cc',
+    'i-ipv4-private.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
@@ -245,6 +248,14 @@ node.add_headers ([
     'i-udp-impl.h',
     'udp.h',
     'i-arp-private.h',
+    'i-ipv4-impl.h',
+    'i-ipv4-private.h',
+    'ipv4.h',
+    'l3-protocol.h',
+    'ipv4-l4-protocol.h',
+    'ipv4-l4-demux.h',
+    'ipv4-end-point-demux.h',
+    'ipv4-end-point.h',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -253,8 +264,6 @@ node.add_inst_headers ([
     'net-device.h',
     'ipv4-interface.h',
     'mac-address.h',
-    'ipv4.h',
-    'l3-protocol.h',
     'ipv4-route.h',
     'queue.h',
     'drop-tail.h',
@@ -269,12 +278,9 @@ node.add_inst_headers ([
     'onoff-application.h',
     'ascii-trace.h',
     'socket.h',
-    'ipv4-l4-protocol.h',
-    'ipv4-l4-demux.h',
-    'ipv4-end-point-demux.h',
-    'ipv4-end-point.h',
     'pcap-trace.h',
     'i-udp.h',
+    'i-ipv4.h',
     ])
 
 p2p = build.Ns3Module ('p2p', 'src/devices/p2p')

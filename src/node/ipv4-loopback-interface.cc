@@ -23,7 +23,7 @@
 #include "ipv4-loopback-interface.h"
 #include "net-device.h"
 #include "node.h"
-#include "ipv4.h"
+#include "i-ipv4-private.h"
 
 namespace ns3 {
 
@@ -47,7 +47,7 @@ Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
 void 
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {
-  Ipv4 *ipv4 = m_node->GetIpv4 ();
+  IIpv4Private *ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
   ipv4->Receive (packet, PeekDevice ());
   ipv4->Unref ();
 }

@@ -55,7 +55,7 @@
 #include "ns3/p2p-net-device.h"
 #include "ns3/mac-address.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/ipv4.h"
+#include "ns3/i-ipv4.h"
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/drop-tail.h"
@@ -153,11 +153,11 @@ int main (int argc, char *argv[])
 
   // Here, finish off packet routing configuration
   // This will likely set by some global StaticRouting object in the future
-  Ipv4 *ipv4;
-  ipv4 = n0->GetIpv4();
+  IIpv4 *ipv4;
+  ipv4 = n0->QueryInterface<IIpv4> (IIpv4::iid);
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
   ipv4->Unref ();
-  ipv4 = n3->GetIpv4();
+  ipv4 = n3->QueryInterface<IIpv4> (IIpv4::iid);
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
   ipv4->Unref ();
 

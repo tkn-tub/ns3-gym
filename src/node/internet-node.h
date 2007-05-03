@@ -42,8 +42,6 @@ public:
   InternetNode();
   virtual ~InternetNode ();
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
-  // Capability access
-  virtual Ipv4 *           GetIpv4 (void) const;
 
   void SetName(std::string name);
 protected:
@@ -51,7 +49,6 @@ protected:
 private:
   virtual void DoAddDevice (NetDevice *device) const;
   bool ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const;
-  // Capabilities
   std::string      m_name;
 };
 

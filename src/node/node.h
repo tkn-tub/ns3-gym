@@ -31,8 +31,6 @@
 
 namespace ns3 {
 
-class Ipv4;
-
 class TraceContext;
 class TraceResolver;
 class NetDevice;
@@ -61,17 +59,6 @@ protected:
 private:
   virtual void DoAddDevice (NetDevice *device) const = 0;
 
-public:
-  // Virtual "Getters" for each capability.
-  // These exist to allow owners of a generic Node pointer to get
-  // a pointer to the underlying capability, a pointer to a "NULL"
-  // capability if one exists, or the nil pointer if not.
-  // Each of these has a default behavior of returning a null capability
-  // of the correct type if one exists, or the nil pointer if no
-  // null capability exists.
-  virtual Ipv4 *           GetIpv4 (void) const;
-  
-private:
   uint32_t    m_id;         // Node id for this node
   uint32_t    m_sid;        // System id for this node
   std::vector<NetDevice *> m_devices;

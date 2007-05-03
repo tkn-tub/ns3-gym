@@ -102,10 +102,4 @@ void Node::DoDispose()
   NsUnknown::DoDispose ();
 }
 
-Ipv4 *
-Node::GetIpv4 (void) const
-{
-  return 0;
-}
-
 }//namespace ns3
