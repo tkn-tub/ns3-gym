@@ -31,28 +31,34 @@
 #include "ipv4.h"
 #include "arp.h"
 #include "net-device.h"
+#include "i-udp-impl.h"
 
 namespace ns3 {
 
 
 InternetNode::InternetNode()
 {
+  Ipv4 *ipv4 = new Ipv4 (this);
+  Arp *arp = new Arp (this);
+  Udp *udp = new Udp (this);
+
+
   // Instantiate the capabilities
   ApplicationList *applicationList = new ApplicationList(this);
   L3Demux *l3Demux = new L3Demux(this);
   Ipv4L4Demux *ipv4L4Demux = new Ipv4L4Demux(this);
 
+  l3Demux->Insert (ipv4);
+  l3Demux->Insert (arp);
+  ipv4L4Demux->Insert (udp);
+
+  IUdpImpl *udpImpl = new IUdpImpl (udp);
+
+  NsUnknown::AddInterface (udpImpl);
   NsUnknown::AddInterface (applicationList);
   NsUnknown::AddInterface (l3Demux);
   NsUnknown::AddInterface (ipv4L4Demux);
 
-  Ipv4 *ipv4 = new Ipv4 (this);
-  Arp *arp = new Arp (this);
-  Udp *udp = new Udp (this);
-
-  l3Demux->Insert (ipv4);
-  l3Demux->Insert (arp);
-  ipv4L4Demux->Insert (udp);
 
   applicationList->Unref ();
   l3Demux->Unref ();
@@ -60,6 +66,7 @@ InternetNode::InternetNode()
   ipv4->Unref ();
   arp->Unref ();
   udp->Unref ();
+  udpImpl->Unref ();
 }
 
 InternetNode::~InternetNode ()

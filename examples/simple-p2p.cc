@@ -56,7 +56,6 @@
 #include "ns3/mac-address.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4.h"
-#include "ns3/udp.h"
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/drop-tail.h"

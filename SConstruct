@@ -221,6 +221,8 @@ node.add_sources ([
     'udp-socket.cc',
     'pcap-trace.cc',
     'ipv4-end-point-demux.cc',
+    'i-udp.cc',
+    'i-udp-impl.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
@@ -239,6 +241,8 @@ node.add_headers ([
     'queue.h',
     'arp-ipv4-interface.h',
     'udp-socket.h',
+    'i-udp-impl.h',
+    'udp.h',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -263,12 +267,12 @@ node.add_inst_headers ([
     'onoff-application.h',
     'ascii-trace.h',
     'socket.h',
-    'udp.h',
     'ipv4-l4-protocol.h',
     'ipv4-l4-demux.h',
     'ipv4-end-point-demux.h',
     'ipv4-end-point.h',
     'pcap-trace.h',
+    'i-udp.h',
     ])
 
 p2p = build.Ns3Module ('p2p', 'src/devices/p2p')
@@ -359,23 +363,11 @@ ns3.add(sample_test)
 sample_test.add_dep('core')
 sample_test.add_source('main-test.cc')
 
-sample_p2p_net_device_if = build.Ns3Module ('sample-p2p-net-device-if', 'samples')
-sample_p2p_net_device_if.set_executable ()
-ns3.add (sample_p2p_net_device_if)
-sample_p2p_net_device_if.add_deps (['common', 'node', 'p2p'])
-sample_p2p_net_device_if.add_source ('main-p2p-net-device-if.cc')
-
 sample_simple = build.Ns3Module('sample-simple', 'samples')
 sample_simple.set_executable()
 ns3.add(sample_simple)
 sample_simple.add_deps(['core', 'simulator', 'node'])
 sample_simple.add_source('main-simple.cc')
-
-sample_sp2p = build.Ns3Module('sample-simple-p2p', 'samples')
-sample_sp2p.set_executable()
-#n3.add(sample_sp2p)
-sample_sp2p.add_deps(['core', 'simulator', 'node', 'p2p'])
-sample_sp2p.add_source('main-simple-p2p.cc')
 
 # examples
 example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')

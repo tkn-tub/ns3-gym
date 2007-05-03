@@ -30,7 +30,7 @@
 #include "ns3/random-variable.h"
 #include "socket.h"
 #include "ns3/simulator.h"
-#include "udp.h"
+#include "i-udp.h"
 
 using namespace std;
 
@@ -170,7 +170,7 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
                                      this));
 #endif
       
-      Udp *udp = PeekNode ()->GetUdp ();
+      IUdp *udp = PeekNode ()->QueryInterface<IUdp> (IUdp::iid);
       m_socket = udp->CreateSocket ();
       udp->Unref ();
       m_socket->Connect (m_peerIP, m_peerPort);

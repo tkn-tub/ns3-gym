@@ -2,7 +2,7 @@
 
 #include "ns3/internet-node.h"
 #include "ns3/simulator.h"
-#include "ns3/udp.h"
+#include "ns3/i-udp.h"
 #include "ns3/socket.h"
 #include "ns3/nstime.h"
 
@@ -39,8 +39,8 @@ int main (int argc, char *argv[])
 {
   InternetNode *a = new InternetNode ();
 
-  Udp *udp;
-  udp = a->GetUdp ();
+  IUdp *udp;
+  udp = a->QueryInterface<IUdp> (IUdp::iid);
 
   Socket *sink = udp->CreateSocket ();
   sink->Bind (80);
