@@ -46,9 +46,7 @@ Udp::Udp (Node *node)
 }
 
 Udp::~Udp ()
-{
-  Dispose ();
-}
+{}
 
 TraceResolver *
 Udp::CreateTraceResolver (TraceContext const &context)
