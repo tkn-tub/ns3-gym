@@ -32,6 +32,7 @@
 #include "arp.h"
 #include "net-device.h"
 #include "i-udp-impl.h"
+#include "i-arp-private.h"
 
 namespace ns3 {
 
@@ -42,8 +43,6 @@ InternetNode::InternetNode()
   Arp *arp = new Arp (this);
   Udp *udp = new Udp (this);
 
-
-  // Instantiate the capabilities
   ApplicationList *applicationList = new ApplicationList(this);
   L3Demux *l3Demux = new L3Demux(this);
   Ipv4L4Demux *ipv4L4Demux = new Ipv4L4Demux(this);
@@ -53,7 +52,9 @@ InternetNode::InternetNode()
   ipv4L4Demux->Insert (udp);
 
   IUdpImpl *udpImpl = new IUdpImpl (udp);
+  IArpPrivate *arpPrivate = new IArpPrivate (arp);
 
+  NsUnknown::AddInterface (arpPrivate);
   NsUnknown::AddInterface (udpImpl);
   NsUnknown::AddInterface (applicationList);
   NsUnknown::AddInterface (l3Demux);
@@ -67,6 +68,7 @@ InternetNode::InternetNode()
   arp->Unref ();
   udp->Unref ();
   udpImpl->Unref ();
+  arpPrivate->Unref ();
 }
 
 InternetNode::~InternetNode ()
@@ -88,11 +90,6 @@ InternetNode::CreateTraceResolver (TraceContext const &context)
                  InternetNode::IPV4);
   ipv4->Unref ();
 
-  Arp *arp = GetArp ();
-  resolver->Add ("arp",
-                 MakeCallback (&Arp::CreateTraceResolver, arp),
-                 InternetNode::ARP);
-  arp->Unref ();
 
   return resolver;
 }
@@ -111,16 +108,6 @@ InternetNode::GetIpv4 (void) const
   l3Demux->Unref ();
   ipv4->Ref ();
   return ipv4;
-}
-
-Arp *
-InternetNode::GetArp (void) const
-{
-  L3Demux *l3Demux = QueryInterface<L3Demux> (L3Demux::iid);
-  Arp *arp = static_cast<Arp*> (l3Demux->PeekProtocol (Arp::PROT_NUMBER));
-  l3Demux->Unref ();
-  arp->Ref ();
-  return arp;
 }
 
 void 

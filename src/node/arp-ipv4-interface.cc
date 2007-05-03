@@ -24,7 +24,7 @@
 #include "ns3/composite-trace-resolver.h"
 
 #include "arp-ipv4-interface.h"
-#include "arp.h"
+#include "i-arp-private.h"
 #include "node.h"
 #include "net-device.h"
 #include "ipv4.h"
@@ -62,7 +62,7 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
   NS_ASSERT (PeekDevice () != 0);
   if (PeekDevice ()->NeedsArp ())
     {
-      Arp * arp = m_node->GetArp ();
+      IArpPrivate * arp = m_node->QueryInterface<IArpPrivate> (IArpPrivate::iid);
       MacAddress hardwareDestination;
       bool found = arp->Lookup (p, dest, PeekDevice (), &hardwareDestination);
       if (found)

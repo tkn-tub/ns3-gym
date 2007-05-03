@@ -223,6 +223,7 @@ node.add_sources ([
     'ipv4-end-point-demux.cc',
     'i-udp.cc',
     'i-udp-impl.cc',
+    'i-arp-private.cc',
     ])
 node.add_headers ([
     'ipv4-header.h',
@@ -243,6 +244,7 @@ node.add_headers ([
     'udp-socket.h',
     'i-udp-impl.h',
     'udp.h',
+    'i-arp-private.h',
     ])
 node.add_inst_headers ([
     'node.h',

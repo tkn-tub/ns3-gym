@@ -108,10 +108,4 @@ Node::GetIpv4 (void) const
   return 0;
 }
 
-Arp *
-Node::GetArp (void) const
-{
-  return 0;
-}
-
 }//namespace ns3

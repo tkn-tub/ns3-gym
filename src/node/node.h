@@ -32,7 +32,6 @@
 namespace ns3 {
 
 class Ipv4;
-class Arp;
 
 class TraceContext;
 class TraceResolver;
@@ -71,7 +70,6 @@ public:
   // of the correct type if one exists, or the nil pointer if no
   // null capability exists.
   virtual Ipv4 *           GetIpv4 (void) const;
-  virtual Arp *            GetArp (void) const;
   
 private:
   uint32_t    m_id;         // Node id for this node

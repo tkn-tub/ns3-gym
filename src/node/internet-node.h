@@ -38,14 +38,12 @@ class InternetNode : public Node
 public:
   enum TraceType {
     IPV4,
-    ARP,
   };
   InternetNode();
   virtual ~InternetNode ();
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
   // Capability access
   virtual Ipv4 *           GetIpv4 (void) const;
-  virtual Arp *            GetArp (void) const;
 
   void SetName(std::string name);
 protected:
