@@ -51,6 +51,8 @@ public:
                           Ipv4Address peerAddress, 
                           uint16_t peerPort);
 
+  void DeAllocate (Ipv4EndPoint *endPoint);
+
  private:
   uint16_t AllocateEphemeralPort (void);
   typedef std::list<Ipv4EndPoint *> EndPoints;

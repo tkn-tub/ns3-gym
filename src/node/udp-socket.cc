@@ -40,7 +40,31 @@ UdpSocket::UdpSocket (Node *node)
 }
 UdpSocket::~UdpSocket ()
 {
-  Destroy ();
+  if (m_node != 0)
+    {
+      m_node->Unref ();
+      m_node = 0;
+    }
+  if (m_endPoint != 0)
+    {
+      NS_ASSERT (m_udp != 0);
+      /**
+       * Note that this piece of code is a bit tricky:
+       * when DeAllocate is called, it will call into
+       * Ipv4EndPointDemux::Deallocate which triggers
+       * a delete of the associated endPoint which triggers
+       * in turn a call to the method ::Destroy below
+       * will will zero the m_endPoint field.
+       */
+      NS_ASSERT (m_endPoint != 0);
+      m_udp->DeAllocate (m_endPoint);
+      NS_ASSERT (m_endPoint == 0);
+    }
+  if (m_udp != 0)
+    {
+      m_udp->Unref ();
+      m_udp = 0;
+    }
 }
 
 Node *

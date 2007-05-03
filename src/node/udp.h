@@ -54,6 +54,8 @@ public:
   Ipv4EndPoint *Allocate (Ipv4Address localAddress, uint16_t localPort,
                          Ipv4Address peerAddress, uint16_t peerPort);
 
+  void DeAllocate (Ipv4EndPoint *endPoint);
+
   // called by UdpSocket.
   void Send (Packet packet,
              Ipv4Address saddr, Ipv4Address daddr, 

@@ -127,6 +127,20 @@ Ipv4EndPointDemux::Allocate (Ipv4Address localAddress, uint16_t localPort,
   return endPoint;
 }
 
+void 
+Ipv4EndPointDemux::DeAllocate (Ipv4EndPoint *endPoint)
+{
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
+    {
+      if (*i == endPoint)
+        {
+          delete endPoint;
+          m_endPoints.erase (i);
+          break;
+        }
+    }
+}
+
 
 /*
  * If we have an exact match, we return it.

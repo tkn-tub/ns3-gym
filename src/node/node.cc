@@ -51,7 +51,6 @@ Node::Node(uint32_t sid)
 Node::~Node ()
 {}
 
-
 uint32_t 
 Node::GetId (void) const
 {
@@ -99,7 +98,7 @@ void Node::DoDispose()
       device->Dispose ();
       device->Unref ();
     }
-  m_devices.erase (m_devices.begin (), m_devices.end ());
+  m_devices.clear ();
   NsUnknown::DoDispose ();
 }
 

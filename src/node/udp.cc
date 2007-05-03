@@ -107,6 +107,12 @@ Udp::Allocate (Ipv4Address localAddress, uint16_t localPort,
 }
 
 void 
+Udp::DeAllocate (Ipv4EndPoint *endPoint)
+{
+  m_endPoints->DeAllocate (endPoint);
+}
+
+void 
 Udp::Receive(Packet& packet, 
              Ipv4Address const &source,
              Ipv4Address const &destination)
