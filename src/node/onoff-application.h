@@ -54,14 +54,15 @@ public:
   virtual void StopApplication();     // Called at time specified by Stop
   virtual OnOffApplication* Copy() const;// Make a copy of the application
 
-  virtual void Dispose (void);
-
   // Event handlers
   void StartSending();
   void StopSending();
   void SendPacket();
 
   virtual void MaxBytes(uint32_t m) { m_maxBytes = m;}
+
+protected:
+  virtual void DoDispose (void);
 
 public: // Static methods
   static void DefaultRate(uint64_t r) { g_defaultRate = r;}

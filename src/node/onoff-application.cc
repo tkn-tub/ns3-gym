@@ -87,12 +87,10 @@ OnOffApplication::OnOffApplication(Node * n, const OnOffApplication& c)
 }
 
 OnOffApplication::~OnOffApplication()
-{
-  Dispose ();
-}
+{}
 
 void
-OnOffApplication::Dispose (void)
+OnOffApplication::DoDispose (void)
 {
   if (m_socket != 0)
     {
@@ -106,7 +104,7 @@ OnOffApplication::Dispose (void)
   m_offTime = 0;
 
   // chain up
-  Application::Dispose ();
+  Application::DoDispose ();
 }
 
 #ifdef REMOVE_THIS

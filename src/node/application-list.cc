@@ -34,7 +34,7 @@ ApplicationList::ApplicationList(Node* n)
 {}
 
 void 
-ApplicationList::Dispose (void)
+ApplicationList::DoDispose (void)
 {
   for (std::vector<Application*>::const_iterator i = m_apps.begin();
        i != m_apps.end(); ++i)
@@ -44,12 +44,11 @@ ApplicationList::Dispose (void)
       app->Unref ();
     }
   m_apps.clear ();
+  NsUnknown::DoDispose ();
 }
   
 ApplicationList::~ApplicationList()
-{ // Destructor, nothing needed as the SmartSet destroys itself
-  Dispose ();
-}
+{}
 
 ApplicationList* ApplicationList::Copy(Node * n) const 
 { // Copy this app list

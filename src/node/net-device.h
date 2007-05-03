@@ -157,8 +157,6 @@ public:
   bool NeedsArp (void) const;
 
   void SetReceiveCallback (Callback<bool,NetDevice *,const Packet &,uint16_t> cb);
-  
-  virtual void Dispose();
 
  protected:
   /**
@@ -217,6 +215,8 @@ public:
    * which is responsible for passing it up to the Rx callback.
    */
   bool ForwardUp (Packet& p);
+
+  virtual void DoDispose (void);
 
  private:
   /**

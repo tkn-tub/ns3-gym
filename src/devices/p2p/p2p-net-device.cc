@@ -56,8 +56,6 @@ PointToPointNetDevice::~PointToPointNetDevice()
 {
   NS_DEBUG ("PointToPointNetDevice::~PointToPointNetDevice ()");
 
-  Dispose ();
-
   delete m_queue;
   m_queue = 0;
 }
@@ -102,14 +100,14 @@ PointToPointNetDevice::PointToPointNetDevice (const PointToPointNetDevice& nd)
     
 }
 
-void PointToPointNetDevice::Dispose()
+void PointToPointNetDevice::DoDispose()
 {
  if (m_channel != 0)
  {
    m_channel->Unref ();
    m_channel = 0;
  }
- NetDevice::Dispose ();
+ NetDevice::DoDispose ();
 }
 
 //

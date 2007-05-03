@@ -235,7 +235,7 @@ NetDevice::SetReceiveCallback (Callback<bool,NetDevice *,const Packet &,uint16_t
 }
 
 void
-NetDevice::Dispose()
+NetDevice::DoDispose()
 {}
 
 }; // namespace ns3

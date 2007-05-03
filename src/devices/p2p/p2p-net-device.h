@@ -97,10 +97,6 @@ public:
    */
   virtual ~PointToPointNetDevice();
   /**
-   *Dispose method for refcounting
-   */
-  virtual void Dispose();
-  /**
    * Assignment Operator for a PointToPointNetDevice
    *
    * This is the assignment operator for the PointToPointNetDevice.  This is
@@ -172,6 +168,7 @@ public:
    */
   void Receive (Packet& p);
 protected:
+  virtual void DoDispose (void);
   /**
    * Get a copy of the attached Queue.
    *

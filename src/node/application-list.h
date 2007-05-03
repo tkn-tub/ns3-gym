@@ -38,7 +38,6 @@ public:
   // Copy constructor not needed, default one is correct
   virtual ~ApplicationList();
   // Inherited from Capabilty
-  virtual void Dispose (void);
   virtual ApplicationList* Copy(Node*) const;
   virtual void SetNode(Node *);              // Sets the node for all apps
   virtual void Add(Application*);      // Add an already new'ed app
@@ -53,6 +52,8 @@ public:
   uint32_t Count() const;  // Number of applications
   Application* Get(uint32_t i) const; // Get app by index
   
+protected:
+  virtual void DoDispose (void);
 private:
   std::vector<Application*> m_apps;
 };

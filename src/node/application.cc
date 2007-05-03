@@ -58,12 +58,10 @@ Application::Application(const Application& o)
   
 // \brief Application Destructor
 Application::~Application()
-{
-  Dispose ();
-}
+{}
 
 void
-Application::Dispose (void)
+Application::DoDispose (void)
 {
   if (m_node != 0)
     {
