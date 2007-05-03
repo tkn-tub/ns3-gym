@@ -90,7 +90,7 @@ Node::GetNDevices (void) const
   return m_devices.size ();
 }
 
-void Node::Dispose()
+void Node::DoDispose()
 {
   for (std::vector<NetDevice *>::iterator i = m_devices.begin ();
        i != m_devices.end (); i++)
@@ -100,13 +100,9 @@ void Node::Dispose()
       device->Unref ();
     }
   m_devices.erase (m_devices.begin (), m_devices.end ());
+  NsUnknown::DoDispose ();
 }
 
-L3Demux*
-Node::GetL3Demux() const
-{
-  return 0;
-}
 Ipv4L4Demux*
 Node::GetIpv4L4Demux() const
 {

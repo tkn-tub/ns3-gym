@@ -61,8 +61,6 @@ public:
   Ipv4(Node *node);
   virtual ~Ipv4 ();
 
-  virtual void Dispose (void);
-
   /**
    * \param context the trace context to use to construct the
    *        TraceResolver to return
@@ -217,7 +215,9 @@ public:
   void SetDown (uint32_t i);
 
 
- private:
+protected:
+  virtual void DoDispose (void);
+private:
   void SendRealOut (Packet const &packet, Ipv4Header const &ip, Ipv4Route const &route);
   bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice *device);
   void ForwardUp (Packet p, Ipv4Header const&ip);

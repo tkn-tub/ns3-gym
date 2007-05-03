@@ -33,9 +33,12 @@ public:
   void Ref (void) const;
   void Unref (void) const;
   bool IsSingle (void) const;
-  virtual void Dispose (void);
+  void Dispose (void);
+protected:
+  virtual void DoDispose (void);
 private:
   mutable uint32_t m_count;
+  bool m_disposed;
 };
 
 }//namespace ns3

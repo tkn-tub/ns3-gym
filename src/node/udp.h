@@ -43,8 +43,6 @@ public:
   Udp (Node *node);
   virtual ~Udp ();
 
-  virtual void Dispose (void);
-
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   Socket *CreateSocket (void);
@@ -64,7 +62,9 @@ public:
   virtual void Receive(Packet& p, 
                        Ipv4Address const &source,
                        Ipv4Address const &destination);
- private:
+protected:
+  virtual void DoDispose (void);
+private:
   Node *m_node;
   Ipv4EndPointDemux *m_endPoints;
 };

@@ -39,25 +39,25 @@ InternetNode::InternetNode()
 {
   // Instantiate the capabilities
   m_applicationList = new ApplicationList(this);
-  m_l3Demux = new L3Demux(this);
+  L3Demux *l3Demux = new L3Demux(this);
+  NsUnknown::AddInterface (l3Demux);
   m_ipv4L4Demux = new Ipv4L4Demux(this);
   Ipv4 *ipv4 = new Ipv4 (this);
   Arp *arp = new Arp (this);
   Udp *udp = new Udp (this);
 
-  m_l3Demux->Insert (ipv4);
-  m_l3Demux->Insert (arp);
+  l3Demux->Insert (ipv4);
+  l3Demux->Insert (arp);
   m_ipv4L4Demux->Insert (udp);
 
+  l3Demux->Unref ();
   ipv4->Unref ();
   arp->Unref ();
   udp->Unref ();
 }
 
 InternetNode::~InternetNode ()
-{
-  Dispose ();
-}
+{}
 
 void
 InternetNode::SetName (std::string name)
@@ -90,14 +90,9 @@ InternetNode::CreateTraceResolver (TraceContext const &context)
   return resolver;
 }
 
-void InternetNode::Dispose()
+void 
+InternetNode::DoDispose()
 {
-  if (m_l3Demux != 0)
-    {
-      m_l3Demux->Dispose ();
-      m_l3Demux->Unref ();
-      m_l3Demux = 0;
-    }
   if (m_ipv4L4Demux != 0)
     {
       m_ipv4L4Demux->Dispose ();
@@ -112,8 +107,7 @@ void InternetNode::Dispose()
       m_applicationList = 0;
     }
 
-  // chain up.
-  Node::Dispose ();
+  Node::DoDispose ();
 }
 
 ApplicationList* 
@@ -122,13 +116,6 @@ InternetNode::GetApplicationList() const
   m_applicationList->Ref ();
   return m_applicationList;
 } 
-
-L3Demux*     
-InternetNode::GetL3Demux() const
-{
-  m_l3Demux->Ref ();
-  return m_l3Demux;
-}
 
 Ipv4L4Demux*     
 InternetNode::GetIpv4L4Demux() const
@@ -140,7 +127,9 @@ InternetNode::GetIpv4L4Demux() const
 Ipv4 *
 InternetNode::GetIpv4 (void) const
 {
-  Ipv4 *ipv4 = static_cast<Ipv4*> (m_l3Demux->PeekProtocol (Ipv4::PROT_NUMBER));
+  L3Demux *l3Demux = QueryInterface<L3Demux> (L3Demux::iid);
+  Ipv4 *ipv4 = static_cast<Ipv4*> (l3Demux->PeekProtocol (Ipv4::PROT_NUMBER));
+  l3Demux->Unref ();
   ipv4->Ref ();
   return ipv4;
 }
@@ -155,7 +144,9 @@ InternetNode::GetUdp (void) const
 Arp *
 InternetNode::GetArp (void) const
 {
-  Arp *arp = static_cast<Arp*> (m_l3Demux->PeekProtocol (Arp::PROT_NUMBER));
+  L3Demux *l3Demux = QueryInterface<L3Demux> (L3Demux::iid);
+  Arp *arp = static_cast<Arp*> (l3Demux->PeekProtocol (Arp::PROT_NUMBER));
+  l3Demux->Unref ();
   arp->Ref ();
   return arp;
 }
@@ -169,7 +160,7 @@ InternetNode::DoAddDevice (NetDevice *device) const
 bool
 InternetNode::ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const
 {
-  L3Demux *demux = GetL3Demux();
+  L3Demux *demux = QueryInterface<L3Demux> (L3Demux::iid);
   L3Protocol *target = demux->PeekProtocol (protocolNumber);
   demux->Unref ();
   if (target != 0) 

@@ -47,7 +47,7 @@ public:
    * \param iid the NsUnknown id of the requested interface
    */
   template <typename T>
-  T *QueryInterface (uint32_t iid);
+  T *QueryInterface (uint32_t iid) const;
 
   /**
    * \param interface another interface
@@ -59,7 +59,7 @@ public:
    */
   void AddInterface (NsUnknown *interface);
 
-  virtual void Dispose (void);
+  void Dispose (void);
 protected:
   /**
    * \param iid the Interface Id of the interface defined by a direct subclass
@@ -79,10 +79,18 @@ protected:
    * this method to associate an interface id to your interface.
    */
   void AddSelfInterface (uint32_t iid, NsUnknown *interface);
+protected:
+  /**
+   * Subclasses who want to handle the "dispose" event should
+   * override this method. They are also responsible for
+   * "chaining up" to their parent class' DoDispose method
+   * once they have done their own "dispose".
+   */
+  virtual void DoDispose (void);
 private:
   friend class NsUnknownImpl;
   NsUnknown ();
-  NsUnknown *DoQueryInterface (uint32_t iid);
+  NsUnknown *DoQueryInterface (uint32_t iid) const;
   void RefInternal (void);
   void UnrefInternal (void);
   NsUnknownImpl *m_impl;
@@ -95,7 +103,7 @@ namespace ns3 {
 
 template <typename T>
 T *
-NsUnknown::QueryInterface (uint32_t iid)
+NsUnknown::QueryInterface (uint32_t iid) const
 {
   NsUnknown *found = DoQueryInterface (iid);
   if (found != 0)

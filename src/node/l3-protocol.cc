@@ -45,4 +45,10 @@ L3Protocol::GetVersion() const
   return m_version;
 }
 
+void
+L3Protocol::DoDispose (void)
+{
+  Object::DoDispose ();
+}
+
 }//namespace ns3

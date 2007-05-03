@@ -35,17 +35,20 @@ public:
   void RefAll (NsUnknownImpl *other);
   void Unref (void);
   void UnrefAll (void);
-  NsUnknown *DoQueryInterface (uint32_t iid);
+  NsUnknown *DoQueryInterface (uint32_t iid) const;
+  void DoDisposeAll (void);
   void AddInterface (NsUnknown *interface);
   void AddSelfInterface (uint32_t iid, NsUnknown *interface);
 private:
   typedef std::list<std::pair<uint32_t,NsUnknown *> > List;
   uint32_t m_ref;
   List m_list;
+  bool m_disposed;
 };
 
 NsUnknownImpl::NsUnknownImpl (uint32_t iid, NsUnknown *interface)
-  : m_ref (1)
+  : m_ref (1),
+    m_disposed (false)
 {
   m_list.push_back (std::make_pair (iid, interface));
 }
@@ -83,8 +86,20 @@ NsUnknownImpl::UnrefAll (void)
   m_ref = 0;
   delete this;
 }
+void
+NsUnknownImpl::DoDisposeAll (void)
+{
+  NS_ASSERT (!m_disposed);
+  for (List::const_iterator i = m_list.begin ();
+       i != m_list.end (); i++)
+    {
+      NsUnknown *interface = i->second;
+      interface->DoDispose ();
+    }
+  m_disposed = true;
+}
 NsUnknown *
-NsUnknownImpl::DoQueryInterface (uint32_t iid)
+NsUnknownImpl::DoQueryInterface (uint32_t iid) const
 {
   for (List::const_iterator i = m_list.begin ();
        i != m_list.end (); i++)
@@ -139,6 +154,12 @@ NsUnknown::Unref (void)
 void 
 NsUnknown::Dispose (void)
 {
+  m_impl->DoDisposeAll ();
+}
+
+void 
+NsUnknown::DoDispose (void)
+{
   // we do not do anything by default.
 }
 
@@ -160,7 +181,7 @@ NsUnknown::UnrefInternal (void)
 }
 
 NsUnknown *
-NsUnknown::DoQueryInterface (uint32_t iid)
+NsUnknown::DoQueryInterface (uint32_t iid) const
 {
   return m_impl->DoQueryInterface (iid);
 }

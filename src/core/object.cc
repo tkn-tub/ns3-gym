@@ -20,19 +20,19 @@
  */
 #include "object.h"
 #include "debug.h"
+#include "assert.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("Object");
 
 namespace ns3 {
 
 Object::Object ()
-  : m_count (1)
-{
-}
+  : m_count (1),
+    m_disposed (false)
+{}
 
 Object::~Object ()
-{
-}
+{}
 
 void 
 Object::Ref (void) const
@@ -65,6 +65,13 @@ Object::IsSingle (void) const
 
 void
 Object::Dispose (void)
+{
+  NS_ASSERT (!m_disposed);
+  DoDispose ();
+}
+
+void 
+Object::DoDispose (void)
 {}
 
 }//namespace ns3

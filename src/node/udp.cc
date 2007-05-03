@@ -57,7 +57,7 @@ Udp::CreateTraceResolver (TraceContext const &context)
 }
 
 void
-Udp::Dispose (void)
+Udp::DoDispose (void)
 {
   if (m_endPoints != 0)
     {
@@ -69,6 +69,7 @@ Udp::Dispose (void)
       m_node->Unref ();
       m_node = 0;
     }
+  Ipv4L4Protocol::DoDispose ();
 }
 
 Socket *

@@ -56,11 +56,11 @@ Ipv4::Ipv4(Node *node)
 }
 Ipv4::~Ipv4 ()
 {
-  Dispose ();
+  DoDispose ();
 }
 
 void 
-Ipv4::Dispose (void)
+Ipv4::DoDispose (void)
 {
   for (Ipv4InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
@@ -89,6 +89,7 @@ Ipv4::Dispose (void)
       m_node->Unref ();
       m_node = 0;
     }
+  L3Protocol::DoDispose ();
 }
 
 void

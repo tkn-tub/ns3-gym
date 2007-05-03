@@ -28,7 +28,7 @@
 #define L3_DEMUX_H
 
 #include <map>
-#include "ns3/object.h"
+#include "ns3/ns-unknown.h"
 
 namespace ns3 {
 
@@ -40,14 +40,13 @@ class TraceContext;
 /**
  * \brief L3 Demux 
  */
-class L3Demux : public Object
+class L3Demux : public NsUnknown
 {
 public:
+  static const uint32_t iid;
   typedef int ProtocolTraceType;
   L3Demux(Node *node);
   virtual ~L3Demux();
-
-  void Dispose (void);
 
   /**
    * \param context the trace context to use to construct the
@@ -86,6 +85,8 @@ public:
    * returned from the L3Protocol::Insert method.
    */
   void Erase(ns3::L3Protocol*protocol);
+protected:
+  virtual void DoDispose (void);
 private:
   typedef std::map<int, ns3::L3Protocol*> L3Map_t;
 

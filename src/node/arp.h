@@ -43,14 +43,14 @@ public:
   Arp (Node *node);
   ~Arp ();
 
-  virtual void Dispose (void);
-
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   virtual void Receive(Packet& p, NetDevice *device);
   bool Lookup (Packet &p, Ipv4Address destination, 
 	       NetDevice *device,
 	       MacAddress *hardwareDestination);
+protected:
+  virtual void DoDispose (void);
 private:
   typedef std::list<ArpCache *> CacheList;
   ArpCache *FindCache (NetDevice *device);

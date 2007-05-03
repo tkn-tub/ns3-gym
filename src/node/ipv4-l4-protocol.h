@@ -51,8 +51,6 @@ public:
   Ipv4L4Protocol(int protocolNumber, int version);
   virtual ~Ipv4L4Protocol ();
 
-  virtual void Dispose (void) = 0;
-
   /**
    * \returns the protocol number of this protocol.
    */
@@ -75,8 +73,9 @@ public:
   virtual void Receive(Packet& p, 
                        Ipv4Address const &source,
                        Ipv4Address const &destination) = 0;
-
- private:
+protected:
+  virtual void DoDispose (void);
+private:
   int m_protocolNumber;
   int m_version;
 };

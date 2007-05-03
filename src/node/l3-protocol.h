@@ -46,8 +46,6 @@ public:
   int GetProtocolNumber (void) const;
   int GetVersion() const;
 
-  virtual void Dispose (void) = 0;
-
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context) = 0;
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
@@ -58,7 +56,9 @@ public:
    */
   virtual void Receive(Packet& p, NetDevice *device) = 0;
 
- private:
+protected:
+  virtual void DoDispose (void);
+private:
   int m_protocolNumber;
   int m_version;
 };

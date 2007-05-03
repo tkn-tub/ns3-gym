@@ -23,25 +23,27 @@
 #include <sstream>
 #include <string>
 #include "ns3/composite-trace-resolver.h"
+#include "ns3/iid-manager.h"
 #include "l3-demux.h"
 #include "l3-protocol.h"
 #include "node.h"
 
 namespace ns3 {
 
+const uint32_t L3Demux::iid = IidManager::Allocate ("L3Demux");
+
 L3Demux::L3Demux (Node *node)
-  : m_node (node)
+  : NsUnknown (L3Demux::iid),
+    m_node (node)
 {
   m_node->Ref ();
 }
 
 L3Demux::~L3Demux()
-{
-  Dispose ();
-}
+{}
 
 void
-L3Demux::Dispose (void)
+L3Demux::DoDispose (void)
 {
   for (L3Map_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
@@ -54,6 +56,7 @@ L3Demux::Dispose (void)
       m_node->Unref ();
       m_node = 0;
     }
+  NsUnknown::DoDispose ();
 }
 
 TraceResolver *

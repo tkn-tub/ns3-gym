@@ -44,22 +44,21 @@ public:
   InternetNode();
   virtual ~InternetNode ();
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
-  virtual void Dispose();
   // Capability access
   virtual ApplicationList* GetApplicationList() const;
-  virtual L3Demux*         GetL3Demux() const;
   virtual Ipv4L4Demux*     GetIpv4L4Demux() const;
   virtual Ipv4 *           GetIpv4 (void) const;
   virtual Udp *            GetUdp (void) const;
   virtual Arp *            GetArp (void) const;
 
   void SetName(std::string name);
+protected:
+  virtual void DoDispose(void);
 private:
   virtual void DoAddDevice (NetDevice *device) const;
   bool ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const;
   // Capabilities
   ApplicationList* m_applicationList;
-  L3Demux*         m_l3Demux;
   Ipv4L4Demux*     m_ipv4L4Demux;
   std::string      m_name;
 };

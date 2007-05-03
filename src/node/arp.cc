@@ -48,7 +48,7 @@ Arp::~Arp ()
 }
 
 void 
-Arp::Dispose (void)
+Arp::DoDispose (void)
 {
   for (CacheList::const_iterator i = m_cacheList.begin (); i != m_cacheList.end (); i++)
     {
@@ -60,6 +60,7 @@ Arp::Dispose (void)
       m_node->Unref ();
       m_node = 0;
     }
+  L3Protocol::DoDispose ();
 }
 
 TraceResolver *

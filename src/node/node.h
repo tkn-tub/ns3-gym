@@ -32,7 +32,6 @@
 namespace ns3 {
 
 class ApplicationList;
-class L3Demux;
 class Ipv4L4Demux;
 class Ipv4;
 class Udp;
@@ -60,9 +59,9 @@ public:
   uint32_t AddDevice (NetDevice *device);
   NetDevice *GetDevice (uint32_t index) const;
   uint32_t GetNDevices (void) const;
-  
-  virtual void Dispose (void);
 
+protected:
+  virtual void DoDispose (void);
 private:
   virtual void DoAddDevice (NetDevice *device) const = 0;
 
@@ -74,7 +73,6 @@ public:
   // Each of these has a default behavior of returning a null capability
   // of the correct type if one exists, or the nil pointer if no
   // null capability exists.
-  virtual L3Demux*         GetL3Demux() const;
   virtual Ipv4L4Demux*     GetIpv4L4Demux() const;
   virtual ApplicationList* GetApplicationList() const;
   virtual Ipv4 *           GetIpv4 (void) const;

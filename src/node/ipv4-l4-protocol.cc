@@ -45,4 +45,10 @@ Ipv4L4Protocol::GetVersion() const
   return m_version;
 }
 
+void 
+Ipv4L4Protocol::DoDispose (void)
+{
+  Object::DoDispose ();
+}
+
 }//namespace ns3
