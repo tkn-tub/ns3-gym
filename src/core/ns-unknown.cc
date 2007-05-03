@@ -26,30 +26,30 @@
 
 namespace ns3 {
 
-class InterfaceImpl
+class NsUnknownImpl
 {
 public:
-  InterfaceImpl (uint32_t iid, Interface *interface);
-  ~InterfaceImpl ();
+  NsUnknownImpl (uint32_t iid, NsUnknown *interface);
+  ~NsUnknownImpl ();
   void Ref (void);
-  void RefAll (InterfaceImpl *other);
+  void RefAll (NsUnknownImpl *other);
   void Unref (void);
   void UnrefAll (void);
-  Interface *DoQueryInterface (uint32_t iid);
-  void AddInterface (Interface *interface);
-  void AddSelfInterface (uint32_t iid, Interface *interface);
+  NsUnknown *DoQueryInterface (uint32_t iid);
+  void AddInterface (NsUnknown *interface);
+  void AddSelfInterface (uint32_t iid, NsUnknown *interface);
 private:
-  typedef std::list<std::pair<uint32_t,Interface *> > List;
+  typedef std::list<std::pair<uint32_t,NsUnknown *> > List;
   uint32_t m_ref;
   List m_list;
 };
 
-InterfaceImpl::InterfaceImpl (uint32_t iid, Interface *interface)
+NsUnknownImpl::NsUnknownImpl (uint32_t iid, NsUnknown *interface)
   : m_ref (1)
 {
   m_list.push_back (std::make_pair (iid, interface));
 }
-InterfaceImpl::~InterfaceImpl ()
+NsUnknownImpl::~NsUnknownImpl ()
 {
   for (List::const_iterator i = m_list.begin ();
        i != m_list.end (); i++)
@@ -59,17 +59,17 @@ InterfaceImpl::~InterfaceImpl ()
   m_list.clear ();
 }
 void 
-InterfaceImpl::Ref (void)
+NsUnknownImpl::Ref (void)
 {
   m_ref++;
 }
 void 
-InterfaceImpl::RefAll (InterfaceImpl *other)
+NsUnknownImpl::RefAll (NsUnknownImpl *other)
 {
   m_ref += other->m_ref;
 }
 void 
-InterfaceImpl::Unref (void)
+NsUnknownImpl::Unref (void)
 {
   m_ref--;
   if (m_ref == 0)
@@ -78,13 +78,13 @@ InterfaceImpl::Unref (void)
     }
 }
 void
-InterfaceImpl::UnrefAll (void)
+NsUnknownImpl::UnrefAll (void)
 {
   m_ref = 0;
   delete this;
 }
-Interface *
-InterfaceImpl::DoQueryInterface (uint32_t iid)
+NsUnknown *
+NsUnknownImpl::DoQueryInterface (uint32_t iid)
 {
   for (List::const_iterator i = m_list.begin ();
        i != m_list.end (); i++)
@@ -98,7 +98,7 @@ InterfaceImpl::DoQueryInterface (uint32_t iid)
   return 0;
 }
 void 
-InterfaceImpl::AddInterface (Interface *interface)
+NsUnknownImpl::AddInterface (NsUnknown *interface)
 {
   for (List::const_iterator i = interface->m_impl->m_list.begin ();
        i != interface->m_impl->m_list.end (); i++)
@@ -110,40 +110,40 @@ InterfaceImpl::AddInterface (Interface *interface)
     }
 }
 void 
-InterfaceImpl::AddSelfInterface (uint32_t iid, Interface *interface)
+NsUnknownImpl::AddSelfInterface (uint32_t iid, NsUnknown *interface)
 {
   interface->RefInternal ();
   m_list.push_back (std::make_pair (iid, interface));
 }
 
 
-Interface::Interface (uint32_t iid)
-  : m_impl (new InterfaceImpl (iid, this)),
+NsUnknown::NsUnknown (uint32_t iid)
+  : m_impl (new NsUnknownImpl (iid, this)),
     m_ref (1)
 {}
-Interface::~Interface ()
+NsUnknown::~NsUnknown ()
 {
   m_impl = 0;
 }
 void 
-Interface::Ref (void)
+NsUnknown::Ref (void)
 {
   m_impl->Ref ();
 }
 void 
-Interface::Unref (void)
+NsUnknown::Unref (void)
 {
   m_impl->Unref ();
 }
 
 void
-Interface::RefInternal (void)
+NsUnknown::RefInternal (void)
 {
   m_ref++;
 }
 
 void
-Interface::UnrefInternal (void)
+NsUnknown::UnrefInternal (void)
 {
   NS_ASSERT (m_ref != 0);
   m_ref--;
@@ -153,14 +153,14 @@ Interface::UnrefInternal (void)
     }
 }
 
-Interface *
-Interface::DoQueryInterface (uint32_t iid)
+NsUnknown *
+NsUnknown::DoQueryInterface (uint32_t iid)
 {
   return m_impl->DoQueryInterface (iid);
 }
 
 void 
-Interface::AddInterface (Interface *interface)
+NsUnknown::AddInterface (NsUnknown *interface)
 {
   m_impl->AddInterface (interface);
   m_impl->RefAll (interface->m_impl);
@@ -169,7 +169,7 @@ Interface::AddInterface (Interface *interface)
 }
 
 void
-Interface::AddSelfInterface (uint32_t iid, Interface *interface)
+NsUnknown::AddSelfInterface (uint32_t iid, NsUnknown *interface)
 {
   m_impl->AddSelfInterface (iid, interface);
 }
@@ -184,44 +184,44 @@ Interface::AddSelfInterface (uint32_t iid, Interface *interface)
 
 namespace {
 
-class A : public ns3::Interface
+class A : public ns3::NsUnknown
 {
 public:
   static const uint32_t iid;
   A ()
-    : Interface (A::iid)
+    : NsUnknown (A::iid)
   {}
 };
-class B : public ns3::Interface 
+class B : public ns3::NsUnknown
 {
 public:
   static const uint32_t iid;
   B ()
-    : Interface (B::iid)
+    : NsUnknown (B::iid)
   {}
 };
-class BaseA : public ns3::Interface
+class BaseA : public ns3::NsUnknown
 {
 public:
   static const uint32_t iid;
   BaseA ()
-    : Interface (BaseA::iid)
+    : NsUnknown (BaseA::iid)
   {}
 };
-class BaseB : public ns3::Interface
+class BaseB : public ns3::NsUnknown
 {
 public:
   static const uint32_t iid;
   BaseB ()
-    : Interface (BaseB::iid)
+    : NsUnknown (BaseB::iid)
   {}
 };
-class Base : public ns3::Interface
+class Base : public ns3::NsUnknown
 {
 public:
   static const uint32_t iid;
   Base ()
-    : Interface (Base::iid)
+    : NsUnknown (Base::iid)
   {}
 };
 class Derived : public Base

@@ -26,7 +26,7 @@
 
 namespace ns3 {
 
-class InterfaceImpl;
+class NsUnknownImpl;
 
 /**
  * \brief COM-like IUnknown
@@ -36,15 +36,15 @@ class InterfaceImpl;
  * inheritance where this base class is at the top of the dreaded 
  * "diamond" shape is not allowed.
  */
-class Interface
+class NsUnknown
 {
 public:
-  virtual ~Interface ();
+  virtual ~NsUnknown ();
   void Ref (void);
   void Unref (void);
 
   /**
-   * \param iid the Interface id of the requested interface
+   * \param iid the NsUnknown id of the requested interface
    */
   template <typename T>
   T *QueryInterface (uint32_t iid);
@@ -57,7 +57,7 @@ public:
    * will be able to perform QI on each other and their lifetimes
    * will be found by the same reference count.
    */
-  void AddInterface (Interface *interface);
+  void AddInterface (NsUnknown *interface);
 protected:
   /**
    * \param iid the Interface Id of the interface defined by a direct subclass
@@ -66,23 +66,23 @@ protected:
    * If you are a direct subclass of this class, you _must_ register
    * the name of your interface with this constructor.
    */
-  Interface (uint32_t iid);
+  NsUnknown (uint32_t iid);
   /**
    * \param iid the Interface id of the interface
    * \param a pointer to the interface object
    *
-   * If you are not a direct subclass of the ns3::Interface base class,
+   * If you are not a direct subclass of the ns3::NsUnknown base class,
    * and if you want to register yourself as another accessible interface
    * (typically, your subclass has added API), you need to call
    * this method to associate an interface id to your interface.
    */
-  void AddSelfInterface (uint32_t iid, Interface *interface);
+  void AddSelfInterface (uint32_t iid, NsUnknown *interface);
 private:
-  friend class InterfaceImpl;
-  Interface *DoQueryInterface (uint32_t iid);
+  friend class NsUnknownImpl;
+  NsUnknown *DoQueryInterface (uint32_t iid);
   void RefInternal (void);
   void UnrefInternal (void);
-  InterfaceImpl *m_impl;
+  NsUnknownImpl *m_impl;
   uint32_t m_ref;
 };
 
@@ -92,9 +92,9 @@ namespace ns3 {
 
 template <typename T>
 T *
-Interface::QueryInterface (uint32_t iid)
+NsUnknown::QueryInterface (uint32_t iid)
 {
-  Interface *found = DoQueryInterface (iid);
+  NsUnknown *found = DoQueryInterface (iid);
   if (found != 0)
     {
       return dynamic_cast<T *> (found);
