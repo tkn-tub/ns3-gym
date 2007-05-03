@@ -81,6 +81,7 @@ protected:
   void AddSelfInterface (uint32_t iid, NsUnknown *interface);
 private:
   friend class NsUnknownImpl;
+  NsUnknown ();
   NsUnknown *DoQueryInterface (uint32_t iid);
   void RefInternal (void);
   void UnrefInternal (void);
