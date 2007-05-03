@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "interface.h"
+#include "ns-unknown.h"
 #include <string>
 #include <list>
 #include <stdint.h>

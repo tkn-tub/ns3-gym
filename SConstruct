@@ -25,7 +25,7 @@ core.add_sources([
     'test.cc',
     'random-variable.cc',
     'rng-stream.cc',
-    'interface.cc',
+    'ns-unknown.cc',
     'iid-manager.cc',
     ])
 env = Environment()
@@ -50,7 +50,7 @@ core.add_inst_headers([
     'test.h',
     'random-variable.h',
     'rng-stream.h',
-    'interface.h',
+    'ns-unknown.h',
     'iid-manager.h',
     ])
 
