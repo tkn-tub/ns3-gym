@@ -75,7 +75,7 @@ int main (int argc, char *argv[])
 
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
-#if 0
+#if 0 
   DebugComponentEnable("Object");
   DebugComponentEnable("Queue");
   DebugComponentEnable("DropTailQueue");
@@ -108,25 +108,32 @@ int main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   PointToPointChannel *channel0 = 
     PointToPointTopology::AddPointToPointLink (
-      n0, Ipv4Address("10.1.1.1"), 
-      n2, Ipv4Address("10.1.1.2"), 
-      DataRate(5000000), MilliSeconds(2));
-  channel0->Unref ();
-  
+      n0, n2, DataRate(5000000), MilliSeconds(2));
+
   PointToPointChannel *channel1 = 
     PointToPointTopology::AddPointToPointLink (
-      n1, Ipv4Address("10.1.2.1"), 
-      n2, Ipv4Address("10.1.2.2"), 
-      DataRate(5000000), MilliSeconds(2));
-  channel1->Unref ();
-
+      n1, n2, DataRate(5000000), MilliSeconds(2));
+  
   PointToPointChannel *channel2 = 
     PointToPointTopology::AddPointToPointLink (
-      n2, Ipv4Address("10.1.3.1"), 
-      n3, Ipv4Address("10.1.3.2"), 
-      DataRate(1500000), MilliSeconds(10));
-  channel2->Unref ();
+      n2, n3, DataRate(1500000), MilliSeconds(10));
   
+  // Later, we add IP addresses.  
+  PointToPointTopology::AddIpv4Addresses (
+      channel0, n0, Ipv4Address("10.1.1.1"),
+      n2, Ipv4Address("10.1.1.2"));
+  channel0->Unref ();
+  
+  PointToPointTopology::AddIpv4Addresses (
+      channel1, n1, Ipv4Address("10.1.2.1"),
+      n2, Ipv4Address("10.1.2.2"));
+  channel1->Unref ();
+  
+  PointToPointTopology::AddIpv4Addresses (
+      channel2, n2, Ipv4Address("10.1.3.1"),
+      n3, Ipv4Address("10.1.3.2"));
+  channel2->Unref ();
+
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   OnOffApplication* ooff0 = new OnOffApplication(
@@ -138,9 +145,11 @@ int main (int argc, char *argv[])
     DataRate(448000), 
     210);
   // Add to Node's ApplicationList (takes ownership of pointer)
-  ApplicationList *apl0 = n0->QueryInterface<ApplicationList> (ApplicationList::iid);
+  ApplicationList *apl0 = n0->QueryInterface<ApplicationList> 
+    (ApplicationList::iid);
   apl0->Add(ooff0);
   apl0->Unref ();
+
   // Start the application
   ooff0->Start(Seconds(1.0));
   ooff0->Stop (Seconds(10.0));
@@ -181,14 +190,15 @@ int main (int argc, char *argv[])
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-p2p.tr file
-#if 1
-  AsciiTrace trace ("simple-p2p.tr");
-  trace.TraceAllQueues ();
-  trace.TraceAllNetDeviceRx ();
-#else
-  PcapTrace trace ("simple-p2p.tr");
-  trace.TraceAllIp ();
-#endif
+  AsciiTrace asciitrace ("simple-p2p.tr");
+  asciitrace.TraceAllQueues ();
+  asciitrace.TraceAllNetDeviceRx ();
+
+  // Also configure some tcpdump traces; each interface will be traced
+  // The output files will be named simple-p2p.pcap-<nodeId>-<interfaceId>
+  // and can be read by the "tcpdump -r" command
+  PcapTrace pcaptrace ("simple-p2p.pcap");
+  pcaptrace.TraceAllIp ();
 
   Simulator::Run ();
     

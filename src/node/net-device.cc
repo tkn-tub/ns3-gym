@@ -80,6 +80,18 @@ NetDevice::GetName(void) const
   return m_name; 
 }
 
+void
+NetDevice::SetIfIndex(uint32_t index) 
+{ 
+  m_ifIndex = index; 
+}
+
+uint32_t
+NetDevice::GetIfIndex(void) const 
+{ 
+  return m_ifIndex; 
+}
+
 bool 
 NetDevice::IsLinkUp (void) const
 {

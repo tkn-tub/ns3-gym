@@ -75,6 +75,7 @@ Node::AddDevice (NetDevice *device)
   uint32_t index = m_devices.size ();
   m_devices.push_back (device);
   DoAddDevice (device);
+  device->SetIfIndex(index);
   return index;
 }
 NetDevice *

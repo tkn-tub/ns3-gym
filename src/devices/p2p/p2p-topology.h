@@ -51,10 +51,12 @@ public:
    * and propagation delay.
    */
   static PointToPointChannel* AddPointToPointLink(
-    Node*, const Ipv4Address&, 
+    Node*, Node*, const DataRate&, const Time&);
+
+  static bool AddIpv4Addresses(
+    const PointToPointChannel*,
     Node*, const Ipv4Address&,
-    const DataRate&,
-    const Time&);
+    Node*, const Ipv4Address&);
 
   /**
    * Get the connecting node n1 to node n2

@@ -107,6 +107,14 @@ public:
    */
   std::string GetName(void) const;
   /**
+   * \param index ifIndex of the device 
+   */
+  void SetIfIndex(const uint32_t);
+  /**
+   * \return index ifIndex of the device 
+   */
+  uint32_t GetIfIndex(void) const;
+  /**
    * \return true if link is up; false otherwise
    */
   bool IsLinkUp (void) const;
@@ -153,6 +161,15 @@ public:
    * \return whether the Send operation succeeded 
    */
   bool Send(Packet& p, const MacAddress& dest, uint16_t protocolNumber);
+  /**
+   * \returns the node base class which contains this network
+   *          interface.
+   *
+   * When a subclass needs to get access to the underlying node
+   * base class to print the nodeid for example, it can invoke
+   * this method.
+   */
+  Node* PeekNode (void) const;
 
   bool NeedsArp (void) const;
 
@@ -195,15 +212,6 @@ public:
    * down, it notifies its parent class by calling this method.
    */
   void NotifyLinkDown (void);
-  /**
-   * \returns the node base class which contains this network
-   *          interface.
-   *
-   * When a subclass needs to get access to the underlying node
-   * base class to print the nodeid for example, it can invoke
-   * this method.
-   */
-  Node* PeekNode (void) const;
 
   /**
    * \param p packet sent from below up to Network Device
