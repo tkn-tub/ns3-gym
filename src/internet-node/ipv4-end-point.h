@@ -23,7 +23,7 @@
 #define IPV4_END_POINT_H
 
 #include <stdint.h>
-#include "ipv4-address.h"
+#include "ns3/ipv4-address.h"
 #include "ns3/callback.h"
 
 namespace ns3 {

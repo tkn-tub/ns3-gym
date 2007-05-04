@@ -24,7 +24,7 @@
 #define IPV4_INTERFACE_H
 
 #include <list>
-#include "ipv4-address.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 

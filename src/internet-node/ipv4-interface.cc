@@ -20,8 +20,8 @@
  */
 
 #include "ipv4-interface.h"
-#include "ipv4-address.h"
-#include "net-device.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/net-device.h"
 
 namespace ns3 {
 

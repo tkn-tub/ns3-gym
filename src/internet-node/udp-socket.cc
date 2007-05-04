@@ -18,10 +18,10 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+#include "ns3/node.h"
 #include "udp-socket.h"
 #include "udp.h"
 #include "ipv4-end-point.h"
-#include "node.h"
 #include "ipv4-l4-demux.h"
 
 namespace ns3 {

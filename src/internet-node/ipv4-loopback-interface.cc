@@ -20,9 +20,9 @@
  *  Mathieu Lacage <mathieu.lacage@sophia.inria.fr>,
  */
 #include "ns3/empty-trace-resolver.h"
+#include "ns3/net-device.h"
+#include "ns3/node.h"
 #include "ipv4-loopback-interface.h"
-#include "net-device.h"
-#include "node.h"
 #include "i-ipv4-private.h"
 
 namespace ns3 {

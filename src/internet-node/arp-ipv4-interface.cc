@@ -22,11 +22,11 @@
 
 #include "ns3/packet.h"
 #include "ns3/composite-trace-resolver.h"
+#include "ns3/node.h"
+#include "ns3/net-device.h"
 
 #include "arp-ipv4-interface.h"
 #include "i-arp-private.h"
-#include "node.h"
-#include "net-device.h"
 #include "ipv4.h"
 
 namespace ns3 {

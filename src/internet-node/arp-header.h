@@ -19,32 +19,33 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef UDP_HEADER_H
-#define UDP_HEADER_H
+#ifndef ARP_HEADER_H
+#define ARP_HEADER_H
 
-#include <stdint.h>
 #include "ns3/header.h"
-#include "ipv4-address.h"
+#include "ns3/mac-address.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
-class UdpHeader : public Header {
-public:
-  UdpHeader ();
-  virtual ~UdpHeader ();
+class ArpHeader : public Header {
+ public:
+  virtual ~ArpHeader ();
 
-  static void EnableChecksums (void);
-
-  void SetDestination (uint16_t port);
-  void SetSource (uint16_t port);
-  uint16_t GetSource (void) const;
-  uint16_t GetDestination (void) const;
-
-  void SetPayloadSize (uint16_t size);
-
-  void InitializeChecksum (Ipv4Address source, 
-                           Ipv4Address destination,
-                           uint8_t protocol);
+  void SetRequest (MacAddress sourceHardwareAddress,
+                   Ipv4Address sourceProtocolAddress,
+                   MacAddress destinationHardwareAddress,
+                   Ipv4Address destinationProtocolAddress);
+  void SetReply (MacAddress sourceHardwareAddress,
+                 Ipv4Address sourceProtocolAddress,
+                 MacAddress destinationHardwareAddress,
+                 Ipv4Address destinationProtocolAddress);
+  bool IsRequest (void) const;
+  bool IsReply (void) const;
+  MacAddress GetSourceHardwareAddress (void);
+  MacAddress GetDestinationHardwareAddress (void);
+  Ipv4Address GetSourceIpv4Address (void);
+  Ipv4Address GetDestinationIpv4Address (void);
 
 private:
   virtual void PrintTo (std::ostream &os) const;
@@ -52,14 +53,17 @@ private:
   virtual void SerializeTo (Buffer::Iterator start) const;
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
 
-  uint16_t m_sourcePort;
-  uint16_t m_destinationPort;
-  uint16_t m_payloadSize;
-  uint16_t m_initialChecksum;
-
-  static bool m_calcChecksum;
+  enum ArpType_e {
+    ARP_TYPE_REQUEST = 1,
+    ARP_TYPE_REPLY   = 2
+  };
+  uint16_t m_type;
+  MacAddress m_macSource;
+  MacAddress m_macDest;
+  Ipv4Address m_ipv4Source;
+  Ipv4Address m_ipv4Dest;
 };
 
 }; // namespace ns3
 
-#endif /* UDP_HEADER */
+#endif /* ARP_HEADER_H */

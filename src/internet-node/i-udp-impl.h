@@ -18,34 +18,29 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_ARP_PRIVATE_H
-#define I_ARP_PRIVATE_H
+#ifndef I_UDP_IMPL_H
+#define I_UDP_IMPL_H
 
-#include "ns3/ns-unknown.h"
-#include "ipv4-address.h"
+#include "ns3/i-udp.h"
 
 namespace ns3 {
 
-class NetDevice;
-class MacAddress;
-class Packet;
-class Arp;
+class Udp;
 
-class IArpPrivate : public NsUnknown
+class IUdpImpl : public IUdp
 {
 public:
-  static const uint32_t iid;
-  IArpPrivate (Arp *arp);
-  virtual ~IArpPrivate ();
-  bool Lookup (Packet &p, Ipv4Address destination, 
-	       NetDevice *device,
-	       MacAddress *hardwareDestination);
+  IUdpImpl (Udp *udp);
+  virtual ~IUdpImpl ();
+
+  virtual Socket *CreateSocket (void);
+
 protected:
   virtual void DoDispose (void);
 private:
-  Arp *m_arp;
+  Udp *m_udp;
 };
 
 } // namespace ns3
 
-#endif /* I_ARP_PRIVATE_H */
+#endif /* I_UDP_IMPL_H */

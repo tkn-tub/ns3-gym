@@ -21,12 +21,13 @@
 #include "ns3/packet.h"
 #include "ns3/debug.h"
 #include "ns3/empty-trace-resolver.h"
+#include "ns3/node.h"
+#include "ns3/net-device.h"
+
 #include "arp.h"
 #include "arp-header.h"
 #include "arp-cache.h"
-#include "net-device.h"
 #include "ipv4-interface.h"
-#include "node.h"
 #include "i-ipv4-private.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("Arp");

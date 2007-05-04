@@ -22,15 +22,15 @@
 // George F. Riley, Georgia Tech, Fall 2006
 
 #include "ns3/composite-trace-resolver.h"
+#include "ns3/application-list.h"
+#include "ns3/net-device.h"
 
-#include "application-list.h"
 #include "l3-demux.h"
 #include "ipv4-l4-demux.h"
 #include "internet-node.h"
 #include "udp.h"
 #include "ipv4.h"
 #include "arp.h"
-#include "net-device.h"
 #include "i-udp-impl.h"
 #include "i-arp-private.h"
 #include "i-ipv4-impl.h"

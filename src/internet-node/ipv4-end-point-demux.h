@@ -24,7 +24,7 @@
 
 #include <stdint.h>
 #include <list>
-#include "ipv4-address.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 

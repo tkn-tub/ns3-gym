@@ -24,17 +24,16 @@
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/array-trace-resolver.h"
 #include "ns3/callback.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/ipv4-route.h"
+#include "ns3/node.h"
 
 #include "ipv4.h"
 #include "ipv4-l4-protocol.h"
-#include "ipv4-address.h"
 #include "ipv4-header.h"
 #include "ipv4-interface.h"
-#include "ipv4-route.h"
 #include "ipv4-loopback-interface.h"
 #include "arp-ipv4-interface.h"
-// the two following headers are needed for Ipv4::ForwardUp
-#include "node.h"
 #include "ipv4-l4-demux.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("Ipv4");

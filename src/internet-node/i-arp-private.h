@@ -1,6 +1,6 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2006 INRIA
+ * Copyright (c) 2007 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,49 +18,34 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef ARP_H
-#define ARP_H
+#ifndef I_ARP_PRIVATE_H
+#define I_ARP_PRIVATE_H
 
-#include <list>
-#include "ipv4-address.h"
-#include "mac-address.h"
-#include "l3-protocol.h"
+#include "ns3/ns-unknown.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
-class ArpCache;
 class NetDevice;
-class Node;
+class MacAddress;
 class Packet;
-class TraceResolver;
-class TraceContext;
+class Arp;
 
-class Arp : public L3Protocol
+class IArpPrivate : public NsUnknown
 {
 public:
-  static const uint16_t PROT_NUMBER;
-
-  Arp (Node *node);
-  ~Arp ();
-
-  virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
-
-  virtual void Receive(Packet& p, NetDevice *device);
+  static const uint32_t iid;
+  IArpPrivate (Arp *arp);
+  virtual ~IArpPrivate ();
   bool Lookup (Packet &p, Ipv4Address destination, 
 	       NetDevice *device,
 	       MacAddress *hardwareDestination);
 protected:
   virtual void DoDispose (void);
 private:
-  typedef std::list<ArpCache *> CacheList;
-  ArpCache *FindCache (NetDevice *device);
-  void SendArpRequest (ArpCache const *cache, Ipv4Address to);
-  void SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac);
-  CacheList m_cacheList;
-  Node *m_node;
+  Arp *m_arp;
 };
 
-}//namespace ns3
+} // namespace ns3
 
-
-#endif /* ARP_H */
+#endif /* I_ARP_PRIVATE_H */

@@ -25,7 +25,7 @@
 #include <stdint.h>
 
 #include "ns3/packet.h"
-#include "ipv4-address.h"
+#include "ns3/ipv4-address.h"
 #include "ipv4-end-point-demux.h"
 #include "ipv4-l4-protocol.h"
 

@@ -22,15 +22,15 @@
 // George F. Riley, Georgia Tech, Spring 2007
 // Adapted from ApplicationOnOff in GTNetS.
 
-#include "ipv4-address.h"
-#include "node.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
-#include "onoff-application.h"
 #include "ns3/random-variable.h"
-#include "socket.h"
+#include "ns3/socket.h"
 #include "ns3/simulator.h"
-#include "i-udp.h"
+#include "ns3/i-udp.h"
+#include "onoff-application.h"
 
 using namespace std;
 

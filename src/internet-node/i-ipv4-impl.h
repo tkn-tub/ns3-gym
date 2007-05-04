@@ -21,7 +21,7 @@
 #ifndef I_IPV4_IMPL_H
 #define I_IPV4_IMPL_H
 
-#include "i-ipv4.h"
+#include "ns3/i-ipv4.h"
 
 namespace ns3 {
 

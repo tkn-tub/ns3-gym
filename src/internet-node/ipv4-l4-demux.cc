@@ -25,9 +25,9 @@
 #include <sstream>
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/iid-manager.h"
+#include "ns3/node.h"
 #include "ipv4-l4-demux.h"
 #include "ipv4-l4-protocol.h"
-#include "node.h"
 
 namespace ns3 {
 

@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 #include "ns3/callback.h"
-#include "socket.h"
+#include "ns3/socket.h"
 
 namespace ns3 {
 

@@ -26,10 +26,10 @@
 #include "ns3/trace-context.h"
 #include "ns3/callback.h"
 #include "ns3/pcap-writer.h"
+#include "ns3/node-list.h"
+#include "ns3/node.h"
 
 #include "ipv4.h"
-#include "node-list.h"
-#include "node.h"
 
 
 namespace ns3 {

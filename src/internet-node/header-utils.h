@@ -1,6 +1,6 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 INRIA
+ * Copyright (c) 2006 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,29 +18,21 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_UDP_IMPL_H
-#define I_UDP_IMPL_H
+#ifndef HEADER_UTILS_H
+#define HEADER_UTILS_H
 
-#include "i-udp.h"
+#include "ns3/buffer.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/mac-address.h"
 
 namespace ns3 {
 
-class Udp;
+void WriteTo (Buffer::Iterator &i, Ipv4Address ad);
+void WriteTo (Buffer::Iterator &i, MacAddress ad);
 
-class IUdpImpl : public IUdp
-{
-public:
-  IUdpImpl (Udp *udp);
-  virtual ~IUdpImpl ();
+void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad);
+void ReadFrom (Buffer::Iterator &i, MacAddress &ad, uint32_t len);
 
-  virtual Socket *CreateSocket (void);
-
-protected:
-  virtual void DoDispose (void);
-private:
-  Udp *m_udp;
 };
 
-} // namespace ns3
-
-#endif /* I_UDP_IMPL_H */
+#endif /* HEADER_UTILS_H */

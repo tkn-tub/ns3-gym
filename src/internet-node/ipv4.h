@@ -26,7 +26,7 @@
 #include <stdint.h>
 #include "ns3/callback-trace-source.h"
 #include "ns3/array-trace-resolver.h"
-#include "ipv4-address.h"
+#include "ns3/ipv4-address.h"
 #include "l3-protocol.h"
 
 namespace ns3 {

@@ -23,7 +23,7 @@
 #define IPV4_HEADER_H
 
 #include "ns3/header.h"
-#include "ipv4-address.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 

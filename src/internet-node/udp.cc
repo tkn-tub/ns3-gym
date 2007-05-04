@@ -22,12 +22,12 @@
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/empty-trace-resolver.h"
+#include "ns3/node.h"
 
 #include "udp.h"
 #include "udp-header.h"
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
-#include "node.h"
 #include "ipv4.h"
 #include "i-ipv4-private.h"
 #include "l3-demux.h"

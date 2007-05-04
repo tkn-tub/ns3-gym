@@ -24,9 +24,9 @@
 #include <stdint.h>
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
-#include "net-device.h"
-#include "ipv4-address.h"
-#include "mac-address.h"
+#include "ns3/net-device.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/mac-address.h"
 #include "sgi-hashmap.h"
 
 namespace ns3 {

@@ -19,33 +19,32 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef ARP_HEADER_H
-#define ARP_HEADER_H
+#ifndef UDP_HEADER_H
+#define UDP_HEADER_H
 
+#include <stdint.h>
 #include "ns3/header.h"
-#include "mac-address.h"
-#include "ipv4-address.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
-class ArpHeader : public Header {
- public:
-  virtual ~ArpHeader ();
+class UdpHeader : public Header {
+public:
+  UdpHeader ();
+  virtual ~UdpHeader ();
 
-  void SetRequest (MacAddress sourceHardwareAddress,
-                   Ipv4Address sourceProtocolAddress,
-                   MacAddress destinationHardwareAddress,
-                   Ipv4Address destinationProtocolAddress);
-  void SetReply (MacAddress sourceHardwareAddress,
-                 Ipv4Address sourceProtocolAddress,
-                 MacAddress destinationHardwareAddress,
-                 Ipv4Address destinationProtocolAddress);
-  bool IsRequest (void) const;
-  bool IsReply (void) const;
-  MacAddress GetSourceHardwareAddress (void);
-  MacAddress GetDestinationHardwareAddress (void);
-  Ipv4Address GetSourceIpv4Address (void);
-  Ipv4Address GetDestinationIpv4Address (void);
+  static void EnableChecksums (void);
+
+  void SetDestination (uint16_t port);
+  void SetSource (uint16_t port);
+  uint16_t GetSource (void) const;
+  uint16_t GetDestination (void) const;
+
+  void SetPayloadSize (uint16_t size);
+
+  void InitializeChecksum (Ipv4Address source, 
+                           Ipv4Address destination,
+                           uint8_t protocol);
 
 private:
   virtual void PrintTo (std::ostream &os) const;
@@ -53,17 +52,14 @@ private:
   virtual void SerializeTo (Buffer::Iterator start) const;
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
 
-  enum ArpType_e {
-    ARP_TYPE_REQUEST = 1,
-    ARP_TYPE_REPLY   = 2
-  };
-  uint16_t m_type;
-  MacAddress m_macSource;
-  MacAddress m_macDest;
-  Ipv4Address m_ipv4Source;
-  Ipv4Address m_ipv4Dest;
+  uint16_t m_sourcePort;
+  uint16_t m_destinationPort;
+  uint16_t m_payloadSize;
+  uint16_t m_initialChecksum;
+
+  static bool m_calcChecksum;
 };
 
 }; // namespace ns3
 
-#endif /* ARP_HEADER_H */
+#endif /* UDP_HEADER */

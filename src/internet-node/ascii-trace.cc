@@ -23,15 +23,15 @@
 #include "ns3/trace-context.h"
 #include "ns3/trace-root.h"
 #include "ns3/simulator.h"
+#include "ns3/node.h"
+#include "ns3/queue.h"
+#include "ns3/node-list.h"
+#include "ns3/llc-snap-header.h"
 
-#include "node.h"
 #include "ipv4.h"
-#include "queue.h"
-#include "llc-snap-header.h"
 #include "arp-header.h"
 #include "udp-header.h"
 #include "ipv4-header.h"
-#include "node-list.h"
 
 namespace ns3 {
 

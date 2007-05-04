@@ -22,7 +22,7 @@
 // George F. Riley, Georgia Tech, Fall 2006
 
 #include "application.h"
-#include "node.h"
+#include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/random-variable.h"
 #include "ns3/simulator.h"
