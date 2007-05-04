@@ -72,7 +72,9 @@ using namespace ns3;
 
 int main (int argc, char *argv[])
 {
-  CommandLine::Parse (argc, argv);
+
+  // Users may find it convenient to turn on explicit debugging
+  // for selected modules; the below lines suggest how to do this
 #if 0
   DebugComponentEnable("Object");
   DebugComponentEnable("Queue");
@@ -82,20 +84,28 @@ int main (int argc, char *argv[])
   DebugComponentEnable("PointToPointNetDevice");
 #endif
 
-  // Optionally, specify some default values for Queue objects.
-  // For this example, we specify that we want each queue to
-  // be a DropTail queue, with a limit of 30 packets.
-  // Specify DropTail for default queue type (note. this is actually
-  // the default, but included here as an example).
-  Bind ("queue", "DropTail"); //Queue::Default(DropTailQueue());
-  // Specify limit of 30 in units of packets (not implemented).
-  //  Queue::Default().SetLimitPackets(30);
+  // Set up some default values for the simulation.  Use the Bind()
+  // technique to tell the system what subclass of Queue to use,
+  // and what the queue limit is
 
+  // The below Bind command tells the queue factory which class to
+  // instantiate, when the queue factory is invoked in the topology code
+  Bind ("Queue", "DropTailQueue");   
+
+  //Bind ("DropTailQueue::m_maxPackets", 30);   
+
+  // Allow the user to override any of the defaults and the above
+  // Bind()s at run-time, via command-line arguments
+  CommandLine::Parse (argc, argv);
+
+  // Here, we will explicitly create four nodes.  In more sophisticated
+  // topologies, we could configure a node factory.
   Node* n0 = new InternetNode ();
   Node* n1 = new InternetNode (); 
   Node* n2 = new InternetNode (); 
   Node* n3 = new InternetNode ();
 
+  // We create the channels first without any IP addressing information
   PointToPointChannel *channel0 = 
     PointToPointTopology::AddPointToPointLink (
       n0, Ipv4Address("10.1.1.1"), 

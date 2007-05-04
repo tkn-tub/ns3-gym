@@ -242,7 +242,7 @@ Queue::AddDefault (Queue &queue, const std::string &name)
 StringEnumDefaultValue *
 Queue::GetDefault (void)
 {
-  static StringEnumDefaultValue value ("queue", "Packet Queue");
+  static StringEnumDefaultValue value ("Queue", "Packet Queue");
   return &value;
 }
 Queue::List *
