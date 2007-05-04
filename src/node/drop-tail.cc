@@ -28,6 +28,8 @@ static class QueueStackInitializationClass {
 public:
   QueueStackInitializationClass () {
     Queue::Default (DropTailQueue ());
+    static DropTailQueue queue;
+    Queue::AddDefault (queue, "DropTail");
   }
 } queue_stack_initialization_class;
 

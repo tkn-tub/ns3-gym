@@ -27,6 +27,9 @@ core.add_sources([
     'rng-stream.cc',
     'ns-unknown.cc',
     'iid-manager.cc',
+    'default-value.cc',
+    'command-line.cc',
+    'type-name.cc',
     ])
 env = Environment()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] == 'cygwin':
@@ -52,6 +55,9 @@ core.add_inst_headers([
     'rng-stream.h',
     'ns-unknown.h',
     'iid-manager.h',
+    'default-value.h',
+    'command-line.h',
+    'type-name.h',
     ])
 
 def config_core (env, config):
@@ -376,6 +382,18 @@ sample_simple.set_executable()
 ns3.add(sample_simple)
 sample_simple.add_deps(['core', 'simulator', 'node'])
 sample_simple.add_source('main-simple.cc')
+
+sample_sp2p = build.Ns3Module('sample-simple-p2p', 'samples')
+sample_sp2p.set_executable()
+#n3.add(sample_sp2p)
+sample_sp2p.add_deps(['core', 'simulator', 'node', 'p2p'])
+sample_sp2p.add_source('main-simple-p2p.cc')
+
+sample_default_value = build.Ns3Module('sample-default-value', 'samples')
+sample_default_value.set_executable()
+ns3.add(sample_default_value)
+sample_default_value.add_deps(['core', 'simulator', 'node', 'p2p'])
+sample_default_value.add_source('main-default-value.cc')
 
 # examples
 example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')

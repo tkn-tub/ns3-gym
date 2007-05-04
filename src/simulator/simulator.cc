@@ -23,8 +23,11 @@
 #include "scheduler.h"
 #include "event-impl.h"
 
-#include <math.h>
 #include "ns3/assert.h"
+#include "ns3/default-value.h"
+
+
+#include <math.h>
 #include <fstream>
 #include <list>
 #include <vector>
@@ -293,27 +296,23 @@ SimulatorPrivate::IsExpired (EventId ev)
 namespace ns3 {
 
 SimulatorPrivate *Simulator::m_priv = 0;
-Simulator::ListType Simulator::m_listType = LINKED_LIST;
-SchedulerFactory const*Simulator::m_schedFactory = 0;
 
 void Simulator::SetLinkedList (void)
 {
-  m_listType = LINKED_LIST;
+  Bind ("scheduler", "list");
 }
 void Simulator::SetBinaryHeap (void)
 {
-  m_listType = BINARY_HEAP;
+  Bind ("scheduler", "BinaryHeap");
 }
 void Simulator::SetStdMap (void)
 {
-  m_listType = STD_MAP;
+  Bind ("scheduler", "map");
 }
 void 
-Simulator::SetExternal (SchedulerFactory const*factory)
+Simulator::SetExternal (const std::string &external)
 {
-  NS_ASSERT (factory != 0);
-  m_schedFactory = factory;
-  m_listType = EXTERNAL;
+  Bind ("scheduler", external);
 }
 void Simulator::EnableLogTo (char const *filename)
 {
@@ -326,24 +325,7 @@ Simulator::GetPriv (void)
 {
   if (m_priv == 0) 
     {
-      Scheduler *events;
-      switch (m_listType) {
-      case LINKED_LIST:
-          events = new SchedulerList ();
-          break;
-      case BINARY_HEAP:
-          events = new SchedulerHeap ();
-          break;
-      case STD_MAP:
-          events = new SchedulerMap ();
-          break;
-      case EXTERNAL:
-          events = m_schedFactory->Create ();
-      default: // not reached
-          events = 0;
-          NS_ASSERT (false); 
-          break;
-      }
+      Scheduler *events = SchedulerFactory::CreateDefault ();
       m_priv = new SimulatorPrivate (events);
     }
   TRACE_S ("priv " << m_priv);

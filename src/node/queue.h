@@ -26,11 +26,14 @@
 #define QUEUE_H
 
 #include <string>
+#include <list>
 #include "ns3/packet.h"
 #include "ns3/callback-trace-source.h"
 #include "ns3/trace-resolver.h"
 
 namespace ns3 {
+
+class StringEnumDefaultValue;
 
 class Queue
 {
@@ -107,6 +110,15 @@ private:
   uint32_t m_nTotalReceivedPackets;
   uint32_t m_nTotalDroppedBytes;
   uint32_t m_nTotalDroppedPackets;
+
+public:
+  static Queue *CreateDefault (void);
+  static void Add (Queue &queue, const std::string &name);
+  static void AddDefault (Queue &queue, const std::string &name);
+private:
+  typedef std::list<std::pair<Queue *,std::string> > List;
+  static StringEnumDefaultValue *GetDefault (void);
+  static List *GetList (void);
 
 public:
   // Static methods to manage queue default

@@ -182,8 +182,10 @@ private:
   static int  devRandom;       // File handle for /dev/random
   static uint32_t globalSeed[6]; // The global seed to use
   static uint32_t runNumber;
+  friend class RandomVariableInitializer;
 protected:
   static unsigned long heuristic_sequence;
+  static RngStream* m_static_generator;
   RngStream* m_generator;  //underlying generator being wrapped
 };
 
@@ -191,6 +193,13 @@ protected:
 /**
  * \brief The uniform distribution RNG for NS-3.
  * \ingroup randomvariable
+ * This class supports the creation of objects that return random numbers
+ * from a fixed uniform distribution.  It also supports the generation of 
+ * single random numbers from various uniform distributions.
+ * \code
+ * UniformVariable x(0,10);
+ * x.GetValue();  //will always return numbers [0,10]
+ * UniformVariable::GetSingleValue(100,1000); //returns a value [100,1000]
  */
 class UniformVariable : public RandomVariable {
 public:
@@ -214,6 +223,13 @@ public:
    */
   virtual double GetValue();
   virtual RandomVariable*  Copy() const;
+public:
+  /**
+   * \param s Low end of the range
+   * \param l High end of the range
+   * \return A uniformly distributed random number between s and l
+   */
+  static double GetSingleValue(double s, double l);
 private:
   double m_min;
   double m_max;
@@ -317,8 +333,16 @@ private:
 /**
  * \brief Exponentially Distributed random var
  * \ingroup randomvariable
+ * This class supports the creation of objects that return random numbers
+ * from a fixed exponential distribution.  It also supports the generation of 
+ * single random numbers from various exponential distributions.
+ * \code
+ * ExponentialVariable x(3.14);
+ * x.GetValue();  //will always return with mean 3.14
+ * ExponentialVariable::GetSingleValue(20.1); //returns with mean 20.1
+ * ExponentialVariable::GetSingleValue(108); //returns with mean 108
+ * \endcode
  *
- * ExponentialVariable defines a random variable with an exponential distribution
  */
 class ExponentialVariable : public RandomVariable { 
 public:
@@ -354,6 +378,13 @@ public:
    */
   virtual double GetValue();
   virtual RandomVariable* Copy() const;
+public:
+  /**
+   * \param m The mean of the distribution from which the return value is drawn
+   * \param b The upper bound value desired, beyond which values get clipped
+   * \return A random number from an exponential distribution with mean m
+   */
+  static double GetSingleValue(double m, double b=0);
 private:
   double m_mean;  // Mean value of RV
   double m_bound; // Upper bound on value (if non-zero)
@@ -362,8 +393,17 @@ private:
 /**
  * \brief ParetoVariable distributed random var
  * \ingroup randomvariable
+ * This class supports the creation of objects that return random numbers
+ * from a fixed pareto distribution.  It also supports the generation of 
+ * single random numbers from various pareto distributions.
+ * \code
+ * ParetoVariable x(3.14);
+ * x.GetValue();  //will always return with mean 3.14
+ * ParetoVariable::GetSingleValue(20.1); //returns with mean 20.1
+ * ParetoVariable::GetSingleValue(108); //returns with mean 108
+ * \endcode
  */
-class ParetoVariable : public RandomVariable { // 
+class ParetoVariable : public RandomVariable {
 public:
   /**
    * Constructs a pareto random variable with a mean of 1 and a shape
@@ -389,6 +429,7 @@ public:
   /**
    * \brief Constructs a pareto random variable with the specified mean
    * \brief value, shape (alpha), and upper bound.
+   *
    * Since pareto distributions can theoretically return unbounded values,
    * it is sometimes useful to specify a fixed upper limit.  Note however
    * when the upper limit is specified, the true mean of the distribution
@@ -406,6 +447,17 @@ public:
    */
   virtual double GetValue();
   virtual RandomVariable* Copy() const;
+public:
+  /**
+   * \param m The mean value of the distribution from which the return value
+   * is drawn.
+   * \param s The shape parameter of the distribution from which the return
+   * value is drawn.
+   * \param b The upper bound to which to restrict return values
+   * \return A random number from a Pareto distribution with mean m and shape
+   * parameter s.
+   */
+  static double GetSingleValue(double m, double s, double b=0);
 private:
   double m_mean;  // Mean value of RV
   double m_shape; // Shape parameter
@@ -415,6 +467,9 @@ private:
 /**
  * \brief WeibullVariable distributed random var
  * \ingroup randomvariable
+ * This class supports the creation of objects that return random numbers
+ * from a fixed weibull distribution.  It also supports the generation of 
+ * single random numbers from various weibull distributions.
  */
 class WeibullVariable : public RandomVariable {
 public:
@@ -460,6 +515,14 @@ public:
    */
   virtual double GetValue();
   virtual RandomVariable* Copy() const;
+public:
+  /**
+   * \param m Mean value for the distribution.
+   * \param s Shape (alpha) parameter for the distribution.
+   * \param b Upper limit on returned values
+   * \return Random number from a distribution specified by m,s, and b
+   */
+  static double GetSingleValue(double m, double s, double b=0);
 private:
   double m_mean;  // Mean value of RV
   double m_alpha; // Shape parameter
@@ -469,6 +532,10 @@ private:
 /**
  * \brief Class NormalVariable defines a random variable with a
  * normal (Gaussian) distribution.
+ * 
+ * This class supports the creation of objects that return random numbers
+ * from a fixed normal distribution.  It also supports the generation of 
+ * single random numbers from various normal distributions.
  * \ingroup randomvariable
  */
 class NormalVariable : public RandomVariable { // Normally Distributed random var
@@ -480,7 +547,6 @@ public:
    * value of 0 and variance of 1.
    */ 
   NormalVariable();
-
 
   /**
    * \brief Construct a normal random variable with specified mean and variance
@@ -497,12 +563,22 @@ public:
    */
   virtual double GetValue();
   virtual RandomVariable* Copy() const;
+public:
+  /**
+   * \param m Mean value
+   * \param v Variance
+   * \param b Bound.  The NormalVariable is bounded within +-bound.
+   * \return A random number from a distribution specified by m,v, and b.
+   */ 
+  static double GetSingleValue(double m, double v, double b = INFINITE_VALUE);
 private:
   double m_mean;      // Mean value of RV
   double m_variance;  // Mean value of RV
   double m_bound;     // Bound on value (absolute value)
-  bool     m_nextValid; // True if next valid
+  bool   m_nextValid; // True if next valid
   double m_next;      // The algorithm produces two values at a time
+  static bool   m_static_nextValid;
+  static double m_static_next;
 };
 
 /**
@@ -611,6 +687,55 @@ private:
   uint32_t   next;
   double* data;
 };
+
+
+/**
+ * \brief Log-normal Distributed random var
+ * \ingroup randomvariable
+ * LogNormalVariable defines a random variable with log-normal
+ * distribution.  If one takes the natural logarithm of random
+ * variable following the log-normal distribution, the obtained values
+ * follow a normal distribution.
+ *  This class supports the creation of objects that return random numbers
+ * from a fixed lognormal distribution.  It also supports the generation of
+ * single random numbers from various lognormal distributions.
+ */
+class LogNormalVariable : public RandomVariable { 
+public:
+  /**
+   * \param mu Mean value of the underlying normal distribution.
+   * \param sigma Standard deviation of the underlying normal distribution.
+   *
+   * Notice: the parameters mu and sigma are _not_ the mean and standard
+   * deviation of the log-normal distribution.  To obtain the
+   * parameters mu and sigma for a given mean and standard deviation
+   * of the log-normal distribution the following convertion can be
+   * used:
+   * \code
+   * double tmp = log (1 + pow (stddev/mean, 2));
+   * double sigma = sqrt (tmp);
+   * double mu = log (mean) - 0.5*tmp;
+   * \endcode
+   */
+  LogNormalVariable (double mu, double sigma);
+
+  /**
+   * \return A random value from this distribution
+   */
+  virtual double GetValue ();
+  virtual RandomVariable* Copy() const;
+public:
+  /**
+   * \param mu Mean value of the underlying normal distribution.
+   * \param sigma Standard deviation of the underlying normal distribution.
+   * \return A random number from the distribution specified by mu and sigma
+   */
+  static double GetSingleValue(double mu, double sigma);
+private:
+  double m_mu;
+  double m_sigma;
+};
+
 
 }//namespace ns3
 #endif

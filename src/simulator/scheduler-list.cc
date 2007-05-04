@@ -20,11 +20,27 @@
  */
 
 #include "scheduler-list.h"
+#include "scheduler-factory.h"
 #include "event-impl.h"
 #include <utility>
 #include "ns3/assert.h"
 
 namespace ns3 {
+
+static class SchedulerListFactory : public SchedulerFactory 
+{
+public:
+  SchedulerListFactory ()
+  {
+    SchedulerFactory::AddDefault (this, "list");
+  }
+private:
+  virtual Scheduler *DoCreate (void) const
+  {
+    return new SchedulerList ();
+  }
+} g_schedulerListFactory;
+
 
 SchedulerList::SchedulerList ()
 {}

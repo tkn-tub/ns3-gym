@@ -44,16 +44,33 @@ namespace ns3{
 
 uint32_t      RandomVariable::runNumber = 0;
 bool          RandomVariable::initialized = false;   // True if RngStream seed set 
-bool          RandomVariable::useDevRandom = false;  // True if use /dev/random desired
+bool          RandomVariable::useDevRandom = false;  // True if use /dev/random
 bool          RandomVariable::globalSeedSet = false; // True if GlobalSeed called
 int           RandomVariable::devRandom = -1;
-uint32_t        RandomVariable::globalSeed[6];
+uint32_t      RandomVariable::globalSeed[6];
 unsigned long RandomVariable::heuristic_sequence;
+RngStream*    RandomVariable::m_static_generator = 0;
+
+//the static object random_variable_initializer initializes the static members
+//of RandomVariable
+static class RandomVariableInitializer
+{
+  public:
+  RandomVariableInitializer()
+  {
+    RandomVariable::Initialize(); // sets the static package seed
+    RandomVariable::m_static_generator = new RngStream();
+    RandomVariable::m_static_generator->InitializeStream();
+  }
+  ~RandomVariableInitializer()
+  {
+    delete RandomVariable::m_static_generator;
+  }
+} random_variable_initializer;
 
 RandomVariable::RandomVariable() 
 {
   m_generator = new RngStream();
-  RandomVariable::Initialize(); // sets the seed for the static object
   m_generator->InitializeStream();
   m_generator->ResetNthSubstream(RandomVariable::runNumber);
 }
@@ -173,7 +190,7 @@ void RandomVariable::SetRunNumber(uint32_t n)
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-// UniformVariable methods
+// UniformVariable
 UniformVariable::UniformVariable() 
   : m_min(0), m_max(1.0) { }
   
@@ -192,6 +209,12 @@ RandomVariable* UniformVariable::Copy() const
 {
   return new UniformVariable(*this);
 }
+
+double UniformVariable::GetSingleValue(double s, double l)
+{
+  return s + m_static_generator->RandU01() * (l - s);;
+}
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // ConstantVariable methods
@@ -291,6 +314,12 @@ RandomVariable* ExponentialVariable::Copy() const
 {
   return new ExponentialVariable(*this);
 }
+double ExponentialVariable::GetSingleValue(double m, double b/*=0*/)
+{
+  double r = -m*log(m_static_generator->RandU01());
+  if (b != 0 && r > b) return b;
+  return r;
+}
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // ParetoVariable methods
@@ -322,6 +351,14 @@ RandomVariable* ParetoVariable::Copy() const
 {
   return new ParetoVariable(*this);
 }
+
+double ParetoVariable::GetSingleValue(double m, double s, double b/*=0*/)
+{
+  double scale = m * ( s - 1.0) / s;
+  double r = (scale * ( 1.0 / pow(m_static_generator->RandU01(), 1.0 / s)));
+  if (b != 0 && r > b) return b;
+  return r;
+}
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // WeibullVariable methods
@@ -348,14 +385,25 @@ RandomVariable* WeibullVariable::Copy() const
 {
   return new WeibullVariable(*this);
 }
+
+double WeibullVariable::GetSingleValue(double m, double s, double b/*=0*/)
+{
+  double exponent = 1.0 / s;
+  double r = m * pow( -log(m_static_generator->RandU01()), exponent);
+  if (b != 0 && r > b) return b;
+  return r;
+}
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 // NormalVariable methods
+bool         NormalVariable::m_static_nextValid = false;
+double       NormalVariable::m_static_next;
 const double NormalVariable::INFINITE_VALUE = 1e307;
+
 NormalVariable::NormalVariable() 
   : m_mean(0.0), m_variance(1.0), m_bound(INFINITE_VALUE), m_nextValid(false){}
 
-NormalVariable::NormalVariable(double m, double v, double b)
+NormalVariable::NormalVariable(double m, double v, double b/*=INFINITE_VALUE*/)
   : m_mean(m), m_variance(v), m_bound(b), m_nextValid(false) { }
 
 NormalVariable::NormalVariable(const NormalVariable& c)
@@ -393,6 +441,34 @@ double NormalVariable::GetValue()
 RandomVariable* NormalVariable::Copy() const
 {
   return new NormalVariable(*this);
+}
+
+double NormalVariable::GetSingleValue(double m, double v, double b)
+{
+  if (m_static_nextValid)
+    { // use previously generated
+      m_static_nextValid = false;
+      return m_static_next;
+    }
+  while(1)
+    { // See Simulation Modeling and Analysis p. 466 (Averill Law)
+      // for algorithm
+      double u1 = m_static_generator->RandU01();
+      double u2 = m_static_generator->RandU01();;
+      double v1 = 2 * u1 - 1;
+      double v2 = 2 * u2 - 1;
+      double w = v1 * v1 + v2 * v2;
+      if (w <= 1.0)
+        { // Got good pair
+          double y = sqrt((-2 * log(w))/w);
+          m_static_next = m + v2 * y * sqrt(v);
+          if (fabs(m_static_next) > b) m_static_next = b * (m_static_next)/fabs(m_static_next);
+          m_static_nextValid = true;
+          double x1 = m + v1 * y * sqrt(v);
+          if (fabs(x1) > b) x1 = b * (x1)/fabs(x1);
+          return x1;
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -520,6 +596,92 @@ double DeterministicVariable::GetValue()
 RandomVariable* DeterministicVariable::Copy() const
 {
   return new DeterministicVariable(*this);
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// LogNormalVariable
+
+RandomVariable* LogNormalVariable::Copy () const
+{
+  return new LogNormalVariable (m_mu, m_sigma);
+}
+
+LogNormalVariable::LogNormalVariable (double mu, double sigma)
+    :m_mu(mu), m_sigma(sigma) 
+{
+}
+
+// The code from this function was adapted from the GNU Scientific
+// Library 1.8:
+/* randist/lognormal.c
+ * 
+ * Copyright (C) 1996, 1997, 1998, 1999, 2000 James Theiler, Brian Gough
+ * 
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ */
+/* The lognormal distribution has the form 
+
+   p(x) dx = 1/(x * sqrt(2 pi sigma^2)) exp(-(ln(x) - zeta)^2/2 sigma^2) dx
+
+   for x > 0. Lognormal random numbers are the exponentials of
+   gaussian random numbers */
+double
+LogNormalVariable::GetValue ()
+{
+  double u, v, r2, normal, z;
+
+  do
+    {
+      /* choose x,y in uniform square (-1,-1) to (+1,+1) */
+
+      u = -1 + 2 * m_generator->RandU01 ();
+      v = -1 + 2 * m_generator->RandU01 ();
+
+      /* see if it is in the unit circle */
+      r2 = u * u + v * v;
+    }
+  while (r2 > 1.0 || r2 == 0);
+
+  normal = u * sqrt (-2.0 * log (r2) / r2);
+
+  z =  exp (m_sigma * normal + m_mu);
+
+  return z;
+}
+
+double LogNormalVariable::GetSingleValue(double sigma,double mu)
+{
+  double u, v, r2, normal, z;
+  do
+    {
+      /* choose x,y in uniform square (-1,-1) to (+1,+1) */
+      u = -1 + 2 * m_static_generator->RandU01 ();
+      v = -1 + 2 * m_static_generator->RandU01 ();
+
+      /* see if it is in the unit circle */
+      r2 = u * u + v * v;
+    }
+  while (r2 > 1.0 || r2 == 0);
+
+  normal = u * sqrt (-2.0 * log (r2) / r2);
+
+  z =  exp (sigma * normal + mu);
+
+  return z;
 }
 
 }//namespace ns3

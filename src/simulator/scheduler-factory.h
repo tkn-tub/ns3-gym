@@ -21,9 +21,12 @@
 #ifndef SCHEDULER_FACTORY_H
 #define SCHEDULER_FACTORY_H
 
+#include <list>
+
 namespace ns3 {
 
 class Scheduler;
+class StringEnumDefaultValue;
 
 /**
  * \brief a base class to create event schedulers
@@ -36,13 +39,39 @@ class Scheduler;
 class SchedulerFactory {
 public:
   virtual ~SchedulerFactory ();
+  /**
+   * \returns a newly-created scheduler.
+   */
   Scheduler *Create (void) const;
+  /**
+   * \returns a newly-created scheduler.
+   *
+   * Return a "default" scheduler.
+   */
+  static Scheduler *CreateDefault (void);
+  /**
+   * \param name of scheduler to create.
+   * \returns a newly-created scheduler.
+   *
+   * Create a scheduler registered under the specified name.
+   */
+  static Scheduler *Create (const std::string &name);
+protected:
+  static void Add (const SchedulerFactory *factory,
+                   const std::string &name);  
+  static void AddDefault (const SchedulerFactory *factory,
+                          const std::string &name);  
 private:
+  typedef std::list<std::pair<const SchedulerFactory *, std::string> > List;
+  static SchedulerFactory::List *GetList (void);
+  static StringEnumDefaultValue *GetDefault (void);
   /**
    * \returns a newly-created scheduler. The caller takes 
    *      ownership of the returned pointer.
+   *
+   * This method must be implemented by subclasses.
    */
-  virtual Scheduler *RealCreate (void) const = 0;
+  virtual Scheduler *DoCreate (void) const = 0;
 };
 
 }; // namespace ns3
