@@ -19,7 +19,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns-unknown.h"
-#include "iid-manager.h"
+#include "singleton.h"
+#include "uid-manager.h"
 #include <string>
 #include <list>
 #include <stdint.h>
@@ -27,8 +28,11 @@
 
 namespace ns3 {
 
+class IidManager : public UidManager
+{};
+
 Iid::Iid (std::string name)
-  : m_iid (IidManager::Allocate (name))
+  : m_iid (Singleton<IidManager>::Get ()->Allocate (name))
 {}
 
 bool operator == (const Iid &a, const Iid &b)
@@ -218,7 +222,6 @@ NsUnknown::AddSelfInterface (Iid iid, NsUnknown *interface)
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
-#include "iid-manager.h"
 
 namespace {
 
@@ -292,7 +295,7 @@ public:
 };
 
 InterfaceTest::InterfaceTest ()
-  : Test ("Interface")
+  : Test ("NsUnknown")
 {}
 bool 
 InterfaceTest::RunTests (void)

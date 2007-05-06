@@ -18,40 +18,27 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "iid-manager.h"
-#include "ns3/fatal-error.h"
+#ifndef UID_MANAGER_H
+#define UID_MANAGER_H
+
+#include <stdint.h>
+#include <string>
 #include <vector>
 
 namespace ns3 {
 
-class IidManagerPriv
+class UidManager
 {
 public:
+  uint32_t LookupByName (std::string name);
+  std::string LookupByUid (uint32_t uid);
   uint32_t Allocate (std::string name);
 private:
   typedef std::vector<std::string> NameList;
   NameList m_nameList;
 };
 
-uint32_t 
-IidManagerPriv::Allocate (std::string name)
-{
-  for (NameList::iterator i = m_nameList.begin (); i != m_nameList.end (); i++)
-    {
-      if ((*i) == name)
-	{
-	  NS_FATAL_ERROR ("Trying to allocate twice the same iid: " << name);
-	}
-    }
-  m_nameList.push_back (name);
-  return m_nameList.size ();
-}
-
-uint32_t 
-IidManager::Allocate (std::string name)
-{
-  static IidManagerPriv priv;
-  return priv.Allocate (name);
-}
-
 } // namespace ns3
+
+
+#endif /* UID_MANAGER_H */

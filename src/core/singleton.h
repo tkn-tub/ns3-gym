@@ -18,21 +18,32 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef IID_MANAGER_H
-#define IID_MANAGER_H
-
-#include <stdint.h>
-#include <string>
+#ifndef SINGLETON_H
+#define SINGLETON_H
 
 namespace ns3 {
 
-class IidManager
+template <typename T>
+class Singleton
 {
 public:
-  static uint32_t Allocate (std::string name);
+  static T *Get (void);
+
 };
 
 } // namespace ns3
 
+namespace ns3 {
 
-#endif /* IID_MANAGER_H */
+template <typename T>
+T *
+Singleton<T>::Get (void)
+{
+  static T object;
+  return &object;
+}
+
+
+} // namespace ns3
+
+#endif /* SINGLETON_H */

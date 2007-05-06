@@ -26,10 +26,11 @@ core.add_sources([
     'random-variable.cc',
     'rng-stream.cc',
     'ns-unknown.cc',
-    'iid-manager.cc',
+    'uid-manager.cc',
     'default-value.cc',
     'command-line.cc',
     'type-name.cc',
+    'ns-unknown-manager.cc',
     ])
 env = Environment()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] == 'cygwin':
@@ -42,7 +43,8 @@ elif env['PLATFORM'] == 'win32':
         'win32-system-wall-clock-ms.cc',
         ])
 core.add_headers ([
-    'iid-manager.h',
+    'uid-manager.h',
+    'singleton.h',
 ])
 core.add_inst_headers([
     'system-wall-clock-ms.h',
@@ -60,6 +62,7 @@ core.add_inst_headers([
     'default-value.h',
     'command-line.h',
     'type-name.h',
+    'ns-unknown-manager.h',
     ])
 
 def config_core (env, config):
