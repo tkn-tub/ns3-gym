@@ -43,7 +43,7 @@ class TraceContext;
 class L3Demux : public NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const Iid iid;
   typedef int ProtocolTraceType;
   L3Demux(Node *node);
   virtual ~L3Demux();

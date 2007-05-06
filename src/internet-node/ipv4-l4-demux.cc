@@ -24,14 +24,13 @@
 
 #include <sstream>
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/iid-manager.h"
 #include "ns3/node.h"
 #include "ipv4-l4-demux.h"
 #include "ipv4-l4-protocol.h"
 
 namespace ns3 {
 
-const uint32_t Ipv4L4Demux::iid = IidManager::Allocate ("Ipv4L4Demux");
+const Iid Ipv4L4Demux::iid ("Ipv4L4Demux");
 
 Ipv4L4Demux::Ipv4L4Demux (Node *node)
   : NsUnknown (Ipv4L4Demux::iid),

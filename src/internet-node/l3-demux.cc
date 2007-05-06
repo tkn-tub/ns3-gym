@@ -23,14 +23,13 @@
 #include <sstream>
 #include <string>
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/iid-manager.h"
 #include "ns3/node.h"
 #include "l3-demux.h"
 #include "l3-protocol.h"
 
 namespace ns3 {
 
-const uint32_t L3Demux::iid = IidManager::Allocate ("L3Demux");
+const Iid L3Demux::iid ("L3Demux");
 
 L3Demux::L3Demux (Node *node)
   : NsUnknown (L3Demux::iid),

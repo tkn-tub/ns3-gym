@@ -30,7 +30,7 @@ class Socket;
 class IUdp : public NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const Iid iid;
 
   IUdp ();
 

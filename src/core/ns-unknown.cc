@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns-unknown.h"
+#include "iid-manager.h"
 #include <string>
 #include <list>
 #include <stdint.h>
@@ -26,27 +27,37 @@
 
 namespace ns3 {
 
+Iid::Iid (std::string name)
+  : m_iid (IidManager::Allocate (name))
+{}
+
+bool operator == (const Iid &a, const Iid &b)
+{
+  return a.m_iid == b.m_iid;
+}
+
+
 class NsUnknownImpl
 {
 public:
-  NsUnknownImpl (uint32_t iid, NsUnknown *interface);
+  NsUnknownImpl (Iid iid, NsUnknown *interface);
   ~NsUnknownImpl ();
   void Ref (void);
   void RefAll (NsUnknownImpl *other);
   void Unref (void);
   void UnrefAll (void);
-  NsUnknown *DoQueryInterface (uint32_t iid) const;
+  NsUnknown *DoQueryInterface (Iid iid) const;
   void DoDisposeAll (void);
   void AddInterface (NsUnknown *interface);
-  void AddSelfInterface (uint32_t iid, NsUnknown *interface);
+  void AddSelfInterface (Iid iid, NsUnknown *interface);
 private:
-  typedef std::list<std::pair<uint32_t,NsUnknown *> > List;
+  typedef std::list<std::pair<Iid,NsUnknown *> > List;
   uint32_t m_ref;
   List m_list;
   bool m_disposed;
 };
 
-NsUnknownImpl::NsUnknownImpl (uint32_t iid, NsUnknown *interface)
+NsUnknownImpl::NsUnknownImpl (Iid iid, NsUnknown *interface)
   : m_ref (1),
     m_disposed (false)
 {
@@ -99,7 +110,7 @@ NsUnknownImpl::DoDisposeAll (void)
   m_disposed = true;
 }
 NsUnknown *
-NsUnknownImpl::DoQueryInterface (uint32_t iid) const
+NsUnknownImpl::DoQueryInterface (Iid iid) const
 {
   for (List::const_iterator i = m_list.begin ();
        i != m_list.end (); i++)
@@ -125,14 +136,14 @@ NsUnknownImpl::AddInterface (NsUnknown *interface)
     }
 }
 void 
-NsUnknownImpl::AddSelfInterface (uint32_t iid, NsUnknown *interface)
+NsUnknownImpl::AddSelfInterface (Iid iid, NsUnknown *interface)
 {
   interface->RefInternal ();
   m_list.push_back (std::make_pair (iid, interface));
 }
 
 
-NsUnknown::NsUnknown (uint32_t iid)
+NsUnknown::NsUnknown (Iid iid)
   : m_impl (new NsUnknownImpl (iid, this)),
     m_ref (1)
 {}
@@ -181,7 +192,7 @@ NsUnknown::UnrefInternal (void)
 }
 
 NsUnknown *
-NsUnknown::DoQueryInterface (uint32_t iid) const
+NsUnknown::DoQueryInterface (Iid iid) const
 {
   return m_impl->DoQueryInterface (iid);
 }
@@ -196,7 +207,7 @@ NsUnknown::AddInterface (NsUnknown *interface)
 }
 
 void
-NsUnknown::AddSelfInterface (uint32_t iid, NsUnknown *interface)
+NsUnknown::AddSelfInterface (Iid iid, NsUnknown *interface)
 {
   m_impl->AddSelfInterface (iid, interface);
 }
@@ -214,7 +225,7 @@ namespace {
 class A : public ns3::NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const ns3::Iid iid;
   A ()
     : NsUnknown (A::iid)
   {}
@@ -222,7 +233,7 @@ public:
 class B : public ns3::NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const ns3::Iid iid;
   B ()
     : NsUnknown (B::iid)
   {}
@@ -230,7 +241,7 @@ public:
 class BaseA : public ns3::NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const ns3::Iid iid;
   BaseA ()
     : NsUnknown (BaseA::iid)
   {}
@@ -238,7 +249,7 @@ public:
 class BaseB : public ns3::NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const ns3::Iid iid;
   BaseB ()
     : NsUnknown (BaseB::iid)
   {}
@@ -246,7 +257,7 @@ public:
 class Base : public ns3::NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const ns3::Iid iid;
   Base ()
     : NsUnknown (Base::iid)
   {}
@@ -254,19 +265,19 @@ public:
 class Derived : public Base
 {
 public:
-  static const uint32_t iid;
+  static const ns3::Iid iid;
   Derived ()
   {
     AddSelfInterface (Derived::iid, this);
   }
 };
 
-const uint32_t A::iid = ns3::IidManager::Allocate ("A");
-const uint32_t B::iid = ns3::IidManager::Allocate ("B");
-const uint32_t BaseA::iid = ns3::IidManager::Allocate ("BaseA");
-const uint32_t BaseB::iid = ns3::IidManager::Allocate ("BaseB");
-const uint32_t Base::iid = ns3::IidManager::Allocate ("Base");
-const uint32_t Derived::iid = ns3::IidManager::Allocate ("Derived");
+const ns3::Iid A::iid ("A");
+const ns3::Iid B::iid ("B");
+const ns3::Iid BaseA::iid ("BaseA");
+const ns3::Iid BaseB::iid ("BaseB");
+const ns3::Iid Base::iid ("Base");
+const ns3::Iid Derived::iid ("Derived");
 
 }//namespace
 

@@ -21,11 +21,10 @@
 #include "i-ipv4-private.h"
 #include "ipv4.h"
 #include "ns3/assert.h"
-#include "ns3/iid-manager.h"
 
 namespace ns3 {
 
-const uint32_t IIpv4Private::iid = IidManager::Allocate ("IIpv4Private");
+const Iid IIpv4Private::iid ("IIpv4Private");
 
 IIpv4Private::IIpv4Private (Ipv4 *ipv4)
   : NsUnknown (IIpv4Private::iid),

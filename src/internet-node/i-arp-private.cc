@@ -19,13 +19,12 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "i-arp-private.h"
-#include "ns3/iid-manager.h"
 #include "arp.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
 
-const uint32_t IArpPrivate::iid = IidManager::Allocate ("IArpPrivate");
+const Iid IArpPrivate::iid ("IArpPrivate");
 
 IArpPrivate::IArpPrivate (Arp *arp)
   : NsUnknown (IArpPrivate::iid),

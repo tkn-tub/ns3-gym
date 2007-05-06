@@ -28,6 +28,15 @@ namespace ns3 {
 
 class NsUnknownImpl;
 
+class Iid
+{
+public:
+  Iid (std::string name);
+private:
+  friend bool operator == (const Iid &a, const Iid &b);
+  uint32_t m_iid;
+};
+
 /**
  * \brief COM-like IUnknown
  *
@@ -47,7 +56,7 @@ public:
    * \param iid the NsUnknown id of the requested interface
    */
   template <typename T>
-  T *QueryInterface (uint32_t iid) const;
+  T *QueryInterface (Iid iid) const;
 
   /**
    * \param interface another interface
@@ -68,7 +77,7 @@ protected:
    * If you are a direct subclass of this class, you _must_ register
    * the name of your interface with this constructor.
    */
-  NsUnknown (uint32_t iid);
+  NsUnknown (Iid iid);
   /**
    * \param iid the Interface id of the interface
    * \param a pointer to the interface object
@@ -78,7 +87,7 @@ protected:
    * (typically, your subclass has added API), you need to call
    * this method to associate an interface id to your interface.
    */
-  void AddSelfInterface (uint32_t iid, NsUnknown *interface);
+  void AddSelfInterface (Iid iid, NsUnknown *interface);
 protected:
   /**
    * Subclasses who want to handle the "dispose" event should
@@ -90,7 +99,7 @@ protected:
 private:
   friend class NsUnknownImpl;
   NsUnknown ();
-  NsUnknown *DoQueryInterface (uint32_t iid) const;
+  NsUnknown *DoQueryInterface (Iid iid) const;
   void RefInternal (void);
   void UnrefInternal (void);
   NsUnknownImpl *m_impl;
@@ -103,7 +112,7 @@ namespace ns3 {
 
 template <typename T>
 T *
-NsUnknown::QueryInterface (uint32_t iid) const
+NsUnknown::QueryInterface (Iid iid) const
 {
   NsUnknown *found = DoQueryInterface (iid);
   if (found != 0)

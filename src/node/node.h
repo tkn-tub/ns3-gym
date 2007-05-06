@@ -38,7 +38,7 @@ class NetDevice;
 class Node : public NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const Iid iid;
 
   Node();
   Node(uint32_t); // Specify which system for a distributed simulation

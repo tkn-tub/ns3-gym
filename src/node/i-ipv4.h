@@ -34,7 +34,7 @@ class Ipv4Route;
 class IIpv4 : public NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const Iid iid;
   IIpv4 ();
   virtual ~IIpv4 ();
     

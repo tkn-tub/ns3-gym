@@ -41,6 +41,9 @@ elif env['PLATFORM'] == 'win32':
     core.add_sources([
         'win32-system-wall-clock-ms.cc',
         ])
+core.add_headers ([
+    'iid-manager.h',
+])
 core.add_inst_headers([
     'system-wall-clock-ms.h',
     'reference-list.h',
@@ -54,7 +57,6 @@ core.add_inst_headers([
     'random-variable.h',
     'rng-stream.h',
     'ns-unknown.h',
-    'iid-manager.h',
     'default-value.h',
     'command-line.h',
     'type-name.h',

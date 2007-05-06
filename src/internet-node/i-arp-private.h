@@ -34,7 +34,7 @@ class Arp;
 class IArpPrivate : public NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const Iid iid;
   IArpPrivate (Arp *arp);
   virtual ~IArpPrivate ();
   bool Lookup (Packet &p, Ipv4Address destination, 

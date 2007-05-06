@@ -19,11 +19,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "i-udp.h"
-#include "ns3/iid-manager.h"
 
 namespace ns3 {
 
-const uint32_t IUdp::iid = IidManager::Allocate ("IUdp");
+const Iid IUdp::iid ("IUdp");
 
 IUdp::IUdp ()
   : NsUnknown (IUdp::iid)

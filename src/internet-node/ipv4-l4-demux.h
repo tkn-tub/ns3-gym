@@ -41,7 +41,7 @@ class TraceContext;
 class Ipv4L4Demux : public NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const Iid iid;
   typedef int Ipv4L4ProtocolTraceType;
   Ipv4L4Demux (Node *node);
   virtual ~Ipv4L4Demux();

@@ -37,7 +37,7 @@ class NetDevice;
 class IIpv4Private : public NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const Iid iid;
   IIpv4Private (Ipv4 *ipv4);
   virtual ~IIpv4Private ();
 

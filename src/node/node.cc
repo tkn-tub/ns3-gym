@@ -26,11 +26,10 @@
 #include "node-list.h"
 #include "net-device.h"
 #include "ns3/simulator.h"
-#include "ns3/iid-manager.h"
 
 namespace ns3{
 
-const uint32_t Node::iid = IidManager::Allocate ("Node");
+const Iid Node::iid ("Node");
 
 Node::Node()
   : NsUnknown (Node::iid),

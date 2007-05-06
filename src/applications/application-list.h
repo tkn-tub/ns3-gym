@@ -33,7 +33,7 @@ namespace ns3 {
 class ApplicationList : public NsUnknown
 {
 public:
-  static const uint32_t iid;
+  static const Iid iid;
   ApplicationList(Node*);
   // Copy constructor not needed, default one is correct
   virtual ~ApplicationList();

@@ -19,11 +19,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "i-ipv4.h"
-#include "ns3/iid-manager.h"
 
 namespace ns3 {
 
-const uint32_t IIpv4::iid = IidManager::Allocate ("IIpv4");
+const Iid IIpv4::iid ("IIpv4");
 
 IIpv4::IIpv4 ()
   : NsUnknown (IIpv4::iid)
