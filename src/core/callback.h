@@ -23,6 +23,7 @@
 #define CALLBACK_H
 
 #include "reference-list.h"
+#include "fatal-error.h"
 
 namespace ns3 {
 
@@ -291,6 +292,16 @@ public:
       {
         return false;
       }
+  }
+  void Assign (CallbackBase const &other) {
+    if (!CheckType (other))
+      {
+        NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\")"
+                        " got=" << typeid (other).name () << 
+                        ", expected=" << typeid (*this).name ());
+      }
+    const Callback<R, T1,T2,T3,T4,T5> *goodType = static_cast<const Callback<R,T1,T2,T3,T4,T5> *> (&other);
+    *this = *goodType;
   }
 private:
   virtual CallbackImplBase *PeekImpl (void) const {
