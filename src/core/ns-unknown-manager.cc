@@ -98,47 +98,47 @@ class A : public ns3::NsUnknown
 public:
   static const ns3::ClassId cidZero;
   static const ns3::ClassId cidOneBool;
-  static const ns3::ClassId cidOneInt;
+  static const ns3::ClassId cidOneUi32;
   static const ns3::Iid iid;
 
   A ();
   A (bool);
-  A (int);
+  A (uint32_t);
 
   bool m_zeroInvoked;
   bool m_oneBoolInvoked;
-  bool m_oneIntInvoked;
+  bool m_oneUi32Invoked;
 
   bool m_bool;
-  int m_int;
+  int m_ui32;
 };
 
 const ns3::ClassId A::cidZero = ns3::NsUnknownManager::RegisterConstructor <A> ("A");
 const ns3::ClassId A::cidOneBool = ns3::NsUnknownManager::RegisterConstructor <A,bool> ("ABool");
-const ns3::ClassId A::cidOneInt = ns3::NsUnknownManager::RegisterConstructor <A,int> ("AInt");
+const ns3::ClassId A::cidOneUi32 = ns3::NsUnknownManager::RegisterConstructor <A,uint32_t> ("AUi32");
 const ns3::Iid A::iid ("IA");
 
 A::A ()
   : NsUnknown (A::iid),
     m_zeroInvoked (true),
     m_oneBoolInvoked (false),
-    m_oneIntInvoked (false)
+    m_oneUi32Invoked (false)
 {}
 
 A::A (bool b)
   : NsUnknown (A::iid),
     m_zeroInvoked (false),
     m_oneBoolInvoked (true),
-    m_oneIntInvoked (false),
+    m_oneUi32Invoked (false),
     m_bool (b)
 {}
 
-A::A (int i)
+A::A (uint32_t i)
   : NsUnknown (A::iid),
     m_zeroInvoked (false),
     m_oneBoolInvoked (false),
-    m_oneIntInvoked (true),
-    m_int (i)
+    m_oneUi32Invoked (true),
+    m_ui32 (i)
 {}
 
 }
@@ -169,7 +169,7 @@ NsUnknownManagerTest::RunTests (void)
     }
   a->Unref ();
 
-  a = NsUnknownManager::Create<A> (A::cidOneBool, A::iid, true);
+  a = NsUnknownManager::Create<A,bool> (A::cidOneBool, A::iid, true);
   if (a == 0 ||
       !a->m_oneBoolInvoked ||
       !a->m_bool)
@@ -178,10 +178,28 @@ NsUnknownManagerTest::RunTests (void)
     }
   a->Unref ();
 
-  a = NsUnknownManager::Create<A> (A::cidOneBool, A::iid, false);
+  a = NsUnknownManager::Create<A,bool> (A::cidOneBool, A::iid, false);
   if (a == 0 ||
       !a->m_oneBoolInvoked ||
       a->m_bool)
+    {
+      ok = false;
+    }
+  a->Unref ();
+
+  a = NsUnknownManager::Create<A,uint32_t> (A::cidOneUi32, A::iid, 10);
+  if (a == 0 ||
+      !a->m_oneUi32Invoked ||
+      a->m_ui32 != 10)
+    {
+      ok = false;
+    }
+  a->Unref ();
+
+  a = NsUnknownManager::Create<A> (A::cidOneUi32, A::iid, (uint32_t)10);
+  if (a == 0 ||
+      !a->m_oneUi32Invoked ||
+      a->m_ui32 != 10)
     {
       ok = false;
     }
