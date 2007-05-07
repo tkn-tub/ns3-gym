@@ -134,27 +134,40 @@ public:
    * \returns a ClassId which uniquely identifies this constructor.
    */
   template <typename T>
-  static ClassId RegisterConstructor (std::string name);
+  static ClassId RegisterConstructor (std::string name)
+  {
+    static Callback<NsUnknown *> callback = 
+      MakeCallback (&NsUnknownManager::MakeObjectZero<T>);
+    return NsUnknownManager::Register (name, &callback);
+  }
 
   /**
    * \param name the symbolic name to associate to this
    *        constructor
    * \returns a ClassId which uniquely identifies this constructor.
-   * \overload ClassIdRegisterConstructor (std::string)
+   * \overload ClassId RegisterConstructor (std::string)
    */
   template <typename T, typename T1>
-  static ClassId RegisterConstructor (std::string name);
+  static ClassId RegisterConstructor (std::string name)
+  {
+    static Callback<NsUnknown *,T1> callback = MakeCallback (&NsUnknownManager::MakeObjectOne<T,T1>);
+    return NsUnknownManager::Register (name, &callback);
+  }
 
   /**
    * \param name the symbolic name to associate to this
    *        constructor
    * \returns a ClassId which uniquely identifies this constructor.
-   * \overload ClassIdRegisterConstructor (std::string)
+   * \overload ClassId RegisterConstructor (std::string)
    */
   template <typename T, typename T1, typename T2>
-  static ClassId RegisterConstructor (std::string name);
+  static ClassId RegisterConstructor (std::string name)
+  {
+    static Callback<NsUnknown *,T1,T2> callback = MakeCallback (&NsUnknownManager::MakeObjectTwo<T,T1,T2>);
+    return NsUnknownManager::Register (name, &callback);
+  }
 private:
-  static void Register (ClassId classId, CallbackBase *callback);
+  static ClassId Register (std::string name, CallbackBase *callback);
 
   template <typename T1, typename T2,
             typename T3, typename T4,
@@ -262,39 +275,6 @@ NsUnknownManager::MakeObjectTwo (T1 a1, T2 a2)
 {
   return new T (a1, a2);
 }
-
-
-template <typename T>
-ClassId 
-NsUnknownManager::RegisterConstructor (std::string name)
-{
-  ClassId classId = ClassId (name);
-  static Callback<NsUnknown *> callback = MakeCallback (&NsUnknownManager::MakeObjectZero<T>);
-  NsUnknownManager::Register (classId, &callback);
-  return classId;
-}
-
-template <typename T, typename T1>
-ClassId 
-NsUnknownManager::RegisterConstructor (std::string name)
-{
-  ClassId classId = ClassId (name);
-  static Callback<NsUnknown *,T1> callback = MakeCallback (&NsUnknownManager::MakeObjectOne<T,T1>);
-  NsUnknownManager::Register (classId, &callback);
-  return classId;
-}
-
-template <typename T, typename T1, typename T2>
-ClassId 
-NsUnknownManager::RegisterConstructor (std::string name)
-{
-  ClassId classId = ClassId (name);
-  static Callback<NsUnknown *,T1, T2> callback = MakeCallback (&NsUnknownManager::MakeObjectTwo<T,T1, T2>);
-  NsUnknownManager::Register (classId, &callback);
-  return classId;
-}
-
-
 
 } // namespace ns3
 

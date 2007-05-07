@@ -76,11 +76,13 @@ NsUnknownManager::LookupByName (std::string name)
   return ClassId (Singleton<CidManager>::Get ()->LookupByName (name));
 }
 
-void
-NsUnknownManager::Register (ClassId classId, CallbackBase *callback)
+ClassId
+NsUnknownManager::Register (std::string name, CallbackBase *callback)
 {
+  ClassId classId = ClassId (name);
   List *list = Singleton<List>::Get ();
   list->push_back (std::make_pair (classId, callback));
+  return classId;
 }
 
 
