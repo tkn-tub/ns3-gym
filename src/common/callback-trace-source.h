@@ -74,14 +74,8 @@ CallbackTraceSource<T1,T2,T3,T4>::AddCallback (CallbackBase const & callback,
                                                TraceContext const &context)
 {
   Callback<void,TraceContext const &,T1,T2,T3,T4> cb;
-  if (!cb.CheckType (callback))
-    {
-      NS_FATAL_ERROR ("Incompatible callbacks. (feed to \"c++filt -t\"): got=\"" << 
-		      typeid (callback).name () << "\" expected=\"" <<
-		      typeid (cb).name () << "\"");
-    }
+  cb.Assign (callback);
   m_context.Add (context);
-  cb = *static_cast<Callback<void,TraceContext const &,T1,T2,T3,T4> const *> (&callback);
   m_callbackList.push_back (cb);
 }
 template<typename T1, typename T2, 
