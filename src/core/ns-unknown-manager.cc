@@ -93,6 +93,21 @@ NsUnknownManager::Register (ClassId classId, CallbackBase *callback)
 
 namespace {
 
+
+class B : public ns3::NsUnknown
+{
+public:
+  static const ns3::Iid iid;
+  B ();
+};
+
+const ns3::Iid B::iid ("IB");
+
+B::B ()
+  : NsUnknown (B::iid)
+{}
+
+
 class A : public ns3::NsUnknown
 {
 public:
@@ -123,15 +138,23 @@ A::A ()
     m_zeroInvoked (true),
     m_oneBoolInvoked (false),
     m_oneUi32Invoked (false)
-{}
+{
+  B *b = new B ();
+  AddInterface (b);
+  b->Unref ();
+}
 
-A::A (bool b)
+A::A (bool bo)
   : NsUnknown (A::iid),
     m_zeroInvoked (false),
     m_oneBoolInvoked (true),
     m_oneUi32Invoked (false),
-    m_bool (b)
-{}
+    m_bool (bo)
+{
+  B *b = new B ();
+  AddInterface (b);
+  b->Unref ();
+}
 
 A::A (uint32_t i)
   : NsUnknown (A::iid),
@@ -139,7 +162,11 @@ A::A (uint32_t i)
     m_oneBoolInvoked (false),
     m_oneUi32Invoked (true),
     m_ui32 (i)
-{}
+{
+  B *b = new B ();
+  AddInterface (b);
+  b->Unref ();
+}
 
 }
 
@@ -204,6 +231,13 @@ NsUnknownManagerTest::RunTests (void)
       ok = false;
     }
   a->Unref ();
+
+  B *b = NsUnknownManager::Create<B,uint32_t> (A::cidOneUi32, B::iid, 10);
+  if (b == 0)
+    {
+      ok = false;
+    }
+  b->Unref ();
 
   return ok;
 }
