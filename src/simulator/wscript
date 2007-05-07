@@ -1,0 +1,95 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+import sys
+
+import Params
+
+
+def set_options(opt):
+    opt.add_option('--high-precision-as-double',
+                   help=('Whether to use a double floating point'
+                         ' type for high precision time values'),
+                   action="store_true", default=False,
+                   dest='high_precision_as_double')
+
+
+def configure(conf):
+    if Params.g_options.high_precision_as_double:
+        conf.add_define('USE_HIGH_PRECISION_DOUBLE', 1)
+        conf.env['USE_HIGH_PRECISION_DOUBLE'] = 1
+        highprec = 'long double'
+    else:
+        conf.env['USE_HIGH_PRECISION_DOUBLE'] = 0
+        highprec = '128-bit integer'
+    conf.check_message_custom('high precision time', 'implementation', highprec)
+
+    e = conf.create_header_configurator()
+    e.mandatory = False
+    e.name = 'stdint.h'
+    e.define = 'HAVE_STDINT_H'
+    e.run()
+
+    e = conf.create_header_configurator()
+    e.mandatory = False
+    e.name = 'inttypes.h'
+    e.define = 'HAVE_INTTYPES_H'
+    e.run()
+
+    e = conf.create_header_configurator()
+    e.mandatory = False
+    e.name = 'sys/inttypes.h'
+    e.define = 'HAVE_SYS_INT_TYPES_H'
+    e.run()
+
+    conf.write_config_header('ns3/simulator-config.h')
+
+
+
+def build(bld):
+    sim = bld.create_obj('cpp', 'shlib')
+    sim.name = 'ns3-simulator'
+    sim.target = sim.name
+    sim.deps = 'ns3-simulator-headers ns3-core-headers'
+
+    sim.source = [
+        'high-precision.cc',
+        'time.cc',
+        'event-id.cc',
+        'scheduler.cc',
+        'scheduler-factory.cc',
+        'scheduler-list.cc',
+        'scheduler-heap.cc',
+        'scheduler-map.cc',
+        'event-impl.cc',
+        'simulator.cc',
+        ]
+    headers = bld.create_obj('ns3header')
+    headers.name = 'ns3-simulator-headers'
+    headers.source = [
+        'high-precision.h',
+        'nstime.h',
+        'event-id.h',
+        'event-impl.h',
+        'simulator.h',
+        'scheduler.h',
+        'scheduler-factory.h',
+        'simulation-singleton.h',
+        ]
+
+    env = bld.env_of_name('default')
+    if env['USE_HIGH_PRECISION_DOUBLE']:
+        sim.source.extend([
+            'high-precision-double.cc',
+            ])
+        headers.source.extend([
+            'high-precision-double.h',
+            ])
+    else:
+        sim.source.extend([
+            'high-precision-128.cc',
+            'cairo-wideint.c',
+            ])
+        headers.source.extend([
+            'high-precision-128.h',
+            'cairo-wideint-private.h',
+            ])
+

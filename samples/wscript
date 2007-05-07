@@ -1,0 +1,30 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+import Params
+
+def build(bld):
+    def create_ns_prog(name, source, deps=['core', 'common', 'simulator']):
+        obj = bld.create_obj('cpp', 'program')
+        obj.target = name
+        obj.uselib_local = ' '.join(["ns3-%s" % dep for dep in deps])
+        obj.source = source
+        for module in deps:
+            obj.env.append_value('RPATH', r'-Wl,--rpath=\$ORIGIN/../src/%s' % (module,))
+        return obj
+        
+    obj = create_ns_prog('main-callback', 'main-callback.cc')
+    obj = create_ns_prog('main-simulator', 'main-simulator.cc')
+    obj = create_ns_prog('main-packet', 'main-packet.cc')
+    #obj = create_ns_prog('main-trace', 'main-trace.cc')
+    obj = create_ns_prog('main-test', 'main-test.cc')
+    obj = create_ns_prog('main-ptr', 'main-ptr.cc')
+
+    #obj = create_ns_prog('main-p2p-net-device-if', 'main-p2p-net-device-if.cc',
+    #                     deps=['core', 'common', 'simulator', 'node', 'p2p'])
+
+    obj = create_ns_prog('main-simple', 'main-simple.cc',
+                         deps=['core', 'common', 'simulator',
+                               'node', 'internet-node', 'applications'])
+
+    #obj = create_ns_prog('main-simple-p2p', 'main-simple-p2p.cc',
+    #                     deps=['core', 'common', 'simulator', 'node', 'p2p'])
+

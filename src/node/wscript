@@ -1,0 +1,40 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+def build(bld):
+    node = bld.create_obj('cpp', 'shlib')
+    node.name = 'ns3-node'
+    node.target = node.name
+    node.deps = ['ns3-core', 'ns3-common', 'ns3-simulator']
+    node.source = [
+        'node.cc',
+        'ipv4-address.cc',
+        'net-device.cc',
+        'mac-address.cc',
+        'llc-snap-header.cc',
+        'ipv4-route.cc',
+        'queue.cc',
+        'drop-tail.cc',
+        'channel.cc',
+        'node-list.cc',
+        'socket.cc',
+        'i-udp.cc',
+        'i-ipv4.cc',
+        ]
+
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'node.h',
+        'ipv4-address.h',
+        'net-device.h',
+        'mac-address.h',
+        'ipv4-route.h',
+        'queue.h',
+        'drop-tail.h',
+        'llc-snap-header.h',
+        'channel.h',
+        'node-list.h',
+        'socket.h',
+        'i-udp.h',
+        'i-ipv4.h',
+        ]

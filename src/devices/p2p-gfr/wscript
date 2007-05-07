@@ -1,0 +1,23 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+def build(bld):
+    p2p = bld.create_obj('cpp', 'objects')
+    p2p.name = 'ns3-p2p-gfr'
+    p2p.source = [
+        'p2p-net-device.cc',
+        'p2p-channel.cc',
+        'p2p-topology.cc',
+        'p2p-phy.cc',
+        'layer-connector.cc',
+        ]
+    headers = bld.create_obj('ns3header')
+    headers.name = 'ns3-p2p-gfr-headers'
+    headers.source = [
+        'p2p-net-device.h',
+        'p2p-channel.h',
+        'p2p-topology.h',
+        'p2p-phy.h',
+        'layer-connector.h',
+        ]
+
