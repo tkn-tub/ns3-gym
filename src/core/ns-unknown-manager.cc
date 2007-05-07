@@ -34,6 +34,16 @@ ClassId::ClassId (std::string name)
   : m_classId (Singleton<CidManager>::Get ()->Allocate (name))
 {}
 
+ClassId::ClassId (uint32_t classId)
+  : m_classId (classId)
+{}
+
+std::string 
+ClassId::GetName (void)
+{
+  return Singleton<CidManager>::Get ()->LookupByUid (m_classId);
+}
+
 bool operator == (const ClassId &a, const ClassId &b)
 {
   return a.m_classId == b.m_classId;
@@ -42,18 +52,8 @@ bool operator == (const ClassId &a, const ClassId &b)
 NsUnknown *
 NsUnknownManager::Create (ClassId classId)
 {
-  CallbackBase *callback = Lookup (classId);
-  if (callback == 0)
-    {
-      return 0;
-    }
-  Callback<NsUnknown *> reference;
-  if (reference.CheckType (*callback))
-    {
-      reference = *static_cast<Callback<NsUnknown *> *> (callback);
-      return reference ();
-    }
-  return 0;
+  Callback<NsUnknown *> callback = DoGetCallback<empty,empty,empty,empty,empty> (classId);
+  return callback ();
 }
 
 CallbackBase *
@@ -70,13 +70,18 @@ NsUnknownManager::Lookup (ClassId classId)
   return 0;
 }
 
+ClassId 
+NsUnknownManager::LookupByName (std::string name)
+{
+  return ClassId (Singleton<CidManager>::Get ()->LookupByName (name));
+}
+
 void
 NsUnknownManager::Register (ClassId classId, CallbackBase *callback)
 {
   List *list = Singleton<List>::Get ();
   list->push_back (std::make_pair (classId, callback));
 }
-
 
 
 } // namespace ns3
@@ -108,9 +113,9 @@ public:
   int m_int;
 };
 
-const ns3::ClassId A::cidZero = ns3::MakeClassId <A> ("A");
-const ns3::ClassId A::cidOneBool = ns3::MakeClassId <A,bool> ("ABool");
-const ns3::ClassId A::cidOneInt = ns3::MakeClassId <A,int> ("AInt");
+const ns3::ClassId A::cidZero = ns3::NsUnknownManager::RegisterConstructor <A> ("A");
+const ns3::ClassId A::cidOneBool = ns3::NsUnknownManager::RegisterConstructor <A,bool> ("ABool");
+const ns3::ClassId A::cidOneInt = ns3::NsUnknownManager::RegisterConstructor <A,int> ("AInt");
 const ns3::Iid A::iid ("IA");
 
 A::A ()

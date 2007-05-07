@@ -26,37 +26,99 @@
 #include <stdint.h>
 #include "callback.h"
 #include "ns-unknown.h"
+#include "fatal-error.h"
 
 namespace ns3 {
 
+/**
+ * \brief Unique Identifier for class constructors.
+ *
+ * Instances of this type must be allocated through
+ * the ns3::Ns3UnknownManager::RegisterConstructor methods
+ */
 class ClassId
 {
 public:
-  ClassId (std::string name);
+  /**
+   * \returns the symbolic name associated to this class id
+   *
+   * This name is the name which was associated to this class id
+   * by the ns3::Ns3UnknownManager::RegisterConstructor methods.
+   * This name is also the name which is expected to be input
+   * to ns3::UnknownManager::LookupByName.
+   */
+  std::string GetName (void);
 private:
+  ClassId (std::string name);
+  ClassId (uint32_t classId);
+  friend class NsUnknownManager;
   friend bool operator == (const ClassId &a, const ClassId &b);
   uint32_t m_classId;
 };
 
-template <typename T>
-ClassId
-MakeClassId (std::string name);
-
-template <typename T, typename T1>
-ClassId
-MakeClassId (std::string name);
-
+/**
+ * \brief Create any NsUnknown
+ *
+ * This class keeps track of a set of ClassId, each
+ * of which uniquely identifies the constructor of an
+ * object which derives from the NsUnknown base class.
+ * This class can also create an instance of any of
+ * the objects tracked through any of their tracked
+ * constructor/ClassId.
+ */
 class NsUnknownManager
 {
 public:
+  /**
+   * \param name the symbolic name to lookup
+   * \returns the ClassId associated to the input name.
+   */
+  static ClassId LookupByName (std::string name);
+
+  /**
+   * \param classId class id of the constructor to invoke.
+   * \return a pointer to the instance created.
+   *
+   * Create an instance of the object identified by its
+   * ClassId. This method invokes the default constructor.
+   */
   static NsUnknown *Create (ClassId classId);
 
+  /**
+   * \param classId class id of the constructor to invoke.
+   * \param a1 argument to pass to the constructor.
+   * \return a pointer to the instance created.
+   * \overload NsUnknown *Create (ClassId)
+   *
+   * Create an instance of the object identified by its
+   * ClassId.
+   */
   template <typename T1>
   static NsUnknown *Create (ClassId classId, T1 a1);
 
+  /**
+   * \param classId class id of the constructor to invoke.
+   * \param a1 first argument to pass to the constructor.
+   * \param a2 second argument to pass to the constructor.
+   * \return a pointer to the instance created.
+   * \overload NsUnknown *Create (ClassId)
+   *
+   * Create an instance of the object identified by its
+   * ClassId.
+   */
   template <typename T1, typename T2>
   static NsUnknown *Create (ClassId classId, T1 a1, T2 a2);
 
+  /**
+   * \param classId class id of the constructor to invoke.
+   * \param iid interface id to query for
+   * \return a pointer to the instance created.
+   * \overload NsUnknown *Create (ClassId)
+   *
+   * Create an instance of the object identified by its
+   * ClassId, call QueryInterface on it, and return the 
+   * result.
+   */
   template <typename T>
   static T *Create (ClassId classId, Iid iid);
 
@@ -66,45 +128,76 @@ public:
   template <typename T, typename T1, typename T2>
   static T *Create (ClassId classId, Iid iid, T1 a1, T2 a2);
 
-  static void Register (ClassId classId, CallbackBase *callback);
+  /**
+   * \param name the symbolic name to associate to this
+   *        constructor
+   * \returns a ClassId which uniquely identifies this constructor.
+   */
+  template <typename T>
+  static ClassId RegisterConstructor (std::string name);
+
+  /**
+   * \param name the symbolic name to associate to this
+   *        constructor
+   * \returns a ClassId which uniquely identifies this constructor.
+   * \overload ClassIdRegisterConstructor (std::string)
+   */
+  template <typename T, typename T1>
+  static ClassId RegisterConstructor (std::string name);
+
+  /**
+   * \param name the symbolic name to associate to this
+   *        constructor
+   * \returns a ClassId which uniquely identifies this constructor.
+   * \overload ClassIdRegisterConstructor (std::string)
+   */
+  template <typename T, typename T1, typename T2>
+  static ClassId RegisterConstructor (std::string name);
 private:
+  static void Register (ClassId classId, CallbackBase *callback);
+
+  template <typename T1, typename T2,
+            typename T3, typename T4,
+            typename T5>
+  static Callback<NsUnknown *,T1,T2,T3,T4,T5> DoGetCallback (ClassId classId);
+
+  template <typename T>
+  static NsUnknown *MakeObjectZero (void);
+
+  template <typename T, typename T1>
+  static NsUnknown *MakeObjectOne (T1 a1);
+
+  template <typename T, typename T1, typename T2>
+  static NsUnknown *MakeObjectTwo (T1 a1, T2 a2);
+
   typedef std::vector<std::pair<ClassId, CallbackBase *> > List;
   static List *GetList (void);
   static CallbackBase *Lookup (ClassId classId);
 };
 
-template <typename T>
-NsUnknown *
-MakeNsUnknownObjectZero (void)
-{
-  return new T ();
-}
-template <typename T, typename T1>
-NsUnknown *
-MakeNsUnknownObjectOne (T1 a1)
-{
-  return new T (a1);
-}
+} // namespace ns3 
 
 
-template <typename T>
-ClassId
-MakeClassId (std::string name)
-{
-  ClassId classId = ClassId (name);
-  static Callback<NsUnknown *> callback = MakeCallback (&MakeNsUnknownObjectZero<T>);
-  NsUnknownManager::Register (classId, &callback);
-  return classId;
-}
+namespace ns3 {
 
-template <typename T, typename T1>
-ClassId
-MakeClassId (std::string name)
+template <typename T1, typename T2,
+          typename T3, typename T4,
+          typename T5>
+Callback<NsUnknown *,T1,T2,T3,T4,T5>
+NsUnknownManager::DoGetCallback (ClassId classId)
 {
-  ClassId classId = ClassId (name);
-  static Callback<NsUnknown *, T1> callback = MakeCallback (&MakeNsUnknownObjectOne<T,T1>);
-  NsUnknownManager::Register (classId, &callback);
-  return classId;
+  CallbackBase *callback = Lookup (classId);
+  if (callback == 0)
+    {
+      NS_FATAL_ERROR ("Invalid Class Id.");
+    }
+  Callback<NsUnknown *, T1,T2,T3,T4,T5> reference;
+  if (!reference.CheckType (*callback))
+    {
+      NS_FATAL_ERROR ("Incompatible types.");
+    }
+  reference = *static_cast<Callback<NsUnknown *,T1,T2,T3,T4,T5> *> (callback);
+  return reference;
 }
 
 
@@ -112,25 +205,16 @@ template <typename T1>
 NsUnknown *
 NsUnknownManager::Create (ClassId classId, T1 a1)
 {
-  CallbackBase *callback = Lookup (classId);
-  if (callback == 0)
-    {
-      return 0;
-    }
-  Callback<NsUnknown *, T1> reference;
-  if (reference.CheckType (*callback))
-    {
-      reference = *static_cast<Callback<NsUnknown *,T1> *> (callback);
-      return reference (a1);
-    }
-  return 0;
+  Callback<NsUnknown *, T1> callback = DoGetCallback<T1,empty,empty,empty,empty> (classId);
+  return callback (a1);
 }
 
 template <typename T1, typename T2>
 NsUnknown *
 NsUnknownManager::Create (ClassId classId, T1 a1, T2 a2)
 {
-  return 0;
+  Callback<NsUnknown *, T1,T2> callback = DoGetCallback<T1,T2,empty,empty,empty> (classId);
+  return callback (a1, a2);
 }
 
 template <typename T>
@@ -139,6 +223,7 @@ NsUnknownManager::Create (ClassId classId, Iid iid)
 {
   NsUnknown *obj = Create (classId);
   T *i = obj->QueryInterface<T> (iid);
+  obj->Unref ();
   return i;
 }
 
@@ -148,6 +233,7 @@ NsUnknownManager::Create (ClassId classId, Iid iid, T1 a1)
 {
   NsUnknown *obj = Create (classId, a1);
   T *i = obj->QueryInterface<T> (iid);
+  obj->Unref ();
   return i;
 }
 
@@ -157,7 +243,59 @@ NsUnknownManager::Create (ClassId classId, Iid iid, T1 a1, T2 a2)
 {
   NsUnknown *obj = Create (classId, a1, a2);
   T *i = obj->QueryInterface<T> (iid);
+  obj->Unref ();
   return i;
+}
+
+
+template <typename T>
+NsUnknown *
+NsUnknownManager::MakeObjectZero (void)
+{
+  return new T ();
+}
+template <typename T, typename T1>
+NsUnknown *
+NsUnknownManager::MakeObjectOne (T1 a1)
+{
+  return new T (a1);
+}
+template <typename T, typename T1, typename T2>
+NsUnknown *
+NsUnknownManager::MakeObjectTwo (T1 a1, T2 a2)
+{
+  return new T (a1, a2);
+}
+
+
+template <typename T>
+ClassId 
+NsUnknownManager::RegisterConstructor (std::string name)
+{
+  ClassId classId = ClassId (name);
+  static Callback<NsUnknown *> callback = MakeCallback (&NsUnknownManager::MakeObjectZero<T>);
+  NsUnknownManager::Register (classId, &callback);
+  return classId;
+}
+
+template <typename T, typename T1>
+ClassId 
+NsUnknownManager::RegisterConstructor (std::string name)
+{
+  ClassId classId = ClassId (name);
+  static Callback<NsUnknown *,T1> callback = MakeCallback (&NsUnknownManager::MakeObjectOne<T,T1>);
+  NsUnknownManager::Register (classId, &callback);
+  return classId;
+}
+
+template <typename T, typename T1, typename T2>
+ClassId 
+NsUnknownManager::RegisterConstructor (std::string name)
+{
+  ClassId classId = ClassId (name);
+  static Callback<NsUnknown *,T1, T2> callback = MakeCallback (&NsUnknownManager::MakeObjectTwo<T,T1, T2>);
+  NsUnknownManager::Register (classId, &callback);
+  return classId;
 }
 
 
