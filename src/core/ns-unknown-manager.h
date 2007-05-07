@@ -192,11 +192,7 @@ NsUnknownManager::DoGetCallback (ClassId classId)
       NS_FATAL_ERROR ("Invalid Class Id.");
     }
   Callback<NsUnknown *, T1,T2,T3,T4,T5> reference;
-  if (!reference.CheckType (*callback))
-    {
-      NS_FATAL_ERROR ("Incompatible types.");
-    }
-  reference = *static_cast<Callback<NsUnknown *,T1,T2,T3,T4,T5> *> (callback);
+  reference.Assign (*callback);
   return reference;
 }
 
