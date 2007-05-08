@@ -46,13 +46,10 @@ class Ptr
 {
 private:
   T *m_ptr;
-  uint32_t *m_count;
   class Tester {
   private:
     void operator delete (void *);
   };
-  static uint32_t *AllocCount (void);
-  static void DeallocCount (uint32_t *count);
   friend class Ptr<const T>;
 public:
   /**
@@ -116,58 +113,33 @@ public:
 };
 
 template <typename T>
-uint32_t *
-Ptr<T>::AllocCount (void)
-{
-  return new uint32_t [1] ();
-}
-template <typename T>
-void 
-Ptr<T>::DeallocCount (uint32_t *count)
-{
-  delete [] count;
-}
-
-template <typename T>
 Ptr<T>::Ptr ()
-  : m_ptr (0),
-    m_count (0)
+  : m_ptr (0)
 {}
 
 template <typename T>
 Ptr<T>::Ptr (T *ptr) 
-  : m_ptr (ptr),
-    m_count (0)
-{
-  if (m_ptr != 0)
-    {
-      m_count = Ptr::AllocCount ();
-      *m_count = 1;
-    }
-}
+  : m_ptr (ptr)
+{}
 
 template <typename T>
 Ptr<T>::Ptr (Ptr const&o) 
-  : m_ptr (o.m_ptr),
-    m_count (0)
+  : m_ptr (o.m_ptr)
 {
   if (m_ptr != 0) 
     {
-      m_count = o.m_count;
-      (*m_count)++;
+      m_ptr->Ref();
     }
 }
 template <typename T>
 template <typename U>
 Ptr<T>::Ptr (Ptr<U> const &o)
-  : m_ptr (o.m_ptr),
-    m_count (0)
+  : m_ptr (o.m_ptr)
 {
   if (m_ptr != 0) 
     {
       NS_ASSERT (o.m_ptr != 0);
-      m_count = o.m_count;
-      (*m_count)++;
+      m_ptr->Ref();
     }
 }
 
@@ -176,12 +148,7 @@ Ptr<T>::~Ptr ()
 {
   if (m_ptr != 0) 
     {
-      (*m_count)--;
-      if ((*m_count) == 0) 
-        {
-          delete m_ptr;
-          Ptr::DeallocCount (m_count);
-        }
+      m_ptr->Unref();
     }
 }
 
@@ -193,18 +160,12 @@ Ptr<T>::operator = (Ptr const& o)
     return *this;
   if (m_ptr != 0) 
     {
-      (*m_count)--;
-      if ((*m_count) == 0) 
-        {
-          delete m_ptr;
-          Ptr::DeallocCount (m_count);
-        }
+      m_ptr->Unref();
     }
   m_ptr = o.m_ptr;
   if (m_ptr != 0) 
     {
-      m_count = o.m_count;
-      (*m_count)++;
+      m_ptr->Ref();
     }
   return *this;
 }
@@ -258,8 +219,7 @@ Ptr<T>::Remove (void)
     }
   else
     {
-      NS_ASSERT ((*m_count) == 1);
-      Ptr::DeallocCount (m_count);
+      NS_ASSERT (m_ptr->IsSingle());
       T *retval = m_ptr;
       m_ptr = 0;
       return retval;

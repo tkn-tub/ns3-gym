@@ -1,10 +1,11 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 #include "ns3/ptr.h"
+#include "ns3/object.h"
 #include <iostream>
 
 using namespace ns3;
 
-class A 
+class A : public Object
 {
 public:
   A ();

@@ -24,10 +24,11 @@
 
 #include "test.h"
 #include "callback.h"
+#include "object.h"
 
 namespace ns3 {
 
-class NoCount
+class NoCount : public Object
 {
 public:
   NoCount (Callback<void> cb);
