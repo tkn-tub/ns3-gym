@@ -241,7 +241,8 @@ PtrTest::RunTests (void)
       {
         Ptr<NoCount const> p1 = p;
       }
-      raw = p.Remove ();
+      raw = p.Get ();
+      p = 0;
     }
     if (m_nDestroyed != 0)
       {
@@ -254,12 +255,12 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p = new NoCount (cb);
-    NoCount const&v1 = p.Peek();
-    NoCount v2 = p.Peek();
-    v1.Nothing ();
-    v2.Nothing ();
+    const NoCount *v1 = p.Peek();
+    NoCount *v2 = p.Peek();
+    v1->Nothing ();
+    v2->Nothing ();
   }
-  if (m_nDestroyed != 2)
+  if (m_nDestroyed != 1)
     {
       ok = false;
     }

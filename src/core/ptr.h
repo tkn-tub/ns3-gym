@@ -72,7 +72,23 @@ public:
   Ptr (Ptr<U> const &o);
   ~Ptr () ;
   Ptr<T> &operator = (Ptr const& o);
-  T const& Peek () const;
+
+  /**
+   * \return the pointer managed by this smart pointer.
+   *
+   * The underlying refcount is not incremented prior
+   * to returning to the caller so the caller is not
+   * responsible for calling Unref himself.
+   */
+  T * Peek () const;
+
+  /**
+   * \return the pointer managed by this smart pointer.
+   *
+   * The underlying refcount is incremented prior
+   * to returning to the caller so the caller is
+   * responsible for calling Unref himself.
+   */
   T * Get () const;
   T *operator -> () const;
   T *operator -> ();
@@ -97,20 +113,6 @@ public:
   inline friend Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
 
 
-  /**
-   * \returns raw pointer
-   *
-   * It is a programming error to invoke this method when
-   * the reference count of the smart pointer is not one.
-   * If you try to do it anyway, an assert will be triggered.
-   * If asserts are disabled, bad things will happen.
-   * Once you have successfully called Ptr<T>::Remove on
-   * a smart pointer, the smart pointer will forget 
-   * about the raw pointer and will stop managing it. As such,
-   * you, as the caller, become responsible for invoking
-   * operator delete on the returned raw pointer.
-   */
-  T *Remove (void);
 };
 
 template <typename T>
@@ -172,10 +174,10 @@ Ptr<T>::operator = (Ptr const& o)
 }
 
 template <typename T>
-T const& 
+T *
 Ptr<T>::Peek () const
 {
-  return *m_ptr;
+  return m_ptr;
 }
 
 template <typename T>
@@ -216,23 +218,6 @@ Ptr<T>::operator Tester * () const
     }
   static Tester test;
   return &test;
-}
-
-template <typename T>
-T *
-Ptr<T>::Remove (void) 
-{
-  if (m_ptr == 0)
-    {
-      return (T *) 0;
-    }
-  else
-    {
-      //NS_ASSERT (m_ptr->IsSingle());
-      T *retval = m_ptr;
-      m_ptr = 0;
-      return retval;
-    }
 }
 
 // non-member friend functions.
