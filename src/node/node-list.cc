@@ -49,37 +49,37 @@ public:
   NodeListPriv ();
   ~NodeListPriv ();
 
-  uint32_t Add (Node *node);
+  uint32_t Add (Ptr<Node> node);
   NodeList::Iterator Begin (void);
   NodeList::Iterator End (void);
   TraceResolver *CreateTraceResolver (TraceContext const &context);
-  Node *PeekNode (uint32_t n);
+  Ptr<Node> PeekNode (uint32_t n);
   uint32_t GetNNodes (void);
 
 private:
-  std::vector<Node *> m_nodes;
+  std::vector<Ptr<Node> > m_nodes;
 };
 
 NodeListPriv::NodeListPriv ()
 {}
 NodeListPriv::~NodeListPriv ()
 {
-  for (std::vector<Node *>::iterator i = m_nodes.begin ();
+  for (std::vector<Ptr<Node> >::iterator i = m_nodes.begin ();
        i != m_nodes.end (); i++)
     {
-      Node *node = *i;
+      Ptr<Node> node = *i;
       node->Dispose ();
-      node->Unref ();
+      //node->Unref ();
     }
   m_nodes.erase (m_nodes.begin (), m_nodes.end ());
 }
 
 
 uint32_t
-NodeListPriv::Add (Node *node)
+NodeListPriv::Add (Ptr<Node> node)
 {
   uint32_t index = m_nodes.size ();
-  node->Ref ();
+  //node->Ref ();
   m_nodes.push_back (node);
   return index;
   
@@ -99,7 +99,7 @@ NodeListPriv::GetNNodes (void)
 {
   return m_nodes.size ();
 }
-Node *
+Ptr<Node>
 NodeListPriv::PeekNode (uint32_t n)
 {
   return m_nodes[n];
@@ -126,7 +126,7 @@ NodeListPriv::CreateTraceResolver (TraceContext const &context)
 namespace ns3 {
 
 uint32_t
-NodeList::Add (Node *node)
+NodeList::Add (Ptr<Node> node)
 {
   return SimulationSingleton<NodeListPriv>::Get ()->Add (node);
 }
@@ -145,7 +145,7 @@ NodeList::CreateTraceResolver (TraceContext const &context)
 {
   return SimulationSingleton<NodeListPriv>::Get ()->CreateTraceResolver (context);
 }
-Node *
+Ptr<Node>
 NodeList::PeekNode (uint32_t n)
 {
   return SimulationSingleton<NodeListPriv>::Get ()->PeekNode (n);
