@@ -50,6 +50,8 @@
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/ptr.h"
+#include "ns3/node.h"
 
 namespace ns3 {
 
@@ -59,7 +61,7 @@ class RandomVariable;
 class Application : public Object
 {
 public:
-  Application(Node *);
+  Application(Ptr<Node>);
   Application(const Application&);  // Copy constructor
   Application& operator=(const Application&); // Assignment operator
   virtual ~Application();
@@ -100,13 +102,13 @@ void Start(const RandomVariable&);
   // \brief Attaches an application to a specific node
   // Specifies which node object this application is associated with.
   // \param Node object to associate with this application.
-  void SetNode(Node *);
+  void SetNode(Ptr<Node>);
 
   // \brief Returns the pointer to the attached node.
-  Node* PeekNode() const;
+  Ptr<Node> PeekNode() const;
   
   // Members
-  Node          * m_node;      // All applications have an associated node
+  Ptr<Node>       m_node;      // All applications have an associated node
   RandomVariable* m_startVar;  // Random variable for start time
   RandomVariable* m_stopVar;   // Random variable for stop time
   EventId         m_startEvent;// Event identifier for start event

@@ -27,6 +27,7 @@
 #include "ns3/packet.h"
 #include "ns3/object.h"
 #include "mac-address.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -61,7 +62,7 @@ public:
    * \param node base class node pointer of device's node 
    * \param addr MAC address of this device.
    */
-  NetDevice(Node* node, const MacAddress& addr);
+  NetDevice(Ptr<Node> node, const MacAddress& addr);
   virtual ~NetDevice();
 
   /**
@@ -169,7 +170,7 @@ public:
    * base class to print the nodeid for example, it can invoke
    * this method.
    */
-  Node* PeekNode (void) const;
+  Ptr<Node> PeekNode (void) const;
 
   bool NeedsArp (void) const;
 
@@ -241,7 +242,7 @@ public:
   virtual bool DoNeedsArp (void) const = 0;
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
   virtual Channel *DoGetChannel (void) const = 0;
-  Node*         m_node;
+  Ptr<Node>         m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
   MacAddress    m_address;

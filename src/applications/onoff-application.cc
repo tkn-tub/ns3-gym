@@ -42,7 +42,7 @@ uint32_t OnOffApplication::g_defaultSize = 512;
 
 // Constructors
 
-  OnOffApplication::OnOffApplication(Node * n, 
+  OnOffApplication::OnOffApplication(Ptr<Node> n, 
                                      const Ipv4Address  rip,   // Remote IP addr
                                      uint16_t       rport, // Remote port
                                      const  RandomVariable& ontime,
@@ -67,7 +67,7 @@ uint32_t OnOffApplication::g_defaultSize = 512;
 {
 }
 
-OnOffApplication::OnOffApplication(Node * n, const OnOffApplication& c)
+OnOffApplication::OnOffApplication(Ptr<Node> n, const OnOffApplication& c)
   : Application(n), 
     m_socket(0),
     m_peerIP(c.m_peerIP),

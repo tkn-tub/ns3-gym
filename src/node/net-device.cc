@@ -29,7 +29,7 @@
 
 namespace ns3 {
 
-NetDevice::NetDevice(Node *node, const MacAddress& addr) : 
+NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) : 
   m_node (node), 
   m_name(""), 
   m_ifIndex (0), 
@@ -228,7 +228,7 @@ NetDevice::NotifyLinkDown (void)
     }
 }
 
-Node *
+Ptr<Node>
 NetDevice::PeekNode (void) const
 {
   return m_node;

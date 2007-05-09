@@ -30,6 +30,7 @@
 #include "ns3/callback-trace-source.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -79,7 +80,7 @@ public:
    * @see PointToPointTopology::AddPointToPointLink ()
    * @param node the Node to which this device is connected.
    */
-  PointToPointNetDevice (Node* node);
+  PointToPointNetDevice (Ptr<Node> node);
   /**
    * Copy Construct a PointToPointNetDevice
    *

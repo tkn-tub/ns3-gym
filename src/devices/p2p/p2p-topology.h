@@ -19,7 +19,7 @@
 //
 // Topology helper for ns3.
 // George F. Riley, Georgia Tech, Spring 2007
-
+#include "ns3/ptr.h"
 #ifndef __POINT_TO_POINT_TOPOLOGY_H__
 #define __POINT_TO_POINT_TOPOLOGY_H__
 
@@ -51,29 +51,29 @@ public:
    * and propagation delay.
    */
   static PointToPointChannel* AddPointToPointLink(
-    Node*, Node*, const DataRate&, const Time&);
+    Ptr<Node>, Ptr<Node>, const DataRate&, const Time&);
 
   static bool AddIpv4Addresses(
     const PointToPointChannel*,
-    Node*, const Ipv4Address&,
-    Node*, const Ipv4Address&);
+    Ptr<Node>, const Ipv4Address&,
+    Ptr<Node>, const Ipv4Address&);
 
   /**
    * Get the connecting node n1 to node n2
    */
-  static PointToPointChannel* GetChannel(Node*, Node*);
+  static PointToPointChannel* GetChannel(Ptr<Node>, Ptr<Node>);
   /**
    * Get the NetDevice connecting node n1 to n2
    */
-  static PointToPointNetDevice* GetNetDevice(Node*, Node*);
+  static PointToPointNetDevice* GetNetDevice(Ptr<Node>, Ptr<Node>);
   /**
    * Get the queue associated with a link between two nodes
    */
-  static Queue* GetQueue(Node*, Node*);
+  static Queue* GetQueue(Ptr<Node>, Ptr<Node>);
   /**
    * Set the queue associated with a link between two nodes
    */
-  static Queue* SetQueue(Node*, Node*, const Queue&);
+  static Queue* SetQueue(Ptr<Node>, Ptr<Node>, const Queue&);
 };
 
 } // namespace ns3

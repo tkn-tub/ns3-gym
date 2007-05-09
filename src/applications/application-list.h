@@ -34,12 +34,12 @@ class ApplicationList : public NsUnknown
 {
 public:
   static const Iid iid;
-  ApplicationList(Node*);
+  ApplicationList(Ptr<Node>);
   // Copy constructor not needed, default one is correct
   virtual ~ApplicationList();
   // Inherited from Capabilty
-  virtual ApplicationList* Copy(Node*) const;
-  virtual void SetNode(Node *);              // Sets the node for all apps
+  virtual ApplicationList* Copy(Ptr<Node>) const;
+  virtual void SetNode(Ptr<Node>);              // Sets the node for all apps
   virtual void Add(Application*);      // Add an already new'ed app
   // Manage the list
   template <typename T> T* AddCopy(const T& t)  // Add a new application

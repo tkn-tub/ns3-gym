@@ -28,7 +28,7 @@ namespace ns3{
 
 const Iid ApplicationList::iid ("ApplicationList");
 
-ApplicationList::ApplicationList(Node* n)
+ApplicationList::ApplicationList(Ptr<Node> n)
   : NsUnknown (ApplicationList::iid)
 {}
 
@@ -49,7 +49,7 @@ ApplicationList::DoDispose (void)
 ApplicationList::~ApplicationList()
 {}
 
-ApplicationList* ApplicationList::Copy(Node * n) const 
+ApplicationList* ApplicationList::Copy(Ptr<Node> n) const 
 { // Copy this app list
   ApplicationList* r = new ApplicationList(n);
   return r;
@@ -62,7 +62,7 @@ ApplicationList::Add(Application* a)
   m_apps.push_back(a);
 }
 
-void ApplicationList::SetNode(Node * n)
+void ApplicationList::SetNode(Ptr<Node> n)
 {
   // Set the node pointer in each application
   for (std::vector<Application *>::const_iterator i = m_apps.begin();

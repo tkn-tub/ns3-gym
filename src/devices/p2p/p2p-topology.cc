@@ -40,8 +40,8 @@ namespace ns3 {
 
 PointToPointChannel *
 PointToPointTopology::AddPointToPointLink(
-  Node* n1,
-  Node* n2,
+  Ptr<Node> n1,
+  Ptr<Node> n2,
   const DataRate& bps,
   const Time& delay)
 {
@@ -65,8 +65,8 @@ PointToPointTopology::AddPointToPointLink(
 bool
 PointToPointTopology::AddIpv4Addresses(
   const PointToPointChannel *chan,
-  Node* n1, const Ipv4Address& addr1,
-  Node* n2, const Ipv4Address& addr2)
+  Ptr<Node> n1, const Ipv4Address& addr1,
+  Ptr<Node> n2, const Ipv4Address& addr2)
 {
 
   // Duplex link is assumed to be subnetted as a /30
@@ -116,7 +116,7 @@ PointToPointTopology::AddIpv4Addresses(
 // there are possibly multiple devices connecting n1 and n2 (for example
 // wireless with two devices on different channels) this will return
 // the first one found.
-PointToPointNetDevice* PointToPointTopology::GetNetDevice(Node* n1, Node* n2)
+PointToPointNetDevice* PointToPointTopology::GetNetDevice(Ptr<Node> n1, Ptr<Node> n2)
 {
   // First get the NetDeviceList capability from node 1
   NetDeviceList* ndl1 = n1->GetNetDeviceList();
@@ -136,8 +136,8 @@ PointToPointNetDevice* PointToPointTopology::GetNetDevice(Node* n1, Node* n2)
   
 // Get the channel connecting node n1 to node n2
 PointToPointChannel* PointToPointTopology::GetChannel(
-  Node* n1, 
-  Node* n2
+  Ptr<Node> n1, 
+  Ptr<Node> n2
 )
 {
   NetDevice* nd = GetNetDevice(n1, n2);
@@ -145,14 +145,14 @@ PointToPointChannel* PointToPointTopology::GetChannel(
   return nd->GetChannel();
 }
 
-Queue* PointToPointTopology::GetQueue(Node* n1, Node* n2)
+Queue* PointToPointTopology::GetQueue(Ptr<Node> n1, Ptr<Node> n2)
 {
   NetDevice* nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, so in queue
   return nd->GetQueue();
 }
 
-Queue* PointToPointTopology::SetQueue(Node* n1, Node* n2, const Queue& q)
+Queue* PointToPointTopology::SetQueue(Ptr<Node> n1, Ptr<Node> n2, const Queue& q)
 {
   NetDevice* nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, can't set queue
@@ -163,8 +163,8 @@ Queue* PointToPointTopology::SetQueue(Node* n1, Node* n2, const Queue& q)
 #endif
 
 #ifdef GFR
-P2PChannel* Topology::AddDuplexLink(Node* n1, const IPAddr& ip1, 
-                                    Node* n2, const IPAddr& ip2,
+P2PChannel* Topology::AddDuplexLink(Ptr<Node> n1, const IPAddr& ip1, 
+                                    Ptr<Node> n2, const IPAddr& ip2,
                                     const Rate& rate, const Time& delay)
 {
   // First get the NetDeviceList capability from each node
@@ -195,21 +195,21 @@ P2PChannel* Topology::AddDuplexLink(Node* n1, const IPAddr& ip1,
 }
 
 // Get the channel connecting node n1 to node n2
-Channel* Topology::GetChannel(Node* n1, Node* n2)
+Channel* Topology::GetChannel(Ptr<Node> n1, Ptr<Node> n2)
 {
   NetDevice* nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, so no channel
   return nd->GetChannel();
 }
 
-Queue* Topology::GetQueue(Node* n1, Node* n2)
+Queue* Topology::GetQueue(Ptr<Node> n1, Ptr<Node> n2)
 {
   NetDevice* nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, so in queue
   return nd->GetQueue();
 }
 
-Queue* Topology::SetQueue(Node* n1, Node* n2, const Queue& q)
+Queue* Topology::SetQueue(Ptr<Node> n1, Ptr<Node> n2, const Queue& q)
 {
   NetDevice* nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, can't set queue

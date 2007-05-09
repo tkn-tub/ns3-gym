@@ -254,8 +254,8 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p = new NoCount (cb);
-    NoCount const&v1 = *p;
-    NoCount v2 = *p;
+    NoCount const&v1 = p.Peek();
+    NoCount v2 = p.Peek();
     v1.Nothing ();
     v2.Nothing ();
   }

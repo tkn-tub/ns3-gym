@@ -72,7 +72,8 @@ public:
   Ptr (Ptr<U> const &o);
   ~Ptr () ;
   Ptr<T> &operator = (Ptr const& o);
-  T const& operator * () const;
+  T const& Peek () const;
+  T * Get () const;
   T *operator -> () const;
   T *operator -> ();
   // allow if (!sp)
@@ -172,9 +173,17 @@ Ptr<T>::operator = (Ptr const& o)
 
 template <typename T>
 T const& 
-Ptr<T>::operator * () const
+Ptr<T>::Peek () const
 {
   return *m_ptr;
+}
+
+template <typename T>
+T * 
+Ptr<T>::Get () const
+{
+  m_ptr->Ref();
+  return m_ptr;
 }
 
 template <typename T>
@@ -219,7 +228,7 @@ Ptr<T>::Remove (void)
     }
   else
     {
-      NS_ASSERT (m_ptr->IsSingle());
+      //NS_ASSERT (m_ptr->IsSingle());
       T *retval = m_ptr;
       m_ptr = 0;
       return retval;

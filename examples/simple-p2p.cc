@@ -45,6 +45,7 @@
 #include "ns3/debug.h"
 #include "ns3/command-line.h"
 #include "ns3/default-value.h"
+#include "ns3/ptr.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -100,10 +101,10 @@ int main (int argc, char *argv[])
 
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
-  Node* n0 = new InternetNode ();
-  Node* n1 = new InternetNode (); 
-  Node* n2 = new InternetNode (); 
-  Node* n3 = new InternetNode ();
+  Ptr<Node> n0 = new InternetNode ();
+  Ptr<Node> n1 = new InternetNode (); 
+  Ptr<Node> n2 = new InternetNode (); 
+  Ptr<Node> n3 = new InternetNode ();
 
   // We create the channels first without any IP addressing information
   PointToPointChannel *channel0 = 

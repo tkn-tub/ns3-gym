@@ -34,7 +34,7 @@ namespace ns3 {
 // Application Methods
 
 // \brief Application Constructor
-Application::Application(Node * n) 
+Application::Application(Ptr<Node> n) 
     : m_node (n),
       m_startVar(0), m_stopVar(0),
       m_start(false), m_stop(false)
@@ -147,7 +147,7 @@ void Application::Stop(const RandomVariable& stopVar)
 // \brief Assign this application to a given node
 // Called by the application manager capability when adding
 // an application to a node.
-void Application::SetNode(Node * n)
+void Application::SetNode(Ptr<Node> n)
 {
   if (m_node != 0)
     {
@@ -157,7 +157,7 @@ void Application::SetNode(Node * n)
   m_node->Ref ();
 }
   
-Node* Application::PeekNode() const
+Ptr<Node> Application::PeekNode() const
 {
   return m_node;
 }
