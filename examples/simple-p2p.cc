@@ -184,11 +184,11 @@ int main (int argc, char *argv[])
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
   ipv4->Unref ();
 
-  n0->Unref ();
-  n1->Unref ();
-  n2->Unref ();
-  n3->Unref ();
-
+  n0 = 0;
+  n1 = 0;
+  n2 = 0;
+  n3 = 0;
+  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-p2p.tr file
   AsciiTrace asciitrace ("simple-p2p.tr");
