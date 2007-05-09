@@ -67,7 +67,8 @@ int main (int argc, char *argv[])
     // remove the raw pointer from its smart pointer.
     // we can do this because the refcount is exactly one
     // here
-    A *raw = prev.Remove ();
+    A *raw = prev.Get ();
+    prev = 0;
     raw->Method ();
     delete raw;
   }
