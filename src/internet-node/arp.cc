@@ -23,6 +23,7 @@
 #include "ns3/empty-trace-resolver.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
+#include "ns3/ptr.h"
 
 #include "arp.h"
 #include "arp-header.h"
@@ -36,11 +37,10 @@ namespace ns3 {
 
 const uint16_t Arp::PROT_NUMBER = 0x0806;
 
-Arp::Arp (Node *node)
+	Arp::Arp (Ptr<Node> node)
   : L3Protocol (PROT_NUMBER, 0/* XXX: correct version number ? */ ),
     m_node (node)
 {
-  m_node->Ref ();
 }
 
 Arp::~Arp ()
@@ -81,7 +81,7 @@ Arp::FindCache (NetDevice *device)
 	}
     }
   IIpv4Private *ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
-  Ipv4Interface *interface = ipv4->FindInterfaceForDevice (device);
+  Ptr<Ipv4Interface> interface = ipv4->FindInterfaceForDevice (device);
   ipv4->Unref ();
   ArpCache * cache = new ArpCache (device, interface);
   NS_ASSERT (device->IsBroadcast ());

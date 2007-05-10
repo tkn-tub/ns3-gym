@@ -63,7 +63,7 @@ Ipv4::DoDispose (void)
 {
   for (Ipv4InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
-      delete (*i);
+      ::delete (*i);
     }
   m_interfaces.clear ();
   for (HostRoutesI i = m_hostRoutes.begin (); 
@@ -319,18 +319,18 @@ Ipv4::RemoveRoute (uint32_t index)
 uint32_t 
 Ipv4::AddInterface (NetDevice *device)
 {
-  Ipv4Interface *interface = new ArpIpv4Interface (m_node, device);
+  Ptr<Ipv4Interface> interface = new ArpIpv4Interface (m_node, device);
   return AddIpv4Interface (interface);
 }
 uint32_t 
-Ipv4::AddIpv4Interface (Ipv4Interface *interface)
+Ipv4::AddIpv4Interface (Ptr<Ipv4Interface> interface)
 {
   uint32_t index = m_nInterfaces;
   m_interfaces.push_back (interface);
   m_nInterfaces++;
   return index;
 }
-Ipv4Interface *
+Ptr<Ipv4Interface>
 Ipv4::GetInterface (uint32_t index) const
 {
   uint32_t tmp = 0;
@@ -350,7 +350,7 @@ Ipv4::GetNInterfaces (void) const
   return m_nInterfaces;
 }
 
-Ipv4Interface *
+Ptr<Ipv4Interface>
 Ipv4::FindInterfaceForDevice (NetDevice const*device)
 {
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
@@ -434,7 +434,7 @@ Ipv4::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route
 {
   Packet packet = p;
   packet.AddHeader (ip);
-  Ipv4Interface *outInterface = GetInterface (route.GetInterface ());
+  Ptr<Ipv4Interface> outInterface = GetInterface (route.GetInterface ());
   NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
   m_txTrace (packet, route.GetInterface ());
   if (route.IsGateway ()) 
@@ -464,7 +464,7 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice *device)
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
     {
-      Ipv4Interface *interface = *i;
+      Ptr<Ipv4Interface> interface = *i;
       if (interface->PeekDevice () == device)
 	{
 	  if (ipHeader.GetDestination ().IsEqual (interface->GetBroadcast ())) 
@@ -520,49 +520,49 @@ Ipv4::ForwardUp (Packet p, Ipv4Header const&ip)
 void 
 Ipv4::SetAddress (uint32_t i, Ipv4Address address)
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetAddress (address);
 }
 void 
 Ipv4::SetNetworkMask (uint32_t i, Ipv4Mask mask)
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetNetworkMask (mask);
 }
 Ipv4Mask 
 Ipv4::GetNetworkMask (uint32_t i) const
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetNetworkMask ();
 }
 Ipv4Address 
 Ipv4::GetAddress (uint32_t i) const
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetAddress ();
 }
 uint16_t 
 Ipv4::GetMtu (uint32_t i) const
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetMtu ();
 }
 bool 
 Ipv4::IsUp (uint32_t i) const
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->IsUp ();
 }
 void 
 Ipv4::SetUp (uint32_t i)
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetUp ();
 }
 void 
 Ipv4::SetDown (uint32_t i)
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetDown ();
 }
 

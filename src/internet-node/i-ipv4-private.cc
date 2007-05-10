@@ -47,7 +47,7 @@ IIpv4Private::Send (Packet const &packet, Ipv4Address source,
 {
   m_ipv4->Send (packet, source, destination, protocol);
 }
-Ipv4Interface *
+Ptr<Ipv4Interface>
 IIpv4Private::FindInterfaceForDevice (NetDevice const*device)
 {
   return m_ipv4->FindInterfaceForDevice (device);
