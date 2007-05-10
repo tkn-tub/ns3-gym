@@ -27,16 +27,12 @@
 
 namespace ns3 {
 
-Ipv4LoopbackInterface::Ipv4LoopbackInterface (Node *node)
+Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
   : Ipv4Interface (0),
     m_node (node)
-{
-  m_node->Ref ();
-}
+{}
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
-{
-  m_node->Unref ();
-}
+{}
 
 TraceResolver *
 Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)

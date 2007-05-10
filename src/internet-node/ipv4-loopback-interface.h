@@ -23,6 +23,7 @@
 #define IPV4_LOOPBACK_INTERFACE_H
 
 #include "ipv4-interface.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -31,14 +32,14 @@ class Node;
 class Ipv4LoopbackInterface : public Ipv4Interface 
 {
  public:
-  Ipv4LoopbackInterface (Node *node);
+  Ipv4LoopbackInterface (Ptr<Node> node);
   virtual ~Ipv4LoopbackInterface ();
 
  private:
   virtual void SendTo (Packet p, Ipv4Address dest);
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
 
-  Node *m_node;
+  Ptr<Node> m_node;
 };
 
 }//namespace ns3

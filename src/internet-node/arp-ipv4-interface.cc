@@ -31,16 +31,12 @@
 
 namespace ns3 {
 
-ArpIpv4Interface::ArpIpv4Interface (Node *node, NetDevice *device)
+ArpIpv4Interface::ArpIpv4Interface (Ptr<Node> node, NetDevice *device)
   : Ipv4Interface (device),
     m_node (node)
-{
-  m_node->Ref ();
-}
+{}
 ArpIpv4Interface::~ArpIpv4Interface ()
-{
-  m_node->Unref ();
-}
+{}
 
 TraceResolver *
 ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
