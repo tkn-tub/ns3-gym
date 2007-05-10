@@ -25,6 +25,9 @@
 #include <list>
 #include <stdint.h>
 #include "assert.h"
+#include "debug.h"
+
+NS_DEBUG_COMPONENT_DEFINE ("NsUnknown");
 
 namespace ns3 {
 
@@ -80,6 +83,7 @@ void
 NsUnknownImpl::Ref (void)
 {
   m_ref++;
+  NS_DEBUG ("inc " << this << " ref=" << m_ref);
 }
 void 
 NsUnknownImpl::RefAll (NsUnknownImpl *other)
@@ -90,6 +94,7 @@ void
 NsUnknownImpl::Unref (void)
 {
   m_ref--;
+  NS_DEBUG ("dec " << this << " ref=" << m_ref);
   if (m_ref == 0)
     {
       delete this;
