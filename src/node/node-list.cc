@@ -54,6 +54,7 @@ public:
   NodeList::Iterator End (void);
   TraceResolver *CreateTraceResolver (TraceContext const &context);
   Node *PeekNode (uint32_t n);
+  Ptr<Node> GetNode (uint32_t n);
   uint32_t GetNNodes (void);
 
 private:
@@ -104,6 +105,13 @@ NodeListPriv::PeekNode (uint32_t n)
   return m_nodes[n].Peek ();
 }
 
+Ptr<Node>
+NodeListPriv::GetNode (uint32_t n)
+{
+  return m_nodes[n];
+}
+
+
 TraceResolver *
 NodeListPriv::CreateTraceResolver (TraceContext const &context)
 {
@@ -147,8 +155,7 @@ NodeList::CreateTraceResolver (TraceContext const &context)
 Ptr<Node>
 NodeList::GetNode (uint32_t n)
 {
-  Node *node = SimulationSingleton<NodeListPriv>::Get ()->PeekNode (n);
-  return node;
+  return SimulationSingleton<NodeListPriv>::Get ()->GetNode (n);
 }
 
 
