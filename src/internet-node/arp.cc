@@ -36,17 +36,13 @@ namespace ns3 {
 
 const uint16_t Arp::PROT_NUMBER = 0x0806;
 
-Arp::Arp (Node *node)
+Arp::Arp (Ptr<Node> node)
   : L3Protocol (PROT_NUMBER, 0/* XXX: correct version number ? */ ),
     m_node (node)
-{
-  m_node->Ref ();
-}
+{}
 
 Arp::~Arp ()
-{
-  Dispose ();
-}
+{}
 
 void 
 Arp::DoDispose (void)
@@ -56,11 +52,7 @@ Arp::DoDispose (void)
       delete *i;
     }
   m_cacheList.clear ();
-  if (m_node != 0)
-    {
-      m_node->Unref ();
-      m_node = 0;
-    }
+  m_node = 0;
   L3Protocol::DoDispose ();
 }
 
