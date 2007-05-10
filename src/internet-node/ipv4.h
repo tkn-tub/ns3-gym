@@ -27,6 +27,7 @@
 #include "ns3/callback-trace-source.h"
 #include "ns3/array-trace-resolver.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ptr.h"
 #include "l3-protocol.h"
 
 namespace ns3 {
@@ -58,7 +59,7 @@ public:
   };
   typedef ArrayTraceResolver<Ipv4Interface>::Index InterfaceIndex;
 
-  Ipv4(Node *node);
+  Ipv4(Ptr<Node> node);
   virtual ~Ipv4 ();
 
   /**
@@ -240,7 +241,7 @@ private:
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;
   Ipv4Route *m_defaultRoute;
-  Node *m_node;
+  Ptr<Node> m_node;
   CallbackTraceSource<Packet const &, uint32_t> m_txTrace;
   CallbackTraceSource<Packet const &, uint32_t> m_rxTrace;
   CallbackTraceSource<Packet const &> m_dropTrace;

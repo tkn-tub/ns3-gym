@@ -42,7 +42,7 @@ namespace ns3 {
 
 const uint16_t Ipv4::PROT_NUMBER = 0x0800;
 
-Ipv4::Ipv4(Node *node)
+Ipv4::Ipv4(Ptr<Node> node)
   : L3Protocol (PROT_NUMBER, 4),
     m_nInterfaces (0),
     m_defaultTtl (64),
@@ -51,12 +51,9 @@ Ipv4::Ipv4(Node *node)
     m_node (node)
 {
   SetupLoopback ();
-  m_node->Ref ();
 }
 Ipv4::~Ipv4 ()
-{
-  DoDispose ();
-}
+{}
 
 void 
 Ipv4::DoDispose (void)
@@ -83,11 +80,7 @@ Ipv4::DoDispose (void)
       delete m_defaultRoute;
       m_defaultRoute = 0;
     }
-  if (m_node != 0)
-    {
-      m_node->Unref ();
-      m_node = 0;
-    }
+  m_node = 0;
   L3Protocol::DoDispose ();
 }
 
