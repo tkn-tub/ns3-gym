@@ -31,7 +31,6 @@ namespace ns3 {
 
 class Packet;
 class NetDevice;
-class Node;
 class TraceResolver;
 class TraceContext;
 
