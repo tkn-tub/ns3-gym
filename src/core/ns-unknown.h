@@ -49,8 +49,8 @@ class NsUnknown
 {
 public:
   virtual ~NsUnknown ();
-  void Ref (void);
-  void Unref (void);
+  void Ref (void) const;
+  void Unref (void) const;
 
   /**
    * \param iid the NsUnknown id of the requested interface

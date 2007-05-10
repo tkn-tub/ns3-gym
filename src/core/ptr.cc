@@ -264,6 +264,22 @@ PtrTest::RunTests (void)
     {
       ok = false;
     }
+
+  {
+    Ptr<Object> p0 = new NoCount (cb);
+    Ptr<NoCount> p1 = new NoCount (cb);
+    if (p0 == p1)
+      {
+        ok = false;
+      }
+    if (p0 != p1)
+      {
+      }
+    else
+      {
+        ok = false;
+      }
+  }
   
 
   return ok;

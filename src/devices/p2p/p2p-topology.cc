@@ -46,14 +46,19 @@ PointToPointTopology::AddPointToPointLink(
   const Time& delay)
 {
   PointToPointChannel* channel = new PointToPointChannel(bps, delay);
+  channel->Ref ();
 
   PointToPointNetDevice* net1 = new PointToPointNetDevice(n1);
+  net1->Ref ();
+
   net1->AddQueue(Queue::Default().Copy());
   n1->AddDevice (net1);
   net1->Attach (channel);
   net1->Unref ();
   
   PointToPointNetDevice* net2 = new PointToPointNetDevice(n2);
+  net2->Ref ();
+
   net2->AddQueue(Queue::Default().Copy());
   n2->AddDevice (net2);
   net2->Attach (channel);

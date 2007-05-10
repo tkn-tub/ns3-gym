@@ -45,9 +45,17 @@ InternetNode::InternetNode()
   Arp *arp = new Arp (this);
   Udp *udp = new Udp (this);
 
+  ipv4->Ref ();
+  arp->Ref ();
+  udp->Ref ();
+
   ApplicationList *applicationList = new ApplicationList(this);
   L3Demux *l3Demux = new L3Demux(this);
   Ipv4L4Demux *ipv4L4Demux = new Ipv4L4Demux(this);
+
+  applicationList->Ref ();
+  l3Demux->Ref ();
+  ipv4L4Demux->Ref ();
 
   l3Demux->Insert (ipv4);
   l3Demux->Insert (arp);
@@ -57,6 +65,11 @@ InternetNode::InternetNode()
   IArpPrivate *arpPrivate = new IArpPrivate (arp);
   IIpv4Impl *ipv4Impl = new IIpv4Impl (ipv4);
   IIpv4Private *ipv4Private = new IIpv4Private (ipv4);
+
+  udpImpl->Ref ();
+  arpPrivate->Ref ();
+  ipv4Impl->Ref ();
+  ipv4Private->Ref ();
 
   NsUnknown::AddInterface (ipv4Private);
   NsUnknown::AddInterface (ipv4Impl);

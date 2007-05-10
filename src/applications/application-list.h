@@ -26,6 +26,7 @@
 
 #include "application.h"
 #include "ns3/ns-unknown.h"
+#include "ns3/ptr.h"
 #include <vector>
 
 namespace ns3 {
@@ -37,23 +38,15 @@ public:
   ApplicationList(Ptr<Node>);
   // Copy constructor not needed, default one is correct
   virtual ~ApplicationList();
-  // Inherited from Capabilty
-  virtual void Add(Application*);      // Add an already new'ed app
-  // Manage the list
-  template <typename T> T* AddCopy(const T& t)  // Add a new application
-  {
-    T* a = t.Copy();
-    m_apps.push_back(a);
-    return a;
-  }
-  void Remove(Application*);                // Application has finished
+  virtual void Add(Ptr<Application> application);
+
   uint32_t Count() const;  // Number of applications
-  Application* Get(uint32_t i) const; // Get app by index
+  Ptr<Application> Get(uint32_t i) const; // Get app by index
   
 protected:
   virtual void DoDispose (void);
 private:
-  std::vector<Application*> m_apps;
+  std::vector<Ptr<Application> > m_apps;
 };
 
 }//namespace ns3

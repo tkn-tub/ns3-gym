@@ -65,9 +65,10 @@ private:
 };
 
 NsUnknownImpl::NsUnknownImpl (Iid iid, NsUnknown *interface)
-  : m_ref (1),
+  : m_ref (0),
     m_disposed (false)
 {
+  NS_DEBUG ("new " << this << " ref=" << m_ref);
   m_list.push_back (std::make_pair (iid, interface));
 }
 NsUnknownImpl::~NsUnknownImpl ()
@@ -89,10 +90,12 @@ void
 NsUnknownImpl::RefAll (NsUnknownImpl *other)
 {
   m_ref += other->m_ref;
+  NS_DEBUG ("inc all " << this << " o=" << other->m_ref << " ref=" << m_ref);
 }
 void 
 NsUnknownImpl::Unref (void)
 {
+  NS_ASSERT (m_ref > 0);
   m_ref--;
   NS_DEBUG ("dec " << this << " ref=" << m_ref);
   if (m_ref == 0)
@@ -103,8 +106,10 @@ NsUnknownImpl::Unref (void)
 void
 NsUnknownImpl::UnrefAll (void)
 {
+  NS_ASSERT (m_ref > 0);
   m_ref = 0;
   delete this;
+  NS_DEBUG ("dec all " << this);
 }
 void
 NsUnknownImpl::DoDisposeAll (void)
@@ -159,14 +164,15 @@ NsUnknown::NsUnknown (Iid iid)
 NsUnknown::~NsUnknown ()
 {
   m_impl = 0;
+  m_ref = -1;
 }
 void 
-NsUnknown::Ref (void)
+NsUnknown::Ref (void) const
 {
   m_impl->Ref ();
 }
 void 
-NsUnknown::Unref (void)
+NsUnknown::Unref (void) const
 {
   m_impl->Unref ();
 }

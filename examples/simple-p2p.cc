@@ -137,7 +137,7 @@ int main (int argc, char *argv[])
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
-  OnOffApplication* ooff0 = new OnOffApplication(
+  Ptr<OnOffApplication> ooff0 = new OnOffApplication(
     n0, 
     Ipv4Address("10.1.3.2"), 
     80, 
@@ -154,10 +154,9 @@ int main (int argc, char *argv[])
   // Start the application
   ooff0->Start(Seconds(1.0));
   ooff0->Stop (Seconds(10.0));
-  ooff0->Unref ();
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  OnOffApplication* ooff1 = new OnOffApplication(
+  Ptr<OnOffApplication> ooff1 = new OnOffApplication(
     n3, 
     Ipv4Address("10.1.2.1"), 
     80, 
@@ -172,7 +171,6 @@ int main (int argc, char *argv[])
   // Start the application
   ooff1->Start(Seconds(1.1));
   ooff1->Stop (Seconds(10.0));
-  ooff1->Unref ();
 
   // Here, finish off packet routing configuration
   // This will likely set by some global StaticRouting object in the future

@@ -51,6 +51,7 @@ private:
     void operator delete (void *);
   };
   friend class Ptr<const T>;
+  void Acquire (void) const;
 public:
   /**
    * Create an empty smart pointer
@@ -109,11 +110,28 @@ public:
   template <typename T1, typename T2>
   inline friend bool operator != (T1 const *lhs, Ptr<T2> &rhs);
 
+  // allow if (sp0 == sp1)
+  template <typename T1, typename T2>
+  inline friend bool operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
+  // allow if (sp0 != sp1)
+  template <typename T1, typename T2>
+  inline friend bool operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
+
   template <typename T1, typename T2>
   inline friend Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
 
 
 };
+
+template <typename T>
+void 
+Ptr<T>::Acquire (void) const
+{
+  if (m_ptr != 0)
+    {
+      m_ptr->Ref ();
+    }  
+}
 
 template <typename T>
 Ptr<T>::Ptr ()
@@ -123,27 +141,22 @@ Ptr<T>::Ptr ()
 template <typename T>
 Ptr<T>::Ptr (T *ptr) 
   : m_ptr (ptr)
-{}
+{
+  Acquire ();
+}
 
 template <typename T>
 Ptr<T>::Ptr (Ptr const&o) 
-  : m_ptr (o.m_ptr)
+  : m_ptr (o.Peek ())
 {
-  if (m_ptr != 0) 
-    {
-      m_ptr->Ref();
-    }
+  Acquire ();
 }
 template <typename T>
 template <typename U>
 Ptr<T>::Ptr (Ptr<U> const &o)
-  : m_ptr (o.m_ptr)
+  : m_ptr (o.Peek ())
 {
-  if (m_ptr != 0) 
-    {
-      NS_ASSERT (o.m_ptr != 0);
-      m_ptr->Ref();
-    }
+  Acquire ();
 }
 
 template <typename T>
@@ -160,16 +173,15 @@ Ptr<T> &
 Ptr<T>::operator = (Ptr const& o) 
 {
   if (&o == this)
-    return *this;
+    {
+      return *this;
+    }
   if (m_ptr != 0) 
     {
       m_ptr->Unref();
     }
   m_ptr = o.m_ptr;
-  if (m_ptr != 0) 
-    {
-      m_ptr->Ref();
-    }
+  Acquire ();
   return *this;
 }
 
@@ -184,7 +196,7 @@ template <typename T>
 T * 
 Ptr<T>::Get () const
 {
-  m_ptr->Ref();
+  Acquire ();
   return m_ptr;
 }
 
@@ -245,6 +257,20 @@ operator != (T1 const *lhs, Ptr<T2> &rhs)
 {
   return lhs != rhs.m_ptr;
 }
+
+template <typename T1, typename T2>
+bool 
+operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
+{
+  return lhs.Get () == rhs.Get ();
+}
+template <typename T1, typename T2>
+bool 
+operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
+{
+  return lhs.Get () != rhs.Get ();
+}
+
 
 template <typename T1, typename T2>
 Ptr<T1>

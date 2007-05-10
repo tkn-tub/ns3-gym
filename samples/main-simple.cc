@@ -35,9 +35,10 @@ PrintTraffic (Socket *socket)
   socket->RecvDummy (MakeCallback (&SocketPrinter));
 }
 
-int main (int argc, char *argv[])
+void
+RunSimulation (void)
 {
-  InternetNode *a = new InternetNode ();
+  Ptr<InternetNode> a = new InternetNode ();
 
   IUdp *udp;
   udp = a->QueryInterface<IUdp> (IUdp::iid);
@@ -60,7 +61,13 @@ int main (int argc, char *argv[])
 
   sink->Unref ();
   source->Unref ();
-  a->Unref ();
+
+  std::cout << "o" << std::endl;
+}
+
+int main (int argc, char *argv[])
+{
+  RunSimulation ();
 
   return 0;
 }

@@ -68,7 +68,9 @@ Udp::DoDispose (void)
 Socket *
 Udp::CreateSocket (void)
 {
-  return new UdpSocket (m_node, this);
+  Socket *socket = new UdpSocket (m_node, this);
+  socket->Ref ();
+  return socket;
 }
 
 Ipv4EndPoint *

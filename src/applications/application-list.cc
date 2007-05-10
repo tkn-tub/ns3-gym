@@ -35,12 +35,12 @@ ApplicationList::ApplicationList(Ptr<Node> n)
 void 
 ApplicationList::DoDispose (void)
 {
-  for (std::vector<Application*>::const_iterator i = m_apps.begin();
+  for (std::vector<Ptr<Application> >::iterator i = m_apps.begin();
        i != m_apps.end(); ++i)
     {
-      Application *app = *i;
+      Ptr<Application> app = *i;
       app->Dispose ();
-      app->Unref ();
+      *i = 0;
     }
   m_apps.clear ();
   NsUnknown::DoDispose ();
@@ -50,9 +50,8 @@ ApplicationList::~ApplicationList()
 {}
 
 void
-ApplicationList::Add(Application* a)
+ApplicationList::Add(Ptr<Application> a)
 {
-  a->Ref ();
   m_apps.push_back(a);
 }  
 
@@ -61,9 +60,12 @@ uint32_t ApplicationList::Count() const
   return m_apps.size();
 }
 
-Application* ApplicationList::Get(uint32_t i) const
-{ // Get the i'th application. Note, this is linear time in N
-  if (m_apps.empty()) return 0;        // List is empty
+Ptr<Application> ApplicationList::Get(uint32_t i) const
+{
+  if (m_apps.empty()) 
+    {
+      return 0;
+    }
   return m_apps[i];
 }
   
