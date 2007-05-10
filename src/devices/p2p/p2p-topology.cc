@@ -79,13 +79,13 @@ PointToPointTopology::AddIpv4Addresses(
   NetDevice* nd1 = chan->GetDevice (0);
   NetDevice* nd2 = chan->GetDevice (1);
   // Make sure that nd1 belongs to n1 and nd2 to n2
-  if ( (nd1->PeekNode ()->GetId () == n2->GetId () ) && 
-       (nd2->PeekNode ()->GetId () == n1->GetId () ) )
+  if ( (nd1->GetNode ()->GetId () == n2->GetId () ) && 
+       (nd2->GetNode ()->GetId () == n1->GetId () ) )
     {
       std::swap(nd1, nd2);
     }
-  NS_ASSERT (nd1->PeekNode ()->GetId () == n1->GetId ());
-  NS_ASSERT (nd2->PeekNode ()->GetId () == n2->GetId ());
+  NS_ASSERT (nd1->GetNode ()->GetId () == n1->GetId ());
+  NS_ASSERT (nd2->GetNode ()->GetId () == n2->GetId ());
   
   IIpv4 *ip1 = n1->QueryInterface<IIpv4> (IIpv4::iid);
   uint32_t index1 = ip1->AddInterface (nd1);

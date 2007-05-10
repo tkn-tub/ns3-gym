@@ -170,7 +170,7 @@ public:
    * base class to print the nodeid for example, it can invoke
    * this method.
    */
-  Ptr<Node> PeekNode (void) const;
+  Ptr<Node> GetNode (void) const;
 
   bool NeedsArp (void) const;
 

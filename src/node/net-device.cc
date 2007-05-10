@@ -39,13 +39,10 @@ NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) :
   m_isBroadcast (false), 
   m_isMulticast (false), 
   m_isPointToPoint (false)
-{
-}
+{}
 
 NetDevice::~NetDevice ()
-{
-  m_node = 0;
-}
+{}
 
 MacAddress 
 NetDevice::GetAddress (void) const
@@ -227,7 +224,7 @@ NetDevice::NotifyLinkDown (void)
 }
 
 Ptr<Node>
-NetDevice::PeekNode (void) const
+NetDevice::GetNode (void) const
 {
   return m_node;
 }
@@ -246,6 +243,8 @@ NetDevice::SetReceiveCallback (Callback<bool,NetDevice *,const Packet &,uint16_t
 
 void
 NetDevice::DoDispose()
-{}
+{
+  m_node = 0;
+}
 
 }; // namespace ns3

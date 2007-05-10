@@ -19,9 +19,10 @@
 //
 // Topology helper for ns3.
 // George F. Riley, Georgia Tech, Spring 2007
-#include "ns3/ptr.h"
 #ifndef __POINT_TO_POINT_TOPOLOGY_H__
 #define __POINT_TO_POINT_TOPOLOGY_H__
+
+#include "ns3/ptr.h"
 
 // The topology class consists of only static methods thar are used to
 // create the topology and data flows for an ns3 simulation
