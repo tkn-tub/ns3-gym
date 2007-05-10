@@ -22,6 +22,7 @@
 #define I_UDP_IMPL_H
 
 #include "ns3/i-udp.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -30,15 +31,15 @@ class Udp;
 class IUdpImpl : public IUdp
 {
 public:
-  IUdpImpl (Udp *udp);
+  IUdpImpl (Ptr<Udp> udp);
   virtual ~IUdpImpl ();
 
-  virtual Socket *CreateSocket (void);
+  virtual Ptr<Socket> CreateSocket (void);
 
 protected:
   virtual void DoDispose (void);
 private:
-  Udp *m_udp;
+  Ptr<Udp> m_udp;
 };
 
 } // namespace ns3

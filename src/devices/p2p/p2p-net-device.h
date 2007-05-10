@@ -140,7 +140,7 @@ public:
    * @see SetInterframeGap ()
    * @param ch a pointer to the channel to which this object is being attached.
    */
-  bool Attach(PointToPointChannel* ch);
+  bool Attach(Ptr<PointToPointChannel> ch);
   /**
    * Attach a queue to the PointToPointNetDevice.
    *
@@ -189,7 +189,7 @@ protected:
    * @see PointToPointChannel
    * @returns a pointer to the channel
    */
-  virtual Channel *DoGetChannel(void) const;
+  virtual Ptr<Channel> DoGetChannel(void) const;
 private:
   /**
    * Send a Packet Down the Wire.
@@ -288,7 +288,7 @@ private:
    * attached.
    * @see class PointToPointChannel
    */
-  PointToPointChannel* m_channel;
+  Ptr<PointToPointChannel> m_channel;
   /**
    * The Queue which this PointToPointNetDevice uses as a packet source.
    * Management of this Queue has been delegated to the PointToPointNetDevice

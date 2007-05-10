@@ -65,11 +65,10 @@ Udp::DoDispose (void)
   Ipv4L4Protocol::DoDispose ();
 }
 
-Socket *
+Ptr<Socket>
 Udp::CreateSocket (void)
 {
-  Socket *socket = new UdpSocket (m_node, this);
-  socket->Ref ();
+  Ptr<Socket> socket = new UdpSocket (m_node, this);
   return socket;
 }
 
@@ -138,11 +137,10 @@ Udp::Send (Packet packet,
 
   packet.AddHeader (udpHeader);
 
-  IIpv4Private *ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  Ptr<IIpv4Private> ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
   if (ipv4 != 0)
     {
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
-      ipv4->Unref ();
     }
 }
 

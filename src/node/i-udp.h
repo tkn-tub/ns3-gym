@@ -22,6 +22,7 @@
 #define I_UDP_H
 
 #include "ns3/ns-unknown.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -34,7 +35,7 @@ public:
 
   IUdp ();
 
-  virtual Socket *CreateSocket (void) = 0;
+  virtual Ptr<Socket> CreateSocket (void) = 0;
 };
 
 } // namespace ns3

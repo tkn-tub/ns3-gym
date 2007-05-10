@@ -70,11 +70,11 @@ PointToPointChannel::PointToPointChannel(
 }
 
   void
-PointToPointChannel::Attach(PointToPointNetDevice *device)
+PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
 {
   NS_DEBUG("PointToPointChannel::Attach (" << device << ")");
   NS_ASSERT(m_nDevices < N_DEVICES && "Only two devices permitted");
-  NS_ASSERT(device);
+  NS_ASSERT(device != 0);
 
   m_link[m_nDevices].m_src = device;
   ++m_nDevices;
@@ -92,7 +92,7 @@ PointToPointChannel::Attach(PointToPointNetDevice *device)
 }
 
 bool
-PointToPointChannel::TransmitStart(Packet& p, PointToPointNetDevice* src)
+PointToPointChannel::TransmitStart(Packet& p, Ptr<PointToPointNetDevice> src)
 {
   NS_DEBUG ("PointToPointChannel::TransmitStart (" << &p << ", " << src << 
             ")");
@@ -117,7 +117,7 @@ PointToPointChannel::TransmitStart(Packet& p, PointToPointNetDevice* src)
 }
 
 bool
-PointToPointChannel::TransmitEnd(Packet& p, PointToPointNetDevice* src)
+PointToPointChannel::TransmitEnd(Packet& p, Ptr<PointToPointNetDevice> src)
 {
   NS_DEBUG("PointToPointChannel::TransmitEnd (" << &p << ", " << src << ")");
   NS_DEBUG ("PointToPointChannel::TransmitEnd (): UID is " << 
@@ -147,7 +147,7 @@ PointToPointChannel::TransmitEnd(Packet& p, PointToPointNetDevice* src)
 void
 PointToPointChannel::PropagationCompleteEvent(
   Packet p, 
-  PointToPointNetDevice *src)
+  Ptr<PointToPointNetDevice> src)
 {
   NS_DEBUG("PointToPointChannel::PropagationCompleteEvent (" << &p << ", " << 
     src << ")");
@@ -169,7 +169,7 @@ PointToPointChannel::GetNDevices (void) const
   return m_nDevices;
 }
 
-NetDevice *
+Ptr<NetDevice>
 PointToPointChannel::GetDevice (uint32_t i) const
 {
   NS_ASSERT(i < 2);

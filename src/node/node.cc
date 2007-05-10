@@ -69,16 +69,15 @@ Node::SetSystemId(uint32_t s )
 }
 
 uint32_t 
-Node::AddDevice (NetDevice *device)
+Node::AddDevice (Ptr<NetDevice> device)
 {
-  device->Ref ();
   uint32_t index = m_devices.size ();
   m_devices.push_back (device);
   DoAddDevice (device);
   device->SetIfIndex(index);
   return index;
 }
-NetDevice *
+Ptr<NetDevice>
 Node::GetDevice (uint32_t index) const
 {
   return m_devices[index];
@@ -91,12 +90,12 @@ Node::GetNDevices (void) const
 
 void Node::DoDispose()
 {
-  for (std::vector<NetDevice *>::iterator i = m_devices.begin ();
+  for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
        i != m_devices.end (); i++)
     {
-      NetDevice *device = *i;
+      Ptr<NetDevice> device = *i;
       device->Dispose ();
-      device->Unref ();
+      *i = 0;
     }
   m_devices.clear ();
   NsUnknown::DoDispose ();

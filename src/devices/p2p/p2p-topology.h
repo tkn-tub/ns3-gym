@@ -51,22 +51,22 @@ public:
    * with the specified IP addresses,  with specified maximum transmission rate
    * and propagation delay.
    */
-  static PointToPointChannel* AddPointToPointLink(
+  static Ptr<PointToPointChannel> AddPointToPointLink(
     Ptr<Node>, Ptr<Node>, const DataRate&, const Time&);
 
   static bool AddIpv4Addresses(
-    const PointToPointChannel*,
+    Ptr<const PointToPointChannel>,
     Ptr<Node>, const Ipv4Address&,
     Ptr<Node>, const Ipv4Address&);
 
   /**
    * Get the connecting node n1 to node n2
    */
-  static PointToPointChannel* GetChannel(Ptr<Node>, Ptr<Node>);
+  static Ptr<PointToPointChannel> GetChannel(Ptr<Node>, Ptr<Node>);
   /**
    * Get the NetDevice connecting node n1 to n2
    */
-  static PointToPointNetDevice* GetNetDevice(Ptr<Node>, Ptr<Node>);
+  static Ptr<PointToPointNetDevice> GetNetDevice(Ptr<Node>, Ptr<Node>);
   /**
    * Get the queue associated with a link between two nodes
    */

@@ -47,8 +47,8 @@ public:
 protected:
   virtual void DoDispose(void);
 private:
-  virtual void DoAddDevice (NetDevice *device) const;
-  bool ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const;
+  virtual void DoAddDevice (Ptr<NetDevice> device) const;
+  bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const;
   std::string      m_name;
 };
 

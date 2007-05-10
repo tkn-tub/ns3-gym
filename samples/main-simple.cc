@@ -9,7 +9,7 @@
 using namespace ns3;
 
 static void
-GenerateTraffic (Socket *socket, uint32_t size)
+GenerateTraffic (Ptr<Socket> socket, uint32_t size)
 {
   std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
   socket->Send (0, size);
@@ -24,13 +24,13 @@ GenerateTraffic (Socket *socket, uint32_t size)
 }
 
 static void
-SocketPrinter (Socket *socket, uint32_t size, const Ipv4Address &from, uint16_t fromPort)
+SocketPrinter (Ptr<Socket> socket, uint32_t size, const Ipv4Address &from, uint16_t fromPort)
 {
   std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << size << std::endl;
 }
 
 static void
-PrintTraffic (Socket *socket)
+PrintTraffic (Ptr<Socket> socket)
 {
   socket->RecvDummy (MakeCallback (&SocketPrinter));
 }
@@ -40,16 +40,13 @@ RunSimulation (void)
 {
   Ptr<InternetNode> a = new InternetNode ();
 
-  IUdp *udp;
-  udp = a->QueryInterface<IUdp> (IUdp::iid);
+  Ptr<IUdp> udp = a->QueryInterface<IUdp> (IUdp::iid);
 
-  Socket *sink = udp->CreateSocket ();
+  Ptr<Socket> sink = udp->CreateSocket ();
   sink->Bind (80);
 
-  Socket *source = udp->CreateSocket ();
+  Ptr<Socket> source = udp->CreateSocket ();
   source->Connect (Ipv4Address::GetLoopback (), 80);
-
-  udp->Unref ();
 
   GenerateTraffic (source, 500);
   PrintTraffic (sink);
@@ -58,11 +55,6 @@ RunSimulation (void)
   Simulator::Run ();
 
   Simulator::Destroy ();
-
-  sink->Unref ();
-  source->Unref ();
-
-  std::cout << "o" << std::endl;
 }
 
 int main (int argc, char *argv[])

@@ -65,7 +65,7 @@ public:
    * a working L4 Protocol and returned from this method.
    * The caller does not get ownership of the returned pointer.
    */
-  void Insert(Ipv4L4Protocol *protocol);
+  void Insert(Ptr<Ipv4L4Protocol> protocol);
   /**
    * \param protocolNumber number of protocol to lookup
    *        in this L4 Demux
@@ -75,17 +75,17 @@ public:
    * to forward packets up the stack to the right protocol.
    * It is also called from InternetNode::GetUdp for example.
    */
-  Ipv4L4Protocol* PeekProtocol(int protocolNumber);
+  Ptr<Ipv4L4Protocol> GetProtocol(int protocolNumber);
   /**
    * \param protocol protocol to remove from this demux.
    *
    * The input value to this method should be the value
    * returned from the Ipv4L4Protocol::Insert method.
    */
-  void Erase(Ipv4L4Protocol*protocol);
+  void Erase (Ptr<Ipv4L4Protocol> protocol);
 private:
   virtual void DoDispose (void);
-  typedef std::list<Ipv4L4Protocol*> L4List_t;
+  typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;
   L4List_t m_protocols;
   Ptr<Node> m_node;
 };

@@ -25,6 +25,7 @@
 #include <string>
 #include <stdint.h>
 #include "ns3/object.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -57,7 +58,7 @@ public:
    *
    * This method must be implemented by subclasses.
    */
-  virtual NetDevice *GetDevice (uint32_t i) const = 0;
+  virtual Ptr<NetDevice> GetDevice (uint32_t i) const = 0;
 
 protected:
   virtual ~Channel ();

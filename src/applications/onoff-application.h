@@ -71,7 +71,7 @@ public: // Static methods
   static void DefaultSize(uint32_t s) { g_defaultSize = s;}
 
 public:
-  Socket        * m_socket;       // Associated socket
+  Ptr<Socket>     m_socket;       // Associated socket
   Ipv4Address     m_peerIP;       // Peer IP address
   uint16_t        m_peerPort;     // Peer port
   bool            m_connected;    // True if connected
@@ -97,9 +97,9 @@ private:
   void ScheduleNextTx();
   void ScheduleStartEvent();
   void ScheduleStopEvent();
-  void ConnectionSucceeded(Socket*);
-  void ConnectionFailed(Socket*);
-  void Ignore(Socket*);
+  void ConnectionSucceeded(Ptr<Socket>);
+  void ConnectionFailed(Ptr<Socket>);
+  void Ignore(Ptr<Socket>);
 protected:
 };
 

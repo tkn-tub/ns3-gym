@@ -35,15 +35,15 @@ class IArpPrivate : public NsUnknown
 {
 public:
   static const Iid iid;
-  IArpPrivate (Arp *arp);
+  IArpPrivate (Ptr<Arp> arp);
   virtual ~IArpPrivate ();
   bool Lookup (Packet &p, Ipv4Address destination, 
-	       NetDevice *device,
+	       Ptr<NetDevice> device,
 	       MacAddress *hardwareDestination);
 protected:
   virtual void DoDispose (void);
 private:
-  Arp *m_arp;
+  Ptr<Arp> m_arp;
 };
 
 } // namespace ns3

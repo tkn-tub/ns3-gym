@@ -81,17 +81,11 @@ PointToPointNetDevice::PointToPointNetDevice (const PointToPointNetDevice& nd)
   m_txMachineState(READY),
   m_bps (nd.m_bps),
   m_tInterframeGap (nd.m_tInterframeGap),
-  m_channel(0), 
+  m_channel(nd.m_channel), 
   m_queue(0),
   m_rxTrace ()
 {
   NS_DEBUG ("PointToPointNetDevice::PointToPointNetDevice (" << &nd << ")");
-
-  if (nd.m_channel)
-    {
-      m_channel = nd.m_channel;
-      m_channel->Ref ();
-    }
 
   if (nd.m_queue)
     {
@@ -102,12 +96,8 @@ PointToPointNetDevice::PointToPointNetDevice (const PointToPointNetDevice& nd)
 
 void PointToPointNetDevice::DoDispose()
 {
- if (m_channel != 0)
- {
-   m_channel->Unref ();
-   m_channel = 0;
- }
- NetDevice::DoDispose ();
+  m_channel = 0;
+  NetDevice::DoDispose ();
 }
 
 //
@@ -305,18 +295,11 @@ PointToPointNetDevice::DoCreateTraceResolver (TraceContext const &context)
 }
 
 bool
-PointToPointNetDevice::Attach (PointToPointChannel* ch)
+PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 {
   NS_DEBUG ("PointToPointNetDevice::Attach (" << &ch << ")");
 
-  if (m_channel)
-    {
-      m_channel->Unref ();
-      m_channel = 0;
-    }
-
   m_channel = ch;
-  m_channel->Ref ();
 
   m_channel->Attach(this);
   m_bps = m_channel->GetDataRate ();
@@ -358,10 +341,9 @@ PointToPointNetDevice::GetQueue(void) const
     return m_queue;
 }
 
-Channel* 
+Ptr<Channel>
 PointToPointNetDevice::DoGetChannel(void) const 
 { 
-    m_channel->Ref();
     return m_channel;
 }
 

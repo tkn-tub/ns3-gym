@@ -43,10 +43,10 @@ Ipv4L4Demux::~Ipv4L4Demux()
 void
 Ipv4L4Demux::DoDispose (void)
 {
-  for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
+  for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       (*i)->Dispose ();
-      (*i)->Unref ();
+      *i = 0;
     }
   m_protocols.clear ();
   m_node = 0;
@@ -59,25 +59,24 @@ Ipv4L4Demux::CreateTraceResolver (TraceContext const &context)
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
-      Ipv4L4Protocol *protocol = *i;
+      Ptr<Ipv4L4Protocol> protocol = *i;
       std::string protValue;
       std::ostringstream oss (protValue);
       oss << (*i)->GetProtocolNumber ();
       Ipv4L4ProtocolTraceType protocolNumber = (*i)->GetProtocolNumber ();
       resolver->Add (protValue,
-                     MakeCallback (&Ipv4L4Protocol::CreateTraceResolver, protocol),
+                     MakeCallback (&Ipv4L4Protocol::CreateTraceResolver, protocol.Peek ()),
                      protocolNumber);
     }
   return resolver;
 }
 void
-Ipv4L4Demux::Insert(Ipv4L4Protocol *protocol)
+Ipv4L4Demux::Insert(Ptr<Ipv4L4Protocol> protocol)
 {
-  protocol->Ref ();
   m_protocols.push_back (protocol);
 }
-Ipv4L4Protocol* 
-Ipv4L4Demux::PeekProtocol(int protocolNumber)
+Ptr<Ipv4L4Protocol>
+Ipv4L4Demux::GetProtocol(int protocolNumber)
 {
   for (L4List_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
@@ -89,7 +88,7 @@ Ipv4L4Demux::PeekProtocol(int protocolNumber)
   return 0;
 }
 void
-Ipv4L4Demux::Erase(Ipv4L4Protocol*protocol)
+Ipv4L4Demux::Erase(Ptr<Ipv4L4Protocol> protocol)
 {
   m_protocols.remove (protocol);
 }

@@ -49,10 +49,10 @@ bool operator == (const ClassId &a, const ClassId &b)
   return a.m_classId == b.m_classId;
 }
 
-NsUnknown *
+Ptr<NsUnknown>
 NsUnknownManager::Create (ClassId classId)
 {
-  Callback<NsUnknown *> callback = DoGetCallback<empty,empty,empty,empty,empty> (classId);
+  Callback<Ptr<NsUnknown> > callback = DoGetCallback<empty,empty,empty,empty,empty> (classId);
   return callback ();
 }
 
@@ -141,9 +141,8 @@ A::A ()
     m_oneBoolInvoked (false),
     m_oneUi32Invoked (false)
 {
-  B *b = new B ();
+  ns3::Ptr<B> b = new B ();
   AddInterface (b);
-  b->Unref ();
 }
 
 A::A (bool bo)
@@ -153,9 +152,8 @@ A::A (bool bo)
     m_oneUi32Invoked (false),
     m_bool (bo)
 {
-  B *b = new B ();
+  ns3::Ptr<B> b = new B ();
   AddInterface (b);
-  b->Unref ();
 }
 
 A::A (uint32_t i)
@@ -165,9 +163,8 @@ A::A (uint32_t i)
     m_oneUi32Invoked (true),
     m_ui32 (i)
 {
-  B *b = new B ();
+  ns3::Ptr<B> b = new B ();
   AddInterface (b);
-  b->Unref ();
 }
 
 }
@@ -189,14 +186,13 @@ NsUnknownManagerTest::RunTests (void)
 {
   bool ok = true;
 
-  A *a = 0;
+  Ptr<A> a = 0;
   a = NsUnknownManager::Create<A> (A::cidZero, A::iid);
   if (a == 0 ||
       !a->m_zeroInvoked)
     {
       ok = false;
     }
-  a->Unref ();
 
   a = NsUnknownManager::Create<A,bool> (A::cidOneBool, A::iid, true);
   if (a == 0 ||
@@ -205,7 +201,6 @@ NsUnknownManagerTest::RunTests (void)
     {
       ok = false;
     }
-  a->Unref ();
 
   a = NsUnknownManager::Create<A,bool> (A::cidOneBool, A::iid, false);
   if (a == 0 ||
@@ -214,7 +209,6 @@ NsUnknownManagerTest::RunTests (void)
     {
       ok = false;
     }
-  a->Unref ();
 
   a = NsUnknownManager::Create<A,uint32_t> (A::cidOneUi32, A::iid, 10);
   if (a == 0 ||
@@ -223,7 +217,6 @@ NsUnknownManagerTest::RunTests (void)
     {
       ok = false;
     }
-  a->Unref ();
 
   a = NsUnknownManager::Create<A> (A::cidOneUi32, A::iid, (uint32_t)10);
   if (a == 0 ||
@@ -232,14 +225,12 @@ NsUnknownManagerTest::RunTests (void)
     {
       ok = false;
     }
-  a->Unref ();
 
-  B *b = NsUnknownManager::Create<B,uint32_t> (A::cidOneUi32, B::iid, 10);
+  Ptr<B> b = NsUnknownManager::Create<B,uint32_t> (A::cidOneUi32, B::iid, 10);
   if (b == 0)
     {
       ok = false;
     }
-  b->Unref ();
 
   return ok;
 }

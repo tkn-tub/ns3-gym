@@ -43,7 +43,7 @@ class ArpIpv4Interface : public Ipv4Interface
     NETDEVICE,
     ARP,
   };
-  ArpIpv4Interface (Ptr<Node> node, NetDevice *device);
+  ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device);
   virtual ~ArpIpv4Interface ();
 
  private:

@@ -79,7 +79,7 @@ public:
    *         returned can be zero if the NetDevice is not yet connected
    *         to any channel.
    */
-  Channel *GetChannel (void) const;
+  Ptr<Channel> GetChannel (void) const;
 
   /**
    * \return the current MacAddress of this interface.
@@ -174,7 +174,7 @@ public:
 
   bool NeedsArp (void) const;
 
-  void SetReceiveCallback (Callback<bool,NetDevice *,const Packet &,uint16_t> cb);
+  void SetReceiveCallback (Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> cb);
 
  protected:
   /**
@@ -241,7 +241,7 @@ public:
   virtual bool SendTo (Packet& p, const MacAddress& dest) = 0;
   virtual bool DoNeedsArp (void) const = 0;
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
-  virtual Channel *DoGetChannel (void) const = 0;
+  virtual Ptr<Channel> DoGetChannel (void) const = 0;
   Ptr<Node>         m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
@@ -253,7 +253,7 @@ public:
   bool          m_isMulticast;
   bool          m_isPointToPoint;
   Callback<void> m_linkChangeCallback;
-  Callback<bool,NetDevice *,const Packet &,uint16_t> m_receiveCallback;
+  Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> m_receiveCallback;
 };
 
 }; // namespace ns3

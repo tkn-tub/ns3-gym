@@ -22,7 +22,7 @@
 #define INTERFACE_H
 
 #include <string>
-
+#include "ptr.h"
 
 namespace ns3 {
 
@@ -56,7 +56,7 @@ public:
    * \param iid the NsUnknown id of the requested interface
    */
   template <typename T>
-  T *QueryInterface (Iid iid) const;
+  Ptr<T> QueryInterface (Iid iid) const;
 
   /**
    * \param interface another interface
@@ -66,7 +66,7 @@ public:
    * will be able to perform QI on each other and their lifetimes
    * will be found by the same reference count.
    */
-  void AddInterface (NsUnknown *interface);
+  void AddInterface (Ptr<NsUnknown> interface);
 
   void Dispose (void);
 protected:
@@ -87,7 +87,7 @@ protected:
    * (typically, your subclass has added API), you need to call
    * this method to associate an interface id to your interface.
    */
-  void AddSelfInterface (Iid iid, NsUnknown *interface);
+  void AddSelfInterface (Iid iid, Ptr<NsUnknown> interface);
 protected:
   /**
    * Subclasses who want to handle the "dispose" event should
@@ -99,7 +99,7 @@ protected:
 private:
   friend class NsUnknownImpl;
   NsUnknown ();
-  NsUnknown *DoQueryInterface (Iid iid) const;
+  Ptr<NsUnknown> DoQueryInterface (Iid iid) const;
   void RefInternal (void);
   void UnrefInternal (void);
   NsUnknownImpl *m_impl;
@@ -111,13 +111,13 @@ private:
 namespace ns3 {
 
 template <typename T>
-T *
+Ptr<T>
 NsUnknown::QueryInterface (Iid iid) const
 {
-  NsUnknown *found = DoQueryInterface (iid);
+  Ptr<NsUnknown> found = DoQueryInterface (iid);
   if (found != 0)
     {
-      return dynamic_cast<T *> (found);
+      return Ptr<T> (dynamic_cast<T *> (found.Peek ()));
     }
   return 0;
 }

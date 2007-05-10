@@ -116,7 +116,7 @@ public:
    * to disable it, you can invoke Ipv4Interface::SetDown which will
    * make sure that it is never used during packet forwarding.
    */
-  virtual uint32_t AddInterface (NetDevice *device) = 0;
+  virtual uint32_t AddInterface (Ptr<NetDevice> device) = 0;
   /**
    * \returns the number of interfaces added by the user.
    */

@@ -27,6 +27,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/node.h"
+#include "ns3/net-device.h"
 
 #include "ipv4.h"
 #include "ipv4-l4-protocol.h"
@@ -310,7 +311,7 @@ Ipv4::RemoveRoute (uint32_t index)
 
 
 uint32_t 
-Ipv4::AddInterface (NetDevice *device)
+Ipv4::AddInterface (Ptr<NetDevice> device)
 {
   Ipv4Interface *interface = new ArpIpv4Interface (m_node, device);
   return AddIpv4Interface (interface);
@@ -344,11 +345,11 @@ Ipv4::GetNInterfaces (void) const
 }
 
 Ipv4Interface *
-Ipv4::FindInterfaceForDevice (NetDevice const*device)
+Ipv4::FindInterfaceForDevice (Ptr<const NetDevice> device)
 {
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
-      if ((*i)->PeekDevice () == device)
+      if ((*i)->GetDevice () == device)
         {
           return *i;
         }
@@ -357,12 +358,12 @@ Ipv4::FindInterfaceForDevice (NetDevice const*device)
 }  
 
 void 
-Ipv4::Receive(Packet& packet, NetDevice *device)
+Ipv4::Receive(Packet& packet, Ptr<NetDevice> device)
 {
   uint32_t index = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
-      if ((*i)->PeekDevice () == device)
+      if ((*i)->GetDevice () == device)
         {
           m_rxTrace (packet, index);
           break;
@@ -442,7 +443,7 @@ Ipv4::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route
 
 
 bool
-Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice *device)
+Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device)
 {
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
@@ -458,7 +459,7 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice *device)
        i != m_interfaces.end (); i++) 
     {
       Ipv4Interface *interface = *i;
-      if (interface->PeekDevice () == device)
+      if (interface->GetDevice () == device)
 	{
 	  if (ipHeader.GetDestination ().IsEqual (interface->GetBroadcast ())) 
 	    {
@@ -504,9 +505,8 @@ Ipv4::Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice *device)
 void
 Ipv4::ForwardUp (Packet p, Ipv4Header const&ip)
 {
-  Ipv4L4Demux *demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
-  Ipv4L4Protocol *protocol = demux->PeekProtocol (ip.GetProtocol ());
-  demux->Unref ();
+  Ptr<Ipv4L4Demux> demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
+  Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());
   protocol->Receive (p, ip.GetSource (), ip.GetDestination ());
 }
 

@@ -63,18 +63,17 @@ Arp::CreateTraceResolver (TraceContext const &context)
 }
 
 ArpCache *
-Arp::FindCache (NetDevice *device)
+Arp::FindCache (Ptr<NetDevice> device)
 {
   for (CacheList::const_iterator i = m_cacheList.begin (); i != m_cacheList.end (); i++)
     {
-      if ((*i)->PeekDevice () == device)
+      if ((*i)->GetDevice () == device)
 	{
 	  return *i;
 	}
     }
-  IIpv4Private *ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  Ptr<IIpv4Private> ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
   Ipv4Interface *interface = ipv4->FindInterfaceForDevice (device);
-  ipv4->Unref ();
   ArpCache * cache = new ArpCache (device, interface);
   NS_ASSERT (device->IsBroadcast ());
   device->SetLinkChangeCallback (MakeCallback (&ArpCache::Flush, cache));
@@ -83,7 +82,7 @@ Arp::FindCache (NetDevice *device)
 }
 
 void 
-Arp::Receive(Packet& packet, NetDevice *device)
+Arp::Receive(Packet& packet, Ptr<NetDevice> device)
 {
   ArpCache *cache = FindCache (device);
   ArpHeader arp;
@@ -132,7 +131,7 @@ Arp::Receive(Packet& packet, NetDevice *device)
 }
 bool 
 Arp::Lookup (Packet &packet, Ipv4Address destination, 
-	     NetDevice *device,
+	     Ptr<NetDevice> device,
 	     MacAddress *hardwareDestination)
 {
   ArpCache *cache = FindCache (device);
@@ -204,25 +203,25 @@ void
 Arp::SendArpRequest (ArpCache const *cache, Ipv4Address to)
 {
   ArpHeader arp;
-  arp.SetRequest (cache->PeekDevice ()->GetAddress (),
+  arp.SetRequest (cache->GetDevice ()->GetAddress (),
 		  cache->GetInterface ()->GetAddress (), 
-                  cache->PeekDevice ()->GetBroadcast (),
+                  cache->GetDevice ()->GetBroadcast (),
                   to);
   Packet packet;
   packet.AddHeader (arp);
-  cache->PeekDevice ()->Send (packet, cache->PeekDevice ()->GetBroadcast (), PROT_NUMBER);
+  cache->GetDevice ()->Send (packet, cache->GetDevice ()->GetBroadcast (), PROT_NUMBER);
 }
 
 void
 Arp::SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac)
 {
   ArpHeader arp;
-  arp.SetReply (cache->PeekDevice ()->GetAddress (),
+  arp.SetReply (cache->GetDevice ()->GetAddress (),
                 cache->GetInterface ()->GetAddress (),
                 toMac, toIp);
   Packet packet;
   packet.AddHeader (arp);
-  cache->PeekDevice ()->Send (packet, toMac, PROT_NUMBER);
+  cache->GetDevice ()->Send (packet, toMac, PROT_NUMBER);
 }
 
 }//namespace ns3

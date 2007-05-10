@@ -31,26 +31,16 @@ namespace ns3 {
    * becoming useable, the user must invoke SetUp on them
    * once the final Ipv4 address and mask has been set.
    */
-Ipv4Interface::Ipv4Interface (NetDevice *nd) 
+Ipv4Interface::Ipv4Interface (Ptr<NetDevice> nd) 
   : m_netdevice (nd), 
     m_ifup(false)
-{
-  if (m_netdevice != 0)
-    {
-      m_netdevice->Ref ();
-    }
-}
+{}
 
 Ipv4Interface::~Ipv4Interface ()
-{
-  if (m_netdevice != 0)
-    {
-      m_netdevice->Unref ();
-    }
-}
+{}
 
-NetDevice*
-Ipv4Interface::PeekDevice (void) const
+Ptr<NetDevice>
+Ipv4Interface::GetDevice (void) const
 {
   return m_netdevice;
 }

@@ -92,11 +92,7 @@ OnOffApplication::~OnOffApplication()
 void
 OnOffApplication::DoDispose (void)
 {
-  if (m_socket != 0)
-    {
-      m_socket->Unref ();
-      m_socket = 0;
-    }
+  m_socket = 0;
   delete m_onTime;
   delete m_offTime;
 
@@ -170,9 +166,8 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
                                      this));
 #endif
       
-      IUdp *udp = GetNode ()->QueryInterface<IUdp> (IUdp::iid);
+      Ptr<IUdp> udp = GetNode ()->QueryInterface<IUdp> (IUdp::iid);
       m_socket = udp->CreateSocket ();
-      udp->Unref ();
       m_socket->Connect (m_peerIP, m_peerPort);
     }
   StopApplication();                         // Insure no pending event
@@ -263,13 +258,13 @@ void OnOffApplication::SendPacket()
   ScheduleNextTx();
 }
 
-void OnOffApplication::ConnectionSucceeded(Socket*)
+void OnOffApplication::ConnectionSucceeded(Ptr<Socket>)
 {
   m_connected = true;
   ScheduleStartEvent();
 }
   
-void OnOffApplication::ConnectionFailed(Socket*)
+void OnOffApplication::ConnectionFailed(Ptr<Socket>)
 {
   cout << "OnOffApplication, Connection Failed" << endl;
 }

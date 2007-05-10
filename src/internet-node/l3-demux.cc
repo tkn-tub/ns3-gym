@@ -45,7 +45,7 @@ L3Demux::DoDispose (void)
   for (L3Map_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       i->second->Dispose ();
-      i->second->Unref ();
+      i->second = 0;
     }
   m_protocols.clear ();
   m_node = 0;
@@ -63,23 +63,25 @@ L3Demux::CreateTraceResolver (TraceContext const &context) const
       oss << i->second->GetProtocolNumber ();
       ProtocolTraceType context = i->second->GetProtocolNumber ();
       resolver->Add (protValue, 
-                     MakeCallback (&L3Protocol::CreateTraceResolver, i->second),
+                     MakeCallback (&L3Protocol::CreateTraceResolver, i->second.Peek ()),
                      context);
     }
   return resolver;
 }
   
-void L3Demux::Insert(L3Protocol *p)
+void L3Demux::Insert(Ptr<L3Protocol> p)
 {
-  p->Ref ();
   m_protocols.insert(L3Map_t::value_type(p->GetProtocolNumber (), p));
 }
 
-L3Protocol* 
-L3Demux::PeekProtocol (int p)
+Ptr<L3Protocol>
+L3Demux::GetProtocol (int p)
 { // Look up a protocol by protocol number
   L3Map_t::iterator i = m_protocols.find(p);
-  if (i == m_protocols.end()) return 0;  // Not found
+  if (i == m_protocols.end()) 
+    {
+      return 0;
+    }
   return i->second; // Return the protocol
 }
 

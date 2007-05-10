@@ -21,17 +21,16 @@
 #include "i-ipv4-private.h"
 #include "ipv4.h"
 #include "ns3/assert.h"
+#include "ns3/net-device.h"
 
 namespace ns3 {
 
 const Iid IIpv4Private::iid ("IIpv4Private");
 
-IIpv4Private::IIpv4Private (Ipv4 *ipv4)
+IIpv4Private::IIpv4Private (Ptr<Ipv4> ipv4)
   : NsUnknown (IIpv4Private::iid),
     m_ipv4 (ipv4)
-{
-  m_ipv4->Ref ();
-}
+{}
 IIpv4Private::~IIpv4Private ()
 {
   NS_ASSERT (m_ipv4 == 0);
@@ -48,19 +47,18 @@ IIpv4Private::Send (Packet const &packet, Ipv4Address source,
   m_ipv4->Send (packet, source, destination, protocol);
 }
 Ipv4Interface *
-IIpv4Private::FindInterfaceForDevice (NetDevice const*device)
+IIpv4Private::FindInterfaceForDevice (Ptr<const NetDevice>device)
 {
   return m_ipv4->FindInterfaceForDevice (device);
 }
 void 
-IIpv4Private::Receive(Packet& p, NetDevice *device)
+IIpv4Private::Receive(Packet& p, Ptr<NetDevice> device)
 {
   m_ipv4->Receive (p, device);
 }
 void 
 IIpv4Private::DoDispose (void)
 {
-  m_ipv4->Unref ();
   m_ipv4 = 0;
   NsUnknown::DoDispose ();
 }

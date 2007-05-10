@@ -26,7 +26,7 @@
 
 namespace ns3 {
 
-UdpSocket::UdpSocket (Ptr<Node> node, Udp *udp)
+UdpSocket::UdpSocket (Ptr<Node> node, Ptr<Udp> udp)
   : m_endPoint (0),
     m_node (node),
     m_udp (udp),
@@ -34,9 +34,7 @@ UdpSocket::UdpSocket (Ptr<Node> node, Udp *udp)
     m_shutdownSend (false),
     m_shutdownRecv (false),
     m_connected (false)
-{
-  m_udp->Ref ();
-}
+{}
 UdpSocket::~UdpSocket ()
 {
   m_node = 0;
@@ -55,11 +53,7 @@ UdpSocket::~UdpSocket ()
       m_udp->DeAllocate (m_endPoint);
       NS_ASSERT (m_endPoint == 0);
     }
-  if (m_udp != 0)
-    {
-      m_udp->Unref ();
-      m_udp = 0;
-    }
+  m_udp = 0;
 }
 
 Ptr<Node>
@@ -73,11 +67,7 @@ UdpSocket::Destroy (void)
 {
   m_node = 0;
   m_endPoint = 0;
-  if (m_udp != 0)
-    {
-      m_udp->Unref ();
-      m_udp = 0;
-    }
+  m_udp = 0;
 }
 int
 UdpSocket::FinishBind (void)
@@ -135,7 +125,7 @@ UdpSocket::ShutdownRecv (void)
 }
 
 void 
-UdpSocket::DoClose(ns3::Callback<void, Socket*> closeCompleted)
+UdpSocket::DoClose(ns3::Callback<void, Ptr<Socket> > closeCompleted)
 {
   // XXX: we should set the close state and check it in all API methods.
   if (!closeCompleted.IsNull ())
@@ -146,9 +136,9 @@ UdpSocket::DoClose(ns3::Callback<void, Socket*> closeCompleted)
 void 
 UdpSocket::DoConnect(const Ipv4Address & address,
                      uint16_t portNumber,
-                     ns3::Callback<void, Socket*> connectionSucceeded,
-                     ns3::Callback<void, Socket*> connectionFailed,
-                     ns3::Callback<void, Socket*> halfClose)
+                     ns3::Callback<void, Ptr<Socket> > connectionSucceeded,
+                     ns3::Callback<void, Ptr<Socket> > connectionFailed,
+                     ns3::Callback<void, Ptr<Socket> > halfClose)
 {
   m_defaultAddress = address;
   m_defaultPort = portNumber;
@@ -159,9 +149,9 @@ UdpSocket::DoConnect(const Ipv4Address & address,
   m_connected = true;
 }
 int
-UdpSocket::DoAccept(ns3::Callback<bool, Socket*, const Ipv4Address&, uint16_t> connectionRequest,
-                    ns3::Callback<void, Socket*, const Ipv4Address&, uint16_t> newConnectionCreated,
-                    ns3::Callback<void, Socket*> closeRequested)
+UdpSocket::DoAccept(ns3::Callback<bool, Ptr<Socket>, const Ipv4Address&, uint16_t> connectionRequest,
+                    ns3::Callback<void, Ptr<Socket>, const Ipv4Address&, uint16_t> newConnectionCreated,
+                    ns3::Callback<void, Ptr<Socket> > closeRequested)
 {
   // calling accept on a udp socket is a programming error.
   m_errno = EOPNOTSUPP;
@@ -170,7 +160,7 @@ UdpSocket::DoAccept(ns3::Callback<bool, Socket*, const Ipv4Address&, uint16_t> c
 int 
 UdpSocket::DoSend (const uint8_t* buffer,
                    uint32_t size,
-                   ns3::Callback<void, Socket*, uint32_t> dataSent)
+                   ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   if (!m_connected)
     {
@@ -190,7 +180,7 @@ UdpSocket::DoSend (const uint8_t* buffer,
 }
 int
 UdpSocket::DoSendPacketTo (const Packet &p, Ipv4Address daddr, uint16_t dport,
-                           ns3::Callback<void, Socket*, uint32_t> dataSent)
+                           ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   if (m_endPoint == 0)
     {
@@ -219,7 +209,7 @@ UdpSocket::DoSendTo(const Ipv4Address &address,
                     uint16_t port,
                     const uint8_t *buffer,
                     uint32_t size,
-                    ns3::Callback<void, Socket*, uint32_t> dataSent)
+                    ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   if (m_connected)
     {
@@ -238,12 +228,12 @@ UdpSocket::DoSendTo(const Ipv4Address &address,
   return DoSendPacketTo (p, address, port, dataSent);
 }
 void 
-UdpSocket::DoRecv(ns3::Callback<void, Socket*, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> callback)
+UdpSocket::DoRecv(ns3::Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> callback)
 {
   m_rxCallback = callback;
 }
 void 
-UdpSocket::DoRecvDummy(ns3::Callback<void, Socket*, uint32_t,const Ipv4Address&, uint16_t> callback)
+UdpSocket::DoRecvDummy(ns3::Callback<void, Ptr<Socket>, uint32_t,const Ipv4Address&, uint16_t> callback)
 {
   m_dummyRxCallback = callback;
 }

@@ -22,6 +22,7 @@
 #define I_IPV4_IMPL_H
 
 #include "ns3/i-ipv4.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -30,7 +31,7 @@ class Ipv4;
 class IIpv4Impl : public IIpv4
 {
 public:
-  IIpv4Impl (Ipv4 *ipv4);
+  IIpv4Impl (Ptr<Ipv4> ipv4);
 
   virtual ~IIpv4Impl ();
 
@@ -51,7 +52,7 @@ public:
   virtual uint32_t GetNRoutes (void);
   virtual Ipv4Route *GetRoute (uint32_t i);
   virtual void RemoveRoute (uint32_t i);
-  virtual uint32_t AddInterface (NetDevice *device);
+  virtual uint32_t AddInterface (Ptr<NetDevice> device);
   virtual uint32_t GetNInterfaces (void);  
 
   virtual void SetAddress (uint32_t i, Ipv4Address address);
@@ -65,7 +66,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ipv4 *m_ipv4;
+  Ptr<Ipv4> m_ipv4;
 };
 
 } // namespace ns3

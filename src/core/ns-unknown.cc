@@ -53,9 +53,9 @@ public:
   void RefAll (NsUnknownImpl *other);
   void Unref (void);
   void UnrefAll (void);
-  NsUnknown *DoQueryInterface (Iid iid) const;
+  NsUnknown *PeekQueryInterface (Iid iid) const;
   void DoDisposeAll (void);
-  void AddInterface (NsUnknown *interface);
+  void AddInterface (NsUnknown * interface);
   void AddSelfInterface (Iid iid, NsUnknown *interface);
 private:
   typedef std::list<std::pair<Iid,NsUnknown *> > List;
@@ -64,7 +64,7 @@ private:
   bool m_disposed;
 };
 
-NsUnknownImpl::NsUnknownImpl (Iid iid, NsUnknown *interface)
+NsUnknownImpl::NsUnknownImpl (Iid iid, NsUnknown * interface)
   : m_ref (0),
     m_disposed (false)
 {
@@ -124,14 +124,13 @@ NsUnknownImpl::DoDisposeAll (void)
   m_disposed = true;
 }
 NsUnknown *
-NsUnknownImpl::DoQueryInterface (Iid iid) const
+NsUnknownImpl::PeekQueryInterface (Iid iid) const
 {
   for (List::const_iterator i = m_list.begin ();
        i != m_list.end (); i++)
     {
       if (i->first == iid)
 	{
-	  i->second->Ref ();
 	  return i->second;
 	}
     }
@@ -206,25 +205,26 @@ NsUnknown::UnrefInternal (void)
     }
 }
 
-NsUnknown *
+Ptr<NsUnknown>
 NsUnknown::DoQueryInterface (Iid iid) const
 {
-  return m_impl->DoQueryInterface (iid);
+  return m_impl->PeekQueryInterface (iid);
 }
 
 void 
-NsUnknown::AddInterface (NsUnknown *interface)
+NsUnknown::AddInterface (Ptr<NsUnknown> interface)
 {
-  m_impl->AddInterface (interface);
-  m_impl->RefAll (interface->m_impl);
-  interface->m_impl->UnrefAll ();
-  interface->m_impl = m_impl;
+  NsUnknown *p = interface.Peek ();
+  m_impl->AddInterface (p);
+  m_impl->RefAll (p->m_impl);
+  p->m_impl->UnrefAll ();
+  p->m_impl = m_impl;
 }
 
 void
-NsUnknown::AddSelfInterface (Iid iid, NsUnknown *interface)
+NsUnknown::AddSelfInterface (Iid iid, Ptr<NsUnknown> interface)
 {
-  m_impl->AddSelfInterface (iid, interface);
+  m_impl->AddSelfInterface (iid, interface.Peek ());
 }
 
 
@@ -316,31 +316,26 @@ InterfaceTest::RunTests (void)
   //DerivedAB *derivedAB;
 
 
-  A *a = new A ();
-  a->Unref ();
+  Ptr<A> a = new A ();
 
   a = new A ();
-  A *a1 = a->QueryInterface<A> (A::iid);
+  Ptr<A> a1 = a->QueryInterface<A> (A::iid);
   if (a1 == 0 || a1 != a)
     {
       ok = false;
     }
-  a1->Unref ();
   a1 = a->QueryInterface<A> (A::iid);
   if (a1 == 0 || a1 != a)
     {
       ok = false;
     }
-  a1->Unref ();
-  a->Unref ();
 
-  B *b = new B ();
-  B *b1 = b->QueryInterface<B> (B::iid);
+  Ptr<B> b = new B ();
+  Ptr<B> b1 = b->QueryInterface<B> (B::iid);
   if (b1 == 0 || b1 != b)
     {
       ok = false;
     }
-  b1->Unref ();
   
   a = new A ();
   a->AddInterface (b);
@@ -349,43 +344,33 @@ InterfaceTest::RunTests (void)
     {
       ok = false;
     }
-  b1->Unref ();
   a1 = b->QueryInterface<A> (A::iid);
   if (a1 == 0 || a1 != a)
     {
       ok = false;
     }
-  a1->Unref ();
   a1 = a->QueryInterface<A> (A::iid);
   if (a1 == 0 || a1 != a)
     {
       ok = false;
     }
-  a1->Unref ();
   b1 = a->QueryInterface<B> (B::iid);
   if (b1 == 0 || b1 != b)
     {
       ok = false;
     }
-  b1->Unref ();
-  
-  a->Unref ();
-  b->Unref ();
 
-  Derived *derived = new Derived ();
-  Base *base = derived->QueryInterface<Base> (Base::iid);
+  Ptr<Derived> derived = new Derived ();
+  Ptr<Base> base = derived->QueryInterface<Base> (Base::iid);
   if (base == 0)
     {
       ok = false;
     }
-  Derived *derived1 = base->QueryInterface<Derived> (Derived::iid);
+  Ptr<Derived> derived1 = base->QueryInterface<Derived> (Derived::iid);
   if (derived1 == 0 || derived1 != derived)
     {
       ok = false;
     }
-  derived1->Unref ();
-  base->Unref ();
-  derived->Unref ();
 
   return ok;
 }

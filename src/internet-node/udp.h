@@ -46,7 +46,7 @@ public:
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
-  Socket *CreateSocket (void);
+  Ptr<Socket> CreateSocket (void);
 
   Ipv4EndPoint *Allocate (void);
   Ipv4EndPoint *Allocate (Ipv4Address address);

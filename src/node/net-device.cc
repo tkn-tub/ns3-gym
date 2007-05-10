@@ -183,7 +183,7 @@ NetDevice::CreateTraceResolver (TraceContext const &context)
   return DoCreateTraceResolver (context);
 }
 
-Channel *
+Ptr<Channel>
 NetDevice::GetChannel (void) const
 {
   return DoGetChannel ();
@@ -236,7 +236,7 @@ NetDevice::NeedsArp (void) const
 }
 
 void 
-NetDevice::SetReceiveCallback (Callback<bool,NetDevice *,const Packet &,uint16_t> cb)
+NetDevice::SetReceiveCallback (Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> cb)
 {
   m_receiveCallback = cb;
 }

@@ -23,6 +23,7 @@
 
 #include "ns3/ns-unknown.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ptr.h"
 #include <stdint.h>
 
 namespace ns3 {
@@ -38,18 +39,18 @@ class IIpv4Private : public NsUnknown
 {
 public:
   static const Iid iid;
-  IIpv4Private (Ipv4 *ipv4);
+  IIpv4Private (Ptr<Ipv4> ipv4);
   virtual ~IIpv4Private ();
 
   TraceResolver *CreateTraceResolver (TraceContext const &context);
   void Send (Packet const &packet, Ipv4Address source, 
 	     Ipv4Address destination, uint8_t protocol);
-  Ipv4Interface *FindInterfaceForDevice (NetDevice const*device);
-  void Receive(Packet& p, NetDevice *device);
+  Ipv4Interface *FindInterfaceForDevice (Ptr<const NetDevice>device);
+  void Receive(Packet& p, Ptr<NetDevice> device);
 protected:
   virtual void DoDispose (void);
 private:
-  Ipv4 *m_ipv4;
+  Ptr<Ipv4> m_ipv4;
 };
 
 } // namespace ns3

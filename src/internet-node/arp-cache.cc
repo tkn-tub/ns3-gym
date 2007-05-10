@@ -28,24 +28,21 @@
 
 namespace ns3 {
 
-ArpCache::ArpCache (NetDevice *device, Ipv4Interface *interface)
+ArpCache::ArpCache (Ptr<NetDevice> device, Ipv4Interface *interface)
   : m_device (device), 
     m_interface (interface),
     m_aliveTimeout (Seconds (120)),
     m_deadTimeout (Seconds (100)),
     m_waitReplyTimeout (Seconds (1))
-{
-  m_device->Ref ();
-}
+{}
 
 ArpCache::~ArpCache ()
 {
-  m_device->Unref ();
   Flush ();
 }
 
-NetDevice *
-ArpCache::PeekDevice (void) const
+Ptr<NetDevice>
+ArpCache::GetDevice (void) const
 {
   return m_device;
 }

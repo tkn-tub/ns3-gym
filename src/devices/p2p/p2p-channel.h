@@ -21,6 +21,7 @@
 
 #include <list>
 #include "ns3/channel.h"
+#include "ns3/ptr.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
@@ -62,13 +63,13 @@ public:
   PointToPointChannel (const std::string& name,
                  const DataRate& bps, const Time& delay);
 
-  void Attach (PointToPointNetDevice* device);
-  bool TransmitStart (Packet& p, PointToPointNetDevice *src);
-  bool TransmitEnd (Packet &p, PointToPointNetDevice *src);
-  void PropagationCompleteEvent(Packet p, PointToPointNetDevice *src);
+  void Attach (Ptr<PointToPointNetDevice> device);
+  bool TransmitStart (Packet& p, Ptr<PointToPointNetDevice> src);
+  bool TransmitEnd (Packet &p, Ptr<PointToPointNetDevice> src);
+  void PropagationCompleteEvent(Packet p, Ptr<PointToPointNetDevice> src);
 
   virtual uint32_t GetNDevices (void) const;
-  virtual NetDevice *GetDevice (uint32_t i) const;
+  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
   virtual DataRate GetDataRate (void);
   virtual Time GetDelay (void);
@@ -92,8 +93,8 @@ private:
   public:
     Link() : m_state (INITIALIZING), m_src (0), m_dst (0) {}
     WireState              m_state;
-    PointToPointNetDevice *m_src;
-    PointToPointNetDevice *m_dst;
+    Ptr<PointToPointNetDevice> m_src;
+    Ptr<PointToPointNetDevice> m_dst;
   };
     
   Link    m_link[N_DEVICES];

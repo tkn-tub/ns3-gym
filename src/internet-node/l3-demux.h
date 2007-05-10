@@ -68,7 +68,7 @@ public:
    * a working L3 Protocol and returned from this method.
    * The caller does not get ownership of the returned pointer.
    */
-  void Insert(ns3::L3Protocol * protocol);
+  void Insert(Ptr<L3Protocol> protocol);
   /**
    * \param protocolNumber number of protocol to lookup
    *        in this L4 Demux
@@ -78,18 +78,18 @@ public:
    * to forward packets up the stack to the right protocol.
    * It is also called from InternetNode::GetIpv4 for example.
    */
-  ns3::L3Protocol* PeekProtocol (int protocolNumber);
+  Ptr<L3Protocol> GetProtocol (int protocolNumber);
   /**
    * \param protocol protocol to remove from this demux.
    *
    * The input value to this method should be the value
    * returned from the L3Protocol::Insert method.
    */
-  void Erase(ns3::L3Protocol*protocol);
+  void Erase(Ptr<L3Protocol> protocol);
 protected:
   virtual void DoDispose (void);
 private:
-  typedef std::map<int, ns3::L3Protocol*> L3Map_t;
+  typedef std::map<int, Ptr<ns3::L3Protocol> > L3Map_t;
 
   Ptr<Node> m_node;
   L3Map_t m_protocols;

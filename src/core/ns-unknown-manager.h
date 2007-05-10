@@ -27,6 +27,7 @@
 #include "callback.h"
 #include "ns-unknown.h"
 #include "fatal-error.h"
+#include "ptr.h"
 
 namespace ns3 {
 
@@ -82,51 +83,51 @@ public:
    * Create an instance of the object identified by its
    * ClassId. This method invokes the default constructor.
    */
-  static NsUnknown *Create (ClassId classId);
+  static Ptr<NsUnknown> Create (ClassId classId);
 
   /**
    * \param classId class id of the constructor to invoke.
    * \param a1 argument to pass to the constructor.
    * \return a pointer to the instance created.
-   * \overload NsUnknown *Create (ClassId)
+   * \overload Create (ClassId)
    *
    * Create an instance of the object identified by its
    * ClassId.
    */
   template <typename T1>
-  static NsUnknown *Create (ClassId classId, T1 a1);
+  static Ptr<NsUnknown> Create (ClassId classId, T1 a1);
 
   /**
    * \param classId class id of the constructor to invoke.
    * \param a1 first argument to pass to the constructor.
    * \param a2 second argument to pass to the constructor.
    * \return a pointer to the instance created.
-   * \overload NsUnknown *Create (ClassId)
+   * \overload Create (ClassId)
    *
    * Create an instance of the object identified by its
    * ClassId.
    */
   template <typename T1, typename T2>
-  static NsUnknown *Create (ClassId classId, T1 a1, T2 a2);
+  static Ptr<NsUnknown> Create (ClassId classId, T1 a1, T2 a2);
 
   /**
    * \param classId class id of the constructor to invoke.
    * \param iid interface id to query for
    * \return a pointer to the instance created.
-   * \overload NsUnknown *Create (ClassId)
+   * \overload Create (ClassId)
    *
    * Create an instance of the object identified by its
    * ClassId, call QueryInterface on it, and return the 
    * result.
    */
   template <typename T>
-  static T *Create (ClassId classId, Iid iid);
+  static Ptr<T> Create (ClassId classId, Iid iid);
 
   template <typename T, typename T1>
-  static T *Create (ClassId classId, Iid iid, T1 a1);
+  static Ptr<T> Create (ClassId classId, Iid iid, T1 a1);
 
   template <typename T, typename T1, typename T2>
-  static T *Create (ClassId classId, Iid iid, T1 a1, T2 a2);
+  static Ptr<T> Create (ClassId classId, Iid iid, T1 a1, T2 a2);
 
   /**
    * \param name the symbolic name to associate to this
@@ -136,7 +137,7 @@ public:
   template <typename T>
   static ClassId RegisterConstructor (std::string name)
   {
-    static Callback<NsUnknown *> callback = 
+    static Callback<Ptr<NsUnknown> > callback = 
       MakeCallback (&NsUnknownManager::MakeObjectZero<T>);
     return NsUnknownManager::Register (name, &callback);
   }
@@ -150,7 +151,7 @@ public:
   template <typename T, typename T1>
   static ClassId RegisterConstructor (std::string name)
   {
-    static Callback<NsUnknown *,T1> callback = MakeCallback (&NsUnknownManager::MakeObjectOne<T,T1>);
+    static Callback<Ptr<NsUnknown> ,T1> callback = MakeCallback (&NsUnknownManager::MakeObjectOne<T,T1>);
     return NsUnknownManager::Register (name, &callback);
   }
 
@@ -163,7 +164,7 @@ public:
   template <typename T, typename T1, typename T2>
   static ClassId RegisterConstructor (std::string name)
   {
-    static Callback<NsUnknown *,T1,T2> callback = MakeCallback (&NsUnknownManager::MakeObjectTwo<T,T1,T2>);
+    static Callback<Ptr<NsUnknown>,T1,T2> callback = MakeCallback (&NsUnknownManager::MakeObjectTwo<T,T1,T2>);
     return NsUnknownManager::Register (name, &callback);
   }
 private:
@@ -172,16 +173,16 @@ private:
   template <typename T1, typename T2,
             typename T3, typename T4,
             typename T5>
-  static Callback<NsUnknown *,T1,T2,T3,T4,T5> DoGetCallback (ClassId classId);
+  static Callback<Ptr<NsUnknown>,T1,T2,T3,T4,T5> DoGetCallback (ClassId classId);
 
   template <typename T>
-  static NsUnknown *MakeObjectZero (void);
+  static Ptr<NsUnknown> MakeObjectZero (void);
 
   template <typename T, typename T1>
-  static NsUnknown *MakeObjectOne (T1 a1);
+  static Ptr<NsUnknown> MakeObjectOne (T1 a1);
 
   template <typename T, typename T1, typename T2>
-  static NsUnknown *MakeObjectTwo (T1 a1, T2 a2);
+  static Ptr<NsUnknown> MakeObjectTwo (T1 a1, T2 a2);
 
   typedef std::vector<std::pair<ClassId, CallbackBase *> > List;
   static List *GetList (void);
@@ -196,7 +197,7 @@ namespace ns3 {
 template <typename T1, typename T2,
           typename T3, typename T4,
           typename T5>
-Callback<NsUnknown *,T1,T2,T3,T4,T5>
+Callback<Ptr<NsUnknown>,T1,T2,T3,T4,T5>
 NsUnknownManager::DoGetCallback (ClassId classId)
 {
   CallbackBase *callback = Lookup (classId);
@@ -204,73 +205,70 @@ NsUnknownManager::DoGetCallback (ClassId classId)
     {
       NS_FATAL_ERROR ("Invalid Class Id.");
     }
-  Callback<NsUnknown *, T1,T2,T3,T4,T5> reference;
+  Callback<Ptr<NsUnknown>, T1,T2,T3,T4,T5> reference;
   reference.Assign (*callback);
   return reference;
 }
 
 
 template <typename T1>
-NsUnknown *
+Ptr<NsUnknown>
 NsUnknownManager::Create (ClassId classId, T1 a1)
 {
-  Callback<NsUnknown *, T1> callback = DoGetCallback<T1,empty,empty,empty,empty> (classId);
+  Callback<Ptr<NsUnknown>, T1> callback = DoGetCallback<T1,empty,empty,empty,empty> (classId);
   return callback (a1);
 }
 
 template <typename T1, typename T2>
-NsUnknown *
+Ptr<NsUnknown> 
 NsUnknownManager::Create (ClassId classId, T1 a1, T2 a2)
 {
-  Callback<NsUnknown *, T1,T2> callback = DoGetCallback<T1,T2,empty,empty,empty> (classId);
+  Callback<Ptr<NsUnknown> , T1,T2> callback = DoGetCallback<T1,T2,empty,empty,empty> (classId);
   return callback (a1, a2);
 }
 
 template <typename T>
-T *
+Ptr<T>
 NsUnknownManager::Create (ClassId classId, Iid iid)
 {
-  NsUnknown *obj = Create (classId);
-  T *i = obj->QueryInterface<T> (iid);
-  obj->Unref ();
+  Ptr<NsUnknown> obj = Create (classId);
+  Ptr<T> i = obj->QueryInterface<T> (iid);
   return i;
 }
 
 template <typename T, typename T1>
-T *
+Ptr<T>
 NsUnknownManager::Create (ClassId classId, Iid iid, T1 a1)
 {
-  NsUnknown *obj = Create (classId, a1);
-  T *i = obj->QueryInterface<T> (iid);
-  obj->Unref ();
+  Ptr<NsUnknown> obj = Create (classId, a1);
+  Ptr<T> i = obj->QueryInterface<T> (iid);
   return i;
 }
 
 template <typename T, typename T1, typename T2>
-T *
+Ptr<T>
 NsUnknownManager::Create (ClassId classId, Iid iid, T1 a1, T2 a2)
 {
-  NsUnknown *obj = Create (classId, a1, a2);
-  T *i = obj->QueryInterface<T> (iid);
-  obj->Unref ();
+  Ptr<NsUnknown> obj = Create (classId, a1, a2);
+  Ptr<T> i = obj->QueryInterface<T> (iid);
   return i;
 }
 
 
 template <typename T>
-NsUnknown *
+Ptr<NsUnknown> 
 NsUnknownManager::MakeObjectZero (void)
 {
   return new T ();
 }
 template <typename T, typename T1>
-NsUnknown *
+Ptr<NsUnknown> 
 NsUnknownManager::MakeObjectOne (T1 a1)
 {
   return new T (a1);
 }
 template <typename T, typename T1, typename T2>
-NsUnknown *
+Ptr<NsUnknown> 
 NsUnknownManager::MakeObjectTwo (T1 a1, T2 a2)
 {
   return new T (a1, a2);
