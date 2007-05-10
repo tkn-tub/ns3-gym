@@ -38,8 +38,6 @@ public:
   // Copy constructor not needed, default one is correct
   virtual ~ApplicationList();
   // Inherited from Capabilty
-  virtual ApplicationList* Copy(Ptr<Node>) const;
-  virtual void SetNode(Ptr<Node>);              // Sets the node for all apps
   virtual void Add(Application*);      // Add an already new'ed app
   // Manage the list
   template <typename T> T* AddCopy(const T& t)  // Add a new application

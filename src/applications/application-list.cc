@@ -49,29 +49,12 @@ ApplicationList::DoDispose (void)
 ApplicationList::~ApplicationList()
 {}
 
-ApplicationList* ApplicationList::Copy(Ptr<Node> n) const 
-{ // Copy this app list
-  ApplicationList* r = new ApplicationList(n);
-  return r;
-}
-
 void
 ApplicationList::Add(Application* a)
 {
   a->Ref ();
   m_apps.push_back(a);
-}
-
-void ApplicationList::SetNode(Ptr<Node> n)
-{
-  // Set the node pointer in each application
-  for (std::vector<Application *>::const_iterator i = m_apps.begin();
-       i != m_apps.end(); ++i)
-    { // Set correct node pointer in each app
-      (*i)->SetNode(n);
-    }
-}
-  
+}  
 
 uint32_t ApplicationList::Count() const
 {
