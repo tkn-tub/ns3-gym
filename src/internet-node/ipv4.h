@@ -28,13 +28,12 @@
 #include "ns3/array-trace-resolver.h"
 #include "ns3/ipv4-address.h"
 #include "l3-protocol.h"
-#include "ns3/ptr.h"
-#include "ipv4-interface.h"
 
 namespace ns3 {
 
 class Packet;
 class NetDevice;
+class Ipv4Interface;
 class Ipv4Address;
 class Ipv4Header;
 class Ipv4Route;
@@ -170,7 +169,7 @@ public:
    * \param i index of interface to return
    * \returns the requested interface
    */
-  Ptr<Ipv4Interface> GetInterface (uint32_t i) const;
+  Ipv4Interface * GetInterface (uint32_t i) const;
   /**
    * \returns the number of interfaces added by the user.
    */
@@ -182,7 +181,7 @@ public:
    * Try to find an Ipv4Interface whose NetDevice is equal to
    * the input NetDevice.
    */
-  Ptr<Ipv4Interface> FindInterfaceForDevice (NetDevice const*device);
+  Ipv4Interface *FindInterfaceForDevice (NetDevice const*device);
   
 
   /**
@@ -222,11 +221,11 @@ private:
   void SendRealOut (Packet const &packet, Ipv4Header const &ip, Ipv4Route const &route);
   bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice *device);
   void ForwardUp (Packet p, Ipv4Header const&ip);
-  uint32_t AddIpv4Interface (Ptr<Ipv4Interface> interface);
+  uint32_t AddIpv4Interface (Ipv4Interface *interface);
   void SetupLoopback (void);
   TraceResolver *InterfacesCreateTraceResolver (TraceContext const &context) const;
 
-  typedef std::list<Ptr<Ipv4Interface> > Ipv4InterfaceList;
+  typedef std::list<Ipv4Interface*> Ipv4InterfaceList;
   typedef std::list<Ipv4Route *> HostRoutes;
   typedef std::list<Ipv4Route *>::const_iterator HostRoutesCI;
   typedef std::list<Ipv4Route *>::iterator HostRoutesI;

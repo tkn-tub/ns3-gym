@@ -53,7 +53,7 @@ public:
   NodeList::Iterator Begin (void);
   NodeList::Iterator End (void);
   TraceResolver *CreateTraceResolver (TraceContext const &context);
-  Ptr<Node> PeekNode (uint32_t n);
+  Node *PeekNode (uint32_t n);
   uint32_t GetNNodes (void);
 
 private:
@@ -69,7 +69,7 @@ NodeListPriv::~NodeListPriv ()
     {
       Ptr<Node> node = *i;
       node->Dispose ();
-      //node->Unref ();
+      *i = 0;
     }
   m_nodes.erase (m_nodes.begin (), m_nodes.end ());
 }
@@ -79,7 +79,6 @@ uint32_t
 NodeListPriv::Add (Ptr<Node> node)
 {
   uint32_t index = m_nodes.size ();
-  //node->Ref ();
   m_nodes.push_back (node);
   return index;
   
@@ -99,10 +98,10 @@ NodeListPriv::GetNNodes (void)
 {
   return m_nodes.size ();
 }
-Ptr<Node>
+Node *
 NodeListPriv::PeekNode (uint32_t n)
 {
-  return m_nodes[n];
+  return m_nodes[n].Peek ();
 }
 
 TraceResolver *

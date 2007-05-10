@@ -25,7 +25,6 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/mac-address.h"
 #include "l3-protocol.h"
-#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -41,7 +40,7 @@ class Arp : public L3Protocol
 public:
   static const uint16_t PROT_NUMBER;
 
-  Arp (Ptr<Node> node);
+  Arp (Node *node);
   ~Arp ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
@@ -58,7 +57,7 @@ private:
   void SendArpRequest (ArpCache const *cache, Ipv4Address to);
   void SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac);
   CacheList m_cacheList;
-  Ptr<Node> m_node;
+  Node *m_node;
 };
 
 }//namespace ns3

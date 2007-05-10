@@ -25,7 +25,6 @@
 
 #include <list>
 #include "ns3/ipv4-address.h"
-#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -62,7 +61,7 @@ class TraceContext;
  *   - Ipv4Interface::SendTo
  *   - Ipv4Interface::DoCreateTraceResolver
  */
-class Ipv4Interface : public Object
+class Ipv4Interface 
 {
 public:
   /**

@@ -23,7 +23,6 @@
 
 #include "ns3/ns-unknown.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/ptr.h"
 #include <stdint.h>
 
 namespace ns3 {
@@ -45,7 +44,7 @@ public:
   TraceResolver *CreateTraceResolver (TraceContext const &context);
   void Send (Packet const &packet, Ipv4Address source, 
 	     Ipv4Address destination, uint8_t protocol);
-  Ptr<Ipv4Interface> FindInterfaceForDevice (NetDevice const*device);
+  Ipv4Interface *FindInterfaceForDevice (NetDevice const*device);
   void Receive(Packet& p, NetDevice *device);
 protected:
   virtual void DoDispose (void);
