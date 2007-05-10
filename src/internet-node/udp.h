@@ -26,6 +26,7 @@
 
 #include "ns3/packet.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ptr.h"
 #include "ipv4-end-point-demux.h"
 #include "ipv4-l4-protocol.h"
 
@@ -40,7 +41,7 @@ class Udp : public Ipv4L4Protocol {
 public:
   static const uint8_t PROT_NUMBER;
 
-  Udp (Node *node);
+  Udp (Ptr<Node> node);
   virtual ~Udp ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
@@ -67,7 +68,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Node *m_node;
+  Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;
 };
 

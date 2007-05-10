@@ -26,7 +26,7 @@
 
 namespace ns3 {
 
-UdpSocket::UdpSocket (Node *node, Udp *udp)
+UdpSocket::UdpSocket (Ptr<Node> node, Udp *udp)
   : m_endPoint (0),
     m_node (node),
     m_udp (udp),
@@ -36,15 +36,10 @@ UdpSocket::UdpSocket (Node *node, Udp *udp)
     m_connected (false)
 {
   m_udp->Ref ();
-  m_node->Ref ();
 }
 UdpSocket::~UdpSocket ()
 {
-  if (m_node != 0)
-    {
-      m_node->Unref ();
-      m_node = 0;
-    }
+  m_node = 0;
   if (m_endPoint != 0)
     {
       NS_ASSERT (m_udp != 0);
@@ -67,8 +62,8 @@ UdpSocket::~UdpSocket ()
     }
 }
 
-Node *
-UdpSocket::PeekNode (void) const
+Ptr<Node>
+UdpSocket::GetNode (void) const
 {
   return m_node;
 }
@@ -76,11 +71,7 @@ UdpSocket::PeekNode (void) const
 void 
 UdpSocket::Destroy (void)
 {
-  if (m_node != 0)
-    {
-      m_node->Unref ();
-      m_node = 0;
-    }
+  m_node = 0;
   m_endPoint = 0;
   if (m_udp != 0)
     {

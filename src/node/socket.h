@@ -22,6 +22,7 @@
 #define __SOCKET_H__
 
 #include "ns3/callback.h"
+#include "ns3/ptr.h"
 #include "ipv4-address.h"
 #include "ns3/object.h"
 #include <stdint.h>
@@ -65,7 +66,7 @@ public:
   /**
    * \returns the node this socket is associated with.
    */
-  virtual Node *PeekNode (void) const = 0;
+  virtual Ptr<Node> GetNode (void) const = 0;
 
   /** 
    * Allocate a free port number and

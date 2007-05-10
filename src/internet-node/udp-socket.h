@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "ns3/callback.h"
 #include "ns3/socket.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -38,11 +39,11 @@ public:
   /**
    * Create an unbound udp socket.
    */
-  UdpSocket (Node *node, Udp *udp);
+  UdpSocket (Ptr<Node> node, Udp *udp);
   virtual ~UdpSocket ();
 
   virtual enum SocketErrno GetErrno (void) const;
-  virtual Node *PeekNode (void) const;
+  virtual Ptr<Node> GetNode (void) const;
   virtual int Bind (void);
   virtual int Bind (Ipv4Address address);
   virtual int Bind (uint16_t port); 
@@ -81,7 +82,7 @@ private:
 		      ns3::Callback<void, Socket*, uint32_t> dataSent);
 
   Ipv4EndPoint *m_endPoint;
-  Node *m_node;
+  Ptr<Node> m_node;
   Udp *m_udp;
   Ipv4Address m_defaultAddress;
   uint16_t m_defaultPort;

@@ -38,13 +38,11 @@ namespace ns3 {
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t Udp::PROT_NUMBER = 17;
 
-Udp::Udp (Node *node)
+Udp::Udp (Ptr<Node> node)
   : Ipv4L4Protocol (PROT_NUMBER, 2),
     m_node (node),
     m_endPoints (new Ipv4EndPointDemux ())
-{
-  m_node->Ref ();
-}
+{}
 
 Udp::~Udp ()
 {}
@@ -63,11 +61,7 @@ Udp::DoDispose (void)
       delete m_endPoints;
       m_endPoints = 0;
     }
-  if (m_node != 0)
-    {
-      m_node->Unref ();
-      m_node = 0;
-    }
+  m_node = 0;
   Ipv4L4Protocol::DoDispose ();
 }
 
