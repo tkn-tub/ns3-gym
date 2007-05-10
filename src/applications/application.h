@@ -102,10 +102,8 @@ void Start(const RandomVariable&);
   // \brief Attaches an application to a specific node
   // Specifies which node object this application is associated with.
   // \param Node object to associate with this application.
-  void SetNode(Ptr<Node>);
-
   // \brief Returns the pointer to the attached node.
-  Ptr<Node> PeekNode() const;
+  Ptr<Node> GetNode() const;
   
   // Members
   Ptr<Node>       m_node;      // All applications have an associated node

@@ -61,10 +61,7 @@ Application::~Application()
 void
 Application::DoDispose (void)
 {
-  if (m_node != 0)
-    {
-      m_node = 0;
-    }
+  m_node = 0;
   if (m_start) 
     {
       Simulator::Cancel(m_startEvent);
@@ -137,16 +134,8 @@ void Application::Stop(const RandomVariable& stopVar)
   m_stopVar = stopVar.Copy();
   ScheduleStop();
 }
-
-// \brief Assign this application to a given node
-// Called by the application manager capability when adding
-// an application to a node.
-void Application::SetNode(Ptr<Node> n)
-{
-  m_node = n;
-}
   
-Ptr<Node> Application::PeekNode() const
+Ptr<Node> Application::GetNode() const
 {
   return m_node;
 }

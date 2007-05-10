@@ -170,7 +170,7 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
                                      this));
 #endif
       
-      IUdp *udp = PeekNode ()->QueryInterface<IUdp> (IUdp::iid);
+      IUdp *udp = GetNode ()->QueryInterface<IUdp> (IUdp::iid);
       m_socket = udp->CreateSocket ();
       udp->Unref ();
       m_socket->Connect (m_peerIP, m_peerPort);
