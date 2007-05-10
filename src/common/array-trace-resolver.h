@@ -24,7 +24,6 @@
 #include <stdint.h>
 #include <string>
 #include "ns3/callback.h"
-#include "ns3/ptr.h"
 #include "trace-resolver.h"
 
 namespace ns3 {
@@ -82,11 +81,11 @@ public:
    */
   ArrayTraceResolver (TraceContext const &context,
                       Callback<uint32_t> getSize, 
-                      Callback<Ptr<T>, uint32_t> get);
+                      Callback<T *, uint32_t> get);
 private:
   virtual TraceResolverList DoLookup (std::string id) const;
   Callback<uint32_t> m_getSize;
-  Callback<Ptr<T>, uint32_t> m_get;
+  Callback<T *, uint32_t> m_get;
 };
 }//namespace ns3
 
@@ -108,8 +107,8 @@ ArrayTraceResolver<T>::Index::operator uint32_t ()
 
 template <typename T>
 ArrayTraceResolver<T>::ArrayTraceResolver (TraceContext const &context,
-                                                   Callback<uint32_t> getSize, 
-						   Callback<Ptr<T>, uint32_t> get)
+                                           Callback<uint32_t> getSize, 
+                                           Callback<T *, uint32_t> get)
   : TraceResolver (context),
     m_getSize (getSize),
     m_get (get)
