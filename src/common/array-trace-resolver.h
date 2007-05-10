@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <string>
 #include "ns3/callback.h"
+#include "ns3/ptr.h"
 #include "trace-resolver.h"
 
 namespace ns3 {
@@ -81,13 +82,12 @@ public:
    */
   ArrayTraceResolver (TraceContext const &context,
                       Callback<uint32_t> getSize, 
-                      Callback<T *, uint32_t> get);
+                      Callback<Ptr<T>, uint32_t> get);
 private:
   virtual TraceResolverList DoLookup (std::string id) const;
   Callback<uint32_t> m_getSize;
-  Callback<T *, uint32_t> m_get;
+  Callback<Ptr<T>, uint32_t> m_get;
 };
-
 }//namespace ns3
 
 namespace ns3 {
@@ -109,7 +109,7 @@ ArrayTraceResolver<T>::Index::operator uint32_t ()
 template <typename T>
 ArrayTraceResolver<T>::ArrayTraceResolver (TraceContext const &context,
                                                    Callback<uint32_t> getSize, 
-						   Callback<T *, uint32_t> get)
+						   Callback<Ptr<T>, uint32_t> get)
   : TraceResolver (context),
     m_getSize (getSize),
     m_get (get)
@@ -120,15 +120,15 @@ ArrayTraceResolver<T>::DoLookup (std::string id) const
 {
   TraceResolverList list;
   if (id == "*")
+  {
+    for (uint32_t i = 0; i < m_getSize (); i++)
     {
-      for (uint32_t i = 0; i < m_getSize (); i++)
-	{
 	  TraceContext context = GetContext ();
-          typename ArrayTraceResolver<T>::Index index = typename ArrayTraceResolver<T>::Index (i);
+      typename ArrayTraceResolver<T>::Index index = typename ArrayTraceResolver<T>::Index (i);
 	  context.Add (index);
 	  list.push_back (m_get (i)->CreateTraceResolver (context));
-	}
     }
+  }
   return list;
 }
 

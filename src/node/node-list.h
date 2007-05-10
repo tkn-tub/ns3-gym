@@ -24,6 +24,7 @@
 
 #include <vector>
 #include "ns3/array-trace-resolver.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -35,14 +36,14 @@ class NodeList
 {
 public:
   typedef ArrayTraceResolver<Node>::Index NodeIndex;
-  typedef std::vector<Node *>::iterator Iterator;
+  typedef std::vector< Ptr<Node> >::iterator Iterator;
 
-  static uint32_t Add (Node *node);
+  static uint32_t Add (Ptr<Node> node);
   static Iterator Begin (void);
   static Iterator End (void);
   static TraceResolver *CreateTraceResolver (TraceContext const &context);
 
-  static Node *PeekNode (uint32_t n);
+  static Ptr<Node> PeekNode (uint32_t n);
 };
 
 }//namespace ns3

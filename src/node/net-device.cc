@@ -40,12 +40,10 @@ NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) :
   m_isMulticast (false), 
   m_isPointToPoint (false)
 {
-  m_node->Ref ();
 }
 
 NetDevice::~NetDevice ()
 {
-  m_node->Unref ();
   m_node = 0;
 }
 

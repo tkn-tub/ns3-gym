@@ -39,7 +39,6 @@ Application::Application(Ptr<Node> n)
       m_startVar(0), m_stopVar(0),
       m_start(false), m_stop(false)
 {
-  m_node->Ref ();
 }
 
 Application::Application(const Application& o)
@@ -47,7 +46,6 @@ Application::Application(const Application& o)
       m_start(false), m_stop(false)
 { // Copy constructor
   m_node = o.m_node;
-  m_node->Ref ();
   // Copy the start and stop random variables if they exist
   if (o.m_startVar) m_startVar = o.m_startVar->Copy();
   if (o.m_stopVar)  m_stopVar  = o.m_stopVar->Copy();
@@ -65,7 +63,6 @@ Application::DoDispose (void)
 {
   if (m_node != 0)
     {
-      m_node->Unref ();
       m_node = 0;
     }
   if (m_start) 
@@ -87,10 +84,7 @@ Application::DoDispose (void)
 Application& Application::operator=(const Application& rhs)
 {
   if (this == &rhs) return *this; // Self assignment
-  m_node->Unref ();
-  m_node = 0;
   m_node = rhs.m_node;
-  m_node->Ref ();
 
   delete m_startVar;
   m_startVar = 0;
@@ -149,12 +143,7 @@ void Application::Stop(const RandomVariable& stopVar)
 // an application to a node.
 void Application::SetNode(Ptr<Node> n)
 {
-  if (m_node != 0)
-    {
-      m_node->Unref ();
-    }
   m_node = n;
-  m_node->Ref ();
 }
   
 Ptr<Node> Application::PeekNode() const

@@ -28,21 +28,22 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/mac-address.h"
 #include "sgi-hashmap.h"
+#include "ns3/ptr.h"
+#include "ipv4-interface.h"
 
 namespace ns3 {
 
 class NetDevice;
-class Ipv4Interface;
 
 class ArpCache {
 public:
   class Entry;
 
-  ArpCache (NetDevice *device, Ipv4Interface *interface);
+  ArpCache (NetDevice *device, Ptr<Ipv4Interface> interface);
   ~ArpCache ();
 
   NetDevice *PeekDevice (void) const;
-  Ipv4Interface *GetInterface (void) const;
+  Ptr<Ipv4Interface> GetInterface (void) const;
 
   void SetAliveTimeout (Time aliveTimeout);
   void SetDeadTimeout (Time deadTimeout);
@@ -92,7 +93,7 @@ private:
   typedef sgi::hash_map<Ipv4Address, ArpCache::Entry *, Ipv4AddressHash>::iterator CacheI;
 
   NetDevice *m_device;
-  Ipv4Interface *m_interface;
+  Ptr<Ipv4Interface> m_interface;
   Time m_aliveTimeout;
   Time m_deadTimeout;
   Time m_waitReplyTimeout;
