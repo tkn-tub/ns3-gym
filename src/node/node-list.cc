@@ -145,9 +145,10 @@ NodeList::CreateTraceResolver (TraceContext const &context)
   return SimulationSingleton<NodeListPriv>::Get ()->CreateTraceResolver (context);
 }
 Ptr<Node>
-NodeList::PeekNode (uint32_t n)
+NodeList::GetNode (uint32_t n)
 {
-  return SimulationSingleton<NodeListPriv>::Get ()->PeekNode (n);
+  Node *node = SimulationSingleton<NodeListPriv>::Get ()->PeekNode (n);
+  return node;
 }
 
 
