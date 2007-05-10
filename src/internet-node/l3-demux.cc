@@ -31,12 +31,10 @@ namespace ns3 {
 
 const Iid L3Demux::iid ("L3Demux");
 
-L3Demux::L3Demux (Node *node)
+L3Demux::L3Demux (Ptr<Node> node)
   : NsUnknown (L3Demux::iid),
     m_node (node)
-{
-  m_node->Ref ();
-}
+{}
 
 L3Demux::~L3Demux()
 {}
@@ -50,11 +48,7 @@ L3Demux::DoDispose (void)
       i->second->Unref ();
     }
   m_protocols.clear ();
-  if (m_node != 0)
-    {
-      m_node->Unref ();
-      m_node = 0;
-    }
+  m_node = 0;
   NsUnknown::DoDispose ();
 }
 

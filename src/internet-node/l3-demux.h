@@ -29,6 +29,7 @@
 
 #include <map>
 #include "ns3/ns-unknown.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -45,7 +46,7 @@ class L3Demux : public NsUnknown
 public:
   static const Iid iid;
   typedef int ProtocolTraceType;
-  L3Demux(Node *node);
+  L3Demux(Ptr<Node> node);
   virtual ~L3Demux();
 
   /**
@@ -90,7 +91,7 @@ protected:
 private:
   typedef std::map<int, ns3::L3Protocol*> L3Map_t;
 
-  Node *m_node;
+  Ptr<Node> m_node;
   L3Map_t m_protocols;
 };
 
