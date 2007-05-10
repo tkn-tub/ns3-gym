@@ -27,6 +27,7 @@
 
 #include <list>
 #include "ns3/ns-unknown.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -43,7 +44,7 @@ class Ipv4L4Demux : public NsUnknown
 public:
   static const Iid iid;
   typedef int Ipv4L4ProtocolTraceType;
-  Ipv4L4Demux (Node *node);
+  Ipv4L4Demux (Ptr<Node> node);
   virtual ~Ipv4L4Demux();
 
   /**
@@ -86,7 +87,7 @@ private:
   virtual void DoDispose (void);
   typedef std::list<Ipv4L4Protocol*> L4List_t;
   L4List_t m_protocols;
-  Node *m_node;
+  Ptr<Node> m_node;
 };
 
 } //namespace ns3

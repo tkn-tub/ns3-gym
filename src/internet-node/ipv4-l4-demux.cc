@@ -32,12 +32,10 @@ namespace ns3 {
 
 const Iid Ipv4L4Demux::iid ("Ipv4L4Demux");
 
-Ipv4L4Demux::Ipv4L4Demux (Node *node)
+Ipv4L4Demux::Ipv4L4Demux (Ptr<Node> node)
   : NsUnknown (Ipv4L4Demux::iid),
     m_node (node)
-{
-  m_node->Ref ();
-}
+{}
 
 Ipv4L4Demux::~Ipv4L4Demux()
 {}
@@ -51,11 +49,7 @@ Ipv4L4Demux::DoDispose (void)
       (*i)->Unref ();
     }
   m_protocols.clear ();
-  if (m_node != 0)
-    {
-      m_node->Unref ();
-      m_node = 0;
-    }
+  m_node = 0;
   NsUnknown::DoDispose ();
 }
 
