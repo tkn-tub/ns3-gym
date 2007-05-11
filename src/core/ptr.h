@@ -124,6 +124,80 @@ public:
 };
 
 template <typename T>
+Ptr<T> MakeNewObject (void);
+
+template <typename T, typename T1>
+Ptr<T> MakeNewObject (T1 a1);
+
+template <typename T, typename T1, typename T2>
+Ptr<T> MakeNewObject (T1 a1, T2 a2);
+
+template <typename T, typename T1, typename T2, typename T3>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+
+
+template <typename T>
+Ptr<T> MakeNewObject (void)
+{
+  T *obj = new T ();
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1>
+Ptr<T> MakeNewObject (T1 a1)
+{
+  T *obj = new T (a1);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2>
+Ptr<T> MakeNewObject (T1 a1, T2 a2)
+{
+  T *obj = new T (a1, a2);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3)
+{
+  T *obj = new T (a1, a2, a3);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4)
+{
+  T *obj = new T (a1, a2, a3, a4);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+{
+  T *obj = new T (a1, a2, a3, a4, a5);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+
+template <typename T>
 void 
 Ptr<T>::Acquire (void) const
 {
@@ -262,13 +336,13 @@ template <typename T1, typename T2>
 bool 
 operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
 {
-  return lhs.Get () == rhs.Get ();
+  return lhs.Peek () == rhs.Peek ();
 }
 template <typename T1, typename T2>
 bool 
 operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
 {
-  return lhs.Get () != rhs.Get ();
+  return lhs.Peek () != rhs.Peek ();
 }
 
 

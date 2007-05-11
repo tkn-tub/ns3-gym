@@ -93,7 +93,7 @@ PtrTest::RunTests (void)
   Callback<void> cb = MakeCallback (&PtrTest::DestroyNotify, this);
   m_nDestroyed = false;
   {
-    Ptr<NoCount> p = new NoCount (cb);
+    Ptr<NoCount> p = MakeNewObject<NoCount> (cb);
   }
   if (m_nDestroyed != 1)
     {
@@ -103,7 +103,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p;
-    p = new NoCount (cb);
+    p = MakeNewObject<NoCount> (cb);
     p = p;
   }
   if (m_nDestroyed != 1)
@@ -114,7 +114,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = new NoCount (cb);
+    p1 = MakeNewObject<NoCount> (cb);
     Ptr<NoCount> p2 = p1;
   }
   if (m_nDestroyed != 1)
@@ -125,7 +125,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = new NoCount (cb);
+    p1 = MakeNewObject<NoCount> (cb);
     Ptr<NoCount> p2;
     p2 = p1;
   }
@@ -137,8 +137,8 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = new NoCount (cb);
-    Ptr<NoCount> p2 = new NoCount (cb);
+    p1 = MakeNewObject<NoCount> (cb);
+    Ptr<NoCount> p2 = MakeNewObject<NoCount> (cb);
     p2 = p1;
   }
   if (m_nDestroyed != 2)
@@ -149,9 +149,9 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = new NoCount (cb);
+    p1 = MakeNewObject<NoCount> (cb);
     Ptr<NoCount> p2;
-    p2 = new NoCount (cb);
+    p2 = MakeNewObject<NoCount> (cb);
     p2 = p1;
   }
   if (m_nDestroyed != 2)
@@ -162,8 +162,8 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = new NoCount (cb);
-    p1 = new NoCount (cb);
+    p1 = MakeNewObject<NoCount> (cb);
+    p1 = MakeNewObject<NoCount> (cb);
   }
   if (m_nDestroyed != 2)
     {
@@ -175,8 +175,8 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p1;
     {
       Ptr<NoCount> p2;
-      p1 = new NoCount (cb);
-      p2 = new NoCount (cb);
+      p1 = MakeNewObject<NoCount> (cb);
+      p2 = MakeNewObject<NoCount> (cb);
       p2 = p1;
     }
     if (m_nDestroyed != 1)
@@ -194,8 +194,8 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p1;
     {
       Ptr<NoCount> p2;
-      p1 = new NoCount (cb);
-      p2 = new NoCount (cb);
+      p1 = MakeNewObject<NoCount> (cb);
+      p2 = MakeNewObject<NoCount> (cb);
       p2 = CallTest (p1);
     }
     if (m_nDestroyed != 1)
@@ -237,7 +237,7 @@ PtrTest::RunTests (void)
   {
     NoCount *raw;
     {
-      Ptr<NoCount> p = new NoCount (cb);
+      Ptr<NoCount> p = MakeNewObject<NoCount> (cb);
       {
         Ptr<NoCount const> p1 = p;
       }
@@ -254,7 +254,7 @@ PtrTest::RunTests (void)
 
   m_nDestroyed = 0;
   {
-    Ptr<NoCount> p = new NoCount (cb);
+    Ptr<NoCount> p = MakeNewObject<NoCount> (cb);
     const NoCount *v1 = p.Peek();
     NoCount *v2 = p.Peek();
     v1->Nothing ();
@@ -266,8 +266,8 @@ PtrTest::RunTests (void)
     }
 
   {
-    Ptr<Object> p0 = new NoCount (cb);
-    Ptr<NoCount> p1 = new NoCount (cb);
+    Ptr<Object> p0 = MakeNewObject<NoCount> (cb);
+    Ptr<NoCount> p1 = MakeNewObject<NoCount> (cb);
     if (p0 == p1)
       {
         ok = false;
