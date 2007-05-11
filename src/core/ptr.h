@@ -141,6 +141,12 @@ Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4);
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
 Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
+
 
 template <typename T>
 Ptr<T> MakeNewObject (void)
@@ -191,6 +197,24 @@ template <typename T, typename T1, typename T2, typename T3, typename T4, typena
 Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
   T *obj = new T (a1, a2, a3, a4, a5);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
+{
+  T *obj = new T (a1, a2, a3, a4, a5, a6);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
+{
+  T *obj = new T (a1, a2, a3, a4, a5, a6, a7);
   Ptr<T> p = obj;
   obj->Unref ();
   return p;
