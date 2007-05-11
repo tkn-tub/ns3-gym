@@ -28,18 +28,26 @@
 namespace ns3 {
 
 /**
- * \brief smart pointer class similar to boost::shared_ptr
+ * \brief smart pointer class similar to boost::intrusive_ptr
  *
- * This smart-pointer class is supposed to be used to manage
- * heap-allocated objects: when it decides it does not need
- * the object it references, it invokes operator delete on it.
+ * This smart-pointer class assumes that the underlying
+ * type provides a pair of Ref and Unref methods which are
+ * expected to increment and decrement the internal refcount
+ * of the object instance.
+ *
  * This implementation allows you to manipulate the smart pointer
  * as if it was a normal pointer: you can compare it with zero,
- * compare it against other pointers, etc. However, the only 
- * operation we are careful to avoid is the conversion back to
- * raw pointers: if you need to convert back, you need to invoke
- * the Ptr<T>::Remove method which returns a raw pointer and
- * makes the smart pointer forget about the raw pointer.
+ * compare it against other pointers, assign zero to it, etc.
+ *
+ * It is possible to extract the raw pointer from this
+ * smart pointer with the GetPointer and PeekPointer methods.
+ *
+ * If you want to store a newed object into a smart pointer,
+ * we recommend you to use the MakeNewObject template functions
+ * to create the object and store it in a smart pointer to avoid
+ * memory leaks. These functions are really small conveniance
+ * functions and their goal is just is save you a small
+ * bit of typing.
  */
 template <typename T>
 class Ptr 
@@ -51,6 +59,11 @@ private:
     void operator delete (void *);
   };
   friend class Ptr<const T>;
+  template <typename U>
+  friend U *GetPointer (const Ptr<U> &p);
+  template <typename U>
+  friend U *PeekPointer (const Ptr<U> &p);
+
   void Acquire (void) const;
 public:
   /**
@@ -74,53 +87,12 @@ public:
   ~Ptr () ;
   Ptr<T> &operator = (Ptr const& o);
 
-  /**
-   * \return the pointer managed by this smart pointer.
-   *
-   * The underlying refcount is not incremented prior
-   * to returning to the caller so the caller is not
-   * responsible for calling Unref himself.
-   */
-  T * Peek () const;
-
-  /**
-   * \return the pointer managed by this smart pointer.
-   *
-   * The underlying refcount is incremented prior
-   * to returning to the caller so the caller is
-   * responsible for calling Unref himself.
-   */
-  T * Get () const;
   T *operator -> () const;
   T *operator -> ();
   // allow if (!sp)
   bool operator! ();
   // allow if (sp)
   operator Tester * () const;
-  // allow if (sp == 0)
-  template <typename T1, typename T2>
-  inline friend bool operator == (Ptr<T1> const &lhs, T2 const *rhs);
-  // allow if (0 == sp)
-  template <typename T1, typename T2>
-  inline friend bool operator == (T1 const *lhs, Ptr<T2> &rhs);
-  // allow if (sp != 0)
-  template <typename T1, typename T2>
-  inline friend bool operator != (Ptr<T1> const &lhs, T2 const *rhs);
-  // allow if (0 != sp)
-  template <typename T1, typename T2>
-  inline friend bool operator != (T1 const *lhs, Ptr<T2> &rhs);
-
-  // allow if (sp0 == sp1)
-  template <typename T1, typename T2>
-  inline friend bool operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
-  // allow if (sp0 != sp1)
-  template <typename T1, typename T2>
-  inline friend bool operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
-
-  template <typename T1, typename T2>
-  inline friend Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
-
-
 };
 
 template <typename T>
@@ -147,6 +119,62 @@ Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
 Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
+/**
+ * \return the pointer managed by this smart pointer.
+ *
+ * The underlying refcount is not incremented prior
+ * to returning to the caller so the caller is not
+ * responsible for calling Unref himself.
+ */
+template <typename T>
+T * PeekPointer (const Ptr<T> &p);
+
+/**
+ * \return the pointer managed by this smart pointer.
+ *
+ * The underlying refcount is incremented prior
+ * to returning to the caller so the caller is
+ * responsible for calling Unref himself.
+ */
+template <typename T>
+T * GetPointer (const Ptr<T> &p);
+
+
+// allow if (sp == 0)
+template <typename T1, typename T2>
+bool operator == (Ptr<T1> const &lhs, T2 const *rhs);
+
+// allow if (0 == sp)
+template <typename T1, typename T2>
+bool operator == (T1 const *lhs, Ptr<T2> &rhs);
+
+// allow if (sp != 0)
+template <typename T1, typename T2>
+bool operator != (Ptr<T1> const &lhs, T2 const *rhs);
+
+// allow if (0 != sp)
+template <typename T1, typename T2>
+bool operator != (T1 const *lhs, Ptr<T2> &rhs);
+
+// allow if (sp0 == sp1)
+template <typename T1, typename T2>
+bool operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
+
+// allow if (sp0 != sp1)
+template <typename T1, typename T2>
+bool operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
+
+template <typename T1, typename T2>
+Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
+
+} // namespace ns3
+
+
+namespace ns3 {
+
+  /*************************************************
+   *  friend non-member function implementations
+   ************************************************/
 
 template <typename T>
 Ptr<T> MakeNewObject (void)
@@ -220,6 +248,73 @@ Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
   return p;
 }
 
+template <typename T>
+T * PeekPointer (const Ptr<T> &p)
+{
+  return p.m_ptr;
+}
+
+template <typename T>
+T * GetPointer (const Ptr<T> &p)
+{
+  p.Acquire ();
+  return p.m_ptr;
+}
+
+template <typename T1, typename T2>
+bool 
+operator == (Ptr<T1> const &lhs, T2 const *rhs)
+{
+  return PeekPointer (lhs) == rhs;
+}
+
+template <typename T1, typename T2>
+bool 
+operator == (T1 const *lhs, Ptr<T2> &rhs)
+{
+  return lhs == PeekPointer (rhs);
+}
+
+template <typename T1, typename T2>
+bool 
+operator != (Ptr<T1> const &lhs, T2 const *rhs)
+{
+  return PeekPointer (lhs) != rhs;
+}
+
+template <typename T1, typename T2>
+bool 
+operator != (T1 const *lhs, Ptr<T2> &rhs)
+{
+  return lhs != PeekPointer (rhs);
+}
+
+template <typename T1, typename T2>
+bool 
+operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
+{
+  return PeekPointer (lhs) == PeekPointer (rhs);
+}
+
+template <typename T1, typename T2>
+bool 
+operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
+{
+  return PeekPointer (lhs) != PeekPointer (rhs);
+}
+
+
+template <typename T1, typename T2>
+Ptr<T1>
+const_pointer_cast (Ptr<T2> const&p)
+{
+  return Ptr<T1> (const_cast<T1 *> (PeekPointer (p)));
+}
+
+
+/****************************************************
+ *      Member method implementations.
+ ***************************************************/
 
 template <typename T>
 void 
@@ -245,14 +340,14 @@ Ptr<T>::Ptr (T *ptr)
 
 template <typename T>
 Ptr<T>::Ptr (Ptr const&o) 
-  : m_ptr (o.Peek ())
+  : m_ptr (PeekPointer (o))
 {
   Acquire ();
 }
 template <typename T>
 template <typename U>
 Ptr<T>::Ptr (Ptr<U> const &o)
-  : m_ptr (o.Peek ())
+  : m_ptr (PeekPointer (o))
 {
   Acquire ();
 }
@@ -285,21 +380,6 @@ Ptr<T>::operator = (Ptr const& o)
 
 template <typename T>
 T *
-Ptr<T>::Peek () const
-{
-  return m_ptr;
-}
-
-template <typename T>
-T * 
-Ptr<T>::Get () const
-{
-  Acquire ();
-  return m_ptr;
-}
-
-template <typename T>
-T *
 Ptr<T>::operator -> () 
 {
   return m_ptr;
@@ -328,53 +408,6 @@ Ptr<T>::operator Tester * () const
     }
   static Tester test;
   return &test;
-}
-
-// non-member friend functions.
-template <typename T1, typename T2>
-bool 
-operator == (Ptr<T1> const &lhs, T2 const *rhs)
-{
-  return lhs.m_ptr == rhs;
-}
-template <typename T1, typename T2>
-bool 
-operator == (T1 const *lhs, Ptr<T2> &rhs)
-{
-  return lhs == rhs.m_ptr;
-}
-template <typename T1, typename T2>
-bool 
-operator != (Ptr<T1> const &lhs, T2 const *rhs)
-{
-  return lhs.m_ptr != rhs;
-}
-template <typename T1, typename T2>
-bool 
-operator != (T1 const *lhs, Ptr<T2> &rhs)
-{
-  return lhs != rhs.m_ptr;
-}
-
-template <typename T1, typename T2>
-bool 
-operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
-{
-  return lhs.Peek () == rhs.Peek ();
-}
-template <typename T1, typename T2>
-bool 
-operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
-{
-  return lhs.Peek () != rhs.Peek ();
-}
-
-
-template <typename T1, typename T2>
-Ptr<T1>
-const_pointer_cast (Ptr<T2> const&p)
-{
-  return Ptr<T1> (const_cast<T1 *> (p.m_ptr));
 }
 
 

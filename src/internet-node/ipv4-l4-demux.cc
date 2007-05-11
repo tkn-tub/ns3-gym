@@ -65,7 +65,7 @@ Ipv4L4Demux::CreateTraceResolver (TraceContext const &context)
       oss << (*i)->GetProtocolNumber ();
       Ipv4L4ProtocolTraceType protocolNumber = (*i)->GetProtocolNumber ();
       resolver->Add (protValue,
-                     MakeCallback (&Ipv4L4Protocol::CreateTraceResolver, protocol.Peek ()),
+                     MakeCallback (&Ipv4L4Protocol::CreateTraceResolver, PeekPointer (protocol)),
                      protocolNumber);
     }
   return resolver;

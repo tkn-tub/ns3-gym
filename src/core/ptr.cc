@@ -241,7 +241,7 @@ PtrTest::RunTests (void)
       {
         Ptr<NoCount const> p1 = p;
       }
-      raw = p.Get ();
+      raw = GetPointer (p);
       p = 0;
     }
     if (m_nDestroyed != 0)
@@ -255,8 +255,8 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p = MakeNewObject<NoCount> (cb);
-    const NoCount *v1 = p.Peek();
-    NoCount *v2 = p.Peek();
+    const NoCount *v1 = PeekPointer (p);
+    NoCount *v2 = PeekPointer (p);
     v1->Nothing ();
     v2->Nothing ();
   }

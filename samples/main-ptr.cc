@@ -49,7 +49,7 @@ int main (int argc, char *argv[])
   {
     // Create a new object of type A, store it in global 
     // variable g_a
-    Ptr<A> a = new A ();
+    Ptr<A> a = MakeNewObject<A> ();
     a->Method ();
     Ptr<A> prev = StoreA (a);
     NS_ASSERT (prev == 0);
@@ -58,19 +58,17 @@ int main (int argc, char *argv[])
   {
     // Create a new object of type A, store it in global 
     // variable g_a, get a hold on the previous A object.
-    Ptr<A> a = new A ();
+    Ptr<A> a = MakeNewObject<A> ();
     Ptr<A> prev = StoreA (a);
     // call method on object
     prev->Method ();
     // Clear the currently-stored object
     ClearA ();
-    // remove the raw pointer from its smart pointer.
-    // we can do this because the refcount is exactly one
-    // here
-    A *raw = prev.Get ();
+    // get the raw pointer and release it.
+    A *raw = GetPointer (prev);
     prev = 0;
     raw->Method ();
-    delete raw;
+    raw->Unref ();
   }
 
 

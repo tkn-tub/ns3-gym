@@ -214,7 +214,7 @@ NsUnknown::DoQueryInterface (Iid iid) const
 void 
 NsUnknown::AddInterface (Ptr<NsUnknown> interface)
 {
-  NsUnknown *p = interface.Peek ();
+  NsUnknown *p = PeekPointer (interface);
   m_impl->AddInterface (p);
   m_impl->RefAll (p->m_impl);
   p->m_impl->UnrefAll ();
@@ -224,7 +224,7 @@ NsUnknown::AddInterface (Ptr<NsUnknown> interface)
 void
 NsUnknown::AddSelfInterface (Iid iid, Ptr<NsUnknown> interface)
 {
-  m_impl->AddSelfInterface (iid, interface.Peek ());
+  m_impl->AddSelfInterface (iid, PeekPointer (interface));
 }
 
 

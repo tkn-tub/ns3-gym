@@ -82,7 +82,7 @@ InternetNode::CreateTraceResolver (TraceContext const &context)
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   Ptr<IIpv4Private> ipv4 = QueryInterface<IIpv4Private> (IIpv4Private::iid);
   resolver->Add ("ipv4",
-                 MakeCallback (&IIpv4Private::CreateTraceResolver, ipv4.Peek ()),
+                 MakeCallback (&IIpv4Private::CreateTraceResolver, PeekPointer (ipv4)),
                  InternetNode::IPV4);
 
   return resolver;

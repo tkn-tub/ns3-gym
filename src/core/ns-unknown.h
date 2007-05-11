@@ -117,7 +117,7 @@ NsUnknown::QueryInterface (Iid iid) const
   Ptr<NsUnknown> found = DoQueryInterface (iid);
   if (found != 0)
     {
-      return Ptr<T> (dynamic_cast<T *> (found.Peek ()));
+      return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));
     }
   return 0;
 }

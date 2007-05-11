@@ -102,7 +102,7 @@ NodeListPriv::GetNNodes (void)
 Node *
 NodeListPriv::PeekNode (uint32_t n)
 {
-  return m_nodes[n].Peek ();
+  return PeekPointer (m_nodes[n]);
 }
 
 Ptr<Node>

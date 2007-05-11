@@ -63,7 +63,7 @@ L3Demux::CreateTraceResolver (TraceContext const &context) const
       oss << i->second->GetProtocolNumber ();
       ProtocolTraceType context = i->second->GetProtocolNumber ();
       resolver->Add (protValue, 
-                     MakeCallback (&L3Protocol::CreateTraceResolver, i->second.Peek ()),
+                     MakeCallback (&L3Protocol::CreateTraceResolver, PeekPointer (i->second)),
                      context);
     }
   return resolver;
