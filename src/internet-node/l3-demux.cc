@@ -29,7 +29,7 @@
 
 namespace ns3 {
 
-const Iid L3Demux::iid ("L3Demux");
+const InterfaceId L3Demux::iid ("L3Demux");
 
 L3Demux::L3Demux (Ptr<Node> node)
   : Interface (L3Demux::iid),

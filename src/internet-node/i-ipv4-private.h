@@ -38,7 +38,7 @@ class NetDevice;
 class IIpv4Private : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
   IIpv4Private (Ptr<Ipv4> ipv4);
   virtual ~IIpv4Private ();
 

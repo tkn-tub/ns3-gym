@@ -26,7 +26,7 @@
 
 namespace ns3{
 
-const Iid ApplicationList::iid ("ApplicationList");
+const InterfaceId ApplicationList::iid ("ApplicationList");
 
 ApplicationList::ApplicationList(Ptr<Node> n)
   : Interface (ApplicationList::iid)

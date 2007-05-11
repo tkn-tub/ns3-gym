@@ -34,7 +34,7 @@ namespace ns3 {
 class ApplicationList : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
   ApplicationList(Ptr<Node>);
   // Copy constructor not needed, default one is correct
   virtual ~ApplicationList();

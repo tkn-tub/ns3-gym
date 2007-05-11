@@ -22,7 +22,7 @@
 
 namespace ns3 {
 
-const Iid IIpv4::iid ("IIpv4");
+const InterfaceId IIpv4::iid ("IIpv4");
 
 IIpv4::IIpv4 ()
   : Interface (IIpv4::iid)

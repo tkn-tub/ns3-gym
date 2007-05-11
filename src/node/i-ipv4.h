@@ -34,7 +34,7 @@ class Ipv4Route;
 class IIpv4 : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
   IIpv4 ();
   virtual ~IIpv4 ();
     

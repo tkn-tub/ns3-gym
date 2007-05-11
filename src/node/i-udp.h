@@ -31,7 +31,7 @@ class Socket;
 class IUdp : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
 
   IUdp ();
 

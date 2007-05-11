@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-const Iid IArpPrivate::iid ("IArpPrivate");
+const InterfaceId IArpPrivate::iid ("IArpPrivate");
 
 IArpPrivate::IArpPrivate (Ptr<Arp> arp)
   : Interface (IArpPrivate::iid),

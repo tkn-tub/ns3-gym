@@ -121,13 +121,13 @@ public:
    * result.
    */
   template <typename T>
-  static Ptr<T> Create (ClassId classId, Iid iid);
+  static Ptr<T> Create (ClassId classId, InterfaceId iid);
 
   template <typename T, typename T1>
-  static Ptr<T> Create (ClassId classId, Iid iid, T1 a1);
+  static Ptr<T> Create (ClassId classId, InterfaceId iid, T1 a1);
 
   template <typename T, typename T1, typename T2>
-  static Ptr<T> Create (ClassId classId, Iid iid, T1 a1, T2 a2);
+  static Ptr<T> Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2);
 
   /**
    * \param name the symbolic name to associate to this
@@ -229,7 +229,7 @@ ComponentManager::Create (ClassId classId, T1 a1, T2 a2)
 
 template <typename T>
 Ptr<T>
-ComponentManager::Create (ClassId classId, Iid iid)
+ComponentManager::Create (ClassId classId, InterfaceId iid)
 {
   Ptr<Interface> obj = Create (classId);
   Ptr<T> i = obj->QueryInterface<T> (iid);
@@ -238,7 +238,7 @@ ComponentManager::Create (ClassId classId, Iid iid)
 
 template <typename T, typename T1>
 Ptr<T>
-ComponentManager::Create (ClassId classId, Iid iid, T1 a1)
+ComponentManager::Create (ClassId classId, InterfaceId iid, T1 a1)
 {
   Ptr<Interface> obj = Create (classId, a1);
   Ptr<T> i = obj->QueryInterface<T> (iid);
@@ -247,7 +247,7 @@ ComponentManager::Create (ClassId classId, Iid iid, T1 a1)
 
 template <typename T, typename T1, typename T2>
 Ptr<T>
-ComponentManager::Create (ClassId classId, Iid iid, T1 a1, T2 a2)
+ComponentManager::Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2)
 {
   Ptr<Interface> obj = Create (classId, a1, a2);
   Ptr<T> i = obj->QueryInterface<T> (iid);

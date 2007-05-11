@@ -29,7 +29,7 @@
 
 namespace ns3{
 
-const Iid Node::iid ("Node");
+const InterfaceId Node::iid ("Node");
 
 Node::Node()
   : Interface (Node::iid),

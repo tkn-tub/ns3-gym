@@ -42,7 +42,7 @@ class TraceContext;
 class Ipv4L4Demux : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
   typedef int Ipv4L4ProtocolTraceType;
   Ipv4L4Demux (Ptr<Node> node);
   virtual ~Ipv4L4Demux();

@@ -99,11 +99,11 @@ namespace {
 class B : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   B ();
 };
 
-const ns3::Iid B::iid ("IB");
+const ns3::InterfaceId B::iid ("IB");
 
 B::B ()
   : Interface (B::iid)
@@ -116,7 +116,7 @@ public:
   static const ns3::ClassId cidZero;
   static const ns3::ClassId cidOneBool;
   static const ns3::ClassId cidOneUi32;
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
 
   A ();
   A (bool);
@@ -133,7 +133,7 @@ public:
 const ns3::ClassId A::cidZero = ns3::ComponentManager::RegisterConstructor <A> ("A");
 const ns3::ClassId A::cidOneBool = ns3::ComponentManager::RegisterConstructor <A,bool> ("ABool");
 const ns3::ClassId A::cidOneUi32 = ns3::ComponentManager::RegisterConstructor <A,uint32_t> ("AUi32");
-const ns3::Iid A::iid ("IA");
+const ns3::InterfaceId A::iid ("IA");
 
 A::A ()
   : Interface (A::iid),

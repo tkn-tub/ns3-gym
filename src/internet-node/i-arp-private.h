@@ -34,7 +34,7 @@ class Arp;
 class IArpPrivate : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
   IArpPrivate (Ptr<Arp> arp);
   virtual ~IArpPrivate ();
   bool Lookup (Packet &p, Ipv4Address destination, 

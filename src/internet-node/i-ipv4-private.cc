@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-const Iid IIpv4Private::iid ("IIpv4Private");
+const InterfaceId IIpv4Private::iid ("IIpv4Private");
 
 IIpv4Private::IIpv4Private (Ptr<Ipv4> ipv4)
   : Interface (IIpv4Private::iid),

@@ -38,7 +38,7 @@ class NetDevice;
 class Node : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
 
   Node();
   Node(uint32_t); // Specify which system for a distributed simulation

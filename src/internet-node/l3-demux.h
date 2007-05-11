@@ -44,7 +44,7 @@ class TraceContext;
 class L3Demux : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
   typedef int ProtocolTraceType;
   L3Demux(Ptr<Node> node);
   virtual ~L3Demux();

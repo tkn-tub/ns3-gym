@@ -34,11 +34,11 @@ namespace ns3 {
 class IidManager : public UidManager
 {};
 
-Iid::Iid (std::string name)
+InterfaceId::InterfaceId (std::string name)
   : m_iid (Singleton<IidManager>::Get ()->Allocate (name))
 {}
 
-bool operator == (const Iid &a, const Iid &b)
+bool operator == (const InterfaceId &a, const InterfaceId &b)
 {
   return a.m_iid == b.m_iid;
 }
@@ -47,24 +47,24 @@ bool operator == (const Iid &a, const Iid &b)
 class InterfaceImpl
 {
 public:
-  InterfaceImpl (Iid iid, Interface *interface);
+  InterfaceImpl (InterfaceId iid, Interface *interface);
   ~InterfaceImpl ();
   void Ref (void);
   void RefAll (InterfaceImpl *other);
   void Unref (void);
   void UnrefAll (void);
-  Interface *PeekQueryInterface (Iid iid) const;
+  Interface *PeekQueryInterface (InterfaceId iid) const;
   void DoDisposeAll (void);
   void AddInterface (Interface * interface);
-  void AddSelfInterface (Iid iid, Interface *interface);
+  void AddSelfInterface (InterfaceId iid, Interface *interface);
 private:
-  typedef std::list<std::pair<Iid,Interface *> > List;
+  typedef std::list<std::pair<InterfaceId,Interface *> > List;
   uint32_t m_ref;
   List m_list;
   bool m_disposed;
 };
 
-InterfaceImpl::InterfaceImpl (Iid iid, Interface * interface)
+InterfaceImpl::InterfaceImpl (InterfaceId iid, Interface * interface)
   : m_ref (1),
     m_disposed (false)
 {
@@ -124,7 +124,7 @@ InterfaceImpl::DoDisposeAll (void)
   m_disposed = true;
 }
 Interface *
-InterfaceImpl::PeekQueryInterface (Iid iid) const
+InterfaceImpl::PeekQueryInterface (InterfaceId iid) const
 {
   for (List::const_iterator i = m_list.begin ();
        i != m_list.end (); i++)
@@ -149,14 +149,14 @@ InterfaceImpl::AddInterface (Interface *interface)
     }
 }
 void 
-InterfaceImpl::AddSelfInterface (Iid iid, Interface *interface)
+InterfaceImpl::AddSelfInterface (InterfaceId iid, Interface *interface)
 {
   interface->RefInternal ();
   m_list.push_back (std::make_pair (iid, interface));
 }
 
 
-Interface::Interface (Iid iid)
+Interface::Interface (InterfaceId iid)
   : m_impl (new InterfaceImpl (iid, this)),
     m_ref (1)
 {}
@@ -206,7 +206,7 @@ Interface::UnrefInternal (void)
 }
 
 Ptr<Interface>
-Interface::DoQueryInterface (Iid iid) const
+Interface::DoQueryInterface (InterfaceId iid) const
 {
   return m_impl->PeekQueryInterface (iid);
 }
@@ -222,7 +222,7 @@ Interface::AddInterface (Ptr<Interface> interface)
 }
 
 void
-Interface::AddSelfInterface (Iid iid, Ptr<Interface> interface)
+Interface::AddSelfInterface (InterfaceId iid, Ptr<Interface> interface)
 {
   m_impl->AddSelfInterface (iid, PeekPointer (interface));
 }
@@ -239,7 +239,7 @@ namespace {
 class A : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   A ()
     : Interface (A::iid)
   {}
@@ -247,7 +247,7 @@ public:
 class B : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   B ()
     : Interface (B::iid)
   {}
@@ -255,7 +255,7 @@ public:
 class BaseA : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   BaseA ()
     : Interface (BaseA::iid)
   {}
@@ -263,7 +263,7 @@ public:
 class BaseB : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   BaseB ()
     : Interface (BaseB::iid)
   {}
@@ -271,7 +271,7 @@ public:
 class Base : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   Base ()
     : Interface (Base::iid)
   {}
@@ -279,19 +279,19 @@ public:
 class Derived : public Base
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   Derived ()
   {
     AddSelfInterface (Derived::iid, this);
   }
 };
 
-const ns3::Iid A::iid ("A");
-const ns3::Iid B::iid ("B");
-const ns3::Iid BaseA::iid ("BaseA");
-const ns3::Iid BaseB::iid ("BaseB");
-const ns3::Iid Base::iid ("Base");
-const ns3::Iid Derived::iid ("Derived");
+const ns3::InterfaceId A::iid ("A");
+const ns3::InterfaceId B::iid ("B");
+const ns3::InterfaceId BaseA::iid ("BaseA");
+const ns3::InterfaceId BaseB::iid ("BaseB");
+const ns3::InterfaceId Base::iid ("Base");
+const ns3::InterfaceId Derived::iid ("Derived");
 
 }//namespace
 

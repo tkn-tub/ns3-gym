@@ -28,12 +28,12 @@ namespace ns3 {
 
 class InterfaceImpl;
 
-class Iid
+class InterfaceId
 {
 public:
-  Iid (std::string name);
+  InterfaceId (std::string name);
 private:
-  friend bool operator == (const Iid &a, const Iid &b);
+  friend bool operator == (const InterfaceId &a, const InterfaceId &b);
   uint32_t m_iid;
 };
 
@@ -56,7 +56,7 @@ public:
    * \param iid the Interface id of the requested interface
    */
   template <typename T>
-  Ptr<T> QueryInterface (Iid iid) const;
+  Ptr<T> QueryInterface (InterfaceId iid) const;
 
   /**
    * \param interface another interface
@@ -77,7 +77,7 @@ protected:
    * If you are a direct subclass of this class, you _must_ register
    * the name of your interface with this constructor.
    */
-  Interface (Iid iid);
+  Interface (InterfaceId iid);
   /**
    * \param iid the Interface id of the interface
    * \param a pointer to the interface object
@@ -87,7 +87,7 @@ protected:
    * (typically, your subclass has added API), you need to call
    * this method to associate an interface id to your interface.
    */
-  void AddSelfInterface (Iid iid, Ptr<Interface> interface);
+  void AddSelfInterface (InterfaceId iid, Ptr<Interface> interface);
 protected:
   /**
    * Subclasses who want to handle the "dispose" event should
@@ -99,7 +99,7 @@ protected:
 private:
   friend class InterfaceImpl;
   Interface ();
-  Ptr<Interface> DoQueryInterface (Iid iid) const;
+  Ptr<Interface> DoQueryInterface (InterfaceId iid) const;
   void RefInternal (void);
   void UnrefInternal (void);
   InterfaceImpl *m_impl;
@@ -112,7 +112,7 @@ namespace ns3 {
 
 template <typename T>
 Ptr<T>
-Interface::QueryInterface (Iid iid) const
+Interface::QueryInterface (InterfaceId iid) const
 {
   Ptr<Interface> found = DoQueryInterface (iid);
   if (found != 0)
