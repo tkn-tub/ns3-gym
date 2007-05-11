@@ -21,15 +21,19 @@
 
 #include <iostream>
 #include "ns3/assert.h"
+#include "ns3/interface.h"
 
+#include "channel.h"
 #include "net-device.h"
 #include "llc-snap-header.h"
 #include "node.h"
-#include "ns3/channel.h"
 
 namespace ns3 {
 
+const InterfaceId NetDevice::iid ("NetDevice");
+
 NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) : 
+  Interface (NetDevice::iid),
   m_node (node), 
   m_name(""), 
   m_ifIndex (0), 
