@@ -82,7 +82,7 @@ public:
    * The input value to this method should be the value
    * returned from the Ipv4L4Protocol::Insert method.
    */
-  void Erase (Ptr<Ipv4L4Protocol> protocol);
+  void Remove (Ptr<Ipv4L4Protocol> protocol);
 private:
   virtual void DoDispose (void);
   typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;

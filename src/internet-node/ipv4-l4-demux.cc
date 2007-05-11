@@ -88,7 +88,7 @@ Ipv4L4Demux::GetProtocol(int protocolNumber)
   return 0;
 }
 void
-Ipv4L4Demux::Erase(Ptr<Ipv4L4Protocol> protocol)
+Ipv4L4Demux::Remove (Ptr<Ipv4L4Protocol> protocol)
 {
   m_protocols.remove (protocol);
 }
