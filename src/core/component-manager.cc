@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns-unknown-manager.h"
+#include "component-manager.h"
 #include "uid-manager.h"
 #include "singleton.h"
 
@@ -91,7 +91,7 @@ NsUnknownManager::Register (std::string name, CallbackBase *callback)
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
-#include "ns-unknown.h"
+#include "interface.h"
 
 namespace {
 

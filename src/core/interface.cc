@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns-unknown.h"
+#include "interface.h"
 #include "singleton.h"
 #include "uid-manager.h"
 #include <string>

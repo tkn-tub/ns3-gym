@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include "ns3/ns-unknown.h"
+#include "ns3/interface.h"
 
 namespace ns3 {
 

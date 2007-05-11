@@ -28,7 +28,7 @@
 #define L3_DEMUX_H
 
 #include <map>
-#include "ns3/ns-unknown.h"
+#include "ns3/interface.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {

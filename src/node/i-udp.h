@@ -21,7 +21,7 @@
 #ifndef I_UDP_H
 #define I_UDP_H
 
-#include "ns3/ns-unknown.h"
+#include "ns3/interface.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {

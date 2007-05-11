@@ -25,12 +25,12 @@ core.add_sources([
     'test.cc',
     'random-variable.cc',
     'rng-stream.cc',
-    'ns-unknown.cc',
+    'interface.cc',
     'uid-manager.cc',
     'default-value.cc',
     'command-line.cc',
     'type-name.cc',
-    'ns-unknown-manager.cc',
+    'component-manager.cc',
     ])
 env = Environment()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] == 'cygwin':
@@ -58,11 +58,11 @@ core.add_inst_headers([
     'test.h',
     'random-variable.h',
     'rng-stream.h',
-    'ns-unknown.h',
+    'interface.h',
     'default-value.h',
     'command-line.h',
     'type-name.h',
-    'ns-unknown-manager.h',
+    'component-manager.h',
     ])
 
 def config_core (env, config):

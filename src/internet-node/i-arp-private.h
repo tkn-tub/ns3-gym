@@ -21,7 +21,7 @@
 #ifndef I_ARP_PRIVATE_H
 #define I_ARP_PRIVATE_H
 
-#include "ns3/ns-unknown.h"
+#include "ns3/interface.h"
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {

@@ -25,7 +25,7 @@
 #define __APPLICATION_LIST_H__
 
 #include "application.h"
-#include "ns3/ns-unknown.h"
+#include "ns3/interface.h"
 #include "ns3/ptr.h"
 #include <vector>
 

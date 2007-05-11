@@ -25,7 +25,7 @@
 #include <vector>
 #include <stdint.h>
 #include "callback.h"
-#include "ns-unknown.h"
+#include "interface.h"
 #include "fatal-error.h"
 #include "ptr.h"
 
