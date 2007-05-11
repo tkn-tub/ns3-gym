@@ -28,7 +28,7 @@ namespace ns3 {
 
 class Socket;
 
-class IUdp : public NsUnknown
+class IUdp : public Interface
 {
 public:
   static const Iid iid;

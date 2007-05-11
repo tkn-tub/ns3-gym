@@ -31,7 +31,7 @@ class MacAddress;
 class Packet;
 class Arp;
 
-class IArpPrivate : public NsUnknown
+class IArpPrivate : public Interface
 {
 public:
   static const Iid iid;

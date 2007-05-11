@@ -29,7 +29,7 @@ namespace ns3{
 const Iid ApplicationList::iid ("ApplicationList");
 
 ApplicationList::ApplicationList(Ptr<Node> n)
-  : NsUnknown (ApplicationList::iid)
+  : Interface (ApplicationList::iid)
 {}
 
 void 
@@ -43,7 +43,7 @@ ApplicationList::DoDispose (void)
       *i = 0;
     }
   m_apps.clear ();
-  NsUnknown::DoDispose ();
+  Interface::DoDispose ();
 }
   
 ApplicationList::~ApplicationList()

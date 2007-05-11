@@ -33,7 +33,7 @@ namespace ns3 {
 const Iid Ipv4L4Demux::iid ("Ipv4L4Demux");
 
 Ipv4L4Demux::Ipv4L4Demux (Ptr<Node> node)
-  : NsUnknown (Ipv4L4Demux::iid),
+  : Interface (Ipv4L4Demux::iid),
     m_node (node)
 {}
 
@@ -50,7 +50,7 @@ Ipv4L4Demux::DoDispose (void)
     }
   m_protocols.clear ();
   m_node = 0;
-  NsUnknown::DoDispose ();
+  Interface::DoDispose ();
 }
 
 TraceResolver *

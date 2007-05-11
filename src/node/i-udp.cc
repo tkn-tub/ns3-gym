@@ -25,7 +25,7 @@ namespace ns3 {
 const Iid IUdp::iid ("IUdp");
 
 IUdp::IUdp ()
-  : NsUnknown (IUdp::iid)
+  : Interface (IUdp::iid)
 {}
 
 } // namespace ns3

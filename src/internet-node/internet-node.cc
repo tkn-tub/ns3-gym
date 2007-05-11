@@ -58,13 +58,13 @@ InternetNode::InternetNode()
   Ptr<IIpv4Impl> ipv4Impl = MakeNewObject<IIpv4Impl> (ipv4);
   Ptr<IIpv4Private> ipv4Private = MakeNewObject<IIpv4Private> (ipv4);
 
-  NsUnknown::AddInterface (ipv4Private);
-  NsUnknown::AddInterface (ipv4Impl);
-  NsUnknown::AddInterface (arpPrivate);
-  NsUnknown::AddInterface (udpImpl);
-  NsUnknown::AddInterface (applicationList);
-  NsUnknown::AddInterface (l3Demux);
-  NsUnknown::AddInterface (ipv4L4Demux);
+  Interface::AddInterface (ipv4Private);
+  Interface::AddInterface (ipv4Impl);
+  Interface::AddInterface (arpPrivate);
+  Interface::AddInterface (udpImpl);
+  Interface::AddInterface (applicationList);
+  Interface::AddInterface (l3Demux);
+  Interface::AddInterface (ipv4L4Demux);
 }
 
 InternetNode::~InternetNode ()

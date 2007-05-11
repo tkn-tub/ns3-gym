@@ -41,7 +41,7 @@ class TraceContext;
 /**
  * \brief L3 Demux 
  */
-class L3Demux : public NsUnknown
+class L3Demux : public Interface
 {
 public:
   static const Iid iid;

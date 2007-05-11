@@ -35,7 +35,7 @@ class TraceResolver;
 class Ipv4Interface;
 class NetDevice;
 
-class IIpv4Private : public NsUnknown
+class IIpv4Private : public Interface
 {
 public:
   static const Iid iid;

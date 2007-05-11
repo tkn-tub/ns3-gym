@@ -31,7 +31,7 @@ class NetDevice;
 class Packet;
 class Ipv4Route;
 
-class IIpv4 : public NsUnknown
+class IIpv4 : public Interface
 {
 public:
   static const Iid iid;

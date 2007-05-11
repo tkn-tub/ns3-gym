@@ -39,7 +39,7 @@ class TraceContext;
 /**
  * \brief L4 Ipv4 Demux
  */
-class Ipv4L4Demux : public NsUnknown
+class Ipv4L4Demux : public Interface
 {
 public:
   static const Iid iid;

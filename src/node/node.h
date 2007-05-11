@@ -35,7 +35,7 @@ class TraceContext;
 class TraceResolver;
 class NetDevice;
 
-class Node : public NsUnknown
+class Node : public Interface
 {
 public:
   static const Iid iid;

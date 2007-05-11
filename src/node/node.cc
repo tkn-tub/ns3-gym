@@ -32,7 +32,7 @@ namespace ns3{
 const Iid Node::iid ("Node");
 
 Node::Node()
-  : NsUnknown (Node::iid),
+  : Interface (Node::iid),
     m_id(0), 
     m_sid(0)
 {
@@ -40,7 +40,7 @@ Node::Node()
 }
 
 Node::Node(uint32_t sid)
-  : NsUnknown (Node::iid),
+  : Interface (Node::iid),
     m_id(0), 
     m_sid(sid)
 { 
@@ -98,7 +98,7 @@ void Node::DoDispose()
       *i = 0;
     }
   m_devices.clear ();
-  NsUnknown::DoDispose ();
+  Interface::DoDispose ();
 }
 
 }//namespace ns3

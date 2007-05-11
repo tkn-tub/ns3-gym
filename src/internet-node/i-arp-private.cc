@@ -28,7 +28,7 @@ namespace ns3 {
 const Iid IArpPrivate::iid ("IArpPrivate");
 
 IArpPrivate::IArpPrivate (Ptr<Arp> arp)
-  : NsUnknown (IArpPrivate::iid),
+  : Interface (IArpPrivate::iid),
     m_arp (arp)
 {}
 IArpPrivate::~IArpPrivate ()
@@ -48,7 +48,7 @@ void
 IArpPrivate::DoDispose (void)
 {
   m_arp = 0;
-  NsUnknown::DoDispose ();
+  Interface::DoDispose ();
 }
 
 

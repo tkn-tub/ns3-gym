@@ -28,7 +28,7 @@ namespace ns3 {
 const Iid IIpv4Private::iid ("IIpv4Private");
 
 IIpv4Private::IIpv4Private (Ptr<Ipv4> ipv4)
-  : NsUnknown (IIpv4Private::iid),
+  : Interface (IIpv4Private::iid),
     m_ipv4 (ipv4)
 {}
 IIpv4Private::~IIpv4Private ()
@@ -60,7 +60,7 @@ void
 IIpv4Private::DoDispose (void)
 {
   m_ipv4 = 0;
-  NsUnknown::DoDispose ();
+  Interface::DoDispose ();
 }
 
 } // namespace ns3

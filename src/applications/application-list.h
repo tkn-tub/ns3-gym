@@ -31,7 +31,7 @@
 
 namespace ns3 {
 
-class ApplicationList : public NsUnknown
+class ApplicationList : public Interface
 {
 public:
   static const Iid iid;

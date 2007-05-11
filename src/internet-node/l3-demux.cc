@@ -32,7 +32,7 @@ namespace ns3 {
 const Iid L3Demux::iid ("L3Demux");
 
 L3Demux::L3Demux (Ptr<Node> node)
-  : NsUnknown (L3Demux::iid),
+  : Interface (L3Demux::iid),
     m_node (node)
 {}
 
@@ -49,7 +49,7 @@ L3Demux::DoDispose (void)
     }
   m_protocols.clear ();
   m_node = 0;
-  NsUnknown::DoDispose ();
+  Interface::DoDispose ();
 }
 
 TraceResolver *
