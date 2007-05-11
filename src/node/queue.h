@@ -28,6 +28,7 @@
 #include <string>
 #include <list>
 #include "ns3/packet.h"
+#include "ns3/interface.h"
 #include "ns3/callback-trace-source.h"
 #include "ns3/trace-resolver.h"
 
@@ -35,9 +36,11 @@ namespace ns3 {
 
 class StringEnumDefaultValue;
 
-class Queue
+class Queue : public Interface
 {
 public:
+  static const InterfaceId iid;
+
   enum TraceType {
     ENQUEUE,
     DEQUEUE,

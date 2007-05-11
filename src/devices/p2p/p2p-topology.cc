@@ -49,13 +49,15 @@ PointToPointTopology::AddPointToPointLink(
 
   Ptr<PointToPointNetDevice> net1 = MakeNewObject<PointToPointNetDevice> (n1);
 
-  net1->AddQueue(Queue::Default().Copy());
+  Ptr<Queue> q = MakeNewObject<DropTailQueue> ();
+  net1->AddQueue(q);
   n1->AddDevice (net1);
   net1->Attach (channel);
   
   Ptr<PointToPointNetDevice> net2 = MakeNewObject<PointToPointNetDevice> (n2);
 
-  net2->AddQueue(Queue::Default().Copy());
+  q = MakeNewObject<DropTailQueue> ();
+  net2->AddQueue(q);
   n2->AddDevice (net2);
   net2->Attach (channel);
 
@@ -137,14 +139,14 @@ Ptr<PointToPointChannel> PointToPointTopology::GetChannel(
   return nd->GetChannel();
 }
 
-Queue* PointToPointTopology::GetQueue(Ptr<Node> n1, Ptr<Node> n2)
+Ptr<Queue> PointToPointTopology::GetQueue(Ptr<Node> n1, Ptr<Node> n2)
 {
   Ptr<NetDevice> nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, so in queue
   return nd->GetQueue();
 }
 
-Queue* PointToPointTopology::SetQueue(Ptr<Node> n1, Ptr<Node> n2, const Queue& q)
+void PointToPointTopology::SetQueue(Ptr<Node> n1, Ptr<Node> n2, Ptr<Queue> q)
 {
   Ptr<NetDevice> nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, can't set queue
@@ -190,14 +192,14 @@ Ptr<Channel> Topology::GetChannel(Ptr<Node> n1, Ptr<Node> n2)
   return nd->GetChannel();
 }
 
-Queue* Topology::GetQueue(Ptr<Node> n1, Ptr<Node> n2)
+Ptr<Queue> Topology::GetQueue(Ptr<Node> n1, Ptr<Node> n2)
 {
   Ptr<NetDevice> nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, so in queue
   return nd->GetQueue();
 }
 
-Queue* Topology::SetQueue(Ptr<Node> n1, Ptr<Node> n2, const Queue& q)
+void Topology::SetQueue(Ptr<Node> n1, Ptr<Node> n2, Ptr<Queue> q)
 {
   Ptr<NetDevice> nd = GetNetDevice(n1, n2);
   if (!nd) return 0; // No net device, can't set queue

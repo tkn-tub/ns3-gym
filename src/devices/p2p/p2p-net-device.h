@@ -155,7 +155,7 @@ public:
    * @param queue a pointer to the queue for which object is assuming
    *        ownership.
    */
-  void AddQueue(Queue* queue);
+  void AddQueue(Ptr<Queue> queue);
   /**
    * Receive a packet from a connected PointToPointChannel.
    *
@@ -179,7 +179,7 @@ protected:
    * @see PointToPointTopology
    * @returns a pointer to the queue.
    */
-  Queue* GetQueue(void) const; 
+  Ptr<Queue> GetQueue(void) const; 
   /**
    * Get a copy of the attached Channel
    *
@@ -296,7 +296,7 @@ private:
    * @see class Queue
    * @see class DropTailQueue
    */
-  Queue* m_queue;
+  Ptr<Queue> m_queue;
   /**
    * The trace source for the packet reception events that the device can
    * fire.

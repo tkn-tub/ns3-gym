@@ -26,9 +26,12 @@ NS_DEBUG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
+const InterfaceId Queue::iid ("Queue");
+
 Queue* Queue::defaultQueue = 0;
 
 Queue::Queue() : 
+  Interface (Queue::iid),
   m_nBytes(0), 
   m_nTotalReceivedBytes(0),
   m_nPackets(0), 

@@ -55,8 +55,6 @@ PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node)
 PointToPointNetDevice::~PointToPointNetDevice()
 {
   NS_DEBUG ("PointToPointNetDevice::~PointToPointNetDevice ()");
-
-  delete m_queue;
   m_queue = 0;
 }
 
@@ -286,7 +284,7 @@ PointToPointNetDevice::DoCreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   resolver->Add ("queue", 
-                 MakeCallback (&Queue::CreateTraceResolver, m_queue),
+                 MakeCallback (&Queue::CreateTraceResolver, PeekPointer (m_queue)),
                  PointToPointNetDevice::QUEUE);
   resolver->Add ("rx",
                  m_rxTrace,
@@ -318,7 +316,7 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 }
 
 void
-PointToPointNetDevice::AddQueue (Queue* q)
+PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 {
   NS_DEBUG ("PointToPointNetDevice::AddQueue (" << q << ")");
 
@@ -335,7 +333,7 @@ PointToPointNetDevice::Receive (Packet& p)
   ForwardUp (p);
 }
 
-Queue* 
+Ptr<Queue>
 PointToPointNetDevice::GetQueue(void) const 
 { 
     return m_queue;
