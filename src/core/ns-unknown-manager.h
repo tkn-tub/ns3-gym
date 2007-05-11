@@ -259,19 +259,19 @@ template <typename T>
 Ptr<NsUnknown> 
 NsUnknownManager::MakeObjectZero (void)
 {
-  return new T ();
+  return MakeNewObject<T> ();
 }
 template <typename T, typename T1>
 Ptr<NsUnknown> 
 NsUnknownManager::MakeObjectOne (T1 a1)
 {
-  return new T (a1);
+  return MakeNewObject<T> (a1);
 }
 template <typename T, typename T1, typename T2>
 Ptr<NsUnknown> 
 NsUnknownManager::MakeObjectTwo (T1 a1, T2 a2)
 {
-  return new T (a1, a2);
+  return MakeNewObject<T> (a1, a2);
 }
 
 } // namespace ns3

@@ -38,7 +38,7 @@ PrintTraffic (Ptr<Socket> socket)
 void
 RunSimulation (void)
 {
-  Ptr<InternetNode> a = new InternetNode ();
+  Ptr<InternetNode> a = MakeNewObject<InternetNode> ();
 
   Ptr<IUdp> udp = a->QueryInterface<IUdp> (IUdp::iid);
 

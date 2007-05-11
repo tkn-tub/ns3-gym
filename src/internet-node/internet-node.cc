@@ -41,22 +41,22 @@ namespace ns3 {
 
 InternetNode::InternetNode()
 {
-  Ptr<Ipv4> ipv4 = new Ipv4 (this);
-  Ptr<Arp> arp = new Arp (this);
-  Ptr<Udp> udp = new Udp (this);
+  Ptr<Ipv4> ipv4 = MakeNewObject<Ipv4> (this);
+  Ptr<Arp> arp = MakeNewObject<Arp> (this);
+  Ptr<Udp> udp = MakeNewObject<Udp> (this);
 
-  Ptr<ApplicationList> applicationList = new ApplicationList(this);
-  Ptr<L3Demux> l3Demux = new L3Demux(this);
-  Ptr<Ipv4L4Demux> ipv4L4Demux = new Ipv4L4Demux(this);
+  Ptr<ApplicationList> applicationList = MakeNewObject<ApplicationList> (this);
+  Ptr<L3Demux> l3Demux = MakeNewObject<L3Demux> (this);
+  Ptr<Ipv4L4Demux> ipv4L4Demux = MakeNewObject<Ipv4L4Demux> (this);
 
   l3Demux->Insert (ipv4);
   l3Demux->Insert (arp);
   ipv4L4Demux->Insert (udp);
 
-  Ptr<IUdpImpl> udpImpl = new IUdpImpl (udp);
-  Ptr<IArpPrivate> arpPrivate = new IArpPrivate (arp);
-  Ptr<IIpv4Impl> ipv4Impl = new IIpv4Impl (ipv4);
-  Ptr<IIpv4Private> ipv4Private = new IIpv4Private (ipv4);
+  Ptr<IUdpImpl> udpImpl = MakeNewObject<IUdpImpl> (udp);
+  Ptr<IArpPrivate> arpPrivate = MakeNewObject<IArpPrivate> (arp);
+  Ptr<IIpv4Impl> ipv4Impl = MakeNewObject<IIpv4Impl> (ipv4);
+  Ptr<IIpv4Private> ipv4Private = MakeNewObject<IIpv4Private> (ipv4);
 
   NsUnknown::AddInterface (ipv4Private);
   NsUnknown::AddInterface (ipv4Impl);

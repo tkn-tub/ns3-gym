@@ -68,7 +68,7 @@ Udp::DoDispose (void)
 Ptr<Socket>
 Udp::CreateSocket (void)
 {
-  Ptr<Socket> socket = new UdpSocket (m_node, this);
+  Ptr<Socket> socket = MakeNewObject<UdpSocket> (m_node, this);
   return socket;
 }
 

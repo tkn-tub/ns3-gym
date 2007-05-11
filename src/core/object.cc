@@ -27,7 +27,7 @@ NS_DEBUG_COMPONENT_DEFINE ("Object");
 namespace ns3 {
 
 Object::Object ()
-  : m_count (0),
+  : m_count (1),
     m_disposed (false)
 {
   NS_DEBUG ("Object::Object: m_count=0");

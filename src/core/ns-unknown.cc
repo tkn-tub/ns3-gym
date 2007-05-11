@@ -65,7 +65,7 @@ private:
 };
 
 NsUnknownImpl::NsUnknownImpl (Iid iid, NsUnknown * interface)
-  : m_ref (0),
+  : m_ref (1),
     m_disposed (false)
 {
   NS_DEBUG ("new " << this << " ref=" << m_ref);
@@ -316,9 +316,9 @@ InterfaceTest::RunTests (void)
   //DerivedAB *derivedAB;
 
 
-  Ptr<A> a = new A ();
+  Ptr<A> a = MakeNewObject<A> ();
 
-  a = new A ();
+  a = MakeNewObject<A> ();
   Ptr<A> a1 = a->QueryInterface<A> (A::iid);
   if (a1 == 0 || a1 != a)
     {
@@ -330,14 +330,14 @@ InterfaceTest::RunTests (void)
       ok = false;
     }
 
-  Ptr<B> b = new B ();
+  Ptr<B> b = MakeNewObject<B> ();
   Ptr<B> b1 = b->QueryInterface<B> (B::iid);
   if (b1 == 0 || b1 != b)
     {
       ok = false;
     }
   
-  a = new A ();
+  a = MakeNewObject<A> ();
   a->AddInterface (b);
   b1 = b->QueryInterface<B> (B::iid);
   if (b1 == 0 || b1 != b)
@@ -360,7 +360,7 @@ InterfaceTest::RunTests (void)
       ok = false;
     }
 
-  Ptr<Derived> derived = new Derived ();
+  Ptr<Derived> derived = MakeNewObject<Derived> ();
   Ptr<Base> base = derived->QueryInterface<Base> (Base::iid);
   if (base == 0)
     {
