@@ -92,6 +92,7 @@ public:
   // allow if (!sp)
   bool operator! ();
   // allow if (sp)
+  // disable delete sp
   operator Tester * () const;
 };
 
