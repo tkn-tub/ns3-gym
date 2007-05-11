@@ -372,6 +372,9 @@ InterfaceTest::RunTests (void)
       ok = false;
     }
 
+  // the following cannot work and it is on purpose
+  // delete derived;
+
   return ok;
 }
 
