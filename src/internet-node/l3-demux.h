@@ -79,13 +79,6 @@ public:
    * It is also called from InternetNode::GetIpv4 for example.
    */
   Ptr<L3Protocol> GetProtocol (int protocolNumber);
-  /**
-   * \param protocol protocol to remove from this demux.
-   *
-   * The input value to this method should be the value
-   * returned from the L3Protocol::Insert method.
-   */
-  void Erase(Ptr<L3Protocol> protocol);
 protected:
   virtual void DoDispose (void);
 private:
