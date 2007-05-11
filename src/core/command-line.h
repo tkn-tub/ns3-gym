@@ -8,16 +8,48 @@
 
 namespace ns3 {
 
+/**
+ * \brief Command line argument processing class
+ * \ingroup config
+ *
+ * Often times in simulations, the user will want the ability to change and
+ * tweak simulation parameters without having to recompile the entire 
+ * simulation.  This can be done by passing arguments in from the command
+ * line invocation of a simulation.
+ * This class is a collection of static functions to aid in this facility.
+ * By using it, users get the automatic things like support for --help command
+ * line arguments.  See samples/main-default-value.cc for more info.
+ */
 class CommandLine
 {
 public:
+  /**
+   * \brief Add a command line argument to the system
+   * \param name Name of the string to expect on the command line
+   * \param help A help string for this param, displayed --help is used.
+   * \param value The desination to store the value read from the command line
+   */
   template <typename T>
   static void AddArgValue (const std::string &name,
 			   const std::string &help, 
 			   T &value);
+  /**
+   * \brief Add a command line triggered function call to the system
+   * \param name Name of the string to expect on the command line
+   * \param help A help string for this param, displayed --help is used.
+   * \param value An ns3::Callback that gets called if name is present as a
+   * commandline argument.
+   */
   static void AddArgCommand (const std::string &name,
 			     const std::string &help,
 			     Callback<void> cb);
+  /**
+   * \brief Parse the command line for arguments thus far added
+   * \param argc Number of strings on the command line; pass this directly from
+   * the first argument of your main(int,char**) function 
+   * \param argv Array of strings passed in as arguments; pass this directly from
+   * the second argument of your main(int,char**) function
+   */
   static void Parse (int argc, char *argv[]);
  private:
   template <typename T>
