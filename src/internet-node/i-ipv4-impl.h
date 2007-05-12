@@ -53,6 +53,7 @@ public:
   virtual void RemoveRoute (uint32_t i);
   virtual uint32_t AddInterface (NetDevice *device);
   virtual uint32_t GetNInterfaces (void);  
+  virtual NetDevice* PeekNetDevice(uint32_t i);
 
   virtual void SetAddress (uint32_t i, Ipv4Address address);
   virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask);

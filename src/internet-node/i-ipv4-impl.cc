@@ -20,6 +20,7 @@
  */
 #include "i-ipv4-impl.h"
 #include "ipv4.h"
+#include "ipv4-interface.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
@@ -98,6 +99,11 @@ uint32_t
 IIpv4Impl::GetNInterfaces (void)
 {
   return m_ipv4->GetNInterfaces ();
+}
+NetDevice*
+IIpv4Impl::PeekNetDevice (uint32_t i)
+{
+  return m_ipv4->GetInterface (i)-> PeekDevice();
 }
 
 void 

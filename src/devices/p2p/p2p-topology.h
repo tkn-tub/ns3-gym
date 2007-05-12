@@ -33,30 +33,51 @@ class Node;
 class IPAddr;
 class DataRate;
 class Queue;
-//class Time;
 
 /**
- * \brief A helper class to create Topologies based on the ns3::PointToPointNetDevice and 
- *        ns3::PointToPointChannel objects.
- *
- * XXX ??
- * I think that some of the methods below are not implemented.
- * If so, remove them.
+ * \brief A helper class to create Topologies based on the 
+ * ns3::PointToPointNetDevice and  ns3::PointToPointChannel objects.
  */
 class PointToPointTopology {
 public:
   /** 
+   * \param n1 Node
+   * \param n2 Node
+   * \param rate Maximum transmission link rate 
+   * \param delay one-way propagation delay 
+   * \return Pointer to the underlying PointToPointChannel
+   * 
    * Add a full-duplex point-to-point link between two nodes
-   * with the specified IP addresses,  with specified maximum transmission rate
-   * and propagation delay.
+   * and attach PointToPointNetDevices to the resulting
+   * PointToPointChannel.  
    */
   static PointToPointChannel* AddPointToPointLink(
-    Node*, Node*, const DataRate&, const Time&);
+    Node* n1, Node* n2, const DataRate& rate, const Time& delay);
 
-  static bool AddIpv4Addresses(
-    const PointToPointChannel*,
-    Node*, const Ipv4Address&,
-    Node*, const Ipv4Address&);
+  /** 
+   * \param chan PointToPointChannel to use
+   * \param n1 Node
+   * \param addr1 Ipv4 Address for n1
+   * \param n2 Node
+   * \param addr2 Ipv4 Address for n2
+   * 
+   * Add Ipv4Addresses to the Ipv4 interfaces associated with the 
+   * two PointToPointNetDevices on the provided PointToPointChannel
+   */
+  static void AddIpv4Addresses(
+    const PointToPointChannel* chan,
+    Node* n1, const Ipv4Address& addr1,
+    Node* n2, const Ipv4Address& addr2);
+
+  /**
+   * \param chan PointToPointChannel to use
+   * \param n1 Node
+   * \param n2 Node
+   * 
+   * For the given PointToPointChannel, for each Node, add an 
+   * IPv4 host route to the IPv4 address of the peer node.  
+   */
+  static void AddIpv4Routes (Node*, Node*, const PointToPointChannel*);
 
   /**
    * Get the connecting node n1 to node n2

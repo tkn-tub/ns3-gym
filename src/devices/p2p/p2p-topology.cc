@@ -24,6 +24,8 @@
 
 #include <algorithm>
 #include "ns3/assert.h"
+#include "ns3/debug.h"
+#include "ns3/fatal-error.h"
 
 #include "ns3/nstime.h"
 
@@ -62,7 +64,7 @@ PointToPointTopology::AddPointToPointLink(
   return channel;
 }
 
-bool
+void
 PointToPointTopology::AddIpv4Addresses(
   const PointToPointChannel *chan,
   Node* n1, const Ipv4Address& addr1,
@@ -101,14 +103,81 @@ PointToPointTopology::AddIpv4Addresses(
   ip2->SetNetworkMask (index2, netmask);
   ip2->SetUp (index2);
   
-  ip1->AddHostRouteTo (addr2, index1);
-  ip2->AddHostRouteTo (addr1, index2);
-  
   ip1->Unref ();
   ip2->Unref ();
   
-  return true;
 }
+
+void
+PointToPointTopology::AddIpv4Routes (
+  Node* n1, Node* n2, const PointToPointChannel* chan)
+{ 
+  // The PointToPoint channel is used to find the relevant NetDevices
+  NS_ASSERT (chan->GetNDevices () == 2);
+  NetDevice* nd1 = chan->GetDevice (0);
+  NetDevice* nd2 = chan->GetDevice (1);
+  // XXX nd1, nd2 should be reference counted
+
+  // Assert that n1 is the Node owning one of the two NetDevices
+  // and make sure that nd1 corresponds to it
+  if (nd1->PeekNode ()->GetId () == n1->GetId ()) 
+    {
+      ; // Do nothing
+    }
+  else if (nd2->PeekNode ()->GetId () == n1->GetId ())
+    { 
+      std::swap(nd1, nd2);
+    }
+  else
+    {
+      NS_FATAL_ERROR("P2PTopo:  Node does not contain an interface on Channel");
+    }
+
+  // Assert that n2 is the Node owning one of the two NetDevices
+  // and make sure that nd2 corresponds to it
+  if (nd2->PeekNode ()->GetId () != n2->GetId ()) 
+    {
+      NS_FATAL_ERROR("P2PTopo:  Node does not contain an interface on Channel");
+    }
+
+  // Assert that both are Ipv4 nodes
+  IIpv4 *ip1 = nd1->PeekNode ()->QueryInterface<IIpv4> (IIpv4::iid);
+  IIpv4 *ip2 = nd2->PeekNode ()->QueryInterface<IIpv4> (IIpv4::iid);
+  NS_ASSERT(ip1 && ip2);
+
+  // Get interface indexes for both nodes corresponding to the right channel
+  uint32_t index1 = 0;
+  bool found = false;
+  for (uint32_t i = 0; i < ip1->GetNInterfaces (); i++)
+    {
+      if (ip1 ->PeekNetDevice (i) == nd1) 
+        {
+          index1 = i;
+          found = true;
+        }
+    }
+  NS_ASSERT(found);
+
+  uint32_t index2 = 0;
+  found = false;
+  for (uint32_t i = 0; i < ip2->GetNInterfaces (); i++)
+    {
+      if (ip2 ->PeekNetDevice (i) == nd2) 
+        {
+          index2 = i;
+          found = true;
+        }
+    }
+  NS_ASSERT(found);
+  
+  ip1->AddHostRouteTo (ip2-> GetAddress (index2), index1);
+  ip2->AddHostRouteTo (ip1-> GetAddress (index1), index2);
+  
+  ip1->Unref ();
+  ip2->Unref ();
+
+}
+
 
 #ifdef NOTYET
 

@@ -122,16 +122,25 @@ int main (int argc, char *argv[])
   PointToPointTopology::AddIpv4Addresses (
       channel0, n0, Ipv4Address("10.1.1.1"),
       n2, Ipv4Address("10.1.1.2"));
-  channel0->Unref ();
   
   PointToPointTopology::AddIpv4Addresses (
       channel1, n1, Ipv4Address("10.1.2.1"),
       n2, Ipv4Address("10.1.2.2"));
-  channel1->Unref ();
   
   PointToPointTopology::AddIpv4Addresses (
       channel2, n2, Ipv4Address("10.1.3.1"),
       n3, Ipv4Address("10.1.3.2"));
+
+  // Finally, we add static routes.  These three steps (Channel and
+  // NetDevice creation, IP Address assignment, and routing) are 
+  // separated because there may be a need to postpone IP Address
+  // assignment (emulation) or modify to use dynamic routing
+  PointToPointTopology::AddIpv4Routes(n0, n2, channel0);
+  PointToPointTopology::AddIpv4Routes(n1, n2, channel1);
+  PointToPointTopology::AddIpv4Routes(n2, n3, channel2);
+
+  channel0->Unref ();
+  channel1->Unref ();
   channel2->Unref ();
 
   // Create the OnOff application to send UDP datagrams of size
