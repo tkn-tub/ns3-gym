@@ -78,23 +78,6 @@ public:
    * IPv4 host route to the IPv4 address of the peer node.  
    */
   static void AddIpv4Routes (Node*, Node*, const PointToPointChannel*);
-
-  /**
-   * Get the connecting node n1 to node n2
-   */
-  static PointToPointChannel* GetChannel(Node*, Node*);
-  /**
-   * Get the NetDevice connecting node n1 to n2
-   */
-  static PointToPointNetDevice* GetNetDevice(Node*, Node*);
-  /**
-   * Get the queue associated with a link between two nodes
-   */
-  static Queue* GetQueue(Node*, Node*);
-  /**
-   * Set the queue associated with a link between two nodes
-   */
-  static Queue* SetQueue(Node*, Node*, const Queue&);
 };
 
 } // namespace ns3

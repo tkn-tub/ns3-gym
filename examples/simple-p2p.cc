@@ -205,7 +205,8 @@ int main (int argc, char *argv[])
 
   // Also configure some tcpdump traces; each interface will be traced
   // The output files will be named simple-p2p.pcap-<nodeId>-<interfaceId>
-  // and can be read by the "tcpdump -r" command
+  // and can be read by the "tcpdump -r" command (use "-tt" option to
+  // display timestamps correctly)
   PcapTrace pcaptrace ("simple-p2p.pcap");
   pcaptrace.TraceAllIp ();
 
