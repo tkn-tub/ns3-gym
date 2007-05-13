@@ -85,8 +85,6 @@ public:
    * \param startVariable the random variable to use to pick
    *        the real start time as an absolute time, in units of
    *        seconds, relative to the start of the simulation.
-   * \overload Start (const Time &)
-   *
    */
   void Start(const RandomVariable& startVariable);
   
@@ -108,8 +106,6 @@ public:
    * \param stopVariable the random variable to use to pick
    *        the real stop time, in units of seconds, 
    *        relative to the start of the simulation.
-   * \overload Stop (const Time &)
-   *
    */
   void Stop(const RandomVariable& stopVariable);
 
