@@ -74,7 +74,7 @@ InternetNode::SetName (std::string name)
 }
 
 TraceResolver *
-InternetNode::CreateTraceResolver (TraceContext const &context)
+InternetNode::DoCreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   Ptr<IIpv4Private> ipv4 = QueryInterface<IIpv4Private> (IIpv4Private::iid);

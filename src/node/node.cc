@@ -51,6 +51,12 @@ Node::Node(uint32_t sid)
 Node::~Node ()
 {}
 
+TraceResolver *
+Node::CreateTraceResolver (TraceContext const &context)
+{
+  return DoCreateTraceResolver (context);
+}
+
 uint32_t 
 Node::GetId (void) const
 {

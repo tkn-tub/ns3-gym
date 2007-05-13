@@ -45,7 +45,7 @@ public:
   Node(uint32_t); // Specify which system for a distributed simulation
   virtual ~Node();
 
-  virtual TraceResolver *CreateTraceResolver (TraceContext const &context) = 0;
+  TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   uint32_t GetId (void) const;
   uint32_t GetSystemId (void) const;
@@ -62,6 +62,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
   virtual void DoAddDevice (Ptr<NetDevice> device) const = 0;
 
   uint32_t    m_id;         // Node id for this node

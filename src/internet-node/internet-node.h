@@ -41,13 +41,13 @@ public:
   };
   InternetNode();
   virtual ~InternetNode ();
-  virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   void SetName(std::string name);
 protected:
   virtual void DoDispose(void);
 private:
   virtual void DoAddDevice (Ptr<NetDevice> device) const;
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
   bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const;
   std::string      m_name;
 };
