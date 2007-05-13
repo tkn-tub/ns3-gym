@@ -28,32 +28,43 @@
 namespace ns3 {
 
 /**
- * \brief smart pointer class similar to boost::shared_ptr
+ * \brief smart pointer class similar to boost::intrusive_ptr
  *
- * This smart-pointer class is supposed to be used to manage
- * heap-allocated objects: when it decides it does not need
- * the object it references, it invokes operator delete on it.
+ * This smart-pointer class assumes that the underlying
+ * type provides a pair of Ref and Unref methods which are
+ * expected to increment and decrement the internal refcount
+ * of the object instance.
+ *
  * This implementation allows you to manipulate the smart pointer
  * as if it was a normal pointer: you can compare it with zero,
- * compare it against other pointers, etc. However, the only 
- * operation we are careful to avoid is the conversion back to
- * raw pointers: if you need to convert back, you need to invoke
- * the Ptr<T>::Remove method which returns a raw pointer and
- * makes the smart pointer forget about the raw pointer.
+ * compare it against other pointers, assign zero to it, etc.
+ *
+ * It is possible to extract the raw pointer from this
+ * smart pointer with the GetPointer and PeekPointer methods.
+ *
+ * If you want to store a newed object into a smart pointer,
+ * we recommend you to use the MakeNewObject template functions
+ * to create the object and store it in a smart pointer to avoid
+ * memory leaks. These functions are really small conveniance
+ * functions and their goal is just is save you a small
+ * bit of typing.
  */
 template <typename T>
 class Ptr 
 {
 private:
   T *m_ptr;
-  uint32_t *m_count;
   class Tester {
   private:
     void operator delete (void *);
   };
-  static uint32_t *AllocCount (void);
-  static void DeallocCount (uint32_t *count);
   friend class Ptr<const T>;
+  template <typename U>
+  friend U *GetPointer (const Ptr<U> &p);
+  template <typename U>
+  friend U *PeekPointer (const Ptr<U> &p);
+
+  void Acquire (void) const;
 public:
   /**
    * Create an empty smart pointer
@@ -75,100 +86,271 @@ public:
   Ptr (Ptr<U> const &o);
   ~Ptr () ;
   Ptr<T> &operator = (Ptr const& o);
-  T const& operator * () const;
+
   T *operator -> () const;
   T *operator -> ();
   // allow if (!sp)
   bool operator! ();
   // allow if (sp)
+  // disable delete sp
   operator Tester * () const;
-  // allow if (sp == 0)
-  template <typename T1, typename T2>
-  inline friend bool operator == (Ptr<T1> const &lhs, T2 const *rhs);
-  // allow if (0 == sp)
-  template <typename T1, typename T2>
-  inline friend bool operator == (T1 const *lhs, Ptr<T2> &rhs);
-  // allow if (sp != 0)
-  template <typename T1, typename T2>
-  inline friend bool operator != (Ptr<T1> const &lhs, T2 const *rhs);
-  // allow if (0 != sp)
-  template <typename T1, typename T2>
-  inline friend bool operator != (T1 const *lhs, Ptr<T2> &rhs);
-
-  template <typename T1, typename T2>
-  inline friend Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
-
-
-  /**
-   * \returns raw pointer
-   *
-   * It is a programming error to invoke this method when
-   * the reference count of the smart pointer is not one.
-   * If you try to do it anyway, an assert will be triggered.
-   * If asserts are disabled, bad things will happen.
-   * Once you have successfully called Ptr<T>::Remove on
-   * a smart pointer, the smart pointer will forget 
-   * about the raw pointer and will stop managing it. As such,
-   * you, as the caller, become responsible for invoking
-   * operator delete on the returned raw pointer.
-   */
-  T *Remove (void);
 };
 
 template <typename T>
-uint32_t *
-Ptr<T>::AllocCount (void)
+Ptr<T> MakeNewObject (void);
+
+template <typename T, typename T1>
+Ptr<T> MakeNewObject (T1 a1);
+
+template <typename T, typename T1, typename T2>
+Ptr<T> MakeNewObject (T1 a1, T2 a2);
+
+template <typename T, typename T1, typename T2, typename T3>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
+
+/**
+ * \return the pointer managed by this smart pointer.
+ *
+ * The underlying refcount is not incremented prior
+ * to returning to the caller so the caller is not
+ * responsible for calling Unref himself.
+ */
+template <typename T>
+T * PeekPointer (const Ptr<T> &p);
+
+/**
+ * \return the pointer managed by this smart pointer.
+ *
+ * The underlying refcount is incremented prior
+ * to returning to the caller so the caller is
+ * responsible for calling Unref himself.
+ */
+template <typename T>
+T * GetPointer (const Ptr<T> &p);
+
+
+// allow if (sp == 0)
+template <typename T1, typename T2>
+bool operator == (Ptr<T1> const &lhs, T2 const *rhs);
+
+// allow if (0 == sp)
+template <typename T1, typename T2>
+bool operator == (T1 const *lhs, Ptr<T2> &rhs);
+
+// allow if (sp != 0)
+template <typename T1, typename T2>
+bool operator != (Ptr<T1> const &lhs, T2 const *rhs);
+
+// allow if (0 != sp)
+template <typename T1, typename T2>
+bool operator != (T1 const *lhs, Ptr<T2> &rhs);
+
+// allow if (sp0 == sp1)
+template <typename T1, typename T2>
+bool operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
+
+// allow if (sp0 != sp1)
+template <typename T1, typename T2>
+bool operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
+
+template <typename T1, typename T2>
+Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
+
+} // namespace ns3
+
+
+namespace ns3 {
+
+  /*************************************************
+   *  friend non-member function implementations
+   ************************************************/
+
+template <typename T>
+Ptr<T> MakeNewObject (void)
 {
-  return new uint32_t [1] ();
+  T *obj = new T ();
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
 }
+
+template <typename T, typename T1>
+Ptr<T> MakeNewObject (T1 a1)
+{
+  T *obj = new T (a1);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2>
+Ptr<T> MakeNewObject (T1 a1, T2 a2)
+{
+  T *obj = new T (a1, a2);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3)
+{
+  T *obj = new T (a1, a2, a3);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4)
+{
+  T *obj = new T (a1, a2, a3, a4);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+{
+  T *obj = new T (a1, a2, a3, a4, a5);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
+{
+  T *obj = new T (a1, a2, a3, a4, a5, a6);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
+{
+  T *obj = new T (a1, a2, a3, a4, a5, a6, a7);
+  Ptr<T> p = obj;
+  obj->Unref ();
+  return p;
+}
+
+template <typename T>
+T * PeekPointer (const Ptr<T> &p)
+{
+  return p.m_ptr;
+}
+
+template <typename T>
+T * GetPointer (const Ptr<T> &p)
+{
+  p.Acquire ();
+  return p.m_ptr;
+}
+
+template <typename T1, typename T2>
+bool 
+operator == (Ptr<T1> const &lhs, T2 const *rhs)
+{
+  return PeekPointer (lhs) == rhs;
+}
+
+template <typename T1, typename T2>
+bool 
+operator == (T1 const *lhs, Ptr<T2> &rhs)
+{
+  return lhs == PeekPointer (rhs);
+}
+
+template <typename T1, typename T2>
+bool 
+operator != (Ptr<T1> const &lhs, T2 const *rhs)
+{
+  return PeekPointer (lhs) != rhs;
+}
+
+template <typename T1, typename T2>
+bool 
+operator != (T1 const *lhs, Ptr<T2> &rhs)
+{
+  return lhs != PeekPointer (rhs);
+}
+
+template <typename T1, typename T2>
+bool 
+operator == (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
+{
+  return PeekPointer (lhs) == PeekPointer (rhs);
+}
+
+template <typename T1, typename T2>
+bool 
+operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
+{
+  return PeekPointer (lhs) != PeekPointer (rhs);
+}
+
+
+template <typename T1, typename T2>
+Ptr<T1>
+const_pointer_cast (Ptr<T2> const&p)
+{
+  return Ptr<T1> (const_cast<T1 *> (PeekPointer (p)));
+}
+
+
+/****************************************************
+ *      Member method implementations.
+ ***************************************************/
+
 template <typename T>
 void 
-Ptr<T>::DeallocCount (uint32_t *count)
+Ptr<T>::Acquire (void) const
 {
-  delete [] count;
+  if (m_ptr != 0)
+    {
+      m_ptr->Ref ();
+    }  
 }
 
 template <typename T>
 Ptr<T>::Ptr ()
-  : m_ptr (0),
-    m_count (0)
+  : m_ptr (0)
 {}
 
 template <typename T>
 Ptr<T>::Ptr (T *ptr) 
-  : m_ptr (ptr),
-    m_count (0)
+  : m_ptr (ptr)
 {
-  if (m_ptr != 0)
-    {
-      m_count = Ptr::AllocCount ();
-      *m_count = 1;
-    }
+  Acquire ();
 }
 
 template <typename T>
 Ptr<T>::Ptr (Ptr const&o) 
-  : m_ptr (o.m_ptr),
-    m_count (0)
+  : m_ptr (PeekPointer (o))
 {
-  if (m_ptr != 0) 
-    {
-      m_count = o.m_count;
-      (*m_count)++;
-    }
+  Acquire ();
 }
 template <typename T>
 template <typename U>
 Ptr<T>::Ptr (Ptr<U> const &o)
-  : m_ptr (o.m_ptr),
-    m_count (0)
+  : m_ptr (PeekPointer (o))
 {
-  if (m_ptr != 0) 
-    {
-      NS_ASSERT (o.m_ptr != 0);
-      m_count = o.m_count;
-      (*m_count)++;
-    }
+  Acquire ();
 }
 
 template <typename T>
@@ -176,12 +358,7 @@ Ptr<T>::~Ptr ()
 {
   if (m_ptr != 0) 
     {
-      (*m_count)--;
-      if ((*m_count) == 0) 
-        {
-          delete m_ptr;
-          Ptr::DeallocCount (m_count);
-        }
+      m_ptr->Unref();
     }
 }
 
@@ -190,30 +367,16 @@ Ptr<T> &
 Ptr<T>::operator = (Ptr const& o) 
 {
   if (&o == this)
-    return *this;
+    {
+      return *this;
+    }
   if (m_ptr != 0) 
     {
-      (*m_count)--;
-      if ((*m_count) == 0) 
-        {
-          delete m_ptr;
-          Ptr::DeallocCount (m_count);
-        }
+      m_ptr->Unref();
     }
   m_ptr = o.m_ptr;
-  if (m_ptr != 0) 
-    {
-      m_count = o.m_count;
-      (*m_count)++;
-    }
+  Acquire ();
   return *this;
-}
-
-template <typename T>
-T const& 
-Ptr<T>::operator * () const
-{
-  return *m_ptr;
 }
 
 template <typename T>
@@ -246,57 +409,6 @@ Ptr<T>::operator Tester * () const
     }
   static Tester test;
   return &test;
-}
-
-template <typename T>
-T *
-Ptr<T>::Remove (void) 
-{
-  if (m_ptr == 0)
-    {
-      return (T *) 0;
-    }
-  else
-    {
-      NS_ASSERT ((*m_count) == 1);
-      Ptr::DeallocCount (m_count);
-      T *retval = m_ptr;
-      m_ptr = 0;
-      return retval;
-    }
-}
-
-// non-member friend functions.
-template <typename T1, typename T2>
-bool 
-operator == (Ptr<T1> const &lhs, T2 const *rhs)
-{
-  return lhs.m_ptr == rhs;
-}
-template <typename T1, typename T2>
-bool 
-operator == (T1 const *lhs, Ptr<T2> &rhs)
-{
-  return lhs == rhs.m_ptr;
-}
-template <typename T1, typename T2>
-bool 
-operator != (Ptr<T1> const &lhs, T2 const *rhs)
-{
-  return lhs.m_ptr != rhs;
-}
-template <typename T1, typename T2>
-bool 
-operator != (T1 const *lhs, Ptr<T2> &rhs)
-{
-  return lhs != rhs.m_ptr;
-}
-
-template <typename T1, typename T2>
-Ptr<T1>
-const_pointer_cast (Ptr<T2> const&p)
-{
-  return Ptr<T1> (const_cast<T1 *> (p.m_ptr));
 }
 
 

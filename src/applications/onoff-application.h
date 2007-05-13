@@ -27,8 +27,9 @@
 #ifndef __onoff_application_h__
 #define __onoff_application_h__
 
-#include "application.h"
+#include "ns3/application.h"
 #include "ns3/event-id.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -40,7 +41,7 @@ class DataRate;
 class OnOffApplication : public Application {
 
 public:
-  OnOffApplication(Node * n,
+  OnOffApplication(Ptr<Node> n,
                    const Ipv4Address,  // Peer IP address
                    uint16_t,           // Peer port
                    const RandomVariable&,     // Random variable for On time
@@ -48,11 +49,10 @@ public:
                    DataRate  = g_defaultRate,  // Data rate when on
                    uint32_t = g_defaultSize);  // Size of packets
 
-  OnOffApplication(Node * n, const OnOffApplication&); // Copy constructor
+  OnOffApplication(Ptr<Node> n, const OnOffApplication&); // Copy constructor
   virtual ~OnOffApplication();               // Destructor
   virtual void StartApplication();    // Called at time specified by Start
   virtual void StopApplication();     // Called at time specified by Stop
-  virtual OnOffApplication* Copy() const;// Make a copy of the application
 
   // Event handlers
   void StartSending();
@@ -70,7 +70,7 @@ public: // Static methods
   static void DefaultSize(uint32_t s) { g_defaultSize = s;}
 
 public:
-  Socket        * m_socket;       // Associated socket
+  Ptr<Socket>     m_socket;       // Associated socket
   Ipv4Address     m_peerIP;       // Peer IP address
   uint16_t        m_peerPort;     // Peer port
   bool            m_connected;    // True if connected
@@ -96,9 +96,9 @@ private:
   void ScheduleNextTx();
   void ScheduleStartEvent();
   void ScheduleStopEvent();
-  void ConnectionSucceeded(Socket*);
-  void ConnectionFailed(Socket*);
-  void Ignore(Socket*);
+  void ConnectionSucceeded(Ptr<Socket>);
+  void ConnectionFailed(Ptr<Socket>);
+  void Ignore(Ptr<Socket>);
 protected:
 };
 

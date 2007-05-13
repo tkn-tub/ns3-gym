@@ -48,7 +48,7 @@ void
 DebugComponentEnableEnvVar (void)
 {
 #ifdef HAVE_GETENV
-  char *envVar = getenv("NS3_DEBUG");
+  char *envVar = getenv("NS_DEBUG");
   if (envVar == 0)
     {
       return;

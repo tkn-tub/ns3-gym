@@ -25,7 +25,8 @@
 #include <stdint.h>
 #include "ns3/callback.h"
 #include "ns3/packet.h"
-#include "ns3/object.h"
+#include "ns3/interface.h"
+#include "ns3/ptr.h"
 #include "mac-address.h"
 
 namespace ns3 {
@@ -54,14 +55,10 @@ class Channel;
  * this base class and implement your own version of the
  * NetDevice::SendTo method.
  */
-class NetDevice : public Object 
+class NetDevice : public Interface
 {
 public:
-  /**
-   * \param node base class node pointer of device's node 
-   * \param addr MAC address of this device.
-   */
-  NetDevice(Node* node, const MacAddress& addr);
+  static const InterfaceId iid;
   virtual ~NetDevice();
 
   /**
@@ -78,7 +75,7 @@ public:
    *         returned can be zero if the NetDevice is not yet connected
    *         to any channel.
    */
-  Channel *GetChannel (void) const;
+  Ptr<Channel> GetChannel (void) const;
 
   /**
    * \return the current MacAddress of this interface.
@@ -109,7 +106,7 @@ public:
   /**
    * \param index ifIndex of the device 
    */
-  void SetIfIndex(const uint32_t);
+  void SetIfIndex(const uint32_t index);
   /**
    * \return index ifIndex of the device 
    */
@@ -169,13 +166,28 @@ public:
    * base class to print the nodeid for example, it can invoke
    * this method.
    */
-  Node* PeekNode (void) const;
+  Ptr<Node> GetNode (void) const;
 
+  /**
+   * \returns true if ARP is needed, false otherwise.
+   *
+   * Called by higher-layers to check if this NetDevice requires
+   * ARP to be used.
+   */
   bool NeedsArp (void) const;
 
-  void SetReceiveCallback (Callback<bool,NetDevice *,const Packet &,uint16_t> cb);
+  /**
+   * \param cb callback to invoke whenever a packet has been received and must
+   *        be forwarded to the higher layers.
+   */
+  void SetReceiveCallback (Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> cb);
 
  protected:
+  /**
+   * \param node base class node pointer of device's node 
+   * \param addr MAC address of this device.
+   */
+  NetDevice(Ptr<Node> node, const MacAddress& addr);
   /**
    * Enable broadcast support. This method should be
    * called by subclasses from their constructor
@@ -224,6 +236,12 @@ public:
    */
   bool ForwardUp (Packet& p);
 
+  /**
+   * The dispose method for this NetDevice class.
+   * Subclasses are expected to override this method _and_
+   * to chain up to it by calling NetDevice::DoDispose
+   * at the end of their own DoDispose method.
+   */
   virtual void DoDispose (void);
 
  private:
@@ -238,10 +256,30 @@ public:
    * subclasses to forward packets. Subclasses MUST override this method.
    */
   virtual bool SendTo (Packet& p, const MacAddress& dest) = 0;
+  /**
+   * \returns true if this NetDevice needs the higher-layers
+   *          to perform ARP over it, false otherwise.
+   *
+   * Subclasses must implement this method.
+   */
   virtual bool DoNeedsArp (void) const = 0;
+  /**
+   * \param context the trace context to associated to the
+   *        trace resolver.
+   * \returns a trace resolver associated to the input context.
+   *          the caller takes ownership of the pointer returned.
+   *
+   * Subclasses must implement this method.
+   */
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
-  virtual Channel *DoGetChannel (void) const = 0;
-  Node*         m_node;
+  /**
+   * \returns the channel associated to this NetDevice.
+   *
+   * Subclasses must implement this method.
+   */
+  virtual Ptr<Channel> DoGetChannel (void) const = 0;
+
+  Ptr<Node>         m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
   MacAddress    m_address;
@@ -252,7 +290,7 @@ public:
   bool          m_isMulticast;
   bool          m_isPointToPoint;
   Callback<void> m_linkChangeCallback;
-  Callback<bool,NetDevice *,const Packet &,uint16_t> m_receiveCallback;
+  Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> m_receiveCallback;
 };
 
 }; // namespace ns3

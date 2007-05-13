@@ -27,14 +27,18 @@ NS_DEBUG_COMPONENT_DEFINE ("Channel");
 
 namespace ns3 {
 
+const InterfaceId Channel::iid ("Channel");
+
 Channel::Channel ()
-  : m_name("Channel")
+  : Interface (Channel::iid),
+    m_name("Channel")
 {
   NS_DEBUG("Channel::Channel ()");
 }
 
 Channel::Channel (std::string name)
-  : m_name(name)
+  : Interface (Channel::iid),
+    m_name(name)
 {
   NS_DEBUG("Channel::Channel (" << name << ")");
 }

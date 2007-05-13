@@ -6,7 +6,7 @@ Socket::~Socket ()
 {}
 
 void 
-Socket::Close(Callback<void, Socket*> closeCompleted)
+Socket::Close(Callback<void, Ptr<Socket> > closeCompleted)
 {
   DoClose (closeCompleted);
 }
@@ -14,23 +14,23 @@ Socket::Close(Callback<void, Socket*> closeCompleted)
 void 
 Socket::Connect(const Ipv4Address & address,
                uint16_t portNumber,
-               Callback<void, Socket*> connectionSucceeded,
-               Callback<void, Socket*> connectionFailed,
-               Callback<void, Socket*> halfClose)
+               Callback<void, Ptr<Socket> > connectionSucceeded,
+               Callback<void, Ptr<Socket> > connectionFailed,
+               Callback<void, Ptr<Socket> > halfClose)
 {
   DoConnect (address, portNumber, connectionSucceeded, connectionFailed, halfClose);
 }
 int
-Socket::Accept(Callback<bool, Socket*, const Ipv4Address&, uint16_t> connectionRequest,
-	       Callback<void, Socket*, const Ipv4Address&, uint16_t> newConnectionCreated,
-	       Callback<void, Socket*> closeRequested)
+Socket::Accept(Callback<bool, Ptr<Socket>, const Ipv4Address&, uint16_t> connectionRequest,
+	       Callback<void, Ptr<Socket>, const Ipv4Address&, uint16_t> newConnectionCreated,
+	       Callback<void, Ptr<Socket> > closeRequested)
 {
   return DoAccept (connectionRequest, newConnectionCreated, closeRequested);
 }
 int 
 Socket::Send (const uint8_t* buffer,
 	      uint32_t size,
-	      Callback<void, Socket*, uint32_t> dataSent)
+	      Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   return DoSend (buffer, size, dataSent);
 }
@@ -39,42 +39,42 @@ Socket::SendTo(const Ipv4Address &address,
 	       uint16_t port,
 	       const uint8_t *buffer,
 	       uint32_t size,
-	       Callback<void, Socket*, uint32_t> dataSent)
+	       Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   return DoSendTo (address, port, buffer, size, dataSent);
 }
 void 
-Socket::Recv(Callback<void, Socket*, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> callback)
+Socket::Recv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> callback)
 {
   DoRecv (callback);
 }
 void 
-Socket::RecvDummy(Callback<void, Socket*, uint32_t,const Ipv4Address&, uint16_t> callback)
+Socket::RecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Ipv4Address&, uint16_t> callback)
 {
   DoRecvDummy (callback);
 }
 
 
 bool 
-Socket::RefuseAllConnections (Socket* socket, const Ipv4Address& address, uint16_t port)
+Socket::RefuseAllConnections (Ptr<Socket> socket, const Ipv4Address& address, uint16_t port)
 {
   return false;
 }
 void 
-Socket::DummyCallbackVoidSocket (Socket *socket)
+Socket::DummyCallbackVoidSocket (Ptr<Socket> socket)
 {}
 void
-Socket::DummyCallbackVoidSocketUi32 (Socket *socket, uint32_t)
+Socket::DummyCallbackVoidSocketUi32 (Ptr<Socket> socket, uint32_t)
 {}
 void 
-Socket::DummyCallbackVoidSocketUi32Ipv4AddressUi16 (Socket *socket, uint32_t, const Ipv4Address &, uint16_t)
+Socket::DummyCallbackVoidSocketUi32Ipv4AddressUi16 (Ptr<Socket> socket, uint32_t, const Ipv4Address &, uint16_t)
 {}
 void 
-Socket::DummyCallbackVoidSocketBufferUi32Ipv4AddressUi16 (Socket *socket, const uint8_t *, uint32_t,
+Socket::DummyCallbackVoidSocketBufferUi32Ipv4AddressUi16 (Ptr<Socket> socket, const uint8_t *, uint32_t,
 							  const Ipv4Address &, uint16_t)
 {}
 void 
-Socket::DummyCallbackVoidSocketIpv4AddressUi16 (Socket *socket, const Ipv4Address &, uint16_t)
+Socket::DummyCallbackVoidSocketIpv4AddressUi16 (Ptr<Socket> socket, const Ipv4Address &, uint16_t)
 {}
 
 

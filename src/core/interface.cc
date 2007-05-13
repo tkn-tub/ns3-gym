@@ -18,56 +18,60 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns-unknown.h"
+#include "interface.h"
 #include "singleton.h"
 #include "uid-manager.h"
 #include <string>
 #include <list>
 #include <stdint.h>
 #include "assert.h"
+#include "debug.h"
+
+NS_DEBUG_COMPONENT_DEFINE ("Interface");
 
 namespace ns3 {
 
 class IidManager : public UidManager
 {};
 
-Iid::Iid (std::string name)
+InterfaceId::InterfaceId (std::string name)
   : m_iid (Singleton<IidManager>::Get ()->Allocate (name))
 {}
 
-bool operator == (const Iid &a, const Iid &b)
+bool operator == (const InterfaceId &a, const InterfaceId &b)
 {
   return a.m_iid == b.m_iid;
 }
 
 
-class NsUnknownImpl
+class InterfaceImpl
 {
 public:
-  NsUnknownImpl (Iid iid, NsUnknown *interface);
-  ~NsUnknownImpl ();
+  InterfaceImpl (InterfaceId iid, Interface *interface);
+  ~InterfaceImpl ();
   void Ref (void);
-  void RefAll (NsUnknownImpl *other);
+  void RefAll (InterfaceImpl *other);
   void Unref (void);
   void UnrefAll (void);
-  NsUnknown *DoQueryInterface (Iid iid) const;
+  Interface *PeekQueryInterface (InterfaceId iid) const;
   void DoDisposeAll (void);
-  void AddInterface (NsUnknown *interface);
-  void AddSelfInterface (Iid iid, NsUnknown *interface);
+  void AddInterface (Interface * interface);
+  void AddSelfInterface (InterfaceId iid, Interface *interface);
 private:
-  typedef std::list<std::pair<Iid,NsUnknown *> > List;
+  typedef std::list<std::pair<InterfaceId,Interface *> > List;
   uint32_t m_ref;
   List m_list;
   bool m_disposed;
 };
 
-NsUnknownImpl::NsUnknownImpl (Iid iid, NsUnknown *interface)
+InterfaceImpl::InterfaceImpl (InterfaceId iid, Interface * interface)
   : m_ref (1),
     m_disposed (false)
 {
+  NS_DEBUG ("new " << this << " ref=" << m_ref);
   m_list.push_back (std::make_pair (iid, interface));
 }
-NsUnknownImpl::~NsUnknownImpl ()
+InterfaceImpl::~InterfaceImpl ()
 {
   for (List::const_iterator i = m_list.begin ();
        i != m_list.end (); i++)
@@ -77,58 +81,63 @@ NsUnknownImpl::~NsUnknownImpl ()
   m_list.clear ();
 }
 void 
-NsUnknownImpl::Ref (void)
+InterfaceImpl::Ref (void)
 {
   m_ref++;
+  NS_DEBUG ("inc " << this << " ref=" << m_ref);
 }
 void 
-NsUnknownImpl::RefAll (NsUnknownImpl *other)
+InterfaceImpl::RefAll (InterfaceImpl *other)
 {
   m_ref += other->m_ref;
+  NS_DEBUG ("inc all " << this << " o=" << other->m_ref << " ref=" << m_ref);
 }
 void 
-NsUnknownImpl::Unref (void)
+InterfaceImpl::Unref (void)
 {
+  NS_ASSERT (m_ref > 0);
   m_ref--;
+  NS_DEBUG ("dec " << this << " ref=" << m_ref);
   if (m_ref == 0)
     {
       delete this;
     }
 }
 void
-NsUnknownImpl::UnrefAll (void)
+InterfaceImpl::UnrefAll (void)
 {
+  NS_ASSERT (m_ref > 0);
   m_ref = 0;
   delete this;
+  NS_DEBUG ("dec all " << this);
 }
 void
-NsUnknownImpl::DoDisposeAll (void)
+InterfaceImpl::DoDisposeAll (void)
 {
   NS_ASSERT (!m_disposed);
   for (List::const_iterator i = m_list.begin ();
        i != m_list.end (); i++)
     {
-      NsUnknown *interface = i->second;
+      Interface *interface = i->second;
       interface->DoDispose ();
     }
   m_disposed = true;
 }
-NsUnknown *
-NsUnknownImpl::DoQueryInterface (Iid iid) const
+Interface *
+InterfaceImpl::PeekQueryInterface (InterfaceId iid) const
 {
   for (List::const_iterator i = m_list.begin ();
        i != m_list.end (); i++)
     {
       if (i->first == iid)
 	{
-	  i->second->Ref ();
 	  return i->second;
 	}
     }
   return 0;
 }
 void 
-NsUnknownImpl::AddInterface (NsUnknown *interface)
+InterfaceImpl::AddInterface (Interface *interface)
 {
   for (List::const_iterator i = interface->m_impl->m_list.begin ();
        i != interface->m_impl->m_list.end (); i++)
@@ -140,52 +149,53 @@ NsUnknownImpl::AddInterface (NsUnknown *interface)
     }
 }
 void 
-NsUnknownImpl::AddSelfInterface (Iid iid, NsUnknown *interface)
+InterfaceImpl::AddSelfInterface (InterfaceId iid, Interface *interface)
 {
   interface->RefInternal ();
   m_list.push_back (std::make_pair (iid, interface));
 }
 
 
-NsUnknown::NsUnknown (Iid iid)
-  : m_impl (new NsUnknownImpl (iid, this)),
+Interface::Interface (InterfaceId iid)
+  : m_impl (new InterfaceImpl (iid, this)),
     m_ref (1)
 {}
-NsUnknown::~NsUnknown ()
+Interface::~Interface ()
 {
   m_impl = 0;
+  m_ref = -1;
 }
 void 
-NsUnknown::Ref (void)
+Interface::Ref (void) const
 {
   m_impl->Ref ();
 }
 void 
-NsUnknown::Unref (void)
+Interface::Unref (void) const
 {
   m_impl->Unref ();
 }
 
 void 
-NsUnknown::Dispose (void)
+Interface::Dispose (void)
 {
   m_impl->DoDisposeAll ();
 }
 
 void 
-NsUnknown::DoDispose (void)
+Interface::DoDispose (void)
 {
   // we do not do anything by default.
 }
 
 void
-NsUnknown::RefInternal (void)
+Interface::RefInternal (void)
 {
   m_ref++;
 }
 
 void
-NsUnknown::UnrefInternal (void)
+Interface::UnrefInternal (void)
 {
   NS_ASSERT (m_ref != 0);
   m_ref--;
@@ -195,25 +205,26 @@ NsUnknown::UnrefInternal (void)
     }
 }
 
-NsUnknown *
-NsUnknown::DoQueryInterface (Iid iid) const
+Ptr<Interface>
+Interface::DoQueryInterface (InterfaceId iid) const
 {
-  return m_impl->DoQueryInterface (iid);
+  return m_impl->PeekQueryInterface (iid);
 }
 
 void 
-NsUnknown::AddInterface (NsUnknown *interface)
+Interface::AddInterface (Ptr<Interface> interface)
 {
-  m_impl->AddInterface (interface);
-  m_impl->RefAll (interface->m_impl);
-  interface->m_impl->UnrefAll ();
-  interface->m_impl = m_impl;
+  Interface *p = PeekPointer (interface);
+  m_impl->AddInterface (p);
+  m_impl->RefAll (p->m_impl);
+  p->m_impl->UnrefAll ();
+  p->m_impl = m_impl;
 }
 
 void
-NsUnknown::AddSelfInterface (Iid iid, NsUnknown *interface)
+Interface::AddSelfInterface (InterfaceId iid, Ptr<Interface> interface)
 {
-  m_impl->AddSelfInterface (iid, interface);
+  m_impl->AddSelfInterface (iid, PeekPointer (interface));
 }
 
 
@@ -225,62 +236,62 @@ NsUnknown::AddSelfInterface (Iid iid, NsUnknown *interface)
 
 namespace {
 
-class A : public ns3::NsUnknown
+class A : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   A ()
-    : NsUnknown (A::iid)
+    : Interface (A::iid)
   {}
 };
-class B : public ns3::NsUnknown
+class B : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   B ()
-    : NsUnknown (B::iid)
+    : Interface (B::iid)
   {}
 };
-class BaseA : public ns3::NsUnknown
+class BaseA : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   BaseA ()
-    : NsUnknown (BaseA::iid)
+    : Interface (BaseA::iid)
   {}
 };
-class BaseB : public ns3::NsUnknown
+class BaseB : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   BaseB ()
-    : NsUnknown (BaseB::iid)
+    : Interface (BaseB::iid)
   {}
 };
-class Base : public ns3::NsUnknown
+class Base : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   Base ()
-    : NsUnknown (Base::iid)
+    : Interface (Base::iid)
   {}
 };
 class Derived : public Base
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   Derived ()
   {
     AddSelfInterface (Derived::iid, this);
   }
 };
 
-const ns3::Iid A::iid ("A");
-const ns3::Iid B::iid ("B");
-const ns3::Iid BaseA::iid ("BaseA");
-const ns3::Iid BaseB::iid ("BaseB");
-const ns3::Iid Base::iid ("Base");
-const ns3::Iid Derived::iid ("Derived");
+const ns3::InterfaceId A::iid ("A");
+const ns3::InterfaceId B::iid ("B");
+const ns3::InterfaceId BaseA::iid ("BaseA");
+const ns3::InterfaceId BaseB::iid ("BaseB");
+const ns3::InterfaceId Base::iid ("Base");
+const ns3::InterfaceId Derived::iid ("Derived");
 
 }//namespace
 
@@ -295,7 +306,7 @@ public:
 };
 
 InterfaceTest::InterfaceTest ()
-  : Test ("NsUnknown")
+  : Test ("Interface")
 {}
 bool 
 InterfaceTest::RunTests (void)
@@ -305,76 +316,64 @@ InterfaceTest::RunTests (void)
   //DerivedAB *derivedAB;
 
 
-  A *a = new A ();
-  a->Unref ();
+  Ptr<A> a = MakeNewObject<A> ();
 
-  a = new A ();
-  A *a1 = a->QueryInterface<A> (A::iid);
+  a = MakeNewObject<A> ();
+  Ptr<A> a1 = a->QueryInterface<A> (A::iid);
   if (a1 == 0 || a1 != a)
     {
       ok = false;
     }
-  a1->Unref ();
   a1 = a->QueryInterface<A> (A::iid);
   if (a1 == 0 || a1 != a)
     {
       ok = false;
     }
-  a1->Unref ();
-  a->Unref ();
 
-  B *b = new B ();
-  B *b1 = b->QueryInterface<B> (B::iid);
+  Ptr<B> b = MakeNewObject<B> ();
+  Ptr<B> b1 = b->QueryInterface<B> (B::iid);
   if (b1 == 0 || b1 != b)
     {
       ok = false;
     }
-  b1->Unref ();
   
-  a = new A ();
+  a = MakeNewObject<A> ();
   a->AddInterface (b);
   b1 = b->QueryInterface<B> (B::iid);
   if (b1 == 0 || b1 != b)
     {
       ok = false;
     }
-  b1->Unref ();
   a1 = b->QueryInterface<A> (A::iid);
   if (a1 == 0 || a1 != a)
     {
       ok = false;
     }
-  a1->Unref ();
   a1 = a->QueryInterface<A> (A::iid);
   if (a1 == 0 || a1 != a)
     {
       ok = false;
     }
-  a1->Unref ();
   b1 = a->QueryInterface<B> (B::iid);
   if (b1 == 0 || b1 != b)
     {
       ok = false;
     }
-  b1->Unref ();
-  
-  a->Unref ();
-  b->Unref ();
 
-  Derived *derived = new Derived ();
-  Base *base = derived->QueryInterface<Base> (Base::iid);
+  Ptr<Derived> derived = MakeNewObject<Derived> ();
+  Ptr<Base> base = derived->QueryInterface<Base> (Base::iid);
   if (base == 0)
     {
       ok = false;
     }
-  Derived *derived1 = base->QueryInterface<Derived> (Derived::iid);
+  Ptr<Derived> derived1 = base->QueryInterface<Derived> (Derived::iid);
   if (derived1 == 0 || derived1 != derived)
     {
       ok = false;
     }
-  derived1->Unref ();
-  base->Unref ();
-  derived->Unref ();
+
+  // the following cannot work and it is on purpose
+  // delete derived;
 
   return ok;
 }

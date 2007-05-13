@@ -21,7 +21,7 @@
 #ifndef I_ARP_PRIVATE_H
 #define I_ARP_PRIVATE_H
 
-#include "ns3/ns-unknown.h"
+#include "ns3/interface.h"
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {
@@ -31,19 +31,19 @@ class MacAddress;
 class Packet;
 class Arp;
 
-class IArpPrivate : public NsUnknown
+class IArpPrivate : public Interface
 {
 public:
-  static const Iid iid;
-  IArpPrivate (Arp *arp);
+  static const InterfaceId iid;
+  IArpPrivate (Ptr<Arp> arp);
   virtual ~IArpPrivate ();
   bool Lookup (Packet &p, Ipv4Address destination, 
-	       NetDevice *device,
+	       Ptr<NetDevice> device,
 	       MacAddress *hardwareDestination);
 protected:
   virtual void DoDispose (void);
 private:
-  Arp *m_arp;
+  Ptr<Arp> m_arp;
 };
 
 } // namespace ns3

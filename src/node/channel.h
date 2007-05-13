@@ -24,7 +24,8 @@
 
 #include <string>
 #include <stdint.h>
-#include "ns3/object.h"
+#include "ns3/interface.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -36,9 +37,10 @@ class NetDevice;
  * A channel is a logical path over which information flows.  The path can
  * be as simple as a short piece of wire, or as complicated as space-time.
  */
-class Channel : public Object
+class Channel : public Interface
 {
 public:
+  static const InterfaceId iid;
   Channel ();
   Channel (std::string name);
 
@@ -57,7 +59,7 @@ public:
    *
    * This method must be implemented by subclasses.
    */
-  virtual NetDevice *GetDevice (uint32_t i) const = 0;
+  virtual Ptr<NetDevice> GetDevice (uint32_t i) const = 0;
 
 protected:
   virtual ~Channel ();

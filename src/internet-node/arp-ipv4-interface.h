@@ -23,6 +23,7 @@
 #define ARP_IPV4_INTERFACE_H
 
 #include "ipv4-interface.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -42,13 +43,13 @@ class ArpIpv4Interface : public Ipv4Interface
     NETDEVICE,
     ARP,
   };
-  ArpIpv4Interface (Node *node, NetDevice *device);
+  ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device);
   virtual ~ArpIpv4Interface ();
 
  private:
   virtual void SendTo (Packet p, Ipv4Address dest);
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
-  Node *m_node;
+  Ptr<Node> m_node;
 };
 
 }//namespace ns3

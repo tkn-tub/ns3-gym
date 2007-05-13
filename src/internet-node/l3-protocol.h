@@ -26,12 +26,12 @@
 #define L3_PROTOCOL_H
 
 #include "ns3/object.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
 class Packet;
 class NetDevice;
-class Node;
 class TraceResolver;
 class TraceContext;
 
@@ -54,7 +54,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  virtual void Receive(Packet& p, NetDevice *device) = 0;
+  virtual void Receive(Packet& p, Ptr<NetDevice> device) = 0;
 
 protected:
   virtual void DoDispose (void);

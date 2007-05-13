@@ -21,20 +21,21 @@
 #ifndef I_UDP_H
 #define I_UDP_H
 
-#include "ns3/ns-unknown.h"
+#include "ns3/interface.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
 class Socket;
 
-class IUdp : public NsUnknown
+class IUdp : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
 
   IUdp ();
 
-  virtual Socket *CreateSocket (void) = 0;
+  virtual Ptr<Socket> CreateSocket (void) = 0;
 };
 
 } // namespace ns3

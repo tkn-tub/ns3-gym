@@ -22,18 +22,18 @@
 #define INTERFACE_H
 
 #include <string>
-
+#include "ptr.h"
 
 namespace ns3 {
 
-class NsUnknownImpl;
+class InterfaceImpl;
 
-class Iid
+class InterfaceId
 {
 public:
-  Iid (std::string name);
+  InterfaceId (std::string name);
 private:
-  friend bool operator == (const Iid &a, const Iid &b);
+  friend bool operator == (const InterfaceId &a, const InterfaceId &b);
   uint32_t m_iid;
 };
 
@@ -45,18 +45,18 @@ private:
  * inheritance where this base class is at the top of the dreaded 
  * "diamond" shape is not allowed.
  */
-class NsUnknown
+class Interface
 {
 public:
-  virtual ~NsUnknown ();
-  void Ref (void);
-  void Unref (void);
+  virtual ~Interface ();
+  void Ref (void) const;
+  void Unref (void) const;
 
   /**
-   * \param iid the NsUnknown id of the requested interface
+   * \param iid the Interface id of the requested interface
    */
   template <typename T>
-  T *QueryInterface (Iid iid) const;
+  Ptr<T> QueryInterface (InterfaceId iid) const;
 
   /**
    * \param interface another interface
@@ -66,7 +66,7 @@ public:
    * will be able to perform QI on each other and their lifetimes
    * will be found by the same reference count.
    */
-  void AddInterface (NsUnknown *interface);
+  void AddInterface (Ptr<Interface> interface);
 
   void Dispose (void);
 protected:
@@ -77,17 +77,17 @@ protected:
    * If you are a direct subclass of this class, you _must_ register
    * the name of your interface with this constructor.
    */
-  NsUnknown (Iid iid);
+  Interface (InterfaceId iid);
   /**
    * \param iid the Interface id of the interface
-   * \param a pointer to the interface object
+   * \param interface a pointer to the interface object
    *
-   * If you are not a direct subclass of the ns3::NsUnknown base class,
+   * If you are not a direct subclass of the ns3::Interface base class,
    * and if you want to register yourself as another accessible interface
    * (typically, your subclass has added API), you need to call
    * this method to associate an interface id to your interface.
    */
-  void AddSelfInterface (Iid iid, NsUnknown *interface);
+  void AddSelfInterface (InterfaceId iid, Ptr<Interface> interface);
 protected:
   /**
    * Subclasses who want to handle the "dispose" event should
@@ -97,12 +97,12 @@ protected:
    */
   virtual void DoDispose (void);
 private:
-  friend class NsUnknownImpl;
-  NsUnknown ();
-  NsUnknown *DoQueryInterface (Iid iid) const;
+  friend class InterfaceImpl;
+  Interface ();
+  Ptr<Interface> DoQueryInterface (InterfaceId iid) const;
   void RefInternal (void);
   void UnrefInternal (void);
-  NsUnknownImpl *m_impl;
+  InterfaceImpl *m_impl;
   uint32_t m_ref;
 };
 
@@ -111,13 +111,13 @@ private:
 namespace ns3 {
 
 template <typename T>
-T *
-NsUnknown::QueryInterface (Iid iid) const
+Ptr<T>
+Interface::QueryInterface (InterfaceId iid) const
 {
-  NsUnknown *found = DoQueryInterface (iid);
+  Ptr<Interface> found = DoQueryInterface (iid);
   if (found != 0)
     {
-      return dynamic_cast<T *> (found);
+      return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));
     }
   return 0;
 }

@@ -24,6 +24,7 @@
 #include <list>
 #include "ns3/ipv4-address.h"
 #include "ns3/mac-address.h"
+#include "ns3/ptr.h"
 #include "l3-protocol.h"
 
 namespace ns3 {
@@ -40,24 +41,24 @@ class Arp : public L3Protocol
 public:
   static const uint16_t PROT_NUMBER;
 
-  Arp (Node *node);
+  Arp (Ptr<Node> node);
   ~Arp ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
-  virtual void Receive(Packet& p, NetDevice *device);
+  virtual void Receive(Packet& p, Ptr<NetDevice> device);
   bool Lookup (Packet &p, Ipv4Address destination, 
-	       NetDevice *device,
+	       Ptr<NetDevice> device,
 	       MacAddress *hardwareDestination);
 protected:
   virtual void DoDispose (void);
 private:
   typedef std::list<ArpCache *> CacheList;
-  ArpCache *FindCache (NetDevice *device);
+  ArpCache *FindCache (Ptr<NetDevice> device);
   void SendArpRequest (ArpCache const *cache, Ipv4Address to);
   void SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac);
   CacheList m_cacheList;
-  Node *m_node;
+  Ptr<Node> m_node;
 };
 
 }//namespace ns3

@@ -29,7 +29,9 @@ namespace ns3 {
 Object::Object ()
   : m_count (1),
     m_disposed (false)
-{}
+{
+  NS_DEBUG ("Object::Object: m_count=0");
+}
 
 Object::~Object ()
 {}
@@ -37,17 +39,16 @@ Object::~Object ()
 void 
 Object::Ref (void) const
 {
-  NS_DEBUG("Object::Ref (): this == 0x" << this);
   m_count++;
-  NS_DEBUG("Object::Ref (): m_count bumped to " << m_count);
+  NS_DEBUG("Object::Ref (): this == 0x" << this << " m_count=" << m_count);
 }
 
 void 
 Object::Unref (void) const
 {
-  NS_DEBUG("Object::Unref (): this == 0x" << this);
+  NS_ASSERT (m_count > 0);
   m_count--;
-  NS_DEBUG("Object::Ref (): m_count dropped to " << m_count);
+  NS_DEBUG("Object::Unref (): this == 0x" << this << " m_count=" << m_count);
 
   if (m_count == 0)
     {

@@ -21,15 +21,19 @@
 
 #include <iostream>
 #include "ns3/assert.h"
+#include "ns3/interface.h"
 
+#include "channel.h"
 #include "net-device.h"
 #include "llc-snap-header.h"
 #include "node.h"
-#include "ns3/channel.h"
 
 namespace ns3 {
 
-NetDevice::NetDevice(Node *node, const MacAddress& addr) : 
+const InterfaceId NetDevice::iid ("NetDevice");
+
+NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) : 
+  Interface (NetDevice::iid),
   m_node (node), 
   m_name(""), 
   m_ifIndex (0), 
@@ -40,14 +44,11 @@ NetDevice::NetDevice(Node *node, const MacAddress& addr) :
   m_isMulticast (false), 
   m_isPointToPoint (false)
 {
-  m_node->Ref ();
+  m_node->AddDevice (this);
 }
 
 NetDevice::~NetDevice ()
-{
-  m_node->Unref ();
-  m_node = 0;
-}
+{}
 
 MacAddress 
 NetDevice::GetAddress (void) const
@@ -188,7 +189,7 @@ NetDevice::CreateTraceResolver (TraceContext const &context)
   return DoCreateTraceResolver (context);
 }
 
-Channel *
+Ptr<Channel>
 NetDevice::GetChannel (void) const
 {
   return DoGetChannel ();
@@ -228,8 +229,8 @@ NetDevice::NotifyLinkDown (void)
     }
 }
 
-Node *
-NetDevice::PeekNode (void) const
+Ptr<Node>
+NetDevice::GetNode (void) const
 {
   return m_node;
 }
@@ -241,13 +242,15 @@ NetDevice::NeedsArp (void) const
 }
 
 void 
-NetDevice::SetReceiveCallback (Callback<bool,NetDevice *,const Packet &,uint16_t> cb)
+NetDevice::SetReceiveCallback (Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> cb)
 {
   m_receiveCallback = cb;
 }
 
 void
 NetDevice::DoDispose()
-{}
+{
+  m_node = 0;
+}
 
 }; // namespace ns3

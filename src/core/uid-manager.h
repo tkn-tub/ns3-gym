@@ -27,6 +27,9 @@
 
 namespace ns3 {
 
+/**
+ * zero is never a valid uid value.
+ */
 class UidManager
 {
 public:

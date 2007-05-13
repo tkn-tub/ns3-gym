@@ -25,6 +25,7 @@
 
 #include <list>
 #include "ns3/ipv4-address.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -69,7 +70,7 @@ public:
    *           This value can be zero in which case the MTU
    *           of this interface will be 2^(16-1).
    */
-  Ipv4Interface (NetDevice *nd);
+  Ipv4Interface (Ptr<NetDevice> nd);
   virtual ~Ipv4Interface();
 
   /**
@@ -87,7 +88,7 @@ public:
    * \returns the underlying NetDevice. This method can return
    *          zero if this interface has no associated NetDevice.
    */
-  NetDevice *PeekDevice (void) const;
+  Ptr<NetDevice> GetDevice (void) const;
 
   /**
    * \param a set the ipv4 address of this interface.
@@ -153,7 +154,7 @@ public:
  private:
   virtual void SendTo (Packet p, Ipv4Address dest) = 0;
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
-  NetDevice* m_netdevice;
+  Ptr<NetDevice> m_netdevice;
   bool m_ifup;
   Ipv4Address m_address;
   Ipv4Mask m_netmask;

@@ -38,13 +38,11 @@ namespace ns3 {
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t Udp::PROT_NUMBER = 17;
 
-Udp::Udp (Node *node)
+Udp::Udp (Ptr<Node> node)
   : Ipv4L4Protocol (PROT_NUMBER, 2),
     m_node (node),
     m_endPoints (new Ipv4EndPointDemux ())
-{
-  m_node->Ref ();
-}
+{}
 
 Udp::~Udp ()
 {}
@@ -63,18 +61,15 @@ Udp::DoDispose (void)
       delete m_endPoints;
       m_endPoints = 0;
     }
-  if (m_node != 0)
-    {
-      m_node->Unref ();
-      m_node = 0;
-    }
+  m_node = 0;
   Ipv4L4Protocol::DoDispose ();
 }
 
-Socket *
+Ptr<Socket>
 Udp::CreateSocket (void)
 {
-  return new UdpSocket (m_node, this);
+  Ptr<Socket> socket = MakeNewObject<UdpSocket> (m_node, this);
+  return socket;
 }
 
 Ipv4EndPoint *
@@ -142,11 +137,10 @@ Udp::Send (Packet packet,
 
   packet.AddHeader (udpHeader);
 
-  IIpv4Private *ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  Ptr<IIpv4Private> ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
   if (ipv4 != 0)
     {
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
-      ipv4->Unref ();
     }
 }
 

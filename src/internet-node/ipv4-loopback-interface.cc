@@ -27,16 +27,12 @@
 
 namespace ns3 {
 
-Ipv4LoopbackInterface::Ipv4LoopbackInterface (Node *node)
+Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
   : Ipv4Interface (0),
     m_node (node)
-{
-  m_node->Ref ();
-}
+{}
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
-{
-  m_node->Unref ();
-}
+{}
 
 TraceResolver *
 Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
@@ -47,9 +43,8 @@ Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
 void 
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {
-  IIpv4Private *ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
-  ipv4->Receive (packet, PeekDevice ());
-  ipv4->Unref ();
+  Ptr<IIpv4Private> ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  ipv4->Receive (packet, GetDevice ());
 }
 
 }//namespace ns3

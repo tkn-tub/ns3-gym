@@ -25,12 +25,12 @@ core.add_sources([
     'test.cc',
     'random-variable.cc',
     'rng-stream.cc',
-    'ns-unknown.cc',
+    'interface.cc',
     'uid-manager.cc',
     'default-value.cc',
     'command-line.cc',
     'type-name.cc',
-    'ns-unknown-manager.cc',
+    'component-manager.cc',
     ])
 env = Environment()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] == 'cygwin':
@@ -58,11 +58,11 @@ core.add_inst_headers([
     'test.h',
     'random-variable.h',
     'rng-stream.h',
-    'ns-unknown.h',
+    'interface.h',
     'default-value.h',
     'command-line.h',
     'type-name.h',
-    'ns-unknown-manager.h',
+    'component-manager.h',
     ])
 
 def config_core (env, config):
@@ -209,6 +209,7 @@ node.add_sources ([
     'socket.cc',
     'i-udp.cc',
     'i-ipv4.cc',
+    'application.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -224,25 +225,22 @@ node.add_inst_headers ([
     'socket.h',
     'i-udp.h',
     'i-ipv4.h',
+    'application.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')
 ns3.add (applications)
 applications.add_deps (['node'])
 applications.add_sources ([
-    'application-list.cc',
-    'application.cc',
     'onoff-application.cc',
 ])
 applications.add_inst_headers ([
-    'application-list.h',
-    'application.h',
     'onoff-application.h',
 ])
 
 inode = build.Ns3Module ('internet-node', 'src/internet-node')
 ns3.add (inode)
-inode.add_deps (['node', 'applications'])
+inode.add_deps (['node'])
 inode.add_sources ([
     'internet-node.cc',
     'l3-demux.cc',
@@ -418,7 +416,7 @@ sample_default_value.add_source('main-default-value.cc')
 example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')
 example_simple_p2p.set_executable()
 ns3.add(example_simple_p2p)
-example_simple_p2p.add_deps(['core', 'simulator', 'node', 'p2p', 'internet-node'])
+example_simple_p2p.add_deps(['core', 'simulator', 'node', 'p2p', 'internet-node', 'applications'])
 example_simple_p2p.add_source('simple-p2p.cc')
 
 ns3.generate_dependencies()

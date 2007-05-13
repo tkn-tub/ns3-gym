@@ -29,14 +29,12 @@
 
 namespace ns3 {
 
-const Iid L3Demux::iid ("L3Demux");
+const InterfaceId L3Demux::iid ("L3Demux");
 
-L3Demux::L3Demux (Node *node)
-  : NsUnknown (L3Demux::iid),
+L3Demux::L3Demux (Ptr<Node> node)
+  : Interface (L3Demux::iid),
     m_node (node)
-{
-  m_node->Ref ();
-}
+{}
 
 L3Demux::~L3Demux()
 {}
@@ -47,15 +45,11 @@ L3Demux::DoDispose (void)
   for (L3Map_t::iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       i->second->Dispose ();
-      i->second->Unref ();
+      i->second = 0;
     }
   m_protocols.clear ();
-  if (m_node != 0)
-    {
-      m_node->Unref ();
-      m_node = 0;
-    }
-  NsUnknown::DoDispose ();
+  m_node = 0;
+  Interface::DoDispose ();
 }
 
 TraceResolver *
@@ -69,23 +63,25 @@ L3Demux::CreateTraceResolver (TraceContext const &context) const
       oss << i->second->GetProtocolNumber ();
       ProtocolTraceType context = i->second->GetProtocolNumber ();
       resolver->Add (protValue, 
-                     MakeCallback (&L3Protocol::CreateTraceResolver, i->second),
+                     MakeCallback (&L3Protocol::CreateTraceResolver, PeekPointer (i->second)),
                      context);
     }
   return resolver;
 }
   
-void L3Demux::Insert(L3Protocol *p)
+void L3Demux::Insert(Ptr<L3Protocol> p)
 {
-  p->Ref ();
   m_protocols.insert(L3Map_t::value_type(p->GetProtocolNumber (), p));
 }
 
-L3Protocol* 
-L3Demux::PeekProtocol (int p)
+Ptr<L3Protocol>
+L3Demux::GetProtocol (int p)
 { // Look up a protocol by protocol number
   L3Map_t::iterator i = m_protocols.find(p);
-  if (i == m_protocols.end()) return 0;  // Not found
+  if (i == m_protocols.end()) 
+    {
+      return 0;
+    }
   return i->second; // Return the protocol
 }
 

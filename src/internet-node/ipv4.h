@@ -27,6 +27,7 @@
 #include "ns3/callback-trace-source.h"
 #include "ns3/array-trace-resolver.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ptr.h"
 #include "l3-protocol.h"
 
 namespace ns3 {
@@ -58,7 +59,7 @@ public:
   };
   typedef ArrayTraceResolver<Ipv4Interface>::Index InterfaceIndex;
 
-  Ipv4(Node *node);
+  Ipv4(Ptr<Node> node);
   virtual ~Ipv4 ();
 
   /**
@@ -164,7 +165,7 @@ public:
    * to disable it, you can invoke Ipv4Interface::SetDown which will
    * make sure that it is never used during packet forwarding.
    */
-  uint32_t AddInterface (NetDevice *device);
+  uint32_t AddInterface (Ptr<NetDevice> device);
   /**
    * \param i index of interface to return
    * \returns the requested interface
@@ -181,7 +182,7 @@ public:
    * Try to find an Ipv4Interface whose NetDevice is equal to
    * the input NetDevice.
    */
-  Ipv4Interface *FindInterfaceForDevice (NetDevice const*device);
+  Ipv4Interface *FindInterfaceForDevice (Ptr<const NetDevice> device);
   
 
   /**
@@ -191,7 +192,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  virtual void Receive(Packet& p, NetDevice *device);
+  virtual void Receive(Packet& p, Ptr<NetDevice> device);
 
   /**
    * \param packet packet to send
@@ -219,7 +220,7 @@ protected:
   virtual void DoDispose (void);
 private:
   void SendRealOut (Packet const &packet, Ipv4Header const &ip, Ipv4Route const &route);
-  bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, NetDevice *device);
+  bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device);
   void ForwardUp (Packet p, Ipv4Header const&ip);
   uint32_t AddIpv4Interface (Ipv4Interface *interface);
   void SetupLoopback (void);
@@ -240,7 +241,7 @@ private:
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;
   Ipv4Route *m_defaultRoute;
-  Node *m_node;
+  Ptr<Node> m_node;
   CallbackTraceSource<Packet const &, uint32_t> m_txTrace;
   CallbackTraceSource<Packet const &, uint32_t> m_rxTrace;
   CallbackTraceSource<Packet const &> m_dropTrace;

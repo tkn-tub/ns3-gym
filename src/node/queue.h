@@ -28,6 +28,7 @@
 #include <string>
 #include <list>
 #include "ns3/packet.h"
+#include "ns3/interface.h"
 #include "ns3/callback-trace-source.h"
 #include "ns3/trace-resolver.h"
 
@@ -35,9 +36,11 @@ namespace ns3 {
 
 class StringEnumDefaultValue;
 
-class Queue
+class Queue : public Interface
 {
 public:
+  static const InterfaceId iid;
+
   enum TraceType {
     ENQUEUE,
     DEQUEUE,
@@ -45,8 +48,6 @@ public:
   };
   Queue ();
   virtual ~Queue ();
-
-  virtual Queue* Copy() const = 0;
 
   TraceResolver *CreateTraceResolver (TraceContext const &context);
 
@@ -112,22 +113,13 @@ private:
   uint32_t m_nTotalDroppedPackets;
 
 public:
-  static Queue *CreateDefault (void);
-  static void Add (Queue &queue, const std::string &name);
-  static void AddDefault (Queue &queue, const std::string &name);
+  static Ptr<Queue> CreateDefault (void);
+  static void Add (const std::string &name);
+  static void AddDefault (const std::string &name);
 private:
   typedef std::list<std::pair<Queue *,std::string> > List;
   static StringEnumDefaultValue *GetDefault (void);
   static List *GetList (void);
-
-public:
-  // Static methods to manage queue default
-  // Set desired queue default
-  static void    Default(const Queue& q);
-  // Return reference to the current default queue type
-  static Queue&  Default();
-  // Static variable pointing to current default queue
-  static Queue* defaultQueue;
 };
 
 }; // namespace ns3

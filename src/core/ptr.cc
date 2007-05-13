@@ -24,10 +24,11 @@
 
 #include "test.h"
 #include "callback.h"
+#include "object.h"
 
 namespace ns3 {
 
-class NoCount
+class NoCount : public Object
 {
 public:
   NoCount (Callback<void> cb);
@@ -92,7 +93,7 @@ PtrTest::RunTests (void)
   Callback<void> cb = MakeCallback (&PtrTest::DestroyNotify, this);
   m_nDestroyed = false;
   {
-    Ptr<NoCount> p = new NoCount (cb);
+    Ptr<NoCount> p = MakeNewObject<NoCount> (cb);
   }
   if (m_nDestroyed != 1)
     {
@@ -102,7 +103,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p;
-    p = new NoCount (cb);
+    p = MakeNewObject<NoCount> (cb);
     p = p;
   }
   if (m_nDestroyed != 1)
@@ -113,7 +114,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = new NoCount (cb);
+    p1 = MakeNewObject<NoCount> (cb);
     Ptr<NoCount> p2 = p1;
   }
   if (m_nDestroyed != 1)
@@ -124,7 +125,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = new NoCount (cb);
+    p1 = MakeNewObject<NoCount> (cb);
     Ptr<NoCount> p2;
     p2 = p1;
   }
@@ -136,8 +137,8 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = new NoCount (cb);
-    Ptr<NoCount> p2 = new NoCount (cb);
+    p1 = MakeNewObject<NoCount> (cb);
+    Ptr<NoCount> p2 = MakeNewObject<NoCount> (cb);
     p2 = p1;
   }
   if (m_nDestroyed != 2)
@@ -148,9 +149,9 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = new NoCount (cb);
+    p1 = MakeNewObject<NoCount> (cb);
     Ptr<NoCount> p2;
-    p2 = new NoCount (cb);
+    p2 = MakeNewObject<NoCount> (cb);
     p2 = p1;
   }
   if (m_nDestroyed != 2)
@@ -161,8 +162,8 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = new NoCount (cb);
-    p1 = new NoCount (cb);
+    p1 = MakeNewObject<NoCount> (cb);
+    p1 = MakeNewObject<NoCount> (cb);
   }
   if (m_nDestroyed != 2)
     {
@@ -174,8 +175,8 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p1;
     {
       Ptr<NoCount> p2;
-      p1 = new NoCount (cb);
-      p2 = new NoCount (cb);
+      p1 = MakeNewObject<NoCount> (cb);
+      p2 = MakeNewObject<NoCount> (cb);
       p2 = p1;
     }
     if (m_nDestroyed != 1)
@@ -193,8 +194,8 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p1;
     {
       Ptr<NoCount> p2;
-      p1 = new NoCount (cb);
-      p2 = new NoCount (cb);
+      p1 = MakeNewObject<NoCount> (cb);
+      p2 = MakeNewObject<NoCount> (cb);
       p2 = CallTest (p1);
     }
     if (m_nDestroyed != 1)
@@ -236,11 +237,12 @@ PtrTest::RunTests (void)
   {
     NoCount *raw;
     {
-      Ptr<NoCount> p = new NoCount (cb);
+      Ptr<NoCount> p = MakeNewObject<NoCount> (cb);
       {
         Ptr<NoCount const> p1 = p;
       }
-      raw = p.Remove ();
+      raw = GetPointer (p);
+      p = 0;
     }
     if (m_nDestroyed != 0)
       {
@@ -252,16 +254,32 @@ PtrTest::RunTests (void)
 
   m_nDestroyed = 0;
   {
-    Ptr<NoCount> p = new NoCount (cb);
-    NoCount const&v1 = *p;
-    NoCount v2 = *p;
-    v1.Nothing ();
-    v2.Nothing ();
+    Ptr<NoCount> p = MakeNewObject<NoCount> (cb);
+    const NoCount *v1 = PeekPointer (p);
+    NoCount *v2 = PeekPointer (p);
+    v1->Nothing ();
+    v2->Nothing ();
   }
-  if (m_nDestroyed != 2)
+  if (m_nDestroyed != 1)
     {
       ok = false;
     }
+
+  {
+    Ptr<Object> p0 = MakeNewObject<NoCount> (cb);
+    Ptr<NoCount> p1 = MakeNewObject<NoCount> (cb);
+    if (p0 == p1)
+      {
+        ok = false;
+      }
+    if (p0 != p1)
+      {
+      }
+    else
+      {
+        ok = false;
+      }
+  }
   
 
   return ok;

@@ -31,25 +31,21 @@
 
 namespace ns3 {
 
-ArpIpv4Interface::ArpIpv4Interface (Node *node, NetDevice *device)
+ArpIpv4Interface::ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device)
   : Ipv4Interface (device),
     m_node (node)
-{
-  m_node->Ref ();
-}
+{}
 ArpIpv4Interface::~ArpIpv4Interface ()
-{
-  m_node->Unref ();
-}
+{}
 
 TraceResolver *
 ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
-  if (PeekDevice () != 0)
+  if (GetDevice () != 0)
     {
       resolver->Add ("netdevice",
-                     MakeCallback (&NetDevice::CreateTraceResolver, PeekDevice ()),
+                     MakeCallback (&NetDevice::CreateTraceResolver, PeekPointer (GetDevice ())),
                      ArpIpv4Interface::NETDEVICE);
     }
   
@@ -59,21 +55,20 @@ ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
 void 
 ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
 {
-  NS_ASSERT (PeekDevice () != 0);
-  if (PeekDevice ()->NeedsArp ())
+  NS_ASSERT (GetDevice () != 0);
+  if (GetDevice ()->NeedsArp ())
     {
-      IArpPrivate * arp = m_node->QueryInterface<IArpPrivate> (IArpPrivate::iid);
+      Ptr<IArpPrivate> arp = m_node->QueryInterface<IArpPrivate> (IArpPrivate::iid);
       MacAddress hardwareDestination;
-      bool found = arp->Lookup (p, dest, PeekDevice (), &hardwareDestination);
+      bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
       if (found)
         {
-          PeekDevice ()->Send (p, hardwareDestination, Ipv4::PROT_NUMBER);
+          GetDevice ()->Send (p, hardwareDestination, Ipv4::PROT_NUMBER);
         }
-      arp->Unref ();
     }
   else
     {
-      PeekDevice ()->Send (p, PeekDevice ()->GetBroadcast (), Ipv4::PROT_NUMBER);
+      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), Ipv4::PROT_NUMBER);
     }
 }
 

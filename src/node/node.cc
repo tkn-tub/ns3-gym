@@ -25,14 +25,15 @@
 #include "node.h"
 #include "node-list.h"
 #include "net-device.h"
+#include "application.h"
 #include "ns3/simulator.h"
 
 namespace ns3{
 
-const Iid Node::iid ("Node");
+const InterfaceId Node::iid ("Node");
 
 Node::Node()
-  : NsUnknown (Node::iid),
+  : Interface (Node::iid),
     m_id(0), 
     m_sid(0)
 {
@@ -40,7 +41,7 @@ Node::Node()
 }
 
 Node::Node(uint32_t sid)
-  : NsUnknown (Node::iid),
+  : Interface (Node::iid),
     m_id(0), 
     m_sid(sid)
 { 
@@ -49,6 +50,12 @@ Node::Node(uint32_t sid)
   
 Node::~Node ()
 {}
+
+TraceResolver *
+Node::CreateTraceResolver (TraceContext const &context)
+{
+  return DoCreateTraceResolver (context);
+}
 
 uint32_t 
 Node::GetId (void) const
@@ -62,23 +69,16 @@ Node::GetSystemId (void) const
   return m_sid;
 }
 
-void   
-Node::SetSystemId(uint32_t s )
-{
-  m_sid = s;
-}
-
 uint32_t 
-Node::AddDevice (NetDevice *device)
+Node::AddDevice (Ptr<NetDevice> device)
 {
-  device->Ref ();
   uint32_t index = m_devices.size ();
   m_devices.push_back (device);
   DoAddDevice (device);
   device->SetIfIndex(index);
   return index;
 }
-NetDevice *
+Ptr<NetDevice>
 Node::GetDevice (uint32_t index) const
 {
   return m_devices[index];
@@ -89,17 +89,44 @@ Node::GetNDevices (void) const
   return m_devices.size ();
 }
 
+uint32_t 
+Node::AddApplication (Ptr<Application> application)
+{
+  uint32_t index = m_applications.size ();
+  m_applications.push_back (application);
+  return index;
+}
+Ptr<Application> 
+Node::GetApplication (uint32_t index) const
+{
+  return m_applications[index];
+}
+uint32_t 
+Node::GetNApplications (void) const
+{
+  return m_applications.size ();
+}
+
+
 void Node::DoDispose()
 {
-  for (std::vector<NetDevice *>::iterator i = m_devices.begin ();
+  for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
        i != m_devices.end (); i++)
     {
-      NetDevice *device = *i;
+      Ptr<NetDevice> device = *i;
       device->Dispose ();
-      device->Unref ();
+      *i = 0;
     }
   m_devices.clear ();
-  NsUnknown::DoDispose ();
+  for (std::vector<Ptr<Application> >::iterator i = m_applications.begin ();
+       i != m_applications.end (); i++)
+    {
+      Ptr<Application> application = *i;
+      application->Dispose ();
+      *i = 0;
+    }
+  m_applications.clear ();
+  Interface::DoDispose ();
 }
 
 }//namespace ns3

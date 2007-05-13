@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
-#include "ns3/ns-unknown.h"
+#include "ns3/interface.h"
 
 namespace ns3 {
 
@@ -31,10 +31,10 @@ class NetDevice;
 class Packet;
 class Ipv4Route;
 
-class IIpv4 : public NsUnknown
+class IIpv4 : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
   IIpv4 ();
   virtual ~IIpv4 ();
     
@@ -116,11 +116,17 @@ public:
    * to disable it, you can invoke Ipv4Interface::SetDown which will
    * make sure that it is never used during packet forwarding.
    */
-  virtual uint32_t AddInterface (NetDevice *device) = 0;
+  virtual uint32_t AddInterface (Ptr<NetDevice> device) = 0;
   /**
    * \returns the number of interfaces added by the user.
    */
   virtual uint32_t GetNInterfaces (void) = 0;  
+
+  /**
+   * \param index of interface
+   * \returns address of the NetDevice associated with the ipv4 interface
+   */
+  virtual Ptr<NetDevice> GetNetDevice (uint32_t i) = 0;
 
   virtual void SetAddress (uint32_t i, Ipv4Address address) = 0;
   virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask) = 0;

@@ -30,6 +30,7 @@
 #include "ns3/callback-trace-source.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -79,7 +80,7 @@ public:
    * @see PointToPointTopology::AddPointToPointLink ()
    * @param node the Node to which this device is connected.
    */
-  PointToPointNetDevice (Node* node);
+  PointToPointNetDevice (Ptr<Node> node);
   /**
    * Copy Construct a PointToPointNetDevice
    *
@@ -139,7 +140,7 @@ public:
    * @see SetInterframeGap ()
    * @param ch a pointer to the channel to which this object is being attached.
    */
-  bool Attach(PointToPointChannel* ch);
+  bool Attach(Ptr<PointToPointChannel> ch);
   /**
    * Attach a queue to the PointToPointNetDevice.
    *
@@ -154,7 +155,7 @@ public:
    * @param queue a pointer to the queue for which object is assuming
    *        ownership.
    */
-  void AddQueue(Queue* queue);
+  void AddQueue(Ptr<Queue> queue);
   /**
    * Receive a packet from a connected PointToPointChannel.
    *
@@ -178,7 +179,7 @@ protected:
    * @see PointToPointTopology
    * @returns a pointer to the queue.
    */
-  Queue* GetQueue(void) const; 
+  Ptr<Queue> GetQueue(void) const; 
   /**
    * Get a copy of the attached Channel
    *
@@ -188,7 +189,7 @@ protected:
    * @see PointToPointChannel
    * @returns a pointer to the channel
    */
-  virtual Channel *DoGetChannel(void) const;
+  virtual Ptr<Channel> DoGetChannel(void) const;
 private:
   /**
    * Send a Packet Down the Wire.
@@ -287,7 +288,7 @@ private:
    * attached.
    * @see class PointToPointChannel
    */
-  PointToPointChannel* m_channel;
+  Ptr<PointToPointChannel> m_channel;
   /**
    * The Queue which this PointToPointNetDevice uses as a packet source.
    * Management of this Queue has been delegated to the PointToPointNetDevice
@@ -295,7 +296,7 @@ private:
    * @see class Queue
    * @see class DropTailQueue
    */
-  Queue* m_queue;
+  Ptr<Queue> m_queue;
   /**
    * The trace source for the packet reception events that the device can
    * fire.

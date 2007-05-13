@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns-unknown-manager.h"
+#include "component-manager.h"
 #include "uid-manager.h"
 #include "singleton.h"
 
@@ -49,15 +49,15 @@ bool operator == (const ClassId &a, const ClassId &b)
   return a.m_classId == b.m_classId;
 }
 
-NsUnknown *
-NsUnknownManager::Create (ClassId classId)
+Ptr<Interface>
+ComponentManager::Create (ClassId classId)
 {
-  Callback<NsUnknown *> callback = DoGetCallback<empty,empty,empty,empty,empty> (classId);
+  Callback<Ptr<Interface> > callback = DoGetCallback<empty,empty,empty,empty,empty> (classId);
   return callback ();
 }
 
 CallbackBase *
-NsUnknownManager::Lookup (ClassId classId)
+ComponentManager::Lookup (ClassId classId)
 {
   List *list = Singleton<List>::Get ();
   for (List::const_iterator i = list->begin (); i != list->end (); i++)
@@ -71,13 +71,13 @@ NsUnknownManager::Lookup (ClassId classId)
 }
 
 ClassId 
-NsUnknownManager::LookupByName (std::string name)
+ComponentManager::LookupByName (std::string name)
 {
   return ClassId (Singleton<CidManager>::Get ()->LookupByName (name));
 }
 
 ClassId
-NsUnknownManager::Register (std::string name, CallbackBase *callback)
+ComponentManager::Register (std::string name, CallbackBase *callback)
 {
   ClassId classId = ClassId (name);
   List *list = Singleton<List>::Get ();
@@ -91,32 +91,32 @@ NsUnknownManager::Register (std::string name, CallbackBase *callback)
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
-#include "ns-unknown.h"
+#include "interface.h"
 
 namespace {
 
 
-class B : public ns3::NsUnknown
+class B : public ns3::Interface
 {
 public:
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
   B ();
 };
 
-const ns3::Iid B::iid ("IB");
+const ns3::InterfaceId B::iid ("IB");
 
 B::B ()
-  : NsUnknown (B::iid)
+  : Interface (B::iid)
 {}
 
 
-class A : public ns3::NsUnknown
+class A : public ns3::Interface
 {
 public:
   static const ns3::ClassId cidZero;
   static const ns3::ClassId cidOneBool;
   static const ns3::ClassId cidOneUi32;
-  static const ns3::Iid iid;
+  static const ns3::InterfaceId iid;
 
   A ();
   A (bool);
@@ -130,122 +130,113 @@ public:
   int m_ui32;
 };
 
-const ns3::ClassId A::cidZero = ns3::NsUnknownManager::RegisterConstructor <A> ("A");
-const ns3::ClassId A::cidOneBool = ns3::NsUnknownManager::RegisterConstructor <A,bool> ("ABool");
-const ns3::ClassId A::cidOneUi32 = ns3::NsUnknownManager::RegisterConstructor <A,uint32_t> ("AUi32");
-const ns3::Iid A::iid ("IA");
+const ns3::ClassId A::cidZero = ns3::ComponentManager::RegisterConstructor <A> ("A");
+const ns3::ClassId A::cidOneBool = ns3::ComponentManager::RegisterConstructor <A,bool> ("ABool");
+const ns3::ClassId A::cidOneUi32 = ns3::ComponentManager::RegisterConstructor <A,uint32_t> ("AUi32");
+const ns3::InterfaceId A::iid ("IA");
 
 A::A ()
-  : NsUnknown (A::iid),
+  : Interface (A::iid),
     m_zeroInvoked (true),
     m_oneBoolInvoked (false),
     m_oneUi32Invoked (false)
 {
-  B *b = new B ();
+  ns3::Ptr<B> b = ns3::MakeNewObject<B> ();
   AddInterface (b);
-  b->Unref ();
 }
 
 A::A (bool bo)
-  : NsUnknown (A::iid),
+  : Interface (A::iid),
     m_zeroInvoked (false),
     m_oneBoolInvoked (true),
     m_oneUi32Invoked (false),
     m_bool (bo)
 {
-  B *b = new B ();
+  ns3::Ptr<B> b = ns3::MakeNewObject<B> ();
   AddInterface (b);
-  b->Unref ();
 }
 
 A::A (uint32_t i)
-  : NsUnknown (A::iid),
+  : Interface (A::iid),
     m_zeroInvoked (false),
     m_oneBoolInvoked (false),
     m_oneUi32Invoked (true),
     m_ui32 (i)
 {
-  B *b = new B ();
+  ns3::Ptr<B> b = ns3::MakeNewObject<B> ();
   AddInterface (b);
-  b->Unref ();
 }
 
 }
 
 namespace ns3 {
 
-class NsUnknownManagerTest : public Test
+class ComponentManagerTest : public Test
 {
 public:
-  NsUnknownManagerTest ();
+  ComponentManagerTest ();
   virtual bool RunTests (void);
 };
 
-NsUnknownManagerTest::NsUnknownManagerTest ()
-  : Test ("NsUnknownManager")
+ComponentManagerTest::ComponentManagerTest ()
+  : Test ("ComponentManager")
 {}
 bool 
-NsUnknownManagerTest::RunTests (void)
+ComponentManagerTest::RunTests (void)
 {
   bool ok = true;
 
-  A *a = 0;
-  a = NsUnknownManager::Create<A> (A::cidZero, A::iid);
+  Ptr<A> a = 0;
+  a = ComponentManager::Create<A> (A::cidZero, A::iid);
   if (a == 0 ||
       !a->m_zeroInvoked)
     {
       ok = false;
     }
-  a->Unref ();
 
-  a = NsUnknownManager::Create<A,bool> (A::cidOneBool, A::iid, true);
+  a = ComponentManager::Create<A,bool> (A::cidOneBool, A::iid, true);
   if (a == 0 ||
       !a->m_oneBoolInvoked ||
       !a->m_bool)
     {
       ok = false;
     }
-  a->Unref ();
 
-  a = NsUnknownManager::Create<A,bool> (A::cidOneBool, A::iid, false);
+  a = ComponentManager::Create<A,bool> (A::cidOneBool, A::iid, false);
   if (a == 0 ||
       !a->m_oneBoolInvoked ||
       a->m_bool)
     {
       ok = false;
     }
-  a->Unref ();
 
-  a = NsUnknownManager::Create<A,uint32_t> (A::cidOneUi32, A::iid, 10);
+  a = ComponentManager::Create<A,uint32_t> (A::cidOneUi32, A::iid, 10);
   if (a == 0 ||
       !a->m_oneUi32Invoked ||
       a->m_ui32 != 10)
     {
       ok = false;
     }
-  a->Unref ();
 
-  a = NsUnknownManager::Create<A> (A::cidOneUi32, A::iid, (uint32_t)10);
+  a = ComponentManager::Create<A> (A::cidOneUi32, A::iid, (uint32_t)10);
   if (a == 0 ||
       !a->m_oneUi32Invoked ||
       a->m_ui32 != 10)
     {
       ok = false;
     }
-  a->Unref ();
 
-  B *b = NsUnknownManager::Create<B,uint32_t> (A::cidOneUi32, B::iid, 10);
+  Ptr<B> b = ComponentManager::Create<B,uint32_t> (A::cidOneUi32, B::iid, 10);
   if (b == 0)
     {
       ok = false;
     }
-  b->Unref ();
 
   return ok;
 }
 
 
-static NsUnknownManagerTest g_unknownManagerTest;
+static ComponentManagerTest g_unknownManagerTest;
 
 } // namespace ns3
 

@@ -200,6 +200,7 @@ protected:
  * UniformVariable x(0,10);
  * x.GetValue();  //will always return numbers [0,10]
  * UniformVariable::GetSingleValue(100,1000); //returns a value [100,1000]
+ * \endcode
  */
 class UniformVariable : public RandomVariable {
 public:

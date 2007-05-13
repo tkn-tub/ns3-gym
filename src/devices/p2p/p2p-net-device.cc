@@ -32,7 +32,7 @@ NS_DEBUG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 namespace ns3 {
 
-PointToPointNetDevice::PointToPointNetDevice (Node* node) 
+PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node) 
 : 
   NetDevice(node, MacAddress ("00:00:00:00:00:00")), 
   m_txMachineState (READY),
@@ -55,8 +55,6 @@ PointToPointNetDevice::PointToPointNetDevice (Node* node)
 PointToPointNetDevice::~PointToPointNetDevice()
 {
   NS_DEBUG ("PointToPointNetDevice::~PointToPointNetDevice ()");
-
-  delete m_queue;
   m_queue = 0;
 }
 
@@ -81,17 +79,11 @@ PointToPointNetDevice::PointToPointNetDevice (const PointToPointNetDevice& nd)
   m_txMachineState(READY),
   m_bps (nd.m_bps),
   m_tInterframeGap (nd.m_tInterframeGap),
-  m_channel(0), 
+  m_channel(nd.m_channel), 
   m_queue(0),
   m_rxTrace ()
 {
   NS_DEBUG ("PointToPointNetDevice::PointToPointNetDevice (" << &nd << ")");
-
-  if (nd.m_channel)
-    {
-      m_channel = nd.m_channel;
-      m_channel->Ref ();
-    }
 
   if (nd.m_queue)
     {
@@ -102,12 +94,8 @@ PointToPointNetDevice::PointToPointNetDevice (const PointToPointNetDevice& nd)
 
 void PointToPointNetDevice::DoDispose()
 {
- if (m_channel != 0)
- {
-   m_channel->Unref ();
-   m_channel = 0;
- }
- NetDevice::DoDispose ();
+  m_channel = 0;
+  NetDevice::DoDispose ();
 }
 
 //
@@ -296,7 +284,7 @@ PointToPointNetDevice::DoCreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   resolver->Add ("queue", 
-                 MakeCallback (&Queue::CreateTraceResolver, m_queue),
+                 MakeCallback (&Queue::CreateTraceResolver, PeekPointer (m_queue)),
                  PointToPointNetDevice::QUEUE);
   resolver->Add ("rx",
                  m_rxTrace,
@@ -305,18 +293,11 @@ PointToPointNetDevice::DoCreateTraceResolver (TraceContext const &context)
 }
 
 bool
-PointToPointNetDevice::Attach (PointToPointChannel* ch)
+PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 {
   NS_DEBUG ("PointToPointNetDevice::Attach (" << &ch << ")");
 
-  if (m_channel)
-    {
-      m_channel->Unref ();
-      m_channel = 0;
-    }
-
   m_channel = ch;
-  m_channel->Ref ();
 
   m_channel->Attach(this);
   m_bps = m_channel->GetDataRate ();
@@ -335,7 +316,7 @@ PointToPointNetDevice::Attach (PointToPointChannel* ch)
 }
 
 void
-PointToPointNetDevice::AddQueue (Queue* q)
+PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 {
   NS_DEBUG ("PointToPointNetDevice::AddQueue (" << q << ")");
 
@@ -352,16 +333,15 @@ PointToPointNetDevice::Receive (Packet& p)
   ForwardUp (p);
 }
 
-Queue* 
+Ptr<Queue>
 PointToPointNetDevice::GetQueue(void) const 
 { 
     return m_queue;
 }
 
-Channel* 
+Ptr<Channel>
 PointToPointNetDevice::DoGetChannel(void) const 
 { 
-    m_channel->Ref();
     return m_channel;
 }
 

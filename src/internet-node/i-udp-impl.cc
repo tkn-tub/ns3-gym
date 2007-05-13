@@ -20,21 +20,20 @@
  */
 #include "i-udp-impl.h"
 #include "udp.h"
+#include "ns3/socket.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
 
-IUdpImpl::IUdpImpl (Udp *udp)
+IUdpImpl::IUdpImpl (Ptr<Udp> udp)
   : m_udp (udp)
-{
-  m_udp->Ref ();
-}
+{}
 IUdpImpl::~IUdpImpl ()
 {
   NS_ASSERT (m_udp == 0);
 }
 
-Socket *
+Ptr<Socket>
 IUdpImpl::CreateSocket (void)
 {
   return m_udp->CreateSocket ();
@@ -43,11 +42,7 @@ IUdpImpl::CreateSocket (void)
 void 
 IUdpImpl::DoDispose (void)
 {
-  if (m_udp != 0)
-    {
-      m_udp->Unref ();
-      m_udp = 0;
-    }
+  m_udp = 0;
   IUdp::DoDispose ();
 }
 

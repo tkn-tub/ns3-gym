@@ -29,7 +29,6 @@
 
 namespace ns3 {
 
-class Node;
 class Packet;
 class Ipv4Address;
 class TraceResolver;

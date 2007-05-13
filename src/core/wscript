@@ -33,12 +33,12 @@ def build(bld):
         'test.cc',
         'random-variable.cc',
         'rng-stream.cc',
-        'ns-unknown.cc',
+        'interface.cc',
         'uid-manager.cc',
         'default-value.cc',
         'command-line.cc',
         'type-name.cc',
-        'ns-unknown-manager.cc',
+        'component-manager.cc',
         ]
 
     if sys.platform == 'win32':
@@ -63,10 +63,10 @@ def build(bld):
         'test.h',
         'random-variable.h',
         'rng-stream.h',
-        'ns-unknown.h',
+        'interface.h',
         'default-value.h',
         'command-line.h',
         'type-name.h',
-        'ns-unknown-manager.h',
+        'component-manager.h',
         ]
 

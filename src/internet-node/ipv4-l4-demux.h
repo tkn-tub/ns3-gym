@@ -26,7 +26,8 @@
 #define IPV4_L4_DEMUX_H
 
 #include <list>
-#include "ns3/ns-unknown.h"
+#include "ns3/interface.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -38,12 +39,12 @@ class TraceContext;
 /**
  * \brief L4 Ipv4 Demux
  */
-class Ipv4L4Demux : public NsUnknown
+class Ipv4L4Demux : public Interface
 {
 public:
-  static const Iid iid;
+  static const InterfaceId iid;
   typedef int Ipv4L4ProtocolTraceType;
-  Ipv4L4Demux (Node *node);
+  Ipv4L4Demux (Ptr<Node> node);
   virtual ~Ipv4L4Demux();
 
   /**
@@ -64,7 +65,7 @@ public:
    * a working L4 Protocol and returned from this method.
    * The caller does not get ownership of the returned pointer.
    */
-  void Insert(Ipv4L4Protocol *protocol);
+  void Insert(Ptr<Ipv4L4Protocol> protocol);
   /**
    * \param protocolNumber number of protocol to lookup
    *        in this L4 Demux
@@ -74,19 +75,19 @@ public:
    * to forward packets up the stack to the right protocol.
    * It is also called from InternetNode::GetUdp for example.
    */
-  Ipv4L4Protocol* PeekProtocol(int protocolNumber);
+  Ptr<Ipv4L4Protocol> GetProtocol(int protocolNumber);
   /**
    * \param protocol protocol to remove from this demux.
    *
    * The input value to this method should be the value
    * returned from the Ipv4L4Protocol::Insert method.
    */
-  void Erase(Ipv4L4Protocol*protocol);
+  void Remove (Ptr<Ipv4L4Protocol> protocol);
 private:
   virtual void DoDispose (void);
-  typedef std::list<Ipv4L4Protocol*> L4List_t;
+  typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;
   L4List_t m_protocols;
-  Node *m_node;
+  Ptr<Node> m_node;
 };
 
 } //namespace ns3

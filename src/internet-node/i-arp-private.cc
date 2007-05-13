@@ -21,17 +21,16 @@
 #include "i-arp-private.h"
 #include "arp.h"
 #include "ns3/assert.h"
+#include "ns3/net-device.h"
 
 namespace ns3 {
 
-const Iid IArpPrivate::iid ("IArpPrivate");
+const InterfaceId IArpPrivate::iid ("IArpPrivate");
 
-IArpPrivate::IArpPrivate (Arp *arp)
-  : NsUnknown (IArpPrivate::iid),
+IArpPrivate::IArpPrivate (Ptr<Arp> arp)
+  : Interface (IArpPrivate::iid),
     m_arp (arp)
-{
-  m_arp->Ref ();
-}
+{}
 IArpPrivate::~IArpPrivate ()
 {
   NS_ASSERT (m_arp == 0);
@@ -39,7 +38,7 @@ IArpPrivate::~IArpPrivate ()
 
 bool 
 IArpPrivate::Lookup (Packet &p, Ipv4Address destination, 
-		     NetDevice *device,
+		     Ptr<NetDevice> device,
 		     MacAddress *hardwareDestination)
 {
   return m_arp->Lookup (p, destination, device, hardwareDestination);
@@ -48,9 +47,8 @@ IArpPrivate::Lookup (Packet &p, Ipv4Address destination,
 void
 IArpPrivate::DoDispose (void)
 {
-  m_arp->Unref ();
   m_arp = 0;
-  NsUnknown::DoDispose ();
+  Interface::DoDispose ();
 }
 
 

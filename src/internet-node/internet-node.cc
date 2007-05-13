@@ -22,7 +22,6 @@
 // George F. Riley, Georgia Tech, Fall 2006
 
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/application-list.h"
 #include "ns3/net-device.h"
 
 #include "l3-demux.h"
@@ -41,42 +40,28 @@ namespace ns3 {
 
 InternetNode::InternetNode()
 {
-  Ipv4 *ipv4 = new Ipv4 (this);
-  Arp *arp = new Arp (this);
-  Udp *udp = new Udp (this);
+  Ptr<Ipv4> ipv4 = MakeNewObject<Ipv4> (this);
+  Ptr<Arp> arp = MakeNewObject<Arp> (this);
+  Ptr<Udp> udp = MakeNewObject<Udp> (this);
 
-  ApplicationList *applicationList = new ApplicationList(this);
-  L3Demux *l3Demux = new L3Demux(this);
-  Ipv4L4Demux *ipv4L4Demux = new Ipv4L4Demux(this);
+  Ptr<L3Demux> l3Demux = MakeNewObject<L3Demux> (this);
+  Ptr<Ipv4L4Demux> ipv4L4Demux = MakeNewObject<Ipv4L4Demux> (this);
 
   l3Demux->Insert (ipv4);
   l3Demux->Insert (arp);
   ipv4L4Demux->Insert (udp);
 
-  IUdpImpl *udpImpl = new IUdpImpl (udp);
-  IArpPrivate *arpPrivate = new IArpPrivate (arp);
-  IIpv4Impl *ipv4Impl = new IIpv4Impl (ipv4);
-  IIpv4Private *ipv4Private = new IIpv4Private (ipv4);
+  Ptr<IUdpImpl> udpImpl = MakeNewObject<IUdpImpl> (udp);
+  Ptr<IArpPrivate> arpPrivate = MakeNewObject<IArpPrivate> (arp);
+  Ptr<IIpv4Impl> ipv4Impl = MakeNewObject<IIpv4Impl> (ipv4);
+  Ptr<IIpv4Private> ipv4Private = MakeNewObject<IIpv4Private> (ipv4);
 
-  NsUnknown::AddInterface (ipv4Private);
-  NsUnknown::AddInterface (ipv4Impl);
-  NsUnknown::AddInterface (arpPrivate);
-  NsUnknown::AddInterface (udpImpl);
-  NsUnknown::AddInterface (applicationList);
-  NsUnknown::AddInterface (l3Demux);
-  NsUnknown::AddInterface (ipv4L4Demux);
-
-
-  applicationList->Unref ();
-  l3Demux->Unref ();
-  ipv4L4Demux->Unref ();
-  arp->Unref ();
-  ipv4->Unref ();
-  udp->Unref ();
-  udpImpl->Unref ();
-  arpPrivate->Unref ();
-  ipv4Impl->Unref ();
-  ipv4Private->Unref ();
+  Interface::AddInterface (ipv4Private);
+  Interface::AddInterface (ipv4Impl);
+  Interface::AddInterface (arpPrivate);
+  Interface::AddInterface (udpImpl);
+  Interface::AddInterface (l3Demux);
+  Interface::AddInterface (ipv4L4Demux);
 }
 
 InternetNode::~InternetNode ()
@@ -89,14 +74,13 @@ InternetNode::SetName (std::string name)
 }
 
 TraceResolver *
-InternetNode::CreateTraceResolver (TraceContext const &context)
+InternetNode::DoCreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
-  IIpv4Private *ipv4 = QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  Ptr<IIpv4Private> ipv4 = QueryInterface<IIpv4Private> (IIpv4Private::iid);
   resolver->Add ("ipv4",
-                 MakeCallback (&IIpv4Private::CreateTraceResolver, ipv4),
+                 MakeCallback (&IIpv4Private::CreateTraceResolver, PeekPointer (ipv4)),
                  InternetNode::IPV4);
-  ipv4->Unref ();
 
   return resolver;
 }
@@ -108,17 +92,16 @@ InternetNode::DoDispose()
 }
 
 void 
-InternetNode::DoAddDevice (NetDevice *device) const
+InternetNode::DoAddDevice (Ptr<NetDevice> device) const
 {
   device->SetReceiveCallback (MakeCallback (&InternetNode::ReceiveFromDevice, this));
 }
 
 bool
-InternetNode::ReceiveFromDevice (NetDevice *device, const Packet &p, uint16_t protocolNumber) const
+InternetNode::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const
 {
-  L3Demux *demux = QueryInterface<L3Demux> (L3Demux::iid);
-  L3Protocol *target = demux->PeekProtocol (protocolNumber);
-  demux->Unref ();
+  Ptr<L3Demux> demux = QueryInterface<L3Demux> (L3Demux::iid);
+  Ptr<L3Protocol> target = demux->GetProtocol (protocolNumber);
   if (target != 0) 
     {
       Packet packet = p;
