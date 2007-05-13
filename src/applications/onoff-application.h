@@ -53,7 +53,6 @@ public:
   virtual ~OnOffApplication();               // Destructor
   virtual void StartApplication();    // Called at time specified by Start
   virtual void StopApplication();     // Called at time specified by Stop
-  virtual OnOffApplication* Copy() const;// Make a copy of the application
 
   // Event handlers
   void StartSending();

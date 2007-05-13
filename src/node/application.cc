@@ -41,19 +41,6 @@ Application::Application(Ptr<Node> n)
 {
   m_node->AddApplication (this);
 }
-
-Application::Application(const Application& o)
-    : m_node(0), m_startVar(0), m_stopVar(0),
-      m_start(false), m_stop(false)
-{ // Copy constructor
-  m_node = o.m_node;
-  // Copy the start and stop random variables if they exist
-  if (o.m_startVar) m_startVar = o.m_startVar->Copy();
-  if (o.m_stopVar)  m_stopVar  = o.m_stopVar->Copy();
-  if (o.m_start)    ScheduleStart();
-  if (o.m_stop)     ScheduleStop();
-}
-
   
 // \brief Application Destructor
 Application::~Application()
@@ -77,27 +64,7 @@ Application::DoDispose (void)
   m_startVar = 0;
   delete m_stopVar;
   m_stopVar = 0;
-}
-  
-Application& Application::operator=(const Application& rhs)
-{
-  if (this == &rhs) return *this; // Self assignment
-  m_node = rhs.m_node;
-
-  delete m_startVar;
-  m_startVar = 0;
-  if (rhs.m_startVar) m_startVar = rhs.m_startVar->Copy();
-  
-  delete m_stopVar;
-  m_stopVar = 0;
-  if (rhs.m_stopVar) m_stopVar = rhs.m_stopVar->Copy();
-  
-  m_start = false;
-  if (rhs.m_start) ScheduleStart();
-  if (rhs.m_stop)  ScheduleStop();
-  return *this;
-}
-  
+}  
    
 // \brief Specify application start time
 // The virtual method STartApp will be called at the time

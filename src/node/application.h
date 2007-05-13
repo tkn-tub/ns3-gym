@@ -62,11 +62,7 @@ class Application : public Object
 {
 public:
   Application(Ptr<Node>);
-  Application(const Application&);  // Copy constructor
-  Application& operator=(const Application&); // Assignment operator
   virtual ~Application();
-  
-  virtual Application* Copy() const = 0; // All applications must provide
   
   // \brief Specify application start time
   // Applications start at various times in the simulation scenario.

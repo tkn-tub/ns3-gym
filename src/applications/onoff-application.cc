@@ -194,11 +194,6 @@ void OnOffApplication::StopApplication()     // Called at time specified by Stop
     }
 }
 
-OnOffApplication* OnOffApplication::Copy() const
-{
-  return new OnOffApplication(*this);
-}
-
 // Event handlers
 void OnOffApplication::StartSending()
 {
