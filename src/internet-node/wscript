@@ -1,0 +1,43 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+def build(bld):
+    obj = bld.create_obj('cpp', 'shlib')
+    obj.name = 'ns3-internet-node'
+    obj.target = obj.name
+    obj.deps = ['ns3-node', 'ns3-applications']
+    obj.source = [
+        'internet-node.cc',
+        'l3-demux.cc',
+        'l3-protocol.cc',
+        'ipv4-l4-demux.cc',
+        'ipv4-l4-protocol.cc',
+        'ipv4-header.cc',
+        'udp-header.cc',
+        'ipv4-checksum.cc',
+        'ipv4-interface.cc',
+        'ipv4.cc',
+        'ipv4-end-point.cc',
+        'udp.cc',
+        'arp-header.cc',
+        'arp-cache.cc',
+        'arp-ipv4-interface.cc',
+        'arp.cc',
+        'ipv4-loopback-interface.cc',
+        'header-utils.cc',
+        'udp-socket.cc',
+        'ipv4-end-point-demux.cc',
+        'i-udp-impl.cc',
+        'i-arp-private.cc',
+        'i-ipv4-impl.cc',
+        'i-ipv4-private.cc',
+        'ascii-trace.cc',
+        'pcap-trace.cc',
+        ]
+
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'internet-node.h',
+        'ascii-trace.h',
+        'pcap-trace.h',
+        ]

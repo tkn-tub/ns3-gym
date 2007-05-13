@@ -20,6 +20,7 @@
  */
 #include "i-ipv4-impl.h"
 #include "ipv4.h"
+#include "ipv4-interface.h"
 #include "ns3/assert.h"
 #include "ns3/net-device.h"
 
@@ -96,6 +97,11 @@ uint32_t
 IIpv4Impl::GetNInterfaces (void)
 {
   return m_ipv4->GetNInterfaces ();
+}
+Ptr<NetDevice>
+IIpv4Impl::GetNetDevice (uint32_t i)
+{
+  return m_ipv4->GetInterface (i)-> GetDevice ();
 }
 
 void 

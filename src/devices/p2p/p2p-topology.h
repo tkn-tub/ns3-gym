@@ -34,47 +34,51 @@ class Node;
 class IPAddr;
 class DataRate;
 class Queue;
-//class Time;
 
 /**
- * \brief A helper class to create Topologies based on the ns3::PointToPointNetDevice and 
- *        ns3::PointToPointChannel objects.
- *
- * XXX ??
- * I think that some of the methods below are not implemented.
- * If so, remove them.
+ * \brief A helper class to create Topologies based on the 
+ * ns3::PointToPointNetDevice and  ns3::PointToPointChannel objects.
  */
 class PointToPointTopology {
 public:
   /** 
+   * \param n1 Node
+   * \param n2 Node
+   * \param rate Maximum transmission link rate 
+   * \param delay one-way propagation delay 
+   * \return Pointer to the underlying PointToPointChannel
+   * 
    * Add a full-duplex point-to-point link between two nodes
-   * with the specified IP addresses,  with specified maximum transmission rate
-   * and propagation delay.
+   * and attach PointToPointNetDevices to the resulting
+   * PointToPointChannel.  
    */
   static Ptr<PointToPointChannel> AddPointToPointLink(
-    Ptr<Node>, Ptr<Node>, const DataRate&, const Time&);
+    Ptr<Node> n1, Ptr<Node> n2, const DataRate& dataRate, const Time& delay);
 
-  static bool AddIpv4Addresses(
-    Ptr<const PointToPointChannel>,
-    Ptr<Node>, const Ipv4Address&,
-    Ptr<Node>, const Ipv4Address&);
+  /** 
+   * \param chan PointToPointChannel to use
+   * \param n1 Node
+   * \param addr1 Ipv4 Address for n1
+   * \param n2 Node
+   * \param addr2 Ipv4 Address for n2
+   * 
+   * Add Ipv4Addresses to the Ipv4 interfaces associated with the 
+   * two PointToPointNetDevices on the provided PointToPointChannel
+   */
+  static void AddIpv4Addresses(
+    Ptr<const PointToPointChannel> chan,
+    Ptr<Node> n1, const Ipv4Address& addr1,
+    Ptr<Node> n2, const Ipv4Address& addr2);
 
   /**
-   * Get the connecting node n1 to node n2
+   * \param channel PointToPointChannel to use
+   * \param n1 Node
+   * \param n2 Node
+   * 
+   * For the given PointToPointChannel, for each Node, add an 
+   * IPv4 host route to the IPv4 address of the peer node.  
    */
-  static Ptr<PointToPointChannel> GetChannel(Ptr<Node>, Ptr<Node>);
-  /**
-   * Get the NetDevice connecting node n1 to n2
-   */
-  static Ptr<PointToPointNetDevice> GetNetDevice(Ptr<Node>, Ptr<Node>);
-  /**
-   * Get the queue associated with a link between two nodes
-   */
-  static Queue* GetQueue(Ptr<Node>, Ptr<Node>);
-  /**
-   * Set the queue associated with a link between two nodes
-   */
-  static Queue* SetQueue(Ptr<Node>, Ptr<Node>, const Queue&);
+  static void AddIpv4Routes (Ptr<Node> n1, Ptr<Node> n2, Ptr<const PointToPointChannel> channel);
 };
 
 } // namespace ns3

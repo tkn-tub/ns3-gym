@@ -66,7 +66,6 @@
 #include "ns3/trace-root.h"
 #include "ns3/p2p-topology.h"
 #include "ns3/onoff-application.h"
-#include "ns3/application-list.h"
 #include "ns3/random-variable.h"
 
 using namespace ns3;
@@ -132,6 +131,15 @@ int main (int argc, char *argv[])
       channel2, n2, Ipv4Address("10.1.3.1"),
       n3, Ipv4Address("10.1.3.2"));
 
+  // Finally, we add static routes.  These three steps (Channel and
+  // NetDevice creation, IP Address assignment, and routing) are 
+  // separated because there may be a need to postpone IP Address
+  // assignment (emulation) or modify to use dynamic routing
+  PointToPointTopology::AddIpv4Routes(n0, n2, channel0);
+  PointToPointTopology::AddIpv4Routes(n1, n2, channel1);
+  PointToPointTopology::AddIpv4Routes(n2, n3, channel2);
+
+
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   Ptr<OnOffApplication> ooff = MakeNewObject<OnOffApplication> (
@@ -175,7 +183,8 @@ int main (int argc, char *argv[])
 
   // Also configure some tcpdump traces; each interface will be traced
   // The output files will be named simple-p2p.pcap-<nodeId>-<interfaceId>
-  // and can be read by the "tcpdump -r" command
+  // and can be read by the "tcpdump -r" command (use "-tt" option to
+  // display timestamps correctly)
   PcapTrace pcaptrace ("simple-p2p.pcap");
   pcaptrace.TraceAllIp ();
 

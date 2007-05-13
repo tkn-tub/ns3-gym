@@ -1,0 +1,20 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+def build(bld):
+    obj = bld.create_obj('cpp', 'shlib')
+    obj.name = 'ns3-applications'
+    obj.target = obj.name
+    obj.deps = ['ns3-node']
+    obj.source = [
+        'application-list.cc',
+        'application.cc',
+        'onoff-application.cc',
+        ]
+
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'application-list.h',
+        'application.h',
+        'onoff-application.h',
+        ]

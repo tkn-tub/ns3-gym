@@ -21,32 +21,6 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
-//
-// \brief The base class for all ns3 applicationes
-//
-// Class Application is the base class for all ns3 applications.
-// Applications are associated with individual nodes, and are created
-// using the AddApplication method in the ApplicationManager capability.
-// 
-// Conceptually, an application has zero or more Socket
-// objects associated with it, that are created using the Socket
-// creation API of the Kernel capability.  The Socket object
-// API is modeled after the
-// well-known BSD sockets interface, although it is somewhat 
-// simplified for use with ns3.  Further, any socket call that
-// would normally "block" in normal sockets will return immediately
-// in ns3.  A set of "upcalls" are defined that will be called when
-// the previous blocking call would normally exit.  THis is documented
-// in more detail Socket class in socket.h.
-// 
-// There is a second application class in ns3, called "ThreadedApplication"
-// that implements a true sockets interface, which should be used
-// when porting existing sockets code to ns3.  The true
-// sockets approach is significantly
-// less memory--efficient using private stacks for each defined application,
-// so that approach should be used with care.  The design and implementation
-// of the ThreadedApplication are still being discussed.
-
 #include "ns3/event-id.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
@@ -59,7 +33,21 @@ class Node;
 class RandomVariable;
 
 /**
- * \brief a model for userspace applications.
+ * \brief The base class for all ns3 applicationes
+ * 
+ * Class Application is the base class for all ns3 applications.
+ * Applications are associated with individual nodes.
+ * 
+ * Conceptually, an application has zero or more Socket
+ * objects associated with it, that are created using the Socket
+ * creation API of the Kernel capability.  The Socket object
+ * API is modeled after the
+ * well-known BSD sockets interface, although it is somewhat 
+ * simplified for use with ns3.  Further, any socket call that
+ * would normally "block" in normal sockets will return immediately
+ * in ns3.  A set of "upcalls" are defined that will be called when
+ * the previous blocking call would normally exit.  THis is documented
+ * in more detail Socket class in socket.h.
  */
 class Application : public Object
 {

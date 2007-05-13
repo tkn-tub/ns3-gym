@@ -122,6 +122,12 @@ public:
    */
   virtual uint32_t GetNInterfaces (void) = 0;  
 
+  /**
+   * \param index of interface
+   * \returns address of the NetDevice associated with the ipv4 interface
+   */
+  virtual Ptr<NetDevice> GetNetDevice (uint32_t i) = 0;
+
   virtual void SetAddress (uint32_t i, Ipv4Address address) = 0;
   virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask) = 0;
   virtual Ipv4Mask GetNetworkMask (uint32_t t) const = 0;

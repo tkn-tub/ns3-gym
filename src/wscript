@@ -1,0 +1,13 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def set_options(opt):
+    opt.sub_options('simulator')
+
+def configure(conf):
+    conf.sub_config('core')
+    conf.sub_config('simulator')
+
+def build(bld):
+    bld.add_subdirs('core common simulator')
+    bld.add_subdirs('node internet-node devices applications')
+

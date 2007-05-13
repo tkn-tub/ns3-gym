@@ -1,0 +1,18 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+def build(bld):
+    p2p = bld.create_obj('cpp', 'shlib')
+    p2p.name = 'ns3-p2p'
+    p2p.target = p2p.name
+    p2p.deps = ['ns3-node']
+    p2p.source = [
+        'p2p-net-device.cc',
+        'p2p-channel.cc',
+        ]
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'p2p-net-device.h',
+        'p2p-channel.h',
+        ]
+

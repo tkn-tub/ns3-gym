@@ -6,6 +6,11 @@
 #include <list>
 #include "callback.h"
 
+/**
+ * \defgroup config Simulation configuration
+ *
+ */
+
 namespace ns3 {
 
 class DefaultValueBase
@@ -45,6 +50,7 @@ class DefaultValueList
 };
 
 /**
+ * \ingroup config
  * \param name name of variable to bind
  * \param value value to bind to the specified variable
  *
@@ -58,6 +64,7 @@ void Bind (std::string name, std::string value);
 
 /**
  * \brief A Boolean variable for ns3::Bind
+ * \ingroup config
  *
  * Every instance of this type is automatically 
  * registered in the variable pool which is used
@@ -95,6 +102,7 @@ private:
 
 /**
  * \brief An Integer variable for ns3::Bind
+ * \ingroup config
  *
  * Every instance of this type is automatically 
  * registered in the variable pool which is used
@@ -147,6 +155,14 @@ private:
   T m_value;
 };
 
+/**
+ * \brief Named enumeration defaults
+ * \ingroup config
+ *
+ * Every instance of this type is automatically 
+ * registered in the variable pool which is used
+ * by ns3::Bind. 
+ */
 class StringEnumDefaultValue : public DefaultValueBase
 {
 public:
@@ -168,6 +184,7 @@ private:
 
 /**
  * \brief An enum variable for ns3::Bind
+ * \ingroup config
  *
  * Every instance of this type is automatically 
  * registered in the variable pool which is used
@@ -232,6 +249,11 @@ public:
   T m_value;
 };
 
+/**
+ * \brief Class used to call a certain function during the configuration of the
+ * simulation
+ * \ingroup config
+ */
 class CommandDefaultValue : public DefaultValueBase
 {
 public:
