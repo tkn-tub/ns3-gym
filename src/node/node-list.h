@@ -32,17 +32,47 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
+/**
+ * \brief the list of simulation nodes.
+ *
+ * Every Node created is automatically added to this list.
+ */
 class NodeList
 {
 public:
   typedef ArrayTraceResolver<Node>::Index NodeIndex;
   typedef std::vector< Ptr<Node> >::iterator Iterator;
 
+  /**
+   * \param node node to add
+   * \returns index of node in list.
+   *
+   * This method is called automatically from Node::Node so
+   * the user has little reason to call it himself.
+   */
   static uint32_t Add (Ptr<Node> node);
+  /**
+   * \returns a C++ iterator located at the beginning of this
+   *          list.
+   */
   static Iterator Begin (void);
+  /**
+   * \returns a C++ iterator located at the end of this
+   *          list.
+   */
   static Iterator End (void);
+  /**
+   * \param context trace context to use for trace resolver
+   *        to create.
+   * \returns the requested trace resolver. The caller
+   *          takes ownership of the returned pointer.
+   */
   static TraceResolver *CreateTraceResolver (TraceContext const &context);
 
+  /**
+   * \param n index of requested node.
+   * \returns the Node associated to index n.
+   */
   static Ptr<Node> GetNode (uint32_t n);
 };
 
