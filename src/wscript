@@ -36,7 +36,7 @@ def build(bld):
     env = bld.env_of_name('default')
     if not env['DISABLE_RPATH']:
         for module in all_modules:
-            node = bld.m_curdirnode.find_build(module)
+            node = bld.m_curdirnode.find_dir(module)
             env.append_value('RPATH', '-Wl,--rpath=%s' % (node.abspath(env),))
     
     bld.add_subdirs(all_modules)
