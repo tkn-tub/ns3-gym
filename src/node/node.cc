@@ -25,6 +25,7 @@
 #include "node.h"
 #include "node-list.h"
 #include "net-device.h"
+#include "application.h"
 #include "ns3/simulator.h"
 
 namespace ns3{
@@ -88,6 +89,25 @@ Node::GetNDevices (void) const
   return m_devices.size ();
 }
 
+uint32_t 
+Node::AddApplication (Ptr<Application> application)
+{
+  uint32_t index = m_applications.size ();
+  m_applications.push_back (application);
+  return index;
+}
+Ptr<Application> 
+Node::GetApplication (uint32_t index) const
+{
+  return m_applications[index];
+}
+uint32_t 
+Node::GetNApplications (void) const
+{
+  return m_applications.size ();
+}
+
+
 void Node::DoDispose()
 {
   for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
@@ -98,6 +118,14 @@ void Node::DoDispose()
       *i = 0;
     }
   m_devices.clear ();
+  for (std::vector<Ptr<Application> >::iterator i = m_applications.begin ();
+       i != m_applications.end (); i++)
+    {
+      Ptr<Application> application = *i;
+      application->Dispose ();
+      *i = 0;
+    }
+  m_applications.clear ();
   Interface::DoDispose ();
 }
 

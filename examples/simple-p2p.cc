@@ -134,7 +134,7 @@ int main (int argc, char *argv[])
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
-  Ptr<OnOffApplication> ooff0 = MakeNewObject<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = MakeNewObject<OnOffApplication> (
     n0, 
     Ipv4Address("10.1.3.2"), 
     80, 
@@ -142,16 +142,12 @@ int main (int argc, char *argv[])
     ConstantVariable(0), 
     DataRate(448000), 
     210);
-  // Add to Node's ApplicationList (takes ownership of pointer)
-  Ptr<ApplicationList> apl0 = n0->QueryInterface<ApplicationList> (ApplicationList::iid);
-  apl0->Add(ooff0);
-
   // Start the application
-  ooff0->Start(Seconds(1.0));
-  ooff0->Stop (Seconds(10.0));
+  ooff->Start(Seconds(1.0));
+  ooff->Stop (Seconds(10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  Ptr<OnOffApplication> ooff1 = MakeNewObject<OnOffApplication> (
+  ooff = MakeNewObject<OnOffApplication> (
     n3, 
     Ipv4Address("10.1.2.1"), 
     80, 
@@ -159,12 +155,9 @@ int main (int argc, char *argv[])
     ConstantVariable(0), 
     DataRate(448000), 
     210);
-  // Add to Node's ApplicationList (takes ownership of pointer)
-  Ptr<ApplicationList> apl3 = n3->QueryInterface<ApplicationList> (ApplicationList::iid);
-  apl3->Add(ooff1);
   // Start the application
-  ooff1->Start(Seconds(1.1));
-  ooff1->Stop (Seconds(10.0));
+  ooff->Start(Seconds(1.1));
+  ooff->Stop (Seconds(10.0));
 
   // Here, finish off packet routing configuration
   // This will likely set by some global StaticRouting object in the future

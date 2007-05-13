@@ -209,6 +209,7 @@ node.add_sources ([
     'socket.cc',
     'i-udp.cc',
     'i-ipv4.cc',
+    'application.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -224,25 +225,22 @@ node.add_inst_headers ([
     'socket.h',
     'i-udp.h',
     'i-ipv4.h',
+    'application.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')
 ns3.add (applications)
 applications.add_deps (['node'])
 applications.add_sources ([
-    'application-list.cc',
-    'application.cc',
     'onoff-application.cc',
 ])
 applications.add_inst_headers ([
-    'application-list.h',
-    'application.h',
     'onoff-application.h',
 ])
 
 inode = build.Ns3Module ('internet-node', 'src/internet-node')
 ns3.add (inode)
-inode.add_deps (['node', 'applications'])
+inode.add_deps (['node'])
 inode.add_sources ([
     'internet-node.cc',
     'l3-demux.cc',

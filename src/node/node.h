@@ -34,6 +34,7 @@ namespace ns3 {
 class TraceContext;
 class TraceResolver;
 class NetDevice;
+class Application;
 
 class Node : public Interface
 {
@@ -54,6 +55,10 @@ public:
   Ptr<NetDevice> GetDevice (uint32_t index) const;
   uint32_t GetNDevices (void) const;
 
+  uint32_t AddApplication (Ptr<Application> application);
+  Ptr<Application> GetApplication (uint32_t index) const;
+  uint32_t GetNApplications (void) const;
+
 protected:
   virtual void DoDispose (void);
 private:
@@ -62,6 +67,7 @@ private:
   uint32_t    m_id;         // Node id for this node
   uint32_t    m_sid;        // System id for this node
   std::vector<Ptr<NetDevice> > m_devices;
+  std::vector<Ptr<Application> > m_applications;
 };
 
 } //namespace ns3

@@ -39,6 +39,7 @@ Application::Application(Ptr<Node> n)
       m_startVar(0), m_stopVar(0),
       m_start(false), m_stop(false)
 {
+  m_node->AddApplication (this);
 }
 
 Application::Application(const Application& o)

@@ -22,7 +22,6 @@
 // George F. Riley, Georgia Tech, Fall 2006
 
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/application-list.h"
 #include "ns3/net-device.h"
 
 #include "l3-demux.h"
@@ -45,7 +44,6 @@ InternetNode::InternetNode()
   Ptr<Arp> arp = MakeNewObject<Arp> (this);
   Ptr<Udp> udp = MakeNewObject<Udp> (this);
 
-  Ptr<ApplicationList> applicationList = MakeNewObject<ApplicationList> (this);
   Ptr<L3Demux> l3Demux = MakeNewObject<L3Demux> (this);
   Ptr<Ipv4L4Demux> ipv4L4Demux = MakeNewObject<Ipv4L4Demux> (this);
 
@@ -62,7 +60,6 @@ InternetNode::InternetNode()
   Interface::AddInterface (ipv4Impl);
   Interface::AddInterface (arpPrivate);
   Interface::AddInterface (udpImpl);
-  Interface::AddInterface (applicationList);
   Interface::AddInterface (l3Demux);
   Interface::AddInterface (ipv4L4Demux);
 }
