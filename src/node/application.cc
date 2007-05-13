@@ -35,9 +35,7 @@ namespace ns3 {
 
 // \brief Application Constructor
 Application::Application(Ptr<Node> n) 
-    : m_node (n),
-      m_startVar(0), m_stopVar(0),
-      m_start(false), m_stop(false)
+    : m_node (n)
 {
   m_node->AddApplication (this);
 }
@@ -50,57 +48,33 @@ void
 Application::DoDispose (void)
 {
   m_node = 0;
-  if (m_start) 
-    {
-      Simulator::Cancel(m_startEvent);
-      m_start = false;
-    }
-  if (m_stop) 
-    {
-      Simulator::Cancel(m_stopEvent);
-      m_stop = false;
-    }
-  delete m_startVar;
-  m_startVar = 0;
-  delete m_stopVar;
-  m_stopVar = 0;
+  Simulator::Cancel(m_startEvent);
+  Simulator::Cancel(m_stopEvent);
 }  
    
-// \brief Specify application start time
-// The virtual method STartApp will be called at the time
-// specified by startTime.
-// \param Time to start application (absolute time, from start of simulation)
 void Application::Start(const Time& startTime)
 {
-  delete m_startVar;
-  m_startVar = new ConstantVariable(startTime.GetSeconds());
-  ScheduleStart();
+  ScheduleStart (startTime);
 }
 
 void Application::Start(const RandomVariable& startVar)
-{ // Start at random time
-  delete m_startVar;
-  m_startVar = startVar.Copy();
-  ScheduleStart();
+{
+  RandomVariable *v = startVar.Copy ();
+  ScheduleStart (Seconds (v->GetValue ()));
+  delete v;
 }
 
    
-// \brief Specify application stop time
-// The virtual method StopApp will be called at the time
-// specified by stopTime.
-// \param Time to stop application (absolute time, from start of simulation)
 void Application::Stop(const Time& stopTime)
 {
-  delete m_stopVar;
-  m_stopVar = new ConstantVariable(stopTime.GetSeconds());
-  ScheduleStop();
+  ScheduleStop (stopTime);
 }
 
 void Application::Stop(const RandomVariable& stopVar)
-{ // Stop at random time
-  delete m_stopVar;
-  m_stopVar = stopVar.Copy();
-  ScheduleStop();
+{
+  RandomVariable *v = stopVar.Copy ();
+  ScheduleStop (Seconds (v->GetValue ()));
+  delete v;
 }
   
 Ptr<Node> Application::GetNode() const
@@ -120,20 +94,18 @@ void Application::StopApplication()
 
 
 // Private helpers
-void Application::ScheduleStart()
+void Application::ScheduleStart (const Time &startTime)
 {
-  m_startEvent = Simulator::Schedule(Seconds(m_startVar->GetValue()) -
+  m_startEvent = Simulator::Schedule(startTime -
                                      Simulator::Now(),
                                      &Application::StartApplication, this);
-  m_start = true;
 }
 
-void Application::ScheduleStop()
+void Application::ScheduleStop (const Time &stopTime)
 {
-  m_stopEvent = Simulator::Schedule(Seconds(m_stopVar->GetValue()) -
-                                     Simulator::Now(),
-                                     &Application::StopApplication, this);
-  m_stop = true;
+  m_stopEvent = Simulator::Schedule(stopTime -
+                                    Simulator::Now(),
+                                    &Application::StopApplication, this);
 }
 
 } //namespace ns3

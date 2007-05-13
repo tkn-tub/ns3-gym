@@ -57,77 +57,92 @@ namespace ns3 {
 
 class Node;
 class RandomVariable;
-  
+
+/**
+ * \brief a model for userspace applications.
+ */
 class Application : public Object
 {
 public:
   Application(Ptr<Node>);
   virtual ~Application();
   
-  // \brief Specify application start time
-  // Applications start at various times in the simulation scenario.
-  // The Start method specifies when the application should be
-  // started.  The application subclasses should override the
-  // private "StartApplication" method defined below, which is called at the
-  // time specified, to cause the application to begin.
-  // \param Start time for this application, relative to the
-  // current simulation time.
-  void Start(const Time&);
+  /**
+   * \brief Specify application start time
+   * Applications start at various times in the simulation scenario.
+   * The Start method specifies when the application should be
+   * started.  The application subclasses should override the
+   * private "StartApplication" method defined below, which is called at the
+   * time specified, to cause the application to begin.
+   * \param startTime Start time for this application, absolute time,
+   *        relative to the start of the simulation.
+   */
+  void Start(const Time& startTime);
 
-  // \brief Same as above, but uses a random variable for start time
-  // The random variable returns the desired start time in units of
-  // Seconds.
+  /** 
+   * \brief Same as above, but uses a random variable for start time
+   * The random variable returns the desired start time in units of
+   * Seconds.
+   * \param startVariable the random variable to use to pick
+   *        the real start time as an absolute time, relative to
+   *        the start of the simulation.
+   */
+  void Start(const RandomVariable& startVariable);
   
-void Start(const RandomVariable&);
-  
-  // \brief Specify application stop time
-  // Once an application has started, it is sometimes useful
-  // to stop the application.  The Stop method specifies when an
-  // application is to stop.  The application subclasses should override
-  // the private StopApplication method defined below, to cause the application
-  // to stop.
-  // \param Stop time for this application, relative to the
-  // current simulation time.
-  void Stop(const Time&);
+  /**
+   * \brief Specify application stop time
+   * Once an application has started, it is sometimes useful
+   * to stop the application.  The Stop method specifies when an
+   * application is to stop.  The application subclasses should override
+   * the private StopApplication method defined below, to cause the application
+   * to stop.
+   * \param stopTime Stop time for this application, relative to the
+   *        start of the simulation.
+   */
+  void Stop(const Time& stopTime);
 
-  // \brief Same as above, but uses a random variable for stop time
-  // The random variable returns the desired stop time in units of
-  // Seconds.
-  void Stop(const RandomVariable&);
-  
-  // \brief Attaches an application to a specific node
-  // Specifies which node object this application is associated with.
-  // \param Node object to associate with this application.
-  // \brief Returns the pointer to the attached node.
+  /**
+   * \brief Same as above, but uses a random variable for stop time
+   * The random variable returns the desired stop time in units of
+   * Seconds.
+   * \param stopVariable the random variable to use to pick
+   *        the real stop time, relative to the start of the simulation.
+   */
+  void Stop(const RandomVariable& stopVariable);
+
+  /**
+   * \returns the Node to which this Application object is attached.
+   */
   Ptr<Node> GetNode() const;
   
+private:
   // Members
   Ptr<Node>       m_node;      // All applications have an associated node
-  RandomVariable* m_startVar;  // Random variable for start time
-  RandomVariable* m_stopVar;   // Random variable for stop time
   EventId         m_startEvent;// Event identifier for start event
   EventId         m_stopEvent; // Event identifier for the stop event
-  bool            m_start;     // True if start event scheduled
-  bool            m_stop;      // True if stop event scheduled
-  
+
+private:
+  /**
+   * \brief Application specific startup code
+   * The StartApplication method is called at the start time specifed by Start
+   * This method should be overridden by all or most application
+   * subclasses.
+   */
+  virtual void StartApplication (void);
+
+  /**
+   * \brief Application specific shutdown code
+   * The StopApplication method is called at the stop time specifed by Stop
+   * This method should be overridden by all or most application
+   * subclasses.
+   */
+  virtual void StopApplication (void);
 protected:
-  // \brief Application specific startup code
-  // The StartApplication method is called at the start time specifed by Start
-  // This method should be overridden by all or most application
-  // subclasses.
-  virtual void StartApplication();
-
-  // \brief Application specific shutdown code
-  // The StopApplication method is called at the stop time specifed by Stop
-  // This method should be overridden by all or most application
-  // subclasses.
-  virtual void StopApplication();
-
   virtual void DoDispose (void);
 private:
   // Helpers
-  void ScheduleStart();
-  void ScheduleStop();
+  void ScheduleStart (const Time &time);
+  void ScheduleStop (const Time &time);
 };
 
 } //namespace ns3
