@@ -19,16 +19,15 @@
 
 #include "ns3/debug.h"
 #include "ns3/composite-trace-resolver.h"
-#include "queue.h"
 #include "ns3/default-value.h"
+#include "ns3/component-manager.h"
+#include "queue.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
 const InterfaceId Queue::iid ("Queue");
-
-Queue* Queue::defaultQueue = 0;
 
 Queue::Queue() : 
   Interface (Queue::iid),
@@ -197,62 +196,29 @@ Queue::Drop (const Packet& p)
   m_traceDrop (p);
 }
 
-// Static methods for managing default queue
-
-// Set new default
-void Queue::Default(const Queue& q)
-{
-  delete defaultQueue;      // delete previous (if any)
-  defaultQueue = q.Copy();  // set new default
-}
-
-// Get current default
-Queue& Queue::Default()
-{
-  // ! Need to schedule an "at end" event to delete the default
-  return *defaultQueue;
-}
-
-
-Queue *
+Ptr<Queue>
 Queue::CreateDefault (void)
 {
   std::string defaultValue = GetDefault ()->GetValue ();
-  for (List::iterator i = GetList ()->begin ();
-       i != GetList ()->end (); i++)
-    {
-      if (i->second == defaultValue)
-        {
-          return i->first->Copy ();
-        }
-    }
-  NS_ASSERT (false);
-  // quiet compiler
-  return 0;
+  ClassId classId = ComponentManager::LookupByName (defaultValue);
+  Ptr<Queue> queue = ComponentManager::Create<Queue> (classId, Queue::iid);
+  return queue;
 }
 void 
-Queue::Add (Queue &queue, const std::string &name)
+Queue::Add (const std::string &name)
 {
   GetDefault ()->AddPossibleValue (name);
-  GetList ()->push_back (std::make_pair (&queue, name));
 }
 void 
-Queue::AddDefault (Queue &queue, const std::string &name)
+Queue::AddDefault (const std::string &name)
 {
   GetDefault ()->AddDefaultValue (name);
-  GetList ()->push_back (std::make_pair (&queue, name));
 }
 StringEnumDefaultValue *
 Queue::GetDefault (void)
 {
   static StringEnumDefaultValue value ("Queue", "Packet Queue");
   return &value;
-}
-Queue::List *
-Queue::GetList (void)
-{
-  static List list;
-  return &list;
 }
 
 

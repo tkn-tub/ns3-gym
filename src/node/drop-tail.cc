@@ -27,11 +27,12 @@ namespace ns3 {
 static class QueueStackInitializationClass {
 public:
   QueueStackInitializationClass () {
-    Queue::Default (DropTailQueue ());
-    static DropTailQueue queue;
-    Queue::AddDefault (queue, "DropTailQueue");
+    Queue::AddDefault ("DropTailQueue");
   }
 } queue_stack_initialization_class;
+
+const ClassId DropTailQueue::cid = 
+  ComponentManager::RegisterConstructor<DropTailQueue> ("DropTailQueue");
 
 
 DropTailQueue::DropTailQueue () :
@@ -45,11 +46,6 @@ DropTailQueue::DropTailQueue () :
 DropTailQueue::~DropTailQueue ()
 {
   NS_DEBUG("DropTailQueue::~DropTailQueue ()");
-}
-
-DropTailQueue* DropTailQueue::Copy() const
-{
-  return new DropTailQueue(*this);
 }
 
 void 

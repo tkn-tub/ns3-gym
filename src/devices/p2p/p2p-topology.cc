@@ -24,13 +24,11 @@
 
 #include <algorithm>
 #include "ns3/assert.h"
-
 #include "ns3/nstime.h"
-
 #include "ns3/internet-node.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/drop-tail.h"
 #include "ns3/i-ipv4.h"
+#include "ns3/queue.h"
 
 #include "p2p-channel.h"
 #include "p2p-net-device.h"
@@ -49,14 +47,14 @@ PointToPointTopology::AddPointToPointLink(
 
   Ptr<PointToPointNetDevice> net1 = MakeNewObject<PointToPointNetDevice> (n1);
 
-  Ptr<Queue> q = MakeNewObject<DropTailQueue> ();
+  Ptr<Queue> q = Queue::CreateDefault ();
   net1->AddQueue(q);
   n1->AddDevice (net1);
   net1->Attach (channel);
   
   Ptr<PointToPointNetDevice> net2 = MakeNewObject<PointToPointNetDevice> (n2);
 
-  q = MakeNewObject<DropTailQueue> ();
+  q = Queue::CreateDefault ();
   net2->AddQueue(q);
   n2->AddDevice (net2);
   net2->Attach (channel);
