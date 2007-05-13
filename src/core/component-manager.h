@@ -89,7 +89,6 @@ public:
    * \param classId class id of the constructor to invoke.
    * \param a1 argument to pass to the constructor.
    * \return a pointer to the instance created.
-   * \overload Create (ClassId)
    *
    * Create an instance of the object identified by its
    * ClassId.
@@ -102,7 +101,6 @@ public:
    * \param a1 first argument to pass to the constructor.
    * \param a2 second argument to pass to the constructor.
    * \return a pointer to the instance created.
-   * \overload Create (ClassId)
    *
    * Create an instance of the object identified by its
    * ClassId.
@@ -114,7 +112,6 @@ public:
    * \param classId class id of the constructor to invoke.
    * \param iid interface id to query for
    * \return a pointer to the instance created.
-   * \overload Create (ClassId)
    *
    * Create an instance of the object identified by its
    * ClassId, call QueryInterface on it, and return the 
@@ -146,7 +143,6 @@ public:
    * \param name the symbolic name to associate to this
    *        constructor
    * \returns a ClassId which uniquely identifies this constructor.
-   * \overload ClassId RegisterConstructor (std::string)
    */
   template <typename T, typename T1>
   static ClassId RegisterConstructor (std::string name)
@@ -159,7 +155,6 @@ public:
    * \param name the symbolic name to associate to this
    *        constructor
    * \returns a ClassId which uniquely identifies this constructor.
-   * \overload ClassId RegisterConstructor (std::string)
    */
   template <typename T, typename T1, typename T2>
   static ClassId RegisterConstructor (std::string name)
