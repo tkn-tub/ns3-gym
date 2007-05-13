@@ -80,7 +80,7 @@ protected:
   Interface (InterfaceId iid);
   /**
    * \param iid the Interface id of the interface
-   * \param a pointer to the interface object
+   * \param interface a pointer to the interface object
    *
    * If you are not a direct subclass of the ns3::Interface base class,
    * and if you want to register yourself as another accessible interface

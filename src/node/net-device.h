@@ -111,7 +111,7 @@ public:
   /**
    * \param index ifIndex of the device 
    */
-  void SetIfIndex(const uint32_t);
+  void SetIfIndex(const uint32_t index);
   /**
    * \return index ifIndex of the device 
    */

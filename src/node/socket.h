@@ -206,24 +206,24 @@ public:
   
   /**
    * \brief Receive data
-   * \param Received data callback. Invoked whenever new data is received.
+   * \param receivedData Invoked whenever new data is received.
    *
    * If you wish to transport only dummy packets, this method is not a very
    * efficient way to receive these dummy packets: it will trigger a memory
    * allocation to hold the dummy memory into a buffer which can be passed
    * to the user. Instead, consider using the RecvDummy method.
    */
-  void Recv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> = 
+  void Recv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> receivedData = 
             MakeCallback (&Socket::DummyCallbackVoidSocketBufferUi32Ipv4AddressUi16));
   
   /**
    * \brief Receive data
-   * \param Received data callback. Invoked whenever new data is received.
+   * \param receivedData Invoked whenever new data is received.
    *
    * This method is included because it is vastly more efficient than the 
    * Recv method when you use dummy payload.
    */
-  void RecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Ipv4Address&, uint16_t> = 
+  void RecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Ipv4Address&, uint16_t> receivedData =
                  MakeCallback (&Socket::DummyCallbackVoidSocketUi32Ipv4AddressUi16));
 
 private:
