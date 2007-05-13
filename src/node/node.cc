@@ -69,12 +69,6 @@ Node::GetSystemId (void) const
   return m_sid;
 }
 
-void   
-Node::SetSystemId(uint32_t s )
-{
-  m_sid = s;
-}
-
 uint32_t 
 Node::AddDevice (Ptr<NetDevice> device)
 {
