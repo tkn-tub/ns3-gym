@@ -5,7 +5,7 @@ def build(bld):
     obj = bld.create_obj('cpp', 'shlib')
     obj.name = 'ns3-applications'
     obj.target = obj.name
-    obj.deps = ['ns3-node']
+    obj.uselib_local = ['ns3-node']
     obj.source = [
         'application-list.cc',
         'application.cc',

@@ -1,6 +1,0 @@
-## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-
-def build(bld):
-    bld.add_subdirs('p2p')
-    #bld.add_subdirs('p2p-gfr')
-

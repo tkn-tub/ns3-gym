@@ -48,7 +48,7 @@ def build(bld):
     sim = bld.create_obj('cpp', 'shlib')
     sim.name = 'ns3-simulator'
     sim.target = sim.name
-    sim.deps = 'ns3-simulator-headers ns3-core-headers'
+    sim.uselib_local = ['ns3-core']
 
     sim.source = [
         'high-precision.cc',
@@ -63,7 +63,6 @@ def build(bld):
         'simulator.cc',
         ]
     headers = bld.create_obj('ns3header')
-    headers.name = 'ns3-simulator-headers'
     headers.source = [
         'high-precision.h',
         'nstime.h',

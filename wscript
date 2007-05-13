@@ -19,7 +19,7 @@ srcdir = '.'
 blddir = 'build'
 
 class Ns3Header(Object.genobj):
-    """A public NS-3 header file"""
+    """A set of NS-3 header files"""
     def __init__(self, env=None):
         Object.genobj.__init__(self, 'other')
         self.inst_var = 'INCLUDEDIR'
@@ -132,7 +132,7 @@ def build(bld):
     bld.m_allenvs['default'] = variant_env # switch to the active variant
     # process subfolders from here
     bld.add_subdirs('src')
-    bld.add_subdirs('samples utils')
+    bld.add_subdirs('samples utils examples')
 
 
 def shutdown():

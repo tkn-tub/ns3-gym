@@ -1,0 +1,82 @@
+WAF is an alternative build system, similar to SCons.  NS-3 now is
+able to build with WAF, in parallel to SCons.
+
+Note: the WAF build scripts are experimental at this stage.
+
+
+=== Building with WAF ===
+
+To build NS-3 with waf type the commands:
+ 1. ./waf configure [options]
+ 2. ./waf
+
+[ Note: if ./waf does not exist, see the section "Note for developers" below ]
+
+To see valid configure options, type ./waf --help.  The most important
+option is -d <debug level>.  Valid debug levels (which are listed in
+./waf --help) are: ultradebug, debug, release, and optimized.
+
+The resulting binaries are placed in build/<debuglevel>/srcpath.
+
+Other waf usages include:
+
+ 1. ./waf check
+    Runs the unit tests
+
+ 2. ./waf --doxygen
+    Run doxygen to generate documentation
+
+ 3. ./waf --lcov-report
+    Run code coverage analysis (assuming the project was configured
+with --enable-gcov)
+
+=== Extending NS-3 ===
+
+To add new modules:
+  1. Create the module directory under src (or src/devices, or whatever);
+  2. Add the source files to it;
+  3. Add a 'wscript' describing it;
+  4. Add the module subdirectory name to the all_modules list in src/wscript.
+
+A module's wscript file is basically a regular WAF script.  A NS-3
+module is created as a cpp/shlib object, like this:
+
+def build(bld):
+    obj = bld.create_obj('cpp', 'shlib')
+
+    ## set module name; by convention it starts with ns3-
+    obj.name = 'ns3-mymodule'
+    obj.target = obj.name 
+
+    ## list dependencies to other modules
+    obj.uselib_local = ['ns3-core'] 
+
+    ## list source files (private or public header files excluded)
+    obj.source = [
+        'mymodule.cc',
+    ]
+
+    ## list module public header files
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'mymodule-header.h',
+    ]
+
+
+=== Note for developers ===
+
+The NS-3 code repository does not contain the waf script.  Instead,
+developers should check it out from a subversion repository:
+
+  svn checkout http://waf.googlecode.com/svn/trunk/ waf
+
+Then it can be installed system-wide with 'sudo ./waf-light install'.
+When preparing a distribution, the resulting 'waf' script, which is
+self contained (no external files needed), can be easily included in
+the tarball so that users downloading NS-3 can easily build it without
+having WAF installed (although Python >= 2.3 is still needed).
+
+The command 'waf dist' can be used to create a distribution tarball.
+It includes all files in the source directory, except some particular
+extensions that are blacklisted, such as back files (ending in ~).
+

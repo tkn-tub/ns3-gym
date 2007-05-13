@@ -5,7 +5,7 @@ def build(bld):
     node = bld.create_obj('cpp', 'shlib')
     node.name = 'ns3-node'
     node.target = node.name
-    node.deps = ['ns3-core', 'ns3-common', 'ns3-simulator']
+    node.uselib_local = ['ns3-core', 'ns3-common', 'ns3-simulator']
     node.source = [
         'node.cc',
         'ipv4-address.cc',

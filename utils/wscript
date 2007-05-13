@@ -2,21 +2,19 @@
 import sys
 import Params
 
+
 def build(bld):
 
     def create_ns_prog(name, source):
         obj = bld.create_obj('cpp', 'program')
         obj.target = name
-        obj.deps = "ns3-core ns3-common ns3-simulator"
         obj.uselib_local = "ns3-core ns3-common ns3-simulator"
         obj.source = source
-        for module in ['core', 'common', 'simulator']:
-            obj.env.append_value('RPATH', r'-Wl,--rpath=\$ORIGIN/../src/%s' % (module,))
         return obj
 
     unit_tests = create_ns_prog('run-tests', 'run-tests.cc')
-    unit_tests.install_var  = 0 #do not install
-    unit_tests.unit_test    = 1
+    unit_tests.install_var  = 0 # do not install
+    unit_tests.unit_test    = 1 # runs on 'waf check'
     
     #if sys.platform != 'win32':
     obj = create_ns_prog('bench-simulator', 'bench-simulator.cc')

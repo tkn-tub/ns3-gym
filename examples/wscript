@@ -1,0 +1,13 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+import Params
+
+def build(bld):
+    def create_ns_prog(name, source, deps=['core', 'common', 'simulator']):
+        obj = bld.create_obj('cpp', 'program')
+        obj.target = name
+        obj.uselib_local = ["ns3-%s" % dep for dep in deps]
+        obj.source = source
+        return obj
+        
+    obj = create_ns_prog('simple-p2p', 'simple-p2p.cc', deps=['p2p', 'internet-node'])
+

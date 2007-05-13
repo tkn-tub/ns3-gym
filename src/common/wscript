@@ -5,7 +5,7 @@ def build(bld):
     common = bld.create_obj('cpp', 'shlib')
     common.name = 'ns3-common'
     common.target = common.name
-    common.deps = ['ns3-core', 'ns3-simulator']
+    common.uselib_local = ['ns3-core', 'ns3-simulator']
     common.source = [
         'buffer.cc',
         'header.cc',
