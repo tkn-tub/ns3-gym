@@ -69,44 +69,47 @@ public:
   
   /**
    * \brief Specify application start time
+   * \param startTime Start time for this application, absolute time,
+   *        relative to the start of the simulation.
+   *
    * Applications start at various times in the simulation scenario.
    * The Start method specifies when the application should be
    * started.  The application subclasses should override the
    * private "StartApplication" method defined below, which is called at the
    * time specified, to cause the application to begin.
-   * \param startTime Start time for this application, absolute time,
-   *        relative to the start of the simulation.
    */
   void Start(const Time& startTime);
 
   /** 
-   * \brief Same as above, but uses a random variable for start time
-   * The random variable returns the desired start time in units of
-   * Seconds.
+   * \brief Specify application start time.
    * \param startVariable the random variable to use to pick
-   *        the real start time as an absolute time, relative to
-   *        the start of the simulation.
+   *        the real start time as an absolute time, in units of
+   *        seconds, relative to the start of the simulation.
+   * \overload Start (const Time &)
+   *
    */
   void Start(const RandomVariable& startVariable);
   
   /**
    * \brief Specify application stop time
+   * \param stopTime Stop time for this application, relative to the
+   *        start of the simulation.
+   *
    * Once an application has started, it is sometimes useful
    * to stop the application.  The Stop method specifies when an
    * application is to stop.  The application subclasses should override
-   * the private StopApplication method defined below, to cause the application
-   * to stop.
-   * \param stopTime Stop time for this application, relative to the
-   *        start of the simulation.
+   * the private StopApplication method, to be notified when that
+   * time has come.
    */
   void Stop(const Time& stopTime);
 
   /**
-   * \brief Same as above, but uses a random variable for stop time
-   * The random variable returns the desired stop time in units of
-   * Seconds.
+   * \brief Specify application stop time
    * \param stopVariable the random variable to use to pick
-   *        the real stop time, relative to the start of the simulation.
+   *        the real stop time, in units of seconds, 
+   *        relative to the start of the simulation.
+   * \overload Stop (const Time &)
+   *
    */
   void Stop(const RandomVariable& stopVariable);
 
@@ -116,14 +119,9 @@ public:
   Ptr<Node> GetNode() const;
   
 private:
-  // Members
-  Ptr<Node>       m_node;      // All applications have an associated node
-  EventId         m_startEvent;// Event identifier for start event
-  EventId         m_stopEvent; // Event identifier for the stop event
-
-private:
   /**
    * \brief Application specific startup code
+   *
    * The StartApplication method is called at the start time specifed by Start
    * This method should be overridden by all or most application
    * subclasses.
@@ -132,6 +130,7 @@ private:
 
   /**
    * \brief Application specific shutdown code
+   *
    * The StopApplication method is called at the stop time specifed by Stop
    * This method should be overridden by all or most application
    * subclasses.
@@ -140,9 +139,12 @@ private:
 protected:
   virtual void DoDispose (void);
 private:
-  // Helpers
   void ScheduleStart (const Time &time);
   void ScheduleStop (const Time &time);
+
+  EventId         m_startEvent;
+  EventId         m_stopEvent;
+  Ptr<Node>       m_node;
 };
 
 } //namespace ns3
