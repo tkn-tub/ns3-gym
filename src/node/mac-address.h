@@ -19,10 +19,6 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-/*
- * This implementation borrowed from yans
- */
-
 #ifndef MAC_ADDRESS_H
 #define MAC_ADDRESS_H
 
