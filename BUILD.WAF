@@ -68,7 +68,11 @@ def build(bld):
 The NS-3 code repository does not contain the waf script.  Instead,
 developers should check it out from a subversion repository:
 
-  svn checkout http://waf.googlecode.com/svn/trunk/ waf
+  svn checkout http://waf.googlecode.com/svn/tags/ns3/ waf
+
+[ note: 'tags/ns3' is a tag that represents the last svn version
+tested to work correctly with ns3, although 'trunk' will likely work
+ as well ]
 
 Then it can be installed system-wide with 'sudo ./waf-light install'.
 When preparing a distribution, the resulting 'waf' script, which is
