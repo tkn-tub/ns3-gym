@@ -49,14 +49,12 @@ PointToPointTopology::AddPointToPointLink(
 
   Ptr<Queue> q = Queue::CreateDefault ();
   net1->AddQueue(q);
-  n1->AddDevice (net1);
   net1->Attach (channel);
   
   Ptr<PointToPointNetDevice> net2 = MakeNewObject<PointToPointNetDevice> (n2);
 
   q = Queue::CreateDefault ();
   net2->AddQueue(q);
-  n2->AddDevice (net2);
   net2->Attach (channel);
 
   return channel;

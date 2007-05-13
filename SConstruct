@@ -416,7 +416,7 @@ sample_default_value.add_source('main-default-value.cc')
 example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')
 example_simple_p2p.set_executable()
 ns3.add(example_simple_p2p)
-example_simple_p2p.add_deps(['core', 'simulator', 'node', 'p2p', 'internet-node'])
+example_simple_p2p.add_deps(['core', 'simulator', 'node', 'p2p', 'internet-node', 'applications'])
 example_simple_p2p.add_source('simple-p2p.cc')
 
 ns3.generate_dependencies()

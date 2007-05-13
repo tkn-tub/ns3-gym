@@ -43,7 +43,9 @@ NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) :
   m_isBroadcast (false), 
   m_isMulticast (false), 
   m_isPointToPoint (false)
-{}
+{
+  m_node->AddDevice (this);
+}
 
 NetDevice::~NetDevice ()
 {}
