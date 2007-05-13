@@ -59,11 +59,6 @@ class NetDevice : public Interface
 {
 public:
   static const InterfaceId iid;
-  /**
-   * \param node base class node pointer of device's node 
-   * \param addr MAC address of this device.
-   */
-  NetDevice(Ptr<Node> node, const MacAddress& addr);
   virtual ~NetDevice();
 
   /**
@@ -173,11 +168,26 @@ public:
    */
   Ptr<Node> GetNode (void) const;
 
+  /**
+   * \returns true if ARP is needed, false otherwise.
+   *
+   * Called by higher-layers to check if this NetDevice requires
+   * ARP to be used.
+   */
   bool NeedsArp (void) const;
 
+  /**
+   * \param cb callback to invoke whenever a packet has been received and must
+   *        be forwarded to the higher layers.
+   */
   void SetReceiveCallback (Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> cb);
 
  protected:
+  /**
+   * \param node base class node pointer of device's node 
+   * \param addr MAC address of this device.
+   */
+  NetDevice(Ptr<Node> node, const MacAddress& addr);
   /**
    * Enable broadcast support. This method should be
    * called by subclasses from their constructor
@@ -226,6 +236,12 @@ public:
    */
   bool ForwardUp (Packet& p);
 
+  /**
+   * The dispose method for this NetDevice class.
+   * Subclasses are expected to override this method _and_
+   * to chain up to it by calling NetDevice::DoDispose
+   * at the end of their own DoDispose method.
+   */
   virtual void DoDispose (void);
 
  private:
@@ -240,9 +256,29 @@ public:
    * subclasses to forward packets. Subclasses MUST override this method.
    */
   virtual bool SendTo (Packet& p, const MacAddress& dest) = 0;
+  /**
+   * \returns true if this NetDevice needs the higher-layers
+   *          to perform ARP over it, false otherwise.
+   *
+   * Subclasses must implement this method.
+   */
   virtual bool DoNeedsArp (void) const = 0;
+  /**
+   * \param context the trace context to associated to the
+   *        trace resolver.
+   * \returns a trace resolver associated to the input context.
+   *          the caller takes ownership of the pointer returned.
+   *
+   * Subclasses must implement this method.
+   */
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
+  /**
+   * \returns the channel associated to this NetDevice.
+   *
+   * Subclasses must implement this method.
+   */
   virtual Ptr<Channel> DoGetChannel (void) const = 0;
+
   Ptr<Node>         m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
