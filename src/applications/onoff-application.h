@@ -42,7 +42,12 @@ class DataRate;
  * \brief Generate traffic to a single destination according to an
  *        OnOff pattern.
  *
- * 
+ * This traffic follows an On/Off pattern: after Application::StartApplication
+ * is called, "On" and "Off" states alternate. The duration of each of
+ * these states is determined with the onTime and the offTime random
+ * variables. During the "Off" state, no traffic is generated.
+ * During the "On" state, cbr traffic is generated. This cbr traffic is
+ * characterized by the specified "data rate" and "packet size".
  */
 class OnOffApplication : public Application 
 {
