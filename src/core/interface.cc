@@ -173,7 +173,7 @@ Interface::Interface (InterfaceId iid)
 Interface::~Interface ()
 {
   m_impl = 0;
-  m_ref = -1;
+  m_ref = 0xffffffff;
 }
 void 
 Interface::Ref (void) const
