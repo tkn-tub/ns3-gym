@@ -38,6 +38,16 @@ InterfaceId::InterfaceId (std::string name)
   : m_iid (Singleton<IidManager>::Get ()->Allocate (name))
 {}
 
+InterfaceId::InterfaceId (uint32_t iid)
+  : m_iid (iid)
+{}
+
+InterfaceId 
+InterfaceId::LookupByName (std::string name)
+{
+  return InterfaceId (Singleton<IidManager>::Get ()->LookupByName (name));
+}
+
 bool operator == (const InterfaceId &a, const InterfaceId &b)
 {
   return a.m_iid == b.m_iid;

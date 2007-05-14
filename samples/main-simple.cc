@@ -2,7 +2,7 @@
 
 #include "ns3/internet-node.h"
 #include "ns3/simulator.h"
-#include "ns3/i-udp.h"
+#include "ns3/i-socket-factory.h"
 #include "ns3/socket.h"
 #include "ns3/nstime.h"
 
@@ -40,12 +40,13 @@ RunSimulation (void)
 {
   Ptr<INode> a = MakeInternetNode ();
 
-  Ptr<IUdp> udp = a->QueryInterface<IUdp> (IUdp::iid);
+  InterfaceId iid = InterfaceId::LookupByName ("IUdp");
+  Ptr<ISocketFactory> socketFactory = a->QueryInterface<ISocketFactory> (iid);
 
-  Ptr<Socket> sink = udp->CreateSocket ();
+  Ptr<Socket> sink = socketFactory->CreateSocket ();
   sink->Bind (80);
 
-  Ptr<Socket> source = udp->CreateSocket ();
+  Ptr<Socket> source = socketFactory->CreateSocket ();
   source->Connect (Ipv4Address::GetLoopback (), 80);
 
   GenerateTraffic (source, 500);

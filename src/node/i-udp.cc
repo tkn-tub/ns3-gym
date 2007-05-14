@@ -25,7 +25,8 @@ namespace ns3 {
 const InterfaceId IUdp::iid ("IUdp");
 
 IUdp::IUdp ()
-  : Interface (IUdp::iid)
-{}
+{
+  AddSelfInterface (IUdp::iid, this);
+}
 
 } // namespace ns3

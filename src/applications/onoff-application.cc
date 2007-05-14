@@ -29,7 +29,7 @@
 #include "ns3/random-variable.h"
 #include "ns3/socket.h"
 #include "ns3/simulator.h"
-#include "ns3/i-udp.h"
+#include "ns3/i-socket-factory.h"
 #include "ns3/default-value.h"
 #include "onoff-application.h"
 
@@ -48,19 +48,22 @@ static IntegerDefaultValue<uint32_t> g_defaultSize ("OnOffApplicationPacketSize"
 
 OnOffApplication::OnOffApplication(Ptr<INode> n, 
                                    const Ipv4Address  rip,
-                                   uint16_t       rport,
+                                   uint16_t rport,
+                                   std::string iid,
                                    const  RandomVariable& ontime,
                                    const  RandomVariable& offtime)
   :  Application(n),
      m_cbrRate (g_defaultRate.GetValue ())
 {
-  Construct (n, rip, rport, ontime, offtime, 
+  Construct (n, rip, rport, iid,
+             ontime, offtime, 
              g_defaultSize.GetValue ());
 }
 
 OnOffApplication::OnOffApplication(Ptr<INode> n, 
                                    const Ipv4Address  rip,
-                                   uint16_t       rport,
+                                   uint16_t rport,
+                                   std::string iid,
                                    const  RandomVariable& ontime,
                                    const  RandomVariable& offtime,
                                    DataRate  rate,
@@ -68,13 +71,15 @@ OnOffApplication::OnOffApplication(Ptr<INode> n,
   :  Application(n),
      m_cbrRate (rate)
 {
-  Construct (n, rip, rport, ontime, offtime, size);
+  Construct (n, rip, rport, iid, 
+             ontime, offtime, size);
 }
 
 void
 OnOffApplication::Construct (Ptr<INode> n, 
                              const Ipv4Address  rip,
-                             uint16_t       rport,
+                             uint16_t rport,
+                             std::string iid,
                              const  RandomVariable& onTime,
                              const  RandomVariable& offTime,
                              uint32_t size)
@@ -90,6 +95,7 @@ OnOffApplication::Construct (Ptr<INode> n,
   m_lastStartTime = Seconds (0);
   m_maxBytes = 0xffffffff;
   m_totBytes = 0;
+  m_iid = iid;
 }
 
 
@@ -134,8 +140,9 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
   // Create the socket if not already
   if (!m_socket)
     {
-      Ptr<IUdp> udp = GetINode ()->QueryInterface<IUdp> (IUdp::iid);
-      m_socket = udp->CreateSocket ();
+      InterfaceId iid = InterfaceId::LookupByName (m_iid);
+      Ptr<ISocketFactory> socketFactory = GetINode ()->QueryInterface<ISocketFactory> (iid);
+      m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
       m_socket->Connect (m_peerIp, m_peerPort);
     }

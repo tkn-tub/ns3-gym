@@ -32,7 +32,9 @@ class InterfaceId
 {
 public:
   InterfaceId (std::string name);
+  static InterfaceId LookupByName (std::string);
 private:
+  InterfaceId (uint32_t iid);
   friend bool operator == (const InterfaceId &a, const InterfaceId &b);
   uint32_t m_iid;
 };

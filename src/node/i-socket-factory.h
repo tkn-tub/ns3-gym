@@ -18,25 +18,27 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_UDP_H
-#define I_UDP_H
+#ifndef I_SOCKET_FACTORY_H
+#define I_SOCKET_FACTORY_H
 
-#include "i-socket-factory.h"
+#include "ns3/interface.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
 class Socket;
 
-class IUdp : public ISocketFactory
+class ISocketFactory : public Interface
 {
 public:
   static const InterfaceId iid;
 
-  IUdp ();
+  ISocketFactory ();
 
   virtual Ptr<Socket> CreateSocket (void) = 0;
 };
 
 } // namespace ns3
 
-#endif /* I_UDP_H */
+
+#endif /* I_SOCKET_FACTORY_H */
