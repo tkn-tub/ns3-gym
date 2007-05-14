@@ -7,7 +7,7 @@ def build(bld):
     node.target = node.name
     node.uselib_local = ['ns3-core', 'ns3-common', 'ns3-simulator']
     node.source = [
-        'node.cc',
+        'i-node.cc',
         'ipv4-address.cc',
         'net-device.cc',
         'mac-address.cc',
@@ -18,6 +18,7 @@ def build(bld):
         'channel.cc',
         'node-list.cc',
         'socket.cc',
+        'i-socket-factory.cc',
         'i-udp.cc',
         'i-ipv4.cc',
         'application.cc',
@@ -36,6 +37,7 @@ def build(bld):
         'channel.h',
         'node-list.h',
         'socket.h',
+        'i-socket-factory.h',
         'i-udp.h',
         'i-ipv4.h',
         'application.h',

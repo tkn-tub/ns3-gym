@@ -8,6 +8,7 @@ def build(bld):
     obj.uselib_local = ['ns3-node', 'ns3-applications']
     obj.source = [
         'internet-node.cc',
+        'i-node-impl.cc',
         'l3-demux.cc',
         'l3-protocol.cc',
         'ipv4-l4-demux.cc',
@@ -37,7 +38,7 @@ def build(bld):
 
     headers = bld.create_obj('ns3header')
     headers.source = [
-        'internet-i-node.h',
+        'internet-node.h',
         'ascii-trace.h',
         'pcap-trace.h',
         ]
