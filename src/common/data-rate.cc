@@ -21,8 +21,111 @@
 
 #include "data-rate.h"
 #include "ns3/nstime.h"
+#include "ns3/fatal-error.h"
 
-namespace ns3{
+namespace {
+
+bool
+DoParse (const std::string s, uint64_t *v)
+{
+  std::string::size_type n = s.find_first_not_of("0123456789.");
+  if (n != std::string::npos)
+  { // Found non-numeric
+    double r = ::atof(s.substr(0, n).c_str());
+    std::string trailer = s.substr(n, std::string::npos);
+    if (trailer == "bps")
+      {
+        // Bit/s
+        *v = (uint64_t)r;
+      }
+    else if (trailer == "b/s")
+      {
+        // Bit/s
+        *v = (uint64_t)r;
+      }
+    else if (trailer == "Bps")
+      {
+        // Byte/s
+        *v = (uint64_t)(r * 8);
+      }
+    else if (trailer == "B/s") 
+      {
+        // Byte/s
+        *v = (uint64_t)(r * 8);
+      }
+    else if (trailer == "kbps")
+      {
+        // KiloBit/s
+        *v = (uint64_t)(r * 1000);
+      }
+    else if (trailer == "kb/s")
+      {
+        // KiloBit/s
+        *v = (uint64_t)(r * 1000);
+      }
+    else if (trailer == "kBps")
+      {
+        // KiloBit/s
+        *v = (uint64_t)(r * 1000);
+      }
+    else if (trailer == "kB/s")
+      {
+        // KiloBit/s
+        *v = (uint64_t)(r * 1000);
+      }
+    else if (trailer == "Mbps")
+      {
+        // MegaBit/s
+        *v = (uint64_t)(r * 1000000);
+      }
+    else if (trailer == "Mb/s")
+      {
+        // MegaBit/s
+        *v = (uint64_t)(r * 1000000);
+      }
+    else if (trailer == "MBps")
+      {
+        // MegaByte/s
+        *v = (uint64_t)(r * 8000000);
+      }
+    else if (trailer == "MB/s")
+      {
+        // MegaByte/s
+        *v = (uint64_t)(r * 8000000);
+      }
+    else if (trailer == "Gbps")
+      {
+        // GigaBit/s
+        *v = (uint64_t)(r * 1000000000);
+      }
+    else if (trailer == "Gb/s")
+      {
+        // GigaBit/s
+        *v = (uint64_t)(r * 1000000000);
+      }
+    else if (trailer == "GBps")
+      {
+        // GigaByte/s
+        *v = (uint64_t)(r * 8*1000000000);
+      }
+    else if (trailer == "GB/s")
+      {
+        // GigaByte/s
+        *v = (uint64_t)(r * 8*1000000000);
+      }
+    else
+      {
+        return false;
+      }
+    return true;
+  }
+  *v = ::atoll(s.c_str());
+  return true;
+}
+
+}
+
+namespace ns3 {
 
 DataRate::DataRate(uint64_t bps)
   :m_bps(bps)
@@ -36,46 +139,12 @@ DataRate::DataRate (const std::string s)
 
 uint64_t DataRate::Parse(const std::string s)
 {
-  std::string::size_type n = s.find_first_not_of("0123456789.");
-  if (n != std::string::npos)
-  { // Found non-numeric
-    double r = atof(s.substr(0, n).c_str());
-    std::string trailer = s.substr(n, std::string::npos);
-    if (trailer == std::string("bps"))
-      return (uint64_t)r;                // Bit/s
-    if (trailer == std::string("b/s"))
-      return (uint64_t)r;                // Bit/s
-    if (trailer == std::string("Bps")) 
-      return  (uint64_t)(r * 8);          // Byte/s
-    if (trailer == std::string("B/s")) 
-      return  (uint64_t)(r * 8);          // Byte/s
-    if (trailer == std::string("kbps"))
-      return  (uint64_t)(r * 1000);       // KiloBit/s
-    if (trailer == std::string("kb/s"))
-      return  (uint64_t)(r * 1000);       // KiloBit/s
-    if (trailer == std::string("kBps"))
-      return  (uint64_t)(r * 1000);       // KiloBit/s
-    if (trailer == std::string("kB/s"))
-      return  (uint64_t)(r * 1000);       // KiloBit/s
-    if (trailer == std::string("Mbps"))
-      return  (uint64_t)(r * 1000000);    // MegaBit/s
-    if (trailer == std::string("Mb/s"))
-      return  (uint64_t)(r * 1000000);    // MegaBit/s
-    if (trailer == std::string("MBps"))
-      return  (uint64_t)(r * 8000000);    // MegaByte/s
-    if (trailer == std::string("MB/s"))
-      return  (uint64_t)(r * 8000000);    // MegaByte/s
-    if (trailer == std::string("Gbps"))
-      return  (uint64_t)(r * 1000000000); // GigaBit/s
-    if (trailer == std::string("Gb/s"))
-      return  (uint64_t)(r * 1000000000); // GigaBit/s
-    if (trailer == std::string("GBps"))
-      return  (uint64_t)(r * 8*1000000000); // GigaByte/s
-    if (trailer == std::string("GB/s"))
-      return  (uint64_t)(r * 8*1000000000); // GigaByte/s
-    NS_FATAL_ERROR("Can't Parse data rate "<<s);
-  }
-  return atoll(s.c_str());
+  uint64_t v;
+  if (!DoParse (s, &v))
+    {
+      NS_FATAL_ERROR("Can't Parse data rate "<<s);
+    }
+  return v;
 }
 
 double DataRate::CalculateTxTime(uint32_t bytes) const
@@ -97,5 +166,62 @@ double operator*(const Time& lhs, const DataRate& rhs)
 {
   return lhs.GetSeconds()*rhs.GetBitRate();
 }
+
+
+DataRateDefaultValue::DataRateDefaultValue (std::string name,
+                                            std::string help,
+                                            DataRate defaultValue)
+  : DefaultValueBase (name, help),
+    m_defaultValue (defaultValue),
+    m_value (defaultValue)
+{
+  DefaultValueList::Add (this);
+}
+void 
+DataRateDefaultValue::SetValue (DataRate rate)
+{
+  m_value = rate;
+}
+DataRate 
+DataRateDefaultValue::GetValue ()
+{
+  return m_value;
+}
+bool 
+DataRateDefaultValue::DoParseValue (const std::string &value)
+{
+  uint64_t v;
+  if (DoParse (value, &v))
+    {
+      m_value = DataRate (v);
+      return true;
+    }
+  return false;
+}
+std::string 
+DataRateDefaultValue::DoGetType (void) const
+{
+  return "(b/s|kb/s|Mb/s)";
+}
+std::string 
+DataRateDefaultValue::DoGetDefaultValue (void) const
+{
+  uint64_t defaultValue = m_defaultValue.GetBitRate ();
+  std::ostringstream oss;
+  if (defaultValue < 1000)
+    {
+      oss << defaultValue << "b/s";
+    }
+  else if (defaultValue < 1000000)
+    {
+      oss << (defaultValue/1000) << "kb/s";
+    }
+  else 
+    {
+      oss << (defaultValue/1000) << "Mb/s";
+    }
+  return oss.str ();
+}
+
 
 };//namespace ns3
