@@ -22,8 +22,6 @@
 // George F. Riley, Georgia Tech, Spring 2007
 // Adapted from ApplicationOnOff in GTNetS.
 
-// Define an on/off data source application class
-
 #ifndef __onoff_application_h__
 #define __onoff_application_h__
 
