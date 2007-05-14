@@ -92,7 +92,8 @@ int main (int argc, char *argv[])
   // instantiate, when the queue factory is invoked in the topology code
   Bind ("Queue", "DropTailQueue");
 
-  Bind ("on-off-app-packet-size", "210");
+  Bind ("OnOffApplicationPacketSize", "210");
+  Bind ("OnOffApplicationDataRate", "448kb/s");
 
   //Bind ("DropTailQueue::m_maxPackets", 30);   
 

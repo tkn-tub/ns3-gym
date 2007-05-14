@@ -38,11 +38,12 @@ using namespace std;
 namespace ns3 {
 
 // Defaults for rate/size
-DataRate OnOffApplication::g_defaultRate = DataRate(500000);
-static IntegerDefaultValue<uint32_t> g_defaultSize ("on-off-app-packet-size", 
-                                                    "The size of packets send by OnOffApplication instances",
+static DataRateDefaultValue g_defaultRate ("OnOffApplicationDataRate", 
+                                           "The data rate in on state for OnOffApplication",
+                                           DataRate ("500kb/s"));
+static IntegerDefaultValue<uint32_t> g_defaultSize ("OnOffApplicationPacketSize", 
+                                                    "The size of packets sent in on state for OnOffApplication",
                                                     512, 1);
-
 // Constructors
 
 OnOffApplication::OnOffApplication(Ptr<INode> n, 
@@ -51,7 +52,7 @@ OnOffApplication::OnOffApplication(Ptr<INode> n,
                                    const  RandomVariable& ontime,
                                    const  RandomVariable& offtime)
   :  Application(n),
-     m_cbrRate (g_defaultRate)
+     m_cbrRate (g_defaultRate.GetValue ())
 {
   Construct (n, rip, rport, ontime, offtime, 
              g_defaultSize.GetValue ());
@@ -101,6 +102,11 @@ OnOffApplication::SetMaxBytes(uint32_t maxBytes)
   m_maxBytes = maxBytes;
 }
 
+void
+OnOffApplication::SetDefaultRate (const DataRate &rate)
+{
+  g_defaultRate.SetValue (rate);
+}
 void 
 OnOffApplication::SetDefaultSize (uint32_t size)
 {

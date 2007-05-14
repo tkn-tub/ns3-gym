@@ -81,7 +81,7 @@ public:
 
   void SetMaxBytes(uint32_t maxBytes);
 
-  static void DefaultRate(uint64_t r) { g_defaultRate = r;}
+  static void SetDefaultRate(const DataRate & r);
 
   static void SetDefaultSize (uint32_t size);
 
@@ -121,9 +121,6 @@ private:
   EventId         m_sendEvent;    // Eventid of pending "send packet" event
   bool            m_sending;      // True if currently in sending state
   
-public:
-  static DataRate   g_defaultRate;  // Default sending rate when on
-
 private:
   void ScheduleNextTx();
   void ScheduleStartEvent();
