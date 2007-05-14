@@ -31,14 +31,29 @@ class TraceContainer;
 
 const int DTQ_NPACKETS_MAX_DEFAULT = 100;
 
+/**
+ * \brief A FIFO packet queue that drops tail-end packets on overflow
+ */
 class DropTailQueue : public Queue {
 public:
   static const ClassId cid;
+  /**
+   * \brief DropTailQueue Constructor
+   *
+   * Creates a droptail queue with a maximum size of 100 packets by default
+   */
   DropTailQueue ();
 
   virtual ~DropTailQueue();
-
+  /**
+   * \param npackets The maximum number of packets this queue will hold before
+   * dropping packets.
+   */
   void SetMaxPackets (uint32_t npackets);
+  /**
+   * \return The maximum number of packets this queue will hold before dropping
+   * packets.
+   */
   uint32_t GetMaxPackets (void);
 
 private:

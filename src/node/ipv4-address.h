@@ -27,31 +27,57 @@
 
 namespace ns3 {
 
-/* Ipv4 addresses are stored in host order in
- * this class.
- */
+/** Ipv4 addresses are stored in host order in
+  * this class.
+  */
 class Ipv4Address {
 public:
   Ipv4Address ();
-  /* input address is in host order. */
-  Ipv4Address (uint32_t address);
-  /* input address is in format:
-   * hhh.xxx.xxx.lll
-   * where h is the high byte and l the
-   * low byte
+  /**
+   * input address is in host order.
+   * \param address The host order 32-bit address
    */
+  Ipv4Address (uint32_t address);
+  /** 
+    * \brief Constructs an Ipv4Address by parsing a the input C-string
+    *
+    * Input address is in format:
+    * hhh.xxx.xxx.lll
+    * where h is the high byte and l the
+    * low byte
+    * \param address C-string containing the address as described above
+    */
   Ipv4Address (char const *address);
-
+  
+  /**
+   * \brief Comparison operation between two Ipv4Addresses
+   * \param other address to which to compare this address
+   * \return True if the addresses are equal. False otherwise.
+   */
   bool IsEqual (Ipv4Address other) const;
 
-  /* Using this method is frowned upon.
+  /** 
+   * \brief Get the host-order 32-bit IP address
+   *
+   * Using this method is frowned upon.
    * Please, do _not_ use this method.
    * It is there only for chunk-ipv4.
+   * \return the host-order 32-bit IP address
    */
   uint32_t GetHostOrder (void) const;
   void SetHostOrder (uint32_t ip);
+  /**
+   * Serialize this address to a 4-byte buffer
+   * \param buf output buffer to which this address gets overwritten with this
+   * Ipv4Address
+   */
   void Serialize (uint8_t buf[4]) const;
-
+  /**
+   * \brief Print this address to the given output stream
+   *
+   * The print format is in the typical "192.168.1.1"
+   * \param os The output stream to which this Ipv4Address is printed
+   */
   void Print (std::ostream &os) const;
 
   bool IsBroadcast (void);
