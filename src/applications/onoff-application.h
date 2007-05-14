@@ -81,9 +81,7 @@ private:
   Time            m_lastStartTime;// Time last packet sent
   uint32_t        m_maxBytes;     // Limit total number of bytes sent
   uint32_t        m_totBytes;     // Total bytes sent so far
-  bool            m_startStopScheduled; // True if start or stop event scheduled
   EventId         m_startStopEvent;     // Event id for next start or stop event
-  bool            m_sendScheduled;// True of send event scheduled
   EventId         m_sendEvent;    // Eventid of pending "send packet" event
   bool            m_sending;      // True if currently in sending state
   

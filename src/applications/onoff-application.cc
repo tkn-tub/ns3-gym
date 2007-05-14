@@ -61,11 +61,8 @@ uint32_t OnOffApplication::g_defaultSize = 512;
       m_residualBits(0),
       m_lastStartTime((HighPrecision)0),
       m_maxBytes(0xffffffff),
-      m_totBytes(0),
-      m_startStopScheduled(false),
-      m_sendScheduled(false)
-{
-}
+      m_totBytes(0)
+{}
 
 OnOffApplication::~OnOffApplication()
 {}
@@ -112,32 +109,25 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
 
 void OnOffApplication::StopApplication()     // Called at time specified by Stop
 {
-  if (m_startStopScheduled)
-    { // Cancel the startStop event
-      Simulator::Cancel(m_startStopEvent);
-      m_startStopScheduled = false;
-    }
-  if (m_sendScheduled)
+  if (m_sendEvent.IsRunning ())
     { // Cancel the pending send packet event
-      Simulator::Cancel(m_sendEvent);
-      m_sendScheduled = false;
       // Calculate residual bits since last packet sent
       Time delta(Simulator::Now() - m_lastStartTime);
       m_residualBits += (uint32_t)(m_cbrRate.GetBitRate() * delta.GetSeconds());
     }
+  Simulator::Cancel(m_sendEvent);
+  Simulator::Cancel(m_startStopEvent);
 }
 
 // Event handlers
 void OnOffApplication::StartSending()
 {
-  m_startStopScheduled = true;
   ScheduleNextTx();  // Schedule the send packet event
 }
 
 void OnOffApplication::StopSending()
 {
-  m_startStopScheduled = true;
-  if (m_sendScheduled) Simulator::Cancel(m_sendEvent);
+  Simulator::Cancel(m_sendEvent);
 }
 
 // Private helpers
@@ -148,7 +138,6 @@ void OnOffApplication::ScheduleNextTx()
       uint32_t bits = m_pktSize * 8 - m_residualBits;
       Time nextTime(Seconds (bits / 
         static_cast<double>(m_cbrRate.GetBitRate()))); // Time till next packet
-      m_sendScheduled = true;
       m_sendEvent = Simulator::Schedule(nextTime, &OnOffApplication::SendPacket, this);
     }
   else
@@ -161,21 +150,18 @@ void OnOffApplication::ScheduleStartEvent()
 {  // Schedules the event to start sending data (switch to the "On" state)
   Time offInterval = Seconds(m_offTime->GetValue());
   m_startStopEvent = Simulator::Schedule(offInterval, &OnOffApplication::StartSending, this);
-  m_startStopScheduled = true;
 }
 
 void OnOffApplication::ScheduleStopEvent()
 {  // Schedules the event to stop sending data (switch to "Off" state)
   Time onInterval = Seconds(m_onTime->GetValue());
   Simulator::Schedule(onInterval, &OnOffApplication::StopSending, this);
-  m_startStopScheduled = true;
 }
 
   
 void OnOffApplication::SendPacket()
 {
-  NS_ASSERT (m_sendScheduled);
-  m_sendScheduled = false;
+  NS_ASSERT (m_sendEvent.IsExpired ());
   m_socket->Send(0, m_pktSize);
   m_totBytes += m_pktSize;
   m_lastStartTime = Simulator::Now();
