@@ -81,8 +81,20 @@ public:
 
   void SetMaxBytes(uint32_t maxBytes);
 
+  /**
+   * \param r the data rate
+   *
+   * Set the data rate to use for every OnOffApplication for which
+   * the user does not specify an explicit data rate.
+   */
   static void SetDefaultRate(const DataRate & r);
 
+  /**
+   * \param size the packet size
+   *
+   * Set the packet size to use for every OnOffApplication for
+   * which the user does not specify an explicit packet size.
+   */
   static void SetDefaultSize (uint32_t size);
 
 protected:
