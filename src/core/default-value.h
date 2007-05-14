@@ -152,6 +152,20 @@ public:
    *        variable
    * \param minValue the minimum value which can be set
    *        in this variable
+   */
+  IntegerDefaultValue (std::string name,
+		       std::string help,
+		       T defaultValue,
+		       T minValue);
+
+  /**
+   * \param name the name of the variable
+   * \param help help text which explains the purpose
+   *        and the semantics of this variable
+   * \param defaultValue the default value assigned to this
+   *        variable
+   * \param minValue the minimum value which can be set
+   *        in this variable
    * \param maxValue the maximum value which can be set in this
    *        variable.
    */
@@ -161,6 +175,7 @@ public:
 		       T minValue,
 		       T maxValue);
 
+  void SetValue (T v);
 
   T GetValue (void) const;
 private:
@@ -310,6 +325,23 @@ IntegerDefaultValue<T>::IntegerDefaultValue (std::string name,
     m_value (defaultValue)
 {
   DefaultValueList::Add (this);
+  NS_ASSERT (m_minValue < m_maxValue);
+}
+template <typename T>
+IntegerDefaultValue<T>::IntegerDefaultValue (std::string name,
+					     std::string help,
+					     T defaultValue,
+					     T minValue)
+  : DefaultValueBase (name, help),
+    m_defaultValue (defaultValue),
+    m_minValue (minValue),
+    m_maxValue (std::numeric_limits<T>::max ()),
+    m_value (defaultValue)
+{
+  DefaultValueList::Add (this);
+  NS_ASSERT (m_minValue < m_maxValue);
+  NS_ASSERT (m_defaultValue <= m_maxValue &&
+	     m_defaultValue >= m_minValue);
 }
 template <typename T>
 IntegerDefaultValue<T>::IntegerDefaultValue (std::string name,
@@ -324,8 +356,18 @@ IntegerDefaultValue<T>::IntegerDefaultValue (std::string name,
     m_value (defaultValue)
 {
   DefaultValueList::Add (this);
+  NS_ASSERT (m_minValue < m_maxValue);
   NS_ASSERT (m_defaultValue <= m_maxValue &&
 	     m_defaultValue >= m_minValue);
+}
+
+template <typename T>
+void 
+IntegerDefaultValue<T>::SetValue (T v)
+{
+  NS_ASSERT (v <= m_maxValue &&
+	     v >= m_minValue);
+  m_value = v;
 }
 
 template <typename T>
