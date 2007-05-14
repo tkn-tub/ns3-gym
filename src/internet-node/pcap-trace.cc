@@ -27,7 +27,7 @@
 #include "ns3/callback.h"
 #include "ns3/pcap-writer.h"
 #include "ns3/node-list.h"
-#include "ns3/node.h"
+#include "ns3/i-node.h"
 
 #include "ipv4.h"
 

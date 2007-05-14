@@ -23,7 +23,7 @@
 #include <sstream>
 #include <string>
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/node.h"
+#include "ns3/i-node.h"
 #include "l3-demux.h"
 #include "l3-protocol.h"
 

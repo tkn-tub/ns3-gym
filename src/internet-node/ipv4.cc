@@ -26,7 +26,7 @@
 #include "ns3/callback.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4-route.h"
-#include "ns3/node.h"
+#include "ns3/i-node.h"
 #include "ns3/net-device.h"
 
 #include "ipv4.h"

@@ -37,7 +37,7 @@ def build(bld):
 
     headers = bld.create_obj('ns3header')
     headers.source = [
-        'internet-node.h',
+        'internet-i-node.h',
         'ascii-trace.h',
         'pcap-trace.h',
         ]

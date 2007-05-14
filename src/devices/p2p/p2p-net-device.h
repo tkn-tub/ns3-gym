@@ -23,7 +23,7 @@
 
 #include <string.h>
 #include "ns3/mac-address.h"
-#include "ns3/node.h"
+#include "ns3/i-node.h"
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"

@@ -196,7 +196,7 @@ node = build.Ns3Module ('node', 'src/node')
 ns3.add (node)
 node.add_deps (['core', 'common', 'simulator'])
 node.add_sources ([
-    'node.cc',
+    'i-node.cc',
     'ipv4-address.cc',
     'net-device.cc',
     'mac-address.cc',
@@ -212,7 +212,7 @@ node.add_sources ([
     'application.cc',
     ])
 node.add_inst_headers ([
-    'node.h',
+    'i-node.h',
     'ipv4-address.h',
     'net-device.h',
     'mac-address.h',

@@ -23,7 +23,7 @@
 #include "ns3/trace-context.h"
 #include "ns3/trace-root.h"
 #include "ns3/simulator.h"
-#include "ns3/node.h"
+#include "ns3/i-node.h"
 #include "ns3/queue.h"
 #include "ns3/node-list.h"
 #include "ns3/llc-snap-header.h"

@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns3/node.h"
+#include "ns3/i-node.h"
 #include "udp-socket.h"
 #include "udp.h"
 #include "ipv4-end-point.h"

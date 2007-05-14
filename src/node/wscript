@@ -25,7 +25,7 @@ def build(bld):
 
     headers = bld.create_obj('ns3header')
     headers.source = [
-        'node.h',
+        'i-node.h',
         'ipv4-address.h',
         'net-device.h',
         'mac-address.h',

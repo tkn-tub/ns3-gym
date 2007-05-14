@@ -21,7 +21,7 @@
  */
 #include "ns3/empty-trace-resolver.h"
 #include "ns3/net-device.h"
-#include "ns3/node.h"
+#include "ns3/i-node.h"
 #include "ipv4-loopback-interface.h"
 #include "i-ipv4-private.h"
 
