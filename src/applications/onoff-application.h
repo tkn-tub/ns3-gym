@@ -38,24 +38,52 @@ class RandomVariable;
 class Socket;
 class DataRate;
 
-class OnOffApplication : public Application {
-
+/**
+ * \brief Generate traffic to a single destination according to an
+ *        OnOff pattern.
+ *
+ * 
+ */
+class OnOffApplication : public Application 
+{
 public:
+  /**
+   * \param n node associated to this application
+   * \param rip remote ip address
+   * \param rport remove port number
+   * \param ontime on time random variable
+   * \param offtime off time random variable
+   */
   OnOffApplication(Ptr<INode> n,
-                   const Ipv4Address,  // Peer IP address
-                   uint16_t,           // Peer port
-                   const RandomVariable&,     // Random variable for On time
-                   const RandomVariable&,     // Random variable for Off time
-                   DataRate  = g_defaultRate,  // Data rate when on
-                   uint32_t = g_defaultSize);  // Size of packets
+                   const Ipv4Address rip,
+                   uint16_t rport,
+                   const RandomVariable& ontime,
+                   const RandomVariable& offtime);
 
-  virtual ~OnOffApplication();               // Destructor
+  /**
+   * \param n node associated to this application
+   * \param rip remote ip address
+   * \param rport remove port number
+   * \param ontime on time random variable
+   * \param offtime off time random variable
+   * \param rate data rate when on
+   * \param size size of packets when sending data.
+   */
+  OnOffApplication(Ptr<INode> n,
+                   const Ipv4Address rip,
+                   uint16_t rport,
+                   const RandomVariable& ontime,
+                   const RandomVariable& offtime,
+                   DataRate  rate,
+                   uint32_t size);
+
+  virtual ~OnOffApplication();
 
   void SetMaxBytes(uint32_t maxBytes);
 
   static void DefaultRate(uint64_t r) { g_defaultRate = r;}
 
-  static void DefaultSize(uint32_t s) { g_defaultSize = s;}
+  static void SetDefaultSize (uint32_t size);
 
 protected:
   virtual void DoDispose (void);
@@ -64,13 +92,21 @@ private:
   virtual void StartApplication (void);    // Called at time specified by Start
   virtual void StopApplication (void);     // Called at time specified by Stop
 
+  void Construct (Ptr<INode> n,
+                  const Ipv4Address rip,
+                  uint16_t rport,
+                  const RandomVariable& ontime,
+                  const RandomVariable& offtime,
+                  uint32_t size);
+
+
   // Event handlers
   void StartSending();
   void StopSending();
   void SendPacket();
 
   Ptr<Socket>     m_socket;       // Associated socket
-  Ipv4Address     m_peerIP;       // Peer IP address
+  Ipv4Address     m_peerIp;       // Peer IP address
   uint16_t        m_peerPort;     // Peer port
   bool            m_connected;    // True if connected
   RandomVariable* m_onTime;       // rng for On Time
@@ -87,7 +123,6 @@ private:
   
 public:
   static DataRate   g_defaultRate;  // Default sending rate when on
-  static uint32_t g_defaultSize;  // Default packet size
 
 private:
   void ScheduleNextTx();

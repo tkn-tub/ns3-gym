@@ -90,7 +90,9 @@ int main (int argc, char *argv[])
 
   // The below Bind command tells the queue factory which class to
   // instantiate, when the queue factory is invoked in the topology code
-  Bind ("Queue", "DropTailQueue");   
+  Bind ("Queue", "DropTailQueue");
+
+  Bind ("on-off-app-packet-size", "210");
 
   //Bind ("DropTailQueue::m_maxPackets", 30);   
 
@@ -147,9 +149,7 @@ int main (int argc, char *argv[])
     Ipv4Address("10.1.3.2"), 
     80, 
     ConstantVariable(1), 
-    ConstantVariable(0), 
-    DataRate(448000), 
-    210);
+    ConstantVariable(0));
   // Start the application
   ooff->Start(Seconds(1.0));
   ooff->Stop (Seconds(10.0));
@@ -160,9 +160,7 @@ int main (int argc, char *argv[])
     Ipv4Address("10.1.2.1"), 
     80, 
     ConstantVariable(1), 
-    ConstantVariable(0), 
-    DataRate(448000), 
-    210);
+    ConstantVariable(0));
   // Start the application
   ooff->Start(Seconds(1.1));
   ooff->Stop (Seconds(10.0));

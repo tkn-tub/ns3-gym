@@ -30,6 +30,7 @@
 #include "ns3/socket.h"
 #include "ns3/simulator.h"
 #include "ns3/i-udp.h"
+#include "ns3/default-value.h"
 #include "onoff-application.h"
 
 using namespace std;
@@ -38,31 +39,58 @@ namespace ns3 {
 
 // Defaults for rate/size
 DataRate OnOffApplication::g_defaultRate = DataRate(500000);
-uint32_t OnOffApplication::g_defaultSize = 512;
+static IntegerDefaultValue<uint32_t> g_defaultSize ("on-off-app-packet-size", 
+                                                    "The size of packets send by OnOffApplication instances",
+                                                    512, 1);
 
 // Constructors
 
-  OnOffApplication::OnOffApplication(Ptr<INode> n, 
-                                     const Ipv4Address  rip,   // Remote IP addr
-                                     uint16_t       rport, // Remote port
-                                     const  RandomVariable& ontime,
-                                     const  RandomVariable& offtime,
-                                     DataRate  rate,
-                                     uint32_t size)
-    :  Application(n), 
-      m_socket(0),      // Socket allocated on Start
-      m_peerIP(rip),
-      m_peerPort(rport),
-      m_connected(false),
-      m_onTime(ontime.Copy()),
-      m_offTime(offtime.Copy()),
-      m_cbrRate(rate),
-      m_pktSize(size), 
-      m_residualBits(0),
-      m_lastStartTime((HighPrecision)0),
-      m_maxBytes(0xffffffff),
-      m_totBytes(0)
-{}
+OnOffApplication::OnOffApplication(Ptr<INode> n, 
+                                   const Ipv4Address  rip,
+                                   uint16_t       rport,
+                                   const  RandomVariable& ontime,
+                                   const  RandomVariable& offtime)
+  :  Application(n),
+     m_cbrRate (g_defaultRate)
+{
+  Construct (n, rip, rport, ontime, offtime, 
+             g_defaultSize.GetValue ());
+}
+
+OnOffApplication::OnOffApplication(Ptr<INode> n, 
+                                   const Ipv4Address  rip,
+                                   uint16_t       rport,
+                                   const  RandomVariable& ontime,
+                                   const  RandomVariable& offtime,
+                                   DataRate  rate,
+                                   uint32_t size)
+  :  Application(n),
+     m_cbrRate (rate)
+{
+  Construct (n, rip, rport, ontime, offtime, size);
+}
+
+void
+OnOffApplication::Construct (Ptr<INode> n, 
+                             const Ipv4Address  rip,
+                             uint16_t       rport,
+                             const  RandomVariable& onTime,
+                             const  RandomVariable& offTime,
+                             uint32_t size)
+{
+  m_socket = 0;
+  m_peerIp = rip;
+  m_peerPort = rport;
+  m_connected = false;
+  m_onTime = onTime.Copy ();
+  m_offTime = offTime.Copy ();
+  m_pktSize = size;
+  m_residualBits = 0;
+  m_lastStartTime = Seconds (0);
+  m_maxBytes = 0xffffffff;
+  m_totBytes = 0;
+}
+
 
 OnOffApplication::~OnOffApplication()
 {}
@@ -71,6 +99,12 @@ void
 OnOffApplication::SetMaxBytes(uint32_t maxBytes)
 {
   m_maxBytes = maxBytes;
+}
+
+void 
+OnOffApplication::SetDefaultSize (uint32_t size)
+{
+  g_defaultSize.SetValue (size);
 }
 
 void
@@ -97,7 +131,7 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
       Ptr<IUdp> udp = GetINode ()->QueryInterface<IUdp> (IUdp::iid);
       m_socket = udp->CreateSocket ();
       m_socket->Bind ();
-      m_socket->Connect (m_peerIP, m_peerPort);
+      m_socket->Connect (m_peerIp, m_peerPort);
     }
   // Insure no pending event
   StopApplication();
