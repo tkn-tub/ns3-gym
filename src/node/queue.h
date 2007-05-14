@@ -117,9 +117,7 @@ public:
   static void Add (const std::string &name);
   static void AddDefault (const std::string &name);
 private:
-  typedef std::list<std::pair<Queue *,std::string> > List;
   static StringEnumDefaultValue *GetDefault (void);
-  static List *GetList (void);
 };
 
 }; // namespace ns3
