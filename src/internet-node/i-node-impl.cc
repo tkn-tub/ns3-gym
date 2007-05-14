@@ -78,11 +78,6 @@ INodeImpl::Construct (void)
   Interface::AddInterface (ipv4L4Demux);
 }
 
-void
-INodeImpl::SetName (std::string name)
-{
-  m_name = name;
-}
 
 TraceResolver *
 INodeImpl::DoCreateTraceResolver (TraceContext const &context)

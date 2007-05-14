@@ -43,7 +43,6 @@ public:
   INodeImpl(uint32_t systemId);
   virtual ~INodeImpl ();
 
-  void SetName(std::string name);
 protected:
   virtual void DoDispose(void);
 private:
@@ -51,7 +50,6 @@ private:
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
   bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const;
   void Construct (void);
-  std::string      m_name;
 };
 
 }//namespace ns3
