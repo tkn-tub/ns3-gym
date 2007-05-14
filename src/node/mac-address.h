@@ -40,24 +40,61 @@ public:
   enum {
     MAX_LEN = 32
   };
+  /**
+   * \brief Construct a null MacAddress
+   *
+   * This MacAddress has length of zero, and is internally all zeros
+   */
   MacAddress (void);
-  /* 
+  /**
+   * \brief Construct a MacAddress from a byte-array
+   *
    * low byte should be first.
-	 */
+   * \param address a byte array indicating the address
+   * \param len length, in bytes, of the address points to
+   */
   MacAddress (uint8_t const *address, uint8_t len);
-  /* The string should look like this:
+  /**
+   * \brief Construct a MacAddress from a C-string
+   *
+   * The string should look like this:
    * hh:xx:xx:xx:xx:ll
    * where hh is the high byte and ll is
    * the low byte.
+   * \param address the C-string representation of the address
    */
   MacAddress (char const *address);
   ~MacAddress ();
   
+  /**
+   * \brief Comparison operation between MacAddresses
+   * \param other The address against which to compare this one
+   * \return True if they are equal, false otherwise.
+   */   
   bool IsEqual (MacAddress other) const;
+  /**
+   * \brief Print this MacAddress to a stream
+   *
+   * The format is colon seperated groups of two hexadecimal digits
+   * \param os The output stream desired
+   */ 
   void Print (std::ostream &os) const;
   
-  uint8_t GetLength() const;  
+  /**
+   * \return The length in bytes of this MacAddress
+   */
+  uint8_t GetLength() const;
+  /**
+   * \brief Copy routine to peek the contents of the MacAddress
+   *
+   * \param ad Output parameter which holds a copy of this MacAddress
+   */
   void Peek (uint8_t ad[MAX_LEN]) const;
+  /**
+   * \brief Sets this MacAddress to a specific value
+   * \param ad byte buffer to set the MacAddress to
+   * \param len the length of the buffer
+   */
   void Set (uint8_t const ad[MAX_LEN], uint8_t len);
 
 private:
