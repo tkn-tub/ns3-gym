@@ -98,7 +98,6 @@ private:
   void ConnectionSucceeded(Ptr<Socket>);
   void ConnectionFailed(Ptr<Socket>);
   void Ignore(Ptr<Socket>);
-protected:
 };
 
 } // namespace ns3
