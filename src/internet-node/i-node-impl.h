@@ -21,8 +21,8 @@
 // Define a basic "Internet" node, with a protocol stack (l3 and l4),
 // network device list, process list, and routing.
 
-#ifndef INTERNET_NODE_H
-#define INTERNET_NODE_H
+#ifndef I_NODE_IMPL_H
+#define I_NODE_IMPL_H
 
 #include <list>
 #include <string>
@@ -40,6 +40,7 @@ public:
     IPV4,
   };
   InternetNode();
+  InternetNode(uint32_t systemId);
   virtual ~InternetNode ();
 
   void SetName(std::string name);
@@ -49,9 +50,10 @@ private:
   virtual void DoAddDevice (Ptr<NetDevice> device) const;
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
   bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const;
+  void Construct (void);
   std::string      m_name;
 };
 
 }//namespace ns3
 
-#endif /* INTERNET_NODE_H */
+#endif /* I_NODE_IMPL_H */

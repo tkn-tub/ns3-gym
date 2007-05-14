@@ -22,8 +22,8 @@
 // Define the basic Node object for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
-#ifndef __NODE_H__
-#define __NODE_H__
+#ifndef I_NODE_H
+#define I_NODE_H
 
 #include <vector>
 
@@ -169,4 +169,5 @@ private:
 };
 
 } //namespace ns3
-#endif
+
+#endif /* I_NODE_H */

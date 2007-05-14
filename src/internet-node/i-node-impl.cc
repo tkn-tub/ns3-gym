@@ -26,7 +26,7 @@
 
 #include "l3-demux.h"
 #include "ipv4-l4-demux.h"
-#include "internet-node.h"
+#include "i-node-impl.h"
 #include "udp.h"
 #include "ipv4.h"
 #include "arp.h"
@@ -39,6 +39,20 @@ namespace ns3 {
 
 
 InternetNode::InternetNode()
+{
+  Construct ();
+}
+
+InternetNode::InternetNode(uint32_t systemId)
+{
+  Construct ();
+}
+
+InternetNode::~InternetNode ()
+{}
+
+void
+InternetNode::Construct (void)
 {
   Ptr<Ipv4> ipv4 = MakeNewObject<Ipv4> (this);
   Ptr<Arp> arp = MakeNewObject<Arp> (this);
@@ -63,9 +77,6 @@ InternetNode::InternetNode()
   Interface::AddInterface (l3Demux);
   Interface::AddInterface (ipv4L4Demux);
 }
-
-InternetNode::~InternetNode ()
-{}
 
 void
 InternetNode::SetName (std::string name)
