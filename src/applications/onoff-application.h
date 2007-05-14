@@ -49,27 +49,26 @@ public:
                    DataRate  = g_defaultRate,  // Data rate when on
                    uint32_t = g_defaultSize);  // Size of packets
 
-  OnOffApplication(Ptr<INode> n, const OnOffApplication&); // Copy constructor
   virtual ~OnOffApplication();               // Destructor
-  virtual void StartApplication();    // Called at time specified by Start
-  virtual void StopApplication();     // Called at time specified by Stop
+
+  void SetMaxBytes(uint32_t maxBytes);
+
+  static void DefaultRate(uint64_t r) { g_defaultRate = r;}
+
+  static void DefaultSize(uint32_t s) { g_defaultSize = s;}
+
+protected:
+  virtual void DoDispose (void);
+private:
+  // inherited from Application base class.
+  virtual void StartApplication (void);    // Called at time specified by Start
+  virtual void StopApplication (void);     // Called at time specified by Stop
 
   // Event handlers
   void StartSending();
   void StopSending();
   void SendPacket();
 
-  virtual void MaxBytes(uint32_t m) { m_maxBytes = m;}
-
-protected:
-  virtual void DoDispose (void);
-
-public: // Static methods
-  static void DefaultRate(uint64_t r) { g_defaultRate = r;}
-
-  static void DefaultSize(uint32_t s) { g_defaultSize = s;}
-
-public:
   Ptr<Socket>     m_socket;       // Associated socket
   Ipv4Address     m_peerIP;       // Peer IP address
   uint16_t        m_peerPort;     // Peer port
