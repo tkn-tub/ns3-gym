@@ -265,12 +265,12 @@ inode.add_sources ([
     'header-utils.cc',
     'udp-socket.cc',
     'ipv4-end-point-demux.cc',
-    'i-udp-socket-factory-impl.cc',
     'i-arp-private.cc',
     'i-ipv4-impl.cc',
     'i-ipv4-private.cc',
     'ascii-trace.cc',
     'pcap-trace.cc',
+    'i-udp-impl.cc',
 ])
 inode.add_headers ([
     'ipv4-header.h',
@@ -285,7 +285,6 @@ inode.add_headers ([
     'queue.h',
     'arp-ipv4-interface.h',
     'udp-socket.h',
-    'i-udp-socket-factory-impl.h',
     'udp.h',
     'i-arp-private.h',
     'i-ipv4-impl.h',
@@ -301,6 +300,7 @@ inode.add_headers ([
     'ipv4-interface.h',
     'sgi-hashmap.h',
     'i-node-impl.h',
+    'i-udp-impl.h',
 ])
 inode.add_inst_headers ([
     'internet-node.h',
