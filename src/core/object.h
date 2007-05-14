@@ -25,13 +25,34 @@
 
 namespace ns3 {
 
+/**
+ * \brief Base class that supports reference counting for memory management
+ *
+ * Many objects in the system derive from this class in order to use its
+ * reference counting implementation.
+ */
 class Object 
 {
 public:
+  /**
+   * \brief Constructor
+   *
+   * Creates an object with a single reference count
+   */
   Object ();
   virtual ~Object ();
+  /**
+   * \brief Increments the reference count of this object
+   */
   void Ref (void) const;
+  /**
+   * \brief Decrements the reference count of this object
+   */
   void Unref (void) const;
+  /**
+   * \return true if there is only a single reference to this object anywhere
+   * in the system; false otherwise.
+   */
   bool IsSingle (void) const;
   void Dispose (void);
 protected:

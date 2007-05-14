@@ -61,7 +61,7 @@ class DataRate
    * numerical portion, followed by units in the following format:
    * - Prefix: nothing, "k", "M", "G"
    * - Data Unit: "b, "B"
-   * - Time Suffix: "ps", "/s"
+   * - Time Suffix: "ps", "/s" \n
    * The prefixes are SI powers of 10 (10^0,10^3,10^6,10^9 respectively).\n
    * The units are the bit, and the (8-bit) byte respectively.\n
    * Both time suffixes denote "per second".  Some supported examples include

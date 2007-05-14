@@ -50,7 +50,7 @@ namespace ns3 {
  *
  * Implementing a new type of Header for a new protocol is pretty easy
  * and is a matter of creating a subclass of the ns3::Header base class,
- * and implementing the 4 pure virtual methods defined in ns3::Header.
+ * and implementing the 4 pure virtual methods defined in ns3::Chunk.
  * Sample code which shows how to create such a new Header, how to use
  * it, and how to manipulate tags is shown below:
  * \include samples/main-packet.cc

@@ -199,10 +199,26 @@ private:
 class StringEnumDefaultValue : public DefaultValueBase
 {
 public:
+  /**
+   * \param name The name of the variable
+   * \param help The help string
+   */
   StringEnumDefaultValue (const std::string &name,
                           const std::string &help);
+  /**
+   * \brief Add a default value to this enumeration of strings
+   * \param value The string to make the default for this
+   */
   void AddDefaultValue (const std::string &value);
+  /**
+   * \brief Add a possible value to accept for this default value
+   */
   void AddPossibleValue (const std::string &value);
+  /**
+   * \brief Get the value of this default value.
+   * \return The string that has been assigned to this default value, either by
+   * Bind() or by a command line setting
+   */
   std::string GetValue (void) const;
 private:
   virtual bool DoParseValue (const std::string &value);

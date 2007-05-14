@@ -57,16 +57,41 @@ public:
 // bring myself to just type 2 in the code (even though I type 0 and 1 :-).
 //
   static const int N_DEVICES = 2;
-
+  /**
+   * \brief Create a PointToPointChannel
+   *
+   * By default, you get a channel with the name "PointToPoint Channel" that
+   * has an "infitely" fast transmission speed and zero delay.
+   */
   PointToPointChannel ();
+  
+  /**
+   * \brief Create a PointToPointChannel
+   *
+   * \param bps The bitrate of the channel
+   * \param delay Transmission delay through the channel
+   */  
   PointToPointChannel (const DataRate& bps, const Time& delay);
+  
+  /**
+   * \brief Create a PointToPointChannel
+   *
+   * \param name the name of the channel for identification purposes
+   * \param bps The bitrate of the channel
+   * \param delay Transmission delay through the channel
+   */
   PointToPointChannel (const std::string& name,
                  const DataRate& bps, const Time& delay);
 
+  /**
+   * \brief Attach a given netdevice to this channel
+   * \param device pointer to the netdevice to attach to the channel
+   */
   void Attach (Ptr<PointToPointNetDevice> device);
   bool TransmitStart (Packet& p, Ptr<PointToPointNetDevice> src);
   bool TransmitEnd (Packet &p, Ptr<PointToPointNetDevice> src);
   void PropagationCompleteEvent(Packet p, Ptr<PointToPointNetDevice> src);
+
 
   virtual uint32_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
