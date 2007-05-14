@@ -36,6 +36,11 @@ namespace ns3 {
 
 class StringEnumDefaultValue;
 
+/**
+ * \brief Abstract base class for packet Queues
+ * 
+ * This class defines the base APIs for packet queues in the ns-3 system
+ */
 class Queue : public Interface
 {
 public:
@@ -50,21 +55,69 @@ public:
   virtual ~Queue ();
 
   TraceResolver *CreateTraceResolver (TraceContext const &context);
-
+  
+  /**
+   * \return true if the queue is empty; false otherwise
+   */
   bool IsEmpty (void);
+  /**
+   * Place a packet into the rear of the Queue
+   * \return True if the operation was successful; false otherwise
+   */
   bool Enqueue (const Packet& p);
+  /**
+   * Remove a packet from the front of the Queue
+   * \return True if the operation was successful; false otherwise
+   */
   bool Dequeue (Packet &p);
+  /**
+   * Get a copy of the item at the front of the queue without removing it
+   * \return True if the operation was successful; false otherwise
+   */
   bool Peek (Packet &p);
 
+  /**
+   * XXX Doesn't do anything right now, think its supposed to flush the queue
+   */
   void DequeueAll (void);
+  /**
+   * \return The number of packets currently stored in the Queue
+   */
   uint32_t GetNPackets (void);
+  /**
+   * \return The number of bytes currently occupied by the packets in the Queue
+   */
   uint32_t GetNBytes (void);
 
+  /**
+   * \return The total number of bytes recieved by this Queue since the
+   * simulation began, or since ResetStatistics was called, according to 
+   * whichever happened more recently
+   * 
+   */
   uint32_t GetTotalReceivedBytes (void);
+  /**
+   * \return The total number of packets recieved by this Queue since the
+   * simulation began, or since ResetStatistics was called, according to 
+   * whichever happened more recently
+   */
   uint32_t GetTotalReceivedPackets (void);
+  /**
+   * \return The total number of bytes dropped by this Queue since the
+   * simulation began, or since ResetStatistics was called, according to 
+   * whichever happened more recently
+   */
   uint32_t GetTotalDroppedBytes (void);
+  /**
+   * \return The total number of bytes dropped by this Queue since the
+   * simulation began, or since ResetStatistics was called, according to 
+   * whichever happened more recently
+   */
   uint32_t GetTotalDroppedPackets (void);
-
+  /**
+   * Resets the counts for dropped packets, dropped bytes, recieved packets, and
+   * recieved bytes.
+   */
   void ResetStatistics (void);
 
 #if 0
@@ -92,6 +145,7 @@ public:
 #endif
 
 private:
+
   virtual bool DoEnqueue (const Packet& p) = 0;
   virtual bool DoDequeue (Packet &p) = 0;
   virtual bool DoPeek (Packet &p) = 0;
@@ -113,6 +167,10 @@ private:
   uint32_t m_nTotalDroppedPackets;
 
 public:
+  /**
+   * A factory method to generate a preconfigured default Queue for use
+   * \return a Queue smart pointer that is the default Queue type defined
+   */
   static Ptr<Queue> CreateDefault (void);
   static void Add (const std::string &name);
   static void AddDefault (const std::string &name);
