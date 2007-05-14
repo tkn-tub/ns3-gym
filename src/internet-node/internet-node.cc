@@ -23,16 +23,16 @@
 
 namespace ns3 {
 
-Ptr<Node> 
+Ptr<INode> 
 MakeInternetNode (void)
 {
-  return MakeNewObject<InternetNode> ();
+  return MakeNewObject<INodeImpl> ();
 }
 
-Ptr<Node> 
+Ptr<INode> 
 MakeInternetNode (uint32_t systemId)
 {
-  return MakeNewObject<InternetNode> (systemId);
+  return MakeNewObject<INodeImpl> (systemId);
 }
 
 } // namespace ns3

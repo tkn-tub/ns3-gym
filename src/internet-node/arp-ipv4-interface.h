@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-class Node;
+class INode;
 
 /**
  * \brief an Ipv4 Interface which uses ARP
@@ -43,13 +43,13 @@ class ArpIpv4Interface : public Ipv4Interface
     NETDEVICE,
     ARP,
   };
-  ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device);
+  ArpIpv4Interface (Ptr<INode> node, Ptr<NetDevice> device);
   virtual ~ArpIpv4Interface ();
 
  private:
   virtual void SendTo (Packet p, Ipv4Address dest);
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
-  Ptr<Node> m_node;
+  Ptr<INode> m_node;
 };
 
 }//namespace ns3

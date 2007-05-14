@@ -32,7 +32,7 @@ namespace ns3 {
 
 const InterfaceId Ipv4L4Demux::iid ("Ipv4L4Demux");
 
-Ipv4L4Demux::Ipv4L4Demux (Ptr<Node> node)
+Ipv4L4Demux::Ipv4L4Demux (Ptr<INode> node)
   : Interface (Ipv4L4Demux::iid),
     m_node (node)
 {}

@@ -26,7 +26,7 @@
 
 namespace ns3 {
 
-UdpSocket::UdpSocket (Ptr<Node> node, Ptr<Udp> udp)
+UdpSocket::UdpSocket (Ptr<INode> node, Ptr<Udp> udp)
   : m_endPoint (0),
     m_node (node),
     m_udp (udp),
@@ -56,8 +56,8 @@ UdpSocket::~UdpSocket ()
   m_udp = 0;
 }
 
-Ptr<Node>
-UdpSocket::GetNode (void) const
+Ptr<INode>
+UdpSocket::GetINode (void) const
 {
   return m_node;
 }

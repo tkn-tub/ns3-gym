@@ -31,7 +31,7 @@ namespace ns3 {
 
 class ArpCache;
 class NetDevice;
-class Node;
+class INode;
 class Packet;
 class TraceResolver;
 class TraceContext;
@@ -41,7 +41,7 @@ class Arp : public L3Protocol
 public:
   static const uint16_t PROT_NUMBER;
 
-  Arp (Ptr<Node> node);
+  Arp (Ptr<INode> node);
   ~Arp ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
@@ -58,7 +58,7 @@ private:
   void SendArpRequest (ArpCache const *cache, Ipv4Address to);
   void SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac);
   CacheList m_cacheList;
-  Ptr<Node> m_node;
+  Ptr<INode> m_node;
 };
 
 }//namespace ns3

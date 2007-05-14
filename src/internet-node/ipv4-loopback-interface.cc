@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
+Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<INode> node)
   : Ipv4Interface (0),
     m_node (node)
 {}

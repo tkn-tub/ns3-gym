@@ -38,7 +38,7 @@ class Ipv4Interface;
 class Ipv4Address;
 class Ipv4Header;
 class Ipv4Route;
-class Node;
+class INode;
 class TraceResolver;
 class TraceContext;
 
@@ -59,7 +59,7 @@ public:
   };
   typedef ArrayTraceResolver<Ipv4Interface>::Index InterfaceIndex;
 
-  Ipv4(Ptr<Node> node);
+  Ipv4(Ptr<INode> node);
   virtual ~Ipv4 ();
 
   /**
@@ -241,7 +241,7 @@ private:
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;
   Ipv4Route *m_defaultRoute;
-  Ptr<Node> m_node;
+  Ptr<INode> m_node;
   CallbackTraceSource<Packet const &, uint32_t> m_txTrace;
   CallbackTraceSource<Packet const &, uint32_t> m_rxTrace;
   CallbackTraceSource<Packet const &> m_dropTrace;

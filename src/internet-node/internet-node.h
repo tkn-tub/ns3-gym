@@ -26,9 +26,9 @@
 
 namespace ns3 {
 
-Ptr<Node> MakeInternetNode (void);
+Ptr<INode> MakeInternetNode (void);
 
-Ptr<Node> MakeInternetNode (uint32_t systemId);
+Ptr<INode> MakeInternetNode (uint32_t systemId);
 
 } // namespace ns3
 

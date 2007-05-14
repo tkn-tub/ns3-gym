@@ -41,7 +41,7 @@ class DataRate;
 class OnOffApplication : public Application {
 
 public:
-  OnOffApplication(Ptr<Node> n,
+  OnOffApplication(Ptr<INode> n,
                    const Ipv4Address,  // Peer IP address
                    uint16_t,           // Peer port
                    const RandomVariable&,     // Random variable for On time
@@ -49,7 +49,7 @@ public:
                    DataRate  = g_defaultRate,  // Data rate when on
                    uint32_t = g_defaultSize);  // Size of packets
 
-  OnOffApplication(Ptr<Node> n, const OnOffApplication&); // Copy constructor
+  OnOffApplication(Ptr<INode> n, const OnOffApplication&); // Copy constructor
   virtual ~OnOffApplication();               // Destructor
   virtual void StartApplication();    // Called at time specified by Start
   virtual void StopApplication();     // Called at time specified by Stop

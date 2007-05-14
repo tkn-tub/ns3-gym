@@ -34,7 +34,7 @@ namespace ns3 {
 // Application Methods
 
 // \brief Application Constructor
-Application::Application(Ptr<Node> n) 
+Application::Application(Ptr<INode> n) 
     : m_node (n)
 {
   m_node->AddApplication (this);
@@ -77,7 +77,7 @@ void Application::Stop(const RandomVariable& stopVar)
   delete v;
 }
   
-Ptr<Node> Application::GetNode() const
+Ptr<INode> Application::GetINode() const
 {
   return m_node;
 }

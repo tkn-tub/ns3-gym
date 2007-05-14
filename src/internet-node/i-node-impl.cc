@@ -18,7 +18,7 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
-// Implementation of the InternetNode class for ns3.
+// Implementation of the INodeImpl class for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
 #include "ns3/composite-trace-resolver.h"
@@ -38,21 +38,21 @@
 namespace ns3 {
 
 
-InternetNode::InternetNode()
+INodeImpl::INodeImpl()
 {
   Construct ();
 }
 
-InternetNode::InternetNode(uint32_t systemId)
+INodeImpl::INodeImpl(uint32_t systemId)
 {
   Construct ();
 }
 
-InternetNode::~InternetNode ()
+INodeImpl::~INodeImpl ()
 {}
 
 void
-InternetNode::Construct (void)
+INodeImpl::Construct (void)
 {
   Ptr<Ipv4> ipv4 = MakeNewObject<Ipv4> (this);
   Ptr<Arp> arp = MakeNewObject<Arp> (this);
@@ -79,37 +79,37 @@ InternetNode::Construct (void)
 }
 
 void
-InternetNode::SetName (std::string name)
+INodeImpl::SetName (std::string name)
 {
   m_name = name;
 }
 
 TraceResolver *
-InternetNode::DoCreateTraceResolver (TraceContext const &context)
+INodeImpl::DoCreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   Ptr<IIpv4Private> ipv4 = QueryInterface<IIpv4Private> (IIpv4Private::iid);
   resolver->Add ("ipv4",
                  MakeCallback (&IIpv4Private::CreateTraceResolver, PeekPointer (ipv4)),
-                 InternetNode::IPV4);
+                 INodeImpl::IPV4);
 
   return resolver;
 }
 
 void 
-InternetNode::DoDispose()
+INodeImpl::DoDispose()
 {
-  Node::DoDispose ();
+  INode::DoDispose ();
 }
 
 void 
-InternetNode::DoAddDevice (Ptr<NetDevice> device) const
+INodeImpl::DoAddDevice (Ptr<NetDevice> device) const
 {
-  device->SetReceiveCallback (MakeCallback (&InternetNode::ReceiveFromDevice, this));
+  device->SetReceiveCallback (MakeCallback (&INodeImpl::ReceiveFromDevice, this));
 }
 
 bool
-InternetNode::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const
+INodeImpl::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const
 {
   Ptr<L3Demux> demux = QueryInterface<L3Demux> (L3Demux::iid);
   Ptr<L3Protocol> target = demux->GetProtocol (protocolNumber);

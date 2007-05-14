@@ -32,7 +32,7 @@
 
 namespace ns3 {
 
-class Node;
+class INode;
 class TraceResolver;
 class TraceContext;
 class Socket;
@@ -41,7 +41,7 @@ class Udp : public Ipv4L4Protocol {
 public:
   static const uint8_t PROT_NUMBER;
 
-  Udp (Ptr<Node> node);
+  Udp (Ptr<INode> node);
   virtual ~Udp ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
@@ -68,7 +68,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<Node> m_node;
+  Ptr<INode> m_node;
   Ipv4EndPointDemux *m_endPoints;
 };
 

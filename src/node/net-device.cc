@@ -32,7 +32,7 @@ namespace ns3 {
 
 const InterfaceId NetDevice::iid ("NetDevice");
 
-NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) : 
+NetDevice::NetDevice(Ptr<INode> node, const MacAddress& addr) : 
   Interface (NetDevice::iid),
   m_node (node), 
   m_name(""), 
@@ -229,8 +229,8 @@ NetDevice::NotifyLinkDown (void)
     }
 }
 
-Ptr<Node>
-NetDevice::GetNode (void) const
+Ptr<INode>
+NetDevice::GetINode (void) const
 {
   return m_node;
 }

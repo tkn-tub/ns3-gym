@@ -29,7 +29,7 @@
 
 namespace ns3 {
 
-class Node;
+class INode;
 class RandomVariable;
 
 /**
@@ -52,7 +52,7 @@ class RandomVariable;
 class Application : public Object
 {
 public:
-  Application(Ptr<Node>);
+  Application(Ptr<INode>);
   virtual ~Application();
   
   /**
@@ -98,9 +98,9 @@ public:
   void Stop(const RandomVariable& stopVariable);
 
   /**
-   * \returns the Node to which this Application object is attached.
+   * \returns the INode to which this Application object is attached.
    */
-  Ptr<Node> GetNode() const;
+  Ptr<INode> GetINode() const;
   
 private:
   /**
@@ -128,7 +128,7 @@ private:
 
   EventId         m_startEvent;
   EventId         m_stopEvent;
-  Ptr<Node>       m_node;
+  Ptr<INode>       m_node;
 };
 
 } //namespace ns3

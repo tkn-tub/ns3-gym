@@ -19,7 +19,7 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// Implement the basic Node object for ns3.
+// Implement the basic INode object for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
 #include "i-node.h"
@@ -30,47 +30,47 @@
 
 namespace ns3{
 
-const InterfaceId Node::iid ("Node");
+const InterfaceId INode::iid ("INode");
 
-Node::Node()
-  : Interface (Node::iid),
+INode::INode()
+  : Interface (INode::iid),
     m_id(0), 
     m_sid(0)
 {
   m_id = NodeList::Add (this);
 }
 
-Node::Node(uint32_t sid)
-  : Interface (Node::iid),
+INode::INode(uint32_t sid)
+  : Interface (INode::iid),
     m_id(0), 
     m_sid(sid)
 { 
   m_id = NodeList::Add (this);
 }
   
-Node::~Node ()
+INode::~INode ()
 {}
 
 TraceResolver *
-Node::CreateTraceResolver (TraceContext const &context)
+INode::CreateTraceResolver (TraceContext const &context)
 {
   return DoCreateTraceResolver (context);
 }
 
 uint32_t 
-Node::GetId (void) const
+INode::GetId (void) const
 {
   return m_id;
 }
 
 uint32_t 
-Node::GetSystemId (void) const
+INode::GetSystemId (void) const
 {
   return m_sid;
 }
 
 uint32_t 
-Node::AddDevice (Ptr<NetDevice> device)
+INode::AddDevice (Ptr<NetDevice> device)
 {
   uint32_t index = m_devices.size ();
   m_devices.push_back (device);
@@ -79,36 +79,36 @@ Node::AddDevice (Ptr<NetDevice> device)
   return index;
 }
 Ptr<NetDevice>
-Node::GetDevice (uint32_t index) const
+INode::GetDevice (uint32_t index) const
 {
   return m_devices[index];
 }
 uint32_t 
-Node::GetNDevices (void) const
+INode::GetNDevices (void) const
 {
   return m_devices.size ();
 }
 
 uint32_t 
-Node::AddApplication (Ptr<Application> application)
+INode::AddApplication (Ptr<Application> application)
 {
   uint32_t index = m_applications.size ();
   m_applications.push_back (application);
   return index;
 }
 Ptr<Application> 
-Node::GetApplication (uint32_t index) const
+INode::GetApplication (uint32_t index) const
 {
   return m_applications[index];
 }
 uint32_t 
-Node::GetNApplications (void) const
+INode::GetNApplications (void) const
 {
   return m_applications.size ();
 }
 
 
-void Node::DoDispose()
+void INode::DoDispose()
 {
   for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
        i != m_devices.end (); i++)

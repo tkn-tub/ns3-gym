@@ -27,19 +27,19 @@
 
 namespace ns3 {
 
-class Node;
+class INode;
 
 class Ipv4LoopbackInterface : public Ipv4Interface 
 {
  public:
-  Ipv4LoopbackInterface (Ptr<Node> node);
+  Ipv4LoopbackInterface (Ptr<INode> node);
   virtual ~Ipv4LoopbackInterface ();
 
  private:
   virtual void SendTo (Packet p, Ipv4Address dest);
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
 
-  Ptr<Node> m_node;
+  Ptr<INode> m_node;
 };
 
 }//namespace ns3

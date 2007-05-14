@@ -33,15 +33,15 @@ namespace ns3 {
 
 class Packet;
 
-class InternetNode : public Node 
+class INodeImpl : public INode 
 {
 public:
   enum TraceType {
     IPV4,
   };
-  InternetNode();
-  InternetNode(uint32_t systemId);
-  virtual ~InternetNode ();
+  INodeImpl();
+  INodeImpl(uint32_t systemId);
+  virtual ~INodeImpl ();
 
   void SetName(std::string name);
 protected:

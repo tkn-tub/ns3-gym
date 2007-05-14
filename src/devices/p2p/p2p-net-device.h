@@ -74,13 +74,13 @@ public:
    * Construct a PointToPointNetDevice
    *
    * This is the constructor for the PointToPointNetDevice.  It takes as a
-   * parameter the Node to which this device is connected.  Ownership of the
-   * Node pointer is not implied and the node must not be deleded.
+   * parameter the INode to which this device is connected.  Ownership of the
+   * INode pointer is not implied and the node must not be deleded.
    *
    * @see PointToPointTopology::AddPointToPointLink ()
-   * @param node the Node to which this device is connected.
+   * @param node the INode to which this device is connected.
    */
-  PointToPointNetDevice (Ptr<Node> node);
+  PointToPointNetDevice (Ptr<INode> node);
   /**
    * Copy Construct a PointToPointNetDevice
    *
