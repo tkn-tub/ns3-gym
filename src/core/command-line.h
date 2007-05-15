@@ -56,7 +56,7 @@ public:
    * \brief Add a command line triggered function call to the system
    * \param name Name of the string to expect on the command line
    * \param help A help string for this param, displayed --help is used.
-   * \param value An ns3::Callback that gets called if name is present as a
+   * \param cb An ns3::Callback that gets called if name is present as a
    * commandline argument.
    */
   static void AddArgCommand (const std::string &name,

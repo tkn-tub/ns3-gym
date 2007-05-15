@@ -44,7 +44,7 @@ public:
   /** 
    * \param n1 INode
    * \param n2 INode
-   * \param rate Maximum transmission link rate 
+   * \param dataRate Maximum transmission link rate 
    * \param delay one-way propagation delay 
    * \return Pointer to the underlying PointToPointChannel
    * 
