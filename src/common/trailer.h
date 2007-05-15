@@ -26,9 +26,45 @@
 
 namespace ns3 {
 
+/**
+ * \brief Protocol trailer serialization and deserialization.
+ *
+ * Every Protocol trailer which needs to be inserted or removed
+ * from a Packet instance must derive from this abstract base class
+ * and implement the private pure virtual methods listed below:
+ *   - ns3::Trailer::SerializeTo
+ *   - ns3::Trailer::DeserializeFrom
+ *   - ns3::Trailer::GetSerializedSize
+ *   - ns3::Trailer::PrintTo
+ */
 class Trailer : public Chunk {
 public:
   virtual ~Trailer ();
+private:
+  /**
+   * \param os the std output stream in which this 
+   *       protocol trailer must print itself.
+   */
+  virtual void PrintTo (std::ostream &os) const = 0;
+
+  /**
+   * \returns the size of the serialized Trailer.
+   */
+  virtual uint32_t GetSerializedSize (void) const = 0;
+
+  /**
+   * \param i the buffer iterator in which the protocol trailer
+   *    must serialize itself. This iterator identifies 
+   *    the end of the buffer.
+   */
+  virtual void SerializeTo (Buffer::Iterator i) const = 0;
+  /**
+   * \param i the buffer iterator from which the protocol trailer must
+   *    deserialize itself. This iterator identifies 
+   *    the end of the buffer.
+   * \returns the number of bytes read from the buffer
+   */
+  virtual uint32_t DeserializeFrom (Buffer::Iterator i) = 0;
 };
 
 }; // namespace ns3

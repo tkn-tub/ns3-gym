@@ -26,9 +26,45 @@
 
 namespace ns3 {
 
+/**
+ * \brief Protocol header serialization and deserialization.
+ *
+ * Every Protocol header which needs to be inserted or removed
+ * from a Packet instance must derive from this abstract base class
+ * and implement the private pure virtual methods listed below:
+ *   - ns3::Header::SerializeTo
+ *   - ns3::Header::DeserializeFrom
+ *   - ns3::Header::GetSerializedSize
+ *   - ns3::Header::PrintTo
+ */
 class Header : public Chunk {
 public:
   virtual ~Header ();
+private:
+  /**
+   * \param os the std output stream in which this 
+   *       protocol header must print itself.
+   */
+  virtual void PrintTo (std::ostream &os) const = 0;
+
+  /**
+   * \returns the size of the serialized Header.
+   */
+  virtual uint32_t GetSerializedSize (void) const = 0;
+
+  /**
+   * \param i the buffer iterator in which the protocol header
+   *    must serialize itself. This iterator identifies 
+   *    the start of the buffer.
+   */
+  virtual void SerializeTo (Buffer::Iterator i) const = 0;
+  /**
+   * \param i the buffer iterator from which the protocol header must
+   *    deserialize itself. This iterator identifies 
+   *    the start of the buffer.
+   * \returns the number of bytes read from the buffer
+   */
+  virtual uint32_t DeserializeFrom (Buffer::Iterator i) = 0;
 };
 
 }; // namespace ns3
