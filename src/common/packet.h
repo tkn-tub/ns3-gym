@@ -50,7 +50,7 @@ namespace ns3 {
  *
  * Implementing a new type of Header for a new protocol is pretty easy
  * and is a matter of creating a subclass of the ns3::Header base class,
- * and implementing the 4 pure virtual methods defined in ns3::Chunk.
+ * and implementing the 4 pure virtual methods defined in ns3::Header.
  * Sample code which shows how to create such a new Header, how to use
  * it, and how to manipulate tags is shown below:
  * \include samples/main-packet.cc
@@ -129,7 +129,7 @@ public:
   uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
-   * ns3::Chunk::GetSerializedSize and ns3::Chunk::SerializeTo 
+   * ns3::Header::GetSerializedSize and ns3::Header::SerializeTo 
    * methods to reserve space in the buffer and request the 
    * header to serialize itself in the packet buffer.
    *
@@ -139,7 +139,8 @@ public:
   void AddHeader (T const &header);
   /**
    * Deserialize and remove the header from the internal buffer.
-   * This method invokes ns3::Chunk::DeserializeFrom.
+   * This method invokes ns3::Header::DeserializeFrom
+   * and then removes the deserialized bytes from the buffer.
    *
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.
@@ -148,7 +149,7 @@ public:
   uint32_t RemoveHeader (T &header);
   /**
    * Add trailer to this packet. This method invokes the
-   * ns3::Chunk::GetSerializedSize and ns3::Trailer::serializeTo 
+   * ns3::Trailer::GetSerializedSize and ns3::Trailer::serializeTo 
    * methods to reserve space in the buffer and request the trailer 
    * to serialize itself in the packet buffer.
    *
@@ -158,7 +159,8 @@ public:
   void AddTrailer (T const &trailer);
   /**
    * Remove a deserialized trailer from the internal buffer.
-   * This method invokes the ns3::Chunk::DeserializeFrom method.
+   * This method invokes the ns3::Trailer::DeserializeFrom method
+   * and then removes the deserialized bytes from the buffer.
    *
    * \param trailer a reference to the trailer to remove from the internal buffer.
    * \returns the number of bytes removed from the end of the packet.
