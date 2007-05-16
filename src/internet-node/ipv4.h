@@ -43,9 +43,6 @@ class TraceResolver;
 class TraceContext;
 
 
-/**
- * ::Send is always defined in subclasses.
- */
 class Ipv4 : public L3Protocol 
 {
 public:

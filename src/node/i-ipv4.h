@@ -30,7 +30,9 @@ namespace ns3 {
 class NetDevice;
 class Packet;
 class Ipv4Route;
-
+/**
+ * \brief IPv4
+ */
 class IIpv4 : public Interface
 {
 public:

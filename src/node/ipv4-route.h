@@ -27,19 +27,33 @@
 #include "ipv4-address.h"
 
 namespace ns3 {
-
+/**
+ * \brief A record of an IPv4 route
+ */
 class Ipv4Route {
 public:
+  /**
+   * \brief This constructor does nothing
+   */
   Ipv4Route ();
+  /**
+   * \brief Copy Constructor
+   * \param route The route to copy
+   */
   Ipv4Route (Ipv4Route const &route);
 
   bool IsHost (void) const;
+  /**
+   * \return The IPv4 address of the destination of this route
+   */
   Ipv4Address GetDest (void) const;
 
   bool IsNetwork (void) const;
   Ipv4Address GetDestNetwork (void) const;
   Ipv4Mask GetDestNetworkMask (void) const;
-
+  /**
+   * \return True if this route is a default route; false otherwise
+   */
   bool IsDefault (void) const;
 
   bool IsGateway (void) const;
