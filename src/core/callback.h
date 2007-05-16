@@ -548,7 +548,7 @@ Callback<R,T1,T2,T3,T4,T5> MakeNullCallback (void) {
 }
 
 
-/**
+/*
  * The following is experimental code. It works but we have
  * not yet determined whether or not it is really useful and whether
  * or not we really want to use it.

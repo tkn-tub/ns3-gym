@@ -27,7 +27,9 @@
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {
-
+/**
+ * \brief The packet header for an ARP packet
+ */
 class ArpHeader : public Header {
  public:
   virtual ~ArpHeader ();
@@ -48,9 +50,22 @@ class ArpHeader : public Header {
   Ipv4Address GetDestinationIpv4Address (void);
 
 private:
+  /**
+   * \param os
+   */
   virtual void PrintTo (std::ostream &os) const;
+  /**
+   * \return
+   */
   virtual uint32_t GetSerializedSize (void) const;
+  /**
+   * \param start
+   */
   virtual void SerializeTo (Buffer::Iterator start) const;
+  /**
+   * \param start
+   * \return
+   */
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
 
   enum ArpType_e {

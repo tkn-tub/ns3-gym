@@ -27,19 +27,39 @@
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {
-
+/**
+ * \brief Packet header for UDP packets
+ */
 class UdpHeader : public Header {
 public:
+  /**
+   * \brief Constructor
+   *
+   * Creates a null header
+   */
   UdpHeader ();
   virtual ~UdpHeader ();
 
   static void EnableChecksums (void);
-
+  /**
+   * \param port the destination port for this UdpHeader
+   */
   void SetDestination (uint16_t port);
+  /**
+   * \param port The source port for this UdpHeader
+   */
   void SetSource (uint16_t port);
+  /**
+   * \return The source port for this UdpHeader
+   */
   uint16_t GetSource (void) const;
+  /**
+   * \return the destination port for this UdpHeader
+   */
   uint16_t GetDestination (void) const;
-
+  /**
+   * \param size The payload size (XXX: in bytes?)
+   */
   void SetPayloadSize (uint16_t size);
 
   void InitializeChecksum (Ipv4Address source, 

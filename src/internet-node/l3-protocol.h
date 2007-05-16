@@ -42,8 +42,13 @@ class L3Protocol : public Object {
 public:
   L3Protocol(int protocolNumber, int version);
   virtual ~L3Protocol ();
-    
+  /**
+   * \return The protocol number of this Layer 3 protocol
+   */  
   int GetProtocolNumber (void) const;
+  /**
+   * \return The version number of this protocol
+   */
   int GetVersion() const;
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context) = 0;

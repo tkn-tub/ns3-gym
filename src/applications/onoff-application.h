@@ -54,6 +54,7 @@ public:
    * \param n node associated to this application
    * \param rip remote ip address
    * \param rport remove port number
+   * \param iid
    * \param ontime on time random variable
    * \param offtime off time random variable
    */
@@ -68,6 +69,7 @@ public:
    * \param n node associated to this application
    * \param rip remote ip address
    * \param rport remove port number
+   * \param iid
    * \param ontime on time random variable
    * \param offtime off time random variable
    * \param rate data rate when on

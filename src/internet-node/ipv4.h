@@ -157,7 +157,7 @@ public:
   void RemoveRoute (uint32_t i);
   
   /**
-   * \param interface interface to add to the list of ipv4 interfaces
+   * \param device interface to add to the list of ipv4 interfaces
    * which can be used as output interfaces during packet forwarding.
    * \returns the index of the interface added.
    *

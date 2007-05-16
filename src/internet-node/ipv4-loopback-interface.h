@@ -28,10 +28,16 @@
 namespace ns3 {
 
 class INode;
-
+/**
+ * \brief An IPv4 loopback interface
+ */
 class Ipv4LoopbackInterface : public Ipv4Interface 
 {
  public:
+  /**
+   * \brief Constructor
+   * \param node Pointer to a node associated with this IPv4 interface
+   */
   Ipv4LoopbackInterface (Ptr<INode> node);
   virtual ~Ipv4LoopbackInterface ();
 

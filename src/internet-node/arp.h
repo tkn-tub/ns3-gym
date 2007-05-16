@@ -35,18 +35,33 @@ class INode;
 class Packet;
 class TraceResolver;
 class TraceContext;
-
+/**
+ * \brief An implementation of the ARP protocol
+ */
 class Arp : public L3Protocol
 {
 public:
   static const uint16_t PROT_NUMBER;
-
+  /**
+   * \brief Constructor
+   * \param node The node which this ARP object is associated with
+   */
   Arp (Ptr<INode> node);
   ~Arp ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
-
+  /**
+   * \brief Recieve a packet
+   */
   virtual void Receive(Packet& p, Ptr<NetDevice> device);
+  /**
+   * \brief Perform an ARP lookup
+   * \param p
+   * \param destination
+   * \param device
+   * \param hardwareDestination
+   * \return 
+   */
   bool Lookup (Packet &p, Ipv4Address destination, 
 	       Ptr<NetDevice> device,
 	       MacAddress *hardwareDestination);

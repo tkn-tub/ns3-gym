@@ -36,16 +36,24 @@ class INode;
 class TraceResolver;
 class TraceContext;
 class Socket;
-
+/**
+ * \brief Implementation of the UDP protocol
+ */
 class Udp : public Ipv4L4Protocol {
 public:
   static const uint8_t PROT_NUMBER;
-
+  /**
+   * \brief Constructor
+   * \param node The node this protocol is associated with
+   */
   Udp (Ptr<INode> node);
   virtual ~Udp ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
-
+  /**
+   * \return A smart Socket pointer to a UdpSocket, allocated by this instance
+   * of the UDP protocol
+   */
   Ptr<Socket> CreateSocket (void);
 
   Ipv4EndPoint *Allocate (void);
@@ -58,9 +66,23 @@ public:
   void DeAllocate (Ipv4EndPoint *endPoint);
 
   // called by UdpSocket.
+  /**
+   * \brief Send a packet via UDP
+   * \param packet The packet to send
+   * \param saddr The source Ipv4Address
+   * \param daddr The destination Ipv4Address
+   * \param sport The source port number
+   * \param dport The destination port number
+   */
   void Send (Packet packet,
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport);
+  /**
+   * \brief Recieve a packet up the protocol stack
+   * \param p The Packet to dump the contents into
+   * \param source The source's Ipv4Address
+   * \param destination The destinations Ipv4Address
+   */
   // inherited from Ipv4L4Protocol
   virtual void Receive(Packet& p, 
                        Ipv4Address const &source,

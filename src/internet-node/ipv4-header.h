@@ -26,26 +26,71 @@
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {
-
+/**
+ * \brief Packet header for IPv4
+ */
 class Ipv4Header : public Header {
 public:
+  /**
+   * \brief Construct a null IPv4 header
+   */
   Ipv4Header ();
   virtual ~Ipv4Header ();
-
+  /**
+   * \brief Enable checksum calculation for IP (XXX currently has no effect)
+   */
   static void EnableChecksums (void);
-
+  /**
+   * \param size
+   */
   void SetPayloadSize (uint16_t size);
+  /**
+   * \param identification
+   */
   void SetIdentification (uint16_t identification);
-  void SetTos (uint8_t);
+  /**
+   * \param tos
+   */
+  void SetTos (uint8_t tos);
+  /**
+   *
+   */
   void SetMoreFragments (void);
+  /**
+   *
+   */
   void SetLastFragment (void);
+  /**
+   *
+   */
   void SetDontFragment (void);
+  /**
+   *
+   */
   void SetMayFragment (void);
+  /**
+   * \param offset
+   */
   void SetFragmentOffset (uint16_t offset);
-  void SetTtl (uint8_t);
-  void SetProtocol (uint8_t);
+  /**
+   * \param ttl
+   */
+  void SetTtl (uint8_t ttl);
+  /**
+   * \param num
+   */
+  void SetProtocol (uint8_t num);
+  /**
+   * \param source
+   */
   void SetSource (Ipv4Address source);
+  /**
+   * \param destination
+   */
   void SetDestination (Ipv4Address destination);
+  /**
+   * \param 
+   */
 
 
   uint16_t GetPayloadSize (void) const;
