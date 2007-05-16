@@ -24,6 +24,7 @@
 #include "scheduler-factory.h"
 #include "event-impl.h"
 #include "ns3/assert.h"
+#include <string>
 
 #define noTRACE_MAP 1
 

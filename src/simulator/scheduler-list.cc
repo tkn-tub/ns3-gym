@@ -23,6 +23,7 @@
 #include "scheduler-factory.h"
 #include "event-impl.h"
 #include <utility>
+#include <string>
 #include "ns3/assert.h"
 
 namespace ns3 {

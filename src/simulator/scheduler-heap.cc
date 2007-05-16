@@ -37,6 +37,7 @@
 #include "event-impl.h"
 #include "ns3/assert.h"
 
+#include <string>
 #define noTRACE_HEAP 1
 
 #ifdef TRACE_HEAP
