@@ -7,7 +7,7 @@ import Object
 import Action
 import Common
 import shutil
-import subprocess
+import pproc as subprocess
 
 Params.g_autoconfig = 1
 
