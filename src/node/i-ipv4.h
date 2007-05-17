@@ -31,7 +31,14 @@ class NetDevice;
 class Packet;
 class Ipv4Route;
 /**
- * \brief IPv4
+ * \brief Access to the Ipv4 forwarding table and to the ipv4 interfaces
+ *
+ * This class allows you to create ipv4 interfaces based on a NetDevice.
+ * Multiple interfaces can be created for a single NetDevice, hence
+ * achieving multihoming.
+ *
+ * This class also allows you to control the content of the ipv4 
+ * forwarding table.
  */
 class IIpv4 : public Interface
 {
@@ -45,7 +52,7 @@ public:
    * \param nextHop address of next hop.
    * \param interface interface of next hop.
    *
-   * add route to host dest through host nextHop 
+   * Add route to host dest through host nextHop 
    * on interface.
    */
   virtual void AddHostRouteTo (Ipv4Address dest, 
@@ -110,12 +117,12 @@ public:
   virtual void RemoveRoute (uint32_t i) = 0;
   
   /**
-   * \param interface interface to add to the list of ipv4 interfaces
-   * which can be used as output interfaces during packet forwarding.
-   * \returns the index of the interface added.
+   * \param device device to add to the list of ipv4 interfaces
+   *        which can be used as output interfaces during packet forwarding.
+   * \returns the index of the ipv4 interface added.
    *
-   * Once an interface has been added, it can never be removed: if you want
-   * to disable it, you can invoke Ipv4Interface::SetDown which will
+   * Once a device has been added, it can never be removed: if you want
+   * to disable it, you can invoke IIpv4::SetDown which will
    * make sure that it is never used during packet forwarding.
    */
   virtual uint32_t AddInterface (Ptr<NetDevice> device) = 0;
@@ -125,18 +132,56 @@ public:
   virtual uint32_t GetNInterfaces (void) = 0;  
 
   /**
-   * \param index of interface
-   * \returns address of the NetDevice associated with the ipv4 interface
+   * \param i index of ipv4 interface
+   * \returns the NetDevice associated with the ipv4 interface index
    */
   virtual Ptr<NetDevice> GetNetDevice (uint32_t i) = 0;
 
+  /**
+   * \param i index of ipv4 interface
+   * \param address address to associate to the underlying ipv4 interface
+   */
   virtual void SetAddress (uint32_t i, Ipv4Address address) = 0;
+  /**
+   * \param i index of ipv4 interface
+   * \param mask mask to associate to the underlying ipv4 interface
+   */
   virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask) = 0;
-  virtual Ipv4Mask GetNetworkMask (uint32_t t) const = 0;
+  /**
+   * \param i index of ipv4 interface
+   * \returns the mask associated to the underlying ipv4 interface
+   */
+  virtual Ipv4Mask GetNetworkMask (uint32_t i) const = 0;
+  /**
+   * \param i index of ipv4 interface
+   * \returns the address associated to the underlying ipv4 interface
+   */
   virtual Ipv4Address GetAddress (uint32_t i) const = 0;
+  /**
+   * \param i index of ipv4 interface
+   * \returns the Maximum Transmission Unit (in bytes) associated
+   *          to the underlying ipv4 interface
+   */
   virtual uint16_t GetMtu (uint32_t i) const = 0;
+  /**
+   * \param i index of ipv4 interface
+   * \returns true if the underlying interface is in the "up" state,
+   *          false otherwise.
+   */
   virtual bool IsUp (uint32_t i) const = 0;
+  /**
+   * \param i index of ipv4 interface
+   * 
+   * Set the interface into the "up" state. In this state, it is
+   * considered valid during ipv4 forwarding.
+   */
   virtual void SetUp (uint32_t i) = 0;
+  /**
+   * \param i index of ipv4 interface
+   *
+   * Set the interface into the "down" state. In this state, it is
+   * ignored during ipv4 forwarding.
+   */
   virtual void SetDown (uint32_t i) = 0;
   
 };
