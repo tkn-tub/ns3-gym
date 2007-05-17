@@ -10,7 +10,8 @@
  *     - common: located in src/common and contains facilities specific
  *       to network simulations but shared by pretty much every model
  *       of a network component.
- *     - node: located in src/node. Contains an ipv4/udp model.
+ *     - node: located in src/node. Defines the abstract interfaces which 
+ *       must be implemented by every node and more specifically, by ipv4 nodes.       
  *     - devices: located in src/devices. Contains a set of MAC-level models
  *
  * The "core" module contains:
@@ -20,8 +21,9 @@
  *    - debugging facilities: \ref debugging, \ref assert, \ref error
  *    - \ref randomvariable
  *    - \ref config
- *    - a class to handle automatic deletion of multiple sets of objects of different types: 
- *      ns3::ObjectContainer
+ *    - a base class for objects which need to support reference counting 
+ *      and QueryInterface: ns3::Interface and ns3::InterfaceId
+ *    - a smart-pointer class ns3::Ptr designed to work together with ns3::Interface
  *
  * The "simulator" module contains:
  *    - a time management class to hold a time and convert between various time units: ns3::Time
@@ -31,19 +33,25 @@
  *
  * The "common" module contains:
  *    - a packet class to create and manipulate simulation packets: ns3::Packet, ns3::Header, 
- *      and ns3::Trailer
+ *      and ns3::Trailer. This packet class also supports per-packet ns3::Tag which are
+ *      globs of data which can be attached to any packet.
  *    - a set of low-level trace facilities: \ref lowleveltracing
  *
  * The "node" module contains:
- *    - a ns3::Node base class and an ns3::InternetNode implementation which model
- *      network nodes.
- *    - a set of models contained in InternetNode: ns3::Ipv4, ns3::Udp, ns3::L3Demux,
- *      ns3::L3Protocol, ns3::Ipv4L4Demux, ns3::Ipv4L4Protocol, ns3::Ipv4Interface,
- *      ns3::DatagramSocket
+ *    - a ns3::INode base class which should be subclassed by any new type of
+ *      network Node.
  *    - models which abstract the MAC-layer from the IP layer protocols:
  *      ns3::NetDevice and ns3::Channel.
- *    - an Arp model if the underlying NetDevice object needs it: ns3::ArpIpv4Interface
- *    - a set of traffic generation models: ns3::OnOffApplication
+ *    - models which abstract the application-layer API: ns3::Application,
+ *      ns3::Socket, ns3::ISocketFactory, and, ns3::IUdp
+ *
+ * The "internet-node" module contains a set of classes which implement the
+ * APIs defined in the "node" module:
+ *    - an Ipv4/Udp stack with socket support
+ *    - an ARP module
+ *    - an INode subclass. 
+ *    - and finally, a function used to instantiate nodes
+ *      which contain this implementation: ns3::MakeInternetNode
  *
  * The "devices" module contains:
  *    - a PointToPoint MAC device: ns3::PointToPointNetDevice, ns3::PointToPointChannel,

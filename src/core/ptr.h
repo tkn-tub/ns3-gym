@@ -121,6 +121,7 @@ template <typename T, typename T1, typename T2, typename T3, typename T4, typena
 Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 /**
+ * \relates Ptr
  * \return the pointer managed by this smart pointer.
  *
  * The underlying refcount is not incremented prior
@@ -131,6 +132,7 @@ template <typename T>
 T * PeekPointer (const Ptr<T> &p);
 
 /**
+ * \relates Ptr
  * \return the pointer managed by this smart pointer.
  *
  * The underlying refcount is incremented prior

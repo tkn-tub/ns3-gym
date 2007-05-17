@@ -41,69 +41,102 @@ public:
    */
   static void EnableChecksums (void);
   /**
-   * \param size
+   * \param size the size of the payload in bytes
    */
   void SetPayloadSize (uint16_t size);
   /**
-   * \param identification
+   * \param identification the Identification field of IPv4 packets.
+   *
+   * By default, set to zero.
    */
   void SetIdentification (uint16_t identification);
   /**
-   * \param tos
+   * \param tos the 8 bits of Ipv4 TOS.
    */
   void SetTos (uint8_t tos);
   /**
-   *
+   * This packet is not the last packet of a fragmented ipv4 packet.
    */
   void SetMoreFragments (void);
   /**
-   *
+   * This packet is the last packet of a fragmented ipv4 packet.
    */
   void SetLastFragment (void);
   /**
-   *
+   * Don't fragment this packet: if you need to anyway, drop it.
    */
   void SetDontFragment (void);
   /**
-   *
+   * If you need to fragment this packet, you can do it.
    */
   void SetMayFragment (void);
   /**
-   * \param offset
+   * \param offset the ipv4 fragment offset
    */
   void SetFragmentOffset (uint16_t offset);
   /**
-   * \param ttl
+   * \param ttl the ipv4 TTL
    */
   void SetTtl (uint8_t ttl);
   /**
-   * \param num
+   * \param num the ipv4 protocol field
    */
   void SetProtocol (uint8_t num);
   /**
-   * \param source
+   * \param source the source of this packet
    */
   void SetSource (Ipv4Address source);
   /**
-   * \param destination
+   * \param destination the destination of this packet.
    */
   void SetDestination (Ipv4Address destination);
   /**
-   * \param 
+   * \returns the size of the payload in bytes
    */
-
-
   uint16_t GetPayloadSize (void) const;
+  /**
+   * \returns the identification field of this packet.
+   */
   uint16_t GetIdentification (void) const;
+  /**
+   * \returns the TOS field of this packet.
+   */
   uint8_t GetTos (void) const;
+  /**
+   * \returns true if this is the last fragment of a packet, false otherwise.
+   */
   bool IsLastFragment (void) const;
+  /**
+   * \returns true if this is this packet can be fragmented.
+   */  
   bool IsDontFragment (void) const;
+  /**
+   * \returns the offset of this fragment.
+   */
   uint16_t GetFragmentOffset (void) const;
+  /**
+   * \returns the TTL field of this packet
+   */
   uint8_t GetTtl (void) const;
+  /**
+   * \returns the protocol field of this packet
+   */
   uint8_t GetProtocol (void) const;
+  /**
+   * \returns the source address of this packet
+   */
   Ipv4Address GetSource (void) const;
+  /**
+   * \returns the destination address of this packet
+   */
   Ipv4Address GetDestination (void) const;
   
+  /**
+   * \returns true if the upv4 checksum is correct, false otherwise.
+   *
+   * If Ipv4Header::EnableChecksums has not been called prior to
+   * creating this packet, this method will always return true.
+   */
   bool IsChecksumOk (void) const;
 
 private:

@@ -53,18 +53,18 @@ private:
   virtual uint32_t GetSerializedSize (void) const = 0;
 
   /**
-   * \param i the buffer iterator in which the protocol trailer
+   * \param end the buffer iterator in which the protocol trailer
    *    must serialize itself. This iterator identifies 
    *    the end of the buffer.
    */
-  virtual void SerializeTo (Buffer::Iterator i) const = 0;
+  virtual void SerializeTo (Buffer::Iterator end) const = 0;
   /**
-   * \param i the buffer iterator from which the protocol trailer must
+   * \param end the buffer iterator from which the protocol trailer must
    *    deserialize itself. This iterator identifies 
    *    the end of the buffer.
    * \returns the number of bytes read from the buffer
    */
-  virtual uint32_t DeserializeFrom (Buffer::Iterator i) = 0;
+  virtual uint32_t DeserializeFrom (Buffer::Iterator end) = 0;
 };
 
 }; // namespace ns3

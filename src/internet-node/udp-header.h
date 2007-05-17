@@ -40,6 +40,9 @@ public:
   UdpHeader ();
   virtual ~UdpHeader ();
 
+  /**
+   * \brief Enable checksum calculation for UDP (XXX currently has no effect)
+   */
   static void EnableChecksums (void);
   /**
    * \param port the destination port for this UdpHeader
@@ -58,10 +61,21 @@ public:
    */
   uint16_t GetDestination (void) const;
   /**
-   * \param size The payload size (XXX: in bytes?)
+   * \param size The payload size in bytes
    */
   void SetPayloadSize (uint16_t size);
 
+  /**
+   * \param source the ip source to use in the underlying
+   *        ip packet.
+   * \param destination the ip destination to use in the
+   *        underlying ip packet.
+   * \param protocol the protocol number to use in the underlying
+   *        ip packet.
+   *
+   * If you want to use udp checksums, you should call this
+   * method prior to adding the header to a packet.
+   */
   void InitializeChecksum (Ipv4Address source, 
                            Ipv4Address destination,
                            uint8_t protocol);

@@ -53,18 +53,18 @@ private:
   virtual uint32_t GetSerializedSize (void) const = 0;
 
   /**
-   * \param i the buffer iterator in which the protocol header
+   * \param start the buffer iterator in which the protocol header
    *    must serialize itself. This iterator identifies 
    *    the start of the buffer.
    */
-  virtual void SerializeTo (Buffer::Iterator i) const = 0;
+  virtual void SerializeTo (Buffer::Iterator start) const = 0;
   /**
-   * \param i the buffer iterator from which the protocol header must
+   * \param start the buffer iterator from which the protocol header must
    *    deserialize itself. This iterator identifies 
    *    the start of the buffer.
    * \returns the number of bytes read from the buffer
    */
-  virtual uint32_t DeserializeFrom (Buffer::Iterator i) = 0;
+  virtual uint32_t DeserializeFrom (Buffer::Iterator start) = 0;
 };
 
 }; // namespace ns3
