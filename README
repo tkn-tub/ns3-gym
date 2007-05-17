@@ -9,7 +9,8 @@ Table of Content:
 2) An overview of the ns-3 project
 3) Building ns-3
 4) Running ns-3
-5) Working with the development version of ns-3
+5) Getting access to the ns-3 documentation
+6) Working with the development version of ns-3
 
 
 1) An Open Source project
@@ -113,7 +114,36 @@ That program should generate a simple-p2p.tr text
 trace file and a set of simple-p2p-xx-xx.pcap binary
 pcap trace files.
 
-5) Working with the development version of ns-3
+5) Getting access to the ns-3 documentation
+-------------------------------------------
+
+Once you have verified that your build of ns-3 works by running
+the simple-p2p example as outlined in 4) above, it is
+quite likely that you will want to get started on reading
+some ns-3 documentation. 
+
+All of that documentation should always be available from
+the ns-3 website: http:://www.nsnam.org/
+
+It includes:
+
+  - an architecture document which describes a very 
+    high-level view of ns-3: it tries to explain the
+    use-cases the ns-3 developers really focused on when
+    doing the initial design and then goes on to explain
+    the structure of the resulting framework.
+    XXX introduce url link
+
+  - a user manual: XXX
+
+  - a wiki for user-contributed tips: http://www.nsnam.org/wiki/
+
+  - an API documentation generated using doxygen: this is
+    a reference manual, most likely not very well suited 
+    as introductory text:
+    http://www.nsnam.org/doxygen/index.html
+
+6) Working with the development version of ns-3
 -----------------------------------------------
 
 If you want to download and use the development version 
