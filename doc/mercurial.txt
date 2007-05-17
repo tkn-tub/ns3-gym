@@ -1,0 +1,44 @@
+Introduction
+------------
+
+ns-3 uses the Mercurial software revision control system which
+is a replacement for tools liks cvs or subversion. Thus, to get
+access to the developement versions of ns-3, you need to install
+mercurial first. See http://www.selenic.com/mercurial/wiki/
+
+Mercurial cheat sheet
+---------------------
+
+Look at our project history and source code:
+-------------------------------------------
+http://code.nsnam.org/ns-3-dev
+
+clone this repository:
+---------------------
+hg clone http://code.nsnam.org/ns-3-dev
+
+commit locally:
+--------------
+hg status
+hg add <new files, if any>
+hg ci -m "message"
+
+pull development tree changes to your local repository:
+------------------------------------------------------
+hg ci -m "my local changes are recorded"
+hg pull http://code.nsnam.org/ns-3-dev
+hg update (apply the changes)  OR
+hg merge (if you've made local changes)
+
+view the change log:
+-------------------
+hg log <file>
+
+push upwards (developers access only):
+--------------------------------------
+To the main repository:
+hg push ssh://code@code.nsnam.org/repos/ns-3-dev
+To your private repository:
+hg push ssh://username@code.nsnam.org//home/username/repositories/username/repository
+
+

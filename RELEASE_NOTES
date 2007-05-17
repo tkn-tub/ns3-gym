@@ -3,6 +3,18 @@
 
 This file contains ns-3  release notes (most recent releases first).
 
+Release 0.2 (2007/05/XX)
+========================
+
+  - Implement a new memory management infrastructure based
+    on reference counting and smart pointers (the latter being
+    optional)
+
+  - Implement a COM-like framework with support for QueryInterface
+    to provide object extensibility
+
+  - Add support for a BSD-style socket API for user applications
+
 Release 0.1 (2007/03/31)
 ========================
 

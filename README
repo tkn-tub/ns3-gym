@@ -1,32 +1,129 @@
-ns-3 uses the Mercurial software revision control system
 
-Mercurial cheat sheet
+    The Network Simulator Version 3
+    -------------------------------
 
-clone this repository:
-----------------------
-hg clone http://code.nsnam.org/ns-3-dev
+Table of Content:
+-----------------
 
-pull development tree changes to your local repository:
-------------------------------------------------------
-hg pull http://code.nsnam.org/ns-3-dev
-hg update (apply the changes)  OR
-hg merge (if you've made local changes)
+1) An Open Source project
+2) An overview of the ns-3 project
+3) Building ns-3
+4) Running ns-3
+5) Working with the development version of ns-3
 
-commit locally:
---------------
-hg status
-hg add <new files, if any>
-hg ci -m "message"
 
-push upwards (developers access only):
---------------------------------------
-hg push ssh://code@code.nsnam.org//home/code/repos/ns-3-dev
+1) An Open Source project
+-------------------------
 
-view the change log:
---------------
-hg log <file>
+ns-3 is an Open Source project and we intend to make this
+project a successful collaborative project: we hope that 
+the missing pieces of the models we have not yet implemented
+will be contributed by the community in an open collaboration
+process.
 
-doing a scons make clean:
-------------------------
-scons -c
+Contributing to the ns-3 project is still a very informal
+process because that process depends heavily on the personality
+of the people involved, the amount of time they can invest
+and the type of model they want to work on.
 
+Despite this lack of a formal process, there are a number of 
+steps which naturally stem from the open-source roots of the
+project. These steps are described in doc/contributing.txt
+
+2) An overview of the ns-3 project
+----------------------------------
+
+This package contains the latest version of ns-3 which is aims 
+at being a replacement for ns-2. Currently, ns-3 provides a 
+number of very simple network simulation models:
+  - an ipv4 and udp stack
+  - arp support at the bottom of the stack
+  - point-to-point physical-layer links
+  - OnOff traffic generator
+
+However, the framework is there to make adding new models as 
+simple as possible:
+  - an extensive tracing system can be used to connect
+    any number of arbitrary trace sources to any number
+    of trace sinks. This tracing system is decoupled
+    from the act of serializing the trace events to a 
+    file: users can and should provide their own
+    trace handling routines.
+
+  - simple file trace serialization support is included
+    to both text and pcap files.
+
+  - adding new MAC-level models simply requires subclassing
+    the pair of classes NetDevice and Channel.
+
+  - adding new traffic generation algorithms is also very 
+    simple through the Application and the Socket classes.
+
+3) Building ns-3
+----------------
+
+The code for the framework and the default models provided
+by ns-3 is built as a set of libraries. User simulations
+are expected to be written as simple programs which make
+use of these ns-3 libraries.
+
+To build the set of default libraries and the example
+programs included in this package, you need to use the
+tool 'scons'. Detailed information on how to install
+and use scons is included in the file doc/build.txt
+
+However, the real quick and dirty way to get started is to
+type the command "scons" the the directory which contains
+this README file. The files built will be copied in the
+build-dir/dbg-shared/bin and build-dir/dbg-shared/lib
+directories. build-dir/dbg-shared/bin will contain
+one binary for each of the sample code in the 'samples'
+directory and one binary for each of the detailed examples
+found in the 'examples' directory.
+
+The current codebase is expected to build and run on the
+following set of platforms:
+  - linux x86 gcc 4.1, gcc 3.4.
+  - MacOS X ppc and x86
+
+The current codebase is expected to fail to build on
+the following platforms:
+  - gcc 3.3 and earlier
+  - optimized builds on linux x86 gcc 4.0 
+
+Other platforms might or might not work: we welcome 
+patches to improve the portability of the code to these
+other platforms.
+
+4) Running ns-3
+---------------
+
+On Recent Linux systems, once you have built ns-3, it 
+should be easy to run the sample programs with the
+following command:
+
+./build-dir/dbg-shared/bin/simple-p2p
+
+or:
+
+cd build-dir/dbg-shared/bin
+./simple-p2p
+
+That program should generate a simple-p2p.tr text 
+trace file and a set of simple-p2p-xx-xx.pcap binary
+pcap trace files.
+
+5) Working with the development version of ns-3
+-----------------------------------------------
+
+If you want to download and use the development version 
+of ns-3, you need to use the tool 'mercurial'. A quick and
+dirty cheat sheet is included in doc/mercurial.txt but
+reading through the mercurial tutorials included on the
+mercurial website is usually a good idea if you are not
+familiar with it.
+
+If you have successfully installed mercurial, you can get
+a copy of the development version with the following
+command:
+"hg clone http://code.nsnam.org/ns-3-dev"
