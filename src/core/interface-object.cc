@@ -94,67 +94,45 @@ MakeObjectInterfaceId (void)
   return iid;
 }
 
+class InterfaceObject;
 
 class AggregateObject
 {
 public:
   AggregateObject ();
   ~AggregateObject ();
-  void Ref (void);
-  void Ref (AggregateObject *other);
-  void RefAll (uint32_t count);
-  void Unref (void);
-  void UnrefAll (void);
   InterfaceObject *PeekQueryInterface (MyInterfaceId iid, InterfaceObject *caller);
   void Dispose (void);
   void AddObject (InterfaceObject *object);
   void Swallow (AggregateObject *object);
+  void MaybeDelete (void);
 private:
   typedef std::vector<InterfaceObject *> ObjectList;
-  uint32_t m_count;
   ObjectList m_objectList;
 };
 
+
+
 AggregateObject::AggregateObject ()
-  : m_count (1)
 {}
 AggregateObject::~AggregateObject ()
-{
-  NS_ASSERT (m_count == 0);
-}
+{}
 void 
-AggregateObject::Ref (void)
+AggregateObject::MaybeDelete (void)
 {
-  m_count++;
-}
-void 
-AggregateObject::Ref (AggregateObject *other)
-{
-  m_count+= other->m_count;
-}
-void 
-AggregateObject::RefAll (uint32_t count)
-{
-  m_count += count;
-}
-void
-AggregateObject::UnrefAll (void)
-{
-  m_count = 0;
-  delete this;
-}
-void 
-AggregateObject::Unref (void)
-{
-  m_count--;
-  if (m_count == 0)
+  for (ObjectList::iterator i = m_objectList.begin (); i != m_objectList.end (); i++)
     {
-      for (ObjectList::iterator i = m_objectList.begin (); i != m_objectList.end (); i++)
-	{
-	  delete *i;
-	}
-      delete this;
+      if ((*i)->m_count > 0)
+        {
+          return;
+        }
     }
+  for (ObjectList::iterator i = m_objectList.begin (); i != m_objectList.end (); i++)
+    {
+      delete *i;
+    }
+  m_objectList.clear ();
+  delete this;
 }
 InterfaceObject *
 AggregateObject::PeekQueryInterface (MyInterfaceId iid, InterfaceObject *caller)
@@ -197,6 +175,7 @@ AggregateObject::Swallow (AggregateObject *other)
   for (ObjectList::iterator i = other->m_objectList.begin (); i != other->m_objectList.end (); i++)
     {
       m_objectList.push_back (*i);
+      (*i)->m_aggregate = this;
     }
   other->m_objectList.clear ();
 }
@@ -211,38 +190,6 @@ InterfaceObject::InterfaceObject ()
 {}
 InterfaceObject::~InterfaceObject () 
 {}
-void 
-InterfaceObject::Ref (void)
-{
-  NS_ASSERT (Check ());
-  if (m_aggregate != 0)
-    {
-      NS_ASSERT (m_count == 0);
-      m_aggregate->Ref ();
-    }
-  else
-    {
-      m_count++;
-    }
-}
-void 
-InterfaceObject::Unref (void)
-{
-  NS_ASSERT (Check ());
-  if (m_aggregate != 0)
-    {
-      NS_ASSERT (m_count == 0);
-      m_aggregate->Unref ();
-    }
-  else
-    {
-      m_count--;
-      if (m_count == 0)
-	{
-	  delete this;
-	}
-    }
-}
 Ptr<InterfaceObject>
 InterfaceObject::DoQueryInterface (MyInterfaceId iid)
 {
@@ -258,7 +205,6 @@ InterfaceObject::DoQueryInterface (MyInterfaceId iid)
     }
   if (m_aggregate != 0)
     {
-      NS_ASSERT (m_count == 0);
       return m_aggregate->PeekQueryInterface (iid, this);
     }
   return 0;
@@ -286,29 +232,21 @@ InterfaceObject::Add (Ptr<InterfaceObject> o)
   InterfaceObject *other = PeekPointer (o);
   if (m_aggregate != 0 && other->m_aggregate != 0)
     {
-      NS_ASSERT (m_count == 0);
-      NS_ASSERT (other->m_count == 0);
       m_aggregate->Swallow (other->m_aggregate);
-      m_aggregate->Ref (other->m_aggregate);
-      other->m_aggregate->UnrefAll ();
+      delete other->m_aggregate;
       other->m_aggregate = m_aggregate;
     }
   else if (m_aggregate != 0)
     {
       NS_ASSERT (other->m_aggregate == 0);
-      NS_ASSERT (m_count == 0);
       m_aggregate->AddObject (other);
       other->m_aggregate = m_aggregate;
-      other->m_aggregate->RefAll (other->m_count);
-      other->m_count = 0;
     }
   else if (other->m_aggregate != 0)
     {
       NS_ASSERT (m_aggregate == 0);
       other->m_aggregate->AddObject (this);
       m_aggregate = other->m_aggregate;
-      m_aggregate->RefAll (m_count);
-      m_count = 0;
     }
   else 
     {
@@ -318,11 +256,6 @@ InterfaceObject::Add (Ptr<InterfaceObject> o)
       other->m_aggregate = m_aggregate;
       m_aggregate->AddObject (this);
       m_aggregate->AddObject (other);
-      m_aggregate->RefAll (m_count);
-      m_aggregate->RefAll (other->m_count);
-      m_aggregate->Unref ();
-      other->m_count = 0;
-      m_count = 0;
     }
   NS_ASSERT (Check ());
   NS_ASSERT (o->Check ());
@@ -344,7 +277,20 @@ InterfaceObject::DoDispose (void)
 bool 
 InterfaceObject::Check (void)
 {
-  return (m_count == 0 && m_aggregate != 0) || (m_count != 0 && m_aggregate == 0);
+  return (m_count > 0);
+}
+
+void
+InterfaceObject::MaybeDelete (void)
+{
+  if (m_aggregate != 0)
+    {
+      m_aggregate->MaybeDelete ();
+    }
+  else
+    {
+      delete this;
+    }
 }
 
 } // namespace ns3
@@ -538,6 +484,11 @@ InterfaceObjectTest::RunTests (void)
       ok = false;
     }
 
+  baseA = MakeNewObject<BaseA> ();
+  baseB = MakeNewObject<BaseB> ();
+  baseA->Add (baseB);
+  baseA = 0;
+  baseA = baseB->QueryInterface<BaseA> (BaseA::iid);
 
   return ok;
 }

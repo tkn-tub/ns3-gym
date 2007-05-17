@@ -54,8 +54,8 @@ public:
 
   InterfaceObject ();
   virtual ~InterfaceObject ();
-  void Ref (void);
-  void Unref (void);
+  inline void Ref (void);
+  inline void Unref (void);
   template <typename T>
   Ptr<T> QueryInterface (MyInterfaceId iid);
   void Dispose (void);
@@ -67,6 +67,7 @@ private:
   virtual void DoDispose (void);
   Ptr<InterfaceObject> DoQueryInterface (MyInterfaceId iid);
   bool Check (void);
+  void MaybeDelete (void);
   uint32_t m_count;
   MyInterfaceId m_iid;
   AggregateObject *m_aggregate;
@@ -75,6 +76,22 @@ private:
 } // namespace ns3
 
 namespace ns3 {
+
+void
+InterfaceObject::Ref (void)
+{
+  m_count++;
+}
+void
+InterfaceObject::Unref (void)
+{
+  NS_ASSERT (Check ());
+  m_count--;
+  if (m_count == 0)
+    {
+      MaybeDelete ();
+    }
+}
 
 template <typename T>
 Ptr<T> 
