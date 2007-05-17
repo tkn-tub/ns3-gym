@@ -6,8 +6,15 @@ ns3 = build.Ns3()
 ns3.build_dir = 'build-dir'
 ns3.version = '0.2'
 ns3.name = 'ns3'
+ns3.distname = 'ns-3'
 ns3.doxygen_config = os.path.join('doc', 'doxygen.conf')
 ns3.add_extra_dist(os.path.join('doc', 'main.txt'))
+ns3.add_extra_dist ('doc/contributing.txt')
+ns3.add_extra_dist ('doc/build.txt')
+ns3.add_extra_dist ('doc/mercurial.txt')
+ns3.add_extra_dist ('README')
+ns3.add_extra_dist ('RELEASE_NOTES')
+ns3.add_extra_dist ('AUTHORS')
 
 
 #

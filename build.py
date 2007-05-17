@@ -138,6 +138,7 @@ class Ns3:
         self.build_dir = 'build'
         self.version = '0.0.1'
         self.name = 'noname'
+        self.distname = 'noname'
         self.doxygen_config = ''
     def add(self, module):
         self.__modules.append(module)
@@ -516,11 +517,12 @@ class Ns3:
                     dist_list.append(os.path.join(module.dir, f))
             for f in self.extra_dist:
                 dist_list.append(f)
+            dist_list.append (self.doxygen_config)
             dist_list.append('SConstruct')
             dist_list.append('build.py')
 
             targets = []
-            basename = self.name + '-' + self.version
+            basename = self.distname + '-' + self.version
             for src in dist_list:
                 tgt = os.path.join(basename, src)
                 targets.append(dist_env.MyCopyBuilder(target=tgt, source=src))
