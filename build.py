@@ -350,6 +350,12 @@ class Ns3:
             env = Environment(ENV=os.environ)
             debug_flags = ['-W1', '-GX', '-EHsc', '-D_DEBUG', '/MDd']
             opti_flags = ['-O2', '-EHsc', '-DNDEBUG', '/MD']
+        cc = ARGUMENTS.get ('cc', '')
+        cxx = ARGUMENTS.get ('cxx', '')
+        if cc != '':
+            env.Replace (CC = cc)
+        if cxx != '':
+            env.Replace (CXX = cxx)
         env.Append(CCFLAGS = common_flags, 
                     CPPDEFINES = ['RUN_SELF_TESTS'], 
                     TARFLAGS = '-c -z', 

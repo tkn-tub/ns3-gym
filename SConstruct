@@ -4,7 +4,7 @@ import build
 
 ns3 = build.Ns3()
 ns3.build_dir = 'build-dir'
-ns3.version = '0.0.1'
+ns3.version = '0.2'
 ns3.name = 'ns3'
 ns3.doxygen_config = os.path.join('doc', 'doxygen.conf')
 ns3.add_extra_dist(os.path.join('doc', 'main.txt'))
@@ -277,12 +277,11 @@ inode.add_headers ([
     'udp-header.h',
     'ipv4-checksum.h',
     'arp-header.h',
-    'arp-cache-cache.h',
+    'arp-cache.h',
     'arp.h',
     'ipv4-loopback-interface.h',
     'l3-demux.h',
     'header-utils.h',
-    'queue.h',
     'arp-ipv4-interface.h',
     'udp-socket.h',
     'udp.h',
@@ -317,9 +316,6 @@ p2p.add_sources ([
     'p2p-net-device.cc',
     'p2p-channel.cc',
     'p2p-topology.cc',
-    ])
-p2p.add_headers ([
-    'propagator.h',
     ])
 p2p.add_inst_headers ([
     'p2p-net-device.h',

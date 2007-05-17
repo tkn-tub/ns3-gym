@@ -29,6 +29,10 @@ Example: scons cflags="-O3 -ffast-math"
 Example: scons cxxflags="-O3 -ffast-math"
 - ldflags: flags for the linker:
 Example: scons ldflags="-L/foo -L/bar"
+- cc: the C compiler to use:
+Example: scons cc=gcc-4.0
+- cxx: the C++ compiler to use:
+Example: scons cxx=g++-4.0
 - high-precision-as-double: set to 'y' to make sure that the
   high-precision arithmetics performed by the Time class on
   behalf of the user will use doubles. By default, the code
