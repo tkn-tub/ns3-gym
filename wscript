@@ -1,5 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import os
+import sys
 
 import Params
 import Object
@@ -120,6 +121,9 @@ def configure(conf):
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
+
+    if sys.platform == 'win32':
+        variant_env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
 
     conf.sub_config('src')
 
