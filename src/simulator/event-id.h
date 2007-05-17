@@ -33,7 +33,7 @@ class EventImpl;
 class EventId {
 public:
   EventId ();
-  EventId (EventImpl *impl, uint64_t ns, uint32_t uid);
+  EventId (EventImpl *impl, uint64_t ts, uint32_t uid);
   /**
    * This method is syntactic sugar for the ns3::Simulator::cancel
    * method.
@@ -52,11 +52,11 @@ public:
    * subclasses of the Scheduler base class.
    */
   EventImpl *GetEventImpl (void) const;
-  uint64_t GetNs (void) const;
+  uint64_t GetTs (void) const;
   uint32_t GetUid (void) const;
 private:
   EventImpl *m_eventImpl;
-  uint64_t m_ns;
+  uint64_t m_ts;
   uint32_t m_uid;
 };
 

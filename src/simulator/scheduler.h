@@ -55,7 +55,7 @@ class EventImpl;
 class Scheduler {
  public:
   struct EventKey {
-      uint64_t m_ns;
+      uint64_t m_ts;
       uint32_t m_uid;
   };
 

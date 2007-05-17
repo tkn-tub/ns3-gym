@@ -67,11 +67,11 @@ SchedulerMap::~SchedulerMap ()
 bool
 SchedulerMap::EventKeyCompare::operator () (struct EventKey const&a, struct EventKey const&b)
 {
-  if (a.m_ns < b.m_ns) 
+  if (a.m_ts < b.m_ts) 
     {
       return true;
     } 
-  else if (a.m_ns > b.m_ns)
+  else if (a.m_ts > b.m_ts)
     {
       return false;
     } 
@@ -93,7 +93,7 @@ SchedulerMap::RealInsert (EventImpl *event, Scheduler::EventKey key)
   std::pair<EventMapI,bool> result;
   result = m_list.insert (std::make_pair (key, event));
   NS_ASSERT (result.second);
-  return EventId (event, key.m_ns, key.m_uid);
+  return EventId (event, key.m_ts, key.m_uid);
 }
 
 bool
@@ -125,7 +125,7 @@ SchedulerMap::RealRemoveNext (void)
 EventImpl *
 SchedulerMap::RealRemove (EventId id, Scheduler::EventKey *key)
 {
-  key->m_ns = id.GetNs ();
+  key->m_ts = id.GetTs ();
   key->m_uid = id.GetUid ();
   EventMapI i = m_list.find (*key);
   EventImpl *retval = i->second;

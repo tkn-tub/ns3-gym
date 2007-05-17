@@ -22,9 +22,11 @@
 #define TIME_H
 
 #include <stdint.h>
+#include <math.h>
 #include "ns3/assert.h"
 #include <ostream>
 #include "high-precision.h"
+#include "cairo-wideint-private.h"
 
 namespace ns3 {
 
@@ -73,6 +75,34 @@ namespace ns3 {
  *  - \ref ns3-Time-Max ns3::Max
  *  - \ref ns3-Time-Min ns3::Min
  */
+  
+typedef uint8_t ts_precision_t;
+  /**
+   * Determines the base unit to store time values. If the
+   * SetTsPrecision function is called, it must be set before any
+   * TimeValue objects are created. All TimeUnit objects will use the
+   * same time precision value.  The actual time can be
+   * extracted as follows: m_data*10^(-m_tsPrecision) seconds.
+   * m_tsPrecision == 0 : m_data stored in sec
+   * m_tsPrecision == 3 : m_data stored in ms
+   * m_tsPrecision == 6 : m_data stored in us
+   * m_tsPrecision == 9 : m_data stored in ns
+   * m_tsPrecision == 12 : m_data stored in ps
+   * The default timestep precision units are ns.
+   */
+enum PrecisionType {
+  SEC = 0,
+  MS = 3,
+  US = 6,
+  NS = 9,
+  PS = 12,
+  FS = 15
+};
+static ts_precision_t m_tsPrecision = NS;
+static int64_t m_tsPrecisionFactor = (int64_t)pow(10,m_tsPrecision);
+  // static void SetTsPrecision(ts_precision_t tsPrecision);
+  // static ts_precision_t GetTsPrecision();
+
 template <int N>
 class TimeUnit
 {
@@ -235,6 +265,9 @@ TimeUnit<N1+N2> operator * (TimeUnit<N1> const &lhs, TimeUnit<N2> const &rhs)
 {
   HighPrecision retval = lhs.GetHighPrecision ();
   retval.Mul (rhs.GetHighPrecision ());
+  //    std::cout << lhs.GetHighPrecision().GetInteger() << " * " 
+  //              << rhs.GetHighPrecision().GetInteger() 
+  //              << " = " << retval.GetInteger() << std::endl;
   return TimeUnit<N1+N2> (retval);
 }
 template <int N1, int N2>
@@ -316,6 +349,8 @@ public:
    * - ms (milliseconds)
    * - us (microseconds)
    * - ns (nanoseconds)
+   * - ps (picoseconds)
+   * - fs (femtoseconds)
    *
    * There can be no white space between the numerical portion
    * and the units.  Any otherwise malformed string causes a fatal error to
@@ -332,7 +367,7 @@ public:
    * \returns an approximation in milliseconds of the time stored in this
    *          instance.
    */
-  int32_t GetMilliSeconds (void) const;
+  int64_t GetMilliSeconds (void) const;
   /**
    * \returns an approximation in microseconds of the time stored in this
    *          instance.
@@ -343,6 +378,21 @@ public:
    *          instance.
    */
   int64_t GetNanoSeconds (void) const;
+  /**
+   * \returns an approximation in picoseconds of the time stored in this
+   *          instance.
+   */
+  int64_t GetPicoSeconds (void) const;
+  /**
+   * \returns an approximation in femtoseconds of the time stored in this
+   *          instance.
+   */
+  int64_t GetFemtoSeconds (void) const;
+  /**
+   * \returns an approximation of the time stored in this
+   *          instance in the units specified in m_tsPrecision.
+   */
+  int64_t GetTimeStep (void) const;
 
   // -*- The rest is the the same as in the generic template class -*-
 public:
@@ -378,6 +428,7 @@ public:
   HighPrecision *PeekHighPrecision (void) {
     return &m_data;
   }
+
 private:
   HighPrecision m_data;
 };
@@ -394,6 +445,8 @@ private:
  *  - ns3::MilliSeconds
  *  - ns3::MicroSeconds
  *  - ns3::NanoSeconds
+ *  - ns3::PicoSeconds
+ *  - ns3::FemtoSeconds
  *  - ns3::Now
  *
  * Time instances can be added, substracted, multipled and divided using
@@ -417,7 +470,7 @@ private:
  *          instance.
  *
  * \code
- * int32_t GetMilliSeconds (void) const;
+ * int64_t GetMilliSeconds (void) const;
  * \endcode
  * returns an approximation in milliseconds of the time stored in this
  *          instance.
@@ -459,7 +512,7 @@ Time Seconds (double seconds);
  * Simulator::Schedule (MilliSeconds (5), ...);
  * \endcode
  */
-Time MilliSeconds (uint32_t ms);
+Time MilliSeconds (uint64_t ms);
 /**
  * \brief create ns3::Time instances in units of microseconds.
  *
@@ -480,6 +533,36 @@ Time MicroSeconds (uint64_t us);
  * \endcode
  */
 Time NanoSeconds (uint64_t ns);
+/**
+ * \brief create ns3::Time instances in units of picoseconds.
+ *
+ * For example:
+ * \code
+ * Time t = PicoSeconds (2);
+ * Simulator::Schedule (PicoSeconds (5), ...);
+ * \endcode
+ */
+Time PicoSeconds (uint64_t ps);
+/**
+ * \brief create ns3::Time instances in units of femtoseconds.
+ *
+ * For example:
+ * \code
+ * Time t = FemtoSeconds (2);
+ * Simulator::Schedule (FemtoSeconds (5), ...);
+ * \endcode
+ */
+Time FemtoSeconds (uint64_t fs);
+/**
+ * \brief create ns3::Time instances in units of m_tsPrecision.
+ *
+ * For example:
+ * \code
+ * Time t = TimeStep (2);
+ * Simulator::Schedule (TimeStep (5), ...);
+ * \endcode
+ */
+Time TimeStep (uint64_t ts);
 
 /**
  * \brief create an ns3::Time instance which contains the
@@ -539,6 +622,7 @@ public:
   HighPrecision *PeekHighPrecision (void) {
     return &m_data;
   }
+
 private:
   HighPrecision m_data;
 };

@@ -24,6 +24,19 @@
 
 namespace ns3 {
 
+static ts_precision_t
+GetTsPrecision (void)
+{
+  return m_tsPrecision;
+}
+
+static void 
+SetTsPrecision (ts_precision_t tsPrecision)
+{
+  m_tsPrecision = tsPrecision;
+  m_tsPrecisionFactor = (int64_t)pow(10, m_tsPrecision);
+}
+
 TimeUnit<1>::TimeUnit(const std::string& s)
 {
   std::string::size_type n = s.find_first_not_of("0123456789.");
@@ -33,78 +46,149 @@ TimeUnit<1>::TimeUnit(const std::string& s)
     std::string trailer = s.substr(n, std::string::npos);
     if (trailer == std::string("s"))
     {
-      m_data = HighPrecision (r * 1000000000.0);
+      m_data = HighPrecision (r * m_tsPrecisionFactor);
       return;
     }
     if (trailer == std::string("ms"))
     {
-      m_data = HighPrecision ((int64_t)(r * 1000000), false);
+      m_data = HighPrecision ((int64_t)(r * (m_tsPrecisionFactor/pow(10,3))), 
+                              false);
       return;
     }
     if (trailer == std::string("us"))
     {
-      m_data = HighPrecision ((int64_t)(r * 1000), false);
+      m_data = HighPrecision ((int64_t)(r * (m_tsPrecisionFactor/pow(10,6))), 
+                              false);
       return;
     }
     if (trailer == std::string("ns"))
     {
-      m_data = HighPrecision ((int64_t)r, false);
+      m_data = HighPrecision ((int64_t)(r * (m_tsPrecisionFactor/pow(10,9))), 
+                              false);
+      return;
+    }
+    if (trailer == std::string("ps"))
+    {
+      m_data = HighPrecision ((int64_t)(r * (m_tsPrecisionFactor/pow(10,12))), 
+                              false);
+      return;
+    }
+    if (trailer == std::string("fs"))
+    {
+      m_data = HighPrecision ((int64_t)(r * (m_tsPrecisionFactor/pow(10,15))), 
+                              false);
       return;
     }
     NS_FATAL_ERROR("Can't Parse Time "<<s);
   }
   //else
   //they didn't provide units, assume seconds
-  m_data = HighPrecision (atof(s.c_str()) * 1000000000.0);
+  m_data = HighPrecision (atof(s.c_str()) * m_tsPrecisionFactor);
 }
+
 double 
 TimeUnit<1>::GetSeconds (void) const
 {
-  double ns = GetHighPrecision ().GetDouble ();
-  return ns/1000000000.0;
+  double time_value = GetHighPrecision ().GetDouble ();
+  return time_value/m_tsPrecisionFactor;
 }
-int32_t 
+int64_t 
 TimeUnit<1>::GetMilliSeconds (void) const
 {
-  int64_t ns = GetHighPrecision ().GetInteger ();
-  ns /= 1000000;
-  return ns;
+  int64_t time_value = GetHighPrecision ().GetInteger ();
+  time_value = (int64_t)(time_value / (m_tsPrecisionFactor / pow(10,3)));
+  return time_value;
 }
 int64_t 
 TimeUnit<1>::GetMicroSeconds (void) const
 {
-  int64_t ns = GetHighPrecision ().GetInteger ();
-  return ns/1000;
+  int64_t time_value = GetHighPrecision ().GetInteger ();
+  time_value = (int64_t)(time_value / (m_tsPrecisionFactor / pow(10,6)));
+  return time_value;
 }
 int64_t 
 TimeUnit<1>::GetNanoSeconds (void) const
 {
-  return GetHighPrecision ().GetInteger ();
+  int64_t time_value = GetHighPrecision ().GetInteger ();
+  time_value = (int64_t)(time_value / (m_tsPrecisionFactor / pow(10,9)));
+  return time_value;
 }
+int64_t 
+TimeUnit<1>::GetPicoSeconds (void) const
+{
+  int64_t time_value = GetHighPrecision ().GetInteger ();
+  time_value = (int64_t)(time_value / (m_tsPrecisionFactor / pow(10,12)));
+  return time_value;
+}
+int64_t 
+TimeUnit<1>::GetFemtoSeconds (void) const
+{
+  int64_t time_value = GetHighPrecision ().GetInteger ();
+  time_value = (int64_t)(time_value / (m_tsPrecisionFactor / pow(10,15)));
+  return time_value;
+}
+
+/**
+ * This returns the value with the precision defined in m_tsPrecision
+ */
+int64_t
+TimeUnit<1>::GetTimeStep (void) const
+{
+  int64_t time_value = GetHighPrecision ().GetInteger ();
+  return time_value;
+}
+
 
 std::ostream& 
 operator<< (std::ostream& os, Time const& time)
 {
-  os << time.GetNanoSeconds () << "ns";
+  os << time.GetTimeStep () << "ts";
   return os;
 }
 
 Time Seconds (double seconds)
 {
-  return Time (HighPrecision (seconds * 1000000000.0));
+  double d_sec = seconds * m_tsPrecisionFactor;
+  return Time (HighPrecision (d_sec));
+  //  return Time (HighPrecision ((int64_t)d_sec, false));
 }
-Time MilliSeconds (uint32_t ms)
+
+Time MilliSeconds (uint64_t ms)
 {
-  return Time (HighPrecision (ms * 1000000, false));
+  double d_ms = ms * (m_tsPrecisionFactor/pow(10,3));
+  return Time (HighPrecision ((uint64_t)d_ms, false));
 }
+
 Time MicroSeconds (uint64_t us)
 {
-  return Time (HighPrecision (us * 1000, false));
+  double d_us = us * (m_tsPrecisionFactor/pow(10,6));
+  return Time (HighPrecision ((uint64_t)d_us, false));
 }
+
 Time NanoSeconds (uint64_t ns)
 {
-  return Time (HighPrecision (ns, false));
+  double d_ns = ns * (m_tsPrecisionFactor/pow(10,9));
+  return Time (HighPrecision ((uint64_t)d_ns, false));
 }
+Time PicoSeconds (uint64_t ps)
+{
+  double d_ps = ps * (m_tsPrecisionFactor/pow(10,12));
+  return Time (HighPrecision ((uint64_t)d_ps, false));
+}
+Time FemtoSeconds (uint64_t fs)
+{
+  double d_fs = fs * (m_tsPrecisionFactor/pow(10,15));
+  return Time (HighPrecision ((uint64_t)d_fs, false));
+}
+
+/**
+ * The timestep value passed to this function must be of the precision of m_tsPrecision
+ */
+Time TimeStep (uint64_t ts)
+{
+  return Time (HighPrecision (ts, false));
+}
+
 Time Now (void)
 {
   return Time (Simulator::Now ());
@@ -136,6 +220,46 @@ public:
   TimeTests ();
   virtual ~TimeTests ();
   virtual bool RunTests (void);
+
+  /**
+   * Verifies that a calculated time value is as expected using
+   * doubles since GetSeconds() returns a double
+   */ 
+  void CheckTimeSec(std::string test_id, double actual, double expected, 
+                    bool *flag, double precMultFactor = 1, 
+                    bool verbose = false);
+
+  /**
+   * Verifies that a calculated time value is as expected.
+   */ 
+  void CheckTime(std::string test_id, int64_t actual, int64_t expected, 
+                 bool *flag, double precMultFactor = 1, 
+                 bool verbose = false);
+
+  /**
+   * Verifies the +, -, * and / operations for the TimeUnit<1> or Time class
+   */
+  void CheckOperations(Time t0, Time t1, bool *ok, bool verbose = false);
+
+  /**
+   * Verifies that the TimeUnit class stores values with the precision
+   * set in the variable m_tsPrecision
+   * Checks that overflow and underflow occur at expected numbers
+   */
+  void CheckPrecision(PrecisionType prec, uint64_t val, bool *ok,
+                      bool verbose = false);
+
+  /**
+   * Verifies that the conversion between units in the class
+   * TimeUnit<1> or Time is done correctly. This is verified both when
+   * setting and retrieving a Time value
+   */
+  void CheckConversions(uint64_t tval, bool *ok, bool verbose = false);
+
+  /**
+   * These are the old tests that used to be run
+   */
+  void CheckOld(bool *ok);
 };
 
 TimeTests::TimeTests ()
@@ -143,21 +267,93 @@ TimeTests::TimeTests ()
 {}
 TimeTests::~TimeTests ()
 {}
+
 bool TimeTests::RunTests (void)
 {
   bool ok = true;
 
-  Time t0 = Seconds (10.0);
-  //std::cout << "t0="<<t0.GetSeconds ()<<" (expected 10.0)"<<std::endl;
-  Time t1 = Seconds (11.0);
-  //std::cout << "t1="<<t1.GetSeconds ()<<" (expected 11.0)"<<std::endl;
-  t0 = Seconds (1.5);
-  //std::cout << "t0="<<t0.GetSeconds ()<<" (expected +1.5)"<<std::endl;
-  t0 = Seconds (-1.5);
-  //std::cout << "t0="<<t0.GetSeconds ()<<" (expected -1.5)"<<std::endl;
+  Time t0, t1;
 
-  t0 = Seconds (10.0);
-  t1 = Seconds (11.0);
+  CheckOld(&ok);
+
+  t0 = MilliSeconds ((uint64_t)10.0);
+  t1 = MilliSeconds ((uint64_t)11.0);
+
+  CheckOperations(t0, t1, &ok);
+
+  //  t0 = Seconds ((uint64_t)10.0);
+  //  t1 = Seconds ((uint64_t)11.0);
+
+  //  CheckOperations(t0, t1, &ok);
+
+  CheckConversions((uint64_t)5, &ok);
+  CheckConversions((uint64_t)0, &ok);
+  CheckConversions((uint64_t)783, &ok);
+  CheckConversions((uint64_t)1132, &ok);
+  CheckConversions((uint64_t)3341039, &ok);
+
+  // Now vary the precision and check the conversions
+  if (GetTsPrecision() != NS) {
+    ok = false;
+  }
+
+  CheckPrecision(US, 7, &ok);
+
+  CheckConversions((uint64_t)7, &ok);
+  CheckConversions((uint64_t)546, &ok);
+  CheckConversions((uint64_t)6231, &ok);
+  CheckConversions((uint64_t)1234639, &ok);
+
+  CheckPrecision(MS, 3, &ok);
+
+  CheckConversions((uint64_t)3, &ok);
+  CheckConversions((uint64_t)134, &ok);
+  CheckConversions((uint64_t)2341, &ok);
+  CheckConversions((uint64_t)8956239, &ok);
+
+  CheckPrecision(PS, 21, &ok);
+
+  CheckConversions((uint64_t)4, &ok);
+  CheckConversions((uint64_t)342, &ok);
+  CheckConversions((uint64_t)1327, &ok);
+  CheckConversions((uint64_t)5439627, &ok);
+
+  CheckPrecision(NS, 12, &ok);
+  CheckConversions((uint64_t)12, &ok);
+
+  CheckPrecision(SEC, 7, &ok);
+  CheckConversions((uint64_t)7, &ok);
+
+  CheckPrecision(FS, 5, &ok);
+  CheckConversions((uint64_t)5, &ok);
+
+  return ok;
+}
+
+void TimeTests::CheckOld (bool *ok)
+{
+  double dt0, dt1, dt2;
+  int64_t it0, it1;
+
+  Time t0 = Seconds (10.0);
+  CheckTimeSec("old 1", t0.GetSeconds(), 10.0, ok);
+
+  Time t1 = Seconds (11.0);
+  CheckTimeSec("old 2", t1.GetSeconds(), 11.0, ok);
+
+  t0 = Seconds (1.5);
+  CheckTimeSec("old 3", t0.GetSeconds(), 1.5, ok);
+
+  t0 = Seconds (-1.5);
+  CheckTimeSec("old 4", t0.GetSeconds(), -1.5, ok);
+
+  t0 = MilliSeconds ((uint64_t)10.0);
+  dt0 = t0.GetSeconds();
+  CheckTimeSec("old 5", dt0, 0.01, ok);
+
+  t1 = MilliSeconds ((uint64_t)11.0);
+  dt1 = t1.GetSeconds();
+  CheckTimeSec("old 6", dt1, 0.011, ok);
 
   Time t2, t3;
 
@@ -166,44 +362,31 @@ bool TimeTests::RunTests (void)
     {
       ok = false;
     }
+  dt2 = t2.GetSeconds();
+  CheckTimeSec("old 7", dt2, dt1-dt0, ok);
+
   t2 = t1 - t1;
   if (!t2.IsZero ())
     {
       ok = false;
     }
+  dt2 = t2.GetSeconds();
+  CheckTimeSec("old 8", dt2, dt1-dt1, ok);
+
   t2 = t0 - t1;
   if (!t2.IsStrictlyNegative ())
     {
       ok = false;
     }
+  dt2 = t2.GetSeconds();
+  CheckTimeSec("old 9", dt2, dt0-dt1, ok);
 
-  t2 = t0 - t1;
-  t3 = t2 * t0 / t1;
-  t3 = t0 * t2 / t1;
-  t3 = t0 * t1 / t2;
-  t3 = t0 * (t1 / t2);
-  t3 = (t0 * t1) / t2;
-  t3 = t0 / t1 * t2;
-  t3 = (t0 / t1) * t2;
-  TimeInvert ti0;
-  ti0 = t0 / (t1 * t2);
-  t3 = t0 * Scalar (10.0);
-  t3 = Scalar (10.0) * t0;
-  t3 = Scalar (10.0) * t0 / t2 * t1;
-  t3 = (Scalar (10.0) * t0 ) / t2 * t1;
-  Scalar s0 = t0 / t1;
-  Scalar s1;
-  s1 = t0 * t1 / (t2 * t0);
-  TimeUnit<0> tu0;
-  tu0 = s0;
-  TimeUnit<1> tu1;
-  tu1 = t0;
-  TimeUnit<2> tu2;
-  tu2 = t0 * t1;
-  TimeUnit<3> tu3;
-  tu3 = t0 * tu2;
-  TimeUnit<-2> tu4;
-  tu4 = t0 / tu3;
+  t1 = NanoSeconds(15);
+  it0 = t0.GetNanoSeconds();
+  it1 = t1.GetNanoSeconds();
+  TimeUnit<-2> tu4 = t0 / (t1 * t1 * t1);
+  CheckTime("old 10", tu4.GetHighPrecision().GetInteger(), it0 / (it1*it1*it1), 
+            ok, 1e9);
 
   Time tmp = MilliSeconds (0);
   if ((tmp != NanoSeconds (0)) ||
@@ -215,19 +398,273 @@ bool TimeTests::RunTests (void)
 
   Time t4;
   t4 = Seconds (10.0) * Scalar (1.5);
-  //std::cout << "10.0s * 1.5 = " << t4.GetSeconds () << "s" << std::endl;
+  CheckTimeSec("old 11", t4.GetSeconds(), 10, ok);
+
   Time t5;
   t5 = NanoSeconds (10) * Scalar (1.5);
-  //std::cout << "10ns * 1.5 = " << t5.GetNanoSeconds () << "ns" <<
-  //std::endl;
+  CheckTime("old 12", t5.GetNanoSeconds(), 10, ok);
+
+  t4 = Seconds (10.0) * Scalar (15) / Scalar (10);
+  CheckTimeSec("old 13", t4.GetSeconds(), 15, ok);
+
+  t5 = NanoSeconds (10) * Scalar (15) / Scalar (10);
+  CheckTime("old 14", t5.GetNanoSeconds(), 15, ok);
+
 
   double foo = (t1 + t2).GetSeconds ();
+  dt1 = t1.GetSeconds();
+  dt2 = t2.GetSeconds();
+  CheckTimeSec("old 15", foo, dt1+dt2, ok);
+
   foo += (t4 == t5)? 1 : 0;
+  CheckTimeSec("old 16", foo, dt1+dt2, ok);
 
   foo = (t1/t2).GetDouble ();
-
-  return ok;
+  CheckTimeSec("old 17", foo, dt1/dt2, ok);
 }
+
+
+void TimeTests::CheckOperations(Time t0, Time t1, bool *ok, bool verbose) 
+{
+
+  if (verbose) 
+    std::cout << std::endl << "Check operations: " 
+              << t0 << " " << t1 << std::endl;
+
+  Time t2, t3;
+  double it0, it1, it2, it3, itu2, itu3;
+  int64_t iti0;
+
+  it0 = t0.GetSeconds();
+  it1 = t1.GetSeconds();
+
+  t2 = t0 - t1;
+  it2 = t2.GetSeconds();
+  CheckTimeSec("ops 1", it2, it0-it1, ok);
+
+  t3 = t2 * t0 / t0;
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 2a", it3, it2*it0/it0, ok);
+
+  t3 = t2 * t0 / t1;
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 2", it3, it2*it0/it1, ok);
+
+  t3 = t0 * t2 / t1;
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 3", it3, it0*it2/it1, ok);
+
+  t3 = t0 * t1 / t2;
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 4", it3, it0*it1/it2, ok);
+
+  t3 = t0 * (t1 / t2);
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 5", it3, it0*(it1/it2), ok);
+
+  t3 = (t0 * t1) / t2;
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 6", it3, (it0*it1)/it2, ok);
+
+  t3 = t0 / t1 * t2;
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 7", it3, it0/it1*it2, ok);
+
+  t3 = (t0 / t1) * t2;
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 8", it3, (it0/it1)*it2, ok);
+
+  t3 = t0 * Scalar (10.0);
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 9", it3, it0*10, ok);
+
+  t3 = Scalar (10.0) * t0;
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 10", it3, 10 * it0, ok);
+
+  t3 = Scalar (10.0) * t0 / t2 * t1;
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 11", it3, 10 * it0 / it2 * it1, ok);
+
+  t3 = (Scalar (10.0) * t0 ) / t2 * t1;
+  it3 = t3.GetSeconds();
+  CheckTimeSec("ops 12", it3, (10 * it0) / it2 * it1, ok);
+
+  TimeInvert ti0;
+  ti0 = t0 / (t1 * t2);
+  iti0 = ti0.GetHighPrecision().GetInteger();
+  // This check is not quite working yet.
+  //  CheckTime("ops 13", iti0, (int64_t)(it0/(it1*it2)), ok);
+
+  Scalar s0 = t0 / t1;
+  CheckTimeSec("ops 14", s0.GetDouble(), it0/it1, ok);
+
+  Scalar s1;
+  s1 = t0 * t1 / (t2 * t0);
+  CheckTimeSec("ops 15", s1.GetDouble(), it0*it1/(it2*it0), ok);
+
+  TimeUnit<0> tu0;
+  tu0 = s0;
+  CheckTimeSec("ops 16", tu0.GetDouble(), s0.GetDouble(), ok);
+
+  TimeUnit<1> tu1;
+  tu1 = t0;
+  CheckTimeSec("ops 17", tu1.GetSeconds(), it0, ok);
+
+  TimeUnit<2> tu2;
+  tu2 = t0 * t1;
+  CheckTimeSec("ops 18", tu2.GetHighPrecision().GetInteger()/(1e18), 
+               it0 * it1, ok);
+  itu2 = tu2.GetHighPrecision().GetInteger()/(1e18);
+  
+  TimeUnit<3> tu3;
+  tu3 = t0 / Scalar(10e6) * tu2;
+  CheckTimeSec("ops 19", tu3.GetHighPrecision().GetInteger()/(1e27), 
+               it0 / 1000000 * itu2, ok);
+  itu3 = tu3.GetHighPrecision().GetInteger()/(1e27);
+}
+
+void TimeTests::CheckConversions(uint64_t tval, bool *ok, bool verbose) {
+  Time t_sec, t_ms, t_us, t_ns, t_ps, t_fs;
+
+  if (verbose) 
+    std::cout << std::endl << "Check conversions: " << tval << std::endl;
+
+  // First check the seconds
+  t_sec = Seconds((double)tval);
+  CheckTimeSec("conv sec sec", t_sec.GetSeconds(), (double)tval, ok);
+  CheckTime("conv sec ms", t_sec.GetMilliSeconds(), (int64_t)(tval*1e3), ok, 1e3);
+  CheckTime("conv sec us", t_sec.GetMicroSeconds(), (int64_t)(tval*1e6), ok, 1e6);
+  CheckTime("conv sec ns", t_sec.GetNanoSeconds(), (int64_t)(tval*1e9), ok, 1e9);
+  CheckTime("conv sec ps", t_sec.GetPicoSeconds(), 
+            (int64_t)(tval*1e12), ok, 1e12);
+  CheckTime("conv sec fs", t_sec.GetFemtoSeconds(), 
+            (int64_t)(tval*1e15), ok, 1e15);
+
+  // Then check the milliseconds
+  t_ms = MilliSeconds(tval);
+  CheckTimeSec("conv ms sec", t_ms.GetSeconds(), (double)tval/1e3, ok);
+  CheckTime("conv ms ms", t_ms.GetMilliSeconds(), (int64_t)(tval), ok, 1e3);
+  CheckTime("conv ms us", t_ms.GetMicroSeconds(), (int64_t)(tval*1e3), ok, 1e6);
+  CheckTime("conv ms ns", t_ms.GetNanoSeconds(), (int64_t)(tval*1e6), ok, 1e9);
+  CheckTime("conv ms ps", t_ms.GetPicoSeconds(), (int64_t)(tval*1e9), ok, 1e12);
+  CheckTime("conv ms fs", t_ms.GetFemtoSeconds(), (int64_t)(tval*1e12), ok, 1e15);
+
+  // Then check the microseconds
+  t_us = MicroSeconds(tval);
+  CheckTimeSec("conv us sec", t_us.GetSeconds(), (double)tval/1e6, ok);
+  CheckTime("conv us ms", t_us.GetMilliSeconds(), (int64_t)(tval/1e3), ok, 1e3);
+  CheckTime("conv us us", t_us.GetMicroSeconds(), (int64_t)(tval), ok, 1e6);
+  CheckTime("conv us ns", t_us.GetNanoSeconds(), (int64_t)(tval*1e3), ok, 1e9);
+  CheckTime("conv us ps", t_us.GetPicoSeconds(), (int64_t)(tval*1e6), ok, 1e12);
+  CheckTime("conv us fs", t_us.GetFemtoSeconds(), (int64_t)(tval*1e9), ok, 1e15);
+  
+  // Then check the nanoseconds
+  t_ns = NanoSeconds(tval);
+  CheckTimeSec("conv ns sec", t_ns.GetSeconds(), (double)tval/1e9, ok);
+  CheckTime("conv ns ms", t_ns.GetMilliSeconds(), (int64_t)(tval/1e6), ok, 1e3);
+  CheckTime("conv ns us", t_ns.GetMicroSeconds(), (int64_t)(tval/1e3), ok, 1e6);
+  CheckTime("conv ns ns", t_ns.GetNanoSeconds(), (int64_t)(tval), ok, 1e9);
+  CheckTime("conv ns ps", t_ns.GetPicoSeconds(), (int64_t)(tval*1e3), ok, 1e12);
+  CheckTime("conv ns fs", t_ns.GetFemtoSeconds(), (int64_t)(tval*1e6), ok, 1e15);
+  
+  // Then check the picoseconds
+  t_ps = PicoSeconds(tval);
+  CheckTimeSec("conv ps sec", t_ps.GetSeconds(), (double)tval/1e12, ok);
+  CheckTime("conv ps ms", t_ps.GetMilliSeconds(), (int64_t)(tval/1e9), ok, 1e3);
+  CheckTime("conv ps us", t_ps.GetMicroSeconds(), (int64_t)(tval/1e6), ok, 1e6);
+  CheckTime("conv ps ns", t_ps.GetNanoSeconds(), (int64_t)(tval/1e3), ok, 1e9);
+  CheckTime("conv ps ps", t_ps.GetPicoSeconds(), (int64_t)(tval), ok, 1e12);
+  CheckTime("conv ps fs", t_ps.GetFemtoSeconds(), (int64_t)(tval*1e3), ok, 1e15);
+  
+  // Then check the femtoseconds
+  t_fs = FemtoSeconds(tval);
+  CheckTimeSec("conv fs sec", t_fs.GetSeconds(), (double)tval/1e15, ok);
+  CheckTime("conv fs ms", t_fs.GetMilliSeconds(), (int64_t)(tval/1e12), ok, 1e3);
+  CheckTime("conv fs us", t_fs.GetMicroSeconds(), (int64_t)(tval/1e9), ok, 1e6);
+  CheckTime("conv fs ns", t_fs.GetNanoSeconds(), (int64_t)(tval/1e6), ok, 1e9);
+  CheckTime("conv fs ps", t_fs.GetPicoSeconds(), (int64_t)(tval/1e3), ok, 1e12);
+  CheckTime("conv fs fs", t_fs.GetFemtoSeconds(), (int64_t)(tval), ok, 1e15);
+
+  
+}
+
+void TimeTests::CheckPrecision(PrecisionType prec, uint64_t val, bool *ok, 
+                               bool verbose) {
+  if (verbose) {
+    std::cout << "check precision 10^-" << prec << std::endl;
+  }
+
+  SetTsPrecision(prec);
+  if (GetTsPrecision() != prec) {
+    ok = false;
+  }
+
+  /* These still need to be fixed.
+  // The smallest value that can be stored is 1x10^(-prec)
+  Time smallest = Seconds(pow(10,-prec));
+  CheckTimeSec("Prec small:     ", smallest.GetSeconds(), pow(10,-prec), ok, 0.1, 
+               true);
+  
+  double d_ts = pow(10,-prec) - pow(10, -(prec+3));
+  Time too_small = Seconds(d_ts);
+  CheckTimeSec("Prec too small: ", too_small.GetSeconds(), 0, ok, 0.1, true);
+
+  double d_la = 0xFFFFFFFF*pow(10,-prec);
+  Time largest = Seconds(d_la);
+  CheckTimeSec("Prec large:     ", largest.GetSeconds(), d_la, ok, 0.1, true);
+
+  double d_tl = (0xFFFFFFFF*pow(10,-prec)) + 1;
+  Time too_large = Seconds(d_tl);
+  if ((largest.GetSeconds() + 1) == too_large.GetSeconds())
+    std::cout << "Overflow did not occur." << std::endl;
+
+  NS_ASSERT(d_la+1 == d_tl);
+  */  
+}
+
+void TimeTests::CheckTimeSec (std::string test_id, double actual, 
+                              double expected, bool *flag, double precMultFactor,
+                              bool verbose)
+{
+  double prec = pow(10,-ns3::m_tsPrecision) * precMultFactor;
+  if ((actual < (expected-prec)) || (actual > (expected+prec))) {
+    std::cout << "FAIL " << test_id 
+              << " Expected:" << expected 
+              << " Actual: " << actual
+              << " Precision: " << prec << std::endl;
+    *flag = false;
+  } else {
+    if (verbose) {
+      std::cout << "PASS " << test_id 
+                << " Expected:" << expected 
+                << " Actual: " << actual
+                << " Precision: " << prec << std::endl;
+    }
+  }
+}
+
+void TimeTests::CheckTime (std::string test_id, int64_t actual, 
+                           int64_t expected, bool *flag, double precMultFactor,
+                           bool verbose)
+{
+  double prec = pow(10,-ns3::m_tsPrecision) * precMultFactor;
+  if ((actual < (expected-prec)) || (actual > (expected+prec))) {
+    std::cout << "FAIL " << test_id 
+              << " Expected:" << expected 
+              << " Actual: " << actual
+              << " Precision: " << prec << std::endl;
+    *flag = false;
+  } else {
+    if (verbose) {
+      std::cout << "PASS " << test_id 
+                << " Expected:" << expected 
+                << " Actual: " << actual 
+                << " Precision: " << prec << std::endl;
+    }
+  }
+}
+
 
 static TimeTests g_time_tests;
   

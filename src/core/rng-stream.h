@@ -20,6 +20,7 @@
 #ifndef RNGSTREAM_H
 #define RNGSTREAM_H
 #include <string>
+#include "ns3/cairo-wideint-private.h"
 
 namespace ns3{
 
