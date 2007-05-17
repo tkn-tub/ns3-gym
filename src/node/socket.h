@@ -46,13 +46,13 @@ public:
   virtual ~Socket();
 
   enum SocketErrno {
-    ENOTERROR,
-    EISCONN,
-    ENOTCONN,
-    EMSGSIZE,
-    EAGAIN,
-    ESHUTDOWN,
-    EOPNOTSUPP,
+    ERROR_NOTERROR,
+    ERROR_ISCONN,
+    ERROR_NOTCONN,
+    ERROR_MSGSIZE,
+    ERROR_AGAIN,
+    ERROR_SHUTDOWN,
+    ERROR_OPNOTSUPP,
     SOCKET_ERRNO_LAST
   };
 
