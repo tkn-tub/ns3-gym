@@ -71,8 +71,7 @@ def init():
 
 def set_options(opt):
     # options provided by the modules
-    if not opt.tool_options('msvc'):
-        opt.tool_options('g++')
+    opt.tool_options('compiler_cxx')
 
     opt.add_option('--enable-gcov',
                    help=('Enable code coverage analysis'),
@@ -95,9 +94,8 @@ def set_options(opt):
 
 
 def configure(conf):
-    if not conf.check_tool('msvc'):
-        if not conf.check_tool('g++'):
-            Params.fatal("No suitable compiler found")
+    if not conf.check_tool('compiler_cxx'):
+        Params.fatal("No suitable compiler found")
 
 
     # create the second environment, set the variant and set its name
