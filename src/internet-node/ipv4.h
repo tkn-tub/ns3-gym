@@ -75,103 +75,7 @@ public:
    * ttl value.
    */
   void SetDefaultTtl (uint8_t ttl);
-    
-  /**
-   * \param dest destination address
-   * \param nextHop address of next hop.
-   * \param interface interface of next hop.
-   *
-   * add route to host dest through host nextHop 
-   * on interface.
-   */
-  void AddHostRouteTo (Ipv4Address dest, 
-                       Ipv4Address nextHop, 
-                       uint32_t interface);
-  /**
-   * \param dest destination address
-   * \param interface of next hop
-   *
-   * add route to host dest on interface.
-   */
-  void AddHostRouteTo (Ipv4Address dest, 
-                       uint32_t interface);
 
-  /**
-   * \param network destination network
-   * \param networkMask netmask of destination network
-   * \param nextHop address of next hop
-   * \param interface interface of next hop
-   * 
-   * add route to network dest with netmask 
-   * through host nextHop on interface
-   */
-  void AddNetworkRouteTo (Ipv4Address network, 
-                          Ipv4Mask networkMask, 
-                          Ipv4Address nextHop, 
-                          uint32_t interface);
-
-  /**
-   * \param network destination network
-   * \param networkMask netmask of destination network
-   * \param interface interface of next hop
-   *
-   * add route to network dest with netmask 
-   * on interface
-   */
-  void AddNetworkRouteTo (Ipv4Address network, 
-                          Ipv4Mask networkMask, 
-                          uint32_t interface);
-  /**
-   * \param nextHop address of default next hop
-   * \param interface interface of default next hop.
-   * 
-   * set the default route to host nextHop on
-   * interface. 
-   */
-  void SetDefaultRoute (Ipv4Address nextHop, 
-                        uint32_t interface);
-
-  /**
-   * \param dest destination address
-   * \returns the route to the destination address
-   *
-   * Lookup the route for this destination address.
-   */
-  Ipv4Route *Lookup (Ipv4Address dest);
-
-  /**
-   * \returns the number of entries in the routing table.
-   */
-  uint32_t GetNRoutes (void);
-  /**
-   * \param i index of route to return
-   * \returns the route whose index is i
-   */
-  Ipv4Route *GetRoute (uint32_t i);
-  /**
-   * \param i index of route to remove from routing table.
-   */
-  void RemoveRoute (uint32_t i);
-  
-  /**
-   * \param device interface to add to the list of ipv4 interfaces
-   * which can be used as output interfaces during packet forwarding.
-   * \returns the index of the interface added.
-   *
-   * Once an interface has been added, it can never be removed: if you want
-   * to disable it, you can invoke Ipv4Interface::SetDown which will
-   * make sure that it is never used during packet forwarding.
-   */
-  uint32_t AddInterface (Ptr<NetDevice> device);
-  /**
-   * \param i index of interface to return
-   * \returns the requested interface
-   */
-  Ipv4Interface * GetInterface (uint32_t i) const;
-  /**
-   * \returns the number of interfaces added by the user.
-   */
-  uint32_t GetNInterfaces (void) const;
   /**
    * \param device the device to match
    * \returns the matching interface, zero if not found.
@@ -180,7 +84,6 @@ public:
    * the input NetDevice.
    */
   Ipv4Interface *FindInterfaceForDevice (Ptr<const NetDevice> device);
-  
 
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
@@ -203,6 +106,34 @@ public:
   void Send (Packet const &packet, Ipv4Address source, 
 	     Ipv4Address destination, uint8_t protocol);
 
+
+    
+  void AddHostRouteTo (Ipv4Address dest, 
+                       Ipv4Address nextHop, 
+                       uint32_t interface);
+  void AddHostRouteTo (Ipv4Address dest, 
+                       uint32_t interface);
+
+  void AddNetworkRouteTo (Ipv4Address network, 
+                          Ipv4Mask networkMask, 
+                          Ipv4Address nextHop, 
+                          uint32_t interface);
+  void AddNetworkRouteTo (Ipv4Address network, 
+                          Ipv4Mask networkMask, 
+                          uint32_t interface);
+  void SetDefaultRoute (Ipv4Address nextHop, 
+                        uint32_t interface);
+
+  Ipv4Route *Lookup (Ipv4Address dest);
+  uint32_t GetNRoutes (void);
+  Ipv4Route *GetRoute (uint32_t i);
+  void RemoveRoute (uint32_t i);
+
+  uint32_t AddInterface (Ptr<NetDevice> device);
+  Ipv4Interface * GetInterface (uint32_t i) const;
+  uint32_t GetNInterfaces (void) const;
+
+  
   void SetAddress (uint32_t i, Ipv4Address address);
   void SetNetworkMask (uint32_t i, Ipv4Mask mask);
   Ipv4Mask GetNetworkMask (uint32_t t) const;
