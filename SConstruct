@@ -38,6 +38,7 @@ core.add_sources([
     'command-line.cc',
     'type-name.cc',
     'component-manager.cc',
+    'interface-object.cc',
     ])
 env = Environment()
 if env['PLATFORM'] == 'posix' or env['PLATFORM'] == 'darwin' or env['PLATFORM'] == 'cygwin':
@@ -70,6 +71,7 @@ core.add_inst_headers([
     'command-line.h',
     'type-name.h',
     'component-manager.h',
+    'interface-object.h',
     ])
 
 def config_core (env, config):
