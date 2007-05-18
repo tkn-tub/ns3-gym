@@ -504,7 +504,7 @@ class Ns3:
 
         # dist support
         dist_env = env.Copy()
-        if dist_env['PLATFORM'] == 'posix':
+        if dist_env['PLATFORM'] == 'posix' or dist_env['PLATFORM'] == 'darwin':
             dist_list = []
             for module in self.__modules:
                 for f in module.sources:
