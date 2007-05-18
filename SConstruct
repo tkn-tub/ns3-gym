@@ -2,9 +2,13 @@
 import os.path
 import build
 
+version_file = open ('VERSION', 'r')
+version = version_file.read (5)
+version_file.close ()
+
 ns3 = build.Ns3()
 ns3.build_dir = 'build-dir'
-ns3.version = '3.0.2'
+ns3.version = version
 ns3.name = 'ns3'
 ns3.distname = 'ns'
 ns3.doxygen_config = os.path.join('doc', 'doxygen.conf')
