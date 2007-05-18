@@ -1,9 +1,9 @@
 
-    The Network Simulator Version 3
-    -------------------------------
+    The Network Simulator, Version 3
+    --------------------------------
 
-Table of Content:
------------------
+Table of Contents:
+------------------
 
 1) An Open Source project
 2) An overview of the ns-3 project
@@ -16,7 +16,7 @@ Table of Content:
 1) An Open Source project
 -------------------------
 
-ns-3 is an Open Source project and we intend to make this
+ns-3 is an Open Source project.   We intend to make this
 project a successful collaborative project: we hope that 
 the missing pieces of the models we have not yet implemented
 will be contributed by the community in an open collaboration
@@ -25,11 +25,11 @@ process.
 Contributing to the ns-3 project is still a very informal
 process because that process depends heavily on the personality
 of the people involved, the amount of time they can invest
-and the type of model they want to work on.
+and the type of model they want to work on.  
 
 Despite this lack of a formal process, there are a number of 
 steps which naturally stem from the open-source roots of the
-project. These steps are described in doc/contributing.txt
+project.  These steps are described in doc/contributing.txt
 
 2) An overview of the ns-3 project
 ----------------------------------
@@ -42,8 +42,9 @@ number of very simple network simulation models:
   - point-to-point physical-layer links
   - OnOff traffic generator
 
-However, the framework is there to make adding new models as 
-simple as possible:
+Our focus to date has been on getting an overall software
+framework in place.  The framework is there to make adding 
+new models as simple as possible:
   - an extensive tracing system can be used to connect
     any number of arbitrary trace sources to any number
     of trace sinks. This tracing system is decoupled
@@ -65,7 +66,7 @@ simple as possible:
 
 The code for the framework and the default models provided
 by ns-3 is built as a set of libraries. User simulations
-are expected to be written as simple programs which make
+are expected to be written as simple programs that make
 use of these ns-3 libraries.
 
 To build the set of default libraries and the example
@@ -92,14 +93,14 @@ the following platforms:
   - gcc 3.3 and earlier
   - optimized builds on linux x86 gcc 4.0 
 
-Other platforms might or might not work: we welcome 
+Other platforms may or may not work: we welcome 
 patches to improve the portability of the code to these
 other platforms.
 
 4) Running ns-3
 ---------------
 
-On Recent Linux systems, once you have built ns-3, it 
+On recent Linux systems, once you have built ns-3, it 
 should be easy to run the sample programs with the
 following command:
 
@@ -112,7 +113,7 @@ cd build-dir/dbg-shared/bin
 
 That program should generate a simple-p2p.tr text 
 trace file and a set of simple-p2p-xx-xx.pcap binary
-pcap trace files.
+pcap trace files, which can be read by tcpdump.
 
 5) Getting access to the ns-3 documentation
 -------------------------------------------

@@ -1,12 +1,17 @@
-WAF is an alternative build system, similar to SCons.  NS-3 now is
-able to build with WAF, in parallel to SCons.
+The main ns-3 build system is SCons.  Read the file build.txt
+for SCons instructions.
 
-Note: the WAF build scripts are experimental at this stage.
+Waf is an alternative build system, similar to SCons.  ns-3 now is
+able to build with Waf, in parallel to SCons.
 
+(http://www.freehackers.org/~tnagy/waf.html)
 
-=== Building with WAF ===
+Note: the Waf build scripts are experimental at this stage.
+Gustavo Carneiro (gjcarneiro@gmail.com) is the maintainer.
 
-To build NS-3 with waf type the commands:
+=== Building with Waf ===
+
+To build ns-3 with waf type the commands:
  1. ./waf configure [options]
  2. ./waf
 
@@ -30,7 +35,7 @@ Other waf usages include:
     Run code coverage analysis (assuming the project was configured
 with --enable-gcov)
 
-=== Extending NS-3 ===
+=== Extending ns-3 ===
 
 To add new modules:
   1. Create the module directory under src (or src/devices, or whatever);
@@ -38,7 +43,7 @@ To add new modules:
   3. Add a 'wscript' describing it;
   4. Add the module subdirectory name to the all_modules list in src/wscript.
 
-A module's wscript file is basically a regular WAF script.  A NS-3
+A module's wscript file is basically a regular Waf script.  A ns-3
 module is created as a cpp/shlib object, like this:
 
 def build(bld):
@@ -65,7 +70,7 @@ def build(bld):
 
 === Note for developers ===
 
-The NS-3 code repository does not contain the waf script.  Instead,
+The ns-3 code repository does not contain the waf script.  Instead,
 developers should check it out from a subversion repository:
 
   svn checkout http://waf.googlecode.com/svn/tags/ns3/ waf
@@ -77,8 +82,8 @@ tested to work correctly with ns3, although 'trunk' will likely work
 Then it can be installed system-wide with 'sudo ./waf-light install'.
 When preparing a distribution, the resulting 'waf' script, which is
 self contained (no external files needed), can be easily included in
-the tarball so that users downloading NS-3 can easily build it without
-having WAF installed (although Python >= 2.3 is still needed).
+the tarball so that users downloading ns-3 can easily build it without
+having Waf installed (although Python >= 2.3 is still needed).
 
 The command 'waf dist' can be used to create a distribution tarball.
 It includes all files in the source directory, except some particular
