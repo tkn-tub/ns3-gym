@@ -123,18 +123,17 @@ quite likely that you will want to get started on reading
 some ns-3 documentation. 
 
 All of that documentation should always be available from
-the ns-3 website: http:://www.nsnam.org/
+the ns-3 website: http:://www.nsnam.org/ but we
+include some of it in this release for ease of use.
 
-It includes:
+This documentation includes:
 
   - an architecture document which describes a very 
     high-level view of ns-3: it tries to explain the
     use-cases the ns-3 developers really focused on when
     doing the initial design and then goes on to explain
     the structure of the resulting framework.
-    XXX introduce url link
-
-  - a user manual: XXX
+    See the file doc/architecture.pdf
 
   - a wiki for user-contributed tips: http://www.nsnam.org/wiki/
 
@@ -142,6 +141,17 @@ It includes:
     a reference manual, most likely not very well suited 
     as introductory text:
     http://www.nsnam.org/doxygen/index.html
+
+If you want to re-generate this documentation, you can 
+easily do so:
+
+  - doc/architecture.pdf is generated from the architecture.tex
+    file in http://code.nsnam.org/docs
+
+  - the doxygen documentation is generated from the doc/doxygen.conf
+    configuration file. The command "scons doc" will generate it
+    as doc/html/index.html if you have installed the doxygen tools 
+    (see http://www.doxygen.org)
 
 6) Working with the development version of ns-3
 -----------------------------------------------
