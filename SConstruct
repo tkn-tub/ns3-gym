@@ -3,8 +3,9 @@ import os.path
 import build
 
 version_file = open ('VERSION', 'r')
-version = version_file.read (5)
+version = version_file.readline ()
 version_file.close ()
+version = version.strip ()
 
 ns3 = build.Ns3()
 ns3.build_dir = 'build-dir'
@@ -21,6 +22,7 @@ ns3.add_extra_dist ('doc/mercurial.txt')
 ns3.add_extra_dist ('README')
 ns3.add_extra_dist ('RELEASE_NOTES')
 ns3.add_extra_dist ('AUTHORS')
+ns3.add_extra_dist ('VERSION')
 
 
 #
