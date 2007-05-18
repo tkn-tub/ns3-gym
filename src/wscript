@@ -42,7 +42,7 @@ def build(bld):
             if sys.platform == 'win32':
                 os.environ["PATH"] = ';'.join([os.environ["PATH"], node.abspath(env)])
             else:
-                env.append_value('RPATH', '-Wl,--rpath=%s' % (node.abspath(env),))
+                env.append_value('RPATH', '-Wl,-rpath=%s' % (node.abspath(env),))
     
     bld.add_subdirs(all_modules)
 
