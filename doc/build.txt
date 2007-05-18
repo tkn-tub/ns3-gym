@@ -16,6 +16,9 @@ the executable binaries generated link explicitely against
 the right libraries. This saves you the pain of having to
 setup environment variables to point to the right libraries.
 
+(Note:  An experimental, alternative build system is described
+in build-waf.txt)
+
 1) Options
 ----------
 

@@ -3,7 +3,7 @@ Introduction
 
 ns-3 uses the Mercurial software revision control system which
 is a replacement for tools liks cvs or subversion. Thus, to get
-access to the developement versions of ns-3, you need to install
+access to the development versions of ns-3, you need to install
 mercurial first. See http://www.selenic.com/mercurial/wiki/
 
 Mercurial cheat sheet
@@ -38,6 +38,7 @@ push upwards (developers access only):
 --------------------------------------
 To the main repository:
 hg push ssh://code@code.nsnam.org/repos/ns-3-dev
+
 To your private repository:
 hg push ssh://username@code.nsnam.org//home/username/repositories/username/repository
 

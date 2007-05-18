@@ -1,6 +1,12 @@
-
 Contributing to the ns-3 project
 --------------------------------
+
+ns-3 is an open source project backed by an NSF CISE CRI grant. 
+Although the NSF PIs have specific aims to fulfill, we want others to 
+contribute, and we'd like to have a broad community of users and 
+developers, with the goal of a self-sustaining project downstream. 
+The project is currently in a bootstrapping phase, but we welcome 
+ambitious developers who might want to help shape the early design.
 
 Despite the lack of a formal contribution process to the ns-3
 project, there are a number of steps which we expect every
@@ -46,8 +52,12 @@ the open-source roots of the project:
     also expect model authors to act as responsible maintainers
     and be reactive to bug reports concerning their models.
 
-  - you should make sure that you understand that contributed
-    models should be licensed under the GPLv2. You do not have
-    to assign your copyright to the ns-3 project but you must
-    accept the terms of the GPLv2. See the following link:
+  - The project has decided upon GNU GPLv2 as the licensing structure. 
+    All simulation software in the ns-3 repositories will be GNU GPLv2 
+    or GNU GPLv2-compatible (with non-GPLv2 licensing reserved for
+    ports of pre-existing code under a different license, such as BSD).
+    You do not have to assign your copyright to the ns-3 project but
+    you must accept the terms of the GPLv2 and attest that your 
+    contributions can be licensed under those terms.  See the 
+    following link:
     http://www.fsf.org/licensing/licenses/info/GPLv2.html
