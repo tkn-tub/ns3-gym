@@ -9,6 +9,7 @@ ns3.name = 'ns3'
 ns3.distname = 'ns'
 ns3.doxygen_config = os.path.join('doc', 'doxygen.conf')
 ns3.add_extra_dist(os.path.join('doc', 'main.txt'))
+ns3.add_extra_dist ('doc/architecture.pdf')
 ns3.add_extra_dist ('doc/contributing.txt')
 ns3.add_extra_dist ('doc/build.txt')
 ns3.add_extra_dist ('doc/mercurial.txt')
