@@ -17,17 +17,20 @@ all_modules = [
 
 def set_options(opt):
     opt.sub_options('simulator')
+    opt.add_option('--enable-rpath',
+                   help=("Link programs with rpath"),
+                   action="store_true", dest='enable_rpath',
+                   default=(sys.platform != 'linux2'))
     opt.add_option('--disable-rpath',
                    help=("Don't link programs with rpath"),
-                   action="store_true", default=False,
-                   dest='disable_rpath')
-
+                   action="store_false", dest='enable_rpath',
+                   default=(sys.platform != 'linux2'))
 
 def configure(conf):
     conf.sub_config('core')
     conf.sub_config('simulator')
 
-    conf.env['DISABLE_RPATH'] = Params.g_options.disable_rpath
+    conf.env['ENABLE_RPATH'] = Params.g_options.enable_rpath
 
 
 def build(bld):
@@ -36,7 +39,7 @@ def build(bld):
     ## Note: this is slightly evil; we get away because our programs
     ## and libs are not supposed to be installed system wide.
     env = bld.env_of_name('default')
-    if not env['DISABLE_RPATH']:
+    if not env['ENABLE_RPATH']:
         for module in all_modules:
             node = bld.m_curdirnode.find_dir(module)
             if sys.platform == 'win32':
