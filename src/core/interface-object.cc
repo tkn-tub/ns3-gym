@@ -138,7 +138,7 @@ InterfaceObject::Dispose (void)
 }
 
 void 
-InterfaceObject::Add (Ptr<InterfaceObject> o)
+InterfaceObject::AddInterface (Ptr<InterfaceObject> o)
 {
   NS_ASSERT (Check ());
   NS_ASSERT (o->Check ());
@@ -312,7 +312,7 @@ InterfaceObjectTest::RunTests (void)
   baseA = MakeNewObject<BaseA> ();
   Ptr<BaseB> baseB = MakeNewObject<BaseB> ();
   Ptr<BaseB> baseBCopy = baseB;
-  baseA->Add (baseB);
+  baseA->AddInterface (baseB);
   if (baseA->QueryInterface<BaseA> (BaseA::iid) == 0)
     {
       ok = false;
@@ -353,7 +353,7 @@ InterfaceObjectTest::RunTests (void)
   baseA = MakeNewObject<DerivedA> (1);
   baseB = MakeNewObject<DerivedB> (1);
   baseBCopy = baseB;
-  baseA->Add (baseB);
+  baseA->AddInterface (baseB);
   if (baseA->QueryInterface<DerivedB> (DerivedB::iid) == 0)
     {
       ok = false;
@@ -389,7 +389,7 @@ InterfaceObjectTest::RunTests (void)
 
   baseA = MakeNewObject<BaseA> ();
   baseB = MakeNewObject<BaseB> ();
-  baseA->Add (baseB);
+  baseA->AddInterface (baseB);
   baseA = 0;
   baseA = baseB->QueryInterface<BaseA> (BaseA::iid);
 

@@ -57,7 +57,7 @@ public:
   template <typename T>
   Ptr<T> QueryInterface (MyInterfaceId iid);
   void Dispose (void);
-  void Add (Ptr<InterfaceObject> other);
+  void AddInterface (Ptr<InterfaceObject> other);
 protected:
   void SetInterfaceId (MyInterfaceId iid);
 private:
