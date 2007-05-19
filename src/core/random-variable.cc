@@ -663,7 +663,7 @@ LogNormalVariable::GetValue ()
   return z;
 }
 
-double LogNormalVariable::GetSingleValue(double sigma,double mu)
+double LogNormalVariable::GetSingleValue (double mu, double sigma)
 {
   double u, v, r2, normal, z;
   do
@@ -686,3 +686,104 @@ double LogNormalVariable::GetSingleValue(double sigma,double mu)
 
 }//namespace ns3
 
+
+#ifdef RUN_SELF_TESTS
+#include "test.h"
+#include <vector>
+
+namespace ns3 {
+
+
+class RandomVariableTest : public Test
+{
+public:
+  RandomVariableTest () : Test ("RandomVariable") {}
+  virtual bool RunTests (void)
+  {
+    bool ok = true;
+    const double desired_mean = 1.0;
+    const double desired_stddev = 1.0;
+    double tmp = log (1 + (desired_stddev/desired_mean)*(desired_stddev/desired_mean));
+    double sigma = sqrt (tmp);
+    double mu = log (desired_mean) - 0.5*tmp;
+
+    // Test a custom lognormal instance
+    {
+      LogNormalVariable lognormal (mu, sigma);
+      vector<double> samples;
+      const int NSAMPLES = 10000;
+      double sum = 0;
+      for (int n = NSAMPLES; n; --n)
+        {
+          double value = lognormal.GetValue ();
+          sum += value;
+          samples.push_back (value);
+        }
+      double obtained_mean = sum / NSAMPLES;
+      sum = 0;
+      for (vector<double>::iterator iter = samples.begin (); iter != samples.end (); iter++)
+        {
+          double tmp = (*iter - obtained_mean);
+          sum += tmp*tmp;
+        }
+      double obtained_stddev = sqrt (sum / (NSAMPLES - 1));
+
+      if (not (obtained_mean/desired_mean > 0.90 and obtained_mean/desired_mean < 1.10))
+        {
+          ok = false;
+          Failure () << "Obtained lognormal mean value " << obtained_mean << ", expected " << desired_mean << std::endl;
+        }
+
+      if (not (obtained_stddev/desired_stddev > 0.90 and obtained_stddev/desired_stddev < 1.10))
+        {
+          ok = false;
+          Failure () << "Obtained lognormal stddev value " << obtained_stddev <<
+            ", expected " << desired_stddev << std::endl;
+        }
+    }
+
+    // Test GetSingleValue
+    {
+      vector<double> samples;
+      const int NSAMPLES = 10000;
+      double sum = 0;
+      for (int n = NSAMPLES; n; --n)
+        {
+          double value = LogNormalVariable::GetSingleValue (mu, sigma);
+          sum += value;
+          samples.push_back (value);
+        }
+      double obtained_mean = sum / NSAMPLES;
+      sum = 0;
+      for (vector<double>::iterator iter = samples.begin (); iter != samples.end (); iter++)
+        {
+          double tmp = (*iter - obtained_mean);
+          sum += tmp*tmp;
+        }
+      double obtained_stddev = sqrt (sum / (NSAMPLES - 1));
+
+      if (not (obtained_mean/desired_mean > 0.90 and obtained_mean/desired_mean < 1.10))
+        {
+          ok = false;
+          Failure () << "Obtained LogNormalVariable::GetSingleValue mean value " << obtained_mean
+                     << ", expected " << desired_mean << std::endl;
+        }
+
+      if (not (obtained_stddev/desired_stddev > 0.90 and obtained_stddev/desired_stddev < 1.10))
+        {
+          ok = false;
+          Failure () << "Obtained LogNormalVariable::GetSingleValue stddev value " << obtained_stddev <<
+            ", expected " << desired_stddev << std::endl;
+        }
+    }
+
+    return ok;
+  }
+};
+
+
+static RandomVariableTest g_random_variable_tests;
+
+}//namespace ns3
+
+#endif /* RUN_SELF_TESTS */
