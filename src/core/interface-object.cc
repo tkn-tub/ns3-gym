@@ -94,91 +94,6 @@ MakeObjectInterfaceId (void)
   return iid;
 }
 
-class InterfaceObject;
-
-class AggregateObject
-{
-public:
-  AggregateObject ();
-  ~AggregateObject ();
-  InterfaceObject *PeekQueryInterface (MyInterfaceId iid, InterfaceObject *caller);
-  void Dispose (void);
-  void AddObject (InterfaceObject *object);
-  void Swallow (AggregateObject *object);
-  void MaybeDelete (void);
-private:
-  typedef std::vector<InterfaceObject *> ObjectList;
-  ObjectList m_objectList;
-};
-
-
-
-AggregateObject::AggregateObject ()
-{}
-AggregateObject::~AggregateObject ()
-{}
-void 
-AggregateObject::MaybeDelete (void)
-{
-  for (ObjectList::iterator i = m_objectList.begin (); i != m_objectList.end (); i++)
-    {
-      if ((*i)->m_count > 0)
-        {
-          return;
-        }
-    }
-  for (ObjectList::iterator i = m_objectList.begin (); i != m_objectList.end (); i++)
-    {
-      delete *i;
-    }
-  m_objectList.clear ();
-  delete this;
-}
-InterfaceObject *
-AggregateObject::PeekQueryInterface (MyInterfaceId iid, InterfaceObject *caller)
-{
-  for (ObjectList::iterator i = m_objectList.begin (); i != m_objectList.end (); i++)
-    {
-      if (*i != caller)
-	{
-	  MyInterfaceId cur = (*i)->m_iid;
-	  while (cur != iid && cur != InterfaceObject::iid)
-	    {
-	      cur = MyInterfaceId::LookupParent (cur);
-	    }
-	  if (cur == iid)
-	    {
-	      return *i;
-	    }
-	}
-    }
-  return 0;
-}
-void 
-AggregateObject::Dispose (void)
-{
-  for (ObjectList::iterator i = m_objectList.begin (); i != m_objectList.end (); i++)
-    {
-      (*i)->DoDispose ();
-    }
-}
-void 
-AggregateObject::AddObject (InterfaceObject *object)
-{
-  // XXX should check for interface uniqueness.
-  m_objectList.push_back (object);
-}
-
-void
-AggregateObject::Swallow (AggregateObject *other)
-{
-  for (ObjectList::iterator i = other->m_objectList.begin (); i != other->m_objectList.end (); i++)
-    {
-      m_objectList.push_back (*i);
-      (*i)->m_aggregate = this;
-    }
-  other->m_objectList.clear ();
-}
 
 const MyInterfaceId InterfaceObject::iid = MakeObjectInterfaceId ();
 
@@ -186,7 +101,7 @@ const MyInterfaceId InterfaceObject::iid = MakeObjectInterfaceId ();
 InterfaceObject::InterfaceObject ()
   : m_count (1),
     m_iid (InterfaceObject::iid),
-    m_aggregate (0)
+    m_next (this)
 {}
 InterfaceObject::~InterfaceObject () 
 {}
@@ -194,34 +109,32 @@ Ptr<InterfaceObject>
 InterfaceObject::DoQueryInterface (MyInterfaceId iid)
 {
   NS_ASSERT (Check ());
-  MyInterfaceId cur = m_iid;
-  while (cur != iid && cur != InterfaceObject::iid)
-    {
-      cur = MyInterfaceId::LookupParent (cur);
-    }
-  if (cur == iid)
-    {
-      return this;
-    }
-  if (m_aggregate != 0)
-    {
-      return m_aggregate->PeekQueryInterface (iid, this);
-    }
+  InterfaceObject *currentObject = this;
+  do {
+    NS_ASSERT (currentObject != 0);
+    MyInterfaceId cur = currentObject->m_iid;
+    while (cur != iid && cur != InterfaceObject::iid)
+      {
+        cur = MyInterfaceId::LookupParent (cur);
+      }
+    if (cur == iid)
+      {
+        return currentObject;
+      }
+    currentObject = currentObject->m_next;
+  } while (currentObject != this);
   return 0;
 }
 void 
 InterfaceObject::Dispose (void)
 {
   NS_ASSERT (Check ());
-  if (m_aggregate != 0)
-    {
-      NS_ASSERT (m_count == 0);
-      m_aggregate->Dispose ();
-    }
-  else
-    {
-      DoDispose ();
-    }
+  InterfaceObject *current = this;
+  do {
+    NS_ASSERT (current != 0);
+    current->DoDispose ();
+    current = current->m_next;
+  } while (current != this);
 }
 
 void 
@@ -230,33 +143,9 @@ InterfaceObject::Add (Ptr<InterfaceObject> o)
   NS_ASSERT (Check ());
   NS_ASSERT (o->Check ());
   InterfaceObject *other = PeekPointer (o);
-  if (m_aggregate != 0 && other->m_aggregate != 0)
-    {
-      m_aggregate->Swallow (other->m_aggregate);
-      delete other->m_aggregate;
-      other->m_aggregate = m_aggregate;
-    }
-  else if (m_aggregate != 0)
-    {
-      NS_ASSERT (other->m_aggregate == 0);
-      m_aggregate->AddObject (other);
-      other->m_aggregate = m_aggregate;
-    }
-  else if (other->m_aggregate != 0)
-    {
-      NS_ASSERT (m_aggregate == 0);
-      other->m_aggregate->AddObject (this);
-      m_aggregate = other->m_aggregate;
-    }
-  else 
-    {
-      NS_ASSERT (m_aggregate == 0);
-      NS_ASSERT (other->m_aggregate == 0);
-      m_aggregate = new AggregateObject ();
-      other->m_aggregate = m_aggregate;
-      m_aggregate->AddObject (this);
-      m_aggregate->AddObject (other);
-    }
+  InterfaceObject *next = m_next;
+  m_next = other->m_next;
+  other->m_next = next;
   NS_ASSERT (Check ());
   NS_ASSERT (o->Check ());
 }
@@ -283,14 +172,28 @@ InterfaceObject::Check (void)
 void
 InterfaceObject::MaybeDelete (void)
 {
-  if (m_aggregate != 0)
-    {
-      m_aggregate->MaybeDelete ();
-    }
-  else
-    {
-      delete this;
-    }
+  // First, check if any of the attached
+  // Object has a non-zero count.
+  InterfaceObject *current = this;
+  do {
+    NS_ASSERT (current != 0);
+    if (current->m_count != 0)
+      {
+        return;
+      }
+    current = current->m_next;
+  } while (current != this);
+
+  // all attached objects have a zero count so, 
+  // we can delete all attached objects.
+  current = this;
+  InterfaceObject *end = this;
+  do {
+    NS_ASSERT (current != 0);
+    InterfaceObject *next = current->m_next;
+    delete current;
+    current = next;
+  } while (current != end);
 }
 
 } // namespace ns3

@@ -45,8 +45,6 @@ private:
 MyInterfaceId
 MakeInterfaceId (std::string name, const MyInterfaceId &parent);
 
-class AggregateObject;
-
 class InterfaceObject
 {
 public:
@@ -63,14 +61,13 @@ public:
 protected:
   void SetInterfaceId (MyInterfaceId iid);
 private:
-  friend class AggregateObject;
   virtual void DoDispose (void);
   Ptr<InterfaceObject> DoQueryInterface (MyInterfaceId iid);
   bool Check (void);
   void MaybeDelete (void);
   uint32_t m_count;
   MyInterfaceId m_iid;
-  AggregateObject *m_aggregate;
+  InterfaceObject *m_next;
 };
 
 } // namespace ns3
