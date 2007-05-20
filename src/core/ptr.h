@@ -73,11 +73,12 @@ public:
   /**
    * \param ptr raw pointer to manage
    *
-   * Create a smart pointer which points to the
-   * input raw pointer. This method takes ownershipt
-   * of the input raw pointer. That is, the smart pointer
-   * becomes responsible for calling delete on the
-   * raw pointer when needed.
+   * Create a smart pointer which points to the object pointed to by
+   * the input raw pointer ptr. This method creates its own reference
+   * to the pointed object. The caller is responsible for Unref()'ing
+   * its own reference, and the smart pointer will eventually do the
+   * same, so that object is deleted if no more references to it
+   * remain.
    */
   Ptr (T *ptr);
   Ptr (Ptr const&o);
