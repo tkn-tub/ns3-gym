@@ -23,7 +23,7 @@
 
 #include <vector>
 #include <algorithm>
-#include "ns3/cairo-wideint-private.h"
+#include <stdint.h>
 
 /**
  * \defgroup randomvariable Random Variable Distributions

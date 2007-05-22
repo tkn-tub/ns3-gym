@@ -76,32 +76,29 @@ namespace ns3 {
  *  - \ref ns3-Time-Min ns3::Min
  */
   
-typedef uint8_t ts_precision_t;
-  /**
+typedef uint64_t ts_precision_t;
+  /*
    * Determines the base unit to store time values. If the
    * SetTsPrecision function is called, it must be set before any
    * TimeValue objects are created. All TimeUnit objects will use the
    * same time precision value.  The actual time can be
    * extracted as follows: m_data*10^(-m_tsPrecision) seconds.
-   * m_tsPrecision == 0 : m_data stored in sec
-   * m_tsPrecision == 3 : m_data stored in ms
-   * m_tsPrecision == 6 : m_data stored in us
-   * m_tsPrecision == 9 : m_data stored in ns
-   * m_tsPrecision == 12 : m_data stored in ps
+   * tsPrecision == 0 : m_data stored in sec
+   * tsPrecision == 3 : m_data stored in ms
+   * tsPrecision == 6 : m_data stored in us
+   * tsPrecision == 9 : m_data stored in ns
+   * tsPrecision == 12 : m_data stored in ps
    * The default timestep precision units are ns.
    */
-enum PrecisionType {
-  SEC = 0,
-  MS = 3,
-  US = 6,
-  NS = 9,
-  PS = 12,
-  FS = 15
-};
-static ts_precision_t m_tsPrecision = NS;
-static int64_t m_tsPrecisionFactor = (int64_t)pow(10,m_tsPrecision);
-  // static void SetTsPrecision(ts_precision_t tsPrecision);
-  // static ts_precision_t GetTsPrecision();
+static const ts_precision_t SEC = 0;
+static const ts_precision_t MS = 3;
+static const ts_precision_t US = 6;
+static const ts_precision_t NS = 9;
+static const ts_precision_t PS = 12;
+static const ts_precision_t FS = 15;
+
+void SetTsPrecision(ts_precision_t newTsPrecision);
+ts_precision_t GetTsPrecision();
 
 template <int N>
 class TimeUnit
@@ -363,10 +360,11 @@ public:
    *          instance.
    */
   double GetSeconds (void) const;
+
   /**
    * \returns an approximation in milliseconds of the time stored in this
    *          instance.
-   */
+   */  
   int64_t GetMilliSeconds (void) const;
   /**
    * \returns an approximation in microseconds of the time stored in this
@@ -429,8 +427,17 @@ public:
     return &m_data;
   }
 
+  static uint64_t UnitsToTimestep (uint64_t unitValue, 
+                                   ts_precision_t unitFactor);
 private:
   HighPrecision m_data;
+
+  /*
+   * \Returns the value of time_value in units of unitPrec. time_value
+   * must be specified in timestep units (which are the same as the
+   * m_tsPrecision units
+   */
+  int64_t ConvertToUnits (int64_t timeValue, uint64_t unitFactor) const;
 };
 
 /**
