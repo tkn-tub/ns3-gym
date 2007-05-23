@@ -17,35 +17,17 @@ all_modules = [
 
 def set_options(opt):
     opt.sub_options('simulator')
-
-    rpath_default = (sys.platform == 'linux2')
-    opt.add_option('--enable-rpath',
-                   help=("Link programs with rpath"),
-                   action="store_true", dest='enable_rpath', default=rpath_default)
-    opt.add_option('--disable-rpath',
-                   help=("Don't link programs with rpath"),
-                   action="store_false", dest='enable_rpath', default=rpath_default)
     
 def configure(conf):
     conf.sub_config('core')
     conf.sub_config('simulator')
 
-    conf.env['ENABLE_RPATH'] = Params.g_options.enable_rpath
-
 
 def build(bld):
-
-    ## Add a global RPATH pointing to each module, so that programs can find the libs
-    ## Note: this is slightly evil; we get away because our programs
-    ## and libs are not supposed to be installed system wide.
     env = bld.env_of_name('default')
     for module in all_modules:
         node = bld.m_curdirnode.find_dir(module)
-        if sys.platform == 'win32':
-            os.environ["PATH"] = ';'.join([os.environ["PATH"], node.abspath(env)])
-        else:
-            if env['ENABLE_RPATH']:
-                env.append_value('RPATH', '-Wl,-rpath=%s' % (node.abspath(env),))
+        node_path = node.abspath(env)
+        env.append_value('NS3_MODULE_PATH', node_path)
     
     bld.add_subdirs(all_modules)
-

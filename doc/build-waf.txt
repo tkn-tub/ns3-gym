@@ -35,6 +35,17 @@ Other waf usages include:
     Run code coverage analysis (assuming the project was configured
 with --enable-gcov)
 
+ 4. ./waf --run "program [args]"
+    Run a ns3 program, given its target name, with the given
+    arguments.  This takes care of automatically modifying the the
+    path for finding the ns3 dynamic libraries in the environment
+    before running the program.  Note: the "program [args]" string is
+    parsed using POSIX shell rules.
+
+ 5. ./waf --shell
+    Starts a nested system shell with modified environment to run ns3 programs.
+
+
 === Extending ns-3 ===
 
 To add new modules:
