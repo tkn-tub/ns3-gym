@@ -147,39 +147,47 @@ def shutdown():
     #ut.print_results()
 
     if Params.g_options.lcov_report:
-        env = Params.g_build.env_of_name('default')
-        variant_name = env['NS3_ACTIVE_VARIANT']
-
-        if 'gcov' not in variant_name:
-            Params.fatal("project not configured for code coverage;"
-                         " reconfigure with --enable-gcov")
-        
-        os.chdir(blddir)
-        try:
-            lcov_report_dir = os.path.join(variant_name, 'lcov-report')
-            create_dir_command = "rm -rf " + lcov_report_dir
-            create_dir_command += " && mkdir " + lcov_report_dir + ";"
-
-            if subprocess.Popen(create_dir_command, shell=True).wait():
-                raise SystemExit(1)
-
-            info_file = os.path.join(lcov_report_dir, variant_name + '.info')
-            lcov_command = "../utils/lcov/lcov -c -d . -o " + info_file
-            lcov_command += " --source-dirs=" + os.getcwd()
-            lcov_command += ":" + os.path.join(
-                os.getcwd(), variant_name, 'include')
-            if subprocess.Popen(lcov_command, shell=True).wait():
-                raise SystemExit(1)
-
-            genhtml_command = "../utils/lcov/genhtml -o " + lcov_report_dir
-            genhtml_command += " " + info_file
-            if subprocess.Popen(genhtml_command, shell=True).wait():
-                raise SystemExit(1)
-        finally:
-            os.chdir("..")
+        lcov_report()
 
     if Params.g_options.doxygen:
-        doxygen_config = os.path.join('doc', 'doxygen.conf')
-        if subprocess.Popen(['doxygen', doxygen_config]).wait():
+        doxygen()
+
+
+def doxygen():
+    doxygen_config = os.path.join('doc', 'doxygen.conf')
+    if subprocess.Popen(['doxygen', doxygen_config]).wait():
+        raise SystemExit(1)
+
+
+def lcov_report():
+    env = Params.g_build.env_of_name('default')
+    variant_name = env['NS3_ACTIVE_VARIANT']
+
+    if 'gcov' not in variant_name:
+        Params.fatal("project not configured for code coverage;"
+                     " reconfigure with --enable-gcov")
+
+    os.chdir(blddir)
+    try:
+        lcov_report_dir = os.path.join(variant_name, 'lcov-report')
+        create_dir_command = "rm -rf " + lcov_report_dir
+        create_dir_command += " && mkdir " + lcov_report_dir + ";"
+
+        if subprocess.Popen(create_dir_command, shell=True).wait():
             raise SystemExit(1)
+
+        info_file = os.path.join(lcov_report_dir, variant_name + '.info')
+        lcov_command = "../utils/lcov/lcov -c -d . -o " + info_file
+        lcov_command += " --source-dirs=" + os.getcwd()
+        lcov_command += ":" + os.path.join(
+            os.getcwd(), variant_name, 'include')
+        if subprocess.Popen(lcov_command, shell=True).wait():
+            raise SystemExit(1)
+
+        genhtml_command = "../utils/lcov/genhtml -o " + lcov_report_dir
+        genhtml_command += " " + info_file
+        if subprocess.Popen(genhtml_command, shell=True).wait():
+            raise SystemExit(1)
+    finally:
+        os.chdir("..")
 
