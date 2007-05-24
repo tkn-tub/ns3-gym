@@ -5,9 +5,6 @@ import shlex
 
 import Params
 import Object
-import Action
-import Common
-import shutil
 import pproc as subprocess
 
 Params.g_autoconfig = 1
@@ -20,56 +17,6 @@ APPNAME = 'ns-3-waf'
 srcdir = '.'
 blddir = 'build'
 
-class Ns3Header(Object.genobj):
-    """A set of NS-3 header files"""
-    def __init__(self, env=None):
-        Object.genobj.__init__(self, 'other')
-        self.inst_var = 'INCLUDEDIR'
-        self.inst_dir = 'ns3'
-        self.env = env
-        if not self.env:
-            self.env = Params.g_build.m_allenvs['default']
-
-    def apply(self):
-        ns3_dir_node = Params.g_build.m_srcnode.find_dir("ns3")
-        inputs = []
-        outputs = []
-        for filename in self.to_list(self.source):
-            src_node = self.path.find_source(filename)
-            if src_node is None:
-                Params.fatal("source ns3 header file %s not found" % (filename,))
-            dst_node = ns3_dir_node.find_build(os.path.basename(filename))
-            assert dst_node is not None
-            inputs.append(src_node)
-            outputs.append(dst_node)
-        task = self.create_task('ns3_headers', self.env, 1)
-        task.set_inputs(inputs)
-        task.set_outputs(outputs)
-
-    def install(self):
-        for i in self.m_tasks:
-            current = Params.g_build.m_curdirnode
-            lst = map(lambda a: a.relpath_gen(current), i.m_outputs)
-            Common.install_files(self.inst_var, self.inst_dir, lst)
-
-def _ns3_headers_inst(task):
-    assert len(task.m_inputs) == len(task.m_outputs)
-    inputs = [node.srcpath(task.m_env) for node in task.m_inputs]
-    outputs = [node.bldpath(task.m_env) for node in task.m_outputs]
-    for src, dst in zip(inputs, outputs):
-        try:
-            os.chmod(dst, 0600)
-        except OSError:
-            pass
-        shutil.copy2(src, dst)
-        ## make the headers in builddir read-only, to prevent
-        ## accidental modification
-        os.chmod(dst, 0400)
-    return 0
-
-def init():
-    Object.register('ns3header', Ns3Header)
-    Action.Action('ns3_headers', func=_ns3_headers_inst, color='BLUE')
 
 def set_options(opt):
     # options provided by the modules
