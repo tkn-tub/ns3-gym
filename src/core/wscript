@@ -24,7 +24,6 @@ def build(bld):
     core.name = 'ns3-core'
     core.target = core.name
     core.source = [
-        'reference-list-test.cc',
         'callback-test.cc',
         'debug.cc',
         'assert.cc',
@@ -53,7 +52,6 @@ def build(bld):
     headers = bld.create_obj('ns3header')
     headers.source = [
         'system-wall-clock-ms.h',
-        'reference-list.h',
         'callback.h',
         'ptr.h',
         'object.h',
