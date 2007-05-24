@@ -171,6 +171,19 @@ bool operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
 template <typename T1, typename T2>
 Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
 
+template <typename T>
+struct CallbackTraits;
+
+template <typename T>
+struct CallbackTraits<Ptr<T> >
+{
+  static T & GetReference (Ptr<T> const p)
+  {
+    return *GetPointer (p);
+  }
+};
+
+
 } // namespace ns3
 
 

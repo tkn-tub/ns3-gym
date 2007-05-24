@@ -58,6 +58,18 @@ namespace ns3 {
  */
 class empty {};
 
+template <typename T>
+struct CallbackTraits;
+
+template <typename T>
+struct CallbackTraits<T *>
+{
+  static T & GetReference (T * const p)
+  {
+    return *p;
+  }
+};
+
 class CallbackImplBase {
 public:
   virtual ~CallbackImplBase () {}
@@ -161,22 +173,22 @@ public:
       : m_objPtr (objPtr), m_memPtr (mem_ptr) {}
   virtual ~MemPtrCallbackImpl () {}
   R operator() (void) {
-      return ((*m_objPtr).*m_memPtr) ();
+    return ((CallbackTraits<OBJ_PTR>::GetReference (m_objPtr)).*m_memPtr) ();
   }
   R operator() (T1 a1) {
-      return ((*m_objPtr).*m_memPtr) (a1);
+    return ((CallbackTraits<OBJ_PTR>::GetReference (m_objPtr)).*m_memPtr) (a1);
   }
   R operator() (T1 a1,T2 a2) {
-      return ((*m_objPtr).*m_memPtr) (a1,a2);
+    return ((CallbackTraits<OBJ_PTR>::GetReference (m_objPtr)).*m_memPtr) (a1, a2);
   }
   R operator() (T1 a1,T2 a2,T3 a3) {
-      return ((*m_objPtr).*m_memPtr) (a1,a2,a3);
+    return ((CallbackTraits<OBJ_PTR>::GetReference (m_objPtr)).*m_memPtr) (a1, a2, a3);
   }
   R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
-      return ((*m_objPtr).*m_memPtr) (a1,a2,a3,a4);
+    return ((CallbackTraits<OBJ_PTR>::GetReference (m_objPtr)).*m_memPtr) (a1, a2, a3, a4);
   }
   R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
-      return ((*m_objPtr).*m_memPtr) (a1,a2,a3,a4,a5);
+    return ((CallbackTraits<OBJ_PTR>::GetReference (m_objPtr)).*m_memPtr) (a1, a2, a3, a4, a5);
   }
   virtual bool IsEqual (CallbackImplBase const *other) const {
     MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5> const *otherDerived = 
@@ -323,12 +335,12 @@ private:
  * Build Callbacks for class method members which takes no arguments
  * and potentially return a value.
  */
-template <typename OBJ, typename R>
-Callback<R> MakeCallback (R (OBJ::*mem_ptr) (), OBJ *const objPtr) {
-  return Callback<R> (objPtr, mem_ptr);
+template <typename T, typename OBJ, typename R>
+Callback<R> MakeCallback (R (T::*memPtr) (void), OBJ objPtr) {
+  return Callback<R> (objPtr, memPtr);
 }
-template <typename OBJ, typename R>
-Callback<R> MakeCallback (R (OBJ::*mem_ptr) () const, OBJ const *const objPtr) {
+template <typename T, typename OBJ, typename R>
+Callback<R> MakeCallback (R (T::*mem_ptr) () const, OBJ const objPtr) {
   return Callback<R> (objPtr, mem_ptr);
 }
 /**
@@ -339,12 +351,12 @@ Callback<R> MakeCallback (R (OBJ::*mem_ptr) () const, OBJ const *const objPtr) {
  * Build Callbacks for class method members which takes one argument
  * and potentially return a value.
  */
-template <typename OBJ, typename R, typename T1>
-Callback<R,T1> MakeCallback (R (OBJ::*mem_ptr) (T1), OBJ *const objPtr) {
+template <typename T, typename OBJ, typename R, typename T1>
+Callback<R,T1> MakeCallback (R (T::*mem_ptr) (T1), OBJ *const objPtr) {
   return Callback<R,T1> (objPtr, mem_ptr);
 }
-template <typename OBJ, typename R, typename T1>
-Callback<R,T1> MakeCallback (R (OBJ::*mem_ptr) (T1) const, OBJ const *const objPtr) {
+template <typename T, typename OBJ, typename R, typename T1>
+Callback<R,T1> MakeCallback (R (T::*mem_ptr) (T1) const, OBJ const *const objPtr) {
   return Callback<R,T1> (objPtr, mem_ptr);
 }
 /**
@@ -355,12 +367,12 @@ Callback<R,T1> MakeCallback (R (OBJ::*mem_ptr) (T1) const, OBJ const *const objP
  * Build Callbacks for class method members which takes two arguments
  * and potentially return a value.
  */
-template <typename OBJ, typename R, typename T1, typename T2>
-Callback<R,T1,T2> MakeCallback (R (OBJ::*mem_ptr) (T1,T2), OBJ *const objPtr) {
+template <typename T, typename OBJ, typename R, typename T1, typename T2>
+Callback<R,T1,T2> MakeCallback (R (T::*mem_ptr) (T1,T2), OBJ *const objPtr) {
   return Callback<R,T1,T2> (objPtr, mem_ptr);
 }
-template <typename OBJ, typename R, typename T1, typename T2>
-Callback<R,T1,T2> MakeCallback (R (OBJ::*mem_ptr) (T1,T2) const, OBJ const*const objPtr) {
+template <typename T, typename OBJ, typename R, typename T1, typename T2>
+Callback<R,T1,T2> MakeCallback (R (T::*mem_ptr) (T1,T2) const, OBJ const*const objPtr) {
   return Callback<R,T1,T2> (objPtr, mem_ptr);
 }
 /**
@@ -371,12 +383,12 @@ Callback<R,T1,T2> MakeCallback (R (OBJ::*mem_ptr) (T1,T2) const, OBJ const*const
  * Build Callbacks for class method members which takes three arguments
  * and potentially return a value.
  */
-template <typename OBJ, typename R, typename T1,typename T2, typename T3>
-Callback<R,T1,T2,T3> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3), OBJ *const objPtr) {
+template <typename T, typename OBJ, typename R, typename T1,typename T2, typename T3>
+Callback<R,T1,T2,T3> MakeCallback (R (T::*mem_ptr) (T1,T2,T3), OBJ *const objPtr) {
   return Callback<R,T1,T2,T3> (objPtr, mem_ptr);
 }
-template <typename OBJ, typename R, typename T1,typename T2, typename T3>
-Callback<R,T1,T2,T3> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3) const, OBJ const*const objPtr) {
+template <typename T, typename OBJ, typename R, typename T1,typename T2, typename T3>
+Callback<R,T1,T2,T3> MakeCallback (R (T::*mem_ptr) (T1,T2,T3) const, OBJ const*const objPtr) {
   return Callback<R,T1,T2,T3> (objPtr, mem_ptr);
 }
 /**
@@ -387,12 +399,12 @@ Callback<R,T1,T2,T3> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3) const, OBJ const
  * Build Callbacks for class method members which takes four arguments
  * and potentially return a value.
  */
-template <typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4>
-Callback<R,T1,T2,T3,T4> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4), OBJ *const objPtr) {
+template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4>
+Callback<R,T1,T2,T3,T4> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4), OBJ *const objPtr) {
   return Callback<R,T1,T2,T3,T4> (objPtr, mem_ptr);
 }
-template <typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4>
-Callback<R,T1,T2,T3,T4> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4) const, OBJ const*const objPtr) {
+template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4>
+Callback<R,T1,T2,T3,T4> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4) const, OBJ const*const objPtr) {
   return Callback<R,T1,T2,T3,T4> (objPtr, mem_ptr);
 }
 /**
@@ -403,12 +415,12 @@ Callback<R,T1,T2,T3,T4> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4) const, OBJ
  * Build Callbacks for class method members which takes five arguments
  * and potentially return a value.
  */
-template <typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
-Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4,T5), OBJ *const objPtr) {
+template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
+Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4,T5), OBJ *const objPtr) {
   return Callback<R,T1,T2,T3,T4,T5> (objPtr, mem_ptr);
 }
-template <typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
-Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (OBJ::*mem_ptr) (T1,T2,T3,T4,T5) const, OBJ const*const objPtr) {
+template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
+Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4,T5) const, OBJ const*const objPtr) {
   return Callback<R,T1,T2,T3,T4,T5> (objPtr, mem_ptr);
 }
 
