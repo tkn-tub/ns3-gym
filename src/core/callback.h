@@ -269,6 +269,9 @@ public:
   bool IsNull (void) {
       return (m_impl.Get () == 0)?true:false;
   }
+  void Nullify (void) {
+    m_impl = 0;
+  }
 
   Callback () : m_impl () {}
   R operator() (void) const {

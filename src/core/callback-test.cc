@@ -192,7 +192,16 @@ CallbackTest::RunTests (void)
   f1 (1);
   g1 (2);
 
+  a1.Nullify ();
+  b1.Nullify ();
+  c1.Nullify ();
+  d1.Nullify ();
+  e1.Nullify ();
+  g1.Nullify ();
+
   Test8 (f1);
+
+  f1.Nullify ();
 
   Callback<void, int64_t,int64_t> a2;
 
