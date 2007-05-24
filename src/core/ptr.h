@@ -183,6 +183,17 @@ struct CallbackTraits<Ptr<T> >
   }
 };
 
+template <typename T>
+struct EventMemberImplTraits;
+
+template <typename T>
+struct EventMemberImplTraits<Ptr<T> >
+{
+  static T &GetReference (Ptr<T> p) {
+    return *PeekPointer (p);
+  }
+};
+
 
 
 } // namespace ns3

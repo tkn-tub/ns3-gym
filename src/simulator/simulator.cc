@@ -454,6 +454,7 @@ Time Now (void)
 #ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -474,6 +475,9 @@ static void foo5 (int, int, int, int, int)
 class SimulatorTests : public Test {
 public:
   SimulatorTests ();
+  // only here for testing of Ptr<>
+  void Ref (void);
+  void Unref (void);
   virtual ~SimulatorTests ();
   virtual bool RunTests (void);
 private:
@@ -501,6 +505,12 @@ SimulatorTests::SimulatorTests ()
   : Test ("Simulator")
 {}
 SimulatorTests::~SimulatorTests ()
+{}
+void 
+SimulatorTests::Ref (void)
+{}
+void 
+SimulatorTests::Unref (void)
 {}
 uint64_t
 SimulatorTests::NowUs (void)
@@ -634,6 +644,12 @@ SimulatorTests::RunTests (void)
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar3, this, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar4, this, 0, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar0, Ptr<SimulatorTests> (this));
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar1, Ptr<SimulatorTests> (this), 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar2, Ptr<SimulatorTests> (this), 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar3, Ptr<SimulatorTests> (this), 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar4, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar5, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
   Simulator::ScheduleNow (&foo0);
   Simulator::ScheduleNow (&foo1, 0);
   Simulator::ScheduleNow (&foo2, 0, 0);
@@ -646,6 +662,12 @@ SimulatorTests::RunTests (void)
   Simulator::ScheduleNow (&SimulatorTests::bar3, this, 0, 0, 0);
   Simulator::ScheduleNow (&SimulatorTests::bar4, this, 0, 0, 0, 0);
   Simulator::ScheduleNow (&SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar0, Ptr<SimulatorTests> (this));
+  Simulator::ScheduleNow (&SimulatorTests::bar1, Ptr<SimulatorTests> (this), 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar2, Ptr<SimulatorTests> (this), 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar3, Ptr<SimulatorTests> (this), 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar4, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar5, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&foo0);
   Simulator::ScheduleDestroy (&foo1, 0);
   Simulator::ScheduleDestroy (&foo2, 0, 0);
@@ -658,6 +680,12 @@ SimulatorTests::RunTests (void)
   Simulator::ScheduleDestroy (&SimulatorTests::bar3, this, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar4, this, 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar0, Ptr<SimulatorTests> (this));
+  Simulator::ScheduleDestroy (&SimulatorTests::bar1, Ptr<SimulatorTests> (this), 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar2, Ptr<SimulatorTests> (this), 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar3, Ptr<SimulatorTests> (this), 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar4, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar5, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
 
   Simulator::Run ();
   Simulator::Destroy ();
