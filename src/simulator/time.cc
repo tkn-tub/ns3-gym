@@ -1,6 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
+ * Copyright (c) 2007 Emmanuelle Laprise
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * TimeStep support by Emmanuelle Laprise <emmanuelle.laprise@bluekazoo.ca>
  */
 #include "nstime.h"
 #include "ns3/fatal-error.h"
