@@ -443,6 +443,11 @@ Simulator::IsExpired (EventId id)
   return GetPriv ()->IsExpired (id);
 }
 
+Time Now (void)
+{
+  return Time (Simulator::Now ());
+}
+
 }; // namespace ns3
 
 

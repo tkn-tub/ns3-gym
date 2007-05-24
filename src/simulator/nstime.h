@@ -574,20 +574,6 @@ Time FemtoSeconds (uint64_t fs);
  */
 Time TimeStep (uint64_t ts);
 
-/**
- * \brief create an ns3::Time instance which contains the
- *        current simulation time.
- *
- * This is really a shortcut for the ns3::Simulator::Now method.
- * It is typically used as shown below to schedule an event
- * which expires at the absolute time "2 seconds":
- * \code
- * Simulator::Schedule (Seconds (2.0) - Now (), &my_function);
- * \endcode
- */
-Time Now (void);
-
-
 // Explicit instatiation of the TimeUnit template for N=0, with a few
 // additional methods that should not be available for N != 0
 template <>

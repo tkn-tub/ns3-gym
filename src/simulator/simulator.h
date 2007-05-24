@@ -559,6 +559,19 @@ private:
   static SimulatorPrivate *m_priv;
 };
 
+/**
+ * \brief create an ns3::Time instance which contains the
+ *        current simulation time.
+ *
+ * This is really a shortcut for the ns3::Simulator::Now method.
+ * It is typically used as shown below to schedule an event
+ * which expires at the absolute time "2 seconds":
+ * \code
+ * Simulator::Schedule (Seconds (2.0) - Now (), &my_function);
+ * \endcode
+ */
+Time Now (void);
+
 }; // namespace ns3
 
 

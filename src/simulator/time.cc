@@ -18,9 +18,9 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "time.h"
-#include "simulator.h"
+#include "nstime.h"
 #include "ns3/fatal-error.h"
+#include <math.h>
 
 namespace ns3 {
 
@@ -244,11 +244,6 @@ Time FemtoSeconds (uint64_t fs)
 Time TimeStep (uint64_t ts)
 {
   return Time (HighPrecision (ts, false));
-}
-
-Time Now (void)
-{
-  return Time (Simulator::Now ());
 }
 
 TimeUnit<0>::TimeUnit (double scalar)
