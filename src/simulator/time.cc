@@ -24,26 +24,30 @@
 
 namespace ns3 {
 
+namespace TimeStepPrecision {
+
 static const uint64_t MS_FACTOR = (uint64_t)pow(10,3);
 static const uint64_t US_FACTOR = (uint64_t)pow(10,6);
 static const uint64_t NS_FACTOR = (uint64_t)pow(10,9);
 static const uint64_t PS_FACTOR = (uint64_t)pow(10,12);
 static const uint64_t FS_FACTOR = (uint64_t)pow(10,15);
-static ts_precision_t tsPrecision = NS;
-static uint64_t tsPrecFactor = NS_FACTOR;
+static precision_t g_tsPrecision = TimeStepPrecision::NS;
+static uint64_t g_tsPrecFactor = NS_FACTOR;
 
-ts_precision_t
-GetTsPrecision (void)
+precision_t
+Get (void)
 {
-  return tsPrecision;
+  return g_tsPrecision;
 }
 
 void 
-SetTsPrecision (ts_precision_t newTsPrecision)
+Set (precision_t newTsPrecision)
 {
-  tsPrecision = newTsPrecision;
-  tsPrecFactor = (uint64_t)pow(10, tsPrecision);
+  g_tsPrecision = newTsPrecision;
+  g_tsPrecFactor = (uint64_t)pow(10, g_tsPrecision);
 }
+
+} // namespace TimeStepPrecision
 
 TimeUnit<1>::TimeUnit(const std::string& s)
 {
@@ -54,36 +58,36 @@ TimeUnit<1>::TimeUnit(const std::string& s)
     std::string trailer = s.substr(n, std::string::npos);
     if (trailer == std::string("s"))
     {
-      m_data = HighPrecision (r * tsPrecFactor);
+      m_data = HighPrecision (r * TimeStepPrecision::g_tsPrecFactor);
       return;
     }
     if (trailer == std::string("ms"))
     {
-      m_data = HighPrecision ((int64_t)(r * (tsPrecFactor/pow(10,3))), 
+      m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor/pow(10,3))), 
                               false);
       return;
     }
     if (trailer == std::string("us"))
     {
-      m_data = HighPrecision ((int64_t)(r * (tsPrecFactor/pow(10,6))), 
+      m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor/pow(10,6))), 
                               false);
       return;
     }
     if (trailer == std::string("ns"))
     {
-      m_data = HighPrecision ((int64_t)(r * (tsPrecFactor/pow(10,9))), 
+      m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor/pow(10,9))), 
                               false);
       return;
     }
     if (trailer == std::string("ps"))
     {
-      m_data = HighPrecision ((int64_t)(r * (tsPrecFactor/pow(10,12))), 
+      m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor/pow(10,12))), 
                               false);
       return;
     }
     if (trailer == std::string("fs"))
     {
-      m_data = HighPrecision ((int64_t)(r * (tsPrecFactor/pow(10,15))), 
+      m_data = HighPrecision ((int64_t)(r * (TimeStepPrecision::g_tsPrecFactor/pow(10,15))), 
                               false);
       return;
     }
@@ -91,14 +95,14 @@ TimeUnit<1>::TimeUnit(const std::string& s)
   }
   //else
   //they didn't provide units, assume seconds
-  m_data = HighPrecision (atof(s.c_str()) * tsPrecFactor);
+  m_data = HighPrecision (atof(s.c_str()) * TimeStepPrecision::g_tsPrecFactor);
 }
 
 double 
 TimeUnit<1>::GetSeconds (void) const
 {
   double timeValue = GetHighPrecision ().GetDouble ();
-  return timeValue/tsPrecFactor;
+  return timeValue/TimeStepPrecision::g_tsPrecFactor;
 }
 
 int64_t
@@ -106,14 +110,14 @@ TimeUnit<1>::ConvertToUnits (int64_t timeValue, uint64_t unitFactor) const
 {
   uint64_t precFactor;
   // In order to avoid conversion to double, precFactor can't be less 1
-  if (tsPrecFactor < unitFactor)
+  if (TimeStepPrecision::g_tsPrecFactor < unitFactor)
     {
-      precFactor = unitFactor / tsPrecFactor;
+      precFactor = unitFactor / TimeStepPrecision::g_tsPrecFactor;
       timeValue = timeValue * precFactor;
     }
   else
     {
-      precFactor = tsPrecFactor / unitFactor;
+      precFactor = TimeStepPrecision::g_tsPrecFactor / unitFactor;
       timeValue = timeValue / precFactor;
     }
   return timeValue;
@@ -124,7 +128,7 @@ int64_t
 TimeUnit<1>::GetMilliSeconds (void) const
 {
   int64_t ts = GetTimeStep();
-  int64_t ms = ConvertToUnits(ts, MS_FACTOR);
+  int64_t ms = ConvertToUnits(ts, TimeStepPrecision::MS_FACTOR);
 
   return ms;
 }
@@ -132,7 +136,7 @@ int64_t
 TimeUnit<1>::GetMicroSeconds (void) const
 {
   int64_t ts = GetTimeStep();
-  int64_t us = ConvertToUnits(ts, US_FACTOR);
+  int64_t us = ConvertToUnits(ts, TimeStepPrecision::US_FACTOR);
 
   return us;
 }
@@ -140,7 +144,7 @@ int64_t
 TimeUnit<1>::GetNanoSeconds (void) const
 {
   int64_t ts = GetTimeStep();
-  int64_t ns = ConvertToUnits(ts, NS_FACTOR);
+  int64_t ns = ConvertToUnits(ts, TimeStepPrecision::NS_FACTOR);
 
   return ns;
 }
@@ -148,7 +152,7 @@ int64_t
 TimeUnit<1>::GetPicoSeconds (void) const
 {
   int64_t ts = GetTimeStep();
-  int64_t ps = ConvertToUnits(ts, PS_FACTOR);
+  int64_t ps = ConvertToUnits(ts, TimeStepPrecision::PS_FACTOR);
 
   return ps;
 }
@@ -156,13 +160,13 @@ int64_t
 TimeUnit<1>::GetFemtoSeconds (void) const
 {
   int64_t ts = GetTimeStep();
-  int64_t fs = ConvertToUnits(ts, FS_FACTOR);
+  int64_t fs = ConvertToUnits(ts, TimeStepPrecision::FS_FACTOR);
 
   return fs;
 }
 
 /**
- * This returns the value with the precision defined in m_tsPrecision
+ * This returns the value with the precision defined in m_TimeStepPrecision::g_tsPrecision
  */
 int64_t
 TimeUnit<1>::GetTimeStep (void) const
@@ -181,7 +185,7 @@ operator<< (std::ostream& os, Time const& time)
 
 Time Seconds (double seconds)
 {
-  double d_sec = seconds * tsPrecFactor;
+  double d_sec = seconds * TimeStepPrecision::g_tsPrecFactor;
   return Time (HighPrecision (d_sec));
   //  return Time (HighPrecision ((int64_t)d_sec, false));
 }
@@ -192,14 +196,14 @@ TimeUnit<1>::UnitsToTimestep (uint64_t unitValue,
 {
   uint64_t precFactor;
   // In order to avoid conversion to double, precFactor can't be less 1
-  if (tsPrecFactor < unitFactor)
+  if (TimeStepPrecision::g_tsPrecFactor < unitFactor)
     {
-      precFactor = unitFactor / tsPrecFactor;
+      precFactor = unitFactor / TimeStepPrecision::g_tsPrecFactor;
       unitValue = unitValue / precFactor;
     }
   else
     {
-      precFactor = tsPrecFactor / unitFactor;
+      precFactor = TimeStepPrecision::g_tsPrecFactor / unitFactor;
       unitValue = unitValue * precFactor;
     }
   return unitValue;
@@ -207,35 +211,35 @@ TimeUnit<1>::UnitsToTimestep (uint64_t unitValue,
 
 Time MilliSeconds (uint64_t ms)
 {
-  uint64_t ts = TimeUnit<1>::UnitsToTimestep(ms, MS_FACTOR);
+  uint64_t ts = TimeUnit<1>::UnitsToTimestep(ms, TimeStepPrecision::MS_FACTOR);
   return TimeStep(ts);
 }
 
 Time MicroSeconds (uint64_t us)
 {
-  uint64_t ts = TimeUnit<1>::UnitsToTimestep(us, US_FACTOR);
+  uint64_t ts = TimeUnit<1>::UnitsToTimestep(us, TimeStepPrecision::US_FACTOR);
   return TimeStep(ts);
 }
 
 Time NanoSeconds (uint64_t ns)
 {
-  uint64_t ts = TimeUnit<1>::UnitsToTimestep(ns, NS_FACTOR);
+  uint64_t ts = TimeUnit<1>::UnitsToTimestep(ns, TimeStepPrecision::NS_FACTOR);
   return TimeStep(ts);
 }
 Time PicoSeconds (uint64_t ps)
 {
-  uint64_t ts = TimeUnit<1>::UnitsToTimestep(ps, PS_FACTOR);
+  uint64_t ts = TimeUnit<1>::UnitsToTimestep(ps, TimeStepPrecision::PS_FACTOR);
   return TimeStep(ts);
 }
 Time FemtoSeconds (uint64_t fs)
 {
-  uint64_t ts = TimeUnit<1>::UnitsToTimestep(fs, FS_FACTOR);
+  uint64_t ts = TimeUnit<1>::UnitsToTimestep(fs, TimeStepPrecision::FS_FACTOR);
   return TimeStep(ts);
 }
 
 /*
  * The timestep value passed to this function must be of the precision
- * of m_tsPrecision
+ * of m_TimeStepPrecision::g_tsPrecision
  */
 Time TimeStep (uint64_t ts)
 {
@@ -296,10 +300,10 @@ public:
 
   /*
    * Verifies that the TimeUnit class stores values with the precision
-   * set in the variable m_tsPrecision
+   * set in the variable m_TimeStepPrecision::g_tsPrecision
    * Checks that overflow and underflow occur at expected numbers
    */
-  void CheckPrecision(ts_precision_t prec, uint64_t val, bool *ok,
+  void CheckPrecision(TimeStepPrecision::precision_t prec, uint64_t val, bool *ok,
                       bool verbose = false);
 
   /*
@@ -346,41 +350,41 @@ bool TimeTests::RunTests (void)
   //  CheckConversions((uint64_t)3341039, &ok);
 
   // Now vary the precision and check the conversions
-  if (GetTsPrecision() != NS) {
+  if (TimeStepPrecision::Get () != TimeStepPrecision::NS) {
     ok = false;
   }
 
-  CheckPrecision(US, 7, &ok);
+  CheckPrecision(TimeStepPrecision::US, 7, &ok);
 
   CheckConversions((uint64_t)7, &ok);
   CheckConversions((uint64_t)546, &ok);
   CheckConversions((uint64_t)6231, &ok);
   //  CheckConversions((uint64_t)1234639, &ok);
 
-  CheckPrecision(MS, 3, &ok);
+  CheckPrecision(TimeStepPrecision::MS, 3, &ok);
 
   CheckConversions((uint64_t)3, &ok);
   CheckConversions((uint64_t)134, &ok);
   CheckConversions((uint64_t)2341, &ok);
   //  CheckConversions((uint64_t)8956239, &ok);
 
-  CheckPrecision(PS, 21, &ok);
+  CheckPrecision(TimeStepPrecision::PS, 21, &ok);
 
   CheckConversions((uint64_t)4, &ok);
   CheckConversions((uint64_t)342, &ok);
   CheckConversions((uint64_t)1327, &ok);
   //  CheckConversions((uint64_t)5439627, &ok);
 
-  CheckPrecision(NS, 12, &ok);
+  CheckPrecision(TimeStepPrecision::NS, 12, &ok);
   CheckConversions((uint64_t)12, &ok);
 
-  CheckPrecision(SEC, 7, &ok);
+  CheckPrecision(TimeStepPrecision::S, 7, &ok);
   CheckConversions((uint64_t)7, &ok);
 
-  CheckPrecision(FS, 5, &ok);
+  CheckPrecision(TimeStepPrecision::FS, 5, &ok);
   CheckConversions((uint64_t)5, &ok);
 
-  SetTsPrecision(NS);
+  TimeStepPrecision::Set (TimeStepPrecision::NS);
 
   return ok;
 }
@@ -644,14 +648,14 @@ void TimeTests::CheckConversions(uint64_t tval, bool *ok, bool verbose) {
   
 }
 
-void TimeTests::CheckPrecision(ts_precision_t prec, uint64_t val, bool *ok, 
+void TimeTests::CheckPrecision(TimeStepPrecision::precision_t prec, uint64_t val, bool *ok, 
                                bool verbose) {
   if (verbose) {
     std::cout << "check precision 10^-" << prec << std::endl;
   }
 
-  SetTsPrecision(prec);
-  if (GetTsPrecision() != prec) {
+  TimeStepPrecision::Set (prec);
+  if (TimeStepPrecision::Get () != prec) {
     ok = false;
   }
 
@@ -682,7 +686,7 @@ void TimeTests::CheckTimeSec (std::string test_id, double actual,
                               double expected, bool *flag, double precMultFactor,
                               bool verbose)
 {
-  double prec = pow(10,-((double)(ns3::tsPrecision))) * precMultFactor;
+  double prec = pow(10,-((double)(ns3::TimeStepPrecision::g_tsPrecision))) * precMultFactor;
   if ((actual < (expected-prec)) || (actual > (expected+prec))) {
     std::cout << "FAIL " << test_id 
               << " Expected:" << expected 
@@ -703,7 +707,7 @@ void TimeTests::CheckTime (std::string test_id, int64_t actual,
                            int64_t expected, bool *flag, double precMultFactor,
                            bool verbose)
 {
-  double prec = pow(10,-((double)(ns3::tsPrecision))) * precMultFactor;
+  double prec = pow(10,-((double)(ns3::TimeStepPrecision::g_tsPrecision))) * precMultFactor;
   if ((actual < (expected-prec)) || (actual > (expected+prec))) {
     std::cout << "FAIL " << test_id 
               << " Expected:" << expected 

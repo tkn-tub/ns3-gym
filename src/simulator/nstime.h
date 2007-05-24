@@ -30,6 +30,34 @@
 
 namespace ns3 {
 
+namespace TimeStepPrecision {
+
+enum precision_t {
+  S  = 0,
+  MS = 3,
+  US = 6,
+  NS = 9,
+  PS = 12,
+  FS = 15
+};
+/**
+ * \param precision the new precision to use
+ *
+ * This should be invoked before any Time object 
+ * is created. i.e., it should be invoked at the very start
+ * of every simulation. The unit specified by this method
+ * is used as the unit of the internal simulation time
+ * which is stored as a 64 bit integer.
+ */
+void Set (precision_t precision);
+/**
+ * \returns the currently-used time precision.
+ */
+precision_t Get (void);
+
+} // namespace TimeStepPrecision
+
+
 /**
  * \brief keep track of time unit.
  *
@@ -75,31 +103,6 @@ namespace ns3 {
  *  - \ref ns3-Time-Max ns3::Max
  *  - \ref ns3-Time-Min ns3::Min
  */
-  
-typedef uint64_t ts_precision_t;
-  /*
-   * Determines the base unit to store time values. If the
-   * SetTsPrecision function is called, it must be set before any
-   * TimeValue objects are created. All TimeUnit objects will use the
-   * same time precision value.  The actual time can be
-   * extracted as follows: m_data*10^(-m_tsPrecision) seconds.
-   * tsPrecision == 0 : m_data stored in sec
-   * tsPrecision == 3 : m_data stored in ms
-   * tsPrecision == 6 : m_data stored in us
-   * tsPrecision == 9 : m_data stored in ns
-   * tsPrecision == 12 : m_data stored in ps
-   * The default timestep precision units are ns.
-   */
-static const ts_precision_t SEC = 0;
-static const ts_precision_t MS = 3;
-static const ts_precision_t US = 6;
-static const ts_precision_t NS = 9;
-static const ts_precision_t PS = 12;
-static const ts_precision_t FS = 15;
-
-void SetTsPrecision(ts_precision_t newTsPrecision);
-ts_precision_t GetTsPrecision();
-
 template <int N>
 class TimeUnit
 {
@@ -428,7 +431,7 @@ public:
   }
 
   static uint64_t UnitsToTimestep (uint64_t unitValue, 
-                                   ts_precision_t unitFactor);
+                                   uint64_t unitFactor);
 private:
   HighPrecision m_data;
 
