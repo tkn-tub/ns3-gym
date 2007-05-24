@@ -450,7 +450,7 @@ private:
  * the return value of the ns3::Simulator::Now method
  * and is needed for the Simulator::Schedule methods
  *
- * Time instances can be created through any of the following classes:
+ * Time instances can be created through any of the following functions:
  *  - ns3::Seconds
  *  - ns3::MilliSeconds
  *  - ns3::MicroSeconds
@@ -495,6 +495,18 @@ private:
  * int64_t GetNanoSeconds (void) const;
  * \endcode
  * returns an approximation in nanoseconds of the time stored in this
+ *          instance.
+ *
+ * \code
+ * int64_t GetPicoSeconds (void) const;
+ * \endcode
+ * returns an approximation in picoseconds of the time stored in this
+ *          instance.
+ *
+ * \code
+ * int64_t GetFemtoSeconds (void) const;
+ * \endcode
+ * returns an approximation in femtoseconds of the time stored in this
  *          instance.
  */
 typedef TimeUnit<1> Time;
@@ -563,15 +575,8 @@ Time PicoSeconds (uint64_t ps);
  * \endcode
  */
 Time FemtoSeconds (uint64_t fs);
-/**
- * \brief create ns3::Time instances in units of m_tsPrecision.
- *
- * For example:
- * \code
- * Time t = TimeStep (2);
- * Simulator::Schedule (TimeStep (5), ...);
- * \endcode
- */
+
+// internal function not publicly documented
 Time TimeStep (uint64_t ts);
 
 // Explicit instatiation of the TimeUnit template for N=0, with a few
