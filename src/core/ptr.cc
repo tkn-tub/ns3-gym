@@ -284,10 +284,12 @@ PtrTest::RunTests (void)
   {
     Ptr<NoCount> p = MakeNewObject<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
+    callback ();
   }
   {
     Ptr<const NoCount> p = MakeNewObject<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
+    callback ();
   }
 
 #if 0

@@ -179,9 +179,10 @@ struct CallbackTraits<Ptr<T> >
 {
   static T & GetReference (Ptr<T> const p)
   {
-    return *GetPointer (p);
+    return *PeekPointer (p);
   }
 };
+
 
 
 } // namespace ns3
