@@ -10,8 +10,8 @@ import pproc as subprocess
 Params.g_autoconfig = 1
 
 # the following two variables are used by the target "waf dist"
-VERSION = '3.0.1'
-APPNAME = 'ns-3-waf'
+VERSION = file("VERSION").read().strip()
+APPNAME = 'ns'
 
 # these variables are mandatory ('/' are converted automatically)
 srcdir = '.'
