@@ -88,7 +88,7 @@ SchedulerFactory::Add (const SchedulerFactory *factory,
 StringEnumDefaultValue *
 SchedulerFactory::GetDefault (void)
 {
-  static StringEnumDefaultValue value ("scheduler", "Event Scheduler algorithm");
+  static StringEnumDefaultValue value ("Scheduler", "Event Scheduler algorithm");
   return &value;
 }
 

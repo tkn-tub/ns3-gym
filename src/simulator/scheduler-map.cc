@@ -44,7 +44,7 @@ static class SchedulerMapFactory : public SchedulerFactory
 public:
   SchedulerMapFactory ()
   {
-    SchedulerFactory::Add (this, "map");
+    SchedulerFactory::Add (this, "Map");
   }
 private:
   virtual Scheduler *DoCreate (void) const

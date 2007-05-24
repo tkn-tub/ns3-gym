@@ -33,7 +33,7 @@ static class SchedulerListFactory : public SchedulerFactory
 public:
   SchedulerListFactory ()
   {
-    SchedulerFactory::AddDefault (this, "list");
+    SchedulerFactory::AddDefault (this, "List");
   }
 private:
   virtual Scheduler *DoCreate (void) const
