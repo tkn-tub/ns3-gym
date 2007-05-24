@@ -22,6 +22,7 @@
  */
 #include "nstime.h"
 #include "ns3/fatal-error.h"
+#include "ns3/default-value.h"
 #include <math.h>
 
 namespace ns3 {
@@ -33,20 +34,29 @@ static const uint64_t US_FACTOR = (uint64_t)pow(10,6);
 static const uint64_t NS_FACTOR = (uint64_t)pow(10,9);
 static const uint64_t PS_FACTOR = (uint64_t)pow(10,12);
 static const uint64_t FS_FACTOR = (uint64_t)pow(10,15);
-static precision_t g_tsPrecision = TimeStepPrecision::NS;
 static uint64_t g_tsPrecFactor = NS_FACTOR;
+
+static EnumDefaultValue<enum precision_t> g_precisionDefaultValue ("TimeStepPrecision", 
+                                                                   "The time unit of the internal 64 bit integer time.",
+                                                                   NS, "NS",
+                                                                   S, "S",
+                                                                   MS, "MS",
+                                                                   US, "US",
+                                                                   PS, "PS",
+                                                                   FS, "FS",
+                                                                   0, (void *)0);
 
 precision_t
 Get (void)
 {
-  return g_tsPrecision;
+  return g_precisionDefaultValue.GetValue ();
 }
 
 void 
-Set (precision_t newTsPrecision)
+Set (precision_t precision)
 {
-  g_tsPrecision = newTsPrecision;
-  g_tsPrecFactor = (uint64_t)pow(10, g_tsPrecision);
+  g_precisionDefaultValue.SetValue (precision);
+  g_tsPrecFactor = (uint64_t)pow(10, precision);
 }
 
 } // namespace TimeStepPrecision
@@ -168,7 +178,7 @@ TimeUnit<1>::GetFemtoSeconds (void) const
 }
 
 /**
- * This returns the value with the precision defined in m_TimeStepPrecision::g_tsPrecision
+ * This returns the value with the precision returned by TimeStepPrecision::Get
  */
 int64_t
 TimeUnit<1>::GetTimeStep (void) const
@@ -241,7 +251,7 @@ Time FemtoSeconds (uint64_t fs)
 
 /*
  * The timestep value passed to this function must be of the precision
- * of TimeStepPrecision::g_tsPrecision
+ * of TimeStepPrecision::Get
  */
 Time TimeStep (uint64_t ts)
 {
@@ -297,7 +307,7 @@ public:
 
   /*
    * Verifies that the TimeUnit class stores values with the precision
-   * set in the variable TimeStepPrecision::g_tsPrecision
+   * set in the variable TimeStepPrecision::Get
    * Checks that overflow and underflow occur at expected numbers
    */
   void CheckPrecision(TimeStepPrecision::precision_t prec, uint64_t val, bool *ok,
@@ -382,6 +392,13 @@ bool TimeTests::RunTests (void)
   CheckConversions((uint64_t)5, &ok);
 
   TimeStepPrecision::Set (TimeStepPrecision::NS);
+
+  Bind ("TimeStepPrecision", "S");
+  Bind ("TimeStepPrecision", "MS");
+  Bind ("TimeStepPrecision", "US");
+  Bind ("TimeStepPrecision", "NS");
+  Bind ("TimeStepPrecision", "PS");
+  Bind ("TimeStepPrecision", "FS");
 
   return ok;
 }
@@ -683,7 +700,7 @@ void TimeTests::CheckTimeSec (std::string test_id, double actual,
                               double expected, bool *flag, double precMultFactor,
                               bool verbose)
 {
-  double prec = pow(10,-((double)(ns3::TimeStepPrecision::g_tsPrecision))) * precMultFactor;
+  double prec = pow(10,-((double)(ns3::TimeStepPrecision::Get ()))) * precMultFactor;
   if ((actual < (expected-prec)) || (actual > (expected+prec))) {
     std::cout << "FAIL " << test_id 
               << " Expected:" << expected 
@@ -704,7 +721,7 @@ void TimeTests::CheckTime (std::string test_id, int64_t actual,
                            int64_t expected, bool *flag, double precMultFactor,
                            bool verbose)
 {
-  double prec = pow(10,-((double)(ns3::TimeStepPrecision::g_tsPrecision))) * precMultFactor;
+  double prec = pow(10,-((double)(ns3::TimeStepPrecision::Get ()))) * precMultFactor;
   if ((actual < (expected-prec)) || (actual > (expected+prec))) {
     std::cout << "FAIL " << test_id 
               << " Expected:" << expected 
