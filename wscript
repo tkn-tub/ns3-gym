@@ -2,6 +2,7 @@
 import os
 import sys
 import shlex
+import shutil
 
 import Params
 import Object
@@ -17,6 +18,9 @@ APPNAME = 'ns'
 srcdir = '.'
 blddir = 'build'
 
+def dist_hook(srcdir, blddir):
+    shutil.rmtree("doc/html")
+    shutil.rmtree("doc/latex")
 
 def set_options(opt):
     # options provided by the modules
