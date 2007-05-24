@@ -239,7 +239,7 @@ Time FemtoSeconds (uint64_t fs)
 
 /*
  * The timestep value passed to this function must be of the precision
- * of m_TimeStepPrecision::g_tsPrecision
+ * of TimeStepPrecision::g_tsPrecision
  */
 Time TimeStep (uint64_t ts)
 {
@@ -300,7 +300,7 @@ public:
 
   /*
    * Verifies that the TimeUnit class stores values with the precision
-   * set in the variable m_TimeStepPrecision::g_tsPrecision
+   * set in the variable TimeStepPrecision::g_tsPrecision
    * Checks that overflow and underflow occur at expected numbers
    */
   void CheckPrecision(TimeStepPrecision::precision_t prec, uint64_t val, bool *ok,
