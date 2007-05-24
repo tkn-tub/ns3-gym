@@ -31,7 +31,6 @@ ns3.add_extra_dist ('VERSION')
 core = build.Ns3Module('core', 'src/core')
 ns3.add(core)
 core.add_sources([
-    'reference-list-test.cc',
     'callback-test.cc',
     'debug.cc',
     'assert.cc',
@@ -63,7 +62,6 @@ core.add_headers ([
 ])
 core.add_inst_headers([
     'system-wall-clock-ms.h',
-    'reference-list.h',
     'callback.h',
     'ptr.h',
     'object.h',
