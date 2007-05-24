@@ -448,7 +448,9 @@ private:
  *
  * This is an instance of type ns3::TimeUnit<1>: it is
  * the return value of the ns3::Simulator::Now method
- * and is needed for the Simulator::Schedule methods
+ * and is needed for the Simulator::Schedule methods.
+ * The precision of the underlying Time unit can be
+ * changed with calls to TimeStepPrecision::Set.
  *
  * Time instances can be created through any of the following functions:
  *  - ns3::Seconds

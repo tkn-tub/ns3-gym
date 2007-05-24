@@ -37,11 +37,13 @@ class SchedulerFactory;
  * \brief Control the scheduling of simulation events. 
  *
  * The internal simulation clock is maintained
- * as a 64-bit integer in nanosecond units. This means that it is
+ * as a 64-bit integer in a unit specified by the user
+ * through the TimeStepPrecision::Set function. This means that it is
  * not possible to specify event expiration times with anything better
- * than nanosecond accuracy. Events whose expiration time is
- * the same are scheduled in FIFO order: the first event inserted in the
- * Scheduling queue is scheduled to expire first.
+ * than this user-specified accuracy. Events whose expiration time is
+ * the same modulo this accuracy are scheduled in FIFO order: the 
+ * first event inserted in the scheduling queue is scheduled to 
+ * expire first.
  * 
  * A simple example of how to use the Simulator class to schedule events
  * is shown below:
