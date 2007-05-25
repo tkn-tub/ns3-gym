@@ -34,12 +34,12 @@ public:
   static InterfaceId LookupParent (InterfaceId iid);
   ~InterfaceId ();
 private:
-  InterfaceId (uint32_t iid);
+  InterfaceId (uint16_t iid);
   friend InterfaceId MakeInterfaceId (std::string name, const InterfaceId &parent);
   friend InterfaceId MakeObjectInterfaceId (void);
   friend bool operator == (const InterfaceId &a, const InterfaceId &b);
   friend bool operator != (const InterfaceId &a, const InterfaceId &b);
-  uint32_t m_iid;
+  uint16_t m_iid;
 };
 
 InterfaceId

@@ -32,20 +32,20 @@ class IidManager : public ns3::UidManager
 class IidTree
 {
 public:
-  void SetParent (uint32_t child, const uint32_t *parent);
-  uint32_t LookupParent (uint32_t child);
+  void SetParent (uint16_t child, const uint16_t *parent);
+  uint16_t LookupParent (uint16_t child);
 private:
-  std::vector<const uint32_t *> m_parents;
+  std::vector<const uint16_t *> m_parents;
 };
 
 void 
-IidTree::SetParent (uint32_t child, const uint32_t *parent)
+IidTree::SetParent (uint16_t child, const uint16_t *parent)
 {
   m_parents.resize (child+1);
   m_parents[child] = parent;
 }
-uint32_t 
-IidTree::LookupParent (uint32_t child)
+uint16_t 
+IidTree::LookupParent (uint16_t child)
 {
   return *(m_parents[child]);
 }
@@ -54,7 +54,7 @@ IidTree::LookupParent (uint32_t child)
 
 namespace ns3 {
 
-InterfaceId::InterfaceId (uint32_t iid)
+InterfaceId::InterfaceId (uint16_t iid)
   : m_iid (iid)
 {}
 InterfaceId::~InterfaceId ()
@@ -62,7 +62,9 @@ InterfaceId::~InterfaceId ()
 InterfaceId 
 InterfaceId::LookupByName (std::string name)
 {
-  return InterfaceId (Singleton<IidManager>::Get ()->LookupByName (name));
+  uint32_t uid = Singleton<IidManager>::Get ()->LookupByName (name);
+  NS_ASSERT (uid <= 0xffff);
+  return InterfaceId (uid);
 }
 InterfaceId 
 InterfaceId::LookupParent (InterfaceId iid)
@@ -83,7 +85,9 @@ bool operator != (const InterfaceId &a, const InterfaceId &b)
 InterfaceId
 MakeInterfaceId (std::string name, const InterfaceId &parent)
 {
-  InterfaceId iid = Singleton<IidManager>::Get ()->Allocate (name);
+  uint32_t uid = Singleton<IidManager>::Get ()->Allocate (name);
+  NS_ASSERT (uid <= 0xffff);
+  InterfaceId iid = uid;
   Singleton<IidTree>::Get ()->SetParent (iid.m_iid, &parent.m_iid);
   return iid;
 }
