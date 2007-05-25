@@ -428,6 +428,12 @@ ns3.add(sample_default_value)
 sample_default_value.add_deps(['core', 'simulator', 'node', 'p2p'])
 sample_default_value.add_source('main-default-value.cc')
 
+sample_object = build.Ns3Module('sample-object', 'samples')
+sample_object.set_executable()
+ns3.add(sample_object)
+sample_object.add_deps(['core'])
+sample_object.add_source('main-object.cc')
+
 # examples
 example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')
 example_simple_p2p.set_executable()
