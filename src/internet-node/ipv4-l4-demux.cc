@@ -30,12 +30,13 @@
 
 namespace ns3 {
 
-const InterfaceId Ipv4L4Demux::iid ("Ipv4L4Demux");
+const InterfaceId Ipv4L4Demux::iid = MakeInterfaceId ("Ipv4L4Demux", Object::iid);
 
 Ipv4L4Demux::Ipv4L4Demux (Ptr<INode> node)
-  : Interface (Ipv4L4Demux::iid),
-    m_node (node)
-{}
+  : m_node (node)
+{
+  SetInterfaceId (Ipv4L4Demux::iid);
+}
 
 Ipv4L4Demux::~Ipv4L4Demux()
 {}
@@ -50,7 +51,7 @@ Ipv4L4Demux::DoDispose (void)
     }
   m_protocols.clear ();
   m_node = 0;
-  Interface::DoDispose ();
+  Object::DoDispose ();
 }
 
 TraceResolver *

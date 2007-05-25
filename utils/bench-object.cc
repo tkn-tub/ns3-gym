@@ -7,7 +7,7 @@ using namespace ns3;
 class BaseA : public ns3::Object
 {
 public:
-  static const ns3::MyInterfaceId iid;
+  static const ns3::InterfaceId iid;
   BaseA ()
   {
     SetInterfaceId (BaseA::iid);
@@ -15,7 +15,7 @@ public:
   virtual void Dispose (void) {}
 };
 
-const ns3::MyInterfaceId BaseA::iid = 
+const ns3::InterfaceId BaseA::iid = 
 ns3::MakeInterfaceId ("BaseABench", Object::iid);
 
 

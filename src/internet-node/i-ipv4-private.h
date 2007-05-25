@@ -21,7 +21,7 @@
 #ifndef I_IPV4_PRIVATE_H
 #define I_IPV4_PRIVATE_H
 
-#include "ns3/interface.h"
+#include "ns3/object.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
 #include <stdint.h>
@@ -35,7 +35,7 @@ class TraceResolver;
 class Ipv4Interface;
 class NetDevice;
 
-class IIpv4Private : public Interface
+class IIpv4Private : public Object
 {
 public:
   static const InterfaceId iid;

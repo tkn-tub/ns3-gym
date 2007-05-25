@@ -70,12 +70,12 @@ INodeImpl::Construct (void)
   Ptr<IIpv4Impl> ipv4Impl = MakeNewObject<IIpv4Impl> (ipv4);
   Ptr<IIpv4Private> ipv4Private = MakeNewObject<IIpv4Private> (ipv4);
 
-  Interface::AddInterface (ipv4Private);
-  Interface::AddInterface (ipv4Impl);
-  Interface::AddInterface (arpPrivate);
-  Interface::AddInterface (udpImpl);
-  Interface::AddInterface (l3Demux);
-  Interface::AddInterface (ipv4L4Demux);
+  Object::AddInterface (ipv4Private);
+  Object::AddInterface (ipv4Impl);
+  Object::AddInterface (arpPrivate);
+  Object::AddInterface (udpImpl);
+  Object::AddInterface (l3Demux);
+  Object::AddInterface (ipv4L4Demux);
 }
 
 

@@ -25,7 +25,7 @@
 #include <stdint.h>
 #include "ns3/callback.h"
 #include "ns3/packet.h"
-#include "ns3/interface.h"
+#include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "mac-address.h"
 
@@ -55,7 +55,7 @@ class Channel;
  * this base class and implement your own version of the
  * NetDevice::SendTo method.
  */
-class NetDevice : public Interface
+class NetDevice : public Object
 {
 public:
   static const InterfaceId iid;

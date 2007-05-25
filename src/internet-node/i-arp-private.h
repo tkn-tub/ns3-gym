@@ -21,7 +21,7 @@
 #ifndef I_ARP_PRIVATE_H
 #define I_ARP_PRIVATE_H
 
-#include "ns3/interface.h"
+#include "ns3/object.h"
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {
@@ -31,7 +31,7 @@ class MacAddress;
 class Packet;
 class Arp;
 
-class IArpPrivate : public Interface
+class IArpPrivate : public Object
 {
 public:
   static const InterfaceId iid;

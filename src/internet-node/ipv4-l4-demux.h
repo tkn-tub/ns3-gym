@@ -26,7 +26,7 @@
 #define IPV4_L4_DEMUX_H
 
 #include <list>
-#include "ns3/interface.h"
+#include "ns3/object.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
@@ -39,7 +39,7 @@ class TraceContext;
 /**
  * \brief L4 Ipv4 Demux
  */
-class Ipv4L4Demux : public Interface
+class Ipv4L4Demux : public Object
 {
 public:
   static const InterfaceId iid;

@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
-#include "ns3/interface.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -40,7 +40,7 @@ class Ipv4Route;
  * This class also allows you to control the content of the ipv4 
  * forwarding table.
  */
-class IIpv4 : public Interface
+class IIpv4 : public Object
 {
 public:
   static const InterfaceId iid;

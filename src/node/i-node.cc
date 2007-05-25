@@ -30,21 +30,21 @@
 
 namespace ns3{
 
-const InterfaceId INode::iid ("INode");
+const InterfaceId INode::iid = MakeInterfaceId ("INode", Object::iid);
 
 INode::INode()
-  : Interface (INode::iid),
-    m_id(0), 
+  : m_id(0), 
     m_sid(0)
 {
+  SetInterfaceId (INode::iid);
   m_id = NodeList::Add (this);
 }
 
 INode::INode(uint32_t sid)
-  : Interface (INode::iid),
-    m_id(0), 
+  : m_id(0), 
     m_sid(sid)
 { 
+  SetInterfaceId (INode::iid);
   m_id = NodeList::Add (this);
 }
   
@@ -126,7 +126,7 @@ void INode::DoDispose()
       *i = 0;
     }
   m_applications.clear ();
-  Interface::DoDispose ();
+  Object::DoDispose ();
 }
 
 }//namespace ns3

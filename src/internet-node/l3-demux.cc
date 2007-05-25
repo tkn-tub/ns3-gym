@@ -29,12 +29,13 @@
 
 namespace ns3 {
 
-const InterfaceId L3Demux::iid ("L3Demux");
+const InterfaceId L3Demux::iid = MakeInterfaceId ("L3Demux", Object::iid);
 
 L3Demux::L3Demux (Ptr<INode> node)
-  : Interface (L3Demux::iid),
-    m_node (node)
-{}
+  : m_node (node)
+{
+  SetInterfaceId (L3Demux::iid);
+}
 
 L3Demux::~L3Demux()
 {}
@@ -49,7 +50,7 @@ L3Demux::DoDispose (void)
     }
   m_protocols.clear ();
   m_node = 0;
-  Interface::DoDispose ();
+  Object::DoDispose ();
 }
 
 TraceResolver *

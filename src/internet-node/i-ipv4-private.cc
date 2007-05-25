@@ -25,12 +25,13 @@
 
 namespace ns3 {
 
-const InterfaceId IIpv4Private::iid ("IIpv4Private");
+const InterfaceId IIpv4Private::iid = MakeInterfaceId ("IIpv4Private", Object::iid);
 
 IIpv4Private::IIpv4Private (Ptr<Ipv4> ipv4)
-  : Interface (IIpv4Private::iid),
-    m_ipv4 (ipv4)
-{}
+  : m_ipv4 (ipv4)
+{
+  SetInterfaceId (IIpv4Private::iid);
+}
 IIpv4Private::~IIpv4Private ()
 {
   NS_ASSERT (m_ipv4 == 0);
@@ -60,7 +61,7 @@ void
 IIpv4Private::DoDispose (void)
 {
   m_ipv4 = 0;
-  Interface::DoDispose ();
+  Object::DoDispose ();
 }
 
 } // namespace ns3

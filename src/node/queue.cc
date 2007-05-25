@@ -27,10 +27,9 @@ NS_DEBUG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
-const InterfaceId Queue::iid ("Queue");
+const InterfaceId Queue::iid = MakeInterfaceId ("Queue", Object::iid);
 
 Queue::Queue() : 
-  Interface (Queue::iid),
   m_nBytes(0), 
   m_nTotalReceivedBytes(0),
   m_nPackets(0), 
@@ -38,6 +37,7 @@ Queue::Queue() :
   m_nTotalDroppedBytes(0),
   m_nTotalDroppedPackets(0)
 {
+  SetInterfaceId (Queue::iid);
   NS_DEBUG("Queue::Queue ()");
 }
 

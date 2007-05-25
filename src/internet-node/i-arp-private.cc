@@ -25,12 +25,13 @@
 
 namespace ns3 {
 
-const InterfaceId IArpPrivate::iid ("IArpPrivate");
+const InterfaceId IArpPrivate::iid = MakeInterfaceId ("IArpPrivate", Object::iid);
 
 IArpPrivate::IArpPrivate (Ptr<Arp> arp)
-  : Interface (IArpPrivate::iid),
-    m_arp (arp)
-{}
+  : m_arp (arp)
+{
+  SetInterfaceId (IArpPrivate::iid);
+}
 IArpPrivate::~IArpPrivate ()
 {
   NS_ASSERT (m_arp == 0);
@@ -48,7 +49,7 @@ void
 IArpPrivate::DoDispose (void)
 {
   m_arp = 0;
-  Interface::DoDispose ();
+  Object::DoDispose ();
 }
 
 

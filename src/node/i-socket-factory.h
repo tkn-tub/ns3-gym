@@ -21,14 +21,14 @@
 #ifndef I_SOCKET_FACTORY_H
 #define I_SOCKET_FACTORY_H
 
-#include "ns3/interface.h"
+#include "ns3/object.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
 
 class Socket;
 
-class ISocketFactory : public Interface
+class ISocketFactory : public Object
 {
 public:
   static const InterfaceId iid;

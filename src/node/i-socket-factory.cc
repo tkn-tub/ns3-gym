@@ -22,10 +22,11 @@
 
 namespace ns3 {
 
-const InterfaceId ISocketFactory::iid ("ISocketFactory");
+const InterfaceId ISocketFactory::iid = MakeInterfaceId ("ISocketFactory", Object::iid);
 
 ISocketFactory::ISocketFactory ()
-  : Interface (ISocketFactory::iid)
-{}
+{
+  SetInterfaceId (ISocketFactory::iid);
+}
 
 } // namespace ns3

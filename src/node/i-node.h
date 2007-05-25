@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include "ns3/interface.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -53,7 +53,7 @@ class Application;
  *
  * Every INode created is added to the NodeList automatically.
  */
-class INode : public Interface
+class INode : public Object
 {
 public:
   static const InterfaceId iid;
