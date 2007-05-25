@@ -55,14 +55,14 @@ public:
   inline void Ref (void) const;
   inline void Unref (void) const;
   template <typename T>
-  Ptr<T> QueryInterface (InterfaceId iid);
+  Ptr<T> QueryInterface (InterfaceId iid) const;
   void Dispose (void);
   void AddInterface (Ptr<Object> other);
 protected:
   void SetInterfaceId (InterfaceId iid);
   virtual void DoDispose (void);
 private:
-  Ptr<Object> DoQueryInterface (InterfaceId iid);
+  Ptr<Object> DoQueryInterface (InterfaceId iid) const;
   bool Check (void) const;
   void MaybeDelete (void) const;
   mutable uint32_t m_count;
@@ -92,7 +92,7 @@ Object::Unref (void) const
 
 template <typename T>
 Ptr<T> 
-Object::QueryInterface (InterfaceId iid)
+Object::QueryInterface (InterfaceId iid) const
 {
   Ptr<Object> found = DoQueryInterface (iid);
   if (found != 0)

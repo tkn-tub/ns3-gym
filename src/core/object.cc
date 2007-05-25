@@ -110,10 +110,10 @@ Object::~Object ()
   m_next = 0;
 }
 Ptr<Object>
-Object::DoQueryInterface (InterfaceId iid)
+Object::DoQueryInterface (InterfaceId iid) const
 {
   NS_ASSERT (Check ());
-  Object *currentObject = this;
+  const Object *currentObject = this;
   do {
     NS_ASSERT (currentObject != 0);
     InterfaceId cur = currentObject->m_iid;
@@ -123,7 +123,7 @@ Object::DoQueryInterface (InterfaceId iid)
       }
     if (cur == iid)
       {
-        return currentObject;
+        return const_cast<Object *> (currentObject);
       }
     currentObject = currentObject->m_next;
   } while (currentObject != this);
