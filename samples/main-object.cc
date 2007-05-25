@@ -52,11 +52,40 @@ AnotherObject::DoDispose (void)
 
 
 
+class YetAnotherObject : public Object
+{
+public:
+  static const InterfaceId iid;
+  YetAnotherObject (int a);
+private:
+  virtual void DoDispose (void);
+};
+
+const InterfaceId YetAnotherObject::iid = MakeInterfaceId ("YetAnotherObject", Object::iid);
+
+YetAnotherObject::YetAnotherObject (int a)
+{
+  // enable our interface
+  SetInterfaceId (YetAnotherObject::iid);
+  // aggregated directly to another object.
+  AddInterface (MakeNewObject<AnObject> ());
+}
+void
+YetAnotherObject::DoDispose (void)
+{
+  // Do your work here.
+  // chain up
+  Object::DoDispose ();
+}
+
+
+
 int main (int argc, char *argv[])
 {
   Ptr<Object> p;
   Ptr<AnObject> anObject;
   Ptr<AnotherObject> anotherObject;
+  Ptr<YetAnotherObject> yetAnotherObject;
 
   p = MakeNewObject<AnObject> ();
   // p gives you access to AnObject's interface
@@ -81,5 +110,12 @@ int main (int argc, char *argv[])
   NS_ASSERT (anotherObject != 0);
 
 
+  yetAnotherObject = MakeNewObject<YetAnotherObject> (2);
+  // gives you acess to AnObject interface too.
+  anObject = yetAnotherObject->QueryInterface<AnObject> (AnObject::iid);
+  NS_ASSERT (anObject != 0);
+
+
   return 0;
 }
+
