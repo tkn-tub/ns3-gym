@@ -27,46 +27,46 @@
 
 namespace ns3 {
 
-class MyInterfaceId
+class InterfaceId
 {
 public:
-  static MyInterfaceId LookupByName (std::string name);
-  static MyInterfaceId LookupParent (MyInterfaceId iid);
-  ~MyInterfaceId ();
+  static InterfaceId LookupByName (std::string name);
+  static InterfaceId LookupParent (InterfaceId iid);
+  ~InterfaceId ();
 private:
-  MyInterfaceId (uint32_t iid);
-  friend MyInterfaceId MakeInterfaceId (std::string name, const MyInterfaceId &parent);
-  friend MyInterfaceId MakeObjectInterfaceId (void);
-  friend bool operator == (const MyInterfaceId &a, const MyInterfaceId &b);
-  friend bool operator != (const MyInterfaceId &a, const MyInterfaceId &b);
+  InterfaceId (uint32_t iid);
+  friend InterfaceId MakeInterfaceId (std::string name, const InterfaceId &parent);
+  friend InterfaceId MakeObjectInterfaceId (void);
+  friend bool operator == (const InterfaceId &a, const InterfaceId &b);
+  friend bool operator != (const InterfaceId &a, const InterfaceId &b);
   uint32_t m_iid;
 };
 
-MyInterfaceId
-MakeInterfaceId (std::string name, const MyInterfaceId &parent);
+InterfaceId
+MakeInterfaceId (std::string name, const InterfaceId &parent);
 
 class Object
 {
 public:
-  static const MyInterfaceId iid;
+  static const InterfaceId iid;
 
   Object ();
   virtual ~Object ();
   inline void Ref (void) const;
   inline void Unref (void) const;
   template <typename T>
-  Ptr<T> QueryInterface (MyInterfaceId iid);
+  Ptr<T> QueryInterface (InterfaceId iid);
   void Dispose (void);
   void AddInterface (Ptr<Object> other);
 protected:
-  void SetInterfaceId (MyInterfaceId iid);
+  void SetInterfaceId (InterfaceId iid);
   virtual void DoDispose (void);
 private:
-  Ptr<Object> DoQueryInterface (MyInterfaceId iid);
+  Ptr<Object> DoQueryInterface (InterfaceId iid);
   bool Check (void) const;
   void MaybeDelete (void) const;
   mutable uint32_t m_count;
-  MyInterfaceId m_iid;
+  InterfaceId m_iid;
   Object *m_next;
 };
 
@@ -92,7 +92,7 @@ Object::Unref (void) const
 
 template <typename T>
 Ptr<T> 
-Object::QueryInterface (MyInterfaceId iid)
+Object::QueryInterface (InterfaceId iid)
 {
   Ptr<Object> found = DoQueryInterface (iid);
   if (found != 0)

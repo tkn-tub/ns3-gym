@@ -54,50 +54,50 @@ IidTree::LookupParent (uint32_t child)
 
 namespace ns3 {
 
-MyInterfaceId::MyInterfaceId (uint32_t iid)
+InterfaceId::InterfaceId (uint32_t iid)
   : m_iid (iid)
 {}
-MyInterfaceId::~MyInterfaceId ()
+InterfaceId::~InterfaceId ()
 {}
-MyInterfaceId 
-MyInterfaceId::LookupByName (std::string name)
+InterfaceId 
+InterfaceId::LookupByName (std::string name)
 {
-  return MyInterfaceId (Singleton<IidManager>::Get ()->LookupByName (name));
+  return InterfaceId (Singleton<IidManager>::Get ()->LookupByName (name));
 }
-MyInterfaceId 
-MyInterfaceId::LookupParent (MyInterfaceId iid)
+InterfaceId 
+InterfaceId::LookupParent (InterfaceId iid)
 {
   return Singleton<IidTree>::Get ()->LookupParent (iid.m_iid);
 }
 
-bool operator == (const MyInterfaceId &a, const MyInterfaceId &b)
+bool operator == (const InterfaceId &a, const InterfaceId &b)
 {
   return a.m_iid == b.m_iid;
 }
 
-bool operator != (const MyInterfaceId &a, const MyInterfaceId &b)
+bool operator != (const InterfaceId &a, const InterfaceId &b)
 {
   return a.m_iid != b.m_iid;
 }
 
-MyInterfaceId
-MakeInterfaceId (std::string name, const MyInterfaceId &parent)
+InterfaceId
+MakeInterfaceId (std::string name, const InterfaceId &parent)
 {
-  MyInterfaceId iid = Singleton<IidManager>::Get ()->Allocate (name);
+  InterfaceId iid = Singleton<IidManager>::Get ()->Allocate (name);
   Singleton<IidTree>::Get ()->SetParent (iid.m_iid, &parent.m_iid);
   return iid;
 }
 
-MyInterfaceId
+InterfaceId
 MakeObjectInterfaceId (void)
 {
-  MyInterfaceId iid = Singleton<IidManager>::Get ()->Allocate ("Object");
+  InterfaceId iid = Singleton<IidManager>::Get ()->Allocate ("Object");
   Singleton<IidTree>::Get ()->SetParent (iid.m_iid, &iid.m_iid);
   return iid;
 }
 
 
-const MyInterfaceId Object::iid = MakeObjectInterfaceId ();
+const InterfaceId Object::iid = MakeObjectInterfaceId ();
 
 
 Object::Object ()
@@ -110,16 +110,16 @@ Object::~Object ()
   m_next = 0;
 }
 Ptr<Object>
-Object::DoQueryInterface (MyInterfaceId iid)
+Object::DoQueryInterface (InterfaceId iid)
 {
   NS_ASSERT (Check ());
   Object *currentObject = this;
   do {
     NS_ASSERT (currentObject != 0);
-    MyInterfaceId cur = currentObject->m_iid;
+    InterfaceId cur = currentObject->m_iid;
     while (cur != iid && cur != Object::iid)
       {
-        cur = MyInterfaceId::LookupParent (cur);
+        cur = InterfaceId::LookupParent (cur);
       }
     if (cur == iid)
       {
@@ -155,7 +155,7 @@ Object::AddInterface (Ptr<Object> o)
 }
 
 void 
-Object::SetInterfaceId (MyInterfaceId iid)
+Object::SetInterfaceId (InterfaceId iid)
 {
   NS_ASSERT (Check ());
   m_iid = iid;
@@ -212,7 +212,7 @@ namespace {
 class BaseA : public ns3::Object
 {
 public:
-  static const ns3::MyInterfaceId iid;
+  static const ns3::InterfaceId iid;
   BaseA ()
   {
     SetInterfaceId (BaseA::iid);
@@ -223,7 +223,7 @@ public:
 class DerivedA : public BaseA
 {
 public:
-  static const ns3::MyInterfaceId iid;
+  static const ns3::InterfaceId iid;
   DerivedA (int v)
   {
     SetInterfaceId (DerivedA::iid);
@@ -233,15 +233,15 @@ public:
   }
 };
 
-const ns3::MyInterfaceId BaseA::iid = 
+const ns3::InterfaceId BaseA::iid = 
   ns3::MakeInterfaceId ("BaseA", Object::iid);
-const ns3::MyInterfaceId DerivedA::iid = 
+const ns3::InterfaceId DerivedA::iid = 
   ns3::MakeInterfaceId ("DerivedA", BaseA::iid);;
 
 class BaseB : public ns3::Object
 {
 public:
-  static const ns3::MyInterfaceId iid;
+  static const ns3::InterfaceId iid;
   BaseB ()
   {
     SetInterfaceId (BaseB::iid);
@@ -252,7 +252,7 @@ public:
 class DerivedB : public BaseB
 {
 public:
-  static const ns3::MyInterfaceId iid;
+  static const ns3::InterfaceId iid;
   DerivedB (int v)
   {
     SetInterfaceId (DerivedB::iid);
@@ -262,9 +262,9 @@ public:
   }
 };
 
-const ns3::MyInterfaceId BaseB::iid = 
+const ns3::InterfaceId BaseB::iid = 
   ns3::MakeInterfaceId ("BaseB", Object::iid);
-const ns3::MyInterfaceId DerivedB::iid = 
+const ns3::InterfaceId DerivedB::iid = 
   ns3::MakeInterfaceId ("DerivedB", BaseB::iid);;
 
 } // namespace anonymous

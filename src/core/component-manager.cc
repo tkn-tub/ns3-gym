@@ -49,10 +49,10 @@ bool operator == (const ClassId &a, const ClassId &b)
   return a.m_classId == b.m_classId;
 }
 
-Ptr<Interface>
+Ptr<Object>
 ComponentManager::Create (ClassId classId)
 {
-  Callback<Ptr<Interface> > callback = DoGetCallback<empty,empty,empty,empty,empty> (classId);
+  Callback<Ptr<Object> > callback = DoGetCallback<empty,empty,empty,empty,empty> (classId);
   return callback ();
 }
 
@@ -91,26 +91,27 @@ ComponentManager::Register (std::string name, CallbackBase *callback)
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
-#include "interface.h"
+#include "object.h"
 
 namespace {
 
 
-class B : public ns3::Interface
+class B : public ns3::Object
 {
 public:
   static const ns3::InterfaceId iid;
   B ();
 };
 
-const ns3::InterfaceId B::iid ("IB");
+const ns3::InterfaceId B::iid = MakeInterfaceId ("B", Object::iid);
 
 B::B ()
-  : Interface (B::iid)
-{}
+{
+  SetInterfaceId (B::iid);
+}
 
 
-class A : public ns3::Interface
+class A : public ns3::Object
 {
 public:
   static const ns3::ClassId cidZero;
@@ -133,36 +134,36 @@ public:
 const ns3::ClassId A::cidZero = ns3::ComponentManager::RegisterConstructor <A> ("A");
 const ns3::ClassId A::cidOneBool = ns3::ComponentManager::RegisterConstructor <A,bool> ("ABool");
 const ns3::ClassId A::cidOneUi32 = ns3::ComponentManager::RegisterConstructor <A,uint32_t> ("AUi32");
-const ns3::InterfaceId A::iid ("IA");
+const ns3::InterfaceId A::iid = MakeInterfaceId ("A", Object::iid);
 
 A::A ()
-  : Interface (A::iid),
-    m_zeroInvoked (true),
+  : m_zeroInvoked (true),
     m_oneBoolInvoked (false),
     m_oneUi32Invoked (false)
 {
+  SetInterfaceId (A::iid);
   ns3::Ptr<B> b = ns3::MakeNewObject<B> ();
   AddInterface (b);
 }
 
 A::A (bool bo)
-  : Interface (A::iid),
-    m_zeroInvoked (false),
+  : m_zeroInvoked (false),
     m_oneBoolInvoked (true),
     m_oneUi32Invoked (false),
     m_bool (bo)
 {
+  SetInterfaceId (A::iid);
   ns3::Ptr<B> b = ns3::MakeNewObject<B> ();
   AddInterface (b);
 }
 
 A::A (uint32_t i)
-  : Interface (A::iid),
-    m_zeroInvoked (false),
+  : m_zeroInvoked (false),
     m_oneBoolInvoked (false),
     m_oneUi32Invoked (true),
     m_ui32 (i)
 {
+  SetInterfaceId (A::iid);
   ns3::Ptr<B> b = ns3::MakeNewObject<B> ();
   AddInterface (b);
 }
