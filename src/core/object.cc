@@ -107,6 +107,7 @@ const InterfaceId Object::iid = MakeObjectInterfaceId ();
 Object::Object ()
   : m_count (1),
     m_iid (Object::iid),
+    m_disposed (false),
     m_next (this)
 {}
 Object::~Object () 
@@ -139,7 +140,9 @@ Object::Dispose (void)
   Object *current = this;
   do {
     NS_ASSERT (current != 0);
+    NS_ASSERT (!current->m_disposed);
     current->DoDispose ();
+    current->m_disposed = true;
     current = current->m_next;
   } while (current != this);
 }
@@ -166,7 +169,9 @@ Object::SetInterfaceId (InterfaceId iid)
 
 void
 Object::DoDispose (void)
-{}
+{
+  NS_ASSERT (!m_disposed);
+}
 
 bool 
 Object::Check (void) const

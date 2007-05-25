@@ -67,6 +67,7 @@ private:
   void MaybeDelete (void) const;
   mutable uint32_t m_count;
   InterfaceId m_iid;
+  bool m_disposed;
   Object *m_next;
 };
 
