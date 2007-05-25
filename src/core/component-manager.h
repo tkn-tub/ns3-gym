@@ -235,38 +235,41 @@ class MakeClassId : public ClassId
 private:
   typedef ObjectMaker<T,T1,T2> MakerType;
   static Callback<Ptr<Object>,T1,T2> m_callback;
-  static std::vector<const InterfaceId *> m_supportedInterfaces;
+  void Register (const InterfaceId *array [], uint32_t n) {
+    std::vector<const InterfaceId *> supportedInterfaces;
+    for (uint32_t i = 0; i < n; i++)
+      {
+        supportedInterfaces.push_back (array[i]);
+      }
+    RegisterCallback (*this, &m_callback, supportedInterfaces);
+  }
 public:
   MakeClassId (std::string name) : ClassId (name) {
-    RegisterCallback (*this, &m_callback, m_supportedInterfaces);
+    const InterfaceId *array[] = {};
+    Register (array, sizeof (array)/sizeof(InterfaceId));
   }
   MakeClassId (std::string name, 
                const InterfaceId &iid) : ClassId (name) {
-    m_supportedInterfaces.push_back (&iid);
-    RegisterCallback (*this, &m_callback, m_supportedInterfaces);
+    const InterfaceId *array[] = {&iid};
+    Register (array, sizeof (array)/sizeof(InterfaceId));
   }
   MakeClassId (std::string name, 
                const InterfaceId &iid0, 
                const InterfaceId iid1) : ClassId (name) {
-    m_supportedInterfaces.push_back (&iid0);
-    m_supportedInterfaces.push_back (&iid1);
-    RegisterCallback (*this, &m_callback, m_supportedInterfaces);
+    const InterfaceId *array[] = {&iid0, &iid1};
+    Register (array, sizeof (array)/sizeof(InterfaceId));
   }
   MakeClassId (std::string name, 
                const InterfaceId &iid0, 
                const InterfaceId &iid1,
                const InterfaceId &iid2) : ClassId (name) {
-    m_supportedInterfaces.push_back (&iid0);
-    m_supportedInterfaces.push_back (&iid1);
-    m_supportedInterfaces.push_back (&iid2);
-    RegisterCallback (*this, &m_callback, m_supportedInterfaces);
+    const InterfaceId *array[] = {&iid0, &iid1, iid2};
+    Register (array, sizeof (array)/sizeof(InterfaceId));
   }
 };
 
 template <typename T, typename T1, typename T2>
 Callback<Ptr<Object>,T1,T2> MakeClassId<T,T1,T2>::m_callback = MakeCallback (&MakeClassId::MakerType::MakeObject);
-template <typename T, typename T1, typename T2>
-std::vector<const InterfaceId *> MakeClassId<T,T1,T2>::m_supportedInterfaces;
 
 
 
