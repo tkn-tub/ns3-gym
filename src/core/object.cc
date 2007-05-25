@@ -132,7 +132,6 @@ Object::DoQueryInterface (InterfaceId iid) const
 void 
 Object::Dispose (void)
 {
-  NS_ASSERT (Check ());
   Object *current = this;
   do {
     NS_ASSERT (current != 0);
@@ -163,9 +162,7 @@ Object::SetInterfaceId (InterfaceId iid)
 
 void
 Object::DoDispose (void)
-{
-  NS_ASSERT (Check ());
-}
+{}
 
 bool 
 Object::Check (void) const
