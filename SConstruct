@@ -434,6 +434,12 @@ ns3.add(sample_object)
 sample_object.add_deps(['core'])
 sample_object.add_source('main-object.cc')
 
+sample_component_manager = build.Ns3Module('sample-component-manager', 'samples')
+sample_component_manager.set_executable()
+ns3.add(sample_component_manager)
+sample_component_manager.add_deps(['core'])
+sample_component_manager.add_source('main-component-manager.cc')
+
 # examples
 example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')
 example_simple_p2p.set_executable()
