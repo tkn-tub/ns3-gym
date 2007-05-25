@@ -27,10 +27,34 @@
 
 namespace ns3 {
 
+/**
+ * \brief a unique identifier for an interface.
+ *
+ * Instances of this class can be created only through
+ * calls to ns3::MakeInterfaceId.
+ *
+ * Note: This class is quite similar to COM's UUIDs.
+ */
 class InterfaceId
 {
 public:
+  /**
+   * \param name the name of the requested interface
+   * \returns the unique id associated with the requested
+   *          name. 
+   *
+   * This method cannot fail: it will crash if the input 
+   * name is not a valid interface name.
+   */
   static InterfaceId LookupByName (std::string name);
+  /**
+   * \param iid a unique id 
+   * \returns the parent of the requested id, as registered
+   *          by ns3::MakeInterfaceId.
+   *
+   * This method cannot fail: it will crash if the input
+   * id is not a valid interface id.
+   */
   static InterfaceId LookupParent (InterfaceId iid);
   ~InterfaceId ();
 private:
@@ -42,9 +66,26 @@ private:
   uint16_t m_iid;
 };
 
+/**
+ * \param name of the new InterfaceId to create.
+ * \param parent the "parent" of the InterfaceId to create.
+ * \returns a new InterfaceId
+ * \relates InterfaceId
+ *
+ * Every InterfaceId is a child of another InterfaceId. The
+ * top-most InterfaceId is Object::iid and its parent is 
+ * itself.
+ */
 InterfaceId
 MakeInterfaceId (std::string name, const InterfaceId &parent);
 
+/**
+ * \brief a base class which provides memory management and object aggregation
+ *
+ * Note: This base class is quite similar in spirit to IUnknown in COM or
+ * BonoboObject in Bonobo: it provides three main methods: Ref, Unref and
+ * QueryInterface.
+ */
 class Object
 {
 public:
@@ -52,14 +93,58 @@ public:
 
   Object ();
   virtual ~Object ();
+  /**
+   * Increment the reference count. This method should not be called
+   * by user code. Object instances are expected to be used in conjunction
+   * of the Ptr template which would make calling Ref unecessary and 
+   * dangerous.
+   */
   inline void Ref (void) const;
+  /**
+   * Decrement the reference count. This method should not be called
+   * by user code. Object instances are expected to be used in conjunction
+   * of the Ptr template which would make calling Ref unecessary and 
+   * dangerous.
+   */
   inline void Unref (void) const;
+  /**
+   * \param iid the interface requested
+   * \returns a pointer to the requested interface or zero if it could not be found.
+   * 
+   */
   template <typename T>
   Ptr<T> QueryInterface (InterfaceId iid) const;
+  /**
+   * Run the DoDispose methods of this object and all the
+   * objects aggregated to it.
+   * After calling this method, the object is expected to be
+   * totally unusable except for the Ref and Unref methods.
+   * It is an error to call Dispose twice on the same object 
+   * instance
+   */
   void Dispose (void);
+  /**
+   * \param other another object pointer
+   *
+   * This method aggregates the two objects together: after this
+   * method returns, it becomes possible to call QueryInterface
+   * on one to get the other, and vice-versa. 
+   */
   void AddInterface (Ptr<Object> other);
 protected:
+  /**
+   * \param iid an InterfaceId
+   *
+   * Every subclass which defines a new InterfaceId for itself
+   * should register this InterfaceId by calling this method
+   * from its constructor.
+   */
   void SetInterfaceId (InterfaceId iid);
+  /**
+   * This method is called by Object::Dispose.
+   * Subclasses are expected to override this method and chain
+   * up to their parent's implementation once they are done.
+   */
   virtual void DoDispose (void);
 private:
   Ptr<Object> DoQueryInterface (InterfaceId iid) const;

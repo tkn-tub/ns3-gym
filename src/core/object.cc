@@ -47,6 +47,7 @@ IidTree::SetParent (uint16_t child, const uint16_t *parent)
 uint16_t 
 IidTree::LookupParent (uint16_t child)
 {
+  NS_ASSERT (child < m_parents.size ());
   return *(m_parents[child]);
 }
 
@@ -63,7 +64,7 @@ InterfaceId
 InterfaceId::LookupByName (std::string name)
 {
   uint32_t uid = Singleton<IidManager>::Get ()->LookupByName (name);
-  NS_ASSERT (uid <= 0xffff);
+  NS_ASSERT (uid != 0 && uid <= 0xffff);
   return InterfaceId (uid);
 }
 InterfaceId 
@@ -150,6 +151,8 @@ Object::Dispose (void)
 void 
 Object::AddInterface (Ptr<Object> o)
 {
+  NS_ASSERT (!m_disposed);
+  NS_ASSERT (!o->m_disposed);
   NS_ASSERT (Check ());
   NS_ASSERT (o->Check ());
   Object *other = PeekPointer (o);
