@@ -304,6 +304,28 @@ A::A (uint32_t i)
   AddInterface (b);
 }
 
+class X : public A
+{
+public:
+  static const ns3::InterfaceId iid;
+};
+class C : public X
+{
+public:
+  static const ns3::InterfaceId iid;
+};
+class D : public C
+{
+public:
+  static const ns3::InterfaceId iid;
+  static const ns3::ClassId cid;
+};
+
+const ns3::InterfaceId X::iid = ns3::MakeInterfaceId ("X", A::iid);
+const ns3::InterfaceId C::iid = ns3::MakeInterfaceId ("C", X::iid);
+const ns3::InterfaceId D::iid = ns3::MakeInterfaceId ("D", C::iid);
+const ns3::ClassId D::cid = ns3::MakeClassId<D> ("D", A::iid, X::iid, C::iid, D::iid);
+
 }
 
 namespace ns3 {

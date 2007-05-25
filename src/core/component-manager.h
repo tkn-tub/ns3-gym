@@ -263,7 +263,24 @@ public:
                const InterfaceId &iid0, 
                const InterfaceId &iid1,
                const InterfaceId &iid2) : ClassId (name) {
-    const InterfaceId *array[] = {&iid0, &iid1, iid2};
+    const InterfaceId *array[] = {&iid0, &iid1, &iid2};
+    Register (array, sizeof (array)/sizeof(InterfaceId));
+  }
+  MakeClassId (std::string name, 
+               const InterfaceId &iid0, 
+               const InterfaceId &iid1,
+               const InterfaceId &iid2,
+               const InterfaceId &iid3) : ClassId (name) {
+    const InterfaceId *array[] = {&iid0, &iid1, &iid2, &iid3};
+    Register (array, sizeof (array)/sizeof(InterfaceId));
+  }
+  MakeClassId (std::string name, 
+               const InterfaceId &iid0, 
+               const InterfaceId &iid1,
+               const InterfaceId &iid2,
+               const InterfaceId &iid3,
+               const InterfaceId &iid4) : ClassId (name) {
+    const InterfaceId *array[] = {&iid0, &iid1, iid2, &iid3, &iid4};
     Register (array, sizeof (array)/sizeof(InterfaceId));
   }
 };
