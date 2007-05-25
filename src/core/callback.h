@@ -24,6 +24,7 @@
 
 #include "ptr.h"
 #include "fatal-error.h"
+#include "empty.h"
 
 namespace ns3 {
 
@@ -56,8 +57,6 @@ namespace ns3 {
  * and relies on a reference list rather than autoPtr to hold
  * the pointer.
  */
-class empty {};
-
 template <typename T>
 struct CallbackTraits;
 

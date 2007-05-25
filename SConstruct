@@ -61,6 +61,7 @@ core.add_headers ([
 ])
 core.add_inst_headers([
     'system-wall-clock-ms.h',
+    'empty.h',
     'callback.h',
     'ptr.h',
     'object.h',
