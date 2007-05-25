@@ -125,7 +125,7 @@ ComponentManager::Register (ClassId classId, CallbackBase *callback,
   for (std::vector<const InterfaceId *>::iterator i = supportedInterfaces.begin ();
        i != supportedInterfaces.end (); i++)
     {
-      if (*(*i) == Object::iid)
+      if (*i == &Object::iid)
         {
           foundObject = true;
         }
