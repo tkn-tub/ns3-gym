@@ -41,6 +41,8 @@ namespace ns3 {
  * uint32_t nBytes = 20;
  * double txtime = x.CalclulateTxTime(nBytes);
  * \endcode
+ * This class also supports the regular comparison operators <, >, <=, >=, ==,
+ * and !=
  */
 class DataRate
 {
@@ -69,6 +71,13 @@ class DataRate
    * a fatal error.
    */
   DataRate (const std::string s);
+  
+  bool operator <  (const DataRate& rhs);
+  bool operator <= (const DataRate& rhs);
+  bool operator >  (const DataRate& rhs);
+  bool operator >= (const DataRate& rhs);
+  bool operator == (const DataRate& rhs);
+  bool operator != (const DataRate& rhs);
   
   /**
    * \brief Calculate transmission time

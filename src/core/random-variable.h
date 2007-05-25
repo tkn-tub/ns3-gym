@@ -23,7 +23,7 @@
 
 #include <vector>
 #include <algorithm>
-
+#include <stdint.h>
 
 /**
  * \defgroup randomvariable Random Variable Distributions

@@ -72,7 +72,7 @@ public:
 
 private:
   void ProcessOneEvent (void);
-  uint64_t NextNs (void) const;
+  uint64_t NextTs (void) const;
 
   typedef std::list<std::pair<EventImpl *,uint32_t> > Events;
   Events m_destroy;
@@ -81,7 +81,7 @@ private:
   Scheduler *m_events;
   uint32_t m_uid;
   uint32_t m_currentUid;
-  uint64_t m_currentNs;
+  uint64_t m_currentTs;
   std::ofstream m_log;
   std::ifstream m_inputLog;
   bool m_logEnable;
@@ -103,7 +103,7 @@ SimulatorPrivate::SimulatorPrivate (Scheduler *events)
   // before ::Run is entered, the m_currentUid will be zero
   m_currentUid = 0;
   m_logEnable = false;
-  m_currentNs = 0;
+  m_currentTs = 0;
   m_unscheduledEvents = 0;
 }
 
@@ -136,15 +136,15 @@ SimulatorPrivate::ProcessOneEvent (void)
   Scheduler::EventKey nextKey = m_events->PeekNextKey ();
   m_events->RemoveNext ();
 
-  NS_ASSERT (nextKey.m_ns >= m_currentNs);
+  NS_ASSERT (nextKey.m_ts >= m_currentTs);
   --m_unscheduledEvents;
 
   TRACE ("handle " << nextEv);
-  m_currentNs = nextKey.m_ns;
+  m_currentTs = nextKey.m_ts;
   m_currentUid = nextKey.m_uid;
   if (m_logEnable) 
     {
-      m_log << "e "<<nextKey.m_uid << " " << nextKey.m_ns << std::endl;
+      m_log << "e "<<nextKey.m_uid << " " << nextKey.m_ts << std::endl;
     }
   nextEv->Invoke ();
   delete nextEv;
@@ -156,25 +156,24 @@ SimulatorPrivate::IsFinished (void) const
   return m_events->IsEmpty ();
 }
 uint64_t
-SimulatorPrivate::NextNs (void) const
+SimulatorPrivate::NextTs (void) const
 {
   NS_ASSERT (!m_events->IsEmpty ());
   Scheduler::EventKey nextKey = m_events->PeekNextKey ();
-  return nextKey.m_ns;
+  return nextKey.m_ts;
 }
 Time
 SimulatorPrivate::Next (void) const
 {
-  return NanoSeconds (NextNs ());
+  return TimeStep (NextTs ());
 }
-
 
 void
 SimulatorPrivate::Run (void)
 {
 
   while (!m_events->IsEmpty () && !m_stop && 
-         (m_stopAt == 0 || m_stopAt > NextNs ())) 
+         (m_stopAt == 0 || m_stopAt > NextTs ())) 
     {
       ProcessOneEvent ();
     }
@@ -196,19 +195,19 @@ void
 SimulatorPrivate::StopAt (Time const &at)
 {
   NS_ASSERT (at.IsPositive ());
-  m_stopAt = at.GetNanoSeconds ();
+  m_stopAt = at.GetTimeStep ();
 }
 EventId
 SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
 {
   NS_ASSERT (time.IsPositive ());
-  NS_ASSERT (time >= NanoSeconds (m_currentNs));
-  uint64_t ns = (uint64_t) time.GetNanoSeconds ();
-  Scheduler::EventKey key = {ns, m_uid};
+  NS_ASSERT (time >= TimeStep (m_currentTs));
+  uint64_t ts = (uint64_t) time.GetTimeStep ();
+  Scheduler::EventKey key = {ts, m_uid};
   if (m_logEnable) 
     {
-      m_log << "i "<<m_currentUid<<" "<<m_currentNs<<" "
-            <<m_uid<<" "<<time.GetNanoSeconds () << std::endl;
+      m_log << "i "<<m_currentUid<<" "<<m_currentTs<<" "
+            <<m_uid<<" "<<time.GetTimeStep () << std::endl;
     }
   m_uid++;
   ++m_unscheduledEvents;
@@ -217,12 +216,12 @@ SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
 void 
 SimulatorPrivate::ScheduleNow (EventImpl *event)
 {
-  uint64_t ns = m_currentNs;
-  Scheduler::EventKey key = {ns, m_uid};
+  uint64_t ts = m_currentTs;
+  Scheduler::EventKey key = {ts, m_uid};
   if (m_logEnable) 
     {
-      m_log << "i "<<m_currentUid<<" "<<m_currentNs<<" "
-            <<m_uid<<" "<<ns << std::endl;
+      m_log << "i "<<m_currentUid<<" "<<m_currentTs<<" "
+            <<m_uid<<" "<<ts << std::endl;
     }
   m_uid++;
   ++m_unscheduledEvents;
@@ -234,7 +233,7 @@ SimulatorPrivate::ScheduleDestroy (EventImpl *event)
   m_destroy.push_back (std::make_pair (event, m_uid));  
   if (m_logEnable) 
   {
-    m_log << "id " << m_currentUid << " " << Now ().GetNanoSeconds () << " "
+    m_log << "id " << m_currentUid << " " << Now ().GetTimeStep () << " "
           << m_uid << std::endl;
   }
   m_uid++;
@@ -243,7 +242,7 @@ SimulatorPrivate::ScheduleDestroy (EventImpl *event)
 Time
 SimulatorPrivate::Now (void) const
 {
-  return NanoSeconds (m_currentNs);
+  return TimeStep (m_currentTs);
 }
 
 void
@@ -254,8 +253,8 @@ SimulatorPrivate::Remove (EventId ev)
   delete impl;
   if (m_logEnable) 
     {
-      m_log << "r " << m_currentUid << " " << m_currentNs << " "
-            << key.m_uid << " " << key.m_ns << std::endl;
+      m_log << "r " << m_currentUid << " " << m_currentTs << " "
+            << key.m_uid << " " << key.m_ts << std::endl;
     }
   --m_unscheduledEvents;
 }
@@ -270,8 +269,8 @@ bool
 SimulatorPrivate::IsExpired (EventId ev)
 {
   if (ev.GetEventImpl () == 0 ||
-      ev.GetNs () < m_currentNs ||
-      (ev.GetNs () == m_currentNs &&
+      ev.GetTs () < m_currentTs ||
+      (ev.GetTs () == m_currentTs &&
        ev.GetUid () <= m_currentUid) ||
       ev.GetEventImpl ()->IsCancelled ()) 
     {
@@ -299,20 +298,20 @@ SimulatorPrivate *Simulator::m_priv = 0;
 
 void Simulator::SetLinkedList (void)
 {
-  Bind ("scheduler", "list");
+  Bind ("Scheduler", "List");
 }
 void Simulator::SetBinaryHeap (void)
 {
-  Bind ("scheduler", "BinaryHeap");
+  Bind ("Scheduler", "BinaryHeap");
 }
 void Simulator::SetStdMap (void)
 {
-  Bind ("scheduler", "map");
+  Bind ("Scheduler", "Map");
 }
 void 
 Simulator::SetExternal (const std::string &external)
 {
-  Bind ("scheduler", external);
+  Bind ("Scheduler", external);
 }
 void Simulator::EnableLogTo (char const *filename)
 {
@@ -444,12 +443,18 @@ Simulator::IsExpired (EventId id)
   return GetPriv ()->IsExpired (id);
 }
 
+Time Now (void)
+{
+  return Time (Simulator::Now ());
+}
+
 }; // namespace ns3
 
 
 #ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -470,6 +475,9 @@ static void foo5 (int, int, int, int, int)
 class SimulatorTests : public Test {
 public:
   SimulatorTests ();
+  // only here for testing of Ptr<>
+  void Ref (void);
+  void Unref (void);
   virtual ~SimulatorTests ();
   virtual bool RunTests (void);
 private:
@@ -497,6 +505,12 @@ SimulatorTests::SimulatorTests ()
   : Test ("Simulator")
 {}
 SimulatorTests::~SimulatorTests ()
+{}
+void 
+SimulatorTests::Ref (void)
+{}
+void 
+SimulatorTests::Unref (void)
 {}
 uint64_t
 SimulatorTests::NowUs (void)
@@ -630,6 +644,12 @@ SimulatorTests::RunTests (void)
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar3, this, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar4, this, 0, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar0, Ptr<SimulatorTests> (this));
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar1, Ptr<SimulatorTests> (this), 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar2, Ptr<SimulatorTests> (this), 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar3, Ptr<SimulatorTests> (this), 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar4, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar5, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
   Simulator::ScheduleNow (&foo0);
   Simulator::ScheduleNow (&foo1, 0);
   Simulator::ScheduleNow (&foo2, 0, 0);
@@ -642,6 +662,12 @@ SimulatorTests::RunTests (void)
   Simulator::ScheduleNow (&SimulatorTests::bar3, this, 0, 0, 0);
   Simulator::ScheduleNow (&SimulatorTests::bar4, this, 0, 0, 0, 0);
   Simulator::ScheduleNow (&SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar0, Ptr<SimulatorTests> (this));
+  Simulator::ScheduleNow (&SimulatorTests::bar1, Ptr<SimulatorTests> (this), 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar2, Ptr<SimulatorTests> (this), 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar3, Ptr<SimulatorTests> (this), 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar4, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar5, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&foo0);
   Simulator::ScheduleDestroy (&foo1, 0);
   Simulator::ScheduleDestroy (&foo2, 0, 0);
@@ -654,6 +680,12 @@ SimulatorTests::RunTests (void)
   Simulator::ScheduleDestroy (&SimulatorTests::bar3, this, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar4, this, 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar0, Ptr<SimulatorTests> (this));
+  Simulator::ScheduleDestroy (&SimulatorTests::bar1, Ptr<SimulatorTests> (this), 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar2, Ptr<SimulatorTests> (this), 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar3, Ptr<SimulatorTests> (this), 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar4, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar5, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
 
   Simulator::Run ();
   Simulator::Destroy ();

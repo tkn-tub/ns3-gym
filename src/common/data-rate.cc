@@ -147,6 +147,36 @@ uint64_t DataRate::Parse(const std::string s)
   return v;
 }
 
+bool DataRate::operator < (const DataRate& rhs)
+{
+	return m_bps<rhs.m_bps;
+}
+
+bool DataRate::operator <= (const DataRate& rhs)
+{
+	return m_bps<=rhs.m_bps;
+}
+
+bool DataRate::operator >  (const DataRate& rhs)
+{
+	return m_bps>rhs.m_bps;
+}
+
+bool DataRate::operator >= (const DataRate& rhs)
+{
+	return m_bps>=rhs.m_bps;
+}
+
+bool DataRate::operator == (const DataRate& rhs)
+{
+	return m_bps==rhs.m_bps;
+}
+
+bool DataRate::operator != (const DataRate& rhs)
+{
+	return m_bps!=rhs.m_bps;
+}
+
 double DataRate::CalculateTxTime(uint32_t bytes) const
 {
   return static_cast<double>(bytes)*8/m_bps;

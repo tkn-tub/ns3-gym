@@ -2,19 +2,27 @@
 import os.path
 import build
 
+version_file = open ('VERSION', 'r')
+version = version_file.readline ()
+version_file.close ()
+version = version.strip ()
+
 ns3 = build.Ns3()
 ns3.build_dir = 'build-dir'
-ns3.version = '0.2'
+ns3.version = version
 ns3.name = 'ns3'
-ns3.distname = 'ns-3'
+ns3.distname = 'ns'
 ns3.doxygen_config = os.path.join('doc', 'doxygen.conf')
 ns3.add_extra_dist(os.path.join('doc', 'main.txt'))
+ns3.add_extra_dist ('doc/architecture.pdf')
 ns3.add_extra_dist ('doc/contributing.txt')
 ns3.add_extra_dist ('doc/build.txt')
+ns3.add_extra_dist ('doc/codingstd.txt')
 ns3.add_extra_dist ('doc/mercurial.txt')
 ns3.add_extra_dist ('README')
 ns3.add_extra_dist ('RELEASE_NOTES')
 ns3.add_extra_dist ('AUTHORS')
+ns3.add_extra_dist ('VERSION')
 
 
 #
@@ -23,7 +31,6 @@ ns3.add_extra_dist ('AUTHORS')
 core = build.Ns3Module('core', 'src/core')
 ns3.add(core)
 core.add_sources([
-    'reference-list-test.cc',
     'callback-test.cc',
     'debug.cc',
     'assert.cc',
@@ -56,7 +63,6 @@ core.add_headers ([
 ])
 core.add_inst_headers([
     'system-wall-clock-ms.h',
-    'reference-list.h',
     'callback.h',
     'ptr.h',
     'object.h',
@@ -196,8 +202,6 @@ common.add_inst_headers([
     'array-trace-resolver.h',
     'trace-root.h',
     'terminal-trace-resolver.h',
-    'smartvector.h',
-    'smartset.h',
     'data-rate.h',
     ])
 

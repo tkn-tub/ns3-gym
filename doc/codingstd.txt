@@ -1,0 +1,210 @@
+       The Ns-3 Coding Style
+
+/*
+ * Note:  This file is incomplete and will be converted to non-text (html,pdf)
+ * formats at a future date
+ */
+
+1) Code layout
+     -----------
+
+The code layout follows the GNU coding standard layout for C and extends
+it to C++. Do not use tabs for indentation. Indentation spacing is 2
+spaces as outlined below:
+
+void 
+Foo (void)
+{
+  if (test)
+    {
+      // do stuff here
+    }
+  else
+    {
+      // do other stuff here
+    }
+
+  for (int i = 0; i < 100; i++)
+    {
+      // do loop
+    }
+
+  while (test)
+    {
+      // do while
+    }
+
+  do
+    {
+      // do stuff
+    } while ();
+}
+
+The following is not recommended:
+
+if (test) statement
+
+if (test)
+  statement
+
+for (...) statement
+
+Each statement should be put on a separate line to increase readability.
+Short one-line comments can use the C++ comment style, that is, '//'
+but longer comments should use C-style comments:
+/*
+ *
+ *
+ */
+
+
+2) Naming Patterns
+   ---------------
+
+2.1) Name encoding
+     -------------
+Function, Method, and Type names should follow the CamelCase convention:
+words are joined without spaces and are capitalized. For example,
+"my computer" is transformed into MyComputer. Do not use all capital 
+letters such as MAC or, PHY, but choose instead Mac or Phy. Do not use
+all capital letters, even for acronyms such as EDCA: use Edca instead.
+The goal of the CamelCase convention is to ensure that the words which
+make up a name can be separated by the eye: the initial Caps fills
+that role.
+
+Variable names should follow a slight variation on the base CamelCase
+convention: camelBack. For example, the variable "user name" would be
+named "userName". This variation on the basic naming pattern is used to
+allow a reader to distinguish a variable name from its type. For example,
+"UserName userName;" would be used to declare a variable named userName
+of type UserName.
+
+Global variables should be prefixed with a "g_" and member variables
+(including static member variables) should be prefixed with a "m_". The
+goal of that prefix is to give a reader a sense of where a variable of
+a given name is declared to allow the reader to locate the variable 
+declaration and infer the variable type from that declaration. For example
+you could declare in your class header my-class.h:
+
+class MyClass
+{
+  void MyMethod (int aVar);
+  int m_aVar;
+  static int m_anotherVar;
+};
+
+and implement in your class file my-class.cc:
+
+int MyClass::m_anotherVar = 10;
+static int g_aStaticVar = 100;
+int g_aGlobalVar = 1000;
+
+void
+MyClass::MyMethod (int aVar)
+{
+  m_aVar = aVar;
+}
+
+2.2) Choosing names
+
+Variable, function, method, and type names should be based on the
+english language. Furthermore, always try to choose descriptive
+names for them. Types are often english names such as: Packet, 
+Buffer, Mac, or Phy. Functions and Methods are often named
+based on verbs and adjectives: GetX, DoDispose, ClearArray, etc.
+
+A long descriptive name which requires a lot of typing is always
+better than a short name which is hard to decipher. Do not use
+abbreviations in names unless the abbreviation is really unambiguous
+and obvious to everyone. Do not use short inapropriate names such
+as foo, bar, or baz. The name of an item should always match its 
+purpose. As such, names such as tmp to identify a temporary
+variable or such as 'i' to identify a loop index are ok.
+
+3) File layout and code organization
+   ---------------------------------
+
+A class named MyClass should be declared in a header named my-class.h
+and implemented in a source file named my-class.cc. The goal of this
+naming pattern is to allow a reader to quickly navigate through
+the ns-3 codebase to locate the source file relevant to a specific
+type.
+
+Each my-class.h header should start with the following comments: the
+first line ensures that developers who use the emacs editor will be 
+able to indent your code correctly. The following lines ensure that
+your code is licensed under the GPL, that the copyright holders
+are properly identified (typically, you or your employer), and
+that the actual author of the code is identified. The latter is
+purely informational and we use it to try to track the most
+appropriate person to review a patch or fix a bug.
+
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) YEAR COPYRIGHTHOLDER
+ * 
+ * 3-paragran GPL blurb
+ *
+ * Author: MyName <myemail@foo.com>
+ */
+
+Below these C-style comments, always include the following which
+defines a set of header guards (MY_CLASS_H) used to avoid multiple
+header includes, which ensures that your code is included
+in the "ns3" namespace and which provides a set of doxygen comments
+for the public part of your class API. Detailed information
+on the set of tags available for doxygen documentation is described
+in the doxygen website: http://www.doxygen.org.
+
+#ifndef MY_CLASS_H
+#define MY_CLASS_H
+
+namespace n3 {
+
+/**
+ * \brief short one-line description of the purpose of your class
+ *
+ * A longer description of the purpose of your class after a blank
+ * empty line.
+ */
+class MyClass
+{
+public:
+ MyClass ();
+ /**
+  * \param firstParam a short description of the purpose of this parameter
+  * \returns a short description of what is returned from this function.
+  *
+  * A detailed description of the purpose of the method.
+  */
+ int DoFoo (int firstParam);
+private:
+ void MyPrivateMethod (void);
+ int m_myPrivateMemberVariable;
+};
+
+} // namespace ns3
+
+#endif /* MY_CLASS_H */
+
+The my-class.cc file is structured similarly:
+
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) YEAR COPYRIGHTHOLDER
+ * 
+ * 3-paragran GPL blurb
+ *
+ * Author: MyName <myemail@foo.com>
+ */
+#include "my-class.h"
+
+namespace ns3 {
+
+MyClass::MyClass ()
+{}
+
+...
+
+} // namespace ns3
+

@@ -139,11 +139,11 @@ SchedulerHeap::Exch (uint32_t a, uint32_t b)
 bool
 SchedulerHeap::IsLowerStrictly (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
 {
-  if (a->m_ns < b->m_ns)
+  if (a->m_ts < b->m_ts)
     {
       return true;
     }
-  else if (a->m_ns > b->m_ns)
+  else if (a->m_ts > b->m_ts)
     {
       return false;
     } 
@@ -227,7 +227,7 @@ SchedulerHeap::RealInsert (EventImpl *event, Scheduler::EventKey key)
 {
   m_heap.push_back (std::make_pair (event, key));
   BottomUp ();
-  return EventId (event, key.m_ns, key.m_uid);
+  return EventId (event, key.m_ts, key.m_uid);
 }
 
 EventImpl *
@@ -252,7 +252,7 @@ SchedulerHeap::RealRemoveNext (void)
 EventImpl *
 SchedulerHeap::RealRemove (EventId id, Scheduler::EventKey *key)
 {
-  key->m_ns = id.GetNs ();
+  key->m_ts = id.GetTs ();
   key->m_uid = id.GetUid ();
   for (uint32_t i = 1; i < m_heap.size (); i++)
     {

@@ -286,6 +286,10 @@ public:
    *          user with ns3::Bind
    */
   T GetValue (void);
+  /**
+   * \param value the new default value.
+   */
+  void SetValue (T value);
  private:
   virtual bool DoParseValue (const std::string &value);
   virtual std::string DoGetType (void) const;
@@ -465,6 +469,12 @@ T
 EnumDefaultValue<T>::GetValue (void)
 {
   return m_value;
+}
+template <typename T>
+void
+EnumDefaultValue<T>::SetValue (T value)
+{
+  m_value = value;
 }
 template <typename T>
 bool 

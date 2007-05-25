@@ -30,7 +30,7 @@ UdpSocket::UdpSocket (Ptr<INode> node, Ptr<Udp> udp)
   : m_endPoint (0),
     m_node (node),
     m_udp (udp),
-    m_errno (ENOTERROR),
+    m_errno (ERROR_NOTERROR),
     m_shutdownSend (false),
     m_shutdownRecv (false),
     m_connected (false)
@@ -154,7 +154,7 @@ UdpSocket::DoAccept(ns3::Callback<bool, Ptr<Socket>, const Ipv4Address&, uint16_
                     ns3::Callback<void, Ptr<Socket> > closeRequested)
 {
   // calling accept on a udp socket is a programming error.
-  m_errno = EOPNOTSUPP;
+  m_errno = ERROR_OPNOTSUPP;
   return -1;
 }
 int 
@@ -164,7 +164,7 @@ UdpSocket::DoSend (const uint8_t* buffer,
 {
   if (!m_connected)
     {
-      m_errno = ENOTCONN;
+      m_errno = ERROR_NOTCONN;
       return -1;
     }
   Packet p;
@@ -193,7 +193,7 @@ UdpSocket::DoSendPacketTo (const Packet &p, Ipv4Address daddr, uint16_t dport,
     }
   if (m_shutdownSend)
     {
-      m_errno = ESHUTDOWN;
+      m_errno = ERROR_SHUTDOWN;
       return -1;
     }
   m_udp->Send (p, m_endPoint->GetLocalAddress (), daddr,
@@ -213,7 +213,7 @@ UdpSocket::DoSendTo(const Ipv4Address &address,
 {
   if (m_connected)
     {
-      m_errno = EISCONN;
+      m_errno = ERROR_ISCONN;
       return -1;
     }
   Packet p;

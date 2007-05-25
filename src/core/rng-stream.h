@@ -20,6 +20,7 @@
 #ifndef RNGSTREAM_H
 #define RNGSTREAM_H
 #include <string>
+#include <stdint.h>
 
 namespace ns3{
 

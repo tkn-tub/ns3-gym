@@ -73,11 +73,12 @@ public:
   /**
    * \param ptr raw pointer to manage
    *
-   * Create a smart pointer which points to the
-   * input raw pointer. This method takes ownershipt
-   * of the input raw pointer. That is, the smart pointer
-   * becomes responsible for calling delete on the
-   * raw pointer when needed.
+   * Create a smart pointer which points to the object pointed to by
+   * the input raw pointer ptr. This method creates its own reference
+   * to the pointed object. The caller is responsible for Unref()'ing
+   * its own reference, and the smart pointer will eventually do the
+   * same, so that object is deleted if no more references to it
+   * remain.
    */
   Ptr (T *ptr);
   Ptr (Ptr const&o);
@@ -169,6 +170,31 @@ bool operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs);
 
 template <typename T1, typename T2>
 Ptr<T1> const_pointer_cast (Ptr<T2> const&p);
+
+template <typename T>
+struct CallbackTraits;
+
+template <typename T>
+struct CallbackTraits<Ptr<T> >
+{
+  static T & GetReference (Ptr<T> const p)
+  {
+    return *PeekPointer (p);
+  }
+};
+
+template <typename T>
+struct EventMemberImplTraits;
+
+template <typename T>
+struct EventMemberImplTraits<Ptr<T> >
+{
+  static T &GetReference (Ptr<T> p) {
+    return *PeekPointer (p);
+  }
+};
+
+
 
 } // namespace ns3
 

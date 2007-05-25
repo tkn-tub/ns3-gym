@@ -33,7 +33,7 @@ static class SchedulerListFactory : public SchedulerFactory
 public:
   SchedulerListFactory ()
   {
-    SchedulerFactory::AddDefault (this, "list");
+    SchedulerFactory::AddDefault (this, "List");
   }
 private:
   virtual Scheduler *DoCreate (void) const
@@ -51,11 +51,11 @@ SchedulerList::~SchedulerList ()
 bool 
 SchedulerList::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const
 {
-  if (a->m_ns < b->m_ns)
+  if (a->m_ts < b->m_ts)
     {
       return true;
     }
-  else if (a->m_ns == b->m_ns &&
+  else if (a->m_ts == b->m_ts &&
            a->m_uid < b->m_uid)
     {
       return true;
@@ -74,11 +74,11 @@ SchedulerList::RealInsert (EventImpl *event, Scheduler::EventKey key)
       if (IsLower (&key, &i->second))
         {
           m_events.insert (i, std::make_pair (event, key));
-          return EventId (event, key.m_ns, key.m_uid);
+          return EventId (event, key.m_ts, key.m_uid);
         }
     }
   m_events.push_back (std::make_pair (event, key));
-  return EventId (event, key.m_ns, key.m_uid);
+  return EventId (event, key.m_ts, key.m_uid);
 }
 bool 
 SchedulerList::RealIsEmpty (void) const
@@ -111,7 +111,7 @@ SchedulerList::RealRemove (EventId id, Scheduler::EventKey *key)
         {
           EventImpl *retval = i->first;
           NS_ASSERT (id.GetEventImpl () == retval);
-          key->m_ns = id.GetNs ();
+          key->m_ts = id.GetTs ();
           key->m_uid = id.GetUid ();
           m_events.erase (i);
           return retval;

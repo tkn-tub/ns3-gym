@@ -33,7 +33,7 @@ class NoCount : public Object
 public:
   NoCount (Callback<void> cb);
   ~NoCount ();
-  void Nothing () const;
+  void Nothing (void) const;
 private:
   Callback<void> m_cb;
 };
@@ -280,6 +280,25 @@ PtrTest::RunTests (void)
         ok = false;
       }
   }
+
+  {
+    Ptr<NoCount> p = MakeNewObject<NoCount> (cb);
+    Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
+    callback ();
+  }
+  {
+    Ptr<const NoCount> p = MakeNewObject<NoCount> (cb);
+    Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
+    callback ();
+  }
+
+#if 0
+  // as expected, fails compilation.
+  {
+    Ptr<const Object> p = MakeNewObject<NoCount> (cb);
+    Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
+  }
+#endif
   
 
   return ok;

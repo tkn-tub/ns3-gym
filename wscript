@@ -1,78 +1,30 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 import os
+import sys
+import shlex
+import shutil
 
 import Params
 import Object
-import Action
-import Common
-import shutil
-import subprocess
+import pproc as subprocess
 
 Params.g_autoconfig = 1
 
 # the following two variables are used by the target "waf dist"
-VERSION = '3.0.1'
-APPNAME = 'ns-3-waf'
+VERSION = file("VERSION").read().strip()
+APPNAME = 'ns'
 
 # these variables are mandatory ('/' are converted automatically)
 srcdir = '.'
 blddir = 'build'
 
-class Ns3Header(Object.genobj):
-    """A set of NS-3 header files"""
-    def __init__(self, env=None):
-        Object.genobj.__init__(self, 'other')
-        self.inst_var = 'INCLUDEDIR'
-        self.inst_dir = 'ns3'
-        self.env = env
-        if not self.env:
-            self.env = Params.g_build.m_allenvs['default']
-
-    def apply(self):
-        ns3_dir_node = Params.g_build.m_srcnode.find_dir("ns3")
-        inputs = []
-        outputs = []
-        for filename in self.to_list(self.source):
-            src_node = self.path.find_source(filename)
-            if src_node is None:
-                Params.fatal("source ns3 header file %s not found" % (filename,))
-            dst_node = ns3_dir_node.find_build(os.path.basename(filename))
-            assert dst_node is not None
-            inputs.append(src_node)
-            outputs.append(dst_node)
-        task = self.create_task('ns3_headers', self.env, 1)
-        task.set_inputs(inputs)
-        task.set_outputs(outputs)
-
-    def install(self):
-        for i in self.m_tasks:
-            current = Params.g_build.m_curdirnode
-            lst = map(lambda a: a.relpath_gen(current), i.m_outputs)
-            Common.install_files(self.inst_var, self.inst_dir, lst)
-
-def _ns3_headers_inst(task):
-    assert len(task.m_inputs) == len(task.m_outputs)
-    inputs = [node.srcpath(task.m_env) for node in task.m_inputs]
-    outputs = [node.bldpath(task.m_env) for node in task.m_outputs]
-    for src, dst in zip(inputs, outputs):
-        try:
-            os.chmod(dst, 0600)
-        except OSError:
-            pass
-        shutil.copy2(src, dst)
-        ## make the headers in builddir read-only, to prevent
-        ## accidental modification
-        os.chmod(dst, 0400)
-    return 0
-
-def init():
-    Object.register('ns3header', Ns3Header)
-    Action.Action('ns3_headers', func=_ns3_headers_inst, color='BLUE')
+def dist_hook(srcdir, blddir):
+    shutil.rmtree("doc/html")
+    shutil.rmtree("doc/latex")
 
 def set_options(opt):
     # options provided by the modules
-    if not opt.tool_options('msvc'):
-        opt.tool_options('g++')
+    opt.tool_options('compiler_cxx')
 
     opt.add_option('--enable-gcov',
                    help=('Enable code coverage analysis'),
@@ -90,14 +42,22 @@ def set_options(opt):
                    action="store_true", default=False,
                    dest='doxygen')
 
+    opt.add_option('--run',
+                   help=('Run a locally built program'),
+                   type="string", default='', dest='run')
+
+    opt.add_option('--shell',
+                   help=('Run a shell with an environment suitably modified to run locally built programs'),
+                   action="store_true", default=False,
+                   dest='shell')
+
     # options provided in a script in a subdirectory named "src"
     opt.sub_options('src')
 
 
 def configure(conf):
-    if not conf.check_tool('msvc'):
-        if not conf.check_tool('g++'):
-            Params.fatal("No suitable compiler found")
+    if not conf.check_tool('compiler_cxx'):
+        Params.fatal("No suitable compiler found")
 
 
     # create the second environment, set the variant and set its name
@@ -123,6 +83,9 @@ def configure(conf):
         variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
 
+    if sys.platform == 'win32':
+        variant_env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
+
     conf.sub_config('src')
 
 
@@ -136,48 +99,126 @@ def build(bld):
 
 
 def shutdown():
-    import UnitTest
-    ut = UnitTest.unit_test()
-    ut.change_to_testfile_dir = True
-    ut.want_to_see_test_output = True
-    ut.want_to_see_test_error = True
-    ut.run()
+    #import UnitTest
+    #ut = UnitTest.unit_test()
+    #ut.change_to_testfile_dir = True
+    #ut.want_to_see_test_output = True
+    #ut.want_to_see_test_error = True
+    #ut.run()
     #ut.print_results()
 
+    if Params.g_commands['check']:
+        run_program('run-tests')
+
     if Params.g_options.lcov_report:
-        env = Params.g_build.env_of_name('default')
-        variant_name = env['NS3_ACTIVE_VARIANT']
-
-        if 'gcov' not in variant_name:
-            Params.fatal("project not configured for code coverage;"
-                         " reconfigure with --enable-gcov")
-        
-        os.chdir(blddir)
-        try:
-            lcov_report_dir = os.path.join(variant_name, 'lcov-report')
-            create_dir_command = "rm -rf " + lcov_report_dir
-            create_dir_command += " && mkdir " + lcov_report_dir + ";"
-
-            if subprocess.Popen(create_dir_command, shell=True).wait():
-                raise SystemExit(1)
-
-            info_file = os.path.join(lcov_report_dir, variant_name + '.info')
-            lcov_command = "../utils/lcov/lcov -c -d . -o " + info_file
-            lcov_command += " --source-dirs=" + os.getcwd()
-            lcov_command += ":" + os.path.join(
-                os.getcwd(), variant_name, 'include')
-            if subprocess.Popen(lcov_command, shell=True).wait():
-                raise SystemExit(1)
-
-            genhtml_command = "../utils/lcov/genhtml -o " + lcov_report_dir
-            genhtml_command += " " + info_file
-            if subprocess.Popen(genhtml_command, shell=True).wait():
-                raise SystemExit(1)
-        finally:
-            os.chdir("..")
+        lcov_report()
 
     if Params.g_options.doxygen:
-        doxygen_config = os.path.join('doc', 'doxygen.conf')
-        if subprocess.Popen(['doxygen', doxygen_config]).wait():
+        doxygen()
+
+    if Params.g_options.run:
+        run_program(Params.g_options.run)
+
+    elif Params.g_options.shell:
+        run_shell()
+
+def _find_program(program_name):
+    for obj in Object.g_allobjs:
+        if obj.target == program_name:
+            return obj
+    raise ValueError("progam '%s' not found" % (program_name,))
+
+def _run_argv(argv):
+    env = Params.g_build.env_of_name('default')
+    if sys.platform == 'linux2':
+        pathvar = 'LD_LIBRARY_PATH'
+        pathsep = ':'
+    elif sys.platform == 'darwin':
+        pathvar = 'DYLD_LIBRARY_PATH'
+        pathsep = ':'
+    elif sys.platform == 'win32':
+        pathvar = 'PATH'
+        pathsep = ';'
+    else:
+        Params.warning(("Don't know how to configure "
+                        "dynamic library path for the platform '%s'") % (sys.platform,))
+        pathvar = None
+        pathsep = None
+
+    os_env = dict(os.environ)
+    if pathvar is not None:
+        if pathvar in os_env:
+            os_env[pathvar] = pathsep.join([os_env[pathvar]] + list(env['NS3_MODULE_PATH']))
+        else:
+            os_env[pathvar] = pathsep.join(list(env['NS3_MODULE_PATH']))
+
+    retval = subprocess.Popen(argv, env=os_env).wait()
+    if retval:
+        raise SystemExit(retval)
+
+
+def run_program(program_string):
+    env = Params.g_build.env_of_name('default')
+    argv = shlex.split(program_string)
+    program_name = argv[0]
+
+    try:
+        program_obj = _find_program(program_name)
+    except ValueError:
+        Params.fatal("progam '%s' not found" % (program_name,))
+
+    try:
+        program_node, = program_obj.m_linktask.m_outputs
+    except AttributeError:
+        Params.fatal("%s does not appear to be a program" % (program_name,))
+
+    execvec = [program_node.abspath(env)] + argv[1:]
+    return _run_argv(execvec)
+
+
+def run_shell():
+    if sys.platform == 'win32':
+        shell = os.environ.get("COMSPEC", "cmd.exe")
+    else:
+        shell = os.environ.get("SHELL", "/bin/sh")
+    _run_argv([shell])
+
+
+def doxygen():
+    doxygen_config = os.path.join('doc', 'doxygen.conf')
+    if subprocess.Popen(['doxygen', doxygen_config]).wait():
+        raise SystemExit(1)
+
+
+def lcov_report():
+    env = Params.g_build.env_of_name('default')
+    variant_name = env['NS3_ACTIVE_VARIANT']
+
+    if 'gcov' not in variant_name:
+        Params.fatal("project not configured for code coverage;"
+                     " reconfigure with --enable-gcov")
+
+    os.chdir(blddir)
+    try:
+        lcov_report_dir = os.path.join(variant_name, 'lcov-report')
+        create_dir_command = "rm -rf " + lcov_report_dir
+        create_dir_command += " && mkdir " + lcov_report_dir + ";"
+
+        if subprocess.Popen(create_dir_command, shell=True).wait():
             raise SystemExit(1)
+
+        info_file = os.path.join(lcov_report_dir, variant_name + '.info')
+        lcov_command = "../utils/lcov/lcov -c -d . -o " + info_file
+        lcov_command += " --source-dirs=" + os.getcwd()
+        lcov_command += ":" + os.path.join(
+            os.getcwd(), variant_name, 'include')
+        if subprocess.Popen(lcov_command, shell=True).wait():
+            raise SystemExit(1)
+
+        genhtml_command = "../utils/lcov/genhtml -o " + lcov_report_dir
+        genhtml_command += " " + info_file
+        if subprocess.Popen(genhtml_command, shell=True).wait():
+            raise SystemExit(1)
+    finally:
+        os.chdir("..")
 

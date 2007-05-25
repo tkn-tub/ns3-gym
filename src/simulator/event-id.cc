@@ -26,13 +26,13 @@ namespace ns3 {
 
 EventId::EventId ()
   : m_eventImpl (0),
-    m_ns (0),
+    m_ts (0),
     m_uid (0)
 {}
   
-EventId::EventId (EventImpl *impl, uint64_t ns, uint32_t uid)
+EventId::EventId (EventImpl *impl, uint64_t ts, uint32_t uid)
   : m_eventImpl (impl),
-    m_ns (ns),
+    m_ts (ts),
     m_uid (uid)
 {}
 void 
@@ -60,9 +60,9 @@ EventId::GetEventImpl (void) const
   return m_eventImpl;
 }
 uint64_t 
-EventId::GetNs (void) const
+EventId::GetTs (void) const
 {
-  return m_ns;
+  return m_ts;
 }
 uint32_t 
 EventId::GetUid (void) const

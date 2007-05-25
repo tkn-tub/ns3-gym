@@ -25,8 +25,8 @@ namespace ns3 {
 
 class SystemWallClockMsPrivate {
 public:
-  void start (void);
-  unsigned long long end (void);
+  void Start (void);
+  unsigned long long End (void);
 private:
 };
 

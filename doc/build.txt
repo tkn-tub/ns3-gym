@@ -16,6 +16,10 @@ the executable binaries generated link explicitely against
 the right libraries. This saves you the pain of having to
 setup environment variables to point to the right libraries.
 
+(Note:  An alternative build system (Waf) is being
+evaluated in the development branch of ns-3-dev on our server
+only (i.e., not in the release tarballs)-- see doc/build-waf.txt)
+
 1) Options
 ----------
 
