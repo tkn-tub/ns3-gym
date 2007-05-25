@@ -18,7 +18,7 @@
  * Authors: Gustavo Carneiro <gjcarneiro@gmail.com>,
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "interface-object.h"
+#include "object.h"
 #include "assert.h"
 #include "singleton.h"
 #include "uid-manager.h"
@@ -56,6 +56,8 @@ namespace ns3 {
 
 MyInterfaceId::MyInterfaceId (uint32_t iid)
   : m_iid (iid)
+{}
+MyInterfaceId::~MyInterfaceId ()
 {}
 MyInterfaceId 
 MyInterfaceId::LookupByName (std::string name)
@@ -95,25 +97,27 @@ MakeObjectInterfaceId (void)
 }
 
 
-const MyInterfaceId InterfaceObject::iid = MakeObjectInterfaceId ();
+const MyInterfaceId Object::iid = MakeObjectInterfaceId ();
 
 
-InterfaceObject::InterfaceObject ()
+Object::Object ()
   : m_count (1),
-    m_iid (InterfaceObject::iid),
+    m_iid (Object::iid),
     m_next (this)
 {}
-InterfaceObject::~InterfaceObject () 
-{}
-Ptr<InterfaceObject>
-InterfaceObject::DoQueryInterface (MyInterfaceId iid)
+Object::~Object () 
+{
+  m_next = 0;
+}
+Ptr<Object>
+Object::DoQueryInterface (MyInterfaceId iid)
 {
   NS_ASSERT (Check ());
-  InterfaceObject *currentObject = this;
+  Object *currentObject = this;
   do {
     NS_ASSERT (currentObject != 0);
     MyInterfaceId cur = currentObject->m_iid;
-    while (cur != iid && cur != InterfaceObject::iid)
+    while (cur != iid && cur != Object::iid)
       {
         cur = MyInterfaceId::LookupParent (cur);
       }
@@ -126,10 +130,10 @@ InterfaceObject::DoQueryInterface (MyInterfaceId iid)
   return 0;
 }
 void 
-InterfaceObject::Dispose (void)
+Object::Dispose (void)
 {
   NS_ASSERT (Check ());
-  InterfaceObject *current = this;
+  Object *current = this;
   do {
     NS_ASSERT (current != 0);
     current->DoDispose ();
@@ -138,12 +142,12 @@ InterfaceObject::Dispose (void)
 }
 
 void 
-InterfaceObject::AddInterface (Ptr<InterfaceObject> o)
+Object::AddInterface (Ptr<Object> o)
 {
   NS_ASSERT (Check ());
   NS_ASSERT (o->Check ());
-  InterfaceObject *other = PeekPointer (o);
-  InterfaceObject *next = m_next;
+  Object *other = PeekPointer (o);
+  Object *next = m_next;
   m_next = other->m_next;
   other->m_next = next;
   NS_ASSERT (Check ());
@@ -151,30 +155,30 @@ InterfaceObject::AddInterface (Ptr<InterfaceObject> o)
 }
 
 void 
-InterfaceObject::SetInterfaceId (MyInterfaceId iid)
+Object::SetInterfaceId (MyInterfaceId iid)
 {
   NS_ASSERT (Check ());
   m_iid = iid;
 }
 
 void
-InterfaceObject::DoDispose (void)
+Object::DoDispose (void)
 {
   NS_ASSERT (Check ());
 }
 
 bool 
-InterfaceObject::Check (void)
+Object::Check (void) const
 {
   return (m_count > 0);
 }
 
 void
-InterfaceObject::MaybeDelete (void)
+Object::MaybeDelete (void) const
 {
   // First, check if any of the attached
   // Object has a non-zero count.
-  InterfaceObject *current = this;
+  const Object *current = this;
   do {
     NS_ASSERT (current != 0);
     if (current->m_count != 0)
@@ -187,10 +191,10 @@ InterfaceObject::MaybeDelete (void)
   // all attached objects have a zero count so, 
   // we can delete all attached objects.
   current = this;
-  InterfaceObject *end = this;
+  const Object *end = this;
   do {
     NS_ASSERT (current != 0);
-    InterfaceObject *next = current->m_next;
+    Object *next = current->m_next;
     delete current;
     current = next;
   } while (current != end);
@@ -205,7 +209,7 @@ InterfaceObject::MaybeDelete (void)
 
 namespace {
 
-class BaseA : public ns3::InterfaceObject
+class BaseA : public ns3::Object
 {
 public:
   static const ns3::MyInterfaceId iid;
@@ -230,11 +234,11 @@ public:
 };
 
 const ns3::MyInterfaceId BaseA::iid = 
-  ns3::MakeInterfaceId ("BaseA", InterfaceObject::iid);
+  ns3::MakeInterfaceId ("BaseA", Object::iid);
 const ns3::MyInterfaceId DerivedA::iid = 
   ns3::MakeInterfaceId ("DerivedA", BaseA::iid);;
 
-class BaseB : public ns3::InterfaceObject
+class BaseB : public ns3::Object
 {
 public:
   static const ns3::MyInterfaceId iid;
@@ -259,7 +263,7 @@ public:
 };
 
 const ns3::MyInterfaceId BaseB::iid = 
-  ns3::MakeInterfaceId ("BaseB", InterfaceObject::iid);
+  ns3::MakeInterfaceId ("BaseB", Object::iid);
 const ns3::MyInterfaceId DerivedB::iid = 
   ns3::MakeInterfaceId ("DerivedB", BaseB::iid);;
 
@@ -267,18 +271,18 @@ const ns3::MyInterfaceId DerivedB::iid =
 
 namespace ns3 {
 
-class InterfaceObjectTest : public Test
+class ObjectTest : public Test
 {
 public:
-  InterfaceObjectTest ();
+  ObjectTest ();
   virtual bool RunTests (void);
 };
 
-InterfaceObjectTest::InterfaceObjectTest ()
-  : Test ("InterfaceObject")
+ObjectTest::ObjectTest ()
+  : Test ("Object")
 {}
 bool 
-InterfaceObjectTest::RunTests (void)
+ObjectTest::RunTests (void)
 {
   bool ok = true;
 
@@ -396,7 +400,7 @@ InterfaceObjectTest::RunTests (void)
   return ok;
 }
 
-static InterfaceObjectTest g_interfaceObjectTests;
+static ObjectTest g_interfaceObjectTests;
 
 
 } // namespace ns3

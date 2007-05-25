@@ -1,10 +1,10 @@
 #include <vector>
 #include <stdlib.h>
-#include "ns3/interface-object.h"
+#include "ns3/object.h"
 
 using namespace ns3;
 
-class BaseA : public ns3::InterfaceObject
+class BaseA : public ns3::Object
 {
 public:
   static const ns3::MyInterfaceId iid;
@@ -16,7 +16,7 @@ public:
 };
 
 const ns3::MyInterfaceId BaseA::iid = 
-ns3::MakeInterfaceId ("BaseABench", InterfaceObject::iid);
+ns3::MakeInterfaceId ("BaseABench", Object::iid);
 
 
 

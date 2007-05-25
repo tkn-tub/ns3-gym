@@ -18,8 +18,8 @@
  * Authors: Gustavo Carneiro <gjcarneiro@gmail.com>,
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef INTERFACE_OBJECT_H
-#define INTERFACE_OBJECT_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
 #include <stdint.h>
 #include <string>
@@ -32,11 +32,11 @@ class MyInterfaceId
 public:
   static MyInterfaceId LookupByName (std::string name);
   static MyInterfaceId LookupParent (MyInterfaceId iid);
+  ~MyInterfaceId ();
 private:
   MyInterfaceId (uint32_t iid);
   friend MyInterfaceId MakeInterfaceId (std::string name, const MyInterfaceId &parent);
   friend MyInterfaceId MakeObjectInterfaceId (void);
-  friend class AggregateObject;
   friend bool operator == (const MyInterfaceId &a, const MyInterfaceId &b);
   friend bool operator != (const MyInterfaceId &a, const MyInterfaceId &b);
   uint32_t m_iid;
@@ -45,29 +45,29 @@ private:
 MyInterfaceId
 MakeInterfaceId (std::string name, const MyInterfaceId &parent);
 
-class InterfaceObject
+class Object
 {
 public:
   static const MyInterfaceId iid;
 
-  InterfaceObject ();
-  virtual ~InterfaceObject ();
-  inline void Ref (void);
-  inline void Unref (void);
+  Object ();
+  virtual ~Object ();
+  inline void Ref (void) const;
+  inline void Unref (void) const;
   template <typename T>
   Ptr<T> QueryInterface (MyInterfaceId iid);
   void Dispose (void);
-  void AddInterface (Ptr<InterfaceObject> other);
+  void AddInterface (Ptr<Object> other);
 protected:
   void SetInterfaceId (MyInterfaceId iid);
-private:
   virtual void DoDispose (void);
-  Ptr<InterfaceObject> DoQueryInterface (MyInterfaceId iid);
-  bool Check (void);
-  void MaybeDelete (void);
-  uint32_t m_count;
+private:
+  Ptr<Object> DoQueryInterface (MyInterfaceId iid);
+  bool Check (void) const;
+  void MaybeDelete (void) const;
+  mutable uint32_t m_count;
   MyInterfaceId m_iid;
-  InterfaceObject *m_next;
+  Object *m_next;
 };
 
 } // namespace ns3
@@ -75,12 +75,12 @@ private:
 namespace ns3 {
 
 void
-InterfaceObject::Ref (void)
+Object::Ref (void) const
 {
   m_count++;
 }
 void
-InterfaceObject::Unref (void)
+Object::Unref (void) const
 {
   NS_ASSERT (Check ());
   m_count--;
@@ -92,9 +92,9 @@ InterfaceObject::Unref (void)
 
 template <typename T>
 Ptr<T> 
-InterfaceObject::QueryInterface (MyInterfaceId iid)
+Object::QueryInterface (MyInterfaceId iid)
 {
-  Ptr<InterfaceObject> found = DoQueryInterface (iid);
+  Ptr<Object> found = DoQueryInterface (iid);
   if (found != 0)
     {
       return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));
@@ -104,5 +104,5 @@ InterfaceObject::QueryInterface (MyInterfaceId iid)
 
 } // namespace ns3
 
-#endif /* INTERFACE_OBJECT_H */
+#endif /* OBJECT_H */
 
