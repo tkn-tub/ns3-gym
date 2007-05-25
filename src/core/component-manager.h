@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef NS_COMPONENT_MANAGER_H
-#define NS_COMPONENT_MANAGER_H
+#ifndef COMPONENT_MANAGER_H
+#define COMPONENT_MANAGER_H
 
 #include <string>
 #include <vector>
@@ -683,4 +683,4 @@ ComponentManager::Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2, T3 a3,
 
 } // namespace ns3
 
-#endif /* NS_COMPONENT_MANAGER_H */
+#endif /* COMPONENT_MANAGER_H */
