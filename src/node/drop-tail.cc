@@ -32,7 +32,7 @@ public:
 } queue_stack_initialization_class;
 
 const ClassId DropTailQueue::cid = 
-  ComponentManager::RegisterConstructor<DropTailQueue> ("DropTailQueue");
+  MakeClassId<DropTailQueue> ("DropTailQueue", Queue::iid);
 
 
 DropTailQueue::DropTailQueue () :

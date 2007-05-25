@@ -49,6 +49,10 @@ bool operator == (const ClassId &a, const ClassId &b)
   return a.m_classId == b.m_classId;
 }
 
+ComponentManager::ClassIdEntry::ClassIdEntry (ClassId classId)
+  : m_classId (classId)
+{}
+
 Ptr<Object>
 ComponentManager::Create (ClassId classId)
 {
@@ -62,9 +66,9 @@ ComponentManager::Lookup (ClassId classId)
   List *list = Singleton<List>::Get ();
   for (List::const_iterator i = list->begin (); i != list->end (); i++)
     {
-      if (i->first == classId)
+      if (i->m_classId == classId)
 	{
-	  return i->second;
+	  return i->m_callback;
 	}
     }
   return 0;
@@ -76,14 +80,36 @@ ComponentManager::LookupByName (std::string name)
   return ClassId (Singleton<CidManager>::Get ()->LookupByName (name));
 }
 
-ClassId
-ComponentManager::Register (std::string name, CallbackBase *callback)
+void
+ComponentManager::Register (ClassId classId, CallbackBase *callback, 
+                            std::vector<InterfaceId> supportedInterfaces)
 {
-  ClassId classId = ClassId (name);
   List *list = Singleton<List>::Get ();
-  list->push_back (std::make_pair (classId, callback));
-  return classId;
+  struct ClassIdEntry entry = ClassIdEntry (classId);
+  entry.m_callback = callback;
+  bool foundObject = false;
+  for (std::vector<InterfaceId>::iterator i = supportedInterfaces.begin ();
+       i != supportedInterfaces.end (); i++)
+    {
+      if (*i == Object::iid)
+        {
+          foundObject = true;
+        }
+    }
+  if (!foundObject)
+    {
+      supportedInterfaces.push_back (Object::iid);
+    }
+  entry.m_supportedInterfaces = supportedInterfaces;
+  list->push_back (entry);
 }
+
+void
+RegisterCallback (ClassId classId, CallbackBase *callback, std::vector<InterfaceId> supportedInterfaces)
+{
+  return ComponentManager::Register (classId, callback, supportedInterfaces);
+}
+
 
 
 } // namespace ns3
@@ -117,6 +143,7 @@ public:
   static const ns3::ClassId cidZero;
   static const ns3::ClassId cidOneBool;
   static const ns3::ClassId cidOneUi32;
+  static const ns3::ClassId cidOther;
   static const ns3::InterfaceId iid;
 
   A ();
@@ -131,9 +158,9 @@ public:
   int m_ui32;
 };
 
-const ns3::ClassId A::cidZero = ns3::ComponentManager::RegisterConstructor <A> ("A");
-const ns3::ClassId A::cidOneBool = ns3::ComponentManager::RegisterConstructor <A,bool> ("ABool");
-const ns3::ClassId A::cidOneUi32 = ns3::ComponentManager::RegisterConstructor <A,uint32_t> ("AUi32");
+const ns3::ClassId A::cidZero = ns3::MakeClassId<A> ("A", A::iid);
+const ns3::ClassId A::cidOneBool = ns3::MakeClassId <A,bool> ("ABool", A::iid);
+const ns3::ClassId A::cidOneUi32 = ns3::MakeClassId <A,uint32_t> ("AUi32", A::iid);
 const ns3::InterfaceId A::iid = MakeInterfaceId ("A", Object::iid);
 
 A::A ()

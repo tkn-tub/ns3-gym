@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef NS_UNKNOWN_MANAGER_H
-#define NS_UNKNOWN_MANAGER_H
+#ifndef NS_COMPONENT_MANAGER_H
+#define NS_COMPONENT_MANAGER_H
 
 #include <string>
 #include <vector>
@@ -28,6 +28,11 @@
 #include "object.h"
 #include "fatal-error.h"
 #include "ptr.h"
+#include "empty.h"
+
+namespace {
+class unknown;
+}
 
 namespace ns3 {
 
@@ -49,13 +54,19 @@ public:
    * to ns3::UnknownManager::LookupByName.
    */
   std::string GetName (void);
-private:
+protected:
   ClassId (std::string name);
+private:
   ClassId (uint32_t classId);
   friend class ComponentManager;
+  friend ClassId AllocateClassId (std::string name);
   friend bool operator == (const ClassId &a, const ClassId &b);
   uint32_t m_classId;
 };
+
+template <typename T, typename T1 = empty, typename T2 = empty>
+class MakeClassId;
+
 
 /**
  * \brief Create any Interface
@@ -75,6 +86,7 @@ public:
    * \returns the ClassId associated to the input name.
    */
   static ClassId LookupByName (std::string name);
+  static std::vector<ClassId> LookupByInterface (InterfaceId iid);
 
   /**
    * \param classId class id of the constructor to invoke.
@@ -126,60 +138,25 @@ public:
   template <typename T, typename T1, typename T2>
   static Ptr<T> Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2);
 
-  /**
-   * \param name the symbolic name to associate to this
-   *        constructor
-   * \returns a ClassId which uniquely identifies this constructor.
-   */
-  template <typename T>
-  static ClassId RegisterConstructor (std::string name)
-  {
-    static Callback<Ptr<Object> > callback = 
-      MakeCallback (&ComponentManager::MakeObjectZero<T>);
-    return ComponentManager::Register (name, &callback);
-  }
-
-  /**
-   * \param name the symbolic name to associate to this
-   *        constructor
-   * \returns a ClassId which uniquely identifies this constructor.
-   */
-  template <typename T, typename T1>
-  static ClassId RegisterConstructor (std::string name)
-  {
-    static Callback<Ptr<Object> ,T1> callback = MakeCallback (&ComponentManager::MakeObjectOne<T,T1>);
-    return ComponentManager::Register (name, &callback);
-  }
-
-  /**
-   * \param name the symbolic name to associate to this
-   *        constructor
-   * \returns a ClassId which uniquely identifies this constructor.
-   */
-  template <typename T, typename T1, typename T2>
-  static ClassId RegisterConstructor (std::string name)
-  {
-    static Callback<Ptr<Object>,T1,T2> callback = MakeCallback (&ComponentManager::MakeObjectTwo<T,T1,T2>);
-    return ComponentManager::Register (name, &callback);
-  }
 private:
-  static ClassId Register (std::string name, CallbackBase *callback);
+  friend void RegisterCallback (ClassId classId, CallbackBase *callback, 
+                                   std::vector<InterfaceId> supportedInterfaces);
+  static void Register (ClassId classId, CallbackBase *callback, 
+                        std::vector<InterfaceId> supportedInterfaces);
 
   template <typename T1, typename T2,
             typename T3, typename T4,
             typename T5>
   static Callback<Ptr<Object>,T1,T2,T3,T4,T5> DoGetCallback (ClassId classId);
 
-  template <typename T>
-  static Ptr<Object> MakeObjectZero (void);
+  struct ClassIdEntry {
+    ClassIdEntry (ClassId classId);
+    ClassId m_classId;
+    CallbackBase *m_callback;
+    std::vector<InterfaceId> m_supportedInterfaces;
+  };
 
-  template <typename T, typename T1>
-  static Ptr<Object> MakeObjectOne (T1 a1);
-
-  template <typename T, typename T1, typename T2>
-  static Ptr<Object> MakeObjectTwo (T1 a1, T2 a2);
-
-  typedef std::vector<std::pair<ClassId, CallbackBase *> > List;
+  typedef std::vector<struct ClassIdEntry> List;
   static List *GetList (void);
   static CallbackBase *Lookup (ClassId classId);
 };
@@ -187,7 +164,80 @@ private:
 } // namespace ns3 
 
 
+namespace {
+  // anonymous namespace for implementation code.
+template <typename T, typename T1 = ns3::empty, typename T2 = ns3::empty>
+struct ObjectMaker;
+
+template <typename T>
+struct ObjectMaker<T,ns3::empty,ns3::empty> {
+  static ns3::Ptr<ns3::Object> 
+  MakeObject (void) {
+    return ns3::MakeNewObject<T> ();
+  }
+};
+
+template <typename T, typename T1>
+struct ObjectMaker<T,T1,ns3::empty> {
+  static ns3::Ptr<ns3::Object> 
+  MakeObject (T1 a1) {
+    return ns3::MakeNewObject<T> (a1);
+  }
+};
+
+template <typename T, typename T1, typename T2>
+struct ObjectMaker {
+  static ns3::Ptr<ns3::Object> 
+  MakeObject (T1 a1, T2 a2) {
+    return ns3::MakeNewObject<T> (a1, a2);
+  }
+};
+
+} // anonymous namespace
+
 namespace ns3 {
+
+void RegisterCallback (ClassId classId, ns3::CallbackBase *callback, 
+                       std::vector<InterfaceId> supportedInterfaces);
+
+
+template <typename T, typename T1, typename T2>
+class MakeClassId : public ClassId
+{
+private:
+  typedef ObjectMaker<T,T1,T2> MakerType;
+  static Callback<Ptr<Object>,T1,T2> m_callback;
+  static std::vector<InterfaceId> m_supportedInterfaces;
+public:
+  MakeClassId (std::string name) : ClassId (name) {
+    RegisterCallback (*this, &m_callback, m_supportedInterfaces);
+  }
+  MakeClassId (std::string name, InterfaceId iid) : ClassId (name) {
+    m_supportedInterfaces.push_back (iid);
+    RegisterCallback (*this, &m_callback, m_supportedInterfaces);
+  }
+  MakeClassId (std::string name, InterfaceId iid0, InterfaceId iid1) : ClassId (name) {
+    m_supportedInterfaces.push_back (iid0);
+    m_supportedInterfaces.push_back (iid1);
+    RegisterCallback (*this, &m_callback, m_supportedInterfaces);
+  }
+  MakeClassId (std::string name, 
+               InterfaceId iid0, 
+               InterfaceId iid1,
+               InterfaceId iid2) : ClassId (name) {
+    m_supportedInterfaces.push_back (iid0);
+    m_supportedInterfaces.push_back (iid1);
+    m_supportedInterfaces.push_back (iid2);
+    RegisterCallback (*this, &m_callback, m_supportedInterfaces);
+  }
+};
+
+template <typename T, typename T1, typename T2>
+Callback<Ptr<Object>,T1,T2> MakeClassId<T,T1,T2>::m_callback = MakeCallback (&MakeClassId::MakerType::MakeObject);
+template <typename T, typename T1, typename T2>
+std::vector<InterfaceId> MakeClassId<T,T1,T2>::m_supportedInterfaces;
+
+
 
 template <typename T1, typename T2,
           typename T3, typename T4,
@@ -200,7 +250,7 @@ ComponentManager::DoGetCallback (ClassId classId)
     {
       NS_FATAL_ERROR ("Invalid Class Id.");
     }
-  Callback<Ptr<Object>, T1,T2,T3,T4,T5> reference;
+  Callback<Ptr<Object>,T1,T2,T3,T4,T5> reference;
   reference.Assign (*callback);
   return reference;
 }
@@ -210,7 +260,7 @@ template <typename T1>
 Ptr<Object>
 ComponentManager::Create (ClassId classId, T1 a1)
 {
-  Callback<Ptr<Object>, T1> callback = DoGetCallback<T1,empty,empty,empty,empty> (classId);
+  Callback<Ptr<Object>,T1> callback = DoGetCallback<T1,empty,empty,empty,empty> (classId);
   return callback (a1);
 }
 
@@ -218,7 +268,7 @@ template <typename T1, typename T2>
 Ptr<Object> 
 ComponentManager::Create (ClassId classId, T1 a1, T2 a2)
 {
-  Callback<Ptr<Object> , T1,T2> callback = DoGetCallback<T1,T2,empty,empty,empty> (classId);
+  Callback<Ptr<Object>,T1,T2> callback = DoGetCallback<T1,T2,empty,empty,empty> (classId);
   return callback (a1, a2);
 }
 
@@ -249,26 +299,6 @@ ComponentManager::Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2)
   return i;
 }
 
-
-template <typename T>
-Ptr<Object> 
-ComponentManager::MakeObjectZero (void)
-{
-  return MakeNewObject<T> ();
-}
-template <typename T, typename T1>
-Ptr<Object> 
-ComponentManager::MakeObjectOne (T1 a1)
-{
-  return MakeNewObject<T> (a1);
-}
-template <typename T, typename T1, typename T2>
-Ptr<Object> 
-ComponentManager::MakeObjectTwo (T1 a1, T2 a2)
-{
-  return MakeNewObject<T> (a1, a2);
-}
-
 } // namespace ns3
 
-#endif /* NS_UNKNOWN_MANAGER_H */
+#endif /* NS_COMPONENT_MANAGER_H */
