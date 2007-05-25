@@ -24,6 +24,27 @@ ns3.add_extra_dist ('RELEASE_NOTES')
 ns3.add_extra_dist ('AUTHORS')
 ns3.add_extra_dist ('VERSION')
 
+ns3.add_extra_dist('doc/build-waf.txt')
+ns3.add_extra_dist('ns3/_placeholder_')
+for wscript in [
+    "src/core/wscript",
+    "src/node/wscript",
+    "src/devices/p2p/wscript",
+    "src/common/wscript",
+    "src/applications/wscript",
+    "src/simulator/wscript",
+    "src/internet-node/wscript",
+    "src/wscript",
+    "utils/wscript",
+    "samples/wscript",
+    "examples/wscript",
+    "wscript",
+    ]:
+    ns3.add_extra_dist(wscript)
+ns3.add_extra_dist('waf')
+ns3.add_extra_dist('waf.bat')
+
+
 
 #
 # The Core module
