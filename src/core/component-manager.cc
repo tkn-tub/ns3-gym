@@ -39,7 +39,7 @@ ClassId::ClassId (uint32_t classId)
 {}
 
 std::string 
-ClassId::GetName (void)
+ClassId::GetName (void) const
 {
   return Singleton<CidManager>::Get ()->LookupByUid (m_classId);
 }
@@ -79,36 +79,145 @@ ComponentManager::LookupByName (std::string name)
 {
   return ClassId (Singleton<CidManager>::Get ()->LookupByName (name));
 }
+ClassId 
+ComponentManager::LookupByName (std::string name, bool *ok)
+{
+  uint32_t cid = Singleton<CidManager>::Get ()->LookupByName (name);
+  if (cid == 0)
+    {
+      *ok = false;
+    }
+  else
+    {
+      *ok = true;
+    }
+  return ClassId (cid);
+}
+std::vector<ClassId> 
+ComponentManager::LookupByInterfaceId (InterfaceId iid)
+{
+  std::vector<ClassId> classIdList;
+  List *list = Singleton<List>::Get ();
+  for (List::const_iterator i = list->begin (); i != list->end (); i++)
+    {
+      for (std::vector<const InterfaceId *>::const_iterator j = i->m_supportedInterfaces.begin ();
+           j != i->m_supportedInterfaces.end (); j++)
+        {
+          if (*(*j) == iid)
+            {
+              classIdList.push_back (i->m_classId);
+              break;
+            }
+        }
+    }
+  unique (classIdList.begin (), classIdList.end ());
+  return classIdList;
+}
 
 void
 ComponentManager::Register (ClassId classId, CallbackBase *callback, 
-                            std::vector<InterfaceId> supportedInterfaces)
+                            std::vector<const InterfaceId *> supportedInterfaces)
 {
   List *list = Singleton<List>::Get ();
   struct ClassIdEntry entry = ClassIdEntry (classId);
   entry.m_callback = callback;
   bool foundObject = false;
-  for (std::vector<InterfaceId>::iterator i = supportedInterfaces.begin ();
+  for (std::vector<const InterfaceId *>::iterator i = supportedInterfaces.begin ();
        i != supportedInterfaces.end (); i++)
     {
-      if (*i == Object::iid)
+      if (*(*i) == Object::iid)
         {
           foundObject = true;
         }
     }
   if (!foundObject)
     {
-      supportedInterfaces.push_back (Object::iid);
+      supportedInterfaces.push_back (&Object::iid);
     }
   entry.m_supportedInterfaces = supportedInterfaces;
   list->push_back (entry);
 }
 
 void
-RegisterCallback (ClassId classId, CallbackBase *callback, std::vector<InterfaceId> supportedInterfaces)
+RegisterCallback (ClassId classId, CallbackBase *callback, std::vector<const InterfaceId *> supportedInterfaces)
 {
   return ComponentManager::Register (classId, callback, supportedInterfaces);
 }
+
+
+ClassIdDefaultValue::ClassIdDefaultValue (std::string name, 
+                                          std::string help,
+                                          const InterfaceId &iid,
+                                          std::string defaultValue)
+  : DefaultValueBase (name, help),
+    m_defaultName (defaultValue),
+    m_name (defaultValue),
+    m_interfaceId (&iid)
+{
+  DefaultValueList::Add (this);
+}
+ClassId 
+ClassIdDefaultValue::GetValue (void) const
+{
+  return ComponentManager::LookupByName (m_name);
+}
+void 
+ClassIdDefaultValue::SetValue (ClassId classId)
+{
+  m_name = classId.GetName ();
+}
+void 
+ClassIdDefaultValue::SetValue (std::string name)
+{
+  m_name = name;
+}
+bool 
+ClassIdDefaultValue::DoParseValue (const std::string &value)
+{
+  bool ok;
+  ClassId classId = ComponentManager::LookupByName (value, &ok);
+  if (!ok)
+    {
+      return false;
+    }
+  std::vector<ClassId> classIdList = ComponentManager::LookupByInterfaceId (*m_interfaceId);
+  for (std::vector<ClassId>::const_iterator i = classIdList.begin ();
+       i != classIdList.end (); i++)
+    {
+      if (*i == classId)
+        {
+          m_name = value;
+          return true;
+        }
+    }
+  return false;
+}
+
+std::string 
+ClassIdDefaultValue::DoGetType (void) const
+{
+  std::vector<ClassId> classIdList = ComponentManager::LookupByInterfaceId (*m_interfaceId);
+  std::ostringstream oss;
+  oss << "(";
+  for (std::vector<ClassId>::const_iterator i = classIdList.begin ();
+       i != classIdList.end (); i++)
+    {
+      if (i != classIdList.begin ())
+        {
+          oss << "|";
+        }
+      oss << i->GetName ();
+    }
+  oss << ")";
+  return oss.str ();
+}
+
+std::string 
+ClassIdDefaultValue::DoGetDefaultValue (void) const
+{
+  return m_name;
+}
+
 
 
 
@@ -161,7 +270,7 @@ public:
 const ns3::ClassId A::cidZero = ns3::MakeClassId<A> ("A", A::iid);
 const ns3::ClassId A::cidOneBool = ns3::MakeClassId <A,bool> ("ABool", A::iid);
 const ns3::ClassId A::cidOneUi32 = ns3::MakeClassId <A,uint32_t> ("AUi32", A::iid);
-const ns3::InterfaceId A::iid = MakeInterfaceId ("A", Object::iid);
+const ns3::InterfaceId A::iid = ns3::MakeInterfaceId ("A", Object::iid);
 
 A::A ()
   : m_zeroInvoked (true),

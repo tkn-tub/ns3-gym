@@ -29,10 +29,7 @@
 #include "fatal-error.h"
 #include "ptr.h"
 #include "empty.h"
-
-namespace {
-class unknown;
-}
+#include "default-value.h"
 
 namespace ns3 {
 
@@ -53,7 +50,7 @@ public:
    * This name is also the name which is expected to be input
    * to ns3::UnknownManager::LookupByName.
    */
-  std::string GetName (void);
+  std::string GetName (void) const;
 protected:
   ClassId (std::string name);
 private:
@@ -86,7 +83,19 @@ public:
    * \returns the ClassId associated to the input name.
    */
   static ClassId LookupByName (std::string name);
-  static std::vector<ClassId> LookupByInterface (InterfaceId iid);
+  static ClassId LookupByName (std::string name, bool *ok);
+  /**
+   * \param iid interface id to lookup
+   * \returns the list of ClassId which can be used to
+   *          create objects which support the requested 
+   *          interface.
+   *
+   * Note that this method will not necessarily return the
+   * complete list of objects which support a given interface
+   * since dynamic aggregation of objects is not under
+   * the control of this class.
+   */
+  static std::vector<ClassId> LookupByInterfaceId (InterfaceId iid);
 
   /**
    * \param classId class id of the constructor to invoke.
@@ -140,9 +149,9 @@ public:
 
 private:
   friend void RegisterCallback (ClassId classId, CallbackBase *callback, 
-                                   std::vector<InterfaceId> supportedInterfaces);
+                                   std::vector<const InterfaceId *> supportedInterfaces);
   static void Register (ClassId classId, CallbackBase *callback, 
-                        std::vector<InterfaceId> supportedInterfaces);
+                        std::vector<const InterfaceId *> supportedInterfaces);
 
   template <typename T1, typename T2,
             typename T3, typename T4,
@@ -153,12 +162,31 @@ private:
     ClassIdEntry (ClassId classId);
     ClassId m_classId;
     CallbackBase *m_callback;
-    std::vector<InterfaceId> m_supportedInterfaces;
+    std::vector<const InterfaceId *> m_supportedInterfaces;
   };
 
   typedef std::vector<struct ClassIdEntry> List;
   static List *GetList (void);
   static CallbackBase *Lookup (ClassId classId);
+};
+
+class ClassIdDefaultValue : public DefaultValueBase
+{
+public:
+  ClassIdDefaultValue (std::string name, 
+                       std::string help,
+                       const InterfaceId &iid,
+                       std::string defaultValue);
+  ClassId GetValue (void) const;
+  void SetValue (ClassId classId);
+  void SetValue (std::string name);
+private:
+  virtual bool DoParseValue (const std::string &value);
+  virtual std::string DoGetType (void) const;
+  virtual std::string DoGetDefaultValue (void) const;
+  std::string m_defaultName;
+  std::string m_name;
+  const InterfaceId *m_interfaceId;
 };
 
 } // namespace ns3 
@@ -196,9 +224,9 @@ struct ObjectMaker {
 } // anonymous namespace
 
 namespace ns3 {
-
+  
 void RegisterCallback (ClassId classId, ns3::CallbackBase *callback, 
-                       std::vector<InterfaceId> supportedInterfaces);
+                       std::vector<const InterfaceId *> supportedInterfaces);
 
 
 template <typename T, typename T1, typename T2>
@@ -207,27 +235,30 @@ class MakeClassId : public ClassId
 private:
   typedef ObjectMaker<T,T1,T2> MakerType;
   static Callback<Ptr<Object>,T1,T2> m_callback;
-  static std::vector<InterfaceId> m_supportedInterfaces;
+  static std::vector<const InterfaceId *> m_supportedInterfaces;
 public:
   MakeClassId (std::string name) : ClassId (name) {
     RegisterCallback (*this, &m_callback, m_supportedInterfaces);
   }
-  MakeClassId (std::string name, InterfaceId iid) : ClassId (name) {
-    m_supportedInterfaces.push_back (iid);
-    RegisterCallback (*this, &m_callback, m_supportedInterfaces);
-  }
-  MakeClassId (std::string name, InterfaceId iid0, InterfaceId iid1) : ClassId (name) {
-    m_supportedInterfaces.push_back (iid0);
-    m_supportedInterfaces.push_back (iid1);
+  MakeClassId (std::string name, 
+               const InterfaceId &iid) : ClassId (name) {
+    m_supportedInterfaces.push_back (&iid);
     RegisterCallback (*this, &m_callback, m_supportedInterfaces);
   }
   MakeClassId (std::string name, 
-               InterfaceId iid0, 
-               InterfaceId iid1,
-               InterfaceId iid2) : ClassId (name) {
-    m_supportedInterfaces.push_back (iid0);
-    m_supportedInterfaces.push_back (iid1);
-    m_supportedInterfaces.push_back (iid2);
+               const InterfaceId &iid0, 
+               const InterfaceId iid1) : ClassId (name) {
+    m_supportedInterfaces.push_back (&iid0);
+    m_supportedInterfaces.push_back (&iid1);
+    RegisterCallback (*this, &m_callback, m_supportedInterfaces);
+  }
+  MakeClassId (std::string name, 
+               const InterfaceId &iid0, 
+               const InterfaceId &iid1,
+               const InterfaceId &iid2) : ClassId (name) {
+    m_supportedInterfaces.push_back (&iid0);
+    m_supportedInterfaces.push_back (&iid1);
+    m_supportedInterfaces.push_back (&iid2);
     RegisterCallback (*this, &m_callback, m_supportedInterfaces);
   }
 };
@@ -235,7 +266,7 @@ public:
 template <typename T, typename T1, typename T2>
 Callback<Ptr<Object>,T1,T2> MakeClassId<T,T1,T2>::m_callback = MakeCallback (&MakeClassId::MakerType::MakeObject);
 template <typename T, typename T1, typename T2>
-std::vector<InterfaceId> MakeClassId<T,T1,T2>::m_supportedInterfaces;
+std::vector<const InterfaceId *> MakeClassId<T,T1,T2>::m_supportedInterfaces;
 
 
 

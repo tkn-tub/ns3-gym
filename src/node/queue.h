@@ -172,10 +172,6 @@ public:
    * \return a Queue smart pointer that is the default Queue type defined
    */
   static Ptr<Queue> CreateDefault (void);
-  static void Add (const std::string &name);
-  static void AddDefault (const std::string &name);
-private:
-  static StringEnumDefaultValue *GetDefault (void);
 };
 
 }; // namespace ns3
