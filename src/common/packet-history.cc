@@ -42,14 +42,16 @@ PacketHistory::Enable (void)
 PacketHistory::PacketHistory ()
   : m_data (0),
     m_end (0),
-    m_n (0)
+    m_n (0),
+    m_aggregated (false)
 {
   Construct (0, 0);
 }
 PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
   : m_data (0),
     m_end (0),
-    m_n (0)
+    m_n (0),
+    m_aggregated (false)
 {
   Construct (uid, size);
 }
@@ -66,7 +68,8 @@ PacketHistory::Construct (uint32_t uid, uint32_t size)
 PacketHistory::PacketHistory (PacketHistory const &o)
   : m_data (o.m_data),
     m_end (o.m_end),
-    m_n (o.m_n)
+    m_n (o.m_n),
+    m_aggregated (o.m_aggregated)
 {
   if (m_data != 0) 
     {
@@ -92,6 +95,7 @@ PacketHistory::operator = (PacketHistory const& o)
   m_data = o.m_data;
   m_end = o.m_end;
   m_n = o.m_n;
+  m_aggregated = o.m_aggregated;
   if (m_data != 0) 
     {
       m_data->m_count++;
@@ -364,9 +368,12 @@ PacketHistory::ReadValue (uint8_t **pBuffer) const
 }
 
 PacketHistory 
-PacketHistory::CreateFragment (uint32_t start, uint32_t length) const
+PacketHistory::CreateFragment (uint32_t start, uint32_t end) const
 {
-  return *this;
+  PacketHistory fragment = *this;
+  fragment.RemoveAtStart (start);
+  fragment.RemoveAtEnd (end);
+  return fragment;
 }
 
 void 
@@ -406,6 +413,7 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
 {
   if (m_enable) 
     {
+      m_aggregated = true;
       uint32_t n = GetUleb128Size (PacketHistory::ADD_AT_END);
       n += o.m_end;
       Reserve (n);
@@ -444,13 +452,8 @@ PacketHistory::RemoveAtEnd (uint32_t end)
 }
 
 void 
-PacketHistory::PrintDefault (std::ostream &os, Buffer buffer) const
+PacketHistory::PrintSimple (std::ostream &os, Buffer buffer) const
 {
-  if (!m_enable) 
-    {
-      return;
-    }
-
   Buffer original = buffer;
   HeadersToPrint headersToPrint;
   TrailersToPrint trailersToPrint;
@@ -597,6 +600,29 @@ PacketHistory::PrintDefault (std::ostream &os, Buffer buffer) const
       Chunk *chunk = CreateStatic (uid);
       chunk->Deserialize (tmp.End ());
       chunk->Print (os);
+    }
+}
+
+void 
+PacketHistory::PrintComplex (std::ostream &os, Buffer buffer) const
+{
+}
+
+void 
+PacketHistory::PrintDefault (std::ostream &os, Buffer buffer) const
+{
+  if (!m_enable) 
+    {
+      return;
+    }
+
+  if (m_aggregated)
+    {
+      PrintComplex (os, buffer);
+    }
+  else
+    {
+      PrintSimple (os, buffer);
     }
 }
 

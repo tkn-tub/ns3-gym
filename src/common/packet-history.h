@@ -62,13 +62,15 @@ public:
   template <typename T>
   void RemoveTrailer (T const &trailer, uint32_t size);
 
-  PacketHistory CreateFragment (uint32_t start, uint32_t length) const;
+  PacketHistory CreateFragment (uint32_t start, uint32_t end) const;
   void AddAtEnd (PacketHistory const&o);
   void AddPaddingAtEnd (uint32_t end);
   void RemoveAtStart (uint32_t start);
   void RemoveAtEnd (uint32_t end);
 
   void PrintDefault (std::ostream &os, Buffer buffer) const;
+  void PrintSimple (std::ostream &os, Buffer buffer) const;
+  void PrintComplex (std::ostream &os, Buffer buffer) const;
   void Print (std::ostream &os, Buffer buffer, PacketPrinter printer) const;
 
 private:
@@ -133,6 +135,7 @@ private:
   struct CommandData *m_data;
   uint32_t m_end;
   uint32_t m_n;
+  bool m_aggregated;
 };
 
 }; // namespace ns3
