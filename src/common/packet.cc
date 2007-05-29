@@ -27,6 +27,7 @@ uint32_t Packet::m_globalUid = 0;
 
 Packet::Packet ()
   : m_buffer (),
+    m_history (m_globalUid, 0),
     m_uid (m_globalUid)
 {
   m_globalUid++;
@@ -34,12 +35,14 @@ Packet::Packet ()
 
 Packet::Packet (uint32_t size)
   : m_buffer (size),
+    m_history (m_globalUid, size),
     m_uid (m_globalUid)
 {
   m_globalUid++;
 }
 Packet::Packet (uint8_t const*buffer, uint32_t size)
   : m_buffer (),
+    m_history (m_globalUid, size),
     m_uid (m_globalUid)
 {
   m_globalUid++;
@@ -48,9 +51,10 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
   i.Write (buffer, size);
 }
 
-Packet::Packet (Buffer buffer, Tags tags, uint32_t uid)
+Packet::Packet (Buffer buffer, Tags tags, PacketHistory history, uint32_t uid)
   : m_buffer (buffer),
     m_tags (tags),
+    m_history (history),
     m_uid (uid)
 {}
 
@@ -58,7 +62,8 @@ Packet
 Packet::CreateFragment (uint32_t start, uint32_t length) const
 {
   Buffer buffer = m_buffer.CreateFragment (start, length);
-  return Packet (buffer, m_tags, m_uid);
+  PacketHistory history = m_history.CreateFragment (start, length);
+  return Packet (buffer, m_tags, history, m_uid);
 }
 
 uint32_t 
@@ -79,21 +84,25 @@ Packet::AddAtEnd (Packet packet)
    * XXX: we might need to merge the tag list of the
    * other packet into the current packet.
    */
+  m_history.AddAtEnd (packet.m_history);
 }
 void
 Packet::AddPaddingAtEnd (uint32_t size)
 {
   m_buffer.AddAtEnd (size);
+  m_history.AddPaddingAtEnd (size);
 }
 void 
 Packet::RemoveAtEnd (uint32_t size)
 {
   m_buffer.RemoveAtEnd (size);
+  m_history.RemoveAtEnd (size);
 }
 void 
 Packet::RemoveAtStart (uint32_t size)
 {
   m_buffer.RemoveAtStart (size);
+  m_history.RemoveAtStart (size);
 }
 
 void 
@@ -116,6 +125,8 @@ Packet::GetUid (void) const
 
 void 
 Packet::Print (std::ostream &os) const
-{}
+{
+  m_history.PrintDefault (os, m_buffer);
+}
 
 }; // namespace ns3

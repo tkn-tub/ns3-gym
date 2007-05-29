@@ -26,6 +26,7 @@
 #include "header.h"
 #include "trailer.h"
 #include "tags.h"
+#include "packet-history.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 
@@ -129,7 +130,7 @@ public:
   uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
-   * ns3::Header::GetSerializedSize and ns3::Header::SerializeTo 
+   * ns3::Chunk::GetSerializedSize and ns3::Chunk::SerializeTo 
    * methods to reserve space in the buffer and request the 
    * header to serialize itself in the packet buffer.
    *
@@ -139,8 +140,7 @@ public:
   void AddHeader (T const &header);
   /**
    * Deserialize and remove the header from the internal buffer.
-   * This method invokes ns3::Header::DeserializeFrom
-   * and then removes the deserialized bytes from the buffer.
+   * This method invokes ns3::Chunk::DeserializeFrom.
    *
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.
@@ -149,7 +149,7 @@ public:
   uint32_t RemoveHeader (T &header);
   /**
    * Add trailer to this packet. This method invokes the
-   * ns3::Trailer::GetSerializedSize and ns3::Trailer::serializeTo 
+   * ns3::Chunk::GetSerializedSize and ns3::Trailer::serializeTo 
    * methods to reserve space in the buffer and request the trailer 
    * to serialize itself in the packet buffer.
    *
@@ -159,8 +159,7 @@ public:
   void AddTrailer (T const &trailer);
   /**
    * Remove a deserialized trailer from the internal buffer.
-   * This method invokes the ns3::Trailer::DeserializeFrom method
-   * and then removes the deserialized bytes from the buffer.
+   * This method invokes the ns3::Chunk::DeserializeFrom method.
    *
    * \param trailer a reference to the trailer to remove from the internal buffer.
    * \returns the number of bytes removed from the end of the packet.
@@ -256,9 +255,10 @@ public:
 
   void Print (std::ostream &os) const;
 private:
-  Packet (Buffer buffer, Tags tags, uint32_t uid);
+  Packet (Buffer buffer, Tags tags, PacketHistory history, uint32_t uid);
   Buffer m_buffer;
   Tags m_tags;
+  PacketHistory m_history;
   uint32_t m_uid;
   static uint32_t m_globalUid;
 };
@@ -282,6 +282,7 @@ Packet::AddHeader (T const &header)
   uint32_t size = header.GetSize ();
   m_buffer.AddAtStart (size);
   header.Serialize (m_buffer.Begin ());
+  m_history.AddHeader (header, size);
 }
 template <typename T>
 uint32_t
@@ -291,6 +292,7 @@ Packet::RemoveHeader (T &header)
                  "Must pass Header subclass to Packet::RemoveHeader");
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
   m_buffer.RemoveAtStart (deserialized);
+  m_history.RemoveHeader (header, deserialized);
   return deserialized;
 }
 template <typename T>
@@ -301,8 +303,10 @@ Packet::AddTrailer (T const &trailer)
                  "Must pass Trailer subclass to Packet::AddTrailer");
   uint32_t size = trailer.GetSize ();
   m_buffer.AddAtEnd (size);
-  Buffer::Iterator end = m_buffer.End ();
-  trailer.Serialize (end);
+  Buffer::Iterator start = m_buffer.End ();
+  start.Prev (size);
+  trailer.Serialize (start);
+  m_history.AddTrailer (trailer, size);
 }
 template <typename T>
 uint32_t
@@ -312,6 +316,7 @@ Packet::RemoveTrailer (T &trailer)
                  "Must pass Trailer subclass to Packet::RemoveTrailer");
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
   m_buffer.RemoveAtEnd (deserialized);
+  m_history.RemoveTrailer (trailer, deserialized);
   return deserialized;
 }
 
