@@ -112,7 +112,9 @@ private:
   uint32_t GetUleb128Size (uint32_t value) const;
   uint32_t GetReverseUleb128Size (uint8_t *buffer) const;
   void AppendValue (uint32_t value);
-  uint32_t ReadValue (uint8_t **pBuffer) const;
+  uint32_t ReadForwardValue (uint8_t **pBuffer) const;
+  uint32_t ReadReverseValue (uint8_t **pBuffer) const;
+  uint32_t ReadValue (uint8_t *buffer, uint32_t *n) const;
   void AppendOneCommand (uint32_t type, uint32_t data);
   void AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1);
   void ReserveCopy (uint32_t size);

@@ -195,13 +195,13 @@ PacketHistory::AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1)
       else
         {
           uint8_t *buffer = &(m_data->m_data[m_end]);
-          uint32_t lastType = ReadValue (&buffer);
+          uint32_t lastType = ReadReverseValue (&buffer);
           if (lastType == type)
             {
-              uint32_t lastData = ReadValue (&buffer);
+              uint32_t lastData = ReadReverseValue (&buffer);
               if (lastData == data0)
                 {
-                  lastData = ReadValue (&buffer);
+                  lastData = ReadReverseValue (&buffer);
                   if (lastData == data1)
                     {
                       return;
@@ -237,10 +237,10 @@ PacketHistory::AppendOneCommand (uint32_t type, uint32_t data)
       else
         {
           uint8_t *buffer = &(m_data->m_data[m_end]);
-          uint32_t lastType = ReadValue (&buffer);
+          uint32_t lastType = ReadReverseValue (&buffer);
           if (lastType == type)
             {
-              uint32_t lastData = ReadValue (&buffer);
+              uint32_t lastData = ReadReverseValue (&buffer);
               if (lastData == data)
                 {
                   return;
@@ -339,11 +339,8 @@ PacketHistory::AppendValue (uint32_t value)
 }
 
 uint32_t
-PacketHistory::ReadValue (uint8_t **pBuffer) const
+PacketHistory::ReadValue (uint8_t *buffer, uint32_t *n) const
 {
-  uint32_t n = GetReverseUleb128Size (*pBuffer);
-  NS_ASSERT (n > 0);
-  uint8_t *buffer = *pBuffer - n + 1;
   uint32_t result = 0;
   uint8_t shift, byte;
   result = 0;
@@ -353,6 +350,7 @@ PacketHistory::ReadValue (uint8_t **pBuffer) const
     buffer++;
     result |= (byte & (~0x80))<<shift;
     shift += 7;
+    (*n)++;
   } while (byte & 0x80 && 
            /* a LEB128 unsigned number is at most 5 bytes long. */
            shift < (7*5)); 
@@ -363,7 +361,28 @@ PacketHistory::ReadValue (uint8_t **pBuffer) const
        */
       result = -1;
     }
+  return result;
+}
+
+uint32_t
+PacketHistory::ReadReverseValue (uint8_t **pBuffer) const
+{
+  uint32_t n = GetReverseUleb128Size (*pBuffer);
+  NS_ASSERT (n > 0);
+  uint8_t *buffer = *pBuffer - n + 1;
+  uint32_t read = 0;
+  uint32_t result = ReadValue (buffer, &read);
+  NS_ASSERT (read == n);
   *pBuffer = *pBuffer - n;
+  return result;
+}
+
+uint32_t
+PacketHistory::ReadForwardValue (uint8_t **pBuffer) const
+{
+  uint32_t read = 0;
+  uint32_t result = ReadValue (*pBuffer, &read);
+  *pBuffer = *pBuffer + read;
   return result;
 }
 
@@ -464,8 +483,8 @@ PacketHistory::PrintSimple (std::ostream &os, Buffer buffer) const
   int32_t curEnd = end;
   for (uint32_t i = 0; i < m_n; i++)
     {
-      uint32_t type = ReadValue (&dataBuffer);
-      uint32_t data = ReadValue (&dataBuffer);
+      uint32_t type = ReadReverseValue (&dataBuffer);
+      uint32_t data = ReadReverseValue (&dataBuffer);
       switch (type)
         {
         case PacketHistory::INIT_UID:
@@ -474,7 +493,7 @@ PacketHistory::PrintSimple (std::ostream &os, Buffer buffer) const
           std::cout << "init size=" << data << std::endl;
           break;
         case PacketHistory::ADD_HEADER: {
-          int32_t size = ReadValue (&dataBuffer);
+          int32_t size = ReadReverseValue (&dataBuffer);
           if (curStart == start)
             {
               if (start + size < end)
@@ -513,7 +532,7 @@ PacketHistory::PrintSimple (std::ostream &os, Buffer buffer) const
             }
         } break;
         case PacketHistory::REM_HEADER: {
-          int32_t size = ReadValue (&dataBuffer);
+          int32_t size = ReadReverseValue (&dataBuffer);
           if (curStart <= start)
             {
               // header lies entirely outside of data area.
@@ -525,7 +544,7 @@ PacketHistory::PrintSimple (std::ostream &os, Buffer buffer) const
             }
         } break;
         case PacketHistory::ADD_TRAILER: {
-          int32_t size = ReadValue (&dataBuffer);
+          int32_t size = ReadReverseValue (&dataBuffer);
           if (curEnd == end)
             {
               if (end - size >= start)
@@ -561,7 +580,7 @@ PacketHistory::PrintSimple (std::ostream &os, Buffer buffer) const
             }
         } break;
         case PacketHistory::REM_TRAILER: {
-          int32_t size = ReadValue (&dataBuffer);
+          int32_t size = ReadReverseValue (&dataBuffer);
           if (curEnd >= end)
             {
               curEnd += size;
@@ -606,6 +625,9 @@ PacketHistory::PrintSimple (std::ostream &os, Buffer buffer) const
 void 
 PacketHistory::PrintComplex (std::ostream &os, Buffer buffer) const
 {
+  // we need to build a linked list of the different fragments 
+  // which are stored in this packet.
+  
 }
 
 void 
