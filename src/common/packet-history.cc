@@ -19,11 +19,177 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include <utility>
+#include <list>
 #include "ns3/assert.h"
 #include "ns3/fatal-error.h"
 #include "packet-history.h"
 #include "chunk.h"
 #include "buffer.h"
+
+namespace {
+
+class ItemList
+{
+public:
+  void InitPayload (uint32_t uid, uint32_t size);
+  void AddHeader (uint32_t type, uint32_t size);
+  void AddTrailer (uint32_t type, uint32_t size);
+
+  void RemHeader (uint32_t type, uint32_t size);
+  void RemTrailer (uint32_t type, uint32_t size);
+
+  void RemAtStart (uint32_t toRemove);
+  void RemAtEnd (uint32_t toRemove);
+
+  void AddAtEnd (ItemList const *other);
+
+private:
+  enum Type {
+    PAYLOAD,
+    CHUNK,
+  };
+  struct Item
+  {
+    enum ItemList::Type m_type;
+    uint32_t m_size;
+    uint32_t m_chunkType;
+    uint32_t m_fragmentStart;
+    uint32_t m_fragmentEnd;
+    uint32_t m_uid;
+  };
+  std::list<Item> m_itemList;
+};
+
+void 
+ItemList::InitPayload (uint32_t uid, uint32_t size)
+{
+  NS_ASSERT (m_itemList.empty ());
+  struct Item item;
+  item.m_type = ItemList::PAYLOAD;
+  item.m_size = size;
+  item.m_fragmentStart = 0;
+  item.m_fragmentEnd = item.m_size;
+  item.m_uid = uid;
+  m_itemList.push_back (item);
+}
+
+void 
+ItemList::AddHeader (uint32_t type, uint32_t size)
+{
+  struct Item item;
+  item.m_type = ItemList::CHUNK;
+  item.m_chunkType = type;
+  item.m_size = size;
+  item.m_fragmentStart = 0;
+  item.m_fragmentEnd = size;
+  item.m_uid = m_itemList.front ().m_uid;
+  m_itemList.push_front (item);
+}
+
+void 
+ItemList::AddTrailer (uint32_t type, uint32_t size)
+{
+  struct Item item;
+  item.m_type = ItemList::CHUNK;
+  item.m_chunkType = type;
+  item.m_size = size;
+  item.m_fragmentStart = 0;
+  item.m_fragmentEnd = size;
+  item.m_uid = m_itemList.back ().m_uid;
+  m_itemList.push_back (item);
+}
+
+void 
+ItemList::RemHeader (uint32_t type, uint32_t size)
+{
+  struct Item item = m_itemList.front ();
+  if (item.m_type != CHUNK ||
+      item.m_size != size ||
+      item.m_chunkType != type)
+    {
+      NS_FATAL_ERROR ("Removing Unexpected header");
+    }
+  else if (item.m_fragmentStart != 0 ||
+           item.m_fragmentEnd != item.m_size)
+    {
+      NS_FATAL_ERROR ("Removing non-complete header");
+    }
+  m_itemList.pop_front ();
+}
+void 
+ItemList::RemTrailer (uint32_t type, uint32_t size)
+{
+  struct Item item = m_itemList.back ();
+  if (item.m_type != CHUNK ||
+      item.m_size != size ||
+      item.m_chunkType != type)
+    {
+      NS_FATAL_ERROR ("Removing Unexpected trailer");
+    }
+  else if (item.m_fragmentStart != 0 ||
+           item.m_fragmentEnd != item.m_size)
+    {
+      NS_FATAL_ERROR ("Removing non-complete trailer");
+    }
+  m_itemList.pop_back ();
+}
+
+void 
+ItemList::RemAtStart (uint32_t toRemove)
+{
+  uint32_t leftToRemove = toRemove;
+  while (!m_itemList.empty () && leftToRemove > 0)
+    {
+      struct Item &item = m_itemList.front ();
+      if (item.m_size >= leftToRemove)
+        {
+          m_itemList.pop_front ();
+          leftToRemove -= item.m_size;
+        }
+      else
+        {
+          item.m_size -= leftToRemove;
+          item.m_fragmentStart += leftToRemove;
+          leftToRemove = 0;
+          NS_ASSERT (item.m_size == item.m_fragmentEnd - item.m_fragmentStart &&
+                     item.m_fragmentStart <= item.m_fragmentEnd);
+        }
+    }
+  NS_ASSERT (leftToRemove == 0);
+}
+void 
+ItemList::RemAtEnd (uint32_t toRemove)
+{
+  uint32_t leftToRemove = toRemove;
+  while (!m_itemList.empty () && leftToRemove > 0)
+    {
+      struct Item &item = m_itemList.back ();
+      if (item.m_size >= leftToRemove)
+        {
+          m_itemList.pop_back ();
+          leftToRemove -= item.m_size;
+                }
+      else
+        {
+          item.m_size -= leftToRemove;
+          item.m_fragmentEnd -= leftToRemove;
+          leftToRemove = 0;
+        }
+      NS_ASSERT (item.m_size == item.m_fragmentEnd - item.m_fragmentStart &&
+                 item.m_fragmentStart <= item.m_fragmentEnd);
+    }
+  NS_ASSERT (leftToRemove == 0);
+}
+
+void 
+ItemList::AddAtEnd (ItemList const *other)
+{
+  
+}
+
+
+
+} // anonymous namespace
 
 namespace ns3 {
 
@@ -627,7 +793,47 @@ PacketHistory::PrintComplex (std::ostream &os, Buffer buffer) const
 {
   // we need to build a linked list of the different fragments 
   // which are stored in this packet.
-  
+  uint8_t *dataBuffer = &m_data->m_data[0];
+  ItemList itemList;
+  for (uint32_t i = 0; i < m_n; i++)
+    {
+      uint32_t type = ReadForwardValue (&dataBuffer);
+      uint32_t data = ReadForwardValue (&dataBuffer);
+      switch (type)
+        {
+        case INIT_UID:
+          break;
+        case INIT_SIZE: {
+          itemList.InitPayload (0, data);
+        } break;
+        case ADD_HEADER: {
+          uint32_t size = ReadForwardValue (&dataBuffer);
+          itemList.AddHeader (data, size);
+        } break;
+        case REM_HEADER: {
+          uint32_t size = ReadForwardValue (&dataBuffer);
+          itemList.RemHeader (data, size);
+        } break;
+        case ADD_TRAILER: {
+          uint32_t size = ReadForwardValue (&dataBuffer);
+          itemList.AddTrailer (data, size);
+        } break;
+        case REM_TRAILER: {
+          uint32_t size = ReadForwardValue (&dataBuffer);
+          itemList.RemTrailer (data, size);
+        } break;
+        case ADD_AT_END:
+          break;
+        case REM_AT_START: {
+          itemList.RemAtStart (data);
+        } break;
+        case REM_AT_END: {
+          itemList.RemAtEnd (data);
+        } break;
+        case PADDING_AT_END:
+          break;
+        }
+    }  
 }
 
 void 

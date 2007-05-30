@@ -83,7 +83,6 @@ private:
     ADD_AT_END   = 5,
     REM_AT_START = 6,
     REM_AT_END   = 7,
-    FRAGMENT     = 8,
     PADDING_AT_END = 9,
     INIT_SIZE    = 10,
     LAST
