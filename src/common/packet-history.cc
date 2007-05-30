@@ -43,6 +43,8 @@ public:
 
   void AddAtEnd (ItemList const *other);
 
+  void Print (std::ostream &os, ns3::Buffer buffer) const;
+
 private:
   enum Type {
     PAYLOAD,
@@ -66,6 +68,7 @@ ItemList::InitPayload (uint32_t uid, uint32_t size)
   NS_ASSERT (m_itemList.empty ());
   struct Item item;
   item.m_type = ItemList::PAYLOAD;
+  item.m_chunkType = 0;
   item.m_size = size;
   item.m_fragmentStart = 0;
   item.m_fragmentEnd = item.m_size;
@@ -168,7 +171,7 @@ ItemList::RemAtEnd (uint32_t toRemove)
         {
           m_itemList.pop_back ();
           leftToRemove -= item.m_size;
-                }
+        }
       else
         {
           item.m_size -= leftToRemove;
@@ -176,7 +179,8 @@ ItemList::RemAtEnd (uint32_t toRemove)
           leftToRemove = 0;
         }
       NS_ASSERT (item.m_size == item.m_fragmentEnd - item.m_fragmentStart &&
-                 item.m_fragmentStart <= item.m_fragmentEnd);
+                 item.m_fragmentStart <= item.m_fragmentEnd &&
+                 item.m_fragmentEnd <= item.m_size);
     }
   NS_ASSERT (leftToRemove == 0);
 }
@@ -184,10 +188,30 @@ ItemList::RemAtEnd (uint32_t toRemove)
 void 
 ItemList::AddAtEnd (ItemList const *other)
 {
-  
+  for (std::list<ItemList::Item>::const_iterator i = other->m_itemList.begin (); 
+       i != other->m_itemList.end (); i++)
+    {
+      const ItemList::Item &item = *i;
+      ItemList::Item &last = m_itemList.back ();
+      if (item.m_uid == last.m_uid &&
+          item.m_type == last.m_type &&
+          item.m_chunkType == last.m_chunkType &&
+          item.m_size == last.m_size &&
+          last.m_fragmentEnd != last.m_size && 
+          item.m_fragmentStart == last.m_fragmentEnd)
+        {
+          last.m_fragmentEnd = item.m_fragmentEnd;
+        }
+      else
+        {
+          m_itemList.push_back (item);
+        }
+    }
 }
 
-
+void 
+ItemList::Print (std::ostream &os, ns3::Buffer buffer) const
+{}
 
 } // anonymous namespace
 
@@ -525,7 +549,7 @@ PacketHistory::ReadValue (uint8_t *buffer, uint32_t *n) const
       /* This means that the LEB128 number was not valid.
        * ie: the last (5th) byte did not have the high-order bit zeroed.
        */
-      result = -1;
+      result = 0xffffffff;
     }
   return result;
 }
@@ -600,6 +624,7 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
     {
       m_aggregated = true;
       uint32_t n = GetUleb128Size (PacketHistory::ADD_AT_END);
+      n += GetUleb128Size (o.m_end); 
       n += o.m_end;
       Reserve (n);
       memcpy (&m_data->m_data[m_end], o.m_data->m_data, o.m_end);
@@ -608,7 +633,7 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
         {
           m_data->m_dirtyEnd = m_end;
         }
-      AppendOneCommand (PacketHistory::ADD_AT_END, 0);
+      AppendOneCommand (PacketHistory::ADD_AT_END, o.m_end);
     }
 }
 void
@@ -795,6 +820,17 @@ PacketHistory::PrintComplex (std::ostream &os, Buffer buffer) const
   // which are stored in this packet.
   uint8_t *dataBuffer = &m_data->m_data[0];
   ItemList itemList;
+  BuildItemList (&itemList, dataBuffer, m_end);
+  itemList.Print (os, buffer);
+}
+
+void 
+PacketHistory::BuildItemList (ItemList *list, uint8_t *buffer, uint32_t size) const
+{
+  // we need to build a linked list of the different fragments 
+  // which are stored in this packet.
+  uint8_t *dataBuffer = buffer;
+  ItemList itemList;
   for (uint32_t i = 0; i < m_n; i++)
     {
       uint32_t type = ReadForwardValue (&dataBuffer);
@@ -822,8 +858,11 @@ PacketHistory::PrintComplex (std::ostream &os, Buffer buffer) const
           uint32_t size = ReadForwardValue (&dataBuffer);
           itemList.RemTrailer (data, size);
         } break;
-        case ADD_AT_END:
-          break;
+        case ADD_AT_END: {
+          ItemList other;
+          BuildItemList (&other, dataBuffer, data);
+          itemList.AddAtEnd (&other);
+        } break;
         case REM_AT_START: {
           itemList.RemAtStart (data);
         } break;

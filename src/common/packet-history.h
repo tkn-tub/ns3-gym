@@ -25,6 +25,10 @@
 #include <vector>
 #include "ns3/callback.h"
 
+namespace {
+class ItemList;
+}
+
 namespace ns3 {
 
 class Chunk;
@@ -69,8 +73,6 @@ public:
   void RemoveAtEnd (uint32_t end);
 
   void PrintDefault (std::ostream &os, Buffer buffer) const;
-  void PrintSimple (std::ostream &os, Buffer buffer) const;
-  void PrintComplex (std::ostream &os, Buffer buffer) const;
   void Print (std::ostream &os, Buffer buffer, PacketPrinter printer) const;
 
 private:
@@ -121,6 +123,10 @@ private:
   void RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size);
   void AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
   void RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
+  void PrintSimple (std::ostream &os, Buffer buffer) const;
+  void PrintComplex (std::ostream &os, Buffer buffer) const;
+  void BuildItemList (ItemList *list, uint8_t *buffer, uint32_t size) const;
+
   static struct PacketHistory::CommandData *Create (uint32_t size);
   static void Recycle (struct CommandData *data);
   static struct PacketHistory::CommandData *Allocate (uint32_t n);
