@@ -42,6 +42,10 @@ public:
   virtual ~Header ();
 private:
   /**
+   * \returns a user-readable name to identify this type of header.
+   */
+  virtual std::string DoGetName (void) const = 0;
+  /**
    * \param os the std output stream in which this 
    *       protocol header must print itself.
    */

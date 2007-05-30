@@ -42,6 +42,10 @@ public:
   virtual ~Trailer ();
 private:
   /**
+   * \returns a user-readable name to identify this type of header.
+   */
+  virtual std::string DoGetName (void) const = 0;
+  /**
    * \param os the std output stream in which this 
    *       protocol trailer must print itself.
    */

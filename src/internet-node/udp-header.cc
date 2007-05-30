@@ -91,7 +91,11 @@ UdpHeader::InitializeChecksum (Ipv4Address source,
   m_initialChecksum = Ipv4ChecksumCalculate (0, buf, 12);
 }
 
-
+std::string 
+UdpHeader::DoGetName (void) const
+{
+  return "Udp";
+}
 
 void 
 UdpHeader::PrintTo (std::ostream &os) const

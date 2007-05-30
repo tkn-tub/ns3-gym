@@ -925,6 +925,7 @@ PacketHistory::RegisterChunkFactory (Chunk *(*createStatic) (void))
 
 #include <stdarg.h>
 #include <iostream>
+#include <sstream>
 #include "ns3/test.h"
 #include "header.h"
 #include "trailer.h"
@@ -964,11 +965,21 @@ template <int N>
 class HistoryHeader : public Header
 {
 private:
+  virtual std::string DoGetName (void) const;
   virtual void PrintTo (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void SerializeTo (Buffer::Iterator start) const;
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
 };
+
+template <int N>
+std::string 
+HistoryHeader<N>::DoGetName (void) const
+{
+  std::ostringstream oss;
+  oss << N;
+  return oss.str ();
+}
 
 template <int N>
 void 
@@ -1006,12 +1017,21 @@ template <int N>
 class HistoryTrailer : public Trailer
 {
 private:
+  virtual std::string DoGetName (void) const;
   virtual void PrintTo (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void SerializeTo (Buffer::Iterator start) const;
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
 };
 
+template <int N>
+std::string 
+HistoryTrailer<N>::DoGetName (void) const
+{
+  std::ostringstream oss;
+  oss << N;
+  return oss.str ();
+}
 template <int N>
 void 
 HistoryTrailer<N>::PrintTo (std::ostream &os) const
