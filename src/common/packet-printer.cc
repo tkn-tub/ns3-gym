@@ -78,10 +78,10 @@ PacketPrinter::PrintChunk (uint32_t chunkUid,
                            Buffer::Iterator start, 
                            std::ostream &os, 
                            uint32_t packetUid,
-                           uint32_t size)
+                           uint32_t size) const
 {
   RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  for (PrinterList::iterator i = m_printerList.begin (); i != m_printerList.end (); i++)
+  for (PrinterList::const_iterator i = m_printerList.begin (); i != m_printerList.end (); i++)
     {
       if (i->m_chunkUid == chunkUid)
         {
@@ -103,7 +103,7 @@ PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
                                    uint32_t packetUid,
                                    uint32_t size,
                                    uint32_t fragmentStart,
-                                   uint32_t fragmentEnd)
+                                   uint32_t fragmentEnd) const
 {
   RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
   DoGetNameCallback cb = (*registeredChunks)[chunkUid].second;
@@ -111,7 +111,7 @@ PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
   struct PacketPrinter::FragmentInformation info;
   info.start = fragmentStart;
   info.end = fragmentEnd;
-  for (PrinterList::iterator i = m_printerList.begin (); i != m_printerList.end (); i++)
+  for (PrinterList::const_iterator i = m_printerList.begin (); i != m_printerList.end (); i++)
     {
       if (i->m_chunkUid == chunkUid)
         {
@@ -123,7 +123,7 @@ PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
 }
 void 
 PacketPrinter::PrintPayload (std::ostream &os, uint32_t packetUid, uint32_t size,
-                             uint32_t fragmentStart, uint32_t fragmentEnd)
+                             uint32_t fragmentStart, uint32_t fragmentEnd) const
 {
   struct PacketPrinter::FragmentInformation info;
   info.start = fragmentStart;

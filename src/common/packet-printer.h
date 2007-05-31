@@ -26,6 +26,10 @@
 #include "buffer.h"
 #include <vector>
 
+namespace {
+  class ItemList;
+}
+
 namespace ns3 {
 
 class Chunk;
@@ -90,6 +94,7 @@ public:
   
 private:
   friend class PacketHistory;
+  friend class ItemList;
   struct Printer
   {
     uint32_t m_chunkUid;
@@ -143,15 +148,15 @@ private:
 		   Buffer::Iterator i, 
 		   std::ostream &os, 
 		   uint32_t packetUid,
-		   uint32_t size);
+		   uint32_t size) const;
   void PrintChunkFragment (uint32_t uid,
 			   std::ostream &os,
 			   uint32_t packetUid,
 			   uint32_t size,
 			   uint32_t fragmentStart,
-			   uint32_t fragmentEnd);
+			   uint32_t fragmentEnd) const;
   void PrintPayload (std::ostream &os, uint32_t packetUid, uint32_t size,
-		     uint32_t fragmentStart, uint32_t fragmentEnd);
+		     uint32_t fragmentStart, uint32_t fragmentEnd) const;
 
   static PacketPrinter m_defaultPacketPrinter;
   PrinterList m_printerList;
