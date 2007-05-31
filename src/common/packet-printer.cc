@@ -38,13 +38,14 @@ PacketPrinter::PrintBackward (void)
   m_forward = false;
 }
 void 
-PacketPrinter::AddPayloadPrinter (Callback<void,
-				  std::ostream &, 
-				  uint32_t, 
-				  uint32_t, 
-				  struct PacketPrinter::FragmentInformation> printer)
+PacketPrinter::AddPayloadPrinter (PayloadPrinter printer)
 {
   m_payloadPrinter = printer;
+}
+void 
+PacketPrinter::AddDefaultPrinter (DefaultPrinter printer)
+{
+  m_defaultPrinter = printer;
 }
 
 PacketPrinter::RegisteredChunks *
