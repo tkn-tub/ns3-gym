@@ -29,10 +29,14 @@ PacketPrinter::PacketPrinter ()
 
 void 
 PacketPrinter::PrintForward (void)
-{}
+{
+  m_forward = true;
+}
 void 
 PacketPrinter::PrintBackward (void)
-{}
+{
+  m_forward = false;
+}
 void 
 PacketPrinter::AddPayloadPrinter (Callback<void,
 				  std::ostream &, 
@@ -42,14 +46,71 @@ PacketPrinter::AddPayloadPrinter (Callback<void,
 {
   m_payloadPrinter = printer;
 }
-  /**
-   * \param printer Arguments: output stream, packet uid, size, header/trailer name, fragment information
-   */
-  void AddDefaultPrinter (Callback<void,
-			           std::ostream &, 
-			           uint32_t, 
-			           uint32_t, 
-			           std::string &,
-			           struct PacketPrinter::FragmentInformation> printer);
+
+PacketPrinter::RegisteredChunks *
+PacketPrinter::GetRegisteredChunks (void)
+{
+  static RegisteredChunks registeredChunks;
+  return &registeredChunks;
+}
+
+void 
+PacketPrinter::PrintChunk (uint32_t chunkUid, 
+                           Buffer::Iterator start, 
+                           std::ostream &os, 
+                           uint32_t packetUid,
+                           uint32_t size)
+{
+  RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
+  for (PrinterList::iterator i = m_printerList.begin (); i != m_printerList.end (); i++)
+    {
+      if (i->m_chunkUid == chunkUid)
+        {
+          DoPrintCallback cb = (*registeredChunks)[chunkUid].first;
+          cb (i->m_printer, start, os, packetUid, size);
+          return;
+        }
+    }
+  DoGetNameCallback cb = (*registeredChunks)[chunkUid].second;
+  std::string name = cb ();
+  struct PacketPrinter::FragmentInformation info;
+  info.start = 0;
+  info.end = size;
+  m_defaultPrinter (os, packetUid, size, name, info);
+}
+void 
+PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
+                                   std::ostream &os,
+                                   uint32_t packetUid,
+                                   uint32_t size,
+                                   uint32_t fragmentStart,
+                                   uint32_t fragmentEnd)
+{
+  RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
+  DoGetNameCallback cb = (*registeredChunks)[chunkUid].second;
+  std::string name = cb ();
+  struct PacketPrinter::FragmentInformation info;
+  info.start = fragmentStart;
+  info.end = fragmentEnd;
+  for (PrinterList::iterator i = m_printerList.begin (); i != m_printerList.end (); i++)
+    {
+      if (i->m_chunkUid == chunkUid)
+        {
+          i->m_fragmentPrinter (os, packetUid, size, name, info);
+          return;
+        }
+    }
+  m_defaultPrinter (os, packetUid, size, name, info);
+}
+void 
+PacketPrinter::PrintPayload (std::ostream &os, uint32_t packetUid, uint32_t size,
+                             uint32_t fragmentStart, uint32_t fragmentEnd)
+{
+  struct PacketPrinter::FragmentInformation info;
+  info.start = fragmentStart;
+  info.end = fragmentEnd;
+  m_payloadPrinter (os, packetUid, size, info);
+}
+
 
 } // namespace ns3
