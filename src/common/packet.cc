@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "packet.h"
+#include "packet-printer.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
@@ -128,6 +129,12 @@ void
 Packet::Print (std::ostream &os) const
 {
   m_history.PrintDefault (os, m_buffer);
+}
+
+void 
+Packet::Print (std::ostream &os, const PacketPrinter &printer) const
+{
+  m_history.Print (os, m_buffer, printer);
 }
 
 }; // namespace ns3
