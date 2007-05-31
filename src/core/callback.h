@@ -226,6 +226,7 @@ class CallbackBase {
 public:
   virtual ~CallbackBase () {}
   virtual CallbackImplBase *PeekImpl (void) const = 0;
+  virtual Ptr<CallbackImplBase> GetImpl (void) const = 0;
 };
 
 /**
@@ -340,6 +341,9 @@ public:
                         ", expected=" << typeid (*impl).name ());
       }
     *this = Callback<R,T1,T2,T3,T4,T5> (impl);
+  }
+  virtual Ptr<CallbackImplBase>GetImpl (void) const {
+    return m_impl;
   }
 private:
   virtual CallbackImpl<R,T1,T2,T3,T4,T5> *PeekImpl (void) const {
