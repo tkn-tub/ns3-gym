@@ -182,7 +182,7 @@ PacketPrinter::AddPrinter (Callback<void,std::ostream &, uint32_t, uint32_t, con
   static uint32_t uid = PacketPrinter::GetUid<T> ();
   struct PacketPrinter::Printer p;
   p.m_chunkUid = uid;
-  p.m_printer = printer.PeekImpl ();
+  p.m_printer = printer.GetImpl ();
   p.m_fragmentPrinter = fragmentPrinter;
   m_printerList.push_back (p);
 }
