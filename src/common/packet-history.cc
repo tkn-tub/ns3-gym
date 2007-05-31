@@ -214,6 +214,15 @@ void
 ItemList::Print (std::ostream &os, ns3::Buffer buffer, const ns3::PacketPrinter &printer) const
 {
   NS_ASSERT (!m_itemList.empty ());
+  uint32_t totalSize = 0;
+  for (std::list<ItemList::Item>::const_iterator i = m_itemList.begin (); 
+       i != m_itemList.end (); i++)
+    {
+      ItemList::Item item = *i;
+      totalSize += item.m_fragmentEnd - item.m_fragmentStart;
+    }
+  NS_ASSERT (totalSize == buffer.GetSize ());
+  uint32_t offset = 0;
   for (std::list<ItemList::Item>::const_iterator i = m_itemList.begin (); 
        i != m_itemList.end (); i++)
     {
@@ -231,15 +240,20 @@ ItemList::Print (std::ostream &os, ns3::Buffer buffer, const ns3::PacketPrinter 
       else if (item.m_type == ItemList::HEADER)
         {
           ns3::Buffer::Iterator j = buffer.Begin ();
-          j.Next (0); //XXX
+          j.Next (offset);
           printer.PrintChunk (item.m_chunkType, j, os, item.m_packetUid, item.m_size);
         }
       else if (item.m_type == ItemList::TRAILER)
         {
           ns3::Buffer::Iterator j = buffer.End ();
-          j.Prev (0); //XXX
+          j.Prev (totalSize - offset + item.m_size);
           printer.PrintChunk (item.m_chunkType, j, os, item.m_packetUid, item.m_size);
         }
+      else 
+        {
+          NS_ASSERT (false);
+        }
+      offset += item.m_fragmentEnd - item.m_fragmentStart;
     }
 }
 
@@ -914,7 +928,7 @@ PacketHistory::Print (std::ostream &os, Buffer buffer, const PacketPrinter &prin
       return;
     }
 
-  if (m_aggregated)
+  if (true)
     {
       PrintComplex (os, buffer, printer);
     }
