@@ -157,6 +157,14 @@ private:
 			   uint32_t fragmentEnd) const;
   void PrintPayload (std::ostream &os, uint32_t packetUid, uint32_t size,
 		     uint32_t fragmentStart, uint32_t fragmentEnd) const;
+  void DoAddPrinter (uint32_t uid,
+                     Ptr<CallbackImplBase> printer,
+                     Callback<void,
+                       std::ostream &, 
+                       uint32_t, 
+                       uint32_t, 
+                       std::string &,
+                       struct PacketPrinter::FragmentInformation> fragmentPrinter);
 
   static PacketPrinter m_defaultPacketPrinter;
   PrinterList m_printerList;
@@ -180,11 +188,7 @@ PacketPrinter::AddPrinter (Callback<void,std::ostream &, uint32_t, uint32_t, con
 		            struct PacketPrinter::FragmentInformation> fragmentPrinter)
 {
   static uint32_t uid = PacketPrinter::GetUid<T> ();
-  struct PacketPrinter::Printer p;
-  p.m_chunkUid = uid;
-  p.m_printer = printer.GetImpl ();
-  p.m_fragmentPrinter = fragmentPrinter;
-  m_printerList.push_back (p);
+  DoAddPrinter (uid, printer.GetImpl (), fragmentPrinter);
 }
 
 template <typename T>
@@ -225,9 +229,11 @@ PacketPrinter::AllocateUid (void)
   RegisteredChunks *chunks = PacketPrinter::GetRegisteredChunks ();
   chunks->push_back (std::make_pair(&PacketPrinter::DoPrint<T>, 
                                     &PacketPrinter::DoGetName<T>));
-  PacketPrinter::PeekDefault ()->AddPrinter (MakeCallback (&PacketPrinter::DoDefaultPrint<T>),
-                                             MakeCallback (&PacketPrinter::DoDefaultPrintFragment));
-  return chunks->size ();
+  uint32_t uid = chunks->size ();
+  PacketPrinter::PeekDefault ()->DoAddPrinter (uid, 
+                                               MakeCallback (&PacketPrinter::DoDefaultPrint<T>).GetImpl (),
+                                               MakeCallback (&PacketPrinter::DoDefaultPrintFragment));
+  return uid;
 }
 
 template <typename T>

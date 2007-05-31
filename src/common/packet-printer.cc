@@ -166,5 +166,22 @@ PacketPrinter::DoDefaultPrintFragment (std::ostream & os,
   os << std::endl;
 }
 
+void
+PacketPrinter::DoAddPrinter (uint32_t uid,
+                             Ptr<CallbackImplBase> printer,
+                             Callback<void,
+                             std::ostream &, 
+                             uint32_t, 
+                             uint32_t, 
+                             std::string &,
+                             struct PacketPrinter::FragmentInformation> fragmentPrinter)
+{
+  struct PacketPrinter::Printer p;
+  p.m_chunkUid = uid;
+  p.m_printer = printer;
+  p.m_fragmentPrinter = fragmentPrinter;
+  m_printerList.push_back (p);
+}
+
 
 } // namespace ns3
