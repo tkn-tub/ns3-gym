@@ -54,6 +54,25 @@ PacketPrinter::GetRegisteredChunks (void)
   return &registeredChunks;
 }
 
+PacketPrinter 
+PacketPrinter::GetDefault (void)
+{
+  return *(PacketPrinter::PeekDefault ());
+}
+PacketPrinter *
+PacketPrinter::PeekDefault (void)
+{
+  static PacketPrinter *tmp = PacketPrinter::CreateStaticDefault ();
+  return tmp;
+}
+PacketPrinter *
+PacketPrinter::CreateStaticDefault (void)
+{
+  static PacketPrinter tmp;
+  return &tmp;
+}
+
+
 void 
 PacketPrinter::PrintChunk (uint32_t chunkUid, 
                            Buffer::Iterator start, 
@@ -110,6 +129,41 @@ PacketPrinter::PrintPayload (std::ostream &os, uint32_t packetUid, uint32_t size
   info.start = fragmentStart;
   info.end = fragmentEnd;
   m_payloadPrinter (os, packetUid, size, info);
+}
+
+void 
+PacketPrinter::DoDefaultPrintPayload (std::ostream & os,
+                                      uint32_t packetUid,
+                                      uint32_t size,
+                                      struct PacketPrinter::FragmentInformation info)
+{
+  os << "data ";
+  os << "[" << info.start << ":" << info.end << "] -> "
+     << "[0:" << size << "]";
+  os << std::endl;
+}
+
+void 
+PacketPrinter::DoDefaultPrintDefault (std::ostream & os,
+                                      uint32_t packetUid,
+                                      uint32_t size,
+                                      std::string &name,
+                                      struct PacketPrinter::FragmentInformation info)
+{
+  NS_ASSERT_MSG (false, "This should never happen because we provide a printer for _all_ chunk types.");
+}
+
+void 
+PacketPrinter::DoDefaultPrintFragment (std::ostream & os,
+                                       uint32_t packetUid,
+                                       uint32_t size,
+                                       std::string &name,
+                                       struct PacketPrinter::FragmentInformation info)
+{
+  os << name << " ";
+  os << "[" << info.start << ":" << info.end << "] -> "
+     << "[0:" << size << "]";
+  os << std::endl;
 }
 
 

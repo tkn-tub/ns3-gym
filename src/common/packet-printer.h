@@ -105,6 +105,24 @@ private:
 
 
   static PacketPrinter GetDefault (void);
+  static PacketPrinter *PeekDefault (void);
+  static PacketPrinter *CreateStaticDefault (void);
+  static void DoDefaultPrintPayload (std::ostream & os,
+                                     uint32_t packetUid,
+                                     uint32_t size,
+                                     struct PacketPrinter::FragmentInformation info);
+  static void DoDefaultPrintDefault (std::ostream & os,
+                                     uint32_t packetUid,
+                                     uint32_t size,
+                                     std::string &name,
+                                     struct PacketPrinter::FragmentInformation info);
+  template <typename T>
+  static void DoDefaultPrint (std::ostream &os, uint32_t packetUid, uint32_t size, const T *chunk);
+  static void DoDefaultPrintFragment (std::ostream & os,
+                                      uint32_t packetUid,
+                                      uint32_t size,
+                                      std::string &name,
+                                      struct PacketPrinter::FragmentInformation info);
 
   template <typename T>
   static void DoPrint (Ptr<CallbackImplBase> callbackPrinter,
@@ -202,8 +220,19 @@ PacketPrinter::AllocateUid (void)
   RegisteredChunks *chunks = PacketPrinter::GetRegisteredChunks ();
   chunks->push_back (std::make_pair(&PacketPrinter::DoPrint<T>, 
                                     &PacketPrinter::DoGetName<T>));
+  PacketPrinter::PeekDefault ()->AddPrinter (MakeCallback (&PacketPrinter::DoDefaultPrint<T>),
+                                             MakeCallback (&PacketPrinter::DoDefaultPrintFragment));
   return chunks->size ();
 }
+
+template <typename T>
+void 
+PacketPrinter::DoDefaultPrint (std::ostream &os, uint32_t packetUid, uint32_t size, const T *chunk)
+{
+  chunk->Print (os);
+  os << std::endl;
+}
+
 
 
 } // namespace ns3
