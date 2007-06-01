@@ -294,8 +294,8 @@ PacketHistory::Construct (uint32_t uid, uint32_t size)
   if (m_enable) 
     {
       m_data = PacketHistory::Create (size);
-      AppendOneCommand (PacketHistory::INIT_UID,
-                        uid);
+      AppendOneCommand (PacketHistory::INIT,
+                        size, uid);
     }
 }
 PacketHistory::PacketHistory (PacketHistory const &o)
@@ -419,22 +419,22 @@ PacketHistory::AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1)
       if (m_data->m_count == 1 ||
           m_data->m_dirtyEnd == m_end)
         {
-          AppendValue (data1);
-          AppendValue (data0);
           AppendValue (type);
+          AppendValue (data0);
+          AppendValue (data1);
           m_n++;
           return;
         }
       else
         {
           uint8_t *buffer = &(m_data->m_data[m_end]);
-          uint32_t lastType = ReadReverseValue (&buffer);
+          uint32_t lastType = ReadForwardValue (&buffer);
           if (lastType == type)
             {
-              uint32_t lastData = ReadReverseValue (&buffer);
+              uint32_t lastData = ReadForwardValue (&buffer);
               if (lastData == data0)
                 {
-                  lastData = ReadReverseValue (&buffer);
+                  lastData = ReadForwardValue (&buffer);
                   if (lastData == data1)
                     {
                       return;
@@ -444,9 +444,9 @@ PacketHistory::AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1)
         }
     }
   Reserve (n);
-  AppendValue (data1);
-  AppendValue (data0);
   AppendValue (type);
+  AppendValue (data0);
+  AppendValue (data1);
   m_n++;
 }
 
@@ -462,18 +462,18 @@ PacketHistory::AppendOneCommand (uint32_t type, uint32_t data)
       if (m_data->m_count == 1 ||
           m_data->m_dirtyEnd == m_end)
         {
-          AppendValue (data);
           AppendValue (type);
+          AppendValue (data);
           m_n++;
           return;
         }
       else
         {
           uint8_t *buffer = &(m_data->m_data[m_end]);
-          uint32_t lastType = ReadReverseValue (&buffer);
+          uint32_t lastType = ReadForwardValue (&buffer);
           if (lastType == type)
             {
-              uint32_t lastData = ReadReverseValue (&buffer);
+              uint32_t lastData = ReadForwardValue (&buffer);
               if (lastData == data)
                 {
                   return;
@@ -482,8 +482,8 @@ PacketHistory::AppendOneCommand (uint32_t type, uint32_t data)
         }
     }
   Reserve (n);
-  AppendValue (data);
   AppendValue (type);
+  AppendValue (data);
   m_n++;
 }
 void
@@ -598,19 +598,6 @@ PacketHistory::ReadValue (uint8_t *buffer, uint32_t *n) const
 }
 
 uint32_t
-PacketHistory::ReadReverseValue (uint8_t **pBuffer) const
-{
-  uint32_t n = GetReverseUleb128Size (*pBuffer);
-  NS_ASSERT (n > 0);
-  uint8_t *buffer = *pBuffer - n + 1;
-  uint32_t read = 0;
-  uint32_t result = ReadValue (buffer, &read);
-  NS_ASSERT (read == n);
-  *pBuffer = *pBuffer - n;
-  return result;
-}
-
-uint32_t
 PacketHistory::ReadForwardValue (uint8_t **pBuffer) const
 {
   uint32_t read = 0;
@@ -705,154 +692,6 @@ PacketHistory::RemoveAtEnd (uint32_t end)
 }
 
 void 
-PacketHistory::PrintSimple (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const
-{
-  Buffer original = buffer;
-  HeadersToPrint headersToPrint;
-  TrailersToPrint trailersToPrint;
-  uint8_t *dataBuffer = &m_data->m_data[m_end] - 1;
-  int32_t start = 0;
-  int32_t end = buffer.GetSize ();
-  int32_t curStart = start;
-  int32_t curEnd = end;
-  for (uint32_t i = 0; i < m_n; i++)
-    {
-      uint32_t type = ReadReverseValue (&dataBuffer);
-      uint32_t data = ReadReverseValue (&dataBuffer);
-      switch (type)
-        {
-        case PacketHistory::INIT_UID:
-          break;
-        case PacketHistory::INIT_SIZE:
-          std::cout << "init size=" << data << std::endl;
-          break;
-        case PacketHistory::ADD_HEADER: {
-          int32_t size = ReadReverseValue (&dataBuffer);
-          if (curStart == start)
-            {
-              if (start + size < end)
-                {
-                  headersToPrint.push_back (std::make_pair (data, curStart));
-                }
-              curStart += size;
-              start += size;
-            }
-          else if (curStart + size <= start)
-            {
-              // header lies entirely outside of data area.
-              curStart += size;
-            }
-          else if (curStart < start)
-            {
-              // header lies partly inside and outside of data area
-              // potentially, because we fragmented the packet in the middle
-              // of this header.
-              curStart += size;
-            }
-          else
-            {
-              // header lies entirely inside data area but there is some 
-              // data at the start of the data area which does not belong
-              // to this header. Potentially, because we fragmented
-              // the packet in the middle of a previous header.
-              NS_ASSERT (curStart > start);
-              // we print the content of the header anyway because we can.
-              if (start + size < end)
-                {
-                  headersToPrint.push_back (std::make_pair (data, curStart));
-                }
-              curStart += size;
-              start = curStart;
-            }
-        } break;
-        case PacketHistory::REM_HEADER: {
-          int32_t size = ReadReverseValue (&dataBuffer);
-          if (curStart <= start)
-            {
-              // header lies entirely outside of data area.
-              curStart -= size;
-            }
-          else
-            {
-              NS_ASSERT (false);
-            }
-        } break;
-        case PacketHistory::ADD_TRAILER: {
-          int32_t size = ReadReverseValue (&dataBuffer);
-          if (curEnd == end)
-            {
-              if (end - size >= start)
-                {
-                  // trailer lies exactly at the end of the data area
-                  trailersToPrint.push_back (std::make_pair (data, buffer.GetSize () - curEnd));
-                }
-              curEnd -= size;
-              end -= size;
-            }
-          else if (curEnd - size >= end)
-            {
-              // trailer lies entirely outside of data area.
-              curEnd -= size;
-            }
-          else if (curEnd > end)
-            {
-              // header lies partly inside and partly outside of
-              // data area, potentially because of fragmentation.
-              curEnd -= size;
-            }
-          else
-            {
-              // header lies entirely inside data area
-              NS_ASSERT (curEnd < end);
-              if (end - size >= start)
-                {
-                  trailersToPrint.push_back (std::make_pair (data, buffer.GetSize () - curEnd));
-                }
-              curEnd -= size;
-              end = curEnd;
-
-            }
-        } break;
-        case PacketHistory::REM_TRAILER: {
-          int32_t size = ReadReverseValue (&dataBuffer);
-          if (curEnd >= end)
-            {
-              curEnd += size;
-            }
-          else
-            {
-              NS_ASSERT (false);
-            }
-        } break;
-        case PacketHistory::REM_AT_START:
-          curStart -= data;
-          break;
-        case PacketHistory::REM_AT_END:
-          curEnd += data;
-          break;
-        }
-    }
-  for (HeadersToPrint::iterator j = headersToPrint.begin (); 
-       j != headersToPrint.end (); j++)
-    {
-      uint32_t uid = j->first;
-      uint32_t offset = j->second;
-      Buffer::Iterator tmp = original.Begin ();
-      tmp.Next (offset);
-      printer.PrintChunk (uid, tmp, os, 0, 0);
-    }
-  for (TrailersToPrint::reverse_iterator j = trailersToPrint.rbegin (); 
-       j != trailersToPrint.rend (); j++)
-    {
-      uint32_t uid = j->first;
-      uint32_t offset = j->second;
-      Buffer::Iterator tmp = original.End ();
-      tmp.Prev (offset);
-      printer.PrintChunk (uid, tmp, os, 0, 0);
-    }
-}
-
-void 
 PacketHistory::PrintComplex (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const
 {
   // we need to build a linked list of the different fragments 
@@ -876,10 +715,9 @@ PacketHistory::BuildItemList (ItemList *list, uint8_t *buffer, uint32_t size) co
       uint32_t data = ReadForwardValue (&dataBuffer);
       switch (type)
         {
-        case INIT_UID:
-          break;
-        case INIT_SIZE: {
-          itemList.InitPayload (0, data);
+        case INIT: {
+          uint32_t uid = ReadForwardValue (&dataBuffer);
+          itemList.InitPayload (uid, data);
         } break;
         case ADD_HEADER: {
           uint32_t size = ReadForwardValue (&dataBuffer);
@@ -928,14 +766,7 @@ PacketHistory::Print (std::ostream &os, Buffer buffer, const PacketPrinter &prin
       return;
     }
 
-  if (true)
-    {
-      PrintComplex (os, buffer, printer);
-    }
-  else
-    {
-      PrintSimple (os, buffer, printer);
-    }
+  PrintComplex (os, buffer, printer);
 }
 
 

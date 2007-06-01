@@ -65,7 +65,7 @@ public:
 
 private:
   enum CommandType {
-    INIT_UID     = 0,
+    INIT         = 0,
     ADD_HEADER   = 1,
     REM_HEADER   = 2,
     ADD_TRAILER  = 3,
@@ -74,7 +74,6 @@ private:
     REM_AT_START = 6,
     REM_AT_END   = 7,
     PADDING_AT_END = 9,
-    INIT_SIZE    = 10,
     LAST
   };
   struct CommandData {
@@ -94,7 +93,6 @@ private:
   uint32_t GetReverseUleb128Size (uint8_t *buffer) const;
   void AppendValue (uint32_t value);
   uint32_t ReadForwardValue (uint8_t **pBuffer) const;
-  uint32_t ReadReverseValue (uint8_t **pBuffer) const;
   uint32_t ReadValue (uint8_t *buffer, uint32_t *n) const;
   void AppendOneCommand (uint32_t type, uint32_t data);
   void AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1);
@@ -103,7 +101,6 @@ private:
   void RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size);
   void AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
   void RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
-  void PrintSimple (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const;
   void PrintComplex (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const;
   void BuildItemList (ItemList *list, uint8_t *buffer, uint32_t size) const;
 
