@@ -307,7 +307,6 @@ Packet::AddTrailer (T const &trailer)
   uint32_t size = trailer.GetSize ();
   m_buffer.AddAtEnd (size);
   Buffer::Iterator start = m_buffer.End ();
-  start.Prev (size);
   trailer.Serialize (start);
   m_history.AddTrailer (trailer, size);
 }
