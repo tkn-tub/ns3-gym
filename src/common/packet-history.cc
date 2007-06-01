@@ -145,17 +145,16 @@ ItemList::RemAtStart (uint32_t toRemove)
   while (!m_itemList.empty () && leftToRemove > 0)
     {
       struct Item &item = m_itemList.front ();
-      if (item.m_size >= leftToRemove)
+      if (item.m_fragmentEnd - item.m_fragmentStart <= leftToRemove)
         {
           m_itemList.pop_front ();
           leftToRemove -= item.m_size;
         }
       else
         {
-          item.m_size -= leftToRemove;
           item.m_fragmentStart += leftToRemove;
           leftToRemove = 0;
-          NS_ASSERT (item.m_size == item.m_fragmentEnd - item.m_fragmentStart &&
+          NS_ASSERT (item.m_size >= item.m_fragmentEnd - item.m_fragmentStart &&
                      item.m_fragmentStart <= item.m_fragmentEnd);
         }
     }
@@ -168,18 +167,17 @@ ItemList::RemAtEnd (uint32_t toRemove)
   while (!m_itemList.empty () && leftToRemove > 0)
     {
       struct Item &item = m_itemList.back ();
-      if (item.m_size >= leftToRemove)
+      if (item.m_fragmentEnd - item.m_fragmentStart <= leftToRemove)
         {
           m_itemList.pop_back ();
           leftToRemove -= item.m_size;
         }
       else
         {
-          item.m_size -= leftToRemove;
           item.m_fragmentEnd -= leftToRemove;
           leftToRemove = 0;
         }
-      NS_ASSERT (item.m_size == item.m_fragmentEnd - item.m_fragmentStart &&
+      NS_ASSERT (item.m_size >= item.m_fragmentEnd - item.m_fragmentStart &&
                  item.m_fragmentStart <= item.m_fragmentEnd &&
                  item.m_fragmentEnd <= item.m_size);
     }
@@ -246,7 +244,7 @@ ItemList::Print (std::ostream &os, ns3::Buffer buffer, const ns3::PacketPrinter 
       else if (item.m_type == ItemList::TRAILER)
         {
           ns3::Buffer::Iterator j = buffer.End ();
-          j.Prev (totalSize - offset + item.m_size);
+          j.Prev (totalSize - (offset + item.m_size));
           printer.PrintChunk (item.m_chunkType, j, os, item.m_packetUid, item.m_size);
         }
       else 
@@ -1020,7 +1018,7 @@ PacketHistoryTest::PrintFragment (std::ostream &os,uint32_t packetUid,
                                   uint32_t size,std::string & name, 
                                   struct PacketPrinter::FragmentInformation info)
 {
-  NS_ASSERT (false);
+  //NS_ASSERT (false);
 }
 void 
 PacketHistoryTest::PrintDefault (std::ostream& os,uint32_t packetUid,
@@ -1034,7 +1032,7 @@ PacketHistoryTest::PrintPayload (std::ostream &os,uint32_t packetUid,
                                  uint32_t size,
                                  struct PacketPrinter::FragmentInformation info)
 {
-  NS_ASSERT (false);
+  //NS_ASSERT (false);
 }
 
 
