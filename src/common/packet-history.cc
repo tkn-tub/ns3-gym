@@ -708,7 +708,6 @@ PacketHistory::BuildItemList (ItemList *list, uint8_t *buffer, uint32_t size) co
   // we need to build a linked list of the different fragments 
   // which are stored in this packet.
   uint8_t *dataBuffer = buffer;
-  ItemList itemList;
   for (uint32_t i = 0; i < m_n; i++)
     {
       uint32_t type = ReadForwardValue (&dataBuffer);
@@ -717,34 +716,34 @@ PacketHistory::BuildItemList (ItemList *list, uint8_t *buffer, uint32_t size) co
         {
         case INIT: {
           uint32_t uid = ReadForwardValue (&dataBuffer);
-          itemList.InitPayload (uid, data);
+          list->InitPayload (uid, data);
         } break;
         case ADD_HEADER: {
           uint32_t size = ReadForwardValue (&dataBuffer);
-          itemList.AddHeader (data, size);
+          list->AddHeader (data, size);
         } break;
         case REM_HEADER: {
           uint32_t size = ReadForwardValue (&dataBuffer);
-          itemList.RemHeader (data, size);
+          list->RemHeader (data, size);
         } break;
         case ADD_TRAILER: {
           uint32_t size = ReadForwardValue (&dataBuffer);
-          itemList.AddTrailer (data, size);
+          list->AddTrailer (data, size);
         } break;
         case REM_TRAILER: {
           uint32_t size = ReadForwardValue (&dataBuffer);
-          itemList.RemTrailer (data, size);
+          list->RemTrailer (data, size);
         } break;
         case ADD_AT_END: {
           ItemList other;
           BuildItemList (&other, dataBuffer, data);
-          itemList.AddAtEnd (&other);
+          list->AddAtEnd (&other);
         } break;
         case REM_AT_START: {
-          itemList.RemAtStart (data);
+          list->RemAtStart (data);
         } break;
         case REM_AT_END: {
-          itemList.RemAtEnd (data);
+          list->RemAtEnd (data);
         } break;
         case PADDING_AT_END:
           break;
