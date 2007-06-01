@@ -655,15 +655,16 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
       m_aggregated = true;
       uint32_t n = GetUleb128Size (PacketHistory::ADD_AT_END);
       n += GetUleb128Size (o.m_end); 
+      n += GetUleb128Size (o.m_n); 
       n += o.m_end;
       Reserve (n);
+      AppendOneCommand (PacketHistory::ADD_AT_END, o.m_end, o.m_n);
       memcpy (&m_data->m_data[m_end], o.m_data->m_data, o.m_end);
       m_end += o.m_end;
       if (m_end > m_data->m_dirtyEnd)
         {
           m_data->m_dirtyEnd = m_end;
         }
-      AppendOneCommand (PacketHistory::ADD_AT_END, o.m_end);
     }
 }
 void
@@ -698,17 +699,17 @@ PacketHistory::PrintComplex (std::ostream &os, Buffer buffer, const PacketPrinte
   // which are stored in this packet.
   uint8_t *dataBuffer = &m_data->m_data[0];
   ItemList itemList;
-  BuildItemList (&itemList, dataBuffer, m_end);
+  BuildItemList (&itemList, &dataBuffer, m_end, m_n);
   itemList.Print (os, buffer, printer);
 }
 
 void 
-PacketHistory::BuildItemList (ItemList *list, uint8_t *buffer, uint32_t size) const
+PacketHistory::BuildItemList (ItemList *list, uint8_t **buffer, uint32_t size, uint32_t n) const
 {
   // we need to build a linked list of the different fragments 
   // which are stored in this packet.
-  uint8_t *dataBuffer = buffer;
-  for (uint32_t i = 0; i < m_n; i++)
+  uint8_t *dataBuffer = *buffer;
+  for (uint32_t i = 0; i < n; i++)
     {
       uint32_t type = ReadForwardValue (&dataBuffer);
       uint32_t data = ReadForwardValue (&dataBuffer);
@@ -735,8 +736,9 @@ PacketHistory::BuildItemList (ItemList *list, uint8_t *buffer, uint32_t size) co
           list->RemTrailer (data, size);
         } break;
         case ADD_AT_END: {
+          uint32_t nCommands = ReadForwardValue (&dataBuffer);
           ItemList other;
-          BuildItemList (&other, dataBuffer, data);
+          BuildItemList (&other, &dataBuffer, data, nCommands);
           list->AddAtEnd (&other);
         } break;
         case REM_AT_START: {
@@ -1277,13 +1279,22 @@ PacketHistoryTest::RunTests (void)
   p = Packet (40);
   ADD_HEADER (p, 5);
   ADD_HEADER (p, 8);
+  CHECK_HISTORY (p, 3, 8, 5, 40);
   p1 = p.CreateFragment (0, 5);
   p2 = p.CreateFragment (5, 5);
   p3 = p.CreateFragment (10, 43);
   CHECK_HISTORY (p1, 1, 5);
   CHECK_HISTORY (p2, 2, 3, 2);
   CHECK_HISTORY (p3, 2, 3, 40);
-
+  p1.AddAtEnd (p2);
+  CHECK_HISTORY (p1, 2, 8, 2);
+  CHECK_HISTORY (p2, 2, 3, 2);
+#if 0
+  p1.AddAtEnd (p3);
+  CHECK_HISTORY (p1, 3, 8, 5, 40);
+  CHECK_HISTORY (p2, 2, 3, 2);
+  CHECK_HISTORY (p3, 2, 3, 40);
+#endif
 
 
   return ok;

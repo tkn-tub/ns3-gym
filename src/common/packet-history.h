@@ -102,7 +102,7 @@ private:
   void AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
   void RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
   void PrintComplex (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const;
-  void BuildItemList (ItemList *list, uint8_t *buffer, uint32_t size) const;
+  void BuildItemList (ItemList *list, uint8_t **buffer, uint32_t size, uint32_t n) const;
 
   static struct PacketHistory::CommandData *Create (uint32_t size);
   static void Recycle (struct CommandData *data);
