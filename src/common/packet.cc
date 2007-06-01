@@ -78,6 +78,9 @@ Packet::GetSize (void) const
 void 
 Packet::AddAtEnd (Packet packet)
 {
+  packet.m_buffer.TransformIntoRealBuffer ();
+  m_buffer.TransformIntoRealBuffer ();
+
   Buffer src = packet.m_buffer;
   m_buffer.AddAtEnd (src.GetSize ());
   Buffer::Iterator destStart = m_buffer.End ();
