@@ -655,6 +655,14 @@ BufferTest::RunTests (void)
   i.Prev (1);
   i.WriteU8 (1, 1);
 
+  buffer = Buffer (6);
+  buffer.AddAtStart (3);
+  buffer.RemoveAtEnd (8);
+  buffer.AddAtEnd (4);
+  i = buffer.End ();
+  i.Prev (4);
+  i.WriteU8 (1, 4);
+
   return ok;
 }
 

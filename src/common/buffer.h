@@ -522,7 +522,8 @@ Buffer::Iterator::GetIndex (uint32_t n)
   NS_ASSERT ( 
       (m_current + n <= m_dataEnd) &&
       ((m_current + n <= m_zeroStart) ||
-       (m_current >= m_zeroEnd))
+       (m_current >= m_zeroEnd) ||
+       m_zeroStart == m_zeroEnd)
       );
   uint32_t index;
   if (m_current < m_zeroStart) 
