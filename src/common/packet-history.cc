@@ -1018,7 +1018,7 @@ PacketHistoryTest::PrintFragment (std::ostream &os,uint32_t packetUid,
                                   uint32_t size,std::string & name, 
                                   struct PacketPrinter::FragmentInformation info)
 {
-  //NS_ASSERT (false);
+  m_prints.push_back (info.end - info.start);
 }
 void 
 PacketHistoryTest::PrintDefault (std::ostream& os,uint32_t packetUid,
@@ -1032,7 +1032,7 @@ PacketHistoryTest::PrintPayload (std::ostream &os,uint32_t packetUid,
                                  uint32_t size,
                                  struct PacketPrinter::FragmentInformation info)
 {
-  //NS_ASSERT (false);
+  //m_prints.push_back (info.end - info.start);
 }
 
 
@@ -1251,7 +1251,7 @@ PacketHistoryTest::RunTests (void)
   ADD_TRAILER (p, 9);
   p.RemoveAtStart (5);
   p.RemoveAtEnd (12);
-  CHECK_HISTORY (p, 2, 10, 6);
+  CHECK_HISTORY (p, 4, 3, 10, 6, 4);
 
 
   return ok;
