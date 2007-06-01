@@ -82,7 +82,7 @@ PacketPrinter::PrintChunk (uint32_t chunkUid,
                            uint32_t size) const
 {
   RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  NS_ASSERT (chunkUid > 1);
+  NS_ASSERT (chunkUid >= 1);
   for (PrinterList::const_iterator i = m_printerList.begin (); i != m_printerList.end (); i++)
     {
       if (i->m_chunkUid == chunkUid)
@@ -108,7 +108,7 @@ PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
                                    uint32_t fragmentEnd) const
 {
   RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  NS_ASSERT (chunkUid > 1);
+  NS_ASSERT (chunkUid >= 1);
   DoGetNameCallback cb = (*registeredChunks)[chunkUid-1].second;
   std::string name = cb ();
   struct PacketPrinter::FragmentInformation info;
