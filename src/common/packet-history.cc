@@ -189,11 +189,11 @@ ItemList::RemAtEnd (uint32_t toRemove)
 void 
 ItemList::AddAtEnd (ItemList const *other)
 {
+  ItemList::Item &last = m_itemList.back ();
   for (std::list<ItemList::Item>::const_iterator i = other->m_itemList.begin (); 
        i != other->m_itemList.end (); i++)
     {
       const ItemList::Item &item = *i;
-      ItemList::Item &last = m_itemList.back ();
       if (item.m_packetUid == last.m_packetUid &&
           item.m_type == last.m_type &&
           item.m_chunkType == last.m_chunkType &&
@@ -751,6 +751,7 @@ PacketHistory::BuildItemList (ItemList *list, uint8_t **buffer, uint32_t size, u
           break;
         }
     }  
+  *buffer = dataBuffer;
 }
 
 void 
@@ -1289,12 +1290,10 @@ PacketHistoryTest::RunTests (void)
   p1.AddAtEnd (p2);
   CHECK_HISTORY (p1, 2, 8, 2);
   CHECK_HISTORY (p2, 2, 3, 2);
-#if 0
   p1.AddAtEnd (p3);
   CHECK_HISTORY (p1, 3, 8, 5, 40);
   CHECK_HISTORY (p2, 2, 3, 2);
   CHECK_HISTORY (p3, 2, 3, 40);
-#endif
 
 
   return ok;
