@@ -145,10 +145,11 @@ ItemList::RemAtStart (uint32_t toRemove)
   while (!m_itemList.empty () && leftToRemove > 0)
     {
       struct Item &item = m_itemList.front ();
-      if (item.m_fragmentEnd - item.m_fragmentStart <= leftToRemove)
+      uint32_t itemRealSize = item.m_fragmentEnd - item.m_fragmentStart;
+      if (itemRealSize <= leftToRemove)
         {
           m_itemList.pop_front ();
-          leftToRemove -= item.m_size;
+          leftToRemove -= itemRealSize;
         }
       else
         {
@@ -167,10 +168,11 @@ ItemList::RemAtEnd (uint32_t toRemove)
   while (!m_itemList.empty () && leftToRemove > 0)
     {
       struct Item &item = m_itemList.back ();
-      if (item.m_fragmentEnd - item.m_fragmentStart <= leftToRemove)
+      uint32_t itemRealSize = item.m_fragmentEnd - item.m_fragmentStart;
+      if (itemRealSize <= leftToRemove)
         {
           m_itemList.pop_back ();
-          leftToRemove -= item.m_size;
+          leftToRemove -= itemRealSize;
         }
       else
         {
@@ -900,6 +902,7 @@ template <int N>
 void 
 HistoryTrailer<N>::SerializeTo (Buffer::Iterator start) const
 {
+  start.Prev (N);
   start.WriteU8 (N, N);
 }
 template <int N>
@@ -1242,7 +1245,6 @@ PacketHistoryTest::RunTests (void)
   p.RemoveAtStart (8+10+8);
   CHECK_HISTORY (p, 1, 8);
 
-
   p = Packet (10);
   ADD_HEADER (p, 10);
   ADD_HEADER (p, 8);
@@ -1252,6 +1254,17 @@ PacketHistoryTest::RunTests (void)
   p.RemoveAtStart (5);
   p.RemoveAtEnd (12);
   CHECK_HISTORY (p, 5, 3, 10, 10, 6, 4);
+
+  p = Packet (10);
+  ADD_HEADER (p, 10);
+  ADD_TRAILER (p, 6);
+  p.RemoveAtEnd (18);
+  ADD_TRAILER (p, 5);
+  ADD_HEADER (p, 3);
+  CHECK_HISTORY (p, 3, 3, 8, 5);
+  p.RemoveAtStart (12);
+  CHECK_HISTORY (p, 1, 4);
+
 
 
   return ok;
