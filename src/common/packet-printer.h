@@ -229,7 +229,7 @@ PacketPrinter::AllocateUid (void)
   RegisteredChunks *chunks = PacketPrinter::GetRegisteredChunks ();
   chunks->push_back (std::make_pair(&PacketPrinter::DoPrint<T>, 
                                     &PacketPrinter::DoGetName<T>));
-  uint32_t uid = chunks->size () - 1;
+  uint32_t uid = chunks->size ();
   PacketPrinter::PeekDefault ()->DoAddPrinter (uid, 
                                                MakeCallback (&PacketPrinter::DoDefaultPrint<T>).GetImpl (),
                                                MakeCallback (&PacketPrinter::DoDefaultPrintFragment));
