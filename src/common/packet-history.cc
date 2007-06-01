@@ -1264,6 +1264,12 @@ PacketHistoryTest::RunTests (void)
   CHECK_HISTORY (p, 3, 3, 8, 5);
   p.RemoveAtStart (12);
   CHECK_HISTORY (p, 1, 4);
+  p.RemoveAtEnd (2);
+  CHECK_HISTORY (p, 1, 2);
+  ADD_HEADER (p, 10);
+  CHECK_HISTORY (p, 2, 10, 2);
+  p.RemoveAtEnd (5);
+  CHECK_HISTORY (p, 1, 7);
 
 
 
