@@ -63,7 +63,8 @@ Packet
 Packet::CreateFragment (uint32_t start, uint32_t length) const
 {
   Buffer buffer = m_buffer.CreateFragment (start, length);
-  uint32_t end = buffer.GetSize () - (start + length);
+  NS_ASSERT (m_buffer.GetSize () >= start + length);
+  uint32_t end = m_buffer.GetSize () - (start + length);
   PacketHistory history = m_history.CreateFragment (start, end);
   return Packet (buffer, m_tags, history, m_uid);
 }
