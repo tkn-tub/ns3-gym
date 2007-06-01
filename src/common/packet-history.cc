@@ -1032,7 +1032,7 @@ PacketHistoryTest::PrintPayload (std::ostream &os,uint32_t packetUid,
                                  uint32_t size,
                                  struct PacketPrinter::FragmentInformation info)
 {
-  //m_prints.push_back (info.end - info.start);
+  m_prints.push_back (info.end - info.start);
 }
 
 
@@ -1144,28 +1144,28 @@ PacketHistoryTest::RunTests (void)
 
   p = Packet (10);
   ADD_TRAILER (p, 100);
-  CHECK_HISTORY (p, 1, 100);
+  CHECK_HISTORY (p, 2, 10, 100);
 
   p = Packet (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
-  CHECK_HISTORY (p, 3, 
-                 3, 2, 1);
-  ADD_HEADER (p, 5);
   CHECK_HISTORY (p, 4, 
-                 5, 3, 2, 1);
-  ADD_HEADER (p, 6);
+                 3, 2, 1, 10);
+  ADD_HEADER (p, 5);
   CHECK_HISTORY (p, 5, 
-                 6, 5, 3, 2, 1);
+                 5, 3, 2, 1, 10);
+  ADD_HEADER (p, 6);
+  CHECK_HISTORY (p, 6, 
+                 6, 5, 3, 2, 1, 10);
 
   p = Packet (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
   REM_HEADER (p, 3);
-  CHECK_HISTORY (p, 2, 
-                 2, 1);
+  CHECK_HISTORY (p, 3, 
+                 2, 1, 10);
 
   p = Packet (10);
   ADD_HEADER (p, 1);
@@ -1173,8 +1173,8 @@ PacketHistoryTest::RunTests (void)
   ADD_HEADER (p, 3);
   REM_HEADER (p, 3);
   REM_HEADER (p, 2);
-  CHECK_HISTORY (p, 1, 
-                 1);
+  CHECK_HISTORY (p, 2, 
+                 1, 10);
 
   p = Packet (10);
   ADD_HEADER (p, 1);
@@ -1183,7 +1183,7 @@ PacketHistoryTest::RunTests (void)
   REM_HEADER (p, 3);
   REM_HEADER (p, 2);
   REM_HEADER (p, 1);
-  CHECK_HISTORY (p, 0);
+  CHECK_HISTORY (p, 1, 10);
 
   p = Packet (10);
   ADD_HEADER (p, 1);
@@ -1193,47 +1193,47 @@ PacketHistoryTest::RunTests (void)
   REM_HEADER (p1, 3);
   REM_HEADER (p1, 2);
   REM_HEADER (p1, 1);
-  CHECK_HISTORY (p1, 0);
-  CHECK_HISTORY (p, 3, 
-                 3, 2, 1);
+  CHECK_HISTORY (p1, 1, 10);
+  CHECK_HISTORY (p, 4, 
+                 3, 2, 1, 10);
   ADD_HEADER (p1, 1);
   ADD_HEADER (p1, 2);
-  CHECK_HISTORY (p1, 2, 
-                 2, 1);
-  CHECK_HISTORY (p, 3, 
-                 3, 2, 1);
+  CHECK_HISTORY (p1, 3, 
+                 2, 1, 10);
+  CHECK_HISTORY (p, 4, 
+                 3, 2, 1, 10);
   ADD_HEADER (p, 3);
-  CHECK_HISTORY (p, 4, 
-                 3, 3, 2, 1);
+  CHECK_HISTORY (p, 5, 
+                 3, 3, 2, 1, 10);
   ADD_TRAILER (p, 4);
-  CHECK_HISTORY (p, 5, 
-                 3, 3, 2, 1, 4);
-  ADD_TRAILER (p, 5);
   CHECK_HISTORY (p, 6, 
-                 3, 3, 2, 1, 4, 5);
+                 3, 3, 2, 1, 10, 4);
+  ADD_TRAILER (p, 5);
+  CHECK_HISTORY (p, 7, 
+                 3, 3, 2, 1, 10, 4, 5);
   REM_HEADER (p, 3);
-  CHECK_HISTORY (p, 5, 
-                 3, 2, 1, 4, 5);
+  CHECK_HISTORY (p, 6, 
+                 3, 2, 1, 10, 4, 5);
   REM_TRAILER (p, 5);
-  CHECK_HISTORY (p, 4, 
-                 3, 2, 1, 4);
+  CHECK_HISTORY (p, 5, 
+                 3, 2, 1, 10, 4);
   p1 = p;
   REM_TRAILER (p, 4);
-  CHECK_HISTORY (p, 3, 
-                 3, 2, 1);
-  CHECK_HISTORY (p1, 4, 
-                 3, 2, 1, 4);
+  CHECK_HISTORY (p, 4, 
+                 3, 2, 1, 10);
+  CHECK_HISTORY (p1, 5, 
+                 3, 2, 1, 10, 4);
   p1.RemoveAtStart (3);
-  CHECK_HISTORY (p1, 3, 
-                 2, 1, 4);
+  CHECK_HISTORY (p1, 4, 
+                 2, 1, 10, 4);
   p1.RemoveAtStart (2);
-  CHECK_HISTORY (p1, 2, 
-                 1, 4);
+  CHECK_HISTORY (p1, 3, 
+                 1, 10, 4);
   p1.RemoveAtEnd (4);
-  CHECK_HISTORY (p1, 1, 
-                 1);
+  CHECK_HISTORY (p1, 2, 
+                 1, 10);
   p1.RemoveAtStart (1);
-  CHECK_HISTORY (p1, 0);
+  CHECK_HISTORY (p1, 1, 10);
 
   p = Packet (10);
   ADD_HEADER (p, 8);
@@ -1251,7 +1251,7 @@ PacketHistoryTest::RunTests (void)
   ADD_TRAILER (p, 9);
   p.RemoveAtStart (5);
   p.RemoveAtEnd (12);
-  CHECK_HISTORY (p, 4, 3, 10, 6, 4);
+  CHECK_HISTORY (p, 5, 3, 10, 10, 6, 4);
 
 
   return ok;
