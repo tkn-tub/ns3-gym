@@ -59,15 +59,20 @@ private:
     uint32_t m_fragmentStart;
     uint32_t m_fragmentEnd;
     uint32_t m_packetUid;
+    uint32_t m_chunkUid;
   };
   std::list<Item> m_itemList;
   uint32_t m_packetUid;
+  uint32_t m_chunkUid;
 };
+
 
 void 
 ItemList::InitPayload (uint32_t packetUid, uint32_t size)
 {
   NS_ASSERT (m_itemList.empty ());
+  m_packetUid = packetUid;
+  m_chunkUid = 1;
   if (size > 0)
     {
       struct Item item;
@@ -76,10 +81,10 @@ ItemList::InitPayload (uint32_t packetUid, uint32_t size)
       item.m_size = size;
       item.m_fragmentStart = 0;
       item.m_fragmentEnd = item.m_size;
-      item.m_packetUid = packetUid;
+      item.m_packetUid = m_packetUid;
+      item.m_chunkUid = m_chunkUid;
       m_itemList.push_back (item);
     }
-  m_packetUid = packetUid;
 }
 
 void 
@@ -92,7 +97,9 @@ ItemList::AddHeader (uint32_t type, uint32_t size)
   item.m_fragmentStart = 0;
   item.m_fragmentEnd = size;
   item.m_packetUid = m_packetUid;
+  item.m_chunkUid = m_chunkUid;
   m_itemList.push_front (item);
+  m_chunkUid++;
 }
 
 void 
@@ -105,7 +112,9 @@ ItemList::AddTrailer (uint32_t type, uint32_t size)
   item.m_fragmentStart = 0;
   item.m_fragmentEnd = size;
   item.m_packetUid = m_packetUid;
+  item.m_chunkUid = m_chunkUid;
   m_itemList.push_back (item);
+  m_chunkUid++;
 }
 
 void 
@@ -204,7 +213,8 @@ ItemList::AddAtEnd (ItemList const *other)
           item.m_chunkType == last.m_chunkType &&
           item.m_size == last.m_size &&
           last.m_fragmentEnd != last.m_size && 
-          item.m_fragmentStart == last.m_fragmentEnd)
+          item.m_fragmentStart == last.m_fragmentEnd &&
+          item.m_chunkUid == last.m_chunkUid)
         {
           last.m_fragmentEnd = item.m_fragmentEnd;
         }
@@ -1333,7 +1343,6 @@ PacketHistoryTest::RunTests (void)
   p = Packet (0);
   CHECK_HISTORY (p, 0);
 
-#if 0
   p3 = Packet (0);
   ADD_HEADER (p3, 5);
   ADD_HEADER (p3, 5);
@@ -1344,7 +1353,6 @@ PacketHistoryTest::RunTests (void)
   CHECK_HISTORY (p2, 1, 1);
   p1.AddAtEnd (p2);
   CHECK_HISTORY (p1, 2, 4, 1);
-#endif
   
   
 
