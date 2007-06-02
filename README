@@ -166,6 +166,5 @@ mercurial website is usually a good idea if you are not
 familiar with it.
 
 If you have successfully installed mercurial, you can get
-a copy of the development version with the following
-command:
+a copy of the development version with the following command:
 "hg clone http://code.nsnam.org/ns-3-dev"
