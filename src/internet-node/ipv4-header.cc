@@ -190,6 +190,12 @@ Ipv4Header::IsChecksumOk (void) const
   return m_goodChecksum;
 }
 
+std::string 
+Ipv4Header::DoGetName (void) const
+{
+  return "Ipv4";
+}
+
 void 
 Ipv4Header::PrintTo (std::ostream &os) const
 {

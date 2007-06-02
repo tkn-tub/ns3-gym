@@ -31,7 +31,7 @@ namespace {
 class ItemList
 {
 public:
-  void InitPayload (uint32_t uid, uint32_t size);
+  void InitPayload (uint32_t packetUid, uint32_t size);
   void AddHeader (uint32_t type, uint32_t size);
   void AddTrailer (uint32_t type, uint32_t size);
 
@@ -43,10 +43,13 @@ public:
 
   void AddAtEnd (ItemList const *other);
 
+  void Print (std::ostream &os, ns3::Buffer buffer, const ns3::PacketPrinter &printer) const;
+
 private:
   enum Type {
     PAYLOAD,
-    CHUNK,
+    HEADER,
+    TRAILER,
   };
   struct Item
   {
@@ -55,21 +58,22 @@ private:
     uint32_t m_chunkType;
     uint32_t m_fragmentStart;
     uint32_t m_fragmentEnd;
-    uint32_t m_uid;
+    uint32_t m_packetUid;
   };
   std::list<Item> m_itemList;
 };
 
 void 
-ItemList::InitPayload (uint32_t uid, uint32_t size)
+ItemList::InitPayload (uint32_t packetUid, uint32_t size)
 {
   NS_ASSERT (m_itemList.empty ());
   struct Item item;
   item.m_type = ItemList::PAYLOAD;
+  item.m_chunkType = 0;
   item.m_size = size;
   item.m_fragmentStart = 0;
   item.m_fragmentEnd = item.m_size;
-  item.m_uid = uid;
+  item.m_packetUid = packetUid;
   m_itemList.push_back (item);
 }
 
@@ -77,12 +81,12 @@ void
 ItemList::AddHeader (uint32_t type, uint32_t size)
 {
   struct Item item;
-  item.m_type = ItemList::CHUNK;
+  item.m_type = ItemList::HEADER;
   item.m_chunkType = type;
   item.m_size = size;
   item.m_fragmentStart = 0;
   item.m_fragmentEnd = size;
-  item.m_uid = m_itemList.front ().m_uid;
+  item.m_packetUid = m_itemList.front ().m_packetUid;
   m_itemList.push_front (item);
 }
 
@@ -90,12 +94,12 @@ void
 ItemList::AddTrailer (uint32_t type, uint32_t size)
 {
   struct Item item;
-  item.m_type = ItemList::CHUNK;
+  item.m_type = ItemList::TRAILER;
   item.m_chunkType = type;
   item.m_size = size;
   item.m_fragmentStart = 0;
   item.m_fragmentEnd = size;
-  item.m_uid = m_itemList.back ().m_uid;
+  item.m_packetUid = m_itemList.back ().m_packetUid;
   m_itemList.push_back (item);
 }
 
@@ -103,7 +107,7 @@ void
 ItemList::RemHeader (uint32_t type, uint32_t size)
 {
   struct Item item = m_itemList.front ();
-  if (item.m_type != CHUNK ||
+  if (item.m_type != ItemList::HEADER ||
       item.m_size != size ||
       item.m_chunkType != type)
     {
@@ -120,7 +124,7 @@ void
 ItemList::RemTrailer (uint32_t type, uint32_t size)
 {
   struct Item item = m_itemList.back ();
-  if (item.m_type != CHUNK ||
+  if (item.m_type != ItemList::TRAILER ||
       item.m_size != size ||
       item.m_chunkType != type)
     {
@@ -141,17 +145,17 @@ ItemList::RemAtStart (uint32_t toRemove)
   while (!m_itemList.empty () && leftToRemove > 0)
     {
       struct Item &item = m_itemList.front ();
-      if (item.m_size >= leftToRemove)
+      uint32_t itemRealSize = item.m_fragmentEnd - item.m_fragmentStart;
+      if (itemRealSize <= leftToRemove)
         {
           m_itemList.pop_front ();
-          leftToRemove -= item.m_size;
+          leftToRemove -= itemRealSize;
         }
       else
         {
-          item.m_size -= leftToRemove;
           item.m_fragmentStart += leftToRemove;
           leftToRemove = 0;
-          NS_ASSERT (item.m_size == item.m_fragmentEnd - item.m_fragmentStart &&
+          NS_ASSERT (item.m_size >= item.m_fragmentEnd - item.m_fragmentStart &&
                      item.m_fragmentStart <= item.m_fragmentEnd);
         }
     }
@@ -164,19 +168,20 @@ ItemList::RemAtEnd (uint32_t toRemove)
   while (!m_itemList.empty () && leftToRemove > 0)
     {
       struct Item &item = m_itemList.back ();
-      if (item.m_size >= leftToRemove)
+      uint32_t itemRealSize = item.m_fragmentEnd - item.m_fragmentStart;
+      if (itemRealSize <= leftToRemove)
         {
           m_itemList.pop_back ();
-          leftToRemove -= item.m_size;
-                }
+          leftToRemove -= itemRealSize;
+        }
       else
         {
-          item.m_size -= leftToRemove;
           item.m_fragmentEnd -= leftToRemove;
           leftToRemove = 0;
         }
-      NS_ASSERT (item.m_size == item.m_fragmentEnd - item.m_fragmentStart &&
-                 item.m_fragmentStart <= item.m_fragmentEnd);
+      NS_ASSERT (item.m_size >= item.m_fragmentEnd - item.m_fragmentStart &&
+                 item.m_fragmentStart <= item.m_fragmentEnd &&
+                 item.m_fragmentEnd <= item.m_size);
     }
   NS_ASSERT (leftToRemove == 0);
 }
@@ -184,17 +189,79 @@ ItemList::RemAtEnd (uint32_t toRemove)
 void 
 ItemList::AddAtEnd (ItemList const *other)
 {
-  
+  ItemList::Item &last = m_itemList.back ();
+  for (std::list<ItemList::Item>::const_iterator i = other->m_itemList.begin (); 
+       i != other->m_itemList.end (); i++)
+    {
+      const ItemList::Item &item = *i;
+      if (item.m_packetUid == last.m_packetUid &&
+          item.m_type == last.m_type &&
+          item.m_chunkType == last.m_chunkType &&
+          item.m_size == last.m_size &&
+          last.m_fragmentEnd != last.m_size && 
+          item.m_fragmentStart == last.m_fragmentEnd)
+        {
+          last.m_fragmentEnd = item.m_fragmentEnd;
+        }
+      else
+        {
+          m_itemList.push_back (item);
+        }
+    }
 }
 
-
+void 
+ItemList::Print (std::ostream &os, ns3::Buffer buffer, const ns3::PacketPrinter &printer) const
+{
+  NS_ASSERT (!m_itemList.empty ());
+  uint32_t totalSize = 0;
+  for (std::list<ItemList::Item>::const_iterator i = m_itemList.begin (); 
+       i != m_itemList.end (); i++)
+    {
+      ItemList::Item item = *i;
+      totalSize += item.m_fragmentEnd - item.m_fragmentStart;
+    }
+  NS_ASSERT (totalSize == buffer.GetSize ());
+  uint32_t offset = 0;
+  for (std::list<ItemList::Item>::const_iterator i = m_itemList.begin (); 
+       i != m_itemList.end (); i++)
+    {
+      ItemList::Item item = *i;
+      if (item.m_type == ItemList::PAYLOAD)
+        {
+          printer.PrintPayload (os, item.m_packetUid, item.m_size, item.m_fragmentStart, item.m_fragmentEnd);
+        }
+      else if (item.m_fragmentStart != 0 || 
+               item.m_fragmentEnd != item.m_size)
+        {
+          printer.PrintChunkFragment (item.m_chunkType, os, item.m_packetUid, item.m_size, 
+                                      item.m_fragmentStart, item.m_fragmentEnd);
+        }
+      else if (item.m_type == ItemList::HEADER)
+        {
+          ns3::Buffer::Iterator j = buffer.Begin ();
+          j.Next (offset);
+          printer.PrintChunk (item.m_chunkType, j, os, item.m_packetUid, item.m_size);
+        }
+      else if (item.m_type == ItemList::TRAILER)
+        {
+          ns3::Buffer::Iterator j = buffer.End ();
+          j.Prev (totalSize - (offset + item.m_size));
+          printer.PrintChunk (item.m_chunkType, j, os, item.m_packetUid, item.m_size);
+        }
+      else 
+        {
+          NS_ASSERT (false);
+        }
+      offset += item.m_fragmentEnd - item.m_fragmentStart;
+    }
+}
 
 } // anonymous namespace
 
 namespace ns3 {
 
 bool PacketHistory::m_enable = false;
-PacketHistory::ChunkFactories PacketHistory::m_factories;
 uint32_t PacketHistory::m_maxSize = 0;
 PacketHistory::DataFreeList PacketHistory::m_freeList;
 
@@ -227,8 +294,8 @@ PacketHistory::Construct (uint32_t uid, uint32_t size)
   if (m_enable) 
     {
       m_data = PacketHistory::Create (size);
-      AppendOneCommand (PacketHistory::INIT_UID,
-                        uid);
+      AppendOneCommand (PacketHistory::INIT,
+                        size, uid);
     }
 }
 PacketHistory::PacketHistory (PacketHistory const &o)
@@ -352,22 +419,22 @@ PacketHistory::AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1)
       if (m_data->m_count == 1 ||
           m_data->m_dirtyEnd == m_end)
         {
-          AppendValue (data1);
-          AppendValue (data0);
           AppendValue (type);
+          AppendValue (data0);
+          AppendValue (data1);
           m_n++;
           return;
         }
       else
         {
           uint8_t *buffer = &(m_data->m_data[m_end]);
-          uint32_t lastType = ReadReverseValue (&buffer);
+          uint32_t lastType = ReadForwardValue (&buffer);
           if (lastType == type)
             {
-              uint32_t lastData = ReadReverseValue (&buffer);
+              uint32_t lastData = ReadForwardValue (&buffer);
               if (lastData == data0)
                 {
-                  lastData = ReadReverseValue (&buffer);
+                  lastData = ReadForwardValue (&buffer);
                   if (lastData == data1)
                     {
                       return;
@@ -377,9 +444,9 @@ PacketHistory::AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1)
         }
     }
   Reserve (n);
-  AppendValue (data1);
-  AppendValue (data0);
   AppendValue (type);
+  AppendValue (data0);
+  AppendValue (data1);
   m_n++;
 }
 
@@ -395,18 +462,18 @@ PacketHistory::AppendOneCommand (uint32_t type, uint32_t data)
       if (m_data->m_count == 1 ||
           m_data->m_dirtyEnd == m_end)
         {
-          AppendValue (data);
           AppendValue (type);
+          AppendValue (data);
           m_n++;
           return;
         }
       else
         {
           uint8_t *buffer = &(m_data->m_data[m_end]);
-          uint32_t lastType = ReadReverseValue (&buffer);
+          uint32_t lastType = ReadForwardValue (&buffer);
           if (lastType == type)
             {
-              uint32_t lastData = ReadReverseValue (&buffer);
+              uint32_t lastData = ReadForwardValue (&buffer);
               if (lastData == data)
                 {
                   return;
@@ -415,8 +482,8 @@ PacketHistory::AppendOneCommand (uint32_t type, uint32_t data)
         }
     }
   Reserve (n);
-  AppendValue (data);
   AppendValue (type);
+  AppendValue (data);
   m_n++;
 }
 void
@@ -525,21 +592,8 @@ PacketHistory::ReadValue (uint8_t *buffer, uint32_t *n) const
       /* This means that the LEB128 number was not valid.
        * ie: the last (5th) byte did not have the high-order bit zeroed.
        */
-      result = -1;
+      result = 0xffffffff;
     }
-  return result;
-}
-
-uint32_t
-PacketHistory::ReadReverseValue (uint8_t **pBuffer) const
-{
-  uint32_t n = GetReverseUleb128Size (*pBuffer);
-  NS_ASSERT (n > 0);
-  uint8_t *buffer = *pBuffer - n + 1;
-  uint32_t read = 0;
-  uint32_t result = ReadValue (buffer, &read);
-  NS_ASSERT (read == n);
-  *pBuffer = *pBuffer - n;
   return result;
 }
 
@@ -600,15 +654,17 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
     {
       m_aggregated = true;
       uint32_t n = GetUleb128Size (PacketHistory::ADD_AT_END);
+      n += GetUleb128Size (o.m_end); 
+      n += GetUleb128Size (o.m_n); 
       n += o.m_end;
       Reserve (n);
+      AppendOneCommand (PacketHistory::ADD_AT_END, o.m_end, o.m_n);
       memcpy (&m_data->m_data[m_end], o.m_data->m_data, o.m_end);
       m_end += o.m_end;
       if (m_end > m_data->m_dirtyEnd)
         {
           m_data->m_dirtyEnd = m_end;
         }
-      AppendOneCommand (PacketHistory::ADD_AT_END, 0);
     }
 }
 void
@@ -637,255 +693,91 @@ PacketHistory::RemoveAtEnd (uint32_t end)
 }
 
 void 
-PacketHistory::PrintSimple (std::ostream &os, Buffer buffer) const
-{
-  Buffer original = buffer;
-  HeadersToPrint headersToPrint;
-  TrailersToPrint trailersToPrint;
-  uint8_t *dataBuffer = &m_data->m_data[m_end] - 1;
-  int32_t start = 0;
-  int32_t end = buffer.GetSize ();
-  int32_t curStart = start;
-  int32_t curEnd = end;
-  for (uint32_t i = 0; i < m_n; i++)
-    {
-      uint32_t type = ReadReverseValue (&dataBuffer);
-      uint32_t data = ReadReverseValue (&dataBuffer);
-      switch (type)
-        {
-        case PacketHistory::INIT_UID:
-          break;
-        case PacketHistory::INIT_SIZE:
-          std::cout << "init size=" << data << std::endl;
-          break;
-        case PacketHistory::ADD_HEADER: {
-          int32_t size = ReadReverseValue (&dataBuffer);
-          if (curStart == start)
-            {
-              if (start + size < end)
-                {
-                  headersToPrint.push_back (std::make_pair (data, curStart));
-                }
-              curStart += size;
-              start += size;
-            }
-          else if (curStart + size <= start)
-            {
-              // header lies entirely outside of data area.
-              curStart += size;
-            }
-          else if (curStart < start)
-            {
-              // header lies partly inside and outside of data area
-              // potentially, because we fragmented the packet in the middle
-              // of this header.
-              curStart += size;
-            }
-          else
-            {
-              // header lies entirely inside data area but there is some 
-              // data at the start of the data area which does not belong
-              // to this header. Potentially, because we fragmented
-              // the packet in the middle of a previous header.
-              NS_ASSERT (curStart > start);
-              // we print the content of the header anyway because we can.
-              if (start + size < end)
-                {
-                  headersToPrint.push_back (std::make_pair (data, curStart));
-                }
-              curStart += size;
-              start = curStart;
-            }
-        } break;
-        case PacketHistory::REM_HEADER: {
-          int32_t size = ReadReverseValue (&dataBuffer);
-          if (curStart <= start)
-            {
-              // header lies entirely outside of data area.
-              curStart -= size;
-            }
-          else
-            {
-              NS_ASSERT (false);
-            }
-        } break;
-        case PacketHistory::ADD_TRAILER: {
-          int32_t size = ReadReverseValue (&dataBuffer);
-          if (curEnd == end)
-            {
-              if (end - size >= start)
-                {
-                  // trailer lies exactly at the end of the data area
-                  trailersToPrint.push_back (std::make_pair (data, buffer.GetSize () - curEnd));
-                }
-              curEnd -= size;
-              end -= size;
-            }
-          else if (curEnd - size >= end)
-            {
-              // trailer lies entirely outside of data area.
-              curEnd -= size;
-            }
-          else if (curEnd > end)
-            {
-              // header lies partly inside and partly outside of
-              // data area, potentially because of fragmentation.
-              curEnd -= size;
-            }
-          else
-            {
-              // header lies entirely inside data area
-              NS_ASSERT (curEnd < end);
-              if (end - size >= start)
-                {
-                  trailersToPrint.push_back (std::make_pair (data, buffer.GetSize () - curEnd));
-                }
-              curEnd -= size;
-              end = curEnd;
-
-            }
-        } break;
-        case PacketHistory::REM_TRAILER: {
-          int32_t size = ReadReverseValue (&dataBuffer);
-          if (curEnd >= end)
-            {
-              curEnd += size;
-            }
-          else
-            {
-              NS_ASSERT (false);
-            }
-        } break;
-        case PacketHistory::REM_AT_START:
-          curStart -= data;
-          break;
-        case PacketHistory::REM_AT_END:
-          curEnd += data;
-          break;
-        }
-    }
-  for (HeadersToPrint::iterator j = headersToPrint.begin (); 
-       j != headersToPrint.end (); j++)
-    {
-      uint32_t uid = j->first;
-      uint32_t offset = j->second;
-      Buffer tmp = original;
-      tmp.RemoveAtStart (offset);
-      Chunk *chunk = CreateStatic (uid);
-      chunk->Deserialize (tmp.Begin ());
-      chunk->Print (os);
-    }
-  for (TrailersToPrint::reverse_iterator j = trailersToPrint.rbegin (); 
-       j != trailersToPrint.rend (); j++)
-    {
-      uint32_t uid = j->first;
-      uint32_t offset = j->second;
-      Buffer tmp = original;
-      tmp.RemoveAtEnd (offset);
-      Chunk *chunk = CreateStatic (uid);
-      chunk->Deserialize (tmp.End ());
-      chunk->Print (os);
-    }
-}
-
-void 
-PacketHistory::PrintComplex (std::ostream &os, Buffer buffer) const
+PacketHistory::PrintComplex (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const
 {
   // we need to build a linked list of the different fragments 
   // which are stored in this packet.
   uint8_t *dataBuffer = &m_data->m_data[0];
   ItemList itemList;
-  for (uint32_t i = 0; i < m_n; i++)
+  BuildItemList (&itemList, &dataBuffer, m_end, m_n);
+  itemList.Print (os, buffer, printer);
+}
+
+void 
+PacketHistory::BuildItemList (ItemList *list, uint8_t **buffer, uint32_t size, uint32_t n) const
+{
+  // we need to build a linked list of the different fragments 
+  // which are stored in this packet.
+  uint8_t *dataBuffer = *buffer;
+  for (uint32_t i = 0; i < n; i++)
     {
       uint32_t type = ReadForwardValue (&dataBuffer);
       uint32_t data = ReadForwardValue (&dataBuffer);
       switch (type)
         {
-        case INIT_UID:
-          break;
-        case INIT_SIZE: {
-          itemList.InitPayload (0, data);
+        case INIT: {
+          uint32_t uid = ReadForwardValue (&dataBuffer);
+          list->InitPayload (uid, data);
         } break;
         case ADD_HEADER: {
           uint32_t size = ReadForwardValue (&dataBuffer);
-          itemList.AddHeader (data, size);
+          list->AddHeader (data, size);
         } break;
         case REM_HEADER: {
           uint32_t size = ReadForwardValue (&dataBuffer);
-          itemList.RemHeader (data, size);
+          list->RemHeader (data, size);
         } break;
         case ADD_TRAILER: {
           uint32_t size = ReadForwardValue (&dataBuffer);
-          itemList.AddTrailer (data, size);
+          list->AddTrailer (data, size);
         } break;
         case REM_TRAILER: {
           uint32_t size = ReadForwardValue (&dataBuffer);
-          itemList.RemTrailer (data, size);
+          list->RemTrailer (data, size);
         } break;
-        case ADD_AT_END:
-          break;
+        case ADD_AT_END: {
+          uint32_t nCommands = ReadForwardValue (&dataBuffer);
+          ItemList other;
+          BuildItemList (&other, &dataBuffer, data, nCommands);
+          list->AddAtEnd (&other);
+        } break;
         case REM_AT_START: {
-          itemList.RemAtStart (data);
+          list->RemAtStart (data);
         } break;
         case REM_AT_END: {
-          itemList.RemAtEnd (data);
+          list->RemAtEnd (data);
         } break;
         case PADDING_AT_END:
           break;
         }
     }  
+  *buffer = dataBuffer;
 }
 
 void 
 PacketHistory::PrintDefault (std::ostream &os, Buffer buffer) const
+{
+  Print (os, buffer, PacketPrinter::GetDefault ());
+}
+
+void
+PacketHistory::Print (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const
 {
   if (!m_enable) 
     {
       return;
     }
 
-  if (m_aggregated)
-    {
-      PrintComplex (os, buffer);
-    }
-  else
-    {
-      PrintSimple (os, buffer);
-    }
+  PrintComplex (os, buffer, printer);
 }
 
 
-Chunk *
-PacketHistory::CreateStatic (uint32_t uid)
-{
-  for (ChunkFactoriesI i = m_factories.begin (); i != m_factories.end (); i++) 
-    {
-      if (i->first == uid) 
-        {
-          return (*i->second) ();
-        }
-    }
-  NS_ASSERT_MSG (false, "cannot be reached");
-  /* quiet compiler */
-  return 0;
-}
-uint32_t 
-PacketHistory::RegisterChunkFactory (Chunk *(*createStatic) (void))
-{
-  static uint32_t uid = 0;
-  uid++;
-  for (ChunkFactoriesI i = m_factories.begin (); i != m_factories.end (); i++) 
-    {
-      NS_ASSERT (i->first != uid);
-    }
-  m_factories.push_back (std::make_pair (uid, createStatic));
-  return uid;
-}
 
 }; // namespace ns3
 
 #include <stdarg.h>
 #include <iostream>
+#include <sstream>
 #include "ns3/test.h"
 #include "header.h"
 #include "trailer.h"
@@ -893,49 +785,47 @@ PacketHistory::RegisterChunkFactory (Chunk *(*createStatic) (void))
 
 namespace ns3 {
 
-static std::list<int> g_prints;
-static bool g_headerError;
-static bool g_trailerError;
-
-static void 
-RecordPrint (int n)
-{
-  g_prints.push_back (n);
-}
-
-static void
-RecordTrailerError (int n)
-{
-  g_trailerError = true;
-}
-
-static void
-RecordHeaderError (int n)
-{
-  g_headerError = true;
-}
-
-static void
-CleanupPrints (void)
-{
-  g_prints.erase (g_prints.begin (), g_prints.end ());
-}
-
 template <int N>
 class HistoryHeader : public Header
 {
+public:
+  HistoryHeader ();
+  bool IsOk (void) const;
 private:
+  virtual std::string DoGetName (void) const;
   virtual void PrintTo (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void SerializeTo (Buffer::Iterator start) const;
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
+  bool m_ok;
 };
+
+template <int N>
+HistoryHeader<N>::HistoryHeader ()
+  : m_ok (false)
+{}
+
+template <int N>
+bool 
+HistoryHeader<N>::IsOk (void) const
+{
+  return m_ok;
+}
+
+template <int N>
+std::string 
+HistoryHeader<N>::DoGetName (void) const
+{
+  std::ostringstream oss;
+  oss << N;
+  return oss.str ();
+}
 
 template <int N>
 void 
 HistoryHeader<N>::PrintTo (std::ostream &os) const
 {
-  RecordPrint (N);
+  NS_ASSERT (false);
 }
 template <int N>
 uint32_t 
@@ -953,11 +843,12 @@ template <int N>
 uint32_t
 HistoryHeader<N>::DeserializeFrom (Buffer::Iterator start)
 {
+  m_ok = true;
   for (int i = 0; i < N; i++)
     {
       if (start.ReadU8 () != N)
         {
-          RecordHeaderError (N);
+          m_ok = false;
         }
     }
   return N;
@@ -966,18 +857,43 @@ HistoryHeader<N>::DeserializeFrom (Buffer::Iterator start)
 template <int N>
 class HistoryTrailer : public Trailer
 {
+public:
+  HistoryTrailer ();
+  bool IsOk (void) const;
 private:
+  virtual std::string DoGetName (void) const;
   virtual void PrintTo (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void SerializeTo (Buffer::Iterator start) const;
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
+  bool m_ok;
 };
 
+template <int N>
+HistoryTrailer<N>::HistoryTrailer ()
+  : m_ok (false)
+{}
+
+template <int N>
+bool
+HistoryTrailer<N>::IsOk (void) const
+{
+  return m_ok;
+}
+
+template <int N>
+std::string 
+HistoryTrailer<N>::DoGetName (void) const
+{
+  std::ostringstream oss;
+  oss << N;
+  return oss.str ();
+}
 template <int N>
 void 
 HistoryTrailer<N>::PrintTo (std::ostream &os) const
 {
-  RecordPrint (N);
+  NS_ASSERT (false);
 }
 template <int N>
 uint32_t 
@@ -989,18 +905,20 @@ template <int N>
 void 
 HistoryTrailer<N>::SerializeTo (Buffer::Iterator start) const
 {
+  start.Prev (N);
   start.WriteU8 (N, N);
 }
 template <int N>
 uint32_t
 HistoryTrailer<N>::DeserializeFrom (Buffer::Iterator start)
 {
+  m_ok = true;
   start.Prev (N);
   for (int i = 0; i < N; i++)
     {
       if (start.ReadU8 () != N)
         {
-          RecordTrailerError (N);
+          m_ok = false;
         }
     }
   return N;
@@ -1014,41 +932,148 @@ public:
   virtual ~PacketHistoryTest ();
   bool CheckHistory (Packet p, char *file, int line, uint32_t n, ...);
   virtual bool RunTests (void);
+private:
+  template <int N>
+  void PrintHeader (std::ostream &os, uint32_t packetUid, uint32_t size, const HistoryHeader<N> *header);
+  template <int N>
+  void PrintTrailer (std::ostream &os, uint32_t packetUid, uint32_t size, const HistoryTrailer<N> *trailer);
+  void PrintFragment (std::ostream &os,uint32_t packetUid,
+                      uint32_t size,std::string & name, 
+                      struct PacketPrinter::FragmentInformation info);
+  void PrintDefault (std::ostream& os,uint32_t packetUid,
+                     uint32_t size,std::string& name,
+                     struct PacketPrinter::FragmentInformation info);
+  void PrintPayload (std::ostream &os,uint32_t packetUid,
+                     uint32_t size,
+                     struct PacketPrinter::FragmentInformation info);
+  template <int N>
+  void RegisterHeader (void);
+  template <int N>
+  void RegisterTrailer (void);
+  void CleanupPrints (void);
+
+
+  bool m_headerError;
+  bool m_trailerError;
+  std::list<int> m_prints;
+  PacketPrinter m_printer;
 };
 
 PacketHistoryTest::PacketHistoryTest ()
   : Test ("PacketHistory")
-{}
+{
+  m_printer.AddPayloadPrinter (MakeCallback (&PacketHistoryTest::PrintPayload, this));
+  m_printer.AddDefaultPrinter (MakeCallback (&PacketHistoryTest::PrintDefault, this));
+}
 
 PacketHistoryTest::~PacketHistoryTest ()
 {}
 
+template <int N>
+void 
+PacketHistoryTest::RegisterHeader (void)
+{
+  static bool registered = false;
+  if (!registered)
+    {
+      m_printer.AddPrinter (MakeCallback (&PacketHistoryTest::PrintHeader<N>, this),
+                            MakeCallback (&PacketHistoryTest::PrintFragment, this));
+      registered = true;
+    }
+}
+
+template <int N>
+void 
+PacketHistoryTest::RegisterTrailer (void)
+{
+  static bool registered = false;
+  if (!registered)
+    {
+      m_printer.AddPrinter (MakeCallback (&PacketHistoryTest::PrintTrailer<N>, this),
+                            MakeCallback (&PacketHistoryTest::PrintFragment, this));
+      registered = true;
+    }
+}
+
+
+template <int N>
+void 
+PacketHistoryTest::PrintHeader (std::ostream &os, uint32_t packetUid, uint32_t size, 
+                                const HistoryHeader<N> *header)
+{
+  if (!header->IsOk ())
+    {
+      m_headerError = true;
+    }
+  m_prints.push_back (N);
+}
+
+template <int N>
+void 
+PacketHistoryTest::PrintTrailer (std::ostream &os, uint32_t packetUid, uint32_t size, 
+                                 const HistoryTrailer<N> *trailer)
+{
+  if (!trailer->IsOk ())
+    {
+      m_trailerError = true;
+    }
+  m_prints.push_back (N);
+}
+void 
+PacketHistoryTest::PrintFragment (std::ostream &os,uint32_t packetUid,
+                                  uint32_t size,std::string & name, 
+                                  struct PacketPrinter::FragmentInformation info)
+{
+  m_prints.push_back (info.end - info.start);
+}
+void 
+PacketHistoryTest::PrintDefault (std::ostream& os,uint32_t packetUid,
+                     uint32_t size,std::string& name,
+                     struct PacketPrinter::FragmentInformation info)
+{
+  NS_ASSERT (false);
+}
+void 
+PacketHistoryTest::PrintPayload (std::ostream &os,uint32_t packetUid,
+                                 uint32_t size,
+                                 struct PacketPrinter::FragmentInformation info)
+{
+  m_prints.push_back (info.end - info.start);
+}
+
+
+void 
+PacketHistoryTest::CleanupPrints (void)
+{
+  m_prints.clear ();
+}
+
 bool 
 PacketHistoryTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ...)
 {
-  g_headerError = false;
-  g_trailerError = false;
+  m_headerError = false;
+  m_trailerError = false;
   va_list ap;
-  p.Print (std::cerr);
+  p.Print (std::cerr, m_printer);
   va_start (ap, n);
-  if (g_headerError)
+  if (m_headerError)
     {
       std::cout << "PacketHistory header error. file=" << file 
                 << ", line=" << line << std::endl;
       return false;
     }
-  if (g_trailerError)
+  if (m_trailerError)
     {
       std::cout << "PacketHistory trailer error. file=" << file 
                 << ", line=" << line << std::endl;
       return false;
     }
-  if (n != g_prints.size ())
+  if (n != m_prints.size ())
     {
       goto error;
     }
-  for (std::list<int>::iterator i = g_prints.begin (); 
-       i != g_prints.end (); i++)
+  for (std::list<int>::iterator i = m_prints.begin (); 
+       i != m_prints.end (); i++)
     {
       int v = va_arg (ap, int);
       if (v != *i)
@@ -1062,8 +1087,8 @@ PacketHistoryTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ...
  error:
   std::cout << "PacketHistory error. file="<< file 
             << ", line=" << line << ", got:\"";
-  for (std::list<int>::iterator i = g_prints.begin (); 
-       i != g_prints.end (); i++)
+  for (std::list<int>::iterator i = m_prints.begin (); 
+       i != m_prints.end (); i++)
     {
       std::cout << *i << ", ";
     }
@@ -1082,21 +1107,25 @@ PacketHistoryTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ...
 #define ADD_HEADER(p, n)                        \
   {                                             \
     HistoryHeader<n> header;                    \
+    RegisterHeader<n> ();                       \
     p.AddHeader (header);                       \
   }
 #define ADD_TRAILER(p, n)                       \
   {                                             \
     HistoryTrailer<n> trailer;                  \
+    RegisterTrailer<n> ();                      \
     p.AddTrailer (trailer);                     \
   }
 #define REM_HEADER(p, n)                        \
   {                                             \
     HistoryHeader<n> header;                    \
+    RegisterHeader<n> ();                       \
     p.RemoveHeader (header);                    \
   }
 #define REM_TRAILER(p, n)                       \
   {                                             \
     HistoryTrailer<n> trailer;                  \
+    RegisterTrailer<n> ();                      \
     p.RemoveTrailer (trailer);                  \
   }
 #define CHECK_HISTORY(p, ...)                   \
@@ -1121,28 +1150,28 @@ PacketHistoryTest::RunTests (void)
 
   p = Packet (10);
   ADD_TRAILER (p, 100);
-  CHECK_HISTORY (p, 1, 100);
+  CHECK_HISTORY (p, 2, 10, 100);
 
   p = Packet (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
-  CHECK_HISTORY (p, 3, 
-                 3, 2, 1);
-  ADD_HEADER (p, 5);
   CHECK_HISTORY (p, 4, 
-                 5, 3, 2, 1);
-  ADD_HEADER (p, 6);
+                 3, 2, 1, 10);
+  ADD_HEADER (p, 5);
   CHECK_HISTORY (p, 5, 
-                 6, 5, 3, 2, 1);
+                 5, 3, 2, 1, 10);
+  ADD_HEADER (p, 6);
+  CHECK_HISTORY (p, 6, 
+                 6, 5, 3, 2, 1, 10);
 
   p = Packet (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
   REM_HEADER (p, 3);
-  CHECK_HISTORY (p, 2, 
-                 2, 1);
+  CHECK_HISTORY (p, 3, 
+                 2, 1, 10);
 
   p = Packet (10);
   ADD_HEADER (p, 1);
@@ -1150,8 +1179,8 @@ PacketHistoryTest::RunTests (void)
   ADD_HEADER (p, 3);
   REM_HEADER (p, 3);
   REM_HEADER (p, 2);
-  CHECK_HISTORY (p, 1, 
-                 1);
+  CHECK_HISTORY (p, 2, 
+                 1, 10);
 
   p = Packet (10);
   ADD_HEADER (p, 1);
@@ -1160,7 +1189,7 @@ PacketHistoryTest::RunTests (void)
   REM_HEADER (p, 3);
   REM_HEADER (p, 2);
   REM_HEADER (p, 1);
-  CHECK_HISTORY (p, 0);
+  CHECK_HISTORY (p, 1, 10);
 
   p = Packet (10);
   ADD_HEADER (p, 1);
@@ -1170,47 +1199,47 @@ PacketHistoryTest::RunTests (void)
   REM_HEADER (p1, 3);
   REM_HEADER (p1, 2);
   REM_HEADER (p1, 1);
-  CHECK_HISTORY (p1, 0);
-  CHECK_HISTORY (p, 3, 
-                 3, 2, 1);
+  CHECK_HISTORY (p1, 1, 10);
+  CHECK_HISTORY (p, 4, 
+                 3, 2, 1, 10);
   ADD_HEADER (p1, 1);
   ADD_HEADER (p1, 2);
-  CHECK_HISTORY (p1, 2, 
-                 2, 1);
-  CHECK_HISTORY (p, 3, 
-                 3, 2, 1);
+  CHECK_HISTORY (p1, 3, 
+                 2, 1, 10);
+  CHECK_HISTORY (p, 4, 
+                 3, 2, 1, 10);
   ADD_HEADER (p, 3);
-  CHECK_HISTORY (p, 4, 
-                 3, 3, 2, 1);
+  CHECK_HISTORY (p, 5, 
+                 3, 3, 2, 1, 10);
   ADD_TRAILER (p, 4);
-  CHECK_HISTORY (p, 5, 
-                 3, 3, 2, 1, 4);
-  ADD_TRAILER (p, 5);
   CHECK_HISTORY (p, 6, 
-                 3, 3, 2, 1, 4, 5);
+                 3, 3, 2, 1, 10, 4);
+  ADD_TRAILER (p, 5);
+  CHECK_HISTORY (p, 7, 
+                 3, 3, 2, 1, 10, 4, 5);
   REM_HEADER (p, 3);
-  CHECK_HISTORY (p, 5, 
-                 3, 2, 1, 4, 5);
+  CHECK_HISTORY (p, 6, 
+                 3, 2, 1, 10, 4, 5);
   REM_TRAILER (p, 5);
-  CHECK_HISTORY (p, 4, 
-                 3, 2, 1, 4);
+  CHECK_HISTORY (p, 5, 
+                 3, 2, 1, 10, 4);
   p1 = p;
   REM_TRAILER (p, 4);
-  CHECK_HISTORY (p, 3, 
-                 3, 2, 1);
-  CHECK_HISTORY (p1, 4, 
-                 3, 2, 1, 4);
+  CHECK_HISTORY (p, 4, 
+                 3, 2, 1, 10);
+  CHECK_HISTORY (p1, 5, 
+                 3, 2, 1, 10, 4);
   p1.RemoveAtStart (3);
-  CHECK_HISTORY (p1, 3, 
-                 2, 1, 4);
+  CHECK_HISTORY (p1, 4, 
+                 2, 1, 10, 4);
   p1.RemoveAtStart (2);
-  CHECK_HISTORY (p1, 2, 
-                 1, 4);
+  CHECK_HISTORY (p1, 3, 
+                 1, 10, 4);
   p1.RemoveAtEnd (4);
-  CHECK_HISTORY (p1, 1, 
-                 1);
+  CHECK_HISTORY (p1, 2, 
+                 1, 10);
   p1.RemoveAtStart (1);
-  CHECK_HISTORY (p1, 0);
+  CHECK_HISTORY (p1, 1, 10);
 
   p = Packet (10);
   ADD_HEADER (p, 8);
@@ -1218,7 +1247,6 @@ PacketHistoryTest::RunTests (void)
   ADD_TRAILER (p, 8);
   p.RemoveAtStart (8+10+8);
   CHECK_HISTORY (p, 1, 8);
-
 
   p = Packet (10);
   ADD_HEADER (p, 10);
@@ -1228,7 +1256,67 @@ PacketHistoryTest::RunTests (void)
   ADD_TRAILER (p, 9);
   p.RemoveAtStart (5);
   p.RemoveAtEnd (12);
-  CHECK_HISTORY (p, 2, 10, 6);
+  CHECK_HISTORY (p, 5, 3, 10, 10, 6, 4);
+
+  p = Packet (10);
+  ADD_HEADER (p, 10);
+  ADD_TRAILER (p, 6);
+  p.RemoveAtEnd (18);
+  ADD_TRAILER (p, 5);
+  ADD_HEADER (p, 3);
+  CHECK_HISTORY (p, 3, 3, 8, 5);
+  p.RemoveAtStart (12);
+  CHECK_HISTORY (p, 1, 4);
+  p.RemoveAtEnd (2);
+  CHECK_HISTORY (p, 1, 2);
+  ADD_HEADER (p, 10);
+  CHECK_HISTORY (p, 2, 10, 2);
+  p.RemoveAtEnd (5);
+  CHECK_HISTORY (p, 1, 7);
+
+  Packet p2 = Packet (0);
+  Packet p3 = Packet (0);
+
+  p = Packet (40);
+  ADD_HEADER (p, 5);
+  ADD_HEADER (p, 8);
+  CHECK_HISTORY (p, 3, 8, 5, 40);
+  p1 = p.CreateFragment (0, 5);
+  p2 = p.CreateFragment (5, 5);
+  p3 = p.CreateFragment (10, 43);
+  CHECK_HISTORY (p1, 1, 5);
+  CHECK_HISTORY (p2, 2, 3, 2);
+  CHECK_HISTORY (p3, 2, 3, 40);
+  p1.AddAtEnd (p2);
+  CHECK_HISTORY (p1, 2, 8, 2);
+  CHECK_HISTORY (p2, 2, 3, 2);
+  p1.AddAtEnd (p3);
+  CHECK_HISTORY (p1, 3, 8, 5, 40);
+  CHECK_HISTORY (p2, 2, 3, 2);
+  CHECK_HISTORY (p3, 2, 3, 40);
+  p1 = p.CreateFragment (0, 5);
+  CHECK_HISTORY (p1, 1, 5);
+
+  p3 = Packet (50);
+  ADD_HEADER (p3, 8);
+  CHECK_HISTORY (p3, 2, 8, 50);
+  CHECK_HISTORY (p1, 1, 5);
+  p1.AddAtEnd (p3);
+  CHECK_HISTORY (p1, 3, 5, 8, 50);
+  ADD_HEADER (p1, 5);
+  CHECK_HISTORY (p1, 4, 5, 5, 8, 50);
+  ADD_TRAILER (p1, 2);
+  CHECK_HISTORY (p1, 5, 5, 5, 8, 50, 2);
+  REM_HEADER (p1, 5);
+  CHECK_HISTORY (p1, 4, 5, 8, 50, 2);
+  p1.RemoveAtEnd (60);
+  CHECK_HISTORY (p1, 1, 5);
+  p1.AddAtEnd (p2);
+  CHECK_HISTORY (p1, 2, 8, 2);
+  CHECK_HISTORY (p2, 2, 3, 2);
+  
+  
+  
 
 
   return ok;

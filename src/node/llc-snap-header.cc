@@ -47,6 +47,12 @@ LlcSnapHeader::GetSerializedSize (void) const
   return 1 + 1 + 1 + 3 + 2;
 }
 
+std::string
+LlcSnapHeader::DoGetName (void) const
+{
+  return "LlcSnap";
+}
+
 void 
 LlcSnapHeader::PrintTo (std::ostream &os) const
 {

@@ -24,24 +24,16 @@
 #include <stdint.h>
 #include <vector>
 #include "ns3/callback.h"
+#include "packet-printer.h"
+
+namespace {
+class ItemList;
+}
 
 namespace ns3 {
 
 class Chunk;
 class Buffer;
-
-class PacketPrinter 
-{
-public:
-  void PrintForward (void);
-  void PrintBackward (void);
-  template <typename T>
-  void Add (Callback<void,std::ostream &, T> cb);
-  
-private:
-  std::vector <std::pair<uint32_t,CallbackBase> > m_printers;
-  bool m_forward;
-};
 
 class PacketHistory {
 public:
@@ -69,13 +61,11 @@ public:
   void RemoveAtEnd (uint32_t end);
 
   void PrintDefault (std::ostream &os, Buffer buffer) const;
-  void PrintSimple (std::ostream &os, Buffer buffer) const;
-  void PrintComplex (std::ostream &os, Buffer buffer) const;
-  void Print (std::ostream &os, Buffer buffer, PacketPrinter printer) const;
+  void Print (std::ostream &os, Buffer buffer, PacketPrinter const &printer) const;
 
 private:
   enum CommandType {
-    INIT_UID     = 0,
+    INIT         = 0,
     ADD_HEADER   = 1,
     REM_HEADER   = 2,
     ADD_TRAILER  = 3,
@@ -84,7 +74,6 @@ private:
     REM_AT_START = 6,
     REM_AT_END   = 7,
     PADDING_AT_END = 9,
-    INIT_SIZE    = 10,
     LAST
   };
   struct CommandData {
@@ -95,14 +84,6 @@ private:
   };
   typedef std::vector<std::pair<uint32_t,uint32_t> > HeadersToPrint;
   typedef std::vector<std::pair<uint32_t,uint32_t> > TrailersToPrint;
-  template <typename T>
-  class ChunkUid {
-  public:
-    static const uint32_t GetUid (void);
-    static Chunk *CreateStatic (void);
-  };
-  typedef std::vector<std::pair<uint32_t, Chunk *(*) (void)> > ChunkFactories;
-  typedef std::vector<std::pair<uint32_t, Chunk *(*) (void)> >::iterator ChunkFactoriesI;
   typedef std::vector<struct CommandData *> DataFreeList;
   
   PacketHistory ();
@@ -112,7 +93,6 @@ private:
   uint32_t GetReverseUleb128Size (uint8_t *buffer) const;
   void AppendValue (uint32_t value);
   uint32_t ReadForwardValue (uint8_t **pBuffer) const;
-  uint32_t ReadReverseValue (uint8_t **pBuffer) const;
   uint32_t ReadValue (uint8_t *buffer, uint32_t *n) const;
   void AppendOneCommand (uint32_t type, uint32_t data);
   void AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1);
@@ -121,15 +101,15 @@ private:
   void RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size);
   void AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
   void RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
+  void PrintComplex (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const;
+  void BuildItemList (ItemList *list, uint8_t **buffer, uint32_t size, uint32_t n) const;
+
   static struct PacketHistory::CommandData *Create (uint32_t size);
   static void Recycle (struct CommandData *data);
   static struct PacketHistory::CommandData *Allocate (uint32_t n);
   static void Deallocate (struct CommandData *data);
-  static Chunk *CreateStatic (uint32_t uid);
-  static uint32_t RegisterChunkFactory (Chunk *(*createStatic) (void));  
   
   static DataFreeList m_freeList;
-  static ChunkFactories m_factories;
   static bool m_enable;
   static uint32_t m_maxSize;
   
@@ -144,46 +124,29 @@ private:
 namespace ns3 {
 
 template <typename T>
-const uint32_t 
-PacketHistory::ChunkUid<T>::GetUid (void)
-{
-  static uint32_t uid = 
-    PacketHistory::RegisterChunkFactory (&PacketHistory::ChunkUid<T>::CreateStatic);
-  return uid;
-}
-template <typename T>
-Chunk *
-PacketHistory::ChunkUid<T>::CreateStatic (void)
-{
-  static T chunk = T ();
-  return &chunk;
-}
-
-
-template <typename T>
 void 
 PacketHistory::AddHeader (T const &header, uint32_t size)
 {
-  AddHeader (ChunkUid<T>::GetUid (), header, size);
+  AddHeader (PacketPrinter::GetUid<T> (), header, size);
 }
 
 template <typename T>
 void 
 PacketHistory::RemoveHeader (T const &header, uint32_t size)
 {
-  RemoveHeader (ChunkUid<T>::GetUid (), header, size);
+  RemoveHeader (PacketPrinter::GetUid<T> (), header, size);
 }
 template <typename T>
 void 
 PacketHistory::AddTrailer (T const &trailer, uint32_t size)
 {
-  AddTrailer (ChunkUid<T>::GetUid (), trailer, size);
+  AddTrailer (PacketPrinter::GetUid<T> (), trailer, size);
 }
 template <typename T>
 void 
 PacketHistory::RemoveTrailer (T const &trailer, uint32_t size)
 {
-  RemoveTrailer (ChunkUid<T>::GetUid (), trailer, size);
+  RemoveTrailer (PacketPrinter::GetUid<T> (), trailer, size);
 }
 
 }; // namespace ns3

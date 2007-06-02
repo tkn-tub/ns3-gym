@@ -50,6 +50,7 @@ class ArpHeader : public Header {
   Ipv4Address GetDestinationIpv4Address (void);
 
 private:
+  virtual std::string DoGetName (void) const;
   /**
    * \param os
    */

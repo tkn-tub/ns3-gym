@@ -83,6 +83,11 @@ ArpHeader::GetDestinationIpv4Address (void)
   return m_ipv4Dest;
 }
 
+std::string 
+ArpHeader::DoGetName (void) const
+{
+  return "Arp";
+}
 
 void 
 ArpHeader::PrintTo (std::ostream &os) const
