@@ -1314,6 +1314,17 @@ PacketHistoryTest::RunTests (void)
   p1.AddAtEnd (p2);
   CHECK_HISTORY (p1, 2, 8, 2);
   CHECK_HISTORY (p2, 2, 3, 2);
+
+  p3 = Packet (40);
+  ADD_HEADER (p3, 5);
+  ADD_HEADER (p3, 5);
+  CHECK_HISTORY (p3, 3, 5, 5, 40);
+  p1 = p3.CreateFragment (0, 5);
+  p2 = p3.CreateFragment (5, 5);
+  CHECK_HISTORY (p1, 1, 5);
+  CHECK_HISTORY (p2, 1, 5);
+  p1.AddAtEnd (p2);
+  CHECK_HISTORY (p1, 2, 5, 5);
   
   
   
