@@ -368,9 +368,9 @@ run_tests.add_deps(['core', 'simulator', 'common'])
 run_tests.add_source('run-tests.cc')
 
 bench_packets = build.Ns3Module('bench-packets', 'utils')
-#ns3.add(bench_packets)
+ns3.add(bench_packets)
 bench_packets.set_executable()
-bench_packets.add_dep('core')
+bench_packets.add_deps (['core', 'common'])
 bench_packets.add_source('bench-packets.cc')
 
 bench_simu = build.Ns3Module('bench-simulator', 'utils')
