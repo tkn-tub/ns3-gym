@@ -61,20 +61,25 @@ private:
     uint32_t m_packetUid;
   };
   std::list<Item> m_itemList;
+  uint32_t m_packetUid;
 };
 
 void 
 ItemList::InitPayload (uint32_t packetUid, uint32_t size)
 {
   NS_ASSERT (m_itemList.empty ());
-  struct Item item;
-  item.m_type = ItemList::PAYLOAD;
-  item.m_chunkType = 0;
-  item.m_size = size;
-  item.m_fragmentStart = 0;
-  item.m_fragmentEnd = item.m_size;
-  item.m_packetUid = packetUid;
-  m_itemList.push_back (item);
+  if (size > 0)
+    {
+      struct Item item;
+      item.m_type = ItemList::PAYLOAD;
+      item.m_chunkType = 0;
+      item.m_size = size;
+      item.m_fragmentStart = 0;
+      item.m_fragmentEnd = item.m_size;
+      item.m_packetUid = packetUid;
+      m_itemList.push_back (item);
+    }
+  m_packetUid = packetUid;
 }
 
 void 
@@ -86,7 +91,7 @@ ItemList::AddHeader (uint32_t type, uint32_t size)
   item.m_size = size;
   item.m_fragmentStart = 0;
   item.m_fragmentEnd = size;
-  item.m_packetUid = m_itemList.front ().m_packetUid;
+  item.m_packetUid = m_packetUid;
   m_itemList.push_front (item);
 }
 
@@ -99,7 +104,7 @@ ItemList::AddTrailer (uint32_t type, uint32_t size)
   item.m_size = size;
   item.m_fragmentStart = 0;
   item.m_fragmentEnd = size;
-  item.m_packetUid = m_itemList.back ().m_packetUid;
+  item.m_packetUid = m_packetUid;
   m_itemList.push_back (item);
 }
 
@@ -213,7 +218,6 @@ ItemList::AddAtEnd (ItemList const *other)
 void 
 ItemList::Print (std::ostream &os, ns3::Buffer buffer, const ns3::PacketPrinter &printer) const
 {
-  NS_ASSERT (!m_itemList.empty ());
   uint32_t totalSize = 0;
   for (std::list<ItemList::Item>::const_iterator i = m_itemList.begin (); 
        i != m_itemList.end (); i++)
@@ -1325,7 +1329,22 @@ PacketHistoryTest::RunTests (void)
   CHECK_HISTORY (p2, 1, 5);
   p1.AddAtEnd (p2);
   CHECK_HISTORY (p1, 2, 5, 5);
-  
+
+  p = Packet (0);
+  CHECK_HISTORY (p, 0);
+
+#if 0
+  p3 = Packet (0);
+  ADD_HEADER (p3, 5);
+  ADD_HEADER (p3, 5);
+  CHECK_HISTORY (p3, 2, 5, 5);
+  p1 = p3.CreateFragment (0, 4);
+  p2 = p3.CreateFragment (9, 1);
+  CHECK_HISTORY (p1, 1, 4);
+  CHECK_HISTORY (p2, 1, 1);
+  p1.AddAtEnd (p2);
+  CHECK_HISTORY (p1, 2, 4, 1);
+#endif
   
   
 
