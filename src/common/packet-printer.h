@@ -94,7 +94,7 @@ public:
   
 private:
   friend class PacketHistory;
-  friend class ItemList;
+  friend class ::ItemList;
   struct Printer
   {
     uint32_t m_chunkUid;
