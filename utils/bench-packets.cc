@@ -20,6 +20,7 @@
  */
 #include "ns3/system-wall-clock-ms.h"
 #include "ns3/packet.h"
+#include "ns3/packet-history.h"
 #include <iostream>
 #include <sstream>
 
@@ -173,17 +174,27 @@ int main (int argc, char *argv[])
 {
   uint32_t n = 0;
   while (argc > 0) {
-      if (strncmp ("--n=", argv[0],strlen ("--n=")) == 0) {
+      if (strncmp ("--n=", argv[0],strlen ("--n=")) == 0) 
+        {
           char const *nAscii = argv[0] + strlen ("--n=");
           n = atoi (nAscii);
-      }
+        }
+      if (strncmp ("--enable-history", argv[0], strlen ("--enable-history")) == 0)
+        {
+          PacketHistory::Enable ();          
+        }
       argc--;
       argv++;
   }
 
+
+
   runBench (&benchPtrA, n, "a");
+  PacketHistory::PrintStats ();
   runBench (&benchPtrB, n, "b");
+  PacketHistory::PrintStats ();
   runBench (&benchPtrC, n, "c");
+  PacketHistory::PrintStats ();
 
   return 0;
 }

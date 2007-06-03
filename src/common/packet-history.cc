@@ -22,9 +22,14 @@
 #include <list>
 #include "ns3/assert.h"
 #include "ns3/fatal-error.h"
+#include "ns3/debug.h"
 #include "packet-history.h"
 #include "chunk.h"
 #include "buffer.h"
+
+NS_DEBUG_COMPONENT_DEFINE ("PacketHistory");
+
+#define noUSE_ULEB 1
 
 namespace {
 
@@ -278,6 +283,44 @@ namespace ns3 {
 bool PacketHistory::m_enable = false;
 uint32_t PacketHistory::m_maxSize = 0;
 PacketHistory::DataFreeList PacketHistory::m_freeList;
+uint32_t g_nAllocs = 0;
+uint32_t g_nDeAllocs = 0;
+uint32_t g_nRecycle = 0;
+uint32_t g_nCreate = 0;
+  uint32_t g_one = 0;
+  uint32_t g_two = 0;
+  uint32_t g_three = 0;
+  uint32_t g_four = 0;
+  uint32_t g_five = 0;
+
+void 
+PacketHistory::PrintStats (void)
+{
+  std::cout << "allocs="<<g_nAllocs<<", deallocs="<<g_nDeAllocs
+            <<", recycle="<<g_nRecycle<<", create="<<g_nCreate<<std::endl;
+  std::cout << "one="<<g_one<<", two="<<g_two<<", three="<<g_three<<std::endl;
+  //std::cout << "four="<<g_four<<", five="<<g_five<<std::endl;
+  g_nAllocs = 0;
+  g_nDeAllocs = 0;
+  g_nRecycle = 0;
+  g_nCreate = 0;
+  g_one = 0;
+  g_two = 0;
+  g_three = 0;
+  g_four = 0;
+  g_five = 0;
+#if 0
+  PacketHistory h (0, 0);
+  for (uint32_t i = 0; i < 0xffffff; i++)
+    {
+      if (h.GetUleb128Size (i) == 4)
+        {
+          std::cout << i << std::endl;
+          break;
+        }
+    }
+#endif
+}
 
 void 
 PacketHistory::Enable (void)
@@ -285,86 +328,11 @@ PacketHistory::Enable (void)
   m_enable = true;
 }
 
-
-PacketHistory::PacketHistory ()
-  : m_data (0),
-    m_end (0),
-    m_n (0),
-    m_aggregated (false)
-{
-  Construct (0, 0);
-}
-PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
-  : m_data (0),
-    m_end (0),
-    m_n (0),
-    m_aggregated (false)
-{
-  Construct (uid, size);
-}
-void
-PacketHistory::Construct (uint32_t uid, uint32_t size)
-{
-  if (m_enable) 
-    {
-      m_data = PacketHistory::Create (size);
-      AppendOneCommand (PacketHistory::INIT,
-                        size, uid);
-    }
-}
-PacketHistory::PacketHistory (PacketHistory const &o)
-  : m_data (o.m_data),
-    m_end (o.m_end),
-    m_n (o.m_n),
-    m_aggregated (o.m_aggregated)
-{
-  if (m_data != 0) 
-    {
-      m_data->m_count++;
-    }
-}
-PacketHistory &
-PacketHistory::operator = (PacketHistory const& o)
-{
-  if (m_data == o.m_data) 
-    {
-      // self assignment
-      return *this;
-    }
-  if (m_data != 0) 
-    {
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          PacketHistory::Recycle (m_data);
-        }
-    }
-  m_data = o.m_data;
-  m_end = o.m_end;
-  m_n = o.m_n;
-  m_aggregated = o.m_aggregated;
-  if (m_data != 0) 
-    {
-      m_data->m_count++;
-    }
-  return *this;
-}
-PacketHistory::~PacketHistory ()
-{
-  if (m_data != 0) 
-    {
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          PacketHistory::Recycle (m_data);
-        }
-    }
-}
-
-
 struct PacketHistory::CommandData *
 PacketHistory::Create (uint32_t size)
 {
+  g_nCreate++;
+  NS_DEBUG ("create size="<<size<<", max="<<m_maxSize);
   if (size > m_maxSize)
     {
       m_maxSize = size;
@@ -375,17 +343,22 @@ PacketHistory::Create (uint32_t size)
       m_freeList.pop_back ();
       if (data->m_size >= size) 
         {
+          NS_DEBUG ("create found size="<<data->m_size);
           data->m_count = 1;
           return data;
         }
       PacketHistory::Deallocate (data);
+      NS_DEBUG ("create dealloc size="<<data->m_size);
     }
-  return PacketHistory::Allocate (size);
+  NS_DEBUG ("create alloc size="<<m_maxSize);
+  return PacketHistory::Allocate (m_maxSize);
 }
 
 void
 PacketHistory::Recycle (struct CommandData *data)
 {
+  g_nRecycle++;
+  NS_DEBUG ("recycle size="<<data->m_size<<", list="<<m_freeList.size ());
   NS_ASSERT (data->m_count == 0);
   if (m_freeList.size () > 1000 ||
       data->m_size < m_maxSize) 
@@ -401,6 +374,7 @@ PacketHistory::Recycle (struct CommandData *data)
 struct PacketHistory::CommandData *
 PacketHistory::Allocate (uint32_t n)
 {
+  g_nAllocs++;
   uint32_t size = sizeof (struct CommandData);
   if (n <= 4)
     {
@@ -416,118 +390,98 @@ PacketHistory::Allocate (uint32_t n)
 void 
 PacketHistory::Deallocate (struct CommandData *data)
 {
+  g_nDeAllocs++;
   uint8_t *buf = (uint8_t *)data;
   delete [] buf;
 }
 
-void
-PacketHistory::AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1)
+bool
+PacketHistory::TryToAppendSmallValue (uint32_t value, uint8_t **buffer)
 {
-  NS_ASSERT (m_data != 0);
-  uint32_t n = GetUleb128Size (type);
-  n += GetUleb128Size (data0);
-  n += GetUleb128Size (data1);
-
-  if (m_data->m_size > m_end + n)
+  uint8_t *start = *buffer;
+  uint8_t *end = &m_data->m_data[m_data->m_size];
+  if (value < 0x80 && start < end)
     {
-      if (m_data->m_count == 1 ||
-          m_data->m_dirtyEnd == m_end)
-        {
-          AppendValue (type);
-          AppendValue (data0);
-          AppendValue (data1);
-          m_n++;
-          return;
-        }
-      else
-        {
-          uint8_t *buffer = &(m_data->m_data[m_end]);
-          uint32_t lastType = ReadForwardValue (&buffer);
-          if (lastType == type)
-            {
-              uint32_t lastData = ReadForwardValue (&buffer);
-              if (lastData == data0)
-                {
-                  lastData = ReadForwardValue (&buffer);
-                  if (lastData == data1)
-                    {
-                      return;
-                    }
-                }
-            }
-        }
+      start[0] = value;
+      *buffer = start + 1;
+      return true;
     }
-  Reserve (n);
-  AppendValue (type);
-  AppendValue (data0);
-  AppendValue (data1);
-  m_n++;
+  if (value < 0x4000 && start + 1 < end)
+    {
+      uint8_t byte = value & (~0x80);
+      start[0] = 0x80 | byte;
+      value >>= 7;
+      start[1] = value;
+      *buffer = start + 2;
+      return true;
+    }
+  return false;
 }
-
-void
-PacketHistory::AppendOneCommand (uint32_t type, uint32_t data)
+bool
+PacketHistory::TryToAppendValue (uint32_t value, uint8_t **buffer)
 {
-  NS_ASSERT (m_data != 0);
-  uint32_t n = GetUleb128Size (data);
-  n += GetUleb128Size (type);
-
-  if (m_data->m_size > m_end + n)
+  uint8_t *start = *buffer;
+  uint8_t *end = &m_data->m_data[m_data->m_size];
+  if (value < 0x80 && start < end)
     {
-      if (m_data->m_count == 1 ||
-          m_data->m_dirtyEnd == m_end)
-        {
-          AppendValue (type);
-          AppendValue (data);
-          m_n++;
-          return;
-        }
-      else
-        {
-          uint8_t *buffer = &(m_data->m_data[m_end]);
-          uint32_t lastType = ReadForwardValue (&buffer);
-          if (lastType == type)
-            {
-              uint32_t lastData = ReadForwardValue (&buffer);
-              if (lastData == data)
-                {
-                  return;
-                }
-            }
-        }
+      start[0] = value;
+      *buffer = start + 1;
+      return true;
     }
-  Reserve (n);
-  AppendValue (type);
-  AppendValue (data);
-  m_n++;
-}
-void
-PacketHistory::ReserveCopy (uint32_t size)
-{
-  struct CommandData *newData = PacketHistory::Create (m_end + size);
-  memcpy (newData->m_data, m_data->m_data, m_end);
-  newData->m_dirtyEnd = m_end;
-  m_data->m_count--;
-  if (m_data->m_count == 0) 
+  if (value < 0x4000 && start + 1 < end)
     {
-      PacketHistory::Recycle (m_data);
+      uint8_t byte = value & (~0x80);
+      start[0] = 0x80 | byte;
+      value >>= 7;
+      start[1] = value;
+      *buffer = start + 2;
+      return true;
     }
-  m_data = newData;
-}
-void
-PacketHistory::Reserve (uint32_t size)
-{
-  NS_ASSERT (m_data != 0);
-  if (m_data->m_size > m_end + size &&
-      (m_data->m_count == 1 ||
-       m_data->m_dirtyEnd == m_end))
+  if (value < 0x200000 && start + 2 < end)
     {
-      /* enough room, not dirty. */
+      uint8_t byte = value & (~0x80);
+      start[0] = 0x80 | byte;
+      value >>= 7;
+      start[1] = 0x80 | byte;
+      value >>= 7;
+      start[2] = value;
+      *buffer = start + 3;
+      return true;
     }
-  else 
+  if (start + 3 < end)
     {
-      /* (enough room and dirty) or (not enough room) */
-      ReserveCopy (size);
+      uint8_t byte = value & (~0x80);
+      start[0] = 0x80 | byte;
+      value >>= 7;
+      start[1] = 0x80 | byte;
+      value >>= 7;
+      start[2] = 0x80 | byte;
+      value >>= 7;
+      start[3] = value;
+      *buffer = start + 4;
+      return true;
     }
+  return false;
+#if 0
+  // more generic version of the above.
+  do {
+    uint8_t byte = value & (~0x80);
+    value >>= 7;
+    if (value != 0)
+      {
+        /* more bytes to come */
+        byte |= 0x80;
+      }
+    *current = byte;
+    current++;
+  } while (value != 0 && current != end);
+  if (value != 0 && current == end)
+    {
+      return false;
+    }
+  *buffer = current;
+  return true;
+#endif
 }
 
 uint32_t 
@@ -539,25 +493,6 @@ PacketHistory::GetUleb128Size (uint32_t value) const
     tmp >>= 7;
     n++;
   } while (tmp != 0);
-  return n;
-}
-
-uint32_t 
-PacketHistory::GetReverseUleb128Size (uint8_t *buffer) const
-{
-  uint8_t *cur = buffer;
-  uint8_t byte = *cur;
-  if (byte & 0x80)
-    {
-      NS_FATAL_ERROR ("The last byte should have a zero high bit");
-    }
-  cur--;
-  while ((byte & 0x80) && (buffer - cur) < 5)
-    {
-      cur--;
-      byte = *cur;
-    }
-  uint32_t n = buffer - cur;
   return n;
 }
 
@@ -588,6 +523,7 @@ PacketHistory::AppendValue (uint32_t value)
 uint32_t
 PacketHistory::ReadValue (uint8_t *buffer, uint32_t *n) const
 {
+#ifdef USE_ULEB
   uint32_t result = 0;
   uint8_t shift, byte;
   result = 0;
@@ -609,6 +545,154 @@ PacketHistory::ReadValue (uint8_t *buffer, uint32_t *n) const
       result = 0xffffffff;
     }
   return result;
+#else
+  uint32_t *start = (uint32_t *)buffer;
+  *n = *n + 4;
+  return *start;
+#endif
+}
+
+
+void
+PacketHistory::AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1)
+{
+  NS_ASSERT (m_data != 0);
+#ifdef USE_ULEB
+  if (m_data->m_count == 1 ||
+      m_data->m_dirtyEnd == m_end)
+    {
+      uint8_t *start = &m_data->m_data[m_end];
+      uint8_t *current = start;
+      if (TryToAppendSmallValue (type, &current) &&
+          TryToAppendSmallValue (data0, &current) &&
+          TryToAppendValue (data1, &current))
+        {
+          uintptr_t written = current - start;
+          m_end += written;
+          m_data->m_dirtyEnd = m_end;
+          m_n++;
+          g_one++;
+          return;
+        }
+    }
+
+  g_two++;
+  uint32_t n = GetUleb128Size (type);
+  n += GetUleb128Size (data0);
+  n += GetUleb128Size (data1);  
+  Reserve (n);
+  AppendValue (type);
+  AppendValue (data0);
+  AppendValue (data1);
+  m_n++;
+
+#else
+ restart:
+  if (m_data->m_count == 1 ||
+      m_data->m_dirtyEnd == m_end)
+    {
+      uint32_t *start = (uint32_t *)&m_data->m_data[m_end];
+      uint32_t *end = (uint32_t *)&m_data->m_data[m_data->m_size];
+      if (start + 2 < end)
+        {
+          start[0] = type;
+          start[1] = data0;
+          start[2] = data1;
+          m_end += 12;
+          m_data->m_dirtyEnd = m_end;
+          m_n++;
+          g_one++;
+          return;
+        }
+    }
+  g_two++;
+  Reserve (12);
+  goto restart;
+#endif
+}
+
+void
+PacketHistory::AppendOneCommand (uint32_t type, uint32_t data)
+{
+  NS_ASSERT (m_data != 0);
+#ifdef USE_ULEB
+  if (m_data->m_count == 1 ||
+      m_data->m_dirtyEnd == m_end)
+    {
+      uint8_t *start = &m_data->m_data[m_end];
+      uint8_t *current = start;
+      if (TryToAppendSmallValue (type, &current) &&
+          TryToAppendSmallValue (data, &current))
+        {
+          uintptr_t written = current - start;
+          m_end += written;
+          m_data->m_dirtyEnd = m_end;
+          m_n++;
+          g_one++;
+          return;
+        }
+    }
+
+  g_two++;
+  uint32_t n = GetUleb128Size (data);
+  n += GetUleb128Size (type);
+  Reserve (n);
+  AppendValue (type);
+  AppendValue (data);
+  m_n++;
+#else
+ restart:
+  if (m_data->m_count == 1 ||
+      m_data->m_dirtyEnd == m_end)
+    {
+      uint32_t *start = (uint32_t *)&m_data->m_data[m_end];
+      uint32_t *end = (uint32_t *)&m_data->m_data[m_data->m_size];
+      if (start + 1 < end)
+        {
+          start[0] = type;
+          start[1] = data;
+          m_end += 8;
+          m_data->m_dirtyEnd = m_end;
+          m_n++;
+          g_one++;
+          return;
+        }
+    }
+  g_two++;
+  Reserve (8);
+  goto restart;
+#endif
+}
+void
+PacketHistory::ReserveCopy (uint32_t size)
+{
+  struct CommandData *newData = PacketHistory::Create (m_end + size);
+  memcpy (newData->m_data, m_data->m_data, m_end);
+  newData->m_dirtyEnd = m_end;
+  m_data->m_count--;
+  if (m_data->m_count == 0) 
+    {
+      PacketHistory::Recycle (m_data);
+    }
+  m_data = newData;
+}
+void
+PacketHistory::Reserve (uint32_t size)
+{
+  NS_ASSERT (m_data != 0);
+  if (m_data->m_size >= m_end + size &&
+      (m_data->m_count == 1 ||
+       m_data->m_dirtyEnd == m_end))
+    {
+      /* enough room, not dirty. */
+      g_four++;
+    }
+  else 
+    {
+      /* (enough room and dirty) or (not enough room) */
+      ReserveCopy (size);
+      g_five++;
+    }
 }
 
 uint32_t
@@ -666,7 +750,6 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
 {
   if (m_enable) 
     {
-      m_aggregated = true;
       uint32_t n = GetUleb128Size (PacketHistory::ADD_AT_END);
       n += GetUleb128Size (o.m_end); 
       n += GetUleb128Size (o.m_n); 

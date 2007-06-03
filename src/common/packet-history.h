@@ -39,10 +39,10 @@ class PacketHistory {
 public:
   static void Enable (void);
 
-  PacketHistory (uint32_t uid, uint32_t size);
-  PacketHistory (PacketHistory const &o);
-  PacketHistory &operator = (PacketHistory const& o);
-  ~PacketHistory ();
+  inline PacketHistory (uint32_t uid, uint32_t size);
+  inline PacketHistory (PacketHistory const &o);
+  inline PacketHistory &operator = (PacketHistory const& o);
+  inline ~PacketHistory ();
 
   template <typename T>
   void AddHeader (T const &header, uint32_t size);
@@ -62,6 +62,8 @@ public:
 
   void PrintDefault (std::ostream &os, Buffer buffer) const;
   void Print (std::ostream &os, Buffer buffer, PacketPrinter const &printer) const;
+
+  static void PrintStats (void);
 
 private:
   enum CommandType {
@@ -88,9 +90,8 @@ private:
   
   PacketHistory ();
   void Reserve (uint32_t n);
-  void Construct (uint32_t uid, uint32_t size);
+  inline void Construct (uint32_t uid, uint32_t size);
   uint32_t GetUleb128Size (uint32_t value) const;
-  uint32_t GetReverseUleb128Size (uint8_t *buffer) const;
   void AppendValue (uint32_t value);
   uint32_t ReadForwardValue (uint8_t **pBuffer) const;
   uint32_t ReadValue (uint8_t *buffer, uint32_t *n) const;
@@ -103,6 +104,8 @@ private:
   void RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
   void PrintComplex (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const;
   void BuildItemList (ItemList *list, uint8_t **buffer, uint32_t size, uint32_t n) const;
+  inline bool TryToAppendValue (uint32_t value, uint8_t **buffer);
+  inline bool TryToAppendSmallValue (uint32_t value, uint8_t **buffer);
 
   static struct PacketHistory::CommandData *Create (uint32_t size);
   static void Recycle (struct CommandData *data);
@@ -116,7 +119,6 @@ private:
   struct CommandData *m_data;
   uint32_t m_end;
   uint32_t m_n;
-  bool m_aggregated;
 };
 
 }; // namespace ns3
@@ -148,6 +150,72 @@ PacketHistory::RemoveTrailer (T const &trailer, uint32_t size)
 {
   RemoveTrailer (PacketPrinter::GetUid<T> (), trailer, size);
 }
+
+
+PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
+  : m_data (0),
+    m_end (0),
+    m_n (0)
+{
+  Construct (uid, size);
+}
+void
+PacketHistory::Construct (uint32_t uid, uint32_t size)
+{
+  if (m_enable) 
+    {
+      m_data = PacketHistory::Create (0);
+      AppendOneCommand (PacketHistory::INIT,
+                        size, uid);
+    }
+}
+PacketHistory::PacketHistory (PacketHistory const &o)
+  : m_data (o.m_data),
+    m_end (o.m_end),
+    m_n (o.m_n)
+{
+  if (m_data != 0) 
+    {
+      m_data->m_count++;
+    }
+}
+PacketHistory &
+PacketHistory::operator = (PacketHistory const& o)
+{
+  if (m_data == o.m_data) 
+    {
+      // self assignment
+      return *this;
+    }
+  if (m_data != 0) 
+    {
+      m_data->m_count--;
+      if (m_data->m_count == 0) 
+        {
+          PacketHistory::Recycle (m_data);
+        }
+    }
+  m_data = o.m_data;
+  m_end = o.m_end;
+  m_n = o.m_n;
+  if (m_data != 0) 
+    {
+      m_data->m_count++;
+    }
+  return *this;
+}
+PacketHistory::~PacketHistory ()
+{
+  if (m_data != 0) 
+    {
+      m_data->m_count--;
+      if (m_data->m_count == 0) 
+        {
+          PacketHistory::Recycle (m_data);
+        }
+    }
+}
+
 
 }; // namespace ns3
 
