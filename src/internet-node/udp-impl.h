@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_UDP_IMPL_H
-#define I_UDP_IMPL_H
+#ifndef UDP_IMPL_H
+#define UDP_IMPL_H
 
 #include "ns3/i-udp.h"
 #include "ns3/ptr.h"
@@ -44,4 +44,4 @@ private:
 
 } // namespace ns3
 
-#endif /* I_UDP_IMPL_H */
+#endif /* UDP_IMPL_H */
