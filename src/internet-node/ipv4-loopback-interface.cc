@@ -23,7 +23,7 @@
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ipv4-loopback-interface.h"
-#include "i-ipv4-private.h"
+#include "ipv4-private.h"
 
 namespace ns3 {
 

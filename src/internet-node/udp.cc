@@ -29,7 +29,7 @@
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
-#include "i-ipv4-private.h"
+#include "ipv4-private.h"
 #include "l3-demux.h"
 #include "udp-socket.h"
 

@@ -33,7 +33,7 @@
 #include "i-udp-impl.h"
 #include "i-arp-private.h"
 #include "ipv4-impl.h"
-#include "i-ipv4-private.h"
+#include "ipv4-private.h"
 
 namespace ns3 {
 

@@ -28,7 +28,7 @@
 #include "arp-header.h"
 #include "arp-cache.h"
 #include "ipv4-interface.h"
-#include "i-ipv4-private.h"
+#include "ipv4-private.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("ArpL3Protocol");
 
