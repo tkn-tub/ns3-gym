@@ -279,7 +279,7 @@ inode.add_sources ([
     'ipv4-private.cc',
     'ascii-trace.cc',
     'pcap-trace.cc',
-    'i-udp-impl.cc',
+    'udp-impl.cc',
 ])
 inode.add_headers ([
     'ipv4-header.h',
@@ -307,7 +307,7 @@ inode.add_headers ([
     'udp-header.h',
     'ipv4-interface.h',
     'sgi-hashmap.h',
-    'i-udp-impl.h',
+    'udp-impl.h',
 ])
 inode.add_inst_headers ([
     'internet-node.h',
