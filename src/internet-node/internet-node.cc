@@ -29,7 +29,7 @@
 #include "internet-node.h"
 #include "udp.h"
 #include "ipv4-l3-protocol.h"
-#include "arp.h"
+#include "arp-l3-protocol.h"
 #include "i-udp-impl.h"
 #include "i-arp-private.h"
 #include "i-ipv4-impl.h"

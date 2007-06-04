@@ -24,7 +24,7 @@
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 
-#include "arp.h"
+#include "arp-l3-protocol.h"
 #include "arp-header.h"
 #include "arp-cache.h"
 #include "ipv4-interface.h"
