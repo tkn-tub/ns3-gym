@@ -28,7 +28,7 @@ namespace ns3 {
 
 class UdpL4Protocol;
 
-class UdpImpl : public IUdp
+class UdpImpl : public Udp
 {
 public:
   UdpImpl (Ptr<UdpL4Protocol> udp);
