@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_IPV4_H
-#define I_IPV4_H
+#ifndef IPV4_H
+#define IPV4_H
 
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
@@ -40,12 +40,12 @@ class Ipv4Route;
  * This class also allows you to control the content of the ipv4 
  * forwarding table.
  */
-class IIpv4 : public Object
+class Ipv4 : public Object
 {
 public:
   static const InterfaceId iid;
-  IIpv4 ();
-  virtual ~IIpv4 ();
+  Ipv4 ();
+  virtual ~Ipv4 ();
     
   /**
    * \param dest destination address
@@ -188,4 +188,4 @@ public:
 
 } // namespace ns3 
 
-#endif /* I_IPV4_H */
+#endif /* IPV4_H */

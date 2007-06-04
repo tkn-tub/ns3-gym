@@ -28,7 +28,7 @@ namespace ns3 {
 
 class Ipv4L3Protocol;
 
-class Ipv4Impl : public IIpv4
+class Ipv4Impl : public Ipv4
 {
 public:
   Ipv4Impl (Ptr<Ipv4L3Protocol> ipv4);

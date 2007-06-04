@@ -22,14 +22,14 @@
 
 namespace ns3 {
 
-const InterfaceId IIpv4::iid = MakeInterfaceId ("IIpv4", Object::iid);
+const InterfaceId Ipv4::iid = MakeInterfaceId ("Ipv4", Object::iid);
 
-IIpv4::IIpv4 ()
+Ipv4::Ipv4 ()
 {
-  SetInterfaceId (IIpv4::iid);
+  SetInterfaceId (Ipv4::iid);
 }
 
-IIpv4::~IIpv4 ()
+Ipv4::~Ipv4 ()
 {}
 
 } // namespace ns3

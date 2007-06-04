@@ -19,8 +19,8 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-#ifndef IPV4_H
-#define IPV4_H
+#ifndef IPV4_L3_PROTOCOL_H
+#define IPV4_L3_PROTOCOL_H
 
 #include <list>
 #include <stdint.h>
@@ -177,4 +177,4 @@ private:
 
 } // Namespace ns3
 
-#endif
+#endif /* IPV$_L3_PROTOCOL_H */

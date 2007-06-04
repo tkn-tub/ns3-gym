@@ -29,7 +29,7 @@
 #include "ns3/nstime.h"
 #include "ns3/internet-node.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/i-ipv4.h"
+#include "ns3/ipv4.h"
 #include "ns3/queue.h"
 
 #include "p2p-channel.h"
@@ -87,14 +87,14 @@ PointToPointTopology::AddIpv4Addresses(
   NS_ASSERT (nd1->GetNode ()->GetId () == n1->GetId ());
   NS_ASSERT (nd2->GetNode ()->GetId () == n2->GetId ());
   
-  Ptr<IIpv4> ip1 = n1->QueryInterface<IIpv4> (IIpv4::iid);
+  Ptr<Ipv4> ip1 = n1->QueryInterface<Ipv4> (Ipv4::iid);
   uint32_t index1 = ip1->AddInterface (nd1);
 
   ip1->SetAddress (index1, addr1);
   ip1->SetNetworkMask (index1, netmask);
   ip1->SetUp (index1);
 
-  Ptr<IIpv4> ip2 = n2->QueryInterface<IIpv4> (IIpv4::iid);
+  Ptr<Ipv4> ip2 = n2->QueryInterface<Ipv4> (Ipv4::iid);
   uint32_t index2 = ip2->AddInterface (nd2);
 
   ip2->SetAddress (index2, addr2);
@@ -135,8 +135,8 @@ PointToPointTopology::AddIpv4Routes (
     }
 
   // Assert that both are Ipv4 nodes
-  Ptr<IIpv4> ip1 = nd1->GetNode ()->QueryInterface<IIpv4> (IIpv4::iid);
-  Ptr<IIpv4> ip2 = nd2->GetNode ()->QueryInterface<IIpv4> (IIpv4::iid);
+  Ptr<Ipv4> ip1 = nd1->GetNode ()->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ip2 = nd2->GetNode ()->QueryInterface<Ipv4> (Ipv4::iid);
   NS_ASSERT(ip1 != 0 && ip2 != 0);
 
   // Get interface indexes for both nodes corresponding to the right channel
