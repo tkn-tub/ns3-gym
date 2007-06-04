@@ -31,7 +31,7 @@
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
 #include "udp-impl.h"
-#include "i-arp-private.h"
+#include "arp-private.h"
 #include "ipv4-impl.h"
 #include "ipv4-private.h"
 

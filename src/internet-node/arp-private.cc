@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "i-arp-private.h"
+#include "arp-private.h"
 #include "arp-l3-protocol.h"
 #include "ns3/assert.h"
 #include "ns3/net-device.h"
