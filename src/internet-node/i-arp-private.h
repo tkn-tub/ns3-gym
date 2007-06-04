@@ -29,13 +29,13 @@ namespace ns3 {
 class NetDevice;
 class MacAddress;
 class Packet;
-class Arp;
+class ArpL3Protocol;
 
 class IArpPrivate : public Object
 {
 public:
   static const InterfaceId iid;
-  IArpPrivate (Ptr<Arp> arp);
+  IArpPrivate (Ptr<ArpL3Protocol> arp);
   virtual ~IArpPrivate ();
   bool Lookup (Packet &p, Ipv4Address destination, 
 	       Ptr<NetDevice> device,
@@ -43,7 +43,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<Arp> m_arp;
+  Ptr<ArpL3Protocol> m_arp;
 };
 
 } // namespace ns3

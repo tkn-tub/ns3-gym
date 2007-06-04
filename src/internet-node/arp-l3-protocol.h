@@ -38,7 +38,7 @@ class TraceContext;
 /**
  * \brief An implementation of the ARP protocol
  */
-class Arp : public L3Protocol
+class ArpL3Protocol : public L3Protocol
 {
 public:
   static const uint16_t PROT_NUMBER;
@@ -46,8 +46,8 @@ public:
    * \brief Constructor
    * \param node The node which this ARP object is associated with
    */
-  Arp (Ptr<Node> node);
-  ~Arp ();
+  ArpL3Protocol (Ptr<Node> node);
+  ~ArpL3Protocol ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
   /**

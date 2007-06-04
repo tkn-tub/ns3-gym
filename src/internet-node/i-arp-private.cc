@@ -27,7 +27,7 @@ namespace ns3 {
 
 const InterfaceId IArpPrivate::iid = MakeInterfaceId ("IArpPrivate", Object::iid);
 
-IArpPrivate::IArpPrivate (Ptr<Arp> arp)
+IArpPrivate::IArpPrivate (Ptr<ArpL3Protocol> arp)
   : m_arp (arp)
 {
   SetInterfaceId (IArpPrivate::iid);
