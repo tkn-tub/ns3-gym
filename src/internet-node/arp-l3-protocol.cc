@@ -72,7 +72,7 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 	  return *i;
 	}
     }
-  Ptr<IIpv4Private> ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  Ptr<Ipv4Private> ipv4 = m_node->QueryInterface<Ipv4Private> (Ipv4Private::iid);
   Ipv4Interface *interface = ipv4->FindInterfaceForDevice (device);
   ArpCache * cache = new ArpCache (device, interface);
   NS_ASSERT (device->IsBroadcast ());

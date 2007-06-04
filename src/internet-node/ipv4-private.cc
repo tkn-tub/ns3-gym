@@ -25,40 +25,40 @@
 
 namespace ns3 {
 
-const InterfaceId IIpv4Private::iid = MakeInterfaceId ("IIpv4Private", Object::iid);
+const InterfaceId Ipv4Private::iid = MakeInterfaceId ("Ipv4Private", Object::iid);
 
-IIpv4Private::IIpv4Private (Ptr<Ipv4L3Protocol> ipv4)
+Ipv4Private::Ipv4Private (Ptr<Ipv4L3Protocol> ipv4)
   : m_ipv4 (ipv4)
 {
-  SetInterfaceId (IIpv4Private::iid);
+  SetInterfaceId (Ipv4Private::iid);
 }
-IIpv4Private::~IIpv4Private ()
+Ipv4Private::~Ipv4Private ()
 {
   NS_ASSERT (m_ipv4 == 0);
 }
 TraceResolver *
-IIpv4Private::CreateTraceResolver (TraceContext const &context)
+Ipv4Private::CreateTraceResolver (TraceContext const &context)
 {
   return m_ipv4->CreateTraceResolver (context);
 }
 void 
-IIpv4Private::Send (Packet const &packet, Ipv4Address source, 
+Ipv4Private::Send (Packet const &packet, Ipv4Address source, 
 		    Ipv4Address destination, uint8_t protocol)
 {
   m_ipv4->Send (packet, source, destination, protocol);
 }
 Ipv4Interface *
-IIpv4Private::FindInterfaceForDevice (Ptr<const NetDevice>device)
+Ipv4Private::FindInterfaceForDevice (Ptr<const NetDevice>device)
 {
   return m_ipv4->FindInterfaceForDevice (device);
 }
 void 
-IIpv4Private::Receive(Packet& p, Ptr<NetDevice> device)
+Ipv4Private::Receive(Packet& p, Ptr<NetDevice> device)
 {
   m_ipv4->Receive (p, device);
 }
 void 
-IIpv4Private::DoDispose (void)
+Ipv4Private::DoDispose (void)
 {
   m_ipv4 = 0;
   Object::DoDispose ();

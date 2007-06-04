@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_IPV4_PRIVATE_H
-#define I_IPV4_PRIVATE_H
+#ifndef IPV4_PRIVATE_H
+#define IPV4_PRIVATE_H
 
 #include "ns3/object.h"
 #include "ns3/ipv4-address.h"
@@ -35,12 +35,12 @@ class TraceResolver;
 class Ipv4Interface;
 class NetDevice;
 
-class IIpv4Private : public Object
+class Ipv4Private : public Object
 {
 public:
   static const InterfaceId iid;
-  IIpv4Private (Ptr<Ipv4L3Protocol> ipv4);
-  virtual ~IIpv4Private ();
+  Ipv4Private (Ptr<Ipv4L3Protocol> ipv4);
+  virtual ~Ipv4Private ();
 
   TraceResolver *CreateTraceResolver (TraceContext const &context);
   void Send (Packet const &packet, Ipv4Address source, 
@@ -55,4 +55,4 @@ private:
 
 } // namespace ns3
 
-#endif /* I_IPV4_PRIVATE_H */
+#endif /* IPV4_PRIVATE_H */

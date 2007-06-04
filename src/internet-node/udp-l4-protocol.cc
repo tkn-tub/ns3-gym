@@ -137,7 +137,7 @@ UdpL4Protocol::Send (Packet packet,
 
   packet.AddHeader (udpHeader);
 
-  Ptr<IIpv4Private> ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  Ptr<Ipv4Private> ipv4 = m_node->QueryInterface<Ipv4Private> (Ipv4Private::iid);
   if (ipv4 != 0)
     {
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER);

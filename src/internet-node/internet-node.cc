@@ -68,7 +68,7 @@ InternetNode::Construct (void)
   Ptr<UdpImpl> udpImpl = Create<UdpImpl> (udp);
   Ptr<ArpPrivate> arpPrivate = Create<ArpPrivate> (arp);
   Ptr<Ipv4Impl> ipv4Impl = Create<Ipv4Impl> (ipv4);
-  Ptr<IIpv4Private> ipv4Private = Create<IIpv4Private> (ipv4);
+  Ptr<Ipv4Private> ipv4Private = Create<Ipv4Private> (ipv4);
 
   Object::AddInterface (ipv4Private);
   Object::AddInterface (ipv4Impl);
@@ -83,9 +83,9 @@ TraceResolver *
 InternetNode::DoCreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
-  Ptr<IIpv4Private> ipv4 = QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  Ptr<Ipv4Private> ipv4 = QueryInterface<Ipv4Private> (Ipv4Private::iid);
   resolver->Add ("ipv4",
-                 MakeCallback (&IIpv4Private::CreateTraceResolver, PeekPointer (ipv4)),
+                 MakeCallback (&Ipv4Private::CreateTraceResolver, PeekPointer (ipv4)),
                  InternetNode::IPV4);
 
   return resolver;
