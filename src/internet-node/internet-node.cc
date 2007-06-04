@@ -56,7 +56,7 @@ InternetNode::Construct (void)
 {
   Ptr<Ipv4L3Protocol> ipv4 = Create<Ipv4L3Protocol> (this);
   Ptr<ArpL3Protocol> arp = Create<ArpL3Protocol> (this);
-  Ptr<Udp> udp = Create<Udp> (this);
+  Ptr<UdpL4Protocol> udp = Create<UdpL4Protocol> (this);
 
   Ptr<L3Demux> l3Demux = Create<L3Demux> (this);
   Ptr<Ipv4L4Demux> ipv4L4Demux = Create<Ipv4L4Demux> (this);

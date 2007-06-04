@@ -26,12 +26,12 @@
 
 namespace ns3 {
 
-class Udp;
+class UdpL4Protocol;
 
 class IUdpImpl : public IUdp
 {
 public:
-  IUdpImpl (Ptr<Udp> udp);
+  IUdpImpl (Ptr<UdpL4Protocol> udp);
   virtual ~IUdpImpl ();
 
   virtual Ptr<Socket> CreateSocket (void);
@@ -39,7 +39,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<Udp> m_udp;
+  Ptr<UdpL4Protocol> m_udp;
 };
 
 } // namespace ns3

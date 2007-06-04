@@ -31,7 +31,7 @@ namespace ns3 {
 class Ipv4EndPoint;
 class Node;
 class Packet;
-class Udp;
+class UdpL4Protocol;
 
 class UdpSocket : public Socket
 {
@@ -39,7 +39,7 @@ public:
   /**
    * Create an unbound udp socket.
    */
-  UdpSocket (Ptr<Node> node, Ptr<Udp> udp);
+  UdpSocket (Ptr<Node> node, Ptr<UdpL4Protocol> udp);
   virtual ~UdpSocket ();
 
   virtual enum SocketErrno GetErrno (void) const;
@@ -83,7 +83,7 @@ private:
 
   Ipv4EndPoint *m_endPoint;
   Ptr<Node> m_node;
-  Ptr<Udp> m_udp;
+  Ptr<UdpL4Protocol> m_udp;
   Ipv4Address m_defaultAddress;
   uint16_t m_defaultPort;
   Callback<void,Ptr<Socket>,uint32_t,const Ipv4Address &,uint16_t> m_dummyRxCallback;

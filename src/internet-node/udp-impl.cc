@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-IUdpImpl::IUdpImpl (Ptr<Udp> udp)
+IUdpImpl::IUdpImpl (Ptr<UdpL4Protocol> udp)
   : m_udp (udp)
 {}
 IUdpImpl::~IUdpImpl ()

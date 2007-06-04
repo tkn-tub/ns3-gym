@@ -26,7 +26,7 @@
 
 namespace ns3 {
 
-UdpSocket::UdpSocket (Ptr<Node> node, Ptr<Udp> udp)
+UdpSocket::UdpSocket (Ptr<Node> node, Ptr<UdpL4Protocol> udp)
   : m_endPoint (0),
     m_node (node),
     m_udp (udp),
