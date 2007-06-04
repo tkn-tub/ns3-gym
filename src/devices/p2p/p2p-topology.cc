@@ -40,8 +40,8 @@ namespace ns3 {
 
 Ptr<PointToPointChannel>
 PointToPointTopology::AddPointToPointLink(
-  Ptr<INode> n1,
-  Ptr<INode> n2,
+  Ptr<Node> n1,
+  Ptr<Node> n2,
   const DataRate& bps,
   const Time& delay)
 {
@@ -65,8 +65,8 @@ PointToPointTopology::AddPointToPointLink(
 void
 PointToPointTopology::AddIpv4Addresses(
   Ptr<const PointToPointChannel> chan,
-  Ptr<INode> n1, const Ipv4Address& addr1,
-  Ptr<INode> n2, const Ipv4Address& addr2)
+  Ptr<Node> n1, const Ipv4Address& addr1,
+  Ptr<Node> n2, const Ipv4Address& addr2)
 {
 
   // Duplex link is assumed to be subnetted as a /30
@@ -79,13 +79,13 @@ PointToPointTopology::AddIpv4Addresses(
   Ptr<NetDevice> nd1 = chan->GetDevice (0);
   Ptr<NetDevice> nd2 = chan->GetDevice (1);
   // Make sure that nd1 belongs to n1 and nd2 to n2
-  if ( (nd1->GetINode ()->GetId () == n2->GetId () ) && 
-       (nd2->GetINode ()->GetId () == n1->GetId () ) )
+  if ( (nd1->GetNode ()->GetId () == n2->GetId () ) && 
+       (nd2->GetNode ()->GetId () == n1->GetId () ) )
     {
       std::swap(nd1, nd2);
     }
-  NS_ASSERT (nd1->GetINode ()->GetId () == n1->GetId ());
-  NS_ASSERT (nd2->GetINode ()->GetId () == n2->GetId ());
+  NS_ASSERT (nd1->GetNode ()->GetId () == n1->GetId ());
+  NS_ASSERT (nd2->GetNode ()->GetId () == n2->GetId ());
   
   Ptr<IIpv4> ip1 = n1->QueryInterface<IIpv4> (IIpv4::iid);
   uint32_t index1 = ip1->AddInterface (nd1);
@@ -105,38 +105,38 @@ PointToPointTopology::AddIpv4Addresses(
 
 void
 PointToPointTopology::AddIpv4Routes (
-  Ptr<INode> n1, Ptr<INode> n2, Ptr<const PointToPointChannel> chan)
+  Ptr<Node> n1, Ptr<Node> n2, Ptr<const PointToPointChannel> chan)
 { 
   // The PointToPoint channel is used to find the relevant NetDevices
   NS_ASSERT (chan->GetNDevices () == 2);
   Ptr<NetDevice> nd1 = chan->GetDevice (0);
   Ptr<NetDevice> nd2 = chan->GetDevice (1);
 
-  // Assert that n1 is the INode owning one of the two NetDevices
+  // Assert that n1 is the Node owning one of the two NetDevices
   // and make sure that nd1 corresponds to it
-  if (nd1->GetINode ()->GetId () == n1->GetId ())
+  if (nd1->GetNode ()->GetId () == n1->GetId ())
     {
       ; // Do nothing
     }
-  else if (nd2->GetINode ()->GetId () == n1->GetId ())
+  else if (nd2->GetNode ()->GetId () == n1->GetId ())
     {
       std::swap(nd1, nd2);
     }
   else
     {
-      NS_FATAL_ERROR("P2PTopo: INode does not contain an interface on Channel");
+      NS_FATAL_ERROR("P2PTopo: Node does not contain an interface on Channel");
     }
 
-   // Assert that n2 is the INode owning one of the two NetDevices
+   // Assert that n2 is the Node owning one of the two NetDevices
    // and make sure that nd2 corresponds to it
-  if (nd2->GetINode ()->GetId () != n2->GetId ())
+  if (nd2->GetNode ()->GetId () != n2->GetId ())
     {
-      NS_FATAL_ERROR("P2PTopo: INode does not contain an interface on Channel");
+      NS_FATAL_ERROR("P2PTopo: Node does not contain an interface on Channel");
     }
 
   // Assert that both are Ipv4 nodes
-  Ptr<IIpv4> ip1 = nd1->GetINode ()->QueryInterface<IIpv4> (IIpv4::iid);
-  Ptr<IIpv4> ip2 = nd2->GetINode ()->QueryInterface<IIpv4> (IIpv4::iid);
+  Ptr<IIpv4> ip1 = nd1->GetNode ()->QueryInterface<IIpv4> (IIpv4::iid);
+  Ptr<IIpv4> ip2 = nd2->GetNode ()->QueryInterface<IIpv4> (IIpv4::iid);
   NS_ASSERT(ip1 != 0 && ip2 != 0);
 
   // Get interface indexes for both nodes corresponding to the right channel

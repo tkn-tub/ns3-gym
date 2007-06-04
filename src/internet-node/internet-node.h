@@ -29,13 +29,13 @@ namespace ns3 {
 /**
  * \returns a newly-created Node which supports the Ipv4 interfaces
  */
-Ptr<INode> MakeInternetNode (void);
+Ptr<Node> MakeInternetNode (void);
 
 /**
  * \param systemId a systemId for parallel simulations.
  * \returns a newly-created Node which supports the Ipv4 interfaces
  */
-Ptr<INode> MakeInternetNode (uint32_t systemId);
+Ptr<Node> MakeInternetNode (uint32_t systemId);
 
 } // namespace ns3
 

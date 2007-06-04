@@ -33,15 +33,15 @@ namespace ns3 {
 
 class Packet;
 
-class INodeImpl : public INode 
+class NodeImpl : public Node 
 {
 public:
   enum TraceType {
     IPV4,
   };
-  INodeImpl();
-  INodeImpl(uint32_t systemId);
-  virtual ~INodeImpl ();
+  NodeImpl();
+  NodeImpl(uint32_t systemId);
+  virtual ~NodeImpl ();
 
 protected:
   virtual void DoDispose(void);

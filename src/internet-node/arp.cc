@@ -36,7 +36,7 @@ namespace ns3 {
 
 const uint16_t Arp::PROT_NUMBER = 0x0806;
 
-Arp::Arp (Ptr<INode> node)
+Arp::Arp (Ptr<Node> node)
   : L3Protocol (PROT_NUMBER, 0/* XXX: correct version number ? */ ),
     m_node (node)
 {}

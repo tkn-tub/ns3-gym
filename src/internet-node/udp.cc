@@ -38,7 +38,7 @@ namespace ns3 {
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t Udp::PROT_NUMBER = 17;
 
-Udp::Udp (Ptr<INode> node)
+Udp::Udp (Ptr<Node> node)
   : Ipv4L4Protocol (PROT_NUMBER, 2),
     m_node (node),
     m_endPoints (new Ipv4EndPointDemux ())

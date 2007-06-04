@@ -110,7 +110,7 @@ AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
   m_os << Simulator::Now ().GetSeconds () << " ";
   NodeList::NodeIndex nodeIndex;
   context.Get (nodeIndex);
-  m_os << "node=" << NodeList::GetINode (nodeIndex)->GetId () << " ";
+  m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
   Ipv4::InterfaceIndex interfaceIndex;
   context.Get (interfaceIndex);
   m_os << "interface=" << interfaceIndex << " ";
@@ -124,7 +124,7 @@ AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
   m_os << "r " << Simulator::Now ().GetSeconds () << " ";
   NodeList::NodeIndex nodeIndex;
   context.Get (nodeIndex);
-  m_os << "node=" << NodeList::GetINode (nodeIndex)->GetId () << " ";
+  m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
   Ipv4::InterfaceIndex interfaceIndex;
   context.Get (interfaceIndex);
   m_os << "interface=" << interfaceIndex << " ";

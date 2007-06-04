@@ -32,7 +32,7 @@
 
 namespace ns3 {
 
-class INode;
+class Node;
 class TraceResolver;
 class TraceContext;
 class Socket;
@@ -46,7 +46,7 @@ public:
    * \brief Constructor
    * \param node The node this protocol is associated with
    */
-  Udp (Ptr<INode> node);
+  Udp (Ptr<Node> node);
   virtual ~Udp ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
@@ -90,7 +90,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<INode> m_node;
+  Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;
 };
 

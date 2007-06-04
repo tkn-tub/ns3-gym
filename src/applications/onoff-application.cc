@@ -46,7 +46,7 @@ static IntegerDefaultValue<uint32_t> g_defaultSize ("OnOffApplicationPacketSize"
                                                     512, 1);
 // Constructors
 
-OnOffApplication::OnOffApplication(Ptr<INode> n, 
+OnOffApplication::OnOffApplication(Ptr<Node> n, 
                                    const Ipv4Address  rip,
                                    uint16_t rport,
                                    std::string iid,
@@ -60,7 +60,7 @@ OnOffApplication::OnOffApplication(Ptr<INode> n,
              g_defaultSize.GetValue ());
 }
 
-OnOffApplication::OnOffApplication(Ptr<INode> n, 
+OnOffApplication::OnOffApplication(Ptr<Node> n, 
                                    const Ipv4Address  rip,
                                    uint16_t rport,
                                    std::string iid,
@@ -76,7 +76,7 @@ OnOffApplication::OnOffApplication(Ptr<INode> n,
 }
 
 void
-OnOffApplication::Construct (Ptr<INode> n, 
+OnOffApplication::Construct (Ptr<Node> n, 
                              const Ipv4Address  rip,
                              uint16_t rport,
                              std::string iid,
@@ -141,7 +141,7 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
   if (!m_socket)
     {
       InterfaceId iid = InterfaceId::LookupByName (m_iid);
-      Ptr<ISocketFactory> socketFactory = GetINode ()->QueryInterface<ISocketFactory> (iid);
+      Ptr<ISocketFactory> socketFactory = GetNode ()->QueryInterface<ISocketFactory> (iid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
       m_socket->Connect (m_peerIp, m_peerPort);

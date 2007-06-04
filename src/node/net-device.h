@@ -31,7 +31,7 @@
 
 namespace ns3 {
 
-class INode;
+class Node;
 class TraceResolver;
 class TraceContext;
 class Channel;
@@ -166,7 +166,7 @@ public:
    * base class to print the nodeid for example, it can invoke
    * this method.
    */
-  Ptr<INode> GetINode (void) const;
+  Ptr<Node> GetNode (void) const;
 
   /**
    * \returns true if ARP is needed, false otherwise.
@@ -187,7 +187,7 @@ public:
    * \param node base class node pointer of device's node 
    * \param addr MAC address of this device.
    */
-  NetDevice(Ptr<INode> node, const MacAddress& addr);
+  NetDevice(Ptr<Node> node, const MacAddress& addr);
   /**
    * Enable broadcast support. This method should be
    * called by subclasses from their constructor
@@ -279,7 +279,7 @@ public:
    */
   virtual Ptr<Channel> DoGetChannel (void) const = 0;
 
-  Ptr<INode>         m_node;
+  Ptr<Node>         m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
   MacAddress    m_address;

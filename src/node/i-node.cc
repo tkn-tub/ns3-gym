@@ -19,7 +19,7 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-// Implement the basic INode object for ns3.
+// Implement the basic Node object for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
 #include "i-node.h"
@@ -30,47 +30,47 @@
 
 namespace ns3{
 
-const InterfaceId INode::iid = MakeInterfaceId ("INode", Object::iid);
+const InterfaceId Node::iid = MakeInterfaceId ("Node", Object::iid);
 
-INode::INode()
+Node::Node()
   : m_id(0), 
     m_sid(0)
 {
-  SetInterfaceId (INode::iid);
+  SetInterfaceId (Node::iid);
   m_id = NodeList::Add (this);
 }
 
-INode::INode(uint32_t sid)
+Node::Node(uint32_t sid)
   : m_id(0), 
     m_sid(sid)
 { 
-  SetInterfaceId (INode::iid);
+  SetInterfaceId (Node::iid);
   m_id = NodeList::Add (this);
 }
   
-INode::~INode ()
+Node::~Node ()
 {}
 
 TraceResolver *
-INode::CreateTraceResolver (TraceContext const &context)
+Node::CreateTraceResolver (TraceContext const &context)
 {
   return DoCreateTraceResolver (context);
 }
 
 uint32_t 
-INode::GetId (void) const
+Node::GetId (void) const
 {
   return m_id;
 }
 
 uint32_t 
-INode::GetSystemId (void) const
+Node::GetSystemId (void) const
 {
   return m_sid;
 }
 
 uint32_t 
-INode::AddDevice (Ptr<NetDevice> device)
+Node::AddDevice (Ptr<NetDevice> device)
 {
   uint32_t index = m_devices.size ();
   m_devices.push_back (device);
@@ -79,36 +79,36 @@ INode::AddDevice (Ptr<NetDevice> device)
   return index;
 }
 Ptr<NetDevice>
-INode::GetDevice (uint32_t index) const
+Node::GetDevice (uint32_t index) const
 {
   return m_devices[index];
 }
 uint32_t 
-INode::GetNDevices (void) const
+Node::GetNDevices (void) const
 {
   return m_devices.size ();
 }
 
 uint32_t 
-INode::AddApplication (Ptr<Application> application)
+Node::AddApplication (Ptr<Application> application)
 {
   uint32_t index = m_applications.size ();
   m_applications.push_back (application);
   return index;
 }
 Ptr<Application> 
-INode::GetApplication (uint32_t index) const
+Node::GetApplication (uint32_t index) const
 {
   return m_applications[index];
 }
 uint32_t 
-INode::GetNApplications (void) const
+Node::GetNApplications (void) const
 {
   return m_applications.size ();
 }
 
 
-void INode::DoDispose()
+void Node::DoDispose()
 {
   for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
        i != m_devices.end (); i++)

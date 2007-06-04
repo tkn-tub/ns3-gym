@@ -31,7 +31,7 @@
 
 namespace ns3 {
 
-ArpIpv4Interface::ArpIpv4Interface (Ptr<INode> node, Ptr<NetDevice> device)
+ArpIpv4Interface::ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device)
   : Ipv4Interface (device),
     m_node (node)
 {}

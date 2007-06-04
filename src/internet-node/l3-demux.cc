@@ -31,7 +31,7 @@ namespace ns3 {
 
 const InterfaceId L3Demux::iid = MakeInterfaceId ("L3Demux", Object::iid);
 
-L3Demux::L3Demux (Ptr<INode> node)
+L3Demux::L3Demux (Ptr<Node> node)
   : m_node (node)
 {
   SetInterfaceId (L3Demux::iid);

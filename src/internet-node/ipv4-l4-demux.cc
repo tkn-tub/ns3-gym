@@ -32,7 +32,7 @@ namespace ns3 {
 
 const InterfaceId Ipv4L4Demux::iid = MakeInterfaceId ("Ipv4L4Demux", Object::iid);
 
-Ipv4L4Demux::Ipv4L4Demux (Ptr<INode> node)
+Ipv4L4Demux::Ipv4L4Demux (Ptr<Node> node)
   : m_node (node)
 {
   SetInterfaceId (Ipv4L4Demux::iid);

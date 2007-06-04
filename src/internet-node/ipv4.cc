@@ -43,7 +43,7 @@ namespace ns3 {
 
 const uint16_t Ipv4::PROT_NUMBER = 0x0800;
 
-Ipv4::Ipv4(Ptr<INode> node)
+Ipv4::Ipv4(Ptr<Node> node)
   : L3Protocol (PROT_NUMBER, 4),
     m_nInterfaces (0),
     m_defaultTtl (64),

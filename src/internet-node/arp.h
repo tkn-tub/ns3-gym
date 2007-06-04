@@ -31,7 +31,7 @@ namespace ns3 {
 
 class ArpCache;
 class NetDevice;
-class INode;
+class Node;
 class Packet;
 class TraceResolver;
 class TraceContext;
@@ -46,7 +46,7 @@ public:
    * \brief Constructor
    * \param node The node which this ARP object is associated with
    */
-  Arp (Ptr<INode> node);
+  Arp (Ptr<Node> node);
   ~Arp ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
@@ -73,7 +73,7 @@ private:
   void SendArpRequest (ArpCache const *cache, Ipv4Address to);
   void SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac);
   CacheList m_cacheList;
-  Ptr<INode> m_node;
+  Ptr<Node> m_node;
 };
 
 }//namespace ns3

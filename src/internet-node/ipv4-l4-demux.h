@@ -32,7 +32,7 @@
 namespace ns3 {
 
 class Ipv4L4Protocol;
-class INode;
+class Node;
 class TraceResolver;
 class TraceContext;
 
@@ -44,7 +44,7 @@ class Ipv4L4Demux : public Object
 public:
   static const InterfaceId iid;
   typedef int Ipv4L4ProtocolTraceType;
-  Ipv4L4Demux (Ptr<INode> node);
+  Ipv4L4Demux (Ptr<Node> node);
   virtual ~Ipv4L4Demux();
 
   /**
@@ -60,7 +60,7 @@ public:
    * \returns the L4Protocol effectively added.
    *
    * Invoke Copy on the input template to get a copy of the input
-   * protocol which can be used on the INode on which this L4 Demux 
+   * protocol which can be used on the Node on which this L4 Demux 
    * is running. The new L4Protocol is registered internally as
    * a working L4 Protocol and returned from this method.
    * The caller does not get ownership of the returned pointer.
@@ -73,7 +73,7 @@ public:
    *
    * This method is typically called by lower layers
    * to forward packets up the stack to the right protocol.
-   * It is also called from INodeImpl::GetUdp for example.
+   * It is also called from NodeImpl::GetUdp for example.
    */
   Ptr<Ipv4L4Protocol> GetProtocol(int protocolNumber);
   /**
@@ -87,7 +87,7 @@ private:
   virtual void DoDispose (void);
   typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;
   L4List_t m_protocols;
-  Ptr<INode> m_node;
+  Ptr<Node> m_node;
 };
 
 } //namespace ns3

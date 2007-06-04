@@ -18,7 +18,7 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
-// Implementation of the INodeImpl class for ns3.
+// Implementation of the NodeImpl class for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
 #include "ns3/composite-trace-resolver.h"
@@ -38,21 +38,21 @@
 namespace ns3 {
 
 
-INodeImpl::INodeImpl()
+NodeImpl::NodeImpl()
 {
   Construct ();
 }
 
-INodeImpl::INodeImpl(uint32_t systemId)
+NodeImpl::NodeImpl(uint32_t systemId)
 {
   Construct ();
 }
 
-INodeImpl::~INodeImpl ()
+NodeImpl::~NodeImpl ()
 {}
 
 void
-INodeImpl::Construct (void)
+NodeImpl::Construct (void)
 {
   Ptr<Ipv4> ipv4 = MakeNewObject<Ipv4> (this);
   Ptr<Arp> arp = MakeNewObject<Arp> (this);
@@ -80,31 +80,31 @@ INodeImpl::Construct (void)
 
 
 TraceResolver *
-INodeImpl::DoCreateTraceResolver (TraceContext const &context)
+NodeImpl::DoCreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   Ptr<IIpv4Private> ipv4 = QueryInterface<IIpv4Private> (IIpv4Private::iid);
   resolver->Add ("ipv4",
                  MakeCallback (&IIpv4Private::CreateTraceResolver, PeekPointer (ipv4)),
-                 INodeImpl::IPV4);
+                 NodeImpl::IPV4);
 
   return resolver;
 }
 
 void 
-INodeImpl::DoDispose()
+NodeImpl::DoDispose()
 {
-  INode::DoDispose ();
+  Node::DoDispose ();
 }
 
 void 
-INodeImpl::DoAddDevice (Ptr<NetDevice> device) const
+NodeImpl::DoAddDevice (Ptr<NetDevice> device) const
 {
-  device->SetReceiveCallback (MakeCallback (&INodeImpl::ReceiveFromDevice, this));
+  device->SetReceiveCallback (MakeCallback (&NodeImpl::ReceiveFromDevice, this));
 }
 
 bool
-INodeImpl::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const
+NodeImpl::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const
 {
   Ptr<L3Demux> demux = QueryInterface<L3Demux> (L3Demux::iid);
   Ptr<L3Protocol> target = demux->GetProtocol (protocolNumber);

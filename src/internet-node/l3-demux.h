@@ -34,7 +34,7 @@
 namespace ns3 {
 
 class L3Protocol;
-class INode;
+class Node;
 class TraceResolver;
 class TraceContext;
 
@@ -46,7 +46,7 @@ class L3Demux : public Object
 public:
   static const InterfaceId iid;
   typedef int ProtocolTraceType;
-  L3Demux(Ptr<INode> node);
+  L3Demux(Ptr<Node> node);
   virtual ~L3Demux();
 
   /**
@@ -63,7 +63,7 @@ public:
    * \param protocol a template for the protocol to add to this L3 Demux.
    *
    * Invoke Copy on the input template to get a copy of the input
-   * protocol which can be used on the INode on which this L3 Demux 
+   * protocol which can be used on the Node on which this L3 Demux 
    * is running. The new L3Protocol is registered internally as
    * a working L3 Protocol and returned from this method.
    * The caller does not get ownership of the returned pointer.
@@ -76,7 +76,7 @@ public:
    *
    * This method is typically called by lower layers
    * to forward packets up the stack to the right protocol.
-   * It is also called from INodeImpl::GetIpv4 for example.
+   * It is also called from NodeImpl::GetIpv4 for example.
    */
   Ptr<L3Protocol> GetProtocol (int protocolNumber);
 protected:
@@ -84,7 +84,7 @@ protected:
 private:
   typedef std::map<int, Ptr<ns3::L3Protocol> > L3Map_t;
 
-  Ptr<INode> m_node;
+  Ptr<Node> m_node;
   L3Map_t m_protocols;
 };
 

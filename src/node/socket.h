@@ -29,7 +29,7 @@
 
 namespace ns3 {
 
-class INode;
+class Node;
 
 /**
  * \brief Define a Socket API based on the BSD Socket API.
@@ -66,7 +66,7 @@ public:
   /**
    * \returns the node this socket is associated with.
    */
-  virtual Ptr<INode> GetINode (void) const = 0;
+  virtual Ptr<Node> GetNode (void) const = 0;
 
   /** 
    * Allocate a free port number and
