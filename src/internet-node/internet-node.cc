@@ -32,7 +32,7 @@
 #include "arp-l3-protocol.h"
 #include "i-udp-impl.h"
 #include "i-arp-private.h"
-#include "i-ipv4-impl.h"
+#include "ipv4-impl.h"
 #include "i-ipv4-private.h"
 
 namespace ns3 {

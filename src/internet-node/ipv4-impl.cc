@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "i-ipv4-impl.h"
+#include "ipv4-impl.h"
 #include "ipv4-l3-protocol.h"
 #include "ipv4-interface.h"
 #include "ns3/assert.h"
