@@ -103,10 +103,10 @@ int main (int argc, char *argv[])
 
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
-  Ptr<Node> n0 = MakeInternetNode ();
-  Ptr<Node> n1 = MakeInternetNode (); 
-  Ptr<Node> n2 = MakeInternetNode (); 
-  Ptr<Node> n3 = MakeInternetNode ();
+  Ptr<Node> n0 = MakeNewObject<InternetNode> ();
+  Ptr<Node> n1 = MakeNewObject<InternetNode> (); 
+  Ptr<Node> n2 = MakeNewObject<InternetNode> (); 
+  Ptr<Node> n3 = MakeNewObject<InternetNode> ();
 
   // We create the channels first without any IP addressing information
   Ptr<PointToPointChannel> channel0 = 

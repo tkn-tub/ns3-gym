@@ -255,7 +255,6 @@ ns3.add (inode)
 inode.add_deps (['node'])
 inode.add_sources ([
     'internet-node.cc',
-    'i-node-impl.cc',
     'l3-demux.cc',
     'l3-protocol.cc',
     'ipv4-l4-demux.cc',
@@ -308,7 +307,6 @@ inode.add_headers ([
     'udp-header.h',
     'ipv4-interface.h',
     'sgi-hashmap.h',
-    'i-node-impl.h',
     'i-udp-impl.h',
 ])
 inode.add_inst_headers ([

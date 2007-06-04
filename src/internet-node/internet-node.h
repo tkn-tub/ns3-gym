@@ -21,8 +21,8 @@
 // Define a basic "Internet" node, with a protocol stack (l3 and l4),
 // network device list, process list, and routing.
 
-#ifndef I_NODE_IMPL_H
-#define I_NODE_IMPL_H
+#ifndef INTERNET_NODE_H
+#define INTERNET_NODE_H
 
 #include <list>
 #include <string>
@@ -33,15 +33,15 @@ namespace ns3 {
 
 class Packet;
 
-class NodeImpl : public Node 
+class InternetNode : public Node 
 {
 public:
   enum TraceType {
     IPV4,
   };
-  NodeImpl();
-  NodeImpl(uint32_t systemId);
-  virtual ~NodeImpl ();
+  InternetNode();
+  InternetNode(uint32_t systemId);
+  virtual ~InternetNode ();
 
 protected:
   virtual void DoDispose(void);
@@ -54,4 +54,4 @@ private:
 
 }//namespace ns3
 
-#endif /* I_NODE_IMPL_H */
+#endif /* INTERNET_NODE_H */
