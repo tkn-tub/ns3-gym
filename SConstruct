@@ -219,7 +219,7 @@ node.add_sources ([
     'socket.cc',
     'socket-factory.cc',
     'udp.cc',
-    'i-ipv4.cc',
+    'ipv4.cc',
     'application.cc',
     ])
 node.add_inst_headers ([
@@ -236,7 +236,7 @@ node.add_inst_headers ([
     'socket.h',
     'socket-factory.h',
     'udp.h',
-    'i-ipv4.h',
+    'ipv4.h',
     'application.h',
     ])
 

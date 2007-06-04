@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "i-ipv4.h"
+#include "ipv4.h"
 
 namespace ns3 {
 
