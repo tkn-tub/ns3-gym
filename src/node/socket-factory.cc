@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "i-socket-factory.h"
+#include "socket-factory.h"
 
 namespace ns3 {
 

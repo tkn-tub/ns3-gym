@@ -2,7 +2,7 @@
 
 #include "ns3/internet-node.h"
 #include "ns3/simulator.h"
-#include "ns3/i-socket-factory.h"
+#include "ns3/socket-factory.h"
 #include "ns3/socket.h"
 #include "ns3/nstime.h"
 

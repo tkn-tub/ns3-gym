@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_SOCKET_FACTORY_H
-#define I_SOCKET_FACTORY_H
+#ifndef SOCKET_FACTORY_H
+#define SOCKET_FACTORY_H
 
 #include "ns3/object.h"
 #include "ns3/ptr.h"
@@ -41,4 +41,4 @@ public:
 } // namespace ns3
 
 
-#endif /* I_SOCKET_FACTORY_H */
+#endif /* SOCKET_FACTORY_H */

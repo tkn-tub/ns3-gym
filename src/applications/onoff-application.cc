@@ -29,7 +29,7 @@
 #include "ns3/random-variable.h"
 #include "ns3/socket.h"
 #include "ns3/simulator.h"
-#include "ns3/i-socket-factory.h"
+#include "ns3/socket-factory.h"
 #include "ns3/default-value.h"
 #include "onoff-application.h"
 

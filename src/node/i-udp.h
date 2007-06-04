@@ -21,7 +21,7 @@
 #ifndef I_UDP_H
 #define I_UDP_H
 
-#include "i-socket-factory.h"
+#include "socket-factory.h"
 
 namespace ns3 {
 
