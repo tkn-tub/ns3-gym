@@ -25,22 +25,22 @@
 
 namespace ns3 {
 
-IUdpImpl::IUdpImpl (Ptr<UdpL4Protocol> udp)
+UdpImpl::UdpImpl (Ptr<UdpL4Protocol> udp)
   : m_udp (udp)
 {}
-IUdpImpl::~IUdpImpl ()
+UdpImpl::~UdpImpl ()
 {
   NS_ASSERT (m_udp == 0);
 }
 
 Ptr<Socket>
-IUdpImpl::CreateSocket (void)
+UdpImpl::CreateSocket (void)
 {
   return m_udp->CreateSocket ();
 }
 
 void 
-IUdpImpl::DoDispose (void)
+UdpImpl::DoDispose (void)
 {
   m_udp = 0;
   IUdp::DoDispose ();

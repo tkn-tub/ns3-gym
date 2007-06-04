@@ -28,11 +28,11 @@ namespace ns3 {
 
 class UdpL4Protocol;
 
-class IUdpImpl : public IUdp
+class UdpImpl : public IUdp
 {
 public:
-  IUdpImpl (Ptr<UdpL4Protocol> udp);
-  virtual ~IUdpImpl ();
+  UdpImpl (Ptr<UdpL4Protocol> udp);
+  virtual ~UdpImpl ();
 
   virtual Ptr<Socket> CreateSocket (void);
 
