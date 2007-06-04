@@ -25,7 +25,7 @@
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 
 namespace ns3 {
 

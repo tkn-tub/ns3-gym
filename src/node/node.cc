@@ -22,7 +22,7 @@
 // Implement the basic Node object for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
-#include "i-node.h"
+#include "node.h"
 #include "node-list.h"
 #include "net-device.h"
 #include "application.h"

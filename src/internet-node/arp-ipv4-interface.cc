@@ -22,7 +22,7 @@
 
 #include "ns3/packet.h"
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 #include "ns3/net-device.h"
 
 #include "arp-ipv4-interface.h"

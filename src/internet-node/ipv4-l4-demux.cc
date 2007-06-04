@@ -24,7 +24,7 @@
 
 #include <sstream>
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 #include "ipv4-l4-demux.h"
 #include "ipv4-l4-protocol.h"
 

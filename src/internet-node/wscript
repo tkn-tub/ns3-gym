@@ -8,7 +8,7 @@ def build(bld):
     obj.uselib_local = ['ns3-node', 'ns3-applications']
     obj.source = [
         'internet-node.cc',
-        'i-node-impl.cc',
+        'node-impl.cc',
         'l3-demux.cc',
         'l3-protocol.cc',
         'ipv4-l4-demux.cc',

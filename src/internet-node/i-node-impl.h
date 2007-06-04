@@ -27,7 +27,7 @@
 #include <list>
 #include <string>
 
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 
 namespace ns3 {
 

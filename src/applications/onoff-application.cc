@@ -23,7 +23,7 @@
 // Adapted from ApplicationOnOff in GTNetS.
 
 #include "ns3/ipv4-address.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
 #include "ns3/random-variable.h"

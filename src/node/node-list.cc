@@ -25,7 +25,7 @@
 #include "ns3/simulator.h"
 #include "ns3/simulation-singleton.h"
 #include "node-list.h"
-#include "i-node.h"
+#include "node.h"
 
 namespace {
 static class Initialization 

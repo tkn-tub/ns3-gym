@@ -26,7 +26,7 @@
 #include "channel.h"
 #include "net-device.h"
 #include "llc-snap-header.h"
-#include "i-node.h"
+#include "node.h"
 
 namespace ns3 {
 

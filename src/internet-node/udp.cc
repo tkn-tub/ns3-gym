@@ -22,7 +22,7 @@
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/empty-trace-resolver.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 
 #include "udp.h"
 #include "udp-header.h"

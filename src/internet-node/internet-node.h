@@ -21,7 +21,7 @@
 #ifndef INTERNET_NODE_H
 #define INTERNET_NODE_H
 
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
