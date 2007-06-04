@@ -28,7 +28,7 @@
 #include "ns3/node-list.h"
 #include "ns3/llc-snap-header.h"
 
-#include "ipv4.h"
+#include "ipv4-l3-protocol.h"
 #include "arp-header.h"
 #include "udp-header.h"
 #include "ipv4-header.h"

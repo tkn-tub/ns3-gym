@@ -27,7 +27,7 @@
 
 #include "arp-ipv4-interface.h"
 #include "i-arp-private.h"
-#include "ipv4.h"
+#include "ipv4-l3-protocol.h"
 
 namespace ns3 {
 
