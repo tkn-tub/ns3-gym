@@ -41,7 +41,7 @@ RunSimulation (void)
   Ptr<Node> a = Create<InternetNode> ();
 
   InterfaceId iid = InterfaceId::LookupByName ("IUdp");
-  Ptr<ISocketFactory> socketFactory = a->QueryInterface<ISocketFactory> (iid);
+  Ptr<SocketFactory> socketFactory = a->QueryInterface<SocketFactory> (iid);
 
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   sink->Bind (80);

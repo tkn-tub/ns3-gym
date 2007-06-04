@@ -141,7 +141,7 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
   if (!m_socket)
     {
       InterfaceId iid = InterfaceId::LookupByName (m_iid);
-      Ptr<ISocketFactory> socketFactory = GetNode ()->QueryInterface<ISocketFactory> (iid);
+      Ptr<SocketFactory> socketFactory = GetNode ()->QueryInterface<SocketFactory> (iid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
       m_socket->Connect (m_peerIp, m_peerPort);

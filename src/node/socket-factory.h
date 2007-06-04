@@ -28,12 +28,12 @@ namespace ns3 {
 
 class Socket;
 
-class ISocketFactory : public Object
+class SocketFactory : public Object
 {
 public:
   static const InterfaceId iid;
 
-  ISocketFactory ();
+  SocketFactory ();
 
   virtual Ptr<Socket> CreateSocket (void) = 0;
 };

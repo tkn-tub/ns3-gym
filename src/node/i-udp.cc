@@ -22,7 +22,7 @@
 
 namespace ns3 {
 
-const InterfaceId IUdp::iid = MakeInterfaceId ("IUdp", ISocketFactory::iid);
+const InterfaceId IUdp::iid = MakeInterfaceId ("IUdp", SocketFactory::iid);
 
 IUdp::IUdp ()
 {
