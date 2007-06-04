@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_IPV4_IMPL_H
-#define I_IPV4_IMPL_H
+#ifndef IPV4_IMPL_H
+#define IPV4_IMPL_H
 
 #include "ns3/i-ipv4.h"
 #include "ns3/ptr.h"
@@ -28,12 +28,12 @@ namespace ns3 {
 
 class Ipv4L3Protocol;
 
-class IIpv4Impl : public IIpv4
+class Ipv4Impl : public IIpv4
 {
 public:
-  IIpv4Impl (Ptr<Ipv4L3Protocol> ipv4);
+  Ipv4Impl (Ptr<Ipv4L3Protocol> ipv4);
 
-  virtual ~IIpv4Impl ();
+  virtual ~Ipv4Impl ();
 
   virtual void AddHostRouteTo (Ipv4Address dest, 
 			       Ipv4Address nextHop, 
@@ -72,4 +72,4 @@ private:
 
 } // namespace ns3
 
-#endif /* I_IPV4_IMPL_H */
+#endif /* IPV4_IMPL_H */

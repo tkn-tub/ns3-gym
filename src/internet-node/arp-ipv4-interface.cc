@@ -58,7 +58,7 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
   NS_ASSERT (GetDevice () != 0);
   if (GetDevice ()->NeedsArp ())
     {
-      Ptr<IArpPrivate> arp = m_node->QueryInterface<IArpPrivate> (IArpPrivate::iid);
+      Ptr<ArpPrivate> arp = m_node->QueryInterface<ArpPrivate> (ArpPrivate::iid);
       MacAddress hardwareDestination;
       bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
       if (found)

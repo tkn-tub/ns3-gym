@@ -66,8 +66,8 @@ InternetNode::Construct (void)
   ipv4L4Demux->Insert (udp);
 
   Ptr<UdpImpl> udpImpl = Create<UdpImpl> (udp);
-  Ptr<IArpPrivate> arpPrivate = Create<IArpPrivate> (arp);
-  Ptr<IIpv4Impl> ipv4Impl = Create<IIpv4Impl> (ipv4);
+  Ptr<ArpPrivate> arpPrivate = Create<ArpPrivate> (arp);
+  Ptr<Ipv4Impl> ipv4Impl = Create<Ipv4Impl> (ipv4);
   Ptr<IIpv4Private> ipv4Private = Create<IIpv4Private> (ipv4);
 
   Object::AddInterface (ipv4Private);

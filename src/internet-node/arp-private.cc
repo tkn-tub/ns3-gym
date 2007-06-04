@@ -25,20 +25,20 @@
 
 namespace ns3 {
 
-const InterfaceId IArpPrivate::iid = MakeInterfaceId ("IArpPrivate", Object::iid);
+const InterfaceId ArpPrivate::iid = MakeInterfaceId ("ArpPrivate", Object::iid);
 
-IArpPrivate::IArpPrivate (Ptr<ArpL3Protocol> arp)
+ArpPrivate::ArpPrivate (Ptr<ArpL3Protocol> arp)
   : m_arp (arp)
 {
-  SetInterfaceId (IArpPrivate::iid);
+  SetInterfaceId (ArpPrivate::iid);
 }
-IArpPrivate::~IArpPrivate ()
+ArpPrivate::~ArpPrivate ()
 {
   NS_ASSERT (m_arp == 0);
 }
 
 bool 
-IArpPrivate::Lookup (Packet &p, Ipv4Address destination, 
+ArpPrivate::Lookup (Packet &p, Ipv4Address destination, 
 		     Ptr<NetDevice> device,
 		     MacAddress *hardwareDestination)
 {
@@ -46,7 +46,7 @@ IArpPrivate::Lookup (Packet &p, Ipv4Address destination,
 }
 
 void
-IArpPrivate::DoDispose (void)
+ArpPrivate::DoDispose (void)
 {
   m_arp = 0;
   Object::DoDispose ();

@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_ARP_PRIVATE_H
-#define I_ARP_PRIVATE_H
+#ifndef ARP_PRIVATE_H
+#define ARP_PRIVATE_H
 
 #include "ns3/object.h"
 #include "ns3/ipv4-address.h"
@@ -31,12 +31,12 @@ class MacAddress;
 class Packet;
 class ArpL3Protocol;
 
-class IArpPrivate : public Object
+class ArpPrivate : public Object
 {
 public:
   static const InterfaceId iid;
-  IArpPrivate (Ptr<ArpL3Protocol> arp);
-  virtual ~IArpPrivate ();
+  ArpPrivate (Ptr<ArpL3Protocol> arp);
+  virtual ~ArpPrivate ();
   bool Lookup (Packet &p, Ipv4Address destination, 
 	       Ptr<NetDevice> device,
 	       MacAddress *hardwareDestination);
@@ -48,4 +48,4 @@ private:
 
 } // namespace ns3
 
-#endif /* I_ARP_PRIVATE_H */
+#endif /* ARP_PRIVATE_H */
