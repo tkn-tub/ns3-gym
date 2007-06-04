@@ -84,8 +84,6 @@ private:
     uint32_t m_dirtyEnd;
     uint8_t m_data[8];
   };
-  typedef std::vector<std::pair<uint32_t,uint32_t> > HeadersToPrint;
-  typedef std::vector<std::pair<uint32_t,uint32_t> > TrailersToPrint;
   typedef std::vector<struct CommandData *> DataFreeList;
   
   PacketHistory ();

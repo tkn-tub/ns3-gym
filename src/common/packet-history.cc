@@ -29,7 +29,7 @@
 
 NS_DEBUG_COMPONENT_DEFINE ("PacketHistory");
 
-#define noUSE_ULEB 1
+#define USE_ULEB 1
 
 namespace {
 
