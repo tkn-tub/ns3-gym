@@ -103,10 +103,10 @@ int main (int argc, char *argv[])
 
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
-  Ptr<Node> n0 = MakeNewObject<InternetNode> ();
-  Ptr<Node> n1 = MakeNewObject<InternetNode> (); 
-  Ptr<Node> n2 = MakeNewObject<InternetNode> (); 
-  Ptr<Node> n3 = MakeNewObject<InternetNode> ();
+  Ptr<Node> n0 = Create<InternetNode> ();
+  Ptr<Node> n1 = Create<InternetNode> (); 
+  Ptr<Node> n2 = Create<InternetNode> (); 
+  Ptr<Node> n3 = Create<InternetNode> ();
 
   // We create the channels first without any IP addressing information
   Ptr<PointToPointChannel> channel0 = 
@@ -145,7 +145,7 @@ int main (int argc, char *argv[])
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
-  Ptr<OnOffApplication> ooff = MakeNewObject<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
     Ipv4Address("10.1.3.2"), 
     80, 
@@ -157,7 +157,7 @@ int main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  ooff = MakeNewObject<OnOffApplication> (
+  ooff = Create<OnOffApplication> (
     n3, 
     Ipv4Address("10.1.2.1"), 
     80, 

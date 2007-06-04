@@ -266,12 +266,12 @@ public:
   // always properly disambiguited by the c++ compiler
   template <typename FUNCTOR>
   Callback (FUNCTOR const &functor, bool, bool) 
-      : m_impl (MakeNewObject<FunctorCallbackImpl<FUNCTOR,R,T1,T2,T3,T4,T5> > (functor))
+      : m_impl (Create<FunctorCallbackImpl<FUNCTOR,R,T1,T2,T3,T4,T5> > (functor))
   {}
 
   template <typename OBJ_PTR, typename MEM_PTR>
   Callback (OBJ_PTR const &objPtr, MEM_PTR mem_ptr)
-      : m_impl (MakeNewObject<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5> > (objPtr, mem_ptr))
+      : m_impl (Create<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5> > (objPtr, mem_ptr))
   {}
 
   Callback (Ptr<CallbackImpl<R,T1,T2,T3,T4,T5> > const &impl)
@@ -627,33 +627,33 @@ private:
 template <typename R, typename TX>
 Callback<R> MakeBoundCallback (R (*fnPtr) (TX), TX a) {
   Ptr<CallbackImpl<R,empty,empty,empty,empty,empty> > impl =
-    MakeNewObject<BoundFunctorCallbackImpl<R (*) (TX),R,TX,empty,empty,empty,empty,empty> >(fnPtr, a);
+    Create<BoundFunctorCallbackImpl<R (*) (TX),R,TX,empty,empty,empty,empty,empty> >(fnPtr, a);
   return Callback<R> (impl);
 }
 
 template <typename R, typename TX, typename T1>
 Callback<R,T1> MakeBoundCallback (R (*fnPtr) (TX,T1), TX a) {
   Ptr<CallbackImpl<R,T1,empty,empty,empty,empty> > impl =
-    MakeNewObject<BoundFunctorCallbackImpl<R (*) (TX,T1),R,TX,T1,empty,empty,empty,empty> > (fnPtr, a);
+    Create<BoundFunctorCallbackImpl<R (*) (TX,T1),R,TX,T1,empty,empty,empty,empty> > (fnPtr, a);
   return Callback<R,T1> (impl);
 }
 template <typename R, typename TX, typename T1, typename T2>
 Callback<R,T1,T2> MakeBoundCallback (R (*fnPtr) (TX,T1,T2), TX a) {
   Ptr<CallbackImpl<R,T1,T2,empty,empty,empty> > impl =
-    MakeNewObject<BoundFunctorCallbackImpl<R (*) (TX,T1,T2),R,TX,T1,T2,empty,empty,empty> > (fnPtr, a);
+    Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2),R,TX,T1,T2,empty,empty,empty> > (fnPtr, a);
   return Callback<R,T1,T2> (impl);
 }
 template <typename R, typename TX, typename T1, typename T2,typename T3,typename T4>
 Callback<R,T1,T2,T3,T4> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4), TX a) {
   Ptr<CallbackImpl<R,T1,T2,T3,T4,empty> > impl =
-    MakeNewObject<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4),R,TX,T1,T2,T3,T4,empty> > (fnPtr, a);
+    Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4),R,TX,T1,T2,T3,T4,empty> > (fnPtr, a);
   return Callback<R,T1,T2,T3,T4> (impl);
 }
 
 template <typename R, typename TX, typename T1, typename T2,typename T3,typename T4,typename T5>
 Callback<R,T1,T2,T3,T4,T5> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4,T5), TX a) {
   Ptr<CallbackImpl<R,T1,T2,T3,T4,T5> > impl =
-    MakeNewObject<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4,T5),R,TX,T1,T2,T3,T4,T5> > (fnPtr, a);
+    Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4,T5),R,TX,T1,T2,T3,T4,T5> > (fnPtr, a);
   return Callback<R,T1,T2,T3,T4,T5> (impl);
 }
 

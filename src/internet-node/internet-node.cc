@@ -54,21 +54,21 @@ InternetNode::~InternetNode ()
 void
 InternetNode::Construct (void)
 {
-  Ptr<Ipv4> ipv4 = MakeNewObject<Ipv4> (this);
-  Ptr<Arp> arp = MakeNewObject<Arp> (this);
-  Ptr<Udp> udp = MakeNewObject<Udp> (this);
+  Ptr<Ipv4> ipv4 = Create<Ipv4> (this);
+  Ptr<Arp> arp = Create<Arp> (this);
+  Ptr<Udp> udp = Create<Udp> (this);
 
-  Ptr<L3Demux> l3Demux = MakeNewObject<L3Demux> (this);
-  Ptr<Ipv4L4Demux> ipv4L4Demux = MakeNewObject<Ipv4L4Demux> (this);
+  Ptr<L3Demux> l3Demux = Create<L3Demux> (this);
+  Ptr<Ipv4L4Demux> ipv4L4Demux = Create<Ipv4L4Demux> (this);
 
   l3Demux->Insert (ipv4);
   l3Demux->Insert (arp);
   ipv4L4Demux->Insert (udp);
 
-  Ptr<IUdpImpl> udpImpl = MakeNewObject<IUdpImpl> (udp);
-  Ptr<IArpPrivate> arpPrivate = MakeNewObject<IArpPrivate> (arp);
-  Ptr<IIpv4Impl> ipv4Impl = MakeNewObject<IIpv4Impl> (ipv4);
-  Ptr<IIpv4Private> ipv4Private = MakeNewObject<IIpv4Private> (ipv4);
+  Ptr<IUdpImpl> udpImpl = Create<IUdpImpl> (udp);
+  Ptr<IArpPrivate> arpPrivate = Create<IArpPrivate> (arp);
+  Ptr<IIpv4Impl> ipv4Impl = Create<IIpv4Impl> (ipv4);
+  Ptr<IIpv4Private> ipv4Private = Create<IIpv4Private> (ipv4);
 
   Object::AddInterface (ipv4Private);
   Object::AddInterface (ipv4Impl);

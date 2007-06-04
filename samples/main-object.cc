@@ -68,7 +68,7 @@ YetAnotherObject::YetAnotherObject (int a)
   // enable our interface
   SetInterfaceId (YetAnotherObject::iid);
   // aggregated directly to another object.
-  AddInterface (MakeNewObject<AnObject> ());
+  AddInterface (Create<AnObject> ());
 }
 void
 YetAnotherObject::DoDispose (void)
@@ -87,7 +87,7 @@ int main (int argc, char *argv[])
   Ptr<AnotherObject> anotherObject;
   Ptr<YetAnotherObject> yetAnotherObject;
 
-  p = MakeNewObject<AnObject> ();
+  p = Create<AnObject> ();
   // p gives you access to AnObject's interface
   anObject = p->QueryInterface<AnObject> (AnObject::iid);
   NS_ASSERT (anObject != 0);
@@ -95,7 +95,7 @@ int main (int argc, char *argv[])
   anotherObject = p->QueryInterface<AnotherObject> (AnotherObject::iid);
   NS_ASSERT (anotherObject == 0);
 
-  anotherObject = MakeNewObject<AnotherObject> (1);
+  anotherObject = Create<AnotherObject> (1);
   // AnotherObject does not give you access to AnObject's interface
   anObject = anotherObject->QueryInterface<AnObject> (AnObject::iid);
   NS_ASSERT (anObject == 0);
@@ -110,7 +110,7 @@ int main (int argc, char *argv[])
   NS_ASSERT (anotherObject != 0);
 
 
-  yetAnotherObject = MakeNewObject<YetAnotherObject> (2);
+  yetAnotherObject = Create<YetAnotherObject> (2);
   // gives you acess to AnObject interface too.
   anObject = yetAnotherObject->QueryInterface<AnObject> (AnObject::iid);
   NS_ASSERT (anObject != 0);

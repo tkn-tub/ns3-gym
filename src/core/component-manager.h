@@ -429,7 +429,7 @@ template <typename T>
 struct ObjectMaker<T,ns3::empty,ns3::empty,ns3::empty,ns3::empty,ns3::empty> {
   static ns3::Ptr<ns3::Object> 
   MakeObject (void) {
-    return ns3::MakeNewObject<T> ();
+    return ns3::Create<T> ();
   }
 };
 
@@ -437,7 +437,7 @@ template <typename T, typename T1>
 struct ObjectMaker<T,T1,ns3::empty,ns3::empty,ns3::empty,ns3::empty> {
   static ns3::Ptr<ns3::Object> 
   MakeObject (T1 a1) {
-    return ns3::MakeNewObject<T> (a1);
+    return ns3::Create<T> (a1);
   }
 };
 
@@ -445,7 +445,7 @@ template <typename T, typename T1, typename T2>
 struct ObjectMaker<T,T1,T2,ns3::empty,ns3::empty,ns3::empty> {
   static ns3::Ptr<ns3::Object> 
   MakeObject (T1 a1, T2 a2) {
-    return ns3::MakeNewObject<T> (a1, a2);
+    return ns3::Create<T> (a1, a2);
   }
 };
 
@@ -453,7 +453,7 @@ template <typename T, typename T1, typename T2, typename T3>
 struct ObjectMaker<T,T1,T2,T3,ns3::empty,ns3::empty> {
   static ns3::Ptr<ns3::Object> 
   MakeObject (T1 a1, T2 a2, T3 a3) {
-    return ns3::MakeNewObject<T> (a1, a2, a3);
+    return ns3::Create<T> (a1, a2, a3);
   }
 };
 
@@ -462,7 +462,7 @@ template <typename T, typename T1, typename T2, typename T3,
 struct ObjectMaker<T,T1,T2,T3,T4,ns3::empty> {
   static ns3::Ptr<ns3::Object> 
   MakeObject (T1 a1, T2 a2, T3 a3, T4 a4) {
-    return ns3::MakeNewObject<T> (a1, a2, a3, a4);
+    return ns3::Create<T> (a1, a2, a3, a4);
   }
 };
 
@@ -471,7 +471,7 @@ template <typename T, typename T1, typename T2, typename T3,
 struct ObjectMaker {
   static ns3::Ptr<ns3::Object> 
   MakeObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) {
-    return ns3::MakeNewObject<T> (a1, a2, a3, a4, a5);
+    return ns3::Create<T> (a1, a2, a3, a4, a5);
   }
 };
 

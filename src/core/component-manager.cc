@@ -278,7 +278,7 @@ A::A ()
     m_oneUi32Invoked (false)
 {
   SetInterfaceId (A::iid);
-  ns3::Ptr<B> b = ns3::MakeNewObject<B> ();
+  ns3::Ptr<B> b = ns3::Create<B> ();
   AddInterface (b);
 }
 
@@ -289,7 +289,7 @@ A::A (bool bo)
     m_bool (bo)
 {
   SetInterfaceId (A::iid);
-  ns3::Ptr<B> b = ns3::MakeNewObject<B> ();
+  ns3::Ptr<B> b = ns3::Create<B> ();
   AddInterface (b);
 }
 
@@ -300,7 +300,7 @@ A::A (uint32_t i)
     m_ui32 (i)
 {
   SetInterfaceId (A::iid);
-  ns3::Ptr<B> b = ns3::MakeNewObject<B> ();
+  ns3::Ptr<B> b = ns3::Create<B> ();
   AddInterface (b);
 }
 

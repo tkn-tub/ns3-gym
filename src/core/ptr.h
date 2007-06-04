@@ -43,7 +43,7 @@ namespace ns3 {
  * smart pointer with the GetPointer and PeekPointer methods.
  *
  * If you want to store a newed object into a smart pointer,
- * we recommend you to use the MakeNewObject template functions
+ * we recommend you to use the Create template functions
  * to create the object and store it in a smart pointer to avoid
  * memory leaks. These functions are really small conveniance
  * functions and their goal is just is save you a small
@@ -98,28 +98,28 @@ public:
 };
 
 template <typename T>
-Ptr<T> MakeNewObject (void);
+Ptr<T> Create (void);
 
 template <typename T, typename T1>
-Ptr<T> MakeNewObject (T1 a1);
+Ptr<T> Create (T1 a1);
 
 template <typename T, typename T1, typename T2>
-Ptr<T> MakeNewObject (T1 a1, T2 a2);
+Ptr<T> Create (T1 a1, T2 a2);
 
 template <typename T, typename T1, typename T2, typename T3>
-Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3);
+Ptr<T> Create (T1 a1, T2 a2, T3 a3);
 
 template <typename T, typename T1, typename T2, typename T3, typename T4>
-Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4);
+Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4);
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
+Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
-Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
+Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 /**
  * \relates Ptr
@@ -206,7 +206,7 @@ namespace ns3 {
    ************************************************/
 
 template <typename T>
-Ptr<T> MakeNewObject (void)
+Ptr<T> Create (void)
 {
   T *obj = new T ();
   Ptr<T> p = obj;
@@ -215,7 +215,7 @@ Ptr<T> MakeNewObject (void)
 }
 
 template <typename T, typename T1>
-Ptr<T> MakeNewObject (T1 a1)
+Ptr<T> Create (T1 a1)
 {
   T *obj = new T (a1);
   Ptr<T> p = obj;
@@ -224,7 +224,7 @@ Ptr<T> MakeNewObject (T1 a1)
 }
 
 template <typename T, typename T1, typename T2>
-Ptr<T> MakeNewObject (T1 a1, T2 a2)
+Ptr<T> Create (T1 a1, T2 a2)
 {
   T *obj = new T (a1, a2);
   Ptr<T> p = obj;
@@ -233,7 +233,7 @@ Ptr<T> MakeNewObject (T1 a1, T2 a2)
 }
 
 template <typename T, typename T1, typename T2, typename T3>
-Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3)
+Ptr<T> Create (T1 a1, T2 a2, T3 a3)
 {
   T *obj = new T (a1, a2, a3);
   Ptr<T> p = obj;
@@ -242,7 +242,7 @@ Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3)
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4>
-Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4)
+Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4)
 {
   T *obj = new T (a1, a2, a3, a4);
   Ptr<T> p = obj;
@@ -251,7 +251,7 @@ Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4)
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
   T *obj = new T (a1, a2, a3, a4, a5);
   Ptr<T> p = obj;
@@ -260,7 +260,7 @@ Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
+Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
 {
   T *obj = new T (a1, a2, a3, a4, a5, a6);
   Ptr<T> p = obj;
@@ -269,7 +269,7 @@ Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
-Ptr<T> MakeNewObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
+Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
 {
   T *obj = new T (a1, a2, a3, a4, a5, a6, a7);
   Ptr<T> p = obj;

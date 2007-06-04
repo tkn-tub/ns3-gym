@@ -295,7 +295,7 @@ ObjectTest::RunTests (void)
 {
   bool ok = true;
 
-  Ptr<BaseA> baseA = MakeNewObject<BaseA> ();
+  Ptr<BaseA> baseA = Create<BaseA> ();
   if (baseA->QueryInterface<BaseA> (BaseA::iid) != baseA)
     {
       ok = false;
@@ -308,7 +308,7 @@ ObjectTest::RunTests (void)
     {
       ok = false;
     }
-  baseA = MakeNewObject<DerivedA> (10);
+  baseA = Create<DerivedA> (10);
   if (baseA->QueryInterface<BaseA> (BaseA::iid) != baseA)
     {
       ok = false;
@@ -322,8 +322,8 @@ ObjectTest::RunTests (void)
       ok = false;
     }
 
-  baseA = MakeNewObject<BaseA> ();
-  Ptr<BaseB> baseB = MakeNewObject<BaseB> ();
+  baseA = Create<BaseA> ();
+  Ptr<BaseB> baseB = Create<BaseB> ();
   Ptr<BaseB> baseBCopy = baseB;
   baseA->AddInterface (baseB);
   if (baseA->QueryInterface<BaseA> (BaseA::iid) == 0)
@@ -363,8 +363,8 @@ ObjectTest::RunTests (void)
       ok = false;
     }
 
-  baseA = MakeNewObject<DerivedA> (1);
-  baseB = MakeNewObject<DerivedB> (1);
+  baseA = Create<DerivedA> (1);
+  baseB = Create<DerivedB> (1);
   baseBCopy = baseB;
   baseA->AddInterface (baseB);
   if (baseA->QueryInterface<DerivedB> (DerivedB::iid) == 0)
@@ -400,8 +400,8 @@ ObjectTest::RunTests (void)
       ok = false;
     }
 
-  baseA = MakeNewObject<BaseA> ();
-  baseB = MakeNewObject<BaseB> ();
+  baseA = Create<BaseA> ();
+  baseB = Create<BaseB> ();
   baseA->AddInterface (baseB);
   baseA = 0;
   baseA = baseB->QueryInterface<BaseA> (BaseA::iid);

@@ -49,7 +49,7 @@ int main (int argc, char *argv[])
   {
     // Create a new object of type A, store it in global 
     // variable g_a
-    Ptr<A> a = MakeNewObject<A> ();
+    Ptr<A> a = Create<A> ();
     a->Method ();
     Ptr<A> prev = StoreA (a);
     NS_ASSERT (prev == 0);
@@ -58,7 +58,7 @@ int main (int argc, char *argv[])
   {
     // Create a new object of type A, store it in global 
     // variable g_a, get a hold on the previous A object.
-    Ptr<A> a = MakeNewObject<A> ();
+    Ptr<A> a = Create<A> ();
     Ptr<A> prev = StoreA (a);
     // call method on object
     prev->Method ();
