@@ -43,7 +43,7 @@ class TraceResolver;
 class TraceContext;
 
 
-class Ipv4 : public L3Protocol 
+class Ipv4L3Protocol : public L3Protocol 
 {
 public:
   static const uint16_t PROT_NUMBER;
@@ -56,8 +56,8 @@ public:
   };
   typedef ArrayTraceResolver<Ipv4Interface>::Index InterfaceIndex;
 
-  Ipv4(Ptr<Node> node);
-  virtual ~Ipv4 ();
+  Ipv4L3Protocol(Ptr<Node> node);
+  virtual ~Ipv4L3Protocol ();
 
   /**
    * \param context the trace context to use to construct the

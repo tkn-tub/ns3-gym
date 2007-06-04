@@ -111,7 +111,7 @@ AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
   NodeList::NodeIndex nodeIndex;
   context.Get (nodeIndex);
   m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
-  Ipv4::InterfaceIndex interfaceIndex;
+  Ipv4L3Protocol::InterfaceIndex interfaceIndex;
   context.Get (interfaceIndex);
   m_os << "interface=" << interfaceIndex << " ";
   m_os << "pkt-uid=" << packet.GetUid () << " ";
@@ -125,7 +125,7 @@ AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
   NodeList::NodeIndex nodeIndex;
   context.Get (nodeIndex);
   m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
-  Ipv4::InterfaceIndex interfaceIndex;
+  Ipv4L3Protocol::InterfaceIndex interfaceIndex;
   context.Get (interfaceIndex);
   m_os << "interface=" << interfaceIndex << " ";
   m_os << "pkt-uid=" << p.GetUid () << " ";

@@ -26,7 +26,7 @@
 
 namespace ns3 {
 
-IIpv4Impl::IIpv4Impl (Ptr<Ipv4> ipv4)
+IIpv4Impl::IIpv4Impl (Ptr<Ipv4L3Protocol> ipv4)
   : m_ipv4 (ipv4)
 {}
 IIpv4Impl::~IIpv4Impl ()

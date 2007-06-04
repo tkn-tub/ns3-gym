@@ -63,12 +63,12 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
       bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
       if (found)
         {
-          GetDevice ()->Send (p, hardwareDestination, Ipv4::PROT_NUMBER);
+          GetDevice ()->Send (p, hardwareDestination, Ipv4L3Protocol::PROT_NUMBER);
         }
     }
   else
     {
-      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), Ipv4::PROT_NUMBER);
+      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), Ipv4L3Protocol::PROT_NUMBER);
     }
 }
 

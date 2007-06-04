@@ -29,7 +29,7 @@
 namespace ns3 {
 
 class Packet;
-class Ipv4;
+class Ipv4L3Protocol;
 class TraceContext;
 class TraceResolver;
 class Ipv4Interface;
@@ -39,7 +39,7 @@ class IIpv4Private : public Object
 {
 public:
   static const InterfaceId iid;
-  IIpv4Private (Ptr<Ipv4> ipv4);
+  IIpv4Private (Ptr<Ipv4L3Protocol> ipv4);
   virtual ~IIpv4Private ();
 
   TraceResolver *CreateTraceResolver (TraceContext const &context);
@@ -50,7 +50,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<Ipv4> m_ipv4;
+  Ptr<Ipv4L3Protocol> m_ipv4;
 };
 
 } // namespace ns3

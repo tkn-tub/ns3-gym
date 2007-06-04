@@ -26,12 +26,12 @@
 
 namespace ns3 {
 
-class Ipv4;
+class Ipv4L3Protocol;
 
 class IIpv4Impl : public IIpv4
 {
 public:
-  IIpv4Impl (Ptr<Ipv4> ipv4);
+  IIpv4Impl (Ptr<Ipv4L3Protocol> ipv4);
 
   virtual ~IIpv4Impl ();
 
@@ -67,7 +67,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<Ipv4> m_ipv4;
+  Ptr<Ipv4L3Protocol> m_ipv4;
 };
 
 } // namespace ns3

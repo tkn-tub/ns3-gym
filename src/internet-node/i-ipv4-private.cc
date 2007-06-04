@@ -27,7 +27,7 @@ namespace ns3 {
 
 const InterfaceId IIpv4Private::iid = MakeInterfaceId ("IIpv4Private", Object::iid);
 
-IIpv4Private::IIpv4Private (Ptr<Ipv4> ipv4)
+IIpv4Private::IIpv4Private (Ptr<Ipv4L3Protocol> ipv4)
   : m_ipv4 (ipv4)
 {
   SetInterfaceId (IIpv4Private::iid);
