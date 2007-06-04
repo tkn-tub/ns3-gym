@@ -21,7 +21,7 @@
 #ifndef UDP_IMPL_H
 #define UDP_IMPL_H
 
-#include "ns3/i-udp.h"
+#include "ns3/udp.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {

@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "i-udp.h"
+#include "udp.h"
 
 namespace ns3 {
 
