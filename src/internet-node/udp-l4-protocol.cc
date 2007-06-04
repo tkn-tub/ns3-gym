@@ -24,7 +24,7 @@
 #include "ns3/empty-trace-resolver.h"
 #include "ns3/node.h"
 
-#include "udp.h"
+#include "udp-l4-protocol.h"
 #include "udp-header.h"
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"

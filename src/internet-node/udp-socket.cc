@@ -20,7 +20,7 @@
  */
 #include "ns3/node.h"
 #include "udp-socket.h"
-#include "udp.h"
+#include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l4-demux.h"
 

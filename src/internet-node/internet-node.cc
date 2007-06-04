@@ -27,7 +27,7 @@
 #include "l3-demux.h"
 #include "ipv4-l4-demux.h"
 #include "internet-node.h"
-#include "udp.h"
+#include "udp-l4-protocol.h"
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
 #include "udp-impl.h"

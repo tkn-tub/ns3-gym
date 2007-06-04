@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "udp-impl.h"
-#include "udp.h"
+#include "udp-l4-protocol.h"
 #include "ns3/socket.h"
 #include "ns3/assert.h"
 
