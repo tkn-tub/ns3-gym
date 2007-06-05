@@ -282,6 +282,7 @@ namespace ns3 {
 
 bool PacketHistory::m_enable = false;
 uint32_t PacketHistory::m_maxSize = 0;
+uint16_t PacketHistory::m_chunkUid = 0;
 PacketHistory::DataFreeList PacketHistory::m_freeList;
 uint32_t g_nAllocs = 0;
 uint32_t g_nDeAllocs = 0;
@@ -328,7 +329,321 @@ PacketHistory::Enable (void)
   m_enable = true;
 }
 
-struct PacketHistory::CommandData *
+PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
+  : m_data (0),
+    m_begin (0),
+    m_end (0),
+    m_used (0),
+    m_packetUid (uid)
+{
+  if (size > 0)
+    {
+      AddSmall (true, 0, size);
+    }
+}
+PacketHistory::PacketHistory (PacketHistory const &o)
+  : m_data (o.m_data),
+    m_begin (o.m_begin),
+    m_end (o.m_end),
+    m_used (o.m_used),
+    m_packetUid (o.m_packetUid)
+{
+  if (m_data != 0) 
+    {
+      m_data->m_count++;
+    }
+}
+PacketHistory &
+PacketHistory::operator = (PacketHistory const& o)
+{
+  if (m_data == o.m_data) 
+    {
+      // self assignment
+      return *this;
+    }
+  if (m_data != 0) 
+    {
+      m_data->m_count--;
+      if (m_data->m_count == 0) 
+        {
+          PacketHistory::Recycle (m_data);
+        }
+    }
+  m_data = o.m_data;
+  m_begin = o.m_begin;
+  m_end = o.m_end;
+  m_used = o.m_used;
+  m_packetUid = o.m_packetUid;
+  if (m_data != 0) 
+    {
+      m_data->m_count++;
+    }
+  return *this;
+}
+PacketHistory::~PacketHistory ()
+{
+  if (m_data != 0) 
+    {
+      m_data->m_count--;
+      if (m_data->m_count == 0) 
+        {
+          PacketHistory::Recycle (m_data);
+        }
+    }
+}
+
+void
+PacketHistory::ReserveCopy (uint32_t size)
+{
+  struct PacketHistory::Data *newData = PacketHistory::Create (m_used + size);
+  memcpy (newData->m_data, m_data->m_data, m_end);
+  newData->m_dirtyEnd = m_end;
+  m_data->m_count--;
+  if (m_data->m_count == 0) 
+    {
+      PacketHistory::Recycle (m_data);
+    }
+  m_data = newData;
+}
+void
+PacketHistory::Reserve (uint32_t size)
+{
+  NS_ASSERT (m_data != 0);
+  if (m_data->m_size >= m_used + size &&
+      (m_data->m_count == 1 ||
+       m_data->m_dirtyEnd == m_used))
+    {
+      /* enough room, not dirty. */
+      g_four++;
+    }
+  else 
+    {
+      /* (enough room and dirty) or (not enough room) */
+      ReserveCopy (size);
+      g_five++;
+    }
+}
+
+uint32_t 
+PacketHistory::GetUleb128Size (uint32_t value) const
+{
+  uint32_t n = 0;
+  uint32_t tmp = value;
+  do {
+    tmp >>= 7;
+    n++;
+  } while (tmp != 0);
+  return n;
+}
+uint32_t
+PacketHistory::ReadUleb128 (uint8_t **pBuffer) const
+{
+  uint8_t *buffer = *pBuffer;
+  uint32_t result = 0;
+  uint8_t byte;
+  result = 0;
+  byte = buffer[0];
+  result = (byte & (~0x80));
+  if (!(byte & 0x80))
+    {
+      *pBuffer = buffer + 1;
+      return result;
+    }
+  byte = buffer[1];
+  result = (byte & (~0x80)) << 7;
+  if (!(byte & 0x80))
+    {
+      *pBuffer = buffer + 2;
+      return result;
+    }
+  byte = buffer[2];
+  result = (byte & (~0x80)) << 14;
+  if (!(byte & 0x80))
+    {
+      *pBuffer = buffer + 3;
+      return result;
+    }
+  byte = buffer[3];
+  result = (byte & (~0x80)) << 21;
+  if (!(byte & 0x80))
+    {
+      *pBuffer = buffer + 4;
+      return result;
+    }
+  byte = buffer[4];
+  result = (byte & (~0x80)) << 28;
+  if (!(byte & 0x80))
+    {
+      *pBuffer = buffer + 5;
+      return result;
+    }
+  /* This means that the LEB128 number was not valid.
+   * ie: the last (5th) byte did not have the high-order bit zeroed.
+   */
+  NS_ASSERT (false);
+  return 0;
+}
+
+void
+PacketHistory::Append16 (uint16_t value, uint8_t **pBuffer)
+{
+  uint8_t *buffer = *pBuffer;
+  buffer[0] = value & 0xff;
+  value >>= 8;
+  buffer[1] = value;
+  *pBuffer = buffer + 2;
+}
+bool
+PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
+{
+  uint8_t *start = *pBuffer;
+  if (value < 0x80 && start < end)
+    {
+      start[0] = value;
+      *pBuffer = start + 1;
+      return true;
+    }
+  if (value < 0x4000 && start + 1 < end)
+    {
+      uint8_t byte = value & (~0x80);
+      start[0] = 0x80 | byte;
+      value >>= 7;
+      start[1] = value;
+      *pBuffer = start + 2;
+      return true;
+    }
+  if (value < 0x200000 && start + 2 < end)
+    {
+      uint8_t byte = value & (~0x80);
+      start[0] = 0x80 | byte;
+      value >>= 7;
+      start[1] = 0x80 | byte;
+      value >>= 7;
+      start[2] = value;
+      *pBuffer = start + 3;
+      return true;
+    }
+  if (start + 3 < end)
+    {
+      uint8_t byte = value & (~0x80);
+      start[0] = 0x80 | byte;
+      value >>= 7;
+      start[1] = 0x80 | byte;
+      value >>= 7;
+      start[2] = 0x80 | byte;
+      value >>= 7;
+      start[3] = value;
+      *pBuffer = start + 4;
+      return true;
+    }
+  return false;
+}
+
+bool
+PacketHistory::IsZero16 (uint16_t index)
+{
+  return m_data->m_data[index] == 0 && m_data->m_data[index+1] == 0;
+}
+
+bool
+PacketHistory::CanAdd (bool atStart)
+{
+  if (atStart)
+    {
+      return IsZero16 (m_begin+2);
+    }
+  else
+    {
+      return IsZero16 (m_end);
+    }
+}
+
+void
+PacketHistory::AddSmall (bool atStart,
+                         uint32_t typeUid, uint32_t size)
+{
+  if (m_data == 0)
+    {
+      m_data = PacketHistory::Create (10);
+    }
+  NS_ASSERT (m_data != 0);
+  uint16_t chunkUid = m_chunkUid;
+  m_chunkUid++;
+ append:
+  uint8_t *start = &m_data->m_data[m_used];
+  uint8_t *end = &m_data->m_data[m_data->m_size];
+  if (end - start >= 7 &&
+      CanAdd (atStart) &&
+      (m_data->m_count == 1 ||
+       m_used == m_data->m_dirtyEnd))
+    {
+      uint8_t *buffer = start;
+      uint16_t next, prev;
+      if (atStart)
+        {
+          next = m_begin;
+          prev = 0;
+        }
+      else
+        {
+          next = 0;
+          prev = m_end;
+        }
+
+      Append16 (next, &buffer);
+      Append16 (prev, &buffer);
+      if (TryToAppend (typeUid, &buffer, end) &&
+          TryToAppend (chunkUid, &buffer, end) &&
+          TryToAppend (size, &buffer, end))
+        {
+          uintptr_t written = buffer - start;
+          NS_ASSERT (written <= 0xffff);
+          if (atStart)
+            {
+              m_begin = m_used;
+            }
+          else
+            {
+              m_end = m_used;
+            }
+          m_used += written;
+          m_data->m_dirtyEnd = m_used;
+          return;
+        }
+    }
+
+  uint32_t n = GetUleb128Size (typeUid);
+  n += GetUleb128Size (chunkUid);
+  n += GetUleb128Size (size);
+  n += 2 + 2;
+  Reserve (n);
+  goto append;
+}
+
+void
+PacketHistory::ReadSmall (struct PacketHistory::SmallItem *item, uint8_t **pBuffer)
+{
+  uint8_t *buffer = *pBuffer;
+  item->next = buffer[0];
+  item->next |= (buffer[1]) << 8;
+  item->prev = buffer[2];
+  item->prev |= (buffer[3]) << 8;
+  *pBuffer = *pBuffer + 4;
+  item->typeUid = ReadUleb128 (pBuffer);
+  item->size = ReadUleb128 (pBuffer);
+  item->chunkUid = ReadUleb128 (pBuffer);
+}
+
+void
+PacketHistory::ReadExtra (struct PacketHistory::ExtraItem *item, uint8_t **pBuffer)
+{
+  item->fragmentStart = ReadUleb128 (pBuffer);
+  item->fragmentEnd = ReadUleb128 (pBuffer);
+  item->packetUid = ReadUleb128 (pBuffer);
+}
+
+
+struct PacketHistory::Data *
 PacketHistory::Create (uint32_t size)
 {
   g_nCreate++;
@@ -339,7 +654,7 @@ PacketHistory::Create (uint32_t size)
     }
   while (!m_freeList.empty ()) 
     {
-      struct PacketHistory::CommandData *data = m_freeList.back ();
+      struct PacketHistory::Data *data = m_freeList.back ();
       m_freeList.pop_back ();
       if (data->m_size >= size) 
         {
@@ -355,7 +670,7 @@ PacketHistory::Create (uint32_t size)
 }
 
 void
-PacketHistory::Recycle (struct CommandData *data)
+PacketHistory::Recycle (struct PacketHistory::Data *data)
 {
   g_nRecycle++;
   NS_DEBUG ("recycle size="<<data->m_size<<", list="<<m_freeList.size ());
@@ -371,338 +686,31 @@ PacketHistory::Recycle (struct CommandData *data)
     }
 }
 
-struct PacketHistory::CommandData *
+struct PacketHistory::Data *
 PacketHistory::Allocate (uint32_t n)
 {
   g_nAllocs++;
-  uint32_t size = sizeof (struct CommandData);
-  if (n <= 4)
+  uint32_t size = sizeof (struct Data);
+  if (n <= 10)
     {
-      n = 4;
+      n = 10;
     }
-  size += (n-4) * (4 + 1);
+  size += n - 10;
   uint8_t *buf = new uint8_t [size];
-  struct CommandData *data = (struct CommandData *)buf;
+  struct PacketHistory::Data *data = (struct PacketHistory::Data *)buf;
   data->m_size = n;
   data->m_count = 1;
+  data->m_dirtyEnd = 0;
   return data;
 }
 void 
-PacketHistory::Deallocate (struct CommandData *data)
+PacketHistory::Deallocate (struct PacketHistory::Data *data)
 {
   g_nDeAllocs++;
   uint8_t *buf = (uint8_t *)data;
   delete [] buf;
 }
 
-bool
-PacketHistory::TryToAppendSmallValue (uint32_t value, uint8_t **buffer)
-{
-  uint8_t *start = *buffer;
-  uint8_t *end = &m_data->m_data[m_data->m_size];
-  if (value < 0x80 && start < end)
-    {
-      start[0] = value;
-      *buffer = start + 1;
-      return true;
-    }
-  if (value < 0x4000 && start + 1 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      start[1] = value;
-      *buffer = start + 2;
-      return true;
-    }
-  return false;
-}
-bool
-PacketHistory::TryToAppendValue (uint32_t value, uint8_t **buffer)
-{
-  uint8_t *start = *buffer;
-  uint8_t *end = &m_data->m_data[m_data->m_size];
-  if (value < 0x80 && start < end)
-    {
-      start[0] = value;
-      *buffer = start + 1;
-      return true;
-    }
-  if (value < 0x4000 && start + 1 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      start[1] = value;
-      *buffer = start + 2;
-      return true;
-    }
-  if (value < 0x200000 && start + 2 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      start[1] = 0x80 | byte;
-      value >>= 7;
-      start[2] = value;
-      *buffer = start + 3;
-      return true;
-    }
-  if (start + 3 < end)
-    {
-      uint8_t byte = value & (~0x80);
-      start[0] = 0x80 | byte;
-      value >>= 7;
-      start[1] = 0x80 | byte;
-      value >>= 7;
-      start[2] = 0x80 | byte;
-      value >>= 7;
-      start[3] = value;
-      *buffer = start + 4;
-      return true;
-    }
-  return false;
-#if 0
-  // more generic version of the above.
-  do {
-    uint8_t byte = value & (~0x80);
-    value >>= 7;
-    if (value != 0)
-      {
-        /* more bytes to come */
-        byte |= 0x80;
-      }
-    *current = byte;
-    current++;
-  } while (value != 0 && current != end);
-  if (value != 0 && current == end)
-    {
-      return false;
-    }
-  *buffer = current;
-  return true;
-#endif
-}
-
-uint32_t 
-PacketHistory::GetUleb128Size (uint32_t value) const
-{
-  uint32_t n = 0;
-  uint32_t tmp = value;
-  do {
-    tmp >>= 7;
-    n++;
-  } while (tmp != 0);
-  return n;
-}
-
-void
-PacketHistory::AppendValue (uint32_t value)
-{
-  uint32_t n = 0;
-  uint8_t *buffer = &m_data->m_data[m_end];
-  do {
-    uint8_t byte = value & (~0x80);
-    value >>= 7;
-    if (value != 0)
-      {
-        /* more bytes to come */
-        byte |= 0x80;
-      }
-    n++;
-    *buffer = byte;
-    buffer++;
-  } while (value != 0);
-  m_end += n;
-  if (m_end > m_data->m_dirtyEnd)
-    {
-      m_data->m_dirtyEnd = m_end;
-    }
-}
-
-uint32_t
-PacketHistory::ReadValue (uint8_t *buffer, uint32_t *n) const
-{
-#ifdef USE_ULEB
-  uint32_t result = 0;
-  uint8_t shift, byte;
-  result = 0;
-  shift = 0;
-  do {
-    byte = *buffer;
-    buffer++;
-    result |= (byte & (~0x80))<<shift;
-    shift += 7;
-    (*n)++;
-  } while (byte & 0x80 && 
-           /* a LEB128 unsigned number is at most 5 bytes long. */
-           shift < (7*5)); 
-  if (byte & 0x80)
-    {
-      /* This means that the LEB128 number was not valid.
-       * ie: the last (5th) byte did not have the high-order bit zeroed.
-       */
-      result = 0xffffffff;
-    }
-  return result;
-#else
-  uint32_t *start = (uint32_t *)buffer;
-  *n = *n + 4;
-  return *start;
-#endif
-}
-
-
-void
-PacketHistory::AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1)
-{
-  NS_ASSERT (m_data != 0);
-#ifdef USE_ULEB
-  if (m_data->m_count == 1 ||
-      m_data->m_dirtyEnd == m_end)
-    {
-      uint8_t *start = &m_data->m_data[m_end];
-      uint8_t *current = start;
-      if (TryToAppendSmallValue (type, &current) &&
-          TryToAppendSmallValue (data0, &current) &&
-          TryToAppendValue (data1, &current))
-        {
-          uintptr_t written = current - start;
-          m_end += written;
-          m_data->m_dirtyEnd = m_end;
-          m_n++;
-          g_one++;
-          return;
-        }
-    }
-
-  g_two++;
-  uint32_t n = GetUleb128Size (type);
-  n += GetUleb128Size (data0);
-  n += GetUleb128Size (data1);  
-  Reserve (n);
-  AppendValue (type);
-  AppendValue (data0);
-  AppendValue (data1);
-  m_n++;
-
-#else
- restart:
-  if (m_data->m_count == 1 ||
-      m_data->m_dirtyEnd == m_end)
-    {
-      uint32_t *start = (uint32_t *)&m_data->m_data[m_end];
-      uint32_t *end = (uint32_t *)&m_data->m_data[m_data->m_size];
-      if (start + 2 < end)
-        {
-          start[0] = type;
-          start[1] = data0;
-          start[2] = data1;
-          m_end += 12;
-          m_data->m_dirtyEnd = m_end;
-          m_n++;
-          g_one++;
-          return;
-        }
-    }
-  g_two++;
-  Reserve (12);
-  goto restart;
-#endif
-}
-
-void
-PacketHistory::AppendOneCommand (uint32_t type, uint32_t data)
-{
-  NS_ASSERT (m_data != 0);
-#ifdef USE_ULEB
-  if (m_data->m_count == 1 ||
-      m_data->m_dirtyEnd == m_end)
-    {
-      uint8_t *start = &m_data->m_data[m_end];
-      uint8_t *current = start;
-      if (TryToAppendSmallValue (type, &current) &&
-          TryToAppendSmallValue (data, &current))
-        {
-          uintptr_t written = current - start;
-          m_end += written;
-          m_data->m_dirtyEnd = m_end;
-          m_n++;
-          g_one++;
-          return;
-        }
-    }
-
-  g_two++;
-  uint32_t n = GetUleb128Size (data);
-  n += GetUleb128Size (type);
-  Reserve (n);
-  AppendValue (type);
-  AppendValue (data);
-  m_n++;
-#else
- restart:
-  if (m_data->m_count == 1 ||
-      m_data->m_dirtyEnd == m_end)
-    {
-      uint32_t *start = (uint32_t *)&m_data->m_data[m_end];
-      uint32_t *end = (uint32_t *)&m_data->m_data[m_data->m_size];
-      if (start + 1 < end)
-        {
-          start[0] = type;
-          start[1] = data;
-          m_end += 8;
-          m_data->m_dirtyEnd = m_end;
-          m_n++;
-          g_one++;
-          return;
-        }
-    }
-  g_two++;
-  Reserve (8);
-  goto restart;
-#endif
-}
-void
-PacketHistory::ReserveCopy (uint32_t size)
-{
-  struct CommandData *newData = PacketHistory::Create (m_end + size);
-  memcpy (newData->m_data, m_data->m_data, m_end);
-  newData->m_dirtyEnd = m_end;
-  m_data->m_count--;
-  if (m_data->m_count == 0) 
-    {
-      PacketHistory::Recycle (m_data);
-    }
-  m_data = newData;
-}
-void
-PacketHistory::Reserve (uint32_t size)
-{
-  NS_ASSERT (m_data != 0);
-  if (m_data->m_size >= m_end + size &&
-      (m_data->m_count == 1 ||
-       m_data->m_dirtyEnd == m_end))
-    {
-      /* enough room, not dirty. */
-      g_four++;
-    }
-  else 
-    {
-      /* (enough room and dirty) or (not enough room) */
-      ReserveCopy (size);
-      g_five++;
-    }
-}
-
-uint32_t
-PacketHistory::ReadForwardValue (uint8_t **pBuffer) const
-{
-  uint32_t read = 0;
-  uint32_t result = ReadValue (*pBuffer, &read);
-  *pBuffer = *pBuffer + read;
-  return result;
-}
 
 PacketHistory 
 PacketHistory::CreateFragment (uint32_t start, uint32_t end) const
@@ -716,139 +724,175 @@ PacketHistory::CreateFragment (uint32_t start, uint32_t end) const
 void 
 PacketHistory::AddHeader (uint32_t uid, Chunk const & header, uint32_t size)
 {
-  if (m_enable) 
+  if (!m_enable)
     {
-      AppendOneCommand (PacketHistory::ADD_HEADER, uid, size);
-    }  
+      return;
+    }
+  AddSmall (true, uid, size);
 }
 void 
 PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
 {
-  if (m_enable) 
+  if (!m_enable) 
     {
-      AppendOneCommand (PacketHistory::REM_HEADER, uid, size);
+      return;
+    }
+  if (m_data == 0)
+    {
+      NS_FATAL_ERROR ("Removing header from empty packet.");
+    }
+  struct PacketHistory::SmallItem item;
+  uint8_t *buffer = &m_data->m_data[m_begin];
+  ReadSmall (&item, &buffer);
+  NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
+  if ((item.typeUid & 0xfffffffd) != uid ||
+      item.size != size)
+    {
+      NS_FATAL_ERROR ("Removing unexpected header.");
+    }
+  else if (item.typeUid != uid)
+    {
+      // this is a "big" item
+      struct PacketHistory::ExtraItem extraItem;
+      ReadExtra (&extraItem, &buffer);
+      NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
+      if (extraItem.fragmentStart != 0 ||
+          extraItem.fragmentEnd != size)
+        {
+          NS_FATAL_ERROR ("Removing incomplete header.");
+        }
+    }
+  m_begin = item.next;
+  if (m_begin > m_end)
+    {
+      m_used = m_begin;
     }
 }
 void 
 PacketHistory::AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size)
 {
-  if (m_enable) 
+  if (!m_enable)
     {
-      AppendOneCommand (PacketHistory::ADD_TRAILER, uid, size);
+      return;
     }
+  AddSmall (true, uid, size);
 }
 void 
 PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size)
 {
-  if (m_enable) 
+  if (!m_enable) 
     {
-      AppendOneCommand (PacketHistory::REM_TRAILER, uid, size);
+      return;
+    }
+  if (m_data == 0)
+    {
+      NS_FATAL_ERROR ("Removing trailer from empty packet.");
+    }
+  struct PacketHistory::SmallItem item;
+  uint8_t *buffer = &m_data->m_data[m_end];
+  ReadSmall (&item, &buffer);
+  NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
+  if ((item.typeUid & 0xfffffffd) != uid ||
+      item.size != size)
+    {
+      NS_FATAL_ERROR ("Removing unexpected trailer.");
+    }
+  else if (item.typeUid != uid)
+    {
+      // this is a "big" item
+      struct PacketHistory::ExtraItem extraItem;
+      ReadExtra (&extraItem, &buffer);
+      NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
+      if (extraItem.fragmentStart != 0 ||
+          extraItem.fragmentEnd != size)
+        {
+          NS_FATAL_ERROR ("Removing incomplete trailer.");
+        }
+    }
+  m_end = item.prev;
+  if (m_end > m_begin)
+    {
+      m_used = m_end;
     }
 }
 void
 PacketHistory::AddAtEnd (PacketHistory const&o)
 {
-  if (m_enable) 
+  if (!m_enable) 
     {
-      uint32_t n = GetUleb128Size (PacketHistory::ADD_AT_END);
-      n += GetUleb128Size (o.m_end); 
-      n += GetUleb128Size (o.m_n); 
-      n += o.m_end;
-      Reserve (n);
-      AppendOneCommand (PacketHistory::ADD_AT_END, o.m_end, o.m_n);
-      memcpy (&m_data->m_data[m_end], o.m_data->m_data, o.m_end);
-      m_end += o.m_end;
-      if (m_end > m_data->m_dirtyEnd)
-        {
-          m_data->m_dirtyEnd = m_end;
-        }
+      return;
     }
 }
 void
 PacketHistory::AddPaddingAtEnd (uint32_t end)
 {
-  if (m_enable)
+  if (!m_enable)
     {
-      AppendOneCommand (PacketHistory::PADDING_AT_END, end);
+      return;
     }
 }
 void 
 PacketHistory::RemoveAtStart (uint32_t start)
 {
-  if (m_enable) 
+  if (!m_enable) 
     {
-      AppendOneCommand (PacketHistory::REM_AT_START, start);
+      return;
     }
+#if 0
+  if (m_data == 0)
+    {
+      NS_FATAL_ERROR ("Removing header from empty packet.");
+    }
+  struct PacketHistory::SmallItem item;
+  uint8_t *buffer = &m_data->m_data[m_begin];
+  bool ok = ReadSmall (&item, &buffer);
+  NS_ASSERT (ok);
+  if ((item.typeUid & 0xfffffffd) != uid ||
+      item.size != size)
+    {
+      NS_FATAL_ERROR ("Removing unexpected header.");
+    }
+  else if (item.typeUid != uid)
+    {
+      // this is a "big" item
+      struct PacketHistory::ExtraItem extraItem;
+      ok = ReadExtra (&extraItem, &buffer);
+      NS_ASSERT (ok);
+      if (extraItem.fragmentStart != 0 ||
+          extraItem.fragmentEnd != size)
+        {
+          NS_FATAL_ERROR ("Removing incomplete header.");
+        }
+    }
+
+  uint32_t leftToRemove = start;
+  while (!m_itemList.empty () && leftToRemove > 0)
+    {
+      struct Item &item = m_itemList.front ();
+      uint32_t itemRealSize = item.m_fragmentEnd - item.m_fragmentStart;
+      if (itemRealSize <= leftToRemove)
+        {
+          m_itemList.pop_front ();
+          leftToRemove -= itemRealSize;
+        }
+      else
+        {
+          item.m_fragmentStart += leftToRemove;
+          leftToRemove = 0;
+          NS_ASSERT (item.m_size >= item.m_fragmentEnd - item.m_fragmentStart &&
+                     item.m_fragmentStart <= item.m_fragmentEnd);
+        }
+    }
+  NS_ASSERT (leftToRemove == 0);
+#endif
 }
 void 
 PacketHistory::RemoveAtEnd (uint32_t end)
 {
-  if (m_enable) 
+  if (!m_enable) 
     {
-      AppendOneCommand (PacketHistory::REM_AT_END, end);
+      return;
     }
-}
-
-void 
-PacketHistory::PrintComplex (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const
-{
-  // we need to build a linked list of the different fragments 
-  // which are stored in this packet.
-  uint8_t *dataBuffer = &m_data->m_data[0];
-  ItemList itemList;
-  BuildItemList (&itemList, &dataBuffer, m_end, m_n);
-  itemList.Print (os, buffer, printer);
-}
-
-void 
-PacketHistory::BuildItemList (ItemList *list, uint8_t **buffer, uint32_t size, uint32_t n) const
-{
-  // we need to build a linked list of the different fragments 
-  // which are stored in this packet.
-  uint8_t *dataBuffer = *buffer;
-  for (uint32_t i = 0; i < n; i++)
-    {
-      uint32_t type = ReadForwardValue (&dataBuffer);
-      uint32_t data = ReadForwardValue (&dataBuffer);
-      switch (type)
-        {
-        case INIT: {
-          uint32_t uid = ReadForwardValue (&dataBuffer);
-          list->InitPayload (uid, data);
-        } break;
-        case ADD_HEADER: {
-          uint32_t size = ReadForwardValue (&dataBuffer);
-          list->AddHeader (data, size);
-        } break;
-        case REM_HEADER: {
-          uint32_t size = ReadForwardValue (&dataBuffer);
-          list->RemHeader (data, size);
-        } break;
-        case ADD_TRAILER: {
-          uint32_t size = ReadForwardValue (&dataBuffer);
-          list->AddTrailer (data, size);
-        } break;
-        case REM_TRAILER: {
-          uint32_t size = ReadForwardValue (&dataBuffer);
-          list->RemTrailer (data, size);
-        } break;
-        case ADD_AT_END: {
-          uint32_t nCommands = ReadForwardValue (&dataBuffer);
-          ItemList other;
-          BuildItemList (&other, &dataBuffer, data, nCommands);
-          list->AddAtEnd (&other);
-        } break;
-        case REM_AT_START: {
-          list->RemAtStart (data);
-        } break;
-        case REM_AT_END: {
-          list->RemAtEnd (data);
-        } break;
-        case PADDING_AT_END:
-          break;
-        }
-    }  
-  *buffer = dataBuffer;
 }
 
 void 
@@ -865,7 +909,6 @@ PacketHistory::Print (std::ostream &os, Buffer buffer, const PacketPrinter &prin
       return;
     }
 
-  PrintComplex (os, buffer, printer);
 }
 
 

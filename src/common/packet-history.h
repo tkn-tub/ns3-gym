@@ -39,10 +39,10 @@ class PacketHistory {
 public:
   static void Enable (void);
 
-  inline PacketHistory (uint32_t uid, uint32_t size);
-  inline PacketHistory (PacketHistory const &o);
-  inline PacketHistory &operator = (PacketHistory const& o);
-  inline ~PacketHistory ();
+  PacketHistory (uint32_t uid, uint32_t size);
+  PacketHistory (PacketHistory const &o);
+  PacketHistory &operator = (PacketHistory const& o);
+  ~PacketHistory ();
 
   template <typename T>
   void AddHeader (T const &header, uint32_t size);
@@ -66,57 +66,61 @@ public:
   static void PrintStats (void);
 
 private:
-  enum CommandType {
-    INIT         = 0,
-    ADD_HEADER   = 1,
-    REM_HEADER   = 2,
-    ADD_TRAILER  = 3,
-    REM_TRAILER  = 4,
-    ADD_AT_END   = 5,
-    REM_AT_START = 6,
-    REM_AT_END   = 7,
-    PADDING_AT_END = 9,
-    LAST
+  struct Data {
+    uint16_t m_count;
+    uint16_t m_size;
+    uint16_t m_dirtyEnd;
+    uint8_t m_data[10];
   };
-  struct CommandData {
-    uint32_t m_count;
-    uint32_t m_size;
-    uint32_t m_dirtyEnd;
-    uint8_t m_data[8];
+  struct SmallItem {
+    uint16_t next;
+    uint16_t prev;
+    uint32_t typeUid;
+    uint32_t size;
+    uint16_t chunkUid;
   };
-  typedef std::vector<struct CommandData *> DataFreeList;
+  struct ExtraItem {
+    uint32_t fragmentStart;
+    uint32_t fragmentEnd;
+    uint32_t packetUid;
+  };
+
+  typedef std::vector<struct Data *> DataFreeList;
   
   PacketHistory ();
-  void Reserve (uint32_t n);
-  inline void Construct (uint32_t uid, uint32_t size);
-  uint32_t GetUleb128Size (uint32_t value) const;
-  void AppendValue (uint32_t value);
-  uint32_t ReadForwardValue (uint8_t **pBuffer) const;
-  uint32_t ReadValue (uint8_t *buffer, uint32_t *n) const;
-  void AppendOneCommand (uint32_t type, uint32_t data);
-  void AppendOneCommand (uint32_t type, uint32_t data0, uint32_t data1);
-  void ReserveCopy (uint32_t size);
   void AddHeader (uint32_t uid, Chunk const & header, uint32_t size);
   void RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size);
   void AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
   void RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
-  void PrintComplex (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const;
-  void BuildItemList (ItemList *list, uint8_t **buffer, uint32_t size, uint32_t n) const;
-  inline bool TryToAppendValue (uint32_t value, uint8_t **buffer);
-  inline bool TryToAppendSmallValue (uint32_t value, uint8_t **buffer);
 
-  static struct PacketHistory::CommandData *Create (uint32_t size);
-  static void Recycle (struct CommandData *data);
-  static struct PacketHistory::CommandData *Allocate (uint32_t n);
-  static void Deallocate (struct CommandData *data);
+  void AddSmall (bool atStart,
+                 uint32_t typeUid, uint32_t size);
+  uint32_t GetUleb128Size (uint32_t value) const;
+  uint32_t ReadUleb128 (uint8_t **pBuffer) const;
+  void Append16 (uint16_t value, uint8_t **pBuffer);
+  bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
+  bool IsZero16 (uint16_t index);
+  bool CanAdd (bool atStart);
+  void ReadSmall (struct PacketHistory::SmallItem *item, uint8_t **pBuffer);
+  void ReadExtra (struct PacketHistory::ExtraItem *item, uint8_t **pBuffer);
+  void Reserve (uint32_t n);
+  void ReserveCopy (uint32_t n);
+
+  static struct PacketHistory::Data *Create (uint32_t size);
+  static void Recycle (struct PacketHistory::Data *data);
+  static struct PacketHistory::Data *Allocate (uint32_t n);
+  static void Deallocate (struct PacketHistory::Data *data);
   
   static DataFreeList m_freeList;
   static bool m_enable;
   static uint32_t m_maxSize;
+  static uint16_t m_chunkUid;
   
-  struct CommandData *m_data;
-  uint32_t m_end;
-  uint32_t m_n;
+  struct Data *m_data;
+  uint16_t m_begin;
+  uint16_t m_end;
+  uint16_t m_used;
+  uint32_t m_packetUid;
 };
 
 }; // namespace ns3
@@ -148,72 +152,6 @@ PacketHistory::RemoveTrailer (T const &trailer, uint32_t size)
 {
   RemoveTrailer (PacketPrinter::GetUid<T> (), trailer, size);
 }
-
-
-PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
-  : m_data (0),
-    m_end (0),
-    m_n (0)
-{
-  Construct (uid, size);
-}
-void
-PacketHistory::Construct (uint32_t uid, uint32_t size)
-{
-  if (m_enable) 
-    {
-      m_data = PacketHistory::Create (0);
-      AppendOneCommand (PacketHistory::INIT,
-                        size, uid);
-    }
-}
-PacketHistory::PacketHistory (PacketHistory const &o)
-  : m_data (o.m_data),
-    m_end (o.m_end),
-    m_n (o.m_n)
-{
-  if (m_data != 0) 
-    {
-      m_data->m_count++;
-    }
-}
-PacketHistory &
-PacketHistory::operator = (PacketHistory const& o)
-{
-  if (m_data == o.m_data) 
-    {
-      // self assignment
-      return *this;
-    }
-  if (m_data != 0) 
-    {
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          PacketHistory::Recycle (m_data);
-        }
-    }
-  m_data = o.m_data;
-  m_end = o.m_end;
-  m_n = o.m_n;
-  if (m_data != 0) 
-    {
-      m_data->m_count++;
-    }
-  return *this;
-}
-PacketHistory::~PacketHistory ()
-{
-  if (m_data != 0) 
-    {
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          PacketHistory::Recycle (m_data);
-        }
-    }
-}
-
 
 }; // namespace ns3
 
