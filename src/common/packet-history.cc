@@ -404,6 +404,17 @@ PacketHistory::ReserveCopy (uint32_t size)
       PacketHistory::Recycle (m_data);
     }
   m_data = newData;
+  if (m_head != 0xffff)
+    {
+      uint8_t *start;
+      NS_ASSERT (m_tail != 0xffff);
+      // clear the next field of the tail
+      start = &m_data->m_data[m_tail];
+      Append16 (0xffff, &start);
+      // clear the prev field of the head
+      start = &m_data->m_data[m_head] + 2;
+      Append16 (0xffff, &start);
+    }
 }
 void
 PacketHistory::Reserve (uint32_t size)

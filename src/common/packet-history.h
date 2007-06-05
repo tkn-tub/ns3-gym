@@ -66,6 +66,11 @@ public:
   static void PrintStats (void);
 
 private:
+  /**
+     head -(next)-> tail
+       ^             |
+        \---(prev)---|
+   */
   struct Data {
     uint16_t m_count;
     uint16_t m_size;
