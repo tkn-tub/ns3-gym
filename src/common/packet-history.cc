@@ -548,11 +548,16 @@ PacketHistory::IsFF16 (uint16_t index)
 bool
 PacketHistory::CanAdd (bool atStart)
 {
-  if (atStart && m_begin != 0xffff)
+  if (m_begin == 0xffff)
+    {
+      NS_ASSERT (m_end == 0xffff);
+      return true;
+    }
+  if (atStart)
     {
       return IsFF16 (m_begin+2);
     }
-  else if (!atStart && m_end != 0xffff)
+  else if (!atStart)
     {
       return IsFF16 (m_end);
     }
