@@ -991,7 +991,7 @@ PacketHistory::GetTotalSize (void) const
 {
   uint32_t totalSize = 0;
   uint16_t current = m_head;
-  uint16_t end = m_tail;
+  uint16_t tail = m_tail;
   while (current != 0xffff)
     {
       const uint8_t *buffer = &m_data->m_data[current];
@@ -1012,11 +1012,11 @@ PacketHistory::GetTotalSize (void) const
           fragmentEnd = item.size;
         }
       totalSize += fragmentEnd - fragmentStart;
-      current = item.next;
-      if (current == end)
+      if (current == tail)
         {
           break;
         }
+      current = item.next;
     }
   return totalSize;
 }
@@ -1045,11 +1045,11 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
           struct PacketHistory::SmallItem item;
           uint32_t realSize = DoPrint (&item, buffer, data, offset, printer, os);
           offset += realSize;
-          current = item.next;
           if (current == tail)
             {
               break;
             }
+          current = item.next;
         }
     }
   else
@@ -1064,11 +1064,11 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
           struct PacketHistory::SmallItem item;
           uint32_t realSize = DoPrint (&item, buffer, data, offset, printer, os);
           offset -= realSize;
-          current = item.prev;
           if (current == tail)
             {
               break;
             }
+          current = item.prev;
         }
     }
 }
