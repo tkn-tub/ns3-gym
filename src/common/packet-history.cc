@@ -396,8 +396,8 @@ void
 PacketHistory::ReserveCopy (uint32_t size)
 {
   struct PacketHistory::Data *newData = PacketHistory::Create (m_used + size);
-  memcpy (newData->m_data, m_data->m_data, m_end);
-  newData->m_dirtyEnd = m_end;
+  memcpy (newData->m_data, m_data->m_data, m_used);
+  newData->m_dirtyEnd = m_used;
   m_data->m_count--;
   if (m_data->m_count == 0) 
     {
@@ -565,6 +565,7 @@ PacketHistory::AddSmall (bool atStart,
   if (m_data == 0)
     {
       m_data = PacketHistory::Create (10);
+      memset (m_data->m_data, 0, 4);
     }
   NS_ASSERT (m_data != 0);
   uint16_t chunkUid = m_chunkUid;
@@ -616,7 +617,7 @@ PacketHistory::AddSmall (bool atStart,
   n += GetUleb128Size (chunkUid);
   n += GetUleb128Size (size);
   n += 2 + 2;
-  Reserve (n);
+  ReserveCopy (n);
   goto append;
 }
 
