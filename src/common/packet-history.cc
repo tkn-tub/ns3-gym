@@ -603,8 +603,8 @@ PacketHistory::AddSmall (bool atStart,
       Append16 (next, &buffer);
       Append16 (prev, &buffer);
       if (TryToAppend (typeUid, &buffer, end) &&
-          TryToAppend (chunkUid, &buffer, end) &&
-          TryToAppend (size, &buffer, end))
+          TryToAppend (size, &buffer, end) &&
+          TryToAppend (chunkUid, &buffer, end))
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
@@ -616,10 +616,20 @@ PacketHistory::AddSmall (bool atStart,
             } 
           else if (atStart)
             {
+              NS_ASSERT (m_begin != 0xffff);
+              // overwrite the prev field of the previous head of the list.
+              uint8_t *previousHead = &m_data->m_data[m_begin] + 2;
+              Append16 (m_used, &previousHead);
+              // update the head of list to the new node.
               m_begin = m_used;
             }
           else
             {
+              NS_ASSERT (m_end != 0xffff);
+              // overwrite the next field of the previous tail of the list.
+              uint8_t *previousTail = &m_data->m_data[m_end];
+              Append16 (m_used, &previousTail);
+              // update the tail of the list to the new node.
               m_end = m_used;
             }
           NS_ASSERT (m_end != 0xffff);
@@ -631,8 +641,8 @@ PacketHistory::AddSmall (bool atStart,
     }
 
   uint32_t n = GetUleb128Size (typeUid);
-  n += GetUleb128Size (chunkUid);
   n += GetUleb128Size (size);
+  n += GetUleb128Size (chunkUid);
   n += 2 + 2;
   ReserveCopy (n);
   goto append;
@@ -793,7 +803,7 @@ PacketHistory::AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size)
     {
       return;
     }
-  AddSmall (true, uid, size);
+  AddSmall (false, uid, size);
 }
 void 
 PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size)
