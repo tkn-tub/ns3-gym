@@ -331,8 +331,8 @@ PacketHistory::Enable (void)
 
 PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
   : m_data (0),
-    m_begin (0xffff),
-    m_end (0xffff),
+    m_head (0xffff),
+    m_tail (0xffff),
     m_used (0),
     m_packetUid (uid)
 {
@@ -343,8 +343,8 @@ PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
 }
 PacketHistory::PacketHistory (PacketHistory const &o)
   : m_data (o.m_data),
-    m_begin (o.m_begin),
-    m_end (o.m_end),
+    m_head (o.m_head),
+    m_tail (o.m_tail),
     m_used (o.m_used),
     m_packetUid (o.m_packetUid)
 {
@@ -370,8 +370,8 @@ PacketHistory::operator = (PacketHistory const& o)
         }
     }
   m_data = o.m_data;
-  m_begin = o.m_begin;
-  m_end = o.m_end;
+  m_head = o.m_head;
+  m_tail = o.m_tail;
   m_used = o.m_used;
   m_packetUid = o.m_packetUid;
   if (m_data != 0) 
@@ -548,18 +548,18 @@ PacketHistory::IsFF16 (uint16_t index)
 bool
 PacketHistory::CanAdd (bool atStart)
 {
-  if (m_begin == 0xffff)
+  if (m_head == 0xffff)
     {
-      NS_ASSERT (m_end == 0xffff);
+      NS_ASSERT (m_tail == 0xffff);
       return true;
     }
   if (atStart)
     {
-      return IsFF16 (m_begin+2);
+      return IsFF16 (m_head+2);
     }
   else if (!atStart)
     {
-      return IsFF16 (m_end);
+      return IsFF16 (m_tail);
     }
   else
     {
@@ -591,13 +591,13 @@ PacketHistory::AddSmall (bool atStart,
       uint16_t next, prev;
       if (atStart)
         {
-          next = m_begin;
+          next = m_head;
           prev = 0xffff;
         }
       else
         {
           next = 0xffff;
-          prev = m_end;
+          prev = m_tail;
         }
 
       Append16 (next, &buffer);
@@ -608,32 +608,32 @@ PacketHistory::AddSmall (bool atStart,
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
-          if (m_begin == 0xffff)
+          if (m_head == 0xffff)
             {
-              NS_ASSERT (m_end == 0xffff);
-              m_begin = m_used;
-              m_end = m_used;
+              NS_ASSERT (m_tail == 0xffff);
+              m_head = m_used;
+              m_tail = m_used;
             } 
           else if (atStart)
             {
-              NS_ASSERT (m_begin != 0xffff);
+              NS_ASSERT (m_head != 0xffff);
               // overwrite the prev field of the previous head of the list.
-              uint8_t *previousHead = &m_data->m_data[m_begin] + 2;
+              uint8_t *previousHead = &m_data->m_data[m_head] + 2;
               Append16 (m_used, &previousHead);
               // update the head of list to the new node.
-              m_begin = m_used;
+              m_head = m_used;
             }
           else
             {
-              NS_ASSERT (m_end != 0xffff);
+              NS_ASSERT (m_tail != 0xffff);
               // overwrite the next field of the previous tail of the list.
-              uint8_t *previousTail = &m_data->m_data[m_end];
+              uint8_t *previousTail = &m_data->m_data[m_tail];
               Append16 (m_used, &previousTail);
               // update the tail of the list to the new node.
-              m_end = m_used;
+              m_tail = m_used;
             }
-          NS_ASSERT (m_end != 0xffff);
-          NS_ASSERT (m_begin != 0xffff);
+          NS_ASSERT (m_tail != 0xffff);
+          NS_ASSERT (m_head != 0xffff);
           m_used += written;
           m_data->m_dirtyEnd = m_used;
           return;
@@ -770,7 +770,7 @@ PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
       NS_FATAL_ERROR ("Removing header from empty packet.");
     }
   struct PacketHistory::SmallItem item;
-  const uint8_t *buffer = &m_data->m_data[m_begin];
+  const uint8_t *buffer = &m_data->m_data[m_head];
   ReadSmall (&item, &buffer);
   NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
   if ((item.typeUid & 0xfffffffd) != uid ||
@@ -790,10 +790,10 @@ PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
           NS_FATAL_ERROR ("Removing incomplete header.");
         }
     }
-  m_begin = item.next;
-  if (m_begin > m_end)
+  m_head = item.next;
+  if (m_head > m_tail)
     {
-      m_used = m_begin;
+      m_used = m_head;
     }
 }
 void 
@@ -817,7 +817,7 @@ PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size
       NS_FATAL_ERROR ("Removing trailer from empty packet.");
     }
   struct PacketHistory::SmallItem item;
-  const uint8_t *buffer = &m_data->m_data[m_end];
+  const uint8_t *buffer = &m_data->m_data[m_tail];
   ReadSmall (&item, &buffer);
   NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
   if ((item.typeUid & 0xfffffffd) != uid ||
@@ -837,10 +837,10 @@ PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size
           NS_FATAL_ERROR ("Removing incomplete trailer.");
         }
     }
-  m_end = item.prev;
-  if (m_end > m_begin)
+  m_tail = item.prev;
+  if (m_tail > m_head)
     {
-      m_used = m_end;
+      m_used = m_tail;
     }
 }
 void
@@ -872,7 +872,7 @@ PacketHistory::RemoveAtStart (uint32_t start)
       NS_FATAL_ERROR ("Removing header from empty packet.");
     }
   struct PacketHistory::SmallItem item;
-  uint8_t *buffer = &m_data->m_data[m_begin];
+  uint8_t *buffer = &m_data->m_data[m_head];
   bool ok = ReadSmall (&item, &buffer);
   NS_ASSERT (ok);
   if ((item.typeUid & 0xfffffffd) != uid ||
@@ -990,8 +990,8 @@ uint32_t
 PacketHistory::GetTotalSize (void) const
 {
   uint32_t totalSize = 0;
-  uint16_t current = m_begin;
-  uint16_t end = m_end;
+  uint16_t current = m_head;
+  uint16_t end = m_tail;
   while (current != 0xffff)
     {
       const uint8_t *buffer = &m_data->m_data[current];
@@ -1035,9 +1035,9 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
   NS_ASSERT (GetTotalSize () == data.GetSize ());
   if (printer.m_forward)
     {
-      uint32_t end = m_end;
-      uint32_t begin = m_begin;
-      uint32_t current = begin;
+      uint32_t tail = m_tail;
+      uint32_t head = m_head;
+      uint32_t current = head;
       uint32_t offset = 0;
       while (current != 0xffff)
         {
@@ -1046,7 +1046,7 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
           uint32_t realSize = DoPrint (&item, buffer, data, offset, printer, os);
           offset += realSize;
           current = item.next;
-          if (current == end)
+          if (current == tail)
             {
               break;
             }
@@ -1054,9 +1054,9 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
     }
   else
     {
-      uint32_t end = m_begin;
-      uint32_t begin = m_end;
-      uint32_t current = begin;
+      uint32_t head = m_head;
+      uint32_t tail = m_tail;
+      uint32_t current = head;
       uint32_t offset = 0;
       while (current != 0xffff)
         {
@@ -1065,7 +1065,7 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
           uint32_t realSize = DoPrint (&item, buffer, data, offset, printer, os);
           offset -= realSize;
           current = item.prev;
-          if (current == end)
+          if (current == tail)
             {
               break;
             }

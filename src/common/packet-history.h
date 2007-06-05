@@ -121,8 +121,8 @@ private:
   static uint16_t m_chunkUid;
   
   struct Data *m_data;
-  uint16_t m_begin;
-  uint16_t m_end;
+  uint16_t m_head;
+  uint16_t m_tail;
   uint16_t m_used;
   uint32_t m_packetUid;
 };
