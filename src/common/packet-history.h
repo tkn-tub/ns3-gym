@@ -96,15 +96,19 @@ private:
   void AddSmall (bool atStart,
                  uint32_t typeUid, uint32_t size);
   uint32_t GetUleb128Size (uint32_t value) const;
-  uint32_t ReadUleb128 (uint8_t **pBuffer) const;
+  uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
   void Append16 (uint16_t value, uint8_t **pBuffer);
   bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
-  bool IsZero16 (uint16_t index);
+  bool IsFF16 (uint16_t index);
   bool CanAdd (bool atStart);
-  void ReadSmall (struct PacketHistory::SmallItem *item, uint8_t **pBuffer);
-  void ReadExtra (struct PacketHistory::ExtraItem *item, uint8_t **pBuffer);
+  void ReadSmall (struct PacketHistory::SmallItem *item, const uint8_t **pBuffer) const;
+  void ReadExtra (struct PacketHistory::ExtraItem *item, const uint8_t **pBuffer) const;
   void Reserve (uint32_t n);
   void ReserveCopy (uint32_t n);
+  uint32_t DoPrint (struct PacketHistory::SmallItem *item, uint8_t const*buffer,
+                    Buffer data, uint32_t offset, const PacketPrinter &printer,
+                    std::ostream &os) const;
+  uint32_t GetTotalSize (void) const;
 
   static struct PacketHistory::Data *Create (uint32_t size);
   static void Recycle (struct PacketHistory::Data *data);
@@ -131,26 +135,26 @@ template <typename T>
 void 
 PacketHistory::AddHeader (T const &header, uint32_t size)
 {
-  AddHeader (PacketPrinter::GetUid<T> (), header, size);
+  AddHeader (PacketPrinter::GetHeaderUid<T> (), header, size);
 }
 
 template <typename T>
 void 
 PacketHistory::RemoveHeader (T const &header, uint32_t size)
 {
-  RemoveHeader (PacketPrinter::GetUid<T> (), header, size);
+  RemoveHeader (PacketPrinter::GetHeaderUid<T> (), header, size);
 }
 template <typename T>
 void 
 PacketHistory::AddTrailer (T const &trailer, uint32_t size)
 {
-  AddTrailer (PacketPrinter::GetUid<T> (), trailer, size);
+  AddTrailer (PacketPrinter::GetTrailerUid<T> (), trailer, size);
 }
 template <typename T>
 void 
 PacketHistory::RemoveTrailer (T const &trailer, uint32_t size)
 {
-  RemoveTrailer (PacketPrinter::GetUid<T> (), trailer, size);
+  RemoveTrailer (PacketPrinter::GetTrailerUid<T> (), trailer, size);
 }
 
 }; // namespace ns3

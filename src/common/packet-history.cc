@@ -331,8 +331,8 @@ PacketHistory::Enable (void)
 
 PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
   : m_data (0),
-    m_begin (0),
-    m_end (0),
+    m_begin (0xffff),
+    m_end (0xffff),
     m_used (0),
     m_packetUid (uid)
 {
@@ -436,9 +436,9 @@ PacketHistory::GetUleb128Size (uint32_t value) const
   return n;
 }
 uint32_t
-PacketHistory::ReadUleb128 (uint8_t **pBuffer) const
+PacketHistory::ReadUleb128 (const uint8_t **pBuffer) const
 {
-  uint8_t *buffer = *pBuffer;
+  const uint8_t *buffer = *pBuffer;
   uint32_t result = 0;
   uint8_t byte;
   result = 0;
@@ -540,21 +540,25 @@ PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
 }
 
 bool
-PacketHistory::IsZero16 (uint16_t index)
+PacketHistory::IsFF16 (uint16_t index)
 {
-  return m_data->m_data[index] == 0 && m_data->m_data[index+1] == 0;
+  return m_data->m_data[index] == 0xff && m_data->m_data[index+1] == 0xff;
 }
 
 bool
 PacketHistory::CanAdd (bool atStart)
 {
-  if (atStart)
+  if (atStart && m_begin != 0xffff)
     {
-      return IsZero16 (m_begin+2);
+      return IsFF16 (m_begin+2);
+    }
+  else if (!atStart && m_end != 0xffff)
+    {
+      return IsFF16 (m_end);
     }
   else
     {
-      return IsZero16 (m_end);
+      return false;
     }
 }
 
@@ -565,7 +569,7 @@ PacketHistory::AddSmall (bool atStart,
   if (m_data == 0)
     {
       m_data = PacketHistory::Create (10);
-      memset (m_data->m_data, 0, 4);
+      memset (m_data->m_data, 0xff, 4);
     }
   NS_ASSERT (m_data != 0);
   uint16_t chunkUid = m_chunkUid;
@@ -583,11 +587,11 @@ PacketHistory::AddSmall (bool atStart,
       if (atStart)
         {
           next = m_begin;
-          prev = 0;
+          prev = 0xffff;
         }
       else
         {
-          next = 0;
+          next = 0xffff;
           prev = m_end;
         }
 
@@ -599,7 +603,13 @@ PacketHistory::AddSmall (bool atStart,
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
-          if (atStart)
+          if (m_begin == 0xffff)
+            {
+              NS_ASSERT (m_end == 0xffff);
+              m_begin = m_used;
+              m_end = m_used;
+            } 
+          else if (atStart)
             {
               m_begin = m_used;
             }
@@ -607,6 +617,8 @@ PacketHistory::AddSmall (bool atStart,
             {
               m_end = m_used;
             }
+          NS_ASSERT (m_end != 0xffff);
+          NS_ASSERT (m_begin != 0xffff);
           m_used += written;
           m_data->m_dirtyEnd = m_used;
           return;
@@ -622,9 +634,9 @@ PacketHistory::AddSmall (bool atStart,
 }
 
 void
-PacketHistory::ReadSmall (struct PacketHistory::SmallItem *item, uint8_t **pBuffer)
+PacketHistory::ReadSmall (struct PacketHistory::SmallItem *item, const uint8_t **pBuffer) const
 {
-  uint8_t *buffer = *pBuffer;
+  const uint8_t *buffer = *pBuffer;
   item->next = buffer[0];
   item->next |= (buffer[1]) << 8;
   item->prev = buffer[2];
@@ -636,7 +648,7 @@ PacketHistory::ReadSmall (struct PacketHistory::SmallItem *item, uint8_t **pBuff
 }
 
 void
-PacketHistory::ReadExtra (struct PacketHistory::ExtraItem *item, uint8_t **pBuffer)
+PacketHistory::ReadExtra (struct PacketHistory::ExtraItem *item, const uint8_t **pBuffer) const
 {
   item->fragmentStart = ReadUleb128 (pBuffer);
   item->fragmentEnd = ReadUleb128 (pBuffer);
@@ -743,7 +755,7 @@ PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
       NS_FATAL_ERROR ("Removing header from empty packet.");
     }
   struct PacketHistory::SmallItem item;
-  uint8_t *buffer = &m_data->m_data[m_begin];
+  const uint8_t *buffer = &m_data->m_data[m_begin];
   ReadSmall (&item, &buffer);
   NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
   if ((item.typeUid & 0xfffffffd) != uid ||
@@ -790,7 +802,7 @@ PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size
       NS_FATAL_ERROR ("Removing trailer from empty packet.");
     }
   struct PacketHistory::SmallItem item;
-  uint8_t *buffer = &m_data->m_data[m_end];
+  const uint8_t *buffer = &m_data->m_data[m_end];
   ReadSmall (&item, &buffer);
   NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
   if ((item.typeUid & 0xfffffffd) != uid ||
@@ -902,14 +914,148 @@ PacketHistory::PrintDefault (std::ostream &os, Buffer buffer) const
   Print (os, buffer, PacketPrinter::GetDefault ());
 }
 
+uint32_t
+PacketHistory::DoPrint (struct PacketHistory::SmallItem *item, uint8_t const*buffer,
+                        Buffer data, uint32_t offset, const PacketPrinter &printer,
+                        std::ostream &os) const
+{
+  ReadSmall (item, &buffer);
+  bool isExtra = (item->typeUid & 0x1) == 0x1;
+  uint32_t uid = item->typeUid & 0xfffffffd;
+  uint32_t fragmentStart, fragmentEnd;
+  uint32_t packetUid;
+  if (isExtra)
+    {
+      PacketHistory::ExtraItem extraItem;
+      ReadExtra (&extraItem, &buffer);
+      fragmentStart = extraItem.fragmentStart;
+      fragmentEnd = extraItem.fragmentEnd;
+      packetUid = extraItem.packetUid;
+    }
+  else
+    {
+      fragmentStart = 0;
+      fragmentEnd = item->size;
+      packetUid = m_packetUid;
+    }
+  NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
+  if (uid == 0)
+    {
+      // payload.
+      printer.PrintPayload (os, packetUid, item->size, 
+                            fragmentStart, 
+                            fragmentEnd);
+    }
+  else if (fragmentStart != 0 && 
+           fragmentEnd != item->size)
+    {
+      printer.PrintChunkFragment (uid, os, packetUid, item->size, 
+                                  fragmentStart, fragmentEnd);
+    }
+  else if (PacketPrinter::IsHeader (uid))
+    {
+      ns3::Buffer::Iterator j = data.Begin ();
+      j.Next (offset);
+      printer.PrintChunk (uid, j, os, packetUid, item->size);
+    }
+  else if (PacketPrinter::IsTrailer (uid))
+    {
+      ns3::Buffer::Iterator j = data.End ();
+      j.Prev (data.GetSize () - (offset + item->size));
+      printer.PrintChunk (uid, j, os, packetUid, item->size);
+    }
+  else 
+    {
+      NS_ASSERT (false);
+    }
+  return fragmentEnd - fragmentStart;
+}
+
+uint32_t
+PacketHistory::GetTotalSize (void) const
+{
+  uint32_t totalSize = 0;
+  uint16_t current = m_begin;
+  uint16_t end = m_end;
+  while (current != 0xffff)
+    {
+      const uint8_t *buffer = &m_data->m_data[current];
+      struct PacketHistory::SmallItem item;
+      ReadSmall (&item, &buffer);
+      bool isExtra = (item.typeUid & 0x1) == 0x1;
+      uint32_t fragmentStart, fragmentEnd;
+      if (isExtra)
+        {
+          PacketHistory::ExtraItem extraItem;
+          ReadExtra (&extraItem, &buffer);
+          fragmentStart = extraItem.fragmentStart;
+          fragmentEnd = extraItem.fragmentEnd;
+        }
+      else
+        {
+          fragmentStart = 0;
+          fragmentEnd = item.size;
+        }
+      totalSize += fragmentEnd - fragmentStart;
+      current = item.next;
+      if (current == end)
+        {
+          break;
+        }
+    }
+  return totalSize;
+}
+
 void
-PacketHistory::Print (std::ostream &os, Buffer buffer, const PacketPrinter &printer) const
+PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printer) const
 {
   if (!m_enable) 
     {
       return;
     }
-
+  if (m_data == 0)
+    {
+      return;
+    }
+  NS_ASSERT (GetTotalSize () == data.GetSize ());
+  if (printer.m_forward)
+    {
+      uint32_t end = m_end;
+      uint32_t begin = m_begin;
+      uint32_t current = begin;
+      uint32_t offset = 0;
+      while (current != 0xffff)
+        {
+          uint8_t *buffer = &m_data->m_data[current];
+          struct PacketHistory::SmallItem item;
+          uint32_t realSize = DoPrint (&item, buffer, data, offset, printer, os);
+          offset += realSize;
+          current = item.next;
+          if (current == end)
+            {
+              break;
+            }
+        }
+    }
+  else
+    {
+      uint32_t end = m_begin;
+      uint32_t begin = m_end;
+      uint32_t current = begin;
+      uint32_t offset = 0;
+      while (current != 0xffff)
+        {
+          uint8_t *buffer = &m_data->m_data[current];
+          struct PacketHistory::SmallItem item;
+          uint32_t realSize = DoPrint (&item, buffer, data, offset, printer, os);
+          offset -= realSize;
+          current = item.prev;
+          if (current == end)
+            {
+              break;
+            }
+        }
+    }
 }
 
 
@@ -1117,8 +1263,8 @@ PacketHistoryTest::RegisterHeader (void)
   static bool registered = false;
   if (!registered)
     {
-      m_printer.AddPrinter (MakeCallback (&PacketHistoryTest::PrintHeader<N>, this),
-                            MakeCallback (&PacketHistoryTest::PrintFragment, this));
+      m_printer.AddHeaderPrinter (MakeCallback (&PacketHistoryTest::PrintHeader<N>, this),
+                                  MakeCallback (&PacketHistoryTest::PrintFragment, this));
       registered = true;
     }
 }
@@ -1130,8 +1276,8 @@ PacketHistoryTest::RegisterTrailer (void)
   static bool registered = false;
   if (!registered)
     {
-      m_printer.AddPrinter (MakeCallback (&PacketHistoryTest::PrintTrailer<N>, this),
-                            MakeCallback (&PacketHistoryTest::PrintFragment, this));
+      m_printer.AddTrailerPrinter (MakeCallback (&PacketHistoryTest::PrintTrailer<N>, this),
+                                   MakeCallback (&PacketHistoryTest::PrintFragment, this));
       registered = true;
     }
 }

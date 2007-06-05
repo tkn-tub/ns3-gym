@@ -87,12 +87,12 @@ PacketPrinter::PrintChunk (uint32_t chunkUid,
     {
       if (i->m_chunkUid == chunkUid)
         {
-          DoPrintCallback cb = (*registeredChunks)[chunkUid-1].first;
+          DoPrintCallback cb = (*registeredChunks)[chunkUid/2-1].printCallback;
           cb (i->m_printer, start, os, packetUid, size);
           return;
         }
     }
-  DoGetNameCallback cb = (*registeredChunks)[chunkUid-1].second;
+  DoGetNameCallback cb = (*registeredChunks)[chunkUid-1].getNameCallback;
   std::string name = cb ();
   struct PacketPrinter::FragmentInformation info;
   info.start = 0;
@@ -109,7 +109,7 @@ PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
 {
   RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
   NS_ASSERT (chunkUid >= 1);
-  DoGetNameCallback cb = (*registeredChunks)[chunkUid-1].second;
+  DoGetNameCallback cb = (*registeredChunks)[chunkUid/2-1].getNameCallback;
   std::string name = cb ();
   struct PacketPrinter::FragmentInformation info;
   info.start = fragmentStart;
@@ -185,6 +185,24 @@ PacketPrinter::DoAddPrinter (uint32_t uid,
   p.m_fragmentPrinter = fragmentPrinter;
   m_printerList.push_back (p);
 }
+
+bool 
+PacketPrinter::IsTrailer (uint32_t uid)
+{
+  RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
+  NS_ASSERT (uid >= 1 && uid/2 < registeredChunks->size ());
+  bool isHeader = (*registeredChunks)[uid/2-1].isHeader;
+  return !isHeader;
+}
+bool 
+PacketPrinter::IsHeader (uint32_t uid)
+{
+  RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
+  NS_ASSERT (uid >= 1 && uid/2 < registeredChunks->size ());
+  bool isHeader = (*registeredChunks)[uid/2-1].isHeader;
+  return isHeader;
+}
+
 
 
 } // namespace ns3
