@@ -773,7 +773,7 @@ PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
   const uint8_t *buffer = &m_data->m_data[m_head];
   ReadSmall (&item, &buffer);
   NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
-  if ((item.typeUid & 0xfffffffd) != uid ||
+  if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
       NS_FATAL_ERROR ("Removing unexpected header.");
@@ -820,7 +820,7 @@ PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size
   const uint8_t *buffer = &m_data->m_data[m_tail];
   ReadSmall (&item, &buffer);
   NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
-  if ((item.typeUid & 0xfffffffd) != uid ||
+  if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
       NS_FATAL_ERROR ("Removing unexpected trailer.");
@@ -875,7 +875,7 @@ PacketHistory::RemoveAtStart (uint32_t start)
   uint8_t *buffer = &m_data->m_data[m_head];
   bool ok = ReadSmall (&item, &buffer);
   NS_ASSERT (ok);
-  if ((item.typeUid & 0xfffffffd) != uid ||
+  if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
       NS_FATAL_ERROR ("Removing unexpected header.");
@@ -936,7 +936,7 @@ PacketHistory::DoPrint (struct PacketHistory::SmallItem *item, uint8_t const*buf
 {
   ReadSmall (item, &buffer);
   bool isExtra = (item->typeUid & 0x1) == 0x1;
-  uint32_t uid = item->typeUid & 0xfffffffd;
+  uint32_t uid = item->typeUid & 0xfffffffe;
   uint32_t fragmentStart, fragmentEnd;
   uint32_t packetUid;
   if (isExtra)
