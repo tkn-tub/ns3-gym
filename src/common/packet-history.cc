@@ -772,7 +772,7 @@ PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
   struct PacketHistory::SmallItem item;
   const uint8_t *buffer = &m_data->m_data[m_head];
   ReadSmall (&item, &buffer);
-  NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
+  NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
   if ((item.typeUid & 0xfffffffd) != uid ||
       item.size != size)
     {
@@ -783,7 +783,7 @@ PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
       // this is a "big" item
       struct PacketHistory::ExtraItem extraItem;
       ReadExtra (&extraItem, &buffer);
-      NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
+      NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
       if (extraItem.fragmentStart != 0 ||
           extraItem.fragmentEnd != size)
         {
@@ -819,7 +819,7 @@ PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size
   struct PacketHistory::SmallItem item;
   const uint8_t *buffer = &m_data->m_data[m_tail];
   ReadSmall (&item, &buffer);
-  NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
+  NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
   if ((item.typeUid & 0xfffffffd) != uid ||
       item.size != size)
     {
@@ -830,7 +830,7 @@ PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size
       // this is a "big" item
       struct PacketHistory::ExtraItem extraItem;
       ReadExtra (&extraItem, &buffer);
-      NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
+      NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
       if (extraItem.fragmentStart != 0 ||
           extraItem.fragmentEnd != size)
         {
@@ -953,7 +953,7 @@ PacketHistory::DoPrint (struct PacketHistory::SmallItem *item, uint8_t const*buf
       fragmentEnd = item->size;
       packetUid = m_packetUid;
     }
-  NS_ASSERT (buffer < &m_data->m_data[m_data->m_size]);
+  NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
   if (uid == 0)
     {
       // payload.
