@@ -1066,7 +1066,8 @@ PacketHistory::RemoveAtEnd (uint32_t end)
         {
           // fragment the list item.
           PacketHistory fragment (m_packetUid, 0);
-          extraItem.fragmentStart += leftToRemove;
+          NS_ASSERT (extraItem.fragmentEnd > leftToRemove);
+          extraItem.fragmentEnd -= leftToRemove;
           leftToRemove = 0;
           fragment.AddBig (true, &item, &extraItem);
           current = item.prev;
