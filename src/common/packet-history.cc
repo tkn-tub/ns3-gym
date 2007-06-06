@@ -693,7 +693,7 @@ PacketHistory::AddBig (bool atStart,
 
       Append16 (next, &buffer);
       Append16 (prev, &buffer);
-      if (TryToAppend (item->typeUid, &buffer, end) &&
+      if (TryToAppend (item->typeUid+1, &buffer, end) &&
           TryToAppend (item->size, &buffer, end) &&
           TryToAppend (item->chunkUid, &buffer, end) &&
           TryToAppend (extraItem->fragmentStart, &buffer, end) &&
@@ -734,7 +734,7 @@ PacketHistory::AddBig (bool atStart,
         }
     }
   
-  uint32_t n = GetUleb128Size (item->typeUid);
+  uint32_t n = GetUleb128Size (item->typeUid+1);
   n += GetUleb128Size (item->size);
   n += GetUleb128Size (item->chunkUid);
   n += 2 + 2;
