@@ -670,6 +670,7 @@ PacketHistory::AddBig (bool atStart,
       memset (m_data->m_data, 0xff, 4);
     }
   NS_ASSERT (m_data != 0);
+  uint32_t typeUid = ((item->typeUid & 0x1) == 0x1)?item->typeUid:item->typeUid+1;
  append:
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
@@ -693,7 +694,7 @@ PacketHistory::AddBig (bool atStart,
 
       Append16 (next, &buffer);
       Append16 (prev, &buffer);
-      if (TryToAppend (item->typeUid+1, &buffer, end) &&
+      if (TryToAppend (typeUid, &buffer, end) &&
           TryToAppend (item->size, &buffer, end) &&
           TryToAppend (item->chunkUid, &buffer, end) &&
           TryToAppend (extraItem->fragmentStart, &buffer, end) &&
@@ -734,7 +735,7 @@ PacketHistory::AddBig (bool atStart,
         }
     }
   
-  uint32_t n = GetUleb128Size (item->typeUid+1);
+  uint32_t n = GetUleb128Size (typeUid);
   n += GetUleb128Size (item->size);
   n += GetUleb128Size (item->chunkUid);
   n += GetUleb128Size (extraItem->fragmentStart);
@@ -1074,7 +1075,7 @@ PacketHistory::RemoveAtEnd (uint32_t end)
           while (current != 0xffff)
             {
               ReadItems (current, &item, &extraItem);
-              fragment.AddBig (false, &item, &extraItem);
+              fragment.AddBig (true, &item, &extraItem);
               if (current == m_head)
                 {
                   break;
