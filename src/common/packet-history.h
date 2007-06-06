@@ -104,7 +104,8 @@ private:
                const PacketHistory::SmallItem *item, 
                const PacketHistory::ExtraItem *extraItem);
   void ReplaceTail (const PacketHistory::SmallItem *item, 
-                    const PacketHistory::ExtraItem *extraItem);
+                    const PacketHistory::ExtraItem *extraItem,
+                    uint32_t available);
   void Update (bool atStart, uint16_t written);
   uint32_t GetUleb128Size (uint32_t value) const;
   uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
@@ -120,9 +121,9 @@ private:
                     Buffer data, uint32_t offset, const PacketPrinter &printer,
                     std::ostream &os) const;
   uint32_t GetTotalSize (void) const;
-  void ReadItems (uint16_t current, 
-                  struct PacketHistory::SmallItem *item,
-                  struct PacketHistory::ExtraItem *extraItem) const;
+  uint32_t ReadItems (uint16_t current, 
+                      struct PacketHistory::SmallItem *item,
+                      struct PacketHistory::ExtraItem *extraItem) const;
 
 
   static struct PacketHistory::Data *Create (uint32_t size);

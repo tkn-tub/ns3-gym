@@ -727,9 +727,44 @@ PacketHistory::AddBig (bool atStart,
 
 void
 PacketHistory::ReplaceTail (const PacketHistory::SmallItem *item, 
-                            const PacketHistory::ExtraItem *extraItem)
+                            const PacketHistory::ExtraItem *extraItem,
+                            uint32_t available)
 {
+  NS_ASSERT (m_data != 0);  
+  if (available >= 10 &&
+      (m_data->m_count == 1 ||
+       m_used == m_data->m_dirtyEnd))
+    {
+      uint8_t *buffer = &m_data->m_data[m_tail];
+      uint8_t *end = buffer + available;
 
+      Append16 (item->next, &buffer);
+      Append16 (item->prev, &buffer);
+      if (TryToAppend (item->typeUid, &buffer, end) &&
+          TryToAppend (item->size, &buffer, end) &&
+          TryToAppend (item->chunkUid, &buffer, end) &&
+          TryToAppend (extraItem->fragmentStart, &buffer, end) &&
+          TryToAppend (extraItem->fragmentEnd, &buffer, end) &&
+          TryToAppend (extraItem->packetUid, &buffer, end))
+        {
+          return;
+        }
+    }
+  
+  // create a copy of the packet.
+  PacketHistory h (m_packetUid, 0);
+  uint16_t current = m_head;
+  while (current != 0xffff && current != m_tail)
+    {
+      struct PacketHistory::SmallItem tmpItem;
+      PacketHistory::ExtraItem tmpExtraItem;
+      ReadItems (current, &tmpItem, &tmpExtraItem);
+      h.AddBig (false, &tmpItem, &tmpExtraItem);
+    }
+  // append new tail.
+  h.AddBig (false, item, extraItem);
+
+  *this = h;
 }
 
 
@@ -748,7 +783,7 @@ PacketHistory::ReadSmall (struct PacketHistory::SmallItem *item, const uint8_t *
   item->chunkUid = ReadUleb128 (pBuffer);
 }
 
-void
+uint32_t
 PacketHistory::ReadItems (uint16_t current, 
                           struct PacketHistory::SmallItem *item,
                           struct PacketHistory::ExtraItem *extraItem) const
@@ -767,6 +802,7 @@ PacketHistory::ReadItems (uint16_t current,
       extraItem->packetUid = m_packetUid;
     }
   NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
+  return buffer - &m_data->m_data[current];
 }
 
 
@@ -968,7 +1004,12 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
   uint16_t lastTail = m_tail;
   struct PacketHistory::SmallItem lastItem;
   PacketHistory::ExtraItem lastExtraItem;
-  ReadItems (m_tail, &lastItem, &lastExtraItem);
+  uint32_t lastTailSize = ReadItems (m_tail, &lastItem, &lastExtraItem);
+  if (m_tail + lastTailSize == m_used &&
+      m_used == m_data->m_dirtyEnd)
+    {
+      lastTailSize = m_data->m_size;
+    }
 
   uint16_t current = o.m_head;
   while (current != 0xffff)
@@ -982,13 +1023,14 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
           item.size == lastItem.size &&
           extraItem.fragmentStart == lastExtraItem.fragmentEnd)
         {
-          // add at tail
+          // replace previous tail.
           lastExtraItem.fragmentEnd = extraItem.fragmentEnd;
           NS_ASSERT (m_tail == lastTail);
-          ReplaceTail (&lastItem, &lastExtraItem);
+          ReplaceTail (&lastItem, &lastExtraItem, lastTailSize);
         }
       else
         {
+          // append the extra items.
           AddBig (false, &item, &extraItem);
         }
       current = item.next;
@@ -996,7 +1038,7 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
         {
           break;
         }
-    }  
+    }
 }
 void
 PacketHistory::AddPaddingAtEnd (uint32_t end)
