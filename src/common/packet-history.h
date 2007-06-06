@@ -98,11 +98,11 @@ private:
   void AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
   void RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
 
-  void AddSmall (bool atStart,
-                 uint32_t typeUid, uint32_t size);
-  void AddBig (bool atStart,
-               const PacketHistory::SmallItem *item, 
-               const PacketHistory::ExtraItem *extraItem);
+  uint16_t AddSmall (bool atStart,
+                     uint32_t typeUid, uint32_t size);
+  uint16_t AddBig (bool atStart,
+                   const PacketHistory::SmallItem *item, 
+                   const PacketHistory::ExtraItem *extraItem);
   void ReplaceTail (const PacketHistory::SmallItem *item, 
                     const PacketHistory::ExtraItem *extraItem,
                     uint32_t available);
