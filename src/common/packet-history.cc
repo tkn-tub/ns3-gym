@@ -1087,13 +1087,13 @@ PacketHistory::RemoveAtStart (uint32_t start)
           extraItem.fragmentStart += leftToRemove;
           leftToRemove = 0;
           uint16_t written = fragment.AddBig (false, &item, &extraItem);
-          Update (false, written);
+          fragment.Update (false, written);
           current = item.next;
           while (current != 0xffff)
             {
               ReadItems (current, &item, &extraItem);
               written = fragment.AddBig (false, &item, &extraItem);
-              Update (false, written);
+              fragment.Update (false, written);
               if (current == m_tail)
                 {
                   break;
@@ -1146,13 +1146,13 @@ PacketHistory::RemoveAtEnd (uint32_t end)
           extraItem.fragmentEnd -= leftToRemove;
           leftToRemove = 0;
           uint16_t written = fragment.AddBig (true, &item, &extraItem);
-          Update (true, written);
+          fragment.Update (true, written);
           current = item.prev;
           while (current != 0xffff)
             {
               ReadItems (current, &item, &extraItem);
               written = fragment.AddBig (true, &item, &extraItem);
-              Update (true, written);
+              fragment.Update (true, written);
               if (current == m_head)
                 {
                   break;
