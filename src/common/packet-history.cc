@@ -1147,24 +1147,10 @@ PacketHistory::GetTotalSize (void) const
   uint16_t tail = m_tail;
   while (current != 0xffff)
     {
-      const uint8_t *buffer = &m_data->m_data[current];
       struct PacketHistory::SmallItem item;
-      ReadSmall (&item, &buffer);
-      bool isExtra = (item.typeUid & 0x1) == 0x1;
-      uint32_t fragmentStart, fragmentEnd;
-      if (isExtra)
-        {
-          PacketHistory::ExtraItem extraItem;
-          ReadExtra (&extraItem, &buffer);
-          fragmentStart = extraItem.fragmentStart;
-          fragmentEnd = extraItem.fragmentEnd;
-        }
-      else
-        {
-          fragmentStart = 0;
-          fragmentEnd = item.size;
-        }
-      totalSize += fragmentEnd - fragmentStart;
+      PacketHistory::ExtraItem extraItem;
+      ReadItems (current, &item, &extraItem);
+      totalSize += extraItem.fragmentEnd - extraItem.fragmentStart;
       if (current == tail)
         {
           break;
