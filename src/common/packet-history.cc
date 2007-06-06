@@ -776,6 +776,7 @@ PacketHistory::ReadItems (uint16_t current,
       extraItem->fragmentEnd = item->size;
       extraItem->packetUid = m_packetUid;
     }
+  NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
 }
 
 
@@ -1097,60 +1098,43 @@ PacketHistory::PrintDefault (std::ostream &os, Buffer buffer) const
 }
 
 uint32_t
-PacketHistory::DoPrint (struct PacketHistory::SmallItem *item, uint8_t const*buffer,
+PacketHistory::DoPrint (struct PacketHistory::SmallItem *item, uint32_t current,
                         Buffer data, uint32_t offset, const PacketPrinter &printer,
                         std::ostream &os) const
 {
-  ReadSmall (item, &buffer);
-  bool isExtra = (item->typeUid & 0x1) == 0x1;
+  PacketHistory::ExtraItem extraItem;
+  ReadItems (current, item, &extraItem);
   uint32_t uid = item->typeUid & 0xfffffffe;
-  uint32_t fragmentStart, fragmentEnd;
-  uint32_t packetUid;
-  if (isExtra)
-    {
-      PacketHistory::ExtraItem extraItem;
-      ReadExtra (&extraItem, &buffer);
-      fragmentStart = extraItem.fragmentStart;
-      fragmentEnd = extraItem.fragmentEnd;
-      packetUid = extraItem.packetUid;
-    }
-  else
-    {
-      fragmentStart = 0;
-      fragmentEnd = item->size;
-      packetUid = m_packetUid;
-    }
-  NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
   if (uid == 0)
     {
       // payload.
-      printer.PrintPayload (os, packetUid, item->size, 
-                            fragmentStart, 
-                            fragmentEnd);
+      printer.PrintPayload (os, extraItem.packetUid, item->size, 
+                            extraItem.fragmentStart, 
+                            extraItem.fragmentEnd);
     }
-  else if (fragmentStart != 0 && 
-           fragmentEnd != item->size)
+  else if (extraItem.fragmentStart != 0 ||
+           extraItem.fragmentEnd != item->size)
     {
-      printer.PrintChunkFragment (uid, os, packetUid, item->size, 
-                                  fragmentStart, fragmentEnd);
+      printer.PrintChunkFragment (uid, os, extraItem.packetUid, item->size, 
+                                  extraItem.fragmentStart, extraItem.fragmentEnd);
     }
   else if (PacketPrinter::IsHeader (uid))
     {
       ns3::Buffer::Iterator j = data.Begin ();
       j.Next (offset);
-      printer.PrintChunk (uid, j, os, packetUid, item->size);
+      printer.PrintChunk (uid, j, os, extraItem.packetUid, item->size);
     }
   else if (PacketPrinter::IsTrailer (uid))
     {
       ns3::Buffer::Iterator j = data.End ();
       j.Prev (data.GetSize () - (offset + item->size));
-      printer.PrintChunk (uid, j, os, packetUid, item->size);
+      printer.PrintChunk (uid, j, os, extraItem.packetUid, item->size);
     }
   else 
     {
       NS_ASSERT (false);
     }
-  return fragmentEnd - fragmentStart;
+  return extraItem.fragmentEnd - extraItem.fragmentStart;
 }
 
 uint32_t
@@ -1208,9 +1192,8 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
       uint32_t offset = 0;
       while (current != 0xffff)
         {
-          uint8_t *buffer = &m_data->m_data[current];
           struct PacketHistory::SmallItem item;
-          uint32_t realSize = DoPrint (&item, buffer, data, offset, printer, os);
+          uint32_t realSize = DoPrint (&item, current, data, offset, printer, os);
           offset += realSize;
           if (current == tail)
             {
@@ -1227,9 +1210,8 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
       uint32_t offset = 0;
       while (current != 0xffff)
         {
-          uint8_t *buffer = &m_data->m_data[current];
           struct PacketHistory::SmallItem item;
-          uint32_t realSize = DoPrint (&item, buffer, data, offset, printer, os);
+          uint32_t realSize = DoPrint (&item, current, data, offset, printer, os);
           offset -= realSize;
           if (current == tail)
             {

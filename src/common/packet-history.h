@@ -113,7 +113,7 @@ private:
   void ReadExtra (struct PacketHistory::ExtraItem *item, const uint8_t **pBuffer) const;
   void Reserve (uint32_t n);
   void ReserveCopy (uint32_t n);
-  uint32_t DoPrint (struct PacketHistory::SmallItem *item, uint8_t const*buffer,
+  uint32_t DoPrint (struct PacketHistory::SmallItem *item, uint32_t current,
                     Buffer data, uint32_t offset, const PacketPrinter &printer,
                     std::ostream &os) const;
   uint32_t GetTotalSize (void) const;
