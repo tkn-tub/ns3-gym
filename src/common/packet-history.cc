@@ -410,10 +410,10 @@ PacketHistory::ReserveCopy (uint32_t size)
       NS_ASSERT (m_tail != 0xffff);
       // clear the next field of the tail
       start = &m_data->m_data[m_tail];
-      Append16 (0xffff, &start);
+      Append16 (0xffff, start);
       // clear the prev field of the head
       start = &m_data->m_data[m_head] + 2;
-      Append16 (0xffff, &start);
+      Append16 (0xffff, start);
     }
 }
 void
@@ -496,13 +496,32 @@ PacketHistory::ReadUleb128 (const uint8_t **pBuffer) const
 }
 
 void
-PacketHistory::Append16 (uint16_t value, uint8_t **pBuffer)
+PacketHistory::Append16 (uint16_t value, uint8_t *buffer)
 {
-  uint8_t *buffer = *pBuffer;
   buffer[0] = value & 0xff;
   value >>= 8;
   buffer[1] = value;
-  *pBuffer = buffer + 2;
+}
+bool
+PacketHistory::TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end)
+{
+  uint8_t *start = *pBuffer;
+  if (value < 0x80 && start < end)
+    {
+      start[0] = value;
+      *pBuffer = start + 1;
+      return true;
+    }
+  if (value < 0x4000 && start + 1 < end)
+    {
+      uint8_t byte = value & (~0x80);
+      start[0] = 0x80 | byte;
+      value >>= 7;
+      start[1] = value;
+      *pBuffer = start + 2;
+      return true;
+    }
+  return false;
 }
 bool
 PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
@@ -551,13 +570,13 @@ PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
 }
 
 bool
-PacketHistory::IsFF16 (uint16_t index)
+PacketHistory::IsFF16 (uint16_t index) const
 {
   return m_data->m_data[index] == 0xff && m_data->m_data[index+1] == 0xff;
 }
 
 bool
-PacketHistory::CanAdd (bool atStart)
+PacketHistory::CanAdd (bool atStart) const
 {
   if (m_head == 0xffff)
     {
@@ -592,7 +611,7 @@ PacketHistory::Update (bool atStart, uint16_t written)
       NS_ASSERT (m_head != 0xffff);
       // overwrite the prev field of the previous head of the list.
       uint8_t *previousHead = &m_data->m_data[m_head] + 2;
-      Append16 (m_used, &previousHead);
+      Append16 (m_used, previousHead);
       // update the head of list to the new node.
       m_head = m_used;
     }
@@ -601,7 +620,7 @@ PacketHistory::Update (bool atStart, uint16_t written)
       NS_ASSERT (m_tail != 0xffff);
       // overwrite the next field of the previous tail of the list.
       uint8_t *previousTail = &m_data->m_data[m_tail];
-      Append16 (m_used, &previousTail);
+      Append16 (m_used, previousTail);
       // update the tail of the list to the new node.
       m_tail = m_used;
     }
@@ -644,19 +663,22 @@ PacketHistory::AddSmall (bool atStart,
           prev = m_tail;
         }
 
-      Append16 (next, &buffer);
-      Append16 (prev, &buffer);
-      if (TryToAppend (typeUid, &buffer, end) &&
-          TryToAppend (size, &buffer, end) &&
+      Append16 (next, buffer);
+      buffer += 2;
+      Append16 (prev, buffer);
+      buffer += 2;
+      if (TryToAppendFast (typeUid, &buffer, end) &&
+          TryToAppendFast (size, &buffer, end) &&
           TryToAppend (chunkUid, &buffer, end))
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
           Update (atStart, written);
+          g_one++;
           return;
         }
     }
-
+  g_two++;
   uint32_t n = GetUleb128Size (typeUid);
   n += GetUleb128Size (size);
   n += GetUleb128Size (chunkUid);
@@ -698,8 +720,10 @@ PacketHistory::AddBig (bool atStart,
           prev = m_tail;
         }
 
-      Append16 (next, &buffer);
-      Append16 (prev, &buffer);
+      Append16 (next, buffer);
+      buffer += 2;
+      Append16 (prev, buffer);
+      buffer += 2;
       if (TryToAppend (typeUid, &buffer, end) &&
           TryToAppend (item->size, &buffer, end) &&
           TryToAppend (item->chunkUid, &buffer, end) &&
@@ -737,8 +761,10 @@ PacketHistory::ReplaceTail (const PacketHistory::SmallItem *item,
       uint8_t *buffer = &m_data->m_data[m_tail];
       uint8_t *end = buffer + available;
 
-      Append16 (item->next, &buffer);
-      Append16 (item->prev, &buffer);
+      Append16 (item->next, buffer);
+      buffer += 2;
+      Append16 (item->prev, buffer);
+      buffer += 2;
       if (TryToAppend (item->typeUid, &buffer, end) &&
           TryToAppend (item->size, &buffer, end) &&
           TryToAppend (item->chunkUid, &buffer, end) &&
@@ -1002,7 +1028,8 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
     }
   NS_ASSERT (m_head != 0xffff && m_tail != 0xffff);
 
-  uint16_t lastTail = m_tail;
+  uint16_t lastTail;
+  lastTail = m_tail;
   struct PacketHistory::SmallItem lastItem;
   PacketHistory::ExtraItem lastExtraItem;
   uint32_t lastTailSize = ReadItems (m_tail, &lastItem, &lastExtraItem);

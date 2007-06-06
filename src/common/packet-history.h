@@ -106,13 +106,14 @@ private:
   void ReplaceTail (const PacketHistory::SmallItem *item, 
                     const PacketHistory::ExtraItem *extraItem,
                     uint32_t available);
-  void Update (bool atStart, uint16_t written);
+  inline void Update (bool atStart, uint16_t written);
   uint32_t GetUleb128Size (uint32_t value) const;
-  uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
-  void Append16 (uint16_t value, uint8_t **pBuffer);
-  bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
-  bool IsFF16 (uint16_t index);
-  bool CanAdd (bool atStart);
+  inline uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
+  inline void Append16 (uint16_t value, uint8_t *buffer);
+  inline bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
+  inline bool TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end);
+  inline bool IsFF16 (uint16_t index) const;
+  inline bool CanAdd (bool atStart) const;
   void ReadSmall (struct PacketHistory::SmallItem *item, const uint8_t **pBuffer) const;
   void ReadExtra (struct PacketHistory::ExtraItem *item, const uint8_t **pBuffer) const;
   void Reserve (uint32_t n);
