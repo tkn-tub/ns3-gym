@@ -569,34 +569,6 @@ PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
   return false;
 }
 
-bool
-PacketHistory::IsFF16 (uint16_t index) const
-{
-  return m_data->m_data[index] == 0xff && m_data->m_data[index+1] == 0xff;
-}
-
-bool
-PacketHistory::CanAdd (bool atStart) const
-{
-  if (m_head == 0xffff)
-    {
-      NS_ASSERT (m_tail == 0xffff);
-      return true;
-    }
-  if (atStart)
-    {
-      return IsFF16 (m_head+2);
-    }
-  else if (!atStart)
-    {
-      return IsFF16 (m_tail);
-    }
-  else
-    {
-      return false;
-    }
-}
-
 void
 PacketHistory::Update (bool atStart, uint16_t written)
 {
@@ -646,8 +618,8 @@ PacketHistory::AddSmall (bool atStart,
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
   if (end - start >= 7 &&
-      CanAdd (atStart) &&
-      (m_data->m_count == 1 ||
+      (m_head == 0xffff ||
+       m_data->m_count == 1 ||
        m_used == m_data->m_dirtyEnd))
     {
       uint8_t *buffer = start;
@@ -703,8 +675,8 @@ PacketHistory::AddBig (bool atStart,
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
   if (end - start >= 10 &&
-      CanAdd (atStart) &&
-      (m_data->m_count == 1 ||
+      (m_head == 0xffff ||
+       m_data->m_count == 1 ||
        m_used == m_data->m_dirtyEnd))
     {
       uint8_t *buffer = start;
