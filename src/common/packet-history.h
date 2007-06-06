@@ -98,11 +98,12 @@ private:
   void AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
   void RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
 
-  void AddSmall (bool atStart,
-                 uint32_t typeUid, uint32_t size);
-  void AddBig (bool atStart,
-               const PacketHistory::SmallItem *item, 
-               const PacketHistory::ExtraItem *extraItem);
+  uint16_t AddSmall (bool atStart,
+                     uint32_t typeUid, uint32_t size);
+  uint16_t AddBig (bool atStart,
+                   const PacketHistory::SmallItem *item, 
+                   const PacketHistory::ExtraItem *extraItem);
+  void Update (bool atStart, uint16_t written);
   uint32_t GetUleb128Size (uint32_t value) const;
   uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
   void Append16 (uint16_t value, uint8_t **pBuffer);

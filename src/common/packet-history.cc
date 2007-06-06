@@ -338,7 +338,8 @@ PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
 {
   if (size > 0)
     {
-      AddSmall (true, 0, size);
+      uint16_t written = AddSmall (true, 0, size);
+      Update (true, written);
     }
 }
 PacketHistory::PacketHistory (PacketHistory const &o)
@@ -579,6 +580,39 @@ PacketHistory::CanAdd (bool atStart)
 }
 
 void
+PacketHistory::Update (bool atStart, uint16_t written)
+{
+  if (m_head == 0xffff)
+    {
+      NS_ASSERT (m_tail == 0xffff);
+      m_head = m_used;
+      m_tail = m_used;
+    } 
+  else if (atStart)
+    {
+      NS_ASSERT (m_head != 0xffff);
+      // overwrite the prev field of the previous head of the list.
+      uint8_t *previousHead = &m_data->m_data[m_head] + 2;
+      Append16 (m_used, &previousHead);
+      // update the head of list to the new node.
+      m_head = m_used;
+    }
+  else
+    {
+      NS_ASSERT (m_tail != 0xffff);
+      // overwrite the next field of the previous tail of the list.
+      uint8_t *previousTail = &m_data->m_data[m_tail];
+      Append16 (m_used, &previousTail);
+      // update the tail of the list to the new node.
+      m_tail = m_used;
+    }
+  NS_ASSERT (m_tail != 0xffff);
+  NS_ASSERT (m_head != 0xffff);
+  m_used += written;
+  m_data->m_dirtyEnd = m_used;
+}
+
+uint16_t
 PacketHistory::AddSmall (bool atStart,
                          uint32_t typeUid, uint32_t size)
 {
@@ -619,35 +653,7 @@ PacketHistory::AddSmall (bool atStart,
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
-          if (m_head == 0xffff)
-            {
-              NS_ASSERT (m_tail == 0xffff);
-              m_head = m_used;
-              m_tail = m_used;
-            } 
-          else if (atStart)
-            {
-              NS_ASSERT (m_head != 0xffff);
-              // overwrite the prev field of the previous head of the list.
-              uint8_t *previousHead = &m_data->m_data[m_head] + 2;
-              Append16 (m_used, &previousHead);
-              // update the head of list to the new node.
-              m_head = m_used;
-            }
-          else
-            {
-              NS_ASSERT (m_tail != 0xffff);
-              // overwrite the next field of the previous tail of the list.
-              uint8_t *previousTail = &m_data->m_data[m_tail];
-              Append16 (m_used, &previousTail);
-              // update the tail of the list to the new node.
-              m_tail = m_used;
-            }
-          NS_ASSERT (m_tail != 0xffff);
-          NS_ASSERT (m_head != 0xffff);
-          m_used += written;
-          m_data->m_dirtyEnd = m_used;
-          return;
+          return written;
         }
     }
 
@@ -659,7 +665,7 @@ PacketHistory::AddSmall (bool atStart,
   goto append;
 }
 
-void
+uint16_t
 PacketHistory::AddBig (bool atStart,
                        const PacketHistory::SmallItem *item, 
                        const PacketHistory::ExtraItem *extraItem)
@@ -703,35 +709,7 @@ PacketHistory::AddBig (bool atStart,
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
-          if (m_head == 0xffff)
-            {
-              NS_ASSERT (m_tail == 0xffff);
-              m_head = m_used;
-              m_tail = m_used;
-            } 
-          else if (atStart)
-            {
-              NS_ASSERT (m_head != 0xffff);
-              // overwrite the prev field of the previous head of the list.
-              uint8_t *previousHead = &m_data->m_data[m_head] + 2;
-              Append16 (m_used, &previousHead);
-              // update the head of list to the new node.
-              m_head = m_used;
-            }
-          else
-            {
-              NS_ASSERT (m_tail != 0xffff);
-              // overwrite the next field of the previous tail of the list.
-              uint8_t *previousTail = &m_data->m_data[m_tail];
-              Append16 (m_used, &previousTail);
-              // update the tail of the list to the new node.
-              m_tail = m_used;
-            }
-          NS_ASSERT (m_tail != 0xffff);
-          NS_ASSERT (m_head != 0xffff);
-          m_used += written;
-          m_data->m_dirtyEnd = m_used;
-          return;
+          return written;
         }
     }
   
@@ -878,7 +856,8 @@ PacketHistory::AddHeader (uint32_t uid, Chunk const & header, uint32_t size)
     {
       return;
     }
-  AddSmall (true, uid, size);
+  uint16_t written = AddSmall (true, uid, size);
+  Update (true, written);
 }
 void 
 PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
@@ -925,7 +904,8 @@ PacketHistory::AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size)
     {
       return;
     }
-  AddSmall (false, uid, size);
+  uint16_t written = AddSmall (false, uid, size);
+  Update (false, written);
 }
 void 
 PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size)
@@ -972,6 +952,48 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
     {
       return;
     }
+  if (m_data == 0 || m_tail == 0xffff)
+    {
+      *this = o;
+      return;
+    }
+  NS_ASSERT (m_head != 0xffff && m_tail != 0xffff);
+
+  uint16_t lastTail = m_tail;
+  struct PacketHistory::SmallItem lastItem;
+  PacketHistory::ExtraItem lastExtraItem;
+  ReadItems (m_tail, &lastItem, &lastExtraItem);
+
+  uint16_t current = o.m_head;
+  while (current != 0xffff)
+    {
+      struct PacketHistory::SmallItem item;
+      PacketHistory::ExtraItem extraItem;
+      o.ReadItems (current, &item, &extraItem);
+      if (extraItem.packetUid == lastExtraItem.packetUid &&
+          item.typeUid == lastItem.typeUid &&
+          item.chunkUid == lastItem.chunkUid &&
+          item.size == lastItem.size &&
+          extraItem.fragmentStart == lastExtraItem.fragmentEnd)
+        {
+          // add at tail
+          lastExtraItem.fragmentEnd = extraItem.fragmentEnd;
+          NS_ASSERT (m_tail == lastTail);
+          uint16_t written = AddBig (false, &lastItem, &lastExtraItem);
+          m_used += written;
+          m_data->m_dirtyEnd = m_used;
+        }
+      else
+        {
+          uint16_t written = AddBig (false, &item, &extraItem);
+          Update (false, written);
+        }
+      current = item.next;
+      if (current == o.m_tail)
+        {
+          break;
+        }
+    }  
 }
 void
 PacketHistory::AddPaddingAtEnd (uint32_t end)
@@ -1013,12 +1035,14 @@ PacketHistory::RemoveAtStart (uint32_t start)
           PacketHistory fragment (m_packetUid, 0);
           extraItem.fragmentStart += leftToRemove;
           leftToRemove = 0;
-          fragment.AddBig (false, &item, &extraItem);
+          uint16_t written = fragment.AddBig (false, &item, &extraItem);
+          fragment.Update (false, written);
           current = item.next;
           while (current != 0xffff)
             {
               ReadItems (current, &item, &extraItem);
-              fragment.AddBig (false, &item, &extraItem);
+              written = fragment.AddBig (false, &item, &extraItem);
+              fragment.Update (false, written);
               if (current == m_tail)
                 {
                   break;
@@ -1070,12 +1094,14 @@ PacketHistory::RemoveAtEnd (uint32_t end)
           NS_ASSERT (extraItem.fragmentEnd > leftToRemove);
           extraItem.fragmentEnd -= leftToRemove;
           leftToRemove = 0;
-          fragment.AddBig (true, &item, &extraItem);
+          uint16_t written = fragment.AddBig (true, &item, &extraItem);
+          fragment.Update (true, written);
           current = item.prev;
           while (current != 0xffff)
             {
               ReadItems (current, &item, &extraItem);
-              fragment.AddBig (true, &item, &extraItem);
+              uint16_t written = fragment.AddBig (true, &item, &extraItem);
+              fragment.Update (true, written);
               if (current == m_head)
                 {
                   break;
