@@ -673,7 +673,7 @@ PacketHistory::AddBig (bool atStart,
  append:
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
-  if (end - start >= 13 &&
+  if (end - start >= 10 &&
       CanAdd (atStart) &&
       (m_data->m_count == 1 ||
        m_used == m_data->m_dirtyEnd))
@@ -737,6 +737,9 @@ PacketHistory::AddBig (bool atStart,
   uint32_t n = GetUleb128Size (item->typeUid+1);
   n += GetUleb128Size (item->size);
   n += GetUleb128Size (item->chunkUid);
+  n += GetUleb128Size (extraItem->fragmentStart);
+  n += GetUleb128Size (extraItem->fragmentEnd);
+  n += GetUleb128Size (extraItem->packetUid);
   n += 2 + 2;
   ReserveCopy (n);
   goto append;
@@ -991,7 +994,6 @@ PacketHistory::RemoveAtStart (uint32_t start)
 
   uint32_t leftToRemove = start;
   uint16_t current = m_head;
-  uint16_t tail = m_tail;
   while (current != 0xffff && leftToRemove > 0)
     {
       struct PacketHistory::SmallItem item;
@@ -1016,7 +1018,7 @@ PacketHistory::RemoveAtStart (uint32_t start)
             {
               ReadItems (current, &item, &extraItem);
               fragment.AddBig (false, &item, &extraItem);
-              if (current == tail)
+              if (current == m_tail)
                 {
                   break;
                 }
@@ -1026,61 +1028,13 @@ PacketHistory::RemoveAtStart (uint32_t start)
         }
       NS_ASSERT (item.size >= extraItem.fragmentEnd - extraItem.fragmentStart &&
                  extraItem.fragmentStart <= extraItem.fragmentEnd);
-      if (current == tail)
+      if (current == m_tail)
         {
           break;
         }
       current = item.next;
     }
   NS_ASSERT (leftToRemove == 0);
-#if 0
-  struct PacketHistory::SmallItem item;
-  const uint8_t *buffer = &m_data->m_data[m_head];
-  ReadSmall (&item, &buffer);
-  NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
-  if ((item.typeUid & 0xfffffffe) != uid ||
-      item.size != size)
-    {
-      NS_FATAL_ERROR ("Removing unexpected header.");
-    }
-  else if (item.typeUid != uid)
-    {
-      // this is a "big" item
-      struct PacketHistory::ExtraItem extraItem;
-      ReadExtra (&extraItem, &buffer);
-      NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
-      if (extraItem.fragmentStart != 0 ||
-          extraItem.fragmentEnd != size)
-        {
-          NS_FATAL_ERROR ("Removing incomplete header.");
-        }
-    }
-  m_head = item.next;
-  if (m_head > m_tail)
-    {
-      m_used = m_head;
-    }
-
-  uint32_t leftToRemove = start;
-  while (!m_itemList.empty () && leftToRemove > 0)
-    {
-      struct Item &item = m_itemList.front ();
-      uint32_t itemRealSize = item.m_fragmentEnd - item.m_fragmentStart;
-      if (itemRealSize <= leftToRemove)
-        {
-          m_itemList.pop_front ();
-          leftToRemove -= itemRealSize;
-        }
-      else
-        {
-          item.m_fragmentStart += leftToRemove;
-          leftToRemove = 0;
-          NS_ASSERT (item.m_size >= item.m_fragmentEnd - item.m_fragmentStart &&
-                     item.m_fragmentStart <= item.m_fragmentEnd);
-        }
-    }
-  NS_ASSERT (leftToRemove == 0);
-#endif
 }
 void 
 PacketHistory::RemoveAtEnd (uint32_t end)
@@ -1089,6 +1043,54 @@ PacketHistory::RemoveAtEnd (uint32_t end)
     {
       return;
     }
+  if (m_data == 0)
+    {
+      NS_FATAL_ERROR ("Removing data from start of empty packet.");
+    }
+
+  uint32_t leftToRemove = end;
+  uint16_t current = m_tail;
+  while (current != 0xffff && leftToRemove > 0)
+    {
+      struct PacketHistory::SmallItem item;
+      PacketHistory::ExtraItem extraItem;
+      ReadItems (current, &item, &extraItem);
+      uint32_t itemRealSize = extraItem.fragmentEnd - extraItem.fragmentStart;
+      if (itemRealSize <= leftToRemove)
+        {
+          // remove from list.
+          m_tail = item.prev;
+          leftToRemove -= itemRealSize;
+        }
+      else
+        {
+          // fragment the list item.
+          PacketHistory fragment (m_packetUid, 0);
+          extraItem.fragmentStart += leftToRemove;
+          leftToRemove = 0;
+          fragment.AddBig (true, &item, &extraItem);
+          current = item.prev;
+          while (current != 0xffff)
+            {
+              ReadItems (current, &item, &extraItem);
+              fragment.AddBig (false, &item, &extraItem);
+              if (current == m_head)
+                {
+                  break;
+                }
+              current = item.prev;
+            }
+          *this = fragment;
+        }
+      NS_ASSERT (item.size >= extraItem.fragmentEnd - extraItem.fragmentStart &&
+                 extraItem.fragmentStart <= extraItem.fragmentEnd);
+      if (current == m_head)
+        {
+          break;
+        }
+      current = item.prev;
+    }
+  NS_ASSERT (leftToRemove == 0);
 }
 
 void 
