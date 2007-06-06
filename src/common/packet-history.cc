@@ -705,10 +705,12 @@ PacketHistory::AddBig (bool atStart,
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
+          g_one++;
           return written;
         }
     }
-  
+
+  g_two++;
   uint32_t n = GetUleb128Size (typeUid);
   n += GetUleb128Size (item->size);
   n += GetUleb128Size (item->chunkUid);
