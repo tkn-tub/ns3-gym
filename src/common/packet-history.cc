@@ -732,8 +732,7 @@ PacketHistory::ReplaceTail (const PacketHistory::SmallItem *item,
 {
   NS_ASSERT (m_data != 0);  
   if (available >= 10 &&
-      (m_data->m_count == 1 ||
-       m_used == m_data->m_dirtyEnd))
+      m_data->m_count == 1)
     {
       uint8_t *buffer = &m_data->m_data[m_tail];
       uint8_t *end = buffer + available;
@@ -747,6 +746,8 @@ PacketHistory::ReplaceTail (const PacketHistory::SmallItem *item,
           TryToAppend (extraItem->fragmentEnd, &buffer, end) &&
           TryToAppend (extraItem->packetUid, &buffer, end))
         {
+          m_used = buffer - &m_data->m_data[0];
+          m_data->m_dirtyEnd = m_used;
           return;
         }
     }
@@ -1008,7 +1009,7 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
   if (m_tail + lastTailSize == m_used &&
       m_used == m_data->m_dirtyEnd)
     {
-      lastTailSize = m_data->m_size;
+      lastTailSize = m_data->m_size - m_tail;
     }
 
   uint16_t current = o.m_head;
@@ -1033,11 +1034,11 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
           // append the extra items.
           AddBig (false, &item, &extraItem);
         }
-      current = item.next;
       if (current == o.m_tail)
         {
           break;
         }
+      current = item.next;
     }
 }
 void
