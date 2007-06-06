@@ -149,7 +149,7 @@ int main (int argc, char *argv[])
     n0, 
     Ipv4Address("10.1.3.2"), 
     80, 
-    "IUdp",
+    "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
   // Start the application
@@ -161,7 +161,7 @@ int main (int argc, char *argv[])
     n3, 
     Ipv4Address("10.1.2.1"), 
     80, 
-    "IUdp",
+    "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
   // Start the application
