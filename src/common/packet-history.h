@@ -93,13 +93,12 @@ private:
   typedef std::vector<struct Data *> DataFreeList;
   
   PacketHistory ();
-  void AddHeader (uint32_t uid, Chunk const & header, uint32_t size);
-  void RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size);
-  void AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
-  void RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size);
+  void DoAddHeader (uint32_t uid, uint32_t size);
+  void DoRemoveHeader (uint32_t uid, uint32_t size);
+  void DoAddTrailer (uint32_t uid, uint32_t size);
+  void DoRemoveTrailer (uint32_t uid, uint32_t size);
 
-  uint16_t AddSmall (bool atStart,
-                     uint32_t typeUid, uint32_t size);
+  uint16_t AddSmall (const PacketHistory::SmallItem *item);
   uint16_t AddBig (bool atStart,
                    const PacketHistory::SmallItem *item, 
                    const PacketHistory::ExtraItem *extraItem);
@@ -150,26 +149,26 @@ template <typename T>
 void 
 PacketHistory::AddHeader (T const &header, uint32_t size)
 {
-  AddHeader (PacketPrinter::GetHeaderUid<T> (), header, size);
+  DoAddHeader (PacketPrinter::GetHeaderUid<T> (), size);
 }
 
 template <typename T>
 void 
 PacketHistory::RemoveHeader (T const &header, uint32_t size)
 {
-  RemoveHeader (PacketPrinter::GetHeaderUid<T> (), header, size);
+  DoRemoveHeader (PacketPrinter::GetHeaderUid<T> (), size);
 }
 template <typename T>
 void 
 PacketHistory::AddTrailer (T const &trailer, uint32_t size)
 {
-  AddTrailer (PacketPrinter::GetTrailerUid<T> (), trailer, size);
+  DoAddTrailer (PacketPrinter::GetTrailerUid<T> (), size);
 }
 template <typename T>
 void 
 PacketHistory::RemoveTrailer (T const &trailer, uint32_t size)
 {
-  RemoveTrailer (PacketPrinter::GetTrailerUid<T> (), trailer, size);
+  DoRemoveTrailer (PacketPrinter::GetTrailerUid<T> (), size);
 }
 
 }; // namespace ns3

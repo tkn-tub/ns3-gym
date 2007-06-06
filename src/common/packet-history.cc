@@ -338,8 +338,7 @@ PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
 {
   if (size > 0)
     {
-      uint16_t written = AddSmall (true, 0, size);
-      Update (true, written);
+      DoAddHeader (0, size);
     }
 }
 PacketHistory::PacketHistory (PacketHistory const &o)
@@ -604,8 +603,7 @@ PacketHistory::Update (bool atStart, uint16_t written)
 }
 
 uint16_t
-PacketHistory::AddSmall (bool atStart,
-                         uint32_t typeUid, uint32_t size)
+PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
 {
   if (m_data == 0)
     {
@@ -613,8 +611,6 @@ PacketHistory::AddSmall (bool atStart,
       memset (m_data->m_data, 0xff, 4);
     }
   NS_ASSERT (m_data != 0);
-  uint16_t chunkUid = m_chunkUid;
-  m_chunkUid++;
  append:
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
@@ -624,25 +620,14 @@ PacketHistory::AddSmall (bool atStart,
        m_used == m_data->m_dirtyEnd))
     {
       uint8_t *buffer = start;
-      uint16_t next, prev;
-      if (atStart)
-        {
-          next = m_head;
-          prev = 0xffff;
-        }
-      else
-        {
-          next = 0xffff;
-          prev = m_tail;
-        }
 
-      Append16 (next, buffer);
+      Append16 (item->next, buffer);
       buffer += 2;
-      Append16 (prev, buffer);
+      Append16 (item->prev, buffer);
       buffer += 2;
-      if (TryToAppendFast (typeUid, &buffer, end) &&
-          TryToAppendFast (size, &buffer, end) &&
-          TryToAppend (chunkUid, &buffer, end))
+      if (TryToAppendFast (item->typeUid, &buffer, end) &&
+          TryToAppendFast (item->size, &buffer, end) &&
+          TryToAppend (item->chunkUid, &buffer, end))
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
@@ -651,9 +636,9 @@ PacketHistory::AddSmall (bool atStart,
         }
     }
   g_two++;
-  uint32_t n = GetUleb128Size (typeUid);
-  n += GetUleb128Size (size);
-  n += GetUleb128Size (chunkUid);
+  uint32_t n = GetUleb128Size (item->typeUid);
+  n += GetUleb128Size (item->size);
+  n += GetUleb128Size (item->chunkUid);
   n += 2 + 2;
   ReserveCopy (n);
   goto append;
@@ -896,17 +881,24 @@ PacketHistory::CreateFragment (uint32_t start, uint32_t end) const
 }
 
 void 
-PacketHistory::AddHeader (uint32_t uid, Chunk const & header, uint32_t size)
+PacketHistory::DoAddHeader (uint32_t uid, uint32_t size)
 {
   if (!m_enable)
     {
       return;
     }
-  uint16_t written = AddSmall (true, uid, size);
+  struct PacketHistory::SmallItem item;
+  item.next = m_head;
+  item.prev = 0xffff;
+  item.typeUid = uid;
+  item.size = size;
+  item.chunkUid = m_chunkUid;
+  m_chunkUid++;
+  uint16_t written = AddSmall (&item);
   Update (true, written);
 }
 void 
-PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
+PacketHistory::DoRemoveHeader (uint32_t uid, uint32_t size)
 {
   if (!m_enable) 
     {
@@ -944,17 +936,24 @@ PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
     }
 }
 void 
-PacketHistory::AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size)
+PacketHistory::DoAddTrailer (uint32_t uid, uint32_t size)
 {
   if (!m_enable)
     {
       return;
     }
-  uint16_t written = AddSmall (false, uid, size);
+  struct PacketHistory::SmallItem item;
+  item.next = 0xffff;
+  item.prev = m_tail;
+  item.typeUid = uid;
+  item.size = size;
+  item.chunkUid = m_chunkUid;
+  m_chunkUid++;
+  uint16_t written = AddSmall (&item);
   Update (false, written);
 }
 void 
-PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size)
+PacketHistory::DoRemoveTrailer (uint32_t uid, uint32_t size)
 {
   if (!m_enable) 
     {
