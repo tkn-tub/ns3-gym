@@ -660,6 +660,91 @@ PacketHistory::AddSmall (bool atStart,
 }
 
 void
+PacketHistory::AddBig (bool atStart,
+                       const PacketHistory::SmallItem *item, 
+                       const PacketHistory::ExtraItem *extraItem)
+{
+  if (m_data == 0)
+    {
+      m_data = PacketHistory::Create (10);
+      memset (m_data->m_data, 0xff, 4);
+    }
+  NS_ASSERT (m_data != 0);
+ append:
+  uint8_t *start = &m_data->m_data[m_used];
+  uint8_t *end = &m_data->m_data[m_data->m_size];
+  if (end - start >= 13 &&
+      CanAdd (atStart) &&
+      (m_data->m_count == 1 ||
+       m_used == m_data->m_dirtyEnd))
+    {
+      uint8_t *buffer = start;
+      uint16_t next, prev;
+      if (atStart)
+        {
+          next = m_head;
+          prev = 0xffff;
+        }
+      else
+        {
+          next = 0xffff;
+          prev = m_tail;
+        }
+
+      Append16 (next, &buffer);
+      Append16 (prev, &buffer);
+      if (TryToAppend (item->typeUid, &buffer, end) &&
+          TryToAppend (item->size, &buffer, end) &&
+          TryToAppend (item->chunkUid, &buffer, end) &&
+          TryToAppend (extraItem->fragmentStart, &buffer, end) &&
+          TryToAppend (extraItem->fragmentEnd, &buffer, end) &&
+          TryToAppend (extraItem->packetUid, &buffer, end))
+        {
+          uintptr_t written = buffer - start;
+          NS_ASSERT (written <= 0xffff);
+          if (m_head == 0xffff)
+            {
+              NS_ASSERT (m_tail == 0xffff);
+              m_head = m_used;
+              m_tail = m_used;
+            } 
+          else if (atStart)
+            {
+              NS_ASSERT (m_head != 0xffff);
+              // overwrite the prev field of the previous head of the list.
+              uint8_t *previousHead = &m_data->m_data[m_head] + 2;
+              Append16 (m_used, &previousHead);
+              // update the head of list to the new node.
+              m_head = m_used;
+            }
+          else
+            {
+              NS_ASSERT (m_tail != 0xffff);
+              // overwrite the next field of the previous tail of the list.
+              uint8_t *previousTail = &m_data->m_data[m_tail];
+              Append16 (m_used, &previousTail);
+              // update the tail of the list to the new node.
+              m_tail = m_used;
+            }
+          NS_ASSERT (m_tail != 0xffff);
+          NS_ASSERT (m_head != 0xffff);
+          m_used += written;
+          m_data->m_dirtyEnd = m_used;
+          return;
+        }
+    }
+  
+  uint32_t n = GetUleb128Size (item->typeUid);
+  n += GetUleb128Size (item->size);
+  n += GetUleb128Size (item->chunkUid);
+  n += 2 + 2;
+  ReserveCopy (n);
+  goto append;
+
+}
+
+
+void
 PacketHistory::ReadSmall (struct PacketHistory::SmallItem *item, const uint8_t **pBuffer) const
 {
   const uint8_t *buffer = *pBuffer;
@@ -877,15 +962,60 @@ PacketHistory::RemoveAtStart (uint32_t start)
     {
       return;
     }
-#if 0
   if (m_data == 0)
     {
-      NS_FATAL_ERROR ("Removing header from empty packet.");
+      NS_FATAL_ERROR ("Removing data from start of empty packet.");
     }
+
+  uint32_t leftToRemove = start;
+  uint16_t current = m_head;
+  uint16_t tail = m_tail;
+  while (current != 0xffff)
+    {
+      const uint8_t *buffer = &m_data->m_data[current];
+      struct PacketHistory::SmallItem item;
+      ReadSmall (&item, &buffer);
+      bool isExtra = (item.typeUid & 0x1) == 0x1;
+      PacketHistory::ExtraItem extraItem;
+      if (isExtra)
+        {
+          ReadExtra (&extraItem, &buffer);
+        }
+      else
+        {
+          extraItem.fragmentStart = 0;
+          extraItem.fragmentEnd = item.size;
+          extraItem.packetUid = m_packetUid;
+        }
+      uint32_t itemRealSize = extraItem.fragmentEnd - extraItem.fragmentStart;
+      if (itemRealSize <= leftToRemove)
+        {
+          // remove from list.
+          m_head = item.next;
+          leftToRemove -= itemRealSize;
+        }
+      else
+        {
+          // fragment the list item.
+          PacketHistory fragment (m_packetUid, 0);
+          extraItem.fragmentStart += leftToRemove;
+          leftToRemove = 0;
+          fragment.AddBig (false, &item, &extraItem);
+          NS_ASSERT (item.size >= extraItem.fragmentEnd - extraItem.fragmentStart &&
+                     extraItem.fragmentStart <= extraItem.fragmentEnd);
+        }
+      if (current == tail)
+        {
+          break;
+        }
+      current = item.next;
+    }
+  NS_ASSERT (leftToRemove == 0);
+#if 0
   struct PacketHistory::SmallItem item;
-  uint8_t *buffer = &m_data->m_data[m_head];
-  bool ok = ReadSmall (&item, &buffer);
-  NS_ASSERT (ok);
+  const uint8_t *buffer = &m_data->m_data[m_head];
+  ReadSmall (&item, &buffer);
+  NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
@@ -895,13 +1025,18 @@ PacketHistory::RemoveAtStart (uint32_t start)
     {
       // this is a "big" item
       struct PacketHistory::ExtraItem extraItem;
-      ok = ReadExtra (&extraItem, &buffer);
-      NS_ASSERT (ok);
+      ReadExtra (&extraItem, &buffer);
+      NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
       if (extraItem.fragmentStart != 0 ||
           extraItem.fragmentEnd != size)
         {
           NS_FATAL_ERROR ("Removing incomplete header.");
         }
+    }
+  m_head = item.next;
+  if (m_head > m_tail)
+    {
+      m_used = m_head;
     }
 
   uint32_t leftToRemove = start;
@@ -1545,7 +1680,10 @@ PacketHistoryTest::RunTests (void)
   p1.RemoveAtStart (3);
   CHECK_HISTORY (p1, 4, 
                  2, 1, 10, 4);
-  p1.RemoveAtStart (2);
+  p1.RemoveAtStart (1);
+  CHECK_HISTORY (p1, 4, 
+                 1, 1, 10, 4);
+  p1.RemoveAtStart (1);
   CHECK_HISTORY (p1, 3, 
                  1, 10, 4);
   p1.RemoveAtEnd (4);
