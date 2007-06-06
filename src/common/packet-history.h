@@ -117,6 +117,10 @@ private:
                     Buffer data, uint32_t offset, const PacketPrinter &printer,
                     std::ostream &os) const;
   uint32_t GetTotalSize (void) const;
+  void ReadItems (uint16_t current, 
+                  struct PacketHistory::SmallItem *item,
+                  struct PacketHistory::ExtraItem *extraItem) const;
+
 
   static struct PacketHistory::Data *Create (uint32_t size);
   static void Recycle (struct PacketHistory::Data *data);

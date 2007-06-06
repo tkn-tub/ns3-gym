@@ -759,6 +759,27 @@ PacketHistory::ReadSmall (struct PacketHistory::SmallItem *item, const uint8_t *
 }
 
 void
+PacketHistory::ReadItems (uint16_t current, 
+                          struct PacketHistory::SmallItem *item,
+                          struct PacketHistory::ExtraItem *extraItem) const
+{
+  const uint8_t *buffer = &m_data->m_data[current];
+  ReadSmall (item, &buffer);
+  bool isExtra = (item->typeUid & 0x1) == 0x1;
+  if (isExtra)
+    {
+      ReadExtra (extraItem, &buffer);
+    }
+  else
+    {
+      extraItem->fragmentStart = 0;
+      extraItem->fragmentEnd = item->size;
+      extraItem->packetUid = m_packetUid;
+    }
+}
+
+
+void
 PacketHistory::ReadExtra (struct PacketHistory::ExtraItem *item, const uint8_t **pBuffer) const
 {
   item->fragmentStart = ReadUleb128 (pBuffer);
@@ -970,23 +991,11 @@ PacketHistory::RemoveAtStart (uint32_t start)
   uint32_t leftToRemove = start;
   uint16_t current = m_head;
   uint16_t tail = m_tail;
-  while (current != 0xffff)
+  while (current != 0xffff && leftToRemove > 0)
     {
-      const uint8_t *buffer = &m_data->m_data[current];
       struct PacketHistory::SmallItem item;
-      ReadSmall (&item, &buffer);
-      bool isExtra = (item.typeUid & 0x1) == 0x1;
       PacketHistory::ExtraItem extraItem;
-      if (isExtra)
-        {
-          ReadExtra (&extraItem, &buffer);
-        }
-      else
-        {
-          extraItem.fragmentStart = 0;
-          extraItem.fragmentEnd = item.size;
-          extraItem.packetUid = m_packetUid;
-        }
+      ReadItems (current, &item, &extraItem);
       uint32_t itemRealSize = extraItem.fragmentEnd - extraItem.fragmentStart;
       if (itemRealSize <= leftToRemove)
         {
@@ -1001,9 +1010,21 @@ PacketHistory::RemoveAtStart (uint32_t start)
           extraItem.fragmentStart += leftToRemove;
           leftToRemove = 0;
           fragment.AddBig (false, &item, &extraItem);
-          NS_ASSERT (item.size >= extraItem.fragmentEnd - extraItem.fragmentStart &&
-                     extraItem.fragmentStart <= extraItem.fragmentEnd);
+          current = item.next;
+          while (current != 0xffff)
+            {
+              ReadItems (current, &item, &extraItem);
+              fragment.AddBig (false, &item, &extraItem);
+              if (current == tail)
+                {
+                  break;
+                }
+              current = item.next;
+            }
+          *this = fragment;
         }
+      NS_ASSERT (item.size >= extraItem.fragmentEnd - extraItem.fragmentStart &&
+                 extraItem.fragmentStart <= extraItem.fragmentEnd);
       if (current == tail)
         {
           break;
