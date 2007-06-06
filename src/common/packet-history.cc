@@ -338,8 +338,7 @@ PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
 {
   if (size > 0)
     {
-      uint16_t written = AddSmall (true, 0, size);
-      Update (true, written);
+      AddSmall (true, 0, size);
     }
 }
 PacketHistory::PacketHistory (PacketHistory const &o)
@@ -612,7 +611,7 @@ PacketHistory::Update (bool atStart, uint16_t written)
   m_data->m_dirtyEnd = m_used;
 }
 
-uint16_t
+void
 PacketHistory::AddSmall (bool atStart,
                          uint32_t typeUid, uint32_t size)
 {
@@ -653,7 +652,8 @@ PacketHistory::AddSmall (bool atStart,
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
-          return written;
+          Update (atStart, written);
+          return;
         }
     }
 
@@ -665,7 +665,7 @@ PacketHistory::AddSmall (bool atStart,
   goto append;
 }
 
-uint16_t
+void
 PacketHistory::AddBig (bool atStart,
                        const PacketHistory::SmallItem *item, 
                        const PacketHistory::ExtraItem *extraItem)
@@ -709,7 +709,8 @@ PacketHistory::AddBig (bool atStart,
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
-          return written;
+          Update (atStart, written);
+          return;
         }
     }
   
@@ -722,8 +723,15 @@ PacketHistory::AddBig (bool atStart,
   n += 2 + 2;
   ReserveCopy (n);
   goto append;
+}
+
+void
+PacketHistory::ReplaceTail (const PacketHistory::SmallItem *item, 
+                            const PacketHistory::ExtraItem *extraItem)
+{
 
 }
+
 
 
 void
@@ -856,8 +864,7 @@ PacketHistory::AddHeader (uint32_t uid, Chunk const & header, uint32_t size)
     {
       return;
     }
-  uint16_t written = AddSmall (true, uid, size);
-  Update (true, written);
+  AddSmall (true, uid, size);
 }
 void 
 PacketHistory::RemoveHeader (uint32_t uid, Chunk const & header, uint32_t size)
@@ -904,8 +911,7 @@ PacketHistory::AddTrailer (uint32_t uid, Chunk const & trailer, uint32_t size)
     {
       return;
     }
-  uint16_t written = AddSmall (false, uid, size);
-  Update (false, written);
+  AddSmall (false, uid, size);
 }
 void 
 PacketHistory::RemoveTrailer (uint32_t uid, Chunk const & trailer, uint32_t size)
@@ -979,14 +985,11 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
           // add at tail
           lastExtraItem.fragmentEnd = extraItem.fragmentEnd;
           NS_ASSERT (m_tail == lastTail);
-          uint16_t written = AddBig (false, &lastItem, &lastExtraItem);
-          m_used += written;
-          m_data->m_dirtyEnd = m_used;
+          ReplaceTail (&lastItem, &lastExtraItem);
         }
       else
         {
-          uint16_t written = AddBig (false, &item, &extraItem);
-          Update (false, written);
+          AddBig (false, &item, &extraItem);
         }
       current = item.next;
       if (current == o.m_tail)
@@ -1035,14 +1038,12 @@ PacketHistory::RemoveAtStart (uint32_t start)
           PacketHistory fragment (m_packetUid, 0);
           extraItem.fragmentStart += leftToRemove;
           leftToRemove = 0;
-          uint16_t written = fragment.AddBig (false, &item, &extraItem);
-          fragment.Update (false, written);
+          fragment.AddBig (false, &item, &extraItem);
           current = item.next;
           while (current != 0xffff)
             {
               ReadItems (current, &item, &extraItem);
-              written = fragment.AddBig (false, &item, &extraItem);
-              fragment.Update (false, written);
+              fragment.AddBig (false, &item, &extraItem);
               if (current == m_tail)
                 {
                   break;
@@ -1094,14 +1095,12 @@ PacketHistory::RemoveAtEnd (uint32_t end)
           NS_ASSERT (extraItem.fragmentEnd > leftToRemove);
           extraItem.fragmentEnd -= leftToRemove;
           leftToRemove = 0;
-          uint16_t written = fragment.AddBig (true, &item, &extraItem);
-          fragment.Update (true, written);
+          fragment.AddBig (true, &item, &extraItem);
           current = item.prev;
           while (current != 0xffff)
             {
               ReadItems (current, &item, &extraItem);
-              uint16_t written = fragment.AddBig (true, &item, &extraItem);
-              fragment.Update (true, written);
+              fragment.AddBig (true, &item, &extraItem);
               if (current == m_head)
                 {
                   break;
