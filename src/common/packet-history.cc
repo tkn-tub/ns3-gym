@@ -329,69 +329,6 @@ PacketHistory::Enable (void)
   m_enable = true;
 }
 
-PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
-  : m_data (0),
-    m_head (0xffff),
-    m_tail (0xffff),
-    m_used (0),
-    m_packetUid (uid)
-{
-  if (size > 0)
-    {
-      DoAddHeader (0, size);
-    }
-}
-PacketHistory::PacketHistory (PacketHistory const &o)
-  : m_data (o.m_data),
-    m_head (o.m_head),
-    m_tail (o.m_tail),
-    m_used (o.m_used),
-    m_packetUid (o.m_packetUid)
-{
-  if (m_data != 0) 
-    {
-      m_data->m_count++;
-    }
-}
-PacketHistory &
-PacketHistory::operator = (PacketHistory const& o)
-{
-  if (m_data == o.m_data) 
-    {
-      // self assignment
-      return *this;
-    }
-  if (m_data != 0) 
-    {
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          PacketHistory::Recycle (m_data);
-        }
-    }
-  m_data = o.m_data;
-  m_head = o.m_head;
-  m_tail = o.m_tail;
-  m_used = o.m_used;
-  m_packetUid = o.m_packetUid;
-  if (m_data != 0) 
-    {
-      m_data->m_count++;
-    }
-  return *this;
-}
-PacketHistory::~PacketHistory ()
-{
-  if (m_data != 0) 
-    {
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          PacketHistory::Recycle (m_data);
-        }
-    }
-}
-
 void
 PacketHistory::ReserveCopy (uint32_t size)
 {
