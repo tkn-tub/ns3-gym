@@ -570,7 +570,7 @@ PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
 }
 
 void
-PacketHistory::Update (bool atStart, uint16_t written)
+PacketHistory::UpdateTail (uint16_t written)
 {
   if (m_head == 0xffff)
     {
@@ -578,15 +578,6 @@ PacketHistory::Update (bool atStart, uint16_t written)
       m_head = m_used;
       m_tail = m_used;
     } 
-  else if (atStart)
-    {
-      NS_ASSERT (m_head != 0xffff);
-      // overwrite the prev field of the previous head of the list.
-      uint8_t *previousHead = &m_data->m_data[m_head] + 2;
-      Append16 (m_used, previousHead);
-      // update the head of list to the new node.
-      m_head = m_used;
-    }
   else
     {
       NS_ASSERT (m_tail != 0xffff);
@@ -595,6 +586,31 @@ PacketHistory::Update (bool atStart, uint16_t written)
       Append16 (m_used, previousTail);
       // update the tail of the list to the new node.
       m_tail = m_used;
+    }
+  NS_ASSERT (m_tail != 0xffff);
+  NS_ASSERT (m_head != 0xffff);
+  m_used += written;
+  m_data->m_dirtyEnd = m_used;
+}
+
+
+void
+PacketHistory::UpdateHead (uint16_t written)
+{
+  if (m_head == 0xffff)
+    {
+      NS_ASSERT (m_tail == 0xffff);
+      m_head = m_used;
+      m_tail = m_used;
+    } 
+  else
+    {
+      NS_ASSERT (m_head != 0xffff);
+      // overwrite the prev field of the previous head of the list.
+      uint8_t *previousHead = &m_data->m_data[m_head + 2];
+      Append16 (m_used, previousHead);
+      // update the head of list to the new node.
+      m_head = m_used;
     }
   NS_ASSERT (m_tail != 0xffff);
   NS_ASSERT (m_head != 0xffff);
@@ -745,11 +761,11 @@ PacketHistory::ReplaceTail (const PacketHistory::SmallItem *item,
       PacketHistory::ExtraItem tmpExtraItem;
       ReadItems (current, &tmpItem, &tmpExtraItem);
       uint16_t written = h.AddBig (false, &tmpItem, &tmpExtraItem);
-      h.Update (false, written);
+      h.UpdateTail (written);
     }
   // append new tail.
   uint16_t written = h.AddBig (false, item, extraItem);
-  h.Update (false, written);
+  h.UpdateTail (written);
 
   *this = h;
 }
@@ -895,7 +911,7 @@ PacketHistory::DoAddHeader (uint32_t uid, uint32_t size)
   item.chunkUid = m_chunkUid;
   m_chunkUid++;
   uint16_t written = AddSmall (&item);
-  Update (true, written);
+  UpdateHead (written);
 }
 void 
 PacketHistory::DoRemoveHeader (uint32_t uid, uint32_t size)
@@ -950,7 +966,7 @@ PacketHistory::DoAddTrailer (uint32_t uid, uint32_t size)
   item.chunkUid = m_chunkUid;
   m_chunkUid++;
   uint16_t written = AddSmall (&item);
-  Update (false, written);
+  UpdateTail (written);
 }
 void 
 PacketHistory::DoRemoveTrailer (uint32_t uid, uint32_t size)
@@ -1036,7 +1052,7 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
         {
           // append the extra items.
           uint16_t written = AddBig (false, &item, &extraItem);
-          Update (false, written);
+          UpdateTail (written);
         }
       if (current == o.m_tail)
         {
@@ -1086,13 +1102,13 @@ PacketHistory::RemoveAtStart (uint32_t start)
           extraItem.fragmentStart += leftToRemove;
           leftToRemove = 0;
           uint16_t written = fragment.AddBig (false, &item, &extraItem);
-          fragment.Update (false, written);
+          fragment.UpdateTail (written);
           current = item.next;
           while (current != 0xffff)
             {
               ReadItems (current, &item, &extraItem);
               written = fragment.AddBig (false, &item, &extraItem);
-              fragment.Update (false, written);
+              fragment.UpdateTail (written);
               if (current == m_tail)
                 {
                   break;
@@ -1145,13 +1161,13 @@ PacketHistory::RemoveAtEnd (uint32_t end)
           extraItem.fragmentEnd -= leftToRemove;
           leftToRemove = 0;
           uint16_t written = fragment.AddBig (true, &item, &extraItem);
-          fragment.Update (true, written);
+          fragment.UpdateHead (written);
           current = item.prev;
           while (current != 0xffff)
             {
               ReadItems (current, &item, &extraItem);
               written = fragment.AddBig (true, &item, &extraItem);
-              fragment.Update (true, written);
+              fragment.UpdateHead (written);
               if (current == m_head)
                 {
                   break;
