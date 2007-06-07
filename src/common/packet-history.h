@@ -98,7 +98,7 @@ private:
   void DoAddTrailer (uint32_t uid, uint32_t size);
   void DoRemoveTrailer (uint32_t uid, uint32_t size);
 
-  uint16_t AddSmall (const PacketHistory::SmallItem *item);
+  inline uint16_t AddSmall (const PacketHistory::SmallItem *item);
   uint16_t AddBig (uint32_t head, uint32_t tail,
                    const PacketHistory::SmallItem *item, 
                    const PacketHistory::ExtraItem *extraItem);
@@ -108,7 +108,7 @@ private:
   inline void UpdateHead (uint16_t written);
   inline void UpdateTail (uint16_t written);
   uint32_t GetUleb128Size (uint32_t value) const;
-  inline uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
+  uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
   inline void Append16 (uint16_t value, uint8_t *buffer);
   inline bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
   inline bool TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end);
