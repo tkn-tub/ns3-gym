@@ -97,7 +97,10 @@ PacketPrinter::PrintChunk (uint32_t chunkUid,
   struct PacketPrinter::FragmentInformation info;
   info.start = 0;
   info.end = size;
-  m_defaultPrinter (os, packetUid, size, name, info);
+  if (!m_defaultPrinter.IsNull ())
+    {
+      m_defaultPrinter (os, packetUid, size, name, info);
+    }
 }
 void 
 PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
@@ -122,7 +125,10 @@ PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
           return;
         }
     }
-  m_defaultPrinter (os, packetUid, size, name, info);
+  if (!m_defaultPrinter.IsNull ())
+    {
+      m_defaultPrinter (os, packetUid, size, name, info);
+    }
 }
 void 
 PacketPrinter::PrintPayload (std::ostream &os, uint32_t packetUid, uint32_t size,
