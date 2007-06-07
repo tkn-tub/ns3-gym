@@ -645,12 +645,6 @@ PacketHistory::UpdateHead (uint16_t written)
 uint16_t
 PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
 {
-  if (m_data == 0)
-    {
-      m_data = PacketHistory::Create (10);
-      memset (m_data->m_data, 0xff, 4);
-      NS_ASSERT (m_head == 0xffff && m_tail == 0xffff);
-    }
   NS_ASSERT (m_data != 0);
 #if 1
  append:
@@ -721,12 +715,6 @@ PacketHistory::AddBig (uint32_t next, uint32_t prev,
                        const PacketHistory::SmallItem *item, 
                        const PacketHistory::ExtraItem *extraItem)
 {
-  if (m_data == 0)
-    {
-      m_data = PacketHistory::Create (10);
-      memset (m_data->m_data, 0xff, 4);
-      NS_ASSERT (m_head == 0xffff && m_tail == 0xffff);
-    }
   NS_ASSERT (m_data != 0);
   uint32_t typeUid = ((item->typeUid & 0x1) == 0x1)?item->typeUid:item->typeUid+1;
  append:
@@ -951,10 +939,6 @@ PacketHistory::DoRemoveHeader (uint32_t uid, uint32_t size)
     {
       return;
     }
-  if (m_data == 0)
-    {
-      NS_FATAL_ERROR ("Removing header from empty packet.");
-    }
   struct PacketHistory::SmallItem item;
   struct PacketHistory::ExtraItem extraItem;
   ReadItems (m_head, &item, &extraItem);
@@ -999,10 +983,6 @@ PacketHistory::DoRemoveTrailer (uint32_t uid, uint32_t size)
     {
       return;
     }
-  if (m_data == 0)
-    {
-      NS_FATAL_ERROR ("Removing trailer from empty packet.");
-    }
   struct PacketHistory::SmallItem item;
   struct PacketHistory::ExtraItem extraItem;
   ReadItems (m_tail, &item, &extraItem);
@@ -1030,7 +1010,7 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
     {
       return;
     }
-  if (m_data == 0 || m_tail == 0xffff)
+  if (m_tail == 0xffff)
     {
       *this = o;
       return;
@@ -1093,11 +1073,7 @@ PacketHistory::RemoveAtStart (uint32_t start)
     {
       return;
     }
-  if (m_data == 0)
-    {
-      NS_FATAL_ERROR ("Removing data from start of empty packet.");
-    }
-
+  NS_ASSERT (m_data != 0);
   uint32_t leftToRemove = start;
   uint16_t current = m_head;
   while (current != 0xffff && leftToRemove > 0)
@@ -1153,10 +1129,7 @@ PacketHistory::RemoveAtEnd (uint32_t end)
     {
       return;
     }
-  if (m_data == 0)
-    {
-      NS_FATAL_ERROR ("Removing data from start of empty packet.");
-    }
+  NS_ASSERT (m_data != 0);
 
   uint32_t leftToRemove = end;
   uint16_t current = m_tail;
@@ -1282,10 +1255,7 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
     {
       return;
     }
-  if (m_data == 0)
-    {
-      return;
-    }
+  NS_ASSERT (m_data != 0);
   NS_ASSERT (GetTotalSize () == data.GetSize ());
   if (printer.m_forward)
     {
