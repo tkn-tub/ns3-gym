@@ -280,7 +280,7 @@ public:
       : m_impl (impl)
   {}
 
-  bool IsNull (void) {
+  bool IsNull (void) const {
     return (PeekImpl () == 0)?true:false;
   }
   void Nullify (void) {
