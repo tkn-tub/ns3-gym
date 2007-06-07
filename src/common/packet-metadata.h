@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef PACKET_HISTORY_H
-#define PACKET_HISTORY_H
+#ifndef PACKET_METADATA_H
+#define PACKET_METADATA_H
 
 #include <stdint.h>
 #include <vector>
@@ -32,15 +32,15 @@ namespace ns3 {
 class Chunk;
 class Buffer;
 
-class PacketHistory {
+class PacketMetadata {
 public:
   static void Enable (void);
   static void SetOptOne (bool optOne);
 
-  inline PacketHistory (uint32_t uid, uint32_t size);
-  inline PacketHistory (PacketHistory const &o);
-  inline PacketHistory &operator = (PacketHistory const& o);
-  inline ~PacketHistory ();
+  inline PacketMetadata (uint32_t uid, uint32_t size);
+  inline PacketMetadata (PacketMetadata const &o);
+  inline PacketMetadata &operator = (PacketMetadata const& o);
+  inline ~PacketMetadata ();
 
   template <typename T>
   void AddHeader (T const &header, uint32_t size);
@@ -52,8 +52,8 @@ public:
   template <typename T>
   void RemoveTrailer (T const &trailer, uint32_t size);
 
-  PacketHistory CreateFragment (uint32_t start, uint32_t end) const;
-  void AddAtEnd (PacketHistory const&o);
+  PacketMetadata CreateFragment (uint32_t start, uint32_t end) const;
+  void AddAtEnd (PacketMetadata const&o);
   void AddPaddingAtEnd (uint32_t end);
   void RemoveAtStart (uint32_t start);
   void RemoveAtEnd (uint32_t end);
@@ -90,18 +90,18 @@ private:
 
   typedef std::vector<struct Data *> DataFreeList;
   
-  PacketHistory ();
+  PacketMetadata ();
   void DoAddHeader (uint32_t uid, uint32_t size);
   void DoRemoveHeader (uint32_t uid, uint32_t size);
   void DoAddTrailer (uint32_t uid, uint32_t size);
   void DoRemoveTrailer (uint32_t uid, uint32_t size);
 
-  inline uint16_t AddSmall (const PacketHistory::SmallItem *item);
+  inline uint16_t AddSmall (const PacketMetadata::SmallItem *item);
   uint16_t AddBig (uint32_t head, uint32_t tail,
-                   const PacketHistory::SmallItem *item, 
-                   const PacketHistory::ExtraItem *extraItem);
-  void ReplaceTail (PacketHistory::SmallItem *item, 
-                    PacketHistory::ExtraItem *extraItem,
+                   const PacketMetadata::SmallItem *item, 
+                   const PacketMetadata::ExtraItem *extraItem);
+  void ReplaceTail (PacketMetadata::SmallItem *item, 
+                    PacketMetadata::ExtraItem *extraItem,
                     uint32_t available);
   inline void UpdateHead (uint16_t written);
   inline void UpdateTail (uint16_t written);
@@ -116,19 +116,19 @@ private:
   void AppendValueExtra (uint32_t value, uint8_t *buffer);
   inline void Reserve (uint32_t n);
   void ReserveCopy (uint32_t n);
-  uint32_t DoPrint (struct PacketHistory::SmallItem *item, uint32_t current,
+  uint32_t DoPrint (struct PacketMetadata::SmallItem *item, uint32_t current,
                     Buffer data, uint32_t offset, const PacketPrinter &printer,
                     std::ostream &os) const;
   uint32_t GetTotalSize (void) const;
   uint32_t ReadItems (uint16_t current, 
-                      struct PacketHistory::SmallItem *item,
-                      struct PacketHistory::ExtraItem *extraItem) const;
+                      struct PacketMetadata::SmallItem *item,
+                      struct PacketMetadata::ExtraItem *extraItem) const;
 
 
-  static struct PacketHistory::Data *Create (uint32_t size);
-  static void Recycle (struct PacketHistory::Data *data);
-  static struct PacketHistory::Data *Allocate (uint32_t n);
-  static void Deallocate (struct PacketHistory::Data *data);
+  static struct PacketMetadata::Data *Create (uint32_t size);
+  static void Recycle (struct PacketMetadata::Data *data);
+  static struct PacketMetadata::Data *Allocate (uint32_t n);
+  static void Deallocate (struct PacketMetadata::Data *data);
   
   static DataFreeList m_freeList;
   static bool m_enable;
@@ -148,33 +148,33 @@ namespace ns3 {
 
 template <typename T>
 void 
-PacketHistory::AddHeader (T const &header, uint32_t size)
+PacketMetadata::AddHeader (T const &header, uint32_t size)
 {
   DoAddHeader (PacketPrinter::GetHeaderUid<T> (), size);
 }
 
 template <typename T>
 void 
-PacketHistory::RemoveHeader (T const &header, uint32_t size)
+PacketMetadata::RemoveHeader (T const &header, uint32_t size)
 {
   DoRemoveHeader (PacketPrinter::GetHeaderUid<T> (), size);
 }
 template <typename T>
 void 
-PacketHistory::AddTrailer (T const &trailer, uint32_t size)
+PacketMetadata::AddTrailer (T const &trailer, uint32_t size)
 {
   DoAddTrailer (PacketPrinter::GetTrailerUid<T> (), size);
 }
 template <typename T>
 void 
-PacketHistory::RemoveTrailer (T const &trailer, uint32_t size)
+PacketMetadata::RemoveTrailer (T const &trailer, uint32_t size)
 {
   DoRemoveTrailer (PacketPrinter::GetTrailerUid<T> (), size);
 }
 
 
-PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
-  : m_data (m_data = PacketHistory::Create (10)),
+PacketMetadata::PacketMetadata (uint32_t uid, uint32_t size)
+  : m_data (m_data = PacketMetadata::Create (10)),
     m_head (0xffff),
     m_tail (0xffff),
     m_used (0),
@@ -186,7 +186,7 @@ PacketHistory::PacketHistory (uint32_t uid, uint32_t size)
       DoAddHeader (0, size);
     }
 }
-PacketHistory::PacketHistory (PacketHistory const &o)
+PacketMetadata::PacketMetadata (PacketMetadata const &o)
   : m_data (o.m_data),
     m_head (o.m_head),
     m_tail (o.m_tail),
@@ -196,8 +196,8 @@ PacketHistory::PacketHistory (PacketHistory const &o)
   NS_ASSERT (m_data != 0);
   m_data->m_count++;
 }
-PacketHistory &
-PacketHistory::operator = (PacketHistory const& o)
+PacketMetadata &
+PacketMetadata::operator = (PacketMetadata const& o)
 {
   if (m_data == o.m_data) 
     {
@@ -208,7 +208,7 @@ PacketHistory::operator = (PacketHistory const& o)
   m_data->m_count--;
   if (m_data->m_count == 0) 
     {
-      PacketHistory::Recycle (m_data);
+      PacketMetadata::Recycle (m_data);
     }
   m_data = o.m_data;
   m_head = o.m_head;
@@ -219,17 +219,17 @@ PacketHistory::operator = (PacketHistory const& o)
   m_data->m_count++;
   return *this;
 }
-PacketHistory::~PacketHistory ()
+PacketMetadata::~PacketMetadata ()
 {
   NS_ASSERT (m_data != 0);
   m_data->m_count--;
   if (m_data->m_count == 0) 
     {
-      PacketHistory::Recycle (m_data);
+      PacketMetadata::Recycle (m_data);
     }
 }
 
 }; // namespace ns3
 
 
-#endif /* PACKET_HISTORY_H */
+#endif /* PACKET_METADATA_H */

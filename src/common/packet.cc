@@ -52,7 +52,7 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
   i.Write (buffer, size);
 }
 
-Packet::Packet (Buffer buffer, Tags tags, PacketHistory history, uint32_t uid)
+Packet::Packet (Buffer buffer, Tags tags, PacketMetadata history, uint32_t uid)
   : m_buffer (buffer),
     m_tags (tags),
     m_history (history),
@@ -65,7 +65,7 @@ Packet::CreateFragment (uint32_t start, uint32_t length) const
   Buffer buffer = m_buffer.CreateFragment (start, length);
   NS_ASSERT (m_buffer.GetSize () >= start + length);
   uint32_t end = m_buffer.GetSize () - (start + length);
-  PacketHistory history = m_history.CreateFragment (start, end);
+  PacketMetadata history = m_history.CreateFragment (start, end);
   return Packet (buffer, m_tags, history, m_uid);
 }
 
@@ -144,7 +144,7 @@ Packet::Print (std::ostream &os, const PacketPrinter &printer) const
 void
 Packet::EnableMetadata (void)
 {
-  PacketHistory::Enable ();
+  PacketMetadata::Enable ();
 }
 
 }; // namespace ns3

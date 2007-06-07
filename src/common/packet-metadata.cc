@@ -27,38 +27,38 @@
 #include "chunk.h"
 #include "buffer.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("PacketHistory");
+NS_DEBUG_COMPONENT_DEFINE ("PacketMetadata");
 
 namespace ns3 {
 
-bool PacketHistory::m_enable = false;
-uint32_t PacketHistory::m_maxSize = 0;
-uint16_t PacketHistory::m_chunkUid = 0;
-PacketHistory::DataFreeList PacketHistory::m_freeList;
+bool PacketMetadata::m_enable = false;
+uint32_t PacketMetadata::m_maxSize = 0;
+uint16_t PacketMetadata::m_chunkUid = 0;
+PacketMetadata::DataFreeList PacketMetadata::m_freeList;
 bool g_optOne = false;
 
 void 
-PacketHistory::Enable (void)
+PacketMetadata::Enable (void)
 {
   m_enable = true;
 }
 
 void 
-PacketHistory::SetOptOne (bool optOne)
+PacketMetadata::SetOptOne (bool optOne)
 {
   g_optOne = optOne;
 }
 
 void
-PacketHistory::ReserveCopy (uint32_t size)
+PacketMetadata::ReserveCopy (uint32_t size)
 {
-  struct PacketHistory::Data *newData = PacketHistory::Create (m_used + size);
+  struct PacketMetadata::Data *newData = PacketMetadata::Create (m_used + size);
   memcpy (newData->m_data, m_data->m_data, m_used);
   newData->m_dirtyEnd = m_used;
   m_data->m_count--;
   if (m_data->m_count == 0) 
     {
-      PacketHistory::Recycle (m_data);
+      PacketMetadata::Recycle (m_data);
     }
   m_data = newData;
   if (m_head != 0xffff)
@@ -74,7 +74,7 @@ PacketHistory::ReserveCopy (uint32_t size)
     }
 }
 void
-PacketHistory::Reserve (uint32_t size)
+PacketMetadata::Reserve (uint32_t size)
 {
   NS_ASSERT (m_data != 0);
   if (m_data->m_size >= m_used + size &&
@@ -92,7 +92,7 @@ PacketHistory::Reserve (uint32_t size)
 }
 
 uint32_t 
-PacketHistory::GetUleb128Size (uint32_t value) const
+PacketMetadata::GetUleb128Size (uint32_t value) const
 {
   if (value < 0x80)
     {
@@ -113,7 +113,7 @@ PacketHistory::GetUleb128Size (uint32_t value) const
   return 5;
 }
 uint32_t
-PacketHistory::ReadUleb128 (const uint8_t **pBuffer) const
+PacketMetadata::ReadUleb128 (const uint8_t **pBuffer) const
 {
   const uint8_t *buffer = *pBuffer;
   uint32_t result = 0;
@@ -162,14 +162,14 @@ PacketHistory::ReadUleb128 (const uint8_t **pBuffer) const
 }
 
 void
-PacketHistory::Append16 (uint16_t value, uint8_t *buffer)
+PacketMetadata::Append16 (uint16_t value, uint8_t *buffer)
 {
   buffer[0] = value & 0xff;
   value >>= 8;
   buffer[1] = value;
 }
 bool
-PacketHistory::TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end)
+PacketMetadata::TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end)
 {
   uint8_t *start = *pBuffer;
   if (value < 0x80 && start < end)
@@ -190,7 +190,7 @@ PacketHistory::TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end)
   return false;
 }
 bool
-PacketHistory::TryToAppend16 (uint16_t value,  uint8_t **pBuffer, uint8_t *end)
+PacketMetadata::TryToAppend16 (uint16_t value,  uint8_t **pBuffer, uint8_t *end)
 {
   uint8_t *start = *pBuffer;
   if (start + 1 < end)
@@ -203,7 +203,7 @@ PacketHistory::TryToAppend16 (uint16_t value,  uint8_t **pBuffer, uint8_t *end)
   return false;
 }
 bool
-PacketHistory::TryToAppend32 (uint32_t value,  uint8_t **pBuffer, uint8_t *end)
+PacketMetadata::TryToAppend32 (uint32_t value,  uint8_t **pBuffer, uint8_t *end)
 {
   uint8_t *start = *pBuffer;
   if (start + 3 < end)
@@ -218,7 +218,7 @@ PacketHistory::TryToAppend32 (uint32_t value,  uint8_t **pBuffer, uint8_t *end)
   return false;
 }
 bool
-PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
+PacketMetadata::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
 {
   uint8_t *start = *pBuffer;
   if (value < 0x80 && start < end)
@@ -286,7 +286,7 @@ PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
 }
 
 void
-PacketHistory::AppendValueExtra (uint32_t value, uint8_t *buffer)
+PacketMetadata::AppendValueExtra (uint32_t value, uint8_t *buffer)
 {
   if (value < 0x200000)
     {
@@ -332,7 +332,7 @@ PacketHistory::AppendValueExtra (uint32_t value, uint8_t *buffer)
 }
 
 void
-PacketHistory::AppendValue (uint32_t value, uint8_t *buffer)
+PacketMetadata::AppendValue (uint32_t value, uint8_t *buffer)
 {
   if (value < 0x80)
     {
@@ -351,7 +351,7 @@ PacketHistory::AppendValue (uint32_t value, uint8_t *buffer)
 }
 
 void
-PacketHistory::UpdateTail (uint16_t written)
+PacketMetadata::UpdateTail (uint16_t written)
 {
   if (m_head == 0xffff)
     {
@@ -376,7 +376,7 @@ PacketHistory::UpdateTail (uint16_t written)
 
 
 void
-PacketHistory::UpdateHead (uint16_t written)
+PacketMetadata::UpdateHead (uint16_t written)
 {
   if (m_head == 0xffff)
     {
@@ -400,7 +400,7 @@ PacketHistory::UpdateHead (uint16_t written)
 }
 
 uint16_t
-PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
+PacketMetadata::AddSmall (const struct PacketMetadata::SmallItem *item)
 {
   NS_ASSERT (m_data != 0);
   if (g_optOne)
@@ -464,9 +464,9 @@ PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
 }
 
 uint16_t
-PacketHistory::AddBig (uint32_t next, uint32_t prev, 
-                       const PacketHistory::SmallItem *item, 
-                       const PacketHistory::ExtraItem *extraItem)
+PacketMetadata::AddBig (uint32_t next, uint32_t prev, 
+                       const PacketMetadata::SmallItem *item, 
+                       const PacketMetadata::ExtraItem *extraItem)
 {
   NS_ASSERT (m_data != 0);
   uint32_t typeUid = ((item->typeUid & 0x1) == 0x1)?item->typeUid:item->typeUid+1;
@@ -509,8 +509,8 @@ PacketHistory::AddBig (uint32_t next, uint32_t prev,
 }
 
 void
-PacketHistory::ReplaceTail (PacketHistory::SmallItem *item, 
-                            PacketHistory::ExtraItem *extraItem,
+PacketMetadata::ReplaceTail (PacketMetadata::SmallItem *item, 
+                            PacketMetadata::ExtraItem *extraItem,
                             uint32_t available)
 {
   NS_ASSERT (m_data != 0);  
@@ -538,12 +538,12 @@ PacketHistory::ReplaceTail (PacketHistory::SmallItem *item,
     }
   
   // create a copy of the packet.
-  PacketHistory h (m_packetUid, 0);
+  PacketMetadata h (m_packetUid, 0);
   uint16_t current = m_head;
   while (current != 0xffff && current != m_tail)
     {
-      struct PacketHistory::SmallItem tmpItem;
-      PacketHistory::ExtraItem tmpExtraItem;
+      struct PacketMetadata::SmallItem tmpItem;
+      PacketMetadata::ExtraItem tmpExtraItem;
       ReadItems (current, &tmpItem, &tmpExtraItem);
       uint16_t written = h.AddBig (0xffff, h.m_tail, 
                                    &tmpItem, &tmpExtraItem);
@@ -557,9 +557,9 @@ PacketHistory::ReplaceTail (PacketHistory::SmallItem *item,
 }
 
 uint32_t
-PacketHistory::ReadItems (uint16_t current, 
-                          struct PacketHistory::SmallItem *item,
-                          struct PacketHistory::ExtraItem *extraItem) const
+PacketMetadata::ReadItems (uint16_t current, 
+                          struct PacketMetadata::SmallItem *item,
+                          struct PacketMetadata::ExtraItem *extraItem) const
 {
   const uint8_t *buffer = &m_data->m_data[current];
   item->next = buffer[0];
@@ -594,8 +594,8 @@ PacketHistory::ReadItems (uint16_t current,
   return buffer - &m_data->m_data[current];
 }
 
-struct PacketHistory::Data *
-PacketHistory::Create (uint32_t size)
+struct PacketMetadata::Data *
+PacketMetadata::Create (uint32_t size)
 {
   NS_DEBUG ("create size="<<size<<", max="<<m_maxSize);
   if (size > m_maxSize)
@@ -604,7 +604,7 @@ PacketHistory::Create (uint32_t size)
     }
   while (!m_freeList.empty ()) 
     {
-      struct PacketHistory::Data *data = m_freeList.back ();
+      struct PacketMetadata::Data *data = m_freeList.back ();
       m_freeList.pop_back ();
       if (data->m_size >= size) 
         {
@@ -612,22 +612,22 @@ PacketHistory::Create (uint32_t size)
           data->m_count = 1;
           return data;
         }
-      PacketHistory::Deallocate (data);
+      PacketMetadata::Deallocate (data);
       NS_DEBUG ("create dealloc size="<<data->m_size);
     }
   NS_DEBUG ("create alloc size="<<m_maxSize);
-  return PacketHistory::Allocate (m_maxSize);
+  return PacketMetadata::Allocate (m_maxSize);
 }
 
 void
-PacketHistory::Recycle (struct PacketHistory::Data *data)
+PacketMetadata::Recycle (struct PacketMetadata::Data *data)
 {
   NS_DEBUG ("recycle size="<<data->m_size<<", list="<<m_freeList.size ());
   NS_ASSERT (data->m_count == 0);
   if (m_freeList.size () > 1000 ||
       data->m_size < m_maxSize) 
     {
-      PacketHistory::Deallocate (data);
+      PacketMetadata::Deallocate (data);
     } 
   else 
     {
@@ -635,8 +635,8 @@ PacketHistory::Recycle (struct PacketHistory::Data *data)
     }
 }
 
-struct PacketHistory::Data *
-PacketHistory::Allocate (uint32_t n)
+struct PacketMetadata::Data *
+PacketMetadata::Allocate (uint32_t n)
 {
   uint32_t size = sizeof (struct Data);
   if (n <= 10)
@@ -645,37 +645,37 @@ PacketHistory::Allocate (uint32_t n)
     }
   size += n - 10;
   uint8_t *buf = new uint8_t [size];
-  struct PacketHistory::Data *data = (struct PacketHistory::Data *)buf;
+  struct PacketMetadata::Data *data = (struct PacketMetadata::Data *)buf;
   data->m_size = n;
   data->m_count = 1;
   data->m_dirtyEnd = 0;
   return data;
 }
 void 
-PacketHistory::Deallocate (struct PacketHistory::Data *data)
+PacketMetadata::Deallocate (struct PacketMetadata::Data *data)
 {
   uint8_t *buf = (uint8_t *)data;
   delete [] buf;
 }
 
 
-PacketHistory 
-PacketHistory::CreateFragment (uint32_t start, uint32_t end) const
+PacketMetadata 
+PacketMetadata::CreateFragment (uint32_t start, uint32_t end) const
 {
-  PacketHistory fragment = *this;
+  PacketMetadata fragment = *this;
   fragment.RemoveAtStart (start);
   fragment.RemoveAtEnd (end);
   return fragment;
 }
 
 void 
-PacketHistory::DoAddHeader (uint32_t uid, uint32_t size)
+PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
 {
   if (!m_enable)
     {
       return;
     }
-  struct PacketHistory::SmallItem item;
+  struct PacketMetadata::SmallItem item;
   item.next = m_head;
   item.prev = 0xffff;
   item.typeUid = uid;
@@ -686,14 +686,14 @@ PacketHistory::DoAddHeader (uint32_t uid, uint32_t size)
   UpdateHead (written);
 }
 void 
-PacketHistory::DoRemoveHeader (uint32_t uid, uint32_t size)
+PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
 {
   if (!m_enable) 
     {
       return;
     }
-  struct PacketHistory::SmallItem item;
-  struct PacketHistory::ExtraItem extraItem;
+  struct PacketMetadata::SmallItem item;
+  struct PacketMetadata::ExtraItem extraItem;
   ReadItems (m_head, &item, &extraItem);
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
@@ -713,13 +713,13 @@ PacketHistory::DoRemoveHeader (uint32_t uid, uint32_t size)
     }
 }
 void 
-PacketHistory::DoAddTrailer (uint32_t uid, uint32_t size)
+PacketMetadata::DoAddTrailer (uint32_t uid, uint32_t size)
 {
   if (!m_enable)
     {
       return;
     }
-  struct PacketHistory::SmallItem item;
+  struct PacketMetadata::SmallItem item;
   item.next = 0xffff;
   item.prev = m_tail;
   item.typeUid = uid;
@@ -730,14 +730,14 @@ PacketHistory::DoAddTrailer (uint32_t uid, uint32_t size)
   UpdateTail (written);
 }
 void 
-PacketHistory::DoRemoveTrailer (uint32_t uid, uint32_t size)
+PacketMetadata::DoRemoveTrailer (uint32_t uid, uint32_t size)
 {
   if (!m_enable) 
     {
       return;
     }
-  struct PacketHistory::SmallItem item;
-  struct PacketHistory::ExtraItem extraItem;
+  struct PacketMetadata::SmallItem item;
+  struct PacketMetadata::ExtraItem extraItem;
   ReadItems (m_tail, &item, &extraItem);
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
@@ -757,7 +757,7 @@ PacketHistory::DoRemoveTrailer (uint32_t uid, uint32_t size)
     }
 }
 void
-PacketHistory::AddAtEnd (PacketHistory const&o)
+PacketMetadata::AddAtEnd (PacketMetadata const&o)
 {
   if (!m_enable) 
     {
@@ -772,8 +772,8 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
 
   uint16_t lastTail;
   lastTail = m_tail;
-  struct PacketHistory::SmallItem lastItem;
-  PacketHistory::ExtraItem lastExtraItem;
+  struct PacketMetadata::SmallItem lastItem;
+  PacketMetadata::ExtraItem lastExtraItem;
   uint32_t lastTailSize = ReadItems (m_tail, &lastItem, &lastExtraItem);
   if (m_tail + lastTailSize == m_used &&
       m_used == m_data->m_dirtyEnd)
@@ -784,8 +784,8 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
   uint16_t current = o.m_head;
   while (current != 0xffff)
     {
-      struct PacketHistory::SmallItem item;
-      PacketHistory::ExtraItem extraItem;
+      struct PacketMetadata::SmallItem item;
+      PacketMetadata::ExtraItem extraItem;
       o.ReadItems (current, &item, &extraItem);
       if (extraItem.packetUid == lastExtraItem.packetUid &&
           item.typeUid == lastItem.typeUid &&
@@ -812,7 +812,7 @@ PacketHistory::AddAtEnd (PacketHistory const&o)
     }
 }
 void
-PacketHistory::AddPaddingAtEnd (uint32_t end)
+PacketMetadata::AddPaddingAtEnd (uint32_t end)
 {
   if (!m_enable)
     {
@@ -820,7 +820,7 @@ PacketHistory::AddPaddingAtEnd (uint32_t end)
     }
 }
 void 
-PacketHistory::RemoveAtStart (uint32_t start)
+PacketMetadata::RemoveAtStart (uint32_t start)
 {
   if (!m_enable) 
     {
@@ -831,8 +831,8 @@ PacketHistory::RemoveAtStart (uint32_t start)
   uint16_t current = m_head;
   while (current != 0xffff && leftToRemove > 0)
     {
-      struct PacketHistory::SmallItem item;
-      PacketHistory::ExtraItem extraItem;
+      struct PacketMetadata::SmallItem item;
+      PacketMetadata::ExtraItem extraItem;
       ReadItems (current, &item, &extraItem);
       uint32_t itemRealSize = extraItem.fragmentEnd - extraItem.fragmentStart;
       if (itemRealSize <= leftToRemove)
@@ -844,7 +844,7 @@ PacketHistory::RemoveAtStart (uint32_t start)
       else
         {
           // fragment the list item.
-          PacketHistory fragment (m_packetUid, 0);
+          PacketMetadata fragment (m_packetUid, 0);
           extraItem.fragmentStart += leftToRemove;
           leftToRemove = 0;
           uint16_t written = fragment.AddBig (0xffff, fragment.m_tail,
@@ -876,7 +876,7 @@ PacketHistory::RemoveAtStart (uint32_t start)
   NS_ASSERT (leftToRemove == 0);
 }
 void 
-PacketHistory::RemoveAtEnd (uint32_t end)
+PacketMetadata::RemoveAtEnd (uint32_t end)
 {
   if (!m_enable) 
     {
@@ -888,8 +888,8 @@ PacketHistory::RemoveAtEnd (uint32_t end)
   uint16_t current = m_tail;
   while (current != 0xffff && leftToRemove > 0)
     {
-      struct PacketHistory::SmallItem item;
-      PacketHistory::ExtraItem extraItem;
+      struct PacketMetadata::SmallItem item;
+      PacketMetadata::ExtraItem extraItem;
       ReadItems (current, &item, &extraItem);
       uint32_t itemRealSize = extraItem.fragmentEnd - extraItem.fragmentStart;
       if (itemRealSize <= leftToRemove)
@@ -901,7 +901,7 @@ PacketHistory::RemoveAtEnd (uint32_t end)
       else
         {
           // fragment the list item.
-          PacketHistory fragment (m_packetUid, 0);
+          PacketMetadata fragment (m_packetUid, 0);
           NS_ASSERT (extraItem.fragmentEnd > leftToRemove);
           extraItem.fragmentEnd -= leftToRemove;
           leftToRemove = 0;
@@ -935,17 +935,17 @@ PacketHistory::RemoveAtEnd (uint32_t end)
 }
 
 void 
-PacketHistory::PrintDefault (std::ostream &os, Buffer buffer) const
+PacketMetadata::PrintDefault (std::ostream &os, Buffer buffer) const
 {
   Print (os, buffer, PacketPrinter::GetDefault ());
 }
 
 uint32_t
-PacketHistory::DoPrint (struct PacketHistory::SmallItem *item, uint32_t current,
+PacketMetadata::DoPrint (struct PacketMetadata::SmallItem *item, uint32_t current,
                         Buffer data, uint32_t offset, const PacketPrinter &printer,
                         std::ostream &os) const
 {
-  PacketHistory::ExtraItem extraItem;
+  PacketMetadata::ExtraItem extraItem;
   ReadItems (current, item, &extraItem);
   uint32_t uid = item->typeUid & 0xfffffffe;
   if (uid == 0)
@@ -981,15 +981,15 @@ PacketHistory::DoPrint (struct PacketHistory::SmallItem *item, uint32_t current,
 }
 
 uint32_t
-PacketHistory::GetTotalSize (void) const
+PacketMetadata::GetTotalSize (void) const
 {
   uint32_t totalSize = 0;
   uint16_t current = m_head;
   uint16_t tail = m_tail;
   while (current != 0xffff)
     {
-      struct PacketHistory::SmallItem item;
-      PacketHistory::ExtraItem extraItem;
+      struct PacketMetadata::SmallItem item;
+      PacketMetadata::ExtraItem extraItem;
       ReadItems (current, &item, &extraItem);
       totalSize += extraItem.fragmentEnd - extraItem.fragmentStart;
       if (current == tail)
@@ -1002,7 +1002,7 @@ PacketHistory::GetTotalSize (void) const
 }
 
 void
-PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printer) const
+PacketMetadata::Print (std::ostream &os, Buffer data, const PacketPrinter &printer) const
 {
   if (!m_enable) 
     {
@@ -1018,7 +1018,7 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
       uint32_t offset = 0;
       while (current != 0xffff)
         {
-          struct PacketHistory::SmallItem item;
+          struct PacketMetadata::SmallItem item;
           uint32_t realSize = DoPrint (&item, current, data, offset, printer, os);
           offset += realSize;
           if (current == tail)
@@ -1036,7 +1036,7 @@ PacketHistory::Print (std::ostream &os, Buffer data, const PacketPrinter &printe
       uint32_t offset = 0;
       while (current != 0xffff)
         {
-          struct PacketHistory::SmallItem item;
+          struct PacketMetadata::SmallItem item;
           uint32_t realSize = DoPrint (&item, current, data, offset, printer, os);
           offset -= realSize;
           if (current == tail)
@@ -1203,10 +1203,10 @@ HistoryTrailer<N>::DeserializeFrom (Buffer::Iterator start)
 
 
 
-class PacketHistoryTest : public Test {
+class PacketMetadataTest : public Test {
 public:
-  PacketHistoryTest ();
-  virtual ~PacketHistoryTest ();
+  PacketMetadataTest ();
+  virtual ~PacketMetadataTest ();
   bool CheckHistory (Packet p, char *file, int line, uint32_t n, ...);
   virtual bool RunTests (void);
 private:
@@ -1236,38 +1236,38 @@ private:
   PacketPrinter m_printer;
 };
 
-PacketHistoryTest::PacketHistoryTest ()
-  : Test ("PacketHistory")
+PacketMetadataTest::PacketMetadataTest ()
+  : Test ("PacketMetadata")
 {
-  m_printer.AddPayloadPrinter (MakeCallback (&PacketHistoryTest::PrintPayload, this));
-  m_printer.AddDefaultPrinter (MakeCallback (&PacketHistoryTest::PrintDefault, this));
+  m_printer.AddPayloadPrinter (MakeCallback (&PacketMetadataTest::PrintPayload, this));
+  m_printer.AddDefaultPrinter (MakeCallback (&PacketMetadataTest::PrintDefault, this));
 }
 
-PacketHistoryTest::~PacketHistoryTest ()
+PacketMetadataTest::~PacketMetadataTest ()
 {}
 
 template <int N>
 void 
-PacketHistoryTest::RegisterHeader (void)
+PacketMetadataTest::RegisterHeader (void)
 {
   static bool registered = false;
   if (!registered)
     {
-      m_printer.AddHeaderPrinter (MakeCallback (&PacketHistoryTest::PrintHeader<N>, this),
-                                  MakeCallback (&PacketHistoryTest::PrintFragment, this));
+      m_printer.AddHeaderPrinter (MakeCallback (&PacketMetadataTest::PrintHeader<N>, this),
+                                  MakeCallback (&PacketMetadataTest::PrintFragment, this));
       registered = true;
     }
 }
 
 template <int N>
 void 
-PacketHistoryTest::RegisterTrailer (void)
+PacketMetadataTest::RegisterTrailer (void)
 {
   static bool registered = false;
   if (!registered)
     {
-      m_printer.AddTrailerPrinter (MakeCallback (&PacketHistoryTest::PrintTrailer<N>, this),
-                                   MakeCallback (&PacketHistoryTest::PrintFragment, this));
+      m_printer.AddTrailerPrinter (MakeCallback (&PacketMetadataTest::PrintTrailer<N>, this),
+                                   MakeCallback (&PacketMetadataTest::PrintFragment, this));
       registered = true;
     }
 }
@@ -1275,7 +1275,7 @@ PacketHistoryTest::RegisterTrailer (void)
 
 template <int N>
 void 
-PacketHistoryTest::PrintHeader (std::ostream &os, uint32_t packetUid, uint32_t size, 
+PacketMetadataTest::PrintHeader (std::ostream &os, uint32_t packetUid, uint32_t size, 
                                 const HistoryHeader<N> *header)
 {
   if (!header->IsOk ())
@@ -1287,7 +1287,7 @@ PacketHistoryTest::PrintHeader (std::ostream &os, uint32_t packetUid, uint32_t s
 
 template <int N>
 void 
-PacketHistoryTest::PrintTrailer (std::ostream &os, uint32_t packetUid, uint32_t size, 
+PacketMetadataTest::PrintTrailer (std::ostream &os, uint32_t packetUid, uint32_t size, 
                                  const HistoryTrailer<N> *trailer)
 {
   if (!trailer->IsOk ())
@@ -1297,21 +1297,21 @@ PacketHistoryTest::PrintTrailer (std::ostream &os, uint32_t packetUid, uint32_t 
   m_prints.push_back (N);
 }
 void 
-PacketHistoryTest::PrintFragment (std::ostream &os,uint32_t packetUid,
+PacketMetadataTest::PrintFragment (std::ostream &os,uint32_t packetUid,
                                   uint32_t size,std::string & name, 
                                   struct PacketPrinter::FragmentInformation info)
 {
   m_prints.push_back (info.end - info.start);
 }
 void 
-PacketHistoryTest::PrintDefault (std::ostream& os,uint32_t packetUid,
+PacketMetadataTest::PrintDefault (std::ostream& os,uint32_t packetUid,
                      uint32_t size,std::string& name,
                      struct PacketPrinter::FragmentInformation info)
 {
   NS_ASSERT (false);
 }
 void 
-PacketHistoryTest::PrintPayload (std::ostream &os,uint32_t packetUid,
+PacketMetadataTest::PrintPayload (std::ostream &os,uint32_t packetUid,
                                  uint32_t size,
                                  struct PacketPrinter::FragmentInformation info)
 {
@@ -1320,13 +1320,13 @@ PacketHistoryTest::PrintPayload (std::ostream &os,uint32_t packetUid,
 
 
 void 
-PacketHistoryTest::CleanupPrints (void)
+PacketMetadataTest::CleanupPrints (void)
 {
   m_prints.clear ();
 }
 
 bool 
-PacketHistoryTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ...)
+PacketMetadataTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ...)
 {
   m_headerError = false;
   m_trailerError = false;
@@ -1335,13 +1335,13 @@ PacketHistoryTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ...
   va_start (ap, n);
   if (m_headerError)
     {
-      std::cout << "PacketHistory header error. file=" << file 
+      std::cout << "PacketMetadata header error. file=" << file 
                 << ", line=" << line << std::endl;
       return false;
     }
   if (m_trailerError)
     {
-      std::cout << "PacketHistory trailer error. file=" << file 
+      std::cout << "PacketMetadata trailer error. file=" << file 
                 << ", line=" << line << std::endl;
       return false;
     }
@@ -1362,7 +1362,7 @@ PacketHistoryTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ...
   va_end (ap);
   return true;
  error:
-  std::cout << "PacketHistory error. file="<< file 
+  std::cout << "PacketMetadata error. file="<< file 
             << ", line=" << line << ", got:\"";
   for (std::list<int>::iterator i = m_prints.begin (); 
        i != m_prints.end (); i++)
@@ -1416,11 +1416,11 @@ PacketHistoryTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ...
   }
 
 bool
-PacketHistoryTest::RunTests (void)
+PacketMetadataTest::RunTests (void)
 {
   bool ok = true;
 
-  PacketHistory::Enable ();
+  PacketMetadata::Enable ();
 
   Packet p = Packet (0);
   Packet p1 = Packet (0);
@@ -1626,6 +1626,6 @@ PacketHistoryTest::RunTests (void)
   return ok;
 }
 
-static PacketHistoryTest g_packetHistoryTest;
+static PacketMetadataTest g_packetHistoryTest;
 
 }//namespace ns3

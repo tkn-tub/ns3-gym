@@ -295,10 +295,10 @@ public:
    */
   static void EnableMetadata (void);
 private:
-  Packet (Buffer buffer, Tags tags, PacketHistory history, uint32_t uid);
+  Packet (Buffer buffer, Tags tags, PacketMetadata history, uint32_t uid);
   Buffer m_buffer;
   Tags m_tags;
-  PacketHistory m_history;
+  PacketMetadata m_history;
   uint32_t m_uid;
   static uint32_t m_globalUid;
 };

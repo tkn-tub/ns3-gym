@@ -114,8 +114,7 @@ public:
   void AddDefaultPrinter (DefaultPrinter printer);
   
 private:
-  friend class PacketHistory;
-  friend class ::ItemList;
+  friend class PacketMetadata;
   typedef void (*DoPrintCallback) (Ptr<CallbackImplBase>, Buffer::Iterator, std::ostream &,
                                    uint32_t, uint32_t);
   typedef std::string (*DoGetNameCallback) (void);

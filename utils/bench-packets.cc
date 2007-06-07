@@ -188,11 +188,11 @@ int main (int argc, char *argv[])
   }
 
 
-  PacketHistory::SetOptOne (false);
+  PacketMetadata::SetOptOne (false);
   runBench (&benchPtrA, n, "a");
   runBench (&benchPtrB, n, "b");
   runBench (&benchPtrC, n, "c");
-  PacketHistory::SetOptOne (true);
+  PacketMetadata::SetOptOne (true);
   runBench (&benchPtrA, n, "a-opt");
   runBench (&benchPtrB, n, "b-opt");
   runBench (&benchPtrC, n, "c-opt");
