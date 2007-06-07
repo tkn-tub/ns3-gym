@@ -707,22 +707,6 @@ PacketHistory::ReplaceTail (const PacketHistory::SmallItem *item,
   *this = h;
 }
 
-
-
-void
-PacketHistory::ReadSmall (struct PacketHistory::SmallItem *item, const uint8_t **pBuffer) const
-{
-  const uint8_t *buffer = *pBuffer;
-  item->next = buffer[0];
-  item->next |= (buffer[1]) << 8;
-  item->prev = buffer[2];
-  item->prev |= (buffer[3]) << 8;
-  *pBuffer = *pBuffer + 4;
-  item->typeUid = ReadUleb128 (pBuffer);
-  item->size = ReadUleb128 (pBuffer);
-  item->chunkUid = ReadUleb128 (pBuffer);
-}
-
 uint32_t
 PacketHistory::ReadItems (uint16_t current, 
                           struct PacketHistory::SmallItem *item,
@@ -754,16 +738,6 @@ PacketHistory::ReadItems (uint16_t current,
   NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
   return buffer - &m_data->m_data[current];
 }
-
-
-void
-PacketHistory::ReadExtra (struct PacketHistory::ExtraItem *item, const uint8_t **pBuffer) const
-{
-  item->fragmentStart = ReadUleb128 (pBuffer);
-  item->fragmentEnd = ReadUleb128 (pBuffer);
-  item->packetUid = ReadUleb128 (pBuffer);
-}
-
 
 struct PacketHistory::Data *
 PacketHistory::Create (uint32_t size)
@@ -872,25 +846,18 @@ PacketHistory::DoRemoveHeader (uint32_t uid, uint32_t size)
       NS_FATAL_ERROR ("Removing header from empty packet.");
     }
   struct PacketHistory::SmallItem item;
-  const uint8_t *buffer = &m_data->m_data[m_head];
-  ReadSmall (&item, &buffer);
-  NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
+  struct PacketHistory::ExtraItem extraItem;
+  ReadItems (m_head, &item, &extraItem);
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
       NS_FATAL_ERROR ("Removing unexpected header.");
     }
-  else if (item.typeUid != uid)
+  else if (item.typeUid != uid &&
+           (extraItem.fragmentStart != 0 ||
+            extraItem.fragmentEnd != size))
     {
-      // this is a "big" item
-      struct PacketHistory::ExtraItem extraItem;
-      ReadExtra (&extraItem, &buffer);
-      NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
-      if (extraItem.fragmentStart != 0 ||
-          extraItem.fragmentEnd != size)
-        {
-          NS_FATAL_ERROR ("Removing incomplete header.");
-        }
+      NS_FATAL_ERROR ("Removing incomplete header.");
     }
   m_head = item.next;
   if (m_head > m_tail)
@@ -927,25 +894,18 @@ PacketHistory::DoRemoveTrailer (uint32_t uid, uint32_t size)
       NS_FATAL_ERROR ("Removing trailer from empty packet.");
     }
   struct PacketHistory::SmallItem item;
-  const uint8_t *buffer = &m_data->m_data[m_tail];
-  ReadSmall (&item, &buffer);
-  NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
+  struct PacketHistory::ExtraItem extraItem;
+  ReadItems (m_tail, &item, &extraItem);
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
       NS_FATAL_ERROR ("Removing unexpected trailer.");
     }
-  else if (item.typeUid != uid)
+  else if (item.typeUid != uid &&
+           (extraItem.fragmentStart != 0 ||
+            extraItem.fragmentEnd != size))
     {
-      // this is a "big" item
-      struct PacketHistory::ExtraItem extraItem;
-      ReadExtra (&extraItem, &buffer);
-      NS_ASSERT (buffer <= &m_data->m_data[m_data->m_size]);
-      if (extraItem.fragmentStart != 0 ||
-          extraItem.fragmentEnd != size)
-        {
-          NS_FATAL_ERROR ("Removing incomplete trailer.");
-        }
+      NS_FATAL_ERROR ("Removing incomplete trailer.");
     }
   m_tail = item.prev;
   if (m_tail > m_head)

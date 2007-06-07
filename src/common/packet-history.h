@@ -112,8 +112,6 @@ private:
   inline void Append16 (uint16_t value, uint8_t *buffer);
   inline bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
   inline bool TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end);
-  void ReadSmall (struct PacketHistory::SmallItem *item, const uint8_t **pBuffer) const;
-  void ReadExtra (struct PacketHistory::ExtraItem *item, const uint8_t **pBuffer) const;
   void Reserve (uint32_t n);
   void ReserveCopy (uint32_t n);
   uint32_t DoPrint (struct PacketHistory::SmallItem *item, uint32_t current,
