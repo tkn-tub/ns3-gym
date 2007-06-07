@@ -27,10 +27,6 @@
 #include "ns3/assert.h"
 #include "packet-printer.h"
 
-namespace {
-class ItemList;
-}
-
 namespace ns3 {
 
 class Chunk;
@@ -39,6 +35,7 @@ class Buffer;
 class PacketHistory {
 public:
   static void Enable (void);
+  static void SetOptOne (bool optOne);
 
   inline PacketHistory (uint32_t uid, uint32_t size);
   inline PacketHistory (PacketHistory const &o);
@@ -63,6 +60,8 @@ public:
 
   void PrintDefault (std::ostream &os, Buffer buffer) const;
   void Print (std::ostream &os, Buffer buffer, PacketPrinter const &printer) const;
+
+  static void PrintStats (void);
 
 private:
   /**
@@ -113,6 +112,8 @@ private:
   inline bool TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end);
   inline bool TryToAppend32 (uint32_t value, uint8_t **pBuffer, uint8_t *end);
   inline bool TryToAppend16 (uint16_t value, uint8_t **pBuffer, uint8_t *end);
+  void AppendValue (uint32_t value, uint8_t *buffer);
+  void AppendValueExtra (uint32_t value, uint8_t *buffer);
   inline void Reserve (uint32_t n);
   void ReserveCopy (uint32_t n);
   uint32_t DoPrint (struct PacketHistory::SmallItem *item, uint32_t current,

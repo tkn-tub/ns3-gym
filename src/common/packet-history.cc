@@ -35,11 +35,18 @@ bool PacketHistory::m_enable = false;
 uint32_t PacketHistory::m_maxSize = 0;
 uint16_t PacketHistory::m_chunkUid = 0;
 PacketHistory::DataFreeList PacketHistory::m_freeList;
+bool g_optOne = false;
 
 void 
 PacketHistory::Enable (void)
 {
   m_enable = true;
+}
+
+void 
+PacketHistory::SetOptOne (bool optOne)
+{
+  g_optOne = optOne;
 }
 
 void
@@ -279,6 +286,71 @@ PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
 }
 
 void
+PacketHistory::AppendValueExtra (uint32_t value, uint8_t *buffer)
+{
+  if (value < 0x200000)
+    {
+      uint8_t byte = value & (~0x80);
+      buffer[0] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      buffer[1] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      buffer[2] = value;
+      return;
+    }
+  if (value < 0x10000000)
+    {
+      uint8_t byte = value & (~0x80);
+      buffer[0] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      buffer[1] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      buffer[2] = 0x80 | byte;
+      value >>= 7;
+      buffer[3] = value;
+      return;
+    }
+  {
+    uint8_t byte = value & (~0x80);
+    buffer[0] = 0x80 | byte;
+    value >>= 7;
+    byte = value & (~0x80);
+    buffer[1] = 0x80 | byte;
+    value >>= 7;
+    byte = value & (~0x80);
+    buffer[2] = 0x80 | byte;
+    value >>= 7;
+    byte = value & (~0x80);
+    buffer[3] = 0x80 | byte;
+    value >>= 7;
+    buffer[4] = value;
+  }
+}
+
+void
+PacketHistory::AppendValue (uint32_t value, uint8_t *buffer)
+{
+  if (value < 0x80)
+    {
+      buffer[0] = value;
+      return;
+    }
+  if (value < 0x4000)
+    {
+      uint8_t byte = value & (~0x80);
+      buffer[0] = 0x80 | byte;
+      value >>= 7;
+      buffer[1] = value;
+      return;
+    }
+  AppendValueExtra (value, buffer);
+}
+
+void
 PacketHistory::UpdateTail (uint16_t written)
 {
   if (m_head == 0xffff)
@@ -331,6 +403,35 @@ uint16_t
 PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
 {
   NS_ASSERT (m_data != 0);
+  if (g_optOne)
+    {
+      uint32_t typeUidSize = GetUleb128Size (item->typeUid);
+      uint32_t sizeSize = GetUleb128Size (item->size);
+      uint32_t n = typeUidSize + sizeSize + 2 + 2 + 2;
+    restart:
+      if (m_used + n <= m_data->m_size &&
+      (m_head == 0xffff ||
+       m_data->m_count == 1 ||
+       m_used == m_data->m_dirtyEnd))
+        {
+          uint8_t *buffer = &m_data->m_data[m_used];
+          Append16 (item->next, buffer);
+          buffer += 2;
+          Append16 (item->prev, buffer);
+          buffer += 2;
+          AppendValue (item->typeUid, buffer);
+          buffer += typeUidSize;
+          AppendValue (item->size, buffer);
+          buffer += sizeSize;
+          Append16 (item->chunkUid, buffer);
+        }
+      else
+        {
+          ReserveCopy (n);
+          goto restart;
+        }
+      return n;
+    }
  append:
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
