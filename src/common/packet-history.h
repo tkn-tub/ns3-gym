@@ -113,6 +113,8 @@ private:
   inline void Append16 (uint16_t value, uint8_t *buffer);
   inline bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
   inline bool TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end);
+  inline bool TryToAppend32 (uint32_t value, uint8_t **pBuffer, uint8_t *end);
+  inline bool TryToAppend16 (uint16_t value, uint8_t **pBuffer, uint8_t *end);
   void AppendValue (uint32_t value, uint8_t *buffer);
   void AppendValueExtra (uint32_t value, uint8_t *buffer);
   inline void Reserve (uint32_t n);

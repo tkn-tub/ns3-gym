@@ -461,6 +461,34 @@ PacketHistory::TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end)
   return false;
 }
 bool
+PacketHistory::TryToAppend16 (uint16_t value,  uint8_t **pBuffer, uint8_t *end)
+{
+  uint8_t *start = *pBuffer;
+  if (start + 1 < end)
+    {
+      start[0] = value & 0xff;
+      start[1] = value >> 8;
+      *pBuffer = start + 2;
+      return true;
+    }
+  return false;
+}
+bool
+PacketHistory::TryToAppend32 (uint32_t value,  uint8_t **pBuffer, uint8_t *end)
+{
+  uint8_t *start = *pBuffer;
+  if (start + 3 < end)
+    {
+      start[0] = value & 0xff;
+      start[1] = (value >> 8) & 0xff;
+      start[2] = (value >> 16) & 0xff;
+      start[3] = (value >> 24) & 0xff;
+      *pBuffer = start + 4;
+      return true;
+    }
+  return false;
+}
+bool
 PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
 {
   uint8_t *start = *pBuffer;
@@ -650,7 +678,7 @@ PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
  append:
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
-  if (end - start >= 7 &&
+  if (end - start >= 8 &&
       (m_head == 0xffff ||
        m_data->m_count == 1 ||
        m_used == m_data->m_dirtyEnd))
@@ -663,7 +691,7 @@ PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
       buffer += 2;
       if (TryToAppendFast (item->typeUid, &buffer, end) &&
           TryToAppendFast (item->size, &buffer, end) &&
-          TryToAppend (item->chunkUid, &buffer, end))
+          TryToAppend16 (item->chunkUid, &buffer, end))
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
@@ -674,15 +702,14 @@ PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
   g_two++;
   uint32_t n = GetUleb128Size (item->typeUid);
   n += GetUleb128Size (item->size);
-  n += GetUleb128Size (item->chunkUid);
+  n += 2;
   n += 2 + 2;
   Reserve (n);
   goto append;
 #else
   uint32_t typeUidSize = GetUleb128Size (item->typeUid);
   uint32_t sizeSize = GetUleb128Size (item->size);
-  uint32_t chunkUidSize = GetUleb128Size (item->chunkUid);
-  uint32_t n = typeUidSize + sizeSize + chunkUidSize + 2 + 2;
+  uint32_t n = typeUidSize + sizeSize + 2 + 2 + 2;
  restart:
   if (m_used + n <= m_data->m_size &&
       (m_head == 0xffff ||
@@ -698,7 +725,7 @@ PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
       buffer += typeUidSize;
       AppendValue (item->size, buffer);
       buffer += sizeSize;
-      AppendValue (item->chunkUid, buffer);
+      Append16 (item->chunkUid, buffer);
     }
   else
     {
@@ -720,7 +747,7 @@ PacketHistory::AddBig (uint32_t next, uint32_t prev,
  append:
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
-  if (end - start >= 10 &&
+  if (end - start >= 14 &&
       (m_head == 0xffff ||
        m_data->m_count == 1 ||
        m_used == m_data->m_dirtyEnd))
@@ -733,10 +760,10 @@ PacketHistory::AddBig (uint32_t next, uint32_t prev,
       buffer += 2;
       if (TryToAppend (typeUid, &buffer, end) &&
           TryToAppend (item->size, &buffer, end) &&
-          TryToAppend (item->chunkUid, &buffer, end) &&
+          TryToAppend16 (item->chunkUid, &buffer, end) &&
           TryToAppend (extraItem->fragmentStart, &buffer, end) &&
           TryToAppend (extraItem->fragmentEnd, &buffer, end) &&
-          TryToAppend (extraItem->packetUid, &buffer, end))
+          TryToAppend32 (extraItem->packetUid, &buffer, end))
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
@@ -748,10 +775,10 @@ PacketHistory::AddBig (uint32_t next, uint32_t prev,
   g_two++;
   uint32_t n = GetUleb128Size (typeUid);
   n += GetUleb128Size (item->size);
-  n += GetUleb128Size (item->chunkUid);
+  n += 2;
   n += GetUleb128Size (extraItem->fragmentStart);
   n += GetUleb128Size (extraItem->fragmentEnd);
-  n += GetUleb128Size (extraItem->packetUid);
+  n += 4;
   n += 2 + 2;
   ReserveCopy (n);
   goto append;
@@ -763,7 +790,7 @@ PacketHistory::ReplaceTail (PacketHistory::SmallItem *item,
                             uint32_t available)
 {
   NS_ASSERT (m_data != 0);  
-  if (available >= 10 &&
+  if (available >= 14 &&
       m_data->m_count == 1)
     {
       uint8_t *buffer = &m_data->m_data[m_tail];
@@ -775,10 +802,10 @@ PacketHistory::ReplaceTail (PacketHistory::SmallItem *item,
       buffer += 2;
       if (TryToAppend (item->typeUid, &buffer, end) &&
           TryToAppend (item->size, &buffer, end) &&
-          TryToAppend (item->chunkUid, &buffer, end) &&
+          TryToAppend16 (item->chunkUid, &buffer, end) &&
           TryToAppend (extraItem->fragmentStart, &buffer, end) &&
           TryToAppend (extraItem->fragmentEnd, &buffer, end) &&
-          TryToAppend (extraItem->packetUid, &buffer, end))
+          TryToAppend32 (extraItem->packetUid, &buffer, end))
         {
           m_used = buffer - &m_data->m_data[0];
           m_data->m_dirtyEnd = m_used;
@@ -818,14 +845,20 @@ PacketHistory::ReadItems (uint16_t current,
   buffer += 4;
   item->typeUid = ReadUleb128 (&buffer);
   item->size = ReadUleb128 (&buffer);
-  item->chunkUid = ReadUleb128 (&buffer);
+  item->chunkUid = buffer[0];
+  item->chunkUid |= (buffer[1]) << 8;
+  buffer += 2;
 
   bool isExtra = (item->typeUid & 0x1) == 0x1;
   if (isExtra)
     {
       extraItem->fragmentStart = ReadUleb128 (&buffer);
       extraItem->fragmentEnd = ReadUleb128 (&buffer);
-      extraItem->packetUid = ReadUleb128 (&buffer);
+      extraItem->packetUid = buffer[0];
+      extraItem->packetUid |= buffer[1] << 8;
+      extraItem->packetUid |= buffer[2] << 16;
+      extraItem->packetUid |= buffer[3] << 24;
+      buffer += 4;
     }
   else
     {
