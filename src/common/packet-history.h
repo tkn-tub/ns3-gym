@@ -107,12 +107,14 @@ private:
                     uint32_t available);
   inline void UpdateHead (uint16_t written);
   inline void UpdateTail (uint16_t written);
-  inline uint32_t GetUleb128Size (uint32_t value) const;
+  uint32_t GetUleb128Size (uint32_t value) const;
   uint32_t ReadUleb128 (const uint8_t **pBuffer) const;
   inline void Append16 (uint16_t value, uint8_t *buffer);
   inline bool TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end);
   inline bool TryToAppendFast (uint32_t value, uint8_t **pBuffer, uint8_t *end);
-  void Reserve (uint32_t n);
+  void AppendValue (uint32_t value, uint8_t *buffer);
+  void AppendValueExtra (uint32_t value, uint8_t *buffer);
+  inline void Reserve (uint32_t n);
   void ReserveCopy (uint32_t n);
   uint32_t DoPrint (struct PacketHistory::SmallItem *item, uint32_t current,
                     Buffer data, uint32_t offset, const PacketPrinter &printer,

@@ -299,8 +299,8 @@ PacketHistory::PrintStats (void)
 {
   std::cout << "allocs="<<g_nAllocs<<", deallocs="<<g_nDeAllocs
             <<", recycle="<<g_nRecycle<<", create="<<g_nCreate<<std::endl;
-  std::cout << "one="<<g_one<<", two="<<g_two<<", three="<<g_three<<std::endl;
-  //std::cout << "four="<<g_four<<", five="<<g_five<<std::endl;
+  //std::cout << "one="<<g_one<<", two="<<g_two<<", three="<<g_three<<std::endl;
+  std::cout << "four="<<g_four<<", five="<<g_five<<std::endl;
   g_nAllocs = 0;
   g_nDeAllocs = 0;
   g_nRecycle = 0;
@@ -347,7 +347,8 @@ PacketHistory::Reserve (uint32_t size)
 {
   NS_ASSERT (m_data != 0);
   if (m_data->m_size >= m_used + size &&
-      (m_data->m_count == 1 ||
+      (m_head == 0xffff ||
+       m_data->m_count == 1 ||
        m_data->m_dirtyEnd == m_used))
     {
       /* enough room, not dirty. */
@@ -528,6 +529,71 @@ PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
 }
 
 void
+PacketHistory::AppendValueExtra (uint32_t value, uint8_t *buffer)
+{
+  if (value < 0x200000)
+    {
+      uint8_t byte = value & (~0x80);
+      buffer[0] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      buffer[1] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      buffer[2] = value;
+      return;
+    }
+  if (value < 0x10000000)
+    {
+      uint8_t byte = value & (~0x80);
+      buffer[0] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      buffer[1] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      buffer[2] = 0x80 | byte;
+      value >>= 7;
+      buffer[3] = value;
+      return;
+    }
+  {
+    uint8_t byte = value & (~0x80);
+    buffer[0] = 0x80 | byte;
+    value >>= 7;
+    byte = value & (~0x80);
+    buffer[1] = 0x80 | byte;
+    value >>= 7;
+    byte = value & (~0x80);
+    buffer[2] = 0x80 | byte;
+    value >>= 7;
+    byte = value & (~0x80);
+    buffer[3] = 0x80 | byte;
+    value >>= 7;
+    buffer[4] = value;
+  }
+}
+
+void
+PacketHistory::AppendValue (uint32_t value, uint8_t *buffer)
+{
+  if (value < 0x80)
+    {
+      buffer[0] = value;
+      return;
+    }
+  if (value < 0x4000)
+    {
+      uint8_t byte = value & (~0x80);
+      buffer[0] = 0x80 | byte;
+      value >>= 7;
+      buffer[1] = value;
+      return;
+    }
+  AppendValueExtra (value, buffer);
+}
+
+void
 PacketHistory::UpdateTail (uint16_t written)
 {
   if (m_head == 0xffff)
@@ -586,6 +652,7 @@ PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
       NS_ASSERT (m_head == 0xffff && m_tail == 0xffff);
     }
   NS_ASSERT (m_data != 0);
+#if 1
  append:
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
@@ -615,8 +682,38 @@ PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
   n += GetUleb128Size (item->size);
   n += GetUleb128Size (item->chunkUid);
   n += 2 + 2;
-  ReserveCopy (n);
+  Reserve (n);
   goto append;
+#else
+  uint32_t typeUidSize = GetUleb128Size (item->typeUid);
+  uint32_t sizeSize = GetUleb128Size (item->size);
+  uint32_t chunkUidSize = GetUleb128Size (item->chunkUid);
+  uint32_t n = typeUidSize + sizeSize + chunkUidSize + 2 + 2;
+ restart:
+  if (m_used + n <= m_data->m_size &&
+      (m_head == 0xffff ||
+       m_data->m_count == 1 ||
+       m_used == m_data->m_dirtyEnd))
+    {
+      uint8_t *buffer = &m_data->m_data[m_used];
+      Append16 (item->next, buffer);
+      buffer += 2;
+      Append16 (item->prev, buffer);
+      buffer += 2;
+      AppendValue (item->typeUid, buffer);
+      buffer += typeUidSize;
+      AppendValue (item->size, buffer);
+      buffer += sizeSize;
+      AppendValue (item->chunkUid, buffer);
+    }
+  else
+    {
+      ReserveCopy (n);
+      goto restart;
+    }
+
+  return n;
+#endif
 }
 
 uint16_t
