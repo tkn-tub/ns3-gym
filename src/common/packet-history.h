@@ -99,11 +99,11 @@ private:
   void DoRemoveTrailer (uint32_t uid, uint32_t size);
 
   uint16_t AddSmall (const PacketHistory::SmallItem *item);
-  uint16_t AddBig (bool atStart,
+  uint16_t AddBig (uint32_t head, uint32_t tail,
                    const PacketHistory::SmallItem *item, 
                    const PacketHistory::ExtraItem *extraItem);
-  void ReplaceTail (const PacketHistory::SmallItem *item, 
-                    const PacketHistory::ExtraItem *extraItem,
+  void ReplaceTail (PacketHistory::SmallItem *item, 
+                    PacketHistory::ExtraItem *extraItem,
                     uint32_t available);
   inline void UpdateHead (uint16_t written);
   inline void UpdateTail (uint16_t written);
