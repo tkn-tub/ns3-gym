@@ -255,9 +255,44 @@ public:
    */
   uint32_t GetUid (void) const;
 
+  /**
+   * \param os output stream in which the data should be printed.
+   *
+   * Iterate over the headers and trailers present in this packet, 
+   * from the first header to the last trailer and invoke, for
+   * each of them, the user-provided method Header::DoPrint or 
+   * Trailer::DoPrint methods.
+   */
   void Print (std::ostream &os) const;
+  /**
+   * \param os output stream in which the data should be printed.
+   * \param printer the output formatter to use to print
+   *        the content of this packet.
+   *
+   * Iterate over the headers and trailers present in this packet,
+   * either in the "forward" (first header to last trailer) or in
+   * the "backward" (last trailer to first header) direction, as
+   * specified by the PacketPrinter::PrintForward or the
+   * PacketPrinter::PrintBackward methods. For each header, trailer,
+   * or fragment of a header or a trailer, invoke the user-specified
+   * print callback stored in the specified PacketPrinter.
+   */
   void Print (std::ostream &os, const PacketPrinter &printer) const;
 
+  /**
+   * By default, packets do not keep around enough metadata to
+   * perform the operations requested by the Print methods. If you
+   * want to be able to invoke any of the two ::Print methods, 
+   * you need to invoke this method at least once during the 
+   * simulation setup and before any packet is created.
+   *
+   * The packet metadata is also used to perform extensive
+   * sanity checks at runtime when performing operations on a 
+   * Packet. For example, this metadata is used to verify that
+   * when you remove a header from a packet, this same header
+   * was actually present at the front of the packet. These
+   * errors will be detected and will abort the program.
+   */
   static void EnableMetadata (void);
 private:
   Packet (Buffer buffer, Tags tags, PacketHistory history, uint32_t uid);
