@@ -26,7 +26,7 @@
 #include "header.h"
 #include "trailer.h"
 #include "tags.h"
-#include "packet-history.h"
+#include "packet-metadata.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 

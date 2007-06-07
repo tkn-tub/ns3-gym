@@ -23,7 +23,7 @@
 #include "ns3/assert.h"
 #include "ns3/fatal-error.h"
 #include "ns3/debug.h"
-#include "packet-history.h"
+#include "packet-metadata.h"
 #include "chunk.h"
 #include "buffer.h"
 
