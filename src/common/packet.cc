@@ -141,4 +141,10 @@ Packet::Print (std::ostream &os, const PacketPrinter &printer) const
   m_history.Print (os, m_buffer, printer);
 }
 
+void
+Packet::EnableMetadata (void)
+{
+  PacketHistory::Enable ();
+}
+
 }; // namespace ns3

@@ -179,9 +179,9 @@ int main (int argc, char *argv[])
           char const *nAscii = argv[0] + strlen ("--n=");
           n = atoi (nAscii);
         }
-      if (strncmp ("--enable-history", argv[0], strlen ("--enable-history")) == 0)
+      if (strncmp ("--enable-history", argv[0], strlen ("--enable-metadata")) == 0)
         {
-          PacketHistory::Enable ();          
+          Packet::EnableMetadata ();
         }
       argc--;
       argv++;

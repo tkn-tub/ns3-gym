@@ -257,6 +257,8 @@ public:
 
   void Print (std::ostream &os) const;
   void Print (std::ostream &os, const PacketPrinter &printer) const;
+
+  static void EnableMetadata (void);
 private:
   Packet (Buffer buffer, Tags tags, PacketHistory history, uint32_t uid);
   Buffer m_buffer;
