@@ -310,17 +310,6 @@ PacketHistory::PrintStats (void)
   g_three = 0;
   g_four = 0;
   g_five = 0;
-#if 0
-  PacketHistory h (0, 0);
-  for (uint32_t i = 0; i < 0xffffff; i++)
-    {
-      if (h.GetUleb128Size (i) == 4)
-        {
-          std::cout << i << std::endl;
-          break;
-        }
-    }
-#endif
 }
 
 void 
@@ -375,13 +364,23 @@ PacketHistory::Reserve (uint32_t size)
 uint32_t 
 PacketHistory::GetUleb128Size (uint32_t value) const
 {
-  uint32_t n = 0;
-  uint32_t tmp = value;
-  do {
-    tmp >>= 7;
-    n++;
-  } while (tmp != 0);
-  return n;
+  if (value < 0x80)
+    {
+      return 1;
+    }
+  if (value < 0x4000)
+    {
+      return 2;
+    }
+  if (value < 0x200000)
+    {
+      return 3;
+    }
+  if (value < 0x10000000)
+    {
+      return 4;
+    }
+  return 5;
 }
 uint32_t
 PacketHistory::ReadUleb128 (const uint8_t **pBuffer) const
@@ -484,23 +483,45 @@ PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
       uint8_t byte = value & (~0x80);
       start[0] = 0x80 | byte;
       value >>= 7;
+      byte = value & (~0x80);
       start[1] = 0x80 | byte;
       value >>= 7;
+      byte = value & (~0x80);
       start[2] = value;
       *pBuffer = start + 3;
       return true;
     }
-  if (start + 3 < end)
+  if (value < 0x10000000 && start + 3 < end)
     {
       uint8_t byte = value & (~0x80);
       start[0] = 0x80 | byte;
       value >>= 7;
+      byte = value & (~0x80);
       start[1] = 0x80 | byte;
       value >>= 7;
+      byte = value & (~0x80);
       start[2] = 0x80 | byte;
       value >>= 7;
       start[3] = value;
       *pBuffer = start + 4;
+      return true;
+    }
+  if (start + 4 < end)
+    {
+      uint8_t byte = value & (~0x80);
+      start[0] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      start[1] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      start[2] = 0x80 | byte;
+      value >>= 7;
+      byte = value & (~0x80);
+      start[3] = 0x80 | byte;
+      value >>= 7;
+      start[4] = value;
+      *pBuffer = start + 5;
       return true;
     }
   return false;
