@@ -137,7 +137,10 @@ PacketPrinter::PrintPayload (std::ostream &os, uint32_t packetUid, uint32_t size
   struct PacketPrinter::FragmentInformation info;
   info.start = fragmentStart;
   info.end = fragmentEnd;
-  m_payloadPrinter (os, packetUid, size, info);
+  if (!m_payloadPrinter.IsNull ())
+    {
+      m_payloadPrinter (os, packetUid, size, info);
+    }
 }
 
 void 
