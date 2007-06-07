@@ -34,6 +34,12 @@ namespace ns3 {
 
 class Chunk;
 
+/**
+ * \brief hold a list of print callbacks for packet headers and trailers
+ *
+ * Users can register in instances of this class print callbacks
+ * which are used by Packet::Print to print the content of a packet.
+ */
 class PacketPrinter 
 {
 public:
@@ -83,6 +89,10 @@ public:
   /**
    * \param printer printer for the specified chunk
    * \param fragmentPrinter printer for a fragment of the specified chunk
+   *
+   * If the user has not specified a callback for a specific header present
+   * in a packet, the "default" callback is invoked. If no such callback
+   * was specified, nothing happens.
    */
   template <typename T>
   void AddHeaderPrinter (Callback<void,std::ostream &,uint32_t,uint32_t,const T *> printer,
@@ -90,6 +100,10 @@ public:
   /**
    * \param printer printer for the specified chunk
    * \param fragmentPrinter printer for a fragment of the specified chunk
+   *
+   * If the user has not specified a callback for a specific trailer present
+   * in a packet, the "default" callback is invoked. If no such callback
+   * was specified, nothing happens.
    */
   template <typename T>
   void AddTrailerPrinter (Callback<void,std::ostream &,uint32_t,uint32_t,const T *> printer,
