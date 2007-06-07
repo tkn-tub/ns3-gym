@@ -729,11 +729,21 @@ PacketHistory::ReadItems (uint16_t current,
                           struct PacketHistory::ExtraItem *extraItem) const
 {
   const uint8_t *buffer = &m_data->m_data[current];
-  ReadSmall (item, &buffer);
+  item->next = buffer[0];
+  item->next |= (buffer[1]) << 8;
+  item->prev = buffer[2];
+  item->prev |= (buffer[3]) << 8;
+  buffer += 4;
+  item->typeUid = ReadUleb128 (&buffer);
+  item->size = ReadUleb128 (&buffer);
+  item->chunkUid = ReadUleb128 (&buffer);
+
   bool isExtra = (item->typeUid & 0x1) == 0x1;
   if (isExtra)
     {
-      ReadExtra (extraItem, &buffer);
+      extraItem->fragmentStart = ReadUleb128 (&buffer);
+      extraItem->fragmentEnd = ReadUleb128 (&buffer);
+      extraItem->packetUid = ReadUleb128 (&buffer);
     }
   else
     {
