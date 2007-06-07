@@ -127,28 +127,28 @@ PacketMetadata::ReadUleb128 (const uint8_t **pBuffer) const
       return result;
     }
   byte = buffer[1];
-  result = (byte & (~0x80)) << 7;
+  result |= (byte & (~0x80)) << 7;
   if (!(byte & 0x80))
     {
       *pBuffer = buffer + 2;
       return result;
     }
   byte = buffer[2];
-  result = (byte & (~0x80)) << 14;
+  result |= (byte & (~0x80)) << 14;
   if (!(byte & 0x80))
     {
       *pBuffer = buffer + 3;
       return result;
     }
   byte = buffer[3];
-  result = (byte & (~0x80)) << 21;
+  result |= (byte & (~0x80)) << 21;
   if (!(byte & 0x80))
     {
       *pBuffer = buffer + 4;
       return result;
     }
   byte = buffer[4];
-  result = (byte & (~0x80)) << 28;
+  result |= (byte & (~0x80)) << 28;
   if (!(byte & 0x80))
     {
       *pBuffer = buffer + 5;
@@ -1619,7 +1619,10 @@ PacketMetadataTest::RunTests (void)
   CHECK_HISTORY (p2, 1, 1);
   p1.AddAtEnd (p2);
   CHECK_HISTORY (p1, 2, 4, 1);
-  
+
+
+  p = Packet (2000);
+  CHECK_HISTORY (p, 1, 2000);
   
 
 

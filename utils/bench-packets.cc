@@ -156,6 +156,22 @@ benchPtrC (uint32_t n)
   }
 }
 
+static void
+benchPrint (uint32_t n)
+{
+  PacketPrinter printer;
+  BenchHeader<25> ipv4;
+  BenchHeader<8> udp;
+  Packet p (2000);
+  p.AddHeader (udp);
+  p.AddHeader (ipv4);
+
+  for (uint32_t i = 0; i < n; i++) 
+    {
+      p.Print (std::cerr, printer);
+    }  
+}
+
 
 static void
 runBench (void (*bench) (uint32_t), uint32_t n, char const *name)
@@ -188,6 +204,7 @@ int main (int argc, char *argv[])
   }
 
 
+  runBench (&benchPrint, n, "print");
   PacketMetadata::SetOptOne (false);
   runBench (&benchPtrA, n, "a");
   runBench (&benchPtrB, n, "b");
