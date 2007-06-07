@@ -29,288 +29,12 @@
 
 NS_DEBUG_COMPONENT_DEFINE ("PacketHistory");
 
-#define USE_ULEB 1
-
-namespace {
-
-class ItemList
-{
-public:
-  void InitPayload (uint32_t packetUid, uint32_t size);
-  void AddHeader (uint32_t type, uint32_t size);
-  void AddTrailer (uint32_t type, uint32_t size);
-
-  void RemHeader (uint32_t type, uint32_t size);
-  void RemTrailer (uint32_t type, uint32_t size);
-
-  void RemAtStart (uint32_t toRemove);
-  void RemAtEnd (uint32_t toRemove);
-
-  void AddAtEnd (ItemList const *other);
-
-  void Print (std::ostream &os, ns3::Buffer buffer, const ns3::PacketPrinter &printer) const;
-
-private:
-  enum Type {
-    PAYLOAD,
-    HEADER,
-    TRAILER,
-  };
-  struct Item
-  {
-    enum ItemList::Type m_type;
-    uint32_t m_size;
-    uint32_t m_chunkType;
-    uint32_t m_fragmentStart;
-    uint32_t m_fragmentEnd;
-    uint32_t m_packetUid;
-    uint32_t m_chunkUid;
-  };
-  std::list<Item> m_itemList;
-  uint32_t m_packetUid;
-  uint32_t m_chunkUid;
-};
-
-
-void 
-ItemList::InitPayload (uint32_t packetUid, uint32_t size)
-{
-  NS_ASSERT (m_itemList.empty ());
-  m_packetUid = packetUid;
-  m_chunkUid = 1;
-  if (size > 0)
-    {
-      struct Item item;
-      item.m_type = ItemList::PAYLOAD;
-      item.m_chunkType = 0;
-      item.m_size = size;
-      item.m_fragmentStart = 0;
-      item.m_fragmentEnd = item.m_size;
-      item.m_packetUid = m_packetUid;
-      item.m_chunkUid = m_chunkUid;
-      m_itemList.push_back (item);
-    }
-}
-
-void 
-ItemList::AddHeader (uint32_t type, uint32_t size)
-{
-  struct Item item;
-  item.m_type = ItemList::HEADER;
-  item.m_chunkType = type;
-  item.m_size = size;
-  item.m_fragmentStart = 0;
-  item.m_fragmentEnd = size;
-  item.m_packetUid = m_packetUid;
-  item.m_chunkUid = m_chunkUid;
-  m_itemList.push_front (item);
-  m_chunkUid++;
-}
-
-void 
-ItemList::AddTrailer (uint32_t type, uint32_t size)
-{
-  struct Item item;
-  item.m_type = ItemList::TRAILER;
-  item.m_chunkType = type;
-  item.m_size = size;
-  item.m_fragmentStart = 0;
-  item.m_fragmentEnd = size;
-  item.m_packetUid = m_packetUid;
-  item.m_chunkUid = m_chunkUid;
-  m_itemList.push_back (item);
-  m_chunkUid++;
-}
-
-void 
-ItemList::RemHeader (uint32_t type, uint32_t size)
-{
-  struct Item item = m_itemList.front ();
-  if (item.m_type != ItemList::HEADER ||
-      item.m_size != size ||
-      item.m_chunkType != type)
-    {
-      NS_FATAL_ERROR ("Removing Unexpected header");
-    }
-  else if (item.m_fragmentStart != 0 ||
-           item.m_fragmentEnd != item.m_size)
-    {
-      NS_FATAL_ERROR ("Removing non-complete header");
-    }
-  m_itemList.pop_front ();
-}
-void 
-ItemList::RemTrailer (uint32_t type, uint32_t size)
-{
-  struct Item item = m_itemList.back ();
-  if (item.m_type != ItemList::TRAILER ||
-      item.m_size != size ||
-      item.m_chunkType != type)
-    {
-      NS_FATAL_ERROR ("Removing Unexpected trailer");
-    }
-  else if (item.m_fragmentStart != 0 ||
-           item.m_fragmentEnd != item.m_size)
-    {
-      NS_FATAL_ERROR ("Removing non-complete trailer");
-    }
-  m_itemList.pop_back ();
-}
-
-void 
-ItemList::RemAtStart (uint32_t toRemove)
-{
-  uint32_t leftToRemove = toRemove;
-  while (!m_itemList.empty () && leftToRemove > 0)
-    {
-      struct Item &item = m_itemList.front ();
-      uint32_t itemRealSize = item.m_fragmentEnd - item.m_fragmentStart;
-      if (itemRealSize <= leftToRemove)
-        {
-          m_itemList.pop_front ();
-          leftToRemove -= itemRealSize;
-        }
-      else
-        {
-          item.m_fragmentStart += leftToRemove;
-          leftToRemove = 0;
-          NS_ASSERT (item.m_size >= item.m_fragmentEnd - item.m_fragmentStart &&
-                     item.m_fragmentStart <= item.m_fragmentEnd);
-        }
-    }
-  NS_ASSERT (leftToRemove == 0);
-}
-void 
-ItemList::RemAtEnd (uint32_t toRemove)
-{
-  uint32_t leftToRemove = toRemove;
-  while (!m_itemList.empty () && leftToRemove > 0)
-    {
-      struct Item &item = m_itemList.back ();
-      uint32_t itemRealSize = item.m_fragmentEnd - item.m_fragmentStart;
-      if (itemRealSize <= leftToRemove)
-        {
-          m_itemList.pop_back ();
-          leftToRemove -= itemRealSize;
-        }
-      else
-        {
-          item.m_fragmentEnd -= leftToRemove;
-          leftToRemove = 0;
-        }
-      NS_ASSERT (item.m_size >= item.m_fragmentEnd - item.m_fragmentStart &&
-                 item.m_fragmentStart <= item.m_fragmentEnd &&
-                 item.m_fragmentEnd <= item.m_size);
-    }
-  NS_ASSERT (leftToRemove == 0);
-}
-
-void 
-ItemList::AddAtEnd (ItemList const *other)
-{
-  ItemList::Item &last = m_itemList.back ();
-  for (std::list<ItemList::Item>::const_iterator i = other->m_itemList.begin (); 
-       i != other->m_itemList.end (); i++)
-    {
-      const ItemList::Item &item = *i;
-      if (item.m_packetUid == last.m_packetUid &&
-          item.m_type == last.m_type &&
-          item.m_chunkType == last.m_chunkType &&
-          item.m_size == last.m_size &&
-          last.m_fragmentEnd != last.m_size && 
-          item.m_fragmentStart == last.m_fragmentEnd &&
-          item.m_chunkUid == last.m_chunkUid)
-        {
-          last.m_fragmentEnd = item.m_fragmentEnd;
-        }
-      else
-        {
-          m_itemList.push_back (item);
-        }
-    }
-}
-
-void 
-ItemList::Print (std::ostream &os, ns3::Buffer buffer, const ns3::PacketPrinter &printer) const
-{
-  uint32_t totalSize = 0;
-  for (std::list<ItemList::Item>::const_iterator i = m_itemList.begin (); 
-       i != m_itemList.end (); i++)
-    {
-      ItemList::Item item = *i;
-      totalSize += item.m_fragmentEnd - item.m_fragmentStart;
-    }
-  NS_ASSERT (totalSize == buffer.GetSize ());
-  uint32_t offset = 0;
-  for (std::list<ItemList::Item>::const_iterator i = m_itemList.begin (); 
-       i != m_itemList.end (); i++)
-    {
-      ItemList::Item item = *i;
-      if (item.m_type == ItemList::PAYLOAD)
-        {
-          printer.PrintPayload (os, item.m_packetUid, item.m_size, item.m_fragmentStart, item.m_fragmentEnd);
-        }
-      else if (item.m_fragmentStart != 0 || 
-               item.m_fragmentEnd != item.m_size)
-        {
-          printer.PrintChunkFragment (item.m_chunkType, os, item.m_packetUid, item.m_size, 
-                                      item.m_fragmentStart, item.m_fragmentEnd);
-        }
-      else if (item.m_type == ItemList::HEADER)
-        {
-          ns3::Buffer::Iterator j = buffer.Begin ();
-          j.Next (offset);
-          printer.PrintChunk (item.m_chunkType, j, os, item.m_packetUid, item.m_size);
-        }
-      else if (item.m_type == ItemList::TRAILER)
-        {
-          ns3::Buffer::Iterator j = buffer.End ();
-          j.Prev (totalSize - (offset + item.m_size));
-          printer.PrintChunk (item.m_chunkType, j, os, item.m_packetUid, item.m_size);
-        }
-      else 
-        {
-          NS_ASSERT (false);
-        }
-      offset += item.m_fragmentEnd - item.m_fragmentStart;
-    }
-}
-
-} // anonymous namespace
-
 namespace ns3 {
 
 bool PacketHistory::m_enable = false;
 uint32_t PacketHistory::m_maxSize = 0;
 uint16_t PacketHistory::m_chunkUid = 0;
 PacketHistory::DataFreeList PacketHistory::m_freeList;
-uint32_t g_nAllocs = 0;
-uint32_t g_nDeAllocs = 0;
-uint32_t g_nRecycle = 0;
-uint32_t g_nCreate = 0;
-  uint32_t g_one = 0;
-  uint32_t g_two = 0;
-  uint32_t g_three = 0;
-  uint32_t g_four = 0;
-  uint32_t g_five = 0;
-
-void 
-PacketHistory::PrintStats (void)
-{
-  std::cout << "allocs="<<g_nAllocs<<", deallocs="<<g_nDeAllocs
-            <<", recycle="<<g_nRecycle<<", create="<<g_nCreate<<std::endl;
-  //std::cout << "one="<<g_one<<", two="<<g_two<<", three="<<g_three<<std::endl;
-  std::cout << "four="<<g_four<<", five="<<g_five<<std::endl;
-  g_nAllocs = 0;
-  g_nDeAllocs = 0;
-  g_nRecycle = 0;
-  g_nCreate = 0;
-  g_one = 0;
-  g_two = 0;
-  g_three = 0;
-  g_four = 0;
-  g_five = 0;
-}
 
 void 
 PacketHistory::Enable (void)
@@ -352,13 +76,11 @@ PacketHistory::Reserve (uint32_t size)
        m_data->m_dirtyEnd == m_used))
     {
       /* enough room, not dirty. */
-      g_four++;
     }
   else 
     {
       /* (enough room and dirty) or (not enough room) */
       ReserveCopy (size);
-      g_five++;
     }
 }
 
@@ -557,71 +279,6 @@ PacketHistory::TryToAppend (uint32_t value, uint8_t **pBuffer, uint8_t *end)
 }
 
 void
-PacketHistory::AppendValueExtra (uint32_t value, uint8_t *buffer)
-{
-  if (value < 0x200000)
-    {
-      uint8_t byte = value & (~0x80);
-      buffer[0] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      buffer[1] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      buffer[2] = value;
-      return;
-    }
-  if (value < 0x10000000)
-    {
-      uint8_t byte = value & (~0x80);
-      buffer[0] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      buffer[1] = 0x80 | byte;
-      value >>= 7;
-      byte = value & (~0x80);
-      buffer[2] = 0x80 | byte;
-      value >>= 7;
-      buffer[3] = value;
-      return;
-    }
-  {
-    uint8_t byte = value & (~0x80);
-    buffer[0] = 0x80 | byte;
-    value >>= 7;
-    byte = value & (~0x80);
-    buffer[1] = 0x80 | byte;
-    value >>= 7;
-    byte = value & (~0x80);
-    buffer[2] = 0x80 | byte;
-    value >>= 7;
-    byte = value & (~0x80);
-    buffer[3] = 0x80 | byte;
-    value >>= 7;
-    buffer[4] = value;
-  }
-}
-
-void
-PacketHistory::AppendValue (uint32_t value, uint8_t *buffer)
-{
-  if (value < 0x80)
-    {
-      buffer[0] = value;
-      return;
-    }
-  if (value < 0x4000)
-    {
-      uint8_t byte = value & (~0x80);
-      buffer[0] = 0x80 | byte;
-      value >>= 7;
-      buffer[1] = value;
-      return;
-    }
-  AppendValueExtra (value, buffer);
-}
-
-void
 PacketHistory::UpdateTail (uint16_t written)
 {
   if (m_head == 0xffff)
@@ -674,7 +331,6 @@ uint16_t
 PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
 {
   NS_ASSERT (m_data != 0);
-#if 1
  append:
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
@@ -695,46 +351,15 @@ PacketHistory::AddSmall (const struct PacketHistory::SmallItem *item)
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
-          g_one++;
           return written;
         }
     }
-  g_two++;
   uint32_t n = GetUleb128Size (item->typeUid);
   n += GetUleb128Size (item->size);
   n += 2;
   n += 2 + 2;
   Reserve (n);
   goto append;
-#else
-  uint32_t typeUidSize = GetUleb128Size (item->typeUid);
-  uint32_t sizeSize = GetUleb128Size (item->size);
-  uint32_t n = typeUidSize + sizeSize + 2 + 2 + 2;
- restart:
-  if (m_used + n <= m_data->m_size &&
-      (m_head == 0xffff ||
-       m_data->m_count == 1 ||
-       m_used == m_data->m_dirtyEnd))
-    {
-      uint8_t *buffer = &m_data->m_data[m_used];
-      Append16 (item->next, buffer);
-      buffer += 2;
-      Append16 (item->prev, buffer);
-      buffer += 2;
-      AppendValue (item->typeUid, buffer);
-      buffer += typeUidSize;
-      AppendValue (item->size, buffer);
-      buffer += sizeSize;
-      Append16 (item->chunkUid, buffer);
-    }
-  else
-    {
-      ReserveCopy (n);
-      goto restart;
-    }
-
-  return n;
-#endif
 }
 
 uint16_t
@@ -767,12 +392,10 @@ PacketHistory::AddBig (uint32_t next, uint32_t prev,
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
-          g_one++;
           return written;
         }
     }
 
-  g_two++;
   uint32_t n = GetUleb128Size (typeUid);
   n += GetUleb128Size (item->size);
   n += 2;
@@ -873,7 +496,6 @@ PacketHistory::ReadItems (uint16_t current,
 struct PacketHistory::Data *
 PacketHistory::Create (uint32_t size)
 {
-  g_nCreate++;
   NS_DEBUG ("create size="<<size<<", max="<<m_maxSize);
   if (size > m_maxSize)
     {
@@ -899,7 +521,6 @@ PacketHistory::Create (uint32_t size)
 void
 PacketHistory::Recycle (struct PacketHistory::Data *data)
 {
-  g_nRecycle++;
   NS_DEBUG ("recycle size="<<data->m_size<<", list="<<m_freeList.size ());
   NS_ASSERT (data->m_count == 0);
   if (m_freeList.size () > 1000 ||
@@ -916,7 +537,6 @@ PacketHistory::Recycle (struct PacketHistory::Data *data)
 struct PacketHistory::Data *
 PacketHistory::Allocate (uint32_t n)
 {
-  g_nAllocs++;
   uint32_t size = sizeof (struct Data);
   if (n <= 10)
     {
@@ -933,7 +553,6 @@ PacketHistory::Allocate (uint32_t n)
 void 
 PacketHistory::Deallocate (struct PacketHistory::Data *data)
 {
-  g_nDeAllocs++;
   uint8_t *buf = (uint8_t *)data;
   delete [] buf;
 }

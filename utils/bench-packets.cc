@@ -190,11 +190,8 @@ int main (int argc, char *argv[])
 
 
   runBench (&benchPtrA, n, "a");
-  PacketHistory::PrintStats ();
   runBench (&benchPtrB, n, "b");
-  PacketHistory::PrintStats ();
   runBench (&benchPtrC, n, "c");
-  PacketHistory::PrintStats ();
 
   return 0;
 }
