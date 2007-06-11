@@ -122,7 +122,7 @@ public:
    * \returns the index of the ipv4 interface added.
    *
    * Once a device has been added, it can never be removed: if you want
-   * to disable it, you can invoke IIpv4::SetDown which will
+   * to disable it, you can invoke Ipv4::SetDown which will
    * make sure that it is never used during packet forwarding.
    */
   virtual uint32_t AddInterface (Ptr<NetDevice> device) = 0;
