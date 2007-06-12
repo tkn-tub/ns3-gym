@@ -70,6 +70,8 @@ PacketPrinter *
 PacketPrinter::CreateStaticDefault (void)
 {
   static PacketPrinter tmp;
+  tmp.PrintForward ();
+  tmp.AddPayloadPrinter (MakeCallback (&PacketPrinter::DoDefaultPrintPayload));
   return &tmp;
 }
 
