@@ -58,6 +58,8 @@ public:
   void RemoveAtStart (uint32_t start);
   void RemoveAtEnd (uint32_t end);
 
+  uint32_t GetUid (void) const;
+
   void PrintDefault (std::ostream &os, Buffer buffer) const;
   void Print (std::ostream &os, Buffer buffer, PacketPrinter const &printer) const;
 

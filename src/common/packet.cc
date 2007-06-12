@@ -28,23 +28,20 @@ uint32_t Packet::m_globalUid = 0;
 
 Packet::Packet ()
   : m_buffer (),
-    m_history (m_globalUid, 0),
-    m_uid (m_globalUid)
+    m_history (m_globalUid, 0)
 {
   m_globalUid++;
 }
 
 Packet::Packet (uint32_t size)
   : m_buffer (size),
-    m_history (m_globalUid, size),
-    m_uid (m_globalUid)
+    m_history (m_globalUid, size)
 {
   m_globalUid++;
 }
 Packet::Packet (uint8_t const*buffer, uint32_t size)
   : m_buffer (),
-    m_history (m_globalUid, size),
-    m_uid (m_globalUid)
+    m_history (m_globalUid, size)
 {
   m_globalUid++;
   m_buffer.AddAtStart (size);
@@ -52,11 +49,10 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
   i.Write (buffer, size);
 }
 
-Packet::Packet (Buffer buffer, Tags tags, PacketMetadata history, uint32_t uid)
+Packet::Packet (Buffer buffer, Tags tags, PacketMetadata history)
   : m_buffer (buffer),
     m_tags (tags),
-    m_history (history),
-    m_uid (uid)
+    m_history (history)
 {}
 
 Packet 
@@ -66,7 +62,7 @@ Packet::CreateFragment (uint32_t start, uint32_t length) const
   NS_ASSERT (m_buffer.GetSize () >= start + length);
   uint32_t end = m_buffer.GetSize () - (start + length);
   PacketMetadata history = m_history.CreateFragment (start, end);
-  return Packet (buffer, m_tags, history, m_uid);
+  return Packet (buffer, m_tags, history);
 }
 
 uint32_t 
@@ -126,7 +122,7 @@ Packet::PeekData (void) const
 uint32_t 
 Packet::GetUid (void) const
 {
-  return m_uid;
+  return m_history.GetUid ();
 }
 
 void 
