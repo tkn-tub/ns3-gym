@@ -195,24 +195,26 @@ int main (int argc, char *argv[])
           char const *nAscii = argv[0] + strlen ("--n=");
           n = atoi (nAscii);
         }
-      if (strncmp ("--enable-metadata", argv[0], strlen ("--enable-metadata")) == 0)
-        {
-          Packet::EnableMetadata ();
-        }
       argc--;
       argv++;
   }
 
 
-  runBench (&benchPrint, n, "print");
-  PacketMetadata::SetOptOne (false);
   runBench (&benchPtrA, n, "a");
   runBench (&benchPtrB, n, "b");
   runBench (&benchPtrC, n, "c");
+
+  Packet::EnableMetadata ();
+  runBench (&benchPrint, n, "print");
+  PacketMetadata::SetOptOne (false);
+  runBench (&benchPtrA, n, "meta-a");
+  runBench (&benchPtrB, n, "meta-b");
+  runBench (&benchPtrC, n, "meta-c");
   PacketMetadata::SetOptOne (true);
-  runBench (&benchPtrA, n, "a-opt");
-  runBench (&benchPtrB, n, "b-opt");
-  runBench (&benchPtrC, n, "c-opt");
+  runBench (&benchPtrA, n, "meta-a-opt");
+  runBench (&benchPtrB, n, "meta-b-opt");
+  runBench (&benchPtrC, n, "meta-c-opt");
+
 
   return 0;
 }
