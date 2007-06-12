@@ -24,7 +24,8 @@
 namespace ns3 {
 
 PacketPrinter::PacketPrinter ()
-  : m_forward (true)
+  : m_forward (true),
+    m_separator ("")
 {}
 
 void 
@@ -36,6 +37,11 @@ void
 PacketPrinter::PrintBackward (void)
 {
   m_forward = false;
+}
+void
+PacketPrinter::SetSeparator (std::string separator)
+{
+  m_separator = separator;
 }
 void 
 PacketPrinter::AddPayloadPrinter (PayloadPrinter printer)
@@ -72,6 +78,7 @@ PacketPrinter::CreateStaticDefault (void)
   static PacketPrinter tmp;
   tmp.PrintForward ();
   tmp.AddPayloadPrinter (MakeCallback (&PacketPrinter::DoDefaultPrintPayload));
+  tmp.SetSeparator ("\n");
   return &tmp;
 }
 
@@ -154,7 +161,6 @@ PacketPrinter::DoDefaultPrintPayload (std::ostream & os,
   os << "data ";
   os << "[" << info.start << ":" << info.end << "] -> "
      << "[0:" << size << "]";
-  os << std::endl;
 }
 
 void 
@@ -177,7 +183,6 @@ PacketPrinter::DoDefaultPrintFragment (std::ostream & os,
   os << name << " ";
   os << "[" << info.start << ":" << info.end << "] -> "
      << "[0:" << size << "]";
-  os << std::endl;
 }
 
 void

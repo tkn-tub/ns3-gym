@@ -24,7 +24,7 @@ private: \
   } \
   virtual void PrintTo (std::ostream &os) const \
   { \
-   uint32_t v = m_v; \
+    uint32_t v = m_v; \
     os << #name << ", v=" << v; \
   } \
   virtual uint32_t GetSerializedSize (void) const \
@@ -67,6 +67,7 @@ void DefaultPrint (void)
 
   std::cout << "full packet size=" << p.GetSize () << std::endl;
   p.Print (std::cout);
+  std::cout << std::endl;
 
 
   Packet p1 = p.CreateFragment (0, 2);
@@ -74,16 +75,20 @@ void DefaultPrint (void)
   Packet p3 = p.CreateFragment (1002, 128);
   std::cout << "fragment1" << std::endl;
   p1.Print (std::cout);
+  std::cout << std::endl;
   std::cout << "fragment2" << std::endl;
   p2.Print (std::cout);
+  std::cout << std::endl;
   std::cout << "fragment3" << std::endl;
   p3.Print (std::cout);
+  std::cout << std::endl;
 
   Packet aggregate = p1;
   aggregate.AddAtEnd (p2);
   aggregate.AddAtEnd (p3);
   std::cout << "aggregated" << std::endl;
   aggregate.Print (std::cout);
+  std::cout << std::endl;
 }
 
 void 
@@ -91,33 +96,31 @@ DoPrintDefault (std::ostream &os,uint32_t packetUid, uint32_t size,
                      std::string &name, struct PacketPrinter::FragmentInformation info)
 {
   os << "default name="<<name<<", size=" << size << ", [" << info.start << ":" << info.end << "]";
-  os << " - ";
 }
 void
 DoPrintPayload (std::ostream & os,uint32_t packetUid,uint32_t size,
                 struct PacketPrinter::FragmentInformation info)
 {
   os << "payload size="<<size<< ", [" << info.start << ":" << info.end << "]";
-  os << " - ";
 }
 void 
 DoPrintMyHeaderA (std::ostream &os, uint32_t packetUid, uint32_t size, const MyHeaderA *headerA)
 {
   uint32_t v = headerA->Get ();
   os << "A v=" << v;
-    os << " - ";
 }
 void 
 DoPrintMyHeaderAFragment (std::ostream &os, uint32_t packetUid, uint32_t size,
                              std::string &name, struct PacketPrinter::FragmentInformation info)
 {
   os << "A fragment";
-  os << " - ";
 }
 
 void NonDefaultPrint (void)
 {
   PacketPrinter printer;
+  printer.PrintForward ();
+  printer.SetSeparator (" - ");
   printer.AddDefaultPrinter (MakeCallback (&DoPrintDefault));
   printer.AddPayloadPrinter (MakeCallback (&DoPrintPayload));
   printer.AddHeaderPrinter (MakeCallback (&DoPrintMyHeaderA),

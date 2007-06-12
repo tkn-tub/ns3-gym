@@ -1031,6 +1031,10 @@ PacketMetadata::Print (std::ostream &os, Buffer data, const PacketPrinter &print
             {
               break;
             }
+          if (item.next != 0xffff)
+            {
+              os << printer.m_separator;
+            }
           current = item.next;
         }
     }

@@ -82,6 +82,7 @@ public:
    * Print the content of the packet backward.
    */
   void PrintBackward (void);
+  void SetSeparator (std::string separator);
   /**
    * \param printer printer for payload
    */
@@ -201,6 +202,7 @@ private:
   PayloadPrinter m_payloadPrinter;
   DefaultPrinter m_defaultPrinter;
   bool m_forward;
+  std::string m_separator;
 };
 
 } // namespace ns3
@@ -296,7 +298,6 @@ void
 PacketPrinter::DoDefaultPrint (std::ostream &os, uint32_t packetUid, uint32_t size, const T *chunk)
 {
   chunk->Print (os);
-  os << std::endl;
 }
 
 
