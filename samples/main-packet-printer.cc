@@ -54,6 +54,8 @@ MY_HEADER(C,20);
 
 void DefaultPrint (void)
 {
+  // We create a packet with 1000 bytes of zero payload
+  // and add 3 headers to this packet.
   Packet p (1000);
   MyHeaderA a;
   MyHeaderB b;
@@ -70,9 +72,11 @@ void DefaultPrint (void)
   std::cout << std::endl;
 
 
+  // Now, we fragment our packet in 3 consecutive pieces.
   Packet p1 = p.CreateFragment (0, 2);
   Packet p2 = p.CreateFragment (2, 1000);
   Packet p3 = p.CreateFragment (1002, 128);
+
   std::cout << "fragment1" << std::endl;
   p1.Print (std::cout);
   std::cout << std::endl;
@@ -83,6 +87,7 @@ void DefaultPrint (void)
   p3.Print (std::cout);
   std::cout << std::endl;
 
+  // And, finally, we re-aggregate the 3 consecutive pieces.
   Packet aggregate = p1;
   aggregate.AddAtEnd (p2);
   aggregate.AddAtEnd (p3);
@@ -118,13 +123,26 @@ DoPrintMyHeaderAFragment (std::ostream &os, uint32_t packetUid, uint32_t size,
 
 void NonDefaultPrint (void)
 {
+  // create an adhoc packet printer.
   PacketPrinter printer;
+  // print from first header to last trailer
   printer.PrintForward ();
+  // set a string separator automatically inserted
+  // between each call to a printing function.
   printer.SetSeparator (" - ");
+  // set the default print function: invoked if no 
+  // specialized function has been provided for a header
+  // or trailer
   printer.AddDefaultPrinter (MakeCallback (&DoPrintDefault));
+  // set the payload print function
   printer.AddPayloadPrinter (MakeCallback (&DoPrintPayload));
+  // set the print function for the header type MyHeaderA.
   printer.AddHeaderPrinter (MakeCallback (&DoPrintMyHeaderA),
                             MakeCallback (&DoPrintMyHeaderAFragment));
+
+
+  // We create a packet with 1000 bytes of zero payload
+  // and add 3 headers to this packet.
   Packet p (1000);
   MyHeaderA a;
   MyHeaderB b;
@@ -141,6 +159,7 @@ void NonDefaultPrint (void)
   std::cout << std::endl;
 
 
+  // fragment our packet in 3 pieces
   Packet p1 = p.CreateFragment (0, 2);
   Packet p2 = p.CreateFragment (2, 1000);
   Packet p3 = p.CreateFragment (1002, 128);
@@ -154,6 +173,8 @@ void NonDefaultPrint (void)
   p3.Print (std::cout, printer);
   std::cout << std::endl;
 
+  // aggregate all 3 fragments of the original packet
+  // to reconstruct a copy of the original packet.
   Packet aggregate = p1;
   aggregate.AddAtEnd (p2);
   aggregate.AddAtEnd (p3);
