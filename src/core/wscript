@@ -32,7 +32,6 @@ def build(bld):
         'test.cc',
         'random-variable.cc',
         'rng-stream.cc',
-        'interface.cc',
         'uid-manager.cc',
         'default-value.cc',
         'command-line.cc',
@@ -52,6 +51,7 @@ def build(bld):
     headers = bld.create_obj('ns3header')
     headers.source = [
         'system-wall-clock-ms.h',
+        'empty.h',
         'callback.h',
         'ptr.h',
         'object.h',
@@ -61,7 +61,6 @@ def build(bld):
         'test.h',
         'random-variable.h',
         'rng-stream.h',
-        'interface.h',
         'default-value.h',
         'command-line.h',
         'type-name.h',

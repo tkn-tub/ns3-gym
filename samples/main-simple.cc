@@ -2,7 +2,7 @@
 
 #include "ns3/internet-node.h"
 #include "ns3/simulator.h"
-#include "ns3/i-socket-factory.h"
+#include "ns3/socket-factory.h"
 #include "ns3/socket.h"
 #include "ns3/nstime.h"
 
@@ -38,10 +38,10 @@ PrintTraffic (Ptr<Socket> socket)
 void
 RunSimulation (void)
 {
-  Ptr<INode> a = MakeInternetNode ();
+  Ptr<Node> a = Create<InternetNode> ();
 
-  InterfaceId iid = InterfaceId::LookupByName ("IUdp");
-  Ptr<ISocketFactory> socketFactory = a->QueryInterface<ISocketFactory> (iid);
+  InterfaceId iid = InterfaceId::LookupByName ("Udp");
+  Ptr<SocketFactory> socketFactory = a->QueryInterface<SocketFactory> (iid);
 
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   sink->Bind (80);

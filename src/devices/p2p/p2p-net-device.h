@@ -23,7 +23,7 @@
 
 #include <string.h>
 #include "ns3/mac-address.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
@@ -74,13 +74,13 @@ public:
    * Construct a PointToPointNetDevice
    *
    * This is the constructor for the PointToPointNetDevice.  It takes as a
-   * parameter the INode to which this device is connected.  Ownership of the
-   * INode pointer is not implied and the node must not be deleded.
+   * parameter the Node to which this device is connected.  Ownership of the
+   * Node pointer is not implied and the node must not be deleded.
    *
    * @see PointToPointTopology::AddPointToPointLink ()
-   * @param node the INode to which this device is connected.
+   * @param node the Node to which this device is connected.
    */
-  PointToPointNetDevice (Ptr<INode> node);
+  PointToPointNetDevice (Ptr<Node> node);
   /**
    * Copy Construct a PointToPointNetDevice
    *

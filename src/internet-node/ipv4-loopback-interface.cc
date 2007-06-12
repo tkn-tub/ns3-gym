@@ -21,13 +21,13 @@
  */
 #include "ns3/empty-trace-resolver.h"
 #include "ns3/net-device.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 #include "ipv4-loopback-interface.h"
-#include "i-ipv4-private.h"
+#include "ipv4-private.h"
 
 namespace ns3 {
 
-Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<INode> node)
+Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
   : Ipv4Interface (0),
     m_node (node)
 {}
@@ -43,7 +43,7 @@ Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
 void 
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {
-  Ptr<IIpv4Private> ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  Ptr<Ipv4Private> ipv4 = m_node->QueryInterface<Ipv4Private> (Ipv4Private::iid);
   ipv4->Receive (packet, GetDevice ());
 }
 

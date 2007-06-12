@@ -23,12 +23,12 @@
 #include "ns3/trace-context.h"
 #include "ns3/trace-root.h"
 #include "ns3/simulator.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 #include "ns3/queue.h"
 #include "ns3/node-list.h"
 #include "ns3/llc-snap-header.h"
 
-#include "ipv4.h"
+#include "ipv4-l3-protocol.h"
 #include "arp-header.h"
 #include "udp-header.h"
 #include "ipv4-header.h"
@@ -110,8 +110,8 @@ AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
   m_os << Simulator::Now ().GetSeconds () << " ";
   NodeList::NodeIndex nodeIndex;
   context.Get (nodeIndex);
-  m_os << "node=" << NodeList::GetINode (nodeIndex)->GetId () << " ";
-  Ipv4::InterfaceIndex interfaceIndex;
+  m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
+  Ipv4L3Protocol::InterfaceIndex interfaceIndex;
   context.Get (interfaceIndex);
   m_os << "interface=" << interfaceIndex << " ";
   m_os << "pkt-uid=" << packet.GetUid () << " ";
@@ -124,8 +124,8 @@ AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
   m_os << "r " << Simulator::Now ().GetSeconds () << " ";
   NodeList::NodeIndex nodeIndex;
   context.Get (nodeIndex);
-  m_os << "node=" << NodeList::GetINode (nodeIndex)->GetId () << " ";
-  Ipv4::InterfaceIndex interfaceIndex;
+  m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
+  Ipv4L3Protocol::InterfaceIndex interfaceIndex;
   context.Get (interfaceIndex);
   m_os << "interface=" << interfaceIndex << " ";
   m_os << "pkt-uid=" << p.GetUid () << " ";

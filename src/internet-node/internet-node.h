@@ -1,42 +1,57 @@
-/* -*-	Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/*
- * Copyright (c) 2007 INRIA
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- */
+// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
+//
+// Copyright (c) 2006 Georgia Tech Research Corporation
+// All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License version 2 as
+// published by the Free Software Foundation;
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// Author: George F. Riley<riley@ece.gatech.edu>
+//
+// Define a basic "Internet" node, with a protocol stack (l3 and l4),
+// network device list, process list, and routing.
+
 #ifndef INTERNET_NODE_H
 #define INTERNET_NODE_H
 
-#include "ns3/i-node.h"
-#include "ns3/ptr.h"
+#include <list>
+#include <string>
+
+#include "ns3/node.h"
 
 namespace ns3 {
 
-/**
- * \returns a newly-created Node which supports the Ipv4 interfaces
- */
-Ptr<INode> MakeInternetNode (void);
+class Packet;
 
-/**
- * \param systemId a systemId for parallel simulations.
- * \returns a newly-created Node which supports the Ipv4 interfaces
- */
-Ptr<INode> MakeInternetNode (uint32_t systemId);
+class InternetNode : public Node 
+{
+public:
+  enum TraceType {
+    IPV4,
+  };
+  InternetNode();
+  InternetNode(uint32_t systemId);
+  virtual ~InternetNode ();
 
-} // namespace ns3
+protected:
+  virtual void DoDispose(void);
+private:
+  virtual void DoAddDevice (Ptr<NetDevice> device) const;
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
+  bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const;
+  void Construct (void);
+};
+
+}//namespace ns3
 
 #endif /* INTERNET_NODE_H */

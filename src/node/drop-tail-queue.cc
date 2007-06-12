@@ -18,21 +18,14 @@
  */
 
 #include "ns3/debug.h"
-#include "drop-tail.h"
+#include "drop-tail-queue.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("DropTailQueue");
 
 namespace ns3 {
 
-static class QueueStackInitializationClass {
-public:
-  QueueStackInitializationClass () {
-    Queue::AddDefault ("DropTailQueue");
-  }
-} queue_stack_initialization_class;
-
 const ClassId DropTailQueue::cid = 
-  ComponentManager::RegisterConstructor<DropTailQueue> ("DropTailQueue");
+  MakeClassId<DropTailQueue> ("DropTailQueue", Queue::iid);
 
 
 DropTailQueue::DropTailQueue () :

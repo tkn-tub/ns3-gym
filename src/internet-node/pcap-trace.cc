@@ -27,9 +27,9 @@
 #include "ns3/callback.h"
 #include "ns3/pcap-writer.h"
 #include "ns3/node-list.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 
-#include "ipv4.h"
+#include "ipv4-l3-protocol.h"
 
 
 namespace ns3 {
@@ -84,7 +84,7 @@ PcapTrace::LogIp (TraceContext const &context, Packet const &p, uint32_t interfa
 {
   NodeList::NodeIndex nodeIndex;
   context.Get (nodeIndex);
-  uint32_t nodeId = NodeList::GetINode (nodeIndex)->GetId ();
+  uint32_t nodeId = NodeList::GetNode (nodeIndex)->GetId ();
   PcapWriter *writer = GetStream (nodeId, interfaceIndex);
   writer->WritePacket (p);
 }

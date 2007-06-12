@@ -18,34 +18,41 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_ARP_PRIVATE_H
-#define I_ARP_PRIVATE_H
+#ifndef IPV4_PRIVATE_H
+#define IPV4_PRIVATE_H
 
-#include "ns3/interface.h"
+#include "ns3/object.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/ptr.h"
+#include <stdint.h>
 
 namespace ns3 {
 
-class NetDevice;
-class MacAddress;
 class Packet;
-class Arp;
+class Ipv4L3Protocol;
+class TraceContext;
+class TraceResolver;
+class Ipv4Interface;
+class NetDevice;
 
-class IArpPrivate : public Interface
+class Ipv4Private : public Object
 {
 public:
   static const InterfaceId iid;
-  IArpPrivate (Ptr<Arp> arp);
-  virtual ~IArpPrivate ();
-  bool Lookup (Packet &p, Ipv4Address destination, 
-	       Ptr<NetDevice> device,
-	       MacAddress *hardwareDestination);
+  Ipv4Private (Ptr<Ipv4L3Protocol> ipv4);
+  virtual ~Ipv4Private ();
+
+  TraceResolver *CreateTraceResolver (TraceContext const &context);
+  void Send (Packet const &packet, Ipv4Address source, 
+	     Ipv4Address destination, uint8_t protocol);
+  Ipv4Interface *FindInterfaceForDevice (Ptr<const NetDevice>device);
+  void Receive(Packet& p, Ptr<NetDevice> device);
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<Arp> m_arp;
+  Ptr<Ipv4L3Protocol> m_ipv4;
 };
 
 } // namespace ns3
 
-#endif /* I_ARP_PRIVATE_H */
+#endif /* IPV4_PRIVATE_H */

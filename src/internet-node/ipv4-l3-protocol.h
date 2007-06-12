@@ -19,8 +19,8 @@
 // Author: George F. Riley<riley@ece.gatech.edu>
 //
 
-#ifndef IPV4_H
-#define IPV4_H
+#ifndef IPV4_L3_PROTOCOL_H
+#define IPV4_L3_PROTOCOL_H
 
 #include <list>
 #include <stdint.h>
@@ -38,12 +38,12 @@ class Ipv4Interface;
 class Ipv4Address;
 class Ipv4Header;
 class Ipv4Route;
-class INode;
+class Node;
 class TraceResolver;
 class TraceContext;
 
 
-class Ipv4 : public L3Protocol 
+class Ipv4L3Protocol : public L3Protocol 
 {
 public:
   static const uint16_t PROT_NUMBER;
@@ -56,8 +56,8 @@ public:
   };
   typedef ArrayTraceResolver<Ipv4Interface>::Index InterfaceIndex;
 
-  Ipv4(Ptr<INode> node);
-  virtual ~Ipv4 ();
+  Ipv4L3Protocol(Ptr<Node> node);
+  virtual ~Ipv4L3Protocol ();
 
   /**
    * \param context the trace context to use to construct the
@@ -169,7 +169,7 @@ private:
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;
   Ipv4Route *m_defaultRoute;
-  Ptr<INode> m_node;
+  Ptr<Node> m_node;
   CallbackTraceSource<Packet const &, uint32_t> m_txTrace;
   CallbackTraceSource<Packet const &, uint32_t> m_rxTrace;
   CallbackTraceSource<Packet const &> m_dropTrace;
@@ -177,4 +177,4 @@ private:
 
 } // Namespace ns3
 
-#endif
+#endif /* IPV$_L3_PROTOCOL_H */

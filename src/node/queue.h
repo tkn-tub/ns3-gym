@@ -28,7 +28,7 @@
 #include <string>
 #include <list>
 #include "ns3/packet.h"
-#include "ns3/interface.h"
+#include "ns3/object.h"
 #include "ns3/callback-trace-source.h"
 #include "ns3/trace-resolver.h"
 
@@ -41,7 +41,7 @@ class StringEnumDefaultValue;
  * 
  * This class defines the base APIs for packet queues in the ns-3 system
  */
-class Queue : public Interface
+class Queue : public Object
 {
 public:
   static const InterfaceId iid;
@@ -172,10 +172,6 @@ public:
    * \return a Queue smart pointer that is the default Queue type defined
    */
   static Ptr<Queue> CreateDefault (void);
-  static void Add (const std::string &name);
-  static void AddDefault (const std::string &name);
-private:
-  static StringEnumDefaultValue *GetDefault (void);
 };
 
 }; // namespace ns3

@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-class INode;
+class Node;
 /**
  * \brief An IPv4 loopback interface
  */
@@ -38,14 +38,14 @@ class Ipv4LoopbackInterface : public Ipv4Interface
    * \brief Constructor
    * \param node Pointer to a node associated with this IPv4 interface
    */
-  Ipv4LoopbackInterface (Ptr<INode> node);
+  Ipv4LoopbackInterface (Ptr<Node> node);
   virtual ~Ipv4LoopbackInterface ();
 
  private:
   virtual void SendTo (Packet p, Ipv4Address dest);
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
 
-  Ptr<INode> m_node;
+  Ptr<Node> m_node;
 };
 
 }//namespace ns3

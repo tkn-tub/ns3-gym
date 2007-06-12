@@ -22,8 +22,10 @@
  *    - \ref randomvariable
  *    - \ref config
  *    - a base class for objects which need to support reference counting 
- *      and QueryInterface: ns3::Interface and ns3::InterfaceId
- *    - a smart-pointer class ns3::Ptr designed to work together with ns3::Interface
+ *      and QueryInterface: ns3::Object and ns3::InterfaceId
+ *    - a ns3::ComponentManager which can be used to manage the creation
+ *      of any object which derives from ns3::Object through an ns3::ClassId
+ *    - a smart-pointer class ns3::Ptr designed to work together with ns3::Object
  *
  * The "simulator" module contains:
  *    - a time management class to hold a time and convert between various time units: ns3::Time
@@ -38,20 +40,18 @@
  *    - a set of low-level trace facilities: \ref lowleveltracing
  *
  * The "node" module contains:
- *    - a ns3::INode base class which should be subclassed by any new type of
+ *    - a ns3::Node base class which should be subclassed by any new type of
  *      network Node.
  *    - models which abstract the MAC-layer from the IP layer protocols:
  *      ns3::NetDevice and ns3::Channel.
  *    - models which abstract the application-layer API: ns3::Application,
- *      ns3::Socket, ns3::ISocketFactory, and, ns3::IUdp
+ *      ns3::Socket, ns3::SocketFactory, and, ns3::Udp
  *
  * The "internet-node" module contains a set of classes which implement the
  * APIs defined in the "node" module:
  *    - an Ipv4/Udp stack with socket support
  *    - an ARP module
- *    - an INode subclass. 
- *    - and finally, a function used to instantiate nodes
- *      which contain this implementation: ns3::MakeInternetNode
+ *    - an InternetNode class which is a Node subclass. 
  *
  * The "devices" module contains:
  *    - a PointToPoint MAC device: ns3::PointToPointNetDevice, ns3::PointToPointChannel,

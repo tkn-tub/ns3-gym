@@ -18,32 +18,34 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "i-udp-impl.h"
-#include "udp.h"
-#include "ns3/socket.h"
-#include "ns3/assert.h"
+#ifndef ARP_PRIVATE_H
+#define ARP_PRIVATE_H
+
+#include "ns3/object.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
-IUdpImpl::IUdpImpl (Ptr<Udp> udp)
-  : m_udp (udp)
-{}
-IUdpImpl::~IUdpImpl ()
-{
-  NS_ASSERT (m_udp == 0);
-}
+class NetDevice;
+class MacAddress;
+class Packet;
+class ArpL3Protocol;
 
-Ptr<Socket>
-IUdpImpl::CreateSocket (void)
+class ArpPrivate : public Object
 {
-  return m_udp->CreateSocket ();
-}
-
-void 
-IUdpImpl::DoDispose (void)
-{
-  m_udp = 0;
-  IUdp::DoDispose ();
-}
+public:
+  static const InterfaceId iid;
+  ArpPrivate (Ptr<ArpL3Protocol> arp);
+  virtual ~ArpPrivate ();
+  bool Lookup (Packet &p, Ipv4Address destination, 
+	       Ptr<NetDevice> device,
+	       MacAddress *hardwareDestination);
+protected:
+  virtual void DoDispose (void);
+private:
+  Ptr<ArpL3Protocol> m_arp;
+};
 
 } // namespace ns3
+
+#endif /* ARP_PRIVATE_H */

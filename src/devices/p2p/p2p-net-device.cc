@@ -32,7 +32,7 @@ NS_DEBUG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 namespace ns3 {
 
-PointToPointNetDevice::PointToPointNetDevice (Ptr<INode> node) 
+PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node) 
 : 
   NetDevice(node, MacAddress ("00:00:00:00:00:00")), 
   m_txMachineState (READY),

@@ -42,10 +42,10 @@
 #include <string>
 #include <cassert>
 
-#include "ns3/debug.h"
 #include "ns3/command-line.h"
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
+#include "ns3/random-variable.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -58,15 +58,11 @@
 #include "ns3/p2p-net-device.h"
 #include "ns3/mac-address.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/i-ipv4.h"
+#include "ns3/ipv4.h"
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
-#include "ns3/drop-tail.h"
-#include "ns3/node-list.h"
-#include "ns3/trace-root.h"
 #include "ns3/p2p-topology.h"
 #include "ns3/onoff-application.h"
-#include "ns3/random-variable.h"
 
 using namespace ns3;
 
@@ -103,10 +99,10 @@ int main (int argc, char *argv[])
 
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
-  Ptr<INode> n0 = MakeInternetNode ();
-  Ptr<INode> n1 = MakeInternetNode (); 
-  Ptr<INode> n2 = MakeInternetNode (); 
-  Ptr<INode> n3 = MakeInternetNode ();
+  Ptr<Node> n0 = Create<InternetNode> ();
+  Ptr<Node> n1 = Create<InternetNode> (); 
+  Ptr<Node> n2 = Create<InternetNode> (); 
+  Ptr<Node> n3 = Create<InternetNode> ();
 
   // We create the channels first without any IP addressing information
   Ptr<PointToPointChannel> channel0 = 
@@ -145,11 +141,11 @@ int main (int argc, char *argv[])
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
-  Ptr<OnOffApplication> ooff = MakeNewObject<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
     Ipv4Address("10.1.3.2"), 
     80, 
-    "IUdp",
+    "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
   // Start the application
@@ -157,11 +153,11 @@ int main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  ooff = MakeNewObject<OnOffApplication> (
+  ooff = Create<OnOffApplication> (
     n3, 
     Ipv4Address("10.1.2.1"), 
     80, 
-    "IUdp",
+    "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
   // Start the application
@@ -170,10 +166,10 @@ int main (int argc, char *argv[])
 
   // Here, finish off packet routing configuration
   // This will likely set by some global StaticRouting object in the future
-  Ptr<IIpv4> ipv4;
-  ipv4 = n0->QueryInterface<IIpv4> (IIpv4::iid);
+  Ptr<Ipv4> ipv4;
+  ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
-  ipv4 = n3->QueryInterface<IIpv4> (IIpv4::iid);
+  ipv4 = n3->QueryInterface<Ipv4> (Ipv4::iid);
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
   
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events

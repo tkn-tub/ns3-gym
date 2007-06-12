@@ -22,39 +22,39 @@
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/empty-trace-resolver.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 
-#include "udp.h"
+#include "udp-l4-protocol.h"
 #include "udp-header.h"
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
-#include "ipv4.h"
-#include "i-ipv4-private.h"
+#include "ipv4-l3-protocol.h"
+#include "ipv4-private.h"
 #include "l3-demux.h"
 #include "udp-socket.h"
 
 namespace ns3 {
 
 /* see http://www.iana.org/assignments/protocol-numbers */
-const uint8_t Udp::PROT_NUMBER = 17;
+const uint8_t UdpL4Protocol::PROT_NUMBER = 17;
 
-Udp::Udp (Ptr<INode> node)
+UdpL4Protocol::UdpL4Protocol (Ptr<Node> node)
   : Ipv4L4Protocol (PROT_NUMBER, 2),
     m_node (node),
     m_endPoints (new Ipv4EndPointDemux ())
 {}
 
-Udp::~Udp ()
+UdpL4Protocol::~UdpL4Protocol ()
 {}
 
 TraceResolver *
-Udp::CreateTraceResolver (TraceContext const &context)
+UdpL4Protocol::CreateTraceResolver (TraceContext const &context)
 {
   return new EmptyTraceResolver (context);
 }
 
 void
-Udp::DoDispose (void)
+UdpL4Protocol::DoDispose (void)
 {
   if (m_endPoints != 0)
     {
@@ -66,34 +66,34 @@ Udp::DoDispose (void)
 }
 
 Ptr<Socket>
-Udp::CreateSocket (void)
+UdpL4Protocol::CreateSocket (void)
 {
-  Ptr<Socket> socket = MakeNewObject<UdpSocket> (m_node, this);
+  Ptr<Socket> socket = Create<UdpSocket> (m_node, this);
   return socket;
 }
 
 Ipv4EndPoint *
-Udp::Allocate (void)
+UdpL4Protocol::Allocate (void)
 {
   return m_endPoints->Allocate ();
 }
 Ipv4EndPoint *
-Udp::Allocate (Ipv4Address address)
+UdpL4Protocol::Allocate (Ipv4Address address)
 {
   return m_endPoints->Allocate (address);
 }
 Ipv4EndPoint *
-Udp::Allocate (uint16_t port)
+UdpL4Protocol::Allocate (uint16_t port)
 {
   return m_endPoints->Allocate (port);
 }
 Ipv4EndPoint *
-Udp::Allocate (Ipv4Address address, uint16_t port)
+UdpL4Protocol::Allocate (Ipv4Address address, uint16_t port)
 {
   return m_endPoints->Allocate (address, port);
 }
 Ipv4EndPoint *
-Udp::Allocate (Ipv4Address localAddress, uint16_t localPort,
+UdpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
                Ipv4Address peerAddress, uint16_t peerPort)
 {
   return m_endPoints->Allocate (localAddress, localPort,
@@ -101,13 +101,13 @@ Udp::Allocate (Ipv4Address localAddress, uint16_t localPort,
 }
 
 void 
-Udp::DeAllocate (Ipv4EndPoint *endPoint)
+UdpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 {
   m_endPoints->DeAllocate (endPoint);
 }
 
 void 
-Udp::Receive(Packet& packet, 
+UdpL4Protocol::Receive(Packet& packet, 
              Ipv4Address const &source,
              Ipv4Address const &destination)
 {
@@ -123,7 +123,7 @@ Udp::Receive(Packet& packet,
 }
 
 void
-Udp::Send (Packet packet, 
+UdpL4Protocol::Send (Packet packet, 
            Ipv4Address saddr, Ipv4Address daddr, 
            uint16_t sport, uint16_t dport)
 {
@@ -137,7 +137,7 @@ Udp::Send (Packet packet,
 
   packet.AddHeader (udpHeader);
 
-  Ptr<IIpv4Private> ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  Ptr<Ipv4Private> ipv4 = m_node->QueryInterface<Ipv4Private> (Ipv4Private::iid);
   if (ipv4 != 0)
     {
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER);

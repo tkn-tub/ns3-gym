@@ -18,14 +18,15 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "i-socket-factory.h"
+#include "socket-factory.h"
 
 namespace ns3 {
 
-const InterfaceId ISocketFactory::iid ("ISocketFactory");
+const InterfaceId SocketFactory::iid = MakeInterfaceId ("SocketFactory", Object::iid);
 
-ISocketFactory::ISocketFactory ()
-  : Interface (ISocketFactory::iid)
-{}
+SocketFactory::SocketFactory ()
+{
+  SetInterfaceId (SocketFactory::iid);
+}
 
 } // namespace ns3

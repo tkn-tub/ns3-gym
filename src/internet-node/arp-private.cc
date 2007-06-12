@@ -18,25 +18,39 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_UDP_H
-#define I_UDP_H
-
-#include "i-socket-factory.h"
+#include "arp-private.h"
+#include "arp-l3-protocol.h"
+#include "ns3/assert.h"
+#include "ns3/net-device.h"
 
 namespace ns3 {
 
-class Socket;
+const InterfaceId ArpPrivate::iid = MakeInterfaceId ("ArpPrivate", Object::iid);
 
-class IUdp : public ISocketFactory
+ArpPrivate::ArpPrivate (Ptr<ArpL3Protocol> arp)
+  : m_arp (arp)
 {
-public:
-  static const InterfaceId iid;
+  SetInterfaceId (ArpPrivate::iid);
+}
+ArpPrivate::~ArpPrivate ()
+{
+  NS_ASSERT (m_arp == 0);
+}
 
-  IUdp ();
+bool 
+ArpPrivate::Lookup (Packet &p, Ipv4Address destination, 
+		     Ptr<NetDevice> device,
+		     MacAddress *hardwareDestination)
+{
+  return m_arp->Lookup (p, destination, device, hardwareDestination);
+}
 
-  virtual Ptr<Socket> CreateSocket (void) = 0;
-};
+void
+ArpPrivate::DoDispose (void)
+{
+  m_arp = 0;
+  Object::DoDispose ();
+}
+
 
 } // namespace ns3
-
-#endif /* I_UDP_H */

@@ -60,7 +60,6 @@ core.add_sources([
     'test.cc',
     'random-variable.cc',
     'rng-stream.cc',
-    'interface.cc',
     'uid-manager.cc',
     'default-value.cc',
     'command-line.cc',
@@ -83,6 +82,7 @@ core.add_headers ([
 ])
 core.add_inst_headers([
     'system-wall-clock-ms.h',
+    'empty.h',
     'callback.h',
     'ptr.h',
     'object.h',
@@ -92,7 +92,6 @@ core.add_inst_headers([
     'test.h',
     'random-variable.h',
     'rng-stream.h',
-    'interface.h',
     'default-value.h',
     'command-line.h',
     'type-name.h',
@@ -232,37 +231,37 @@ node = build.Ns3Module ('node', 'src/node')
 ns3.add (node)
 node.add_deps (['core', 'common', 'simulator'])
 node.add_sources ([
-    'i-node.cc',
+    'node.cc',
     'ipv4-address.cc',
     'net-device.cc',
     'mac-address.cc',
     'llc-snap-header.cc',
     'ipv4-route.cc',
     'queue.cc',
-    'drop-tail.cc',
+    'drop-tail-queue.cc',
     'channel.cc',
     'node-list.cc',
     'socket.cc',
-    'i-socket-factory.cc',
-    'i-udp.cc',
-    'i-ipv4.cc',
+    'socket-factory.cc',
+    'udp.cc',
+    'ipv4.cc',
     'application.cc',
     ])
 node.add_inst_headers ([
-    'i-node.h',
+    'node.h',
     'ipv4-address.h',
     'net-device.h',
     'mac-address.h',
     'ipv4-route.h',
     'queue.h',
-    'drop-tail.h',
+    'drop-tail-queue.h',
     'llc-snap-header.h',
     'channel.h',
     'node-list.h',
     'socket.h',
-    'i-socket-factory.h',
-    'i-udp.h',
-    'i-ipv4.h',
+    'socket-factory.h',
+    'udp.h',
+    'ipv4.h',
     'application.h',
     ])
 
@@ -281,7 +280,6 @@ ns3.add (inode)
 inode.add_deps (['node'])
 inode.add_sources ([
     'internet-node.cc',
-    'i-node-impl.cc',
     'l3-demux.cc',
     'l3-protocol.cc',
     'ipv4-l4-demux.cc',
@@ -290,23 +288,23 @@ inode.add_sources ([
     'udp-header.cc',
     'ipv4-checksum.cc',
     'ipv4-interface.cc',
-    'ipv4.cc',
+    'ipv4-l3-protocol.cc',
     'ipv4-end-point.cc',
-    'udp.cc',
+    'udp-l4-protocol.cc',
     'arp-header.cc',
     'arp-cache.cc',
     'arp-ipv4-interface.cc',
-    'arp.cc',
+    'arp-l3-protocol.cc',
     'ipv4-loopback-interface.cc',
     'header-utils.cc',
     'udp-socket.cc',
     'ipv4-end-point-demux.cc',
-    'i-arp-private.cc',
-    'i-ipv4-impl.cc',
-    'i-ipv4-private.cc',
+    'arp-private.cc',
+    'ipv4-impl.cc',
+    'ipv4-private.cc',
     'ascii-trace.cc',
     'pcap-trace.cc',
-    'i-udp-impl.cc',
+    'udp-impl.cc',
 ])
 inode.add_headers ([
     'ipv4-header.h',
@@ -314,17 +312,17 @@ inode.add_headers ([
     'ipv4-checksum.h',
     'arp-header.h',
     'arp-cache.h',
-    'arp.h',
+    'arp-l3-protocol.h',
     'ipv4-loopback-interface.h',
     'l3-demux.h',
     'header-utils.h',
     'arp-ipv4-interface.h',
     'udp-socket.h',
-    'udp.h',
-    'i-arp-private.h',
-    'i-ipv4-impl.h',
-    'i-ipv4-private.h',
-    'ipv4.h',
+    'udp-l4-protocol.h',
+    'arp-private.h',
+    'ipv4-impl.h',
+    'ipv4-private.h',
+    'ipv4-l3-protocol.h',
     'l3-protocol.h',
     'ipv4-l4-protocol.h',
     'ipv4-l4-demux.h',
@@ -334,8 +332,7 @@ inode.add_headers ([
     'udp-header.h',
     'ipv4-interface.h',
     'sgi-hashmap.h',
-    'i-node-impl.h',
-    'i-udp-impl.h',
+    'udp-impl.h',
 ])
 inode.add_inst_headers ([
     'internet-node.h',
@@ -366,6 +363,12 @@ ns3.add(run_tests)
 run_tests.set_executable()
 run_tests.add_deps(['core', 'simulator', 'common'])
 run_tests.add_source('run-tests.cc')
+
+bench_object = build.Ns3Module('bench-object', 'utils')
+ns3.add(bench_object)
+bench_object.set_executable()
+bench_object.add_deps(['core'])
+bench_object.add_source('bench-object.cc')
 
 bench_packets = build.Ns3Module('bench-packets', 'utils')
 ns3.add(bench_packets)
@@ -447,6 +450,18 @@ sample_default_value.set_executable()
 ns3.add(sample_default_value)
 sample_default_value.add_deps(['core', 'simulator', 'node', 'p2p'])
 sample_default_value.add_source('main-default-value.cc')
+
+sample_object = build.Ns3Module('sample-object', 'samples')
+sample_object.set_executable()
+ns3.add(sample_object)
+sample_object.add_deps(['core'])
+sample_object.add_source('main-object.cc')
+
+sample_component_manager = build.Ns3Module('sample-component-manager', 'samples')
+sample_component_manager.set_executable()
+ns3.add(sample_component_manager)
+sample_component_manager.add_deps(['core'])
+sample_component_manager.add_source('main-component-manager.cc')
 
 # examples
 example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')

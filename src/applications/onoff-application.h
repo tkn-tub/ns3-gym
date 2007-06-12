@@ -58,7 +58,7 @@ public:
    * \param ontime on time random variable
    * \param offtime off time random variable
    */
-  OnOffApplication(Ptr<INode> n,
+  OnOffApplication(Ptr<Node> n,
                    const Ipv4Address rip,
                    uint16_t rport,
                    std::string iid,
@@ -75,7 +75,7 @@ public:
    * \param rate data rate when on
    * \param size size of packets when sending data.
    */
-  OnOffApplication(Ptr<INode> n,
+  OnOffApplication(Ptr<Node> n,
                    const Ipv4Address rip,
                    uint16_t rport,
                    std::string iid,
@@ -111,7 +111,7 @@ private:
   virtual void StartApplication (void);    // Called at time specified by Start
   virtual void StopApplication (void);     // Called at time specified by Stop
 
-  void Construct (Ptr<INode> n,
+  void Construct (Ptr<Node> n,
                   const Ipv4Address rip,
                   uint16_t rport,
                   std::string iid,

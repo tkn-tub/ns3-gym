@@ -21,31 +21,31 @@
 #include "ns3/packet.h"
 #include "ns3/debug.h"
 #include "ns3/empty-trace-resolver.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 #include "ns3/net-device.h"
 
-#include "arp.h"
+#include "arp-l3-protocol.h"
 #include "arp-header.h"
 #include "arp-cache.h"
 #include "ipv4-interface.h"
-#include "i-ipv4-private.h"
+#include "ipv4-private.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("Arp");
+NS_DEBUG_COMPONENT_DEFINE ("ArpL3Protocol");
 
 namespace ns3 {
 
-const uint16_t Arp::PROT_NUMBER = 0x0806;
+const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
 
-Arp::Arp (Ptr<INode> node)
+ArpL3Protocol::ArpL3Protocol (Ptr<Node> node)
   : L3Protocol (PROT_NUMBER, 0/* XXX: correct version number ? */ ),
     m_node (node)
 {}
 
-Arp::~Arp ()
+ArpL3Protocol::~ArpL3Protocol ()
 {}
 
 void 
-Arp::DoDispose (void)
+ArpL3Protocol::DoDispose (void)
 {
   for (CacheList::const_iterator i = m_cacheList.begin (); i != m_cacheList.end (); i++)
     {
@@ -57,13 +57,13 @@ Arp::DoDispose (void)
 }
 
 TraceResolver *
-Arp::CreateTraceResolver (TraceContext const &context)
+ArpL3Protocol::CreateTraceResolver (TraceContext const &context)
 {
   return new EmptyTraceResolver (context);
 }
 
 ArpCache *
-Arp::FindCache (Ptr<NetDevice> device)
+ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 {
   for (CacheList::const_iterator i = m_cacheList.begin (); i != m_cacheList.end (); i++)
     {
@@ -72,7 +72,7 @@ Arp::FindCache (Ptr<NetDevice> device)
 	  return *i;
 	}
     }
-  Ptr<IIpv4Private> ipv4 = m_node->QueryInterface<IIpv4Private> (IIpv4Private::iid);
+  Ptr<Ipv4Private> ipv4 = m_node->QueryInterface<Ipv4Private> (Ipv4Private::iid);
   Ipv4Interface *interface = ipv4->FindInterfaceForDevice (device);
   ArpCache * cache = new ArpCache (device, interface);
   NS_ASSERT (device->IsBroadcast ());
@@ -82,7 +82,7 @@ Arp::FindCache (Ptr<NetDevice> device)
 }
 
 void 
-Arp::Receive(Packet& packet, Ptr<NetDevice> device)
+ArpL3Protocol::Receive(Packet& packet, Ptr<NetDevice> device)
 {
   ArpCache *cache = FindCache (device);
   ArpHeader arp;
@@ -130,7 +130,7 @@ Arp::Receive(Packet& packet, Ptr<NetDevice> device)
     }
 }
 bool 
-Arp::Lookup (Packet &packet, Ipv4Address destination, 
+ArpL3Protocol::Lookup (Packet &packet, Ipv4Address destination, 
 	     Ptr<NetDevice> device,
 	     MacAddress *hardwareDestination)
 {
@@ -200,7 +200,7 @@ Arp::Lookup (Packet &packet, Ipv4Address destination,
 }
 
 void
-Arp::SendArpRequest (ArpCache const *cache, Ipv4Address to)
+ArpL3Protocol::SendArpRequest (ArpCache const *cache, Ipv4Address to)
 {
   ArpHeader arp;
   arp.SetRequest (cache->GetDevice ()->GetAddress (),
@@ -213,7 +213,7 @@ Arp::SendArpRequest (ArpCache const *cache, Ipv4Address to)
 }
 
 void
-Arp::SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac)
+ArpL3Protocol::SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac)
 {
   ArpHeader arp;
   arp.SetReply (cache->GetDevice ()->GetAddress (),

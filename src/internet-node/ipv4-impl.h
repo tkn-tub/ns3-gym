@@ -18,22 +18,22 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_IPV4_IMPL_H
-#define I_IPV4_IMPL_H
+#ifndef IPV4_IMPL_H
+#define IPV4_IMPL_H
 
-#include "ns3/i-ipv4.h"
+#include "ns3/ipv4.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
 
-class Ipv4;
+class Ipv4L3Protocol;
 
-class IIpv4Impl : public IIpv4
+class Ipv4Impl : public Ipv4
 {
 public:
-  IIpv4Impl (Ptr<Ipv4> ipv4);
+  Ipv4Impl (Ptr<Ipv4L3Protocol> ipv4);
 
-  virtual ~IIpv4Impl ();
+  virtual ~Ipv4Impl ();
 
   virtual void AddHostRouteTo (Ipv4Address dest, 
 			       Ipv4Address nextHop, 
@@ -50,7 +50,7 @@ public:
   virtual void SetDefaultRoute (Ipv4Address nextHop, 
 				uint32_t interface);
   virtual uint32_t GetNRoutes (void);
-  virtual Ipv4Route *GetRoute (uint32_t i);
+  virtual Ipv4Route GetRoute (uint32_t i);
   virtual void RemoveRoute (uint32_t i);
   virtual uint32_t AddInterface (Ptr<NetDevice> device);
   virtual uint32_t GetNInterfaces (void);  
@@ -67,9 +67,9 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<Ipv4> m_ipv4;
+  Ptr<Ipv4L3Protocol> m_ipv4;
 };
 
 } // namespace ns3
 
-#endif /* I_IPV4_IMPL_H */
+#endif /* IPV4_IMPL_H */

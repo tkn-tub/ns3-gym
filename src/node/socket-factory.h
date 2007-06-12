@@ -18,38 +18,27 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "i-arp-private.h"
-#include "arp.h"
-#include "ns3/assert.h"
-#include "ns3/net-device.h"
+#ifndef SOCKET_FACTORY_H
+#define SOCKET_FACTORY_H
+
+#include "ns3/object.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
-const InterfaceId IArpPrivate::iid ("IArpPrivate");
+class Socket;
 
-IArpPrivate::IArpPrivate (Ptr<Arp> arp)
-  : Interface (IArpPrivate::iid),
-    m_arp (arp)
-{}
-IArpPrivate::~IArpPrivate ()
+class SocketFactory : public Object
 {
-  NS_ASSERT (m_arp == 0);
-}
+public:
+  static const InterfaceId iid;
 
-bool 
-IArpPrivate::Lookup (Packet &p, Ipv4Address destination, 
-		     Ptr<NetDevice> device,
-		     MacAddress *hardwareDestination)
-{
-  return m_arp->Lookup (p, destination, device, hardwareDestination);
-}
+  SocketFactory ();
 
-void
-IArpPrivate::DoDispose (void)
-{
-  m_arp = 0;
-  Interface::DoDispose ();
-}
-
+  virtual Ptr<Socket> CreateSocket (void) = 0;
+};
 
 } // namespace ns3
+
+
+#endif /* SOCKET_FACTORY_H */

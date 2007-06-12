@@ -18,15 +18,18 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "i-udp.h"
+#include "ipv4.h"
 
 namespace ns3 {
 
-const InterfaceId IUdp::iid ("IUdp");
+const InterfaceId Ipv4::iid = MakeInterfaceId ("Ipv4", Object::iid);
 
-IUdp::IUdp ()
+Ipv4::Ipv4 ()
 {
-  AddSelfInterface (IUdp::iid, this);
+  SetInterfaceId (Ipv4::iid);
 }
+
+Ipv4::~Ipv4 ()
+{}
 
 } // namespace ns3

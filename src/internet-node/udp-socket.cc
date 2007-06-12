@@ -18,15 +18,15 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 #include "udp-socket.h"
-#include "udp.h"
+#include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l4-demux.h"
 
 namespace ns3 {
 
-UdpSocket::UdpSocket (Ptr<INode> node, Ptr<Udp> udp)
+UdpSocket::UdpSocket (Ptr<Node> node, Ptr<UdpL4Protocol> udp)
   : m_endPoint (0),
     m_node (node),
     m_udp (udp),
@@ -56,8 +56,8 @@ UdpSocket::~UdpSocket ()
   m_udp = 0;
 }
 
-Ptr<INode>
-UdpSocket::GetINode (void) const
+Ptr<Node>
+UdpSocket::GetNode (void) const
 {
   return m_node;
 }

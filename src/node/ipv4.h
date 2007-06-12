@@ -18,12 +18,13 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_IPV4_H
-#define I_IPV4_H
+#ifndef IPV4_H
+#define IPV4_H
 
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
-#include "ns3/interface.h"
+#include "ns3/object.h"
+#include "ipv4-route.h"
 
 namespace ns3 {
 
@@ -40,12 +41,12 @@ class Ipv4Route;
  * This class also allows you to control the content of the ipv4 
  * forwarding table.
  */
-class IIpv4 : public Interface
+class Ipv4 : public Object
 {
 public:
   static const InterfaceId iid;
-  IIpv4 ();
-  virtual ~IIpv4 ();
+  Ipv4 ();
+  virtual ~Ipv4 ();
     
   /**
    * \param dest destination address
@@ -110,7 +111,7 @@ public:
    * \param i index of route to return
    * \returns the route whose index is i
    */
-  virtual Ipv4Route *GetRoute (uint32_t i) = 0;
+  virtual Ipv4Route GetRoute (uint32_t i) = 0;
   /**
    * \param i index of route to remove from routing table.
    */
@@ -122,7 +123,7 @@ public:
    * \returns the index of the ipv4 interface added.
    *
    * Once a device has been added, it can never be removed: if you want
-   * to disable it, you can invoke IIpv4::SetDown which will
+   * to disable it, you can invoke Ipv4::SetDown which will
    * make sure that it is never used during packet forwarding.
    */
   virtual uint32_t AddInterface (Ptr<NetDevice> device) = 0;
@@ -188,4 +189,4 @@ public:
 
 } // namespace ns3 
 
-#endif /* I_IPV4_H */
+#endif /* IPV4_H */

@@ -18,41 +18,30 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_IPV4_PRIVATE_H
-#define I_IPV4_PRIVATE_H
+#ifndef UDP_IMPL_H
+#define UDP_IMPL_H
 
-#include "ns3/interface.h"
-#include "ns3/ipv4-address.h"
+#include "ns3/udp.h"
 #include "ns3/ptr.h"
-#include <stdint.h>
 
 namespace ns3 {
 
-class Packet;
-class Ipv4;
-class TraceContext;
-class TraceResolver;
-class Ipv4Interface;
-class NetDevice;
+class UdpL4Protocol;
 
-class IIpv4Private : public Interface
+class UdpImpl : public Udp
 {
 public:
-  static const InterfaceId iid;
-  IIpv4Private (Ptr<Ipv4> ipv4);
-  virtual ~IIpv4Private ();
+  UdpImpl (Ptr<UdpL4Protocol> udp);
+  virtual ~UdpImpl ();
 
-  TraceResolver *CreateTraceResolver (TraceContext const &context);
-  void Send (Packet const &packet, Ipv4Address source, 
-	     Ipv4Address destination, uint8_t protocol);
-  Ipv4Interface *FindInterfaceForDevice (Ptr<const NetDevice>device);
-  void Receive(Packet& p, Ptr<NetDevice> device);
+  virtual Ptr<Socket> CreateSocket (void);
+
 protected:
   virtual void DoDispose (void);
 private:
-  Ptr<Ipv4> m_ipv4;
+  Ptr<UdpL4Protocol> m_udp;
 };
 
 } // namespace ns3
 
-#endif /* I_IPV4_PRIVATE_H */
+#endif /* UDP_IMPL_H */

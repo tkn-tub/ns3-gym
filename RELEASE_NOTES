@@ -3,6 +3,19 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
+Release 3.0.3 (2007/06/15)
+========================
+
+  - Enable Waf for release tarballs: users can now build ns-3
+    with the "waf" tool. See doc/build-waf.txt.
+  - Add support for variable time precision: it is now possible
+    to run a simulation with an accuracy which is higher or lower
+    than a nanosecond: seconds, milliseconds, microseconds, 
+    femtoseconds and picoseconds are supported.
+  - Optimize and rework the COM framework, solidify the component 
+    manager
+  - Many small API cleanups
+
 Release 3.0.2 (2007/05/18)
 ========================
 

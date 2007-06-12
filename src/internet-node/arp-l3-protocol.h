@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef ARP_H
-#define ARP_H
+#ifndef ARP_L3_PROTOCOL_H
+#define ARP_L3_PROTOCOL_H
 
 #include <list>
 #include "ns3/ipv4-address.h"
@@ -31,14 +31,14 @@ namespace ns3 {
 
 class ArpCache;
 class NetDevice;
-class INode;
+class Node;
 class Packet;
 class TraceResolver;
 class TraceContext;
 /**
  * \brief An implementation of the ARP protocol
  */
-class Arp : public L3Protocol
+class ArpL3Protocol : public L3Protocol
 {
 public:
   static const uint16_t PROT_NUMBER;
@@ -46,8 +46,8 @@ public:
    * \brief Constructor
    * \param node The node which this ARP object is associated with
    */
-  Arp (Ptr<INode> node);
-  ~Arp ();
+  ArpL3Protocol (Ptr<Node> node);
+  ~ArpL3Protocol ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
   /**
@@ -73,10 +73,10 @@ private:
   void SendArpRequest (ArpCache const *cache, Ipv4Address to);
   void SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac);
   CacheList m_cacheList;
-  Ptr<INode> m_node;
+  Ptr<Node> m_node;
 };
 
 }//namespace ns3
 
 
-#endif /* ARP_H */
+#endif /* ARP_L3_PROTOCOL_H */

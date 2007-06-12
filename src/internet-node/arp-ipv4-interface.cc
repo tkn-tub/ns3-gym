@@ -22,16 +22,16 @@
 
 #include "ns3/packet.h"
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 #include "ns3/net-device.h"
 
 #include "arp-ipv4-interface.h"
-#include "i-arp-private.h"
-#include "ipv4.h"
+#include "arp-private.h"
+#include "ipv4-l3-protocol.h"
 
 namespace ns3 {
 
-ArpIpv4Interface::ArpIpv4Interface (Ptr<INode> node, Ptr<NetDevice> device)
+ArpIpv4Interface::ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device)
   : Ipv4Interface (device),
     m_node (node)
 {}
@@ -58,17 +58,17 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
   NS_ASSERT (GetDevice () != 0);
   if (GetDevice ()->NeedsArp ())
     {
-      Ptr<IArpPrivate> arp = m_node->QueryInterface<IArpPrivate> (IArpPrivate::iid);
+      Ptr<ArpPrivate> arp = m_node->QueryInterface<ArpPrivate> (ArpPrivate::iid);
       MacAddress hardwareDestination;
       bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
       if (found)
         {
-          GetDevice ()->Send (p, hardwareDestination, Ipv4::PROT_NUMBER);
+          GetDevice ()->Send (p, hardwareDestination, Ipv4L3Protocol::PROT_NUMBER);
         }
     }
   else
     {
-      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), Ipv4::PROT_NUMBER);
+      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), Ipv4L3Protocol::PROT_NUMBER);
     }
 }
 

@@ -21,19 +21,18 @@
 
 #include <iostream>
 #include "ns3/assert.h"
-#include "ns3/interface.h"
+#include "ns3/object.h"
 
 #include "channel.h"
 #include "net-device.h"
 #include "llc-snap-header.h"
-#include "i-node.h"
+#include "node.h"
 
 namespace ns3 {
 
-const InterfaceId NetDevice::iid ("NetDevice");
+const InterfaceId NetDevice::iid = MakeInterfaceId ("NetDevice", Object::iid);
 
-NetDevice::NetDevice(Ptr<INode> node, const MacAddress& addr) : 
-  Interface (NetDevice::iid),
+NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) : 
   m_node (node), 
   m_name(""), 
   m_ifIndex (0), 
@@ -44,6 +43,7 @@ NetDevice::NetDevice(Ptr<INode> node, const MacAddress& addr) :
   m_isMulticast (false), 
   m_isPointToPoint (false)
 {
+  SetInterfaceId (NetDevice::iid);
   m_node->AddDevice (this);
 }
 
@@ -229,8 +229,8 @@ NetDevice::NotifyLinkDown (void)
     }
 }
 
-Ptr<INode>
-NetDevice::GetINode (void) const
+Ptr<Node>
+NetDevice::GetNode (void) const
 {
   return m_node;
 }

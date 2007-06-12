@@ -18,17 +18,32 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "i-ipv4.h"
+#include "udp-impl.h"
+#include "udp-l4-protocol.h"
+#include "ns3/socket.h"
+#include "ns3/assert.h"
 
 namespace ns3 {
 
-const InterfaceId IIpv4::iid ("IIpv4");
-
-IIpv4::IIpv4 ()
-  : Interface (IIpv4::iid)
+UdpImpl::UdpImpl (Ptr<UdpL4Protocol> udp)
+  : m_udp (udp)
 {}
+UdpImpl::~UdpImpl ()
+{
+  NS_ASSERT (m_udp == 0);
+}
 
-IIpv4::~IIpv4 ()
-{}
+Ptr<Socket>
+UdpImpl::CreateSocket (void)
+{
+  return m_udp->CreateSocket ();
+}
+
+void 
+UdpImpl::DoDispose (void)
+{
+  m_udp = 0;
+  Udp::DoDispose ();
+}
 
 } // namespace ns3

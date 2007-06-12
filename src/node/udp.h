@@ -18,30 +18,25 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef I_UDP_IMPL_H
-#define I_UDP_IMPL_H
+#ifndef UDP_H
+#define UDP_H
 
-#include "ns3/i-udp.h"
-#include "ns3/ptr.h"
+#include "socket-factory.h"
 
 namespace ns3 {
 
-class Udp;
+class Socket;
 
-class IUdpImpl : public IUdp
+class Udp : public SocketFactory
 {
 public:
-  IUdpImpl (Ptr<Udp> udp);
-  virtual ~IUdpImpl ();
+  static const InterfaceId iid;
 
-  virtual Ptr<Socket> CreateSocket (void);
+  Udp ();
 
-protected:
-  virtual void DoDispose (void);
-private:
-  Ptr<Udp> m_udp;
+  virtual Ptr<Socket> CreateSocket (void) = 0;
 };
 
 } // namespace ns3
 
-#endif /* I_UDP_IMPL_H */
+#endif /* UDP_H */

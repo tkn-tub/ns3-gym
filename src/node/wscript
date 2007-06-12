@@ -7,38 +7,38 @@ def build(bld):
     node.target = node.name
     node.uselib_local = ['ns3-core', 'ns3-common', 'ns3-simulator']
     node.source = [
-        'i-node.cc',
+        'node.cc',
         'ipv4-address.cc',
         'net-device.cc',
         'mac-address.cc',
         'llc-snap-header.cc',
         'ipv4-route.cc',
         'queue.cc',
-        'drop-tail.cc',
+        'drop-tail-queue.cc',
         'channel.cc',
         'node-list.cc',
         'socket.cc',
-        'i-socket-factory.cc',
-        'i-udp.cc',
-        'i-ipv4.cc',
+        'socket-factory.cc',
+        'udp.cc',
+        'ipv4.cc',
         'application.cc',
         ]
 
     headers = bld.create_obj('ns3header')
     headers.source = [
-        'i-node.h',
+        'node.h',
         'ipv4-address.h',
         'net-device.h',
         'mac-address.h',
         'ipv4-route.h',
         'queue.h',
-        'drop-tail.h',
+        'drop-tail-queue.h',
         'llc-snap-header.h',
         'channel.h',
         'node-list.h',
         'socket.h',
-        'i-socket-factory.h',
-        'i-udp.h',
-        'i-ipv4.h',
+        'socket-factory.h',
+        'udp.h',
+        'ipv4.h',
         'application.h',
         ]

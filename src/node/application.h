@@ -25,11 +25,11 @@
 #include "ns3/nstime.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
-#include "ns3/i-node.h"
+#include "ns3/node.h"
 
 namespace ns3 {
 
-class INode;
+class Node;
 class RandomVariable;
 
 /**
@@ -52,7 +52,7 @@ class RandomVariable;
 class Application : public Object
 {
 public:
-  Application(Ptr<INode>);
+  Application(Ptr<Node>);
   virtual ~Application();
   
   /**
@@ -98,9 +98,9 @@ public:
   void Stop(const RandomVariable& stopVariable);
 
   /**
-   * \returns the INode to which this Application object is attached.
+   * \returns the Node to which this Application object is attached.
    */
-  Ptr<INode> GetINode() const;
+  Ptr<Node> GetNode() const;
   
 private:
   /**
@@ -128,7 +128,7 @@ private:
 
   EventId         m_startEvent;
   EventId         m_stopEvent;
-  Ptr<INode>       m_node;
+  Ptr<Node>       m_node;
 };
 
 } //namespace ns3

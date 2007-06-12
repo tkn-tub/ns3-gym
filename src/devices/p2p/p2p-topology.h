@@ -30,7 +30,7 @@
 namespace ns3 {
 
 class PointToPointChannel;
-class INode;
+class Node;
 class IPAddr;
 class DataRate;
 class Queue;
@@ -42,8 +42,8 @@ class Queue;
 class PointToPointTopology {
 public:
   /** 
-   * \param n1 INode
-   * \param n2 INode
+   * \param n1 Node
+   * \param n2 Node
    * \param dataRate Maximum transmission link rate 
    * \param delay one-way propagation delay 
    * \return Pointer to the underlying PointToPointChannel
@@ -53,13 +53,13 @@ public:
    * PointToPointChannel.  
    */
   static Ptr<PointToPointChannel> AddPointToPointLink(
-    Ptr<INode> n1, Ptr<INode> n2, const DataRate& dataRate, const Time& delay);
+    Ptr<Node> n1, Ptr<Node> n2, const DataRate& dataRate, const Time& delay);
 
   /** 
    * \param chan PointToPointChannel to use
-   * \param n1 INode
+   * \param n1 Node
    * \param addr1 Ipv4 Address for n1
-   * \param n2 INode
+   * \param n2 Node
    * \param addr2 Ipv4 Address for n2
    * 
    * Add Ipv4Addresses to the Ipv4 interfaces associated with the 
@@ -67,18 +67,18 @@ public:
    */
   static void AddIpv4Addresses(
     Ptr<const PointToPointChannel> chan,
-    Ptr<INode> n1, const Ipv4Address& addr1,
-    Ptr<INode> n2, const Ipv4Address& addr2);
+    Ptr<Node> n1, const Ipv4Address& addr1,
+    Ptr<Node> n2, const Ipv4Address& addr2);
 
   /**
    * \param channel PointToPointChannel to use
-   * \param n1 INode
-   * \param n2 INode
+   * \param n1 Node
+   * \param n2 Node
    * 
-   * For the given PointToPointChannel, for each INode, add an 
+   * For the given PointToPointChannel, for each Node, add an 
    * IPv4 host route to the IPv4 address of the peer node.  
    */
-  static void AddIpv4Routes (Ptr<INode> n1, Ptr<INode> n2, Ptr<const PointToPointChannel> channel);
+  static void AddIpv4Routes (Ptr<Node> n1, Ptr<Node> n2, Ptr<const PointToPointChannel> channel);
 };
 
 } // namespace ns3

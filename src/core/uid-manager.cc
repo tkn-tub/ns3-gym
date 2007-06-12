@@ -58,7 +58,7 @@ std::string
 UidManager::LookupByUid (uint32_t uid)
 {
   NS_ASSERT (uid > 0);
-  NS_ASSERT (m_nameList.size () > uid);
+  NS_ASSERT (m_nameList.size () >= uid);
   return m_nameList[uid-1];
 }
 

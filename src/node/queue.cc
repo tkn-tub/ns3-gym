@@ -27,10 +27,11 @@ NS_DEBUG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
-const InterfaceId Queue::iid ("Queue");
+const InterfaceId Queue::iid = MakeInterfaceId ("Queue", Object::iid);
+static ClassIdDefaultValue g_classIdDefaultValue ("Queue", "Packet Queue",
+                                                  Queue::iid, "DropTailQueue");
 
 Queue::Queue() : 
-  Interface (Queue::iid),
   m_nBytes(0), 
   m_nTotalReceivedBytes(0),
   m_nPackets(0), 
@@ -38,6 +39,7 @@ Queue::Queue() :
   m_nTotalDroppedBytes(0),
   m_nTotalDroppedPackets(0)
 {
+  SetInterfaceId (Queue::iid);
   NS_DEBUG("Queue::Queue ()");
 }
 
@@ -199,27 +201,9 @@ Queue::Drop (const Packet& p)
 Ptr<Queue>
 Queue::CreateDefault (void)
 {
-  std::string defaultValue = GetDefault ()->GetValue ();
-  ClassId classId = ComponentManager::LookupByName (defaultValue);
+  ClassId classId = g_classIdDefaultValue.GetValue ();
   Ptr<Queue> queue = ComponentManager::Create<Queue> (classId, Queue::iid);
   return queue;
 }
-void 
-Queue::Add (const std::string &name)
-{
-  GetDefault ()->AddPossibleValue (name);
-}
-void 
-Queue::AddDefault (const std::string &name)
-{
-  GetDefault ()->AddDefaultValue (name);
-}
-StringEnumDefaultValue *
-Queue::GetDefault (void)
-{
-  static StringEnumDefaultValue value ("Queue", "Packet Queue");
-  return &value;
-}
-
 
 }; // namespace ns3
