@@ -1001,6 +1001,12 @@ PacketMetadata::GetTotalSize (void) const
   return totalSize;
 }
 
+uint32_t 
+PacketMetadata::GetUid (void) const
+{
+  return m_packetUid;
+}
+
 void
 PacketMetadata::Print (std::ostream &os, Buffer data, const PacketPrinter &printer) const
 {
