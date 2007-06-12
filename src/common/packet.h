@@ -295,10 +295,10 @@ public:
    */
   static void EnableMetadata (void);
 private:
-  Packet (Buffer buffer, Tags tags, PacketMetadata history);
+  Packet (Buffer buffer, Tags tags, PacketMetadata metadata);
   Buffer m_buffer;
   Tags m_tags;
-  PacketMetadata m_history;
+  PacketMetadata m_metadata;
   static uint32_t m_globalUid;
 };
 
@@ -321,7 +321,7 @@ Packet::AddHeader (T const &header)
   uint32_t size = header.GetSize ();
   m_buffer.AddAtStart (size);
   header.Serialize (m_buffer.Begin ());
-  m_history.AddHeader (header, size);
+  m_metadata.AddHeader (header, size);
 }
 template <typename T>
 uint32_t
@@ -331,7 +331,7 @@ Packet::RemoveHeader (T &header)
                  "Must pass Header subclass to Packet::RemoveHeader");
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
   m_buffer.RemoveAtStart (deserialized);
-  m_history.RemoveHeader (header, deserialized);
+  m_metadata.RemoveHeader (header, deserialized);
   return deserialized;
 }
 template <typename T>
@@ -344,7 +344,7 @@ Packet::AddTrailer (T const &trailer)
   m_buffer.AddAtEnd (size);
   Buffer::Iterator start = m_buffer.End ();
   trailer.Serialize (start);
-  m_history.AddTrailer (trailer, size);
+  m_metadata.AddTrailer (trailer, size);
 }
 template <typename T>
 uint32_t
@@ -354,7 +354,7 @@ Packet::RemoveTrailer (T &trailer)
                  "Must pass Trailer subclass to Packet::RemoveTrailer");
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
   m_buffer.RemoveAtEnd (deserialized);
-  m_history.RemoveTrailer (trailer, deserialized);
+  m_metadata.RemoveTrailer (trailer, deserialized);
   return deserialized;
 }
 
