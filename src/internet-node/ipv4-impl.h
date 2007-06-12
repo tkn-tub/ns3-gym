@@ -50,7 +50,7 @@ public:
   virtual void SetDefaultRoute (Ipv4Address nextHop, 
 				uint32_t interface);
   virtual uint32_t GetNRoutes (void);
-  virtual Ipv4Route *GetRoute (uint32_t i);
+  virtual Ipv4Route GetRoute (uint32_t i);
   virtual void RemoveRoute (uint32_t i);
   virtual uint32_t AddInterface (Ptr<NetDevice> device);
   virtual uint32_t GetNInterfaces (void);  

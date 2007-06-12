@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
 #include "ns3/object.h"
+#include "ipv4-route.h"
 
 namespace ns3 {
 
@@ -110,7 +111,7 @@ public:
    * \param i index of route to return
    * \returns the route whose index is i
    */
-  virtual Ipv4Route *GetRoute (uint32_t i) = 0;
+  virtual Ipv4Route GetRoute (uint32_t i) = 0;
   /**
    * \param i index of route to remove from routing table.
    */

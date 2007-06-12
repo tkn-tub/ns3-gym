@@ -78,10 +78,10 @@ Ipv4Impl::GetNRoutes (void)
 {
   return m_ipv4->GetNRoutes ();
 }
-Ipv4Route *
+Ipv4Route 
 Ipv4Impl::GetRoute (uint32_t i)
 {
-  return m_ipv4->GetRoute (i);
+  return *m_ipv4->GetRoute (i);
 }
 void 
 Ipv4Impl::RemoveRoute (uint32_t i)
