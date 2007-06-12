@@ -1,6 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
-import os
+import os, os.path
 import shutil
 
 import Action
@@ -27,16 +27,14 @@ def configure(conf):
     conf.sub_config('core')
     conf.sub_config('simulator')
 
+    blddir = os.path.abspath(os.path.join(conf.m_blddir, conf.env.variant()))
+    for module in all_modules:
+        conf.env.append_value('NS3_MODULE_PATH', os.path.join(blddir, 'src', module))
+
 
 def build(bld):
     Object.register('ns3header', Ns3Header)
     Action.Action('ns3_headers', func=_ns3_headers_inst, color='BLUE')
-
-    env = bld.env_of_name('default')
-    for module in all_modules:
-        node = bld.m_curdirnode.find_dir(module)
-        node_path = node.abspath(env)
-        env.append_value('NS3_MODULE_PATH', node_path)
     
     bld.add_subdirs(all_modules)
 
