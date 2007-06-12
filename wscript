@@ -93,6 +93,14 @@ def build(bld):
     variant_name = bld.env_of_name('default')['NS3_ACTIVE_VARIANT']
     variant_env = bld.env_of_name(variant_name)
     bld.m_allenvs['default'] = variant_env # switch to the active variant
+
+    if Params.g_options.run:
+        run_program(Params.g_options.run)
+        return
+    elif Params.g_options.shell:
+        run_shell()
+        return
+
     # process subfolders from here
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples')
@@ -115,12 +123,6 @@ def shutdown():
 
     if Params.g_options.doxygen:
         doxygen()
-
-    if Params.g_options.run:
-        run_program(Params.g_options.run)
-
-    elif Params.g_options.shell:
-        run_shell()
 
 def _find_program(program_name):
     for obj in Object.g_allobjs:
