@@ -42,10 +42,10 @@
 #include <string>
 #include <cassert>
 
-#include "ns3/debug.h"
 #include "ns3/command-line.h"
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
+#include "ns3/random-variable.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -61,12 +61,8 @@
 #include "ns3/ipv4.h"
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
-#include "ns3/drop-tail.h"
-#include "ns3/node-list.h"
-#include "ns3/trace-root.h"
 #include "ns3/p2p-topology.h"
 #include "ns3/onoff-application.h"
-#include "ns3/random-variable.h"
 
 using namespace ns3;
 
