@@ -786,7 +786,7 @@ _cairo_int_96by64_32x64_divrem (cairo_int128_t num, cairo_int64_t den)
 	nonneg_den = _cairo_int64_negate (den);
 
     uqr = _cairo_uint_96by64_32x64_divrem (num, nonneg_den);
-    if (_cairo_uint64_eq (uqr.rem, nonneg_den)) {
+    if (_cairo_uint64_eq (uqr.rem, _cairo_int64_to_uint64 (nonneg_den))) {
 	/* bail on overflow. */
 	qr.quo = _cairo_uint32s_to_uint64 (0x7FFFFFFF, -1U);;
 	qr.rem = den;
