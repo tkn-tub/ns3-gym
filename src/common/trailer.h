@@ -36,6 +36,32 @@ namespace ns3 {
  *   - ns3::Trailer::DeserializeFrom
  *   - ns3::Trailer::GetSerializedSize
  *   - ns3::Trailer::PrintTo
+ *
+ * Note that the SerializeTo and DeserializeFrom methods behave
+ * in a way which might seem surprising to users: the input iterator
+ * really points to the end of the buffer to which and from which
+ * the user is expected to write and read respectively. This means that
+ * if the trailer has a fixed size and if the user wishes to read or
+ * write that trailer from front to back, the user must rewind the 
+ * iterator by hand to go to the start of the trailer. Typical code
+ * looks like this:
+ * \code
+ * void CrcTrailer::SerializeTo (Buffer::Iterator end)
+ * {
+ *   end.Prev (4);
+ *   end.WriteHtonU32 (m_crc);
+ * }
+ * \endcode
+ *
+ * Some users would have expected that the iterator would be rewinded 
+ * to the "start" of the trailer before calling SerializeTo and DeserializeFrom.
+ * However, this behavior was not implemented because it cannot be made to
+ * work reliably for trailers which have a variable size. i.e., if the trailer 
+ * contains options, the code which calls DeserializeFrom cannot rewind
+ * to the start of the trailer because it does not know the real size of the 
+ * trailer. Hence, to make this legitimate use-case work (variable-sized 
+ * trailers), the input iterator to DeserializeFrom and SerializeTo points
+ * to the end of the trailer, and not its start.
  */
 class Trailer : public Chunk {
 public:
@@ -56,6 +82,9 @@ private:
    * \param end the buffer iterator in which the protocol trailer
    *    must serialize itself. This iterator identifies 
    *    the end of the buffer.
+   *
+   * This iterator must be typically moved with the Buffer::Iterator::Prev
+   * method before writing any byte in the buffer.
    */
   virtual void SerializeTo (Buffer::Iterator end) const = 0;
   /**
@@ -63,6 +92,9 @@ private:
    *    deserialize itself. This iterator identifies 
    *    the end of the buffer.
    * \returns the number of bytes read from the buffer
+   *
+   * This iterator must be typically moved with the Buffer::Iterator::Prev
+   * method before reading any byte in the buffer.
    */
   virtual uint32_t DeserializeFrom (Buffer::Iterator end) = 0;
 };
