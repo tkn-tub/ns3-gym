@@ -1,23 +1,24 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-import sys
-import Params
 
 
 def build(bld):
+    env = bld.env_of_name('default')
 
     def create_ns_prog(name, source):
         obj = bld.create_obj('cpp', 'program')
         obj.target = name
-        obj.uselib_local = "ns3-core ns3-common ns3-simulator"
         obj.source = source
         return obj
 
     unit_tests = create_ns_prog('run-tests', 'run-tests.cc')
     unit_tests.install_var  = 0 # do not install
     unit_tests.unit_test    = 1 # runs on 'waf check'
+    ## link unit test program with all ns3 modules
+    unit_tests.uselib_local = env['NS3_MODULES']
+    print env['NS3_MODULES']
     
-    #if sys.platform != 'win32':
     obj = create_ns_prog('bench-simulator', 'bench-simulator.cc')
+    obj.uselib_local = "ns3-core ns3-common ns3-simulator"
+
     obj = create_ns_prog('replay-simulation', 'replay-simulation.cc')
-    ## bench-packets requires missing header files
-    #obj = create_ns_prog('bench-packets', 'bench-packets.cc')
+    obj.uselib_local = "ns3-core ns3-common ns3-simulator"
