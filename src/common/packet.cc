@@ -119,3 +119,58 @@ Packet::Print (std::ostream &os) const
 {}
 
 }; // namespace ns3
+
+
+
+#ifdef RUN_SELF_TESTS
+
+#include "ns3/test.h"
+#include <string>
+
+namespace ns3 {
+
+class PacketTest: public Test {
+public:
+  virtual bool RunTests (void);
+  PacketTest ();
+};
+
+
+PacketTest::PacketTest ()
+  : Test ("Packet") {}
+
+
+bool
+PacketTest::RunTests (void)
+{
+  bool ok = true;
+
+  Packet pkt1 (reinterpret_cast<const uint8_t*> ("hello"), 5);
+  Packet pkt2 (reinterpret_cast<const uint8_t*> (" world"), 6);
+  Packet packet;
+  packet.AddAtEnd (pkt1);
+  packet.AddAtEnd (pkt2);
+  
+  if (packet.GetSize () != 11)
+    {
+      Failure () << "expected size 11, got " << packet.GetSize () << std::endl;
+      ok = false;
+    }
+
+  std::string msg = std::string (reinterpret_cast<const char *>(packet.PeekData ()),
+                                 packet.GetSize ());
+  if (msg != "hello world")
+    {
+      Failure () << "expected size 'hello world', got " << msg << std::endl;
+      ok = false;
+    }
+
+  return ok;
+}
+
+
+static PacketTest gPacketTest;
+
+}; // namespace ns3
+
+#endif /* RUN_SELF_TESTS */
