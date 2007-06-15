@@ -47,13 +47,6 @@ public:
    */
   MacAddress (void);
   /**
-   * \brief Construct a MacAddress using the next available
-   * address.
-   * \see MacAddres::Next
-   * \param len length, in bytes, of the desired address
-   */
-  MacAddress(uint8_t len);
-  /**
    * \brief Construct a MacAddress from a byte-array
    *
    * low byte should be first.
@@ -103,14 +96,6 @@ public:
    * \param len the length of the buffer
    */
   void Set (uint8_t const ad[MAX_LEN], uint8_t len);
-
-  // Static methods/members
-  /**
-   *
-   * Advance the global to the next available mac address.
-   */
-  static void AdvanceAddress();
-  static uint8_t g_nextAddress[MAX_LEN];
 
 private:
   uint8_t m_address[MAX_LEN];

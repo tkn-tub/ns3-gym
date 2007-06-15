@@ -135,14 +135,12 @@ PointToPointChannel::TransmitEnd(Packet& p, Ptr<PointToPointNetDevice> src)
 // The sender is going to free the packet as soon as it has been transmitted.
 // We need to copy it to get a reference so it won't e deleted.
 //
-// Above is not correct (GFR).  The event scheduler makes a copy
-// of the packet
-//  Packet packet = p;
+  Packet packet = p;
   NS_DEBUG ("PointToPointChannel::TransmitEnd (): Schedule event in " << 
             m_delay.GetSeconds () << "sec");
   Simulator::Schedule (m_delay,
                        &PointToPointChannel::PropagationCompleteEvent,
-                       this, p, src);
+                       this, packet, src);
   return true;
 }
 

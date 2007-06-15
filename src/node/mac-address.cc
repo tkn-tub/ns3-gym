@@ -33,9 +33,6 @@
 
 namespace ns3 {
 
-// Static variables
-uint8_t MacAddress::g_nextAddress[MacAddress::MAX_LEN];
-
 static char
 AsciiToLowCase (char c)
 {
@@ -55,13 +52,6 @@ MacAddress::MacAddress () : m_len(0)
     {
       m_address[i] = 0;
     }
-}
-
-MacAddress::MacAddress(uint8_t len) : m_len(len)
-{
-  NS_ASSERT (len <= MacAddress::MAX_LEN);
-  AdvanceAddress();
-  memcpy(m_address, g_nextAddress, len);
 }
 
 MacAddress::MacAddress (uint8_t const *address, uint8_t len)
@@ -158,17 +148,6 @@ MacAddress::Set (uint8_t const ad[MacAddress::MAX_LEN], uint8_t len)
         m_len = len;
 }
 
-// Static methods
-void MacAddress::AdvanceAddress()
-  {
-    // Advance to next address, little end first
-    for(size_t i = 0; i < MAX_LEN; ++i)
-      {
-        if (++g_nextAddress[i] != 0) break;
-      }
-  }
-
-// Non-member operators
 bool operator == (MacAddress const&a, MacAddress const&b)
 {
 	return a.IsEqual (b);

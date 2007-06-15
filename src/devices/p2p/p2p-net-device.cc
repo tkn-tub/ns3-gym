@@ -16,8 +16,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author:  Craig Dowell <craigdo@ee.washington.edu>
- * Revised: George Riley <riley@ece.gatech.edu>
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
 #include <iostream>
@@ -33,17 +32,11 @@ NS_DEBUG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 namespace ns3 {
 
-DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
-           "PointToPointLinkDataRate", 
-           "The default data rate for point to point links",
-           DataRate ("10Mb/s"));
-
-  PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
-                                                const DataRate& rate) 
+PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node) 
 : 
-  NetDevice(node, MacAddress (6)), 
+  NetDevice(node, MacAddress ("00:00:00:00:00:00")), 
   m_txMachineState (READY),
-  m_bps (rate),
+  m_bps (DataRate (0xffffffff)),
   m_tInterframeGap (Seconds(0)),
   m_channel (0), 
   m_queue (0),
@@ -108,25 +101,26 @@ void PointToPointNetDevice::DoDispose()
 //
 // Assignment operator for PointToPointNetDevice.
 //
+// This uses the non-obvious trick of taking the source net device passed by
+// value instead of by reference.  This causes the copy constructor to be
+// invoked (where the real work is done -- see above).  All we have to do
+// here is to return the newly constructed net device.
 //
-PointToPointNetDevice&
-PointToPointNetDevice::operator= (const PointToPointNetDevice& nd)
+  PointToPointNetDevice&
+PointToPointNetDevice::operator= (const PointToPointNetDevice nd)
 {
   NS_DEBUG ("PointToPointNetDevice::operator= (" << &nd << ")");
-  // FIXME.  Not sure what to do here
-  // GFR Note.  I would suggest dis-allowing netdevice assignment,
-  // as well as pass-by-value (ie. copy constructor).
   return *this;
 }
 
   void 
-PointToPointNetDevice::SetDataRate(const DataRate& bps)
+PointToPointNetDevice::SetDataRate(DataRate bps)
 {
   m_bps = bps;
 }
 
   void 
-PointToPointNetDevice::SetInterframeGap(const Time& t)
+PointToPointNetDevice::SetInterframeGap(Time t)
 {
   m_tInterframeGap = t;
 }
@@ -139,23 +133,68 @@ PointToPointNetDevice::SendTo (Packet& p, const MacAddress& dest)
 
   NS_ASSERT (IsLinkUp ());
 
+#ifdef NOTYET
+    struct NetDevicePacketDestAddress tag;
+    tag.address = address;
+    p.AddTag (tag);
+#endif
+
 //
 // This class simulates a point to point device.  In the case of a serial
 // link, this means that we're simulating something like a UART.  This is
 // not a requirement for a point-to-point link, but it's a typical model for
 // the device.  
 //
+// Generally, a real device will have a list of pending packets to transmit.  
+// An on-device CPU frees the main CPU(s) of the details of what is happening
+// in the device and feeds the USART.  The main CPU basically just sees the 
+// list of packets -- it puts packets into the list, and the device frees the
+// packets when they are transmitted.
 //
-// If there's a transmission in progress, we enque the packet for later
-// trnsmission; otherwise we send it now.
+// In the case of our virtual device here, the queue pointed to by m_queue
+// corresponds to this list.  The main CPU adds packets to the list by 
+// calling this method and when the device completes a send, the packets are
+// freed in an "interrupt" service routine.
+//
+// We're going to do the same thing here.  So first of all, the incoming packet
+// goes onto our queue if possible.  If the queue can't handle it, there's
+// nothing to be done.
+//
+    if (m_queue->Enqueue(p) == false )
+      {
+        return false;
+      }
+//
+// If there's a transmission in progress, the "interrupt" will keep the
+// transmission process going.  If the device is idle, we need to start a
+// transmission.
+//
+// In the real world, the USART runs until it finishes sending bits, and then
+// pulls on the device's transmit complete interrupt wire.  At the same time,
+// the electrons from the last wiggle of the wire are busy propagating down
+// the wire.  In the case of a long speed-of-light delay in the wire, we could
+// conceivably start transmitting the next packet before the end of the 
+// previously sent data has even reached the end of the wire.  This situation
+// is usually avoided (like the plague) and an "interframe gap" is introduced.
+// This is usually the round-trip delay on the channel plus some hard-to-
+// quantify receiver turn-around time (the time required for the receiver
+// to process the last frame and prepare for reception of the next).
+//
+// So, if the transmit machine is ready, we need to schedule a transmit 
+// complete event (at which time we tell the channel we're no longer sending
+// bits).  A separate transmit ready event (at which time the transmitter 
+// becomes ready to start sending bits again is scheduled there).  Finally, 
+// we tell the channel (via TransmitStart ()) that we've started wiggling the 
+// wire and bits are coming out.
+//
+// If the transmit machine is not ready, we just leave and the transmit ready
+// event we know is coming will kick-start the transmit process.
+//
     if (m_txMachineState == READY) 
       {
         return TransmitStart (p);
       }
-    else
-      {
-        return m_queue->Enqueue(p);
-      }
+    return true;
 }
 
   bool
@@ -167,25 +206,25 @@ PointToPointNetDevice::TransmitStart (Packet &p)
 //
 // This function is called to start the process of transmitting a packet.
 // We need to tell the channel that we've started wiggling the wire and
-// schedule an event that will be executed when the transmission is complete.
+// schedule an event that will be executed when it's time to tell the 
+// channel that we're done wiggling the wire.
 //
   NS_ASSERT_MSG(m_txMachineState == READY, "Must be READY to transmit");
   m_txMachineState = BUSY;
-  Time txCompleteTime = Seconds (m_bps.CalculateTxTime(p.GetSize())) + 
-    m_tInterframeGap;
+  Time tEvent = Seconds (m_bps.CalculateTxTime(p.GetSize()));
 
   NS_DEBUG ("PointToPointNetDevice::TransmitStart (): " <<
     "Schedule TransmitCompleteEvent in " << 
-    txCompleteTime.GetSeconds () << "sec");
-  // Schedule the tx complete event
-  Simulator::Schedule (txCompleteTime, 
-                       &PointToPointNetDevice::TransmitComplete, 
+    tEvent.GetSeconds () << "sec");
+
+  Simulator::Schedule (tEvent, 
+                       &PointToPointNetDevice::TransmitCompleteEvent, 
                        this);
-  return m_channel->TransmitStart(p, this); 
+  return m_channel->TransmitStart (p, this); 
 }
 
   void
-PointToPointNetDevice::TransmitComplete (void)
+PointToPointNetDevice::TransmitCompleteEvent (void)
 {
   NS_DEBUG ("PointToPointNetDevice::TransmitCompleteEvent ()");
 //
@@ -195,10 +234,49 @@ PointToPointNetDevice::TransmitComplete (void)
 // the transmitter after the interframe gap.
 //
   NS_ASSERT_MSG(m_txMachineState == BUSY, "Must be BUSY if transmitting");
-  m_txMachineState = READY;
+  m_txMachineState = GAP;
   Packet p;
-  if (!m_queue->Dequeue(p)) return; // Nothing to do at this point
-  TransmitStart(p);
+  bool found;
+  found = m_queue->Dequeue (p);
+  NS_ASSERT_MSG(found, "Packet must be on queue if transmitted");
+  NS_DEBUG ("PointToPointNetDevice::TransmitCompleteEvent (): Pkt UID is " << 
+            p.GetUid () << ")");
+  m_channel->TransmitEnd (p, this); 
+
+  NS_DEBUG (
+    "PointToPointNetDevice::TransmitCompleteEvent (): " <<
+    "Schedule TransmitReadyEvent in "
+    << m_tInterframeGap.GetSeconds () << "sec");
+
+  Simulator::Schedule (m_tInterframeGap, 
+                       &PointToPointNetDevice::TransmitReadyEvent, 
+                       this);
+}
+
+  void
+PointToPointNetDevice::TransmitReadyEvent (void)
+{
+  NS_DEBUG ("PointToPointNetDevice::TransmitReadyEvent ()");
+//
+// This function is called to enable the transmitter after the interframe
+// gap has passed.  If there are pending transmissions, we use this opportunity
+// to start the next transmit.
+//
+  NS_ASSERT_MSG(m_txMachineState == GAP, "Must be in interframe gap");
+  m_txMachineState = READY;
+
+  if (m_queue->IsEmpty())
+    {
+      return;
+    }
+  else
+    {
+      Packet p;
+      bool found;
+      found = m_queue->Peek (p);
+      NS_ASSERT_MSG(found, "IsEmpty false but no Packet on queue?");
+      TransmitStart (p);
+    }
 }
 
 TraceResolver *
