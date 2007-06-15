@@ -15,7 +15,6 @@ def build(bld):
     unit_tests.unit_test    = 1 # runs on 'waf check'
     ## link unit test program with all ns3 modules
     unit_tests.uselib_local = env['NS3_MODULES']
-    print env['NS3_MODULES']
     
     obj = create_ns_prog('bench-simulator', 'bench-simulator.cc')
     obj.uselib_local = "ns3-core ns3-common ns3-simulator"
