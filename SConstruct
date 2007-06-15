@@ -411,6 +411,12 @@ sample_trace.add_dep('common')
 sample_trace.set_executable()
 sample_trace.add_source('main-trace.cc')
 
+sample_query_interface = build.Ns3Module('sample-query-interface', 'samples')
+ns3.add(sample_query_interface)
+sample_query_interface.add_dep('common')
+sample_query_interface.set_executable()
+sample_query_interface.add_source('main-query-interface.cc')
+
 sample_simu = build.Ns3Module('sample-simulator', 'samples')
 ns3.add(sample_simu)
 sample_simu.set_executable()

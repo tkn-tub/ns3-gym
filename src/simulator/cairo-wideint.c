@@ -658,7 +658,7 @@ _cairo_int128_divrem (cairo_int128_t num, cairo_int128_t den)
  * Compute a 32 bit quotient and 64 bit remainder of a 96 bit unsigned
  * dividend and 64 bit divisor.  If the quotient doesn't fit into 32
  * bits then the returned remainder is equal to the divisor, and the
- * qoutient is the largest representable 64 bit integer.  It is an
+ * quotient is the largest representable 64 bit integer.  It is an
  * error to call this function with the high 32 bits of @num being
  * non-zero. */
 cairo_uquorem64_t
@@ -776,7 +776,7 @@ _cairo_int_96by64_32x64_divrem (cairo_int128_t num, cairo_int64_t den)
 {
     int			num_neg = _cairo_int128_negative (num);
     int			den_neg = _cairo_int64_negative (den);
-    cairo_int64_t	nonneg_den = den;
+    cairo_uint64_t	nonneg_den;
     cairo_uquorem64_t	uqr;
     cairo_quorem64_t	qr;
 
@@ -784,9 +784,11 @@ _cairo_int_96by64_32x64_divrem (cairo_int128_t num, cairo_int64_t den)
 	num = _cairo_int128_negate (num);
     if (den_neg)
 	nonneg_den = _cairo_int64_negate (den);
+    else
+	nonneg_den = den;
 
     uqr = _cairo_uint_96by64_32x64_divrem (num, nonneg_den);
-    if (_cairo_uint64_eq (uqr.rem, nonneg_den)) {
+    if (_cairo_uint64_eq (uqr.rem, _cairo_int64_to_uint64 (nonneg_den))) {
 	/* bail on overflow. */
 	qr.quo = _cairo_uint32s_to_uint64 (0x7FFFFFFF, -1U);;
 	qr.rem = den;

@@ -29,6 +29,7 @@ def configure(conf):
 
     blddir = os.path.abspath(os.path.join(conf.m_blddir, conf.env.variant()))
     for module in all_modules:
+        conf.sub_config(module)
         conf.env.append_value('NS3_MODULE_PATH', os.path.join(blddir, 'src', module))
 
 
