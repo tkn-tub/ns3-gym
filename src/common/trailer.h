@@ -75,6 +75,10 @@ private:
 
   /**
    * \returns the size of the serialized Trailer.
+   *
+   * This method is used by Packet::AddTrailer to reserve
+   * enough room in the packet byte buffer prior to calling
+   * Trailer::Serialize.
    */
   virtual uint32_t GetSerializedSize (void) const = 0;
 
@@ -94,7 +98,9 @@ private:
    * \returns the number of bytes read from the buffer
    *
    * This iterator must be typically moved with the Buffer::Iterator::Prev
-   * method before reading any byte in the buffer.
+   * method before reading any byte in the buffer. The value returned
+   * is used to trim the packet byte buffer of the corresponding
+   * amount when this method is invoked from Packet::RemoveTrailer
    */
   virtual uint32_t DeserializeFrom (Buffer::Iterator end) = 0;
 };
