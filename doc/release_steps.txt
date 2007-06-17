@@ -1,0 +1,19 @@
+Steps in doing an ns-3 release
+
+1. prepare the source files
+   - revise and check in AUTHORS, if needed
+   - revise and check in RELEASE_NOTES
+   - update and check in VERSION to the latest release number
+2. make a new "architecture.pdf" document and place it in the doc/ directory
+3. scons dist
+4. test tarball on release platforms (run-tests and simple-p2p)
+5. tag ns-3-dev with "release ns-3.0.X"
+6. clone the ns-3-dev and place it on the repository
+7. upload "ns-3.0.x.tar.gz" to the releases/ directory on the server
+8. update web page
+   - add link to news.html
+   - update download.html
+   - update roadmap.html
+   - build and update Doxygen directory on the server
+   - update and upload software architecture document (PDF, HTML)
+9. announce to ns-developers, with summary of release notes
