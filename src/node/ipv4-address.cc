@@ -230,6 +230,14 @@ std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask)
   mask.Print (os);
   return os;
 }
+bool operator == (Ipv4Mask const &a, Ipv4Mask const &b)
+{
+  return a.IsEqual (b);
+}
+bool operator != (Ipv4Mask const &a, Ipv4Mask const &b)
+{
+  return !a.IsEqual (b);
+}
 
 
 }; // namespace ns3
