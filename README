@@ -23,7 +23,7 @@ will be contributed by the community in an open collaboration
 process.
 
 Contributing to the ns-3 project is still a very informal
-process because that process depends heavily on the personality
+process because that process depends heavily on the background
 of the people involved, the amount of time they can invest
 and the type of model they want to work on.  
 
@@ -34,7 +34,7 @@ project.  These steps are described in doc/contributing.txt
 2) An overview of the ns-3 project
 ----------------------------------
 
-This package contains the latest version of ns-3 which is aims 
+This package contains the latest version of ns-3 which aims 
 at being a replacement for ns-2. Currently, ns-3 provides a 
 number of very simple network simulation models:
   - an ipv4 and udp stack
@@ -93,6 +93,7 @@ The current codebase is expected to fail to build on
 the following platforms:
   - gcc 3.3 and earlier
   - optimized builds on linux x86 gcc 4.0 
+  - cygwin
 
 Other platforms may or may not work: we welcome 
 patches to improve the portability of the code to these
