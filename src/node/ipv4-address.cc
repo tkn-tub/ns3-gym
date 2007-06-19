@@ -215,6 +215,11 @@ bool operator != (Ipv4Address const &a, Ipv4Address const &b)
 {
   return !a.IsEqual (b);
 }
+bool operator < (Ipv4Address const &addrA, Ipv4Address const &addrB)
+{
+  return (addrA.GetHostOrder () < addrB.GetHostOrder ());
+}
+
 size_t Ipv4AddressHash::operator()(Ipv4Address const &x) const 
 { 
   return x.GetHostOrder ();
