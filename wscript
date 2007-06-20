@@ -142,6 +142,9 @@ def _run_argv(argv):
     elif sys.platform == 'win32':
         pathvar = 'PATH'
         pathsep = ';'
+    elif sys.platform == 'cygwin':
+        pathvar = 'PATH'
+        pathsep = ':'
     else:
         Params.warning(("Don't know how to configure "
                         "dynamic library path for the platform '%s'") % (sys.platform,))
