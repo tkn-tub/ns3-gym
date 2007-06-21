@@ -59,7 +59,6 @@ def configure(conf):
     if not conf.check_tool('compiler_cxx'):
         Params.fatal("No suitable compiler found")
 
-
     # create the second environment, set the variant and set its name
     variant_env = conf.env.copy()
     variant_name = Params.g_options.debug_level.lower()
@@ -79,13 +78,17 @@ def configure(conf):
     conf.setenv(variant_name)
 
     variant_env.append_value('CXXDEFINES', 'RUN_SELF_TESTS')
-    variant_env.append_value('CXXFLAGS', ['-Wall', '-Werror'])
+    
+    if os.path.basename(conf.env['CXX']).startswith("g++"):
+        variant_env.append_value('CXXFLAGS', ['-Wall', '-Werror'])
+
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
 
     if sys.platform == 'win32':
-        variant_env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
+        if os.path.basename(conf.env['CXX']).startswith("g++"):
+            variant_env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
 
     conf.sub_config('src')
 
