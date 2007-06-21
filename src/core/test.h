@@ -101,6 +101,41 @@ private:
 };
 }; // namespace ns3 
 
+/**
+ * Convenience macro to check that a value returned by a test is what
+ * is expected.  Note: this macro assumes a 'bool result = true'
+ * declaration exists in the test function body, and that the function
+ * returns that value.
+ *
+ * \param got value obtained from the test
+ * \param expected value that the test is expected to return
+ */
+#define NS_TEST_ASSERT_EQUAL(got, expected)             \
+    if ((got) != (expected))                            \
+      {                                                 \
+        Failure () << __FILE__ << ":" <<__LINE__        \
+                   << ": expected " << (expected)       \
+                   << ", got " << (got) << std::endl;   \
+        result = false;                                 \
+      }
+/**
+ * Convenience macro to check an assertion is held during an unit
+ * test.  Note: this macro assumes a 'bool result = true' declaration
+ * exists in the test function body, and that the function returns
+ * that value.
+ *
+ * \param assertion expression that must be true if the test did not fail
+ */
+#define NS_TEST_ASSERT(assertion)                       \
+    if (!(assertion))                                   \
+      {                                                 \
+        Failure () << __FILE__ << ":" <<__LINE__        \
+                   << ": assertion `" << (assertion)    \
+                   << "'failed." << std::endl;          \
+        result = false;                                 \
+      }
+
+
 #endif /* RUN_SELF_TESTS */
 
 #endif /* TEST_H */

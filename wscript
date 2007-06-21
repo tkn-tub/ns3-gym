@@ -79,6 +79,7 @@ def configure(conf):
     conf.setenv(variant_name)
 
     variant_env.append_value('CXXDEFINES', 'RUN_SELF_TESTS')
+    variant_env.append_value('CXXFLAGS', ['-Wall', '-Werror'])
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
@@ -141,6 +142,9 @@ def _run_argv(argv):
     elif sys.platform == 'win32':
         pathvar = 'PATH'
         pathsep = ';'
+    elif sys.platform == 'cygwin':
+        pathvar = 'PATH'
+        pathsep = ':'
     else:
         Params.warning(("Don't know how to configure "
                         "dynamic library path for the platform '%s'") % (sys.platform,))

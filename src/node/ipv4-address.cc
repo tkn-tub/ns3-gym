@@ -215,6 +215,11 @@ bool operator != (Ipv4Address const &a, Ipv4Address const &b)
 {
   return !a.IsEqual (b);
 }
+bool operator < (Ipv4Address const &addrA, Ipv4Address const &addrB)
+{
+  return (addrA.GetHostOrder () < addrB.GetHostOrder ());
+}
+
 size_t Ipv4AddressHash::operator()(Ipv4Address const &x) const 
 { 
   return x.GetHostOrder ();
@@ -229,6 +234,14 @@ std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask)
 {
   mask.Print (os);
   return os;
+}
+bool operator == (Ipv4Mask const &a, Ipv4Mask const &b)
+{
+  return a.IsEqual (b);
+}
+bool operator != (Ipv4Mask const &a, Ipv4Mask const &b)
+{
+  return !a.IsEqual (b);
 }
 
 

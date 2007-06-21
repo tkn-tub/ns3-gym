@@ -122,11 +122,15 @@ std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask);
 
 bool operator == (Ipv4Address const &a, Ipv4Address const &b);
 bool operator != (Ipv4Address const &a, Ipv4Address const &b);
+bool operator < (Ipv4Address const &addrA, Ipv4Address const &addrB);
+
 class Ipv4AddressHash : public std::unary_function<Ipv4Address, size_t> {
 public:
   size_t operator()(Ipv4Address const &x) const;
 };
-bool operator != (Ipv4Address const &a, Ipv4Address const &b);
+
+bool operator == (Ipv4Mask const &a, Ipv4Mask const &b);
+bool operator != (Ipv4Mask const &a, Ipv4Mask const &b);
 
 }; // namespace ns3
 

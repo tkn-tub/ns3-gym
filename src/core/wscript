@@ -3,6 +3,8 @@ import sys
 
 
 def configure(conf):
+    conf.env.append_value('NS3_MODULES', 'ns3-core')
+
     e = conf.create_header_configurator()
     e.mandatory = False
     e.name = 'stdlib.h'

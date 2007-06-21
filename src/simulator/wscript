@@ -13,6 +13,8 @@ def set_options(opt):
 
 
 def configure(conf):
+    conf.env.append_value('NS3_MODULES', 'ns3-simulator')
+
     if Params.g_options.high_precision_as_double:
         conf.add_define('USE_HIGH_PRECISION_DOUBLE', 1)
         conf.env['USE_HIGH_PRECISION_DOUBLE'] = 1

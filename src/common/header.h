@@ -53,6 +53,10 @@ private:
 
   /**
    * \returns the size of the serialized Header.
+   *
+   * This method is used by Packet::AddHeader to reserve
+   * enough room in the packet byte buffer prior to calling
+   * Header::Serialize.
    */
   virtual uint32_t GetSerializedSize (void) const = 0;
 
@@ -67,6 +71,10 @@ private:
    *    deserialize itself. This iterator identifies 
    *    the start of the buffer.
    * \returns the number of bytes read from the buffer
+   *
+   * The value returned is used to trim the packet byte buffer of the 
+   * corresponding amount when this method is invoked from 
+   * Packet::RemoveHeader
    */
   virtual uint32_t DeserializeFrom (Buffer::Iterator start) = 0;
 };
