@@ -94,16 +94,17 @@ UdpHeader::InitializeChecksum (Ipv4Address source,
 std::string 
 UdpHeader::DoGetName (void) const
 {
-  return "Udp";
+  return "UDP";
 }
 
 void 
 UdpHeader::PrintTo (std::ostream &os) const
 {
-  os << "(udp)"
-     << ", port source=" << m_sourcePort
-     << ", port destination=" << m_destinationPort
-     << ", length=" << m_payloadSize;
+  os << "(" 
+     << "length: " << m_payloadSize + GetSize ()
+     << ") "
+     << m_sourcePort << " > " << m_destinationPort
+    ;
 }
 
 uint32_t 

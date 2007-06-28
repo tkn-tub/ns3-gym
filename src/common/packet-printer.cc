@@ -78,7 +78,7 @@ PacketPrinter::CreateStaticDefault (void)
   static PacketPrinter tmp;
   tmp.PrintForward ();
   tmp.AddPayloadPrinter (MakeCallback (&PacketPrinter::DoDefaultPrintPayload));
-  tmp.SetSeparator ("\n");
+  tmp.SetSeparator (" ");
   return &tmp;
 }
 
@@ -158,9 +158,15 @@ PacketPrinter::DoDefaultPrintPayload (std::ostream & os,
                                       uint32_t size,
                                       struct PacketPrinter::FragmentInformation info)
 {
-  os << "data ";
-  os << "[" << info.start << ":" << info.end << "] -> "
-     << "[0:" << size << "]";
+  os << "DATA ("
+     << "length " << size - (info.end + info.start);
+  if (info.start != 0 || info.end != 0)
+    {
+      os << " "
+         << "trim_start " << info.start << " "
+         << "trim_end " << info.end;
+    }
+  os << ")";
 }
 
 void 
@@ -180,9 +186,14 @@ PacketPrinter::DoDefaultPrintFragment (std::ostream & os,
                                        std::string &name,
                                        struct PacketPrinter::FragmentInformation info)
 {
-  os << name << " ";
-  os << "[" << info.start << ":" << info.end << "] -> "
-     << "[0:" << size << "]";
+  NS_ASSERT (info.start != 0 || info.end != 0);
+  os << name << " "
+     << "("
+     << "length " << size - (info.end + info.start) << " "
+     << "trim_start " << info.start << " "
+     << "trim_end " << info.end
+     << ")"
+    ;
 }
 
 void

@@ -43,9 +43,19 @@ class Chunk;
 class PacketPrinter 
 {
 public:
+  /**
+   * \brief indicates how many bytes were trimmed from a header
+   * or a trailer.
+   */
   struct FragmentInformation
   {
+    /**
+     * The number of bytes trimmed from the start of the header or the trailer.
+     */
     uint32_t start;
+    /**
+     * The number of bytes trimmed from the end of the header or the trailer.
+     */
     uint32_t end;
   };
   /**
@@ -297,6 +307,7 @@ template <typename T>
 void 
 PacketPrinter::DoDefaultPrint (std::ostream &os, uint32_t packetUid, uint32_t size, const T *chunk)
 {
+  os << chunk->GetName () << " ";
   chunk->Print (os);
 }
 

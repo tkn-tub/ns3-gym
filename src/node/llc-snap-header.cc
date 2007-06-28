@@ -50,17 +50,17 @@ LlcSnapHeader::GetSerializedSize (void) const
 std::string
 LlcSnapHeader::DoGetName (void) const
 {
-  return "LlcSnap";
+  return "LLCSNAP";
 }
 
 void 
 LlcSnapHeader::PrintTo (std::ostream &os) const
 {
-  os << "(mac)"
-      << " EtherType: ";
+  os << "(type 0x";
   os.setf (std::ios::hex, std::ios::basefield);
   os << m_etherType;
   os.setf (std::ios::dec, std::ios::basefield);
+  os << ")";
 }
 
 void

@@ -953,13 +953,14 @@ PacketMetadata::DoPrint (struct PacketMetadata::SmallItem *item, uint32_t curren
       // payload.
       printer.PrintPayload (os, extraItem.packetUid, item->size, 
                             extraItem.fragmentStart, 
-                            extraItem.fragmentEnd);
+                            item->size - extraItem.fragmentEnd);
     }
   else if (extraItem.fragmentStart != 0 ||
            extraItem.fragmentEnd != item->size)
     {
       printer.PrintChunkFragment (uid, os, extraItem.packetUid, item->size, 
-                                  extraItem.fragmentStart, extraItem.fragmentEnd);
+                                  extraItem.fragmentStart, 
+                                  item->size - extraItem.fragmentEnd);
     }
   else if (PacketPrinter::IsHeader (uid))
     {
