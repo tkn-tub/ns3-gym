@@ -403,6 +403,7 @@ uint16_t
 PacketMetadata::AddSmall (const struct PacketMetadata::SmallItem *item)
 {
   NS_ASSERT (m_data != 0);
+  NS_ASSERT (m_used != item->prev && m_used != item->next);
   if (g_optOne)
     {
       uint32_t typeUidSize = GetUleb128Size (item->typeUid);
@@ -452,6 +453,7 @@ PacketMetadata::AddSmall (const struct PacketMetadata::SmallItem *item)
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
+          NS_ASSERT (written >= 8);
           return written;
         }
     }
@@ -470,6 +472,7 @@ PacketMetadata::AddBig (uint32_t next, uint32_t prev,
 {
   NS_ASSERT (m_data != 0);
   uint32_t typeUid = ((item->typeUid & 0x1) == 0x1)?item->typeUid:item->typeUid+1;
+  NS_ASSERT (m_used != prev && m_used != next);
  append:
   uint8_t *start = &m_data->m_data[m_used];
   uint8_t *end = &m_data->m_data[m_data->m_size];
@@ -493,6 +496,7 @@ PacketMetadata::AddBig (uint32_t next, uint32_t prev,
         {
           uintptr_t written = buffer - start;
           NS_ASSERT (written <= 0xffff);
+          NS_ASSERT (written >= 14);
           return written;
         }
     }
@@ -796,6 +800,7 @@ PacketMetadata::AddAtEnd (PacketMetadata const&o)
           // replace previous tail.
           lastExtraItem.fragmentEnd = extraItem.fragmentEnd;
           NS_ASSERT (m_tail == lastTail);
+          // XXX This call might be wrong. 
           ReplaceTail (&lastItem, &lastExtraItem, lastTailSize);
         }
       else
@@ -1319,7 +1324,7 @@ PacketMetadataTest::PrintFragment (std::ostream &os,uint32_t packetUid,
                                   uint32_t size,std::string & name, 
                                   struct PacketPrinter::FragmentInformation info)
 {
-  m_prints.push_back (info.end - info.start);
+  m_prints.push_back (size - (info.end + info.start));
 }
 void 
 PacketMetadataTest::PrintDefault (std::ostream& os,uint32_t packetUid,
@@ -1333,7 +1338,7 @@ PacketMetadataTest::PrintPayload (std::ostream &os,uint32_t packetUid,
                                  uint32_t size,
                                  struct PacketPrinter::FragmentInformation info)
 {
-  m_prints.push_back (info.end - info.start);
+  m_prints.push_back (size - (info.end + info.start));
 }
 
 
@@ -1642,7 +1647,13 @@ PacketMetadataTest::RunTests (void)
   p = Packet (2000);
   CHECK_HISTORY (p, 1, 2000);
   
-
+  p = Packet ();
+  ADD_TRAILER (p, 10);
+  ADD_HEADER (p, 5);
+  p1 = p.CreateFragment (0, 8);
+  p2 = p.CreateFragment (8, 7);
+  p1.AddAtEnd (p2);
+  CHECK_HISTORY (p, 2, 5, 10);
 
   return ok;
 }
