@@ -370,6 +370,7 @@ PacketMetadata::UpdateTail (uint16_t written)
     }
   NS_ASSERT (m_tail != 0xffff);
   NS_ASSERT (m_head != 0xffff);
+  NS_ASSERT (written >= 8);
   m_used += written;
   m_data->m_dirtyEnd = m_used;
 }
@@ -395,6 +396,7 @@ PacketMetadata::UpdateHead (uint16_t written)
     }
   NS_ASSERT (m_tail != 0xffff);
   NS_ASSERT (m_head != 0xffff);
+  NS_ASSERT (written >= 8);
   m_used += written;
   m_data->m_dirtyEnd = m_used;
 }
@@ -698,7 +700,7 @@ PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
     }
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
-  ReadItems (m_head, &item, &extraItem);
+  uint32_t read = ReadItems (m_head, &item, &extraItem);
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
@@ -710,10 +712,18 @@ PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
     {
       NS_FATAL_ERROR ("Removing incomplete header.");
     }
-  m_head = item.next;
-  if (m_head > m_tail)
+  if (m_head + read == m_used)
     {
       m_used = m_head;
+    }
+  if (item.next == 0xffff)
+    {
+      m_head = 0xffff;
+      m_tail = 0xffff;
+    }
+  else
+    {
+      m_head = item.next;
     }
 }
 void 
@@ -742,7 +752,7 @@ PacketMetadata::DoRemoveTrailer (uint32_t uid, uint32_t size)
     }
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
-  ReadItems (m_tail, &item, &extraItem);
+  uint32_t read = ReadItems (m_tail, &item, &extraItem);
   if ((item.typeUid & 0xfffffffe) != uid ||
       item.size != size)
     {
@@ -754,10 +764,18 @@ PacketMetadata::DoRemoveTrailer (uint32_t uid, uint32_t size)
     {
       NS_FATAL_ERROR ("Removing incomplete trailer.");
     }
-  m_tail = item.prev;
-  if (m_tail > m_head)
+  if (m_tail + read == m_used)
     {
       m_used = m_tail;
+    }  
+  if (item.prev == 0xffff)
+    {
+      m_head = 0xffff;
+      m_tail = 0xffff;
+    }
+  else
+    {
+      m_tail = item.prev;
     }
 }
 void
@@ -1654,6 +1672,18 @@ PacketMetadataTest::RunTests (void)
   p2 = p.CreateFragment (8, 7);
   p1.AddAtEnd (p2);
   CHECK_HISTORY (p, 2, 5, 10);
+
+  p = Packet ();
+  ADD_TRAILER (p, 10);
+  REM_TRAILER (p, 10);
+  ADD_TRAILER (p, 10);
+  CHECK_HISTORY (p, 1, 10);
+
+  p = Packet ();
+  ADD_HEADER (p, 10);
+  REM_HEADER (p, 10);
+  ADD_HEADER (p, 10);
+  CHECK_HISTORY (p, 1, 10);
 
   return ok;
 }
