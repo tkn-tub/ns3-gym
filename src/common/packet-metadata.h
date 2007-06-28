@@ -162,7 +162,8 @@ private:
   void AppendValueExtra (uint32_t value, uint8_t *buffer);
   inline void Reserve (uint32_t n);
   void ReserveCopy (uint32_t n);
-  uint32_t DoPrint (struct PacketMetadata::SmallItem *item, uint32_t current,
+  uint32_t DoPrint (const struct PacketMetadata::SmallItem *item,
+                    const struct PacketMetadata::ExtraItem *extraItem,
                     Buffer data, uint32_t offset, const PacketPrinter &printer,
                     std::ostream &os) const;
   uint32_t GetTotalSize (void) const;

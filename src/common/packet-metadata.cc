@@ -964,44 +964,43 @@ PacketMetadata::PrintDefault (std::ostream &os, Buffer buffer) const
 }
 
 uint32_t
-PacketMetadata::DoPrint (struct PacketMetadata::SmallItem *item, uint32_t current,
-                        Buffer data, uint32_t offset, const PacketPrinter &printer,
-                        std::ostream &os) const
+PacketMetadata::DoPrint (const struct PacketMetadata::SmallItem *item, 
+                         const struct PacketMetadata::ExtraItem *extraItem,
+                         Buffer data, uint32_t offset, const PacketPrinter &printer,
+                         std::ostream &os) const
 {
-  PacketMetadata::ExtraItem extraItem;
-  ReadItems (current, item, &extraItem);
   uint32_t uid = item->typeUid & 0xfffffffe;
   if (uid == 0)
     {
       // payload.
-      printer.PrintPayload (os, extraItem.packetUid, item->size, 
-                            extraItem.fragmentStart, 
-                            item->size - extraItem.fragmentEnd);
+      printer.PrintPayload (os, extraItem->packetUid, item->size, 
+                            extraItem->fragmentStart, 
+                            item->size - extraItem->fragmentEnd);
     }
-  else if (extraItem.fragmentStart != 0 ||
-           extraItem.fragmentEnd != item->size)
+  else if (extraItem->fragmentStart != 0 ||
+           extraItem->fragmentEnd != item->size)
     {
-      printer.PrintChunkFragment (uid, os, extraItem.packetUid, item->size, 
-                                  extraItem.fragmentStart, 
-                                  item->size - extraItem.fragmentEnd);
+      printer.PrintChunkFragment (uid, os, extraItem->packetUid, item->size, 
+                                  extraItem->fragmentStart, 
+                                  item->size - extraItem->fragmentEnd);
     }
   else if (PacketPrinter::IsHeader (uid))
     {
       ns3::Buffer::Iterator j = data.Begin ();
       j.Next (offset);
-      printer.PrintChunk (uid, j, os, extraItem.packetUid, item->size);
+      printer.PrintChunk (uid, j, os, extraItem->packetUid, item->size);
     }
   else if (PacketPrinter::IsTrailer (uid))
     {
       ns3::Buffer::Iterator j = data.End ();
       j.Prev (data.GetSize () - (offset + item->size));
-      printer.PrintChunk (uid, j, os, extraItem.packetUid, item->size);
+      printer.PrintChunk (uid, j, os, extraItem->packetUid, item->size);
     }
   else 
     {
       NS_ASSERT (false);
     }
-  return extraItem.fragmentEnd - extraItem.fragmentStart;
+  return extraItem->fragmentEnd - extraItem->fragmentStart;
 }
 
 uint32_t
@@ -1041,18 +1040,18 @@ PacketMetadata::Print (std::ostream &os, Buffer data, const PacketPrinter &print
     }
   NS_ASSERT (m_data != 0);
   NS_ASSERT (GetTotalSize () == data.GetSize ());
+  struct PacketMetadata::SmallItem item;
+  struct PacketMetadata::ExtraItem extraItem;
   if (printer.m_forward)
     {
-      uint32_t tail = m_tail;
-      uint32_t head = m_head;
-      uint32_t current = head;
+      uint32_t current = m_head;
       uint32_t offset = 0;
       while (current != 0xffff)
         {
-          struct PacketMetadata::SmallItem item;
-          uint32_t realSize = DoPrint (&item, current, data, offset, printer, os);
+          ReadItems (current, &item, &extraItem);
+          uint32_t realSize = DoPrint (&item, &extraItem, data, offset, printer, os);
           offset += realSize;
-          if (current == tail)
+          if (current == m_tail)
             {
               break;
             }
@@ -1066,16 +1065,14 @@ PacketMetadata::Print (std::ostream &os, Buffer data, const PacketPrinter &print
     }
   else
     {
-      uint32_t head = m_head;
-      uint32_t tail = m_tail;
-      uint32_t current = head;
-      uint32_t offset = 0;
+      uint32_t current = m_tail;
+      uint32_t offset = data.GetSize ();
       while (current != 0xffff)
         {
-          struct PacketMetadata::SmallItem item;
-          uint32_t realSize = DoPrint (&item, current, data, offset, printer, os);
+          ReadItems (current, &item, &extraItem);
+          uint32_t realSize = DoPrint (&item, &extraItem, data, offset - item.size, printer, os);
           offset -= realSize;
-          if (current == tail)
+          if (current == m_head)
             {
               break;
             }
@@ -1248,7 +1245,7 @@ class PacketMetadataTest : public Test {
 public:
   PacketMetadataTest ();
   virtual ~PacketMetadataTest ();
-  bool CheckHistory (Packet p, char *file, int line, uint32_t n, ...);
+  bool CheckHistory (Packet p, const char *file, int line, uint32_t n, ...);
   virtual bool RunTests (void);
 private:
   template <int N>
@@ -1269,6 +1266,7 @@ private:
   template <int N>
   void RegisterTrailer (void);
   void CleanupPrints (void);
+  bool Check (const char *file, int line, std::list<int> expected);
 
 
   bool m_headerError;
@@ -1366,14 +1364,9 @@ PacketMetadataTest::CleanupPrints (void)
   m_prints.clear ();
 }
 
-bool 
-PacketMetadataTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ...)
+bool
+PacketMetadataTest::Check (const char *file, int line, std::list<int> expected)
 {
-  m_headerError = false;
-  m_trailerError = false;
-  va_list ap;
-  p.Print (std::cerr, m_printer);
-  va_start (ap, n);
   if (m_headerError)
     {
       std::cout << "PacketMetadata header error. file=" << file 
@@ -1386,21 +1379,20 @@ PacketMetadataTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ..
                 << ", line=" << line << std::endl;
       return false;
     }
-  if (n != m_prints.size ())
+  if (expected.size () != m_prints.size ())
     {
       goto error;
     }
-  for (std::list<int>::iterator i = m_prints.begin (); 
-       i != m_prints.end (); i++)
+  for (std::list<int>::iterator i = m_prints.begin (),
+         j = expected.begin (); 
+       i != m_prints.end (); i++, j++)
     {
-      int v = va_arg (ap, int);
-      if (v != *i)
+      NS_ASSERT (j != expected.end ());
+      if (*j != *i)
         {
-          va_end (ap);
           goto error;
         }
     }
-  va_end (ap);
   return true;
  error:
   std::cout << "PacketMetadata error. file="<< file 
@@ -1411,15 +1403,45 @@ PacketMetadataTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ..
       std::cout << *i << ", ";
     }
   std::cout << "\", expected: \"";
+  for (std::list<int>::iterator j = expected.begin ();
+       j != expected.end (); j++)
+    {
+      std::cout << *j << ", ";
+    }
+  std::cout << "\"" << std::endl;
+  return false;
+}
+
+bool 
+PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t n, ...)
+{
+  m_headerError = false;
+  m_trailerError = false;
+  std::list<int> expected;
+  va_list ap;
   va_start (ap, n);
   for (uint32_t j = 0; j < n; j++)
     {
       int v = va_arg (ap, int);
-      std::cout << v << ", ";
+      expected.push_back (v);
     }
   va_end (ap);
-  std::cout << "\"" << std::endl;
-  return false;
+
+  m_printer.PrintForward ();
+  p.Print (std::cerr, m_printer);
+  bool ok = Check (file, line, expected);
+  CleanupPrints ();
+  if (!ok)
+    {
+      return false;
+    }
+
+  m_printer.PrintBackward ();
+  p.Print (std::cerr, m_printer);
+  expected.reverse ();
+  ok = Check (file, line, expected);
+  CleanupPrints ();
+  return ok;
 }
 
 #define ADD_HEADER(p, n)                        \
@@ -1453,7 +1475,6 @@ PacketMetadataTest::CheckHistory (Packet p, char *file, int line, uint32_t n, ..
       {                                         \
         ok = false;                             \
       }                                         \
-    CleanupPrints ();                           \
   }
 
 bool
