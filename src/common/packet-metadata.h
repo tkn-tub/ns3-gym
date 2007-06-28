@@ -32,6 +32,46 @@ namespace ns3 {
 class Chunk;
 class Buffer;
 
+/**
+ * \internal
+ * \brief handle packet metadata about packet headers and trailers
+ *
+ * This class is used by the Packet class to record every operation
+ * performed on the packet's buffer. This class also provides
+ * an implementation of the Packet::Print methods which uses
+ * the metadata to analyse the content of the packet's buffer.
+ *
+ * To achieve this, this class maintains a linked list of so-called
+ * "items", each of which represents a header or a trailer, or 
+ * payload, or a fragment of any of these. Each item contains a "next"
+ * and a "prev" field which point to the next and previous entries
+ * in the linked list. The PacketMetadata class maintains a pair
+ * of pointers to the head and the tail of the linked list.
+ *
+ * Each entry in the list also maintains:
+ *   - its native size (the size it had when it was first added
+ *     to the packet)
+ *   - its type: identifies what kind of header, what kind of trailer,
+ *     if it is payload or not
+ *   - the uid of the packet to which it was first added
+ *   - the start and end of the area represented by a fragment
+ *     if it is one.
+ *
+ * This linked list is flattened in a byte buffer stored in
+ * struct PacketMetadata::Data. Each entry of the linked list is
+ * identified by an offset which identifies the first byte of the
+ * entry from the start of the data buffer. The size of this data
+ * buffer is 2^16-1 bytes maximum which somewhat limits the number
+ * of entries which can be stored in this linked list but it is
+ * quite unlikely to hit this limit in practice.
+ *
+ * Each item of the linked list is a variable-sized byte buffer
+ * made of a number of fields. Some of these fields are stored
+ * as fixed-size 32 bit integers, others as fixed-size 16 bit 
+ * integers, and some others as variable-size 32-bit integers.
+ * The variable-size 32 bit integers are stored using the uleb128
+ * encoding.
+ */
 class PacketMetadata {
 public:
   static void Enable (void);
@@ -87,11 +127,13 @@ private:
     /* offset (in bytes) from start of m_data buffer 
        to next element in linked list. value is 0xffff 
        if next element does not exist.
+       stored as a fixed-size 16 bit integer.
     */
     uint16_t next;
     /* offset (in bytes) from start of m_data buffer 
        to previous element in linked list. value is 0xffff 
        if previous element does not exist.
+       stored as a fixed-size 16 bit integer.
      */
     uint16_t prev;
     /* the high 31 bits of this field identify the 
@@ -99,10 +141,12 @@ private:
        this item: the value zero represents payload.
        If the low bit of this uid is one, an ExtraItem
        structure follows this SmallItem structure.
+       stored as a variable-size 32 bit integer.
      */
     uint32_t typeUid;
     /* the size (in bytes) of the header or trailer represented
        by this element.
+       stored as a variable-size 32 bit integer.
      */
     uint32_t size;
     /* this field tries to uniquely identify each header or 
@@ -115,21 +159,25 @@ private:
        share the same chunkUid _and_ typeUid is very small 
        unless they are really representations of the same header
        instance.
+       stored as a fixed-size 16 bit integer.
      */
     uint16_t chunkUid;
   };
   struct ExtraItem {
     /* offset (in bytes) from start of original header to 
        the start of the fragment still present.
+       stored as a variable-size 32 bit integer.
      */
     uint32_t fragmentStart;
     /* offset (in bytes) from start of original header to 
        the end of the fragment still present.
+       stored as a variable-size 32 bit integer.
      */
     uint32_t fragmentEnd;
     /* the packetUid of the packet in which this header or trailer
        was first added. It could be different from the m_packetUid
        field if the user has aggregated multiple packets into one.
+       stored as a fixed-size 32 bit integer.
      */
     uint32_t packetUid;
   };
