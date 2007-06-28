@@ -105,7 +105,7 @@ PacketPrinter::PrintChunk (uint32_t chunkUid,
   std::string name = cb ();
   struct PacketPrinter::FragmentInformation info;
   info.start = 0;
-  info.end = size;
+  info.end = 0;
   if (!m_defaultPrinter.IsNull ())
     {
       m_defaultPrinter (os, packetUid, size, name, info);

@@ -307,8 +307,6 @@ inode.add_sources ([
     'udp-impl.cc',
 ])
 inode.add_headers ([
-    'ipv4-header.h',
-    'udp-header.h',
     'ipv4-checksum.h',
     'arp-header.h',
     'arp-cache.h',
@@ -338,6 +336,8 @@ inode.add_inst_headers ([
     'internet-node.h',
     'ascii-trace.h',
     'pcap-trace.h',
+    'ipv4-header.h',
+    'udp-header.h',
 ])
 
 
@@ -400,7 +400,7 @@ sample_debug.add_source('main-debug-other.cc')
 sample_packet_printer = build.Ns3Module('sample-packet-printer', 'samples')
 sample_packet_printer.set_executable()
 ns3.add(sample_packet_printer)
-sample_packet_printer.add_dep('common')
+sample_packet_printer.add_deps (['common', 'internet-node'])
 sample_packet_printer.add_source('main-packet-printer.cc')
 
 
