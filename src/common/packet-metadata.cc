@@ -997,6 +997,7 @@ PacketMetadata::GetTotalSize (void) const
         {
           break;
         }
+      NS_ASSERT (current != item.next);
       current = item.next;
     }
   return totalSize;
@@ -1036,6 +1037,7 @@ PacketMetadata::Print (std::ostream &os, Buffer data, const PacketPrinter &print
             {
               os << printer.m_separator;
             }
+          NS_ASSERT (current != item.next);
           current = item.next;
         }
     }
@@ -1058,6 +1060,7 @@ PacketMetadata::Print (std::ostream &os, Buffer data, const PacketPrinter &print
             {
               os << printer.m_separator;
             }
+          NS_ASSERT (current != item.prev);
           current = item.prev;
         }
     }
