@@ -242,6 +242,10 @@ node.add_sources ([
     'udp.cc',
     'ipv4.cc',
     'application.cc',
+    'position.cc',
+    'static-position.cc',
+    'notify-static-position.cc',
+    'static-speed-position.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -259,6 +263,10 @@ node.add_inst_headers ([
     'udp.h',
     'ipv4.h',
     'application.h',
+    'position.h',
+    'static-position.h',
+    'notify-static-position.h',
+    'static-speed-position.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')
