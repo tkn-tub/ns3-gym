@@ -56,6 +56,7 @@ void DefaultPrint (void)
   ipv4.SetDestination (Ipv4Address ("192.168.0.2"));
   udp.SetSource (1025);
   udp.SetDestination (80);
+  udp.SetPayloadSize (1000);
   p.AddHeader (udp);
   p.AddHeader (ipv4);
 
@@ -147,6 +148,7 @@ void NonDefaultPrint (void)
   ipv4.SetDestination (Ipv4Address ("192.168.0.2"));
   udp.SetSource (1025);
   udp.SetDestination (80);
+  udp.SetPayloadSize (1000);
   p.AddHeader (udp);
   p.AddHeader (ipv4);
 
