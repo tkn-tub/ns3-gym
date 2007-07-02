@@ -30,6 +30,9 @@ const ClassId NotifyStaticPosition::cid =
 NotifyStaticPosition::NotifyStaticPosition ()
   : StaticPosition ()
 {}
+NotifyStaticPosition::NotifyStaticPosition (double x, double y)
+  : StaticPosition (x, y, 0.0)
+{}
 NotifyStaticPosition::NotifyStaticPosition (double x, double y, double z)
   : StaticPosition (x, y, z)
 {}
