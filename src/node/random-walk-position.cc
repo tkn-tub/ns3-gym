@@ -22,7 +22,10 @@
 #include "ns3/default-value.h"
 #include "ns3/time-default-value.h"
 #include "ns3/simulator.h"
+#include "ns3/debug.h"
 #include <cmath>
+
+NS_DEBUG_COMPONENT_DEFINE ("RandomWalk");
 
 namespace ns3 {
 
@@ -51,7 +54,7 @@ RandomWalkPositionParameters::RandomWalkPositionParameters ()
     m_maxSpeed (g_maxSpeed.GetValue ()),
     m_mode (g_mode.GetValue ()),
     m_modeDistance (g_modeDistance.GetValue ()),
-    m_modeTime (g_modeDistance.GetValue ())
+    m_modeTime (g_modeTime.GetValue ())
 {}
 bool 
 RandomWalkPositionParameters::IsDefault (void) const
@@ -122,6 +125,7 @@ RandomWalkPosition::Reset (void)
       delay = Seconds (distance / sqrt (m_dx * m_dx + m_dy * m_dy));
     }
   NotifyCourseChange ();
+  NS_DEBUG ("change speed at " << Simulator::Now () << " in " << delay);
   Simulator::Schedule (delay, &RandomWalkPosition::Reset, this);
 }
 
