@@ -246,6 +246,7 @@ node.add_sources ([
     'static-position.cc',
     'notify-static-position.cc',
     'static-speed-position.cc',
+    'grid-topology.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -267,6 +268,7 @@ node.add_inst_headers ([
     'static-position.h',
     'notify-static-position.h',
     'static-speed-position.h',
+    'grid-topology.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')

@@ -22,6 +22,7 @@
 #define NOTIFY_STATIC_POSITION_H
 
 #include "ns3/callback.h"
+#include "ns3/component-manager.h"
 #include "static-position.h"
 #include <list>
 
@@ -34,11 +35,21 @@ class NotifyStaticPosition : public StaticPosition
 {
 public:
   static const InterfaceId iid;
+  static const ClassId cid;
+
   typedef Callback<void,const NotifyStaticPosition &> Listener;
   /**
    * Create a position located at coordinates (0,0,0)
    */
   NotifyStaticPosition ();
+  /**
+   * \param x x coordinate
+   * \param y y coordinate
+   *
+   * Create a position located at coordinates (x,y,0)
+   * Unit is meters
+   */
+  NotifyStaticPosition (double x, double y);
   /**
    * \param x x coordinate
    * \param y y coordinate

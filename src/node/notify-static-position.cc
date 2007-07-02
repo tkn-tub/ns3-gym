@@ -23,6 +23,9 @@
 namespace ns3 {
 
 const InterfaceId NotifyStaticPosition::iid = MakeInterfaceId ("NotifyStaticPosition", StaticPosition::iid);
+const ClassId NotifyStaticPosition::cid = 
+  MakeClassId<NotifyStaticPosition,double, double> ("NotifyStaticPosition", 
+                                                    NotifyStaticPosition::iid);
 
 NotifyStaticPosition::NotifyStaticPosition ()
   : StaticPosition ()
