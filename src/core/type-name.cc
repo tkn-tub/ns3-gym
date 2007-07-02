@@ -19,6 +19,7 @@ DEF_TYPE (int8_t);
 DEF_TYPE (int16_t);
 DEF_TYPE (int32_t);
 DEF_TYPE (int64_t);
-
+DEF_TYPE (float);
+DEF_TYPE (double);
 
 }//namespace ns3
