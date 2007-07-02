@@ -67,6 +67,8 @@ public:
    */
   double GetZ (void) const;
 
+  void Add (double dx, double dy, double dz);
+
   void Set (double x, double y, double z);
   void SetXY (double x, double y);
   void SetX (double x);
@@ -79,6 +81,12 @@ public:
    * Unit is meters
    */
   double GetDistanceFrom (const Position &position) const;
+protected:
+  /**
+   * Must be invoked by subclasses when the course of the
+   * position changes to notify course change listeners.
+   */
+  void NotifyCourseChange (void) const;
 private:
   /**
    * \param x reference to floating-point variable for x coordinate.

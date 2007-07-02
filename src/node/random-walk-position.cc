@@ -106,10 +106,10 @@ RandomWalkPosition::Reset (void)
   double speed = UniformVariable::GetSingleValue (m_parameters->m_minSpeed, 
 						  m_parameters->m_maxSpeed);
   double direction = m_randomDirection.GetValue ();
-  double dx = std::cos (direction);
-  double dy = std::sin (direction);
-  m_dx = dx * speed;
-  m_dy = dy * speed;
+  double dx = std::cos (direction) * speed;
+  double dy = std::sin (direction) * speed;
+  m_dx = dx;
+  m_dy = dy;
   Time delay;
   if (m_parameters->m_mode == RandomWalkPositionParameters::MODE_TIME)
     {
@@ -120,6 +120,7 @@ RandomWalkPosition::Reset (void)
       double distance = g_modeDistance.GetValue ();
       delay = Seconds (distance / sqrt (m_dx * m_dx + m_dy * m_dy));
     }
+  NotifyCourseChange ();
   Simulator::Schedule (delay, &RandomWalkPosition::Reset, this);
 }
 
@@ -144,9 +145,18 @@ RandomWalkPosition::DoGet (double &x, double &y, double &z) const
 void
 RandomWalkPosition::DoSet (double x, double y, double z)
 {
+  bool changed = false;
+  if (m_x != x || m_y != y)
+    {
+      changed = true;
+    }
   m_x = x;
   m_y = y;
   m_prevTime = Simulator::Now ();
+  if (changed)
+    {
+      NotifyCourseChange ();
+    }
 }
 
 

@@ -60,13 +60,6 @@ public:
   virtual ~StaticPosition ();
 
 private:
-  /**
-   * Subclasses must override this virtual method to be notified
-   * of a call to one of the Set methods which changes the current
-   * position. The default implementation does nothing. This method
-   * is invoked _after_ the current position has been updated.
-   */
-  virtual void NotifyPositionChange (void) const;
   virtual void DoGet (double &x, double &y, double &z) const;
   virtual void DoSet (double x, double y, double z);
   double m_x;

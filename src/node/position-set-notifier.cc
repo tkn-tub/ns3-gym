@@ -18,32 +18,25 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "notify-static-position.h"
+#include "position-set-notifier.h"
 
 namespace ns3 {
 
-const InterfaceId NotifyStaticPosition::iid = MakeInterfaceId ("NotifyStaticPosition", StaticPosition::iid);
-const ClassId NotifyStaticPosition::cid = 
-  MakeClassId<NotifyStaticPosition,double, double> ("NotifyStaticPosition", 
-                                                    NotifyStaticPosition::iid);
+const InterfaceId PositionSetNotifier::iid = MakeInterfaceId ("PositionSetNotifier", Object::iid);
+const ClassId PositionSetNotifier::cid = 
+  MakeClassId<PositionSetNotifier> ("PositionSetNotifier", 
+				    PositionSetNotifier::iid);
 
-NotifyStaticPosition::NotifyStaticPosition ()
-  : StaticPosition ()
-{}
-NotifyStaticPosition::NotifyStaticPosition (double x, double y)
-  : StaticPosition (x, y, 0.0)
-{}
-NotifyStaticPosition::NotifyStaticPosition (double x, double y, double z)
-  : StaticPosition (x, y, z)
+PositionSetNotifier::PositionSetNotifier ()
 {}
 
 void 
-NotifyStaticPosition::RegisterListener (Listener listener)
+PositionSetNotifier::RegisterListener (Listener listener)
 {
   m_listeners.push_back (listener);
 }
 void 
-NotifyStaticPosition::UnregisterListener (Listener callback)
+PositionSetNotifier::UnregisterListener (Listener callback)
 {
   for (std::list<Listener>::iterator i = m_listeners.begin ();
        i != m_listeners.end ();)
@@ -60,13 +53,13 @@ NotifyStaticPosition::UnregisterListener (Listener callback)
     }  
 }
 void 
-NotifyStaticPosition::NotifyPositionChange (void) const
+PositionSetNotifier::Notify (Ptr<const Position> position) const
 {
   for (std::list<Listener>::const_iterator i = m_listeners.begin ();
        i != m_listeners.end (); i++)
     {
       Listener listener = *i;
-      listener (*this);
+      listener (position);
     }
 }
 

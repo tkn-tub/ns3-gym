@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "position.h"
+#include "position-set-notifier.h"
 #include <math.h>
 
 namespace ns3 {
@@ -66,7 +67,7 @@ Position::SetXY (double x, double y)
   double currentX, currentY, currentZ;
   DoGet (currentX, currentY, currentZ);
   DoSet (x, y, currentZ);
-}
+ }
 void 
 Position::SetX (double x)
 {
@@ -103,4 +104,15 @@ Position::GetDistanceFrom (const Position &position) const
   return sqrt (dx*dx+dy*dy+dz*dz);
 }
 
-}; // namespace ns3
+void
+Position::NotifyCourseChange (void) const
+{
+  Ptr<PositionSetNotifier> notifier = 
+    QueryInterface<PositionSetNotifier> (PositionSetNotifier::iid);
+  if (notifier != 0)
+    {
+      notifier->Notify (this);
+    }
+}
+
+} // namespace ns3

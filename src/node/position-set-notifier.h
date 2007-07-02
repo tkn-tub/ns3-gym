@@ -18,47 +18,36 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef NOTIFY_STATIC_POSITION_H
-#define NOTIFY_STATIC_POSITION_H
+#ifndef POSITION_SET_NOTIFIER_H
+#define POSITION_SET_NOTIFIER_H
 
-#include "ns3/callback.h"
+#include "ns3/object.h"
 #include "ns3/component-manager.h"
-#include "static-position.h"
-#include <list>
+#include "ns3/callback.h"
+#include "position.h"
 
 namespace ns3 {
 
 /**
  * \brief notify listeners of position changes.
  */
-class NotifyStaticPosition : public StaticPosition
+class PositionSetNotifier : public Object
 {
 public:
   static const InterfaceId iid;
   static const ClassId cid;
 
-  typedef Callback<void,const NotifyStaticPosition &> Listener;
+  typedef Callback<void,Ptr<const Position> > Listener;
+
   /**
-   * Create a position located at coordinates (0,0,0)
+   * Create a new position notifier
    */
-  NotifyStaticPosition ();
+  PositionSetNotifier ();
+
   /**
-   * \param x x coordinate
-   * \param y y coordinate
-   *
-   * Create a position located at coordinates (x,y,0)
-   * Unit is meters
+   * \param position the position which just changed.
    */
-  NotifyStaticPosition (double x, double y);
-  /**
-   * \param x x coordinate
-   * \param y y coordinate
-   * \param z z coordinate
-   *
-   * Create a position located at coordinates (x,y,z)
-   * Unit is meters
-   */
-  NotifyStaticPosition (double x, double y, double z);
+  void Notify (Ptr<const Position> position) const;
 
   /**
    * \param listener listener to add
@@ -75,11 +64,9 @@ public:
    */
   void UnregisterListener (Listener listener);
 private:
-  virtual void NotifyPositionChange (void) const;
   std::list<Listener> m_listeners;
 };
 
 } // namespace ns3
 
-
-#endif /* NOTIFY_STATIC_POSITION_H */
+#endif /* POSITION_SET_NOTIFIER_H */

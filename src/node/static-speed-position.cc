@@ -73,10 +73,19 @@ StaticSpeedPosition::~StaticSpeedPosition ()
 void 
 StaticSpeedPosition::SetSpeed (double dx, double dy, double dz)
 {
+  bool changed = false;
   Update ();
+  if (m_dx != dx || m_dy != dy || m_dz != dz)
+    {
+      changed = true;
+    }
   m_dx = dx;
   m_dy = dy;
   m_dz = dz;
+  if (changed)
+    {
+      NotifyCourseChange ();
+    }
 }
 
 void
@@ -101,10 +110,19 @@ StaticSpeedPosition::DoGet (double &x, double &y, double &z) const
 void 
 StaticSpeedPosition::DoSet (double x, double y, double z)
 {
+  bool changed = false;
   Update ();
+  if (m_x != x || m_y != y || m_z != z)
+    {
+      changed = true;
+    }
   m_x = x;
   m_y = y;
   m_z = z;
+  if (changed)
+    {
+      NotifyCourseChange ();
+    }
 }
 
 }; // namespace ns3

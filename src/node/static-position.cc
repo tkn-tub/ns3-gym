@@ -38,10 +38,6 @@ StaticPosition::StaticPosition (double x, double y, double z)
 StaticPosition::~StaticPosition ()
 {}
 
-void
-StaticPosition::NotifyPositionChange (void) const
-{}
-
 void 
 StaticPosition::DoGet (double &x, double &y, double &z) const
 {
@@ -52,19 +48,17 @@ StaticPosition::DoGet (double &x, double &y, double &z) const
 void 
 StaticPosition::DoSet (double x, double y, double z)
 {
-  bool mustNotify = false;
-  if (x != m_x || 
-      y != m_y ||
-      z != m_z)
+  bool changed = false;
+  if (m_x != x || m_y != y || m_z != z)
     {
-      mustNotify = true;
+      changed = true;
     }
   m_x = x;
   m_y = y;
   m_z = z;
-  if (mustNotify)
+  if (changed)
     {
-      NotifyPositionChange ();
+      NotifyCourseChange ();
     }
 }
 
