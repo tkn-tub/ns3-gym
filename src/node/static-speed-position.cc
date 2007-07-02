@@ -24,6 +24,10 @@
 namespace ns3 {
 
 const InterfaceId StaticSpeedPosition::iid = MakeInterfaceId ("StaticSpeedPosition", Position::iid);
+const ClassId StaticSpeedPosition::cid = 
+  MakeClassId<StaticSpeedPosition,double, double> ("StaticSpeedPosition", 
+                                              StaticSpeedPosition::iid);
+
 
 StaticSpeedPosition::StaticSpeedPosition ()
   : m_x (0.0),
@@ -38,6 +42,15 @@ StaticSpeedPosition::StaticSpeedPosition (double x, double y, double z)
   : m_x (x),
     m_y (y),
     m_z (z),
+    m_dx (0.0),
+    m_dy (0.0),
+    m_dz (0.0),
+    m_prevTime (Simulator::Now ())
+{}
+StaticSpeedPosition::StaticSpeedPosition (double x, double y)
+  : m_x (x),
+    m_y (y),
+    m_z (0.0),
     m_dx (0.0),
     m_dy (0.0),
     m_dz (0.0),

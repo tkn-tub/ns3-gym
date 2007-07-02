@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "position.h"
 #include "ns3/nstime.h"
+#include "ns3/component-manager.h"
 
 namespace ns3 {
 
@@ -31,11 +32,21 @@ class StaticSpeedPosition : public Position
 {
 public:
   static const InterfaceId iid;
+  static const ClassId cid;
   /**
    * Create position located at coordinates (0,0,0) with
    * speed (0,0,0).
    */
   StaticSpeedPosition ();
+  /**
+   * \param x x coordinate
+   * \param y y coordinate
+   *
+   * Create a position located at coordinates (x,y,0) with
+   * speed (0,0,0).
+   * Unit is meters
+   */
+  StaticSpeedPosition (double x, double y);
   /**
    * \param x x coordinate
    * \param y y coordinate

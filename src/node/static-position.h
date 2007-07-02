@@ -21,6 +21,7 @@
 #ifndef STATIC_POSITION_H
 #define STATIC_POSITION_H
 
+#include "ns3/component-manager.h"
 #include "position.h"
 
 namespace ns3 {
@@ -34,10 +35,19 @@ class StaticPosition : public Position
 {
 public:
   static const InterfaceId iid;
+  static const ClassId cid;
   /**
    * Create a position located at coordinates (0,0,0)
    */
   StaticPosition ();
+  /**
+   * \param x x coordinate
+   * \param y y coordinate
+   *
+   * Create a position located at coordinates (x,y,0).
+   * Unit is meters
+   */
+  StaticPosition (double x, double y);
   /**
    * \param x x coordinate
    * \param y y coordinate
