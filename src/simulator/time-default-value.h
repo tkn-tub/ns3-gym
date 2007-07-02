@@ -26,12 +26,35 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup config
+ * \brief a ns3::Time variable for ns3::Bind
+ *
+ * Every instance of this type is automatically 
+ * registered in the variable pool which is used
+ * by ns3::Bind. 
+ */
 class TimeDefaultValue : public DefaultValueBase
 {
 public:
+  /**
+   * \param name name of variable
+   * \param help help text which explains the purpose
+   *        and the semantics of this variable
+   * \param defaultValue the default value to assign
+   *        to this variable.
+   *
+   * Unless the user invokes ns3::Bind with the right arguments,
+   * the GetValue method will return the default value. Otherwise,
+   * it will return the user-specified value.
+   */
   TimeDefaultValue (const std::string name,
 		    const std::string help,
 		    Time defaultValue);
+  /**
+   * \returns the default value for this variable or a
+   *          user-provided overriden variable.
+   */
   Time GetValue (void) const;
 private:
   virtual bool DoParseValue (const std::string &value);
