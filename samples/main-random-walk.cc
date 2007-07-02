@@ -1,5 +1,23 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
+#include "ns3/ptr.h"
+#include "ns3/position.h"
+#include "ns3/position-set-notifier.h"
+#include "ns3/random-walk-position.h"
+#include "ns3/default-value.h"
+#include "ns3/command-line.h"
+#include "ns3/simulator.h"
+#include "ns3/nstime.h"
+
+using namespace ns3;
+
+static void 
+CourseChange (Ptr<const Position> position)
+{
+  double x, y, z;
+  position->Get (x, y, z);
+  std::cout << "pos=" << position << ", x=" << x << ", y=" << y << ", z=" << z << std::endl;
+}
 
 int main (int argc, char *argv[])
 {
@@ -9,7 +27,16 @@ int main (int argc, char *argv[])
   Bind ("RandomWalkModeDistance", "20");
   Bind ("RandomWalkModeTime", "2s");
 
-  RandomWalkPosition pos;
+  CommandLine::Parse (argc, argv);
+
+  Ptr<PositionSetNotifier> notifier = Create<PositionSetNotifier> ();
+  Ptr<RandomWalkPosition> position = Create<RandomWalkPosition> ();
+  position->AddInterface (notifier);
+  notifier->RegisterListener (MakeCallback (&CourseChange));
+
+  Simulator::StopAt (Seconds (10.0));
+
+  Simulator::Run ();
   
   return 0;
 }

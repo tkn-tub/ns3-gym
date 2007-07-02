@@ -413,6 +413,12 @@ ns3.add(sample_callback)
 sample_callback.add_dep('core')
 sample_callback.add_source('main-callback.cc')
 
+sample_random_walk = build.Ns3Module('sample-random-walk', 'samples')
+sample_random_walk.set_executable()
+ns3.add(sample_random_walk)
+sample_random_walk.add_deps(['core', 'node'])
+sample_random_walk.add_source('main-random-walk.cc')
+
 sample_ptr = build.Ns3Module('sample-ptr', 'samples')
 sample_ptr.set_executable()
 ns3.add(sample_ptr)
