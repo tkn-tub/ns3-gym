@@ -83,24 +83,36 @@ ArpHeader::GetDestinationIpv4Address (void)
   return m_ipv4Dest;
 }
 
+std::string 
+ArpHeader::DoGetName (void) const
+{
+  return "ARP";
+}
 
 void 
 ArpHeader::PrintTo (std::ostream &os) const
 {
-  os << "(arp)";
   if (IsRequest ()) 
     {
-      os << " source mac: " << m_macSource
-          << " source ipv4: " << m_ipv4Source
-          << " dest ipv4: " << m_ipv4Dest;
+      os << "("
+         << "request "
+         << "source mac: " << m_macSource << " "
+         << "source ipv4: " << m_ipv4Source << " "
+         << "dest ipv4: " << m_ipv4Dest
+         << ")"
+        ;
     } 
   else 
     {
       NS_ASSERT (IsReply ());
-      os << " source mac: " << m_macSource
-          << " source ipv4: " << m_ipv4Source
-          << " dest mac: " << m_macDest
-          << " dest ipv4: " <<m_ipv4Dest;
+      os << "("
+         << "reply " 
+         << "source mac: " << m_macSource << " "
+         << "source ipv4: " << m_ipv4Source << " "
+         << "dest mac: " << m_macDest << " "
+         << "dest ipv4: " <<m_ipv4Dest
+         << ")"
+        ;
     }
 }
 uint32_t 

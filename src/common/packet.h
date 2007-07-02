@@ -26,10 +26,13 @@
 #include "header.h"
 #include "trailer.h"
 #include "tags.h"
+#include "packet-metadata.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
+
+class PacketPrinter;
 
 /**
  * \brief network packets
@@ -129,7 +132,7 @@ public:
   uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
-   * ns3::Header::GetSerializedSize and ns3::Header::SerializeTo 
+   * ns3::Chunk::GetSerializedSize and ns3::Chunk::SerializeTo 
    * methods to reserve space in the buffer and request the 
    * header to serialize itself in the packet buffer.
    *
@@ -139,8 +142,7 @@ public:
   void AddHeader (T const &header);
   /**
    * Deserialize and remove the header from the internal buffer.
-   * This method invokes ns3::Header::DeserializeFrom
-   * and then removes the deserialized bytes from the buffer.
+   * This method invokes ns3::Chunk::DeserializeFrom.
    *
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.
@@ -149,7 +151,7 @@ public:
   uint32_t RemoveHeader (T &header);
   /**
    * Add trailer to this packet. This method invokes the
-   * ns3::Trailer::GetSerializedSize and ns3::Trailer::serializeTo 
+   * ns3::Chunk::GetSerializedSize and ns3::Trailer::serializeTo 
    * methods to reserve space in the buffer and request the trailer 
    * to serialize itself in the packet buffer.
    *
@@ -159,8 +161,7 @@ public:
   void AddTrailer (T const &trailer);
   /**
    * Remove a deserialized trailer from the internal buffer.
-   * This method invokes the ns3::Trailer::DeserializeFrom method
-   * and then removes the deserialized bytes from the buffer.
+   * This method invokes the ns3::Chunk::DeserializeFrom method.
    *
    * \param trailer a reference to the trailer to remove from the internal buffer.
    * \returns the number of bytes removed from the end of the packet.
@@ -254,12 +255,50 @@ public:
    */
   uint32_t GetUid (void) const;
 
+  /**
+   * \param os output stream in which the data should be printed.
+   *
+   * Iterate over the headers and trailers present in this packet, 
+   * from the first header to the last trailer and invoke, for
+   * each of them, the user-provided method Header::DoPrint or 
+   * Trailer::DoPrint methods.
+   */
   void Print (std::ostream &os) const;
+  /**
+   * \param os output stream in which the data should be printed.
+   * \param printer the output formatter to use to print
+   *        the content of this packet.
+   *
+   * Iterate over the headers and trailers present in this packet,
+   * either in the "forward" (first header to last trailer) or in
+   * the "backward" (last trailer to first header) direction, as
+   * specified by the PacketPrinter::PrintForward or the
+   * PacketPrinter::PrintBackward methods. For each header, trailer,
+   * or fragment of a header or a trailer, invoke the user-specified
+   * print callback stored in the specified PacketPrinter.
+   */
+  void Print (std::ostream &os, const PacketPrinter &printer) const;
+
+  /**
+   * By default, packets do not keep around enough metadata to
+   * perform the operations requested by the Print methods. If you
+   * want to be able to invoke any of the two ::Print methods, 
+   * you need to invoke this method at least once during the 
+   * simulation setup and before any packet is created.
+   *
+   * The packet metadata is also used to perform extensive
+   * sanity checks at runtime when performing operations on a 
+   * Packet. For example, this metadata is used to verify that
+   * when you remove a header from a packet, this same header
+   * was actually present at the front of the packet. These
+   * errors will be detected and will abort the program.
+   */
+  static void EnableMetadata (void);
 private:
-  Packet (Buffer buffer, Tags tags, uint32_t uid);
+  Packet (Buffer buffer, Tags tags, PacketMetadata metadata);
   Buffer m_buffer;
   Tags m_tags;
-  uint32_t m_uid;
+  PacketMetadata m_metadata;
   static uint32_t m_globalUid;
 };
 
@@ -282,6 +321,7 @@ Packet::AddHeader (T const &header)
   uint32_t size = header.GetSize ();
   m_buffer.AddAtStart (size);
   header.Serialize (m_buffer.Begin ());
+  m_metadata.AddHeader (header, size);
 }
 template <typename T>
 uint32_t
@@ -291,6 +331,7 @@ Packet::RemoveHeader (T &header)
                  "Must pass Header subclass to Packet::RemoveHeader");
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
   m_buffer.RemoveAtStart (deserialized);
+  m_metadata.RemoveHeader (header, deserialized);
   return deserialized;
 }
 template <typename T>
@@ -303,6 +344,7 @@ Packet::AddTrailer (T const &trailer)
   m_buffer.AddAtEnd (size);
   Buffer::Iterator end = m_buffer.End ();
   trailer.Serialize (end);
+  m_metadata.AddTrailer (trailer, size);
 }
 template <typename T>
 uint32_t
@@ -312,6 +354,7 @@ Packet::RemoveTrailer (T &trailer)
                  "Must pass Trailer subclass to Packet::RemoveTrailer");
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
   m_buffer.RemoveAtEnd (deserialized);
+  m_metadata.RemoveTrailer (trailer, deserialized);
   return deserialized;
 }
 

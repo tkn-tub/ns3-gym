@@ -225,6 +225,7 @@ class CallbackBase {
 public:
   virtual ~CallbackBase () {}
   virtual CallbackImplBase *PeekImpl (void) const = 0;
+  virtual Ptr<CallbackImplBase> GetImpl (void) const = 0;
 };
 
 /**
@@ -278,7 +279,7 @@ public:
       : m_impl (impl)
   {}
 
-  bool IsNull (void) {
+  bool IsNull (void) const {
     return (PeekImpl () == 0)?true:false;
   }
   void Nullify (void) {
@@ -329,6 +330,19 @@ public:
       }
     const Callback<R, T1,T2,T3,T4,T5> *goodType = static_cast<const Callback<R,T1,T2,T3,T4,T5> *> (&other);
     *this = *goodType;
+  }
+  void Assign (Ptr<CallbackImplBase> other) {
+    CallbackImpl<R,T1,T2,T3,T4,T5> *impl = dynamic_cast<CallbackImpl<R,T1,T2,T3,T4,T5> *> (PeekPointer (other));
+    if (other == 0)
+      {
+        NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\")"
+                        " got=" << typeid (other).name () << 
+                        ", expected=" << typeid (*impl).name ());
+      }
+    *this = Callback<R,T1,T2,T3,T4,T5> (impl);
+  }
+  virtual Ptr<CallbackImplBase>GetImpl (void) const {
+    return m_impl;
   }
 private:
   virtual CallbackImpl<R,T1,T2,T3,T4,T5> *PeekImpl (void) const {

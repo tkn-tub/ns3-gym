@@ -224,7 +224,7 @@ Buffer::AddAtEnd (uint32_t end)
       uint32_t newSize = m_size + end;
       struct Buffer::BufferData *newData = Buffer::Allocate (newSize, 0);
       memcpy (newData->m_data, GetStart (), m_size);
-      newData->m_initialStart = m_data->m_initialStart;
+      newData->m_initialStart = m_data->m_initialStart - m_start;
       m_data->m_count--;
       if (m_data->m_count == 0) 
         {
@@ -662,6 +662,12 @@ BufferTest::RunTests (void)
   i = buffer.End ();
   i.Prev (4);
   i.WriteU8 (1, 4);
+
+  buffer = Buffer (1);
+  buffer.AddAtEnd (100);
+  i = buffer.End ();
+  i.Prev (100);
+  i.WriteU8 (1, 100);
 
   return ok;
 }
