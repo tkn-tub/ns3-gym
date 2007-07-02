@@ -2,6 +2,7 @@
 
 #include "ns3/ptr.h"
 #include "ns3/grid-topology.h"
+#include "ns3/random-walk-position.h"
 #include "ns3/static-position.h"
 #include "ns3/internet-node.h"
 
@@ -25,6 +26,7 @@ int main (int argc, char *argv[])
 
   // each object will be attached a static position.
   grid.SetPositionModel (StaticPosition::cid);
+  //grid.SetPositionModel (RandomWalkPosition::cid);
 
   // finalize the setup by attaching to each object
   // in the input array a position and initializing
@@ -42,7 +44,6 @@ int main (int argc, char *argv[])
       position->Get (x,y,z);
       std::cout << "x=" << x << ", y=" << y << ", z=" << z << std::endl;
     }
-
 
   return 0;
 }

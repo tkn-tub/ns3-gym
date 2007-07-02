@@ -25,6 +25,7 @@
 #include "ns3/position.h"
 #include "ns3/nstime.h"
 #include "ns3/random-variable.h"
+#include "ns3/component-manager.h"
 
 namespace ns3 {
 
@@ -87,6 +88,8 @@ class RandomWalkPositionParameters : public Object
 class RandomWalkPosition : public Position 
 {
  public:
+  static const InterfaceId iid;
+  static const ClassId cid;
   /**
    * Create a new position object located at position (0,0,0)
    */

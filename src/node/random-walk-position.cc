@@ -29,6 +29,12 @@ NS_DEBUG_COMPONENT_DEFINE ("RandomWalk");
 
 namespace ns3 {
 
+const InterfaceId RandomWalkPosition::iid = 
+  MakeInterfaceId ("RandomWalkPosition", Object::iid);
+const ClassId RandomWalkPosition::cid = 
+  MakeClassId<RandomWalkPosition, double, double> ("RandomWalkPosition", RandomWalkPosition::iid);
+
+
 static IntegerDefaultValue<double> g_minSpeed ("RandomWalkMinSpeed", 
 					       "Minimum speed used during a random walk", 
 					       0);
@@ -94,6 +100,18 @@ RandomWalkPosition::GetDefaultParameters (void)
 RandomWalkPosition::RandomWalkPosition ()
   : m_x (0.0),
     m_y (0.0),
+    m_dx (0.0),
+    m_dy (0.0),
+    m_prevTime (Simulator::Now ()),
+    m_parameters (RandomWalkPosition::GetDefaultParameters ())
+{
+  SetInterfaceId (RandomWalkPosition::iid);
+  Reset ();
+}
+
+RandomWalkPosition::RandomWalkPosition (double x, double y)
+  : m_x (x),
+    m_y (y),
     m_dx (0.0),
     m_dy (0.0),
     m_prevTime (Simulator::Now ()),
