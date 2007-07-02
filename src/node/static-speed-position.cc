@@ -37,7 +37,9 @@ StaticSpeedPosition::StaticSpeedPosition ()
     m_dy (0.0),
     m_dz (0.0),
     m_prevTime (Simulator::Now ())
-{}
+{
+  SetInterfaceId (StaticSpeedPosition::iid);
+}
 StaticSpeedPosition::StaticSpeedPosition (double x, double y, double z)
   : m_x (x),
     m_y (y),
@@ -46,7 +48,9 @@ StaticSpeedPosition::StaticSpeedPosition (double x, double y, double z)
     m_dy (0.0),
     m_dz (0.0),
     m_prevTime (Simulator::Now ())
-{}
+{
+  SetInterfaceId (StaticSpeedPosition::iid);
+}
 StaticSpeedPosition::StaticSpeedPosition (double x, double y)
   : m_x (x),
     m_y (y),
@@ -55,7 +59,9 @@ StaticSpeedPosition::StaticSpeedPosition (double x, double y)
     m_dy (0.0),
     m_dz (0.0),
     m_prevTime (Simulator::Now ())
-{}
+{
+  SetInterfaceId (StaticSpeedPosition::iid);
+}
 StaticSpeedPosition::StaticSpeedPosition (double x, double y, double z,
                                           double dx, double dy, double dz)
   : m_x (x),
@@ -65,7 +71,9 @@ StaticSpeedPosition::StaticSpeedPosition (double x, double y, double z,
     m_dy (dy),
     m_dz (dz),
     m_prevTime (Simulator::Now ())
-{}
+{
+  SetInterfaceId (StaticSpeedPosition::iid);
+}
 
 StaticSpeedPosition::~StaticSpeedPosition ()
 {}

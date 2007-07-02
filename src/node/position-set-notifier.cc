@@ -28,7 +28,9 @@ const ClassId PositionSetNotifier::cid =
 				    PositionSetNotifier::iid);
 
 PositionSetNotifier::PositionSetNotifier ()
-{}
+{
+  SetInterfaceId (PositionSetNotifier::iid);
+}
 
 void 
 PositionSetNotifier::RegisterListener (Listener listener)

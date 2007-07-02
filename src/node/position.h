@@ -36,6 +36,7 @@ class Position : public Object
 {
 public:
   static const InterfaceId iid;
+  Position ();
   virtual ~Position () = 0;
 
   /**

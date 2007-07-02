@@ -26,6 +26,11 @@ namespace ns3 {
 
 const InterfaceId Position::iid = MakeInterfaceId ("Position", Object::iid);
 
+Position::Position ()
+{
+  SetInterfaceId (Position::iid);
+}
+
 Position::~Position ()
 {}
 

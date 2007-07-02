@@ -16,7 +16,7 @@ CourseChange (Ptr<const Position> position)
 {
   double x, y, z;
   position->Get (x, y, z);
-  std::cout << "pos=" << position << ", x=" << x << ", y=" << y << ", z=" << z << std::endl;
+  std::cout << Simulator::Now () << ", pos=" << position << ", x=" << x << ", y=" << y << ", z=" << z << std::endl;
 }
 
 int main (int argc, char *argv[])

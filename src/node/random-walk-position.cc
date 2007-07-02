@@ -96,6 +96,7 @@ RandomWalkPosition::RandomWalkPosition ()
     m_prevTime (Simulator::Now ()),
     m_parameters (RandomWalkPosition::GetDefaultParameters ())
 {
+  SetInterfaceId (RandomWalkPosition::iid);
   Reset ();
 }
 
