@@ -28,6 +28,9 @@
 
 namespace ns3 {
 
+/**
+ * \brief parameters to control a random walk model
+ */
 class RandomWalkPositionParameters : public Object
 {
  public:
@@ -35,15 +38,31 @@ class RandomWalkPositionParameters : public Object
     MODE_DISTANCE,
     MODE_TIME
   };
+  /**
+   * Instantiate a set of RandomWalk parameters initialized
+   * with the Bind default values.
+   */
   RandomWalkPositionParameters ();
-  bool IsDefault (void) const;
+  /**
+   * \param minSpeed the minimum speed
+   * \param maxSpeed the maximum speed
+   *
+   * The speed of any node is chosen such that minSpeed <= speed <= maxSpeed
+   */
   void SetSpeedBounds (double minSpeed, double maxSpeed);
+  /**
+   * \param distance the distance before a direction change
+   *
+   * Unit is meters
+   */
+  void SetModeDistance (double distance);
+  /**
+   * \param time the delay before a direction change.
+   */
+  void SetModeTime (Time time);
  private:
+  bool IsDefault (void) const;
   friend class RandomWalkPosition;
-  double m_xMin;
-  double m_xMax;
-  double m_yMin;
-  double m_yMax;
   double m_minSpeed;
   double m_maxSpeed;
   enum Mode m_mode;
@@ -52,23 +71,37 @@ class RandomWalkPositionParameters : public Object
 };
 
 /**
- * \brief a random walk position model
+ * \brief an unbounded 2D random walk position model
  *
  * Each instance moves with a speed and direction choosen at random
  * in the intervals [minspeed,maxspeed] and [0,2pi] until
- * either a fixed distance has been walked or until a fixed period
+ * either a fixed distance has been walked or until a fixed amount
  * of time.
+ *
+ * The parameters of the model can be specified either with the ns3::Bind
+ * function and the variables "RandomWalkMinSpeed", "RandomWalkMaxSpeed",
+ * "RandomWalkMode", "RandomWalkModeDistance", and, "RandomWalkModeTime" or
+ * with an instance of the RandomWalkPositionParameters class which
+ * must be fed to the RandomWalkPosition constructors.
  */
 class RandomWalkPosition : public Position 
 {
  public:
   /**
-   * Create a new position object located at a random
-   * position within the default random walk area.
+   * Create a new position object located at position (0,0,0)
    */
   RandomWalkPosition ();
+  /**
+   * Create a new position object located at position (x,y,0)
+   */
   RandomWalkPosition (double x, double y);
+  /**
+   * Create a new position object located at position (0,0,0)
+   */
   RandomWalkPosition (Ptr<RandomWalkPositionParameters> parameters);
+  /**
+   * Create a new position object located at position (x,y,0)
+   */
   RandomWalkPosition (Ptr<RandomWalkPositionParameters> parameters,
 		      double x, double y);
  private:
