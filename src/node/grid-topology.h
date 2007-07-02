@@ -36,7 +36,7 @@ class GridTopology
   /**
    * \param xMin the left boundary where the objects will start being arranged.
    * \param yMin the lower boundary where the objects will start being arranged.
-   * \param nCols number of objects for each row
+   * \param n number of objects for each row or column
    * \param deltaX distance separating two adjacent objects along the x axis.
    * \param deltaY distance separating two adjacent objects along the y axis.
    *
@@ -56,14 +56,26 @@ class GridTopology
    * Attach a position (the type of position is specified through 
    * the ClassId given to SetPositionModel) to each object present
    * in the input vector and configure its initial location with a set
-   * of coordinates arranged according to a regular rectangular grid.
+   * of coordinates arranged according to a regular rectangular grid,
+   * one row after the other.
    */
-  void Create (std::vector<Ptr<Object> > objects);
+  void ArrangeHorizontally (std::vector<Ptr<Object> > objects);
+
+  /**
+   * \param objects a vector of objects
+   *
+   * Attach a position (the type of position is specified through 
+   * the ClassId given to SetPositionModel) to each object present
+   * in the input vector and configure its initial location with a set
+   * of coordinates arranged according to a regular rectangular grid,
+   * one column after the other.
+   */
+  void ArrangeVertically (std::vector<Ptr<Object> > objects);
  private:
   GridTopology ();
   double m_xMin;
   double m_yMin;
-  uint32_t m_nCols;
+  uint32_t m_n;
   double m_deltaX;
   double m_deltaY;
   ClassId m_positionClassId;

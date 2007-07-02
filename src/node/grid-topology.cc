@@ -23,10 +23,10 @@
 
 namespace ns3 {
 
-GridTopology::GridTopology (double xMin, double yMin, uint32_t nCols, double deltaX, double deltaY)
+GridTopology::GridTopology (double xMin, double yMin, uint32_t n, double deltaX, double deltaY)
   : m_xMin (xMin),
     m_yMin (yMin),
-    m_nCols (nCols),
+    m_n (n),
     m_deltaX (deltaX),
     m_deltaY (deltaY),
     m_positionClassId (StaticPosition::cid)
@@ -39,7 +39,7 @@ GridTopology::SetPositionModel (ClassId classId)
 }
 
 void 
-GridTopology::Create (std::vector<Ptr<Object> > objects)
+GridTopology::ArrangeHorizontally (std::vector<Ptr<Object> > objects)
 {
   double x, y;
   uint32_t col;
@@ -53,11 +53,35 @@ GridTopology::Create (std::vector<Ptr<Object> > objects)
       object->AddInterface (ComponentManager::Create (m_positionClassId, x, y));
       x += m_deltaX;
       col++;
-      if (col == m_nCols)
+      if (col == m_n)
 	{
 	  col = 0;
 	  x = m_xMin;
 	  y += m_deltaY;
+	}
+    }
+}
+
+void 
+GridTopology::ArrangeVertically (std::vector<Ptr<Object> > objects)
+{
+  double x, y;
+  uint32_t row;
+  x = m_xMin;
+  y = m_yMin;
+  row = 0;
+  for (std::vector<Ptr<Object> >::const_iterator i = objects.begin ();
+       i != objects.end (); i++)
+    {
+      Ptr<Object> object = *i;
+      object->AddInterface (ComponentManager::Create (m_positionClassId, x, y));
+      y += m_deltaY;
+      row++;
+      if (row == m_n)
+	{
+	  row = 0;
+	  y = m_yMin;
+	  x += m_deltaX;
 	}
     }
 }
