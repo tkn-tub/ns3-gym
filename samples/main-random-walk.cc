@@ -34,7 +34,7 @@ int main (int argc, char *argv[])
   position->AddInterface (notifier);
   notifier->RegisterListener (MakeCallback (&CourseChange));
 
-  Simulator::StopAt (Seconds (10.0));
+  Simulator::StopAt (Seconds (20.0));
 
   Simulator::Run ();
   
