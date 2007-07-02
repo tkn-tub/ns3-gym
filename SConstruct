@@ -419,6 +419,12 @@ ns3.add(sample_random_walk)
 sample_random_walk.add_deps(['core', 'node'])
 sample_random_walk.add_source('main-random-walk.cc')
 
+sample_grid_topology = build.Ns3Module('sample-grid-topology', 'samples')
+sample_grid_topology.set_executable()
+ns3.add(sample_grid_topology)
+sample_grid_topology.add_deps(['core', 'internet-node'])
+sample_grid_topology.add_source('main-grid-topology.cc')
+
 sample_ptr = build.Ns3Module('sample-ptr', 'samples')
 sample_ptr.set_executable()
 ns3.add(sample_ptr)

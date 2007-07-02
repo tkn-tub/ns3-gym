@@ -39,18 +39,18 @@ GridTopology::SetPositionModel (ClassId classId)
 }
 
 void 
-GridTopology::Create (std::vector<Ptr<Node> > nodes)
+GridTopology::Create (std::vector<Ptr<Object> > objects)
 {
   double x, y;
   uint32_t col;
   x = m_xMin;
   y = m_yMin;
   col = 0;
-  for (std::vector<Ptr<Node> >::const_iterator i = nodes.begin ();
-       i != nodes.end (); i++)
+  for (std::vector<Ptr<Object> >::const_iterator i = objects.begin ();
+       i != objects.end (); i++)
     {
-      Ptr<Node> node = *i;
-      node->AddInterface (ComponentManager::Create (m_positionClassId, x, y));
+      Ptr<Object> object = *i;
+      object->AddInterface (ComponentManager::Create (m_positionClassId, x, y));
       x += m_deltaX;
       col++;
       if (col == m_nCols)

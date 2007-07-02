@@ -24,21 +24,41 @@
 #include <vector>
 #include "ns3/component-manager.h"
 #include "ns3/ptr.h"
-#include "node.h"
 
 namespace ns3 {
 
+/**
+ * \brief a 2D grid of objects
+ */
 class GridTopology
 {
  public:
+  /**
+   * \param xMin the left boundary where the objects will start being arranged.
+   * \param yMin the lower boundary where the objects will start being arranged.
+   * \param nCols number of objects for each row
+   * \param deltaX distance separating two adjacent objects along the x axis.
+   * \param deltaY distance separating two adjacent objects along the y axis.
+   *
+   * The first object is positioned at (xMin,yMin).
+   */
   GridTopology (double xMin, double yMin, uint32_t nCols, double deltaX, double deltaY);
 
+  /**
+   * \param classId the classId of the position object to attach to each
+   *        input object.
+   */
   void SetPositionModel (ClassId classId);
 
   /**
-   * Add position to each node in vector.
+   * \param objects a vector of objects
+   *
+   * Attach a position (the type of position is specified through 
+   * the ClassId given to SetPositionModel) to each object present
+   * in the input vector and configure its initial location with a set
+   * of coordinates arranged according to a regular rectangular grid.
    */
-  void Create (std::vector<Ptr<Node> > nodes);
+  void Create (std::vector<Ptr<Object> > objects);
  private:
   GridTopology ();
   double m_xMin;
