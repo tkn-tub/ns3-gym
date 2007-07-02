@@ -91,7 +91,7 @@ private:
    * Unit is meters
    */
   virtual void DoGet (double &x, double &y, double &z) const = 0;
-  virtual void DoSet (double x, double y, double z) const = 0;
+  virtual void DoSet (double x, double y, double z) = 0;
 };
 
 }; // namespace ns3
