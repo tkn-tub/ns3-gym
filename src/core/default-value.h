@@ -46,6 +46,8 @@ protected:
   DefaultValueBase (const std::string &name, 
 		    const std::string &help);
 private:
+  DefaultValueBase ();
+private:
   virtual bool DoParseValue (const std::string &value) = 0;
   virtual std::string DoGetType (void) const = 0;
   virtual std::string DoGetDefaultValue (void) const = 0;
