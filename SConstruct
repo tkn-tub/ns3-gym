@@ -129,6 +129,7 @@ simu.add_sources([
     'scheduler-map.cc',
     'event-impl.cc',
     'simulator.cc',
+    'time-default-value.cc',
     ])
 simu.add_headers([
     'scheduler-heap.h',
@@ -144,6 +145,7 @@ simu.add_inst_headers([
     'scheduler.h',
     'scheduler-factory.h',
     'simulation-singleton.h',
+    'time-default-value.h',
     ])
 high_precision_as_double = ARGUMENTS.get('high-precision-as-double', 'n')
 if high_precision_as_double == 'y':
@@ -247,6 +249,7 @@ node.add_sources ([
     'notify-static-position.cc',
     'static-speed-position.cc',
     'grid-topology.cc',
+    'random-walk-position.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -269,6 +272,7 @@ node.add_inst_headers ([
     'notify-static-position.h',
     'static-speed-position.h',
     'grid-topology.h',
+    'random-walk-position.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')
