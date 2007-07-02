@@ -62,16 +62,6 @@ public:
                        double dx, double dy, double dz);
   virtual ~StaticSpeedPosition ();
 
-  /**
-   * \param x x coordinate
-   * \param y y coordinate
-   * \param z z coordinate
-   *
-   * Set the current position now to (x,y,z)
-   * Unit is meters
-   */
-  void SetPosition (double x, double y, double z);
-
   /*
    * \param dx x coordinate speed
    * \param dy y coordinate speed
@@ -82,7 +72,8 @@ public:
    */
   void SetSpeed (double dx, double dy, double dz);
 private:
-  virtual void RealGet (double &x, double &y, double &z) const;
+  virtual void DoGet (double &x, double &y, double &z) const;
+  virtual void DoSet (double x, double y, double z);
   void Update (void) const;
   mutable double m_x;
   mutable double m_y;

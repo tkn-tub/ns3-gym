@@ -49,33 +49,6 @@ public:
   StaticPosition (double x, double y, double z);
   virtual ~StaticPosition ();
 
-  /**
-   * \param x x coordinate
-   * \param y y coordinate
-   * \param z z coordinate
-   *
-   * Set all 3 coordinates at the same time.
-   * Unit is meters
-   */
-  void Set (double x, double y, double z);
-  /**
-   * \param x x coordinate
-   *
-   * Set x coordinate. Unit is meters
-   */
-  void SetX (double x);
-  /**
-   * \param y y coordinate
-   *
-   * Set y coordinate. Unit is meters
-   */
-  void SetY (double y);
-  /**
-   * \param z z coordinate
-   *
-   * Set z coordinate. Unit is meters
-   */
-  void SetZ (double z);
 private:
   /**
    * Subclasses must override this virtual method to be notified
@@ -85,6 +58,7 @@ private:
    */
   virtual void NotifyPositionChange (void) const;
   virtual void DoGet (double &x, double &y, double &z) const;
+  virtual void DoSet (double x, double y, double z);
   double m_x;
   double m_y;
   double m_z;

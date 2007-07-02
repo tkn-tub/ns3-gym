@@ -58,15 +58,6 @@ StaticSpeedPosition::~StaticSpeedPosition ()
 {}
 
 void 
-StaticSpeedPosition::SetPosition (double x, double y, double z)
-{
-  Update ();
-  m_x = x;
-  m_y = y;
-  m_z = z;
-}
-
-void 
 StaticSpeedPosition::SetSpeed (double dx, double dy, double dz)
 {
   Update ();
@@ -87,12 +78,20 @@ StaticSpeedPosition::Update (void) const
 }
 
 void 
-StaticSpeedPosition::RealGet (double &x, double &y, double &z) const
+StaticSpeedPosition::DoGet (double &x, double &y, double &z) const
 {
   Update ();
   x = m_x;
   y = m_y;
   z = m_z;
+}
+void 
+StaticSpeedPosition::DoSet (double x, double y, double z)
+{
+  Update ();
+  m_x = x;
+  m_y = y;
+  m_z = z;
 }
 
 }; // namespace ns3

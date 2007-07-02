@@ -66,6 +66,12 @@ public:
    * Unit is meters
    */
   double GetZ (void) const;
+
+  void Set (double x, double y, double z);
+  void SetXY (double x, double y);
+  void SetX (double x);
+  void SetY (double y);
+  void SetZ (double z);
   /**
    * \param position a reference to another position object instance
    * \returns the distance between the two objects.
@@ -85,6 +91,7 @@ private:
    * Unit is meters
    */
   virtual void DoGet (double &x, double &y, double &z) const = 0;
+  virtual void DoSet (double x, double y, double z) const = 0;
 };
 
 }; // namespace ns3

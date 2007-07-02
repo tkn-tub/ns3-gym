@@ -55,6 +55,41 @@ Position::GetZ (void) const
   return z;
 }
 
+void 
+Position::Set (double x, double y, double z)
+{
+  DoSet (x, y, z);
+}
+void 
+Position::SetXY (double x, double y)
+{
+  double currentX, currentY, currentZ;
+  DoGet (currentX, currentY, currentZ);
+  DoSet (x, y, currentZ);
+}
+void 
+Position::SetX (double x)
+{
+  double currentX, currentY, currentZ;
+  DoGet (currentX, currentY, currentZ);
+  DoSet (x, currentY, currentZ);
+}
+void 
+Position::SetY (double y)
+{
+  double currentX, currentY, currentZ;
+  DoGet (currentX, currentY, currentZ);
+  DoSet (currentX, y, currentZ);
+}
+void 
+Position::SetZ (double z)
+{
+  double currentX, currentY, currentZ;
+  DoGet (currentX, currentY, currentZ);
+  DoSet (currentX, currentY, z);
+}
+
+
 double 
 Position::GetDistanceFrom (const Position &position) const
 {

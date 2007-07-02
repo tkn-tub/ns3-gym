@@ -33,8 +33,19 @@ StaticPosition::StaticPosition (double x, double y, double z)
 StaticPosition::~StaticPosition ()
 {}
 
+void
+StaticPosition::NotifyPositionChange (void) const
+{}
+
 void 
-StaticPosition::Set (double x, double y, double z)
+StaticPosition::DoGet (double &x, double &y, double &z) const
+{
+  x = m_x;
+  y = m_y;
+  z = m_z;
+}
+void 
+StaticPosition::DoSet (double x, double y, double z)
 {
   bool mustNotify = false;
   if (x != m_x || 
@@ -51,59 +62,6 @@ StaticPosition::Set (double x, double y, double z)
       NotifyPositionChange ();
     }
 }
-void 
-StaticPosition::SetX (double x)
-{
-  bool mustNotify = false;
-  if (x != m_x)
-    {
-      mustNotify = true;
-    }
-  m_x = x;
-  if (mustNotify)
-    {
-      NotifyPositionChange ();
-    }
-}
-void 
-StaticPosition::SetY (double y)
-{
-  bool mustNotify = false;
-  if (y != m_y)
-    {
-      mustNotify = true;
-    }
-  m_y = y;
-  if (mustNotify)
-    {
-      NotifyPositionChange ();
-    }
-}
-void 
-StaticPosition::SetZ (double z)
-{
-  bool mustNotify = false;
-  if (z != m_z)
-    {
-      mustNotify = true;
-    }
-  m_z = z;
-  if (mustNotify)
-    {
-      NotifyPositionChange ();
-    }
-}
 
-void
-StaticPosition::NotifyPositionChange (void) const
-{}
-
-void 
-StaticPosition::DoGet (double &x, double &y, double &z) const
-{
-  x = m_x;
-  y = m_y;
-  z = m_z;
-}
 
 }; // namespace ns3
