@@ -2,14 +2,16 @@
 
 #include "ns3/ptr.h"
 #include "ns3/grid-topology.h"
-#include "ns3/random-walk-position.h"
 #include "ns3/static-position.h"
 #include "ns3/internet-node.h"
+#include "ns3/command-line.h"
 
 using namespace ns3;
 
 int main (int argc, char *argv[])
 {
+  CommandLine::Parse (argc, argv);
+
   std::vector<Ptr<Object> > nodes;
 
   // create an array of empty nodes for testing purposes 
@@ -26,7 +28,6 @@ int main (int argc, char *argv[])
 
   // each object will be attached a static position.
   grid.SetPositionModel (StaticPosition::cid);
-  //grid.SetPositionModel (RandomWalkPosition::cid);
 
   // finalize the setup by attaching to each object
   // in the input array a position and initializing
