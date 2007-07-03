@@ -30,7 +30,7 @@ NS_DEBUG_COMPONENT_DEFINE ("RandomWalk");
 namespace ns3 {
 
 const InterfaceId RandomWalkPosition::iid = 
-  MakeInterfaceId ("RandomWalkPosition", Object::iid);
+  MakeInterfaceId ("RandomWalkPosition", Position::iid);
 const ClassId RandomWalkPosition::cid = 
   MakeClassId<RandomWalkPosition, double, double> ("RandomWalkPosition", RandomWalkPosition::iid);
 
