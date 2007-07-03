@@ -143,6 +143,9 @@ T * PeekPointer (const Ptr<T> &p);
 template <typename T>
 T * GetPointer (const Ptr<T> &p);
 
+template <typename T>
+std::ostream &operator << (std::ostream &, const Ptr<T> &p);
+
 
 // allow if (sp == 0)
 template <typename T1, typename T2>
@@ -288,6 +291,13 @@ T * GetPointer (const Ptr<T> &p)
 {
   p.Acquire ();
   return p.m_ptr;
+}
+
+template <typename T>
+std::ostream &operator << (std::ostream &os, const Ptr<T> &p)
+{
+  os << PeekPointer (p);
+  return os;
 }
 
 template <typename T1, typename T2>
