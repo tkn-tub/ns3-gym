@@ -20,8 +20,24 @@
  */
 #include "random-rectangle-topology.h"
 #include "static-position.h"
+#include "ns3/random-variable-default-value.h"
 
 namespace ns3 {
+
+static RandomVariableDefaultValue 
+g_xVariable ("RandomRectangleTopologyX", 
+	     "Random variable to choose the x coordinate of the elements of a RandomRectangleTopology.",
+	     "Uniform:-100:100");
+static RandomVariableDefaultValue 
+g_yVariable ("RandomRectangleTopologyY", 
+	     "Random variable to choose the y coordinate of the elements of a RandomRectangleTopology.",
+	     "Uniform:-100:100");
+
+RandomRectangleTopology::RandomRectangleTopology ()
+  : m_xVariable (g_xVariable.GetCopy ()),
+    m_yVariable (g_yVariable.GetCopy ()),
+    m_positionModel (StaticPosition::cid)
+{}
 
 RandomRectangleTopology::RandomRectangleTopology (double xMin, double xMax, double yMin, double yMax)
   : m_xVariable (new UniformVariable (xMin, xMax)),
