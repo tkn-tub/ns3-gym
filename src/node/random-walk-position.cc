@@ -159,6 +159,13 @@ RandomWalkPosition::Update (void) const
   m_y += m_dy * deltaS;
 }
 
+void
+RandomWalkPosition::DoDispose (void)
+{
+  m_parameters = 0;
+  // chain up
+  Position::DoDispose ();
+}
 void 
 RandomWalkPosition::DoGet (double &x, double &y, double &z) const
 {

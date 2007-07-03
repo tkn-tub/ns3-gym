@@ -108,6 +108,7 @@ class RandomWalkPosition : public Position
   RandomWalkPosition (Ptr<RandomWalkPositionParameters> parameters,
 		      double x, double y);
  private:
+  virtual void DoDispose (void);
   virtual void DoGet (double &x, double &y, double &z) const;
   virtual void DoSet (double x, double y, double z);
 
