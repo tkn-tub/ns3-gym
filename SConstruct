@@ -249,6 +249,7 @@ node.add_sources ([
     'static-position.cc',
     'static-speed-position.cc',
     'grid-topology.cc',
+    'random-rectangle-topology.cc',
     'random-walk-position.cc',
     ])
 node.add_inst_headers ([
@@ -272,6 +273,7 @@ node.add_inst_headers ([
     'static-position.h',
     'static-speed-position.h',
     'grid-topology.h',
+    'random-rectangle-topology.h',
     'random-walk-position.h',
     ])
 

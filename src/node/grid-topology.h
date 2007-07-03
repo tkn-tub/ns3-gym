@@ -59,7 +59,8 @@ class GridTopology
    * of coordinates arranged according to a regular rectangular grid,
    * one row after the other.
    */
-  void ArrangeHorizontally (std::vector<Ptr<Object> > objects);
+  template <typename T>
+  void LayoutRowFirst (const T &begin, const T &end);
 
   /**
    * \param objects a vector of objects
@@ -70,9 +71,12 @@ class GridTopology
    * of coordinates arranged according to a regular rectangular grid,
    * one column after the other.
    */
-  void ArrangeVertically (std::vector<Ptr<Object> > objects);
+  template <typename T>
+  void LayoutColumnFirst (const T &begin, const T &end);
  private:
   GridTopology ();
+  void LayoutOneRowFirst (Ptr<Object> object, uint32_t i);
+  void LayoutOneColumnFirst (Ptr<Object> object, uint32_t i);
   double m_xMin;
   double m_yMin;
   uint32_t m_n;
@@ -80,6 +84,34 @@ class GridTopology
   double m_deltaY;
   ClassId m_positionClassId;
 };
+
+} // namespace ns3
+
+namespace ns3 {
+
+template <typename T>
+void
+GridTopology::LayoutRowFirst (const T &begin, const T &end)
+{
+  uint32_t j = 0;
+  for (T i = begin; i != end; i++)
+    {
+      j++;
+      LayoutOneRowFirst (*i, j);
+    }  
+}
+
+template <typename T>
+void
+GridTopology::LayoutColumnFirst (const T &begin, const T &end)
+{
+  uint32_t j = 0;
+  for (T i = begin; i != end; i++)
+    {
+      j++;
+      LayoutOneColumnFirst (*i, j);
+    }
+}
 
 } // namespace ns3
 

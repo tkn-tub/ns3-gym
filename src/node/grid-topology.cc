@@ -39,51 +39,22 @@ GridTopology::SetPositionModel (ClassId classId)
 }
 
 void 
-GridTopology::ArrangeHorizontally (std::vector<Ptr<Object> > objects)
+GridTopology::LayoutOneRowFirst (Ptr<Object> object, uint32_t i)
 {
   double x, y;
-  uint32_t col;
-  x = m_xMin;
-  y = m_yMin;
-  col = 0;
-  for (std::vector<Ptr<Object> >::const_iterator i = objects.begin ();
-       i != objects.end (); i++)
-    {
-      Ptr<Object> object = *i;
-      object->AddInterface (ComponentManager::Create (m_positionClassId, x, y));
-      x += m_deltaX;
-      col++;
-      if (col == m_n)
-	{
-	  col = 0;
-	  x = m_xMin;
-	  y += m_deltaY;
-	}
-    }
+  x = m_xMin + m_deltaX * (i % m_n);
+  y = m_yMin + m_deltaY * (i / m_n);
+  object->AddInterface (ComponentManager::Create (m_positionClassId, x, y));
 }
 
 void 
-GridTopology::ArrangeVertically (std::vector<Ptr<Object> > objects)
+GridTopology::LayoutOneColumnFirst (Ptr<Object> object, uint32_t i)
 {
   double x, y;
-  uint32_t row;
-  x = m_xMin;
-  y = m_yMin;
-  row = 0;
-  for (std::vector<Ptr<Object> >::const_iterator i = objects.begin ();
-       i != objects.end (); i++)
-    {
-      Ptr<Object> object = *i;
-      object->AddInterface (ComponentManager::Create (m_positionClassId, x, y));
-      y += m_deltaY;
-      row++;
-      if (row == m_n)
-	{
-	  row = 0;
-	  y = m_yMin;
-	  x += m_deltaX;
-	}
-    }
+  x = m_xMin + m_deltaX * (i / m_n);
+  y = m_yMin + m_deltaY * (i % m_n);
+  object->AddInterface (ComponentManager::Create (m_positionClassId, x, y));
 }
+
 
 } // namespace ns3

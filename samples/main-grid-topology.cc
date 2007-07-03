@@ -31,8 +31,7 @@ int main (int argc, char *argv[])
   // finalize the setup by attaching to each object
   // in the input array a position and initializing
   // this position with the calculated coordinates.
-  grid.ArrangeHorizontally (nodes);
-
+  grid.LayoutRowFirst (nodes.begin (), nodes.end ());
 
   // iterate our nodes and print their position.
   for (std::vector<Ptr<Object> >::const_iterator j = nodes.begin ();
