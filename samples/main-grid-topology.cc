@@ -40,6 +40,7 @@ int main (int argc, char *argv[])
     {
       Ptr<Object> object = *j;
       Ptr<Position> position = object->QueryInterface<Position> (Position::iid);
+      NS_ASSERT (position != 0);
       double x, y, z;
       position->Get (x,y,z);
       std::cout << "x=" << x << ", y=" << y << ", z=" << z << std::endl;
