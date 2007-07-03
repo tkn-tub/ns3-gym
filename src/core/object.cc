@@ -118,7 +118,6 @@ Object::~Object ()
 Ptr<Object>
 Object::DoQueryInterface (InterfaceId iid) const
 {
-  NS_ASSERT (Check ());
   const Object *currentObject = this;
   do {
     NS_ASSERT (currentObject != 0);
