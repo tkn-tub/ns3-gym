@@ -62,6 +62,8 @@ core.add_sources([
     'rng-stream.cc',
     'uid-manager.cc',
     'default-value.cc',
+    'random-variable-default-value.cc',
+    'rectangle-default-value.cc',
     'command-line.cc',
     'type-name.cc',
     'component-manager.cc',
@@ -93,6 +95,8 @@ core.add_inst_headers([
     'random-variable.h',
     'rng-stream.h',
     'default-value.h',
+    'random-variable-default-value.h',
+    'rectangle-default-value.h',
     'command-line.h',
     'type-name.h',
     'component-manager.h',
@@ -251,6 +255,7 @@ node.add_sources ([
     'grid-topology.cc',
     'random-rectangle-topology.cc',
     'random-walk-position.cc',
+    'random-direction-position.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -275,6 +280,7 @@ node.add_inst_headers ([
     'grid-topology.h',
     'random-rectangle-topology.h',
     'random-walk-position.h',
+    'random-direction-position.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')
