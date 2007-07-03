@@ -37,10 +37,10 @@ const ClassId RandomWalkPosition::cid =
 
 static IntegerDefaultValue<double> g_minSpeed ("RandomWalkMinSpeed", 
 					       "Minimum speed used during a random walk", 
-					       0);
+					       0.1);
 static IntegerDefaultValue<double> g_maxSpeed ("RandomWalkMaxSpeed", 
 					       "Maximum speed used during a random walk",
-					       0);
+					       0.5);
 static EnumDefaultValue<RandomWalkPositionParameters::Mode> g_mode 
   ("RandomWalkMode",
    "The mode indicates the condition used to "
@@ -127,6 +127,8 @@ RandomWalkPosition::Reset (void)
   Update ();
   double speed = UniformVariable::GetSingleValue (m_parameters->m_minSpeed, 
 						  m_parameters->m_maxSpeed);
+  NS_DEBUG ("min="<< m_parameters->m_minSpeed << ", max=" << m_parameters->m_maxSpeed <<
+            ", speed=" << speed);
   double direction = m_randomDirection.GetValue ();
   double dx = std::cos (direction) * speed;
   double dy = std::sin (direction) * speed;
@@ -139,7 +141,7 @@ RandomWalkPosition::Reset (void)
     }
   else
     {
-      double distance = g_modeDistance.GetValue ();
+      double distance = m_parameters->m_modeDistance;
       delay = Seconds (distance / sqrt (m_dx * m_dx + m_dy * m_dy));
     }
   NotifyCourseChange ();
