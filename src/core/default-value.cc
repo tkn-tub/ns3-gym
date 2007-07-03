@@ -26,7 +26,8 @@ namespace ns3 {
 DefaultValueBase::DefaultValueBase (const std::string &name,
 				    const std::string &help)
   : m_name (name),
-    m_help (help)
+    m_help (help),
+    m_dirty (false)
 {}
 DefaultValueBase::~DefaultValueBase ()
 {}
@@ -41,9 +42,24 @@ DefaultValueBase::GetHelp (void) const
   return m_help;
 }
 bool 
+DefaultValueBase::IsDirty (void) const
+{
+  return m_dirty;
+}
+void 
+DefaultValueBase::ClearDirtyFlag (void)
+{
+  m_dirty = false;
+}
+bool 
 DefaultValueBase::ParseValue (const std::string &value)
 {
-  return DoParseValue (value);
+  bool ok = DoParseValue (value);
+  if (ok)
+    {
+      m_dirty = true;
+    }
+  return ok;
 }
 std::string 
 DefaultValueBase::GetType (void) const

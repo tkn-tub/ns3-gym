@@ -37,6 +37,19 @@ public:
   virtual ~DefaultValueBase ();
   std::string GetName (void) const;
   std::string GetHelp (void) const;
+
+  /**
+   * \returns true if this value is dirty, false otherwise.
+   *
+   * A value becomes dirty when ParseValue is invoked
+   * and it successfully completes. Dirtyness indicates
+   * that the state of the value was changed by a user.
+   */
+  bool IsDirty (void) const;
+  /**
+   * Clear the dirty state.
+   */
+  void ClearDirtyFlag (void);
   // parse a matching parameter
   // return true in case of success, false otherwise.
   bool ParseValue (const std::string &value);
@@ -53,6 +66,7 @@ private:
   virtual std::string DoGetDefaultValue (void) const = 0;
   std::string m_name;
   std::string m_help;
+  bool m_dirty;
 };
 
 class DefaultValueList
