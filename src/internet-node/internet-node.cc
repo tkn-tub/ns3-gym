@@ -98,7 +98,7 @@ InternetNode::DoDispose()
 }
 
 void 
-InternetNode::DoAddDevice (Ptr<NetDevice> device) const
+InternetNode::DoAddDevice (Ptr<NetDevice> device)
 {
   device->SetReceiveCallback (MakeCallback (&InternetNode::ReceiveFromDevice, this));
 }
