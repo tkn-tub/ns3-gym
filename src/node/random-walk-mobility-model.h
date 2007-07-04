@@ -109,8 +109,8 @@ class RandomWalkMobilityModel : public MobilityModel
 		      double x, double y);
  private:
   virtual void DoDispose (void);
-  virtual void DoGet (double &x, double &y, double &z) const;
-  virtual void DoSet (double x, double y, double z);
+  virtual Position DoGet (void) const;
+  virtual void DoSet (const Position &position);
 
   void Reset (void);
   void Update (void) const;

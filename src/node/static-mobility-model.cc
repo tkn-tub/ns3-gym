@@ -44,24 +44,22 @@ StaticMobilityModel::StaticMobilityModel (double x, double y, double z)
 StaticMobilityModel::~StaticMobilityModel ()
 {}
 
-void 
-StaticMobilityModel::DoGet (double &x, double &y, double &z) const
+Position
+StaticMobilityModel::DoGet (void) const
 {
-  x = m_x;
-  y = m_y;
-  z = m_z;
+  return Position (m_x, m_y, m_z);
 }
 void 
-StaticMobilityModel::DoSet (double x, double y, double z)
+StaticMobilityModel::DoSet (const Position &position)
 {
   bool changed = false;
-  if (m_x != x || m_y != y || m_z != z)
+  if (m_x != position.x || m_y != position.y || m_z != position.z)
     {
       changed = true;
     }
-  m_x = x;
-  m_y = y;
-  m_z = z;
+  m_x = position.x;
+  m_y = position.y;
+  m_z = position.z;
   if (changed)
     {
       NotifyCourseChange ();

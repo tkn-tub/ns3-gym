@@ -166,24 +166,22 @@ RandomWalkMobilityModel::DoDispose (void)
   // chain up
   MobilityModel::DoDispose ();
 }
-void 
-RandomWalkMobilityModel::DoGet (double &x, double &y, double &z) const
+Position
+RandomWalkMobilityModel::DoGet (void) const
 {
   Update ();
-  x = m_x;
-  y = m_y;
-  z = 0;
+  return Position (m_x, m_y, 0.0);
 }
 void
-RandomWalkMobilityModel::DoSet (double x, double y, double z)
+RandomWalkMobilityModel::DoSet (const Position &position)
 {
   bool changed = false;
-  if (m_x != x || m_y != y)
+  if (m_x != position.x || m_y != position.y)
     {
       changed = true;
     }
-  m_x = x;
-  m_y = y;
+  m_x = position.x;
+  m_y = position.y;
   m_prevTime = Simulator::Now ();
   if (changed)
     {

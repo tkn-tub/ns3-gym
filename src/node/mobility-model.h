@@ -28,12 +28,16 @@ namespace ns3 {
 class Vector3D
 {
 public:
+  Vector3D (double x, double y, double z);
   double x;
   double y;
   double z;
 };
 class Position : public Vector3D
-{};
+{
+public:
+  Position (double x, double y, double z);
+};
 class Speed : public Vector3D
 {};
 class Vector2D
@@ -117,8 +121,8 @@ private:
    * base class must implement this method.
    * Unit is meters
    */
-  virtual void DoGet (double &x, double &y, double &z) const = 0;
-  virtual void DoSet (double x, double y, double z) = 0;
+  virtual Position DoGet (void) const = 0;
+  virtual void DoSet (const Position &position) = 0;
 };
 
 }; // namespace ns3

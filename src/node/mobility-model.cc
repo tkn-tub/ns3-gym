@@ -26,6 +26,16 @@ namespace ns3 {
 
 const InterfaceId MobilityModel::iid = MakeInterfaceId ("MobilityModel", Object::iid);
 
+Vector3D::Vector3D (double x, double y, double z)
+  : x (x),
+    y (y),
+    z (z)
+{}
+
+Position::Position (double x, double y, double z)
+  : Vector3D (x, y, z)
+{}
+
 MobilityModel::MobilityModel ()
 {
   SetInterfaceId (MobilityModel::iid);
@@ -37,82 +47,77 @@ MobilityModel::~MobilityModel ()
 Position
 MobilityModel::Get (void) const
 {
-  Position position;
-  DoGet (position.x,position.y,position.z);
-  return position;
+  return DoGet ();
 }
 double 
 MobilityModel::GetX (void) const
 {
-  double x,y,z;
-  DoGet (x,y,z);
-  return x;
+  Position position = DoGet ();
+  return position.x;
 }
 double 
 MobilityModel::GetY (void) const
 {
-  double x, y, z;
-  DoGet (x,y,z);
-  return y;
+  Position position = DoGet ();
+  return position.y;
 }
 double 
 MobilityModel::GetZ (void) const
 {
-  double x, y, z;
-  DoGet (x,y,z);
-  return z;
+  Position position = DoGet ();
+  return position.z;
 }
 
 void 
 MobilityModel::Set (double x, double y, double z)
 {
-  DoSet (x, y, z);
+  Position position (x, y, z);
+  DoSet (position);
 }
 void 
 MobilityModel::Set (const Position &position)
 {
-  DoSet (position.x, position.y, position.z);
+  DoSet (position);
 }
 void 
 MobilityModel::SetXY (double x, double y)
 {
-  double currentX, currentY, currentZ;
-  DoGet (currentX, currentY, currentZ);
-  DoSet (x, y, currentZ);
+  Position position = DoGet ();
+  position.x = x;
+  position.y = y;
+  DoSet (position);
  }
 void 
 MobilityModel::SetX (double x)
 {
-  double currentX, currentY, currentZ;
-  DoGet (currentX, currentY, currentZ);
-  DoSet (x, currentY, currentZ);
+  Position position = DoGet ();
+  position.x = x;
+  DoSet (position);
 }
 void 
 MobilityModel::SetY (double y)
 {
-  double currentX, currentY, currentZ;
-  DoGet (currentX, currentY, currentZ);
-  DoSet (currentX, y, currentZ);
+  Position position = DoGet ();
+  position.y = y;
+  DoSet (position);
 }
 void 
 MobilityModel::SetZ (double z)
 {
-  double currentX, currentY, currentZ;
-  DoGet (currentX, currentY, currentZ);
-  DoSet (currentX, currentY, z);
+  Position position = DoGet ();
+  position.z = z;
+  DoSet (position);
 }
 
 
 double 
-MobilityModel::GetDistanceFrom (const MobilityModel &position) const
+MobilityModel::GetDistanceFrom (const MobilityModel &other) const
 {
-  double ox,oy,oz;
-  double x,y,z;
-  position.DoGet (ox,oy,oz);
-  DoGet (x,y,z);
-  double dx = ox - x;
-  double dy = oy - y;
-  double dz = oz - z;
+  Position oPosition = other.DoGet ();
+  Position position = DoGet ();
+  double dx = oPosition.x - position.x;
+  double dy = oPosition.y - position.y;
+  double dz = oPosition.z - position.z;
   return sqrt (dx*dx+dy*dy+dz*dz);
 }
 

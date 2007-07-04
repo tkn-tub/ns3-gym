@@ -309,24 +309,22 @@ RandomDirectionMobilityModel::Update (void) const
   m_y = std::max (m_y, m_parameters->m_yMin);
   NS_ASSERT (CheckMobilityModel ());
 }
-void 
-RandomDirectionMobilityModel::DoGet (double &x, double &y, double &z) const
+Position
+RandomDirectionMobilityModel::DoGet (void) const
 {
   Update ();
-  x = m_x;
-  y = m_y;
-  z = 0;
+  return Position (m_x, m_y, 0.0);
 }
 void
-RandomDirectionMobilityModel::DoSet (double x, double y, double z)
+RandomDirectionMobilityModel::DoSet (const Position &position)
 {
   bool changed = false;
-  if (m_x != x || m_y != y)
+  if (m_x != position.x || m_y != position.y)
     {
       changed = true;
     }
-  m_x = x;
-  m_y = y;
+  m_x = position.x;
+  m_y = position.y;
   m_prevTime = Simulator::Now ();
   m_pauseStart = Simulator::Now ();
   Simulator::Remove (m_event);

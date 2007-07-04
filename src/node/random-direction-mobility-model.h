@@ -83,8 +83,8 @@ class RandomDirectionMobilityModel : public MobilityModel
   bool CheckMobilityModel (void) const;
   enum RandomDirectionMobilityModel::Side CalculateIntersection (double &x, double &y);
   virtual void DoDispose (void);
-  virtual void DoGet (double &x, double &y, double &z) const;
-  virtual void DoSet (double x, double y, double z);
+  virtual Position DoGet (void) const;
+  virtual void DoSet (const Position &position);
 
   static const double PI;
   Ptr<RandomDirectionParameters> m_parameters;

@@ -107,26 +107,24 @@ StaticSpeedMobilityModel::Update (void) const
   m_z += m_dz * deltaS;
 }
 
-void 
-StaticSpeedMobilityModel::DoGet (double &x, double &y, double &z) const
+Position
+StaticSpeedMobilityModel::DoGet (void) const
 {
   Update ();
-  x = m_x;
-  y = m_y;
-  z = m_z;
+  return Position (m_x, m_y, m_z);
 }
 void 
-StaticSpeedMobilityModel::DoSet (double x, double y, double z)
+StaticSpeedMobilityModel::DoSet (const Position &position)
 {
   bool changed = false;
   Update ();
-  if (m_x != x || m_y != y || m_z != z)
+  if (m_x != position.x || m_y != position.y || m_z != position.z)
     {
       changed = true;
     }
-  m_x = x;
-  m_y = y;
-  m_z = z;
+  m_x = position.x;
+  m_y = position.y;
+  m_z = position.z;
   if (changed)
     {
       NotifyCourseChange ();

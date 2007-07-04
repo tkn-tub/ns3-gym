@@ -83,8 +83,8 @@ public:
    */
   void SetSpeed (double dx, double dy, double dz);
 private:
-  virtual void DoGet (double &x, double &y, double &z) const;
-  virtual void DoSet (double x, double y, double z);
+  virtual Position DoGet (void) const;
+  virtual void DoSet (const Position &position);
   void Update (void) const;
   mutable double m_x;
   mutable double m_y;

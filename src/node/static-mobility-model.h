@@ -60,8 +60,8 @@ public:
   virtual ~StaticMobilityModel ();
 
 private:
-  virtual void DoGet (double &x, double &y, double &z) const;
-  virtual void DoSet (double x, double y, double z);
+  virtual Position DoGet (void) const;
+  virtual void DoSet (const Position &position);
   double m_x;
   double m_y;
   double m_z;
