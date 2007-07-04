@@ -2,7 +2,7 @@
 
 #include "ns3/ptr.h"
 #include "ns3/position.h"
-#include "ns3/position-set-notifier.h"
+#include "ns3/mobility-model-notifier.h"
 #include "ns3/random-walk-position.h"
 #include "ns3/default-value.h"
 #include "ns3/command-line.h"
@@ -29,7 +29,7 @@ int main (int argc, char *argv[])
 
   CommandLine::Parse (argc, argv);
 
-  Ptr<PositionSetNotifier> notifier = Create<PositionSetNotifier> ();
+  Ptr<MobilityModelNotifier> notifier = Create<MobilityModelNotifier> ();
   Ptr<RandomWalkPosition> position = Create<RandomWalkPosition> ();
   position->AddInterface (notifier);
   notifier->RegisterListener (MakeCallback (&CourseChange));

@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef POSITION_SET_NOTIFIER_H
-#define POSITION_SET_NOTIFIER_H
+#ifndef MOBILITY_MODEL_NOTIFIER_H
+#define MOBILITY_MODEL_NOTIFIER_H
 
 #include "ns3/object.h"
 #include "ns3/component-manager.h"
@@ -31,7 +31,7 @@ namespace ns3 {
 /**
  * \brief notify listeners of position changes.
  */
-class PositionSetNotifier : public Object
+class MobilityModelNotifier : public Object
 {
 public:
   static const InterfaceId iid;
@@ -42,7 +42,7 @@ public:
   /**
    * Create a new position notifier
    */
-  PositionSetNotifier ();
+  MobilityModelNotifier ();
 
   /**
    * \param position the position which just changed.
@@ -69,4 +69,4 @@ private:
 
 } // namespace ns3
 
-#endif /* POSITION_SET_NOTIFIER_H */
+#endif /* MOBILITY_MODEL_NOTIFIER_H */

@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "position.h"
-#include "position-set-notifier.h"
+#include "mobility-model-notifier.h"
 #include <math.h>
 
 namespace ns3 {
@@ -112,8 +112,8 @@ Position::GetDistanceFrom (const Position &position) const
 void
 Position::NotifyCourseChange (void) const
 {
-  Ptr<PositionSetNotifier> notifier = 
-    QueryInterface<PositionSetNotifier> (PositionSetNotifier::iid);
+  Ptr<MobilityModelNotifier> notifier = 
+    QueryInterface<MobilityModelNotifier> (MobilityModelNotifier::iid);
   if (notifier != 0)
     {
       notifier->Notify (this);

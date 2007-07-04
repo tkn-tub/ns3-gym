@@ -18,27 +18,27 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "position-set-notifier.h"
+#include "mobility-model-notifier.h"
 
 namespace ns3 {
 
-const InterfaceId PositionSetNotifier::iid = MakeInterfaceId ("PositionSetNotifier", Object::iid);
-const ClassId PositionSetNotifier::cid = 
-  MakeClassId<PositionSetNotifier> ("PositionSetNotifier", 
-				    PositionSetNotifier::iid);
+const InterfaceId MobilityModelNotifier::iid = MakeInterfaceId ("MobilityModelNotifier", Object::iid);
+const ClassId MobilityModelNotifier::cid = 
+  MakeClassId<MobilityModelNotifier> ("MobilityModelNotifier", 
+				    MobilityModelNotifier::iid);
 
-PositionSetNotifier::PositionSetNotifier ()
+MobilityModelNotifier::MobilityModelNotifier ()
 {
-  SetInterfaceId (PositionSetNotifier::iid);
+  SetInterfaceId (MobilityModelNotifier::iid);
 }
 
 void 
-PositionSetNotifier::RegisterListener (Listener listener)
+MobilityModelNotifier::RegisterListener (Listener listener)
 {
   m_listeners.push_back (listener);
 }
 void 
-PositionSetNotifier::UnregisterListener (Listener callback)
+MobilityModelNotifier::UnregisterListener (Listener callback)
 {
   for (std::list<Listener>::iterator i = m_listeners.begin ();
        i != m_listeners.end ();)
@@ -55,7 +55,7 @@ PositionSetNotifier::UnregisterListener (Listener callback)
     }  
 }
 void 
-PositionSetNotifier::Notify (Ptr<const Position> position) const
+MobilityModelNotifier::Notify (Ptr<const Position> position) const
 {
   for (std::list<Listener>::const_iterator i = m_listeners.begin ();
        i != m_listeners.end (); i++)
