@@ -31,7 +31,8 @@ namespace ns3 {
 class RandomRectangleTopology
 {
  public:
-  
+
+  RandomRectangleTopology ();
   RandomRectangleTopology (double xMin, double xMax, double yMin, double yMax);
   RandomRectangleTopology (const RandomVariable &xVariable, const RandomVariable &yVariable);
 
