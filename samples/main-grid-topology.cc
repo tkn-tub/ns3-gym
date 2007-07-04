@@ -2,7 +2,7 @@
 
 #include "ns3/ptr.h"
 #include "ns3/grid-topology.h"
-#include "ns3/static-position.h"
+#include "ns3/static-mobility-model.h"
 #include "ns3/internet-node.h"
 #include "ns3/command-line.h"
 

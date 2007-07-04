@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "grid-topology.h"
-#include "static-position.h"
+#include "static-mobility-model.h"
 
 namespace ns3 {
 

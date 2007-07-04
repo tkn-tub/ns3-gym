@@ -22,7 +22,7 @@
 #define RANDOM_WALK_POSITION_H
 
 #include "ns3/object.h"
-#include "ns3/position.h"
+#include "ns3/mobility-model.h"
 #include "ns3/nstime.h"
 #include "ns3/random-variable.h"
 #include "ns3/component-manager.h"

@@ -22,7 +22,7 @@
 #define STATIC_SPEED_POSITION_H
 
 #include <stdint.h>
-#include "position.h"
+#include "mobility-model.h"
 #include "ns3/nstime.h"
 #include "ns3/component-manager.h"
 

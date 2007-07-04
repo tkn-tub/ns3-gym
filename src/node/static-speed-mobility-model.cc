@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "static-speed-position.h"
+#include "static-speed-mobility-model.h"
 #include "ns3/simulator.h"
 
 namespace ns3 {

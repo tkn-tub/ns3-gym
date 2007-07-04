@@ -26,7 +26,7 @@
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
 #include "ns3/component-manager.h"
-#include "position.h"
+#include "mobility-model.h"
 
 namespace ns3 {
 

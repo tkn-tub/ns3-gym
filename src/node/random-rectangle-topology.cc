@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "random-rectangle-topology.h"
-#include "static-position.h"
+#include "static-mobility-model.h"
 #include "ns3/random-variable-default-value.h"
 
 namespace ns3 {

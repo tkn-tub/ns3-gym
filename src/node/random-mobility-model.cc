@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "random-walk-position.h"
+#include "random-walk-mobility-model.h"
 #include "ns3/default-value.h"
 #include "ns3/time-default-value.h"
 #include "ns3/simulator.h"

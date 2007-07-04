@@ -22,7 +22,7 @@
 #define STATIC_POSITION_H
 
 #include "ns3/component-manager.h"
-#include "position.h"
+#include "mobility-model.h"
 
 namespace ns3 {
 

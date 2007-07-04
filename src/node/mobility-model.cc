@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "position.h"
+#include "mobility-model.h"
 #include "mobility-model-notifier.h"
 #include <math.h>
 

@@ -1,9 +1,9 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 
 #include "ns3/ptr.h"
-#include "ns3/position.h"
+#include "ns3/mobility-model.h"
 #include "ns3/mobility-model-notifier.h"
-#include "ns3/random-walk-position.h"
+#include "ns3/random-walk-mobility-model.h"
 #include "ns3/default-value.h"
 #include "ns3/command-line.h"
 #include "ns3/simulator.h"

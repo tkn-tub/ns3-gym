@@ -24,7 +24,7 @@
 #include "ns3/object.h"
 #include "ns3/component-manager.h"
 #include "ns3/callback.h"
-#include "position.h"
+#include "mobility-model.h"
 
 namespace ns3 {
 
