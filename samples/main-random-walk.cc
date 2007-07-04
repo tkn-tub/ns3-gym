@@ -14,9 +14,9 @@ using namespace ns3;
 static void 
 CourseChange (Ptr<const MobilityModel> position)
 {
-  double x, y, z;
-  position->Get (x, y, z);
-  std::cout << Simulator::Now () << ", pos=" << position << ", x=" << x << ", y=" << y << ", z=" << z << std::endl;
+  Position pos = position->Get ();
+  std::cout << Simulator::Now () << ", pos=" << position << ", x=" << pos.x << ", y=" << pos.y
+            << ", z=" << pos.z << std::endl;
 }
 
 int main (int argc, char *argv[])

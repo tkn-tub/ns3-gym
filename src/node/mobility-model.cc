@@ -34,11 +34,6 @@ MobilityModel::MobilityModel ()
 MobilityModel::~MobilityModel ()
 {}
 
-void
-MobilityModel::Get (double &x, double &y, double &z) const
-{
-  DoGet (x,y,z);
-}
 Position
 MobilityModel::Get (void) const
 {

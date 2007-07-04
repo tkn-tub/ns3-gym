@@ -41,9 +41,8 @@ int main (int argc, char *argv[])
       Ptr<Object> object = *j;
       Ptr<MobilityModel> position = object->QueryInterface<MobilityModel> (MobilityModel::iid);
       NS_ASSERT (position != 0);
-      double x, y, z;
-      position->Get (x,y,z);
-      std::cout << "x=" << x << ", y=" << y << ", z=" << z << std::endl;
+      Position pos = position->Get ();
+      std::cout << "x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << std::endl;
     }
 
   return 0;

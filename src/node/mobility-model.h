@@ -62,15 +62,9 @@ public:
   virtual ~MobilityModel () = 0;
 
   /**
-   * \param x reference to floating-point variable for x coordinate.
-   * \param y reference to floating-point variable for y coordinate.
-   * \param z reference to floating-point variable for z coordinate.
-   *
-   * Store in the x, y, and z variables the current coordinates
-   * managed by this position object.
+   * \returns the current position
    * Unit is meters
    */
-  void Get (double &x, double &y, double &z) const;
   Position Get (void) const;
   /**
    * \returns the current x coordinate
