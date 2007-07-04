@@ -25,6 +25,28 @@
 
 namespace ns3 {
 
+class Vector3D
+{
+public:
+  double x;
+  double y;
+  double z;
+};
+class Position : public Vector3D
+{};
+class Speed : public Vector3D
+{};
+class Vector2D
+{
+public:
+  double x;
+  double y;
+};
+class Position2D : public Vector2D
+{};
+class Speed2D : public Vector2D
+{};
+
 /**
  * \brief keep track of the current position of an object
  *
@@ -49,6 +71,7 @@ public:
    * Unit is meters
    */
   void Get (double &x, double &y, double &z) const;
+  Position Get (void) const;
   /**
    * \returns the current x coordinate
    *
@@ -71,6 +94,7 @@ public:
   void Add (double dx, double dy, double dz);
 
   void Set (double x, double y, double z);
+  void Set (const Position &position);
   void SetXY (double x, double y);
   void SetX (double x);
   void SetY (double y);

@@ -39,6 +39,13 @@ MobilityModel::Get (double &x, double &y, double &z) const
 {
   DoGet (x,y,z);
 }
+Position
+MobilityModel::Get (void) const
+{
+  Position position;
+  DoGet (position.x,position.y,position.z);
+  return position;
+}
 double 
 MobilityModel::GetX (void) const
 {
@@ -65,6 +72,11 @@ void
 MobilityModel::Set (double x, double y, double z)
 {
   DoSet (x, y, z);
+}
+void 
+MobilityModel::Set (const Position &position)
+{
+  DoSet (position.x, position.y, position.z);
 }
 void 
 MobilityModel::SetXY (double x, double y)
