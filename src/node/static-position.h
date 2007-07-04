@@ -31,7 +31,7 @@ namespace ns3 {
  *        change once it has been set and until it is set again 
  *        explicitely to a new value.
  */
-class StaticPosition : public Position 
+class StaticMobilityModel : public MobilityModel 
 {
 public:
   static const InterfaceId iid;
@@ -39,7 +39,7 @@ public:
   /**
    * Create a position located at coordinates (0,0,0)
    */
-  StaticPosition ();
+  StaticMobilityModel ();
   /**
    * \param x x coordinate
    * \param y y coordinate
@@ -47,7 +47,7 @@ public:
    * Create a position located at coordinates (x,y,0).
    * Unit is meters
    */
-  StaticPosition (double x, double y);
+  StaticMobilityModel (double x, double y);
   /**
    * \param x x coordinate
    * \param y y coordinate
@@ -56,8 +56,8 @@ public:
    * Create a position located at coordinates (x,y,z).
    * Unit is meters
    */
-  StaticPosition (double x, double y, double z);
-  virtual ~StaticPosition ();
+  StaticMobilityModel (double x, double y, double z);
+  virtual ~StaticMobilityModel ();
 
 private:
   virtual void DoGet (double &x, double &y, double &z) const;

@@ -27,7 +27,7 @@ int main (int argc, char *argv[])
   GridTopology grid (-100, -100, 20, 5, 20);
 
   // each object will be attached a static position.
-  grid.SetPositionModel (StaticPosition::cid);
+  grid.SetMobilityModelModel (StaticMobilityModel::cid);
 
   // finalize the setup by attaching to each object
   // in the input array a position and initializing
@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
        j != nodes.end (); j++)
     {
       Ptr<Object> object = *j;
-      Ptr<Position> position = object->QueryInterface<Position> (Position::iid);
+      Ptr<MobilityModel> position = object->QueryInterface<MobilityModel> (MobilityModel::iid);
       NS_ASSERT (position != 0);
       double x, y, z;
       position->Get (x,y,z);

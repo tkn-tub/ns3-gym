@@ -12,7 +12,7 @@
 using namespace ns3;
 
 static void 
-CourseChange (Ptr<const Position> position)
+CourseChange (Ptr<const MobilityModel> position)
 {
   double x, y, z;
   position->Get (x, y, z);
@@ -30,7 +30,7 @@ int main (int argc, char *argv[])
   CommandLine::Parse (argc, argv);
 
   Ptr<MobilityModelNotifier> notifier = Create<MobilityModelNotifier> ();
-  Ptr<RandomWalkPosition> position = Create<RandomWalkPosition> ();
+  Ptr<RandomWalkMobilityModel> position = Create<RandomWalkMobilityModel> ();
   position->AddInterface (notifier);
   notifier->RegisterListener (MakeCallback (&CourseChange));
 

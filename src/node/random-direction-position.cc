@@ -27,12 +27,12 @@
 
 namespace ns3 {
 
-const double RandomDirectionPosition::PI = 3.1415;
-const InterfaceId RandomDirectionPosition::iid = 
-  MakeInterfaceId ("RandomDirectionPosition", Position::iid);
-const ClassId RandomDirectionPosition::cid = 
-  MakeClassId<RandomDirectionPosition,double,double> ("RandomDirectionPosition",
-						      RandomDirectionPosition::iid);
+const double RandomDirectionMobilityModel::PI = 3.1415;
+const InterfaceId RandomDirectionMobilityModel::iid = 
+  MakeInterfaceId ("RandomDirectionMobilityModel", MobilityModel::iid);
+const ClassId RandomDirectionMobilityModel::cid = 
+  MakeClassId<RandomDirectionMobilityModel,double,double> ("RandomDirectionMobilityModel",
+						      RandomDirectionMobilityModel::iid);
 
 
 static RandomVariableDefaultValue 
@@ -108,7 +108,7 @@ RandomDirectionParameters::SetBounds (double xMin, double xMax, double yMin, dou
 }
 
 Ptr<RandomDirectionParameters> 
-RandomDirectionPosition::GetDefaultParameters (void)
+RandomDirectionMobilityModel::GetDefaultParameters (void)
 {
   static Ptr<RandomDirectionParameters> parameters = Create<RandomDirectionParameters> ();
   if (parameters->m_xMin != g_rectangle.GetMinX () ||
@@ -126,7 +126,7 @@ RandomDirectionPosition::GetDefaultParameters (void)
 }
 
 
-RandomDirectionPosition::RandomDirectionPosition ()
+RandomDirectionMobilityModel::RandomDirectionMobilityModel ()
   : m_parameters (GetDefaultParameters ()),
     m_x (0.0),
     m_y (0.0),
@@ -135,11 +135,11 @@ RandomDirectionPosition::RandomDirectionPosition ()
     m_prevTime (Simulator::Now ()),
     m_pauseStart (Simulator::Now ())
 {
-  SetInterfaceId (RandomDirectionPosition::iid);
+  SetInterfaceId (RandomDirectionMobilityModel::iid);
   InitializeDirectionAndSpeed ();
 }
 bool
-RandomDirectionPosition::CheckPosition (void) const
+RandomDirectionMobilityModel::CheckMobilityModel (void) const
 {
   return 
     m_x <= m_parameters->m_xMax && 
@@ -148,7 +148,7 @@ RandomDirectionPosition::CheckPosition (void) const
     m_y >= m_parameters->m_yMin;
 }
 
-RandomDirectionPosition::RandomDirectionPosition (double x, double y)
+RandomDirectionMobilityModel::RandomDirectionMobilityModel (double x, double y)
   : m_parameters (GetDefaultParameters ()),
     m_x (x),
     m_y (y),
@@ -157,11 +157,11 @@ RandomDirectionPosition::RandomDirectionPosition (double x, double y)
     m_prevTime (Simulator::Now ()),
     m_pauseStart (Simulator::Now ())
 {
-  SetInterfaceId (RandomDirectionPosition::iid);
-  NS_ASSERT (CheckPosition ());
+  SetInterfaceId (RandomDirectionMobilityModel::iid);
+  NS_ASSERT (CheckMobilityModel ());
   InitializeDirectionAndSpeed ();
 }
-RandomDirectionPosition::RandomDirectionPosition (Ptr<RandomDirectionParameters> parameters)
+RandomDirectionMobilityModel::RandomDirectionMobilityModel (Ptr<RandomDirectionParameters> parameters)
   : m_parameters (parameters),
     m_x (0.0),
     m_y (0.0),
@@ -170,11 +170,11 @@ RandomDirectionPosition::RandomDirectionPosition (Ptr<RandomDirectionParameters>
     m_prevTime (Simulator::Now ()),
     m_pauseStart (Simulator::Now ())
 {
-  SetInterfaceId (RandomDirectionPosition::iid);
+  SetInterfaceId (RandomDirectionMobilityModel::iid);
   InitializeDirectionAndSpeed ();
-  NS_ASSERT (CheckPosition ());
+  NS_ASSERT (CheckMobilityModel ());
 }
-RandomDirectionPosition::RandomDirectionPosition (Ptr<RandomDirectionParameters> parameters,
+RandomDirectionMobilityModel::RandomDirectionMobilityModel (Ptr<RandomDirectionParameters> parameters,
 						  double x, double y)
   : m_parameters (parameters),
     m_x (x),
@@ -184,19 +184,19 @@ RandomDirectionPosition::RandomDirectionPosition (Ptr<RandomDirectionParameters>
     m_prevTime (Simulator::Now ()),
     m_pauseStart (Simulator::Now ())
 {
-  SetInterfaceId (RandomDirectionPosition::iid);
+  SetInterfaceId (RandomDirectionMobilityModel::iid);
   InitializeDirectionAndSpeed ();
-  NS_ASSERT (CheckPosition ());
+  NS_ASSERT (CheckMobilityModel ());
 }
 void 
-RandomDirectionPosition::DoDispose (void)
+RandomDirectionMobilityModel::DoDispose (void)
 {
   m_parameters = 0;
   // chain up.
-  Position::DoDispose ();
+  MobilityModel::DoDispose ();
 }
-enum RandomDirectionPosition::Side
-RandomDirectionPosition::CalculateIntersection (double &x, double &y)
+enum RandomDirectionMobilityModel::Side
+RandomDirectionMobilityModel::CalculateIntersection (double &x, double &y)
 {
   double xMin = m_parameters->m_xMin;
   double xMax = m_parameters->m_xMax;
@@ -214,41 +214,41 @@ RandomDirectionPosition::CalculateIntersection (double &x, double &y)
     {
       x = xMax;
       y = xMaxY;
-      return RandomDirectionPosition::RIGHT;
+      return RandomDirectionMobilityModel::RIGHT;
     }
   else if (xMinOk && m_dx <= 0)
     {
       x = xMin;
       y = xMinY;
-      return RandomDirectionPosition::LEFT;
+      return RandomDirectionMobilityModel::LEFT;
     }
   else if (yMaxOk && m_dy >= 0)
     {
       x = yMaxX;
       y = yMax;
-      return RandomDirectionPosition::TOP;
+      return RandomDirectionMobilityModel::TOP;
     }
   else if (yMinOk && m_dy <= 0)
     {
       x = yMinX;
       y = yMin;
-      return RandomDirectionPosition::BOTTOM;
+      return RandomDirectionMobilityModel::BOTTOM;
     }
   else
     {
       NS_ASSERT (false);
       // quiet compiler
-      return RandomDirectionPosition::RIGHT;
+      return RandomDirectionMobilityModel::RIGHT;
     }
 }
 void
-RandomDirectionPosition::InitializeDirectionAndSpeed (void)
+RandomDirectionMobilityModel::InitializeDirectionAndSpeed (void)
 {
   double direction = UniformVariable::GetSingleValue (0, 2 * PI);
   SetDirectionAndSpeed (direction);
 }
 void
-RandomDirectionPosition::SetDirectionAndSpeed (double direction)
+RandomDirectionMobilityModel::SetDirectionAndSpeed (double direction)
 {
   double speed = m_parameters->m_speedVariable->GetValue ();
   m_dx = std::cos (direction) * speed;
@@ -263,25 +263,25 @@ RandomDirectionPosition::SetDirectionAndSpeed (double direction)
   m_pauseStart = Simulator::Now () + Seconds (seconds);
   m_prevTime = Simulator::Now ();
   m_event = Simulator::Schedule (Seconds (seconds + pause),
-				 &RandomDirectionPosition::ResetDirectionAndSpeed, this);
+				 &RandomDirectionMobilityModel::ResetDirectionAndSpeed, this);
 }
 void
-RandomDirectionPosition::ResetDirectionAndSpeed (void)
+RandomDirectionMobilityModel::ResetDirectionAndSpeed (void)
 {
   Update ();
   double direction = UniformVariable::GetSingleValue (0, PI);
   switch (m_side)
     {
-    case RandomDirectionPosition::RIGHT:
+    case RandomDirectionMobilityModel::RIGHT:
       direction += PI / 2;
       break;
-    case RandomDirectionPosition::LEFT:
+    case RandomDirectionMobilityModel::LEFT:
       direction += - PI / 2;
       break;
-    case RandomDirectionPosition::TOP:
+    case RandomDirectionMobilityModel::TOP:
       direction += PI;
       break;
-    case RandomDirectionPosition::BOTTOM:
+    case RandomDirectionMobilityModel::BOTTOM:
       direction += 0.0;
       break;
     }
@@ -289,7 +289,7 @@ RandomDirectionPosition::ResetDirectionAndSpeed (void)
   NotifyCourseChange ();
 }
 void
-RandomDirectionPosition::Update (void) const
+RandomDirectionMobilityModel::Update (void) const
 {
   Time end = std::min (Simulator::Now (), m_pauseStart);
   if (m_prevTime >= end)
@@ -299,7 +299,7 @@ RandomDirectionPosition::Update (void) const
   Time deltaTime = end - m_prevTime;
   m_prevTime = Simulator::Now ();
   double deltaS = deltaTime.GetSeconds ();
-  NS_ASSERT (CheckPosition ());
+  NS_ASSERT (CheckMobilityModel ());
   m_x += m_dx * deltaS;
   m_y += m_dy * deltaS;
   // round to closest boundaries.
@@ -307,10 +307,10 @@ RandomDirectionPosition::Update (void) const
   m_x = std::max (m_x, m_parameters->m_xMin);
   m_y = std::min (m_y, m_parameters->m_yMax);
   m_y = std::max (m_y, m_parameters->m_yMin);
-  NS_ASSERT (CheckPosition ());
+  NS_ASSERT (CheckMobilityModel ());
 }
 void 
-RandomDirectionPosition::DoGet (double &x, double &y, double &z) const
+RandomDirectionMobilityModel::DoGet (double &x, double &y, double &z) const
 {
   Update ();
   x = m_x;
@@ -318,7 +318,7 @@ RandomDirectionPosition::DoGet (double &x, double &y, double &z) const
   z = 0;
 }
 void
-RandomDirectionPosition::DoSet (double x, double y, double z)
+RandomDirectionMobilityModel::DoSet (double x, double y, double z)
 {
   bool changed = false;
   if (m_x != x || m_y != y)

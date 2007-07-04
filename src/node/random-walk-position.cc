@@ -29,10 +29,10 @@ NS_DEBUG_COMPONENT_DEFINE ("RandomWalk");
 
 namespace ns3 {
 
-const InterfaceId RandomWalkPosition::iid = 
-  MakeInterfaceId ("RandomWalkPosition", Position::iid);
-const ClassId RandomWalkPosition::cid = 
-  MakeClassId<RandomWalkPosition, double, double> ("RandomWalkPosition", RandomWalkPosition::iid);
+const InterfaceId RandomWalkMobilityModel::iid = 
+  MakeInterfaceId ("RandomWalkMobilityModel", MobilityModel::iid);
+const ClassId RandomWalkMobilityModel::cid = 
+  MakeClassId<RandomWalkMobilityModel, double, double> ("RandomWalkMobilityModel", RandomWalkMobilityModel::iid);
 
 
 static IntegerDefaultValue<double> g_minSpeed ("RandomWalkMinSpeed", 
@@ -41,12 +41,12 @@ static IntegerDefaultValue<double> g_minSpeed ("RandomWalkMinSpeed",
 static IntegerDefaultValue<double> g_maxSpeed ("RandomWalkMaxSpeed", 
 					       "Maximum speed used during a random walk",
 					       0.5);
-static EnumDefaultValue<RandomWalkPositionParameters::Mode> g_mode 
+static EnumDefaultValue<RandomWalkMobilityModelParameters::Mode> g_mode 
   ("RandomWalkMode",
    "The mode indicates the condition used to "
    "change the current speed and direction",
-   RandomWalkPositionParameters::MODE_DISTANCE, "Distance",
-   RandomWalkPositionParameters::MODE_TIME, "Time",
+   RandomWalkMobilityModelParameters::MODE_DISTANCE, "Distance",
+   RandomWalkMobilityModelParameters::MODE_TIME, "Time",
    0, 0);
 static IntegerDefaultValue<double> g_modeDistance ("RandomWalkModeDistance",
 						   "Distance to walk before changing direction and speed.",
@@ -55,7 +55,7 @@ static TimeDefaultValue g_modeTime ("RandomWalkModeTime",
 				    "Time to walk before changing direction and speed.",
 				    Seconds (1));
 
-RandomWalkPositionParameters::RandomWalkPositionParameters ()
+RandomWalkMobilityModelParameters::RandomWalkMobilityModelParameters ()
   : m_minSpeed (g_minSpeed.GetValue ()),
     m_maxSpeed (g_maxSpeed.GetValue ()),
     m_mode (g_mode.GetValue ()),
@@ -63,7 +63,7 @@ RandomWalkPositionParameters::RandomWalkPositionParameters ()
     m_modeTime (g_modeTime.GetValue ())
 {}
 bool 
-RandomWalkPositionParameters::IsDefault (void) const
+RandomWalkMobilityModelParameters::IsDefault (void) const
 {
   if (m_minSpeed != g_minSpeed.GetValue () ||
       m_maxSpeed != g_maxSpeed.GetValue () ||
@@ -77,52 +77,52 @@ RandomWalkPositionParameters::IsDefault (void) const
 }
 
 void
-RandomWalkPositionParameters::SetSpeedBounds (double minSpeed, double maxSpeed)
+RandomWalkMobilityModelParameters::SetSpeedBounds (double minSpeed, double maxSpeed)
 {
   m_minSpeed = minSpeed;
   m_maxSpeed = maxSpeed;
 }
 
 
-UniformVariable RandomWalkPosition::m_randomDirection (0.0, 2*3.141592);
+UniformVariable RandomWalkMobilityModel::m_randomDirection (0.0, 2*3.141592);
 
-Ptr<RandomWalkPositionParameters> 
-RandomWalkPosition::GetDefaultParameters (void)
+Ptr<RandomWalkMobilityModelParameters> 
+RandomWalkMobilityModel::GetDefaultParameters (void)
 {
-  static Ptr<RandomWalkPositionParameters> parameters = Create<RandomWalkPositionParameters> ();
+  static Ptr<RandomWalkMobilityModelParameters> parameters = Create<RandomWalkMobilityModelParameters> ();
   if (!parameters->IsDefault ())
     {
-      parameters = Create<RandomWalkPositionParameters> ();
+      parameters = Create<RandomWalkMobilityModelParameters> ();
     }
   return parameters;
 }
 
-RandomWalkPosition::RandomWalkPosition ()
+RandomWalkMobilityModel::RandomWalkMobilityModel ()
   : m_x (0.0),
     m_y (0.0),
     m_dx (0.0),
     m_dy (0.0),
     m_prevTime (Simulator::Now ()),
-    m_parameters (RandomWalkPosition::GetDefaultParameters ())
+    m_parameters (RandomWalkMobilityModel::GetDefaultParameters ())
 {
-  SetInterfaceId (RandomWalkPosition::iid);
+  SetInterfaceId (RandomWalkMobilityModel::iid);
   Reset ();
 }
 
-RandomWalkPosition::RandomWalkPosition (double x, double y)
+RandomWalkMobilityModel::RandomWalkMobilityModel (double x, double y)
   : m_x (x),
     m_y (y),
     m_dx (0.0),
     m_dy (0.0),
     m_prevTime (Simulator::Now ()),
-    m_parameters (RandomWalkPosition::GetDefaultParameters ())
+    m_parameters (RandomWalkMobilityModel::GetDefaultParameters ())
 {
-  SetInterfaceId (RandomWalkPosition::iid);
+  SetInterfaceId (RandomWalkMobilityModel::iid);
   Reset ();
 }
 
 void
-RandomWalkPosition::Reset (void)
+RandomWalkMobilityModel::Reset (void)
 {
   Update ();
   double speed = UniformVariable::GetSingleValue (m_parameters->m_minSpeed, 
@@ -135,7 +135,7 @@ RandomWalkPosition::Reset (void)
   m_dx = dx;
   m_dy = dy;
   Time delay;
-  if (m_parameters->m_mode == RandomWalkPositionParameters::MODE_TIME)
+  if (m_parameters->m_mode == RandomWalkMobilityModelParameters::MODE_TIME)
     {
       delay = m_parameters->m_modeTime;
     }
@@ -146,11 +146,11 @@ RandomWalkPosition::Reset (void)
     }
   NotifyCourseChange ();
   NS_DEBUG ("change speed at " << Simulator::Now () << " in " << delay);
-  Simulator::Schedule (delay, &RandomWalkPosition::Reset, this);
+  Simulator::Schedule (delay, &RandomWalkMobilityModel::Reset, this);
 }
 
 void
-RandomWalkPosition::Update (void) const
+RandomWalkMobilityModel::Update (void) const
 {
   Time deltaTime = Simulator::Now () - m_prevTime;
   m_prevTime = Simulator::Now ();
@@ -160,14 +160,14 @@ RandomWalkPosition::Update (void) const
 }
 
 void
-RandomWalkPosition::DoDispose (void)
+RandomWalkMobilityModel::DoDispose (void)
 {
   m_parameters = 0;
   // chain up
-  Position::DoDispose ();
+  MobilityModel::DoDispose ();
 }
 void 
-RandomWalkPosition::DoGet (double &x, double &y, double &z) const
+RandomWalkMobilityModel::DoGet (double &x, double &y, double &z) const
 {
   Update ();
   x = m_x;
@@ -175,7 +175,7 @@ RandomWalkPosition::DoGet (double &x, double &y, double &z) const
   z = 0;
 }
 void
-RandomWalkPosition::DoSet (double x, double y, double z)
+RandomWalkMobilityModel::DoSet (double x, double y, double z)
 {
   bool changed = false;
   if (m_x != x || m_y != y)

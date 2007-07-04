@@ -32,7 +32,7 @@ namespace ns3 {
 /**
  * \brief parameters to control a random walk model
  */
-class RandomWalkPositionParameters : public Object
+class RandomWalkMobilityModelParameters : public Object
 {
  public:
   enum Mode {
@@ -43,7 +43,7 @@ class RandomWalkPositionParameters : public Object
    * Instantiate a set of RandomWalk parameters initialized
    * with the Bind default values.
    */
-  RandomWalkPositionParameters ();
+  RandomWalkMobilityModelParameters ();
   /**
    * \param minSpeed the minimum speed
    * \param maxSpeed the maximum speed
@@ -63,7 +63,7 @@ class RandomWalkPositionParameters : public Object
   void SetModeTime (Time time);
  private:
   bool IsDefault (void) const;
-  friend class RandomWalkPosition;
+  friend class RandomWalkMobilityModel;
   double m_minSpeed;
   double m_maxSpeed;
   enum Mode m_mode;
@@ -82,10 +82,10 @@ class RandomWalkPositionParameters : public Object
  * The parameters of the model can be specified either with the ns3::Bind
  * function and the variables "RandomWalkMinSpeed", "RandomWalkMaxSpeed",
  * "RandomWalkMode", "RandomWalkModeDistance", and, "RandomWalkModeTime" or
- * with an instance of the RandomWalkPositionParameters class which
- * must be fed to the RandomWalkPosition constructors.
+ * with an instance of the RandomWalkMobilityModelParameters class which
+ * must be fed to the RandomWalkMobilityModel constructors.
  */
-class RandomWalkPosition : public Position 
+class RandomWalkMobilityModel : public MobilityModel 
 {
  public:
   static const InterfaceId iid;
@@ -93,19 +93,19 @@ class RandomWalkPosition : public Position
   /**
    * Create a new position object located at position (0,0,0)
    */
-  RandomWalkPosition ();
+  RandomWalkMobilityModel ();
   /**
    * Create a new position object located at position (x,y,0)
    */
-  RandomWalkPosition (double x, double y);
+  RandomWalkMobilityModel (double x, double y);
   /**
    * Create a new position object located at position (0,0,0)
    */
-  RandomWalkPosition (Ptr<RandomWalkPositionParameters> parameters);
+  RandomWalkMobilityModel (Ptr<RandomWalkMobilityModelParameters> parameters);
   /**
    * Create a new position object located at position (x,y,0)
    */
-  RandomWalkPosition (Ptr<RandomWalkPositionParameters> parameters,
+  RandomWalkMobilityModel (Ptr<RandomWalkMobilityModelParameters> parameters,
 		      double x, double y);
  private:
   virtual void DoDispose (void);
@@ -114,7 +114,7 @@ class RandomWalkPosition : public Position
 
   void Reset (void);
   void Update (void) const;
-  static Ptr<RandomWalkPositionParameters> GetDefaultParameters (void);
+  static Ptr<RandomWalkMobilityModelParameters> GetDefaultParameters (void);
   static UniformVariable m_randomDirection;
 
   mutable double m_x;
@@ -122,7 +122,7 @@ class RandomWalkPosition : public Position
   double m_dx;
   double m_dy;
   mutable Time m_prevTime;
-  Ptr<RandomWalkPositionParameters> m_parameters;
+  Ptr<RandomWalkMobilityModelParameters> m_parameters;
 };
 
 

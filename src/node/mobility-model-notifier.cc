@@ -55,7 +55,7 @@ MobilityModelNotifier::UnregisterListener (Listener callback)
     }  
 }
 void 
-MobilityModelNotifier::Notify (Ptr<const Position> position) const
+MobilityModelNotifier::Notify (Ptr<const MobilityModel> position) const
 {
   for (std::list<Listener>::const_iterator i = m_listeners.begin ();
        i != m_listeners.end (); i++)

@@ -48,13 +48,13 @@ class GridTopology
    * \param classId the classId of the position object to attach to each
    *        input object.
    */
-  void SetPositionModel (ClassId classId);
+  void SetMobilityModelModel (ClassId classId);
 
   /**
    * \param objects a vector of objects
    *
    * Attach a position (the type of position is specified through 
-   * the ClassId given to SetPositionModel) to each object present
+   * the ClassId given to SetMobilityModelModel) to each object present
    * in the input vector and configure its initial location with a set
    * of coordinates arranged according to a regular rectangular grid,
    * one row after the other.
@@ -66,7 +66,7 @@ class GridTopology
    * \param objects a vector of objects
    *
    * Attach a position (the type of position is specified through 
-   * the ClassId given to SetPositionModel) to each object present
+   * the ClassId given to SetMobilityModelModel) to each object present
    * in the input vector and configure its initial location with a set
    * of coordinates arranged according to a regular rectangular grid,
    * one column after the other.

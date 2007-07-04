@@ -38,7 +38,7 @@ class RandomRectangleTopology
 
   ~RandomRectangleTopology ();
 
-  void SetPositionModel (ClassId classId);
+  void SetMobilityModelModel (ClassId classId);
 
   void LayoutOne (Ptr<Object> object);
 

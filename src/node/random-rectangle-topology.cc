@@ -36,19 +36,19 @@ g_yVariable ("RandomRectangleTopologyY",
 RandomRectangleTopology::RandomRectangleTopology ()
   : m_xVariable (g_xVariable.GetCopy ()),
     m_yVariable (g_yVariable.GetCopy ()),
-    m_positionModel (StaticPosition::cid)
+    m_positionModel (StaticMobilityModel::cid)
 {}
 
 RandomRectangleTopology::RandomRectangleTopology (double xMin, double xMax, double yMin, double yMax)
   : m_xVariable (new UniformVariable (xMin, xMax)),
     m_yVariable (new UniformVariable (yMin, yMax)),
-    m_positionModel (StaticPosition::cid)
+    m_positionModel (StaticMobilityModel::cid)
 {}
 RandomRectangleTopology::RandomRectangleTopology (const RandomVariable &xVariable, 
 						  const RandomVariable &yVariable)
   : m_xVariable (xVariable.Copy ()),
     m_yVariable (yVariable.Copy ()),
-    m_positionModel (StaticPosition::cid)
+    m_positionModel (StaticMobilityModel::cid)
 {}
 RandomRectangleTopology::~RandomRectangleTopology ()
 {
@@ -59,7 +59,7 @@ RandomRectangleTopology::~RandomRectangleTopology ()
 }
 
 void 
-RandomRectangleTopology::SetPositionModel (ClassId classId)
+RandomRectangleTopology::SetMobilityModelModel (ClassId classId)
 {
   m_positionModel = classId;
 }

@@ -32,12 +32,12 @@ namespace ns3 {
  * understood to be meters or meters/s. i.e., they are all
  * metric international units.
  */
-class Position : public Object
+class MobilityModel : public Object
 {
 public:
   static const InterfaceId iid;
-  Position ();
-  virtual ~Position () = 0;
+  MobilityModel ();
+  virtual ~MobilityModel () = 0;
 
   /**
    * \param x reference to floating-point variable for x coordinate.
@@ -81,7 +81,7 @@ public:
    *
    * Unit is meters
    */
-  double GetDistanceFrom (const Position &position) const;
+  double GetDistanceFrom (const MobilityModel &position) const;
 protected:
   /**
    * Must be invoked by subclasses when the course of the

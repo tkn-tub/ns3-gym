@@ -46,7 +46,7 @@ class RandomDirectionParameters : public Object
   void SetPause (const RandomVariable &pauseVariable);
   void SetBounds (double xMin, double xMax, double yMin, double yMax);
  private:
-  friend class RandomDirectionPosition;
+  friend class RandomDirectionMobilityModel;
   double m_xMin;
   double m_xMax;
   double m_yMin;
@@ -57,16 +57,16 @@ class RandomDirectionParameters : public Object
   std::string m_pauseVariableValue;
 };
 
-class RandomDirectionPosition : public Position
+class RandomDirectionMobilityModel : public MobilityModel
 {
  public:
   static const InterfaceId iid;
   static const ClassId cid;
 
-  RandomDirectionPosition ();
-  RandomDirectionPosition (double x, double y);
-  RandomDirectionPosition (Ptr<RandomDirectionParameters> parameters);
-  RandomDirectionPosition (Ptr<RandomDirectionParameters> parameters, 
+  RandomDirectionMobilityModel ();
+  RandomDirectionMobilityModel (double x, double y);
+  RandomDirectionMobilityModel (Ptr<RandomDirectionParameters> parameters);
+  RandomDirectionMobilityModel (Ptr<RandomDirectionParameters> parameters, 
 			   double x, double y);
  private:
   enum Side {
@@ -80,8 +80,8 @@ class RandomDirectionPosition : public Position
   void SetDirectionAndSpeed (double direction);
   void InitializeDirectionAndSpeed (void);
   void Update (void) const;
-  bool CheckPosition (void) const;
-  enum RandomDirectionPosition::Side CalculateIntersection (double &x, double &y);
+  bool CheckMobilityModel (void) const;
+  enum RandomDirectionMobilityModel::Side CalculateIntersection (double &x, double &y);
   virtual void DoDispose (void);
   virtual void DoGet (double &x, double &y, double &z) const;
   virtual void DoSet (double x, double y, double z);

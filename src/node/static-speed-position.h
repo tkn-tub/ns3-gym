@@ -28,7 +28,7 @@
 
 namespace ns3 {
 
-class StaticSpeedPosition : public Position 
+class StaticSpeedMobilityModel : public MobilityModel 
 {
 public:
   static const InterfaceId iid;
@@ -37,7 +37,7 @@ public:
    * Create position located at coordinates (0,0,0) with
    * speed (0,0,0).
    */
-  StaticSpeedPosition ();
+  StaticSpeedMobilityModel ();
   /**
    * \param x x coordinate
    * \param y y coordinate
@@ -46,7 +46,7 @@ public:
    * speed (0,0,0).
    * Unit is meters
    */
-  StaticSpeedPosition (double x, double y);
+  StaticSpeedMobilityModel (double x, double y);
   /**
    * \param x x coordinate
    * \param y y coordinate
@@ -56,7 +56,7 @@ public:
    * speed (0,0,0).
    * Unit is meters
    */
-  StaticSpeedPosition (double x, double y, double z);
+  StaticSpeedMobilityModel (double x, double y, double z);
   /**
    * \param x x coordinate
    * \param y y coordinate
@@ -69,9 +69,9 @@ public:
    * speed (dx,dy,dz).
    * Unit is meters and meters/s
    */
-  StaticSpeedPosition (double x, double y, double z,
+  StaticSpeedMobilityModel (double x, double y, double z,
                        double dx, double dy, double dz);
-  virtual ~StaticSpeedPosition ();
+  virtual ~StaticSpeedMobilityModel ();
 
   /*
    * \param dx x coordinate speed

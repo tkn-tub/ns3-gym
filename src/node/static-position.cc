@@ -22,37 +22,37 @@
 
 namespace ns3 {
 
-const InterfaceId StaticPosition::iid = MakeInterfaceId ("StaticPosition", Position::iid);
-const ClassId StaticPosition::cid = MakeClassId<StaticPosition,double, double> ("StaticPosition", 
-                                                                                StaticPosition::iid);
+const InterfaceId StaticMobilityModel::iid = MakeInterfaceId ("StaticMobilityModel", MobilityModel::iid);
+const ClassId StaticMobilityModel::cid = MakeClassId<StaticMobilityModel,double, double> ("StaticMobilityModel", 
+                                                                                StaticMobilityModel::iid);
 
-StaticPosition::StaticPosition ()
+StaticMobilityModel::StaticMobilityModel ()
   : m_x (0.0), m_y (0.0), m_z (0.0)
 {
-  SetInterfaceId (StaticPosition::iid);
+  SetInterfaceId (StaticMobilityModel::iid);
 }
-StaticPosition::StaticPosition (double x, double y)
+StaticMobilityModel::StaticMobilityModel (double x, double y)
   : m_x (x), m_y (y), m_z (0.0)
 {
-  SetInterfaceId (StaticPosition::iid);
+  SetInterfaceId (StaticMobilityModel::iid);
 }
-StaticPosition::StaticPosition (double x, double y, double z)
+StaticMobilityModel::StaticMobilityModel (double x, double y, double z)
   : m_x (x), m_y (y), m_z (z)
 {
-  SetInterfaceId (StaticPosition::iid);
+  SetInterfaceId (StaticMobilityModel::iid);
 }
-StaticPosition::~StaticPosition ()
+StaticMobilityModel::~StaticMobilityModel ()
 {}
 
 void 
-StaticPosition::DoGet (double &x, double &y, double &z) const
+StaticMobilityModel::DoGet (double &x, double &y, double &z) const
 {
   x = m_x;
   y = m_y;
   z = m_z;
 }
 void 
-StaticPosition::DoSet (double x, double y, double z)
+StaticMobilityModel::DoSet (double x, double y, double z)
 {
   bool changed = false;
   if (m_x != x || m_y != y || m_z != z)

@@ -37,7 +37,7 @@ public:
   static const InterfaceId iid;
   static const ClassId cid;
 
-  typedef Callback<void,Ptr<const Position> > Listener;
+  typedef Callback<void,Ptr<const MobilityModel> > Listener;
 
   /**
    * Create a new position notifier
@@ -47,7 +47,7 @@ public:
   /**
    * \param position the position which just changed.
    */
-  void Notify (Ptr<const Position> position) const;
+  void Notify (Ptr<const MobilityModel> position) const;
 
   /**
    * \param listener listener to add

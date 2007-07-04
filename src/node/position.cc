@@ -24,37 +24,37 @@
 
 namespace ns3 {
 
-const InterfaceId Position::iid = MakeInterfaceId ("Position", Object::iid);
+const InterfaceId MobilityModel::iid = MakeInterfaceId ("MobilityModel", Object::iid);
 
-Position::Position ()
+MobilityModel::MobilityModel ()
 {
-  SetInterfaceId (Position::iid);
+  SetInterfaceId (MobilityModel::iid);
 }
 
-Position::~Position ()
+MobilityModel::~MobilityModel ()
 {}
 
 void
-Position::Get (double &x, double &y, double &z) const
+MobilityModel::Get (double &x, double &y, double &z) const
 {
   DoGet (x,y,z);
 }
 double 
-Position::GetX (void) const
+MobilityModel::GetX (void) const
 {
   double x,y,z;
   DoGet (x,y,z);
   return x;
 }
 double 
-Position::GetY (void) const
+MobilityModel::GetY (void) const
 {
   double x, y, z;
   DoGet (x,y,z);
   return y;
 }
 double 
-Position::GetZ (void) const
+MobilityModel::GetZ (void) const
 {
   double x, y, z;
   DoGet (x,y,z);
@@ -62,33 +62,33 @@ Position::GetZ (void) const
 }
 
 void 
-Position::Set (double x, double y, double z)
+MobilityModel::Set (double x, double y, double z)
 {
   DoSet (x, y, z);
 }
 void 
-Position::SetXY (double x, double y)
+MobilityModel::SetXY (double x, double y)
 {
   double currentX, currentY, currentZ;
   DoGet (currentX, currentY, currentZ);
   DoSet (x, y, currentZ);
  }
 void 
-Position::SetX (double x)
+MobilityModel::SetX (double x)
 {
   double currentX, currentY, currentZ;
   DoGet (currentX, currentY, currentZ);
   DoSet (x, currentY, currentZ);
 }
 void 
-Position::SetY (double y)
+MobilityModel::SetY (double y)
 {
   double currentX, currentY, currentZ;
   DoGet (currentX, currentY, currentZ);
   DoSet (currentX, y, currentZ);
 }
 void 
-Position::SetZ (double z)
+MobilityModel::SetZ (double z)
 {
   double currentX, currentY, currentZ;
   DoGet (currentX, currentY, currentZ);
@@ -97,7 +97,7 @@ Position::SetZ (double z)
 
 
 double 
-Position::GetDistanceFrom (const Position &position) const
+MobilityModel::GetDistanceFrom (const MobilityModel &position) const
 {
   double ox,oy,oz;
   double x,y,z;
@@ -110,7 +110,7 @@ Position::GetDistanceFrom (const Position &position) const
 }
 
 void
-Position::NotifyCourseChange (void) const
+MobilityModel::NotifyCourseChange (void) const
 {
   Ptr<MobilityModelNotifier> notifier = 
     QueryInterface<MobilityModelNotifier> (MobilityModelNotifier::iid);

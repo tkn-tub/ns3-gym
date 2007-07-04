@@ -23,13 +23,13 @@
 
 namespace ns3 {
 
-const InterfaceId StaticSpeedPosition::iid = MakeInterfaceId ("StaticSpeedPosition", Position::iid);
-const ClassId StaticSpeedPosition::cid = 
-  MakeClassId<StaticSpeedPosition,double, double> ("StaticSpeedPosition", 
-                                              StaticSpeedPosition::iid);
+const InterfaceId StaticSpeedMobilityModel::iid = MakeInterfaceId ("StaticSpeedMobilityModel", MobilityModel::iid);
+const ClassId StaticSpeedMobilityModel::cid = 
+  MakeClassId<StaticSpeedMobilityModel,double, double> ("StaticSpeedMobilityModel", 
+                                              StaticSpeedMobilityModel::iid);
 
 
-StaticSpeedPosition::StaticSpeedPosition ()
+StaticSpeedMobilityModel::StaticSpeedMobilityModel ()
   : m_x (0.0),
     m_y (0.0),
     m_z (0.0),
@@ -38,9 +38,9 @@ StaticSpeedPosition::StaticSpeedPosition ()
     m_dz (0.0),
     m_prevTime (Simulator::Now ())
 {
-  SetInterfaceId (StaticSpeedPosition::iid);
+  SetInterfaceId (StaticSpeedMobilityModel::iid);
 }
-StaticSpeedPosition::StaticSpeedPosition (double x, double y, double z)
+StaticSpeedMobilityModel::StaticSpeedMobilityModel (double x, double y, double z)
   : m_x (x),
     m_y (y),
     m_z (z),
@@ -49,9 +49,9 @@ StaticSpeedPosition::StaticSpeedPosition (double x, double y, double z)
     m_dz (0.0),
     m_prevTime (Simulator::Now ())
 {
-  SetInterfaceId (StaticSpeedPosition::iid);
+  SetInterfaceId (StaticSpeedMobilityModel::iid);
 }
-StaticSpeedPosition::StaticSpeedPosition (double x, double y)
+StaticSpeedMobilityModel::StaticSpeedMobilityModel (double x, double y)
   : m_x (x),
     m_y (y),
     m_z (0.0),
@@ -60,9 +60,9 @@ StaticSpeedPosition::StaticSpeedPosition (double x, double y)
     m_dz (0.0),
     m_prevTime (Simulator::Now ())
 {
-  SetInterfaceId (StaticSpeedPosition::iid);
+  SetInterfaceId (StaticSpeedMobilityModel::iid);
 }
-StaticSpeedPosition::StaticSpeedPosition (double x, double y, double z,
+StaticSpeedMobilityModel::StaticSpeedMobilityModel (double x, double y, double z,
                                           double dx, double dy, double dz)
   : m_x (x),
     m_y (y),
@@ -72,14 +72,14 @@ StaticSpeedPosition::StaticSpeedPosition (double x, double y, double z,
     m_dz (dz),
     m_prevTime (Simulator::Now ())
 {
-  SetInterfaceId (StaticSpeedPosition::iid);
+  SetInterfaceId (StaticSpeedMobilityModel::iid);
 }
 
-StaticSpeedPosition::~StaticSpeedPosition ()
+StaticSpeedMobilityModel::~StaticSpeedMobilityModel ()
 {}
 
 void 
-StaticSpeedPosition::SetSpeed (double dx, double dy, double dz)
+StaticSpeedMobilityModel::SetSpeed (double dx, double dy, double dz)
 {
   bool changed = false;
   Update ();
@@ -97,7 +97,7 @@ StaticSpeedPosition::SetSpeed (double dx, double dy, double dz)
 }
 
 void
-StaticSpeedPosition::Update (void) const
+StaticSpeedMobilityModel::Update (void) const
 {
   Time deltaTime = Simulator::Now () - m_prevTime;
   m_prevTime = Simulator::Now ();
@@ -108,7 +108,7 @@ StaticSpeedPosition::Update (void) const
 }
 
 void 
-StaticSpeedPosition::DoGet (double &x, double &y, double &z) const
+StaticSpeedMobilityModel::DoGet (double &x, double &y, double &z) const
 {
   Update ();
   x = m_x;
@@ -116,7 +116,7 @@ StaticSpeedPosition::DoGet (double &x, double &y, double &z) const
   z = m_z;
 }
 void 
-StaticSpeedPosition::DoSet (double x, double y, double z)
+StaticSpeedMobilityModel::DoSet (double x, double y, double z)
 {
   bool changed = false;
   Update ();
