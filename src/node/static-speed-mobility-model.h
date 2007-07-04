@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef STATIC_SPEED_POSITION_H
-#define STATIC_SPEED_POSITION_H
+#ifndef STATIC_SPEED_MOBILITY_MODEL_H
+#define STATIC_SPEED_MOBILITY_MODEL_H
 
 #include <stdint.h>
 #include "mobility-model.h"

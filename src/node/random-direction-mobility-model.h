@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef RANDOM_DIRECTION_POSITION_H
-#define RANDOM_DIRECTION_POSITION_H
+#ifndef RANDOM_DIRECTION_MOBILITY_MODEL_H
+#define RANDOM_DIRECTION_MOBILITY_MODEL_H
 
 #include "ns3/object.h"
 #include "ns3/ptr.h"
@@ -100,4 +100,4 @@ class RandomDirectionMobilityModel : public MobilityModel
 
 } // namespace ns3
 
-#endif /* RANDOM_DIRECTION_POSITION_H */
+#endif /* RANDOM_DIRECTION_MOBILITY_MODEL_H */

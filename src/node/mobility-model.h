@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef POSITION_H
-#define POSITION_H
+#ifndef MOBILITY_MODEL_H
+#define MOBILITY_MODEL_H
 
 #include "ns3/object.h"
 
@@ -105,4 +105,4 @@ private:
 
 }; // namespace ns3
 
-#endif /* POSITION_H */
+#endif /* MOBILITY_MODEL_H */

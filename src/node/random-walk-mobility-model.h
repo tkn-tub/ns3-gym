@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef RANDOM_WALK_POSITION_H
-#define RANDOM_WALK_POSITION_H
+#ifndef RANDOM_WALK_MOBILITY_MODEL_H
+#define RANDOM_WALK_MOBILITY_MODEL_H
 
 #include "ns3/object.h"
 #include "ns3/mobility-model.h"
@@ -128,4 +128,4 @@ class RandomWalkMobilityModel : public MobilityModel
 
 } // namespace ns3
 
-#endif /* RANDOM_WALK_POSITION_H */
+#endif /* RANDOM_WALK_MOBILITY_MODEL_H */

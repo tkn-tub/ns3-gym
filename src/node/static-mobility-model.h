@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef STATIC_POSITION_H
-#define STATIC_POSITION_H
+#ifndef STATIC_MOBILITY_MODEL_H
+#define STATIC_MOBILITY_MODEL_H
 
 #include "ns3/component-manager.h"
 #include "mobility-model.h"
@@ -69,4 +69,4 @@ private:
 
 }; // namespace ns3
 
-#endif /* STATIC_POSITION_H */
+#endif /* STATIC_MOBILITY_MODEL_H */
