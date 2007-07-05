@@ -124,10 +124,7 @@ def build(bld):
     variant_env = bld.env_of_name(variant_name)
     bld.m_allenvs['default'] = variant_env # switch to the active variant
 
-    if Params.g_options.run:
-        run_program(Params.g_options.run)
-        return
-    elif Params.g_options.shell:
+    if Params.g_options.shell:
         run_shell()
         return
 
@@ -153,6 +150,9 @@ def shutdown():
 
     if Params.g_options.doxygen:
         doxygen()
+
+    if Params.g_options.run:
+        run_program(Params.g_options.run)
 
 def _find_program(program_name):
     for obj in Object.g_allobjs:
