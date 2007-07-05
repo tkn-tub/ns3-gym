@@ -162,7 +162,7 @@ def _find_program(program_name):
         found_programs.append(obj.target)
         if obj.target == program_name:
             return obj
-    raise ValueError("progam '%s' not found; available programs are: %r"
+    raise ValueError("program '%s' not found; available programs are: %r"
                      % (program_name, found_programs))
 
 def _run_argv(argv):
