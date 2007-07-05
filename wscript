@@ -155,10 +155,15 @@ def shutdown():
         run_program(Params.g_options.run)
 
 def _find_program(program_name):
+    found_programs = []
     for obj in Object.g_allobjs:
+        if obj.m_type != 'program' or not obj.target:
+            continue
+        found_programs.append(obj.target)
         if obj.target == program_name:
             return obj
-    raise ValueError("progam '%s' not found" % (program_name,))
+    raise ValueError("progam '%s' not found; available programs are: %r"
+                     % (program_name, found_programs))
 
 def _run_argv(argv):
     env = Params.g_build.env_of_name('default')
@@ -199,8 +204,8 @@ def run_program(program_string):
 
     try:
         program_obj = _find_program(program_name)
-    except ValueError:
-        Params.fatal("progam '%s' not found" % (program_name,))
+    except ValueError, ex:
+        Params.fatal(str(ex))
 
     try:
         program_node, = program_obj.m_linktask.m_outputs
