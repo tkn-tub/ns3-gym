@@ -17,6 +17,7 @@
 #define STATIC_ROUTER_H
 
 #include <stdint.h>
+#include <list>
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
@@ -54,7 +55,7 @@ public:
   } m_linkType;
   
   uint32_t m_metric;  
-}
+};
 
 /**  
  * \brief a Link State Advertisement (LSA) for a router, used in static routing

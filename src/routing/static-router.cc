@@ -15,6 +15,7 @@
  */
 
 #include "ns3/debug.h"
+#include "ns3/internet-node.h"
 #include "static-router.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("StaticRouter");
@@ -24,7 +25,8 @@ namespace ns3 {
 const InterfaceId StaticRouter::iid = 
   MakeInterfaceId ("StaticRouter", Object::iid);
 
-StaticRouter::StaticRouter ()
+StaticRouter::StaticRouter (Ptr<Node> node)
+  : m_node(node)
 {
   SetInterfaceId (StaticRouter::iid);
   NS_DEBUG("StaticRouter::StaticRouter ()");
