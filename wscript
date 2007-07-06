@@ -7,6 +7,7 @@ import shutil
 import Params
 import Object
 import pproc as subprocess
+import optparse
 
 Params.g_autoconfig = 1
 
@@ -23,11 +24,32 @@ def dist_hook(srcdir, blddir):
     shutil.rmtree("doc/latex")
 
 def set_options(opt):
+
+    def debug_option_callback(option, opt, value, parser):
+        if value == 'debug':
+            setattr(parser.values, option.dest, 'ultradebug')
+        elif value == 'optimized':
+            setattr(parser.values, option.dest, 'optimized')
+        else:
+            raise optparse.OptionValueError("allowed --debug-level values"
+                                            " are debug, optimized.")
+
+    opt.add_option('-d', '--debug-level',
+                   action='callback',
+                   type=str, dest='debug_level', default='debug',
+                   help=('Specify the debug level, does nothing if CFLAGS is set'
+                         ' in the environment. [Allowed Values: debug, optimized].'
+                         ' WARNING: this option only has effect '
+                         'with the configure command.'),
+                   callback=debug_option_callback)
+    
     # options provided by the modules
     opt.tool_options('compiler_cxx')
 
     opt.add_option('--enable-gcov',
-                   help=('Enable code coverage analysis'),
+                   help=('Enable code coverage analysis.'
+                         ' WARNING: this option only has effect '
+                         'with the configure command.'),
                    action="store_true", default=False,
                    dest='enable_gcov')
 
@@ -59,10 +81,13 @@ def configure(conf):
     if not conf.check_tool('compiler_cxx'):
         Params.fatal("No suitable compiler found")
 
-
     # create the second environment, set the variant and set its name
     variant_env = conf.env.copy()
-    variant_name = Params.g_options.debug_level.lower()
+    debug_level = Params.g_options.debug_level.lower()
+    if debug_level == 'ultradebug':
+        variant_name = 'debug'
+    else:
+        variant_name = debug_level
 
     if Params.g_options.enable_gcov:
         variant_name += '-gcov'
@@ -79,13 +104,17 @@ def configure(conf):
     conf.setenv(variant_name)
 
     variant_env.append_value('CXXDEFINES', 'RUN_SELF_TESTS')
-    variant_env.append_value('CXXFLAGS', ['-Wall', '-Werror'])
+    
+    if os.path.basename(conf.env['CXX']).startswith("g++"):
+        variant_env.append_value('CXXFLAGS', ['-Wall', '-Werror'])
+
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
 
     if sys.platform == 'win32':
-        variant_env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
+        if os.path.basename(conf.env['CXX']).startswith("g++"):
+            variant_env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
 
     conf.sub_config('src')
 
@@ -95,10 +124,7 @@ def build(bld):
     variant_env = bld.env_of_name(variant_name)
     bld.m_allenvs['default'] = variant_env # switch to the active variant
 
-    if Params.g_options.run:
-        run_program(Params.g_options.run)
-        return
-    elif Params.g_options.shell:
+    if Params.g_options.shell:
         run_shell()
         return
 
@@ -125,11 +151,19 @@ def shutdown():
     if Params.g_options.doxygen:
         doxygen()
 
+    if Params.g_options.run:
+        run_program(Params.g_options.run)
+
 def _find_program(program_name):
+    found_programs = []
     for obj in Object.g_allobjs:
+        if obj.m_type != 'program' or not obj.target:
+            continue
+        found_programs.append(obj.target)
         if obj.target == program_name:
             return obj
-    raise ValueError("progam '%s' not found" % (program_name,))
+    raise ValueError("program '%s' not found; available programs are: %r"
+                     % (program_name, found_programs))
 
 def _run_argv(argv):
     env = Params.g_build.env_of_name('default')
@@ -142,6 +176,9 @@ def _run_argv(argv):
     elif sys.platform == 'win32':
         pathvar = 'PATH'
         pathsep = ';'
+    elif sys.platform == 'cygwin':
+        pathvar = 'PATH'
+        pathsep = ':'
     else:
         Params.warning(("Don't know how to configure "
                         "dynamic library path for the platform '%s'") % (sys.platform,))
@@ -167,8 +204,8 @@ def run_program(program_string):
 
     try:
         program_obj = _find_program(program_name)
-    except ValueError:
-        Params.fatal("progam '%s' not found" % (program_name,))
+    except ValueError, ex:
+        Params.fatal(str(ex))
 
     try:
         program_node, = program_obj.m_linktask.m_outputs

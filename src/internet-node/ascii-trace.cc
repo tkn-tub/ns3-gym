@@ -46,12 +46,14 @@ AsciiTrace::~AsciiTrace ()
 void
 AsciiTrace::TraceAllQueues (void)
 {
+  Packet::EnableMetadata ();
   TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/*",
                       MakeCallback (&AsciiTrace::LogDevQueue, this));
 }
 void
 AsciiTrace::TraceAllNetDeviceRx (void)
 {
+  Packet::EnableMetadata ();
   TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/rx",
                       MakeCallback (&AsciiTrace::LogDevRx, this));
 }
@@ -115,7 +117,7 @@ AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
   context.Get (interfaceIndex);
   m_os << "interface=" << interfaceIndex << " ";
   m_os << "pkt-uid=" << packet.GetUid () << " ";
-  PrintType (packet);
+  packet.Print (m_os);
   m_os << std::endl;
 }
 void 
@@ -129,7 +131,7 @@ AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
   context.Get (interfaceIndex);
   m_os << "interface=" << interfaceIndex << " ";
   m_os << "pkt-uid=" << p.GetUid () << " ";
-  PrintType (p);
+  p.Print (m_os);
   m_os << std::endl;  
 }
 

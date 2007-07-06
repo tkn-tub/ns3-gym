@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "packet.h"
+#include "packet-printer.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
@@ -27,20 +28,20 @@ uint32_t Packet::m_globalUid = 0;
 
 Packet::Packet ()
   : m_buffer (),
-    m_uid (m_globalUid)
+    m_metadata (m_globalUid, 0)
 {
   m_globalUid++;
 }
 
 Packet::Packet (uint32_t size)
   : m_buffer (size),
-    m_uid (m_globalUid)
+    m_metadata (m_globalUid, size)
 {
   m_globalUid++;
 }
 Packet::Packet (uint8_t const*buffer, uint32_t size)
   : m_buffer (),
-    m_uid (m_globalUid)
+    m_metadata (m_globalUid, size)
 {
   m_globalUid++;
   m_buffer.AddAtStart (size);
@@ -48,17 +49,20 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
   i.Write (buffer, size);
 }
 
-Packet::Packet (Buffer buffer, Tags tags, uint32_t uid)
+Packet::Packet (Buffer buffer, Tags tags, PacketMetadata metadata)
   : m_buffer (buffer),
     m_tags (tags),
-    m_uid (uid)
+    m_metadata (metadata)
 {}
 
 Packet 
 Packet::CreateFragment (uint32_t start, uint32_t length) const
 {
   Buffer buffer = m_buffer.CreateFragment (start, length);
-  return Packet (buffer, m_tags, m_uid);
+  NS_ASSERT (m_buffer.GetSize () >= start + length);
+  uint32_t end = m_buffer.GetSize () - (start + length);
+  PacketMetadata metadata = m_metadata.CreateFragment (start, end);
+  return Packet (buffer, m_tags, metadata);
 }
 
 uint32_t 
@@ -70,6 +74,9 @@ Packet::GetSize (void) const
 void 
 Packet::AddAtEnd (Packet packet)
 {
+  packet.m_buffer.TransformIntoRealBuffer ();
+  m_buffer.TransformIntoRealBuffer ();
+
   Buffer src = packet.m_buffer;
   m_buffer.AddAtEnd (src.GetSize ());
   Buffer::Iterator destStart = m_buffer.End ();
@@ -79,21 +86,25 @@ Packet::AddAtEnd (Packet packet)
    * XXX: we might need to merge the tag list of the
    * other packet into the current packet.
    */
+  m_metadata.AddAtEnd (packet.m_metadata);
 }
 void
 Packet::AddPaddingAtEnd (uint32_t size)
 {
   m_buffer.AddAtEnd (size);
+  m_metadata.AddPaddingAtEnd (size);
 }
 void 
 Packet::RemoveAtEnd (uint32_t size)
 {
   m_buffer.RemoveAtEnd (size);
+  m_metadata.RemoveAtEnd (size);
 }
 void 
 Packet::RemoveAtStart (uint32_t size)
 {
   m_buffer.RemoveAtStart (size);
+  m_metadata.RemoveAtStart (size);
 }
 
 void 
@@ -111,12 +122,26 @@ Packet::PeekData (void) const
 uint32_t 
 Packet::GetUid (void) const
 {
-  return m_uid;
+  return m_metadata.GetUid ();
 }
 
 void 
 Packet::Print (std::ostream &os) const
-{}
+{
+  m_metadata.PrintDefault (os, m_buffer);
+}
+
+void 
+Packet::Print (std::ostream &os, const PacketPrinter &printer) const
+{
+  m_metadata.Print (os, m_buffer, printer);
+}
+
+void
+Packet::EnableMetadata (void)
+{
+  PacketMetadata::Enable ();
+}
 
 }; // namespace ns3
 

@@ -140,6 +140,7 @@ public:
   bool IsChecksumOk (void) const;
 
 private:
+  virtual std::string DoGetName (void) const;
   virtual void PrintTo (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void SerializeTo (Buffer::Iterator start) const;

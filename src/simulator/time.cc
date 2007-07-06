@@ -191,7 +191,28 @@ TimeUnit<1>::GetTimeStep (void) const
 std::ostream& 
 operator<< (std::ostream& os, Time const& time)
 {
-  os << time.GetTimeStep () << "ts";
+  std::string unit;
+  switch (TimeStepPrecision::Get ()) {
+  case TimeStepPrecision::S:
+    unit = "s";
+    break;
+  case TimeStepPrecision::MS:
+    unit = "ms";
+    break;
+  case TimeStepPrecision::US:
+    unit = "us";
+    break;
+  case TimeStepPrecision::NS:
+    unit = "ns";
+    break;
+  case TimeStepPrecision::PS:
+    unit = "ps";
+    break;
+  case TimeStepPrecision::FS:
+    unit = "fs";
+    break;
+  }
+  os << time.GetTimeStep () << unit;
   return os;
 }
 

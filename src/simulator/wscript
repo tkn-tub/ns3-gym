@@ -7,7 +7,9 @@ import Params
 def set_options(opt):
     opt.add_option('--high-precision-as-double',
                    help=('Whether to use a double floating point'
-                         ' type for high precision time values'),
+                         ' type for high precision time values'
+                         ' WARNING: this option only has effect '
+                         'with the configure command.'),
                    action="store_true", default=False,
                    dest='high_precision_as_double')
 

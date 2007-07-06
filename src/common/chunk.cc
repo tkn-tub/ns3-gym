@@ -30,6 +30,11 @@ Chunk::Chunk ()
 Chunk::~Chunk ()
 {}
 
+std::string
+Chunk::GetName (void) const
+{
+  return DoGetName ();
+}
 void 
 Chunk::Print (std::ostream &os) const
 {
