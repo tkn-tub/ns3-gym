@@ -15,6 +15,7 @@ public:
   void SetData (uint16_t data);
   uint16_t GetData (void) const;
 private:
+  virtual std::string DoGetName (void) const;
   virtual void PrintTo (std::ostream &os) const;
   virtual void SerializeTo (Buffer::Iterator start) const;
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
@@ -27,6 +28,11 @@ MyHeader::MyHeader ()
 {}
 MyHeader::~MyHeader ()
 {}
+std::string 
+MyHeader::DoGetName (void) const
+{
+  return "MyHeader";
+}
 void 
 MyHeader::PrintTo (std::ostream &os) const
 {

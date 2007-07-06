@@ -33,11 +33,13 @@ public:
   Chunk ();
   virtual ~Chunk ();
 
+  std::string GetName (void) const;
   void Print (std::ostream &os) const;
   uint32_t GetSize (void) const;
   void Serialize (Buffer::Iterator start) const;
   uint32_t Deserialize (Buffer::Iterator start);
 private:
+  virtual std::string DoGetName (void) const = 0;
   virtual void PrintTo (std::ostream &os) const = 0;
   virtual uint32_t GetSerializedSize (void) const = 0;
   virtual void SerializeTo (Buffer::Iterator i) const = 0;

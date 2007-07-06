@@ -28,17 +28,6 @@ NS_DEBUG_COMPONENT_DEFINE ("Ipv4Header");
 
 namespace ns3 {
 
-static uint16_t 
-UtilsNtoh16 (uint16_t v)
-{
-  uint16_t val;
-  uint8_t *array;
-  array = (uint8_t *)&v;
-  val = (array[0] << 8) | (array[1] << 0);
-  return val;
-}
-
-
 bool Ipv4Header::m_calcChecksum = false;
 
 Ipv4Header::Ipv4Header ()
@@ -190,21 +179,48 @@ Ipv4Header::IsChecksumOk (void) const
   return m_goodChecksum;
 }
 
+std::string 
+Ipv4Header::DoGetName (void) const
+{
+  return "IPV4";
+}
+
 void 
 Ipv4Header::PrintTo (std::ostream &os) const
 {
   // ipv4, right ?
-  os << "(ipv4)"
-     << " tos=" << (uint32_t)m_tos
-     << ", payload length=" << UtilsNtoh16 (m_payloadSize)
-     << ", id=" << m_identification
-     << ", " << (IsLastFragment ()?"last":"more")
-     << ", " << (IsDontFragment ()?"dont":"may")
-     << ", frag offset=" << m_fragmentOffset
-     << ", ttl=" << m_ttl
-     << ", protocol=" << m_protocol
-     << ", source=" << m_source
-     << ", destination=" << m_destination;
+  std::string flags;
+  if (m_flags == 0)
+    {
+      flags = "none";
+    }
+  else if (m_flags & MORE_FRAGMENTS &&
+           m_flags & DONT_FRAGMENT)
+    {
+      flags = "MF|DF";
+    }
+  else if (m_flags & DONT_FRAGMENT)
+    {
+      flags = "DF";
+    }
+  else if (m_flags & MORE_FRAGMENTS)
+    {
+      flags = "MF";
+    }
+  else
+    {
+      flags = "XX";
+    }
+  os << "("
+     << "tos 0x" << std::hex << m_tos << std::dec << " "
+     << "ttl " << m_ttl << " "
+     << "id " << m_identification << " "
+     << "offset " << m_fragmentOffset << " "
+     << "flags [" << flags << "] "
+     << "length: " << (m_payloadSize + 5 * 4)
+     << ") "
+     << m_source << " > " << m_destination
+    ;
 }
 uint32_t 
 Ipv4Header::GetSerializedSize (void) const

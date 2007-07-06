@@ -320,6 +320,8 @@ public:
    */
   inline Buffer::Iterator End (void) const;
 
+  void TransformIntoRealBuffer (void) const;
+
   inline Buffer (Buffer const &o);
   inline Buffer &operator = (Buffer const &o);
   inline Buffer ();
@@ -337,7 +339,6 @@ private:
   typedef std::vector<struct Buffer::BufferData*> BufferDataList;
 
   inline uint8_t *GetStart (void) const;
-  void TransformIntoRealBuffer (void) const;
   static void Recycle (struct Buffer::BufferData *data);
   static struct Buffer::BufferData *Create (void);
   static struct Buffer::BufferData *Allocate (uint32_t size, uint32_t start);
@@ -543,6 +544,8 @@ Buffer::Iterator::Write (Iterator start, Iterator end)
 {
   NS_ASSERT (start.m_data == end.m_data);
   NS_ASSERT (start.m_current <= end.m_current);
+  NS_ASSERT (start.m_zeroStart == end.m_zeroStart);
+  NS_ASSERT (start.m_zeroEnd == end.m_zeroEnd);
   NS_ASSERT (m_data != start.m_data);
   uint32_t size = end.m_current - start.m_current;
   uint8_t *src = start.m_data + start.GetIndex (size);

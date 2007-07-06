@@ -42,8 +42,25 @@ public:
   virtual ~Header ();
 private:
   /**
+   * \returns a user-readable name to identify this type of header.
+   *
+   * The string returned is expected to be a single word with 
+   * all capital letters
+   */
+  virtual std::string DoGetName (void) const = 0;
+  /**
    * \param os the std output stream in which this 
    *       protocol header must print itself.
+   *
+   * Although the header is free to format its output as it
+   * wishes, it is recommended to follow a few rules to integrate
+   * with the packet pretty printer:
+   *   - start with flags, small field values located between a
+   *     pair of parens. Values should be separated by whitespace.
+   *   - follow the parens with the important fields, separated by
+   *     whitespace.
+   * i.e.:
+   * (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
    */
   virtual void PrintTo (std::ostream &os) const = 0;
 
