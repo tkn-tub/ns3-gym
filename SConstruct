@@ -1,7 +1,5 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
-#
-
 import os.path
 import build
 
@@ -46,8 +44,6 @@ for wscript in [
     ns3.add_extra_dist(wscript)
 ns3.add_extra_dist('waf')
 ns3.add_extra_dist('waf.bat')
-
-
 
 #
 # The Core module
@@ -115,7 +111,7 @@ def config_core (env, config):
 core.add_config (config_core)
 
 #
-# The Simu module
+# The Simulator module
 #
 simu = build.Ns3Module('simulator', 'src/simulator')
 ns3.add(simu)
@@ -178,7 +174,6 @@ def config_simulator (env, config):
     return retval
 simu.add_config (config_simulator)
     
-
 #
 # The Common module
 #
@@ -226,6 +221,9 @@ common.add_inst_headers([
     'data-rate.h',
     ])
 
+#
+# The Node module
+#
 node = build.Ns3Module ('node', 'src/node')
 ns3.add (node)
 node.add_deps (['core', 'common', 'simulator'])
@@ -264,6 +262,9 @@ node.add_inst_headers ([
     'application.h',
     ])
 
+#
+# The Applications module
+#
 applications = build.Ns3Module ('applications', 'src/applications')
 ns3.add (applications)
 applications.add_deps (['node'])
@@ -274,6 +275,9 @@ applications.add_inst_headers ([
     'onoff-application.h',
 ])
 
+#
+# The Internet Node module
+#
 inode = build.Ns3Module ('internet-node', 'src/internet-node')
 ns3.add (inode)
 inode.add_deps (['node'])
@@ -339,8 +343,9 @@ inode.add_inst_headers ([
     'pcap-trace.h',
 ])
 
-
-
+#
+# The Point-to-point module
+#
 p2p = build.Ns3Module ('p2p', 'src/devices/p2p')
 ns3.add (p2p)
 p2p.add_deps (['node'])
@@ -355,6 +360,22 @@ p2p.add_inst_headers ([
     'p2p-topology.h',
     ])
 
+#
+# The Routing module
+#
+routing = build.Ns3Module('routing', 'src/routing')
+routing.add_deps(['core'])
+ns3.add(routing)
+routing.add_sources([
+    'routing-environment.cc',
+    'static-router.cc',
+    ])
+routing.add_headers ([
+    ])
+routing.add_inst_headers([
+    'routing-environment.h',
+    'static-router.h',
+    ])
 
 # utils
 run_tests = build.Ns3Module('run-tests', 'utils')
@@ -441,7 +462,7 @@ sample_test.add_source('main-test.cc')
 sample_simple = build.Ns3Module('sample-simple', 'samples')
 sample_simple.set_executable()
 ns3.add(sample_simple)
-sample_simple.add_deps(['core', 'simulator', 'node', 'internet-node'])
+sample_simple.add_deps(['core', 'simulator', 'node', 'internet-node', 'routing'])
 sample_simple.add_source('main-simple.cc')
 
 sample_sp2p = build.Ns3Module('sample-simple-p2p', 'samples')
@@ -472,13 +493,13 @@ sample_component_manager.add_source('main-component-manager.cc')
 example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')
 example_simple_p2p.set_executable()
 ns3.add(example_simple_p2p)
-example_simple_p2p.add_deps(['core', 'simulator', 'node', 'p2p', 'internet-node', 'applications'])
+example_simple_p2p.add_deps(['core', 'simulator', 'node', 'p2p', 'internet-node', 'applications', 'routing'])
 example_simple_p2p.add_source('simple-p2p.cc')
 
 example_static_routing = build.Ns3Module('simple-static-routing', 'examples')
 example_static_routing.set_executable()
 ns3.add(example_static_routing)
-example_static_routing.add_deps(['core', 'simulator', 'node', 'p2p', 'internet-node', 'applications'])
+example_static_routing.add_deps(['core', 'simulator', 'node', 'p2p', 'internet-node', 'applications', 'routing'])
 example_static_routing.add_source('simple-static-routing.cc')
 
 ns3.generate_dependencies()
