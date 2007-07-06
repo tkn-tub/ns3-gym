@@ -63,6 +63,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/p2p-topology.h"
 #include "ns3/onoff-application.h"
+#include "ns3/static-route-manager.h"
 
 using namespace ns3;
 
@@ -135,6 +136,10 @@ int main (int argc, char *argv[])
       channel2, n2, Ipv4Address("10.1.3.1"),
       n3, Ipv4Address("10.1.3.2"));
 
+  // Here, we will use the StaticRoutingManager to build routes
+  Ptr<StaticRouteManager> route_manager = Create<StaticRouteManager> ();
+
+  // XXX this goes away once static routing is in place
   // Finally, we add static routes.  These three steps (Channel and
   // NetDevice creation, IP Address assignment, and routing) are 
   // separated because there may be a need to postpone IP Address

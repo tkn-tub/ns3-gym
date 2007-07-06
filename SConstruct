@@ -373,12 +373,14 @@ ns3.add(routing)
 routing.add_sources([
     'routing-environment.cc',
     'static-router.cc',
+    'static-route-manager.cc',
     ])
 routing.add_headers ([
     ])
 routing.add_inst_headers([
     'routing-environment.h',
     'static-router.h',
+    'static-route-manager.h',
     ])
 
 # utils
