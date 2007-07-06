@@ -284,7 +284,7 @@ applications.add_inst_headers ([
 #
 inode = build.Ns3Module ('internet-node', 'src/internet-node')
 ns3.add (inode)
-inode.add_deps (['node'])
+inode.add_deps (['node', 'routing'])
 inode.add_sources ([
     'internet-node.cc',
     'l3-demux.cc',
