@@ -23,6 +23,8 @@
 
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/net-device.h"
+#include "ns3/routing-environment.h"
+#include "ns3/static-router.h"
 
 #include "l3-demux.h"
 #include "ipv4-l4-demux.h"
@@ -36,7 +38,6 @@
 #include "ipv4-private.h"
 
 namespace ns3 {
-
 
 InternetNode::InternetNode()
 {
@@ -76,8 +77,18 @@ InternetNode::Construct (void)
   Object::AddInterface (udpImpl);
   Object::AddInterface (l3Demux);
   Object::AddInterface (ipv4L4Demux);
+//
+// If static routing has been enabled via bind(), all nodes will have the
+// capacity to participate in the global static routing scheme.  The presence
+// of the StaticRouter interface tells the route manager that it needs to 
+// ask a given node about any link state records that it may want to advertise.
+//
+  if (RoutingEnvironment::StaticRoutingEnabled())
+    {
+      Ptr<StaticRouter> staticRouter = Create<StaticRouter> (this);
+      Object::AddInterface (staticRouter);
+    }
 }
-
 
 TraceResolver *
 InternetNode::DoCreateTraceResolver (TraceContext const &context)
