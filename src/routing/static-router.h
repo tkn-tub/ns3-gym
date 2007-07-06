@@ -23,16 +23,15 @@
 
 namespace ns3 {
 
-//  
-// Roughly equivalent to a static incarnation of the OSPF link state header
-// combined with a single Router-LSA Link Record.  Since it's static, there's
-// no need for age or sequence number.
-//
-
+/**
+ * \brief A single link record for a link state advertisement
+ *
+ */
 class StaticRouterLinkRecord
 {
 public:
-  IpV4Address   m_originator;           // Router ID of this router
+  uint32_t m_linkId;
+  Ipv4Address m_linkData;
 
   enum LinkType {
     PointToPoint = 1,
@@ -40,44 +39,56 @@ public:
     StubNetwork,
     VirtualLink
   };
+  
+  uint32_t m_metric;
+}
 
-  LinkType      m_linkType;             // What kind of link this is
+/**  
+ * \brief a Link State Advertisement (LSA) for a router, used in static routing
+ * 
+ * Roughly equivalent to a static incarnation of the OSPF link state header
+ * combined with a list of Link Records.  Since it's static, there's
+ * no need for age or sequence number.  See RFC 2328, Appendix A.
+ */
+class StaticRouterLSA
+{
+public:
+  enum LSType {
+    RouterLSA = 1,
+    NetworkLSA
+  } m_LSType;
+  uint32_t  m_linkStateId;
+  Ipv4Address m_advertising_rtr;
+  uint32_t m_numLinks;
 
-  Ipv4Address   m_linkId;               // Neighbor's router ID
-
-  union {
-    uint32_t    m_interfaceIndex;       // For unnumbered links
-    uint32_t    m_networkMask;          // For Stub Network (self)
-  } u;
-
-  uint32_t      m_metric;               // Abstract cost of sending packets
+  typedef std::list<StaticRouterLinkRecord> type_listOfLinkRecords;
+  type_listOfLinkRecords m_listOfLinkRecords;
+  type_listOfLinkRecords::iterator m_iter;
 };
 
-//  
-// An interface aggregated to a node that provides static routing information
-// to a global route manager.  The presence of the interface indicates that
-// the node is a router.  The interface is the mechanism by which the router
-// advertises its connections to neighboring routers.  We're basically 
-// allowing the route manager to query for link state advertisements.
-//
-
+/**
+ * \brief An interface aggregated to a node to provide static routing info
+ *
+ * An interface aggregated to a node that provides static routing information
+ * to a global route manager.  The presence of the interface indicates that
+ * the node is a router.  The interface is the mechanism by which the router
+ * advertises its connections to neighboring routers.  We're basically 
+ * allowing the route manager to query for link state advertisements.
+ */
 class StaticRouter : public Object
 {
 public:
   static const InterfaceId iid;
-  StaticRouter ();
+  StaticRouter (Ptr<Node> node);
 
-  void SetRouterId (IpV4Address routerId);
-
-  uint32_t GetNumLinkRecords (void);
-  bool GetLinkRecord (uint32_t n, StaticRouterLinkRecord &lsa);
+  uint32_t GetNumLSAs (void);
+  bool GetLSA (uint32_t n, StaticRouterLSA &lsa);
 
 protected:
   virtual ~StaticRouter ();
 
-  IpV4Address   m_routerId;             // Router ID of this router
-
 private:
+  Ptr<Node> m_node;
 };
 
 } // namespace ns3
