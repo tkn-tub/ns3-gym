@@ -137,7 +137,11 @@ int main (int argc, char *argv[])
       n3, Ipv4Address("10.1.3.2"));
 
   // Here, we will use the StaticRoutingManager to build routes
-  Ptr<StaticRouteManager> route_manager = Create<StaticRouteManager> ();
+  Ptr<StaticRouteManager> routeManager = Create<StaticRouteManager> ();
+  // The below functions might better be placed in some kind of
+  // Simulator::Initialization function (for further study)
+  routeManager->BuildStaticRoutingDatabase ();
+  routeManager->InitializeRoutes ();
 
   // XXX this goes away once static routing is in place
   // Finally, we add static routes.  These three steps (Channel and
