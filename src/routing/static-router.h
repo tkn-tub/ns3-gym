@@ -26,21 +26,34 @@ namespace ns3 {
 /**
  * \brief A single link record for a link state advertisement
  *
+ * For Type 3 link (Stub), 
  */
 class StaticRouterLinkRecord
 {
 public:
-  uint32_t m_linkId;
-  Ipv4Address m_linkData;
+  //
+  // For Type 1 link (PointToPoint), set m_linkId to Router ID of 
+  // neighboring router.
+  // 
+  // For Type 3 link (Stub), set m_linkId to neighbor's IP address
+  //  
+  Ipv4Address m_linkId;         
+
+  //
+  // For Type 1 link (PointToPoint), set m_linkData to local IP address  
+  // 
+  // For Type 3 link (Stub), set m_linkData to mask 0xffffffff
+  //
+  Ipv4Address m_linkData;    // for links to RouterLSA, 
 
   enum LinkType {
     PointToPoint = 1,
     TransitNetwork,
     StubNetwork,
     VirtualLink
-  };
+  } m_linkType;
   
-  uint32_t m_metric;
+  uint32_t m_metric;  
 }
 
 /**  
@@ -53,14 +66,10 @@ public:
 class StaticRouterLSA
 {
 public:
-  enum LSType {
-    RouterLSA = 1,
-    NetworkLSA
-  } m_LSType;
-  uint32_t  m_linkStateId;
-  Ipv4Address m_advertising_rtr;
-  uint32_t m_numLinks;
+  Ipv4Address  m_linkStateId;     // set to the NodeId
+  Ipv4Address  m_advertising_rtr;  // set to the NodeId
 
+  uint32_t m_numLinks;
   typedef std::list<StaticRouterLinkRecord> type_listOfLinkRecords;
   type_listOfLinkRecords m_listOfLinkRecords;
   type_listOfLinkRecords::iterator m_iter;
