@@ -88,6 +88,11 @@ int main (int argc, char *argv[])
   // instantiate, when the queue factory is invoked in the topology code
   Bind ("Queue", "DropTailQueue");
 
+  // This bind tells the system to use global static routing.  It results in
+  // a StaticRouter interface being aggregated to the internet nodes and the
+  // creation of a Route Manager component to oversee the route generation.
+  Bind ("DoStaticRouting", "true");
+
   Bind ("OnOffApplicationPacketSize", "210");
   Bind ("OnOffApplicationDataRate", "448kb/s");
 
