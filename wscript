@@ -8,6 +8,7 @@ import Params
 import Object
 import pproc as subprocess
 import optparse
+import os.path
 
 Params.g_autoconfig = 1
 
@@ -154,11 +155,18 @@ def shutdown():
     if Params.g_options.run:
         run_program(Params.g_options.run)
 
-def _find_program(program_name):
+def _find_program(program_name, env):
+    launch_dir = os.path.abspath(Params.g_cwd_launch)
     found_programs = []
     for obj in Object.g_allobjs:
         if obj.m_type != 'program' or not obj.target:
             continue
+
+        ## filter out programs not in the subtree starting at the launch dir
+        if not (obj.path.abspath().startswith(launch_dir)
+                or obj.path.abspath(env).startswith(launch_dir)):
+            continue
+        
         found_programs.append(obj.target)
         if obj.target == program_name:
             return obj
@@ -203,7 +211,7 @@ def run_program(program_string):
     program_name = argv[0]
 
     try:
-        program_obj = _find_program(program_name)
+        program_obj = _find_program(program_name, env)
     except ValueError, ex:
         Params.fatal(str(ex))
 
