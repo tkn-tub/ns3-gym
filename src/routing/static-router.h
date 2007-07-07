@@ -20,6 +20,7 @@
 #include <list>
 #include "ns3/object.h"
 #include "ns3/ptr.h"
+#include "ns3/node.h"
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {
