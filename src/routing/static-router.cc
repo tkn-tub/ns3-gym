@@ -22,8 +22,8 @@ NS_DEBUG_COMPONENT_DEFINE ("StaticRouter");
 
 namespace ns3 {
 
-StaticRouterLSA::StaticRouterLSA () : m_linkStateId(0x66666666), 
-  m_advertisingRtr(0x66666666), m_numLinks(0)
+StaticRouterLSA::StaticRouterLSA () : 
+  m_linkStateId(0x66666666), m_advertisingRtr(0x66666666)
 {
   NS_DEBUG("StaticRouterLSA::StaticRouterLSA ()");
 }
