@@ -33,7 +33,6 @@ StaticRouterLSA::~StaticRouterLSA ()
   for (m_iter = m_listOfLinkRecords.begin(); 
     m_iter != m_listOfLinkRecords.end(); m_iter++)
   {
-    NS_DEBUG_UNCOND("Deleting");
     StaticRouterLinkRecord* temp = *m_iter;
     delete temp;
   }
