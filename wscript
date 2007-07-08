@@ -221,7 +221,13 @@ def run_program(program_string):
         Params.fatal("%s does not appear to be a program" % (program_name,))
 
     execvec = [program_node.abspath(env)] + argv[1:]
-    return _run_argv(execvec)
+
+    former_cwd = os.getcwd()
+    os.chdir(Params.g_cwd_launch)
+    try:
+        return _run_argv(execvec)
+    finally:
+        os.chdir(former_cwd)
 
 
 def run_shell():
