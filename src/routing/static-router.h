@@ -68,13 +68,17 @@ public:
 class StaticRouterLSA
 {
 public:
+  StaticRouterLSA();
+  virtual ~StaticRouterLSA ();
+public:
   Ipv4Address  m_linkStateId;     // set to the NodeId
-  Ipv4Address  m_advertising_rtr;  // set to the NodeId
+  Ipv4Address  m_advertisingRtr;  // set to the NodeId
 
   uint32_t m_numLinks;
-  typedef std::list<StaticRouterLinkRecord> type_listOfLinkRecords;
+  typedef std::list<StaticRouterLinkRecord*> type_listOfLinkRecords;
   type_listOfLinkRecords m_listOfLinkRecords;
   type_listOfLinkRecords::iterator m_iter;
+  uint32_t Add (StaticRouterLinkRecord* lr);
 };
 
 /**

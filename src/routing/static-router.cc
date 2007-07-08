@@ -22,6 +22,30 @@ NS_DEBUG_COMPONENT_DEFINE ("StaticRouter");
 
 namespace ns3 {
 
+StaticRouterLSA::StaticRouterLSA () : m_linkStateId(0x66666666), 
+  m_advertisingRtr(0x66666666), m_numLinks(0)
+{
+  NS_DEBUG("StaticRouterLSA::StaticRouterLSA ()");
+}
+StaticRouterLSA::~StaticRouterLSA ()
+{
+  NS_DEBUG("StaticRouterLSA::~StaticRouterLSA ()");
+  for (m_iter = m_listOfLinkRecords.begin(); 
+    m_iter != m_listOfLinkRecords.end(); m_iter++)
+  {
+    NS_DEBUG_UNCOND("Deleting");
+    StaticRouterLinkRecord* temp = *m_iter;
+    delete temp;
+  }
+}
+
+uint32_t
+StaticRouterLSA::Add (StaticRouterLinkRecord* lr)
+{
+  m_listOfLinkRecords.push_back (lr);
+  return m_listOfLinkRecords.size ();
+}
+
 const InterfaceId StaticRouter::iid = 
   MakeInterfaceId ("StaticRouter", Object::iid);
 
