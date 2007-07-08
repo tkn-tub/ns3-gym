@@ -368,7 +368,7 @@ p2p.add_inst_headers ([
 # The Routing module
 #
 routing = build.Ns3Module('routing', 'src/routing')
-routing.add_deps(['core'])
+routing.add_deps(['core', 'node'])
 ns3.add(routing)
 routing.add_sources([
     'routing-environment.cc',
@@ -387,7 +387,7 @@ routing.add_inst_headers([
 run_tests = build.Ns3Module('run-tests', 'utils')
 ns3.add(run_tests)
 run_tests.set_executable()
-run_tests.add_deps(['core', 'simulator', 'common'])
+run_tests.add_deps(['core', 'simulator', 'common', 'routing'])
 run_tests.add_source('run-tests.cc')
 
 bench_object = build.Ns3Module('bench-object', 'utils')
