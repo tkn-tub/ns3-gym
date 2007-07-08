@@ -50,6 +50,22 @@ public:
   Ipv4Address (char const *address);
   
   /**
+   * input address is in host order.
+   * \param address The host order 32-bit address
+   */
+  void Set (uint32_t address);
+  /** 
+    * \brief Sets an Ipv4Address by parsing a the input C-string
+    *
+    * Input address is in format:
+    * hhh.xxx.xxx.lll
+    * where h is the high byte and l the
+    * low byte
+    * \param address C-string containing the address as described above
+    */
+  void Set (char const *address);
+
+  /**
    * \brief Comparison operation between two Ipv4Addresses
    * \param other address to which to compare this address
    * \return True if the addresses are equal. False otherwise.

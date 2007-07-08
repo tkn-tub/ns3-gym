@@ -135,6 +135,17 @@ Ipv4Address::Ipv4Address (char const *address)
   m_address = AsciiToIpv4Host (address);
 }
 
+void
+Ipv4Address::Set (uint32_t address)
+{
+  m_address = address;
+}
+void
+Ipv4Address::Set (char const *address)
+{
+  m_address = AsciiToIpv4Host (address);
+}
+
 bool 
 Ipv4Address::IsEqual (Ipv4Address other) const
 {
