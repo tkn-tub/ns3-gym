@@ -130,8 +130,8 @@ private:
     if (!(assertion))                                   \
       {                                                 \
         Failure () << __FILE__ << ":" <<__LINE__        \
-                   << ": assertion `" << (assertion)    \
-                   << "'failed." << std::endl;          \
+                   << ": assertion `" << #assertion     \
+                   << "' failed." << std::endl;         \
         result = false;                                 \
       }
 
