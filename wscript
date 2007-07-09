@@ -21,8 +21,8 @@ srcdir = '.'
 blddir = 'build'
 
 def dist_hook(srcdir, blddir):
-    shutil.rmtree("doc/html")
-    shutil.rmtree("doc/latex")
+    shutil.rmtree("doc/html", True)
+    shutil.rmtree("doc/latex", True)
 
 def set_options(opt):
 
