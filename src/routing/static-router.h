@@ -21,6 +21,7 @@
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/node.h"
+#include "ns3/channel.h"
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {
@@ -69,16 +70,15 @@ class StaticRouterLSA
 {
 public:
   StaticRouterLSA();
-  virtual ~StaticRouterLSA ();
-  uint32_t Add (StaticRouterLinkRecord* lr);
+  ~StaticRouterLSA();
 
-public:
+  uint32_t AddLinkRecord (StaticRouterLinkRecord* lr);
+
   Ipv4Address  m_linkStateId;     // set to the NodeId
   Ipv4Address  m_advertisingRtr;  // set to the NodeId
 
-  typedef std::list<StaticRouterLinkRecord*> type_listOfLinkRecords;
-  type_listOfLinkRecords m_listOfLinkRecords;
-  type_listOfLinkRecords::iterator m_iter;
+  typedef std::list<StaticRouterLinkRecord*> ListOfLinkRecords_t;
+  ListOfLinkRecords_t m_linkRecords;
 };
 
 /**
@@ -102,8 +102,12 @@ public:
 protected:
   virtual ~StaticRouter ();
 
+  Ptr<Node>     m_node;
+  uint32_t      m_numLSAs;
+
+  Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch);
+
 private:
-  Ptr<Node> m_node;
 };
 
 } // namespace ns3

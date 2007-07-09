@@ -1,8 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 University of Washington
- * All rights reserved.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -15,8 +12,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Author: Craig Dowell <craigdo@ee.washington.edu>
  */
 
 #include "p2p-channel.h"
@@ -32,6 +27,7 @@ namespace ns3 {
 //
 // By default, you get a channel with the name "PointToPoint Channel" that 
 // has an "infitely" fast transmission speed and zero delay.
+//
 PointToPointChannel::PointToPointChannel()
 : 
   Channel ("PointToPoint Channel"), 
@@ -91,7 +87,7 @@ PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
     }
 }
 
-bool
+  bool
 PointToPointChannel::TransmitStart(Packet& p, Ptr<PointToPointNetDevice> src)
 {
   NS_DEBUG ("PointToPointChannel::TransmitStart (" << &p << ", " << src << 
@@ -116,7 +112,7 @@ PointToPointChannel::TransmitStart(Packet& p, Ptr<PointToPointNetDevice> src)
   return true;
 }
 
-bool
+  bool
 PointToPointChannel::TransmitEnd(Packet& p, Ptr<PointToPointNetDevice> src)
 {
   NS_DEBUG("PointToPointChannel::TransmitEnd (" << &p << ", " << src << ")");
@@ -144,7 +140,7 @@ PointToPointChannel::TransmitEnd(Packet& p, Ptr<PointToPointNetDevice> src)
   return true;
 }
 
-void
+  void
 PointToPointChannel::PropagationCompleteEvent(
   Packet p, 
   Ptr<PointToPointNetDevice> src)
@@ -162,18 +158,23 @@ PointToPointChannel::PropagationCompleteEvent(
   m_link[wire].m_dst->Receive (p);
 }
 
-
-uint32_t 
+  uint32_t 
 PointToPointChannel::GetNDevices (void) const
 {
   return m_nDevices;
 }
 
-Ptr<NetDevice>
+  Ptr<NetDevice>
 PointToPointChannel::GetDevice (uint32_t i) const
 {
   NS_ASSERT(i < 2);
   return m_link[i].m_src;
+}
+
+  Channel::ChannelType 
+PointToPointChannel::GetType (void) const
+{
+  return Channel::PointToPoint;
 }
 
   DataRate
@@ -187,6 +188,5 @@ PointToPointChannel::GetDelay (void)
 {
   return m_delay;
 }
-
 
 } // namespace ns3

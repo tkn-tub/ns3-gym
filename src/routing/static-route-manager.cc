@@ -44,6 +44,13 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
     {
       Ptr<Node> node = *i;
       NS_DEBUG_UNCOND ("node="<< node->GetId () );
+
+      Ptr<StaticRouter> rtr = 
+        node->QueryInterface<StaticRouter> (StaticRouter::iid);
+      NS_ASSERT_MSG(rtr, "QI for <StaticRouter> interface failed");
+
+      uint32_t numLSAs = rtr->GetNumLSAs();
+      NS_DEBUG_UNCOND (numLSAs << "LSAs");
     }
 }
 
@@ -84,6 +91,7 @@ StaticRouteManagerTest::RunTests (void)
 {
   DebugComponentEnable("StaticRouteManager");
   bool ok = true;
+#if 0
   StaticRouterLinkRecord* lr1 = new StaticRouterLinkRecord();
   lr1->m_linkId.Set(1);
   lr1->m_linkData.Set(0xffffffff);
@@ -95,6 +103,7 @@ StaticRouteManagerTest::RunTests (void)
   lsa1->Add(lr1);
   
   delete lsa1;
+#endif
   return ok;
 }
 

@@ -42,6 +42,8 @@
 #include <string>
 #include <cassert>
 
+#include "ns3/debug.h"
+
 #include "ns3/command-line.h"
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
@@ -80,6 +82,7 @@ int main (int argc, char *argv[])
   DebugComponentEnable("PointToPointChannel");
   DebugComponentEnable("PointToPointNetDevice");
 #endif
+  DebugComponentEnable("StaticRouter");
 
   // Set up some default values for the simulation.  Use the Bind()
   // technique to tell the system what subclass of Queue to use,
@@ -151,7 +154,6 @@ int main (int argc, char *argv[])
   PointToPointTopology::AddIpv4Routes(n0, n2, channel0);
   PointToPointTopology::AddIpv4Routes(n1, n2, channel1);
   PointToPointTopology::AddIpv4Routes(n2, n3, channel2);
-
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
