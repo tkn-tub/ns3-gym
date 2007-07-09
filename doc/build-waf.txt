@@ -12,38 +12,52 @@ Gustavo Carneiro (gjcarneiro@gmail.com) is the maintainer.
 === Building with Waf ===
 
 To build ns-3 with waf type the commands:
- 1. ./waf configure [options]
- 2. ./waf
+ 1. waf configure [options]
+ 2. waf
 
-[ Note: if ./waf does not exist, see the section "Note for developers" below ]
+[ Note: if waf does not exist in your path, see the section 
+"Note for developers" below ]
 
-To see valid configure options, type ./waf --help.  The most important
+To see valid configure options, type waf --help.  The most important
 option is -d <debug level>.  Valid debug levels (which are listed in
-./waf --help) are: ultradebug, debug, release, and optimized.
+waf --help) are: ultradebug, debug, release, and optimized.
+
+[ Note:  Unlike some other build tools, to change the build target,
+the option must be supplied during the configure stage rather than
+the build stage (i.e., "waf -d optimized" will not work; instead, do
+"waf -d optimized configure; waf" ]
 
 The resulting binaries are placed in build/<debuglevel>/srcpath.
 
 Other waf usages include:
 
- 1. ./waf check
+ 1. waf check
     Runs the unit tests
 
- 2. ./waf --doxygen
+ 2. waf --doxygen
     Run doxygen to generate documentation
 
- 3. ./waf --lcov-report
+ 3. waf --lcov-report
     Run code coverage analysis (assuming the project was configured
 with --enable-gcov)
 
- 4. ./waf --run "program [args]"
+ 4. waf --run "program [args]"
     Run a ns3 program, given its target name, with the given
     arguments.  This takes care of automatically modifying the the
     path for finding the ns3 dynamic libraries in the environment
     before running the program.  Note: the "program [args]" string is
     parsed using POSIX shell rules.
 
- 5. ./waf --shell
+ 5. waf --shell
     Starts a nested system shell with modified environment to run ns3 programs.
+
+ 6. waf distclean
+    Cleans out the entire build/ directory
+
+ 7. waf dist
+    The command 'waf dist' can be used to create a distribution tarball.
+    It includes all files in the source directory, except some particular
+    extensions that are blacklisted, such as back files (ending in ~).
 
 
 === Extending ns-3 ===
@@ -90,13 +104,9 @@ developers should check it out from a subversion repository:
 tested to work correctly with ns3, although 'trunk' will likely work
  as well ]
 
-Then it can be installed system-wide with 'sudo ./waf-light install'.
+Then it can be installed system-wide with 'sudo waf-light install'.
 When preparing a distribution, the resulting 'waf' script, which is
 self contained (no external files needed), can be easily included in
 the tarball so that users downloading ns-3 can easily build it without
 having Waf installed (although Python >= 2.3 is still needed).
-
-The command 'waf dist' can be used to create a distribution tarball.
-It includes all files in the source directory, except some particular
-extensions that are blacklisted, such as back files (ending in ~).
 
