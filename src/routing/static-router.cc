@@ -55,7 +55,7 @@ StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
 }
 
   StaticRouterLSA&
-StaticRouterLSA::operator= (StaticRouterLSA lsa)
+StaticRouterLSA::operator= (StaticRouterLSA& lsa)
 {
   NS_DEBUG("StaticRouterLSA Operator =");
   NS_ASSERT_MSG(IsEmpty(), "The LSA must be empty before assignment");
@@ -274,7 +274,10 @@ StaticRouter::GetNumLSAs (void)
       Ipv4Mask maskRemote = ipv4Remote->GetNetworkMask(ifIndexRemote);
       NS_DEBUG("Working with remote address " << addrRemote);
 //
-// Now we can fill out the link state advertisement for this link.
+// Now we can fill out the link state advertisement for this link.  There
+// are always two link records; the first is a point-to-point record 
+// describing the link and the second is a stub network record with the 
+// network number.
 //
       StaticRouterLSA *pLSA = new StaticRouterLSA;
       pLSA->m_linkStateId = m_routerId;
@@ -301,11 +304,18 @@ StaticRouter::GetNumLSAs (void)
   return m_LSAs.size ();
 }
 
+//
+// Get the nth link state advertisement from this router.
+//
   bool
 StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa)
 {
   NS_ASSERT_MSG(lsa.IsEmpty(), "Must pass empty LSA");
-
+//
+// All of the work was done in GetNumLSAs.  All we have to do here is to
+// walk the list of link state advertisements created there and return the 
+// one the client is interested in.
+//
   ListOfLSAs_t::iterator i = m_LSAs.begin ();
   uint32_t j = 0;
 
@@ -318,9 +328,14 @@ StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa)
           return true;
         }
     }
+
   return false;
 }
 
+//
+// Link through the given channel and find the net device that's on the
+// other end.  This only makes sense with a point-to-point channel.
+//
   Ptr<NetDevice>
 StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch)
 {
@@ -358,6 +373,10 @@ StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch)
     }
 }
 
+//
+// Given a node and a net device, find the IPV4 interface index that 
+// corresponds to that net device.
+//
   uint32_t
 StaticRouter::FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd)
 {
