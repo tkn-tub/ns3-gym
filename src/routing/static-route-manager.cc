@@ -305,6 +305,28 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
 
 namespace ns3 {
 
+class StaticRouterTestNode : public Node
+{
+public:
+  StaticRouterTestNode();
+
+private:
+  virtual void DoAddDevice (Ptr<NetDevice> device) const {};
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
+};
+
+StaticRouterTestNode::StaticRouterTestNode ()
+{
+//  Ptr<Ipv4L3Protocol> ipv4 = Create<Ipv4L3Protocol> (this);
+}
+
+TraceResolver*
+StaticRouterTestNode::DoCreateTraceResolver (TraceContext const &context)
+{
+  return 0;
+}
+
+
 class StaticRouteManagerTest : public Test {
 public:
   StaticRouteManagerTest ();
@@ -453,6 +475,9 @@ StaticRouteManagerTest::RunTests (void)
   srmlsdb->Insert(lsa2->m_linkStateId, v2);
   srmlsdb->Insert(lsa3->m_linkStateId, v3);
   NS_ASSERT(v2 == srmlsdb->GetVertex(lsa2->m_linkStateId));
+
+  // We need a dummy node to populate the routing tables
+  Ptr<StaticRouterTestNode> n2 = Create<StaticRouterTestNode> ();
 
   // XXX next, calculate routes based on the manually created LSDB
   StaticRouteManager* srm = new StaticRouteManager();
