@@ -106,6 +106,7 @@ protected:
   uint32_t      m_numLSAs;
 
   Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch);
+  uint32_t FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd);
 
 private:
 };

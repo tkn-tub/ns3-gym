@@ -90,8 +90,8 @@ StaticRouter::GetNumLSAs (void)
 // Ipv4 interface.  This is where the information regarding the attached 
 // interfaces lives.
 //
-  Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
-  NS_ASSERT_MSG(ipv4, "QI for <Ipv4> interface failed");
+  Ptr<Ipv4> ipv4Local = m_node->QueryInterface<Ipv4> (Ipv4::iid);
+  NS_ASSERT_MSG(ipv4Local, "QI for <Ipv4> interface failed");
 //
 // Now, we need to ask Ipv4 for the number of interfaces attached to this 
 // node. This isn't necessarily equal to the number of links to adjacent 
@@ -104,45 +104,65 @@ StaticRouter::GetNumLSAs (void)
 // number if we discover a link that's not actually connected to another
 // router.
 //
-  m_numLSAs = ipv4->GetNInterfaces();
-
-  NS_DEBUG("StaticRouter::GetNumLSAs (): m_numLSAs = " << m_numLSAs);
-
-  for (uint32_t i = 0; i < m_numLSAs; ++i)
+  m_numLSAs = 0;
+  uint32_t numDevices = m_node->GetNDevices();
+  NS_DEBUG("StaticRouter::GetNumLSAs (): numDevices = " << numDevices);
+//
+// Loop through the devices looking for those connected to a point-to-point
+// channel.  These are the ones that are used to route packets.
+//
+  for (uint32_t i = 0; i < numDevices; ++i)
     {
-      Ptr<NetDevice> nd = ipv4->GetNetDevice(i);
-      Ptr<Channel> ch = nd->GetChannel();
+      Ptr<NetDevice> nd = m_node->GetDevice(i);
 
       if (!nd->IsPointToPoint ())
         {
           NS_DEBUG("StaticRouter::GetNumLSAs (): non-point-to-point device");
-          --m_numLSAs;
           continue;
         }
 
-      NS_DEBUG("StaticRouter::GetNumLSAs (): point-to-point device");
+      NS_DEBUG("StaticRouter::GetNumLSAs (): Point-to-point device");
 //
-// Find the net device on the other end of the point-to-point channel.  This
-// is where our adjacent router is running.  The adjacent net device is 
-// aggregated to a node.  We need to ask that net device for its node, then
-// ask that node for its Ipv4 interface and then ask the Ipv4 for the IP
-// address.  To do this, we have to get the interface index associated with 
-// that net device in order to find the correct interface on the adjacent node.
+// Now, we have to find the Ipv4 interface whose netdevice is the one we 
+// just found.  This is the IP on the local side of the channel.  There is 
+// a function to do this used down in the guts of the stack, but its not 
+// exported so we had to whip up an equivalent.
 //
-      Ptr<NetDevice> ndAdjacent = GetAdjacent(nd, ch);
-      uint32_t ifIndexAdjacent = ndAdjacent->GetIfIndex();
-      Ptr<Node> nodeAdjacent = ndAdjacent->GetNode();
-      Ptr<Ipv4> ipv4Adjacent = nodeAdjacent->QueryInterface<Ipv4> (Ipv4::iid);
-      NS_ASSERT_MSG(ipv4Adjacent, "QI for adjacent <Ipv4> interface failed");
+      uint32_t ifIndexLocal = FindIfIndexForDevice(m_node, nd);
 //
-// Okay, all of the preliminaries are done.  We can get the IP address and
-// net mask for the adjacent router.
+// Now that we have the Ipv4 interface index, we can get the address and mask
+// we need.
 //
-      Ipv4Address addrAdjacent = ipv4Adjacent->GetAddress(ifIndexAdjacent);
-      Ipv4Mask maskAdjacent = ipv4->GetNetworkMask(ifIndexAdjacent);
-
-      NS_DEBUG("StaticRouter::GetNumLSAs (): Adjacent to " << addrAdjacent <<
-        " & " << maskAdjacent);
+      Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
+      Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+      NS_DEBUG("Working with local address " << addrLocal);
+//
+// Now, we're going to link to the remote net device on the other end of the
+// point-to-point channel we know we have.  This is where our adjacent router
+// (to use OSPF lingo) is running.  
+//
+      Ptr<Channel> ch = nd->GetChannel();
+      Ptr<NetDevice> ndRemote = GetAdjacent(nd, ch);
+//
+// The adjacent net device is aggregated to a node.  We need to ask that net 
+// device for its node, then ask that node for its Ipv4 interface.
+//
+      Ptr<Node> nodeRemote = ndRemote->GetNode();
+      Ptr<Ipv4> ipv4Remote = nodeRemote->QueryInterface<Ipv4> (Ipv4::iid);
+      NS_ASSERT_MSG(ipv4Remote, "QI for remote <Ipv4> interface failed");
+//
+// Now, just like we did above, we need to get the IP interface index for the 
+// net device on the other end of the point-to-point channel.
+//
+      uint32_t ifIndexRemote = FindIfIndexForDevice(nodeRemote, ndRemote);
+//
+// Now that we have the Ipv4 interface, we can get the (remote) address and
+// mask we need.
+//
+      Ipv4Address addrRemote = ipv4Remote->GetAddress(ifIndexRemote);
+      Ipv4Mask maskRemote = ipv4Remote->GetNetworkMask(ifIndexRemote);
+      NS_DEBUG("Working with remote address " << addrRemote);
+      ++m_numLSAs;
     }
 
   return m_numLSAs;
@@ -189,6 +209,23 @@ StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch)
         "Neither channel endpoint thinks it is connected to this net device");
       return 0;
     }
+}
+
+  uint32_t
+StaticRouter::FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd)
+{
+  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+  NS_ASSERT_MSG(ipv4, "QI for <Ipv4> interface failed");
+  for (uint32_t i = 0; i < ipv4->GetNInterfaces(); ++i )
+    {
+      if (ipv4->GetNetDevice(i) == nd) 
+        {
+          return i;
+        }
+    }
+
+  NS_ASSERT_MSG(0, "Cannot find interface for device");
+  return 0;
 }
 
 } // namespace ns3
