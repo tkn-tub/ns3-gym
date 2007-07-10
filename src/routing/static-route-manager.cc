@@ -225,36 +225,23 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
 
   // The SPFVertex objects may have state from a previous computation
   m_lsdb->Initialize();
+  SPFVertex* v;
 
-   // Make a priority queue of int using a vector container
-   //    priority_queue<int, vector<int>, less<int> > pq;
-  //priority_queue<SPFVertex*, vector<SPFVertex*>, less<int> > candidate;
-  /*
- *  struct pqueue* candidate;
- *  struct vertex* v;
- */
+  // Make a priority queue of int using a vector container
+  //    priority_queue<int, vector<int>, less<int> > pq;
+  //
+  //priority_queue<SPFVertex*> candidate;
+  //
   // Initialize the shortest-path tree to only the router doing the 
   // calculation.
   //
+  v= m_lsdb->GetVertex(root);
+  // Set LSA position to LSA_SPF_IN_SPFTREE. This vertex is the root of the
+  // spanning tree. 
+  v->m_distanceFromRoot = 0;
+  v->m_stat = true;
   
 #if 0
-  ospf_spf_init (area);
-  v = area->spf;
-
-
-  /* Create a new heap for the candidates. */
-  candidate = pqueue_create();
-  candidate->cmp = cmp;
-  candidate->update = update_stat;
-
-  /* Set LSA position to LSA_SPF_IN_SPFTREE. This vertex is the root of the
- *    * spanning tree. */
-  *(v->stat) = LSA_SPF_IN_SPFTREE;
-
-  /* Set Area A's TransitCapability to FALSE. */
-  area->transit = OSPF_TRANSIT_FALSE;
-  area->shortcut_capability = 1;
-
   for (;;)
     {
       /* RFC2328 16.1. (2). */
