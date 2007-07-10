@@ -334,8 +334,8 @@ inode.add_headers ([
     'ipv4-end-point-demux.h',
     'ipv4-end-point.h',
     'ipv4-header.h',
-    'udp-header.h',
     'ipv4-interface.h',
+    'udp-header.h',
     'sgi-hashmap.h',
     'udp-impl.h',
 ])
