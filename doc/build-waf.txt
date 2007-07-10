@@ -20,7 +20,9 @@ To build ns-3 with waf type the commands:
 
 To see valid configure options, type waf --help.  The most important
 option is -d <debug level>.  Valid debug levels (which are listed in
-waf --help) are: ultradebug, debug, release, and optimized.
+waf --help) are: ultradebug, debug, release, and optimized.  It is
+also possible to change the flags used for compilation with (e.g.):
+CXXFLAGS="-O3" waf configure.
 
 [ Note:  Unlike some other build tools, to change the build target,
 the option must be supplied during the configure stage rather than
