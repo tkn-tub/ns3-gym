@@ -35,9 +35,6 @@ StaticRouterLSA::StaticRouterLSA()
   NS_DEBUG("StaticRouterLSA::StaticRouterLSA ()");
 }
 
-//
-// Copy constructor for StaticRouterLSA
-//
 StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
   : m_linkStateId(lsa.m_linkStateId), m_advertisingRtr(lsa.m_advertisingRtr)
 {
@@ -57,18 +54,27 @@ StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
     }
 }
 
-//
-// Assignment operator for StaticRouterLSA
-//
-// This uses the non-obvious trick of taking the source LSA passed by
-// value instead of by reference.  This causes the copy constructor to be
-// invoked (where the real work is done -- see above).  All we have to do
-// here is to return the newly constructed LSA.
-//
   StaticRouterLSA&
 StaticRouterLSA::operator= (StaticRouterLSA lsa)
 {
   NS_DEBUG("StaticRouterLSA Operator =");
+  NS_ASSERT_MSG(IsEmpty(), "The LSA must be empty before assignment");
+
+  m_linkStateId = lsa.m_linkStateId;
+  m_advertisingRtr = lsa.m_advertisingRtr;
+
+  for ( ListOfLinkRecords_t::iterator i = lsa.m_linkRecords.begin ();
+        i != lsa.m_linkRecords.end (); 
+        i++)
+    {
+      StaticRouterLinkRecord *pSrc = *i;
+      StaticRouterLinkRecord *pDst = new StaticRouterLinkRecord;
+      pDst->m_linkId = pSrc->m_linkId;
+      pDst->m_linkData = pSrc->m_linkData;
+      m_linkRecords.push_back(pDst);
+      pDst = 0;
+    }
+
   return *this;
 }
 

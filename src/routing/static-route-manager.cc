@@ -92,10 +92,8 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
           StaticRouterLSA lsa;
           rtr->GetLSA(j, lsa);
           NS_DEBUG_UNCOND ("LSA " << j);
-          NS_DEBUG_UNCOND ("----------------------------------------");
-          NS_DEBUG_UNCOND("m_linkStateId = " << lsa.m_linkStateId);
-          NS_DEBUG_UNCOND("m_advertisingRtr = " << lsa.m_advertisingRtr);
-          NS_DEBUG_UNCOND ("----------------------------------------");
+          NS_DEBUG_UNCOND ("----------------------------");
+          NS_DEBUG_UNCOND(lsa);
         }
     }
 }
