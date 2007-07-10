@@ -26,6 +26,8 @@
 
 namespace ns3 {
 
+const uint32_t SPF_INFINITY = 0xffffffff;
+
 /**
  * \brief Vertex used in shortest path first (SPF) computations
  *
@@ -34,10 +36,12 @@ namespace ns3 {
 class SPFVertex
 {
 public:
+  SPFVertex();
   ~SPFVertex();
 
   enum VertexType {
-    VertexRouter = 1,
+    VertexUnknown = 0,
+    VertexRouter,
     VertexNetwork
   } m_vertexType;
 
@@ -51,6 +55,8 @@ public:
   type_listOfSPFVertex::iterator m_iter;
 
   uint32_t m_distanceFromRoot;
+
+  bool m_stat;  // true if LSA is in SPF tree already
 };
 
 /**

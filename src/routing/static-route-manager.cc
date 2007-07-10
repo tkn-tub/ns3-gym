@@ -15,6 +15,7 @@
  */
 #include <utility>
 #include <vector>
+#include <queue>
 #include "ns3/assert.h"
 #include "ns3/fatal-error.h"
 #include "ns3/debug.h"
@@ -25,6 +26,15 @@
 NS_DEBUG_COMPONENT_DEFINE ("StaticRouteManager");
 
 namespace ns3 {
+
+SPFVertex::SPFVertex () : 
+  m_vertexType(VertexUnknown), 
+  m_vertexId("255.255.255.255"), 
+  m_lsa(0),
+  m_distanceFromRoot(SPF_INFINITY), 
+  m_stat(false)
+{
+}
 
 SPFVertex::~SPFVertex ()
 {
@@ -191,6 +201,9 @@ void
 StaticRouteManager::SPFCalculate(Ipv4Address root)
 {
   NS_DEBUG("StaticRouteManager::SPFCalculate ()");
+   // Make a priority queue of int using a vector container
+   //    priority_queue<int, vector<int>, less<int> > pq;
+  //priority_queue<SPFVertex*, vector<SPFVertex*>, less<int> > candidate;
   /*
  *  struct pqueue* candidate;
  *  struct vertex* v;
