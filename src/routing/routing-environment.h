@@ -25,6 +25,7 @@ namespace ns3 {
 namespace RoutingEnvironment {
 
 bool StaticRoutingEnabled(void);
+uint32_t AllocateRouterId(void);
 
 } // namespace RoutingEnvironment
 } // namespace ns3

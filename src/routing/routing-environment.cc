@@ -29,10 +29,17 @@ namespace RoutingEnvironment {
 BooleanDefaultValue g_doStaticRoutingDefaultValue ("DoStaticRouting", 
   "Enable global static routing", false);
 
-    bool
+  bool
 StaticRoutingEnabled(void)
 {
   return g_doStaticRoutingDefaultValue.GetValue();
+}
+
+  uint32_t
+AllocateRouterId(void)
+{
+  static uint32_t routerId = 0;
+  return ++routerId;
 }
 
 } // namespace RoutingEnvironment

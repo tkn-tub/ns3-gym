@@ -81,8 +81,8 @@ int main (int argc, char *argv[])
   DebugComponentEnable("Channel");
   DebugComponentEnable("PointToPointChannel");
   DebugComponentEnable("PointToPointNetDevice");
-#endif
   DebugComponentEnable("StaticRouter");
+#endif
 
   // Set up some default values for the simulation.  Use the Bind()
   // technique to tell the system what subclass of Queue to use,

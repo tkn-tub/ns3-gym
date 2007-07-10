@@ -35,15 +35,57 @@ StaticRouterLSA::StaticRouterLSA()
   NS_DEBUG("StaticRouterLSA::StaticRouterLSA ()");
 }
 
+//
+// Copy constructor for StaticRouterLSA
+//
+StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
+  : m_linkStateId(lsa.m_linkStateId), m_advertisingRtr(lsa.m_advertisingRtr)
+{
+  NS_DEBUG("StaticRouterLSA Copy Constructor");
+  NS_ASSERT_MSG(IsEmpty(), "The LSA must be empty before copy");
+
+  for ( ListOfLinkRecords_t::iterator i = lsa.m_linkRecords.begin ();
+        i != lsa.m_linkRecords.end (); 
+        i++)
+    {
+      StaticRouterLinkRecord *pSrc = *i;
+      StaticRouterLinkRecord *pDst = new StaticRouterLinkRecord;
+      pDst->m_linkId = pSrc->m_linkId;
+      pDst->m_linkData = pSrc->m_linkData;
+      m_linkRecords.push_back(pDst);
+      pDst = 0;
+    }
+}
+
+//
+// Assignment operator for StaticRouterLSA
+//
+// This uses the non-obvious trick of taking the source LSA passed by
+// value instead of by reference.  This causes the copy constructor to be
+// invoked (where the real work is done -- see above).  All we have to do
+// here is to return the newly constructed LSA.
+//
+  StaticRouterLSA&
+StaticRouterLSA::operator= (StaticRouterLSA lsa)
+{
+  NS_DEBUG("StaticRouterLSA Operator =");
+  return *this;
+}
+
 StaticRouterLSA::~StaticRouterLSA()
 {
   NS_DEBUG("StaticRouterLSA::~StaticRouterLSA ()");
+  ClearLinkRecords ();
+}
 
+  void
+StaticRouterLSA::ClearLinkRecords(void)
+{
   for ( ListOfLinkRecords_t::iterator i = m_linkRecords.begin ();
         i != m_linkRecords.end (); 
         i++)
     {
-      NS_DEBUG("StaticRouterLSA::~StaticRouterLSA ():  free link record");
+      NS_DEBUG("StaticRouterLSA::ClearLinkRecords ():  free link record");
 
       StaticRouterLinkRecord *p = *i;
       delete p;
@@ -51,7 +93,7 @@ StaticRouterLSA::~StaticRouterLSA()
 
       *i = 0;
     }
-  NS_DEBUG("StaticRouterLSA::~StaticRouterLSA ():  clear list");
+  NS_DEBUG("StaticRouterLSA::ClearLinkRecords():  clear list");
   m_linkRecords.clear();
 }
 
@@ -62,19 +104,77 @@ StaticRouterLSA::AddLinkRecord (StaticRouterLinkRecord* lr)
   return m_linkRecords.size ();
 }
 
+  bool
+StaticRouterLSA::IsEmpty (void)
+{
+  return m_linkRecords.size () == 0;
+}
+
+  void 
+StaticRouterLSA::Print (std::ostream &os)
+{
+  os << "m_linkStateId = " << m_linkStateId << std::endl <<
+        "m_advertisingRtr = " << m_advertisingRtr << std::endl;
+
+  for ( ListOfLinkRecords_t::iterator i = m_linkRecords.begin ();
+        i != m_linkRecords.end (); 
+        i++)
+    {
+      StaticRouterLinkRecord *p = *i;
+      os << "----------" << std::endl;
+      os << "m_linkId = " << p->m_linkId << std::endl;
+      os << "m_linkData = " << p->m_linkData << std::endl;
+    }
+}
+
+std::ostream& operator<< (std::ostream& os, StaticRouterLSA& lsa)
+{
+  lsa.Print (os);
+  return os;
+}
+
 const InterfaceId StaticRouter::iid = 
   MakeInterfaceId ("StaticRouter", Object::iid);
 
 StaticRouter::StaticRouter (Ptr<Node> node)
-  : m_node(node), m_numLSAs(0)
+  : m_node(node), m_LSAs()
 {
   NS_DEBUG("StaticRouter::StaticRouter ()");
   SetInterfaceId (StaticRouter::iid);
+  m_routerId.Set(RoutingEnvironment::AllocateRouterId());
 }
 
 StaticRouter::~StaticRouter ()
 {
   NS_DEBUG("StaticRouter::~StaticRouter ()");
+  ClearLSAs();
+}
+
+  void
+StaticRouter::ClearLSAs ()
+{
+  NS_DEBUG("StaticRouter::ClearLSAs ()");
+
+  for ( ListOfLSAs_t::iterator i = m_LSAs.begin ();
+        i != m_LSAs.end (); 
+        i++)
+    {
+      NS_DEBUG("StaticRouter::ClearLSAs ():  free LSA");
+
+      StaticRouterLSA *p = *i;
+      delete p;
+      p = 0;
+
+      *i = 0;
+    }
+  NS_DEBUG("StaticRouter::ClearLSAs ():  clear list");
+  m_LSAs.clear();
+}
+
+  Ipv4Address
+  StaticRouter::GetRouterId (void)
+{
+  return m_routerId;
 }
 
 //
@@ -85,6 +185,7 @@ StaticRouter::GetNumLSAs (void)
 {
   NS_DEBUG("StaticRouter::GetNumLSAs ()");
   NS_ASSERT_MSG(m_node, "<Node> interface not set");
+  ClearLSAs ();
 //
 // We're aggregated to a node.  We need to ask the node for a pointer to its
 // Ipv4 interface.  This is where the information regarding the attached 
@@ -93,29 +194,24 @@ StaticRouter::GetNumLSAs (void)
   Ptr<Ipv4> ipv4Local = m_node->QueryInterface<Ipv4> (Ipv4::iid);
   NS_ASSERT_MSG(ipv4Local, "QI for <Ipv4> interface failed");
 //
-// Now, we need to ask Ipv4 for the number of interfaces attached to this 
-// node. This isn't necessarily equal to the number of links to adjacent 
-// nodes (other routers); the number of interfaces may include interfaces
-// connected to stub networks (e.g., ethernets, etc.).  So we have to walk
-// through the list of net devices and see if they are directly connected
-// to another router.
+// We need to ask the node for the number of net devices attached. This isn't
+// necessarily equal to the number of links to adjacent nodes (other routers)
+// as the number of devices may include those for stub networks (e.g., 
+// ethernets, etc.).  So we have to walk through the list of net devices and
+// pay attention to those that are directly connected to another router through
+// a point-to-point channel.
 //
-// We'll start out at the maximum possible number of LSAs and reduce that
-// number if we discover a link that's not actually connected to another
-// router.
-//
-  m_numLSAs = 0;
   uint32_t numDevices = m_node->GetNDevices();
   NS_DEBUG("StaticRouter::GetNumLSAs (): numDevices = " << numDevices);
 //
 // Loop through the devices looking for those connected to a point-to-point
-// channel.  These are the ones that are used to route packets.
+// channel.
 //
   for (uint32_t i = 0; i < numDevices; ++i)
     {
-      Ptr<NetDevice> nd = m_node->GetDevice(i);
+      Ptr<NetDevice> ndLocal = m_node->GetDevice(i);
 
-      if (!nd->IsPointToPoint ())
+      if (!ndLocal->IsPointToPoint ())
         {
           NS_DEBUG("StaticRouter::GetNumLSAs (): non-point-to-point device");
           continue;
@@ -124,11 +220,11 @@ StaticRouter::GetNumLSAs (void)
       NS_DEBUG("StaticRouter::GetNumLSAs (): Point-to-point device");
 //
 // Now, we have to find the Ipv4 interface whose netdevice is the one we 
-// just found.  This is the IP on the local side of the channel.  There is 
-// a function to do this used down in the guts of the stack, but its not 
+// just found.  This is still the IP on the local side of the channel.  There 
+// is a function to do this used down in the guts of the stack, but it's not 
 // exported so we had to whip up an equivalent.
 //
-      uint32_t ifIndexLocal = FindIfIndexForDevice(m_node, nd);
+      uint32_t ifIndexLocal = FindIfIndexForDevice(m_node, ndLocal);
 //
 // Now that we have the Ipv4 interface index, we can get the address and mask
 // we need.
@@ -137,12 +233,12 @@ StaticRouter::GetNumLSAs (void)
       Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
       NS_DEBUG("Working with local address " << addrLocal);
 //
-// Now, we're going to link to the remote net device on the other end of the
-// point-to-point channel we know we have.  This is where our adjacent router
-// (to use OSPF lingo) is running.  
+// Now, we're going to walk over to the remote net device on the other end of 
+// the point-to-point channel we now know we have.  This is where our adjacent 
+// router (to use OSPF lingo) is running.  
 //
-      Ptr<Channel> ch = nd->GetChannel();
-      Ptr<NetDevice> ndRemote = GetAdjacent(nd, ch);
+      Ptr<Channel> ch = ndLocal->GetChannel();
+      Ptr<NetDevice> ndRemote = GetAdjacent(ndLocal, ch);
 //
 // The adjacent net device is aggregated to a node.  We need to ask that net 
 // device for its node, then ask that node for its Ipv4 interface.
@@ -150,6 +246,15 @@ StaticRouter::GetNumLSAs (void)
       Ptr<Node> nodeRemote = ndRemote->GetNode();
       Ptr<Ipv4> ipv4Remote = nodeRemote->QueryInterface<Ipv4> (Ipv4::iid);
       NS_ASSERT_MSG(ipv4Remote, "QI for remote <Ipv4> interface failed");
+//
+// Per the OSPF spec, we're going to need the remote router ID, so we might as
+// well get it now.
+//
+      Ptr<StaticRouter> srRemote = 
+        nodeRemote->QueryInterface<StaticRouter> (StaticRouter::iid);
+      NS_ASSERT_MSG(srRemote, "QI for remote <StaticRouter> failed");
+      Ipv4Address rtrIdRemote = srRemote->GetRouterId();
+      NS_DEBUG("Working with remote router " << rtrIdRemote);
 //
 // Now, just like we did above, we need to get the IP interface index for the 
 // net device on the other end of the point-to-point channel.
@@ -162,15 +267,51 @@ StaticRouter::GetNumLSAs (void)
       Ipv4Address addrRemote = ipv4Remote->GetAddress(ifIndexRemote);
       Ipv4Mask maskRemote = ipv4Remote->GetNetworkMask(ifIndexRemote);
       NS_DEBUG("Working with remote address " << addrRemote);
-      ++m_numLSAs;
+//
+// Now we can fill out the link state advertisement for this link.
+//
+      StaticRouterLSA *pLSA = new StaticRouterLSA;
+      pLSA->m_linkStateId = m_routerId;
+      pLSA->m_advertisingRtr = m_routerId;
+
+      StaticRouterLinkRecord *plr = new StaticRouterLinkRecord;
+      plr->m_linkType = StaticRouterLinkRecord::PointToPoint;
+      plr->m_linkId = rtrIdRemote;
+      plr->m_linkData = addrLocal;
+      pLSA->AddLinkRecord(plr);
+      plr = 0;
+
+      plr = new StaticRouterLinkRecord;
+      plr->m_linkType = StaticRouterLinkRecord::StubNetwork;
+      plr->m_linkId = addrRemote;
+      plr->m_linkData.Set(maskRemote.GetHostOrder());  // Frown
+      pLSA->AddLinkRecord(plr);
+      plr = 0;
+
+      m_LSAs.push_back (pLSA);
+      NS_DEBUG(*pLSA);
     }
 
-  return m_numLSAs;
+  return m_LSAs.size ();
 }
 
   bool
 StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa)
 {
+  NS_ASSERT_MSG(lsa.IsEmpty(), "Must pass empty LSA");
+
+  ListOfLSAs_t::iterator i = m_LSAs.begin ();
+  uint32_t j = 0;
+
+  for (; i != m_LSAs.end (); i++, j++)
+    {
+      if (j == n)
+        {
+          StaticRouterLSA *p = *i;
+          lsa = *p;
+          return true;
+        }
+    }
   return false;
 }
 

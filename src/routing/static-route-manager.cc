@@ -85,7 +85,18 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
       NS_ASSERT_MSG(rtr, "QI for <StaticRouter> interface failed");
 
       uint32_t numLSAs = rtr->GetNumLSAs();
-      NS_DEBUG_UNCOND (numLSAs << "LSAs");
+      NS_DEBUG_UNCOND ("Found " << numLSAs << " LSAs");
+
+      for (uint32_t j = 0; j < numLSAs; ++j)
+        {
+          StaticRouterLSA lsa;
+          rtr->GetLSA(j, lsa);
+          NS_DEBUG_UNCOND ("LSA " << j);
+          NS_DEBUG_UNCOND ("----------------------------------------");
+          NS_DEBUG_UNCOND("m_linkStateId = " << lsa.m_linkStateId);
+          NS_DEBUG_UNCOND("m_advertisingRtr = " << lsa.m_advertisingRtr);
+          NS_DEBUG_UNCOND ("----------------------------------------");
+        }
     }
 }
 

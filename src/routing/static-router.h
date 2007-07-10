@@ -23,6 +23,7 @@
 #include "ns3/node.h"
 #include "ns3/channel.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/routing-environment.h"
 
 namespace ns3 {
 
@@ -70,16 +71,25 @@ class StaticRouterLSA
 {
 public:
   StaticRouterLSA();
+  StaticRouterLSA (StaticRouterLSA& lsa);
   ~StaticRouterLSA();
 
-  uint32_t AddLinkRecord (StaticRouterLinkRecord* lr);
+  StaticRouterLSA& operator= (StaticRouterLSA lsa);
 
-  Ipv4Address  m_linkStateId;     // set to the NodeId
-  Ipv4Address  m_advertisingRtr;  // set to the NodeId
+  uint32_t AddLinkRecord (StaticRouterLinkRecord* lr);
+  void ClearLinkRecords(void);
+  bool IsEmpty(void);
+
+  void Print (std::ostream &os);
+
+  Ipv4Address  m_linkStateId;
+  Ipv4Address  m_advertisingRtr;
 
   typedef std::list<StaticRouterLinkRecord*> ListOfLinkRecords_t;
   ListOfLinkRecords_t m_linkRecords;
 };
+
+std::ostream& operator<< (std::ostream& os, StaticRouterLSA& lsa);
 
 /**
  * \brief An interface aggregated to a node to provide static routing info
@@ -96,17 +106,23 @@ public:
   static const InterfaceId iid;
   StaticRouter (Ptr<Node> node);
 
+  Ipv4Address GetRouterId(void);
   uint32_t GetNumLSAs (void);
   bool GetLSA (uint32_t n, StaticRouterLSA &lsa);
 
 protected:
   virtual ~StaticRouter ();
-
-  Ptr<Node>     m_node;
-  uint32_t      m_numLSAs;
+  void ClearLSAs (void);
 
   Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch);
   uint32_t FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd);
+
+  Ptr<Node>     m_node;
+
+  typedef std::list<StaticRouterLSA*> ListOfLSAs_t;
+  ListOfLSAs_t m_LSAs;
+
+  Ipv4Address m_routerId;
 
 private:
 };
