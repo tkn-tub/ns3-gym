@@ -102,8 +102,12 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
       Ptr<StaticRouter> rtr = 
         node->QueryInterface<StaticRouter> (StaticRouter::iid);
       NS_ASSERT_MSG(rtr, "QI for <StaticRouter> interface failed");
-
-      uint32_t numLSAs = rtr->GetNumLSAs();
+//
+// Should call DiscoverLSAs () before trying to use any routing info or to
+// update LSAs.  Subsequently you may use GetNumLSAs().  If you call
+// GetNumLSAs () before calling DiscoverLSAs () will get zero as the number.
+// 
+      uint32_t numLSAs = rtr->DiscoverLSAs();
       NS_DEBUG_UNCOND ("Found " << numLSAs << " LSAs");
 
       for (uint32_t j = 0; j < numLSAs; ++j)

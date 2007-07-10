@@ -184,12 +184,13 @@ StaticRouter::ClearLSAs ()
 }
 
 //
-// Return the number of Link State Advertisements this node has to advertise.
+// Go out and discover any adjacent routers and build the Link State 
+// Advertisements that reflect them and their associated networks.
 // 
   uint32_t 
-StaticRouter::GetNumLSAs (void)
+StaticRouter::DiscoverLSAs (void)
 {
-  NS_DEBUG("StaticRouter::GetNumLSAs ()");
+  NS_DEBUG("StaticRouter::DiscoverLSAs ()");
   NS_ASSERT_MSG(m_node, "<Node> interface not set");
   ClearLSAs ();
 //
@@ -208,7 +209,7 @@ StaticRouter::GetNumLSAs (void)
 // a point-to-point channel.
 //
   uint32_t numDevices = m_node->GetNDevices();
-  NS_DEBUG("StaticRouter::GetNumLSAs (): numDevices = " << numDevices);
+  NS_DEBUG("StaticRouter::DiscoverLSAs (): numDevices = " << numDevices);
 //
 // Loop through the devices looking for those connected to a point-to-point
 // channel.
@@ -219,11 +220,11 @@ StaticRouter::GetNumLSAs (void)
 
       if (!ndLocal->IsPointToPoint ())
         {
-          NS_DEBUG("StaticRouter::GetNumLSAs (): non-point-to-point device");
+          NS_DEBUG("StaticRouter::DiscoverLSAs (): non-point-to-point device");
           continue;
         }
 
-      NS_DEBUG("StaticRouter::GetNumLSAs (): Point-to-point device");
+      NS_DEBUG("StaticRouter::DiscoverLSAs (): Point-to-point device");
 //
 // Now, we have to find the Ipv4 interface whose netdevice is the one we 
 // just found.  This is still the IP on the local side of the channel.  There 
@@ -301,6 +302,13 @@ StaticRouter::GetNumLSAs (void)
       NS_DEBUG(*pLSA);
     }
 
+  return m_LSAs.size ();
+}
+
+  uint32_t 
+StaticRouter::GetNumLSAs (void)
+{
+  NS_DEBUG("StaticRouter::GetNumLSAs ()");
   return m_LSAs.size ();
 }
 
