@@ -20,7 +20,6 @@
 #include "ns3/net-device.h"
 #include "ns3/internet-node.h"
 #include "ns3/ipv4.h"
-#include "ns3/ipv4-interface.h"
 #include "static-router.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("StaticRouter");
@@ -137,17 +136,17 @@ StaticRouter::GetNumLSAs (void)
       Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
       Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
       NS_DEBUG("Working with local address " << addrLocal);
-
+//
+// Now, we're going to link to the remote net device on the other end of the
+// point-to-point channel we know we have.  This is where our adjacent router
+// (to use OSPF lingo) is running.  
+//
       Ptr<Channel> ch = nd->GetChannel();
-//
-// Find the net device on the other end of the point-to-point channel.  This
-// is where our adjacent router is running.  The adjacent net device is 
-// aggregated to a node.  We need to ask that net device for its node, then
-// ask that node for its Ipv4 interface and then ask the Ipv4 for the IP
-// address.  To do this, we have to get the interface index associated with 
-// that net device in order to find the correct interface on the adjacent node.
-//
       Ptr<NetDevice> ndRemote = GetAdjacent(nd, ch);
+//
+// The adjacent net device is aggregated to a node.  We need to ask that net 
+// device for its node, then ask that node for its Ipv4 interface.
+//
       Ptr<Node> nodeRemote = ndRemote->GetNode();
       Ptr<Ipv4> ipv4Remote = nodeRemote->QueryInterface<Ipv4> (Ipv4::iid);
       NS_ASSERT_MSG(ipv4Remote, "QI for remote <Ipv4> interface failed");
@@ -157,8 +156,8 @@ StaticRouter::GetNumLSAs (void)
 //
       uint32_t ifIndexRemote = FindIfIndexForDevice(nodeRemote, ndRemote);
 //
-// Now that we have the Ipv4 interface, we can get the address and mask we 
-// need.
+// Now that we have the Ipv4 interface, we can get the (remote) address and
+// mask we need.
 //
       Ipv4Address addrRemote = ipv4Remote->GetAddress(ifIndexRemote);
       Ipv4Mask maskRemote = ipv4Remote->GetNetworkMask(ifIndexRemote);
