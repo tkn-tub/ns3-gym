@@ -25,6 +25,49 @@
 NS_DEBUG_COMPONENT_DEFINE ("StaticRouteManager");
 
 namespace ns3 {
+StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
+{
+  NS_DEBUG_UNCOND("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ()");
+
+#if 0
+  for ( ListOfLinkRecords_t::iterator i = m_linkRecords.begin ();
+        i != m_linkRecords.end ();
+        i++)
+    { 
+      NS_DEBUG("StaticRouterLSA::~StaticRouterLSA ():  free link record");
+      
+      StaticRouterLinkRecord *p = *i;
+      delete p;
+      p = 0;
+      
+      *i = 0;
+    }
+#endif
+  NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ():  clear list");
+  //m_linkRecords.clear();
+}
+
+void
+StaticRouteManagerLSDB::Insert(Ipv4Address addr, StaticRouterLSA* lsa)
+{
+    m_database.insert(LSDBPair_t(addr, lsa));
+}
+
+StaticRouterLSA*
+StaticRouteManagerLSDB::GetLSA (Ipv4Address addr)
+{
+  // Look up an LSA by its address
+  LSDBMap_t::iterator i;
+  for (i= m_database.begin(); i!= m_database.end(); i++)
+  {
+    //Ipv4Address temp = i->first;
+    if (i->first == addr)
+    {
+      return i->second;
+    }
+  }
+  return 0;
+}
 
 StaticRouteManager::StaticRouteManager ()
 {
@@ -198,7 +241,13 @@ StaticRouteManagerTest::RunTests (void)
   lsa3->AddLinkRecord(lr2);
   lsa3->AddLinkRecord(lr3);
 
-  // Add four LSAs to the database; XXX todo next
+  // Test the database 
+  StaticRouteManagerLSDB* srmlsdb = new StaticRouteManagerLSDB();
+  srmlsdb->Insert(lsa0->m_linkStateId ,lsa0);
+  srmlsdb->Insert(lsa1->m_linkStateId ,lsa1);
+  srmlsdb->Insert(lsa2->m_linkStateId ,lsa2);
+  srmlsdb->Insert(lsa3->m_linkStateId ,lsa3);
+  NS_ASSERT(lsa2 == srmlsdb->GetLSA(lsa2->m_linkStateId));
 
   delete lsa0;
   delete lsa1;

@@ -18,9 +18,11 @@
 
 #include <stdint.h>
 #include <list>
+#include <map>
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
+#include "static-router.h"
 
 namespace ns3 {
 
@@ -53,6 +55,13 @@ public:
 class StaticRouteManagerLSDB
 {
 public:
+  ~StaticRouteManagerLSDB ();
+  void Insert(Ipv4Address addr, StaticRouterLSA* lsa);
+  StaticRouterLSA* GetLSA (Ipv4Address addr);
+
+  typedef std::map<Ipv4Address, StaticRouterLSA*> LSDBMap_t;
+  typedef std::pair<Ipv4Address, StaticRouterLSA*> LSDBPair_t;
+  LSDBMap_t m_database;
 };
 
 /**
