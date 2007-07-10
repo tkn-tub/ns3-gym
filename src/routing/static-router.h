@@ -185,7 +185,7 @@ public:
    * Create a Static Router class and aggregate its interface onto the Node
    * provided.
    *
-   * @param lsa The existing Node onto which this router will be aggregated.
+   * @param node The existing Node onto which this router will be aggregated.
    */
   StaticRouter (Ptr<Node> node);
   /**
@@ -198,18 +198,32 @@ public:
    */
   Ipv4Address GetRouterId(void);
   /**
-   * Get the Number of Static Router Link State Advertisements that this
-   * router can export.
+   * Walk the connected channels, discover the adjacent routers and build
+   * the associated number of Static Router Link State Advertisements that 
+   * this router can export.
    *
    * This is a fairly expensive operation in that every time it is called
    * the current list of LSAs is built by walking connected point-to-point
    * channels and peeking into adjacent IPV4 stacks to get address information.
    * This is done to allow for limited dymanics of the Static Routing 
    * environment.  By that we mean that you can discover new link state 
-   * advertisements after a network topology change by calling GetNumLSAs and
-   * then by reading those advertisements.
+   * advertisements after a network topology change by calling DiscoverLSAs 
+   * and then by reading those advertisements.
    *
    * @see StaticRouterLSA
+   * @see StaticRouter::GetLSA ()
+   * @returns The number of Static Router Link State Advertisements.
+   */
+  uint32_t DiscoverLSAs (void);
+  /**
+   * Get the Number of Static Router Link State Advertisements that this
+   * router can export.  To get meaningful information you must have 
+   * previously called DiscoverLSAs.  After you know how many LSAs are 
+   * present in the router, you may call GetLSA () to retrieve the actual
+   * advertisement.
+   *
+   * @see StaticRouterLSA
+   * @see StaticRouter::DiscoverLSAs ()
    * @see StaticRouter::GetLSA ()
    * @returns The number of Static Router Link State Advertisements.
    */
