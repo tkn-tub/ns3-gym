@@ -34,6 +34,8 @@ namespace ns3 {
 class SPFVertex
 {
 public:
+  ~SPFVertex();
+
   enum VertexType {
     VertexRouter = 1,
     VertexNetwork
@@ -41,12 +43,14 @@ public:
 
   Ipv4Address m_vertexId;
 
-  uint32_t m_distanceFromRoot;
+  StaticRouterLSA* m_lsa;  // This pointer owns LSA for mem. mgmt purposes
 
   typedef std::list<SPFVertex> type_listOfSPFVertex;
   type_listOfSPFVertex m_parents;
   type_listOfSPFVertex m_children;
   type_listOfSPFVertex::iterator m_iter;
+
+  uint32_t m_distanceFromRoot;
 };
 
 /**
@@ -56,11 +60,11 @@ class StaticRouteManagerLSDB
 {
 public:
   ~StaticRouteManagerLSDB ();
-  void Insert(Ipv4Address addr, StaticRouterLSA* lsa);
-  StaticRouterLSA* GetLSA (Ipv4Address addr);
+  void Insert(Ipv4Address addr, SPFVertex* vertex);
+  SPFVertex* GetVertex (Ipv4Address addr);
 
-  typedef std::map<Ipv4Address, StaticRouterLSA*> LSDBMap_t;
-  typedef std::pair<Ipv4Address, StaticRouterLSA*> LSDBPair_t;
+  typedef std::map<Ipv4Address, SPFVertex*> LSDBMap_t;
+  typedef std::pair<Ipv4Address, SPFVertex*> LSDBPair_t;
   LSDBMap_t m_database;
 };
 
@@ -96,6 +100,8 @@ protected:
 
 private:
   StaticRouteManagerLSDB m_lsdb;
+  void SPFCalculate ();
+  void SPFNext ();
 };
 
 } // namespace ns3

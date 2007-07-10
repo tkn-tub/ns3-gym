@@ -25,6 +25,13 @@
 NS_DEBUG_COMPONENT_DEFINE ("StaticRouteManager");
 
 namespace ns3 {
+
+SPFVertex::~SPFVertex ()
+{
+  delete m_lsa;
+}
+
+
 StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
 {
   NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ()");
@@ -32,8 +39,8 @@ StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
   LSDBMap_t::iterator i;
   for (i= m_database.begin(); i!= m_database.end(); i++)
   {
-      NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ():  free LSA");
-      StaticRouterLSA* temp = i->second;
+      NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB():free vertex");
+      SPFVertex* temp = i->second;
       delete temp;
     }
   NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ():  clear map");
@@ -41,13 +48,13 @@ StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
 }
 
 void
-StaticRouteManagerLSDB::Insert(Ipv4Address addr, StaticRouterLSA* lsa)
+StaticRouteManagerLSDB::Insert(Ipv4Address addr, SPFVertex* vertex)
 {
-    m_database.insert(LSDBPair_t(addr, lsa));
+    m_database.insert(LSDBPair_t(addr, vertex));
 }
 
-StaticRouterLSA*
-StaticRouteManagerLSDB::GetLSA (Ipv4Address addr)
+SPFVertex*
+StaticRouteManagerLSDB::GetVertex (Ipv4Address addr)
 {
   // Look up an LSA by its address
   LSDBMap_t::iterator i;
@@ -98,14 +105,147 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
     }
 }
 
-void
-StaticRouteManager::InitializeRoutes ()
-{
   // For each node that is a static router (which can be determined by
   // the presence of StaticRouter interface), run Dijkstra SPF calculation
   // on the database rooted at that router, and populate the node
   // forwarding tables
+  //
+void
+StaticRouteManager::InitializeRoutes ()
+{
+//      This function parallels RFC2328, Section 16.1.1, and quagga ospfd
+//
+//      This calculation yields the set of intra-area routes associated
+//      with an area (called hereafter Area A).  A router calculates the
+//      shortest-path tree using itself as the root.  The formation
+//      of the shortest path tree is done here in two stages.  In the
+//      first stage, only links between routers and transit networks are
+//      considered.  Using the Dijkstra algorithm, a tree is formed from
+//      this subset of the link state database.  In the second stage,
+//      leaves are added to the tree by considering the links to stub
+//      networks.
+
+//      The area's link state database is represented as a directed graph.  
+//      The graph's vertices are routers, transit networks and stub networks.  
+//      The first stage of the procedure (i.e., the Dijkstra algorithm)
+//      can now be summarized as follows. At each iteration of the
+//      algorithm, there is a list of candidate vertices.  Paths from
+//      the root to these vertices have been found, but not necessarily
+//      the shortest ones.  However, the paths to the candidate vertex
+//      that is closest to the root are guaranteed to be shortest; this
+//      vertex is added to the shortest-path tree, removed from the
+//      candidate list, and its adjacent vertices are examined for
+//      possible addition to/modification of the candidate list.  The
+//      algorithm then iterates again.  It terminates when the candidate
+//      list becomes empty. 
+
+    // For each node that is a router in the topology
+  typedef std::vector < Ptr<Node> >::iterator Iterator;
+  for (Iterator i = NodeList::Begin(); i != NodeList::End(); i++)
+    {
+      Ptr<Node> node = *i;
+      NS_DEBUG_UNCOND ("node="<< node->GetId () );
+      
+      Ptr<StaticRouter> rtr = 
+        node->QueryInterface<StaticRouter> (StaticRouter::iid);
+      NS_ASSERT_MSG(rtr, "QI for <StaticRouter> interface failed");
+      if (rtr && rtr->GetNumLSAs () )
+        {
+          SPFCalculate();
+        }
+    }
 }
+
+
+// quagga ospf_spf_next
+void
+StaticRouteManager::SPFNext()
+{
+  // if LSA == Router_LSA, examine links
+  // a) if link to stub, skip
+  // b) W is transit
+}
+
+void
+StaticRouteManager::SPFCalculate()
+{
+  NS_DEBUG("StaticRouteManager::SPFCalculate ()");
+  /*
+ *  struct pqueue* candidate;
+ *  struct vertex* v;
+ */
+  // Initialize the shortest-path tree to only the router doing the 
+  // calculation.
+  //
+  
+#if 0
+  ospf_spf_init (area);
+  v = area->spf;
+
+
+  /* Create a new heap for the candidates. */
+  candidate = pqueue_create();
+  candidate->cmp = cmp;
+  candidate->update = update_stat;
+
+  /* Set LSA position to LSA_SPF_IN_SPFTREE. This vertex is the root of the
+ *    * spanning tree. */
+  *(v->stat) = LSA_SPF_IN_SPFTREE;
+
+  /* Set Area A's TransitCapability to FALSE. */
+  area->transit = OSPF_TRANSIT_FALSE;
+  area->shortcut_capability = 1;
+
+  for (;;)
+    {
+      /* RFC2328 16.1. (2). */
+      ospf_spf_next (v, area, candidate);
+  
+      /* RFC2328 16.1. (3). */
+      /* If at this step the candidate list is empty, the shortest-
+ *          path tree (of transit vertices) has been completely built and
+ *                   this stage of the procedure terminates. */
+      if (candidate->size == 0)
+        break;
+  
+      /* Otherwise, choose the vertex belonging to the candidate list
+ *          that is closest to the root, and add it to the shortest-path
+ *                   tree (removing it from the candidate list in the
+ *                            process). */
+      /* Extract from the candidates the node with the lower key. */
+      v = (struct vertex *) pqueue_dequeue (candidate);
+      /* Update stat field in vertex. */
+      *(v->stat) = LSA_SPF_IN_SPFTREE;
+
+      ospf_vertex_add_parent (v);
+      /* Note that when there is a choice of vertices closest to the
+ *          root, network vertices must be chosen before router vertices
+ *                   in order to necessarily find all equal-cost paths. */
+      /* We don't do this at this moment, we should add the treatment
+ *          above codes. -- kunihiro. */
+
+      /* RFC2328 16.1. (4). */
+      if (v->type == OSPF_VERTEX_ROUTER)
+        ospf_intra_add_router (new_rtrs, v, area);
+      else
+        ospf_intra_add_transit (new_table, v, area);
+
+      /* RFC2328 16.1. (5). */
+      /* Iterate the algorithm by returning to Step 2. */
+
+    } /* end loop until no more candidate vertices */
+
+  /* Second stage of SPF calculation procedure's  */
+  ospf_spf_process_stubs (area, area->spf, new_table);
+  
+  /* Free candidate queue. */
+  pqueue_delete (candidate);
+
+#endif
+
+
+}
+
 
 } // namespace ns3
 
@@ -242,16 +382,26 @@ StaticRouteManagerTest::RunTests (void)
   lsa3->AddLinkRecord(lr2);
   lsa3->AddLinkRecord(lr3);
 
+  // Create four vertices to store these four LSAs
+  SPFVertex* v0 = new SPFVertex ();
+  v0->m_lsa = lsa0;
+  SPFVertex* v1 = new SPFVertex ();
+  v1->m_lsa = lsa1;
+  SPFVertex* v2 = new SPFVertex ();
+  v2->m_lsa = lsa2;
+  SPFVertex* v3 = new SPFVertex ();
+  v3->m_lsa = lsa3;
+  
   // Test the database 
   StaticRouteManagerLSDB* srmlsdb = new StaticRouteManagerLSDB();
-  srmlsdb->Insert(lsa0->m_linkStateId, lsa0);
-  srmlsdb->Insert(lsa1->m_linkStateId, lsa1);
-  srmlsdb->Insert(lsa2->m_linkStateId, lsa2);
-  srmlsdb->Insert(lsa3->m_linkStateId, lsa3);
-  NS_ASSERT(lsa2 == srmlsdb->GetLSA(lsa2->m_linkStateId));
+  srmlsdb->Insert(lsa0->m_linkStateId, v0);
+  srmlsdb->Insert(lsa1->m_linkStateId, v1);
+  srmlsdb->Insert(lsa2->m_linkStateId, v2);
+  srmlsdb->Insert(lsa3->m_linkStateId, v3);
+  NS_ASSERT(v2 == srmlsdb->GetVertex(lsa2->m_linkStateId));
 
-  // This delete clears the LSDB, which clears the LSAs, which destroy
-  // the LinkRecords.
+  // This delete clears the LSDB, which clears the vertices, which deletes
+  // the matching LSAs, which destroys the LinkRecords.
   delete srmlsdb;
 
   // XXX next, calculate routes based on the manually created LSDB
