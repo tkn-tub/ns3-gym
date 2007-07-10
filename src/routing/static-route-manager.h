@@ -68,6 +68,7 @@ class StaticRouteManagerLSDB
 public:
   ~StaticRouteManagerLSDB ();
   void Insert(Ipv4Address addr, SPFVertex* vertex);
+  void Insert(Ipv4Address addr, StaticRouterLSA* lsa);
   SPFVertex* GetVertex (Ipv4Address addr);
   /**
    * \brief Set all SPFVertex to an initialized state, for SPF computation
@@ -116,12 +117,13 @@ public:
   void DebugSPFCalculate (Ipv4Address root);
 
   virtual ~StaticRouteManager ();
+
 protected:
 
 private:
   StaticRouteManagerLSDB* m_lsdb;
   void SPFCalculate (Ipv4Address root);
-  void SPFNext ();
+  void SPFNext (SPFVertex*/*,candidate */);
 };
 
 } // namespace ns3

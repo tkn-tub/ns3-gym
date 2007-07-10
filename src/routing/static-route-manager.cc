@@ -79,6 +79,16 @@ StaticRouteManagerLSDB::Initialize()
 }
 
 void
+StaticRouteManagerLSDB::Insert(Ipv4Address addr, StaticRouterLSA* lsa)
+{
+    SPFVertex* temp = new SPFVertex ();
+    temp->m_lsa = lsa;
+    temp->m_vertexType = SPFVertex::VertexRouter;
+    temp->m_vertexId = lsa->m_linkStateId;
+    m_database.insert(LSDBPair_t(addr, temp));
+}
+
+void
 StaticRouteManagerLSDB::Insert(Ipv4Address addr, SPFVertex* vertex)
 {
     m_database.insert(LSDBPair_t(addr, vertex));
@@ -143,11 +153,12 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
 
       for (uint32_t j = 0; j < numLSAs; ++j)
         {
-          StaticRouterLSA lsa;
-          rtr->GetLSA(j, lsa);
+          StaticRouterLSA* lsa = new StaticRouterLSA ();
+          rtr->GetLSA(j, *lsa);
           NS_DEBUG_UNCOND ("LSA " << j);
           NS_DEBUG_UNCOND ("----------------------------");
-          NS_DEBUG_UNCOND(lsa);
+          NS_DEBUG_UNCOND (*lsa);
+          m_lsdb->Insert (lsa->m_linkStateId, lsa); 
         }
     }
 }
@@ -192,7 +203,6 @@ StaticRouteManager::InitializeRoutes ()
   for (Iterator i = NodeList::Begin(); i != NodeList::End(); i++)
     {
       Ptr<Node> node = *i;
-      NS_DEBUG_UNCOND ("node="<< node->GetId () );
       
       Ptr<StaticRouter> rtr = 
         node->QueryInterface<StaticRouter> (StaticRouter::iid);
@@ -206,12 +216,49 @@ StaticRouteManager::InitializeRoutes ()
 
 
 // quagga ospf_spf_next
+// RFC2328 Section 16.1 (2).
+// v is on the SPF tree.  Examine the links in v's LSA.  Update the list
+// of candidates with any vertices not already on the list.  If a lower-cost
+// path is found to a vertex already on the candidate list, store the new cost.
+// 
+//
+//
 void
-StaticRouteManager::SPFNext()
+StaticRouteManager::SPFNext(SPFVertex* v /*,candidate */)
 {
-  // if LSA == Router_LSA, examine links
-  // a) if link to stub, skip
-  // b) W is transit
+  if (v->m_vertexType == SPFVertex::VertexRouter) 
+    {
+      // Always true for now, since all our LSAs are RouterLSAs
+      if (true)
+        {
+          NS_DEBUG_UNCOND("Examining " << v->m_vertexId << "'s link records");
+          for ( StaticRouterLSA::ListOfLinkRecords_t::iterator i = 
+                v->m_lsa->m_linkRecords.begin();
+                i != v->m_lsa->m_linkRecords.end();
+                i++ )
+            {
+              // (a) If this is a link to a stub network, examine the next
+              // link in V's LSA.  Links to stub networks will be
+              // considered in the second stage of the shortest path
+              // calculation. 
+              StaticRouterLinkRecord* temp = *i;
+              if (temp->m_linkType == StaticRouterLinkRecord::StubNetwork)
+                {
+                  NS_DEBUG_UNCOND("Found a Stub record to " << temp->m_linkId);
+                  continue;
+                }
+              if (temp->m_linkType == StaticRouterLinkRecord::PointToPoint)
+                {
+                  // Lookup the LSA (vertex) for the neighbor
+                  SPFVertex* w = m_lsdb->GetVertex(temp->m_linkId);
+                  NS_DEBUG_UNCOND("Found a P2P record from " << 
+                    v->m_vertexId << " to " << w->m_vertexId);
+                  continue;
+                }
+            }
+        } 
+     }
+     NS_DEBUG_UNCOND("");
 }
 
 // quagga ospf_spf_calculate
@@ -225,7 +272,7 @@ StaticRouteManager::DebugSPFCalculate(Ipv4Address root)
 void
 StaticRouteManager::SPFCalculate(Ipv4Address root)
 {
-  NS_DEBUG("StaticRouteManager::SPFCalculate ()");
+  NS_DEBUG_UNCOND("StaticRouteManager::SPFCalculate ()");
 
   // The SPFVertex objects may have state from a previous computation
   m_lsdb->Initialize();
@@ -242,11 +289,18 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   v= m_lsdb->GetVertex(root);
   // Set LSA position to LSA_SPF_IN_SPFTREE. This vertex is the root of the
   // spanning tree. 
+  NS_ASSERT(v);
   v->m_distanceFromRoot = 0;
   v->m_stat = true;
+
+  // Add all other vertices to the candidate list
   
-#if 0
   for (;;)
+    {
+       SPFNext(v /*,candidate */);
+       break;
+    }
+#if 0
     {
       /* RFC2328 16.1. (2). */
       ospf_spf_next (v, area, candidate);
@@ -458,15 +512,19 @@ StaticRouteManagerTest::RunTests (void)
   SPFVertex* v0 = new SPFVertex ();
   v0->m_lsa = lsa0;
   v0->m_vertexType = SPFVertex::VertexRouter;
+  v0->m_vertexId = lsa0->m_linkStateId;
   SPFVertex* v1 = new SPFVertex ();
   v1->m_lsa = lsa1;
-  v0->m_vertexType = SPFVertex::VertexRouter;
+  v1->m_vertexType = SPFVertex::VertexRouter;
+  v1->m_vertexId = lsa1->m_linkStateId;
   SPFVertex* v2 = new SPFVertex ();
   v2->m_lsa = lsa2;
-  v0->m_vertexType = SPFVertex::VertexRouter;
+  v2->m_vertexType = SPFVertex::VertexRouter;
+  v2->m_vertexId = lsa2->m_linkStateId;
   SPFVertex* v3 = new SPFVertex ();
   v3->m_lsa = lsa3;
-  v0->m_vertexType = SPFVertex::VertexRouter;
+  v3->m_vertexType = SPFVertex::VertexRouter;
+  v3->m_vertexId = lsa3->m_linkStateId;
   
   // Test the database 
   StaticRouteManagerLSDB* srmlsdb = new StaticRouteManagerLSDB();

@@ -49,6 +49,7 @@ StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
       StaticRouterLinkRecord *pDst = new StaticRouterLinkRecord;
       pDst->m_linkId = pSrc->m_linkId;
       pDst->m_linkData = pSrc->m_linkData;
+      pDst->m_linkType = pSrc->m_linkType;
       m_linkRecords.push_back(pDst);
       pDst = 0;
     }
@@ -71,6 +72,7 @@ StaticRouterLSA::operator= (StaticRouterLSA& lsa)
       StaticRouterLinkRecord *pDst = new StaticRouterLinkRecord;
       pDst->m_linkId = pSrc->m_linkId;
       pDst->m_linkData = pSrc->m_linkData;
+      pDst->m_linkType = pSrc->m_linkType;
       m_linkRecords.push_back(pDst);
       pDst = 0;
     }
