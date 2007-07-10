@@ -113,6 +113,14 @@ def configure(conf):
         variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
 
+    ## In optimized builds we still want debugging symbols, e.g. for
+    ## profiling, and at least partially usable stack traces.
+    if 'optimized' in Params.g_options.debug_level.lower():
+        for flag in variant_env['CXXFLAGS_DEBUG']:
+            ## this probably doesn't work for MSVC
+            if flag.startswith('-g'):
+                variant_env.append_value('CXXFLAGS', flag)
+
     if sys.platform == 'win32':
         if os.path.basename(conf.env['CXX']).startswith("g++"):
             variant_env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
