@@ -106,7 +106,8 @@ def configure(conf):
 
     variant_env.append_value('CXXDEFINES', 'RUN_SELF_TESTS')
     
-    if os.path.basename(conf.env['CXX']).startswith("g++"):
+    if (os.path.basename(conf.env['CXX']).startswith("g++")
+        and 'CXXFLAGS' not in os.environ):
         variant_env.append_value('CXXFLAGS', ['-Wall', '-Werror'])
 
     if 'debug' in Params.g_options.debug_level.lower():
@@ -115,7 +116,8 @@ def configure(conf):
 
     ## In optimized builds we still want debugging symbols, e.g. for
     ## profiling, and at least partially usable stack traces.
-    if 'optimized' in Params.g_options.debug_level.lower():
+    if ('optimized' in Params.g_options.debug_level.lower() 
+        and 'CXXFLAGS' not in os.environ):
         for flag in variant_env['CXXFLAGS_DEBUG']:
             ## this probably doesn't work for MSVC
             if flag.startswith('-g'):
