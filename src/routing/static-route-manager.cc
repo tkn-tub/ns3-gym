@@ -68,12 +68,24 @@ StaticRouteManagerLSDB::GetVertex (Ipv4Address addr)
   return 0;
 }
 
-StaticRouteManager::StaticRouteManager ()
+StaticRouteManager::StaticRouteManager () 
 {
+  m_lsdb = new StaticRouteManagerLSDB ();
 }
 
 StaticRouteManager::~StaticRouteManager ()
-{}
+{
+  if (m_lsdb)
+    delete m_lsdb;
+}
+
+void
+StaticRouteManager::DebugUseLsdb (StaticRouteManagerLSDB* lsdb)
+{
+  if (m_lsdb)
+    delete m_lsdb;
+  m_lsdb = lsdb;
+}
 
 void
 StaticRouteManager::BuildStaticRoutingDatabase () 
@@ -113,6 +125,7 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
 void
 StaticRouteManager::InitializeRoutes ()
 {
+  NS_DEBUG_UNCOND("StaticRouteManager::InitializeRoutes ()");
 //      This function parallels RFC2328, Section 16.1.1, and quagga ospfd
 //
 //      This calculation yields the set of intra-area routes associated
@@ -151,7 +164,7 @@ StaticRouteManager::InitializeRoutes ()
       NS_ASSERT_MSG(rtr, "QI for <StaticRouter> interface failed");
       if (rtr && rtr->GetNumLSAs () )
         {
-          SPFCalculate();
+          SPFCalculate(rtr->GetRouterId ());
         }
     }
 }
@@ -166,8 +179,16 @@ StaticRouteManager::SPFNext()
   // b) W is transit
 }
 
+// quagga ospf_spf_calculate
 void
-StaticRouteManager::SPFCalculate()
+StaticRouteManager::DebugSPFCalculate(Ipv4Address root)
+{
+  SPFCalculate(root);
+}
+
+// quagga ospf_spf_calculate
+void
+StaticRouteManager::SPFCalculate(Ipv4Address root)
 {
   NS_DEBUG("StaticRouteManager::SPFCalculate ()");
   /*
@@ -385,12 +406,20 @@ StaticRouteManagerTest::RunTests (void)
   // Create four vertices to store these four LSAs
   SPFVertex* v0 = new SPFVertex ();
   v0->m_lsa = lsa0;
+  v0->m_vertexType = SPFVertex::VertexRouter;
+  v0->m_distanceFromRoot = 0xffffffff;
   SPFVertex* v1 = new SPFVertex ();
   v1->m_lsa = lsa1;
+  v0->m_vertexType = SPFVertex::VertexRouter;
+  v0->m_distanceFromRoot = 0xffffffff;
   SPFVertex* v2 = new SPFVertex ();
   v2->m_lsa = lsa2;
+  v0->m_vertexType = SPFVertex::VertexRouter;
+  v0->m_distanceFromRoot = 0xffffffff;
   SPFVertex* v3 = new SPFVertex ();
   v3->m_lsa = lsa3;
+  v0->m_vertexType = SPFVertex::VertexRouter;
+  v0->m_distanceFromRoot = 0xffffffff;
   
   // Test the database 
   StaticRouteManagerLSDB* srmlsdb = new StaticRouteManagerLSDB();
@@ -400,11 +429,15 @@ StaticRouteManagerTest::RunTests (void)
   srmlsdb->Insert(lsa3->m_linkStateId, v3);
   NS_ASSERT(v2 == srmlsdb->GetVertex(lsa2->m_linkStateId));
 
-  // This delete clears the LSDB, which clears the vertices, which deletes
-  // the matching LSAs, which destroys the LinkRecords.
-  delete srmlsdb;
-
   // XXX next, calculate routes based on the manually created LSDB
+  StaticRouteManager* srm = new StaticRouteManager();
+  srm->DebugUseLsdb (srmlsdb);
+  srm->DebugSPFCalculate(lsa0->m_linkStateId);  // node n0
+
+  // This delete clears the srm, which deletes the LSDB, which clears 
+  // all of the vertices, which each destroy the matching LSAs, which each
+  // destroys the attached LinkRecords.
+  delete srm;
 
   return ok;
 }

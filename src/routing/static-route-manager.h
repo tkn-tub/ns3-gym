@@ -95,12 +95,21 @@ public:
    */
   virtual void InitializeRoutes();
 
-protected:
+  /**
+   * \brief Debugging routine; allow client code to supply a pre-built LSDB
+   */
+  void DebugUseLsdb (StaticRouteManagerLSDB*);
+  /**
+   * \brief Debugging routine; call the core SPF from the unit tests
+   */
+  void DebugSPFCalculate (Ipv4Address root);
+
   virtual ~StaticRouteManager ();
+protected:
 
 private:
-  StaticRouteManagerLSDB m_lsdb;
-  void SPFCalculate ();
+  StaticRouteManagerLSDB* m_lsdb;
+  void SPFCalculate (Ipv4Address root);
   void SPFNext ();
 };
 
