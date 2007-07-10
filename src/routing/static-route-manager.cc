@@ -41,6 +41,14 @@ SPFVertex::~SPFVertex ()
   delete m_lsa;
 }
 
+void
+SPFVertex::Initialize ()
+{
+  m_distanceFromRoot = SPF_INFINITY;
+  m_stat = false;
+  // XXX previous = 0
+}
+
 
 StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
 {
@@ -48,13 +56,26 @@ StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
 
   LSDBMap_t::iterator i;
   for (i= m_database.begin(); i!= m_database.end(); i++)
-  {
+    {
       NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB():free vertex");
       SPFVertex* temp = i->second;
       delete temp;
     }
   NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ():  clear map");
   m_database.clear();
+}
+
+void
+StaticRouteManagerLSDB::Initialize()
+{
+  NS_DEBUG("StaticRouteManagerLSDB::Initialize ()");
+
+  LSDBMap_t::iterator i;
+  for (i= m_database.begin(); i!= m_database.end(); i++)
+    {
+      SPFVertex* temp = i->second;
+      temp->Initialize();
+    }
 }
 
 void
@@ -201,6 +222,10 @@ void
 StaticRouteManager::SPFCalculate(Ipv4Address root)
 {
   NS_DEBUG("StaticRouteManager::SPFCalculate ()");
+
+  // The SPFVertex objects may have state from a previous computation
+  m_lsdb->Initialize();
+
    // Make a priority queue of int using a vector container
    //    priority_queue<int, vector<int>, less<int> > pq;
   //priority_queue<SPFVertex*, vector<SPFVertex*>, less<int> > candidate;
@@ -420,19 +445,15 @@ StaticRouteManagerTest::RunTests (void)
   SPFVertex* v0 = new SPFVertex ();
   v0->m_lsa = lsa0;
   v0->m_vertexType = SPFVertex::VertexRouter;
-  v0->m_distanceFromRoot = 0xffffffff;
   SPFVertex* v1 = new SPFVertex ();
   v1->m_lsa = lsa1;
   v0->m_vertexType = SPFVertex::VertexRouter;
-  v0->m_distanceFromRoot = 0xffffffff;
   SPFVertex* v2 = new SPFVertex ();
   v2->m_lsa = lsa2;
   v0->m_vertexType = SPFVertex::VertexRouter;
-  v0->m_distanceFromRoot = 0xffffffff;
   SPFVertex* v3 = new SPFVertex ();
   v3->m_lsa = lsa3;
   v0->m_vertexType = SPFVertex::VertexRouter;
-  v0->m_distanceFromRoot = 0xffffffff;
   
   // Test the database 
   StaticRouteManagerLSDB* srmlsdb = new StaticRouteManagerLSDB();

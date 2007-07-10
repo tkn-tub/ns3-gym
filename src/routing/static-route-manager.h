@@ -38,6 +38,7 @@ class SPFVertex
 public:
   SPFVertex();
   ~SPFVertex();
+  void Initialize ();
 
   enum VertexType {
     VertexUnknown = 0,
@@ -68,6 +69,10 @@ public:
   ~StaticRouteManagerLSDB ();
   void Insert(Ipv4Address addr, SPFVertex* vertex);
   SPFVertex* GetVertex (Ipv4Address addr);
+  /**
+   * \brief Set all SPFVertex to an initialized state, for SPF computation
+   */
+  void Initialize ();
 
   typedef std::map<Ipv4Address, SPFVertex*> LSDBMap_t;
   typedef std::pair<Ipv4Address, SPFVertex*> LSDBPair_t;
