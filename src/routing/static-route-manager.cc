@@ -49,7 +49,6 @@ SPFVertex::Initialize ()
   // XXX previous = 0
 }
 
-
 StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
 {
   NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ()");
@@ -400,6 +399,28 @@ bool
 StaticRouteManagerTest::RunTests (void)
 {
   bool ok = true;
+
+  SPFVertexPriorityQueue candidate;     // <----------------
+
+  for (int i = 0; i < 100; ++i)
+    {
+      SPFVertex *v = new SPFVertex;
+      v->m_distanceFromRoot = rand () % 100;
+      candidate.push (v);               // <----------------
+    }
+
+  uint32_t lastDistance = 0;
+
+  for (int i = 0; i < 100; ++i)
+    {
+      SPFVertex *v = candidate.top ();  // <----------------
+      candidate.pop ();                 // <----------------
+      if (v->m_distanceFromRoot < lastDistance)
+        {
+          ok = false;
+        }
+      lastDistance = v->m_distanceFromRoot;
+    }
 
   // Build fake link state database; four routers (0-3), 3 point-to-point
   // links

@@ -18,6 +18,7 @@
 
 #include <stdint.h>
 #include <list>
+#include <queue>
 #include <map>
 #include "ns3/object.h"
 #include "ns3/ptr.h"
@@ -58,7 +59,19 @@ public:
   uint32_t m_distanceFromRoot;
 
   bool m_stat;  // true if LSA is in SPF tree already
+
+  struct Greater : public std::binary_function< SPFVertex*, SPFVertex*, bool>
+  {
+    bool operator()(const SPFVertex *v1, const SPFVertex *v2) const
+    {
+      return v1->m_distanceFromRoot > v2->m_distanceFromRoot;
+    }
+  };
 };
+
+typedef std::vector<SPFVertex*> SPFVector_t;
+typedef std::priority_queue<SPFVertex*, SPFVector_t, SPFVertex::Greater> 
+  SPFVertexPriorityQueue;
 
 /**
  * \brief The Link State DataBase (LSDB) of a static router
