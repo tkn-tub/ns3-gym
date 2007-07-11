@@ -203,6 +203,15 @@ StaticRouter::DiscoverLSAs (void)
   Ptr<Ipv4> ipv4Local = m_node->QueryInterface<Ipv4> (Ipv4::iid);
   NS_ASSERT_MSG(ipv4Local, "QI for <Ipv4> interface failed");
 //
+// We are, for now at least, only going to report RouterLSAs in this method.
+// What this means is that there is going to be one advertisement with some
+// number of link records.  This means that GetNumLSAs will actually always
+// return exactly one.
+//
+  StaticRouterLSA *pLSA = new StaticRouterLSA;
+  pLSA->m_linkStateId = m_routerId;
+  pLSA->m_advertisingRtr = m_routerId;
+//
 // We need to ask the node for the number of net devices attached. This isn't
 // necessarily equal to the number of links to adjacent nodes (other routers)
 // as the number of devices may include those for stub networks (e.g., 
@@ -277,15 +286,10 @@ StaticRouter::DiscoverLSAs (void)
       Ipv4Mask maskRemote = ipv4Remote->GetNetworkMask(ifIndexRemote);
       NS_DEBUG("Working with remote address " << addrRemote);
 //
-// Now we can fill out the link state advertisement for this link.  There
-// are always two link records; the first is a point-to-point record 
-// describing the link and the second is a stub network record with the 
-// network number.
+// Now we can fill out the link records for this link.  There are always two
+// link records; the first is a point-to-point record describing the link and
+// the second is a stub network record with the network number.
 //
-      StaticRouterLSA *pLSA = new StaticRouterLSA;
-      pLSA->m_linkStateId = m_routerId;
-      pLSA->m_advertisingRtr = m_routerId;
-
       StaticRouterLinkRecord *plr = new StaticRouterLinkRecord;
       plr->m_linkType = StaticRouterLinkRecord::PointToPoint;
       plr->m_linkId = rtrIdRemote;
@@ -299,11 +303,12 @@ StaticRouter::DiscoverLSAs (void)
       plr->m_linkData.Set(maskRemote.GetHostOrder());  // Frown
       pLSA->AddLinkRecord(plr);
       plr = 0;
-
-      m_LSAs.push_back (pLSA);
-      NS_DEBUG(*pLSA);
     }
-
+//
+// The LSA goes on a list of LSAs in case we want to begin exporting other
+// kinds of advertisements (than Router LSAs).
+  m_LSAs.push_back (pLSA);
+  NS_DEBUG(*pLSA);
   return m_LSAs.size ();
 }
 
