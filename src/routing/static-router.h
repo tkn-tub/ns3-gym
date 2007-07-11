@@ -116,6 +116,15 @@ public:
    */
   StaticRouterLSA& operator= (StaticRouterLSA& lsa);
   /**
+   * Copy any Static Router Link Records in a given Static Router Link
+   * State Advertisement to the current LSA.  Existing Link Records are not
+   * deleted -- this is a concatenation of Link Records.
+   *
+   * @see ClearLinkRecords ()
+   * @param lsa The LSA to copy the Link Records from.
+   */
+  void CopyLinkRecords (StaticRouterLSA& lsa);
+  /**
    * Add a given Static Router Link Record to a given Static Router Link
    * State Advertisement.
    *

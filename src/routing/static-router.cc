@@ -38,32 +38,24 @@ StaticRouterLSA::StaticRouterLSA()
 StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
   : m_linkStateId(lsa.m_linkStateId), m_advertisingRtr(lsa.m_advertisingRtr)
 {
-  NS_DEBUG("StaticRouterLSA Copy Constructor");
-  NS_ASSERT_MSG(IsEmpty(), "The LSA must be empty before copy");
-
-  for ( ListOfLinkRecords_t::iterator i = lsa.m_linkRecords.begin ();
-        i != lsa.m_linkRecords.end (); 
-        i++)
-    {
-      StaticRouterLinkRecord *pSrc = *i;
-      StaticRouterLinkRecord *pDst = new StaticRouterLinkRecord;
-      pDst->m_linkId = pSrc->m_linkId;
-      pDst->m_linkData = pSrc->m_linkData;
-      pDst->m_linkType = pSrc->m_linkType;
-      m_linkRecords.push_back(pDst);
-      pDst = 0;
-    }
+  NS_ASSERT_MSG(IsEmpty(), "The LSA must be empty in its constructor!");
+  CopyLinkRecords (lsa);
 }
 
   StaticRouterLSA&
 StaticRouterLSA::operator= (StaticRouterLSA& lsa)
 {
-  NS_DEBUG("StaticRouterLSA Operator =");
-  NS_ASSERT_MSG(IsEmpty(), "The LSA must be empty before assignment");
-
   m_linkStateId = lsa.m_linkStateId;
   m_advertisingRtr = lsa.m_advertisingRtr;
 
+  ClearLinkRecords ();
+  CopyLinkRecords (lsa);
+  return *this;
+}
+
+  void
+StaticRouterLSA::CopyLinkRecords (StaticRouterLSA& lsa)
+{
   for ( ListOfLinkRecords_t::iterator i = lsa.m_linkRecords.begin ();
         i != lsa.m_linkRecords.end (); 
         i++)
@@ -76,8 +68,6 @@ StaticRouterLSA::operator= (StaticRouterLSA& lsa)
       m_linkRecords.push_back(pDst);
       pDst = 0;
     }
-
-  return *this;
 }
 
 StaticRouterLSA::~StaticRouterLSA()
