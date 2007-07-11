@@ -32,7 +32,7 @@ SPFVertex::SPFVertex () :
   m_vertexId("255.255.255.255"), 
   m_lsa(0),
   m_distanceFromRoot(SPF_INFINITY), 
-  m_stat(false)
+  m_stat(LSA_SPF_NOT_EXPLORED)
 {
 }
 
@@ -45,7 +45,7 @@ void
 SPFVertex::Initialize ()
 {
   m_distanceFromRoot = SPF_INFINITY;
-  m_stat = false;
+  m_stat = LSA_SPF_NOT_EXPLORED;
   // XXX previous = 0
 }
 
@@ -223,7 +223,7 @@ StaticRouteManager::InitializeRoutes ()
 //
 //
 void
-StaticRouteManager::SPFNext(SPFVertex* v /*,candidate */)
+StaticRouteManager::SPFNext(SPFVertex* v, SPFVertexPriorityQueue& candidate)
 {
   if (v->m_vertexType == SPFVertex::VertexRouter) 
     {
@@ -258,7 +258,7 @@ StaticRouteManager::SPFNext(SPFVertex* v /*,candidate */)
                     v->m_vertexId << " to " << w->m_vertexId);
                   // (c) If vertex W is already on the shortest-path tree, 
                   //  examine the next link in the LSA. 
-                  if (w->m_stat == true) 
+                  if (w->m_stat == LSA_SPF_IN_SPFTREE) 
                     {
                       continue;
                     }
@@ -268,7 +268,7 @@ StaticRouteManager::SPFNext(SPFVertex* v /*,candidate */)
                   // shortest path to vertex V and the advertised cost of 
                   // the link between vertices V and W.  
                   
-//                  uint32_t distance = v->m_distanceFromRoot + temp->m_metric;
+                  //uint32_t distance = v->m_distanceFromRoot + temp->m_metric;
 
                   // Here, W is either already in candidate list or not
 
@@ -315,10 +315,12 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   m_lsdb->Initialize();
   SPFVertex* v;
 
-  // Make a priority queue of int using a vector container
-  //    priority_queue<int, vector<int>, less<int> > pq;
+  // The candidate queue is a priority queue of SPFVertex objects, with
+  // the top of the queue being the closest vertex in terms of 
+  // distanceFromRoot.  Initially, this queue is empty.
   //
-  //priority_queue<SPFVertex*> candidate;
+  SPFVertexPriorityQueue candidate;
+  NS_ASSERT(candidate.size() == 0);
   //
   // Initialize the shortest-path tree to only the router doing the 
   // calculation.
@@ -328,16 +330,12 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   // spanning tree. 
   NS_ASSERT(v);
   v->m_distanceFromRoot = 0;
-  v->m_stat = true;
+  v->m_stat = LSA_SPF_IN_SPFTREE;
 
-  // Add all other vertices to the candidate list
-  // XXX todo
-  
   for (;;)
     {
       // RFC2328 16.1. (2). 
-      SPFNext(v /*,candidate */);
-
+      SPFNext(v , candidate);
 #if 0
       /* RFC2328 16.1. (3). */
       /* If at this step the candidate list is empty, the shortest-

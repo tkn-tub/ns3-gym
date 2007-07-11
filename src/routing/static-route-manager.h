@@ -29,6 +29,8 @@ namespace ns3 {
 
 const uint32_t SPF_INFINITY = 0xffffffff;
 
+const int LSA_SPF_NOT_EXPLORED = -1;
+const int LSA_SPF_IN_SPFTREE = -2;
 /**
  * \brief Vertex used in shortest path first (SPF) computations
  *
@@ -51,6 +53,8 @@ public:
 
   StaticRouterLSA* m_lsa;  // This pointer owns LSA for mem. mgmt purposes
 
+  // XXX not sure exactly what data structure is needed here
+  // need to keep track of previous vertex
   typedef std::list<SPFVertex> type_listOfSPFVertex;
   type_listOfSPFVertex m_parents;
   type_listOfSPFVertex m_children;
@@ -58,7 +62,8 @@ public:
 
   uint32_t m_distanceFromRoot;
 
-  bool m_stat;  // true if LSA is in SPF tree already
+  // If stat >= 0, stat is LSA position in candidates heap
+  int m_stat;  
 
   struct Greater : public std::binary_function< SPFVertex*, SPFVertex*, bool>
   {
@@ -136,7 +141,7 @@ protected:
 private:
   StaticRouteManagerLSDB* m_lsdb;
   void SPFCalculate (Ipv4Address root);
-  void SPFNext (SPFVertex*/*,candidate */);
+  void SPFNext (SPFVertex*, SPFVertexPriorityQueue&);
 };
 
 } // namespace ns3
