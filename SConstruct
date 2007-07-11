@@ -374,6 +374,7 @@ routing.add_sources([
     'routing-environment.cc',
     'static-router.cc',
     'static-route-manager.cc',
+    'candidate-queue.cc',
     ])
 routing.add_headers ([
     ])
@@ -381,6 +382,7 @@ routing.add_inst_headers([
     'routing-environment.h',
     'static-router.h',
     'static-route-manager.h',
+    'candidate-queue.h',
     ])
 
 # utils
@@ -428,7 +430,6 @@ sample_packet_printer.set_executable()
 ns3.add(sample_packet_printer)
 sample_packet_printer.add_deps (['common', 'internet-node'])
 sample_packet_printer.add_source('main-packet-printer.cc')
-
 
 sample_callback = build.Ns3Module('sample-callback', 'samples')
 sample_callback.set_executable()
@@ -501,6 +502,13 @@ sample_component_manager.set_executable()
 ns3.add(sample_component_manager)
 sample_component_manager.add_deps(['core'])
 sample_component_manager.add_source('main-component-manager.cc')
+
+sample_candidate_queue = build.Ns3Module('sample-candidate-queue', 'samples')
+sample_candidate_queue.set_executable()
+ns3.add(sample_candidate_queue)
+sample_candidate_queue.add_deps(['core'])
+sample_candidate_queue.add_deps(['routing'])
+sample_candidate_queue.add_source('main-candidate-queue.cc')
 
 # examples
 example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')

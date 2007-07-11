@@ -13,6 +13,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #ifndef STATIC_ROUTER_H
 #define STATIC_ROUTER_H
 
@@ -39,19 +40,18 @@ namespace ns3 {
 class StaticRouterLinkRecord
 {
 public:
-  //
-  // For Type 1 link (PointToPoint), set m_linkId to Router ID of 
-  // neighboring router.
-  // 
-  // For Type 3 link (Stub), set m_linkId to neighbor's IP address
-  //  
+//
+// For Type 1 link (PointToPoint), set m_linkId to Router ID of 
+// neighboring router.
+// 
+// For Type 3 link (Stub), set m_linkId to neighbor's IP address
+//  
   Ipv4Address m_linkId;         
-
-  //
-  // For Type 1 link (PointToPoint), set m_linkData to local IP address  
-  // 
-  // For Type 3 link (Stub), set m_linkData to mask 0xffffffff
-  //
+//
+// For Type 1 link (PointToPoint), set m_linkData to local IP address  
+// 
+// For Type 3 link (Stub), set m_linkData to mask 0xffffffff
+//
   Ipv4Address m_linkData;    // for links to RouterLSA, 
   /**
    * Enumeration of the possible types of Static Router Link Records.  These

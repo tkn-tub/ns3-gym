@@ -170,7 +170,7 @@ StaticRouter::ClearLSAs ()
 }
 
   Ipv4Address
-  StaticRouter::GetRouterId (void)
+StaticRouter::GetRouterId (void)
 {
   return m_routerId;
 }
