@@ -246,12 +246,50 @@ StaticRouteManager::SPFNext(SPFVertex* v /*,candidate */)
                   NS_DEBUG_UNCOND("Found a Stub record to " << temp->m_linkId);
                   continue;
                 }
+                // (b) Otherwise, W is a transit vertex (router or transit
+                // network).  Look up the vertex W's LSA (router-LSA or
+                // network-LSA) in Area A's link state database. 
               if (temp->m_linkType == StaticRouterLinkRecord::PointToPoint)
                 {
                   // Lookup the LSA (vertex) for the neighbor
                   SPFVertex* w = m_lsdb->GetVertex(temp->m_linkId);
+                  NS_ASSERT(w);
                   NS_DEBUG_UNCOND("Found a P2P record from " << 
                     v->m_vertexId << " to " << w->m_vertexId);
+                  // (c) If vertex W is already on the shortest-path tree, 
+                  //  examine the next link in the LSA. 
+                  if (w->m_stat == true) 
+                    {
+                      continue;
+                    }
+                  // (d) Calculate the link state cost D of the resulting path
+                  // from the root to vertex W.  D is equal to the sum of 
+                  // the link state cost of the (already calculated) 
+                  // shortest path to vertex V and the advertised cost of 
+                  // the link between vertices V and W.  
+                  
+//                  uint32_t distance = v->m_distanceFromRoot + temp->m_metric;
+
+                  // Here, W is either already in candidate list or not
+
+                  // if (not in candidate list)
+                  //   ospf_nexthop_calculation()
+                  //   priority_queue.enqueu()
+                  // else
+                  //   get vertex from candidates list
+                  //   if (w->distance < distance)
+                  //     continue; // not a shorter path
+                  //   else if (w->distance > distance)
+                  //       Found a lower-cost path to W.
+                  //      * nexthop_calculation is conditional, if it finds
+                  //      * valid nexthop it will call spf_add_parents, which
+                  //      * will flush the old parents
+                  //      */
+                  //      if (ospf_nexthop_calculation (area, v, w, l, distance))
+                  //      /* Decrease the key of the node in the heap,
+                  //       * re-sort the heap. */
+                  //        trickle_down (w_lsa->stat, candidate);
+                  //
                   continue;
                 }
             }
@@ -293,17 +331,14 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   v->m_stat = true;
 
   // Add all other vertices to the candidate list
+  // XXX todo
   
   for (;;)
     {
-       SPFNext(v /*,candidate */);
-       break;
-    }
+      // RFC2328 16.1. (2). 
+      SPFNext(v /*,candidate */);
+
 #if 0
-    {
-      /* RFC2328 16.1. (2). */
-      ospf_spf_next (v, area, candidate);
-  
       /* RFC2328 16.1. (3). */
       /* If at this step the candidate list is empty, the shortest-
  *          path tree (of transit vertices) has been completely built and
@@ -345,6 +380,9 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   pqueue_delete (candidate);
 
 #endif
+      break;
+    }
+  
 
 
 }
