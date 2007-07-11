@@ -35,7 +35,7 @@ public:
   SPFVertex*    Top (void);
   bool          Empty (void);
   uint32_t      Size (void);
-  SPFVertex*    Fetch (uint32_t key);
+  SPFVertex*    Find (const Ipv4Address addr);
   void          Reorder (void);
 
 protected:

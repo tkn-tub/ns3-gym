@@ -61,13 +61,15 @@ main (int argc, char *argv[])
       candidate.Push (v);
     }
 
+#if 0
   for (int i = 0; i < 100; ++i)
     {
-      SPFVertex *v = candidate.Fetch (i);
+      SPFVertex *v = candidate.Find (i);
       if (v) {
         v->m_distanceFromRoot = rand () % 100;
       }
     }
+#endif
 
   candidate.Reorder ();
 

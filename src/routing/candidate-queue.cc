@@ -111,16 +111,16 @@ CandidateQueue::Size (void)
 
 
   SPFVertex *
-CandidateQueue::Fetch (uint32_t m_distanceFromRoot)
+CandidateQueue::Find (const Ipv4Address addr)
 {
-  NS_DEBUG("CandidateQueue::Fetch ()");
+  NS_DEBUG("CandidateQueue::Find ()");
 
   CandidateList_t::iterator i = m_candidates.begin ();
 
   for (; i != m_candidates.end (); i++)
     {
       SPFVertex *v = *i;
-      if (v->m_distanceFromRoot == m_distanceFromRoot)
+      if (v->m_vertexId == addr)
         {
           return v;
         }
