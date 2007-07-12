@@ -40,6 +40,7 @@ class SPFVertex
 {
 public:
   SPFVertex();
+  SPFVertex(StaticRouterLSA*);
   ~SPFVertex();
   void Initialize ();
 

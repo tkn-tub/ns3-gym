@@ -36,9 +36,17 @@ SPFVertex::SPFVertex () :
 {
 }
 
+SPFVertex::SPFVertex (StaticRouterLSA* lsa) : 
+  m_vertexType(VertexRouter), 
+  m_vertexId(lsa->m_linkStateId),
+  m_lsa(lsa),
+  m_distanceFromRoot(SPF_INFINITY) 
+{
+}
+
+
 SPFVertex::~SPFVertex ()
 {
-  delete m_lsa;
 }
 
 void
@@ -320,12 +328,8 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   // Initialize the shortest-path tree to only the router doing the 
   // calculation.
   //
-  v= new SPFVertex();
-  v->m_vertexType = SPFVertex::VertexRouter;
-  v->m_vertexId = root;
-  v-> m_lsa = m_lsdb->GetLSA(root);
-  // Set LSA position to LSA_SPF_IN_SPFTREE. This vertex is the root of the
-  // spanning tree. 
+  v= new SPFVertex(m_lsdb->GetLSA(root));
+  // This vertex is the root of the SPF tree
   v->m_distanceFromRoot = 0;
 
   for (;;)
