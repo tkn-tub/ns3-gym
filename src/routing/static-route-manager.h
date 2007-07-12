@@ -42,7 +42,6 @@ public:
   SPFVertex();
   SPFVertex(StaticRouterLSA*);
   ~SPFVertex();
-  void Initialize ();
 
   enum VertexType {
     VertexUnknown = 0,
@@ -54,14 +53,15 @@ public:
 
   StaticRouterLSA* m_lsa;  // This pointer owns LSA for mem. mgmt purposes
 
-  // XXX not sure exactly what data structure is needed here
-  // need to keep track of previous vertex
-  typedef std::list<SPFVertex> type_listOfSPFVertex;
-  type_listOfSPFVertex m_parents;
-  type_listOfSPFVertex m_children;
-  type_listOfSPFVertex::iterator m_iter;
+  // need to keep track of current parent vertex
+  SPFVertex* m_parent;
+  //  m_children lists the leaves from your SPF tree
+  typedef std::list<SPFVertex*> t_listOfSPFVertex;
+  t_listOfSPFVertex m_children;
+  t_listOfSPFVertex::iterator m_SPFVertexIter;
 
   uint32_t m_distanceFromRoot;
+  uint32_t m_root_oif;
 
 };
 
@@ -127,11 +127,14 @@ public:
 protected:
 
 private:
+  SPFVertex* m_spfroot;
   StaticRouteManagerLSDB* m_lsdb;
   void SPFCalculate (Ipv4Address root);
   void SPFNext (SPFVertex*, CandidateQueue&);
   int SPFNexthopCalculation (SPFVertex* v, SPFVertex* w, 
     StaticRouterLinkRecord* l, uint32_t distance);
+  void SPFVertexAddParent(SPFVertex* v);
+  void DeleteSPFVertexChain(SPFVertex* spfroot);
 };
 
 } // namespace ns3

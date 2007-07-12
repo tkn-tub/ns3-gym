@@ -32,7 +32,10 @@ SPFVertex::SPFVertex () :
   m_vertexType(VertexUnknown), 
   m_vertexId("255.255.255.255"), 
   m_lsa(0),
-  m_distanceFromRoot(SPF_INFINITY) 
+  m_parent(0),
+  m_children(),
+  m_distanceFromRoot(SPF_INFINITY), 
+  m_root_oif(SPF_INFINITY)
 {
 }
 
@@ -40,20 +43,16 @@ SPFVertex::SPFVertex (StaticRouterLSA* lsa) :
   m_vertexType(VertexRouter), 
   m_vertexId(lsa->m_linkStateId),
   m_lsa(lsa),
-  m_distanceFromRoot(SPF_INFINITY) 
+  m_parent(0),
+  m_children(),
+  m_distanceFromRoot(SPF_INFINITY), 
+  m_root_oif(SPF_INFINITY)
 {
 }
 
 
 SPFVertex::~SPFVertex ()
 {
-}
-
-void
-SPFVertex::Initialize ()
-{
-  m_distanceFromRoot = SPF_INFINITY;
-  // XXX previous = 0
 }
 
 StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
@@ -107,7 +106,7 @@ StaticRouteManagerLSDB::GetLSA (Ipv4Address addr)
   return 0;
 }
 
-StaticRouteManager::StaticRouteManager () 
+StaticRouteManager::StaticRouteManager () : m_spfroot(0) 
 {
   m_lsdb = new StaticRouteManagerLSDB ();
 }
@@ -321,14 +320,8 @@ StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
 
 /* 16.1.1.  Calculate nexthop from root through V (parent) to
  * vertex W (destination), with given distance from root->W.
- *        
- * The link must be supplied if V is the root vertex. In all other cases
- * it may be NULL.
- *          
- * Note that this function may fail, hence the state of the destination
- * vertex, W, should /not/ be modified in a dependent manner until
- * this function returns. This function will update the W vertex with the
- * provided distance as appropriate.
+ *
+ * This greatly simplified from quagga
  */                  
 int
 StaticRouteManager::SPFNexthopCalculation (
@@ -337,6 +330,21 @@ StaticRouteManager::SPFNexthopCalculation (
   StaticRouterLinkRecord* l,
   uint32_t distance)
 {
+  if (v == m_spfroot)
+    {
+      // parent of w is the root itself
+      // calculate the interfaceid of the router that corresponds
+      // to link l between v and w and store it in w->m_root_oif
+      // This root_oif is then used when installing host routes for the
+      // destinations covered by this vertex
+    }
+  else 
+    {
+       // Inherit the root_oif from the current parent
+       w->m_root_oif = v->m_root_oif;
+    }
+  w->m_distanceFromRoot = distance;
+  w->m_parent = v;
   return 1;
 }
 
@@ -353,7 +361,9 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
 {
   NS_DEBUG_UNCOND("StaticRouteManager::SPFCalculate ()");
 
-  SPFVertex* v;
+  SPFVertex *v;
+
+  // Query Interface for the IPv4-route interface
 
   // The candidate queue is a priority queue of SPFVertex objects, with
   // the top of the queue being the closest vertex in terms of 
@@ -368,17 +378,17 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   v= new SPFVertex(m_lsdb->GetLSA(root));
   // This vertex is the root of the SPF tree
   v->m_distanceFromRoot = 0;
+  m_spfroot= v;  
 
   for (;;)
     {
       // RFC2328 16.1. (2). 
       SPFNext(v , candidate);
-#if 0
       /* RFC2328 16.1. (3). */
       /* If at this step the candidate list is empty, the shortest-
  *          path tree (of transit vertices) has been completely built and
  *                   this stage of the procedure terminates. */
-      if (candidate->size == 0)
+      if (candidate.Size() == 0)
         break;
   
       /* Otherwise, choose the vertex belonging to the candidate list
@@ -386,16 +396,20 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
  *                   tree (removing it from the candidate list in the
  *                            process). */
       /* Extract from the candidates the node with the lower key. */
-      v = (struct vertex *) pqueue_dequeue (candidate);
+      v = candidate.Top();
+      candidate.Pop();
       /* Update stat field in vertex. */
-      *(v->stat) = LSA_SPF_IN_SPFTREE;
-
-      ospf_vertex_add_parent (v);
+      v->m_lsa->m_stat = StaticRouterLSA::LSA_SPF_IN_SPFTREE;
+      SPFVertexAddParent(v);
+#if 0
       /* Note that when there is a choice of vertices closest to the
  *          root, network vertices must be chosen before router vertices
  *                   in order to necessarily find all equal-cost paths. */
       /* We don't do this at this moment, we should add the treatment
  *          above codes. -- kunihiro. */
+
+
+INSTALL HOST ROUTES HERE
 
       /* RFC2328 16.1. (4). */
       if (v->type == OSPF_VERTEX_ROUTER)
@@ -413,15 +427,29 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   
   /* Free candidate queue. */
   pqueue_delete (candidate);
-
+  
 #endif
+
       break;
     }
-  
-
-
+  DeleteSPFVertexChain(m_spfroot);  
+  m_spfroot = 0;
 }
 
+// Add a vertex to the list of children in each of its parents. 
+void
+StaticRouteManager::SPFVertexAddParent(SPFVertex* v)
+{
+}
+
+void
+StaticRouteManager::DeleteSPFVertexChain(SPFVertex* spfroot)
+{
+  // spfroot is the root of all SPFVertex created during the SPF process
+  // each vertex has a number of children
+  // Recursively, delete all of the SPFVertex children of each SPFVertex
+  // then delete root itself
+}
 
 } // namespace ns3
 
