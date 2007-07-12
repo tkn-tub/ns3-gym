@@ -173,7 +173,7 @@ public:
   enum SPFStatus {
     LSA_SPF_NOT_EXPLORED = 0,
     LSA_SPF_IN_SPFTREE,
-    LSA_SPF_IN_CANDIDATE_QUEUE
+    LSA_SPF_CANDIDATE
   } m_stat;
 
 };

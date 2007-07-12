@@ -130,6 +130,8 @@ private:
   StaticRouteManagerLSDB* m_lsdb;
   void SPFCalculate (Ipv4Address root);
   void SPFNext (SPFVertex*, CandidateQueue&);
+  int SPFNexthopCalculation (SPFVertex* v, SPFVertex* w, 
+    StaticRouterLinkRecord* l, uint32_t distance);
 };
 
 } // namespace ns3

@@ -224,6 +224,10 @@ StaticRouteManager::InitializeRoutes ()
 void
 StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
 {
+  SPFVertex* w = 0;
+  StaticRouterLSA* w_lsa = 0;
+  uint32_t distance = 0;
+
   if (v->m_vertexType == SPFVertex::VertexRouter) 
     {
       // Always true for now, since all our LSAs are RouterLSAs
@@ -239,19 +243,19 @@ StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
               // link in V's LSA.  Links to stub networks will be
               // considered in the second stage of the shortest path
               // calculation. 
-              StaticRouterLinkRecord* temp = *i;
-              if (temp->m_linkType == StaticRouterLinkRecord::StubNetwork)
+              StaticRouterLinkRecord* l = *i;
+              if (l->m_linkType == StaticRouterLinkRecord::StubNetwork)
                 {
-                  NS_DEBUG_UNCOND("Found a Stub record to " << temp->m_linkId);
+                  NS_DEBUG_UNCOND("Found a Stub record to " << l->m_linkId);
                   continue;
                 }
                 // (b) Otherwise, W is a transit vertex (router or transit
                 // network).  Look up the vertex W's LSA (router-LSA or
                 // network-LSA) in Area A's link state database. 
-              if (temp->m_linkType == StaticRouterLinkRecord::PointToPoint)
+              if (l->m_linkType == StaticRouterLinkRecord::PointToPoint)
                 {
                   // Lookup the vertex W's LSA 
-                  StaticRouterLSA* w_lsa = m_lsdb->GetLSA(temp->m_linkId);
+                  w_lsa = m_lsdb->GetLSA(l->m_linkId);
                   NS_ASSERT(w_lsa);
                   NS_DEBUG_UNCOND("Found a P2P record from " << 
                     v->m_vertexId << " to " << w_lsa->m_linkStateId);
@@ -267,40 +271,73 @@ StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
                   // the link state cost of the (already calculated) 
                   // shortest path to vertex V and the advertised cost of 
                   // the link between vertices V and W.  
-                  
-                  //uint32_t distance = v->m_distanceFromRoot + temp->m_metric;
+                  distance = v->m_distanceFromRoot + l->m_metric;
 
                   // Here, W is either already in candidate list or not
-
-#if 0
                   if (w_lsa->m_stat == StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
                     {
-                      SPFVertex* w = new SPFVertex(w_lsa);
-#endif
-
-                  //   ospf_nexthop_calculation()
-                  //   priority_queue.enqueu()
-                  // else
-                  //   get vertex from candidates list
-                  //   if (w->distance < distance)
-                  //     continue; // not a shorter path
-                  //   else if (w->distance > distance)
+                      w = new SPFVertex(w_lsa);
+                      // Calculate nexthop to W
+                      if (SPFNexthopCalculation(v, w, l, distance))
+                        {
+                          w_lsa->m_stat = StaticRouterLSA::LSA_SPF_CANDIDATE;
+                          candidate.Push(w);
+                        }
+                    }
+                  } else if (w_lsa->m_stat == 
+                             StaticRouterLSA::LSA_SPF_CANDIDATE)
+                    {
+                      //Get the vertex from candidates
+                      w = candidate.Find(w_lsa->m_linkStateId);
+                      if (w->m_distanceFromRoot < distance)
+                        {
+                          continue; // not a shorter path
+                        }
+                       // equal to
+                       else if (w->m_distanceFromRoot == distance)
+                         {
+                           // Do nothing-- not doing equal-cost multipath
+                         }
+                       else
+                         {
                   //       Found a lower-cost path to W.
                   //      * nexthop_calculation is conditional, if it finds
                   //      * valid nexthop it will call spf_add_parents, which
                   //      * will flush the old parents
                   //      */
-                  //      if (ospf_nexthop_calculation (area, v, w, l, distance))
+                           if (SPFNexthopCalculation(v, w, l, distance))
+                             {
                   //      /* Decrease the key of the node in the heap,
                   //       * re-sort the heap. */
-                  //        trickle_down (w_lsa->stat, candidate);
-                  //
-                  continue;
-                }
-            }
+                             candidate.Reorder();
+                              }
+                          }    
+                }  // point-to-point
+            } // for loop
         } 
      }
      NS_DEBUG_UNCOND("");
+}
+
+/* 16.1.1.  Calculate nexthop from root through V (parent) to
+ * vertex W (destination), with given distance from root->W.
+ *        
+ * The link must be supplied if V is the root vertex. In all other cases
+ * it may be NULL.
+ *          
+ * Note that this function may fail, hence the state of the destination
+ * vertex, W, should /not/ be modified in a dependent manner until
+ * this function returns. This function will update the W vertex with the
+ * provided distance as appropriate.
+ */                  
+int
+StaticRouteManager::SPFNexthopCalculation (
+  SPFVertex* v, 
+  SPFVertex* w,
+  StaticRouterLinkRecord* l,
+  uint32_t distance)
+{
+  return 1;
 }
 
 // quagga ospf_spf_calculate
