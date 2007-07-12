@@ -266,7 +266,7 @@ SimulatorPrivate::Cancel (EventId &id)
 }
 
 bool
-SimulatorPrivate::IsExpired (EventId ev)
+SimulatorPrivate::IsExpired (const EventId ev)
 {
   if (ev.GetEventImpl () == 0 ||
       ev.GetTs () < m_currentTs ||

@@ -529,7 +529,7 @@ public:
    * @param id the event to test for expiration
    * @returns true if the event has expired, false otherwise.
    */
-  static bool IsExpired (EventId id);
+  static bool IsExpired (const EventId id);
   /**
    * Return the "current simulation time".
    */
