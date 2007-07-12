@@ -32,8 +32,7 @@ SPFVertex::SPFVertex () :
   m_vertexType(VertexUnknown), 
   m_vertexId("255.255.255.255"), 
   m_lsa(0),
-  m_distanceFromRoot(SPF_INFINITY), 
-  m_stat(LSA_SPF_NOT_EXPLORED)
+  m_distanceFromRoot(SPF_INFINITY) 
 {
 }
 
@@ -46,7 +45,6 @@ void
 SPFVertex::Initialize ()
 {
   m_distanceFromRoot = SPF_INFINITY;
-  m_stat = LSA_SPF_NOT_EXPLORED;
   // XXX previous = 0
 }
 
@@ -244,19 +242,18 @@ StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
                 // network-LSA) in Area A's link state database. 
               if (temp->m_linkType == StaticRouterLinkRecord::PointToPoint)
                 {
-                  // Lookup the LSA (vertex) for the neighbor
+                  // Lookup the vertex W's LSA 
                   StaticRouterLSA* w_lsa = m_lsdb->GetLSA(temp->m_linkId);
                   NS_ASSERT(w_lsa);
                   NS_DEBUG_UNCOND("Found a P2P record from " << 
                     v->m_vertexId << " to " << w_lsa->m_linkStateId);
-#if 0
                   // (c) If vertex W is already on the shortest-path tree, 
                   //  examine the next link in the LSA. 
-                  if (w->m_stat == LSA_SPF_IN_SPFTREE) 
+                  if (w_lsa->m_stat == StaticRouterLSA::LSA_SPF_IN_SPFTREE) 
                     {
+                      NS_DEBUG("LSA "<< w_lsa->m_linkStateId << " in SPF");
                       continue;
                     }
-#endif
                   // (d) Calculate the link state cost D of the resulting path
                   // from the root to vertex W.  D is equal to the sum of 
                   // the link state cost of the (already calculated) 
@@ -267,7 +264,12 @@ StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
 
                   // Here, W is either already in candidate list or not
 
-                  // if (not in candidate list)
+#if 0
+                  if (w_lsa->m_stat == StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
+                    {
+                      SPFVertex* w = new SPFVertex(w_lsa);
+#endif
+
                   //   ospf_nexthop_calculation()
                   //   priority_queue.enqueu()
                   // else
@@ -325,7 +327,6 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   // Set LSA position to LSA_SPF_IN_SPFTREE. This vertex is the root of the
   // spanning tree. 
   v->m_distanceFromRoot = 0;
-  v->m_stat = LSA_SPF_IN_SPFTREE;
 
   for (;;)
     {

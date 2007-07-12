@@ -29,9 +29,6 @@ namespace ns3 {
 
 const uint32_t SPF_INFINITY = 0xffffffff;
 
-const int LSA_SPF_NOT_EXPLORED = -1;
-const int LSA_SPF_IN_SPFTREE = -2;
-
 class CandidateQueue;
 
 /**
@@ -65,8 +62,6 @@ public:
 
   uint32_t m_distanceFromRoot;
 
-  // If stat >= 0, stat is LSA position in candidates heap
-  int m_stat;  
 };
 
 /**

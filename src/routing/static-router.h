@@ -168,6 +168,14 @@ public:
 
   typedef std::list<StaticRouterLinkRecord*> ListOfLinkRecords_t;
   ListOfLinkRecords_t m_linkRecords;
+
+  // this is a tristate flag used internally in the SPF computation
+  enum SPFStatus {
+    LSA_SPF_NOT_EXPLORED = 0,
+    LSA_SPF_IN_SPFTREE,
+    LSA_SPF_IN_CANDIDATE_QUEUE
+  } m_stat;
+
 };
 
 std::ostream& operator<< (std::ostream& os, StaticRouterLSA& lsa);

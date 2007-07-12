@@ -30,13 +30,15 @@ StaticRouterLSA::StaticRouterLSA()
   : 
   m_linkStateId("0.0.0.0"),
   m_advertisingRtr("0.0.0.0"),
-  m_linkRecords()
+  m_linkRecords(),
+  m_stat(StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
 {
   NS_DEBUG("StaticRouterLSA::StaticRouterLSA ()");
 }
 
 StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
-  : m_linkStateId(lsa.m_linkStateId), m_advertisingRtr(lsa.m_advertisingRtr)
+  : m_linkStateId(lsa.m_linkStateId), m_advertisingRtr(lsa.m_advertisingRtr),
+    m_stat(lsa.m_stat)
 {
   NS_ASSERT_MSG(IsEmpty(), "The LSA must be empty in its constructor!");
   CopyLinkRecords (lsa);
@@ -47,6 +49,7 @@ StaticRouterLSA::operator= (StaticRouterLSA& lsa)
 {
   m_linkStateId = lsa.m_linkStateId;
   m_advertisingRtr = lsa.m_advertisingRtr;
+  m_stat = lsa.m_stat;
 
   ClearLinkRecords ();
   CopyLinkRecords (lsa);
@@ -201,6 +204,7 @@ StaticRouter::DiscoverLSAs (void)
   StaticRouterLSA *pLSA = new StaticRouterLSA;
   pLSA->m_linkStateId = m_routerId;
   pLSA->m_advertisingRtr = m_routerId;
+  pLSA->m_stat = StaticRouterLSA::LSA_SPF_NOT_EXPLORED;
 //
 // We need to ask the node for the number of net devices attached. This isn't
 // necessarily equal to the number of links to adjacent nodes (other routers)
