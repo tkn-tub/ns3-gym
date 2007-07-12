@@ -22,6 +22,7 @@
 #include "ns3/node-list.h"
 #include "static-router.h"
 #include "static-route-manager.h"
+#include "candidate-queue.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("StaticRouteManager");
 
@@ -215,7 +216,7 @@ StaticRouteManager::InitializeRoutes ()
 //
 //
 void
-StaticRouteManager::SPFNext(SPFVertex* v, SPFVertexPriorityQueue& candidate)
+StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
 {
   if (v->m_vertexType == SPFVertex::VertexRouter) 
     {
@@ -311,8 +312,8 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   // the top of the queue being the closest vertex in terms of 
   // distanceFromRoot.  Initially, this queue is empty.
   //
-  SPFVertexPriorityQueue candidate;
-  NS_ASSERT(candidate.size() == 0);
+  CandidateQueue candidate;
+  NS_ASSERT(candidate.Size() == 0);
   //
   // Initialize the shortest-path tree to only the router doing the 
   // calculation.
@@ -430,21 +431,21 @@ StaticRouteManagerTest::RunTests (void)
 {
   bool ok = true;
 
-  SPFVertexPriorityQueue candidate;     // <----------------
+  CandidateQueue candidate;     // <----------------
 
   for (int i = 0; i < 100; ++i)
     {
       SPFVertex *v = new SPFVertex;
       v->m_distanceFromRoot = rand () % 100;
-      candidate.push (v);               // <----------------
+      candidate.Push (v);               // <----------------
     }
 
   uint32_t lastDistance = 0;
 
   for (int i = 0; i < 100; ++i)
     {
-      SPFVertex *v = candidate.top ();  // <----------------
-      candidate.pop ();                 // <----------------
+      SPFVertex *v = candidate.Top ();  // <----------------
+      candidate.Pop ();                 // <----------------
       if (v->m_distanceFromRoot < lastDistance)
         {
           ok = false;

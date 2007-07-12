@@ -31,6 +31,9 @@ const uint32_t SPF_INFINITY = 0xffffffff;
 
 const int LSA_SPF_NOT_EXPLORED = -1;
 const int LSA_SPF_IN_SPFTREE = -2;
+
+class CandidateQueue;
+
 /**
  * \brief Vertex used in shortest path first (SPF) computations
  *
@@ -64,19 +67,7 @@ public:
 
   // If stat >= 0, stat is LSA position in candidates heap
   int m_stat;  
-
-  struct Greater : public std::binary_function< SPFVertex*, SPFVertex*, bool>
-  {
-    bool operator()(const SPFVertex *v1, const SPFVertex *v2) const
-    {
-      return v1->m_distanceFromRoot > v2->m_distanceFromRoot;
-    }
-  };
 };
-
-typedef std::vector<SPFVertex*> SPFVector_t;
-typedef std::priority_queue<SPFVertex*, SPFVector_t, SPFVertex::Greater> 
-  SPFVertexPriorityQueue;
 
 /**
  * \brief The Link State DataBase (LSDB) of a static router
@@ -142,7 +133,7 @@ protected:
 private:
   StaticRouteManagerLSDB* m_lsdb;
   void SPFCalculate (Ipv4Address root);
-  void SPFNext (SPFVertex*, SPFVertexPriorityQueue&);
+  void SPFNext (SPFVertex*, CandidateQueue&);
 };
 
 } // namespace ns3
