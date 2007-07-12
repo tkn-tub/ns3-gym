@@ -45,7 +45,6 @@ CandidateQueue::Clear (void)
     }
 }
 
-
   void
 CandidateQueue::Push (SPFVertex *vNew)
 {
@@ -108,7 +107,6 @@ CandidateQueue::Size (void)
 
   return m_candidates.size ();
 }
-
 
   SPFVertex *
 CandidateQueue::Find (const Ipv4Address addr)

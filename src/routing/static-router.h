@@ -282,6 +282,14 @@ protected:
   Ipv4Address m_routerId;
 
 private:
+  /**
+   * Static Router copy construction is disallowed.
+   */
+  StaticRouter (StaticRouter& sr);
+  /**
+   * Static Router copy assignment operator is disallowed.
+   */
+  StaticRouter& operator= (StaticRouter& sr);
 };
 
 } // namespace ns3
