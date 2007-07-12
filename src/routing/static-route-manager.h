@@ -135,6 +135,10 @@ private:
     StaticRouterLinkRecord* l, uint32_t distance);
   void SPFVertexAddParent(SPFVertex* v);
   void DeleteSPFVertexChain(SPFVertex* spfroot);
+  uint32_t FindOutgoingInterface(SPFVertex* v, SPFVertex* w, 
+    StaticRouterLinkRecord* l);
+  void SPFIntraAddRouter(SPFVertex* v);
+
 };
 
 } // namespace ns3

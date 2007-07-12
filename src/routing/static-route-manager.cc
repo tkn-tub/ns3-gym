@@ -337,6 +337,10 @@ StaticRouteManager::SPFNexthopCalculation (
       // to link l between v and w and store it in w->m_root_oif
       // This root_oif is then used when installing host routes for the
       // destinations covered by this vertex
+      //
+      // Find the outgoing interface on v corresponding to the link l
+      // between v and w
+      w->m_root_oif = FindOutgoingInterface(v,w,l);
     }
   else 
     {
@@ -347,6 +351,20 @@ StaticRouteManager::SPFNexthopCalculation (
   w->m_parent = v;
   return 1;
 }
+
+uint32_t
+StaticRouteManager::FindOutgoingInterface (
+  SPFVertex* v,
+  SPFVertex* w,
+  StaticRouterLinkRecord* l
+  ) 
+{
+  // Using the Ipv4 public APIs of a node, find the outgoing
+  // interface ID corresponding to the link l between vertex v and w
+  // where v is the root of the tree
+  return 0;
+}
+  
 
 // quagga ospf_spf_calculate
 void
@@ -363,7 +381,6 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
 
   SPFVertex *v;
 
-  // Query Interface for the IPv4-route interface
 
   // The candidate queue is a priority queue of SPFVertex objects, with
   // the top of the queue being the closest vertex in terms of 
@@ -401,52 +418,63 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
       /* Update stat field in vertex. */
       v->m_lsa->m_stat = StaticRouterLSA::LSA_SPF_IN_SPFTREE;
       SPFVertexAddParent(v);
-#if 0
       /* Note that when there is a choice of vertices closest to the
  *          root, network vertices must be chosen before router vertices
  *                   in order to necessarily find all equal-cost paths. */
       /* We don't do this at this moment, we should add the treatment
  *          above codes. -- kunihiro. */
 
-
-INSTALL HOST ROUTES HERE
-
       /* RFC2328 16.1. (4). */
-      if (v->type == OSPF_VERTEX_ROUTER)
-        ospf_intra_add_router (new_rtrs, v, area);
-      else
-        ospf_intra_add_transit (new_table, v, area);
+      SPFIntraAddRouter (v);
 
       /* RFC2328 16.1. (5). */
       /* Iterate the algorithm by returning to Step 2. */
 
     } /* end loop until no more candidate vertices */
 
+#ifdef NOTYET
   /* Second stage of SPF calculation procedure's  */
   ospf_spf_process_stubs (area, area->spf, new_table);
-  
-  /* Free candidate queue. */
-  pqueue_delete (candidate);
-  
 #endif
 
-      break;
-    }
   DeleteSPFVertexChain(m_spfroot);  
   m_spfroot = 0;
+}
+
+void
+StaticRouteManager::SPFIntraAddRouter(SPFVertex* v)
+{
+
+   // This vertex has just been added to the SPF tree
+   // - the vertex should have a valid m_root_oid corresponding
+   //   to the outgoing interface on the root router of the tree
+   //   that corresponds to the path to it
+   // - the vertex has an m_lsa field that has a number of link
+   //   records.  For each point to point record, the m_linkData
+   //   is a destination IP address to which we add a host route
+   //
+   
+   // Therefore, this routine's logic should be:
+   // i) obtain the ipv4-route interface of the node corresponding
+   //    to m_spfroot (vertex)
+   //    i.e. Query Interface for the IPv4-route interface
+   // ii) for each point-to-point link in v->m_lsa
+   //    ipv4-route::AddHostRouteTo(m_linkData, m_root_oid);
 }
 
 // Add a vertex to the list of children in each of its parents. 
 void
 StaticRouteManager::SPFVertexAddParent(SPFVertex* v)
 {
+  // For now, only one parent (not doing equal-cost multipath)
+  v->m_parent->m_children.push_back(v);
 }
 
 void
 StaticRouteManager::DeleteSPFVertexChain(SPFVertex* spfroot)
 {
   // spfroot is the root of all SPFVertex created during the SPF process
-  // each vertex has a number of children
+  // each vertex has a list of children
   // Recursively, delete all of the SPFVertex children of each SPFVertex
   // then delete root itself
 }
