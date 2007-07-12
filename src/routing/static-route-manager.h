@@ -85,16 +85,17 @@ class StaticRouteManagerLSDB
 {
 public:
   ~StaticRouteManagerLSDB ();
-  void Insert(Ipv4Address addr, SPFVertex* vertex);
   void Insert(Ipv4Address addr, StaticRouterLSA* lsa);
-  SPFVertex* GetVertex (Ipv4Address addr);
+  StaticRouterLSA* GetLSA (Ipv4Address addr);
   /**
    * \brief Set all SPFVertex to an initialized state, for SPF computation
    */
+#if 0
   void Initialize ();
+#endif
 
-  typedef std::map<Ipv4Address, SPFVertex*> LSDBMap_t;
-  typedef std::pair<Ipv4Address, SPFVertex*> LSDBPair_t;
+  typedef std::map<Ipv4Address, StaticRouterLSA*> LSDBMap_t;
+  typedef std::pair<Ipv4Address, StaticRouterLSA*> LSDBPair_t;
   LSDBMap_t m_database;
 };
 

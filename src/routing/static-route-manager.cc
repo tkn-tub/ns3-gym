@@ -56,14 +56,15 @@ StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
   LSDBMap_t::iterator i;
   for (i= m_database.begin(); i!= m_database.end(); i++)
     {
-      NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB():free vertex");
-      SPFVertex* temp = i->second;
+      NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB():free LSA");
+      StaticRouterLSA* temp = i->second;
       delete temp;
     }
   NS_DEBUG("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ():  clear map");
   m_database.clear();
 }
 
+#if 0
 void
 StaticRouteManagerLSDB::Initialize()
 {
@@ -72,29 +73,20 @@ StaticRouteManagerLSDB::Initialize()
   LSDBMap_t::iterator i;
   for (i= m_database.begin(); i!= m_database.end(); i++)
     {
-      SPFVertex* temp = i->second;
+      StaticRouterLSA* temp = i->second;
       temp->Initialize();
     }
 }
+#endif
 
 void
 StaticRouteManagerLSDB::Insert(Ipv4Address addr, StaticRouterLSA* lsa)
 {
-    SPFVertex* temp = new SPFVertex ();
-    temp->m_lsa = lsa;
-    temp->m_vertexType = SPFVertex::VertexRouter;
-    temp->m_vertexId = lsa->m_linkStateId;
-    m_database.insert(LSDBPair_t(addr, temp));
+    m_database.insert(LSDBPair_t(addr, lsa));
 }
 
-void
-StaticRouteManagerLSDB::Insert(Ipv4Address addr, SPFVertex* vertex)
-{
-    m_database.insert(LSDBPair_t(addr, vertex));
-}
-
-SPFVertex*
-StaticRouteManagerLSDB::GetVertex (Ipv4Address addr)
+StaticRouterLSA*
+StaticRouteManagerLSDB::GetLSA (Ipv4Address addr)
 {
   // Look up an LSA by its address
   LSDBMap_t::iterator i;
@@ -252,16 +244,18 @@ StaticRouteManager::SPFNext(SPFVertex* v, SPFVertexPriorityQueue& candidate)
               if (temp->m_linkType == StaticRouterLinkRecord::PointToPoint)
                 {
                   // Lookup the LSA (vertex) for the neighbor
-                  SPFVertex* w = m_lsdb->GetVertex(temp->m_linkId);
-                  NS_ASSERT(w);
+                  StaticRouterLSA* w_lsa = m_lsdb->GetLSA(temp->m_linkId);
+                  NS_ASSERT(w_lsa);
                   NS_DEBUG_UNCOND("Found a P2P record from " << 
-                    v->m_vertexId << " to " << w->m_vertexId);
+                    v->m_vertexId << " to " << w_lsa->m_linkStateId);
+#if 0
                   // (c) If vertex W is already on the shortest-path tree, 
                   //  examine the next link in the LSA. 
                   if (w->m_stat == LSA_SPF_IN_SPFTREE) 
                     {
                       continue;
                     }
+#endif
                   // (d) Calculate the link state cost D of the resulting path
                   // from the root to vertex W.  D is equal to the sum of 
                   // the link state cost of the (already calculated) 
@@ -311,8 +305,6 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
 {
   NS_DEBUG_UNCOND("StaticRouteManager::SPFCalculate ()");
 
-  // The SPFVertex objects may have state from a previous computation
-  m_lsdb->Initialize();
   SPFVertex* v;
 
   // The candidate queue is a priority queue of SPFVertex objects, with
@@ -325,10 +317,12 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   // Initialize the shortest-path tree to only the router doing the 
   // calculation.
   //
-  v= m_lsdb->GetVertex(root);
+  v= new SPFVertex();
+  v->m_vertexType = SPFVertex::VertexRouter;
+  v->m_vertexId = root;
+  v-> m_lsa = m_lsdb->GetLSA(root);
   // Set LSA position to LSA_SPF_IN_SPFTREE. This vertex is the root of the
   // spanning tree. 
-  NS_ASSERT(v);
   v->m_distanceFromRoot = 0;
   v->m_stat = LSA_SPF_IN_SPFTREE;
 
@@ -565,31 +559,13 @@ StaticRouteManagerTest::RunTests (void)
   lsa3->AddLinkRecord(lr2);
   lsa3->AddLinkRecord(lr3);
 
-  // Create four vertices to store these four LSAs
-  SPFVertex* v0 = new SPFVertex ();
-  v0->m_lsa = lsa0;
-  v0->m_vertexType = SPFVertex::VertexRouter;
-  v0->m_vertexId = lsa0->m_linkStateId;
-  SPFVertex* v1 = new SPFVertex ();
-  v1->m_lsa = lsa1;
-  v1->m_vertexType = SPFVertex::VertexRouter;
-  v1->m_vertexId = lsa1->m_linkStateId;
-  SPFVertex* v2 = new SPFVertex ();
-  v2->m_lsa = lsa2;
-  v2->m_vertexType = SPFVertex::VertexRouter;
-  v2->m_vertexId = lsa2->m_linkStateId;
-  SPFVertex* v3 = new SPFVertex ();
-  v3->m_lsa = lsa3;
-  v3->m_vertexType = SPFVertex::VertexRouter;
-  v3->m_vertexId = lsa3->m_linkStateId;
-  
   // Test the database 
   StaticRouteManagerLSDB* srmlsdb = new StaticRouteManagerLSDB();
-  srmlsdb->Insert(lsa0->m_linkStateId, v0);
-  srmlsdb->Insert(lsa1->m_linkStateId, v1);
-  srmlsdb->Insert(lsa2->m_linkStateId, v2);
-  srmlsdb->Insert(lsa3->m_linkStateId, v3);
-  NS_ASSERT(v2 == srmlsdb->GetVertex(lsa2->m_linkStateId));
+  srmlsdb->Insert(lsa0->m_linkStateId, lsa0);
+  srmlsdb->Insert(lsa1->m_linkStateId, lsa1);
+  srmlsdb->Insert(lsa2->m_linkStateId, lsa2);
+  srmlsdb->Insert(lsa3->m_linkStateId, lsa3);
+  NS_ASSERT(lsa2 == srmlsdb->GetLSA(lsa2->m_linkStateId));
 
   // We need a dummy node to populate the routing tables
   Ptr<StaticRouterTestNode> n2 = Create<StaticRouterTestNode> ();
@@ -600,8 +576,7 @@ StaticRouteManagerTest::RunTests (void)
   srm->DebugSPFCalculate(lsa0->m_linkStateId);  // node n0
 
   // This delete clears the srm, which deletes the LSDB, which clears 
-  // all of the vertices, which each destroy the matching LSAs, which each
-  // destroys the attached LinkRecords.
+  // all of the LSAs, which each destroys the attached LinkRecords.
   delete srm;
 
   return ok;
