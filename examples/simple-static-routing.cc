@@ -140,12 +140,12 @@ int main (int argc, char *argv[])
       channel2, n2, Ipv4Address("10.1.3.1"),
       n3, Ipv4Address("10.1.3.2"));
 
-  // Here, we will use the StaticRoutingManager to build routes
-  Ptr<StaticRouteManager> routeManager = Create<StaticRouteManager> ();
-  // The below functions might better be placed in some kind of
-  // Simulator::Initialization function (for further study)
-  routeManager->BuildStaticRoutingDatabase ();
-  routeManager->InitializeRoutes ();
+  if (RoutingEnvironment::StaticRoutingEnabled())
+    {
+      Ptr<StaticRouteManager> routeManager = Create<StaticRouteManager> ();
+      routeManager->BuildStaticRoutingDatabase ();
+      routeManager->InitializeRoutes ();
+    }
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
