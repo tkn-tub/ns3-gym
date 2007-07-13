@@ -125,13 +125,25 @@ public:
    */
   void CopyLinkRecords (StaticRouterLSA& lsa);
   /**
-   * Add a given Static Router Link Record to a given Static Router Link
-   * State Advertisement.
+   * Add a given Static Router Link Record to the LSA.
    *
    * @param lr The Static Router Link Record to be added.
    * @returns The number of link records in the list.
    */
   uint32_t AddLinkRecord (StaticRouterLinkRecord* lr);
+  /**
+   * Return the number of Static Router Link Records in the LSA.
+   *
+   * @returns The number of link records in the list.
+   */
+  uint32_t GetNLinkRecords (void);
+  /**
+   * Return a pointer to the specified Static Router Link Record.
+   *
+   * @param n The LSA number desired.
+   * @returns The number of link records in the list.
+   */
+  StaticRouterLinkRecord* GetLinkRecord (uint32_t n);
   /**
    * Release all of the Static Router Link Records present in the Static
    * Router Link State Advertisement and make the list of link records empty.

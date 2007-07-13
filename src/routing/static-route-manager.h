@@ -49,7 +49,7 @@ public:
     VertexNetwork
   } m_vertexType;
 
-  Ipv4Address m_vertexId;
+  Ipv4Address m_vertexId;  // router id
 
   StaticRouterLSA* m_lsa;  // This pointer owns LSA for mem. mgmt purposes
 

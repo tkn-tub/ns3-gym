@@ -20,6 +20,7 @@
 #include "ns3/fatal-error.h"
 #include "ns3/debug.h"
 #include "ns3/node-list.h"
+#include "ns3/ipv4.h"
 #include "static-router.h"
 #include "static-route-manager.h"
 #include "candidate-queue.h"
@@ -352,6 +353,10 @@ StaticRouteManager::SPFNexthopCalculation (
   return 1;
 }
 
+//
+// Figure out which interface that the node represented by v will want to use
+// to send packets to the node represented by w over the link represented by l
+//
 uint32_t
 StaticRouteManager::FindOutgoingInterface (
   SPFVertex* v,
@@ -359,6 +364,12 @@ StaticRouteManager::FindOutgoingInterface (
   StaticRouterLinkRecord* l
   ) 
 {
+  NS_ASSERT_MSG(v == m_spfroot, 
+    "StaticRouterManager""FindOutgoingInterface (): "
+    "The node of interest must be the root node");
+
+  // want interface that v uses to send packets
+
   // Using the Ipv4 public APIs of a node, find the outgoing
   // interface ID corresponding to the link l between vertex v and w
   // where v is the root of the tree
@@ -444,7 +455,6 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
 void
 StaticRouteManager::SPFIntraAddRouter(SPFVertex* v)
 {
-
    // This vertex has just been added to the SPF tree
    // - the vertex should have a valid m_root_oid corresponding
    //   to the outgoing interface on the root router of the tree
@@ -460,6 +470,75 @@ StaticRouteManager::SPFIntraAddRouter(SPFVertex* v)
    //    i.e. Query Interface for the IPv4-route interface
    // ii) for each point-to-point link in v->m_lsa
    //    ipv4-route::AddHostRouteTo(m_linkData, m_root_oid);
+
+  NS_ASSERT_MSG(m_spfroot, 
+    "StaticRouteManager::SPFIntraAddRouter (): Root pointer not set");
+
+  Ipv4Address routerId = m_spfroot->m_vertexId;
+
+  std::vector<Ptr<Node> >::iterator i = NodeList::Begin(); 
+  for (; i != NodeList::End(); i++)
+    {
+      Ptr<Node> node = *i;
+
+      Ptr<StaticRouter> rtr = 
+        node->QueryInterface<StaticRouter> (StaticRouter::iid);
+      NS_ASSERT_MSG(rtr, 
+        "StaticRouteManager::SPFIntraAddRouter (): "
+        "QI for <StaticRouter> interface failed");
+
+      if (rtr->GetRouterId () == routerId)
+        {
+          NS_DEBUG_UNCOND("StaticRouteManager::SPFIntraAddRouter (): "
+            "setting routes for node " << node->GetId ());
+
+          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+          NS_ASSERT_MSG(ipv4, 
+            "StaticRouteManager::SPFIntraAddRouter (): "
+            "QI for <Ipv4> interface failed");
+
+          StaticRouterLSA *lsa = v->m_lsa;
+          NS_ASSERT_MSG(lsa, 
+            "StaticRouteManager::SPFIntraAddRouter (): "
+            "Expected valid LSA in SPFVertex* v");
+
+          uint32_t nLinkRecords = lsa->GetNLinkRecords ();
+
+          NS_ASSERT_MSG((nLinkRecords & 1) == 0,
+            "StaticRouteManager::SPFIntraAddRouter (): "
+            "Expected exen number of Link Records");
+
+          for (uint32_t j = 0; j < nLinkRecords; j += 2)
+            {
+              StaticRouterLinkRecord *lrp2p = lsa->GetLinkRecord (j);
+              NS_ASSERT_MSG(
+                lrp2p->m_linkType == StaticRouterLinkRecord::PointToPoint,
+                "StaticRouteManager::SPFIntraAddRouter (): "
+                "Expected PointToPoint Link Record");
+
+              StaticRouterLinkRecord *lrstub = lsa->GetLinkRecord (j + 1);
+              NS_ASSERT_MSG(
+                lrstub->m_linkType == StaticRouterLinkRecord::StubNetwork,
+                "StaticRouteManager::SPFIntraAddRouter (): "
+                "Expected StubNetwork Link Record");
+//
+// BUGBUG
+//
+// Where does the next hop address come from?
+//
+              NS_ASSERT_MSG(false, "BUGBUG");
+
+              NS_DEBUG_UNCOND("StaticRouteManager::SPFIntraAddRouter (): "
+                "Add route to " << lrp2p->m_linkData <<
+                " using next hop " << lrp2p->m_linkData <<
+                " via interface " << v->m_root_oif);
+
+              ipv4->AddHostRouteTo(lrp2p->m_linkData, lrp2p->m_linkData, 
+                v->m_root_oif);
+            }
+          break;
+        }
+    }
 }
 
 // Add a vertex to the list of children in each of its parents. 
@@ -529,21 +608,21 @@ StaticRouteManagerTest::RunTests (void)
 {
   bool ok = true;
 
-  CandidateQueue candidate;     // <----------------
+  CandidateQueue candidate;
 
   for (int i = 0; i < 100; ++i)
     {
       SPFVertex *v = new SPFVertex;
       v->m_distanceFromRoot = rand () % 100;
-      candidate.Push (v);               // <----------------
+      candidate.Push (v);
     }
 
   uint32_t lastDistance = 0;
 
   for (int i = 0; i < 100; ++i)
     {
-      SPFVertex *v = candidate.Top ();  // <----------------
-      candidate.Pop ();                 // <----------------
+      SPFVertex *v = candidate.Top ();
+      candidate.Pop ();
       if (v->m_distanceFromRoot < lastDistance)
         {
           ok = false;

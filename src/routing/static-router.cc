@@ -40,7 +40,8 @@ StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
   : m_linkStateId(lsa.m_linkStateId), m_advertisingRtr(lsa.m_advertisingRtr),
     m_stat(lsa.m_stat)
 {
-  NS_ASSERT_MSG(IsEmpty(), "The LSA must be empty in its constructor!");
+  NS_ASSERT_MSG(IsEmpty(), 
+    "StaticRouterLSA::StaticRouterLSA (): Non-empty LSA in constructor");
   CopyLinkRecords (lsa);
 }
 
@@ -104,6 +105,30 @@ StaticRouterLSA::AddLinkRecord (StaticRouterLinkRecord* lr)
   m_linkRecords.push_back (lr);
   return m_linkRecords.size ();
 }
+
+  uint32_t
+StaticRouterLSA::GetNLinkRecords (void)
+{
+  return m_linkRecords.size ();
+}
+
+  StaticRouterLinkRecord *
+StaticRouterLSA::GetLinkRecord (uint32_t n)
+{
+  uint32_t j = 0;
+  for ( ListOfLinkRecords_t::iterator i = m_linkRecords.begin ();
+        i != m_linkRecords.end (); 
+        i++, j++)
+    {
+      if (j == n) 
+        {
+          return *i;
+        }
+    }
+  NS_ASSERT_MSG(false, "StaticRouterLSA::GetLinkRecord (): invalid index");
+  return 0;
+}
+
 
   bool
 StaticRouterLSA::IsEmpty (void)
@@ -186,7 +211,9 @@ StaticRouter::GetRouterId (void)
 StaticRouter::DiscoverLSAs (void)
 {
   NS_DEBUG("StaticRouter::DiscoverLSAs ()");
-  NS_ASSERT_MSG(m_node, "<Node> interface not set");
+  NS_ASSERT_MSG(m_node, 
+    "StaticRouter::DiscoverLSAs (): <Node> interface not set");
+
   ClearLSAs ();
 //
 // We're aggregated to a node.  We need to ask the node for a pointer to its
@@ -194,7 +221,8 @@ StaticRouter::DiscoverLSAs (void)
 // interfaces lives.
 //
   Ptr<Ipv4> ipv4Local = m_node->QueryInterface<Ipv4> (Ipv4::iid);
-  NS_ASSERT_MSG(ipv4Local, "QI for <Ipv4> interface failed");
+  NS_ASSERT_MSG(ipv4Local, 
+    "StaticRouter::DiscoverLSAs (): QI for <Ipv4> interface failed");
 //
 // We are, for now at least, only going to report RouterLSAs in this method.
 // What this means is that there is going to be one advertisement with some
@@ -257,14 +285,16 @@ StaticRouter::DiscoverLSAs (void)
 //
       Ptr<Node> nodeRemote = ndRemote->GetNode();
       Ptr<Ipv4> ipv4Remote = nodeRemote->QueryInterface<Ipv4> (Ipv4::iid);
-      NS_ASSERT_MSG(ipv4Remote, "QI for remote <Ipv4> interface failed");
+      NS_ASSERT_MSG(ipv4Remote, 
+        "StaticRouter::DiscoverLSAs (): QI for remote <Ipv4> failed");
 //
 // Per the OSPF spec, we're going to need the remote router ID, so we might as
 // well get it now.
 //
       Ptr<StaticRouter> srRemote = 
         nodeRemote->QueryInterface<StaticRouter> (StaticRouter::iid);
-      NS_ASSERT_MSG(srRemote, "QI for remote <StaticRouter> failed");
+      NS_ASSERT_MSG(srRemote, 
+        "StaticRouter::DiscoverLSAs (): QI for remote <StaticRouter> failed");
       Ipv4Address rtrIdRemote = srRemote->GetRouterId();
       NS_DEBUG("Working with remote router " << rtrIdRemote);
 //
@@ -319,7 +349,7 @@ StaticRouter::GetNumLSAs (void)
   bool
 StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa)
 {
-  NS_ASSERT_MSG(lsa.IsEmpty(), "Must pass empty LSA");
+  NS_ASSERT_MSG(lsa.IsEmpty(), "StaticRouter::GetLSA (): Must pass empty LSA");
 //
 // All of the work was done in GetNumLSAs.  All we have to do here is to
 // walk the list of link state advertisements created there and return the 
@@ -355,7 +385,7 @@ StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch)
 
   uint32_t nDevices = ch->GetNDevices();
   NS_ASSERT_MSG(nDevices == 2, 
-    "Point to point channel with other than two devices is not expected");
+    "StaticRouter::GetAdjacent (): Channel with other than two devices");
 //
 // This is a point to point channel with two endpoints.  Get both of them.
 //
@@ -376,8 +406,8 @@ StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch)
     }
   else
     {
-      NS_ASSERT_MSG(0, 
-        "Neither channel endpoint thinks it is connected to this net device");
+      NS_ASSERT_MSG(false,
+        "StaticRouter::GetAdjacent (): Wrong or confused channel?");
       return 0;
     }
 }
