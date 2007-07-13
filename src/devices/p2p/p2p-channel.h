@@ -51,11 +51,7 @@ class PointToPointNetDevice;
  */
 class PointToPointChannel : public Channel {
 public:
-//
-// This is really kidding myself, since just setting N_DEVICES to 3 isn't
-// going to come close to magically creating a multi-drop link, but I can't
-// bring myself to just type 2 in the code (even though I type 0 and 1 :-).
-//
+// Each point to point link has exactly two net devices
   static const int N_DEVICES = 2;
   /**
    * \brief Create a PointToPointChannel
@@ -68,7 +64,7 @@ public:
   /**
    * \brief Create a PointToPointChannel
    *
-   * \param bps The bitrate of the channel
+   * \param bps The maximum bitrate of the channel
    * \param delay Transmission delay through the channel
    */  
   PointToPointChannel (const DataRate& bps, const Time& delay);
@@ -77,7 +73,7 @@ public:
    * \brief Create a PointToPointChannel
    *
    * \param name the name of the channel for identification purposes
-   * \param bps The bitrate of the channel
+   * \param bps The maximum bitrate of the channel
    * \param delay Transmission delay through the channel
    */
   PointToPointChannel (const std::string& name,
@@ -88,21 +84,22 @@ public:
    * \param device pointer to the netdevice to attach to the channel
    */
   void Attach (Ptr<PointToPointNetDevice> device);
-  bool TransmitStart (Packet& p, Ptr<PointToPointNetDevice> src);
-  bool TransmitEnd (Packet &p, Ptr<PointToPointNetDevice> src);
-  void PropagationCompleteEvent(Packet p, Ptr<PointToPointNetDevice> src);
+  bool TransmitStart (Packet& p, Ptr<PointToPointNetDevice> src,
+                      const Time& txTime);
+  // Below two not needed
+  //bool TransmitEnd (Packet &p, Ptr<PointToPointNetDevice> src);
+  //void PropagationCompleteEvent(Packet p, Ptr<PointToPointNetDevice> src);
 
 
   virtual uint32_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
-  virtual DataRate GetDataRate (void);
-  virtual Time GetDelay (void);
+  virtual const DataRate& GetDataRate (void);
+  virtual const Time&     GetDelay (void);
 
 private:
   DataRate      m_bps;
   Time          m_delay;
-
   int32_t       m_nDevices;
 
   enum WireState

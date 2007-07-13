@@ -16,7 +16,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author:  Craig Dowell <craigdo@ee.washington.edu>
+ * Revised: George Riley <riley@ece.gatech.edu>
  */
 
 #include <iostream>
@@ -32,11 +33,17 @@ NS_DEBUG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 namespace ns3 {
 
-PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node) 
+DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
+           "PointToPointLinkDataRate", 
+           "The default data rate for point to point links",
+           DataRate ("10Mb/s"));
+
+  PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
+                                                const DataRate& rate) 
 : 
-  NetDevice(node, MacAddress ("00:00:00:00:00:00")), 
+  NetDevice(node, MacAddress (6)), 
   m_txMachineState (READY),
-  m_bps (DataRate (0xffffffff)),
+  m_bps (rate),
   m_tInterframeGap (Seconds(0)),
   m_channel (0), 
   m_queue (0),
@@ -73,6 +80,9 @@ PointToPointNetDevice::~PointToPointNetDevice()
 // We're assuming that the tracing will be set up after the topology creation
 // phase and this won't actually matter.
 //
+// GFR Comments.  Don't see where the "copy the pointer and add reference"
+// stated above is done. Can original author please comment and/or fix.
+// Shouldn't the queue pointer also bump the refcount?
 PointToPointNetDevice::PointToPointNetDevice (const PointToPointNetDevice& nd)
 : 
   NetDevice(nd), 
@@ -92,6 +102,8 @@ PointToPointNetDevice::PointToPointNetDevice (const PointToPointNetDevice& nd)
     
 }
 
+  // GFR COmments...shouldn't this decrement the refcount instead
+  // of just nil-ing out the pointer?  Don't understand this.
 void PointToPointNetDevice::DoDispose()
 {
   m_channel = 0;
@@ -101,100 +113,54 @@ void PointToPointNetDevice::DoDispose()
 //
 // Assignment operator for PointToPointNetDevice.
 //
-// This uses the non-obvious trick of taking the source net device passed by
-// value instead of by reference.  This causes the copy constructor to be
-// invoked (where the real work is done -- see above).  All we have to do
-// here is to return the newly constructed net device.
 //
-  PointToPointNetDevice&
-PointToPointNetDevice::operator= (const PointToPointNetDevice nd)
+PointToPointNetDevice&
+PointToPointNetDevice::operator= (const PointToPointNetDevice& nd)
 {
   NS_DEBUG ("PointToPointNetDevice::operator= (" << &nd << ")");
+  // FIXME.  Not sure what to do here
+  // GFR Note.  I would suggest dis-allowing netdevice assignment,
+  // as well as pass-by-value (ie. copy constructor).
+  // This resolves some of the questions above about copy constructors.
+  // Why should we ever copy or assign a net device?
   return *this;
 }
 
-  void 
-PointToPointNetDevice::SetDataRate(DataRate bps)
+void PointToPointNetDevice::SetDataRate(const DataRate& bps)
 {
   m_bps = bps;
 }
 
-  void 
-PointToPointNetDevice::SetInterframeGap(Time t)
+void PointToPointNetDevice::SetInterframeGap(const Time& t)
 {
   m_tInterframeGap = t;
 }
 
-  bool
-PointToPointNetDevice::SendTo (Packet& p, const MacAddress& dest)
+bool PointToPointNetDevice::SendTo (Packet& p, const MacAddress& dest)
 {
   NS_DEBUG ("PointToPointNetDevice::SendTo (" << &p << ", " << &dest << ")");
   NS_DEBUG ("PointToPointNetDevice::SendTo (): UID is " << p.GetUid () << ")");
 
+  // GFR Comment. Why is this an assertion? Can't a link legitimately
+  // "go down" during the simulation?  Shouldn't we just wait for it
+  // to come back up?
   NS_ASSERT (IsLinkUp ());
-
-#ifdef NOTYET
-    struct NetDevicePacketDestAddress tag;
-    tag.address = address;
-    p.AddTag (tag);
-#endif
 
 //
 // This class simulates a point to point device.  In the case of a serial
-// link, this means that we're simulating something like a UART.  This is
-// not a requirement for a point-to-point link, but it's a typical model for
-// the device.  
+// link, this means that we're simulating something like a UART.
 //
-// Generally, a real device will have a list of pending packets to transmit.  
-// An on-device CPU frees the main CPU(s) of the details of what is happening
-// in the device and feeds the USART.  The main CPU basically just sees the 
-// list of packets -- it puts packets into the list, and the device frees the
-// packets when they are transmitted.
 //
-// In the case of our virtual device here, the queue pointed to by m_queue
-// corresponds to this list.  The main CPU adds packets to the list by 
-// calling this method and when the device completes a send, the packets are
-// freed in an "interrupt" service routine.
-//
-// We're going to do the same thing here.  So first of all, the incoming packet
-// goes onto our queue if possible.  If the queue can't handle it, there's
-// nothing to be done.
-//
-    if (m_queue->Enqueue(p) == false )
-      {
-        return false;
-      }
-//
-// If there's a transmission in progress, the "interrupt" will keep the
-// transmission process going.  If the device is idle, we need to start a
-// transmission.
-//
-// In the real world, the USART runs until it finishes sending bits, and then
-// pulls on the device's transmit complete interrupt wire.  At the same time,
-// the electrons from the last wiggle of the wire are busy propagating down
-// the wire.  In the case of a long speed-of-light delay in the wire, we could
-// conceivably start transmitting the next packet before the end of the 
-// previously sent data has even reached the end of the wire.  This situation
-// is usually avoided (like the plague) and an "interframe gap" is introduced.
-// This is usually the round-trip delay on the channel plus some hard-to-
-// quantify receiver turn-around time (the time required for the receiver
-// to process the last frame and prepare for reception of the next).
-//
-// So, if the transmit machine is ready, we need to schedule a transmit 
-// complete event (at which time we tell the channel we're no longer sending
-// bits).  A separate transmit ready event (at which time the transmitter 
-// becomes ready to start sending bits again is scheduled there).  Finally, 
-// we tell the channel (via TransmitStart ()) that we've started wiggling the 
-// wire and bits are coming out.
-//
-// If the transmit machine is not ready, we just leave and the transmit ready
-// event we know is coming will kick-start the transmit process.
-//
+// If there's a transmission in progress, we enque the packet for later
+// trnsmission; otherwise we send it now.
     if (m_txMachineState == READY) 
       {
         return TransmitStart (p);
       }
-    return true;
+    else
+      {
+        return m_queue->Enqueue(p);
+      }
 }
 
   bool
@@ -206,81 +172,41 @@ PointToPointNetDevice::TransmitStart (Packet &p)
 //
 // This function is called to start the process of transmitting a packet.
 // We need to tell the channel that we've started wiggling the wire and
-// schedule an event that will be executed when it's time to tell the 
-// channel that we're done wiggling the wire.
+// schedule an event that will be executed when the transmission is complete.
 //
   NS_ASSERT_MSG(m_txMachineState == READY, "Must be READY to transmit");
   m_txMachineState = BUSY;
-  Time tEvent = Seconds (m_bps.CalculateTxTime(p.GetSize()));
+  Time txTime = Seconds (m_bps.CalculateTxTime(p.GetSize()));
+  Time txCompleteTime = txTime + m_tInterframeGap;
 
   NS_DEBUG ("PointToPointNetDevice::TransmitStart (): " <<
     "Schedule TransmitCompleteEvent in " << 
-    tEvent.GetSeconds () << "sec");
-
-  Simulator::Schedule (tEvent, 
-                       &PointToPointNetDevice::TransmitCompleteEvent, 
+    txCompleteTime.GetSeconds () << "sec");
+  // Schedule the tx complete event
+  Simulator::Schedule (txCompleteTime, 
+                       &PointToPointNetDevice::TransmitComplete, 
                        this);
-  return m_channel->TransmitStart (p, this); 
+  return m_channel->TransmitStart(p, this, txTime); 
 }
 
-  void
-PointToPointNetDevice::TransmitCompleteEvent (void)
+void PointToPointNetDevice::TransmitComplete (void)
 {
   NS_DEBUG ("PointToPointNetDevice::TransmitCompleteEvent ()");
 //
 // This function is called to finish the  process of transmitting a packet.
 // We need to tell the channel that we've stopped wiggling the wire and
-// schedule an event that will be executed when it's time to re-enable
-// the transmitter after the interframe gap.
+// get the next packet from the queue.  If the queue is empty, we are
+// done, otherwise transmit the next packet.
 //
   NS_ASSERT_MSG(m_txMachineState == BUSY, "Must be BUSY if transmitting");
-  m_txMachineState = GAP;
-  Packet p;
-  bool found;
-  found = m_queue->Dequeue (p);
-  NS_ASSERT_MSG(found, "Packet must be on queue if transmitted");
-  NS_DEBUG ("PointToPointNetDevice::TransmitCompleteEvent (): Pkt UID is " << 
-            p.GetUid () << ")");
-  m_channel->TransmitEnd (p, this); 
-
-  NS_DEBUG (
-    "PointToPointNetDevice::TransmitCompleteEvent (): " <<
-    "Schedule TransmitReadyEvent in "
-    << m_tInterframeGap.GetSeconds () << "sec");
-
-  Simulator::Schedule (m_tInterframeGap, 
-                       &PointToPointNetDevice::TransmitReadyEvent, 
-                       this);
-}
-
-  void
-PointToPointNetDevice::TransmitReadyEvent (void)
-{
-  NS_DEBUG ("PointToPointNetDevice::TransmitReadyEvent ()");
-//
-// This function is called to enable the transmitter after the interframe
-// gap has passed.  If there are pending transmissions, we use this opportunity
-// to start the next transmit.
-//
-  NS_ASSERT_MSG(m_txMachineState == GAP, "Must be in interframe gap");
   m_txMachineState = READY;
-
-  if (m_queue->IsEmpty())
-    {
-      return;
-    }
-  else
-    {
-      Packet p;
-      bool found;
-      found = m_queue->Peek (p);
-      NS_ASSERT_MSG(found, "IsEmpty false but no Packet on queue?");
-      TransmitStart (p);
-    }
+  Packet p;
+  if (!m_queue->Dequeue(p)) return; // Nothing to do at this point
+  TransmitStart(p);
 }
 
-TraceResolver *
-PointToPointNetDevice::DoCreateTraceResolver (TraceContext const &context)
+TraceResolver* PointToPointNetDevice::DoCreateTraceResolver (
+                                      TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   resolver->Add ("queue", 
@@ -292,8 +218,7 @@ PointToPointNetDevice::DoCreateTraceResolver (TraceContext const &context)
   return resolver;
 }
 
-bool
-PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
+bool PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 {
   NS_DEBUG ("PointToPointNetDevice::Attach (" << &ch << ")");
 
@@ -301,7 +226,9 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 
   m_channel->Attach(this);
   m_bps = m_channel->GetDataRate ();
-  m_tInterframeGap = m_channel->GetDelay ();
+  // GFR Comment.  Below is definitely wrong.  Interframe gap
+  // is unrelated to channel delay.
+  //m_tInterframeGap = m_channel->GetDelay ();
 
   /* 
    * For now, this device is up whenever a channel is attached to it.
@@ -315,38 +242,32 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
   return true;
 }
 
-void
-PointToPointNetDevice::AddQueue (Ptr<Queue> q)
+void PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 {
   NS_DEBUG ("PointToPointNetDevice::AddQueue (" << q << ")");
 
   m_queue = q;
 }
 
-void
-PointToPointNetDevice::Receive (Packet& p)
+void PointToPointNetDevice::Receive (Packet& p)
 {
-  // ignore return value for now.
   NS_DEBUG ("PointToPointNetDevice::Receive (" << &p << ")");
 
   m_rxTrace (p);
   ForwardUp (p);
 }
 
-Ptr<Queue>
-PointToPointNetDevice::GetQueue(void) const 
+Ptr<Queue> PointToPointNetDevice::GetQueue(void) const 
 { 
     return m_queue;
 }
 
-Ptr<Channel>
-PointToPointNetDevice::DoGetChannel(void) const 
+Ptr<Channel> PointToPointNetDevice::DoGetChannel(void) const 
 { 
     return m_channel;
 }
 
-bool 
-PointToPointNetDevice::DoNeedsArp (void) const
+bool PointToPointNetDevice::DoNeedsArp (void) const
 {
   return false;
 }

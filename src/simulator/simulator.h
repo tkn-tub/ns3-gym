@@ -173,6 +173,10 @@ public:
    */
   template <typename T, typename OBJ, typename T1>
   static EventId Schedule (Time const &time, void (T::*mem_ptr) (T1), OBJ obj, T1 a1);
+  template <typename T, typename OBJ, typename T1>
+  static EventId Schedule (Time const &time, void (T::*mem_ptr) (const T1&), OBJ obj, T1 a1); // GFR
+  template <typename T, typename OBJ, typename T1>
+  static EventId Schedule (Time const &time, void (T::*mem_ptr) (T1&), OBJ obj, T1 a1); // GFR
   /**
    * @param time the relative expiration time of the event.
    * @param mem_ptr member method pointer to invoke
@@ -234,6 +238,10 @@ public:
    */
   template <typename T1>
   static EventId Schedule (Time const &time, void (*f) (T1), T1 a1);
+  template <typename T1>
+  static EventId Schedule (Time const &time, void (*f) (const T1&), T1 a1); // GFR
+  template <typename T1>
+  static EventId Schedule (Time const &time, void (*f) (T1&), T1 a1); // GFR
   /**
    * @param time the relative expiration time of the event.
    * @param f the function to invoke
@@ -533,6 +541,10 @@ private:
   static EventImpl *MakeEvent (void (T::*mem_ptr) (void), OBJ obj);
   template <typename T, typename OBJ, typename T1>
   static EventImpl *MakeEvent (void (T::*mem_ptr) (T1), OBJ obj, T1 a1);
+  template <typename T, typename OBJ, typename T1>
+  static EventImpl *MakeEvent (void (T::*mem_ptr) (const T1&), OBJ obj, T1 a1); // GFR
+  template <typename T, typename OBJ, typename T1>
+  static EventImpl *MakeEvent (void (T::*mem_ptr) (T1&), OBJ obj, T1 a1); // GFR
   template <typename T, typename OBJ, typename T1, typename T2>
   static EventImpl *MakeEvent (void (T::*mem_ptr) (T1,T2), OBJ obj, T1 a1, T2 a2);
   template <typename T, typename OBJ, typename T1, typename T2, typename T3>
@@ -624,6 +636,56 @@ EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1), OBJ obj, T1 a1)
   class EventMemberImpl1 : public EventImpl {
   public:
     typedef void (T::*F)(T1);
+    EventMemberImpl1 (OBJ obj, F function, T1 a1) 
+      : m_obj (obj), 
+        m_function (function),
+        m_a1 (a1)
+    {}
+  protected:
+    virtual ~EventMemberImpl1 () {}
+  private:
+    virtual void Notify (void) { 
+      (EventMemberImplTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1);
+    }
+    OBJ m_obj;
+    F m_function;
+    T1 m_a1;
+  } *ev = new EventMemberImpl1 (obj, mem_ptr, a1);
+  return ev;
+}
+
+template <typename T, typename OBJ, typename T1>
+EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (const T1&), OBJ obj, T1 a1) 
+{
+  // one argument version, with const reference
+  class EventMemberImpl1 : public EventImpl {
+  public:
+    typedef void (T::*F)(const T1&);
+    EventMemberImpl1 (OBJ obj, F function, T1 a1) 
+      : m_obj (obj), 
+        m_function (function),
+        m_a1 (a1)
+    {}
+  protected:
+    virtual ~EventMemberImpl1 () {}
+  private:
+    virtual void Notify (void) { 
+      (EventMemberImplTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1);
+    }
+    OBJ m_obj;
+    F m_function;
+    T1 m_a1;
+  } *ev = new EventMemberImpl1 (obj, mem_ptr, a1);
+  return ev;
+}
+
+template <typename T, typename OBJ, typename T1>
+EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1&), OBJ obj, T1 a1) 
+{
+  // one argument version with non-const reference
+  class EventMemberImpl1 : public EventImpl {
+  public:
+    typedef void (T::*F)(T1&);
     EventMemberImpl1 (OBJ obj, F function, T1 a1) 
       : m_obj (obj), 
         m_function (function),
@@ -916,6 +978,18 @@ EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (void), OBJ ob
 
 template <typename T, typename OBJ, typename T1>
 EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1), OBJ obj, T1 a1) 
+{
+  return Schedule (time, MakeEvent (mem_ptr, obj, a1));
+}
+
+template <typename T, typename OBJ, typename T1>
+EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (const T1&), OBJ obj, T1 a1) 
+{
+  return Schedule (time, MakeEvent (mem_ptr, obj, a1));
+}
+
+template <typename T, typename OBJ, typename T1>
+EventId Simulator::Schedule (Time const &time, void (T::*mem_ptr) (T1&), OBJ obj, T1 a1) 
 {
   return Schedule (time, MakeEvent (mem_ptr, obj, a1));
 }

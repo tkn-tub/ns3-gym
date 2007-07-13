@@ -30,6 +30,7 @@
 #include "ns3/callback-trace-source.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
+#include "ns3/default-value.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
@@ -80,7 +81,8 @@ public:
    * @see PointToPointTopology::AddPointToPointLink ()
    * @param node the Node to which this device is connected.
    */
-  PointToPointNetDevice (Ptr<Node> node);
+  PointToPointNetDevice (Ptr<Node> node,
+                         const DataRate& = g_defaultRate.GetValue());
   /**
    * Copy Construct a PointToPointNetDevice
    *
@@ -105,7 +107,7 @@ public:
    *
    * @param nd the object to be copied
    */
-  PointToPointNetDevice& operator= (PointToPointNetDevice nd);
+  PointToPointNetDevice& operator= (const PointToPointNetDevice& nd);
   /**
    * Set the Data Rate used for transmission of packets.  The data rate is
    * set in the Attach () method from the corresponding field in the channel
@@ -114,7 +116,7 @@ public:
    * @see Attach ()
    * @param bps the data rate at which this object operates
    */
-  void SetDataRate(DataRate bps);
+  void SetDataRate(const DataRate& bps);
   /**
    * Set the inteframe gap used to separate packets.  The interframe gap
    * defines the minimum space required between packets sent by this device.
@@ -125,7 +127,7 @@ public:
    * @see Attach ()
    * @param t the interframe gap time
    */
-  void SetInterframeGap(Time t);
+  void SetInterframeGap(const Time& t);
   /**
    * Attach the device to a channel.
    *
@@ -190,6 +192,19 @@ protected:
    * @returns a pointer to the channel
    */
   virtual Ptr<Channel> DoGetChannel(void) const;
+  /**
+   * Set a new default data rate
+   * @param Data rate to set for new default
+   */
+  static void SetDefaultRate(const DataRate&);
+
+  /** 
+   * Get the current default rate.
+   * @returns a const reference to current default
+   */
+
+  static const DataRate& GetDefaultRate();
+
 private:
   /**
    * Send a Packet Down the Wire.
@@ -223,39 +238,17 @@ private:
   /**
    * Stop Sending a Packet Down the Wire and Begin the Interframe Gap.
    *
-   * The TransmitCompleteEvent method is used internally to finish the process
-   * of sending a packet out on the channel.  During execution of this method
-   * the TransmitEnd method is called on the channel to let it know that the
-   * physical device this class represents has virually finished sending 
-   * signals.  The channel uses this event to begin its speed of light delay
-   * timer after which it notifies the Net Device at the other end of the 
-   * link that the bits have arrived.  During this method, the net device 
-   * also schedules the TransmitReadyEvent at which time the transmitter 
-   * becomes ready to send the next packet.
+   * The TransmitComplete method is used internally to finish the process
+   * of sending a packet out on the channel.
    *
-   * @see PointToPointChannel::TransmitEnd ()
-   * @see TransmitReadyEvent ()
-   * @returns true if success, false on failure
    */
-  void TransmitCompleteEvent (void);
-  /**
-   * Cause the Transmitter to Become Ready to Send Another Packet.
-   *
-   * The TransmitReadyEvent method is used internally to re-enable the 
-   * transmit machine of the net device.  It is scheduled after a suitable
-   * interframe gap after the completion of the previous transmission.
-   * The queue is checked at this time, and if there is a packet waiting on
-   * the queue, the transmission process is begun.
-   *
-   * @see TransmitStart ()
-   */
-  void TransmitReadyEvent (void);
+  void TransmitComplete(void);
   /**
    * Create a Trace Resolver for events in the net device.
    *
    * @see class TraceResolver
    */
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
+  virtual TraceResolver* DoCreateTraceResolver (TraceContext const &context);
   virtual bool DoNeedsArp (void) const;
   /**
    * Enumeration of the states of the transmit machine of the net device.
@@ -263,8 +256,7 @@ private:
   enum TxMachineState
     {
       READY, /**< The transmitter is ready to begin transmission of a packet */
-      BUSY,  /**< The transmitter is busy transmitting a packet */
-      GAP    /**< The transmitter is in the interframe gap time */
+      BUSY   /**< The transmitter is busy transmitting a packet */
     };
   /**
    * The state of the Net Device transmit state machine.
@@ -305,6 +297,11 @@ private:
    * @see class TraceResolver
    */
   CallbackTraceSource<Packet &> m_rxTrace;
+  /** 
+   * Default data rate.  Used for all newly created p2p net devices
+   */
+   static DataRateDefaultValue g_defaultRate;
+
 };
 
 }; // namespace ns3
