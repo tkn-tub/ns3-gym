@@ -477,8 +477,7 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
       // tree (removing it from the candidate list in the 
       // process). 
       // Extract from the candidates the node with the lower key. 
-      v = candidate.Top();
-      candidate.Pop();
+      v = candidate.Pop();
       // Update stat field in vertex. 
       NS_DEBUG("SPFCalculate: Popping vertex" << v->m_vertexId);
       v->m_lsa->m_stat = StaticRouterLSA::LSA_SPF_IN_SPFTREE;
@@ -691,13 +690,14 @@ StaticRouteManagerTest::RunTests (void)
 
   for (int i = 0; i < 100; ++i)
     {
-      SPFVertex *v = candidate.Top ();
-      candidate.Pop ();
+      SPFVertex *v = candidate.Pop ();
       if (v->m_distanceFromRoot < lastDistance)
         {
           ok = false;
         }
       lastDistance = v->m_distanceFromRoot;
+      delete v;
+      v = 0;
     }
 
   // Build fake link state database; four routers (0-3), 3 point-to-point
