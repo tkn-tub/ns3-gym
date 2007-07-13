@@ -61,7 +61,9 @@ public:
   t_listOfSPFVertex::iterator m_SPFVertexIter;
 
   uint32_t m_distanceFromRoot;
-  uint32_t m_root_oif;
+  uint32_t m_rootOif;
+  Ipv4Address m_nextHop;
+
 };
 
 /**
@@ -74,11 +76,9 @@ public:
   void Insert(Ipv4Address addr, StaticRouterLSA* lsa);
   StaticRouterLSA* GetLSA (Ipv4Address addr);
   /**
-   * \brief Set all SPFVertex to an initialized state, for SPF computation
+   * \brief Set all LSA flags to an initialized state, for SPF computation
    */
-#if 0
   void Initialize ();
-#endif
 
   typedef std::map<Ipv4Address, StaticRouterLSA*> LSDBMap_t;
   typedef std::pair<Ipv4Address, StaticRouterLSA*> LSDBPair_t;
@@ -134,9 +134,10 @@ private:
     StaticRouterLinkRecord* l, uint32_t distance);
   void SPFVertexAddParent(SPFVertex* v);
   void DeleteSPFVertexChain(SPFVertex* spfroot);
-  uint32_t FindOutgoingInterface(SPFVertex* v, SPFVertex* w, 
-    StaticRouterLinkRecord* l);
+  StaticRouterLinkRecord* SPFGetNextLink(SPFVertex* v, SPFVertex* w, 
+    StaticRouterLinkRecord* prev_link);
   void SPFIntraAddRouter(SPFVertex* v);
+  uint32_t FindOutgoingInterfaceId(Ipv4Address a);
 
 };
 

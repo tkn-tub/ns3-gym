@@ -184,8 +184,8 @@ public:
   // this is a tristate flag used internally in the SPF computation
   enum SPFStatus {
     LSA_SPF_NOT_EXPLORED = 0,
-    LSA_SPF_IN_SPFTREE,
-    LSA_SPF_CANDIDATE
+    LSA_SPF_CANDIDATE,
+    LSA_SPF_IN_SPFTREE
   } m_stat;
 
 };

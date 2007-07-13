@@ -39,7 +39,7 @@ StaticRoutingEnabled(void)
 AllocateRouterId(void)
 {
   static uint32_t routerId = 0;
-  return ++routerId;
+  return routerId++;
 }
 
 } // namespace RoutingEnvironment
