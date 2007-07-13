@@ -518,13 +518,13 @@ StaticRouteManager::FindOutgoingInterfaceId(Ipv4Address a)
       Ptr<StaticRouter> rtr = 
         node->QueryInterface<StaticRouter> (StaticRouter::iid);
       NS_ASSERT_MSG(rtr, 
-        "StaticRouteManager::SPFIntraAddRouter (): "
+        "StaticRouteManager::FindOutgoingInterfaceId (): "
         "QI for <StaticRouter> interface failed");
       if (rtr->GetRouterId () == routerId)
         {
           Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
           NS_ASSERT_MSG(ipv4, 
-            "StaticRouteManager::SPFIntraAddRouter (): "
+            "StaticRouteManager::FindOutgoingInterfaceId (): "
             "QI for <Ipv4> interface failed");
           for (uint32_t i = 0; i < ipv4->GetNInterfaces(); i++)
             {
@@ -592,24 +592,21 @@ StaticRouteManager::SPFIntraAddRouter(SPFVertex* v)
 
           for (uint32_t j = 0; j < nLinkRecords; j += 2)
             {
-              StaticRouterLinkRecord *lrp2p = lsa->GetLinkRecord (j);
-              NS_ASSERT_MSG(
-                lrp2p->m_linkType == StaticRouterLinkRecord::PointToPoint,
-                "StaticRouteManager::SPFIntraAddRouter (): "
-                "Expected PointToPoint Link Record");
+              StaticRouterLinkRecord *lr = lsa->GetLinkRecord (j);
+              if (lr->m_linkType != StaticRouterLinkRecord::PointToPoint)
+                {
+                  continue;
+                }
 
-              StaticRouterLinkRecord *lrstub = lsa->GetLinkRecord (j + 1);
-              NS_ASSERT_MSG(
-                lrstub->m_linkType == StaticRouterLinkRecord::StubNetwork,
-                "StaticRouteManager::SPFIntraAddRouter (): "
-                "Expected StubNetwork Link Record");
-      
-              NS_DEBUG("StaticRouteManager::SPFIntraAddRouter (): "
-                "Add route to " << lrp2p->m_linkData <<
+              NS_DEBUG_UNCOND("StaticRouteManager::SPFIntraAddRouter (): "
+                "BUGBUG incorrect next hope calculation");
+
+              NS_DEBUG_UNCOND("StaticRouteManager::SPFIntraAddRouter (): "
+                "Add route to " << lr->m_linkData <<
                 " using next hop " << v->m_nextHop <<
                 " via interface " << v->m_rootOif);
 
-              ipv4->AddHostRouteTo(lrp2p->m_linkData, v->m_nextHop, 
+              ipv4->AddHostRouteTo(lr->m_linkData, v->m_nextHop,
                 v->m_rootOif);
             }
         }
