@@ -598,10 +598,7 @@ StaticRouteManager::SPFIntraAddRouter(SPFVertex* v)
                   continue;
                 }
 
-              NS_DEBUG_UNCOND("StaticRouteManager::SPFIntraAddRouter (): "
-                "BUGBUG incorrect next hope calculation");
-
-              NS_DEBUG_UNCOND("StaticRouteManager::SPFIntraAddRouter (): "
+              NS_DEBUG("StaticRouteManager::SPFIntraAddRouter (): "
                 "Add route to " << lr->m_linkData <<
                 " using next hop " << v->m_nextHop <<
                 " via interface " << v->m_rootOif);
