@@ -145,7 +145,11 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
 
       Ptr<StaticRouter> rtr = 
         node->QueryInterface<StaticRouter> (StaticRouter::iid);
-      NS_ASSERT_MSG(rtr, "QI for <StaticRouter> interface failed");
+      
+      if (!rtr)
+        {
+          continue;
+        }
 
       // You must call DiscoverLSAs () before trying to use any 
       // routing info or to update LSAs.  Subsequently you may use 
@@ -208,7 +212,7 @@ StaticRouteManager::InitializeRoutes ()
       
       Ptr<StaticRouter> rtr = 
         node->QueryInterface<StaticRouter> (StaticRouter::iid);
-      NS_ASSERT_MSG(rtr, "QI for <StaticRouter> interface failed");
+
       if (rtr && rtr->GetNumLSAs () )
         {
           SPFCalculate(rtr->GetRouterId ());
