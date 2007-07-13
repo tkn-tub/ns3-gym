@@ -51,9 +51,18 @@ SPFVertex::SPFVertex (StaticRouterLSA* lsa) :
 {
 }
 
-
 SPFVertex::~SPFVertex ()
 {
+  for ( t_listOfSPFVertex::iterator i = m_children.begin ();
+        i != m_children.end (); 
+        i++)
+    {
+      SPFVertex *p = *i;
+      delete p;
+      p = 0;
+      *i = 0;
+    }
+  m_children.clear();
 }
 
 StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
@@ -89,7 +98,7 @@ StaticRouteManagerLSDB::Initialize()
 void
 StaticRouteManagerLSDB::Insert(Ipv4Address addr, StaticRouterLSA* lsa)
 {
-    m_database.insert(LSDBPair_t(addr, lsa));
+  m_database.insert(LSDBPair_t(addr, lsa));
 }
 
 StaticRouterLSA*
@@ -153,8 +162,7 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
         {
           StaticRouterLSA* lsa = new StaticRouterLSA ();
           rtr->GetLSA(j, *lsa);
-          NS_DEBUG_UNCOND ("LSA " << j);
-          NS_DEBUG_UNCOND ("----------------------------");
+          NS_DEBUG_UNCOND ("*** LSA " << j);
           NS_DEBUG_UNCOND (*lsa);
           m_lsdb->Insert (lsa->m_linkStateId, lsa); 
         }
@@ -424,8 +432,7 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
  *                   tree (removing it from the candidate list in the
  *                            process). */
       /* Extract from the candidates the node with the lower key. */
-      v = candidate.Top();
-      candidate.Pop();
+      v = candidate.Pop();
       /* Update stat field in vertex. */
       v->m_lsa->m_stat = StaticRouterLSA::LSA_SPF_IN_SPFTREE;
       SPFVertexAddParent(v);
@@ -448,7 +455,7 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   ospf_spf_process_stubs (area, area->spf, new_table);
 #endif
 
-  DeleteSPFVertexChain(m_spfroot);  
+  delete m_spfroot;
   m_spfroot = 0;
 }
 
@@ -508,33 +515,26 @@ StaticRouteManager::SPFIntraAddRouter(SPFVertex* v)
             "StaticRouteManager::SPFIntraAddRouter (): "
             "Expected exen number of Link Records");
 
-          for (uint32_t j = 0; j < nLinkRecords; j += 2)
+          for (uint32_t j = 0; j < nLinkRecords; ++j)
             {
-              StaticRouterLinkRecord *lrp2p = lsa->GetLinkRecord (j);
-              NS_ASSERT_MSG(
-                lrp2p->m_linkType == StaticRouterLinkRecord::PointToPoint,
-                "StaticRouteManager::SPFIntraAddRouter (): "
-                "Expected PointToPoint Link Record");
-
-              StaticRouterLinkRecord *lrstub = lsa->GetLinkRecord (j + 1);
-              NS_ASSERT_MSG(
-                lrstub->m_linkType == StaticRouterLinkRecord::StubNetwork,
-                "StaticRouteManager::SPFIntraAddRouter (): "
-                "Expected StubNetwork Link Record");
+              StaticRouterLinkRecord *lr = lsa->GetLinkRecord (j);
+              if (lr->m_linkType != StaticRouterLinkRecord::PointToPoint)
+                {
+                  continue;
+                }
 //
-// BUGBUG
+// BUGBUG This is not right.  Need to find the next hop interface correctly
 //
-// Where does the next hop address come from?
-//
-              NS_ASSERT_MSG(false, "BUGBUG");
+              NS_DEBUG_UNCOND("StaticRouteManager::SPFIntraAddRouter (): "
+                "BUGBUG incorrect next hope calculation");
 
               NS_DEBUG_UNCOND("StaticRouteManager::SPFIntraAddRouter (): "
-                "Add route to " << lrp2p->m_linkData <<
-                " using next hop " << lrp2p->m_linkData <<
+                "Add route to " << lr->m_linkData <<
+                " using next hop " << lr->m_linkData <<
                 " via interface " << v->m_root_oif);
 
-              ipv4->AddHostRouteTo(lrp2p->m_linkData, lrp2p->m_linkData, 
-                v->m_root_oif);
+              ipv4->AddHostRouteTo(lr->m_linkData, 
+                lr->m_linkData, v->m_root_oif);
             }
           break;
         }
@@ -547,15 +547,6 @@ StaticRouteManager::SPFVertexAddParent(SPFVertex* v)
 {
   // For now, only one parent (not doing equal-cost multipath)
   v->m_parent->m_children.push_back(v);
-}
-
-void
-StaticRouteManager::DeleteSPFVertexChain(SPFVertex* spfroot)
-{
-  // spfroot is the root of all SPFVertex created during the SPF process
-  // each vertex has a list of children
-  // Recursively, delete all of the SPFVertex children of each SPFVertex
-  // then delete root itself
 }
 
 } // namespace ns3
@@ -621,12 +612,13 @@ StaticRouteManagerTest::RunTests (void)
 
   for (int i = 0; i < 100; ++i)
     {
-      SPFVertex *v = candidate.Top ();
-      candidate.Pop ();
+      SPFVertex *v = candidate.Pop ();
       if (v->m_distanceFromRoot < lastDistance)
         {
           ok = false;
         }
+      delete v;
+      v = 0;
       lastDistance = v->m_distanceFromRoot;
     }
 

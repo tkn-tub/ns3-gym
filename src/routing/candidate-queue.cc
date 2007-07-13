@@ -41,7 +41,9 @@ CandidateQueue::Clear (void)
 
   while (!m_candidates.empty ())
     {
-      Pop ();
+      SPFVertex *p = Pop ();
+      delete p;
+      p = 0;
     }
 }
 
@@ -63,20 +65,19 @@ CandidateQueue::Push (SPFVertex *vNew)
   m_candidates.insert(i, vNew);
 }
 
-  void
+  SPFVertex *
 CandidateQueue::Pop (void)
 {
   NS_DEBUG("CandidateQueue::Pop ()");
 
   if (m_candidates.empty ())
     {
-      return;
+      return 0;
     }
 
   SPFVertex *v = m_candidates.front ();
   m_candidates.pop_front ();
-  delete v;
-  v = 0;
+  return v;
 }
 
   SPFVertex *

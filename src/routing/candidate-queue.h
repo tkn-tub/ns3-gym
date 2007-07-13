@@ -77,13 +77,15 @@ public:
    */
   void          Push (SPFVertex *vNew);
   /**
-   * Pop the Shortest Path First Vertex pointer at the top of the queue and
-   * release the resources associated with the vertex.
+   * Pop the Shortest Path First Vertex pointer at the top of the queue.
+   * The caller is given the responsiblity for releasing the resources 
+   * associated with the vertex.
    *
    * @see SPFVertex
    * @see Top ()
+   * @returns The Shortest Path First Vertex pointer at the top of the queue.
    */
-  void          Pop (void);
+  SPFVertex*          Pop (void);
   /**
    * Return the Shortest Path First Vertex pointer at the top of the queue.  
    * This method does not pop the SPFVertex* off of the queue, it simply 

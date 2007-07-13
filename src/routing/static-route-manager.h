@@ -62,7 +62,6 @@ public:
 
   uint32_t m_distanceFromRoot;
   uint32_t m_root_oif;
-
 };
 
 /**
