@@ -133,7 +133,6 @@ private:
   int SPFNexthopCalculation (SPFVertex* v, SPFVertex* w, 
     StaticRouterLinkRecord* l, uint32_t distance);
   void SPFVertexAddParent(SPFVertex* v);
-  void DeleteSPFVertexChain(SPFVertex* spfroot);
   StaticRouterLinkRecord* SPFGetNextLink(SPFVertex* v, SPFVertex* w, 
     StaticRouterLinkRecord* prev_link);
   void SPFIntraAddRouter(SPFVertex* v);

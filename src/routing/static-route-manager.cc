@@ -56,6 +56,16 @@ SPFVertex::SPFVertex (StaticRouterLSA* lsa) :
 
 SPFVertex::~SPFVertex ()
 {
+    for ( t_listOfSPFVertex::iterator i = m_children.begin ();
+      i != m_children.end ();
+      i++)
+    {
+      SPFVertex *p = *i;
+      delete p;
+      p = 0;
+      *i = 0;
+    }
+  m_children.clear();
 }
 
 StaticRouteManagerLSDB::~StaticRouteManagerLSDB()
@@ -502,7 +512,7 @@ StaticRouteManager::SPFCalculate(Ipv4Address root)
   // Second stage of SPF calculation procedure's  
   // NOTYET:  ospf_spf_process_stubs (area, area->spf, new_table);
 
-  DeleteSPFVertexChain(m_spfroot);  
+  delete m_spfroot;
   m_spfroot = 0;
 }
 
@@ -620,15 +630,6 @@ StaticRouteManager::SPFVertexAddParent(SPFVertex* v)
 {
   // For now, only one parent (not doing equal-cost multipath)
   v->m_parent->m_children.push_back(v);
-}
-
-void
-StaticRouteManager::DeleteSPFVertexChain(SPFVertex* spfroot)
-{
-  // spfroot is the root of all SPFVertex created during the SPF process
-  // each vertex has a list of children
-  // Recursively, delete all of the SPFVertex children of each SPFVertex
-  // then delete root itself
 }
 
 } // namespace ns3
@@ -819,12 +820,11 @@ StaticRouteManagerTest::RunTests (void)
   srmlsdb->Insert(lsa3->m_linkStateId, lsa3);
   NS_ASSERT(lsa2 == srmlsdb->GetLSA(lsa2->m_linkStateId));
 
-  // We need a dummy node to populate the routing tables
-  Ptr<StaticRouterTestNode> n2 = Create<StaticRouterTestNode> ();
-
   // XXX next, calculate routes based on the manually created LSDB
   StaticRouteManager* srm = new StaticRouteManager();
-  srm->DebugUseLsdb (srmlsdb);
+  srm->DebugUseLsdb (srmlsdb);  // manually add in an LSDB
+  // Note-- this will succeed without any nodes in the topology
+  // because the NodeList is empty
   srm->DebugSPFCalculate(lsa0->m_linkStateId);  // node n0
 
   // This delete clears the srm, which deletes the LSDB, which clears 
