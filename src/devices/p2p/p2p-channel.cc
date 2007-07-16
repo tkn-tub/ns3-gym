@@ -76,8 +76,7 @@ PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
   NS_ASSERT(m_nDevices < N_DEVICES && "Only two devices permitted");
   NS_ASSERT(device != 0);
 
-  m_link[m_nDevices].m_src = device;
-  ++m_nDevices;
+  m_link[m_nDevices++].m_src = device;
 //
 // If we have both devices connected to the channel, then finish introducing
 // the two halves and set the links to IDLE.
@@ -91,8 +90,9 @@ PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
     }
 }
 
-bool
-PointToPointChannel::TransmitStart(Packet& p, Ptr<PointToPointNetDevice> src)
+bool PointToPointChannel::TransmitStart(Packet& p,
+                                        Ptr<PointToPointNetDevice> src,
+                                        const Time& txTime)
 {
   NS_DEBUG ("PointToPointChannel::TransmitStart (" << &p << ", " << src << 
             ")");
@@ -104,64 +104,14 @@ PointToPointChannel::TransmitStart(Packet& p, Ptr<PointToPointNetDevice> src)
 
   uint32_t wire = src == m_link[0].m_src ? 0 : 1;
 
-  if (m_link[wire].m_state == TRANSMITTING)
-    {
-      NS_DEBUG("PointToPointChannel::TransmitStart (): **** ERROR ****");
-      NS_DEBUG("PointToPointChannel::TransmitStart (): state TRANSMITTING");
-      return false;
-    }
-
-  NS_DEBUG("PointToPointChannel::TransmitStart (): switch to TRANSMITTING");
-  m_link[wire].m_state = TRANSMITTING;
+  // Here we schedule the packet receive event at the receiver,
+  // which simplifies this model quite a bit.  The channel just
+  // adds the propagation delay time
+  Simulator::Schedule (txTime + m_delay,
+                       &PointToPointNetDevice::Receive,
+                       m_link[wire].m_dst, p);
   return true;
 }
-
-bool
-PointToPointChannel::TransmitEnd(Packet& p, Ptr<PointToPointNetDevice> src)
-{
-  NS_DEBUG("PointToPointChannel::TransmitEnd (" << &p << ", " << src << ")");
-  NS_DEBUG ("PointToPointChannel::TransmitEnd (): UID is " << 
-            p.GetUid () << ")");
-
-  NS_ASSERT(m_link[0].m_state != INITIALIZING);
-  NS_ASSERT(m_link[1].m_state != INITIALIZING);
-
-  uint32_t wire = src == m_link[0].m_src ? 0 : 1;
-
-  NS_ASSERT(m_link[wire].m_state == TRANSMITTING);
-
-  m_link[wire].m_state = PROPAGATING;
-//
-// The sender is going to free the packet as soon as it has been transmitted.
-// We need to copy it to get a reference so it won't e deleted.
-//
-  Packet packet = p;
-  NS_DEBUG ("PointToPointChannel::TransmitEnd (): Schedule event in " << 
-            m_delay.GetSeconds () << "sec");
-  Simulator::Schedule (m_delay,
-                       &PointToPointChannel::PropagationCompleteEvent,
-                       this, packet, src);
-  return true;
-}
-
-void
-PointToPointChannel::PropagationCompleteEvent(
-  Packet p, 
-  Ptr<PointToPointNetDevice> src)
-{
-  NS_DEBUG("PointToPointChannel::PropagationCompleteEvent (" << &p << ", " << 
-    src << ")");
-  NS_DEBUG ("PointToPointChannel::PropagationCompleteEvent (): UID is " << 
-    p.GetUid () << ")");
-
-  uint32_t wire = src == m_link[0].m_src ? 0 : 1;
-  NS_ASSERT(m_link[wire].m_state == PROPAGATING);
-  m_link[wire].m_state = IDLE;
-
-  NS_DEBUG ("PointToPointChannel::PropagationCompleteEvent (): Receive");
-  m_link[wire].m_dst->Receive (p);
-}
-
 
 uint32_t 
 PointToPointChannel::GetNDevices (void) const
@@ -176,13 +126,13 @@ PointToPointChannel::GetDevice (uint32_t i) const
   return m_link[i].m_src;
 }
 
-  DataRate
+const DataRate&
 PointToPointChannel::GetDataRate (void)
 {
   return m_bps;
 }
 
-  Time
+const Time&
 PointToPointChannel::GetDelay (void)
 {
   return m_delay;

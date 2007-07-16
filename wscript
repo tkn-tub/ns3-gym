@@ -8,6 +8,7 @@ import Params
 import Object
 import pproc as subprocess
 import optparse
+import os.path
 
 Params.g_autoconfig = 1
 
@@ -20,8 +21,8 @@ srcdir = '.'
 blddir = 'build'
 
 def dist_hook(srcdir, blddir):
-    shutil.rmtree("doc/html")
-    shutil.rmtree("doc/latex")
+    shutil.rmtree("doc/html", True)
+    shutil.rmtree("doc/latex", True)
 
 def set_options(opt):
 
@@ -105,12 +106,22 @@ def configure(conf):
 
     variant_env.append_value('CXXDEFINES', 'RUN_SELF_TESTS')
     
-    if os.path.basename(conf.env['CXX']).startswith("g++"):
+    if (os.path.basename(conf.env['CXX']).startswith("g++")
+        and 'CXXFLAGS' not in os.environ):
         variant_env.append_value('CXXFLAGS', ['-Wall', '-Werror'])
 
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
+
+    ## In optimized builds we still want debugging symbols, e.g. for
+    ## profiling, and at least partially usable stack traces.
+    if ('optimized' in Params.g_options.debug_level.lower() 
+        and 'CXXFLAGS' not in os.environ):
+        for flag in variant_env['CXXFLAGS_DEBUG']:
+            ## this probably doesn't work for MSVC
+            if flag.startswith('-g'):
+                variant_env.append_value('CXXFLAGS', flag)
 
     if sys.platform == 'win32':
         if os.path.basename(conf.env['CXX']).startswith("g++"):
@@ -124,10 +135,7 @@ def build(bld):
     variant_env = bld.env_of_name(variant_name)
     bld.m_allenvs['default'] = variant_env # switch to the active variant
 
-    if Params.g_options.run:
-        run_program(Params.g_options.run)
-        return
-    elif Params.g_options.shell:
+    if Params.g_options.shell:
         run_shell()
         return
 
@@ -154,11 +162,26 @@ def shutdown():
     if Params.g_options.doxygen:
         doxygen()
 
-def _find_program(program_name):
+    if Params.g_options.run:
+        run_program(Params.g_options.run)
+
+def _find_program(program_name, env):
+    launch_dir = os.path.abspath(Params.g_cwd_launch)
+    found_programs = []
     for obj in Object.g_allobjs:
+        if obj.m_type != 'program' or not obj.target:
+            continue
+
+        ## filter out programs not in the subtree starting at the launch dir
+        if not (obj.path.abspath().startswith(launch_dir)
+                or obj.path.abspath(env).startswith(launch_dir)):
+            continue
+        
+        found_programs.append(obj.target)
         if obj.target == program_name:
             return obj
-    raise ValueError("progam '%s' not found" % (program_name,))
+    raise ValueError("program '%s' not found; available programs are: %r"
+                     % (program_name, found_programs))
 
 def _run_argv(argv):
     env = Params.g_build.env_of_name('default')
@@ -198,9 +221,9 @@ def run_program(program_string):
     program_name = argv[0]
 
     try:
-        program_obj = _find_program(program_name)
-    except ValueError:
-        Params.fatal("progam '%s' not found" % (program_name,))
+        program_obj = _find_program(program_name, env)
+    except ValueError, ex:
+        Params.fatal(str(ex))
 
     try:
         program_node, = program_obj.m_linktask.m_outputs
@@ -208,7 +231,13 @@ def run_program(program_string):
         Params.fatal("%s does not appear to be a program" % (program_name,))
 
     execvec = [program_node.abspath(env)] + argv[1:]
-    return _run_argv(execvec)
+
+    former_cwd = os.getcwd()
+    os.chdir(Params.g_cwd_launch)
+    try:
+        return _run_argv(execvec)
+    finally:
+        os.chdir(former_cwd)
 
 
 def run_shell():

@@ -1,8 +1,5 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
-def configure(conf):
-    conf.env.append_value('NS3_MODULES', 'ns3-common')
-
 def build(bld):
     common = bld.create_obj('cpp', 'shlib')
     common.name = 'ns3-common'

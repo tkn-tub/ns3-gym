@@ -1,10 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 
-def configure(conf):
-    conf.env.append_value('NS3_MODULES', 'ns3-internet-node')
-
-
 def build(bld):
     obj = bld.create_obj('cpp', 'shlib')
     obj.name = 'ns3-internet-node'
