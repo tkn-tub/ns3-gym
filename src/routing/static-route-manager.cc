@@ -53,7 +53,6 @@ SPFVertex::SPFVertex (StaticRouterLSA* lsa) :
 {
 }
 
-
 SPFVertex::~SPFVertex ()
 {
     for ( t_listOfSPFVertex::iterator i = m_children.begin ();
@@ -129,7 +128,9 @@ StaticRouteManager::~StaticRouteManager ()
   NS_DEBUG("StaticRouteManager::~StaticRouteManager ()");
 
   if (m_lsdb)
-    delete m_lsdb;
+    {
+      delete m_lsdb;
+    }
 }
 
 void
@@ -140,14 +141,22 @@ StaticRouteManager::DebugUseLsdb (StaticRouteManagerLSDB* lsdb)
   m_lsdb = lsdb;
 }
 
+//
+// In order to build the routing database, we need to walk the list of nodes
+// in the system and look for those that support the StaticRouter interface.
+// These routers will export a number of Link State Advertisements (LSAs)
+// that describe the links and networks that are "adjacent" (i.e., that are
+// on the other side of a point-to-point link).  We take these LSAs and put
+// add them to the Link State DataBase (LSDB) from which the routes will 
+// ultimately be computed.
+//
 void
 StaticRouteManager::BuildStaticRoutingDatabase () 
 {
   NS_DEBUG("StaticRouteManager::BuildStaticRoutingDatabase()");
-
-  // Walk the list of nodes.  QI for StaticRouter interface.
-  // if node has a StaticRouter interface, grab the LSAs 
-  // from it and stick them in the LSDB
+//
+// Walk the list of nodes looking for the StaticRouter Interface.
+//
   typedef std::vector < Ptr<Node> >::iterator Iterator;
   for (Iterator i = NodeList::Begin(); i != NodeList::End(); i++)
     {
@@ -155,74 +164,96 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
 
       Ptr<StaticRouter> rtr = 
         node->QueryInterface<StaticRouter> (StaticRouter::iid);
-      
+//      
+// Ignore nodes that aren't participating in routing.
+//
       if (!rtr)
         {
           continue;
         }
-
-      // You must call DiscoverLSAs () before trying to use any 
-      // routing info or to update LSAs.  Subsequently you may use 
-      // GetNumLSAs().  If you call GetNumLSAs () before calling 
-      // DiscoverLSAs () will get zero as the number.
+//
+// You must call DiscoverLSAs () before trying to use any routing info or to
+// update LSAs.  DiscoverLSAs () drives the process of discovering routes in
+// the StaticRouter.  Afterward, you may use GetNumLSAs (), which is a very
+// computationally inexpensive call.  If you call GetNumLSAs () before calling 
+// DiscoverLSAs () will get zero as the number since no routes have been 
+// found.
+//
       uint32_t numLSAs = rtr->DiscoverLSAs();
       NS_DEBUG ("Discover LSAs:  Found " << numLSAs << " LSAs");
 
       for (uint32_t j = 0; j < numLSAs; ++j)
         {
           StaticRouterLSA* lsa = new StaticRouterLSA ();
+//
+// This is the call to actually fetch a Link State Advertisement from the 
+// router.
+//
           rtr->GetLSA(j, *lsa);
           NS_DEBUG ("LSA " << j);
-          NS_DEBUG ("----------------------------");
           NS_DEBUG (*lsa);
+//
+// Write the newly discovered link state advertisement to the database.
+//
           m_lsdb->Insert (lsa->m_linkStateId, lsa); 
         }
     }
 }
 
-// For each node that is a static router (which can be determined by
-// the presence of StaticRouter interface), run Dijkstra SPF calculation
-// on the database rooted at that router, and populate the node
-// forwarding tables
+//
+// For each node that is a static router (which is determined by the presence
+// of an aggregated StaticRouter interface), run the Dijkstra SPF calculation
+// on the database rooted at that router, and populate the node forwarding
+// tables.
+//
+// This function parallels RFC2328, Section 16.1.1, and quagga ospfd
+//
+// This calculation yields the set of intra-area routes associated
+// with an area (called hereafter Area A).  A router calculates the
+// shortest-path tree using itself as the root.  The formation
+// of the shortest path tree is done here in two stages.  In the
+// first stage, only links between routers and transit networks are
+// considered.  Using the Dijkstra algorithm, a tree is formed from
+// this subset of the link state database.  In the second stage,
+// leaves are added to the tree by considering the links to stub
+// networks.
+//
+// The area's link state database is represented as a directed graph.  
+// The graph's vertices are routers, transit networks and stub networks.  
+//
+// The first stage of the procedure (i.e., the Dijkstra algorithm)
+// can now be summarized as follows. At each iteration of the
+// algorithm, there is a list of candidate vertices.  Paths from
+// the root to these vertices have been found, but not necessarily
+// the shortest ones.  However, the paths to the candidate vertex
+// that is closest to the root are guaranteed to be shortest; this
+// vertex is added to the shortest-path tree, removed from the
+// candidate list, and its adjacent vertices are examined for
+// possible addition to/modification of the candidate list.  The
+// algorithm then iterates again.  It terminates when the candidate
+// list becomes empty. 
+//
 void
 StaticRouteManager::InitializeRoutes ()
 {
   NS_DEBUG("StaticRouteManager::InitializeRoutes ()");
-  //    This function parallels RFC2328, Section 16.1.1, and quagga ospfd
-  //
-  //      This calculation yields the set of intra-area routes associated
-  //      with an area (called hereafter Area A).  A router calculates the
-  //      shortest-path tree using itself as the root.  The formation
-  //      of the shortest path tree is done here in two stages.  In the
-  //      first stage, only links between routers and transit networks are
-  //      considered.  Using the Dijkstra algorithm, a tree is formed from
-  //      this subset of the link state database.  In the second stage,
-  //      leaves are added to the tree by considering the links to stub
-  //      networks.
-
-  //      The area's link state database is represented as a directed graph.  
-  //      The graph's vertices are routers, transit networks and stub networks.  
-  //      The first stage of the procedure (i.e., the Dijkstra algorithm)
-  //      can now be summarized as follows. At each iteration of the
-  //      algorithm, there is a list of candidate vertices.  Paths from
-  //      the root to these vertices have been found, but not necessarily
-  //      the shortest ones.  However, the paths to the candidate vertex
-  //      that is closest to the root are guaranteed to be shortest; this
-  //      vertex is added to the shortest-path tree, removed from the
-  //      candidate list, and its adjacent vertices are examined for
-  //      possible addition to/modification of the candidate list.  The
-  //      algorithm then iterates again.  It terminates when the candidate
-  //      list becomes empty. 
-
-  // Iterate for each node that is a router in the topology
+//
+// Walk the list of nodes in the system.
+//
   typedef std::vector < Ptr<Node> >::iterator Iterator;
   for (Iterator i = NodeList::Begin(); i != NodeList::End(); i++)
     {
       Ptr<Node> node = *i;
-      
+//
+// Look for the StaticRouter interface that indicates that the node is
+// participating in routing.
+//
       Ptr<StaticRouter> rtr = 
         node->QueryInterface<StaticRouter> (StaticRouter::iid);
-
+//
+// if the node has a static router interface, then run the static routing
+// algorithms.
+//
       if (rtr && rtr->GetNumLSAs () )
         {
           SPFCalculate(rtr->GetRouterId ());
@@ -230,12 +261,19 @@ StaticRouteManager::InitializeRoutes ()
     }
 }
 
-
-// Derived from quagga ospf_spf_next()
-// RFC2328 Section 16.1 (2).
-// v is on the SPF tree.  Examine the links in v's LSA.  Update the list
-// of candidates with any vertices not already on the list.  If a lower-cost
-// path is found to a vertex already on the candidate list, store the new cost.
+//
+// This method is derived from quagga ospf_spf_next().  See RFC2328 Section 
+// 16.1 (2) for further details.
+//
+// We're passed a parameter <v> that is a vertex which is already in the SPF
+// tree.  A vertex represents a router node.  We also get a reference to the
+// SPF candidate queue, which is a priority queue containing the shortest paths
+// to the networks we know about.
+//
+// We examine the links in v's LSA and update the listof candidates with any
+// vertices not already on the list.  If a lower-cost path is found to a
+// vertex already on the candidate list, store the new (lower) cost.
+//
 void
 StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
 {
@@ -246,20 +284,27 @@ StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
   NS_DEBUG("StaticRouteManager::SPFNext ()");
   if (v->m_vertexType == SPFVertex::VertexRouter) 
     {
-      // Always true for now, since all our LSAs are RouterLSAs
+//
+// Always true for now, since all our LSAs are RouterLSAs.
+//
       if (true)
         {
           NS_DEBUG ("SPFNext: Examining " << v->m_vertexId << "'s " <<
             v->m_lsa->m_linkRecords.size() << " link records");
+//
+// Walk the list of link records in the link state advertisemnt associated with
+// the "current" router (represented by vertex <v>).
+//
           for ( StaticRouterLSA::ListOfLinkRecords_t::iterator i = 
                 v->m_lsa->m_linkRecords.begin();
                 i != v->m_lsa->m_linkRecords.end();
                 i++ )
             {
-              // (a) If this is a link to a stub network, examine the next
-              // link in V's LSA.  Links to stub networks will be
-              // considered in the second stage of the shortest path
-              // calculation. 
+//
+// (a) If this is a link to a stub network, examine the next link in V's LSA.
+// Links to stub networks will be considered in the second stage of the
+// shortest path calculation.
+//
               StaticRouterLinkRecord* l = *i;
               if (l->m_linkType == StaticRouterLinkRecord::StubNetwork)
                 {
@@ -267,41 +312,67 @@ StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
                     << l->m_linkId);
                   continue;
                 }
-                // (b) Otherwise, W is a transit vertex (router or transit
-                // network).  Look up the vertex W's LSA (router-LSA or
-                // network-LSA) in Area A's link state database. 
+//
+// (b) Otherwise, W is a transit vertex (router or transit network).  Look up
+// the vertex W's LSA (router-LSA or network-LSA) in Area A's link state
+// database. 
+//
               if (l->m_linkType == StaticRouterLinkRecord::PointToPoint)
                 {
-                  // Lookup the vertex W's LSA 
+//
+// Lookup the link state advertisement of the new link -- we call it <w> in
+// the link state database.
+//
                   w_lsa = m_lsdb->GetLSA(l->m_linkId);
                   NS_ASSERT(w_lsa);
                   NS_DEBUG("SPFNext:  Found a P2P record from " << 
                     v->m_vertexId << " to " << w_lsa->m_linkStateId);
-                  // (c) If vertex W is already on the shortest-path tree, 
-                  //  examine the next link in the LSA. 
+//
+// (c) If vertex W is already on the shortest-path tree, examine the next
+// link in the LSA.
+//
+// If the link is to a router that is already in the shortest path first tree
+// then we have it covered -- ignore it.
+//
                   if (w_lsa->m_stat == StaticRouterLSA::LSA_SPF_IN_SPFTREE) 
                     {
                       NS_DEBUG("SPFNext: Skipping->  LSA "<< 
                         w_lsa->m_linkStateId << " already in SPF tree");
                       continue;
                     }
-                  // (d) Calculate the link state cost D of the resulting path
-                  // from the root to vertex W.  D is equal to the sum of 
-                  // the link state cost of the (already calculated) 
-                  // shortest path to vertex V and the advertised cost of 
-                  // the link between vertices V and W.  
+//
+// The link is to a router we haven't dealt with yet.
+//
+// (d) Calculate the link state cost D of the resulting path from the root to 
+// vertex W.  D is equal to the sum of the link state cost of the (already 
+// calculated) shortest path to vertex V and the advertised cost of the link
+// between vertices V and W.  
+//
                   distance = v->m_distanceFromRoot + l->m_metric;
 
                   NS_DEBUG("SPFNext: Considering w_lsa " << 
                     w_lsa->m_linkStateId);
-                  // Here, W is either already in candidate list or not
+
                   if (w_lsa->m_stat == StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
                     {
+//
+// If we havent yet considered the link represented by <w> we have to create 
+// a new SPFVertex to represent it.
+//
                         w = new SPFVertex(w_lsa);
-                      // Calculate nexthop to W
+//
+// We need to figure out how to actually get to the new router represented
+// by <w>.  This will (among other things0 find the next hop address to send
+// packets destined fo this network to, and also find the outbound interface
+// used to forward the packets.
+//
                       if (SPFNexthopCalculation(v, w, l, distance))
                         {
                           w_lsa->m_stat = StaticRouterLSA::LSA_SPF_CANDIDATE;
+//
+// Push this new vertex onto the priority queue (ordered by distance from the
+// root node).
+//
                           candidate.Push(w);
                           NS_DEBUG("SPFNext:  Pushing " << w->m_vertexId
                             << ", parent vertexId: " << v->m_vertexId);
@@ -310,39 +381,58 @@ StaticRouteManager::SPFNext(SPFVertex* v, CandidateQueue& candidate)
                   } else if (w_lsa->m_stat == 
                              StaticRouterLSA::LSA_SPF_CANDIDATE)
                     {
-                      //Get the vertex from candidates
+//
+// We have already considered the link represented by <w>.  What wse have to
+// do now is to decide if this new router represents a route with a shorter
+// distance metric.
+//
+// So, locate the vertex in the candidate queue and take a look at the 
+// distance.
                       w = candidate.Find(w_lsa->m_linkStateId);
                       if (w->m_distanceFromRoot < distance)
                         {
-                          continue; // not a shorter path
+//
+// This is not a shorter path, so don't do anything.
+//
+                          continue;
                         }
-                       // equal to
                        else if (w->m_distanceFromRoot == distance)
                          {
-                           // Do nothing-- not doing equal-cost multipath
+//
+// This path is one with an equal cost.  Do nothing for now -- we're not doing
+// equal-cost multipath cases yet.
+//
                          }
                        else
                          {
-                          // Found a lower-cost path to W.
-                          // nexthop_calculation is conditional, if it finds
-                          // valid nexthop it will call spf_add_parents, which
-                          // will flush the old parents
+// 
+// this path represents a new, lower-cost path to <w> (the vertex we found in
+// the current link record of the link state advertisement of the current root
+// (vertex <v>)
+//
+// N.B. the nexthop_calculation is conditional, if it finds a valid nexthop
+// it will call spf_add_parents, which will flush the old parents
+//
                            if (SPFNexthopCalculation(v, w, l, distance))
                              {
-                               // Decrease the key of the node in the heap,
-                               // re-sort the heap. 
+//
+// If we've changed the cost to get to the vertex represented by <w>, we 
+// must reorder the priority queue keyed to that cost.
+//
                                candidate.Reorder();
                              }
-                          }    
+                         }    
                 }  // point-to-point
             } // for loop
         } 
      }
 }
 
-// Derived from quagga ospf_next_hop_calculation()
-// 16.1.1.  Calculate nexthop from root through V (parent) to
-// vertex W (destination), with given distance from root->W.
+//
+// This method is derived from quagga ospf_next_hop_calculation() 16.1.1.  
+//
+// Calculate the nexthop from the root through V (parent) to vertex W 
+// (destination), with given distance from root->W.
 //
 // For now, this is greatly simplified from the quagga code
 //                  
@@ -354,25 +444,42 @@ StaticRouteManager::SPFNexthopCalculation (
   uint32_t distance)
 {
   NS_DEBUG("StaticRouteManager::SPFNexthopCalculation ()");
+//
+// If we're calculating the next hop information from a node (v) that is the 
+// root, then we need to store the information needed to forward to the 
+// given network (w).  We need to know the interface ID to use to forward the 
+// packets, and we need to know the IP address of the router to which we need
+// to send the packets (the next hop address).
+//
   if (v == m_spfroot)
     {
-      // parent of w is the root itself
-      // calculate the interfaceid of the router that corresponds
-      // to link l between v and w and store it in w->m_rootOif
-      // This rootOif is then used when installing host routes for the
-      // destinations covered by this vertex.  Store also the next hop
-      // IP address.
-      //
-      // Find the outgoing interface on v corresponding to the link l
-      // between v and w
+//
+// We're going from the root to a vertex representing a router ...
+// 
       if (w->m_vertexType == SPFVertex::VertexRouter) 
         {
-          // l is a link from v to w
-          // l2 will be a link from w to v
+//
+// We need to find both sides of the link we're examining.  We are considering
+// a link "from" vertex v "to" vertex w over the link represented by the link
+// record l.  We have the information from the perspective of v, now we need 
+// to get the information from the perspective of w, specifically the point
+// to point link record describing the link from w to v.
+//
           StaticRouterLinkRecord *l2 = 0;
           l2 = SPFGetNextLink(w,v,l2);
+// 
+// At this point, <l> is the link record from <v> to <w>; and <l2> is the
+// link record from <w> to <v>.  The next hop address of the destination is
+// the link data field of the static router link record (which is the local IP
+// address in the case of a point-to-point link).  This means that in order to
+// get to the network w, you send packets to the other side of the point-to-
+// point link -- the router on that network.
+//
           w->m_nextHop = l2->m_linkData;
-          // Find interface corresponding to link's IP address
+// 
+// Now find the interface corresponding to the point to point link's IP 
+// address.
+//
           w->m_rootOif = FindOutgoingInterfaceId(l->m_linkData); 
 
           NS_DEBUG("SPFNexthopCalculation: Next hop from " << 
@@ -383,10 +490,16 @@ StaticRouteManager::SPFNexthopCalculation (
     }
   else 
     {
-       // Inherit the rootOif and nextHop from the current parent
+//
+// If we're calculating the next hop information from a node (v) that is 
+// *not* the root, then we need to "inherit" the information needed to
+// forward from the parent (who will have inherited, ultimately, from the 
+// root.
+//
        w->m_rootOif = v->m_rootOif;
        w->m_nextHop = v->m_nextHop;
     }
+
   w->m_distanceFromRoot = distance;
   w->m_parent = v;
   return 1;
