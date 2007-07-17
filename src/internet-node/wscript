@@ -9,7 +9,7 @@ def build(bld):
     obj = bld.create_obj('cpp', 'shlib')
     obj.name = 'ns3-internet-node'
     obj.target = obj.name
-    obj.uselib_local = ['ns3-node', 'ns3-applications']
+    obj.uselib_local = ['ns3-node', 'ns3-applications', 'ns3-routing']
     obj.source = [
         'internet-node.cc',
         'l3-demux.cc',
