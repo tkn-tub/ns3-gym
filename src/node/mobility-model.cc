@@ -26,14 +26,11 @@ namespace ns3 {
 
 const InterfaceId MobilityModel::iid = MakeInterfaceId ("MobilityModel", Object::iid);
 
-Vector3D::Vector3D (double x, double y, double z)
-  : x (x),
-    y (y),
-    z (z)
-{}
 
-Position::Position (double x, double y, double z)
-  : Vector3D (x, y, z)
+Position::Position (double _x, double _y, double _z)
+  : x (_x),
+    y (_y),
+    z (_z)
 {}
 
 MobilityModel::MobilityModel ()

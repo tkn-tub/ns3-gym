@@ -25,31 +25,14 @@
 
 namespace ns3 {
 
-class Vector3D
+class Position
 {
 public:
-  Vector3D (double x, double y, double z);
+  Position (double x, double y, double z);
   double x;
   double y;
   double z;
 };
-class Position : public Vector3D
-{
-public:
-  Position (double x, double y, double z);
-};
-class Speed : public Vector3D
-{};
-class Vector2D
-{
-public:
-  double x;
-  double y;
-};
-class Position2D : public Vector2D
-{};
-class Speed2D : public Vector2D
-{};
 
 /**
  * \brief keep track of the current position of an object
