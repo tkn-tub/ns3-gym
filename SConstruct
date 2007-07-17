@@ -257,6 +257,7 @@ node.add_sources ([
     'random-walk-mobility-model.cc',
     'random-direction-mobility-model.cc',
     'hierarchical-mobility-model.cc',
+    'ns2-mobility-file-topology.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -283,6 +284,7 @@ node.add_inst_headers ([
     'random-walk-mobility-model.h',
     'random-direction-mobility-model.h',
     'hierarchical-mobility-model.h',
+    'ns2-mobility-file-topology.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')
@@ -378,6 +380,12 @@ p2p.add_inst_headers ([
 
 
 # utils
+mobgen = build.Ns3Module ('mobility-generator', 'utils')
+ns3.add (mobgen)
+mobgen.set_executable ()
+mobgen.add_deps (['simulator', 'node'])
+mobgen.add_source ('mobility-generator.cc')
+
 run_tests = build.Ns3Module('run-tests', 'utils')
 ns3.add(run_tests)
 run_tests.set_executable()
