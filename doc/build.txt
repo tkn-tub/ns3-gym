@@ -1,186 +1,106 @@
-If you want to build ns3, you need to install scons (see
-http://www.scons.org). scons takes care of building
-the whole source tree using your system compiler. scons
-0.91.1 and 0.91.96 have been tested and are known to 
-work on linux FC5, Mac os X and MinGW.
+The Waf build system is used to build ns-3.  Waf is a Python-based
+build system (http://www.freehackers.org/~tnagy/waf.html)
 
-To start a build, you can just type 'scons' which
-will generate a debug shared build by default, located
-in the directory 'build-dir/dbg-shared/bin' and
-'build-dir/dbg-shared/lib'.
+=== Installing Waf ===
 
-All builds are built with debugging symbols. Debugging
-builds enable asserts while optimized builds disable them.
-On platforms which support it, rpath is used which means that
-the executable binaries generated link explicitely against
-the right libraries. This saves you the pain of having to
-setup environment variables to point to the right libraries.
+If this file is part of a development release tarball, the top-level 
+ns-3 directory should contain a current waf script.
 
-(Note:  An alternative build system (Waf) is being
-evaluated in the development branch of ns-3-dev on our server
-only (i.e., not in the release tarballs)-- see doc/build-waf.txt)
+However, the ns-3 Mercurial code repository does not contain the waf 
+script.  Instead, developers should check it out from a subversion 
+repository:
 
-1) Options
-----------
+  svn checkout http://waf.googlecode.com/svn/tags/ns3/ waf
 
-- verbose: if you have installed scons 0.91.96 or higher, 
-  the default build output is terse. To get a more verbose 
-  output, you need to set the 'verbose' variable to 'y'.
-Example: scons verbose=y
-- cflags: flags for the C compiler.
-Example: scons cflags="-O3 -ffast-math"
-- cxxflags: flags for the C++ compiler.
-Example: scons cxxflags="-O3 -ffast-math"
-- ldflags: flags for the linker:
-Example: scons ldflags="-L/foo -L/bar"
-- cc: the C compiler to use:
-Example: scons cc=gcc-4.0
-- cxx: the C++ compiler to use:
-Example: scons cxx=g++-4.0
-- high-precision-as-double: set to 'y' to make sure that the
-  high-precision arithmetics performed by the Time class on
-  behalf of the user will use doubles. By default, the code
-  uses 128 integers.
-Example: scons high-precision-as-double=y
-- inheritenv: set to 'y' if you want to make your compiler
-  execute within the same environment (env vars) as your own
-  shell. This is typically used to make colorgcc work.
-Example: scons inheritenv=y
+[ note: 'tags/ns3' is a tag that represents the last svn version
+tested to work correctly with ns3, although 'trunk' will likely work
+ as well ]
 
-2) Targets
-----------
+Then it can be installed system-wide with 'sudo waf-light install'.
+When preparing a distribution, the resulting 'waf' script, which is
+self contained (no external files needed), can be easily included in
+the tarball so that users downloading ns-3 can easily build it without
+having Waf installed (although Python >= 2.3 is still needed).
 
-- doc: build the doxygen documentation.
-Example: scons doc
+=== Building with Waf ===
 
-- dbg-shared: a debug build using shared libraries.
-  The files are built in 'build-dir/dbg-shared/'.
-Example: scons dbg-shared
+To build ns-3 with waf type the commands:
+ 1. waf configure [options]
+ 2. waf
 
-- dbg-static: a debug build using static libraries
-  The files are built in 'build-dir/dbg-static/'.
-Example: scons dbg-static
+To see valid configure options, type waf --help.  The most important
+option is -d <debug level>.  Valid debug levels (which are listed in
+waf --help) are: ultradebug, debug, release, and optimized.  It is
+also possible to change the flags used for compilation with (e.g.):
+CXXFLAGS="-O3" waf configure.
 
-- opt-shared: an optimized build using shared libraries.
-  The files are built in 'build-dir/opt-shared/'.
-Example: scons opt-shared
+[ Note:  Unlike some other build tools, to change the build target,
+the option must be supplied during the configure stage rather than
+the build stage (i.e., "waf -d optimized" will not work; instead, do
+"waf -d optimized configure; waf" ]
 
-- opt-static: an optimized build using static libraries.
-  The files are built in 'build-dir/opt-static/'.
-Example: scons opt-static
+The resulting binaries are placed in build/<debuglevel>/srcpath.
 
-- dbg: an alias for dbg-shared
-Example: scons dbg
+Other waf usages include:
 
-- opt: an alias for opt-shared
-Example: scons opt
+ 1. waf check
+    Runs the unit tests
 
-- all: alias for dbg-shared, dbg-static, opt-shared 
-  and opt-static
-Example: scons all
+ 2. waf --doxygen
+    Run doxygen to generate documentation
 
-- gcov: code coverage analysis. Build a debugging version of
-  the code for code coverage analysis in 'build-dir/gcov'. Once
-  the code has been built, you can run various applications to
-  exercise the code paths. To generate an html report from
-  the gcov data, use the lcov-report target
+ 3. waf --lcov-report
+    Run code coverage analysis (assuming the project was configured
+with --enable-gcov)
 
-- lcov-report: generate html report of gcov data. The output
-  is stored in 'build-dir/lcov-report/'.
+ 4. waf --run "program [args]"
+    Run a ns3 program, given its target name, with the given
+    arguments.  This takes care of automatically modifying the the
+    path for finding the ns3 dynamic libraries in the environment
+    before running the program.  Note: the "program [args]" string is
+    parsed using POSIX shell rules.
 
-- dist: generate a release tarball and zipfile from the 
-  source tree. The tarball and zipfile name are generated
-  according to the version number stored in the SConstruct
-  file.
-Example in SConstruct:
-ns3 = Ns3 ()
-ns3.name = 'foo'
-ns3.version = '0.0.10'
-Example command: scons dist
-Example output files:
-foo-0.0.10.tar.gz
-foo-0.0.10.zip
+ 5. waf --shell
+    Starts a nested system shell with modified environment to run ns3 programs.
 
-- distcheck: generate a release tarball and zipfile and 
-  attempt to run the 'all' target for the release tarball.
-Example: scons distcheck
+ 6. waf distclean
+    Cleans out the entire build/ directory
 
-3) How the build system works
------------------------------
+ 7. waf dist
+    The command 'waf dist' can be used to create a distribution tarball.
+    It includes all files in the source directory, except some particular
+    extensions that are blacklisted, such as back files (ending in ~).
 
-The current build system defines what are called "ns3 modules": each module
-is a set of source files, normal header files and installable header
-files. Each module also depends on a set of other modules. We build
-modules automatically in the correct order. That is, we always start
-from the module which does not depend on any other module (core) and
-proceed with the other modules and make sure that when a module is
-built, all the modules it depends upon have already been built.
 
-To build a module, we:
-1) generate the .o files
-2) link the .o files together 
-3) install the installable headers in the common directory
-top_build_dir/include/ns3.
+=== Extending ns-3 ===
 
-This means that if you want to use a header from your own module, you
-should just include it: #include "foo.h" but if you want to include a
-header from another module, you need to include it with #include
-"ns3/bar.h". This allows you to make sure that our "public" ns3 headers
-do not conflict with existing system-level headers.   For instance,
-if you were to define a header called queue.h, you would include
-ns3/queue.h rather than queue.h, when including from a separate module,
-since many systems provide a queue.h system include file.  
+To add new modules:
+  1. Create the module directory under src (or src/devices, or whatever);
+  2. Add the source files to it;
+  3. Add a 'wscript' describing it;
+  4. Add the module subdirectory name to the all_modules list in src/wscript.
 
-4) How to add files to a module ?
----------------------------------
+A module's wscript file is basically a regular Waf script.  A ns-3
+module is created as a cpp/shlib object, like this:
 
-In the main SConstruct file, you can add source code
-to the add_sources method. For example, to add a foo.cc
-file to the core module, we coud do this:
-core.add_sources ('foo.cc')
-Of course, if this file implements public API, its 
-header should be installable:
-core.add_inst_headers ('foo.h')
+def build(bld):
+    obj = bld.create_obj('cpp', 'shlib')
 
-5) How to create a new module ?
--------------------------------
+    ## set module name; by convention it starts with ns3-
+    obj.name = 'ns3-mymodule'
+    obj.target = obj.name 
 
-# create a new module. First arg is the name of
-# the new module. Second arg is the directory in
-# which all source files for this module reside.
-my_module = build.Ns3Module ('my', 'src/my_dir')
-# add it to build system
-ns3.add (my_module)
-# specify module dependencies. Here, depends
-# on the 'ipv4' and 'core' modules
-my_module.add_deps (['core', 'ipv4']) 
-# add source code to build located in 
-# src/my_dir
-my_module.add_sources ([
-	'my_a.cc',
-	'my_b.cc',
-	'my_c.cc'
-])
-my_module.add_sources ([
-	'my_d.cc'
-])
-# add headers which are not public
-my_module.add_headers ([
-	'my_a.h',
-	'my_c.h'
-])
-# add headers which are public
-my_module.add_inst_headers ([
-	'my_b.h'
-])
-my_module.add_inst_headers ([
-	'my_d.h'
-])
-# if you need to link against an external library,
-# you must add 'external' dependencies. Here, the 
-# pthread library
-my_module.add_external_dep ('pthread')
-# by default, a module is conceptually a library. If you
-# want to generate an executable from a module you need to:
-my_module.set_executable ()
+    ## list dependencies to other modules
+    obj.uselib_local = ['ns3-core'] 
+
+    ## list source files (private or public header files excluded)
+    obj.source = [
+        'mymodule.cc',
+    ]
+
+    ## list module public header files
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'mymodule-header.h',
+    ]
 
