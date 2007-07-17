@@ -97,21 +97,27 @@ Ns2MobileFileTopology::LayoutObjectStore (const ObjectStore &store) const
 	    {
 	      double value = ReadDouble (line.substr (endNodeId + 9, std::string::npos));
 	      std::string coordinate = line.substr (endNodeId + 6, 1);
+              Position position = model->Get ();
 	      if (coordinate == "X")
 		{
-		  model->SetX (value);
+                  position.x = value;
 		  NS_DEBUG ("X=" << value);
 		}
 	      else if (coordinate == "Y")
 		{
-		  model->SetY (value);
+                  position.y = value;
 		  NS_DEBUG ("Y=" << value);
 		}
 	      else if (coordinate == "Z")
 		{
-		  model->SetZ (value);
+                  position.z = value;
 		  NS_DEBUG ("Z=" << value);
 		}
+              else
+                {
+                  continue;
+                }
+              model->Set (position);
 	    }
 	  else 
 	    {

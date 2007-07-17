@@ -49,24 +49,6 @@ MobilityModel::Get (void) const
 {
   return DoGet ();
 }
-double 
-MobilityModel::GetX (void) const
-{
-  Position position = DoGet ();
-  return position.x;
-}
-double 
-MobilityModel::GetY (void) const
-{
-  Position position = DoGet ();
-  return position.y;
-}
-double 
-MobilityModel::GetZ (void) const
-{
-  Position position = DoGet ();
-  return position.z;
-}
 
 void 
 MobilityModel::Set (double x, double y, double z)
@@ -79,36 +61,6 @@ MobilityModel::Set (const Position &position)
 {
   DoSet (position);
 }
-void 
-MobilityModel::SetXY (double x, double y)
-{
-  Position position = DoGet ();
-  position.x = x;
-  position.y = y;
-  DoSet (position);
- }
-void 
-MobilityModel::SetX (double x)
-{
-  Position position = DoGet ();
-  position.x = x;
-  DoSet (position);
-}
-void 
-MobilityModel::SetY (double y)
-{
-  Position position = DoGet ();
-  position.y = y;
-  DoSet (position);
-}
-void 
-MobilityModel::SetZ (double z)
-{
-  Position position = DoGet ();
-  position.z = z;
-  DoSet (position);
-}
-
 
 double 
 MobilityModel::GetDistanceFrom (const MobilityModel &other) const

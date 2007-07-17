@@ -70,33 +70,9 @@ public:
    * Unit is meters
    */
   Position Get (void) const;
-  /**
-   * \returns the current x coordinate
-   *
-   * Unit is meters
-   */
-  double GetX (void) const;
-  /**
-   * \returns the current y coordinate
-   *
-   * Unit is meters
-   */
-  double GetY (void) const;
-  /**
-   * \returns the current z coordinate
-   *
-   * Unit is meters
-   */
-  double GetZ (void) const;
-
-  void Add (double dx, double dy, double dz);
 
   void Set (double x, double y, double z);
   void Set (const Position &position);
-  void SetXY (double x, double y);
-  void SetX (double x);
-  void SetY (double y);
-  void SetZ (double z);
   /**
    * \param position a reference to another position object instance
    * \returns the distance between the two objects.
