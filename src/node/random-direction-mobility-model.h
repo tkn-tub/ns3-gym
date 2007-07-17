@@ -67,19 +67,10 @@ class RandomDirectionMobilityModel : public MobilityModel
   RandomDirectionMobilityModel (Ptr<RandomDirectionParameters> parameters, 
 			   double x, double y);
  private:
-  enum Side {
-    TOP,
-    BOTTOM,
-    LEFT,
-    RIGHT
-  };
   static Ptr<RandomDirectionParameters> GetDefaultParameters (void);
   void ResetDirectionAndSpeed (void);
   void SetDirectionAndSpeed (double direction);
   void InitializeDirectionAndSpeed (void);
-  void Update (void) const;
-  bool CheckMobilityModel (void) const;
-  enum RandomDirectionMobilityModel::Side CalculateIntersection (double &x, double &y);
   virtual void DoDispose (void);
   virtual Position DoGet (void) const;
   virtual void DoSet (const Position &position);
