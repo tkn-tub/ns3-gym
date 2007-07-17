@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/ns2-mobile-file-topology.h"
+#include "ns3/ns2-mobility-file-topology.h"
 #include "ns3/object.h"
 #include "ns3/simulator.h"
 #include "ns3/mobility-model-notifier.h"
