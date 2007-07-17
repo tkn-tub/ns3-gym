@@ -20,7 +20,7 @@
  */
 #include "ns3/debug.h"
 #include "ns3/simulator.h"
-#include "ns2-mobile-file-topology.h"
+#include "ns2-mobility-file-topology.h"
 #include "node-list.h"
 #include "node.h"
 #include "static-speed-mobility-model.h"
