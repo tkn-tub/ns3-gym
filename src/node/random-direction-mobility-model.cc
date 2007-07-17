@@ -52,31 +52,34 @@ static RectangleDefaultValue
 
 
 RandomDirectionParameters::RandomDirectionParameters ()
-  : m_xMin (g_rectangle.GetMinX ()),
-    m_xMax (g_rectangle.GetMaxX ()),
-    m_yMin (g_rectangle.GetMinY ()),
-    m_yMax (g_rectangle.GetMaxY ()),
-    m_speedVariable (g_speedVariable.GetCopy ()),
+  : m_speedVariable (g_speedVariable.GetCopy ()),
     m_pauseVariable (g_pauseVariable.GetCopy ())
-{}
+{
+  m_bounds.xMin = g_rectangle.GetMinX ();
+  m_bounds.xMax = g_rectangle.GetMaxX ();
+  m_bounds.yMin = g_rectangle.GetMinY ();
+  m_bounds.yMax = g_rectangle.GetMaxY ();
+}
 RandomDirectionParameters::RandomDirectionParameters (double xMin, double xMax, double yMin, double yMax)
-  : m_xMin (xMin),
-    m_xMax (xMax),
-    m_yMin (yMin),
-    m_yMax (yMax),
-    m_speedVariable (g_speedVariable.GetCopy ()),
+  : m_speedVariable (g_speedVariable.GetCopy ()),
     m_pauseVariable (g_pauseVariable.GetCopy ())
-{}
+{
+  m_bounds.xMin = xMin;
+  m_bounds.xMax = xMax;
+  m_bounds.yMin = yMin;
+  m_bounds.yMax = yMax;
+}
 RandomDirectionParameters::RandomDirectionParameters (double xMin, double xMax, double yMin, double yMax,
 						      const RandomVariable &speedVariable,
 						      const RandomVariable &pauseVariable)
-  : m_xMin (xMin),
-    m_xMax (xMax),
-    m_yMin (yMin),
-    m_yMax (yMax),
-    m_speedVariable (speedVariable.Copy ()),
+  : m_speedVariable (speedVariable.Copy ()),
     m_pauseVariable (pauseVariable.Copy ())
-{}
+{
+  m_bounds.xMin = xMin;
+  m_bounds.xMax = xMax;
+  m_bounds.yMin = yMin;
+  m_bounds.yMax = yMax;
+}
 
 RandomDirectionParameters::~RandomDirectionParameters ()
 {
@@ -101,20 +104,20 @@ RandomDirectionParameters::SetPause (const RandomVariable &pauseVariable)
 void 
 RandomDirectionParameters::SetBounds (double xMin, double xMax, double yMin, double yMax)
 {
-  m_xMin = xMin;
-  m_yMin = yMin;
-  m_xMax = xMax;
-  m_yMax = yMax;
+  m_bounds.xMin = xMin;
+  m_bounds.yMin = yMin;
+  m_bounds.xMax = xMax;
+  m_bounds.yMax = yMax;
 }
 
 Ptr<RandomDirectionParameters> 
 RandomDirectionMobilityModel::GetDefaultParameters (void)
 {
   static Ptr<RandomDirectionParameters> parameters = Create<RandomDirectionParameters> ();
-  if (parameters->m_xMin != g_rectangle.GetMinX () ||
-      parameters->m_yMin != g_rectangle.GetMinY () ||
-      parameters->m_xMax != g_rectangle.GetMaxX () ||
-      parameters->m_yMax != g_rectangle.GetMaxY () ||
+  if (parameters->m_bounds.xMin != g_rectangle.GetMinX () ||
+      parameters->m_bounds.yMin != g_rectangle.GetMinY () ||
+      parameters->m_bounds.xMax != g_rectangle.GetMaxX () ||
+      parameters->m_bounds.yMax != g_rectangle.GetMaxY () ||
       g_speedVariable.IsDirty () ||
       g_pauseVariable.IsDirty ())
     {
@@ -127,66 +130,29 @@ RandomDirectionMobilityModel::GetDefaultParameters (void)
 
 
 RandomDirectionMobilityModel::RandomDirectionMobilityModel ()
-  : m_parameters (GetDefaultParameters ()),
-    m_x (0.0),
-    m_y (0.0),
-    m_dx (0.0),
-    m_dy (0.0),
-    m_prevTime (Simulator::Now ()),
-    m_pauseStart (Simulator::Now ())
+  : m_parameters (GetDefaultParameters ())
 {
   SetInterfaceId (RandomDirectionMobilityModel::iid);
   InitializeDirectionAndSpeed ();
 }
-bool
-RandomDirectionMobilityModel::CheckMobilityModel (void) const
-{
-  return 
-    m_x <= m_parameters->m_xMax && 
-    m_x >= m_parameters->m_xMin &&
-    m_y <= m_parameters->m_yMax && 
-    m_y >= m_parameters->m_yMin;
-}
-
 RandomDirectionMobilityModel::RandomDirectionMobilityModel (double x, double y)
-  : m_parameters (GetDefaultParameters ()),
-    m_x (x),
-    m_y (y),
-    m_dx (0.0),
-    m_dy (0.0),
-    m_prevTime (Simulator::Now ()),
-    m_pauseStart (Simulator::Now ())
+  : m_parameters (GetDefaultParameters ())
 {
   SetInterfaceId (RandomDirectionMobilityModel::iid);
-  NS_ASSERT (CheckMobilityModel ());
   InitializeDirectionAndSpeed ();
 }
 RandomDirectionMobilityModel::RandomDirectionMobilityModel (Ptr<RandomDirectionParameters> parameters)
-  : m_parameters (parameters),
-    m_x (0.0),
-    m_y (0.0),
-    m_dx (0.0),
-    m_dy (0.0),
-    m_prevTime (Simulator::Now ()),
-    m_pauseStart (Simulator::Now ())
+  : m_parameters (parameters)
 {
   SetInterfaceId (RandomDirectionMobilityModel::iid);
   InitializeDirectionAndSpeed ();
-  NS_ASSERT (CheckMobilityModel ());
 }
 RandomDirectionMobilityModel::RandomDirectionMobilityModel (Ptr<RandomDirectionParameters> parameters,
-						  double x, double y)
-  : m_parameters (parameters),
-    m_x (x),
-    m_y (y),
-    m_dx (0.0),
-    m_dy (0.0),
-    m_prevTime (Simulator::Now ()),
-    m_pauseStart (Simulator::Now ())
+                                                            double x, double y)
+  : m_parameters (parameters)
 {
   SetInterfaceId (RandomDirectionMobilityModel::iid);
   InitializeDirectionAndSpeed ();
-  NS_ASSERT (CheckMobilityModel ());
 }
 void 
 RandomDirectionMobilityModel::DoDispose (void)
@@ -194,52 +160,6 @@ RandomDirectionMobilityModel::DoDispose (void)
   m_parameters = 0;
   // chain up.
   MobilityModel::DoDispose ();
-}
-enum RandomDirectionMobilityModel::Side
-RandomDirectionMobilityModel::CalculateIntersection (double &x, double &y)
-{
-  double xMin = m_parameters->m_xMin;
-  double xMax = m_parameters->m_xMax;
-  double yMin = m_parameters->m_yMin;
-  double yMax = m_parameters->m_yMax;
-  double xMaxY = m_y + (xMax - m_x) / m_dx * m_dy;
-  double xMinY = m_y + (xMin - m_x) / m_dx * m_dy;
-  double yMaxX = m_x + (yMax - m_y) / m_dy * m_dx;
-  double yMinX = m_x + (yMin - m_y) / m_dy * m_dx;
-  bool xMaxOk = xMaxY <= yMax && xMaxY >= yMin;
-  bool xMinOk = xMinY <= yMax && xMinY >= yMin;
-  bool yMaxOk = yMaxX <= xMax && yMaxX >= xMin;
-  bool yMinOk = yMinX <= xMax && yMinX >= xMin;
-  if (xMaxOk && m_dx >= 0)
-    {
-      x = xMax;
-      y = xMaxY;
-      return RandomDirectionMobilityModel::RIGHT;
-    }
-  else if (xMinOk && m_dx <= 0)
-    {
-      x = xMin;
-      y = xMinY;
-      return RandomDirectionMobilityModel::LEFT;
-    }
-  else if (yMaxOk && m_dy >= 0)
-    {
-      x = yMaxX;
-      y = yMax;
-      return RandomDirectionMobilityModel::TOP;
-    }
-  else if (yMinOk && m_dy <= 0)
-    {
-      x = yMinX;
-      y = yMin;
-      return RandomDirectionMobilityModel::BOTTOM;
-    }
-  else
-    {
-      NS_ASSERT (false);
-      // quiet compiler
-      return RandomDirectionMobilityModel::RIGHT;
-    }
 }
 void
 RandomDirectionMobilityModel::InitializeDirectionAndSpeed (void)
@@ -251,82 +171,50 @@ void
 RandomDirectionMobilityModel::SetDirectionAndSpeed (double direction)
 {
   double speed = m_parameters->m_speedVariable->GetValue ();
-  m_dx = std::cos (direction) * speed;
-  m_dy = std::sin (direction) * speed;
-  double x, y;
-  m_side = CalculateIntersection (x, y);
-  double deltaX = x - m_x;
-  double deltaY = y - m_y;
-  double distance = sqrt (deltaX * deltaX + deltaY * deltaY);
-  double seconds = distance / speed;
-  double pause = m_parameters->m_pauseVariable->GetValue ();
-  m_pauseStart = Simulator::Now () + Seconds (seconds);
-  m_prevTime = Simulator::Now ();
-  m_event = Simulator::Schedule (Seconds (seconds + pause),
+  Time pause = Seconds (m_parameters->m_pauseVariable->GetValue ());
+  Time delay = m_helper.Reset (m_parameters->m_bounds,
+                               direction, speed,
+                               pause);
+  m_event = Simulator::Schedule (delay + pause,
 				 &RandomDirectionMobilityModel::ResetDirectionAndSpeed, this);
 }
 void
 RandomDirectionMobilityModel::ResetDirectionAndSpeed (void)
 {
-  Update ();
   double direction = UniformVariable::GetSingleValue (0, PI);
-  switch (m_side)
+  
+  switch (m_helper.GetSide (m_parameters->m_bounds))
     {
-    case RandomDirectionMobilityModel::RIGHT:
+    case MobilityModelHelper::RIGHT:
       direction += PI / 2;
       break;
-    case RandomDirectionMobilityModel::LEFT:
+    case MobilityModelHelper::LEFT:
       direction += - PI / 2;
       break;
-    case RandomDirectionMobilityModel::TOP:
+    case MobilityModelHelper::TOP:
       direction += PI;
       break;
-    case RandomDirectionMobilityModel::BOTTOM:
+    case MobilityModelHelper::BOTTOM:
       direction += 0.0;
+      break;
+    case MobilityModelHelper::NONE:
+      NS_ASSERT (false);
       break;
     }
   SetDirectionAndSpeed (direction);
   NotifyCourseChange ();
 }
-void
-RandomDirectionMobilityModel::Update (void) const
-{
-  Time end = std::min (Simulator::Now (), m_pauseStart);
-  if (m_prevTime >= end)
-    {
-      return;
-    }
-  Time deltaTime = end - m_prevTime;
-  m_prevTime = Simulator::Now ();
-  double deltaS = deltaTime.GetSeconds ();
-  NS_ASSERT (CheckMobilityModel ());
-  m_x += m_dx * deltaS;
-  m_y += m_dy * deltaS;
-  // round to closest boundaries.
-  m_x = std::min (m_x, m_parameters->m_xMax);
-  m_x = std::max (m_x, m_parameters->m_xMin);
-  m_y = std::min (m_y, m_parameters->m_yMax);
-  m_y = std::max (m_y, m_parameters->m_yMin);
-  NS_ASSERT (CheckMobilityModel ());
-}
 Position
 RandomDirectionMobilityModel::DoGet (void) const
 {
-  Update ();
-  return Position (m_x, m_y, 0.0);
+  Position2D position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
+  return Position (position.x, position.y, 0.0);
 }
 void
 RandomDirectionMobilityModel::DoSet (const Position &position)
 {
-  bool changed = false;
-  if (m_x != position.x || m_y != position.y)
-    {
-      changed = true;
-    }
-  m_x = position.x;
-  m_y = position.y;
-  m_prevTime = Simulator::Now ();
-  m_pauseStart = Simulator::Now ();
+  Position2D pos (position.x, position.y);
+  m_helper.InitializePosition (pos);
   Simulator::Remove (m_event);
   InitializeDirectionAndSpeed ();
   NotifyCourseChange ();

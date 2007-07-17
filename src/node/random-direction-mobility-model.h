@@ -27,6 +27,7 @@
 #include "ns3/event-id.h"
 #include "ns3/component-manager.h"
 #include "mobility-model.h"
+#include "mobility-model-helper.h"
 
 namespace ns3 {
 
@@ -47,10 +48,7 @@ class RandomDirectionParameters : public Object
   void SetBounds (double xMin, double xMax, double yMin, double yMax);
  private:
   friend class RandomDirectionMobilityModel;
-  double m_xMin;
-  double m_xMax;
-  double m_yMin;
-  double m_yMax;
+  struct AreaBounds m_bounds;
   RandomVariable *m_speedVariable;
   RandomVariable *m_pauseVariable;
   std::string m_speedVariableValue;
@@ -88,14 +86,8 @@ class RandomDirectionMobilityModel : public MobilityModel
 
   static const double PI;
   Ptr<RandomDirectionParameters> m_parameters;
-  mutable double m_x;
-  mutable double m_y;
-  double m_dx;
-  double m_dy;
-  mutable Time m_prevTime;
-  Time m_pauseStart;
   EventId m_event;
-  enum Side m_side;
+  MobilityModelHelper m_helper;
 };
 
 } // namespace ns3

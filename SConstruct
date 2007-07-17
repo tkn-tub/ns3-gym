@@ -258,6 +258,7 @@ node.add_sources ([
     'random-direction-mobility-model.cc',
     'hierarchical-mobility-model.cc',
     'ns2-mobility-file-topology.cc',
+    'mobility-model-helper.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -285,6 +286,7 @@ node.add_inst_headers ([
     'random-direction-mobility-model.h',
     'hierarchical-mobility-model.h',
     'ns2-mobility-file-topology.h',
+    'mobility-model-helper.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')
