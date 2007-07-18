@@ -19,6 +19,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "random-variable-default-value.h"
+#include "ns3/debug.h"
+
+NS_DEBUG_COMPONENT_DEFINE ("RandomVariableDefaultValue");
 
 namespace ns3 {
 
@@ -69,6 +72,7 @@ RandomVariableDefaultValue::Parse (const std::string &value,
   if (type == "Constant")
     {
       double constant = ReadAsDouble (v, ok);
+      NS_DEBUG ("Constant constant=" << constant);
       if (mustCreate)
 	{
 	  *pVariable = new ConstantVariable (constant);
@@ -88,6 +92,7 @@ RandomVariableDefaultValue::Parse (const std::string &value,
       double maxVal;
       minVal = ReadAsDouble (min, ok);
       maxVal = ReadAsDouble (max, ok);
+      NS_DEBUG ("Uniform min=" << min << ", max=" << max);
       if (mustCreate)
 	{
 	  *pVariable = new UniformVariable (minVal, maxVal);
