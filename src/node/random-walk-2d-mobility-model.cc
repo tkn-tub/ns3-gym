@@ -49,7 +49,7 @@ g_modeDistance ("RandomWalk2dDistance",
                 2.0);
 
 static TimeDefaultValue
-g_modeTime ("RandomWalk2dDelay",
+g_modeTime ("RandomWalk2dTime",
              "Change current direction and speed after moving for this delay.",
              Seconds (1.0));
 
