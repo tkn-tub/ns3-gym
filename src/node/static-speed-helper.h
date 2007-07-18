@@ -7,6 +7,8 @@
 
 namespace ns3 {
 
+class Rectangle;
+
 class StaticSpeedHelper
 {
  public:
@@ -15,11 +17,18 @@ class StaticSpeedHelper
 
   void Reset (const Speed &speed, const Time &pauseDelay);
 
+  void Reset (const Speed &speed);
+  Time GetDelayToNextPosition (const Rectangle &bounds, Time delayLeft);
+  void Rebound (const Rectangle &bounds);
+  Position GetCurrentPosition (const Rectangle &bounds) const;
+
   Position GetCurrentPosition (void) const;
   Speed GetCurrentSpeed (void) const;
 
  private:
   void Update (void) const;
+  void UpdateFull (const Rectangle &rectangle) const;
+  Position IntersectCurrentDirection (const Rectangle &bounds);
   mutable Time m_lastUpdate;
   mutable Position m_position;
   Speed m_speed;
