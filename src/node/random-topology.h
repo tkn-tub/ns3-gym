@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef RANDOM_RECTANGLE_TOPOLOGY_H
-#define RANDOM_RECTANGLE_TOPOLOGY_H
+#ifndef RANDOM_TOPOLOGY_H
+#define RANDOM_TOPOLOGY_H
 
 #include "ns3/ptr.h"
 #include "ns3/object.h"
@@ -29,14 +29,14 @@ namespace ns3 {
 
 class Random2dPosition;
 
-class RandomRectangleTopology
+class RandomTopology
 {
  public:
-  RandomRectangleTopology ();
-  RandomRectangleTopology (Ptr<Random2dPosition> positionModel,
+  RandomTopology ();
+  RandomTopology (Ptr<Random2dPosition> positionModel,
                            ClassId mobilityModel);
 
-  ~RandomRectangleTopology ();
+  ~RandomTopology ();
 
   void SetMobilityModel (ClassId classId);
   void SetPositionModel (Ptr<Random2dPosition> positionModel);
@@ -56,7 +56,7 @@ namespace ns3 {
 
 template <typename T>
 void 
-RandomRectangleTopology::Layout (const T &begin, const T &end)
+RandomTopology::Layout (const T &begin, const T &end)
 {
   for (T i = begin; i != end; i++)
     {
@@ -67,4 +67,4 @@ RandomRectangleTopology::Layout (const T &begin, const T &end)
 
 } // namespace ns3 
 
-#endif /* RANDOM_RECTANGLE_TOPOLOGY_H */
+#endif /* RANDOM_TOPOLOGY_H */

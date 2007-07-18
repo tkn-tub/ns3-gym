@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/random-variable-default-value.h"
-#include "random-rectangle-topology.h"
+#include "random-topology.h"
 #include "random-2d-position.h"
 #include "mobility-model.h"
 
@@ -37,35 +37,35 @@ g_mobility ("Random2dTopologyMobilityModelType",
             MobilityModel::iid,
             "StaticMobilityModel");
 
-RandomRectangleTopology::RandomRectangleTopology ()
+RandomTopology::RandomTopology ()
   : m_mobilityModel (g_mobility.GetValue ())
 {
   m_positionModel = ComponentManager::Create<Random2dPosition> (g_position.GetValue (), 
                                                                 Random2dPosition::iid);
 }
-RandomRectangleTopology::RandomRectangleTopology (Ptr<Random2dPosition> positionModel, ClassId mobilityModel)
+RandomTopology::RandomTopology (Ptr<Random2dPosition> positionModel, ClassId mobilityModel)
   : m_positionModel (positionModel),
     m_mobilityModel (mobilityModel)
 {}
-RandomRectangleTopology::~RandomRectangleTopology ()
+RandomTopology::~RandomTopology ()
 {
   m_positionModel = 0;
 }
 
 void 
-RandomRectangleTopology::SetMobilityModel (ClassId classId)
+RandomTopology::SetMobilityModel (ClassId classId)
 {
   m_mobilityModel = classId;
 }
 
 void 
-RandomRectangleTopology::SetPositionModel (Ptr<Random2dPosition> positionModel)
+RandomTopology::SetPositionModel (Ptr<Random2dPosition> positionModel)
 {
   m_positionModel = positionModel;
 }
 
 void 
-RandomRectangleTopology::LayoutOne (Ptr<Object> object)
+RandomTopology::LayoutOne (Ptr<Object> object)
 {
   Position2d position2d = m_positionModel->Get ();
   Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_mobilityModel, 
