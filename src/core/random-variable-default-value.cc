@@ -72,11 +72,15 @@ RandomVariableDefaultValue::Parse (const std::string &value,
   if (type == "Constant")
     {
       double constant = ReadAsDouble (v, ok);
-      NS_DEBUG ("Constant constant=" << constant);
       if (mustCreate)
 	{
+          NS_DEBUG ("create Constant constant=" << constant);
 	  *pVariable = new ConstantVariable (constant);
 	}
+      else
+        {
+          NS_DEBUG ("parse  Constant constant=" << constant);
+        }
       return ok;
     }
   else if (type == "Uniform")
@@ -92,11 +96,15 @@ RandomVariableDefaultValue::Parse (const std::string &value,
       double maxVal;
       minVal = ReadAsDouble (min, ok);
       maxVal = ReadAsDouble (max, ok);
-      NS_DEBUG ("Uniform min=" << min << ", max=" << max);
       if (mustCreate)
 	{
+          NS_DEBUG ("create Uniform min=" << min << ", max=" << max);
 	  *pVariable = new UniformVariable (minVal, maxVal);
 	}
+      else
+        {
+          NS_DEBUG ("parse  Uniform min=" << min << ", max=" << max);
+        }
       return ok;
     }
   else
@@ -108,7 +116,12 @@ RandomVariableDefaultValue::Parse (const std::string &value,
 bool 
 RandomVariableDefaultValue::DoParseValue (const std::string &value)
 {
-  return Parse (value, false, 0);
+  bool ok = Parse (value, false, 0);
+  if (ok)
+    {
+      m_value = value;
+    }
+  return ok;
 }
 std::string 
 RandomVariableDefaultValue::DoGetType (void) const
