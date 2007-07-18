@@ -57,7 +57,7 @@ CandidateQueue::Push (SPFVertex *vNew)
   for (; i != m_candidates.end (); i++)
     {
       SPFVertex *v = *i;
-      if (vNew->m_distanceFromRoot < v->m_distanceFromRoot)
+      if (vNew->GetDistanceFromRoot () < v->GetDistanceFromRoot ())
         {
           break;
         }
@@ -119,7 +119,7 @@ CandidateQueue::Find (const Ipv4Address addr) const
   for (; i != m_candidates.end (); i++)
     {
       SPFVertex *v = *i;
-      if (v->m_vertexId == addr)
+      if (v->GetVertexId() == addr)
         {
           return v;
         }

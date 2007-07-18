@@ -503,13 +503,6 @@ ns3.add(sample_component_manager)
 sample_component_manager.add_deps(['core'])
 sample_component_manager.add_source('main-component-manager.cc')
 
-sample_candidate_queue = build.Ns3Module('sample-candidate-queue', 'samples')
-sample_candidate_queue.set_executable()
-ns3.add(sample_candidate_queue)
-sample_candidate_queue.add_deps(['core'])
-sample_candidate_queue.add_deps(['routing'])
-sample_candidate_queue.add_source('main-candidate-queue.cc')
-
 # examples
 example_simple_p2p = build.Ns3Module('simple-p2p', 'examples')
 example_simple_p2p.set_executable()

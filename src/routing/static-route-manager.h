@@ -47,23 +47,58 @@ public:
     VertexUnknown = 0,
     VertexRouter,
     VertexNetwork
-  } m_vertexType;
+  };
 
+  void SetVertexType (VertexType type);
+  VertexType GetVertexType (void) const;
+
+  void SetVertexId (Ipv4Address idV);
+  Ipv4Address GetVertexId (void) const;
+
+  void SetLSA (StaticRouterLSA* lsa);
+  StaticRouterLSA* GetLSA (void) const;
+
+  void SetDistanceFromRoot (uint32_t distance);
+  uint32_t GetDistanceFromRoot (void) const;
+
+  void SetOutgoingInterfaceId (uint32_t id);
+  uint32_t GetOutgoingInterfaceId (void) const;
+
+  void SetNextHop (Ipv4Address nextHop);
+  Ipv4Address GetNextHop (void) const;
+
+  void SetParent (SPFVertex* parent);
+  SPFVertex* GetParent (void) const;
+
+  uint32_t GetNChildren (void) const;
+  SPFVertex* GetChild (uint32_t n) const;
+
+  uint32_t AddChild (SPFVertex* child);
+
+private:
+  VertexType m_vertexType;
   Ipv4Address m_vertexId;  // router id
-
   StaticRouterLSA* m_lsa;  // This pointer owns LSA for mem. mgmt purposes
-
-  // need to keep track of current parent vertex
-  SPFVertex* m_parent;
-  //  m_children lists the leaves from your SPF tree
-  typedef std::list<SPFVertex*> t_listOfSPFVertex;
-  t_listOfSPFVertex m_children;
-  t_listOfSPFVertex::iterator m_SPFVertexIter;
-
   uint32_t m_distanceFromRoot;
   uint32_t m_rootOif;
   Ipv4Address m_nextHop;
 
+  // need to keep track of current parent vertex
+  SPFVertex* m_parent;
+
+  //  m_children lists the leaves from your SPF tree
+  typedef std::list<SPFVertex*> ListOfSPFVertex_t;
+  ListOfSPFVertex_t m_children;
+/**
+ * The SPFVertex copy construction is disallowed.  There's no need for
+ * it and a compiler provided shallow copy would be wrong.
+ */
+  SPFVertex (SPFVertex& v);
+/**
+ * The SPFVertex copy assignment operator is disallowed.  There's no need for
+ * it and a compiler provided shallow copy would be wrong.
+ */
+  SPFVertex& operator= (SPFVertex& v);
 };
 
 /**
@@ -72,6 +107,7 @@ public:
 class StaticRouteManagerLSDB
 {
 public:
+  StaticRouteManagerLSDB ();
   ~StaticRouteManagerLSDB ();
   void Insert(Ipv4Address addr, StaticRouterLSA* lsa);
   StaticRouterLSA* GetLSA (Ipv4Address addr);
@@ -83,6 +119,17 @@ public:
   typedef std::map<Ipv4Address, StaticRouterLSA*> LSDBMap_t;
   typedef std::pair<Ipv4Address, StaticRouterLSA*> LSDBPair_t;
   LSDBMap_t m_database;
+private:
+/**
+ * StaticRouteManagerLSDB copy construction is disallowed.  There's no 
+ * need for it and a compiler provided shallow copy would be hopelessly wrong.
+ */
+  StaticRouteManagerLSDB (StaticRouteManagerLSDB& lsdb);
+/**
+ * The SPFVertex copy assignment operator is disallowed.  There's no need for
+ * it and a compiler provided shallow copy would be wrong.
+ */
+  StaticRouteManagerLSDB& operator= (StaticRouteManagerLSDB& lsdb);
 };
 
 /**
@@ -126,6 +173,18 @@ public:
 protected:
 
 private:
+/**
+ * Static Route Manager copy construction is disallowed.  There's no need for
+ * it and a compiler provided shallow copy would be hopelessly wrong.
+ *
+ */
+  StaticRouteManager (StaticRouteManager& srm);
+/**
+ * Static Router copy assignment operator is disallowed.  There's no need for
+ * it and a compiler provided shallow copy would be hopelessly wrong.
+ */
+  StaticRouteManager& operator= (StaticRouteManager& srm);
+
   SPFVertex* m_spfroot;
   StaticRouteManagerLSDB* m_lsdb;
   void SPFCalculate (Ipv4Address root);

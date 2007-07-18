@@ -39,11 +39,11 @@ namespace ns3 {
 class StaticRouterLinkRecord
 {
 public:
-  /**
-   * Enumeration of the possible types of Static Router Link Records.  These
-   * are defined in the OSPF spec.  We currently only use PointToPoint and
-   * StubNetwork types.
-   */
+/**
+ * Enumeration of the possible types of Static Router Link Records.  These
+ * are defined in the OSPF spec.  We currently only use PointToPoint and
+ * StubNetwork types.
+ */
   enum LinkType {
     Unknown = 0,        /**< Uninitialized Link Record */
     PointToPoint,       /**< Record representing a point to point channel */
@@ -51,148 +51,151 @@ public:
     StubNetwork,        /**< Record represents a leaf node network */
     VirtualLink         /**< Unused -- for future OSPF compatibility  */
   };
-  /**
-   * Construct an empty ("uninitialized") Static Router Link Record.
-   *
-   * The Link ID and Link Data Ipv4 addresses are set to "0.0.0.0";
-   * The Link Type is set to Unknown;
-   * The metric is set to 0.
-   */
+/**
+ * Construct an empty ("uninitialized") Static Router Link Record.
+ *
+ * The Link ID and Link Data Ipv4 addresses are set to "0.0.0.0";
+ * The Link Type is set to Unknown;
+ * The metric is set to 0.
+ */
   StaticRouterLinkRecord ();
-  /**
-   * Construct a fully uninitialized Static Router Link Record.
-   *
-   * @param linkType The type of link record to construct.
-   * @param linkId The link ID for the record.
-   * @param linkData The link data field for the record.
-   * @param metric The metric field for the record.
-   * @see LinkType
-   * @see SetLinkId
-   * @see SetLinkData
-   */
+/**
+ * Construct a fully uninitialized Static Router Link Record.
+ *
+ * @param linkType The type of link record to construct.
+ * @param linkId The link ID for the record.
+ * @param linkData The link data field for the record.
+ * @param metric The metric field for the record.
+ * @see LinkType
+ * @see SetLinkId
+ * @see SetLinkData
+ */
   StaticRouterLinkRecord (
     LinkType    linkType, 
     Ipv4Address linkId, 
     Ipv4Address linkData, 
     uint32_t    metric);
-  /**
-   * Destroy a Static Router Link Record.
-   *
-   * Currently does nothing.  Here as a placeholder only.
-   */
+/**
+ * Destroy a Static Router Link Record.
+ *
+ * Currently does nothing.  Here as a placeholder only.
+ */
   ~StaticRouterLinkRecord ();
-  /**
-   * Get the Link ID field of the Static Router Link Record.
-   *
-   * For an OSPF type 1 link (PointToPoint) the Link ID will be the Router ID
-   * of the neighboring router.
-   *
-   * For an OSPF type 3 link (StubNetwork), the Link ID will be the adjacent
-   * neighbor's IP address
-   */
+/**
+ * Get the Link ID field of the Static Router Link Record.
+ *
+ * For an OSPF type 1 link (PointToPoint) the Link ID will be the Router ID
+ * of the neighboring router.
+ *
+ * For an OSPF type 3 link (StubNetwork), the Link ID will be the adjacent
+ * neighbor's IP address
+ */
   Ipv4Address GetLinkId(void) const;
-  /**
-   * Set the Link ID field of the Static Router Link Record.
-   *
-   * For an OSPF type 1 link (PointToPoint) the Link ID must be the Router ID
-   * of the neighboring router.
-   *
-   * For an OSPF type 3 link (StubNetwork), the Link ID must be the adjacent
-   * neighbor's IP address
-   */
+/**
+ * Set the Link ID field of the Static Router Link Record.
+ *
+ * For an OSPF type 1 link (PointToPoint) the Link ID must be the Router ID
+ * of the neighboring router.
+ *
+ * For an OSPF type 3 link (StubNetwork), the Link ID must be the adjacent
+ * neighbor's IP address
+ */
   void SetLinkId(Ipv4Address addr);
-  /**
-   * Get the Link Data field of the Static Router Link Record.
-   *
-   * For an OSPF type 1 link (PointToPoint) the Link Data will be the IP
-   * address of the node of the local side of the link.
-   *
-   * For an OSPF type 3 link (StubNetwork), the Link Data will be the
-   * network mask
-   */
+/**
+ * Get the Link Data field of the Static Router Link Record.
+ *
+ * For an OSPF type 1 link (PointToPoint) the Link Data will be the IP
+ * address of the node of the local side of the link.
+ *
+ * For an OSPF type 3 link (StubNetwork), the Link Data will be the
+ * network mask
+ */
   Ipv4Address GetLinkData(void) const;
-  /**
-   * Set the Link Data field of the Static Router Link Record.
-   *
-   * For an OSPF type 1 link (PointToPoint) the Link Data must be the IP
-   * address of the node of the local side of the link.
-   *
-   * For an OSPF type 3 link (StubNetwork), the Link Data must be set to the
-   * network mask
-   */
+/**
+ * Set the Link Data field of the Static Router Link Record.
+ *
+ * For an OSPF type 1 link (PointToPoint) the Link Data must be the IP
+ * address of the node of the local side of the link.
+ *
+ * For an OSPF type 3 link (StubNetwork), the Link Data must be set to the
+ * network mask
+ */
   void SetLinkData(Ipv4Address addr);
-  /**
-   * Get the Link Type field of the Static Router Link Record.
-   *
-   * The Link Type describes the kind of link a given record represents.  The
-   * values are defined by OSPF.
-   *
-   * @see LinkType
-   */
+/**
+ * Get the Link Type field of the Static Router Link Record.
+ *
+ * The Link Type describes the kind of link a given record represents.  The
+ * values are defined by OSPF.
+ *
+ * @see LinkType
+ */
   LinkType GetLinkType(void) const;
-  /**
-   * Set the Link Type field of the Static Router Link Record.
-   *
-   * The Link Type describes the kind of link a given record represents.  The
-   * values are defined by OSPF.
-   *
-   * @see LinkType
-   */
+/**
+ * Set the Link Type field of the Static Router Link Record.
+ *
+ * The Link Type describes the kind of link a given record represents.  The
+ * values are defined by OSPF.
+ *
+ * @see LinkType
+ */
   void SetLinkType(LinkType linkType);
-  /**
-   * Get the Metric Data field of the Static Router Link Record.
-   *
-   * The metric is an abstract cost associated with forwarding a packet across
-   * a link.  A sum of metrics must have a well-defined meaning.  That is, you
-   * shouldn't use bandwidth as a metric (how does the sum of the bandwidth of
-   * two hops relate to the cost of sending a packet); rather you should use
-   * something like delay.
-   */
+/**
+ * Get the Metric Data field of the Static Router Link Record.
+ *
+ * The metric is an abstract cost associated with forwarding a packet across
+ * a link.  A sum of metrics must have a well-defined meaning.  That is, you
+ * shouldn't use bandwidth as a metric (how does the sum of the bandwidth of
+ * two hops relate to the cost of sending a packet); rather you should use
+ * something like delay.
+ */
   uint32_t GetMetric(void) const;
-  /**
-   * Set the Metric Data field of the Static Router Link Record.
-   *
-   * The metric is an abstract cost associated with forwarding a packet across
-   * a link.  A sum of metrics must have a well-defined meaning.  That is, you
-   * shouldn't use bandwidth as a metric (how does the sum of the bandwidth of
-   * two hops relate to the cost of sending a packet); rather you should use
-   * something like delay.
-   */
+/**
+ * Set the Metric Data field of the Static Router Link Record.
+ *
+ * The metric is an abstract cost associated with forwarding a packet across
+ * a link.  A sum of metrics must have a well-defined meaning.  That is, you
+ * shouldn't use bandwidth as a metric (how does the sum of the bandwidth of
+ * two hops relate to the cost of sending a packet); rather you should use
+ * something like delay.
+ */
   void SetMetric(uint32_t metric);
 
 private:
-  /**
-   * m_linkId and m_linkData are defined by OSPF to have different meanings 
-   * depending on the type of link a given link records represents.  They work
-   * together.
-   *
-   * For Type 1 link (PointToPoint), set m_linkId to Router ID of 
-   * neighboring router.
-   *
-   * For Type 3 link (Stub), set m_linkId to neighbor's IP address
-   */
+/**
+ * m_linkId and m_linkData are defined by OSPF to have different meanings 
+ * depending on the type of link a given link records represents.  They work
+ * together.
+ *
+ * For Type 1 link (PointToPoint), set m_linkId to Router ID of 
+ * neighboring router.
+ *
+ * For Type 3 link (Stub), set m_linkId to neighbor's IP address
+ */
   Ipv4Address m_linkId;         
-  /**
-   * m_linkId and m_linkData are defined by OSPF to have different meanings 
-   * depending on the type of link a given link records represents.  They work
-   * together.
-   *
-   * For Type 1 link (PointToPoint), set m_linkData to local IP address  
-   *
-   * For Type 3 link (Stub), set m_linkData to mask
-   */
+/**
+ * m_linkId and m_linkData are defined by OSPF to have different meanings 
+ * depending on the type of link a given link records represents.  They work
+ * together.
+ *
+ * For Type 1 link (PointToPoint), set m_linkData to local IP address  
+ *
+ * For Type 3 link (Stub), set m_linkData to mask
+ */
   Ipv4Address m_linkData;    // for links to RouterLSA, 
-
+/**
+ * The type of the Static Router Link Record.  Defined in the OSPF spec.  
+ * We currently only use PointToPoint and StubNetwork types.
+ */
   LinkType m_linkType;
-  /**
-   * The metric for a given link.
-   *
-   * A metric is abstract cost associated with forwarding a packet across a 
-   * link.  A sum of metrics must have a well-defined meaning.  That is, you 
-   * shouldn't use bandwidth as a metric (how does the sum of the bandwidth 
-   * of two hops relate to the cost of sending a packet); rather you should
-   * use something like delay.
-   */
+/**
+ * The metric for a given link.
+ *
+ * A metric is abstract cost associated with forwarding a packet across a 
+ * link.  A sum of metrics must have a well-defined meaning.  That is, you 
+ * shouldn't use bandwidth as a metric (how does the sum of the bandwidth 
+ * of two hops relate to the cost of sending a packet); rather you should
+ * use something like delay.
+ */
   uint32_t m_metric;  
 };
 
@@ -405,79 +408,79 @@ std::ostream& operator<< (std::ostream& os, StaticRouterLSA& lsa);
 class StaticRouter : public Object
 {
 public:
-  /**
-   * The Interface ID of the Static Router interface.
-   *
-   * @see Object::QueryInterface ()
-   */
+/**
+ * The Interface ID of the Static Router interface.
+ *
+ * @see Object::QueryInterface ()
+ */
   static const InterfaceId iid;
-  /**
-   * Create a Static Router class and aggregate its interface onto the Node
-   * provided.
-   *
-   * @param node The existing Node onto which this router will be aggregated.
-   */
+/**
+ * Create a Static Router class and aggregate its interface onto the Node
+ * provided.
+ *
+ * @param node The existing Node onto which this router will be aggregated.
+ */
   StaticRouter (Ptr<Node> node);
-  /**
-   * Get the Router ID associated with this Static Router.  The Router IDs
-   * are allocated in the RoutingEnvironment -- one per Router, starting at
-   * 0.0.0.1 and incrementing with each instantiation of a router.
-   *
-   * @see RoutingEnvironment::AllocateRouterId ()
-   * @returns The Router ID associated with the Static Router.
-   */
+/**
+ * Get the Router ID associated with this Static Router.  The Router IDs
+ * are allocated in the RoutingEnvironment -- one per Router, starting at
+ * 0.0.0.1 and incrementing with each instantiation of a router.
+ *
+ * @see RoutingEnvironment::AllocateRouterId ()
+ * @returns The Router ID associated with the Static Router.
+ */
   Ipv4Address GetRouterId (void) const;
-  /**
-   * Walk the connected channels, discover the adjacent routers and build
-   * the associated number of Static Router Link State Advertisements that 
-   * this router can export.
-   *
-   * This is a fairly expensive operation in that every time it is called
-   * the current list of LSAs is built by walking connected point-to-point
-   * channels and peeking into adjacent IPV4 stacks to get address information.
-   * This is done to allow for limited dymanics of the Static Routing 
-   * environment.  By that we mean that you can discover new link state 
-   * advertisements after a network topology change by calling DiscoverLSAs 
-   * and then by reading those advertisements.
-   *
-   * @see StaticRouterLSA
-   * @see StaticRouter::GetLSA ()
-   * @returns The number of Static Router Link State Advertisements.
-   */
+/**
+ * Walk the connected channels, discover the adjacent routers and build
+ * the associated number of Static Router Link State Advertisements that 
+ * this router can export.
+ *
+ * This is a fairly expensive operation in that every time it is called
+ * the current list of LSAs is built by walking connected point-to-point
+ * channels and peeking into adjacent IPV4 stacks to get address information.
+ * This is done to allow for limited dymanics of the Static Routing 
+ * environment.  By that we mean that you can discover new link state 
+ * advertisements after a network topology change by calling DiscoverLSAs 
+ * and then by reading those advertisements.
+ *
+ * @see StaticRouterLSA
+ * @see StaticRouter::GetLSA ()
+ * @returns The number of Static Router Link State Advertisements.
+ */
   uint32_t DiscoverLSAs (void);
-  /**
-   * Get the Number of Static Router Link State Advertisements that this
-   * router can export.  To get meaningful information you must have 
-   * previously called DiscoverLSAs.  After you know how many LSAs are 
-   * present in the router, you may call GetLSA () to retrieve the actual
-   * advertisement.
-   *
-   * @see StaticRouterLSA
-   * @see StaticRouter::DiscoverLSAs ()
-   * @see StaticRouter::GetLSA ()
-   * @returns The number of Static Router Link State Advertisements.
-   */
+/**
+ * Get the Number of Static Router Link State Advertisements that this
+ * router can export.  To get meaningful information you must have 
+ * previously called DiscoverLSAs.  After you know how many LSAs are 
+ * present in the router, you may call GetLSA () to retrieve the actual
+ * advertisement.
+ *
+ * @see StaticRouterLSA
+ * @see StaticRouter::DiscoverLSAs ()
+ * @see StaticRouter::GetLSA ()
+ * @returns The number of Static Router Link State Advertisements.
+ */
   uint32_t GetNumLSAs (void) const;
-  /**
-   * Get a Static Router Link State Advertisements that this router has said
-   * that it can export.
-   *
-   * This is a fairly inexpensive expensive operation in that the hard work
-   * was done in GetNumLSAs.  We just copy the indicated Static Router Link
-   * State Advertisement into the requested StaticRouterLSA object.
-   *
-   * You must call StaticRouter::GetNumLSAs before calling this method in 
-   * order to discover the adjacent routers and build the advertisements.
-   * GetNumLSAs will return the number of LSAs this router advertises.  
-   * The parameter n (requested LSA number) must be in the range 0 to 
-   * GetNumLSAs() - 1.
-   *
-   * @see StaticRouterLSA
-   * @see StaticRouter::GetNumLSAs ()
-   * @param n The index number of the LSA you want to read.
-   * @param lsa The StaticRouterLSA class to receive the LSA information.
-   * @returns The number of Static Router Link State Advertisements.
-   */
+/**
+ * Get a Static Router Link State Advertisements that this router has said
+ * that it can export.
+ *
+ * This is a fairly inexpensive expensive operation in that the hard work
+ * was done in GetNumLSAs.  We just copy the indicated Static Router Link
+ * State Advertisement into the requested StaticRouterLSA object.
+ *
+ * You must call StaticRouter::GetNumLSAs before calling this method in 
+ * order to discover the adjacent routers and build the advertisements.
+ * GetNumLSAs will return the number of LSAs this router advertises.  
+ * The parameter n (requested LSA number) must be in the range 0 to 
+ * GetNumLSAs() - 1.
+ *
+ * @see StaticRouterLSA
+ * @see StaticRouter::GetNumLSAs ()
+ * @param n The index number of the LSA you want to read.
+ * @param lsa The StaticRouterLSA class to receive the LSA information.
+ * @returns The number of Static Router Link State Advertisements.
+ */
   bool GetLSA (uint32_t n, StaticRouterLSA &lsa) const;
 
 protected:
@@ -495,13 +498,13 @@ protected:
   Ipv4Address m_routerId;
 
 private:
-  /**
-   * Static Router copy construction is disallowed.
-   */
+/**
+ * Static Router copy construction is disallowed.
+ */
   StaticRouter (StaticRouter& sr);
-  /**
-   * Static Router copy assignment operator is disallowed.
-   */
+/**
+ * Static Router copy assignment operator is disallowed.
+ */
   StaticRouter& operator= (StaticRouter& sr);
 };
 
