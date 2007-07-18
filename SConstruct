@@ -24,7 +24,6 @@ ns3.add_extra_dist ('RELEASE_NOTES')
 ns3.add_extra_dist ('AUTHORS')
 ns3.add_extra_dist ('VERSION')
 
-ns3.add_extra_dist('doc/build-waf.txt')
 ns3.add_extra_dist('ns3/_placeholder_')
 for wscript in [
     "src/core/wscript",
@@ -41,7 +40,6 @@ for wscript in [
     "wscript",
     ]:
     ns3.add_extra_dist(wscript)
-ns3.add_extra_dist('waf')
 ns3.add_extra_dist('waf.bat')
 
 
