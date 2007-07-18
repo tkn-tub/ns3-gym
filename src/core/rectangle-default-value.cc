@@ -28,37 +28,29 @@ RectangleDefaultValue::RectangleDefaultValue (std::string name,
 					      double xMin, double xMax,
 					      double yMin, double yMax)
   : DefaultValueBase (name, help),
-    m_xMinDefault (xMin),
-    m_xMaxDefault (xMax),
-    m_yMinDefault (yMin),
-    m_yMaxDefault (yMax),
-    m_xMin (xMin),
-    m_xMax (xMax),
-    m_yMin (yMin),
-    m_yMax (yMax)
+    m_default (xMin, xMax, yMin, yMax),
+    m_rectangle (xMin, xMax, yMin, yMax)
 {
   DefaultValueList::Add (this);
 }
 
-double 
-RectangleDefaultValue::GetMinX (void) const
+Rectangle
+RectangleDefaultValue::GetValue (void) const
 {
-  return m_xMin;
+  return m_rectangle;
 }
-double 
-RectangleDefaultValue::GetMinY (void) const
+double
+RectangleDefaultValue::ReadDouble (std::string str, bool &ok)
 {
-  return m_yMin;
-}
-double 
-RectangleDefaultValue::GetMaxX (void) const
-{
-  return m_xMax;
-}
-double 
-RectangleDefaultValue::GetMaxY (void) const
-{
-  return m_yMax;
+  double value;
+  std::istringstream iss;
+  iss.str (str);
+  iss >> value;
+  if (iss.bad () || iss.fail ())
+    {
+      ok = false;
+    }
+  return value;
 }
 bool 
 RectangleDefaultValue::DoParseValue (const std::string &value)
@@ -77,17 +69,12 @@ RectangleDefaultValue::DoParseValue (const std::string &value)
   std::string yMinString = value.substr (yMinStart, yMinEnd);
   std::string yMaxString = value.substr (yMaxStart, yMaxEnd);
 
-  std::istringstream iss;
-  iss.str (xMinString);
-  iss >> m_xMin;
-  iss.str (xMaxString);
-  iss >> m_xMax;
-  iss.str (yMinString);
-  iss >> m_yMin;
-  iss.str (yMaxString);
-  iss >> m_yMax;
-
-  return !iss.bad () && !iss.fail ();
+  bool ok = true;
+  m_rectangle.xMin = ReadDouble (xMinString, ok);
+  m_rectangle.yMin = ReadDouble (yMinString, ok);
+  m_rectangle.xMax = ReadDouble (xMaxString, ok);
+  m_rectangle.yMax = ReadDouble (yMaxString, ok);
+  return ok;
 }
 std::string 
 RectangleDefaultValue::DoGetType (void) const
@@ -98,7 +85,7 @@ std::string
 RectangleDefaultValue::DoGetDefaultValue (void) const
 {
   std::ostringstream oss;
-  oss << m_xMinDefault << ":" << m_xMaxDefault << ":" << m_yMinDefault << ":" << m_yMaxDefault;
+  oss << m_default.xMin << ":" << m_default.xMax << ":" << m_default.yMin << ":" << m_default.yMax;
   return oss.str ();
 }
 

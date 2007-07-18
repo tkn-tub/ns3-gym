@@ -18,34 +18,23 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef RECTANGLE_DEFAULT_VALUE_H
-#define RECTANGLE_DEFAULT_VALUE_H
-
-#include <string>
-#include "default-value.h"
 #include "rectangle.h"
 
 namespace ns3 {
 
-class RectangleDefaultValue : public DefaultValueBase
-{
- public:
-  RectangleDefaultValue (std::string name,
-			 std::string help,
-			 double xMin, double xMax,
-			 double yMin, double yMax);
+Rectangle::Rectangle (double _xMin, double _xMax,
+		      double _yMin, double _yMax)
+  : xMin (_xMin),
+    xMax (_xMax),
+    yMin (_yMin),
+    yMax (_yMax)
+{}
 
-  Rectangle GetValue (void) const;
- private:
-  double ReadDouble (std::string str, bool &ok);
-  virtual bool DoParseValue (const std::string &value);
-  virtual std::string DoGetType (void) const;
-  virtual std::string DoGetDefaultValue (void) const;
-
-  Rectangle m_default;
-  Rectangle m_rectangle;
-};
+Rectangle::Rectangle ()
+  : xMin (0.0),
+    xMax (0.0),
+    yMin (0.0),
+    yMax (0.0)
+{}
 
 } // namespace ns3
-
-#endif /* RECTANGLE_DEFAULT_VALUE_H */
