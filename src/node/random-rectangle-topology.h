@@ -21,33 +21,33 @@
 #ifndef RANDOM_RECTANGLE_TOPOLOGY_H
 #define RANDOM_RECTANGLE_TOPOLOGY_H
 
-#include "ns3/random-variable.h"
 #include "ns3/ptr.h"
 #include "ns3/object.h"
 #include "ns3/component-manager.h"
 
 namespace ns3 {
 
+class Random2dPosition;
+
 class RandomRectangleTopology
 {
  public:
-
   RandomRectangleTopology ();
-  RandomRectangleTopology (double xMin, double xMax, double yMin, double yMax);
-  RandomRectangleTopology (const RandomVariable &xVariable, const RandomVariable &yVariable);
+  RandomRectangleTopology (Ptr<Random2dPosition> positionModel,
+                           ClassId mobilityModel);
 
   ~RandomRectangleTopology ();
 
-  void SetMobilityModelModel (ClassId classId);
+  void SetMobilityModel (ClassId classId);
+  void SetPositionModel (Ptr<Random2dPosition> positionModel);
 
   void LayoutOne (Ptr<Object> object);
 
   template <typename T>
   void Layout (const T &begin, const T &end);
  private:
-  RandomVariable *m_xVariable;
-  RandomVariable *m_yVariable;
-  ClassId m_positionModel;
+  Ptr<Random2dPosition> m_positionModel;
+  ClassId m_mobilityModel;
 };
 
 } // namespace ns3
