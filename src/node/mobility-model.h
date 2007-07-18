@@ -22,17 +22,9 @@
 #define MOBILITY_MODEL_H
 
 #include "ns3/object.h"
+#include "position.h"
 
 namespace ns3 {
-
-class Position
-{
-public:
-  Position (double x, double y, double z);
-  double x;
-  double y;
-  double z;
-};
 
 /**
  * \brief keep track of the current position of an object

@@ -26,13 +26,6 @@ namespace ns3 {
 
 const InterfaceId MobilityModel::iid = MakeInterfaceId ("MobilityModel", Object::iid);
 
-
-Position::Position (double _x, double _y, double _z)
-  : x (_x),
-    y (_y),
-    z (_z)
-{}
-
 MobilityModel::MobilityModel ()
 {
   SetInterfaceId (MobilityModel::iid);
