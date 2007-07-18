@@ -42,6 +42,7 @@ public:
   void SetPause (const RandomVariable &pause);
 private:
   friend class RandomWaypointMobilityModel;
+  static Ptr<RandomWaypointMobilityModelParameters> GetCurrent (void);
   virtual void DoDispose (void);
   RandomVariable *m_speed;
   RandomVariable *m_pause;
@@ -51,6 +52,7 @@ private:
 class RandomWaypointMobilityModel : public MobilityModel
 {
 public:
+  RandomWaypointMobilityModel ();
   RandomWaypointMobilityModel (Ptr<RandomWaypointMobilityModelParameters> parameters);
 private:
   void Start (void);

@@ -1,12 +1,35 @@
 #include "ns3/simulator.h"
 #include "ns3/random-variable.h"
+#include "ns3/random-variable-default-value.h"
+#include "ns3/component-manager.h"
 #include "random-waypoint-mobility-model.h"
 #include "random-position.h"
 
 namespace ns3 {
 
+static RandomVariableDefaultValue
+g_speed ("RandomWaypointSpeed",
+	 "A random variable used to pick the speed of a random waypoint model.",
+	 "Uniform:0.3:0.7");
+
+static RandomVariableDefaultValue
+g_pause ("RandomWaypointPause",
+	 "A random variable used to pick the pause of a random waypoint model.",
+	 "Constant:2");
+
+static ClassIdDefaultValue
+g_position ("RandomWaypointPosition",
+	    "A random position model used to pick the next waypoint position.",
+	    RandomPosition::iid,
+	    "RandomPositionRectangle");
+
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters ()
-{}
+  : m_speed (g_speed.GetCopy ()),
+    m_pause (g_pause.GetCopy ())
+{
+  m_position = ComponentManager::Create<RandomPosition> (g_position.GetValue (), 
+							 RandomPosition::iid);
+}
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters (Ptr<RandomPosition> randomPosition,
 									      const RandomVariable &speed,
 									      const RandomVariable &pause)
@@ -41,6 +64,23 @@ RandomWaypointMobilityModelParameters::DoDispose (void)
   m_speed = 0;  
 }
 
+Ptr<RandomWaypointMobilityModelParameters>
+RandomWaypointMobilityModelParameters::GetCurrent (void)
+{
+  static Ptr<RandomWaypointMobilityModelParameters> parameters = 0;
+  if (parameters == 0 ||
+      g_position.IsDirty () ||
+      g_pause.IsDirty () ||
+      g_speed.IsDirty ())
+    {
+      parameters = Create<RandomWaypointMobilityModelParameters> ();
+    }
+  return parameters;
+}
+
+RandomWaypointMobilityModel::RandomWaypointMobilityModel ()
+  : m_parameters (RandomWaypointMobilityModelParameters::GetCurrent ())
+{}
 
 RandomWaypointMobilityModel::RandomWaypointMobilityModel (Ptr<RandomWaypointMobilityModelParameters> parameters)
   : m_parameters (parameters)
