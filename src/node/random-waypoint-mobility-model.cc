@@ -23,6 +23,9 @@ g_position ("RandomWaypointPosition",
 	    RandomPosition::iid,
 	    "RandomPositionRectangle");
 
+const ClassId RandomWaypointMobilityModel::cid = 
+  MakeClassId<RandomWaypointMobilityModel> ("RandomWaypointMobilityModel", MobilityModel::iid);
+
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters ()
   : m_speed (g_speed.GetCopy ()),
     m_pause (g_pause.GetCopy ())

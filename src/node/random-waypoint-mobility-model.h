@@ -52,6 +52,8 @@ private:
 class RandomWaypointMobilityModel : public MobilityModel
 {
 public:
+  static const ClassId cid;
+
   RandomWaypointMobilityModel ();
   RandomWaypointMobilityModel (Ptr<RandomWaypointMobilityModelParameters> parameters);
 private:
