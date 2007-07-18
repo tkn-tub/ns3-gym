@@ -60,15 +60,6 @@ with --enable-gcov)
     before running the program.  Note: the "program [args]" string is
     parsed using POSIX shell rules.
 
- 4.1 waf --run programname --command-template "... %s ..."
-
-    Same as --run, but uses a command template with %s replaced by the
-    actual program (whose name is given by --run).  This can be use to
-    run ns-3 programs with helper tools.  For example, to run unit
-    tests with valgrind, use the command:
-
-         waf --run run-tests --command-template "valgrind %s"
-
  5. waf --shell
     Starts a nested system shell with modified environment to run ns3 programs.
 

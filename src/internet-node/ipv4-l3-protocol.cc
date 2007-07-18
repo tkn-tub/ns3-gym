@@ -404,40 +404,23 @@ Ipv4L3Protocol::Send (Packet const &packet,
 
   m_identification ++;
 
-  if (destination.IsBroadcast ())
+  // XXX Note here that in most ipv4 stacks in the world,
+  // the route calculation for an outgoing packet is not
+  // done in the ip layer. It is done within the application
+  // socket when the first packet is sent to avoid this
+  // costly lookup on a per-packet basis.
+  // That would require us to get the route from the packet,
+  // most likely with a packet tag. The higher layers do not
+  // do this yet for us.
+  Ipv4Route *route = Lookup (ipHeader.GetDestination ());
+  if (route == 0) 
     {
-      uint32_t ifaceIndex = 0;
-      for (Ipv4InterfaceList::iterator ifaceIter = m_interfaces.begin ();
-           ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
-        {
-          Ipv4Interface *outInterface = *ifaceIter;
-          Packet packetCopy = packet;
+      NS_DEBUG ("not for me -- forwarding but no route to host. drop.");
+      m_dropTrace (packet);
+      return;
+    }
 
-          NS_ASSERT (packetCopy.GetSize () <= outInterface->GetMtu ());
-          packetCopy.AddHeader (ipHeader);
-          m_txTrace (packetCopy, ifaceIndex);
-          outInterface->Send (packetCopy, destination);
-        }
-    }
-  else
-    {
-      // XXX Note here that in most ipv4 stacks in the world,
-      // the route calculation for an outgoing packet is not
-      // done in the ip layer. It is done within the application
-      // socket when the first packet is sent to avoid this
-      // costly lookup on a per-packet basis.
-      // That would require us to get the route from the packet,
-      // most likely with a packet tag. The higher layers do not
-      // do this yet for us.
-      Ipv4Route *route = Lookup (ipHeader.GetDestination ());
-      if (route == 0) 
-        {
-          NS_DEBUG ("not for me -- forwarding but no route to host. drop.");
-          m_dropTrace (packet);
-          return;
-        }
-      SendRealOut (packet, ipHeader, *route);
-    }
+  SendRealOut (packet, ipHeader, *route);
 }
 
 void
@@ -487,7 +470,7 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
 	}
     }
       
-  if (ipHeader.GetDestination ().IsBroadcast ()) 
+  if (ipHeader.GetDestination ().IsEqual (Ipv4Address::GetBroadcast ())) 
     {
       NS_DEBUG ("for me 3");
       return false;

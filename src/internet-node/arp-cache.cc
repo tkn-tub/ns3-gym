@@ -109,8 +109,6 @@ ArpCache::Lookup (Ipv4Address to)
 ArpCache::Entry *
 ArpCache::Add (Ipv4Address to)
 {
-  NS_ASSERT (m_arpCache.find (to) == m_arpCache.end ());
-
   ArpCache::Entry *entry = new ArpCache::Entry (this);
   m_arpCache[to] = entry;  
   return entry;

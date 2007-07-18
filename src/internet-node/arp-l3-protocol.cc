@@ -87,13 +87,6 @@ ArpL3Protocol::Receive(Packet& packet, Ptr<NetDevice> device)
   ArpCache *cache = FindCache (device);
   ArpHeader arp;
   packet.RemoveHeader (arp);
-  
-  NS_DEBUG ("ARP: received "<< (arp.IsRequest ()? "request" : "reply") <<
-            " node="<<m_node->GetId ()<<", got request from " <<
-            arp.GetSourceIpv4Address () << " for address " <<
-            arp.GetDestinationIpv4Address () << "; we have address " <<
-            cache->GetInterface ()->GetAddress ());
-
   if (arp.IsRequest () && 
       arp.GetDestinationIpv4Address () == cache->GetInterface ()->GetAddress ()) 
     {
@@ -134,12 +127,6 @@ ArpL3Protocol::Receive(Packet& packet, Ptr<NetDevice> device)
           NS_DEBUG ("node="<<m_node->GetId ()<<", got reply for unknown entry -- drop");
 	  // XXX report packet as dropped.
         }
-    }
-  else
-    {
-      NS_DEBUG ("node="<<m_node->GetId ()<<", got request from " <<
-                arp.GetSourceIpv4Address () << " for unknown address " <<
-                arp.GetDestinationIpv4Address () << " -- drop");
     }
 }
 bool 
@@ -216,11 +203,6 @@ void
 ArpL3Protocol::SendArpRequest (ArpCache const *cache, Ipv4Address to)
 {
   ArpHeader arp;
-  NS_DEBUG ("ARP: sending request from node "<<m_node->GetId ()<<
-            " || src: " << cache->GetDevice ()->GetAddress () <<
-            " / " << cache->GetInterface ()->GetAddress () <<
-            " || dst: " << cache->GetDevice ()->GetBroadcast () <<
-            " / " << to);
   arp.SetRequest (cache->GetDevice ()->GetAddress (),
 		  cache->GetInterface ()->GetAddress (), 
                   cache->GetDevice ()->GetBroadcast (),
@@ -234,10 +216,6 @@ void
 ArpL3Protocol::SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac)
 {
   ArpHeader arp;
-  NS_DEBUG ("ARP: sending reply from node "<<m_node->GetId ()<<
-            "|| src: " << cache->GetDevice ()->GetAddress () << 
-            " / " << cache->GetInterface ()->GetAddress () <<
-            " || dst: " << toMac << " / " << toIp);
   arp.SetReply (cache->GetDevice ()->GetAddress (),
                 cache->GetInterface ()->GetAddress (),
                 toMac, toIp);

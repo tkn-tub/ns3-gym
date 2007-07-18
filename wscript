@@ -1,4 +1,5 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+import os
 import sys
 import shlex
 import shutil
@@ -65,14 +66,8 @@ def set_options(opt):
                    dest='doxygen')
 
     opt.add_option('--run',
-                   help=('Run a locally built program; argument can be a program name,'
-                         ' or a command starting with the program name.'),
+                   help=('Run a locally built program'),
                    type="string", default='', dest='run')
-    opt.add_option('--command-template',
-                   help=('Template of the command used to run the program given by --run;'
-                         ' It should be a shell command string containing %s inside,'
-                         ' which will be replaced by the actual program.'),
-                   type="string", default=None, dest='command_template')
 
     opt.add_option('--shell',
                    help=('Run a shell with an environment suitably modified to run locally built programs'),
@@ -168,11 +163,7 @@ def shutdown():
         doxygen()
 
     if Params.g_options.run:
-        run_program(Params.g_options.run, Params.g_options.command_template)
-        raise SystemExit(0)
-
-    if Params.g_options.command_template:
-        Params.fatal("Option --command-template requires the option --run to be given")
+        run_program(Params.g_options.run)
 
 def _find_program(program_name, env):
     launch_dir = os.path.abspath(Params.g_cwd_launch)
@@ -221,57 +212,32 @@ def _run_argv(argv):
 
     retval = subprocess.Popen(argv, env=os_env).wait()
     if retval:
-        Params.fatal("Command %s exited with code %i" % (argv, retval))
+        raise SystemExit(retval)
 
 
-def run_program(program_string, command_template=None):
-    """
-    if command_template is not None, then program_string == program
-    name and argv is given by command_template with %s replaced by the
-    full path to the program.  Else, program_string is interpreted as
-    a shell command with first name being the program name.
-    """
+def run_program(program_string):
     env = Params.g_build.env_of_name('default')
+    argv = shlex.split(program_string)
+    program_name = argv[0]
 
-    if command_template is None:
-        argv = shlex.split(program_string)
-        program_name = argv[0]
+    try:
+        program_obj = _find_program(program_name, env)
+    except ValueError, ex:
+        Params.fatal(str(ex))
 
-        try:
-            program_obj = _find_program(program_name, env)
-        except ValueError, ex:
-            Params.fatal(str(ex))
+    try:
+        program_node, = program_obj.m_linktask.m_outputs
+    except AttributeError:
+        Params.fatal("%s does not appear to be a program" % (program_name,))
 
-        try:
-            program_node, = program_obj.m_linktask.m_outputs
-        except AttributeError:
-            Params.fatal("%s does not appear to be a program" % (program_name,))
-
-        execvec = [program_node.abspath(env)] + argv[1:]
-
-    else:
-
-        program_name = program_string
-        try:
-            program_obj = _find_program(program_name, env)
-        except ValueError, ex:
-            Params.fatal(str(ex))
-        try:
-            program_node, = program_obj.m_linktask.m_outputs
-        except AttributeError:
-            Params.fatal("%s does not appear to be a program" % (program_name,))
-
-        execvec = shlex.split(command_template % (program_node.abspath(env),))
-
+    execvec = [program_node.abspath(env)] + argv[1:]
 
     former_cwd = os.getcwd()
     os.chdir(Params.g_cwd_launch)
     try:
-        retval = _run_argv(execvec)
+        return _run_argv(execvec)
     finally:
         os.chdir(former_cwd)
-
-    return retval
 
 
 def run_shell():
