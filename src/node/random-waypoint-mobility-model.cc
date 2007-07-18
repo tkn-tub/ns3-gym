@@ -83,7 +83,9 @@ RandomWaypointMobilityModelParameters::GetCurrent (void)
 
 RandomWaypointMobilityModel::RandomWaypointMobilityModel ()
   : m_parameters (RandomWaypointMobilityModelParameters::GetCurrent ())
-{}
+{
+  Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
+}
 
 RandomWaypointMobilityModel::RandomWaypointMobilityModel (Ptr<RandomWaypointMobilityModelParameters> parameters)
   : m_parameters (parameters)
@@ -118,7 +120,7 @@ RandomWaypointMobilityModel::DoSet (const Position &position)
 {
   m_helper.InitializePosition (position);
   Simulator::Remove (m_event);
-  Start ();
+  Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
 }
 
 
