@@ -2,6 +2,7 @@
 #define RANDOM_2D_POSITION_H
 
 #include "ns3/object.h"
+#include "ns3/component-manager.h"
 #include "position-2d.h"
 
 namespace ns3 {
@@ -11,6 +12,8 @@ class RandomVariable;
 class Random2dPosition : public Object
 {
 public:
+  static const InterfaceId iid;
+  Random2dPosition ();
   virtual ~Random2dPosition ();
   virtual Position2d Get (void) const = 0;
 };
@@ -18,6 +21,7 @@ public:
 class RandomRectanglePosition : public Random2dPosition
 {
 public:
+  static const ClassId cid;
   RandomRectanglePosition ();
   RandomRectanglePosition (const RandomVariable &x,
 			   const RandomVariable &y);
@@ -31,6 +35,7 @@ private:
 class RandomDiscPosition : public Random2dPosition
 {
 public:
+  static const ClassId cid;
   RandomDiscPosition ();
   RandomDiscPosition (const RandomVariable &theta,
 		      const RandomVariable &rho);

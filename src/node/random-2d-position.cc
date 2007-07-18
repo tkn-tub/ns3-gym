@@ -25,6 +25,20 @@ g_discRho ("RandomRectanglePositionRho",
 	   "A random variable which represents the radius of a position in a random disc.",
 	   "Uniform:0:200");
 
+const InterfaceId Random2dPosition::iid = MakeInterfaceId ("Random2dPosition", Object::iid);
+
+const ClassId RandomRectanglePosition::cid = 
+  MakeClassId<RandomRectanglePosition> ("RandomRectanglePosition", 
+					Random2dPosition::iid);
+const ClassId RandomDiscPosition::cid = 
+  MakeClassId<RandomDiscPosition> ("RandomDiscPosition", 
+				   Random2dPosition::iid);
+
+Random2dPosition::Random2dPosition ()
+{
+  Object::SetInterfaceId (Random2dPosition::iid);
+}
+
 Random2dPosition::~Random2dPosition ()
 {}
 
