@@ -248,6 +248,10 @@ SimulatorPrivate::Now (void) const
 void
 SimulatorPrivate::Remove (EventId ev)
 {
+  if (IsExpired (ev))
+    {
+      return;
+    }
   Scheduler::EventKey key;
   EventImpl *impl = m_events->Remove (ev, &key);
   delete impl;
