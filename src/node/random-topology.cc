@@ -20,30 +20,30 @@
  */
 #include "ns3/random-variable-default-value.h"
 #include "random-topology.h"
-#include "random-2d-position.h"
+#include "random-position.h"
 #include "mobility-model.h"
 
 namespace ns3 {
 
 static ClassIdDefaultValue
-g_position ("Random2dTopologyType",
-            "The type of initial random position in a 2d topology.",
-            Random2dPosition::iid,
+g_position ("RandomTopologyType",
+            "The type of initial random position in a 3d topology.",
+            RandomPosition::iid,
             "Rectangle");
 
 static ClassIdDefaultValue
-g_mobility ("Random2dTopologyMobilityModelType",
-            "The type of mobility model attached to an object in a 2d topology.",
+g_mobility ("RandomTopologyMobilityModelType",
+            "The type of mobility model attached to an object in a 3d topology.",
             MobilityModel::iid,
             "StaticMobilityModel");
 
 RandomTopology::RandomTopology ()
   : m_mobilityModel (g_mobility.GetValue ())
 {
-  m_positionModel = ComponentManager::Create<Random2dPosition> (g_position.GetValue (), 
-                                                                Random2dPosition::iid);
+  m_positionModel = ComponentManager::Create<RandomPosition> (g_position.GetValue (), 
+                                                              RandomPosition::iid);
 }
-RandomTopology::RandomTopology (Ptr<Random2dPosition> positionModel, ClassId mobilityModel)
+RandomTopology::RandomTopology (Ptr<RandomPosition> positionModel, ClassId mobilityModel)
   : m_positionModel (positionModel),
     m_mobilityModel (mobilityModel)
 {}
@@ -59,7 +59,7 @@ RandomTopology::SetMobilityModel (ClassId classId)
 }
 
 void 
-RandomTopology::SetPositionModel (Ptr<Random2dPosition> positionModel)
+RandomTopology::SetPositionModel (Ptr<RandomPosition> positionModel)
 {
   m_positionModel = positionModel;
 }
@@ -67,12 +67,9 @@ RandomTopology::SetPositionModel (Ptr<Random2dPosition> positionModel)
 void 
 RandomTopology::LayoutOne (Ptr<Object> object)
 {
-  Position2d position2d = m_positionModel->Get ();
   Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_mobilityModel, 
                                                                          MobilityModel::iid);
-  Position position = mobility->Get ();
-  position.x = position2d.x;
-  position.y = position2d.y;
+  Position position = m_positionModel->Get ();
   mobility->Set (position);
   object->AddInterface (mobility);
 }

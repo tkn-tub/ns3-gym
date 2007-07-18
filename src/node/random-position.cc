@@ -1,4 +1,4 @@
-#include "random-2d-position.h"
+#include "random-position.h"
 #include "ns3/random-variable.h"
 #include "ns3/random-variable-default-value.h"
 #include <cmath>
@@ -25,21 +25,21 @@ g_discRho ("RandomRectanglePositionRho",
 	   "A random variable which represents the radius of a position in a random disc.",
 	   "Uniform:0:200");
 
-const InterfaceId Random2dPosition::iid = MakeInterfaceId ("Random2dPosition", Object::iid);
+const InterfaceId RandomPosition::iid = MakeInterfaceId ("RandomPosition", Object::iid);
 
 const ClassId RandomRectanglePosition::cid = 
   MakeClassId<RandomRectanglePosition> ("RandomRectanglePosition", 
-					Random2dPosition::iid);
+					RandomPosition::iid);
 const ClassId RandomDiscPosition::cid = 
   MakeClassId<RandomDiscPosition> ("RandomDiscPosition", 
-				   Random2dPosition::iid);
+				   RandomPosition::iid);
 
-Random2dPosition::Random2dPosition ()
+RandomPosition::RandomPosition ()
 {
-  Object::SetInterfaceId (Random2dPosition::iid);
+  Object::SetInterfaceId (RandomPosition::iid);
 }
 
-Random2dPosition::~Random2dPosition ()
+RandomPosition::~RandomPosition ()
 {}
 
 RandomRectanglePosition::RandomRectanglePosition ()
@@ -58,12 +58,12 @@ RandomRectanglePosition::~RandomRectanglePosition ()
   m_x = 0;
   m_y = 0;
 }
-Position2d
+Position
 RandomRectanglePosition::Get (void) const
 {
   double x = m_x->GetValue ();
   double y = m_y->GetValue ();
-  return Position2d (x, y);
+  return Position (x, y, 0.0);
 }
 
 RandomDiscPosition::RandomDiscPosition ()
@@ -82,14 +82,14 @@ RandomDiscPosition::~RandomDiscPosition ()
   m_theta = 0;
   m_rho = 0;
 }
-Position2d
+Position
 RandomDiscPosition::Get (void) const
 {
   double theta = m_theta->GetValue ();
   double rho = m_rho->GetValue ();
   double x = std::cos (theta) * rho;
   double y = std::sin (theta) * rho;
-  return Position2d (x, y);
+  return Position (x, y, 0.0);
 }
 
 

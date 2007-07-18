@@ -261,7 +261,8 @@ node.add_sources ([
     'ns2-mobility-file-topology.cc',
     'mobility-model-helper.cc',
     'position-2d.cc',
-    'random-2d-position.cc',
+    'position.cc',
+    'random-position.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -292,7 +293,8 @@ node.add_inst_headers ([
     'ns2-mobility-file-topology.h',
     'mobility-model-helper.h',
     'position-2d.h',
-    'random-2d-position.h',
+    'position.h',
+    'random-position.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')

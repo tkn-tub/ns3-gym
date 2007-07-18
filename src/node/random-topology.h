@@ -27,26 +27,26 @@
 
 namespace ns3 {
 
-class Random2dPosition;
+class RandomPosition;
 
 class RandomTopology
 {
  public:
   RandomTopology ();
-  RandomTopology (Ptr<Random2dPosition> positionModel,
-                           ClassId mobilityModel);
+  RandomTopology (Ptr<RandomPosition> positionModel,
+                  ClassId mobilityModel);
 
   ~RandomTopology ();
 
   void SetMobilityModel (ClassId classId);
-  void SetPositionModel (Ptr<Random2dPosition> positionModel);
+  void SetPositionModel (Ptr<RandomPosition> positionModel);
 
   void LayoutOne (Ptr<Object> object);
 
   template <typename T>
   void Layout (const T &begin, const T &end);
  private:
-  Ptr<Random2dPosition> m_positionModel;
+  Ptr<RandomPosition> m_positionModel;
   ClassId m_mobilityModel;
 };
 
