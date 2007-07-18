@@ -490,6 +490,10 @@ StaticRouteManager::SPFNexthopCalculation (
 // address -- the next hop address to get from <v> to <w> and all networks 
 // accessed through that path.
 //
+// SPFGetNextLink () is a little odd.  used in this way it is just going to
+// return the link record describing the link from <w> to <v>.  Think of it as
+// SPFGetLink.
+//
           StaticRouterLinkRecord *linkRemote = 0;
           linkRemote = SPFGetNextLink (w, v, linkRemote);
 // 
@@ -500,8 +504,8 @@ StaticRouteManager::SPFNexthopCalculation (
 // address from the m_linkData member variable.
 // 
 // The next hop member variable we put in <w> has the sense "in order to get
-// to the network represented by vertex <w>, you have to send the packet to 
-// the next hop address specified in w->nextHop.
+// from the root node to the host represented by vertex <w>, you have to send
+// the packet to the next hop address specified in w->m_nextHop.
 //
           w->m_nextHop = linkRemote->m_linkData;
 // 
@@ -632,8 +636,9 @@ StaticRouteManager::SPFGetNextLink (
   return 0;
 }
   
-
-// quagga ospf_spf_calculate
+//
+// Used for unit tests.
+//
 void
 StaticRouteManager::DebugSPFCalculate (Ipv4Address root)
 {
@@ -644,7 +649,8 @@ StaticRouteManager::DebugSPFCalculate (Ipv4Address root)
 void
 StaticRouteManager::SPFCalculate (Ipv4Address root)
 {
-  NS_DEBUG ("StaticRouteManager::SPFCalculate ()");
+  NS_DEBUG ("StaticRouteManager::SPFCalculate (): "
+    "root = " << root);
 
   SPFVertex *v;
 //
@@ -710,7 +716,7 @@ StaticRouteManager::SPFCalculate (Ipv4Address root)
 // the candidate list.
 //
       v = candidate.Pop ();
-      NS_DEBUG ("SPFCalculate: Popped vertex" << v->m_vertexId);
+      NS_DEBUG ("SPFCalculate: Popped vertex " << v->m_vertexId);
 //
 // Update the status field of the vertex to indicate that it is in the SPF
 // tree.
@@ -730,19 +736,28 @@ StaticRouteManager::SPFCalculate (Ipv4Address root)
 // find all equal-cost paths. We don't do this at this moment, we should add
 // the treatment above codes. -- kunihiro. 
 //
-//
 // RFC2328 16.1. (4). 
 //
 // This is the method that actually adds the routes.  It'll walk the list
 // of nodes in the system, looking for the node corresponding to the router
 // ID of the root of the tree -- that is the router we're building the routes
 // for.  It looks for the Ipv4 interface of that node and remembers it.  So
-// we are always adding routes to that one node at the root of the SPF tree.
+// we are only actually adding routes to that one node at the root of the SPF 
+// tree.
 //
-// We have a pointer to a vertex <v> in the SPF tree.  For each of the
-// point-to-point Static Router Link Records of that vertex, we add a route
-// using the existing next hop and outbound interface information we have
-// already calculated.
+// We're going to pop of a pointer to every vertex in the tree except the 
+// root in order of distance from the root.  For each of the vertices, we call
+// SPFIntraAddRouter ().  Down in SPFIntraAddRouter, we look at all of the 
+// point-to-point Static Router Link Records (the links to nodes adjacent to
+// the node represented by the vertex).  We add a link to the IP address 
+// specified by the m_linkData field of each of those link records.  This will
+// be the *local* IP address associated with the interface attached to the 
+// link.  We use the outbound interface and next hop information present in 
+// the vertex <v>.
+//
+// To summarize, we're going to look at the node represented by <v> and loop
+// through its point-to-point links, adding a *host* route to the local IP
+// address (at the <v> side) for each of those links.
 //
       SPFIntraAddRouter (v);
 //
@@ -756,17 +771,36 @@ StaticRouteManager::SPFCalculate (Ipv4Address root)
 // Second stage of SPF calculation procedure's  
 // NOTYET:  ospf_spf_process_stubs (area, area->spf, new_table);
 //
+// We're all done setting the routing information for the node at the root of
+// the SPF tree.  Delete all of the vertices and corresponding resources.  Go
+// possibly do it again for the next router.
+//
   delete m_spfroot;
   m_spfroot = 0;
 }
 
+//
 // XXX this should probably be a method on Ipv4
+//
+// Return the interface index corresponding to a given IP address
+//
 uint32_t
 StaticRouteManager::FindOutgoingInterfaceId (Ipv4Address a)
 {
-
+//
+// We have an IP address <a> and a vertex ID of the root of the SPF tree.  
+// The question is what interface index does this address correspond to.
+// The answer is a little complicated since we have to find a pointer to
+// the node corresponding to the vertex ID, find the Ipv4 interface on that
+// node in order to iterate the interfaces and find the one corresponding to
+// the address in question.
+//
   Ipv4Address routerId = m_spfroot->m_vertexId;
-
+//
+// Walk the list of nodes in the system looking for the one corresponding to
+// the node at the root of the SPF tree.  This is the node for which we are
+// building the routing table.
+//
   std::vector<Ptr<Node> >::iterator i = NodeList::Begin (); 
   for (; i != NodeList::End (); i++)
     {
@@ -774,81 +808,147 @@ StaticRouteManager::FindOutgoingInterfaceId (Ipv4Address a)
 
       Ptr<StaticRouter> rtr = 
         node->QueryInterface<StaticRouter> (StaticRouter::iid);
-      NS_ASSERT_MSG (rtr, 
-        "StaticRouteManager::FindOutgoingInterfaceId (): "
-        "QI for <StaticRouter> interface failed");
+//
+// If the node doesn't have a StaticRouter interface it can't be the one
+// we're interested in.
+//
+      if (rtr == 0)
+        {
+          continue;
+        }
+
       if (rtr->GetRouterId () == routerId)
         {
+//
+// This is the node we're building the routing table for.  We're going to need
+// the Ipv4 interface to look for the ipv4 interface index.  Since this node
+// is participating in routing IP version 4 packets, it certainly must have 
+// an Ipv4 interface.
+//
           Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
           NS_ASSERT_MSG (ipv4, 
             "StaticRouteManager::FindOutgoingInterfaceId (): "
             "QI for <Ipv4> interface failed");
+//
+// Look through the interfaces on this node for one that has the IP address
+// we're looking for.  If we find one, return the corresponding interface
+// index.
+//
           for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++)
             {
-              if (ipv4->GetAddress (i) == a) {
-                NS_DEBUG ("FindOutgoingInterfaceId: Interface match for " << a);
-                return i;
-              }
+              if (ipv4->GetAddress (i) == a)
+                {
+                  NS_DEBUG ("StaticRouteManager::FindOutgoingInterfaceId (): "
+                    "Interface match for " << a);
+                  return i;
+                }
             }
         }
-     }
+    }
+//
+// Couldn't find it.
+//
   return 0;
 }
 
-// derived from quagga ospf_intra_add_router ()
 //
-// This is where we add host routes to the routing tables
+// This method is derived from quagga ospf_intra_add_router ()
+//
+// This is where we are actually going to add the host routes to the routing
+// tables of the individual nodes.
+//
+// The vertex passed as a parameter has just been added to the SPF tree.
+// This vertex must have a valid m_root_oid, corresponding to the outgoing
+// interface on the root router of the tree that is the first hop on the path
+// to the vertex.  The vertex must also have a next hop address, corresponding
+// to the next hop on the path to the vertex.  The vertex has an m_lsa field
+// that has some number of link records.  For each point to point link record,
+// the m_linkData is the local IP address of the link.  This corresponds to
+// a destination IP address, reachable from the root, to which we add a host
+// route.
+//
 void
 StaticRouteManager::SPFIntraAddRouter (SPFVertex* v)
 {
-   // This vertex has just been added to the SPF tree
-   // - the vertex should have a valid m_root_oid corresponding
-   //   to the outgoing interface on the root router of the tree
-   //   that corresponds to the path to it
-   // - the vertex has an m_lsa field that has a number of link
-   //   records.  For each point to point record, the m_linkData
-   //   is a destination IP address to which we add a host route
-   //
+  NS_DEBUG ("StaticRouteManager::SPFIntraAddRouter ()");
 
   NS_ASSERT_MSG (m_spfroot, 
     "StaticRouteManager::SPFIntraAddRouter (): Root pointer not set");
-
+//
+// The root of the Shortest Path First tree is the router to which we are 
+// going to write the actual routing table entries.  The vertex corresponding
+// to this router has a vertex ID which is the router ID of that node.  We're
+// going to use this ID to discover which node it is that we're actually going
+// to update.
+//
   Ipv4Address routerId = m_spfroot->m_vertexId;
 
+  NS_DEBUG ("StaticRouteManager::SPFIntraAddRouter ():"
+    "Vertex ID = " << routerId);
+//
+// We need to walk the list of nodes looking for the one that has the router
+// ID corresponding to the root vertex.  This is the one we're going to write
+// the routing information to.
+//
   std::vector<Ptr<Node> >::iterator i = NodeList::Begin (); 
   for (; i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
-
+//
+// The router ID is accessible through the StaticRouter interface, so we need
+// to QI for that interface.  If there's no StaticRouter interface, the node
+// in question cannot be the router we want, so we continue.
+// 
       Ptr<StaticRouter> rtr = 
         node->QueryInterface<StaticRouter> (StaticRouter::iid);
-      NS_ASSERT_MSG (rtr, 
-        "StaticRouteManager::SPFIntraAddRouter (): "
-        "QI for <StaticRouter> interface failed");
 
+      if (rtr == 0)
+        {
+          continue;
+        }
+//
+// If the router ID of the current node is equal to the router ID of the 
+// root of the SPF tree, then this node is the one for which we need to 
+// write the routing tables.
+//
       if (rtr->GetRouterId () == routerId)
         {
           NS_DEBUG ("StaticRouteManager::SPFIntraAddRouter (): "
             "setting routes for node " << node->GetId ());
-
+//
+// Routing information is updated using the Ipv4 interface.  We need to QI
+// for that interface.  If the node is acting as an IP version 4 router, it
+// should absolutely have an Ipv4 interface.
+//
           Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
           NS_ASSERT_MSG (ipv4, 
             "StaticRouteManager::SPFIntraAddRouter (): "
             "QI for <Ipv4> interface failed");
-
+//
+// Get the Static Router Link State Advertisement from the vertex we're
+// adding the routes to.  The LSA will have a number of attached Static Router
+// Link Records corresponding to links off of that vertex / node.  We're going
+// to be interested in the records corresponding to point-to-point links.
+//
           StaticRouterLSA *lsa = v->m_lsa;
           NS_ASSERT_MSG (lsa, 
             "StaticRouteManager::SPFIntraAddRouter (): "
             "Expected valid LSA in SPFVertex* v");
 
           uint32_t nLinkRecords = lsa->GetNLinkRecords ();
-
-          NS_ASSERT_MSG ((nLinkRecords & 1) == 0,
-            "StaticRouteManager::SPFIntraAddRouter (): "
-            "Expected even number of Link Records");
-
+//
+// Iterate through the link records on the vertex to which we're going to add
+// routes.  To make sure we're being clear, we're going to add routing table
+// entries to the tables on the node corresping to the root of the SPF tree.
+// These entries will have routes to the IP addresses we find from looking at
+// the local side of the point-to-point links found on the node described by
+// the vertex <v>.
+//
           for (uint32_t j = 0; j < nLinkRecords; j += 2)
             {
+//
+// We are only concerned about point-to-point links
+//
               StaticRouterLinkRecord *lr = lsa->GetLinkRecord (j);
               if (lr->m_linkType != StaticRouterLinkRecord::PointToPoint)
                 {
@@ -856,19 +956,44 @@ StaticRouteManager::SPFIntraAddRouter (SPFVertex* v)
                 }
 
               NS_DEBUG ("StaticRouteManager::SPFIntraAddRouter (): "
-                "Add route to " << lr->m_linkData <<
+                " Node " << node->GetId () <<
+                " add route to " << lr->m_linkData <<
                 " using next hop " << v->m_nextHop <<
                 " via interface " << v->m_rootOif);
-
+//
+// Here's why we did all of that work.  We're going to add a host route to the
+// host address found in the m_linkData field of the point-to-point link
+// record.  In the case of a point-to-point link, this is the local IP address
+// of the node connected to the link.  Each of these point-to-point links
+// will correspond to a local interface that has an IP address to which
+// the node at the root of the SPF tree can send packets.  The vertex <v> 
+// (corresponding to the node that has these links and interfaces) has 
+// an m_nextHop address precalculated for us that is the address to which the
+// root node should send packets to be forwarded to these IP addresses.
+// Similarly, the vertex <v> has an m_rootOif (outbound interface index) to
+// which the packets should be send for forwarding.
+//
               ipv4->AddHostRouteTo (lr->m_linkData, v->m_nextHop,
                 v->m_rootOif);
             }
         }
+//
+// We've found the node and added the routes.  Don't need to search forward
+// for another node we'll never find.
+//
+      return;
     }
 }
 
 // Derived from quagga ospf_vertex_add_parents ()
-// Add a vertex to the list of children in each of its parents. 
+//
+// This is a somewhat oddly named method (blame quagga).  Although you might
+// expect it to add a parent *to* something, it actually adds a vertex
+// to the list of children *in* each of its parents. 
+//
+// Given a pointer to a vertex, it links back to the vertex's parent that it
+// already has set and adds itself to that vertex's list of children.
+//
 void
 StaticRouteManager::SPFVertexAddParent (SPFVertex* v)
 {
@@ -904,7 +1029,6 @@ StaticRouterTestNode::DoCreateTraceResolver (TraceContext const &context)
 {
   return 0;
 }
-
 
 class StaticRouteManagerTest : public Test {
 public:
