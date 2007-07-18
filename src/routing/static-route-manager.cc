@@ -44,7 +44,7 @@ SPFVertex::SPFVertex () :
 
 SPFVertex::SPFVertex (StaticRouterLSA* lsa) : 
   m_vertexType (VertexRouter), 
-  m_vertexId (lsa->m_linkStateId),
+  m_vertexId (lsa->GetLinkStateId ()),
   m_lsa (lsa),
   m_parent (0),
   m_children (),
@@ -92,7 +92,7 @@ StaticRouteManagerLSDB::Initialize ()
   for (i= m_database.begin (); i!= m_database.end (); i++)
     {
       StaticRouterLSA* temp = i->second;
-      temp->m_stat = StaticRouterLSA::LSA_SPF_NOT_EXPLORED;
+      temp->SetStatus (StaticRouterLSA::LSA_SPF_NOT_EXPLORED);
     }
 }
 
@@ -196,7 +196,7 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
 //
 // Write the newly discovered link state advertisement to the database.
 //
-          m_lsdb->Insert (lsa->m_linkStateId, lsa); 
+          m_lsdb->Insert (lsa->GetLinkStateId (), lsa); 
         }
     }
 }
@@ -291,26 +291,23 @@ StaticRouteManager::SPFNext (SPFVertex* v, CandidateQueue& candidate)
       if (true)
         {
           NS_DEBUG ("SPFNext: Examining " << v->m_vertexId << "'s " <<
-            v->m_lsa->m_linkRecords.size () << " link records");
+            v->m_lsa->GetNLinkRecords () << " link records");
 //
 // Walk the list of link records in the link state advertisement associated 
 // with the "current" router (represented by vertex <v>).
 //
-          for (StaticRouterLSA::ListOfLinkRecords_t::iterator i = 
-               v->m_lsa->m_linkRecords.begin ();
-               i != v->m_lsa->m_linkRecords.end ();
-               i++)
+          for (uint32_t i = 0; i < v->m_lsa->GetNLinkRecords (); ++i)
             {
 //
 // (a) If this is a link to a stub network, examine the next link in V's LSA.
 // Links to stub networks will be considered in the second stage of the
 // shortest path calculation.
 //
-              StaticRouterLinkRecord* l = *i;
-              if (l->m_linkType == StaticRouterLinkRecord::StubNetwork)
+              StaticRouterLinkRecord *l = v->m_lsa->GetLinkRecord (i);
+              if (l->GetLinkType () == StaticRouterLinkRecord::StubNetwork)
                 {
-                  NS_DEBUG ("SPFNext: Found a Stub record to " 
-                    << l->m_linkId);
+                  NS_DEBUG ("SPFNext: Found a Stub record to " << 
+                    l->GetLinkId ());
                   continue;
                 }
 //
@@ -318,16 +315,16 @@ StaticRouteManager::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // the vertex W's LSA (router-LSA or network-LSA) in Area A's link state
 // database. 
 //
-              if (l->m_linkType == StaticRouterLinkRecord::PointToPoint)
+              if (l->GetLinkType () == StaticRouterLinkRecord::PointToPoint)
                 {
 //
 // Lookup the link state advertisement of the new link -- we call it <w> in
 // the link state database.
 //
-                  w_lsa = m_lsdb->GetLSA (l->m_linkId);
+                  w_lsa = m_lsdb->GetLSA (l->GetLinkId ());
                   NS_ASSERT (w_lsa);
                   NS_DEBUG ("SPFNext:  Found a P2P record from " << 
-                    v->m_vertexId << " to " << w_lsa->m_linkStateId);
+                    v->m_vertexId << " to " << w_lsa->GetLinkStateId ());
 //
 // (c) If vertex W is already on the shortest-path tree, examine the next
 // link in the LSA.
@@ -335,10 +332,11 @@ StaticRouteManager::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // If the link is to a router that is already in the shortest path first tree
 // then we have it covered -- ignore it.
 //
-                  if (w_lsa->m_stat == StaticRouterLSA::LSA_SPF_IN_SPFTREE) 
+                  if (w_lsa->GetStatus () == 
+                      StaticRouterLSA::LSA_SPF_IN_SPFTREE) 
                     {
                       NS_DEBUG ("SPFNext: Skipping->  LSA "<< 
-                        w_lsa->m_linkStateId << " already in SPF tree");
+                        w_lsa->GetLinkStateId () << " already in SPF tree");
                       continue;
                     }
 //
@@ -349,12 +347,13 @@ StaticRouteManager::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // calculated) shortest path to vertex V and the advertised cost of the link
 // between vertices V and W.  
 //
-                  distance = v->m_distanceFromRoot + l->m_metric;
+                  distance = v->m_distanceFromRoot + l->GetMetric ();
 
                   NS_DEBUG ("SPFNext: Considering w_lsa " << 
-                    w_lsa->m_linkStateId);
+                    w_lsa->GetLinkStateId ());
 
-                  if (w_lsa->m_stat == StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
+                  if (w_lsa->GetStatus () == 
+                      StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
                     {
 //
 // If we havent yet considered the link represented by <w> we have to create 
@@ -369,7 +368,8 @@ StaticRouteManager::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 //
                       if (SPFNexthopCalculation (v, w, l, distance))
                         {
-                          w_lsa->m_stat = StaticRouterLSA::LSA_SPF_CANDIDATE;
+                          w_lsa->SetStatus (
+                            StaticRouterLSA::LSA_SPF_CANDIDATE);
 //
 // Push this new vertex onto the priority queue (ordered by distance from the
 // root node).
@@ -379,8 +379,8 @@ StaticRouteManager::SPFNext (SPFVertex* v, CandidateQueue& candidate)
                             << ", parent vertexId: " << v->m_vertexId);
                         }
                     }
-                  } else if (w_lsa->m_stat == 
-                             StaticRouterLSA::LSA_SPF_CANDIDATE)
+                } else if (w_lsa->GetStatus () == 
+                           StaticRouterLSA::LSA_SPF_CANDIDATE)
                     {
 //
 // We have already considered the link represented by <w>.  What wse have to
@@ -389,7 +389,7 @@ StaticRouteManager::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 //
 // So, locate the vertex in the candidate queue and take a look at the 
 // distance.
-                      w = candidate.Find (w_lsa->m_linkStateId);
+                      w = candidate.Find (w_lsa->GetLinkStateId ());
                       if (w->m_distanceFromRoot < distance)
                         {
 //
@@ -507,13 +507,13 @@ StaticRouteManager::SPFNexthopCalculation (
 // from the root node to the host represented by vertex <w>, you have to send
 // the packet to the next hop address specified in w->m_nextHop.
 //
-          w->m_nextHop = linkRemote->m_linkData;
+          w->m_nextHop = linkRemote->GetLinkData ();
 // 
 // Now find the outgoing interface corresponding to the point to point link
 // from the perspective of <v> -- remember that <l> is the link "from"
 // <v> "to" <w>.
 //
-          w->m_rootOif = FindOutgoingInterfaceId (l->m_linkData); 
+          w->m_rootOif = FindOutgoingInterfaceId (l->GetLinkData ()); 
 
           NS_DEBUG ("SPFNexthopCalculation: Next hop from " << 
             v->m_vertexId << " to " << w->m_vertexId << 
@@ -587,13 +587,10 @@ StaticRouteManager::SPFGetNextLink (
 // <v> looking for records representing the point-to-point links off of this
 // vertex.
 //
-  for (  StaticRouterLSA::ListOfLinkRecords_t::iterator i = 
-         v->m_lsa->m_linkRecords.begin ();
-       i != v->m_lsa->m_linkRecords.end ();
-       i++ )
+  for (uint32_t i = 0; i < v->m_lsa->GetNLinkRecords (); ++i)
     {
-      l = *i;
-      if (l->m_linkType != StaticRouterLinkRecord::PointToPoint)
+      l = v->m_lsa->GetLinkRecord (i);
+      if (l->GetLinkType () != StaticRouterLinkRecord::PointToPoint)
         {
           continue;
         }
@@ -605,9 +602,9 @@ StaticRouteManager::SPFGetNextLink (
 // We're just checking to see if the link <l> is actually the link from <v> to
 // <w>.
 //
-      if (l->m_linkId == w->m_vertexId) {
-        NS_DEBUG ("SPFGetNextLink: Found matching link l:  linkId=" <<
-          l->m_linkId << " linkData=" << l->m_linkData);
+      if (l->GetLinkId () == w->m_vertexId) {
+        NS_DEBUG ("SPFGetNextLink: Found matching link l:  linkId = " <<
+          l->GetLinkId () << " linkData = " << l->GetLinkData ());
 //
 // If skip is false, don't (not too surprisingly) skip the link found -- it's 
 // the one we're interested in.  That's either because we didn't pass in a 
@@ -676,7 +673,7 @@ StaticRouteManager::SPFCalculate (Ipv4Address root)
 //
   m_spfroot= v;
   v->m_distanceFromRoot = 0;
-  v->m_lsa->m_stat = StaticRouterLSA::LSA_SPF_IN_SPFTREE;
+  v->m_lsa->SetStatus (StaticRouterLSA::LSA_SPF_IN_SPFTREE);
 
   for (;;)
     {
@@ -721,7 +718,7 @@ StaticRouteManager::SPFCalculate (Ipv4Address root)
 // Update the status field of the vertex to indicate that it is in the SPF
 // tree.
 //
-      v->m_lsa->m_stat = StaticRouterLSA::LSA_SPF_IN_SPFTREE;
+      v->m_lsa->SetStatus (StaticRouterLSA::LSA_SPF_IN_SPFTREE);
 //
 // The current vertex has a parent pointer.  By calling this rather oddly 
 // named method (blame quagga) we add the current vertex to the list of 
@@ -950,14 +947,14 @@ StaticRouteManager::SPFIntraAddRouter (SPFVertex* v)
 // We are only concerned about point-to-point links
 //
               StaticRouterLinkRecord *lr = lsa->GetLinkRecord (j);
-              if (lr->m_linkType != StaticRouterLinkRecord::PointToPoint)
+              if (lr->GetLinkType () != StaticRouterLinkRecord::PointToPoint)
                 {
                   continue;
                 }
 
               NS_DEBUG ("StaticRouteManager::SPFIntraAddRouter (): "
                 " Node " << node->GetId () <<
-                " add route to " << lr->m_linkData <<
+                " add route to " << lr->GetLinkData () <<
                 " using next hop " << v->m_nextHop <<
                 " via interface " << v->m_rootOif);
 //
@@ -973,7 +970,7 @@ StaticRouteManager::SPFIntraAddRouter (SPFVertex* v)
 // Similarly, the vertex <v> has an m_rootOif (outbound interface index) to
 // which the packets should be send for forwarding.
 //
-              ipv4->AddHostRouteTo (lr->m_linkData, v->m_nextHop,
+              ipv4->AddHostRouteTo (lr->GetLinkData (), v->m_nextHop,
                 v->m_rootOif);
             }
         }
@@ -1089,73 +1086,83 @@ StaticRouteManagerTest::RunTests (void)
   //  link2:  10.1.3.1/30, 10.1.3.2/30
   //
   // Router 0
-  StaticRouterLinkRecord* lr0 = new StaticRouterLinkRecord ();
-  lr0->m_linkId.Set (2);  // router ID 0.0.0.2
-  lr0->m_linkData.Set ("10.1.1.1");
-  lr0->m_linkType = StaticRouterLinkRecord::PointToPoint;
-  lr0->m_metric = 1;
-  StaticRouterLinkRecord* lr1 = new StaticRouterLinkRecord ();
-  lr1->m_linkId.Set ("10.1.1.1");  
-  lr1->m_linkData.Set ("255.255.255.252");
-  lr1->m_linkType = StaticRouterLinkRecord::StubNetwork;
-  lr1->m_metric = 1;
+  StaticRouterLinkRecord* lr0 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::PointToPoint, 
+    "0.0.0.2",  // router ID 0.0.0.2
+    "10.1.1.1", // local ID
+    1);         // metric
+
+  StaticRouterLinkRecord* lr1 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::StubNetwork,
+    "10.1.1.1",
+    "255.255.255.252",
+    1);
+
   StaticRouterLSA* lsa0 = new StaticRouterLSA ();
-  lsa0->m_linkStateId.Set ("0.0.0.0");
-  lsa0->m_advertisingRtr.Set ("0.0.0.0");
+  lsa0->SetLinkStateId ("0.0.0.0");
+  lsa0->SetAdvertisingRouter ("0.0.0.0");
   lsa0->AddLinkRecord (lr0);
   lsa0->AddLinkRecord (lr1);
 
   // Router 1
-  StaticRouterLinkRecord* lr2 = new StaticRouterLinkRecord ();
-  lr2->m_linkId.Set (2);  // router ID 0.0.0.2
-  lr2->m_linkData.Set ("10.1.2.1");
-  lr2->m_linkType = StaticRouterLinkRecord::PointToPoint;
-  lr2->m_metric = 1;
-  StaticRouterLinkRecord* lr3 = new StaticRouterLinkRecord ();
-  lr3->m_linkId.Set ("10.1.2.1");  
-  lr3->m_linkData.Set ("255.255.255.252");
-  lr3->m_linkType = StaticRouterLinkRecord::StubNetwork;
-  lr3->m_metric = 1;
+  StaticRouterLinkRecord* lr2 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::PointToPoint,
+    "0.0.0.2",
+    "10.1.2.1",
+    1);
+
+  StaticRouterLinkRecord* lr3 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::StubNetwork,
+    "10.1.2.1",
+    "255.255.255.252",
+    1);
+
   StaticRouterLSA* lsa1 = new StaticRouterLSA ();
-  lsa1->m_linkStateId.Set (1);
-  lsa1->m_advertisingRtr.Set (1);
+  lsa1->SetLinkStateId ("0.0.0.1");
+  lsa1->SetAdvertisingRouter ("0.0.0.1");
   lsa1->AddLinkRecord (lr2);
   lsa1->AddLinkRecord (lr3);
   
   // Router 2 
-  StaticRouterLinkRecord* lr4 = new StaticRouterLinkRecord ();
-  lr4->m_linkId.Set ("0.0.0.0");
-  lr4->m_linkData.Set ("10.1.1.2");
-  lr4->m_linkType = StaticRouterLinkRecord::PointToPoint;
-  lr4->m_metric = 1;
-  StaticRouterLinkRecord* lr5 = new StaticRouterLinkRecord ();
-  lr5->m_linkId.Set ("10.1.1.2");  
-  lr5->m_linkData.Set ("255.255.255.252");
-  lr5->m_linkType = StaticRouterLinkRecord::StubNetwork;
-  lr5->m_metric = 1;
-  StaticRouterLinkRecord* lr6 = new StaticRouterLinkRecord ();
-  lr6->m_linkId.Set (1);  
-  lr6->m_linkData.Set ("10.1.2.2");
-  lr6->m_linkType = StaticRouterLinkRecord::PointToPoint;
-  lr6->m_metric = 1;
-  StaticRouterLinkRecord* lr7 = new StaticRouterLinkRecord ();
-  lr7->m_linkId.Set ("10.1.2.2");  
-  lr7->m_linkData.Set ("255.255.255.252");
-  lr7->m_linkType = StaticRouterLinkRecord::StubNetwork;
-  lr7->m_metric = 1;
-  StaticRouterLinkRecord* lr8 = new StaticRouterLinkRecord ();
-  lr8->m_linkId.Set (3);  
-  lr8->m_linkData.Set ("10.1.3.2");
-  lr8->m_linkType = StaticRouterLinkRecord::PointToPoint;
-  lr8->m_metric = 1;
-  StaticRouterLinkRecord* lr9 = new StaticRouterLinkRecord ();
-  lr9->m_linkId.Set ("10.1.3.2");  
-  lr9->m_linkData.Set ("255.255.255.252");
-  lr9->m_linkType = StaticRouterLinkRecord::StubNetwork;
-  lr9->m_metric = 1;
+  StaticRouterLinkRecord* lr4 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::PointToPoint,
+    "0.0.0.0",
+    "10.1.1.2",
+    1);
+
+  StaticRouterLinkRecord* lr5 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::StubNetwork,
+    "10.1.1.2",
+    "255.255.255.252",
+    1);
+
+  StaticRouterLinkRecord* lr6 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::PointToPoint,
+    "0.0.0.1",
+    "10.1.2.2",
+    1);
+
+  StaticRouterLinkRecord* lr7 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::StubNetwork,
+    "10.1.2.2",
+    "255.255.255.252",
+    1);
+
+  StaticRouterLinkRecord* lr8 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::PointToPoint,
+    "0.0.0.3",
+    "10.1.3.2",
+    1);
+
+  StaticRouterLinkRecord* lr9 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::StubNetwork,
+    "10.1.3.2",
+    "255.255.255.252",
+    1);
+
   StaticRouterLSA* lsa2 = new StaticRouterLSA ();
-  lsa2->m_linkStateId.Set (2);
-  lsa2->m_advertisingRtr.Set (2);
+  lsa2->SetLinkStateId ("0.0.0.2");
+  lsa2->SetAdvertisingRouter ("0.0.0.2");
   lsa2->AddLinkRecord (lr4);
   lsa2->AddLinkRecord (lr5);
   lsa2->AddLinkRecord (lr6);
@@ -1164,36 +1171,38 @@ StaticRouteManagerTest::RunTests (void)
   lsa2->AddLinkRecord (lr9);
 
   // Router 3
-  StaticRouterLinkRecord* lr10 = new StaticRouterLinkRecord ();
-  lr10->m_linkId.Set (2);  // router ID 0.0.0.2
-  lr10->m_linkData.Set ("10.1.2.1");
-  lr10->m_linkType = StaticRouterLinkRecord::PointToPoint;
-  lr10->m_metric = 1;
-  StaticRouterLinkRecord* lr11 = new StaticRouterLinkRecord ();
-  lr11->m_linkId.Set ("10.1.2.1");  
-  lr11->m_linkData.Set ("255.255.255.252");
-  lr11->m_linkType = StaticRouterLinkRecord::StubNetwork;
-  lr11->m_metric = 1;
+  StaticRouterLinkRecord* lr10 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::PointToPoint,
+    "0.0.0.2",
+    "10.1.2.1",
+    1);
+
+  StaticRouterLinkRecord* lr11 = new StaticRouterLinkRecord (
+    StaticRouterLinkRecord::StubNetwork,
+    "10.1.2.1",
+    "255.255.255.252",
+    1);
+
   StaticRouterLSA* lsa3 = new StaticRouterLSA ();
-  lsa3->m_linkStateId.Set (3);
-  lsa3->m_advertisingRtr.Set (3);
-  lsa3->AddLinkRecord (lr2);
-  lsa3->AddLinkRecord (lr3);
+  lsa3->SetLinkStateId ("0.0.0.3");
+  lsa3->SetAdvertisingRouter ("0.0.0.3");
+  lsa3->AddLinkRecord (lr10);
+  lsa3->AddLinkRecord (lr11);
 
   // Test the database 
   StaticRouteManagerLSDB* srmlsdb = new StaticRouteManagerLSDB ();
-  srmlsdb->Insert (lsa0->m_linkStateId, lsa0);
-  srmlsdb->Insert (lsa1->m_linkStateId, lsa1);
-  srmlsdb->Insert (lsa2->m_linkStateId, lsa2);
-  srmlsdb->Insert (lsa3->m_linkStateId, lsa3);
-  NS_ASSERT (lsa2 == srmlsdb->GetLSA (lsa2->m_linkStateId));
+  srmlsdb->Insert (lsa0->GetLinkStateId (), lsa0);
+  srmlsdb->Insert (lsa1->GetLinkStateId (), lsa1);
+  srmlsdb->Insert (lsa2->GetLinkStateId (), lsa2);
+  srmlsdb->Insert (lsa3->GetLinkStateId (), lsa3);
+  NS_ASSERT (lsa2 == srmlsdb->GetLSA (lsa2->GetLinkStateId ()));
 
   // XXX next, calculate routes based on the manually created LSDB
   StaticRouteManager* srm = new StaticRouteManager ();
   srm->DebugUseLsdb (srmlsdb);  // manually add in an LSDB
   // Note-- this will succeed without any nodes in the topology
   // because the NodeList is empty
-  srm->DebugSPFCalculate (lsa0->m_linkStateId);  // node n0
+  srm->DebugSPFCalculate (lsa0->GetLinkStateId ());  // node n0
 
   // This delete clears the srm, which deletes the LSDB, which clears 
   // all of the LSAs, which each destroys the attached LinkRecords.

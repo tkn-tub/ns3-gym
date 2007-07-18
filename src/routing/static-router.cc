@@ -26,19 +26,120 @@ NS_DEBUG_COMPONENT_DEFINE ("StaticRouter");
 
 namespace ns3 {
 
+StaticRouterLinkRecord::StaticRouterLinkRecord ()
+:
+  m_linkId ("0.0.0.0"),
+  m_linkData ("0.0.0.0"),
+  m_linkType (Unknown),
+  m_metric (0)
+{
+  NS_DEBUG("StaticRouterLinkRecord::StaticRouterLinkRecord ()");
+}
+
+StaticRouterLinkRecord::StaticRouterLinkRecord (
+  LinkType    linkType, 
+  Ipv4Address linkId, 
+  Ipv4Address linkData, 
+  uint32_t    metric)
+:
+  m_linkId (linkId),
+  m_linkData (linkData),
+  m_linkType (linkType),
+  m_metric (metric)
+{
+  NS_DEBUG("StaticRouterLinkRecord::StaticRouterLinkRecord (" <<
+    linkType << ", " << linkId << ", " << linkData << ", " << metric << ")");
+}
+
+StaticRouterLinkRecord::~StaticRouterLinkRecord ()
+{
+  NS_DEBUG("StaticRouterLinkRecord::~StaticRouterLinkRecord ()");
+}
+
+  Ipv4Address
+StaticRouterLinkRecord::GetLinkId (void) const
+{
+  NS_DEBUG("StaticRouterLinkRecord::GetLinkId ()");
+  return m_linkId;
+}
+
+  void
+StaticRouterLinkRecord::SetLinkId (Ipv4Address addr)
+{
+  NS_DEBUG("StaticRouterLinkRecord::SetLinkId ()");
+  m_linkId = addr;
+}
+
+  Ipv4Address
+StaticRouterLinkRecord::GetLinkData (void) const
+{
+  NS_DEBUG("StaticRouterLinkRecord::GetLinkData ()");
+  return m_linkData;
+}
+
+  void
+StaticRouterLinkRecord::SetLinkData (Ipv4Address addr)
+{
+  NS_DEBUG("StaticRouterLinkRecord::SetLinkData ()");
+  m_linkData = addr;
+}
+
+  StaticRouterLinkRecord::LinkType
+StaticRouterLinkRecord::GetLinkType (void) const
+{
+  NS_DEBUG("StaticRouterLinkRecord::GetLinkType ()");
+  return m_linkType;
+}
+
+  void
+StaticRouterLinkRecord::SetLinkType (
+  StaticRouterLinkRecord::LinkType linkType)
+{
+  NS_DEBUG("StaticRouterLinkRecord::SetLinkType ()");
+  m_linkType = linkType;
+}
+
+  uint32_t
+StaticRouterLinkRecord::GetMetric (void) const
+{
+  NS_DEBUG("StaticRouterLinkRecord::GetMetric ()");
+  return m_metric;
+}
+
+  void
+StaticRouterLinkRecord::SetMetric (uint32_t metric)
+{
+  NS_DEBUG("StaticRouterLinkRecord::SetMetric ()");
+  m_metric = metric;
+}
+
 StaticRouterLSA::StaticRouterLSA()
   : 
   m_linkStateId("0.0.0.0"),
   m_advertisingRtr("0.0.0.0"),
   m_linkRecords(),
-  m_stat(StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
+  m_status(StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
 {
   NS_DEBUG("StaticRouterLSA::StaticRouterLSA ()");
 }
 
+StaticRouterLSA::StaticRouterLSA (
+  StaticRouterLSA::SPFStatus status,
+  Ipv4Address linkStateId, 
+  Ipv4Address advertisingRtr)
+:
+  m_linkStateId(linkStateId),
+  m_advertisingRtr(advertisingRtr),
+  m_linkRecords(),
+  m_status(status)
+{
+  NS_DEBUG("StaticRouterLSA::StaticRouterLSA (" << status << ", " <<
+    linkStateId << ", " << advertisingRtr << ")");
+}
+
 StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
   : m_linkStateId(lsa.m_linkStateId), m_advertisingRtr(lsa.m_advertisingRtr),
-    m_stat(lsa.m_stat)
+    m_status(lsa.m_status)
 {
   NS_ASSERT_MSG(IsEmpty(), 
     "StaticRouterLSA::StaticRouterLSA (): Non-empty LSA in constructor");
@@ -46,11 +147,11 @@ StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
 }
 
   StaticRouterLSA&
-StaticRouterLSA::operator= (StaticRouterLSA& lsa)
+StaticRouterLSA::operator= (const StaticRouterLSA& lsa)
 {
   m_linkStateId = lsa.m_linkStateId;
   m_advertisingRtr = lsa.m_advertisingRtr;
-  m_stat = lsa.m_stat;
+  m_status = lsa.m_status;
 
   ClearLinkRecords ();
   CopyLinkRecords (lsa);
@@ -58,17 +159,19 @@ StaticRouterLSA::operator= (StaticRouterLSA& lsa)
 }
 
   void
-StaticRouterLSA::CopyLinkRecords (StaticRouterLSA& lsa)
+StaticRouterLSA::CopyLinkRecords (const StaticRouterLSA& lsa)
 {
-  for ( ListOfLinkRecords_t::iterator i = lsa.m_linkRecords.begin ();
-        i != lsa.m_linkRecords.end (); 
-        i++)
+  for (ListOfLinkRecords_t::const_iterator i = lsa.m_linkRecords.begin ();
+       i != lsa.m_linkRecords.end (); 
+       i++)
     {
       StaticRouterLinkRecord *pSrc = *i;
       StaticRouterLinkRecord *pDst = new StaticRouterLinkRecord;
-      pDst->m_linkId = pSrc->m_linkId;
-      pDst->m_linkData = pSrc->m_linkData;
-      pDst->m_linkType = pSrc->m_linkType;
+
+      pDst->SetLinkType (pSrc->GetLinkType ());
+      pDst->SetLinkId (pSrc->GetLinkId ());
+      pDst->SetLinkData (pSrc->GetLinkData ());
+
       m_linkRecords.push_back(pDst);
       pDst = 0;
     }
@@ -107,16 +210,16 @@ StaticRouterLSA::AddLinkRecord (StaticRouterLinkRecord* lr)
 }
 
   uint32_t
-StaticRouterLSA::GetNLinkRecords (void)
+StaticRouterLSA::GetNLinkRecords (void) const
 {
   return m_linkRecords.size ();
 }
 
   StaticRouterLinkRecord *
-StaticRouterLSA::GetLinkRecord (uint32_t n)
+StaticRouterLSA::GetLinkRecord (uint32_t n) const
 {
   uint32_t j = 0;
-  for ( ListOfLinkRecords_t::iterator i = m_linkRecords.begin ();
+  for ( ListOfLinkRecords_t::const_iterator i = m_linkRecords.begin ();
         i != m_linkRecords.end (); 
         i++, j++)
     {
@@ -129,27 +232,62 @@ StaticRouterLSA::GetLinkRecord (uint32_t n)
   return 0;
 }
 
-
   bool
-StaticRouterLSA::IsEmpty (void)
+StaticRouterLSA::IsEmpty (void) const
 {
   return m_linkRecords.size () == 0;
 }
 
+  Ipv4Address
+StaticRouterLSA::GetLinkStateId (void) const
+{
+  return m_linkStateId;
+}
+
+  void
+StaticRouterLSA::SetLinkStateId (Ipv4Address addr)
+{
+  m_linkStateId = addr;
+}
+
+  Ipv4Address
+StaticRouterLSA::GetAdvertisingRouter (void) const
+{
+  return m_advertisingRtr;
+}
+
+  void
+StaticRouterLSA::SetAdvertisingRouter (Ipv4Address addr)
+{
+  m_advertisingRtr = addr;
+}
+
+  StaticRouterLSA::SPFStatus
+StaticRouterLSA::GetStatus (void) const
+{
+  return m_status;
+}
+
+  void
+StaticRouterLSA::SetStatus (StaticRouterLSA::SPFStatus status)
+{
+  m_status = status;
+}
+
   void 
-StaticRouterLSA::Print (std::ostream &os)
+StaticRouterLSA::Print (std::ostream &os) const
 {
   os << "m_linkStateId = " << m_linkStateId << std::endl <<
         "m_advertisingRtr = " << m_advertisingRtr << std::endl;
 
-  for ( ListOfLinkRecords_t::iterator i = m_linkRecords.begin ();
+  for ( ListOfLinkRecords_t::const_iterator i = m_linkRecords.begin ();
         i != m_linkRecords.end (); 
         i++)
     {
       StaticRouterLinkRecord *p = *i;
       os << "----------" << std::endl;
-      os << "m_linkId = " << p->m_linkId << std::endl;
-      os << "m_linkData = " << p->m_linkData << std::endl;
+      os << "m_linkId = " << p->GetLinkId () << std::endl;
+      os << "m_linkData = " << p->GetLinkData () << std::endl;
     }
 }
 
@@ -198,7 +336,7 @@ StaticRouter::ClearLSAs ()
 }
 
   Ipv4Address
-StaticRouter::GetRouterId (void)
+StaticRouter::GetRouterId (void) const
 {
   return m_routerId;
 }
@@ -230,9 +368,9 @@ StaticRouter::DiscoverLSAs (void)
 // return exactly one.
 //
   StaticRouterLSA *pLSA = new StaticRouterLSA;
-  pLSA->m_linkStateId = m_routerId;
-  pLSA->m_advertisingRtr = m_routerId;
-  pLSA->m_stat = StaticRouterLSA::LSA_SPF_NOT_EXPLORED;
+  pLSA->SetLinkStateId (m_routerId);
+  pLSA->SetAdvertisingRouter (m_routerId);
+  pLSA->SetStatus (StaticRouterLSA::LSA_SPF_NOT_EXPLORED);
 //
 // We need to ask the node for the number of net devices attached. This isn't
 // necessarily equal to the number of links to adjacent nodes (other routers)
@@ -315,16 +453,16 @@ StaticRouter::DiscoverLSAs (void)
 // the second is a stub network record with the network number.
 //
       StaticRouterLinkRecord *plr = new StaticRouterLinkRecord;
-      plr->m_linkType = StaticRouterLinkRecord::PointToPoint;
-      plr->m_linkId = rtrIdRemote;
-      plr->m_linkData = addrLocal;
+      plr->SetLinkType (StaticRouterLinkRecord::PointToPoint);
+      plr->SetLinkId (rtrIdRemote);
+      plr->SetLinkData (addrLocal);
       pLSA->AddLinkRecord(plr);
       plr = 0;
 
       plr = new StaticRouterLinkRecord;
-      plr->m_linkType = StaticRouterLinkRecord::StubNetwork;
-      plr->m_linkId = addrRemote;
-      plr->m_linkData.Set(maskRemote.GetHostOrder());  // Frown
+      plr->SetLinkType (StaticRouterLinkRecord::StubNetwork);
+      plr->SetLinkId (addrRemote);
+      plr->SetLinkData (Ipv4Address(maskRemote.GetHostOrder()));  // Frown
       pLSA->AddLinkRecord(plr);
       plr = 0;
     }
@@ -337,7 +475,7 @@ StaticRouter::DiscoverLSAs (void)
 }
 
   uint32_t 
-StaticRouter::GetNumLSAs (void)
+StaticRouter::GetNumLSAs (void) const
 {
   NS_DEBUG("StaticRouter::GetNumLSAs ()");
   return m_LSAs.size ();
@@ -347,7 +485,7 @@ StaticRouter::GetNumLSAs (void)
 // Get the nth link state advertisement from this router.
 //
   bool
-StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa)
+StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa) const
 {
   NS_ASSERT_MSG(lsa.IsEmpty(), "StaticRouter::GetLSA (): Must pass empty LSA");
 //
@@ -355,7 +493,7 @@ StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa)
 // walk the list of link state advertisements created there and return the 
 // one the client is interested in.
 //
-  ListOfLSAs_t::iterator i = m_LSAs.begin ();
+  ListOfLSAs_t::const_iterator i = m_LSAs.begin ();
   uint32_t j = 0;
 
   for (; i != m_LSAs.end (); i++, j++)
@@ -376,7 +514,7 @@ StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa)
 // other end.  This only makes sense with a point-to-point channel.
 //
   Ptr<NetDevice>
-StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch)
+StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const
 {
 //
 // Double-check that channel agrees with device that it's a point-to-point
@@ -417,7 +555,7 @@ StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch)
 // corresponds to that net device.
 //
   uint32_t
-StaticRouter::FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd)
+StaticRouter::FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd) const
 {
   Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
   NS_ASSERT_MSG(ipv4, "QI for <Ipv4> interface failed");

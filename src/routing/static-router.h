@@ -1,3 +1,4 @@
+
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -34,42 +35,163 @@ namespace ns3 {
  * The StaticRouterLinkRecord is modeled after the OSPF link record field of
  * a Link State Advertisement.  Right now we will only see two types of link
  * records corresponding to a stub network and a point-to-point link (channel).
- *
- * For Type 3 link (Stub), 
  */
 class StaticRouterLinkRecord
 {
 public:
-//
-// For Type 1 link (PointToPoint), set m_linkId to Router ID of 
-// neighboring router.
-// 
-// For Type 3 link (Stub), set m_linkId to neighbor's IP address
-//  
-  Ipv4Address m_linkId;         
-//
-// For Type 1 link (PointToPoint), set m_linkData to local IP address  
-// 
-// For Type 3 link (Stub), set m_linkData to mask 0xffffffff
-//
-  Ipv4Address m_linkData;    // for links to RouterLSA, 
   /**
    * Enumeration of the possible types of Static Router Link Records.  These
    * are defined in the OSPF spec.  We currently only use PointToPoint and
    * StubNetwork types.
    */
   enum LinkType {
-    PointToPoint = 1,   /**< Record representing a point to point channel */
+    Unknown = 0,        /**< Uninitialized Link Record */
+    PointToPoint,       /**< Record representing a point to point channel */
     TransitNetwork,     /**< Unused -- for future OSPF compatibility  */
     StubNetwork,        /**< Record represents a leaf node network */
     VirtualLink         /**< Unused -- for future OSPF compatibility  */
-  } m_linkType;
+  };
   /**
-   * An abstract cost associated with forwarding a packet across a link.  
-   * A sum of metrics must have a well-defined meaning.  That is, you shouldn't
-   * use bandwidth as a metric (how does the sum of the bandwidth of two hops
-   * relate to the cost of sending a packet); rather you should use something
-   * like delay.
+   * Construct an empty ("uninitialized") Static Router Link Record.
+   *
+   * The Link ID and Link Data Ipv4 addresses are set to "0.0.0.0";
+   * The Link Type is set to Unknown;
+   * The metric is set to 0.
+   */
+  StaticRouterLinkRecord ();
+  /**
+   * Construct a fully uninitialized Static Router Link Record.
+   *
+   * @param linkType The type of link record to construct.
+   * @param linkId The link ID for the record.
+   * @param linkData The link data field for the record.
+   * @param metric The metric field for the record.
+   * @see LinkType
+   * @see SetLinkId
+   * @see SetLinkData
+   */
+  StaticRouterLinkRecord (
+    LinkType    linkType, 
+    Ipv4Address linkId, 
+    Ipv4Address linkData, 
+    uint32_t    metric);
+  /**
+   * Destroy a Static Router Link Record.
+   *
+   * Currently does nothing.  Here as a placeholder only.
+   */
+  ~StaticRouterLinkRecord ();
+  /**
+   * Get the Link ID field of the Static Router Link Record.
+   *
+   * For an OSPF type 1 link (PointToPoint) the Link ID will be the Router ID
+   * of the neighboring router.
+   *
+   * For an OSPF type 3 link (StubNetwork), the Link ID will be the adjacent
+   * neighbor's IP address
+   */
+  Ipv4Address GetLinkId(void) const;
+  /**
+   * Set the Link ID field of the Static Router Link Record.
+   *
+   * For an OSPF type 1 link (PointToPoint) the Link ID must be the Router ID
+   * of the neighboring router.
+   *
+   * For an OSPF type 3 link (StubNetwork), the Link ID must be the adjacent
+   * neighbor's IP address
+   */
+  void SetLinkId(Ipv4Address addr);
+  /**
+   * Get the Link Data field of the Static Router Link Record.
+   *
+   * For an OSPF type 1 link (PointToPoint) the Link Data will be the IP
+   * address of the node of the local side of the link.
+   *
+   * For an OSPF type 3 link (StubNetwork), the Link Data will be the
+   * network mask
+   */
+  Ipv4Address GetLinkData(void) const;
+  /**
+   * Set the Link Data field of the Static Router Link Record.
+   *
+   * For an OSPF type 1 link (PointToPoint) the Link Data must be the IP
+   * address of the node of the local side of the link.
+   *
+   * For an OSPF type 3 link (StubNetwork), the Link Data must be set to the
+   * network mask
+   */
+  void SetLinkData(Ipv4Address addr);
+  /**
+   * Get the Link Type field of the Static Router Link Record.
+   *
+   * The Link Type describes the kind of link a given record represents.  The
+   * values are defined by OSPF.
+   *
+   * @see LinkType
+   */
+  LinkType GetLinkType(void) const;
+  /**
+   * Set the Link Type field of the Static Router Link Record.
+   *
+   * The Link Type describes the kind of link a given record represents.  The
+   * values are defined by OSPF.
+   *
+   * @see LinkType
+   */
+  void SetLinkType(LinkType linkType);
+  /**
+   * Get the Metric Data field of the Static Router Link Record.
+   *
+   * The metric is an abstract cost associated with forwarding a packet across
+   * a link.  A sum of metrics must have a well-defined meaning.  That is, you
+   * shouldn't use bandwidth as a metric (how does the sum of the bandwidth of
+   * two hops relate to the cost of sending a packet); rather you should use
+   * something like delay.
+   */
+  uint32_t GetMetric(void) const;
+  /**
+   * Set the Metric Data field of the Static Router Link Record.
+   *
+   * The metric is an abstract cost associated with forwarding a packet across
+   * a link.  A sum of metrics must have a well-defined meaning.  That is, you
+   * shouldn't use bandwidth as a metric (how does the sum of the bandwidth of
+   * two hops relate to the cost of sending a packet); rather you should use
+   * something like delay.
+   */
+  void SetMetric(uint32_t metric);
+
+private:
+  /**
+   * m_linkId and m_linkData are defined by OSPF to have different meanings 
+   * depending on the type of link a given link records represents.  They work
+   * together.
+   *
+   * For Type 1 link (PointToPoint), set m_linkId to Router ID of 
+   * neighboring router.
+   *
+   * For Type 3 link (Stub), set m_linkId to neighbor's IP address
+   */
+  Ipv4Address m_linkId;         
+  /**
+   * m_linkId and m_linkData are defined by OSPF to have different meanings 
+   * depending on the type of link a given link records represents.  They work
+   * together.
+   *
+   * For Type 1 link (PointToPoint), set m_linkData to local IP address  
+   *
+   * For Type 3 link (Stub), set m_linkData to mask
+   */
+  Ipv4Address m_linkData;    // for links to RouterLSA, 
+
+  LinkType m_linkType;
+  /**
+   * The metric for a given link.
+   *
+   * A metric is abstract cost associated with forwarding a packet across a 
+   * link.  A sum of metrics must have a well-defined meaning.  That is, you 
+   * shouldn't use bandwidth as a metric (how does the sum of the bandwidth 
+   * of two hops relate to the cost of sending a packet); rather you should
+   * use something like delay.
    */
   uint32_t m_metric;  
 };
@@ -84,110 +206,189 @@ public:
 class StaticRouterLSA
 {
 public:
-  /**
-   * Create a blank Static Router Link State Advertisement.  On completion,
-   * any Ipv4Address variables initialized to 0.0.0.0 and the list of Link 
-   * State Records is empty.
-   */
-  StaticRouterLSA();
-  /**
-   * Copy constructor for a Static Router Link State Advertisement.
-   * Takes a piece of memory and constructs a semantically identical copy of
-   * the given LSA.
-   *
-   * @param lsa The existing LSA to be used as the source.
-   */
-  StaticRouterLSA (StaticRouterLSA& lsa);
-  /**
-   * Destroy an existing Static Router Link State Advertisement.  Any Static
-   * router Link Records present in the list are freed.
-   */
-  ~StaticRouterLSA();
-  /**
-   * Assignment operator for a Static Router Link State Advertisement.
-   * Takes an existing Static Router Link State Advertisement and overwrites
-   * it to make a semantically identical copy of a given prototype LSA.
-   *
-   * If there are any Static Router Link Records present in the existing 
-   * LSA, they are freed before the assignment happens.
-   *
-   * @param lsa The existing LSA to be used as the source.
-   * @returns Reference to the overwritten LSA.
-   */
-  StaticRouterLSA& operator= (StaticRouterLSA& lsa);
-  /**
-   * Copy any Static Router Link Records in a given Static Router Link
-   * State Advertisement to the current LSA.  Existing Link Records are not
-   * deleted -- this is a concatenation of Link Records.
-   *
-   * @see ClearLinkRecords ()
-   * @param lsa The LSA to copy the Link Records from.
-   */
-  void CopyLinkRecords (StaticRouterLSA& lsa);
-  /**
-   * Add a given Static Router Link Record to the LSA.
-   *
-   * @param lr The Static Router Link Record to be added.
-   * @returns The number of link records in the list.
-   */
-  uint32_t AddLinkRecord (StaticRouterLinkRecord* lr);
-  /**
-   * Return the number of Static Router Link Records in the LSA.
-   *
-   * @returns The number of link records in the list.
-   */
-  uint32_t GetNLinkRecords (void);
-  /**
-   * Return a pointer to the specified Static Router Link Record.
-   *
-   * @param n The LSA number desired.
-   * @returns The number of link records in the list.
-   */
-  StaticRouterLinkRecord* GetLinkRecord (uint32_t n);
-  /**
-   * Release all of the Static Router Link Records present in the Static
-   * Router Link State Advertisement and make the list of link records empty.
-   */
-  void ClearLinkRecords(void);
-  /**
-   * Check to see of the list of Static Router Link Records present in the
-   * Static Router Link State Advertisement is empty.
-   *
-   * @returns True if the list is empty, false otherwise.
-   */
-  bool IsEmpty(void);
-  /**
-   * Print the contents of the Static Router Link State Advertisement and
-   * any Static Router Link Records present in the list.  Quite verbose.
-   */
-  void Print (std::ostream &os);
-  /**
-   * The Link State ID is defined by the OSPF spec.  We always set it to the
-   * router ID of the router making the advertisement.
-   *
-   * @see RoutingEnvironment::AllocateRouterId ()
-   * @see StaticRouter::GetRouterId ()
-   */
-  Ipv4Address  m_linkStateId;
-  /**
-   * The Advertising Router is defined by the OSPF spec.  We always set it to 
-   * the router ID of the router making the advertisement.
-   *
-   * @see RoutingEnvironment::AllocateRouterId ()
-   * @see StaticRouter::GetRouterId ()
-   */
-  Ipv4Address  m_advertisingRtr;
-
-  typedef std::list<StaticRouterLinkRecord*> ListOfLinkRecords_t;
-  ListOfLinkRecords_t m_linkRecords;
-
-  // this is a tristate flag used internally in the SPF computation
+/**
+ * Enumeration of the possible values of the status flag in the Router Link
+ * State Advertisements.
+ */
   enum SPFStatus {
-    LSA_SPF_NOT_EXPLORED = 0,
-    LSA_SPF_CANDIDATE,
-    LSA_SPF_IN_SPFTREE
-  } m_stat;
+    LSA_SPF_NOT_EXPLORED = 0,	/**< New vertex not yet considered */
+    LSA_SPF_CANDIDATE,		/**< Vertex is in the SPF candidate queue */
+    LSA_SPF_IN_SPFTREE		/**< Vertex is in the SPF tree */
+  };
+/**
+ * Create a blank Static Router Link State Advertisement.  On completion,
+ * any Ipv4Address variables initialized to 0.0.0.0 and the list of Link 
+ * State Records is empty.
+ */
+  StaticRouterLSA();
+/**
+ * Create an initialized Static Router Link State Advertisement.  On 
+ * completion the list of Link State Records is empty.
+ *
+ * @param status The status to of the new LSA.
+ * @param linkStateId The Ipv4Address for the link state ID field.
+ * @param advertisingRouter The Ipv4Address for the advertising router field.
+ */
+  StaticRouterLSA(SPFStatus status, Ipv4Address linkStateId, 
+    Ipv4Address advertisingRtr);
+/**
+ * Copy constructor for a Static Router Link State Advertisement.
+ * Takes a piece of memory and constructs a semantically identical copy of
+ * the given LSA.
+ *
+ * @param lsa The existing LSA to be used as the source.
+ */
+  StaticRouterLSA (StaticRouterLSA& lsa);
+/**
+ * Destroy an existing Static Router Link State Advertisement.  Any Static
+ * router Link Records present in the list are freed.
+ */
+  ~StaticRouterLSA();
+/**
+ * Assignment operator for a Static Router Link State Advertisement.
+ * Takes an existing Static Router Link State Advertisement and overwrites
+ * it to make a semantically identical copy of a given prototype LSA.
+ *
+ * If there are any Static Router Link Records present in the existing 
+ * LSA, they are freed before the assignment happens.
+ *
+ * @param lsa The existing LSA to be used as the source.
+ * @returns Reference to the overwritten LSA.
+ */
+  StaticRouterLSA& operator= (const StaticRouterLSA& lsa);
+/**
+ * Copy any Static Router Link Records in a given Static Router Link
+ * State Advertisement to the current LSA.  Existing Link Records are not
+ * deleted -- this is a concatenation of Link Records.
+ *
+ * @see ClearLinkRecords ()
+ * @param lsa The LSA to copy the Link Records from.
+ */
+  void CopyLinkRecords (const StaticRouterLSA& lsa);
+/**
+ * Add a given Static Router Link Record to the LSA.
+ *
+ * @param lr The Static Router Link Record to be added.
+ * @returns The number of link records in the list.
+ */
+  uint32_t AddLinkRecord (StaticRouterLinkRecord* lr);
+/**
+ * Return the number of Static Router Link Records in the LSA.
+ *
+ * @returns The number of link records in the list.
+ */
+  uint32_t GetNLinkRecords (void) const;
+/**
+ * Return a pointer to the specified Static Router Link Record.
+ *
+ * @param n The LSA number desired.
+ * @returns The number of link records in the list.
+ */
+  StaticRouterLinkRecord* GetLinkRecord (uint32_t n) const;
+/**
+ * Release all of the Static Router Link Records present in the Static
+ * Router Link State Advertisement and make the list of link records empty.
+ */
+  void ClearLinkRecords(void);
+/**
+ * Check to see of the list of Static Router Link Records present in the
+ * Static Router Link State Advertisement is empty.
+ *
+ * @returns True if the list is empty, false otherwise.
+ */
+  bool IsEmpty(void) const;
+/**
+ * Print the contents of the Static Router Link State Advertisement and
+ * any Static Router Link Records present in the list.  Quite verbose.
+ */
+  void Print (std::ostream &os) const;
+/**
+ * Get the Link State ID as defined by the OSPF spec.  We always set it to
+ * the router ID of the router making the advertisement.
+ *
+ * @see RoutingEnvironment::AllocateRouterId ()
+ * @see StaticRouter::GetRouterId ()
+ * @returns The Ipv4Address stored as the link state ID.
+ */
+  Ipv4Address GetLinkStateId (void) const;
+/**
+ * Set the Link State ID is defined by the OSPF spec.  We always set it to 
+ * the router ID of the router making the advertisement.
+ *
+ * @see RoutingEnvironment::AllocateRouterId ()
+ * @see StaticRouter::GetRouterId ()
+ */
+  void SetLinkStateId (Ipv4Address addr);
+/**
+ * Get the Advertising Router as defined by the OSPF spec.  We always set 
+ * it to the router ID of the router making the advertisement.
+ *
+ * @see RoutingEnvironment::AllocateRouterId ()
+ * @see StaticRouter::GetRouterId ()
+ * @returns The Ipv4Address stored as the advetising router.
+ */
+  Ipv4Address GetAdvertisingRouter (void) const;
+/**
+ * Set the Advertising Router as defined by the OSPF spec.  We always set 
+ * it to the router ID of the router making the advertisement.
+ *
+ * @see RoutingEnvironment::AllocateRouterId ()
+ * @see StaticRouter::GetRouterId ()
+ */
+  void SetAdvertisingRouter (Ipv4Address  rtr);
+/**
+ * Get the SPF status of the advertisement.
+ *
+ * @see SPFStatus
+ * @returns The SPFStatus of the LSA.
+ */
+  SPFStatus GetStatus (void) const;
+/**
+ * Set the SPF status of the advertisement
+ *
+ * @see SPFStatus
+ */
+  void SetStatus (SPFStatus status);
 
+private:
+/**
+ * The Link State ID is defined by the OSPF spec.  We always set it to the
+ * router ID of the router making the advertisement.
+ *
+ * @see RoutingEnvironment::AllocateRouterId ()
+ * @see StaticRouter::GetRouterId ()
+ */
+  Ipv4Address  m_linkStateId;
+/**
+ * The Advertising Router is defined by the OSPF spec.  We always set it to 
+ * the router ID of the router making the advertisement.
+ *
+ * @see RoutingEnvironment::AllocateRouterId ()
+ * @see StaticRouter::GetRouterId ()
+ */
+  Ipv4Address  m_advertisingRtr;
+/**
+ * A convenience typedef to avoid too much writers cramp.
+ */
+  typedef std::list<StaticRouterLinkRecord*> ListOfLinkRecords_t;
+/**
+ * Each Link State Advertisement contains a number of Link Records that
+ * describe the kinds of links that are attached to a given node.  We 
+ * consider PointToPoint and StubNetwork links.
+ *
+ * m_linkRecords is an STL list container to hold the Link Records that have
+ * been discovered and prepared for the advertisement.
+ *
+ * @see StaticRouter::DiscoverLSAs ()
+ */
+  ListOfLinkRecords_t m_linkRecords;
+/**
+ * This is a tristate flag used internally in the SPF computation to mark
+ * if an SPFVertex (a data structure representing a vertex in the SPF tree
+ * -- a router) is new, is a candidate for a shortest path, or is in its
+ * proper position in the tree.
+ */
+  SPFStatus m_status;
 };
 
 std::ostream& operator<< (std::ostream& os, StaticRouterLSA& lsa);
@@ -225,7 +426,7 @@ public:
    * @see RoutingEnvironment::AllocateRouterId ()
    * @returns The Router ID associated with the Static Router.
    */
-  Ipv4Address GetRouterId(void);
+  Ipv4Address GetRouterId (void) const;
   /**
    * Walk the connected channels, discover the adjacent routers and build
    * the associated number of Static Router Link State Advertisements that 
@@ -256,7 +457,7 @@ public:
    * @see StaticRouter::GetLSA ()
    * @returns The number of Static Router Link State Advertisements.
    */
-  uint32_t GetNumLSAs (void);
+  uint32_t GetNumLSAs (void) const;
   /**
    * Get a Static Router Link State Advertisements that this router has said
    * that it can export.
@@ -277,14 +478,14 @@ public:
    * @param lsa The StaticRouterLSA class to receive the LSA information.
    * @returns The number of Static Router Link State Advertisements.
    */
-  bool GetLSA (uint32_t n, StaticRouterLSA &lsa);
+  bool GetLSA (uint32_t n, StaticRouterLSA &lsa) const;
 
 protected:
   virtual ~StaticRouter ();
   void ClearLSAs (void);
 
-  Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch);
-  uint32_t FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd);
+  Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const;
+  uint32_t FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd) const;
 
   Ptr<Node>     m_node;
 

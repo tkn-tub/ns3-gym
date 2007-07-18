@@ -95,13 +95,13 @@ public:
    * @see Pop ()
    * @returns The Shortest Path First Vertex pointer at the top of the queue.
    */
-  SPFVertex*    Top (void);
+  SPFVertex*    Top (void) const;
   /**
    * Test the Candidate Queue to determine if it is empty.
    *
    * @returns True if the queue is empty, false otherwise.
    */
-  bool          Empty (void);
+  bool          Empty (void) const;
   /**
    * Return the number of Shortest Path First Vertex pointers presently
    * stored in the Candidate Queue.
@@ -109,7 +109,7 @@ public:
    * @see SPFVertex
    * @returns The number of SPFVertex* pointers in the Candidate Queue.
    */
-  uint32_t      Size (void);
+  uint32_t      Size (void) const;
   /**
    * Searches the Candidate Queue for a Shortest Path First Vertex pointer
    * that points to a vertex having the given IP address.
@@ -118,7 +118,7 @@ public:
    * @param addr The IP address to search for.
    * @returns The SPFVertex* pointer corresponding to the given IP address.
    */
-  SPFVertex*    Find (const Ipv4Address addr);
+  SPFVertex*    Find (const Ipv4Address addr) const;
   /**
    * Reorders the Candidate Queue according to the priority scheme.  On 
    * completion, the top of the queue will hold the Shortest Path First

@@ -81,7 +81,7 @@ CandidateQueue::Pop (void)
 }
 
   SPFVertex *
-CandidateQueue::Top (void)
+CandidateQueue::Top (void) const
 {
   NS_DEBUG("CandidateQueue::Top ()");
 
@@ -94,7 +94,7 @@ CandidateQueue::Top (void)
 }
 
   bool
-CandidateQueue::Empty (void)
+CandidateQueue::Empty (void) const
 {
   NS_DEBUG("CandidateQueue::Empty ()");
 
@@ -102,7 +102,7 @@ CandidateQueue::Empty (void)
 }
 
   uint32_t
-CandidateQueue::Size (void)
+CandidateQueue::Size (void) const
 {
   NS_DEBUG("CandidateQueue::Size ()");
 
@@ -110,11 +110,11 @@ CandidateQueue::Size (void)
 }
 
   SPFVertex *
-CandidateQueue::Find (const Ipv4Address addr)
+CandidateQueue::Find (const Ipv4Address addr) const
 {
   NS_DEBUG("CandidateQueue::Find ()");
 
-  CandidateList_t::iterator i = m_candidates.begin ();
+  CandidateList_t::const_iterator i = m_candidates.begin ();
 
   for (; i != m_candidates.end (); i++)
     {
