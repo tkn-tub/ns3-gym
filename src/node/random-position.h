@@ -38,12 +38,15 @@ public:
   static const ClassId cid;
   RandomDiscPosition ();
   RandomDiscPosition (const RandomVariable &theta,
-		      const RandomVariable &rho);
+		      const RandomVariable &rho,
+		      double x, double y);
   virtual ~RandomDiscPosition ();
   virtual Position Get (void) const;
 private:
   RandomVariable *m_theta;
   RandomVariable *m_rho;
+  double m_x;
+  double m_y;
 };
 
 } // namespace ns3

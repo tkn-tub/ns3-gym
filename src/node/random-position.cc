@@ -1,7 +1,11 @@
 #include "random-position.h"
 #include "ns3/random-variable.h"
+#include "ns3/default-value.h"
 #include "ns3/random-variable-default-value.h"
+#include "ns3/debug.h"
 #include <cmath>
+
+NS_DEBUG_COMPONENT_DEFINE ("RandomPosition");
 
 namespace ns3 {
 
@@ -16,14 +20,24 @@ g_rectangleY ("RandomRectanglePositionY",
 	      "Uniform:0:200");
 
 static RandomVariableDefaultValue
-g_discTheta ("RandomRectanglePositionTheta",
+g_discTheta ("RandomDiscPositionTheta",
 	     "A random variable which represents the angle (gradients) of a position in a random disc.",
 	     "Uniform:0:3.1415");
 
 static RandomVariableDefaultValue
-g_discRho ("RandomRectanglePositionRho",
+g_discRho ("RandomDiscPositionRho",
 	   "A random variable which represents the radius of a position in a random disc.",
 	   "Uniform:0:200");
+
+static IntegerDefaultValue<double>
+g_discX ("RandomDiscPositionX",
+	 "The x coordinate of the center of the random position disc.",
+	 0.0);
+
+static IntegerDefaultValue<double>
+g_discY ("RandomDiscPositionY",
+	 "The y coordinate of the center of the random position disc.",
+	 0.0);
 
 const InterfaceId RandomPosition::iid = MakeInterfaceId ("RandomPosition", Object::iid);
 
@@ -68,12 +82,17 @@ RandomRectanglePosition::Get (void) const
 
 RandomDiscPosition::RandomDiscPosition ()
   : m_theta (g_discTheta.GetCopy ()),
-    m_rho (g_discRho.GetCopy ())
+    m_rho (g_discRho.GetCopy ()),
+    m_x (g_discX.GetValue ()),
+    m_y (g_discY.GetValue ())
 {}
 RandomDiscPosition::RandomDiscPosition (const RandomVariable &theta,
-					const RandomVariable &rho)
+					const RandomVariable &rho,
+					double x, double y)
   : m_theta (theta.Copy ()),
-    m_rho (rho.Copy ())
+    m_rho (rho.Copy ()),
+    m_x (0.0),
+    m_y (0.0)
 {}
 RandomDiscPosition::~RandomDiscPosition ()
 {
@@ -87,8 +106,9 @@ RandomDiscPosition::Get (void) const
 {
   double theta = m_theta->GetValue ();
   double rho = m_rho->GetValue ();
-  double x = std::cos (theta) * rho;
-  double y = std::sin (theta) * rho;
+  double x = m_x + std::cos (theta) * rho;
+  double y = m_y + std::sin (theta) * rho;
+  NS_DEBUG ("Disc position x=" << x << ", y=" << y);
   return Position (x, y, 0.0);
 }
 
