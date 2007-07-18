@@ -263,6 +263,9 @@ node.add_sources ([
     'position-2d.cc',
     'position.cc',
     'random-position.cc',
+    'speed.cc',
+    'static-speed-helper.cc',
+    'random-waypoint-mobility-model.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -295,6 +298,9 @@ node.add_inst_headers ([
     'position-2d.h',
     'position.h',
     'random-position.h',
+    'speed.h',
+    'static-speed-helper.h',
+    'random-waypoint-mobility-model.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')

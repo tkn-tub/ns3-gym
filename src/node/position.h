@@ -7,10 +7,13 @@ class Position
 {
 public:
   Position (double x, double y, double z);
+  Position ();
   double x;
   double y;
   double z;
 };
+
+double CalculateDistance (const Position &a, const Position &b);
 
 } // namespace ns3
 

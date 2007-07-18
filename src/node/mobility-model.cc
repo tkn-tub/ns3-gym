@@ -57,10 +57,7 @@ MobilityModel::GetDistanceFrom (const MobilityModel &other) const
 {
   Position oPosition = other.DoGet ();
   Position position = DoGet ();
-  double dx = oPosition.x - position.x;
-  double dy = oPosition.y - position.y;
-  double dz = oPosition.z - position.z;
-  return sqrt (dx*dx+dy*dy+dz*dz);
+  return CalculateDistance (position, oPosition);
 }
 
 void
