@@ -13,6 +13,9 @@ class StaticSpeedHelper
 {
  public:
   StaticSpeedHelper ();
+  StaticSpeedHelper (const Position &position);
+  StaticSpeedHelper (const Position &position,
+		     const Speed &speed);
   void InitializePosition (const Position &position);
 
   void Reset (const Speed &speed, const Time &pauseDelay);
@@ -20,6 +23,7 @@ class StaticSpeedHelper
   Position GetCurrentPosition (const Rectangle &bounds) const;
   Position GetCurrentPosition (void) const;
   Speed GetSpeed (void) const;
+  void SetSpeed (const Speed &speed);
 
  private:
   void Update (void) const;

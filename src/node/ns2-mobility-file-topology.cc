@@ -129,7 +129,7 @@ Ns2MobileFileTopology::LayoutObjectStore (const ObjectStore &store) const
 	      double zSpeed = ReadDouble (line.substr (ySpeedEnd + 1, std::string::npos));
 	      NS_DEBUG ("at=" << at << "xSpeed=" << xSpeed << ", ySpeed=" << ySpeed << ", zSpeed=" << zSpeed);
 	      Simulator::Schedule (Seconds (at), &StaticSpeedMobilityModel::SetSpeed, model,
-				   xSpeed, ySpeed, zSpeed);
+				   Speed (xSpeed, ySpeed, zSpeed));
 	    }
 	}
       file.close();

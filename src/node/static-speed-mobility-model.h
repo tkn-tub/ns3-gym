@@ -25,6 +25,8 @@
 #include "mobility-model.h"
 #include "ns3/nstime.h"
 #include "ns3/component-manager.h"
+#include "static-speed-helper.h"
+#include "speed.h"
 
 namespace ns3 {
 
@@ -39,60 +41,31 @@ public:
    */
   StaticSpeedMobilityModel ();
   /**
-   * \param x x coordinate
-   * \param y y coordinate
-   *
-   * Create a position located at coordinates (x,y,0) with
-   * speed (0,0,0).
-   * Unit is meters
-   */
-  StaticSpeedMobilityModel (double x, double y);
-  /**
-   * \param x x coordinate
-   * \param y y coordinate
-   * \param z z coordinate
-   *
    * Create a position located at coordinates (x,y,z) with
    * speed (0,0,0).
-   * Unit is meters
    */
-  StaticSpeedMobilityModel (double x, double y, double z);
+  StaticSpeedMobilityModel (const Position &position);
   /**
-   * \param x x coordinate
-   * \param y y coordinate
-   * \param z z coordinate
-   * \param dx x coordinate speed
-   * \param dy y coordinate speed
-   * \param dz z coordinate speed
    *
    * Create a position located at coordinates (x,y,z) with
    * speed (dx,dy,dz).
    * Unit is meters and meters/s
    */
-  StaticSpeedMobilityModel (double x, double y, double z,
-                       double dx, double dy, double dz);
+  StaticSpeedMobilityModel (const Position &position,
+                            const Speed &speed);
   virtual ~StaticSpeedMobilityModel ();
 
   /*
-   * \param dx x coordinate speed
-   * \param dy y coordinate speed
-   * \param dz z coordinate speed
    *
    * Set the current speed now to (dx,dy,dz)
    * Unit is meters/s
    */
-  void SetSpeed (double dx, double dy, double dz);
+  void SetSpeed (const Speed speed);
 private:
   virtual Position DoGet (void) const;
   virtual void DoSet (const Position &position);
   void Update (void) const;
-  mutable double m_x;
-  mutable double m_y;
-  mutable double m_z;
-  double m_dx;
-  double m_dy;
-  double m_dz;
-  mutable Time m_prevTime;
+  StaticSpeedHelper m_helper;
 };
 
 }; // namespace ns3

@@ -23,54 +23,25 @@
 
 namespace ns3 {
 
-const InterfaceId StaticSpeedMobilityModel::iid = MakeInterfaceId ("StaticSpeedMobilityModel", MobilityModel::iid);
+const InterfaceId StaticSpeedMobilityModel::iid = 
+  MakeInterfaceId ("StaticSpeedMobilityModel", MobilityModel::iid);
 const ClassId StaticSpeedMobilityModel::cid = 
-  MakeClassId<StaticSpeedMobilityModel,double, double> ("StaticSpeedMobilityModel", 
-                                              StaticSpeedMobilityModel::iid);
+  MakeClassId<StaticSpeedMobilityModel> ("StaticSpeedMobilityModel", 
+                                         StaticSpeedMobilityModel::iid);
 
 
 StaticSpeedMobilityModel::StaticSpeedMobilityModel ()
-  : m_x (0.0),
-    m_y (0.0),
-    m_z (0.0),
-    m_dx (0.0),
-    m_dy (0.0),
-    m_dz (0.0),
-    m_prevTime (Simulator::Now ())
 {
   SetInterfaceId (StaticSpeedMobilityModel::iid);
 }
-StaticSpeedMobilityModel::StaticSpeedMobilityModel (double x, double y, double z)
-  : m_x (x),
-    m_y (y),
-    m_z (z),
-    m_dx (0.0),
-    m_dy (0.0),
-    m_dz (0.0),
-    m_prevTime (Simulator::Now ())
+StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Position &position)
+  : m_helper (position)
 {
   SetInterfaceId (StaticSpeedMobilityModel::iid);
 }
-StaticSpeedMobilityModel::StaticSpeedMobilityModel (double x, double y)
-  : m_x (x),
-    m_y (y),
-    m_z (0.0),
-    m_dx (0.0),
-    m_dy (0.0),
-    m_dz (0.0),
-    m_prevTime (Simulator::Now ())
-{
-  SetInterfaceId (StaticSpeedMobilityModel::iid);
-}
-StaticSpeedMobilityModel::StaticSpeedMobilityModel (double x, double y, double z,
-                                          double dx, double dy, double dz)
-  : m_x (x),
-    m_y (y),
-    m_z (z),
-    m_dx (dx),
-    m_dy (dy),
-    m_dz (dz),
-    m_prevTime (Simulator::Now ())
+StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Position &position,
+                                                    const Speed &speed)
+  : m_helper (position, speed)
 {
   SetInterfaceId (StaticSpeedMobilityModel::iid);
 }
@@ -79,56 +50,23 @@ StaticSpeedMobilityModel::~StaticSpeedMobilityModel ()
 {}
 
 void 
-StaticSpeedMobilityModel::SetSpeed (double dx, double dy, double dz)
+StaticSpeedMobilityModel::SetSpeed (const Speed speed)
 {
-  bool changed = false;
-  Update ();
-  if (m_dx != dx || m_dy != dy || m_dz != dz)
-    {
-      changed = true;
-    }
-  m_dx = dx;
-  m_dy = dy;
-  m_dz = dz;
-  if (changed)
-    {
-      NotifyCourseChange ();
-    }
+  m_helper.SetSpeed (speed);
+  NotifyCourseChange ();
 }
 
-void
-StaticSpeedMobilityModel::Update (void) const
-{
-  Time deltaTime = Simulator::Now () - m_prevTime;
-  m_prevTime = Simulator::Now ();
-  double deltaS = deltaTime.GetSeconds ();
-  m_x += m_dx * deltaS;
-  m_y += m_dy * deltaS;
-  m_z += m_dz * deltaS;
-}
 
 Position
 StaticSpeedMobilityModel::DoGet (void) const
 {
-  Update ();
-  return Position (m_x, m_y, m_z);
+  return m_helper.GetCurrentPosition ();
 }
 void 
 StaticSpeedMobilityModel::DoSet (const Position &position)
 {
-  bool changed = false;
-  Update ();
-  if (m_x != position.x || m_y != position.y || m_z != position.z)
-    {
-      changed = true;
-    }
-  m_x = position.x;
-  m_y = position.y;
-  m_z = position.z;
-  if (changed)
-    {
-      NotifyCourseChange ();
-    }
+  m_helper.InitializePosition (position);
+  NotifyCourseChange ();
 }
 
 }; // namespace ns3

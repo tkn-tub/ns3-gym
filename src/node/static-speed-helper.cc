@@ -6,12 +6,21 @@ namespace ns3 {
 
 StaticSpeedHelper::StaticSpeedHelper ()
 {}
+StaticSpeedHelper::StaticSpeedHelper (const Position &position)
+  : m_position (position)
+{}
+StaticSpeedHelper::StaticSpeedHelper (const Position &position,
+				      const Speed &speed)
+  : m_position (position),
+    m_speed (speed)
+{}
 void 
 StaticSpeedHelper::InitializePosition (const Position &position)
 {
   m_position = position;
   m_speed.dx = 0.0;
   m_speed.dy = 0.0;
+  m_speed.dz = 0.0;
   m_lastUpdate = Simulator::Now ();
   m_pauseEnd = Simulator::Now ();
 }
@@ -34,6 +43,12 @@ Speed
 StaticSpeedHelper::GetSpeed (void) const
 {
   return m_speed;
+}
+void 
+StaticSpeedHelper::SetSpeed (const Speed &speed)
+{
+  Update ();
+  m_speed = speed;
 }
 
 void
