@@ -31,7 +31,7 @@ StaticSpeedHelper::GetCurrentPosition (void) const
 }
 
 Speed 
-StaticSpeedHelper::GetCurrentSpeed (void) const
+StaticSpeedHelper::GetSpeed (void) const
 {
   return m_speed;
 }
@@ -79,25 +79,6 @@ StaticSpeedHelper::GetDelayToNextPosition (const Rectangle &bounds, Time delayLe
   nextPosition = bounds.CalculateIntersection (m_position, m_speed);
   Time delay = Seconds ((nextPosition.x - m_position.x) / m_speed.dx);
   return delay;
-}
-void 
-StaticSpeedHelper::Rebound (const Rectangle &bounds)
-{
-  UpdateFull (bounds);
-  double xMinDist = m_position.x - bounds.xMin;
-  double xMaxDist = bounds.xMax - m_position.x;
-  double yMinDist = m_position.y - bounds.yMin;
-  double yMaxDist = bounds.yMax - m_position.y;
-  double minX = std::min (xMinDist, xMaxDist);
-  double minY = std::min (yMinDist, yMaxDist);
-  if (minY < minX)
-    {
-      m_speed.dy = - m_speed.dy;
-    }
-  else
-    {
-      m_speed.dx = - m_speed.dx;
-    }
 }
 
 void

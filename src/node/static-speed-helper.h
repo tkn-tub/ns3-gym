@@ -19,11 +19,10 @@ class StaticSpeedHelper
 
   void Reset (const Speed &speed);
   Time GetDelayToNextPosition (const Rectangle &bounds, Time delayLeft);
-  void Rebound (const Rectangle &bounds);
   Position GetCurrentPosition (const Rectangle &bounds) const;
 
   Position GetCurrentPosition (void) const;
-  Speed GetCurrentSpeed (void) const;
+  Speed GetSpeed (void) const;
 
  private:
   void Update (void) const;

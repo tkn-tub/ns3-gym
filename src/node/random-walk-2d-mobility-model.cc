@@ -151,7 +151,20 @@ RandomWalk2dMobilityModel::DoWalk (Time delayLeft)
 void
 RandomWalk2dMobilityModel::Rebound (Time delayLeft)
 {
-  m_helper.Rebound (m_parameters->m_bounds);
+  Position position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
+  Speed speed = m_helper.GetSpeed ();
+  switch (m_parameters->m_bounds.GetClosestSide (position))
+    {
+    case Rectangle::RIGHT:
+    case Rectangle::LEFT:
+      speed.dx = - speed.dx;
+      break;
+    case Rectangle::TOP:
+    case Rectangle::BOTTOM:
+      speed.dy = - speed.dy;
+      break;
+    }
+  m_helper.Reset (speed);
   DoWalk (delayLeft);
 }
 
