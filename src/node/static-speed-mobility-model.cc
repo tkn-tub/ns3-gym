@@ -68,5 +68,10 @@ StaticSpeedMobilityModel::DoSet (const Position &position)
   m_helper.InitializePosition (position);
   NotifyCourseChange ();
 }
+Speed 
+StaticSpeedMobilityModel::DoGetSpeed (void) const
+{
+  return m_helper.GetSpeed ();
+}
 
 }; // namespace ns3

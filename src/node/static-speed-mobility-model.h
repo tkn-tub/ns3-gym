@@ -64,6 +64,7 @@ public:
 private:
   virtual Position DoGet (void) const;
   virtual void DoSet (const Position &position);
+  virtual Speed DoGetSpeed (void) const;
   void Update (void) const;
   StaticSpeedHelper m_helper;
 };

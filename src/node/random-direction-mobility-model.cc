@@ -186,6 +186,11 @@ RandomDirectionMobilityModel::DoSet (const Position &position)
   Simulator::Remove (m_event);
   m_event = Simulator::ScheduleNow (&RandomDirectionMobilityModel::Start, this);
 }
+Speed 
+RandomDirectionMobilityModel::DoGetSpeed (void) const
+{
+  return m_helper.GetSpeed ();
+}
 
 
 

@@ -192,6 +192,12 @@ RandomWalk2dMobilityModel::DoSet (const Position &position)
   Simulator::Remove (m_event);
   m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
 }
+Speed 
+RandomWalk2dMobilityModel::DoGetSpeed (void) const
+{
+  return m_helper.GetSpeed ();
+}
+
 
 
 } // namespace ns3

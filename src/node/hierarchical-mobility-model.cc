@@ -77,6 +77,16 @@ HierarchicalMobilityModel::DoSet (const Position &position)
 			  position.z - parentPosition.z);
   m_child->Set (childPosition);
 }
+Speed 
+HierarchicalMobilityModel::DoGetSpeed (void) const
+{
+  Speed parentSpeed = m_parent->GetSpeed ();
+  Speed childSpeed = m_child->GetSpeed ();
+  Speed speed (parentSpeed.dx + childSpeed.dx,
+               parentSpeed.dy + childSpeed.dy,
+               parentSpeed.dz + childSpeed.dz);
+  return speed;
+}
 
 void 
 HierarchicalMobilityModel::ParentChanged (Ptr<const MobilityModel> model)

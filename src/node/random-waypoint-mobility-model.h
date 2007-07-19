@@ -60,6 +60,8 @@ private:
   void Start (void);
   virtual Position DoGet (void) const;
   virtual void DoSet (const Position &position);
+  virtual Speed DoGetSpeed (void) const;
+
   StaticSpeedHelper m_helper;
   Ptr<RandomWaypointMobilityModelParameters> m_parameters;
   EventId m_event;

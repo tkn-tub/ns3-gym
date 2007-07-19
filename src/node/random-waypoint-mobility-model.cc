@@ -122,6 +122,11 @@ RandomWaypointMobilityModel::DoSet (const Position &position)
   Simulator::Remove (m_event);
   Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
 }
+Speed 
+RandomWaypointMobilityModel::DoGetSpeed (void) const
+{
+  return m_helper.GetSpeed ();
+}
 
 
 } // namespace ns3

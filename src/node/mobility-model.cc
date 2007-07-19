@@ -39,6 +39,11 @@ MobilityModel::Get (void) const
 {
   return DoGet ();
 }
+Speed 
+MobilityModel::GetSpeed (void) const
+{
+  return DoGetSpeed ();
+}
 
 void 
 MobilityModel::Set (double x, double y, double z)

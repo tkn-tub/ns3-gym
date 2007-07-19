@@ -72,6 +72,7 @@ class RandomDirectionMobilityModel : public MobilityModel
   virtual void DoDispose (void);
   virtual Position DoGet (void) const;
   virtual void DoSet (const Position &position);
+  virtual Speed DoGetSpeed (void) const;
 
   static const double PI;
   Ptr<RandomDirectionParameters> m_parameters;

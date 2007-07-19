@@ -34,37 +34,25 @@ namespace ns3 {
 class StaticMobilityModel : public MobilityModel 
 {
 public:
-  static const InterfaceId iid;
   static const ClassId cid;
   /**
    * Create a position located at coordinates (0,0,0)
    */
   StaticMobilityModel ();
   /**
-   * \param x x coordinate
-   * \param y y coordinate
-   *
-   * Create a position located at coordinates (x,y,0).
-   * Unit is meters
-   */
-  StaticMobilityModel (double x, double y);
-  /**
-   * \param x x coordinate
-   * \param y y coordinate
-   * \param z z coordinate
    *
    * Create a position located at coordinates (x,y,z).
    * Unit is meters
    */
-  StaticMobilityModel (double x, double y, double z);
+  StaticMobilityModel (const Position &position);
   virtual ~StaticMobilityModel ();
 
 private:
   virtual Position DoGet (void) const;
   virtual void DoSet (const Position &position);
-  double m_x;
-  double m_y;
-  double m_z;
+  virtual Speed DoGetSpeed (void) const;
+
+  Position m_position;
 };
 
 }; // namespace ns3

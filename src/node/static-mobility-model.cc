@@ -22,22 +22,15 @@
 
 namespace ns3 {
 
-const InterfaceId StaticMobilityModel::iid = MakeInterfaceId ("StaticMobilityModel", MobilityModel::iid);
-const ClassId StaticMobilityModel::cid = MakeClassId<StaticMobilityModel,double, double> ("StaticMobilityModel", 
-                                                                                StaticMobilityModel::iid);
-
+const ClassId StaticMobilityModel::cid = MakeClassId<StaticMobilityModel> ("StaticMobilityModel", 
+                                                                           MobilityModel::iid);
+  
 StaticMobilityModel::StaticMobilityModel ()
-  : m_x (0.0), m_y (0.0), m_z (0.0)
 {
   SetInterfaceId (StaticMobilityModel::iid);
 }
-StaticMobilityModel::StaticMobilityModel (double x, double y)
-  : m_x (x), m_y (y), m_z (0.0)
-{
-  SetInterfaceId (StaticMobilityModel::iid);
-}
-StaticMobilityModel::StaticMobilityModel (double x, double y, double z)
-  : m_x (x), m_y (y), m_z (z)
+StaticMobilityModel::StaticMobilityModel (const Position &position)
+  : m_position (position)
 {
   SetInterfaceId (StaticMobilityModel::iid);
 }
@@ -47,24 +40,18 @@ StaticMobilityModel::~StaticMobilityModel ()
 Position
 StaticMobilityModel::DoGet (void) const
 {
-  return Position (m_x, m_y, m_z);
+  return m_position;
 }
 void 
 StaticMobilityModel::DoSet (const Position &position)
 {
-  bool changed = false;
-  if (m_x != position.x || m_y != position.y || m_z != position.z)
-    {
-      changed = true;
-    }
-  m_x = position.x;
-  m_y = position.y;
-  m_z = position.z;
-  if (changed)
-    {
-      NotifyCourseChange ();
-    }
+  m_position = position;
+  NotifyCourseChange ();
 }
-
+Speed 
+StaticMobilityModel::DoGetSpeed (void) const
+{
+  return Speed ();
+}
 
 }; // namespace ns3

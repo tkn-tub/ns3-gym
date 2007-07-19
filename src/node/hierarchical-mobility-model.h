@@ -38,6 +38,7 @@ public:
 private:
   virtual Position DoGet (void) const;
   virtual void DoSet (const Position &position);
+  virtual Speed DoGetSpeed (void) const;
 
   void ParentChanged (Ptr<const MobilityModel> model);
   void ChildChanged (Ptr<const MobilityModel> model);

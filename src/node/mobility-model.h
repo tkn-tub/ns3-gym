@@ -23,6 +23,7 @@
 
 #include "ns3/object.h"
 #include "position.h"
+#include "speed.h"
 
 namespace ns3 {
 
@@ -45,9 +46,9 @@ public:
    * Unit is meters
    */
   Position Get (void) const;
-
   void Set (double x, double y, double z);
   void Set (const Position &position);
+  Speed GetSpeed (void) const;
   /**
    * \param position a reference to another position object instance
    * \returns the distance between the two objects.
@@ -74,6 +75,7 @@ private:
    */
   virtual Position DoGet (void) const = 0;
   virtual void DoSet (const Position &position) = 0;
+  virtual Speed DoGetSpeed (void) const = 0;
 };
 
 }; // namespace ns3
