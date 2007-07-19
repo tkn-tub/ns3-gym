@@ -29,20 +29,63 @@ namespace ns3 {
 
 class RandomPosition;
 
+/**
+ * \brief layout objects randomly in 3d space.
+ *
+ * This assigns an initial position to each object
+ * according to its position model and assigns
+ * an instance of a mobility model to each object
+ * according to its mobility model class id.
+ */
 class RandomTopology
 {
  public:
+  /**
+   * Create a default random topology based
+   * on Bind configuration.
+   */
   RandomTopology ();
+  /**
+   * \param positionModel model to set the initial position
+   *        of each object.
+   * \param type of mobility model to attach to each object.
+   *
+   * Create a random topology based on the
+   * specified position and mobility models.
+   */
   RandomTopology (Ptr<RandomPosition> positionModel,
                   ClassId mobilityModel);
 
   ~RandomTopology ();
 
+  /**
+   * \param classId the type of mobility model attached to each
+   *        input object if it does not have one already.
+   */
   void SetMobilityModel (ClassId classId);
+  /**
+   * \param positionModel the position model used to initialize
+   *        the position of each object.
+   */
   void SetPositionModel (Ptr<RandomPosition> positionModel);
 
+  /**
+   * \param object the object to layout
+   *
+   * Assign an initial position and a mobility model
+   * to the object.
+   */
   void LayoutOne (Ptr<Object> object);
 
+  /**
+   * \param begin iterator which identifies the first
+   *        object to configure.
+   * \param end iterator which identifies the last
+   *        object to configure.
+   *
+   * Assign an initial position and a mobility model
+   * to the objects.
+   */
   template <typename T>
   void Layout (const T &begin, const T &end);
  private:
