@@ -403,7 +403,7 @@ p2p.add_inst_headers ([
 mobgen = build.Ns3Module ('mobility-generator', 'utils')
 ns3.add (mobgen)
 mobgen.set_executable ()
-mobgen.add_deps (['simulator', 'node'])
+mobgen.add_deps (['simulator', 'node', 'mobility'])
 mobgen.add_source ('mobility-generator.cc')
 
 run_tests = build.Ns3Module('run-tests', 'utils')
