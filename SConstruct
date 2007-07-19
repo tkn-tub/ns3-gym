@@ -93,6 +93,7 @@ core.add_inst_headers([
     'default-value.h',
     'command-line.h',
     'type-name.h',
+    'type-traits.h',
     'component-manager.h',
     ])
 
