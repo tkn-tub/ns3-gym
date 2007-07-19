@@ -28,11 +28,9 @@
 namespace ns3 {
 
 const double RandomDirection2dMobilityModel::PI = 3.1415;
-const InterfaceId RandomDirection2dMobilityModel::iid = 
-  MakeInterfaceId ("RandomDirection2dMobilityModel", MobilityModel::iid);
 const ClassId RandomDirection2dMobilityModel::cid = 
   MakeClassId<RandomDirection2dMobilityModel> ("RandomDirection2dMobilityModel",
-                                             RandomDirection2dMobilityModel::iid);
+                                               MobilityModel::iid);
 
 
 static RandomVariableDefaultValue 

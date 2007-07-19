@@ -34,17 +34,37 @@ namespace ns3 {
 
 class RandomVariable;
 
+/**
+ * \brief the parameters to control a RandomDirection mobility model.
+ */
 class RandomDirection2dParameters : public Object
 {
  public:
+  /**
+   * Create a default parameter object from Bind default values.
+   */
   RandomDirection2dParameters ();
+  /**
+   * \param bounds the 2d bounds of the mobility model
+   * \param speedVariable the random variable used to pick a random speed
+   * \param pauseVariable the random variable used to pick a random pause delay
+   */
   RandomDirection2dParameters (const Rectangle &bounds,
-			     const RandomVariable &speedVariable,
-			     const RandomVariable &pauseVariable);
+                               const RandomVariable &speedVariable,
+                               const RandomVariable &pauseVariable);
   virtual ~RandomDirection2dParameters ();
 
+  /**
+   * \param speedVariable the random variable used to pick a random speed.
+   */
   void SetSpeed (const RandomVariable &speedVariable);
+  /**
+   * \param pauseVariable the random variable used to pick a random pause delay.
+   */
   void SetPause (const RandomVariable &pauseVariable);
+  /**
+   * \param bounds the 2d bounds of the mobility model.
+   */
   void SetBounds (const Rectangle &bounds);
  private:
   friend class RandomDirection2dMobilityModel;
@@ -56,13 +76,28 @@ class RandomDirection2dParameters : public Object
   RandomVariable *m_pauseVariable;
 };
 
+/**
+ * \brief a RandomDirection mobility model
+ *
+ * The movement of objects is based on random directions: each object
+ * pauses for a specific delay, chooses a random direction and speed and 
+ * then travels in the specific direction until it reaches one of
+ * the boundaries of the model. When it reaches the boundary, it pauses,
+ * selects a new direction and speed, aso.
+ */
 class RandomDirection2dMobilityModel : public MobilityModel
 {
  public:
-  static const InterfaceId iid;
   static const ClassId cid;
 
+  /**
+   * Create a RandomDirection model from the default Bind values.
+   */
   RandomDirection2dMobilityModel ();
+  /**
+   * \param parameters the parameters which control the behavior of the model.
+   * Create a RandomDirection model using the parameters specified.
+   */
   RandomDirection2dMobilityModel (Ptr<RandomDirection2dParameters> parameters);
  private:
   void Start (void);
