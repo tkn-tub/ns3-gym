@@ -30,15 +30,36 @@ namespace ns3 {
 
 class RandomVariable;
 
+/**
+ * \brief the parameters which control the behavior of a random waypoint
+ *        mobility model.
+ */
 class RandomWaypointMobilityModelParameters : public Object
 {
 public:
+  /**
+   * Defaults parameters based on the Bind values.
+   */
   RandomWaypointMobilityModelParameters ();
+  /**
+   * \param randomPosition a random position model to choose the position of waypoints.
+   * \param speed a random variable to choose the speed
+   * \param pause a random variable to choose the pause delay
+   */
   RandomWaypointMobilityModelParameters (Ptr<RandomPosition> randomPosition,
                                          const RandomVariable &speed,
                                          const RandomVariable &pause);
+  /**
+   * \param randomPosition a random position model to choose the position of waypoints.
+   */
   void SetWaypointPositionModel (Ptr<RandomPosition> randomPosition);
+  /**
+   * \param speed a random variable to choose the speed
+   */
   void SetSpeed (const RandomVariable &speed);
+  /**
+   * \param pause a random variable to choose the pause delay
+   */
   void SetPause (const RandomVariable &pause);
 private:
   friend class RandomWaypointMobilityModel;
@@ -49,12 +70,30 @@ private:
   Ptr<RandomPosition> m_position;
 };
 
+/**
+ * \brief a random waypoint mobility model
+ *
+ * Each object chooses a random destination "waypoint", a random speed,
+ * and a random pause time: it then pauses for the specified pause time,
+ * and starts moving towards the specified destination with the specified
+ * speed. Once the destination is reached the process starts again.
+ *
+ * The implementation of this model is not 2d-specific. i.e. if you provide
+ * a 3d random waypoint position model to this mobility model, the model 
+ * will still work.
+ */
 class RandomWaypointMobilityModel : public MobilityModel
 {
 public:
   static const ClassId cid;
 
+  /**
+   * Create a waypoint mobility model from the Bind default values.
+   */
   RandomWaypointMobilityModel ();
+  /**
+   * \param parameters the parameters which control the behavior of this model.
+   */
   RandomWaypointMobilityModel (Ptr<RandomWaypointMobilityModelParameters> parameters);
 private:
   void Start (void);
