@@ -33,7 +33,7 @@ GridTopology::GridTopology (double xMin, double yMin, uint32_t n, double deltaX,
 {}
 
 void 
-GridTopology::SetMobilityModelModel (ClassId classId)
+GridTopology::SetMobilityModel (ClassId classId)
 {
   m_positionClassId = classId;
 }

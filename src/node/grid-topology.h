@@ -48,7 +48,7 @@ class GridTopology
    * \param classId the classId of the position object to attach to each
    *        input object.
    */
-  void SetMobilityModelModel (ClassId classId);
+  void SetMobilityModel (ClassId classId);
 
   /**
    * \param objects a vector of objects
