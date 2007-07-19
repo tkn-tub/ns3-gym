@@ -105,7 +105,7 @@ RandomWalk2dMobilityModel::RandomWalk2dMobilityModel ()
   : m_parameters (RandomWalk2dMobilityModelParameters::GetCurrent ())
 {
   SetInterfaceId (RandomWalk2dMobilityModel::iid);
-  Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
+  m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
 }
 
 void
@@ -145,6 +145,7 @@ RandomWalk2dMobilityModel::DoWalk (Time delayLeft)
       NS_ASSERT (delay == delayLeft);
       m_event = Simulator::Schedule (delay, &RandomWalk2dMobilityModel::Start, this);
     }
+  NotifyCourseChange ();
 }
 
 void
@@ -172,7 +173,7 @@ RandomWalk2dMobilityModel::DoSet (const Position &position)
   NS_ASSERT (position.IsInside (m_parameters->m_bounds));
   m_helper.InitializePosition (position);
   Simulator::Remove (m_event);
-  Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
+  m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
 }
 
 
