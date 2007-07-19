@@ -34,36 +34,36 @@ namespace ns3 {
 
 class RandomVariable;
 
-class RandomDirectionParameters : public Object
+class RandomDirection2dParameters : public Object
 {
  public:
-  RandomDirectionParameters ();
-  RandomDirectionParameters (const Rectangle &bounds,
+  RandomDirection2dParameters ();
+  RandomDirection2dParameters (const Rectangle &bounds,
 			     const RandomVariable &speedVariable,
 			     const RandomVariable &pauseVariable);
-  virtual ~RandomDirectionParameters ();
+  virtual ~RandomDirection2dParameters ();
 
   void SetSpeed (const RandomVariable &speedVariable);
   void SetPause (const RandomVariable &pauseVariable);
   void SetBounds (const Rectangle &bounds);
  private:
-  friend class RandomDirectionMobilityModel;
+  friend class RandomDirection2dMobilityModel;
 
-  static Ptr<RandomDirectionParameters> GetCurrent (void);
+  static Ptr<RandomDirection2dParameters> GetCurrent (void);
 
   Rectangle m_bounds;
   RandomVariable *m_speedVariable;
   RandomVariable *m_pauseVariable;
 };
 
-class RandomDirectionMobilityModel : public MobilityModel
+class RandomDirection2dMobilityModel : public MobilityModel
 {
  public:
   static const InterfaceId iid;
   static const ClassId cid;
 
-  RandomDirectionMobilityModel ();
-  RandomDirectionMobilityModel (Ptr<RandomDirectionParameters> parameters);
+  RandomDirection2dMobilityModel ();
+  RandomDirection2dMobilityModel (Ptr<RandomDirection2dParameters> parameters);
  private:
   void Start (void);
   void ResetDirectionAndSpeed (void);
@@ -75,7 +75,7 @@ class RandomDirectionMobilityModel : public MobilityModel
   virtual Speed DoGetSpeed (void) const;
 
   static const double PI;
-  Ptr<RandomDirectionParameters> m_parameters;
+  Ptr<RandomDirection2dParameters> m_parameters;
   EventId m_event;
   StaticSpeedHelper m_helper;
 };
