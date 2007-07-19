@@ -54,7 +54,7 @@ int main (int argc, char *argv[])
 			strlen ("--ns2-topology=")) == 0)
 	{
 	  const char *filename = *argv + strlen ("--ns2-topology=");
-	  Ns2MobileFileTopology topology (filename);
+	  Ns2MobilityFileTopology topology (filename);
 	  topology.Layout (objects.begin (), objects.end ());
 	}
       argc--;

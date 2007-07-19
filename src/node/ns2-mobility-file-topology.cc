@@ -27,18 +27,18 @@
 #include <fstream>
 #include <sstream>
 
-NS_DEBUG_COMPONENT_DEFINE ("Ns2MobileFileTopology");
+NS_DEBUG_COMPONENT_DEFINE ("Ns2MobilityFileTopology");
 
 namespace ns3 {
 
 
-Ns2MobileFileTopology::Ns2MobileFileTopology (std::string filename)
+Ns2MobilityFileTopology::Ns2MobilityFileTopology (std::string filename)
   : m_filename (filename)
 {}
 
 
 Ptr<StaticSpeedMobilityModel>
-Ns2MobileFileTopology::GetMobilityModel (std::string idString, const ObjectStore &store) const
+Ns2MobilityFileTopology::GetMobilityModel (std::string idString, const ObjectStore &store) const
 {
   std::istringstream iss;
   iss.str (idString);
@@ -60,7 +60,7 @@ Ns2MobileFileTopology::GetMobilityModel (std::string idString, const ObjectStore
 }
 
 double
-Ns2MobileFileTopology::ReadDouble (std::string valueString) const
+Ns2MobilityFileTopology::ReadDouble (std::string valueString) const
 {
   std::istringstream iss;
   iss.str (valueString);
@@ -70,7 +70,7 @@ Ns2MobileFileTopology::ReadDouble (std::string valueString) const
 }
 
 void 
-Ns2MobileFileTopology::LayoutObjectStore (const ObjectStore &store) const
+Ns2MobilityFileTopology::LayoutObjectStore (const ObjectStore &store) const
 {
   std::ifstream file (m_filename.c_str (), std::ios::in);
   if (file.is_open())
@@ -137,7 +137,7 @@ Ns2MobileFileTopology::LayoutObjectStore (const ObjectStore &store) const
 }
 
 void 
-Ns2MobileFileTopology::Layout (void) const
+Ns2MobilityFileTopology::Layout (void) const
 {
   Layout (NodeList::Begin (), NodeList::End ());
 }
