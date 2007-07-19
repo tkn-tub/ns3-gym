@@ -37,22 +37,22 @@ class RandomVariable;
 /**
  * \brief the parameters to control a RandomDirection mobility model.
  */
-class RandomDirection2dParameters : public Object
+class RandomDirection2dMobilityModelParameters : public Object
 {
  public:
   /**
    * Create a default parameter object from Bind default values.
    */
-  RandomDirection2dParameters ();
+  RandomDirection2dMobilityModelParameters ();
   /**
    * \param bounds the 2d bounds of the mobility model
    * \param speedVariable the random variable used to pick a random speed
    * \param pauseVariable the random variable used to pick a random pause delay
    */
-  RandomDirection2dParameters (const Rectangle &bounds,
+  RandomDirection2dMobilityModelParameters (const Rectangle &bounds,
                                const RandomVariable &speedVariable,
                                const RandomVariable &pauseVariable);
-  virtual ~RandomDirection2dParameters ();
+  virtual ~RandomDirection2dMobilityModelParameters ();
 
   /**
    * \param speedVariable the random variable used to pick a random speed.
@@ -69,7 +69,7 @@ class RandomDirection2dParameters : public Object
  private:
   friend class RandomDirection2dMobilityModel;
 
-  static Ptr<RandomDirection2dParameters> GetCurrent (void);
+  static Ptr<RandomDirection2dMobilityModelParameters> GetCurrent (void);
 
   Rectangle m_bounds;
   RandomVariable *m_speedVariable;
@@ -98,7 +98,7 @@ class RandomDirection2dMobilityModel : public MobilityModel
    * \param parameters the parameters which control the behavior of the model.
    * Create a RandomDirection model using the parameters specified.
    */
-  RandomDirection2dMobilityModel (Ptr<RandomDirection2dParameters> parameters);
+  RandomDirection2dMobilityModel (Ptr<RandomDirection2dMobilityModelParameters> parameters);
  private:
   void Start (void);
   void ResetDirectionAndSpeed (void);
@@ -110,7 +110,7 @@ class RandomDirection2dMobilityModel : public MobilityModel
   virtual Speed DoGetSpeed (void) const;
 
   static const double PI;
-  Ptr<RandomDirection2dParameters> m_parameters;
+  Ptr<RandomDirection2dMobilityModelParameters> m_parameters;
   EventId m_event;
   StaticSpeedHelper m_helper;
 };
