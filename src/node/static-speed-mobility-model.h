@@ -30,6 +30,11 @@
 
 namespace ns3 {
 
+/**
+ * \brief a position model for which the current speed does not
+ *        change once it has been set and until it is set again 
+ *        explicitely to a new value.
+ */
 class StaticSpeedMobilityModel : public MobilityModel 
 {
 public:
@@ -55,7 +60,8 @@ public:
                             const Speed &speed);
   virtual ~StaticSpeedMobilityModel ();
 
-  /*
+  /**
+   * \param speed the new speed to set.
    *
    * Set the current speed now to (dx,dy,dz)
    * Unit is meters/s

@@ -25,14 +25,37 @@
 
 namespace ns3 {
 
+/**
+ * \brief a hierachical mobility model.
+ * 
+ * This model allows you to specify the position of a
+ * child object relative to a parent object.
+ */
 class HierarchicalMobilityModel : public MobilityModel
 {
 public:
   static const InterfaceId iid;
 
+  /**
+   * \param child the "relative" mobility model
+   * \param parent the "reference" mobility model
+   */
   HierarchicalMobilityModel (Ptr<MobilityModel> child, Ptr<MobilityModel> parent);
 
+  /**
+   * \returns the child mobility model.
+   *
+   * This allows you to get access to the position of the child
+   * relative to its parent.
+   */
   Ptr<MobilityModel> GetChild (void) const;
+  /**
+   * \returns the parent mobility model.
+   *
+   * This allows you to get access to the position of the 
+   * parent mobility model which is used as the reference 
+   * position by the child mobility model.
+   */
   Ptr<MobilityModel> GetParent (void) const;
   
 private:

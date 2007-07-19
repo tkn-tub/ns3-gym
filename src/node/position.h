@@ -3,13 +3,37 @@
 
 namespace ns3 {
 
+/**
+ * \brief a 3d cartesian position vector
+ *
+ * Unit is meters.
+ */
 class Position
 {
 public:
-  Position (double x, double y, double z);
+  /**
+   * \param _x x coordinate of position vector
+   * \param _y y coordinate of position vector
+   * \param _z z coordinate of position vector
+   *
+   * Create position vector (_x, _y, _z)
+   */
+  Position (double _x, double _y, double _z);
+  /**
+   * Create position vector (0.0, 0.0, 0.0)
+   */
   Position ();
+  /**
+   * x coordinate of position vector
+   */
   double x;
+  /**
+   * y coordinate of position vector
+   */
   double y;
+  /**
+   * z coordinate of position vector
+   */
   double z;
 };
 

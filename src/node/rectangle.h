@@ -26,6 +26,9 @@ namespace ns3 {
 class Position;
 class Speed;
 
+/**
+ * \brief a 2d rectangle
+ */
 class Rectangle
 {
 public:
@@ -35,8 +38,19 @@ public:
     TOP,
     BOTTOM
   };
+  /**
+   * \param xMin x coordinates of left boundary.
+   * \param xMax x coordinates of right boundary.
+   * \param yMin y coordinates of bottom boundary.
+   * \param yMin y coordinates of top boundary.
+   *
+   * Create a rectangle.
+   */
   Rectangle (double _xMin, double _xMax,
              double _yMin, double _yMax);
+  /**
+   * Create a zero-sized rectangle located at coordinates (0.0,0.0)
+   */
   Rectangle ();
   bool IsInside (const Position &position) const;
   Side GetClosestSide (const Position &position) const;

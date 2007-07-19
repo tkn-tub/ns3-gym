@@ -40,6 +40,7 @@ public:
    */
   StaticMobilityModel ();
   /**
+   * \param position the initial position.
    *
    * Create a position located at coordinates (x,y,z).
    * Unit is meters
