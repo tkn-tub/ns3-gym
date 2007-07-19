@@ -263,7 +263,7 @@ node.add_sources ([
     'random-waypoint-mobility-model.cc',
     'rectangle-default-value.cc',
     'rectangle.cc',
-    'random-direction-mobility-model.cc',
+    'random-direction-2d-mobility-model.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -298,7 +298,7 @@ node.add_inst_headers ([
     'random-waypoint-mobility-model.h',
     'rectangle-default-value.h',
     'rectangle.h',
-    'random-direction-mobility-model.h',
+    'random-direction-2d-mobility-model.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')

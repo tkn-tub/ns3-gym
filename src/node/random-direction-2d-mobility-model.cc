@@ -23,7 +23,7 @@
 #include "ns3/simulator.h"
 #include <algorithm>
 #include <cmath>
-#include "random-direction-mobility-model.h"
+#include "random-direction-2d-mobility-model.h"
 
 namespace ns3 {
 
