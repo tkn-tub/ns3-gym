@@ -46,12 +46,6 @@ MobilityModel::GetSpeed (void) const
 }
 
 void 
-MobilityModel::Set (double x, double y, double z)
-{
-  Position position (x, y, z);
-  DoSet (position);
-}
-void 
 MobilityModel::Set (const Position &position)
 {
   DoSet (position);

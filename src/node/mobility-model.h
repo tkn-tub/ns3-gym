@@ -46,7 +46,6 @@ public:
    * Unit is meters
    */
   Position Get (void) const;
-  void Set (double x, double y, double z);
   void Set (const Position &position);
   Speed GetSpeed (void) const;
   /**
