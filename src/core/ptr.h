@@ -184,10 +184,10 @@ struct CallbackTraits<Ptr<T> >
 };
 
 template <typename T>
-struct EventMemberImplTraits;
+struct EventMemberImplObjTraits;
 
 template <typename T>
-struct EventMemberImplTraits<Ptr<T> >
+struct EventMemberImplObjTraits<Ptr<T> >
 {
   static T &GetReference (Ptr<T> p) {
     return *PeekPointer (p);

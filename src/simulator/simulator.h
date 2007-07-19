@@ -584,10 +584,10 @@ Time Now (void);
 namespace ns3 {
 
 template <typename T>
-struct EventMemberImplTraits;
+struct EventMemberImplObjTraits;
 
 template <typename T>
-struct EventMemberImplTraits<T *>
+struct EventMemberImplObjTraits<T *>
 {
   static T &GetReference (T *p) {
     return *p;
@@ -608,7 +608,7 @@ EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (void), OBJ obj)
     virtual ~EventMemberImpl0 () {}
   private:
     virtual void Notify (void) { 
-      (EventMemberImplTraits<OBJ>::GetReference (m_obj).*m_function) (); 
+      (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function) (); 
     }
     OBJ m_obj;
     F m_function;
@@ -633,7 +633,7 @@ EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1), OBJ obj, T1 a1)
     virtual ~EventMemberImpl1 () {}
   private:
     virtual void Notify (void) { 
-      (EventMemberImplTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1);
+      (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1);
     }
     OBJ m_obj;
     F m_function;
@@ -660,7 +660,7 @@ EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1,T2), OBJ obj, T1 a1, T2 
     virtual ~EventMemberImpl2 () {}
   private:
     virtual void Notify (void) { 
-      (EventMemberImplTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1, m_a2);
+      (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1, m_a2);
     }
     OBJ m_obj;
     F m_function;
@@ -689,7 +689,7 @@ EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1,T2,T3), OBJ obj, T1 a1, 
     virtual ~EventMemberImpl3 () {}
   private:
     virtual void Notify (void) { 
-      (EventMemberImplTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1, m_a2, m_a3);
+      (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1, m_a2, m_a3);
     }
     OBJ m_obj;
     F m_function;
@@ -720,7 +720,7 @@ EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1,T2,T3,T4), OBJ obj, T1 a
     virtual ~EventMemberImpl4 () {}
   private:
     virtual void Notify (void) { 
-      (EventMemberImplTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1, m_a2, m_a3, m_a4);
+      (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1, m_a2, m_a3, m_a4);
     }
     OBJ m_obj;
     F m_function;
@@ -754,7 +754,7 @@ EventImpl *Simulator::MakeEvent (void (T::*mem_ptr) (T1,T2,T3,T4,T5), OBJ obj,
     virtual ~EventMemberImpl5 () {}
   private:
     virtual void Notify (void) { 
-      (EventMemberImplTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1, m_a2, m_a3, m_a4, m_a5);
+      (EventMemberImplObjTraits<OBJ>::GetReference (m_obj).*m_function) (m_a1, m_a2, m_a3, m_a4, m_a5);
     }
     OBJ m_obj;
     F m_function;
