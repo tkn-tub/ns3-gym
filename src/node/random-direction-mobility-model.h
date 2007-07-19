@@ -26,8 +26,9 @@
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
 #include "ns3/component-manager.h"
+#include "ns3/rectangle.h"
 #include "mobility-model.h"
-#include "mobility-model-helper.h"
+#include "static-speed-helper.h"
 
 namespace ns3 {
 
@@ -37,22 +38,22 @@ class RandomDirectionParameters : public Object
 {
  public:
   RandomDirectionParameters ();
-  RandomDirectionParameters (double xMin, double xMax, double yMin, double yMax);
-  RandomDirectionParameters (double xMin, double xMax, double yMin, double yMax,
+  RandomDirectionParameters (const Rectangle &bounds,
 			     const RandomVariable &speedVariable,
 			     const RandomVariable &pauseVariable);
   virtual ~RandomDirectionParameters ();
 
   void SetSpeed (const RandomVariable &speedVariable);
   void SetPause (const RandomVariable &pauseVariable);
-  void SetBounds (double xMin, double xMax, double yMin, double yMax);
+  void SetBounds (const Rectangle &bounds);
  private:
   friend class RandomDirectionMobilityModel;
-  struct AreaBounds m_bounds;
+
+  static Ptr<RandomDirectionParameters> GetCurrent (void);
+
+  Rectangle m_bounds;
   RandomVariable *m_speedVariable;
   RandomVariable *m_pauseVariable;
-  std::string m_speedVariableValue;
-  std::string m_pauseVariableValue;
 };
 
 class RandomDirectionMobilityModel : public MobilityModel
@@ -62,12 +63,9 @@ class RandomDirectionMobilityModel : public MobilityModel
   static const ClassId cid;
 
   RandomDirectionMobilityModel ();
-  RandomDirectionMobilityModel (double x, double y);
   RandomDirectionMobilityModel (Ptr<RandomDirectionParameters> parameters);
-  RandomDirectionMobilityModel (Ptr<RandomDirectionParameters> parameters, 
-			   double x, double y);
  private:
-  static Ptr<RandomDirectionParameters> GetDefaultParameters (void);
+  void Start (void);
   void ResetDirectionAndSpeed (void);
   void SetDirectionAndSpeed (double direction);
   void InitializeDirectionAndSpeed (void);
@@ -78,7 +76,7 @@ class RandomDirectionMobilityModel : public MobilityModel
   static const double PI;
   Ptr<RandomDirectionParameters> m_parameters;
   EventId m_event;
-  MobilityModelHelper m_helper;
+  StaticSpeedHelper m_helper;
 };
 
 } // namespace ns3
