@@ -227,6 +227,48 @@ common.add_inst_headers([
     'data-rate.h',
     ])
 
+mobility = build.Ns3Module ('mobility', 'src/mobility');
+ns3.add (mobility);
+mobility.add_deps (['core', 'simulator', 'node'])
+mobility.add_sources ([
+    'position.cc',
+    'speed.cc',
+    'random-position.cc',
+    'rectangle-default-value.cc',
+    'rectangle.cc',
+    'mobility-model.cc',
+    'mobility-model-notifier.cc',
+    'static-speed-helper.cc',
+    'static-mobility-model.cc',
+    'static-speed-mobility-model.cc',
+    'hierarchical-mobility-model.cc',
+    'random-direction-2d-mobility-model.cc',
+    'random-waypoint-mobility-model.cc',
+    'random-walk-2d-mobility-model.cc',
+    'grid-topology.cc',
+    'random-topology.cc',
+    'ns2-mobility-file-topology.cc',
+    ])
+mobility.add_inst_headers ([
+    'position.h',
+    'speed.h',
+    'random-position.h',
+    'rectangle-default-value.h',
+    'rectangle.h',
+    'mobility-model.h',
+    'mobility-model-notifier.h',
+    'static-speed-helper.h',
+    'static-mobility-model.h',
+    'static-speed-mobility-model.h',
+    'hierarchical-mobility-model.h',
+    'random-direction-2d-mobility-model.h',
+    'random-waypoint-mobility-model.h',
+    'random-walk-2d-mobility-model.h',
+    'grid-topology.h',
+    'random-topology.h',
+    'ns2-mobility-file-topology.h',
+    ])
+
 node = build.Ns3Module ('node', 'src/node')
 ns3.add (node)
 node.add_deps (['core', 'common', 'simulator'])
@@ -246,23 +288,6 @@ node.add_sources ([
     'udp.cc',
     'ipv4.cc',
     'application.cc',
-    'mobility-model.cc',
-    'mobility-model-notifier.cc',
-    'static-mobility-model.cc',
-    'static-speed-mobility-model.cc',
-    'grid-topology.cc',
-    'random-topology.cc',
-    'random-walk-2d-mobility-model.cc',
-    'hierarchical-mobility-model.cc',
-    'ns2-mobility-file-topology.cc',
-    'position.cc',
-    'random-position.cc',
-    'speed.cc',
-    'static-speed-helper.cc',
-    'random-waypoint-mobility-model.cc',
-    'rectangle-default-value.cc',
-    'rectangle.cc',
-    'random-direction-2d-mobility-model.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -280,23 +305,6 @@ node.add_inst_headers ([
     'udp.h',
     'ipv4.h',
     'application.h',
-    'mobility-model.h',
-    'mobility-model-notifier.h',
-    'static-mobility-model.h',
-    'static-speed-mobility-model.h',
-    'grid-topology.h',
-    'random-topology.h',
-    'random-walk-2d-mobility-model.h',
-    'hierarchical-mobility-model.h',
-    'ns2-mobility-file-topology.h',
-    'position.h',
-    'random-position.h',
-    'speed.h',
-    'static-speed-helper.h',
-    'random-waypoint-mobility-model.h',
-    'rectangle-default-value.h',
-    'rectangle.h',
-    'random-direction-2d-mobility-model.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')
@@ -446,13 +454,13 @@ sample_callback.add_source('main-callback.cc')
 sample_random_walk = build.Ns3Module('sample-random-walk', 'samples')
 sample_random_walk.set_executable()
 ns3.add(sample_random_walk)
-sample_random_walk.add_deps(['core', 'node'])
+sample_random_walk.add_deps(['core', 'mobility'])
 sample_random_walk.add_source('main-random-walk.cc')
 
 sample_grid_topology = build.Ns3Module('sample-grid-topology', 'samples')
 sample_grid_topology.set_executable()
 ns3.add(sample_grid_topology)
-sample_grid_topology.add_deps(['core', 'internet-node'])
+sample_grid_topology.add_deps(['core', 'internet-node', 'mobility'])
 sample_grid_topology.add_source('main-grid-topology.cc')
 
 sample_ptr = build.Ns3Module('sample-ptr', 'samples')

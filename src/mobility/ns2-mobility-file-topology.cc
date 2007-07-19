@@ -18,14 +18,14 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns3/debug.h"
-#include "ns3/simulator.h"
-#include "ns2-mobility-file-topology.h"
-#include "node-list.h"
-#include "node.h"
-#include "static-speed-mobility-model.h"
 #include <fstream>
 #include <sstream>
+#include "ns3/debug.h"
+#include "ns3/simulator.h"
+#include "ns3/node-list.h"
+#include "ns3/node.h"
+#include "ns2-mobility-file-topology.h"
+#include "static-speed-mobility-model.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("Ns2MobilityFileTopology");
 
