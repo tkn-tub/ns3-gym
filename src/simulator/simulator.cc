@@ -471,6 +471,7 @@ static void foo4 (int, int, int, int)
 static void foo5 (int, int, int, int, int)
 {}
 
+#if 1
 static void ber1 (int &)
 {}
 static void ber2 (int &, int &)
@@ -480,6 +481,18 @@ static void ber3 (int &, int &, int &)
 static void ber4 (int &, int &, int &, int &)
 {}
 static void ber5 (int &, int &, int &, int &, int &)
+{}
+#endif
+
+static void cber1 (const int &)
+{}
+static void cber2 (const int &, const int &)
+{}
+static void cber3 (const int &, const int &, const int &)
+{}
+static void cber4 (const int &, const int &, const int &, const int &)
+{}
+static void cber5 (const int &, const int &, const int &, const int &, const int &)
 {}
   
 
@@ -509,6 +522,11 @@ private:
   void baz3 (int &, int &, int &);
   void baz4 (int &, int &, int &, int &);
   void baz5 (int &, int &, int &, int &, int &);
+  void cbaz1 (const int &);
+  void cbaz2 (const int &, const int &);
+  void cbaz3 (const int &, const int &, const int &);
+  void cbaz4 (const int &, const int &, const int &, const int &);
+  void cbaz5 (const int &, const int &, const int &, const int &, const int &);
   
   bool m_b;
   bool m_a;
@@ -605,6 +623,22 @@ void
 SimulatorTests::baz5 (int &, int &, int &, int &, int &)
 {}
 
+void
+SimulatorTests::cbaz1 (const int &)
+{}
+void
+SimulatorTests::cbaz2 (const int &, const int &)
+{}
+void
+SimulatorTests::cbaz3 (const int &, const int &, const int &)
+{}
+void 
+SimulatorTests::cbaz4 (const int &, const int &, const int &, const int &)
+{}
+void 
+SimulatorTests::cbaz5 (const int &, const int &, const int &, const int &, const int &)
+{}
+
 bool
 SimulatorTests::RunOneTest (void)
 {
@@ -670,11 +704,11 @@ SimulatorTests::RunTests (void)
   Simulator::Schedule (Seconds (0.0), &foo3, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &foo4, 0, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &foo5, 0, 0, 0, 0, 0);
-  Simulator::Schedule (Seconds (0.0), &ber1, 0);
-  Simulator::Schedule (Seconds (0.0), &ber2, 0, 0);
-  Simulator::Schedule (Seconds (0.0), &ber3, 0, 0, 0);
-  Simulator::Schedule (Seconds (0.0), &ber4, 0, 0, 0, 0);
-  Simulator::Schedule (Seconds (0.0), &ber5, 0, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &cber1, 0);
+  Simulator::Schedule (Seconds (0.0), &cber2, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &cber3, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &cber4, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &cber5, 0, 0, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar0, this);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar1, this, 0);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar2, this, 0, 0);
@@ -687,18 +721,33 @@ SimulatorTests::RunTests (void)
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar3, Ptr<SimulatorTests> (this), 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar4, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar5, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::cbaz1, this, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::cbaz2, this, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::cbaz3, this, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::cbaz4, this, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::cbaz5, this, 0, 0, 0, 0, 0);
   Simulator::ScheduleNow (&foo0);
   Simulator::ScheduleNow (&foo1, 0);
   Simulator::ScheduleNow (&foo2, 0, 0);
   Simulator::ScheduleNow (&foo3, 0, 0, 0);
   Simulator::ScheduleNow (&foo4, 0, 0, 0, 0);
   Simulator::ScheduleNow (&foo5, 0, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&cber1, 0);
+  Simulator::ScheduleNow (&cber2, 0, 0);
+  Simulator::ScheduleNow (&cber3, 0, 0, 0);
+  Simulator::ScheduleNow (&cber4, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&cber5, 0, 0, 0, 0, 0);
   Simulator::ScheduleNow (&SimulatorTests::bar0, this);
   Simulator::ScheduleNow (&SimulatorTests::bar1, this, 0);
   Simulator::ScheduleNow (&SimulatorTests::bar2, this, 0, 0);
   Simulator::ScheduleNow (&SimulatorTests::bar3, this, 0, 0, 0);
   Simulator::ScheduleNow (&SimulatorTests::bar4, this, 0, 0, 0, 0);
   Simulator::ScheduleNow (&SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::cbaz1, this, 0);
+  Simulator::ScheduleNow (&SimulatorTests::cbaz2, this, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::cbaz3, this, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::cbaz4, this, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::cbaz5, this, 0, 0, 0, 0, 0);
   Simulator::ScheduleNow (&SimulatorTests::bar0, Ptr<SimulatorTests> (this));
   Simulator::ScheduleNow (&SimulatorTests::bar1, Ptr<SimulatorTests> (this), 0);
   Simulator::ScheduleNow (&SimulatorTests::bar2, Ptr<SimulatorTests> (this), 0, 0);
@@ -711,18 +760,65 @@ SimulatorTests::RunTests (void)
   Simulator::ScheduleDestroy (&foo3, 0, 0, 0);
   Simulator::ScheduleDestroy (&foo4, 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&foo5, 0, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&cber1, 0);
+  Simulator::ScheduleDestroy (&cber2, 0, 0);
+  Simulator::ScheduleDestroy (&cber3, 0, 0, 0);
+  Simulator::ScheduleDestroy (&cber4, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&cber5, 0, 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar0, this);
   Simulator::ScheduleDestroy (&SimulatorTests::bar1, this, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar2, this, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar3, this, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar4, this, 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar5, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::cbaz1, this, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::cbaz2, this, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::cbaz3, this, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::cbaz4, this, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::cbaz5, this, 0, 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar0, Ptr<SimulatorTests> (this));
   Simulator::ScheduleDestroy (&SimulatorTests::bar1, Ptr<SimulatorTests> (this), 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar2, Ptr<SimulatorTests> (this), 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar3, Ptr<SimulatorTests> (this), 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar4, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar5, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
+
+
+  // the code below does not compile, as expected.
+  //Simulator::Schedule (Seconds (0.0), &cber1, 0.0);
+
+#if 1
+  Simulator::Schedule (Seconds (0.0), &ber1, 0);
+  Simulator::Schedule (Seconds (0.0), &ber2, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &ber3, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &ber4, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &ber5, 0, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::baz1, this, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::baz2, this, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::baz3, this, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::baz4, this, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::baz5, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&ber1, 0);
+  Simulator::ScheduleNow (&ber2, 0, 0);
+  Simulator::ScheduleNow (&ber3, 0, 0, 0);
+  Simulator::ScheduleNow (&ber4, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&ber5, 0, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::baz1, this, 0);
+  Simulator::ScheduleNow (&SimulatorTests::baz2, this, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::baz3, this, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::baz4, this, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::baz5, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&ber1, 0);
+  Simulator::ScheduleDestroy (&ber2, 0, 0);
+  Simulator::ScheduleDestroy (&ber3, 0, 0, 0);
+  Simulator::ScheduleDestroy (&ber4, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&ber5, 0, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::baz1, this, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::baz2, this, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::baz3, this, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::baz4, this, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::baz5, this, 0, 0, 0, 0, 0);
+#endif
 
   Simulator::Run ();
   Simulator::Destroy ();
