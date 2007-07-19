@@ -62,8 +62,8 @@ public:
   void Stop (void);
   void StopAt (Time const &time);
   EventId Schedule (Time const &time, EventImpl *event);
-  void ScheduleNow (EventImpl *event);
-  void ScheduleDestroy (EventImpl *event);
+  EventId ScheduleNow (EventImpl *event);
+  EventId ScheduleDestroy (EventImpl *event);
   void Remove (EventId ev);
   void Cancel (EventId &ev);
   bool IsExpired (EventId ev);
@@ -74,8 +74,8 @@ private:
   void ProcessOneEvent (void);
   uint64_t NextTs (void) const;
 
-  typedef std::list<std::pair<EventImpl *,uint32_t> > Events;
-  Events m_destroy;
+  typedef std::list<EventId> DestroyEvents;
+  DestroyEvents m_destroyEvents;
   uint64_t m_stopAt;
   bool m_stop;
   Scheduler *m_events;
@@ -98,8 +98,11 @@ SimulatorPrivate::SimulatorPrivate (Scheduler *events)
   m_stop = false;
   m_stopAt = 0;
   m_events = events;
-  // uids are allocated from 1.
-  m_uid = 1; 
+  // uids are allocated from 4.
+  // uid 0 is "invalid" events
+  // uid 1 is "now" events
+  // uid 2 is "destroy" events
+  m_uid = 4; 
   // before ::Run is entered, the m_currentUid will be zero
   m_currentUid = 0;
   m_logEnable = false;
@@ -109,13 +112,16 @@ SimulatorPrivate::SimulatorPrivate (Scheduler *events)
 
 SimulatorPrivate::~SimulatorPrivate ()
 {
-  while (!m_destroy.empty ()) 
+  while (!m_destroyEvents.empty ()) 
     {
-      EventImpl *ev = m_destroy.front ().first;
-      m_destroy.pop_front ();
+      EventImpl *ev = m_destroyEvents.front ().GetEventImpl ();
+      m_destroyEvents.pop_front ();
       TRACE ("handle destroy " << ev);
-      ev->Invoke ();
-      delete ev;
+      if (!ev->IsCancelled ())
+        {
+          ev->Invoke ();
+          delete ev;
+        }
     }
   delete m_events;
   m_events = (Scheduler *)0xdeadbeaf;
@@ -132,22 +138,22 @@ SimulatorPrivate::EnableLogTo (char const *filename)
 void
 SimulatorPrivate::ProcessOneEvent (void)
 {
-  EventImpl *nextEv = m_events->PeekNext ();
-  Scheduler::EventKey nextKey = m_events->PeekNextKey ();
+  EventId next = m_events->PeekNext ();
   m_events->RemoveNext ();
 
-  NS_ASSERT (nextKey.m_ts >= m_currentTs);
+  NS_ASSERT (next.GetTs () >= m_currentTs);
   --m_unscheduledEvents;
 
   TRACE ("handle " << nextEv);
-  m_currentTs = nextKey.m_ts;
-  m_currentUid = nextKey.m_uid;
+  m_currentTs = next.GetTs ();
+  m_currentUid = next.GetUid ();
   if (m_logEnable) 
     {
-      m_log << "e "<<nextKey.m_uid << " " << nextKey.m_ts << std::endl;
+      m_log << "e "<<next.GetUid () << " " << next.GetTs () << std::endl;
     }
-  nextEv->Invoke ();
-  delete nextEv;
+  EventImpl *event = next.GetEventImpl ();
+  event->Invoke ();
+  delete event;
 }
 
 bool 
@@ -159,8 +165,8 @@ uint64_t
 SimulatorPrivate::NextTs (void) const
 {
   NS_ASSERT (!m_events->IsEmpty ());
-  Scheduler::EventKey nextKey = m_events->PeekNextKey ();
-  return nextKey.m_ts;
+  EventId id = m_events->PeekNext ();
+  return id.GetTs ();
 }
 Time
 SimulatorPrivate::Next (void) const
@@ -203,7 +209,7 @@ SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
   NS_ASSERT (time.IsPositive ());
   NS_ASSERT (time >= TimeStep (m_currentTs));
   uint64_t ts = (uint64_t) time.GetTimeStep ();
-  Scheduler::EventKey key = {ts, m_uid};
+  EventId id (event, ts, m_uid);
   if (m_logEnable) 
     {
       m_log << "i "<<m_currentUid<<" "<<m_currentTs<<" "
@@ -211,32 +217,35 @@ SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
     }
   m_uid++;
   ++m_unscheduledEvents;
-  return m_events->Insert (event, key);
+  m_events->Insert (id);
+  return id;
 }
-void 
+EventId
 SimulatorPrivate::ScheduleNow (EventImpl *event)
 {
-  uint64_t ts = m_currentTs;
-  Scheduler::EventKey key = {ts, m_uid};
+  EventId id (event, m_currentTs, m_uid);
   if (m_logEnable) 
     {
       m_log << "i "<<m_currentUid<<" "<<m_currentTs<<" "
-            <<m_uid<<" "<<ts << std::endl;
+            <<m_uid<<" "<<m_currentTs << std::endl;
     }
   m_uid++;
   ++m_unscheduledEvents;
-  m_events->Insert (event, key);
+  m_events->Insert (id);
+  return id;
 }
-void 
+EventId
 SimulatorPrivate::ScheduleDestroy (EventImpl *event)
 {
-  m_destroy.push_back (std::make_pair (event, m_uid));  
+  EventId id (event, m_currentTs, 2);
+  m_destroyEvents.push_back (id);
   if (m_logEnable) 
   {
     m_log << "id " << m_currentUid << " " << Now ().GetTimeStep () << " "
           << m_uid << std::endl;
   }
   m_uid++;
+  return id;
 }
 
 Time
@@ -248,17 +257,29 @@ SimulatorPrivate::Now (void) const
 void
 SimulatorPrivate::Remove (EventId ev)
 {
+  if (ev.GetUid () == 2)
+    {
+      // destroy events.
+      for (DestroyEvents::iterator i = m_destroyEvents.begin (); i != m_destroyEvents.end (); i++)
+        {
+          if (*i == ev)
+            {
+              m_destroyEvents.erase (i);
+              break;
+            }
+        }
+      return;
+    }
   if (IsExpired (ev))
     {
       return;
     }
-  Scheduler::EventKey key;
-  EventImpl *impl = m_events->Remove (ev, &key);
-  delete impl;
+  m_events->Remove (ev);
+  delete ev.GetEventImpl ();
   if (m_logEnable) 
     {
       m_log << "r " << m_currentUid << " " << m_currentTs << " "
-            << key.m_uid << " " << key.m_ts << std::endl;
+            << ev.GetUid () << " " << ev.GetTs () << std::endl;
     }
   --m_unscheduledEvents;
 }
@@ -403,27 +424,27 @@ Simulator::Schedule (Time const &time, EventImpl *ev)
 {
   return GetPriv ()->Schedule (Now () + time, ev);
 }
-void
+EventId
 Simulator::ScheduleNow (EventImpl *ev)
 {
-  GetPriv ()->ScheduleNow (ev);
+  return GetPriv ()->ScheduleNow (ev);
 }
-void
+EventId
 Simulator::ScheduleDestroy (EventImpl *ev)
 {
-  GetPriv ()->ScheduleDestroy (ev);
+  return GetPriv ()->ScheduleDestroy (ev);
 }  
 EventId
 Simulator::Schedule (Time const &time, void (*f) (void))
 {
   return Schedule (time, MakeEvent (f));
 }
-void
+EventId
 Simulator::ScheduleNow (void (*f) (void))
 {
   return ScheduleNow (MakeEvent (f));
 }
-void
+EventId
 Simulator::ScheduleDestroy (void (*f) (void))
 {
   return ScheduleDestroy (MakeEvent (f));
@@ -690,6 +711,9 @@ SimulatorTests::RunTests (void)
   Simulator::ScheduleDestroy (&SimulatorTests::bar3, Ptr<SimulatorTests> (this), 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar4, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::bar5, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
+
+  EventId nowId = Simulator::ScheduleNow (&foo0);
+  EventId destroyId = Simulator::ScheduleDestroy (&foo0);
 
   Simulator::Run ();
   Simulator::Destroy ();

@@ -42,7 +42,6 @@ class EventImpl;
  *   - ns3::Scheduler::realPeekNextKey
  *   - ns3::Scheduler::realRemoveNext
  *   - ns3::Scheduler::realRemove
- *   - ns3::Scheduler::realIsValid
  *
  * If you need to provide a new event list scheduler without
  * editing the main simulator class, you need to also implement
@@ -61,12 +60,11 @@ class Scheduler {
 
   virtual ~Scheduler () = 0;
 
-  EventId Insert (EventImpl *event, EventKey key);
+  void Insert (EventId id);
   bool IsEmpty (void) const;
-  EventImpl *PeekNext (void) const;
-  Scheduler::EventKey PeekNextKey (void) const ;
+  EventId PeekNext (void) const;
   void RemoveNext (void);
-  EventImpl *Remove (EventId id, EventKey *key);
+  bool Remove (EventId);
 
 private:
   /**
@@ -76,7 +74,7 @@ private:
    *
    * This method takes ownership of the event pointer.
    */
-  virtual EventId RealInsert (EventImpl *event, EventKey key) = 0;
+  virtual void RealInsert (EventId id) = 0;
   /**
    * \returns true if the event list is empty and false otherwise.
    */
@@ -87,13 +85,7 @@ private:
    *
    * This method cannot be invoked if the list is empty.
    */
-  virtual EventImpl *RealPeekNext (void) const = 0;
-  /**
-   * \returns the timecode associated with the next earliest event.
-   *
-   * This method cannot be invoked if the list is empty.
-   */
-  virtual Scheduler::EventKey RealPeekNextKey (void) const = 0;
+  virtual EventId RealPeekNext (void) const = 0;
   /**
    * This method cannot be invoked if the list is empty.
    * Remove the next earliest event from the event list.
@@ -107,7 +99,7 @@ private:
    *
    * This methods cannot be invoked if the list is empty.
    */
-  virtual EventImpl *RealRemove (EventId id, EventKey *key) = 0;
+  virtual bool RealRemove (EventId id) = 0;
 };
 
 }; // namespace ns3

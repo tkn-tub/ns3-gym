@@ -37,13 +37,11 @@ public:
   virtual ~SchedulerMap ();
 
 private:
-  virtual EventId RealInsert (EventImpl *event, Scheduler::EventKey key);
+  virtual void RealInsert (EventId id);
   virtual bool RealIsEmpty (void) const;
-  virtual EventImpl *RealPeekNext (void) const;
-  virtual Scheduler::EventKey RealPeekNextKey (void) const;
+  virtual EventId RealPeekNext (void) const;
   virtual void RealRemoveNext (void);
-  virtual EventImpl *RealRemove (EventId ev, Scheduler::EventKey *key);
-  virtual bool RealIsValid (EventId id);
+  virtual bool RealRemove (EventId ev);
 
   class EventKeyCompare {
   public:
@@ -56,7 +54,6 @@ private:
 
 
   EventMap m_list;
-  uint32_t m_uid;
 };
 
 }; // namespace ns3

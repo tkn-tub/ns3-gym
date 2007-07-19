@@ -287,14 +287,14 @@ public:
    * @param obj the object on which to invoke the member method
    */
   template <typename T, typename OBJ>
-  static void ScheduleNow (void (T::*mem_ptr) (void), OBJ obj);
+  static EventId ScheduleNow (void (T::*mem_ptr) (void), OBJ obj);
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
    */
   template <typename T, typename OBJ, typename T1>
-  static void ScheduleNow (void (T::*mem_ptr) (T1), OBJ obj, T1 a1);
+  static EventId ScheduleNow (void (T::*mem_ptr) (T1), OBJ obj, T1 a1);
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -302,7 +302,7 @@ public:
    * @param a2 the second argument to pass to the invoked method
    */
   template <typename T, typename OBJ, typename T1, typename T2>
-  static void ScheduleNow (void (T::*mem_ptr) (T1,T2), OBJ obj, T1 a1, T2 a2);
+  static EventId ScheduleNow (void (T::*mem_ptr) (T1,T2), OBJ obj, T1 a1, T2 a2);
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -311,7 +311,7 @@ public:
    * @param a3 the third argument to pass to the invoked method
    */
   template <typename T, typename OBJ, typename T1, typename T2, typename T3>
-  static void ScheduleNow (void (T::*mem_ptr) (T1,T2,T3), OBJ obj, T1 a1, T2 a2, T3 a3);
+  static EventId ScheduleNow (void (T::*mem_ptr) (T1,T2,T3), OBJ obj, T1 a1, T2 a2, T3 a3);
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -321,7 +321,7 @@ public:
    * @param a4 the fourth argument to pass to the invoked method
    */
   template <typename T, typename OBJ, typename T1, typename T2, typename T3, typename T4>
-  static void ScheduleNow (void (T::*mem_ptr) (T1,T2,T3,T4), OBJ obj, 
+  static EventId ScheduleNow (void (T::*mem_ptr) (T1,T2,T3,T4), OBJ obj, 
                            T1 a1, T2 a2, T3 a3, T4 a4);
   /**
    * @param mem_ptr member method pointer to invoke
@@ -333,25 +333,25 @@ public:
    * @param a5 the fifth argument to pass to the invoked method
    */
   template <typename T, typename OBJ, typename T1, typename T2, typename T3, typename T4, typename T5>
-  static void ScheduleNow (void (T::*mem_ptr) (T1,T2,T3,T4,T5), OBJ obj, 
+  static EventId ScheduleNow (void (T::*mem_ptr) (T1,T2,T3,T4,T5), OBJ obj, 
                            T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
    * @param f the function to invoke
    */
-  static void ScheduleNow (void (*f) (void));
+  static EventId ScheduleNow (void (*f) (void));
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    */
   template <typename T1>
-  static void ScheduleNow (void (*f) (T1), T1 a1);
+  static EventId ScheduleNow (void (*f) (T1), T1 a1);
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    * @param a2 the second argument to pass to the function to invoke
    */
   template <typename T1, typename T2>
-  static void ScheduleNow (void (*f) (T1,T2), T1 a1, T2 a2);
+  static EventId ScheduleNow (void (*f) (T1,T2), T1 a1, T2 a2);
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -359,7 +359,7 @@ public:
    * @param a3 the third argument to pass to the function to invoke
    */
   template <typename T1, typename T2, typename T3>
-  static void ScheduleNow (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
+  static EventId ScheduleNow (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -368,7 +368,7 @@ public:
    * @param a4 the fourth argument to pass to the function to invoke
    */
   template <typename T1, typename T2, typename T3, typename T4>
-  static void ScheduleNow (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
+  static EventId ScheduleNow (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -378,7 +378,7 @@ public:
    * @param a5 the fifth argument to pass to the function to invoke
    */
   template <typename T1, typename T2, typename T3, typename T4, typename T5>
-  static void ScheduleNow (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+  static EventId ScheduleNow (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
 
   /**
@@ -391,14 +391,14 @@ public:
    * @param obj the object on which to invoke the member method
    */
   template <typename T, typename OBJ>
-  static void ScheduleDestroy (void (T::*mem_ptr) (void), OBJ obj);
+  static EventId ScheduleDestroy (void (T::*mem_ptr) (void), OBJ obj);
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
    * @param a1 the first argument to pass to the invoked method
    */
   template <typename T, typename OBJ, typename T1>
-  static void ScheduleDestroy (void (T::*mem_ptr) (T1), OBJ obj, T1 a1);
+  static EventId ScheduleDestroy (void (T::*mem_ptr) (T1), OBJ obj, T1 a1);
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -406,7 +406,7 @@ public:
    * @param a2 the second argument to pass to the invoked method
    */
   template <typename T, typename OBJ, typename T1, typename T2>
-  static void ScheduleDestroy (void (T::*mem_ptr) (T1,T2), OBJ obj, T1 a1, T2 a2);
+  static EventId ScheduleDestroy (void (T::*mem_ptr) (T1,T2), OBJ obj, T1 a1, T2 a2);
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -415,7 +415,7 @@ public:
    * @param a3 the third argument to pass to the invoked method
    */
   template <typename T, typename OBJ, typename T1, typename T2, typename T3>
-  static void ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3), OBJ obj, T1 a1, T2 a2, T3 a3);
+  static EventId ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3), OBJ obj, T1 a1, T2 a2, T3 a3);
   /**
    * @param mem_ptr member method pointer to invoke
    * @param obj the object on which to invoke the member method
@@ -425,7 +425,7 @@ public:
    * @param a4 the fourth argument to pass to the invoked method
    */
   template <typename T, typename OBJ, typename T1, typename T2, typename T3, typename T4>
-  static void ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3,T4), OBJ obj, 
+  static EventId ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3,T4), OBJ obj, 
                                T1 a1, T2 a2, T3 a3, T4 a4);
   /**
    * @param mem_ptr member method pointer to invoke
@@ -437,25 +437,25 @@ public:
    * @param a5 the fifth argument to pass to the invoked method
    */
   template <typename T, typename OBJ, typename T1, typename T2, typename T3, typename T4, typename T5>
-  static void ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3,T4,T5), OBJ obj, 
+  static EventId ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3,T4,T5), OBJ obj, 
                                T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
   /**
    * @param f the function to invoke
    */
-  static void ScheduleDestroy (void (*f) (void));
+  static EventId ScheduleDestroy (void (*f) (void));
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    */
   template <typename T1>
-  static void ScheduleDestroy (void (*f) (T1), T1 a1);
+  static EventId ScheduleDestroy (void (*f) (T1), T1 a1);
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
    * @param a2 the second argument to pass to the function to invoke
    */
   template <typename T1, typename T2>
-  static void ScheduleDestroy (void (*f) (T1,T2), T1 a1, T2 a2);
+  static EventId ScheduleDestroy (void (*f) (T1,T2), T1 a1, T2 a2);
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -463,7 +463,7 @@ public:
    * @param a3 the third argument to pass to the function to invoke
    */
   template <typename T1, typename T2, typename T3>
-  static void ScheduleDestroy (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
+  static EventId ScheduleDestroy (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3);
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -472,7 +472,7 @@ public:
    * @param a4 the fourth argument to pass to the function to invoke
    */
   template <typename T1, typename T2, typename T3, typename T4>
-  static void ScheduleDestroy (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
+  static EventId ScheduleDestroy (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4);
   /**
    * @param f the function to invoke
    * @param a1 the first argument to pass to the function to invoke
@@ -482,7 +482,7 @@ public:
    * @param a5 the fifth argument to pass to the function to invoke
    */
   template <typename T1, typename T2, typename T3, typename T4, typename T5>
-  static void ScheduleDestroy (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+  static EventId ScheduleDestroy (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
   /**
    * Remove an event from the event list. 
@@ -556,8 +556,8 @@ private:
 
   static SimulatorPrivate *GetPriv (void);
   static EventId Schedule (Time const &time, EventImpl *event);
-  static void ScheduleDestroy (EventImpl *event);
-  static void ScheduleNow (EventImpl *event);
+  static EventId ScheduleDestroy (EventImpl *event);
+  static EventId ScheduleNow (EventImpl *event);
   static SimulatorPrivate *m_priv;
 };
 
@@ -979,163 +979,163 @@ EventId Simulator::Schedule (Time const &time, void (*f) (T1,T2,T3,T4,T5), T1 a1
 
 
 template <typename T, typename OBJ>
-void
+EventId
 Simulator::ScheduleNow (void (T::*mem_ptr) (void), OBJ obj) 
 {
-  ScheduleNow (MakeEvent (mem_ptr, obj));
+  return ScheduleNow (MakeEvent (mem_ptr, obj));
 }
 
 
 template <typename T, typename OBJ, typename T1>
-void
+EventId
 Simulator::ScheduleNow (void (T::*mem_ptr) (T1), OBJ obj, T1 a1) 
 {
-  ScheduleNow (MakeEvent (mem_ptr, obj, a1));
+  return ScheduleNow (MakeEvent (mem_ptr, obj, a1));
 }
 
 template <typename T, typename OBJ, typename T1, typename T2>
-void
+EventId
 Simulator::ScheduleNow (void (T::*mem_ptr) (T1,T2), OBJ obj, T1 a1, T2 a2) 
 {
-  ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2));
+  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2));
 }
 
 template <typename T, typename OBJ, typename T1, typename T2, typename T3>
-void
+EventId
 Simulator::ScheduleNow (void (T::*mem_ptr) (T1,T2,T3), OBJ obj, T1 a1, T2 a2, T3 a3) 
 {
-  ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3));
+  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3));
 }
 
 template <typename T, typename OBJ, typename T1, typename T2, typename T3, typename T4>
-void
+EventId
 Simulator::ScheduleNow (void (T::*mem_ptr) (T1,T2,T3,T4), OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
 }
 
 template <typename T, typename OBJ, typename T1, typename T2, typename T3, typename T4, typename T5>
-void
+EventId
 Simulator::ScheduleNow (void (T::*mem_ptr) (T1,T2,T3,T4,T5), OBJ obj, 
                         T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+  return ScheduleNow (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
 }
 
 template <typename T1>
-void
+EventId
 Simulator::ScheduleNow (void (*f) (T1), T1 a1) 
 {
-  ScheduleNow (MakeEvent (f, a1));
+  return ScheduleNow (MakeEvent (f, a1));
 }
 
 template <typename T1, typename T2>
-void
+EventId
 Simulator::ScheduleNow (void (*f) (T1,T2), T1 a1, T2 a2) 
 {
-  ScheduleNow (MakeEvent (f, a1, a2));
+  return ScheduleNow (MakeEvent (f, a1, a2));
 }
 
 template <typename T1, typename T2, typename T3>
-void
+EventId
 Simulator::ScheduleNow (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3)
 {
-  ScheduleNow (MakeEvent (f, a1, a2, a3));
+  return ScheduleNow (MakeEvent (f, a1, a2, a3));
 }
 
 template <typename T1, typename T2, typename T3, typename T4>
-void
+EventId
 Simulator::ScheduleNow (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  ScheduleNow (MakeEvent (f, a1, a2, a3, a4));
+  return ScheduleNow (MakeEvent (f, a1, a2, a3, a4));
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-void
+EventId
 Simulator::ScheduleNow (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  ScheduleNow (MakeEvent (f, a1, a2, a3, a4, a5));
+  return ScheduleNow (MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 
 
 template <typename T, typename OBJ>
-void
+EventId
 Simulator::ScheduleDestroy (void (T::*mem_ptr) (void), OBJ obj) 
 {
-  ScheduleDestroy (MakeEvent (mem_ptr, obj));
+  return ScheduleDestroy (MakeEvent (mem_ptr, obj));
 }
 
 
 template <typename T, typename OBJ, typename T1>
-void
+EventId
 Simulator::ScheduleDestroy (void (T::*mem_ptr) (T1), OBJ obj, T1 a1) 
 {
-  ScheduleDestroy (MakeEvent (mem_ptr, obj, a1));
+  return ScheduleDestroy (MakeEvent (mem_ptr, obj, a1));
 }
 
 template <typename T, typename OBJ, typename T1, typename T2>
-void
+EventId
 Simulator::ScheduleDestroy (void (T::*mem_ptr) (T1,T2), OBJ obj, T1 a1, T2 a2) 
 {
-  ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2));
+  return ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2));
 }
 
 template <typename T, typename OBJ, typename T1, typename T2, typename T3>
-void
+EventId
 Simulator::ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3), OBJ obj, T1 a1, T2 a2, T3 a3) 
 {
-  ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3));
+  return ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3));
 }
 
 template <typename T, typename OBJ, typename T1, typename T2, typename T3, typename T4>
-void
+EventId
 Simulator::ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3,T4), OBJ obj, T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
+  return ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3, a4));
 }
 
 template <typename T, typename OBJ, typename T1, typename T2, typename T3, typename T4, typename T5>
-void
+EventId
 Simulator::ScheduleDestroy (void (T::*mem_ptr) (T1,T2,T3,T4,T5), OBJ obj, 
                             T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
+  return ScheduleDestroy (MakeEvent (mem_ptr, obj, a1, a2, a3, a4, a5));
 }
 
 template <typename T1>
-void
+EventId
 Simulator::ScheduleDestroy (void (*f) (T1), T1 a1) 
 {
-  ScheduleDestroy (MakeEvent (f, a1));
+  return ScheduleDestroy (MakeEvent (f, a1));
 }
 
 template <typename T1, typename T2>
-void
+EventId
 Simulator::ScheduleDestroy (void (*f) (T1,T2), T1 a1, T2 a2) 
 {
-  ScheduleDestroy (MakeEvent (f, a1, a2));
+  return ScheduleDestroy (MakeEvent (f, a1, a2));
 }
 
 template <typename T1, typename T2, typename T3>
-void
+EventId
 Simulator::ScheduleDestroy (void (*f) (T1,T2,T3), T1 a1, T2 a2, T3 a3)
 {
-  ScheduleDestroy (MakeEvent (f, a1, a2, a3));
+  return ScheduleDestroy (MakeEvent (f, a1, a2, a3));
 }
 
 template <typename T1, typename T2, typename T3, typename T4>
-void
+EventId
 Simulator::ScheduleDestroy (void (*f) (T1,T2,T3,T4), T1 a1, T2 a2, T3 a3, T4 a4) 
 {
-  ScheduleDestroy (MakeEvent (f, a1, a2, a3, a4));
+  return ScheduleDestroy (MakeEvent (f, a1, a2, a3, a4));
 }
 
 template <typename T1, typename T2, typename T3, typename T4, typename T5>
-void
+EventId
 Simulator::ScheduleDestroy (void (*f) (T1,T2,T3,T4,T5), T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) 
 {
-  ScheduleDestroy (MakeEvent (f, a1, a2, a3, a4, a5));
+  return ScheduleDestroy (MakeEvent (f, a1, a2, a3, a4, a5));
 }
 
 }; // namespace ns3

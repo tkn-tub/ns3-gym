@@ -66,34 +66,33 @@ SchedulerList::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b
     }
 }
 
-EventId
-SchedulerList::RealInsert (EventImpl *event, Scheduler::EventKey key)
+void
+SchedulerList::RealInsert (EventId id)
 {
+  Scheduler::EventKey key;
+  EventImpl *event = id.GetEventImpl ();
+  key.m_ts = id.GetTs ();
+  key.m_uid = id.GetUid ();
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
       if (IsLower (&key, &i->second))
         {
           m_events.insert (i, std::make_pair (event, key));
-          return EventId (event, key.m_ts, key.m_uid);
+          return;
         }
     }
   m_events.push_back (std::make_pair (event, key));
-  return EventId (event, key.m_ts, key.m_uid);
 }
 bool 
 SchedulerList::RealIsEmpty (void) const
 {
   return m_events.empty ();
 }
-EventImpl *
+EventId
 SchedulerList::RealPeekNext (void) const
 {
-  return m_events.front ().first;
-}
-Scheduler::EventKey
-SchedulerList::RealPeekNextKey (void) const
-{
-  return m_events.front ().second;
+  std::pair<EventImpl *, EventKey> next = m_events.front ();
+  return EventId (next.first, next.second.m_ts, next.second.m_uid);
 }
 
 void
@@ -102,29 +101,20 @@ SchedulerList::RealRemoveNext (void)
   m_events.pop_front ();
 }
 
-EventImpl *
-SchedulerList::RealRemove (EventId id, Scheduler::EventKey *key)
+bool
+SchedulerList::RealRemove (EventId id)
 {
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
       if (i->second.m_uid == id.GetUid ())
         {
-          EventImpl *retval = i->first;
-          NS_ASSERT (id.GetEventImpl () == retval);
-          key->m_ts = id.GetTs ();
-          key->m_uid = id.GetUid ();
+          NS_ASSERT (id.GetEventImpl () == i->first);
           m_events.erase (i);
-          return retval;
+          return true;
         }
     }
   NS_ASSERT (false);
-  return 0;
-}
-
-bool 
-SchedulerList::RealIsValid (EventId id)
-{
-  return true;
+  return false;
 }
 
 }; // namespace ns3
