@@ -268,6 +268,9 @@ mobility.add_inst_headers ([
     'random-topology.h',
     'ns2-mobility-file-topology.h',
     ])
+mobility.add_headers ([
+    'mobility.h'
+    ])
 
 node = build.Ns3Module ('node', 'src/node')
 ns3.add (node)
