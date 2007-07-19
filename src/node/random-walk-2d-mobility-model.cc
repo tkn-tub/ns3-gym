@@ -133,18 +133,22 @@ RandomWalk2dMobilityModel::Start (void)
 void
 RandomWalk2dMobilityModel::DoWalk (Time delayLeft)
 {
-  Time delay = m_helper.GetDelayToNextPosition (m_parameters->m_bounds, 
-                                                delayLeft);
-  if (delay < delayLeft)
+  Position position = m_helper.GetCurrentPosition ();
+  Speed speed = m_helper.GetSpeed ();
+  Position nextPosition = position;
+  nextPosition.x += speed.dx * delayLeft.GetSeconds ();
+  nextPosition.y += speed.dy * delayLeft.GetSeconds ();
+  if (m_parameters->m_bounds.IsInside (nextPosition))
     {
-      m_event = Simulator::Schedule (delay, &RandomWalk2dMobilityModel::Rebound, this,
-                                     delayLeft - delay);
+      m_event = Simulator::Schedule (delayLeft, &RandomWalk2dMobilityModel::Start, this);
     }
   else
     {
-      NS_ASSERT (delay == delayLeft);
-      m_event = Simulator::Schedule (delay, &RandomWalk2dMobilityModel::Start, this);
-    }
+      nextPosition = m_parameters->m_bounds.CalculateIntersection (position, speed);
+      Time delay = Seconds ((nextPosition.x - position.x) / speed.dx);
+      m_event = Simulator::Schedule (delay, &RandomWalk2dMobilityModel::Rebound, this,
+                                     delayLeft - delay);      
+    }  
   NotifyCourseChange ();
 }
 

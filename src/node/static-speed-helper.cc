@@ -64,23 +64,6 @@ StaticSpeedHelper::Reset (const Speed &speed)
   m_speed = speed;
   m_pauseEnd = Simulator::Now ();
 }
-Time 
-StaticSpeedHelper::GetDelayToNextPosition (const Rectangle &bounds, Time delayLeft)
-{
-  UpdateFull (bounds);
-  Position nextPosition = m_position;
-  nextPosition.x += m_speed.dx * delayLeft.GetSeconds ();
-  nextPosition.y += m_speed.dy * delayLeft.GetSeconds ();
-  if (bounds.IsInside (nextPosition))
-    {
-      return delayLeft;
-    }
-  
-  nextPosition = bounds.CalculateIntersection (m_position, m_speed);
-  Time delay = Seconds ((nextPosition.x - m_position.x) / m_speed.dx);
-  return delay;
-}
-
 void
 StaticSpeedHelper::UpdateFull (const Rectangle &bounds) const
 {
