@@ -20,6 +20,8 @@
  */
 #include "rectangle.h"
 #include "position.h"
+#include "speed.h"
+#include "ns3/assert.h"
 #include <cmath>
 #include <algorithm>
 
@@ -79,6 +81,42 @@ Rectangle::GetClosestSide (const Position &position) const
           return TOP;
         }
     }
+}
+
+Position
+Rectangle::CalculateIntersection (const Position &current, const Speed &speed) const
+{
+  double xMaxY = current.y + (xMax - current.x) / speed.dx * speed.dy;
+  double xMinY = current.y + (xMin - current.x) / speed.dx * speed.dy;
+  double yMaxX = current.x + (yMax - current.y) / speed.dy * speed.dx;
+  double yMinX = current.x + (yMin - current.y) / speed.dy * speed.dx;
+  bool xMaxOk = xMaxY <= yMax && xMaxY >= yMin;
+  bool xMinOk = xMinY <= yMax && xMinY >= yMin;
+  bool yMaxOk = yMaxX <= xMax && yMaxX >= xMin;
+  bool yMinOk = yMinX <= xMax && yMinX >= xMin;
+  if (xMaxOk && speed.dx >= 0)
+    {
+      return Position (xMax, xMaxY, 0.0);
+    }
+  else if (xMinOk && speed.dx <= 0)
+    {
+      return Position (xMin, xMinY, 0.0);
+    }
+  else if (yMaxOk && speed.dy >= 0)
+    {
+      return Position (yMaxX, yMax, 0.0);
+    }
+  else if (yMinOk && speed.dy <= 0)
+    {
+      return Position (yMinX, yMin, 0.0);
+    }
+  else
+    {
+      NS_ASSERT (false);
+      // quiet compiler
+      return Position (0.0, 0.0, 0.0);
+    }
+
 }
 
 

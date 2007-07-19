@@ -64,40 +64,6 @@ StaticSpeedHelper::Reset (const Speed &speed)
   m_speed = speed;
   m_pauseEnd = Simulator::Now ();
 }
-Position
-StaticSpeedHelper::IntersectCurrentDirection (const Rectangle &bounds)
-{
-  double xMaxY = m_position.y + (bounds.xMax - m_position.x) / m_speed.dx * m_speed.dy;
-  double xMinY = m_position.y + (bounds.xMin - m_position.x) / m_speed.dx * m_speed.dy;
-  double yMaxX = m_position.x + (bounds.yMax - m_position.y) / m_speed.dy * m_speed.dx;
-  double yMinX = m_position.x + (bounds.yMin - m_position.y) / m_speed.dy * m_speed.dx;
-  bool xMaxOk = xMaxY <= bounds.yMax && xMaxY >= bounds.yMin;
-  bool xMinOk = xMinY <= bounds.yMax && xMinY >= bounds.yMin;
-  bool yMaxOk = yMaxX <= bounds.xMax && yMaxX >= bounds.xMin;
-  bool yMinOk = yMinX <= bounds.xMax && yMinX >= bounds.xMin;
-  if (xMaxOk && m_speed.dx >= 0)
-    {
-      return Position (bounds.xMax, xMaxY, 0.0);
-    }
-  else if (xMinOk && m_speed.dx <= 0)
-    {
-      return Position (bounds.xMin, xMinY, 0.0);
-    }
-  else if (yMaxOk && m_speed.dy >= 0)
-    {
-      return Position (yMaxX, bounds.yMax, 0.0);
-    }
-  else if (yMinOk && m_speed.dy <= 0)
-    {
-      return Position (yMinX, bounds.yMin, 0.0);
-    }
-  else
-    {
-      NS_ASSERT (false);
-      // quiet compiler
-      return Position (0.0, 0.0, 0.0);
-    }
-}
 Time 
 StaticSpeedHelper::GetDelayToNextPosition (const Rectangle &bounds, Time delayLeft)
 {
@@ -109,7 +75,8 @@ StaticSpeedHelper::GetDelayToNextPosition (const Rectangle &bounds, Time delayLe
     {
       return delayLeft;
     }
-  nextPosition = IntersectCurrentDirection (bounds);
+  
+  nextPosition = bounds.CalculateIntersection (m_position, m_speed);
   Time delay = Seconds ((nextPosition.x - m_position.x) / m_speed.dx);
   return delay;
 }

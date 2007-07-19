@@ -24,6 +24,7 @@
 namespace ns3 {
 
 class Position;
+class Speed;
 
 class Rectangle
 {
@@ -39,6 +40,7 @@ public:
   Rectangle ();
   bool IsInside (const Position &position) const;
   Side GetClosestSide (const Position &position) const;
+  Position CalculateIntersection (const Position &current, const Speed &speed) const;
 
   double xMin;
   double xMax;

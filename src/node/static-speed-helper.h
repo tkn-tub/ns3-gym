@@ -28,7 +28,6 @@ class StaticSpeedHelper
  private:
   void Update (void) const;
   void UpdateFull (const Rectangle &rectangle) const;
-  Position IntersectCurrentDirection (const Rectangle &bounds);
   mutable Time m_lastUpdate;
   mutable Position m_position;
   Speed m_speed;
