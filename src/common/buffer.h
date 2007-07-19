@@ -158,7 +158,7 @@ public:
        * Write the data in buffer and avance the iterator position
        * by size bytes.
        */
-      inline void Write (uint8_t const*buffer, uint16_t size);
+      inline void Write (uint8_t const*buffer, uint32_t size);
       /**
        * \param start the start of the data to copy
        * \param end the end of the data to copy
@@ -621,7 +621,7 @@ Buffer::Iterator::WriteHtonU64 (uint64_t data)
   m_current += 8;
 }
 void 
-Buffer::Iterator::Write (uint8_t const*buffer, uint16_t size)
+Buffer::Iterator::Write (uint8_t const*buffer, uint32_t size)
 {
   uint8_t *current = m_data + GetIndex (size);
   memcpy (current, buffer, size);

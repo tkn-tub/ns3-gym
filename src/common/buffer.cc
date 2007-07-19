@@ -440,6 +440,7 @@ Buffer::PeekData (void) const
 #ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
+#include "ns3/random-variable.h"
 #include <iomanip>
 
 namespace ns3 {
@@ -501,14 +502,14 @@ BufferTest::EnsureWrittenBytes (Buffer b, uint32_t n, uint8_t array[])
   uint8_t bytes[] = {__VA_ARGS__};             \
   if (!EnsureWrittenBytes (buffer, n , bytes)) \
     {                                          \
-      ok = false;                              \
+      result = false;                          \
     }                                          \
   }
 
 bool
 BufferTest::RunTests (void)
 {
-  bool ok = true;
+  bool result = true;
   Buffer buffer;
   Buffer::Iterator i;
   buffer.AddAtStart (6);
@@ -555,7 +556,7 @@ BufferTest::RunTests (void)
   i.Prev (2);
   if (i.ReadNtohU16 () != 0xff00) 
     {
-      ok = false;
+      result = false;
     }
   i.Prev (2);
   i.WriteU16 (saved);
@@ -645,7 +646,7 @@ BufferTest::RunTests (void)
   buffer.RemoveAtEnd (8);
   if (buffer.GetSize () != 0) 
     {
-      ok = false;
+      result = false;
     }
 
   buffer = Buffer (6);
@@ -669,7 +670,31 @@ BufferTest::RunTests (void)
   i.Prev (100);
   i.WriteU8 (1, 100);
 
-  return ok;
+  // Bug #54
+  {
+    const uint32_t actualSize = 72602;
+    const uint32_t chunkSize = 67624;
+    UniformVariable bytesRng (0, 256);
+
+    Buffer inputBuffer;
+    Buffer outputBuffer;
+    
+    inputBuffer.AddAtEnd (actualSize);
+    {
+      Buffer::Iterator iter = inputBuffer.Begin ();
+      for (uint32_t i = 0; i < actualSize; i++)
+        iter.WriteU8 (static_cast<uint8_t> (bytesRng.GetValue ()));
+    }
+
+    outputBuffer.AddAtEnd (chunkSize);
+    Buffer::Iterator iter = outputBuffer.End ();
+    iter.Prev (chunkSize);
+    iter.Write (inputBuffer.PeekData (), chunkSize);
+
+    NS_TEST_ASSERT (memcmp (inputBuffer.PeekData (), outputBuffer.PeekData (), chunkSize) == 0);
+  }
+
+  return result;
 }
 
 
