@@ -48,7 +48,7 @@ class RandomTopology
   /**
    * \param positionModel model to set the initial position
    *        of each object.
-   * \param type of mobility model to attach to each object.
+   * \param mobilityModel type of mobility model to attach to each object.
    *
    * Create a random topology based on the
    * specified position and mobility models.

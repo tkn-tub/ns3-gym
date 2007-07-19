@@ -39,10 +39,10 @@ public:
     BOTTOM
   };
   /**
-   * \param xMin x coordinates of left boundary.
-   * \param xMax x coordinates of right boundary.
-   * \param yMin y coordinates of bottom boundary.
-   * \param yMin y coordinates of top boundary.
+   * \param _xMin x coordinates of left boundary.
+   * \param _xMax x coordinates of right boundary.
+   * \param _yMin y coordinates of bottom boundary.
+   * \param _yMax y coordinates of top boundary.
    *
    * Create a rectangle.
    */

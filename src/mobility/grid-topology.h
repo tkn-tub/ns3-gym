@@ -42,7 +42,7 @@ class GridTopology
    *
    * The first object is positioned at (xMin,yMin).
    */
-  GridTopology (double xMin, double yMin, uint32_t nCols, double deltaX, double deltaY);
+  GridTopology (double xMin, double yMin, uint32_t n, double deltaX, double deltaY);
 
   /**
    * \param classId the classId of the position object to attach to each
@@ -51,11 +51,12 @@ class GridTopology
   void SetMobilityModel (ClassId classId);
 
   /**
-   * \param objects a vector of objects
+   * \param begin an iterator to the first object to layout.
+   * \param end an iterator to the last object to layout.
    *
    * Attach a position (the type of position is specified through 
-   * the ClassId given to SetMobilityModelModel) to each object present
-   * in the input vector and configure its initial location with a set
+   * the ClassId given to SetMobilityModelModel) to each input object
+   * and configure its initial location with a set
    * of coordinates arranged according to a regular rectangular grid,
    * one row after the other.
    */
@@ -63,11 +64,12 @@ class GridTopology
   void LayoutRowFirst (const T &begin, const T &end);
 
   /**
-   * \param objects a vector of objects
+   * \param begin an iterator to the first object to layout.
+   * \param end an iterator to the last object to layout.
    *
    * Attach a position (the type of position is specified through 
-   * the ClassId given to SetMobilityModelModel) to each object present
-   * in the input vector and configure its initial location with a set
+   * the ClassId given to SetMobilityModelModel) to each input object
+   * and configure its initial location with a set
    * of coordinates arranged according to a regular rectangular grid,
    * one column after the other.
    */
