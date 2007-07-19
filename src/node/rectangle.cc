@@ -19,6 +19,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "rectangle.h"
+#include "position.h"
+#include <cmath>
+#include <algorithm>
 
 namespace ns3 {
 
@@ -36,5 +39,47 @@ Rectangle::Rectangle ()
     yMin (0.0),
     yMax (0.0)
 {}
+
+bool 
+Rectangle::IsInside (const Position &position) const
+{
+  return 
+    position.x <= xMax && position.x >= xMin &&
+    position.y <= yMax && position.y >= yMin;
+}
+
+Rectangle::Side 
+Rectangle::GetClosestSide (const Position &position) const
+{
+  double xMinDist = std::abs (position.x - xMin);
+  double xMaxDist = std::abs (xMax - position.x);
+  double yMinDist = std::abs (position.y - yMin);
+  double yMaxDist = std::abs (yMax - position.y);
+  double minX = std::min (xMinDist, xMaxDist);
+  double minY = std::min (yMinDist, yMaxDist);
+  if (minX < minY)
+    {
+      if (xMinDist < xMaxDist)
+        {
+          return LEFT;
+        }
+      else
+        {
+          return RIGHT;
+        }
+    }
+  else
+    {
+      if (yMinDist < yMaxDist)
+        {
+          return BOTTOM;
+        }
+      else
+        {
+          return TOP;
+        }
+    }
+}
+
 
 } // namespace ns3

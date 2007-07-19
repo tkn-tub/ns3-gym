@@ -3,14 +3,11 @@
 
 namespace ns3 {
 
-class Rectangle;
-
 class Position
 {
 public:
   Position (double x, double y, double z);
   Position ();
-  bool IsInside (const Rectangle &rectangle) const;
   double x;
   double y;
   double z;

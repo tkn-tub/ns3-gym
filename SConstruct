@@ -63,8 +63,6 @@ core.add_sources([
     'uid-manager.cc',
     'default-value.cc',
     'random-variable-default-value.cc',
-    'rectangle-default-value.cc',
-    'rectangle.cc',
     'command-line.cc',
     'type-name.cc',
     'component-manager.cc',
@@ -97,8 +95,6 @@ core.add_inst_headers([
     'rng-stream.h',
     'default-value.h',
     'random-variable-default-value.h',
-    'rectangle-default-value.h',
-    'rectangle.h',
     'command-line.h',
     'type-name.h',
     'component-manager.h',
@@ -266,6 +262,8 @@ node.add_sources ([
     'speed.cc',
     'static-speed-helper.cc',
     'random-waypoint-mobility-model.cc',
+    'rectangle-default-value.cc',
+    'rectangle.cc',
     ])
 node.add_inst_headers ([
     'node.h',
@@ -299,6 +297,8 @@ node.add_inst_headers ([
     'speed.h',
     'static-speed-helper.h',
     'random-waypoint-mobility-model.h',
+    'rectangle-default-value.h',
+    'rectangle.h',
     ])
 
 applications = build.Ns3Module ('applications', 'src/applications')

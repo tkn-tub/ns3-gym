@@ -23,12 +23,23 @@
 
 namespace ns3 {
 
+class Position;
+
 class Rectangle
 {
 public:
+  enum Side {
+    RIGHT,
+    LEFT,
+    TOP,
+    BOTTOM
+  };
   Rectangle (double _xMin, double _xMax,
              double _yMin, double _yMax);
   Rectangle ();
+  bool IsInside (const Position &position) const;
+  Side GetClosestSide (const Position &position) const;
+
   double xMin;
   double xMax;
   double yMin;

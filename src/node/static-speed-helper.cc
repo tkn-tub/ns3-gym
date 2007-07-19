@@ -105,7 +105,7 @@ StaticSpeedHelper::GetDelayToNextPosition (const Rectangle &bounds, Time delayLe
   Position nextPosition = m_position;
   nextPosition.x += m_speed.dx * delayLeft.GetSeconds ();
   nextPosition.y += m_speed.dy * delayLeft.GetSeconds ();
-  if (nextPosition.IsInside (bounds))
+  if (bounds.IsInside (nextPosition))
     {
       return delayLeft;
     }

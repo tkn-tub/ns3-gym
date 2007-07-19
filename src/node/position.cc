@@ -1,5 +1,4 @@
 #include "position.h"
-#include "ns3/rectangle.h"
 #include <cmath>
 
 namespace ns3 {
@@ -16,14 +15,6 @@ Position::Position ()
     y (0.0),
     z (0.0)
 {}
-
-bool 
-Position::IsInside (const Rectangle &rectangle) const
-{
-  return 
-    x <= rectangle.xMax && x >= rectangle.xMin &&
-    y <= rectangle.yMax && y >= rectangle.yMin;
-}
 
 double 
 CalculateDistance (const Position &a, const Position &b)

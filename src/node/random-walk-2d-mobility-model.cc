@@ -170,7 +170,7 @@ RandomWalk2dMobilityModel::DoGet (void) const
 void
 RandomWalk2dMobilityModel::DoSet (const Position &position)
 {
-  NS_ASSERT (position.IsInside (m_parameters->m_bounds));
+  NS_ASSERT (m_parameters->m_bounds.IsInside (position));
   m_helper.InitializePosition (position);
   Simulator::Remove (m_event);
   m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);

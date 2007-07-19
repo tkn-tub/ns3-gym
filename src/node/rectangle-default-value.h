@@ -22,7 +22,7 @@
 #define RECTANGLE_DEFAULT_VALUE_H
 
 #include <string>
-#include "default-value.h"
+#include "ns3/default-value.h"
 #include "rectangle.h"
 
 namespace ns3 {
