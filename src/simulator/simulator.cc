@@ -469,7 +469,18 @@ static void foo3 (int, int, int)
 static void foo4 (int, int, int, int)
 {}
 static void foo5 (int, int, int, int, int)
-{}  
+{}
+
+static void ber1 (int &)
+{}
+static void ber2 (int &, int &)
+{}
+static void ber3 (int &, int &, int &)
+{}
+static void ber4 (int &, int &, int &, int &)
+{}
+static void ber5 (int &, int &, int &, int &, int &)
+{}
   
 
 class SimulatorTests : public Test {
@@ -493,6 +504,11 @@ private:
   void bar3 (int, int, int);
   void bar4 (int, int, int, int);
   void bar5 (int, int, int, int, int);
+  void baz1 (int &);
+  void baz2 (int &, int &);
+  void baz3 (int &, int &, int &);
+  void baz4 (int &, int &, int &, int &);
+  void baz5 (int &, int &, int &, int &, int &);
   
   bool m_b;
   bool m_a;
@@ -573,6 +589,22 @@ void
 SimulatorTests::bar5 (int, int, int, int, int)
 {}
 
+void
+SimulatorTests::baz1 (int &)
+{}
+void
+SimulatorTests::baz2 (int &, int &)
+{}
+void
+SimulatorTests::baz3 (int &, int &, int &)
+{}
+void 
+SimulatorTests::baz4 (int &, int &, int &, int &)
+{}
+void 
+SimulatorTests::baz5 (int &, int &, int &, int &, int &)
+{}
+
 bool
 SimulatorTests::RunOneTest (void)
 {
@@ -638,6 +670,11 @@ SimulatorTests::RunTests (void)
   Simulator::Schedule (Seconds (0.0), &foo3, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &foo4, 0, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &foo5, 0, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &ber1, 0);
+  Simulator::Schedule (Seconds (0.0), &ber2, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &ber3, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &ber4, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &ber5, 0, 0, 0, 0, 0);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar0, this);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar1, this, 0);
   Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar2, this, 0, 0);
