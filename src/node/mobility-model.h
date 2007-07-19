@@ -43,16 +43,19 @@ public:
 
   /**
    * \returns the current position
-   * Unit is meters
    */
   Position Get (void) const;
+  /**
+   * \param position the position to set.
+   */
   void Set (const Position &position);
+  /**
+   * \returns the current position.
+   */
   Speed GetSpeed (void) const;
   /**
-   * \param position a reference to another position object instance
-   * \returns the distance between the two objects.
-   *
-   * Unit is meters
+   * \param position a reference to another mobility model
+   * \returns the distance between the two objects. Unit is meters.
    */
   double GetDistanceFrom (const MobilityModel &position) const;
 protected:
@@ -63,17 +66,25 @@ protected:
   void NotifyCourseChange (void) const;
 private:
   /**
-   * \param x reference to floating-point variable for x coordinate.
-   * \param y reference to floating-point variable for y coordinate.
-   * \param z reference to floating-point variable for z coordinate.
+   * \returns the current position.
    *
-   * Store in the x, y, and z variables the current coordinates
-   * managed by this position object. Concrete subclasses of this 
-   * base class must implement this method.
-   * Unit is meters
+   * Concrete subclasses of this base class must 
+   * implement this method.
    */
   virtual Position DoGet (void) const = 0;
+  /**
+   * \param position the position to set.
+   *
+   * Concrete subclasses of this base class must 
+   * implement this method.
+   */
   virtual void DoSet (const Position &position) = 0;
+  /**
+   * \returns the current speed.
+   *
+   * Concrete subclasses of this base class must 
+   * implement this method.
+   */
   virtual Speed DoGetSpeed (void) const = 0;
 };
 

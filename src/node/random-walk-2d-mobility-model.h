@@ -34,7 +34,10 @@ namespace ns3 {
 class RandomVariable;
 
 /**
- * \brief parameters to control a random walk model
+ * \brief parameters to control a random walk 2d model
+ *
+ * A single parameter object can be shared by multiple random
+ * walk models.
  */
 class RandomWalk2dMobilityModelParameters : public Object
 {
@@ -46,21 +49,37 @@ class RandomWalk2dMobilityModelParameters : public Object
   RandomWalk2dMobilityModelParameters ();
   virtual ~RandomWalk2dMobilityModelParameters ();
   /**
+   * \param speed the random variable used to pick a new
+   *        speed when the direction is changed.
+   *
    */
   void SetSpeed (const RandomVariable &speed);
+  /**
+   * \param direction the random variable used to pick a new
+   *        direction.
+   */
   void SetDirection (const RandomVariable &direction);
   /**
    * \param distance the distance before a direction change
    *
-   * Unit is meters
+   * Unit is meters.
+   * "time" mode is incompatible with "distance" mode.
    */
   void SetModeDistance (double distance);
   /**
    * \param time the delay before a direction change.
+   *
+   * "time" mode is incompatible with "distance" mode.
    */
   void SetModeTime (Time time);
 
+  /**
+   * \param bounds the bounds of the random walk
+   */
+  void SetBounds (const Rectangle &bounds);
 
+
+  // needed public for internal default value code.
   enum Mode  {
     MODE_DISTANCE,
     MODE_TIME
@@ -81,13 +100,13 @@ class RandomWalk2dMobilityModelParameters : public Object
  * \brief a 2D random walk position model
  *
  * Each instance moves with a speed and direction choosen at random
- * in the intervals [minspeed,maxspeed] and [0,2pi] until
+ * with the user-provided random variables until
  * either a fixed distance has been walked or until a fixed amount
  * of time.
  *
  * The parameters of the model can be specified either with the ns3::Bind
- * function and the variables "RandomWalk2dMinSpeed", "RandomWalk2dMaxSpeed",
- * "RandomWalk2dMode", "RandomWalk2dModeDistance", and, "RandomWalk2dModeTime" or
+ * function and the variables "RandomWalk2dSpeed", "RandomWalk2dMode", 
+ * "RandomWalk2dDistance", "RandomWalk2dTime", and, "RandomWalk2dBounds" or
  * with an instance of the RandomWalk2dMobilityModelParameters class which
  * must be fed to the RandomWalk2dMobilityModel constructors.
  */
@@ -100,7 +119,11 @@ class RandomWalk2dMobilityModel : public MobilityModel
    */
   RandomWalk2dMobilityModel ();
   /**
-   * Create a new position object located at position (0,0,0)
+   * \param parameters the parameters to use to control
+   * the movement of this mobile object.
+   *
+   * Create a new position object located at position (0,0,0) with
+   * the specified parameters.
    */
   RandomWalk2dMobilityModel (Ptr<RandomWalk2dMobilityModelParameters> parameters);
 

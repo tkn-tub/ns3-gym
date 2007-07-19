@@ -84,6 +84,36 @@ RandomWalk2dMobilityModelParameters::~RandomWalk2dMobilityModelParameters ()
   m_direction = 0;
 }
 
+void 
+RandomWalk2dMobilityModelParameters::SetSpeed (const RandomVariable &speed)
+{
+  delete m_speed;
+  m_speed = speed.Copy ();
+}
+void 
+RandomWalk2dMobilityModelParameters::SetDirection (const RandomVariable &direction)
+{
+  delete m_direction;
+  m_direction = direction.Copy ();
+}
+void 
+RandomWalk2dMobilityModelParameters::SetModeDistance (double distance)
+{
+  m_mode = RandomWalk2dMobilityModelParameters::MODE_DISTANCE;
+  m_modeDistance = distance;
+}
+void 
+RandomWalk2dMobilityModelParameters::SetModeTime (Time time)
+{
+  m_mode = RandomWalk2dMobilityModelParameters::MODE_TIME;
+  m_modeTime = time;
+}
+void 
+RandomWalk2dMobilityModelParameters::SetBounds (const Rectangle &bounds)
+{
+  m_bounds = bounds;
+}
+
 Ptr<RandomWalk2dMobilityModelParameters> 
 RandomWalk2dMobilityModelParameters::GetCurrent (void)
 {
