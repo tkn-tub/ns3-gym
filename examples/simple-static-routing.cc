@@ -85,7 +85,6 @@ int main (int argc, char *argv[])
   DebugComponentEnable("StaticRouter");
   DebugComponentEnable("StaticRouteManager");
 #endif
-  DebugComponentEnable("StaticRouteManager");
 
   // Set up some default values for the simulation.  Use the Bind()
   // technique to tell the system what subclass of Queue to use,
