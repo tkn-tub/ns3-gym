@@ -37,7 +37,7 @@ def configure(conf):
 
 def build(bld):
     Object.register('ns3header', Ns3Header)
-    Action.Action('ns3_headers', func=_ns3_headers_inst, color='BLUE')
+    Action.Action('ns3header', func=_ns3_headers_inst, color='BLUE')
     
     bld.add_subdirs(all_modules)
 
@@ -54,19 +54,15 @@ class Ns3Header(Object.genobj):
 
     def apply(self):
         ns3_dir_node = Params.g_build.m_srcnode.find_dir("ns3")
-        inputs = []
-        outputs = []
         for filename in self.to_list(self.source):
             src_node = self.path.find_source(filename)
             if src_node is None:
                 Params.fatal("source ns3 header file %s not found" % (filename,))
             dst_node = ns3_dir_node.find_build(os.path.basename(filename))
             assert dst_node is not None
-            inputs.append(src_node)
-            outputs.append(dst_node)
-        task = self.create_task('ns3_headers', self.env, 1)
-        task.set_inputs(inputs)
-        task.set_outputs(outputs)
+            task = self.create_task('ns3header', self.env, 1)
+            task.set_inputs([src_node])
+            task.set_outputs([dst_node])
 
     def install(self):
         for i in self.m_tasks:
