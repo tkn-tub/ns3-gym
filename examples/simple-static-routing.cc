@@ -65,6 +65,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/p2p-topology.h"
 #include "ns3/onoff-application.h"
+#include "ns3/routing-environment.h"
 #include "ns3/static-route-manager.h"
 
 using namespace ns3;
@@ -84,6 +85,7 @@ int main (int argc, char *argv[])
   DebugComponentEnable("StaticRouter");
   DebugComponentEnable("StaticRouteManager");
 #endif
+  DebugComponentEnable("StaticRouteManager");
 
   // Set up some default values for the simulation.  Use the Bind()
   // technique to tell the system what subclass of Queue to use,
@@ -142,9 +144,8 @@ int main (int argc, char *argv[])
 
   if (RoutingEnvironment::StaticRoutingEnabled())
     {
-      Ptr<StaticRouteManager> routeManager = Create<StaticRouteManager> ();
-      routeManager->BuildStaticRoutingDatabase ();
-      routeManager->InitializeRoutes ();
+      StaticRouteManager::BuildStaticRoutingDatabase ();
+      StaticRouteManager::InitializeRoutes ();
     }
 
   // Create the OnOff application to send UDP datagrams of size

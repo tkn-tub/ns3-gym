@@ -374,15 +374,17 @@ routing.add_sources([
     'routing-environment.cc',
     'static-router.cc',
     'static-route-manager.cc',
+    'static-route-manager-impl.cc',
     'candidate-queue.cc',
     ])
 routing.add_headers ([
+    'candidate-queue.h',
+    'static-route-manager-impl.h',
     ])
 routing.add_inst_headers([
     'routing-environment.h',
     'static-router.h',
     'static-route-manager.h',
-    'candidate-queue.h',
     ])
 
 # utils

@@ -19,7 +19,7 @@
 
 #include <stdint.h>
 #include <list>
-#include "static-route-manager.h"
+#include "static-route-manager-impl.h"
 
 namespace ns3 {
 
