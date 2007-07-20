@@ -11,6 +11,8 @@ def build(bld):
         'p2p-channel.cc',
         'p2p-topology.cc',
         ]
+    p2p.includes = '.'
+
     headers = bld.create_obj('ns3header')
     headers.source = [
         'p2p-net-device.h',

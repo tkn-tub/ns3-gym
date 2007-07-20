@@ -38,6 +38,7 @@ def build(bld):
         'type-name.cc',
         'component-manager.cc',
         ]
+    core.includes = '.'
 
     if sys.platform == 'win32':
         core.source.extend([

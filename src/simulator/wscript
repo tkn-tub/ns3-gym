@@ -64,6 +64,8 @@ def build(bld):
         'event-impl.cc',
         'simulator.cc',
         ]
+    sim.includes = '.'
+
     headers = bld.create_obj('ns3header')
     headers.source = [
         'high-precision.h',
