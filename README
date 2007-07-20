@@ -71,17 +71,13 @@ use of these ns-3 libraries.
 
 To build the set of default libraries and the example
 programs included in this package, you need to use the
-tool 'scons'. Detailed information on how to install
-and use scons is included in the file doc/build.txt
+tool 'waf'. Detailed information on how to install
+and use waf is included in the file doc/build.txt
 
 However, the real quick and dirty way to get started is to
-type the command "scons" the the directory which contains
+type the command "./waf" the the directory which contains
 this README file. The files built will be copied in the
-build-dir/dbg-shared/bin and build-dir/dbg-shared/lib
-directories. build-dir/dbg-shared/bin will contain
-one binary for each of the sample code in the 'samples'
-directory and one binary for each of the detailed examples
-found in the 'examples' directory.
+build/debug or build/optimized.
 
 The current codebase is expected to build and run on the
 following set of platforms:
@@ -106,12 +102,7 @@ On recent Linux systems, once you have built ns-3, it
 should be easy to run the sample programs with the
 following command:
 
-./build-dir/dbg-shared/bin/simple-p2p
-
-or:
-
-cd build-dir/dbg-shared/bin
-./simple-p2p
+./waf --run simple-p2p
 
 That program should generate a simple-p2p.tr text 
 trace file and a set of simple-p2p-xx-xx.pcap binary
@@ -152,7 +143,7 @@ easily do so:
     file in http://code.nsnam.org/docs
 
   - the doxygen documentation is generated from the doc/doxygen.conf
-    configuration file. The command "scons doc" will generate it
+    configuration file. The command "./waf --doxygen" will generate it
     as doc/html/index.html if you have installed the doxygen tools 
     (see http://www.doxygen.org)
 
