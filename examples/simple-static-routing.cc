@@ -76,17 +76,17 @@ int main (int argc, char *argv[])
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
 #if 0 
-  DebugComponentEnable("Object");
-  DebugComponentEnable("Queue");
-  DebugComponentEnable("DropTailQueue");
-  DebugComponentEnable("Channel");
-  DebugComponentEnable("PointToPointChannel");
-  DebugComponentEnable("PointToPointNetDevice");
-  DebugComponentEnable("StaticRouter");
-  DebugComponentEnable("StaticRouteManager");
+  DebugComponentEnable ("Object");
+  DebugComponentEnable ("Queue");
+  DebugComponentEnable ("DropTailQueue");
+  DebugComponentEnable ("Channel");
+  DebugComponentEnable ("PointToPointChannel");
+  DebugComponentEnable ("PointToPointNetDevice");
+  DebugComponentEnable ("StaticRouter");
+  DebugComponentEnable ("StaticRouteManager");
 #endif
 
-  // Set up some default values for the simulation.  Use the Bind()
+  // Set up some default values for the simulation.  Use the Bind ()
   // technique to tell the system what subclass of Queue to use,
   // and what the queue limit is
 
@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
   //Bind ("DropTailQueue::m_maxPackets", 30);   
 
   // Allow the user to override any of the defaults and the above
-  // Bind()s at run-time, via command-line arguments
+  // Bind ()s at run-time, via command-line arguments
   CommandLine::Parse (argc, argv);
 
   // Here, we will explicitly create four nodes.  In more sophisticated
@@ -118,30 +118,30 @@ int main (int argc, char *argv[])
   // We create the channels first without any IP addressing information
   Ptr<PointToPointChannel> channel0 = 
     PointToPointTopology::AddPointToPointLink (
-      n0, n2, DataRate(5000000), MilliSeconds(2));
+      n0, n2, DataRate (5000000), MilliSeconds (2));
 
   Ptr<PointToPointChannel> channel1 = 
     PointToPointTopology::AddPointToPointLink (
-      n1, n2, DataRate(5000000), MilliSeconds(2));
+      n1, n2, DataRate (5000000), MilliSeconds (2));
   
   Ptr<PointToPointChannel> channel2 = 
     PointToPointTopology::AddPointToPointLink (
-      n2, n3, DataRate(1500000), MilliSeconds(10));
+      n2, n3, DataRate (1500000), MilliSeconds (10));
   
   // Later, we add IP addresses.  
   PointToPointTopology::AddIpv4Addresses (
-      channel0, n0, Ipv4Address("10.1.1.1"),
-      n2, Ipv4Address("10.1.1.2"));
+      channel0, n0, Ipv4Address ("10.1.1.1"),
+      n2, Ipv4Address ("10.1.1.2"));
   
   PointToPointTopology::AddIpv4Addresses (
-      channel1, n1, Ipv4Address("10.1.2.1"),
-      n2, Ipv4Address("10.1.2.2"));
+      channel1, n1, Ipv4Address ("10.1.2.1"),
+      n2, Ipv4Address ("10.1.2.2"));
   
   PointToPointTopology::AddIpv4Addresses (
-      channel2, n2, Ipv4Address("10.1.3.1"),
-      n3, Ipv4Address("10.1.3.2"));
+      channel2, n2, Ipv4Address ("10.1.3.1"),
+      n3, Ipv4Address ("10.1.3.2"));
 
-  if (RoutingEnvironment::StaticRoutingEnabled())
+  if (RoutingEnvironment::StaticRoutingEnabled ())
     {
       StaticRouteManager::BuildStaticRoutingDatabase ();
       StaticRouteManager::InitializeRoutes ();
@@ -151,26 +151,26 @@ int main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    Ipv4Address("10.1.3.2"), 
+    Ipv4Address ("10.1.3.2"), 
     80, 
     "Udp",
-    ConstantVariable(1), 
-    ConstantVariable(0));
+    ConstantVariable (1), 
+    ConstantVariable (0));
   // Start the application
-  ooff->Start(Seconds(1.0));
-  ooff->Stop (Seconds(10.0));
+  ooff->Start (Seconds (1.0));
+  ooff->Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   ooff = Create<OnOffApplication> (
     n3, 
-    Ipv4Address("10.1.2.1"), 
+    Ipv4Address ("10.1.2.1"), 
     80, 
     "Udp",
-    ConstantVariable(1), 
-    ConstantVariable(0));
+    ConstantVariable (1), 
+    ConstantVariable (0));
   // Start the application
-  ooff->Start(Seconds(1.1));
-  ooff->Stop (Seconds(10.0));
+  ooff->Start (Seconds (1.1));
+  ooff->Stop (Seconds (10.0));
 
   // Here, finish off packet routing configuration
   // This will likely set by some global StaticRouting object in the future
