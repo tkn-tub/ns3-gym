@@ -26,6 +26,12 @@ NS_DEBUG_COMPONENT_DEFINE ("StaticRouter");
 
 namespace ns3 {
 
+// ---------------------------------------------------------------------------
+//
+// StaticRouterLinkRecord Implementation
+//
+// ---------------------------------------------------------------------------
+
 StaticRouterLinkRecord::StaticRouterLinkRecord ()
 :
   m_linkId ("0.0.0.0"),
@@ -112,6 +118,12 @@ StaticRouterLinkRecord::SetMetric (uint32_t metric)
   NS_DEBUG("StaticRouterLinkRecord::SetMetric ()");
   m_metric = metric;
 }
+
+// ---------------------------------------------------------------------------
+//
+// StaticRouterLSA Implementation
+//
+// ---------------------------------------------------------------------------
 
 StaticRouterLSA::StaticRouterLSA()
   : 
@@ -296,6 +308,12 @@ std::ostream& operator<< (std::ostream& os, StaticRouterLSA& lsa)
   lsa.Print (os);
   return os;
 }
+
+// ---------------------------------------------------------------------------
+//
+// StaticRouter Implementation
+//
+// ---------------------------------------------------------------------------
 
 const InterfaceId StaticRouter::iid = 
   MakeInterfaceId ("StaticRouter", Object::iid);

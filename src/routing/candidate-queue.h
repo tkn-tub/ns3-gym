@@ -24,7 +24,7 @@
 namespace ns3 {
 
 /**  
- * \brief a Candidate Queue used in static routing.
+ * \brief A Candidate Queue used in static routing.
  *
  * The CandidateQueue is used in the OSPF shortest path computations.  It
  * is a priority queue used to store candidates for the shortest path to a
@@ -62,7 +62,7 @@ public:
    *
    * @see SPFVertex
    */
-  void          Clear (void);
+  void Clear (void);
   /**
    * Push a Shortest Path First Vertex pointer onto the queue according to the
    * priority scheme.
@@ -75,7 +75,7 @@ public:
    * @see SPFVertex
    * @param vNew The Shortest Path First Vertex to add to the queue.
    */
-  void          Push (SPFVertex *vNew);
+  void Push (SPFVertex *vNew);
   /**
    * Pop the Shortest Path First Vertex pointer at the top of the queue.
    * The caller is given the responsiblity for releasing the resources 
@@ -85,7 +85,7 @@ public:
    * @see Top ()
    * @returns The Shortest Path First Vertex pointer at the top of the queue.
    */
-  SPFVertex*          Pop (void);
+  SPFVertex* Pop (void);
   /**
    * Return the Shortest Path First Vertex pointer at the top of the queue.  
    * This method does not pop the SPFVertex* off of the queue, it simply 
@@ -95,13 +95,13 @@ public:
    * @see Pop ()
    * @returns The Shortest Path First Vertex pointer at the top of the queue.
    */
-  SPFVertex*    Top (void) const;
+  SPFVertex* Top (void) const;
   /**
    * Test the Candidate Queue to determine if it is empty.
    *
    * @returns True if the queue is empty, false otherwise.
    */
-  bool          Empty (void) const;
+  bool Empty (void) const;
   /**
    * Return the number of Shortest Path First Vertex pointers presently
    * stored in the Candidate Queue.
@@ -109,7 +109,7 @@ public:
    * @see SPFVertex
    * @returns The number of SPFVertex* pointers in the Candidate Queue.
    */
-  uint32_t      Size (void) const;
+  uint32_t Size (void) const;
   /**
    * Searches the Candidate Queue for a Shortest Path First Vertex pointer
    * that points to a vertex having the given IP address.
@@ -118,7 +118,7 @@ public:
    * @param addr The IP address to search for.
    * @returns The SPFVertex* pointer corresponding to the given IP address.
    */
-  SPFVertex*    Find (const Ipv4Address addr) const;
+  SPFVertex* Find (const Ipv4Address addr) const;
   /**
    * Reorders the Candidate Queue according to the priority scheme.  On 
    * completion, the top of the queue will hold the Shortest Path First
@@ -131,7 +131,7 @@ public:
    *
    * @see SPFVertex
    */
-  void          Reorder (void);
+  void Reorder (void);
 
 protected:
   typedef std::list<SPFVertex*> CandidateList_t;

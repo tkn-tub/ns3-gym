@@ -30,6 +30,12 @@ NS_DEBUG_COMPONENT_DEFINE ("StaticRouteManager");
 
 namespace ns3 {
 
+// ---------------------------------------------------------------------------
+//
+// SPFVertex Implementation
+//
+// ---------------------------------------------------------------------------
+
 SPFVertex::SPFVertex () : 
   m_vertexType (VertexUnknown), 
   m_vertexId ("255.255.255.255"), 
@@ -183,6 +189,12 @@ SPFVertex::AddChild (SPFVertex* child)
   return m_children.size ();
 }
 
+// ---------------------------------------------------------------------------
+//
+// StaticRouteManagerLSDB Implementation
+//
+// ---------------------------------------------------------------------------
+
 StaticRouteManagerLSDB::StaticRouteManagerLSDB ()
 :
   m_database ()
@@ -205,7 +217,7 @@ StaticRouteManagerLSDB::~StaticRouteManagerLSDB ()
   m_database.clear ();
 }
 
-void
+  void
 StaticRouteManagerLSDB::Initialize ()
 {
   NS_DEBUG ("StaticRouteManagerLSDB::Initialize ()");
@@ -218,19 +230,21 @@ StaticRouteManagerLSDB::Initialize ()
     }
 }
 
-void
+  void
 StaticRouteManagerLSDB::Insert (Ipv4Address addr, StaticRouterLSA* lsa)
 {
   NS_DEBUG ("StaticRouteManagerLSDB::Insert ()");
   m_database.insert (LSDBPair_t (addr, lsa));
 }
 
-StaticRouterLSA*
-StaticRouteManagerLSDB::GetLSA (Ipv4Address addr)
+  StaticRouterLSA*
+StaticRouteManagerLSDB::GetLSA (Ipv4Address addr) const
 {
   NS_DEBUG ("StaticRouteManagerLSDB::GetLSA ()");
-  // Look up an LSA by its address
-  LSDBMap_t::iterator i;
+//
+// Look up an LSA by its address.
+//
+  LSDBMap_t::const_iterator i;
   for (i= m_database.begin (); i!= m_database.end (); i++)
   {
     if (i->first == addr)
@@ -241,7 +255,15 @@ StaticRouteManagerLSDB::GetLSA (Ipv4Address addr)
   return 0;
 }
 
-StaticRouteManager::StaticRouteManager () : m_spfroot (0) 
+// ---------------------------------------------------------------------------
+//
+// StaticRouteManager Implementation
+//
+// ---------------------------------------------------------------------------
+
+StaticRouteManager::StaticRouteManager () 
+: 
+  m_spfroot (0) 
 {
   m_lsdb = new StaticRouteManagerLSDB ();
 }
@@ -256,7 +278,7 @@ StaticRouteManager::~StaticRouteManager ()
     }
 }
 
-void
+  void
 StaticRouteManager::DebugUseLsdb (StaticRouteManagerLSDB* lsdb)
 {
   if (m_lsdb)
@@ -273,7 +295,7 @@ StaticRouteManager::DebugUseLsdb (StaticRouteManagerLSDB* lsdb)
 // add them to the Link State DataBase (LSDB) from which the routes will 
 // ultimately be computed.
 //
-void
+  void
 StaticRouteManager::BuildStaticRoutingDatabase () 
 {
   NS_DEBUG ("StaticRouteManager::BuildStaticRoutingDatabase()");
@@ -356,7 +378,7 @@ StaticRouteManager::BuildStaticRoutingDatabase ()
 // algorithm then iterates again.  It terminates when the candidate
 // list becomes empty. 
 //
-void
+  void
 StaticRouteManager::InitializeRoutes ()
 {
   NS_DEBUG ("StaticRouteManager::InitializeRoutes ()");
@@ -397,7 +419,7 @@ StaticRouteManager::InitializeRoutes ()
 // vertices not already on the list.  If a lower-cost path is found to a
 // vertex already on the candidate list, store the new (lower) cost.
 //
-void
+  void
 StaticRouteManager::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 {
   SPFVertex* w = 0;
@@ -561,7 +583,7 @@ StaticRouteManager::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 //
 // For now, this is greatly simplified from the quagga code
 //                  
-int
+  int
 StaticRouteManager::SPFNexthopCalculation (
   SPFVertex* v, 
   SPFVertex* w,
@@ -684,15 +706,14 @@ StaticRouteManager::SPFNexthopCalculation (
 // to <w>.  If prev_link is not NULL, we return a Static Router Link Record
 // representing a possible *second* link from <v> to <w>.
 //
-// BUGBUG This seems to be a bug?  Shouldn't this function look for any link
-// records after pre_link and not just after the first?
+// BUGBUG FIXME:  This seems to be a bug.  Shouldn't this function look for
+// any link records after pre_link and not just after the first?
 //
-StaticRouterLinkRecord* 
+  StaticRouterLinkRecord* 
 StaticRouteManager::SPFGetNextLink (
   SPFVertex* v,
   SPFVertex* w,
-  StaticRouterLinkRecord* prev_link
-  ) 
+  StaticRouterLinkRecord* prev_link) 
 {
   NS_DEBUG ("StaticRouteManager::SPFGetNextLink ()");
 
@@ -760,14 +781,14 @@ StaticRouteManager::SPFGetNextLink (
 //
 // Used for unit tests.
 //
-void
+  void
 StaticRouteManager::DebugSPFCalculate (Ipv4Address root)
 {
   SPFCalculate (root);
 }
 
 // quagga ospf_spf_calculate
-void
+  void
 StaticRouteManager::SPFCalculate (Ipv4Address root)
 {
   NS_DEBUG ("StaticRouteManager::SPFCalculate (): "
@@ -870,11 +891,11 @@ StaticRouteManager::SPFCalculate (Ipv4Address root)
 // root in order of distance from the root.  For each of the vertices, we call
 // SPFIntraAddRouter ().  Down in SPFIntraAddRouter, we look at all of the 
 // point-to-point Static Router Link Records (the links to nodes adjacent to
-// the node represented by the vertex).  We add a link to the IP address 
+// the node represented by the vertex).  We add a route to the IP address 
 // specified by the m_linkData field of each of those link records.  This will
 // be the *local* IP address associated with the interface attached to the 
 // link.  We use the outbound interface and next hop information present in 
-// the vertex <v>.
+// the vertex <v> which have possibly been inherited from the root.
 //
 // To summarize, we're going to look at the node represented by <v> and loop
 // through its point-to-point links, adding a *host* route to the local IP
@@ -901,11 +922,11 @@ StaticRouteManager::SPFCalculate (Ipv4Address root)
 }
 
 //
-// XXX this should probably be a method on Ipv4
+// BUGBUG FIXME: This should probably be a method on Ipv4
 //
 // Return the interface index corresponding to a given IP address
 //
-uint32_t
+  uint32_t
 StaticRouteManager::FindOutgoingInterfaceId (Ipv4Address a)
 {
 //
@@ -988,7 +1009,7 @@ StaticRouteManager::FindOutgoingInterfaceId (Ipv4Address a)
 // a destination IP address, reachable from the root, to which we add a host
 // route.
 //
-void
+  void
 StaticRouteManager::SPFIntraAddRouter (SPFVertex* v)
 {
   NS_DEBUG ("StaticRouteManager::SPFIntraAddRouter ()");
@@ -1115,18 +1136,23 @@ StaticRouteManager::SPFIntraAddRouter (SPFVertex* v)
 // Given a pointer to a vertex, it links back to the vertex's parent that it
 // already has set and adds itself to that vertex's list of children.
 //
-void
-StaticRouteManager::SPFVertexAddParent (SPFVertex* v)
-{
-//
 // For now, only one parent (not doing equal-cost multipath)
 //
+  void
+StaticRouteManager::SPFVertexAddParent (SPFVertex* v)
+{
   v->GetParent ()->AddChild (v);
 }
 
 } // namespace ns3
 
 #ifdef RUN_SELF_TESTS
+
+// ---------------------------------------------------------------------------
+//
+// Unit Tests
+//
+// ---------------------------------------------------------------------------
 
 #include "ns3/test.h"
 
@@ -1147,7 +1173,7 @@ StaticRouterTestNode::StaticRouterTestNode ()
 //  Ptr<Ipv4L3Protocol> ipv4 = Create<Ipv4L3Protocol> (this);
 }
 
-TraceResolver*
+  TraceResolver*
 StaticRouterTestNode::DoCreateTraceResolver (TraceContext const &context)
 {
   return 0;
@@ -1168,7 +1194,7 @@ StaticRouteManagerTest::StaticRouteManagerTest ()
 StaticRouteManagerTest::~StaticRouteManagerTest ()
 {}
 
-bool
+  bool
 StaticRouteManagerTest::RunTests (void)
 {
   bool ok = true;

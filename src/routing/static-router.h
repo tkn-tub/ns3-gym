@@ -60,7 +60,7 @@ public:
  */
   StaticRouterLinkRecord ();
 /**
- * Construct a fully uninitialized Static Router Link Record.
+ * Construct an initialized Static Router Link Record.
  *
  * @param linkType The type of link record to construct.
  * @param linkId The link ID for the record.
@@ -89,6 +89,8 @@ public:
  *
  * For an OSPF type 3 link (StubNetwork), the Link ID will be the adjacent
  * neighbor's IP address
+ *
+ * @returns The Ipv4Address corresponding to the Link ID field of the record.
  */
   Ipv4Address GetLinkId(void) const;
 /**
@@ -99,6 +101,8 @@ public:
  *
  * For an OSPF type 3 link (StubNetwork), the Link ID must be the adjacent
  * neighbor's IP address
+ *
+ * @param An Ipv4Address to store in the Link ID field of the record.
  */
   void SetLinkId(Ipv4Address addr);
 /**
@@ -109,6 +113,8 @@ public:
  *
  * For an OSPF type 3 link (StubNetwork), the Link Data will be the
  * network mask
+ *
+ * @returns The Ipv4Address corresponding to the Link Data field of the record.
  */
   Ipv4Address GetLinkData(void) const;
 /**
@@ -119,6 +125,8 @@ public:
  *
  * For an OSPF type 3 link (StubNetwork), the Link Data must be set to the
  * network mask
+ *
+ * @param An Ipv4Address to store in the Link Data field of the record.
  */
   void SetLinkData(Ipv4Address addr);
 /**
@@ -128,6 +136,7 @@ public:
  * values are defined by OSPF.
  *
  * @see LinkType
+ * @returns The LinkType of the current Static Router Link Record.
  */
   LinkType GetLinkType(void) const;
 /**
@@ -137,6 +146,7 @@ public:
  * values are defined by OSPF.
  *
  * @see LinkType
+ * @param linkType The new LinkType for the current Static Router Link Record.
  */
   void SetLinkType(LinkType linkType);
 /**
@@ -147,6 +157,8 @@ public:
  * shouldn't use bandwidth as a metric (how does the sum of the bandwidth of
  * two hops relate to the cost of sending a packet); rather you should use
  * something like delay.
+ *
+ * @returns The metric field of the Static Router Link Record.
  */
   uint32_t GetMetric(void) const;
 /**
@@ -157,6 +169,8 @@ public:
  * shouldn't use bandwidth as a metric (how does the sum of the bandwidth of
  * two hops relate to the cost of sending a packet); rather you should use
  * something like delay.
+ *
+ * @param metric The new metric for the current Static Router Link Record.
  */
   void SetMetric(uint32_t metric);
 
