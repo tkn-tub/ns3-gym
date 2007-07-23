@@ -13,6 +13,7 @@ def build(bld):
         'routing-environment.cc',
         'static-router.cc',
         'static-route-manager.cc',
+        'static-route-manager-impl.cc',
         'candidate-queue.cc',
         ]
 

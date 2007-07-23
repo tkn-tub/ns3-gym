@@ -59,10 +59,11 @@ class SPFVertex
 {
 public:
 /**
- * @enum Enumeration of the possible types of SPFVertex objects.  Currently 
- * we use VertexRouter to identify objects that represent a router in the 
- * simulation topology, and VertexNetwork to identify objects that represent
- * a network.
+ * @brief Enumeration of the possible types of SPFVertex objects.
+ *
+ * Currently we use VertexRouter to identify objects that represent a router 
+ * in the simulation topology, and VertexNetwork to identify objects that 
+ * represent a network.
  */
   enum VertexType {
     VertexUnknown = 0,  /**< Uninitialized Link Record */
@@ -124,7 +125,7 @@ public:
  * represents.
  *
  * @see VertexType
- * @param The new VertexType for the current SPFVertex object.
+ * @param type The new VertexType for the current SPFVertex object.
  */
   void SetVertexType (VertexType type);
 /**
@@ -178,7 +179,7 @@ public:
  * @see StaticRouter::DiscoverLSAs ()
  * @warning Ownership of the LSA is transferred to the "this" SPFVertex.  You
  * must not delete the LSA after calling this method.
- * @param A pointer to the StaticRouterLSA.
+ * @param lsa A pointer to the StaticRouterLSA.
  */
   void SetLSA (StaticRouterLSA* lsa);
 /**
@@ -486,8 +487,6 @@ public:
  * the SPF tree.
  *
  * @see SPFVertex::GetNChildren
- * @param n The index (from 0 to the number of children minus 1) of the 
- * child SPFVertex to return.
  * @warning Ownership of the pointer added to the children of "this" 
  * SPFVertex is transferred to the "this" SPFVertex.  You must not delete the
  * (now) child SPFVertex after calling this method.

@@ -40,9 +40,11 @@ class StaticRouterLinkRecord
 {
 public:
 /**
- * @enum Enumeration of the possible types of Static Router Link Records.
- * These are defined in the OSPF spec.  We currently only use PointToPoint and
- * StubNetwork types.
+ * @enum LinkType
+ * @brief Enumeration of the possible types of Static Router Link Records.
+ *
+ * These values are defined in the OSPF spec.  We currently only use 
+ * PointToPoint and StubNetwork types.
  */
   enum LinkType {
     Unknown = 0,        /**< Uninitialized Link Record */
@@ -102,7 +104,7 @@ public:
  * For an OSPF type 3 link (StubNetwork), the Link ID must be the adjacent
  * neighbor's IP address
  *
- * @param An Ipv4Address to store in the Link ID field of the record.
+ * @param addr An Ipv4Address to store in the Link ID field of the record.
  */
   void SetLinkId(Ipv4Address addr);
 /**
@@ -126,7 +128,7 @@ public:
  * For an OSPF type 3 link (StubNetwork), the Link Data must be set to the
  * network mask
  *
- * @param An Ipv4Address to store in the Link Data field of the record.
+ * @param addr An Ipv4Address to store in the Link Data field of the record.
  */
   void SetLinkData(Ipv4Address addr);
 /**
@@ -225,7 +227,8 @@ class StaticRouterLSA
 {
 public:
 /**
- * @enum Enumeration of the possible values of the status flag in the Router 
+ * @enum SPFStatus
+ * @brief Enumeration of the possible values of the status flag in the Router 
  * Link State Advertisements.
  */
   enum SPFStatus {
@@ -247,7 +250,7 @@ public:
  *
  * @param status The status to of the new LSA.
  * @param linkStateId The Ipv4Address for the link state ID field.
- * @param advertisingRouter The Ipv4Address for the advertising router field.
+ * @param advertisingRtr The Ipv4Address for the advertising router field.
  */
   StaticRouterLSA(SPFStatus status, Ipv4Address linkStateId, 
     Ipv4Address advertisingRtr);
