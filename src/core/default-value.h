@@ -135,7 +135,7 @@ private:
 };
 
 /**
- * \brief An Numeric variable for ns3::Bind
+ * \brief A Numeric variable for ns3::Bind
  * \ingroup config
  *
  * Every instance of this type is automatically 
