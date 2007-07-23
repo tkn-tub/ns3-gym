@@ -374,7 +374,7 @@ DefaultValueTest::RunTests (void)
       ok = false;
     }
 
-  IntegerDefaultValue<int> i ("test-i", "help-i", -1);
+  NumericDefaultValue<int> i ("test-i", "help-i", -1);
   if (i.GetValue () != -1)
     {
       ok = false;
@@ -393,17 +393,20 @@ DefaultValueTest::RunTests (void)
     {
       ok = false;
     }
-  IntegerDefaultValue<uint32_t> ui32 ("test-ui32", "help-ui32", 10);
+  NumericDefaultValue<uint32_t> ui32 ("test-ui32", "help-ui32", 10);
   if (ui32.GetType () != "uint32_t(0:4294967295)")
     {
       ok = false;
     }
-  IntegerDefaultValue<char> c ("test-c", "help-c", 10);
+  NumericDefaultValue<char> c ("test-c", "help-c", 10);
   if (c.GetValue () != 10)
     {
       ok = false;
     }
   Bind ("test-c", "257");  
+  NumericDefaultValue<float> x ("test-x", "help-x", 10.0);
+  NumericDefaultValue<double> y ("test-y", "help-y", 10.0);
+  
 
   EnumDefaultValue<enum MyEnum> e ("test-e", "help-e",
 				   MY_ENUM_C, "C",
