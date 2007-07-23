@@ -294,6 +294,18 @@ SimulatorPrivate::Cancel (EventId &id)
 bool
 SimulatorPrivate::IsExpired (const EventId ev)
 {
+  if (ev.GetUid () == 2)
+    {
+      // destroy events.
+      for (DestroyEvents::iterator i = m_destroyEvents.begin (); i != m_destroyEvents.end (); i++)
+        {
+          if (*i == ev)
+            {
+              return false;
+            }
+         }
+      return true;
+    }
   if (ev.GetEventImpl () == 0 ||
       ev.GetTs () < m_currentTs ||
       (ev.GetTs () == m_currentTs &&
@@ -553,12 +565,15 @@ private:
   void cbaz3 (const int &, const int &, const int &);
   void cbaz4 (const int &, const int &, const int &, const int &);
   void cbaz5 (const int &, const int &, const int &, const int &, const int &);
+  void destroy (void);
   
   bool m_b;
   bool m_a;
   bool m_c;
   bool m_d;
   EventId m_idC;
+  bool m_destroy;
+  EventId m_destroyId;
 };
 
 SimulatorTests::SimulatorTests ()
@@ -612,6 +627,14 @@ SimulatorTests::D (int d)
   else 
     {
       m_d = true;
+    }
+}
+void
+SimulatorTests::destroy (void)
+{
+  if (m_destroyId.IsExpired ())
+    {
+      m_destroy = true; 
     }
 }
 void 
@@ -847,10 +870,19 @@ SimulatorTests::RunTests (void)
 #endif
 
   EventId nowId = Simulator::ScheduleNow (&foo0);
-  EventId destroyId = Simulator::ScheduleDestroy (&foo0);
+  m_destroyId = Simulator::ScheduleDestroy (&SimulatorTests::destroy, this);
+  if (m_destroyId.IsExpired ())
+    {
+      ok = false;
+    }
 
   Simulator::Run ();
+  m_destroy = false;
   Simulator::Destroy ();
+  if (!m_destroy) 
+    {
+      ok = false;
+    }
 
   return ok;
 }
