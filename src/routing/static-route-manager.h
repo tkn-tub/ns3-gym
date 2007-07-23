@@ -34,17 +34,30 @@ class StaticRouteManager
 {
 public:
 /**
+ * @brief Build a routing database and initialize the routing tables of
+ * the nodes in the simulation.
+ *
+ * All this function does is call  BuildStaticRoutingDatabase () and
+ * InitializeRoutes ().  There's no reason to export the two-step process
+ * since a high-level caller has no need to know how we're implementing the
+ * process.
+ *
+ * @see BuildStaticRoutingDatabase ();
+ * @see InitializeRoutes ();
+ */
+  static void PopulateRoutingTables ();
+private:
+/**
  * @brief Build the routing database by gathering Link State Advertisements
  * from each node exporting a StaticRouter interface.
  *
  */
-  static void BuildStaticRoutingDatabase();
+  static void BuildStaticRoutingDatabase ();
 /**
  * @brief Compute routes using a Dijkstra SPF computation and populate
  * per-node forwarding tables
  */
-  static void InitializeRoutes();
-private:
+  static void InitializeRoutes ();
 /**
  * @brief Static Route Manager copy construction is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be hopelessly wrong.

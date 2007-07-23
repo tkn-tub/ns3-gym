@@ -29,6 +29,13 @@ namespace ns3 {
 // ---------------------------------------------------------------------------
 
   void
+StaticRouteManager::PopulateRoutingTables () 
+{
+  BuildStaticRoutingDatabase ();
+  InitializeRoutes ();
+}
+
+  void
 StaticRouteManager::BuildStaticRoutingDatabase () 
 {
   return SimulationSingleton<StaticRouteManagerImpl>::Get ()->

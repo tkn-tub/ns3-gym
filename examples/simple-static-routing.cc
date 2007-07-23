@@ -143,8 +143,7 @@ int main (int argc, char *argv[])
 
   if (RoutingEnvironment::StaticRoutingEnabled ())
     {
-      StaticRouteManager::BuildStaticRoutingDatabase ();
-      StaticRouteManager::InitializeRoutes ();
+      StaticRouteManager::PopulateRoutingTables ();
     }
 
   // Create the OnOff application to send UDP datagrams of size
