@@ -44,8 +44,8 @@ public:
    * method.
    * \returns true if the event has expired, false otherwise.
    */
-  bool IsExpired (void) const;
-  bool IsRunning (void) const;
+  bool IsExpired (void);
+  bool IsRunning (void);
 public:
   /* The following methods are semi-private
    * they are supposed to be invoked only by
@@ -55,10 +55,14 @@ public:
   uint64_t GetTs (void) const;
   uint32_t GetUid (void) const;
 private:
+  friend bool operator == (const EventId &a, const EventId &b);
   EventImpl *m_eventImpl;
   uint64_t m_ts;
   uint32_t m_uid;
 };
+
+bool operator == (const EventId &a, const EventId &b);
+bool operator != (const EventId &a, const EventId &b);
 
 }; // namespace ns3
 
