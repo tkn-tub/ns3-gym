@@ -63,6 +63,7 @@ def build(bld):
         'scheduler-map.cc',
         'event-impl.cc',
         'simulator.cc',
+        'time-default-value.cc',
         ]
     sim.includes = '.'
 
@@ -76,6 +77,7 @@ def build(bld):
         'scheduler.h',
         'scheduler-factory.h',
         'simulation-singleton.h',
+        'time-default-value.h',
         ]
 
     env = bld.env_of_name('default')
