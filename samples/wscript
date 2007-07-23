@@ -21,4 +21,8 @@ def build(bld):
     #obj = create_ns_prog('main-simple-p2p', 'main-simple-p2p.cc', deps=['node', 'p2p'])
     obj = create_ns_prog('main-default-value', 'main-default-value.cc',
                          deps=['core', 'simulator', 'node', 'p2p'])
+    obj = create_ns_prog('main-grid-topology', 'main-grid-topology.cc',
+                         deps=['core', 'simulator', 'mobility', 'internet-node'])
+    obj = create_ns_prog('main-random-topology', 'main-random-topology.cc',
+                         deps=['core', 'simulator', 'mobility'])
 
