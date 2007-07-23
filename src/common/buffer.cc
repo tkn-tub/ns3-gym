@@ -31,6 +31,15 @@ Buffer::BufferDataList  Buffer::m_freeList;
 uint32_t Buffer::m_maxTotalAddStart = 0;
 uint32_t Buffer::m_maxTotalAddEnd = 0;
 
+Buffer::BufferDataList::~BufferDataList ()
+{
+  for (BufferDataList::iterator i = begin ();
+       i != end (); i++)
+    {
+      Buffer::Deallocate (*i);
+    }
+}
+
 struct Buffer::BufferData *
 Buffer::Allocate (uint32_t reqSize, uint32_t reqStart)
 {

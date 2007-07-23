@@ -336,7 +336,11 @@ private:
       uint32_t m_dirtySize;
       uint8_t m_data[1];
   };
-  typedef std::vector<struct Buffer::BufferData*> BufferDataList;
+  class BufferDataList : public std::vector<struct Buffer::BufferData*>
+  {
+  public:
+    ~BufferDataList ();
+  };
 
   inline uint8_t *GetStart (void) const;
   static void Recycle (struct Buffer::BufferData *data);

@@ -37,6 +37,14 @@ uint16_t PacketMetadata::m_chunkUid = 0;
 PacketMetadata::DataFreeList PacketMetadata::m_freeList;
 bool g_optOne = false;
 
+PacketMetadata::DataFreeList::~DataFreeList ()
+{
+  for (iterator i = begin (); i != end (); i++)
+    {
+      PacketMetadata::Deallocate (*i);
+    }
+}
+
 void 
 PacketMetadata::Enable (void)
 {

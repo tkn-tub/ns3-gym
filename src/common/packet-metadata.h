@@ -182,7 +182,11 @@ private:
     uint32_t packetUid;
   };
 
-  typedef std::vector<struct Data *> DataFreeList;
+  class DataFreeList : public std::vector<struct Data *>
+  {
+  public:
+    ~DataFreeList ();
+  };
   
   PacketMetadata ();
   void DoAddHeader (uint32_t uid, uint32_t size);
