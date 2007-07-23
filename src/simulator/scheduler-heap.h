@@ -36,13 +36,11 @@ public:
   virtual ~SchedulerHeap ();
 
 private:
-  virtual EventId RealInsert (EventImpl *event, Scheduler::EventKey key);
+  virtual void RealInsert (EventId id);
   virtual bool RealIsEmpty (void) const;
-  virtual EventImpl *RealPeekNext (void) const;
-  virtual Scheduler::EventKey RealPeekNextKey (void) const;
+  virtual EventId RealPeekNext (void) const;
   virtual void RealRemoveNext (void);
-  virtual EventImpl *RealRemove (EventId ev, Scheduler::EventKey *key);
-  virtual bool RealIsValid (EventId id);
+  virtual bool RealRemove (EventId ev);
 
   typedef std::vector<std::pair<EventImpl *, Scheduler::EventKey> > BinaryHeap;
 

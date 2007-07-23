@@ -222,23 +222,22 @@ SchedulerHeap::TopDown (uint32_t start)
 }
 
 
-EventId
-SchedulerHeap::RealInsert (EventImpl *event, Scheduler::EventKey key)
+void
+SchedulerHeap::RealInsert (EventId id)
 {
+  EventImpl *event = id.GetEventImpl ();
+  Scheduler::EventKey key;
+  key.m_ts = id.GetTs ();
+  key.m_uid = id.GetUid ();
   m_heap.push_back (std::make_pair (event, key));
   BottomUp ();
-  return EventId (event, key.m_ts, key.m_uid);
 }
 
-EventImpl *
+EventId
 SchedulerHeap::RealPeekNext (void) const
 {
-  return m_heap[Root ()].first;
-}
-Scheduler::EventKey
-SchedulerHeap::RealPeekNextKey (void) const
-{
-  return m_heap[Root ()].second;
+  std::pair<EventImpl *,Scheduler::EventKey> next = m_heap[Root ()];
+  return EventId (next.first, next.second.m_ts, next.second.m_uid);
 }
 void     
 SchedulerHeap::RealRemoveNext (void)
@@ -249,31 +248,25 @@ SchedulerHeap::RealRemoveNext (void)
 }
 
 
-EventImpl *
-SchedulerHeap::RealRemove (EventId id, Scheduler::EventKey *key)
+bool
+SchedulerHeap::RealRemove (EventId id)
 {
-  key->m_ts = id.GetTs ();
-  key->m_uid = id.GetUid ();
+  uint32_t uid = id.GetUid ();
   for (uint32_t i = 1; i < m_heap.size (); i++)
     {
-      if (key->m_uid == m_heap[i].second.m_uid)
+      if (uid == m_heap[i].second.m_uid)
         {
-          EventImpl *retval = m_heap[i].first;
+          NS_ASSERT (m_heap[i].first == id.GetEventImpl ());
           Exch (i, Last ());
           m_heap.pop_back ();
           TopDown (i);
-          return retval;
+          return true;
         }
     }
   NS_ASSERT (false);
   // quiet compiler
-  return 0;
+  return false;
 }
 
-bool 
-SchedulerHeap::RealIsValid (EventId id)
-{
-  return true;
-}
 }; // namespace ns3
 
