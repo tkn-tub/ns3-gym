@@ -37,6 +37,7 @@ def build(bld):
         'command-line.cc',
         'type-name.cc',
         'component-manager.cc',
+        'random-variable-default-value.cc',
         ]
     core.includes = '.'
 
@@ -66,6 +67,7 @@ def build(bld):
         'command-line.h',
         'type-name.h',
         'component-manager.h',
-        'type-traits.h'
+        'type-traits.h',
+        'random-variable-default-value.h',
         ]
 
