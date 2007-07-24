@@ -171,14 +171,6 @@ int main (int argc, char *argv[])
   ooff->Start (Seconds (1.1));
   ooff->Stop (Seconds (10.0));
 
-  // Here, finish off packet routing configuration
-  // This will likely set by some global StaticRouting object in the future
-  Ptr<Ipv4> ipv4;
-  ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
-  ipv4->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
-  ipv4 = n3->QueryInterface<Ipv4> (Ipv4::iid);
-  ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
-  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-static-routing.tr file
   AsciiTrace asciitrace ("simple-static-routing.tr");
