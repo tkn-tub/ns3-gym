@@ -9,7 +9,7 @@ import Object
 import Params
 
 
-all_modules = [
+all_modules = (
     'core',
     'common',
     'simulator',
@@ -18,7 +18,7 @@ all_modules = [
     'devices/p2p',
     'applications',
     'mobility',
-    ]
+    )
 
 
 def set_options(opt):
@@ -52,7 +52,7 @@ def build(bld):
     Object.register('ns3header', Ns3Header)
     Action.Action('ns3header', func=_ns3_headers_inst, color='BLUE')
     
-    bld.add_subdirs(all_modules)
+    bld.add_subdirs(list(all_modules))
 
 class Ns3Header(Object.genobj):
     """A set of NS-3 header files"""
