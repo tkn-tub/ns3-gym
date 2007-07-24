@@ -505,7 +505,7 @@ StaticRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
                       StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
                     {
 //
-// If we havent yet considered the link represented by <w> we have to create 
+// If we haven't yet considered the link represented by <w> we have to create 
 // a new SPFVertex to represent it.
 //
                         w = new SPFVertex (w_lsa);
@@ -710,9 +710,6 @@ StaticRouteManagerImpl::SPFNexthopCalculation (
 // Router Link Record we find that describes a point-to-point link from <v> 
 // to <w>.  If prev_link is not NULL, we return a Static Router Link Record
 // representing a possible *second* link from <v> to <w>.
-//
-// BUGBUG FIXME:  This seems to be a bug.  Shouldn't this function look for
-// any link records after pre_link and not just after the first?
 //
   StaticRouterLinkRecord* 
 StaticRouteManagerImpl::SPFGetNextLink (
@@ -928,7 +925,7 @@ StaticRouteManagerImpl::SPFCalculate (Ipv4Address root)
 }
 
 //
-// BUGBUG FIXME: This should probably be a method on Ipv4
+// XXX This should probably be a method on Ipv4
 //
 // Return the interface index corresponding to a given IP address
 //
@@ -1360,12 +1357,14 @@ StaticRouteManagerImplTest::RunTests (void)
   srmlsdb->Insert (lsa3->GetLinkStateId (), lsa3);
   NS_ASSERT (lsa2 == srmlsdb->GetLSA (lsa2->GetLinkStateId ()));
 
-  // XXX next, calculate routes based on the manually created LSDB
+  // next, calculate routes based on the manually created LSDB
   StaticRouteManagerImpl* srm = new StaticRouteManagerImpl ();
   srm->DebugUseLsdb (srmlsdb);  // manually add in an LSDB
   // Note-- this will succeed without any nodes in the topology
   // because the NodeList is empty
   srm->DebugSPFCalculate (lsa0->GetLinkStateId ());  // node n0
+  
+  // XXX here we should do some verification of the routes built
 
   // This delete clears the srm, which deletes the LSDB, which clears 
   // all of the LSAs, which each destroys the attached LinkRecords.

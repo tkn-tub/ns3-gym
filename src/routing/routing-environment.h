@@ -23,8 +23,17 @@
 
 namespace ns3 {
 namespace RoutingEnvironment {
-
+ 
+/**
+ * @brief This function tests the value of the global default value
+ * "DoStaticRouting".  This approach puts everything in one compilation
+ * unit, as opposed to explicitly testing the value of the underlying
+ * static variable.
+ */
 bool StaticRoutingEnabled(void);
+/**
+ * @brief Allocate a 32-bit router ID from monotonically increasing counter.
+ */
 uint32_t AllocateRouterId(void);
 
 } // namespace RoutingEnvironment

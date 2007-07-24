@@ -72,7 +72,8 @@ Therefore, we think that enabling these other link types will be more
 straightforward now that the underlying OSPF SPF framework is in place.
 
 Presently, we can handle IPv4 point-to-point, numbered links, and we do
-not do equal-cost multipath.
+not do equal-cost multipath.  We also do not allow for non-unit-cost
+links, although it should be trivially extensible to do so.
 
 The support for this relies on the node object supporting a StaticRouter
 interface.  This can be manually added to each node, or alternatively,
@@ -124,3 +125,9 @@ router component into the node such as Gustavo's OLSR code does
 the StaticRouteManager.  One possibility I would be fine with is to call 
 it GlobalRouteManager (although I would still argue it adds static routes
 into the nodes in any case).
+
+- this method probably belongs in the Ipv4 (find InterfaceId corresponding
+to the provided address)
+  uint32_t
+StaticRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a)
+

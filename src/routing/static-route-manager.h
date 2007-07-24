@@ -38,9 +38,7 @@ public:
  * the nodes in the simulation.
  *
  * All this function does is call  BuildStaticRoutingDatabase () and
- * InitializeRoutes ().  There's no reason to export the two-step process
- * since a high-level caller has no need to know how we're implementing the
- * process.
+ * InitializeRoutes ().  
  *
  * @see BuildStaticRoutingDatabase ();
  * @see InitializeRoutes ();
@@ -60,13 +58,13 @@ private:
   static void InitializeRoutes ();
 /**
  * @brief Static Route Manager copy construction is disallowed.  There's no 
- * need for it and a compiler provided shallow copy would be hopelessly wrong.
+ * need for it and a compiler provided shallow copy would be wrong.
  *
  */
   StaticRouteManager (StaticRouteManager& srm);
 /**
  * @brief Static Router copy assignment operator is disallowed.  There's no 
- * need for it and a compiler provided shallow copy would be hopelessly wrong.
+ * need for it and a compiler provided shallow copy would be wrong.
  */
   StaticRouteManager& operator= (StaticRouteManager& srm);
 };

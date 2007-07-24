@@ -136,7 +136,7 @@ public:
  * representing routers, and comes from the Link State Advertisement of a 
  * router aggregated to a node in the simulation.  These IDs are allocated
  * automatically by the routing environment and look like IP addresses 
- * beginning at 0.0.0.0 and monotonically increasing as new routers are
+ * beginning at 0.0.0.0 and monotonically increase as new routers are
  * instantiated.
  *
  * @returns The Ipv4Address Vertex ID of the current SPFVertex object.
@@ -150,8 +150,9 @@ public:
  * representing routers, and comes from the Link State Advertisement of a 
  * router aggregated to a node in the simulation.  These IDs are allocated
  * automatically by the routing environment and look like IP addresses 
- * beginning at 0.0.0.0 and monotonically increasing as new routers are
- * instantiated.
+ * beginning at 0.0.0.0 and monotonically increase as new routers are
+ * instantiated.  This method is an explicit override of the automatically
+ * generated value.
  *
  * @param id The new Ipv4Address Vertex ID for the current SPFVertex object.
  */
@@ -520,7 +521,7 @@ private:
 };
 
 /**
- * @brief The Link State DataBase (LSDB) of the Static Route Manager.
+ * @brief The Link State DataBase (LSDB) of the StaticRouteManager.
  *
  * Each node in the simulation participating in static routing has a
  * StaticRouter interface.  The primary job of this interface is to export
@@ -536,14 +537,14 @@ class StaticRouteManagerLSDB
 {
 public:
 /**
- * @brief Construct an empty Static Router Manager Link State Database.
+ * @brief Construct an empty StaticRoutingManager Link State Database.
  *
  * The database map composing the Link State Database is initialized in
  * this constructor.
  */
   StaticRouteManagerLSDB ();
 /**
- * @brief Destroy an empty Static Router Manager Link State Database.
+ * @brief Destroy an empty StaticRoutingManager Link State Database.
  *
  * The database map is walked and all of the Link State Advertisements stored
  * in the database are freed; then the database map itself is clear ()ed to
@@ -599,7 +600,7 @@ private:
   LSDBMap_t m_database;
 /**
  * @brief StaticRouteManagerLSDB copy construction is disallowed.  There's no 
- * need for it and a compiler provided shallow copy would be hopelessly wrong.
+ * need for it and a compiler provided shallow copy would be wrong.
  */
   StaticRouteManagerLSDB (StaticRouteManagerLSDB& lsdb);
 /**
@@ -646,15 +647,15 @@ public:
   void DebugSPFCalculate (Ipv4Address root);
 private:
 /**
- * @brief Static Route Manager Implementation copy construction is disallowed.
+ * @brief StaticRouteManager Implementation copy construction is disallowed.
  * There's no  need for it and a compiler provided shallow copy would be 
- * hopelessly wrong.
+ * wrong.
  */
   StaticRouteManagerImpl (StaticRouteManagerImpl& srmi);
 /**
- * @brief Static Route Manager Implementation assignment operator is
+ * @brief StaticRouteManager Implementation assignment operator is
  * disallowed.  There's no  need for it and a compiler provided shallow copy
- * would be hopelessly wrong.
+ * would be wrong.
  */
   StaticRouteManagerImpl& operator= (StaticRouteManagerImpl& srmi);
 
