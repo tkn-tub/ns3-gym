@@ -6,6 +6,9 @@ def build(bld):
     node.target = node.name
     node.uselib_local = ['ns3-core', 'ns3-common', 'ns3-simulator']
     node.source = [
+        'address.cc',
+        'eui48-address.cc',
+        'ipv4-transport-address.cc',
         'node.cc',
         'ipv4-address.cc',
         'net-device.cc',
@@ -26,6 +29,9 @@ def build(bld):
 
     headers = bld.create_obj('ns3header')
     headers.source = [
+        'address.h',
+        'eui48-address.h',
+        'ipv4-transport-address.h',
         'node.h',
         'ipv4-address.h',
         'net-device.h',
