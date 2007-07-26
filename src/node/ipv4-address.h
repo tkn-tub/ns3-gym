@@ -82,8 +82,8 @@ public:
    */
   void Print (std::ostream &os) const;
 
-  bool IsBroadcast (void);
-  bool IsMulticast (void);
+  bool IsBroadcast (void) const;
+  bool IsMulticast (void) const;
   /**
    * \brief Combine this address with a network mask
    *
