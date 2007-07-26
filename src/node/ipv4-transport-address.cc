@@ -49,8 +49,7 @@ Ipv4TransportAddress::ConvertTo (void) const
 Ipv4TransportAddress 
 Ipv4TransportAddress::ConvertFrom (const Address &address)
 {
-  NS_ASSERT (address.GetType () == GetType ());
-  NS_ASSERT (address.GetLength () == 6);
+  NS_ASSERT (address.CheckCompatible (GetType (), 6));
   uint8_t buf[6];
   address.CopyTo (buf);
   Ipv4Address ipv4 = Ipv4Address::Deserialize (buf);

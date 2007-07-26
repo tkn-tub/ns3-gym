@@ -205,8 +205,7 @@ Ipv4Address::ConvertTo (void) const
 Ipv4Address
 Ipv4Address::ConvertFrom (const Address &address)
 {
-  NS_ASSERT (address.GetType () == GetType ());
-  NS_ASSERT (address.GetLength () == 4);
+  NS_ASSERT (address.CheckCompatible (GetType (), 4));
   uint8_t buf[4];
   address.CopyTo (buf);
   return Deserialize (buf);

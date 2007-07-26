@@ -66,8 +66,7 @@ Eui48Address::ConvertTo (void) const
 Eui48Address 
 Eui48Address::ConvertFrom (const Address &address)
 {
-  NS_ASSERT (address.GetType () == GetType ());
-  NS_ASSERT (address.GetLength () == 6);
+  NS_ASSERT (address.CheckCompatible (GetType (), 6));
   Eui48Address retval;
   address.CopyTo (retval.m_address);
   return retval;

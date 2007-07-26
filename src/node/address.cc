@@ -5,6 +5,13 @@
 
 namespace ns3 {
 
+Address::Address ()
+  : m_type (0),
+    m_len (0)
+{
+  memset (m_data, 0, m_len);
+}
+
 Address::Address (uint8_t type, const uint8_t *buffer, uint8_t len)
   : m_type (type),
     m_len (len)
@@ -45,11 +52,16 @@ Address::CopyTo (uint8_t *buffer) const
   NS_ASSERT (m_len <= MAX_SIZE);
   memcpy (buffer, m_data, m_len);
 }
-uint8_t
-Address::GetType (void) const
+void 
+Address::CopyFrom (uint8_t *buffer, uint8_t len)
 {
-  NS_ASSERT (m_len <= MAX_SIZE);
-  return m_type;
+  NS_ASSERT (len == m_len);
+  memcpy (m_data, buffer, len);
+}
+bool 
+Address::CheckCompatible (uint8_t type, uint8_t len) const
+{
+  return m_len == len && (m_type == type || m_type == 0);
 }
 
 uint8_t 
@@ -62,7 +74,9 @@ Address::Register (void)
 
 bool operator == (const Address &a, const Address &b)
 {
-  NS_ASSERT (a.GetType () == b.GetType ());
+  NS_ASSERT (a.m_type == b.m_type || 
+	     a.m_type == 0 || 
+	     b.m_type == 0);
   NS_ASSERT (a.GetLength() == b.GetLength());  
   return memcmp (a.m_data, b.m_data, a.m_len) == 0;
 }
@@ -72,7 +86,9 @@ bool operator != (const Address &a, const Address &b)
 }
 bool operator < (const Address &a, const Address &b)
 {
-  NS_ASSERT (a.GetType () == b.GetType ());
+  NS_ASSERT (a.m_type == b.m_type  || 
+	     a.m_type == 0 || 
+	     b.m_type == 0);
   NS_ASSERT (a.GetLength() == b.GetLength());
   for (uint8_t i = 0; i < a.GetLength(); i++) 
     {
