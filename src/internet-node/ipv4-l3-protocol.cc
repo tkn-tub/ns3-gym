@@ -48,9 +48,10 @@ Ipv4L3Protocol::Ipv4L3Protocol(Ptr<Node> node)
     m_nInterfaces (0),
     m_defaultTtl (64),
     m_identification (0),
-    m_defaultRoute (0),
     m_node (node)
 {
+  m_staticRouting = Create<Ipv4StaticRouting> ();
+  AddRoutingProtocol (m_staticRouting, 0);
   SetupLoopback ();
 }
 Ipv4L3Protocol::~Ipv4L3Protocol ()
@@ -64,25 +65,10 @@ Ipv4L3Protocol::DoDispose (void)
       delete (*i);
     }
   m_interfaces.clear ();
-  for (HostRoutesI i = m_hostRoutes.begin (); 
-       i != m_hostRoutes.end (); 
-       i = m_hostRoutes.erase (i)) 
-    {
-      delete (*i);
-    }
-  for (NetworkRoutesI j = m_networkRoutes.begin (); 
-       j != m_networkRoutes.end (); 
-       j = m_networkRoutes.erase (j)) 
-    {
-      delete (*j);
-    }
-  if (m_defaultRoute != 0)
-    {
-      delete m_defaultRoute;
-      m_defaultRoute = 0;
-    }
   m_node = 0;
   L3Protocol::DoDispose ();
+  m_staticRouting->Dispose ();
+  m_staticRouting = 0;
 }
 
 void
@@ -132,17 +118,13 @@ Ipv4L3Protocol::AddHostRouteTo (Ipv4Address dest,
                       Ipv4Address nextHop, 
                       uint32_t interface)
 {
-  Ipv4Route *route = new Ipv4Route ();
-  *route = Ipv4Route::CreateHostRouteTo (dest, nextHop, interface);
-  m_hostRoutes.push_back (route);
+  m_staticRouting->AddHostRouteTo (dest, nextHop, interface);
 }
 void 
 Ipv4L3Protocol::AddHostRouteTo (Ipv4Address dest, 
 				uint32_t interface)
 {
-  Ipv4Route *route = new Ipv4Route ();
-  *route = Ipv4Route::CreateHostRouteTo (dest, interface);
-  m_hostRoutes.push_back (route);
+  m_staticRouting->AddHostRouteTo (dest, interface);
 }
 void 
 Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network, 
@@ -150,163 +132,63 @@ Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network,
 				   Ipv4Address nextHop, 
 				   uint32_t interface)
 {
-  Ipv4Route *route = new Ipv4Route ();
-  *route = Ipv4Route::CreateNetworkRouteTo (network,
-                                            networkMask,
-                                            nextHop,
-                                            interface);
-  m_networkRoutes.push_back (route);
+  m_staticRouting->AddNetworkRouteTo (network, networkMask, nextHop, interface);
 }
 void 
 Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network, 
 				   Ipv4Mask networkMask, 
 				   uint32_t interface)
 {
-  Ipv4Route *route = new Ipv4Route ();
-  *route = Ipv4Route::CreateNetworkRouteTo (network,
-                                            networkMask,
-                                            interface);
-  m_networkRoutes.push_back (route);
+  m_staticRouting->AddNetworkRouteTo (network, networkMask, interface);
 }
 void 
 Ipv4L3Protocol::SetDefaultRoute (Ipv4Address nextHop, 
 				 uint32_t interface)
 {
-  Ipv4Route *route = new Ipv4Route ();
-  *route = Ipv4Route::CreateDefaultRoute (nextHop, interface);
-  delete m_defaultRoute;
-  m_defaultRoute = route;
+  m_staticRouting->SetDefaultRoute (nextHop, interface);
 }
 
-Ipv4Route *
-Ipv4L3Protocol::Lookup (Ipv4Address dest)
+
+void
+Ipv4L3Protocol::Lookup (Ipv4Header const &ipHeader,
+                        Packet packet,
+                        Ipv4RoutingProtocol::RouteReplyCallback routeReply)
 {
-  for (HostRoutesCI i = m_hostRoutes.begin (); 
-       i != m_hostRoutes.end (); 
-       i++) 
+  for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end (); rprotoIter++)
     {
-      NS_ASSERT ((*i)->IsHost ());
-      if ((*i)->GetDest ().IsEqual (dest)) 
-        {
-          return (*i);
-        }
+      if ((*rprotoIter).second->RequestRoute (ipHeader, packet, routeReply))
+        return;
     }
-  for (NetworkRoutesI j = m_networkRoutes.begin (); 
-       j != m_networkRoutes.end (); 
-       j++) 
-    {
-      NS_ASSERT ((*j)->IsNetwork ());
-      Ipv4Mask mask = (*j)->GetDestNetworkMask ();
-      Ipv4Address entry = (*j)->GetDestNetwork ();
-      if (mask.IsMatch (dest, entry)) 
-        {
-          return (*j);
-        }
-    }
-  if (m_defaultRoute != 0) 
-    {
-      NS_ASSERT (m_defaultRoute->IsDefault ());
-      return m_defaultRoute;
-    }
-  return 0;
+  // No route found
+  routeReply (false, Ipv4Route (), packet, ipHeader);
+}
+
+void
+Ipv4L3Protocol::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
+                                    int priority)
+{
+  m_routingProtocols.push_back
+    (std::pair<int, Ptr<Ipv4RoutingProtocol> > (-priority, routingProtocol));
+  m_routingProtocols.sort ();
 }
 
 uint32_t 
 Ipv4L3Protocol::GetNRoutes (void)
 {
-  uint32_t n = 0;
-  if (m_defaultRoute != 0)
-    {
-      n++;
-    }
-  n += m_hostRoutes.size ();
-  n += m_networkRoutes.size ();
-  return n;
+  return m_staticRouting->GetNRoutes ();
 }
+
 Ipv4Route *
 Ipv4L3Protocol::GetRoute (uint32_t index)
 {
-  if (index == 0 && m_defaultRoute != 0)
-    {
-      return m_defaultRoute;
-    }
-  if (index > 0 && m_defaultRoute != 0)
-    {
-      index--;
-    }
-  if (index < m_hostRoutes.size ())
-    {
-      uint32_t tmp = 0;
-      for (HostRoutesCI i = m_hostRoutes.begin (); 
-           i != m_hostRoutes.end (); 
-           i++) 
-        {
-          if (tmp  == index)
-            {
-              return *i;
-            }
-          tmp++;
-        }
-    }
-  index -= m_hostRoutes.size ();
-  uint32_t tmp = 0;
-  for (NetworkRoutesI j = m_networkRoutes.begin (); 
-       j != m_networkRoutes.end (); 
-       j++) 
-    {
-      if (tmp == index)
-        {
-          return *j;
-        }
-      tmp++;
-    }
-  NS_ASSERT (false);
-  // quiet compiler.
-  return 0;
+  return m_staticRouting->GetRoute (index);
 }
+
 void 
 Ipv4L3Protocol::RemoveRoute (uint32_t index)
 {
-  if (index == 0 && m_defaultRoute != 0)
-    {
-      delete m_defaultRoute;
-      m_defaultRoute = 0;
-    }
-  if (index > 0 && m_defaultRoute != 0)
-    {
-      index--;
-    }
-  if (index < m_hostRoutes.size ())
-    {
-      uint32_t tmp = 0;
-      for (HostRoutesI i = m_hostRoutes.begin (); 
-           i != m_hostRoutes.end (); 
-           i++) 
-        {
-          if (tmp  == index)
-            {
-              delete *i;
-              m_hostRoutes.erase (i);
-              return;
-            }
-          tmp++;
-        }
-    }
-  index -= m_hostRoutes.size ();
-  uint32_t tmp = 0;
-  for (NetworkRoutesI j = m_networkRoutes.begin (); 
-       j != m_networkRoutes.end (); 
-       j++) 
-    {
-      if (tmp == index)
-        {
-          delete *j;
-          m_networkRoutes.erase (j);
-          return;
-        }
-      tmp++;
-    }
-  NS_ASSERT (false);
+  m_staticRouting->RemoveRoute (index);
 }
 
 
@@ -386,6 +268,7 @@ Ipv4L3Protocol::Receive(Packet& packet, Ptr<NetDevice> device)
   ForwardUp (packet, ipHeader);
 }
 
+
 void 
 Ipv4L3Protocol::Send (Packet const &packet, 
             Ipv4Address source, 
@@ -404,30 +287,49 @@ Ipv4L3Protocol::Send (Packet const &packet,
 
   m_identification ++;
 
-  // XXX Note here that in most ipv4 stacks in the world,
-  // the route calculation for an outgoing packet is not
-  // done in the ip layer. It is done within the application
-  // socket when the first packet is sent to avoid this
-  // costly lookup on a per-packet basis.
-  // That would require us to get the route from the packet,
-  // most likely with a packet tag. The higher layers do not
-  // do this yet for us.
-  Ipv4Route *route = Lookup (ipHeader.GetDestination ());
-  if (route == 0) 
+  if (destination.IsBroadcast ())
     {
-      NS_DEBUG ("not for me -- forwarding but no route to host. drop.");
-      m_dropTrace (packet);
-      return;
-    }
+      uint32_t ifaceIndex = 0;
+      for (Ipv4InterfaceList::iterator ifaceIter = m_interfaces.begin ();
+           ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
+        {
+          Ipv4Interface *outInterface = *ifaceIter;
+          Packet packetCopy = packet;
 
-  SendRealOut (packet, ipHeader, *route);
+          NS_ASSERT (packetCopy.GetSize () <= outInterface->GetMtu ());
+          packetCopy.AddHeader (ipHeader);
+          m_txTrace (packetCopy, ifaceIndex);
+          outInterface->Send (packetCopy, destination);
+        }
+    }
+  else
+    {
+      // XXX Note here that in most ipv4 stacks in the world,
+      // the route calculation for an outgoing packet is not
+      // done in the ip layer. It is done within the application
+      // socket when the first packet is sent to avoid this
+      // costly lookup on a per-packet basis.
+      // That would require us to get the route from the packet,
+      // most likely with a packet tag. The higher layers do not
+      // do this yet for us.
+      Lookup (ipHeader, packet,
+              MakeCallback (&Ipv4L3Protocol::SendRealOut, this));
+    }
 }
 
 void
-Ipv4L3Protocol::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route const &route)
+Ipv4L3Protocol::SendRealOut (bool found,
+                             Ipv4Route const &route,
+                             Packet packet,
+                             Ipv4Header const &ipHeader)
 {
-  Packet packet = p;
-  packet.AddHeader (ip);
+  if (!found)
+    {
+      NS_DEBUG ("no route to host. drop.");
+      m_dropTrace (packet);
+      return;
+    }
+  packet.AddHeader (ipHeader);
   Ipv4Interface *outInterface = GetInterface (route.GetInterface ());
   NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
   m_txTrace (packet, route.GetInterface ());
@@ -437,7 +339,7 @@ Ipv4L3Protocol::SendRealOut (Packet const &p, Ipv4Header const &ip, Ipv4Route co
     } 
   else 
     {
-      outInterface->Send (packet, ip.GetDestination ());
+      outInterface->Send (packet, ipHeader.GetDestination ());
     }
 }
 
@@ -470,7 +372,7 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
 	}
     }
       
-  if (ipHeader.GetDestination ().IsEqual (Ipv4Address::GetBroadcast ())) 
+  if (ipHeader.GetDestination ().IsBroadcast ()) 
     {
       NS_DEBUG ("for me 3");
       return false;
@@ -489,15 +391,10 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
       return true;
     }
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
-  Ipv4Route *route = Lookup (ipHeader.GetDestination ());
-  if (route == 0) 
-    {
-      NS_DEBUG ("not for me -- forwarding but no route to host. drop.");
-      m_dropTrace (packet);
-      return true;
-    }
+
   NS_DEBUG ("not for me -- forwarding.");
-  SendRealOut (packet, ipHeader, *route);
+  Lookup (ipHeader, packet,
+          MakeCallback (&Ipv4L3Protocol::SendRealOut, this));
   return true;
 }
 
