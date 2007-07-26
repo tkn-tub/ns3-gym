@@ -22,6 +22,7 @@
 #ifndef PTR_H
 #define PTR_H
 
+#include <iostream>
 #include <stdint.h>
 #include "assert.h"
 

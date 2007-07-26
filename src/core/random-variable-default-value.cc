@@ -43,7 +43,8 @@ RandomVariable *
 RandomVariableDefaultValue::GetCopy (void)
 {
   RandomVariable *variable;
-  bool ok = Parse (m_value, true, &variable);
+  bool ok;
+  ok = Parse (m_value, true, &variable);
   NS_ASSERT (ok);
   return variable;
 }
