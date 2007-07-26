@@ -55,6 +55,7 @@ def build(bld):
     sim.source = [
         'high-precision.cc',
         'time.cc',
+        'timer.cc',
         'event-id.cc',
         'scheduler.cc',
         'scheduler-factory.cc',
@@ -71,6 +72,7 @@ def build(bld):
     headers.source = [
         'high-precision.h',
         'nstime.h',
+        'timer.h',
         'event-id.h',
         'event-impl.h',
         'simulator.h',
