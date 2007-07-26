@@ -113,13 +113,14 @@ UdpL4Protocol::Receive(Packet& packet,
 {
   UdpHeader udpHeader;
   packet.RemoveHeader (udpHeader);
-  Ipv4EndPoint *endPoint = m_endPoints->Lookup (destination, udpHeader.GetDestination (),
-                                                source, udpHeader.GetSource ());
-  if (endPoint == 0)
+  Ipv4EndPointDemux::EndPoints endPoints =
+    m_endPoints->Lookup (destination, udpHeader.GetDestination (),
+                         source, udpHeader.GetSource ());
+  for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
+       endPoint != endPoints.end (); endPoint++)
     {
-      return;
+      (*endPoint)->ForwardUp (packet, source, udpHeader.GetSource ());
     }
-  endPoint->ForwardUp (packet, source, udpHeader.GetSource ());
 }
 
 void
