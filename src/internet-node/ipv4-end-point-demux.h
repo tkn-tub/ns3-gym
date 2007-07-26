@@ -32,15 +32,18 @@ class Ipv4EndPoint;
 
 class Ipv4EndPointDemux {
 public:
+  typedef std::list<Ipv4EndPoint *> EndPoints;
+  typedef std::list<Ipv4EndPoint *>::iterator EndPointsI;
+
   Ipv4EndPointDemux ();
   ~Ipv4EndPointDemux ();
 
   bool LookupPortLocal (uint16_t port);
   bool LookupLocal (Ipv4Address addr, uint16_t port);
-  Ipv4EndPoint *Lookup (Ipv4Address daddr, 
-                        uint16_t dport, 
-                        Ipv4Address saddr, 
-                        uint16_t sport);
+  EndPoints Lookup (Ipv4Address daddr, 
+                    uint16_t dport, 
+                    Ipv4Address saddr, 
+                    uint16_t sport);
 
   Ipv4EndPoint *Allocate (void);
   Ipv4EndPoint *Allocate (Ipv4Address address);
@@ -55,8 +58,6 @@ public:
 
  private:
   uint16_t AllocateEphemeralPort (void);
-  typedef std::list<Ipv4EndPoint *> EndPoints;
-  typedef std::list<Ipv4EndPoint *>::iterator EndPointsI;
 
   uint16_t m_ephemeral;
   EndPoints m_endPoints;
