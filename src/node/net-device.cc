@@ -32,7 +32,7 @@ namespace ns3 {
 
 const InterfaceId NetDevice::iid = MakeInterfaceId ("NetDevice", Object::iid);
 
-NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) : 
+NetDevice::NetDevice(Ptr<Node> node, const Address& addr) : 
   m_node (node), 
   m_name(""), 
   m_ifIndex (0), 
@@ -50,7 +50,7 @@ NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) :
 NetDevice::~NetDevice ()
 {}
 
-MacAddress 
+Address 
 NetDevice::GetAddress (void) const
 {
   return m_address;
@@ -110,7 +110,7 @@ NetDevice::IsBroadcast (void) const
 {
   return m_isBroadcast;
 }
-MacAddress const &
+Address const &
 NetDevice::GetBroadcast (void) const
 {
   NS_ASSERT (m_isBroadcast);
@@ -118,7 +118,7 @@ NetDevice::GetBroadcast (void) const
 }
 
 void
-NetDevice::EnableBroadcast (MacAddress broadcast)
+NetDevice::EnableBroadcast (Address broadcast)
 {
   m_isBroadcast = true;
   m_broadcast = broadcast;
@@ -168,7 +168,7 @@ NetDevice::DisablePointToPoint (void)
 
 // Receive packet from above
 bool 
-NetDevice::Send(Packet& p, const MacAddress& dest, uint16_t protocolNumber)
+NetDevice::Send(Packet& p, const Address& dest, uint16_t protocolNumber)
 {
   if (m_isUp)
     {

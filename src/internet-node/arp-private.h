@@ -27,7 +27,7 @@
 namespace ns3 {
 
 class NetDevice;
-class MacAddress;
+class Address;
 class Packet;
 class ArpL3Protocol;
 
@@ -39,7 +39,7 @@ public:
   virtual ~ArpPrivate ();
   bool Lookup (Packet &p, Ipv4Address destination, 
 	       Ptr<NetDevice> device,
-	       MacAddress *hardwareDestination);
+	       Address *hardwareDestination);
 protected:
   virtual void DoDispose (void);
 private:

@@ -40,7 +40,7 @@ ArpPrivate::~ArpPrivate ()
 bool 
 ArpPrivate::Lookup (Packet &p, Ipv4Address destination, 
 		     Ptr<NetDevice> device,
-		     MacAddress *hardwareDestination)
+		     Address *hardwareDestination)
 {
   return m_arp->Lookup (p, destination, device, hardwareDestination);
 }

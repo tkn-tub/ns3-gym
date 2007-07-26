@@ -23,15 +23,15 @@
 
 #include "ns3/buffer.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/mac-address.h"
+#include "ns3/address.h"
 
 namespace ns3 {
 
 void WriteTo (Buffer::Iterator &i, Ipv4Address ad);
-void WriteTo (Buffer::Iterator &i, MacAddress ad);
+void WriteTo (Buffer::Iterator &i, Address ad);
 
 void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad);
-void ReadFrom (Buffer::Iterator &i, MacAddress &ad, uint32_t len);
+void ReadFrom (Buffer::Iterator &i, Address &ad, uint32_t len);
 
 };
 

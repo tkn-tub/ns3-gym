@@ -56,7 +56,6 @@
 #include "ns3/internet-node.h"
 #include "ns3/p2p-channel.h"
 #include "ns3/p2p-net-device.h"
-#include "ns3/mac-address.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/socket.h"

@@ -71,6 +71,20 @@ Eui48Address::ConvertFrom (const Address &address)
   address.CopyTo (retval.m_address);
   return retval;
 }
+Eui48Address 
+Eui48Address::Allocate (void)
+{
+  static uint64_t id = 0;
+  id++;
+  Eui48Address address;
+  address.m_address[0] = (id >> 48) & 0xff;
+  address.m_address[1] = (id >> 32) & 0xff;
+  address.m_address[2] = (id >> 24) & 0xff;
+  address.m_address[3] = (id >> 16) & 0xff;
+  address.m_address[4] = (id >> 8) & 0xff;
+  address.m_address[5] = (id >> 0) & 0xff;
+  return address;
+}
 uint8_t 
 Eui48Address::GetType (void)
 {

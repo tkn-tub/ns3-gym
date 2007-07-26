@@ -14,6 +14,7 @@ public:
   Eui48Address (const char *str);
   Address ConvertTo (void) const;
   static Eui48Address ConvertFrom (const Address &address);
+  static Eui48Address Allocate (void);
 private:
   static uint8_t GetType (void);
   uint8_t m_address[6];

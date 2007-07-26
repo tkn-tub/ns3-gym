@@ -23,7 +23,7 @@
 #define ARP_HEADER_H
 
 #include "ns3/header.h"
-#include "ns3/mac-address.h"
+#include "ns3/address.h"
 #include "ns3/ipv4-address.h"
 
 namespace ns3 {
@@ -34,18 +34,18 @@ class ArpHeader : public Header {
  public:
   virtual ~ArpHeader ();
 
-  void SetRequest (MacAddress sourceHardwareAddress,
+  void SetRequest (Address sourceHardwareAddress,
                    Ipv4Address sourceProtocolAddress,
-                   MacAddress destinationHardwareAddress,
+                   Address destinationHardwareAddress,
                    Ipv4Address destinationProtocolAddress);
-  void SetReply (MacAddress sourceHardwareAddress,
+  void SetReply (Address sourceHardwareAddress,
                  Ipv4Address sourceProtocolAddress,
-                 MacAddress destinationHardwareAddress,
+                 Address destinationHardwareAddress,
                  Ipv4Address destinationProtocolAddress);
   bool IsRequest (void) const;
   bool IsReply (void) const;
-  MacAddress GetSourceHardwareAddress (void);
-  MacAddress GetDestinationHardwareAddress (void);
+  Address GetSourceHardwareAddress (void);
+  Address GetDestinationHardwareAddress (void);
   Ipv4Address GetSourceIpv4Address (void);
   Ipv4Address GetDestinationIpv4Address (void);
 
@@ -74,8 +74,8 @@ private:
     ARP_TYPE_REPLY   = 2
   };
   uint16_t m_type;
-  MacAddress m_macSource;
-  MacAddress m_macDest;
+  Address m_macSource;
+  Address m_macDest;
   Ipv4Address m_ipv4Source;
   Ipv4Address m_ipv4Dest;
 };

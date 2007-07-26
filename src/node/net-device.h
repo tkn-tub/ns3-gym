@@ -27,7 +27,7 @@
 #include "ns3/packet.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
-#include "mac-address.h"
+#include "address.h"
 
 namespace ns3 {
 
@@ -78,9 +78,9 @@ public:
   Ptr<Channel> GetChannel (void) const;
 
   /**
-   * \return the current MacAddress of this interface.
+   * \return the current Address of this interface.
    */
-  MacAddress GetAddress (void) const;
+  Address GetAddress (void) const;
   /**
    * \param mtu MTU value, in bytes, to set for the device
    * \return whether the MTU value was within legal bounds
@@ -136,7 +136,7 @@ public:
    * Calling this method is invalid if IsBroadcast returns
    * not true.
    */
-  MacAddress const &GetBroadcast (void) const;
+  Address const &GetBroadcast (void) const;
   /**
    * \return value of m_isMulticast flag
    */
@@ -153,11 +153,11 @@ public:
    *        is received.
    * 
    *  Called from higher layer to send packet into Network Device
-   *  to the specified destination MacAddress
+   *  to the specified destination Address
    * 
    * \return whether the Send operation succeeded 
    */
-  bool Send(Packet& p, const MacAddress& dest, uint16_t protocolNumber);
+  bool Send(Packet& p, const Address& dest, uint16_t protocolNumber);
   /**
    * \returns the node base class which contains this network
    *          interface.
@@ -187,12 +187,12 @@ public:
    * \param node base class node pointer of device's node 
    * \param addr MAC address of this device.
    */
-  NetDevice(Ptr<Node> node, const MacAddress& addr);
+  NetDevice(Ptr<Node> node, const Address& addr);
   /**
    * Enable broadcast support. This method should be
    * called by subclasses from their constructor
    */
-  void EnableBroadcast (MacAddress broadcast);
+  void EnableBroadcast (Address broadcast);
   /**
    * Set m_isBroadcast flag to false
    */
@@ -255,7 +255,7 @@ public:
    * method.  When the link is Up, this method is invoked to ask 
    * subclasses to forward packets. Subclasses MUST override this method.
    */
-  virtual bool SendTo (Packet& p, const MacAddress& dest) = 0;
+  virtual bool SendTo (Packet& p, const Address& dest) = 0;
   /**
    * \returns true if this NetDevice needs the higher-layers
    *          to perform ARP over it, false otherwise.
@@ -282,8 +282,8 @@ public:
   Ptr<Node>         m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
-  MacAddress    m_address;
-  MacAddress    m_broadcast;
+  Address       m_address;
+  Address       m_broadcast;
   uint16_t      m_mtu;
   bool          m_isUp;
   bool          m_isBroadcast;

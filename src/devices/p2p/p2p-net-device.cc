@@ -26,6 +26,7 @@
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
+#include "ns3/eui48-address.h"
 #include "p2p-net-device.h"
 #include "p2p-channel.h"
 
@@ -38,10 +39,10 @@ DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
            "The default data rate for point to point links",
            DataRate ("10Mb/s"));
 
-  PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
-                                                const DataRate& rate) 
+PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
+                                              const DataRate& rate) 
 : 
-  NetDevice(node, MacAddress (6)), 
+  NetDevice(node, Eui48Address::Allocate ().ConvertTo ()), 
   m_txMachineState (READY),
   m_bps (rate),
   m_tInterframeGap (Seconds(0)),
@@ -54,7 +55,7 @@ DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
   // BUGBUG FIXME
   //
   // You _must_ support broadcast to get any sort of packet from the ARP layer.
-  EnableBroadcast (MacAddress ("ff:ff:ff:ff:ff:ff"));
+  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff").ConvertTo ());
   EnableMulticast();
   EnablePointToPoint();
 }
@@ -82,7 +83,7 @@ void PointToPointNetDevice::SetInterframeGap(const Time& t)
   m_tInterframeGap = t;
 }
 
-bool PointToPointNetDevice::SendTo (Packet& p, const MacAddress& dest)
+bool PointToPointNetDevice::SendTo (Packet& p, const Address& dest)
 {
   NS_DEBUG ("PointToPointNetDevice::SendTo (" << &p << ", " << &dest << ")");
   NS_DEBUG ("PointToPointNetDevice::SendTo (): UID is " << p.GetUid () << ")");

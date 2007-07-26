@@ -24,6 +24,7 @@
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
+#include "ns3/address.h"
 
 #include "arp-ipv4-interface.h"
 #include "arp-private.h"
@@ -59,7 +60,7 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
   if (GetDevice ()->NeedsArp ())
     {
       Ptr<ArpPrivate> arp = m_node->QueryInterface<ArpPrivate> (ArpPrivate::iid);
-      MacAddress hardwareDestination;
+      Address hardwareDestination;
       bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
       if (found)
         {

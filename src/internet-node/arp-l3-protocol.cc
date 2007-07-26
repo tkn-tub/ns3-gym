@@ -97,7 +97,7 @@ ArpL3Protocol::Receive(Packet& packet, Ptr<NetDevice> device)
     } 
   else if (arp.IsReply () &&
            arp.GetDestinationIpv4Address ().IsEqual (cache->GetInterface ()->GetAddress ()) &&
-           arp.GetDestinationHardwareAddress ().IsEqual (device->GetAddress ())) 
+           arp.GetDestinationHardwareAddress () == device->GetAddress ()) 
     {
       Ipv4Address from = arp.GetSourceIpv4Address ();
       ArpCache::Entry *entry = cache->Lookup (from);
@@ -108,7 +108,7 @@ ArpL3Protocol::Receive(Packet& packet, Ptr<NetDevice> device)
               NS_DEBUG ("node="<<m_node->GetId ()<<", got reply from " << 
                         arp.GetSourceIpv4Address ()
                      << " for waiting entry -- flush");
-              MacAddress from_mac = arp.GetSourceHardwareAddress ();
+              Address from_mac = arp.GetSourceHardwareAddress ();
               Packet waiting = entry->MarkAlive (from_mac);
 	      cache->GetInterface ()->Send (waiting, arp.GetSourceIpv4Address ());
             } 
@@ -131,8 +131,8 @@ ArpL3Protocol::Receive(Packet& packet, Ptr<NetDevice> device)
 }
 bool 
 ArpL3Protocol::Lookup (Packet &packet, Ipv4Address destination, 
-	     Ptr<NetDevice> device,
-	     MacAddress *hardwareDestination)
+                       Ptr<NetDevice> device,
+                       Address *hardwareDestination)
 {
   ArpCache *cache = FindCache (device);
   ArpCache::Entry *entry = cache->Lookup (destination);
@@ -213,7 +213,7 @@ ArpL3Protocol::SendArpRequest (ArpCache const *cache, Ipv4Address to)
 }
 
 void
-ArpL3Protocol::SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac)
+ArpL3Protocol::SendArpReply (ArpCache const *cache, Ipv4Address toIp, Address toMac)
 {
   ArpHeader arp;
   arp.SetReply (cache->GetDevice ()->GetAddress (),

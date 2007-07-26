@@ -146,7 +146,7 @@ ArpCache::Entry::MarkDead (void)
   UpdateSeen ();
 }
 Packet 
-ArpCache::Entry::MarkAlive (MacAddress macAddress) 
+ArpCache::Entry::MarkAlive (Address macAddress) 
 {
   NS_ASSERT (m_state == WAIT_REPLY);
   //NS_ASSERT (m_waiting != 0);
@@ -180,7 +180,7 @@ ArpCache::Entry::MarkWaitReply (Packet waiting)
   UpdateSeen ();
 }
 
-MacAddress
+Address
 ArpCache::Entry::GetMacAddress (void)
 {
   NS_ASSERT (m_state == ALIVE);

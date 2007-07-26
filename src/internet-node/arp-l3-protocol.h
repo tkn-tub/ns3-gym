@@ -23,7 +23,7 @@
 
 #include <list>
 #include "ns3/ipv4-address.h"
-#include "ns3/mac-address.h"
+#include "ns3/address.h"
 #include "ns3/ptr.h"
 #include "l3-protocol.h"
 
@@ -64,14 +64,14 @@ public:
    */
   bool Lookup (Packet &p, Ipv4Address destination, 
 	       Ptr<NetDevice> device,
-	       MacAddress *hardwareDestination);
+	       Address *hardwareDestination);
 protected:
   virtual void DoDispose (void);
 private:
   typedef std::list<ArpCache *> CacheList;
   ArpCache *FindCache (Ptr<NetDevice> device);
   void SendArpRequest (ArpCache const *cache, Ipv4Address to);
-  void SendArpReply (ArpCache const *cache, Ipv4Address toIp, MacAddress toMac);
+  void SendArpReply (ArpCache const *cache, Ipv4Address toIp, Address toMac);
   CacheList m_cacheList;
   Ptr<Node> m_node;
 };
