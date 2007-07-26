@@ -17,6 +17,7 @@ def build(bld):
         'ipv4-checksum.cc',
         'ipv4-interface.cc',
         'ipv4-l3-protocol.cc',
+        'ipv4-static-routing.cc',
         'ipv4-end-point.cc',
         'udp-l4-protocol.cc',
         'arp-header.cc',
@@ -41,4 +42,5 @@ def build(bld):
         'internet-node.h',
         'ascii-trace.h',
         'pcap-trace.h',
+        'ipv4-header.h',
         ]

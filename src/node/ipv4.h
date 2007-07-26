@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "ns3/ipv4-address.h"
 #include "ns3/object.h"
+#include "ns3/callback.h"
 #include "ipv4-route.h"
 
 namespace ns3 {
@@ -31,6 +32,30 @@ namespace ns3 {
 class NetDevice;
 class Packet;
 class Ipv4Route;
+class Ipv4Header; // FIXME: ipv4-header.h needs to move from module
+                  // "internet-node" to module "node"
+
+class Ipv4RoutingProtocol : public Object
+{
+public:
+  // void (*RouteReply) (bool found, Ipv4Route route, Packet packet, Ipv4Header const &ipHeader);
+  typedef Callback<void, bool, Ipv4Route const&, Packet, Ipv4Header const &> RouteReplyCallback;
+
+  /**
+   * \brief Asynchronously requests a route for a given packet and IP header 
+   *
+   * \param ipHeader IP header of the packet
+   * \param packet packet that is being sent or forwarded
+   * \param routeReply callback that will receive the route reply
+   *
+   * \returns true if the routing protocol should be able to get the
+   * route, false otherwise.
+   */
+  virtual bool RequestRoute (Ipv4Header const &ipHeader,
+                             Packet packet,
+                             RouteReplyCallback routeReply) = 0;
+};
+
 /**
  * \brief Access to the Ipv4 forwarding table and to the ipv4 interfaces
  *
@@ -47,7 +72,10 @@ public:
   static const InterfaceId iid;
   Ipv4 ();
   virtual ~Ipv4 ();
-    
+
+  virtual void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
+                                   int priority) = 0;
+  
   /**
    * \param dest destination address
    * \param nextHop address of next hop.
