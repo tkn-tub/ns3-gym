@@ -65,66 +65,12 @@ PointToPointNetDevice::~PointToPointNetDevice()
   m_queue = 0;
 }
 
-//
-// Copy constructor for PointToPointNetDevice.
-//
-// We use the underlying NetDevice copy constructor to get the base class
-// copied.  These just remain as is (e.g. you get the same name, the same
-// MAC address).  If you need to fix them up, YOU, the copier need to do 
-// that.
-// 
-// The things we need to be careful of are the channel, the queue and the
-// trace callback.  If the channel pointer is non-zero, we copy the pointer 
-// and add a reference.  If the queue is non-zero, we copy it using the queue
-// assignment operator.  We don't mess with the trace -- we just reset it.
-// We're assuming that the tracing will be set up after the topology creation
-// phase and this won't actually matter.
-//
-// GFR Comments.  Don't see where the "copy the pointer and add reference"
-// stated above is done. Can original author please comment and/or fix.
-// Shouldn't the queue pointer also bump the refcount?
-PointToPointNetDevice::PointToPointNetDevice (const PointToPointNetDevice& nd)
-: 
-  NetDevice(nd), 
-  m_txMachineState(READY),
-  m_bps (nd.m_bps),
-  m_tInterframeGap (nd.m_tInterframeGap),
-  m_channel(nd.m_channel), 
-  m_queue(0),
-  m_rxTrace ()
-{
-  NS_DEBUG ("PointToPointNetDevice::PointToPointNetDevice (" << &nd << ")");
-
-  if (nd.m_queue)
-    {
-      m_queue = nd.m_queue;
-    }
-    
-}
-
-  // GFR COmments...shouldn't this decrement the refcount instead
-  // of just nil-ing out the pointer?  Don't understand this.
 void PointToPointNetDevice::DoDispose()
 {
   m_channel = 0;
   NetDevice::DoDispose ();
 }
 
-//
-// Assignment operator for PointToPointNetDevice.
-//
-//
-PointToPointNetDevice&
-PointToPointNetDevice::operator= (const PointToPointNetDevice& nd)
-{
-  NS_DEBUG ("PointToPointNetDevice::operator= (" << &nd << ")");
-  // FIXME.  Not sure what to do here
-  // GFR Note.  I would suggest dis-allowing netdevice assignment,
-  // as well as pass-by-value (ie. copy constructor).
-  // This resolves some of the questions above about copy constructors.
-  // Why should we ever copy or assign a net device?
-  return *this;
-}
 
 void PointToPointNetDevice::SetDataRate(const DataRate& bps)
 {

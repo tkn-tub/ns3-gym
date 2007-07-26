@@ -84,30 +84,11 @@ public:
   PointToPointNetDevice (Ptr<Node> node,
                          const DataRate& = g_defaultRate.GetValue());
   /**
-   * Copy Construct a PointToPointNetDevice
-   *
-   * This is the copy constructor for the PointToPointNetDevice.  This is
-   * primarily used in topology creation.
-   *
-   * @see PointToPointTopology::AddPointToPointLink ()
-   * @param nd the object to be copied
-   */
-  PointToPointNetDevice (const PointToPointNetDevice& nd);
-  /**
    * Destroy a PointToPointNetDevice
    *
    * This is the destructor for the PointToPointNetDevice.
    */
   virtual ~PointToPointNetDevice();
-  /**
-   * Assignment Operator for a PointToPointNetDevice
-   *
-   * This is the assignment operator for the PointToPointNetDevice.  This is
-   * to allow
-   *
-   * @param nd the object to be copied
-   */
-  PointToPointNetDevice& operator= (const PointToPointNetDevice& nd);
   /**
    * Set the Data Rate used for transmission of packets.  The data rate is
    * set in the Attach () method from the corresponding field in the channel
@@ -206,6 +187,11 @@ protected:
   static const DataRate& GetDefaultRate();
 
 private:
+  // unimplemented methods to make it impossible
+  // to copy these objects.
+  PointToPointNetDevice (const PointToPointNetDevice& nd);
+  PointToPointNetDevice& operator = (const PointToPointNetDevice&o);
+  
   /**
    * Send a Packet Down the Wire.
    *
