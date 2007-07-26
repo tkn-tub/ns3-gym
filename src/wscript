@@ -17,6 +17,7 @@ all_modules = (
     'internet-node',
     'devices/p2p',
     'applications',
+    'routing/olsr',
     'mobility',
     )
 

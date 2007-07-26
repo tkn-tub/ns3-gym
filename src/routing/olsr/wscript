@@ -1,0 +1,19 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_obj('cpp', 'shlib')
+    obj.name = 'ns3-olsr'
+    obj.target = obj.name
+    obj.uselib_local = ['ns3-internet-node']
+    obj.includes = '.'
+    obj.source = [
+        'olsr-header.cc',
+        'olsr-state.cc',
+        'routing-table.cc',
+        'olsr.cc',
+        ]
+
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'olsr.h',
+        ]

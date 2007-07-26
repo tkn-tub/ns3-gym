@@ -10,4 +10,6 @@ def build(bld):
         return obj
         
     obj = create_ns_prog('simple-p2p', 'simple-p2p.cc', deps=['p2p', 'internet-node'])
+    obj = create_ns_prog('simple-p2p-olsr', 'simple-p2p-olsr.cc',
+                         deps=['p2p', 'internet-node', 'olsr'])
 

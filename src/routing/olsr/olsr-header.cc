@@ -1,0 +1,704 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2007 INESC Porto
+ * All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt>
+ */
+
+#include "ns3/assert.h"
+
+#include "olsr-header.h"
+
+#define IPV4_ADDRESS_SIZE 4
+#define OLSR_MSG_HEADER_SIZE 12
+#define OLSR_PKT_HEADER_SIZE 4
+
+namespace ns3 {
+
+/// Scaling factor used in RFC 3626.
+#define OLSR_C 0.0625
+
+///
+/// \brief Converts a decimal number of seconds to the mantissa/exponent format.
+///
+/// \param seconds decimal number of seconds we want to convert.
+/// \return the number of seconds in mantissa/exponent format.
+///
+uint8_t
+OlsrSecondsToEmf (double seconds)
+{
+  int a, b = 0;
+  
+  // find the largest integer 'b' such that: T/C >= 2^b
+  for (b = 0; (seconds/OLSR_C) >= (1 << b); ++b)
+    ;
+  NS_ASSERT ((seconds/OLSR_C) < (1 << b));
+  b--;
+  NS_ASSERT ((seconds/OLSR_C) >= (1 << b));
+
+  // compute the expression 16*(T/(C*(2^b))-1), which may not be a integer
+  double tmp = 16*(seconds/(OLSR_C*(1<<b))-1);
+
+  // round it up.  This results in the value for 'a'
+  a = (int) ceil (tmp);
+
+  // if 'a' is equal to 16: increment 'b' by one, and set 'a' to 0
+  if (a == 16)
+    {
+      b += 1;
+      a = 0;
+    }
+
+  // now, 'a' and 'b' should be integers between 0 and 15,
+  NS_ASSERT (a >= 0 && a < 16);
+  NS_ASSERT (b >= 0 && b < 16);
+
+  // the field will be a byte holding the value a*16+b
+  return (uint8_t) ((a << 4) | b);
+}
+
+///
+/// \brief Converts a number of seconds in the mantissa/exponent format to a decimal number.
+///
+/// \param olsr_format number of seconds in mantissa/exponent format.
+/// \return the decimal number of seconds.
+///
+double
+OlsrEmfToSeconds (uint8_t olsrFormat)
+{
+  int a = (olsrFormat >> 4);
+  int b = (olsrFormat & 0xf);
+  // value = C*(1+a/16)*2^b [in seconds]
+  return OLSR_C * (1 + a/16.0) * (1 << b);
+}
+
+
+
+// ---------------- OLSR Packet -------------------------------
+
+OlsrPacketHeader::OlsrPacketHeader ()
+{}
+
+OlsrPacketHeader::~OlsrPacketHeader ()
+{}
+
+uint32_t 
+OlsrPacketHeader::GetSerializedSize (void) const
+{
+  return OLSR_PKT_HEADER_SIZE;
+}
+
+void 
+OlsrPacketHeader::PrintTo (std::ostream &os) const
+{
+  // TODO
+}
+
+void
+OlsrPacketHeader::SerializeTo (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+  i.WriteHtonU16 (m_packetLength);
+  i.WriteHtonU16 (m_packetSequenceNumber);
+}
+
+uint32_t
+OlsrPacketHeader::DeserializeFrom (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  m_packetLength  = i.ReadNtohU16 ();
+  m_packetSequenceNumber = i.ReadNtohU16 ();
+  return GetSerializedSize ();
+}
+
+
+// ---------------- OLSR Message -------------------------------
+
+OlsrMessageHeader::OlsrMessageHeader ()
+{}
+
+OlsrMessageHeader::~OlsrMessageHeader ()
+{}
+
+uint32_t 
+OlsrMessageHeader::GetSerializedSize (void) const
+{
+  return OLSR_MSG_HEADER_SIZE;
+}
+
+void 
+OlsrMessageHeader::PrintTo (std::ostream &os) const
+{
+  // TODO
+}
+
+void
+OlsrMessageHeader::SerializeTo (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+  i.WriteU8 (m_messageType);
+  i.WriteU8 (m_vTime);
+  i.WriteHtonU16 (m_messageSize);
+  i.WriteHtonU32 (m_originatorAddress.GetHostOrder ());
+  i.WriteU8 (m_timeToLive);
+  i.WriteU8 (m_hopCount);
+  i.WriteHtonU16 (m_messageSequenceNumber);
+}
+
+uint32_t
+OlsrMessageHeader::DeserializeFrom (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+  m_messageType  = (MessageType) i.ReadU8 ();
+  NS_ASSERT (m_messageType >= HELLO_MESSAGE && m_messageType <= HNA_MESSAGE);
+  m_vTime  = i.ReadU8 ();
+  m_messageSize  = i.ReadNtohU16 ();
+  m_originatorAddress = Ipv4Address (i.ReadNtohU32 ());
+  m_timeToLive  = i.ReadU8 ();
+  m_hopCount  = i.ReadU8 ();
+  m_messageSequenceNumber = i.ReadNtohU16 ();
+  return GetSerializedSize ();
+}
+
+
+// ---------------- OLSR MID Message -------------------------------
+
+OlsrMidMessageHeader::OlsrMidMessageHeader ()
+{}
+
+OlsrMidMessageHeader::~OlsrMidMessageHeader ()
+{}
+
+uint32_t 
+OlsrMidMessageHeader::GetSerializedSize (void) const
+{
+  return m_interfaceAddresses.size () * IPV4_ADDRESS_SIZE;
+}
+
+void 
+OlsrMidMessageHeader::PrintTo (std::ostream &os) const
+{
+  // TODO
+}
+
+void
+OlsrMidMessageHeader::SerializeTo (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  for (std::vector<Ipv4Address>::const_iterator iter = m_interfaceAddresses.begin ();
+       iter != m_interfaceAddresses.end (); iter++)
+    {
+      i.WriteHtonU32 (iter->GetHostOrder ());
+    }
+}
+
+uint32_t
+OlsrMidMessageHeader::DeserializeFrom (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  m_interfaceAddresses.clear ();
+  NS_ASSERT (m_messageSize >= 0);
+  NS_ASSERT (m_messageSize % IPV4_ADDRESS_SIZE == 0);
+  
+  int numAddresses = m_messageSize / IPV4_ADDRESS_SIZE;
+  m_interfaceAddresses.erase (m_interfaceAddresses.begin(),
+                              m_interfaceAddresses.end ());
+  for (int n = 0; n < numAddresses; ++n)
+      m_interfaceAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+  return GetSerializedSize ();
+}
+
+
+
+// ---------------- OLSR HELLO Message -------------------------------
+
+OlsrHelloMessageHeader::OlsrHelloMessageHeader ()
+{}
+
+OlsrHelloMessageHeader::~OlsrHelloMessageHeader ()
+{}
+
+uint32_t 
+OlsrHelloMessageHeader::GetSerializedSize (void) const
+{
+  uint32_t size = 4;
+  for (std::vector<LinkMessage>::const_iterator iter = m_linkMessages.begin ();
+       iter != m_linkMessages.end (); iter++)
+    {
+      const LinkMessage &lm = *iter;
+      size += 4;
+      size += IPV4_ADDRESS_SIZE * lm.neighborInterfaceAddresses.size ();
+    }
+  return size;
+}
+
+void 
+OlsrHelloMessageHeader::PrintTo (std::ostream &os) const
+{
+  // TODO
+}
+
+void
+OlsrHelloMessageHeader::SerializeTo (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  i.WriteU16 (0); // Reserved
+  i.WriteU8 (m_hTime);
+  i.WriteU8 (m_willingness);
+  
+  for (std::vector<LinkMessage>::const_iterator iter = m_linkMessages.begin ();
+       iter != m_linkMessages.end (); iter++)
+    {
+      const LinkMessage &lm = *iter;
+
+      i.WriteU8 (lm.linkCode);
+      i.WriteU8 (0); // Reserved
+
+      // The size of the link message, counted in bytes and measured
+      // from the beginning of the "Link Code" field and until the
+      // next "Link Code" field (or - if there are no more link types
+      // - the end of the message).
+      i.WriteHtonU16 (4 + lm.neighborInterfaceAddresses.size () * IPV4_ADDRESS_SIZE);
+      
+      for (std::vector<Ipv4Address>::const_iterator neigh_iter = lm.neighborInterfaceAddresses.begin ();
+           neigh_iter != lm.neighborInterfaceAddresses.end (); neigh_iter++)
+        {
+          i.WriteHtonU32 (neigh_iter->GetHostOrder ());
+        }
+    }
+}
+
+uint32_t
+OlsrHelloMessageHeader::DeserializeFrom (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  NS_ASSERT (m_messageSize >= 4);
+
+  m_linkMessages.clear ();
+  
+  uint16_t helloSizeLeft = m_messageSize;
+  
+  i.ReadNtohU16 (); // Reserved
+  m_hTime = i.ReadU8 ();
+  m_willingness = i.ReadU8 ();
+  
+  helloSizeLeft -= 4;
+
+  while (helloSizeLeft)
+    {
+      LinkMessage lm;
+      NS_ASSERT (helloSizeLeft >= 4);
+      lm.linkCode = i.ReadU8 ();
+      i.ReadU8 (); // Reserved
+      uint16_t lmSize = i.ReadNtohU16 ();
+      NS_ASSERT ((lmSize - 4) % IPV4_ADDRESS_SIZE == 0);
+      for (int n = (lmSize - 4) / IPV4_ADDRESS_SIZE; n; --n)
+        {
+          lm.neighborInterfaceAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+        }
+      helloSizeLeft -= lmSize;
+      m_linkMessages.push_back (lm);
+    }
+
+  return m_messageSize;
+}
+
+
+
+// ---------------- OLSR TC Message -------------------------------
+
+OlsrTcMessageHeader::OlsrTcMessageHeader ()
+{}
+
+OlsrTcMessageHeader::~OlsrTcMessageHeader ()
+{}
+
+uint32_t 
+OlsrTcMessageHeader::GetSerializedSize (void) const
+{
+  return 4 + m_neighborAddresses.size () * IPV4_ADDRESS_SIZE;
+}
+
+void 
+OlsrTcMessageHeader::PrintTo (std::ostream &os) const
+{
+  // TODO
+}
+
+void
+OlsrTcMessageHeader::SerializeTo (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  i.WriteHtonU16 (m_ansn);
+  i.WriteHtonU16 (0); // Reserved
+
+  for (std::vector<Ipv4Address>::const_iterator iter = m_neighborAddresses.begin ();
+       iter != m_neighborAddresses.end (); iter++)
+    {
+      i.WriteHtonU32 (iter->GetHostOrder ());
+    }
+}
+
+uint32_t
+OlsrTcMessageHeader::DeserializeFrom (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  m_neighborAddresses.clear ();
+  NS_ASSERT (m_messageSize >= 4);
+
+  m_ansn = i.ReadNtohU16 ();
+  i.ReadNtohU16 (); // Reserved
+  
+  NS_ASSERT ((m_messageSize - 4) % IPV4_ADDRESS_SIZE == 0);
+  int numAddresses = (m_messageSize - 4) / IPV4_ADDRESS_SIZE;
+  m_neighborAddresses.clear ();
+  for (int n = 0; n < numAddresses; ++n)
+    m_neighborAddresses.push_back (Ipv4Address (i.ReadNtohU32 ()));
+
+  return m_messageSize;
+}
+
+
+// ---------------- OLSR HNA Message -------------------------------
+
+OlsrHnaMessageHeader::OlsrHnaMessageHeader ()
+{}
+
+OlsrHnaMessageHeader::~OlsrHnaMessageHeader ()
+{}
+
+uint32_t 
+OlsrHnaMessageHeader::GetSerializedSize (void) const
+{
+  return 2*m_associations.size () * IPV4_ADDRESS_SIZE;
+}
+
+void 
+OlsrHnaMessageHeader::PrintTo (std::ostream &os) const
+{
+  // TODO
+}
+
+void
+OlsrHnaMessageHeader::SerializeTo (Buffer::Iterator start) const
+{
+  Buffer::Iterator i = start;
+
+  for (size_t n = 0; n < m_associations.size (); ++n)
+    {
+      i.WriteHtonU32 (m_associations[n].address.GetHostOrder ());
+      i.WriteHtonU32 (m_associations[n].mask.GetHostOrder ());
+    }
+}
+
+uint32_t
+OlsrHnaMessageHeader::DeserializeFrom (Buffer::Iterator start)
+{
+  Buffer::Iterator i = start;
+
+  NS_ASSERT (m_messageSize % (IPV4_ADDRESS_SIZE*2) == 0);
+  int numAddresses = m_messageSize / IPV4_ADDRESS_SIZE / 2;
+  m_associations.clear ();
+  for (int n = 0; n < numAddresses; ++n)
+    {
+      Ipv4Address address (i.ReadNtohU32 ());
+      Ipv4Mask mask (i.ReadNtohU32 ());
+      m_associations.push_back ((Association) {address, mask});
+    }
+  return m_messageSize;
+}
+
+
+
+}; // namespace ns3
+
+
+#ifdef RUN_SELF_TESTS
+
+
+#include "ns3/test.h"
+#include "ns3/packet.h"
+#include <math.h>
+
+
+namespace ns3 {
+
+class OlsrHeaderTest : public ns3::Test {
+private:
+public:
+  OlsrHeaderTest ();
+  virtual bool RunTests (void);
+
+
+};
+
+OlsrHeaderTest::OlsrHeaderTest ()
+  : ns3::Test ("OlsrHeader")
+{}
+
+
+bool 
+OlsrHeaderTest::RunTests (void)
+{
+  bool result = true;
+
+  // Testing packet header + message header + MID message
+  {
+    Packet packet;
+
+    {
+      OlsrPacketHeader hdr;
+      OlsrMessageHeader msg1;
+      OlsrMidMessageHeader mid1;
+      OlsrMessageHeader msg2;
+      OlsrMidMessageHeader mid2;
+    
+      // MID message #1
+      {
+        std::vector<Ipv4Address> addresses;
+        addresses.push_back (Ipv4Address ("1.2.3.4"));
+        addresses.push_back (Ipv4Address ("1.2.3.5"));
+        mid1.SetInterfaceAddresses (addresses);
+      }
+
+      msg1.SetMessageSize (mid1.GetSize () + msg1.GetSize ());
+      msg1.SetTimeToLive (255);
+      msg1.SetOriginatorAddress (Ipv4Address ("11.22.33.44"));
+      msg1.SetVTime (Seconds (9));
+      msg1.SetMessageType (OlsrMessageHeader::MID_MESSAGE);
+      msg1.SetMessageSequenceNumber (7);
+
+      // MID message #2
+      {
+        std::vector<Ipv4Address> addresses;
+        addresses.push_back (Ipv4Address ("2.2.3.4"));
+        addresses.push_back (Ipv4Address ("2.2.3.5"));
+        mid2.SetInterfaceAddresses (addresses);
+      }
+
+      msg2.SetMessageSize (mid2.GetSize () + msg2.GetSize ());
+      msg2.SetTimeToLive (254);
+      msg2.SetOriginatorAddress (Ipv4Address ("12.22.33.44"));
+      msg2.SetVTime (Seconds (10));
+      msg2.SetMessageType (OlsrMessageHeader::MID_MESSAGE);
+      msg2.SetMessageSequenceNumber (7);
+
+      // Build an OLSR packet header
+      hdr.SetPacketLength (hdr.GetSize () + msg1.GetMessageSize () + msg2.GetMessageSize ());
+      hdr.SetPacketSequenceNumber (123);
+    
+
+      // Now add all the headers in the correct order
+      packet.AddHeader (mid2);
+      packet.AddHeader (msg2);
+      packet.AddHeader (mid1);
+      packet.AddHeader (msg1);
+      packet.AddHeader (hdr);
+    }    
+
+    {
+      OlsrPacketHeader hdr;
+      packet.RemoveHeader (hdr);
+      NS_TEST_ASSERT_EQUAL (hdr.GetPacketSequenceNumber (), 123);
+      uint32_t sizeLeft = hdr.GetPacketLength () - hdr.GetSize ();
+      {
+        OlsrMessageHeader msg1;
+        OlsrMidMessageHeader mid1;
+
+        packet.RemoveHeader (msg1);
+
+        NS_TEST_ASSERT_EQUAL (msg1.GetTimeToLive (),  255);
+        NS_TEST_ASSERT_EQUAL (msg1.GetOriginatorAddress (), Ipv4Address ("11.22.33.44"));
+        NS_TEST_ASSERT_EQUAL (msg1.GetVTime (), Seconds (9));
+        NS_TEST_ASSERT_EQUAL (msg1.GetMessageType (), OlsrMessageHeader::MID_MESSAGE);
+        NS_TEST_ASSERT_EQUAL (msg1.GetMessageSequenceNumber (), 7);
+
+        mid1.SetMessageSize (msg1.GetMessageSize () - msg1.GetSize ());
+        packet.RemoveHeader (mid1);
+        NS_TEST_ASSERT_EQUAL (mid1.GetInterfaceAddresses ().size (), 2);
+        NS_TEST_ASSERT_EQUAL (*mid1.GetInterfaceAddresses ().begin (), Ipv4Address ("1.2.3.4"));
+
+        sizeLeft -= msg1.GetMessageSize ();
+        NS_TEST_ASSERT (sizeLeft > 0);
+      }
+      {
+        // now read the second message
+        OlsrMessageHeader msg2;
+        OlsrMidMessageHeader mid2;
+
+        packet.RemoveHeader (msg2);
+
+        NS_TEST_ASSERT_EQUAL (msg2.GetTimeToLive (),  254);
+        NS_TEST_ASSERT_EQUAL (msg2.GetOriginatorAddress (), Ipv4Address ("12.22.33.44"));
+        NS_TEST_ASSERT_EQUAL (msg2.GetVTime (), Seconds (10));
+        NS_TEST_ASSERT_EQUAL (msg2.GetMessageType (), OlsrMessageHeader::MID_MESSAGE);
+        NS_TEST_ASSERT_EQUAL (msg2.GetMessageSequenceNumber (), 7);
+
+        mid2.SetMessageSize (msg2.GetMessageSize () - msg2.GetSize ());
+        packet.RemoveHeader (mid2);
+        NS_TEST_ASSERT_EQUAL (mid2.GetInterfaceAddresses ().size (), 2);
+        NS_TEST_ASSERT_EQUAL (*mid2.GetInterfaceAddresses ().begin (), Ipv4Address ("2.2.3.4"));
+
+        sizeLeft -= msg2.GetMessageSize ();
+        NS_TEST_ASSERT_EQUAL (sizeLeft, 0);
+      }
+    }
+  }
+  
+  // Test the HELLO message
+  {
+    Packet packet;
+    OlsrHelloMessageHeader helloIn;
+
+    helloIn.SetHTime (Seconds (7));
+    helloIn.SetWillingness (66);
+
+    {
+      std::vector<OlsrHelloMessageHeader::LinkMessage> vec;
+
+      OlsrHelloMessageHeader::LinkMessage lm1;
+      lm1.linkCode = 2;
+      lm1.neighborInterfaceAddresses.push_back (Ipv4Address ("1.2.3.4"));
+      lm1.neighborInterfaceAddresses.push_back (Ipv4Address ("1.2.3.5"));
+      vec.push_back (lm1);
+
+      OlsrHelloMessageHeader::LinkMessage lm2;
+      lm2.linkCode = 3;
+      lm2.neighborInterfaceAddresses.push_back (Ipv4Address ("2.2.3.4"));
+      lm2.neighborInterfaceAddresses.push_back (Ipv4Address ("2.2.3.5"));
+      vec.push_back (lm2);
+
+      helloIn.SetLinkMessages (vec);
+    }
+
+    packet.AddHeader (helloIn);
+
+    OlsrHelloMessageHeader helloOut;
+    helloOut.SetMessageSize (packet.GetSize ());
+    packet.RemoveHeader (helloOut);
+    
+    NS_TEST_ASSERT_EQUAL (helloOut.GetHTime (), Seconds (7));
+    NS_TEST_ASSERT_EQUAL (helloOut.GetWillingness (), 66);
+    NS_TEST_ASSERT_EQUAL (helloOut.GetLinkMessages ().size (), 2);
+
+    NS_TEST_ASSERT_EQUAL (helloOut.GetLinkMessages ()[0].linkCode, 2);
+    NS_TEST_ASSERT_EQUAL (helloOut.GetLinkMessages ()[0].neighborInterfaceAddresses[0],
+                          Ipv4Address ("1.2.3.4"));
+    NS_TEST_ASSERT_EQUAL (helloOut.GetLinkMessages ()[0].neighborInterfaceAddresses[1],
+                          Ipv4Address ("1.2.3.5"));
+
+    NS_TEST_ASSERT_EQUAL (helloOut.GetLinkMessages ()[1].linkCode, 3);
+    NS_TEST_ASSERT_EQUAL (helloOut.GetLinkMessages ()[1].neighborInterfaceAddresses[0],
+                          Ipv4Address ("2.2.3.4"));
+    NS_TEST_ASSERT_EQUAL (helloOut.GetLinkMessages ()[1].neighborInterfaceAddresses[1],
+                          Ipv4Address ("2.2.3.5"));
+
+    // check that all bytes of the message were read
+    NS_TEST_ASSERT_EQUAL (packet.GetSize (), 0);
+  }
+
+  // Test the TC message
+  {
+    Packet packet;
+    OlsrTcMessageHeader tcIn;
+
+    tcIn.SetAnsn (0x1234);
+    {
+      std::vector<Ipv4Address> vec;
+      vec.push_back (Ipv4Address ("1.2.3.4"));
+      vec.push_back (Ipv4Address ("1.2.3.5"));
+      tcIn.SetNeighborAddresses (vec);
+    }
+    packet.AddHeader (tcIn);
+
+    OlsrTcMessageHeader tcOut;
+    tcOut.SetMessageSize (packet.GetSize ());
+    packet.RemoveHeader (tcOut);
+    
+    NS_TEST_ASSERT_EQUAL (tcOut.GetAnsn (), 0x1234);
+    NS_TEST_ASSERT_EQUAL (tcOut.GetNeighborAddresses ().size (), 2);
+
+    NS_TEST_ASSERT_EQUAL (tcOut.GetNeighborAddresses ()[0],
+                          Ipv4Address ("1.2.3.4"));
+    NS_TEST_ASSERT_EQUAL (tcOut.GetNeighborAddresses ()[1],
+                          Ipv4Address ("1.2.3.5"));
+
+    // check that all bytes of the message were read
+    NS_TEST_ASSERT_EQUAL (packet.GetSize (), 0);
+  }
+
+  // Test the HNA message
+  {
+    Packet packet;
+    OlsrHnaMessageHeader hnaIn;
+
+    {
+      std::vector<OlsrHnaMessageHeader::Association> vec;
+      vec.push_back ((OlsrHnaMessageHeader::Association)
+                     { Ipv4Address ("1.2.3.4"), Ipv4Mask ("255.255.255.0")});
+      vec.push_back ((OlsrHnaMessageHeader::Association)
+                     {Ipv4Address ("1.2.3.5"), Ipv4Mask ("255.255.0.0")});
+      hnaIn.SetAssociations (vec);
+    }
+    packet.AddHeader (hnaIn);
+
+    OlsrHnaMessageHeader hnaOut;
+    hnaOut.SetMessageSize (packet.GetSize ());
+    packet.RemoveHeader (hnaOut);
+    
+    NS_TEST_ASSERT_EQUAL (hnaOut.GetAssociations ().size (), 2);
+
+    NS_TEST_ASSERT_EQUAL (hnaOut.GetAssociations ()[0].address,
+                          Ipv4Address ("1.2.3.4"));
+    NS_TEST_ASSERT_EQUAL (hnaOut.GetAssociations ()[0].mask,
+                          Ipv4Mask ("255.255.255.0"));
+
+    NS_TEST_ASSERT_EQUAL (hnaOut.GetAssociations ()[1].address,
+                          Ipv4Address ("1.2.3.5"));
+    NS_TEST_ASSERT_EQUAL (hnaOut.GetAssociations ()[1].mask,
+                          Ipv4Mask ("255.255.0.0"));
+
+    // check that all bytes of the message were read
+    NS_TEST_ASSERT_EQUAL (packet.GetSize (), 0);
+  }
+
+  for (int time = 1; time <= 30; time++)
+    {
+      uint8_t emf = OlsrSecondsToEmf (time);
+      double seconds = OlsrEmfToSeconds (emf);
+      if (seconds < 0 || fabs (seconds - time) > 0.1)
+        {
+          result = false;
+          Failure () << "In " << time << " out " << seconds << std::endl;
+        }
+    }
+
+  return result;
+}
+
+static OlsrHeaderTest gOlsrHeaderTest;
+
+}; // namespace
+
+
+#endif /* RUN_SELF_TESTS */
