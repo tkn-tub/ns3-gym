@@ -16,6 +16,7 @@ all_modules = (
     'node',
     'internet-node',
     'devices/point-to-point',
+    'devices/csma-cd',
     'applications',
     'mobility',
     )
