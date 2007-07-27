@@ -29,7 +29,10 @@ namespace ns3 {
 
 /**
  * \brief An object that tracks scheduled events and automatically
- * cancels them when it is destroyed.
+ * cancels them when it is destroyed.  It is useful in situations
+ * where multiple instances of the same type of event can
+ * simultaneously be scheduled, and when the events should be limited
+ * to the lifetime of a container object.
  */
 class EventCollector
 {
