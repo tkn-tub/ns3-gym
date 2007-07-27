@@ -226,7 +226,8 @@ void
 SchedulerHeap::Insert (const EventId &id)
 {
   // acquire single ref
-  EventImpl *event = GetPointer (id.GetEventImpl ());
+  EventImpl *event = id.PeekEventImpl ();
+  event->Ref ();
   Scheduler::EventKey key;
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
@@ -259,7 +260,7 @@ SchedulerHeap::Remove (const EventId &id)
     {
       if (uid == m_heap[i].second.m_uid)
         {
-          NS_ASSERT (m_heap[i].first == id.GetEventImpl ());
+          NS_ASSERT (m_heap[i].first == id.PeekEventImpl ());
           std::pair<EventImpl *,Scheduler::EventKey> next = m_heap[i];
           // release single ref
           next.first->Unref ();

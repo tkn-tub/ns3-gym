@@ -71,7 +71,8 @@ SchedulerList::Insert (const EventId &id)
 {
   Scheduler::EventKey key;
   // acquire refcount on EventImpl
-  EventImpl *event = GetPointer (id.GetEventImpl ());
+  EventImpl *event = id.PeekEventImpl ();
+  event->Ref ();
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
@@ -111,7 +112,7 @@ SchedulerList::Remove (const EventId &id)
     {
       if (i->second.m_uid == id.GetUid ())
         {
-          NS_ASSERT (id.GetEventImpl () == i->first);
+          NS_ASSERT (id.PeekEventImpl () == i->first);
           // release single acquire ref.
           i->first->Unref ();
           m_events.erase (i);

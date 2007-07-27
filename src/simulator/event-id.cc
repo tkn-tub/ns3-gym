@@ -50,11 +50,6 @@ EventId::IsRunning (void)
 {
   return !IsExpired ();
 }
-Ptr<EventImpl> 
-EventId::GetEventImpl (void) const
-{
-  return m_eventImpl;
-}
 EventImpl *
 EventId::PeekEventImpl (void) const
 {

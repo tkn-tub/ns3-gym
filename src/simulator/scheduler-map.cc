@@ -91,7 +91,8 @@ void
 SchedulerMap::Insert (const EventId &id)
 {
   // acquire a single ref
-  EventImpl *event = GetPointer (id.GetEventImpl ());
+  EventImpl *event = id.PeekEventImpl ();
+  event->Ref ();
   Scheduler::EventKey key;
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
@@ -129,7 +130,7 @@ SchedulerMap::Remove (const EventId &id)
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
   EventMapI i = m_list.find (key);
-  NS_ASSERT (i->second == id.GetEventImpl ());
+  NS_ASSERT (i->second == id.PeekEventImpl ());
   // release single ref.
   i->second->Unref ();
   m_list.erase (i);
