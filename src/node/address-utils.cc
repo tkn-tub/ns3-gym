@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "header-utils.h"
+#include "address-utils.h"
 
 namespace ns3 {
 

@@ -26,8 +26,9 @@
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
-#include "p2p-net-device.h"
-#include "p2p-channel.h"
+#include "point-to-point-net-device.h"
+#include "point-to-point-channel.h"
+#include "ns3/llc-snap-header.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
@@ -65,12 +66,29 @@ PointToPointNetDevice::~PointToPointNetDevice()
   m_queue = 0;
 }
 
+void PointToPointNetDevice::AddHeader(Packet& p, const MacAddress& dest,
+                                      uint16_t protocolNumber)
+{
+  LlcSnapHeader llc;
+  llc.SetType (protocolNumber);
+  p.AddHeader (llc);
+}
+
+bool PointToPointNetDevice::ProcessHeader(Packet& p, int& param)
+{
+  LlcSnapHeader llc;
+  p.RemoveHeader (llc);
+
+  param = llc.GetType ();
+
+  return true;
+}
+
 void PointToPointNetDevice::DoDispose()
 {
   m_channel = 0;
   NetDevice::DoDispose ();
 }
-
 
 void PointToPointNetDevice::SetDataRate(const DataRate& bps)
 {
@@ -82,7 +100,8 @@ void PointToPointNetDevice::SetInterframeGap(const Time& t)
   m_tInterframeGap = t;
 }
 
-bool PointToPointNetDevice::SendTo (Packet& p, const MacAddress& dest)
+bool PointToPointNetDevice::SendTo (Packet& p, const MacAddress& dest, 
+                                    uint16_t protocolNumber)
 {
   NS_DEBUG ("PointToPointNetDevice::SendTo (" << &p << ", " << &dest << ")");
   NS_DEBUG ("PointToPointNetDevice::SendTo (): UID is " << p.GetUid () << ")");
@@ -91,6 +110,7 @@ bool PointToPointNetDevice::SendTo (Packet& p, const MacAddress& dest)
   // "go down" during the simulation?  Shouldn't we just wait for it
   // to come back up?
   NS_ASSERT (IsLinkUp ());
+  AddHeader(p, dest, protocolNumber);
 
 //
 // This class simulates a point to point device.  In the case of a serial
@@ -198,9 +218,12 @@ void PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 void PointToPointNetDevice::Receive (Packet& p)
 {
   NS_DEBUG ("PointToPointNetDevice::Receive (" << &p << ")");
+  int param = 0;
+  Packet packet = p;
 
-  m_rxTrace (p);
-  ForwardUp (p);
+  ProcessHeader(packet, param);
+  m_rxTrace (packet);
+  ForwardUp (packet, param);
 }
 
 Ptr<Queue> PointToPointNetDevice::GetQueue(void) const 

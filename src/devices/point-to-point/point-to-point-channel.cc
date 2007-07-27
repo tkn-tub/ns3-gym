@@ -19,8 +19,8 @@
  * Author: Craig Dowell <craigdo@ee.washington.edu>
  */
 
-#include "p2p-channel.h"
-#include "p2p-net-device.h"
+#include "point-to-point-channel.h"
+#include "point-to-point-net-device.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/debug.h"
