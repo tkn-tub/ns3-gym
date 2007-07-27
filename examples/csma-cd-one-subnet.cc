@@ -18,19 +18,15 @@
 //
 // Network topology
 //
-//       n0
-//       |
-//       |
-//  n2---+----n3
-//       |
-//       |
-//       n1
+//       n0    n1   n2   n3
+//       |     |    |    |
+//     =====================
 //
 // - CBR/UDP flows from n0 to n1, and from n3 to n0
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
 // - DropTail queues 
-// - Tracing of queues and packet receptions to file "simple-csma-cd.tr"
+// - Tracing of queues and packet receptions to file "csma-cd-one-subnet.tr"
 
 #include <iostream>
 #include <fstream>
@@ -157,8 +153,8 @@ int main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the simple-p2p.tr file
-  AsciiTrace asciitrace ("simple-csma-cd.tr");
+  // Trace output will be sent to the csma-cd-one-subnet.tr file
+  AsciiTrace asciitrace ("csma-cd-one-subnet.tr");
   asciitrace.TraceAllNetDeviceRx ();
   //  asciitrace.TraceAllQueues ();
 

@@ -10,5 +10,5 @@ def build(bld):
         return obj
         
     obj = create_ns_prog('simple-p2p', 'simple-p2p.cc', deps=['point-to-point', 'internet-node'])
-    obj = create_ns_prog('simple-csma-cd', 'simple-csma-cd.cc', deps=['csma-cd', 'internet-node'])
+    obj = create_ns_prog('csma-cd-one-subnet', 'csma-cd-one-subnet.cc', deps=['csma-cd', 'internet-node'])
 
