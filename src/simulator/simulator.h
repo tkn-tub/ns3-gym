@@ -534,7 +534,7 @@ public:
    *
    * @param id the event to remove from the list of scheduled events.
    */
-  static void Remove (EventId id);
+  static void Remove (const EventId &id);
   /**
    * Set the cancel bit on this event: the event's associated function
    * will not be invoked when it expires. 
@@ -547,7 +547,7 @@ public:
    * 
    * @param id the event to cancel
    */
-  static void Cancel (EventId &id);
+  static void Cancel (const EventId &id);
   /**
    * This method has O(1) complexity.
    * Note that it is not possible to test for the expiration of
@@ -560,7 +560,7 @@ public:
    * @param id the event to test for expiration
    * @returns true if the event has expired, false otherwise.
    */
-  static bool IsExpired (const EventId id);
+  static bool IsExpired (const EventId &id);
   /**
    * Return the "current simulation time".
    */

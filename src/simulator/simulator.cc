@@ -65,9 +65,9 @@ public:
   EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
   EventId ScheduleNow (const Ptr<EventImpl> &event);
   EventId ScheduleDestroy (const Ptr<EventImpl> &event);
-  void Remove (EventId ev);
-  void Cancel (EventId &ev);
-  bool IsExpired (EventId ev);
+  void Remove (const EventId &ev);
+  void Cancel (const EventId &ev);
+  bool IsExpired (const EventId &ev);
   void Run (void);
   Time Now (void) const;
 
@@ -253,7 +253,7 @@ SimulatorPrivate::Now (void) const
 }
 
 void
-SimulatorPrivate::Remove (EventId ev)
+SimulatorPrivate::Remove (const EventId &ev)
 {
   if (ev.GetUid () == 2)
     {
@@ -284,7 +284,7 @@ SimulatorPrivate::Remove (EventId ev)
 }
 
 void
-SimulatorPrivate::Cancel (EventId &id)
+SimulatorPrivate::Cancel (const EventId &id)
 {
   if (!IsExpired (id))
     {
@@ -293,7 +293,7 @@ SimulatorPrivate::Cancel (EventId &id)
 }
 
 bool
-SimulatorPrivate::IsExpired (const EventId ev)
+SimulatorPrivate::IsExpired (const EventId &ev)
 {
   if (ev.GetUid () == 2)
     {
@@ -466,18 +466,18 @@ Simulator::ScheduleDestroy (void (*f) (void))
 
 
 void
-Simulator::Remove (EventId ev)
+Simulator::Remove (const EventId &ev)
 {
   return GetPriv ()->Remove (ev);
 }
 
 void
-Simulator::Cancel (EventId &ev)
+Simulator::Cancel (const EventId &ev)
 {
   return GetPriv ()->Cancel (ev);
 }
 bool 
-Simulator::IsExpired (EventId id)
+Simulator::IsExpired (const EventId &id)
 {
   return GetPriv ()->IsExpired (id);
 }
