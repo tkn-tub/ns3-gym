@@ -6,24 +6,116 @@
 
 namespace ns3 {
 
+/**
+ * \brief a polymophic address class
+ *
+ * This class is very similar in design and spirit to the BSD sockaddr
+ * structure: they are both used to hold multiple types of addresses
+ * together with the type of the address.
+ *
+ * A new address class defined by a user needs to:
+ *   - allocate a type id with Address::Register
+ *   - provide a method to convert his new address to an Address 
+ *     instance. This method is typically a member method named ConvertTo:
+ *     Address MyAddress::ConvertTo (void) const;
+ *   - provide a method to convert an Address instance back to
+ *     an instance of his new address type. This method is typically
+ *     a static member method of his address class named ConvertFrom:
+ *     static MyAddress MyAddress::ConvertFrom (const Address &address);
+ *   - the ConvertFrom method is expected to check that the type of the
+ *     input Address instance is compatible with its own type.
+ *
+ * Typical code to create a new class type looks like:
+ * \code
+ * // this class represents addresses which are 2 bytes long.
+ * class MyAddress
+ * {
+ * public:
+ *   Address ConvertTo (void) const;
+ *   static MyAddress ConvertFrom (void);
+ * private:
+ *   static uint8_t GetType (void);
+ * };
+ *
+ * Address MyAddress::ConvertTo (void) const
+ * {
+ *   return Address (GetType (), m_buffer, 2);
+ * }
+ * MyAddress MyAddress::ConvertFrom (const Address &address)
+ * {
+ *   MyAddress ad;
+ *   NS_ASSERT (address.CheckCompatible (GetType (), 2));
+ *   address.CopyTo (ad.m_buffer, 2);
+ *   return ad;
+ * }
+ * uint8_t MyAddress::GetType (void)
+ * {
+ *   static uint8_t type = Address::Register ();
+ *   return type;
+ * }
+ * \endcode
+ */
 class Address 
 {
 public:
   enum {
+    /**
+     * The maximum size of a byte buffer which
+     * can be stored in an Address instance.
+     */
     MAX_SIZE = 14
   };
 
+  /**
+   * Create an invalid address
+   */
   Address ();
+  /**
+   * \param type the type of the Address to create
+   * \param buffer a pointer to a buffer of bytes which hold
+   *        a serialized representation of the address in network
+   *        byte order.
+   * \param len the length of the buffer.
+   * 
+   * Create an address from a type and a buffer. This constructor
+   * is typically invoked from the conversion functions of various
+   * address types when they have to convert themselves to an 
+   * Address instance.
+   */
   Address (uint8_t type, const uint8_t *buffer, uint8_t len);
   Address (const Address & address);
   Address &operator = (const Address &address);
 
+  /**
+   * \returns the length of the underlying address.
+   */
   uint8_t GetLength (void) const;
-  void CopyTo (uint8_t *buffer) const;
+  /**
+   * \param buffer buffer to copy the address bytes to.
+   */
+  void CopyTo (uint8_t buffer[MAX_SIZE]) const;
+  /**
+   * \param buffer pointer to a buffer of bytes which contain
+   *        a serialized representation of the address in network
+   *        byte order.
+   * \param len length of buffer
+   *
+   * Copy the input buffer to the internal buffer of this address 
+   * instance.
+   */
   void CopyFrom (uint8_t *buffer, uint8_t len);
+  /**
+   * \param type a type id as returned by Address::Register
+   * \param len the length associated to this type id.
+   *
+   * \returns true if the type of the address stored internally
+   * is compatible with the requested type, false otherwise.
+   */
   bool CheckCompatible (uint8_t type, uint8_t len) const;
-
-
+  /**
+   * Allocate a new type id for a new type of address.
+   * \returns a new type id.
+   */
   static uint8_t Register (void);
 private:
   friend bool operator == (const Address &a, const Address &b);

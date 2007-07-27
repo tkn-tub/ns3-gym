@@ -47,7 +47,7 @@ Address::GetLength (void) const
   return m_len;
 }
 void 
-Address::CopyTo (uint8_t *buffer) const
+Address::CopyTo (uint8_t buffer[MAX_SIZE]) const
 {
   NS_ASSERT (m_len <= MAX_SIZE);
   memcpy (buffer, m_data, m_len);
