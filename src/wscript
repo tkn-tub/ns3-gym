@@ -15,7 +15,7 @@ all_modules = (
     'simulator',
     'node',
     'internet-node',
-    'devices/p2p',
+    'devices/point-to-point',
     'applications',
     'mobility',
     )
