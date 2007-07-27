@@ -62,9 +62,9 @@ public:
   Time Next (void) const;
   void Stop (void);
   void StopAt (Time const &time);
-  EventId Schedule (Time const &time, Ptr<EventImpl> event);
-  EventId ScheduleNow (Ptr<EventImpl> event);
-  EventId ScheduleDestroy (Ptr<EventImpl> event);
+  EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
+  EventId ScheduleNow (const Ptr<EventImpl> &event);
+  EventId ScheduleDestroy (const Ptr<EventImpl> &event);
   void Remove (EventId ev);
   void Cancel (EventId &ev);
   bool IsExpired (EventId ev);
@@ -202,7 +202,7 @@ SimulatorPrivate::StopAt (Time const &at)
   m_stopAt = at.GetTimeStep ();
 }
 EventId
-SimulatorPrivate::Schedule (Time const &time, Ptr<EventImpl> event)
+SimulatorPrivate::Schedule (Time const &time, const Ptr<EventImpl> &event)
 {
   NS_ASSERT (time.IsPositive ());
   NS_ASSERT (time >= TimeStep (m_currentTs));
@@ -219,7 +219,7 @@ SimulatorPrivate::Schedule (Time const &time, Ptr<EventImpl> event)
   return id;
 }
 EventId
-SimulatorPrivate::ScheduleNow (Ptr<EventImpl> event)
+SimulatorPrivate::ScheduleNow (const Ptr<EventImpl> &event)
 {
   EventId id (event, m_currentTs, m_uid);
   if (m_logEnable) 
@@ -233,7 +233,7 @@ SimulatorPrivate::ScheduleNow (Ptr<EventImpl> event)
   return id;
 }
 EventId
-SimulatorPrivate::ScheduleDestroy (Ptr<EventImpl> event)
+SimulatorPrivate::ScheduleDestroy (const Ptr<EventImpl> &event)
 {
   EventId id (event, m_currentTs, 2);
   m_destroyEvents.push_back (id);
@@ -434,17 +434,17 @@ Simulator::MakeEvent (void (*f) (void))
   return Ptr<EventImpl> (ev, false);
 }
 EventId
-Simulator::Schedule (Time const &time, Ptr<EventImpl> ev)
+Simulator::Schedule (Time const &time, const Ptr<EventImpl> &ev)
 {
   return GetPriv ()->Schedule (Now () + time, ev);
 }
 EventId
-Simulator::ScheduleNow (Ptr<EventImpl> ev)
+Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
 {
   return GetPriv ()->ScheduleNow (ev);
 }
 EventId
-Simulator::ScheduleDestroy (Ptr<EventImpl> ev)
+Simulator::ScheduleDestroy (const Ptr<EventImpl> &ev)
 {
   return GetPriv ()->ScheduleDestroy (ev);
 }  

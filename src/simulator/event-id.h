@@ -35,7 +35,7 @@ class EventImpl;
 class EventId {
 public:
   EventId ();
-  EventId (Ptr<EventImpl> impl, uint64_t ts, uint32_t uid);
+  EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t uid);
   /**
    * This method is syntactic sugar for the ns3::Simulator::cancel
    * method.

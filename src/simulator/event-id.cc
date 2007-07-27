@@ -30,7 +30,7 @@ EventId::EventId ()
     m_uid (0)
 {}
   
-EventId::EventId (Ptr<EventImpl> impl, uint64_t ts, uint32_t uid)
+EventId::EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t uid)
   : m_eventImpl (impl),
     m_ts (ts),
     m_uid (uid)
