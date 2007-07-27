@@ -70,7 +70,8 @@ void
 SchedulerList::RealInsert (EventId id)
 {
   Scheduler::EventKey key;
-  EventImpl *event = id.PeekEventImpl ();
+  // acquire refcount on EventImpl
+  EventImpl *event = GetPointer (id.GetEventImpl ());
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
@@ -98,6 +99,9 @@ SchedulerList::RealPeekNext (void) const
 void
 SchedulerList::RealRemoveNext (void)
 {
+  std::pair<EventImpl *, EventKey> next = m_events.front ();
+  // release single acquired ref.
+  next.first->Unref ();
   m_events.pop_front ();
 }
 
@@ -108,7 +112,9 @@ SchedulerList::RealRemove (EventId id)
     {
       if (i->second.m_uid == id.GetUid ())
         {
-          NS_ASSERT (id.PeekEventImpl () == i->first);
+          NS_ASSERT (id.GetEventImpl () == i->first);
+          // release single acquire ref.
+          i->first->Unref ();
           m_events.erase (i);
           return true;
         }

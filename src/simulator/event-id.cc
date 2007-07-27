@@ -30,7 +30,7 @@ EventId::EventId ()
     m_uid (0)
 {}
   
-EventId::EventId (EventImpl *impl, uint64_t ts, uint32_t uid)
+EventId::EventId (Ptr<EventImpl> impl, uint64_t ts, uint32_t uid)
   : m_eventImpl (impl),
     m_ts (ts),
     m_uid (uid)
@@ -38,11 +38,7 @@ EventId::EventId (EventImpl *impl, uint64_t ts, uint32_t uid)
 void 
 EventId::Cancel (void)
 {
-  if (!IsExpired ())
-    {
-      m_eventImpl->Cancel ();
-      m_eventImpl = 0;
-    }
+  Simulator::Cancel (*this);
 }
 bool 
 EventId::IsExpired (void)
@@ -54,8 +50,8 @@ EventId::IsRunning (void)
 {
   return !IsExpired ();
 }
-EventImpl *
-EventId::PeekEventImpl (void) const
+Ptr<EventImpl> 
+EventId::GetEventImpl (void) const
 {
   return m_eventImpl;
 }

@@ -23,6 +23,7 @@
 #include "scheduler.h"
 #include "event-impl.h"
 
+#include "ns3/ptr.h"
 #include "ns3/assert.h"
 #include "ns3/default-value.h"
 
@@ -61,9 +62,9 @@ public:
   Time Next (void) const;
   void Stop (void);
   void StopAt (Time const &time);
-  EventId Schedule (Time const &time, EventImpl *event);
-  EventId ScheduleNow (EventImpl *event);
-  EventId ScheduleDestroy (EventImpl *event);
+  EventId Schedule (Time const &time, Ptr<EventImpl> event);
+  EventId ScheduleNow (Ptr<EventImpl> event);
+  EventId ScheduleDestroy (Ptr<EventImpl> event);
   void Remove (EventId ev);
   void Cancel (EventId &ev);
   bool IsExpired (EventId ev);
@@ -114,13 +115,12 @@ SimulatorPrivate::~SimulatorPrivate ()
 {
   while (!m_destroyEvents.empty ()) 
     {
-      EventImpl *ev = m_destroyEvents.front ().PeekEventImpl ();
+      Ptr<EventImpl> ev = m_destroyEvents.front ().GetEventImpl ();
       m_destroyEvents.pop_front ();
       TRACE ("handle destroy " << ev);
       if (!ev->IsCancelled ())
         {
           ev->Invoke ();
-          delete ev;
         }
     }
   delete m_events;
@@ -151,9 +151,8 @@ SimulatorPrivate::ProcessOneEvent (void)
     {
       m_log << "e "<<next.GetUid () << " " << next.GetTs () << std::endl;
     }
-  EventImpl *event = next.PeekEventImpl ();
+  Ptr<EventImpl> event = next.GetEventImpl ();
   event->Invoke ();
-  delete event;
 }
 
 bool 
@@ -204,7 +203,7 @@ SimulatorPrivate::StopAt (Time const &at)
   m_stopAt = at.GetTimeStep ();
 }
 EventId
-SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
+SimulatorPrivate::Schedule (Time const &time, Ptr<EventImpl> event)
 {
   NS_ASSERT (time.IsPositive ());
   NS_ASSERT (time >= TimeStep (m_currentTs));
@@ -221,7 +220,7 @@ SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
   return id;
 }
 EventId
-SimulatorPrivate::ScheduleNow (EventImpl *event)
+SimulatorPrivate::ScheduleNow (Ptr<EventImpl> event)
 {
   EventId id (event, m_currentTs, m_uid);
   if (m_logEnable) 
@@ -235,7 +234,7 @@ SimulatorPrivate::ScheduleNow (EventImpl *event)
   return id;
 }
 EventId
-SimulatorPrivate::ScheduleDestroy (EventImpl *event)
+SimulatorPrivate::ScheduleDestroy (Ptr<EventImpl> event)
 {
   EventId id (event, m_currentTs, 2);
   m_destroyEvents.push_back (id);
@@ -275,7 +274,7 @@ SimulatorPrivate::Remove (EventId ev)
       return;
     }
   m_events->Remove (ev);
-  delete ev.PeekEventImpl ();
+  Cancel (ev);
 
   if (m_logEnable) 
     {
@@ -288,7 +287,10 @@ SimulatorPrivate::Remove (EventId ev)
 void
 SimulatorPrivate::Cancel (EventId &id)
 {
-  id.Cancel ();
+  if (!IsExpired (id))
+    {
+      id.GetEventImpl ()->Cancel ();
+    }
 }
 
 bool
@@ -306,11 +308,11 @@ SimulatorPrivate::IsExpired (const EventId ev)
          }
       return true;
     }
-  if (ev.PeekEventImpl () == 0 ||
+  if (ev.GetEventImpl () == 0 ||
       ev.GetTs () < m_currentTs ||
       (ev.GetTs () == m_currentTs &&
        ev.GetUid () <= m_currentUid) ||
-      ev.PeekEventImpl ()->IsCancelled ()) 
+      ev.GetEventImpl ()->IsCancelled ()) 
     {
       return true;
     }
@@ -411,39 +413,39 @@ Simulator::Now (void)
   return GetPriv ()->Now ();
 }
 
-EventImpl *
+Ptr<EventImpl>
 Simulator::MakeEvent (void (*f) (void))
 {
     // zero arg version
   class EventFunctionImpl0 : public EventImpl {
   public:
-  	typedef void (*F)(void);
+    typedef void (*F)(void);
       
-  	EventFunctionImpl0 (F function) 
-  		: m_function (function)
-  	{}
-  	virtual ~EventFunctionImpl0 () {}
+    EventFunctionImpl0 (F function) 
+      : m_function (function)
+    {}
+    virtual ~EventFunctionImpl0 () {}
   protected:
-  	virtual void Notify (void) { 
-  		(*m_function) (); 
-      }
+    virtual void Notify (void) { 
+      (*m_function) (); 
+    }
   private:
   	F m_function;
   } *ev = new EventFunctionImpl0 (f);
-  return ev;
+  return Ptr<EventImpl> (ev, false);
 }
 EventId
-Simulator::Schedule (Time const &time, EventImpl *ev)
+Simulator::Schedule (Time const &time, Ptr<EventImpl> ev)
 {
   return GetPriv ()->Schedule (Now () + time, ev);
 }
 EventId
-Simulator::ScheduleNow (EventImpl *ev)
+Simulator::ScheduleNow (Ptr<EventImpl> ev)
 {
   return GetPriv ()->ScheduleNow (ev);
 }
 EventId
-Simulator::ScheduleDestroy (EventImpl *ev)
+Simulator::ScheduleDestroy (Ptr<EventImpl> ev)
 {
   return GetPriv ()->ScheduleDestroy (ev);
 }  
@@ -883,6 +885,22 @@ SimulatorTests::RunTests (void)
     {
       ok = false;
     }
+
+  EventId anId = Simulator::ScheduleNow (&foo0);
+  EventId anotherId = anId;
+  if (anId.IsExpired () || anotherId.IsExpired ())
+    {
+      ok = false;
+    }
+  Simulator::Remove (anId);
+  if (!anId.IsExpired () || !anotherId.IsExpired ())
+    {
+      ok = false;
+    }
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+  
 
   return ok;
 }

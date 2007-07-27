@@ -90,7 +90,8 @@ SchedulerMap::EventKeyCompare::operator () (struct EventKey const&a, struct Even
 void
 SchedulerMap::RealInsert (EventId id)
 {
-  EventImpl *event = id.PeekEventImpl ();
+  // acquire a single ref
+  EventImpl *event = GetPointer (id.GetEventImpl ());
   Scheduler::EventKey key;
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
@@ -116,6 +117,9 @@ SchedulerMap::RealPeekNext (void) const
 void
 SchedulerMap::RealRemoveNext (void)
 {
+  EventMapCI i = m_list.begin ();
+  // release single ref.
+  i->second->Unref ();
   m_list.erase (m_list.begin ());
 }
 
@@ -126,7 +130,9 @@ SchedulerMap::RealRemove (EventId id)
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
   EventMapI i = m_list.find (key);
-  NS_ASSERT (i->second == id.PeekEventImpl ());
+  NS_ASSERT (i->second == id.GetEventImpl ());
+  // release single ref.
+  i->second->Unref ();
   m_list.erase (i);
   return true;
 }

@@ -27,8 +27,6 @@
 
 namespace ns3 {
 
-class EventImpl;
-
 /**
  * \brief Maintain the event list
  *
