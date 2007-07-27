@@ -1,4 +1,4 @@
-#include "ipv4-transport-address.h"
+#include "inet-address.h"
 #include "ns3/assert.h"
 
 namespace ns3 {

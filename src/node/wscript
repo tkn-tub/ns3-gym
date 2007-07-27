@@ -8,7 +8,7 @@ def build(bld):
     node.source = [
         'address.cc',
         'eui48-address.cc',
-        'ipv4-transport-address.cc',
+        'inet-address.cc',
         'node.cc',
         'ipv4-address.cc',
         'net-device.cc',
@@ -30,7 +30,7 @@ def build(bld):
     headers.source = [
         'address.h',
         'eui48-address.h',
-        'ipv4-transport-address.h',
+        'inet-address.h',
         'node.h',
         'ipv4-address.h',
         'net-device.h',

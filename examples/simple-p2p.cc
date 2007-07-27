@@ -57,7 +57,7 @@
 #include "ns3/p2p-channel.h"
 #include "ns3/p2p-net-device.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/ipv4-transport-address.h"
+#include "ns3/inet-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
