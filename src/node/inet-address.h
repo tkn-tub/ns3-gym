@@ -7,12 +7,12 @@
 
 namespace ns3 {
 
-class Ipv4TransportAddress
+class InetAddress
 {
 public:
-  Ipv4TransportAddress (Ipv4Address ipv4, uint16_t port);
-  Ipv4TransportAddress (Ipv4Address ipv4);
-  Ipv4TransportAddress (uint16_t post);
+  InetAddress (Ipv4Address ipv4, uint16_t port);
+  InetAddress (Ipv4Address ipv4);
+  InetAddress (uint16_t post);
   uint16_t GetPort (void) const;
   Ipv4Address GetIpv4 (void) const;
 
@@ -20,7 +20,7 @@ public:
   void SetIpv4 (Ipv4Address address);
 
   Address ConvertTo (void) const;
-  static Ipv4TransportAddress ConvertFrom (const Address &address);
+  static InetAddress ConvertFrom (const Address &address);
 private:
   static uint8_t GetType (void);
   Ipv4Address m_ipv4;

@@ -45,11 +45,11 @@ RunSimulation (void)
   Ptr<SocketFactory> socketFactory = a->QueryInterface<SocketFactory> (iid);
 
   Ptr<Socket> sink = socketFactory->CreateSocket ();
-  Ipv4TransportAddress local = Ipv4TransportAddress (Ipv4Address::GetAny (), 80);
+  InetAddress local = InetAddress (Ipv4Address::GetAny (), 80);
   sink->Bind (local.ConvertTo ());
 
   Ptr<Socket> source = socketFactory->CreateSocket ();
-  Ipv4TransportAddress remote = Ipv4TransportAddress (Ipv4Address::GetLoopback (), 80);
+  InetAddress remote = InetAddress (Ipv4Address::GetLoopback (), 80);
   source->Connect (remote.ConvertTo ());
 
   GenerateTraffic (source, 500);
