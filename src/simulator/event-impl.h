@@ -28,8 +28,8 @@ namespace ns3 {
 class EventImpl {
 public:
   EventImpl ();
-  void Ref (void) const;
-  void Unref (void) const;
+  inline void Ref (void) const;
+  inline void Unref (void) const;
   virtual ~EventImpl () = 0;
   void Invoke (void);
   void Cancel (void);
@@ -43,5 +43,24 @@ private:
 };
 
 }; // namespace ns3
+
+namespace ns3 {
+
+void
+EventImpl::Ref (void) const
+{
+  m_count++;
+}
+void
+EventImpl::Unref (void) const
+{
+  m_count--;
+  if (m_count == 0)
+    {
+      delete this;
+    }
+}
+
+} // namespace ns3
 
 #endif /* EVENT_IMPL_H */

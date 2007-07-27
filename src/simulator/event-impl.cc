@@ -32,21 +32,6 @@ EventImpl::EventImpl ()
   : m_cancel (false),
     m_count (1)
 {}
-void
-EventImpl::Ref (void) const
-{
-  m_count++;
-}
-void
-EventImpl::Unref (void) const
-{
-  m_count--;
-  if (m_count == 0)
-    {
-      delete this;
-    }
-}
-
 void 
 EventImpl::Invoke (void)
 {

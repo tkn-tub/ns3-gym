@@ -138,8 +138,7 @@ SimulatorPrivate::EnableLogTo (char const *filename)
 void
 SimulatorPrivate::ProcessOneEvent (void)
 {
-  EventId next = m_events->PeekNext ();
-  m_events->RemoveNext ();
+  EventId next = m_events->RemoveNext ();
 
   NS_ASSERT (next.GetTs () >= m_currentTs);
   --m_unscheduledEvents;
@@ -151,7 +150,7 @@ SimulatorPrivate::ProcessOneEvent (void)
     {
       m_log << "e "<<next.GetUid () << " " << next.GetTs () << std::endl;
     }
-  Ptr<EventImpl> event = next.GetEventImpl ();
+  EventImpl *event = next.PeekEventImpl ();
   event->Invoke ();
 }
 

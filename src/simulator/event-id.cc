@@ -55,6 +55,11 @@ EventId::GetEventImpl (void) const
 {
   return m_eventImpl;
 }
+EventImpl *
+EventId::PeekEventImpl (void) const
+{
+  return PeekPointer (m_eventImpl);
+}
 uint64_t 
 EventId::GetTs (void) const
 {

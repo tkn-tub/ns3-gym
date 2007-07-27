@@ -54,6 +54,7 @@ public:
    * subclasses of the Scheduler base class.
    */
   Ptr<EventImpl> GetEventImpl (void) const;
+  EventImpl *PeekEventImpl (void) const;
   uint64_t GetTs (void) const;
   uint32_t GetUid (void) const;
 private:
