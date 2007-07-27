@@ -31,7 +31,7 @@
 
 namespace ns3 {
 
-class Ipv4Address;
+class Address;
 class RandomVariable;
 class Socket;
 class DataRate;
@@ -52,23 +52,20 @@ class OnOffApplication : public Application
 public:
   /**
    * \param n node associated to this application
-   * \param rip remote ip address
-   * \param rport remove port number
+   * \param remote remote ip address
    * \param iid
    * \param ontime on time random variable
    * \param offtime off time random variable
    */
   OnOffApplication(Ptr<Node> n,
-                   const Ipv4Address rip,
-                   uint16_t rport,
+                   const Address &remote,
                    std::string iid,
                    const RandomVariable& ontime,
                    const RandomVariable& offtime);
 
   /**
    * \param n node associated to this application
-   * \param rip remote ip address
-   * \param rport remove port number
+   * \param remote remote ip address
    * \param iid
    * \param ontime on time random variable
    * \param offtime off time random variable
@@ -76,8 +73,7 @@ public:
    * \param size size of packets when sending data.
    */
   OnOffApplication(Ptr<Node> n,
-                   const Ipv4Address rip,
-                   uint16_t rport,
+                   const Address &remote,
                    std::string iid,
                    const RandomVariable& ontime,
                    const RandomVariable& offtime,
@@ -112,8 +108,7 @@ private:
   virtual void StopApplication (void);     // Called at time specified by Stop
 
   void Construct (Ptr<Node> n,
-                  const Ipv4Address rip,
-                  uint16_t rport,
+                  const Address &remote,
                   std::string iid,
                   const RandomVariable& ontime,
                   const RandomVariable& offtime,
@@ -126,8 +121,7 @@ private:
   void SendPacket();
 
   Ptr<Socket>     m_socket;       // Associated socket
-  Ipv4Address     m_peerIp;       // Peer IP address
-  uint16_t        m_peerPort;     // Peer port
+  Address         m_peer;         // Peer address
   bool            m_connected;    // True if connected
   RandomVariable* m_onTime;       // rng for On Time
   RandomVariable* m_offTime;      // rng for Off Time

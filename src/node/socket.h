@@ -23,8 +23,8 @@
 
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
-#include "ipv4-address.h"
 #include "ns3/object.h"
+#include "address.h"
 #include <stdint.h>
 
 namespace ns3 {
@@ -35,8 +35,7 @@ class Node;
  * \brief Define a Socket API based on the BSD Socket API.
  *
  * Contrary to the original BSD socket API, this API is asynchronous:
- * it does not contain blocking calls. This API also does not use
- * the dreaded BSD sockaddr_t type. Other than that, it tries to stick
+ * it does not contain blocking calls. Other than that, it tries to stick
  * to the BSD API to make it easier those who know the BSD API to use
  * this API.
  */
@@ -69,42 +68,20 @@ public:
   virtual Ptr<Node> GetNode (void) const = 0;
 
   /** 
-   * Allocate a free port number and
-   * bind this socket to this port number on all
-   * interfaces of this system.
-   *
+   * \param address the address to try to allocate
    * \returns 0 on success, -1 on failure.
+   *
+   * Allocate a local endpoint for this socket.
    */
-  virtual int Bind (void) = 0;
+  virtual int Bind (const Address &address) = 0;
 
   /** 
-   * Allocate a free port number and
-   * bind this socket to this port number on the
-   * specified interface.
+   * Allocate a local endpoint for this socket.
    *
-   * \param address address of interface to bind to.
    * \returns 0 on success, -1 on failure.
    */
-  virtual int Bind (Ipv4Address address) = 0;
+  virtual int Bind () = 0;
 
-  /**
-   * Bind this socket to this port number
-   * on all interfaces of this system.
-   *
-   * \param port port to bind to on all interfaces
-   * \returns 0 on success, -1 on failure.
-   */
-  virtual int Bind (uint16_t port) = 0; 
-
-  /**
-   * Bind this socket to this port number
-   * on the interface specified by address.
-   *
-   * \param address address of interface to bind to.
-   * \param port port to bind to on specified interface
-   * \returns 0 on success, -1 on failure.
-   */
-  virtual int Bind (Ipv4Address address, uint16_t port) = 0;
 
   /** 
    * \brief Close a socket.
@@ -134,8 +111,7 @@ public:
 
   /**
    * \brief Initiate a connection to a remote host
-   * \param address IP Address of remote.
-   * \param portNumber Port number of remote
+   * \param address Address of remote.
    * \param connectionSucceeded this callback is invoked when the connection request
    *        initiated by the user is successfully completed. The callback is passed
    *        back a pointer to the same socket object.
@@ -145,8 +121,7 @@ public:
    * \param halfClose XXX When exactly is this callback invoked ? If it invoked when the
    *        other side closes the connection ? Or when I call Close ?
    */
-  void Connect(const Ipv4Address & address,
-               uint16_t portNumber,
+  void Connect(const Address &address,
                Callback<void, Ptr<Socket> > connectionSucceeded = MakeCallback(&Socket::DummyCallbackVoidSocket),
                Callback<void, Ptr<Socket> > connectionFailed = MakeCallback(&Socket::DummyCallbackVoidSocket),
                Callback<void, Ptr<Socket> > halfClose = MakeCallback(&Socket::DummyCallbackVoidSocket));
@@ -170,10 +145,10 @@ public:
    * \param closeRequested Callback for connection close request from peer.
    *        XXX: when is this callback invoked ?
    */
-  int Accept(Callback<bool, Ptr<Socket>, const Ipv4Address&, uint16_t> connectionRequest = 
+  int Accept(Callback<bool, Ptr<Socket>, const Address &> connectionRequest = 
              MakeCallback(&Socket::RefuseAllConnections),
-             Callback<void, Ptr<Socket>, const Ipv4Address&, uint16_t> newConnectionCreated = 
-             MakeCallback (&Socket::DummyCallbackVoidSocketIpv4AddressUi16),
+             Callback<void, Ptr<Socket>, const Address&> newConnectionCreated = 
+             MakeCallback (&Socket::DummyCallbackVoidSocketAddress),
              Callback<void, Ptr<Socket> > closeRequested = MakeCallback (&Socket::DummyCallbackVoidSocket));
 
   /**
@@ -191,15 +166,13 @@ public:
   /**
    * \brief Send data to a specified peer.
    * \param address IP Address of remote host
-   * \param port port number
    * \param buffer Data to send (nil if dummy data).
    * \param size Number of bytes to send.
    * \param dataSent Data sent callback.
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  int SendTo(const Ipv4Address &address,
-             uint16_t port,
+  int SendTo(const Address &address,
              const uint8_t *buffer,
              uint32_t size,
              Callback<void, Ptr<Socket>, uint32_t> dataSent = MakeCallback (&Socket::DummyCallbackVoidSocketUi32));
@@ -213,8 +186,8 @@ public:
    * allocation to hold the dummy memory into a buffer which can be passed
    * to the user. Instead, consider using the RecvDummy method.
    */
-  void Recv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> receivedData = 
-            MakeCallback (&Socket::DummyCallbackVoidSocketBufferUi32Ipv4AddressUi16));
+  void Recv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> receivedData = 
+            MakeCallback (&Socket::DummyCallbackVoidSocketBufferUi32Address));
   
   /**
    * \brief Receive data
@@ -223,38 +196,36 @@ public:
    * This method is included because it is vastly more efficient than the 
    * Recv method when you use dummy payload.
    */
-  void RecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Ipv4Address&, uint16_t> receivedData =
-                 MakeCallback (&Socket::DummyCallbackVoidSocketUi32Ipv4AddressUi16));
+  void RecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Address&> receivedData =
+                 MakeCallback (&Socket::DummyCallbackVoidSocketUi32Address));
 
 private:
   virtual void DoClose(Callback<void, Ptr<Socket> > closeCompleted) = 0;
-  virtual void DoConnect(const Ipv4Address & address,
-                         uint16_t portNumber,
+  virtual void DoConnect(const Address & address,
                          Callback<void, Ptr<Socket> > connectionSucceeded,
                          Callback<void, Ptr<Socket> > connectionFailed,
                          Callback<void, Ptr<Socket> > halfClose) = 0;
-  virtual int DoAccept(Callback<bool, Ptr<Socket>, const Ipv4Address&, uint16_t> connectionRequest,
-                       Callback<void, Ptr<Socket>, const Ipv4Address&, uint16_t> newConnectionCreated,
+  virtual int DoAccept(Callback<bool, Ptr<Socket>, const Address&> connectionRequest,
+                       Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
                        Callback<void, Ptr<Socket> > closeRequested) = 0;
   virtual int DoSend (const uint8_t* buffer,
-                    uint32_t size,
-                    Callback<void, Ptr<Socket>, uint32_t> dataSent) = 0;
-  virtual int DoSendTo(const Ipv4Address &address,
-                       uint16_t port,
+                      uint32_t size,
+                      Callback<void, Ptr<Socket>, uint32_t> dataSent) = 0;
+  virtual int DoSendTo(const Address &address,
                        const uint8_t *buffer,
                        uint32_t size,
                        Callback<void, Ptr<Socket>, uint32_t> dataSent) = 0;
-  virtual void DoRecv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> receive) = 0;
-  virtual void DoRecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Ipv4Address&, uint16_t>) = 0;
+  virtual void DoRecv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> receive) = 0;
+  virtual void DoRecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Address&>) = 0;
 
 
-  static bool RefuseAllConnections (Ptr<Socket> socket, const Ipv4Address& address, uint16_t port);
+  static bool RefuseAllConnections (Ptr<Socket> socket, const Address& address);
   static void DummyCallbackVoidSocket (Ptr<Socket> socket);
   static void DummyCallbackVoidSocketUi32 (Ptr<Socket> socket, uint32_t);
-  static void DummyCallbackVoidSocketUi32Ipv4AddressUi16 (Ptr<Socket> socket, uint32_t, const Ipv4Address &, uint16_t);
-  static void DummyCallbackVoidSocketBufferUi32Ipv4AddressUi16 (Ptr<Socket> socket, const uint8_t *, uint32_t, 
-                                                                const Ipv4Address &, uint16_t);
-  static void DummyCallbackVoidSocketIpv4AddressUi16 (Ptr<Socket> socket, const Ipv4Address &, uint16_t);
+  static void DummyCallbackVoidSocketUi32Address (Ptr<Socket> socket, uint32_t, const Address &);
+  static void DummyCallbackVoidSocketBufferUi32Address (Ptr<Socket> socket, const uint8_t *, uint32_t, 
+                                                                const Address &);
+  static void DummyCallbackVoidSocketAddress (Ptr<Socket> socket, const Address &);
 };
 
 } //namespace ns3
