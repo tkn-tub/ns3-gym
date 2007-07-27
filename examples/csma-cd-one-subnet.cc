@@ -71,10 +71,10 @@ int main (int argc, char *argv[])
 
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
+#if 0 
   DebugComponentEnable("CsmaCdNetDevice");
   DebugComponentEnable("Ipv4L3Protocol");
   DebugComponentEnable("NetDevice");
-#if 0 
   DebugComponentEnable("Channel");
   DebugComponentEnable("CsmaCdChannel");
   DebugComponentEnable("PacketSocket");
@@ -126,7 +126,6 @@ int main (int argc, char *argv[])
   CsmaCdIpv4Topology::AddIpv4Address (
       n3, n3ifIndex, Ipv4Address("10.1.1.4"), Ipv4Mask("255.255.255.0"));
 
-
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   // from n0 to n1
@@ -155,9 +154,17 @@ int main (int argc, char *argv[])
  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the csma-cd-one-subnet.tr file
- // AsciiTrace asciitrace ("csma-cd-one-subnet.tr");
-//  asciitrace.TraceAllNetDeviceRx ();
-  //  asciitrace.TraceAllQueues ();
+  AsciiTrace asciitrace ("csma-cd-one-subnet.tr");
+  asciitrace.TraceAllNetDeviceRx ();
+  asciitrace.TraceAllQueues ();
+
+  // Also configure some tcpdump traces; each interface will be traced
+  // The output files will be named 
+  // simple-point-to-point.pcap-<nodeId>-<interfaceId>
+  // and can be read by the "tcpdump -r" command (use "-tt" option to
+  // display timestamps correctly)
+  PcapTrace pcaptrace ("csma-cd-one-subnet.pcap");
+  pcaptrace.TraceAllIp ();
 
   Simulator::Run ();
     
