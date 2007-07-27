@@ -17,35 +17,35 @@
 #include "ns3/assert.h"
 #include "ns3/debug.h"
 #include "ns3/simulation-singleton.h"
-#include "static-route-manager.h"
-#include "static-route-manager-impl.h"
+#include "global-route-manager.h"
+#include "global-route-manager-impl.h"
 
 namespace ns3 {
 
 // ---------------------------------------------------------------------------
 //
-// StaticRouteManager Implementation
+// GlobalRouteManager Implementation
 //
 // ---------------------------------------------------------------------------
 
   void
-StaticRouteManager::PopulateRoutingTables () 
+GlobalRouteManager::PopulateRoutingTables () 
 {
-  BuildStaticRoutingDatabase ();
+  BuildGlobalRoutingDatabase ();
   InitializeRoutes ();
 }
 
   void
-StaticRouteManager::BuildStaticRoutingDatabase () 
+GlobalRouteManager::BuildGlobalRoutingDatabase () 
 {
-  return SimulationSingleton<StaticRouteManagerImpl>::Get ()->
-    BuildStaticRoutingDatabase ();
+  return SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
+    BuildGlobalRoutingDatabase ();
 }
 
   void
-StaticRouteManager::InitializeRoutes ()
+GlobalRouteManager::InitializeRoutes ()
 {
-  return SimulationSingleton<StaticRouteManagerImpl>::Get ()->
+  return SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
     InitializeRoutes ();
 }
 

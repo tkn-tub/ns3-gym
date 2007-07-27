@@ -1,7 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * All rights reserved.
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -15,32 +13,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef ROUTING_ENVIRONMENT_H
+#define ROUTING_ENVIRONMENT_H
 
-#include "ns3/debug.h"
-#include "ns3/default-value.h"
-
-#include "routing-environment.h"
-
-NS_DEBUG_COMPONENT_DEFINE ("RoutingEnvironment");
+#include <stdint.h>
+#include "ns3/object.h"
+#include "ns3/ptr.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 namespace RoutingEnvironment {
 
-BooleanDefaultValue g_doStaticRoutingDefaultValue ("DoStaticRouting", 
-  "Enable global static routing", false);
+/**
+ * @brief This function tests the value of the global default value
+ * "DoStaticRouting".  This approach puts everything in one compilation
+ * unit, as opposed to explicitly testing the value of the underlying
+ * static variable.
+ */
+bool GlobalRoutingEnabled(void);
 
-  bool
-StaticRoutingEnabled(void)
-{
-  return g_doStaticRoutingDefaultValue.GetValue();
-}
-
-  uint32_t
-AllocateRouterId(void)
-{
-  static uint32_t routerId = 0;
-  return routerId++;
-}
+/**
+ * @brief Allocate a 32-bit router ID from monotonically increasing counter.
+ */
+uint32_t AllocateRouterId(void);
 
 } // namespace RoutingEnvironment
 } // namespace ns3
+
+#endif /* ROUTING_ENVIRONMENT_H */

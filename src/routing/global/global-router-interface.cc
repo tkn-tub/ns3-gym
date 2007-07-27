@@ -20,29 +20,29 @@
 #include "ns3/net-device.h"
 #include "ns3/internet-node.h"
 #include "ns3/ipv4.h"
-#include "static-router.h"
+#include "global-router-interface.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("StaticRouter");
+NS_DEBUG_COMPONENT_DEFINE ("GlobalRouter");
 
 namespace ns3 {
 
 // ---------------------------------------------------------------------------
 //
-// StaticRouterLinkRecord Implementation
+// GlobalRouterLinkRecord Implementation
 //
 // ---------------------------------------------------------------------------
 
-StaticRouterLinkRecord::StaticRouterLinkRecord ()
+GlobalRouterLinkRecord::GlobalRouterLinkRecord ()
 :
   m_linkId ("0.0.0.0"),
   m_linkData ("0.0.0.0"),
   m_linkType (Unknown),
   m_metric (0)
 {
-  NS_DEBUG("StaticRouterLinkRecord::StaticRouterLinkRecord ()");
+  NS_DEBUG("GlobalRouterLinkRecord::GlobalRouterLinkRecord ()");
 }
 
-StaticRouterLinkRecord::StaticRouterLinkRecord (
+GlobalRouterLinkRecord::GlobalRouterLinkRecord (
   LinkType    linkType, 
   Ipv4Address linkId, 
   Ipv4Address linkData, 
@@ -53,90 +53,90 @@ StaticRouterLinkRecord::StaticRouterLinkRecord (
   m_linkType (linkType),
   m_metric (metric)
 {
-  NS_DEBUG("StaticRouterLinkRecord::StaticRouterLinkRecord (" <<
+  NS_DEBUG("GlobalRouterLinkRecord::GlobalRouterLinkRecord (" <<
     linkType << ", " << linkId << ", " << linkData << ", " << metric << ")");
 }
 
-StaticRouterLinkRecord::~StaticRouterLinkRecord ()
+GlobalRouterLinkRecord::~GlobalRouterLinkRecord ()
 {
-  NS_DEBUG("StaticRouterLinkRecord::~StaticRouterLinkRecord ()");
+  NS_DEBUG("GlobalRouterLinkRecord::~GlobalRouterLinkRecord ()");
 }
 
   Ipv4Address
-StaticRouterLinkRecord::GetLinkId (void) const
+GlobalRouterLinkRecord::GetLinkId (void) const
 {
-  NS_DEBUG("StaticRouterLinkRecord::GetLinkId ()");
+  NS_DEBUG("GlobalRouterLinkRecord::GetLinkId ()");
   return m_linkId;
 }
 
   void
-StaticRouterLinkRecord::SetLinkId (Ipv4Address addr)
+GlobalRouterLinkRecord::SetLinkId (Ipv4Address addr)
 {
-  NS_DEBUG("StaticRouterLinkRecord::SetLinkId ()");
+  NS_DEBUG("GlobalRouterLinkRecord::SetLinkId ()");
   m_linkId = addr;
 }
 
   Ipv4Address
-StaticRouterLinkRecord::GetLinkData (void) const
+GlobalRouterLinkRecord::GetLinkData (void) const
 {
-  NS_DEBUG("StaticRouterLinkRecord::GetLinkData ()");
+  NS_DEBUG("GlobalRouterLinkRecord::GetLinkData ()");
   return m_linkData;
 }
 
   void
-StaticRouterLinkRecord::SetLinkData (Ipv4Address addr)
+GlobalRouterLinkRecord::SetLinkData (Ipv4Address addr)
 {
-  NS_DEBUG("StaticRouterLinkRecord::SetLinkData ()");
+  NS_DEBUG("GlobalRouterLinkRecord::SetLinkData ()");
   m_linkData = addr;
 }
 
-  StaticRouterLinkRecord::LinkType
-StaticRouterLinkRecord::GetLinkType (void) const
+  GlobalRouterLinkRecord::LinkType
+GlobalRouterLinkRecord::GetLinkType (void) const
 {
-  NS_DEBUG("StaticRouterLinkRecord::GetLinkType ()");
+  NS_DEBUG("GlobalRouterLinkRecord::GetLinkType ()");
   return m_linkType;
 }
 
   void
-StaticRouterLinkRecord::SetLinkType (
-  StaticRouterLinkRecord::LinkType linkType)
+GlobalRouterLinkRecord::SetLinkType (
+  GlobalRouterLinkRecord::LinkType linkType)
 {
-  NS_DEBUG("StaticRouterLinkRecord::SetLinkType ()");
+  NS_DEBUG("GlobalRouterLinkRecord::SetLinkType ()");
   m_linkType = linkType;
 }
 
   uint32_t
-StaticRouterLinkRecord::GetMetric (void) const
+GlobalRouterLinkRecord::GetMetric (void) const
 {
-  NS_DEBUG("StaticRouterLinkRecord::GetMetric ()");
+  NS_DEBUG("GlobalRouterLinkRecord::GetMetric ()");
   return m_metric;
 }
 
   void
-StaticRouterLinkRecord::SetMetric (uint32_t metric)
+GlobalRouterLinkRecord::SetMetric (uint32_t metric)
 {
-  NS_DEBUG("StaticRouterLinkRecord::SetMetric ()");
+  NS_DEBUG("GlobalRouterLinkRecord::SetMetric ()");
   m_metric = metric;
 }
 
 // ---------------------------------------------------------------------------
 //
-// StaticRouterLSA Implementation
+// GlobalRouterLSA Implementation
 //
 // ---------------------------------------------------------------------------
 
-StaticRouterLSA::StaticRouterLSA()
+GlobalRouterLSA::GlobalRouterLSA()
   : 
   m_linkStateId("0.0.0.0"),
   m_advertisingRtr("0.0.0.0"),
   m_linkRecords(),
-  m_status(StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
+  m_status(GlobalRouterLSA::LSA_SPF_NOT_EXPLORED)
 {
-  NS_DEBUG("StaticRouterLSA::StaticRouterLSA ()");
+  NS_DEBUG("GlobalRouterLSA::GlobalRouterLSA ()");
 }
 
-StaticRouterLSA::StaticRouterLSA (
-  StaticRouterLSA::SPFStatus status,
+GlobalRouterLSA::GlobalRouterLSA (
+  GlobalRouterLSA::SPFStatus status,
   Ipv4Address linkStateId, 
   Ipv4Address advertisingRtr)
 :
@@ -145,21 +145,21 @@ StaticRouterLSA::StaticRouterLSA (
   m_linkRecords(),
   m_status(status)
 {
-  NS_DEBUG("StaticRouterLSA::StaticRouterLSA (" << status << ", " <<
+  NS_DEBUG("GlobalRouterLSA::GlobalRouterLSA (" << status << ", " <<
     linkStateId << ", " << advertisingRtr << ")");
 }
 
-StaticRouterLSA::StaticRouterLSA (StaticRouterLSA& lsa)
+GlobalRouterLSA::GlobalRouterLSA (GlobalRouterLSA& lsa)
   : m_linkStateId(lsa.m_linkStateId), m_advertisingRtr(lsa.m_advertisingRtr),
     m_status(lsa.m_status)
 {
   NS_ASSERT_MSG(IsEmpty(), 
-    "StaticRouterLSA::StaticRouterLSA (): Non-empty LSA in constructor");
+    "GlobalRouterLSA::GlobalRouterLSA (): Non-empty LSA in constructor");
   CopyLinkRecords (lsa);
 }
 
-  StaticRouterLSA&
-StaticRouterLSA::operator= (const StaticRouterLSA& lsa)
+  GlobalRouterLSA&
+GlobalRouterLSA::operator= (const GlobalRouterLSA& lsa)
 {
   m_linkStateId = lsa.m_linkStateId;
   m_advertisingRtr = lsa.m_advertisingRtr;
@@ -171,14 +171,14 @@ StaticRouterLSA::operator= (const StaticRouterLSA& lsa)
 }
 
   void
-StaticRouterLSA::CopyLinkRecords (const StaticRouterLSA& lsa)
+GlobalRouterLSA::CopyLinkRecords (const GlobalRouterLSA& lsa)
 {
   for (ListOfLinkRecords_t::const_iterator i = lsa.m_linkRecords.begin ();
        i != lsa.m_linkRecords.end (); 
        i++)
     {
-      StaticRouterLinkRecord *pSrc = *i;
-      StaticRouterLinkRecord *pDst = new StaticRouterLinkRecord;
+      GlobalRouterLinkRecord *pSrc = *i;
+      GlobalRouterLinkRecord *pDst = new GlobalRouterLinkRecord;
 
       pDst->SetLinkType (pSrc->GetLinkType ());
       pDst->SetLinkId (pSrc->GetLinkId ());
@@ -189,46 +189,46 @@ StaticRouterLSA::CopyLinkRecords (const StaticRouterLSA& lsa)
     }
 }
 
-StaticRouterLSA::~StaticRouterLSA()
+GlobalRouterLSA::~GlobalRouterLSA()
 {
-  NS_DEBUG("StaticRouterLSA::~StaticRouterLSA ()");
+  NS_DEBUG("GlobalRouterLSA::~GlobalRouterLSA ()");
   ClearLinkRecords ();
 }
 
   void
-StaticRouterLSA::ClearLinkRecords(void)
+GlobalRouterLSA::ClearLinkRecords(void)
 {
   for ( ListOfLinkRecords_t::iterator i = m_linkRecords.begin ();
         i != m_linkRecords.end (); 
         i++)
     {
-      NS_DEBUG("StaticRouterLSA::ClearLinkRecords ():  free link record");
+      NS_DEBUG("GlobalRouterLSA::ClearLinkRecords ():  free link record");
 
-      StaticRouterLinkRecord *p = *i;
+      GlobalRouterLinkRecord *p = *i;
       delete p;
       p = 0;
 
       *i = 0;
     }
-  NS_DEBUG("StaticRouterLSA::ClearLinkRecords():  clear list");
+  NS_DEBUG("GlobalRouterLSA::ClearLinkRecords():  clear list");
   m_linkRecords.clear();
 }
 
   uint32_t
-StaticRouterLSA::AddLinkRecord (StaticRouterLinkRecord* lr)
+GlobalRouterLSA::AddLinkRecord (GlobalRouterLinkRecord* lr)
 {
   m_linkRecords.push_back (lr);
   return m_linkRecords.size ();
 }
 
   uint32_t
-StaticRouterLSA::GetNLinkRecords (void) const
+GlobalRouterLSA::GetNLinkRecords (void) const
 {
   return m_linkRecords.size ();
 }
 
-  StaticRouterLinkRecord *
-StaticRouterLSA::GetLinkRecord (uint32_t n) const
+  GlobalRouterLinkRecord *
+GlobalRouterLSA::GetLinkRecord (uint32_t n) const
 {
   uint32_t j = 0;
   for ( ListOfLinkRecords_t::const_iterator i = m_linkRecords.begin ();
@@ -240,54 +240,54 @@ StaticRouterLSA::GetLinkRecord (uint32_t n) const
           return *i;
         }
     }
-  NS_ASSERT_MSG(false, "StaticRouterLSA::GetLinkRecord (): invalid index");
+  NS_ASSERT_MSG(false, "GlobalRouterLSA::GetLinkRecord (): invalid index");
   return 0;
 }
 
   bool
-StaticRouterLSA::IsEmpty (void) const
+GlobalRouterLSA::IsEmpty (void) const
 {
   return m_linkRecords.size () == 0;
 }
 
   Ipv4Address
-StaticRouterLSA::GetLinkStateId (void) const
+GlobalRouterLSA::GetLinkStateId (void) const
 {
   return m_linkStateId;
 }
 
   void
-StaticRouterLSA::SetLinkStateId (Ipv4Address addr)
+GlobalRouterLSA::SetLinkStateId (Ipv4Address addr)
 {
   m_linkStateId = addr;
 }
 
   Ipv4Address
-StaticRouterLSA::GetAdvertisingRouter (void) const
+GlobalRouterLSA::GetAdvertisingRouter (void) const
 {
   return m_advertisingRtr;
 }
 
   void
-StaticRouterLSA::SetAdvertisingRouter (Ipv4Address addr)
+GlobalRouterLSA::SetAdvertisingRouter (Ipv4Address addr)
 {
   m_advertisingRtr = addr;
 }
 
-  StaticRouterLSA::SPFStatus
-StaticRouterLSA::GetStatus (void) const
+  GlobalRouterLSA::SPFStatus
+GlobalRouterLSA::GetStatus (void) const
 {
   return m_status;
 }
 
   void
-StaticRouterLSA::SetStatus (StaticRouterLSA::SPFStatus status)
+GlobalRouterLSA::SetStatus (GlobalRouterLSA::SPFStatus status)
 {
   m_status = status;
 }
 
   void 
-StaticRouterLSA::Print (std::ostream &os) const
+GlobalRouterLSA::Print (std::ostream &os) const
 {
   os << "m_linkStateId = " << m_linkStateId << std::endl <<
         "m_advertisingRtr = " << m_advertisingRtr << std::endl;
@@ -296,14 +296,14 @@ StaticRouterLSA::Print (std::ostream &os) const
         i != m_linkRecords.end (); 
         i++)
     {
-      StaticRouterLinkRecord *p = *i;
+      GlobalRouterLinkRecord *p = *i;
       os << "----------" << std::endl;
       os << "m_linkId = " << p->GetLinkId () << std::endl;
       os << "m_linkData = " << p->GetLinkData () << std::endl;
     }
 }
 
-std::ostream& operator<< (std::ostream& os, StaticRouterLSA& lsa)
+std::ostream& operator<< (std::ostream& os, GlobalRouterLSA& lsa)
 {
   lsa.Print (os);
   return os;
@@ -311,50 +311,50 @@ std::ostream& operator<< (std::ostream& os, StaticRouterLSA& lsa)
 
 // ---------------------------------------------------------------------------
 //
-// StaticRouter Implementation
+// GlobalRouter Implementation
 //
 // ---------------------------------------------------------------------------
 
-const InterfaceId StaticRouter::iid = 
-  MakeInterfaceId ("StaticRouter", Object::iid);
+const InterfaceId GlobalRouter::iid = 
+  MakeInterfaceId ("GlobalRouter", Object::iid);
 
-StaticRouter::StaticRouter (Ptr<Node> node)
+GlobalRouter::GlobalRouter (Ptr<Node> node)
   : m_node(node), m_LSAs()
 {
-  NS_DEBUG("StaticRouter::StaticRouter ()");
-  SetInterfaceId (StaticRouter::iid);
+  NS_DEBUG("GlobalRouter::GlobalRouter ()");
+  SetInterfaceId (GlobalRouter::iid);
   m_routerId.Set(RoutingEnvironment::AllocateRouterId());
 }
 
-StaticRouter::~StaticRouter ()
+GlobalRouter::~GlobalRouter ()
 {
-  NS_DEBUG("StaticRouter::~StaticRouter ()");
+  NS_DEBUG("GlobalRouter::~GlobalRouter ()");
   ClearLSAs();
 }
 
   void
-StaticRouter::ClearLSAs ()
+GlobalRouter::ClearLSAs ()
 {
-  NS_DEBUG("StaticRouter::ClearLSAs ()");
+  NS_DEBUG("GlobalRouter::ClearLSAs ()");
 
   for ( ListOfLSAs_t::iterator i = m_LSAs.begin ();
         i != m_LSAs.end (); 
         i++)
     {
-      NS_DEBUG("StaticRouter::ClearLSAs ():  free LSA");
+      NS_DEBUG("GlobalRouter::ClearLSAs ():  free LSA");
 
-      StaticRouterLSA *p = *i;
+      GlobalRouterLSA *p = *i;
       delete p;
       p = 0;
 
       *i = 0;
     }
-  NS_DEBUG("StaticRouter::ClearLSAs ():  clear list");
+  NS_DEBUG("GlobalRouter::ClearLSAs ():  clear list");
   m_LSAs.clear();
 }
 
   Ipv4Address
-StaticRouter::GetRouterId (void) const
+GlobalRouter::GetRouterId (void) const
 {
   return m_routerId;
 }
@@ -364,11 +364,11 @@ StaticRouter::GetRouterId (void) const
 // Advertisements that reflect them and their associated networks.
 // 
   uint32_t 
-StaticRouter::DiscoverLSAs (void)
+GlobalRouter::DiscoverLSAs (void)
 {
-  NS_DEBUG("StaticRouter::DiscoverLSAs ()");
+  NS_DEBUG("GlobalRouter::DiscoverLSAs ()");
   NS_ASSERT_MSG(m_node, 
-    "StaticRouter::DiscoverLSAs (): <Node> interface not set");
+    "GlobalRouter::DiscoverLSAs (): <Node> interface not set");
 
   ClearLSAs ();
 //
@@ -378,17 +378,17 @@ StaticRouter::DiscoverLSAs (void)
 //
   Ptr<Ipv4> ipv4Local = m_node->QueryInterface<Ipv4> (Ipv4::iid);
   NS_ASSERT_MSG(ipv4Local, 
-    "StaticRouter::DiscoverLSAs (): QI for <Ipv4> interface failed");
+    "GlobalRouter::DiscoverLSAs (): QI for <Ipv4> interface failed");
 //
 // We are, for now at least, only going to report RouterLSAs in this method.
 // What this means is that there is going to be one advertisement with some
 // number of link records.  This means that GetNumLSAs will actually always
 // return exactly one.
 //
-  StaticRouterLSA *pLSA = new StaticRouterLSA;
+  GlobalRouterLSA *pLSA = new GlobalRouterLSA;
   pLSA->SetLinkStateId (m_routerId);
   pLSA->SetAdvertisingRouter (m_routerId);
-  pLSA->SetStatus (StaticRouterLSA::LSA_SPF_NOT_EXPLORED);
+  pLSA->SetStatus (GlobalRouterLSA::LSA_SPF_NOT_EXPLORED);
 //
 // We need to ask the node for the number of net devices attached. This isn't
 // necessarily equal to the number of links to adjacent nodes (other routers)
@@ -398,7 +398,7 @@ StaticRouter::DiscoverLSAs (void)
 // a point-to-point channel.
 //
   uint32_t numDevices = m_node->GetNDevices();
-  NS_DEBUG("StaticRouter::DiscoverLSAs (): numDevices = " << numDevices);
+  NS_DEBUG("GlobalRouter::DiscoverLSAs (): numDevices = " << numDevices);
 //
 // Loop through the devices looking for those connected to a point-to-point
 // channel.
@@ -409,11 +409,11 @@ StaticRouter::DiscoverLSAs (void)
 
       if (!ndLocal->IsPointToPoint ())
         {
-          NS_DEBUG("StaticRouter::DiscoverLSAs (): non-point-to-point device");
+          NS_DEBUG("GlobalRouter::DiscoverLSAs (): non-point-to-point device");
           continue;
         }
 
-      NS_DEBUG("StaticRouter::DiscoverLSAs (): Point-to-point device");
+      NS_DEBUG("GlobalRouter::DiscoverLSAs (): Point-to-point device");
 //
 // Now, we have to find the Ipv4 interface whose netdevice is the one we 
 // just found.  This is still the IP on the local side of the channel.  There 
@@ -442,15 +442,15 @@ StaticRouter::DiscoverLSAs (void)
       Ptr<Node> nodeRemote = ndRemote->GetNode();
       Ptr<Ipv4> ipv4Remote = nodeRemote->QueryInterface<Ipv4> (Ipv4::iid);
       NS_ASSERT_MSG(ipv4Remote, 
-        "StaticRouter::DiscoverLSAs (): QI for remote <Ipv4> failed");
+        "GlobalRouter::DiscoverLSAs (): QI for remote <Ipv4> failed");
 //
 // Per the OSPF spec, we're going to need the remote router ID, so we might as
 // well get it now.
 //
-      Ptr<StaticRouter> srRemote = 
-        nodeRemote->QueryInterface<StaticRouter> (StaticRouter::iid);
+      Ptr<GlobalRouter> srRemote = 
+        nodeRemote->QueryInterface<GlobalRouter> (GlobalRouter::iid);
       NS_ASSERT_MSG(srRemote, 
-        "StaticRouter::DiscoverLSAs (): QI for remote <StaticRouter> failed");
+        "GlobalRouter::DiscoverLSAs (): QI for remote <GlobalRouter> failed");
       Ipv4Address rtrIdRemote = srRemote->GetRouterId();
       NS_DEBUG("Working with remote router " << rtrIdRemote);
 //
@@ -470,15 +470,15 @@ StaticRouter::DiscoverLSAs (void)
 // link records; the first is a point-to-point record describing the link and
 // the second is a stub network record with the network number.
 //
-      StaticRouterLinkRecord *plr = new StaticRouterLinkRecord;
-      plr->SetLinkType (StaticRouterLinkRecord::PointToPoint);
+      GlobalRouterLinkRecord *plr = new GlobalRouterLinkRecord;
+      plr->SetLinkType (GlobalRouterLinkRecord::PointToPoint);
       plr->SetLinkId (rtrIdRemote);
       plr->SetLinkData (addrLocal);
       pLSA->AddLinkRecord(plr);
       plr = 0;
 
-      plr = new StaticRouterLinkRecord;
-      plr->SetLinkType (StaticRouterLinkRecord::StubNetwork);
+      plr = new GlobalRouterLinkRecord;
+      plr->SetLinkType (GlobalRouterLinkRecord::StubNetwork);
       plr->SetLinkId (addrRemote);
       plr->SetLinkData (Ipv4Address(maskRemote.GetHostOrder()));  // Frown
       pLSA->AddLinkRecord(plr);
@@ -493,9 +493,9 @@ StaticRouter::DiscoverLSAs (void)
 }
 
   uint32_t 
-StaticRouter::GetNumLSAs (void) const
+GlobalRouter::GetNumLSAs (void) const
 {
-  NS_DEBUG("StaticRouter::GetNumLSAs ()");
+  NS_DEBUG("GlobalRouter::GetNumLSAs ()");
   return m_LSAs.size ();
 }
 
@@ -503,9 +503,9 @@ StaticRouter::GetNumLSAs (void) const
 // Get the nth link state advertisement from this router.
 //
   bool
-StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa) const
+GlobalRouter::GetLSA (uint32_t n, GlobalRouterLSA &lsa) const
 {
-  NS_ASSERT_MSG(lsa.IsEmpty(), "StaticRouter::GetLSA (): Must pass empty LSA");
+  NS_ASSERT_MSG(lsa.IsEmpty(), "GlobalRouter::GetLSA (): Must pass empty LSA");
 //
 // All of the work was done in GetNumLSAs.  All we have to do here is to
 // walk the list of link state advertisements created there and return the 
@@ -518,7 +518,7 @@ StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa) const
     {
       if (j == n)
         {
-          StaticRouterLSA *p = *i;
+          GlobalRouterLSA *p = *i;
           lsa = *p;
           return true;
         }
@@ -532,7 +532,7 @@ StaticRouter::GetLSA (uint32_t n, StaticRouterLSA &lsa) const
 // other end.  This only makes sense with a point-to-point channel.
 //
   Ptr<NetDevice>
-StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const
+GlobalRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const
 {
 //
 // Double-check that channel agrees with device that it's a point-to-point
@@ -541,7 +541,7 @@ StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const
 
   uint32_t nDevices = ch->GetNDevices();
   NS_ASSERT_MSG(nDevices == 2, 
-    "StaticRouter::GetAdjacent (): Channel with other than two devices");
+    "GlobalRouter::GetAdjacent (): Channel with other than two devices");
 //
 // This is a point to point channel with two endpoints.  Get both of them.
 //
@@ -563,7 +563,7 @@ StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const
   else
     {
       NS_ASSERT_MSG(false,
-        "StaticRouter::GetAdjacent (): Wrong or confused channel?");
+        "GlobalRouter::GetAdjacent (): Wrong or confused channel?");
       return 0;
     }
 }
@@ -573,7 +573,7 @@ StaticRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const
 // corresponds to that net device.
 //
   uint32_t
-StaticRouter::FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd) const
+GlobalRouter::FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd) const
 {
   Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
   NS_ASSERT_MSG(ipv4, "QI for <Ipv4> interface failed");

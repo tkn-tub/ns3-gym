@@ -22,11 +22,11 @@
 #include "ns3/debug.h"
 #include "ns3/node-list.h"
 #include "ns3/ipv4.h"
-#include "static-router.h"
-#include "static-route-manager-impl.h"
+#include "global-router-interface.h"
+#include "global-route-manager-impl.h"
 #include "candidate-queue.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("StaticRouteManager");
+NS_DEBUG_COMPONENT_DEFINE ("GlobalRouteManager");
 
 namespace ns3 {
 
@@ -48,7 +48,7 @@ SPFVertex::SPFVertex () :
 {
 }
 
-SPFVertex::SPFVertex (StaticRouterLSA* lsa) : 
+SPFVertex::SPFVertex (GlobalRouterLSA* lsa) : 
   m_vertexType (VertexRouter), 
   m_vertexId (lsa->GetLinkStateId ()),
   m_lsa (lsa),
@@ -99,12 +99,12 @@ SPFVertex::GetVertexId (void) const
 }
 
   void 
-SPFVertex::SetLSA (StaticRouterLSA* lsa)
+SPFVertex::SetLSA (GlobalRouterLSA* lsa)
 {
   m_lsa = lsa;
 }
 
-  StaticRouterLSA* 
+  GlobalRouterLSA* 
 SPFVertex::GetLSA (void) const
 {
   return m_lsa;
@@ -191,56 +191,56 @@ SPFVertex::AddChild (SPFVertex* child)
 
 // ---------------------------------------------------------------------------
 //
-// StaticRouteManagerLSDB Implementation
+// GlobalRouteManagerLSDB Implementation
 //
 // ---------------------------------------------------------------------------
 
-StaticRouteManagerLSDB::StaticRouteManagerLSDB ()
+GlobalRouteManagerLSDB::GlobalRouteManagerLSDB ()
 :
   m_database ()
 {
-  NS_DEBUG ("StaticRouteManagerLSDB::StaticRouteManagerLSDB ()");
+  NS_DEBUG ("GlobalRouteManagerLSDB::GlobalRouteManagerLSDB ()");
 }
 
-StaticRouteManagerLSDB::~StaticRouteManagerLSDB ()
+GlobalRouteManagerLSDB::~GlobalRouteManagerLSDB ()
 {
-  NS_DEBUG ("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ()");
+  NS_DEBUG ("GlobalRouteManagerLSDB::~GlobalRouteManagerLSDB ()");
 
   LSDBMap_t::iterator i;
   for (i= m_database.begin (); i!= m_database.end (); i++)
     {
-      NS_DEBUG ("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ():free LSA");
-      StaticRouterLSA* temp = i->second;
+      NS_DEBUG ("GlobalRouteManagerLSDB::~GlobalRouteManagerLSDB ():free LSA");
+      GlobalRouterLSA* temp = i->second;
       delete temp;
     }
-  NS_DEBUG ("StaticRouteManagerLSDB::~StaticRouteManagerLSDB ():  clear map");
+  NS_DEBUG ("GlobalRouteManagerLSDB::~GlobalRouteManagerLSDB ():  clear map");
   m_database.clear ();
 }
 
   void
-StaticRouteManagerLSDB::Initialize ()
+GlobalRouteManagerLSDB::Initialize ()
 {
-  NS_DEBUG ("StaticRouteManagerLSDB::Initialize ()");
+  NS_DEBUG ("GlobalRouteManagerLSDB::Initialize ()");
 
   LSDBMap_t::iterator i;
   for (i= m_database.begin (); i!= m_database.end (); i++)
     {
-      StaticRouterLSA* temp = i->second;
-      temp->SetStatus (StaticRouterLSA::LSA_SPF_NOT_EXPLORED);
+      GlobalRouterLSA* temp = i->second;
+      temp->SetStatus (GlobalRouterLSA::LSA_SPF_NOT_EXPLORED);
     }
 }
 
   void
-StaticRouteManagerLSDB::Insert (Ipv4Address addr, StaticRouterLSA* lsa)
+GlobalRouteManagerLSDB::Insert (Ipv4Address addr, GlobalRouterLSA* lsa)
 {
-  NS_DEBUG ("StaticRouteManagerLSDB::Insert ()");
+  NS_DEBUG ("GlobalRouteManagerLSDB::Insert ()");
   m_database.insert (LSDBPair_t (addr, lsa));
 }
 
-  StaticRouterLSA*
-StaticRouteManagerLSDB::GetLSA (Ipv4Address addr) const
+  GlobalRouterLSA*
+GlobalRouteManagerLSDB::GetLSA (Ipv4Address addr) const
 {
-  NS_DEBUG ("StaticRouteManagerLSDB::GetLSA ()");
+  NS_DEBUG ("GlobalRouteManagerLSDB::GetLSA ()");
 //
 // Look up an LSA by its address.
 //
@@ -257,21 +257,21 @@ StaticRouteManagerLSDB::GetLSA (Ipv4Address addr) const
 
 // ---------------------------------------------------------------------------
 //
-// StaticRouteManagerImpl Implementation
+// GlobalRouteManagerImpl Implementation
 //
 // ---------------------------------------------------------------------------
 
-StaticRouteManagerImpl::StaticRouteManagerImpl () 
+GlobalRouteManagerImpl::GlobalRouteManagerImpl () 
 : 
   m_spfroot (0) 
 {
-  NS_DEBUG ("StaticRouteManagerImpl::StaticRoutemanagerImpl ()");
-  m_lsdb = new StaticRouteManagerLSDB ();
+  NS_DEBUG ("GlobalRouteManagerImpl::GlobalRoutemanagerImpl ()");
+  m_lsdb = new GlobalRouteManagerLSDB ();
 }
 
-StaticRouteManagerImpl::~StaticRouteManagerImpl ()
+GlobalRouteManagerImpl::~GlobalRouteManagerImpl ()
 {
-  NS_DEBUG ("StaticRouteManagerImpl::~StaticRouteManagerImpl ()");
+  NS_DEBUG ("GlobalRouteManagerImpl::~GlobalRouteManagerImpl ()");
 
   if (m_lsdb)
     {
@@ -280,9 +280,9 @@ StaticRouteManagerImpl::~StaticRouteManagerImpl ()
 }
 
   void
-StaticRouteManagerImpl::DebugUseLsdb (StaticRouteManagerLSDB* lsdb)
+GlobalRouteManagerImpl::DebugUseLsdb (GlobalRouteManagerLSDB* lsdb)
 {
-  NS_DEBUG ("StaticRouteManagerImpl::DebugUseLsdb ()");
+  NS_DEBUG ("GlobalRouteManagerImpl::DebugUseLsdb ()");
 
   if (m_lsdb)
     {
@@ -293,7 +293,7 @@ StaticRouteManagerImpl::DebugUseLsdb (StaticRouteManagerLSDB* lsdb)
 
 //
 // In order to build the routing database, we need to walk the list of nodes
-// in the system and look for those that support the StaticRouter interface.
+// in the system and look for those that support the GlobalRouter interface.
 // These routers will export a number of Link State Advertisements (LSAs)
 // that describe the links and networks that are "adjacent" (i.e., that are
 // on the other side of a point-to-point link).  We take these LSAs and put
@@ -301,19 +301,19 @@ StaticRouteManagerImpl::DebugUseLsdb (StaticRouteManagerLSDB* lsdb)
 // ultimately be computed.
 //
   void
-StaticRouteManagerImpl::BuildStaticRoutingDatabase () 
+GlobalRouteManagerImpl::BuildGlobalRoutingDatabase () 
 {
-  NS_DEBUG ("StaticRouteManagerImpl::BuildStaticRoutingDatabase()");
+  NS_DEBUG ("GlobalRouteManagerImpl::BuildGlobalRoutingDatabase()");
 //
-// Walk the list of nodes looking for the StaticRouter Interface.
+// Walk the list of nodes looking for the GlobalRouter Interface.
 //
   typedef std::vector < Ptr<Node> >::iterator Iterator;
   for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
 
-      Ptr<StaticRouter> rtr = 
-        node->QueryInterface<StaticRouter> (StaticRouter::iid);
+      Ptr<GlobalRouter> rtr = 
+        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
 //      
 // Ignore nodes that aren't participating in routing.
 //
@@ -324,7 +324,7 @@ StaticRouteManagerImpl::BuildStaticRoutingDatabase ()
 //
 // You must call DiscoverLSAs () before trying to use any routing info or to
 // update LSAs.  DiscoverLSAs () drives the process of discovering routes in
-// the StaticRouter.  Afterward, you may use GetNumLSAs (), which is a very
+// the GlobalRouter.  Afterward, you may use GetNumLSAs (), which is a very
 // computationally inexpensive call.  If you call GetNumLSAs () before calling 
 // DiscoverLSAs () will get zero as the number since no routes have been 
 // found.
@@ -334,7 +334,7 @@ StaticRouteManagerImpl::BuildStaticRoutingDatabase ()
 
       for (uint32_t j = 0; j < numLSAs; ++j)
         {
-          StaticRouterLSA* lsa = new StaticRouterLSA ();
+          GlobalRouterLSA* lsa = new GlobalRouterLSA ();
 //
 // This is the call to actually fetch a Link State Advertisement from the 
 // router.
@@ -351,8 +351,8 @@ StaticRouteManagerImpl::BuildStaticRoutingDatabase ()
 }
 
 //
-// For each node that is a static router (which is determined by the presence
-// of an aggregated StaticRouter interface), run the Dijkstra SPF calculation
+// For each node that is a global router (which is determined by the presence
+// of an aggregated GlobalRouter interface), run the Dijkstra SPF calculation
 // on the database rooted at that router, and populate the node forwarding
 // tables.
 //
@@ -384,9 +384,9 @@ StaticRouteManagerImpl::BuildStaticRoutingDatabase ()
 // list becomes empty. 
 //
   void
-StaticRouteManagerImpl::InitializeRoutes ()
+GlobalRouteManagerImpl::InitializeRoutes ()
 {
-  NS_DEBUG ("StaticRouteManagerImpl::InitializeRoutes ()");
+  NS_DEBUG ("GlobalRouteManagerImpl::InitializeRoutes ()");
 //
 // Walk the list of nodes in the system.
 //
@@ -395,13 +395,13 @@ StaticRouteManagerImpl::InitializeRoutes ()
     {
       Ptr<Node> node = *i;
 //
-// Look for the StaticRouter interface that indicates that the node is
+// Look for the GlobalRouter interface that indicates that the node is
 // participating in routing.
 //
-      Ptr<StaticRouter> rtr = 
-        node->QueryInterface<StaticRouter> (StaticRouter::iid);
+      Ptr<GlobalRouter> rtr = 
+        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
 //
-// if the node has a static router interface, then run the static routing
+// if the node has a global router interface, then run the global routing
 // algorithms.
 //
       if (rtr && rtr->GetNumLSAs () )
@@ -425,13 +425,13 @@ StaticRouteManagerImpl::InitializeRoutes ()
 // vertex already on the candidate list, store the new (lower) cost.
 //
   void
-StaticRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
+GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 {
   SPFVertex* w = 0;
-  StaticRouterLSA* w_lsa = 0;
+  GlobalRouterLSA* w_lsa = 0;
   uint32_t distance = 0;
 
-  NS_DEBUG ("StaticRouteManagerImpl::SPFNext ()");
+  NS_DEBUG ("GlobalRouteManagerImpl::SPFNext ()");
 //
 // Always true for now, since all our LSAs are RouterLSAs.
 //
@@ -452,8 +452,8 @@ StaticRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // Links to stub networks will be considered in the second stage of the
 // shortest path calculation.
 //
-              StaticRouterLinkRecord *l = v->GetLSA ()->GetLinkRecord (i);
-              if (l->GetLinkType () == StaticRouterLinkRecord::StubNetwork)
+              GlobalRouterLinkRecord *l = v->GetLSA ()->GetLinkRecord (i);
+              if (l->GetLinkType () == GlobalRouterLinkRecord::StubNetwork)
                 {
                   NS_DEBUG ("SPFNext: Found a Stub record to " << 
                     l->GetLinkId ());
@@ -464,7 +464,7 @@ StaticRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // the vertex W's LSA (router-LSA or network-LSA) in Area A's link state
 // database. 
 //
-              if (l->GetLinkType () == StaticRouterLinkRecord::PointToPoint)
+              if (l->GetLinkType () == GlobalRouterLinkRecord::PointToPoint)
                 {
 //
 // Lookup the link state advertisement of the new link -- we call it <w> in
@@ -482,7 +482,7 @@ StaticRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // then we have it covered -- ignore it.
 //
                   if (w_lsa->GetStatus () == 
-                      StaticRouterLSA::LSA_SPF_IN_SPFTREE) 
+                      GlobalRouterLSA::LSA_SPF_IN_SPFTREE) 
                     {
                       NS_DEBUG ("SPFNext: Skipping->  LSA "<< 
                         w_lsa->GetLinkStateId () << " already in SPF tree");
@@ -502,7 +502,7 @@ StaticRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
                     w_lsa->GetLinkStateId ());
 
                   if (w_lsa->GetStatus () == 
-                      StaticRouterLSA::LSA_SPF_NOT_EXPLORED)
+                      GlobalRouterLSA::LSA_SPF_NOT_EXPLORED)
                     {
 //
 // If we haven't yet considered the link represented by <w> we have to create 
@@ -518,7 +518,7 @@ StaticRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
                       if (SPFNexthopCalculation (v, w, l, distance))
                         {
                           w_lsa->SetStatus (
-                            StaticRouterLSA::LSA_SPF_CANDIDATE);
+                            GlobalRouterLSA::LSA_SPF_CANDIDATE);
 //
 // Push this new vertex onto the priority queue (ordered by distance from the
 // root node).
@@ -530,7 +530,7 @@ StaticRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
                         }
                     }
                 } else if (w_lsa->GetStatus () == 
-                           StaticRouterLSA::LSA_SPF_CANDIDATE)
+                           GlobalRouterLSA::LSA_SPF_CANDIDATE)
                     {
 //
 // We have already considered the link represented by <w>.  What wse have to
@@ -589,13 +589,13 @@ StaticRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // For now, this is greatly simplified from the quagga code
 //                  
   int
-StaticRouteManagerImpl::SPFNexthopCalculation (
+GlobalRouteManagerImpl::SPFNexthopCalculation (
   SPFVertex* v, 
   SPFVertex* w,
-  StaticRouterLinkRecord* l,
+  GlobalRouterLinkRecord* l,
   uint32_t distance)
 {
-  NS_DEBUG ("StaticRouteManagerImpl::SPFNexthopCalculation ()");
+  NS_DEBUG ("GlobalRouteManagerImpl::SPFNexthopCalculation ()");
 //
 // The vertex m_spfroot is a distinguished vertex representing the node at
 // the root of the calculations.  That is, it is the node for which we are
@@ -633,7 +633,7 @@ StaticRouteManagerImpl::SPFNexthopCalculation (
         {
 //
 // In the case of point-to-point links, the link data field (m_linkData) of a
-// Static Router Link Record contains the local IP address.  If we look at the
+// Global Router Link Record contains the local IP address.  If we look at the
 // link record describing the link from the perspecive of <w> (the remote
 // node from the viewpoint of <v>) back to the root node, we can discover the
 // IP address of the router to which <v> is adjacent.  This is a distinguished
@@ -644,12 +644,12 @@ StaticRouteManagerImpl::SPFNexthopCalculation (
 // return the link record describing the link from <w> to <v>.  Think of it as
 // SPFGetLink.
 //
-          StaticRouterLinkRecord *linkRemote = 0;
+          GlobalRouterLinkRecord *linkRemote = 0;
           linkRemote = SPFGetNextLink (w, v, linkRemote);
 // 
-// At this point, <l> is the Static Router Link Record describing the point-
+// At this point, <l> is the Global Router Link Record describing the point-
 // to point link from <v> to <w> from the perspective of <v>; and <linkRemote>
-// is the Static Router Link Record describing that same link from the 
+// is the Global Router Link Record describing that same link from the 
 // perspective of <w> (back to <v>).  Now we can just copy the next hop 
 // address from the m_linkData member variable.
 // 
@@ -702,25 +702,28 @@ StaticRouteManagerImpl::SPFNexthopCalculation (
 //
 // This method is derived from quagga ospf_get_next_link ()
 //
-// First search the Static Router Link Records of vertex <v> for one
+// First search the Global Router Link Records of vertex <v> for one
 // representing a point-to point link to vertex <w>.
 //
 // What is done depends on prev_link.  Contrary to appearances, prev_link just
-// acts as a flag here.  If prev_link is NULL, we return the first Static
+// acts as a flag here.  If prev_link is NULL, we return the first Global
 // Router Link Record we find that describes a point-to-point link from <v> 
-// to <w>.  If prev_link is not NULL, we return a Static Router Link Record
+// to <w>.  If prev_link is not NULL, we return a Global Router Link Record
 // representing a possible *second* link from <v> to <w>.
 //
-  StaticRouterLinkRecord* 
-StaticRouteManagerImpl::SPFGetNextLink (
+// BUGBUG FIXME:  This seems to be a bug.  Shouldn't this function look for
+// any link records after pre_link and not just after the first?
+//
+  GlobalRouterLinkRecord* 
+GlobalRouteManagerImpl::SPFGetNextLink (
   SPFVertex* v,
   SPFVertex* w,
-  StaticRouterLinkRecord* prev_link) 
+  GlobalRouterLinkRecord* prev_link) 
 {
-  NS_DEBUG ("StaticRouteManagerImpl::SPFGetNextLink ()");
+  NS_DEBUG ("GlobalRouteManagerImpl::SPFGetNextLink ()");
 
   bool skip = true;
-  StaticRouterLinkRecord* l;
+  GlobalRouterLinkRecord* l;
 //
 // If prev_link is 0, we are really looking for the first link, not the next 
 // link.
@@ -730,14 +733,14 @@ StaticRouteManagerImpl::SPFGetNextLink (
       skip = false;
     }
 //  
-// Iterate through the Static Router Link Records advertised by the vertex
+// Iterate through the Global Router Link Records advertised by the vertex
 // <v> looking for records representing the point-to-point links off of this
 // vertex.
 //
   for (uint32_t i = 0; i < v->GetLSA ()->GetNLinkRecords (); ++i)
     {
       l = v->GetLSA ()->GetLinkRecord (i);
-      if (l->GetLinkType () != StaticRouterLinkRecord::PointToPoint)
+      if (l->GetLinkType () != GlobalRouterLinkRecord::PointToPoint)
         {
           continue;
         }
@@ -768,7 +771,7 @@ StaticRouteManagerImpl::SPFGetNextLink (
           {
 //
 // Skip is true and we've found a link from <v> to <w>.  We want the next one.
-// Setting skip to false gets us the next point-to-point static router link
+// Setting skip to false gets us the next point-to-point global router link
 // record in the LSA from <v>.
 //
             NS_DEBUG ("SPFGetNextLink: Skipping the found link");
@@ -784,17 +787,17 @@ StaticRouteManagerImpl::SPFGetNextLink (
 // Used for unit tests.
 //
   void
-StaticRouteManagerImpl::DebugSPFCalculate (Ipv4Address root)
+GlobalRouteManagerImpl::DebugSPFCalculate (Ipv4Address root)
 {
-  NS_DEBUG ("StaticRouteManagerImpl::DebugSPFCalculate ()");
+  NS_DEBUG ("GlobalRouteManagerImpl::DebugSPFCalculate ()");
   SPFCalculate (root);
 }
 
 // quagga ospf_spf_calculate
   void
-StaticRouteManagerImpl::SPFCalculate (Ipv4Address root)
+GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 {
-  NS_DEBUG ("StaticRouteManagerImpl::SPFCalculate (): "
+  NS_DEBUG ("GlobalRouteManagerImpl::SPFCalculate (): "
     "root = " << root);
 
   SPFVertex *v;
@@ -821,7 +824,7 @@ StaticRouteManagerImpl::SPFCalculate (Ipv4Address root)
 //
   m_spfroot= v;
   v->SetDistanceFromRoot (0);
-  v->GetLSA ()->SetStatus (StaticRouterLSA::LSA_SPF_IN_SPFTREE);
+  v->GetLSA ()->SetStatus (GlobalRouterLSA::LSA_SPF_IN_SPFTREE);
 
   for (;;)
     {
@@ -831,7 +834,7 @@ StaticRouteManagerImpl::SPFCalculate (Ipv4Address root)
 //
 // RFC2328 16.1. (2). 
 //
-// We examine the Static Router Link Records in the Link State 
+// We examine the Global Router Link Records in the Link State 
 // Advertisements of the current vertex.  If there are any point-to-point
 // links to unexplored adjacent vertices we add them to the tree and update
 // the distance and next hop information on how to get there.  We also add
@@ -857,7 +860,7 @@ StaticRouteManagerImpl::SPFCalculate (Ipv4Address root)
 // list in the process).
 //
 // Recall that in the previous step, we created SPFVertex structures for each
-// of the routers found in the Static Router Link Records and added tehm to 
+// of the routers found in the Global Router Link Records and added tehm to 
 // the candidate list.
 //
       v = candidate.Pop ();
@@ -866,7 +869,7 @@ StaticRouteManagerImpl::SPFCalculate (Ipv4Address root)
 // Update the status field of the vertex to indicate that it is in the SPF
 // tree.
 //
-      v->GetLSA ()->SetStatus (StaticRouterLSA::LSA_SPF_IN_SPFTREE);
+      v->GetLSA ()->SetStatus (GlobalRouterLSA::LSA_SPF_IN_SPFTREE);
 //
 // The current vertex has a parent pointer.  By calling this rather oddly 
 // named method (blame quagga) we add the current vertex to the list of 
@@ -893,7 +896,7 @@ StaticRouteManagerImpl::SPFCalculate (Ipv4Address root)
 // We're going to pop of a pointer to every vertex in the tree except the 
 // root in order of distance from the root.  For each of the vertices, we call
 // SPFIntraAddRouter ().  Down in SPFIntraAddRouter, we look at all of the 
-// point-to-point Static Router Link Records (the links to nodes adjacent to
+// point-to-point Global Router Link Records (the links to nodes adjacent to
 // the node represented by the vertex).  We add a route to the IP address 
 // specified by the m_linkData field of each of those link records.  This will
 // be the *local* IP address associated with the interface attached to the 
@@ -930,7 +933,7 @@ StaticRouteManagerImpl::SPFCalculate (Ipv4Address root)
 // Return the interface index corresponding to a given IP address
 //
   uint32_t
-StaticRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a)
+GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a)
 {
 //
 // We have an IP address <a> and a vertex ID of the root of the SPF tree.  
@@ -951,10 +954,10 @@ StaticRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a)
     {
       Ptr<Node> node = *i;
 
-      Ptr<StaticRouter> rtr = 
-        node->QueryInterface<StaticRouter> (StaticRouter::iid);
+      Ptr<GlobalRouter> rtr = 
+        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
 //
-// If the node doesn't have a StaticRouter interface it can't be the one
+// If the node doesn't have a GlobalRouter interface it can't be the one
 // we're interested in.
 //
       if (rtr == 0)
@@ -972,7 +975,7 @@ StaticRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a)
 //
           Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
           NS_ASSERT_MSG (ipv4, 
-            "StaticRouteManagerImpl::FindOutgoingInterfaceId (): "
+            "GlobalRouteManagerImpl::FindOutgoingInterfaceId (): "
             "QI for <Ipv4> interface failed");
 //
 // Look through the interfaces on this node for one that has the IP address
@@ -984,7 +987,7 @@ StaticRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a)
               if (ipv4->GetAddress (i) == a)
                 {
                   NS_DEBUG (
-                    "StaticRouteManagerImpl::FindOutgoingInterfaceId (): "
+                    "GlobalRouteManagerImpl::FindOutgoingInterfaceId (): "
                     "Interface match for " << a);
                   return i;
                 }
@@ -1014,12 +1017,12 @@ StaticRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a)
 // route.
 //
   void
-StaticRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
+GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 {
-  NS_DEBUG ("StaticRouteManagerImpl::SPFIntraAddRouter ()");
+  NS_DEBUG ("GlobalRouteManagerImpl::SPFIntraAddRouter ()");
 
   NS_ASSERT_MSG (m_spfroot, 
-    "StaticRouteManagerImpl::SPFIntraAddRouter (): Root pointer not set");
+    "GlobalRouteManagerImpl::SPFIntraAddRouter (): Root pointer not set");
 //
 // The root of the Shortest Path First tree is the router to which we are 
 // going to write the actual routing table entries.  The vertex corresponding
@@ -1029,7 +1032,7 @@ StaticRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 //
   Ipv4Address routerId = m_spfroot->GetVertexId ();
 
-  NS_DEBUG ("StaticRouteManagerImpl::SPFIntraAddRouter (): "
+  NS_DEBUG ("GlobalRouteManagerImpl::SPFIntraAddRouter (): "
     "Vertex ID = " << routerId);
 //
 // We need to walk the list of nodes looking for the one that has the router
@@ -1041,17 +1044,17 @@ StaticRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
     {
       Ptr<Node> node = *i;
 //
-// The router ID is accessible through the StaticRouter interface, so we need
-// to QI for that interface.  If there's no StaticRouter interface, the node
+// The router ID is accessible through the GlobalRouter interface, so we need
+// to QI for that interface.  If there's no GlobalRouter interface, the node
 // in question cannot be the router we want, so we continue.
 // 
-      Ptr<StaticRouter> rtr = 
-        node->QueryInterface<StaticRouter> (StaticRouter::iid);
+      Ptr<GlobalRouter> rtr = 
+        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
 
       if (rtr == 0)
         {
-          NS_DEBUG ("StaticRouteManagerImpl::SPFIntraAddRouter (): "
-            "No StaticRouter interface on node " << node->GetId ());
+          NS_DEBUG ("GlobalRouteManagerImpl::SPFIntraAddRouter (): "
+            "No GlobalRouter interface on node " << node->GetId ());
           continue;
         }
 //
@@ -1059,12 +1062,12 @@ StaticRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // root of the SPF tree, then this node is the one for which we need to 
 // write the routing tables.
 //
-      NS_DEBUG ("StaticRouteManagerImpl::SPFIntraAddRouter (): "
+      NS_DEBUG ("GlobalRouteManagerImpl::SPFIntraAddRouter (): "
         "Considering router " << rtr->GetRouterId ());
 
       if (rtr->GetRouterId () == routerId)
         {
-          NS_DEBUG ("StaticRouteManagerImpl::SPFIntraAddRouter (): "
+          NS_DEBUG ("GlobalRouteManagerImpl::SPFIntraAddRouter (): "
             "setting routes for node " << node->GetId ());
 //
 // Routing information is updated using the Ipv4 interface.  We need to QI
@@ -1073,17 +1076,17 @@ StaticRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 //
           Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
           NS_ASSERT_MSG (ipv4, 
-            "StaticRouteManagerImpl::SPFIntraAddRouter (): "
+            "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
             "QI for <Ipv4> interface failed");
 //
-// Get the Static Router Link State Advertisement from the vertex we're
-// adding the routes to.  The LSA will have a number of attached Static Router
+// Get the Global Router Link State Advertisement from the vertex we're
+// adding the routes to.  The LSA will have a number of attached Global Router
 // Link Records corresponding to links off of that vertex / node.  We're going
 // to be interested in the records corresponding to point-to-point links.
 //
-          StaticRouterLSA *lsa = v->GetLSA ();
+          GlobalRouterLSA *lsa = v->GetLSA ();
           NS_ASSERT_MSG (lsa, 
-            "StaticRouteManagerImpl::SPFIntraAddRouter (): "
+            "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
             "Expected valid LSA in SPFVertex* v");
 
           uint32_t nLinkRecords = lsa->GetNLinkRecords ();
@@ -1100,13 +1103,13 @@ StaticRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 //
 // We are only concerned about point-to-point links
 //
-              StaticRouterLinkRecord *lr = lsa->GetLinkRecord (j);
-              if (lr->GetLinkType () != StaticRouterLinkRecord::PointToPoint)
+              GlobalRouterLinkRecord *lr = lsa->GetLinkRecord (j);
+              if (lr->GetLinkType () != GlobalRouterLinkRecord::PointToPoint)
                 {
                   continue;
                 }
 
-              NS_DEBUG ("StaticRouteManagerImpl::SPFIntraAddRouter (): "
+              NS_DEBUG ("GlobalRouteManagerImpl::SPFIntraAddRouter (): "
                 " Node " << node->GetId () <<
                 " add route to " << lr->GetLinkData () <<
                 " using next hop " << v->GetNextHop () <<
@@ -1147,7 +1150,7 @@ StaticRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // For now, only one parent (not doing equal-cost multipath)
 //
   void
-StaticRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
+GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
 {
   v->GetParent ()->AddChild (v);
 }
@@ -1166,44 +1169,44 @@ StaticRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
 
 namespace ns3 {
 
-class StaticRouterTestNode : public Node
+class GlobalRouterTestNode : public Node
 {
 public:
-  StaticRouterTestNode ();
+  GlobalRouterTestNode ();
 
 private:
   virtual void DoAddDevice (Ptr<NetDevice> device) const {};
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
 };
 
-StaticRouterTestNode::StaticRouterTestNode ()
+GlobalRouterTestNode::GlobalRouterTestNode ()
 {
 //  Ptr<Ipv4L3Protocol> ipv4 = Create<Ipv4L3Protocol> (this);
 }
 
   TraceResolver*
-StaticRouterTestNode::DoCreateTraceResolver (TraceContext const &context)
+GlobalRouterTestNode::DoCreateTraceResolver (TraceContext const &context)
 {
   return 0;
 }
 
-class StaticRouteManagerImplTest : public Test {
+class GlobalRouteManagerImplTest : public Test {
 public:
-  StaticRouteManagerImplTest ();
-  virtual ~StaticRouteManagerImplTest ();
+  GlobalRouteManagerImplTest ();
+  virtual ~GlobalRouteManagerImplTest ();
   virtual bool RunTests (void);
 };
 
-StaticRouteManagerImplTest::StaticRouteManagerImplTest ()
-  : Test ("StaticRouteManagerImpl")
+GlobalRouteManagerImplTest::GlobalRouteManagerImplTest ()
+  : Test ("GlobalRouteManagerImpl")
 {
 }
 
-StaticRouteManagerImplTest::~StaticRouteManagerImplTest ()
+GlobalRouteManagerImplTest::~GlobalRouteManagerImplTest ()
 {}
 
   bool
-StaticRouteManagerImplTest::RunTests (void)
+GlobalRouteManagerImplTest::RunTests (void)
 {
   bool ok = true;
 
@@ -1246,81 +1249,81 @@ StaticRouteManagerImplTest::RunTests (void)
   //  link2:  10.1.3.1/30, 10.1.3.2/30
   //
   // Router 0
-  StaticRouterLinkRecord* lr0 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::PointToPoint, 
+  GlobalRouterLinkRecord* lr0 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::PointToPoint, 
     "0.0.0.2",  // router ID 0.0.0.2
     "10.1.1.1", // local ID
     1);         // metric
 
-  StaticRouterLinkRecord* lr1 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::StubNetwork,
+  GlobalRouterLinkRecord* lr1 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::StubNetwork,
     "10.1.1.1",
     "255.255.255.252",
     1);
 
-  StaticRouterLSA* lsa0 = new StaticRouterLSA ();
+  GlobalRouterLSA* lsa0 = new GlobalRouterLSA ();
   lsa0->SetLinkStateId ("0.0.0.0");
   lsa0->SetAdvertisingRouter ("0.0.0.0");
   lsa0->AddLinkRecord (lr0);
   lsa0->AddLinkRecord (lr1);
 
   // Router 1
-  StaticRouterLinkRecord* lr2 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::PointToPoint,
+  GlobalRouterLinkRecord* lr2 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::PointToPoint,
     "0.0.0.2",
     "10.1.2.1",
     1);
 
-  StaticRouterLinkRecord* lr3 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::StubNetwork,
+  GlobalRouterLinkRecord* lr3 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::StubNetwork,
     "10.1.2.1",
     "255.255.255.252",
     1);
 
-  StaticRouterLSA* lsa1 = new StaticRouterLSA ();
+  GlobalRouterLSA* lsa1 = new GlobalRouterLSA ();
   lsa1->SetLinkStateId ("0.0.0.1");
   lsa1->SetAdvertisingRouter ("0.0.0.1");
   lsa1->AddLinkRecord (lr2);
   lsa1->AddLinkRecord (lr3);
   
   // Router 2 
-  StaticRouterLinkRecord* lr4 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::PointToPoint,
+  GlobalRouterLinkRecord* lr4 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::PointToPoint,
     "0.0.0.0",
     "10.1.1.2",
     1);
 
-  StaticRouterLinkRecord* lr5 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::StubNetwork,
+  GlobalRouterLinkRecord* lr5 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::StubNetwork,
     "10.1.1.2",
     "255.255.255.252",
     1);
 
-  StaticRouterLinkRecord* lr6 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::PointToPoint,
+  GlobalRouterLinkRecord* lr6 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::PointToPoint,
     "0.0.0.1",
     "10.1.2.2",
     1);
 
-  StaticRouterLinkRecord* lr7 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::StubNetwork,
+  GlobalRouterLinkRecord* lr7 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::StubNetwork,
     "10.1.2.2",
     "255.255.255.252",
     1);
 
-  StaticRouterLinkRecord* lr8 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::PointToPoint,
+  GlobalRouterLinkRecord* lr8 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::PointToPoint,
     "0.0.0.3",
     "10.1.3.2",
     1);
 
-  StaticRouterLinkRecord* lr9 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::StubNetwork,
+  GlobalRouterLinkRecord* lr9 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::StubNetwork,
     "10.1.3.2",
     "255.255.255.252",
     1);
 
-  StaticRouterLSA* lsa2 = new StaticRouterLSA ();
+  GlobalRouterLSA* lsa2 = new GlobalRouterLSA ();
   lsa2->SetLinkStateId ("0.0.0.2");
   lsa2->SetAdvertisingRouter ("0.0.0.2");
   lsa2->AddLinkRecord (lr4);
@@ -1331,26 +1334,26 @@ StaticRouteManagerImplTest::RunTests (void)
   lsa2->AddLinkRecord (lr9);
 
   // Router 3
-  StaticRouterLinkRecord* lr10 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::PointToPoint,
+  GlobalRouterLinkRecord* lr10 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::PointToPoint,
     "0.0.0.2",
     "10.1.2.1",
     1);
 
-  StaticRouterLinkRecord* lr11 = new StaticRouterLinkRecord (
-    StaticRouterLinkRecord::StubNetwork,
+  GlobalRouterLinkRecord* lr11 = new GlobalRouterLinkRecord (
+    GlobalRouterLinkRecord::StubNetwork,
     "10.1.2.1",
     "255.255.255.252",
     1);
 
-  StaticRouterLSA* lsa3 = new StaticRouterLSA ();
+  GlobalRouterLSA* lsa3 = new GlobalRouterLSA ();
   lsa3->SetLinkStateId ("0.0.0.3");
   lsa3->SetAdvertisingRouter ("0.0.0.3");
   lsa3->AddLinkRecord (lr10);
   lsa3->AddLinkRecord (lr11);
 
   // Test the database 
-  StaticRouteManagerLSDB* srmlsdb = new StaticRouteManagerLSDB ();
+  GlobalRouteManagerLSDB* srmlsdb = new GlobalRouteManagerLSDB ();
   srmlsdb->Insert (lsa0->GetLinkStateId (), lsa0);
   srmlsdb->Insert (lsa1->GetLinkStateId (), lsa1);
   srmlsdb->Insert (lsa2->GetLinkStateId (), lsa2);
@@ -1358,13 +1361,11 @@ StaticRouteManagerImplTest::RunTests (void)
   NS_ASSERT (lsa2 == srmlsdb->GetLSA (lsa2->GetLinkStateId ()));
 
   // next, calculate routes based on the manually created LSDB
-  StaticRouteManagerImpl* srm = new StaticRouteManagerImpl ();
+  GlobalRouteManagerImpl* srm = new GlobalRouteManagerImpl ();
   srm->DebugUseLsdb (srmlsdb);  // manually add in an LSDB
   // Note-- this will succeed without any nodes in the topology
   // because the NodeList is empty
   srm->DebugSPFCalculate (lsa0->GetLinkStateId ());  // node n0
-  
-  // XXX here we should do some verification of the routes built
 
   // This delete clears the srm, which deletes the LSDB, which clears 
   // all of the LSAs, which each destroys the attached LinkRecords.
@@ -1374,7 +1375,8 @@ StaticRouteManagerImplTest::RunTests (void)
 }
 
 // Instantiate this class for the unit tests
-static StaticRouteManagerImplTest g_staticRouteManagerTest;
+// XXX here we should do some verification of the routes built
+static GlobalRouteManagerImplTest g_globalRouteManagerTest;
 
 } // namespace ns3
 

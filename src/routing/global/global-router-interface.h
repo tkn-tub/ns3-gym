@@ -15,8 +15,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef STATIC_ROUTER_H
-#define STATIC_ROUTER_H
+#ifndef GLOBAL_ROUTER_H
+#define GLOBAL_ROUTER_H
 
 #include <stdint.h>
 #include <list>
@@ -32,16 +32,16 @@ namespace ns3 {
 /**
  * @brief A single link record for a link state advertisement.
  *
- * The StaticRouterLinkRecord is modeled after the OSPF link record field of
+ * The GlobalRouterLinkRecord is modeled after the OSPF link record field of
  * a Link State Advertisement.  Right now we will only see two types of link
  * records corresponding to a stub network and a point-to-point link (channel).
  */
-class StaticRouterLinkRecord
+class GlobalRouterLinkRecord
 {
 public:
 /**
  * @enum LinkType
- * @brief Enumeration of the possible types of Static Router Link Records.
+ * @brief Enumeration of the possible types of Global Router Link Records.
  *
  * These values are defined in the OSPF spec.  We currently only use 
  * PointToPoint and StubNetwork types.
@@ -54,15 +54,15 @@ public:
     VirtualLink         /**< Unused -- for future OSPF compatibility  */
   };
 /**
- * @brief Construct an empty ("uninitialized") Static Router Link Record.
+ * @brief Construct an empty ("uninitialized") Global Router Link Record.
  *
  * The Link ID and Link Data Ipv4 addresses are set to "0.0.0.0";
  * The Link Type is set to Unknown;
  * The metric is set to 0.
  */
-  StaticRouterLinkRecord ();
+  GlobalRouterLinkRecord ();
 /**
- * Construct an initialized Static Router Link Record.
+ * Construct an initialized Global Router Link Record.
  *
  * @param linkType The type of link record to construct.
  * @param linkId The link ID for the record.
@@ -72,19 +72,19 @@ public:
  * @see SetLinkId
  * @see SetLinkData
  */
-  StaticRouterLinkRecord (
+  GlobalRouterLinkRecord (
     LinkType    linkType, 
     Ipv4Address linkId, 
     Ipv4Address linkData, 
     uint32_t    metric);
 /**
- * @brief Destroy a Static Router Link Record.
+ * @brief Destroy a Global Router Link Record.
  *
  * Currently does nothing.  Here as a placeholder only.
  */
-  ~StaticRouterLinkRecord ();
+  ~GlobalRouterLinkRecord ();
 /**
- * Get the Link ID field of the Static Router Link Record.
+ * Get the Link ID field of the Global Router Link Record.
  *
  * For an OSPF type 1 link (PointToPoint) the Link ID will be the Router ID
  * of the neighboring router.
@@ -96,7 +96,7 @@ public:
  */
   Ipv4Address GetLinkId(void) const;
 /**
- * @brief Set the Link ID field of the Static Router Link Record.
+ * @brief Set the Link ID field of the Global Router Link Record.
  *
  * For an OSPF type 1 link (PointToPoint) the Link ID must be the Router ID
  * of the neighboring router.
@@ -108,7 +108,7 @@ public:
  */
   void SetLinkId(Ipv4Address addr);
 /**
- * @brief Get the Link Data field of the Static Router Link Record.
+ * @brief Get the Link Data field of the Global Router Link Record.
  *
  * For an OSPF type 1 link (PointToPoint) the Link Data will be the IP
  * address of the node of the local side of the link.
@@ -120,7 +120,7 @@ public:
  */
   Ipv4Address GetLinkData(void) const;
 /**
- * @brief Set the Link Data field of the Static Router Link Record.
+ * @brief Set the Link Data field of the Global Router Link Record.
  *
  * For an OSPF type 1 link (PointToPoint) the Link Data must be the IP
  * address of the node of the local side of the link.
@@ -132,27 +132,27 @@ public:
  */
   void SetLinkData(Ipv4Address addr);
 /**
- * @brief Get the Link Type field of the Static Router Link Record.
+ * @brief Get the Link Type field of the Global Router Link Record.
  *
  * The Link Type describes the kind of link a given record represents.  The
  * values are defined by OSPF.
  *
  * @see LinkType
- * @returns The LinkType of the current Static Router Link Record.
+ * @returns The LinkType of the current Global Router Link Record.
  */
   LinkType GetLinkType(void) const;
 /**
- * @brief Set the Link Type field of the Static Router Link Record.
+ * @brief Set the Link Type field of the Global Router Link Record.
  *
  * The Link Type describes the kind of link a given record represents.  The
  * values are defined by OSPF.
  *
  * @see LinkType
- * @param linkType The new LinkType for the current Static Router Link Record.
+ * @param linkType The new LinkType for the current Global Router Link Record.
  */
   void SetLinkType(LinkType linkType);
 /**
- * @brief Get the Metric Data field of the Static Router Link Record.
+ * @brief Get the Metric Data field of the Global Router Link Record.
  *
  * The metric is an abstract cost associated with forwarding a packet across
  * a link.  A sum of metrics must have a well-defined meaning.  That is, you
@@ -160,11 +160,11 @@ public:
  * two hops relate to the cost of sending a packet); rather you should use
  * something like delay.
  *
- * @returns The metric field of the Static Router Link Record.
+ * @returns The metric field of the Global Router Link Record.
  */
   uint32_t GetMetric(void) const;
 /**
- * @brief Set the Metric Data field of the Static Router Link Record.
+ * @brief Set the Metric Data field of the Global Router Link Record.
  *
  * The metric is an abstract cost associated with forwarding a packet across
  * a link.  A sum of metrics must have a well-defined meaning.  That is, you
@@ -172,7 +172,7 @@ public:
  * two hops relate to the cost of sending a packet); rather you should use
  * something like delay.
  *
- * @param metric The new metric for the current Static Router Link Record.
+ * @param metric The new metric for the current Global Router Link Record.
  */
   void SetMetric(uint32_t metric);
 
@@ -199,7 +199,7 @@ private:
  */
   Ipv4Address m_linkData;    // for links to RouterLSA, 
 /**
- * The type of the Static Router Link Record.  Defined in the OSPF spec.  
+ * The type of the Global Router Link Record.  Defined in the OSPF spec.  
  * We currently only use PointToPoint and StubNetwork types.
  */
   LinkType m_linkType;
@@ -216,14 +216,14 @@ private:
 };
 
 /**  
- * @brief a Link State Advertisement (LSA) for a router, used in static 
+ * @brief a Link State Advertisement (LSA) for a router, used in global 
  * routing.
  * 
- * Roughly equivalent to a static incarnation of the OSPF link state header
- * combined with a list of Link Records.  Since it's static, there's
+ * Roughly equivalent to a global incarnation of the OSPF link state header
+ * combined with a list of Link Records.  Since it's global, there's
  * no need for age or sequence number.  See RFC 2328, Appendix A.
  */
-class StaticRouterLSA
+class GlobalRouterLSA
 {
 public:
 /**
@@ -237,14 +237,14 @@ public:
     LSA_SPF_IN_SPFTREE		/**< Vertex is in the SPF tree */
   };
 /**
- * @brief Create a blank Static Router Link State Advertisement.  
+ * @brief Create a blank Global Router Link State Advertisement.  
  *
  * On completion Ipv4Address variables initialized to 0.0.0.0 and the 
  * list of Link State Records is empty.
  */
-  StaticRouterLSA();
+  GlobalRouterLSA();
 /**
- * @brief Create an initialized Static Router Link State Advertisement.  
+ * @brief Create an initialized Global Router Link State Advertisement.  
  *
  * On completion the list of Link State Records is empty.
  *
@@ -252,38 +252,38 @@ public:
  * @param linkStateId The Ipv4Address for the link state ID field.
  * @param advertisingRtr The Ipv4Address for the advertising router field.
  */
-  StaticRouterLSA(SPFStatus status, Ipv4Address linkStateId, 
+  GlobalRouterLSA(SPFStatus status, Ipv4Address linkStateId, 
     Ipv4Address advertisingRtr);
 /**
- * @brief Copy constructor for a Static Router Link State Advertisement.
+ * @brief Copy constructor for a Global Router Link State Advertisement.
  *
  * Takes a piece of memory and constructs a semantically identical copy of
  * the given LSA.
  *
  * @param lsa The existing LSA to be used as the source.
  */
-  StaticRouterLSA (StaticRouterLSA& lsa);
+  GlobalRouterLSA (GlobalRouterLSA& lsa);
 /**
- * @brief Destroy an existing Static Router Link State Advertisement.
+ * @brief Destroy an existing Global Router Link State Advertisement.
  *
- * Any Static Router Link Records present in the list are freed.
+ * Any Global Router Link Records present in the list are freed.
  */
-  ~StaticRouterLSA();
+  ~GlobalRouterLSA();
 /**
- * @brief Assignment operator for a Static Router Link State Advertisement.
+ * @brief Assignment operator for a Global Router Link State Advertisement.
  *
- * Takes an existing Static Router Link State Advertisement and overwrites
+ * Takes an existing Global Router Link State Advertisement and overwrites
  * it to make a semantically identical copy of a given prototype LSA.
  *
- * If there are any Static Router Link Records present in the existing 
+ * If there are any Global Router Link Records present in the existing 
  * LSA, they are freed before the assignment happens.
  *
  * @param lsa The existing LSA to be used as the source.
  * @returns Reference to the overwritten LSA.
  */
-  StaticRouterLSA& operator= (const StaticRouterLSA& lsa);
+  GlobalRouterLSA& operator= (const GlobalRouterLSA& lsa);
 /**
- * @brief Copy any Static Router Link Records in a given Static Router Link
+ * @brief Copy any Global Router Link Records in a given Global Router Link
  * State Advertisement to the current LSA.  
  * 
  * Existing Link Records are not deleted -- this is a concatenation of Link 
@@ -292,42 +292,42 @@ public:
  * @see ClearLinkRecords ()
  * @param lsa The LSA to copy the Link Records from.
  */
-  void CopyLinkRecords (const StaticRouterLSA& lsa);
+  void CopyLinkRecords (const GlobalRouterLSA& lsa);
 /**
- * @brief Add a given Static Router Link Record to the LSA.
+ * @brief Add a given Global Router Link Record to the LSA.
  *
- * @param lr The Static Router Link Record to be added.
+ * @param lr The Global Router Link Record to be added.
  * @returns The number of link records in the list.
  */
-  uint32_t AddLinkRecord (StaticRouterLinkRecord* lr);
+  uint32_t AddLinkRecord (GlobalRouterLinkRecord* lr);
 /**
- * @brief Return the number of Static Router Link Records in the LSA.
+ * @brief Return the number of Global Router Link Records in the LSA.
  *
  * @returns The number of link records in the list.
  */
   uint32_t GetNLinkRecords (void) const;
 /**
- * @brief Return a pointer to the specified Static Router Link Record.
+ * @brief Return a pointer to the specified Global Router Link Record.
  *
  * @param n The LSA number desired.
  * @returns The number of link records in the list.
  */
-  StaticRouterLinkRecord* GetLinkRecord (uint32_t n) const;
+  GlobalRouterLinkRecord* GetLinkRecord (uint32_t n) const;
 /**
- * @brief Release all of the Static Router Link Records present in the Static
+ * @brief Release all of the Global Router Link Records present in the Global
  * Router Link State Advertisement and make the list of link records empty.
  */
   void ClearLinkRecords(void);
 /**
- * @brief Check to see if the list of Static Router Link Records present in the
- * Static Router Link State Advertisement is empty.
+ * @brief Check to see if the list of Global Router Link Records present in the
+ * Global Router Link State Advertisement is empty.
  *
  * @returns True if the list is empty, false otherwise.
  */
   bool IsEmpty(void) const;
 /**
- * @brief Print the contents of the Static Router Link State Advertisement and
- * any Static Router Link Records present in the list.  Quite verbose.
+ * @brief Print the contents of the Global Router Link State Advertisement and
+ * any Global Router Link Records present in the list.  Quite verbose.
  */
   void Print (std::ostream &os) const;
 /**
@@ -335,7 +335,7 @@ public:
  * to the router ID of the router making the advertisement.
  *
  * @see RoutingEnvironment::AllocateRouterId ()
- * @see StaticRouter::GetRouterId ()
+ * @see GlobalRouter::GetRouterId ()
  * @returns The Ipv4Address stored as the link state ID.
  */
   Ipv4Address GetLinkStateId (void) const;
@@ -344,7 +344,7 @@ public:
  * to the router ID of the router making the advertisement.
  *
  * @see RoutingEnvironment::AllocateRouterId ()
- * @see StaticRouter::GetRouterId ()
+ * @see GlobalRouter::GetRouterId ()
  */
   void SetLinkStateId (Ipv4Address addr);
 /**
@@ -352,7 +352,7 @@ public:
  * set it to the router ID of the router making the advertisement.
  *
  * @see RoutingEnvironment::AllocateRouterId ()
- * @see StaticRouter::GetRouterId ()
+ * @see GlobalRouter::GetRouterId ()
  * @returns The Ipv4Address stored as the advetising router.
  */
   Ipv4Address GetAdvertisingRouter (void) const;
@@ -361,7 +361,7 @@ public:
  * set it to the router ID of the router making the advertisement.
  *
  * @see RoutingEnvironment::AllocateRouterId ()
- * @see StaticRouter::GetRouterId ()
+ * @see GlobalRouter::GetRouterId ()
  */
   void SetAdvertisingRouter (Ipv4Address  rtr);
 /**
@@ -384,7 +384,7 @@ private:
  * router ID of the router making the advertisement.
  *
  * @see RoutingEnvironment::AllocateRouterId ()
- * @see StaticRouter::GetRouterId ()
+ * @see GlobalRouter::GetRouterId ()
  */
   Ipv4Address  m_linkStateId;
 /**
@@ -392,13 +392,13 @@ private:
  * the router ID of the router making the advertisement.
  *
  * @see RoutingEnvironment::AllocateRouterId ()
- * @see StaticRouter::GetRouterId ()
+ * @see GlobalRouter::GetRouterId ()
  */
   Ipv4Address  m_advertisingRtr;
 /**
  * A convenience typedef to avoid too much writers cramp.
  */
-  typedef std::list<StaticRouterLinkRecord*> ListOfLinkRecords_t;
+  typedef std::list<GlobalRouterLinkRecord*> ListOfLinkRecords_t;
 /**
  * Each Link State Advertisement contains a number of Link Records that
  * describe the kinds of links that are attached to a given node.  We 
@@ -407,7 +407,7 @@ private:
  * m_linkRecords is an STL list container to hold the Link Records that have
  * been discovered and prepared for the advertisement.
  *
- * @see StaticRouter::DiscoverLSAs ()
+ * @see GlobalRouter::DiscoverLSAs ()
  */
   ListOfLinkRecords_t m_linkRecords;
 /**
@@ -419,99 +419,99 @@ private:
   SPFStatus m_status;
 };
 
-std::ostream& operator<< (std::ostream& os, StaticRouterLSA& lsa);
+std::ostream& operator<< (std::ostream& os, GlobalRouterLSA& lsa);
 
 /**
- * @brief An interface aggregated to a node to provide static routing info
+ * @brief An interface aggregated to a node to provide global routing info
  *
- * An interface aggregated to a node that provides static routing information
+ * An interface aggregated to a node that provides global routing information
  * to a global route manager.  The presence of the interface indicates that
  * the node is a router.  The interface is the mechanism by which the router
  * advertises its connections to neighboring routers.  We're basically 
  * allowing the route manager to query for link state advertisements.
  */
-class StaticRouter : public Object
+class GlobalRouter : public Object
 {
 public:
 /**
- * @brief The Interface ID of the Static Router interface.
+ * @brief The Interface ID of the Global Router interface.
  *
  * @see Object::QueryInterface ()
  */
   static const InterfaceId iid;
 /**
- * @brief Create a Static Router class and aggregate its interface onto the 
+ * @brief Create a Global Router class and aggregate its interface onto the 
  * Node provided.
  *
  * @param node The existing Node onto which this router will be aggregated.
  */
-  StaticRouter (Ptr<Node> node);
+  GlobalRouter (Ptr<Node> node);
 /**
- * @brief Get the Router ID associated with this Static Router.
+ * @brief Get the Router ID associated with this Global Router.
  *
  * The Router IDs are allocated in the RoutingEnvironment -- one per Router, 
  * starting at 0.0.0.1 and incrementing with each instantiation of a router.
  *
  * @see RoutingEnvironment::AllocateRouterId ()
- * @returns The Router ID associated with the Static Router.
+ * @returns The Router ID associated with the Global Router.
  */
   Ipv4Address GetRouterId (void) const;
 /**
  * @brief Walk the connected channels, discover the adjacent routers and build
- * the associated number of Static Router Link State Advertisements that 
+ * the associated number of Global Router Link State Advertisements that 
  * this router can export.
  *
  * This is a fairly expensive operation in that every time it is called
  * the current list of LSAs is built by walking connected point-to-point
  * channels and peeking into adjacent IPV4 stacks to get address information.
- * This is done to allow for limited dymanics of the Static Routing 
+ * This is done to allow for limited dymanics of the Global Routing 
  * environment.  By that we mean that you can discover new link state 
  * advertisements after a network topology change by calling DiscoverLSAs 
  * and then by reading those advertisements.
  *
- * @see StaticRouterLSA
- * @see StaticRouter::GetLSA ()
- * @returns The number of Static Router Link State Advertisements.
+ * @see GlobalRouterLSA
+ * @see GlobalRouter::GetLSA ()
+ * @returns The number of Global Router Link State Advertisements.
  */
   uint32_t DiscoverLSAs (void);
 /**
- * @brief Get the Number of Static Router Link State Advertisements that this
+ * @brief Get the Number of Global Router Link State Advertisements that this
  * router can export.
  *
  * To get meaningful information you must have previously called DiscoverLSAs.
  * After you know how many LSAs are present in the router, you may call 
  * GetLSA () to retrieve the actual advertisement.
  *
- * @see StaticRouterLSA
- * @see StaticRouter::DiscoverLSAs ()
- * @see StaticRouter::GetLSA ()
- * @returns The number of Static Router Link State Advertisements.
+ * @see GlobalRouterLSA
+ * @see GlobalRouter::DiscoverLSAs ()
+ * @see GlobalRouter::GetLSA ()
+ * @returns The number of Global Router Link State Advertisements.
  */
   uint32_t GetNumLSAs (void) const;
 /**
- * @brief Get a Static Router Link State Advertisements that this router has 
+ * @brief Get a Global Router Link State Advertisements that this router has 
  * said that it can export.
  *
  * This is a fairly inexpensive expensive operation in that the hard work
- * was done in GetNumLSAs.  We just copy the indicated Static Router Link
- * State Advertisement into the requested StaticRouterLSA object.
+ * was done in GetNumLSAs.  We just copy the indicated Global Router Link
+ * State Advertisement into the requested GlobalRouterLSA object.
  *
- * You must call StaticRouter::GetNumLSAs before calling this method in 
+ * You must call GlobalRouter::GetNumLSAs before calling this method in 
  * order to discover the adjacent routers and build the advertisements.
  * GetNumLSAs will return the number of LSAs this router advertises.  
  * The parameter n (requested LSA number) must be in the range 0 to 
  * GetNumLSAs() - 1.
  *
- * @see StaticRouterLSA
- * @see StaticRouter::GetNumLSAs ()
+ * @see GlobalRouterLSA
+ * @see GlobalRouter::GetNumLSAs ()
  * @param n The index number of the LSA you want to read.
- * @param lsa The StaticRouterLSA class to receive the LSA information.
- * @returns The number of Static Router Link State Advertisements.
+ * @param lsa The GlobalRouterLSA class to receive the LSA information.
+ * @returns The number of Global Router Link State Advertisements.
  */
-  bool GetLSA (uint32_t n, StaticRouterLSA &lsa) const;
+  bool GetLSA (uint32_t n, GlobalRouterLSA &lsa) const;
 
 protected:
-  virtual ~StaticRouter ();
+  virtual ~GlobalRouter ();
   void ClearLSAs (void);
 
   Ptr<NetDevice> GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const;
@@ -519,22 +519,22 @@ protected:
 
   Ptr<Node>     m_node;
 
-  typedef std::list<StaticRouterLSA*> ListOfLSAs_t;
+  typedef std::list<GlobalRouterLSA*> ListOfLSAs_t;
   ListOfLSAs_t m_LSAs;
 
   Ipv4Address m_routerId;
 
 private:
 /**
- * @brief Static Router copy construction is disallowed.
+ * @brief Global Router copy construction is disallowed.
  */
-  StaticRouter (StaticRouter& sr);
+  GlobalRouter (GlobalRouter& sr);
 /**
- * @brief Static Router assignment operator is disallowed.
+ * @brief Global Router assignment operator is disallowed.
  */
-  StaticRouter& operator= (StaticRouter& sr);
+  GlobalRouter& operator= (GlobalRouter& sr);
 };
 
 } // namespace ns3
 
-#endif /* STATIC_ROUTER_H */
+#endif /* GLOBAL_ROUTER_H */

@@ -15,60 +15,64 @@
  */
 
 #ifndef STATIC_ROUTE_MANAGER_H
-#define STATIC_ROUTE_MANAGER_H
+#define GLOBAL_ROUTE_MANAGER_H
 
 namespace ns3 {
 
 /**
- * @brief A global static router
+ * @brief A global global router
  *
  * This singleton object can query interface each node in the system
- * for a StaticRouter interface.  For those nodes, it fetches one or
+ * for a GlobalRouter interface.  For those nodes, it fetches one or
  * more Link State Advertisements and stores them in a local database.
  * Then, it can compute shortest paths on a per-node basis to all routers, 
  * and finally configure each of the node's forwarding tables.
  *
  * The design is guided by OSPFv2 RFC 2328 section 16.1.1 and quagga ospfd.
  */
-class StaticRouteManager
+class GlobalRouteManager
 {
 public:
 /**
  * @brief Build a routing database and initialize the routing tables of
  * the nodes in the simulation.
  *
- * All this function does is call  BuildStaticRoutingDatabase () and
- * InitializeRoutes ().  
+ * All this function does is call  BuildGlobalRoutingDatabase () and
+ * InitializeRoutes ().
  *
- * @see BuildStaticRoutingDatabase ();
+ * @see BuildGlobalRoutingDatabase ();
  * @see InitializeRoutes ();
  */
   static void PopulateRoutingTables ();
+
 private:
 /**
  * @brief Build the routing database by gathering Link State Advertisements
- * from each node exporting a StaticRouter interface.
+ * from each node exporting a GlobalRouter interface.
  *
  */
-  static void BuildStaticRoutingDatabase ();
+  static void BuildGlobalRoutingDatabase ();
+
 /**
  * @brief Compute routes using a Dijkstra SPF computation and populate
  * per-node forwarding tables
  */
   static void InitializeRoutes ();
+
 /**
- * @brief Static Route Manager copy construction is disallowed.  There's no 
+ * @brief Global Route Manager copy construction is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be wrong.
  *
  */
-  StaticRouteManager (StaticRouteManager& srm);
+  GlobalRouteManager (GlobalRouteManager& srm);
+
 /**
- * @brief Static Router copy assignment operator is disallowed.  There's no 
+ * @brief Global Router copy assignment operator is disallowed.  There's no 
  * need for it and a compiler provided shallow copy would be wrong.
  */
-  StaticRouteManager& operator= (StaticRouteManager& srm);
+  GlobalRouteManager& operator= (GlobalRouteManager& srm);
 };
 
 } // namespace ns3
 
-#endif /* STATIC_ROUTE_MANAGER_H */
+#endif /* GLOBAL_ROUTE_MANAGER_H */

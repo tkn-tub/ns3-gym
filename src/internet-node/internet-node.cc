@@ -24,7 +24,7 @@
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/net-device.h"
 #include "ns3/routing-environment.h"
-#include "ns3/static-router.h"
+#include "ns3/global-router-interface.h"
 
 #include "l3-demux.h"
 #include "ipv4-l4-demux.h"
@@ -83,10 +83,10 @@ InternetNode::Construct (void)
 // of the StaticRouter interface tells the route manager that it needs to 
 // ask a given node about any link state records that it may want to advertise.
 //
-  if (RoutingEnvironment::StaticRoutingEnabled())
+  if (RoutingEnvironment::GlobalRoutingEnabled())
     {
-      Ptr<StaticRouter> staticRouter = Create<StaticRouter> (this);
-      Object::AddInterface (staticRouter);
+      Ptr<GlobalRouter> globalRouter = Create<GlobalRouter> (this);
+      Object::AddInterface (globalRouter);
     }
 }
 
