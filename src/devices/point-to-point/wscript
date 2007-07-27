@@ -2,21 +2,20 @@
 
 
 def build(bld):
-    p2p = bld.create_obj('cpp', 'shlib')
-    p2p.name = 'ns3-p2p'
-    p2p.target = p2p.name
-    p2p.uselib_local = ['ns3-node']
-    p2p.source = [
+    module = bld.create_obj('cpp', 'shlib')
+    module.name = 'ns3-point-to-point'
+    module.target = module.name
+    module.uselib_local = ['ns3-node']
+    module.source = [
         'point-to-point-net-device.cc',
         'point-to-point-channel.cc',
         'point-to-point-topology.cc',
         ]
-    p2p.includes = '.'
-
     headers = bld.create_obj('ns3header')
     headers.source = [
         'point-to-point-net-device.h',
         'point-to-point-channel.h',
         'point-to-point-topology.h',
         ]
+    module.includes = '.'
 
