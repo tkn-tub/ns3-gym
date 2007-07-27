@@ -26,8 +26,8 @@
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
-#include "p2p-net-device.h"
-#include "p2p-channel.h"
+#include "point-to-point-net-device.h"
+#include "point-to-point-channel.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
