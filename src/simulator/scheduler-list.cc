@@ -70,7 +70,7 @@ void
 SchedulerList::RealInsert (EventId id)
 {
   Scheduler::EventKey key;
-  EventImpl *event = id.GetEventImpl ();
+  EventImpl *event = id.PeekEventImpl ();
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
@@ -108,7 +108,7 @@ SchedulerList::RealRemove (EventId id)
     {
       if (i->second.m_uid == id.GetUid ())
         {
-          NS_ASSERT (id.GetEventImpl () == i->first);
+          NS_ASSERT (id.PeekEventImpl () == i->first);
           m_events.erase (i);
           return true;
         }

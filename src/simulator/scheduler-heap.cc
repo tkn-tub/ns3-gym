@@ -225,7 +225,7 @@ SchedulerHeap::TopDown (uint32_t start)
 void
 SchedulerHeap::RealInsert (EventId id)
 {
-  EventImpl *event = id.GetEventImpl ();
+  EventImpl *event = id.PeekEventImpl ();
   Scheduler::EventKey key;
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
@@ -256,7 +256,7 @@ SchedulerHeap::RealRemove (EventId id)
     {
       if (uid == m_heap[i].second.m_uid)
         {
-          NS_ASSERT (m_heap[i].first == id.GetEventImpl ());
+          NS_ASSERT (m_heap[i].first == id.PeekEventImpl ());
           Exch (i, Last ());
           m_heap.pop_back ();
           TopDown (i);

@@ -55,7 +55,7 @@ EventId::IsRunning (void)
   return !IsExpired ();
 }
 EventImpl *
-EventId::GetEventImpl (void) const
+EventId::PeekEventImpl (void) const
 {
   return m_eventImpl;
 }

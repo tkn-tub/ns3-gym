@@ -114,7 +114,7 @@ SimulatorPrivate::~SimulatorPrivate ()
 {
   while (!m_destroyEvents.empty ()) 
     {
-      EventImpl *ev = m_destroyEvents.front ().GetEventImpl ();
+      EventImpl *ev = m_destroyEvents.front ().PeekEventImpl ();
       m_destroyEvents.pop_front ();
       TRACE ("handle destroy " << ev);
       if (!ev->IsCancelled ())
@@ -151,7 +151,7 @@ SimulatorPrivate::ProcessOneEvent (void)
     {
       m_log << "e "<<next.GetUid () << " " << next.GetTs () << std::endl;
     }
-  EventImpl *event = next.GetEventImpl ();
+  EventImpl *event = next.PeekEventImpl ();
   event->Invoke ();
   delete event;
 }
@@ -275,7 +275,7 @@ SimulatorPrivate::Remove (EventId ev)
       return;
     }
   m_events->Remove (ev);
-  delete ev.GetEventImpl ();
+  delete ev.PeekEventImpl ();
 
   if (m_logEnable) 
     {
@@ -306,11 +306,11 @@ SimulatorPrivate::IsExpired (const EventId ev)
          }
       return true;
     }
-  if (ev.GetEventImpl () == 0 ||
+  if (ev.PeekEventImpl () == 0 ||
       ev.GetTs () < m_currentTs ||
       (ev.GetTs () == m_currentTs &&
        ev.GetUid () <= m_currentUid) ||
-      ev.GetEventImpl ()->IsCancelled ()) 
+      ev.PeekEventImpl ()->IsCancelled ()) 
     {
       return true;
     }

@@ -51,7 +51,7 @@ public:
    * they are supposed to be invoked only by
    * subclasses of the Scheduler base class.
    */
-  EventImpl *GetEventImpl (void) const;
+  EventImpl *PeekEventImpl (void) const;
   uint64_t GetTs (void) const;
   uint32_t GetUid (void) const;
 private:

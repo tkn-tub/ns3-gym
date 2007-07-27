@@ -90,7 +90,7 @@ SchedulerMap::EventKeyCompare::operator () (struct EventKey const&a, struct Even
 void
 SchedulerMap::RealInsert (EventId id)
 {
-  EventImpl *event = id.GetEventImpl ();
+  EventImpl *event = id.PeekEventImpl ();
   Scheduler::EventKey key;
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
@@ -126,7 +126,7 @@ SchedulerMap::RealRemove (EventId id)
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
   EventMapI i = m_list.find (key);
-  NS_ASSERT (i->second == id.GetEventImpl ());
+  NS_ASSERT (i->second == id.PeekEventImpl ());
   m_list.erase (i);
   return true;
 }
