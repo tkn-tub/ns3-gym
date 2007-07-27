@@ -144,6 +144,10 @@ def build(bld):
         run_shell()
         return
 
+    if Params.g_options.doxygen:
+        doxygen()
+        raise SystemExit(0)
+
     # process subfolders from here
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples')
@@ -163,9 +167,6 @@ def shutdown():
 
     if Params.g_options.lcov_report:
         lcov_report()
-
-    if Params.g_options.doxygen:
-        doxygen()
 
     if Params.g_options.run:
         run_program(Params.g_options.run, Params.g_options.command_template)
