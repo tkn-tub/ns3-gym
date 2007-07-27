@@ -36,7 +36,7 @@ public:
   virtual ~Ipv4Impl ();
 
   virtual void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
-                                   int priority);
+                                   int16_t priority);
 
   virtual void AddHostRouteTo (Ipv4Address dest, 
 			       Ipv4Address nextHop, 

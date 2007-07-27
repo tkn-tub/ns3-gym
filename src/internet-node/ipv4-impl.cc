@@ -41,7 +41,7 @@ Ipv4Impl::DoDispose (void)
 
 void
 Ipv4Impl::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
-                              int priority)
+                              int16_t priority)
 {
   m_ipv4->AddRoutingProtocol (routingProtocol, priority);
 }
