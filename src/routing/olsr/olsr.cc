@@ -162,11 +162,7 @@ NS_DEBUG_COMPONENT_DEFINE ("Olsr");
 
 Olsr::Olsr (Ptr<Node> node)
   :
-  m_useL2Notifications (false),
-  m_helloTimer (OLSR_HELLO_INTERVAL, MakeCallback (&Olsr::HelloTimerExpire, this)),
-  m_tcTimer (OLSR_TC_INTERVAL, MakeCallback (&Olsr::TcTimerExpire, this)),
-  m_midTimer (OLSR_MID_INTERVAL, MakeCallback (&Olsr::MidTimerExpire, this)), 
-  m_queuedMessagesTimer (MakeCallback (&Olsr::SendQueuedMessages, this))
+  m_useL2Notifications (false)
 {
   SetInterfaceId (Olsr::iid);
 
@@ -239,9 +235,10 @@ void Olsr::Start ()
   if (m_sendSocket->Bind (m_mainAddress, OLSR_PORT_NUMBER))
     NS_ASSERT_MSG (false, "Failed to bind() OLSR send socket");
   m_receiveSocket->Recv (MakeCallback (&Olsr::RecvOlsr,  this));
-  m_helloTimer.Expire ();
-  m_tcTimer.Expire ();
-  m_midTimer.Expire ();
+
+  HelloTimerExpire ();
+  TcTimerExpire ();
+  MidTimerExpire ();
 
   NS_DEBUG ("OLSR on node " << m_mainAddress << " started");
 }
@@ -1065,10 +1062,9 @@ void
 Olsr::QueueMessage (Packet message, Time delay)
 {
   m_queuedMessages.push_back (message);
-  if (not m_queuedMessagesTimer.IsRunning ())
+  if (not m_queuedMessagesTimer.GetEvent ().IsRunning ())
     {
-      m_queuedMessagesTimer.SetInterval (delay);
-      m_queuedMessagesTimer.Schedule ();
+      m_queuedMessagesTimer = Simulator::Schedule (delay, &Olsr::SendQueuedMessages, this);
     }
 }
 
@@ -1395,8 +1391,9 @@ Olsr::LinkSensing (const OlsrMessageHeader &msg,
   // Schedules link tuple deletion
   if (created && link_tuple != NULL)
     {
-      Simulator::Schedule (DELAY (std::min (link_tuple->time, link_tuple->symTime)),
-                           &Olsr::LinkTupleTimerExpire, this, *link_tuple);
+      m_events.Track (Simulator::Schedule
+                      (DELAY (std::min (link_tuple->time, link_tuple->symTime)),
+                       &Olsr::LinkTupleTimerExpire, this, *link_tuple));
     }
 }
 
@@ -1470,9 +1467,10 @@ Olsr::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
                                     now + msg.GetVTime ();
                                   // Schedules nb2hop tuple
                                   // deletion
-                                  Simulator::Schedule (DELAY (new_nb2hop_tuple.expirationTime),
-                                                       &Olsr::Nb2hopTupleTimerExpire, this,
-                                                       new_nb2hop_tuple);
+                                  m_events.Track (Simulator::Schedule
+                                                  (DELAY (new_nb2hop_tuple.expirationTime),
+                                                   &Olsr::Nb2hopTupleTimerExpire, this,
+                                                   new_nb2hop_tuple));
                                 }
                               else
                                 {
@@ -1541,9 +1539,10 @@ Olsr::PopulateMprSelectorSet (const OlsrMessageHeader &msg,
                       AddMprSelectorTuple (mprsel_tuple);
 
                       // Schedules mpr selector tuple deletion
-                      Simulator::Schedule (DELAY (mprsel_tuple.expirationTime),
-                                           &Olsr::MprSelTupleTimerExpire,
-                                           this, mprsel_tuple);
+                      m_events.Track (Simulator::Schedule
+                                      (DELAY (mprsel_tuple.expirationTime),
+                                       &Olsr::MprSelTupleTimerExpire,
+                                       this, mprsel_tuple));
                     }
                   else
                     {
@@ -1936,7 +1935,7 @@ void
 Olsr::HelloTimerExpire ()
 {
   SendHello ();
-  m_helloTimer.Schedule ();
+  m_helloTimer = Simulator::Schedule (m_helloInterval, &Olsr::HelloTimerExpire, this);
 }
 
 ///
@@ -1948,7 +1947,7 @@ Olsr::TcTimerExpire ()
 {
   if (m_state.GetMprSelectors ().size () > 0)
     SendTc ();
-  m_tcTimer.Schedule ();
+  m_tcTimer = Simulator::Schedule (m_tcInterval, &Olsr::TcTimerExpire, this);
 }
 
 ///
@@ -1960,7 +1959,7 @@ void
 Olsr::MidTimerExpire ()
 {
   SendMid ();
-  m_midTimer.Schedule ();
+  m_midTimer = Simulator::Schedule (m_midInterval, &Olsr::MidTimerExpire, this);
 }
 
 ///
@@ -1978,7 +1977,9 @@ Olsr::DupTupleTimerExpire (DuplicateTuple tuple)
       RemoveDuplicateTuple (tuple);
     }
   else
-    Simulator::Schedule (DELAY (tuple.expirationTime), &Olsr::DupTupleTimerExpire, this, tuple);
+    m_events.Track (Simulator::Schedule
+                    (DELAY (tuple.expirationTime),
+                     &Olsr::DupTupleTimerExpire, this, tuple));
 }
 
 ///
@@ -2008,13 +2009,15 @@ Olsr::LinkTupleTimerExpire (LinkTuple tuple)
       else
         NeighborLoss (tuple);
 
-      Simulator::Schedule (DELAY(tuple.time),
-                           &Olsr::LinkTupleTimerExpire, this, tuple);
+      m_events.Track (Simulator::Schedule
+                      (DELAY(tuple.time),
+                       &Olsr::LinkTupleTimerExpire, this, tuple));
 
     }
   else
-    Simulator::Schedule (DELAY (std::min (tuple.time, tuple.symTime)),
-                         &Olsr::LinkTupleTimerExpire, this, tuple);
+    m_events.Track (Simulator::Schedule
+                    (DELAY (std::min (tuple.time, tuple.symTime)),
+                     &Olsr::LinkTupleTimerExpire, this, tuple));
 }
 
 ///
@@ -2032,8 +2035,9 @@ Olsr::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple)
       RemoveTwoHopNeighborTuple (tuple);
     }
   else
-    Simulator::Schedule (DELAY (tuple.expirationTime),
-                         &Olsr::Nb2hopTupleTimerExpire, this, tuple);
+    m_events.Track (Simulator::Schedule
+                    (DELAY (tuple.expirationTime),
+                     &Olsr::Nb2hopTupleTimerExpire, this, tuple));
 }
 
 ///
@@ -2051,8 +2055,9 @@ Olsr::MprSelTupleTimerExpire (MprSelectorTuple tuple)
       RemoveMprSelectorTuple (tuple);
     }
   else
-    Simulator::Schedule (DELAY (tuple.expirationTime),
-                         &Olsr::MprSelTupleTimerExpire, this, tuple);
+    m_events.Track (Simulator::Schedule
+                    (DELAY (tuple.expirationTime),
+                     &Olsr::MprSelTupleTimerExpire, this, tuple));
 }
 
 ///
@@ -2070,8 +2075,9 @@ Olsr::TopologyTupleTimerExpire (TopologyTuple tuple)
       RemoveTopologyTuple (tuple);
     }
   else
-    Simulator::Schedule (DELAY (tuple.expirationTime),
-                         &Olsr::TopologyTupleTimerExpire, this, tuple);
+    m_events.Track (Simulator::Schedule
+                    (DELAY (tuple.expirationTime),
+                     &Olsr::TopologyTupleTimerExpire, this, tuple));
 }
 
 ///
@@ -2087,8 +2093,9 @@ Olsr::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple)
       RemoveIfaceAssocTuple (tuple);
     }
   else
-    Simulator::Schedule (DELAY (tuple.time),
-                         &Olsr::IfaceAssocTupleTimerExpire, this, tuple);
+    m_events.Track (Simulator::Schedule
+                    (DELAY (tuple.time),
+                     &Olsr::IfaceAssocTupleTimerExpire, this, tuple));
 }
 
 

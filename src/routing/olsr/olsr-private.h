@@ -38,7 +38,8 @@
 #include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/socket.h"
-#include "ns3/timer.h"
+#include "ns3/single-event.h"
+#include "ns3/event-collector.h"
 
 
 namespace ns3 { namespace olsr {
@@ -56,6 +57,7 @@ public:
   virtual void SetMainInterface (uint32_t interface);
 
 private:
+  EventCollector m_events;
 
   /// Address of the routing agent.
   Ipv4Address m_routingAgentAddr;
@@ -104,13 +106,13 @@ protected:
   Ipv4Address GetMainAddress (Ipv4Address iface_addr);
 
   // Timer handlers
-  Timer<> m_helloTimer;
+  SingleEvent m_helloTimer;
   void HelloTimerExpire ();
   
-  Timer<> m_tcTimer;
+  SingleEvent m_tcTimer;
   void TcTimerExpire ();
 
-  Timer<> m_midTimer;
+  SingleEvent m_midTimer;
   void MidTimerExpire ();
 
   void DupTupleTimerExpire (DuplicateTuple tuple);
@@ -123,7 +125,7 @@ protected:
 
   /// A list of pending messages which are buffered awaiting for being sent.
   std::vector<Packet> m_queuedMessages;
-  Timer<> m_queuedMessagesTimer; // timer for throttling outgoing messages
+  SingleEvent m_queuedMessagesTimer; // timer for throttling outgoing messages
 
   void ForwardDefault (OlsrMessageHeader olsrMessage,
                        Packet messagePayload,
