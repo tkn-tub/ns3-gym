@@ -18,8 +18,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef HEADER_UTILS_H
-#define HEADER_UTILS_H
+#ifndef ADDRESS_UTILS_H
+#define ADDRESS_UTILS_H
 
 #include "ns3/buffer.h"
 #include "ns3/ipv4-address.h"
@@ -35,4 +35,4 @@ void ReadFrom (Buffer::Iterator &i, MacAddress &ad, uint32_t len);
 
 };
 
-#endif /* HEADER_UTILS_H */
+#endif /* ADDRESS_UTILS_H */
