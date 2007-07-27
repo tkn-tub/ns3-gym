@@ -58,8 +58,10 @@ public:
    * connect to a CsmaCdChannel. This means that Ethernet headers
    * and trailers will be added to the packet before sending out on
    * the net device.
+   * 
+   * \return ifIndex of the device
    */
-  static void AddIpv4CsmaCdNode( Ptr<Node> n1,
+  static uint32_t AddIpv4CsmaCdNode( Ptr<Node> n1,
                                  Ptr<CsmaCdChannel> ch,
                                  MacAddress addr);
 

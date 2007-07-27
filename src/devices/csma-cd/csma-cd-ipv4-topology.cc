@@ -35,26 +35,20 @@
 namespace ns3 {
 
 
-void
+uint32_t
 CsmaCdIpv4Topology::AddIpv4CsmaCdNode(Ptr<Node> n1,
                                       Ptr<CsmaCdChannel> ch,
                                       MacAddress addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
-  // Use the first net device in the node to transmit
+  // assume full-duplex
   Ptr<CsmaCdNetDevice> nd0 = Create<CsmaCdNetDevice> (n1, addr, 
                                                       ns3::CsmaCdNetDevice::IP_ARP,
-                                                      true, false);
+                                                      true, true);
   nd0->AddQueue(q);
   nd0->Attach (ch);
-
-  // Use the second net device in the node to transmit
-  Ptr<CsmaCdNetDevice> nd1 = Create<CsmaCdNetDevice> (n1, addr, 
-                                                      ns3::CsmaCdNetDevice::IP_ARP,
-                                                      false, true);
-  nd1->AddQueue(q);
-  nd1->Attach (ch);
+  return nd0->GetIfIndex ();
 }
 
 
