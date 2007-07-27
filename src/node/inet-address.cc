@@ -11,6 +11,14 @@ InetAddress::InetAddress (Ipv4Address ipv4)
   : m_ipv4 (ipv4),
     m_port (0)
 {}
+InetAddress::InetAddress (const char *ipv4, uint16_t port)
+  : m_ipv4 (Ipv4Address (ipv4)),
+    m_port (port)
+{}
+InetAddress::InetAddress (const char * ipv4)
+  : m_ipv4 (Ipv4Address (ipv4)),
+    m_port (0)
+{}
 InetAddress::InetAddress (uint16_t port)
   : m_ipv4 (Ipv4Address::GetAny ()),
     m_port (port)

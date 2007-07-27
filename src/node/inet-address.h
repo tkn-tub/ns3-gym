@@ -12,7 +12,9 @@ class InetAddress
 public:
   InetAddress (Ipv4Address ipv4, uint16_t port);
   InetAddress (Ipv4Address ipv4);
-  InetAddress (uint16_t post);
+  InetAddress (uint16_t port);
+  InetAddress (const char *ipv4, uint16_t port);
+  InetAddress (const char *ipv4);
   uint16_t GetPort (void) const;
   Ipv4Address GetIpv4 (void) const;
 
