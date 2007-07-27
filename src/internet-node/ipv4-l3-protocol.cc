@@ -551,12 +551,39 @@ Ipv4L3Protocol::SetUp (uint32_t i)
 {
   Ipv4Interface *interface = GetInterface (i);
   interface->SetUp ();
+
+  // If interface address and network mask have been set, add a route
+  // to the network of the interface (like e.g. ifconfig does on a
+  // Linux box)
+  if ((interface->GetAddress ()) != (Ipv4Address ())
+      && (interface->GetNetworkMask ()) != (Ipv4Mask ()))
+    {
+      AddNetworkRouteTo (interface->GetAddress ().CombineMask (interface->GetNetworkMask ()),
+                         interface->GetNetworkMask (), i);
+    }
 }
 void 
-Ipv4L3Protocol::SetDown (uint32_t i)
+Ipv4L3Protocol::SetDown (uint32_t ifaceIndex)
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ipv4Interface *interface = GetInterface (ifaceIndex);
   interface->SetDown ();
+
+  // Remove all routes that are going through this interface
+  bool modified = true;
+  while (modified)
+    {
+      modified = false;
+      for (uint32_t i = 0; i < GetNRoutes (); i++)
+        {
+          Ipv4Route *route = GetRoute (i);
+          if (route->GetInterface () == ifaceIndex)
+            {
+              RemoveRoute (i);
+              modified = true;
+              break;
+            }
+        }
+    }
 }
 
 

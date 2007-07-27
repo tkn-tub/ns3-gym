@@ -145,6 +145,12 @@ Ipv4Address::IsEqual (Ipv4Address other) const
   }
 }
 
+Ipv4Address
+Ipv4Address::CombineMask (Ipv4Mask const &mask) const
+{
+  return Ipv4Address (GetHostOrder () & mask.GetHostOrder ());
+}
+
 bool 
 Ipv4Address::IsMulticast (void)
 {
