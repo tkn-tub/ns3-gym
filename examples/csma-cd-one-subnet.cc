@@ -71,11 +71,12 @@ int main (int argc, char *argv[])
 
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
+  DebugComponentEnable("CsmaCdNetDevice");
+  DebugComponentEnable("Ipv4L3Protocol");
+  DebugComponentEnable("NetDevice");
 #if 0 
   DebugComponentEnable("Channel");
   DebugComponentEnable("CsmaCdChannel");
-  DebugComponentEnable("CsmaCdNetDevice");
-  DebugComponentEnable("NetDevice");
   DebugComponentEnable("PacketSocket");
 #endif
 
@@ -103,27 +104,27 @@ int main (int argc, char *argv[])
     CsmaCdTopology::CreateCsmaCdChannel(
       DataRate(5000000), MilliSeconds(2));
 
-  CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n0, channel0, 
+  uint32_t n0ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n0, channel0, 
                                          MacAddress("10:54:23:54:23:50"));
-  CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n1, channel0,
+  uint32_t n1ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n1, channel0,
                                          MacAddress("10:54:23:54:23:51"));
-  CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n2, channel0,
+  uint32_t n2ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n2, channel0,
                                          MacAddress("10:54:23:54:23:52"));
-  CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n3, channel0,
+  uint32_t n3ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n3, channel0,
                                          MacAddress("10:54:23:54:23:53"));
 
   // Later, we add IP addresses.  
   CsmaCdIpv4Topology::AddIpv4Address (
-      n0, 1, Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
+      n0, n0ifIndex, Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
 
   CsmaCdIpv4Topology::AddIpv4Address (
-      n1, 1, Ipv4Address("10.1.1.2"), Ipv4Mask("255.255.255.0"));
+      n1, n1ifIndex, Ipv4Address("10.1.1.2"), Ipv4Mask("255.255.255.0"));
 
   CsmaCdIpv4Topology::AddIpv4Address (
-      n2, 1, Ipv4Address("10.1.1.3"), Ipv4Mask("255.255.255.0"));
+      n2, n2ifIndex, Ipv4Address("10.1.1.3"), Ipv4Mask("255.255.255.0"));
   
   CsmaCdIpv4Topology::AddIpv4Address (
-      n3, 1, Ipv4Address("10.1.1.4"), Ipv4Mask("255.255.255.0"));
+      n3, n3ifIndex, Ipv4Address("10.1.1.4"), Ipv4Mask("255.255.255.0"));
 
 
   // Create the OnOff application to send UDP datagrams of size
@@ -154,8 +155,8 @@ int main (int argc, char *argv[])
  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the csma-cd-one-subnet.tr file
-  AsciiTrace asciitrace ("csma-cd-one-subnet.tr");
-  asciitrace.TraceAllNetDeviceRx ();
+ // AsciiTrace asciitrace ("csma-cd-one-subnet.tr");
+//  asciitrace.TraceAllNetDeviceRx ();
   //  asciitrace.TraceAllQueues ();
 
   Simulator::Run ();
