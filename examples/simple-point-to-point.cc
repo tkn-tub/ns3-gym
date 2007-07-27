@@ -29,13 +29,14 @@
 //     / 5 Mb/s, 2ms
 //   n1
 //
-// - all links are p2p links with indicated one-way BW/delay
+// - all links are point-to-point links with indicated one-way BW/delay
 // - CBR/UDP flows from n0 to n3, and from n3 to n1
 // - FTP/TCP flow from n0 to n3, starting at time 1.2 to time 1.35 sec.
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
 // - DropTail queues 
-// - Tracing of queues and packet receptions to file "simple-p2p.tr"
+// - Tracing of queues and packet receptions to file 
+//   "simple-point-to-point.tr"
 
 #include <iostream>
 #include <fstream>
@@ -173,16 +174,17 @@ int main (int argc, char *argv[])
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
   
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the simple-p2p.tr file
-  AsciiTrace asciitrace ("simple-p2p.tr");
+  // Trace output will be sent to the simple-point-to-point.tr file
+  AsciiTrace asciitrace ("simple-point-to-point.tr");
   asciitrace.TraceAllQueues ();
   asciitrace.TraceAllNetDeviceRx ();
 
   // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named simple-p2p.pcap-<nodeId>-<interfaceId>
+  // The output files will be named 
+  // simple-point-to-point.pcap-<nodeId>-<interfaceId>
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
-  PcapTrace pcaptrace ("simple-p2p.pcap");
+  PcapTrace pcaptrace ("simple-point-to-point.pcap");
   pcaptrace.TraceAllIp ();
 
   Simulator::Run ();
