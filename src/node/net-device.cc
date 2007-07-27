@@ -22,11 +22,14 @@
 #include <iostream>
 #include "ns3/assert.h"
 #include "ns3/object.h"
+#include "ns3/debug.h"
+
 
 #include "channel.h"
 #include "net-device.h"
-#include "llc-snap-header.h"
 #include "node.h"
+
+NS_DEBUG_COMPONENT_DEFINE ("NetDevice");
 
 namespace ns3 {
 
@@ -172,10 +175,7 @@ NetDevice::Send(Packet& p, const MacAddress& dest, uint16_t protocolNumber)
 {
   if (m_isUp)
     {
-      LlcSnapHeader llc;
-      llc.SetType (protocolNumber);
-      p.AddHeader (llc);
-      return SendTo(p, dest);
+      return SendTo(p, dest, protocolNumber);
     }
   else
     {
@@ -195,18 +195,24 @@ NetDevice::GetChannel (void) const
   return DoGetChannel ();
 }
 
-// Receive packet from below
+// Receive packets from below
 bool
-NetDevice::ForwardUp (Packet& packet)
+NetDevice::ForwardUp(Packet& p, uint32_t param)
 {
   bool retval = false;
-  LlcSnapHeader llc;
-  packet.RemoveHeader (llc);
+  Packet packet = p;
+
+  NS_DEBUG ("NetDevice::ForwardUp: UID is " << packet.GetUid()
+            << " device is: " << GetName());
+  
   if (!m_receiveCallback.IsNull ())
     {
-      retval = m_receiveCallback (this, packet, llc.GetType ());
+      retval = m_receiveCallback (this, packet, param);
+    } else {
+      NS_DEBUG ("NetDevice::Receive call back is NULL");
     }
-  return retval;
+
+    return retval;
 }
 
 void 
