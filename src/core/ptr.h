@@ -65,7 +65,7 @@ private:
   template <typename U>
   friend U *PeekPointer (const Ptr<U> &p);
 
-  void Acquire (void) const;
+  inline void Acquire (void) const;
 public:
   /**
    * Create an empty smart pointer
