@@ -24,7 +24,7 @@
 #include "ns3/node.h"
 #include "ns3/channel.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/routing-environment.h"
+#include "ns3/global-route-manager.h"
 
 namespace ns3 {
 

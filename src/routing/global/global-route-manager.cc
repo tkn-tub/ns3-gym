@@ -31,22 +31,38 @@ namespace ns3 {
   void
 GlobalRouteManager::PopulateRoutingTables () 
 {
+  SelectRouterNodes ();
   BuildGlobalRoutingDatabase ();
   InitializeRoutes ();
 }
 
   void
+GlobalRouteManager::SelectRouterNodes () 
+{
+  SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
+    SelectRouterNodes ();
+}
+
+  void
 GlobalRouteManager::BuildGlobalRoutingDatabase () 
 {
-  return SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
+  SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
     BuildGlobalRoutingDatabase ();
 }
 
   void
 GlobalRouteManager::InitializeRoutes ()
 {
-  return SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
+  SimulationSingleton<GlobalRouteManagerImpl>::Get ()->
     InitializeRoutes ();
 }
+
+  uint32_t
+GlobalRouteManager::AllocateRouterId ()
+{
+  static uint32_t routerId = 0;
+  return routerId++;
+}
+
 
 } // namespace ns3

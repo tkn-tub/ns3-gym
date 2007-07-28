@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef STATIC_ROUTE_MANAGER_H
+#ifndef GLOBAL_ROUTE_MANAGER_H
 #define GLOBAL_ROUTE_MANAGER_H
 
 namespace ns3 {
@@ -45,7 +45,19 @@ public:
  */
   static void PopulateRoutingTables ();
 
+/**
+ * @brief Allocate a 32-bit router ID from monotonically increasing counter.
+ */
+  static uint32_t AllocateRouterId ();
+
 private:
+/**
+ * @brief Select which nodes in the system are to be router nodes and 
+ * aggregate the appropriate interfaces onto those nodes.
+ *
+ */
+  static void SelectRouterNodes ();
+
 /**
  * @brief Build the routing database by gathering Link State Advertisements
  * from each node exporting a GlobalRouter interface.

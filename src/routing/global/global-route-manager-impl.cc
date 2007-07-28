@@ -292,6 +292,31 @@ GlobalRouteManagerImpl::DebugUseLsdb (GlobalRouteManagerLSDB* lsdb)
 }
 
 //
+// In order to build the routing database, we need at least one of the nodes
+// to participate as a router.  Eventually we expect to provide a mechanism
+// for selecting a subset of the nodes to participate; for now, we just make
+// all nodes routers.  We do this by walking the list of nodes in the system
+// and aggregating a Global Router Interface to each of the nodes.
+//
+  void
+GlobalRouteManagerImpl::SelectRouterNodes () 
+{
+  NS_DEBUG ("GlobalRouteManagerImpl::SelectRouterNodes ()");
+
+  typedef std::vector < Ptr<Node> >::iterator Iterator;
+  for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+    {
+      Ptr<Node> node = *i;
+      NS_DEBUG ("GlobalRouteManagerImpl::SelectRouterNodes (): "
+        "Adding GlobalRouter interface to node " <<
+                node->GetId ());
+
+      Ptr<GlobalRouter> globalRouter = Create<GlobalRouter> (node);
+      node->AddInterface (globalRouter);
+    }
+}
+
+//
 // In order to build the routing database, we need to walk the list of nodes
 // in the system and look for those that support the GlobalRouter interface.
 // These routers will export a number of Link State Advertisements (LSAs)

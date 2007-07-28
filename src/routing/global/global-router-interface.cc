@@ -323,7 +323,7 @@ GlobalRouter::GlobalRouter (Ptr<Node> node)
 {
   NS_DEBUG("GlobalRouter::GlobalRouter ()");
   SetInterfaceId (GlobalRouter::iid);
-  m_routerId.Set(RoutingEnvironment::AllocateRouterId());
+  m_routerId.Set(GlobalRouteManager::AllocateRouterId ());
 }
 
 GlobalRouter::~GlobalRouter ()
