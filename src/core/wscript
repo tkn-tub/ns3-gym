@@ -39,7 +39,6 @@ def build(bld):
         'component-manager.cc',
         'random-variable-default-value.cc',
         ]
-    core.includes = '.'
 
     if sys.platform == 'win32':
         core.source.extend([

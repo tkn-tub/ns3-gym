@@ -25,7 +25,6 @@ def build(bld):
         'ipv4.cc',
         'application.cc',
         ]
-    node.includes = '.'
 
     headers = bld.create_obj('ns3header')
     headers.source = [

@@ -24,7 +24,6 @@ def build(bld):
         'trace-root.cc',
         'data-rate.cc',
         ]
-    common.includes = '.'
 
     headers = bld.create_obj('ns3header')
     headers.source = [

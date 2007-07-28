@@ -17,5 +17,4 @@ def build(bld):
         'point-to-point-channel.h',
         'point-to-point-topology.h',
         ]
-    module.includes = '.'
 
