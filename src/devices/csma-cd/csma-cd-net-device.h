@@ -97,29 +97,11 @@ enum CsmaCdEncapsulationMode {
                    CsmaCdEncapsulationMode pktType,
                    bool sendEnable, bool receiveEnable);
   /**
-   * Copy Construct a CsmaCdNetDevice
-   *
-   * This is the copy constructor for the CsmaCdNetDevice.  This is
-   * primarily used in topology creation.
-   *
-   * \param nd the object to be copied
-   */
-  CsmaCdNetDevice (const CsmaCdNetDevice& nd);
-  /**
    * Destroy a CsmaCdNetDevice
    *
    * This is the destructor for the CsmaCdNetDevice.
    */
   virtual ~CsmaCdNetDevice();
-  /**
-   * Assignment Operator for a CsmaCdNetDevice
-   *
-   * This is the assignment operator for the CsmaCdNetDevice.  This is
-   * to allow
-   *
-   * \param nd the object to be copied
-   */
-  // CsmaCdNetDevice& operator= (CsmaCdNetDevice nd);
   /**
    * Set the Data Rate used for transmission of packets.  The data rate is
    * set in the Attach () method from the corresponding field in the channel
@@ -243,6 +225,9 @@ protected:
   bool ProcessHeader (Packet& p, int& param);
 
 private:
+  // disable copy constructor and operator =
+  CsmaCdNetDevice &operator = (const CsmaCdNetDevice &o);
+  CsmaCdNetDevice (const CsmaCdNetDevice &o);
   /**
    * Initializes variablea when construction object.
    */

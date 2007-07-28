@@ -62,43 +62,6 @@ CsmaCdNetDevice::~CsmaCdNetDevice()
   m_queue = 0;
 }
 
-//
-// Copy constructor for CsmaCdNetDevice.
-//
-// We use the underlying NetDevice copy constructor to get the base class
-// copied.  These just remain as is (e.g. you get the same name, the same
-// MAC address).  If you need to fix them up, YOU, the copier need to do 
-// that.
-// 
-// The things we need to be careful of are the channel, the queue and the
-// trace callback.  If the channel pointer is non-zero, we copy the pointer 
-// and add a reference.  If the queue is non-zero, we copy it using the queue
-// assignment operator.  We don't mess with the trace -- we just reset it.
-// We're assuming that the tracing will be set up after the topology creation
-// phase and this won't actually matter.
-//
-
-CsmaCdNetDevice::CsmaCdNetDevice (const CsmaCdNetDevice& nd)
-  : NetDevice(nd), m_bps (nd.m_bps)
-{
-  NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << &nd << ")");
-
-  m_txMachineState = READY;
-  m_tInterframeGap = nd.m_tInterframeGap;
-  m_backoff = nd.m_backoff;
-  m_channel = nd.m_channel; 
-  m_queue = 0;
-  m_pktType = nd.m_pktType;
-  m_sendEnable = nd.m_sendEnable;
-  m_receiveEnable = nd.m_receiveEnable;
-    
-  if (nd.m_queue)
-    {
-      m_queue = nd.m_queue;
-    }
-    
-}
-
 void 
 CsmaCdNetDevice::DoDispose ()
 {
