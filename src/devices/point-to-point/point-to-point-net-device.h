@@ -198,7 +198,7 @@ private:
    * \return Returns true if the packet should be forwarded up the
    * protocol stack.
    */
-  bool ProcessHeader(Packet& p, int& param);
+  bool ProcessHeader(Packet& p, uint16_t& param);
   /**
    * Send a Packet Down the Wire.
    *

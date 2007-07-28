@@ -74,7 +74,7 @@ void PointToPointNetDevice::AddHeader(Packet& p, const MacAddress& dest,
   p.AddHeader (llc);
 }
 
-bool PointToPointNetDevice::ProcessHeader(Packet& p, int& param)
+bool PointToPointNetDevice::ProcessHeader(Packet& p, uint16_t& param)
 {
   LlcSnapHeader llc;
   p.RemoveHeader (llc);
@@ -218,7 +218,7 @@ void PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 void PointToPointNetDevice::Receive (Packet& p)
 {
   NS_DEBUG ("PointToPointNetDevice::Receive (" << &p << ")");
-  int param = 0;
+  uint16_t param = 0;
   Packet packet = p;
 
   ProcessHeader(packet, param);
