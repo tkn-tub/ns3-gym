@@ -36,22 +36,22 @@ NS_DEBUG_COMPONENT_DEFINE ("CsmaCdNetDevice");
 namespace ns3 {
 
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, MacAddress addr, 
-                                  CsmaCdEncapsulationMode pktType) 
+                                  CsmaCdEncapsulationMode encapMode) 
   : NetDevice(node, addr), m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
-  m_pktType = pktType;
+  m_encapMode = encapMode;
 
   Init(true, true);
 }
 
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, MacAddress addr, 
-                                  CsmaCdEncapsulationMode pktType,
+                                  CsmaCdEncapsulationMode encapMode,
                                   bool sendEnable, bool receiveEnable) 
   : NetDevice(node, addr), m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
-  m_pktType = pktType;
+  m_encapMode = encapMode;
 
   Init(sendEnable, receiveEnable);
 }
@@ -152,14 +152,14 @@ void
 CsmaCdNetDevice::AddHeader (Packet& p, const MacAddress& dest,
                                   uint16_t protocolNumber)
 {
-  if ((m_pktType == ETHERNET_V1) || (m_pktType == IP_ARP))
+  if ((m_encapMode == ETHERNET_V1) || (m_encapMode == IP_ARP))
     {
       EthernetHeader  header;
       EthernetTrailer trailer;
       
       header.SetSource(this->GetAddress());
       header.SetDestination(dest);
-      switch (m_pktType)
+      switch (m_encapMode)
         {
         case IP_ARP:
           header.SetLengthType(protocolNumber);
@@ -172,7 +172,7 @@ CsmaCdNetDevice::AddHeader (Packet& p, const MacAddress& dest,
       trailer.CalcFcs(p);
       p.AddTrailer(trailer);
     } 
-  else if (m_pktType == LLC) 
+  else if (m_encapMode == LLC) 
     {
       LlcSnapHeader llc;
       llc.SetType (protocolNumber);
@@ -184,7 +184,7 @@ CsmaCdNetDevice::ProcessHeader(Packet& p, int& param)
 {
   bool retVal = true;
 
-  if ((m_pktType == ETHERNET_V1) || (m_pktType == IP_ARP))
+  if ((m_encapMode == ETHERNET_V1) || (m_encapMode == IP_ARP))
     {
       EthernetHeader  header;
       EthernetTrailer trailer;
@@ -200,7 +200,7 @@ CsmaCdNetDevice::ProcessHeader(Packet& p, int& param)
           retVal = false;
         }
     }
-  else if (m_pktType == LLC)
+  else if (m_encapMode == LLC)
     {
       LlcSnapHeader llc;
       p.RemoveHeader (llc);
@@ -214,7 +214,7 @@ CsmaCdNetDevice::ProcessHeader(Packet& p, int& param)
 bool
 CsmaCdNetDevice::DoNeedsArp (void) const
 {
-  if ((m_pktType == IP_ARP) || (m_pktType == LLC))
+  if ((m_encapMode == IP_ARP) || (m_encapMode == LLC))
     {
       return true;
     } else {

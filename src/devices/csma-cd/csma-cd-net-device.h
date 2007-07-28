@@ -351,7 +351,7 @@ private:
    * function and that should be processed by the ProcessHeader
    * function.
    */
-  CsmaCdEncapsulationMode m_pktType;
+  CsmaCdEncapsulationMode m_encapMode;
   /**
    * The data rate that the Net Device uses to simulate packet transmission
    * timing.
