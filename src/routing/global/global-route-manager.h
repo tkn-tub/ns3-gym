@@ -54,6 +54,7 @@ private:
 /**
  * @brief Select which nodes in the system are to be router nodes and 
  * aggregate the appropriate interfaces onto those nodes.
+ * @internal
  *
  */
   static void SelectRouterNodes ();
@@ -61,6 +62,7 @@ private:
 /**
  * @brief Build the routing database by gathering Link State Advertisements
  * from each node exporting a GlobalRouter interface.
+ * @internal
  *
  */
   static void BuildGlobalRoutingDatabase ();
@@ -68,6 +70,7 @@ private:
 /**
  * @brief Compute routes using a Dijkstra SPF computation and populate
  * per-node forwarding tables
+ * @internal
  */
   static void InitializeRoutes ();
 
