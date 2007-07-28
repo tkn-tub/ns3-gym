@@ -228,7 +228,9 @@ CsmaCdNetDevice::DoNeedsArp (void) const
   if ((m_encapMode == IP_ARP) || (m_encapMode == LLC))
     {
       return true;
-    } else {
+    } 
+  else 
+    {
       return false;
     }
 }
@@ -248,22 +250,22 @@ CsmaCdNetDevice::SendTo (Packet& p, const MacAddress& dest, uint16_t protocolNum
   AddHeader(p, dest, protocolNumber);
 
   // Place the packet to be sent on the send queue
-    if (m_queue->Enqueue(p) == false )
-      {
-        return false;
-      }
-    // If the device is idle, we need to start a transmission. Otherwise,
-    // the transmission will be started when the current packet finished
-    // transmission (see TransmitCompleteEvent)
-    if (m_txMachineState == READY) 
-      {
-        // Store the next packet to be transmitted
-        if (m_queue->Dequeue (m_currentPkt))
-          {
-            TransmitStart();
-          }
-      }
-    return true;
+  if (m_queue->Enqueue(p) == false )
+    {
+      return false;
+    }
+  // If the device is idle, we need to start a transmission. Otherwise,
+  // the transmission will be started when the current packet finished
+  // transmission (see TransmitCompleteEvent)
+  if (m_txMachineState == READY) 
+    {
+      // Store the next packet to be transmitted
+      if (m_queue->Dequeue (m_currentPkt))
+        {
+          TransmitStart();
+        }
+    }
+  return true;
 }
 
 void
@@ -292,7 +294,9 @@ CsmaCdNetDevice::TransmitStart ()
       if (m_backoff.MaxRetriesReached())
         { // Too many retries reached, abort transmission of packet
           TransmitAbort();
-        } else {
+        } 
+      else 
+        {
           m_backoff.IncrNumRetries();
           Time backoffTime = m_backoff.GetBackoffTime();
 
@@ -304,7 +308,9 @@ CsmaCdNetDevice::TransmitStart ()
                                &CsmaCdNetDevice::TransmitStart, 
                                this);
         }
-    } else {
+    } 
+  else 
+    {
       // Channel is free, transmit packet
       m_txMachineState = BUSY;
       Time tEvent = Seconds (m_bps.CalculateTxTime(m_currentPkt.GetSize()));
@@ -322,7 +328,9 @@ CsmaCdNetDevice::TransmitStart ()
                     "Channel transmit start did not work at " << 
                     tEvent.GetSeconds () << "sec");
           m_txMachineState = READY;
-        } else {
+        } 
+      else 
+        {
           // Transmission success, reset backoff time parameters.
           m_backoff.ResetBackoffTime();
         }
