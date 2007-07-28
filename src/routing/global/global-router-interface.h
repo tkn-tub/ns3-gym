@@ -14,8 +14,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef GLOBAL_ROUTER_H
-#define GLOBAL_ROUTER_H
+#ifndef GLOBAL_ROUTER_INTERFACE_H
+#define GLOBAL_ROUTER_INTERFACE_H
 
 #include <stdint.h>
 #include <list>
@@ -52,6 +52,7 @@ public:
     StubNetwork,        /**< Record represents a leaf node network */
     VirtualLink         /**< Unused -- for future OSPF compatibility  */
   };
+
 /**
  * @brief Construct an empty ("uninitialized") Global Router Link Record.
  *
@@ -60,6 +61,7 @@ public:
  * The metric is set to 0.
  */
   GlobalRouterLinkRecord ();
+
 /**
  * Construct an initialized Global Router Link Record.
  *
@@ -76,12 +78,14 @@ public:
     Ipv4Address linkId, 
     Ipv4Address linkData, 
     uint32_t    metric);
+
 /**
  * @brief Destroy a Global Router Link Record.
  *
  * Currently does nothing.  Here as a placeholder only.
  */
   ~GlobalRouterLinkRecord ();
+
 /**
  * Get the Link ID field of the Global Router Link Record.
  *
@@ -94,6 +98,7 @@ public:
  * @returns The Ipv4Address corresponding to the Link ID field of the record.
  */
   Ipv4Address GetLinkId(void) const;
+
 /**
  * @brief Set the Link ID field of the Global Router Link Record.
  *
@@ -106,6 +111,7 @@ public:
  * @param addr An Ipv4Address to store in the Link ID field of the record.
  */
   void SetLinkId(Ipv4Address addr);
+
 /**
  * @brief Get the Link Data field of the Global Router Link Record.
  *
@@ -118,6 +124,7 @@ public:
  * @returns The Ipv4Address corresponding to the Link Data field of the record.
  */
   Ipv4Address GetLinkData(void) const;
+
 /**
  * @brief Set the Link Data field of the Global Router Link Record.
  *
@@ -130,6 +137,7 @@ public:
  * @param addr An Ipv4Address to store in the Link Data field of the record.
  */
   void SetLinkData(Ipv4Address addr);
+
 /**
  * @brief Get the Link Type field of the Global Router Link Record.
  *
@@ -140,6 +148,7 @@ public:
  * @returns The LinkType of the current Global Router Link Record.
  */
   LinkType GetLinkType(void) const;
+
 /**
  * @brief Set the Link Type field of the Global Router Link Record.
  *
@@ -150,6 +159,7 @@ public:
  * @param linkType The new LinkType for the current Global Router Link Record.
  */
   void SetLinkType(LinkType linkType);
+
 /**
  * @brief Get the Metric Data field of the Global Router Link Record.
  *
@@ -162,6 +172,7 @@ public:
  * @returns The metric field of the Global Router Link Record.
  */
   uint32_t GetMetric(void) const;
+
 /**
  * @brief Set the Metric Data field of the Global Router Link Record.
  *
@@ -187,6 +198,7 @@ private:
  * For Type 3 link (Stub), set m_linkId to neighbor's IP address
  */
   Ipv4Address m_linkId;         
+
 /**
  * m_linkId and m_linkData are defined by OSPF to have different meanings 
  * depending on the type of link a given link records represents.  They work
@@ -197,11 +209,13 @@ private:
  * For Type 3 link (Stub), set m_linkData to mask
  */
   Ipv4Address m_linkData;    // for links to RouterLSA, 
+
 /**
  * The type of the Global Router Link Record.  Defined in the OSPF spec.  
  * We currently only use PointToPoint and StubNetwork types.
  */
   LinkType m_linkType;
+
 /**
  * The metric for a given link.
  *
@@ -235,6 +249,7 @@ public:
     LSA_SPF_CANDIDATE,		/**< Vertex is in the SPF candidate queue */
     LSA_SPF_IN_SPFTREE		/**< Vertex is in the SPF tree */
   };
+
 /**
  * @brief Create a blank Global Router Link State Advertisement.  
  *
@@ -242,6 +257,7 @@ public:
  * list of Link State Records is empty.
  */
   GlobalRouterLSA();
+
 /**
  * @brief Create an initialized Global Router Link State Advertisement.  
  *
@@ -253,6 +269,7 @@ public:
  */
   GlobalRouterLSA(SPFStatus status, Ipv4Address linkStateId, 
     Ipv4Address advertisingRtr);
+
 /**
  * @brief Copy constructor for a Global Router Link State Advertisement.
  *
@@ -262,12 +279,14 @@ public:
  * @param lsa The existing LSA to be used as the source.
  */
   GlobalRouterLSA (GlobalRouterLSA& lsa);
+
 /**
  * @brief Destroy an existing Global Router Link State Advertisement.
  *
  * Any Global Router Link Records present in the list are freed.
  */
   ~GlobalRouterLSA();
+
 /**
  * @brief Assignment operator for a Global Router Link State Advertisement.
  *
@@ -281,6 +300,7 @@ public:
  * @returns Reference to the overwritten LSA.
  */
   GlobalRouterLSA& operator= (const GlobalRouterLSA& lsa);
+
 /**
  * @brief Copy any Global Router Link Records in a given Global Router Link
  * State Advertisement to the current LSA.  
@@ -292,6 +312,7 @@ public:
  * @param lsa The LSA to copy the Link Records from.
  */
   void CopyLinkRecords (const GlobalRouterLSA& lsa);
+
 /**
  * @brief Add a given Global Router Link Record to the LSA.
  *
@@ -299,12 +320,14 @@ public:
  * @returns The number of link records in the list.
  */
   uint32_t AddLinkRecord (GlobalRouterLinkRecord* lr);
+
 /**
  * @brief Return the number of Global Router Link Records in the LSA.
  *
  * @returns The number of link records in the list.
  */
   uint32_t GetNLinkRecords (void) const;
+
 /**
  * @brief Return a pointer to the specified Global Router Link Record.
  *
@@ -312,11 +335,13 @@ public:
  * @returns The number of link records in the list.
  */
   GlobalRouterLinkRecord* GetLinkRecord (uint32_t n) const;
+
 /**
  * @brief Release all of the Global Router Link Records present in the Global
  * Router Link State Advertisement and make the list of link records empty.
  */
   void ClearLinkRecords(void);
+
 /**
  * @brief Check to see if the list of Global Router Link Records present in the
  * Global Router Link State Advertisement is empty.
@@ -324,11 +349,13 @@ public:
  * @returns True if the list is empty, false otherwise.
  */
   bool IsEmpty(void) const;
+
 /**
  * @brief Print the contents of the Global Router Link State Advertisement and
  * any Global Router Link Records present in the list.  Quite verbose.
  */
   void Print (std::ostream &os) const;
+
 /**
  * @brief Get the Link State ID as defined by the OSPF spec.  We always set it
  * to the router ID of the router making the advertisement.
@@ -338,6 +365,7 @@ public:
  * @returns The Ipv4Address stored as the link state ID.
  */
   Ipv4Address GetLinkStateId (void) const;
+
 /**
  * @brief Set the Link State ID is defined by the OSPF spec.  We always set it
  * to the router ID of the router making the advertisement.
@@ -346,6 +374,7 @@ public:
  * @see GlobalRouter::GetRouterId ()
  */
   void SetLinkStateId (Ipv4Address addr);
+
 /**
  * @brief Get the Advertising Router as defined by the OSPF spec.  We always
  * set it to the router ID of the router making the advertisement.
@@ -355,6 +384,7 @@ public:
  * @returns The Ipv4Address stored as the advetising router.
  */
   Ipv4Address GetAdvertisingRouter (void) const;
+
 /**
  * @brief Set the Advertising Router as defined by the OSPF spec.  We always
  * set it to the router ID of the router making the advertisement.
@@ -363,6 +393,7 @@ public:
  * @see GlobalRouter::GetRouterId ()
  */
   void SetAdvertisingRouter (Ipv4Address  rtr);
+
 /**
  * @brief Get the SPF status of the advertisement.
  *
@@ -370,6 +401,7 @@ public:
  * @returns The SPFStatus of the LSA.
  */
   SPFStatus GetStatus (void) const;
+
 /**
  * @brief Set the SPF status of the advertisement
  *
@@ -386,6 +418,7 @@ private:
  * @see GlobalRouter::GetRouterId ()
  */
   Ipv4Address  m_linkStateId;
+
 /**
  * The Advertising Router is defined by the OSPF spec.  We always set it to 
  * the router ID of the router making the advertisement.
@@ -394,10 +427,12 @@ private:
  * @see GlobalRouter::GetRouterId ()
  */
   Ipv4Address  m_advertisingRtr;
+
 /**
  * A convenience typedef to avoid too much writers cramp.
  */
   typedef std::list<GlobalRouterLinkRecord*> ListOfLinkRecords_t;
+
 /**
  * Each Link State Advertisement contains a number of Link Records that
  * describe the kinds of links that are attached to a given node.  We 
@@ -409,6 +444,7 @@ private:
  * @see GlobalRouter::DiscoverLSAs ()
  */
   ListOfLinkRecords_t m_linkRecords;
+
 /**
  * This is a tristate flag used internally in the SPF computation to mark
  * if an SPFVertex (a data structure representing a vertex in the SPF tree
@@ -438,6 +474,7 @@ public:
  * @see Object::QueryInterface ()
  */
   static const InterfaceId iid;
+
 /**
  * @brief Create a Global Router class and aggregate its interface onto the 
  * Node provided.
@@ -445,6 +482,7 @@ public:
  * @param node The existing Node onto which this router will be aggregated.
  */
   GlobalRouter (Ptr<Node> node);
+
 /**
  * @brief Get the Router ID associated with this Global Router.
  *
@@ -455,6 +493,7 @@ public:
  * @returns The Router ID associated with the Global Router.
  */
   Ipv4Address GetRouterId (void) const;
+
 /**
  * @brief Walk the connected channels, discover the adjacent routers and build
  * the associated number of Global Router Link State Advertisements that 
@@ -473,6 +512,7 @@ public:
  * @returns The number of Global Router Link State Advertisements.
  */
   uint32_t DiscoverLSAs (void);
+
 /**
  * @brief Get the Number of Global Router Link State Advertisements that this
  * router can export.
@@ -487,6 +527,7 @@ public:
  * @returns The number of Global Router Link State Advertisements.
  */
   uint32_t GetNumLSAs (void) const;
+
 /**
  * @brief Get a Global Router Link State Advertisements that this router has 
  * said that it can export.
@@ -536,4 +577,4 @@ private:
 
 } // namespace ns3
 
-#endif /* GLOBAL_ROUTER_H */
+#endif /* GLOBAL_ROUTER_INTERFACE_H */
