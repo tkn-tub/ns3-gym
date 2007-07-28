@@ -53,14 +53,16 @@ public:
 
   /**
    * \brief Construct a null ethernet header
+   * \param hasPreamble if true, insert and remove an ethernet preamble from the
+   *       packet, if false, does not insert and remove it.
+   */
+  EthernetHeader (bool hasPreamble);
+  /**
+   * \brief Construct a null ethernet header
+   * By default, does not add or remove an ethernet preamble
    */
   EthernetHeader ();
   virtual ~EthernetHeader ();
-  /**
-   * \brief Enable or disabled the serialisation of the preamble and
-   * Sfd header fields
-   */
-  static void EnablePreambleSfd (bool enable);
   /**
    * \param size The size of the payload in bytes
    */
@@ -109,15 +111,12 @@ private:
   virtual void SerializeTo (Buffer::Iterator start) const;
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
 
-  void Init (void);
-
   /**
    * If false, the preamble/sfd are not serialised/deserialised.
    */
-  static bool m_enPreambleSfd;
-
+  bool m_enPreambleSfd;
   uint64_t m_preambleSfd;     /// Value of the Preamble/SFD fields
-  uint16_t m_lengthType : 16; /// Length or type of the packet
+  uint16_t m_lengthType;      /// Length or type of the packet
   MacAddress m_source;        /// Source address
   MacAddress m_destination;   /// Destination address
 };

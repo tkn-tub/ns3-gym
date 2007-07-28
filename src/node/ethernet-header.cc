@@ -29,28 +29,18 @@ NS_DEBUG_COMPONENT_DEFINE ("EthernetHeader");
 
 namespace ns3 {
 
-bool EthernetHeader::m_enPreambleSfd = false;
+EthernetHeader::EthernetHeader (bool hasPreamble)
+  : m_enPreambleSfd (hasPreamble),
+    m_lengthType (0)
+{}
 
 EthernetHeader::EthernetHeader ()
-{
-  Init();
-}
+  : m_enPreambleSfd (false),
+    m_lengthType (0)
+{}
 
 EthernetHeader::~EthernetHeader ()
 {}
-
-void 
-EthernetHeader::Init()
-{
-  m_preambleSfd = 0;
-  m_lengthType = 0x0;
-}
-
-void 
-EthernetHeader::EnablePreambleSfd (bool enable)
-{
-  m_enPreambleSfd = enable;
-}
 
 void 
 EthernetHeader::SetLengthType (uint16_t lengthType)
