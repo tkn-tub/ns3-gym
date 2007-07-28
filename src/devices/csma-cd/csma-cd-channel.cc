@@ -114,12 +114,15 @@ CsmaCdChannel::Reattach(Ptr<CsmaCdNetDevice> device)
     {
       if (it->devicePtr == device) 
         {
-          if (!it->active) {
-            it->active = true;
-            return true;
-          } else {
-            return false;
-          }
+          if (!it->active) 
+            {
+              it->active = true;
+              return true;
+            } 
+          else 
+            {
+              return false;
+            }
         }
     }
   return false;
@@ -137,7 +140,9 @@ CsmaCdChannel::Reattach(uint32_t deviceId)
   if (m_deviceList[deviceId].active)
     {
       return false;
-    } else {
+    } 
+  else 
+    {
       m_deviceList[deviceId].active = true;
       return true;
     }
@@ -166,7 +171,9 @@ CsmaCdChannel::Detach(uint32_t deviceId)
         }
 
       return true;
-    } else {
+    } 
+  else 
+    {
       return false;
     }
 }
@@ -218,7 +225,8 @@ CsmaCdChannel::TransmitStart(Packet& p, uint32_t srcId)
 }
 
 bool
-CsmaCdChannel::IsActive(uint32_t deviceId) {
+CsmaCdChannel::IsActive(uint32_t deviceId) 
+{
     return (m_deviceList[deviceId].active);
 }
 
@@ -318,7 +326,9 @@ CsmaCdChannel::GetDeviceNum (Ptr<CsmaCdNetDevice> device)
           if (it->active) 
             {
               return i;
-            } else {
+            } 
+          else 
+            {
               return -2;
             }
         }
@@ -333,7 +343,9 @@ CsmaCdChannel::IsBusy (void)
   if (m_state == IDLE) 
     {
       return false;
-    } else {
+    } 
+  else 
+    {
       return true;
     }
 }
