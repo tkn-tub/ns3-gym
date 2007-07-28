@@ -150,65 +150,76 @@ CsmaCdNetDevice::SetBackoffParams (Time slotTime, uint32_t minSlots,
 }
 void 
 CsmaCdNetDevice::AddHeader (Packet& p, const MacAddress& dest,
-                                  uint16_t protocolNumber)
+                            uint16_t protocolNumber)
 {
-  if ((m_encapMode == ETHERNET_V1) || (m_encapMode == IP_ARP))
+  if (m_encapMode == RAW)
     {
-      EthernetHeader  header;
-      EthernetTrailer trailer;
-      
-      header.SetSource(this->GetAddress());
-      header.SetDestination(dest);
-      switch (m_encapMode)
-        {
-        case IP_ARP:
-          header.SetLengthType(protocolNumber);
-          break;
-        default:
-          header.SetLengthType(p.GetSize() + header.GetSize() + trailer.GetSize());
-          break;
-        }
-      p.AddHeader(header);
-      trailer.CalcFcs(p);
-      p.AddTrailer(trailer);
-    } 
-  else if (m_encapMode == LLC) 
+      return;
+    }
+  EthernetHeader header (false);
+  EthernetTrailer trailer;
+  header.SetSource(this->GetAddress());
+  header.SetDestination(dest);
+
+  uint16_t lengthType;
+  switch (m_encapMode) 
     {
+    case ETHERNET_V1:
+      lengthType = p.GetSize() + header.GetSize() + trailer.GetSize();
+      break;
+    case IP_ARP:
+      lengthType = protocolNumber;
+      break;
+    case LLC: {
       LlcSnapHeader llc;
       llc.SetType (protocolNumber);
       p.AddHeader (llc);
+    } break;
+    case RAW:
+      NS_ASSERT (false);
+      break;
     }
+  header.SetLengthType (lengthType);
+  p.AddHeader(header);
+  trailer.CalcFcs(p);
+  p.AddTrailer(trailer);
 }
 bool 
-CsmaCdNetDevice::ProcessHeader(Packet& p, int& param)
+CsmaCdNetDevice::ProcessHeader (Packet& p, uint16_t & param)
 {
-  bool retVal = true;
-
-  if ((m_encapMode == ETHERNET_V1) || (m_encapMode == IP_ARP))
+  if (m_encapMode == RAW)
     {
-      EthernetHeader  header;
-      EthernetTrailer trailer;
-      
-      p.RemoveTrailer(trailer);
-      trailer.CheckFcs(p);
-      p.RemoveHeader(header);
-      
-      param = header.GetLengthType();
-      if ((header.GetDestination() != this->GetBroadcast()) &&
-          (header.GetDestination() != this->GetAddress()))
-        {
-          retVal = false;
-        }
+      return true;
     }
-  else if (m_encapMode == LLC)
+  EthernetHeader header (false);
+  EthernetTrailer trailer;
+      
+  p.RemoveTrailer(trailer);
+  trailer.CheckFcs(p);
+  p.RemoveHeader(header);
+
+  if ((header.GetDestination() != this->GetBroadcast()) &&
+      (header.GetDestination() != this->GetAddress()))
     {
+      return false;
+    }
+
+  switch (m_encapMode)
+    {
+    case ETHERNET_V1:
+    case IP_ARP:
+      param = header.GetLengthType();
+      break;
+    case LLC: {
       LlcSnapHeader llc;
       p.RemoveHeader (llc);
-
       param = llc.GetType ();
+    } break;
+    case RAW:
+      NS_ASSERT (false);
+      break;
     }
-
-  return retVal;
+  return true;
 }
 
 bool
@@ -440,14 +451,16 @@ CsmaCdNetDevice::Receive (Packet& p)
   if (!IsReceiveEnabled())
     return;
 
-  int param = 0;
+  uint16_t param = 0;
   Packet packet = p;
 
   if (ProcessHeader(packet, param))
     {
       m_rxTrace (packet);
       ForwardUp (packet, param);
-    } else {
+    } 
+  else 
+    {
       m_dropTrace (packet);
     }
 }
