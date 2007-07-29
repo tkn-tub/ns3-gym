@@ -161,7 +161,7 @@ CsmaCdNetDevice::AddHeader (Packet& p, const MacAddress& dest,
   header.SetSource(this->GetAddress());
   header.SetDestination(dest);
 
-  uint16_t lengthType;
+  uint16_t lengthType = 0;
   switch (m_encapMode) 
     {
     case ETHERNET_V1:
