@@ -206,6 +206,11 @@ Ipv4Address::Print (std::ostream &os) const
      << ((m_address >> 0) & 0xff);
 }
 
+bool 
+Ipv4Address::IsMatchingType (const Address &address)
+{
+  return address.CheckCompatible (GetType (), 4);
+}
 Address 
 Ipv4Address::ConvertTo (void) const
 {

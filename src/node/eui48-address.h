@@ -43,6 +43,10 @@ public:
    */
   Address ConvertTo (void) const;
   /**
+   * \returns true if the address matches, false otherwise.
+   */
+  static bool IsMatchingType (const Address &address);
+  /**
    * \param address a polymorphic address
    *
    * Convert a polymorphic address to an Eui48Address instance.

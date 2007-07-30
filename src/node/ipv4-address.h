@@ -104,6 +104,7 @@ public:
    */
   Ipv4Address CombineMask (Ipv4Mask const &mask) const;
 
+  static bool IsMatchingType (const Address &address);
   Address ConvertTo (void) const;
   static Ipv4Address ConvertFrom (const Address &address);
 

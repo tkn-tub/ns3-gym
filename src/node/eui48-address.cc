@@ -71,6 +71,11 @@ Eui48Address::CopyTo (uint8_t buffer[6]) const
   memcpy (buffer, m_address, 6);
 }
 
+bool 
+Eui48Address::IsMatchingType (const Address &address)
+{
+  return address.CheckCompatible (GetType (), 6);
+}
 Address 
 Eui48Address::ConvertTo (void) const
 {
