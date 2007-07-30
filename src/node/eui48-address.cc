@@ -2,6 +2,7 @@
 #include "address.h"
 #include "ns3/assert.h"
 #include <iomanip>
+#include <iostream>
 
 namespace ns3 {
 
