@@ -15,37 +15,37 @@ namespace ns3 {
  * API. i.e., this class holds an Ipv4Address and a port number
  * to form an ipv4 transport endpoint.
  */
-class InetAddress
+class InetSocketAddress
 {
 public:
   /**
    * \param ipv4 the ipv4 address
    * \param port the port number
    */
-  InetAddress (Ipv4Address ipv4, uint16_t port);
+  InetSocketAddress (Ipv4Address ipv4, uint16_t port);
   /**
    * \param ipv4 the ipv4 address
    *
    * The port number is set to zero by default.
    */
-  InetAddress (Ipv4Address ipv4);
+  InetSocketAddress (Ipv4Address ipv4);
   /**
    * \param port the port number
    *
    * The ipv4 address is set to the "Any" address by default.
    */
-  InetAddress (uint16_t port);
+  InetSocketAddress (uint16_t port);
   /**
    * \param ipv4 string which represents an ipv4 address
    * \param port the port number
    */
-  InetAddress (const char *ipv4, uint16_t port);
+  InetSocketAddress (const char *ipv4, uint16_t port);
   /**
    * \param ipv4 string which represents an ipv4 address
    *
    * The port number is set to zero.
    */
-  InetAddress (const char *ipv4);
+  InetSocketAddress (const char *ipv4);
   /**
    * \returns the port number
    */
@@ -66,15 +66,15 @@ public:
 
   /**
    * \returns an Address instance which represents this
-   * InetAddress instance.
+   * InetSocketAddress instance.
    */
   Address ConvertTo (void) const;
   /**
    * \param address the Address instance to convert from.
-   * \returns an InetAddress which corresponds to the input
+   * \returns an InetSocketAddress which corresponds to the input
    * Address
    */
-  static InetAddress ConvertFrom (const Address &address);
+  static InetSocketAddress ConvertFrom (const Address &address);
 private:
   static uint8_t GetType (void);
   Ipv4Address m_ipv4;

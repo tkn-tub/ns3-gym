@@ -57,7 +57,7 @@
 #include "ns3/p2p-channel.h"
 #include "ns3/p2p-net-device.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/inet-address.h"
+#include "ns3/inet-socket-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
@@ -143,7 +143,7 @@ int main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    InetAddress("10.1.3.2", 80).ConvertTo (), 
+    InetSocketAddress("10.1.3.2", 80).ConvertTo (), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
@@ -154,7 +154,7 @@ int main (int argc, char *argv[])
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   ooff = Create<OnOffApplication> (
     n3, 
-    InetAddress("10.1.2.1", 80).ConvertTo (),
+    InetSocketAddress("10.1.2.1", 80).ConvertTo (),
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));

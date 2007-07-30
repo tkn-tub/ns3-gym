@@ -52,7 +52,7 @@
 #include "ns3/csma-cd-ipv4-topology.h"
 #include "ns3/eui48-address.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/inet-address.h"
+#include "ns3/inet-socket-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
@@ -132,7 +132,7 @@ int main (int argc, char *argv[])
   // from n0 to n1
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    InetAddress (Ipv4Address("10.1.1.2"), 80).ConvertTo (), 
+    InetSocketAddress (Ipv4Address("10.1.1.2"), 80).ConvertTo (), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
@@ -143,7 +143,7 @@ int main (int argc, char *argv[])
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
   ooff = Create<OnOffApplication> (
     n3, 
-    InetAddress (Ipv4Address("10.1.1.1"), 80).ConvertTo (), 
+    InetSocketAddress (Ipv4Address("10.1.1.1"), 80).ConvertTo (), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));

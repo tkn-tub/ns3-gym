@@ -4,7 +4,7 @@
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/socket.h"
-#include "ns3/inet-address.h"
+#include "ns3/inet-socket-address.h"
 #include "ns3/nstime.h"
 
 using namespace ns3;
@@ -45,11 +45,11 @@ RunSimulation (void)
   Ptr<SocketFactory> socketFactory = a->QueryInterface<SocketFactory> (iid);
 
   Ptr<Socket> sink = socketFactory->CreateSocket ();
-  InetAddress local = InetAddress (Ipv4Address::GetAny (), 80);
+  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);
   sink->Bind (local.ConvertTo ());
 
   Ptr<Socket> source = socketFactory->CreateSocket ();
-  InetAddress remote = InetAddress (Ipv4Address::GetLoopback (), 80);
+  InetSocketAddress remote = InetSocketAddress (Ipv4Address::GetLoopback (), 80);
   source->Connect (remote.ConvertTo ());
 
   GenerateTraffic (source, 500);
