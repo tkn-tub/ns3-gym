@@ -21,3 +21,6 @@ def build(bld):
 
     obj = create_ns_prog('replay-simulation', 'replay-simulation.cc')
     obj.uselib_local = "ns3-core ns3-common ns3-simulator"
+
+    obj = create_ns_prog('bench-event-collector', 'bench-event-collector.cc')
+    obj.uselib_local = "ns3-simulator"
