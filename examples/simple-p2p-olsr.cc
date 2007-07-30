@@ -65,7 +65,7 @@
 #include "ns3/onoff-application.h"
 #include "ns3/debug.h"
 
-#include "ns3/olsr-agent.h"
+#include "ns3/olsr.h"
 
 using namespace ns3;
 
@@ -138,20 +138,9 @@ int main (int argc, char *argv[])
 
 
   // Run OLSR in each node.
-  ComponentManager::Create<OlsrAgent, Ptr<Node> >
-    (OlsrAgent::cid, OlsrAgent::iid, n0)->Start ();
-
-  ComponentManager::Create<OlsrAgent, Ptr<Node> >
-    (OlsrAgent::cid, OlsrAgent::iid, n1)->Start ();
-
-  ComponentManager::Create<OlsrAgent, Ptr<Node> >
-    (OlsrAgent::cid, OlsrAgent::iid, n2)->Start ();
-
-  ComponentManager::Create<OlsrAgent, Ptr<Node> >
-    (OlsrAgent::cid, OlsrAgent::iid, n3)->Start ();
+  olsr::EnableAllNodes ();
 
 
-#if 1
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
@@ -176,7 +165,6 @@ int main (int argc, char *argv[])
   // Start the application
   ooff->Start(Seconds(1.1));
   ooff->Stop (Seconds(10.0));
-#endif
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-p2p.tr file
