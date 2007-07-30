@@ -64,6 +64,8 @@ public:
    */
   void SetIpv4 (Ipv4Address address);
 
+  static bool IsMatchingType (const Address &address);
+
   /**
    * \returns an Address instance which represents this
    * InetSocketAddress instance.

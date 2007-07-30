@@ -52,6 +52,7 @@ public:
     ERROR_AGAIN,
     ERROR_SHUTDOWN,
     ERROR_OPNOTSUPP,
+    ERROR_INVAL,
     SOCKET_ERRNO_LAST
   };
 

@@ -45,6 +45,12 @@ InetSocketAddress::SetIpv4 (Ipv4Address address)
   m_ipv4 = address;
 }
 
+bool 
+InetSocketAddress::IsMatchingType (const Address &address)
+{
+  return address.CheckCompatible (GetType (), 6);
+}
+
 Address 
 InetSocketAddress::ConvertTo (void) const
 {

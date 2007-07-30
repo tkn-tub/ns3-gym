@@ -91,6 +91,10 @@ UdpSocket::Bind (void)
 int 
 UdpSocket::Bind (const Address &address)
 {
+  if (!InetSocketAddress::IsMatchingType (address))
+    {
+      return ERROR_INVAL;
+    }
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
