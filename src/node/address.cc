@@ -55,8 +55,9 @@ Address::CopyTo (uint8_t buffer[MAX_SIZE]) const
 void 
 Address::CopyFrom (uint8_t *buffer, uint8_t len)
 {
-  NS_ASSERT (len == m_len);
+  NS_ASSERT (len <= MAX_SIZE);
   memcpy (m_data, buffer, len);
+  m_len = len;
 }
 bool 
 Address::CheckCompatible (uint8_t type, uint8_t len) const
