@@ -211,6 +211,15 @@ Ipv4Address::IsMatchingType (const Address &address)
 {
   return address.CheckCompatible (GetType (), 4);
 }
+Ipv4Address::operator Address ()
+{
+  return ConvertTo ();
+}
+Ipv4Address::Ipv4Address (const Address &address)
+{
+  *this = ConvertFrom (address);
+}
+
 Address 
 Ipv4Address::ConvertTo (void) const
 {

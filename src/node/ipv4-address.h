@@ -105,14 +105,16 @@ public:
   Ipv4Address CombineMask (Ipv4Mask const &mask) const;
 
   static bool IsMatchingType (const Address &address);
-  Address ConvertTo (void) const;
-  static Ipv4Address ConvertFrom (const Address &address);
+  operator Address ();
+  Ipv4Address (const Address &address);
 
   static Ipv4Address GetZero (void);
   static Ipv4Address GetAny (void);
   static Ipv4Address GetBroadcast (void);
   static Ipv4Address GetLoopback (void);
 private:
+  Address ConvertTo (void) const;
+  static Ipv4Address ConvertFrom (const Address &address);
   static uint8_t GetType (void);
   uint32_t m_address;
 };
