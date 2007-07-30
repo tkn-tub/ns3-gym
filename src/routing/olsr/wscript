@@ -10,10 +10,11 @@ def build(bld):
         'olsr-header.cc',
         'olsr-state.cc',
         'routing-table.cc',
-        'olsr.cc',
+        'olsr-agent.cc',
+        'olsr-agent-impl.cc',
         ]
 
     headers = bld.create_obj('ns3header')
     headers.source = [
-        'olsr.h',
+        'olsr-agent.h',
         ]

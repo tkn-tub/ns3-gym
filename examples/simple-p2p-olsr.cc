@@ -65,7 +65,7 @@
 #include "ns3/onoff-application.h"
 #include "ns3/debug.h"
 
-#include "ns3/olsr.h"
+#include "ns3/olsr-agent.h"
 
 using namespace ns3;
 
@@ -138,17 +138,17 @@ int main (int argc, char *argv[])
 
 
   // Run OLSR in each node.
-  ComponentManager::Create<Olsr, Ptr<Node> >
-    (Olsr::cid, Olsr::iid, n0)->Start ();
+  ComponentManager::Create<OlsrAgent, Ptr<Node> >
+    (OlsrAgent::cid, OlsrAgent::iid, n0)->Start ();
 
-  ComponentManager::Create<Olsr, Ptr<Node> >
-    (Olsr::cid, Olsr::iid, n1)->Start ();
+  ComponentManager::Create<OlsrAgent, Ptr<Node> >
+    (OlsrAgent::cid, OlsrAgent::iid, n1)->Start ();
 
-  ComponentManager::Create<Olsr, Ptr<Node> >
-    (Olsr::cid, Olsr::iid, n2)->Start ();
+  ComponentManager::Create<OlsrAgent, Ptr<Node> >
+    (OlsrAgent::cid, OlsrAgent::iid, n2)->Start ();
 
-  ComponentManager::Create<Olsr, Ptr<Node> >
-    (Olsr::cid, Olsr::iid, n3)->Start ();
+  ComponentManager::Create<OlsrAgent, Ptr<Node> >
+    (OlsrAgent::cid, OlsrAgent::iid, n3)->Start ();
 
 
 #if 1

@@ -19,27 +19,12 @@
  * Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt>
  */
 
-#ifndef OLSR_H
-#define OLSR_H
-
-#include "ns3/node.h"
-#include "ns3/component-manager.h"
+#include "olsr-agent.h"
+#include "olsr-agent-impl.h"
 
 namespace ns3 {
 
+const InterfaceId OlsrAgent::iid = MakeInterfaceId ("OlsrAgent", Object::iid);
+const ClassId OlsrAgent::cid = MakeClassId< OlsrAgentImpl, Ptr<Node> > ("OlsrAgent", OlsrAgent::iid);
 
-class Olsr : public Object
-{
-public:
-  static const InterfaceId iid;
-  static const ClassId cid;
-
-  virtual void Start () = 0;
-  virtual void SetMainInterface (uint32_t interface) = 0;
-};
-
-
-}; // namespace ns3
-
-#endif /* OLSR_H */
-
+}

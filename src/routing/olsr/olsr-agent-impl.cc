@@ -36,7 +36,7 @@
 // #include <ip.h>
 // #include <cmu-trace.h>
 #include <map>
-#include "olsr-private.h"
+#include "olsr-agent-impl.h"
 #include "ns3/socket-factory.h"
 #include "ns3/udp.h"
 #include "ns3/internet-node.h"
@@ -149,22 +149,17 @@
 
 namespace ns3 {
 
-const InterfaceId Olsr::iid = MakeInterfaceId ("Olsr", Object::iid);
-const ClassId Olsr::cid = MakeClassId< olsr::Olsr, Ptr<Node> > ("Olsr", Olsr::iid);
-
-namespace olsr {
-
-NS_DEBUG_COMPONENT_DEFINE ("Olsr");
+NS_DEBUG_COMPONENT_DEFINE ("OlsrAgent");
 
 
 /********** OLSR class **********/
 
 
-Olsr::Olsr (Ptr<Node> node)
+OlsrAgentImpl::OlsrAgentImpl (Ptr<Node> node)
   :
   m_useL2Notifications (false)
 {
-  SetInterfaceId (Olsr::iid);
+  SetInterfaceId (OlsrAgentImpl::iid);
 
   // Aggregate with the Node, so that OLSR dies when the node is destroyed.
   node->AddInterface (this);
@@ -194,7 +189,7 @@ Olsr::Olsr (Ptr<Node> node)
 
 }
 
-void Olsr::DoDispose ()
+void OlsrAgentImpl::DoDispose ()
 {
   m_ipv4 = 0;
   m_receiveSocket->Dispose ();
@@ -207,7 +202,7 @@ void Olsr::DoDispose ()
   Object::DoDispose ();
 }
 
-void Olsr::Start ()
+void OlsrAgentImpl::Start ()
 {
   if (m_mainAddress == Ipv4Address ())
     {
@@ -234,7 +229,7 @@ void Olsr::Start ()
 
   if (m_sendSocket->Bind (m_mainAddress, OLSR_PORT_NUMBER))
     NS_ASSERT_MSG (false, "Failed to bind() OLSR send socket");
-  m_receiveSocket->Recv (MakeCallback (&Olsr::RecvOlsr,  this));
+  m_receiveSocket->Recv (MakeCallback (&OlsrAgentImpl::RecvOlsr,  this));
 
   HelloTimerExpire ();
   TcTimerExpire ();
@@ -243,7 +238,7 @@ void Olsr::Start ()
   NS_DEBUG ("OLSR on node " << m_mainAddress << " started");
 }
 
-void Olsr::SetMainInterface (uint32_t interface)
+void OlsrAgentImpl::SetMainInterface (uint32_t interface)
 {
   m_mainAddress = m_ipv4->GetAddress (interface);
 }
@@ -252,7 +247,7 @@ void Olsr::SetMainInterface (uint32_t interface)
 //
 // \brief Processes an incoming %OLSR packet following RFC 3626 specification.
 void
-Olsr::RecvOlsr (Ptr<Socket> socket,
+OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
                 const uint8_t *dataPtr, uint32_t dataSize,
                 const Ipv4Address &sourceAddress,
                 uint16_t sourcePort)
@@ -382,7 +377,7 @@ Olsr::RecvOlsr (Ptr<Socket> socket,
 /// \return the degree of the node.
 ///
 int
-Olsr::Degree (NeighborTuple const &tuple)
+OlsrAgentImpl::Degree (NeighborTuple const &tuple)
 {
   int degree = 0;
   for (TwoHopNeighborSet::const_iterator it = m_state.GetTwoHopNeighbors ().begin ();
@@ -404,7 +399,7 @@ Olsr::Degree (NeighborTuple const &tuple)
 /// \brief Computates MPR set of a node following RFC 3626 hints.
 ///
 void
-Olsr::MprComputation()
+OlsrAgentImpl::MprComputation()
 {
   // MPR computation should be done for each interface. See section 8.3.1
   // (RFC 3626) for details.
@@ -654,7 +649,7 @@ Olsr::MprComputation()
 /// \return the corresponding main address.
 ///
 Ipv4Address
-Olsr::GetMainAddress (Ipv4Address iface_addr)
+OlsrAgentImpl::GetMainAddress (Ipv4Address iface_addr)
 {
   IfaceAssocTuple *tuple =
     m_state.FindIfaceAssocTuple (iface_addr);
@@ -669,7 +664,7 @@ Olsr::GetMainAddress (Ipv4Address iface_addr)
 /// \brief Creates the routing table of the node following RFC 3626 hints.
 ///
 void
-Olsr::RoutingTableComputation ()
+OlsrAgentImpl::RoutingTableComputation ()
 {
   // 1. All the entries from the routing table are removed.
   m_routingTable->Clear ();
@@ -823,7 +818,7 @@ Olsr::RoutingTableComputation ()
 /// \param sender_iface the address of the interface where the message was sent from.
 ///
 void
-Olsr::ProcessHello (const OlsrMessageHeader &msg,
+OlsrAgentImpl::ProcessHello (const OlsrMessageHeader &msg,
                     const OlsrHelloMessageHeader &hello,
                     const Ipv4Address &receiverIface,
                     const Ipv4Address &senderIface)
@@ -845,7 +840,7 @@ Olsr::ProcessHello (const OlsrMessageHeader &msg,
 /// \param sender_iface the address of the interface where the message was sent from.
 ///
 void
-Olsr::ProcessTc (const OlsrMessageHeader &msg,
+OlsrAgentImpl::ProcessTc (const OlsrMessageHeader &msg,
                  const OlsrTcMessageHeader &tc,
                  const Ipv4Address &senderIface)
 {
@@ -908,7 +903,7 @@ Olsr::ProcessTc (const OlsrMessageHeader &msg,
 
           // Schedules topology tuple deletion
           Simulator::Schedule (DELAY (topologyTuple.expirationTime),
-                               &Olsr::TopologyTupleTimerExpire,
+                               &OlsrAgentImpl::TopologyTupleTimerExpire,
                                this, topologyTuple);
         }
     }
@@ -924,7 +919,7 @@ Olsr::ProcessTc (const OlsrMessageHeader &msg,
 /// \param sender_iface the address of the interface where the message was sent from.
 ///
 void
-Olsr::ProcessMid (const OlsrMessageHeader &msg,
+OlsrAgentImpl::ProcessMid (const OlsrMessageHeader &msg,
                   const OlsrMidMessageHeader &mid,
                   const Ipv4Address &senderIface)
 {
@@ -962,7 +957,7 @@ Olsr::ProcessMid (const OlsrMessageHeader &msg,
           AddIfaceAssocTuple (tuple);
           // Schedules iface association tuple deletion
           Simulator::Schedule (DELAY (tuple.time),
-                               &Olsr::IfaceAssocTupleTimerExpire, this, tuple);
+                               &OlsrAgentImpl::IfaceAssocTupleTimerExpire, this, tuple);
         }
     }
 }
@@ -980,7 +975,7 @@ Olsr::ProcessMid (const OlsrMessageHeader &msg,
 /// \param local_iface the address of the interface where the message was received from.
 ///
 void
-Olsr::ForwardDefault (OlsrMessageHeader olsrMessage,
+OlsrAgentImpl::ForwardDefault (OlsrMessageHeader olsrMessage,
                       Packet messagePayload,
                       DuplicateTuple *duplicated,
                       const Ipv4Address &localIface,
@@ -1045,7 +1040,7 @@ Olsr::ForwardDefault (OlsrMessageHeader olsrMessage,
       AddDuplicateTuple (newDup);
       // Schedule dup tuple deletion
       Simulator::Schedule (OLSR_DUP_HOLD_TIME,
-                           &Olsr::DupTupleTimerExpire, this, newDup);
+                           &OlsrAgentImpl::DupTupleTimerExpire, this, newDup);
     }
 }
 
@@ -1059,17 +1054,17 @@ Olsr::ForwardDefault (OlsrMessageHeader olsrMessage,
 /// \param delay maximum delay the %OLSR message is going to be buffered.
 ///
 void
-Olsr::QueueMessage (Packet message, Time delay)
+OlsrAgentImpl::QueueMessage (Packet message, Time delay)
 {
   m_queuedMessages.push_back (message);
   if (not m_queuedMessagesTimer.IsRunning ())
     {
-      m_queuedMessagesTimer = Simulator::Schedule (delay, &Olsr::SendQueuedMessages, this);
+      m_queuedMessagesTimer = Simulator::Schedule (delay, &OlsrAgentImpl::SendQueuedMessages, this);
     }
 }
 
 void
-Olsr::SendPacket (Packet packet)
+OlsrAgentImpl::SendPacket (Packet packet)
 {
   NS_DEBUG ("OLSR node " << m_mainAddress << " sending a OLSR packet");
   // Add a header
@@ -1089,7 +1084,7 @@ Olsr::SendPacket (Packet packet)
 /// dictated by OLSR_MAX_MSGS constant.
 ///
 void
-Olsr::SendQueuedMessages ()
+OlsrAgentImpl::SendQueuedMessages ()
 {
   Packet packet;
   int numMessages = 0;
@@ -1122,7 +1117,7 @@ Olsr::SendQueuedMessages ()
 /// \brief Creates a new %OLSR HELLO message which is buffered for being sent later on.
 ///
 void
-Olsr::SendHello ()
+OlsrAgentImpl::SendHello ()
 {
   OlsrMessageHeader msg;
   OlsrHelloMessageHeader hello;
@@ -1230,7 +1225,7 @@ Olsr::SendHello ()
 /// \brief Creates a new %OLSR TC message which is buffered for being sent later on.
 ///
 void
-Olsr::SendTc ()
+OlsrAgentImpl::SendTc ()
 {
   OlsrMessageHeader msg;
   OlsrTcMessageHeader tc;
@@ -1262,7 +1257,7 @@ Olsr::SendTc ()
 /// \brief Creates a new %OLSR MID message which is buffered for being sent later on.
 ///
 void
-Olsr::SendMid ()
+OlsrAgentImpl::SendMid ()
 {
   OlsrMessageHeader msg;
   OlsrMidMessageHeader mid;
@@ -1318,7 +1313,7 @@ Olsr::SendMid ()
 /// \param sender_iface the address of the interface where the message was sent from.
 ///
 void
-Olsr::LinkSensing (const OlsrMessageHeader &msg,
+OlsrAgentImpl::LinkSensing (const OlsrMessageHeader &msg,
                    const OlsrHelloMessageHeader &hello,
                    const Ipv4Address &receiverIface,
                    const Ipv4Address &senderIface)
@@ -1393,7 +1388,7 @@ Olsr::LinkSensing (const OlsrMessageHeader &msg,
     {
       m_events.Track (Simulator::Schedule
                       (DELAY (std::min (link_tuple->time, link_tuple->symTime)),
-                       &Olsr::LinkTupleTimerExpire, this, *link_tuple));
+                       &OlsrAgentImpl::LinkTupleTimerExpire, this, *link_tuple));
     }
 }
 
@@ -1404,7 +1399,7 @@ Olsr::LinkSensing (const OlsrMessageHeader &msg,
 /// \param msg the %OLSR message which contains the HELLO message.
 ///
 void
-Olsr::PopulateNeighborSet (const OlsrMessageHeader &msg,
+OlsrAgentImpl::PopulateNeighborSet (const OlsrMessageHeader &msg,
                            const OlsrHelloMessageHeader &hello)
 {
   NeighborTuple *nb_tuple = m_state.FindNeighborTuple (msg.GetOriginatorAddress ());
@@ -1420,7 +1415,7 @@ Olsr::PopulateNeighborSet (const OlsrMessageHeader &msg,
 /// \param msg the %OLSR message which contains the HELLO message.
 ///
 void
-Olsr::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
+OlsrAgentImpl::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
                                  const OlsrHelloMessageHeader &hello)
 {
   Time now = Simulator::Now ();
@@ -1469,7 +1464,7 @@ Olsr::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
                                   // deletion
                                   m_events.Track (Simulator::Schedule
                                                   (DELAY (new_nb2hop_tuple.expirationTime),
-                                                   &Olsr::Nb2hopTupleTimerExpire, this,
+                                                   &OlsrAgentImpl::Nb2hopTupleTimerExpire, this,
                                                    new_nb2hop_tuple));
                                 }
                               else
@@ -1507,7 +1502,7 @@ Olsr::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
 /// \param msg the %OLSR message which contains the HELLO message.
 ///
 void
-Olsr::PopulateMprSelectorSet (const OlsrMessageHeader &msg,
+OlsrAgentImpl::PopulateMprSelectorSet (const OlsrMessageHeader &msg,
                               const OlsrHelloMessageHeader &hello)
 {
   Time now = Simulator::Now ();
@@ -1541,7 +1536,7 @@ Olsr::PopulateMprSelectorSet (const OlsrMessageHeader &msg,
                       // Schedules mpr selector tuple deletion
                       m_events.Track (Simulator::Schedule
                                       (DELAY (mprsel_tuple.expirationTime),
-                                       &Olsr::MprSelTupleTimerExpire,
+                                       &OlsrAgentImpl::MprSelTupleTimerExpire,
                                        this, mprsel_tuple));
                     }
                   else
@@ -1600,7 +1595,7 @@ OLSR::mac_failed(Packet* p) {
 /// \param tuple link tuple with the information of the link to the neighbor which has been lost.
 ///
 void
-Olsr::NeighborLoss (const LinkTuple &tuple)
+OlsrAgentImpl::NeighborLoss (const LinkTuple &tuple)
 {
 //   debug("%f: Node %d detects neighbor %d loss\n",
 //         Simulator::Now (),
@@ -1621,7 +1616,7 @@ Olsr::NeighborLoss (const LinkTuple &tuple)
 /// \param tuple the duplicate tuple to be added.
 ///
 void
-Olsr::AddDuplicateTuple (const DuplicateTuple &tuple)
+OlsrAgentImpl::AddDuplicateTuple (const DuplicateTuple &tuple)
 {
 	/*debug("%f: Node %d adds dup tuple: addr = %d seq_num = %d\n",
 		Simulator::Now (),
@@ -1637,7 +1632,7 @@ Olsr::AddDuplicateTuple (const DuplicateTuple &tuple)
 /// \param tuple the duplicate tuple to be removed.
 ///
 void
-Olsr::RemoveDuplicateTuple (const DuplicateTuple &tuple)
+OlsrAgentImpl::RemoveDuplicateTuple (const DuplicateTuple &tuple)
 {
   /*debug("%f: Node %d removes dup tuple: addr = %d seq_num = %d\n",
     Simulator::Now (),
@@ -1654,7 +1649,7 @@ Olsr::RemoveDuplicateTuple (const DuplicateTuple &tuple)
 /// \param willingness willingness of the node which is going to be inserted in the Neighbor Set.
 ///
 LinkTuple&
-Olsr::AddLinkTuple (const LinkTuple &tuple, uint8_t willingness)
+OlsrAgentImpl::AddLinkTuple (const LinkTuple &tuple, uint8_t willingness)
 {
 //   debug("%f: Node %d adds link tuple: nb_addr = %d\n",
 //         now,
@@ -1681,7 +1676,7 @@ Olsr::AddLinkTuple (const LinkTuple &tuple, uint8_t willingness)
 /// \param tuple the link tuple to be removed.
 ///
 void
-Olsr::RemoveLinkTuple (const LinkTuple &tuple)
+OlsrAgentImpl::RemoveLinkTuple (const LinkTuple &tuple)
 {
 //   nsaddr_t nb_addr	= get_main_addr(tuple->neighborIfaceAddr);
 //   double now		= Simulator::Now ();
@@ -1707,7 +1702,7 @@ Olsr::RemoveLinkTuple (const LinkTuple &tuple)
 /// \param tuple the link tuple which has been updated.
 ///
 void
-Olsr::LinkTupleUpdated (const LinkTuple &tuple)
+OlsrAgentImpl::LinkTupleUpdated (const LinkTuple &tuple)
 {
   // Each time a link tuple changes, the associated neighbor tuple must be recomputed
   NeighborTuple *nb_tuple =
@@ -1742,7 +1737,7 @@ Olsr::LinkTupleUpdated (const LinkTuple &tuple)
 /// \param tuple the neighbor tuple to be added.
 ///
 void
-Olsr::AddNeighborTuple (const NeighborTuple &tuple)
+OlsrAgentImpl::AddNeighborTuple (const NeighborTuple &tuple)
 {
 //   debug("%f: Node %d adds neighbor tuple: nb_addr = %d status = %s\n",
 //         Simulator::Now (),
@@ -1759,7 +1754,7 @@ Olsr::AddNeighborTuple (const NeighborTuple &tuple)
 /// \param tuple the neighbor tuple to be removed.
 ///
 void
-Olsr::RemoveNeighborTuple (const NeighborTuple &tuple)
+OlsrAgentImpl::RemoveNeighborTuple (const NeighborTuple &tuple)
 {
 //   debug("%f: Node %d removes neighbor tuple: nb_addr = %d status = %s\n",
 //         Simulator::Now (),
@@ -1776,7 +1771,7 @@ Olsr::RemoveNeighborTuple (const NeighborTuple &tuple)
 /// \param tuple the 2-hop neighbor tuple to be added.
 ///
 void
-Olsr::AddTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
+OlsrAgentImpl::AddTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 {
 //   debug("%f: Node %d adds 2-hop neighbor tuple: nb_addr = %d nb2hop_addr = %d\n",
 //         Simulator::Now (),
@@ -1793,7 +1788,7 @@ Olsr::AddTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 /// \param tuple the 2-hop neighbor tuple to be removed.
 ///
 void
-Olsr::RemoveTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
+OlsrAgentImpl::RemoveTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 {
 //   debug("%f: Node %d removes 2-hop neighbor tuple: nb_addr = %d nb2hop_addr = %d\n",
 //         Simulator::Now (),
@@ -1812,7 +1807,7 @@ Olsr::RemoveTwoHopNeighborTuple (const TwoHopNeighborTuple &tuple)
 /// \param tuple the MPR selector tuple to be added.
 ///
 void
-Olsr::AddMprSelectorTuple (const MprSelectorTuple  &tuple)
+OlsrAgentImpl::AddMprSelectorTuple (const MprSelectorTuple  &tuple)
 {
 //   debug("%f: Node %d adds MPR selector tuple: nb_addr = %d\n",
 //         Simulator::Now (),
@@ -1831,7 +1826,7 @@ Olsr::AddMprSelectorTuple (const MprSelectorTuple  &tuple)
 /// \param tuple the MPR selector tuple to be removed.
 ///
 void
-Olsr::RemoveMprSelectorTuple (const MprSelectorTuple &tuple)
+OlsrAgentImpl::RemoveMprSelectorTuple (const MprSelectorTuple &tuple)
 {
 //   debug("%f: Node %d removes MPR selector tuple: nb_addr = %d\n",
 //         Simulator::Now (),
@@ -1848,7 +1843,7 @@ Olsr::RemoveMprSelectorTuple (const MprSelectorTuple &tuple)
 /// \param tuple the topology tuple to be added.
 ///
 void
-Olsr::AddTopologyTuple (const TopologyTuple &tuple)
+OlsrAgentImpl::AddTopologyTuple (const TopologyTuple &tuple)
 {
 //   debug("%f: Node %d adds topology tuple: dest_addr = %d last_addr = %d seq = %d\n",
 //         Simulator::Now (),
@@ -1866,7 +1861,7 @@ Olsr::AddTopologyTuple (const TopologyTuple &tuple)
 /// \param tuple the topology tuple to be removed.
 ///
 void
-Olsr::RemoveTopologyTuple (const TopologyTuple &tuple)
+OlsrAgentImpl::RemoveTopologyTuple (const TopologyTuple &tuple)
 {
 //   debug("%f: Node %d removes topology tuple: dest_addr = %d last_addr = %d seq = %d\n",
 //         Simulator::Now (),
@@ -1884,7 +1879,7 @@ Olsr::RemoveTopologyTuple (const TopologyTuple &tuple)
 /// \param tuple the interface association tuple to be added.
 ///
 void
-Olsr::AddIfaceAssocTuple (const IfaceAssocTuple &tuple)
+OlsrAgentImpl::AddIfaceAssocTuple (const IfaceAssocTuple &tuple)
 {
 //   debug("%f: Node %d adds iface association tuple: main_addr = %d iface_addr = %d\n",
 //         Simulator::Now (),
@@ -1901,7 +1896,7 @@ Olsr::AddIfaceAssocTuple (const IfaceAssocTuple &tuple)
 /// \param tuple the interface association tuple to be removed.
 ///
 void
-Olsr::RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple)
+OlsrAgentImpl::RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple)
 {
 //   debug("%f: Node %d removes iface association tuple: main_addr = %d iface_addr = %d\n",
 //         Simulator::Now (),
@@ -1913,14 +1908,14 @@ Olsr::RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple)
 }
 
 
-uint16_t Olsr::GetPacketSequenceNumber ()
+uint16_t OlsrAgentImpl::GetPacketSequenceNumber ()
 {
   m_packetSequenceNumber = (m_packetSequenceNumber + 1) % (OLSR_MAX_SEQ_NUM + 1);
   return m_packetSequenceNumber;
 }
 
 /// Increments message sequence number and returns the new value.
-uint16_t Olsr::GetMessageSequenceNumber ()
+uint16_t OlsrAgentImpl::GetMessageSequenceNumber ()
 {
   m_messageSequenceNumber = (m_messageSequenceNumber + 1) % (OLSR_MAX_SEQ_NUM + 1);
   return m_messageSequenceNumber;
@@ -1932,10 +1927,10 @@ uint16_t Olsr::GetMessageSequenceNumber ()
 /// \param e The event which has expired.
 ///
 void
-Olsr::HelloTimerExpire ()
+OlsrAgentImpl::HelloTimerExpire ()
 {
   SendHello ();
-  m_helloTimer = Simulator::Schedule (m_helloInterval, &Olsr::HelloTimerExpire, this);
+  m_helloTimer = Simulator::Schedule (m_helloInterval, &OlsrAgentImpl::HelloTimerExpire, this);
 }
 
 ///
@@ -1943,11 +1938,11 @@ Olsr::HelloTimerExpire ()
 /// \param e The event which has expired.
 ///
 void
-Olsr::TcTimerExpire ()
+OlsrAgentImpl::TcTimerExpire ()
 {
   if (m_state.GetMprSelectors ().size () > 0)
     SendTc ();
-  m_tcTimer = Simulator::Schedule (m_tcInterval, &Olsr::TcTimerExpire, this);
+  m_tcTimer = Simulator::Schedule (m_tcInterval, &OlsrAgentImpl::TcTimerExpire, this);
 }
 
 ///
@@ -1956,10 +1951,10 @@ Olsr::TcTimerExpire ()
 /// \param e The event which has expired.
 ///
 void
-Olsr::MidTimerExpire ()
+OlsrAgentImpl::MidTimerExpire ()
 {
   SendMid ();
-  m_midTimer = Simulator::Schedule (m_midInterval, &Olsr::MidTimerExpire, this);
+  m_midTimer = Simulator::Schedule (m_midInterval, &OlsrAgentImpl::MidTimerExpire, this);
 }
 
 ///
@@ -1970,7 +1965,7 @@ Olsr::MidTimerExpire ()
 /// \param e The event which has expired.
 ///
 void
-Olsr::DupTupleTimerExpire (DuplicateTuple tuple)
+OlsrAgentImpl::DupTupleTimerExpire (DuplicateTuple tuple)
 {
   if (tuple.expirationTime < Simulator::Now ())
     {
@@ -1979,7 +1974,7 @@ Olsr::DupTupleTimerExpire (DuplicateTuple tuple)
   else
     m_events.Track (Simulator::Schedule
                     (DELAY (tuple.expirationTime),
-                     &Olsr::DupTupleTimerExpire, this, tuple));
+                     &OlsrAgentImpl::DupTupleTimerExpire, this, tuple));
 }
 
 ///
@@ -1994,7 +1989,7 @@ Olsr::DupTupleTimerExpire (DuplicateTuple tuple)
 /// \param e The event which has expired.
 ///
 void
-Olsr::LinkTupleTimerExpire (LinkTuple tuple)
+OlsrAgentImpl::LinkTupleTimerExpire (LinkTuple tuple)
 {
   Time now = Simulator::Now ();
 	
@@ -2011,13 +2006,13 @@ Olsr::LinkTupleTimerExpire (LinkTuple tuple)
 
       m_events.Track (Simulator::Schedule
                       (DELAY(tuple.time),
-                       &Olsr::LinkTupleTimerExpire, this, tuple));
+                       &OlsrAgentImpl::LinkTupleTimerExpire, this, tuple));
 
     }
   else
     m_events.Track (Simulator::Schedule
                     (DELAY (std::min (tuple.time, tuple.symTime)),
-                     &Olsr::LinkTupleTimerExpire, this, tuple));
+                     &OlsrAgentImpl::LinkTupleTimerExpire, this, tuple));
 }
 
 ///
@@ -2028,7 +2023,7 @@ Olsr::LinkTupleTimerExpire (LinkTuple tuple)
 /// \param e The event which has expired.
 ///
 void
-Olsr::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple)
+OlsrAgentImpl::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple)
 {
   if (tuple.expirationTime < Simulator::Now ())
     {
@@ -2037,7 +2032,7 @@ Olsr::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple)
   else
     m_events.Track (Simulator::Schedule
                     (DELAY (tuple.expirationTime),
-                     &Olsr::Nb2hopTupleTimerExpire, this, tuple));
+                     &OlsrAgentImpl::Nb2hopTupleTimerExpire, this, tuple));
 }
 
 ///
@@ -2048,7 +2043,7 @@ Olsr::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple)
 /// \param e The event which has expired.
 ///
 void
-Olsr::MprSelTupleTimerExpire (MprSelectorTuple tuple)
+OlsrAgentImpl::MprSelTupleTimerExpire (MprSelectorTuple tuple)
 {
   if (tuple.expirationTime < Simulator::Now ())
     {
@@ -2057,7 +2052,7 @@ Olsr::MprSelTupleTimerExpire (MprSelectorTuple tuple)
   else
     m_events.Track (Simulator::Schedule
                     (DELAY (tuple.expirationTime),
-                     &Olsr::MprSelTupleTimerExpire, this, tuple));
+                     &OlsrAgentImpl::MprSelTupleTimerExpire, this, tuple));
 }
 
 ///
@@ -2068,7 +2063,7 @@ Olsr::MprSelTupleTimerExpire (MprSelectorTuple tuple)
 /// \param e The event which has expired.
 ///
 void
-Olsr::TopologyTupleTimerExpire (TopologyTuple tuple)
+OlsrAgentImpl::TopologyTupleTimerExpire (TopologyTuple tuple)
 {
   if (tuple.expirationTime < Simulator::Now ())
     {
@@ -2077,7 +2072,7 @@ Olsr::TopologyTupleTimerExpire (TopologyTuple tuple)
   else
     m_events.Track (Simulator::Schedule
                     (DELAY (tuple.expirationTime),
-                     &Olsr::TopologyTupleTimerExpire, this, tuple));
+                     &OlsrAgentImpl::TopologyTupleTimerExpire, this, tuple));
 }
 
 ///
@@ -2086,7 +2081,7 @@ Olsr::TopologyTupleTimerExpire (TopologyTuple tuple)
 /// \param e The event which has expired.
 ///
 void
-Olsr::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple)
+OlsrAgentImpl::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple)
 {
   if (tuple.time < Simulator::Now ())
     {
@@ -2095,12 +2090,12 @@ Olsr::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple)
   else
     m_events.Track (Simulator::Schedule
                     (DELAY (tuple.time),
-                     &Olsr::IfaceAssocTupleTimerExpire, this, tuple));
+                     &OlsrAgentImpl::IfaceAssocTupleTimerExpire, this, tuple));
 }
 
 
 
-}}; // namespace ns3, olsr
+} // namespace ns3
 
 
 
@@ -2109,7 +2104,7 @@ Olsr::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple)
 
 #include "ns3/test.h"
 
-namespace ns3 { namespace olsr {
+namespace ns3 {
 
 class OlsrTest : public ns3::Test {
 private:
@@ -2136,7 +2131,7 @@ OlsrTest::RunTests (void)
 
 static OlsrTest gOlsrTest;
 
-}}; // namespace
+}
 
 
 #endif /* RUN_SELF_TESTS */

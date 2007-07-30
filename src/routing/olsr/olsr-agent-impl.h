@@ -23,17 +23,18 @@
  ***************************************************************************/
 
 
-#ifndef __OLSR_H__
-#define __OLSR_H__
-
-#include "olsr.h"
+#ifndef __OLSR_AGENT_IMPL_H__
+#define __OLSR_AGENT_IMPL_H__
 
 #include <vector>
 
+#include "olsr-agent.h"
 #include "olsr-header.h"
 #include "olsr-state.h"
+
 #include "routing-table.h"
-#include "olsr-repositories.h"
+#include "repositories.h"
+
 #include "ns3/object.h"
 #include "ns3/packet.h"
 #include "ns3/node.h"
@@ -42,16 +43,17 @@
 #include "ns3/event-collector.h"
 
 
-namespace ns3 { namespace olsr {
+namespace ns3 {
+
+using namespace olsr;
 
 
-
-class Olsr : public ::ns3::Olsr
+class OlsrAgentImpl : public OlsrAgent
 {
   friend class OlsrTest;
 
 public:
-  Olsr (Ptr<Node> node);
+  OlsrAgentImpl (Ptr<Node> node);
 
   virtual void Start ();
   virtual void SetMainInterface (uint32_t interface);
@@ -184,6 +186,6 @@ protected:
   Ptr<Socket> m_sendSocket; // UDP socket for sending OSLR packets
 };
 
-}}; // namespace ns3, olsr
+} // namespace ns3
 
 #endif

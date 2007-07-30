@@ -31,7 +31,7 @@
 #include "olsr-state.h"
 
 
-namespace ns3 { namespace olsr {
+namespace ns3 {
 
 
 /********** MPR Selector Set Manipulation **********/
@@ -435,4 +435,4 @@ OlsrState::FindNeighborInterfaces (const Ipv4Address &neighborMainAddr) const
   return retval;
 }
 
-}}; // namespace ns3, olsr
+} // namespace ns3

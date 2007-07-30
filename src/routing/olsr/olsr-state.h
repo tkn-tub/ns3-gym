@@ -22,17 +22,16 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-///
-/// \file	OLSR_state.h
 /// \brief	This header file declares and defines internal state of an OLSR node.
-///
 
-#ifndef __OLSR_state_h__
-#define __OLSR_state_h__
+#ifndef __OLSR_STATE_H__
+#define __OLSR_STATE_H__
 
-#include "olsr-repositories.h"
+#include "repositories.h"
 
-namespace ns3 { namespace olsr {
+namespace ns3 {
+
+using namespace olsr;
 
 /// This class encapsulates all data structures needed for maintaining internal state of an OLSR node.
 class OlsrState
@@ -142,6 +141,6 @@ public:
 
 };
 
-}}; // namespace ns3, olsr
+} // namespace ns3
 
 #endif
