@@ -53,6 +53,8 @@ private:
   std::list<EventId> m_events;
 
   void Cleanup ();
+  void Grow ();
+  void Shrink ();
 };
 
 }; // namespace ns3

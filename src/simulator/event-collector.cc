@@ -19,10 +19,9 @@
  * Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt>
  */
 #include "event-collector.h"
-#include <algorithm>
 
 #define CLEANUP_CHUNK_MIN_SIZE 8
-#define CLEANUP_CHUNK_MAX_SIZE 1024
+#define CLEANUP_CHUNK_MAX_SIZE 128
 
 
 namespace ns3 {
@@ -46,6 +45,21 @@ EventExpiredPredicate (const EventId &event)
   return event.IsExpired ();
 }
 
+void
+EventCollector::Grow ()
+{
+  m_nextCleanupSize += (m_nextCleanupSize < CLEANUP_CHUNK_MAX_SIZE?
+                        m_nextCleanupSize : CLEANUP_CHUNK_MAX_SIZE);
+}
+
+void
+EventCollector::Shrink ()
+{
+  while (m_nextCleanupSize > m_events.size ())
+    m_nextCleanupSize >>= 1;
+  Grow ();
+}
+
 // Called when a new event was added and the cleanup limit was exceeded in consequence.
 void
 EventCollector::Cleanup ()
@@ -54,8 +68,9 @@ EventCollector::Cleanup ()
 
   // If after cleanup we are still over the limit, increase the limit.
   if (m_events.size () >= m_nextCleanupSize)
-    m_nextCleanupSize = std::min (std::list<EventId>::size_type (CLEANUP_CHUNK_MAX_SIZE),
-                                  m_nextCleanupSize<<1);
+    Grow ();
+  else
+    Shrink ();
 }
 
 
