@@ -42,8 +42,8 @@ class SingleEvent
 {
 public:
 
-  SingleEvent ()
-  {}
+  SingleEvent ();
+  ~SingleEvent ();
 
   /**
    * \brief Tracks a newly scheduled event.
@@ -51,28 +51,20 @@ public:
    * Tracks a newly scheduled event.  Any previous event that may have
    * been scheduled is first cancelled.
    */
-  void operator = (const EventId &event)
-  {
-    Simulator::Cancel (m_event);
-    m_event = event;
-  }
+  void operator = (const EventId &event);
 
   /**
-   * \brief Retrives the event being tracked
-   *
-   * Returns a copy of the tracked event.  The returned value can be
-   * used to e.g. check if the event is still running, or to manually
-   * Cancel it.
+   * This method is syntactic sugar for the ns3::Simulator::cancel
+   * method.
    */
-  EventId GetEvent () const
-  {
-    return m_event;
-  }
-
-  ~SingleEvent ()
-  {
-    Simulator::Cancel (m_event);
-  }
+  void Cancel (void);
+  /**
+   * This method is syntactic sugar for the ns3::Simulator::isExpired
+   * method.
+   * \returns true if the event has expired, false otherwise.
+   */
+  bool IsExpired (void) const;
+  bool IsRunning (void) const;
 
 private:
 

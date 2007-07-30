@@ -19,9 +19,49 @@
  * Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt>
  */
 
+#include "single-event.h"
+
+namespace ns3 {
+
+SingleEvent::SingleEvent ()
+{
+}
+
+SingleEvent::~SingleEvent ()
+{
+  Simulator::Cancel (m_event);
+}
+
+void
+SingleEvent::operator = (const EventId &event)
+{
+  Simulator::Cancel (m_event);
+  m_event = event;
+}
+
+void
+SingleEvent::Cancel (void)
+{
+  m_event.Cancel ();
+}
+
+bool
+SingleEvent::IsExpired (void) const
+{
+  return m_event.IsExpired ();
+}
+
+bool
+SingleEvent::IsRunning (void) const
+{
+  return m_event.IsRunning ();
+}
+
+
+}; // namespace ns3
+
 #ifdef RUN_SELF_TESTS
 
-#include "single-event.h"
 #include "ns3/test.h"
 
 namespace ns3 {
