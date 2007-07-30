@@ -1062,7 +1062,7 @@ void
 Olsr::QueueMessage (Packet message, Time delay)
 {
   m_queuedMessages.push_back (message);
-  if (not m_queuedMessagesTimer.GetEvent ().IsRunning ())
+  if (not m_queuedMessagesTimer.IsRunning ())
     {
       m_queuedMessagesTimer = Simulator::Schedule (delay, &Olsr::SendQueuedMessages, this);
     }
