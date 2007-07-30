@@ -45,11 +45,13 @@ public:
   operator Address ();
   /**
    * \param address a polymorphic address
-   *
-   * Convert a polymorphic address to an Eui48Address instance.
-   * The conversion performs a type check.
+   * \returns a new Eui48Address from the polymorphic address
+   * 
+   * This function performs a type check and asserts if the
+   * type of the input address is not compatible with an
+   * Eui48Address.
    */
-  Eui48Address (const Address &address);
+  static Eui48Address ConvertFrom (const Address &address);
   /**
    * \returns true if the address matches, false otherwise.
    */
@@ -65,7 +67,6 @@ private:
    * Convert an instance of this class to a polymorphic Address instance.
    */
   Address ConvertTo (void) const;
-  static Eui48Address ConvertFrom (const Address &address);
   static uint8_t GetType (void);
   uint8_t m_address[6];
 };

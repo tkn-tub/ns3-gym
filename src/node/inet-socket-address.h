@@ -78,13 +78,13 @@ public:
   /**
    * \param address the Address instance to convert from.
    *
-   * Construct an InetSocketAddress which corresponds to the input
+   * Returns an InetSocketAddress which corresponds to the input
    * Address
    */
-  InetSocketAddress (const Address &address);
+  static InetSocketAddress ConvertFrom (const Address &address);
 private:
   Address ConvertTo (void) const;
-  static InetSocketAddress ConvertFrom (const Address &address);
+
   static uint8_t GetType (void);
   Ipv4Address m_ipv4;
   uint16_t m_port;

@@ -160,7 +160,7 @@ CsmaCdNetDevice::AddHeader (Packet& p, Eui48Address dest,
     }
   EthernetHeader header (false);
   EthernetTrailer trailer;
-  Eui48Address source = GetAddress ();
+  Eui48Address source = Eui48Address::ConvertFrom (GetAddress ());
   header.SetSource(source);
   header.SetDestination(dest);
 
@@ -201,10 +201,8 @@ CsmaCdNetDevice::ProcessHeader (Packet& p, uint16_t & param)
   trailer.CheckFcs(p);
   p.RemoveHeader(header);
 
-  Eui48Address broadcast = GetBroadcast ();
-  Eui48Address destination = GetAddress ();
-  if ((header.GetDestination() != broadcast) &&
-      (header.GetDestination() != destination))
+  if ((header.GetDestination() != GetBroadcast ()) &&
+      (header.GetDestination() != GetAddress ()))
     {
       return false;
     }
@@ -252,8 +250,8 @@ CsmaCdNetDevice::SendTo (Packet& p, const Address& dest, uint16_t protocolNumber
   if (!IsSendEnabled())
     return false;
 
-  Eui48Address address = dest;
-  AddHeader(p, address, protocolNumber);
+  Eui48Address destination = Eui48Address::ConvertFrom (dest);
+  AddHeader(p, destination, protocolNumber);
 
   // Place the packet to be sent on the send queue
   if (m_queue->Enqueue(p) == false )

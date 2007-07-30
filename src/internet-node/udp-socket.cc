@@ -95,7 +95,7 @@ UdpSocket::Bind (const Address &address)
     {
       return ERROR_INVAL;
     }
-  InetSocketAddress transport = address;
+  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
   if (ipv4 == Ipv4Address::GetAny () && port == 0)
@@ -151,7 +151,7 @@ UdpSocket::DoConnect(const Address & address,
                      ns3::Callback<void, Ptr<Socket> > connectionFailed,
                      ns3::Callback<void, Ptr<Socket> > halfClose)
 {
-  InetSocketAddress transport = address;
+  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
   m_defaultPort = transport.GetPort ();
   if (!connectionSucceeded.IsNull ())
@@ -194,7 +194,7 @@ int
 UdpSocket::DoSendPacketTo (const Packet &p, const Address &address,
                            ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
-  InetSocketAddress transport = address;
+  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
   return DoSendPacketTo (p, ipv4, port, dataSent);
@@ -245,7 +245,7 @@ UdpSocket::DoSendTo(const Address &address,
     {
       p = Packet (buffer, size);
     }
-  InetSocketAddress transport = address;
+  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
   return DoSendPacketTo (p, ipv4, port, dataSent);

@@ -56,11 +56,6 @@ InetSocketAddress::operator Address () const
   return ConvertTo ();
 }
 
-InetSocketAddress::InetSocketAddress (const Address &address)
-{
-  *this = ConvertFrom (address);
-}
-
 Address 
 InetSocketAddress::ConvertTo (void) const
 {
