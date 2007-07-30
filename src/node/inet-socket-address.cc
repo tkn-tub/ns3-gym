@@ -51,6 +51,16 @@ InetSocketAddress::IsMatchingType (const Address &address)
   return address.CheckCompatible (GetType (), 6);
 }
 
+InetSocketAddress::operator Address () const
+{
+  return ConvertTo ();
+}
+
+InetSocketAddress::InetSocketAddress (const Address &address)
+{
+  *this = ConvertFrom (address);
+}
+
 Address 
 InetSocketAddress::ConvertTo (void) const
 {
