@@ -21,7 +21,24 @@
 #include "event-collector.h"
 #include <algorithm>
 
+#define CLEANUP_CHUNK_MIN_SIZE 8
+#define CLEANUP_CHUNK_MAX_SIZE 1024
+
+
 namespace ns3 {
+
+
+EventCollector::EventCollector () :
+  m_nextCleanupSize (CLEANUP_CHUNK_MIN_SIZE)
+{}
+
+void
+EventCollector::Track (EventId event)
+{
+  m_events.push_back (event);
+  if (m_events.size () >= m_nextCleanupSize)
+    Cleanup ();
+}
 
 inline bool
 EventExpiredPredicate (const EventId &event)
