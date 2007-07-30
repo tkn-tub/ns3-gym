@@ -32,11 +32,30 @@ namespace ns3
     void EnableAllNodes (void);
 
     // \brief Start the OLSR routing agent on a given list of nodes
-    void EnableNodes (NodeList::Iterator begin, NodeList::Iterator end);
+    template <typename InputIterator>
+    void EnableNodes (InputIterator begin, InputIterator end);
 
     // \brief Start the OLSR routing agent on the given nodes
     void EnableNode (Ptr<Node> node);
   }
 }
+
+
+// implementation
+namespace ns3
+{
+  namespace olsr
+  {
+    template <typename InputIterator>
+    void EnableNodes (InputIterator begin, InputIterator end)
+    {
+      for (InputIterator i = begin; i != end; i++)
+        {
+          EnableNode (*i);
+        }
+    }
+  }
+}
+
 
 #endif /* OLSR_H */

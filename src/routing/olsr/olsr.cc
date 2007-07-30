@@ -28,23 +28,14 @@ namespace ns3 { namespace olsr {
 void
 EnableAllNodes (void)
 {
-    EnableNodes (NodeList::Begin (), NodeList::End ());
-}
-
-void
-EnableNodes (NodeList::Iterator begin, NodeList::Iterator end)
-{
-    for (NodeList::Iterator i = begin; i != end; i++)
-    {
-        EnableNode (*i);
-    }
+  EnableNodes <NodeList::Iterator> (NodeList::Begin (), NodeList::End ());
 }
 
 void
 EnableNode (Ptr<Node> node)
 {
-    ComponentManager::Create<OlsrAgent, Ptr<Node> >
-        (OlsrAgent::cid, OlsrAgent::iid, node)->Start ();
+  ComponentManager::Create<OlsrAgent, Ptr<Node> >
+    (OlsrAgent::cid, OlsrAgent::iid, node)->Start ();
 }
 
 
