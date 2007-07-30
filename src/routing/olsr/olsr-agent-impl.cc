@@ -248,9 +248,9 @@ void OlsrAgentImpl::SetMainInterface (uint32_t interface)
 // \brief Processes an incoming %OLSR packet following RFC 3626 specification.
 void
 OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
-                const uint8_t *dataPtr, uint32_t dataSize,
-                const Ipv4Address &sourceAddress,
-                uint16_t sourcePort)
+                         const uint8_t *dataPtr, uint32_t dataSize,
+                         const Ipv4Address &sourceAddress,
+                         uint16_t sourcePort)
 {
   NS_DEBUG ("OLSR node " << m_mainAddress << " received a OLSR packet");
 
@@ -819,9 +819,9 @@ OlsrAgentImpl::RoutingTableComputation ()
 ///
 void
 OlsrAgentImpl::ProcessHello (const OlsrMessageHeader &msg,
-                    const OlsrHelloMessageHeader &hello,
-                    const Ipv4Address &receiverIface,
-                    const Ipv4Address &senderIface)
+                             const OlsrHelloMessageHeader &hello,
+                             const Ipv4Address &receiverIface,
+                             const Ipv4Address &senderIface)
 {
   LinkSensing (msg, hello, receiverIface, senderIface);
   PopulateNeighborSet (msg, hello);
@@ -841,8 +841,8 @@ OlsrAgentImpl::ProcessHello (const OlsrMessageHeader &msg,
 ///
 void
 OlsrAgentImpl::ProcessTc (const OlsrMessageHeader &msg,
-                 const OlsrTcMessageHeader &tc,
-                 const Ipv4Address &senderIface)
+                          const OlsrTcMessageHeader &tc,
+                          const Ipv4Address &senderIface)
 {
   Time now = Simulator::Now ();
 	
@@ -920,8 +920,8 @@ OlsrAgentImpl::ProcessTc (const OlsrMessageHeader &msg,
 ///
 void
 OlsrAgentImpl::ProcessMid (const OlsrMessageHeader &msg,
-                  const OlsrMidMessageHeader &mid,
-                  const Ipv4Address &senderIface)
+                           const OlsrMidMessageHeader &mid,
+                           const Ipv4Address &senderIface)
 {
   Time now = Simulator::Now ();
 	
@@ -976,10 +976,10 @@ OlsrAgentImpl::ProcessMid (const OlsrMessageHeader &msg,
 ///
 void
 OlsrAgentImpl::ForwardDefault (OlsrMessageHeader olsrMessage,
-                      Packet messagePayload,
-                      DuplicateTuple *duplicated,
-                      const Ipv4Address &localIface,
-                      const Ipv4Address &senderAddress)
+                               Packet messagePayload,
+                               DuplicateTuple *duplicated,
+                               const Ipv4Address &localIface,
+                               const Ipv4Address &senderAddress)
 {
   Time now = Simulator::Now ();
   
@@ -1307,16 +1307,11 @@ OlsrAgentImpl::SendMid ()
 ///
 /// \brief	Updates Link Set according to a new received HELLO message (following RFC 3626
 ///		specification). Neighbor Set is also updated if needed.
-///
-/// \param msg the OLSR message which contains the HELLO message.
-/// \param receiver_iface the address of the interface where the message was received from.
-/// \param sender_iface the address of the interface where the message was sent from.
-///
 void
 OlsrAgentImpl::LinkSensing (const OlsrMessageHeader &msg,
-                   const OlsrHelloMessageHeader &hello,
-                   const Ipv4Address &receiverIface,
-                   const Ipv4Address &senderIface)
+                            const OlsrHelloMessageHeader &hello,
+                            const Ipv4Address &receiverIface,
+                            const Ipv4Address &senderIface)
 {
   Time now = Simulator::Now ();
   bool updated = false;
@@ -1395,12 +1390,9 @@ OlsrAgentImpl::LinkSensing (const OlsrMessageHeader &msg,
 ///
 /// \brief	Updates the Neighbor Set according to the information contained in a new received
 ///		HELLO message (following RFC 3626).
-///
-/// \param msg the %OLSR message which contains the HELLO message.
-///
 void
 OlsrAgentImpl::PopulateNeighborSet (const OlsrMessageHeader &msg,
-                           const OlsrHelloMessageHeader &hello)
+                                    const OlsrHelloMessageHeader &hello)
 {
   NeighborTuple *nb_tuple = m_state.FindNeighborTuple (msg.GetOriginatorAddress ());
   if (nb_tuple != NULL)
@@ -1411,12 +1403,9 @@ OlsrAgentImpl::PopulateNeighborSet (const OlsrMessageHeader &msg,
 ///
 /// \brief	Updates the 2-hop Neighbor Set according to the information contained in a new
 ///		received HELLO message (following RFC 3626).
-///
-/// \param msg the %OLSR message which contains the HELLO message.
-///
 void
 OlsrAgentImpl::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
-                                 const OlsrHelloMessageHeader &hello)
+                                          const OlsrHelloMessageHeader &hello)
 {
   Time now = Simulator::Now ();
 	
@@ -1498,12 +1487,9 @@ OlsrAgentImpl::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
 ///
 /// \brief	Updates the MPR Selector Set according to the information contained in a new
 ///		received HELLO message (following RFC 3626).
-///
-/// \param msg the %OLSR message which contains the HELLO message.
-///
 void
 OlsrAgentImpl::PopulateMprSelectorSet (const OlsrMessageHeader &msg,
-                              const OlsrHelloMessageHeader &hello)
+                                       const OlsrHelloMessageHeader &hello)
 {
   Time now = Simulator::Now ();
 	
