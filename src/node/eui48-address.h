@@ -2,6 +2,7 @@
 #define EUI48_ADDRESS_H
 
 #include <stdint.h>
+#include <ostream>
 
 namespace ns3 {
 
@@ -22,6 +23,19 @@ public:
    * The format of the string is "xx:xx:xx:xx:xx:xx"
    */
   Eui48Address (const char *str);
+
+  /**
+   * \param buffer address in network order
+   *
+   * Copy the input address to our internal buffer.
+   */
+  void CopyFrom (const uint8_t buffer[6]);
+  /**
+   * \param buffer address in network order
+   *
+   * Copy the internal address to the input buffer.
+   */
+  void CopyTo (uint8_t buffer[6]) const;
   /**
    * \returns a new Address instance
    *
@@ -42,8 +56,11 @@ public:
 private:
   static uint8_t GetType (void);
   uint8_t m_address[6];
-
 };
+
+bool operator == (const Eui48Address &a, const Eui48Address &b);
+bool operator != (const Eui48Address &a, const Eui48Address &b);
+std::ostream& operator<< (std::ostream& os, const Eui48Address & address);
 
 } // namespace ns3
 

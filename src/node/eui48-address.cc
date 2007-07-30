@@ -1,6 +1,7 @@
 #include "eui48-address.h"
 #include "address.h"
 #include "ns3/assert.h"
+#include <iomanip>
 
 namespace ns3 {
 
@@ -58,6 +59,17 @@ Eui48Address::Eui48Address (const char *str)
     }
   NS_ASSERT (i == 6);
 }
+void 
+Eui48Address::CopyFrom (const uint8_t buffer[6])
+{
+  memcpy (m_address, buffer, 6);
+}
+void 
+Eui48Address::CopyTo (uint8_t buffer[6]) const
+{
+  memcpy (buffer, m_address, 6);
+}
+
 Address 
 Eui48Address::ConvertTo (void) const
 {
@@ -90,6 +102,37 @@ Eui48Address::GetType (void)
 {
   static uint8_t type = Address::Register ();
   return type;
+}
+
+bool operator == (const Eui48Address &a, const Eui48Address &b)
+{
+  uint8_t ada[6];
+  uint8_t adb[6];
+  a.CopyTo (ada);
+  b.CopyTo (adb);
+  return memcmp (ada, adb, 6) == 0;
+}
+bool operator != (const Eui48Address &a, const Eui48Address &b)
+{
+  return ! (a == b);
+}
+
+std::ostream& operator<< (std::ostream& os, const Eui48Address & address)
+{
+  uint8_t ad[6];
+  address.CopyTo (ad);
+
+  os.setf (std::ios::hex, std::ios::basefield);
+  std::cout.fill('0');
+  for (uint8_t i=0; i < 5; i++) 
+    {
+      os << std::setw(2) << (uint32_t)ad[i] << ":";
+    }
+  // Final byte not suffixed by ":"
+  os << std::setw(2) << (uint32_t)ad[5];
+  os.setf (std::ios::dec, std::ios::basefield);
+  std::cout.fill(' ');
+  return os;
 }
 
 

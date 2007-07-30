@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Modified by Emmanuelle Laprise to remove dependance on LLC headers
  */
 #ifndef NET_DEVICE_H
 #define NET_DEVICE_H
@@ -227,6 +228,8 @@ public:
 
   /**
    * \param p packet sent from below up to Network Device
+   * \param param Extra parameter extracted from header and needed by
+   * some protocols
    * \returns true if the packet was forwarded successfully,
    *          false otherwise.
    *
@@ -234,7 +237,8 @@ public:
    * forwards it to the higher layers by calling this method
    * which is responsible for passing it up to the Rx callback.
    */
-  bool ForwardUp (Packet& p);
+  bool ForwardUp (Packet& p, uint32_t param);
+
 
   /**
    * The dispose method for this NetDevice class.
@@ -244,10 +248,13 @@ public:
    */
   virtual void DoDispose (void);
 
+  Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> m_receiveCallback;
+
  private:
   /**
    * \param p packet to send
    * \param dest address of destination to which packet must be sent
+   * \param protocolNumber Number of the protocol (used with some protocols)
    * \returns true if the packet could be sent successfully, false
    *          otherwise.
    *
@@ -255,7 +262,7 @@ public:
    * method.  When the link is Up, this method is invoked to ask 
    * subclasses to forward packets. Subclasses MUST override this method.
    */
-  virtual bool SendTo (Packet& p, const Address& dest) = 0;
+  virtual bool SendTo (Packet& p, const Address &dest, uint16_t protocolNumber) = 0;
   /**
    * \returns true if this NetDevice needs the higher-layers
    *          to perform ARP over it, false otherwise.
@@ -279,7 +286,7 @@ public:
    */
   virtual Ptr<Channel> DoGetChannel (void) const = 0;
 
-  Ptr<Node>         m_node;
+  Ptr<Node>     m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
   Address       m_address;
@@ -290,7 +297,6 @@ public:
   bool          m_isMulticast;
   bool          m_isPointToPoint;
   Callback<void> m_linkChangeCallback;
-  Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> m_receiveCallback;
 };
 
 }; // namespace ns3

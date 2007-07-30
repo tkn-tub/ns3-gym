@@ -12,7 +12,10 @@ def build(bld):
         'node.cc',
         'ipv4-address.cc',
         'net-device.cc',
+	'address-utils.cc',
         'llc-snap-header.cc',
+        'ethernet-header.cc',
+        'ethernet-trailer.cc',
         'ipv4-route.cc',
         'queue.cc',
         'drop-tail-queue.cc',
@@ -24,7 +27,6 @@ def build(bld):
         'ipv4.cc',
         'application.cc',
         ]
-    node.includes = '.'
 
     headers = bld.create_obj('ns3header')
     headers.source = [
@@ -34,10 +36,13 @@ def build(bld):
         'node.h',
         'ipv4-address.h',
         'net-device.h',
+	'address-utils.h',
         'ipv4-route.h',
         'queue.h',
         'drop-tail-queue.h',
         'llc-snap-header.h',
+        'ethernet-header.h',
+        'ethernet-trailer.h',
         'channel.h',
         'node-list.h',
         'socket.h',

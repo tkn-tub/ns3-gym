@@ -3,6 +3,13 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
+Release 3.0.5 (2007/08/XX)
+========================
+
+  - Add CSMA/CD model (Emmanuelle Laprise)
+  - Modularize ipv4 routing support (Gustavo Carneiro)
+  - Add mobility framework and basic mobility models
+
 Release 3.0.4 (2007/07/15)
 ========================
 

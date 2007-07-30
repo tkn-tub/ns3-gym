@@ -45,12 +45,12 @@ EventId::Cancel (void)
     }
 }
 bool 
-EventId::IsExpired (void)
+EventId::IsExpired (void) const
 {
   return Simulator::IsExpired (*this);
 }
 bool 
-EventId::IsRunning (void)
+EventId::IsRunning (void) const
 {
   return !IsExpired ();
 }

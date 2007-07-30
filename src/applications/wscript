@@ -8,7 +8,6 @@ def build(bld):
     obj.source = [
         'onoff-application.cc',
         ]
-    obj.includes = '.'
 
     headers = bld.create_obj('ns3header')
     headers.source = [

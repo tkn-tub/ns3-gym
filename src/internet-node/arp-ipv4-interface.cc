@@ -21,6 +21,7 @@
  */
 
 #include "ns3/packet.h"
+#include "ns3/debug.h"
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
@@ -61,7 +62,19 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
     {
       Ptr<ArpPrivate> arp = m_node->QueryInterface<ArpPrivate> (ArpPrivate::iid);
       Address hardwareDestination;
-      bool found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
+      bool found;
+
+      if (dest.IsBroadcast ())
+        {
+           hardwareDestination = GetDevice ()->GetBroadcast ();
+           found = true;
+        }
+      else
+        {
+          Ptr<ArpPrivate> arp = m_node->QueryInterface<ArpPrivate> (ArpPrivate::iid);
+          found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
+        }
+
       if (found)
         {
           GetDevice ()->Send (p, hardwareDestination, Ipv4L3Protocol::PROT_NUMBER);
