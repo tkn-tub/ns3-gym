@@ -28,8 +28,13 @@ namespace ns3
 {
   namespace olsr
   {
+    // \brief Start the OLSR routing agent on all nodes
     void EnableAllNodes (void);
+
+    // \brief Start the OLSR routing agent on a given list of nodes
     void EnableNodes (NodeList::Iterator begin, NodeList::Iterator end);
+
+    // \brief Start the OLSR routing agent on the given nodes
     void EnableNode (Ptr<Node> node);
   }
 }
