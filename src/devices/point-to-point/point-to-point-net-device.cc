@@ -43,7 +43,7 @@ DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
 PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
                                               const DataRate& rate) 
 : 
-  NetDevice(node, Eui48Address::Allocate ().ConvertTo ()), 
+  NetDevice(node, Eui48Address::Allocate ()), 
   m_txMachineState (READY),
   m_bps (rate),
   m_tInterframeGap (Seconds(0)),
@@ -56,7 +56,7 @@ PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
   // BUGBUG FIXME
   //
   // You _must_ support broadcast to get any sort of packet from the ARP layer.
-  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff").ConvertTo ());
+  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
   EnableMulticast();
   EnablePointToPoint();
 }

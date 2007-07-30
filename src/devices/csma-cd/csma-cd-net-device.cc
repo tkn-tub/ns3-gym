@@ -37,7 +37,7 @@ namespace ns3 {
 
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
                                   CsmaCdEncapsulationMode encapMode) 
-  : NetDevice(node, addr.ConvertTo ()), 
+  : NetDevice(node, addr), 
     m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
@@ -49,7 +49,7 @@ CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr,
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
                                   CsmaCdEncapsulationMode encapMode,
                                   bool sendEnable, bool receiveEnable) 
-  : NetDevice(node, addr.ConvertTo ()), 
+  : NetDevice(node, addr), 
     m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
@@ -96,7 +96,7 @@ CsmaCdNetDevice::Init(bool sendEnable, bool receiveEnable)
   m_channel = 0; 
   m_queue = 0;
 
-  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff").ConvertTo ());
+  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
   EnableMulticast();
   EnablePointToPoint();
 
@@ -160,7 +160,7 @@ CsmaCdNetDevice::AddHeader (Packet& p, Eui48Address dest,
     }
   EthernetHeader header (false);
   EthernetTrailer trailer;
-  Eui48Address source = Eui48Address::ConvertFrom (GetAddress ());
+  Eui48Address source = GetAddress ();
   header.SetSource(source);
   header.SetDestination(dest);
 
@@ -201,8 +201,8 @@ CsmaCdNetDevice::ProcessHeader (Packet& p, uint16_t & param)
   trailer.CheckFcs(p);
   p.RemoveHeader(header);
 
-  Eui48Address broadcast = Eui48Address::ConvertFrom (GetBroadcast ());
-  Eui48Address destination = Eui48Address::ConvertFrom (GetAddress ());
+  Eui48Address broadcast = GetBroadcast ();
+  Eui48Address destination = GetAddress ();
   if ((header.GetDestination() != broadcast) &&
       (header.GetDestination() != destination))
     {
@@ -252,7 +252,7 @@ CsmaCdNetDevice::SendTo (Packet& p, const Address& dest, uint16_t protocolNumber
   if (!IsSendEnabled())
     return false;
 
-  Eui48Address address = Eui48Address::ConvertFrom (dest);
+  Eui48Address address = dest;
   AddHeader(p, address, protocolNumber);
 
   // Place the packet to be sent on the send queue
