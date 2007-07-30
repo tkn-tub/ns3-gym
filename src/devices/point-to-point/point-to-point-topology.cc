@@ -32,9 +32,9 @@
 #include "ns3/ipv4.h"
 #include "ns3/queue.h"
 
-#include "p2p-channel.h"
-#include "p2p-net-device.h"
-#include "p2p-topology.h"
+#include "point-to-point-channel.h"
+#include "point-to-point-net-device.h"
+#include "point-to-point-topology.h"
 
 namespace ns3 {
 

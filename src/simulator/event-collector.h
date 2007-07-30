@@ -38,32 +38,23 @@ class EventCollector
 {
 public:
 
-  EventCollector () :
-    m_nextCleanupSize (CLEANUP_CHUNK_MIN_SIZE)
-  {}
+  EventCollector ();
 
   /**
    * \brief Tracks a new event
    */
-  void Track (EventId event)
-  {
-    m_events.push_back (event);
-    if (m_events.size () >= m_nextCleanupSize)
-      Cleanup ();
-  }
+  void Track (EventId event);
 
   ~EventCollector ();
 
 private:
-  enum {
-    CLEANUP_CHUNK_MIN_SIZE = 8,
-    CLEANUP_CHUNK_MAX_SIZE = 1024
-  };
 
   std::list<EventId>::size_type m_nextCleanupSize;
   std::list<EventId> m_events;
 
   void Cleanup ();
+  void Grow ();
+  void Shrink ();
 };
 
 }; // namespace ns3

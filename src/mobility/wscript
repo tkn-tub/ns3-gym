@@ -20,7 +20,6 @@ def build(bld):
         'static-speed-helper.cc',
         'static-speed-mobility-model.cc',
         ]
-    mobility.includes = '.'
 
     headers = bld.create_obj('ns3header')
     headers.source = [

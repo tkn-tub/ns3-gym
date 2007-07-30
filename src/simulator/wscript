@@ -67,7 +67,6 @@ def build(bld):
         'simulator.cc',
         'time-default-value.cc',
         ]
-    sim.includes = '.'
 
     headers = bld.create_obj('ns3header')
     headers.source = [
