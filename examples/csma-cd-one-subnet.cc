@@ -12,30 +12,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * ns-2 simple.tcl script (ported from ns-2)
- * Originally authored by Steve McCanne, 12/19/1996
  */
 
 // Port of ns-2/tcl/ex/simple.tcl to ns-3
 //
 // Network topology
 //
-//  n0
-//     \ 5 Mb/s, 2ms
-//      \          1.5Mb/s, 10ms
-//       n2 -------------------------n3
-//      /
-//     / 5 Mb/s, 2ms
-//   n1
+//       n0    n1   n2   n3
+//       |     |    |    |
+//     =====================
 //
-// - all links are p2p links with indicated one-way BW/delay
-// - CBR/UDP flows from n0 to n3, and from n3 to n1
-// - FTP/TCP flow from n0 to n3, starting at time 1.2 to time 1.35 sec.
+// - CBR/UDP flows from n0 to n1, and from n3 to n0
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
 // - DropTail queues 
-// - Tracing of queues and packet receptions to file "simple-p2p.tr"
+// - Tracing of queues and packet receptions to file "csma-cd-one-subnet.tr"
 
 #include <iostream>
 #include <fstream>
@@ -46,6 +37,7 @@
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
+#include "ns3/debug.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -54,17 +46,25 @@
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
 #include "ns3/internet-node.h"
-#include "ns3/p2p-channel.h"
-#include "ns3/p2p-net-device.h"
+#include "ns3/csma-cd-channel.h"
+#include "ns3/csma-cd-net-device.h"
+#include "ns3/csma-cd-topology.h"
+#include "ns3/csma-cd-ipv4-topology.h"
 #include "ns3/mac-address.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
-#include "ns3/p2p-topology.h"
 #include "ns3/onoff-application.h"
 
+#include "ns3/ascii-trace.h"
+
+#include "ns3/trace-context.h"
+#include "ns3/trace-root.h"
+
+
 using namespace ns3;
+
 
 int main (int argc, char *argv[])
 {
@@ -72,12 +72,12 @@ int main (int argc, char *argv[])
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
 #if 0 
-  DebugComponentEnable("Object");
-  DebugComponentEnable("Queue");
-  DebugComponentEnable("DropTailQueue");
+  DebugComponentEnable("CsmaCdNetDevice");
+  DebugComponentEnable("Ipv4L3Protocol");
+  DebugComponentEnable("NetDevice");
   DebugComponentEnable("Channel");
-  DebugComponentEnable("PointToPointChannel");
-  DebugComponentEnable("PointToPointNetDevice");
+  DebugComponentEnable("CsmaCdChannel");
+  DebugComponentEnable("PacketSocket");
 #endif
 
   // Set up some default values for the simulation.  Use the Bind()
@@ -87,11 +87,6 @@ int main (int argc, char *argv[])
   // The below Bind command tells the queue factory which class to
   // instantiate, when the queue factory is invoked in the topology code
   Bind ("Queue", "DropTailQueue");
-
-  Bind ("OnOffApplicationPacketSize", "210");
-  Bind ("OnOffApplicationDataRate", "448kb/s");
-
-  //Bind ("DropTailQueue::m_maxPackets", 30);   
 
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
@@ -105,45 +100,38 @@ int main (int argc, char *argv[])
   Ptr<Node> n3 = Create<InternetNode> ();
 
   // We create the channels first without any IP addressing information
-  Ptr<PointToPointChannel> channel0 = 
-    PointToPointTopology::AddPointToPointLink (
-      n0, n2, DataRate(5000000), MilliSeconds(2));
+  Ptr<CsmaCdChannel> channel0 = 
+    CsmaCdTopology::CreateCsmaCdChannel(
+      DataRate(5000000), MilliSeconds(2));
 
-  Ptr<PointToPointChannel> channel1 = 
-    PointToPointTopology::AddPointToPointLink (
-      n1, n2, DataRate(5000000), MilliSeconds(2));
-  
-  Ptr<PointToPointChannel> channel2 = 
-    PointToPointTopology::AddPointToPointLink (
-      n2, n3, DataRate(1500000), MilliSeconds(10));
-  
+  uint32_t n0ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n0, channel0, 
+                                         MacAddress("10:54:23:54:23:50"));
+  uint32_t n1ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n1, channel0,
+                                         MacAddress("10:54:23:54:23:51"));
+  uint32_t n2ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n2, channel0,
+                                         MacAddress("10:54:23:54:23:52"));
+  uint32_t n3ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n3, channel0,
+                                         MacAddress("10:54:23:54:23:53"));
+
   // Later, we add IP addresses.  
-  PointToPointTopology::AddIpv4Addresses (
-      channel0, n0, Ipv4Address("10.1.1.1"),
-      n2, Ipv4Address("10.1.1.2"));
-  
-  PointToPointTopology::AddIpv4Addresses (
-      channel1, n1, Ipv4Address("10.1.2.1"),
-      n2, Ipv4Address("10.1.2.2"));
-  
-  PointToPointTopology::AddIpv4Addresses (
-      channel2, n2, Ipv4Address("10.1.3.1"),
-      n3, Ipv4Address("10.1.3.2"));
+  CsmaCdIpv4Topology::AddIpv4Address (
+      n0, n0ifIndex, Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
 
-  // Finally, we add static routes.  These three steps (Channel and
-  // NetDevice creation, IP Address assignment, and routing) are 
-  // separated because there may be a need to postpone IP Address
-  // assignment (emulation) or modify to use dynamic routing
-  PointToPointTopology::AddIpv4Routes(n0, n2, channel0);
-  PointToPointTopology::AddIpv4Routes(n1, n2, channel1);
-  PointToPointTopology::AddIpv4Routes(n2, n3, channel2);
+  CsmaCdIpv4Topology::AddIpv4Address (
+      n1, n1ifIndex, Ipv4Address("10.1.1.2"), Ipv4Mask("255.255.255.0"));
 
+  CsmaCdIpv4Topology::AddIpv4Address (
+      n2, n2ifIndex, Ipv4Address("10.1.1.3"), Ipv4Mask("255.255.255.0"));
+  
+  CsmaCdIpv4Topology::AddIpv4Address (
+      n3, n3ifIndex, Ipv4Address("10.1.1.4"), Ipv4Mask("255.255.255.0"));
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
+  // from n0 to n1
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    Ipv4Address("10.1.3.2"), 
+    Ipv4Address("10.1.1.2"), 
     80, 
     "Udp",
     ConstantVariable(1), 
@@ -152,10 +140,10 @@ int main (int argc, char *argv[])
   ooff->Start(Seconds(1.0));
   ooff->Stop (Seconds(10.0));
 
-  // Create a similar flow from n3 to n1, starting at time 1.1 seconds
+  // Create a similar flow from n3 to n0, starting at time 1.1 seconds
   ooff = Create<OnOffApplication> (
     n3, 
-    Ipv4Address("10.1.2.1"), 
+    Ipv4Address("10.1.1.1"), 
     80, 
     "Udp",
     ConstantVariable(1), 
@@ -163,26 +151,19 @@ int main (int argc, char *argv[])
   // Start the application
   ooff->Start(Seconds(1.1));
   ooff->Stop (Seconds(10.0));
-
-  // Here, finish off packet routing configuration
-  // This will likely set by some global StaticRouting object in the future
-  Ptr<Ipv4> ipv4;
-  ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
-  ipv4->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
-  ipv4 = n3->QueryInterface<Ipv4> (Ipv4::iid);
-  ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
-  
+ 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the simple-p2p.tr file
-  AsciiTrace asciitrace ("simple-p2p.tr");
-  asciitrace.TraceAllQueues ();
+  // Trace output will be sent to the csma-cd-one-subnet.tr file
+  AsciiTrace asciitrace ("csma-cd-one-subnet.tr");
   asciitrace.TraceAllNetDeviceRx ();
+  asciitrace.TraceAllQueues ();
 
   // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named simple-p2p.pcap-<nodeId>-<interfaceId>
+  // The output files will be named 
+  // simple-point-to-point.pcap-<nodeId>-<interfaceId>
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
-  PcapTrace pcaptrace ("simple-p2p.pcap");
+  PcapTrace pcaptrace ("csma-cd-one-subnet.pcap");
   pcaptrace.TraceAllIp ();
 
   Simulator::Run ();

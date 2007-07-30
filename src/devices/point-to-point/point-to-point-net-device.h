@@ -84,30 +84,11 @@ public:
   PointToPointNetDevice (Ptr<Node> node,
                          const DataRate& = g_defaultRate.GetValue());
   /**
-   * Copy Construct a PointToPointNetDevice
-   *
-   * This is the copy constructor for the PointToPointNetDevice.  This is
-   * primarily used in topology creation.
-   *
-   * @see PointToPointTopology::AddPointToPointLink ()
-   * @param nd the object to be copied
-   */
-  PointToPointNetDevice (const PointToPointNetDevice& nd);
-  /**
    * Destroy a PointToPointNetDevice
    *
    * This is the destructor for the PointToPointNetDevice.
    */
   virtual ~PointToPointNetDevice();
-  /**
-   * Assignment Operator for a PointToPointNetDevice
-   *
-   * This is the assignment operator for the PointToPointNetDevice.  This is
-   * to allow
-   *
-   * @param nd the object to be copied
-   */
-  PointToPointNetDevice& operator= (const PointToPointNetDevice& nd);
   /**
    * Set the Data Rate used for transmission of packets.  The data rate is
    * set in the Attach () method from the corresponding field in the channel
@@ -207,6 +188,18 @@ protected:
 
 private:
   /**
+   * Adds the necessary headers and trailers to a packet of data in order to
+   * respect the protocol implemented by the agent.
+   */
+  void AddHeader(Packet& p, const MacAddress& dest, uint16_t protocolNumber);
+  /**
+   * Removes, from a packet of data, all headers and trailers that
+   * relate to the protocol implemented by the agent
+   * \return Returns true if the packet should be forwarded up the
+   * protocol stack.
+   */
+  bool ProcessHeader(Packet& p, uint16_t& param);
+  /**
    * Send a Packet Down the Wire.
    *
    * The SendTo method is defined as the standard way that the level three
@@ -216,9 +209,11 @@ private:
    * @see NetDevice
    * @param p a reference to the packet to send
    * @param dest a reference to the MacAddress of the destination device
+   * @param protocolNumber Protocol Number used to find protocol touse
    * @returns true if success, false on failure
    */
-  virtual bool SendTo (Packet& p, const MacAddress& dest);
+  virtual bool SendTo (Packet& p, const MacAddress& dest, 
+                       uint16_t protocolNumber);
   /**
    * Start Sending a Packet Down the Wire.
    *
