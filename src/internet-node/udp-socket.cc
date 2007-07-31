@@ -73,12 +73,12 @@ UdpSocket::Destroy (void)
 int
 UdpSocket::FinishBind (void)
 {
-  m_endPoint->SetRxCallback (MakeCallback (&UdpSocket::ForwardUp, this));
-  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocket::Destroy, this));
   if (m_endPoint == 0)
     {
       return -1;
     }
+  m_endPoint->SetRxCallback (MakeCallback (&UdpSocket::ForwardUp, this));
+  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocket::Destroy, this));
   return 0;
 }
 
