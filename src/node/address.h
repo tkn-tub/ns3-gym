@@ -95,6 +95,11 @@ public:
    */
   void CopyTo (uint8_t buffer[MAX_SIZE]) const;
   /**
+   * \param buffer buffer to copy the whole address data structure to
+   * \param len the size of the buffer
+   */
+  void CopyAllTo (uint8_t *buffer, uint8_t len) const;
+  /**
    * \param buffer pointer to a buffer of bytes which contain
    *        a serialized representation of the address in network
    *        byte order.
@@ -103,7 +108,13 @@ public:
    * Copy the input buffer to the internal buffer of this address 
    * instance.
    */
-  void CopyFrom (uint8_t *buffer, uint8_t len);
+  void CopyFrom (const uint8_t *buffer, uint8_t len);
+  /**
+   * \param buffer pointer to a buffer of bytes which contain
+   *        a copy of all the members of this Address class.
+   * \param len the length of the buffer
+   */
+  void CopyAllFrom (const uint8_t *buffer, uint8_t len);
   /**
    * \param type a type id as returned by Address::Register
    * \param len the length associated to this type id.
