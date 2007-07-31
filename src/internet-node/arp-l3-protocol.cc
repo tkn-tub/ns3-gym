@@ -24,11 +24,11 @@
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 
+#include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
 #include "arp-header.h"
 #include "arp-cache.h"
 #include "ipv4-interface.h"
-#include "ipv4-private.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("ArpL3Protocol");
 
@@ -37,8 +37,7 @@ namespace ns3 {
 const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
 
 ArpL3Protocol::ArpL3Protocol (Ptr<Node> node)
-  : L3Protocol (PROT_NUMBER, 0/* XXX: correct version number ? */ ),
-    m_node (node)
+  : m_node (node)
 {}
 
 ArpL3Protocol::~ArpL3Protocol ()
@@ -53,7 +52,7 @@ ArpL3Protocol::DoDispose (void)
     }
   m_cacheList.clear ();
   m_node = 0;
-  L3Protocol::DoDispose ();
+  Object::DoDispose ();
 }
 
 TraceResolver *
@@ -72,7 +71,7 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 	  return *i;
 	}
     }
-  Ptr<Ipv4Private> ipv4 = m_node->QueryInterface<Ipv4Private> (Ipv4Private::iid);
+  Ptr<Ipv4L3Protocol> ipv4 = m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
   Ipv4Interface *interface = ipv4->FindInterfaceForDevice (device);
   ArpCache * cache = new ArpCache (device, interface);
   NS_ASSERT (device->IsBroadcast ());
@@ -82,10 +81,11 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 }
 
 void 
-ArpL3Protocol::Receive(Packet& packet, Ptr<NetDevice> device)
+ArpL3Protocol::Receive(const Packet& p, uint16_t protocol, Ptr<NetDevice> device)
 {
   ArpCache *cache = FindCache (device);
   ArpHeader arp;
+  Packet packet = p;
   packet.RemoveHeader (arp);
   
   NS_DEBUG ("ARP: received "<< (arp.IsRequest ()? "request" : "reply") <<

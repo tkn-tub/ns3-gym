@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "ns3/object.h"
+#include "ns3/callback.h"
 
 namespace ns3 {
 
@@ -31,6 +32,7 @@ class TraceContext;
 class TraceResolver;
 class NetDevice;
 class Application;
+class Packet;
 
 /**
  * \brief A network Node.
@@ -123,6 +125,41 @@ public:
    */
   uint32_t GetNApplications (void) const;
 
+  /**
+   * A protocol handler
+   */
+  typedef Callback<void,const Packet &,uint16_t,Ptr<NetDevice> > ProtocolHandler;
+  /**
+   * \param handler the handler to register
+   * \param protocolType the type of protocol this handler is 
+   *        interested in.
+   * \param device the device attached to this handler. If the
+   *        value is zero, the handler is attached to all
+   *        devices on this node.
+   */
+  void RegisterProtocolHandler (ProtocolHandler handler, 
+                                uint16_t protocolType,
+                                Ptr<NetDevice> device);
+  /**
+   * \param handler the handler to register
+   * \param device the device attached to this handler. If the
+   *        value is zero, the handler is attached to all
+   *        devices on this node.
+   *
+   * Register a handler to receive all packets for all
+   * protocols.
+   */
+  void RegisterProtocolHandler (ProtocolHandler handler,
+                                Ptr<NetDevice> device);
+
+  /**
+   * \param handler the handler to unregister
+   *
+   * After this call returns, the input handler will never
+   * be invoked anymore.
+   */
+  void UnregisterProtocolHandler (ProtocolHandler handler);
+
 protected:
   /**
    * Must be invoked by subclasses only.
@@ -147,7 +184,7 @@ private:
    *
    * Subclasses must implement this method.
    */
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
+  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
   /**
    * \param device the device added to this Node.
    *
@@ -156,12 +193,22 @@ private:
    * at this point to setup the node's receive function for
    * the NetDevice packets.
    */
-  virtual void DoAddDevice (Ptr<NetDevice> device) = 0;
+  virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
 
+  bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, uint16_t protocol);
+
+  struct ProtocolHandlerEntry {
+    ProtocolHandler handler;
+    bool isSpecificProtocol;
+    uint16_t protocol;
+    Ptr<NetDevice> device;
+  };
+  typedef std::vector<struct Node::ProtocolHandlerEntry> ProtocolHandlerList;
   uint32_t    m_id;         // Node id for this node
   uint32_t    m_sid;        // System id for this node
   std::vector<Ptr<NetDevice> > m_devices;
   std::vector<Ptr<Application> > m_applications;
+  ProtocolHandlerList m_handlers;
 };
 
 } //namespace ns3

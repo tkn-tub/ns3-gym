@@ -30,7 +30,6 @@
 #include "ipv4-header.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4.h"
-#include "l3-protocol.h"
 #include "ipv4-static-routing.h"
 
 namespace ns3 {
@@ -46,9 +45,10 @@ class TraceResolver;
 class TraceContext;
 
 
-class Ipv4L3Protocol : public L3Protocol 
+class Ipv4L3Protocol : public Object
 {
 public:
+  static const InterfaceId iid;
   static const uint16_t PROT_NUMBER;
 
   enum TraceType {
@@ -95,7 +95,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  virtual void Receive(Packet& p, Ptr<NetDevice> device);
+  void Receive(const Packet& p, uint16_t protocol, Ptr<NetDevice> device);
 
   /**
    * \param packet packet to send

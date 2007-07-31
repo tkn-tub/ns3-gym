@@ -25,7 +25,6 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/address.h"
 #include "ns3/ptr.h"
-#include "l3-protocol.h"
 
 namespace ns3 {
 
@@ -38,7 +37,7 @@ class TraceContext;
 /**
  * \brief An implementation of the ARP protocol
  */
-class ArpL3Protocol : public L3Protocol
+class ArpL3Protocol : public Object
 {
 public:
   static const uint16_t PROT_NUMBER;
@@ -47,13 +46,13 @@ public:
    * \param node The node which this ARP object is associated with
    */
   ArpL3Protocol (Ptr<Node> node);
-  ~ArpL3Protocol ();
+  virtual ~ArpL3Protocol ();
 
   virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
   /**
    * \brief Recieve a packet
    */
-  virtual void Receive(Packet& p, Ptr<NetDevice> device);
+  void Receive(const Packet& p, uint16_t protocol, Ptr<NetDevice> device);
   /**
    * \brief Perform an ARP lookup
    * \param p

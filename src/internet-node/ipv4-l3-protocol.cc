@@ -41,11 +41,11 @@ NS_DEBUG_COMPONENT_DEFINE ("Ipv4L3Protocol");
 
 namespace ns3 {
 
+const InterfaceId Ipv4L3Protocol::iid = MakeInterfaceId ("Ipv4L3Protocol", Object::iid);
 const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 
 Ipv4L3Protocol::Ipv4L3Protocol(Ptr<Node> node)
-  : L3Protocol (PROT_NUMBER, 4),
-    m_nInterfaces (0),
+  : m_nInterfaces (0),
     m_defaultTtl (64),
     m_identification (0),
     m_node (node)
@@ -66,9 +66,9 @@ Ipv4L3Protocol::DoDispose (void)
     }
   m_interfaces.clear ();
   m_node = 0;
-  L3Protocol::DoDispose ();
   m_staticRouting->Dispose ();
   m_staticRouting = 0;
+  Object::DoDispose ();
 }
 
 void
@@ -240,18 +240,19 @@ Ipv4L3Protocol::FindInterfaceForDevice (Ptr<const NetDevice> device)
 }  
 
 void 
-Ipv4L3Protocol::Receive(Packet& packet, Ptr<NetDevice> device)
+Ipv4L3Protocol::Receive(const Packet& p, uint16_t protocol, Ptr<NetDevice> device)
 {
   uint32_t index = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
       if ((*i)->GetDevice () == device)
         {
-          m_rxTrace (packet, index);
+          m_rxTrace (p, index);
           break;
         }
       index++;
     }
+  Packet packet = p;
   Ipv4Header ipHeader;
   packet.RemoveHeader (ipHeader);
 

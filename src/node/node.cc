@@ -1,32 +1,29 @@
-// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
-//
-// Copyright (c) 2006 Georgia Tech Research Corporation
-// All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License version 2 as
-// published by the Free Software Foundation;
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// Author: George F. Riley<riley@ece.gatech.edu>
-//
-
-// Implement the basic Node object for ns3.
-// George F. Riley, Georgia Tech, Fall 2006
-
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2006 Georgia Tech Research Corporation, INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors: George F. Riley<riley@ece.gatech.edu>
+ *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 #include "node.h"
 #include "node-list.h"
 #include "net-device.h"
 #include "application.h"
 #include "ns3/simulator.h"
+#include "ns3/empty-trace-resolver.h"
 
 namespace ns3{
 
@@ -74,8 +71,9 @@ Node::AddDevice (Ptr<NetDevice> device)
 {
   uint32_t index = m_devices.size ();
   m_devices.push_back (device);
-  DoAddDevice (device);
   device->SetIfIndex(index);
+  device->SetReceiveCallback (MakeCallback (&Node::ReceiveFromDevice, this));
+  NotifyDeviceAdded (device);
   return index;
 }
 Ptr<NetDevice>
@@ -127,6 +125,75 @@ void Node::DoDispose()
     }
   m_applications.clear ();
   Object::DoDispose ();
+}
+
+TraceResolver *
+Node::DoCreateTraceResolver (TraceContext const &context)
+{
+  return new EmptyTraceResolver (context);
+}
+void 
+Node::NotifyDeviceAdded (Ptr<NetDevice> device)
+{}
+
+void
+Node::RegisterProtocolHandler (ProtocolHandler handler, 
+                               uint16_t protocolType,
+                               Ptr<NetDevice> device)
+{
+  struct Node::ProtocolHandlerEntry entry;
+  entry.handler = handler;
+  entry.isSpecificProtocol = true;
+  entry.protocol = protocolType;
+  entry.device = device;
+  m_handlers.push_back (entry);
+}
+
+void 
+Node::RegisterProtocolHandler (ProtocolHandler handler,
+                               Ptr<NetDevice> device)
+{
+  struct Node::ProtocolHandlerEntry entry;
+  entry.handler = handler;
+  entry.isSpecificProtocol = false;
+  entry.protocol = 0;
+  entry.device = device;
+  m_handlers.push_back (entry);
+}
+
+void
+Node::UnregisterProtocolHandler (ProtocolHandler handler)
+{
+  for (ProtocolHandlerList::iterator i = m_handlers.begin ();
+       i != m_handlers.end (); i++)
+    {
+      if (i->handler.IsEqual (handler))
+        {
+          m_handlers.erase (i);
+          break;
+        }
+    }
+}
+
+bool
+Node::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, uint16_t protocol)
+{
+  bool found = false;
+  for (ProtocolHandlerList::iterator i = m_handlers.begin ();
+       i != m_handlers.end (); i++)
+    {
+      if (i->device == 0 ||
+          (i->device != 0 && i->device == device))
+        {
+          if (!i->isSpecificProtocol || 
+              (i->isSpecificProtocol && i->protocol == protocol))
+            {
+              i->handler (packet, protocol, device);
+              found = true;
+            }
+        }
+    }
+  return found;
 }
 
 }//namespace ns3
