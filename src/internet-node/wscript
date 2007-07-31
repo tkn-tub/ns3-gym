@@ -25,7 +25,6 @@ def build(bld):
         'ipv4-loopback-interface.cc',
         'udp-socket.cc',
         'ipv4-end-point-demux.cc',
-        'arp-private.cc',
         'ipv4-impl.cc',
         'ascii-trace.cc',
         'pcap-trace.cc',

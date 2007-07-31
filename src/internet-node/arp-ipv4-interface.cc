@@ -28,8 +28,8 @@
 #include "ns3/address.h"
 
 #include "arp-ipv4-interface.h"
-#include "arp-private.h"
 #include "ipv4-l3-protocol.h"
+#include "arp-l3-protocol.h"
 
 namespace ns3 {
 
@@ -60,18 +60,17 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
   NS_ASSERT (GetDevice () != 0);
   if (GetDevice ()->NeedsArp ())
     {
-      Ptr<ArpPrivate> arp = m_node->QueryInterface<ArpPrivate> (ArpPrivate::iid);
+      Ptr<ArpL3Protocol> arp = m_node->QueryInterface<ArpL3Protocol> (ArpL3Protocol::iid);
       Address hardwareDestination;
       bool found;
 
       if (dest.IsBroadcast ())
         {
-           hardwareDestination = GetDevice ()->GetBroadcast ();
-           found = true;
+          hardwareDestination = GetDevice ()->GetBroadcast ();
+          found = true;
         }
       else
         {
-          Ptr<ArpPrivate> arp = m_node->QueryInterface<ArpPrivate> (ArpPrivate::iid);
           found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
         }
 

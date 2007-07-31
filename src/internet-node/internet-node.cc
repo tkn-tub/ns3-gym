@@ -31,7 +31,6 @@
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
 #include "udp-impl.h"
-#include "arp-private.h"
 #include "ipv4-impl.h"
 
 namespace ns3 {
@@ -67,12 +66,11 @@ InternetNode::Construct (void)
   ipv4L4Demux->Insert (udp);
 
   Ptr<UdpImpl> udpImpl = Create<UdpImpl> (udp);
-  Ptr<ArpPrivate> arpPrivate = Create<ArpPrivate> (arp);
   Ptr<Ipv4Impl> ipv4Impl = Create<Ipv4Impl> (ipv4);
 
   Object::AddInterface (ipv4);
+  Object::AddInterface (arp);
   Object::AddInterface (ipv4Impl);
-  Object::AddInterface (arpPrivate);
   Object::AddInterface (udpImpl);
   Object::AddInterface (ipv4L4Demux);
 }
