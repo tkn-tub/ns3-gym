@@ -17,7 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "eui48-address.h"
+#include "eui64-address.h"
 #include "address.h"
 #include "ns3/assert.h"
 #include <iomanip>
