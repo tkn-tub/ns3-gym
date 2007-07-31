@@ -28,13 +28,30 @@
 namespace ns3 {
 
 
+/**
+ * \brief Class implementing the OLSR state machine
+ *
+ * This class represents an instance of the OLSR protocol.  It
+ * attaches itself to a Node, and its lifecycle is bound to that node.
+ * Normally the functions in the ns3::olsr namespace are more simple
+ * to use to start OLSR on nodes, but access to the underlying OLSR
+ * agent can be useful in order to customize the OLSR parameters.
+ * Example:
+ *
+ * \code
+ * Ptr<OlsrAgent> olsr = ComponentManager::Create<OlsrAgent, Ptr<Node> > (OlsrAgent::cid, OlsrAgent::iid, node);
+ * agent->SetMainInterface (2);
+ * agent->Start ();
+ * \endcode
+ */
 class OlsrAgent : public Object
 {
 public:
   static const InterfaceId iid;
   static const ClassId cid;
 
-  /* \brief Sets the main interface to be used by OLSR
+  /**
+   * \brief Sets the main interface to be used by OLSR
    *
    * Normally OLSR supports multiple interfaces, but the protocol
    * requires the definition of a "main interface".  This interface's
@@ -48,7 +65,8 @@ public:
    */
   virtual void SetMainInterface (uint32_t interface) = 0;
 
-  /* \brief Starts the OLSR protocol operation
+  /**
+   * \brief Starts the OLSR protocol operation
    *
    * Calling this method essentially bootstraps the OLSR protocol, and
    * causes the agent to start broadcasting OLSR messages to

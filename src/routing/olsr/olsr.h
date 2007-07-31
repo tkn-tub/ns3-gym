@@ -26,16 +26,22 @@
 
 namespace ns3
 {
+  /**
+   * \namespace ns3::olsr
+   * \brief Includes a set of utility functions to enable OLSR on
+   * certain nodes with default parameters.  For finer grained control
+   * of OLSR parameters, see OlsrAgent.
+   */
   namespace olsr
   {
-    // \brief Start the OLSR routing agent on all nodes
+    /// \brief Start the OLSR routing agent on all nodes
     void EnableAllNodes (void);
 
-    // \brief Start the OLSR routing agent on a given list of nodes
+    /// \brief Start the OLSR routing agent on a given list of nodes
     template <typename InputIterator>
     void EnableNodes (InputIterator begin, InputIterator end);
 
-    // \brief Start the OLSR routing agent on the given nodes
+    /// \brief Start the OLSR routing agent on the given node
     void EnableNode (Ptr<Node> node);
   }
 }
