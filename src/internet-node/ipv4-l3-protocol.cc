@@ -50,6 +50,7 @@ Ipv4L3Protocol::Ipv4L3Protocol(Ptr<Node> node)
     m_identification (0),
     m_node (node)
 {
+  SetInterfaceId (Ipv4L3Protocol::iid);
   m_staticRouting = Create<Ipv4StaticRouting> ();
   AddRoutingProtocol (m_staticRouting, 0);
   SetupLoopback ();

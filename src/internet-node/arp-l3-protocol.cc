@@ -39,7 +39,9 @@ const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
 
 ArpL3Protocol::ArpL3Protocol (Ptr<Node> node)
   : m_node (node)
-{}
+{
+  SetInterfaceId (ArpL3Protocol::iid);
+}
 
 ArpL3Protocol::~ArpL3Protocol ()
 {}
