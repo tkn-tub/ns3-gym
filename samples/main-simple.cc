@@ -6,6 +6,7 @@
 #include "ns3/socket.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/nstime.h"
+#include "ns3/packet.h"
 
 using namespace ns3;
 
@@ -25,16 +26,15 @@ GenerateTraffic (Ptr<Socket> socket, uint32_t size)
 }
 
 static void
-SocketPrinter (Ptr<Socket> socket, uint32_t size, const Address &from)
+SocketPrinter (Ptr<Socket> socket, const Packet &packet, const Address &from)
 {
-  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << size << std::endl;
+  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << packet.GetSize () << std::endl;
 }
 
 static void
 PrintTraffic (Ptr<Socket> socket)
 {
-  socket->SetRecvCallback (MakeNullCallback<void,Ptr<Socket>,const uint8_t *,uint32_t,const Address &> (),
-			   MakeCallback (&SocketPrinter));
+  socket->SetRecvCallback (MakeCallback (&SocketPrinter));
 }
 
 void

@@ -56,11 +56,9 @@ Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
   m_dataSent = dataSent;
 }
 void 
-Socket::SetRecvCallback (Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> receivedData,
-			 Callback<void, Ptr<Socket>, uint32_t,const Address&> receivedDummyData)
+Socket::SetRecvCallback (Callback<void, Ptr<Socket>, const Packet &,const Address&> receivedData)
 {
   m_receivedData = receivedData;
-  m_receivedDummyData = receivedDummyData;
 }
 
 void 
@@ -137,11 +135,7 @@ Socket::NotifyDataReceived (const Packet &p, const Address &from)
 {
   if (!m_receivedData.IsNull ())
     {
-      m_receivedData (this, p.PeekData (), p.GetSize (), from);
-    }
-  if (!m_receivedDummyData.IsNull ())
-    {
-      m_receivedDummyData (this, p.GetSize (), from);
+      m_receivedData (this, p, from);
     }
 }
 

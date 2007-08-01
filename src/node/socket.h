@@ -119,13 +119,8 @@ public:
    * \brief Receive data
    * \param receivedData Invoked whenever new data is received.
    *
-   * If you wish to transport only dummy packets, this method is not a very
-   * efficient way to receive these dummy packets: it will trigger a memory
-   * allocation to hold the dummy memory into a buffer which can be passed
-   * to the user. Instead, consider using the RecvDummy method.
    */
-  void SetRecvCallback (Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> receivedData,
-                        Callback<void, Ptr<Socket>, uint32_t,const Address&> receivedDummyData);
+  void SetRecvCallback (Callback<void, Ptr<Socket>, const Packet &,const Address&> receivedData);
 
   /** 
    * \param address the address to try to allocate
@@ -212,8 +207,7 @@ protected:
   Callback<bool, Ptr<Socket>, const Address &>   m_connectionRequest;
   Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated;
   Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;
-  Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> m_receivedData;
-  Callback<void, Ptr<Socket>, uint32_t,const Address&> m_receivedDummyData;
+  Callback<void, Ptr<Socket>, const Packet &,const Address&> m_receivedData;
 };
 
 } //namespace ns3
