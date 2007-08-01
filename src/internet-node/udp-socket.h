@@ -51,8 +51,8 @@ public:
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
-  virtual int Send (const uint8_t* buffer, uint32_t size);
-  virtual int SendTo(const Address &address,const uint8_t *buffer, uint32_t size);
+  virtual int Send (const Packet &p);
+  virtual int SendTo(const Address &address,const Packet &p);
 
 private:
 

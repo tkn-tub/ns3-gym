@@ -155,22 +155,12 @@ UdpSocket::Connect(const Address & address)
   return 0;
 }
 int 
-UdpSocket::Send (const uint8_t* buffer,
-                   uint32_t size)
+UdpSocket::Send (const Packet &p)
 {
   if (!m_connected)
     {
       m_errno = ERROR_NOTCONN;
       return -1;
-    }
-  Packet p;
-  if (buffer == 0)
-    {
-      p = Packet (size);
-    }
-  else
-    {
-      p = Packet (buffer, size);
     }
   return DoSendTo (p, m_defaultAddress, m_defaultPort);
 }
@@ -205,23 +195,12 @@ UdpSocket::DoSendTo (const Packet &p, Ipv4Address ipv4, uint16_t port)
   return 0;
 }
 int 
-UdpSocket::SendTo(const Address &address,
-                    const uint8_t *buffer,
-                    uint32_t size)
+UdpSocket::SendTo(const Address &address, const Packet &p)
 {
   if (m_connected)
     {
       m_errno = ERROR_ISCONN;
       return -1;
-    }
-  Packet p;
-  if (buffer == 0)
-    {
-      p = Packet (size);
-    }
-  else
-    {
-      p = Packet (buffer, size);
     }
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();

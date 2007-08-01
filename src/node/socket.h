@@ -169,24 +169,22 @@ public:
     
   /**
    * \brief Send data (or dummy data) to the remote host
-   * \param buffer Data to send (nil if dummy data).
-   * \param size Number of bytes to send.
+   * \param p packet to send
    * \param dataSent Data sent callback.
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  virtual int Send (const uint8_t* buffer, uint32_t size) = 0;
+  virtual int Send (const Packet &p) = 0;
   
   /**
    * \brief Send data to a specified peer.
    * \param address IP Address of remote host
-   * \param buffer Data to send (nil if dummy data).
-   * \param size Number of bytes to send.
+   * \param p packet to send
    * \param dataSent Data sent callback.
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  virtual int SendTo(const Address &address,const uint8_t *buffer, uint32_t size) = 0;
+  virtual int SendTo(const Address &address,const Packet &p) = 0;
 
 protected:
   void NotifyCloseCompleted (void);

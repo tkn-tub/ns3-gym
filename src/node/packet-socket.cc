@@ -186,8 +186,7 @@ PacketSocket::Connect(const Address &ad)
 }
 
 int
-PacketSocket::Send (const uint8_t* buffer,
-                      uint32_t size)
+PacketSocket::Send (const Packet &p)
 {
   if (m_state == STATE_OPEN ||
       m_state == STATE_BOUND)
@@ -195,13 +194,11 @@ PacketSocket::Send (const uint8_t* buffer,
       m_errno = ERROR_NOTCONN;
       return -1;
     }
-  return SendTo (m_destAddr, buffer, size);
+  return SendTo (m_destAddr, p);
 }
 
 int
-PacketSocket::SendTo(const Address &address,
-                       const uint8_t *buffer,
-                       uint32_t size)
+PacketSocket::SendTo(const Address &address, const Packet &p)
 {
   PacketSocketAddress ad;
   if (m_state == STATE_CLOSED)
@@ -226,16 +223,6 @@ PacketSocket::SendTo(const Address &address,
       return -1;
     }
   ad = PacketSocketAddress::ConvertFrom (address);
-
-  Packet p;
-  if (buffer == 0)
-    {
-      p = Packet (size);
-    }
-  else
-    {
-      p = Packet (buffer, size);
-    }
   
   bool error = false;
   Address dest = ad.GetPhysicalAddress ();
