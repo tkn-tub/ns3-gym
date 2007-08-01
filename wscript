@@ -142,7 +142,9 @@ def build(bld):
 
     if Params.g_options.shell:
         run_shell()
-        return
+        raise SystemExit(0)
+
+    check_shell()
 
     # process subfolders from here
     bld.add_subdirs('src')
@@ -192,34 +194,32 @@ def _find_program(program_name, env):
     raise ValueError("program '%s' not found; available programs are: %r"
                      % (program_name, found_programs))
 
-def _run_argv(argv):
+def _run_argv(argv, os_env=None):
     env = Params.g_build.env_of_name('default')
     if sys.platform == 'linux2':
         pathvar = 'LD_LIBRARY_PATH'
-        pathsep = ':'
     elif sys.platform == 'darwin':
         pathvar = 'DYLD_LIBRARY_PATH'
-        pathsep = ':'
     elif sys.platform == 'win32':
         pathvar = 'PATH'
-        pathsep = ';'
     elif sys.platform == 'cygwin':
         pathvar = 'PATH'
-        pathsep = ':'
     else:
         Params.warning(("Don't know how to configure "
                         "dynamic library path for the platform '%s'") % (sys.platform,))
         pathvar = None
-        pathsep = None
 
-    os_env = dict(os.environ)
+    proc_env = dict(os.environ)
+    if os_env is not None:
+        proc_env.update(os_env)
+
     if pathvar is not None:
-        if pathvar in os_env:
-            os_env[pathvar] = pathsep.join(list(env['NS3_MODULE_PATH']) + [os_env[pathvar]])
+        if pathvar in proc_env:
+            proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']) + [proc_env[pathvar]])
         else:
-            os_env[pathvar] = pathsep.join(list(env['NS3_MODULE_PATH']))
+            proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
 
-    retval = subprocess.Popen(argv, env=os_env).wait()
+    retval = subprocess.Popen(argv, env=proc_env).wait()
     if retval:
         Params.fatal("Command %s exited with code %i" % (argv, retval))
 
@@ -273,13 +273,33 @@ def run_program(program_string, command_template=None):
 
     return retval
 
+def check_shell():
+    if 'NS3_MODULE_PATH' not in os.environ:
+        return
+    env = Params.g_build.env_of_name('default')
+    correct_modpath = os.pathsep.join(env['NS3_MODULE_PATH'])
+    found_modpath = os.environ['NS3_MODULE_PATH']
+    if found_modpath != correct_modpath:
+        msg = ("Detected shell (waf --shell) with incorrect configuration\n"
+               "=========================================================\n"
+               "Possible reasons for this problem:\n"
+               "  1. You switched to another ns-3 tree from inside this shell\n"
+               "  2. You switched ns-3 debug level (waf configure --debug)\n"
+               "  3. You modified the list of built ns-3 modules\n"
+               "You should correct this situation before running any program.  Possible solutions:\n"
+               "  1. Exit this shell, and start a new one\n"
+               "  2. Run a new nested shell")
+        Params.fatal(msg)
+
 
 def run_shell():
     if sys.platform == 'win32':
         shell = os.environ.get("COMSPEC", "cmd.exe")
     else:
         shell = os.environ.get("SHELL", "/bin/sh")
-    _run_argv([shell])
+
+    env = Params.g_build.env_of_name('default')
+    _run_argv([shell], {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
 
 
 def doxygen():
