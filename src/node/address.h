@@ -63,7 +63,7 @@ public:
      * The maximum size of a byte buffer which
      * can be stored in an Address instance.
      */
-    MAX_SIZE = 14
+    MAX_SIZE = 30
   };
 
   /**
