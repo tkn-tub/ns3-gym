@@ -102,9 +102,10 @@ void PointToPointNetDevice::SetInterframeGap(const Time& t)
   m_tInterframeGap = t;
 }
 
-bool PointToPointNetDevice::SendTo (Packet& p, const Address& dest, 
+bool PointToPointNetDevice::SendTo (const Packet& packet, const Address& dest, 
                                     uint16_t protocolNumber)
 {
+  Packet p = packet;
   NS_DEBUG ("PointToPointNetDevice::SendTo (" << &p << ", " << &dest << ")");
   NS_DEBUG ("PointToPointNetDevice::SendTo (): UID is " << p.GetUid () << ")");
 

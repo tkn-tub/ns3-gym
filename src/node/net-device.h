@@ -158,7 +158,7 @@ public:
    * 
    * \return whether the Send operation succeeded 
    */
-  bool Send(Packet& p, const Address& dest, uint16_t protocolNumber);
+  bool Send(const Packet& p, const Address& dest, uint16_t protocolNumber);
   /**
    * \returns the node base class which contains this network
    *          interface.
@@ -274,7 +274,7 @@ public:
    * method.  When the link is Up, this method is invoked to ask 
    * subclasses to forward packets. Subclasses MUST override this method.
    */
-  virtual bool SendTo (Packet& p, const Address &dest, uint16_t protocolNumber) = 0;
+  virtual bool SendTo (const Packet& p, const Address &dest, uint16_t protocolNumber) = 0;
   /**
    * \returns true if this NetDevice needs the higher-layers
    *          to perform ARP over it, false otherwise.

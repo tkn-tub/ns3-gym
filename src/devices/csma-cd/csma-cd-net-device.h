@@ -249,7 +249,7 @@ private:
    * \param protocolNumber -- this parameter is not used here
    * \return true if success, false on failure
    */
-  virtual bool SendTo (Packet& p, const Address& dest, uint16_t protocolNumber);
+  virtual bool SendTo (const Packet& p, const Address& dest, uint16_t protocolNumber);
 
   /**
    * Start Sending a Packet Down the Wire.
