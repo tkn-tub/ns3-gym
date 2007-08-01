@@ -87,6 +87,14 @@ public:
   Address &operator = (const Address &address);
 
   /**
+   * \returns true if this address is invalid, false otherwise.
+   *
+   * An address is invalid if and only if it was created
+   * through the default constructor and it was never
+   * re-initialized.
+   */
+  bool IsInvalid (void);
+  /**
    * \returns the length of the underlying address.
    */
   uint8_t GetLength (void) const;

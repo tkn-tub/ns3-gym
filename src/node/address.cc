@@ -40,6 +40,12 @@ Address::operator = (const Address &address)
   return *this;
 }
 
+bool
+Address::IsInvalid (void) const
+{
+  return m_len == 0 && m_type == 0;
+}
+
 uint8_t 
 Address::GetLength (void) const
 {
