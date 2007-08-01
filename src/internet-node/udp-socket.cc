@@ -57,6 +57,12 @@ UdpSocket::~UdpSocket ()
   m_udp = 0;
 }
 
+enum Socket::SocketErrno
+UdpSocket::GetErrno (void) const
+{
+  return m_errno;
+}
+
 Ptr<Node>
 UdpSocket::GetNode (void) const
 {
@@ -118,11 +124,6 @@ UdpSocket::Bind (const Address &address)
   return FinishBind ();
 }
 
-enum Socket::SocketErrno
-UdpSocket::GetErrno (void) const
-{
-  return m_errno;
-}
 int 
 UdpSocket::ShutdownSend (void)
 {
@@ -137,44 +138,25 @@ UdpSocket::ShutdownRecv (void)
 }
 
 int
-UdpSocket::DoClose(Callback<void, Ptr<Socket> > closeCompleted)
+UdpSocket::Close(void)
 {
-  // XXX: we should set the close state and check it in all API methods.
-  if (!closeCompleted.IsNull ())
-    {
-      closeCompleted (this);
-    }
+  NotifyCloseCompleted ();
   return 0;
 }
+
 int
-UdpSocket::DoConnect(const Address & address,
-                     Callback<void, Ptr<Socket> > connectionSucceeded,
-                     Callback<void, Ptr<Socket> > connectionFailed,
-                     Callback<void, Ptr<Socket> > halfClose)
+UdpSocket::Connect(const Address & address)
 {
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
   m_defaultPort = transport.GetPort ();
-  if (!connectionSucceeded.IsNull ())
-    {
-      connectionSucceeded (this);
-    }
+  NotifyConnectionSucceeded ();
   m_connected = true;
   return 0;
 }
-int
-UdpSocket::DoAccept(Callback<bool, Ptr<Socket>, const Address&> connectionRequest,
-                    Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
-                    Callback<void, Ptr<Socket> > closeRequested)
-{
-  // calling accept on a udp socket is a programming error.
-  m_errno = ERROR_OPNOTSUPP;
-  return -1;
-}
 int 
-UdpSocket::DoSend (const uint8_t* buffer,
-                   uint32_t size,
-                   Callback<void, Ptr<Socket>, uint32_t> dataSent)
+UdpSocket::Send (const uint8_t* buffer,
+                   uint32_t size)
 {
   if (!m_connected)
     {
@@ -190,20 +172,18 @@ UdpSocket::DoSend (const uint8_t* buffer,
     {
       p = Packet (buffer, size);
     }
-  return DoSendPacketTo (p, m_defaultAddress, m_defaultPort, dataSent);
+  return DoSendTo (p, m_defaultAddress, m_defaultPort);
 }
 int
-UdpSocket::DoSendPacketTo (const Packet &p, const Address &address,
-                           Callback<void, Ptr<Socket>, uint32_t> dataSent)
+UdpSocket::DoSendTo (const Packet &p, const Address &address)
 {
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
-  return DoSendPacketTo (p, ipv4, port, dataSent);
+  return DoSendTo (p, ipv4, port);
 }
 int
-UdpSocket::DoSendPacketTo (const Packet &p, Ipv4Address ipv4, uint16_t port,
-                           Callback<void, Ptr<Socket>, uint32_t> dataSent)
+UdpSocket::DoSendTo (const Packet &p, Ipv4Address ipv4, uint16_t port)
 {
   if (m_endPoint == 0)
     {
@@ -221,17 +201,13 @@ UdpSocket::DoSendPacketTo (const Packet &p, Ipv4Address ipv4, uint16_t port,
     }
   m_udp->Send (p, m_endPoint->GetLocalAddress (), ipv4,
 		   m_endPoint->GetLocalPort (), port);
-  if (!dataSent.IsNull ())
-    {
-      dataSent (this, p.GetSize ());
-    }
+  NotifyDataSent (p.GetSize ());
   return 0;
 }
 int 
-UdpSocket::DoSendTo(const Address &address,
+UdpSocket::SendTo(const Address &address,
                     const uint8_t *buffer,
-                    uint32_t size,
-                    Callback<void, Ptr<Socket>, uint32_t> dataSent)
+                    uint32_t size)
 {
   if (m_connected)
     {
@@ -250,17 +226,7 @@ UdpSocket::DoSendTo(const Address &address,
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
-  return DoSendPacketTo (p, ipv4, port, dataSent);
-}
-void 
-UdpSocket::DoRecv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> callback)
-{
-  m_rxCallback = callback;
-}
-void 
-UdpSocket::DoRecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Address&> callback)
-{
-  m_dummyRxCallback = callback;
+  return DoSendTo (p, ipv4, port);
 }
 
 void 
@@ -273,14 +239,7 @@ UdpSocket::ForwardUp (const Packet &packet, Ipv4Address ipv4, uint16_t port)
   
   Address address = InetSocketAddress (ipv4, port).ConvertTo ();
   Packet p = packet;
-  if (!m_dummyRxCallback.IsNull ())
-    {
-      m_dummyRxCallback (this, p.GetSize (), address);
-    }
-  if (!m_rxCallback.IsNull ())
-    {
-      m_rxCallback (this, p.PeekData (), p.GetSize (), address);
-    }
+  NotifyDataReceived (p, address);
 }
 
 }//namespace ns3

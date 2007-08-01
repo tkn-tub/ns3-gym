@@ -1,22 +1,24 @@
-/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
-//
-// Copyright (c) 2006 Georgia Tech Research Corporation
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License version 2 as
-// published by the Free Software Foundation;
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// Author: George F. Riley<riley@ece.gatech.edu>
-//
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2006 Georgia Tech Research Corporation
+ *               2007 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors: George F. Riley<riley@ece.gatech.edu>
+ *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 
 #ifndef __SOCKET_H__
 #define __SOCKET_H__
@@ -30,6 +32,7 @@
 namespace ns3 {
 
 class Node;
+class Packet;
 
 /**
  * \brief Define a Socket API based on the BSD Socket API.
@@ -70,6 +73,60 @@ public:
    */
   virtual Ptr<Node> GetNode (void) const = 0;
 
+  /**
+   * \param closeCompleted Callback invoked when the close operation is
+   *        completed.
+   */
+  void SetCloseCallback (Callback<void,Ptr<Socket> > closeCompleted);
+
+  /**
+   * \param connectionSucceeded this callback is invoked when the connection request
+   *        initiated by the user is successfully completed. The callback is passed
+   *        back a pointer to the same socket object.
+   * \param connectionFailed this callback is invoked when the connection request
+   *        initiated by the user is unsuccessfully completed. The callback is passed
+   *        back a pointer to the same socket object. 
+   * \param halfClose XXX When exactly is this callback invoked ? If it invoked when the
+   *        other side closes the connection ? Or when I call Close ?
+   */
+  void SetConnectCallback (Callback<void, Ptr<Socket> > connectionSucceeded,
+                          Callback<void, Ptr<Socket> > connectionFailed,
+                          Callback<void, Ptr<Socket> > halfClose);
+  /**
+   * \brief Accept connection requests from remote hosts
+   * \param connectionRequest Callback for connection request from peer. 
+   *        This user callback is passed a pointer to this socket, the 
+   *        ip address and the port number of the connection originator. 
+   *        This callback must return true to accept the incoming connection,
+   *        false otherwise. If the connection is accepted, the 
+   *        "newConnectionCreated" callback will be invoked later to give access
+   *        to the user to the socket created to match this new connection. If the
+   *        user does not explicitely specify this callback, all incoming 
+   *        connections will be refused.
+   * \param newConnectionCreated Callback for new connection: when a new
+   *        is accepted, it is created and the corresponding socket is passed
+   *        back to the user through this callback. This user callback is passed
+   *        a pointer to the new socket, and the ip address and port number
+   *        of the connection originator.
+   * \param closeRequested Callback for connection close request from peer.
+   *        XXX: when is this callback invoked ?
+   */
+  void SetAcceptCallback (Callback<bool, Ptr<Socket>, const Address &> connectionRequest,
+                                 Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
+                                 Callback<void, Ptr<Socket> > closeRequested);
+  void SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent);
+  /**
+   * \brief Receive data
+   * \param receivedData Invoked whenever new data is received.
+   *
+   * If you wish to transport only dummy packets, this method is not a very
+   * efficient way to receive these dummy packets: it will trigger a memory
+   * allocation to hold the dummy memory into a buffer which can be passed
+   * to the user. Instead, consider using the RecvDummy method.
+   */
+  void SetRecvCallback (Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> receivedData,
+                        Callback<void, Ptr<Socket>, uint32_t,const Address&> receivedDummyData);
+
   /** 
    * \param address the address to try to allocate
    * \returns 0 on success, -1 on failure.
@@ -85,16 +142,13 @@ public:
    */
   virtual int Bind () = 0;
 
-
   /** 
    * \brief Close a socket.
-   * \param closeCompleted Callback invoked when the close operation is
-   *        completed.
    *
    * After the Close call, the socket is no longer valid, and cannot
    * safely be used for subsequent operations.
    */
-  int Close(Callback<void, Ptr<Socket> > closeCompleted = MakeCallback (&Socket::DummyCallbackVoidSocket));
+  virtual int Close(void) = 0;
 
   /**
    * \returns zero on success, -1 on failure.
@@ -115,45 +169,9 @@ public:
   /**
    * \brief Initiate a connection to a remote host
    * \param address Address of remote.
-   * \param connectionSucceeded this callback is invoked when the connection request
-   *        initiated by the user is successfully completed. The callback is passed
-   *        back a pointer to the same socket object.
-   * \param connectionFailed this callback is invoked when the connection request
-   *        initiated by the user is unsuccessfully completed. The callback is passed
-   *        back a pointer to the same socket object. 
-   * \param halfClose XXX When exactly is this callback invoked ? If it invoked when the
-   *        other side closes the connection ? Or when I call Close ?
    */
-  int Connect(const Address &address,
-              Callback<void, Ptr<Socket> > connectionSucceeded = MakeCallback(&Socket::DummyCallbackVoidSocket),
-              Callback<void, Ptr<Socket> > connectionFailed = MakeCallback(&Socket::DummyCallbackVoidSocket),
-              Callback<void, Ptr<Socket> > halfClose = MakeCallback(&Socket::DummyCallbackVoidSocket));
+  virtual int Connect(const Address &address) = 0;
     
-  /**
-   * \brief Accept connection requests from remote hosts
-   * \param connectionRequest Callback for connection request from peer. 
-   *        This user callback is passed a pointer to this socket, the 
-   *        ip address and the port number of the connection originator. 
-   *        This callback must return true to accept the incoming connection,
-   *        false otherwise. If the connection is accepted, the 
-   *        "newConnectionCreated" callback will be invoked later to give access
-   *        to the user to the socket created to match this new connection. If the
-   *        user does not explicitely specify this callback, all incoming 
-   *        connections will be refused.
-   * \param newConnectionCreated Callback for new connection: when a new
-   *        is accepted, it is created and the corresponding socket is passed
-   *        back to the user through this callback. This user callback is passed
-   *        a pointer to the new socket, and the ip address and port number
-   *        of the connection originator.
-   * \param closeRequested Callback for connection close request from peer.
-   *        XXX: when is this callback invoked ?
-   */
-  int Accept(Callback<bool, Ptr<Socket>, const Address &> connectionRequest = 
-             MakeCallback(&Socket::RefuseAllConnections),
-             Callback<void, Ptr<Socket>, const Address&> newConnectionCreated = 
-             MakeCallback (&Socket::DummyCallbackVoidSocketAddress),
-             Callback<void, Ptr<Socket> > closeRequested = MakeCallback (&Socket::DummyCallbackVoidSocket));
-
   /**
    * \brief Send data (or dummy data) to the remote host
    * \param buffer Data to send (nil if dummy data).
@@ -162,9 +180,7 @@ public:
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  int Send (const uint8_t* buffer,
-            uint32_t size,
-            Callback<void, Ptr<Socket>, uint32_t> dataSent = MakeCallback (&Socket::DummyCallbackVoidSocketUi32));
+  virtual int Send (const uint8_t* buffer, uint32_t size) = 0;
   
   /**
    * \brief Send data to a specified peer.
@@ -175,60 +191,29 @@ public:
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  int SendTo(const Address &address,
-             const uint8_t *buffer,
-             uint32_t size,
-             Callback<void, Ptr<Socket>, uint32_t> dataSent = MakeCallback (&Socket::DummyCallbackVoidSocketUi32));
-  
-  /**
-   * \brief Receive data
-   * \param receivedData Invoked whenever new data is received.
-   *
-   * If you wish to transport only dummy packets, this method is not a very
-   * efficient way to receive these dummy packets: it will trigger a memory
-   * allocation to hold the dummy memory into a buffer which can be passed
-   * to the user. Instead, consider using the RecvDummy method.
-   */
-  void Recv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> receivedData = 
-            MakeCallback (&Socket::DummyCallbackVoidSocketBufferUi32Address));
-  
-  /**
-   * \brief Receive data
-   * \param receivedData Invoked whenever new data is received.
-   *
-   * This method is included because it is vastly more efficient than the 
-   * Recv method when you use dummy payload.
-   */
-  void RecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Address&> receivedData =
-                 MakeCallback (&Socket::DummyCallbackVoidSocketUi32Address));
+  virtual int SendTo(const Address &address,const uint8_t *buffer, uint32_t size) = 0;
 
-private:
-  virtual int DoClose(Callback<void, Ptr<Socket> > closeCompleted) = 0;
-  virtual int DoConnect(const Address & address,
-                        Callback<void, Ptr<Socket> > connectionSucceeded,
-                        Callback<void, Ptr<Socket> > connectionFailed,
-                        Callback<void, Ptr<Socket> > halfClose) = 0;
-  virtual int DoAccept(Callback<bool, Ptr<Socket>, const Address&> connectionRequest,
-                       Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
-                       Callback<void, Ptr<Socket> > closeRequested) = 0;
-  virtual int DoSend (const uint8_t* buffer,
-                      uint32_t size,
-                      Callback<void, Ptr<Socket>, uint32_t> dataSent) = 0;
-  virtual int DoSendTo(const Address &address,
-                       const uint8_t *buffer,
-                       uint32_t size,
-                       Callback<void, Ptr<Socket>, uint32_t> dataSent) = 0;
-  virtual void DoRecv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> receive) = 0;
-  virtual void DoRecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Address&>) = 0;
+protected:
+  void NotifyCloseCompleted (void);
+  void NotifyConnectionSucceeded (void);
+  void NotifyConnectionFailed (void);
+  void NotifyHalfClose (void);
+  bool NotifyConnectionRequest (const Address &from);
+  void NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from);
+  void NotifyCloseRequested (void);
+  void NotifyDataSent (uint32_t size);
+  void NotifyDataReceived (const Packet &p, const Address &from);
 
-
-  static bool RefuseAllConnections (Ptr<Socket> socket, const Address& address);
-  static void DummyCallbackVoidSocket (Ptr<Socket> socket);
-  static void DummyCallbackVoidSocketUi32 (Ptr<Socket> socket, uint32_t);
-  static void DummyCallbackVoidSocketUi32Address (Ptr<Socket> socket, uint32_t, const Address &);
-  static void DummyCallbackVoidSocketBufferUi32Address (Ptr<Socket> socket, const uint8_t *, uint32_t, 
-                                                                const Address &);
-  static void DummyCallbackVoidSocketAddress (Ptr<Socket> socket, const Address &);
+  Callback<void,Ptr<Socket> >    m_closeCompleted;
+  Callback<void, Ptr<Socket> >   m_connectionSucceeded;
+  Callback<void, Ptr<Socket> >   m_connectionFailed;
+  Callback<void, Ptr<Socket> >   m_halfClose;
+  Callback<void, Ptr<Socket> >   m_closeRequested;
+  Callback<bool, Ptr<Socket>, const Address &>   m_connectionRequest;
+  Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated;
+  Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;
+  Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> m_receivedData;
+  Callback<void, Ptr<Socket>, uint32_t,const Address&> m_receivedDummyData;
 };
 
 } //namespace ns3

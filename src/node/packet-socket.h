@@ -78,27 +78,15 @@ public:
   virtual Ptr<Node> GetNode (void) const;
   virtual int Bind (void);
   virtual int Bind (const Address & address);
+  virtual int Close (void);
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
+  virtual int Connect(const Address &address);
+  virtual int Send (const uint8_t* buffer, uint32_t size);
+  virtual int SendTo(const Address &address,const uint8_t *buffer, uint32_t size);
+
 
 private:
-  virtual int DoClose(Callback<void, Ptr<Socket> > closeCompleted);
-  virtual int DoConnect(const Address & address,
-                        Callback<void, Ptr<Socket> > connectionSucceeded,
-                        Callback<void, Ptr<Socket> > connectionFailed,
-                        Callback<void, Ptr<Socket> > halfClose);
-  virtual int DoAccept(Callback<bool, Ptr<Socket>, const Address&> connectionRequest,
-                       Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
-                       Callback<void, Ptr<Socket> > closeRequested);
-  virtual int DoSend (const uint8_t* buffer,
-                      uint32_t size,
-                      Callback<void, Ptr<Socket>, uint32_t> dataSent);
-  virtual int DoSendTo(const Address &address,
-                       const uint8_t *buffer,
-                       uint32_t size,
-                       Callback<void, Ptr<Socket>, uint32_t> dataSent);
-  virtual void DoRecv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> receive);
-  virtual void DoRecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Address&>);
 
 private:
   void Init (void);
@@ -114,8 +102,6 @@ private:
     STATE_CLOSED
   };
   Ptr<Node> m_node;
-  Callback<void,Ptr<Socket>,uint32_t,const Address &> m_dummyRxCallback;
-  Callback<void,Ptr<Socket>,uint8_t const*,uint32_t, const Address &> m_rxCallback;
   enum SocketErrno m_errno;
   bool m_shutdownSend;
   bool m_shutdownRecv;

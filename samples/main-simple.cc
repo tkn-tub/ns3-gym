@@ -33,7 +33,8 @@ SocketPrinter (Ptr<Socket> socket, uint32_t size, const Address &from)
 static void
 PrintTraffic (Ptr<Socket> socket)
 {
-  socket->RecvDummy (MakeCallback (&SocketPrinter));
+  socket->SetRecvCallback (MakeNullCallback<void,Ptr<Socket>,const uint8_t *,uint32_t,const Address &> (),
+			   MakeCallback (&SocketPrinter));
 }
 
 void

@@ -52,12 +52,17 @@ PacketSocket::DoDispose (void)
   m_device = 0;
 }
 
+enum Socket::SocketErrno
+PacketSocket::GetErrno (void) const
+{
+  return m_errno;
+}
+
 Ptr<Node>
 PacketSocket::GetNode (void) const
 {
   return m_node;
 }
-
 
 int
 PacketSocket::Bind (void)
@@ -111,11 +116,6 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
   return 0;
 }
 
-enum Socket::SocketErrno
-PacketSocket::GetErrno (void) const
-{
-  return m_errno;
-}
 int
 PacketSocket::ShutdownSend (void)
 {
@@ -139,26 +139,20 @@ PacketSocket::ShutdownRecv (void)
   return 0;
 }
 int
-PacketSocket::DoClose(ns3::Callback<void, Ptr<Socket> > closeCompleted)
+PacketSocket::Close(void)
 {
   if (m_state == STATE_CLOSED)
     {
       m_errno = ERROR_BADF;
       return -1;
     }
-  if (!closeCompleted.IsNull ())
-    {
-      closeCompleted (this);
-    }
   m_state = STATE_CLOSED;
+  NotifyCloseCompleted ();
   return 0;
 }
 
 int
-PacketSocket::DoConnect(const Address &ad,
-                        ns3::Callback<void, Ptr<Socket> > connectionSucceeded,
-                        ns3::Callback<void, Ptr<Socket> > connectionFailed,
-                        ns3::Callback<void, Ptr<Socket> > halfClose)
+PacketSocket::Connect(const Address &ad)
 {
   PacketSocketAddress address;
   if (m_state == STATE_CLOSED)
@@ -184,33 +178,16 @@ PacketSocket::DoConnect(const Address &ad,
     }
   m_destAddr = ad;
   m_state = STATE_CONNECTED;
-  if (!connectionSucceeded.IsNull ())
-    {
-      connectionSucceeded (this);
-    }
+  NotifyConnectionSucceeded ();
   return 0;
  error:
-  if (!connectionFailed.IsNull ())
-    {
-      connectionFailed (this);
-    }
+  NotifyConnectionFailed ();
   return -1;
 }
 
 int
-PacketSocket::DoAccept(ns3::Callback<bool, Ptr<Socket>, const Address &> connectionRequest,
-                       ns3::Callback<void, Ptr<Socket>, const Address &> newConnectionCreated,
-                       ns3::Callback<void, Ptr<Socket> > closeRequested)
-{
-  // calling accept on a packet socket is a programming error.
-  m_errno = ERROR_OPNOTSUPP;
-  return -1;
-}
-
-int
-PacketSocket::DoSend (const uint8_t* buffer,
-                      uint32_t size,
-                      ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
+PacketSocket::Send (const uint8_t* buffer,
+                      uint32_t size)
 {
   if (m_state == STATE_OPEN ||
       m_state == STATE_BOUND)
@@ -218,14 +195,13 @@ PacketSocket::DoSend (const uint8_t* buffer,
       m_errno = ERROR_NOTCONN;
       return -1;
     }
-  return DoSendTo (m_destAddr, buffer, size, dataSent);
+  return SendTo (m_destAddr, buffer, size);
 }
 
 int
-PacketSocket::DoSendTo(const Address &address,
+PacketSocket::SendTo(const Address &address,
                        const uint8_t *buffer,
-                       uint32_t size,
-                       Callback<void, Ptr<Socket>, uint32_t> dataSent)
+                       uint32_t size)
 {
   PacketSocketAddress ad;
   if (m_state == STATE_CLOSED)
@@ -282,9 +258,9 @@ PacketSocket::DoSendTo(const Address &address,
             }
         }
     }
-  if (!error && !dataSent.IsNull ())
+  if (!error)
     {
-      dataSent (this, p.GetSize ());
+      NotifyDataSent (p.GetSize ());
     }
 
   if (error)
@@ -296,18 +272,6 @@ PacketSocket::DoSendTo(const Address &address,
     {
       return 0;
     }
-}
-
-void 
-PacketSocket::DoRecv(ns3::Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address &> callback)
-{
-  m_rxCallback = callback;
-}
-
-void 
-PacketSocket::DoRecvDummy(ns3::Callback<void, Ptr<Socket>, uint32_t, const Address &> callback)
-{
-  m_dummyRxCallback = callback;
 }
 
 void 
@@ -328,14 +292,7 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, const Packet &packet,
 
   NS_DEBUG ("PacketSocket::ForwardUp: UID is " << packet.GetUid()
             << " PacketSocket " << this);
-  if (!m_dummyRxCallback.IsNull ())
-    {
-      m_dummyRxCallback (this, p.GetSize (), address.ConvertTo ());
-    }
-  if (!m_rxCallback.IsNull ())
-    {
-      m_rxCallback (this, p.PeekData (), p.GetSize (), address.ConvertTo ());
-    }
+  NotifyDataReceived (p, address.ConvertTo ());
 }
 
 }//namespace ns3
