@@ -215,7 +215,7 @@ def _run_argv(argv):
     os_env = dict(os.environ)
     if pathvar is not None:
         if pathvar in os_env:
-            os_env[pathvar] = pathsep.join([os_env[pathvar]] + list(env['NS3_MODULE_PATH']))
+            os_env[pathvar] = pathsep.join(list(env['NS3_MODULE_PATH']) + [os_env[pathvar]])
         else:
             os_env[pathvar] = pathsep.join(list(env['NS3_MODULE_PATH']))
 
