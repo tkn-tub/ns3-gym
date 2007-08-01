@@ -58,11 +58,6 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/onoff-application.h"
 
-#include "ns3/ascii-trace.h"
-
-#include "ns3/trace-context.h"
-#include "ns3/trace-root.h"
-
 
 using namespace ns3;
 
