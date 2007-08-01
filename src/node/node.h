@@ -25,6 +25,7 @@
 
 #include "ns3/object.h"
 #include "ns3/callback.h"
+#include "ns3/array-trace-resolver.h"
 
 namespace ns3 {
 
@@ -57,6 +58,7 @@ class Node : public Object
 {
 public:
   static const InterfaceId iid;
+  typedef ArrayTraceResolver<Ptr<NetDevice> >::Index NetDeviceIndex;
 
   /**
    * Must be invoked by subclasses only.

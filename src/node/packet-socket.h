@@ -121,6 +121,7 @@ private:
   bool m_shutdownRecv;
   enum State m_state;
   uint16_t m_protocol;
+  bool m_isSingleDevice;
   uint32_t m_device;
   Address m_destAddr; /// Default destination address
 };

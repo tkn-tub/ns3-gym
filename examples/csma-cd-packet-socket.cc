@@ -90,13 +90,13 @@ int main (int argc, char *argv[])
 
   // create the address which identifies n1 from n0
   PacketSocketAddress n0ToN1;
-  n0ToN1.SetDevice (n0If->GetIfIndex ());      // set outgoing interface for outgoing packets
+  n0ToN1.SetSingleDevice (n0If->GetIfIndex ());      // set outgoing interface for outgoing packets
   n0ToN1.SetPhysicalAddress (n1If->GetAddress ()); // set destination address for outgoing packets
   n0ToN1.SetProtocol (2);            // set arbitrary protocol for outgoing packets
 
   // create the address which identifies n0 from n3
   PacketSocketAddress n3ToN0;
-  n3ToN0.SetDevice (n3If->GetIfIndex ());
+  n3ToN0.SetSingleDevice (n3If->GetIfIndex ());
   n3ToN0.SetPhysicalAddress (n0If->GetAddress ());
   n3ToN0.SetProtocol (3);
   

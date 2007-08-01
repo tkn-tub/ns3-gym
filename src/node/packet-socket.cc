@@ -64,7 +64,7 @@ PacketSocket::Bind (void)
 {
   PacketSocketAddress address;
   address.SetProtocol (0);
-  address.SetDevice (0);
+  address.SetAllDevices ();
   return DoBind (address);
 }
 int
@@ -93,12 +93,21 @@ PacketSocket::DoBind (const PacketSocketAddress &address)
       m_errno = ERROR_BADF;
       return -1;
     }
-  Ptr<NetDevice> dev = m_node->GetDevice (address.GetDevice ());
+  Ptr<NetDevice> dev ;
+  if (address.IsSingleDevice ())
+    {
+      dev = 0;
+    }
+  else
+    {
+      m_node->GetDevice (address.GetSingleDevice ());
+    }
   m_node->RegisterProtocolHandler (MakeCallback (&PacketSocket::ForwardUp, this),
                                    address.GetProtocol (), dev);
   m_state = STATE_BOUND;
   m_protocol = address.GetProtocol ();
-  m_device = address.GetDevice ();
+  m_isSingleDevice = address.IsSingleDevice ();
+  m_device = address.GetSingleDevice ();
   return 0;
 }
 
@@ -254,23 +263,23 @@ PacketSocket::DoSendTo(const Address &address,
   
   bool error = false;
   Address dest = ad.GetPhysicalAddress ();
-  if (ad.GetDevice () == 0)
+  if (ad.IsSingleDevice ())
     {
-      for (uint32_t i = 1; i <= m_node->GetNDevices (); i++)
+      Ptr<NetDevice> device = m_node->GetDevice (ad.GetSingleDevice ());
+      if (!device->Send (p, dest, ad.GetProtocol ()))
+        {
+          error = true;
+        }
+    }
+  else
+    {
+      for (uint32_t i = 0; i < m_node->GetNDevices (); i++)
         {
           Ptr<NetDevice> device = m_node->GetDevice (i);
           if (!device->Send (p, dest, ad.GetProtocol ()))
             {
               error = true;
             }
-        }
-    }
-  else
-    {
-      Ptr<NetDevice> device = m_node->GetDevice (ad.GetDevice ());
-      if (!device->Send (p, dest, ad.GetProtocol ()))
-        {
-          error = true;
         }
     }
   if (!error && !dataSent.IsNull ())
@@ -314,7 +323,7 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, const Packet &packet,
 
   PacketSocketAddress address;
   address.SetPhysicalAddress (from);
-  address.SetDevice (device->GetIfIndex ());
+  address.SetSingleDevice (device->GetIfIndex ());
   address.SetProtocol (protocol);
 
   NS_DEBUG ("PacketSocket::ForwardUp: UID is " << packet.GetUid()

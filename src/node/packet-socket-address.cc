@@ -29,22 +29,17 @@ PacketSocketAddress::SetProtocol (uint16_t protocol)
 {
   m_protocol = protocol;
 }
-void 
-PacketSocketAddress::SetDevice (uint32_t index)
+void
+PacketSocketAddress::SetAllDevices (void)
 {
-  m_device = index;
+  m_isSingleDevice = false;
+  m_device = 0;
 }
 void 
-PacketSocketAddress::SetDevice (Ptr<NetDevice> device)
+PacketSocketAddress::SetSingleDevice (uint32_t index)
 {
-  if (device == 0)
-    {
-      m_device = 0;
-    }
-  else
-    {
-      m_device = device->GetIfIndex ();
-    }
+  m_isSingleDevice = true;
+  m_device = index;
 }
 void 
 PacketSocketAddress::SetPhysicalAddress (const Address address)
@@ -57,8 +52,13 @@ PacketSocketAddress::GetProtocol (void) const
 {
   return m_protocol;
 }
+bool
+PacketSocketAddress::IsSingleDevice (void) const
+{
+  return m_isSingleDevice;
+}
 uint32_t
-PacketSocketAddress::GetDevice (void) const
+PacketSocketAddress::GetSingleDevice (void) const
 {
   return m_device;
 }
@@ -79,8 +79,9 @@ PacketSocketAddress::ConvertTo (void) const
   buffer[3] = (m_device >> 16) & 0xff;
   buffer[4] = (m_device >> 8) & 0xff;
   buffer[5] = (m_device >> 0) & 0xff;
-  uint32_t copied = m_address.CopyAllTo (buffer + 6, Address::MAX_SIZE - 6);
-  return Address (GetType (), buffer, 6 + copied);
+  buffer[6] = m_isSingleDevice?1:0;
+  uint32_t copied = m_address.CopyAllTo (buffer + 7, Address::MAX_SIZE - 7);
+  return Address (GetType (), buffer, 7 + copied);
 }
 PacketSocketAddress 
 PacketSocketAddress::ConvertFrom (const Address &address)
@@ -97,11 +98,19 @@ PacketSocketAddress::ConvertFrom (const Address &address)
   device |= buffer[4];
   device <<= 8;
   device |= buffer[5];
+  bool isSingleDevice = (buffer[6] == 1)?true:false;
   Address physical;
-  physical.CopyAllFrom (buffer + 6, Address::MAX_SIZE - 6);
+  physical.CopyAllFrom (buffer + 7, Address::MAX_SIZE - 7);
   PacketSocketAddress ad;
   ad.SetProtocol (protocol);
-  ad.SetDevice (device);
+  if (isSingleDevice)
+    {
+      ad.SetSingleDevice (device);
+    }
+  else
+    {
+      ad.SetAllDevices ();
+    }
   ad.SetPhysicalAddress (physical);
   return ad;
 }

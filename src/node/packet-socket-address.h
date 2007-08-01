@@ -35,18 +35,14 @@ class PacketSocketAddress
  public:
   PacketSocketAddress ();
   void SetProtocol (uint16_t protocol);
-  /**
-   * \param index of NetDevice.
-   *
-   * index zero is reserved to identify _all_
-   * Netdevices.
-   */
-  void SetDevice (uint32_t index);
-  void SetDevice (Ptr<NetDevice> device);
+
+  void SetAllDevices (void);
+  void SetSingleDevice (uint32_t device);
   void SetPhysicalAddress (const Address address);
 
   uint16_t GetProtocol (void) const;
-  uint32_t GetDevice (void) const;
+  uint32_t GetSingleDevice (void) const;
+  bool IsSingleDevice (void) const;
   Address GetPhysicalAddress (void) const;
 
   /**
@@ -69,6 +65,7 @@ class PacketSocketAddress
  private:
   static uint8_t GetType (void);
   uint16_t m_protocol;
+  bool m_isSingleDevice;
   uint32_t m_device;
   Address m_address;
 };

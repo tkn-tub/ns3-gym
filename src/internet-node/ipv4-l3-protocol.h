@@ -57,7 +57,7 @@ public:
     DROP,
     INTERFACES,
   };
-  typedef ArrayTraceResolver<Ipv4Interface>::Index InterfaceIndex;
+  typedef ArrayTraceResolver<Ipv4Interface *>::Index InterfaceIndex;
 
   Ipv4L3Protocol(Ptr<Node> node);
   virtual ~Ipv4L3Protocol ();

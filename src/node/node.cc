@@ -79,8 +79,8 @@ Node::GetSystemId (void) const
 uint32_t 
 Node::AddDevice (Ptr<NetDevice> device)
 {
-  m_devices.push_back (device);
   uint32_t index = m_devices.size ();
+  m_devices.push_back (device);
   device->SetIfIndex(index);
   device->SetReceiveCallback (MakeCallback (&Node::ReceiveFromDevice, this));
   NotifyDeviceAdded (device);
@@ -89,14 +89,7 @@ Node::AddDevice (Ptr<NetDevice> device)
 Ptr<NetDevice>
 Node::GetDevice (uint32_t index) const
 {
-  if (index == 0)
-    {
-      return 0;
-    }
-  else
-    {
-      return m_devices[index - 1];
-    }
+  return m_devices[index];
 }
 uint32_t 
 Node::GetNDevices (void) const
