@@ -79,8 +79,8 @@ PacketSocketAddress::ConvertTo (void) const
   buffer[3] = (m_device >> 16) & 0xff;
   buffer[4] = (m_device >> 8) & 0xff;
   buffer[5] = (m_device >> 0) & 0xff;
-  m_address.CopyAllTo (buffer + 6, Address::MAX_SIZE - 6);
-  return Address (GetType (), buffer, GetSize ());
+  uint32_t copied = m_address.CopyAllTo (buffer + 6, Address::MAX_SIZE - 6);
+  return Address (GetType (), buffer, 6 + copied);
 }
 PacketSocketAddress 
 PacketSocketAddress::ConvertFrom (const Address &address)
@@ -108,18 +108,13 @@ PacketSocketAddress::ConvertFrom (const Address &address)
 bool 
 PacketSocketAddress::IsMatchingType (const Address &address)
 {
-  return address.CheckCompatible (GetType (), GetSize ());
+  return address.IsMatchingType (GetType ());
 }
 uint8_t 
 PacketSocketAddress::GetType (void)
 {
   static uint8_t type = Address::Register ();
   return type;
-}
-uint8_t
-PacketSocketAddress::GetSize (void)
-{
-  return 2 + sizeof (NetDevice *) + 1 + 1 + 8;
 }
 
 } // namespace ns3

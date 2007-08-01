@@ -100,29 +100,33 @@ public:
   uint8_t GetLength (void) const;
   /**
    * \param buffer buffer to copy the address bytes to.
+   * \returns the number of bytes copied.
    */
-  void CopyTo (uint8_t buffer[MAX_SIZE]) const;
+  uint32_t CopyTo (uint8_t buffer[MAX_SIZE]) const;
   /**
    * \param buffer buffer to copy the whole address data structure to
    * \param len the size of the buffer
+   * \returns the number of bytes copied.
    */
-  void CopyAllTo (uint8_t *buffer, uint8_t len) const;
+  uint32_t CopyAllTo (uint8_t *buffer, uint8_t len) const;
   /**
    * \param buffer pointer to a buffer of bytes which contain
    *        a serialized representation of the address in network
    *        byte order.
    * \param len length of buffer
+   * \returns the number of bytes copied.
    *
    * Copy the input buffer to the internal buffer of this address 
    * instance.
    */
-  void CopyFrom (const uint8_t *buffer, uint8_t len);
+  uint32_t CopyFrom (const uint8_t *buffer, uint8_t len);
   /**
    * \param buffer pointer to a buffer of bytes which contain
    *        a copy of all the members of this Address class.
    * \param len the length of the buffer
+   * \returns the number of bytes copied.
    */
-  void CopyAllFrom (const uint8_t *buffer, uint8_t len);
+  uint32_t CopyAllFrom (const uint8_t *buffer, uint8_t len);
   /**
    * \param type a type id as returned by Address::Register
    * \param len the length associated to this type id.
@@ -131,6 +135,17 @@ public:
    * is compatible with the requested type, false otherwise.
    */
   bool CheckCompatible (uint8_t type, uint8_t len) const;
+  /**
+   * \param type a type id as returned by Address::Register
+   * \returns true if the type of the address stored internally
+   * is compatible with the requested type, false otherwise.
+   *
+   * This method checks that the types are _exactly_ equal.
+   * This method is really used only by the PacketSocketAddress
+   * and there is little point in using it otherwise so, 
+   * you have been warned: DO NOT USE THIS METHOD.
+   */
+  bool IsMatchingType (uint8_t type) const;
   /**
    * Allocate a new type id for a new type of address.
    * \returns a new type id.

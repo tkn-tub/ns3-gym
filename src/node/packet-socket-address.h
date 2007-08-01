@@ -68,7 +68,6 @@ class PacketSocketAddress
   static bool IsMatchingType (const Address &address);
  private:
   static uint8_t GetType (void);
-  static uint8_t GetSize (void);
   uint16_t m_protocol;
   uint32_t m_device;
   Address m_address;

@@ -52,29 +52,32 @@ Address::GetLength (void) const
   NS_ASSERT (m_len <= MAX_SIZE);
   return m_len;
 }
-void 
+uint32_t
 Address::CopyTo (uint8_t buffer[MAX_SIZE]) const
 {
   NS_ASSERT (m_len <= MAX_SIZE);
   memcpy (buffer, m_data, m_len);
+  return m_len;
 }
-void 
+uint32_t
 Address::CopyAllTo (uint8_t *buffer, uint8_t len) const
 {
   NS_ASSERT (len >= m_len + 2);
   buffer[0] = m_type;
   buffer[1] = m_len;
   memcpy (buffer + 2, m_data, m_len);
+  return m_len + 2;
 }
 
-void 
+uint32_t
 Address::CopyFrom (const uint8_t *buffer, uint8_t len)
 {
   NS_ASSERT (len <= MAX_SIZE);
   memcpy (m_data, buffer, len);
   m_len = len;
+  return m_len;
 }
-void
+uint32_t
 Address::CopyAllFrom (const uint8_t *buffer, uint8_t len)
 {
   NS_ASSERT (len >= 2);
@@ -82,12 +85,18 @@ Address::CopyAllFrom (const uint8_t *buffer, uint8_t len)
   m_len = buffer[1];
   NS_ASSERT (len >= m_len + 2);
   memcpy (m_data, buffer + 2, m_len);
+  return m_len + 2;
 }
 bool 
 Address::CheckCompatible (uint8_t type, uint8_t len) const
 {
   NS_ASSERT (len <= MAX_SIZE);
   return m_len == len && (m_type == type || m_type == 0);
+}
+bool 
+Address::IsMatchingType (uint8_t type) const
+{
+  return m_type == type;
 }
 
 uint8_t 
