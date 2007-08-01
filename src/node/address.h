@@ -93,7 +93,7 @@ public:
    * through the default constructor and it was never
    * re-initialized.
    */
-  bool IsInvalid (void);
+  bool IsInvalid (void) const;
   /**
    * \returns the length of the underlying address.
    */
