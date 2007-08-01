@@ -24,7 +24,7 @@
 #include "application.h"
 #include "packet-socket-factory.h"
 #include "ns3/simulator.h"
-#include "ns3/empty-trace-resolver.h"
+#include "ns3/composite-trace-resolver.h"
 
 namespace ns3{
 
@@ -59,7 +59,9 @@ Node::~Node ()
 TraceResolver *
 Node::CreateTraceResolver (TraceContext const &context)
 {
-  return DoCreateTraceResolver (context);
+  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  DoFillTraceResolver (*resolver);
+  return resolver;
 }
 
 uint32_t 
@@ -120,8 +122,27 @@ Node::GetNApplications (void) const
   return m_applications.size ();
 }
 
+TraceResolver *
+Node::CreateDevicesTraceResolver (const TraceContext &context)
+{
+  ArrayTraceResolver<Ptr<NetDevice> > *resolver = 
+    new ArrayTraceResolver<Ptr<NetDevice> > (context,
+                                             MakeCallback (&Node::GetNDevices, this), 
+                                             MakeCallback (&Node::GetDevice, this));
+  
+  return resolver;
+}
 
-void Node::DoDispose()
+void
+Node::DoFillTraceResolver (CompositeTraceResolver &resolver)
+{
+  resolver.Add ("devices", 
+                MakeCallback (&Node::CreateDevicesTraceResolver, this),
+                Node::DEVICES);
+}
+
+void 
+Node::DoDispose()
 {
   for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
        i != m_devices.end (); i++)
@@ -142,11 +163,6 @@ void Node::DoDispose()
   Object::DoDispose ();
 }
 
-TraceResolver *
-Node::DoCreateTraceResolver (TraceContext const &context)
-{
-  return new EmptyTraceResolver (context);
-}
 void 
 Node::NotifyDeviceAdded (Ptr<NetDevice> device)
 {}

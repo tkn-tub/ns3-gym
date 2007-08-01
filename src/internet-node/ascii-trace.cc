@@ -47,14 +47,14 @@ void
 AsciiTrace::TraceAllQueues (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/*",
+  TraceRoot::Connect ("/nodes/*/devices/*/queue/*",
                       MakeCallback (&AsciiTrace::LogDevQueue, this));
 }
 void
 AsciiTrace::TraceAllNetDeviceRx (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/rx",
+  TraceRoot::Connect ("/nodes/*/devices/*/rx",
                       MakeCallback (&AsciiTrace::LogDevRx, this));
 }
 

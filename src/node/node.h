@@ -34,6 +34,7 @@ class NetDevice;
 class Application;
 class Packet;
 class Address;
+class CompositeTraceResolver;
 
 /**
  * \brief A network Node.
@@ -175,14 +176,17 @@ protected:
    * end of their own DoDispose method.
    */
   virtual void DoDispose (void);
-private:
   /**
-   * \param context the trace context
-   * \returns a trace resolver to the user. The user must delete it.
+   * \param resolver the resolver to store trace sources in.
    *
-   * Subclasses must implement this method.
+   * If a subclass wants to add new traces to a Node, it needs
+   * to override this method and record the new trace sources
+   * in the input resolver. Subclasses also _must_ chain up to
+   * their parent's DoFillTraceResolver method prior
+   * to recording they own trace sources.
    */
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
+  virtual void DoFillTraceResolver (CompositeTraceResolver &resolver);
+private:
   /**
    * \param device the device added to this Node.
    *
@@ -196,7 +200,11 @@ private:
   bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
                           uint16_t protocol, const Address &from);
   void Construct (void);
+  TraceResolver *CreateDevicesTraceResolver (const TraceContext &context);
 
+  enum TraceSource {
+    DEVICES
+  };
   struct ProtocolHandlerEntry {
     ProtocolHandler handler;
     uint16_t protocol;

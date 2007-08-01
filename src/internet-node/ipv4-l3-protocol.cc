@@ -99,8 +99,8 @@ Ipv4L3Protocol::CreateTraceResolver (TraceContext const &context)
 TraceResolver *
 Ipv4L3Protocol::InterfacesCreateTraceResolver (TraceContext const &context) const
 {
-  ArrayTraceResolver<Ipv4Interface> *resolver = 
-    new ArrayTraceResolver<Ipv4Interface> 
+  ArrayTraceResolver<Ipv4Interface *> *resolver = 
+    new ArrayTraceResolver<Ipv4Interface *> 
     (context,
      MakeCallback (&Ipv4L3Protocol::GetNInterfaces, this),
      MakeCallback (&Ipv4L3Protocol::GetInterface, this));
