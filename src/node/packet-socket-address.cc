@@ -35,6 +35,18 @@ PacketSocketAddress::SetDevice (uint32_t index)
   m_device = index;
 }
 void 
+PacketSocketAddress::SetDevice (Ptr<NetDevice> device)
+{
+  if (device == 0)
+    {
+      m_device = 0;
+    }
+  else
+    {
+      m_device = device->GetIfIndex ();
+    }
+}
+void 
 PacketSocketAddress::SetPhysicalAddress (const Address address)
 {
   m_address = address;

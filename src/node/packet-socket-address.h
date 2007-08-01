@@ -20,9 +20,11 @@
 #ifndef PACKET_SOCKET_ADDRESS_H
 #define PACKET_SOCKET_ADDRESS_H
 
+#include "ns3/ptr.h"
 #include "address.h"
 #include "eui48-address.h"
 #include "eui64-address.h"
+#include "net-device.h"
 
 namespace ns3 {
 
@@ -33,7 +35,14 @@ class PacketSocketAddress
  public:
   PacketSocketAddress ();
   void SetProtocol (uint16_t protocol);
+  /**
+   * \param index of NetDevice.
+   *
+   * index zero is reserved to identify _all_
+   * Netdevices.
+   */
   void SetDevice (uint32_t index);
+  void SetDevice (Ptr<NetDevice> device);
   void SetPhysicalAddress (const Address address);
 
   uint16_t GetProtocol (void) const;
