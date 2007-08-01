@@ -5,19 +5,19 @@ namespace ns3 {
 Socket::~Socket ()
 {}
 
-void 
+int
 Socket::Close(Callback<void, Ptr<Socket> > closeCompleted)
 {
-  DoClose (closeCompleted);
+  return DoClose (closeCompleted);
 }
 
-void 
+int
 Socket::Connect(const Address & address,
                Callback<void, Ptr<Socket> > connectionSucceeded,
                Callback<void, Ptr<Socket> > connectionFailed,
                Callback<void, Ptr<Socket> > halfClose)
 {
-  DoConnect (address, connectionSucceeded, connectionFailed, halfClose);
+  return DoConnect (address, connectionSucceeded, connectionFailed, halfClose);
 }
 int
 Socket::Accept(Callback<bool, Ptr<Socket>, const Address&> connectionRequest,

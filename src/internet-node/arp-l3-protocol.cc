@@ -84,7 +84,7 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 }
 
 void 
-ArpL3Protocol::Receive(const Packet& p, uint16_t protocol, Ptr<NetDevice> device)
+ArpL3Protocol::Receive(Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from)
 {
   ArpCache *cache = FindCache (device);
   ArpHeader arp;

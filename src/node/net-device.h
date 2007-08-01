@@ -178,10 +178,23 @@ public:
   bool NeedsArp (void) const;
 
   /**
+   * \param device a pointer to the net device which is calling this callback
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   *        This protocol number is expected to be the same protocol number
+   *        given to the Send method by the user on the sender side.
+   * \param address the address of the sender
+   * \returns true if the callback could handle the packet successfully, false
+   *          otherwise.
+   */
+  typedef Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t,const Address &> ReceiveCallback;
+
+  /**
    * \param cb callback to invoke whenever a packet has been received and must
    *        be forwarded to the higher layers.
+   *
    */
-  void SetReceiveCallback (Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> cb);
+  void SetReceiveCallback (ReceiveCallback cb);
 
  protected:
   /**
@@ -230,6 +243,7 @@ public:
    * \param p packet sent from below up to Network Device
    * \param param Extra parameter extracted from header and needed by
    * some protocols
+   * \param address the address of the sender of this packet.
    * \returns true if the packet was forwarded successfully,
    *          false otherwise.
    *
@@ -237,7 +251,7 @@ public:
    * forwards it to the higher layers by calling this method
    * which is responsible for passing it up to the Rx callback.
    */
-  bool ForwardUp (Packet& p, uint32_t param);
+  bool ForwardUp (const Packet& p, uint32_t param, const Address &address);
 
 
   /**
@@ -247,8 +261,6 @@ public:
    * at the end of their own DoDispose method.
    */
   virtual void DoDispose (void);
-
-  Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> m_receiveCallback;
 
  private:
   /**
@@ -297,6 +309,7 @@ public:
   bool          m_isMulticast;
   bool          m_isPointToPoint;
   Callback<void> m_linkChangeCallback;
+  ReceiveCallback m_receiveCallback;
 };
 
 }; // namespace ns3

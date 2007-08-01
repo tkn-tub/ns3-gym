@@ -136,20 +136,21 @@ UdpSocket::ShutdownRecv (void)
   return 0;
 }
 
-void 
-UdpSocket::DoClose(ns3::Callback<void, Ptr<Socket> > closeCompleted)
+int
+UdpSocket::DoClose(Callback<void, Ptr<Socket> > closeCompleted)
 {
   // XXX: we should set the close state and check it in all API methods.
   if (!closeCompleted.IsNull ())
     {
       closeCompleted (this);
     }
+  return 0;
 }
-void 
+int
 UdpSocket::DoConnect(const Address & address,
-                     ns3::Callback<void, Ptr<Socket> > connectionSucceeded,
-                     ns3::Callback<void, Ptr<Socket> > connectionFailed,
-                     ns3::Callback<void, Ptr<Socket> > halfClose)
+                     Callback<void, Ptr<Socket> > connectionSucceeded,
+                     Callback<void, Ptr<Socket> > connectionFailed,
+                     Callback<void, Ptr<Socket> > halfClose)
 {
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
@@ -159,11 +160,12 @@ UdpSocket::DoConnect(const Address & address,
       connectionSucceeded (this);
     }
   m_connected = true;
+  return 0;
 }
 int
-UdpSocket::DoAccept(ns3::Callback<bool, Ptr<Socket>, const Address&> connectionRequest,
-                    ns3::Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
-                    ns3::Callback<void, Ptr<Socket> > closeRequested)
+UdpSocket::DoAccept(Callback<bool, Ptr<Socket>, const Address&> connectionRequest,
+                    Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
+                    Callback<void, Ptr<Socket> > closeRequested)
 {
   // calling accept on a udp socket is a programming error.
   m_errno = ERROR_OPNOTSUPP;
@@ -172,7 +174,7 @@ UdpSocket::DoAccept(ns3::Callback<bool, Ptr<Socket>, const Address&> connectionR
 int 
 UdpSocket::DoSend (const uint8_t* buffer,
                    uint32_t size,
-                   ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
+                   Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   if (!m_connected)
     {
@@ -192,7 +194,7 @@ UdpSocket::DoSend (const uint8_t* buffer,
 }
 int
 UdpSocket::DoSendPacketTo (const Packet &p, const Address &address,
-                           ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
+                           Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
@@ -201,7 +203,7 @@ UdpSocket::DoSendPacketTo (const Packet &p, const Address &address,
 }
 int
 UdpSocket::DoSendPacketTo (const Packet &p, Ipv4Address ipv4, uint16_t port,
-                           ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
+                           Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   if (m_endPoint == 0)
     {
@@ -229,7 +231,7 @@ int
 UdpSocket::DoSendTo(const Address &address,
                     const uint8_t *buffer,
                     uint32_t size,
-                    ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
+                    Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
   if (m_connected)
     {
@@ -251,12 +253,12 @@ UdpSocket::DoSendTo(const Address &address,
   return DoSendPacketTo (p, ipv4, port, dataSent);
 }
 void 
-UdpSocket::DoRecv(ns3::Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> callback)
+UdpSocket::DoRecv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&> callback)
 {
   m_rxCallback = callback;
 }
 void 
-UdpSocket::DoRecvDummy(ns3::Callback<void, Ptr<Socket>, uint32_t,const Address&> callback)
+UdpSocket::DoRecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Address&> callback)
 {
   m_dummyRxCallback = callback;
 }

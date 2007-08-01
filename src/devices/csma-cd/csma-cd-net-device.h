@@ -173,7 +173,7 @@ enum CsmaCdEncapsulationMode {
    * @see CsmaCdChannel
    * \param p a reference to the received packet
    */
-  void Receive (Packet& p);
+  void Receive (const Packet& p);
 
   bool IsSendEnabled (void);
   bool IsReceiveEnabled (void);

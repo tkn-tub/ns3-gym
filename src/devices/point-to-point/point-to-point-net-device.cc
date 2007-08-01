@@ -220,12 +220,12 @@ void PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 void PointToPointNetDevice::Receive (Packet& p)
 {
   NS_DEBUG ("PointToPointNetDevice::Receive (" << &p << ")");
-  uint16_t param = 0;
+  uint16_t protocol = 0;
   Packet packet = p;
 
-  ProcessHeader(packet, param);
+  ProcessHeader(packet, protocol);
   m_rxTrace (packet);
-  ForwardUp (packet, param);
+  ForwardUp (packet, protocol, GetBroadcast ());
 }
 
 Ptr<Queue> PointToPointNetDevice::GetQueue(void) const 

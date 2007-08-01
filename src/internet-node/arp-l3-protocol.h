@@ -53,7 +53,7 @@ public:
   /**
    * \brief Recieve a packet
    */
-  void Receive(const Packet& p, uint16_t protocol, Ptr<NetDevice> device);
+  void Receive(Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from);
   /**
    * \brief Perform an ARP lookup
    * \param p

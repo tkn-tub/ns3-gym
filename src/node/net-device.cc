@@ -197,18 +197,19 @@ NetDevice::GetChannel (void) const
 
 // Receive packets from below
 bool
-NetDevice::ForwardUp(Packet& p, uint32_t param)
+NetDevice::ForwardUp(const Packet& p, uint32_t param, const Address &from)
 {
   bool retval = false;
-  Packet packet = p;
 
-  NS_DEBUG ("NetDevice::ForwardUp: UID is " << packet.GetUid()
+  NS_DEBUG ("NetDevice::ForwardUp: UID is " << p.GetUid()
             << " device is: " << GetName());
   
   if (!m_receiveCallback.IsNull ())
     {
-      retval = m_receiveCallback (this, packet, param);
-    } else {
+      retval = m_receiveCallback (this, p, param, from);
+    } 
+  else 
+    {
       NS_DEBUG ("NetDevice::Receive call back is NULL");
     }
 
@@ -248,7 +249,7 @@ NetDevice::NeedsArp (void) const
 }
 
 void 
-NetDevice::SetReceiveCallback (Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> cb)
+NetDevice::SetReceiveCallback (ReceiveCallback cb)
 {
   m_receiveCallback = cb;
 }

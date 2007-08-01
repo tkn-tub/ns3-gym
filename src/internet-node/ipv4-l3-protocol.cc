@@ -241,7 +241,7 @@ Ipv4L3Protocol::FindInterfaceForDevice (Ptr<const NetDevice> device)
 }  
 
 void 
-Ipv4L3Protocol::Receive(const Packet& p, uint16_t protocol, Ptr<NetDevice> device)
+Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from)
 {
   uint32_t index = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)

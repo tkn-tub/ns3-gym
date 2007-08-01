@@ -52,7 +52,9 @@ public:
     ERROR_AGAIN,
     ERROR_SHUTDOWN,
     ERROR_OPNOTSUPP,
+    ERROR_AFNOSUPPORT,
     ERROR_INVAL,
+    ERROR_BADF,
     SOCKET_ERRNO_LAST
   };
 
@@ -92,7 +94,7 @@ public:
    * After the Close call, the socket is no longer valid, and cannot
    * safely be used for subsequent operations.
    */
-  void Close(Callback<void, Ptr<Socket> > closeCompleted = MakeCallback (&Socket::DummyCallbackVoidSocket));
+  int Close(Callback<void, Ptr<Socket> > closeCompleted = MakeCallback (&Socket::DummyCallbackVoidSocket));
 
   /**
    * \returns zero on success, -1 on failure.
@@ -122,10 +124,10 @@ public:
    * \param halfClose XXX When exactly is this callback invoked ? If it invoked when the
    *        other side closes the connection ? Or when I call Close ?
    */
-  void Connect(const Address &address,
-               Callback<void, Ptr<Socket> > connectionSucceeded = MakeCallback(&Socket::DummyCallbackVoidSocket),
-               Callback<void, Ptr<Socket> > connectionFailed = MakeCallback(&Socket::DummyCallbackVoidSocket),
-               Callback<void, Ptr<Socket> > halfClose = MakeCallback(&Socket::DummyCallbackVoidSocket));
+  int Connect(const Address &address,
+              Callback<void, Ptr<Socket> > connectionSucceeded = MakeCallback(&Socket::DummyCallbackVoidSocket),
+              Callback<void, Ptr<Socket> > connectionFailed = MakeCallback(&Socket::DummyCallbackVoidSocket),
+              Callback<void, Ptr<Socket> > halfClose = MakeCallback(&Socket::DummyCallbackVoidSocket));
     
   /**
    * \brief Accept connection requests from remote hosts
@@ -201,11 +203,11 @@ public:
                  MakeCallback (&Socket::DummyCallbackVoidSocketUi32Address));
 
 private:
-  virtual void DoClose(Callback<void, Ptr<Socket> > closeCompleted) = 0;
-  virtual void DoConnect(const Address & address,
-                         Callback<void, Ptr<Socket> > connectionSucceeded,
-                         Callback<void, Ptr<Socket> > connectionFailed,
-                         Callback<void, Ptr<Socket> > halfClose) = 0;
+  virtual int DoClose(Callback<void, Ptr<Socket> > closeCompleted) = 0;
+  virtual int DoConnect(const Address & address,
+                        Callback<void, Ptr<Socket> > connectionSucceeded,
+                        Callback<void, Ptr<Socket> > connectionFailed,
+                        Callback<void, Ptr<Socket> > halfClose) = 0;
   virtual int DoAccept(Callback<bool, Ptr<Socket>, const Address&> connectionRequest,
                        Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
                        Callback<void, Ptr<Socket> > closeRequested) = 0;

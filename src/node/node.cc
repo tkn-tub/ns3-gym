@@ -22,6 +22,7 @@
 #include "node-list.h"
 #include "net-device.h"
 #include "application.h"
+#include "packet-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/empty-trace-resolver.h"
 
@@ -33,16 +34,23 @@ Node::Node()
   : m_id(0), 
     m_sid(0)
 {
-  SetInterfaceId (Node::iid);
-  m_id = NodeList::Add (this);
+  Construct ();
 }
 
 Node::Node(uint32_t sid)
   : m_id(0), 
     m_sid(sid)
 { 
+  Construct ();
+}
+
+void
+Node::Construct (void)
+{
   SetInterfaceId (Node::iid);
   m_id = NodeList::Add (this);
+  Ptr<PacketSocketFactory> socketFactory = Create<PacketSocketFactory> ();
+  AddInterface (socketFactory);
 }
   
 Node::~Node ()
@@ -69,8 +77,8 @@ Node::GetSystemId (void) const
 uint32_t 
 Node::AddDevice (Ptr<NetDevice> device)
 {
-  uint32_t index = m_devices.size ();
   m_devices.push_back (device);
+  uint32_t index = m_devices.size ();
   device->SetIfIndex(index);
   device->SetReceiveCallback (MakeCallback (&Node::ReceiveFromDevice, this));
   NotifyDeviceAdded (device);
@@ -79,7 +87,14 @@ Node::AddDevice (Ptr<NetDevice> device)
 Ptr<NetDevice>
 Node::GetDevice (uint32_t index) const
 {
-  return m_devices[index];
+  if (index == 0)
+    {
+      return 0;
+    }
+  else
+    {
+      return m_devices[index - 1];
+    }
 }
 uint32_t 
 Node::GetNDevices (void) const
@@ -143,20 +158,7 @@ Node::RegisterProtocolHandler (ProtocolHandler handler,
 {
   struct Node::ProtocolHandlerEntry entry;
   entry.handler = handler;
-  entry.isSpecificProtocol = true;
   entry.protocol = protocolType;
-  entry.device = device;
-  m_handlers.push_back (entry);
-}
-
-void 
-Node::RegisterProtocolHandler (ProtocolHandler handler,
-                               Ptr<NetDevice> device)
-{
-  struct Node::ProtocolHandlerEntry entry;
-  entry.handler = handler;
-  entry.isSpecificProtocol = false;
-  entry.protocol = 0;
   entry.device = device;
   m_handlers.push_back (entry);
 }
@@ -176,7 +178,8 @@ Node::UnregisterProtocolHandler (ProtocolHandler handler)
 }
 
 bool
-Node::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, uint16_t protocol)
+Node::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
+                         uint16_t protocol, const Address &from)
 {
   bool found = false;
   for (ProtocolHandlerList::iterator i = m_handlers.begin ();
@@ -185,10 +188,10 @@ Node::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, uint16_t p
       if (i->device == 0 ||
           (i->device != 0 && i->device == device))
         {
-          if (!i->isSpecificProtocol || 
-              (i->isSpecificProtocol && i->protocol == protocol))
+          if (i->protocol == 0 || 
+              i->protocol == protocol)
             {
-              i->handler (packet, protocol, device);
+              i->handler (device, packet, protocol, from);
               found = true;
             }
         }

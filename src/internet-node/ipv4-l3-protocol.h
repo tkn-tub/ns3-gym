@@ -95,7 +95,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  void Receive(const Packet& p, uint16_t protocol, Ptr<NetDevice> device);
+  void Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from);
 
   /**
    * \param packet packet to send

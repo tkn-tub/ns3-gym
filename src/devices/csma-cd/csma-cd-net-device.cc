@@ -457,26 +457,62 @@ CsmaCdNetDevice::AddQueue (Ptr<Queue> q)
 }
 
 void
-CsmaCdNetDevice::Receive (Packet& p)
+CsmaCdNetDevice::Receive (const Packet& packet)
 {
+  EthernetHeader header (false);
+  EthernetTrailer trailer;
+  Eui48Address broadcast;
+  Eui48Address destination;
+  Packet p = packet;
+
   NS_DEBUG ("CsmaCdNetDevice::Receive UID is (" << p.GetUid() << ")");
 
   // Only receive if send side of net device is enabled
   if (!IsReceiveEnabled())
-    return;
-
-  uint16_t param = 0;
-  Packet packet = p;
-
-  if (ProcessHeader(packet, param))
     {
-      m_rxTrace (packet);
-      ForwardUp (packet, param);
-    } 
-  else 
-    {
-      m_dropTrace (packet);
+      goto drop;
     }
+
+  if (m_encapMode == RAW)
+    {
+      ForwardUp (packet, 0, GetBroadcast ());
+      goto drop;
+    }
+  p.RemoveTrailer(trailer);
+  trailer.CheckFcs(p);
+  p.RemoveHeader(header);
+
+  broadcast = Eui48Address::ConvertFrom (GetBroadcast ());
+  destination = Eui48Address::ConvertFrom (GetAddress ());
+  if ((header.GetDestination() != broadcast) &&
+      (header.GetDestination() != destination))
+    {
+      // not for us.
+      goto drop;
+    }
+
+  uint16_t protocol;
+  switch (m_encapMode)
+    {
+    case ETHERNET_V1:
+    case IP_ARP:
+      protocol = header.GetLengthType();
+      break;
+    case LLC: {
+      LlcSnapHeader llc;
+      p.RemoveHeader (llc);
+      protocol = llc.GetType ();
+    } break;
+    case RAW:
+      NS_ASSERT (false);
+      break;
+    }
+  
+  m_rxTrace (p);
+  ForwardUp (p, protocol, header.GetSource ().ConvertTo ());
+  return;
+ drop:
+  m_dropTrace (p);
 }
 
 Ptr<Queue>

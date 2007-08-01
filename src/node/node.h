@@ -33,6 +33,7 @@ class TraceResolver;
 class NetDevice;
 class Application;
 class Packet;
+class Address;
 
 /**
  * \brief A network Node.
@@ -55,6 +56,17 @@ class Node : public Object
 {
 public:
   static const InterfaceId iid;
+
+  /**
+   * Must be invoked by subclasses only.
+   */
+  Node();
+  /**
+   * \param systemId a unique integer used for parallel simulations.
+   *
+   * Must be invoked by subclasses only.
+   */
+  Node(uint32_t systemId);
 
   virtual ~Node();
 
@@ -91,11 +103,15 @@ public:
    * Associate this device to this node.
    * This method is called automatically from NetDevice::NetDevice
    * so the user has little reason to call this method himself.
+   * The index returned is always non-zero.
    */
   uint32_t AddDevice (Ptr<NetDevice> device);
   /**
    * \param index the index of the requested NetDevice
    * \returns the requested NetDevice associated to this Node.
+   *
+   * The indexes used by the GetDevice method start at one and
+   * end at GetNDevices ()
    */
   Ptr<NetDevice> GetDevice (uint32_t index) const;
   /**
@@ -128,11 +144,15 @@ public:
   /**
    * A protocol handler
    */
-  typedef Callback<void,const Packet &,uint16_t,Ptr<NetDevice> > ProtocolHandler;
+  typedef Callback<void,Ptr<NetDevice>, const Packet &,uint16_t,const Address &> ProtocolHandler;
   /**
    * \param handler the handler to register
    * \param protocolType the type of protocol this handler is 
-   *        interested in.
+   *        interested in. This protocol type is a so-called
+   *        EtherType, as registered here:
+   *        http://standards.ieee.org/regauth/ethertype/eth.txt
+   *        the value zero is interpreted as matching all
+   *        protocols.
    * \param device the device attached to this handler. If the
    *        value is zero, the handler is attached to all
    *        devices on this node.
@@ -140,18 +160,6 @@ public:
   void RegisterProtocolHandler (ProtocolHandler handler, 
                                 uint16_t protocolType,
                                 Ptr<NetDevice> device);
-  /**
-   * \param handler the handler to register
-   * \param device the device attached to this handler. If the
-   *        value is zero, the handler is attached to all
-   *        devices on this node.
-   *
-   * Register a handler to receive all packets for all
-   * protocols.
-   */
-  void RegisterProtocolHandler (ProtocolHandler handler,
-                                Ptr<NetDevice> device);
-
   /**
    * \param handler the handler to unregister
    *
@@ -161,16 +169,6 @@ public:
   void UnregisterProtocolHandler (ProtocolHandler handler);
 
 protected:
-  /**
-   * Must be invoked by subclasses only.
-   */
-  Node();
-  /**
-   * \param systemId a unique integer used for parallel simulations.
-   *
-   * Must be invoked by subclasses only.
-   */
-  Node(uint32_t systemId);
   /**
    * The dispose method. Subclasses must override this method
    * and must chain up to it by calling Node::DoDispose at the
@@ -195,11 +193,12 @@ private:
    */
   virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
 
-  bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, uint16_t protocol);
+  bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
+                          uint16_t protocol, const Address &from);
+  void Construct (void);
 
   struct ProtocolHandlerEntry {
     ProtocolHandler handler;
-    bool isSpecificProtocol;
     uint16_t protocol;
     Ptr<NetDevice> device;
   };
