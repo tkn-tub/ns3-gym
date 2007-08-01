@@ -65,7 +65,7 @@ void AssertBreakpoint (void);
     {                                                           \
       if (!(condition))                                         \
         {                                                       \
-          std::cout << "assert failed. file=" << __FILE__ <<    \
+          std::cerr << "assert failed. file=" << __FILE__ <<    \
             ", line=" << __LINE__ << ", cond=\""#condition <<   \
             "\"" << std::endl;                                  \
           ns3::AssertBreakpoint ();                             \
@@ -88,7 +88,7 @@ void AssertBreakpoint (void);
     {                                           \
       if (!(condition))                         \
         {                                       \
-          std::cout << message << std::endl;    \
+          std::cerr << message << std::endl;    \
           ns3::AssertBreakpoint ();             \
         }                                       \
     }                                           \
