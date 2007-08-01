@@ -83,6 +83,7 @@ enum CsmaCdEncapsulationMode {
   LLC,         /**< LLC packet encapsulation */  
 };
 
+  CsmaCdNetDevice (Ptr<Node> node);
   /**
    * Construct a CsmaCdNetDevice
    *

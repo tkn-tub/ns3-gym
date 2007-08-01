@@ -35,6 +35,15 @@ NS_DEBUG_COMPONENT_DEFINE ("CsmaCdNetDevice");
 
 namespace ns3 {
 
+CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node)
+  : NetDevice (node, Eui48Address::Allocate ().ConvertTo ()),
+    m_bps (DataRate (0xffffffff))
+{
+  NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
+  m_encapMode = IP_ARP;
+  Init(true, true);
+}
+
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
                                   CsmaCdEncapsulationMode encapMode) 
   : NetDevice(node, addr.ConvertTo ()), 
