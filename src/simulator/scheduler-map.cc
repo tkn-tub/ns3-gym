@@ -118,9 +118,10 @@ SchedulerMap::PeekNext (void) const
 EventId
 SchedulerMap::RemoveNext (void)
 {
-  EventMapCI i = m_list.begin ();
-  m_list.erase (m_list.begin ());
-  return EventId (Ptr<EventImpl> (i->second, false), i->first.m_ts, i->first.m_uid);
+  EventMapI i = m_list.begin ();
+  std::pair<Scheduler::EventKey, EventImpl*> next = *i;
+  m_list.erase (i);
+  return EventId (Ptr<EventImpl> (next.second, false), next.first.m_ts, next.first.m_uid);
 }
 
 bool
