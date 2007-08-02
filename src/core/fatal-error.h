@@ -21,7 +21,7 @@
 #ifndef FATAL_ERROR_H
 #define FATAL_ERROR_H
 
-#include "assert.h"
+#include "breakpoint.h"
 #include <iostream>
 
 /**
@@ -32,7 +32,7 @@
  *
  * When this macro is hit at runtime, the user-specified 
  * error message is output and the program is halted by calling
- * the ns3::AssertBreakpoint function. This macro is enabled
+ * the NS_DEBUG_BREAKPOINT macro. This macro is enabled
  * unconditionally in all builds, including debug and optimized 
  * builds.
  */
@@ -40,7 +40,7 @@
   do                                                    \
     {                                                   \
       std::cout << msg << std::endl;			\
-      ns3::AssertBreakpoint ();                         \
+      NS_BREAKPOINT ();                                 \
     }                                                   \
   while (false)
 

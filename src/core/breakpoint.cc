@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2006 INRIA
+ * Copyright (c) 2006,2007 INRIA, INESC Porto
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,14 +17,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Gustavo Carneiro <gjc@inescporto.pt>
  */
 
-#include "assert.h"
+#include "breakpoint.h"
+#include "ns3/core-config.h"
+#ifdef HAVE_SIGNAL_H
+# include <signal.h>
+#endif
 
 namespace ns3 {
 
+#ifdef HAVE_SIGNAL_H
+
 void
-AssertBreakpoint (void)
+Breakpoint (void)
+{
+  raise (SIGTRAP);
+}
+
+#else
+
+void
+Breakpoint (void)
 {
   int *a = 0;
   /**
@@ -37,5 +52,7 @@ AssertBreakpoint (void)
       *a = 0;
     }
 }
+
+#endif // HAVE_SIGNAL_H
 
 }//namespace ns3

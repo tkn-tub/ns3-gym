@@ -21,35 +21,11 @@
 #ifndef ASSERT_H
 #define ASSERT_H
 
-/**
- * \defgroup assert Assert
- * \brief assert functions and macros
- *
- * The assert macros are used to verify
- * at runtime that a certain condition is true. If it is
- * not true, the program halts. These checks are built
- * into the program only in debugging builds. They are
- * removed in optimized builds.
- */
-
-namespace ns3 {
-
-/**
- * \ingroup debugging
- *
- * When an NS_ASSERT cannot verify its condition, 
- * this function is called. This is where you should
- * be able to put a breakpoint with a debugger if
- * you want to catch assertions before the program 
- * halts.
- */
-void AssertBreakpoint (void);
-
-}//namespace ns3
-
 #ifdef NS3_ASSERT_ENABLE
 
 #include <iostream>
+
+#include "breakpoint.h"
 
 /**
  * \ingroup assert
@@ -68,7 +44,7 @@ void AssertBreakpoint (void);
           std::cerr << "assert failed. file=" << __FILE__ <<    \
             ", line=" << __LINE__ << ", cond=\""#condition <<   \
             "\"" << std::endl;                                  \
-          ns3::AssertBreakpoint ();                             \
+          NS_BREAKPOINT ();                                     \
         }                                                       \
     }                                                           \
   while (false)
@@ -89,7 +65,7 @@ void AssertBreakpoint (void);
       if (!(condition))                         \
         {                                       \
           std::cerr << message << std::endl;    \
-          ns3::AssertBreakpoint ();             \
+          NS_BREAKPOINT ();                     \
         }                                       \
     }                                           \
   while (false)
