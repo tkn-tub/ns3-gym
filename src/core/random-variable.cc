@@ -108,8 +108,8 @@ void RandomVariable::UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2,
 {
   if (RandomVariable::globalSeedSet)
     {
-      cout << "Random number generator already initialized!" << endl;
-      cout << "Call to RandomVariable::UseGlobalSeed() ignored" << endl;
+      cerr << "Random number generator already initialized!" << endl;
+      cerr << "Call to RandomVariable::UseGlobalSeed() ignored" << endl;
       return;
     }
   RandomVariable::globalSeed[0] = s0;
@@ -537,7 +537,7 @@ void EmpiricalVariable::Validate()
       ValueCDF& current = emp[i];
       if (current.value < prior.value || current.cdf < prior.cdf)
         { // Error
-          cout << "Empirical Dist error,"
+          cerr << "Empirical Dist error,"
                << " current value " << current.value
                << " prior value "   << prior.value
                << " current cdf "   << current.cdf
