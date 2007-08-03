@@ -140,6 +140,7 @@ private:
   {
     DoPrintCallback printCallback;
     DoGetNameCallback getNameCallback;
+    std::string uidString;
     bool isHeader;
   };
   typedef std::vector<struct PacketPrinter::Printer> PrinterList;
@@ -291,12 +292,22 @@ uint32_t
 PacketPrinter::AllocateUid (bool isHeader)
 {
   RegisteredChunks *chunks = PacketPrinter::GetRegisteredChunks ();
+  uint32_t j = 0;
+  for (RegisteredChunks::iterator i = chunks->begin (); i != chunks->end (); i++)
+    {
+      if (i->uidString == T::GetUid ())
+        {
+          return j;
+        }
+      j++;
+    }
   RegisteredChunk chunk;
   chunk.printCallback = &PacketPrinter::DoPrint<T>;
   chunk.getNameCallback = &PacketPrinter::DoGetName<T>;
   chunk.isHeader = isHeader;
+  chunk.uidString = T::GetUid ();
   chunks->push_back (chunk);
-  uint32_t uid = chunks->size () * 2;
+  uint32_t uid = chunks->size ();
   PacketPrinter::PeekDefault ()->DoAddPrinter (uid, 
                                                MakeCallback (&PacketPrinter::DoDefaultPrint<T>).GetImpl (),
                                                MakeCallback (&PacketPrinter::DoDefaultPrintFragment));

@@ -7,8 +7,11 @@ using namespace ns3;
 
 /* A sample Header implementation
  */
-class MyHeader : public Header {
+class MyHeader : public Header 
+{
 public:
+  static const char *GetUid (void);
+
   MyHeader ();
   virtual ~MyHeader ();
 
@@ -23,6 +26,13 @@ private:
 
   uint16_t m_data;
 };
+
+const char *
+MyHeader::GetUid (void)
+{
+  // make sure the string is really unique.
+  return "MyHeader.test.nsnam.org";
+}
 
 MyHeader::MyHeader ()
 {}

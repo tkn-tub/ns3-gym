@@ -254,26 +254,26 @@ template <typename T>
 void 
 PacketMetadata::AddHeader (T const &header, uint32_t size)
 {
-  DoAddHeader (PacketPrinter::GetHeaderUid<T> (), size);
+  DoAddHeader (PacketPrinter::GetHeaderUid<T> () << 1, size);
 }
 
 template <typename T>
 void 
 PacketMetadata::RemoveHeader (T const &header, uint32_t size)
 {
-  DoRemoveHeader (PacketPrinter::GetHeaderUid<T> (), size);
+  DoRemoveHeader (PacketPrinter::GetHeaderUid<T> () << 1, size);
 }
 template <typename T>
 void 
 PacketMetadata::AddTrailer (T const &trailer, uint32_t size)
 {
-  DoAddTrailer (PacketPrinter::GetTrailerUid<T> (), size);
+  DoAddTrailer (PacketPrinter::GetTrailerUid<T> () << 1, size);
 }
 template <typename T>
 void 
 PacketMetadata::RemoveTrailer (T const &trailer, uint32_t size)
 {
-  DoRemoveTrailer (PacketPrinter::GetTrailerUid<T> (), size);
+  DoRemoveTrailer (PacketPrinter::GetTrailerUid<T> () << 1, size);
 }
 
 

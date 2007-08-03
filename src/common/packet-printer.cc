@@ -91,17 +91,17 @@ PacketPrinter::PrintChunk (uint32_t chunkUid,
                            uint32_t size) const
 {
   RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  NS_ASSERT (chunkUid >= 1 && chunkUid/2 <= registeredChunks->size ());
+  NS_ASSERT (chunkUid >= 1 && chunkUid <= registeredChunks->size ());
   for (PrinterList::const_iterator i = m_printerList.begin (); i != m_printerList.end (); i++)
     {
       if (i->m_chunkUid == chunkUid)
         {
-          DoPrintCallback cb = (*registeredChunks)[chunkUid/2-1].printCallback;
+          DoPrintCallback cb = (*registeredChunks)[chunkUid-1].printCallback;
           cb (i->m_printer, start, os, packetUid, size);
           return;
         }
     }
-  DoGetNameCallback cb = (*registeredChunks)[chunkUid/2-1].getNameCallback;
+  DoGetNameCallback cb = (*registeredChunks)[chunkUid-1].getNameCallback;
   std::string name = cb ();
   struct PacketPrinter::FragmentInformation info;
   info.start = 0;
@@ -120,8 +120,8 @@ PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
                                    uint32_t fragmentEnd) const
 {
   RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  NS_ASSERT (chunkUid >= 1 && chunkUid/2 <= registeredChunks->size ());
-  DoGetNameCallback cb = (*registeredChunks)[chunkUid/2-1].getNameCallback;
+  NS_ASSERT (chunkUid >= 1 && chunkUid <= registeredChunks->size ());
+  DoGetNameCallback cb = (*registeredChunks)[chunkUid-1].getNameCallback;
   std::string name = cb ();
   struct PacketPrinter::FragmentInformation info;
   info.start = fragmentStart;
@@ -217,16 +217,16 @@ bool
 PacketPrinter::IsTrailer (uint32_t uid)
 {
   RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  NS_ASSERT (uid >= 1 && uid/2 <= registeredChunks->size ());
-  bool isHeader = (*registeredChunks)[uid/2-1].isHeader;
+  NS_ASSERT (uid >= 1 && uid <= registeredChunks->size ());
+  bool isHeader = (*registeredChunks)[uid-1].isHeader;
   return !isHeader;
 }
 bool 
 PacketPrinter::IsHeader (uint32_t uid)
 {
   RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  NS_ASSERT (uid >= 1 && uid/2 <= registeredChunks->size ());
-  bool isHeader = (*registeredChunks)[uid/2-1].isHeader;
+  NS_ASSERT (uid >= 1 && uid <= registeredChunks->size ());
+  bool isHeader = (*registeredChunks)[uid-1].isHeader;
   return isHeader;
 }
 

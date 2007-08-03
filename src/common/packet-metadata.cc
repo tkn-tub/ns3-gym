@@ -977,7 +977,7 @@ PacketMetadata::DoPrint (const struct PacketMetadata::SmallItem *item,
                          Buffer data, uint32_t offset, const PacketPrinter &printer,
                          std::ostream &os) const
 {
-  uint32_t uid = item->typeUid & 0xfffffffe;
+  uint32_t uid = (item->typeUid & 0xfffffffe) >> 1;
   if (uid == 0)
     {
       // payload.
@@ -1112,6 +1112,7 @@ template <int N>
 class HistoryHeader : public Header
 {
 public:
+  static const char *GetUid (void);
   HistoryHeader ();
   bool IsOk (void) const;
 private:
@@ -1122,6 +1123,15 @@ private:
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
   bool m_ok;
 };
+
+template <int N>
+const char *
+HistoryHeader<N>::GetUid (void)
+{
+  std::ostringstream oss;
+  oss << N << "HistoryHeader.ns3";
+  return oss.str ().c_str ();
+}
 
 template <int N>
 HistoryHeader<N>::HistoryHeader ()
@@ -1181,6 +1191,7 @@ template <int N>
 class HistoryTrailer : public Trailer
 {
 public:
+  static const char *GetUid (void);
   HistoryTrailer ();
   bool IsOk (void) const;
 private:
@@ -1191,6 +1202,16 @@ private:
   virtual uint32_t DeserializeFrom (Buffer::Iterator start);
   bool m_ok;
 };
+
+template <int N>
+const char *
+HistoryTrailer<N>::GetUid (void)
+{
+  std::ostringstream oss;
+  oss << N << "HistoryTrailer.ns3";
+  return oss.str ().c_str ();
+}
+
 
 template <int N>
 HistoryTrailer<N>::HistoryTrailer ()
