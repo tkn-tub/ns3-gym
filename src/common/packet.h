@@ -37,12 +37,15 @@ class PacketPrinter;
 /**
  * \brief network packets
  *
- * Each network packet contains a byte buffer and a list of tags.
+ * Each network packet contains a byte buffer, a list of tags, and
+ * metadata.
+ *
  * - The byte buffer stores the serialized content of the headers and trailers 
  * added to a packet. The serialized representation of these headers is expected
  * to match that of real network packets bit for bit (although nothing
  * forces you to do this) which means that the content of a packet buffer
  * is expected to be that of a real packet.
+ *
  * - The list of tags stores an arbitrarily large set of arbitrary 
  * user-provided data structures in the packet: only one instance of
  * each type of data structure is allowed in a list of tags. 
@@ -51,12 +54,25 @@ class PacketPrinter;
  * 16 bytes big. Trying to attach bigger data structures will trigger
  * crashes at runtime.
  *
- * Implementing a new type of Header for a new protocol is pretty easy
- * and is a matter of creating a subclass of the ns3::Header base class,
- * and implementing the 4 pure virtual methods defined in ns3::Header.
- * Sample code which shows how to create such a new Header, how to use
- * it, and how to manipulate tags is shown below:
- * \include samples/main-packet.cc
+ * - The metadata describes the type of the headers and trailers which
+ * were serialized in the byte buffer. The maintenance of metadata is
+ * optional and disabled by default. To enable it, you must call
+ * Packet::EnableMetadata and this will allow you to get non-empty
+ * output from Packet::Print and Packet::PrintDefault.
+ *
+ * Implementing a new type of Header or Trailer for a new protocol is 
+ * pretty easy and is a matter of creating a subclass of the ns3::Header 
+ * or of the ns3::Trailer base class, and implementing the 4 pure virtual 
+ * methods defined in either of the two base classes. Users _must_
+ * also implement a static public method named GetUid which is
+ * expected to return a unique string which uniquely identifies the
+ * user's new header or trailer.
+ *
+ * Sample code which shows how to create a new Header, and how to use it, 
+ * is shown in the sample file samples/main-header.cc
+ *
+ * Implementing a new type of Tag requires roughly the same amount of
+ * work: 
  *
  * The current implementation of the byte buffers and tag list is based
  * on COW (Copy On Write. An introduction to COW can be found in Scott 
@@ -70,15 +86,16 @@ class PacketPrinter;
  *
  * Dirty operations:
  *   - ns3::Packet::RemoveTag
- *   - ns3::Packet::Add
+ *   - ns3::Packet::AddHeader
+ *   - ns3::Packet::AddTrailer
  *   - both versions of ns3::Packet::AddAtEnd
  *
  * Non-dirty operations:
  *   - ns3::Packet::AddTag
  *   - ns3::Packet::RemoveAllTags
  *   - ns3::Packet::PeekTag
- *   - ns3::Packet::Peek
- *   - ns3::Packet::Remove
+ *   - ns3::Packet::RemoveHeader
+ *   - ns3::Packet::RemoveTrailer
  *   - ns3::Packet::CreateFragment
  *   - ns3::Packet::RemoveAtStart
  *   - ns3::Packet::RemoveAtEnd
