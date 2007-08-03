@@ -14,8 +14,8 @@ using namespace ns3;
 // value of the default parameter.  Then as other code require the values of 
 // the defaults, they query them with GetValue() to get the present value.
 static BooleanDefaultValue defaultTestBool1 ("testBool1", "helpBool", true);
-static IntegerDefaultValue<int> defaultTestInt1 ("testInt1", "helpInt1", 33);
-static IntegerDefaultValue<uint32_t> defaultTestInt2 ("testInt2", "helpInt2", 47);
+static NumericDefaultValue<int> defaultTestInt1 ("testInt1", "helpInt1", 33);
+static NumericDefaultValue<uint32_t> defaultTestInt2 ("testInt2", "helpInt2", 47);
 
 // 
 // This test class demonstrates the declaration of variables that

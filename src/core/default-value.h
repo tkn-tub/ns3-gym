@@ -37,6 +37,19 @@ public:
   virtual ~DefaultValueBase ();
   std::string GetName (void) const;
   std::string GetHelp (void) const;
+
+  /**
+   * \returns true if this value is dirty, false otherwise.
+   *
+   * A value becomes dirty when ParseValue is invoked
+   * and it successfully completes. Dirtyness indicates
+   * that the state of the value was changed by a user.
+   */
+  bool IsDirty (void) const;
+  /**
+   * Clear the dirty state.
+   */
+  void ClearDirtyFlag (void);
   // parse a matching parameter
   // return true in case of success, false otherwise.
   bool ParseValue (const std::string &value);
@@ -46,11 +59,14 @@ protected:
   DefaultValueBase (const std::string &name, 
 		    const std::string &help);
 private:
+  DefaultValueBase ();
+private:
   virtual bool DoParseValue (const std::string &value) = 0;
   virtual std::string DoGetType (void) const = 0;
   virtual std::string DoGetDefaultValue (void) const = 0;
   std::string m_name;
   std::string m_help;
+  bool m_dirty;
 };
 
 class DefaultValueList
@@ -119,7 +135,7 @@ private:
 };
 
 /**
- * \brief An Integer variable for ns3::Bind
+ * \brief A Numeric variable for ns3::Bind
  * \ingroup config
  *
  * Every instance of this type is automatically 
@@ -127,7 +143,7 @@ private:
  * by ns3::Bind. 
  */
 template <typename T>
-class IntegerDefaultValue : public DefaultValueBase
+class NumericDefaultValue : public DefaultValueBase
 {
 public:
   /**
@@ -141,7 +157,7 @@ public:
    * of values which can be stored and retrieved from the underlying
    * type.
    */
-  IntegerDefaultValue (std::string name,
+  NumericDefaultValue (std::string name,
 		       std::string help,
 		       T defaultValue);
   /**
@@ -153,7 +169,7 @@ public:
    * \param minValue the minimum value which can be set
    *        in this variable
    */
-  IntegerDefaultValue (std::string name,
+  NumericDefaultValue (std::string name,
 		       std::string help,
 		       T defaultValue,
 		       T minValue);
@@ -169,7 +185,7 @@ public:
    * \param maxValue the maximum value which can be set in this
    *        variable.
    */
-  IntegerDefaultValue (std::string name,
+  NumericDefaultValue (std::string name,
 		       std::string help,
 		       T defaultValue,
 		       T minValue,
@@ -335,7 +351,7 @@ namespace ns3 {
 
 
 template <typename T>
-IntegerDefaultValue<T>::IntegerDefaultValue (std::string name,
+NumericDefaultValue<T>::NumericDefaultValue (std::string name,
 					     std::string help,
 					     T defaultValue)
   : DefaultValueBase (name, help),
@@ -348,7 +364,7 @@ IntegerDefaultValue<T>::IntegerDefaultValue (std::string name,
   NS_ASSERT (m_minValue < m_maxValue);
 }
 template <typename T>
-IntegerDefaultValue<T>::IntegerDefaultValue (std::string name,
+NumericDefaultValue<T>::NumericDefaultValue (std::string name,
 					     std::string help,
 					     T defaultValue,
 					     T minValue)
@@ -364,7 +380,7 @@ IntegerDefaultValue<T>::IntegerDefaultValue (std::string name,
 	     m_defaultValue >= m_minValue);
 }
 template <typename T>
-IntegerDefaultValue<T>::IntegerDefaultValue (std::string name,
+NumericDefaultValue<T>::NumericDefaultValue (std::string name,
 					     std::string help,
 					     T defaultValue,
 					     T minValue,
@@ -383,7 +399,7 @@ IntegerDefaultValue<T>::IntegerDefaultValue (std::string name,
 
 template <typename T>
 void 
-IntegerDefaultValue<T>::SetValue (T v)
+NumericDefaultValue<T>::SetValue (T v)
 {
   NS_ASSERT (v <= m_maxValue &&
 	     v >= m_minValue);
@@ -392,14 +408,14 @@ IntegerDefaultValue<T>::SetValue (T v)
 
 template <typename T>
 T
-IntegerDefaultValue<T>::GetValue (void) const
+NumericDefaultValue<T>::GetValue (void) const
 {
   return m_value;
 }
 
 template <typename T>
 bool
-IntegerDefaultValue<T>::DoParseValue (const std::string &value)
+NumericDefaultValue<T>::DoParseValue (const std::string &value)
 {
   std::istringstream iss;
   iss.str (value);
@@ -414,7 +430,7 @@ IntegerDefaultValue<T>::DoParseValue (const std::string &value)
 
 template <typename T>
 std::string
-IntegerDefaultValue<T>::DoGetType (void) const
+NumericDefaultValue<T>::DoGetType (void) const
 {
   std::ostringstream oss;
   oss << TypeNameGet<T> () << "("
@@ -425,7 +441,7 @@ IntegerDefaultValue<T>::DoGetType (void) const
 
 template <typename T>
 std::string
-IntegerDefaultValue<T>::DoGetDefaultValue (void) const
+NumericDefaultValue<T>::DoGetDefaultValue (void) const
 {
   std::ostringstream oss;
   oss << m_defaultValue;

@@ -66,65 +66,61 @@ SchedulerList::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b
     }
 }
 
-EventId
-SchedulerList::RealInsert (EventImpl *event, Scheduler::EventKey key)
+void
+SchedulerList::Insert (const EventId &id)
 {
+  Scheduler::EventKey key;
+  // acquire refcount on EventImpl
+  EventImpl *event = id.PeekEventImpl ();
+  event->Ref ();
+  key.m_ts = id.GetTs ();
+  key.m_uid = id.GetUid ();
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
       if (IsLower (&key, &i->second))
         {
           m_events.insert (i, std::make_pair (event, key));
-          return EventId (event, key.m_ts, key.m_uid);
+          return;
         }
     }
   m_events.push_back (std::make_pair (event, key));
-  return EventId (event, key.m_ts, key.m_uid);
 }
 bool 
-SchedulerList::RealIsEmpty (void) const
+SchedulerList::IsEmpty (void) const
 {
   return m_events.empty ();
 }
-EventImpl *
-SchedulerList::RealPeekNext (void) const
+EventId
+SchedulerList::PeekNext (void) const
 {
-  return m_events.front ().first;
-}
-Scheduler::EventKey
-SchedulerList::RealPeekNextKey (void) const
-{
-  return m_events.front ().second;
+  std::pair<EventImpl *, EventKey> next = m_events.front ();
+  return EventId (next.first, next.second.m_ts, next.second.m_uid);
 }
 
-void
-SchedulerList::RealRemoveNext (void)
+EventId
+SchedulerList::RemoveNext (void)
 {
+  std::pair<EventImpl *, EventKey> next = m_events.front ();
   m_events.pop_front ();
+  return EventId (Ptr<EventImpl> (next.first,false), next.second.m_ts, next.second.m_uid);
 }
 
-EventImpl *
-SchedulerList::RealRemove (EventId id, Scheduler::EventKey *key)
+bool
+SchedulerList::Remove (const EventId &id)
 {
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
       if (i->second.m_uid == id.GetUid ())
         {
-          EventImpl *retval = i->first;
-          NS_ASSERT (id.GetEventImpl () == retval);
-          key->m_ts = id.GetTs ();
-          key->m_uid = id.GetUid ();
+          NS_ASSERT (id.PeekEventImpl () == i->first);
+          // release single acquire ref.
+          i->first->Unref ();
           m_events.erase (i);
-          return retval;
+          return true;
         }
     }
   NS_ASSERT (false);
-  return 0;
-}
-
-bool 
-SchedulerList::RealIsValid (EventId id)
-{
-  return true;
+  return false;
 }
 
 }; // namespace ns3

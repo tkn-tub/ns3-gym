@@ -5,15 +5,23 @@ Steps in doing an ns-3 release
    - revise and check in RELEASE_NOTES
    - update and check in VERSION to the latest release number
 2. make a new "architecture.pdf" document and place it in the doc/ directory
-3. scons dist
-4. test tarball on release platforms (run-tests and simple-p2p)
-5. tag ns-3-dev with "release ns-3.0.X"
-6. clone the ns-3-dev and place it on the repository
-7. upload "ns-3.0.x.tar.gz" to the releases/ directory on the server
-8. update web page
+3. add current version of waf script from subversion:
+   - svn checkout http://waf.googlecode.com/svn/tags/ns3/ waf
+   - build waf script and put it into top of ns-3-dev
+4. cd ns-3-dev; ./waf configure; ./waf dist
+5. test tarball on release platforms (run-tests and simple-p2p)
+6. tag ns-3-dev with "release ns-3.0.X"
+  - hg tag "release ns-3.0.x"
+  - hg push 
+7. clone the tagged ns-3-dev and place it on the repository
+  - ssh code.nsnam.org; sudo; su code;
+  - cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.0.x
+  - cd /home/code/repos/ns-3.0.x/.hg and edit the hgrc appropriately
+8. upload "ns-3.0.x.tar.bz2" to the releases/ directory on the server
+9. update web page
    - add link to news.html
    - update download.html
    - update roadmap.html
    - build and update Doxygen directory on the server
    - update and upload software architecture document (PDF, HTML)
-9. announce to ns-developers, with summary of release notes
+10. announce to ns-developers, with summary of release notes

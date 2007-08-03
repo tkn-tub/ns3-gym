@@ -37,6 +37,14 @@ uint16_t PacketMetadata::m_chunkUid = 0;
 PacketMetadata::DataFreeList PacketMetadata::m_freeList;
 bool g_optOne = false;
 
+PacketMetadata::DataFreeList::~DataFreeList ()
+{
+  for (iterator i = begin (); i != end (); i++)
+    {
+      PacketMetadata::Deallocate (*i);
+    }
+}
+
 void 
 PacketMetadata::Enable (void)
 {
@@ -1369,13 +1377,13 @@ PacketMetadataTest::Check (const char *file, int line, std::list<int> expected)
 {
   if (m_headerError)
     {
-      std::cout << "PacketMetadata header error. file=" << file 
+      Failure () << "PacketMetadata header error. file=" << file 
                 << ", line=" << line << std::endl;
       return false;
     }
   if (m_trailerError)
     {
-      std::cout << "PacketMetadata trailer error. file=" << file 
+      Failure () << "PacketMetadata trailer error. file=" << file 
                 << ", line=" << line << std::endl;
       return false;
     }
@@ -1395,20 +1403,20 @@ PacketMetadataTest::Check (const char *file, int line, std::list<int> expected)
     }
   return true;
  error:
-  std::cout << "PacketMetadata error. file="<< file 
+  Failure () << "PacketMetadata error. file="<< file 
             << ", line=" << line << ", got:\"";
   for (std::list<int>::iterator i = m_prints.begin (); 
        i != m_prints.end (); i++)
     {
-      std::cout << *i << ", ";
+      Failure () << *i << ", ";
     }
-  std::cout << "\", expected: \"";
+  Failure () << "\", expected: \"";
   for (std::list<int>::iterator j = expected.begin ();
        j != expected.end (); j++)
     {
-      std::cout << *j << ", ";
+      Failure () << *j << ", ";
     }
-  std::cout << "\"" << std::endl;
+  Failure () << "\"" << std::endl;
   return false;
 }
 
@@ -1428,7 +1436,7 @@ PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t
   va_end (ap);
 
   m_printer.PrintForward ();
-  p.Print (std::cerr, m_printer);
+  p.Print (Failure (), m_printer);
   bool ok = Check (file, line, expected);
   CleanupPrints ();
   if (!ok)
@@ -1437,7 +1445,7 @@ PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t
     }
 
   m_printer.PrintBackward ();
-  p.Print (std::cerr, m_printer);
+  p.Print (Failure (), m_printer);
   expected.reverse ();
   ok = Check (file, line, expected);
   CleanupPrints ();

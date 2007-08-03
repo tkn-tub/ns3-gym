@@ -27,6 +27,8 @@
 
 namespace ns3 {
 
+class Ipv4Mask;
+
 /** Ipv4 addresses are stored in host order in
   * this class.
   */
@@ -96,8 +98,18 @@ public:
    */
   void Print (std::ostream &os) const;
 
-  bool IsBroadcast (void);
-  bool IsMulticast (void);
+  bool IsBroadcast (void) const;
+  bool IsMulticast (void) const;
+  /**
+   * \brief Combine this address with a network mask
+   *
+   * This method returns an IPv4 address that is this address combined
+   * (bitwise and) with a network mask, yielding an IPv4 network
+   * address.
+   *
+   * \param a network mask 
+   */
+  Ipv4Address CombineMask (Ipv4Mask const &mask) const;
 
   static Ipv4Address GetZero (void);
   static Ipv4Address GetAny (void);

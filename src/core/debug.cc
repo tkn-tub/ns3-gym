@@ -24,6 +24,7 @@
 #include "debug.h"
 #include "assert.h"
 #include "ns3/core-config.h"
+#include "fatal-error.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -88,7 +89,7 @@ DebugComponentEnableEnvVar (void)
         }
       if (!found)
         {
-          std::cout << "No debug component named=\"" << tmp << "\"" << std::endl;
+          NS_FATAL_ERROR ("No debug component named=\"" << tmp << "\"");
         }
       if (next == std::string::npos)
         {

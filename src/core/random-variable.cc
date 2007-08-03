@@ -108,8 +108,8 @@ void RandomVariable::UseGlobalSeed(uint32_t s0, uint32_t s1, uint32_t s2,
 {
   if (RandomVariable::globalSeedSet)
     {
-      cout << "Random number generator already initialized!" << endl;
-      cout << "Call to RandomVariable::UseGlobalSeed() ignored" << endl;
+      cerr << "Random number generator already initialized!" << endl;
+      cerr << "Call to RandomVariable::UseGlobalSeed() ignored" << endl;
       return;
     }
   RandomVariable::globalSeed[0] = s0;
@@ -537,7 +537,7 @@ void EmpiricalVariable::Validate()
       ValueCDF& current = emp[i];
       if (current.value < prior.value || current.cdf < prior.cdf)
         { // Error
-          cout << "Empirical Dist error,"
+          cerr << "Empirical Dist error,"
                << " current value " << current.value
                << " prior value "   << prior.value
                << " current cdf "   << current.cdf
@@ -683,6 +683,43 @@ double LogNormalVariable::GetSingleValue (double mu, double sigma)
 
   return z;
 }
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// TriangularVariable methods
+TriangularVariable::TriangularVariable() 
+  : m_min(0), m_max(1), m_mode(0.5) { }
+  
+TriangularVariable::TriangularVariable(double s, double l, double mean) 
+  : m_min(s), m_max(l), m_mode(3.0*mean-s-l) { }
+  
+TriangularVariable::TriangularVariable(const TriangularVariable& c) 
+  : RandomVariable(c), m_min(c.m_min), m_max(c.m_max), m_mode(c.m_mode) { }
+
+double TriangularVariable::GetValue()
+{
+  double u = m_generator->RandU01();
+  if(u <= (m_mode - m_min) / (m_max - m_min) )
+    return m_min + sqrt(u * (m_max - m_min) * (m_mode - m_min) );
+  else
+    return m_max - sqrt( (1-u) * (m_max - m_min) * (m_max - m_mode) );
+}
+
+RandomVariable* TriangularVariable::Copy() const
+{
+  return new TriangularVariable(*this);
+}
+
+double TriangularVariable::GetSingleValue(double s, double l, double mean)
+{
+  double mode = 3.0*mean-s-l;
+  double u = m_static_generator->RandU01();
+  if(u <= (mode - s) / (l - s) )
+    return s + sqrt(u * (l - s) * (mode - s) );
+  else
+    return l - sqrt( (1-u) * (l - s) * (l - mode) );
+}
+
 
 }//namespace ns3
 

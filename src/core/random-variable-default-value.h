@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2006 INRIA
+ * Copyright (c) 2007 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,21 +18,33 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef HEADER_UTILS_H
-#define HEADER_UTILS_H
+#ifndef RANDOM_VARIABLE_DEFAULT_VALUE_H
+#define RANDOM_VARIABLE_DEFAULT_VALUE_H
 
-#include "ns3/buffer.h"
-#include "ns3/ipv4-address.h"
-#include "ns3/mac-address.h"
+#include "random-variable.h"
+#include "default-value.h"
 
 namespace ns3 {
 
-void WriteTo (Buffer::Iterator &i, Ipv4Address ad);
-void WriteTo (Buffer::Iterator &i, MacAddress ad);
+class RandomVariableDefaultValue : public DefaultValueBase
+{
+ public:
+  RandomVariableDefaultValue (std::string name,
+			      std::string help,
+			      std::string defaultValue);
 
-void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad);
-void ReadFrom (Buffer::Iterator &i, MacAddress &ad, uint32_t len);
+  RandomVariable *GetCopy (void);
+private:
+  bool Parse (const std::string &value, bool mustCreate, RandomVariable **pVariable);
+  double ReadAsDouble (const std::string value, bool &ok);
+  virtual bool DoParseValue (const std::string &value);
+  virtual std::string DoGetType (void) const;
+  virtual std::string DoGetDefaultValue (void) const;
 
+  std::string m_defaultValue;
+  std::string m_value;
 };
 
-#endif /* HEADER_UTILS_H */
+} // namespace ns3
+
+#endif /* RANDOM_VARIABLE_DEFAULT_VALUE_H */

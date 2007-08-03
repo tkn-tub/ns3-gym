@@ -160,7 +160,7 @@ private:
    * at this point to setup the node's receive function for
    * the NetDevice packets.
    */
-  virtual void DoAddDevice (Ptr<NetDevice> device) const = 0;
+  virtual void DoAddDevice (Ptr<NetDevice> device) = 0;
 
   uint32_t    m_id;         // Node id for this node
   uint32_t    m_sid;        // System id for this node

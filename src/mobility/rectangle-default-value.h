@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2006 INRIA
+ * Copyright (c) 2007 INRIA
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,32 +18,34 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "header-utils.h"
+#ifndef RECTANGLE_DEFAULT_VALUE_H
+#define RECTANGLE_DEFAULT_VALUE_H
+
+#include <string>
+#include "ns3/default-value.h"
+#include "rectangle.h"
 
 namespace ns3 {
 
-void WriteTo (Buffer::Iterator &i, Ipv4Address ad)
+class RectangleDefaultValue : public DefaultValueBase
 {
-  i.WriteHtonU32 (ad.GetHostOrder ());
-}
-void WriteTo (Buffer::Iterator &i, MacAddress ad)
-{
-  uint8_t mac[MacAddress::MAX_LEN];
-  ad.Peek (mac);
-  i.Write (mac, ad.GetLength ());
-}
+ public:
+  RectangleDefaultValue (std::string name,
+			 std::string help,
+			 double xMin, double xMax,
+			 double yMin, double yMax);
 
-void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad)
-{
-  ad.SetHostOrder (i.ReadNtohU32 ());
-}
-void ReadFrom (Buffer::Iterator &i, MacAddress &ad, uint32_t len)
-{
-  uint8_t mac[MacAddress::MAX_LEN];
-  i.Read (mac, len);
-  ad.Set (mac, len);
-}
+  Rectangle GetValue (void) const;
+ private:
+  double ReadDouble (std::string str, bool &ok);
+  virtual bool DoParseValue (const std::string &value);
+  virtual std::string DoGetType (void) const;
+  virtual std::string DoGetDefaultValue (void) const;
 
+  Rectangle m_default;
+  Rectangle m_rectangle;
+};
 
+} // namespace ns3
 
-}; // namespace ns3
+#endif /* RECTANGLE_DEFAULT_VALUE_H */

@@ -29,7 +29,8 @@ EventImpl::~EventImpl ()
 {}
 
 EventImpl::EventImpl ()
-  : m_cancel (false)
+  : m_cancel (false),
+    m_count (1)
 {}
 void 
 EventImpl::Invoke (void)

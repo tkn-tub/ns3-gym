@@ -1,0 +1,39 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    mobility = bld.create_obj('cpp', 'shlib')
+    mobility.name = 'ns3-mobility'
+    mobility.target = mobility.name
+    mobility.uselib_local = ['ns3-core', 'ns3-simulator']
+    mobility.source = [
+        'grid-topology.cc',
+        'hierarchical-mobility-model.cc',
+        'mobility-model.cc',
+        'mobility-model-notifier.cc',
+        'position.cc',
+        'random-position.cc',
+        'random-topology.cc',
+        'rectangle.cc',
+        'rectangle-default-value.cc',
+        'speed.cc',
+        'static-mobility-model.cc',
+        'static-speed-helper.cc',
+        'static-speed-mobility-model.cc',
+        ]
+
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'grid-topology.h',
+        'hierarchical-mobility-model.h',
+        'mobility-model.h',
+        'mobility-model-notifier.h',
+        'position.h',
+        'random-position.h',
+        'random-topology.h',
+        'rectangle.h',
+        'rectangle-default-value.h',
+        'speed.h',
+        'static-mobility-model.h',
+        'static-speed-helper.h',
+        'static-speed-mobility-model.h',
+        ]

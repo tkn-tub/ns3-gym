@@ -39,6 +39,13 @@ Ipv4Impl::DoDispose (void)
   m_ipv4 = 0;
 }
 
+void
+Ipv4Impl::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
+                              int16_t priority)
+{
+  m_ipv4->AddRoutingProtocol (routingProtocol, priority);
+}
+
 void 
 Ipv4Impl::AddHostRouteTo (Ipv4Address dest, 
 			   Ipv4Address nextHop, 

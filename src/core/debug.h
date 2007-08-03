@@ -110,7 +110,7 @@ private:
     {                                           \
       if (g_debug.IsEnabled ())			\
         {                                       \
-          std::cout << msg << std::endl;        \
+          std::cerr << msg << std::endl;        \
         }                                       \
     }                                           \
   while (false)
@@ -125,7 +125,7 @@ private:
 #define NS_DEBUG_UNCOND(msg)         \
   do                                 \
     {                                \
-      std::cout << msg << std::endl; \
+      std::cerr << msg << std::endl; \
     }                                \
   while (false)
 

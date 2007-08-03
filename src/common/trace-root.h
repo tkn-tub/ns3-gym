@@ -148,7 +148,7 @@
  * information on where the trace source is located in the namespace tree.
  * In that example, if there are multiple nodes in this scenario, each
  * call to the MyTraceSink function would receive a different TraceContext,
- * each of which would contain a different NodeList::Index object.
+ * each of which would contain a different NodeList::NodeIndex object.
  *
  * It is important to understand exactly what an ns3::TraceContext
  * is. It is a container for a number of type instances. Each instance of
@@ -164,7 +164,7 @@
  * \code
  * void MyTraceSink (TraceContext const &context, Packet &packet)
  * {
- *   NodeList::Index index;
+ *   NodeList::NodeIndex index;
  *   context.Get (index);
  *   std::cout << "node id=" << NodeList::GetNode (index)->GetId () << std::endl;
  * }

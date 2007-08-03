@@ -87,57 +87,55 @@ SchedulerMap::EventKeyCompare::operator () (struct EventKey const&a, struct Even
 
 
 
-EventId
-SchedulerMap::RealInsert (EventImpl *event, Scheduler::EventKey key)
+void
+SchedulerMap::Insert (const EventId &id)
 {
+  // acquire a single ref
+  EventImpl *event = id.PeekEventImpl ();
+  event->Ref ();
+  Scheduler::EventKey key;
+  key.m_ts = id.GetTs ();
+  key.m_uid = id.GetUid ();
   std::pair<EventMapI,bool> result;
   result = m_list.insert (std::make_pair (key, event));
   NS_ASSERT (result.second);
-  return EventId (event, key.m_ts, key.m_uid);
 }
 
 bool
-SchedulerMap::RealIsEmpty (void) const
+SchedulerMap::IsEmpty (void) const
 {
   return m_list.empty ();
 }
 
-EventImpl *
-SchedulerMap::RealPeekNext (void) const
+EventId
+SchedulerMap::PeekNext (void) const
 {
   EventMapCI i = m_list.begin ();
   NS_ASSERT (i != m_list.end ());
-  return (*i).second;
+  
+  return EventId (i->second, i->first.m_ts, i->first.m_uid);
 }
-Scheduler::EventKey
-SchedulerMap::RealPeekNextKey (void) const
+EventId
+SchedulerMap::RemoveNext (void)
 {
-  EventMapCI i = m_list.begin ();
-  NS_ASSERT (i != m_list.end ());
-  return (*i).first;
-}
-void
-SchedulerMap::RealRemoveNext (void)
-{
-  m_list.erase (m_list.begin ());
-}
-
-EventImpl *
-SchedulerMap::RealRemove (EventId id, Scheduler::EventKey *key)
-{
-  key->m_ts = id.GetTs ();
-  key->m_uid = id.GetUid ();
-  EventMapI i = m_list.find (*key);
-  EventImpl *retval = i->second;
+  EventMapI i = m_list.begin ();
+  std::pair<Scheduler::EventKey, EventImpl*> next = *i;
   m_list.erase (i);
-  return retval;
+  return EventId (Ptr<EventImpl> (next.second, false), next.first.m_ts, next.first.m_uid);
 }
 
 bool
-SchedulerMap::RealIsValid (EventId id)
+SchedulerMap::Remove (const EventId &id)
 {
+  Scheduler::EventKey key;
+  key.m_ts = id.GetTs ();
+  key.m_uid = id.GetUid ();
+  EventMapI i = m_list.find (key);
+  NS_ASSERT (i->second == id.PeekEventImpl ());
+  // release single ref.
+  i->second->Unref ();
+  m_list.erase (i);
   return true;
 }
-
 
 }; // namespace ns3

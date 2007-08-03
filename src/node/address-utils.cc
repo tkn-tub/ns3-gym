@@ -1,4 +1,4 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
  * All rights reserved.
@@ -18,24 +18,32 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-
-#include "assert.h"
+#include "address-utils.h"
 
 namespace ns3 {
 
-void
-AssertBreakpoint (void)
+void WriteTo (Buffer::Iterator &i, Ipv4Address ad)
 {
-  int *a = 0;
-  /**
-   * we test here to allow a debugger to change the value of
-   * the variable 'a' to allow the debugger to avoid the 
-   * subsequent segfault.
-   */
-  if (a == 0)
-    {
-      *a = 0;
-    }
+  i.WriteHtonU32 (ad.GetHostOrder ());
+}
+void WriteTo (Buffer::Iterator &i, MacAddress ad)
+{
+  uint8_t mac[MacAddress::MAX_LEN];
+  ad.Peek (mac);
+  i.Write (mac, ad.GetLength ());
 }
 
-}//namespace ns3
+void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad)
+{
+  ad.SetHostOrder (i.ReadNtohU32 ());
+}
+void ReadFrom (Buffer::Iterator &i, MacAddress &ad, uint32_t len)
+{
+  uint8_t mac[MacAddress::MAX_LEN];
+  i.Read (mac, len);
+  ad.Set (mac, len);
+}
+
+
+
+}; // namespace ns3

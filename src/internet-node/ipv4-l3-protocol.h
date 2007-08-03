@@ -27,8 +27,11 @@
 #include "ns3/callback-trace-source.h"
 #include "ns3/array-trace-resolver.h"
 #include "ns3/ipv4-address.h"
+#include "ipv4-header.h"
 #include "ns3/ptr.h"
+#include "ns3/ipv4.h"
 #include "l3-protocol.h"
+#include "ipv4-static-routing.h"
 
 namespace ns3 {
 
@@ -124,7 +127,10 @@ public:
   void SetDefaultRoute (Ipv4Address nextHop, 
                         uint32_t interface);
 
-  Ipv4Route *Lookup (Ipv4Address dest);
+  void Lookup (Ipv4Header const &ipHeader,
+               Packet packet,
+               Ipv4RoutingProtocol::RouteReplyCallback routeReply);
+
   uint32_t GetNRoutes (void);
   Ipv4Route *GetRoute (uint32_t i);
   void RemoveRoute (uint32_t i);
@@ -143,11 +149,19 @@ public:
   void SetUp (uint32_t i);
   void SetDown (uint32_t i);
 
+  void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
+                           int priority);
 
 protected:
+
   virtual void DoDispose (void);
+
 private:
-  void SendRealOut (Packet const &packet, Ipv4Header const &ip, Ipv4Route const &route);
+
+  void SendRealOut (bool found,
+                    Ipv4Route const &route,
+                    Packet packet,
+                    Ipv4Header const &ipHeader);
   bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device);
   void ForwardUp (Packet p, Ipv4Header const&ip);
   uint32_t AddIpv4Interface (Ipv4Interface *interface);
@@ -155,26 +169,22 @@ private:
   TraceResolver *InterfacesCreateTraceResolver (TraceContext const &context) const;
 
   typedef std::list<Ipv4Interface*> Ipv4InterfaceList;
-  typedef std::list<Ipv4Route *> HostRoutes;
-  typedef std::list<Ipv4Route *>::const_iterator HostRoutesCI;
-  typedef std::list<Ipv4Route *>::iterator HostRoutesI;
-  typedef std::list<Ipv4Route *> NetworkRoutes;
-  typedef std::list<Ipv4Route *>::const_iterator NetworkRoutesCI;
-  typedef std::list<Ipv4Route *>::iterator NetworkRoutesI;
+  typedef std::list< std::pair< int, Ptr<Ipv4RoutingProtocol> > > Ipv4RoutingProtocolList;
 
   Ipv4InterfaceList m_interfaces;
   uint32_t m_nInterfaces;
   uint8_t m_defaultTtl;
   uint16_t m_identification;
-  HostRoutes m_hostRoutes;
-  NetworkRoutes m_networkRoutes;
-  Ipv4Route *m_defaultRoute;
   Ptr<Node> m_node;
   CallbackTraceSource<Packet const &, uint32_t> m_txTrace;
   CallbackTraceSource<Packet const &, uint32_t> m_rxTrace;
   CallbackTraceSource<Packet const &> m_dropTrace;
+
+  Ipv4RoutingProtocolList m_routingProtocols;
+
+  Ptr<Ipv4StaticRouting> m_staticRouting;
 };
 
 } // Namespace ns3
 
-#endif /* IPV$_L3_PROTOCOL_H */
+#endif /* IPV4_L3_PROTOCOL_H */
