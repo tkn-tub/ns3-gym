@@ -29,7 +29,7 @@ NS_DEBUG_COMPONENT_DEFINE ("EthernetHeader");
 
 namespace ns3 {
 
-const char *
+std::string
 EthernetHeader::GetUid (void)
 {
   return "EthernetHeader.ns3";

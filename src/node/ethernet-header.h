@@ -24,6 +24,7 @@
 
 #include "ns3/header.h"
 #include "ns3/mac-address.h"
+#include <string>
 
 namespace ns3 {
 
@@ -48,7 +49,7 @@ namespace ns3 {
 class EthernetHeader : public Header 
 {
 public:
-  static const char *GetUid (void);
+  static std::string GetUid (void);
 
   /**
    * \brief Construct a null ethernet header

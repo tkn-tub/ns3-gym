@@ -23,6 +23,7 @@
 #define LLC_SNAP_HEADER_H
 
 #include <stdint.h>
+#include <string>
 #include "ns3/header.h"
 
 namespace ns3 {
@@ -30,7 +31,7 @@ namespace ns3 {
 class LlcSnapHeader : public Header 
 {
 public:
-  static const char *GetUid (void);
+  static std::string GetUid (void);
 
   LlcSnapHeader ();
   virtual ~LlcSnapHeader ();

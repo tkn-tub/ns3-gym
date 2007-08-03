@@ -30,7 +30,7 @@ namespace ns3 {
 
 bool EthernetTrailer::m_calcFcs = false;
 
-const char *
+std::string
 EthernetTrailer::GetUid (void)
 {
   return "EthernetTrailer.ns3";

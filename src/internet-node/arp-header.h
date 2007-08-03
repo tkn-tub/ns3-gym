@@ -25,6 +25,7 @@
 #include "ns3/header.h"
 #include "ns3/mac-address.h"
 #include "ns3/ipv4-address.h"
+#include <string>
 
 namespace ns3 {
 /**
@@ -33,7 +34,7 @@ namespace ns3 {
 class ArpHeader : public Header 
 {
 public:
-  static const char *GetUid (void);
+  static std::string GetUid (void);
 
   virtual ~ArpHeader ();
 

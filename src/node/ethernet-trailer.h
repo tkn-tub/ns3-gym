@@ -24,6 +24,7 @@
 
 #include "ns3/trailer.h"
 #include "ns3/packet.h"
+#include <string>
 
 namespace ns3 {
 /**
@@ -36,7 +37,7 @@ namespace ns3 {
 class EthernetTrailer : public Trailer 
 {
 public:
-  static const char *GetUid (void);
+  static std::string GetUid (void);
 
   /**
    * \brief Construct a null ethernet trailer

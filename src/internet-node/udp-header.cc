@@ -26,7 +26,7 @@ namespace ns3 {
 
 bool UdpHeader::m_calcChecksum = false;
 
-const char *
+std::string
 UdpHeader::GetUid (void)
 {
   return "UdpHeader.ns3";

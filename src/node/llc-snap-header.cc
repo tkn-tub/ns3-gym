@@ -19,13 +19,14 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/assert.h"
-
 #include "llc-snap-header.h"
+#include "ns3/assert.h"
+#include <string>
+
 
 namespace ns3 {
 
-const char *
+std::string
 LlcSnapHeader::GetUid (void)
 {
   return "LlcSnapHeader.ns3";

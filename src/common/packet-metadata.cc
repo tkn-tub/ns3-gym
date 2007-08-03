@@ -1112,7 +1112,7 @@ template <int N>
 class HistoryHeader : public Header
 {
 public:
-  static const char *GetUid (void);
+  static std::string GetUid (void);
   HistoryHeader ();
   bool IsOk (void) const;
 private:
@@ -1125,12 +1125,12 @@ private:
 };
 
 template <int N>
-const char *
+std::string
 HistoryHeader<N>::GetUid (void)
 {
   std::ostringstream oss;
   oss << N << "HistoryHeader.ns3";
-  return oss.str ().c_str ();
+  return oss.str ();
 }
 
 template <int N>
@@ -1191,7 +1191,7 @@ template <int N>
 class HistoryTrailer : public Trailer
 {
 public:
-  static const char *GetUid (void);
+  static std::string GetUid (void);
   HistoryTrailer ();
   bool IsOk (void) const;
 private:
@@ -1204,12 +1204,12 @@ private:
 };
 
 template <int N>
-const char *
+std::string
 HistoryTrailer<N>::GetUid (void)
 {
   std::ostringstream oss;
   oss << N << "HistoryTrailer.ns3";
-  return oss.str ().c_str ();
+  return oss.str ();
 }
 
 

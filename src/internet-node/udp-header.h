@@ -23,6 +23,7 @@
 #define UDP_HEADER_H
 
 #include <stdint.h>
+#include <string>
 #include "ns3/header.h"
 #include "ns3/ipv4-address.h"
 
@@ -33,7 +34,7 @@ namespace ns3 {
 class UdpHeader : public Header 
 {
 public:
-  static const char *GetUid (void);
+  static std::string GetUid (void);
 
   /**
    * \brief Constructor
