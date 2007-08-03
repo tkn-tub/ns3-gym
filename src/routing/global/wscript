@@ -1,12 +1,8 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
-def configure(conf):
-    conf.env.append_value('NS3_MODULES', 'ns3-routing')
-
-
 def build(bld):
     module = bld.create_obj('cpp', 'shlib')
-    module.name = 'ns3-routing'
+    module.name = 'ns3-global-routing'
     module.target = module.name
     module.uselib_local = ['ns3-node']
     module.source = [
@@ -15,10 +11,10 @@ def build(bld):
         'global-route-manager-impl.cc',
         'candidate-queue.cc',
         ]
-
     headers = bld.create_obj('ns3header')
     headers.source = [
         'global-router-interface.h',
         'global-route-manager.h',
         'candidate-queue.h',
         ]
+

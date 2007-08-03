@@ -10,7 +10,9 @@ def build(bld):
         return obj
         
     obj = create_ns_prog('simple-global-routing', 'simple-global-routing.cc',
-                         deps=['p2p', 'internet-node', 'routing'])
-    obj = create_ns_prog('simple-point-to-point', 'simple-point-to-point.cc', deps=['point-to-point', 'internet-node'])
-    obj = create_ns_prog('csma-cd-one-subnet', 'csma-cd-one-subnet.cc', deps=['csma-cd', 'internet-node'])
+                         deps=['point-to-point', 'internet-node', 'global-routing'])
+    obj = create_ns_prog('simple-point-to-point', 'simple-point-to-point.cc', 
+                         deps=['point-to-point', 'internet-node'])
+    obj = create_ns_prog('csma-cd-one-subnet', 'csma-cd-one-subnet.cc', 
+                         deps=['csma-cd', 'internet-node'])
 
