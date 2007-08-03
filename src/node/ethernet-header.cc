@@ -108,7 +108,6 @@ void
 EthernetHeader::PrintTo (std::ostream &os) const
 {
   // ethernet, right ?
-  os << "(ethernet)";
   if (m_enPreambleSfd)
     {
       os << " preamble/sfd=" << m_preambleSfd << ",";
