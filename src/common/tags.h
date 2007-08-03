@@ -92,6 +92,26 @@ private:
 
 namespace ns3 {
 
+/**
+ * \brief represent a single tag
+ * \internal
+ *
+ * This class is used to give polymorphic access to the methods
+ * exported by a tag. It also is used to associate a single
+ * reliable uid to each unique type. The tricky part here is
+ * that we have to deal correctly with a single type
+ * being registered multiple times in AllocateUid so,
+ * AllocateUid must first check in the list of existing
+ * types if there is already a type registered with the
+ * same string returned by T::GetUid.
+ *
+ * It is important to note that, for example, this code
+ * will never be triggered on ELF systems (linux, and
+ * a lot of unixes) because the ELF runtime ensures that
+ * there exist a single instance of a template instanciation
+ * even if multiple instanciations of that template are
+ * present in memory at runtime.
+ */
 class Tag
 {
 public:
