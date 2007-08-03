@@ -36,6 +36,26 @@ namespace ns3 {
  *   - ns3::Trailer::DeserializeFrom
  *   - ns3::Trailer::GetSerializedSize
  *   - ns3::Trailer::PrintTo
+ *   - ns3::Trailer::DoGetName
+ *
+ * Each trailer must also make sure that:
+ *   - it defines a public default constructor
+ *   - it defines a public static method named GetUid which returns a string.
+ *
+ * The latter should look like the following to ensure that
+ * every trailer returns a unique string.
+ * \code
+ * class MyTrailer : public Header
+ * {
+ * public:
+ *   static const char *GetUid (void);
+ * };
+ *
+ * const char *MyTrailer::GetUid (void)
+ * {
+ *   return "MyTrailer.unique.prefix";
+ * }
+ * \endcode
  *
  * Note that the SerializeTo and DeserializeFrom methods behave
  * in a way which might seem surprising to users: the input iterator

@@ -58,21 +58,19 @@ class PacketPrinter;
  * were serialized in the byte buffer. The maintenance of metadata is
  * optional and disabled by default. To enable it, you must call
  * Packet::EnableMetadata and this will allow you to get non-empty
- * output from Packet::Print and Packet::PrintDefault.
+ * output from Packet::Print and Packet::Print.
  *
  * Implementing a new type of Header or Trailer for a new protocol is 
  * pretty easy and is a matter of creating a subclass of the ns3::Header 
- * or of the ns3::Trailer base class, and implementing the 4 pure virtual 
+ * or of the ns3::Trailer base class, and implementing the 5 pure virtual 
  * methods defined in either of the two base classes. Users _must_
- * also implement a static public method named GetUid which is
- * expected to return a unique string which uniquely identifies the
- * user's new header or trailer.
- *
- * Sample code which shows how to create a new Header, and how to use it, 
- * is shown in the sample file samples/main-header.cc
+ * also make sure that they class defines a public default constructor and
+ * a public method named GetUid, as documented in the ns3::Header and ns::Trailer
+ * API documentations.
  *
  * Implementing a new type of Tag requires roughly the same amount of
- * work: 
+ * work: users must implement a total of 6 methods which are described in
+ * the ns3::Tags API documentation.
  *
  * The current implementation of the byte buffers and tag list is based
  * on COW (Copy On Write. An introduction to COW can be found in Scott 

@@ -36,6 +36,29 @@ namespace ns3 {
  *   - ns3::Header::DeserializeFrom
  *   - ns3::Header::GetSerializedSize
  *   - ns3::Header::PrintTo
+ *   - ns3::Header::DoGetName
+ *
+ * Each header must also make sure that:
+ *   - it defines a public default constructor
+ *   - it defines a public static method named GetUid which returns a string.
+ *
+ * The latter should look like the following to ensure that
+ * every header returns a unique string.
+ * \code
+ * class MyHeader : public Header
+ * {
+ * public:
+ *   static const char *GetUid (void);
+ * };
+ *
+ * const char *MyHeader::GetUid (void)
+ * {
+ *   return "MyHeader.unique.prefix";
+ * }
+ * \endcode
+ *
+ * Sample code which shows how to create a new Header, and how to use it, 
+ * is shown in the sample file samples/main-header.cc
  */
 class Header : public Chunk {
 public:
