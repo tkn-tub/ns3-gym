@@ -36,12 +36,6 @@ class Channel : public Object
 {
 public:
   static const InterfaceId iid;
-  enum ChannelType
-    {
-      Unknown = 0,
-      PointToPoint,
-      Multipoint
-    };
 
   Channel ();
   Channel (std::string name);
@@ -63,18 +57,9 @@ public:
    */
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const = 0;
 
-  /**
-   * \returns the abstract type of this channel.  Right now this is only
-   * PointToPoint (p2p) or Multipoint (Ethernet).
-   *
-   * This method must be implemented by subclasses.
-   */
-  virtual ChannelType GetType (void) const = 0;
-
 protected:
   virtual      ~Channel ();
   std::string   m_name;
-  ChannelType   m_channelType;
 
 private:
 };

@@ -534,10 +534,6 @@ GlobalRouter::GetLSA (uint32_t n, GlobalRouterLSA &lsa) const
   Ptr<NetDevice>
 GlobalRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const
 {
-//
-// Double-check that channel agrees with device that it's a point-to-point
-//
-  NS_ASSERT(ch->GetType () == Channel::PointToPoint);
 
   uint32_t nDevices = ch->GetNDevices();
   NS_ASSERT_MSG(nDevices == 2, 

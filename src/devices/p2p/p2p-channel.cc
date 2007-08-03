@@ -171,12 +171,6 @@ PointToPointChannel::GetDevice (uint32_t i) const
   return m_link[i].m_src;
 }
 
-  Channel::ChannelType 
-PointToPointChannel::GetType (void) const
-{
-  return Channel::PointToPoint;
-}
-
   DataRate
 PointToPointChannel::GetDataRate (void)
 {

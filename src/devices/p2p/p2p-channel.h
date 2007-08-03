@@ -94,8 +94,6 @@ public:
   virtual uint32_t GetNDevices (void) const;
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
 
-  virtual ChannelType GetType (void) const;
-
   virtual DataRate GetDataRate (void);
   virtual Time GetDelay (void);
 
