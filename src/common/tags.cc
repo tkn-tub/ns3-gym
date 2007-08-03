@@ -20,6 +20,7 @@
  */
 #include "tags.h"
 #include <string.h>
+#include "ns3/fatal-error.h"
 
 namespace ns3 {
 
@@ -28,6 +29,29 @@ Tag::GetInfo (void)
 {
   static Tag::TagInfoVector vector;
   return &vector;
+}
+
+std::string
+Tag::GetUidString (uint32_t uid)
+{
+  TagInfo info = (*GetInfo ())[uid - 1];
+  return info.uidString;
+}
+uint32_t 
+Tag::GetUidFromUidString (std::string uidString)
+{
+  TagInfoVector *vec = GetInfo ();
+  uint32_t uid = 1;
+  for (TagInfoVector::iterator i = vec->begin (); i != vec->end (); i++)
+    {
+      if (i->uidString == uidString)
+        {
+          return uid;
+        }
+      uid++;
+    }
+  NS_FATAL_ERROR ("We are trying to deserialize an un-registered type. This can't work.");
+  return 0;
 }
 
 void 
@@ -156,13 +180,98 @@ Tags::Remove (uint32_t id)
 }
 
 void 
-Tags::PrettyPrint (std::ostream &os)
+Tags::Print (std::ostream &os) const
 {
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
       Tag::Print (cur->m_id, cur->m_data, os);
     }
 }
+
+uint32_t
+Tags::GetSerializedSize (void) const
+{
+  uint32_t totalSize = 4; // reserve space for the size of the tag data.
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
+    {
+      uint32_t size = Tag::GetSerializedSize (cur->m_id, cur->m_data);
+      if (size != 0)
+        {
+          std::string uidString = Tag::GetUidString (cur->m_id);
+          totalSize += 4; // for the size of the string itself.
+          totalSize += uidString.size ();
+          totalSize += size;
+        }
+    }
+  return totalSize;
+}
+
+void 
+Tags::Serialize (Buffer::Iterator i, uint32_t totalSize) const
+{
+  i.WriteU32 (totalSize);
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
+    {
+      uint32_t size = Tag::GetSerializedSize (cur->m_id, cur->m_data);
+      if (size != 0)
+        {
+          std::string uidString = Tag::GetUidString (cur->m_id);
+          i.WriteU32 (uidString.size ());
+          uint8_t *buf = (uint8_t *)uidString.c_str ();
+          i.Write (buf, uidString.size ());
+          Tag::Serialize (cur->m_id, cur->m_data, i);
+        }
+    }
+}
+uint32_t
+Tags::Deserialize (Buffer::Iterator i)
+{
+  uint32_t totalSize = i.ReadU32 ();
+  uint32_t bytesRead = 4;
+  while (bytesRead < totalSize)
+    {
+      uint32_t uidStringSize = i.ReadU32 ();
+      bytesRead += 4;
+      std::string uidString;
+      uidString.reserve (uidStringSize);
+      for (uint32_t j = 0; j < uidStringSize; j++)
+        {
+          uint32_t c = i.ReadU8 ();
+          uidString.push_back (c);
+        }
+      bytesRead += uidStringSize;
+      uint32_t uid = Tag::GetUidFromUidString (uidString);
+      struct TagData *newStart = AllocData ();
+      newStart->m_count = 1;
+      newStart->m_next = 0;
+      newStart->m_id = uid;
+      bytesRead += Tag::Deserialize (uid, newStart->m_data, i);
+      newStart->m_next = m_next;
+      m_next = newStart;
+    }
+  NS_ASSERT (bytesRead == totalSize);
+  /**
+   * The process of serialization/deserialization 
+   * results in an inverted linked-list after
+   * deserialization so, we invert the linked-list
+   * in-place here.
+   * Note: the algorithm below is pretty classic
+   * but whenever I get to code it, it makes my
+   * brain hurt :)
+   */
+  struct TagData *prev = 0;
+  struct TagData *cur = m_next;
+  while (cur != 0)
+    {
+      struct TagData *next = cur->m_next;
+      cur->m_next = prev;
+      prev = cur;
+      cur = next;
+    }
+  m_next = prev;
+  return totalSize;
+}
+
 
 
 }; // namespace ns3
@@ -293,7 +402,7 @@ TagsTest::RunTests (void)
       ok = false;
     }
   g_a = false;
-  tags.PrettyPrint (std::cout);
+  tags.Print (std::cout);
   if (!g_a)
     {
       ok = false;
@@ -309,7 +418,7 @@ TagsTest::RunTests (void)
     }
   g_b = false;
   g_a = false;
-  tags.PrettyPrint (std::cout);
+  tags.Print (std::cout);
   if (!g_a || !g_b)
     {
       ok = false;
@@ -318,14 +427,14 @@ TagsTest::RunTests (void)
   Tags other = tags;
   g_b = false;
   g_a = false;
-  other.PrettyPrint (std::cout);
+  other.Print (std::cout);
   if (!g_a || !g_b)
     {
       ok = false;
     }
   g_b = false;
   g_a = false;
-  tags.PrettyPrint (std::cout);
+  tags.Print (std::cout);
   if (!g_a || !g_b)
     {
       ok = false;
@@ -352,7 +461,7 @@ TagsTest::RunTests (void)
     }
   g_b = false;
   g_a = false;
-  other.PrettyPrint (std::cout);
+  other.Print (std::cout);
   if (g_a || !g_b)
     {
       ok = false;
@@ -398,7 +507,7 @@ TagsTest::RunTests (void)
   tagZ.z = 0;
   testLastTag.Add (tagZ);
   g_z = false;
-  testLastTag.PrettyPrint (std::cout);
+  testLastTag.Print (std::cout);
   if (!g_z)
     {
       ok = false;

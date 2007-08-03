@@ -55,7 +55,10 @@ public:
   template <typename T>
   bool Peek (T &tag) const;
 
-  void PrettyPrint (std::ostream &os);
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator i, uint32_t size) const;
+  uint32_t Deserialize (Buffer::Iterator i);
 
   inline void RemoveAll (void);
 
@@ -117,6 +120,8 @@ class Tag
 public:
   template <typename T>
   static uint32_t GetUid (void);
+  static std::string GetUidString (uint32_t uid);
+  static uint32_t GetUidFromUidString (std::string uidString);
   static void Destruct (uint32_t uid, uint8_t data[Tags::SIZE]);
   static void Print (uint32_t uid, uint8_t data[Tags::SIZE], std::ostream &os);
   static uint32_t GetSerializedSize (uint32_t uid, uint8_t data[Tags::SIZE]);
