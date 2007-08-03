@@ -123,7 +123,9 @@ EthernetHeader::GetSerializedSize (void) const
   if (m_enPreambleSfd)
     {
       return PREAMBLE_SIZE + LENGTH_SIZE + 2*MAC_ADDR_SIZE;
-    } else {
+    } 
+  else 
+    {
       return LENGTH_SIZE + 2*MAC_ADDR_SIZE;
     }
 }
