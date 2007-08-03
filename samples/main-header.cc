@@ -10,7 +10,7 @@ using namespace ns3;
 class MyHeader : public Header 
 {
 public:
-  static const char *GetUid (void);
+  static std::string GetUid (void);
 
   MyHeader ();
   virtual ~MyHeader ();
@@ -35,7 +35,7 @@ MyHeader::MyHeader ()
 MyHeader::~MyHeader ()
 {}
 
-const char *
+std::string
 MyHeader::GetUid (void)
 {
   // This string is used by the internals of the packet
