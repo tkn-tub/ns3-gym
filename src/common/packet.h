@@ -70,39 +70,10 @@ class PacketPrinter;
  *
  * Implementing a new type of Tag requires roughly the same amount of
  * work: users must implement a total of 6 methods which are described in
- * the ns3::Tags API documentation.
+ * \ref tags
  *
- * The current implementation of the byte buffers and tag list is based
- * on COW (Copy On Write. An introduction to COW can be found in Scott 
- * Meyer's "More Effective C++", items 17 and 29). What this means is that
- * copying packets without modifying them is very cheap (in terms of cpu
- * and memory usage) and modifying them can be also very cheap. What is 
- * key for proper COW implementations is being
- * able to detect when a given modification of the state of a packet triggers
- * a full copy of the data prior to the modification: COW systems need
- * to detect when an operation is "dirty".
- *
- * Dirty operations:
- *   - ns3::Packet::RemoveTag
- *   - ns3::Packet::AddHeader
- *   - ns3::Packet::AddTrailer
- *   - both versions of ns3::Packet::AddAtEnd
- *
- * Non-dirty operations:
- *   - ns3::Packet::AddTag
- *   - ns3::Packet::RemoveAllTags
- *   - ns3::Packet::PeekTag
- *   - ns3::Packet::RemoveHeader
- *   - ns3::Packet::RemoveTrailer
- *   - ns3::Packet::CreateFragment
- *   - ns3::Packet::RemoveAtStart
- *   - ns3::Packet::RemoveAtEnd
- *
- * Dirty operations will always be slower than non-dirty operations,
- * sometimes by several orders of magnitude. However, even the
- * dirty operations have been optimized for common use-cases which
- * means that most of the time, these operations will not trigger
- * data copies and will thus be still very fast.
+ * The performance aspects of the Packet API are discussed in 
+ * \ref packetperf
  */
 class Packet {
 public:
@@ -317,7 +288,89 @@ private:
   static uint32_t m_globalUid;
 };
 
-}; // namespace ns3
+/**
+ * \defgroup tags Packet Tags
+ *
+ * A tag is a class which must define:
+ *  - a public default constructor
+ *  - a public static method named GetUid
+ *  - a public method named Print
+ *  - a public method named GetSerializedSize
+ *  - a public method named Serialize
+ *  - a public method named Deserialize
+ *
+ * So, a tag class should look like this:
+ * \code
+ * // note how a tag class does not derive from any other class.
+ * class MyTag 
+ * {
+ * public:
+ *   // we need a public default constructor
+ *   MyTag ();
+ *   // we need a public static GetUid
+ *   // GetUid must return a string which uniquely
+ *   // identifies this tag type
+ *   static std::string GetUid (void);
+ *   // Print should record in the output stream
+ *   // the content of the tag instance.
+ *   void Print (std::ostream &os) const;
+ *   // GetSerializedSize should return the number of bytes needed
+ *   // to store the state of a tag instance
+ *   uint32_t GetSerializedSize (void) const;
+ *   // Serialize should store its state in the input
+ *   // buffer with the help of the iterator. It should
+ *   // write exactly size bytes.
+ *   void Serialize (Buffer::Iterator i, uint32_t size) const;
+ *   // Deserialize should restore the state of a Tag instance
+ *   // from a byte buffer with the help of the iterator
+ *   uint32_t Deserialize (Buffer::Iterator i);
+ * };
+ *
+ * std::string MyTag::GetUid (void)
+ * {
+ *   // we really want to make sure that this
+ *   // string is unique in the universe.
+ *   return "MyTag.unique.prefix";
+ * }
+ * \endcode
+ */
+
+/**
+ * \defgroup packetperf Packet Performance
+ * The current implementation of the byte buffers and tag list is based
+ * on COW (Copy On Write. An introduction to COW can be found in Scott 
+ * Meyer's "More Effective C++", items 17 and 29). What this means is that
+ * copying packets without modifying them is very cheap (in terms of cpu
+ * and memory usage) and modifying them can be also very cheap. What is 
+ * key for proper COW implementations is being
+ * able to detect when a given modification of the state of a packet triggers
+ * a full copy of the data prior to the modification: COW systems need
+ * to detect when an operation is "dirty".
+ *
+ * Dirty operations:
+ *   - ns3::Packet::RemoveTag
+ *   - ns3::Packet::AddHeader
+ *   - ns3::Packet::AddTrailer
+ *   - both versions of ns3::Packet::AddAtEnd
+ *
+ * Non-dirty operations:
+ *   - ns3::Packet::AddTag
+ *   - ns3::Packet::RemoveAllTags
+ *   - ns3::Packet::PeekTag
+ *   - ns3::Packet::RemoveHeader
+ *   - ns3::Packet::RemoveTrailer
+ *   - ns3::Packet::CreateFragment
+ *   - ns3::Packet::RemoveAtStart
+ *   - ns3::Packet::RemoveAtEnd
+ *
+ * Dirty operations will always be slower than non-dirty operations,
+ * sometimes by several orders of magnitude. However, even the
+ * dirty operations have been optimized for common use-cases which
+ * means that most of the time, these operations will not trigger
+ * data copies and will thus be still very fast.
+ */
+
+} // namespace ns3
 
 
 /**************************************************
