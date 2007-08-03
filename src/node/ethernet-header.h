@@ -47,10 +47,6 @@ namespace ns3 {
  */
 class EthernetHeader : public Header {
 public:
-  static const int PREAMBLE_SIZE = 8; /// size of the preamble_sfd header field
-  static const int LENGTH_SIZE = 2;   /// size of the length_type header field
-  static const int MAC_ADDR_SIZE = 6; /// size of src/dest addr header fields
-
   /**
    * \brief Construct a null ethernet header
    * \param hasPreamble if true, insert and remove an ethernet preamble from the
@@ -105,6 +101,10 @@ public:
   uint32_t GetHeaderSize() const;
 
 private:
+  static const int PREAMBLE_SIZE = 8; /// size of the preamble_sfd header field
+  static const int LENGTH_SIZE = 2;   /// size of the length_type header field
+  static const int MAC_ADDR_SIZE = 6; /// size of src/dest addr header fields
+
   virtual std::string DoGetName (void) const;
   virtual void PrintTo (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
