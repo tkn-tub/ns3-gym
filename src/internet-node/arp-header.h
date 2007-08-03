@@ -30,8 +30,11 @@ namespace ns3 {
 /**
  * \brief The packet header for an ARP packet
  */
-class ArpHeader : public Header {
- public:
+class ArpHeader : public Header 
+{
+public:
+  static const char *GetUid (void);
+
   virtual ~ArpHeader ();
 
   void SetRequest (MacAddress sourceHardwareAddress,

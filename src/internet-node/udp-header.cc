@@ -26,6 +26,12 @@ namespace ns3 {
 
 bool UdpHeader::m_calcChecksum = false;
 
+const char *
+UdpHeader::GetUid (void)
+{
+  return "UdpHeader.ns3";
+}
+
 /* The magic values below are used only for debugging.
  * They can be used to easily detect memory corruption
  * problems so you can see the patterns in memory.

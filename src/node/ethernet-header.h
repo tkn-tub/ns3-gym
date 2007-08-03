@@ -45,8 +45,11 @@ namespace ns3 {
  * the packet. Eventually the class will be improved to also support
  * VLAN tags in packet headers.
  */
-class EthernetHeader : public Header {
+class EthernetHeader : public Header 
+{
 public:
+  static const char *GetUid (void);
+
   /**
    * \brief Construct a null ethernet header
    * \param hasPreamble if true, insert and remove an ethernet preamble from the

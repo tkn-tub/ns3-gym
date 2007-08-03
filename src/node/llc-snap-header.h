@@ -27,8 +27,11 @@
 
 namespace ns3 {
 
-class LlcSnapHeader : public Header {
- public:
+class LlcSnapHeader : public Header 
+{
+public:
+  static const char *GetUid (void);
+
   LlcSnapHeader ();
   virtual ~LlcSnapHeader ();
 

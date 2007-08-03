@@ -25,6 +25,12 @@
 
 namespace ns3 {
 
+const char *
+LlcSnapHeader::GetUid (void)
+{
+  return "LlcSnapHeader.ns3";
+}
+
 LlcSnapHeader::LlcSnapHeader ()
 {}
 

@@ -29,6 +29,12 @@ NS_DEBUG_COMPONENT_DEFINE ("EthernetHeader");
 
 namespace ns3 {
 
+const char *
+EthernetHeader::GetUid (void)
+{
+  return "EthernetHeader.ns3";
+}
+
 EthernetHeader::EthernetHeader (bool hasPreamble)
   : m_enPreambleSfd (hasPreamble),
     m_lengthType (0)

@@ -33,8 +33,11 @@ namespace ns3 {
  * ethernet packet. The actual FCS functionality is not yet coded and
  * so this acts more as a placeholder.
  */
-class EthernetTrailer : public Trailer {
+class EthernetTrailer : public Trailer 
+{
 public:
+  static const char *GetUid (void);
+
   /**
    * \brief Construct a null ethernet trailer
    */

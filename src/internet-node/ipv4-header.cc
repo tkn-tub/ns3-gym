@@ -30,6 +30,12 @@ namespace ns3 {
 
 bool Ipv4Header::m_calcChecksum = false;
 
+const char *
+Ipv4Header::GetUid (void)
+{
+  return "Ipv4Header.ns3";
+}
+
 Ipv4Header::Ipv4Header ()
   : m_payloadSize (0),
     m_identification (0),

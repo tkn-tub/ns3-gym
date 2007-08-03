@@ -30,8 +30,11 @@ namespace ns3 {
 /**
  * \brief Packet header for UDP packets
  */
-class UdpHeader : public Header {
+class UdpHeader : public Header 
+{
 public:
+  static const char *GetUid (void);
+
   /**
    * \brief Constructor
    *

@@ -25,6 +25,12 @@
 
 namespace ns3 {
 
+const char *
+ArpHeader::GetUid (void)
+{
+  return "ArpHeader.ns3";
+}
+
 ArpHeader::~ArpHeader ()
 {}
 
