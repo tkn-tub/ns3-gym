@@ -80,12 +80,17 @@ MyHeader::GetData (void) const
 
 /* A sample Tag implementation
  */
-struct MyTag {
+class MyTag 
+{
+public:
+  static const char *GetUid (void) {return "MyTag.test.nsnam.org";}
+  void Print (std::ostream &os) const {}
+  uint32_t GetSerializedSize (void) const {return 0;}
+  void Serialize (Buffer::Iterator i) const {}
+  uint32_t Deserialize (Buffer::Iterator i) {return 0;}
+
   uint16_t m_streamId;
 };
-
-static TagRegistration<struct MyTag> g_MyTagRegistration ("ns3::MyTag", 0);
-
 
 static void
 Receive (Packet p)

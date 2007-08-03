@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <ostream>
 #include <vector>
+#include "buffer.h"
 
 namespace ns3 {
 
@@ -79,31 +80,7 @@ private:
   struct TagData *m_next;
 };
 
-/**
- * \brief pretty print packet tags
- * 
- * This class is used to register a pretty-printer
- * callback function to print in a nice user-friendly
- * way the content of the target type. To register
- * such a type, all you need to do is instantiate
- * an instance of this type as a static variable.
- */
-template <typename T>
-class TagRegistration {
-public:
-  /**
-   * \param uuid a uuid generated with uuidgen
-   * \param fn a function which can pretty-print an instance
-   *        of type T in the output stream.
-   */
-  TagRegistration<T> (std::string uuid, void(*fn) (T const*, std::ostream &));
-private:
-  static void PrettyPrinterCb (uint8_t *buf, std::ostream &os);
-  static void DestructorCb (uint8_t *buf);
-  static void(*m_prettyPrinter) (T const*, std::ostream &);
-};
-
-}; // namespace ns3
+} // namespace ns3
 
 
 
@@ -115,110 +92,118 @@ private:
 
 namespace ns3 {
 
-class TagRegistry {
-public:
-  typedef void (*PrettyPrinter) (uint8_t [Tags::SIZE], std::ostream &);
-  typedef void (*Destructor) (uint8_t [Tags::SIZE]);
-  void Record (std::string uuid, PrettyPrinter prettyPrinter, Destructor destructor);
-  /**
-   * returns a numeric integer which uniquely identifies the input string.
-   * that integer cannot be zero which is a reserved value.
-   */
-  uint32_t LookupUid (std::string uuid);
-  void PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os);
-  void Destruct (uint32_t uid, uint8_t buf[Tags::SIZE]);
-
-  static TagRegistry *GetInstance (void);
-private:
-  TagRegistry ();
-  struct TagInfoItem
-  {
-    std::string uuid;
-    PrettyPrinter printer;
-    Destructor destructor;
-  };
-  typedef std::vector<struct TagInfoItem> TagsData;
-  typedef std::vector<struct TagInfoItem>::const_iterator TagsDataCI;
-  static bool CompareItem (const struct TagInfoItem &a, const struct TagInfoItem &b);
-  bool m_sorted;
-  TagsData m_registry;
-};
-/**
- * The TypeUid class is used to create a mapping Type --> uid
- * Note that we use a static getUuid function which contains a
- * static std::string variable rather than a simpler static
- * member std::string variable to ensure the proper order
- * of initialization when these methods are invoked
- * from the constructor of another static variable.
- */
-template <typename T>
-class TypeUid {
-public:
-  static void Record (std::string uuid);
-  static const uint32_t GetUid (void);
-private:
-  static std::string *GetUuid (void);
-  T m_realType;
-};
-
-template <typename T>
-void TypeUid<T>::Record (std::string uuid)
+class Tag
 {
-  *(GetUuid ()) = uuid;
+public:
+  template <typename T>
+  static uint32_t GetUid (void);
+  static void Destruct (uint32_t uid, uint8_t data[Tags::SIZE]);
+  static void Print (uint32_t uid, uint8_t data[Tags::SIZE], std::ostream &os);
+  static uint32_t GetSerializedSize (uint32_t uid, uint8_t data[Tags::SIZE]);
+  static void Serialize (uint32_t uid, uint8_t data[Tags::SIZE], Buffer::Iterator start);
+  static uint32_t Deserialize (uint32_t uid, uint8_t data[Tags::SIZE], Buffer::Iterator start);
+private:
+  typedef void (*DestructCb) (uint8_t [Tags::SIZE]);
+  typedef void (*PrintCb) (uint8_t [Tags::SIZE], std::ostream &);
+  typedef uint32_t (*GetSerializedSizeCb) (uint8_t [Tags::SIZE]);
+  typedef void (*SerializeCb) (uint8_t [Tags::SIZE], Buffer::Iterator);
+  typedef uint32_t (*DeserializeCb) (uint8_t [Tags::SIZE], Buffer::Iterator);
+  struct TagInfo
+  {
+    std::string uidString;
+    DestructCb destruct;
+    PrintCb print;
+    GetSerializedSizeCb getSerializedSize;
+    SerializeCb serialize;
+    DeserializeCb deserialize;
+  };
+  typedef std::vector<struct TagInfo> TagInfoVector;
+
+  template <typename T>
+  static void DoDestruct (uint8_t data[Tags::SIZE]);
+  template <typename T>
+  static void DoPrint (uint8_t data[Tags::SIZE], std::ostream &os);
+  template <typename T>
+  static uint32_t DoGetSerializedSize (uint8_t data[Tags::SIZE]);
+  template <typename T>
+  static void DoSerialize (uint8_t data[Tags::SIZE], Buffer::Iterator start);
+  template <typename T>
+  static uint32_t DoDeserialize (uint8_t data[Tags::SIZE], Buffer::Iterator start);
+  template <typename T>
+  static uint32_t AllocateUid (void);
+
+  static TagInfoVector *GetInfo (void);
+};
+
+template <typename T>
+void 
+Tag::DoDestruct (uint8_t data[Tags::SIZE])
+{
+  T *tag = reinterpret_cast<T *> (data);
+  tag->~T ();  
+}
+template <typename T>
+void 
+Tag::DoPrint (uint8_t data[Tags::SIZE], std::ostream &os)
+{
+  T *tag = reinterpret_cast<T *> (data);
+  tag->Print (os);
+}
+template <typename T>
+uint32_t 
+Tag::DoGetSerializedSize (uint8_t data[Tags::SIZE])
+{
+  T *tag = reinterpret_cast<T *> (data);
+  return tag->GetSerializedSize ();
+}
+template <typename T>
+void 
+Tag::DoSerialize (uint8_t data[Tags::SIZE], Buffer::Iterator start)
+{
+  T *tag = reinterpret_cast<T *> (data);
+  tag->Serialize (start);
+}
+template <typename T>
+uint32_t 
+Tag::DoDeserialize (uint8_t data[Tags::SIZE], Buffer::Iterator start)
+{
+  T *tag = reinterpret_cast<T *> (data);
+  return tag->Deserialize (start);
 }
 
 template <typename T>
-const uint32_t TypeUid<T>::GetUid (void)
+uint32_t 
+Tag::GetUid (void)
 {
-  static const uint32_t uid = TagRegistry::GetInstance ()->
-    LookupUid (*(GetUuid ()));
+  static uint32_t uid = AllocateUid<T> ();
   return uid;
 }
 
 template <typename T>
-std::string *TypeUid<T>::GetUuid (void)
+uint32_t 
+Tag::AllocateUid (void)
 {
-  static std::string uuid;
-  return &uuid;
+  TagInfoVector *vec = GetInfo ();
+  uint32_t j = 0;
+  for (TagInfoVector::iterator i = vec->begin (); i != vec->end (); i++)
+    {
+      if (i->uidString == T::GetUid ())
+        {
+          return j;
+        }
+      j++;
+    }
+  TagInfo info;
+  info.uidString = T::GetUid ();
+  info.destruct = &Tag::DoDestruct<T>;
+  info.print = &Tag::DoPrint<T>;
+  info.getSerializedSize = &Tag::DoGetSerializedSize<T>;
+  info.serialize = &Tag::DoSerialize<T>;
+  info.deserialize = &Tag::DoDeserialize<T>;
+  vec->push_back (info);
+  uint32_t uid = vec->size ();
+  return uid;
 }
-
-
-
-/**
- * Implementation of the TagRegistration registration class.
- * It records a callback with the TagRegistry
- * This callback performs type conversion before forwarding
- * the call to the user-provided function.
- */
-template <typename T>
-TagRegistration<T>::TagRegistration (std::string uuid, void (*prettyPrinter) (T const*, std::ostream &))
-{
-  NS_ASSERT (sizeof (T) <= Tags::SIZE);
-  m_prettyPrinter  = prettyPrinter;
-  TagRegistry::GetInstance ()->
-    Record (uuid, &TagRegistration<T>::PrettyPrinterCb, &TagRegistration<T>::DestructorCb);
-  TypeUid<T>::Record (uuid);
-}
-template <typename T>
-void 
-TagRegistration<T>::PrettyPrinterCb (uint8_t *buf, std::ostream &os)
-{
-  NS_ASSERT (sizeof (T) <= Tags::SIZE);
-  T *tag = reinterpret_cast<T *> (buf);
-  (*m_prettyPrinter) (tag, os);
-}
-template <typename T>
-void
-TagRegistration<T>::DestructorCb (uint8_t *buf)
-{
-  T *tag = reinterpret_cast<T *> (buf);
-  tag->~T ();
-}
-template <typename T>
-void (*TagRegistration<T>::m_prettyPrinter) (T const*, std::ostream &) = 0;
-
-
-
 
 template <typename T>
 void 
@@ -228,12 +213,12 @@ Tags::Add (T const&tag)
   // ensure this id was not yet added
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
-      NS_ASSERT (cur->m_id != TypeUid<T>::GetUid ());
+      NS_ASSERT (cur->m_id != Tag::GetUid<T> ());
     }
   struct TagData *newStart = AllocData ();
   newStart->m_count = 1;
   newStart->m_next = 0;
-  newStart->m_id = TypeUid<T>::GetUid ();
+  newStart->m_id = Tag::GetUid<T> ();
   void *buf = &newStart->m_data;
   new (buf) T (tag);
   newStart->m_next = m_next;
@@ -245,7 +230,7 @@ bool
 Tags::Remove (T &tag)
 {
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
-  return Remove (TypeUid<T>::GetUid ());
+  return Remove (Tag::GetUid<T> ());
 }
 
 template <typename T>
@@ -255,7 +240,7 @@ Tags::Peek (T &tag) const
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
-      if (cur->m_id == TypeUid<T>::GetUid ()) 
+      if (cur->m_id == Tag::GetUid<T> ()) 
         {
           /* found tag */
           T *data = reinterpret_cast<T *> (&cur->m_data);
@@ -315,16 +300,14 @@ Tags::RemoveAll (void)
         }
       if (prev != 0) 
         {
-          TagRegistry::GetInstance ()->
-            Destruct (prev->m_id, prev->m_data);
+          Tag::Destruct (prev->m_id, prev->m_data);
           FreeData (prev);
         }
       prev = cur;
     }
   if (prev != 0) 
     {
-      TagRegistry::GetInstance ()->
-        Destruct (prev->m_id, prev->m_data);
+      Tag::Destruct (prev->m_id, prev->m_data);
       FreeData (prev);
     }
   m_next = 0;
