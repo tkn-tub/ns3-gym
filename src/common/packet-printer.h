@@ -26,10 +26,6 @@
 #include "buffer.h"
 #include <vector>
 
-namespace {
-  class ItemList;
-}
-
 namespace ns3 {
 
 class Chunk;
