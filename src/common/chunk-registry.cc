@@ -48,6 +48,7 @@ ChunkRegistry::GetUidFromUidString (std::string uidString)
 	{
 	  return uid;
 	}
+      uid++;
     }
   NS_FATAL_ERROR ("Trying to access a non-registered Header or Trailer: \"" << uidString << "\". "<<
 		  "You could try calling NS_HEADER_ENSURE_REGISTER somewhere.");
