@@ -410,8 +410,8 @@ Buffer::CreateFragment (uint32_t start, uint32_t length) const
   return tmp;
 }
 
-void
-Buffer::TransformIntoRealBuffer (void) const
+Buffer 
+Buffer::CreateFullCopy (void) const
 {
   if (m_zeroAreaSize != 0) 
     {
@@ -428,8 +428,16 @@ Buffer::TransformIntoRealBuffer (void) const
       Buffer::Iterator i = tmp.End ();
       i.Prev (dataEnd);
       i.Write (m_data->m_data+m_data->m_initialStart,dataEnd);
-      *const_cast<Buffer *> (this) = tmp;
+      return tmp;
     }
+  return *this;
+}
+
+void
+Buffer::TransformIntoRealBuffer (void) const
+{
+  Buffer tmp = CreateFullCopy ();
+  *const_cast<Buffer *> (this) = tmp;
 }
 
 
