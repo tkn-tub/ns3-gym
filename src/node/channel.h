@@ -1,7 +1,5 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 University of Washington
- *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -14,11 +12,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Author: Craig Dowell <craigdo@ee.washingon.edu>
- *
- *      Wed Feb 14 16:05:46 PST 2007 craigdo:  Created
  */
+
 #ifndef CHANNEL_H
 #define CHANNEL_H
 
@@ -41,6 +36,7 @@ class Channel : public Object
 {
 public:
   static const InterfaceId iid;
+
   Channel ();
   Channel (std::string name);
 
@@ -62,8 +58,8 @@ public:
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const = 0;
 
 protected:
-  virtual ~Channel ();
-  std::string m_name;
+  virtual      ~Channel ();
+  std::string   m_name;
 
 private:
 };

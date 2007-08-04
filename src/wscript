@@ -18,9 +18,9 @@ all_modules = (
     'devices/point-to-point',
     'devices/csma-cd',
     'applications',
+    'routing/global-routing',
     'mobility',
     )
-
 
 def set_options(opt):
     opt.sub_options('simulator')

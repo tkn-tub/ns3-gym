@@ -37,7 +37,6 @@
 
 namespace ns3 {
 
-
 InternetNode::InternetNode()
 {
   Construct ();
@@ -77,7 +76,6 @@ InternetNode::Construct (void)
   Object::AddInterface (l3Demux);
   Object::AddInterface (ipv4L4Demux);
 }
-
 
 TraceResolver *
 InternetNode::DoCreateTraceResolver (TraceContext const &context)
