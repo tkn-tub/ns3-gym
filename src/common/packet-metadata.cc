@@ -1087,5 +1087,111 @@ PacketMetadata::Print (std::ostream &os, Buffer data, const PacketPrinter &print
     }
 }
 
+uint32_t 
+PacketMetadata::GetSerializedSize (void) const
+{
+  uint32_t totalSize = 0;
+  totalSize += 4;
+  if (!m_enable)
+    {
+      return totalSize;
+    }
+  struct PacketMetadata::SmallItem item;
+  struct PacketMetadata::ExtraItem extraItem;
+  uint32_t current = m_head;
+  while (current != 0xffff)
+    {
+      ReadItems (current, &item, &extraItem);
+      uint32_t uid = (item.typeUid & 0xfffffffe) >> 1;
+      totalSize += 4 + ChunkRegistry::GetUidStringFromUid (uid).size () +
+        1 + 4 + 2 + 4 + 4 + 4;
+      if (current == m_tail)
+        {
+          break;
+        }
+      NS_ASSERT (current != item.next);
+      current = item.next;
+    }
+  return totalSize;
+}
+void 
+PacketMetadata::Serialize (Buffer::Iterator i, uint32_t size) const
+{
+  uint32_t bytesWritten = 0;
+  i.WriteU32 (size);
+  bytesWritten += 4;
+  struct PacketMetadata::SmallItem item;
+  struct PacketMetadata::ExtraItem extraItem;
+  uint32_t current = m_head;
+  while (current != 0xffff)
+    {
+      ReadItems (current, &item, &extraItem);
+      uint32_t uid = (item.typeUid & 0xfffffffe) >> 1;
+      std::string uidString = ChunkRegistry::GetUidStringFromUid (uid);
+      i.WriteU32 (uidString.size ());
+      bytesWritten += 4;
+      i.Write ((uint8_t *)uidString.c_str (), uidString.size ());
+      bytesWritten += uidString.size ();
+      uint8_t isBig = item.typeUid & 0x1;
+      i.WriteU8 (isBig);
+      bytesWritten += 1;
+      i.WriteU32 (item.size);
+      bytesWritten += 4;
+      i.WriteU16 (item.chunkUid);
+      bytesWritten += 2;
+      i.WriteU32 (extraItem.fragmentStart);
+      bytesWritten += 4;
+      i.WriteU32 (extraItem.fragmentEnd);
+      bytesWritten += 4;
+      i.WriteU32 (extraItem.packetUid);
+      bytesWritten += 4;
+      if (current == m_tail)
+        {
+          break;
+        }
+      
+      NS_ASSERT (current != item.next);
+      current = item.next;
+    }
+  NS_ASSERT (bytesWritten == size);
+}
+uint32_t 
+PacketMetadata::Deserialize (Buffer::Iterator i)
+{
+  struct PacketMetadata::SmallItem item;
+  struct PacketMetadata::ExtraItem extraItem;
+  uint32_t size = i.ReadU32 ();
+  size -= 4;
+  while (size > 0)
+    {
+      uint32_t uidStringSize = i.ReadU32 ();
+      size -= 4;
+      std::string uidString;
+      for (uint32_t j = 0; j < uidStringSize; j++)
+        {
+          uidString.push_back (i.ReadU8 ());
+          size --;
+        }
+      uint32_t uid = ChunkRegistry::GetUidFromUidString (uidString);
+      uint8_t isBig = i.ReadU8 ();
+      size --;
+      item.typeUid = (uid << 1) | isBig;
+      item.size = i.ReadU32 ();
+      size -= 4;
+      item.chunkUid = i.ReadU16 ();
+      size -= 2;
+      extraItem.fragmentStart = i.ReadU32 ();
+      size -= 4;
+      extraItem.fragmentEnd = i.ReadU32 ();
+      size -= 4;
+      extraItem.packetUid = i.ReadU32 ();
+      size -= 4;
+      uint32_t tmp = AddBig (0xffff, m_tail, &item, &extraItem);
+      UpdateTail (tmp);
+    }
+  return size;
+}
+
+
 } // namespace ns3
 

@@ -42,6 +42,8 @@ public:
   template <typename T>
   static uint32_t GetTrailerUid (void);
 
+  static std::string GetUidStringFromUid (uint32_t uid);
+  static uint32_t GetUidFromUidString (std::string uidString);
   static uint8_t *GetStaticInstance (uint32_t uid);
   static uint32_t Deserialize (uint32_t uid, uint8_t *instance, Buffer::Iterator i);
   static void Print (uint32_t uid, uint8_t *instance, std::ostream &os);

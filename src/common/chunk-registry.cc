@@ -29,6 +29,31 @@ ChunkRegistry::GetInfoVector (void)
   return &vec;
 }
 
+std::string 
+ChunkRegistry::GetUidStringFromUid (uint32_t uid)
+{
+  InfoVector *vec = GetInfoVector ();
+  NS_ASSERT (uid >= 1 && uid <= vec->size ());
+  Info info = (*vec)[uid - 1];
+  return info.uidString;
+}
+uint32_t 
+ChunkRegistry::GetUidFromUidString (std::string uidString)
+{
+  uint32_t uid = 1;
+  InfoVector *vec = GetInfoVector ();
+  for (InfoVector::iterator i = vec->begin (); i != vec->end (); i++)
+    {
+      if (i->uidString == uidString)
+	{
+	  return uid;
+	}
+    }
+  NS_FATAL_ERROR ("Trying to access a non-registered Header or Trailer: \"" << uidString << "\". "<<
+		  "You could try calling NS_HEADER_ENSURE_REGISTER somewhere.");
+  return 0;
+}
+
 uint8_t *
 ChunkRegistry::GetStaticInstance (uint32_t uid)
 {

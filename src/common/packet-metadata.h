@@ -102,6 +102,10 @@ public:
 
   void Print (std::ostream &os, Buffer buffer, PacketPrinter const &printer) const;
 
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator i, uint32_t size) const;
+  uint32_t Deserialize (Buffer::Iterator i);
+
   static void PrintStats (void);
 
 private:
