@@ -416,6 +416,15 @@ PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t
       {                                         \
         ok = false;                             \
       }                                         \
+    Buffer buffer;                              \
+    buffer = p.Serialize ();                    \
+    Packet otherPacket;                         \
+    otherPacket.Deserialize  (buffer);          \
+    if (!CheckHistory (otherPacket, __FILE__,   \
+                      __LINE__, __VA_ARGS__))   \
+      {                                         \
+        ok = false;                             \
+      }                                         \
   }
 
 bool
