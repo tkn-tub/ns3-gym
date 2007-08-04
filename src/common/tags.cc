@@ -301,9 +301,9 @@ class myTagA
 public:
   static const char *GetUid (void) {return "myTagA.test.nsnam.org";}
   void Print (std::ostream &os) const {g_a = true;}
-  uint32_t GetSerializedSize (void) const {return 0;}
-  void Serialize (Buffer::Iterator i) const {}
-  uint32_t Deserialize (Buffer::Iterator i) {return 0;}
+  uint32_t GetSerializedSize (void) const {return 1;}
+  void Serialize (Buffer::Iterator i) const {i.WriteU8 (a);}
+  uint32_t Deserialize (Buffer::Iterator i) {a = i.ReadU8 (); return 1;}
 
   uint8_t a;
 };
@@ -312,9 +312,9 @@ class myTagB
 public:
   static const char *GetUid (void) {return "myTagB.test.nsnam.org";}
   void Print (std::ostream &os) const {g_b = true;}
-  uint32_t GetSerializedSize (void) const {return 0;}
-  void Serialize (Buffer::Iterator i) const {}
-  uint32_t Deserialize (Buffer::Iterator i) {return 0;}
+  uint32_t GetSerializedSize (void) const {return 4;}
+  void Serialize (Buffer::Iterator i) const {i.WriteU32 (b);}
+  uint32_t Deserialize (Buffer::Iterator i) {b = i.ReadU32 (); return 4;}
 
   uint32_t b;
 };
@@ -323,9 +323,9 @@ class myTagC
 public:
   static const char *GetUid (void) {return "myTagC.test.nsnam.org";}
   void Print (std::ostream &os) const {g_c = true;}
-  uint32_t GetSerializedSize (void) const {return 0;}
-  void Serialize (Buffer::Iterator i) const {}
-  uint32_t Deserialize (Buffer::Iterator i) {return 0;}
+  uint32_t GetSerializedSize (void) const {return Tags::SIZE;}
+  void Serialize (Buffer::Iterator i) const {i.Write (c, Tags::SIZE);}
+  uint32_t Deserialize (Buffer::Iterator i) {i.Read (c, Tags::SIZE); return Tags::SIZE;}
   uint8_t c [Tags::SIZE];
 };
 class myInvalidTag 
@@ -519,6 +519,58 @@ TagsTest::RunTests (void)
     tmp.Add (smartTag);
     tmp.Peek (smartTag);
     tmp.Remove (smartTag);
+  }
+
+  {
+    Tags source;
+    myTagA aSource;
+    aSource.a = 0x66;
+    source.Add (aSource);
+    Buffer buffer;
+    uint32_t serialized = source.GetSerializedSize ();
+    buffer.AddAtStart (serialized);
+    source.Serialize (buffer.Begin (), serialized);
+    Tags dest;
+    dest.Deserialize (buffer.Begin ());
+    myTagA aDest;
+    aDest.a = 0x55;
+    dest.Peek (aDest);
+    if (aDest.a != 0x66)
+      {
+        ok = false;
+      }
+  }
+
+  {
+    Tags source;
+    myTagA aSource;
+    aSource.a = 0x66;
+    source.Add (aSource);
+    myTagZ zSource;
+    zSource.z = 0x77;
+    source.Add (zSource);
+
+    Buffer buffer;
+    uint32_t serialized = source.GetSerializedSize ();
+    buffer.AddAtStart (serialized);
+    source.Serialize (buffer.Begin (), serialized);
+    Tags dest;
+    dest.Deserialize (buffer.Begin ());
+
+    myTagA aDest;
+    aDest.a = 0x55;
+    dest.Peek (aDest);
+    if (aDest.a != 0x66)
+      {
+        ok = false;
+      }
+    myTagZ zDest;
+    zDest.z = 0x44;
+    dest.Peek (zDest);
+    if (zDest.z != 0x44)
+      {
+        ok = false;
+      }
   }
 
   return ok;
