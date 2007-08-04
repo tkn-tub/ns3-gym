@@ -23,6 +23,8 @@
 #include "ns3/address-utils.h"
 #include "arp-header.h"
 
+NS_HEADER_ENSURE_REGISTERED (ns3::ArpHeader);
+
 namespace ns3 {
 
 uint32_t

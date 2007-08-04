@@ -22,6 +22,8 @@
 #include "udp-header.h"
 #include "ipv4-checksum.h"
 
+NS_HEADER_ENSURE_REGISTERED (ns3::UdpHeader);
+
 namespace ns3 {
 
 bool UdpHeader::m_calcChecksum = false;

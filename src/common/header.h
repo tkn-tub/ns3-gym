@@ -24,6 +24,16 @@
 
 #include "chunk.h"
 
+#define NS_HEADER_ENSURE_REGISTERED(x)          \
+namespace {                                     \
+static class thisisaveryverylongclassname       \
+{                                               \
+public:                                         \
+  thisisaveryverylongclassname ()               \
+  { uint32_t uid; uid = x::GetUid ();}          \
+} g_thisisanotherveryveryverylongname;          \
+}
+
 namespace ns3 {
 
 /**

@@ -23,6 +23,8 @@
 #include "ns3/assert.h"
 #include <string>
 
+NS_HEADER_ENSURE_REGISTERED (ns3::LlcSnapHeader);
+
 
 namespace ns3 {
 

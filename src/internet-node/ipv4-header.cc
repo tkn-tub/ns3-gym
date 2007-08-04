@@ -26,6 +26,8 @@
 
 NS_DEBUG_COMPONENT_DEFINE ("Ipv4Header");
 
+NS_HEADER_ENSURE_REGISTERED (ns3::Ipv4Header);
+
 namespace ns3 {
 
 bool Ipv4Header::m_calcChecksum = false;
