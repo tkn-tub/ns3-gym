@@ -26,6 +26,30 @@
 #include <vector>
 #include "buffer.h"
 
+/**
+ * \ingroup tag
+ * \brief this macro should be instantiated exactly once for each
+ *        new type of Tag
+ *
+ * This macro will ensure that your new Tag type is registered
+ * within the tag registry. In most cases, this macro
+ * is not really needed but, for safety, please, use it all the
+ * time.
+ *
+ * Note: This macro is _absolutely_ needed if you try to run a
+ * distributed simulation.
+ */
+#define NS_TAG_ENSURE_REGISTERED(x)            \
+namespace {                                     \
+static class thisisaveryverylongclassname       \
+{                                               \
+public:                                         \
+  thisisaveryverylongclassname ()               \
+  { uint32_t uid; uid = x::GetUid ();}          \
+} g_thisisanotherveryveryverylongname;          \
+}
+
+
 namespace ns3 {
 
 template <typename T>
@@ -96,30 +120,18 @@ private:
 namespace ns3 {
 
 /**
- * \brief represent a single tag
+ * \brief a registry of all existing tag types.
  * \internal
  *
  * This class is used to give polymorphic access to the methods
  * exported by a tag. It also is used to associate a single
- * reliable uid to each unique type. The tricky part here is
- * that we have to deal correctly with a single type
- * being registered multiple times in AllocateUid so,
- * AllocateUid must first check in the list of existing
- * types if there is already a type registered with the
- * same string returned by T::GetUid.
- *
- * It is important to note that, for example, this code
- * will never be triggered on ELF systems (linux, and
- * a lot of unixes) because the ELF runtime ensures that
- * there exist a single instance of a template instanciation
- * even if multiple instanciations of that template are
- * present in memory at runtime.
+ * reliable uid to each unique type. 
  */
-class Tag
+class TagRegistry
 {
 public:
   template <typename T>
-  static uint32_t GetUid (void);
+  static uint32_t Register (std::string uidString);
   static std::string GetUidString (uint32_t uid);
   static uint32_t GetUidFromUidString (std::string uidString);
   static void Destruct (uint32_t uid, uint8_t data[Tags::SIZE]);
@@ -154,43 +166,41 @@ private:
   static void DoSerialize (uint8_t data[Tags::SIZE], Buffer::Iterator start);
   template <typename T>
   static uint32_t DoDeserialize (uint8_t data[Tags::SIZE], Buffer::Iterator start);
-  template <typename T>
-  static uint32_t AllocateUid (void);
 
   static TagInfoVector *GetInfo (void);
 };
 
 template <typename T>
 void 
-Tag::DoDestruct (uint8_t data[Tags::SIZE])
+TagRegistry::DoDestruct (uint8_t data[Tags::SIZE])
 {
   T *tag = reinterpret_cast<T *> (data);
   tag->~T ();  
 }
 template <typename T>
 void 
-Tag::DoPrint (uint8_t data[Tags::SIZE], std::ostream &os)
+TagRegistry::DoPrint (uint8_t data[Tags::SIZE], std::ostream &os)
 {
   T *tag = reinterpret_cast<T *> (data);
   tag->Print (os);
 }
 template <typename T>
 uint32_t 
-Tag::DoGetSerializedSize (uint8_t data[Tags::SIZE])
+TagRegistry::DoGetSerializedSize (uint8_t data[Tags::SIZE])
 {
   T *tag = reinterpret_cast<T *> (data);
   return tag->GetSerializedSize ();
 }
 template <typename T>
 void 
-Tag::DoSerialize (uint8_t data[Tags::SIZE], Buffer::Iterator start)
+TagRegistry::DoSerialize (uint8_t data[Tags::SIZE], Buffer::Iterator start)
 {
   T *tag = reinterpret_cast<T *> (data);
   tag->Serialize (start);
 }
 template <typename T>
 uint32_t 
-Tag::DoDeserialize (uint8_t data[Tags::SIZE], Buffer::Iterator start)
+TagRegistry::DoDeserialize (uint8_t data[Tags::SIZE], Buffer::Iterator start)
 {
   T *tag = reinterpret_cast<T *> (data);
   return tag->Deserialize (start);
@@ -198,33 +208,25 @@ Tag::DoDeserialize (uint8_t data[Tags::SIZE], Buffer::Iterator start)
 
 template <typename T>
 uint32_t 
-Tag::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<T> ();
-  return uid;
-}
-
-template <typename T>
-uint32_t 
-Tag::AllocateUid (void)
+TagRegistry::Register (std::string uidString)
 {
   TagInfoVector *vec = GetInfo ();
   uint32_t j = 0;
   for (TagInfoVector::iterator i = vec->begin (); i != vec->end (); i++)
     {
-      if (i->uidString == T::GetUid ())
+      if (i->uidString == uidString)
         {
           return j;
         }
       j++;
     }
   TagInfo info;
-  info.uidString = T::GetUid ();
-  info.destruct = &Tag::DoDestruct<T>;
-  info.print = &Tag::DoPrint<T>;
-  info.getSerializedSize = &Tag::DoGetSerializedSize<T>;
-  info.serialize = &Tag::DoSerialize<T>;
-  info.deserialize = &Tag::DoDeserialize<T>;
+  info.uidString = uidString;
+  info.destruct = &TagRegistry::DoDestruct<T>;
+  info.print = &TagRegistry::DoPrint<T>;
+  info.getSerializedSize = &TagRegistry::DoGetSerializedSize<T>;
+  info.serialize = &TagRegistry::DoSerialize<T>;
+  info.deserialize = &TagRegistry::DoDeserialize<T>;
   vec->push_back (info);
   uint32_t uid = vec->size ();
   return uid;
@@ -238,12 +240,12 @@ Tags::Add (T const&tag)
   // ensure this id was not yet added
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
-      NS_ASSERT (cur->m_id != Tag::GetUid<T> ());
+      NS_ASSERT (cur->m_id != T::GetUid ());
     }
   struct TagData *newStart = AllocData ();
   newStart->m_count = 1;
   newStart->m_next = 0;
-  newStart->m_id = Tag::GetUid<T> ();
+  newStart->m_id = T::GetUid ();
   void *buf = &newStart->m_data;
   new (buf) T (tag);
   newStart->m_next = m_next;
@@ -255,7 +257,7 @@ bool
 Tags::Remove (T &tag)
 {
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
-  return Remove (Tag::GetUid<T> ());
+  return Remove (T::GetUid ());
 }
 
 template <typename T>
@@ -265,7 +267,7 @@ Tags::Peek (T &tag) const
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
-      if (cur->m_id == Tag::GetUid<T> ()) 
+      if (cur->m_id == T::GetUid ()) 
         {
           /* found tag */
           T *data = reinterpret_cast<T *> (&cur->m_data);
@@ -325,14 +327,14 @@ Tags::RemoveAll (void)
         }
       if (prev != 0) 
         {
-          Tag::Destruct (prev->m_id, prev->m_data);
+          TagRegistry::Destruct (prev->m_id, prev->m_data);
           FreeData (prev);
         }
       prev = cur;
     }
   if (prev != 0) 
     {
-      Tag::Destruct (prev->m_id, prev->m_data);
+      TagRegistry::Destruct (prev->m_id, prev->m_data);
       FreeData (prev);
     }
   m_next = 0;

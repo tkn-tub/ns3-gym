@@ -361,7 +361,7 @@ private:
  * {
  *   // we really want to make sure that this
  *   // string is unique in the universe.
- *   static uint32_t uid = TagRegistry<MyTag> ("MyTag.unique.prefix");
+ *   static uint32_t uid = TagRegistry::Register<MyTag> ("MyTag.unique.prefix");
  *   return uid;
  * }
  * \endcode
