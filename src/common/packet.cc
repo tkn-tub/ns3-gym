@@ -146,29 +146,51 @@ Packet::EnableMetadata (void)
 Buffer 
 Packet::Serialize (void) const
 {
-  Buffer buffer = m_buffer.CreateFullCopy ();
-  buffer.AddAtStart (4);
-  buffer.Begin ().WriteU32 (m_buffer.GetSize ());
-  uint32_t tagsSize = m_tags.GetSerializedSize ();
-  buffer.AddAtEnd (tagsSize);
-  Buffer::Iterator tagStart = buffer.End ();
-  tagStart.Prev (tagsSize);
-  m_tags.Serialize (tagStart, tagsSize);
-  // serialize metadata.
-  return buffer;
+  Buffer buffer;
+  uint32_t reserve;
+
+  // write metadata
+  reserve = m_metadata.GetSerializedSize ();
+  buffer.AddAtStart (reserve);
+  m_metadata.Serialize (buffer.Begin (), reserve);
+
+  // write tags
+  reserve = m_tags.GetSerializedSize ();
+  buffer.AddAtStart (reserve);
+  m_tags.Serialize (buffer.Begin (), reserve);
+  
+  // aggregate byte buffer, metadata, and tags
+  Buffer tmp = m_buffer.CreateFullCopy ();
+  buffer.AddAtStart (tmp.GetSize ());
+  buffer.Begin ().Write (tmp.Begin (), tmp.End ());
+  
+  // write total size.
+  tmp.AddAtStart (4);
+  tmp.Begin ().WriteU32 (m_buffer.GetSize ());
+
+  return tmp;
 }
 void 
 Packet::Deserialize (Buffer buffer)
 {
   Buffer buf = buffer;
+  // read size
   uint32_t packetSize = buf.Begin ().ReadU32 ();
   buf.RemoveAtStart (4);
+
+  // read buffer.
   buf.RemoveAtEnd (buffer.GetSize () - packetSize);
   m_buffer = buf;
+
+  // read tags
   buffer.RemoveAtStart (4 + packetSize);
-  uint32_t deserialized = m_tags.Deserialize (buffer.Begin ());
-  buffer.RemoveAtStart (deserialized);
-  // deserialize metadata.
+  uint32_t tagsDeserialized = m_tags.Deserialize (buffer.Begin ());
+  buffer.RemoveAtStart (tagsDeserialized);
+
+  // read metadata
+  uint32_t metadataDeserialized = 
+    m_metadata.Deserialize (buffer.Begin ());
+  buffer.RemoveAtStart (metadataDeserialized);
 }
 
 
