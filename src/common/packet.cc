@@ -164,11 +164,11 @@ Packet::Serialize (void) const
   buffer.AddAtStart (tmp.GetSize ());
   buffer.Begin ().Write (tmp.Begin (), tmp.End ());
   
-  // write total size.
-  tmp.AddAtStart (4);
-  tmp.Begin ().WriteU32 (m_buffer.GetSize ());
+  // write byte buffer size.
+  buffer.AddAtStart (4);
+  buffer.Begin ().WriteU32 (m_buffer.GetSize ());
 
-  return tmp;
+  return buffer;
 }
 void 
 Packet::Deserialize (Buffer buffer)
@@ -179,7 +179,7 @@ Packet::Deserialize (Buffer buffer)
   buf.RemoveAtStart (4);
 
   // read buffer.
-  buf.RemoveAtEnd (buffer.GetSize () - packetSize);
+  buf.RemoveAtEnd (buf.GetSize () - packetSize);
   m_buffer = buf;
 
   // read tags
