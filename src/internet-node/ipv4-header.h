@@ -32,7 +32,7 @@ namespace ns3 {
 class Ipv4Header : public Header 
 {
 public:
-  static const char *GetUid (void);
+  static std::string GetUid (void);
   /**
    * \brief Construct a null IPv4 header
    */

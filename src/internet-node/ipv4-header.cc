@@ -30,7 +30,7 @@ namespace ns3 {
 
 bool Ipv4Header::m_calcChecksum = false;
 
-const char *
+std::string
 Ipv4Header::GetUid (void)
 {
   return "Ipv4Header.ns3";
