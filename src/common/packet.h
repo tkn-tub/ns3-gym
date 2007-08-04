@@ -281,7 +281,30 @@ public:
    */
   static void EnableMetadata (void);
 
-  Buffer Serialize (void);
+  /**
+   * \returns a byte buffer
+   *
+   * This method creates a serialized representation of a Packet object
+   * ready to be transmitted over a network to another system. This
+   * serialized representation contains a copy of the packet byte buffer,
+   * the tag list, and the packet metadata (if there is one).
+   *
+   * This method will typically be used by parallel simulations where
+   * the simulated system is partitioned and each partition runs on
+   * a different CPU.
+   */
+  Buffer Serialize (void) const;
+  /**
+   * \param a byte buffer
+   *
+   * This method reads a byte buffer as created by Packet::Serialize
+   * and restores the state of the Packet to what it was prio to
+   * calling Serialize.
+   *
+   * This method will typically be used by parallel simulations where
+   * the simulated system is partitioned and each partition runs on
+   * a different CPU.
+   */
   void Deserialize (Buffer buffer);
 private:
   Packet (Buffer buffer, Tags tags, PacketMetadata metadata);

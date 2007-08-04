@@ -144,7 +144,7 @@ Packet::EnableMetadata (void)
 }
 
 Buffer 
-Packet::Serialize (void)
+Packet::Serialize (void) const
 {
   Buffer buffer = m_buffer.CreateFullCopy ();
   buffer.AddAtStart (4);
