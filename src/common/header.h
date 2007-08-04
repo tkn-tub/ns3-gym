@@ -63,20 +63,24 @@ namespace ns3 {
  *
  * Each header must also make sure that:
  *   - it defines a public default constructor
- *   - it defines a public static method named GetUid which returns a string.
+ *   - it defines a public static method named GetUid which returns a 32 bit integer
  *
- * The latter should look like the following to ensure that
- * every header returns a unique string.
+ * The latter should look like the following:
  * \code
+ * // in the header,
  * class MyHeader : public Header
  * {
  * public:
- *   static const char *GetUid (void);
+ *   static uint32_t GetUid (void);
  * };
  *
- * const char *MyHeader::GetUid (void)
+ * // in the source file:
+ * NS_HEADER_ENSURE_REGISTERED (MyHeader);
+ *
+ * uint32_t MyHeader::GetUid (void)
  * {
- *   return "MyHeader.unique.prefix";
+ *   static uint32_t uid = Header::Register<MyHeader> ("MyHeader.unique.prefix");
+ *   return uid;
  * }
  * \endcode
  *

@@ -63,20 +63,24 @@ namespace ns3 {
  *
  * Each trailer must also make sure that:
  *   - it defines a public default constructor
- *   - it defines a public static method named GetUid which returns a string.
+ *   - it defines a public static method named GetUid which returns a 32 bit integer.
  *
- * The latter should look like the following to ensure that
- * every trailer returns a unique string.
+ * The latter should look like the following:
  * \code
+ * // in the header
  * class MyTrailer : public Header
  * {
  * public:
- *   static const char *GetUid (void);
+ *   static uint32_t GetUid (void);
  * };
  *
- * const char *MyTrailer::GetUid (void)
+ * // in the source file
+ * NS_TRAILER_ENSURE_REGISTERED (MyTrailer);
+ *
+ * uint32_t MyTrailer::GetUid (void)
  * {
- *   return "MyTrailer.unique.prefix";
+ *   static uint32_t uid = Trailer::Register<MyTrailer> ("MyTrailer.unique.prefix");
+ *   return uid;
  * }
  * \endcode
  *

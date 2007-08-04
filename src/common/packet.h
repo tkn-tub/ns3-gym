@@ -327,6 +327,7 @@ private:
  *
  * So, a tag class should look like this:
  * \code
+ * // in header file
  * // note how a tag class does not derive from any other class.
  * class MyTag 
  * {
@@ -334,9 +335,9 @@ private:
  *   // we need a public default constructor
  *   MyTag ();
  *   // we need a public static GetUid
- *   // GetUid must return a string which uniquely
+ *   // GetUid must return a 32 bit integer which uniquely
  *   // identifies this tag type
- *   static std::string GetUid (void);
+ *   static uint32_t GetUid (void);
  *   // Print should record in the output stream
  *   // the content of the tag instance.
  *   void Print (std::ostream &os) const;
@@ -352,11 +353,16 @@ private:
  *   uint32_t Deserialize (Buffer::Iterator i);
  * };
  *
+ * // in source file
+ * 
+ * NS_TAG_ENSURE_REGISTERED (MyTag);
+ *
  * std::string MyTag::GetUid (void)
  * {
  *   // we really want to make sure that this
  *   // string is unique in the universe.
- *   return "MyTag.unique.prefix";
+ *   static uint32_t uid = TagRegistry<MyTag> ("MyTag.unique.prefix");
+ *   return uid;
  * }
  * \endcode
  */
