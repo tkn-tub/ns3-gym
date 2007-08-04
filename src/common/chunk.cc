@@ -62,4 +62,100 @@ std::ostream& operator<< (std::ostream& os, Chunk const& chunk)
   return os;
 }
 
-}; // namespace ns3
+
+/**************************************
+ * The Chunk Registry below
+ ***************************************/
+
+
+ChunkRegistry::InfoVector *
+ChunkRegistry::GetInfoVector (void)
+{
+  static InfoVector vec;
+  return &vec;
+}
+
+std::string 
+ChunkRegistry::GetUidStringFromUid (uint32_t uid)
+{
+  InfoVector *vec = GetInfoVector ();
+  NS_ASSERT (uid >= 1 && uid <= vec->size ());
+  Info info = (*vec)[uid - 1];
+  return info.uidString;
+}
+uint32_t 
+ChunkRegistry::GetUidFromUidString (std::string uidString)
+{
+  uint32_t uid = 1;
+  InfoVector *vec = GetInfoVector ();
+  for (InfoVector::iterator i = vec->begin (); i != vec->end (); i++)
+    {
+      if (i->uidString == uidString)
+	{
+	  return uid;
+	}
+      uid++;
+    }
+  NS_FATAL_ERROR ("Trying to access a non-registered Header or Trailer: \"" << uidString << "\". "<<
+		  "You could try calling NS_HEADER_ENSURE_REGISTER somewhere.");
+  return 0;
+}
+
+uint8_t *
+ChunkRegistry::GetStaticInstance (uint32_t uid)
+{
+  InfoVector *vec = GetInfoVector ();
+  NS_ASSERT (uid >= 1 && uid <= vec->size ());
+  Info info = (*vec)[uid - 1];
+  return info.getStaticInstance ();
+}
+bool 
+ChunkRegistry::IsHeader (uint32_t uid)
+{
+  InfoVector *vec = GetInfoVector ();
+  NS_ASSERT (uid >= 1 && uid <= vec->size ());
+  Info info = (*vec)[uid - 1];
+  return info.isHeader;
+}
+bool 
+ChunkRegistry::IsTrailer (uint32_t uid)
+{
+  return !IsHeader (uid);
+}
+uint32_t 
+ChunkRegistry::Deserialize (uint32_t uid, uint8_t *instance, Buffer::Iterator i)
+{
+  InfoVector *vec = GetInfoVector ();
+  NS_ASSERT (uid >= 1 && uid <= vec->size ());
+  Info info = (*vec)[uid - 1];
+  return info.deserialize (instance, i);
+}
+void 
+ChunkRegistry::Print (uint32_t uid, uint8_t *instance, std::ostream &os)
+{
+  InfoVector *vec = GetInfoVector ();
+  NS_ASSERT (uid >= 1 && uid <= vec->size ());
+  Info info = (*vec)[uid - 1];
+  return info.print (instance, os);
+}
+std::string
+ChunkRegistry::GetName (uint32_t uid, uint8_t *instance)
+{ 
+  InfoVector *vec = GetInfoVector ();
+  NS_ASSERT (uid >= 1 && uid <= vec->size ());
+  Info info = (*vec)[uid - 1];
+  return info.getName (instance);
+}
+void 
+ChunkRegistry::InvokePrintCallback (uint32_t uid, uint8_t *instance, std::ostream &os,
+				    uint32_t packetUid, uint32_t size, 
+				    Ptr<CallbackImplBase> callback)
+{
+  InfoVector *vec = GetInfoVector ();
+  NS_ASSERT (uid >= 1 && uid <= vec->size ());
+  Info info = (*vec)[uid - 1];
+  info.invokePrintCallback (instance, os, packetUid, size, callback);
+}
+
+
+} // namespace ns3

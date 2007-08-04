@@ -25,10 +25,11 @@
 
 namespace ns3 {
 
-std::string
+uint32_t
 ArpHeader::GetUid (void)
 {
-  return "ArpHeader.ns3";
+  static uint32_t uid = Header::Register<ArpHeader> ("ArpHeader.ns3");
+  return uid;
 }
 
 ArpHeader::~ArpHeader ()

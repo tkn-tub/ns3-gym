@@ -10,7 +10,7 @@ using namespace ns3;
 class MyHeader : public Header 
 {
 public:
-  static std::string GetUid (void);
+  static uint32_t GetUid (void);
 
   MyHeader ();
   virtual ~MyHeader ();
@@ -35,14 +35,15 @@ MyHeader::MyHeader ()
 MyHeader::~MyHeader ()
 {}
 
-std::string
+uint32_t
 MyHeader::GetUid (void)
 {
   // This string is used by the internals of the packet
   // code to keep track of the packet metadata.
   // You need to make sure that this string is absolutely
   // unique. The code will detect any duplicate string.
-  return "MyHeader.test.nsnam.org";
+  static uint32_t uid = Header::Register<MyHeader> ("MyHeader.test.nsnam.org");
+  return uid;
 }
 
 std::string 

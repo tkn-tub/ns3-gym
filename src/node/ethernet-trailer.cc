@@ -30,10 +30,11 @@ namespace ns3 {
 
 bool EthernetTrailer::m_calcFcs = false;
 
-std::string
+uint32_t
 EthernetTrailer::GetUid (void)
 {
-  return "EthernetTrailer.ns3";
+  static uint32_t uid = Trailer::Register<EthernetTrailer> ("EthernetTrailer.ns3");
+  return uid;
 }
 
 EthernetTrailer::EthernetTrailer ()

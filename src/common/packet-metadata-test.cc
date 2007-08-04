@@ -35,7 +35,7 @@ template <int N>
 class HistoryHeader : public Header
 {
 public:
-  static std::string GetUid (void);
+  static uint32_t GetUid (void);
   HistoryHeader ();
   bool IsOk (void) const;
 private:
@@ -48,12 +48,13 @@ private:
 };
 
 template <int N>
-std::string
+uint32_t
 HistoryHeader<N>::GetUid (void)
 {
   std::ostringstream oss;
   oss << N << "HistoryHeader.ns3";
-  return oss.str ();
+  static uint32_t uid = Header::Register<HistoryHeader<N> > (oss.str());
+  return uid;
 }
 
 template <int N>
@@ -114,7 +115,7 @@ template <int N>
 class HistoryTrailer : public Trailer
 {
 public:
-  static std::string GetUid (void);
+  static uint32_t GetUid (void);
   HistoryTrailer ();
   bool IsOk (void) const;
 private:
@@ -127,12 +128,13 @@ private:
 };
 
 template <int N>
-std::string
+uint32_t
 HistoryTrailer<N>::GetUid (void)
 {
   std::ostringstream oss;
   oss << N << "HistoryTrailer.ns3";
-  return oss.str ();
+  static uint32_t uid = Trailer::Register<HistoryTrailer<N> > (oss.str ());
+  return uid;
 }
 
 

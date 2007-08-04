@@ -257,26 +257,26 @@ template <typename T>
 void 
 PacketMetadata::AddHeader (T const &header, uint32_t size)
 {
-  DoAddHeader (ChunkRegistry::GetHeaderUid<T> () << 1, size);
+  DoAddHeader (T::GetUid () << 1, size);
 }
 
 template <typename T>
 void 
 PacketMetadata::RemoveHeader (T const &header, uint32_t size)
 {
-  DoRemoveHeader (ChunkRegistry::GetHeaderUid<T> () << 1, size);
+  DoRemoveHeader (T::GetUid () << 1, size);
 }
 template <typename T>
 void 
 PacketMetadata::AddTrailer (T const &trailer, uint32_t size)
 {
-  DoAddTrailer (ChunkRegistry::GetTrailerUid<T> () << 1, size);
+  DoAddTrailer (T::GetUid () << 1, size);
 }
 template <typename T>
 void 
 PacketMetadata::RemoveTrailer (T const &trailer, uint32_t size)
 {
-  DoRemoveTrailer (ChunkRegistry::GetTrailerUid<T> () << 1, size);
+  DoRemoveTrailer (T::GetUid () << 1, size);
 }
 
 

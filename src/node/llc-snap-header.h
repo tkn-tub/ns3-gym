@@ -31,7 +31,7 @@ namespace ns3 {
 class LlcSnapHeader : public Header 
 {
 public:
-  static std::string GetUid (void);
+  static uint32_t GetUid (void);
 
   LlcSnapHeader ();
   virtual ~LlcSnapHeader ();

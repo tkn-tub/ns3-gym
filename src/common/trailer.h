@@ -86,6 +86,9 @@ namespace ns3 {
 class Trailer : public Chunk {
 public:
   virtual ~Trailer ();
+protected:
+  template <typename T>
+  static uint32_t Register (std::string uidString);
 private:
   /**
    * \returns a user-readable name to identify this type of header.
@@ -142,6 +145,18 @@ private:
   virtual uint32_t DeserializeFrom (Buffer::Iterator end) = 0;
 };
 
-}; // namespace ns3
+} // namespace ns3
+
+namespace ns3 {
+
+template <typename T>
+uint32_t 
+Trailer::Register (std::string uidString)
+{
+  return ChunkRegistry::RegisterTrailer<T> (uidString);
+}
+
+
+} // namespace ns3
 
 #endif /* TRAILER_H */

@@ -30,10 +30,11 @@ namespace ns3 {
 
 bool Ipv4Header::m_calcChecksum = false;
 
-std::string
+uint32_t
 Ipv4Header::GetUid (void)
 {
-  return "Ipv4Header.ns3";
+  static uint32_t uid = Header::Register<Ipv4Header> ("Ipv4Header.ns3");
+  return uid;
 }
 
 Ipv4Header::Ipv4Header ()

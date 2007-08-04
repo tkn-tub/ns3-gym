@@ -24,7 +24,7 @@
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
 #include "buffer.h"
-#include "chunk-registry.h"
+#include "chunk.h"
 #include <vector>
 
 namespace ns3 {
@@ -158,7 +158,7 @@ PacketPrinter::SetHeaderPrinter (Callback<void,std::ostream &,uint32_t,uint32_t,
                                  ChunkFragmentPrinter fragmentPrinter)
 {
   Printer p;
-  p.m_chunkUid = ChunkRegistry::GetHeaderUid<T> ();
+  p.m_chunkUid = T::GetUid ();
   p.m_printer = printer.GetImpl ();
   p.m_fragmentPrinter = fragmentPrinter;
   m_printerList.push_back (p);
@@ -170,7 +170,7 @@ PacketPrinter::SetTrailerPrinter (Callback<void,std::ostream &,uint32_t,uint32_t
                                  ChunkFragmentPrinter fragmentPrinter)
 {
   Printer p;
-  p.m_chunkUid = ChunkRegistry::GetTrailerUid<T> ();
+  p.m_chunkUid = T::GetUid ();
   p.m_printer = printer.GetImpl ();
   p.m_fragmentPrinter = fragmentPrinter;
   m_printerList.push_back (p);

@@ -63,6 +63,9 @@ namespace ns3 {
 class Header : public Chunk {
 public:
   virtual ~Header ();
+protected:
+  template <typename T>
+  static uint32_t Register (std::string uuid);
 private:
   /**
    * \returns a user-readable name to identify this type of header.
@@ -115,6 +118,18 @@ private:
   virtual uint32_t DeserializeFrom (Buffer::Iterator start) = 0;
 };
 
-}; // namespace ns3
+} // namespace ns3
+
+namespace ns3 {
+
+template <typename T>
+uint32_t 
+Header::Register (std::string uuid)
+{
+  return ChunkRegistry::RegisterHeader<T> (uuid);
+}
+
+
+} // namespace ns3
 
 #endif /* HEADER_H */

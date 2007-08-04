@@ -34,7 +34,7 @@ namespace ns3 {
 class ArpHeader : public Header 
 {
 public:
-  static std::string GetUid (void);
+  static uint32_t GetUid (void);
 
   virtual ~ArpHeader ();
 

@@ -26,10 +26,11 @@ namespace ns3 {
 
 bool UdpHeader::m_calcChecksum = false;
 
-std::string
+uint32_t
 UdpHeader::GetUid (void)
 {
-  return "UdpHeader.ns3";
+  static uint32_t uid = Header::Register<UdpHeader> ("UdpHeader.ns3");
+  return uid;
 }
 
 /* The magic values below are used only for debugging.

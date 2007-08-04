@@ -29,10 +29,11 @@ NS_DEBUG_COMPONENT_DEFINE ("EthernetHeader");
 
 namespace ns3 {
 
-std::string
+uint32_t
 EthernetHeader::GetUid (void)
 {
-  return "EthernetHeader.ns3";
+  static uint32_t uid = Header::Register<EthernetHeader> ("EthernetHeader.ns3");
+  return uid;
 }
 
 EthernetHeader::EthernetHeader (bool hasPreamble)

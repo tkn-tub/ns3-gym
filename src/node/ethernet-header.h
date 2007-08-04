@@ -49,7 +49,7 @@ namespace ns3 {
 class EthernetHeader : public Header 
 {
 public:
-  static std::string GetUid (void);
+  static uint32_t GetUid (void);
 
   /**
    * \brief Construct a null ethernet header

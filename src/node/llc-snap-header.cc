@@ -26,10 +26,11 @@
 
 namespace ns3 {
 
-std::string
+uint32_t
 LlcSnapHeader::GetUid (void)
 {
-  return "LlcSnapHeader.ns3";
+  static uint32_t uid = Header::Register<LlcSnapHeader> ("LlcSnapHeader.ns3");
+  return uid;
 }
 
 LlcSnapHeader::LlcSnapHeader ()
