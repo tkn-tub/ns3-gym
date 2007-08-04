@@ -74,14 +74,14 @@ Packet::GetSize (void) const
 void 
 Packet::AddAtEnd (Packet packet)
 {
-  packet.m_buffer.TransformIntoRealBuffer ();
-  m_buffer.TransformIntoRealBuffer ();
+  Buffer src = packet.m_buffer.CreateFullCopy ();
+  Buffer dst = m_buffer.CreateFullCopy ();
 
-  Buffer src = packet.m_buffer;
-  m_buffer.AddAtEnd (src.GetSize ());
-  Buffer::Iterator destStart = m_buffer.End ();
+  dst.AddAtEnd (src.GetSize ());
+  Buffer::Iterator destStart = dst.End ();
   destStart.Prev (src.GetSize ());
   destStart.Write (src.Begin (), src.End ());
+  m_buffer = dst;
   /**
    * XXX: we might need to merge the tag list of the
    * other packet into the current packet.
@@ -143,7 +143,36 @@ Packet::EnableMetadata (void)
   PacketMetadata::Enable ();
 }
 
-}; // namespace ns3
+Buffer 
+Packet::Serialize (void)
+{
+  Buffer buffer = m_buffer.CreateFullCopy ();
+  buffer.AddAtStart (4);
+  buffer.Begin ().WriteU32 (m_buffer.GetSize ());
+  uint32_t tagsSize = m_tags.GetSerializedSize ();
+  buffer.AddAtEnd (tagsSize);
+  Buffer::Iterator tagStart = buffer.End ();
+  tagStart.Prev (tagsSize);
+  m_tags.Serialize (tagStart, tagsSize);
+  // serialize metadata.
+  return buffer;
+}
+void 
+Packet::Deserialize (Buffer buffer)
+{
+  Buffer buf = buffer;
+  uint32_t packetSize = buf.Begin ().ReadU32 ();
+  buf.RemoveAtStart (4);
+  buf.RemoveAtEnd (buffer.GetSize () - packetSize);
+  m_buffer = buf;
+  buffer.RemoveAtStart (4 + packetSize);
+  uint32_t deserialized = m_tags.Deserialize (buffer.Begin ());
+  buffer.RemoveAtStart (deserialized);
+  // deserialize metadata.
+}
+
+
+} // namespace ns3
 
 
 

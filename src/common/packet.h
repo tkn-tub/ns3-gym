@@ -280,6 +280,9 @@ public:
    * errors will be detected and will abort the program.
    */
   static void EnableMetadata (void);
+
+  Buffer Serialize (void);
+  void Deserialize (Buffer buffer);
 private:
   Packet (Buffer buffer, Tags tags, PacketMetadata metadata);
   Buffer m_buffer;
