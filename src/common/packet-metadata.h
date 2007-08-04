@@ -100,7 +100,6 @@ public:
 
   uint32_t GetUid (void) const;
 
-  void PrintDefault (std::ostream &os, Buffer buffer) const;
   void Print (std::ostream &os, Buffer buffer, PacketPrinter const &printer) const;
 
   static void PrintStats (void);
@@ -254,26 +253,26 @@ template <typename T>
 void 
 PacketMetadata::AddHeader (T const &header, uint32_t size)
 {
-  DoAddHeader (PacketPrinter::GetHeaderUid<T> () << 1, size);
+  DoAddHeader (ChunkRegistry::GetHeaderUid<T> () << 1, size);
 }
 
 template <typename T>
 void 
 PacketMetadata::RemoveHeader (T const &header, uint32_t size)
 {
-  DoRemoveHeader (PacketPrinter::GetHeaderUid<T> () << 1, size);
+  DoRemoveHeader (ChunkRegistry::GetHeaderUid<T> () << 1, size);
 }
 template <typename T>
 void 
 PacketMetadata::AddTrailer (T const &trailer, uint32_t size)
 {
-  DoAddTrailer (PacketPrinter::GetTrailerUid<T> () << 1, size);
+  DoAddTrailer (ChunkRegistry::GetTrailerUid<T> () << 1, size);
 }
 template <typename T>
 void 
 PacketMetadata::RemoveTrailer (T const &trailer, uint32_t size)
 {
-  DoRemoveTrailer (PacketPrinter::GetTrailerUid<T> () << 1, size);
+  DoRemoveTrailer (ChunkRegistry::GetTrailerUid<T> () << 1, size);
 }
 
 

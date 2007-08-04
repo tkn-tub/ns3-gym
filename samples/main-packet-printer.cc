@@ -90,15 +90,6 @@ void DefaultPrint (void)
   std::cout << std::endl;
 }
 
-// The below functions are used in place of default versions, in the
-// non-default case below.  For instance, DoPrintIpv4Header will print
-// out less IPv4 header information than the default print function
-void 
-DoPrintDefault (std::ostream &os,uint32_t packetUid, uint32_t size, 
-                std::string &name, struct PacketPrinter::FragmentInformation info)
-{
-  os << name <<" (size " << size << " trim_start " << info.start << " trim_end " << info.end << ")";
-}
 void
 DoPrintPayload (std::ostream & os,uint32_t packetUid,uint32_t size,
                 struct PacketPrinter::FragmentInformation info)
@@ -129,14 +120,10 @@ void NonDefaultPrint (void)
   // set a string separator automatically inserted
   // between each call to a printing function.
   printer.SetSeparator (" - ");
-  // set the default print function: invoked if no 
-  // specialized function has been provided for a header
-  // or trailer
-  printer.AddDefaultPrinter (MakeCallback (&DoPrintDefault));
   // set the payload print function
-  printer.AddPayloadPrinter (MakeCallback (&DoPrintPayload));
+  printer.SetPayloadPrinter (MakeCallback (&DoPrintPayload));
   // set the print function for the header type Ipv4Header.
-  printer.AddHeaderPrinter (MakeCallback (&DoPrintIpv4Header),
+  printer.SetHeaderPrinter (MakeCallback (&DoPrintIpv4Header),
                             MakeCallback (&DoPrintIpv4HeaderFragment));
 
 

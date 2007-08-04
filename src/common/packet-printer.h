@@ -24,11 +24,10 @@
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
 #include "buffer.h"
+#include "chunk-registry.h"
 #include <vector>
 
 namespace ns3 {
-
-class Chunk;
 
 /**
  * \brief hold a list of print callbacks for packet headers and trailers
@@ -88,100 +87,38 @@ public:
    * Print the content of the packet backward.
    */
   void PrintBackward (void);
+  /**
+   * \param separator the new separator
+   *
+   * The default separator is a single space character.
+   */
   void SetSeparator (std::string separator);
   /**
    * \param printer printer for payload
    */
-  void AddPayloadPrinter (PayloadPrinter printer);
+  void SetPayloadPrinter (PayloadPrinter printer);
   /**
    * \param printer printer for the specified chunk
    * \param fragmentPrinter printer for a fragment of the specified chunk
    *
-   * If the user has not specified a callback for a specific header present
-   * in a packet, the "default" callback is invoked. If no such callback
-   * was specified, nothing happens.
+   * If the user does not force a user-specific printing function through
+   * a call to SetHeaderPrinter, the default print output is generated.
    */
   template <typename T>
-  void AddHeaderPrinter (Callback<void,std::ostream &,uint32_t,uint32_t,const T *> printer,
+  void SetHeaderPrinter (Callback<void,std::ostream &,uint32_t,uint32_t,const T *> printer,
                          ChunkFragmentPrinter fragmentPrinter);
   /**
    * \param printer printer for the specified chunk
    * \param fragmentPrinter printer for a fragment of the specified chunk
    *
-   * If the user has not specified a callback for a specific trailer present
-   * in a packet, the "default" callback is invoked. If no such callback
-   * was specified, nothing happens.
+   * If the user does not force a user-specific printing function through
+   * a call to SetTrailerPrinter, the default print output is generated.
    */
   template <typename T>
-  void AddTrailerPrinter (Callback<void,std::ostream &,uint32_t,uint32_t,const T *> printer,
-                          ChunkFragmentPrinter fragmentPrinter);
-  /**
-   * \param printer printer for a chunk for which no callback was specified explicitely
-   */
-  void AddDefaultPrinter (DefaultPrinter printer);
-  
+  void SetTrailerPrinter (Callback<void,std::ostream &,uint32_t,uint32_t,const T *> printer,
+                          ChunkFragmentPrinter fragmentPrinter);  
 private:
   friend class PacketMetadata;
-  typedef void (*DoPrintCallback) (Ptr<CallbackImplBase>, Buffer::Iterator, std::ostream &,
-                                   uint32_t, uint32_t);
-  typedef std::string (*DoGetNameCallback) (void);
-  struct Printer
-  {
-    uint32_t m_chunkUid;
-    Ptr<CallbackImplBase> m_printer;
-    Callback<void,std::ostream &,uint32_t,uint32_t,std::string &,struct PacketPrinter::FragmentInformation>
-      m_fragmentPrinter;
-  };
-  struct RegisteredChunk
-  {
-    DoPrintCallback printCallback;
-    DoGetNameCallback getNameCallback;
-    std::string uidString;
-    bool isHeader;
-  };
-  typedef std::vector<struct PacketPrinter::Printer> PrinterList;
-  typedef std::vector<struct RegisteredChunk> RegisteredChunks;
-
-
-  static PacketPrinter GetDefault (void);
-  static PacketPrinter *PeekDefault (void);
-  static PacketPrinter *CreateStaticDefault (void);
-  static void DoDefaultPrintPayload (std::ostream & os,
-                                     uint32_t packetUid,
-                                     uint32_t size,
-                                     struct PacketPrinter::FragmentInformation info);
-  static void DoDefaultPrintDefault (std::ostream & os,
-                                     uint32_t packetUid,
-                                     uint32_t size,
-                                     std::string &name,
-                                     struct PacketPrinter::FragmentInformation info);
-  template <typename T>
-  static void DoDefaultPrint (std::ostream &os, uint32_t packetUid, uint32_t size, const T *chunk);
-  static void DoDefaultPrintFragment (std::ostream & os,
-                                      uint32_t packetUid,
-                                      uint32_t size,
-                                      std::string &name,
-                                      struct PacketPrinter::FragmentInformation info);
-
-  template <typename T>
-  static void DoPrint (Ptr<CallbackImplBase> callbackPrinter,
-                       Buffer::Iterator i, 
-                       std::ostream &os, 
-                       uint32_t packetUid,
-                       uint32_t size);
-  template <typename T>
-  static std::string DoGetName (void);
-  template <typename T>
-  static uint32_t GetTrailerUid (void);
-  template <typename T>
-  static uint32_t GetHeaderUid (void);
-  template <typename T>
-  static uint32_t AllocateUid (bool isHeader);
-  static RegisteredChunks *GetRegisteredChunks (void);
-  static bool IsTrailer (uint32_t uid);
-  static bool IsHeader (uint32_t uid);
-
-
   void PrintChunk (uint32_t uid, 
 		   Buffer::Iterator i, 
 		   std::ostream &os, 
@@ -195,16 +132,15 @@ private:
 			   uint32_t fragmentEnd) const;
   void PrintPayload (std::ostream &os, uint32_t packetUid, uint32_t size,
 		     uint32_t fragmentStart, uint32_t fragmentEnd) const;
-  void DoAddPrinter (uint32_t uid,
-                     Ptr<CallbackImplBase> printer,
-                     Callback<void,
-                       std::ostream &, 
-                       uint32_t, 
-                       uint32_t, 
-                       std::string &,
-                       struct PacketPrinter::FragmentInformation> fragmentPrinter);
-
-  static PacketPrinter m_defaultPacketPrinter;
+  struct Printer
+  {
+    uint32_t m_chunkUid;
+    Ptr<CallbackImplBase> m_printer;
+    Callback<void,std::ostream &,uint32_t,uint32_t,std::string &,
+             struct PacketPrinter::FragmentInformation> m_fragmentPrinter;
+  };
+  typedef std::vector<struct PacketPrinter::Printer> PrinterList;
+  
   PrinterList m_printerList;
   PayloadPrinter m_payloadPrinter;
   DefaultPrinter m_defaultPrinter;
@@ -218,106 +154,27 @@ namespace ns3 {
 
 template <typename T>
 void 
-PacketPrinter::AddHeaderPrinter (Callback<void,std::ostream &, uint32_t, uint32_t, const T *> printer,
-			   Callback<void,
-		            std::ostream &, 
-		            uint32_t, 
-                            uint32_t, 
-                            std::string &,
-		            struct PacketPrinter::FragmentInformation> fragmentPrinter)
+PacketPrinter::SetHeaderPrinter (Callback<void,std::ostream &,uint32_t,uint32_t,const T *> printer,
+                                 ChunkFragmentPrinter fragmentPrinter)
 {
-  static uint32_t uid = PacketPrinter::GetHeaderUid<T> ();
-  DoAddPrinter (uid, printer.GetImpl (), fragmentPrinter);
+  Printer p;
+  p.m_chunkUid = ChunkRegistry::GetHeaderUid<T> ();
+  p.m_printer = printer.GetImpl ();
+  p.m_fragmentPrinter = fragmentPrinter;
+  m_printerList.push_back (p);
 }
 
 template <typename T>
 void 
-PacketPrinter::AddTrailerPrinter (Callback<void,std::ostream &, uint32_t, uint32_t, const T *> printer,
-			   Callback<void,
-		            std::ostream &, 
-		            uint32_t, 
-                            uint32_t, 
-                            std::string &,
-		            struct PacketPrinter::FragmentInformation> fragmentPrinter)
+PacketPrinter::SetTrailerPrinter (Callback<void,std::ostream &,uint32_t,uint32_t,const T *> printer,
+                                 ChunkFragmentPrinter fragmentPrinter)
 {
-  static uint32_t uid = PacketPrinter::GetTrailerUid<T> ();
-  DoAddPrinter (uid, printer.GetImpl (), fragmentPrinter);
+  Printer p;
+  p.m_chunkUid = ChunkRegistry::GetTrailerUid<T> ();
+  p.m_printer = printer.GetImpl ();
+  p.m_fragmentPrinter = fragmentPrinter;
+  m_printerList.push_back (p);
 }
-
-template <typename T>
-void
-PacketPrinter::DoPrint (Ptr<CallbackImplBase> printerCallback,
-                        Buffer::Iterator i,
-                        std::ostream &os, 
-                        uint32_t packetUid,
-                        uint32_t size)
-{
-  T chunk = T ();
-  chunk.Deserialize (i);
-  Callback<void,std::ostream&,uint32_t,uint32_t,const T*> callback;
-  callback.Assign (printerCallback);
-  callback (os, packetUid, size, &chunk);
-}
-
-template <typename T>
-std::string
-PacketPrinter::DoGetName (void)
-{
-  T chunk = T ();
-  return chunk.GetName ();
-}
-
-template <typename T>
-uint32_t 
-PacketPrinter::GetHeaderUid (void)
-{
-  static uint32_t uid = PacketPrinter::AllocateUid<T> (true);
-  return uid;
-}
-
-template <typename T>
-uint32_t 
-PacketPrinter::GetTrailerUid (void)
-{
-  static uint32_t uid = PacketPrinter::AllocateUid<T> (false);
-  return uid;
-}
-
-template <typename T>
-uint32_t
-PacketPrinter::AllocateUid (bool isHeader)
-{
-  RegisteredChunks *chunks = PacketPrinter::GetRegisteredChunks ();
-  uint32_t j = 0;
-  for (RegisteredChunks::iterator i = chunks->begin (); i != chunks->end (); i++)
-    {
-      if (i->uidString == T::GetUid ())
-        {
-          return j;
-        }
-      j++;
-    }
-  RegisteredChunk chunk;
-  chunk.printCallback = &PacketPrinter::DoPrint<T>;
-  chunk.getNameCallback = &PacketPrinter::DoGetName<T>;
-  chunk.isHeader = isHeader;
-  chunk.uidString = T::GetUid ();
-  chunks->push_back (chunk);
-  uint32_t uid = chunks->size ();
-  PacketPrinter::PeekDefault ()->DoAddPrinter (uid, 
-                                               MakeCallback (&PacketPrinter::DoDefaultPrint<T>).GetImpl (),
-                                               MakeCallback (&PacketPrinter::DoDefaultPrintFragment));
-  return uid;
-}
-
-template <typename T>
-void 
-PacketPrinter::DoDefaultPrint (std::ostream &os, uint32_t packetUid, uint32_t size, const T *chunk)
-{
-  os << chunk->GetName () << " ";
-  chunk->Print (os);
-}
-
 
 
 } // namespace ns3

@@ -128,7 +128,7 @@ Packet::GetUid (void) const
 void 
 Packet::Print (std::ostream &os) const
 {
-  m_metadata.PrintDefault (os, m_buffer);
+  m_metadata.Print (os, m_buffer, PacketPrinter ());
 }
 
 void 

@@ -207,9 +207,6 @@ private:
   void PrintFragment (std::ostream &os,uint32_t packetUid,
                       uint32_t size,std::string & name, 
                       struct PacketPrinter::FragmentInformation info);
-  void PrintDefault (std::ostream& os,uint32_t packetUid,
-                     uint32_t size,std::string& name,
-                     struct PacketPrinter::FragmentInformation info);
   void PrintPayload (std::ostream &os,uint32_t packetUid,
                      uint32_t size,
                      struct PacketPrinter::FragmentInformation info);
@@ -230,8 +227,7 @@ private:
 PacketMetadataTest::PacketMetadataTest ()
   : Test ("PacketMetadata")
 {
-  m_printer.AddPayloadPrinter (MakeCallback (&PacketMetadataTest::PrintPayload, this));
-  m_printer.AddDefaultPrinter (MakeCallback (&PacketMetadataTest::PrintDefault, this));
+  m_printer.SetPayloadPrinter (MakeCallback (&PacketMetadataTest::PrintPayload, this));
 }
 
 PacketMetadataTest::~PacketMetadataTest ()
@@ -244,7 +240,7 @@ PacketMetadataTest::RegisterHeader (void)
   static bool registered = false;
   if (!registered)
     {
-      m_printer.AddHeaderPrinter (MakeCallback (&PacketMetadataTest::PrintHeader<N>, this),
+      m_printer.SetHeaderPrinter (MakeCallback (&PacketMetadataTest::PrintHeader<N>, this),
                                   MakeCallback (&PacketMetadataTest::PrintFragment, this));
       registered = true;
     }
@@ -257,7 +253,7 @@ PacketMetadataTest::RegisterTrailer (void)
   static bool registered = false;
   if (!registered)
     {
-      m_printer.AddTrailerPrinter (MakeCallback (&PacketMetadataTest::PrintTrailer<N>, this),
+      m_printer.SetTrailerPrinter (MakeCallback (&PacketMetadataTest::PrintTrailer<N>, this),
                                    MakeCallback (&PacketMetadataTest::PrintFragment, this));
       registered = true;
     }
@@ -293,13 +289,6 @@ PacketMetadataTest::PrintFragment (std::ostream &os,uint32_t packetUid,
                                   struct PacketPrinter::FragmentInformation info)
 {
   m_prints.push_back (size - (info.end + info.start));
-}
-void 
-PacketMetadataTest::PrintDefault (std::ostream& os,uint32_t packetUid,
-                     uint32_t size,std::string& name,
-                     struct PacketPrinter::FragmentInformation info)
-{
-  NS_ASSERT (false);
 }
 void 
 PacketMetadataTest::PrintPayload (std::ostream &os,uint32_t packetUid,

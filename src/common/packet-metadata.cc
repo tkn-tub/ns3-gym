@@ -964,12 +964,6 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
   NS_ASSERT (leftToRemove == 0);
 }
 
-void 
-PacketMetadata::PrintDefault (std::ostream &os, Buffer buffer) const
-{
-  Print (os, buffer, PacketPrinter::GetDefault ());
-}
-
 uint32_t
 PacketMetadata::DoPrint (const struct PacketMetadata::SmallItem *item, 
                          const struct PacketMetadata::ExtraItem *extraItem,
@@ -991,13 +985,13 @@ PacketMetadata::DoPrint (const struct PacketMetadata::SmallItem *item,
                                   extraItem->fragmentStart, 
                                   item->size - extraItem->fragmentEnd);
     }
-  else if (PacketPrinter::IsHeader (uid))
+  else if (ChunkRegistry::IsHeader (uid))
     {
       ns3::Buffer::Iterator j = data.Begin ();
       j.Next (offset);
       printer.PrintChunk (uid, j, os, extraItem->packetUid, item->size);
     }
-  else if (PacketPrinter::IsTrailer (uid))
+  else if (ChunkRegistry::IsTrailer (uid))
     {
       ns3::Buffer::Iterator j = data.End ();
       j.Prev (data.GetSize () - (offset + item->size));
