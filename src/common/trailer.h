@@ -24,6 +24,19 @@
 
 #include "chunk.h"
 
+/**
+ * \relates Trailer
+ * \brief this macro should be instantiated exactly once for each
+ *        new type of Trailer
+ *
+ * This macro will ensure that your new Trailer type is registered
+ * within the packet trailer registry. In most cases, this macro
+ * is not really needed but, for safety, please, use it all the
+ * time.
+ *
+ * Note: This macro is _absolutely_ needed if you try to run a
+ * distributed simulation.
+ */
 #define NS_TRAILER_ENSURE_REGISTERED(x)         \
 namespace {                                     \
 static class thisisaveryverylongclassname       \
