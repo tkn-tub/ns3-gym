@@ -80,8 +80,7 @@ InternetNode::DoFillTraceResolver (CompositeTraceResolver &resolver)
   Node::DoFillTraceResolver (resolver);
   Ptr<Ipv4L3Protocol> ipv4 = QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
   resolver.Add ("ipv4",
-                MakeCallback (&Ipv4L3Protocol::CreateTraceResolver, PeekPointer (ipv4)),
-                InternetNode::IPV4);
+                MakeCallback (&Ipv4L3Protocol::CreateTraceResolver, PeekPointer (ipv4)));
 }
 
 void 

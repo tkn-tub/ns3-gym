@@ -44,6 +44,76 @@ namespace ns3 {
 const InterfaceId Ipv4L3Protocol::iid = MakeInterfaceId ("Ipv4L3Protocol", Object::iid);
 const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 
+Ipv4L3ProtocolTraceContextElement::Ipv4L3ProtocolTraceContextElement ()
+  : m_type (TX)
+{}
+Ipv4L3ProtocolTraceContextElement::Ipv4L3ProtocolTraceContextElement (enum Type type)
+  : m_type (type)
+{}
+bool 
+Ipv4L3ProtocolTraceContextElement::IsTx (void) const
+{
+  return m_type == TX;
+}
+bool 
+Ipv4L3ProtocolTraceContextElement::IsRx (void) const
+{
+  return m_type == RX;
+}
+bool 
+Ipv4L3ProtocolTraceContextElement::IsDrop (void) const
+{
+  return m_type == DROP;
+}
+void 
+Ipv4L3ProtocolTraceContextElement::Print (std::ostream &os) const
+{
+  os << "ipv4=";
+  switch (m_type)
+    {
+    case TX:
+      os << "tx";
+      break;
+    case RX:
+      os << "rx";
+      break;
+    case DROP:
+      os << "drop";
+      break;
+    }
+}
+uint16_t 
+Ipv4L3ProtocolTraceContextElement::GetUid (void)
+{
+  static uint16_t uid = Register<Ipv4L3ProtocolTraceContextElement> ("Ipv4L3ProtocolTraceContextElement");
+  return uid;
+}
+
+
+Ipv4l3ProtocolInterfaceIndex::Ipv4l3ProtocolInterfaceIndex ()
+  : m_index (0)
+{}
+Ipv4l3ProtocolInterfaceIndex::Ipv4l3ProtocolInterfaceIndex (uint32_t index)
+  : m_index (index)
+{}
+uint32_t 
+Ipv4l3ProtocolInterfaceIndex::Get (void) const
+{
+  return m_index;
+}
+void 
+Ipv4l3ProtocolInterfaceIndex::Print (std::ostream &os) const
+{
+  os << "ipv4-interface=" << m_index;
+}
+uint16_t 
+Ipv4l3ProtocolInterfaceIndex::GetUid (void)
+{
+  static uint16_t uid = Register<Ipv4l3ProtocolInterfaceIndex> ("Ipv4l3ProtocolInterfaceIndex");
+  return uid;
+}
+
+
 Ipv4L3Protocol::Ipv4L3Protocol(Ptr<Node> node)
   : m_nInterfaces (0),
     m_defaultTtl (64),
@@ -87,20 +157,19 @@ TraceResolver *
 Ipv4L3Protocol::CreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
-  resolver->Add ("tx", m_txTrace, Ipv4L3Protocol::TX);
-  resolver->Add ("rx", m_rxTrace, Ipv4L3Protocol::RX);
-  resolver->Add ("drop", m_dropTrace, Ipv4L3Protocol::DROP);
+  resolver->Add ("tx", m_txTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::TX));
+  resolver->Add ("rx", m_rxTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::RX));
+  resolver->Add ("drop", m_dropTrace, Ipv4L3ProtocolTraceContextElement (Ipv4L3ProtocolTraceContextElement::DROP));
   resolver->Add ("interfaces", 
-                 MakeCallback (&Ipv4L3Protocol::InterfacesCreateTraceResolver, this), 
-                 Ipv4L3Protocol::INTERFACES);
+                 MakeCallback (&Ipv4L3Protocol::InterfacesCreateTraceResolver, this));
   return resolver;
 }
 
 TraceResolver *
 Ipv4L3Protocol::InterfacesCreateTraceResolver (TraceContext const &context) const
 {
-  ArrayTraceResolver<Ipv4Interface *> *resolver = 
-    new ArrayTraceResolver<Ipv4Interface *> 
+  ArrayTraceResolver<Ipv4Interface *, Ipv4l3ProtocolInterfaceIndex> *resolver = 
+    new ArrayTraceResolver<Ipv4Interface *,Ipv4l3ProtocolInterfaceIndex> 
     (context,
      MakeCallback (&Ipv4L3Protocol::GetNInterfaces, this),
      MakeCallback (&Ipv4L3Protocol::GetInterface, this));

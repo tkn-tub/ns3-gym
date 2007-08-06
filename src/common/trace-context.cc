@@ -205,6 +205,32 @@ TraceContext::DoGet (uint8_t uid, uint8_t *buffer) const
   return false;
 }
 
+void 
+TraceContext::Print (std::ostream &os) const
+{
+  if (m_data == 0)
+    {
+      return;
+    }
+  uint8_t currentUid;
+  uint16_t i = 0;
+  do {
+    currentUid = m_data->data[i];
+    uint8_t size = ElementRegistry::GetSize (currentUid);
+    uint8_t *instance = &m_data->data[i+1];
+    ElementRegistry::Print (currentUid, instance, os);
+    i += 1 + size;
+    if (i < m_data->size && currentUid != 0)
+      {
+        os << " ";
+      }
+    else
+      {
+        break;
+      }
+  } while (true);
+}
+
 }//namespace ns3
 
 #include "ns3/test.h"

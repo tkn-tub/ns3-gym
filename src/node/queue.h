@@ -37,6 +37,26 @@ namespace ns3 {
 
 class StringEnumDefaultValue;
 
+class QueueTraceType : public TraceContextElement
+{
+public:
+  enum Type {
+    ENQUEUE,
+    DEQUEUE,
+    DROP
+  };
+  static uint16_t GetUid (void);
+  QueueTraceType ();
+  QueueTraceType (enum Type type);
+  bool IsEnqueue (void) const;
+  bool IsDequeue (void) const;
+  bool IsDrop (void) const;
+  void Print (std::ostream &os) const;
+private:
+  enum Type m_type;
+};
+
+
 /**
  * \brief Abstract base class for packet Queues
  * 
@@ -47,21 +67,6 @@ class Queue : public Object
 public:
   static const InterfaceId iid;
 
-  class TraceType : public TraceContextElement
-  {
-  public:
-    enum Type {
-      ENQUEUE,
-      DEQUEUE,
-      DROP
-    };
-    static uint16_t GetUid (void);
-    TraceType ();
-    TraceType (enum Type type);
-    void Print (std::ostream &os);
-  private:
-    enum Type m_type;
-  };
   Queue ();
   virtual ~Queue ();
 

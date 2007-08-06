@@ -24,8 +24,7 @@
 #include "ns3/trace-root.h"
 #include "ns3/simulator.h"
 #include "ns3/node.h"
-#include "ns3/queue.h"
-#include "ns3/node-list.h"
+#include "ns3/packet.h"
 
 namespace ns3 {
 
@@ -55,42 +54,18 @@ AsciiTrace::TraceAllNetDeviceRx (void)
 void 
 AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
 {
-  enum Queue::TraceType type;
-  context.Get (type);
-  switch (type) 
-    {
-    case Queue::ENQUEUE:
-      m_os << "+ ";
-      break;
-    case Queue::DEQUEUE:
-      m_os << "- ";
-      break;
-    case Queue::DROP:
-      m_os << "d ";
-      break;
-    }
   m_os << Simulator::Now ().GetSeconds () << " ";
-  NodeList::NodeIndex nodeIndex;
-  context.Get (nodeIndex);
-  m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
-  Node::NetDeviceIndex deviceIndex;
-  context.Get (deviceIndex);
-  m_os << "device=" << deviceIndex << " ";
-  m_os << "pkt-uid=" << packet.GetUid () << " ";
+  context.Print (m_os);
+  m_os << " pkt-uid=" << packet.GetUid () << " ";
   packet.Print (m_os);
   m_os << std::endl;
 }
 void 
 AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
 {
-  m_os << "r " << Simulator::Now ().GetSeconds () << " ";
-  NodeList::NodeIndex nodeIndex;
-  context.Get (nodeIndex);
-  m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
-  Node::NetDeviceIndex deviceIndex;
-  context.Get (deviceIndex);
-  m_os << "device=" << deviceIndex << " ";
-  m_os << "pkt-uid=" << p.GetUid () << " ";
+  m_os << Simulator::Now ().GetSeconds () << " ";
+  context.Print (m_os);
+  m_os << " pkt-uid=" << p.GetUid () << " ";
   p.Print (m_os);
   m_os << std::endl;  
 }

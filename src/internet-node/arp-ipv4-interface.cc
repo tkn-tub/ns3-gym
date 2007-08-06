@@ -47,8 +47,7 @@ ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
   if (GetDevice () != 0)
     {
       resolver->Add ("netdevice",
-                     MakeCallback (&NetDevice::CreateTraceResolver, PeekPointer (GetDevice ())),
-                     ArpIpv4Interface::NETDEVICE);
+                     MakeCallback (&NetDevice::CreateTraceResolver, PeekPointer (GetDevice ())));
     }
   
   return resolver;

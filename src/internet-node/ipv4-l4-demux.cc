@@ -32,6 +32,30 @@ namespace ns3 {
 
 const InterfaceId Ipv4L4Demux::iid = MakeInterfaceId ("Ipv4L4Demux", Object::iid);
 
+Ipv4L4ProtocolTraceContextElement::Ipv4L4ProtocolTraceContextElement ()
+  : m_protocolNumber (0)
+{}
+Ipv4L4ProtocolTraceContextElement::Ipv4L4ProtocolTraceContextElement (int protocolNumber)
+  : m_protocolNumber (protocolNumber)
+{}
+int 
+Ipv4L4ProtocolTraceContextElement::Get (void) const
+{
+  return m_protocolNumber;
+}
+void 
+Ipv4L4ProtocolTraceContextElement::Print (std::ostream &os) const
+{
+  os << "ipv4-protocol=0x" << std::hex << m_protocolNumber << std::dec;
+}
+uint16_t 
+Ipv4L4ProtocolTraceContextElement::GetUid (void)
+{
+  static uint16_t uid = Register<Ipv4L4ProtocolTraceContextElement> ("Ipv4L4ProtocolTraceContextElement");
+  return uid;
+}
+
+
 Ipv4L4Demux::Ipv4L4Demux (Ptr<Node> node)
   : m_node (node)
 {
@@ -64,7 +88,7 @@ Ipv4L4Demux::CreateTraceResolver (TraceContext const &context)
       std::string protValue;
       std::ostringstream oss (protValue);
       oss << (*i)->GetProtocolNumber ();
-      Ipv4L4ProtocolTraceType protocolNumber = (*i)->GetProtocolNumber ();
+      Ipv4L4ProtocolTraceContextElement protocolNumber = (*i)->GetProtocolNumber ();
       resolver->Add (protValue,
                      MakeCallback (&Ipv4L4Protocol::CreateTraceResolver, PeekPointer (protocol)),
                      protocolNumber);

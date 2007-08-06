@@ -40,6 +40,21 @@ DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
            "The default data rate for point to point links",
            DataRate ("10Mb/s"));
 
+PointToPointTraceType::PointToPointTraceType ()
+{}
+void 
+PointToPointTraceType::Print (std::ostream &os) const
+{
+  os << "device rx";
+}
+uint16_t 
+PointToPointTraceType::GetUid (void)
+{
+  static uint16_t uid = Register<PointToPointTraceType> ("PointToPointTraceType");
+  return uid;
+}
+
+
 PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
                                               const DataRate& rate) 
 : 
@@ -178,11 +193,10 @@ TraceResolver* PointToPointNetDevice::DoCreateTraceResolver (
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   resolver->Add ("queue", 
-                 MakeCallback (&Queue::CreateTraceResolver, PeekPointer (m_queue)),
-                 PointToPointNetDevice::QUEUE);
+                 MakeCallback (&Queue::CreateTraceResolver, PeekPointer (m_queue)));
   resolver->Add ("rx",
                  m_rxTrace,
-                 PointToPointNetDevice::RX);
+                 PointToPointTraceType ());
   return resolver;
 }
 

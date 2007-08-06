@@ -77,6 +77,8 @@ public:
    */
   template <typename T>
   void Get (T &context) const;
+
+  void Print (std::ostream &os) const;
 private:
   friend class TraceContextTest;
   // used exclusively for testing code.

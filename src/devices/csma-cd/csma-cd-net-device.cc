@@ -35,6 +35,32 @@ NS_DEBUG_COMPONENT_DEFINE ("CsmaCdNetDevice");
 
 namespace ns3 {
 
+CsmaCdTraceType::CsmaCdTraceType (enum Type type)
+  : m_type (type)
+{}
+CsmaCdTraceType::CsmaCdTraceType ()
+  : m_type (RX)
+{}
+void 
+CsmaCdTraceType::Print (std::ostream &os) const
+{
+  switch (m_type) {
+  case RX:
+    os << "mac rx";
+    break;
+  case DROP:
+    os << "mac drop";
+    break;
+  }
+}
+uint16_t 
+CsmaCdTraceType::GetUid (void)
+{
+  static uint16_t uid = Register<CsmaCdTraceType> ("CsmaCdTraceType");
+  return uid;
+}
+
+
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node)
   : NetDevice (node, Eui48Address::Allocate ()),
     m_bps (DataRate (0xffffffff))
@@ -429,12 +455,14 @@ CsmaCdNetDevice::DoCreateTraceResolver (TraceContext const &context)
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   resolver->Add ("queue", 
                  MakeCallback (&Queue::CreateTraceResolver, 
-                               PeekPointer (m_queue)),
-                 CsmaCdNetDevice::QUEUE);
+                               PeekPointer (m_queue)));
   resolver->Add ("rx",
                  m_rxTrace,
-                 CsmaCdNetDevice::RX);
-  return resolver;
+                 CsmaCdTraceType (CsmaCdTraceType::RX));
+  resolver->Add ("drop",
+                 m_dropTrace,
+                 CsmaCdTraceType (CsmaCdTraceType::DROP));
+   return resolver;
 }
 
 bool
