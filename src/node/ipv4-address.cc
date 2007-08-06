@@ -19,10 +19,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/debug.h"
+#include "ipv4-address.h"
+#include "ns3/assert.h"
 
 NS_DEBUG_COMPONENT_DEFINE("Ipv4Address");
-
-#include "ipv4-address.h"
 
 
 namespace ns3 {
@@ -193,6 +193,20 @@ Ipv4Address::Serialize (uint8_t buf[4]) const
   buf[2] = (m_address >> 8) & 0xff;
   buf[3] = (m_address >> 0) & 0xff;
 }
+Ipv4Address 
+Ipv4Address::Deserialize (const uint8_t buf[4])
+{
+  Ipv4Address ipv4;
+  ipv4.m_address = 0;
+  ipv4.m_address |= buf[0];
+  ipv4.m_address <<= 8;
+  ipv4.m_address |= buf[1];
+  ipv4.m_address <<= 8;
+  ipv4.m_address |= buf[2];
+  ipv4.m_address <<= 8;
+  ipv4.m_address |= buf[3];
+  return ipv4;
+}
 
 void 
 Ipv4Address::Print (std::ostream &os) const
@@ -203,7 +217,34 @@ Ipv4Address::Print (std::ostream &os) const
      << ((m_address >> 0) & 0xff);
 }
 
+bool 
+Ipv4Address::IsMatchingType (const Address &address)
+{
+  return address.CheckCompatible (GetType (), 4);
+}
+Address 
+Ipv4Address::ConvertTo (void) const
+{
+  uint8_t buf[4];
+  Serialize (buf);
+  return Address (GetType (), buf, 4);
+}
 
+Ipv4Address
+Ipv4Address::ConvertFrom (const Address &address)
+{
+  NS_ASSERT (address.CheckCompatible (GetType (), 4));
+  uint8_t buf[4];
+  address.CopyTo (buf);
+  return Deserialize (buf);
+}
+
+uint8_t 
+Ipv4Address::GetType (void)
+{
+  static uint8_t type = Address::Register ();
+  return type;
+}
 
 Ipv4Address 
 Ipv4Address::GetZero (void)

@@ -35,9 +35,19 @@ NS_DEBUG_COMPONENT_DEFINE ("CsmaCdNetDevice");
 
 namespace ns3 {
 
-CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, MacAddress addr, 
+CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node)
+  : NetDevice (node, Eui48Address::Allocate ().ConvertTo ()),
+    m_bps (DataRate (0xffffffff))
+{
+  NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
+  m_encapMode = IP_ARP;
+  Init(true, true);
+}
+
+CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
                                   CsmaCdEncapsulationMode encapMode) 
-  : NetDevice(node, addr), m_bps (DataRate (0xffffffff))
+  : NetDevice(node, addr.ConvertTo ()), 
+    m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
   m_encapMode = encapMode;
@@ -45,10 +55,11 @@ CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, MacAddress addr,
   Init(true, true);
 }
 
-CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, MacAddress addr, 
+CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
                                   CsmaCdEncapsulationMode encapMode,
                                   bool sendEnable, bool receiveEnable) 
-  : NetDevice(node, addr), m_bps (DataRate (0xffffffff))
+  : NetDevice(node, addr.ConvertTo ()), 
+    m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
   m_encapMode = encapMode;
@@ -94,7 +105,7 @@ CsmaCdNetDevice::Init(bool sendEnable, bool receiveEnable)
   m_channel = 0; 
   m_queue = 0;
 
-  EnableBroadcast (MacAddress ("ff:ff:ff:ff:ff:ff"));
+  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff").ConvertTo ());
   EnableMulticast();
   EnablePointToPoint();
 
@@ -149,7 +160,7 @@ CsmaCdNetDevice::SetBackoffParams (Time slotTime, uint32_t minSlots,
   m_backoff.m_maxRetries = maxRetries;
 }
 void 
-CsmaCdNetDevice::AddHeader (Packet& p, const MacAddress& dest,
+CsmaCdNetDevice::AddHeader (Packet& p, Eui48Address dest,
                             uint16_t protocolNumber)
 {
   if (m_encapMode == RAW)
@@ -158,7 +169,8 @@ CsmaCdNetDevice::AddHeader (Packet& p, const MacAddress& dest,
     }
   EthernetHeader header (false);
   EthernetTrailer trailer;
-  header.SetSource(this->GetAddress());
+  Eui48Address source = Eui48Address::ConvertFrom (GetAddress ());
+  header.SetSource(source);
   header.SetDestination(dest);
 
   uint16_t lengthType = 0;
@@ -198,8 +210,10 @@ CsmaCdNetDevice::ProcessHeader (Packet& p, uint16_t & param)
   trailer.CheckFcs(p);
   p.RemoveHeader(header);
 
-  if ((header.GetDestination() != this->GetBroadcast()) &&
-      (header.GetDestination() != this->GetAddress()))
+  Eui48Address broadcast = Eui48Address::ConvertFrom (GetBroadcast ());
+  Eui48Address destination = Eui48Address::ConvertFrom (GetAddress ());
+  if ((header.GetDestination() != broadcast) &&
+      (header.GetDestination() != destination))
     {
       return false;
     }
@@ -236,7 +250,7 @@ CsmaCdNetDevice::DoNeedsArp (void) const
 }
 
 bool
-CsmaCdNetDevice::SendTo (Packet& p, const MacAddress& dest, uint16_t protocolNumber)
+CsmaCdNetDevice::SendTo (Packet& p, const Address& dest, uint16_t protocolNumber)
 {
   NS_DEBUG ("CsmaCdNetDevice::SendTo (" << &p << ")");
   NS_DEBUG ("CsmaCdNetDevice::SendTo (): UID is " << p.GetUid () << ")");
@@ -247,7 +261,8 @@ CsmaCdNetDevice::SendTo (Packet& p, const MacAddress& dest, uint16_t protocolNum
   if (!IsSendEnabled())
     return false;
 
-  AddHeader(p, dest, protocolNumber);
+  Eui48Address address = Eui48Address::ConvertFrom (dest);
+  AddHeader(p, address, protocolNumber);
 
   // Place the packet to be sent on the send queue
   if (m_queue->Enqueue(p) == false )
@@ -451,26 +466,62 @@ CsmaCdNetDevice::AddQueue (Ptr<Queue> q)
 }
 
 void
-CsmaCdNetDevice::Receive (Packet& p)
+CsmaCdNetDevice::Receive (const Packet& packet)
 {
+  EthernetHeader header (false);
+  EthernetTrailer trailer;
+  Eui48Address broadcast;
+  Eui48Address destination;
+  Packet p = packet;
+
   NS_DEBUG ("CsmaCdNetDevice::Receive UID is (" << p.GetUid() << ")");
 
   // Only receive if send side of net device is enabled
   if (!IsReceiveEnabled())
-    return;
-
-  uint16_t param = 0;
-  Packet packet = p;
-
-  if (ProcessHeader(packet, param))
     {
-      m_rxTrace (packet);
-      ForwardUp (packet, param);
-    } 
-  else 
-    {
-      m_dropTrace (packet);
+      goto drop;
     }
+
+  if (m_encapMode == RAW)
+    {
+      ForwardUp (packet, 0, GetBroadcast ());
+      goto drop;
+    }
+  p.RemoveTrailer(trailer);
+  trailer.CheckFcs(p);
+  p.RemoveHeader(header);
+
+  broadcast = Eui48Address::ConvertFrom (GetBroadcast ());
+  destination = Eui48Address::ConvertFrom (GetAddress ());
+  if ((header.GetDestination() != broadcast) &&
+      (header.GetDestination() != destination))
+    {
+      // not for us.
+      goto drop;
+    }
+
+  uint16_t protocol;
+  switch (m_encapMode)
+    {
+    case ETHERNET_V1:
+    case IP_ARP:
+      protocol = header.GetLengthType();
+      break;
+    case LLC: {
+      LlcSnapHeader llc;
+      p.RemoveHeader (llc);
+      protocol = llc.GetType ();
+    } break;
+    case RAW:
+      NS_ASSERT (false);
+      break;
+    }
+  
+  m_rxTrace (p);
+  ForwardUp (p, protocol, header.GetSource ().ConvertTo ());
+  return;
+ drop:
+  m_dropTrace (p);
 }
 
 Ptr<Queue>

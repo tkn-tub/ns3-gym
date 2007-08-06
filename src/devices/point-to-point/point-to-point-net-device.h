@@ -22,7 +22,7 @@
 #define POINT_TO_POINT_NET_DEVICE_H
 
 #include <string.h>
-#include "ns3/mac-address.h"
+#include "ns3/address.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
@@ -191,7 +191,7 @@ private:
    * Adds the necessary headers and trailers to a packet of data in order to
    * respect the protocol implemented by the agent.
    */
-  void AddHeader(Packet& p, const MacAddress& dest, uint16_t protocolNumber);
+  void AddHeader(Packet& p, uint16_t protocolNumber);
   /**
    * Removes, from a packet of data, all headers and trailers that
    * relate to the protocol implemented by the agent
@@ -208,11 +208,11 @@ private:
    *
    * @see NetDevice
    * @param p a reference to the packet to send
-   * @param dest a reference to the MacAddress of the destination device
+   * @param dest a reference to the Address of the destination device
    * @param protocolNumber Protocol Number used to find protocol touse
    * @returns true if success, false on failure
    */
-  virtual bool SendTo (Packet& p, const MacAddress& dest, 
+  virtual bool SendTo (Packet& p, const Address& dest, 
                        uint16_t protocolNumber);
   /**
    * Start Sending a Packet Down the Wire.

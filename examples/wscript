@@ -15,4 +15,5 @@ def build(bld):
                          deps=['point-to-point', 'internet-node'])
     obj = create_ns_prog('csma-cd-one-subnet', 'csma-cd-one-subnet.cc', 
                          deps=['csma-cd', 'internet-node'])
+    obj = create_ns_prog('csma-cd-packet-socket', 'csma-cd-packet-socket.cc', deps=['csma-cd', 'internet-node'])
 

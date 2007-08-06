@@ -50,17 +50,13 @@
 #include "ns3/csma-cd-net-device.h"
 #include "ns3/csma-cd-topology.h"
 #include "ns3/csma-cd-ipv4-topology.h"
-#include "ns3/mac-address.h"
+#include "ns3/eui48-address.h"
 #include "ns3/ipv4-address.h"
+#include "ns3/inet-socket-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/onoff-application.h"
-
-#include "ns3/ascii-trace.h"
-
-#include "ns3/trace-context.h"
-#include "ns3/trace-root.h"
 
 
 using namespace ns3;
@@ -105,13 +101,13 @@ int main (int argc, char *argv[])
       DataRate(5000000), MilliSeconds(2));
 
   uint32_t n0ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n0, channel0, 
-                                         MacAddress("10:54:23:54:23:50"));
+                                         Eui48Address("10:54:23:54:23:50"));
   uint32_t n1ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n1, channel0,
-                                         MacAddress("10:54:23:54:23:51"));
+                                         Eui48Address("10:54:23:54:23:51"));
   uint32_t n2ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n2, channel0,
-                                         MacAddress("10:54:23:54:23:52"));
+                                         Eui48Address("10:54:23:54:23:52"));
   uint32_t n3ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n3, channel0,
-                                         MacAddress("10:54:23:54:23:53"));
+                                         Eui48Address("10:54:23:54:23:53"));
 
   // Later, we add IP addresses.  
   CsmaCdIpv4Topology::AddIpv4Address (
@@ -131,8 +127,7 @@ int main (int argc, char *argv[])
   // from n0 to n1
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    Ipv4Address("10.1.1.2"), 
-    80, 
+    InetSocketAddress (Ipv4Address("10.1.1.2"), 80).ConvertTo (), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
@@ -143,8 +138,7 @@ int main (int argc, char *argv[])
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
   ooff = Create<OnOffApplication> (
     n3, 
-    Ipv4Address("10.1.1.1"), 
-    80, 
+    InetSocketAddress (Ipv4Address("10.1.1.1"), 80).ConvertTo (), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));

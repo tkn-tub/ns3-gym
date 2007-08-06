@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 INRIA
+ * Copyright (c) 2007 Emmanuelle Laprise
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,41 +16,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Emmanuelle Laprise <emmanuelle.laprise@bluekazoo.ca>
  */
-#include "arp-private.h"
-#include "arp-l3-protocol.h"
-#include "ns3/assert.h"
-#include "ns3/net-device.h"
+#ifndef PACKET_SOCKET_FACTORY_H
+#define PACKET_SOCKET_FACTORY_H
+
+#include "socket-factory.h"
+#include "packet-socket.h"
 
 namespace ns3 {
 
-const InterfaceId ArpPrivate::iid = MakeInterfaceId ("ArpPrivate", Object::iid);
+class Socket;
 
-ArpPrivate::ArpPrivate (Ptr<ArpL3Protocol> arp)
-  : m_arp (arp)
+/**
+ * This can be used as an interface in a node in order for the node to
+ * generate PacketSockets that can connect to net devices.
+ */
+class PacketSocketFactory : public SocketFactory
 {
-  SetInterfaceId (ArpPrivate::iid);
-}
-ArpPrivate::~ArpPrivate ()
-{
-  NS_ASSERT (m_arp == 0);
-}
+public:
+  static const InterfaceId iid; /// Interface identifier
 
-bool 
-ArpPrivate::Lookup (Packet &p, Ipv4Address destination, 
-		     Ptr<NetDevice> device,
-		     MacAddress *hardwareDestination)
-{
-  return m_arp->Lookup (p, destination, device, hardwareDestination);
-}
+  PacketSocketFactory ();
 
-void
-ArpPrivate::DoDispose (void)
-{
-  m_arp = 0;
-  Object::DoDispose ();
-}
-
+  /**
+   * Creates a PacketSocket and returns a pointer to it.
+   *
+   * \return a pointer to the created socket
+   */
+  virtual Ptr<Socket> CreateSocket (void);
+};
 
 } // namespace ns3
+
+#endif /* PACKET_SOCKET_FACTORY_H */

@@ -40,7 +40,7 @@ class TraceContext;
 class NodeList
 {
 public:
-  typedef ArrayTraceResolver<Node>::Index NodeIndex;
+  typedef ArrayTraceResolver<Ptr<Node> >::Index NodeIndex;
   typedef std::vector< Ptr<Node> >::iterator Iterator;
 
   /**

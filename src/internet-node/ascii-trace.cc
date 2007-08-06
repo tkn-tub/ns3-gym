@@ -26,12 +26,6 @@
 #include "ns3/node.h"
 #include "ns3/queue.h"
 #include "ns3/node-list.h"
-#include "ns3/llc-snap-header.h"
-
-#include "ipv4-l3-protocol.h"
-#include "arp-header.h"
-#include "udp-header.h"
-#include "ipv4-header.h"
 
 namespace ns3 {
 
@@ -47,50 +41,16 @@ void
 AsciiTrace::TraceAllQueues (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/*",
+  TraceRoot::Connect ("/nodes/*/devices/*/queue/*",
                       MakeCallback (&AsciiTrace::LogDevQueue, this));
 }
 void
 AsciiTrace::TraceAllNetDeviceRx (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/rx",
+  TraceRoot::Connect ("/nodes/*/devices/*/rx",
                       MakeCallback (&AsciiTrace::LogDevRx, this));
 }
-
-void
-AsciiTrace::PrintType (Packet const &packet)
-{
-  Packet p = packet;
-  LlcSnapHeader llc;
-  p.RemoveHeader (llc);
-  switch (llc.GetType ())
-    {
-    case 0x0800: {
-      Ipv4Header ipv4;
-      p.RemoveHeader (ipv4);
-      if (ipv4.GetProtocol () == 17)
-        {
-          UdpHeader udp;
-          p.RemoveHeader (udp);
-          m_os << "udp size=" << p.GetSize ();
-        }
-    } break;
-    case 0x0806: {
-      ArpHeader arp;
-      p.RemoveHeader (arp);
-      m_os << "arp ";
-      if (arp.IsRequest ())
-        {
-          m_os << "request";
-        }
-      else
-        {
-          m_os << "reply ";
-        }
-    } break;
-    }
-} 
 
 void 
 AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
@@ -113,9 +73,9 @@ AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
   NodeList::NodeIndex nodeIndex;
   context.Get (nodeIndex);
   m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
-  Ipv4L3Protocol::InterfaceIndex interfaceIndex;
-  context.Get (interfaceIndex);
-  m_os << "interface=" << interfaceIndex << " ";
+  Node::NetDeviceIndex deviceIndex;
+  context.Get (deviceIndex);
+  m_os << "device=" << deviceIndex << " ";
   m_os << "pkt-uid=" << packet.GetUid () << " ";
   packet.Print (m_os);
   m_os << std::endl;
@@ -127,9 +87,9 @@ AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
   NodeList::NodeIndex nodeIndex;
   context.Get (nodeIndex);
   m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
-  Ipv4L3Protocol::InterfaceIndex interfaceIndex;
-  context.Get (interfaceIndex);
-  m_os << "interface=" << interfaceIndex << " ";
+  Node::NetDeviceIndex deviceIndex;
+  context.Get (deviceIndex);
+  m_os << "device=" << deviceIndex << " ";
   m_os << "pkt-uid=" << p.GetUid () << " ";
   p.Print (m_os);
   m_os << std::endl;  

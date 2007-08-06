@@ -38,9 +38,9 @@ ArpHeader::~ArpHeader ()
 {}
 
 void 
-ArpHeader::SetRequest (MacAddress sourceHardwareAddress,
+ArpHeader::SetRequest (Address sourceHardwareAddress,
                        Ipv4Address sourceProtocolAddress,
-                       MacAddress destinationHardwareAddress,
+                       Address destinationHardwareAddress,
                        Ipv4Address destinationProtocolAddress)
 {
   m_type = ARP_TYPE_REQUEST;
@@ -50,9 +50,9 @@ ArpHeader::SetRequest (MacAddress sourceHardwareAddress,
   m_ipv4Dest = destinationProtocolAddress;
 }
 void 
-ArpHeader::SetReply (MacAddress sourceHardwareAddress,
+ArpHeader::SetReply (Address sourceHardwareAddress,
                      Ipv4Address sourceProtocolAddress,
-                     MacAddress destinationHardwareAddress,
+                     Address destinationHardwareAddress,
                      Ipv4Address destinationProtocolAddress)
 {
   m_type = ARP_TYPE_REPLY;
@@ -71,12 +71,12 @@ ArpHeader::IsReply (void) const
 {
   return (m_type == ARP_TYPE_REPLY)?true:false;
 }
-MacAddress 
+Address 
 ArpHeader::GetSourceHardwareAddress (void)
 {
   return m_macSource;
 }
-MacAddress 
+Address 
 ArpHeader::GetDestinationHardwareAddress (void)
 {
   return m_macDest;
