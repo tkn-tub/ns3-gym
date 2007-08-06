@@ -23,6 +23,7 @@
 #include "scheduler.h"
 #include "event-impl.h"
 
+#include "ns3/ptr.h"
 #include "ns3/assert.h"
 #include "ns3/default-value.h"
 
@@ -61,12 +62,12 @@ public:
   Time Next (void) const;
   void Stop (void);
   void StopAt (Time const &time);
-  EventId Schedule (Time const &time, EventImpl *event);
-  EventId ScheduleNow (EventImpl *event);
-  EventId ScheduleDestroy (EventImpl *event);
-  void Remove (EventId ev);
-  void Cancel (EventId &ev);
-  bool IsExpired (EventId ev);
+  EventId Schedule (Time const &time, const Ptr<EventImpl> &event);
+  EventId ScheduleNow (const Ptr<EventImpl> &event);
+  EventId ScheduleDestroy (const Ptr<EventImpl> &event);
+  void Remove (const EventId &ev);
+  void Cancel (const EventId &ev);
+  bool IsExpired (const EventId &ev);
   void Run (void);
   Time Now (void) const;
 
@@ -114,13 +115,12 @@ SimulatorPrivate::~SimulatorPrivate ()
 {
   while (!m_destroyEvents.empty ()) 
     {
-      EventImpl *ev = m_destroyEvents.front ().GetEventImpl ();
+      Ptr<EventImpl> ev = m_destroyEvents.front ().PeekEventImpl ();
       m_destroyEvents.pop_front ();
       TRACE ("handle destroy " << ev);
       if (!ev->IsCancelled ())
         {
           ev->Invoke ();
-          delete ev;
         }
     }
   delete m_events;
@@ -138,8 +138,7 @@ SimulatorPrivate::EnableLogTo (char const *filename)
 void
 SimulatorPrivate::ProcessOneEvent (void)
 {
-  EventId next = m_events->PeekNext ();
-  m_events->RemoveNext ();
+  EventId next = m_events->RemoveNext ();
 
   NS_ASSERT (next.GetTs () >= m_currentTs);
   --m_unscheduledEvents;
@@ -151,9 +150,8 @@ SimulatorPrivate::ProcessOneEvent (void)
     {
       m_log << "e "<<next.GetUid () << " " << next.GetTs () << std::endl;
     }
-  EventImpl *event = next.GetEventImpl ();
+  EventImpl *event = next.PeekEventImpl ();
   event->Invoke ();
-  delete event;
 }
 
 bool 
@@ -204,7 +202,7 @@ SimulatorPrivate::StopAt (Time const &at)
   m_stopAt = at.GetTimeStep ();
 }
 EventId
-SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
+SimulatorPrivate::Schedule (Time const &time, const Ptr<EventImpl> &event)
 {
   NS_ASSERT (time.IsPositive ());
   NS_ASSERT (time >= TimeStep (m_currentTs));
@@ -221,7 +219,7 @@ SimulatorPrivate::Schedule (Time const &time, EventImpl *event)
   return id;
 }
 EventId
-SimulatorPrivate::ScheduleNow (EventImpl *event)
+SimulatorPrivate::ScheduleNow (const Ptr<EventImpl> &event)
 {
   EventId id (event, m_currentTs, m_uid);
   if (m_logEnable) 
@@ -235,7 +233,7 @@ SimulatorPrivate::ScheduleNow (EventImpl *event)
   return id;
 }
 EventId
-SimulatorPrivate::ScheduleDestroy (EventImpl *event)
+SimulatorPrivate::ScheduleDestroy (const Ptr<EventImpl> &event)
 {
   EventId id (event, m_currentTs, 2);
   m_destroyEvents.push_back (id);
@@ -255,7 +253,7 @@ SimulatorPrivate::Now (void) const
 }
 
 void
-SimulatorPrivate::Remove (EventId ev)
+SimulatorPrivate::Remove (const EventId &ev)
 {
   if (ev.GetUid () == 2)
     {
@@ -275,7 +273,7 @@ SimulatorPrivate::Remove (EventId ev)
       return;
     }
   m_events->Remove (ev);
-  delete ev.GetEventImpl ();
+  Cancel (ev);
 
   if (m_logEnable) 
     {
@@ -286,13 +284,16 @@ SimulatorPrivate::Remove (EventId ev)
 }
 
 void
-SimulatorPrivate::Cancel (EventId &id)
+SimulatorPrivate::Cancel (const EventId &id)
 {
-  id.Cancel ();
+  if (!IsExpired (id))
+    {
+      id.PeekEventImpl ()->Cancel ();
+    }
 }
 
 bool
-SimulatorPrivate::IsExpired (const EventId ev)
+SimulatorPrivate::IsExpired (const EventId &ev)
 {
   if (ev.GetUid () == 2)
     {
@@ -306,11 +307,11 @@ SimulatorPrivate::IsExpired (const EventId ev)
          }
       return true;
     }
-  if (ev.GetEventImpl () == 0 ||
+  if (ev.PeekEventImpl () == 0 ||
       ev.GetTs () < m_currentTs ||
       (ev.GetTs () == m_currentTs &&
        ev.GetUid () <= m_currentUid) ||
-      ev.GetEventImpl ()->IsCancelled ()) 
+      ev.PeekEventImpl ()->IsCancelled ()) 
     {
       return true;
     }
@@ -411,39 +412,39 @@ Simulator::Now (void)
   return GetPriv ()->Now ();
 }
 
-EventImpl *
+Ptr<EventImpl>
 Simulator::MakeEvent (void (*f) (void))
 {
     // zero arg version
   class EventFunctionImpl0 : public EventImpl {
   public:
-  	typedef void (*F)(void);
+    typedef void (*F)(void);
       
-  	EventFunctionImpl0 (F function) 
-  		: m_function (function)
-  	{}
-  	virtual ~EventFunctionImpl0 () {}
+    EventFunctionImpl0 (F function) 
+      : m_function (function)
+    {}
+    virtual ~EventFunctionImpl0 () {}
   protected:
-  	virtual void Notify (void) { 
-  		(*m_function) (); 
-      }
+    virtual void Notify (void) { 
+      (*m_function) (); 
+    }
   private:
   	F m_function;
   } *ev = new EventFunctionImpl0 (f);
-  return ev;
+  return Ptr<EventImpl> (ev, false);
 }
 EventId
-Simulator::Schedule (Time const &time, EventImpl *ev)
+Simulator::Schedule (Time const &time, const Ptr<EventImpl> &ev)
 {
   return GetPriv ()->Schedule (Now () + time, ev);
 }
 EventId
-Simulator::ScheduleNow (EventImpl *ev)
+Simulator::ScheduleNow (const Ptr<EventImpl> &ev)
 {
   return GetPriv ()->ScheduleNow (ev);
 }
 EventId
-Simulator::ScheduleDestroy (EventImpl *ev)
+Simulator::ScheduleDestroy (const Ptr<EventImpl> &ev)
 {
   return GetPriv ()->ScheduleDestroy (ev);
 }  
@@ -465,18 +466,18 @@ Simulator::ScheduleDestroy (void (*f) (void))
 
 
 void
-Simulator::Remove (EventId ev)
+Simulator::Remove (const EventId &ev)
 {
   return GetPriv ()->Remove (ev);
 }
 
 void
-Simulator::Cancel (EventId &ev)
+Simulator::Cancel (const EventId &ev)
 {
   return GetPriv ()->Cancel (ev);
 }
 bool 
-Simulator::IsExpired (EventId id)
+Simulator::IsExpired (const EventId &id)
 {
   return GetPriv ()->IsExpired (id);
 }
@@ -883,6 +884,22 @@ SimulatorTests::RunTests (void)
     {
       ok = false;
     }
+
+  EventId anId = Simulator::ScheduleNow (&foo0);
+  EventId anotherId = anId;
+  if (anId.IsExpired () || anotherId.IsExpired ())
+    {
+      ok = false;
+    }
+  Simulator::Remove (anId);
+  if (!anId.IsExpired () || !anotherId.IsExpired ())
+    {
+      ok = false;
+    }
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+  
 
   return ok;
 }

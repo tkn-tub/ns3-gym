@@ -1,7 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006,2007 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -965,19 +964,13 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
   NS_ASSERT (leftToRemove == 0);
 }
 
-void 
-PacketMetadata::PrintDefault (std::ostream &os, Buffer buffer) const
-{
-  Print (os, buffer, PacketPrinter::GetDefault ());
-}
-
 uint32_t
 PacketMetadata::DoPrint (const struct PacketMetadata::SmallItem *item, 
                          const struct PacketMetadata::ExtraItem *extraItem,
                          Buffer data, uint32_t offset, const PacketPrinter &printer,
                          std::ostream &os) const
 {
-  uint32_t uid = item->typeUid & 0xfffffffe;
+  uint32_t uid = (item->typeUid & 0xfffffffe) >> 1;
   if (uid == 0)
     {
       // payload.
@@ -992,13 +985,13 @@ PacketMetadata::DoPrint (const struct PacketMetadata::SmallItem *item,
                                   extraItem->fragmentStart, 
                                   item->size - extraItem->fragmentEnd);
     }
-  else if (PacketPrinter::IsHeader (uid))
+  else if (ChunkRegistry::IsHeader (uid))
     {
       ns3::Buffer::Iterator j = data.Begin ();
       j.Next (offset);
       printer.PrintChunk (uid, j, os, extraItem->packetUid, item->size);
     }
-  else if (PacketPrinter::IsTrailer (uid))
+  else if (ChunkRegistry::IsTrailer (uid))
     {
       ns3::Buffer::Iterator j = data.End ();
       j.Prev (data.GetSize () - (offset + item->size));
@@ -1094,629 +1087,145 @@ PacketMetadata::Print (std::ostream &os, Buffer data, const PacketPrinter &print
     }
 }
 
-
-
-}; // namespace ns3
-
-#include <stdarg.h>
-#include <iostream>
-#include <sstream>
-#include "ns3/test.h"
-#include "header.h"
-#include "trailer.h"
-#include "packet.h"
-
-namespace ns3 {
-
-template <int N>
-class HistoryHeader : public Header
-{
-public:
-  HistoryHeader ();
-  bool IsOk (void) const;
-private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
-  bool m_ok;
-};
-
-template <int N>
-HistoryHeader<N>::HistoryHeader ()
-  : m_ok (false)
-{}
-
-template <int N>
-bool 
-HistoryHeader<N>::IsOk (void) const
-{
-  return m_ok;
-}
-
-template <int N>
-std::string 
-HistoryHeader<N>::DoGetName (void) const
-{
-  std::ostringstream oss;
-  oss << N;
-  return oss.str ();
-}
-
-template <int N>
-void 
-HistoryHeader<N>::PrintTo (std::ostream &os) const
-{
-  NS_ASSERT (false);
-}
-template <int N>
 uint32_t 
-HistoryHeader<N>::GetSerializedSize (void) const
+PacketMetadata::GetSerializedSize (void) const
 {
-  return N;
-}
-template <int N>
-void 
-HistoryHeader<N>::SerializeTo (Buffer::Iterator start) const
-{
-  start.WriteU8 (N, N);
-}
-template <int N>
-uint32_t
-HistoryHeader<N>::DeserializeFrom (Buffer::Iterator start)
-{
-  m_ok = true;
-  for (int i = 0; i < N; i++)
+  uint32_t totalSize = 0;
+  totalSize += 4;
+  if (!m_enable)
     {
-      if (start.ReadU8 () != N)
-        {
-          m_ok = false;
-        }
+      return totalSize;
     }
-  return N;
+  struct PacketMetadata::SmallItem item;
+  struct PacketMetadata::ExtraItem extraItem;
+  uint32_t current = m_head;
+  while (current != 0xffff)
+    {
+      ReadItems (current, &item, &extraItem);
+      uint32_t uid = (item.typeUid & 0xfffffffe) >> 1;
+      if (uid == 0)
+        {
+          totalSize += 4;
+        }
+      else
+        {
+          totalSize += 4 + ChunkRegistry::GetUidStringFromUid (uid).size ();
+        }
+      totalSize += 1 + 4 + 2 + 4 + 4 + 4;
+      if (current == m_tail)
+        {
+          break;
+        }
+      NS_ASSERT (current != item.next);
+      current = item.next;
+    }
+  return totalSize;
 }
-
-template <int N>
-class HistoryTrailer : public Trailer
-{
-public:
-  HistoryTrailer ();
-  bool IsOk (void) const;
-private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
-  bool m_ok;
-};
-
-template <int N>
-HistoryTrailer<N>::HistoryTrailer ()
-  : m_ok (false)
-{}
-
-template <int N>
-bool
-HistoryTrailer<N>::IsOk (void) const
-{
-  return m_ok;
-}
-
-template <int N>
-std::string 
-HistoryTrailer<N>::DoGetName (void) const
-{
-  std::ostringstream oss;
-  oss << N;
-  return oss.str ();
-}
-template <int N>
 void 
-HistoryTrailer<N>::PrintTo (std::ostream &os) const
+PacketMetadata::Serialize (Buffer::Iterator i, uint32_t size) const
 {
-  NS_ASSERT (false);
+  uint32_t bytesWritten = 0;
+  i.WriteU32 (size);
+  bytesWritten += 4;
+  struct PacketMetadata::SmallItem item;
+  struct PacketMetadata::ExtraItem extraItem;
+  uint32_t current = m_head;
+  while (current != 0xffff)
+    {
+      ReadItems (current, &item, &extraItem);
+      NS_DEBUG ("bytesWritten=" << bytesWritten << ", typeUid="<<item.typeUid <<
+                ", size="<<item.size<<", chunkUid="<<item.chunkUid<<
+                ", fragmentStart="<<extraItem.fragmentStart<<", fragmentEnd="<<extraItem.fragmentEnd<<
+                ", packetUid="<<extraItem.packetUid);
+      uint32_t uid = (item.typeUid & 0xfffffffe) >> 1;
+      if (uid != 0)
+        {
+          std::string uidString = ChunkRegistry::GetUidStringFromUid (uid);
+          i.WriteU32 (uidString.size ());
+          bytesWritten += 4;
+          i.Write ((uint8_t *)uidString.c_str (), uidString.size ());
+          bytesWritten += uidString.size ();
+        }
+      else
+        {
+          i.WriteU32 (0);
+          bytesWritten += 4;
+        }
+      uint8_t isBig = item.typeUid & 0x1;
+      i.WriteU8 (isBig);
+      bytesWritten += 1;
+      i.WriteU32 (item.size);
+      bytesWritten += 4;
+      i.WriteU16 (item.chunkUid);
+      bytesWritten += 2;
+      i.WriteU32 (extraItem.fragmentStart);
+      bytesWritten += 4;
+      i.WriteU32 (extraItem.fragmentEnd);
+      bytesWritten += 4;
+      i.WriteU32 (extraItem.packetUid);
+      bytesWritten += 4;
+      if (current == m_tail)
+        {
+          break;
+        }
+      
+      NS_ASSERT (current != item.next);
+      current = item.next;
+    }
+  NS_ASSERT (bytesWritten == size);
 }
-template <int N>
 uint32_t 
-HistoryTrailer<N>::GetSerializedSize (void) const
+PacketMetadata::Deserialize (Buffer::Iterator i)
 {
-  return N;
-}
-template <int N>
-void 
-HistoryTrailer<N>::SerializeTo (Buffer::Iterator start) const
-{
-  start.Prev (N);
-  start.WriteU8 (N, N);
-}
-template <int N>
-uint32_t
-HistoryTrailer<N>::DeserializeFrom (Buffer::Iterator start)
-{
-  m_ok = true;
-  start.Prev (N);
-  for (int i = 0; i < N; i++)
+  struct PacketMetadata::SmallItem item;
+  struct PacketMetadata::ExtraItem extraItem;
+  uint32_t totalSize = i.ReadU32 ();
+  uint32_t size = totalSize;
+  size -= 4;
+  while (size > 0)
     {
-      if (start.ReadU8 () != N)
+      uint32_t uidStringSize = i.ReadU32 ();
+      size -= 4;
+      uint32_t uid;
+      if (uidStringSize == 0)
         {
-          m_ok = false;
+          // uid zero for payload.
+          uid = 0;
         }
-    }
-  return N;
-}
-
-
-
-class PacketMetadataTest : public Test {
-public:
-  PacketMetadataTest ();
-  virtual ~PacketMetadataTest ();
-  bool CheckHistory (Packet p, const char *file, int line, uint32_t n, ...);
-  virtual bool RunTests (void);
-private:
-  template <int N>
-  void PrintHeader (std::ostream &os, uint32_t packetUid, uint32_t size, const HistoryHeader<N> *header);
-  template <int N>
-  void PrintTrailer (std::ostream &os, uint32_t packetUid, uint32_t size, const HistoryTrailer<N> *trailer);
-  void PrintFragment (std::ostream &os,uint32_t packetUid,
-                      uint32_t size,std::string & name, 
-                      struct PacketPrinter::FragmentInformation info);
-  void PrintDefault (std::ostream& os,uint32_t packetUid,
-                     uint32_t size,std::string& name,
-                     struct PacketPrinter::FragmentInformation info);
-  void PrintPayload (std::ostream &os,uint32_t packetUid,
-                     uint32_t size,
-                     struct PacketPrinter::FragmentInformation info);
-  template <int N>
-  void RegisterHeader (void);
-  template <int N>
-  void RegisterTrailer (void);
-  void CleanupPrints (void);
-  bool Check (const char *file, int line, std::list<int> expected);
-
-
-  bool m_headerError;
-  bool m_trailerError;
-  std::list<int> m_prints;
-  PacketPrinter m_printer;
-};
-
-PacketMetadataTest::PacketMetadataTest ()
-  : Test ("PacketMetadata")
-{
-  m_printer.AddPayloadPrinter (MakeCallback (&PacketMetadataTest::PrintPayload, this));
-  m_printer.AddDefaultPrinter (MakeCallback (&PacketMetadataTest::PrintDefault, this));
-}
-
-PacketMetadataTest::~PacketMetadataTest ()
-{}
-
-template <int N>
-void 
-PacketMetadataTest::RegisterHeader (void)
-{
-  static bool registered = false;
-  if (!registered)
-    {
-      m_printer.AddHeaderPrinter (MakeCallback (&PacketMetadataTest::PrintHeader<N>, this),
-                                  MakeCallback (&PacketMetadataTest::PrintFragment, this));
-      registered = true;
-    }
-}
-
-template <int N>
-void 
-PacketMetadataTest::RegisterTrailer (void)
-{
-  static bool registered = false;
-  if (!registered)
-    {
-      m_printer.AddTrailerPrinter (MakeCallback (&PacketMetadataTest::PrintTrailer<N>, this),
-                                   MakeCallback (&PacketMetadataTest::PrintFragment, this));
-      registered = true;
-    }
-}
-
-
-template <int N>
-void 
-PacketMetadataTest::PrintHeader (std::ostream &os, uint32_t packetUid, uint32_t size, 
-                                const HistoryHeader<N> *header)
-{
-  if (!header->IsOk ())
-    {
-      m_headerError = true;
-    }
-  m_prints.push_back (N);
-}
-
-template <int N>
-void 
-PacketMetadataTest::PrintTrailer (std::ostream &os, uint32_t packetUid, uint32_t size, 
-                                 const HistoryTrailer<N> *trailer)
-{
-  if (!trailer->IsOk ())
-    {
-      m_trailerError = true;
-    }
-  m_prints.push_back (N);
-}
-void 
-PacketMetadataTest::PrintFragment (std::ostream &os,uint32_t packetUid,
-                                  uint32_t size,std::string & name, 
-                                  struct PacketPrinter::FragmentInformation info)
-{
-  m_prints.push_back (size - (info.end + info.start));
-}
-void 
-PacketMetadataTest::PrintDefault (std::ostream& os,uint32_t packetUid,
-                     uint32_t size,std::string& name,
-                     struct PacketPrinter::FragmentInformation info)
-{
-  NS_ASSERT (false);
-}
-void 
-PacketMetadataTest::PrintPayload (std::ostream &os,uint32_t packetUid,
-                                 uint32_t size,
-                                 struct PacketPrinter::FragmentInformation info)
-{
-  m_prints.push_back (size - (info.end + info.start));
-}
-
-
-void 
-PacketMetadataTest::CleanupPrints (void)
-{
-  m_prints.clear ();
-}
-
-bool
-PacketMetadataTest::Check (const char *file, int line, std::list<int> expected)
-{
-  if (m_headerError)
-    {
-      std::cout << "PacketMetadata header error. file=" << file 
-                << ", line=" << line << std::endl;
-      return false;
-    }
-  if (m_trailerError)
-    {
-      std::cout << "PacketMetadata trailer error. file=" << file 
-                << ", line=" << line << std::endl;
-      return false;
-    }
-  if (expected.size () != m_prints.size ())
-    {
-      goto error;
-    }
-  for (std::list<int>::iterator i = m_prints.begin (),
-         j = expected.begin (); 
-       i != m_prints.end (); i++, j++)
-    {
-      NS_ASSERT (j != expected.end ());
-      if (*j != *i)
+      else
         {
-          goto error;
+          std::string uidString;
+          for (uint32_t j = 0; j < uidStringSize; j++)
+            {
+              uidString.push_back (i.ReadU8 ());
+              size --;
+            }
+          uid = ChunkRegistry::GetUidFromUidString (uidString);
         }
+      uint8_t isBig = i.ReadU8 ();
+      size --;
+      item.typeUid = (uid << 1) | isBig;
+      item.size = i.ReadU32 ();
+      size -= 4;
+      item.chunkUid = i.ReadU16 ();
+      size -= 2;
+      extraItem.fragmentStart = i.ReadU32 ();
+      size -= 4;
+      extraItem.fragmentEnd = i.ReadU32 ();
+      size -= 4;
+      extraItem.packetUid = i.ReadU32 ();
+      size -= 4;
+      NS_DEBUG ("size=" << size << ", typeUid="<<item.typeUid <<
+                ", size="<<item.size<<", chunkUid="<<item.chunkUid<<
+                ", fragmentStart="<<extraItem.fragmentStart<<", fragmentEnd="<<extraItem.fragmentEnd<<
+                ", packetUid="<<extraItem.packetUid);
+      uint32_t tmp = AddBig (0xffff, m_tail, &item, &extraItem);
+      UpdateTail (tmp);
     }
-  return true;
- error:
-  std::cout << "PacketMetadata error. file="<< file 
-            << ", line=" << line << ", got:\"";
-  for (std::list<int>::iterator i = m_prints.begin (); 
-       i != m_prints.end (); i++)
-    {
-      std::cout << *i << ", ";
-    }
-  std::cout << "\", expected: \"";
-  for (std::list<int>::iterator j = expected.begin ();
-       j != expected.end (); j++)
-    {
-      std::cout << *j << ", ";
-    }
-  std::cout << "\"" << std::endl;
-  return false;
+  NS_ASSERT (size == 0);
+  return totalSize;
 }
 
-bool 
-PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t n, ...)
-{
-  m_headerError = false;
-  m_trailerError = false;
-  std::list<int> expected;
-  va_list ap;
-  va_start (ap, n);
-  for (uint32_t j = 0; j < n; j++)
-    {
-      int v = va_arg (ap, int);
-      expected.push_back (v);
-    }
-  va_end (ap);
 
-  m_printer.PrintForward ();
-  p.Print (std::cerr, m_printer);
-  bool ok = Check (file, line, expected);
-  CleanupPrints ();
-  if (!ok)
-    {
-      return false;
-    }
+} // namespace ns3
 
-  m_printer.PrintBackward ();
-  p.Print (std::cerr, m_printer);
-  expected.reverse ();
-  ok = Check (file, line, expected);
-  CleanupPrints ();
-  return ok;
-}
-
-#define ADD_HEADER(p, n)                        \
-  {                                             \
-    HistoryHeader<n> header;                    \
-    RegisterHeader<n> ();                       \
-    p.AddHeader (header);                       \
-  }
-#define ADD_TRAILER(p, n)                       \
-  {                                             \
-    HistoryTrailer<n> trailer;                  \
-    RegisterTrailer<n> ();                      \
-    p.AddTrailer (trailer);                     \
-  }
-#define REM_HEADER(p, n)                        \
-  {                                             \
-    HistoryHeader<n> header;                    \
-    RegisterHeader<n> ();                       \
-    p.RemoveHeader (header);                    \
-  }
-#define REM_TRAILER(p, n)                       \
-  {                                             \
-    HistoryTrailer<n> trailer;                  \
-    RegisterTrailer<n> ();                      \
-    p.RemoveTrailer (trailer);                  \
-  }
-#define CHECK_HISTORY(p, ...)                   \
-  {                                             \
-    if (!CheckHistory (p, __FILE__,             \
-                      __LINE__, __VA_ARGS__))   \
-      {                                         \
-        ok = false;                             \
-      }                                         \
-  }
-
-bool
-PacketMetadataTest::RunTests (void)
-{
-  bool ok = true;
-
-  PacketMetadata::Enable ();
-
-  Packet p = Packet (0);
-  Packet p1 = Packet (0);
-
-  p = Packet (10);
-  ADD_TRAILER (p, 100);
-  CHECK_HISTORY (p, 2, 10, 100);
-
-  p = Packet (10);
-  ADD_HEADER (p, 1);
-  ADD_HEADER (p, 2);
-  ADD_HEADER (p, 3);
-  CHECK_HISTORY (p, 4, 
-                 3, 2, 1, 10);
-  ADD_HEADER (p, 5);
-  CHECK_HISTORY (p, 5, 
-                 5, 3, 2, 1, 10);
-  ADD_HEADER (p, 6);
-  CHECK_HISTORY (p, 6, 
-                 6, 5, 3, 2, 1, 10);
-
-  p = Packet (10);
-  ADD_HEADER (p, 1);
-  ADD_HEADER (p, 2);
-  ADD_HEADER (p, 3);
-  REM_HEADER (p, 3);
-  CHECK_HISTORY (p, 3, 
-                 2, 1, 10);
-
-  p = Packet (10);
-  ADD_HEADER (p, 1);
-  ADD_HEADER (p, 2);
-  ADD_HEADER (p, 3);
-  REM_HEADER (p, 3);
-  REM_HEADER (p, 2);
-  CHECK_HISTORY (p, 2, 
-                 1, 10);
-
-  p = Packet (10);
-  ADD_HEADER (p, 1);
-  ADD_HEADER (p, 2);
-  ADD_HEADER (p, 3);
-  REM_HEADER (p, 3);
-  REM_HEADER (p, 2);
-  REM_HEADER (p, 1);
-  CHECK_HISTORY (p, 1, 10);
-
-  p = Packet (10);
-  ADD_HEADER (p, 1);
-  ADD_HEADER (p, 2);
-  ADD_HEADER (p, 3);
-  p1 = p;
-  REM_HEADER (p1, 3);
-  REM_HEADER (p1, 2);
-  REM_HEADER (p1, 1);
-  CHECK_HISTORY (p1, 1, 10);
-  CHECK_HISTORY (p, 4, 
-                 3, 2, 1, 10);
-  ADD_HEADER (p1, 1);
-  ADD_HEADER (p1, 2);
-  CHECK_HISTORY (p1, 3, 
-                 2, 1, 10);
-  CHECK_HISTORY (p, 4, 
-                 3, 2, 1, 10);
-  ADD_HEADER (p, 3);
-  CHECK_HISTORY (p, 5, 
-                 3, 3, 2, 1, 10);
-  ADD_TRAILER (p, 4);
-  CHECK_HISTORY (p, 6, 
-                 3, 3, 2, 1, 10, 4);
-  ADD_TRAILER (p, 5);
-  CHECK_HISTORY (p, 7, 
-                 3, 3, 2, 1, 10, 4, 5);
-  REM_HEADER (p, 3);
-  CHECK_HISTORY (p, 6, 
-                 3, 2, 1, 10, 4, 5);
-  REM_TRAILER (p, 5);
-  CHECK_HISTORY (p, 5, 
-                 3, 2, 1, 10, 4);
-  p1 = p;
-  REM_TRAILER (p, 4);
-  CHECK_HISTORY (p, 4, 
-                 3, 2, 1, 10);
-  CHECK_HISTORY (p1, 5, 
-                 3, 2, 1, 10, 4);
-  p1.RemoveAtStart (3);
-  CHECK_HISTORY (p1, 4, 
-                 2, 1, 10, 4);
-  p1.RemoveAtStart (1);
-  CHECK_HISTORY (p1, 4, 
-                 1, 1, 10, 4);
-  p1.RemoveAtStart (1);
-  CHECK_HISTORY (p1, 3, 
-                 1, 10, 4);
-  p1.RemoveAtEnd (4);
-  CHECK_HISTORY (p1, 2, 
-                 1, 10);
-  p1.RemoveAtStart (1);
-  CHECK_HISTORY (p1, 1, 10);
-
-  p = Packet (10);
-  ADD_HEADER (p, 8);
-  ADD_TRAILER (p, 8);
-  ADD_TRAILER (p, 8);
-  p.RemoveAtStart (8+10+8);
-  CHECK_HISTORY (p, 1, 8);
-
-  p = Packet (10);
-  ADD_HEADER (p, 10);
-  ADD_HEADER (p, 8);
-  ADD_TRAILER (p, 6);
-  ADD_TRAILER (p, 7);
-  ADD_TRAILER (p, 9);
-  p.RemoveAtStart (5);
-  p.RemoveAtEnd (12);
-  CHECK_HISTORY (p, 5, 3, 10, 10, 6, 4);
-
-  p = Packet (10);
-  ADD_HEADER (p, 10);
-  ADD_TRAILER (p, 6);
-  p.RemoveAtEnd (18);
-  ADD_TRAILER (p, 5);
-  ADD_HEADER (p, 3);
-  CHECK_HISTORY (p, 3, 3, 8, 5);
-  p.RemoveAtStart (12);
-  CHECK_HISTORY (p, 1, 4);
-  p.RemoveAtEnd (2);
-  CHECK_HISTORY (p, 1, 2);
-  ADD_HEADER (p, 10);
-  CHECK_HISTORY (p, 2, 10, 2);
-  p.RemoveAtEnd (5);
-  CHECK_HISTORY (p, 1, 7);
-
-  Packet p2 = Packet (0);
-  Packet p3 = Packet (0);
-
-  p = Packet (40);
-  ADD_HEADER (p, 5);
-  ADD_HEADER (p, 8);
-  CHECK_HISTORY (p, 3, 8, 5, 40);
-  p1 = p.CreateFragment (0, 5);
-  p2 = p.CreateFragment (5, 5);
-  p3 = p.CreateFragment (10, 43);
-  CHECK_HISTORY (p1, 1, 5);
-  CHECK_HISTORY (p2, 2, 3, 2);
-  CHECK_HISTORY (p3, 2, 3, 40);
-  p1.AddAtEnd (p2);
-  CHECK_HISTORY (p1, 2, 8, 2);
-  CHECK_HISTORY (p2, 2, 3, 2);
-  p1.AddAtEnd (p3);
-  CHECK_HISTORY (p1, 3, 8, 5, 40);
-  CHECK_HISTORY (p2, 2, 3, 2);
-  CHECK_HISTORY (p3, 2, 3, 40);
-  p1 = p.CreateFragment (0, 5);
-  CHECK_HISTORY (p1, 1, 5);
-
-  p3 = Packet (50);
-  ADD_HEADER (p3, 8);
-  CHECK_HISTORY (p3, 2, 8, 50);
-  CHECK_HISTORY (p1, 1, 5);
-  p1.AddAtEnd (p3);
-  CHECK_HISTORY (p1, 3, 5, 8, 50);
-  ADD_HEADER (p1, 5);
-  CHECK_HISTORY (p1, 4, 5, 5, 8, 50);
-  ADD_TRAILER (p1, 2);
-  CHECK_HISTORY (p1, 5, 5, 5, 8, 50, 2);
-  REM_HEADER (p1, 5);
-  CHECK_HISTORY (p1, 4, 5, 8, 50, 2);
-  p1.RemoveAtEnd (60);
-  CHECK_HISTORY (p1, 1, 5);
-  p1.AddAtEnd (p2);
-  CHECK_HISTORY (p1, 2, 8, 2);
-  CHECK_HISTORY (p2, 2, 3, 2);
-
-  p3 = Packet (40);
-  ADD_HEADER (p3, 5);
-  ADD_HEADER (p3, 5);
-  CHECK_HISTORY (p3, 3, 5, 5, 40);
-  p1 = p3.CreateFragment (0, 5);
-  p2 = p3.CreateFragment (5, 5);
-  CHECK_HISTORY (p1, 1, 5);
-  CHECK_HISTORY (p2, 1, 5);
-  p1.AddAtEnd (p2);
-  CHECK_HISTORY (p1, 2, 5, 5);
-
-  p = Packet (0);
-  CHECK_HISTORY (p, 0);
-
-  p3 = Packet (0);
-  ADD_HEADER (p3, 5);
-  ADD_HEADER (p3, 5);
-  CHECK_HISTORY (p3, 2, 5, 5);
-  p1 = p3.CreateFragment (0, 4);
-  p2 = p3.CreateFragment (9, 1);
-  CHECK_HISTORY (p1, 1, 4);
-  CHECK_HISTORY (p2, 1, 1);
-  p1.AddAtEnd (p2);
-  CHECK_HISTORY (p1, 2, 4, 1);
-
-
-  p = Packet (2000);
-  CHECK_HISTORY (p, 1, 2000);
-  
-  p = Packet ();
-  ADD_TRAILER (p, 10);
-  ADD_HEADER (p, 5);
-  p1 = p.CreateFragment (0, 8);
-  p2 = p.CreateFragment (8, 7);
-  p1.AddAtEnd (p2);
-  CHECK_HISTORY (p, 2, 5, 10);
-
-  p = Packet ();
-  ADD_TRAILER (p, 10);
-  REM_TRAILER (p, 10);
-  ADD_TRAILER (p, 10);
-  CHECK_HISTORY (p, 1, 10);
-
-  p = Packet ();
-  ADD_HEADER (p, 10);
-  REM_HEADER (p, 10);
-  ADD_HEADER (p, 10);
-  CHECK_HISTORY (p, 1, 10);
-
-  return ok;
-}
-
-static PacketMetadataTest g_packetHistoryTest;
-
-}//namespace ns3

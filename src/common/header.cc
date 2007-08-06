@@ -26,4 +26,4 @@ namespace ns3 {
 Header::~Header ()
 {}
 
-}; // namespace ns3
+} // namespace ns3

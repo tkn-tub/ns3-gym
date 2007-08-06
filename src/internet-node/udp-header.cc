@@ -22,9 +22,18 @@
 #include "udp-header.h"
 #include "ipv4-checksum.h"
 
+NS_HEADER_ENSURE_REGISTERED (ns3::UdpHeader);
+
 namespace ns3 {
 
 bool UdpHeader::m_calcChecksum = false;
+
+uint32_t
+UdpHeader::GetUid (void)
+{
+  static uint32_t uid = Header::Register<UdpHeader> ("UdpHeader.ns3");
+  return uid;
+}
 
 /* The magic values below are used only for debugging.
  * They can be used to easily detect memory corruption

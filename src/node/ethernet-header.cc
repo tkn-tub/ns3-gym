@@ -27,7 +27,16 @@
 
 NS_DEBUG_COMPONENT_DEFINE ("EthernetHeader");
 
+NS_HEADER_ENSURE_REGISTERED (ns3::EthernetHeader);
+
 namespace ns3 {
+
+uint32_t
+EthernetHeader::GetUid (void)
+{
+  static uint32_t uid = Header::Register<EthernetHeader> ("EthernetHeader.ns3");
+  return uid;
+}
 
 EthernetHeader::EthernetHeader (bool hasPreamble)
   : m_enPreambleSfd (hasPreamble),
@@ -108,7 +117,6 @@ void
 EthernetHeader::PrintTo (std::ostream &os) const
 {
   // ethernet, right ?
-  os << "(ethernet)";
   if (m_enPreambleSfd)
     {
       os << " preamble/sfd=" << m_preambleSfd << ",";

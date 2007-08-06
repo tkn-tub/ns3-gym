@@ -20,83 +20,70 @@
  */
 #include "tags.h"
 #include <string.h>
+#include "ns3/fatal-error.h"
 
 namespace ns3 {
 
-TagRegistry *
-TagRegistry::GetInstance (void)
+TagRegistry::TagInfoVector *
+TagRegistry::GetInfo (void)
 {
-  static TagRegistry registry;
-  return &registry;
+  static TagRegistry::TagInfoVector vector;
+  return &vector;
 }
 
-TagRegistry::TagRegistry ()
-  : m_sorted (false)
-{}
-
-
-void 
-TagRegistry::Record (std::string uuid, PrettyPrinter prettyPrinter, Destructor destructor)
+std::string
+TagRegistry::GetUidString (uint32_t uid)
 {
-  NS_ASSERT (!m_sorted);
-  struct TagInfoItem item;
-  item.uuid = uuid;
-  item.printer = prettyPrinter;
-  item.destructor = destructor;
-  m_registry.push_back (item);
-}
-bool 
-TagRegistry::CompareItem (const struct TagInfoItem &a, const struct TagInfoItem &b)
-{
-  return a.uuid < b.uuid;
+  TagInfo info = (*GetInfo ())[uid - 1];
+  return info.uidString;
 }
 uint32_t 
-TagRegistry::LookupUid (std::string uuid)
+TagRegistry::GetUidFromUidString (std::string uidString)
 {
-  if (!m_sorted) 
-    {
-      std::sort (m_registry.begin (), m_registry.end (), &TagRegistry::CompareItem);
-      m_sorted = true;
-    }
-  NS_ASSERT (m_sorted);
+  TagInfoVector *vec = GetInfo ();
   uint32_t uid = 1;
-  for (TagsDataCI i = m_registry.begin (); i != m_registry.end (); i++) 
+  for (TagInfoVector::iterator i = vec->begin (); i != vec->end (); i++)
     {
-      if (i->uuid == uuid) 
+      if (i->uidString == uidString)
         {
           return uid;
         }
       uid++;
     }
-  // someone asked for a uid for an unregistered uuid.
-  NS_ASSERT (!"You tried to use unregistered tag: make sure you create an instance of type TagRegistration<YouTagType>.");
-  // quiet compiler
+  NS_FATAL_ERROR ("We are trying to deserialize an un-registered type. This can't work.");
   return 0;
 }
+
 void 
-TagRegistry::PrettyPrint (uint32_t uid, uint8_t buf[Tags::SIZE], std::ostream &os)
+TagRegistry::Destruct (uint32_t uid, uint8_t data[Tags::SIZE])
 {
-  NS_ASSERT (uid > 0);
-  uint32_t index = uid - 1;
-  NS_ASSERT (m_registry.size () > index);
-  PrettyPrinter prettyPrinter = m_registry[index].printer;
-  if (prettyPrinter != 0) 
-    {
-      prettyPrinter (buf, os);
-    }
+  TagInfo info = (*GetInfo ())[uid - 1];
+  info.destruct (data);
 }
 void 
-TagRegistry::Destruct (uint32_t uid, uint8_t buf[Tags::SIZE])
+TagRegistry::Print (uint32_t uid, uint8_t data[Tags::SIZE], std::ostream &os)
 {
-  NS_ASSERT (uid > 0);
-  uint32_t index = uid - 1;
-  NS_ASSERT (m_registry.size () > index);
-  Destructor destructor = m_registry[index].destructor;
-  NS_ASSERT (destructor != 0);
-  destructor (buf);
+  TagInfo info = (*GetInfo ())[uid - 1];
+  info.print (data, os);
 }
-
-
+uint32_t
+TagRegistry::GetSerializedSize (uint32_t uid, uint8_t data[Tags::SIZE])
+{
+  TagInfo info = (*GetInfo ())[uid - 1];
+  return info.getSerializedSize (data);
+}
+void 
+TagRegistry::Serialize (uint32_t uid, uint8_t data[Tags::SIZE], Buffer::Iterator start)
+{
+  TagInfo info = (*GetInfo ())[uid - 1];
+  info.serialize (data, start);
+}
+uint32_t 
+TagRegistry::Deserialize (uint32_t uid, uint8_t data[Tags::SIZE], Buffer::Iterator start)
+{
+  TagInfo info = (*GetInfo ())[uid - 1];
+  return info.deserialize (data, start);
+}
 
 #ifdef USE_FREE_LIST
 
@@ -193,13 +180,98 @@ Tags::Remove (uint32_t id)
 }
 
 void 
-Tags::PrettyPrint (std::ostream &os)
+Tags::Print (std::ostream &os) const
 {
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
-      TagRegistry::GetInstance ()->PrettyPrint (cur->m_id, cur->m_data, os);
+      TagRegistry::Print (cur->m_id, cur->m_data, os);
     }
 }
+
+uint32_t
+Tags::GetSerializedSize (void) const
+{
+  uint32_t totalSize = 4; // reserve space for the size of the tag data.
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
+    {
+      uint32_t size = TagRegistry::GetSerializedSize (cur->m_id, cur->m_data);
+      if (size != 0)
+        {
+          std::string uidString = TagRegistry::GetUidString (cur->m_id);
+          totalSize += 4; // for the size of the string itself.
+          totalSize += uidString.size ();
+          totalSize += size;
+        }
+    }
+  return totalSize;
+}
+
+void 
+Tags::Serialize (Buffer::Iterator i, uint32_t totalSize) const
+{
+  i.WriteU32 (totalSize);
+  for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
+    {
+      uint32_t size = TagRegistry::GetSerializedSize (cur->m_id, cur->m_data);
+      if (size != 0)
+        {
+          std::string uidString = TagRegistry::GetUidString (cur->m_id);
+          i.WriteU32 (uidString.size ());
+          uint8_t *buf = (uint8_t *)uidString.c_str ();
+          i.Write (buf, uidString.size ());
+          TagRegistry::Serialize (cur->m_id, cur->m_data, i);
+        }
+    }
+}
+uint32_t
+Tags::Deserialize (Buffer::Iterator i)
+{
+  uint32_t totalSize = i.ReadU32 ();
+  uint32_t bytesRead = 4;
+  while (bytesRead < totalSize)
+    {
+      uint32_t uidStringSize = i.ReadU32 ();
+      bytesRead += 4;
+      std::string uidString;
+      uidString.reserve (uidStringSize);
+      for (uint32_t j = 0; j < uidStringSize; j++)
+        {
+          uint32_t c = i.ReadU8 ();
+          uidString.push_back (c);
+        }
+      bytesRead += uidStringSize;
+      uint32_t uid = TagRegistry::GetUidFromUidString (uidString);
+      struct TagData *newStart = AllocData ();
+      newStart->m_count = 1;
+      newStart->m_next = 0;
+      newStart->m_id = uid;
+      bytesRead += TagRegistry::Deserialize (uid, newStart->m_data, i);
+      newStart->m_next = m_next;
+      m_next = newStart;
+    }
+  NS_ASSERT (bytesRead == totalSize);
+  /**
+   * The process of serialization/deserialization 
+   * results in an inverted linked-list after
+   * deserialization so, we invert the linked-list
+   * in-place here.
+   * Note: the algorithm below is pretty classic
+   * but whenever I get to code it, it makes my
+   * brain hurt :)
+   */
+  struct TagData *prev = 0;
+  struct TagData *cur = m_next;
+  while (cur != 0)
+    {
+      struct TagData *next = cur->m_next;
+      cur->m_next = prev;
+      prev = cur;
+      cur = next;
+    }
+  m_next = prev;
+  return totalSize;
+}
+
 
 
 }; // namespace ns3
@@ -224,25 +296,67 @@ public:
   virtual bool RunTests (void);
 };
 
-struct myTagA {
+class myTagA 
+{
+public:
+  static uint32_t GetUid (void) {static uint32_t uid = TagRegistry::Register<myTagA> ("myTagA.test.nsnam.org"); return uid;}
+  void Print (std::ostream &os) const {g_a = true;}
+  uint32_t GetSerializedSize (void) const {return 1;}
+  void Serialize (Buffer::Iterator i) const {i.WriteU8 (a);}
+  uint32_t Deserialize (Buffer::Iterator i) {a = i.ReadU8 (); return 1;}
+
   uint8_t a;
 };
-struct myTagB {
+class myTagB 
+{
+public:
+  static uint32_t GetUid (void) {static uint32_t uid = TagRegistry::Register<myTagB> ("myTagB.test.nsnam.org"); return uid;}
+  void Print (std::ostream &os) const {g_b = true;}
+  uint32_t GetSerializedSize (void) const {return 4;}
+  void Serialize (Buffer::Iterator i) const {i.WriteU32 (b);}
+  uint32_t Deserialize (Buffer::Iterator i) {b = i.ReadU32 (); return 4;}
+
   uint32_t b;
 };
-struct myTagC {
+class myTagC 
+{
+public:
+  static uint32_t GetUid (void) {static uint32_t uid = TagRegistry::Register<myTagC> ("myTagC.test.nsnam.org"); return uid;}
+  void Print (std::ostream &os) const {g_c = true;}
+  uint32_t GetSerializedSize (void) const {return Tags::SIZE;}
+  void Serialize (Buffer::Iterator i) const {i.Write (c, Tags::SIZE);}
+  uint32_t Deserialize (Buffer::Iterator i) {i.Read (c, Tags::SIZE); return Tags::SIZE;}
   uint8_t c [Tags::SIZE];
 };
-struct myInvalidTag {
+class myInvalidTag 
+{
+public:
+  static uint32_t GetUid (void) 
+  {static uint32_t uid = TagRegistry::Register<myInvalidTag> ("myinvalidTag.test.nsnam.org"); return uid;}
+  void Print (std::ostream &os) const {}
+  uint32_t GetSerializedSize (void) const {return 0;}
+  void Serialize (Buffer::Iterator i) const {}
+  uint32_t Deserialize (Buffer::Iterator i) {return 0;}
+
   uint8_t invalid [Tags::SIZE+1];
 };
-struct myTagZ {
+class myTagZ 
+{
+public:
+  static uint32_t GetUid (void) {static uint32_t uid = TagRegistry::Register<myTagZ> ("myTagZ.test.nsnam.org"); return uid;}
+  void Print (std::ostream &os) const {g_z = true;}
+  uint32_t GetSerializedSize (void) const {return 0;}
+  void Serialize (Buffer::Iterator i) const {}
+  uint32_t Deserialize (Buffer::Iterator i) {return 0;}
+
   uint8_t z;
 };
 
 class MySmartTag 
 {
 public:
+  static uint32_t GetUid (void) 
+  {static uint32_t uid = TagRegistry::Register<MySmartTag> ("MySmartTag.test.nsnam.org"); return uid;}
   MySmartTag ()
   {
     //std::cout << "construct" << std::endl;
@@ -260,42 +374,11 @@ public:
     //std::cout << "assign" << std::endl;
     return *this;
   }
-  static void PrettyPrinterCb (const MySmartTag *a, std::ostream &os)
-  {}
+  void Print (std::ostream &os) const {}
+  uint32_t GetSerializedSize (void) const {return 0;}
+  void Serialize (Buffer::Iterator i) const {}
+  uint32_t Deserialize (Buffer::Iterator i) {return 0;}
 };
-
-static void 
-myTagAPrettyPrinterCb (struct myTagA const*a, std::ostream &os)
-{
-  //os << "struct myTagA, a="<<(uint32_t)a->a<<std::endl;
-  g_a = true;
-}
-static void 
-myTagBPrettyPrinterCb (struct myTagB const*b, std::ostream &os)
-{
-  //os << "struct myTagB, b="<<b->b<<std::endl;
-  g_b = true;
-}
-static void 
-myTagCPrettyPrinterCb (struct myTagC const*c, std::ostream &os)
-{
-  //os << "struct myTagC, c="<<(uint32_t)c->c[0]<<std::endl;
-  g_c = true;
-}
-static void 
-myTagZPrettyPrinterCb (struct myTagZ const*z, std::ostream &os)
-{
-  //os << "struct myTagZ" << std::endl;
-  g_z = true;
-}
-
-
-static TagRegistration<struct myTagA> gMyTagARegistration ("A", &myTagAPrettyPrinterCb);
-static TagRegistration<struct myTagB> gMyTagBRegistration ("B", &myTagBPrettyPrinterCb);
-static TagRegistration<struct myTagC> gMyTagCRegistration ("C", &myTagCPrettyPrinterCb);
-static TagRegistration<struct myTagZ> g_myTagZRegistration ("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", 
-                                                            &myTagZPrettyPrinterCb);
-static TagRegistration<MySmartTag> g_myTagSmartRegistration ("SmartTag", &MySmartTag::PrettyPrinterCb);
 
 
 TagsTest::TagsTest ()
@@ -311,7 +394,7 @@ TagsTest::RunTests (void)
 
   // build initial tag.
   Tags tags;
-  struct myTagA a;
+  myTagA a;
   a.a = 10;
   tags.Add (a);
   a.a = 0;
@@ -321,12 +404,12 @@ TagsTest::RunTests (void)
       ok = false;
     }
   g_a = false;
-  tags.PrettyPrint (std::cout);
+  tags.Print (std::cout);
   if (!g_a)
     {
       ok = false;
     }
-  struct myTagB b;
+  myTagB b;
   b.b = 0xff;
   tags.Add (b);
   b.b = 0;
@@ -337,7 +420,7 @@ TagsTest::RunTests (void)
     }
   g_b = false;
   g_a = false;
-  tags.PrettyPrint (std::cout);
+  tags.Print (std::cout);
   if (!g_a || !g_b)
     {
       ok = false;
@@ -346,26 +429,26 @@ TagsTest::RunTests (void)
   Tags other = tags;
   g_b = false;
   g_a = false;
-  other.PrettyPrint (std::cout);
+  other.Print (std::cout);
   if (!g_a || !g_b)
     {
       ok = false;
     }
   g_b = false;
   g_a = false;
-  tags.PrettyPrint (std::cout);
+  tags.Print (std::cout);
   if (!g_a || !g_b)
     {
       ok = false;
     }
-  struct myTagA oA;
+  myTagA oA;
   oA.a = 0;
   other.Peek (oA);
   if (oA.a != 10) 
     {
       ok = false;
     }
-  struct myTagB oB;
+  myTagB oB;
   oB.b = 1;
   other.Peek (oB);
   if (oB.b != 0xff) 
@@ -380,7 +463,7 @@ TagsTest::RunTests (void)
     }
   g_b = false;
   g_a = false;
-  other.PrettyPrint (std::cout);
+  other.Print (std::cout);
   if (g_a || !g_b)
     {
       ok = false;
@@ -401,7 +484,7 @@ TagsTest::RunTests (void)
 
   other = tags;
   Tags another = other;
-  struct myTagC c;
+  myTagC c;
   memset (c.c, 0x66, 16);
   another.Add (c);
   c.c[0] = 0;
@@ -421,12 +504,12 @@ TagsTest::RunTests (void)
   //struct myInvalidTag invalid;
   //tags.add (&invalid);
 
-  struct myTagZ tagZ;
+  myTagZ tagZ;
   Tags testLastTag;
   tagZ.z = 0;
   testLastTag.Add (tagZ);
   g_z = false;
-  testLastTag.PrettyPrint (std::cout);
+  testLastTag.Print (std::cout);
   if (!g_z)
     {
       ok = false;
@@ -438,6 +521,58 @@ TagsTest::RunTests (void)
     tmp.Add (smartTag);
     tmp.Peek (smartTag);
     tmp.Remove (smartTag);
+  }
+
+  {
+    Tags source;
+    myTagA aSource;
+    aSource.a = 0x66;
+    source.Add (aSource);
+    Buffer buffer;
+    uint32_t serialized = source.GetSerializedSize ();
+    buffer.AddAtStart (serialized);
+    source.Serialize (buffer.Begin (), serialized);
+    Tags dest;
+    dest.Deserialize (buffer.Begin ());
+    myTagA aDest;
+    aDest.a = 0x55;
+    dest.Peek (aDest);
+    if (aDest.a != 0x66)
+      {
+        ok = false;
+      }
+  }
+
+  {
+    Tags source;
+    myTagA aSource;
+    aSource.a = 0x66;
+    source.Add (aSource);
+    myTagZ zSource;
+    zSource.z = 0x77;
+    source.Add (zSource);
+
+    Buffer buffer;
+    uint32_t serialized = source.GetSerializedSize ();
+    buffer.AddAtStart (serialized);
+    source.Serialize (buffer.Begin (), serialized);
+    Tags dest;
+    dest.Deserialize (buffer.Begin ());
+
+    myTagA aDest;
+    aDest.a = 0x55;
+    dest.Peek (aDest);
+    if (aDest.a != 0x66)
+      {
+        ok = false;
+      }
+    myTagZ zDest;
+    zDest.z = 0x44;
+    dest.Peek (zDest);
+    if (zDest.z != 0x44)
+      {
+        ok = false;
+      }
   }
 
   return ok;

@@ -74,14 +74,14 @@ Packet::GetSize (void) const
 void 
 Packet::AddAtEnd (Packet packet)
 {
-  packet.m_buffer.TransformIntoRealBuffer ();
-  m_buffer.TransformIntoRealBuffer ();
+  Buffer src = packet.m_buffer.CreateFullCopy ();
+  Buffer dst = m_buffer.CreateFullCopy ();
 
-  Buffer src = packet.m_buffer;
-  m_buffer.AddAtEnd (src.GetSize ());
-  Buffer::Iterator destStart = m_buffer.End ();
+  dst.AddAtEnd (src.GetSize ());
+  Buffer::Iterator destStart = dst.End ();
   destStart.Prev (src.GetSize ());
   destStart.Write (src.Begin (), src.End ());
+  m_buffer = dst;
   /**
    * XXX: we might need to merge the tag list of the
    * other packet into the current packet.
@@ -128,7 +128,7 @@ Packet::GetUid (void) const
 void 
 Packet::Print (std::ostream &os) const
 {
-  m_metadata.PrintDefault (os, m_buffer);
+  m_metadata.Print (os, m_buffer, PacketPrinter ());
 }
 
 void 
@@ -143,7 +143,58 @@ Packet::EnableMetadata (void)
   PacketMetadata::Enable ();
 }
 
-}; // namespace ns3
+Buffer 
+Packet::Serialize (void) const
+{
+  Buffer buffer;
+  uint32_t reserve;
+
+  // write metadata
+  reserve = m_metadata.GetSerializedSize ();
+  buffer.AddAtStart (reserve);
+  m_metadata.Serialize (buffer.Begin (), reserve);
+
+  // write tags
+  reserve = m_tags.GetSerializedSize ();
+  buffer.AddAtStart (reserve);
+  m_tags.Serialize (buffer.Begin (), reserve);
+  
+  // aggregate byte buffer, metadata, and tags
+  Buffer tmp = m_buffer.CreateFullCopy ();
+  buffer.AddAtStart (tmp.GetSize ());
+  buffer.Begin ().Write (tmp.Begin (), tmp.End ());
+  
+  // write byte buffer size.
+  buffer.AddAtStart (4);
+  buffer.Begin ().WriteU32 (m_buffer.GetSize ());
+
+  return buffer;
+}
+void 
+Packet::Deserialize (Buffer buffer)
+{
+  Buffer buf = buffer;
+  // read size
+  uint32_t packetSize = buf.Begin ().ReadU32 ();
+  buf.RemoveAtStart (4);
+
+  // read buffer.
+  buf.RemoveAtEnd (buf.GetSize () - packetSize);
+  m_buffer = buf;
+
+  // read tags
+  buffer.RemoveAtStart (4 + packetSize);
+  uint32_t tagsDeserialized = m_tags.Deserialize (buffer.Begin ());
+  buffer.RemoveAtStart (tagsDeserialized);
+
+  // read metadata
+  uint32_t metadataDeserialized = 
+    m_metadata.Deserialize (buffer.Begin ());
+  buffer.RemoveAtStart (metadataDeserialized);
+}
+
+
+} // namespace ns3
 
 
 

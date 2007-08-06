@@ -25,13 +25,17 @@
 #include "ns3/header.h"
 #include "ns3/address.h"
 #include "ns3/ipv4-address.h"
+#include <string>
 
 namespace ns3 {
 /**
  * \brief The packet header for an ARP packet
  */
-class ArpHeader : public Header {
- public:
+class ArpHeader : public Header 
+{
+public:
+  static uint32_t GetUid (void);
+
   virtual ~ArpHeader ();
 
   void SetRequest (Address sourceHardwareAddress,

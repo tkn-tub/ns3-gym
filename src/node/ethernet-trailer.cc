@@ -26,9 +26,18 @@
 
 NS_DEBUG_COMPONENT_DEFINE ("EthernetTrailer");
 
+NS_TRAILER_ENSURE_REGISTERED (ns3::EthernetTrailer);
+
 namespace ns3 {
 
 bool EthernetTrailer::m_calcFcs = false;
+
+uint32_t
+EthernetTrailer::GetUid (void)
+{
+  static uint32_t uid = Trailer::Register<EthernetTrailer> ("EthernetTrailer.ns3");
+  return uid;
+}
 
 EthernetTrailer::EthernetTrailer ()
 {

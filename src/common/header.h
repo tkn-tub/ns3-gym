@@ -24,6 +24,29 @@
 
 #include "chunk.h"
 
+/**
+ * \relates Header
+ * \brief this macro should be instantiated exactly once for each
+ *        new type of Header
+ *
+ * This macro will ensure that your new Header type is registered
+ * within the packet header registry. In most cases, this macro
+ * is not really needed but, for safety, please, use it all the
+ * time.
+ *
+ * Note: This macro is _absolutely_ needed if you try to run a
+ * distributed simulation.
+ */
+#define NS_HEADER_ENSURE_REGISTERED(x)          \
+namespace {                                     \
+static class thisisaveryverylongclassname       \
+{                                               \
+public:                                         \
+  thisisaveryverylongclassname ()               \
+  { uint32_t uid; uid = x::GetUid ();}          \
+} g_thisisanotherveryveryverylongname;          \
+}
+
 namespace ns3 {
 
 /**
@@ -36,10 +59,40 @@ namespace ns3 {
  *   - ns3::Header::DeserializeFrom
  *   - ns3::Header::GetSerializedSize
  *   - ns3::Header::PrintTo
+ *   - ns3::Header::DoGetName
+ *
+ * Each header must also make sure that:
+ *   - it defines a public default constructor
+ *   - it defines a public static method named GetUid which returns a 32 bit integer
+ *
+ * The latter should look like the following:
+ * \code
+ * // in the header,
+ * class MyHeader : public Header
+ * {
+ * public:
+ *   static uint32_t GetUid (void);
+ * };
+ *
+ * // in the source file:
+ * NS_HEADER_ENSURE_REGISTERED (MyHeader);
+ *
+ * uint32_t MyHeader::GetUid (void)
+ * {
+ *   static uint32_t uid = Header::Register<MyHeader> ("MyHeader.unique.prefix");
+ *   return uid;
+ * }
+ * \endcode
+ *
+ * Sample code which shows how to create a new Header, and how to use it, 
+ * is shown in the sample file samples/main-header.cc
  */
 class Header : public Chunk {
 public:
   virtual ~Header ();
+protected:
+  template <typename T>
+  static uint32_t Register (std::string uuid);
 private:
   /**
    * \returns a user-readable name to identify this type of header.
@@ -92,6 +145,18 @@ private:
   virtual uint32_t DeserializeFrom (Buffer::Iterator start) = 0;
 };
 
-}; // namespace ns3
+} // namespace ns3
+
+namespace ns3 {
+
+template <typename T>
+uint32_t 
+Header::Register (std::string uuid)
+{
+  return ChunkRegistry::RegisterHeader<T> (uuid);
+}
+
+
+} // namespace ns3
 
 #endif /* HEADER_H */

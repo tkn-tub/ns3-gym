@@ -26,9 +26,18 @@
 
 NS_DEBUG_COMPONENT_DEFINE ("Ipv4Header");
 
+NS_HEADER_ENSURE_REGISTERED (ns3::Ipv4Header);
+
 namespace ns3 {
 
 bool Ipv4Header::m_calcChecksum = false;
+
+uint32_t
+Ipv4Header::GetUid (void)
+{
+  static uint32_t uid = Header::Register<Ipv4Header> ("Ipv4Header.ns3");
+  return uid;
+}
 
 Ipv4Header::Ipv4Header ()
   : m_payloadSize (0),

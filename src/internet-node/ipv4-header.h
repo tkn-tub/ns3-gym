@@ -29,8 +29,10 @@ namespace ns3 {
 /**
  * \brief Packet header for IPv4
  */
-class Ipv4Header : public Header {
+class Ipv4Header : public Header 
+{
 public:
+  static uint32_t GetUid (void);
   /**
    * \brief Construct a null IPv4 header
    */

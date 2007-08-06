@@ -23,12 +23,16 @@
 #define LLC_SNAP_HEADER_H
 
 #include <stdint.h>
+#include <string>
 #include "ns3/header.h"
 
 namespace ns3 {
 
-class LlcSnapHeader : public Header {
- public:
+class LlcSnapHeader : public Header 
+{
+public:
+  static uint32_t GetUid (void);
+
   LlcSnapHeader ();
   virtual ~LlcSnapHeader ();
 

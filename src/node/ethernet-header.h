@@ -23,6 +23,7 @@
 #define ETHERNET_HEADER_H
 
 #include "ns3/header.h"
+#include <string>
 #include "ns3/eui48-address.h"
 
 namespace ns3 {
@@ -45,11 +46,10 @@ namespace ns3 {
  * the packet. Eventually the class will be improved to also support
  * VLAN tags in packet headers.
  */
-class EthernetHeader : public Header {
+class EthernetHeader : public Header 
+{
 public:
-  static const int PREAMBLE_SIZE = 8; /// size of the preamble_sfd header field
-  static const int LENGTH_SIZE = 2;   /// size of the length_type header field
-  static const int MAC_ADDR_SIZE = 6; /// size of src/dest addr header fields
+  static uint32_t GetUid (void);
 
   /**
    * \brief Construct a null ethernet header
@@ -105,6 +105,10 @@ public:
   uint32_t GetHeaderSize() const;
 
 private:
+  static const int PREAMBLE_SIZE = 8; /// size of the preamble_sfd header field
+  static const int LENGTH_SIZE = 2;   /// size of the length_type header field
+  static const int MAC_ADDR_SIZE = 6; /// size of src/dest addr header fields
+
   virtual std::string DoGetName (void) const;
   virtual void PrintTo (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;

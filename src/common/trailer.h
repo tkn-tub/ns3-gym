@@ -24,6 +24,29 @@
 
 #include "chunk.h"
 
+/**
+ * \relates Trailer
+ * \brief this macro should be instantiated exactly once for each
+ *        new type of Trailer
+ *
+ * This macro will ensure that your new Trailer type is registered
+ * within the packet trailer registry. In most cases, this macro
+ * is not really needed but, for safety, please, use it all the
+ * time.
+ *
+ * Note: This macro is _absolutely_ needed if you try to run a
+ * distributed simulation.
+ */
+#define NS_TRAILER_ENSURE_REGISTERED(x)         \
+namespace {                                     \
+static class thisisaveryverylongclassname       \
+{                                               \
+public:                                         \
+  thisisaveryverylongclassname ()               \
+  { uint32_t uid; uid = x::GetUid ();}          \
+} g_thisisanotherveryveryverylongname;          \
+}
+
 namespace ns3 {
 
 /**
@@ -36,6 +59,30 @@ namespace ns3 {
  *   - ns3::Trailer::DeserializeFrom
  *   - ns3::Trailer::GetSerializedSize
  *   - ns3::Trailer::PrintTo
+ *   - ns3::Trailer::DoGetName
+ *
+ * Each trailer must also make sure that:
+ *   - it defines a public default constructor
+ *   - it defines a public static method named GetUid which returns a 32 bit integer.
+ *
+ * The latter should look like the following:
+ * \code
+ * // in the header
+ * class MyTrailer : public Header
+ * {
+ * public:
+ *   static uint32_t GetUid (void);
+ * };
+ *
+ * // in the source file
+ * NS_TRAILER_ENSURE_REGISTERED (MyTrailer);
+ *
+ * uint32_t MyTrailer::GetUid (void)
+ * {
+ *   static uint32_t uid = Trailer::Register<MyTrailer> ("MyTrailer.unique.prefix");
+ *   return uid;
+ * }
+ * \endcode
  *
  * Note that the SerializeTo and DeserializeFrom methods behave
  * in a way which might seem surprising to users: the input iterator
@@ -66,6 +113,9 @@ namespace ns3 {
 class Trailer : public Chunk {
 public:
   virtual ~Trailer ();
+protected:
+  template <typename T>
+  static uint32_t Register (std::string uidString);
 private:
   /**
    * \returns a user-readable name to identify this type of header.
@@ -122,6 +172,18 @@ private:
   virtual uint32_t DeserializeFrom (Buffer::Iterator end) = 0;
 };
 
-}; // namespace ns3
+} // namespace ns3
+
+namespace ns3 {
+
+template <typename T>
+uint32_t 
+Trailer::Register (std::string uidString)
+{
+  return ChunkRegistry::RegisterTrailer<T> (uidString);
+}
+
+
+} // namespace ns3
 
 #endif /* TRAILER_H */

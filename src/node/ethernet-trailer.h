@@ -24,6 +24,7 @@
 
 #include "ns3/trailer.h"
 #include "ns3/packet.h"
+#include <string>
 
 namespace ns3 {
 /**
@@ -33,8 +34,11 @@ namespace ns3 {
  * ethernet packet. The actual FCS functionality is not yet coded and
  * so this acts more as a placeholder.
  */
-class EthernetTrailer : public Trailer {
+class EthernetTrailer : public Trailer 
+{
 public:
+  static uint32_t GetUid (void);
+
   /**
    * \brief Construct a null ethernet trailer
    */

@@ -23,6 +23,7 @@
 #define UDP_HEADER_H
 
 #include <stdint.h>
+#include <string>
 #include "ns3/header.h"
 #include "ns3/ipv4-address.h"
 
@@ -30,8 +31,11 @@ namespace ns3 {
 /**
  * \brief Packet header for UDP packets
  */
-class UdpHeader : public Header {
+class UdpHeader : public Header 
+{
 public:
+  static uint32_t GetUid (void);
+
   /**
    * \brief Constructor
    *
