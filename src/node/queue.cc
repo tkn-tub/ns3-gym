@@ -31,6 +31,36 @@ const InterfaceId Queue::iid = MakeInterfaceId ("Queue", Object::iid);
 static ClassIdDefaultValue g_classIdDefaultValue ("Queue", "Packet Queue",
                                                   Queue::iid, "DropTailQueue");
 
+
+uint16_t 
+Queue::TraceType::GetUid (void)
+{
+  static uint16_t uid = Register<Queue::TraceType> ("Queue::TraceType");
+  return uid;
+}
+Queue::TraceType::TraceType ()
+  : m_type (Queue::TraceType::ENQUEUE)
+{}
+Queue::TraceType::TraceType (enum Type type)
+  : m_type (type)
+{}
+void 
+Queue::TraceType::Print (std::ostream &os)
+{
+  os << "queue=";
+  switch (m_type) {
+  case Queue::TraceType::ENQUEUE:
+    os << "enqueue";
+    break;
+  case Queue::TraceType::DEQUEUE:
+    os << "dequeue";
+    break;
+  case Queue::TraceType::DROP:
+    os << "drop";
+    break;
+  }
+}
+
 Queue::Queue() : 
   m_nBytes(0), 
   m_nTotalReceivedBytes(0),
@@ -52,9 +82,9 @@ TraceResolver *
 Queue::CreateTraceResolver (TraceContext const &context)
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
-  resolver->Add ("enqueue", m_traceEnqueue, Queue::ENQUEUE);
-  resolver->Add ("dequeue", m_traceDequeue, Queue::DEQUEUE);
-  resolver->Add ("drop", m_traceDrop, Queue::DROP);
+  resolver->Add ("enqueue", m_traceEnqueue, Queue::TraceType (Queue::TraceType::ENQUEUE));
+  resolver->Add ("dequeue", m_traceDequeue, Queue::TraceType (Queue::TraceType::DEQUEUE));
+  resolver->Add ("drop", m_traceDrop, Queue::TraceType (Queue::TraceType::DROP));
   return resolver;
 }
 

@@ -31,6 +31,7 @@
 #include "ns3/object.h"
 #include "ns3/callback-trace-source.h"
 #include "ns3/trace-resolver.h"
+#include "ns3/trace-context-element.h"
 
 namespace ns3 {
 
@@ -46,10 +47,20 @@ class Queue : public Object
 public:
   static const InterfaceId iid;
 
-  enum TraceType {
-    ENQUEUE,
-    DEQUEUE,
-    DROP,
+  class TraceType : public TraceContextElement
+  {
+  public:
+    enum Type {
+      ENQUEUE,
+      DEQUEUE,
+      DROP
+    };
+    static uint16_t GetUid (void);
+    TraceType ();
+    TraceType (enum Type type);
+    void Print (std::ostream &os);
+  private:
+    enum Type m_type;
   };
   Queue ();
   virtual ~Queue ();

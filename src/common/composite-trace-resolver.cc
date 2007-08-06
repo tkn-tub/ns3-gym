@@ -30,6 +30,14 @@ CompositeTraceResolver::~CompositeTraceResolver ()
 {}
 
 void 
+CompositeTraceResolver::Add (std::string name, 
+                             Callback<TraceResolver *,TraceContext const &> createResolver)
+{
+  TraceContext traceContext = GetContext ();
+  DoAdd (name, createResolver, traceContext);
+}
+
+void 
 CompositeTraceResolver::DoAdd (std::string name, 
 			       Callback<TraceResolver *,TraceContext const &> createResolver,
 			       TraceContext const &context)
@@ -107,20 +115,53 @@ CompositeTraceResolver::DoLookup (std::string id) const
 #ifdef RUN_SELF_TESTS
 
 #include "ns3/test.h"
+#include "trace-context-element.h"
 
 namespace ns3 {
+
+class TraceSourceTest : public TraceContextElement
+{
+public:
+  enum Sources {
+    DOUBLEA,
+    DOUBLEB,
+    SUBRESOLVER,
+  };
+  static uint16_t GetUid (void) 
+  {static uint16_t uid = Register<TraceSourceTest> ("TraceSourceTest"); return uid;}
+  void Print (std::ostream &os)
+  {os << "tracesource=";
+    if (m_sources == DOUBLEA) {os << "doubleA";}
+    else if (m_sources == DOUBLEB) {os << "doubleB";}
+    else if (m_sources == SUBRESOLVER) {os << "subresolver";}
+  }
+  TraceSourceTest () : m_sources (TraceSourceTest::DOUBLEA) {}
+  TraceSourceTest (enum Sources sources) :m_sources (sources) {}
+  bool IsDoubleA (void) {return m_sources == TraceSourceTest::DOUBLEA;}
+  bool IsDoubleB (void) {return m_sources == TraceSourceTest::DOUBLEB;}
+private:
+  enum TraceSourceTest::Sources m_sources;
+};
+
+class SubTraceSourceTest : public TraceContextElement
+{
+public:
+  enum Sources {
+    INT,
+  };
+  static uint16_t GetUid (void) 
+  {static uint16_t uid = Register<SubTraceSourceTest> ("SubTraceSourceTest"); return uid;}
+  void Print (std::ostream &os)
+  {os << "subtracesource=int";}
+  SubTraceSourceTest () : m_sources (SubTraceSourceTest::INT) {}
+  SubTraceSourceTest (enum Sources sources) : m_sources (sources) {}
+private:
+  enum Sources m_sources;
+};
 
 class CompositeTraceResolverTest : public Test
 {
 public:
-  enum TraceSources {
-    TEST_TRACE_DOUBLEA,
-    TEST_TRACE_DOUBLEB,
-    TEST_TRACE_SUBRESOLVER,
-  };
-  enum SubTraceSources {
-    TEST_SUBTRACE_INT,
-  };
   CompositeTraceResolverTest ();
   virtual ~CompositeTraceResolverTest ();
   virtual bool RunTests (void);
@@ -144,19 +185,19 @@ CompositeTraceResolverTest::~CompositeTraceResolverTest ()
 void 
 CompositeTraceResolverTest::TraceDouble (TraceContext const &context, double v)
 {
-  enum CompositeTraceResolverTest::TraceSources source;
+  TraceSourceTest source;
   context.Get (source);
-  switch (source)
+  if (source.IsDoubleA ())
     {
-    case TEST_TRACE_DOUBLEA:
       m_gotDoubleA = true;
-      break;
-    case TEST_TRACE_DOUBLEB:
+    }
+  else if (source.IsDoubleB ())
+    {
       m_gotDoubleB = true;
-      break;
-    default:
+    }
+  else
+    {
       NS_FATAL_ERROR ("should not get any other trace source in this sink");
-      break;
     }
   
 }
@@ -171,7 +212,8 @@ TraceResolver *
 CompositeTraceResolverTest::CreateSubResolver (TraceContext const &context)
 {
   CompositeTraceResolver *subresolver = new CompositeTraceResolver (context);
-  subresolver->Add ("trace-int", m_traceInt, TEST_SUBTRACE_INT);
+  subresolver->Add ("trace-int", m_traceInt, 
+                    SubTraceSourceTest (SubTraceSourceTest::INT));
   return subresolver;
 }
 bool 
@@ -185,8 +227,10 @@ CompositeTraceResolverTest::RunTests (void)
 
   CompositeTraceResolver resolver (context) ;
 
-  resolver.Add ("trace-double-a", traceDoubleA, TEST_TRACE_DOUBLEA);
-  resolver.Add ("trace-double-b", traceDoubleB, TEST_TRACE_DOUBLEB);
+  resolver.Add ("trace-double-a", traceDoubleA, 
+                TraceSourceTest (TraceSourceTest::DOUBLEA));
+  resolver.Add ("trace-double-b", traceDoubleB, 
+                TraceSourceTest (TraceSourceTest::DOUBLEB));
 
   resolver.Connect ("/*", MakeCallback (&CompositeTraceResolverTest::TraceDouble, this));
 
@@ -279,7 +323,7 @@ CompositeTraceResolverTest::RunTests (void)
 
   resolver.Add ("subresolver", 
 		MakeCallback (&CompositeTraceResolverTest::CreateSubResolver, this),
-		TEST_TRACE_SUBRESOLVER);
+		TraceSourceTest (TraceSourceTest::SUBRESOLVER));
 
   resolver.Connect ("/subresolver/trace-int", 
 		    MakeCallback (&CompositeTraceResolverTest::TraceInt, this));

@@ -19,11 +19,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "trace-context.h"
+#include "trace-context-element.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
-
-std::vector<uint8_t> TraceContext::m_sizes;
 
 TraceContext::TraceContext ()
   : m_data (0)
@@ -68,12 +67,6 @@ TraceContext::~TraceContext ()
     }
 }
 
-uint8_t 
-TraceContext::GetSize (uint8_t uid)
-{
-  return m_sizes[uid];
-}
-
 void 
 TraceContext::Add (TraceContext const &o)
 {
@@ -81,12 +74,12 @@ TraceContext::Add (TraceContext const &o)
     {
       return;
     }
-  uint8_t currentUid;
+  uint16_t currentUid;
   uint16_t i = 0;
   while (i < o.m_data->size) 
     {
       currentUid = o.m_data->data[i];
-      uint8_t size = TraceContext::GetSize (currentUid);
+      uint8_t size = ElementRegistry::GetSize (currentUid);
       uint8_t *selfBuffer = CheckPresent (currentUid);
       uint8_t *otherBuffer = &(o.m_data->data[i+1]);
       if (selfBuffer != 0)
@@ -116,7 +109,7 @@ TraceContext::CheckPresent (uint8_t uid) const
   uint16_t i = 0;
   do {
     currentUid = m_data->data[i];
-    uint8_t size = TraceContext::GetSize (currentUid);
+    uint8_t size = ElementRegistry::GetSize (currentUid);
     if (currentUid == uid)
       {
         return &m_data->data[i+1];
@@ -131,7 +124,7 @@ bool
 TraceContext::DoAdd (uint8_t uid, uint8_t const *buffer)
 {
   NS_ASSERT (uid != 0);
-  uint8_t size = TraceContext::GetSize (uid);
+  uint8_t size = ElementRegistry::GetSize (uid);
   uint8_t *present = CheckPresent (uid);
   if (present != 0) {
     if (memcmp (present, buffer, size) == 0)
@@ -201,7 +194,7 @@ TraceContext::DoGet (uint8_t uid, uint8_t *buffer) const
   uint16_t i = 0;
   do {
     currentUid = m_data->data[i];
-    uint8_t size = TraceContext::GetSize (currentUid);
+    uint8_t size = ElementRegistry::GetSize (currentUid);
     if (currentUid == uid)
       {
         memcpy (buffer, &m_data->data[i+1], size);
@@ -212,31 +205,22 @@ TraceContext::DoGet (uint8_t uid, uint8_t *buffer) const
   return false;
 }
 
-uint8_t
-TraceContext::DoGetNextUid (void)
-{
-  static uint8_t uid = 0;
-  if (uid == 0)
-    {
-      m_sizes.push_back (0);
-    }
-  uid++;
-  return uid;
-}
-
-
 }//namespace ns3
 
 #include "ns3/test.h"
+#include <sstream>
 
 namespace ns3 {
 
 template <int N>
-class Ctx
+class Ctx : public TraceContextElement
 {
 public:
+  static uint16_t GetUid (void) {static uint16_t uid = Register<Ctx<N> > (GetName ()); return uid;}
+  static std::string GetName (void) {std::ostringstream oss; oss << "Ctx" << N; return oss.str ();}
   Ctx () : m_v (0) {}
   Ctx (int v) : m_v (v) {}
+  void Print (std::ostream &os) {os << N;}
   int Get (void) const { return N;}
 private:
   int m_v;
