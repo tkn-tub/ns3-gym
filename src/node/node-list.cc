@@ -77,7 +77,6 @@ public:
   NodeList::Iterator Begin (void);
   NodeList::Iterator End (void);
   TraceResolver *CreateTraceResolver (TraceContext const &context);
-  Node *PeekNode (uint32_t n);
   Ptr<Node> GetNode (uint32_t n);
   uint32_t GetNNodes (void);
 
@@ -123,11 +122,6 @@ NodeListPriv::GetNNodes (void)
 {
   return m_nodes.size ();
 }
-Node *
-NodeListPriv::PeekNode (uint32_t n)
-{
-  return PeekPointer (m_nodes[n]);
-}
 
 Ptr<Node>
 NodeListPriv::GetNode (uint32_t n)
@@ -139,11 +133,11 @@ NodeListPriv::GetNode (uint32_t n)
 TraceResolver *
 NodeListPriv::CreateTraceResolver (TraceContext const &context)
 {
-  ArrayTraceResolver<Node, NodeListIndex> *resolver =
-    new ArrayTraceResolver<Node, NodeListIndex>
+  ArrayTraceResolver<Ptr<Node>, NodeListIndex> *resolver =
+    new ArrayTraceResolver<Ptr<Node>, NodeListIndex>
     (context, 
      MakeCallback (&NodeListPriv::GetNNodes, this),
-     MakeCallback (&NodeListPriv::PeekNode, this));
+     MakeCallback (&NodeListPriv::GetNode, this));
   return resolver;
 }
 

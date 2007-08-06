@@ -35,7 +35,7 @@ namespace ns3 {
 
 const InterfaceId NetDevice::iid = MakeInterfaceId ("NetDevice", Object::iid);
 
-NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) : 
+NetDevice::NetDevice(Ptr<Node> node, const Address& addr) : 
   m_node (node), 
   m_name(""), 
   m_ifIndex (0), 
@@ -53,7 +53,7 @@ NetDevice::NetDevice(Ptr<Node> node, const MacAddress& addr) :
 NetDevice::~NetDevice ()
 {}
 
-MacAddress 
+Address 
 NetDevice::GetAddress (void) const
 {
   return m_address;
@@ -113,7 +113,7 @@ NetDevice::IsBroadcast (void) const
 {
   return m_isBroadcast;
 }
-MacAddress const &
+Address const &
 NetDevice::GetBroadcast (void) const
 {
   NS_ASSERT (m_isBroadcast);
@@ -121,7 +121,7 @@ NetDevice::GetBroadcast (void) const
 }
 
 void
-NetDevice::EnableBroadcast (MacAddress broadcast)
+NetDevice::EnableBroadcast (Address broadcast)
 {
   m_isBroadcast = true;
   m_broadcast = broadcast;
@@ -171,7 +171,7 @@ NetDevice::DisablePointToPoint (void)
 
 // Receive packet from above
 bool 
-NetDevice::Send(Packet& p, const MacAddress& dest, uint16_t protocolNumber)
+NetDevice::Send(Packet& p, const Address& dest, uint16_t protocolNumber)
 {
   if (m_isUp)
     {
@@ -197,18 +197,19 @@ NetDevice::GetChannel (void) const
 
 // Receive packets from below
 bool
-NetDevice::ForwardUp(Packet& p, uint32_t param)
+NetDevice::ForwardUp(const Packet& p, uint32_t param, const Address &from)
 {
   bool retval = false;
-  Packet packet = p;
 
-  NS_DEBUG ("NetDevice::ForwardUp: UID is " << packet.GetUid()
+  NS_DEBUG ("NetDevice::ForwardUp: UID is " << p.GetUid()
             << " device is: " << GetName());
   
   if (!m_receiveCallback.IsNull ())
     {
-      retval = m_receiveCallback (this, packet, param);
-    } else {
+      retval = m_receiveCallback (this, p, param, from);
+    } 
+  else 
+    {
       NS_DEBUG ("NetDevice::Receive call back is NULL");
     }
 
@@ -248,7 +249,7 @@ NetDevice::NeedsArp (void) const
 }
 
 void 
-NetDevice::SetReceiveCallback (Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> cb)
+NetDevice::SetReceiveCallback (ReceiveCallback cb)
 {
   m_receiveCallback = cb;
 }

@@ -25,7 +25,7 @@
 #include <string.h>
 #include "ns3/node.h"
 #include "ns3/backoff.h"
-#include "ns3/mac-address.h"
+#include "ns3/address.h"
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
@@ -34,6 +34,7 @@
 #include "ns3/data-rate.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
+#include "ns3/eui48-address.h"
 
 namespace ns3 {
 
@@ -82,6 +83,7 @@ enum CsmaCdEncapsulationMode {
   LLC,         /**< LLC packet encapsulation */  
 };
 
+  CsmaCdNetDevice (Ptr<Node> node);
   /**
    * Construct a CsmaCdNetDevice
    *
@@ -92,8 +94,8 @@ enum CsmaCdEncapsulationMode {
    * \param node the Node to which this device is connected.
    * \param addr The source MAC address of the net device.
    */
-  CsmaCdNetDevice (Ptr<Node> node, MacAddress addr, CsmaCdEncapsulationMode pktType);
-  CsmaCdNetDevice (Ptr<Node> node, MacAddress addr,
+  CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, CsmaCdEncapsulationMode pktType);
+  CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr,
                    CsmaCdEncapsulationMode pktType,
                    bool sendEnable, bool receiveEnable);
   /**
@@ -172,7 +174,7 @@ enum CsmaCdEncapsulationMode {
    * @see CsmaCdChannel
    * \param p a reference to the received packet
    */
-  void Receive (Packet& p);
+  void Receive (const Packet& p);
 
   bool IsSendEnabled (void);
   bool IsReceiveEnabled (void);
@@ -210,7 +212,7 @@ protected:
    * \param protocolNumber In some protocols, identifies the type of
    * payload contained in this packet.
    */
-  void AddHeader (Packet& p, const MacAddress& dest, 
+  void AddHeader (Packet& p, Eui48Address dest, 
                   uint16_t protocolNumber);
   /**
    * Removes, from a packet of data, all headers and trailers that
@@ -247,7 +249,7 @@ private:
    * \param protocolNumber -- this parameter is not used here
    * \return true if success, false on failure
    */
-  virtual bool SendTo (Packet& p, const MacAddress& dest, uint16_t protocolNumber);
+  virtual bool SendTo (Packet& p, const Address& dest, uint16_t protocolNumber);
 
   /**
    * Start Sending a Packet Down the Wire.

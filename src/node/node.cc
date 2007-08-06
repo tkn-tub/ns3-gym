@@ -1,32 +1,30 @@
-// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
-//
-// Copyright (c) 2006 Georgia Tech Research Corporation
-// All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License version 2 as
-// published by the Free Software Foundation;
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// Author: George F. Riley<riley@ece.gatech.edu>
-//
-
-// Implement the basic Node object for ns3.
-// George F. Riley, Georgia Tech, Fall 2006
-
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2006 Georgia Tech Research Corporation, INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors: George F. Riley<riley@ece.gatech.edu>
+ *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 #include "node.h"
 #include "node-list.h"
 #include "net-device.h"
 #include "application.h"
+#include "packet-socket-factory.h"
 #include "ns3/simulator.h"
+#include "ns3/composite-trace-resolver.h"
 
 namespace ns3{
 
@@ -36,16 +34,23 @@ Node::Node()
   : m_id(0), 
     m_sid(0)
 {
-  SetInterfaceId (Node::iid);
-  m_id = NodeList::Add (this);
+  Construct ();
 }
 
 Node::Node(uint32_t sid)
   : m_id(0), 
     m_sid(sid)
 { 
+  Construct ();
+}
+
+void
+Node::Construct (void)
+{
   SetInterfaceId (Node::iid);
   m_id = NodeList::Add (this);
+  Ptr<PacketSocketFactory> socketFactory = Create<PacketSocketFactory> ();
+  AddInterface (socketFactory);
 }
   
 Node::~Node ()
@@ -54,7 +59,9 @@ Node::~Node ()
 TraceResolver *
 Node::CreateTraceResolver (TraceContext const &context)
 {
-  return DoCreateTraceResolver (context);
+  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  DoFillTraceResolver (*resolver);
+  return resolver;
 }
 
 uint32_t 
@@ -74,8 +81,9 @@ Node::AddDevice (Ptr<NetDevice> device)
 {
   uint32_t index = m_devices.size ();
   m_devices.push_back (device);
-  DoAddDevice (device);
   device->SetIfIndex(index);
+  device->SetReceiveCallback (MakeCallback (&Node::ReceiveFromDevice, this));
+  NotifyDeviceAdded (device);
   return index;
 }
 Ptr<NetDevice>
@@ -107,8 +115,27 @@ Node::GetNApplications (void) const
   return m_applications.size ();
 }
 
+TraceResolver *
+Node::CreateDevicesTraceResolver (const TraceContext &context)
+{
+  ArrayTraceResolver<Ptr<NetDevice> > *resolver = 
+    new ArrayTraceResolver<Ptr<NetDevice> > (context,
+                                             MakeCallback (&Node::GetNDevices, this), 
+                                             MakeCallback (&Node::GetDevice, this));
+  
+  return resolver;
+}
 
-void Node::DoDispose()
+void
+Node::DoFillTraceResolver (CompositeTraceResolver &resolver)
+{
+  resolver.Add ("devices", 
+                MakeCallback (&Node::CreateDevicesTraceResolver, this),
+                Node::DEVICES);
+}
+
+void 
+Node::DoDispose()
 {
   for (std::vector<Ptr<NetDevice> >::iterator i = m_devices.begin ();
        i != m_devices.end (); i++)
@@ -127,6 +154,58 @@ void Node::DoDispose()
     }
   m_applications.clear ();
   Object::DoDispose ();
+}
+
+void 
+Node::NotifyDeviceAdded (Ptr<NetDevice> device)
+{}
+
+void
+Node::RegisterProtocolHandler (ProtocolHandler handler, 
+                               uint16_t protocolType,
+                               Ptr<NetDevice> device)
+{
+  struct Node::ProtocolHandlerEntry entry;
+  entry.handler = handler;
+  entry.protocol = protocolType;
+  entry.device = device;
+  m_handlers.push_back (entry);
+}
+
+void
+Node::UnregisterProtocolHandler (ProtocolHandler handler)
+{
+  for (ProtocolHandlerList::iterator i = m_handlers.begin ();
+       i != m_handlers.end (); i++)
+    {
+      if (i->handler.IsEqual (handler))
+        {
+          m_handlers.erase (i);
+          break;
+        }
+    }
+}
+
+bool
+Node::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
+                         uint16_t protocol, const Address &from)
+{
+  bool found = false;
+  for (ProtocolHandlerList::iterator i = m_handlers.begin ();
+       i != m_handlers.end (); i++)
+    {
+      if (i->device == 0 ||
+          (i->device != 0 && i->device == device))
+        {
+          if (i->protocol == 0 || 
+              i->protocol == protocol)
+            {
+              i->handler (device, packet, protocol, from);
+              found = true;
+            }
+        }
+    }
+  return found;
 }
 
 }//namespace ns3

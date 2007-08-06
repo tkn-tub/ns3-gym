@@ -1191,6 +1191,7 @@ GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
 // ---------------------------------------------------------------------------
 
 #include "ns3/test.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 
@@ -1391,6 +1392,9 @@ GlobalRouteManagerImplTest::RunTests (void)
   // Note-- this will succeed without any nodes in the topology
   // because the NodeList is empty
   srm->DebugSPFCalculate (lsa0->GetLinkStateId ());  // node n0
+
+  Simulator::Run ();
+  Simulator::Destroy ();
 
   // This delete clears the srm, which deletes the LSDB, which clears 
   // all of the LSAs, which each destroys the attached LinkRecords.

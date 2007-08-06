@@ -74,22 +74,22 @@ EthernetHeader::GetPreambleSfd (void) const
 }
 
 void 
-EthernetHeader::SetSource (MacAddress source)
+EthernetHeader::SetSource (Eui48Address source)
 {
   m_source = source;
 }
-MacAddress
+Eui48Address
 EthernetHeader::GetSource (void) const
 {
   return m_source;
 }
 
 void 
-EthernetHeader::SetDestination (MacAddress dst)
+EthernetHeader::SetDestination (Eui48Address dst)
 {
   m_destination = dst;
 }
-MacAddress
+Eui48Address
 EthernetHeader::GetDestination (void) const
 {
   return m_destination;
@@ -147,8 +147,6 @@ EthernetHeader::SerializeTo (Buffer::Iterator start) const
     {
       i.WriteU64(m_preambleSfd);
     }
-  NS_ASSERT (m_destination.GetLength () == MAC_ADDR_SIZE);
-  NS_ASSERT (m_source.GetLength () == MAC_ADDR_SIZE);
   WriteTo (i, m_destination);
   WriteTo (i, m_source);
   i.WriteU16 (m_lengthType);
@@ -163,11 +161,11 @@ EthernetHeader::DeserializeFrom (Buffer::Iterator start)
       m_enPreambleSfd = i.ReadU64 ();
     }
 
-  ReadFrom (i, m_destination, MAC_ADDR_SIZE);
-  ReadFrom (i, m_source, MAC_ADDR_SIZE);
+  ReadFrom (i, m_destination);
+  ReadFrom (i, m_source);
   m_lengthType = i.ReadU16 ();
 
   return GetSerializedSize ();
 }
 
-}; // namespace ns3
+} // namespace ns3

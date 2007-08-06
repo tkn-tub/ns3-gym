@@ -1,6 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 INRIA
+ * Copyright (c) 2007 Emmanuelle Laprise
  * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,36 +16,25 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Emmanuelle Laprise <emmanuelle.laprise@bluekazoo.ca>
  */
-#ifndef ARP_PRIVATE_H
-#define ARP_PRIVATE_H
-
-#include "ns3/object.h"
-#include "ns3/ipv4-address.h"
+#include "packet-socket-factory.h"
+#include "node.h"
 
 namespace ns3 {
 
-class NetDevice;
-class MacAddress;
-class Packet;
-class ArpL3Protocol;
+const InterfaceId PacketSocketFactory::iid = MakeInterfaceId ("Packet", 
+                                                              SocketFactory::iid);
 
-class ArpPrivate : public Object
+PacketSocketFactory::PacketSocketFactory ()
 {
-public:
-  static const InterfaceId iid;
-  ArpPrivate (Ptr<ArpL3Protocol> arp);
-  virtual ~ArpPrivate ();
-  bool Lookup (Packet &p, Ipv4Address destination, 
-	       Ptr<NetDevice> device,
-	       MacAddress *hardwareDestination);
-protected:
-  virtual void DoDispose (void);
-private:
-  Ptr<ArpL3Protocol> m_arp;
-};
+  SetInterfaceId (PacketSocketFactory::iid);
+}
 
+Ptr<Socket> PacketSocketFactory::CreateSocket (void)
+{
+  Ptr<Node> node = QueryInterface<Node> (Node::iid);
+  Ptr<PacketSocket> socket = Create<PacketSocket> (node);
+  return socket;
+} 
 } // namespace ns3
-
-#endif /* ARP_PRIVATE_H */

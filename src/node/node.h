@@ -1,33 +1,31 @@
-// -*- Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*-
-//
-// Copyright (c) 2006 Georgia Tech Research Corporation
-// All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License version 2 as
-// published by the Free Software Foundation;
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// Author: George F. Riley<riley@ece.gatech.edu>
-//
-
-// Define the basic Node object for ns3.
-// George F. Riley, Georgia Tech, Fall 2006
-
-#ifndef I_NODE_H
-#define I_NODE_H
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2006 Georgia Tech Research Corporation, INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors: George F. Riley<riley@ece.gatech.edu>
+ *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+#ifndef NODE_H
+#define NODE_H
 
 #include <vector>
 
 #include "ns3/object.h"
+#include "ns3/callback.h"
+#include "ns3/array-trace-resolver.h"
 
 namespace ns3 {
 
@@ -35,6 +33,9 @@ class TraceContext;
 class TraceResolver;
 class NetDevice;
 class Application;
+class Packet;
+class Address;
+class CompositeTraceResolver;
 
 /**
  * \brief A network Node.
@@ -57,6 +58,18 @@ class Node : public Object
 {
 public:
   static const InterfaceId iid;
+  typedef ArrayTraceResolver<Ptr<NetDevice> >::Index NetDeviceIndex;
+
+  /**
+   * Must be invoked by subclasses only.
+   */
+  Node();
+  /**
+   * \param systemId a unique integer used for parallel simulations.
+   *
+   * Must be invoked by subclasses only.
+   */
+  Node(uint32_t systemId);
 
   virtual ~Node();
 
@@ -93,11 +106,15 @@ public:
    * Associate this device to this node.
    * This method is called automatically from NetDevice::NetDevice
    * so the user has little reason to call this method himself.
+   * The index returned is always non-zero.
    */
   uint32_t AddDevice (Ptr<NetDevice> device);
   /**
    * \param index the index of the requested NetDevice
    * \returns the requested NetDevice associated to this Node.
+   *
+   * The indexes used by the GetDevice method start at one and
+   * end at GetNDevices ()
    */
   Ptr<NetDevice> GetDevice (uint32_t index) const;
   /**
@@ -127,31 +144,51 @@ public:
    */
   uint32_t GetNApplications (void) const;
 
-protected:
   /**
-   * Must be invoked by subclasses only.
+   * A protocol handler
    */
-  Node();
+  typedef Callback<void,Ptr<NetDevice>, const Packet &,uint16_t,const Address &> ProtocolHandler;
   /**
-   * \param systemId a unique integer used for parallel simulations.
+   * \param handler the handler to register
+   * \param protocolType the type of protocol this handler is 
+   *        interested in. This protocol type is a so-called
+   *        EtherType, as registered here:
+   *        http://standards.ieee.org/regauth/ethertype/eth.txt
+   *        the value zero is interpreted as matching all
+   *        protocols.
+   * \param device the device attached to this handler. If the
+   *        value is zero, the handler is attached to all
+   *        devices on this node.
+   */
+  void RegisterProtocolHandler (ProtocolHandler handler, 
+                                uint16_t protocolType,
+                                Ptr<NetDevice> device);
+  /**
+   * \param handler the handler to unregister
    *
-   * Must be invoked by subclasses only.
+   * After this call returns, the input handler will never
+   * be invoked anymore.
    */
-  Node(uint32_t systemId);
+  void UnregisterProtocolHandler (ProtocolHandler handler);
+
+protected:
   /**
    * The dispose method. Subclasses must override this method
    * and must chain up to it by calling Node::DoDispose at the
    * end of their own DoDispose method.
    */
   virtual void DoDispose (void);
-private:
   /**
-   * \param context the trace context
-   * \returns a trace resolver to the user. The user must delete it.
+   * \param resolver the resolver to store trace sources in.
    *
-   * Subclasses must implement this method.
+   * If a subclass wants to add new traces to a Node, it needs
+   * to override this method and record the new trace sources
+   * in the input resolver. Subclasses also _must_ chain up to
+   * their parent's DoFillTraceResolver method prior
+   * to recording they own trace sources.
    */
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
+  virtual void DoFillTraceResolver (CompositeTraceResolver &resolver);
+private:
   /**
    * \param device the device added to this Node.
    *
@@ -160,14 +197,29 @@ private:
    * at this point to setup the node's receive function for
    * the NetDevice packets.
    */
-  virtual void DoAddDevice (Ptr<NetDevice> device) = 0;
+  virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
 
+  bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
+                          uint16_t protocol, const Address &from);
+  void Construct (void);
+  TraceResolver *CreateDevicesTraceResolver (const TraceContext &context);
+
+  enum TraceSource {
+    DEVICES
+  };
+  struct ProtocolHandlerEntry {
+    ProtocolHandler handler;
+    uint16_t protocol;
+    Ptr<NetDevice> device;
+  };
+  typedef std::vector<struct Node::ProtocolHandlerEntry> ProtocolHandlerList;
   uint32_t    m_id;         // Node id for this node
   uint32_t    m_sid;        // System id for this node
   std::vector<Ptr<NetDevice> > m_devices;
   std::vector<Ptr<Application> > m_applications;
+  ProtocolHandlerList m_handlers;
 };
 
 } //namespace ns3
 
-#endif /* I_NODE_H */
+#endif /* NODE_H */

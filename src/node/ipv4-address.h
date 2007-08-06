@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include <ostream>
+#include "address.h"
 
 namespace ns3 {
 
@@ -86,10 +87,18 @@ public:
   void SetHostOrder (uint32_t ip);
   /**
    * Serialize this address to a 4-byte buffer
+   *
    * \param buf output buffer to which this address gets overwritten with this
    * Ipv4Address
    */
   void Serialize (uint8_t buf[4]) const;
+  /**
+   * \param buf buffer to read address from
+   * \returns an Ipv4Address
+   * 
+   * The input address is expected to be in network byte order format.
+   */
+  static Ipv4Address Deserialize (const uint8_t buf[4]);
   /**
    * \brief Print this address to the given output stream
    *
@@ -111,11 +120,17 @@ public:
    */
   Ipv4Address CombineMask (Ipv4Mask const &mask) const;
 
+  static bool IsMatchingType (const Address &address);
+  operator Address ();
+  static Ipv4Address ConvertFrom (const Address &address);
+
   static Ipv4Address GetZero (void);
   static Ipv4Address GetAny (void);
   static Ipv4Address GetBroadcast (void);
   static Ipv4Address GetLoopback (void);
 private:
+  Address ConvertTo (void) const;
+  static uint8_t GetType (void);
   uint32_t m_address;
 };
 

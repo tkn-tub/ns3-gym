@@ -26,24 +26,34 @@ void WriteTo (Buffer::Iterator &i, Ipv4Address ad)
 {
   i.WriteHtonU32 (ad.GetHostOrder ());
 }
-void WriteTo (Buffer::Iterator &i, MacAddress ad)
+void WriteTo (Buffer::Iterator &i, const Address &ad)
 {
-  uint8_t mac[MacAddress::MAX_LEN];
-  ad.Peek (mac);
+  uint8_t mac[Address::MAX_SIZE];
+  ad.CopyTo (mac);
   i.Write (mac, ad.GetLength ());
+}
+void WriteTo (Buffer::Iterator &i, Eui48Address ad)
+{
+  uint8_t mac[6];
+  ad.CopyTo (mac);
+  i.Write (mac, 6);
 }
 
 void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad)
 {
   ad.SetHostOrder (i.ReadNtohU32 ());
 }
-void ReadFrom (Buffer::Iterator &i, MacAddress &ad, uint32_t len)
+void ReadFrom (Buffer::Iterator &i, Address &ad, uint32_t len)
 {
-  uint8_t mac[MacAddress::MAX_LEN];
+  uint8_t mac[Address::MAX_SIZE];
   i.Read (mac, len);
-  ad.Set (mac, len);
+  ad.CopyFrom (mac, len);
+}
+void ReadFrom (Buffer::Iterator &i, Eui48Address &ad)
+{
+  uint8_t mac[6];
+  i.Read (mac, 6);
+  ad.CopyFrom (mac);
 }
 
-
-
-}; // namespace ns3
+} // namespace ns3

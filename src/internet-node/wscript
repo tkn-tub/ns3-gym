@@ -8,8 +8,6 @@ def build(bld):
     obj.uselib_local = ['ns3-node', 'ns3-applications']
     obj.source = [
         'internet-node.cc',
-        'l3-demux.cc',
-        'l3-protocol.cc',
         'ipv4-l4-demux.cc',
         'ipv4-l4-protocol.cc',
         'ipv4-header.cc',
@@ -27,9 +25,7 @@ def build(bld):
         'ipv4-loopback-interface.cc',
         'udp-socket.cc',
         'ipv4-end-point-demux.cc',
-        'arp-private.cc',
         'ipv4-impl.cc',
-        'ipv4-private.cc',
         'ascii-trace.cc',
         'pcap-trace.cc',
         'udp-impl.cc',

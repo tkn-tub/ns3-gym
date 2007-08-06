@@ -26,7 +26,7 @@
 #include "ns3/nstime.h"
 #include "ns3/net-device.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/mac-address.h"
+#include "ns3/address.h"
 #include "ns3/ptr.h"
 #include "sgi-hashmap.h"
 
@@ -101,7 +101,7 @@ public:
      * \param macAddress
      * \return 
      */
-    Packet MarkAlive (MacAddress macAddress);
+    Packet MarkAlive (Address macAddress);
     /**
      * \param waiting
      */
@@ -127,7 +127,7 @@ public:
     /**
      * \return The MacAddress of this entry
      */
-    MacAddress GetMacAddress (void);
+    Address GetMacAddress (void);
     /**
      * \return True if this entry has timedout; false otherwise.
      */
@@ -143,7 +143,7 @@ public:
     ArpCache *m_arp;
     ArpCacheEntryState_e m_state;
     Time m_lastSeen;
-    MacAddress m_macAddress;
+    Address m_macAddress;
     Packet m_waiting;
   };
 

@@ -53,11 +53,11 @@ public:
    */
   ArrayTraceResolver (TraceContext const &context,
                       Callback<uint32_t> getSize, 
-                      Callback<T *, uint32_t> get);
+                      Callback<T, uint32_t> get);
 private:
   virtual TraceResolverList DoLookup (std::string id) const;
   Callback<uint32_t> m_getSize;
-  Callback<T *, uint32_t> m_get;
+  Callback<T, uint32_t> m_get;
 };
 }//namespace ns3
 
@@ -66,7 +66,7 @@ namespace ns3 {
 template <typename T, typename INDEX>
 ArrayTraceResolver<T,INDEX>::ArrayTraceResolver (TraceContext const &context,
                                                  Callback<uint32_t> getSize, 
-                                                 Callback<T *, uint32_t> get)
+                                                 Callback<T, uint32_t> get)
   : TraceResolver (context),
     m_getSize (getSize),
     m_get (get)

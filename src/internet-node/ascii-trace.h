@@ -37,7 +37,6 @@ public:
   void TraceAllQueues (void);
   void TraceAllNetDeviceRx (void);
 private:
-  void PrintType (Packet const &p);
   void LogDevQueue (TraceContext const &context, const Packet &p);
   void LogDevRx (TraceContext const &context, Packet &p);
   std::ofstream m_os;

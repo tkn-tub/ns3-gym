@@ -25,6 +25,7 @@
 #include "ns3/callback.h"
 #include "ns3/socket.h"
 #include "ns3/ptr.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
@@ -45,49 +46,47 @@ public:
   virtual enum SocketErrno GetErrno (void) const;
   virtual Ptr<Node> GetNode (void) const;
   virtual int Bind (void);
-  virtual int Bind (Ipv4Address address);
-  virtual int Bind (uint16_t port); 
-  virtual int Bind (Ipv4Address address, uint16_t port);
+  virtual int Bind (const Address &address);
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
 
 private:
-  virtual void DoClose(ns3::Callback<void, Ptr<Socket> > closeCompleted);
-  virtual void DoConnect(const Ipv4Address & address,
-			 uint16_t portNumber,
-			 ns3::Callback<void, Ptr<Socket> > connectionSucceeded,
-			 ns3::Callback<void, Ptr<Socket> > connectionFailed,
-			 ns3::Callback<void, Ptr<Socket> > halfClose);
-  virtual int DoAccept(ns3::Callback<bool, Ptr<Socket>, const Ipv4Address&, uint16_t> connectionRequest,
-		       ns3::Callback<void, Ptr<Socket>, const Ipv4Address&, uint16_t> newConnectionCreated,
-		       ns3::Callback<void, Ptr<Socket> > closeRequested);
+  virtual int DoClose(Callback<void, Ptr<Socket> > closeCompleted);
+  virtual int DoConnect(const Address & address,
+                        Callback<void, Ptr<Socket> > connectionSucceeded,
+                        Callback<void, Ptr<Socket> > connectionFailed,
+                        Callback<void, Ptr<Socket> > halfClose);
+  virtual int DoAccept(Callback<bool, Ptr<Socket>, const Address&> connectionRequest,
+		       Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
+		       Callback<void, Ptr<Socket> > closeRequested);
   virtual int DoSend (const uint8_t* buffer,
                     uint32_t size,
-                    ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent);
-  virtual int DoSendTo(const Ipv4Address &address,
-                      uint16_t port,
+                    Callback<void, Ptr<Socket>, uint32_t> dataSent);
+  virtual int DoSendTo(const Address &address,
                       const uint8_t *buffer,
                       uint32_t size,
-                      ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent);
-  virtual void DoRecv(ns3::Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t>);
-  virtual void DoRecvDummy(ns3::Callback<void, Ptr<Socket>, uint32_t,const Ipv4Address&, uint16_t>);
+                      Callback<void, Ptr<Socket>, uint32_t> dataSent);
+  virtual void DoRecv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Address&>);
+  virtual void DoRecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Address&>);
 
 private:
   friend class Udp;
   // invoked by Udp class
   int FinishBind (void);
-  void ForwardUp (const Packet &p, Ipv4Address saddr, uint16_t sport);
+  void ForwardUp (const Packet &p, Ipv4Address ipv4, uint16_t port);
   void Destroy (void);
+  int DoSendPacketTo (const Packet &p, const Address &daddr,
+		      Callback<void, Ptr<Socket>, uint32_t> dataSent);
   int DoSendPacketTo (const Packet &p, Ipv4Address daddr, uint16_t dport,
-		      ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent);
+		      Callback<void, Ptr<Socket>, uint32_t> dataSent);
 
   Ipv4EndPoint *m_endPoint;
   Ptr<Node> m_node;
   Ptr<UdpL4Protocol> m_udp;
   Ipv4Address m_defaultAddress;
   uint16_t m_defaultPort;
-  Callback<void,Ptr<Socket>,uint32_t,const Ipv4Address &,uint16_t> m_dummyRxCallback;
-  Callback<void,Ptr<Socket>,uint8_t const*,uint32_t,const Ipv4Address &,uint16_t> m_rxCallback;
+  Callback<void,Ptr<Socket>,uint32_t,const Address &> m_dummyRxCallback;
+  Callback<void,Ptr<Socket>,uint8_t const*,uint32_t,const Address &> m_rxCallback;
   enum SocketErrno m_errno;
   bool m_shutdownSend;
   bool m_shutdownRecv;

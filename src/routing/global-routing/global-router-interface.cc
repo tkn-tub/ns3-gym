@@ -332,6 +332,13 @@ GlobalRouter::~GlobalRouter ()
   ClearLSAs();
 }
 
+void
+GlobalRouter::DoDispose ()
+{
+  m_node = 0;
+  Object::DoDispose ();
+}
+
   void
 GlobalRouter::ClearLSAs ()
 {
@@ -535,8 +542,7 @@ GlobalRouter::GetLSA (uint32_t n, GlobalRouterLSA &lsa) const
 GlobalRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const
 {
 
-  uint32_t nDevices = ch->GetNDevices();
-  NS_ASSERT_MSG(nDevices == 2, 
+  NS_ASSERT_MSG(ch->GetNDevices() == 2, 
     "GlobalRouter::GetAdjacent (): Channel with other than two devices");
 //
 // This is a point to point channel with two endpoints.  Get both of them.

@@ -38,7 +38,7 @@ namespace ns3 {
 uint32_t
 CsmaCdIpv4Topology::AddIpv4CsmaCdNode(Ptr<Node> n1,
                                       Ptr<CsmaCdChannel> ch,
-                                      MacAddress addr)
+                                      Eui48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
@@ -55,7 +55,7 @@ CsmaCdIpv4Topology::AddIpv4CsmaCdNode(Ptr<Node> n1,
 void
 CsmaCdIpv4Topology::AddIpv4LlcCsmaCdNode(Ptr<Node> n1,
                                          Ptr<CsmaCdChannel> ch,
-                                         MacAddress addr)
+                                         Eui48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
@@ -75,7 +75,7 @@ CsmaCdIpv4Topology::AddIpv4LlcCsmaCdNode(Ptr<Node> n1,
 void
 CsmaCdIpv4Topology::AddIpv4RawCsmaCdNode(Ptr<Node> n1,
                                          Ptr<CsmaCdChannel> ch,
-                                         MacAddress addr)
+                                         Eui48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 

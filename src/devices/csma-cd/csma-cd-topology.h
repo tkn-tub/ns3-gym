@@ -24,12 +24,7 @@
 
 #include "ns3/ptr.h"
 #include "ns3/csma-cd-net-device.h"
-#if 0
-#include "ns3/packet-socket.h"
-#include "ns3/packet-socket-app.h"
-#endif
 #include "ns3/node.h"
-#include "ns3/mac-address.h"
 
 // The topology class consists of only static methods thar are used to
 // create the topology and data flows for an ns3 simulation
