@@ -46,7 +46,7 @@ CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node)
 
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
                                   CsmaCdEncapsulationMode encapMode) 
-  : NetDevice(node, addr.ConvertTo ()), 
+  : NetDevice(node, addr), 
     m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
@@ -58,7 +58,7 @@ CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr,
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
                                   CsmaCdEncapsulationMode encapMode,
                                   bool sendEnable, bool receiveEnable) 
-  : NetDevice(node, addr.ConvertTo ()), 
+  : NetDevice(node, addr), 
     m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
@@ -105,7 +105,7 @@ CsmaCdNetDevice::Init(bool sendEnable, bool receiveEnable)
   m_channel = 0; 
   m_queue = 0;
 
-  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff").ConvertTo ());
+  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
   EnableMulticast();
   EnablePointToPoint();
 
@@ -210,10 +210,8 @@ CsmaCdNetDevice::ProcessHeader (Packet& p, uint16_t & param)
   trailer.CheckFcs(p);
   p.RemoveHeader(header);
 
-  Eui48Address broadcast = Eui48Address::ConvertFrom (GetBroadcast ());
-  Eui48Address destination = Eui48Address::ConvertFrom (GetAddress ());
-  if ((header.GetDestination() != broadcast) &&
-      (header.GetDestination() != destination))
+  if ((header.GetDestination() != GetBroadcast ()) &&
+      (header.GetDestination() != GetAddress ()))
     {
       return false;
     }
@@ -261,8 +259,8 @@ CsmaCdNetDevice::SendTo (Packet& p, const Address& dest, uint16_t protocolNumber
   if (!IsSendEnabled())
     return false;
 
-  Eui48Address address = Eui48Address::ConvertFrom (dest);
-  AddHeader(p, address, protocolNumber);
+  Eui48Address destination = Eui48Address::ConvertFrom (dest);
+  AddHeader(p, destination, protocolNumber);
 
   // Place the packet to be sent on the send queue
   if (m_queue->Enqueue(p) == false )

@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
   // from n0 to n1
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    n0ToN1.ConvertTo (),
+    n0ToN1,
     "Packet",
     ConstantVariable(1), 
     ConstantVariable(0));
@@ -116,7 +116,7 @@ int main (int argc, char *argv[])
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
   ooff = Create<OnOffApplication> (
     n3, 
-    n3ToN0.ConvertTo (),
+    n3ToN0,
     "Packet",
     ConstantVariable(1), 
     ConstantVariable(0));
