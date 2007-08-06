@@ -36,7 +36,7 @@ NS_DEBUG_COMPONENT_DEFINE ("CsmaCdNetDevice");
 namespace ns3 {
 
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node)
-  : NetDevice (node, Eui48Address::Allocate ().ConvertTo ()),
+  : NetDevice (node, Eui48Address::Allocate ()),
     m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
@@ -516,7 +516,7 @@ CsmaCdNetDevice::Receive (const Packet& packet)
     }
   
   m_rxTrace (p);
-  ForwardUp (p, protocol, header.GetSource ().ConvertTo ());
+  ForwardUp (p, protocol, header.GetSource ());
   return;
  drop:
   m_dropTrace (p);

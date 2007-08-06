@@ -330,11 +330,11 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, const Packet &packet,
             << " PacketSocket " << this);
   if (!m_dummyRxCallback.IsNull ())
     {
-      m_dummyRxCallback (this, p.GetSize (), address.ConvertTo ());
+      m_dummyRxCallback (this, p.GetSize (), address);
     }
   if (!m_rxCallback.IsNull ())
     {
-      m_rxCallback (this, p.PeekData (), p.GetSize (), address.ConvertTo ());
+      m_rxCallback (this, p.PeekData (), p.GetSize (), address);
     }
 }
 
