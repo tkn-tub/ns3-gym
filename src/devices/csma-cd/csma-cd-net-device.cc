@@ -477,13 +477,15 @@ CsmaCdNetDevice::Receive (const Packet& packet)
   // Only receive if send side of net device is enabled
   if (!IsReceiveEnabled())
     {
-      goto drop;
+      m_dropTrace (p);
+      return;
     }
 
   if (m_encapMode == RAW)
     {
       ForwardUp (packet, 0, GetBroadcast ());
-      goto drop;
+      m_dropTrace (p);
+      return;
     }
   p.RemoveTrailer(trailer);
   trailer.CheckFcs(p);
@@ -495,10 +497,15 @@ CsmaCdNetDevice::Receive (const Packet& packet)
       (header.GetDestination() != destination))
     {
       // not for us.
-      goto drop;
+      m_dropTrace (p);
+      return;
     }
+//
+// protocol must be initialized to avoid a compiler warning in the RAW
+// case that breaks the optimized build.
+//
+  uint16_t protocol = 0;
 
-  uint16_t protocol;
   switch (m_encapMode)
     {
     case ETHERNET_V1:
@@ -518,8 +525,6 @@ CsmaCdNetDevice::Receive (const Packet& packet)
   m_rxTrace (p);
   ForwardUp (p, protocol, header.GetSource ());
   return;
- drop:
-  m_dropTrace (p);
 }
 
 Ptr<Queue>
