@@ -45,7 +45,7 @@ PointToPointTraceType::PointToPointTraceType ()
 void 
 PointToPointTraceType::Print (std::ostream &os) const
 {
-  os << "device rx";
+  os << "dev-rx";
 }
 uint16_t 
 PointToPointTraceType::GetUid (void)

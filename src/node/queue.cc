@@ -63,7 +63,7 @@ QueueTraceType::IsDrop (void) const
 void 
 QueueTraceType::Print (std::ostream &os) const
 {
-  os << "queue=";
+  os << "queue-";
   switch (m_type) {
   case QueueTraceType::ENQUEUE:
     os << "enqueue";

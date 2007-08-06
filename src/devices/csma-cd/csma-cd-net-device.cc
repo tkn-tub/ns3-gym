@@ -46,10 +46,10 @@ CsmaCdTraceType::Print (std::ostream &os) const
 {
   switch (m_type) {
   case RX:
-    os << "mac rx";
+    os << "dev-rx";
     break;
   case DROP:
-    os << "mac drop";
+    os << "dev-drop";
     break;
   }
 }
