@@ -565,6 +565,8 @@ protected:
   Ipv4Address m_routerId;
 
 private:
+  // inherited from Object
+  virtual void DoDispose (void);
 /**
  * @brief Global Router copy construction is disallowed.
  */

@@ -332,6 +332,13 @@ GlobalRouter::~GlobalRouter ()
   ClearLSAs();
 }
 
+void
+GlobalRouter::DoDispose ()
+{
+  m_node = 0;
+  Object::DoDispose ();
+}
+
   void
 GlobalRouter::ClearLSAs ()
 {
