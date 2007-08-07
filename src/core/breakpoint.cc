@@ -28,7 +28,7 @@
 
 namespace ns3 {
 
-#ifdef HAVE_SIGNAL_H
+#if defined (HAVE_SIGNAL_H) && defined (SIGTRAP)
 
 void
 BreakpointFallback (void)
