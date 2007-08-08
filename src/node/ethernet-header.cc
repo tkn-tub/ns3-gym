@@ -48,9 +48,6 @@ EthernetHeader::EthernetHeader ()
     m_lengthType (0)
 {}
 
-EthernetHeader::~EthernetHeader ()
-{}
-
 void 
 EthernetHeader::SetLengthType (uint16_t lengthType)
 {
@@ -108,13 +105,13 @@ EthernetHeader::GetHeaderSize (void) const
 }
 
 std::string
-EthernetHeader::DoGetName (void) const
+EthernetHeader::GetName (void) const
 {
   return "ETHERNET";
 }
 
 void 
-EthernetHeader::PrintTo (std::ostream &os) const
+EthernetHeader::Print (std::ostream &os) const
 {
   // ethernet, right ?
   if (m_enPreambleSfd)
@@ -139,7 +136,7 @@ EthernetHeader::GetSerializedSize (void) const
 }
 
 void
-EthernetHeader::SerializeTo (Buffer::Iterator start) const
+EthernetHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   
@@ -152,7 +149,7 @@ EthernetHeader::SerializeTo (Buffer::Iterator start) const
   i.WriteU16 (m_lengthType);
 }
 uint32_t
-EthernetHeader::DeserializeFrom (Buffer::Iterator start)
+EthernetHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 

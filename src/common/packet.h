@@ -118,7 +118,7 @@ public:
   uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
-   * ns3::Chunk::GetSerializedSize and ns3::Chunk::SerializeTo 
+   * ns3::Header::GetSerializedSize and ns3::Header::SerializeTo 
    * methods to reserve space in the buffer and request the 
    * header to serialize itself in the packet buffer.
    *
@@ -128,7 +128,7 @@ public:
   void AddHeader (T const &header);
   /**
    * Deserialize and remove the header from the internal buffer.
-   * This method invokes ns3::Chunk::DeserializeFrom.
+   * This method invokes ns3::Header::DeserializeFrom.
    *
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.
@@ -137,7 +137,7 @@ public:
   uint32_t RemoveHeader (T &header);
   /**
    * Add trailer to this packet. This method invokes the
-   * ns3::Chunk::GetSerializedSize and ns3::Trailer::serializeTo 
+   * ns3::Trailer::GetSerializedSize and ns3::Trailer::serializeTo 
    * methods to reserve space in the buffer and request the trailer 
    * to serialize itself in the packet buffer.
    *
@@ -147,7 +147,7 @@ public:
   void AddTrailer (T const &trailer);
   /**
    * Remove a deserialized trailer from the internal buffer.
-   * This method invokes the ns3::Chunk::DeserializeFrom method.
+   * This method invokes the ns3::Trailer::DeserializeFrom method.
    *
    * \param trailer a reference to the trailer to remove from the internal buffer.
    * \returns the number of bytes removed from the end of the packet.
@@ -416,9 +416,11 @@ template <typename T>
 void
 Packet::AddHeader (T const &header)
 {
-  NS_ASSERT_MSG (dynamic_cast<Header const *> (&header) != 0, 
-                 "Must pass Header subclass to Packet::AddHeader");
-  uint32_t size = header.GetSize ();
+  const Header *testHeader;
+  // if the following assignment fails, it is because the 
+  // input to this function is not a subclass of the Header class
+  testHeader = &header;
+  uint32_t size = header.GetSerializedSize ();
   m_buffer.AddAtStart (size);
   header.Serialize (m_buffer.Begin ());
   m_metadata.AddHeader (header, size);
@@ -427,8 +429,10 @@ template <typename T>
 uint32_t
 Packet::RemoveHeader (T &header)
 {
-  NS_ASSERT_MSG (dynamic_cast<Header const *> (&header) != 0, 
-                 "Must pass Header subclass to Packet::RemoveHeader");
+  Header *testHeader;
+  // if the following assignment fails, it is because the 
+  // input to this function is not a subclass of the Header class
+  testHeader = &header;
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
   m_buffer.RemoveAtStart (deserialized);
   m_metadata.RemoveHeader (header, deserialized);
@@ -438,9 +442,11 @@ template <typename T>
 void
 Packet::AddTrailer (T const &trailer)
 {
-  NS_ASSERT_MSG (dynamic_cast<Trailer const *> (&trailer) != 0, 
-                 "Must pass Trailer subclass to Packet::AddTrailer");
-  uint32_t size = trailer.GetSize ();
+  const Trailer *testTrailer;
+  // if the following assignment fails, it is because the 
+  // input to this function is not a subclass of the Trailer class
+  testTrailer = &trailer;
+  uint32_t size = trailer.GetSerializedSize ();
   m_buffer.AddAtEnd (size);
   Buffer::Iterator end = m_buffer.End ();
   trailer.Serialize (end);
@@ -450,8 +456,10 @@ template <typename T>
 uint32_t
 Packet::RemoveTrailer (T &trailer)
 {
-  NS_ASSERT_MSG (dynamic_cast<Trailer const *> (&trailer) != 0, 
-                 "Must pass Trailer subclass to Packet::RemoveTrailer");
+  Trailer *testTrailer;
+  // if the following assignment fails, it is because the 
+  // input to this function is not a subclass of the Trailer class
+  testTrailer = &trailer;
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
   m_buffer.RemoveAtEnd (deserialized);
   m_metadata.RemoveTrailer (trailer, deserialized);

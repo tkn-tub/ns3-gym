@@ -93,7 +93,7 @@ UdpHeader::InitializeChecksum (Ipv4Address source,
   destination.Serialize (buf+4);
   buf[8] = 0;
   buf[9] = protocol;
-  uint16_t udpLength = m_payloadSize + GetSize ();
+  uint16_t udpLength = m_payloadSize + GetSerializedSize ();
   buf[10] = udpLength >> 8;
   buf[11] = udpLength & 0xff;
 
@@ -101,16 +101,16 @@ UdpHeader::InitializeChecksum (Ipv4Address source,
 }
 
 std::string 
-UdpHeader::DoGetName (void) const
+UdpHeader::GetName (void) const
 {
   return "UDP";
 }
 
 void 
-UdpHeader::PrintTo (std::ostream &os) const
+UdpHeader::Print (std::ostream &os) const
 {
   os << "(" 
-     << "length: " << m_payloadSize + GetSize ()
+     << "length: " << m_payloadSize + GetSerializedSize ()
      << ") "
      << m_sourcePort << " > " << m_destinationPort
     ;
@@ -123,12 +123,12 @@ UdpHeader::GetSerializedSize (void) const
 }
 
 void
-UdpHeader::SerializeTo (Buffer::Iterator start) const
+UdpHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   i.WriteHtonU16 (m_sourcePort);
   i.WriteHtonU16 (m_destinationPort);
-  i.WriteHtonU16 (m_payloadSize + GetSize ());
+  i.WriteHtonU16 (m_payloadSize + GetSerializedSize ());
   i.WriteU16 (0);
 
   if (m_calcChecksum) 
@@ -137,7 +137,7 @@ UdpHeader::SerializeTo (Buffer::Iterator start) const
       //XXXX
       uint16_t checksum = Ipv4ChecksumCalculate (m_initialChecksum, 
                                                   buffer->PeekData (), 
-                                                  GetSize () + m_payloadSize);
+                                                  GetSerializedSize () + m_payloadSize);
       checksum = Ipv4ChecksumComplete (checksum);
       i = buffer->Begin ();
       i.Next (6);
@@ -146,12 +146,12 @@ UdpHeader::SerializeTo (Buffer::Iterator start) const
     }
 }
 uint32_t
-UdpHeader::DeserializeFrom (Buffer::Iterator start)
+UdpHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   m_sourcePort = i.ReadNtohU16 ();
   m_destinationPort = i.ReadNtohU16 ();
-  m_payloadSize = i.ReadNtohU16 () - GetSize ();
+  m_payloadSize = i.ReadNtohU16 () - GetSerializedSize ();
   if (m_calcChecksum) 
     {
       // XXX verify checksum.

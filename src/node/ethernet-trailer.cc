@@ -44,9 +44,6 @@ EthernetTrailer::EthernetTrailer ()
   Init();
 }
 
-EthernetTrailer::~EthernetTrailer ()
-{}
-
 void EthernetTrailer::Init()
 {
   m_fcs = 0;
@@ -94,13 +91,13 @@ EthernetTrailer::GetTrailerSize (void) const
   return GetSerializedSize();
 }
 std::string
-EthernetTrailer::DoGetName (void) const
+EthernetTrailer::GetName (void) const
 {
   return "ETHERNET";
 }
 
 void 
-EthernetTrailer::PrintTo (std::ostream &os) const
+EthernetTrailer::Print (std::ostream &os) const
 {
   os << " fcs=" << m_fcs;
 }
@@ -111,7 +108,7 @@ EthernetTrailer::GetSerializedSize (void) const
 }
 
 void
-EthernetTrailer::SerializeTo (Buffer::Iterator end) const
+EthernetTrailer::Serialize (Buffer::Iterator end) const
 {
   Buffer::Iterator i = end;
   i.Prev(GetSerializedSize());
@@ -119,7 +116,7 @@ EthernetTrailer::SerializeTo (Buffer::Iterator end) const
   i.WriteU32 (m_fcs);
 }
 uint32_t
-EthernetTrailer::DeserializeFrom (Buffer::Iterator end)
+EthernetTrailer::Deserialize (Buffer::Iterator end)
 {
   Buffer::Iterator i = end;
   uint32_t size = GetSerializedSize();

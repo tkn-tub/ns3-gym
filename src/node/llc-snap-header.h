@@ -34,21 +34,19 @@ public:
   static uint32_t GetUid (void);
 
   LlcSnapHeader ();
-  virtual ~LlcSnapHeader ();
-
 
   void SetType (uint16_t type);
   uint16_t GetType (void);
 
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
   uint16_t m_etherType;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* LLC_SNAP_HEADER_H */

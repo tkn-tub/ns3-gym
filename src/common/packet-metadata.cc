@@ -23,8 +23,8 @@
 #include "ns3/fatal-error.h"
 #include "ns3/debug.h"
 #include "packet-metadata.h"
-#include "chunk.h"
 #include "buffer.h"
+#include "chunk-registry.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("PacketMetadata");
 

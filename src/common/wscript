@@ -7,9 +7,7 @@ def build(bld):
     common.uselib_local = ['ns3-core', 'ns3-simulator']
     common.source = [
         'buffer.cc',
-        'chunk.cc',
-        'header.cc',
-        'trailer.cc',
+        'chunk-registry.cc',
         'packet-printer.cc',
         'packet-metadata.cc',
         'packet-metadata-test.cc',
@@ -30,7 +28,7 @@ def build(bld):
     headers = bld.create_obj('ns3header')
     headers.source = [
         'buffer.h',
-        'chunk.h',
+        'chunk-registry.h',
         'header.h',
         'trailer.h',
         'tags.h',

@@ -22,7 +22,7 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-#include "chunk.h"
+#include "chunk-registry.h"
 
 /**
  * \relates Header
@@ -87,12 +87,12 @@ namespace ns3 {
  * Sample code which shows how to create a new Header, and how to use it, 
  * is shown in the sample file samples/main-header.cc
  */
-class Header : public Chunk {
+class Header {
 public:
-  virtual ~Header ();
 protected:
   template <typename T>
   static uint32_t Register (std::string uuid);
+#if 0
 private:
   /**
    * \returns a user-readable name to identify this type of header.
@@ -143,6 +143,7 @@ private:
    * Packet::RemoveHeader
    */
   virtual uint32_t DeserializeFrom (Buffer::Iterator start) = 0;
+#endif
 };
 
 } // namespace ns3

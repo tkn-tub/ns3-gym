@@ -20,6 +20,7 @@
  */
 
 #include "packet-printer.h"
+#include "chunk-registry.h"
 
 namespace ns3 {
 

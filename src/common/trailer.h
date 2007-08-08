@@ -22,7 +22,7 @@
 #ifndef TRAILER_H
 #define TRAILER_H
 
-#include "chunk.h"
+#include "chunk-registry.h"
 
 /**
  * \relates Trailer
@@ -110,12 +110,12 @@ namespace ns3 {
  * trailers), the input iterator to DeserializeFrom and SerializeTo points
  * to the end of the trailer, and not its start.
  */
-class Trailer : public Chunk {
+class Trailer {
 public:
-  virtual ~Trailer ();
 protected:
   template <typename T>
   static uint32_t Register (std::string uidString);
+#if 0
 private:
   /**
    * \returns a user-readable name to identify this type of header.
@@ -170,6 +170,7 @@ private:
    * amount when this method is invoked from Packet::RemoveTrailer
    */
   virtual uint32_t DeserializeFrom (Buffer::Iterator end) = 0;
+#endif
 };
 
 } // namespace ns3

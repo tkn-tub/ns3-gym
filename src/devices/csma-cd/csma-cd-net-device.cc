@@ -203,7 +203,7 @@ CsmaCdNetDevice::AddHeader (Packet& p, Eui48Address dest,
   switch (m_encapMode) 
     {
     case ETHERNET_V1:
-      lengthType = p.GetSize() + header.GetSize() + trailer.GetSize();
+      lengthType = p.GetSize() + header.GetSerializedSize() + trailer.GetSerializedSize();
       break;
     case IP_ARP:
       lengthType = protocolNumber;
