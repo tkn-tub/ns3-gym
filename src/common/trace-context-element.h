@@ -16,9 +16,85 @@ static class thisisaveryverylongclassname ##x		       \
 
 namespace ns3 {
 
+/**
+ * \brief an item stored in a TraceContext
+ *
+ * To store trace context information in a TraceContext instance,
+ * users must subclass this base class and store subclass instances
+ * in a TraceContext with TraceContext::Add.
+ *
+ * Each subclass should define and implement:
+ *   - a public default constructor: it is used by the internals
+ *     of the implementation of TraceContext.
+ *   - a public destructor: it is also used by the internals of
+ *     the implementation of TraceContext.
+ *   - a public static method named GetUid which returns a 16 bit 
+ *     integer. The integer returned from this method should be
+ *     allocated with the protected AllocatedUid method.
+ *   - a public Print method: this method is used by the 
+ *     TraceContext::Print method to print the content of each
+ *     of the trace context element stored in the trace context.
+ *     This method takes a c++ output stream and argument and is
+ *     expected to write an ascii string describing its content
+ *     in this output stream.
+ *
+ * A typical subclass should look like this:
+ * \code
+ * class MyContext : public TraceContextElement
+ * {
+ * public:
+ *   // the _required_ public API
+ *   static uint16_t GetUid (void);
+ *   MyContext ();
+ *   ~MyContext ();
+ *   void Print (std::ostream &os) const;
+ *
+ *   // the user-specific API to manipulate the context.
+ *   void SetData (uint8_t data);
+ *   uint8_t GetData (void) const;
+ * private:
+ *   uint8_t m_myContextData;
+ * };
+ *
+ * uint16_t 
+ * MyContext::GetUid (void)
+ * {
+ *   static uint16_t uid = AllocateUid<MyContext> ("MyContext");
+ *   return uid;
+ * }
+ * MyContext::MyContext ()
+ * {}
+ * MyContext::~MyContext ()
+ * {}
+ * void 
+ * MyContext::Print (std::ostream &os) const
+ * {
+ *   os << "mycontext=" << (uint32_t) m_myContextData;
+ * }
+ * void 
+ * MyContext::SetData (uint8_t data)
+ * {
+ *   m_myContextData = data;
+ * }
+ * uint8_t 
+ * MyContext::GetData (void) const
+ * {
+ *   return m_myContextData;
+ * }
+ * \endcode
+ */
 class TraceContextElement
 {
 protected:
+  /**
+   * \param name a string which uniquely identifies the type
+   *        of the subclass which is calling this method.
+   * \returns a unique 32 bit integer associated to the
+   *          input string.
+   *
+   * Subclasses are expected to call this method from their
+   * public static GetUid method.
+   */
   template <typename T>
   static uint16_t AllocateUid (std::string name);
 };
