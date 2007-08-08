@@ -245,6 +245,14 @@ public:
   /**
    * \param os output stream in which the data should be printed.
    *
+   * Iterate over the tags present in this packet, and
+   * invoke the Print method of each tag stored in the packet.
+   */
+  void PrintTags (std::ostream &os) const;
+
+  /**
+   * \param os output stream in which the data should be printed.
+   *
    * Iterate over the headers and trailers present in this packet, 
    * from the first header to the last trailer and invoke, for
    * each of them, the user-provided method Header::DoPrint or 
@@ -314,59 +322,6 @@ private:
   PacketMetadata m_metadata;
   static uint32_t m_globalUid;
 };
-
-/**
- * \defgroup tags Packet Tags
- *
- * A tag is a class which must define:
- *  - a public default constructor
- *  - a public static method named GetUid
- *  - a public method named Print
- *  - a public method named GetSerializedSize
- *  - a public method named Serialize
- *  - a public method named Deserialize
- *
- * So, a tag class should look like this:
- * \code
- * // in header file
- * // note how a tag class does not derive from any other class.
- * class MyTag 
- * {
- * public:
- *   // we need a public default constructor
- *   MyTag ();
- *   // we need a public static GetUid
- *   // GetUid must return a 32 bit integer which uniquely
- *   // identifies this tag type
- *   static uint32_t GetUid (void);
- *   // Print should record in the output stream
- *   // the content of the tag instance.
- *   void Print (std::ostream &os) const;
- *   // GetSerializedSize should return the number of bytes needed
- *   // to store the state of a tag instance
- *   uint32_t GetSerializedSize (void) const;
- *   // Serialize should store its state in the input
- *   // buffer with the help of the iterator. It should
- *   // write exactly size bytes.
- *   void Serialize (Buffer::Iterator i, uint32_t size) const;
- *   // Deserialize should restore the state of a Tag instance
- *   // from a byte buffer with the help of the iterator
- *   uint32_t Deserialize (Buffer::Iterator i);
- * };
- *
- * // in source file
- * 
- * NS_TAG_ENSURE_REGISTERED (MyTag);
- *
- * std::string MyTag::GetUid (void)
- * {
- *   // we really want to make sure that this
- *   // string is unique in the universe.
- *   static uint32_t uid = TagRegistry::Register<MyTag> ("MyTag.unique.prefix");
- *   return uid;
- * }
- * \endcode
- */
 
 /**
  * \defgroup packetperf Packet Performance
