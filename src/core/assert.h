@@ -28,6 +28,17 @@
 #include "breakpoint.h"
 
 /**
+ * \defgroup assert Assert
+ * \brief assert functions and macros
+ *
+ * The assert macros are used to verify
+ * at runtime that a certain condition is true. If it is
+ * not true, the program halts. These checks are built
+ * into the program only in debugging builds. They are
+ * removed in optimized builds.
+ */
+
+/**
  * \ingroup assert
  * \param condition condition to verifiy.
  *
