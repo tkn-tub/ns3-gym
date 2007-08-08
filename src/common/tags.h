@@ -28,9 +28,6 @@
 
 namespace ns3 {
 
-template <typename T>
-class TagPrettyPrinter;
-
 /**
  * \ingroup constants
  * \brief Tag maximum size
