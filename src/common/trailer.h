@@ -25,7 +25,7 @@
 #include "chunk-registry.h"
 
 /**
- * \relates Trailer
+ * \relates ns3::Trailer
  * \brief this macro should be instantiated exactly once for each
  *        new type of Trailer
  *

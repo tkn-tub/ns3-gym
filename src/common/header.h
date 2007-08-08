@@ -25,7 +25,7 @@
 #include "chunk-registry.h"
 
 /**
- * \relates Header
+ * \relates ns3::Header
  * \brief this macro should be instantiated exactly once for each
  *        new type of Header
  *
@@ -44,6 +44,7 @@ static class thisisaveryverylongclassname ##x  \
   thisisaveryverylongclassname ##x ()          \
     { uint32_t uid; uid = x::GetUid ();}       \
 } g_thisisanotherveryveryverylongname ## x;
+
 
 namespace ns3 {
 
@@ -108,7 +109,6 @@ Header::AllocateUid (std::string uuid)
 {
   return ChunkRegistry::RegisterHeader<T> (uuid);
 }
-
 
 } // namespace ns3
 

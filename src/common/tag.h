@@ -25,7 +25,7 @@
 #include <string>
 
 /**
- * \relates Tag
+ * \relates ns3::Tag
  * \brief this macro should be instantiated exactly once for each
  *        new type of Tag
  *
