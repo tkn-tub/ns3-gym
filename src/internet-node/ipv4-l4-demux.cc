@@ -51,7 +51,7 @@ Ipv4L4ProtocolTraceContextElement::Print (std::ostream &os) const
 uint16_t 
 Ipv4L4ProtocolTraceContextElement::GetUid (void)
 {
-  static uint16_t uid = Register<Ipv4L4ProtocolTraceContextElement> ("Ipv4L4ProtocolTraceContextElement");
+  static uint16_t uid = AllocateUid<Ipv4L4ProtocolTraceContextElement> ("Ipv4L4ProtocolTraceContextElement");
   return uid;
 }
 

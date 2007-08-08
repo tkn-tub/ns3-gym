@@ -56,7 +56,7 @@ CsmaCdTraceType::Print (std::ostream &os) const
 uint16_t 
 CsmaCdTraceType::GetUid (void)
 {
-  static uint16_t uid = Register<CsmaCdTraceType> ("CsmaCdTraceType");
+  static uint16_t uid = AllocateUid<CsmaCdTraceType> ("CsmaCdTraceType");
   return uid;
 }
 

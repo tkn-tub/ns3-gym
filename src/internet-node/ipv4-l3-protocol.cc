@@ -85,7 +85,7 @@ Ipv4L3ProtocolTraceContextElement::Print (std::ostream &os) const
 uint16_t 
 Ipv4L3ProtocolTraceContextElement::GetUid (void)
 {
-  static uint16_t uid = Register<Ipv4L3ProtocolTraceContextElement> ("Ipv4L3ProtocolTraceContextElement");
+  static uint16_t uid = AllocateUid<Ipv4L3ProtocolTraceContextElement> ("Ipv4L3ProtocolTraceContextElement");
   return uid;
 }
 
@@ -109,7 +109,7 @@ Ipv4l3ProtocolInterfaceIndex::Print (std::ostream &os) const
 uint16_t 
 Ipv4l3ProtocolInterfaceIndex::GetUid (void)
 {
-  static uint16_t uid = Register<Ipv4l3ProtocolInterfaceIndex> ("Ipv4l3ProtocolInterfaceIndex");
+  static uint16_t uid = AllocateUid<Ipv4l3ProtocolInterfaceIndex> ("Ipv4l3ProtocolInterfaceIndex");
   return uid;
 }
 

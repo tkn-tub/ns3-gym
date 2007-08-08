@@ -128,7 +128,7 @@ public:
     SUBRESOLVER,
   };
   static uint16_t GetUid (void) 
-  {static uint16_t uid = Register<TraceSourceTest> ("TraceSourceTest"); return uid;}
+  {static uint16_t uid = AllocateUid<TraceSourceTest> ("TraceSourceTest"); return uid;}
   void Print (std::ostream &os)
   {os << "tracesource=";
     if (m_sources == DOUBLEA) {os << "doubleA";}
@@ -150,7 +150,7 @@ public:
     INT,
   };
   static uint16_t GetUid (void) 
-  {static uint16_t uid = Register<SubTraceSourceTest> ("SubTraceSourceTest"); return uid;}
+  {static uint16_t uid = AllocateUid<SubTraceSourceTest> ("SubTraceSourceTest"); return uid;}
   void Print (std::ostream &os)
   {os << "subtracesource=int";}
   SubTraceSourceTest () : m_sources (SubTraceSourceTest::INT) {}

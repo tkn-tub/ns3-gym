@@ -50,7 +50,7 @@ PointToPointTraceType::Print (std::ostream &os) const
 uint16_t 
 PointToPointTraceType::GetUid (void)
 {
-  static uint16_t uid = Register<PointToPointTraceType> ("PointToPointTraceType");
+  static uint16_t uid = AllocateUid<PointToPointTraceType> ("PointToPointTraceType");
   return uid;
 }
 

@@ -35,7 +35,7 @@ static ClassIdDefaultValue g_classIdDefaultValue ("Queue", "Packet Queue",
 uint16_t 
 QueueTraceType::GetUid (void)
 {
-  static uint16_t uid = Register<QueueTraceType> ("QueueTraceType");
+  static uint16_t uid = AllocateUid<QueueTraceType> ("QueueTraceType");
   return uid;
 }
 QueueTraceType::QueueTraceType ()

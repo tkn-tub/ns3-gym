@@ -54,7 +54,7 @@ NodeListIndex::Print (std::ostream &os)
 uint16_t 
 NodeListIndex::GetUid (void)
 {
-  static uint16_t uid = Register<NodeListIndex> ("NodeListIndex");
+  static uint16_t uid = AllocateUid<NodeListIndex> ("NodeListIndex");
   return uid;
 }
 uint32_t 

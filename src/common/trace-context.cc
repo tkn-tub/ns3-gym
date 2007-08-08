@@ -242,7 +242,7 @@ template <int N>
 class Ctx : public TraceContextElement
 {
 public:
-  static uint16_t GetUid (void) {static uint16_t uid = Register<Ctx<N> > (GetName ()); return uid;}
+  static uint16_t GetUid (void) {static uint16_t uid = AllocateUid<Ctx<N> > (GetName ()); return uid;}
   static std::string GetName (void) {std::ostringstream oss; oss << "Ctx" << N; return oss.str ();}
   Ctx () : m_v (0) {}
   Ctx (int v) : m_v (v) {}

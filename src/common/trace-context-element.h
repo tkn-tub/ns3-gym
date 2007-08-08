@@ -20,7 +20,7 @@ class TraceContextElement
 {
 protected:
   template <typename T>
-  static uint16_t Register (std::string name);
+  static uint16_t AllocateUid (std::string name);
 };
 
 } // namespace ns3
@@ -35,7 +35,7 @@ class ElementRegistry
 {
 public:
   template <typename T>
-  static uint16_t Register (std::string name);
+  static uint16_t AllocateUid (std::string name);
 
   static uint32_t GetSize (uint16_t uid);
   static void Print (uint16_t uid, uint8_t *instance, std::ostream &os);
@@ -78,7 +78,7 @@ ElementRegistry::DoDestroy (uint8_t *instance)
 
 template <typename T>
 uint16_t 
-ElementRegistry::Register (std::string name)
+ElementRegistry::AllocateUid (std::string name)
 {
   InfoVector *vec = GetInfoVector ();
   uint16_t uid = 1;
@@ -103,9 +103,9 @@ ElementRegistry::Register (std::string name)
 
 template <typename T>
 uint16_t 
-TraceContextElement::Register (std::string name)
+TraceContextElement::AllocateUid (std::string name)
 {
-  return ElementRegistry::Register<T> (name);
+  return ElementRegistry::AllocateUid<T> (name);
 }
 
 } // namespace ns3

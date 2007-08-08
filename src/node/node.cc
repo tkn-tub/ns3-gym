@@ -50,7 +50,7 @@ NodeNetDeviceIndex::Print (std::ostream &os) const
 uint16_t 
 NodeNetDeviceIndex::GetUid (void)
 {
-  static uint16_t uid = Register<NodeNetDeviceIndex> ("NodeNetDeviceIndex");
+  static uint16_t uid = AllocateUid<NodeNetDeviceIndex> ("NodeNetDeviceIndex");
   return uid;
 }
 
