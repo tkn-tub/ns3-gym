@@ -140,7 +140,7 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
     program = bld.create_obj('cpp', 'program')
     program.name = name
     program.target = program.name
-    program.uselib_local = ['ns3-' + dep for dep in dependencies]
+    program.uselib_local = 'ns3'
     return program
 
 
