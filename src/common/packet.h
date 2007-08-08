@@ -306,7 +306,7 @@ public:
    */
   Buffer Serialize (void) const;
   /**
-   * \param a byte buffer
+   * \param buffer a byte buffer
    *
    * This method reads a byte buffer as created by Packet::Serialize
    * and restores the state of the Packet to what it was prior to
