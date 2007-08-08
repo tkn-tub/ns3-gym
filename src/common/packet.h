@@ -63,15 +63,11 @@ class PacketPrinter;
  *
  * Implementing a new type of Header or Trailer for a new protocol is 
  * pretty easy and is a matter of creating a subclass of the ns3::Header 
- * or of the ns3::Trailer base class, and implementing the 5 pure virtual 
- * methods defined in either of the two base classes. Users _must_
- * also make sure that they class defines a public default constructor and
- * a public method named GetUid, as documented in the ns3::Header and ns::Trailer
- * API documentations.
+ * or of the ns3::Trailer base class, and implementing the methods
+ * described in their respective API documentation.
  *
  * Implementing a new type of Tag requires roughly the same amount of
- * work: users must implement a total of 6 methods which are described in
- * \ref tags
+ * work and this work is described in the ns3::Tag API documentation.
  *
  * The performance aspects of the Packet API are discussed in 
  * \ref packetperf
@@ -119,7 +115,7 @@ public:
   uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
-   * ns3::Header::GetSerializedSize and ns3::Header::SerializeTo 
+   * GetSerializedSize and Serialize
    * methods to reserve space in the buffer and request the 
    * header to serialize itself in the packet buffer.
    *
@@ -129,7 +125,7 @@ public:
   void AddHeader (T const &header);
   /**
    * Deserialize and remove the header from the internal buffer.
-   * This method invokes ns3::Header::DeserializeFrom.
+   * This method invokes Deserialize.
    *
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.
@@ -138,7 +134,7 @@ public:
   uint32_t RemoveHeader (T &header);
   /**
    * Add trailer to this packet. This method invokes the
-   * ns3::Trailer::GetSerializedSize and ns3::Trailer::serializeTo 
+   * GetSerializedSize and Serialize
    * methods to reserve space in the buffer and request the trailer 
    * to serialize itself in the packet buffer.
    *
@@ -148,7 +144,7 @@ public:
   void AddTrailer (T const &trailer);
   /**
    * Remove a deserialized trailer from the internal buffer.
-   * This method invokes the ns3::Trailer::DeserializeFrom method.
+   * This method invokes the Deserialize method.
    *
    * \param trailer a reference to the trailer to remove from the internal buffer.
    * \returns the number of bytes removed from the end of the packet.
@@ -158,7 +154,8 @@ public:
   /**
    * Attach a tag to this packet. The tag is fully copied
    * in a packet-specific internal buffer. This operation 
-   * is expected to be really fast.
+   * is expected to be really fast. The copy constructor of the
+   * tag is invoked to copy it into the tag buffer.
    *
    * \param tag a pointer to the tag to attach to this packet.
    */
@@ -185,6 +182,8 @@ public:
   /**
    * Copy a tag stored internally to the input tag. If no instance
    * of this tag is present internally, the input tag is not modified.
+   * The copy constructor of the tag is invoked to copy it into the 
+   * input tag variable.
    *
    * \param tag a pointer to the tag to read from this packet
    * \returns true if an instance of this tag type is stored
@@ -197,6 +196,14 @@ public:
    * much much faster than invoking removeTag n times.
    */
   void RemoveAllTags (void);
+  /**
+   * \param os output stream in which the data should be printed.
+   *
+   * Iterate over the tags present in this packet, and
+   * invoke the Print method of each tag stored in the packet.
+   */
+  void PrintTags (std::ostream &os) const;
+
   /**
    * Concatenate the input packet at the end of the current
    * packet. This does not alter the uid of either packet.
@@ -241,14 +248,6 @@ public:
    *          identifies this packet.
    */
   uint32_t GetUid (void) const;
-
-  /**
-   * \param os output stream in which the data should be printed.
-   *
-   * Iterate over the tags present in this packet, and
-   * invoke the Print method of each tag stored in the packet.
-   */
-  void PrintTags (std::ostream &os) const;
 
   /**
    * \param os output stream in which the data should be printed.
@@ -298,6 +297,9 @@ public:
    * serialized representation contains a copy of the packet byte buffer,
    * the tag list, and the packet metadata (if there is one).
    *
+   * This method will trigger calls to the Serialize and GetSerializedSize
+   * methods of each tag stored in this packet.
+   *
    * This method will typically be used by parallel simulations where
    * the simulated system is partitioned and each partition runs on
    * a different CPU.
@@ -307,8 +309,11 @@ public:
    * \param a byte buffer
    *
    * This method reads a byte buffer as created by Packet::Serialize
-   * and restores the state of the Packet to what it was prio to
+   * and restores the state of the Packet to what it was prior to
    * calling Serialize.
+   *
+   * This method will trigger calls to the Deserialize method
+   * of each tag stored in this packet.
    *
    * This method will typically be used by parallel simulations where
    * the simulated system is partitioned and each partition runs on
