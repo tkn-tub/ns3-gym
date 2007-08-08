@@ -14,7 +14,10 @@ def build(bld):
     obj = create_ns_prog('main-ptr', 'main-ptr.cc')
     #obj = create_ns_prog('main-trace', 'main-trace.cc')
     obj = create_ns_prog('main-simulator', 'main-simulator.cc')
-    obj = create_ns_prog('main-header', 'main-header.cc')
+    obj = create_ns_prog('main-packet-header', 'main-packet-header.cc')
+    obj = create_ns_prog('main-packet-tag', 'main-packet-tag.cc')
+    obj = create_ns_prog('main-packet-printer', 'main-packet-printer.cc',
+                         deps=['node', 'internet-node'])
     obj = create_ns_prog('main-test', 'main-test.cc')
     obj = create_ns_prog('main-simple', 'main-simple.cc',
                          deps=['node', 'internet-node', 'applications'])
