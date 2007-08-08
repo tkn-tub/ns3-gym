@@ -27,6 +27,7 @@
 #include "trailer.h"
 #include "tags.h"
 #include "packet-metadata.h"
+#include "tag.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 
@@ -470,18 +471,31 @@ Packet::RemoveTrailer (T &trailer)
 template <typename T>
 void Packet::AddTag (T const& tag)
 {
+  const Tag *parent;
+  // if the following assignment fails, it is because the
+  // input to this function is not a subclass of the Tag class.
+  parent = &tag;
   m_tags.Add (tag);
 }
 template <typename T>
 bool Packet::RemoveTag (T & tag)
 {
+  Tag *parent;
+  // if the following assignment fails, it is because the
+  // input to this function is not a subclass of the Tag class.
+  parent = &tag;
   return m_tags.Remove (tag);
 }
 template <typename T>
 bool Packet::PeekTag (T & tag) const
 {
+  Tag *parent;
+  // if the following assignment fails, it is because the
+  // input to this function is not a subclass of the Tag class.
+  parent = &tag;
   return m_tags.Peek (tag);
 }
-}; // namespace ns3
+
+} // namespace ns3
 
 #endif /* PACKET_H */

@@ -24,67 +24,6 @@
 
 namespace ns3 {
 
-TagRegistry::TagInfoVector *
-TagRegistry::GetInfo (void)
-{
-  static TagRegistry::TagInfoVector vector;
-  return &vector;
-}
-
-std::string
-TagRegistry::GetUidString (uint32_t uid)
-{
-  TagInfo info = (*GetInfo ())[uid - 1];
-  return info.uidString;
-}
-uint32_t 
-TagRegistry::GetUidFromUidString (std::string uidString)
-{
-  TagInfoVector *vec = GetInfo ();
-  uint32_t uid = 1;
-  for (TagInfoVector::iterator i = vec->begin (); i != vec->end (); i++)
-    {
-      if (i->uidString == uidString)
-        {
-          return uid;
-        }
-      uid++;
-    }
-  NS_FATAL_ERROR ("We are trying to deserialize an un-registered type. This can't work.");
-  return 0;
-}
-
-void 
-TagRegistry::Destruct (uint32_t uid, uint8_t data[Tags::SIZE])
-{
-  TagInfo info = (*GetInfo ())[uid - 1];
-  info.destruct (data);
-}
-void 
-TagRegistry::Print (uint32_t uid, uint8_t data[Tags::SIZE], std::ostream &os)
-{
-  TagInfo info = (*GetInfo ())[uid - 1];
-  info.print (data, os);
-}
-uint32_t
-TagRegistry::GetSerializedSize (uint32_t uid, uint8_t data[Tags::SIZE])
-{
-  TagInfo info = (*GetInfo ())[uid - 1];
-  return info.getSerializedSize (data);
-}
-void 
-TagRegistry::Serialize (uint32_t uid, uint8_t data[Tags::SIZE], Buffer::Iterator start)
-{
-  TagInfo info = (*GetInfo ())[uid - 1];
-  info.serialize (data, start);
-}
-uint32_t 
-TagRegistry::Deserialize (uint32_t uid, uint8_t data[Tags::SIZE], Buffer::Iterator start)
-{
-  TagInfo info = (*GetInfo ())[uid - 1];
-  return info.deserialize (data, start);
-}
-
 #ifdef USE_FREE_LIST
 
 struct Tags::TagData *Tags::gFree = 0;
@@ -296,10 +235,10 @@ public:
   virtual bool RunTests (void);
 };
 
-class myTagA 
+class myTagA : public Tag
 {
 public:
-  static uint32_t GetUid (void) {static uint32_t uid = TagRegistry::Register<myTagA> ("myTagA.test.nsnam.org"); return uid;}
+  static uint32_t GetUid (void) {static uint32_t uid = AllocateUid<myTagA> ("myTagA.test.nsnam.org"); return uid;}
   void Print (std::ostream &os) const {g_a = true;}
   uint32_t GetSerializedSize (void) const {return 1;}
   void Serialize (Buffer::Iterator i) const {i.WriteU8 (a);}
@@ -307,10 +246,10 @@ public:
 
   uint8_t a;
 };
-class myTagB 
+class myTagB : public Tag
 {
 public:
-  static uint32_t GetUid (void) {static uint32_t uid = TagRegistry::Register<myTagB> ("myTagB.test.nsnam.org"); return uid;}
+  static uint32_t GetUid (void) {static uint32_t uid = AllocateUid<myTagB> ("myTagB.test.nsnam.org"); return uid;}
   void Print (std::ostream &os) const {g_b = true;}
   uint32_t GetSerializedSize (void) const {return 4;}
   void Serialize (Buffer::Iterator i) const {i.WriteU32 (b);}
@@ -318,21 +257,21 @@ public:
 
   uint32_t b;
 };
-class myTagC 
+class myTagC : public Tag
 {
 public:
-  static uint32_t GetUid (void) {static uint32_t uid = TagRegistry::Register<myTagC> ("myTagC.test.nsnam.org"); return uid;}
+  static uint32_t GetUid (void) {static uint32_t uid = AllocateUid<myTagC> ("myTagC.test.nsnam.org"); return uid;}
   void Print (std::ostream &os) const {g_c = true;}
   uint32_t GetSerializedSize (void) const {return Tags::SIZE;}
   void Serialize (Buffer::Iterator i) const {i.Write (c, Tags::SIZE);}
   uint32_t Deserialize (Buffer::Iterator i) {i.Read (c, Tags::SIZE); return Tags::SIZE;}
   uint8_t c [Tags::SIZE];
 };
-class myInvalidTag 
+class myInvalidTag : public Tag
 {
 public:
   static uint32_t GetUid (void) 
-  {static uint32_t uid = TagRegistry::Register<myInvalidTag> ("myinvalidTag.test.nsnam.org"); return uid;}
+  {static uint32_t uid = AllocateUid<myInvalidTag> ("myinvalidTag.test.nsnam.org"); return uid;}
   void Print (std::ostream &os) const {}
   uint32_t GetSerializedSize (void) const {return 0;}
   void Serialize (Buffer::Iterator i) const {}
@@ -340,10 +279,10 @@ public:
 
   uint8_t invalid [Tags::SIZE+1];
 };
-class myTagZ 
+class myTagZ  : public Tag
 {
 public:
-  static uint32_t GetUid (void) {static uint32_t uid = TagRegistry::Register<myTagZ> ("myTagZ.test.nsnam.org"); return uid;}
+  static uint32_t GetUid (void) {static uint32_t uid = AllocateUid<myTagZ> ("myTagZ.test.nsnam.org"); return uid;}
   void Print (std::ostream &os) const {g_z = true;}
   uint32_t GetSerializedSize (void) const {return 0;}
   void Serialize (Buffer::Iterator i) const {}
@@ -352,11 +291,11 @@ public:
   uint8_t z;
 };
 
-class MySmartTag 
+class MySmartTag : public Tag
 {
 public:
   static uint32_t GetUid (void) 
-  {static uint32_t uid = TagRegistry::Register<MySmartTag> ("MySmartTag.test.nsnam.org"); return uid;}
+  {static uint32_t uid = AllocateUid<MySmartTag> ("MySmartTag.test.nsnam.org"); return uid;}
   MySmartTag ()
   {
     //std::cout << "construct" << std::endl;
