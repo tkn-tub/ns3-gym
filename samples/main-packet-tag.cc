@@ -70,7 +70,7 @@ void
 MyTag::Print (std::ostream &os) const
 {
   // print the content of this tag for Packet::PrintTags
-  os << (uint32_t)m_simpleValue;
+  os << "MyTag=0x" << std::hex << (uint32_t)m_simpleValue << std::dec;
 }
 uint32_t 
 MyTag::GetSerializedSize (void) const
@@ -130,6 +130,7 @@ int main (int argc, char *argv[])
   NS_ASSERT (tagCopy.GetSimpleValue () == tag.GetSimpleValue ());
 
   aCopy.PrintTags (std::cout);
+  std::cout << std::endl;
 
   return 0;
 }
