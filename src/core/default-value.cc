@@ -341,84 +341,39 @@ DefaultValueTest::DefaultValueTest ()
 bool 
 DefaultValueTest::RunTests (void)
 {
-  bool ok = true;
+  bool result = true;
 
   BooleanDefaultValue a ("bool-a", "help a", true);
-  if (!a.GetValue ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (a.GetValue ());
   Bind ("bool-a", "false");
-  if (a.GetValue ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (!a.GetValue ());
   BooleanDefaultValue b ("bool-b", "help b", false);
   Bind ("bool-b", "true");
-  if (!b.GetValue ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (b.GetValue ());
   Bind ("bool-b", "0");
-  if (b.GetValue ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (!b.GetValue ());
   Bind ("bool-b", "1");
-  if (!b.GetValue ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (b.GetValue ());
   Bind ("bool-b", "f");
-  if (b.GetValue ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (!b.GetValue ());
   Bind ("bool-b", "t");
-  if (!b.GetValue ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (b.GetValue ());
 
   Bind ("bool-b", "false");
-  if (b.GetValue ())
-    {
-      ok = false;
-    }
-  if (BindSafe ("bool-b", "tr") != INVALID_VALUE)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (!b.GetValue ());
+  NS_TEST_ASSERT_EQUAL (BindSafe ("bool-b", "tr"), INVALID_VALUE)
 
   NumericDefaultValue<int> i ("test-i", "help-i", -1);
-  if (i.GetValue () != -1)
-    {
-      ok = false;
-    }  
+  NS_TEST_ASSERT_EQUAL (i.GetValue (), -1);
   Bind ("test-i", "-2");
-  if (i.GetValue () != -2)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (i.GetValue (), -2);
   Bind ("test-i", "+2");
-  if (i.GetValue () != 2)
-    {
-      ok = false;
-    }
-  if (i.GetType () != "int32_t(-2147483648:2147483647)")
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (i.GetValue (), 2);
+  NS_TEST_ASSERT_EQUAL (i.GetType (), "int32_t(-2147483648:2147483647)");
   NumericDefaultValue<uint32_t> ui32 ("test-ui32", "help-ui32", 10);
-  if (ui32.GetType () != "uint32_t(0:4294967295)")
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (ui32.GetType (), "uint32_t(0:4294967295)");
   NumericDefaultValue<char> c ("test-c", "help-c", 10);
-  if (c.GetValue () != 10)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (c.GetValue (), 10);
   Bind ("test-c", "257");  
   NumericDefaultValue<float> x ("test-x", "help-x", 10.0);
   NumericDefaultValue<double> y ("test-y", "help-y", 10.0);
@@ -429,19 +384,10 @@ DefaultValueTest::RunTests (void)
 				   MY_ENUM_A, "A",
 				   MY_ENUM_B, "B",
 				   0, (void*)0);
-  if (e.GetValue () != MY_ENUM_C)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (e.GetValue (), MY_ENUM_C);
   Bind ("test-e", "B");
-  if (e.GetValue () != MY_ENUM_B)
-    {
-      ok = false;
-    }
-  if (BindSafe ("test-e", "D") != INVALID_VALUE)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (e.GetValue (), MY_ENUM_B);
+  NS_TEST_ASSERT_EQUAL (BindSafe ("test-e", "D"), INVALID_VALUE);
 
   class MyEnumSubclass : public EnumDefaultValue<enum MyEnum>
   {
@@ -456,15 +402,9 @@ DefaultValueTest::RunTests (void)
       AddPossibleValue (MY_ENUM_D, "D");
     }
   } e1 ;
-  if (e1.GetValue () != MY_ENUM_B)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (e1.GetValue (), MY_ENUM_B);
   Bind ("test-e1", "D");
-  if (e1.GetValue () != MY_ENUM_D)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (e1.GetValue (), MY_ENUM_D);
 
   DefaultValueList::Remove ("test-e1");
   DefaultValueList::Remove ("test-e");
@@ -474,7 +414,7 @@ DefaultValueTest::RunTests (void)
   DefaultValueList::Remove ("test-c");
   DefaultValueList::Remove ("test-ui32");
   
-  return ok;
+  return result;
 }
 
 static DefaultValueTest g_default_value_tests;
