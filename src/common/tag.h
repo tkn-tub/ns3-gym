@@ -21,6 +21,9 @@
 #ifndef TAG_H
 #define TAG_H
 
+#include <stdint.h>
+#include <string>
+
 /**
  * \relates Tag
  * \brief this macro should be instantiated exactly once for each
@@ -44,9 +47,62 @@ static class thisisaveryverylongclassname ##x  \
 
 namespace ns3 {
 
+/**
+ * \brief a tag can be stored in a packet.
+ *
+ * A tag is a blob of 16 bytes of data which can be stored in
+ * a packet: a packet can contain an arbitrary number of tags
+ * and these tags are considered as "on-the-side" per-packet
+ * data structures which are not taken into account when calculating
+ * the size of the payload of a packet. They exist solely as 
+ * simulation-specific objects.
+ *
+ * Tags are typically used to:
+ *   - implement per-packet cross-layer communication
+ *   - implement packet coloring: you could store a "color" tag
+ *     in a packet to mark various types of packet for
+ *     simulation analysis
+ *
+ * To create a new type of tag, you must create a subclass
+ * of the Tag base class which defines:
+ *  - a public default constructor: needed for implementation
+ *    purposes of the Packet code.
+ *  - a public copy constructor: needed to copy a tag into
+ *    a packet tag buffer when the user invokes Packet::AddTag
+ *  - a public destructor: needed to destroy the copy of a tag
+ *    stored in a packet buffer when the user invokes Packet::RemoveTag
+ *    or when the packet is destroyed and the last reference to 
+ *    a tag instance disapears.
+ *  - a public static method named GetUid: needed to uniquely
+ *    the type of each tag instance.
+ *  - a public method named Print: needed to print the content
+ *    of a tag when the user calls Packet::PrintTags
+ *  - a public method named GetSerializedSize: needed to serialize
+ *    the content of a tag to a byte buffer when a packet must
+ *    be sent from one computing node to another in a parallel 
+ *    simulation. If this method returns 0, it means that the
+ *    tag does not need to be transfered from computing node to 
+ *     computing node
+ *  - a public method named Serialize: perform the serialization
+ *    to a byte buffer upon transfer to a new computing node in a 
+ *    parallel simulation.
+ *  - a public method named Deserialize: invert the serialization
+ *    from a byte buffer after being transfered to a new computing
+ *    node in a parallel simulation.
+ *
+ * A detailed example of what these methods should look like
+ * and how they should be implemented is described in samples/main-packet-tag.cc
+ */
 class Tag
 {
 protected:
+  /**
+   * \param name the unique name of the new type of tag
+   * \returns a newly-allocated uid
+   *
+   * This method should be used by subclasses to implement
+   * their static public GetUid method.
+   */
   template <typename T>
   static uint32_t AllocateUid (std::string name);
 };
