@@ -26,9 +26,9 @@
 
 NS_DEBUG_COMPONENT_DEFINE ("EthernetTrailer");
 
-NS_TRAILER_ENSURE_REGISTERED (ns3::EthernetTrailer);
-
 namespace ns3 {
+
+NS_TRAILER_ENSURE_REGISTERED (EthernetTrailer);
 
 bool EthernetTrailer::m_calcFcs = false;
 

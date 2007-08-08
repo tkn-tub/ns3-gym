@@ -27,9 +27,9 @@
 
 NS_DEBUG_COMPONENT_DEFINE ("EthernetHeader");
 
-NS_HEADER_ENSURE_REGISTERED (ns3::EthernetHeader);
-
 namespace ns3 {
+
+NS_HEADER_ENSURE_REGISTERED (EthernetHeader);
 
 uint32_t
 EthernetHeader::GetUid (void)

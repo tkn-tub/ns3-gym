@@ -21,6 +21,27 @@
 #ifndef TAG_H
 #define TAG_H
 
+/**
+ * \relates Tag
+ * \brief this macro should be instantiated exactly once for each
+ *        new type of Tag
+ *
+ * This macro will ensure that your new Tag type is registered
+ * within the tag registry. In most cases, this macro
+ * is not really needed but, for safety, please, use it all the
+ * time.
+ *
+ * Note: This macro is _absolutely_ needed if you try to run a
+ * distributed simulation.
+ */
+#define NS_TAG_ENSURE_REGISTERED(x)	       \
+static class thisisaveryverylongclassname ##x  \
+{					       \
+ public:				       \
+  thisisaveryverylongclassname ##x ()          \
+    { uint32_t uid; uid = x::GetUid ();}       \
+} g_thisisanotherveryveryverylongname ## x;
+
 namespace ns3 {
 
 class Tag

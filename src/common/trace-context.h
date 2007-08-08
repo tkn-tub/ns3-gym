@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include <vector>
 #include "ns3/fatal-error.h"
+#include "trace-context-element.h"
 
 namespace ns3 {
 
@@ -85,7 +86,7 @@ private:
   template <typename T>
   bool SafeGet (T &context) const;
   template <typename T>
-  bool SafeAdd (T &context);
+  bool SafeAdd (const T &context);
 
   uint8_t *CheckPresent (uint8_t uid) const;
   bool DoAdd (uint8_t uid, uint8_t const *buffer);
@@ -106,6 +107,10 @@ template <typename T>
 void 
 TraceContext::Add (T const &context)
 {
+  const TraceContextElement *parent;
+  // if the following assignment fails, it is because the input
+  // to this function is not a subclass of the TraceContextElement class.
+  parent = &context;
   uint8_t *data = (uint8_t *) &context;
   bool ok = DoAdd (T::GetUid (), data);
   if (!ok)
@@ -117,6 +122,10 @@ template <typename T>
 void
 TraceContext::Get (T &context) const
 {
+  TraceContextElement *parent;
+  // if the following assignment fails, it is because the input
+  // to this function is not a subclass of the TraceContextElement class.
+  parent = &context;
   uint8_t *data = (uint8_t *) &context;
   bool found = DoGet (T::GetUid (), data);
   if (!found)
@@ -128,14 +137,22 @@ template <typename T>
 bool
 TraceContext::SafeGet (T &context) const
 {
+  TraceContextElement *parent;
+  // if the following assignment fails, it is because the input
+  // to this function is not a subclass of the TraceContextElement class.
+  parent = &context;
   uint8_t *data = (uint8_t *) &context;
   bool found = DoGet (T::GetUid (), data);
   return found;
 }
 template <typename T>
 bool
-TraceContext::SafeAdd (T &context)
+TraceContext::SafeAdd (const T &context)
 {
+  const TraceContextElement *parent;
+  // if the following assignment fails, it is because the input
+  // to this function is not a subclass of the TraceContextElement class.
+  parent = &context;
   uint8_t *data = (uint8_t *) &context;
   bool ok = DoAdd (T::GetUid (), data);
   return ok;

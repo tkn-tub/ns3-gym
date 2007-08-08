@@ -37,15 +37,13 @@
  * Note: This macro is _absolutely_ needed if you try to run a
  * distributed simulation.
  */
-#define NS_TRAILER_ENSURE_REGISTERED(x)         \
-namespace {                                     \
-static class thisisaveryverylongclassname       \
-{                                               \
-public:                                         \
-  thisisaveryverylongclassname ()               \
-  { uint32_t uid; uid = x::GetUid ();}          \
-} g_thisisanotherveryveryverylongname;          \
-}
+#define NS_TRAILER_ENSURE_REGISTERED(x)          \
+static class thisisaveryverylongclassname ##x    \
+{                                                \
+ public:                                         \
+  thisisaveryverylongclassname ##x ()            \
+    { uint32_t uid; uid = x::GetUid ();}         \
+} g_thisisanotherveryveryverylongname ##x;
 
 namespace ns3 {
 

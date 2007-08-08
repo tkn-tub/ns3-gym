@@ -6,12 +6,12 @@
 
 #define NS_TRACE_CONTEXT_ELEMENT_ENSURE_REGISTERED(x)          \
 namespace {						       \
-static class thisisaveryverylongclassname		       \
+static class thisisaveryverylongclassname ##x		       \
   {							       \
   public:						       \
-    thisisaveryverylongclassname ()			       \
+    thisisaveryverylongclassname ##x ()			       \
       { uint32_t uid; uid = x::GetUid ();}		       \
-  } g_thisisanotherveryveryverylongname;		       \
+  } g_thisisanotherveryveryverylongname ##x ;		       \
 }
 
 namespace ns3 {
