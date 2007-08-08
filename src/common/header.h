@@ -83,7 +83,7 @@ namespace ns3 {
  * \endcode
  *
  * Sample code which shows how to create a new Header, and how to use it, 
- * is shown in the sample file samples/main-header.cc
+ * is shown in the sample file samples/main-packet-header.cc
  */
 class Header {
 public:
