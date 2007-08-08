@@ -42,7 +42,7 @@ MyHeader::GetUid (void)
   // code to keep track of the packet metadata.
   // You need to make sure that this string is absolutely
   // unique. The code will detect any duplicate string.
-  static uint32_t uid = Header::Register<MyHeader> ("MyHeader.test.nsnam.org");
+  static uint32_t uid = AllocateUid<MyHeader> ("MyHeader.test.nsnam.org");
   return uid;
 }
 

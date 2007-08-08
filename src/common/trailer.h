@@ -114,7 +114,7 @@ class Trailer {
 public:
 protected:
   template <typename T>
-  static uint32_t Register (std::string uidString);
+  static uint32_t AllocateUid (std::string uidString);
 #if 0
 private:
   /**
@@ -179,7 +179,7 @@ namespace ns3 {
 
 template <typename T>
 uint32_t 
-Trailer::Register (std::string uidString)
+Trailer::AllocateUid (std::string uidString)
 {
   return ChunkRegistry::RegisterTrailer<T> (uidString);
 }

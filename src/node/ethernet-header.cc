@@ -34,7 +34,7 @@ namespace ns3 {
 uint32_t
 EthernetHeader::GetUid (void)
 {
-  static uint32_t uid = Header::Register<EthernetHeader> ("EthernetHeader.ns3");
+  static uint32_t uid = AllocateUid<EthernetHeader> ("EthernetHeader.ns3");
   return uid;
 }
 

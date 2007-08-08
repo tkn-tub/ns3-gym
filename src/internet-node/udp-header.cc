@@ -31,7 +31,7 @@ bool UdpHeader::m_calcChecksum = false;
 uint32_t
 UdpHeader::GetUid (void)
 {
-  static uint32_t uid = Header::Register<UdpHeader> ("UdpHeader.ns3");
+  static uint32_t uid = AllocateUid<UdpHeader> ("UdpHeader.ns3");
   return uid;
 }
 

@@ -35,7 +35,7 @@ bool Ipv4Header::m_calcChecksum = false;
 uint32_t
 Ipv4Header::GetUid (void)
 {
-  static uint32_t uid = Header::Register<Ipv4Header> ("Ipv4Header.ns3");
+  static uint32_t uid = AllocateUid<Ipv4Header> ("Ipv4Header.ns3");
   return uid;
 }
 

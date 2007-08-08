@@ -35,7 +35,7 @@ bool EthernetTrailer::m_calcFcs = false;
 uint32_t
 EthernetTrailer::GetUid (void)
 {
-  static uint32_t uid = Trailer::Register<EthernetTrailer> ("EthernetTrailer.ns3");
+  static uint32_t uid = AllocateUid<EthernetTrailer> ("EthernetTrailer.ns3");
   return uid;
 }
 

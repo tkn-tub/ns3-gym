@@ -53,7 +53,7 @@ HistoryHeader<N>::GetUid (void)
 {
   std::ostringstream oss;
   oss << N << "HistoryHeader.ns3";
-  static uint32_t uid = Header::Register<HistoryHeader<N> > (oss.str());
+  static uint32_t uid = AllocateUid<HistoryHeader<N> > (oss.str());
   return uid;
 }
 
@@ -133,7 +133,7 @@ HistoryTrailer<N>::GetUid (void)
 {
   std::ostringstream oss;
   oss << N << "HistoryTrailer.ns3";
-  static uint32_t uid = Trailer::Register<HistoryTrailer<N> > (oss.str ());
+  static uint32_t uid = AllocateUid<HistoryTrailer<N> > (oss.str ());
   return uid;
 }
 

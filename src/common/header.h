@@ -91,7 +91,7 @@ class Header {
 public:
 protected:
   template <typename T>
-  static uint32_t Register (std::string uuid);
+  static uint32_t AllocateUid (std::string uuid);
 #if 0
 private:
   /**
@@ -152,7 +152,7 @@ namespace ns3 {
 
 template <typename T>
 uint32_t 
-Header::Register (std::string uuid)
+Header::AllocateUid (std::string uuid)
 {
   return ChunkRegistry::RegisterHeader<T> (uuid);
 }

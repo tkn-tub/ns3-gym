@@ -31,7 +31,7 @@ namespace ns3 {
 uint32_t
 LlcSnapHeader::GetUid (void)
 {
-  static uint32_t uid = Header::Register<LlcSnapHeader> ("LlcSnapHeader.ns3");
+  static uint32_t uid = AllocateUid<LlcSnapHeader> ("LlcSnapHeader.ns3");
   return uid;
 }
 
