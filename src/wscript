@@ -47,18 +47,10 @@ def configure(conf):
     ## Used to link the 'run-tests' program with all of ns-3 code
     conf.env['NS3_MODULES'] = ['ns3-' + module.split('/')[-1] for module in all_modules]
 
-def create_ns3_module(bld, name, dependencies=()):
-    module = bld.create_obj('cpp', 'shlib')
-    module.name = 'ns3-' + name
-    module.target = module.name
-    module.uselib_local = ['ns3-' + dep for dep in dependencies]
-    return module
-    
 
 def build(bld):
     Object.register('ns3header', Ns3Header)
     Action.Action('ns3header', func=_ns3_headers_inst, color='BLUE')
-    bld.create_ns3_module = create_ns3_module
     
     bld.add_subdirs(list(all_modules))
 
