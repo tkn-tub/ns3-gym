@@ -337,20 +337,20 @@ SimulatorPrivate *Simulator::m_priv = 0;
 
 void Simulator::SetLinkedList (void)
 {
-  Bind ("Scheduler", "List");
+  DefaultValue::Bind ("Scheduler", "List");
 }
 void Simulator::SetBinaryHeap (void)
 {
-  Bind ("Scheduler", "BinaryHeap");
+  DefaultValue::Bind ("Scheduler", "BinaryHeap");
 }
 void Simulator::SetStdMap (void)
 {
-  Bind ("Scheduler", "Map");
+  DefaultValue::Bind ("Scheduler", "Map");
 }
 void 
 Simulator::SetExternal (const std::string &external)
 {
-  Bind ("Scheduler", external);
+  DefaultValue::Bind ("Scheduler", external);
 }
 void Simulator::EnableLogTo (char const *filename)
 {

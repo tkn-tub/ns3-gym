@@ -73,7 +73,7 @@ int main (int argc, char* argv[])
   // global variable and value (string) to overwrite the default.
   // Here, the default value of 33 for testInt1 is overwritten with 57
   // 
-  Bind("testInt1", "57");
+  DefaultValue::Bind("testInt1", "57");
 
   TestClass* testclass = new TestClass ();
   NS_DEBUG_UNCOND("TestBool1 default value (" << testclass->m_testBool1 << ")");

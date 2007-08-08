@@ -87,12 +87,12 @@ int main (int argc, char *argv[])
 
   // The below Bind command tells the queue factory which class to
   // instantiate, when the queue factory is invoked in the topology code
-  Bind ("Queue", "DropTailQueue");
+  DefaultValue::Bind ("Queue", "DropTailQueue");
 
-  Bind ("OnOffApplicationPacketSize", "210");
-  Bind ("OnOffApplicationDataRate", "448kb/s");
+  DefaultValue::Bind ("OnOffApplicationPacketSize", "210");
+  DefaultValue::Bind ("OnOffApplicationDataRate", "448kb/s");
 
-  //Bind ("DropTailQueue::m_maxPackets", 30);   
+  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
 
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
