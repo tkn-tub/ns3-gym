@@ -124,6 +124,10 @@ Tags::Print (std::ostream &os) const
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
       TagRegistry::Print (cur->m_id, cur->m_data, os);
+      if (cur->m_next != 0)
+        {
+          os << " ";
+        }
     }
 }
 
