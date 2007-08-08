@@ -363,7 +363,7 @@ DefaultValueTest::RunTests (void)
   NS_TEST_ASSERT (!b.GetValue ());
   NS_TEST_ASSERT_EQUAL (BindSafe ("bool-b", "tr"), INVALID_VALUE)
 
-  NumericDefaultValue<int> i ("test-i", "help-i", -1);
+  NumericDefaultValue<int32_t> i ("test-i", "help-i", -1);
   NS_TEST_ASSERT_EQUAL (i.GetValue (), -1);
   Bind ("test-i", "-2");
   NS_TEST_ASSERT_EQUAL (i.GetValue (), -2);
@@ -372,7 +372,7 @@ DefaultValueTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (i.GetType (), "int32_t(-2147483648:2147483647)");
   NumericDefaultValue<uint32_t> ui32 ("test-ui32", "help-ui32", 10);
   NS_TEST_ASSERT_EQUAL (ui32.GetType (), "uint32_t(0:4294967295)");
-  NumericDefaultValue<char> c ("test-c", "help-c", 10);
+  NumericDefaultValue<int8_t> c ("test-c", "help-c", 10);
   NS_TEST_ASSERT_EQUAL (c.GetValue (), 10);
   Bind ("test-c", "257");  
   NumericDefaultValue<float> x ("test-x", "help-x", 10.0);
