@@ -23,7 +23,6 @@
 
 namespace ns3 {
 
-std::vector<uint8_t> TraceContext::m_sizes;
 
 TraceContext::TraceContext ()
   : m_data (0)
@@ -68,10 +67,17 @@ TraceContext::~TraceContext ()
     }
 }
 
+TraceContext::Sizes *
+TraceContext::GetSizes (void)
+{
+  static Sizes sizes;
+  return &sizes;
+}
+
 uint8_t 
 TraceContext::GetSize (uint8_t uid)
 {
-  return m_sizes[uid];
+  return (*GetSizes ())[uid];
 }
 
 void 
@@ -218,7 +224,7 @@ TraceContext::DoGetNextUid (void)
   static uint8_t uid = 0;
   if (uid == 0)
     {
-      m_sizes.push_back (0);
+      GetSizes ()->push_back (0);
     }
   uid++;
   return uid;
