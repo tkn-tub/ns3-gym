@@ -267,7 +267,6 @@ CsmaCdChannel::PropagationCompleteEvent()
             m_currentPkt.GetUid () << ")");
 
   NS_ASSERT(m_state == PROPAGATING);
-  m_state = IDLE;
 
   NS_DEBUG ("CsmaCdChannel::PropagationCompleteEvent (): Receive");
   
@@ -279,6 +278,7 @@ CsmaCdChannel::PropagationCompleteEvent()
         it->devicePtr->Receive (m_currentPkt);
       }
     }
+  m_state = IDLE;
 }
 
 
