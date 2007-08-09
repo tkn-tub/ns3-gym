@@ -95,7 +95,8 @@ private:
   bool DoAdd (uint8_t uid, uint8_t const *buffer);
   bool DoGet (uint8_t uid, uint8_t *buffer) const;
 
-  static std::vector<uint8_t> m_sizes;
+  typedef std::vector<uint8_t> Sizes; 
+  static Sizes *GetSizes (void);
   struct Data {
     uint16_t count;
     uint16_t size;
@@ -158,7 +159,7 @@ uint8_t
 TraceContext::GetNextUid (void)
 {
   uint8_t uid = DoGetNextUid ();
-  m_sizes.push_back (sizeof (T));
+  GetSizes ()->push_back (sizeof (T));
   return uid;
 }
 

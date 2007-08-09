@@ -2,10 +2,7 @@
 
 
 def build(bld):
-    obj = bld.create_obj('cpp', 'shlib')
-    obj.name = 'ns3-csma-cd'
-    obj.target = obj.name
-    obj.uselib_local = ['ns3-node']
+    obj = bld.create_ns3_module('csma-cd', ['node'])
     obj.source = [
         'backoff.cc',
         'csma-cd-net-device.cc',
