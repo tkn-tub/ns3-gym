@@ -1,10 +1,7 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    node = bld.create_obj('cpp', 'shlib')
-    node.name = 'ns3-node'
-    node.target = node.name
-    node.uselib_local = ['ns3-core', 'ns3-common', 'ns3-simulator']
+    node = bld.create_ns3_module('node', ['core', 'common', 'simulator'])
     node.source = [
         'address.cc',
         'eui48-address.cc',

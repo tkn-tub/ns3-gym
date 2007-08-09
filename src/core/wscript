@@ -26,9 +26,7 @@ def configure(conf):
 
 
 def build(bld):
-    core = bld.create_obj('cpp', 'shlib')
-    core.name = 'ns3-core'
-    core.target = core.name
+    core = bld.create_ns3_module('core')
     core.source = [
         'callback-test.cc',
         'debug.cc',
