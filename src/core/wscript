@@ -65,5 +65,6 @@ def build(bld):
         'command-line.h',
         'type-name.h',
         'component-manager.h',
+        'type-traits.h'
         ]
 
