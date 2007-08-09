@@ -25,7 +25,7 @@ namespace ns3 {
 
 PacketPrinter::PacketPrinter ()
   : m_forward (true),
-    m_separator ("")
+    m_separator (" ")
 {}
 
 void 
