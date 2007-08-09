@@ -19,8 +19,8 @@
  * Derived from the p2p net device file
  */
 
-#ifndef CSMA_CD_NET_DEVICE_H
-#define CSMA_CD_NET_DEVICE_H
+#ifndef CSMA_NET_DEVICE_H
+#define CSMA_NET_DEVICE_H
 
 #include <string.h>
 #include "ns3/node.h"
@@ -39,17 +39,17 @@
 namespace ns3 {
 
 class Queue;
-class CsmaCdChannel;
+class CsmaChannel;
 
-class CsmaCdTraceType : public TraceContextElement
+class CsmaTraceType : public TraceContextElement
 {
 public:
   enum Type {
     RX, 
     DROP
   };
-  CsmaCdTraceType (enum Type type);
-  CsmaCdTraceType ();
+  CsmaTraceType (enum Type type);
+  CsmaTraceType ();
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
 private:
@@ -57,59 +57,59 @@ private:
 };
 
 /**
- * \class CsmaCdNetDevice
- * \brief A Device for a CsmaCd Network Link.
+ * \class CsmaNetDevice
+ * \brief A Device for a Csma Network Link.
  *
- * The Csma/Cd net device class is analogous to layer 1 and 2 of the
+ * The Csma net device class is analogous to layer 1 and 2 of the
  * TCP stack. The NetDevice takes a raw packet of bytes and creates a
- * protocol specific packet from them. The Csma/Cd net device class
+ * protocol specific packet from them. The Csma net device class
  * takes this packet and adds and processes the headers/trailers that
  * are associated with EthernetV1, EthernetV2, RAW or LLC
  * protocols. The EthernetV1 packet type adds and removes Ethernet
  * destination and source addresses. The LLC packet type adds and
  * removes LLC snap headers. The raw packet type does not add or
- * remove any headers.  Each Csma/Cd net device will receive all
- * packets written to the Csma/Cd link. The ProcessHeader function can
+ * remove any headers.  Each Csma net device will receive all
+ * packets written to the Csma link. The ProcessHeader function can
  * be used to filter out the packets such that higher level layers
  * only receive packets that are addressed to their associated net
  * devices
  *
  */
-class CsmaCdNetDevice : public NetDevice {
+class CsmaNetDevice : public NetDevice {
 public:
 
   /**
    * Enumeration of the types of packets supported in the class.
    *
    */
-enum CsmaCdEncapsulationMode {
+enum CsmaEncapsulationMode {
   ETHERNET_V1, /**< Version one ethernet packet, length field */
   IP_ARP,      /**< Ethernet packet encapsulates IP/ARP packet */
   RAW,         /**< Packet that contains no headers */
   LLC,         /**< LLC packet encapsulation */  
 };
 
-  CsmaCdNetDevice (Ptr<Node> node);
+  CsmaNetDevice (Ptr<Node> node);
   /**
-   * Construct a CsmaCdNetDevice
+   * Construct a CsmaNetDevice
    *
-   * This is the constructor for the CsmaCdNetDevice.  It takes as a
+   * This is the constructor for the CsmaNetDevice.  It takes as a
    * parameter the Node to which this device is connected.  Ownership of the
    * Node pointer is not implied and the node must not be deleted.
    *
    * \param node the Node to which this device is connected.
    * \param addr The source MAC address of the net device.
    */
-  CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, CsmaCdEncapsulationMode pktType);
-  CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr,
-                   CsmaCdEncapsulationMode pktType,
+  CsmaNetDevice (Ptr<Node> node, Eui48Address addr, CsmaEncapsulationMode pktType);
+  CsmaNetDevice (Ptr<Node> node, Eui48Address addr,
+                   CsmaEncapsulationMode pktType,
                    bool sendEnable, bool receiveEnable);
   /**
-   * Destroy a CsmaCdNetDevice
+   * Destroy a CsmaNetDevice
    *
-   * This is the destructor for the CsmaCdNetDevice.
+   * This is the destructor for the CsmaNetDevice.
    */
-  virtual ~CsmaCdNetDevice();
+  virtual ~CsmaNetDevice();
   /**
    * Set the Data Rate used for transmission of packets.  The data rate is
    * set in the Attach () method from the corresponding field in the channel
@@ -146,23 +146,23 @@ enum CsmaCdEncapsulationMode {
   /**
    * Attach the device to a channel.
    *
-   * The function Attach is used to add a CsmaCdNetDevice to a
-   * CsmaCdChannel.
+   * The function Attach is used to add a CsmaNetDevice to a
+   * CsmaChannel.
    *
    * @see SetDataRate ()
    * @see SetInterframeGap ()
    * \param ch a pointer to the channel to which this object is being attached.
    */
-  bool Attach (Ptr<CsmaCdChannel> ch);
+  bool Attach (Ptr<CsmaChannel> ch);
   /**
-   * Attach a queue to the CsmaCdNetDevice.
+   * Attach a queue to the CsmaNetDevice.
    *
-   * The CsmaCdNetDevice "owns" a queue.  This queue is created by the
-   * CsmaCdTopology object and implements a queueing method such as
-   * DropTail or RED.  The CsmaCdNetDevice assumes ownership of this
+   * The CsmaNetDevice "owns" a queue.  This queue is created by the
+   * CsmaTopology object and implements a queueing method such as
+   * DropTail or RED.  The CsmaNetDevice assumes ownership of this
    * queue and must delete it when the device is destroyed.
    *
-   * @see CsmaCdTopology::AddCsmaCdLink ()
+   * @see CsmaTopology::AddCsmaLink ()
    * @see Queue
    * @see DropTailQueue
    * \param queue a pointer to the queue for which object is assuming
@@ -170,14 +170,14 @@ enum CsmaCdEncapsulationMode {
    */
   void AddQueue (Ptr<Queue> queue);
   /**
-   * Receive a packet from a connected CsmaCdChannel.
+   * Receive a packet from a connected CsmaChannel.
    *
-   * The CsmaCdNetDevice receives packets from its connected channel
+   * The CsmaNetDevice receives packets from its connected channel
    * and forwards them up the protocol stack.  This is the public method
    * used by the channel to indicate that the last bit of a packet has 
    * arrived at the device.
    *
-   * @see CsmaCdChannel
+   * @see CsmaChannel
    * \param p a reference to the received packet
    */
   void Receive (const Packet& p);
@@ -234,14 +234,14 @@ protected:
 
 private:
   // disable copy constructor and operator =
-  CsmaCdNetDevice &operator = (const CsmaCdNetDevice &o);
-  CsmaCdNetDevice (const CsmaCdNetDevice &o);
+  CsmaNetDevice &operator = (const CsmaNetDevice &o);
+  CsmaNetDevice (const CsmaNetDevice &o);
   /**
    * Initializes variablea when construction object.
    */
   void Init (bool sendEnable, bool receiveEnable);
   /**
-   * Send a Packet on the Csma/Cd network
+   * Send a Packet on the Csma network
    *
    * This method does not use a destination address since all packets
    * are broadcast to all NetDevices attached to the channel. Packet
@@ -261,7 +261,7 @@ private:
    * Start Sending a Packet Down the Wire.
    *
    * The TransmitStart method is the method that is used internally in
-   * the CsmaCdNetDevice to begin the process of sending a packet
+   * the CsmaNetDevice to begin the process of sending a packet
    * out on the channel.  The corresponding method is called on the
    * channel to let it know that the physical device this class
    * represents has virually started sending signals, this causes the
@@ -270,7 +270,7 @@ private:
    * is busy, the method reschedules itself for a later time (within
    * the backoff period)
    *
-   * @see CsmaCdChannel::TransmitStart ()
+   * @see CsmaChannel::TransmitStart ()
    * @see TransmitCompleteEvent ()
    */
   void TransmitStart ();
@@ -287,7 +287,7 @@ private:
    * also schedules the TransmitReadyEvent at which time the transmitter 
    * becomes ready to send the next packet.
    *
-   * @see CsmaCdChannel::TransmitEnd ()
+   * @see CsmaChannel::TransmitEnd ()
    * @see TransmitReadyEvent ()
    */
   void TransmitCompleteEvent (void);
@@ -359,7 +359,7 @@ private:
    * function and that should be processed by the ProcessHeader
    * function.
    */
-  CsmaCdEncapsulationMode m_encapMode;
+  CsmaEncapsulationMode m_encapMode;
   /**
    * The data rate that the Net Device uses to simulate packet transmission
    * timing.
@@ -385,14 +385,14 @@ private:
    */
   Packet m_currentPkt;
   /**
-   * The CsmaCdChannel to which this CsmaCdNetDevice has been
+   * The CsmaChannel to which this CsmaNetDevice has been
    * attached.
-   * @see class CsmaCdChannel
+   * @see class CsmaChannel
    */
-  Ptr<CsmaCdChannel> m_channel;
+  Ptr<CsmaChannel> m_channel;
   /**
-   * The Queue which this CsmaCdNetDevice uses as a packet source.
-   * Management of this Queue has been delegated to the CsmaCdNetDevice
+   * The Queue which this CsmaNetDevice uses as a packet source.
+   * Management of this Queue has been delegated to the CsmaNetDevice
    * and it has the responsibility for deletion.
    * @see class Queue
    * @see class DropTailQueue
@@ -413,5 +413,5 @@ private:
 
 }; // namespace ns3
 
-#endif // CSMA_CD_NET_DEVICE_H
+#endif // CSMA_NET_DEVICE_H
 

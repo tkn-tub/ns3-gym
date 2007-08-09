@@ -19,38 +19,38 @@
 //
 
 //
-// Topology helper for CsmaCd channels in ns3.
+// Topology helper for Csma channels in ns3.
 
 #include "ns3/assert.h"
 #include "ns3/debug.h"
 #include "ns3/queue.h"
 
-#include "csma-cd-channel.h"
-#include "csma-cd-net-device.h"
-#include "csma-cd-topology.h"
+#include "csma-channel.h"
+#include "csma-net-device.h"
+#include "csma-topology.h"
 #include "ns3/socket-factory.h"
 
 namespace ns3 {
 
-Ptr<CsmaCdChannel>
-CsmaCdTopology::CreateCsmaCdChannel(
+Ptr<CsmaChannel>
+CsmaTopology::CreateCsmaChannel(
   const DataRate& bps,
   const Time& delay)
 {
-  Ptr<CsmaCdChannel> channel = Create<CsmaCdChannel> (bps, delay);
+  Ptr<CsmaChannel> channel = Create<CsmaChannel> (bps, delay);
 
   return channel;
 }
 
 #if 0
-Ptr<CsmaCdNetDevice>
-CsmaCdTopology::AddCsmaCdEthernetNode(
+Ptr<CsmaNetDevice>
+CsmaTopology::AddCsmaEthernetNode(
   Ptr<Node> n1,
-  Ptr<CsmaCdChannel> ch,
+  Ptr<CsmaChannel> ch,
   MacAddress addr)
 {
-  Ptr<CsmaCdNetDevice> nd1 = Create<CsmaCdNetDevice> (n1, addr, 
-                                                      ns3::CsmaCdNetDevice::ETHERNET_V1);
+  Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr, 
+                                                      ns3::CsmaNetDevice::ETHERNET_V1);
 
   Ptr<Queue> q = Queue::CreateDefault ();
   nd1->AddQueue(q);
@@ -60,9 +60,9 @@ CsmaCdTopology::AddCsmaCdEthernetNode(
 }
 
 Ptr<PacketSocket>
-CsmaCdTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app, 
-                                        Ptr<CsmaCdNetDevice> ndSrc,
-                                        Ptr<CsmaCdNetDevice> ndDest)
+CsmaTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app, 
+                                        Ptr<CsmaNetDevice> ndSrc,
+                                        Ptr<CsmaNetDevice> ndDest)
 {
   Ptr<PacketSocket> socket = Create<PacketSocket> ();
   socket->Bind(ndSrc);
@@ -73,8 +73,8 @@ CsmaCdTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app,
 }
 
 Ptr<PacketSocket>
-CsmaCdTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app,
-                                        Ptr<CsmaCdNetDevice> ndSrc,
+CsmaTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app,
+                                        Ptr<CsmaNetDevice> ndSrc,
                                         MacAddress macAddr)
 {
   Ptr<PacketSocket> socket = Create<PacketSocket> ();
@@ -86,7 +86,7 @@ CsmaCdTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app,
 }
 
 Ptr<Socket>
-CsmaCdTopology::CreatePacketSocket(Ptr<Node> n1, std::string iid_name)
+CsmaTopology::CreatePacketSocket(Ptr<Node> n1, std::string iid_name)
 {
   InterfaceId iid = InterfaceId::LookupByName (iid_name);
 
