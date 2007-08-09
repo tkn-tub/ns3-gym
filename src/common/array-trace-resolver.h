@@ -37,7 +37,6 @@ class ArrayTraceResolver : public TraceResolver
 {
 public:
   /**
-   * \param context trace context associated to this trace resolver
    * \param getSize callback which returns dynamically the size of underlying array
    * \param get callback which returns any element in the underlying array
    *
@@ -51,8 +50,7 @@ public:
    * a pointer to a TraceResolver. i.e. the signature is:
    * TraceResolver * (*) (TraceContext const &)
    */
-  ArrayTraceResolver (TraceContext const &context,
-                      Callback<uint32_t> getSize, 
+  ArrayTraceResolver (Callback<uint32_t> getSize, 
                       Callback<T, uint32_t> get);
 private:
   virtual TraceResolverList DoLookup (std::string id) const;
@@ -64,11 +62,9 @@ private:
 namespace ns3 {
 
 template <typename T, typename INDEX>
-ArrayTraceResolver<T,INDEX>::ArrayTraceResolver (TraceContext const &context,
-                                                 Callback<uint32_t> getSize, 
+ArrayTraceResolver<T,INDEX>::ArrayTraceResolver (Callback<uint32_t> getSize, 
                                                  Callback<T, uint32_t> get)
-  : TraceResolver (context),
-    m_getSize (getSize),
+  : m_getSize (getSize),
     m_get (get)
 {}
 template <typename T, typename INDEX>
@@ -80,10 +76,10 @@ ArrayTraceResolver<T,INDEX>::DoLookup (std::string id) const
   {
     for (uint32_t i = 0; i < m_getSize (); i++)
     {
-      TraceContext context = GetContext ();
+      TraceContext context;
       INDEX index = i;
       context.Add (index);
-      list.push_back (m_get (i)->CreateTraceResolver (context));
+      list.push_back (std::make_pair (m_get (i)->CreateTraceResolver (), context));
     }
   }
   return list;

@@ -450,9 +450,9 @@ CsmaCdNetDevice::TransmitReadyEvent (void)
 }
 
 TraceResolver *
-CsmaCdNetDevice::DoCreateTraceResolver (TraceContext const &context)
+CsmaCdNetDevice::DoCreateTraceResolver (void)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  CompositeTraceResolver *resolver = new CompositeTraceResolver ();
   resolver->Add ("queue", 
                  MakeCallback (&Queue::CreateTraceResolver, 
                                PeekPointer (m_queue)));

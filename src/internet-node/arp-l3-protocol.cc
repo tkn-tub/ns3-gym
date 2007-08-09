@@ -59,9 +59,9 @@ ArpL3Protocol::DoDispose (void)
 }
 
 TraceResolver *
-ArpL3Protocol::CreateTraceResolver (TraceContext const &context)
+ArpL3Protocol::CreateTraceResolver (void)
 {
-  return new EmptyTraceResolver (context);
+  return new EmptyTraceResolver ();
 }
 
 ArpCache *

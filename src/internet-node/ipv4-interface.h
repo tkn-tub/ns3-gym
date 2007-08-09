@@ -83,7 +83,7 @@ public:
    * This method will delegate the work to the private DoCreateTraceResolver 
    * method which is supposed to be implemented by subclasses.
    */
-  TraceResolver *CreateTraceResolver (TraceContext const &context);
+  TraceResolver *CreateTraceResolver (void);
   /**
    * \returns the underlying NetDevice. This method can return
    *          zero if this interface has no associated NetDevice.
@@ -153,7 +153,7 @@ public:
 
  private:
   virtual void SendTo (Packet p, Ipv4Address dest) = 0;
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
+  virtual TraceResolver *DoCreateTraceResolver (void) = 0;
   Ptr<NetDevice> m_netdevice;
   bool m_ifup;
   Ipv4Address m_address;

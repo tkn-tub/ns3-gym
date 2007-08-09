@@ -22,8 +22,7 @@
 
 namespace ns3 {
 
-CompositeTraceResolver::CompositeTraceResolver (TraceContext const &context)
-  : TraceResolver (context)
+CompositeTraceResolver::CompositeTraceResolver ()
 {}
 
 CompositeTraceResolver::~CompositeTraceResolver ()
@@ -31,15 +30,14 @@ CompositeTraceResolver::~CompositeTraceResolver ()
 
 void 
 CompositeTraceResolver::Add (std::string name, 
-                             Callback<TraceResolver *,TraceContext const &> createResolver)
+                             Callback<TraceResolver *> createResolver)
 {
-  TraceContext traceContext = GetContext ();
-  DoAdd (name, createResolver, traceContext);
+  DoAdd (name, createResolver, TraceContext ());
 }
 
 void 
 CompositeTraceResolver::DoAdd (std::string name, 
-			       Callback<TraceResolver *,TraceContext const &> createResolver,
+			       Callback<TraceResolver *> createResolver,
 			       TraceContext const &context)
 {
   struct CallbackTraceSourceItem item;
@@ -57,7 +55,7 @@ CompositeTraceResolver::DoLookup (std::string id) const
       TraceResolver::TraceResolverList list;
       for (TraceItems::const_iterator i = m_items.begin (); i != m_items.end (); i++)
 	{
-	  list.push_back (i->createResolver (i->context));
+	  list.push_back (std::make_pair (i->createResolver (), i->context));
 	}
       return list;
     }
@@ -71,7 +69,7 @@ CompositeTraceResolver::DoLookup (std::string id) const
 	  if (i->name == id)
 	    {
 	      TraceResolver::TraceResolverList list;
-	      list.push_back (i->createResolver (i->context));
+	      list.push_back (std::make_pair (i->createResolver (), i->context));
 	      return list;
 	    }
 	}
@@ -102,7 +100,7 @@ CompositeTraceResolver::DoLookup (std::string id) const
 	{
 	  if (j->name == *i)
 	    {
-	      list.push_back (j->createResolver (j->context));
+	      list.push_back (std::make_pair (j->createResolver (), j->context));
 	      break;
 	    }
 	}
@@ -168,7 +166,7 @@ public:
 private:
   void TraceDouble (TraceContext const &context, double v);
   void TraceInt (TraceContext const &context, int v);
-  TraceResolver *CreateSubResolver (TraceContext const &context);
+  TraceResolver *CreateSubResolver ();
 
 
   bool m_gotDoubleA;
@@ -209,9 +207,9 @@ CompositeTraceResolverTest::TraceInt (TraceContext const &context, int v)
 }
 
 TraceResolver *
-CompositeTraceResolverTest::CreateSubResolver (TraceContext const &context)
+CompositeTraceResolverTest::CreateSubResolver (void)
 {
-  CompositeTraceResolver *subresolver = new CompositeTraceResolver (context);
+  CompositeTraceResolver *subresolver = new CompositeTraceResolver ();
   subresolver->Add ("trace-int", m_traceInt, 
                     SubTraceSourceTest (SubTraceSourceTest::INT));
   return subresolver;
@@ -225,14 +223,14 @@ CompositeTraceResolverTest::RunTests (void)
   CallbackTraceSource<double> traceDoubleB;
   TraceContext context;
 
-  CompositeTraceResolver resolver (context) ;
+  CompositeTraceResolver resolver;
 
   resolver.Add ("trace-double-a", traceDoubleA, 
                 TraceSourceTest (TraceSourceTest::DOUBLEA));
   resolver.Add ("trace-double-b", traceDoubleB, 
                 TraceSourceTest (TraceSourceTest::DOUBLEB));
 
-  resolver.Connect ("/*", MakeCallback (&CompositeTraceResolverTest::TraceDouble, this));
+  resolver.Connect ("/*", MakeCallback (&CompositeTraceResolverTest::TraceDouble, this), TraceContext ());
 
   m_gotDoubleA = false;
   m_gotDoubleB = false;
@@ -263,7 +261,7 @@ CompositeTraceResolverTest::RunTests (void)
     }
 
   resolver.Connect ("/trace-double-a", 
-		    MakeCallback (&CompositeTraceResolverTest::TraceDouble, this));
+		    MakeCallback (&CompositeTraceResolverTest::TraceDouble, this), TraceContext ());
   m_gotDoubleA = false;
   m_gotDoubleB = false;
   traceDoubleA (0);
@@ -276,7 +274,7 @@ CompositeTraceResolverTest::RunTests (void)
 		       MakeCallback (&CompositeTraceResolverTest::TraceDouble, this));
 
   resolver.Connect ("/(trace-double-a)", 
-		    MakeCallback (&CompositeTraceResolverTest::TraceDouble, this));
+		    MakeCallback (&CompositeTraceResolverTest::TraceDouble, this), TraceContext ());
   m_gotDoubleA = false;
   m_gotDoubleB = false;
   traceDoubleA (0);
@@ -289,7 +287,7 @@ CompositeTraceResolverTest::RunTests (void)
 		       MakeCallback (&CompositeTraceResolverTest::TraceDouble, this));
 
   resolver.Connect ("/(trace-double-a|trace-double-b)", 
-		    MakeCallback (&CompositeTraceResolverTest::TraceDouble, this));
+		    MakeCallback (&CompositeTraceResolverTest::TraceDouble, this), TraceContext ());
   m_gotDoubleA = false;
   m_gotDoubleB = false;
   traceDoubleA (0);
@@ -326,7 +324,7 @@ CompositeTraceResolverTest::RunTests (void)
 		TraceSourceTest (TraceSourceTest::SUBRESOLVER));
 
   resolver.Connect ("/subresolver/trace-int", 
-		    MakeCallback (&CompositeTraceResolverTest::TraceInt, this));
+		    MakeCallback (&CompositeTraceResolverTest::TraceInt, this), TraceContext ());
   m_gotInt = false;
   m_traceInt (1);
   if (!m_gotInt)
@@ -344,7 +342,7 @@ CompositeTraceResolverTest::RunTests (void)
     }
 
   resolver.Connect ("/*/trace-int", 
-		    MakeCallback (&CompositeTraceResolverTest::TraceInt, this));
+		    MakeCallback (&CompositeTraceResolverTest::TraceInt, this), TraceContext ());
   m_gotInt = false;
   m_traceInt (1);
   if (!m_gotInt)

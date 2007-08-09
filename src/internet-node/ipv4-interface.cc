@@ -46,9 +46,9 @@ Ipv4Interface::GetDevice (void) const
 }
 
 TraceResolver *
-Ipv4Interface::CreateTraceResolver (TraceContext const &context)
+Ipv4Interface::CreateTraceResolver (void)
 {
-  return DoCreateTraceResolver (context);
+  return DoCreateTraceResolver ();
 }
 
 void 

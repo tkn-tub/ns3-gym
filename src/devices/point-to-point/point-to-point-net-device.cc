@@ -188,10 +188,9 @@ void PointToPointNetDevice::TransmitComplete (void)
   TransmitStart(p);
 }
 
-TraceResolver* PointToPointNetDevice::DoCreateTraceResolver (
-                                      TraceContext const &context)
+TraceResolver* PointToPointNetDevice::DoCreateTraceResolver (void)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  CompositeTraceResolver *resolver = new CompositeTraceResolver ();
   resolver->Add ("queue", 
                  MakeCallback (&Queue::CreateTraceResolver, PeekPointer (m_queue)));
   resolver->Add ("rx",

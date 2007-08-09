@@ -38,7 +38,7 @@ namespace ns3 {
 class CompositeTraceResolver : public TraceResolver
 {
 public:
-  CompositeTraceResolver (TraceContext const &context);
+  CompositeTraceResolver ();
   virtual ~CompositeTraceResolver ();
   /**
    * \param name name of trace source
@@ -109,7 +109,7 @@ public:
    */
   template <typename T>
   void Add (std::string name, 
-            Callback<TraceResolver *,TraceContext const &> createResolver,
+            Callback<TraceResolver *> createResolver,
             T const &context);
 
   /**
@@ -122,23 +122,22 @@ public:
    * will be invoked to create the child trace resolver.
    */
   void Add (std::string name, 
-            Callback<TraceResolver *,TraceContext const &> createResolver);
+            Callback<TraceResolver *> createResolver);
 private:
   template <typename SOURCE, typename CONTEXT>
   void DoAddTraceSource (std::string name,
                          SOURCE &traceSource, CONTEXT const &context);
   template <typename SOURCE>
-  static TraceResolver *CreateTerminalTraceResolver (SOURCE *trace, 
-                                                     TraceContext const &context);
+  static TraceResolver *CreateTerminalTraceResolver (SOURCE *trace);
   void DoAdd (std::string name, 
-              Callback<TraceResolver *,TraceContext const &> createResolver,
+              Callback<TraceResolver *> createResolver,
               TraceContext const &context);
   virtual TraceResolverList DoLookup (std::string id) const;
 
   struct CallbackTraceSourceItem
   {
     std::string name;
-    Callback<TraceResolver *,TraceContext const &> createResolver;
+    Callback<TraceResolver *> createResolver;
     TraceContext context;
   };
 
@@ -155,21 +154,21 @@ void
 CompositeTraceResolver::DoAddTraceSource (std::string name,
                                           SOURCE &traceSource, CONTEXT const &context)
 {
-  TraceContext traceContext = GetContext ();
-  traceContext.Add (context);
-  TraceResolver *(*create) (SOURCE *trace, TraceContext const &context);
+  TraceResolver *(*create) (SOURCE *trace);
   create = &CompositeTraceResolver::CreateTerminalTraceResolver<SOURCE>;
-  Callback<TraceResolver *,TraceContext const &> createResolver = 
+  Callback<TraceResolver *> createResolver = 
     MakeBoundCallback (create, &traceSource);
-  DoAdd (name, createResolver, traceContext);
+
+  TraceContext ctx;
+  ctx.Add (context);
+  DoAdd (name, createResolver, ctx);
 }
 
 template <typename SOURCE>
 TraceResolver *
-CompositeTraceResolver::CreateTerminalTraceResolver (SOURCE *traceSource, 
-                                                     TraceContext const &context)
+CompositeTraceResolver::CreateTerminalTraceResolver (SOURCE *traceSource)
 {
-  return new TerminalTraceResolver<SOURCE> (*traceSource, context);
+  return new TerminalTraceResolver<SOURCE> (*traceSource);
 }
 
 
@@ -209,12 +208,12 @@ CompositeTraceResolver::Add (std::string name,
 template <typename T>
 void 
 CompositeTraceResolver::Add (std::string name, 
-                             Callback<TraceResolver *,TraceContext const &> createResolver,
+                             Callback<TraceResolver *> createResolver,
                              T const &context)
 {
-  TraceContext traceContext = GetContext ();
-  traceContext.Add (context);
-  DoAdd (name, createResolver, traceContext);
+  TraceContext ctx;
+  ctx.Add (context);
+  DoAdd (name, createResolver, ctx);
 }
 
 }//namespace ns3

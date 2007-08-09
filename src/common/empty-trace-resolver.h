@@ -44,7 +44,7 @@ public:
    *
    * The only constructor exported by this class.
    */
-  EmptyTraceResolver (TraceContext const &o);
+  EmptyTraceResolver ();
 };
 
 }//namespace ns3

@@ -44,7 +44,7 @@ class ArpIpv4Interface : public Ipv4Interface
 
  private:
   virtual void SendTo (Packet p, Ipv4Address dest);
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
+  virtual TraceResolver *DoCreateTraceResolver (void);
   Ptr<Node> m_node;
 };
 

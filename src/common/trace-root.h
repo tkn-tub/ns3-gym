@@ -325,7 +325,7 @@ public:
   static void Connect (std::string path, CallbackBase const &cb);
   static void Disconnect (std::string path, CallbackBase const &cb);
   static void Register (std::string name, 
-                        Callback<TraceResolver *,TraceContext const &> createResolver);
+                        Callback<TraceResolver *> createResolver);
 private:
   static CompositeTraceResolver *GetComposite (void);
 };

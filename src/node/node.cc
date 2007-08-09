@@ -83,9 +83,9 @@ Node::~Node ()
 {}
 
 TraceResolver *
-Node::CreateTraceResolver (TraceContext const &context)
+Node::CreateTraceResolver (void)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  CompositeTraceResolver *resolver = new CompositeTraceResolver ();
   DoFillTraceResolver (*resolver);
   return resolver;
 }
@@ -142,12 +142,11 @@ Node::GetNApplications (void) const
 }
 
 TraceResolver *
-Node::CreateDevicesTraceResolver (const TraceContext &context)
+Node::CreateDevicesTraceResolver (void)
 {
   ArrayTraceResolver<Ptr<NetDevice>,NodeNetDeviceIndex> *resolver = 
     new ArrayTraceResolver<Ptr<NetDevice>,NodeNetDeviceIndex> 
-    (context,
-     MakeCallback (&Node::GetNDevices, this), 
+    (MakeCallback (&Node::GetNDevices, this), 
      MakeCallback (&Node::GetDevice, this));
   
   return resolver;

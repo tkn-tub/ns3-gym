@@ -92,7 +92,7 @@ public:
    *          performed in this object. The caller must
    *          delete the returned object.
    */
-  virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
+  virtual TraceResolver *CreateTraceResolver (void);
 
   /**
    * \param ttl default ttl to use
@@ -189,7 +189,7 @@ private:
   void ForwardUp (Packet p, Ipv4Header const&ip);
   uint32_t AddIpv4Interface (Ipv4Interface *interface);
   void SetupLoopback (void);
-  TraceResolver *InterfacesCreateTraceResolver (TraceContext const &context) const;
+  TraceResolver *InterfacesCreateTraceResolver (void) const;
 
   typedef std::list<Ipv4Interface*> Ipv4InterfaceList;
   typedef std::list< std::pair< int, Ptr<Ipv4RoutingProtocol> > > Ipv4RoutingProtocolList;

@@ -46,9 +46,9 @@ UdpL4Protocol::~UdpL4Protocol ()
 {}
 
 TraceResolver *
-UdpL4Protocol::CreateTraceResolver (TraceContext const &context)
+UdpL4Protocol::CreateTraceResolver (void)
 {
-  return new EmptyTraceResolver (context);
+  return new EmptyTraceResolver ();
 }
 
 void

@@ -20,6 +20,5 @@
  */
 #include "empty-trace-resolver.h"
 
-ns3::EmptyTraceResolver::EmptyTraceResolver (TraceContext const &context)
-  : TraceResolver (context)
+ns3::EmptyTraceResolver::EmptyTraceResolver ()
 {}

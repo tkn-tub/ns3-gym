@@ -79,9 +79,9 @@ Ipv4L4Demux::DoDispose (void)
 }
 
 TraceResolver *
-Ipv4L4Demux::CreateTraceResolver (TraceContext const &context)
+Ipv4L4Demux::CreateTraceResolver (void)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  CompositeTraceResolver *resolver = new CompositeTraceResolver ();
   for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       Ptr<Ipv4L4Protocol> protocol = *i;

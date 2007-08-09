@@ -31,9 +31,9 @@ template <typename T>
 class TerminalTraceResolver : public TraceResolver
 {
  public:
-  TerminalTraceResolver (T &traceSource, TraceContext const &context);
+  TerminalTraceResolver (T &traceSource);
  private:
-  virtual void DoConnect (CallbackBase const &cb);
+  virtual void DoConnect (CallbackBase const &cb, const TraceContext &context);
   virtual void DoDisconnect (CallbackBase const &cb);
   T &m_traceSource;
 };
@@ -43,16 +43,14 @@ class TerminalTraceResolver : public TraceResolver
 namespace ns3 {
 
 template <typename T>
-TerminalTraceResolver<T>::TerminalTraceResolver (T &traceSource, 
-						 TraceContext const &context)
-  : TraceResolver (context),
-    m_traceSource (traceSource)
+TerminalTraceResolver<T>::TerminalTraceResolver (T &traceSource)
+  : m_traceSource (traceSource)
 {}
 template <typename T>
 void 
-TerminalTraceResolver<T>::DoConnect (CallbackBase const &cb)
+TerminalTraceResolver<T>::DoConnect (CallbackBase const &cb, const TraceContext &context)
 {
-  m_traceSource.AddCallback (cb, GetContext ());
+  m_traceSource.AddCallback (cb, context);
 }
 template <typename T>
 void 

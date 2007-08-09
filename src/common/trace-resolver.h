@@ -59,7 +59,7 @@ public:
    * users could also conceivably call it directly if they want to
    * skip the ns3::TraceRoot.
    */
-  void Connect (std::string path, CallbackBase const &cb);
+  void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   /**
    * \param path the namespace path to resolver
    * \param cb the callback to disconnect in the matching namespace
@@ -70,23 +70,8 @@ public:
    */
   void Disconnect (std::string path, CallbackBase const &cb);
 protected:
-  /**
-   * \param context the context used to initialize this TraceResolver.
-   *
-   * Every subclass must call this constructor
-   */
-  TraceResolver (TraceContext const &context);
-  /**
-   * \returns the ns3::TraceContext stored in this ns3::TraceResolver.
-   *
-   * Subclasses usually invoke this method to get access to the
-   * TraceContext stored here to pass it down to the TraceResolver
-   * constructors invoked from within the DoLookup method.
-   */
-  TraceContext const &GetContext (void) const;
-  typedef std::list<TraceResolver *> TraceResolverList;
+  typedef std::list<std::pair<TraceResolver *, TraceContext> > TraceResolverList;
 private:
-  TraceResolver ();
   /**
    * \param id the id to resolve. This is supposed to be
    * one element of the global tracing namespace.
@@ -104,7 +89,7 @@ private:
    *
    * This method is invoked on leaf trace resolvers.
    */
-  virtual void DoConnect (CallbackBase const &cb);
+  virtual void DoConnect (CallbackBase const &cb, const TraceContext &context);
   /**
    * \param cb callback to disconnect
    *

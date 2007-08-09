@@ -85,7 +85,6 @@ public:
   virtual ~Node();
 
   /**
-   * \param context the trace context for the TraceResolver to create
    * \returns a newly-created TraceResolver. The caller takes
    *          ownership of the returned pointer.
    *
@@ -93,7 +92,7 @@ public:
    * could be used directly by a user who needs access to very low-level
    * trace configuration.
    */
-  TraceResolver *CreateTraceResolver (TraceContext const &context);
+  TraceResolver *CreateTraceResolver (void);
 
   /**
    * \returns the unique id of this node.
@@ -213,7 +212,7 @@ private:
   bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
                           uint16_t protocol, const Address &from);
   void Construct (void);
-  TraceResolver *CreateDevicesTraceResolver (const TraceContext &context);
+  TraceResolver *CreateDevicesTraceResolver (void);
 
   struct ProtocolHandlerEntry {
     ProtocolHandler handler;

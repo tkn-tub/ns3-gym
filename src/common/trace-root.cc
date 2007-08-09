@@ -28,7 +28,7 @@ void
 TraceRoot::Connect (std::string path, CallbackBase const &cb)
 {
   TraceResolver *resolver = GetComposite ();
-  resolver->Connect (path, cb);
+  resolver->Connect (path, cb, TraceContext ());
 }
 void 
 TraceRoot::Disconnect (std::string path, CallbackBase const &cb)
@@ -38,7 +38,7 @@ TraceRoot::Disconnect (std::string path, CallbackBase const &cb)
 }
 void 
 TraceRoot::Register (std::string name, 
-                     Callback<TraceResolver *,TraceContext const &> createResolver)
+                     Callback<TraceResolver *> createResolver)
 {
   CompositeTraceResolver *resolver = GetComposite ();
   resolver->Add (name, createResolver);
@@ -47,7 +47,7 @@ TraceRoot::Register (std::string name,
 CompositeTraceResolver *
 TraceRoot::GetComposite (void)
 {
-  static CompositeTraceResolver resolver = CompositeTraceResolver (TraceContext ());
+  static CompositeTraceResolver resolver;
   return &resolver;
 }
 

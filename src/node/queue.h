@@ -70,7 +70,7 @@ public:
   Queue ();
   virtual ~Queue ();
 
-  TraceResolver *CreateTraceResolver (TraceContext const &context);
+  TraceResolver *CreateTraceResolver (void);
   
   /**
    * \return true if the queue is empty; false otherwise

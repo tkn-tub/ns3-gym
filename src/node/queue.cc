@@ -95,9 +95,9 @@ Queue::~Queue()
 }
 
 TraceResolver *
-Queue::CreateTraceResolver (TraceContext const &context)
+Queue::CreateTraceResolver (void)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  CompositeTraceResolver *resolver = new CompositeTraceResolver ();
   resolver->Add ("enqueue", m_traceEnqueue, QueueTraceType (QueueTraceType::ENQUEUE));
   resolver->Add ("dequeue", m_traceDequeue, QueueTraceType (QueueTraceType::DEQUEUE));
   resolver->Add ("drop", m_traceDrop, QueueTraceType (QueueTraceType::DROP));

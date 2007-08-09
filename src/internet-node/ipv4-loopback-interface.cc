@@ -35,9 +35,9 @@ Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
 {}
 
 TraceResolver *
-Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
+Ipv4LoopbackInterface::DoCreateTraceResolver (void)
 {
-  return new EmptyTraceResolver (context);
+  return new EmptyTraceResolver ();
 }
 
 void 

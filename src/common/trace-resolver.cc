@@ -22,21 +22,12 @@
 
 namespace ns3 {
 
-TraceResolver::TraceResolver (TraceContext const &context)
-  : m_context (context)
-{}
 
 TraceResolver::~TraceResolver ()
 {}
 
-TraceContext const &
-TraceResolver::GetContext (void) const
-{
-  return m_context;
-}
-
 void 
-TraceResolver::Connect (std::string path, CallbackBase const &cb)
+TraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
 {
   std::string::size_type cur = 1;
   // check that first char is "/"
@@ -45,16 +36,18 @@ TraceResolver::Connect (std::string path, CallbackBase const &cb)
   TraceResolverList resolverList = DoLookup (element);
   for (TraceResolverList::iterator i = resolverList.begin (); i != resolverList.end (); i++)
     {
-      TraceResolver *resolver = *i;
+      TraceResolver *resolver = i->first;
+      TraceContext tmp = context;
+      tmp.Add (i->second);
       if (next == std::string::npos) 
 	{
 	  // we really break the recursion here.
-	  resolver->DoConnect (cb);
+	  resolver->DoConnect (cb, tmp);
 	}
       else
 	{
 	  std::string subpath = std::string (path, next, std::string::npos);
-          resolver->Connect (subpath, cb);
+          resolver->Connect (subpath, cb, tmp);
 	}
       delete resolver;
     }
@@ -71,7 +64,7 @@ TraceResolver::Disconnect (std::string path, CallbackBase const &cb)
   TraceResolverList resolverList = DoLookup (element);
   for (TraceResolverList::iterator i = resolverList.begin (); i != resolverList.end (); i++)
     {
-      TraceResolver *resolver = *i;
+      TraceResolver *resolver = i->first;
       if (next == std::string::npos) 
 	{
 	  // we really break the recursion here.
@@ -93,7 +86,7 @@ TraceResolver::DoLookup (std::string id) const
   return TraceResolverList ();
 }
 void 
-TraceResolver::DoConnect (CallbackBase const &cb)
+TraceResolver::DoConnect (CallbackBase const &cb, const TraceContext &context)
 {}
 
 void 

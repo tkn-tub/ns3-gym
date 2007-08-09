@@ -41,9 +41,9 @@ ArpIpv4Interface::~ArpIpv4Interface ()
 {}
 
 TraceResolver *
-ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
+ArpIpv4Interface::DoCreateTraceResolver (void)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  CompositeTraceResolver *resolver = new CompositeTraceResolver ();
   if (GetDevice () != 0)
     {
       resolver->Add ("netdevice",
