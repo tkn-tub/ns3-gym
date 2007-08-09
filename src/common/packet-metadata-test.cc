@@ -38,12 +38,12 @@ public:
   static uint32_t GetUid (void);
   HistoryHeader ();
   bool IsOk (void) const;
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
   bool m_ok;
 };
 
@@ -53,7 +53,7 @@ HistoryHeader<N>::GetUid (void)
 {
   std::ostringstream oss;
   oss << N << "HistoryHeader.ns3";
-  static uint32_t uid = Header::Register<HistoryHeader<N> > (oss.str());
+  static uint32_t uid = AllocateUid<HistoryHeader<N> > (oss.str());
   return uid;
 }
 
@@ -71,7 +71,7 @@ HistoryHeader<N>::IsOk (void) const
 
 template <int N>
 std::string 
-HistoryHeader<N>::DoGetName (void) const
+HistoryHeader<N>::GetName (void) const
 {
   std::ostringstream oss;
   oss << N;
@@ -80,7 +80,7 @@ HistoryHeader<N>::DoGetName (void) const
 
 template <int N>
 void 
-HistoryHeader<N>::PrintTo (std::ostream &os) const
+HistoryHeader<N>::Print (std::ostream &os) const
 {
   NS_ASSERT (false);
 }
@@ -92,13 +92,13 @@ HistoryHeader<N>::GetSerializedSize (void) const
 }
 template <int N>
 void 
-HistoryHeader<N>::SerializeTo (Buffer::Iterator start) const
+HistoryHeader<N>::Serialize (Buffer::Iterator start) const
 {
   start.WriteU8 (N, N);
 }
 template <int N>
 uint32_t
-HistoryHeader<N>::DeserializeFrom (Buffer::Iterator start)
+HistoryHeader<N>::Deserialize (Buffer::Iterator start)
 {
   m_ok = true;
   for (int i = 0; i < N; i++)
@@ -118,12 +118,12 @@ public:
   static uint32_t GetUid (void);
   HistoryTrailer ();
   bool IsOk (void) const;
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
   bool m_ok;
 };
 
@@ -133,7 +133,7 @@ HistoryTrailer<N>::GetUid (void)
 {
   std::ostringstream oss;
   oss << N << "HistoryTrailer.ns3";
-  static uint32_t uid = Trailer::Register<HistoryTrailer<N> > (oss.str ());
+  static uint32_t uid = AllocateUid<HistoryTrailer<N> > (oss.str ());
   return uid;
 }
 
@@ -152,7 +152,7 @@ HistoryTrailer<N>::IsOk (void) const
 
 template <int N>
 std::string 
-HistoryTrailer<N>::DoGetName (void) const
+HistoryTrailer<N>::GetName (void) const
 {
   std::ostringstream oss;
   oss << N;
@@ -160,7 +160,7 @@ HistoryTrailer<N>::DoGetName (void) const
 }
 template <int N>
 void 
-HistoryTrailer<N>::PrintTo (std::ostream &os) const
+HistoryTrailer<N>::Print (std::ostream &os) const
 {
   NS_ASSERT (false);
 }
@@ -172,14 +172,14 @@ HistoryTrailer<N>::GetSerializedSize (void) const
 }
 template <int N>
 void 
-HistoryTrailer<N>::SerializeTo (Buffer::Iterator start) const
+HistoryTrailer<N>::Serialize (Buffer::Iterator start) const
 {
   start.Prev (N);
   start.WriteU8 (N, N);
 }
 template <int N>
 uint32_t
-HistoryTrailer<N>::DeserializeFrom (Buffer::Iterator start)
+HistoryTrailer<N>::Deserialize (Buffer::Iterator start)
 {
   m_ok = true;
   start.Prev (N);

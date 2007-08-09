@@ -24,7 +24,6 @@
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
 #include "buffer.h"
-#include "chunk.h"
 #include <vector>
 
 namespace ns3 {

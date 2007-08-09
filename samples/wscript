@@ -13,8 +13,14 @@ def build(bld):
     obj = bld.create_ns3_program('main-simulator')
     obj.source = 'main-simulator.cc'
 
-    obj = bld.create_ns3_program('main-header', ['common', 'simulator'])
-    obj.source = 'main-header.cc'
+    obj = bld.create_ns3_program('main-packet-header', ['common', 'simulator'])
+    obj.source = 'main-packet-header.cc'
+
+    obj = bld.create_ns3_program('main-packet-tag', ['common', 'simulator'])
+    obj.source = 'main-packet-tag.cc'
+
+    obj = bld.create_ns3_program('main-packet-printer', ['common', 'simulator', 'internet-node'])
+    obj.source = 'main-packet-printer.cc'
 
     obj = bld.create_ns3_program('main-test')
     obj.source = 'main-test.cc'

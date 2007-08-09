@@ -348,7 +348,7 @@ public:
    * result.
    */
   template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-  static Ptr<T> Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2, T3 a3, T4 a4, T5);
+  static Ptr<T> Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
 private:
   friend void RegisterCallback (ClassId classId, CallbackBase *callback, 

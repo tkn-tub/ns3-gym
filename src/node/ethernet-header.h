@@ -62,7 +62,6 @@ public:
    * By default, does not add or remove an ethernet preamble
    */
   EthernetHeader ();
-  virtual ~EthernetHeader ();
   /**
    * \param size The size of the payload in bytes
    */
@@ -104,16 +103,15 @@ public:
    */
   uint32_t GetHeaderSize() const;
 
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 private:
   static const int PREAMBLE_SIZE = 8; /// size of the preamble_sfd header field
   static const int LENGTH_SIZE = 2;   /// size of the length_type header field
   static const int MAC_ADDR_SIZE = 6; /// size of src/dest addr header fields
-
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
 
   /**
    * If false, the preamble/sfd are not serialised/deserialised.

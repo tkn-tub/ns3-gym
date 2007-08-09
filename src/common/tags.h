@@ -26,34 +26,7 @@
 #include <vector>
 #include "buffer.h"
 
-/**
- * \ingroup tag
- * \brief this macro should be instantiated exactly once for each
- *        new type of Tag
- *
- * This macro will ensure that your new Tag type is registered
- * within the tag registry. In most cases, this macro
- * is not really needed but, for safety, please, use it all the
- * time.
- *
- * Note: This macro is _absolutely_ needed if you try to run a
- * distributed simulation.
- */
-#define NS_TAG_ENSURE_REGISTERED(x)            \
-namespace {                                     \
-static class thisisaveryverylongclassname       \
-{                                               \
-public:                                         \
-  thisisaveryverylongclassname ()               \
-  { uint32_t uid; uid = x::GetUid ();}          \
-} g_thisisanotherveryveryverylongname;          \
-}
-
-
 namespace ns3 {
-
-template <typename T>
-class TagPrettyPrinter;
 
 /**
  * \ingroup constants
@@ -114,128 +87,22 @@ private:
 /**************************************************************
    An implementation of the templates defined above
  *************************************************************/
+#include "tag-registry.h"
+#include "tag.h"
 #include "ns3/assert.h"
 #include <string>
 
 namespace ns3 {
 
-/**
- * \brief a registry of all existing tag types.
- * \internal
- *
- * This class is used to give polymorphic access to the methods
- * exported by a tag. It also is used to associate a single
- * reliable uid to each unique type. 
- */
-class TagRegistry
-{
-public:
-  template <typename T>
-  static uint32_t Register (std::string uidString);
-  static std::string GetUidString (uint32_t uid);
-  static uint32_t GetUidFromUidString (std::string uidString);
-  static void Destruct (uint32_t uid, uint8_t data[Tags::SIZE]);
-  static void Print (uint32_t uid, uint8_t data[Tags::SIZE], std::ostream &os);
-  static uint32_t GetSerializedSize (uint32_t uid, uint8_t data[Tags::SIZE]);
-  static void Serialize (uint32_t uid, uint8_t data[Tags::SIZE], Buffer::Iterator start);
-  static uint32_t Deserialize (uint32_t uid, uint8_t data[Tags::SIZE], Buffer::Iterator start);
-private:
-  typedef void (*DestructCb) (uint8_t [Tags::SIZE]);
-  typedef void (*PrintCb) (uint8_t [Tags::SIZE], std::ostream &);
-  typedef uint32_t (*GetSerializedSizeCb) (uint8_t [Tags::SIZE]);
-  typedef void (*SerializeCb) (uint8_t [Tags::SIZE], Buffer::Iterator);
-  typedef uint32_t (*DeserializeCb) (uint8_t [Tags::SIZE], Buffer::Iterator);
-  struct TagInfo
-  {
-    std::string uidString;
-    DestructCb destruct;
-    PrintCb print;
-    GetSerializedSizeCb getSerializedSize;
-    SerializeCb serialize;
-    DeserializeCb deserialize;
-  };
-  typedef std::vector<struct TagInfo> TagInfoVector;
-
-  template <typename T>
-  static void DoDestruct (uint8_t data[Tags::SIZE]);
-  template <typename T>
-  static void DoPrint (uint8_t data[Tags::SIZE], std::ostream &os);
-  template <typename T>
-  static uint32_t DoGetSerializedSize (uint8_t data[Tags::SIZE]);
-  template <typename T>
-  static void DoSerialize (uint8_t data[Tags::SIZE], Buffer::Iterator start);
-  template <typename T>
-  static uint32_t DoDeserialize (uint8_t data[Tags::SIZE], Buffer::Iterator start);
-
-  static TagInfoVector *GetInfo (void);
-};
-
-template <typename T>
-void 
-TagRegistry::DoDestruct (uint8_t data[Tags::SIZE])
-{
-  T *tag = reinterpret_cast<T *> (data);
-  tag->~T ();  
-}
-template <typename T>
-void 
-TagRegistry::DoPrint (uint8_t data[Tags::SIZE], std::ostream &os)
-{
-  T *tag = reinterpret_cast<T *> (data);
-  tag->Print (os);
-}
-template <typename T>
-uint32_t 
-TagRegistry::DoGetSerializedSize (uint8_t data[Tags::SIZE])
-{
-  T *tag = reinterpret_cast<T *> (data);
-  return tag->GetSerializedSize ();
-}
-template <typename T>
-void 
-TagRegistry::DoSerialize (uint8_t data[Tags::SIZE], Buffer::Iterator start)
-{
-  T *tag = reinterpret_cast<T *> (data);
-  tag->Serialize (start);
-}
-template <typename T>
-uint32_t 
-TagRegistry::DoDeserialize (uint8_t data[Tags::SIZE], Buffer::Iterator start)
-{
-  T *tag = reinterpret_cast<T *> (data);
-  return tag->Deserialize (start);
-}
-
-template <typename T>
-uint32_t 
-TagRegistry::Register (std::string uidString)
-{
-  TagInfoVector *vec = GetInfo ();
-  uint32_t j = 0;
-  for (TagInfoVector::iterator i = vec->begin (); i != vec->end (); i++)
-    {
-      if (i->uidString == uidString)
-        {
-          return j;
-        }
-      j++;
-    }
-  TagInfo info;
-  info.uidString = uidString;
-  info.destruct = &TagRegistry::DoDestruct<T>;
-  info.print = &TagRegistry::DoPrint<T>;
-  info.getSerializedSize = &TagRegistry::DoGetSerializedSize<T>;
-  info.serialize = &TagRegistry::DoSerialize<T>;
-  info.deserialize = &TagRegistry::DoDeserialize<T>;
-  vec->push_back (info);
-  uint32_t uid = vec->size ();
-  return uid;
-}
-
 template <typename T>
 void 
 Tags::Add (T const&tag)
 {
+  const Tag *parent;
+  // if the following assignment fails, it is because the
+  // input to this function is not a subclass of the Tag class.
+  parent = &tag;
+
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
   // ensure this id was not yet added
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
@@ -256,6 +123,10 @@ template <typename T>
 bool
 Tags::Remove (T &tag)
 {
+  Tag *parent;
+  // if the following assignment fails, it is because the
+  // input to this function is not a subclass of the Tag class.
+  parent = &tag;
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
   return Remove (T::GetUid ());
 }
@@ -264,6 +135,10 @@ template <typename T>
 bool
 Tags::Peek (T &tag) const
 {
+  Tag *parent;
+  // if the following assignment fails, it is because the
+  // input to this function is not a subclass of the Tag class.
+  parent = &tag;
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {

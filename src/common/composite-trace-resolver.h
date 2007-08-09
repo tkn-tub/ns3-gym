@@ -111,6 +111,18 @@ public:
   void Add (std::string name, 
             Callback<TraceResolver *,TraceContext const &> createResolver,
             T const &context);
+
+  /**
+   * \param name name of child trace resolver
+   * \param createResolver a trace resolver constructor
+   *
+   * Add a child trace resolver to this resolver. This child
+   * trace resolver will match the name specified during
+   * namespace resolution. When this happens, the constructor
+   * will be invoked to create the child trace resolver.
+   */
+  void Add (std::string name, 
+            Callback<TraceResolver *,TraceContext const &> createResolver);
 private:
   template <typename SOURCE, typename CONTEXT>
   void DoAddTraceSource (std::string name,
@@ -204,7 +216,6 @@ CompositeTraceResolver::Add (std::string name,
   traceContext.Add (context);
   DoAdd (name, createResolver, traceContext);
 }
-
 
 }//namespace ns3
 

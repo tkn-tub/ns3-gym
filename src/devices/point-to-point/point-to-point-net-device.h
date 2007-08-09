@@ -38,6 +38,14 @@ namespace ns3 {
 class Queue;
 class PointToPointChannel;
 
+class PointToPointTraceType : public TraceContextElement
+{
+public:
+  PointToPointTraceType ();
+  void Print (std::ostream &os) const;
+  static uint16_t GetUid (void);
+};
+
 /**
  * \class PointToPointNetDevice
  * \brief A Device for a Point to Point Network Link.
@@ -63,14 +71,6 @@ class PointToPointChannel;
  */
 class PointToPointNetDevice : public NetDevice {
 public:
-  /**
-   * Enumeration of the types of traces supported in the class.
-   *
-   */
-  enum TraceType {
-    QUEUE, /**< Trace queue events on the attached queue */
-    RX,    /**< Trace packet reception events (from the channel) */
-  };
   /**
    * Construct a PointToPointNetDevice
    *

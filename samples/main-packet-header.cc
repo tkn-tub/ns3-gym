@@ -17,13 +17,13 @@ public:
 
   void SetData (uint16_t data);
   uint16_t GetData (void) const;
-private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
-  virtual uint32_t GetSerializedSize (void) const;
 
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
+  uint32_t GetSerializedSize (void) const;
+private:
   uint16_t m_data;
 };
 
@@ -42,19 +42,19 @@ MyHeader::GetUid (void)
   // code to keep track of the packet metadata.
   // You need to make sure that this string is absolutely
   // unique. The code will detect any duplicate string.
-  static uint32_t uid = Header::Register<MyHeader> ("MyHeader.test.nsnam.org");
+  static uint32_t uid = AllocateUid<MyHeader> ("MyHeader.test.nsnam.org");
   return uid;
 }
 
 std::string 
-MyHeader::DoGetName (void) const
+MyHeader::GetName (void) const
 {
   // This string is used to identify the type of 
   // my header by the packet printing routines.
   return "MYHEADER";
 }
 void 
-MyHeader::PrintTo (std::ostream &os) const
+MyHeader::Print (std::ostream &os) const
 {
   // This method is invoked by the packet printing
   // routines to print the content of my header.
@@ -67,14 +67,14 @@ MyHeader::GetSerializedSize (void) const
   return 2;
 }
 void
-MyHeader::SerializeTo (Buffer::Iterator start) const
+MyHeader::Serialize (Buffer::Iterator start) const
 {
   // we can serialize two bytes at the start of the buffer.
   // we write them in network byte order.
   start.WriteHtonU16 (m_data);
 }
 uint32_t
-MyHeader::DeserializeFrom (Buffer::Iterator start)
+MyHeader::Deserialize (Buffer::Iterator start)
 {
   // we can deserialize two bytes from the start of the buffer.
   // we read them in network byte order and store them

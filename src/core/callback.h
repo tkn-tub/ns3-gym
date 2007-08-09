@@ -358,7 +358,7 @@ private:
 
 /**
  * \ingroup MakeCallback
- * \param mem_ptr class method member pointer
+ * \param memPtr class method member pointer
  * \param objPtr class instance
  * \return a wrapper Callback
  * Build Callbacks for class method members which takes no arguments

@@ -116,7 +116,7 @@ public:
    * (bitwise and) with a network mask, yielding an IPv4 network
    * address.
    *
-   * \param a network mask 
+   * \param mask a network mask 
    */
   Ipv4Address CombineMask (Ipv4Mask const &mask) const;
 

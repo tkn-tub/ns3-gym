@@ -28,6 +28,7 @@
 #include <list>
 #include "ns3/object.h"
 #include "ns3/ptr.h"
+#include "ns3/trace-context-element.h"
 
 namespace ns3 {
 
@@ -36,6 +37,18 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
+class Ipv4L4ProtocolTraceContextElement : public TraceContextElement
+{
+public:
+  Ipv4L4ProtocolTraceContextElement ();
+  Ipv4L4ProtocolTraceContextElement (int protocolNumber);
+  int Get (void) const;
+  void Print (std::ostream &os) const;
+  static uint16_t GetUid (void);
+private:
+  int m_protocolNumber;
+};
+
 /**
  * \brief L4 Ipv4 Demux
  */
@@ -43,7 +56,6 @@ class Ipv4L4Demux : public Object
 {
 public:
   static const InterfaceId iid;
-  typedef int Ipv4L4ProtocolTraceType;
   Ipv4L4Demux (Ptr<Node> node);
   virtual ~Ipv4L4Demux();
 

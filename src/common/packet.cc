@@ -126,6 +126,12 @@ Packet::GetUid (void) const
 }
 
 void 
+Packet::PrintTags (std::ostream &os) const
+{
+  m_tags.Print (os);
+}
+
+void 
 Packet::Print (std::ostream &os) const
 {
   m_metadata.Print (os, m_buffer, PacketPrinter ());

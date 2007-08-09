@@ -34,4 +34,5 @@ def build(bld):
         'ascii-trace.h',
         'pcap-trace.h',
         'ipv4-header.h',
+        'udp-header.h',
         ]

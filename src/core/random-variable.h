@@ -772,6 +772,7 @@ public:
   /**
    * \param s Low end of the range
    * \param l High end of the range
+   * \param mean mean of the distribution
    * \return A triangularly distributed random number between s and l
    */
   static double GetSingleValue(double s, double l, double mean);

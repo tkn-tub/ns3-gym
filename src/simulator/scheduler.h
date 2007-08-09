@@ -58,9 +58,7 @@ class Scheduler {
   virtual ~Scheduler () = 0;
 
   /**
-   * \param event event to store in the event list
-   * \param key timecode associated to this new event
-   * \returns an event id which identifies the event inserted
+   * \param id event to store in the event list
    *
    * This method takes ownership of the event pointer.
    */
@@ -83,9 +81,8 @@ class Scheduler {
   virtual EventId RemoveNext (void) = 0;
   /**
    * \param id the id of the event to remove
-   * \param key the timecode of the event removed
-   * \returns a pointer to the event removed. The caller
-   *      takes ownership of the returned pointer.
+   * \returns true if the id was found and removed 
+   *          successfully, false otherwise.
    *
    * This methods cannot be invoked if the list is empty.
    */

@@ -23,23 +23,20 @@
 #include "ns3/assert.h"
 #include <string>
 
-NS_HEADER_ENSURE_REGISTERED (ns3::LlcSnapHeader);
-
-
 namespace ns3 {
+
+NS_HEADER_ENSURE_REGISTERED (LlcSnapHeader);
 
 uint32_t
 LlcSnapHeader::GetUid (void)
 {
-  static uint32_t uid = Header::Register<LlcSnapHeader> ("LlcSnapHeader.ns3");
+  static uint32_t uid = AllocateUid<LlcSnapHeader> ("LlcSnapHeader.ns3");
   return uid;
 }
 
 LlcSnapHeader::LlcSnapHeader ()
 {}
 
-LlcSnapHeader::~LlcSnapHeader ()
-{}
 void 
 LlcSnapHeader::SetType (uint16_t type)
 {
@@ -58,13 +55,13 @@ LlcSnapHeader::GetSerializedSize (void) const
 }
 
 std::string
-LlcSnapHeader::DoGetName (void) const
+LlcSnapHeader::GetName (void) const
 {
   return "LLCSNAP";
 }
 
 void 
-LlcSnapHeader::PrintTo (std::ostream &os) const
+LlcSnapHeader::Print (std::ostream &os) const
 {
   os << "(type 0x";
   os.setf (std::ios::hex, std::ios::basefield);
@@ -74,7 +71,7 @@ LlcSnapHeader::PrintTo (std::ostream &os) const
 }
 
 void
-LlcSnapHeader::SerializeTo (Buffer::Iterator start) const
+LlcSnapHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   uint8_t buf[] = {0xaa, 0xaa, 0x03, 0, 0, 0};
@@ -82,7 +79,7 @@ LlcSnapHeader::SerializeTo (Buffer::Iterator start) const
   i.WriteHtonU16 (m_etherType);
 }
 uint32_t
-LlcSnapHeader::DeserializeFrom (Buffer::Iterator start)
+LlcSnapHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   i.Next (5+1);
@@ -91,4 +88,4 @@ LlcSnapHeader::DeserializeFrom (Buffer::Iterator start)
 }
 
 
-}; // namespace ns3
+} // namespace ns3

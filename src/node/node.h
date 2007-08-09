@@ -25,7 +25,7 @@
 
 #include "ns3/object.h"
 #include "ns3/callback.h"
-#include "ns3/array-trace-resolver.h"
+#include "ns3/trace-context-element.h"
 
 namespace ns3 {
 
@@ -36,6 +36,18 @@ class Application;
 class Packet;
 class Address;
 class CompositeTraceResolver;
+
+class NodeNetDeviceIndex : public TraceContextElement
+{
+public:
+  NodeNetDeviceIndex ();
+  NodeNetDeviceIndex (uint32_t index);
+  uint32_t Get (void) const;
+  void Print (std::ostream &os) const;
+  static uint16_t GetUid (void);
+private:
+  uint32_t m_index;
+};
 
 /**
  * \brief A network Node.
@@ -58,7 +70,6 @@ class Node : public Object
 {
 public:
   static const InterfaceId iid;
-  typedef ArrayTraceResolver<Ptr<NetDevice> >::Index NetDeviceIndex;
 
   /**
    * Must be invoked by subclasses only.
@@ -204,9 +215,6 @@ private:
   void Construct (void);
   TraceResolver *CreateDevicesTraceResolver (const TraceContext &context);
 
-  enum TraceSource {
-    DEVICES
-  };
   struct ProtocolHandlerEntry {
     ProtocolHandler handler;
     uint16_t protocol;

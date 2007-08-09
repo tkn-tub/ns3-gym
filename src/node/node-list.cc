@@ -40,6 +40,30 @@ public:
 
 namespace ns3 {
 
+NodeListIndex::NodeListIndex ()
+  : m_index (0)
+{}
+NodeListIndex::NodeListIndex (uint32_t index)
+  : m_index (index)
+{}
+void 
+NodeListIndex::Print (std::ostream &os)
+{
+  os << "nodeid=" << m_index;
+}
+uint16_t 
+NodeListIndex::GetUid (void)
+{
+  static uint16_t uid = AllocateUid<NodeListIndex> ("NodeListIndex");
+  return uid;
+}
+uint32_t 
+NodeListIndex::Get (void) const
+{
+  return m_index;
+}
+
+
 /**
  * The private node list used by the static-based API
  */
@@ -109,8 +133,8 @@ NodeListPriv::GetNode (uint32_t n)
 TraceResolver *
 NodeListPriv::CreateTraceResolver (TraceContext const &context)
 {
-  ArrayTraceResolver<Ptr<Node> > *resolver =
-    new ArrayTraceResolver<Ptr<Node> >
+  ArrayTraceResolver<Ptr<Node>, NodeListIndex> *resolver =
+    new ArrayTraceResolver<Ptr<Node>, NodeListIndex>
     (context, 
      MakeCallback (&NodeListPriv::GetNNodes, this),
      MakeCallback (&NodeListPriv::GetNode, this));

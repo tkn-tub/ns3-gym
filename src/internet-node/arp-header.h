@@ -36,8 +36,6 @@ class ArpHeader : public Header
 public:
   static uint32_t GetUid (void);
 
-  virtual ~ArpHeader ();
-
   void SetRequest (Address sourceHardwareAddress,
                    Ipv4Address sourceProtocolAddress,
                    Address destinationHardwareAddress,
@@ -53,25 +51,11 @@ public:
   Ipv4Address GetSourceIpv4Address (void);
   Ipv4Address GetDestinationIpv4Address (void);
 
-private:
-  virtual std::string DoGetName (void) const;
-  /**
-   * \param os
-   */
-  virtual void PrintTo (std::ostream &os) const;
-  /**
-   * \return
-   */
-  virtual uint32_t GetSerializedSize (void) const;
-  /**
-   * \param start
-   */
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  /**
-   * \param start
-   * \return
-   */
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
   enum ArpType_e {
     ARP_TYPE_REQUEST = 1,

@@ -19,54 +19,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "chunk.h"
+#include "chunk-registry.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
-
-Chunk::Chunk ()
-{}
-
-Chunk::~Chunk ()
-{}
-
-std::string
-Chunk::GetName (void) const
-{
-  return DoGetName ();
-}
-void 
-Chunk::Print (std::ostream &os) const
-{
-  PrintTo (os);
-}
-uint32_t
-Chunk::GetSize (void) const
-{
-  return GetSerializedSize ();
-}
-void
-Chunk::Serialize (Buffer::Iterator start) const
-{
-  SerializeTo (start);
-}
-uint32_t
-Chunk::Deserialize (Buffer::Iterator start)
-{
-  uint32_t deserialized = DeserializeFrom (start);
-  return deserialized;
-}
-std::ostream& operator<< (std::ostream& os, Chunk const& chunk)
-{
-  chunk.Print (os);
-  return os;
-}
-
-
-/**************************************
- * The Chunk Registry below
- ***************************************/
-
 
 ChunkRegistry::InfoVector *
 ChunkRegistry::GetInfoVector (void)
