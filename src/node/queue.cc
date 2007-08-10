@@ -94,10 +94,10 @@ Queue::~Queue()
   NS_DEBUG("Queue::~Queue ()");
 }
 
-TraceResolver *
+Ptr<TraceResolver>
 Queue::CreateTraceResolver (void)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver ();
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->Add ("enqueue", m_traceEnqueue, QueueTraceType (QueueTraceType::ENQUEUE));
   resolver->Add ("dequeue", m_traceDequeue, QueueTraceType (QueueTraceType::DEQUEUE));
   resolver->Add ("drop", m_traceDrop, QueueTraceType (QueueTraceType::DROP));

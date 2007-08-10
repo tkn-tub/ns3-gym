@@ -311,7 +311,7 @@ private:
    * (NOT TESTED)
    * @see class TraceResolver
    */
-  virtual TraceResolver *DoCreateTraceResolver (void);
+  virtual Ptr<TraceResolver> DoCreateTraceResolver (void);
 
   /**
    * Aborts the transmission of the current packet

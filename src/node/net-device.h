@@ -69,7 +69,7 @@ public:
    *          performed in this object. The caller must
    *          delete the returned object.
    */
-  TraceResolver *CreateTraceResolver (void);
+  Ptr<TraceResolver> CreateTraceResolver (void);
 
   /**
    * \return the channel this NetDevice is connected to. The value
@@ -290,7 +290,7 @@ public:
    *
    * Subclasses must implement this method.
    */
-  virtual TraceResolver *DoCreateTraceResolver (void) = 0;
+  virtual Ptr<TraceResolver> DoCreateTraceResolver (void) = 0;
   /**
    * \returns the channel associated to this NetDevice.
    *

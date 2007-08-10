@@ -58,10 +58,10 @@ ArpL3Protocol::DoDispose (void)
   Object::DoDispose ();
 }
 
-TraceResolver *
+Ptr<TraceResolver>
 ArpL3Protocol::CreateTraceResolver (void)
 {
-  return new EmptyTraceResolver ();
+  return Create<EmptyTraceResolver> ();
 }
 
 ArpCache *

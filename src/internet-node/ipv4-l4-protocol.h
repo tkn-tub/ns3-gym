@@ -59,7 +59,7 @@ public:
    */
   int GetVersion() const;
 
-  virtual TraceResolver *CreateTraceResolver () = 0;
+  virtual Ptr<TraceResolver> CreateTraceResolver () = 0;
 
   /**
    * \param p packet to forward up

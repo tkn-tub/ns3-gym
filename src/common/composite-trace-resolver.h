@@ -22,6 +22,7 @@
 #define COMPOSITE_TRACE_RESOLVER_H
 
 #include "ns3/callback.h"
+#include "ns3/ptr.h"
 #include "trace-resolver.h"
 #include "callback-trace-source.h"
 #include "uv-trace-source.h"
@@ -109,7 +110,7 @@ public:
    */
   template <typename T>
   void Add (std::string name, 
-            Callback<TraceResolver *> createResolver,
+            Callback<Ptr<TraceResolver> > createResolver,
             T const &context);
 
   /**
@@ -122,7 +123,7 @@ public:
    * will be invoked to create the child trace resolver.
    */
   void Add (std::string name, 
-            Callback<TraceResolver *> createResolver);
+            Callback<Ptr<TraceResolver> > createResolver);
   virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   virtual void Disconnect (std::string path, CallbackBase const &cb);
 
@@ -130,7 +131,7 @@ private:
   struct CallbackTraceSourceItem
   {
     std::string name;
-    Callback<TraceResolver *> createResolver;
+    Callback<Ptr<TraceResolver> > createResolver;
     TraceContext context;
   };
   typedef std::list<struct CallbackTraceSourceItem> TraceItems;
@@ -143,9 +144,9 @@ private:
   void DoAddTraceSource (std::string name,
                          SOURCE &traceSource, CONTEXT const &context);
   template <typename SOURCE>
-  static TraceResolver *CreateTerminalTraceResolver (SOURCE *trace);
+  static Ptr<TraceResolver> CreateTerminalTraceResolver (SOURCE *trace);
   void DoAdd (std::string name, 
-              Callback<TraceResolver *> createResolver,
+              Callback<Ptr<TraceResolver> > createResolver,
               TraceContext const &context);
   void OperationOne (std::string subpath, 
                      TraceItems::const_iterator i,
@@ -170,9 +171,9 @@ void
 CompositeTraceResolver::DoAddTraceSource (std::string name,
                                           SOURCE &traceSource, CONTEXT const &context)
 {
-  TraceResolver *(*create) (SOURCE *trace);
+  Ptr<TraceResolver> (*create) (SOURCE *trace);
   create = &CompositeTraceResolver::CreateTerminalTraceResolver<SOURCE>;
-  Callback<TraceResolver *> createResolver = 
+  Callback<Ptr<TraceResolver> > createResolver = 
     MakeBoundCallback (create, &traceSource);
 
   TraceContext ctx;
@@ -181,10 +182,10 @@ CompositeTraceResolver::DoAddTraceSource (std::string name,
 }
 
 template <typename SOURCE>
-TraceResolver *
+Ptr<TraceResolver>
 CompositeTraceResolver::CreateTerminalTraceResolver (SOURCE *traceSource)
 {
-  return new TerminalTraceResolver<SOURCE> (*traceSource);
+  return Create<TerminalTraceResolver<SOURCE> > (traceSource);
 }
 
 
@@ -224,7 +225,7 @@ CompositeTraceResolver::Add (std::string name,
 template <typename T>
 void 
 CompositeTraceResolver::Add (std::string name, 
-                             Callback<TraceResolver *> createResolver,
+                             Callback<Ptr<TraceResolver> > createResolver,
                              T const &context)
 {
   TraceContext ctx;

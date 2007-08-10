@@ -49,7 +49,7 @@ public:
   UdpL4Protocol (Ptr<Node> node);
   virtual ~UdpL4Protocol ();
 
-  virtual TraceResolver *CreateTraceResolver (void);
+  virtual Ptr<TraceResolver> CreateTraceResolver (void);
   /**
    * \return A smart Socket pointer to a UdpSocket, allocated by this instance
    * of the UDP protocol

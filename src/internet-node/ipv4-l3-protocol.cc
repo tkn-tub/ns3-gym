@@ -153,10 +153,10 @@ Ipv4L3Protocol::SetupLoopback (void)
   interface->SetUp ();
 }
 
-TraceResolver *
+Ptr<TraceResolver>
 Ipv4L3Protocol::CreateTraceResolver (void)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver ();
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->Add ("tx", m_txTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::TX));
   resolver->Add ("rx", m_rxTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::RX));
   resolver->Add ("drop", m_dropTrace, Ipv4L3ProtocolTraceContextElement (Ipv4L3ProtocolTraceContextElement::DROP));
@@ -165,11 +165,11 @@ Ipv4L3Protocol::CreateTraceResolver (void)
   return resolver;
 }
 
-TraceResolver *
+Ptr<TraceResolver>
 Ipv4L3Protocol::InterfacesCreateTraceResolver (void) const
 {
-  ArrayTraceResolver<Ipv4Interface *, Ipv4l3ProtocolInterfaceIndex> *resolver = 
-    new ArrayTraceResolver<Ipv4Interface *,Ipv4l3ProtocolInterfaceIndex> 
+  Ptr<ArrayTraceResolver<Ipv4Interface *, Ipv4l3ProtocolInterfaceIndex> >resolver = 
+    Create<ArrayTraceResolver<Ipv4Interface *,Ipv4l3ProtocolInterfaceIndex> >
     (MakeCallback (&Ipv4L3Protocol::GetNInterfaces, this),
      MakeCallback (&Ipv4L3Protocol::GetInterface, this));
   return resolver;

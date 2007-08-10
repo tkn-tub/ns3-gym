@@ -34,10 +34,10 @@ Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
 {}
 
-TraceResolver *
+Ptr<TraceResolver>
 Ipv4LoopbackInterface::DoCreateTraceResolver (void)
 {
-  return new EmptyTraceResolver ();
+  return Create<EmptyTraceResolver> ();
 }
 
 void 

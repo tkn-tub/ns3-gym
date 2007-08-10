@@ -40,10 +40,10 @@ ArpIpv4Interface::ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device)
 ArpIpv4Interface::~ArpIpv4Interface ()
 {}
 
-TraceResolver *
+Ptr<TraceResolver>
 ArpIpv4Interface::DoCreateTraceResolver (void)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver ();
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   if (GetDevice () != 0)
     {
       resolver->Add ("netdevice",

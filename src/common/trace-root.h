@@ -325,9 +325,9 @@ public:
   static void Connect (std::string path, CallbackBase const &cb);
   static void Disconnect (std::string path, CallbackBase const &cb);
   static void Register (std::string name, 
-                        Callback<TraceResolver *> createResolver);
+                        Callback<Ptr<TraceResolver> > createResolver);
 private:
-  static CompositeTraceResolver *GetComposite (void);
+  static Ptr<CompositeTraceResolver> GetComposite (void);
 };
 
 }// namespace ns3

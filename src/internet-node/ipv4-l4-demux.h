@@ -66,7 +66,7 @@ public:
    *          performed in this object. The caller must
    *          delete the returned object.
    */
-  TraceResolver *CreateTraceResolver (void);
+  Ptr<TraceResolver> CreateTraceResolver (void);
   /**
    * \param protocol a template for the protocol to add to this L4 Demux.
    * \returns the L4Protocol effectively added.

@@ -23,6 +23,7 @@
 #include "ns3/assert.h"
 #include "ns3/object.h"
 #include "ns3/debug.h"
+#include "ns3/trace-resolver.h"
 
 
 #include "channel.h"
@@ -183,7 +184,7 @@ NetDevice::Send(Packet& p, const Address& dest, uint16_t protocolNumber)
     }
 }
 
-TraceResolver *
+Ptr<TraceResolver>
 NetDevice::CreateTraceResolver (void)
 {
   return DoCreateTraceResolver ();

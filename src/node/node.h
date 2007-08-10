@@ -92,7 +92,7 @@ public:
    * could be used directly by a user who needs access to very low-level
    * trace configuration.
    */
-  TraceResolver *CreateTraceResolver (void);
+  Ptr<TraceResolver> CreateTraceResolver (void);
 
   /**
    * \returns the unique id of this node.
@@ -212,7 +212,7 @@ private:
   bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
                           uint16_t protocol, const Address &from);
   void Construct (void);
-  TraceResolver *CreateDevicesTraceResolver (void);
+  Ptr<TraceResolver> CreateDevicesTraceResolver (void);
 
   struct ProtocolHandlerEntry {
     ProtocolHandler handler;

@@ -27,24 +27,24 @@ namespace ns3 {
 void 
 TraceRoot::Connect (std::string path, CallbackBase const &cb)
 {
-  TraceResolver *resolver = GetComposite ();
+  Ptr<TraceResolver> resolver = GetComposite ();
   resolver->Connect (path, cb, TraceContext ());
 }
 void 
 TraceRoot::Disconnect (std::string path, CallbackBase const &cb)
 {
-  TraceResolver *resolver = GetComposite ();
+  Ptr<TraceResolver> resolver = GetComposite ();
   resolver->Disconnect (path, cb);
 }
 void 
 TraceRoot::Register (std::string name, 
-                     Callback<TraceResolver *> createResolver)
+                     Callback<Ptr<TraceResolver> > createResolver)
 {
-  CompositeTraceResolver *resolver = GetComposite ();
+  Ptr<CompositeTraceResolver> resolver = GetComposite ();
   resolver->Add (name, createResolver);
 }
 
-CompositeTraceResolver *
+Ptr<CompositeTraceResolver>
 TraceRoot::GetComposite (void)
 {
   static CompositeTraceResolver resolver;

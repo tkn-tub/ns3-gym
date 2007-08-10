@@ -19,6 +19,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "trace-resolver.h"
+#include "ns3/debug.h"
+
+NS_DEBUG_COMPONENT_DEFINE ("TraceResolver");
 
 namespace ns3 {
 
@@ -40,6 +43,7 @@ TraceResolver::Unref (void)
   m_count--;
   if (m_count == 0)
     {
+      NS_DEBUG ("delete "<<this);
       delete this;
     }
 }

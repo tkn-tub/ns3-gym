@@ -48,7 +48,7 @@ public:
    * to provide a method named CreateTraceResolver which takes as
    * only argument a reference to a const TraceContext and returns
    * a pointer to a TraceResolver. i.e. the signature is:
-   * TraceResolver * (*) (TraceContext const &)
+   * Ptr<TraceResolver> (*) (void)
    */
   ArrayTraceResolver (Callback<uint32_t> getSize, 
                       Callback<T, uint32_t> get);
@@ -83,9 +83,8 @@ ArrayTraceResolver<T,INDEX>::Connect (std::string path, CallbackBase const &cb, 
       TraceContext tmp = context;
       INDEX index = i;
       tmp.Add (index);
-      TraceResolver *resolver = m_get (i)->CreateTraceResolver ();
+      Ptr<TraceResolver> resolver = m_get (i)->CreateTraceResolver ();
       resolver->Connect (subpath, cb, tmp);
-      delete resolver;
     }
   }
 }
@@ -99,9 +98,8 @@ ArrayTraceResolver<T,INDEX>::Disconnect (std::string path, CallbackBase const &c
   {
     for (uint32_t i = 0; i < m_getSize (); i++)
     {
-      TraceResolver *resolver = m_get (i)->CreateTraceResolver ();
+      Ptr<TraceResolver> resolver = m_get (i)->CreateTraceResolver ();
       resolver->Disconnect (subpath, cb);
-      delete resolver;
     }
   }
 }

@@ -33,14 +33,14 @@ CompositeTraceResolver::~CompositeTraceResolver ()
 
 void 
 CompositeTraceResolver::Add (std::string name, 
-                             Callback<TraceResolver *> createResolver)
+                             Callback<Ptr<TraceResolver> > createResolver)
 {
   DoAdd (name, createResolver, TraceContext ());
 }
 
 void 
 CompositeTraceResolver::DoAdd (std::string name, 
-			       Callback<TraceResolver *> createResolver,
+			       Callback<Ptr<TraceResolver> > createResolver,
 			       TraceContext const &context)
 {
   struct CallbackTraceSourceItem item;
@@ -125,7 +125,7 @@ CompositeTraceResolver::OperationOne (std::string subpath,
                                       const TraceContext &context,
                                       enum Operation op)
 {
-  TraceResolver *resolver = i->createResolver ();
+  Ptr<TraceResolver> resolver = i->createResolver ();
   switch (op) {
   case CONNECT: {
     NS_DEBUG ("connect to path="<<subpath<<" name="<<i->name);
@@ -137,7 +137,6 @@ CompositeTraceResolver::OperationOne (std::string subpath,
     resolver->Disconnect (subpath, cb);
     break;
   }
-  delete resolver;
 }
 
 void 
@@ -204,7 +203,7 @@ public:
 private:
   void TraceDouble (TraceContext const &context, double v);
   void TraceInt (TraceContext const &context, int v);
-  TraceResolver *CreateSubResolver ();
+  Ptr<TraceResolver> CreateSubResolver ();
 
 
   bool m_gotDoubleA;
@@ -244,10 +243,10 @@ CompositeTraceResolverTest::TraceInt (TraceContext const &context, int v)
   m_gotInt = true;
 }
 
-TraceResolver *
+Ptr<TraceResolver>
 CompositeTraceResolverTest::CreateSubResolver (void)
 {
-  CompositeTraceResolver *subresolver = new CompositeTraceResolver ();
+  Ptr<CompositeTraceResolver> subresolver = Create<CompositeTraceResolver> ();
   subresolver->Add ("trace-int", m_traceInt, 
                     SubTraceSourceTest (SubTraceSourceTest::INT));
   return subresolver;

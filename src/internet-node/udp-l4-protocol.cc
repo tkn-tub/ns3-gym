@@ -45,10 +45,10 @@ UdpL4Protocol::UdpL4Protocol (Ptr<Node> node)
 UdpL4Protocol::~UdpL4Protocol ()
 {}
 
-TraceResolver *
+Ptr<TraceResolver>
 UdpL4Protocol::CreateTraceResolver (void)
 {
-  return new EmptyTraceResolver ();
+  return Create<EmptyTraceResolver> ();
 }
 
 void

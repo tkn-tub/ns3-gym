@@ -243,7 +243,7 @@ private:
    *
    * @see class TraceResolver
    */
-  virtual TraceResolver* DoCreateTraceResolver (void);
+  virtual Ptr<TraceResolver> DoCreateTraceResolver (void);
   virtual bool DoNeedsArp (void) const;
   /**
    * Enumeration of the states of the transmit machine of the net device.

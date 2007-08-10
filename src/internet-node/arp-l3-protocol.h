@@ -49,7 +49,7 @@ public:
   ArpL3Protocol (Ptr<Node> node);
   virtual ~ArpL3Protocol ();
 
-  virtual TraceResolver *CreateTraceResolver (void);
+  virtual Ptr<TraceResolver> CreateTraceResolver (void);
   /**
    * \brief Recieve a packet
    */

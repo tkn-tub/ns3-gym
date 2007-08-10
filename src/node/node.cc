@@ -82,11 +82,11 @@ Node::Construct (void)
 Node::~Node ()
 {}
 
-TraceResolver *
+Ptr<TraceResolver>
 Node::CreateTraceResolver (void)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver ();
-  DoFillTraceResolver (*resolver);
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
+  DoFillTraceResolver (*PeekPointer (resolver));
   return resolver;
 }
 
@@ -141,11 +141,11 @@ Node::GetNApplications (void) const
   return m_applications.size ();
 }
 
-TraceResolver *
+Ptr<TraceResolver>
 Node::CreateDevicesTraceResolver (void)
 {
-  ArrayTraceResolver<Ptr<NetDevice>,NodeNetDeviceIndex> *resolver = 
-    new ArrayTraceResolver<Ptr<NetDevice>,NodeNetDeviceIndex> 
+  Ptr<ArrayTraceResolver<Ptr<NetDevice>,NodeNetDeviceIndex> >resolver = 
+    Create<ArrayTraceResolver<Ptr<NetDevice>,NodeNetDeviceIndex> >
     (MakeCallback (&Node::GetNDevices, this), 
      MakeCallback (&Node::GetDevice, this));
   
