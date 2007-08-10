@@ -73,14 +73,18 @@ public:
    * \returns an Address instance which represents this
    * InetSocketAddress instance.
    */
-  Address ConvertTo (void) const;
+  operator Address () const;
+
   /**
    * \param address the Address instance to convert from.
-   * \returns an InetSocketAddress which corresponds to the input
+   *
+   * Returns an InetSocketAddress which corresponds to the input
    * Address
    */
   static InetSocketAddress ConvertFrom (const Address &address);
 private:
+  Address ConvertTo (void) const;
+
   static uint8_t GetType (void);
   Ipv4Address m_ipv4;
   uint16_t m_port;

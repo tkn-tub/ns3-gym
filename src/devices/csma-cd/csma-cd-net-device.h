@@ -41,6 +41,21 @@ namespace ns3 {
 class Queue;
 class CsmaCdChannel;
 
+class CsmaCdTraceType : public TraceContextElement
+{
+public:
+  enum Type {
+    RX, 
+    DROP
+  };
+  CsmaCdTraceType (enum Type type);
+  CsmaCdTraceType ();
+  void Print (std::ostream &os) const;
+  static uint16_t GetUid (void);
+private:
+  enum Type m_type;
+};
+
 /**
  * \class CsmaCdNetDevice
  * \brief A Device for a CsmaCd Network Link.
@@ -62,15 +77,6 @@ class CsmaCdChannel;
  */
 class CsmaCdNetDevice : public NetDevice {
 public:
-  /**
-   * Enumeration of the types of traces supported in the class.
-   *
-   */
-  enum TraceType {
-    QUEUE, /**< Trace queue events on the attached queue */
-    RX,    /**< Trace packet reception events (from the channel) */
-    DROP    /**< Trace packet drop events (from the channel) */
-  };
 
   /**
    * Enumeration of the types of packets supported in the class.

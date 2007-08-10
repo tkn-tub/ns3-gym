@@ -36,9 +36,6 @@ class Packet;
 class InternetNode : public Node 
 {
 public:
-  enum TraceType {
-    IPV4,
-  };
   InternetNode();
   InternetNode(uint32_t systemId);
   virtual ~InternetNode ();

@@ -550,7 +550,7 @@ public:
  */
   bool GetLSA (uint32_t n, GlobalRouterLSA &lsa) const;
 
-protected:
+private:
   virtual ~GlobalRouter ();
   void ClearLSAs (void);
 
@@ -564,13 +564,14 @@ protected:
 
   Ipv4Address m_routerId;
 
-private:
   // inherited from Object
   virtual void DoDispose (void);
+
 /**
  * @brief Global Router copy construction is disallowed.
  */
   GlobalRouter (GlobalRouter& sr);
+
 /**
  * @brief Global Router assignment operator is disallowed.
  */

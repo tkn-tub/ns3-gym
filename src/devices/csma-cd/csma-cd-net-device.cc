@@ -35,8 +35,34 @@ NS_DEBUG_COMPONENT_DEFINE ("CsmaCdNetDevice");
 
 namespace ns3 {
 
+CsmaCdTraceType::CsmaCdTraceType (enum Type type)
+  : m_type (type)
+{}
+CsmaCdTraceType::CsmaCdTraceType ()
+  : m_type (RX)
+{}
+void 
+CsmaCdTraceType::Print (std::ostream &os) const
+{
+  switch (m_type) {
+  case RX:
+    os << "dev-rx";
+    break;
+  case DROP:
+    os << "dev-drop";
+    break;
+  }
+}
+uint16_t 
+CsmaCdTraceType::GetUid (void)
+{
+  static uint16_t uid = AllocateUid<CsmaCdTraceType> ("CsmaCdTraceType");
+  return uid;
+}
+
+
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node)
-  : NetDevice (node, Eui48Address::Allocate ().ConvertTo ()),
+  : NetDevice (node, Eui48Address::Allocate ()),
     m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
@@ -46,7 +72,7 @@ CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node)
 
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
                                   CsmaCdEncapsulationMode encapMode) 
-  : NetDevice(node, addr.ConvertTo ()), 
+  : NetDevice(node, addr), 
     m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
@@ -58,7 +84,7 @@ CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr,
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
                                   CsmaCdEncapsulationMode encapMode,
                                   bool sendEnable, bool receiveEnable) 
-  : NetDevice(node, addr.ConvertTo ()), 
+  : NetDevice(node, addr), 
     m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
@@ -105,7 +131,7 @@ CsmaCdNetDevice::Init(bool sendEnable, bool receiveEnable)
   m_channel = 0; 
   m_queue = 0;
 
-  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff").ConvertTo ());
+  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
   EnableMulticast();
   EnablePointToPoint();
 
@@ -177,7 +203,7 @@ CsmaCdNetDevice::AddHeader (Packet& p, Eui48Address dest,
   switch (m_encapMode) 
     {
     case ETHERNET_V1:
-      lengthType = p.GetSize() + header.GetSize() + trailer.GetSize();
+      lengthType = p.GetSize() + header.GetSerializedSize() + trailer.GetSerializedSize();
       break;
     case IP_ARP:
       lengthType = protocolNumber;
@@ -210,10 +236,8 @@ CsmaCdNetDevice::ProcessHeader (Packet& p, uint16_t & param)
   trailer.CheckFcs(p);
   p.RemoveHeader(header);
 
-  Eui48Address broadcast = Eui48Address::ConvertFrom (GetBroadcast ());
-  Eui48Address destination = Eui48Address::ConvertFrom (GetAddress ());
-  if ((header.GetDestination() != broadcast) &&
-      (header.GetDestination() != destination))
+  if ((header.GetDestination() != GetBroadcast ()) &&
+      (header.GetDestination() != GetAddress ()))
     {
       return false;
     }
@@ -262,8 +286,8 @@ CsmaCdNetDevice::SendTo (const Packet& packet, const Address& dest, uint16_t pro
   if (!IsSendEnabled())
     return false;
 
-  Eui48Address address = Eui48Address::ConvertFrom (dest);
-  AddHeader(p, address, protocolNumber);
+  Eui48Address destination = Eui48Address::ConvertFrom (dest);
+  AddHeader(p, destination, protocolNumber);
 
   // Place the packet to be sent on the send queue
   if (m_queue->Enqueue(p) == false )
@@ -432,12 +456,14 @@ CsmaCdNetDevice::DoCreateTraceResolver (TraceContext const &context)
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   resolver->Add ("queue", 
                  MakeCallback (&Queue::CreateTraceResolver, 
-                               PeekPointer (m_queue)),
-                 CsmaCdNetDevice::QUEUE);
+                               PeekPointer (m_queue)));
   resolver->Add ("rx",
                  m_rxTrace,
-                 CsmaCdNetDevice::RX);
-  return resolver;
+                 CsmaCdTraceType (CsmaCdTraceType::RX));
+  resolver->Add ("drop",
+                 m_dropTrace,
+                 CsmaCdTraceType (CsmaCdTraceType::DROP));
+   return resolver;
 }
 
 bool
@@ -480,13 +506,15 @@ CsmaCdNetDevice::Receive (const Packet& packet)
   // Only receive if send side of net device is enabled
   if (!IsReceiveEnabled())
     {
-      goto drop;
+      m_dropTrace (p);
+      return;
     }
 
   if (m_encapMode == RAW)
     {
       ForwardUp (packet, 0, GetBroadcast ());
-      goto drop;
+      m_dropTrace (p);
+      return;
     }
   p.RemoveTrailer(trailer);
   trailer.CheckFcs(p);
@@ -498,10 +526,15 @@ CsmaCdNetDevice::Receive (const Packet& packet)
       (header.GetDestination() != destination))
     {
       // not for us.
-      goto drop;
+      m_dropTrace (p);
+      return;
     }
+//
+// protocol must be initialized to avoid a compiler warning in the RAW
+// case that breaks the optimized build.
+//
+  uint16_t protocol = 0;
 
-  uint16_t protocol;
   switch (m_encapMode)
     {
     case ETHERNET_V1:
@@ -519,10 +552,8 @@ CsmaCdNetDevice::Receive (const Packet& packet)
     }
   
   m_rxTrace (p);
-  ForwardUp (p, protocol, header.GetSource ().ConvertTo ());
+  ForwardUp (p, protocol, header.GetSource ());
   return;
- drop:
-  m_dropTrace (p);
 }
 
 Ptr<Queue>

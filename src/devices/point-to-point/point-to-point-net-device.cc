@@ -40,10 +40,25 @@ DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
            "The default data rate for point to point links",
            DataRate ("10Mb/s"));
 
+PointToPointTraceType::PointToPointTraceType ()
+{}
+void 
+PointToPointTraceType::Print (std::ostream &os) const
+{
+  os << "dev-rx";
+}
+uint16_t 
+PointToPointTraceType::GetUid (void)
+{
+  static uint16_t uid = AllocateUid<PointToPointTraceType> ("PointToPointTraceType");
+  return uid;
+}
+
+
 PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
                                               const DataRate& rate) 
 : 
-  NetDevice(node, Eui48Address::Allocate ().ConvertTo ()), 
+  NetDevice(node, Eui48Address::Allocate ()), 
   m_txMachineState (READY),
   m_bps (rate),
   m_tInterframeGap (Seconds(0)),
@@ -56,7 +71,7 @@ PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
   // BUGBUG FIXME
   //
   // You _must_ support broadcast to get any sort of packet from the ARP layer.
-  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff").ConvertTo ());
+  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
   EnableMulticast();
   EnablePointToPoint();
 }
@@ -179,11 +194,10 @@ TraceResolver* PointToPointNetDevice::DoCreateTraceResolver (
 {
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   resolver->Add ("queue", 
-                 MakeCallback (&Queue::CreateTraceResolver, PeekPointer (m_queue)),
-                 PointToPointNetDevice::QUEUE);
+                 MakeCallback (&Queue::CreateTraceResolver, PeekPointer (m_queue)));
   resolver->Add ("rx",
                  m_rxTrace,
-                 PointToPointNetDevice::RX);
+                 PointToPointTraceType ());
   return resolver;
 }
 

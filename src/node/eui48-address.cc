@@ -95,6 +95,10 @@ Eui48Address::IsMatchingType (const Address &address)
 {
   return address.CheckCompatible (GetType (), 6);
 }
+Eui48Address::operator Address ()
+{
+  return ConvertTo ();
+}
 Address 
 Eui48Address::ConvertTo (void) const
 {

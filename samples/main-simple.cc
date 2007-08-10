@@ -47,11 +47,11 @@ RunSimulation (void)
 
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);
-  sink->Bind (local.ConvertTo ());
+  sink->Bind (local);
 
   Ptr<Socket> source = socketFactory->CreateSocket ();
   InetSocketAddress remote = InetSocketAddress (Ipv4Address::GetLoopback (), 80);
-  source->Connect (remote.ConvertTo ());
+  source->Connect (remote);
 
   GenerateTraffic (source, 500);
   PrintTraffic (sink);

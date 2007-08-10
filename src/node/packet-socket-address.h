@@ -50,7 +50,7 @@ class PacketSocketAddress
    *
    * Convert an instance of this class to a polymorphic Address instance.
    */
-  Address ConvertTo (void) const;
+  operator Address () const;
   /**
    * \param address a polymorphic address
    *
@@ -64,6 +64,7 @@ class PacketSocketAddress
   static bool IsMatchingType (const Address &address);
  private:
   static uint8_t GetType (void);
+  Address ConvertTo (void) const;
   uint16_t m_protocol;
   bool m_isSingleDevice;
   uint32_t m_device;

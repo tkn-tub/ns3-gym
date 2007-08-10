@@ -216,7 +216,7 @@ UdpSocket::ForwardUp (const Packet &packet, Ipv4Address ipv4, uint16_t port)
       return;
     }
   
-  Address address = InetSocketAddress (ipv4, port).ConvertTo ();
+  Address address = InetSocketAddress (ipv4, port);
   Packet p = packet;
   NotifyDataReceived (p, address);
 }

@@ -39,10 +39,6 @@ class Node;
 class ArpIpv4Interface : public Ipv4Interface
 {
  public:
-  enum TraceType {
-    NETDEVICE,
-    ARP,
-  };
   ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device);
   virtual ~ArpIpv4Interface ();
 

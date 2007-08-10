@@ -55,28 +55,37 @@ public:
    * Copy the internal address to the input buffer.
    */
   void CopyTo (uint8_t buffer[6]) const;
+
+  /**
+   * \returns a new Address instance
+   *
+   * Convert an instance of this class to a polymorphic Address instance.
+   */
+  operator Address ();
+  /**
+   * \param address a polymorphic address
+   * \returns a new Eui48Address from the polymorphic address
+   * 
+   * This function performs a type check and asserts if the
+   * type of the input address is not compatible with an
+   * Eui48Address.
+   */
+  static Eui48Address ConvertFrom (const Address &address);
+  /**
+   * \returns true if the address matches, false otherwise.
+   */
+  static bool IsMatchingType (const Address &address);
+  /**
+   * Allocate a new Eui48Address.
+   */
+  static Eui48Address Allocate (void);
+private:
   /**
    * \returns a new Address instance
    *
    * Convert an instance of this class to a polymorphic Address instance.
    */
   Address ConvertTo (void) const;
-  /**
-   * \returns true if the address matches, false otherwise.
-   */
-  static bool IsMatchingType (const Address &address);
-  /**
-   * \param address a polymorphic address
-   *
-   * Convert a polymorphic address to an Eui48Address instance.
-   * The conversion performs a type check.
-   */
-  static Eui48Address ConvertFrom (const Address &address);
-  /**
-   * Allocate a new Eui48Address.
-   */
-  static Eui48Address Allocate (void);
-private:
   static uint8_t GetType (void);
   uint8_t m_address[6];
 };

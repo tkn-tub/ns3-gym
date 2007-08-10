@@ -27,6 +27,7 @@
 #include "trailer.h"
 #include "tags.h"
 #include "packet-metadata.h"
+#include "tag.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 
@@ -62,15 +63,11 @@ class PacketPrinter;
  *
  * Implementing a new type of Header or Trailer for a new protocol is 
  * pretty easy and is a matter of creating a subclass of the ns3::Header 
- * or of the ns3::Trailer base class, and implementing the 5 pure virtual 
- * methods defined in either of the two base classes. Users _must_
- * also make sure that they class defines a public default constructor and
- * a public method named GetUid, as documented in the ns3::Header and ns::Trailer
- * API documentations.
+ * or of the ns3::Trailer base class, and implementing the methods
+ * described in their respective API documentation.
  *
  * Implementing a new type of Tag requires roughly the same amount of
- * work: users must implement a total of 6 methods which are described in
- * \ref tags
+ * work and this work is described in the ns3::Tag API documentation.
  *
  * The performance aspects of the Packet API are discussed in 
  * \ref packetperf
@@ -118,7 +115,7 @@ public:
   uint32_t GetSize (void) const;
   /**
    * Add header to this packet. This method invokes the
-   * ns3::Chunk::GetSerializedSize and ns3::Chunk::SerializeTo 
+   * GetSerializedSize and Serialize
    * methods to reserve space in the buffer and request the 
    * header to serialize itself in the packet buffer.
    *
@@ -128,7 +125,7 @@ public:
   void AddHeader (T const &header);
   /**
    * Deserialize and remove the header from the internal buffer.
-   * This method invokes ns3::Chunk::DeserializeFrom.
+   * This method invokes Deserialize.
    *
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.
@@ -137,7 +134,7 @@ public:
   uint32_t RemoveHeader (T &header);
   /**
    * Add trailer to this packet. This method invokes the
-   * ns3::Chunk::GetSerializedSize and ns3::Trailer::serializeTo 
+   * GetSerializedSize and Serialize
    * methods to reserve space in the buffer and request the trailer 
    * to serialize itself in the packet buffer.
    *
@@ -147,7 +144,7 @@ public:
   void AddTrailer (T const &trailer);
   /**
    * Remove a deserialized trailer from the internal buffer.
-   * This method invokes the ns3::Chunk::DeserializeFrom method.
+   * This method invokes the Deserialize method.
    *
    * \param trailer a reference to the trailer to remove from the internal buffer.
    * \returns the number of bytes removed from the end of the packet.
@@ -157,7 +154,8 @@ public:
   /**
    * Attach a tag to this packet. The tag is fully copied
    * in a packet-specific internal buffer. This operation 
-   * is expected to be really fast.
+   * is expected to be really fast. The copy constructor of the
+   * tag is invoked to copy it into the tag buffer.
    *
    * \param tag a pointer to the tag to attach to this packet.
    */
@@ -184,6 +182,8 @@ public:
   /**
    * Copy a tag stored internally to the input tag. If no instance
    * of this tag is present internally, the input tag is not modified.
+   * The copy constructor of the tag is invoked to copy it into the 
+   * input tag variable.
    *
    * \param tag a pointer to the tag to read from this packet
    * \returns true if an instance of this tag type is stored
@@ -196,6 +196,14 @@ public:
    * much much faster than invoking removeTag n times.
    */
   void RemoveAllTags (void);
+  /**
+   * \param os output stream in which the data should be printed.
+   *
+   * Iterate over the tags present in this packet, and
+   * invoke the Print method of each tag stored in the packet.
+   */
+  void PrintTags (std::ostream &os) const;
+
   /**
    * Concatenate the input packet at the end of the current
    * packet. This does not alter the uid of either packet.
@@ -289,17 +297,23 @@ public:
    * serialized representation contains a copy of the packet byte buffer,
    * the tag list, and the packet metadata (if there is one).
    *
+   * This method will trigger calls to the Serialize and GetSerializedSize
+   * methods of each tag stored in this packet.
+   *
    * This method will typically be used by parallel simulations where
    * the simulated system is partitioned and each partition runs on
    * a different CPU.
    */
   Buffer Serialize (void) const;
   /**
-   * \param a byte buffer
+   * \param buffer a byte buffer
    *
    * This method reads a byte buffer as created by Packet::Serialize
-   * and restores the state of the Packet to what it was prio to
+   * and restores the state of the Packet to what it was prior to
    * calling Serialize.
+   *
+   * This method will trigger calls to the Deserialize method
+   * of each tag stored in this packet.
    *
    * This method will typically be used by parallel simulations where
    * the simulated system is partitioned and each partition runs on
@@ -313,59 +327,6 @@ private:
   PacketMetadata m_metadata;
   static uint32_t m_globalUid;
 };
-
-/**
- * \defgroup tags Packet Tags
- *
- * A tag is a class which must define:
- *  - a public default constructor
- *  - a public static method named GetUid
- *  - a public method named Print
- *  - a public method named GetSerializedSize
- *  - a public method named Serialize
- *  - a public method named Deserialize
- *
- * So, a tag class should look like this:
- * \code
- * // in header file
- * // note how a tag class does not derive from any other class.
- * class MyTag 
- * {
- * public:
- *   // we need a public default constructor
- *   MyTag ();
- *   // we need a public static GetUid
- *   // GetUid must return a 32 bit integer which uniquely
- *   // identifies this tag type
- *   static uint32_t GetUid (void);
- *   // Print should record in the output stream
- *   // the content of the tag instance.
- *   void Print (std::ostream &os) const;
- *   // GetSerializedSize should return the number of bytes needed
- *   // to store the state of a tag instance
- *   uint32_t GetSerializedSize (void) const;
- *   // Serialize should store its state in the input
- *   // buffer with the help of the iterator. It should
- *   // write exactly size bytes.
- *   void Serialize (Buffer::Iterator i, uint32_t size) const;
- *   // Deserialize should restore the state of a Tag instance
- *   // from a byte buffer with the help of the iterator
- *   uint32_t Deserialize (Buffer::Iterator i);
- * };
- *
- * // in source file
- * 
- * NS_TAG_ENSURE_REGISTERED (MyTag);
- *
- * std::string MyTag::GetUid (void)
- * {
- *   // we really want to make sure that this
- *   // string is unique in the universe.
- *   static uint32_t uid = TagRegistry::Register<MyTag> ("MyTag.unique.prefix");
- *   return uid;
- * }
- * \endcode
- */
 
 /**
  * \defgroup packetperf Packet Performance
@@ -416,9 +377,11 @@ template <typename T>
 void
 Packet::AddHeader (T const &header)
 {
-  NS_ASSERT_MSG (dynamic_cast<Header const *> (&header) != 0, 
-                 "Must pass Header subclass to Packet::AddHeader");
-  uint32_t size = header.GetSize ();
+  const Header *testHeader;
+  // if the following assignment fails, it is because the 
+  // input to this function is not a subclass of the Header class
+  testHeader = &header;
+  uint32_t size = header.GetSerializedSize ();
   m_buffer.AddAtStart (size);
   header.Serialize (m_buffer.Begin ());
   m_metadata.AddHeader (header, size);
@@ -427,8 +390,10 @@ template <typename T>
 uint32_t
 Packet::RemoveHeader (T &header)
 {
-  NS_ASSERT_MSG (dynamic_cast<Header const *> (&header) != 0, 
-                 "Must pass Header subclass to Packet::RemoveHeader");
+  Header *testHeader;
+  // if the following assignment fails, it is because the 
+  // input to this function is not a subclass of the Header class
+  testHeader = &header;
   uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
   m_buffer.RemoveAtStart (deserialized);
   m_metadata.RemoveHeader (header, deserialized);
@@ -438,9 +403,11 @@ template <typename T>
 void
 Packet::AddTrailer (T const &trailer)
 {
-  NS_ASSERT_MSG (dynamic_cast<Trailer const *> (&trailer) != 0, 
-                 "Must pass Trailer subclass to Packet::AddTrailer");
-  uint32_t size = trailer.GetSize ();
+  const Trailer *testTrailer;
+  // if the following assignment fails, it is because the 
+  // input to this function is not a subclass of the Trailer class
+  testTrailer = &trailer;
+  uint32_t size = trailer.GetSerializedSize ();
   m_buffer.AddAtEnd (size);
   Buffer::Iterator end = m_buffer.End ();
   trailer.Serialize (end);
@@ -450,8 +417,10 @@ template <typename T>
 uint32_t
 Packet::RemoveTrailer (T &trailer)
 {
-  NS_ASSERT_MSG (dynamic_cast<Trailer const *> (&trailer) != 0, 
-                 "Must pass Trailer subclass to Packet::RemoveTrailer");
+  Trailer *testTrailer;
+  // if the following assignment fails, it is because the 
+  // input to this function is not a subclass of the Trailer class
+  testTrailer = &trailer;
   uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
   m_buffer.RemoveAtEnd (deserialized);
   m_metadata.RemoveTrailer (trailer, deserialized);
@@ -462,18 +431,31 @@ Packet::RemoveTrailer (T &trailer)
 template <typename T>
 void Packet::AddTag (T const& tag)
 {
+  const Tag *parent;
+  // if the following assignment fails, it is because the
+  // input to this function is not a subclass of the Tag class.
+  parent = &tag;
   m_tags.Add (tag);
 }
 template <typename T>
 bool Packet::RemoveTag (T & tag)
 {
+  Tag *parent;
+  // if the following assignment fails, it is because the
+  // input to this function is not a subclass of the Tag class.
+  parent = &tag;
   return m_tags.Remove (tag);
 }
 template <typename T>
 bool Packet::PeekTag (T & tag) const
 {
+  Tag *parent;
+  // if the following assignment fails, it is because the
+  // input to this function is not a subclass of the Tag class.
+  parent = &tag;
   return m_tags.Peek (tag);
 }
-}; // namespace ns3
+
+} // namespace ns3
 
 #endif /* PACKET_H */

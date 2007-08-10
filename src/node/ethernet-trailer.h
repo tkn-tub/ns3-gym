@@ -43,7 +43,7 @@ public:
    * \brief Construct a null ethernet trailer
    */
   EthernetTrailer ();
-  virtual ~EthernetTrailer ();
+
   /**
    * \brief Enable or disabled FCS checking and calculations
    * \param enable If true, enables FCS calculations.
@@ -81,12 +81,12 @@ public:
    */ 
   uint32_t GetTrailerSize() const;
 
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator end) const;
+  uint32_t Deserialize (Buffer::Iterator end);
 private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator end) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator end);
 
   /**
    * Initializes the trailer parameters during construction.
@@ -102,7 +102,7 @@ private:
 
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* ETHERNET_TRAILER_H */

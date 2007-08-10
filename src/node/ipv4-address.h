@@ -116,12 +116,12 @@ public:
    * (bitwise and) with a network mask, yielding an IPv4 network
    * address.
    *
-   * \param a network mask 
+   * \param mask a network mask 
    */
   Ipv4Address CombineMask (Ipv4Mask const &mask) const;
 
   static bool IsMatchingType (const Address &address);
-  Address ConvertTo (void) const;
+  operator Address ();
   static Ipv4Address ConvertFrom (const Address &address);
 
   static Ipv4Address GetZero (void);
@@ -129,6 +129,7 @@ public:
   static Ipv4Address GetBroadcast (void);
   static Ipv4Address GetLoopback (void);
 private:
+  Address ConvertTo (void) const;
   static uint8_t GetType (void);
   uint32_t m_address;
 };

@@ -2,10 +2,7 @@
 
 
 def build(bld):
-    module = bld.create_obj('cpp', 'shlib')
-    module.name = 'ns3-point-to-point'
-    module.target = module.name
-    module.uselib_local = ['ns3-node']
+    module = bld.create_ns3_module('point-to-point', ['node'])
     module.source = [
         'point-to-point-net-device.cc',
         'point-to-point-channel.cc',

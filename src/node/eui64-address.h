@@ -28,9 +28,9 @@ namespace ns3 {
 class Address;
 
 /**
- * \brief an EUI-48 address
+ * \brief an EUI-64 address
  *
- * This class can contain 48 bit IEEE addresses.
+ * This class can contain 64 bit IEEE addresses.
  */
 class Eui64Address
 {
@@ -60,23 +60,31 @@ public:
    *
    * Convert an instance of this class to a polymorphic Address instance.
    */
-  Address ConvertTo (void) const;
+  operator Address ();
+  /**
+   * \param address a polymorphic address
+   * \returns a new Eui64Address from the polymorphic address
+   * 
+   * This function performs a type check and asserts if the
+   * type of the input address is not compatible with an
+   * Eui64Address.
+   */
+  static Eui64Address ConvertFrom (const Address &address);
   /**
    * \returns true if the address matches, false otherwise.
    */
   static bool IsMatchingType (const Address &address);
   /**
-   * \param address a polymorphic address
-   *
-   * Convert a polymorphic address to an Eui64Address instance.
-   * The conversion performs a type check.
-   */
-  static Eui64Address ConvertFrom (const Address &address);
-  /**
    * Allocate a new Eui64Address.
    */
   static Eui64Address Allocate (void);
 private:
+  /**
+   * \returns a new Address instance
+   *
+   * Convert an instance of this class to a polymorphic Address instance.
+   */
+  Address ConvertTo (void) const;
   static uint8_t GetType (void);
   uint8_t m_address[8];
 };

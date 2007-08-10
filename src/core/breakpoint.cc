@@ -28,10 +28,10 @@
 
 namespace ns3 {
 
-#ifdef HAVE_SIGNAL_H
+#if defined (HAVE_SIGNAL_H) && defined (SIGTRAP)
 
 void
-Breakpoint (void)
+BreakpointFallback (void)
 {
   raise (SIGTRAP);
 }
@@ -39,7 +39,7 @@ Breakpoint (void)
 #else
 
 void
-Breakpoint (void)
+BreakpointFallback (void)
 {
   int *a = 0;
   /**

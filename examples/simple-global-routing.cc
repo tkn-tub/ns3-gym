@@ -85,21 +85,21 @@ int main (int argc, char *argv[])
   DebugComponentEnable ("GlobalRouteMaager");
 #endif
 
-  // Set up some default values for the simulation.  Use the Bind ()
+  // Set up some default values for the simulation.  Use the DefaultValue::Bind ()
   // technique to tell the system what subclass of Queue to use,
   // and what the queue limit is
 
   // The below Bind command tells the queue factory which class to
   // instantiate, when the queue factory is invoked in the topology code
-  Bind ("Queue", "DropTailQueue");
+  DefaultValue::Bind ("Queue", "DropTailQueue");
 
-  Bind ("OnOffApplicationPacketSize", "210");
-  Bind ("OnOffApplicationDataRate", "448kb/s");
+  DefaultValue::Bind ("OnOffApplicationPacketSize", "210");
+  DefaultValue::Bind ("OnOffApplicationDataRate", "448kb/s");
 
-  //Bind ("DropTailQueue::m_maxPackets", 30);   
+  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
 
   // Allow the user to override any of the defaults and the above
-  // Bind ()s at run-time, via command-line arguments
+  // DefaultValue::Bind ()s at run-time, via command-line arguments
   CommandLine::Parse (argc, argv);
 
   // Here, we will explicitly create four nodes.  In more sophisticated
@@ -143,7 +143,7 @@ int main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    InetSocketAddress ("10.1.3.2", 80).ConvertTo (), 
+    InetSocketAddress ("10.1.3.2", 80), 
     "Udp",
     ConstantVariable (1), 
     ConstantVariable (0));
@@ -154,7 +154,7 @@ int main (int argc, char *argv[])
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   ooff = Create<OnOffApplication> (
     n3, 
-    InetSocketAddress ("10.1.2.1", 80).ConvertTo (),
+    InetSocketAddress ("10.1.2.1", 80),
     "Udp",
     ConstantVariable (1), 
     ConstantVariable (0));

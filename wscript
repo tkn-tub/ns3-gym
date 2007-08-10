@@ -2,12 +2,13 @@
 import sys
 import shlex
 import shutil
+import types
+import optparse
+import os.path
 
 import Params
 import Object
 import pproc as subprocess
-import optparse
-import os.path
 
 Params.g_autoconfig = 1
 
@@ -135,13 +136,27 @@ def configure(conf):
     conf.sub_config('src')
 
 
+def create_ns3_program(bld, name, dependencies=('simulator',)):
+    program = bld.create_obj('cpp', 'program')
+    program.name = name
+    program.target = program.name
+    program.uselib_local = 'ns3'
+    return program
+
+
 def build(bld):
+    bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
+
     variant_name = bld.env_of_name('default')['NS3_ACTIVE_VARIANT']
     variant_env = bld.env_of_name(variant_name)
     bld.m_allenvs['default'] = variant_env # switch to the active variant
 
     if Params.g_options.shell:
         run_shell()
+        raise SystemExit(0)
+
+    if Params.g_options.doxygen:
+        doxygen()
         raise SystemExit(0)
 
     check_shell()
@@ -165,9 +180,6 @@ def shutdown():
 
     if Params.g_options.lcov_report:
         lcov_report()
-
-    if Params.g_options.doxygen:
-        doxygen()
 
     if Params.g_options.run:
         run_program(Params.g_options.run, Params.g_options.command_template)

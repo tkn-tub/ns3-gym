@@ -25,10 +25,36 @@
 #include "packet-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
+#include "ns3/array-trace-resolver.h"
 
 namespace ns3{
 
 const InterfaceId Node::iid = MakeInterfaceId ("Node", Object::iid);
+
+NodeNetDeviceIndex::NodeNetDeviceIndex ()
+  : m_index (0)
+{}
+NodeNetDeviceIndex::NodeNetDeviceIndex (uint32_t index)
+  : m_index (index)
+{}
+uint32_t 
+NodeNetDeviceIndex::Get (void) const
+{
+  return m_index;
+}
+void 
+NodeNetDeviceIndex::Print (std::ostream &os) const
+{
+  os << "device=" << m_index;
+}
+uint16_t 
+NodeNetDeviceIndex::GetUid (void)
+{
+  static uint16_t uid = AllocateUid<NodeNetDeviceIndex> ("NodeNetDeviceIndex");
+  return uid;
+}
+
+
 
 Node::Node()
   : m_id(0), 
@@ -118,10 +144,11 @@ Node::GetNApplications (void) const
 TraceResolver *
 Node::CreateDevicesTraceResolver (const TraceContext &context)
 {
-  ArrayTraceResolver<Ptr<NetDevice> > *resolver = 
-    new ArrayTraceResolver<Ptr<NetDevice> > (context,
-                                             MakeCallback (&Node::GetNDevices, this), 
-                                             MakeCallback (&Node::GetDevice, this));
+  ArrayTraceResolver<Ptr<NetDevice>,NodeNetDeviceIndex> *resolver = 
+    new ArrayTraceResolver<Ptr<NetDevice>,NodeNetDeviceIndex> 
+    (context,
+     MakeCallback (&Node::GetNDevices, this), 
+     MakeCallback (&Node::GetDevice, this));
   
   return resolver;
 }
@@ -130,8 +157,7 @@ void
 Node::DoFillTraceResolver (CompositeTraceResolver &resolver)
 {
   resolver.Add ("devices", 
-                MakeCallback (&Node::CreateDevicesTraceResolver, this),
-                Node::DEVICES);
+                MakeCallback (&Node::CreateDevicesTraceResolver, this));
 }
 
 void 

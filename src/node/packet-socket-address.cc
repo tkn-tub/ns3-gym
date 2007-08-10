@@ -68,6 +68,11 @@ PacketSocketAddress::GetPhysicalAddress (void) const
   return m_address;
 }
 
+PacketSocketAddress::operator Address () const
+{
+  return ConvertTo ();
+}
+
 Address 
 PacketSocketAddress::ConvertTo (void) const
 {

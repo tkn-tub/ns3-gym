@@ -20,12 +20,13 @@
  */
 
 #include "packet-printer.h"
+#include "chunk-registry.h"
 
 namespace ns3 {
 
 PacketPrinter::PacketPrinter ()
   : m_forward (true),
-    m_separator ("")
+    m_separator (" ")
 {}
 
 void 

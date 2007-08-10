@@ -1,28 +1,43 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-import Params
 
 def build(bld):
-    def create_ns_prog(name, source, deps=['core', 'common', 'simulator']):
-        obj = bld.create_obj('cpp', 'program')
-        obj.target = name
-        obj.uselib_local = ["ns3-%s" % dep for dep in deps]
-        obj.source = source
-        return obj
-        
-    obj = create_ns_prog('main-debug', ['main-debug.cc', 'main-debug-other.cc'])
-    obj = create_ns_prog('main-callback', 'main-callback.cc')
-    obj = create_ns_prog('main-ptr', 'main-ptr.cc')
-    #obj = create_ns_prog('main-trace', 'main-trace.cc')
-    obj = create_ns_prog('main-simulator', 'main-simulator.cc')
-    obj = create_ns_prog('main-header', 'main-header.cc')
-    obj = create_ns_prog('main-test', 'main-test.cc')
-    obj = create_ns_prog('main-simple', 'main-simple.cc',
-                         deps=['node', 'internet-node', 'applications'])
-    #obj = create_ns_prog('main-simple-p2p', 'main-simple-p2p.cc', deps=['node', 'point-to-point'])
-    obj = create_ns_prog('main-default-value', 'main-default-value.cc',
-                         deps=['core', 'simulator', 'node', 'point-to-point'])
-    obj = create_ns_prog('main-grid-topology', 'main-grid-topology.cc',
-                         deps=['core', 'simulator', 'mobility', 'internet-node'])
-    obj = create_ns_prog('main-random-topology', 'main-random-topology.cc',
-                         deps=['core', 'simulator', 'mobility'])
+    obj = bld.create_ns3_program('main-debug')
+    obj.source = ['main-debug.cc', 'main-debug-other.cc']
+
+    obj = bld.create_ns3_program('main-callback')
+    obj.source = 'main-callback.cc'
+
+    obj = bld.create_ns3_program('main-ptr')
+    obj.source = 'main-ptr.cc'
+
+    obj = bld.create_ns3_program('main-simulator')
+    obj.source = 'main-simulator.cc'
+
+    obj = bld.create_ns3_program('main-packet-header', ['common', 'simulator'])
+    obj.source = 'main-packet-header.cc'
+
+    obj = bld.create_ns3_program('main-packet-tag', ['common', 'simulator'])
+    obj.source = 'main-packet-tag.cc'
+
+    obj = bld.create_ns3_program('main-packet-printer', ['common', 'simulator', 'internet-node'])
+    obj.source = 'main-packet-printer.cc'
+
+    obj = bld.create_ns3_program('main-test')
+    obj.source = 'main-test.cc'
+
+    obj = bld.create_ns3_program('main-simple',
+                                 ['node', 'internet-node', 'applications'])
+    obj.source = 'main-simple.cc'
+
+    obj = bld.create_ns3_program('main-default-value',
+                                 ['core', 'simulator', 'node', 'point-to-point'])
+    obj.source = 'main-default-value.cc'
+
+    obj = bld.create_ns3_program('main-grid-topology',
+                                 ['core', 'simulator', 'mobility', 'internet-node'])
+    obj.source = 'main-grid-topology.cc'
+
+    obj = bld.create_ns3_program('main-random-topology',
+                                 ['core', 'simulator', 'mobility'])
+    obj.source = 'main-random-topology.cc'
 

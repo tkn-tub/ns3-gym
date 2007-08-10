@@ -27,14 +27,14 @@
 
 NS_DEBUG_COMPONENT_DEFINE ("EthernetHeader");
 
-NS_HEADER_ENSURE_REGISTERED (ns3::EthernetHeader);
-
 namespace ns3 {
+
+NS_HEADER_ENSURE_REGISTERED (EthernetHeader);
 
 uint32_t
 EthernetHeader::GetUid (void)
 {
-  static uint32_t uid = Header::Register<EthernetHeader> ("EthernetHeader.ns3");
+  static uint32_t uid = AllocateUid<EthernetHeader> ("EthernetHeader.ns3");
   return uid;
 }
 
@@ -46,9 +46,6 @@ EthernetHeader::EthernetHeader (bool hasPreamble)
 EthernetHeader::EthernetHeader ()
   : m_enPreambleSfd (false),
     m_lengthType (0)
-{}
-
-EthernetHeader::~EthernetHeader ()
 {}
 
 void 
@@ -108,13 +105,13 @@ EthernetHeader::GetHeaderSize (void) const
 }
 
 std::string
-EthernetHeader::DoGetName (void) const
+EthernetHeader::GetName (void) const
 {
   return "ETHERNET";
 }
 
 void 
-EthernetHeader::PrintTo (std::ostream &os) const
+EthernetHeader::Print (std::ostream &os) const
 {
   // ethernet, right ?
   if (m_enPreambleSfd)
@@ -139,7 +136,7 @@ EthernetHeader::GetSerializedSize (void) const
 }
 
 void
-EthernetHeader::SerializeTo (Buffer::Iterator start) const
+EthernetHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   
@@ -152,7 +149,7 @@ EthernetHeader::SerializeTo (Buffer::Iterator start) const
   i.WriteU16 (m_lengthType);
 }
 uint32_t
-EthernetHeader::DeserializeFrom (Buffer::Iterator start)
+EthernetHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 

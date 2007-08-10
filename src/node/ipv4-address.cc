@@ -222,6 +222,11 @@ Ipv4Address::IsMatchingType (const Address &address)
 {
   return address.CheckCompatible (GetType (), 4);
 }
+Ipv4Address::operator Address ()
+{
+  return ConvertTo ();
+}
+
 Address 
 Ipv4Address::ConvertTo (void) const
 {
