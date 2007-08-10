@@ -131,6 +131,7 @@ public:
    * on one to get the other, and vice-versa. 
    */
   void AddInterface (Ptr<Object> other);
+
 protected:
   /**
    * \param iid an InterfaceId

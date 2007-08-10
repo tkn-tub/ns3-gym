@@ -22,9 +22,28 @@
 
 namespace ns3 {
 
+TraceResolver::TraceResolver ()
+  : m_count (1)
+{}
 
 TraceResolver::~TraceResolver ()
 {}
+
+void 
+TraceResolver::Ref (void)
+{
+  m_count++;
+}
+void 
+TraceResolver::Unref (void)
+{
+  m_count--;
+  if (m_count == 0)
+    {
+      delete this;
+    }
+}
+
 
 void 
 TraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)

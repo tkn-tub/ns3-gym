@@ -50,7 +50,12 @@ class CallbackBase;
 class TraceResolver
 {
 public:
+
+  TraceResolver ();
   virtual ~TraceResolver ();
+  void Ref (void);
+  void Unref (void);
+
   /**
    * \param path the namespace path to resolver
    * \param cb the callback to connect to the matching namespace
@@ -72,6 +77,7 @@ public:
 protected:
   std::string GetElement (std::string path);
   std::string GetSubpath (std::string path);
+  uint32_t m_count;
 };
 
 }//namespace ns3
