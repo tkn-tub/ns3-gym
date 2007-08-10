@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "composite-trace-resolver.h"
-#include "ns3/debug.h"
+#include "debug.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("CompositeTraceResolver");
 
@@ -149,7 +149,7 @@ CompositeTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
 
 #ifdef RUN_SELF_TESTS
 
-#include "ns3/test.h"
+#include "test.h"
 #include "trace-context-element.h"
 
 namespace ns3 {

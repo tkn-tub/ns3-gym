@@ -19,8 +19,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "trace-root.h"
-#include "ns3/composite-trace-resolver.h"
-#include "ns3/trace-context.h"
+#include "composite-trace-resolver.h"
+#include "trace-context.h"
 
 namespace ns3 {
 

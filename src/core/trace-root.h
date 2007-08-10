@@ -22,7 +22,7 @@
 #define TRACE_ROOT_H
 
 #include <string>
-#include "ns3/callback.h"
+#include "callback.h"
 
 /**
  * \defgroup lowleveltracing Low-level tracing

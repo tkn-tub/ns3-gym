@@ -22,7 +22,7 @@
 #define TERMINAL_TRACE_RESOLVER_H
 
 #include "trace-resolver.h"
-#include "ns3/assert.h"
+#include "assert.h"
 
 namespace ns3 {
 

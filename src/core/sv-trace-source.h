@@ -74,7 +74,7 @@ class UVTraceSource;
  * ns3::UVTraceSource<int32_t> :
  \code
  #include <stdint.h>
- #include "ns3/sv-trace-source.h"
+ #include "sv-trace-source.h"
 
  ns3::SVTraceSource<uint16_t> var;
  \endcode

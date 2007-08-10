@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "callback-trace-source.h"
-#include "ns3/test.h"
+#include "test.h"
 
 namespace ns3 {
 

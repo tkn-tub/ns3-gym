@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 #include <vector>
-#include "ns3/fatal-error.h"
+#include "fatal-error.h"
 #include "trace-context-element.h"
 
 namespace ns3 {

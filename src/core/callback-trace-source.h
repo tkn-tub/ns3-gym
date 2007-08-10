@@ -23,8 +23,8 @@
 #define CALLBACK_TRACE_H
 
 #include <list>
-#include "ns3/callback.h"
-#include "ns3/fatal-error.h"
+#include "callback.h"
+#include "fatal-error.h"
 #include "trace-context.h"
 
 namespace ns3 {

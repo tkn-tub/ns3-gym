@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 #include <string>
-#include "ns3/callback.h"
+#include "callback.h"
 #include "trace-resolver.h"
 
 namespace ns3 {

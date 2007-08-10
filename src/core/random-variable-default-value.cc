@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "random-variable-default-value.h"
-#include "ns3/debug.h"
+#include "debug.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("RandomVariableDefaultValue");
 

@@ -20,7 +20,7 @@
  */
 #include "trace-context.h"
 #include "trace-context-element.h"
-#include "ns3/assert.h"
+#include "assert.h"
 
 namespace ns3 {
 
@@ -233,7 +233,7 @@ TraceContext::Print (std::ostream &os) const
 
 }//namespace ns3
 
-#include "ns3/test.h"
+#include "test.h"
 #include <sstream>
 
 namespace ns3 {

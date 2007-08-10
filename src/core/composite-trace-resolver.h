@@ -21,8 +21,8 @@
 #ifndef COMPOSITE_TRACE_RESOLVER_H
 #define COMPOSITE_TRACE_RESOLVER_H
 
-#include "ns3/callback.h"
-#include "ns3/ptr.h"
+#include "callback.h"
+#include "ptr.h"
 #include "trace-resolver.h"
 #include "callback-trace-source.h"
 #include "uv-trace-source.h"
