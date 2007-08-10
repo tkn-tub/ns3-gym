@@ -59,7 +59,7 @@ public:
    * users could also conceivably call it directly if they want to
    * skip the ns3::TraceRoot.
    */
-  void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
+  virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   /**
    * \param path the namespace path to resolver
    * \param cb the callback to disconnect in the matching namespace
@@ -68,7 +68,7 @@ public:
    * users could also conceivably call it directly if they want to
    * skip the ns3::TraceRoot.
    */
-  void Disconnect (std::string path, CallbackBase const &cb);
+  virtual void Disconnect (std::string path, CallbackBase const &cb);
 protected:
   typedef std::list<std::pair<TraceResolver *, TraceContext> > TraceResolverList;
 private:
