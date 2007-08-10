@@ -32,12 +32,12 @@ template <typename T>
 class TerminalTraceResolver : public TraceResolver
 {
  public:
-  TerminalTraceResolver (T &traceSource);
+  TerminalTraceResolver (T *traceSource);
 
   virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   virtual void Disconnect (std::string path, CallbackBase const &cb);
  private:
-  T &m_traceSource;
+  T *m_traceSource;
 };
 
 }//namespace ns3
@@ -45,7 +45,7 @@ class TerminalTraceResolver : public TraceResolver
 namespace ns3 {
 
 template <typename T>
-TerminalTraceResolver<T>::TerminalTraceResolver (T &traceSource)
+TerminalTraceResolver<T>::TerminalTraceResolver (T *traceSource)
   : m_traceSource (traceSource)
 {}
 template <typename T>
@@ -54,7 +54,7 @@ TerminalTraceResolver<T>::Connect (std::string path, CallbackBase const &cb, con
 {
   if (path == "")
     {
-      m_traceSource.AddCallback (cb, context);
+      m_traceSource->AddCallback (cb, context);
     }
 }
 template <typename T>
@@ -63,7 +63,7 @@ TerminalTraceResolver<T>::Disconnect (std::string path, CallbackBase const &cb)
 {
   if (path == "")
     {
-      m_traceSource.RemoveCallback (cb);
+      m_traceSource->RemoveCallback (cb);
     }
 }
 
