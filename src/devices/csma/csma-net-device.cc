@@ -133,7 +133,6 @@ CsmaNetDevice::Init(bool sendEnable, bool receiveEnable)
 
   EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
   EnableMulticast();
-  EnablePointToPoint();
 
   SetSendEnable (sendEnable);
   SetReceiveEnable (receiveEnable);
