@@ -22,6 +22,7 @@
 #define TERMINAL_TRACE_RESOLVER_H
 
 #include "trace-resolver.h"
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -32,9 +33,10 @@ class TerminalTraceResolver : public TraceResolver
 {
  public:
   TerminalTraceResolver (T &traceSource);
+
+  virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
+  virtual void Disconnect (std::string path, CallbackBase const &cb);
  private:
-  virtual void DoConnect (CallbackBase const &cb, const TraceContext &context);
-  virtual void DoDisconnect (CallbackBase const &cb);
   T &m_traceSource;
 };
 
@@ -48,15 +50,21 @@ TerminalTraceResolver<T>::TerminalTraceResolver (T &traceSource)
 {}
 template <typename T>
 void 
-TerminalTraceResolver<T>::DoConnect (CallbackBase const &cb, const TraceContext &context)
+TerminalTraceResolver<T>::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
 {
-  m_traceSource.AddCallback (cb, context);
+  if (path == "")
+    {
+      m_traceSource.AddCallback (cb, context);
+    }
 }
 template <typename T>
 void 
-TerminalTraceResolver<T>::DoDisconnect (CallbackBase const &cb)
+TerminalTraceResolver<T>::Disconnect (std::string path, CallbackBase const &cb)
 {
-  m_traceSource.RemoveCallback (cb);
+  if (path == "")
+    {
+      m_traceSource.RemoveCallback (cb);
+    }
 }
 
 }//namespace ns3

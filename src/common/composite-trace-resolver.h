@@ -123,7 +123,22 @@ public:
    */
   void Add (std::string name, 
             Callback<TraceResolver *> createResolver);
+  virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
+  virtual void Disconnect (std::string path, CallbackBase const &cb);
+
 private:
+  struct CallbackTraceSourceItem
+  {
+    std::string name;
+    Callback<TraceResolver *> createResolver;
+    TraceContext context;
+  };
+  typedef std::list<struct CallbackTraceSourceItem> TraceItems;
+  enum Operation {
+    CONNECT,
+    DISCONNECT
+  };
+
   template <typename SOURCE, typename CONTEXT>
   void DoAddTraceSource (std::string name,
                          SOURCE &traceSource, CONTEXT const &context);
@@ -132,16 +147,17 @@ private:
   void DoAdd (std::string name, 
               Callback<TraceResolver *> createResolver,
               TraceContext const &context);
-  virtual TraceResolverList DoLookup (std::string id) const;
+  void OperationOne (std::string subpath, 
+                     TraceItems::const_iterator i,
+                     const CallbackBase &cb,
+                     const TraceContext &context,
+                     enum Operation op);
+  void DoRecursiveOperation (std::string path, CallbackBase const &cb, 
+                             const TraceContext &context,
+                             enum Operation op);
 
-  struct CallbackTraceSourceItem
-  {
-    std::string name;
-    Callback<TraceResolver *> createResolver;
-    TraceContext context;
-  };
 
-  typedef std::list<struct CallbackTraceSourceItem> TraceItems;
+
   TraceItems m_items;
 };
 

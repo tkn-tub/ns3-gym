@@ -19,6 +19,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "composite-trace-resolver.h"
+#include "ns3/debug.h"
+
+NS_DEBUG_COMPONENT_DEFINE ("CompositeTraceResolver");
 
 namespace ns3 {
 
@@ -47,17 +50,39 @@ CompositeTraceResolver::DoAdd (std::string name,
   m_items.push_back (item);
 }
 
-TraceResolver::TraceResolverList 
-CompositeTraceResolver::DoLookup (std::string id) const
+void 
+CompositeTraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
 {
+  NS_DEBUG ("connect path="<<path);
+  DoRecursiveOperation (path, cb, context, CONNECT);
+}
+void 
+CompositeTraceResolver::DoRecursiveOperation (std::string path, CallbackBase const &cb, 
+                                              const TraceContext &context,
+                                              enum Operation op)
+{
+  std::string::size_type cur = 1;
+  // check that first char is "/"
+  std::string::size_type next = path.find ("/", cur);
+  std::string id = std::string (path, cur, next-1);
+  std::string subpath;
+  if (next != std::string::npos)
+    {
+      subpath = std::string (path, next, std::string::npos);
+    }
+  else
+    {
+      subpath = "";
+    }
+
   if (id == "*")
     {
       TraceResolver::TraceResolverList list;
       for (TraceItems::const_iterator i = m_items.begin (); i != m_items.end (); i++)
 	{
-	  list.push_back (std::make_pair (i->createResolver (), i->context));
-	}
-      return list;
+          OperationOne (subpath, i, cb, context, op);
+        }
+      return;
     }
   std::string::size_type start, end;
   start = id.find_first_of ("(", 0);
@@ -68,30 +93,29 @@ CompositeTraceResolver::DoLookup (std::string id) const
 	{
 	  if (i->name == id)
 	    {
-	      TraceResolver::TraceResolverList list;
-	      list.push_back (std::make_pair (i->createResolver (), i->context));
-	      return list;
+              OperationOne (subpath, i, cb, context, op);
+              return;
 	    }
 	}
     }
   std::list<std::string> names;
   std::string alternatives = std::string (id, start+1, end-1);
-  std::string::size_type next, cur;
-  next = 0;
-  cur = 0;
+  std::string::size_type next_pos, cur_pos;
+  next_pos = 0;
+  cur_pos = 0;
   while (true)
     {
       std::string element;
-      next = alternatives.find ("|", cur);
-      if (next == std::string::npos)
+      next_pos = alternatives.find ("|", cur_pos);
+      if (next_pos == std::string::npos)
 	{
-	  element = std::string (alternatives, cur, alternatives.size ());
+	  element = std::string (alternatives, cur_pos, alternatives.size ());
 	  names.push_back (element);
 	  break;
 	}
-      element = std::string (alternatives, cur, next);
+      element = std::string (alternatives, cur_pos, next_pos);
       names.push_back (element);
-      cur = next + 1;
+      cur_pos = next_pos + 1;
     }
   TraceResolver::TraceResolverList list;
   for (std::list<std::string>::const_iterator i = names.begin (); i != names.end (); i++)
@@ -100,12 +124,38 @@ CompositeTraceResolver::DoLookup (std::string id) const
 	{
 	  if (j->name == *i)
 	    {
-	      list.push_back (std::make_pair (j->createResolver (), j->context));
+              OperationOne (subpath, j, cb, context, op);
 	      break;
 	    }
 	}
     }
-  return list;
+}
+
+void 
+CompositeTraceResolver::OperationOne (std::string subpath, 
+                                      TraceItems::const_iterator i,
+                                      const CallbackBase &cb,
+                                      const TraceContext &context,
+                                      enum Operation op)
+{
+  TraceResolver *resolver = i->createResolver ();
+  switch (op) {
+  case CONNECT: {
+    NS_DEBUG ("connect to path="<<subpath<<" name="<<i->name);
+    TraceContext ctx = context;
+    ctx.Add (i->context);
+    resolver->Connect (subpath, cb, ctx);
+    } break;
+  case DISCONNECT:
+    resolver->Disconnect (subpath, cb);
+    break;
+  }
+  }
+
+void 
+CompositeTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
+{
+  DoRecursiveOperation (path, cb, TraceContext (), DISCONNECT);
 }
 
 }//namespace ns3
