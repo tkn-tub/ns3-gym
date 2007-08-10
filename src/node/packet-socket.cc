@@ -279,7 +279,7 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, const Packet &packet,
 
   NS_DEBUG ("PacketSocket::ForwardUp: UID is " << packet.GetUid()
             << " PacketSocket " << this);
-  NotifyDataReceived (p, address.ConvertTo ());
+  NotifyDataReceived (p, address);
 }
 
 }//namespace ns3

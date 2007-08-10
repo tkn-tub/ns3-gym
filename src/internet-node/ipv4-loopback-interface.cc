@@ -45,7 +45,7 @@ void
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {
   Ptr<Ipv4L3Protocol> ipv4 = m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
-  ipv4->Receive (GetDevice (), packet, Ipv4L3Protocol::PROT_NUMBER, Eui48Address ("ff:ff:ff:ff:ff:ff").ConvertTo ());
+  ipv4->Receive (GetDevice (), packet, Ipv4L3Protocol::PROT_NUMBER, Eui48Address ("ff:ff:ff:ff:ff:ff"));
 }
 
 }//namespace ns3
