@@ -27,6 +27,9 @@
 
 namespace ns3 {
 
+class TraceResolver;
+class CallbackBase;
+
 /**
  * \brief a unique identifier for an interface.
  *
@@ -132,6 +135,9 @@ public:
    */
   void AddInterface (Ptr<Object> other);
 
+
+  void TraceConnect (std::string path, const CallbackBase &cb);
+  void TraceDisconnect (std::string path, const CallbackBase &cb);
 protected:
   /**
    * \param iid an InterfaceId
@@ -147,6 +153,8 @@ protected:
    * up to their parent's implementation once they are done.
    */
   virtual void DoDispose (void);
+
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 private:
   Ptr<Object> DoQueryInterface (InterfaceId iid) const;
   bool Check (void) const;

@@ -22,6 +22,7 @@
 #include "assert.h"
 #include "singleton.h"
 #include "uid-manager.h"
+#include "empty-trace-resolver.h"
 #include <vector>
 
 namespace {
@@ -164,6 +165,18 @@ Object::AddInterface (Ptr<Object> o)
 }
 
 void 
+Object::TraceConnect (std::string path, const CallbackBase &cb)
+{
+  GetTraceResolver ()->Connect (path, cb, TraceContext ());
+}
+void 
+Object::TraceDisconnect (std::string path, const CallbackBase &cb)
+{
+  GetTraceResolver ()->Disconnect (path, cb);
+}
+
+
+void 
 Object::SetInterfaceId (InterfaceId iid)
 {
   NS_ASSERT (Check ());
@@ -174,6 +187,12 @@ void
 Object::DoDispose (void)
 {
   NS_ASSERT (!m_disposed);
+}
+
+Ptr<TraceResolver>
+Object::GetTraceResolver (void) const
+{
+  return Create<EmptyTraceResolver> ();
 }
 
 bool 
