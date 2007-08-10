@@ -19,6 +19,8 @@
  * Author: Emmanuelle Laprise <emmanuelle.laprise@bluekazoo.ca>
  */
 
+#include <iomanip>
+#include <iostream>
 #include "ns3/assert.h"
 #include "ns3/debug.h"
 #include "ns3/header.h"
@@ -118,7 +120,8 @@ EthernetHeader::Print (std::ostream &os) const
     {
       os << " preamble/sfd=" << m_preambleSfd << ",";
     }
-  os << " length/type=" << m_lengthType
+
+  os << " length/type=0x" << std::hex << m_lengthType << std::dec
      << ", source=" << m_source
      << ", destination=" << m_destination;
 }
