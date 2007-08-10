@@ -119,14 +119,14 @@ Tags::Remove (uint32_t id)
 }
 
 void 
-Tags::Print (std::ostream &os) const
+Tags::Print (std::ostream &os, std::string separator) const
 {
   for (struct TagData *cur = m_next; cur != 0; cur = cur->m_next) 
     {
       TagRegistry::Print (cur->m_id, cur->m_data, os);
       if (cur->m_next != 0)
         {
-          os << " ";
+          os << separator;
         }
     }
 }
@@ -347,7 +347,7 @@ TagsTest::RunTests (void)
       ok = false;
     }
   g_a = false;
-  tags.Print (std::cout);
+  tags.Print (std::cout, "");
   if (!g_a)
     {
       ok = false;
@@ -363,7 +363,7 @@ TagsTest::RunTests (void)
     }
   g_b = false;
   g_a = false;
-  tags.Print (std::cout);
+  tags.Print (std::cout, "");
   if (!g_a || !g_b)
     {
       ok = false;
@@ -372,14 +372,14 @@ TagsTest::RunTests (void)
   Tags other = tags;
   g_b = false;
   g_a = false;
-  other.Print (std::cout);
+  other.Print (std::cout, "");
   if (!g_a || !g_b)
     {
       ok = false;
     }
   g_b = false;
   g_a = false;
-  tags.Print (std::cout);
+  tags.Print (std::cout, "");
   if (!g_a || !g_b)
     {
       ok = false;
@@ -406,7 +406,7 @@ TagsTest::RunTests (void)
     }
   g_b = false;
   g_a = false;
-  other.Print (std::cout);
+  other.Print (std::cout, "");
   if (g_a || !g_b)
     {
       ok = false;
@@ -452,7 +452,7 @@ TagsTest::RunTests (void)
   tagZ.z = 0;
   testLastTag.Add (tagZ);
   g_z = false;
-  testLastTag.Print (std::cout);
+  testLastTag.Print (std::cout, "");
   if (!g_z)
     {
       ok = false;

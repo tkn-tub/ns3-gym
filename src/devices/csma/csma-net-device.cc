@@ -274,8 +274,12 @@ CsmaNetDevice::DoNeedsArp (void) const
 }
 
 bool
-CsmaNetDevice::SendTo (Packet& p, const Address& dest, uint16_t protocolNumber)
+CsmaNetDevice::SendTo (
+  const Packet& packet, 
+  const Address& dest, 
+  uint16_t protocolNumber)
 {
+  Packet p = packet;
   NS_DEBUG ("CsmaNetDevice::SendTo (" << &p << ")");
   NS_DEBUG ("CsmaNetDevice::SendTo (): UID is " << p.GetUid () << ")");
 

@@ -52,7 +52,7 @@ public:
   template <typename T>
   bool Peek (T &tag) const;
 
-  void Print (std::ostream &os) const;
+  void Print (std::ostream &os, std::string separator) const;
   uint32_t GetSerializedSize (void) const;
   void Serialize (Buffer::Iterator i, uint32_t size) const;
   uint32_t Deserialize (Buffer::Iterator i);

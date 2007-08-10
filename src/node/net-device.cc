@@ -171,7 +171,7 @@ NetDevice::DisablePointToPoint (void)
 
 // Receive packet from above
 bool 
-NetDevice::Send(Packet& p, const Address& dest, uint16_t protocolNumber)
+NetDevice::Send(const Packet& p, const Address& dest, uint16_t protocolNumber)
 {
   if (m_isUp)
     {

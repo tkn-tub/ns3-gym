@@ -152,7 +152,7 @@ std::ostream& operator<< (std::ostream& os, const Eui48Address & address)
   address.CopyTo (ad);
 
   os.setf (std::ios::hex, std::ios::basefield);
-  std::cout.fill('0');
+  os.fill('0');
   for (uint8_t i=0; i < 5; i++) 
     {
       os << std::setw(2) << (uint32_t)ad[i] << ":";
@@ -160,7 +160,7 @@ std::ostream& operator<< (std::ostream& os, const Eui48Address & address)
   // Final byte not suffixed by ":"
   os << std::setw(2) << (uint32_t)ad[5];
   os.setf (std::ios::dec, std::ios::basefield);
-  std::cout.fill(' ');
+  os.fill(' ');
   return os;
 }
 

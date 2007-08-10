@@ -72,7 +72,7 @@ InetSocketAddress::ConvertFrom (const Address &address)
   uint8_t buf[6];
   address.CopyTo (buf);
   Ipv4Address ipv4 = Ipv4Address::Deserialize (buf);
-  uint16_t port = buf[0] | (buf[1] << 8);
+  uint16_t port = buf[4] | (buf[5] << 8);
   return InetSocketAddress (ipv4, port);
 }
 uint8_t 
