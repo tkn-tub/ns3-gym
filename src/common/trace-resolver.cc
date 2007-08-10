@@ -80,6 +80,34 @@ TraceResolver::Disconnect (std::string path, CallbackBase const &cb)
   resolverList.erase (resolverList.begin (), resolverList.end ());
 }
 
+std::string 
+TraceResolver::GetElement (std::string path)
+{
+  std::string::size_type cur = 1;
+  // check that first char is "/"
+  std::string::size_type next = path.find ("/", cur);
+  std::string id = std::string (path, cur, next-1);
+  return id;
+}
+std::string 
+TraceResolver::GetSubpath (std::string path)
+{
+  std::string::size_type cur = 1;
+  // check that first char is "/"
+  std::string::size_type next = path.find ("/", cur);
+  std::string subpath;
+  if (next != std::string::npos)
+    {
+      subpath = std::string (path, next, std::string::npos);
+    }
+  else
+    {
+      subpath = "";
+    }
+  return subpath;
+}
+
+
 TraceResolver::TraceResolverList 
 TraceResolver::DoLookup (std::string id) const
 {

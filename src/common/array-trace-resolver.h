@@ -52,8 +52,10 @@ public:
    */
   ArrayTraceResolver (Callback<uint32_t> getSize, 
                       Callback<T, uint32_t> get);
+
+  virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
+  virtual void Disconnect (std::string path, CallbackBase const &cb);
 private:
-  virtual TraceResolverList DoLookup (std::string id) const;
   Callback<uint32_t> m_getSize;
   Callback<T, uint32_t> m_get;
 };
@@ -67,22 +69,41 @@ ArrayTraceResolver<T,INDEX>::ArrayTraceResolver (Callback<uint32_t> getSize,
   : m_getSize (getSize),
     m_get (get)
 {}
+
 template <typename T, typename INDEX>
-TraceResolver::TraceResolverList 
-ArrayTraceResolver<T,INDEX>::DoLookup (std::string id) const
+void 
+ArrayTraceResolver<T,INDEX>::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
 {
-  TraceResolverList list;
+  std::string id = GetElement (path);
+  std::string subpath = GetSubpath (path);
   if (id == "*")
   {
     for (uint32_t i = 0; i < m_getSize (); i++)
     {
-      TraceContext context;
+      TraceContext tmp = context;
       INDEX index = i;
-      context.Add (index);
-      list.push_back (std::make_pair (m_get (i)->CreateTraceResolver (), context));
+      tmp.Add (index);
+      TraceResolver *resolver = m_get (i)->CreateTraceResolver ();
+      resolver->Connect (subpath, cb, tmp);
+      delete resolver;
     }
   }
-  return list;
+}
+template <typename T, typename INDEX>
+void 
+ArrayTraceResolver<T,INDEX>::Disconnect (std::string path, CallbackBase const &cb)
+{
+  std::string id = GetElement (path);
+  std::string subpath = GetSubpath (path);
+  if (id == "*")
+  {
+    for (uint32_t i = 0; i < m_getSize (); i++)
+    {
+      TraceResolver *resolver = m_get (i)->CreateTraceResolver ();
+      resolver->Disconnect (subpath, cb);
+      delete resolver;
+    }
+  }
 }
 
 

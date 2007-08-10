@@ -71,6 +71,8 @@ public:
   virtual void Disconnect (std::string path, CallbackBase const &cb);
 protected:
   typedef std::list<std::pair<TraceResolver *, TraceContext> > TraceResolverList;
+  std::string GetElement (std::string path);
+  std::string GetSubpath (std::string path);
 private:
   /**
    * \param id the id to resolve. This is supposed to be

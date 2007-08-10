@@ -61,19 +61,8 @@ CompositeTraceResolver::DoRecursiveOperation (std::string path, CallbackBase con
                                               const TraceContext &context,
                                               enum Operation op)
 {
-  std::string::size_type cur = 1;
-  // check that first char is "/"
-  std::string::size_type next = path.find ("/", cur);
-  std::string id = std::string (path, cur, next-1);
-  std::string subpath;
-  if (next != std::string::npos)
-    {
-      subpath = std::string (path, next, std::string::npos);
-    }
-  else
-    {
-      subpath = "";
-    }
+  std::string id = GetElement (path);
+  std::string subpath = GetSubpath (path);
 
   if (id == "*")
     {
@@ -150,7 +139,8 @@ CompositeTraceResolver::OperationOne (std::string subpath,
     resolver->Disconnect (subpath, cb);
     break;
   }
-  }
+  delete resolver;
+}
 
 void 
 CompositeTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
