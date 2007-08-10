@@ -70,35 +70,8 @@ public:
    */
   virtual void Disconnect (std::string path, CallbackBase const &cb);
 protected:
-  typedef std::list<std::pair<TraceResolver *, TraceContext> > TraceResolverList;
   std::string GetElement (std::string path);
   std::string GetSubpath (std::string path);
-private:
-  /**
-   * \param id the id to resolve. This is supposed to be
-   * one element of the global tracing namespace.
-   * \returns a list of reslvers which match the input namespace element
-   *
-   * A subclass which overrides this method should return a potentially
-   * empty list of pointers to ns3::TraceResolver instances which match
-   * the input namespace element. Each of these TraceResolver should be
-   * instanciated with a TraceContext which holds enough context
-   * information to identify the type of the TraceResolver.
-   */
-  virtual TraceResolverList DoLookup (std::string id) const;
-  /**
-   * \param cb callback to connect
-   *
-   * This method is invoked on leaf trace resolvers.
-   */
-  virtual void DoConnect (CallbackBase const &cb, const TraceContext &context);
-  /**
-   * \param cb callback to disconnect
-   *
-   * This method is invoked on leaf trace resolvers.
-   */
-  virtual void DoDisconnect (CallbackBase const &cb);
-  TraceContext m_context;
 };
 
 }//namespace ns3

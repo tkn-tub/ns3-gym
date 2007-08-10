@@ -66,7 +66,6 @@ CompositeTraceResolver::DoRecursiveOperation (std::string path, CallbackBase con
 
   if (id == "*")
     {
-      TraceResolver::TraceResolverList list;
       for (TraceItems::const_iterator i = m_items.begin (); i != m_items.end (); i++)
 	{
           OperationOne (subpath, i, cb, context, op);
@@ -106,7 +105,6 @@ CompositeTraceResolver::DoRecursiveOperation (std::string path, CallbackBase con
       names.push_back (element);
       cur_pos = next_pos + 1;
     }
-  TraceResolver::TraceResolverList list;
   for (std::list<std::string>::const_iterator i = names.begin (); i != names.end (); i++)
     {
       for (TraceItems::const_iterator j = m_items.begin (); j != m_items.end (); j++)

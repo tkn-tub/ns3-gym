@@ -28,57 +28,11 @@ TraceResolver::~TraceResolver ()
 
 void 
 TraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
-{
-  std::string::size_type cur = 1;
-  // check that first char is "/"
-  std::string::size_type next = path.find ("/", cur);
-  std::string element = std::string (path, cur, next-1);
-  TraceResolverList resolverList = DoLookup (element);
-  for (TraceResolverList::iterator i = resolverList.begin (); i != resolverList.end (); i++)
-    {
-      TraceResolver *resolver = i->first;
-      TraceContext tmp = context;
-      tmp.Add (i->second);
-      if (next == std::string::npos) 
-	{
-	  // we really break the recursion here.
-	  resolver->DoConnect (cb, tmp);
-	}
-      else
-	{
-	  std::string subpath = std::string (path, next, std::string::npos);
-          resolver->Connect (subpath, cb, tmp);
-	}
-      delete resolver;
-    }
-  resolverList.erase (resolverList.begin (), resolverList.end ());
-}
+{}
 
 void 
 TraceResolver::Disconnect (std::string path, CallbackBase const &cb)
-{
-  std::string::size_type cur = 1;
-  // check that first char is "/"
-  std::string::size_type next = path.find ("/", cur);
-  std::string element = std::string (path, cur, next-1);
-  TraceResolverList resolverList = DoLookup (element);
-  for (TraceResolverList::iterator i = resolverList.begin (); i != resolverList.end (); i++)
-    {
-      TraceResolver *resolver = i->first;
-      if (next == std::string::npos) 
-	{
-	  // we really break the recursion here.
-	  resolver->DoDisconnect (cb);
-	}
-      else
-	{
-	  std::string subpath = std::string (path, next, std::string::npos);
-          resolver->Disconnect (subpath, cb);
-	}
-      delete resolver;
-    }
-  resolverList.erase (resolverList.begin (), resolverList.end ());
-}
+{}
 
 std::string 
 TraceResolver::GetElement (std::string path)
@@ -106,20 +60,5 @@ TraceResolver::GetSubpath (std::string path)
     }
   return subpath;
 }
-
-
-TraceResolver::TraceResolverList 
-TraceResolver::DoLookup (std::string id) const
-{
-  return TraceResolverList ();
-}
-void 
-TraceResolver::DoConnect (CallbackBase const &cb, const TraceContext &context)
-{}
-
-void 
-TraceResolver::DoDisconnect (CallbackBase const &cb)
-{}
-
 
 }//namespace ns3
