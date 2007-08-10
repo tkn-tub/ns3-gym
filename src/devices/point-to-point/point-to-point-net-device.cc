@@ -237,8 +237,8 @@ void PointToPointNetDevice::Receive (Packet& p)
   uint16_t protocol = 0;
   Packet packet = p;
 
-  ProcessHeader(packet, protocol);
   m_rxTrace (packet);
+  ProcessHeader(packet, protocol);
   ForwardUp (packet, protocol, GetBroadcast ());
 }
 

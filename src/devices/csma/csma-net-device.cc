@@ -528,6 +528,8 @@ CsmaNetDevice::Receive (const Packet& packet)
       m_dropTrace (p);
       return;
     }
+
+  m_rxTrace (p);
 //
 // protocol must be initialized to avoid a compiler warning in the RAW
 // case that breaks the optimized build.
@@ -550,7 +552,6 @@ CsmaNetDevice::Receive (const Packet& packet)
       break;
     }
   
-  m_rxTrace (p);
   ForwardUp (p, protocol, header.GetSource ());
   return;
 }
