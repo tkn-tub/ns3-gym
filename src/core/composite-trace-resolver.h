@@ -52,11 +52,9 @@ public:
    * resolution. The TraceContext of this trace source will also
    * be automatically extended to contain the input context.
    */
-  template <typename T1, typename T2,
-            typename T3, typename T4,
-            typename T>
+  template <typename T>
   void Add (std::string name,
-            CallbackTraceSource<T1,T2,T3,T4> &trace, T const &context);
+            CallbackTraceSourceBase &trace, T const &context);
   /**
    * \param name name of trace source
    * \param trace a signed variable trace source
@@ -69,7 +67,7 @@ public:
    */
   template <typename T>
   void Add (std::string name,
-            SVTraceSource<T> &trace, T const &context);
+            SVTraceSourceBase &trace, T const &context);
   /**
    * \param name name of trace source
    * \param trace an unsigned variable trace source
@@ -82,7 +80,7 @@ public:
    */
   template <typename T>
   void Add (std::string name,
-            UVTraceSource<T> &trace, T const &context);
+            UVTraceSourceBase &trace, T const &context);
   /**
    * \param name name of trace source
    * \param trace a floating-point variable trace source
@@ -95,7 +93,49 @@ public:
    */
   template <typename T>
   void Add (std::string name,
-            FVTraceSource<T> &trace, T const &context);
+            FVTraceSourceBase &trace, T const &context);
+  /**
+   * \param name name of trace source
+   * \param trace a callback trace source
+   *
+   * Add a callback trace source in this resolver. This trace
+   * source will match the name specified during namespace 
+   * resolution.
+   */
+  template <typename T1, typename T2,
+            typename T3, typename T4>
+  void Add (std::string name,
+            CallbackTraceSource<T1,T2,T3,T4> &trace);
+  /**
+   * \param name name of trace source
+   * \param trace a signed variable trace source
+   *
+   * Add a signed variable trace source in this resolver. 
+   * This trace source will match the name specified during namespace 
+   * resolution.
+   */
+  void Add (std::string name,
+            SVTraceSourceBase &trace);
+  /**
+   * \param name name of trace source
+   * \param trace an unsigned variable trace source
+   *
+   * Add an unsigned variable trace source in this resolver. 
+   * This trace source will match the name specified during namespace 
+   * resolution.
+   */
+  void Add (std::string name,
+            UVTraceSourceBase &trace);
+  /**
+   * \param name name of trace source
+   * \param trace a floating-point variable trace source
+   *
+   * Add a floating-point variable trace source in this resolver. 
+   * This trace source will match the name specified during namespace 
+   * resolution.
+   */
+  void Add (std::string name,
+            FVTraceSourceBase &trace);
   /**
    * \param name name of child trace resolver
    * \param createResolver a trace resolver constructor
@@ -155,6 +195,19 @@ private:
                                       const TraceContext &context, 
                                       enum Operation op);
   void DoAddChild (std::string name, Ptr<Object> child, const TraceContext &context);
+  void DoAddCallback (std::string name,
+                      CallbackTraceSourceBase &trace,
+                      const TraceContext &context);
+  void DoAddSV (std::string name,
+                SVTraceSourceBase &trace, 
+                const TraceContext &context);
+  void DoAddUV (std::string name,
+                UVTraceSourceBase &trace,
+                const TraceContext &context);
+  void DoAddFV (std::string name,
+                FVTraceSourceBase &trace,
+                const TraceContext &context);
+
 
   CompositeTraceResolver::TraceItems m_items;
   Ptr<TraceResolver> m_parent;
@@ -166,88 +219,51 @@ namespace ns3 {
 
 
 
-template <typename T1, typename T2,
-          typename T3, typename T4,
-          typename T>
+template <typename T>
 void 
 CompositeTraceResolver::Add (std::string name,
-                             CallbackTraceSource<T1,T2,T3,T4> &trace, 
+                             CallbackTraceSourceBase &trace, 
                              T const &context)
 {
-  class CallbackCompositeItem : public CompositeItem
-  {
-  public:
-    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
-    {if (subpath == "") {trace->AddCallback (cb, context);}}
-    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
-    {if (subpath == "") {trace->RemoveCallback (cb);}}
+  TraceContext ctx;
+  ctx.Add (context);
+  DoAddCallback (name, trace, ctx);  
+}
+template <typename T1, typename T2,
+          typename T3, typename T4>
+void 
+CompositeTraceResolver::Add (std::string name,
+                             CallbackTraceSource<T1,T2,T3,T4> &trace)
+{
+  DoAddCallback (name, trace, TraceContext ());
+}
 
-    CallbackTraceSource<T1,T2,T3,T4> *trace;
-  } *item = new CallbackCompositeItem ();
-  item->name = name;
-  item->context.Add (context);
-  item->trace = &trace;
-  AddItem (item);
+template <typename T>
+void 
+CompositeTraceResolver::Add (std::string name,
+                             SVTraceSourceBase &trace, T const &context)
+{
+  TraceContext ctx;
+  ctx.Add (context);
+  DoAddSV (name, trace, ctx);  
 }
 template <typename T>
 void 
 CompositeTraceResolver::Add (std::string name,
-                             SVTraceSource<T> &trace, T const &context)
+                             UVTraceSourceBase &trace, T const &context)
 {
-  class SVCompositeItem : public CompositeItem
-  {
-  public:
-    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
-    {if (subpath == "") {trace->AddCallback (cb, context);}}
-    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
-    {if (subpath == "") {trace->RemoveCallback (cb);}}
-
-    SVTraceSource<T> *trace;
-  } *item = new SVCompositeItem ();
-  item->name = name;
-  item->context.Add (context);
-  item->trace = &trace;
-  AddItem (item);
+  TraceContext ctx;
+  ctx.Add (context);
+  DoAddUV (name, trace, ctx);
 }
 template <typename T>
 void 
 CompositeTraceResolver::Add (std::string name,
-                             UVTraceSource<T> &trace, T const &context)
+                             FVTraceSourceBase &trace, T const &context)
 {
-  class UVCompositeItem : public CompositeItem
-  {
-  public:
-    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
-    {if (subpath == "") {trace->AddCallback (cb, context);}}
-    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
-    {if (subpath == "") {trace->RemoveCallback (cb);}}
-
-    UVTraceSource<T> *trace;
-  } *item = new UVCompositeItem ();
-  item->name = name;
-  item->context.Add (context);
-  item->trace = &trace;
-  AddItem (item);
-}
-template <typename T>
-void 
-CompositeTraceResolver::Add (std::string name,
-                             FVTraceSource<T> &trace, T const &context)
-{
-  class FVCompositeItem : public CompositeItem
-  {
-  public:
-    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
-    {if (subpath == "") {trace->AddCallback (cb, context);}}
-    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
-    {if (subpath == "") {trace->RemoveCallback (cb);}}
-
-    FVTraceSource<T> *trace;
-  } *item = new FVCompositeItem ();
-  item->name = name;
-  item->context.Add (context);
-  item->trace = &trace;
-  AddItem (item);
+  TraceContext ctx;
+  ctx.Add (context);
+  DoAddFV (name, trace, ctx);
 }
 
 template <typename ITERATOR, typename INDEX>

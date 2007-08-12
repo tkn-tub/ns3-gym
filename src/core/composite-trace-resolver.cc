@@ -64,6 +64,115 @@ CompositeTraceResolver::Add (std::string name,
 }
 
 void 
+CompositeTraceResolver::Add (std::string name,
+                             FVTraceSourceBase &trace)
+{
+  DoAddFV (name, trace, TraceContext ());
+}
+
+
+void 
+CompositeTraceResolver::DoAddFV (std::string name,
+                               FVTraceSourceBase &trace, 
+                               const TraceContext &context)
+{
+  class FVCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {if (subpath == "") {trace->AddCallback (cb, context);}}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {if (subpath == "") {trace->RemoveCallback (cb);}}
+
+    FVTraceSourceBase *trace;
+  } *item = new FVCompositeItem ();
+  item->name = name;
+  item->context = context;
+  item->trace = &trace;
+  AddItem (item);
+}
+
+void 
+CompositeTraceResolver::Add (std::string name,
+                             UVTraceSourceBase &trace)
+{
+  DoAddUV (name, trace, TraceContext ());
+}
+
+
+void 
+CompositeTraceResolver::DoAddUV (std::string name,
+                                 UVTraceSourceBase &trace,
+                                 const TraceContext &context)
+{
+  class UVCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {if (subpath == "") {trace->AddCallback (cb, context);}}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {if (subpath == "") {trace->RemoveCallback (cb);}}
+
+    UVTraceSourceBase *trace;
+  } *item = new UVCompositeItem ();
+  item->name = name;
+  item->context = context;
+  item->trace = &trace;
+  AddItem (item);
+}
+
+void
+CompositeTraceResolver::Add (std::string name,
+                             SVTraceSourceBase &trace)
+{
+  DoAddSV (name, trace, TraceContext ());
+}
+void
+CompositeTraceResolver::DoAddSV (std::string name,
+                                 SVTraceSourceBase &trace, 
+                                 const TraceContext &context)
+{
+  class SVCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {if (subpath == "") {trace->AddCallback (cb, context);}}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {if (subpath == "") {trace->RemoveCallback (cb);}}
+
+    SVTraceSourceBase *trace;
+  } *item = new SVCompositeItem ();
+  item->name = name;
+  item->context = context;
+  item->trace = &trace;
+  AddItem (item);
+}
+
+void 
+CompositeTraceResolver::DoAddCallback (std::string name,
+                                       CallbackTraceSourceBase &trace, 
+                                       const TraceContext &context)
+{
+  class CallbackCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {if (subpath == "") {trace->AddCallback (cb, context);}}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {if (subpath == "") {trace->RemoveCallback (cb);}}
+
+    CallbackTraceSourceBase *trace;
+  } *item = new CallbackCompositeItem ();
+  item->name = name;
+  item->context = context;
+  item->trace = &trace;
+  AddItem (item);
+}
+
+
+
+
+void 
 CompositeTraceResolver::AddChild (std::string name, Ptr<Object> child)
 {
   DoAddChild (name, child, TraceContext ());
@@ -229,18 +338,22 @@ class TraceSourceTest : public TraceContextElement
 public:
   enum Sources {
     DOUBLEA,
-    DOUBLEB
+    DOUBLEB,
+    UINT16_T
   };
   static uint16_t GetUid (void) 
   {static uint16_t uid = AllocateUid<TraceSourceTest> ("TraceSourceTest"); return uid;}
   void Print (std::ostream &os)
   {os << "tracesource=";
     if (m_sources == DOUBLEA) {os << "doubleA";}
-    else if (m_sources == DOUBLEB) {os << "doubleB";}}
+    else if (m_sources == DOUBLEB) {os << "doubleB";}
+    else if (m_sources == UINT16_T) {os << "uint16_t";}
+  }
   TraceSourceTest () : m_sources (TraceSourceTest::DOUBLEA) {}
   TraceSourceTest (enum Sources sources) :m_sources (sources) {}
-  bool IsDoubleA (void) {return m_sources == TraceSourceTest::DOUBLEA;}
-  bool IsDoubleB (void) {return m_sources == TraceSourceTest::DOUBLEB;}
+  bool IsDoubleA (void) const {return m_sources == TraceSourceTest::DOUBLEA;}
+  bool IsDoubleB (void) const {return m_sources == TraceSourceTest::DOUBLEB;}
+  bool IsUint16 (void) const {return m_sources == TraceSourceTest::UINT16_T;}
 private:
   enum TraceSourceTest::Sources m_sources;
 };
@@ -462,7 +575,9 @@ CompositeTraceResolverTest::RunTests (void)
       ok = false;
     }
 
+  SVTraceSource<uint16_t> source;
 
+  resolver.Add ("uint16_t", source, TraceSourceTest (TraceSourceTest::UINT16_T));
   
 
   return ok;
