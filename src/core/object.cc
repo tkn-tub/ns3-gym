@@ -532,7 +532,31 @@ ObjectTest::RunTests (void)
   NS_TEST_ASSERT (m_baseATrace);
   baseA->TraceDisconnect ("/$BaseA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
 
-  
+  Ptr<DerivedA> derivedA;
+  derivedA = Create<DerivedA> (1);
+  baseB = Create<BaseB> ();
+  derivedA->AddInterface (baseB);
+  baseB->TraceConnect ("/$DerivedA/deriveda-x", MakeCallback (&ObjectTest::DerivedATrace, this));
+  baseB->TraceConnect ("/$DerivedA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
+  m_derivedATrace = false;
+  m_baseATrace = false;
+  derivedA->DerivedGenerateTrace (8);
+  derivedA->BaseGenerateTrace (9);
+  NS_TEST_ASSERT (m_derivedATrace);
+  NS_TEST_ASSERT (m_baseATrace);
+  baseB->TraceDisconnect ("/$DerivedA/deriveda-x", MakeCallback (&ObjectTest::BaseATrace, this));
+  baseB->TraceDisconnect ("/$DerivedA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
+
+  baseB->TraceConnect ("/$DerivedA/*", MakeCallback (&ObjectTest::DerivedATrace, this));
+  m_derivedATrace = false;
+  derivedA->DerivedGenerateTrace (10);
+  NS_TEST_ASSERT (m_derivedATrace);
+  // here, we have connected the derived trace sink to all 
+  // trace sources, including the base trace source.
+  m_derivedATrace = false;
+  derivedA->BaseGenerateTrace (11);
+  NS_TEST_ASSERT (m_derivedATrace);
+  baseB->TraceDisconnect ("/$DerivedA/*", MakeCallback (&ObjectTest::BaseATrace, this));
 
   return result;
 }
