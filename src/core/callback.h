@@ -306,11 +306,11 @@ public:
     return (*(PeekImpl ())) (a1,a2,a3,a4,a5);
   }
 
-  bool IsEqual (CallbackBase const &other) {
+  bool IsEqual (CallbackBase const &other) const {
     return PeekImpl ()->IsEqual (other.PeekImpl ());
   }
 
-  bool CheckType (CallbackBase const& other) {
+  bool CheckType (CallbackBase const& other) const {
     CallbackImplBase *otherBase = other.PeekImpl ();
     if (dynamic_cast<CallbackImpl<R,T1,T2,T3,T4,T5> *> (otherBase) != 0)
       {
