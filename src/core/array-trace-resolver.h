@@ -25,85 +25,144 @@
 #include <string>
 #include "callback.h"
 #include "trace-resolver.h"
+#include "object.h"
 
 namespace ns3 {
 
 /**
  * \brief a helper class to offer trace resolution for an array of objects.
  * \ingroup lowleveltracing
+ *
+ * \class ArrayTraceResolver
+ *
+ * An ArrayTraceResolver is a resolver which can match any input integer
+ * against an element in an array. The array is accessed using a 
+ * pair iterators. Each element of the array is expected
+ * to be a subclass of the Object base class.
+ * 
+ * When the Connect method is called, this trace resolver will 
+ * automatically store in the TraceContext of each resolved object
+ * its index through an object of type INDEX specified during the
+ * instanciation of the ArrayTraceResolver template.
  */
-template <typename T, typename INDEX>
+template <typename INDEX>
 class ArrayTraceResolver : public TraceResolver
 {
 public:
-  /**
-   * \param getSize callback which returns dynamically the size of underlying array
-   * \param get callback which returns any element in the underlying array
-   *
-   * Construct a trace resolver which can match any input integer
-   * against an element in an array. The array is accessed using a 
-   * pair of callbacks. It is the responsability of the user to
-   * provide two such callbacks whose job is to adapt the array
-   * API to the resolver needs. Each element of the array is expected
-   * to provide a method named CreateTraceResolver which takes as
-   * only argument a reference to a const TraceContext and returns
-   * a pointer to a TraceResolver. i.e. the signature is:
-   * Ptr<TraceResolver> (*) (void)
-   */
-  ArrayTraceResolver (Callback<uint32_t> getSize, 
-                      Callback<T, uint32_t> get);
+  ArrayTraceResolver ();
+  ~ArrayTraceResolver ();
 
+  /**
+   * \param begin an iterator which points to the start of the array.
+   * \param end an iterator which points to the end of the array.
+   */
+  template <typename T>
+  void SetIterators (T begin, T end);
+
+  // inherited from TraceResolver
   virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   virtual void Disconnect (std::string path, CallbackBase const &cb);
+
 private:
-  Callback<uint32_t> m_getSize;
-  Callback<T, uint32_t> m_get;
+  class IteratorBase
+  {
+  public:
+    virtual ~IteratorBase () {}
+    virtual void Next (void) = 0;
+    virtual bool HasNext (void) = 0;
+    virtual Ptr<Object> Get (void) = 0;
+    virtual void Rewind (void) = 0;
+  };
+  IteratorBase *m_iter;
 };
 }//namespace ns3
 
+
+// implementation
 namespace ns3 {
 
-template <typename T, typename INDEX>
-ArrayTraceResolver<T,INDEX>::ArrayTraceResolver (Callback<uint32_t> getSize, 
-                                                 Callback<T, uint32_t> get)
-  : m_getSize (getSize),
-    m_get (get)
+template <typename INDEX>
+ArrayTraceResolver<INDEX>::ArrayTraceResolver ()
+  : m_iter (0)
 {}
 
-template <typename T, typename INDEX>
-void 
-ArrayTraceResolver<T,INDEX>::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
+template <typename INDEX>
+ArrayTraceResolver<INDEX>::~ArrayTraceResolver ()
 {
-  std::string id = GetElement (path);
-  std::string subpath = GetSubpath (path);
-  if (id == "*")
-  {
-    for (uint32_t i = 0; i < m_getSize (); i++)
-    {
-      TraceContext tmp = context;
-      INDEX index = i;
-      tmp.Add (index);
-      Ptr<TraceResolver> resolver = m_get (i)->CreateTraceResolver ();
-      resolver->Connect (subpath, cb, tmp);
-    }
-  }
-}
-template <typename T, typename INDEX>
-void 
-ArrayTraceResolver<T,INDEX>::Disconnect (std::string path, CallbackBase const &cb)
-{
-  std::string id = GetElement (path);
-  std::string subpath = GetSubpath (path);
-  if (id == "*")
-  {
-    for (uint32_t i = 0; i < m_getSize (); i++)
-    {
-      Ptr<TraceResolver> resolver = m_get (i)->CreateTraceResolver ();
-      resolver->Disconnect (subpath, cb);
-    }
-  }
+  delete m_iter;
 }
 
+template <typename INDEX>
+template <typename T>
+void
+ArrayTraceResolver<INDEX>::SetIterators (T begin, T end)
+{
+  class Iterator : public IteratorBase 
+  {
+  public:
+    Iterator (T begin, T end)
+      : m_begin (begin), m_end (end), m_cur (begin)
+    {}
+    virtual void Next (void)
+    {m_cur++;}
+    virtual bool HasNext (void)
+    {return m_cur != m_end;}
+    virtual Ptr<Object> Get (void)
+    {return *m_cur;}
+    virtual void Rewind (void)
+    {m_cur = m_begin;}
+  private:
+    T m_begin;
+    T m_end;
+    T m_cur;
+  };
+  delete m_iter;
+  m_iter = new Iterator (begin, end);
+}
+
+template <typename INDEX>
+void 
+ArrayTraceResolver<INDEX>::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
+{
+  if (path == "")
+    {
+      return;
+    }
+  std::string id = GetElement (path);
+  std::string subpath = GetSubpath (path);
+  if (id == "*")
+  {
+    uint32_t j = 0;
+    for (m_iter->Rewind (); m_iter->HasNext (); m_iter->Next ())
+      {
+        TraceContext tmp = context;
+        INDEX index = j;
+        tmp.Add (index);
+        Ptr<Object> obj = m_iter->Get ();
+        obj->TraceConnect (subpath, cb, tmp);
+        j++;
+      }
+  }
+}
+template <typename INDEX>
+void 
+ArrayTraceResolver<INDEX>::Disconnect (std::string path, CallbackBase const &cb)
+{
+  if (path == "")
+    {
+      return;
+    }
+  std::string id = GetElement (path);
+  std::string subpath = GetSubpath (path);
+  if (id == "*")
+  {
+    for (m_iter->Rewind (); m_iter->HasNext (); m_iter->Next ())
+      {
+        Ptr<Object> obj = m_iter->Get ();
+        obj->TraceDisconnect (subpath, cb);
+      }
+  }
+}
 
 }//namespace ns3
 
