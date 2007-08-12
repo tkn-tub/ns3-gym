@@ -22,7 +22,9 @@
 #include "assert.h"
 #include "singleton.h"
 #include "uid-manager.h"
-#include "empty-trace-resolver.h"
+#include "sv-trace-source.h"
+#include "trace-resolver.h"
+#include "composite-trace-resolver.h"
 #include <vector>
 
 namespace {
@@ -301,7 +303,18 @@ public:
   {
     SetInterfaceId (BaseA::iid);
   }
+  void BaseGenerateTrace (int16_t v)
+  { m_source = v; }
   virtual void Dispose (void) {}
+  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void)
+  {
+    ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
+      ns3::Create<ns3::CompositeTraceResolver> ();
+    resolver->Add ("basea-x", m_source);
+    resolver->SetParent (Object::GetTraceResolver ());
+    return resolver;
+  }
+  ns3::SVTraceSource<int16_t> m_source;
 };
 
 class DerivedA : public BaseA
@@ -312,9 +325,20 @@ public:
   {
     SetInterfaceId (DerivedA::iid);
   }
+  void DerivedGenerateTrace (int16_t v)
+  { m_sourceDerived = v; }
   virtual void Dispose (void) {
     BaseA::Dispose ();
   }
+  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void)
+  {
+    ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
+      ns3::Create<ns3::CompositeTraceResolver> ();
+    resolver->Add ("deriveda-x", m_sourceDerived);
+    resolver->SetParent (BaseA::GetTraceResolver ());
+    return resolver;
+  }
+  ns3::SVTraceSource<int16_t> m_sourceDerived;
 };
 
 const ns3::InterfaceId BaseA::iid = 
@@ -330,7 +354,18 @@ public:
   {
     SetInterfaceId (BaseB::iid);
   }
+  void BaseGenerateTrace (int16_t v)
+  { m_source = v; }
   virtual void Dispose (void) {}
+  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void)
+  {
+    ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
+      ns3::Create<ns3::CompositeTraceResolver> ();
+    resolver->Add ("baseb-x", m_source);
+    resolver->SetParent (Object::GetTraceResolver ());
+    return resolver;
+  }
+  ns3::SVTraceSource<int16_t> m_source;
 };
 
 class DerivedB : public BaseB
@@ -341,9 +376,20 @@ public:
   {
     SetInterfaceId (DerivedB::iid);
   }
+  void DerivedGenerateTrace (int16_t v)
+  { m_sourceDerived = v; }
   virtual void Dispose (void) {
     BaseB::Dispose ();
   }
+  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void)
+  {
+    ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
+      ns3::Create<ns3::CompositeTraceResolver> ();
+    resolver->Add ("derivedb-x", m_sourceDerived);
+    resolver->SetParent (BaseB::GetTraceResolver ());
+    return resolver;
+  }
+  ns3::SVTraceSource<int16_t> m_sourceDerived;
 };
 
 const ns3::InterfaceId BaseB::iid = 
@@ -360,11 +406,42 @@ class ObjectTest : public Test
 public:
   ObjectTest ();
   virtual bool RunTests (void);
+private:
+  void BaseATrace (const TraceContext &context, int64_t oldValue, int64_t newValue);
+  void DerivedATrace (const TraceContext &context, int64_t oldValue, int64_t newValue);
+  void BaseBTrace (const TraceContext &context, int64_t oldValue, int64_t newValue);
+  void DerivedBTrace (const TraceContext &context, int64_t oldValue, int64_t newValue);
+
+  bool m_baseATrace;
+  bool m_derivedATrace;
+  bool m_baseBTrace;
+  bool m_derivedBTrace;
 };
 
 ObjectTest::ObjectTest ()
   : Test ("Object")
 {}
+void 
+ObjectTest::BaseATrace (const TraceContext &context, int64_t oldValue, int64_t newValue)
+{
+  m_baseATrace = true;
+}
+void 
+ObjectTest::DerivedATrace (const TraceContext &context, int64_t oldValue, int64_t newValue)
+{
+  m_derivedATrace = true;
+}
+void 
+ObjectTest::BaseBTrace (const TraceContext &context, int64_t oldValue, int64_t newValue)
+{
+  m_baseBTrace = true;
+}
+void 
+ObjectTest::DerivedBTrace (const TraceContext &context, int64_t oldValue, int64_t newValue)
+{
+  m_derivedBTrace = true;
+}
+
 bool 
 ObjectTest::RunTests (void)
 {
@@ -411,6 +488,51 @@ ObjectTest::RunTests (void)
   baseA->AddInterface (baseB);
   baseA = 0;
   baseA = baseB->QueryInterface<BaseA> (BaseA::iid);
+
+  baseA = Create<BaseA> ();
+  baseA->TraceConnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
+  m_baseATrace = false;
+  baseA->BaseGenerateTrace (1);
+  NS_TEST_ASSERT (m_baseATrace);
+  baseA->TraceDisconnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
+
+  baseB = Create<BaseB> ();
+  baseB->TraceConnect ("/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
+  m_baseBTrace = false;
+  baseB->BaseGenerateTrace (2);
+  NS_TEST_ASSERT (m_baseBTrace);
+  baseB->TraceDisconnect ("/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
+
+  baseA->AddInterface (baseB);
+
+  baseA->TraceConnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
+  m_baseATrace = false;
+  baseA->BaseGenerateTrace (3);
+  NS_TEST_ASSERT (m_baseATrace);
+  baseA->TraceDisconnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
+
+  baseA->TraceConnect ("/$BaseB/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
+  m_baseBTrace = false;
+  baseB->BaseGenerateTrace (4);
+  NS_TEST_ASSERT (m_baseBTrace);
+  baseA->TraceDisconnect ("/$BaseB/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
+  m_baseBTrace = false;
+  baseB->BaseGenerateTrace (5);
+  NS_TEST_ASSERT (!m_baseBTrace);
+
+  baseB->TraceConnect ("/$BaseA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
+  m_baseATrace = false;
+  baseA->BaseGenerateTrace (6);
+  NS_TEST_ASSERT (m_baseATrace);
+  baseB->TraceDisconnect ("/$BaseA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
+
+  baseA->TraceConnect ("/$BaseA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
+  m_baseATrace = false;
+  baseA->BaseGenerateTrace (7);
+  NS_TEST_ASSERT (m_baseATrace);
+  baseA->TraceDisconnect ("/$BaseA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
+
+  
 
   return result;
 }
