@@ -43,7 +43,6 @@ class Ipv4LoopbackInterface : public Ipv4Interface
 
  private:
   virtual void SendTo (Packet p, Ipv4Address dest);
-  virtual Ptr<TraceResolver> DoCreateTraceResolver (void);
 
   Ptr<Node> m_node;
 };

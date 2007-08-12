@@ -25,7 +25,6 @@
 #include "packet-socket-factory.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/array-trace-resolver.h"
 
 namespace ns3{
 
@@ -83,10 +82,11 @@ Node::~Node ()
 {}
 
 Ptr<TraceResolver>
-Node::CreateTraceResolver (void)
+Node::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  DoFillTraceResolver (*PeekPointer (resolver));
+  resolver->AddArray ("devices", m_devices.begin (), m_devices.end (), NodeNetDeviceIndex ());
+  resolver->SetParent (Object::GetTraceResolver ());
   return resolver;
 }
 
@@ -139,24 +139,6 @@ uint32_t
 Node::GetNApplications (void) const
 {
   return m_applications.size ();
-}
-
-Ptr<TraceResolver>
-Node::CreateDevicesTraceResolver (void)
-{
-  Ptr<ArrayTraceResolver<Ptr<NetDevice>,NodeNetDeviceIndex> >resolver = 
-    Create<ArrayTraceResolver<Ptr<NetDevice>,NodeNetDeviceIndex> >
-    (MakeCallback (&Node::GetNDevices, this), 
-     MakeCallback (&Node::GetDevice, this));
-  
-  return resolver;
-}
-
-void
-Node::DoFillTraceResolver (CompositeTraceResolver &resolver)
-{
-  resolver.Add ("devices", 
-                MakeCallback (&Node::CreateDevicesTraceResolver, this));
 }
 
 void 

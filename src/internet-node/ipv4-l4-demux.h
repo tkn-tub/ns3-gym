@@ -60,14 +60,6 @@ public:
   virtual ~Ipv4L4Demux();
 
   /**
-   * \param context the trace context to use to construct the
-   *        TraceResolver to return
-   * \returns a TraceResolver which can resolve all traces
-   *          performed in this object. The caller must
-   *          delete the returned object.
-   */
-  Ptr<TraceResolver> CreateTraceResolver (void);
-  /**
    * \param protocol a template for the protocol to add to this L4 Demux.
    * \returns the L4Protocol effectively added.
    *
@@ -95,8 +87,10 @@ public:
    * returned from the Ipv4L4Protocol::Insert method.
    */
   void Remove (Ptr<Ipv4L4Protocol> protocol);
-private:
+protected:
+  Ptr<TraceResolver> GetTraceResolver (void);
   virtual void DoDispose (void);
+private:
   typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;
   L4List_t m_protocols;
   Ptr<Node> m_node;

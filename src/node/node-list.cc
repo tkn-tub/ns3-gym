@@ -33,7 +33,7 @@ static class Initialization
 public:
   Initialization ()
   {
-    ns3::TraceRoot::Register ("nodes", ns3::MakeCallback (&ns3::NodeList::CreateTraceResolver));
+    ns3::TraceRoot::Register ("nodes", ns3::MakeCallback (&ns3::NodeList::GetTraceResolver));
   }
 } g_initialization;
 }
@@ -76,7 +76,7 @@ public:
   uint32_t Add (Ptr<Node> node);
   NodeList::Iterator Begin (void);
   NodeList::Iterator End (void);
-  Ptr<TraceResolver> CreateTraceResolver (void);
+  Ptr<TraceResolver> GetTraceResolver (void);
   Ptr<Node> GetNode (uint32_t n);
   uint32_t GetNNodes (void);
 
@@ -131,12 +131,11 @@ NodeListPriv::GetNode (uint32_t n)
 
 
 Ptr<TraceResolver>
-NodeListPriv::CreateTraceResolver (void)
+NodeListPriv::GetTraceResolver (void)
 {
-  Ptr<ArrayTraceResolver<Ptr<Node>, NodeListIndex> >resolver =
-    Create<ArrayTraceResolver<Ptr<Node>, NodeListIndex> >
-    (MakeCallback (&NodeListPriv::GetNNodes, this),
-     MakeCallback (&NodeListPriv::GetNode, this));
+  Ptr<ArrayTraceResolver<NodeListIndex> >resolver =
+    Create<ArrayTraceResolver<NodeListIndex> > ();
+  resolver->SetIterators (Begin (), End ());
   return resolver;
 }
 
@@ -165,9 +164,9 @@ NodeList::End (void)
   return SimulationSingleton<NodeListPriv>::Get ()->End ();
 }
 Ptr<TraceResolver>
-NodeList::CreateTraceResolver (void)
+NodeList::GetTraceResolver (void)
 {
-  return SimulationSingleton<NodeListPriv>::Get ()->CreateTraceResolver ();
+  return SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ();
 }
 Ptr<Node>
 NodeList::GetNode (uint32_t n)

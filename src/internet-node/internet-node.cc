@@ -74,13 +74,14 @@ InternetNode::Construct (void)
   Object::AddInterface (ipv4L4Demux);
 }
 
-void
-InternetNode::DoFillTraceResolver (CompositeTraceResolver &resolver)
+Ptr<TraceResolver>
+InternetNode::GetTraceResolver ()
 {
-  Node::DoFillTraceResolver (resolver);
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   Ptr<Ipv4L3Protocol> ipv4 = QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
-  resolver.Add ("ipv4",
-                MakeCallback (&Ipv4L3Protocol::CreateTraceResolver, PeekPointer (ipv4)));
+  resolver->AddChild ("ipv4", ipv4);
+  resolver->SetParent (Node::GetTraceResolver ());
+  return resolver;
 }
 
 void 

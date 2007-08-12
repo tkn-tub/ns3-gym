@@ -95,12 +95,13 @@ Queue::~Queue()
 }
 
 Ptr<TraceResolver>
-Queue::CreateTraceResolver (void)
+Queue::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->Add ("enqueue", m_traceEnqueue, QueueTraceType (QueueTraceType::ENQUEUE));
   resolver->Add ("dequeue", m_traceDequeue, QueueTraceType (QueueTraceType::DEQUEUE));
   resolver->Add ("drop", m_traceDrop, QueueTraceType (QueueTraceType::DROP));
+  resolver->SetParent (Object::GetTraceResolver ());
   return resolver;
 }
 

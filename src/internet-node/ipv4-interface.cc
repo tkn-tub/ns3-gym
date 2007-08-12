@@ -40,16 +40,17 @@ Ipv4Interface::Ipv4Interface (Ptr<NetDevice> nd)
 Ipv4Interface::~Ipv4Interface ()
 {}
 
+void
+Ipv4Interface::DoDispose (void)
+{
+  m_netdevice = 0;
+  Object::DoDispose ();
+}
+
 Ptr<NetDevice>
 Ipv4Interface::GetDevice (void) const
 {
   return m_netdevice;
-}
-
-Ptr<TraceResolver>
-Ipv4Interface::CreateTraceResolver (void)
-{
-  return DoCreateTraceResolver ();
 }
 
 void 

@@ -41,15 +41,14 @@ ArpIpv4Interface::~ArpIpv4Interface ()
 {}
 
 Ptr<TraceResolver>
-ArpIpv4Interface::DoCreateTraceResolver (void)
+ArpIpv4Interface::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   if (GetDevice () != 0)
     {
-      resolver->Add ("netdevice",
-                     MakeCallback (&NetDevice::CreateTraceResolver, PeekPointer (GetDevice ())));
+      resolver->AddChild ("netdevice", GetDevice ());
     }
-  
+  resolver->SetParent (Ipv4Interface::GetTraceResolver ());
   return resolver;
 }
 

@@ -85,16 +85,6 @@ public:
   virtual ~Node();
 
   /**
-   * \returns a newly-created TraceResolver. The caller takes
-   *          ownership of the returned pointer.
-   *
-   * Request the Node to create a trace resolver. This method
-   * could be used directly by a user who needs access to very low-level
-   * trace configuration.
-   */
-  Ptr<TraceResolver> CreateTraceResolver (void);
-
-  /**
    * \returns the unique id of this node.
    * 
    * This unique id happens to be also the index of the Node into
@@ -182,23 +172,15 @@ public:
   void UnregisterProtocolHandler (ProtocolHandler handler);
 
 protected:
+  virtual Ptr<TraceResolver> GetTraceResolver (void);
   /**
    * The dispose method. Subclasses must override this method
    * and must chain up to it by calling Node::DoDispose at the
    * end of their own DoDispose method.
    */
   virtual void DoDispose (void);
-  /**
-   * \param resolver the resolver to store trace sources in.
-   *
-   * If a subclass wants to add new traces to a Node, it needs
-   * to override this method and record the new trace sources
-   * in the input resolver. Subclasses also _must_ chain up to
-   * their parent's DoFillTraceResolver method prior
-   * to recording they own trace sources.
-   */
-  virtual void DoFillTraceResolver (CompositeTraceResolver &resolver);
 private:
+
   /**
    * \param device the device added to this Node.
    *
@@ -212,7 +194,6 @@ private:
   bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
                           uint16_t protocol, const Address &from);
   void Construct (void);
-  Ptr<TraceResolver> CreateDevicesTraceResolver (void);
 
   struct ProtocolHandlerEntry {
     ProtocolHandler handler;

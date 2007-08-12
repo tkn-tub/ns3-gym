@@ -33,13 +33,6 @@ Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
 {}
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
 {}
-
-Ptr<TraceResolver>
-Ipv4LoopbackInterface::DoCreateTraceResolver (void)
-{
-  return Create<EmptyTraceResolver> ();
-}
-
 void 
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {

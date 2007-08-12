@@ -42,8 +42,8 @@ public:
 
 protected:
   virtual void DoDispose(void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void);
 private:
-  virtual void DoFillTraceResolver (CompositeTraceResolver &resolver);
   bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const;
   void Construct (void);
 };

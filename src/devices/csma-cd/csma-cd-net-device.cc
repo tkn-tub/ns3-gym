@@ -450,19 +450,18 @@ CsmaCdNetDevice::TransmitReadyEvent (void)
 }
 
 Ptr<TraceResolver>
-CsmaCdNetDevice::DoCreateTraceResolver (void)
+CsmaCdNetDevice::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->Add ("queue", 
-                 MakeCallback (&Queue::CreateTraceResolver, 
-                               PeekPointer (m_queue)));
+  resolver->AddChild ("queue", m_queue);
   resolver->Add ("rx",
                  m_rxTrace,
                  CsmaCdTraceType (CsmaCdTraceType::RX));
   resolver->Add ("drop",
                  m_dropTrace,
                  CsmaCdTraceType (CsmaCdTraceType::DROP));
-   return resolver;
+  resolver->SetParent (NetDevice::GetTraceResolver ());
+  return resolver;
 }
 
 bool

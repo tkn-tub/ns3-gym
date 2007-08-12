@@ -79,7 +79,7 @@ public:
    * \returns the requested trace resolver. The caller
    *          takes ownership of the returned pointer.
    */
-  static Ptr<TraceResolver> CreateTraceResolver (void);
+  static Ptr<TraceResolver> GetTraceResolver (void);
 
   /**
    * \param n index of requested node.

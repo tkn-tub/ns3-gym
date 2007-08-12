@@ -19,16 +19,16 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/assert.h"
-
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 
 #include "arp-cache.h"
 #include "arp-header.h"
+#include "ipv4-interface.h"
 
 namespace ns3 {
 
-ArpCache::ArpCache (Ptr<NetDevice> device, Ipv4Interface *interface)
+ArpCache::ArpCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
   : m_device (device), 
     m_interface (interface),
     m_aliveTimeout (Seconds (120)),
@@ -47,7 +47,7 @@ ArpCache::GetDevice (void) const
   return m_device;
 }
 
-Ipv4Interface *
+Ptr<Ipv4Interface>
 ArpCache::GetInterface (void) const
 {
   return m_interface;

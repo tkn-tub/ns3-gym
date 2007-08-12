@@ -189,14 +189,14 @@ void PointToPointNetDevice::TransmitComplete (void)
 }
 
 Ptr<TraceResolver> 
-PointToPointNetDevice::DoCreateTraceResolver (void)
+PointToPointNetDevice::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->Add ("queue", 
-                 MakeCallback (&Queue::CreateTraceResolver, PeekPointer (m_queue)));
+  resolver->AddChild ("queue", m_queue);
   resolver->Add ("rx",
                  m_rxTrace,
                  PointToPointTraceType ());
+  resolver->SetParent (NetDevice::GetTraceResolver ());
   return resolver;
 }
 

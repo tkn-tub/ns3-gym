@@ -26,6 +26,7 @@
 #include <list>
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -60,9 +61,8 @@ class TraceContext;
  *
  * Subclasses must implement the two methods:
  *   - Ipv4Interface::SendTo
- *   - Ipv4Interface::DoCreateTraceResolver
  */
-class Ipv4Interface 
+class Ipv4Interface  : public Object
 {
 public:
   /**
@@ -73,17 +73,6 @@ public:
   Ipv4Interface (Ptr<NetDevice> nd);
   virtual ~Ipv4Interface();
 
-  /**
-   * \param context the trace context to use to construct the
-   *        TraceResolver to return
-   * \returns a TraceResolver which can resolve all traces
-   *          performed in this object. The caller must
-   *          delete the returned object.
-   *
-   * This method will delegate the work to the private DoCreateTraceResolver 
-   * method which is supposed to be implemented by subclasses.
-   */
-  Ptr<TraceResolver> CreateTraceResolver (void);
   /**
    * \returns the underlying NetDevice. This method can return
    *          zero if this interface has no associated NetDevice.
@@ -150,10 +139,10 @@ public:
    */ 
   void Send(Packet p, Ipv4Address dest);
 
-
- private:
+protected:
+  virtual void DoDispose (void);
+private:
   virtual void SendTo (Packet p, Ipv4Address dest) = 0;
-  virtual Ptr<TraceResolver> DoCreateTraceResolver (void) = 0;
   Ptr<NetDevice> m_netdevice;
   bool m_ifup;
   Ipv4Address m_address;

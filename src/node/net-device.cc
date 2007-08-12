@@ -184,12 +184,6 @@ NetDevice::Send(Packet& p, const Address& dest, uint16_t protocolNumber)
     }
 }
 
-Ptr<TraceResolver>
-NetDevice::CreateTraceResolver (void)
-{
-  return DoCreateTraceResolver ();
-}
-
 Ptr<Channel>
 NetDevice::GetChannel (void) const
 {

@@ -79,7 +79,7 @@ Ipv4L4Demux::DoDispose (void)
 }
 
 Ptr<TraceResolver>
-Ipv4L4Demux::CreateTraceResolver (void)
+Ipv4L4Demux::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
@@ -89,10 +89,9 @@ Ipv4L4Demux::CreateTraceResolver (void)
       std::ostringstream oss (protValue);
       oss << (*i)->GetProtocolNumber ();
       Ipv4L4ProtocolTraceContextElement protocolNumber = (*i)->GetProtocolNumber ();
-      resolver->Add (protValue,
-                     MakeCallback (&Ipv4L4Protocol::CreateTraceResolver, PeekPointer (protocol)),
-                     protocolNumber);
+      resolver->AddChild (protValue, protocol, protocolNumber);
     }
+  resolver->SetParent (Object::GetTraceResolver ());
   return resolver;
 }
 void

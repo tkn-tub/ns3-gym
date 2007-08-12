@@ -69,8 +69,6 @@ public:
 
   Queue ();
   virtual ~Queue ();
-
-  Ptr<TraceResolver> CreateTraceResolver (void);
   
   /**
    * \return true if the queue is empty; false otherwise
@@ -167,6 +165,7 @@ private:
   virtual bool DoPeek (Packet &p) = 0;
 
 protected:
+  Ptr<TraceResolver> GetTraceResolver (void);
   // called by subclasses to notify parent of packet drops.
   void Drop (const Packet& p);
 

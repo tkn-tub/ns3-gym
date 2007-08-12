@@ -58,12 +58,6 @@ ArpL3Protocol::DoDispose (void)
   Object::DoDispose ();
 }
 
-Ptr<TraceResolver>
-ArpL3Protocol::CreateTraceResolver (void)
-{
-  return Create<EmptyTraceResolver> ();
-}
-
 ArpCache *
 ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 {
@@ -75,7 +69,7 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 	}
     }
   Ptr<Ipv4L3Protocol> ipv4 = m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
-  Ipv4Interface *interface = ipv4->FindInterfaceForDevice (device);
+  Ptr<Ipv4Interface> interface = ipv4->FindInterfaceForDevice (device);
   ArpCache * cache = new ArpCache (device, interface);
   NS_ASSERT (device->IsBroadcast ());
   device->SetLinkChangeCallback (MakeCallback (&ArpCache::Flush, cache));

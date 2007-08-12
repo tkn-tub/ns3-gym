@@ -37,10 +37,6 @@ class TraceContext;
 /**
  * \brief L4 Protocol base class 
  *
- * All subclasses must implement:
- *   - Ipv4L4Protocol::Copy
- *   - Ipv4L4Protocol::CreateTraceResolver
- *
  * If you want to implement a new L4 protocol, all you have to do is
  * implement a subclass of this base class and add it to an L4Demux.
  */  
@@ -58,8 +54,6 @@ public:
    * \returns the version number of this protocol.
    */
   int GetVersion() const;
-
-  virtual Ptr<TraceResolver> CreateTraceResolver () = 0;
 
   /**
    * \param p packet to forward up
