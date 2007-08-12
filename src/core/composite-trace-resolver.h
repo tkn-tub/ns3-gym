@@ -21,6 +21,7 @@
 #ifndef COMPOSITE_TRACE_RESOLVER_H
 #define COMPOSITE_TRACE_RESOLVER_H
 
+#include <vector>
 #include "callback.h"
 #include "ptr.h"
 #include "trace-resolver.h"
@@ -28,7 +29,7 @@
 #include "uv-trace-source.h"
 #include "sv-trace-source.h"
 #include "fv-trace-source.h"
-#include "terminal-trace-resolver.h"
+#include "array-trace-resolver.h"
 
 namespace ns3 {
 
@@ -95,24 +96,6 @@ public:
   template <typename T>
   void Add (std::string name,
             FVTraceSource<T> &trace, T const &context);
-
-  /**
-   * \param name name of child trace resolver
-   * \param createResolver a trace resolver constructor
-   * \param context the context associated to this entry
-   *
-   * Add a child trace resolver to this resolver. This child
-   * trace resolver will match the name specified during
-   * namespace resolution. When this happens, the constructor
-   * will be invoked to create the child trace resolver and
-   * the associated TraceContext will be automatically extended
-   * to contain the input context.
-   */
-  template <typename T>
-  void Add (std::string name, 
-            Callback<Ptr<TraceResolver> > createResolver,
-            T const &context);
-
   /**
    * \param name name of child trace resolver
    * \param createResolver a trace resolver constructor
@@ -124,70 +107,62 @@ public:
    */
   void Add (std::string name, 
             Callback<Ptr<TraceResolver> > createResolver);
+
+  void AddChild (std::string name, Ptr<Object> child);
+
+  template <typename T>
+  void AddChild (std::string name, Ptr<Object> child, const T &contextElement);
+
+  template <typename ITERATOR, typename INDEX>
+  void AddArray (std::string name, 
+                 ITERATOR begin, ITERATOR end, INDEX index);
+
+
+  void SetParent (Ptr<TraceResolver> parent);
+
   virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   virtual void Disconnect (std::string path, CallbackBase const &cb);
 
 private:
-  struct CallbackTraceSourceItem
+  class CompositeItem 
   {
+  public:
+    virtual ~CompositeItem () {}
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context) = 0;
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb) = 0;
+
     std::string name;
-    Callback<Ptr<TraceResolver> > createResolver;
     TraceContext context;
   };
-  typedef std::list<struct CallbackTraceSourceItem> TraceItems;
+  typedef std::vector<CompositeItem *> TraceItems;
   enum Operation {
     CONNECT,
     DISCONNECT
   };
 
-  template <typename SOURCE, typename CONTEXT>
-  void DoAddTraceSource (std::string name,
-                         SOURCE &traceSource, CONTEXT const &context);
-  template <typename SOURCE>
-  static Ptr<TraceResolver> CreateTerminalTraceResolver (SOURCE *trace);
-  void DoAdd (std::string name, 
-              Callback<Ptr<TraceResolver> > createResolver,
-              TraceContext const &context);
+  void AddItem (CompositeItem *item);
   void OperationOne (std::string subpath, 
                      TraceItems::const_iterator i,
                      const CallbackBase &cb,
                      const TraceContext &context,
                      enum Operation op);
-  void DoRecursiveOperation (std::string path, CallbackBase const &cb, 
+  void DoRecursiveOperation (std::string path, 
+                             const CallbackBase &cb, 
                              const TraceContext &context,
                              enum Operation op);
+  void DoRecursiveOperationForParent (std::string path, 
+                                      const CallbackBase &cb, 
+                                      const TraceContext &context, 
+                                      enum Operation op);
+  void DoAddChild (std::string name, Ptr<Object> child, const TraceContext &context);
 
-
-
-  TraceItems m_items;
+  CompositeTraceResolver::TraceItems m_items;
+  Ptr<TraceResolver> m_parent;
 };
 
 }//namespace ns3
 
 namespace ns3 {
-
-template <typename SOURCE, typename CONTEXT>
-void 
-CompositeTraceResolver::DoAddTraceSource (std::string name,
-                                          SOURCE &traceSource, CONTEXT const &context)
-{
-  Ptr<TraceResolver> (*create) (SOURCE *trace);
-  create = &CompositeTraceResolver::CreateTerminalTraceResolver<SOURCE>;
-  Callback<Ptr<TraceResolver> > createResolver = 
-    MakeBoundCallback (create, &traceSource);
-
-  TraceContext ctx;
-  ctx.Add (context);
-  DoAdd (name, createResolver, ctx);
-}
-
-template <typename SOURCE>
-Ptr<TraceResolver>
-CompositeTraceResolver::CreateTerminalTraceResolver (SOURCE *traceSource)
-{
-  return Create<TerminalTraceResolver<SOURCE> > (traceSource);
-}
-
 
 
 
@@ -199,39 +174,114 @@ CompositeTraceResolver::Add (std::string name,
                              CallbackTraceSource<T1,T2,T3,T4> &trace, 
                              T const &context)
 {
-  DoAddTraceSource (name, trace, context);
+  class CallbackCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {if (subpath == "") {trace->AddCallback (cb, context);}}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {if (subpath == "") {trace->RemoveCallback (cb);}}
+
+    CallbackTraceSource<T1,T2,T3,T4> *trace;
+  } *item = new CallbackCompositeItem ();
+  item->name = name;
+  item->context.Add (context);
+  item->trace = &trace;
+  AddItem (item);
 }
 template <typename T>
 void 
 CompositeTraceResolver::Add (std::string name,
                              SVTraceSource<T> &trace, T const &context)
 {
-  DoAddTraceSource (name, trace, context);
+  class SVCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {if (subpath == "") {trace->AddCallback (cb, context);}}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {if (subpath == "") {trace->RemoveCallback (cb);}}
+
+    SVTraceSource<T> *trace;
+  } *item = new SVCompositeItem ();
+  item->name = name;
+  item->context.Add (context);
+  item->trace = &trace;
+  AddItem (item);
 }
 template <typename T>
 void 
 CompositeTraceResolver::Add (std::string name,
                              UVTraceSource<T> &trace, T const &context)
 {
-  DoAddTraceSource (name, trace, context);
+  class UVCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {if (subpath == "") {trace->AddCallback (cb, context);}}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {if (subpath == "") {trace->RemoveCallback (cb);}}
+
+    UVTraceSource<T> *trace;
+  } *item = new UVCompositeItem ();
+  item->name = name;
+  item->context.Add (context);
+  item->trace = &trace;
+  AddItem (item);
 }
 template <typename T>
 void 
 CompositeTraceResolver::Add (std::string name,
                              FVTraceSource<T> &trace, T const &context)
 {
-  DoAddTraceSource (name, trace, context);
+  class FVCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {if (subpath == "") {trace->AddCallback (cb, context);}}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {if (subpath == "") {trace->RemoveCallback (cb);}}
+
+    FVTraceSource<T> *trace;
+  } *item = new FVCompositeItem ();
+  item->name = name;
+  item->context.Add (context);
+  item->trace = &trace;
+  AddItem (item);
 }
+
+template <typename ITERATOR, typename INDEX>
+void 
+CompositeTraceResolver::AddArray (std::string name, 
+                                  ITERATOR begin, ITERATOR end, INDEX index)
+{
+  class ArrayCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {array->Connect (subpath, cb, context);}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {array->Disconnect (subpath, cb);}
+
+    Ptr<ArrayTraceResolver<INDEX> > array;
+  } *item = new ArrayCompositeItem ();
+  item->name = name;
+  item->context = TraceContext ();
+  item->array = Create<ArrayTraceResolver<INDEX> > ();
+  item->array->SetIterators (begin, end);
+  AddItem (item);
+}
+
 template <typename T>
 void 
-CompositeTraceResolver::Add (std::string name, 
-                             Callback<Ptr<TraceResolver> > createResolver,
-                             T const &context)
+CompositeTraceResolver::AddChild (std::string name, Ptr<Object> child, const T &contextElement)
 {
-  TraceContext ctx;
-  ctx.Add (context);
-  DoAdd (name, createResolver, ctx);
+  TraceContext context;
+  context.Add (contextElement);
+  DoAddChild (name, child, context);
 }
+
+
 
 }//namespace ns3
 

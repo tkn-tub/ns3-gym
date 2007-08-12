@@ -29,25 +29,68 @@ CompositeTraceResolver::CompositeTraceResolver ()
 {}
 
 CompositeTraceResolver::~CompositeTraceResolver ()
-{}
+{
+  for (TraceItems::iterator i = m_items.begin (); i != m_items.end (); i++)
+    {
+      delete *i;
+    }
+  m_items.clear ();
+}
+
+void 
+CompositeTraceResolver::AddItem (CompositeItem *item)
+{
+  m_items.push_back (item);
+}
 
 void 
 CompositeTraceResolver::Add (std::string name, 
                              Callback<Ptr<TraceResolver> > createResolver)
 {
-  DoAdd (name, createResolver, TraceContext ());
+  class MakerCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {maker ()->Connect (subpath, cb, context);}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {maker ()->Disconnect (subpath, cb);}
+
+    Callback<Ptr<TraceResolver> > maker;
+  } *item = new MakerCompositeItem ();
+  item->name = name;
+  item->context = TraceContext ();
+  item->maker = createResolver;
+  AddItem (item);
 }
 
 void 
-CompositeTraceResolver::DoAdd (std::string name, 
-			       Callback<Ptr<TraceResolver> > createResolver,
-			       TraceContext const &context)
+CompositeTraceResolver::AddChild (std::string name, Ptr<Object> child)
 {
-  struct CallbackTraceSourceItem item;
-  item.name = name;
-  item.createResolver = createResolver;
-  item.context = context;
-  m_items.push_back (item);
+  DoAddChild (name, child, TraceContext ());
+}
+void 
+CompositeTraceResolver::DoAddChild (std::string name, Ptr<Object> child, const TraceContext &context)
+{
+  class ChildCompositeItem : public CompositeItem
+  {
+  public:
+    virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
+    {child->TraceConnect (subpath, cb, context);}
+    virtual void Disconnect (std::string subpath, const CallbackBase &cb)
+    {child->TraceDisconnect (subpath, cb);}
+
+    Ptr<Object> child;
+  } *item = new ChildCompositeItem ();
+  item->name = name;
+  item->context = context;
+  item->child = child;
+  AddItem (item);
+}
+
+void
+CompositeTraceResolver::SetParent (Ptr<TraceResolver> resolver)
+{
+  m_parent = resolver;
 }
 
 void 
@@ -57,10 +100,15 @@ CompositeTraceResolver::Connect (std::string path, CallbackBase const &cb, const
   DoRecursiveOperation (path, cb, context, CONNECT);
 }
 void 
-CompositeTraceResolver::DoRecursiveOperation (std::string path, CallbackBase const &cb, 
+CompositeTraceResolver::DoRecursiveOperation (std::string path, 
+                                              const CallbackBase  &cb, 
                                               const TraceContext &context,
                                               enum Operation op)
 {
+  if (path == "")
+    {
+      return;
+    }
   std::string id = GetElement (path);
   std::string subpath = GetSubpath (path);
 
@@ -70,6 +118,7 @@ CompositeTraceResolver::DoRecursiveOperation (std::string path, CallbackBase con
 	{
           OperationOne (subpath, i, cb, context, op);
         }
+      DoRecursiveOperationForParent (path, cb, context, op);
       return;
     }
   std::string::size_type start, end;
@@ -79,9 +128,10 @@ CompositeTraceResolver::DoRecursiveOperation (std::string path, CallbackBase con
     {
       for (TraceItems::const_iterator i = m_items.begin (); i != m_items.end (); i++)
 	{
-	  if (i->name == id)
+	  if ((*i)->name == id)
 	    {
               OperationOne (subpath, i, cb, context, op);
+              DoRecursiveOperationForParent (path, cb, context, op);
               return;
 	    }
 	}
@@ -109,13 +159,34 @@ CompositeTraceResolver::DoRecursiveOperation (std::string path, CallbackBase con
     {
       for (TraceItems::const_iterator j = m_items.begin (); j != m_items.end (); j++)
 	{
-	  if (j->name == *i)
+	  if ((*j)->name == *i)
 	    {
               OperationOne (subpath, j, cb, context, op);
 	      break;
 	    }
 	}
     }
+  DoRecursiveOperationForParent (path, cb, context, op);
+}
+
+void
+CompositeTraceResolver::DoRecursiveOperationForParent (std::string path, 
+                                                       const CallbackBase &cb, 
+                                                       const TraceContext &context, 
+                                                       enum Operation op)
+{
+  if (m_parent == 0)
+    {
+      return;
+    }
+  switch (op) {
+  case CONNECT:
+    m_parent->Connect (path, cb, context);
+    break;
+  case DISCONNECT:
+    m_parent->Disconnect (path, cb);
+    break;
+  }
 }
 
 void 
@@ -125,16 +196,15 @@ CompositeTraceResolver::OperationOne (std::string subpath,
                                       const TraceContext &context,
                                       enum Operation op)
 {
-  Ptr<TraceResolver> resolver = i->createResolver ();
   switch (op) {
   case CONNECT: {
-    NS_DEBUG ("connect to path="<<subpath<<" name="<<i->name);
+    NS_DEBUG ("connect to path="<<subpath<<" name="<<(*i)->name);
     TraceContext ctx = context;
-    ctx.Add (i->context);
-    resolver->Connect (subpath, cb, ctx);
+    ctx.Add ((*i)->context);
+    (*i)->Connect (subpath, cb, ctx);
     } break;
   case DISCONNECT:
-    resolver->Disconnect (subpath, cb);
+    (*i)->Disconnect (subpath, cb);
     break;
   }
 }
@@ -159,17 +229,14 @@ class TraceSourceTest : public TraceContextElement
 public:
   enum Sources {
     DOUBLEA,
-    DOUBLEB,
-    SUBRESOLVER,
+    DOUBLEB
   };
   static uint16_t GetUid (void) 
   {static uint16_t uid = AllocateUid<TraceSourceTest> ("TraceSourceTest"); return uid;}
   void Print (std::ostream &os)
   {os << "tracesource=";
     if (m_sources == DOUBLEA) {os << "doubleA";}
-    else if (m_sources == DOUBLEB) {os << "doubleB";}
-    else if (m_sources == SUBRESOLVER) {os << "subresolver";}
-  }
+    else if (m_sources == DOUBLEB) {os << "doubleB";}}
   TraceSourceTest () : m_sources (TraceSourceTest::DOUBLEA) {}
   TraceSourceTest (enum Sources sources) :m_sources (sources) {}
   bool IsDoubleA (void) {return m_sources == TraceSourceTest::DOUBLEA;}
@@ -357,8 +424,7 @@ CompositeTraceResolverTest::RunTests (void)
     }
 
   resolver.Add ("subresolver", 
-		MakeCallback (&CompositeTraceResolverTest::CreateSubResolver, this),
-		TraceSourceTest (TraceSourceTest::SUBRESOLVER));
+		MakeCallback (&CompositeTraceResolverTest::CreateSubResolver, this));
 
   resolver.Connect ("/subresolver/trace-int", 
 		    MakeCallback (&CompositeTraceResolverTest::TraceInt, this), TraceContext ());
