@@ -167,7 +167,12 @@ Object::AddInterface (Ptr<Object> o)
 void 
 Object::TraceConnect (std::string path, const CallbackBase &cb)
 {
-  GetTraceResolver ()->Connect (path, cb, TraceContext ());
+  TraceConnect (path, cb, TraceContext ());
+}
+void 
+Object::TraceConnect (std::string path, const CallbackBase &cb, const TraceContext &context)
+{
+  GetTraceResolver ()->Connect (path, cb, context);
 }
 void 
 Object::TraceDisconnect (std::string path, const CallbackBase &cb)
@@ -190,7 +195,7 @@ Object::DoDispose (void)
 }
 
 Ptr<TraceResolver>
-Object::GetTraceResolver (void) const
+Object::GetTraceResolver (void)
 {
   return Create<EmptyTraceResolver> ();
 }

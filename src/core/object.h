@@ -28,6 +28,7 @@
 namespace ns3 {
 
 class TraceResolver;
+class TraceContext;
 class CallbackBase;
 
 /**
@@ -137,6 +138,7 @@ public:
 
 
   void TraceConnect (std::string path, const CallbackBase &cb);
+  void TraceConnect (std::string path, const CallbackBase &cb, const TraceContext &context);
   void TraceDisconnect (std::string path, const CallbackBase &cb);
 protected:
   /**
@@ -154,7 +156,7 @@ protected:
    */
   virtual void DoDispose (void);
 
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
+  virtual Ptr<TraceResolver> GetTraceResolver (void);
 private:
   Ptr<Object> DoQueryInterface (InterfaceId iid) const;
   bool Check (void) const;
