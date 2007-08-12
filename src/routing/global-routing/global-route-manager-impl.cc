@@ -861,9 +861,6 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 // to <w>.  If prev_link is not NULL, we return a Global Router Link Record
 // representing a possible *second* link from <v> to <w>.
 //
-// BUGBUG FIXME:  This seems to be a bug.  Shouldn't this function look for
-// any link records after pre_link and not just after the first?
-//
   GlobalRoutingLinkRecord* 
 GlobalRouteManagerImpl::SPFGetNextLink (
   SPFVertex* v,
@@ -1450,8 +1447,8 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
           NS_ASSERT_MSG (lsa, 
             "GlobalRouteManagerImpl::SPFIntraAddTransit (): "
             "Expected valid LSA in SPFVertex* v");
-          Ipv4Mask tempmask = v->GetLSA ()->GetNetworkLSANetworkMask ();
-          Ipv4Address tempip = v->GetLSA ()->GetLinkStateId ();
+          Ipv4Mask tempmask = lsa->GetNetworkLSANetworkMask ();
+          Ipv4Address tempip = lsa->GetLinkStateId ();
           tempip = tempip.CombineMask (tempmask);
           ipv4->AddNetworkRouteTo (tempip, tempmask, v->GetNextHop (),
             v->GetOutgoingInterfaceId ());
