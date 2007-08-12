@@ -43,10 +43,10 @@ public:
   }
   ~UVTraceSourceBase () {}
 
-  void AddCallback (CallbackBase const & callback, TraceContext const & context) {
+  virtual void AddCallback (CallbackBase const & callback, TraceContext const & context) {
     m_callback.AddCallback (callback, context);
   }
-  void RemoveCallback (CallbackBase const & callback) {
+  virtual void RemoveCallback (CallbackBase const & callback) {
     m_callback.RemoveCallback (callback);
   }
 
