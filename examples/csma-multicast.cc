@@ -58,19 +58,36 @@
 
 using namespace ns3;
 
+NS_DEBUG_COMPONENT_DEFINE ("Me");
+
 int 
 main (int argc, char *argv[])
 {
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
 #if 0 
+  DebugComponentEnable("Me");
   DebugComponentEnable("CsmaNetDevice");
   DebugComponentEnable("Ipv4L3Protocol");
   DebugComponentEnable("NetDevice");
   DebugComponentEnable("Channel");
   DebugComponentEnable("CsmaChannel");
   DebugComponentEnable("PacketSocket");
+  DebugComponentEnable("OnOffApplication");
+  DebugComponentEnable("UdpSocket");
+  DebugComponentEnable("UdpL4Protocol");
+  DebugComponentEnable("Ipv4L3Protocol");
+  DebugComponentEnable("Ipv4StaticRouting");
 #endif
+
+  DebugComponentEnable("Me");
+  DebugComponentEnable("OnOffApplication");
+  DebugComponentEnable("UdpSocket");
+  DebugComponentEnable("UdpL4Protocol");
+  DebugComponentEnable("Ipv4L3Protocol");
+  DebugComponentEnable("Ipv4StaticRouting");
+  DebugComponentEnable("CsmaNetDevice");
+  DebugComponentEnable("CsmaChannel");
 
   // Set up some default values for the simulation.  Use the Bind()
   // technique to tell the system what subclass of Queue to use,
@@ -86,16 +103,19 @@ main (int argc, char *argv[])
 
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
+  NS_DEBUG("Create nodes.");
   Ptr<Node> n0 = Create<InternetNode> ();
   Ptr<Node> n1 = Create<InternetNode> (); 
   Ptr<Node> n2 = Create<InternetNode> (); 
   Ptr<Node> n3 = Create<InternetNode> ();
 
+  NS_DEBUG("Create channels.");
   // We create the channels first without any IP addressing information
   Ptr<CsmaChannel> channel0 = 
     CsmaTopology::CreateCsmaChannel(
       DataRate(5000000), MilliSeconds(2));
 
+  NS_DEBUG("Build Topology.");
   uint32_t n0ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n0, channel0, 
                                          Eui48Address("10:54:23:54:23:50"));
   uint32_t n1ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n1, channel0,
@@ -106,6 +126,8 @@ main (int argc, char *argv[])
                                          Eui48Address("10:54:23:54:23:53"));
 
   // Later, we add IP addresses.  
+  NS_DEBUG("Assign IP Addresses.");
+
   CsmaIpv4Topology::AddIpv4Address (
       n0, n0ifIndex, Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
 
@@ -119,6 +141,7 @@ main (int argc, char *argv[])
       n3, n3ifIndex, Ipv4Address("10.1.1.4"), Ipv4Mask("255.255.255.0"));
 
   // Configure multicasting
+  NS_DEBUG("Configure multicasting.");
   Ipv4Address multicastSource ("10.1.1.1");
   Ipv4Address multicastGroup ("225.0.0.0");
 
@@ -142,7 +165,8 @@ main (int argc, char *argv[])
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
-  // from n0 to n1
+  // from n0 to the multicast group
+  NS_DEBUG("Create Applications.");
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
     InetSocketAddress (multicastGroup, 80), 
@@ -155,7 +179,8 @@ main (int argc, char *argv[])
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the csma-one-subnet.tr file
-  AsciiTrace asciitrace ("csma-one-subnet.tr");
+  NS_DEBUG("Configure Tracing.");
+  AsciiTrace asciitrace ("csma-multicast.tr");
   asciitrace.TraceAllNetDeviceRx ();
   asciitrace.TraceAllQueues ();
 
@@ -164,10 +189,11 @@ main (int argc, char *argv[])
   // simple-point-to-point.pcap-<nodeId>-<interfaceId>
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
-  PcapTrace pcaptrace ("csma-one-subnet.pcap");
+  PcapTrace pcaptrace ("csma-multicast.pcap");
   pcaptrace.TraceAllIp ();
 
+  NS_DEBUG("Run Simulation.");
   Simulator::Run ();
-    
   Simulator::Destroy ();
+  NS_DEBUG("Done.");
 }

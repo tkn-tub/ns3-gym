@@ -18,10 +18,12 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //         Gustavo Carneiro <gjc@inescporto.pt>
-//         Craig Dowell <craigdo@ee.washington.edu>
 
+#include "ns3/debug.h"
 #include "ipv4-static-routing.h"
 #include "ns3/packet.h"
+
+NS_DEBUG_COMPONENT_DEFINE ("Ipv4StaticRouting");
 
 namespace ns3 {
 
@@ -31,10 +33,12 @@ Ipv4StaticRouting::AddHostRouteTo (Ipv4Address dest,
                                    Ipv4Address nextHop, 
                                    uint32_t interface)
 {
+
   Ipv4Route *route = new Ipv4Route ();
   *route = Ipv4Route::CreateHostRouteTo (dest, nextHop, interface);
   m_hostRoutes.push_back (route);
 }
+
 void 
 Ipv4StaticRouting::AddHostRouteTo (Ipv4Address dest, 
                                    uint32_t interface)
@@ -43,6 +47,7 @@ Ipv4StaticRouting::AddHostRouteTo (Ipv4Address dest,
   *route = Ipv4Route::CreateHostRouteTo (dest, interface);
   m_hostRoutes.push_back (route);
 }
+
 void 
 Ipv4StaticRouting::AddNetworkRouteTo (Ipv4Address network, 
                                       Ipv4Mask networkMask, 
@@ -56,6 +61,7 @@ Ipv4StaticRouting::AddNetworkRouteTo (Ipv4Address network,
                                             interface);
   m_networkRoutes.push_back (route);
 }
+
 void 
 Ipv4StaticRouting::AddNetworkRouteTo (Ipv4Address network, 
                                       Ipv4Mask networkMask, 
@@ -67,6 +73,7 @@ Ipv4StaticRouting::AddNetworkRouteTo (Ipv4Address network,
                                             interface);
   m_networkRoutes.push_back (route);
 }
+
 void 
 Ipv4StaticRouting::SetDefaultRoute (Ipv4Address nextHop, 
                                     uint32_t interface)
@@ -197,7 +204,8 @@ Ipv4StaticRouting::LookupStatic (
        i++) 
     {
       Ipv4MulticastRoute *route = *i;
-      if (origin == route->GetOrigin () &&
+      if (  (origin == route->GetOrigin () || 
+             origin == Ipv4Address::GetAny ()) &&
           group == route->GetGroup ())
         {
           return *i;
@@ -309,6 +317,15 @@ Ipv4StaticRouting::RequestRoute (Ipv4Header const &ipHeader,
                                  Packet packet,
                                  RouteReplyCallback routeReply)
 {
+  NS_DEBUG ("Ipv4StaticRouting::RequestRoute (" << &ipHeader << ", " <<
+    &packet << ", " << &routeReply << ")");
+
+  NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): source = " << 
+    ipHeader.GetSource ());
+
+  NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): destination = " << 
+    ipHeader.GetDestination ());
+
 //
 // First, see if this is a multicast packet we have a route for.  If we
 // have a route, then send the packet down each of the specified interfaces.

@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
+#include "ns3/debug.h"
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/empty-trace-resolver.h"
@@ -31,6 +32,8 @@
 #include "ipv4-l3-protocol.h"
 #include "udp-socket.h"
 
+NS_DEBUG_COMPONENT_DEFINE ("UdpL4Protocol");
+
 namespace ns3 {
 
 /* see http://www.iana.org/assignments/protocol-numbers */
@@ -40,20 +43,26 @@ UdpL4Protocol::UdpL4Protocol (Ptr<Node> node)
   : Ipv4L4Protocol (PROT_NUMBER, 2),
     m_node (node),
     m_endPoints (new Ipv4EndPointDemux ())
-{}
+{
+  NS_DEBUG("UdpL4Protocol::UdpL4Protocol ()");
+}
 
 UdpL4Protocol::~UdpL4Protocol ()
-{}
+{
+  NS_DEBUG("UdpL4Protocol::~UdpL4Protocol ()");
+}
 
 TraceResolver *
 UdpL4Protocol::CreateTraceResolver (TraceContext const &context)
 {
+  NS_DEBUG("UdpL4Protocol::CreateTraceResolver ()");
   return new EmptyTraceResolver (context);
 }
 
 void
 UdpL4Protocol::DoDispose (void)
 {
+  NS_DEBUG("UdpL4Protocol::DoDispose ()");
   if (m_endPoints != 0)
     {
       delete m_endPoints;
@@ -66,6 +75,7 @@ UdpL4Protocol::DoDispose (void)
 Ptr<Socket>
 UdpL4Protocol::CreateSocket (void)
 {
+  NS_DEBUG("UdpL4Protocol::CreateSocket ()");
   Ptr<Socket> socket = Create<UdpSocket> (m_node, this);
   return socket;
 }
@@ -73,27 +83,36 @@ UdpL4Protocol::CreateSocket (void)
 Ipv4EndPoint *
 UdpL4Protocol::Allocate (void)
 {
+  NS_DEBUG("UdpL4Protocol::Allocate ()");
   return m_endPoints->Allocate ();
 }
+
 Ipv4EndPoint *
 UdpL4Protocol::Allocate (Ipv4Address address)
 {
+  NS_DEBUG("UdpL4Protocol::Allocate (" << address << ")");
   return m_endPoints->Allocate (address);
 }
+
 Ipv4EndPoint *
 UdpL4Protocol::Allocate (uint16_t port)
 {
+  NS_DEBUG("UdpL4Protocol::Allocate (" << port << ")");
   return m_endPoints->Allocate (port);
 }
+
 Ipv4EndPoint *
 UdpL4Protocol::Allocate (Ipv4Address address, uint16_t port)
 {
+  NS_DEBUG("UdpL4Protocol::Allocate (" << address << ", " << port << ")");
   return m_endPoints->Allocate (address, port);
 }
 Ipv4EndPoint *
 UdpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
                Ipv4Address peerAddress, uint16_t peerPort)
 {
+  NS_DEBUG("UdpL4Protocol::Allocate (" << localAddress << ", " << localPort <<
+    ", " << peerAddress << ", " << peerPort << ")");
   return m_endPoints->Allocate (localAddress, localPort,
                                 peerAddress, peerPort);
 }
@@ -101,6 +120,7 @@ UdpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
 void 
 UdpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 {
+  NS_DEBUG("UdpL4Protocol::Deallocate (" << endPoint << ")");
   m_endPoints->DeAllocate (endPoint);
 }
 
@@ -109,6 +129,9 @@ UdpL4Protocol::Receive(Packet& packet,
              Ipv4Address const &source,
              Ipv4Address const &destination)
 {
+  NS_DEBUG("UdpL4Protocol::Receive (" << &packet << ", " << source <<
+    ", " << destination << ")");
+
   UdpHeader udpHeader;
   packet.RemoveHeader (udpHeader);
   Ipv4EndPointDemux::EndPoints endPoints =
@@ -126,6 +149,9 @@ UdpL4Protocol::Send (Packet packet,
            Ipv4Address saddr, Ipv4Address daddr, 
            uint16_t sport, uint16_t dport)
 {
+  NS_DEBUG("UdpL4Protocol::Send (" << &packet << ", " << saddr <<
+    ", " << daddr << ", " << sport << ", " << dport << ")");
+
   UdpHeader udpHeader;
   udpHeader.SetDestination (dport);
   udpHeader.SetSource (sport);
@@ -139,6 +165,7 @@ UdpL4Protocol::Send (Packet packet,
   Ptr<Ipv4L3Protocol> ipv4 = m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
   if (ipv4 != 0)
     {
+      NS_DEBUG("UdpL4Protocol::Send (): Sending to IP");
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
     }
 }
