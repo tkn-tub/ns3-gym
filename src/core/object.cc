@@ -22,9 +22,7 @@
 #include "assert.h"
 #include "singleton.h"
 #include "uid-manager.h"
-#include "sv-trace-source.h"
 #include "trace-resolver.h"
-#include "composite-trace-resolver.h"
 #include <vector>
 
 namespace {
@@ -292,6 +290,8 @@ Object::MaybeDelete (void) const
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
+#include "sv-trace-source.h"
+#include "composite-trace-resolver.h"
 
 namespace {
 
