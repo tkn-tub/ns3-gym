@@ -152,9 +152,9 @@ Ptr<TraceResolver>
 Ipv4L3Protocol::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->Add ("tx", m_txTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::TX));
-  resolver->Add ("rx", m_rxTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::RX));
-  resolver->Add ("drop", m_dropTrace, Ipv4L3ProtocolTraceContextElement (Ipv4L3ProtocolTraceContextElement::DROP));
+  resolver->AddSource ("tx", m_txTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::TX));
+  resolver->AddSource ("rx", m_rxTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::RX));
+  resolver->AddSource ("drop", m_dropTrace, Ipv4L3ProtocolTraceContextElement (Ipv4L3ProtocolTraceContextElement::DROP));
   resolver->AddArray ("interfaces", 
                       m_interfaces.begin (), m_interfaces.end (), 
                       Ipv4L3ProtocolInterfaceIndex ());

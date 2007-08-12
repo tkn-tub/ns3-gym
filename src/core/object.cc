@@ -310,7 +310,7 @@ public:
   {
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
-    resolver->Add ("basea-x", m_source);
+    resolver->AddSource ("basea-x", m_source);
     resolver->SetParent (Object::GetTraceResolver ());
     return resolver;
   }
@@ -334,7 +334,7 @@ public:
   {
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
-    resolver->Add ("deriveda-x", m_sourceDerived);
+    resolver->AddSource ("deriveda-x", m_sourceDerived);
     resolver->SetParent (BaseA::GetTraceResolver ());
     return resolver;
   }
@@ -361,7 +361,7 @@ public:
   {
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
-    resolver->Add ("baseb-x", m_source);
+    resolver->AddSource ("baseb-x", m_source);
     resolver->SetParent (Object::GetTraceResolver ());
     return resolver;
   }
@@ -385,7 +385,7 @@ public:
   {
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
-    resolver->Add ("derivedb-x", m_sourceDerived);
+    resolver->AddSource ("derivedb-x", m_sourceDerived);
     resolver->SetParent (BaseB::GetTraceResolver ());
     return resolver;
   }

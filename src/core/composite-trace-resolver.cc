@@ -64,7 +64,7 @@ CompositeTraceResolver::Add (std::string name,
 }
 
 void 
-CompositeTraceResolver::Add (std::string name,
+CompositeTraceResolver::AddSource (std::string name,
                              TraceSource &trace)
 {
   DoAddSource (name, trace, TraceContext ());
@@ -351,8 +351,8 @@ Ptr<TraceResolver>
 CompositeTraceResolverTest::CreateSubResolver (void)
 {
   Ptr<CompositeTraceResolver> subresolver = Create<CompositeTraceResolver> ();
-  subresolver->Add ("trace-int", m_traceInt, 
-                    SubTraceSourceTest (SubTraceSourceTest::INT));
+  subresolver->AddSource ("trace-int", m_traceInt, 
+                          SubTraceSourceTest (SubTraceSourceTest::INT));
   return subresolver;
 }
 bool 
@@ -366,10 +366,10 @@ CompositeTraceResolverTest::RunTests (void)
 
   CompositeTraceResolver resolver;
 
-  resolver.Add ("trace-double-a", traceDoubleA, 
-                TraceSourceTest (TraceSourceTest::DOUBLEA));
-  resolver.Add ("trace-double-b", traceDoubleB, 
-                TraceSourceTest (TraceSourceTest::DOUBLEB));
+  resolver.AddSource ("trace-double-a", traceDoubleA, 
+                      TraceSourceTest (TraceSourceTest::DOUBLEA));
+  resolver.AddSource ("trace-double-b", traceDoubleB, 
+                      TraceSourceTest (TraceSourceTest::DOUBLEB));
 
   resolver.Connect ("/*", MakeCallback (&CompositeTraceResolverTest::TraceDouble, this), TraceContext ());
 
@@ -461,7 +461,7 @@ CompositeTraceResolverTest::RunTests (void)
     }
 
   resolver.Add ("subresolver", 
-		MakeCallback (&CompositeTraceResolverTest::CreateSubResolver, this));
+                MakeCallback (&CompositeTraceResolverTest::CreateSubResolver, this));
 
   resolver.Connect ("/subresolver/trace-int", 
 		    MakeCallback (&CompositeTraceResolverTest::TraceInt, this), TraceContext ());
@@ -501,7 +501,7 @@ CompositeTraceResolverTest::RunTests (void)
 
   SVTraceSource<uint16_t> source;
 
-  resolver.Add ("uint16_t", source, TraceSourceTest (TraceSourceTest::UINT16_T));
+  resolver.AddSource ("uint16_t", source, TraceSourceTest (TraceSourceTest::UINT16_T));
   
 
   return ok;

@@ -98,9 +98,9 @@ Ptr<TraceResolver>
 Queue::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->Add ("enqueue", m_traceEnqueue, QueueTraceType (QueueTraceType::ENQUEUE));
-  resolver->Add ("dequeue", m_traceDequeue, QueueTraceType (QueueTraceType::DEQUEUE));
-  resolver->Add ("drop", m_traceDrop, QueueTraceType (QueueTraceType::DROP));
+  resolver->AddSource ("enqueue", m_traceEnqueue, QueueTraceType (QueueTraceType::ENQUEUE));
+  resolver->AddSource ("dequeue", m_traceDequeue, QueueTraceType (QueueTraceType::DEQUEUE));
+  resolver->AddSource ("drop", m_traceDrop, QueueTraceType (QueueTraceType::DROP));
   resolver->SetParent (Object::GetTraceResolver ());
   return resolver;
 }

@@ -53,8 +53,8 @@ public:
    * be automatically extended to contain the input context.
    */
   template <typename T>
-  void Add (std::string name,
-            TraceSource &trace, T const &context);
+  void AddSource (std::string name,
+                  TraceSource &trace, T const &context);
   /**
    * \param name name of trace source
    * \param trace a callback trace source
@@ -63,8 +63,8 @@ public:
    * source will match the name specified during namespace 
    * resolution.
    */
-  void Add (std::string name,
-            TraceSource &trace);
+  void AddSource (std::string name,
+                  TraceSource &trace);
   /**
    * \param name name of child trace resolver
    * \param createResolver a trace resolver constructor
@@ -140,9 +140,9 @@ namespace ns3 {
 
 template <typename T>
 void 
-CompositeTraceResolver::Add (std::string name,
-                             TraceSource &trace, 
-                             T const &context)
+CompositeTraceResolver::AddSource (std::string name,
+                                   TraceSource &trace, 
+                                   T const &context)
 {
   TraceContext ctx;
   ctx.Add (context);

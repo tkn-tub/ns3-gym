@@ -454,12 +454,12 @@ CsmaCdNetDevice::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddChild ("queue", m_queue);
-  resolver->Add ("rx",
-                 m_rxTrace,
-                 CsmaCdTraceType (CsmaCdTraceType::RX));
-  resolver->Add ("drop",
-                 m_dropTrace,
-                 CsmaCdTraceType (CsmaCdTraceType::DROP));
+  resolver->AddSource ("rx",
+                       m_rxTrace,
+                       CsmaCdTraceType (CsmaCdTraceType::RX));
+  resolver->AddSource ("drop",
+                       m_dropTrace,
+                       CsmaCdTraceType (CsmaCdTraceType::DROP));
   resolver->SetParent (NetDevice::GetTraceResolver ());
   return resolver;
 }
