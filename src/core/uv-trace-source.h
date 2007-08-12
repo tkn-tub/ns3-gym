@@ -23,11 +23,12 @@
 #define UV_TRACE_SOURCE_H
 
 #include "callback-trace-source.h"
+#include "trace-source.h"
 #include <stdint.h>
 
 namespace ns3 {
 
-class UVTraceSourceBase {
+class UVTraceSourceBase : public TraceSource {
 public:
   typedef CallbackTraceSource<uint64_t, uint64_t> ChangeNotifyCallback;
 

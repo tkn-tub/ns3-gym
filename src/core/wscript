@@ -81,6 +81,7 @@ def build(bld):
         'component-manager.h',
         'type-traits.h',
         'random-variable-default-value.h',
+        'trace-source.h',
         'uv-trace-source.h',
         'sv-trace-source.h',
         'fv-trace-source.h',

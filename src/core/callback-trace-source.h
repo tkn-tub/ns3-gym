@@ -26,17 +26,9 @@
 #include "callback.h"
 #include "fatal-error.h"
 #include "trace-context.h"
+#include "trace-source.h"
 
 namespace ns3 {
-
-class CallbackTraceSourceBase 
-{
-public:
-  virtual ~CallbackTraceSourceBase () {}
-  virtual void AddCallback (CallbackBase const & callback, TraceContext const & context) = 0;
-  virtual void RemoveCallback (CallbackBase const & callback) = 0;
-};
-
 
 /**
  * \brief log arbitrary number of parameters to a matching ns3::Callback
@@ -47,7 +39,7 @@ public:
  */
 template<typename T1 = empty, typename T2 = empty, 
          typename T3 = empty, typename T4 = empty>
-class CallbackTraceSource : public CallbackTraceSourceBase {
+class CallbackTraceSource : public TraceSource {
 public:
   CallbackTraceSource ();
   virtual void AddCallback (CallbackBase const & callback, TraceContext const & context);

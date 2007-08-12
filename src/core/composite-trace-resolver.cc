@@ -65,6 +65,14 @@ CompositeTraceResolver::Add (std::string name,
 
 void 
 CompositeTraceResolver::Add (std::string name,
+                             TraceSource &trace)
+{
+  DoAddSource (name, trace, TraceContext ());
+}
+
+
+void 
+CompositeTraceResolver::Add (std::string name,
                              FVTraceSourceBase &trace)
 {
   DoAddFV (name, trace, TraceContext ());
@@ -149,11 +157,11 @@ CompositeTraceResolver::DoAddSV (std::string name,
 }
 
 void 
-CompositeTraceResolver::DoAddCallback (std::string name,
-                                       CallbackTraceSourceBase &trace, 
-                                       const TraceContext &context)
+CompositeTraceResolver::DoAddSource (std::string name,
+                                     TraceSource &trace, 
+                                     const TraceContext &context)
 {
-  class CallbackCompositeItem : public CompositeItem
+  class SourceCompositeItem : public CompositeItem
   {
   public:
     virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
@@ -161,8 +169,8 @@ CompositeTraceResolver::DoAddCallback (std::string name,
     virtual void Disconnect (std::string subpath, const CallbackBase &cb)
     {if (subpath == "") {trace->RemoveCallback (cb);}}
 
-    CallbackTraceSourceBase *trace;
-  } *item = new CallbackCompositeItem ();
+    TraceSource *trace;
+  } *item = new SourceCompositeItem ();
   item->name = name;
   item->context = context;
   item->trace = &trace;

@@ -54,7 +54,7 @@ public:
    */
   template <typename T>
   void Add (std::string name,
-            CallbackTraceSourceBase &trace, T const &context);
+            TraceSource &trace, T const &context);
   /**
    * \param name name of trace source
    * \param trace a signed variable trace source
@@ -102,10 +102,8 @@ public:
    * source will match the name specified during namespace 
    * resolution.
    */
-  template <typename T1, typename T2,
-            typename T3, typename T4>
   void Add (std::string name,
-            CallbackTraceSource<T1,T2,T3,T4> &trace);
+            TraceSource &trace);
   /**
    * \param name name of trace source
    * \param trace a signed variable trace source
@@ -195,9 +193,9 @@ private:
                                       const TraceContext &context, 
                                       enum Operation op);
   void DoAddChild (std::string name, Ptr<Object> child, const TraceContext &context);
-  void DoAddCallback (std::string name,
-                      CallbackTraceSourceBase &trace,
-                      const TraceContext &context);
+  void DoAddSource (std::string name,
+                    TraceSource &trace,
+                    const TraceContext &context);
   void DoAddSV (std::string name,
                 SVTraceSourceBase &trace, 
                 const TraceContext &context);
@@ -222,20 +220,12 @@ namespace ns3 {
 template <typename T>
 void 
 CompositeTraceResolver::Add (std::string name,
-                             CallbackTraceSourceBase &trace, 
+                             TraceSource &trace, 
                              T const &context)
 {
   TraceContext ctx;
   ctx.Add (context);
-  DoAddCallback (name, trace, ctx);  
-}
-template <typename T1, typename T2,
-          typename T3, typename T4>
-void 
-CompositeTraceResolver::Add (std::string name,
-                             CallbackTraceSource<T1,T2,T3,T4> &trace)
-{
-  DoAddCallback (name, trace, TraceContext ());
+  DoAddSource (name, trace, ctx);  
 }
 
 template <typename T>

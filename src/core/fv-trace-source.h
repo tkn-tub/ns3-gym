@@ -23,11 +23,12 @@
 #define F_VARIABLE_TRACER_H
 
 #include "callback-trace-source.h"
+#include "trace-source.h"
 #include <stdint.h>
 
 namespace ns3 {
 
-class FVTraceSourceBase {
+class FVTraceSourceBase : public TraceSource {
 public:
   typedef CallbackTraceSource<double, double> ChangeNotifyCallback;
 

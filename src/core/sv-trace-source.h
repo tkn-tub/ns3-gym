@@ -23,11 +23,12 @@
 #define SV_TRACE_SOURCE_H
 
 #include "callback-trace-source.h"
+#include "trace-source.h"
 #include <stdint.h>
 
 namespace ns3 {
 
-class SVTraceSourceBase {
+class SVTraceSourceBase : public TraceSource {
 public:
   typedef CallbackTraceSource<int64_t, int64_t> ChangeNotifyCallback;
 
@@ -37,7 +38,7 @@ public:
       return *this;
   }
 
-  ~SVTraceSourceBase () {}
+  virtual ~SVTraceSourceBase () {}
 
   void AddCallback (CallbackBase const & callback, TraceContext const & context) {
     m_callback.AddCallback (callback, context);
