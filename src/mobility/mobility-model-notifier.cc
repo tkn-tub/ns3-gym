@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "mobility-model-notifier.h"
+#include "ns3/composite-trace-resolver.h"
 
 namespace ns3 {
 
@@ -33,36 +34,18 @@ MobilityModelNotifier::MobilityModelNotifier ()
 }
 
 void 
-MobilityModelNotifier::RegisterListener (Listener listener)
-{
-  m_listeners.push_back (listener);
-}
-void 
-MobilityModelNotifier::UnregisterListener (Listener callback)
-{
-  for (std::list<Listener>::iterator i = m_listeners.begin ();
-       i != m_listeners.end ();)
-    {
-      Listener listener = *i;
-      if (listener.IsEqual (callback))
-	{
-	  i = m_listeners.erase (i);
-	}
-      else
-	{
-	  i++;
-	}
-    }  
-}
-void 
 MobilityModelNotifier::Notify (Ptr<const MobilityModel> position) const
 {
-  for (std::list<Listener>::const_iterator i = m_listeners.begin ();
-       i != m_listeners.end (); i++)
-    {
-      Listener listener = *i;
-      listener (position);
-    }
+  m_trace (position);
+}
+
+Ptr<TraceResolver> 
+MobilityModelNotifier::GetTraceResolver (void)
+{
+  Ptr<CompositeTraceResolver> resolver = 
+    Create<CompositeTraceResolver> ();
+  resolver->Add ("course-change", m_trace);
+  return resolver;
 }
 
 } // namespace ns3

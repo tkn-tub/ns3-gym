@@ -24,6 +24,7 @@
 #include "ns3/object.h"
 #include "ns3/component-manager.h"
 #include "ns3/callback.h"
+#include "ns3/callback-trace-source.h"
 #include "mobility-model.h"
 
 namespace ns3 {
@@ -37,8 +38,6 @@ public:
   static const InterfaceId iid;
   static const ClassId cid;
 
-  typedef Callback<void,Ptr<const MobilityModel> > Listener;
-
   /**
    * Create a new position notifier
    */
@@ -48,23 +47,10 @@ public:
    * \param position the position which just changed.
    */
   void Notify (Ptr<const MobilityModel> position) const;
-
-  /**
-   * \param listener listener to add
-   *
-   * The listener will be notified upon every position change.
-   */
-  void RegisterListener (Listener listener);
-  /**
-   * \param listener listener to remove
-   *
-   * The listener will not be notified anymore upon every 
-   * position change. It is not an error to try to unregister
-   * a non-registered liste
-   */
-  void UnregisterListener (Listener listener);
+protected:
+  virtual Ptr<TraceResolver> GetTraceResolver (void);
 private:
-  std::list<Listener> m_listeners;
+  CallbackTraceSource<Ptr<const MobilityModel> > m_trace;
 };
 
 } // namespace ns3
