@@ -35,6 +35,7 @@ class IidTree
 public:
   void SetParent (uint16_t child, const uint16_t *parent);
   uint16_t LookupParent (uint16_t child);
+
 private:
   std::vector<const uint16_t *> m_parents;
 };
@@ -55,6 +56,54 @@ IidTree::LookupParent (uint16_t child)
 } // anonymous namespace
 
 namespace ns3 {
+
+class InterfaceIdTraceResolver : public TraceResolver
+{
+public:
+  InterfaceIdTraceResolver (Ptr<Object> aggregate);
+  virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
+  virtual void Disconnect (std::string path, CallbackBase const &cb);
+private:
+  Ptr<Object> ParseForInterface (std::string path);
+  Ptr<Object> m_aggregate;
+};
+
+InterfaceIdTraceResolver::InterfaceIdTraceResolver (Ptr<Object> aggregate)
+  : m_aggregate (aggregate)
+{}
+Ptr<Object>
+InterfaceIdTraceResolver::ParseForInterface (std::string path)
+{
+  std::string element = GetElement (path);
+  std::string::size_type dollar_pos = element.find ("$");
+  if (dollar_pos != 0)
+    {
+      return 0;
+    }
+  std::string interfaceName = element.substr (1, std::string::npos);
+  InterfaceId interfaceId = InterfaceId::LookupByName (interfaceName);
+  Ptr<Object> interface = m_aggregate->QueryInterface<Object> (interfaceId);
+  return interface;
+}
+void 
+InterfaceIdTraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
+{
+  Ptr<Object> interface = ParseForInterface (path);
+  if (interface != 0)
+    {
+      interface->TraceConnect (GetSubpath (path), cb, context);
+    }
+}
+void 
+InterfaceIdTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
+{
+  Ptr<Object> interface = ParseForInterface (path);
+  if (interface != 0)
+    {
+      interface->TraceDisconnect (GetSubpath (path), cb);
+    }
+}
+
 
 InterfaceId::InterfaceId (uint16_t iid)
   : m_iid (iid)
@@ -197,7 +246,9 @@ Object::DoDispose (void)
 Ptr<TraceResolver>
 Object::GetTraceResolver (void)
 {
-  return Create<EmptyTraceResolver> ();
+  Ptr<InterfaceIdTraceResolver> resolver =
+    Create<InterfaceIdTraceResolver> (this);
+  return resolver;
 }
 
 bool 
