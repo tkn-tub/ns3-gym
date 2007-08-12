@@ -313,6 +313,7 @@ CompositeTraceResolver::OperationOne (std::string subpath,
     (*i)->Connect (subpath, cb, ctx);
     } break;
   case DISCONNECT:
+    NS_DEBUG ("disconnect from path="<<subpath<<" name="<<(*i)->name);
     (*i)->Disconnect (subpath, cb);
     break;
   }
@@ -321,6 +322,7 @@ CompositeTraceResolver::OperationOne (std::string subpath,
 void 
 CompositeTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
 {
+  NS_DEBUG ("disconnect path="<<path);
   DoRecursiveOperation (path, cb, TraceContext (), DISCONNECT);
 }
 
