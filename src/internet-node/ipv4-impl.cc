@@ -95,6 +95,42 @@ Ipv4Impl::RemoveRoute (uint32_t i)
 {
   return m_ipv4->RemoveRoute (i);
 }
+
+void
+Ipv4Impl::AddMulticastRoute (Ipv4Address origin,
+                             Ipv4Address group,
+                             uint32_t inputInterface,
+                             std::vector<uint32_t> outputInterfaces)
+{
+  m_ipv4->AddMulticastRoute (origin, group, inputInterface, outputInterfaces);
+}
+
+uint32_t 
+Ipv4Impl::GetNMulticastRoutes (void) const
+{
+  return m_ipv4->GetNMulticastRoutes ();
+}
+
+Ipv4MulticastRoute 
+Ipv4Impl::GetMulticastRoute (uint32_t i) const
+{
+  return *m_ipv4->GetMulticastRoute (i);
+}
+
+void
+Ipv4Impl::RemoveMulticastRoute (Ipv4Address origin,
+                                Ipv4Address group,
+                                uint32_t inputInterface)
+{
+  m_ipv4->RemoveMulticastRoute (origin, group, inputInterface);
+}
+
+void 
+Ipv4Impl::RemoveMulticastRoute (uint32_t i)
+{
+  return m_ipv4->RemoveMulticastRoute (i);
+}
+
 uint32_t 
 Ipv4Impl::AddInterface (Ptr<NetDevice> device)
 {
@@ -109,6 +145,18 @@ Ptr<NetDevice>
 Ipv4Impl::GetNetDevice (uint32_t i)
 {
   return m_ipv4->GetInterface (i)-> GetDevice ();
+}
+
+void 
+Ipv4Impl::JoinMulticastGroup (Ipv4Address origin, Ipv4Address group)
+{
+  m_ipv4->JoinMulticastGroup(origin, group);
+}
+
+void
+Ipv4Impl::LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group)
+{
+  m_ipv4->LeaveMulticastGroup(origin, group);
 }
 
 void 

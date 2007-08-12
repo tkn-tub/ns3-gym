@@ -75,6 +75,20 @@ public:
   Ipv4Route *GetRoute (uint32_t i);
   void RemoveRoute (uint32_t i);
 
+  void AddMulticastRoute (Ipv4Address origin,
+                          Ipv4Address group,
+                          uint32_t inputInterface,
+                          std::vector<uint32_t> outputInterfaces);
+
+  uint32_t GetNMulticastRoutes (void) const;
+  Ipv4MulticastRoute *GetMulticastRoute (uint32_t i) const;
+
+  void RemoveMulticastRoute (Ipv4Address origin,
+                             Ipv4Address group,
+                             uint32_t inputInterface);
+
+  void RemoveMulticastRoute (uint32_t index);
+
 protected:
   void DoDispose (void);
 
@@ -86,14 +100,18 @@ private:
   typedef std::list<Ipv4Route *>::const_iterator NetworkRoutesCI;
   typedef std::list<Ipv4Route *>::iterator NetworkRoutesI;
 
+  typedef std::list<Ipv4MulticastRoute *> MulticastRoutes;
+  typedef std::list<Ipv4MulticastRoute *>::const_iterator MulticastRoutesCI;
+  typedef std::list<Ipv4MulticastRoute *>::iterator MulticastRoutesI;
+
   Ipv4Route *LookupStatic (Ipv4Address dest);
+  Ipv4MulticastRoute *LookupStatic (Ipv4Address origin, Ipv4Address group);
 
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;
   Ipv4Route *m_defaultRoute;
+  MulticastRoutes m_multicastRoutes;
 };
-
-
 
 } // Namespace ns3
 

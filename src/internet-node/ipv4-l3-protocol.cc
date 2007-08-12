@@ -17,6 +17,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
+//         Craig Dowell <craigdo@ee.washington.edu>
 //
 
 #include "ns3/packet.h"
@@ -131,7 +132,8 @@ Ipv4L3Protocol::~Ipv4L3Protocol ()
 void 
 Ipv4L3Protocol::DoDispose (void)
 {
-  for (Ipv4InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
+  for (Ipv4InterfaceList::iterator i = m_interfaces.begin (); 
+       i != m_interfaces.end (); i++)
     {
       delete (*i);
     }
@@ -224,12 +226,15 @@ Ipv4L3Protocol::Lookup (Ipv4Header const &ipHeader,
                         Packet packet,
                         Ipv4RoutingProtocol::RouteReplyCallback routeReply)
 {
-  for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin ();
-       rprotoIter != m_routingProtocols.end (); rprotoIter++)
+  for (Ipv4RoutingProtocolList::const_iterator rprotoIter = 
+         m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end (); 
+       rprotoIter++)
     {
       if ((*rprotoIter).second->RequestRoute (ipHeader, packet, routeReply))
         return;
     }
+
   // No route found
   routeReply (false, Ipv4Route (), packet, ipHeader);
 }
@@ -261,6 +266,41 @@ Ipv4L3Protocol::RemoveRoute (uint32_t index)
   m_staticRouting->RemoveRoute (index);
 }
 
+void 
+Ipv4L3Protocol::AddMulticastRoute (Ipv4Address origin,
+                                   Ipv4Address group,
+                                   uint32_t inputInterface,
+                                   std::vector<uint32_t> outputInterfaces)
+{
+  m_staticRouting->AddMulticastRoute (origin, group, inputInterface,
+    outputInterfaces);
+}
+
+uint32_t 
+Ipv4L3Protocol::GetNMulticastRoutes (void) const
+{
+  return m_staticRouting->GetNMulticastRoutes ();
+}
+
+Ipv4MulticastRoute *
+Ipv4L3Protocol::GetMulticastRoute (uint32_t index) const
+{
+  return m_staticRouting->GetMulticastRoute (index);
+}
+
+void 
+Ipv4L3Protocol::RemoveMulticastRoute (Ipv4Address origin,
+                                       Ipv4Address group,
+                                       uint32_t inputInterface)
+{
+  m_staticRouting->RemoveMulticastRoute (origin, group, inputInterface);
+}
+
+void 
+Ipv4L3Protocol::RemoveMulticastRoute (uint32_t index)
+{
+  m_staticRouting->RemoveMulticastRoute (index);
+}
 
 uint32_t 
 Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
@@ -463,12 +503,28 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
     }
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
 
-  NS_DEBUG ("not for me -- forwarding.");
+  NS_DEBUG ("forwarding.");
   Lookup (ipHeader, packet,
           MakeCallback (&Ipv4L3Protocol::SendRealOut, this));
+//
+// If this is a to a multicast address and this node is a member of the 
+// indicated group we need to return false so the multicast is forwarded up.
+// Note that we may have just forwarded this packet too.
+//
+  for (Ipv4MulticastGroupList::const_iterator i = m_multicastGroups.begin ();
+       i != m_multicastGroups.end (); i++) 
+    {
+      if ((*i).first.IsEqual (ipHeader.GetSource ()) &&
+          (*i).second.IsEqual (ipHeader.GetDestination ()))
+        {
+          NS_DEBUG ("for me 5");
+          return false;
+        }
+    }
+  
+  NS_DEBUG ("not for me.");
   return true;
 }
-
 
 void
 Ipv4L3Protocol::ForwardUp (Packet p, Ipv4Header const&ip)
@@ -476,6 +532,28 @@ Ipv4L3Protocol::ForwardUp (Packet p, Ipv4Header const&ip)
   Ptr<Ipv4L4Demux> demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
   Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());
   protocol->Receive (p, ip.GetSource (), ip.GetDestination ());
+}
+
+void 
+Ipv4L3Protocol::JoinMulticastGroup (Ipv4Address origin, Ipv4Address group)
+{
+  m_multicastGroups.push_back(
+    std::pair<Ipv4Address, Ipv4Address> (origin, group));
+}
+
+void
+Ipv4L3Protocol::LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group)
+{
+  for (Ipv4MulticastGroupList::iterator i = m_multicastGroups.begin ();
+       i != m_multicastGroups.end (); 
+       i++)
+    {
+      if ((*i).first.IsEqual(origin) && (*i).second.IsEqual(group))
+        {
+          m_multicastGroups.erase (i);
+          return;
+        }
+    }
 }
 
 void 

@@ -55,9 +55,27 @@ public:
   virtual uint32_t GetNRoutes (void);
   virtual Ipv4Route GetRoute (uint32_t i);
   virtual void RemoveRoute (uint32_t i);
+
+
+  virtual void AddMulticastRoute (Ipv4Address origin,
+                                  Ipv4Address group,
+                                  uint32_t inputInterface,
+                                  std::vector<uint32_t> outputInterfaces);
+
+  virtual uint32_t GetNMulticastRoutes (void) const;
+  virtual Ipv4MulticastRoute GetMulticastRoute (uint32_t i) const;
+
+  virtual void RemoveMulticastRoute (Ipv4Address origin,
+                                     Ipv4Address group,
+                                     uint32_t inputInterface);
+  virtual void RemoveMulticastRoute (uint32_t i);
+
   virtual uint32_t AddInterface (Ptr<NetDevice> device);
   virtual uint32_t GetNInterfaces (void);  
   virtual Ptr<NetDevice> GetNetDevice(uint32_t i);
+
+  virtual void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
+  virtual void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);
 
   virtual void SetAddress (uint32_t i, Ipv4Address address);
   virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask);

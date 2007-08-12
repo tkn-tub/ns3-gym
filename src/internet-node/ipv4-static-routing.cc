@@ -18,10 +18,10 @@
 //
 // Author: George F. Riley<riley@ece.gatech.edu>
 //         Gustavo Carneiro <gjc@inescporto.pt>
+//         Craig Dowell <craigdo@ee.washington.edu>
 
 #include "ipv4-static-routing.h"
 #include "ns3/packet.h"
-
 
 namespace ns3 {
 
@@ -77,6 +77,83 @@ Ipv4StaticRouting::SetDefaultRoute (Ipv4Address nextHop,
   m_defaultRoute = route;
 }
 
+void 
+Ipv4StaticRouting::AddMulticastRoute(Ipv4Address origin,
+                                     Ipv4Address group,
+                                     uint32_t inputInterface,
+                                     std::vector<uint32_t> outputInterfaces)
+{
+  Ipv4MulticastRoute *route = new Ipv4MulticastRoute ();
+  *route = Ipv4MulticastRoute::CreateMulticastRoute (origin, group, 
+    inputInterface, outputInterfaces);
+  m_multicastRoutes.push_back (route);
+}
+
+uint32_t 
+Ipv4StaticRouting::GetNMulticastRoutes (void) const
+{
+  return m_multicastRoutes.size ();
+}
+
+Ipv4MulticastRoute *
+Ipv4StaticRouting::GetMulticastRoute (uint32_t index) const
+{
+  NS_ASSERT_MSG(index < m_multicastRoutes.size (),
+    "Ipv4StaticRouting::GetMulticastRoute ():  Index out of range");
+
+  uint32_t tmp = 0;
+  for (MulticastRoutesCI i = m_multicastRoutes.begin (); 
+       i != m_multicastRoutes.end (); 
+       i++) 
+    {
+      if (tmp  == index)
+        {
+          return *i;
+        }
+      tmp++;
+    }
+  return 0;
+}
+
+void 
+Ipv4StaticRouting::RemoveMulticastRoute(Ipv4Address origin,
+                                        Ipv4Address group,
+                                        uint32_t inputInterface)
+{
+  for (MulticastRoutesI i = m_multicastRoutes.begin (); 
+       i != m_multicastRoutes.end (); 
+       i++) 
+    {
+      Ipv4MulticastRoute *route = *i;
+      if (origin == route->GetOrigin () &&
+          group == route->GetGroup () &&
+          inputInterface == route->GetInputInterface ())
+        {
+          delete *i;
+          m_multicastRoutes.erase (i);
+          return;
+        }
+    }
+}
+
+void 
+Ipv4StaticRouting::RemoveMulticastRoute(uint32_t index)
+{
+  uint32_t tmp = 0;
+  for (MulticastRoutesI i = m_multicastRoutes.begin (); 
+       i != m_multicastRoutes.end (); 
+       i++) 
+    {
+      if (tmp  == index)
+        {
+          delete *i;
+          m_multicastRoutes.erase (i);
+          return;
+        }
+      tmp++;
+    }
+}
+
 Ipv4Route *
 Ipv4StaticRouting::LookupStatic (Ipv4Address dest)
 {
@@ -106,6 +183,25 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest)
     {
       NS_ASSERT (m_defaultRoute->IsDefault ());
       return m_defaultRoute;
+    }
+  return 0;
+}
+
+Ipv4MulticastRoute *
+Ipv4StaticRouting::LookupStatic (
+  Ipv4Address origin, 
+  Ipv4Address group)
+{
+  for (MulticastRoutesI i = m_multicastRoutes.begin (); 
+       i != m_multicastRoutes.end (); 
+       i++) 
+    {
+      Ipv4MulticastRoute *route = *i;
+      if (origin == route->GetOrigin () &&
+          group == route->GetGroup ())
+        {
+          return *i;
+        }
     }
   return 0;
 }
@@ -213,6 +309,27 @@ Ipv4StaticRouting::RequestRoute (Ipv4Header const &ipHeader,
                                  Packet packet,
                                  RouteReplyCallback routeReply)
 {
+//
+// First, see if this is a multicast packet we have a route for.  If we
+// have a route, then send the packet down each of the specified interfaces.
+//
+  Ipv4MulticastRoute *mRoute = LookupStatic(ipHeader.GetSource (),
+                                            ipHeader.GetDestination ());
+  if (mRoute)
+    {
+      for (uint32_t i = 0; i < mRoute->GetNOutputInterfaces (); ++i)
+        {
+          Packet p = packet;
+          Ipv4Route route = 
+            Ipv4Route::CreateHostRouteTo(ipHeader.GetDestination (), 
+              mRoute->GetOutputInterface(i));
+          routeReply (true, route, p, ipHeader);
+          return true;
+        }
+    }
+//
+// See if this is a unicast packet we have a route for.
+//
   Ipv4Route *route = LookupStatic (ipHeader.GetDestination ());
   if (route != 0)
     {
@@ -246,8 +363,13 @@ Ipv4StaticRouting::DoDispose (void)
       delete m_defaultRoute;
       m_defaultRoute = 0;
     }
+  for (MulticastRoutesI i = m_multicastRoutes.begin (); 
+       i != m_multicastRoutes.end (); 
+       i = m_multicastRoutes.erase (i)) 
+    {
+      delete (*i);
+    }
   Ipv4RoutingProtocol::DoDispose ();
 }
-
 
 }//namespace ns3

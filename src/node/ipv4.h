@@ -202,7 +202,49 @@ public:
    * \param i index of route to remove from routing table.
    */
   virtual void RemoveRoute (uint32_t i) = 0;
+
+  /**
+   * \brief Add a static multicast route for a given multicast source and 
+   *        group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   * \param inputInterface The interface index over which the packet arrived.
+   * \param outputInterfaces The list of output interface indices over which 
+   *        the packet should be sent (excluding the inputInterface).
+   */
+  virtual void AddMulticastRoute (Ipv4Address origin,
+                                  Ipv4Address group,
+                                  uint32_t inputInterface,
+                                  std::vector<uint32_t> outputInterfaces) = 0;
+  /**
+   * \brief Remove a static multicast route for a given multicast source and
+   *        group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   * \param inputInterface The interface index over which the packet arrived.
+   */
+  virtual void RemoveMulticastRoute (Ipv4Address origin,
+                                     Ipv4Address group,
+                                     uint32_t inputInterface) = 0;
   
+  /**
+   * \returns the number of entries in the multicast routing table.
+   */
+  virtual uint32_t GetNMulticastRoutes (void) const = 0;
+
+  /**
+   * \param i index of route to return
+   * \returns the route whose index is i
+   */
+  virtual Ipv4MulticastRoute GetMulticastRoute (uint32_t i) const = 0;
+
+  /**
+   * \param i index of route to remove from routing table.
+   */
+  virtual void RemoveMulticastRoute (uint32_t i) = 0;
+
   /**
    * \param device device to add to the list of ipv4 interfaces
    *        which can be used as output interfaces during packet forwarding.
@@ -223,6 +265,24 @@ public:
    * \returns the NetDevice associated with the ipv4 interface index
    */
   virtual Ptr<NetDevice> GetNetDevice (uint32_t i) = 0;
+
+  /**
+   * \brief Join a multicast group for a given multicast source and 
+   *        group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   */
+  virtual void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group) = 0;
+
+  /**
+   * \brief Leave a multicast group for a given multicast source and 
+   *        group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   */
+  virtual void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group) = 0;
 
   /**
    * \param i index of ipv4 interface

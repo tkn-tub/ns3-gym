@@ -158,11 +158,26 @@ public:
   Ipv4Route *GetRoute (uint32_t i);
   void RemoveRoute (uint32_t i);
 
+  void AddMulticastRoute (Ipv4Address origin,
+                          Ipv4Address group,
+                          uint32_t inputInterface,
+                          std::vector<uint32_t> outputInterfaces);
+
+  uint32_t GetNMulticastRoutes (void) const;
+  Ipv4MulticastRoute *GetMulticastRoute (uint32_t i) const;
+
+  void RemoveMulticastRoute (Ipv4Address origin,
+                             Ipv4Address group,
+                             uint32_t inputInterface);
+  void RemoveMulticastRoute (uint32_t i);
+
   uint32_t AddInterface (Ptr<NetDevice> device);
   Ipv4Interface * GetInterface (uint32_t i) const;
   uint32_t GetNInterfaces (void) const;
-
   
+  virtual void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
+  virtual void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);
+
   void SetAddress (uint32_t i, Ipv4Address address);
   void SetNetworkMask (uint32_t i, Ipv4Mask mask);
   Ipv4Mask GetNetworkMask (uint32_t t) const;
@@ -192,7 +207,10 @@ private:
   TraceResolver *InterfacesCreateTraceResolver (TraceContext const &context) const;
 
   typedef std::list<Ipv4Interface*> Ipv4InterfaceList;
-  typedef std::list< std::pair< int, Ptr<Ipv4RoutingProtocol> > > Ipv4RoutingProtocolList;
+  typedef std::list<std::pair<Ipv4Address, Ipv4Address> > 
+    Ipv4MulticastGroupList;
+  typedef std::list<std::pair< int, Ptr<Ipv4RoutingProtocol> > > 
+    Ipv4RoutingProtocolList;
 
   Ipv4InterfaceList m_interfaces;
   uint32_t m_nInterfaces;
@@ -206,6 +224,7 @@ private:
   Ipv4RoutingProtocolList m_routingProtocols;
 
   Ptr<Ipv4StaticRouting> m_staticRouting;
+  Ipv4MulticastGroupList m_multicastGroups;
 };
 
 } // Namespace ns3
