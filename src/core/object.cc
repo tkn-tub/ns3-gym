@@ -368,112 +368,43 @@ ObjectTest::ObjectTest ()
 bool 
 ObjectTest::RunTests (void)
 {
-  bool ok = true;
+  bool result = true;
 
   Ptr<BaseA> baseA = Create<BaseA> ();
-  if (baseA->QueryInterface<BaseA> (BaseA::iid) != baseA)
-    {
-      ok = false;
-    }
-  if (baseA->QueryInterface<BaseA> (DerivedA::iid) != 0)
-    {
-      ok = false;
-    }
-  if (baseA->QueryInterface<DerivedA> (DerivedA::iid) != 0)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (BaseA::iid), baseA);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (DerivedA::iid), 0);
   baseA = Create<DerivedA> (10);
-  if (baseA->QueryInterface<BaseA> (BaseA::iid) != baseA)
-    {
-      ok = false;
-    }
-  if (baseA->QueryInterface<BaseA> (DerivedA::iid) != baseA)
-    {
-      ok = false;
-    }
-  if (baseA->QueryInterface<DerivedA> (DerivedA::iid) == 0)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (BaseA::iid), baseA);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid), baseA);
+  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedA> (DerivedA::iid), 0);
 
   baseA = Create<BaseA> ();
   Ptr<BaseB> baseB = Create<BaseB> ();
   Ptr<BaseB> baseBCopy = baseB;
   baseA->AddInterface (baseB);
-  if (baseA->QueryInterface<BaseA> (BaseA::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseA->QueryInterface<DerivedA> (DerivedA::iid) != 0)
-    {
-      ok = false;
-    }
-  if (baseA->QueryInterface<BaseB> (BaseB::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseA->QueryInterface<DerivedB> (DerivedB::iid) != 0)
-    {
-      ok = false;
-    }
-  if (baseB->QueryInterface<BaseB> (BaseB::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseB->QueryInterface<DerivedB> (DerivedB::iid) != 0)
-    {
-      ok = false;
-    }
-  if (baseB->QueryInterface<BaseA> (BaseA::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseB->QueryInterface<DerivedA> (DerivedA::iid) != 0)
-    {
-      ok = false;
-    }
-  if (baseBCopy->QueryInterface<BaseA> (BaseA::iid) == 0)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseA> (BaseA::iid), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (DerivedA::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseB> (BaseB::iid), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedB> (DerivedB::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseB> (BaseB::iid), 0);
+  NS_TEST_ASSERT_EQUAL (baseB->QueryInterface<DerivedB> (DerivedB::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseA> (BaseA::iid), 0);
+  NS_TEST_ASSERT_EQUAL (baseB->QueryInterface<DerivedA> (DerivedA::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<BaseA> (BaseA::iid), 0);
 
   baseA = Create<DerivedA> (1);
   baseB = Create<DerivedB> (1);
   baseBCopy = baseB;
   baseA->AddInterface (baseB);
-  if (baseA->QueryInterface<DerivedB> (DerivedB::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseA->QueryInterface<BaseB> (BaseB::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseB->QueryInterface<DerivedA> (DerivedA::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseB->QueryInterface<BaseA> (BaseA::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseBCopy->QueryInterface<DerivedA> (DerivedA::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseBCopy->QueryInterface<BaseA> (BaseA::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseB->QueryInterface<DerivedB> (DerivedB::iid) == 0)
-    {
-      ok = false;
-    }
-  if (baseB->QueryInterface<BaseB> (BaseB::iid) == 0)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedB> (DerivedB::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseB> (BaseB::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<DerivedA> (DerivedA::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseA> (BaseA::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<DerivedA> (DerivedA::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<BaseA> (BaseA::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<DerivedB> (DerivedB::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseB> (BaseB::iid), 0)
 
   baseA = Create<BaseA> ();
   baseB = Create<BaseB> ();
@@ -481,7 +412,7 @@ ObjectTest::RunTests (void)
   baseA = 0;
   baseA = baseB->QueryInterface<BaseA> (BaseA::iid);
 
-  return ok;
+  return result;
 }
 
 static ObjectTest g_interfaceObjectTests;
