@@ -92,6 +92,5 @@ def build(bld):
         'composite-trace-resolver.h',
         'array-trace-resolver.h',
         'trace-root.h',
-        'terminal-trace-resolver.h',
         ]
 
