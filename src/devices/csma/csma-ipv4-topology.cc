@@ -35,19 +35,20 @@
 namespace ns3 {
 
 uint32_t
-CsmaIpv4Topology::AddIpv4CsmaNode(Ptr<Node> n1,
-                                  Ptr<CsmaChannel> ch,
-                                  Eui48Address addr)
+CsmaIpv4Topology::AddIpv4CsmaNetDevice(
+  Ptr<Node> node,
+  Ptr<CsmaChannel> channel,
+  Eui48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
   // assume full-duplex
-  Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr, 
-                                                  ns3::CsmaNetDevice::IP_ARP,
-                                                  true, true);
-  nd0->AddQueue(q);
-  nd0->Attach (ch);
-  return nd0->GetIfIndex ();
+  Ptr<CsmaNetDevice> nd = Create<CsmaNetDevice> (node, addr, 
+    ns3::CsmaNetDevice::IP_ARP, true, true);
+
+  nd->AddQueue(q);
+  nd->Attach (channel);
+  return nd->GetIfIndex ();
 }
 
 
