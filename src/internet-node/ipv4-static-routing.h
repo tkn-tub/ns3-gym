@@ -56,6 +56,7 @@ public:
                              Packet packet,
                              RouteReplyCallback routeReply);
 
+  virtual bool RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex);
 
   void AddHostRouteTo (Ipv4Address dest, 
                        Ipv4Address nextHop, 

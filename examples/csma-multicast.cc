@@ -123,12 +123,10 @@ main (int argc, char *argv[])
 // Explicitly create the channels required by the topology (shown above).
 //
   Ptr<CsmaChannel> lan0 = 
-    CsmaTopology::CreateCsmaChannel(
-      DataRate(5000000), MilliSeconds(2));
+    CsmaTopology::CreateCsmaChannel(DataRate(5000000), MilliSeconds(2));
 
   Ptr<CsmaChannel> lan1 = 
-    CsmaTopology::CreateCsmaChannel(
-      DataRate(5000000), MilliSeconds(2));
+    CsmaTopology::CreateCsmaChannel(DataRate(5000000), MilliSeconds(2));
 
   NS_DEBUG("Build Topology.");
 //

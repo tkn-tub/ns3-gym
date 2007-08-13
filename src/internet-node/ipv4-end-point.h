@@ -37,6 +37,8 @@ public:
   ~Ipv4EndPoint ();
 
   Ipv4Address GetLocalAddress (void);
+  void SetLocalAddress (Ipv4Address address);
+
   uint16_t GetLocalPort (void);
   Ipv4Address GetPeerAddress (void);
   uint16_t GetPeerPort (void);

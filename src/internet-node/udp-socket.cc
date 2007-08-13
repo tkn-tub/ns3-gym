@@ -26,6 +26,7 @@
 #include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l4-demux.h"
+#include "ns3/ipv4.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("UdpSocket");
 
@@ -180,6 +181,10 @@ UdpSocket::Connect(const Address & address)
   m_defaultPort = transport.GetPort ();
   NotifyConnectionSucceeded ();
   m_connected = true;
+
+  Ptr<Ipv4> ipv4;
+  ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
+  m_endPoint->SetLocalAddress (ipv4->GetSourceAddress(m_defaultAddress));
   return 0;
 }
 

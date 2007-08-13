@@ -104,6 +104,16 @@ public:
                              const Ipv4Header &ipHeader,
                              Packet packet,
                              RouteReplyCallback routeReply) = 0;
+  /**
+   * \brief Synchronously request the interface index that will be used to
+   * send a packet to a hypothetical destination.
+   *
+   * \param destination IP address of a hypothetical destination packet
+   * \param ifIndex Reference to interface index.
+   * \returns True if the protocol has a route, false otherwise.
+   */
+  virtual bool RequestIfIndex (Ipv4Address destination, 
+                              uint32_t& ifIndex) = 0;
 
   static const uint32_t IF_INDEX_ANY = 0xffffffff;
 };
@@ -308,6 +318,12 @@ public:
    * \returns the address associated to the underlying ipv4 interface
    */
   virtual Ipv4Address GetAddress (uint32_t i) const = 0;
+  /**
+   * \param destination The IP address of a hypothetical destination.
+   * \returns The IP address assigned to the interface that will be used
+   * if we were to send a packet to destination.
+   */
+  virtual Ipv4Address GetSourceAddress (Ipv4Address destination) const = 0;
   /**
    * \param i index of ipv4 interface
    * \returns the Maximum Transmission Unit (in bytes) associated

@@ -182,6 +182,8 @@ public:
   void SetNetworkMask (uint32_t i, Ipv4Mask mask);
   Ipv4Mask GetNetworkMask (uint32_t t) const;
   Ipv4Address GetAddress (uint32_t i) const;
+  bool GetIfIndexForDestination (Ipv4Address destination, 
+                                 uint32_t& ifIndex) const;
   uint16_t GetMtu (uint32_t i) const;
   bool IsUp (uint32_t i) const;
   void SetUp (uint32_t i);

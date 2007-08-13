@@ -81,6 +81,8 @@ public:
   virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask);
   virtual Ipv4Mask GetNetworkMask (uint32_t t) const;
   virtual Ipv4Address GetAddress (uint32_t i) const;
+  virtual Ipv4Address GetSourceAddress (Ipv4Address destination) const;
+
   virtual uint16_t GetMtu (uint32_t i) const;
   virtual bool IsUp (uint32_t i) const;
   virtual void SetUp (uint32_t i);

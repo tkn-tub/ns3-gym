@@ -691,6 +691,28 @@ Ipv4L3Protocol::GetAddress (uint32_t i) const
   return interface->GetAddress ();
 }
 
+bool
+Ipv4L3Protocol::GetIfIndexForDestination (
+  Ipv4Address destination, uint32_t& ifIndex) const
+{
+  NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (" << destination << 
+    ", " << &ifIndex << ")");
+
+  for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
+       i != m_routingProtocols.end (); 
+       i++)
+    {
+      NS_DEBUG("Ipv4L3Protocol::Lookup (): Requesting Source Address");
+      uint32_t ifIndex;
+
+      if ((*i).second->RequestIfIndex (destination, ifIndex))
+        {
+          return true;
+        }
+    }
+  return false;
+}
+
 uint16_t 
 Ipv4L3Protocol::GetMtu (uint32_t i) const
 {

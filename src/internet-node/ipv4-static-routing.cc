@@ -377,6 +377,55 @@ Ipv4StaticRouting::RequestRoute (
     }
 }
 
+bool
+Ipv4StaticRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
+{
+  NS_DEBUG ("Ipv4StaticRouting::RequestIfIndex (" << destination << ", " <<
+    &ifIndex << ")");
+//
+// First, see if this is a multicast packet we have a route for.  If we
+// have a route, then send the packet down each of the specified interfaces.
+//
+  if (destination.IsMulticast ())
+    {
+      NS_DEBUG ("Ipv4StaticRouting::RequestIfIndex (): Multicast destination");
+
+      Ipv4MulticastRoute *mRoute = LookupStatic(Ipv4Address::GetAny (),
+        destination, Ipv4RoutingProtocol::IF_INDEX_ANY);
+
+      if (mRoute)
+        {
+          NS_DEBUG ("Ipv4StaticRouting::RequestIfIndex (): "
+            "Multicast route found");
+
+          if (mRoute->GetNOutputInterfaces () != 1)
+            {
+              NS_DEBUG ("Ipv4StaticRouting::RequestIfIndex (): "
+                "Route is to multiple interfaces.  Ignoring.");
+              return false;
+            }
+
+          ifIndex = mRoute->GetOutputInterface(0);
+          return true;
+        }
+      return false; // Let other routing protocols try to handle this
+    }
+//
+// See if this is a unicast packet we have a route for.
+//
+  NS_DEBUG ("Ipv4StaticRouting::RequestIfIndex (): Unicast destination");
+  Ipv4Route *route = LookupStatic (destination);
+  if (route)
+    {
+      ifIndex = route->GetInterface ();
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
 void
 Ipv4StaticRouting::DoDispose (void)
 {
