@@ -28,21 +28,21 @@ namespace ns3 {
 
 // ---------------------------------------------------------------------------
 //
-// GlobalRouterLinkRecord Implementation
+// GlobalRoutingLinkRecord Implementation
 //
 // ---------------------------------------------------------------------------
 
-GlobalRouterLinkRecord::GlobalRouterLinkRecord ()
+GlobalRoutingLinkRecord::GlobalRoutingLinkRecord ()
 :
   m_linkId ("0.0.0.0"),
   m_linkData ("0.0.0.0"),
   m_linkType (Unknown),
   m_metric (0)
 {
-  NS_DEBUG("GlobalRouterLinkRecord::GlobalRouterLinkRecord ()");
+  NS_DEBUG("GlobalRoutingLinkRecord::GlobalRoutingLinkRecord ()");
 }
 
-GlobalRouterLinkRecord::GlobalRouterLinkRecord (
+GlobalRoutingLinkRecord::GlobalRoutingLinkRecord (
   LinkType    linkType, 
   Ipv4Address linkId, 
   Ipv4Address linkData, 
@@ -53,116 +53,126 @@ GlobalRouterLinkRecord::GlobalRouterLinkRecord (
   m_linkType (linkType),
   m_metric (metric)
 {
-  NS_DEBUG("GlobalRouterLinkRecord::GlobalRouterLinkRecord (" <<
+  NS_DEBUG("GlobalRoutingLinkRecord::GlobalRoutingLinkRecord (" <<
     linkType << ", " << linkId << ", " << linkData << ", " << metric << ")");
 }
 
-GlobalRouterLinkRecord::~GlobalRouterLinkRecord ()
+GlobalRoutingLinkRecord::~GlobalRoutingLinkRecord ()
 {
-  NS_DEBUG("GlobalRouterLinkRecord::~GlobalRouterLinkRecord ()");
+  NS_DEBUG("GlobalRoutingLinkRecord::~GlobalRoutingLinkRecord ()");
 }
 
   Ipv4Address
-GlobalRouterLinkRecord::GetLinkId (void) const
+GlobalRoutingLinkRecord::GetLinkId (void) const
 {
-  NS_DEBUG("GlobalRouterLinkRecord::GetLinkId ()");
+  NS_DEBUG("GlobalRoutingLinkRecord::GetLinkId ()");
   return m_linkId;
 }
 
   void
-GlobalRouterLinkRecord::SetLinkId (Ipv4Address addr)
+GlobalRoutingLinkRecord::SetLinkId (Ipv4Address addr)
 {
-  NS_DEBUG("GlobalRouterLinkRecord::SetLinkId ()");
+  NS_DEBUG("GlobalRoutingLinkRecord::SetLinkId ()");
   m_linkId = addr;
 }
 
   Ipv4Address
-GlobalRouterLinkRecord::GetLinkData (void) const
+GlobalRoutingLinkRecord::GetLinkData (void) const
 {
-  NS_DEBUG("GlobalRouterLinkRecord::GetLinkData ()");
+  NS_DEBUG("GlobalRoutingLinkRecord::GetLinkData ()");
   return m_linkData;
 }
 
   void
-GlobalRouterLinkRecord::SetLinkData (Ipv4Address addr)
+GlobalRoutingLinkRecord::SetLinkData (Ipv4Address addr)
 {
-  NS_DEBUG("GlobalRouterLinkRecord::SetLinkData ()");
+  NS_DEBUG("GlobalRoutingLinkRecord::SetLinkData ()");
   m_linkData = addr;
 }
 
-  GlobalRouterLinkRecord::LinkType
-GlobalRouterLinkRecord::GetLinkType (void) const
+  GlobalRoutingLinkRecord::LinkType
+GlobalRoutingLinkRecord::GetLinkType (void) const
 {
-  NS_DEBUG("GlobalRouterLinkRecord::GetLinkType ()");
+  NS_DEBUG("GlobalRoutingLinkRecord::GetLinkType ()");
   return m_linkType;
 }
 
   void
-GlobalRouterLinkRecord::SetLinkType (
-  GlobalRouterLinkRecord::LinkType linkType)
+GlobalRoutingLinkRecord::SetLinkType (
+  GlobalRoutingLinkRecord::LinkType linkType)
 {
-  NS_DEBUG("GlobalRouterLinkRecord::SetLinkType ()");
+  NS_DEBUG("GlobalRoutingLinkRecord::SetLinkType ()");
   m_linkType = linkType;
 }
 
   uint32_t
-GlobalRouterLinkRecord::GetMetric (void) const
+GlobalRoutingLinkRecord::GetMetric (void) const
 {
-  NS_DEBUG("GlobalRouterLinkRecord::GetMetric ()");
+  NS_DEBUG("GlobalRoutingLinkRecord::GetMetric ()");
   return m_metric;
 }
 
   void
-GlobalRouterLinkRecord::SetMetric (uint32_t metric)
+GlobalRoutingLinkRecord::SetMetric (uint32_t metric)
 {
-  NS_DEBUG("GlobalRouterLinkRecord::SetMetric ()");
+  NS_DEBUG("GlobalRoutingLinkRecord::SetMetric ()");
   m_metric = metric;
 }
 
 // ---------------------------------------------------------------------------
 //
-// GlobalRouterLSA Implementation
+// GlobalRoutingLSA Implementation
 //
 // ---------------------------------------------------------------------------
 
-GlobalRouterLSA::GlobalRouterLSA()
+GlobalRoutingLSA::GlobalRoutingLSA()
   : 
+  m_lsType (GlobalRoutingLSA::Unknown),
   m_linkStateId("0.0.0.0"),
   m_advertisingRtr("0.0.0.0"),
   m_linkRecords(),
-  m_status(GlobalRouterLSA::LSA_SPF_NOT_EXPLORED)
+  m_networkLSANetworkMask("0.0.0.0"),
+  m_attachedRouters(),
+  m_status(GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED)
 {
-  NS_DEBUG("GlobalRouterLSA::GlobalRouterLSA ()");
+  NS_DEBUG("GlobalRoutingLSA::GlobalRoutingLSA ()");
 }
 
-GlobalRouterLSA::GlobalRouterLSA (
-  GlobalRouterLSA::SPFStatus status,
+GlobalRoutingLSA::GlobalRoutingLSA (
+  GlobalRoutingLSA::SPFStatus status,
   Ipv4Address linkStateId, 
   Ipv4Address advertisingRtr)
 :
+  m_lsType (GlobalRoutingLSA::Unknown),
   m_linkStateId(linkStateId),
   m_advertisingRtr(advertisingRtr),
   m_linkRecords(),
+  m_networkLSANetworkMask("0.0.0.0"),
+  m_attachedRouters(),
   m_status(status)
 {
-  NS_DEBUG("GlobalRouterLSA::GlobalRouterLSA (" << status << ", " <<
+  NS_DEBUG("GlobalRoutingLSA::GlobalRoutingLSA (" << status << ", " <<
     linkStateId << ", " << advertisingRtr << ")");
 }
 
-GlobalRouterLSA::GlobalRouterLSA (GlobalRouterLSA& lsa)
-  : m_linkStateId(lsa.m_linkStateId), m_advertisingRtr(lsa.m_advertisingRtr),
+GlobalRoutingLSA::GlobalRoutingLSA (GlobalRoutingLSA& lsa)
+  : m_lsType(lsa.m_lsType), m_linkStateId(lsa.m_linkStateId), 
+    m_advertisingRtr(lsa.m_advertisingRtr), 
+    m_networkLSANetworkMask(lsa.m_networkLSANetworkMask), 
     m_status(lsa.m_status)
 {
   NS_ASSERT_MSG(IsEmpty(), 
-    "GlobalRouterLSA::GlobalRouterLSA (): Non-empty LSA in constructor");
+    "GlobalRoutingLSA::GlobalRoutingLSA (): Non-empty LSA in constructor");
   CopyLinkRecords (lsa);
 }
 
-  GlobalRouterLSA&
-GlobalRouterLSA::operator= (const GlobalRouterLSA& lsa)
+  GlobalRoutingLSA&
+GlobalRoutingLSA::operator= (const GlobalRoutingLSA& lsa)
 {
+  m_lsType = lsa.m_lsType;
   m_linkStateId = lsa.m_linkStateId;
   m_advertisingRtr = lsa.m_advertisingRtr;
+  m_networkLSANetworkMask = lsa.m_networkLSANetworkMask, 
   m_status = lsa.m_status;
 
   ClearLinkRecords ();
@@ -171,14 +181,14 @@ GlobalRouterLSA::operator= (const GlobalRouterLSA& lsa)
 }
 
   void
-GlobalRouterLSA::CopyLinkRecords (const GlobalRouterLSA& lsa)
+GlobalRoutingLSA::CopyLinkRecords (const GlobalRoutingLSA& lsa)
 {
   for (ListOfLinkRecords_t::const_iterator i = lsa.m_linkRecords.begin ();
        i != lsa.m_linkRecords.end (); 
        i++)
     {
-      GlobalRouterLinkRecord *pSrc = *i;
-      GlobalRouterLinkRecord *pDst = new GlobalRouterLinkRecord;
+      GlobalRoutingLinkRecord *pSrc = *i;
+      GlobalRoutingLinkRecord *pDst = new GlobalRoutingLinkRecord;
 
       pDst->SetLinkType (pSrc->GetLinkType ());
       pDst->SetLinkId (pSrc->GetLinkId ());
@@ -187,48 +197,50 @@ GlobalRouterLSA::CopyLinkRecords (const GlobalRouterLSA& lsa)
       m_linkRecords.push_back(pDst);
       pDst = 0;
     }
+
+   m_attachedRouters = lsa.m_attachedRouters;
 }
 
-GlobalRouterLSA::~GlobalRouterLSA()
+GlobalRoutingLSA::~GlobalRoutingLSA()
 {
-  NS_DEBUG("GlobalRouterLSA::~GlobalRouterLSA ()");
+  NS_DEBUG("GlobalRoutingLSA::~GlobalRoutingLSA ()");
   ClearLinkRecords ();
 }
 
   void
-GlobalRouterLSA::ClearLinkRecords(void)
+GlobalRoutingLSA::ClearLinkRecords(void)
 {
   for ( ListOfLinkRecords_t::iterator i = m_linkRecords.begin ();
         i != m_linkRecords.end (); 
         i++)
     {
-      NS_DEBUG("GlobalRouterLSA::ClearLinkRecords ():  free link record");
+      NS_DEBUG("GlobalRoutingLSA::ClearLinkRecords ():  free link record");
 
-      GlobalRouterLinkRecord *p = *i;
+      GlobalRoutingLinkRecord *p = *i;
       delete p;
       p = 0;
 
       *i = 0;
     }
-  NS_DEBUG("GlobalRouterLSA::ClearLinkRecords():  clear list");
+  NS_DEBUG("GlobalRoutingLSA::ClearLinkRecords():  clear list");
   m_linkRecords.clear();
 }
 
   uint32_t
-GlobalRouterLSA::AddLinkRecord (GlobalRouterLinkRecord* lr)
+GlobalRoutingLSA::AddLinkRecord (GlobalRoutingLinkRecord* lr)
 {
   m_linkRecords.push_back (lr);
   return m_linkRecords.size ();
 }
 
   uint32_t
-GlobalRouterLSA::GetNLinkRecords (void) const
+GlobalRoutingLSA::GetNLinkRecords (void) const
 {
   return m_linkRecords.size ();
 }
 
-  GlobalRouterLinkRecord *
-GlobalRouterLSA::GetLinkRecord (uint32_t n) const
+  GlobalRoutingLinkRecord *
+GlobalRoutingLSA::GetLinkRecord (uint32_t n) const
 {
   uint32_t j = 0;
   for ( ListOfLinkRecords_t::const_iterator i = m_linkRecords.begin ();
@@ -240,70 +252,146 @@ GlobalRouterLSA::GetLinkRecord (uint32_t n) const
           return *i;
         }
     }
-  NS_ASSERT_MSG(false, "GlobalRouterLSA::GetLinkRecord (): invalid index");
+  NS_ASSERT_MSG(false, "GlobalRoutingLSA::GetLinkRecord (): invalid index");
   return 0;
 }
 
   bool
-GlobalRouterLSA::IsEmpty (void) const
+GlobalRoutingLSA::IsEmpty (void) const
 {
   return m_linkRecords.size () == 0;
 }
 
+  GlobalRoutingLSA::LSType
+GlobalRoutingLSA::GetLSType (void) const
+{
+  return m_lsType;
+}
+
+  void 
+GlobalRoutingLSA::SetLSType (GlobalRoutingLSA::LSType typ) 
+{
+  m_lsType = typ;
+}
+
   Ipv4Address
-GlobalRouterLSA::GetLinkStateId (void) const
+GlobalRoutingLSA::GetLinkStateId (void) const
 {
   return m_linkStateId;
 }
 
   void
-GlobalRouterLSA::SetLinkStateId (Ipv4Address addr)
+GlobalRoutingLSA::SetLinkStateId (Ipv4Address addr)
 {
   m_linkStateId = addr;
 }
 
   Ipv4Address
-GlobalRouterLSA::GetAdvertisingRouter (void) const
+GlobalRoutingLSA::GetAdvertisingRouter (void) const
 {
   return m_advertisingRtr;
 }
 
   void
-GlobalRouterLSA::SetAdvertisingRouter (Ipv4Address addr)
+GlobalRoutingLSA::SetAdvertisingRouter (Ipv4Address addr)
 {
   m_advertisingRtr = addr;
 }
 
-  GlobalRouterLSA::SPFStatus
-GlobalRouterLSA::GetStatus (void) const
+  void 
+GlobalRoutingLSA::SetNetworkLSANetworkMask (Ipv4Mask mask)
+{
+  m_networkLSANetworkMask = mask;
+}
+
+  Ipv4Mask 
+GlobalRoutingLSA::GetNetworkLSANetworkMask (void) const
+{
+  return m_networkLSANetworkMask;
+}
+
+  GlobalRoutingLSA::SPFStatus
+GlobalRoutingLSA::GetStatus (void) const
 {
   return m_status;
 }
 
+  uint32_t 
+GlobalRoutingLSA::AddAttachedRouter (Ipv4Address addr)
+{
+  m_attachedRouters.push_back (addr);
+  return m_attachedRouters.size ();
+}
+
+  uint32_t 
+GlobalRoutingLSA::GetNAttachedRouters (void) const
+{
+  return m_attachedRouters.size (); 
+}
+
+  Ipv4Address 
+GlobalRoutingLSA::GetAttachedRouter (uint32_t n) const
+{
+  uint32_t j = 0;
+  for ( ListOfAttachedRouters_t::const_iterator i = m_attachedRouters.begin ();
+        i != m_attachedRouters.end (); 
+        i++, j++)
+    {
+      if (j == n) 
+        {
+          return *i;
+        }
+    }
+  NS_ASSERT_MSG(false, "GlobalRoutingLSA::GetAttachedRouter (): invalid index");
+  return Ipv4Address("0.0.0.0");
+}
+
   void
-GlobalRouterLSA::SetStatus (GlobalRouterLSA::SPFStatus status)
+GlobalRoutingLSA::SetStatus (GlobalRoutingLSA::SPFStatus status)
 {
   m_status = status;
 }
 
   void 
-GlobalRouterLSA::Print (std::ostream &os) const
+GlobalRoutingLSA::Print (std::ostream &os) const
 {
-  os << "m_linkStateId = " << m_linkStateId << std::endl <<
+  os << "m_lsType = " << m_lsType << std::endl <<
+        "m_linkStateId = " << m_linkStateId << std::endl <<
         "m_advertisingRtr = " << m_advertisingRtr << std::endl;
 
-  for ( ListOfLinkRecords_t::const_iterator i = m_linkRecords.begin ();
-        i != m_linkRecords.end (); 
-        i++)
+  if (m_lsType == GlobalRoutingLSA::RouterLSA) 
     {
-      GlobalRouterLinkRecord *p = *i;
+      for ( ListOfLinkRecords_t::const_iterator i = m_linkRecords.begin ();
+            i != m_linkRecords.end (); 
+            i++)
+        {
+          GlobalRoutingLinkRecord *p = *i;
+          os << "----------" << std::endl;
+          os << "m_linkId = " << p->GetLinkId () << std::endl;
+          os << "m_linkData = " << p->GetLinkData () << std::endl;
+        }
+    }
+  else if (m_lsType == GlobalRoutingLSA::NetworkLSA) 
+    {
       os << "----------" << std::endl;
-      os << "m_linkId = " << p->GetLinkId () << std::endl;
-      os << "m_linkData = " << p->GetLinkData () << std::endl;
+      os << "m_networkLSANetworkMask = " << m_networkLSANetworkMask 
+         << std::endl;
+      for ( ListOfAttachedRouters_t::const_iterator i = 
+            m_attachedRouters.begin ();
+            i != m_attachedRouters.end (); 
+            i++)
+        {
+          Ipv4Address p = *i;
+          os << "attachedRouter = " << p << std::endl;
+        }
+    }
+  else 
+    {
+      NS_ASSERT_MSG(0, "Illegal LSA LSType: " << m_lsType);
     }
 }
 
-std::ostream& operator<< (std::ostream& os, GlobalRouterLSA& lsa)
+std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa)
 {
   lsa.Print (os);
   return os;
@@ -350,7 +438,7 @@ GlobalRouter::ClearLSAs ()
     {
       NS_DEBUG("GlobalRouter::ClearLSAs ():  free LSA");
 
-      GlobalRouterLSA *p = *i;
+      GlobalRoutingLSA *p = *i;
       delete p;
       p = 0;
 
@@ -373,11 +461,16 @@ GlobalRouter::GetRouterId (void) const
   uint32_t 
 GlobalRouter::DiscoverLSAs (void)
 {
-  NS_DEBUG("GlobalRouter::DiscoverLSAs ()");
+  NS_DEBUG("GlobalRouter::DiscoverLSAs () for node " << m_node->GetId () );
   NS_ASSERT_MSG(m_node, 
     "GlobalRouter::DiscoverLSAs (): <Node> interface not set");
 
   ClearLSAs ();
+
+// While building the router-LSA, keep a list of those NetDevices for
+// which I am the designated router and need to later build a NetworkLSA
+  std::list<Ptr<NetDevice> > listOfDRInterfaces;
+
 //
 // We're aggregated to a node.  We need to ask the node for a pointer to its
 // Ipv4 interface.  This is where the information regarding the attached 
@@ -387,116 +480,250 @@ GlobalRouter::DiscoverLSAs (void)
   NS_ASSERT_MSG(ipv4Local, 
     "GlobalRouter::DiscoverLSAs (): QI for <Ipv4> interface failed");
 //
-// We are, for now at least, only going to report RouterLSAs in this method.
-// What this means is that there is going to be one advertisement with some
-// number of link records.  This means that GetNumLSAs will actually always
-// return exactly one.
+// Each node originates a Router-LSA
 //
-  GlobalRouterLSA *pLSA = new GlobalRouterLSA;
+  GlobalRoutingLSA *pLSA = new GlobalRoutingLSA;
+  pLSA->SetLSType (GlobalRoutingLSA::RouterLSA);
   pLSA->SetLinkStateId (m_routerId);
   pLSA->SetAdvertisingRouter (m_routerId);
-  pLSA->SetStatus (GlobalRouterLSA::LSA_SPF_NOT_EXPLORED);
+  pLSA->SetStatus (GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED);
 //
 // We need to ask the node for the number of net devices attached. This isn't
 // necessarily equal to the number of links to adjacent nodes (other routers)
 // as the number of devices may include those for stub networks (e.g., 
-// ethernets, etc.).  So we have to walk through the list of net devices and
-// pay attention to those that are directly connected to another router through
-// a point-to-point channel.
+// ethernets, etc.).  
 //
   uint32_t numDevices = m_node->GetNDevices();
   NS_DEBUG("GlobalRouter::DiscoverLSAs (): numDevices = " << numDevices);
-//
-// Loop through the devices looking for those connected to a point-to-point
-// channel.
-//
   for (uint32_t i = 0; i < numDevices; ++i)
     {
       Ptr<NetDevice> ndLocal = m_node->GetDevice(i);
 
-      if (!ndLocal->IsPointToPoint ())
+      if (ndLocal->IsBroadcast () && !ndLocal->IsPointToPoint () )
         {
-          NS_DEBUG("GlobalRouter::DiscoverLSAs (): non-point-to-point device");
-          continue;
-        }
-
-      NS_DEBUG("GlobalRouter::DiscoverLSAs (): Point-to-point device");
+          NS_DEBUG("GlobalRouter::DiscoverLSAs (): broadcast link");
+          GlobalRoutingLinkRecord *plr = new GlobalRoutingLinkRecord;
+//
+// We need to determine whether we are on a transit or stub network
+// If we find at least one more router on this channel, we are a transit
+//
 //
 // Now, we have to find the Ipv4 interface whose netdevice is the one we 
 // just found.  This is still the IP on the local side of the channel.  There 
 // is a function to do this used down in the guts of the stack, but it's not 
 // exported so we had to whip up an equivalent.
 //
-      uint32_t ifIndexLocal = FindIfIndexForDevice(m_node, ndLocal);
-//
-// Now that we have the Ipv4 interface index, we can get the address and mask
-// we need.
-//
-      Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
-      Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
-      NS_DEBUG("Working with local address " << addrLocal);
+          uint32_t ifIndexLocal = FindIfIndexForDevice(m_node, ndLocal);
+          Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
+          Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+          NS_DEBUG("Working with local address " << addrLocal);
 //
 // Now, we're going to walk over to the remote net device on the other end of 
 // the point-to-point channel we now know we have.  This is where our adjacent 
 // router (to use OSPF lingo) is running.  
 //
-      Ptr<Channel> ch = ndLocal->GetChannel();
-      Ptr<NetDevice> ndRemote = GetAdjacent(ndLocal, ch);
+          Ptr<Channel> ch = ndLocal->GetChannel();
+          uint32_t nDevices = ch->GetNDevices();
+          if (nDevices == 1)
+            {
+              // This is a stub broadcast interface
+              NS_DEBUG("GlobalRouter::DiscoverLSAs (): Router-LSA stub broadcast link");
+              // XXX in future, need to consider if >1 includes other routers
+              plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
+              // Link ID is IP network number of attached network
+              plr->SetLinkId (addrLocal.CombineMask(maskLocal));
+              // Link Data is network mask; convert to Ipv4Address
+              Ipv4Address maskLocalAddr;
+              maskLocalAddr.Set(maskLocal.GetHostOrder ());
+              plr->SetLinkData (maskLocalAddr);
+              // Cost is interface's configured output cost (NOTYET)
+              plr->SetMetric (1);
+              pLSA->AddLinkRecord(plr);
+              plr = 0;
+              continue;
+            }
+          else
+            {
+              NS_DEBUG("GlobalRouter::DiscoverLSAs (): Router-LSA Broadcast link");
+              // multiple routers on a broadcast interface
+              // lowest IP address is designated router
+              plr->SetLinkType (GlobalRoutingLinkRecord::TransitNetwork);
+              // Link ID is IP interface address of designated router
+              Ipv4Address desigRtr = 
+                FindDesignatedRouterForLink (m_node, ndLocal);
+              if (desigRtr == addrLocal) 
+                {
+                  listOfDRInterfaces.push_back (ndLocal);
+                  NS_DEBUG("GlobalRouter::DiscoverLSAs (): " << 
+                    m_node->GetId () << " is a DR");
+                }
+              plr->SetLinkId (desigRtr);
+              // Link Data is router's own IP address
+              plr->SetLinkData (addrLocal);
+              // Cost is interface's configured output cost (NOTYET)
+              plr->SetMetric (1);
+              pLSA->AddLinkRecord (plr);
+              plr = 0;
+              continue;
+            }
+        }
+      else if (ndLocal->IsPointToPoint () )
+        {
+          NS_DEBUG("GlobalRouter::DiscoverLSAs (): Router-LSA Point-to-point device");
+//
+// Now, we have to find the Ipv4 interface whose netdevice is the one we 
+// just found.  This is still the IP on the local side of the channel.  There 
+// is a function to do this used down in the guts of the stack, but it's not 
+// exported so we had to whip up an equivalent.
+//
+          uint32_t ifIndexLocal = FindIfIndexForDevice(m_node, ndLocal);
+//
+// Now that we have the Ipv4 interface index, we can get the address and mask
+// we need.
+//
+          Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
+          Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+          NS_DEBUG("Working with local address " << addrLocal);
+//
+// Now, we're going to walk over to the remote net device on the other end of 
+// the point-to-point channel we now know we have.  This is where our adjacent 
+// router (to use OSPF lingo) is running.  
+//
+          Ptr<Channel> ch = ndLocal->GetChannel();
+          Ptr<NetDevice> ndRemote = GetAdjacent(ndLocal, ch);
 //
 // The adjacent net device is aggregated to a node.  We need to ask that net 
 // device for its node, then ask that node for its Ipv4 interface.
 //
-      Ptr<Node> nodeRemote = ndRemote->GetNode();
-      Ptr<Ipv4> ipv4Remote = nodeRemote->QueryInterface<Ipv4> (Ipv4::iid);
-      NS_ASSERT_MSG(ipv4Remote, 
-        "GlobalRouter::DiscoverLSAs (): QI for remote <Ipv4> failed");
+          Ptr<Node> nodeRemote = ndRemote->GetNode();
+          Ptr<Ipv4> ipv4Remote = nodeRemote->QueryInterface<Ipv4> (Ipv4::iid);
+          NS_ASSERT_MSG(ipv4Remote, 
+            "GlobalRouter::DiscoverLSAs (): QI for remote <Ipv4> failed");
 //
 // Per the OSPF spec, we're going to need the remote router ID, so we might as
 // well get it now.
 //
-      Ptr<GlobalRouter> srRemote = 
-        nodeRemote->QueryInterface<GlobalRouter> (GlobalRouter::iid);
-      NS_ASSERT_MSG(srRemote, 
-        "GlobalRouter::DiscoverLSAs (): QI for remote <GlobalRouter> failed");
-      Ipv4Address rtrIdRemote = srRemote->GetRouterId();
-      NS_DEBUG("Working with remote router " << rtrIdRemote);
+          Ptr<GlobalRouter> srRemote = 
+            nodeRemote->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+          NS_ASSERT_MSG(srRemote, 
+            "GlobalRouter::DiscoverLSAs():QI for remote <GlobalRouter> failed");
+          Ipv4Address rtrIdRemote = srRemote->GetRouterId();
+          NS_DEBUG("Working with remote router " << rtrIdRemote);
 //
 // Now, just like we did above, we need to get the IP interface index for the 
 // net device on the other end of the point-to-point channel.
 //
-      uint32_t ifIndexRemote = FindIfIndexForDevice(nodeRemote, ndRemote);
+          uint32_t ifIndexRemote = FindIfIndexForDevice(nodeRemote, ndRemote);
 //
 // Now that we have the Ipv4 interface, we can get the (remote) address and
 // mask we need.
 //
-      Ipv4Address addrRemote = ipv4Remote->GetAddress(ifIndexRemote);
-      Ipv4Mask maskRemote = ipv4Remote->GetNetworkMask(ifIndexRemote);
-      NS_DEBUG("Working with remote address " << addrRemote);
+          Ipv4Address addrRemote = ipv4Remote->GetAddress(ifIndexRemote);
+          Ipv4Mask maskRemote = ipv4Remote->GetNetworkMask(ifIndexRemote);
+          NS_DEBUG("Working with remote address " << addrRemote);
 //
 // Now we can fill out the link records for this link.  There are always two
 // link records; the first is a point-to-point record describing the link and
 // the second is a stub network record with the network number.
 //
-      GlobalRouterLinkRecord *plr = new GlobalRouterLinkRecord;
-      plr->SetLinkType (GlobalRouterLinkRecord::PointToPoint);
-      plr->SetLinkId (rtrIdRemote);
-      plr->SetLinkData (addrLocal);
-      pLSA->AddLinkRecord(plr);
-      plr = 0;
+          GlobalRoutingLinkRecord *plr = new GlobalRoutingLinkRecord;
+          plr->SetLinkType (GlobalRoutingLinkRecord::PointToPoint);
+          plr->SetLinkId (rtrIdRemote);
+          plr->SetLinkData (addrLocal);
+          pLSA->AddLinkRecord (plr);
+          plr = 0;
 
-      plr = new GlobalRouterLinkRecord;
-      plr->SetLinkType (GlobalRouterLinkRecord::StubNetwork);
-      plr->SetLinkId (addrRemote);
-      plr->SetLinkData (Ipv4Address(maskRemote.GetHostOrder()));  // Frown
-      pLSA->AddLinkRecord(plr);
-      plr = 0;
+          plr = new GlobalRoutingLinkRecord;
+          plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
+          plr->SetLinkId (addrRemote);
+          plr->SetLinkData (Ipv4Address(maskRemote.GetHostOrder()));  // Frown
+          pLSA->AddLinkRecord (plr);
+          plr = 0;
+        }
+      else
+        {
+          NS_ASSERT_MSG(0, "GlobalRouter::DiscoverLSAs (): unknown link type");
+        }
+
     }
 //
 // The LSA goes on a list of LSAs in case we want to begin exporting other
 // kinds of advertisements (than Router LSAs).
   m_LSAs.push_back (pLSA);
   NS_DEBUG(*pLSA);
+
+
+// Now, determine whether we need to build a NetworkLSA
+  if (listOfDRInterfaces.size () > 0)
+    {
+      for (std::list<Ptr<NetDevice> >::iterator i = listOfDRInterfaces.begin ();
+        i != listOfDRInterfaces.end (); i++)
+        {
+// Build one NetworkLSA for each interface that is a DR
+          Ptr<NetDevice> ndLocal = *i;
+          uint32_t ifIndexLocal = FindIfIndexForDevice(m_node, ndLocal);
+          Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
+          Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+
+          GlobalRoutingLSA *pLSA = new GlobalRoutingLSA;
+          pLSA->SetLSType (GlobalRoutingLSA::NetworkLSA);
+          pLSA->SetLinkStateId (addrLocal);
+          pLSA->SetAdvertisingRouter (m_routerId);
+          pLSA->SetNetworkLSANetworkMask (maskLocal);
+          pLSA->SetStatus (GlobalRoutingLSA::LSA_SPF_NOT_EXPLORED);
+// Build list of AttachedRouters
+          Ptr<Channel> ch = ndLocal->GetChannel();
+          uint32_t nDevices = ch->GetNDevices();
+          NS_ASSERT (nDevices);
+          for (uint32_t i = 0; i < nDevices; i++)
+            {
+              Ptr<NetDevice> tempNd = ch->GetDevice (i);
+              NS_ASSERT (tempNd);
+              Ptr<Node> tempNode = tempNd->GetNode ();
+              uint32_t tempIfIndex = FindIfIndexForDevice (tempNode, tempNd);
+              Ptr<Ipv4> tempIpv4 = tempNode->QueryInterface<Ipv4> (Ipv4::iid);
+              NS_ASSERT (tempIpv4);
+              Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
+              pLSA->AddAttachedRouter (tempAddr);
+            }
+          m_LSAs.push_back (pLSA);
+          NS_DEBUG(*pLSA);
+        }
+    }
+
   return m_LSAs.size ();
+}
+
+  Ipv4Address
+GlobalRouter::FindDesignatedRouterForLink (Ptr<Node> node, 
+  Ptr<NetDevice> ndLocal) const
+{
+  uint32_t ifIndexLocal = FindIfIndexForDevice(node, ndLocal);
+  Ptr<Ipv4> ipv4Local = m_node->QueryInterface<Ipv4> (Ipv4::iid);
+  NS_ASSERT (ipv4Local);
+  Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
+  Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
+
+  Ptr<Channel> ch = ndLocal->GetChannel();
+  uint32_t nDevices = ch->GetNDevices();
+  NS_ASSERT (nDevices);
+  Ipv4Address lowest = addrLocal;
+  // iterate all NetDevices and return the lowest numbered IP address 
+  for (uint32_t i = 0; i < nDevices; i++)
+    {
+      Ptr<NetDevice> tempNd = ch->GetDevice (i);
+      NS_ASSERT (tempNd);
+      Ptr<Node> tempNode = tempNd->GetNode ();
+      uint32_t tempIfIndex = FindIfIndexForDevice (tempNode, tempNd);
+      Ptr<Ipv4> tempIpv4 = tempNode->QueryInterface<Ipv4> (Ipv4::iid);
+      NS_ASSERT (tempIpv4);
+      Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
+      if (tempAddr < addrLocal)
+        {
+          addrLocal = tempAddr;
+        }
+    }
+  return addrLocal;
 }
 
   uint32_t 
@@ -510,7 +737,7 @@ GlobalRouter::GetNumLSAs (void) const
 // Get the nth link state advertisement from this router.
 //
   bool
-GlobalRouter::GetLSA (uint32_t n, GlobalRouterLSA &lsa) const
+GlobalRouter::GetLSA (uint32_t n, GlobalRoutingLSA &lsa) const
 {
   NS_ASSERT_MSG(lsa.IsEmpty(), "GlobalRouter::GetLSA (): Must pass empty LSA");
 //
@@ -525,7 +752,7 @@ GlobalRouter::GetLSA (uint32_t n, GlobalRouterLSA &lsa) const
     {
       if (j == n)
         {
-          GlobalRouterLSA *p = *i;
+          GlobalRoutingLSA *p = *i;
           lsa = *p;
           return true;
         }
