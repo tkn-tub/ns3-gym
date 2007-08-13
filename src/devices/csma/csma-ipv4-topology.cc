@@ -91,24 +91,22 @@ CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
   nd1->Attach (ch);
 }
 
-void
-CsmaIpv4Topology::AddIpv4Address(Ptr<Node> n1,
-                                 int ndNum,
-                                 const Ipv4Address& addr1,
-                                 const Ipv4Mask& netmask1)
+uint32_t
+CsmaIpv4Topology::AddIpv4Address(
+  Ptr<Node>             node,
+  uint32_t              netDeviceNumber,
+  const Ipv4Address     address,
+  const Ipv4Mask        mask)
 {
-  // Duplex link is assumed to be subnetted as a /30
-  // May run this unnumbered in the future?
-  Ipv4Mask netmask(netmask1);
+  Ptr<NetDevice> nd = node->GetDevice(netDeviceNumber);
 
-  Ptr<NetDevice> nd1 = n1->GetDevice(ndNum);
+  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+  uint32_t ifIndex = ipv4->AddInterface (nd);
 
-  Ptr<Ipv4> ip1 = n1->QueryInterface<Ipv4> (Ipv4::iid);
-  uint32_t index1 = ip1->AddInterface (nd1);
-
-  ip1->SetAddress (index1, addr1);
-  ip1->SetNetworkMask (index1, netmask);
-  ip1->SetUp (index1);
+  ipv4->SetAddress (ifIndex, address);
+  ipv4->SetNetworkMask (ifIndex, mask);
+  ipv4->SetUp (ifIndex);
+  return ifIndex;
 }
 
 void

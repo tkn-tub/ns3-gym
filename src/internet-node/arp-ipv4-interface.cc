@@ -81,6 +81,14 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
           hardwareDestination = GetDevice ()->GetBroadcast ();
           found = true;
         }
+      else if (dest.IsMulticast ())
+        {
+          NS_DEBUG ("ArpIpv4Interface::SendTo (): IsMulticast");
+          // XXX BUGBUG
+          // Need real multicast addresses
+          hardwareDestination = GetDevice ()->GetBroadcast ();
+          found = true;
+        }
       else
         {
           NS_DEBUG ("ArpIpv4Interface::SendTo (): ARP Lookup");

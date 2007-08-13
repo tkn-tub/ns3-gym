@@ -196,7 +196,8 @@ Ipv4StaticRouting::LookupStatic (Ipv4Address dest)
 Ipv4MulticastRoute *
 Ipv4StaticRouting::LookupStatic (
   Ipv4Address origin, 
-  Ipv4Address group)
+  Ipv4Address group,
+  uint32_t    ifIndex)
 {
   for (MulticastRoutesI i = m_multicastRoutes.begin (); 
        i != m_multicastRoutes.end (); 
@@ -207,7 +208,11 @@ Ipv4StaticRouting::LookupStatic (
              origin == Ipv4Address::GetAny ()) &&
           group == route->GetGroup ())
         {
-          return *i;
+          if (ifIndex == Ipv4RoutingProtocol::IF_INDEX_ANY || 
+              ifIndex == route->GetInputInterface ())
+            {
+              return *i;
+            }
         }
     }
   return 0;
@@ -312,9 +317,11 @@ Ipv4StaticRouting::RemoveRoute (uint32_t index)
 }
 
 bool
-Ipv4StaticRouting::RequestRoute (Ipv4Header const &ipHeader,
-                                 Packet packet,
-                                 RouteReplyCallback routeReply)
+Ipv4StaticRouting::RequestRoute (
+  uint32_t ifIndex,
+  Ipv4Header const &ipHeader,
+  Packet packet,
+  RouteReplyCallback routeReply)
 {
   NS_DEBUG ("Ipv4StaticRouting::RequestRoute (" << &ipHeader << ", " <<
     &packet << ", " << &routeReply << ")");
@@ -328,27 +335,35 @@ Ipv4StaticRouting::RequestRoute (Ipv4Header const &ipHeader,
 // First, see if this is a multicast packet we have a route for.  If we
 // have a route, then send the packet down each of the specified interfaces.
 //
-  Ipv4MulticastRoute *mRoute = LookupStatic(ipHeader.GetSource (),
-                                            ipHeader.GetDestination ());
-  if (mRoute)
+  if (ipHeader.GetDestination ().IsMulticast ())
     {
-      NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): Multicast route");
-      for (uint32_t i = 0; i < mRoute->GetNOutputInterfaces (); ++i)
+      NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): Multicast destination");
+
+      Ipv4MulticastRoute *mRoute = LookupStatic(ipHeader.GetSource (),
+        ipHeader.GetDestination (), ifIndex);
+
+      if (mRoute)
         {
-          Packet p = packet;
-          Ipv4Route route = 
-            Ipv4Route::CreateHostRouteTo(ipHeader.GetDestination (), 
-              mRoute->GetOutputInterface(i));
           NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): "
-            "Send via interface " << mRoute->GetOutputInterface(i));
-          routeReply (true, route, p, ipHeader);
-          return true;
+            "Multicast route found");
+          for (uint32_t i = 0; i < mRoute->GetNOutputInterfaces (); ++i)
+            {
+              Packet p = packet;
+              Ipv4Route route = 
+                Ipv4Route::CreateHostRouteTo(ipHeader.GetDestination (), 
+                  mRoute->GetOutputInterface(i));
+              NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): "
+                "Send via interface " << mRoute->GetOutputInterface(i));
+              routeReply (true, route, p, ipHeader);
+              return true;
+            }
         }
+      return false; // Let other routing protocols try to handle this
     }
 //
 // See if this is a unicast packet we have a route for.
 //
-  NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): Unicast route");
+  NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): Unicast destination");
   Ipv4Route *route = LookupStatic (ipHeader.GetDestination ());
   if (route != 0)
     {

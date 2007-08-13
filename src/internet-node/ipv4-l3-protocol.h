@@ -195,12 +195,19 @@ protected:
   virtual void DoDispose (void);
 
 private:
+  void Lookup (uint32_t ifIndex,
+               Ipv4Header const &ipHeader,
+               Packet packet,
+               Ipv4RoutingProtocol::RouteReplyCallback routeReply);
 
   void SendRealOut (bool found,
                     Ipv4Route const &route,
                     Packet packet,
                     Ipv4Header const &ipHeader);
-  bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device);
+  bool Forwarding (uint32_t ifIndex, 
+                   Packet const &packet, 
+                   Ipv4Header &ipHeader, 
+                   Ptr<NetDevice> device);
   void ForwardUp (Packet p, Ipv4Header const&ip);
   uint32_t AddIpv4Interface (Ipv4Interface *interface);
   void SetupLoopback (void);

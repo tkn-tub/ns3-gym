@@ -246,12 +246,26 @@ Ipv4L3Protocol::SetDefaultRoute (Ipv4Address nextHop,
 }
 
 void
-Ipv4L3Protocol::Lookup (Ipv4Header const &ipHeader,
-                        Packet packet,
-                        Ipv4RoutingProtocol::RouteReplyCallback routeReply)
+Ipv4L3Protocol::Lookup (
+  Ipv4Header const &ipHeader,
+  Packet packet,
+  Ipv4RoutingProtocol::RouteReplyCallback routeReply)
 {
-  NS_DEBUG("Ipv4L3Protocol::Lookup (" << &ipHeader << ", " << &packet <<
-    &routeReply << ")");
+  NS_DEBUG("Ipv4L3Protocol::Lookup (" << &ipHeader << 
+    ", " << &packet << &routeReply << ")");
+
+  Lookup (Ipv4RoutingProtocol::IF_INDEX_ANY, ipHeader, packet, routeReply);
+}
+
+void
+Ipv4L3Protocol::Lookup (
+  uint32_t ifIndex,
+  Ipv4Header const &ipHeader,
+  Packet packet,
+  Ipv4RoutingProtocol::RouteReplyCallback routeReply)
+{
+  NS_DEBUG("Ipv4L3Protocol::Lookup (" << ifIndex << ", " << &ipHeader << 
+    ", " << &packet << &routeReply << ")");
 
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter = 
          m_routingProtocols.begin ();
@@ -259,7 +273,8 @@ Ipv4L3Protocol::Lookup (Ipv4Header const &ipHeader,
        rprotoIter++)
     {
       NS_DEBUG("Ipv4L3Protocol::Lookup (): Requesting route");
-      if ((*rprotoIter).second->RequestRoute (ipHeader, packet, routeReply))
+      if ((*rprotoIter).second->RequestRoute (ifIndex, ipHeader, packet, 
+                                              routeReply))
         return;
     }
 
@@ -405,7 +420,9 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protoc
     protocol << ", " << from << ")");
 
   uint32_t index = 0;
-  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
+       i != m_interfaces.end (); 
+       i++)
     {
       if ((*i)->GetDevice () == device)
         {
@@ -423,7 +440,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protoc
       return;
     }
 
-  if (Forwarding (packet, ipHeader, device)) 
+  if (Forwarding (index, packet, ipHeader, device)) 
     {
       return;
     }
@@ -521,10 +538,14 @@ Ipv4L3Protocol::SendRealOut (bool found,
 }
 
 bool
-Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device)
+Ipv4L3Protocol::Forwarding (
+  uint32_t ifIndex, 
+  Packet const &packet, 
+  Ipv4Header &ipHeader, 
+  Ptr<NetDevice> device)
 {
-  NS_DEBUG("Ipv4L3Protocol::Forwarding (" << &packet << ", " << &ipHeader << 
-    ", " << device << ")");
+  NS_DEBUG("Ipv4L3Protocol::Forwarding (" << ifIndex << ", " << &packet << 
+    ", " << &ipHeader << ", " << device << ")");
 
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
@@ -579,7 +600,7 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
 
   NS_DEBUG("Ipv4L3Protocol::Forwarding (): Forwarding packet.");
-  Lookup (ipHeader, packet,
+  Lookup (ifIndex, ipHeader, packet,
           MakeCallback (&Ipv4L3Protocol::SendRealOut, this));
 //
 // If this is a to a multicast address and this node is a member of the 

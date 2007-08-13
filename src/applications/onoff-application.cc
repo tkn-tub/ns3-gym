@@ -199,9 +199,12 @@ void OnOffApplication::ScheduleNextTx()
   if (m_totBytes < m_maxBytes)
     {
       uint32_t bits = m_pktSize * 8 - m_residualBits;
+      NS_DEBUG("OnOffApplication::ScheduleNextTx (): bits = " << bits);
       Time nextTime(Seconds (bits / 
         static_cast<double>(m_cbrRate.GetBitRate()))); // Time till next packet
-      m_sendEvent = Simulator::Schedule(nextTime, &OnOffApplication::SendPacket, this);
+      NS_DEBUG("OnOffApplication::ScheduleNextTx (): nextTime = " << nextTime);
+      m_sendEvent = Simulator::Schedule(nextTime, 
+                                        &OnOffApplication::SendPacket, this);
     }
   else
     { // All done, cancel any pending events
@@ -214,6 +217,8 @@ void OnOffApplication::ScheduleStartEvent()
   NS_DEBUG("OnOffApplication::ScheduleStartEvent ()");
 
   Time offInterval = Seconds(m_offTime->GetValue());
+  NS_DEBUG("OnOffApplication::ScheduleStartEvent (): "
+    "start at " << offInterval);
   m_startStopEvent = Simulator::Schedule(offInterval, &OnOffApplication::StartSending, this);
 }
 

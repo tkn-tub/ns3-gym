@@ -70,6 +70,7 @@ public:
   /**
    * \brief Asynchronously requests a route for a given packet and IP header
    *
+   * \param ifIndex The interface index on which the packet was received.
    * \param ipHeader IP header of the packet
    * \param packet packet that is being sent or forwarded
    * \param routeReply callback that will receive the route reply
@@ -99,9 +100,12 @@ public:
    * immediately after the IP header, although most routing do not
    * insert any extra header.
    */
-  virtual bool RequestRoute (const Ipv4Header &ipHeader,
+  virtual bool RequestRoute (uint32_t ifIndex,
+                             const Ipv4Header &ipHeader,
                              Packet packet,
                              RouteReplyCallback routeReply) = 0;
+
+  static const uint32_t IF_INDEX_ANY = 0xffffffff;
 };
 
 /**

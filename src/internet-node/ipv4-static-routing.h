@@ -51,7 +51,8 @@ class Ipv4StaticRouting : public Ipv4RoutingProtocol
 public:
   Ipv4StaticRouting () : m_defaultRoute (0) {}
 
-  virtual bool RequestRoute (Ipv4Header const &ipHeader,
+  virtual bool RequestRoute (uint32_t ifIndex,
+                             Ipv4Header const &ipHeader,
                              Packet packet,
                              RouteReplyCallback routeReply);
 
@@ -105,7 +106,8 @@ private:
   typedef std::list<Ipv4MulticastRoute *>::iterator MulticastRoutesI;
 
   Ipv4Route *LookupStatic (Ipv4Address dest);
-  Ipv4MulticastRoute *LookupStatic (Ipv4Address origin, Ipv4Address group);
+  Ipv4MulticastRoute *LookupStatic (Ipv4Address origin, Ipv4Address group,
+                                    uint32_t ifIndex);
 
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;

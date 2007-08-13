@@ -65,7 +65,7 @@ main (int argc, char *argv[])
 {
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
-#if 0 
+#if 0
   DebugComponentEnable("Me");
   DebugComponentEnable("Object");
   DebugComponentEnable("Queue");
@@ -87,16 +87,9 @@ main (int argc, char *argv[])
 #endif
 
   DebugComponentEnable("Me");
-  DebugComponentEnable("OnOffApplication");
-  DebugComponentEnable("UdpSocket");
-  DebugComponentEnable("UdpL4Protocol");
-  DebugComponentEnable("Ipv4L3Protocol");
-  DebugComponentEnable("Ipv4StaticRouting");
-  DebugComponentEnable("CsmaNetDevice");
   DebugComponentEnable("CsmaChannel");
-  DebugComponentEnable("Ipv4Interface");
-  DebugComponentEnable("ArpIpv4Interface");
-  DebugComponentEnable("Ipv4LoopbackInterface");
+  DebugComponentEnable("CsmaNetDevice");
+  DebugComponentEnable("UdpL4Protocol");
 
   // Set up some default values for the simulation.  Use the Bind()
   // technique to tell the system what subclass of Queue to use,
@@ -125,29 +118,47 @@ main (int argc, char *argv[])
       DataRate(5000000), MilliSeconds(2));
 
   NS_DEBUG("Build Topology.");
-  uint32_t n0ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n0, channel0, 
-                                         Eui48Address("10:54:23:54:23:50"));
-  uint32_t n1ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n1, channel0,
-                                         Eui48Address("10:54:23:54:23:51"));
-  uint32_t n2ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n2, channel0,
-                                         Eui48Address("10:54:23:54:23:52"));
-  uint32_t n3ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n3, channel0,
-                                         Eui48Address("10:54:23:54:23:53"));
+  uint32_t netDeviceNumberNode0 = CsmaIpv4Topology::AddIpv4CsmaNode (n0, 
+    channel0, Eui48Address("10:54:23:54:23:50"));
+  uint32_t netDeviceNumberNode1 = CsmaIpv4Topology::AddIpv4CsmaNode (n1, 
+    channel0, Eui48Address("10:54:23:54:23:51"));
+  uint32_t netDeviceNumberNode2 = CsmaIpv4Topology::AddIpv4CsmaNode (n2, 
+    channel0, Eui48Address("10:54:23:54:23:52"));
+  uint32_t netDeviceNumberNode3 = CsmaIpv4Topology::AddIpv4CsmaNode (n3, 
+    channel0, Eui48Address("10:54:23:54:23:53"));
+
+  NS_DEBUG ("netDeviceNumberNode0 = " << netDeviceNumberNode0);
+  NS_DEBUG ("netDeviceNumberNode1 = " << netDeviceNumberNode1);
+  NS_DEBUG ("netDeviceNumberNode2 = " << netDeviceNumberNode2);
+  NS_DEBUG ("netDeviceNumberNode3 = " << netDeviceNumberNode3);
 
   // Later, we add IP addresses.  
   NS_DEBUG("Assign IP Addresses.");
+  // XXX BUGBUG
+  // Need a better way to get the interface index.  The point-to-point topology
+  // as implemented can't return the index since it creates interfaces on both
+  // sides (i.e., AddIpv4Addresses, not AddIpv4Address).  Need a method on
+  // Ipv4 to find the interface index corresponding to a given ipv4 address.
+  uint32_t ifIndexNode0 = CsmaIpv4Topology::AddIpv4Address (n0, 
+    netDeviceNumberNode0, Ipv4Address ("10.1.1.1"), 
+    Ipv4Mask ("255.255.255.0"));
 
-  CsmaIpv4Topology::AddIpv4Address (
-      n0, n0ifIndex, Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
+  uint32_t ifIndexNode1 = CsmaIpv4Topology::AddIpv4Address (n1, 
+    netDeviceNumberNode1, Ipv4Address ("10.1.1.2"), 
+    Ipv4Mask ("255.255.255.0"));
 
-  CsmaIpv4Topology::AddIpv4Address (
-      n1, n1ifIndex, Ipv4Address("10.1.1.2"), Ipv4Mask("255.255.255.0"));
-
-  CsmaIpv4Topology::AddIpv4Address (
-      n2, n2ifIndex, Ipv4Address("10.1.1.3"), Ipv4Mask("255.255.255.0"));
+  uint32_t ifIndexNode2 = CsmaIpv4Topology::AddIpv4Address (n2, 
+    netDeviceNumberNode2, Ipv4Address ("10.1.1.3"), 
+    Ipv4Mask ("255.255.255.0"));
   
-  CsmaIpv4Topology::AddIpv4Address (
-      n3, n3ifIndex, Ipv4Address("10.1.1.4"), Ipv4Mask("255.255.255.0"));
+  uint32_t ifIndexNode3 = CsmaIpv4Topology::AddIpv4Address (n3, 
+    netDeviceNumberNode3, Ipv4Address ("10.1.1.4"), 
+    Ipv4Mask ("255.255.255.0"));
+
+  NS_DEBUG ("ifIndexNode0 = " << ifIndexNode0);
+  NS_DEBUG ("ifIndexNode1 = " << ifIndexNode1);
+  NS_DEBUG ("ifIndexNode2 = " << ifIndexNode2);
+  NS_DEBUG ("ifIndexNode3 = " << ifIndexNode3);
 
   // Configure multicasting
   NS_DEBUG("Configure multicasting.");
@@ -158,22 +169,21 @@ main (int argc, char *argv[])
   ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
 
   std::vector<uint32_t> outputInterfaces (1);
-  outputInterfaces[0] = n0ifIndex;
+  outputInterfaces[0] = ifIndexNode0;
 
   ipv4->AddMulticastRoute (multicastSource, multicastGroup, 0, 
     outputInterfaces);
 
   ipv4 = n1->QueryInterface<Ipv4> (Ipv4::iid);
-  ipv4->JoinMulticastGroup (multicastSource, multicastGroup);
+  //  ipv4->JoinMulticastGroup (multicastSource, multicastGroup);
 
   ipv4 = n2->QueryInterface<Ipv4> (Ipv4::iid);
-  ipv4->JoinMulticastGroup (multicastSource, multicastGroup);
+  //  ipv4->JoinMulticastGroup (multicastSource, multicastGroup);
 
   ipv4 = n3->QueryInterface<Ipv4> (Ipv4::iid);
-  ipv4->JoinMulticastGroup (multicastSource, multicastGroup);
+  //  ipv4->JoinMulticastGroup (multicastSource, multicastGroup);
 
-  // Create the OnOff application to send UDP datagrams of size
-  // 210 bytes at a rate of 448 Kb/s
+  // Create the OnOff application to send UDP datagrams
   // from n0 to the multicast group
   NS_DEBUG("Create Applications.");
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
@@ -181,10 +191,12 @@ main (int argc, char *argv[])
     InetSocketAddress (multicastGroup, 80), 
     "Udp",
     ConstantVariable(1), 
-    ConstantVariable(0));
+    ConstantVariable(0),
+    DataRate ("128b/s"),
+    128);
   // Start the application
-  ooff->Start(Seconds(1.0));
-  ooff->Stop (Seconds(10.0));
+  ooff->Start(Seconds(1.));
+  ooff->Stop (Seconds(10.));
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the csma-one-subnet.tr file
