@@ -494,24 +494,31 @@ Ipv4L3Protocol::SendRealOut (bool found,
 
   if (!found)
     {
-      NS_DEBUG ("no route to host. drop.");
+      NS_DEBUG ("Ipv4L3Protocol::SendRealOut (): No route to host.  Drop.");
       m_dropTrace (packet);
       return;
     }
+
+  NS_DEBUG ("Ipv4L3Protocol::SendRealOut (): Send via interface " <<
+        route.GetInterface ());
+
   packet.AddHeader (ipHeader);
   Ipv4Interface *outInterface = GetInterface (route.GetInterface ());
   NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
   m_txTrace (packet, route.GetInterface ());
   if (route.IsGateway ()) 
     {
+      NS_DEBUG ("Ipv4L3Protocol::SendRealOut (): Send to gateway " <<
+        route.GetGateway ());
       outInterface->Send (packet, route.GetGateway ());
     } 
   else 
     {
+      NS_DEBUG ("Ipv4L3Protocol::SendRealOut (): Send to destination " <<
+        ipHeader.GetDestination ());
       outInterface->Send (packet, ipHeader.GetDestination ());
     }
 }
-
 
 bool
 Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device)
@@ -524,7 +531,8 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
     {
       if ((*i)->GetAddress ().IsEqual (ipHeader.GetDestination ())) 
         {
-          NS_DEBUG ("for me 1");
+          NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+            "For me (destination match)");
           return false;
         }
     }
@@ -537,7 +545,8 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
 	{
 	  if (ipHeader.GetDestination ().IsEqual (interface->GetBroadcast ())) 
 	    {
-	      NS_DEBUG ("for me 2");
+              NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+                "For me (interface broadcast address)");
 	      return false;
 	    }
 	  break;
@@ -546,25 +555,30 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
       
   if (ipHeader.GetDestination ().IsBroadcast ()) 
     {
-      NS_DEBUG ("for me 3");
+      NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+        "For me (Ipv4Addr broadcast address)");
       return false;
     }
+
   if (ipHeader.GetDestination ().IsEqual (Ipv4Address::GetAny ())) 
     {
-      NS_DEBUG ("for me 4");
+      NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+        "For me (Ipv4Addr any address)");
       return false;
     }
+
   if (ipHeader.GetTtl () == 1) 
     {
       // Should send ttl expired here
       // XXX
-      NS_DEBUG ("not for me -- ttl expired. drop.");
+      NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+        "Not for me (TTL expired).  Drop");
       m_dropTrace (packet);
       return true;
     }
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
 
-  NS_DEBUG ("forwarding.");
+  NS_DEBUG("Ipv4L3Protocol::Forwarding (): Forwarding packet.");
   Lookup (ipHeader, packet,
           MakeCallback (&Ipv4L3Protocol::SendRealOut, this));
 //
@@ -578,12 +592,13 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
       if ((*i).first.IsEqual (ipHeader.GetSource ()) &&
           (*i).second.IsEqual (ipHeader.GetDestination ()))
         {
-          NS_DEBUG ("for me 5");
+          NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+            "For me (Joined multicast group)");
           return false;
         }
     }
   
-  NS_DEBUG ("not for me.");
+  NS_DEBUG("Ipv4L3Protocol::Forwarding (): Not for me.");
   return true;
 }
 

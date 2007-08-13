@@ -27,7 +27,6 @@ NS_DEBUG_COMPONENT_DEFINE ("Ipv4StaticRouting");
 
 namespace ns3 {
 
-
 void 
 Ipv4StaticRouting::AddHostRouteTo (Ipv4Address dest, 
                                    Ipv4Address nextHop, 
@@ -325,7 +324,6 @@ Ipv4StaticRouting::RequestRoute (Ipv4Header const &ipHeader,
 
   NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): destination = " << 
     ipHeader.GetDestination ());
-
 //
 // First, see if this is a multicast packet we have a route for.  If we
 // have a route, then send the packet down each of the specified interfaces.
@@ -334,12 +332,15 @@ Ipv4StaticRouting::RequestRoute (Ipv4Header const &ipHeader,
                                             ipHeader.GetDestination ());
   if (mRoute)
     {
+      NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): Multicast route");
       for (uint32_t i = 0; i < mRoute->GetNOutputInterfaces (); ++i)
         {
           Packet p = packet;
           Ipv4Route route = 
             Ipv4Route::CreateHostRouteTo(ipHeader.GetDestination (), 
               mRoute->GetOutputInterface(i));
+          NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): "
+            "Send via interface " << mRoute->GetOutputInterface(i));
           routeReply (true, route, p, ipHeader);
           return true;
         }
@@ -347,6 +348,7 @@ Ipv4StaticRouting::RequestRoute (Ipv4Header const &ipHeader,
 //
 // See if this is a unicast packet we have a route for.
 //
+  NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): Unicast route");
   Ipv4Route *route = LookupStatic (ipHeader.GetDestination ());
   if (route != 0)
     {

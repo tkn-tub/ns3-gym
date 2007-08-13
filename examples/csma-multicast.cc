@@ -67,17 +67,23 @@ main (int argc, char *argv[])
   // for selected modules; the below lines suggest how to do this
 #if 0 
   DebugComponentEnable("Me");
+  DebugComponentEnable("Object");
+  DebugComponentEnable("Queue");
+  DebugComponentEnable("DropTailQueue");
+  DebugComponentEnable("Channel");
+  DebugComponentEnable("CsmaChannel");
   DebugComponentEnable("CsmaNetDevice");
   DebugComponentEnable("Ipv4L3Protocol");
   DebugComponentEnable("NetDevice");
-  DebugComponentEnable("Channel");
-  DebugComponentEnable("CsmaChannel");
   DebugComponentEnable("PacketSocket");
   DebugComponentEnable("OnOffApplication");
   DebugComponentEnable("UdpSocket");
   DebugComponentEnable("UdpL4Protocol");
   DebugComponentEnable("Ipv4L3Protocol");
   DebugComponentEnable("Ipv4StaticRouting");
+  DebugComponentEnable("Ipv4Interface");
+  DebugComponentEnable("ArpIpv4Interface");
+  DebugComponentEnable("Ipv4LoopbackInterface");
 #endif
 
   DebugComponentEnable("Me");
@@ -88,6 +94,9 @@ main (int argc, char *argv[])
   DebugComponentEnable("Ipv4StaticRouting");
   DebugComponentEnable("CsmaNetDevice");
   DebugComponentEnable("CsmaChannel");
+  DebugComponentEnable("Ipv4Interface");
+  DebugComponentEnable("ArpIpv4Interface");
+  DebugComponentEnable("Ipv4LoopbackInterface");
 
   // Set up some default values for the simulation.  Use the Bind()
   // technique to tell the system what subclass of Queue to use,

@@ -58,23 +58,47 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/onoff-application.h"
 
-
 using namespace ns3;
 
+NS_DEBUG_COMPONENT_DEFINE ("Me");
 
-int main (int argc, char *argv[])
+int 
+main (int argc, char *argv[])
 {
-
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
 #if 0 
+  DebugComponentEnable("Me");
+  DebugComponentEnable("Object");
+  DebugComponentEnable("Queue");
+  DebugComponentEnable("DropTailQueue");
+  DebugComponentEnable("Channel");
+  DebugComponentEnable("CsmaChannel");
   DebugComponentEnable("CsmaNetDevice");
   DebugComponentEnable("Ipv4L3Protocol");
   DebugComponentEnable("NetDevice");
-  DebugComponentEnable("Channel");
-  DebugComponentEnable("CsmaChannel");
   DebugComponentEnable("PacketSocket");
+  DebugComponentEnable("OnOffApplication");
+  DebugComponentEnable("UdpSocket");
+  DebugComponentEnable("UdpL4Protocol");
+  DebugComponentEnable("Ipv4L3Protocol");
+  DebugComponentEnable("Ipv4StaticRouting");
+  DebugComponentEnable("Ipv4Interface");
+  DebugComponentEnable("ArpIpv4Interface");
+  DebugComponentEnable("Ipv4LoopbackInterface");
 #endif
+
+  DebugComponentEnable("Me");
+  DebugComponentEnable("OnOffApplication");
+  DebugComponentEnable("UdpSocket");
+  DebugComponentEnable("UdpL4Protocol");
+  DebugComponentEnable("Ipv4L3Protocol");
+  DebugComponentEnable("Ipv4StaticRouting");
+  DebugComponentEnable("CsmaNetDevice");
+  DebugComponentEnable("CsmaChannel");
+  DebugComponentEnable("Ipv4Interface");
+  DebugComponentEnable("ArpIpv4Interface");
+  DebugComponentEnable("Ipv4LoopbackInterface");
 
   // Set up some default values for the simulation.  Use the Bind()
   // technique to tell the system what subclass of Queue to use,
@@ -90,16 +114,19 @@ int main (int argc, char *argv[])
 
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
+  NS_DEBUG("Create nodes.");
   Ptr<Node> n0 = Create<InternetNode> ();
   Ptr<Node> n1 = Create<InternetNode> (); 
   Ptr<Node> n2 = Create<InternetNode> (); 
   Ptr<Node> n3 = Create<InternetNode> ();
 
   // We create the channels first without any IP addressing information
+  NS_DEBUG("Create channels.");
   Ptr<CsmaChannel> channel0 = 
     CsmaTopology::CreateCsmaChannel(
       DataRate(5000000), MilliSeconds(2));
 
+  NS_DEBUG("Build Topology.");
   uint32_t n0ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n0, channel0, 
                                          Eui48Address("10:54:23:54:23:50"));
   uint32_t n1ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n1, channel0,
@@ -110,6 +137,7 @@ int main (int argc, char *argv[])
                                          Eui48Address("10:54:23:54:23:53"));
 
   // Later, we add IP addresses.  
+  NS_DEBUG("Assign IP Addresses.");
   CsmaIpv4Topology::AddIpv4Address (
       n0, n0ifIndex, Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
 
@@ -125,6 +153,7 @@ int main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   // from n0 to n1
+  NS_DEBUG("Create Applications.");
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
     InetSocketAddress ("10.1.1.2", 80), 
@@ -148,6 +177,7 @@ int main (int argc, char *argv[])
  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the csma-one-subnet.tr file
+  NS_DEBUG("Configure Tracing.");
   AsciiTrace asciitrace ("csma-one-subnet.tr");
   asciitrace.TraceAllNetDeviceRx ();
   asciitrace.TraceAllQueues ();
@@ -160,7 +190,8 @@ int main (int argc, char *argv[])
   PcapTrace pcaptrace ("csma-one-subnet.pcap");
   pcaptrace.TraceAllIp ();
 
+  NS_DEBUG("Run Simulation.");
   Simulator::Run ();
-    
   Simulator::Destroy ();
+  NS_DEBUG("Done.");
 }

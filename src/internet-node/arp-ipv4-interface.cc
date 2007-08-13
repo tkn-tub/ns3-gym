@@ -31,18 +31,26 @@
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
 
+NS_DEBUG_COMPONENT_DEFINE ("ArpIpv4Interface");
+
 namespace ns3 {
 
 ArpIpv4Interface::ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device)
   : Ipv4Interface (device),
     m_node (node)
-{}
+{
+  NS_DEBUG ("ArpIpv4Interface::ArpIpv4Interface ()");
+}
+
 ArpIpv4Interface::~ArpIpv4Interface ()
-{}
+{
+  NS_DEBUG ("ArpIpv4Interface::~ArpIpv4Interface ()");
+}
 
 TraceResolver *
 ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
 {
+  NS_DEBUG ("ArpIpv4Interface::DoCreateTraceResolver ()");
   CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
   if (GetDevice () != 0)
     {
@@ -56,31 +64,41 @@ ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
 void 
 ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
 {
+  NS_DEBUG ("ArpIpv4Interface::SendTo (" << &p << ", " << dest << ")");
+
   NS_ASSERT (GetDevice () != 0);
   if (GetDevice ()->NeedsArp ())
     {
-      Ptr<ArpL3Protocol> arp = m_node->QueryInterface<ArpL3Protocol> (ArpL3Protocol::iid);
+      NS_DEBUG ("ArpIpv4Interface::SendTo (): Needs ARP");
+      Ptr<ArpL3Protocol> arp = 
+        m_node->QueryInterface<ArpL3Protocol> (ArpL3Protocol::iid);
       Address hardwareDestination;
       bool found;
 
       if (dest.IsBroadcast ())
         {
+          NS_DEBUG ("ArpIpv4Interface::SendTo (): IsBroadcast");
           hardwareDestination = GetDevice ()->GetBroadcast ();
           found = true;
         }
       else
         {
+          NS_DEBUG ("ArpIpv4Interface::SendTo (): ARP Lookup");
           found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
         }
 
       if (found)
         {
-          GetDevice ()->Send (p, hardwareDestination, Ipv4L3Protocol::PROT_NUMBER);
+          NS_DEBUG ("ArpIpv4Interface::SendTo (): Address Resolved.  Send.");
+          GetDevice ()->Send (p, hardwareDestination, 
+            Ipv4L3Protocol::PROT_NUMBER);
         }
     }
   else
     {
-      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), Ipv4L3Protocol::PROT_NUMBER);
+      NS_DEBUG ("ArpIpv4Interface::SendTo (): Doesn't need ARP");
+      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), 
+        Ipv4L3Protocol::PROT_NUMBER);
     }
 }
 

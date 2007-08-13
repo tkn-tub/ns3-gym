@@ -36,15 +36,15 @@ namespace ns3 {
 
 uint32_t
 CsmaIpv4Topology::AddIpv4CsmaNode(Ptr<Node> n1,
-                                      Ptr<CsmaChannel> ch,
-                                      Eui48Address addr)
+                                  Ptr<CsmaChannel> ch,
+                                  Eui48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
   // assume full-duplex
   Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr, 
-                                                      ns3::CsmaNetDevice::IP_ARP,
-                                                      true, true);
+                                                  ns3::CsmaNetDevice::IP_ARP,
+                                                  true, true);
   nd0->AddQueue(q);
   nd0->Attach (ch);
   return nd0->GetIfIndex ();
@@ -53,51 +53,50 @@ CsmaIpv4Topology::AddIpv4CsmaNode(Ptr<Node> n1,
 
 void
 CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
-                                         Ptr<CsmaChannel> ch,
-                                         Eui48Address addr)
+                                     Ptr<CsmaChannel> ch,
+                                     Eui48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
   Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr,
-                                                      ns3::CsmaNetDevice::LLC,
-                                                      true, false);
+                                                  ns3::CsmaNetDevice::LLC,
+                                                  true, false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
   Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr,
-                                                      ns3::CsmaNetDevice::LLC,
-                                                      false, true);
+                                                  ns3::CsmaNetDevice::LLC,
+                                                  false, true);
   nd1->AddQueue(q);
   nd1->Attach (ch);
 }
 
 void
 CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
-                                         Ptr<CsmaChannel> ch,
-                                         Eui48Address addr)
+                                     Ptr<CsmaChannel> ch,
+                                     Eui48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
   Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr,
-                                                      ns3::CsmaNetDevice::RAW,
-                                                      true, false);
+                                                  ns3::CsmaNetDevice::RAW,
+                                                  true, false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
   Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr,
-                                                      ns3::CsmaNetDevice::RAW,
-                                                      false, true);
+                                                  ns3::CsmaNetDevice::RAW,
+                                                  false, true);
   nd1->AddQueue(q);
   nd1->Attach (ch);
 }
 
 void
 CsmaIpv4Topology::AddIpv4Address(Ptr<Node> n1,
-                                       int ndNum,
-                                       const Ipv4Address& addr1,
-                                       const Ipv4Mask& netmask1)
+                                 int ndNum,
+                                 const Ipv4Address& addr1,
+                                 const Ipv4Mask& netmask1)
 {
-
   // Duplex link is assumed to be subnetted as a /30
   // May run this unnumbered in the future?
   Ipv4Mask netmask(netmask1);
@@ -110,7 +109,6 @@ CsmaIpv4Topology::AddIpv4Address(Ptr<Node> n1,
   ip1->SetAddress (index1, addr1);
   ip1->SetNetworkMask (index1, netmask);
   ip1->SetUp (index1);
-
 }
 
 void
@@ -133,7 +131,7 @@ CsmaIpv4Topology::AddIpv4Routes (
           found = true;
         }
     }
-  NS_ASSERT(found);
+  NS_ASSERT (found);
 
   uint32_t index2 = 0;
   found = false;
@@ -145,7 +143,7 @@ CsmaIpv4Topology::AddIpv4Routes (
           found = true;
         }
     }
-  NS_ASSERT(found);
+  NS_ASSERT (found);
 
   ip1->AddHostRouteTo (ip2-> GetAddress (index2), index1);
   ip2->AddHostRouteTo (ip1-> GetAddress (index1), index2); 
