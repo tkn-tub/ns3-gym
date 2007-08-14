@@ -193,6 +193,15 @@ main (int argc, char *argv[])
   NS_DEBUG ("ifIndexNd2Lan1 = " << ifIndexNd2Lan1);
   NS_DEBUG ("ifIndexNd3 = " << ifIndexNd3);
   NS_DEBUG ("ifIndexNd4 = " << ifIndexNd4);
+//
+// A little silliness to let optimized code work while still printing all 
+// results in debug code (without attribute).
+//
+  nd3 = nd3;
+  ifIndexNd1 = ifIndexNd1;
+  ifIndexNd3 = ifIndexNd3;
+  ifIndexNd4 = ifIndexNd4;
+
   NS_DEBUG("Configure multicasting.");
 //
 // Now we can configure multicasting.  As described above, the multicast 
