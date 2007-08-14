@@ -80,7 +80,6 @@ main (int argc, char *argv[])
   DebugComponentEnable("ArpIpv4Interface");
   DebugComponentEnable("Ipv4LoopbackInterface");
 #endif
-
 //
 // Set up default values for the simulation.  Use the DefaultValue::Bind()
 // technique to tell the system what subclass of Queue to use.  The Bind

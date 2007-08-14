@@ -406,6 +406,8 @@ Ipv4StaticRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
             }
 
           ifIndex = mRoute->GetOutputInterface(0);
+          NS_DEBUG ("Ipv4StaticRouting::RequestIfIndex (): "
+            "Found ifIndex " << ifIndex);
           return true;
         }
       return false; // Let other routing protocols try to handle this

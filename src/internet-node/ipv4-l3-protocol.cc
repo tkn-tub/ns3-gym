@@ -703,10 +703,13 @@ Ipv4L3Protocol::GetIfIndexForDestination (
        i++)
     {
       NS_DEBUG("Ipv4L3Protocol::Lookup (): Requesting Source Address");
-      uint32_t ifIndex;
+      uint32_t ifIndexTmp;
 
-      if ((*i).second->RequestIfIndex (destination, ifIndex))
+      if ((*i).second->RequestIfIndex (destination, ifIndexTmp))
         {
+          NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (): "
+            "Found ifIndex " << ifIndexTmp);
+          ifIndex = ifIndexTmp;
           return true;
         }
     }

@@ -71,11 +71,11 @@ main (int argc, char *argv[])
   DebugComponentEnable("DropTailQueue");
   DebugComponentEnable("Channel");
   DebugComponentEnable("CsmaChannel");
+  DebugComponentEnable("NetDevice");
   DebugComponentEnable("CsmaNetDevice");
   DebugComponentEnable("Ipv4L3Protocol");
-  DebugComponentEnable("NetDevice");
-  DebugComponentEnable("PacketSocket");
   DebugComponentEnable("OnOffApplication");
+  DebugComponentEnable("PacketSocket");
   DebugComponentEnable("UdpSocket");
   DebugComponentEnable("UdpL4Protocol");
   DebugComponentEnable("Ipv4L3Protocol");
@@ -84,18 +84,6 @@ main (int argc, char *argv[])
   DebugComponentEnable("ArpIpv4Interface");
   DebugComponentEnable("Ipv4LoopbackInterface");
 #endif
-
-  DebugComponentEnable("UdpSocket");
-  DebugComponentEnable("UdpL4Protocol");
-  DebugComponentEnable("Ipv4L3Protocol");
-  DebugComponentEnable("Ipv4StaticRouting");
-  DebugComponentEnable("Ipv4Interface");
-  DebugComponentEnable("ArpIpv4Interface");
-  DebugComponentEnable("Ipv4LoopbackInterface");
-
-  DebugComponentEnable("CsmaMulticast");
-  DebugComponentEnable("CsmaChannel");
-  DebugComponentEnable("CsmaNetDevice");
 //
 // Set up default values for the simulation.  Use the DefaultValue::Bind()
 // technique to tell the system what subclass of Queue to use.  The Bind

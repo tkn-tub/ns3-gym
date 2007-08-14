@@ -184,8 +184,10 @@ Ipv4Impl::GetAddress (uint32_t i) const
 Ipv4Address 
 Ipv4Impl::GetSourceAddress (Ipv4Address destination) const
 {
-  uint32_t ifIndex;
+  uint32_t ifIndex = 0xffffffff;
+
   bool result = m_ipv4->GetIfIndexForDestination (destination, ifIndex);
+
   if (result)
     {
       return m_ipv4->GetAddress (ifIndex);

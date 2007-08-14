@@ -174,7 +174,7 @@ UdpSocket::Close(void)
 int
 UdpSocket::Connect(const Address & address)
 {
-  NS_DEBUG("UdpSocket::Connect (" << address << ")");
+  NS_DEBUG ("UdpSocket::Connect (" << address << ")");
 
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
@@ -185,6 +185,8 @@ UdpSocket::Connect(const Address & address)
   Ptr<Ipv4> ipv4;
   ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
   m_endPoint->SetLocalAddress (ipv4->GetSourceAddress(m_defaultAddress));
+  NS_DEBUG ("UdpSocket::Connect (): Local address is" << 
+    m_endPoint->GetLocalAddress());
   return 0;
 }
 
@@ -270,4 +272,4 @@ UdpSocket::ForwardUp (const Packet &packet, Ipv4Address ipv4, uint16_t port)
   NotifyDataReceived (p, address);
 }
 
-}//namespace ns3
+} //namespace ns3
