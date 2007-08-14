@@ -97,7 +97,7 @@ public:
    * \param n1 Node
    * \param ndNum NetDevice number with which to associate address
    * \param addr1 Ipv4 Address for ndNum of n1
-   * \param network network mask for ndNum of node n1
+   * \param netmask1 network mask for ndNum of node n1
    * 
    * Add an Ipv4Address to the Ipv4 interface associated with the
    * ndNum CsmaIpv4NetDevices on the provided

@@ -431,7 +431,7 @@ public:
 /**
  * @brief Add an attached router to the list in the NetworkLSA
  *
- * @param address The Ipv4Address of the interface on the network link
+ * @param addr The Ipv4Address of the interface on the network link
  * @returns The number of addresses in the list.
  */
   uint32_t AddAttachedRouter (Ipv4Address addr);

@@ -170,7 +170,6 @@ public:
   /**
    * \brief Send data (or dummy data) to the remote host
    * \param p packet to send
-   * \param dataSent Data sent callback.
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
@@ -180,7 +179,6 @@ public:
    * \brief Send data to a specified peer.
    * \param address IP Address of remote host
    * \param p packet to send
-   * \param dataSent Data sent callback.
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
