@@ -135,11 +135,11 @@ main (int argc, char *argv[])
     Eui48Address("08:00:2e:00:00:02"));
 
   uint32_t nd2Lan1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan1, 
-    Eui48Address("08:00:2e:00:00:00"));
+    Eui48Address("08:00:2e:00:00:03"));
   uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan1, 
-    Eui48Address("08:00:2e:00:00:01"));
+    Eui48Address("08:00:2e:00:00:04"));
   uint32_t nd4 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n4, lan1, 
-    Eui48Address("08:00:2e:00:00:02"));
+    Eui48Address("08:00:2e:00:00:05"));
 
   NS_DEBUG ("nd0 = " << nd0);
   NS_DEBUG ("nd1 = " << nd1);
