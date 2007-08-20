@@ -25,6 +25,7 @@
 #include "ns3/simulator.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
+#include "ns3/queue.h"
 
 namespace ns3 {
 
@@ -40,8 +41,12 @@ void
 AsciiTrace::TraceAllQueues (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/devices/*/queue/*",
-                      MakeCallback (&AsciiTrace::LogDevQueue, this));
+  TraceRoot::Connect ("/nodes/*/devices/*/queue/enqueue",
+                      MakeCallback (&AsciiTrace::LogDevQueueEnqueue, this));
+  TraceRoot::Connect ("/nodes/*/devices/*/queue/dequeue",
+                      MakeCallback (&AsciiTrace::LogDevQueueDequeue, this));
+  TraceRoot::Connect ("/nodes/*/devices/*/queue/drop",
+                      MakeCallback (&AsciiTrace::LogDevQueueDrop, this));
 }
 void
 AsciiTrace::TraceAllNetDeviceRx (void)
@@ -52,8 +57,34 @@ AsciiTrace::TraceAllNetDeviceRx (void)
 }
 
 void 
-AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
+AsciiTrace::LogDevQueueEnqueue (TraceContext const &context, 
+  Packet const &packet)
 {
+  m_os << "+ ";
+  m_os << Simulator::Now ().GetSeconds () << " ";
+  context.Print (m_os);
+  m_os << " pkt-uid=" << packet.GetUid () << " ";
+  packet.Print (m_os);
+  m_os << std::endl;
+}
+
+void 
+AsciiTrace::LogDevQueueDequeue (TraceContext const &context, 
+  Packet const &packet)
+{
+  m_os << "- ";
+  m_os << Simulator::Now ().GetSeconds () << " ";
+  context.Print (m_os);
+  m_os << " pkt-uid=" << packet.GetUid () << " ";
+  packet.Print (m_os);
+  m_os << std::endl;
+}
+
+void 
+AsciiTrace::LogDevQueueDrop (TraceContext const &context, 
+  Packet const &packet)
+{
+  m_os << "d ";
   m_os << Simulator::Now ().GetSeconds () << " ";
   context.Print (m_os);
   m_os << " pkt-uid=" << packet.GetUid () << " ";
@@ -63,7 +94,7 @@ AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
 void 
 AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
 {
-  m_os << Simulator::Now ().GetSeconds () << " ";
+  m_os << "r " << Simulator::Now ().GetSeconds () << " ";
   context.Print (m_os);
   m_os << " pkt-uid=" << p.GetUid () << " ";
   p.Print (m_os);

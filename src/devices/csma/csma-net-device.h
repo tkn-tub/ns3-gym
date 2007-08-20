@@ -99,8 +99,23 @@ enum CsmaEncapsulationMode {
    *
    * \param node the Node to which this device is connected.
    * \param addr The source MAC address of the net device.
+   * \param pktType the type of encapsulation
    */
   CsmaNetDevice (Ptr<Node> node, Eui48Address addr, CsmaEncapsulationMode pktType);
+
+  /**
+   * Construct a CsmaNetDevice
+   *
+   * This is the constructor for the CsmaNetDevice.  It takes as a
+   * parameter the Node to which this device is connected.  Ownership of the
+   * Node pointer is not implied and the node must not be deleted.
+   *
+   * \param node the Node to which this device is connected.
+   * \param addr The source MAC address of the net device.
+   * \param pktType the type of encapsulation
+   * \param sendEnable whether this device is able to send
+   * \param receiveEnable whether this device is able to receive
+   */
   CsmaNetDevice (Ptr<Node> node, Eui48Address addr,
                    CsmaEncapsulationMode pktType,
                    bool sendEnable, bool receiveEnable);

@@ -1586,6 +1586,7 @@ GlobalRouteManagerImplTest::RunTests (void)
     1);
 
   GlobalRoutingLSA* lsa0 = new GlobalRoutingLSA ();
+  lsa0->SetLSType (GlobalRoutingLSA::RouterLSA);
   lsa0->SetLinkStateId ("0.0.0.0");
   lsa0->SetAdvertisingRouter ("0.0.0.0");
   lsa0->AddLinkRecord (lr0);
@@ -1605,6 +1606,7 @@ GlobalRouteManagerImplTest::RunTests (void)
     1);
 
   GlobalRoutingLSA* lsa1 = new GlobalRoutingLSA ();
+  lsa1->SetLSType (GlobalRoutingLSA::RouterLSA);
   lsa1->SetLinkStateId ("0.0.0.1");
   lsa1->SetAdvertisingRouter ("0.0.0.1");
   lsa1->AddLinkRecord (lr2);
@@ -1648,6 +1650,7 @@ GlobalRouteManagerImplTest::RunTests (void)
     1);
 
   GlobalRoutingLSA* lsa2 = new GlobalRoutingLSA ();
+  lsa2->SetLSType (GlobalRoutingLSA::RouterLSA);
   lsa2->SetLinkStateId ("0.0.0.2");
   lsa2->SetAdvertisingRouter ("0.0.0.2");
   lsa2->AddLinkRecord (lr4);
@@ -1671,6 +1674,7 @@ GlobalRouteManagerImplTest::RunTests (void)
     1);
 
   GlobalRoutingLSA* lsa3 = new GlobalRoutingLSA ();
+  lsa3->SetLSType (GlobalRoutingLSA::RouterLSA);
   lsa3->SetLinkStateId ("0.0.0.3");
   lsa3->SetAdvertisingRouter ("0.0.0.3");
   lsa3->AddLinkRecord (lr10);

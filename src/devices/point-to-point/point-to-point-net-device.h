@@ -175,7 +175,6 @@ protected:
   virtual Ptr<Channel> DoGetChannel(void) const;
   /**
    * Set a new default data rate
-   * @param Data rate to set for new default
    */
   static void SetDefaultRate(const DataRate&);
 
