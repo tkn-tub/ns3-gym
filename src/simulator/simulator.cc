@@ -546,6 +546,7 @@ public:
 private:
   uint64_t NowUs ();
   bool RunOneTest (void);
+  void RunTestsConst (void) const;
   void A (int a);
   void B (int b);
   void C (int c);
@@ -566,6 +567,24 @@ private:
   void cbaz3 (const int &, const int &, const int &);
   void cbaz4 (const int &, const int &, const int &, const int &);
   void cbaz5 (const int &, const int &, const int &, const int &, const int &);
+
+  void bar0c (void) const;
+  void bar1c (int) const;
+  void bar2c (int, int) const;
+  void bar3c (int, int, int) const;
+  void bar4c (int, int, int, int) const;
+  void bar5c (int, int, int, int, int) const;
+  void baz1c (int &) const;
+  void baz2c (int &, int &) const;
+  void baz3c (int &, int &, int &) const;
+  void baz4c (int &, int &, int &, int &) const;
+  void baz5c (int &, int &, int &, int &, int &) const;
+  void cbaz1c (const int &) const;
+  void cbaz2c (const int &, const int &) const;
+  void cbaz3c (const int &, const int &, const int &) const;
+  void cbaz4c (const int &, const int &, const int &, const int &) const;
+  void cbaz5c (const int &, const int &, const int &, const int &, const int &) const;
+
   void destroy (void);
   
   bool m_b;
@@ -689,6 +708,57 @@ void
 SimulatorTests::cbaz5 (const int &, const int &, const int &, const int &, const int &)
 {}
 
+void 
+SimulatorTests::bar0c (void) const
+{}
+void 
+SimulatorTests::bar1c (int) const
+{}
+void 
+SimulatorTests::bar2c (int, int) const
+{}
+void 
+SimulatorTests::bar3c (int, int, int) const
+{}
+void 
+SimulatorTests::bar4c (int, int, int, int) const
+{}
+void 
+SimulatorTests::bar5c (int, int, int, int, int) const
+{}
+
+void
+SimulatorTests::baz1c (int &) const
+{}
+void
+SimulatorTests::baz2c (int &, int &) const
+{}
+void
+SimulatorTests::baz3c (int &, int &, int &) const
+{}
+void 
+SimulatorTests::baz4c (int &, int &, int &, int &) const
+{}
+void 
+SimulatorTests::baz5c (int &, int &, int &, int &, int &) const
+{}
+
+void
+SimulatorTests::cbaz1c (const int &) const
+{}
+void
+SimulatorTests::cbaz2c (const int &, const int &) const
+{}
+void
+SimulatorTests::cbaz3c (const int &, const int &, const int &) const
+{}
+void 
+SimulatorTests::cbaz4c (const int &, const int &, const int &, const int &) const
+{}
+void 
+SimulatorTests::cbaz5c (const int &, const int &, const int &, const int &, const int &) const
+{}
+
 bool
 SimulatorTests::RunOneTest (void)
 {
@@ -723,6 +793,80 @@ SimulatorTests::RunOneTest (void)
     }
   return ok;
 }
+void
+SimulatorTests::RunTestsConst (void) const
+{
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar0c, this);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar1c, this, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar2c, this, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar3c, this, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar4c, this, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar5c, this, 0, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar0c, Ptr<SimulatorTests> (this));
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar1c, Ptr<SimulatorTests> (this), 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar2c, Ptr<SimulatorTests> (this), 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar3c, Ptr<SimulatorTests> (this), 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar4c, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::bar5c, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::cbaz1c, this, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::cbaz2c, this, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::cbaz3c, this, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::cbaz4c, this, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::cbaz5c, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar0c, this);
+  Simulator::ScheduleNow (&SimulatorTests::bar1c, this, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar2c, this, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar3c, this, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar4c, this, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar5c, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::cbaz1c, this, 0);
+  Simulator::ScheduleNow (&SimulatorTests::cbaz2c, this, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::cbaz3c, this, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::cbaz4c, this, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::cbaz5c, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar0c, Ptr<SimulatorTests> (this));
+  Simulator::ScheduleNow (&SimulatorTests::bar1c, Ptr<SimulatorTests> (this), 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar2c, Ptr<SimulatorTests> (this), 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar3c, Ptr<SimulatorTests> (this), 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar4c, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::bar5c, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar0c, this);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar1c, this, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar2c, this, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar3c, this, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar4c, this, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar5c, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::cbaz1c, this, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::cbaz2c, this, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::cbaz3c, this, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::cbaz4c, this, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::cbaz5c, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar0c, Ptr<SimulatorTests> (this));
+  Simulator::ScheduleDestroy (&SimulatorTests::bar1c, Ptr<SimulatorTests> (this), 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar2c, Ptr<SimulatorTests> (this), 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar3c, Ptr<SimulatorTests> (this), 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar4c, Ptr<SimulatorTests> (this), 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::bar5c, Ptr<SimulatorTests> (this), 0, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::baz1c, this, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::baz2c, this, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::baz3c, this, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::baz4c, this, 0, 0, 0, 0);
+  Simulator::Schedule (Seconds (0.0), &SimulatorTests::baz5c, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::baz1c, this, 0);
+  Simulator::ScheduleNow (&SimulatorTests::baz2c, this, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::baz3c, this, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::baz4c, this, 0, 0, 0, 0);
+  Simulator::ScheduleNow (&SimulatorTests::baz5c, this, 0, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::baz1c, this, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::baz2c, this, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::baz3c, this, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::baz4c, this, 0, 0, 0, 0);
+  Simulator::ScheduleDestroy (&SimulatorTests::baz5c, this, 0, 0, 0, 0, 0);
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+}
+
 bool 
 SimulatorTests::RunTests (void)
 {
@@ -869,6 +1013,8 @@ SimulatorTests::RunTests (void)
   Simulator::ScheduleDestroy (&SimulatorTests::baz4, this, 0, 0, 0, 0);
   Simulator::ScheduleDestroy (&SimulatorTests::baz5, this, 0, 0, 0, 0, 0);
 #endif
+
+  RunTestsConst ();
 
   EventId nowId = Simulator::ScheduleNow (&foo0);
   m_destroyId = Simulator::ScheduleDestroy (&SimulatorTests::destroy, this);
