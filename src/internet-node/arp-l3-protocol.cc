@@ -84,12 +84,11 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 }
 
 void 
-ArpL3Protocol::Receive(Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from)
+ArpL3Protocol::Receive(Ptr<NetDevice> device, Packet& p, uint16_t protocol, const Address &from)
 {
   ArpCache *cache = FindCache (device);
   ArpHeader arp;
-  Packet packet = p;
-  packet.RemoveHeader (arp);
+  p.RemoveHeader (arp);
   
   NS_DEBUG ("ARP: received "<< (arp.IsRequest ()? "request" : "reply") <<
             " node="<<m_node->GetId ()<<", got request from " <<

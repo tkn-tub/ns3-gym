@@ -221,7 +221,7 @@ Ipv4L3Protocol::SetDefaultRoute (Ipv4Address nextHop,
 
 void
 Ipv4L3Protocol::Lookup (Ipv4Header const &ipHeader,
-                        Packet packet,
+                        Packet& packet,
                         Ipv4RoutingProtocol::RouteReplyCallback routeReply)
 {
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin ();
@@ -310,7 +310,7 @@ Ipv4L3Protocol::FindInterfaceForDevice (Ptr<const NetDevice> device)
 }  
 
 void 
-Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from)
+Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Packet& p, uint16_t protocol, const Address &from)
 {
   uint32_t index = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
@@ -322,26 +322,25 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protoc
         }
       index++;
     }
-  Packet packet = p;
   Ipv4Header ipHeader;
-  packet.RemoveHeader (ipHeader);
+  p.RemoveHeader (ipHeader);
 
   if (!ipHeader.IsChecksumOk ()) 
     {
       return;
     }
 
-  if (Forwarding (packet, ipHeader, device)) 
+  if (Forwarding (p, ipHeader, device)) 
     {
       return;
     }
 
-  ForwardUp (packet, ipHeader);
+  ForwardUp (p, ipHeader);
 }
 
 
 void 
-Ipv4L3Protocol::Send (Packet const &packet, 
+Ipv4L3Protocol::Send (Packet& packet, 
             Ipv4Address source, 
             Ipv4Address destination,
             uint8_t protocol)
@@ -365,12 +364,10 @@ Ipv4L3Protocol::Send (Packet const &packet,
            ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
         {
           Ipv4Interface *outInterface = *ifaceIter;
-          Packet packetCopy = packet;
-
-          NS_ASSERT (packetCopy.GetSize () <= outInterface->GetMtu ());
-          packetCopy.AddHeader (ipHeader);
-          m_txTrace (packetCopy, ifaceIndex);
-          outInterface->Send (packetCopy, destination);
+          NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
+          packet.AddHeader (ipHeader);
+          m_txTrace (packet, ifaceIndex);
+          outInterface->Send (packet, destination);
         }
     }
   else
@@ -391,7 +388,7 @@ Ipv4L3Protocol::Send (Packet const &packet,
 void
 Ipv4L3Protocol::SendRealOut (bool found,
                              Ipv4Route const &route,
-                             Packet packet,
+                             Packet& packet,
                              Ipv4Header const &ipHeader)
 {
   if (!found)
@@ -416,7 +413,7 @@ Ipv4L3Protocol::SendRealOut (bool found,
 
 
 bool
-Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device)
+Ipv4L3Protocol::Forwarding (Packet& packet, Ipv4Header &ipHeader, Ptr<NetDevice> device)
 {
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
@@ -471,7 +468,7 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
 
 
 void
-Ipv4L3Protocol::ForwardUp (Packet p, Ipv4Header const&ip)
+Ipv4L3Protocol::ForwardUp (Packet& p, Ipv4Header const&ip)
 {
   Ptr<Ipv4L4Demux> demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
   Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());

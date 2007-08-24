@@ -73,39 +73,26 @@ DropTailQueue::DoEnqueue (const Packet& p)
   return true;
 }
 
-bool
-DropTailQueue::DoDequeue (Packet& p)
+Packet
+DropTailQueue::DoDequeue ()
 {
-  NS_DEBUG("DropTailQueue::DoDequeue (" << &p << ")");
-
-  if (m_packets.empty()) 
-    {
-      NS_DEBUG("DropTailQueue::DoDequeue (): Queue empty");
-      return false;
-    }
-
-  p = m_packets.front ();
+  NS_DEBUG("DropTailQueue::DoDequeue ( )");
+  NS_ASSERT(!IsEmpty());
+  Packet p = m_packets.front ();
   m_packets.pop ();
 
   NS_DEBUG("DropTailQueue::DoDequeue (): Popped " << &p << " <= true");
 
-  return true;
+  return p;
 }
 
-bool
-DropTailQueue::DoPeek (Packet& p)
+Packet
+DropTailQueue::DoPeek ()
 {
-  NS_DEBUG("DropTailQueue::DoPeek (" << &p << ")");
+  NS_DEBUG("DropTailQueue::DoPeek ( )");
+  NS_ASSERT(!IsEmpty());
 
-  if (m_packets.empty()) 
-    {
-      NS_DEBUG("DropTailQueue::DoPeek (): Queue empty");
-      return false;
-    }
-
-  p = m_packets.front ();
-
-  return true;
+  return m_packets.front ();
 }
 
 }; // namespace ns3

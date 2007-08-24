@@ -51,8 +51,8 @@ public:
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
-  virtual int Send (const Packet &p);
-  virtual int SendTo(const Address &address,const Packet &p);
+  virtual int Send (Packet &p);
+  virtual int SendTo(const Address &address,Packet &p);
 
 private:
 
@@ -60,10 +60,10 @@ private:
   friend class Udp;
   // invoked by Udp class
   int FinishBind (void);
-  void ForwardUp (const Packet &p, Ipv4Address ipv4, uint16_t port);
+  void ForwardUp (Packet &p, Ipv4Address ipv4, uint16_t port);
   void Destroy (void);
-  int DoSendTo (const Packet &p, const Address &daddr);
-  int DoSendTo (const Packet &p, Ipv4Address daddr, uint16_t dport);
+  int DoSendTo (Packet &p, const Address &daddr);
+  int DoSendTo (Packet &p, Ipv4Address daddr, uint16_t dport);
 
   Ipv4EndPoint *m_endPoint;
   Ptr<Node> m_node;

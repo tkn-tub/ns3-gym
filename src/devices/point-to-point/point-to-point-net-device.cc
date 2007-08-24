@@ -117,18 +117,17 @@ void PointToPointNetDevice::SetInterframeGap(const Time& t)
   m_tInterframeGap = t;
 }
 
-bool PointToPointNetDevice::SendTo (const Packet& packet, const Address& dest, 
+bool PointToPointNetDevice::SendTo (Packet& packet, const Address& dest, 
                                     uint16_t protocolNumber)
 {
-  Packet p = packet;
-  NS_DEBUG ("PointToPointNetDevice::SendTo (" << &p << ", " << &dest << ")");
-  NS_DEBUG ("PointToPointNetDevice::SendTo (): UID is " << p.GetUid () << ")");
+  NS_DEBUG ("PointToPointNetDevice::SendTo (" << &packet << ", " << &dest << ")");
+  NS_DEBUG ("PointToPointNetDevice::SendTo (): UID is " << packet.GetUid () << ")");
 
   // GFR Comment. Why is this an assertion? Can't a link legitimately
   // "go down" during the simulation?  Shouldn't we just wait for it
   // to come back up?
   NS_ASSERT (IsLinkUp ());
-  AddHeader(p, protocolNumber);
+  AddHeader(packet, protocolNumber);
 
 //
 // This class simulates a point to point device.  In the case of a serial
@@ -139,16 +138,16 @@ bool PointToPointNetDevice::SendTo (const Packet& packet, const Address& dest,
 // trnsmission; otherwise we send it now.
   if (m_txMachineState == READY) 
     {
-      return TransmitStart (p);
+      return TransmitStart (packet);
     }
   else
     {
-      return m_queue->Enqueue(p);
+      return m_queue->Enqueue(packet);
     }
 }
 
   bool
-PointToPointNetDevice::TransmitStart (Packet &p)
+PointToPointNetDevice::TransmitStart (Packet& p)
 {
   NS_DEBUG ("PointToPointNetDevice::TransmitStart (" << &p << ")");
   NS_DEBUG (
@@ -184,8 +183,8 @@ void PointToPointNetDevice::TransmitComplete (void)
 //
   NS_ASSERT_MSG(m_txMachineState == BUSY, "Must be BUSY if transmitting");
   m_txMachineState = READY;
-  Packet p;
-  if (!m_queue->Dequeue(p)) return; // Nothing to do at this point
+  if (m_queue->IsEmpty()) return; // Nothing to do at this point
+  Packet p = m_queue->Dequeue();
   TransmitStart(p);
 }
 
@@ -236,11 +235,9 @@ void PointToPointNetDevice::Receive (Packet& p)
 {
   NS_DEBUG ("PointToPointNetDevice::Receive (" << &p << ")");
   uint16_t protocol = 0;
-  Packet packet = p;
-
-  m_rxTrace (packet);
-  ProcessHeader(packet, protocol);
-  ForwardUp (packet, protocol, GetBroadcast ());
+  m_rxTrace (p);
+  ProcessHeader(p, protocol);
+  ForwardUp (p, protocol, GetBroadcast ());
 }
 
 Ptr<Queue> PointToPointNetDevice::GetQueue(void) const 

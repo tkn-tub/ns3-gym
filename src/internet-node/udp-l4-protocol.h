@@ -74,7 +74,7 @@ public:
    * \param sport The source port number
    * \param dport The destination port number
    */
-  void Send (Packet packet,
+  void Send (Packet& packet,
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport);
   /**

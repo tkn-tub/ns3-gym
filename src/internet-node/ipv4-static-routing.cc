@@ -210,7 +210,7 @@ Ipv4StaticRouting::RemoveRoute (uint32_t index)
 
 bool
 Ipv4StaticRouting::RequestRoute (Ipv4Header const &ipHeader,
-                                 Packet packet,
+                                 Packet& packet,
                                  RouteReplyCallback routeReply)
 {
   Ipv4Route *route = LookupStatic (ipHeader.GetDestination ());

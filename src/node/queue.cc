@@ -49,7 +49,7 @@ QueueTraceType::IsEnqueue (void) const
 {
   return m_type == ENQUEUE;
 }
-bool 
+bool
 QueueTraceType::IsDequeue (void) const
 {
   return m_type == DEQUEUE;
@@ -122,28 +122,25 @@ Queue::Enqueue (const Packet& p)
   return retval;
 }
 
-bool
-Queue::Dequeue (Packet &p)
+Packet
+Queue::Dequeue ()
 {
-  NS_DEBUG("Queue::Dequeue (" << &p << ")");
+  NS_ASSERT(!IsEmpty());
+  NS_DEBUG("Queue::Dequeue ( )");
 
-  bool retval = DoDequeue (p);
+  Packet p = DoDequeue ();
 
-  if (retval)
-    {
-      m_nBytes -= p.GetSize ();
-      m_nPackets--;
+  m_nBytes -= p.GetSize ();
+  m_nPackets--;
+  
+  NS_ASSERT (m_nBytes >= 0);
+  NS_ASSERT (m_nPackets >= 0);
+  
+  NS_DEBUG("Queue::Dequeue (): m_traceDequeue (p)");
 
-      NS_ASSERT (m_nBytes >= 0);
-      NS_ASSERT (m_nPackets >= 0);
+  m_traceDequeue (p);
 
-      NS_DEBUG("Queue::Dequeue (): m_traceDequeue (p)");
-
-      const Packet packet = p;
-      m_traceDequeue (packet);
-    }
-
-  return retval;
+  return p;
 }
 
 void
@@ -154,12 +151,13 @@ Queue::DequeueAll (void)
   NS_ASSERT (!"Don't know what to do with dequeued packets!");
 }
 
-bool
-Queue::Peek (Packet &p)
+Packet
+Queue::Peek ()
 {
-  NS_DEBUG("Queue::Peek (" << &p << ")");
+  NS_ASSERT(!IsEmpty());
+  NS_DEBUG("Queue::Peek ( )");
 
-  return DoPeek (p);
+  return DoPeek ();
 }
 
 

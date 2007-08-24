@@ -274,13 +274,12 @@ CsmaNetDevice::DoNeedsArp (void) const
 
 bool
 CsmaNetDevice::SendTo (
-  const Packet& packet, 
+  Packet& packet, 
   const Address& dest, 
   uint16_t protocolNumber)
 {
-  Packet p = packet;
-  NS_DEBUG ("CsmaNetDevice::SendTo (" << &p << ")");
-  NS_DEBUG ("CsmaNetDevice::SendTo (): UID is " << p.GetUid () << ")");
+  NS_DEBUG ("CsmaNetDevice::SendTo (" << &packet << ")");
+  NS_DEBUG ("CsmaNetDevice::SendTo (): UID is " << packet.GetUid () << ")");
 
   NS_ASSERT (IsLinkUp ());
 
@@ -289,10 +288,10 @@ CsmaNetDevice::SendTo (
     return false;
 
   Eui48Address destination = Eui48Address::ConvertFrom (dest);
-  AddHeader(p, destination, protocolNumber);
+  AddHeader(packet, destination, protocolNumber);
 
   // Place the packet to be sent on the send queue
-  if (m_queue->Enqueue(p) == false )
+  if (m_queue->Enqueue(packet) == false )
     {
       return false;
     }
@@ -301,11 +300,10 @@ CsmaNetDevice::SendTo (
   // transmission (see TransmitCompleteEvent)
   if (m_txMachineState == READY) 
     {
+      if (m_queue->IsEmpty()) return true; // Nothing else to do
       // Store the next packet to be transmitted
-      if (m_queue->Dequeue (m_currentPkt))
-        {
-          TransmitStart();
-        }
+      m_currentPkt = m_queue->Dequeue();
+      TransmitStart();
     }
   return true;
 }
@@ -389,9 +387,8 @@ CsmaNetDevice::TransmitAbort (void)
             m_currentPkt.GetUid () << ")");
 
   // Try to transmit a new packet
-  bool found;
-  found = m_queue->Dequeue (m_currentPkt);
-  NS_ASSERT_MSG(found, "IsEmpty false but no Packet on queue?");
+  if (m_queue->IsEmpty()) return; //No packet to transmit
+  m_currentPkt = m_queue->Dequeue ();
   m_backoff.ResetBackoffTime();
   m_txMachineState = READY;
   TransmitStart ();
@@ -438,18 +435,10 @@ CsmaNetDevice::TransmitReadyEvent (void)
   NS_ASSERT_MSG(m_txMachineState == GAP, "Must be in interframe gap");
   m_txMachineState = READY;
 
+  if (m_queue->IsEmpty()) return; // No more to transmit, remain ready
   // Get the next packet from the queue for transmitting
-  if (m_queue->IsEmpty())
-    {
-      return;
-    }
-  else
-    {
-      bool found;
-      found = m_queue->Dequeue (m_currentPkt);
-      NS_ASSERT_MSG(found, "IsEmpty false but no Packet on queue?");
-      TransmitStart ();
-    }
+  m_currentPkt = m_queue->Dequeue ();
+  TransmitStart ();
 }
 
 TraceResolver *
@@ -495,32 +484,31 @@ CsmaNetDevice::AddQueue (Ptr<Queue> q)
 }
 
 void
-CsmaNetDevice::Receive (const Packet& packet)
+CsmaNetDevice::Receive (Packet& packet)
 {
   EthernetHeader header (false);
   EthernetTrailer trailer;
   Eui48Address broadcast;
   Eui48Address destination;
-  Packet p = packet;
 
-  NS_DEBUG ("CsmaNetDevice::Receive UID is (" << p.GetUid() << ")");
+  NS_DEBUG ("CsmaNetDevice::Receive UID is (" << packet.GetUid() << ")");
 
   // Only receive if send side of net device is enabled
   if (!IsReceiveEnabled())
     {
-      m_dropTrace (p);
+      m_dropTrace (packet);
       return;
     }
 
   if (m_encapMode == RAW)
     {
       ForwardUp (packet, 0, GetBroadcast ());
-      m_dropTrace (p);
+      //m_dropTrace (packet);
       return;
     }
-  p.RemoveTrailer(trailer);
-  trailer.CheckFcs(p);
-  p.RemoveHeader(header);
+  packet.RemoveTrailer(trailer);
+  trailer.CheckFcs(packet);
+  packet.RemoveHeader(header);
 
   broadcast = Eui48Address::ConvertFrom (GetBroadcast ());
   destination = Eui48Address::ConvertFrom (GetAddress ());
@@ -528,11 +516,11 @@ CsmaNetDevice::Receive (const Packet& packet)
       (header.GetDestination() != destination))
     {
       // not for us.
-      m_dropTrace (p);
+      m_dropTrace (packet);
       return;
     }
 
-  m_rxTrace (p);
+  m_rxTrace (packet);
 //
 // protocol must be initialized to avoid a compiler warning in the RAW
 // case that breaks the optimized build.
@@ -547,7 +535,7 @@ CsmaNetDevice::Receive (const Packet& packet)
       break;
     case LLC: {
       LlcSnapHeader llc;
-      p.RemoveHeader (llc);
+      packet.RemoveHeader (llc);
       protocol = llc.GetType ();
     } break;
     case RAW:
@@ -555,7 +543,7 @@ CsmaNetDevice::Receive (const Packet& packet)
       break;
     }
   
-  ForwardUp (p, protocol, header.GetSource ());
+  ForwardUp (packet, protocol, header.GetSource ());
   return;
 }
 

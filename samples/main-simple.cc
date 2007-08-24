@@ -14,7 +14,8 @@ static void
 GenerateTraffic (Ptr<Socket> socket, uint32_t size)
 {
   std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
-  socket->Send (Packet (size));
+  Packet p(size);
+  socket->Send (p);
   if (size > 0)
     {
       Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);

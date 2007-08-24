@@ -118,7 +118,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  void Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from);
+  void Receive( Ptr<NetDevice> device, Packet& p, uint16_t protocol, const Address &from);
 
   /**
    * \param packet packet to send
@@ -129,7 +129,7 @@ public:
    * Higher-level layers call this method to send a packet
    * down the stack to the MAC and PHY layers.
    */
-  void Send (Packet const &packet, Ipv4Address source, 
+  void Send (Packet& packet, Ipv4Address source, 
 	     Ipv4Address destination, uint8_t protocol);
 
 
@@ -151,7 +151,7 @@ public:
                         uint32_t interface);
 
   void Lookup (Ipv4Header const &ipHeader,
-               Packet packet,
+               Packet& packet,
                Ipv4RoutingProtocol::RouteReplyCallback routeReply);
 
   uint32_t GetNRoutes (void);
@@ -183,10 +183,10 @@ private:
 
   void SendRealOut (bool found,
                     Ipv4Route const &route,
-                    Packet packet,
+                    Packet& packet,
                     Ipv4Header const &ipHeader);
-  bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device);
-  void ForwardUp (Packet p, Ipv4Header const&ip);
+  bool Forwarding (Packet& packet, Ipv4Header &ipHeader, Ptr<NetDevice> device);
+  void ForwardUp (Packet& p, Ipv4Header const&ip);
   uint32_t AddIpv4Interface (Ipv4Interface *interface);
   void SetupLoopback (void);
   TraceResolver *InterfacesCreateTraceResolver (TraceContext const &context) const;

@@ -52,7 +52,7 @@ public:
   Ipv4StaticRouting () : m_defaultRoute (0) {}
 
   virtual bool RequestRoute (Ipv4Header const &ipHeader,
-                             Packet packet,
+                             Packet& packet,
                              RouteReplyCallback routeReply);
 
 

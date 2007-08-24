@@ -173,7 +173,7 @@ public:
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  virtual int Send (const Packet &p) = 0;
+  virtual int Send (Packet &p) = 0;
   
   /**
    * \brief Send data to a specified peer.
@@ -182,7 +182,7 @@ public:
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  virtual int SendTo(const Address &address,const Packet &p) = 0;
+  virtual int SendTo(const Address &address,Packet &p) = 0;
 
 protected:
   void NotifyCloseCompleted (void);
