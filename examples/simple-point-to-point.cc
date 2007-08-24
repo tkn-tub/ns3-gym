@@ -71,6 +71,7 @@ main (int argc, char *argv[])
 
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
+  // remember to add #include "ns3/debug.h" before enabling these
 #if 0 
   DebugComponentEnable("Me");
   DebugComponentEnable("Object");

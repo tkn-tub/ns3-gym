@@ -251,7 +251,7 @@ public:
    * forwards it to the higher layers by calling this method
    * which is responsible for passing it up to the Rx callback.
    */
-  bool ForwardUp (const Packet& p, uint32_t param, const Address &address);
+  bool ForwardUp (const Packet& p, uint16_t param, const Address &address);
 
 
   /**

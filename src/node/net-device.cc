@@ -197,7 +197,7 @@ NetDevice::GetChannel (void) const
 
 // Receive packets from below
 bool
-NetDevice::ForwardUp(const Packet& p, uint32_t param, const Address &from)
+NetDevice::ForwardUp(const Packet& p, uint16_t param, const Address &from)
 {
   bool retval = false;
 

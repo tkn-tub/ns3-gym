@@ -57,7 +57,7 @@ public:
    * \param position a reference to another mobility model
    * \returns the distance between the two objects. Unit is meters.
    */
-  double GetDistanceFrom (const MobilityModel &position) const;
+  double GetDistanceFrom (Ptr<const MobilityModel> position) const;
 protected:
   /**
    * Must be invoked by subclasses when the course of the
