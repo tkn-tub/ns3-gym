@@ -230,6 +230,20 @@ Ipv4StaticRouting::GetNRoutes (void)
   n += m_networkRoutes.size ();
   return n;
 }
+
+Ipv4Route *
+Ipv4StaticRouting::GetDefaultRoute ()
+{
+  if (m_defaultRoute != 0)
+    {
+      return m_defaultRoute;
+    }
+  else
+    {
+      return 0;
+    }
+}
+
 Ipv4Route *
 Ipv4StaticRouting::GetRoute (uint32_t index)
 {
@@ -331,14 +345,37 @@ Ipv4StaticRouting::RequestRoute (
 
   NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): destination = " << 
     ipHeader.GetDestination ());
-//
-// First, see if this is a multicast packet we have a route for.  If we
-// have a route, then send the packet down each of the specified interfaces.
-//
+
   if (ipHeader.GetDestination ().IsMulticast ())
     {
       NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): Multicast destination");
-
+//
+// We have a multicast packet we're going to send.  There are two distinct
+// cases we need to support.  The first is if the current node is the source
+// of the packet.  In that case, we don't want to have to consult multicast
+// routing tables (nor build them) in order to send multicasts.  The interface
+// index (ifIndex) is Ipv4RoutingProtocol::IF_INDEX_ANY if we're the source.
+//
+// The second case is if the current packet has gotten to us by being
+// received over one of our interfaces.  In this case, ifIndex is set to the
+// index over which we received the packet.  For these packets, we need to
+// consult the multicast routing table for a disposition.
+//
+// So, first let's see if we're the source.  In this case, we don't consult
+// the routing tables, but just return false and let the caller (up in 
+// ipv4-l3-protocol) flood the multicast packet out of all of its interfaces.
+// We can't really do it here even if we wanted to since we have no easy way
+// to get to the Ipv4 interface which we would need.
+//
+      if (ifIndex == Ipv4RoutingProtocol::IF_INDEX_ANY)
+        {
+          return false;
+        }
+//
+// If we fall through to this point, we have a multicast packet that has
+// not originated at this node.  We need to deal with forwarding.  Let's
+// see if we have a route, and if so go ahead and forward this puppy.
+//
       Ipv4MulticastRoute *mRoute = LookupStatic(ipHeader.GetSource (),
         ipHeader.GetDestination (), ifIndex);
 
@@ -349,14 +386,15 @@ Ipv4StaticRouting::RequestRoute (
           for (uint32_t i = 0; i < mRoute->GetNOutputInterfaces (); ++i)
             {
               Packet p = packet;
+              Ipv4Header h = ipHeader;
               Ipv4Route route = 
-                Ipv4Route::CreateHostRouteTo(ipHeader.GetDestination (), 
+                Ipv4Route::CreateHostRouteTo(h.GetDestination (), 
                   mRoute->GetOutputInterface(i));
               NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): "
                 "Send via interface " << mRoute->GetOutputInterface(i));
-              routeReply (true, route, p, ipHeader);
-              return true;
+              routeReply (true, route, p, h);
             }
+          return true;
         }
       return false; // Let other routing protocols try to handle this
     }

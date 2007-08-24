@@ -174,9 +174,12 @@ public:
   uint32_t AddInterface (Ptr<NetDevice> device);
   Ipv4Interface * GetInterface (uint32_t i) const;
   uint32_t GetNInterfaces (void) const;
+
+  uint32_t FindInterfaceForAddr (Ipv4Address addr) const;
+  uint32_t FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const;
   
-  virtual void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
-  virtual void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);
+  void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
+  void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);
 
   void SetAddress (uint32_t i, Ipv4Address address);
   void SetNetworkMask (uint32_t i, Ipv4Mask mask);

@@ -275,6 +275,36 @@ public:
   virtual uint32_t GetNInterfaces (void) = 0;  
 
   /**
+   * \brief Find and return the interface ID of the interface that has been
+   *        assigned the specified IP address.
+   * \param addr The IP address assigned to the interface of interest.
+   * \returns The index of the ipv4 interface with the given address.
+   *
+   * Each IP interface has an IP address associated with it.  It is often 
+   * useful to search the list of interfaces for one that corresponds to 
+   * a known IP Address.  This call takes an IP address as a parameter and
+   * returns the interface index of the first interface that has been assigned
+   * that address.  If the address is not found, this function asserts.
+   */
+  virtual uint32_t FindInterfaceForAddr (Ipv4Address addr) const = 0;
+
+  /**
+   * \brief Find and return the interface ID of the interface that has been
+   *        assigned the specified (masked) IP address.
+   * \param addr The IP address assigned to the interface of interest.
+   * \param mask The address mask to be used in address matching.
+   * \returns The index of the ipv4 interface with the given address.
+   *
+   * Each IP interface has an IP address associated with it.  It is often 
+   * useful to search the list of interfaces for one that corresponds to 
+   * a known IP Address.  This call takes an IP address and an IP address
+   * mask as parameters and returns the interface index of the first interface
+   * that matches the masked IP address.
+   */
+  virtual uint32_t FindInterfaceForAddr (Ipv4Address addr, 
+    Ipv4Mask mask) const = 0;
+
+  /**
    * \param i index of ipv4 interface
    * \returns the NetDevice associated with the ipv4 interface index
    */

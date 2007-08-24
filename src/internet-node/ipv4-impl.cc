@@ -136,11 +136,25 @@ Ipv4Impl::AddInterface (Ptr<NetDevice> device)
 {
   return m_ipv4->AddInterface (device);
 }
+
 uint32_t 
 Ipv4Impl::GetNInterfaces (void)
 {
   return m_ipv4->GetNInterfaces ();
 }
+
+uint32_t 
+Ipv4Impl::FindInterfaceForAddr (Ipv4Address addr) const
+{
+  return m_ipv4->FindInterfaceForAddr (addr);
+}
+
+uint32_t 
+Ipv4Impl::FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const
+{
+  return m_ipv4->FindInterfaceForAddr (addr, mask);
+}
+
 Ptr<NetDevice>
 Ipv4Impl::GetNetDevice (uint32_t i)
 {

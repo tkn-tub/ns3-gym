@@ -84,6 +84,21 @@ main (int argc, char *argv[])
   DebugComponentEnable("ArpIpv4Interface");
   DebugComponentEnable("Ipv4LoopbackInterface");
 #endif
+
+  DebugComponentEnable("Channel");
+  DebugComponentEnable("CsmaChannel");
+  DebugComponentEnable("CsmaMulticast");
+  DebugComponentEnable("CsmaNetDevice");
+  DebugComponentEnable("OnOffApplication");
+  DebugComponentEnable("PacketSocket");
+  DebugComponentEnable("UdpSocket");
+  DebugComponentEnable("UdpL4Protocol");
+  DebugComponentEnable("Ipv4L3Protocol");
+  DebugComponentEnable("Ipv4StaticRouting");
+  DebugComponentEnable("Ipv4Interface");
+  DebugComponentEnable("ArpIpv4Interface");
+  DebugComponentEnable("Ipv4LoopbackInterface");
+
 //
 // Set up default values for the simulation.  Use the DefaultValue::Bind()
 // technique to tell the system what subclass of Queue to use.  The Bind
@@ -151,56 +166,32 @@ main (int argc, char *argv[])
 // We've got the "hardware" in place.  Now we need to add IP addresses.
 //
   NS_DEBUG("Assign IP Addresses.");
-//
-// XXX BUGBUG
-// Need a better way to get the interface index.  The point-to-point topology
-// as implemented can't return the index since it creates interfaces on both
-// sides (i.e., it does AddIpv4Addresses, not AddIpv4Address).  We need a
-// method on Ipv4 to find the interface index corresponding to a given ipv4 
-// address.
-//
-// First, assign IP addresses to the net devices and associated interfaces
-// on Lan0.  The AddIpv4Address method returns an Ipv4 interface index.
-// Interpret ifIndexNd0 as the interface index to use to reference the
-// net device we created on node zero when coming in from the Ipv4 interface.
-// Net device numbers and interface indices are distinct.  Interpret
-// ifIndexNd2Lan0 as the interface index to use to reference the
-// net device we created that connects node two to lan zero.
-//
-  uint32_t ifIndexNd0 = CsmaIpv4Topology::AddIpv4Address (n0, nd0, 
-    Ipv4Address ("10.1.1.1"), Ipv4Mask ("255.255.255.0"));
 
-  uint32_t ifIndexNd1 = CsmaIpv4Topology::AddIpv4Address (n1, nd1, 
-    Ipv4Address ("10.1.1.2"), Ipv4Mask ("255.255.255.0"));
+  CsmaIpv4Topology::AddIpv4Address (n0, nd0, Ipv4Address ("10.1.1.1"), 
+    Ipv4Mask ("255.255.255.0"));
 
-  uint32_t ifIndexNd2Lan0 = CsmaIpv4Topology::AddIpv4Address (n2, nd2Lan0,
-    Ipv4Address ("10.1.1.3"), Ipv4Mask ("255.255.255.0"));
+  CsmaIpv4Topology::AddIpv4Address (n1, nd1, Ipv4Address ("10.1.1.2"), 
+    Ipv4Mask ("255.255.255.0"));
+
+//
+// We'll need these addresses later
+//
+  Ipv4Address n2Lan0Addr ("10.1.1.3");
+  Ipv4Address n2Lan1Addr ("10.1.2.1");
+
+  CsmaIpv4Topology::AddIpv4Address (n2, nd2Lan0, n2Lan0Addr, 
+    Ipv4Mask ("255.255.255.0"));
 //
 // Assign IP addresses to the net devices and associated interfaces on Lan1
 //
-  uint32_t ifIndexNd2Lan1 = CsmaIpv4Topology::AddIpv4Address (n2, nd2Lan1, 
-    Ipv4Address ("10.1.2.1"), Ipv4Mask ("255.255.255.0"));
+  CsmaIpv4Topology::AddIpv4Address (n2, nd2Lan1, n2Lan1Addr, 
+    Ipv4Mask ("255.255.255.0"));
 
-  uint32_t ifIndexNd3 = CsmaIpv4Topology::AddIpv4Address (n3, nd1, 
-    Ipv4Address ("10.1.2.2"), Ipv4Mask ("255.255.255.0"));
+  CsmaIpv4Topology::AddIpv4Address (n3, nd1, Ipv4Address ("10.1.2.2"), 
+    Ipv4Mask ("255.255.255.0"));
 
-  uint32_t ifIndexNd4 = CsmaIpv4Topology::AddIpv4Address (n4, nd4,
-    Ipv4Address ("10.1.2.3"), Ipv4Mask ("255.255.255.0"));
-
-  NS_DEBUG ("ifIndexNd0 = " << ifIndexNd0);
-  NS_DEBUG ("ifIndexNd1 = " << ifIndexNd1);
-  NS_DEBUG ("ifIndexNd2Lan0 = " << ifIndexNd2Lan0);
-  NS_DEBUG ("ifIndexNd2Lan1 = " << ifIndexNd2Lan1);
-  NS_DEBUG ("ifIndexNd3 = " << ifIndexNd3);
-  NS_DEBUG ("ifIndexNd4 = " << ifIndexNd4);
-//
-// A little silliness to let optimized code work while still printing all 
-// results in debug code (without attribute).
-//
-  nd3 = nd3;
-  ifIndexNd1 = ifIndexNd1;
-  ifIndexNd3 = ifIndexNd3;
-  ifIndexNd4 = ifIndexNd4;
+  CsmaIpv4Topology::AddIpv4Address (n4, nd4, Ipv4Address ("10.1.2.3"), 
+    Ipv4Mask ("255.255.255.0"));
 
   NS_DEBUG("Configure multicasting.");
 //
@@ -216,34 +207,35 @@ main (int argc, char *argv[])
 //
 // We are going to manually configure multicast routing.  This means telling
 // node two that it should expect multicast data coming from IP address 
-// 10.1.1.1 over its IP interface connected to Lan0.  These are called
-// multicastSource and ifIndexNd2Lan0 respectively.  When node two receives
-// these packets, they should be forwarded out the interface that connects it
-// to Lan1 which is called ifIndexNd2Lan1.  All we need to do is to call the
-// AddMulticastRoute method on node two's Ipv4 interface and provide this
-// information.  (Note: the vector of output interfaces is in case there are
-// multiple net devices on a node).
+// 10.1.1.1 originally.  It should expect these data coming in over its IP 
+// interface connected to Lan0.  When node two receives these packets, they
+// should be forwarded out the interface that connects it to Lan1.
+//
+// We're going to need the interface indices on node two corresponding to 
+// these interfaces, which we call ifIndexLan0 and ifIndexLan1.  The most
+// general way to get these interfaces is to look them up by IP address.
+// Looking back to the topology creation calls above, we saved the addresses
+// assigned to the interface connecting node two to Lan0 and Lan1.  Now is
+// a fine time to find the interface indices on node two.
 //
   Ptr<Ipv4> ipv4;
   ipv4 = n2->QueryInterface<Ipv4> (Ipv4::iid);
 
+  uint32_t ifIndexLan0 = ipv4->FindInterfaceForAddr(n2Lan0Addr);
+  uint32_t ifIndexLan1 = ipv4->FindInterfaceForAddr(n2Lan1Addr);
+//
+// Now, we need to do is to call the AddMulticastRoute () method on node 
+// two's Ipv4 interface and tell it that whenever it receives a packet on
+// the interface from Lan0, with the packet from the multicast source, 
+// destined for the multicast group, it should forward these packets down
+// the interface connecting it to Lan1.  (Note: the vector of output
+// interfaces is in case there are multiple net devices on a node -- not
+// true in this case).
+//
   std::vector<uint32_t> outputInterfaces (1);
-  outputInterfaces[0] = ifIndexNd2Lan1;
+  outputInterfaces[0] = ifIndexLan1;
 
-  ipv4->AddMulticastRoute (multicastSource, multicastGroup, ifIndexNd2Lan0,
-    outputInterfaces);
-//
-// We also need to explain to the node zero forwarding code that when it sees
-// a packet destined for the multicast group it needs to send it out its
-// one and only interface.  The 0xffffffff in the call means that the input
-// interface qualification is not applicable in this case (the packet has
-// not been received over an interface, it has been created locally).
-//
-  ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
-
-  outputInterfaces[0] = ifIndexNd0;;
-
-  ipv4->AddMulticastRoute (multicastSource, multicastGroup, 0xffffffff,
+  ipv4->AddMulticastRoute (multicastSource, multicastGroup, ifIndexLan0,
     outputInterfaces);
 //
 // As described above, node four will be the only node listening for the

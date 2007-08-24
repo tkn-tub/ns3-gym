@@ -278,6 +278,33 @@ Ipv4L3Protocol::Lookup (
         return;
     }
 
+  if (ipHeader.GetDestination ().IsMulticast () && 
+      ifIndex == Ipv4RoutingProtocol::IF_INDEX_ANY)
+    {
+      NS_DEBUG ("Ipv4L3Protocol::Lookup (): "
+        "Multicast destination with local source");
+//
+// We have a multicast packet originating from the current node.  We didn't
+// want to force users to construct a route in order to get packets out of a
+// node, so there will have been no route found and it is left to us to send
+// the packet.  What we'll do is to send the multicast out all of the 
+// interfaces on this node.
+//
+      NS_DEBUG ("Ipv4StaticRouting::Lookup (): "
+        "Local source. Flooding multicast packet");
+
+      for (uint32_t i = 0; i < GetNInterfaces (); ++i)
+        {
+          Packet p = packet;
+          Ipv4Header h = ipHeader;
+          Ipv4Route route = 
+            Ipv4Route::CreateHostRouteTo(h.GetDestination (), i);
+          NS_DEBUG ("Ipv4StaticRouting::Lookup (): "
+            "Send via interface " << i);
+          routeReply (true, route, p, h);
+        }
+      return;
+    }
   // No route found
   routeReply (false, Ipv4Route (), packet, ipHeader);
 }
@@ -397,6 +424,49 @@ Ipv4L3Protocol::GetNInterfaces (void) const
 {
   NS_DEBUG("Ipv4L3Protocol::GetNInterface ()");
   return m_nInterfaces;
+}
+
+uint32_t 
+Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr) const
+{
+  NS_DEBUG("Ipv4L3Protocol::FindInterfaceForAddr (" << addr << ")");
+
+  uint32_t ifIndex = 0;
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
+       i != m_interfaces.end (); 
+       i++, ifIndex++)
+    {
+      if ((*i)->GetAddress () == addr)
+        {
+          return ifIndex;
+        }
+    }
+
+  NS_ASSERT_MSG(false, "Ipv4L3Protocol::FindInterfaceForAddr (): "
+    "Interface not found for IP address");
+  return 0;
+}
+
+uint32_t 
+Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const
+{
+  NS_DEBUG("Ipv4L3Protocol::FindInterfaceForAddr (" << addr << ", " << 
+    mask << ")");
+
+  uint32_t ifIndex = 0;
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
+       i != m_interfaces.end (); 
+       i++, ifIndex++)
+    {
+      if ((*i)->GetAddress ().CombineMask (mask) == addr.CombineMask (mask))
+        {
+          return ifIndex;
+        }
+    }
+
+  NS_ASSERT_MSG(false, "Ipv4L3Protocol::FindInterfaceForAddr (): "
+    "Interface not found for masked IP address");
+  return 0;
 }
 
 Ipv4Interface *
@@ -713,7 +783,40 @@ Ipv4L3Protocol::GetIfIndexForDestination (
           return true;
         }
     }
-  return false;
+//
+// If there's no routing table entry telling us what single interface will be
+// used to send a packet to this destination, we'll have to just pick one.  
+// If there's only one interface on this node, a good answer isn't very hard
+// to come up with.  Before jumping to any conclusions, remember that the 
+// zeroth interface is the loopback interface, so what we actually want is
+// a situation where there are exactly two interfaces on the node, in which
+// case interface one is the "single" interface.
+//
+  if (GetNInterfaces () == 2)
+    {
+      NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (): "
+        "One Interface.  Using interface 1.");
+      ifIndex = 1;
+      return true;
+    }
+//
+// If we fall through to here, we have a node with multiple interfaces and
+// no routes to guide us in determining what interface to choose.  The last
+// choice is to use the one set in the default route.
+// 
+  NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (): "
+    "Using default route");
+  Ipv4Route *route = m_staticRouting->GetDefaultRoute ();
+
+  NS_ASSERT_MSG(route, 
+    "Ipv4L3Protocol::GetIfIndexForDestination (): "
+    "Unable to determine outbound interface.  No default route set");
+
+  ifIndex = route->GetInterface ();
+
+  NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (): "
+    "Default route specifies interface " << ifIndex);
+  return true;
 }
 
 uint16_t 

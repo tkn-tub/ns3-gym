@@ -74,6 +74,7 @@ public:
   void SetDefaultRoute (Ipv4Address nextHop, 
                         uint32_t interface);
   uint32_t GetNRoutes (void);
+  Ipv4Route *GetDefaultRoute (void);
   Ipv4Route *GetRoute (uint32_t i);
   void RemoveRoute (uint32_t i);
 

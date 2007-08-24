@@ -72,6 +72,11 @@ public:
 
   virtual uint32_t AddInterface (Ptr<NetDevice> device);
   virtual uint32_t GetNInterfaces (void);  
+
+  virtual uint32_t FindInterfaceForAddr (Ipv4Address addr) const;
+  virtual uint32_t FindInterfaceForAddr (Ipv4Address addr, 
+    Ipv4Mask mask) const;
+
   virtual Ptr<NetDevice> GetNetDevice(uint32_t i);
 
   virtual void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
