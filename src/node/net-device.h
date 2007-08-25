@@ -138,10 +138,21 @@ public:
    * not true.
    */
   Address const &GetBroadcast (void) const;
+
   /**
    * \return value of m_isMulticast flag
    */
   bool IsMulticast (void) const;
+
+  /**
+   * \return the multicast address supported by
+   *         this netdevice.
+   *
+   * Calling this method is invalid if IsMulticast returns
+   * not true.
+   */
+  Address const &GetMulticast (void) const;
+
   /**
    * \return value of m_isPointToPoint flag
    */
@@ -212,9 +223,10 @@ public:
    */
   void DisableBroadcast (void);
   /**
-   * Set m_isMulticast flag to true
+   * Enable multicast support. This method should be
+   * called by subclasses from their constructor
    */
-  void EnableMulticast (void);
+  void EnableMulticast (Address multicast);
   /**
    * Set m_isMulticast flag to false
    */
@@ -303,6 +315,7 @@ public:
   uint16_t      m_ifIndex;
   Address       m_address;
   Address       m_broadcast;
+  Address       m_multicast;
   uint16_t      m_mtu;
   bool          m_isUp;
   bool          m_isBroadcast;

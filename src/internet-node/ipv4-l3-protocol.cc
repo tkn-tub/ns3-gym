@@ -288,12 +288,13 @@ Ipv4L3Protocol::Lookup (
 // want to force users to construct a route in order to get packets out of a
 // node, so there will have been no route found and it is left to us to send
 // the packet.  What we'll do is to send the multicast out all of the 
-// interfaces on this node.
+// interfaces on this node.  Note that we start with interface 1 since we 
+// don't particularly want to send the packet out the loopback.
 //
       NS_DEBUG ("Ipv4StaticRouting::Lookup (): "
         "Local source. Flooding multicast packet");
 
-      for (uint32_t i = 0; i < GetNInterfaces (); ++i)
+      for (uint32_t i = 1; i < GetNInterfaces (); ++i)
         {
           Packet p = packet;
           Ipv4Header h = ipHeader;

@@ -132,7 +132,7 @@ CsmaNetDevice::Init(bool sendEnable, bool receiveEnable)
   m_queue = 0;
 
   EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
-  EnableMulticast();
+  EnableMulticast (Eui48Address ("01:00:5e:00:00:00"));
 
   SetSendEnable (sendEnable);
   SetReceiveEnable (receiveEnable);
@@ -500,10 +500,11 @@ CsmaNetDevice::Receive (const Packet& packet)
   EthernetHeader header (false);
   EthernetTrailer trailer;
   Eui48Address broadcast;
+  Eui48Address multicast;
   Eui48Address destination;
   Packet p = packet;
 
-  NS_DEBUG ("CsmaNetDevice::Receive UID is (" << p.GetUid() << ")");
+  NS_DEBUG ("CsmaNetDevice::Receive ():  UID is " << p.GetUid());
 
   // Only receive if send side of net device is enabled
   if (!IsReceiveEnabled())
@@ -522,12 +523,25 @@ CsmaNetDevice::Receive (const Packet& packet)
   trailer.CheckFcs(p);
   p.RemoveHeader(header);
 
+  NS_DEBUG ("CsmaNetDevice::Receive ():  Pkt destination is " << 
+    header.GetDestination ());
+//
+// XXX BUGBUG
+//
+// An IP host group address is mapped to an Ethernet multicast address
+// by placing the low-order 23-bits of the IP address into the low-order
+// 23 bits of the Ethernet multicast address 01-00-5E-00-00-00 (hex).
+//
+// Need to mask off the appropriate multicast bits.
+//
+  multicast = Eui48Address::ConvertFrom (GetMulticast ());
   broadcast = Eui48Address::ConvertFrom (GetBroadcast ());
   destination = Eui48Address::ConvertFrom (GetAddress ());
   if ((header.GetDestination() != broadcast) &&
+      (header.GetDestination() != multicast) &&
       (header.GetDestination() != destination))
     {
-      // not for us.
+      NS_DEBUG ("CsmaNetDevice::Receive ():  Dropping pkt ");
       m_dropTrace (p);
       return;
     }

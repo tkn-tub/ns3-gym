@@ -84,9 +84,18 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
       else if (dest.IsMulticast ())
         {
           NS_DEBUG ("ArpIpv4Interface::SendTo (): IsMulticast");
-          // XXX BUGBUG
-          // Need real multicast addresses
-          hardwareDestination = GetDevice ()->GetBroadcast ();
+          NS_ASSERT_MSG(GetDevice ()->IsMulticast (),
+            "ArpIpv4Interface::SendTo (): Sending multicast packet over "
+            "non-multicast device");
+// XXX
+// 
+// An IP host group address is mapped to an Ethernet multicast address
+// by placing the low-order 23-bits of the IP address into the low-order
+// 23 bits of the Ethernet multicast address 01-00-5E-00-00-00 (hex).
+//
+// Currently no easy way to or bit from Ipv4Address into Address
+//
+          hardwareDestination = GetDevice ()->GetMulticast ();
           found = true;
         }
       else

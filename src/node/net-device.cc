@@ -113,6 +113,7 @@ NetDevice::IsBroadcast (void) const
 {
   return m_isBroadcast;
 }
+
 Address const &
 NetDevice::GetBroadcast (void) const
 {
@@ -139,10 +140,18 @@ NetDevice::IsMulticast (void) const
   return m_isMulticast;
 }
 
+Address const &
+NetDevice::GetMulticast (void) const
+{
+  NS_ASSERT (m_isMulticast);
+  return m_multicast;
+}
+
 void
-NetDevice::EnableMulticast (void)
+NetDevice::EnableMulticast (Address multicast)
 {
   m_isMulticast = true;
+  m_multicast = multicast;
 }
 
 void

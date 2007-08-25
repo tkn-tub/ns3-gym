@@ -68,11 +68,14 @@ PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
 {
   NS_DEBUG ("PointToPointNetDevice::PointToPointNetDevice (" << node << ")");
 
-  // BUGBUG FIXME
-  //
-  // You _must_ support broadcast to get any sort of packet from the ARP layer.
+// BUGBUG FIXME
+//
+// You _must_ support broadcast to get any sort of packet from the ARP layer.
   EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
-  EnableMulticast();
+//
+// Randomly pick the ethernet multicast address base
+//
+  EnableMulticast (Eui48Address ("01:00:5e:00:00:00"));
   EnablePointToPoint();
 }
 
