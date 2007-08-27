@@ -49,7 +49,6 @@ def build(bld):
         'callback-trace-source.cc',
         'empty-trace-resolver.cc',
         'composite-trace-resolver.cc',
-        'trace-root.cc',
         ]
 
     if sys.platform == 'win32':
@@ -92,6 +91,5 @@ def build(bld):
         'empty-trace-resolver.h',
         'composite-trace-resolver.h',
         'array-trace-resolver.h',
-        'trace-root.h',
         ]
 

@@ -20,23 +20,11 @@
  *  Mathieu Lacage <mathieu.lacage@sophia.inria.fr>,
  */
 
-#include "ns3/array-trace-resolver.h"
-#include "ns3/trace-root.h"
+#include "ns3/composite-trace-resolver.h"
 #include "ns3/simulator.h"
 #include "ns3/simulation-singleton.h"
 #include "node-list.h"
 #include "node.h"
-
-namespace {
-static class Initialization 
-{
-public:
-  Initialization ()
-  {
-    ns3::TraceRoot::Register ("nodes", ns3::MakeCallback (&ns3::NodeList::GetTraceResolver));
-  }
-} g_initialization;
-}
 
 namespace ns3 {
 
@@ -133,9 +121,8 @@ NodeListPriv::GetNode (uint32_t n)
 Ptr<TraceResolver>
 NodeListPriv::GetTraceResolver (void)
 {
-  Ptr<ArrayTraceResolver<NodeListIndex> >resolver =
-    Create<ArrayTraceResolver<NodeListIndex> > ();
-  resolver->SetIterators (Begin (), End ());
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
+  resolver->AddArray ("nodes", Begin (), End (), NodeListIndex ());
   return resolver;
 }
 
@@ -163,17 +150,21 @@ NodeList::End (void)
 {
   return SimulationSingleton<NodeListPriv>::Get ()->End ();
 }
-Ptr<TraceResolver>
-NodeList::GetTraceResolver (void)
-{
-  return SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ();
-}
 Ptr<Node>
 NodeList::GetNode (uint32_t n)
 {
   return SimulationSingleton<NodeListPriv>::Get ()->GetNode (n);
 }
 
-
+void 
+NodeList::Connect (std::string name, const CallbackBase &cb)
+{
+  SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ()->Connect (name, cb, TraceContext ());
+}
+void 
+NodeList::Disconnect (std::string name, const CallbackBase &cb)
+{
+  SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ()->Disconnect (name, cb);
+}
 
 }//namespace ns3

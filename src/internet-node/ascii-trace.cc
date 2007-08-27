@@ -21,9 +21,9 @@
 #include "ascii-trace.h"
 
 #include "ns3/trace-context.h"
-#include "ns3/trace-root.h"
 #include "ns3/simulator.h"
 #include "ns3/node.h"
+#include "ns3/node-list.h"
 #include "ns3/packet.h"
 
 namespace ns3 {
@@ -40,15 +40,15 @@ void
 AsciiTrace::TraceAllQueues (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/devices/*/queue/*",
-                      MakeCallback (&AsciiTrace::LogDevQueue, this));
+  NodeList::Connect ("/nodes/*/devices/*/queue/*",
+                     MakeCallback (&AsciiTrace::LogDevQueue, this));
 }
 void
 AsciiTrace::TraceAllNetDeviceRx (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/devices/*/rx",
-                      MakeCallback (&AsciiTrace::LogDevRx, this));
+  NodeList::Connect ("/nodes/*/devices/*/rx",
+                     MakeCallback (&AsciiTrace::LogDevRx, this));
 }
 
 void 
