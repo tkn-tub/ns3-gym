@@ -99,6 +99,8 @@ private:
   } * m_data;
 };
 
+std::ostream& operator<< (std::ostream& os, const TraceContext &context);
+
 }//namespace ns3
 
 namespace ns3 {

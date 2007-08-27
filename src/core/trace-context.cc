@@ -231,6 +231,12 @@ TraceContext::Print (std::ostream &os) const
   } while (true);
 }
 
+std::ostream& operator<< (std::ostream& os, const TraceContext &context)
+{
+  context.Print (os);
+  return os;
+}
+
 }//namespace ns3
 
 #include "test.h"
