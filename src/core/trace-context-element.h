@@ -115,18 +115,23 @@ public:
 
   static uint32_t GetSize (uint16_t uid);
   static void Print (uint16_t uid, uint8_t *instance, std::ostream &os);
+  static std::string GetName (uint16_t uid);
   static void Destroy (uint16_t uid, uint8_t *instance);
 private:
+  typedef std::string (*GetNameCb) (void);
   typedef void (*PrintCb) (uint8_t *instance, std::ostream &os);
   typedef void (*DestroyCb) (uint8_t *instance);
   struct Info {
     uint32_t size;
     std::string uidString;
+    GetNameCb getName;
     PrintCb print;
     DestroyCb destroy;
   };
   typedef std::vector<struct Info> InfoVector;
   static InfoVector *GetInfoVector (void);
+  template <typename T>
+  static std::string DoGetName (void);
   template <typename T>
   static void DoPrint (uint8_t *instance, std::ostream &os);
   template <typename T>
@@ -141,6 +146,13 @@ ElementRegistry::DoPrint (uint8_t *instance, std::ostream &os)
   // make sure we are aligned.
   memcpy ((void*)&obj, instance, sizeof (T));
   obj.Print (os);
+}
+template <typename T>
+std::string
+ElementRegistry::DoGetName (void)
+{
+  static T obj;
+  return obj.GetName ();
 }
 template <typename T>
 void 
@@ -169,6 +181,7 @@ ElementRegistry::AllocateUid (std::string name)
   struct Info info;
   info.size = sizeof (T);
   info.uidString = name;
+  info.getName = &ElementRegistry::DoGetName<T>;
   info.print = &ElementRegistry::DoPrint<T>;
   info.destroy = &ElementRegistry::DoDestroy<T>;
   vec->push_back (info);

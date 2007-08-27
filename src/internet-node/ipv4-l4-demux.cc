@@ -54,6 +54,11 @@ Ipv4L4ProtocolTraceContextElement::GetUid (void)
   static uint16_t uid = AllocateUid<Ipv4L4ProtocolTraceContextElement> ("Ipv4L4ProtocolTraceContextElement");
   return uid;
 }
+std::string 
+Ipv4L4ProtocolTraceContextElement::GetName (void) const
+{
+  return "Ipv4L4ProtocolTraceContextElement";
+}
 
 
 Ipv4L4Demux::Ipv4L4Demux (Ptr<Node> node)

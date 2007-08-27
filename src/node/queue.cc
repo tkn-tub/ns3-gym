@@ -32,6 +32,11 @@ static ClassIdDefaultValue g_classIdDefaultValue ("Queue", "Packet Queue",
                                                   Queue::iid, "DropTailQueue");
 
 
+std::string 
+QueueTraceType::GetName (void) const
+{
+  return "QueueTraceType";
+}
 uint16_t 
 QueueTraceType::GetUid (void)
 {

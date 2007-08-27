@@ -52,6 +52,11 @@ NodeNetDeviceIndex::GetUid (void)
   static uint16_t uid = AllocateUid<NodeNetDeviceIndex> ("NodeNetDeviceIndex");
   return uid;
 }
+std::string 
+NodeNetDeviceIndex::GetName (void) const
+{
+  return "NodeNetDeviceIndex";
+}
 
 
 

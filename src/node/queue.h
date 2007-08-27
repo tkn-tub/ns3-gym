@@ -52,6 +52,7 @@ public:
   bool IsDequeue (void) const;
   bool IsDrop (void) const;
   void Print (std::ostream &os) const;
+  std::string GetName (void) const;
 private:
   enum Type m_type;
 };

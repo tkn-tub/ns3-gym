@@ -59,6 +59,11 @@ CsmaCdTraceType::GetUid (void)
   static uint16_t uid = AllocateUid<CsmaCdTraceType> ("CsmaCdTraceType");
   return uid;
 }
+std::string 
+CsmaCdTraceType::GetName (void) const
+{
+  return "CsmaCdTraceType";
+}
 
 
 CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node)

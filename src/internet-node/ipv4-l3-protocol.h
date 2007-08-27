@@ -59,6 +59,7 @@ public:
   bool IsDrop (void) const;
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
+  std::string GetName (void) const;
 private:
   enum Type m_type;
 };
@@ -71,6 +72,7 @@ public:
   uint32_t Get (void) const;
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
+  std::string GetName (void) const;
 private:
   uint32_t m_index;
 };

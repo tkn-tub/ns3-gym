@@ -53,6 +53,11 @@ PointToPointTraceType::GetUid (void)
   static uint16_t uid = AllocateUid<PointToPointTraceType> ("PointToPointTraceType");
   return uid;
 }
+std::string 
+PointToPointTraceType::GetName (void) const
+{
+  return "PointToPointTraceType";
+}
 
 
 PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,

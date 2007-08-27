@@ -2,6 +2,13 @@
 
 namespace ns3 {
 
+std::string 
+ElementRegistry::GetName (uint16_t uid)
+{
+  InfoVector *vec = GetInfoVector ();
+  struct Info info = (*vec)[uid - 1];
+  return info.getName ();
+}
 uint32_t 
 ElementRegistry::GetSize (uint16_t uid)
 {

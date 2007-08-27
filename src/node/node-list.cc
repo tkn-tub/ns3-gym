@@ -50,6 +50,11 @@ NodeListIndex::Get (void) const
 {
   return m_index;
 }
+std::string 
+NodeListIndex::GetName (void) const
+{
+  return "NodeListIndex";
+}
 
 
 /**

@@ -39,6 +39,7 @@ public:
   void Print (std::ostream &os);
   static uint16_t GetUid (void);
   uint32_t Get (void) const;
+  std::string GetName (void) const;
 private:
   uint32_t m_index;
 };

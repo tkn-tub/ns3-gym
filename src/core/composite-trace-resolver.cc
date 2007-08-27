@@ -273,6 +273,7 @@ public:
     else if (m_sources == DOUBLEB) {os << "doubleB";}
     else if (m_sources == UINT16_T) {os << "uint16_t";}
   }
+  std::string GetName (void) {return "TraceSourceTest";}
   TraceSourceTest () : m_sources (TraceSourceTest::DOUBLEA) {}
   TraceSourceTest (enum Sources sources) :m_sources (sources) {}
   bool IsDoubleA (void) const {return m_sources == TraceSourceTest::DOUBLEA;}
@@ -292,6 +293,7 @@ public:
   {static uint16_t uid = AllocateUid<SubTraceSourceTest> ("SubTraceSourceTest"); return uid;}
   void Print (std::ostream &os)
   {os << "subtracesource=int";}
+  std::string GetName (void) const {return "SubTraceSourceTest";}
   SubTraceSourceTest () : m_sources (SubTraceSourceTest::INT) {}
   SubTraceSourceTest (enum Sources sources) : m_sources (sources) {}
 private:
