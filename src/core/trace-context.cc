@@ -256,6 +256,42 @@ TraceContext::PrintAvailable (std::ostream &os, std::string separator) const
   } while (true);
 }
 
+bool 
+TraceContext::IsSimilar (const TraceContext &o) const
+{
+  if (m_data == 0 && o.m_data == 0)
+    {
+      return true;
+    }
+  if ((m_data != 0 && o.m_data == 0) || 
+      (m_data == 0 && o.m_data != 0))
+    {
+      return false;
+    }
+  uint8_t myCurrentUid;
+  uint16_t myI = 0;
+  uint8_t otherCurrentUid;
+  uint16_t otherI = 0;
+  do {
+    myCurrentUid = m_data->data[myI];
+    otherCurrentUid = o.m_data->data[otherI];
+    uint8_t mySize = ElementRegistry::GetSize (myCurrentUid);
+    uint8_t otherSize = ElementRegistry::GetSize (otherCurrentUid);
+    myI += 1 + mySize;
+    otherI += 1 + otherSize;
+  } while (myCurrentUid == otherCurrentUid && 
+           myCurrentUid != 0 && 
+           otherCurrentUid != 0);
+  if (myCurrentUid == 0 && otherCurrentUid == 0)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
 std::ostream& operator<< (std::ostream& os, const TraceContext &context)
 {
   context.Print (os);

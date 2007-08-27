@@ -81,6 +81,7 @@ public:
 
   void Print (std::ostream &os) const;
   void PrintAvailable (std::ostream &os, std::string separator) const;
+  bool IsSimilar (const TraceContext &o) const;
 private:
   friend class TraceContextTest;
   // used exclusively for testing code.
