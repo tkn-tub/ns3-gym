@@ -80,6 +80,7 @@ public:
   void Get (T &context) const;
 
   void Print (std::ostream &os) const;
+  void PrintAvailable (std::ostream &os, std::string separator) const;
 private:
   friend class TraceContextTest;
   // used exclusively for testing code.

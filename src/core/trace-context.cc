@@ -231,6 +231,31 @@ TraceContext::Print (std::ostream &os) const
   } while (true);
 }
 
+void 
+TraceContext::PrintAvailable (std::ostream &os, std::string separator) const
+{
+  if (m_data == 0)
+    {
+      return;
+    }
+  uint8_t currentUid;
+  uint16_t i = 0;
+  do {
+    currentUid = m_data->data[i];
+    uint8_t size = ElementRegistry::GetSize (currentUid);
+    os << ElementRegistry::GetName (currentUid);
+    i += 1 + size;
+    if (i < m_data->size && currentUid != 0)
+      {
+        os << separator;
+      }
+    else
+      {
+        break;
+      }
+  } while (true);
+}
+
 std::ostream& operator<< (std::ostream& os, const TraceContext &context)
 {
   context.Print (os);
