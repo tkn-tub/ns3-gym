@@ -69,6 +69,8 @@ public:
    * This method should behave as Connect.
    */
   virtual void Disconnect (std::string path, CallbackBase const &cb) = 0;
+
+  virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os) = 0;
 protected:
   /**
    * \param path a namespace path

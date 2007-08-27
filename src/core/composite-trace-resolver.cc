@@ -82,7 +82,14 @@ CompositeTraceResolver::DoAddSource (std::string name,
     {if (subpath == "") {trace->AddCallback (cb, context);}}
     virtual void Disconnect (std::string subpath, const CallbackBase &cb)
     {if (subpath == "") {trace->RemoveCallback (cb);}}
-
+    virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os)
+    {
+      os << path << "/" << this->name << " [";
+      TraceContext ctx = context;
+      ctx.Union (this->context);
+      ctx.PrintAvailable (os, ",");
+      os << "]" << std::endl;
+    }
     TraceSource *trace;
   } *item = new SourceCompositeItem ();
   item->name = name;
@@ -106,9 +113,17 @@ CompositeTraceResolver::DoAddChild (std::string name, Ptr<Object> child, const T
   {
   public:
     virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
-    {child->TraceConnect (subpath, cb, context);}
+    {child->GetTraceResolver ()->Connect (subpath, cb, context);}
     virtual void Disconnect (std::string subpath, const CallbackBase &cb)
     {child->TraceDisconnect (subpath, cb);}
+    virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os)
+    {
+      path.append ("/");
+      path.append (this->name);
+      TraceContext ctx = context;
+      ctx.Union (this->context);
+      this->child->GetTraceResolver ()->PrintAvailable (path, ctx, os);
+    }
 
     Ptr<Object> child;
   } *item = new ChildCompositeItem ();
@@ -248,6 +263,19 @@ CompositeTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
     const CallbackBase &m_cb;
   } operation  = DisconnectOperation (cb);
   DoRecursiveOperation (path, operation);
+}
+void 
+CompositeTraceResolver::PrintAvailable (std::string path, const TraceContext &context, std::ostream &os)
+{
+  for (TraceItems::const_iterator i = m_items.begin (); i != m_items.end (); i++)
+    {
+      NS_DEBUG ("print " << (*i)->name);
+      (*i)->PrintAvailable (path, context, os);
+    }
+  if (m_parent != 0)
+    {
+      m_parent->PrintAvailable (path, context, os);
+    }
 }
 
 }//namespace ns3

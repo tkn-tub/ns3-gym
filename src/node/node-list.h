@@ -30,6 +30,7 @@ namespace ns3 {
 
 class Node;
 class CallbackBase;
+class TraceResolver;
 
 class NodeListIndex : public TraceContextElement
 {
@@ -94,6 +95,7 @@ public:
    * the input namespace regexp.
    */
   static void Disconnect (std::string name, const CallbackBase &cb);
+  static Ptr<TraceResolver> GetTraceResolver (void);
 private:
 };
 

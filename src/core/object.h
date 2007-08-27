@@ -138,8 +138,8 @@ public:
 
 
   void TraceConnect (std::string path, const CallbackBase &cb);
-  void TraceConnect (std::string path, const CallbackBase &cb, const TraceContext &context);
   void TraceDisconnect (std::string path, const CallbackBase &cb);
+  virtual Ptr<TraceResolver> GetTraceResolver (void);
 protected:
   /**
    * \param iid an InterfaceId
@@ -155,8 +155,6 @@ protected:
    * up to their parent's implementation once they are done.
    */
   virtual void DoDispose (void);
-
-  virtual Ptr<TraceResolver> GetTraceResolver (void);
 private:
   Ptr<Object> DoQueryInterface (InterfaceId iid) const;
   bool Check (void) const;

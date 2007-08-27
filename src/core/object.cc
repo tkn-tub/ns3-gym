@@ -63,6 +63,7 @@ public:
   InterfaceIdTraceResolver (Ptr<Object> aggregate);
   virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   virtual void Disconnect (std::string path, CallbackBase const &cb);
+  virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os);
 private:
   Ptr<Object> ParseForInterface (std::string path);
   Ptr<Object> m_aggregate;
@@ -91,7 +92,7 @@ InterfaceIdTraceResolver::Connect (std::string path, CallbackBase const &cb, con
   Ptr<Object> interface = ParseForInterface (path);
   if (interface != 0)
     {
-      interface->TraceConnect (GetSubpath (path), cb, context);
+      interface->GetTraceResolver ()->Connect (GetSubpath (path), cb, context);
     }
 }
 void 
@@ -102,6 +103,11 @@ InterfaceIdTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
     {
       interface->TraceDisconnect (GetSubpath (path), cb);
     }
+}
+void 
+InterfaceIdTraceResolver::PrintAvailable (std::string path, const TraceContext &context, std::ostream &os)
+{
+  
 }
 
 
@@ -216,19 +222,13 @@ Object::AddInterface (Ptr<Object> o)
 void 
 Object::TraceConnect (std::string path, const CallbackBase &cb)
 {
-  TraceConnect (path, cb, TraceContext ());
-}
-void 
-Object::TraceConnect (std::string path, const CallbackBase &cb, const TraceContext &context)
-{
-  GetTraceResolver ()->Connect (path, cb, context);
+  GetTraceResolver ()->Connect (path, cb, TraceContext ());
 }
 void 
 Object::TraceDisconnect (std::string path, const CallbackBase &cb)
 {
   GetTraceResolver ()->Disconnect (path, cb);
 }
-
 
 void 
 Object::SetInterfaceId (InterfaceId iid)

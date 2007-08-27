@@ -171,5 +171,9 @@ NodeList::Disconnect (std::string name, const CallbackBase &cb)
 {
   SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ()->Disconnect (name, cb);
 }
-
+Ptr<TraceResolver> 
+NodeList::GetTraceResolver (void)
+{
+  return SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ();
+}
 }//namespace ns3

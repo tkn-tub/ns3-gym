@@ -62,6 +62,7 @@ public:
   // inherited from TraceResolver
   virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   virtual void Disconnect (std::string path, CallbackBase const &cb);
+  virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os);
 
 private:
   class IteratorBase
@@ -139,7 +140,7 @@ ArrayTraceResolver<INDEX>::Connect (std::string path, CallbackBase const &cb, co
         INDEX index = j;
         tmp.AddElement (index);
         Ptr<Object> obj = m_iter->Get ();
-        obj->TraceConnect (subpath, cb, tmp);
+        obj->GetTraceResolver ()->Connect (subpath, cb, tmp);
         j++;
       }
   }
@@ -162,6 +163,22 @@ ArrayTraceResolver<INDEX>::Disconnect (std::string path, CallbackBase const &cb)
         obj->TraceDisconnect (subpath, cb);
       }
   }
+}
+template <typename INDEX>
+void 
+ArrayTraceResolver<INDEX>::PrintAvailable (std::string path, const TraceContext &context, std::ostream &os)
+{
+  path.append ("/[0-n]");
+  uint32_t j = 0;
+  for (m_iter->Rewind (); m_iter->HasNext (); m_iter->Next ())
+    {
+        TraceContext tmp = context;
+        INDEX index = j;
+        tmp.AddElement (index);
+        Ptr<Object> obj = m_iter->Get ();
+        obj->GetTraceResolver ()->PrintAvailable (path, tmp, os);
+        j++;
+    }
 }
 
 }//namespace ns3
