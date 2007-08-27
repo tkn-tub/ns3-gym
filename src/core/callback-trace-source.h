@@ -75,7 +75,7 @@ CallbackTraceSource<T1,T2,T3,T4>::AddCallback (CallbackBase const & callback,
 {
   Callback<void,TraceContext const &,T1,T2,T3,T4> cb;
   cb.Assign (callback);
-  m_context.Add (context);
+  m_context.Union (context);
   m_callbackList.push_back (cb);
 }
 template<typename T1, typename T2, 

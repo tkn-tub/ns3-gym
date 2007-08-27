@@ -231,7 +231,7 @@ CompositeTraceResolver::OperationOne (std::string subpath,
   case CONNECT: {
     NS_DEBUG ("connect to path="<<subpath<<" name="<<(*i)->name);
     TraceContext ctx = context;
-    ctx.Add ((*i)->context);
+    ctx.Union ((*i)->context);
     (*i)->Connect (subpath, cb, ctx);
     } break;
   case DISCONNECT:

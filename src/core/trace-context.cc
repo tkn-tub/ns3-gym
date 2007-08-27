@@ -68,7 +68,7 @@ TraceContext::~TraceContext ()
 }
 
 void 
-TraceContext::Add (TraceContext const &o)
+TraceContext::Union (TraceContext const &o)
 {
   if (o.m_data == 0)
     {
@@ -284,14 +284,14 @@ TraceContextTest::RunTests (void)
     {
       ok = false;
     }
-  ctx.Add (v0);
-  ctx.Add (v0);
+  ctx.AddElement (v0);
+  ctx.AddElement (v0);
   if (ctx.SafeAdd (v01))
     {
       ok = false;
     }
   ctx.Get (v0);
-  ctx.Add (v1);
+  ctx.AddElement (v1);
   ctx.Get (v1);
   ctx.Get (v0);
   ctx.Get (v1);
@@ -301,11 +301,11 @@ TraceContextTest::RunTests (void)
   ctx.Get (v1);
   copy.Get (v0);
   copy.Get (v1);
-  copy.Add (v2);
+  copy.AddElement (v2);
   copy.Get (v0);
   copy.Get (v1);
   copy.Get (v2);
-  ctx.Add (v3);
+  ctx.AddElement (v3);
   ctx.Get (v0);
   ctx.Get (v1);
   ctx.Get (v3);
@@ -318,13 +318,13 @@ TraceContextTest::RunTests (void)
     {
       ok = false;
     }
-  ctx.Add (copy);
+  ctx.Union (copy);
   ctx.Get (v2);
   if (copy.SafeGet (v3))
     {
       ok = false;
     }
-  copy.Add (ctx);
+  copy.Union (ctx);
   copy.Get (v3);  
   
   return ok;

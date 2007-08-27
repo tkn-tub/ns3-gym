@@ -137,7 +137,7 @@ ArrayTraceResolver<INDEX>::Connect (std::string path, CallbackBase const &cb, co
       {
         TraceContext tmp = context;
         INDEX index = j;
-        tmp.Add (index);
+        tmp.AddElement (index);
         Ptr<Object> obj = m_iter->Get ();
         obj->TraceConnect (subpath, cb, tmp);
         j++;

@@ -41,8 +41,8 @@ namespace ns3 {
  * using Copy On Write which means that copying unmodified
  * versions of this class is very cheap. However, modifying
  * the content of this class through a call 
- * to ns3::TraceContext::Add will trigger a costly memory
- * reallocation if needed.
+ * to ns3::TraceContext::AddElement or ns3::TraceContext::Union 
+ * will trigger a costly memory reallocation if needed.
  */
 class TraceContext
 {
@@ -56,7 +56,7 @@ public:
    * \param context add context to list of trace contexts.
    */
   template <typename T>
-  void Add (T const &context);
+  void AddElement (T const &context);
 
   /**
    * \param o the other context
@@ -68,7 +68,7 @@ public:
    * to store a single TraceContext instance per connected sink.
    * Instead, all sinks share the same TraceContext.
    */
-  void Add (TraceContext const &o);
+  void Union (TraceContext const &o);
 
   /**
    * \param context context to get from this list of trace contexts.
@@ -107,7 +107,7 @@ namespace ns3 {
 
 template <typename T>
 void 
-TraceContext::Add (T const &context)
+TraceContext::AddElement (T const &context)
 {
   const TraceContextElement *parent;
   // if the following assignment fails, it is because the input

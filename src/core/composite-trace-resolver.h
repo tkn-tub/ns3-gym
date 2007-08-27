@@ -145,7 +145,7 @@ CompositeTraceResolver::AddSource (std::string name,
                                    T const &context)
 {
   TraceContext ctx;
-  ctx.Add (context);
+  ctx.AddElement (context);
   DoAddSource (name, trace, ctx);  
 }
 
@@ -176,7 +176,7 @@ void
 CompositeTraceResolver::AddChild (std::string name, Ptr<Object> child, const T &contextElement)
 {
   TraceContext context;
-  context.Add (contextElement);
+  context.AddElement (contextElement);
   DoAddChild (name, child, context);
 }
 
