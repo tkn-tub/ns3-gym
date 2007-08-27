@@ -21,7 +21,6 @@
 
 #include "ns3/assert.h"
 #include "ns3/packet.h"
-#include "ns3/empty-trace-resolver.h"
 #include "ns3/node.h"
 
 #include "udp-l4-protocol.h"

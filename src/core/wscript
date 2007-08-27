@@ -47,7 +47,6 @@ def build(bld):
         'trace-context-element.cc',
         'trace-resolver.cc',
         'callback-trace-source.cc',
-        'empty-trace-resolver.cc',
         'composite-trace-resolver.cc',
         ]
 
@@ -88,7 +87,6 @@ def build(bld):
         'trace-context.h',
         'trace-context-element.h',
         'trace-resolver.h',
-        'empty-trace-resolver.h',
         'composite-trace-resolver.h',
         'array-trace-resolver.h',
         ]

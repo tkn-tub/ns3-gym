@@ -20,7 +20,6 @@
  */
 #include "ns3/packet.h"
 #include "ns3/debug.h"
-#include "ns3/empty-trace-resolver.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 
