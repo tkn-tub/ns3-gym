@@ -128,13 +128,35 @@ void
 CompositeTraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
 {
   NS_DEBUG ("connect path="<<path);
-  DoRecursiveOperation (path, cb, context, CONNECT);
+  class ConnectOperation : public Operation
+  {
+  public:
+    ConnectOperation (const CallbackBase &cb, const TraceContext &context)
+      : m_cb (cb), m_context (context)
+    {}
+    virtual void Do (std::string subpath, CompositeItem *item) const
+    {
+      NS_DEBUG ("connect to path="<<subpath<<" name="<<item->name);
+      TraceContext context = m_context;
+      context.Union (item->context);
+      item->Connect (subpath, m_cb, context);
+    }
+    virtual void DoParent (std::string path, Ptr<TraceResolver> parent) const
+    {
+      if (parent != 0)
+        {
+          parent->Connect (path, m_cb, m_context);
+        }
+    }
+  private:
+    const CallbackBase &m_cb;
+    const TraceContext &m_context;
+  } operation  = ConnectOperation (cb, context);
+  DoRecursiveOperation (path, operation);
 }
 void 
 CompositeTraceResolver::DoRecursiveOperation (std::string path, 
-                                              const CallbackBase  &cb, 
-                                              const TraceContext &context,
-                                              enum Operation op)
+                                              const Operation &operation)
 {
   if (path == "")
     {
@@ -147,9 +169,9 @@ CompositeTraceResolver::DoRecursiveOperation (std::string path,
     {
       for (TraceItems::const_iterator i = m_items.begin (); i != m_items.end (); i++)
 	{
-          OperationOne (subpath, i, cb, context, op);
+          operation.Do (subpath, *i);
         }
-      DoRecursiveOperationForParent (path, cb, context, op);
+      operation.DoParent (path, m_parent);
       return;
     }
   std::string::size_type start, end;
@@ -161,8 +183,8 @@ CompositeTraceResolver::DoRecursiveOperation (std::string path,
 	{
 	  if ((*i)->name == id)
 	    {
-              OperationOne (subpath, i, cb, context, op);
-              DoRecursiveOperationForParent (path, cb, context, op);
+              operation.Do (subpath, *i);
+              operation.DoParent (path, m_parent);
               return;
 	    }
 	}
@@ -192,60 +214,40 @@ CompositeTraceResolver::DoRecursiveOperation (std::string path,
 	{
 	  if ((*j)->name == *i)
 	    {
-              OperationOne (subpath, j, cb, context, op);
+              operation.Do (subpath, *j);
 	      break;
 	    }
 	}
     }
-  DoRecursiveOperationForParent (path, cb, context, op);
-}
-
-void
-CompositeTraceResolver::DoRecursiveOperationForParent (std::string path, 
-                                                       const CallbackBase &cb, 
-                                                       const TraceContext &context, 
-                                                       enum Operation op)
-{
-  if (m_parent == 0)
-    {
-      return;
-    }
-  switch (op) {
-  case CONNECT:
-    m_parent->Connect (path, cb, context);
-    break;
-  case DISCONNECT:
-    m_parent->Disconnect (path, cb);
-    break;
-  }
-}
-
-void 
-CompositeTraceResolver::OperationOne (std::string subpath, 
-                                      TraceItems::const_iterator i,
-                                      const CallbackBase &cb,
-                                      const TraceContext &context,
-                                      enum Operation op)
-{
-  switch (op) {
-  case CONNECT: {
-    NS_DEBUG ("connect to path="<<subpath<<" name="<<(*i)->name);
-    TraceContext ctx = context;
-    ctx.Union ((*i)->context);
-    (*i)->Connect (subpath, cb, ctx);
-    } break;
-  case DISCONNECT:
-    NS_DEBUG ("disconnect from path="<<subpath<<" name="<<(*i)->name);
-    (*i)->Disconnect (subpath, cb);
-    break;
-  }
+  operation.DoParent (path, m_parent);
 }
 
 void 
 CompositeTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
 {
   NS_DEBUG ("disconnect path="<<path);
-  DoRecursiveOperation (path, cb, TraceContext (), DISCONNECT);
+  class DisconnectOperation : public Operation
+  {
+  public:
+    DisconnectOperation (const CallbackBase &cb)
+      : m_cb (cb)
+    {}
+    virtual void Do (std::string subpath, CompositeItem *item) const
+    {
+      NS_DEBUG ("disconnect from path="<<subpath<<" name="<<item->name);
+      item->Disconnect (subpath, m_cb);
+    }
+    virtual void DoParent (std::string path, Ptr<TraceResolver> parent) const
+    {
+      if (parent != 0)
+        {
+          parent->Disconnect (path, m_cb);
+        }
+    }
+  private:
+    const CallbackBase &m_cb;
+  } operation  = DisconnectOperation (cb);
+  DoRecursiveOperation (path, operation);
 }
 
 }//namespace ns3

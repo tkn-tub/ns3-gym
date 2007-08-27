@@ -104,25 +104,19 @@ private:
     TraceContext context;
   };
   typedef std::vector<CompositeItem *> TraceItems;
-  enum Operation {
-    CONNECT,
-    DISCONNECT
+  class Operation
+  {
+  public:
+    virtual ~Operation () {}
+    virtual void Do (std::string subpath, CompositeItem *item) const = 0;
+    virtual void DoParent (std::string path, Ptr<TraceResolver> parent) const = 0;
   };
 
   void AddItem (CompositeItem *item);
-  void OperationOne (std::string subpath, 
-                     TraceItems::const_iterator i,
-                     const CallbackBase &cb,
-                     const TraceContext &context,
-                     enum Operation op);
   void DoRecursiveOperation (std::string path, 
-                             const CallbackBase &cb, 
-                             const TraceContext &context,
-                             enum Operation op);
+                             const Operation &operation);
   void DoRecursiveOperationForParent (std::string path, 
-                                      const CallbackBase &cb, 
-                                      const TraceContext &context, 
-                                      enum Operation op);
+                                      const Operation &operation);
   void DoAddChild (std::string name, Ptr<Object> child, const TraceContext &context);
   void DoAddSource (std::string name,
                     TraceSource &trace,
