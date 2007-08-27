@@ -48,15 +48,6 @@ TraceResolver::Unref (void)
     }
 }
 
-
-void 
-TraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
-{}
-
-void 
-TraceResolver::Disconnect (std::string path, CallbackBase const &cb)
-{}
-
 std::string 
 TraceResolver::GetElement (std::string path)
 {

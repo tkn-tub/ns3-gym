@@ -30,22 +30,14 @@ namespace ns3 {
 class CallbackBase;
 
 /**
- * \brief the base class which is used to incremental perform trace
+ * \brief the base class which is used to recursively perform trace
  *        namespace resolution.
- * \ingroup lowleveltracing
+ * \ingroup tracing
  *
- * This class provides a public API to the ns3::TraceRoot object:
- *   - ns3::TraceResolver::Connect
- *   - ns3::TraceResolver::Disconnect
- *
- * It also provides an API for its subclasses. Each subclass should 
- * implement one of:
- *   - ns3::TraceResolver::DoLookup
- *   - ns3::TraceResolver::DoConnect and ns3::TraceResolver::DoDisconnect
- * Each subclass must also provide an ns3::TraceContext to the TraceResolver
- * constructor. Finally, each subclass can access the ns3::TraceContext 
- * associated to this  ns3::TraceResolver through the 
- * ns3::TraceResolver::GetContext method.
+ * Subclasses must implement the two pure virtal methods defined in 
+ * this base class:
+ *  - ns3::TraceResolver::Connect
+ *  - ns3::TraceResolver::Disconnect.
  */
 class TraceResolver
 {
@@ -59,24 +51,42 @@ public:
   /**
    * \param path the namespace path to resolver
    * \param cb the callback to connect to the matching namespace
+   * \param context the context in which to store the trace context
    *
-   * This method is typically invoked by ns3::TraceRoot but advanced
-   * users could also conceivably call it directly if they want to
-   * skip the ns3::TraceRoot.
+   * First, extract the leading path element from the input path, and 
+   * match this leading patch element against any terminal trace source
+   * contained in this trace resolver.
+   * Second, recursively resolve the rest of the path using other 
+   * objects if there are any.
+   * If there is any TraceContextElement associated to one of the matching
+   * elements, it should be added to the input TraceContext.
    */
-  virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
+  virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context) = 0;
   /**
    * \param path the namespace path to resolver
    * \param cb the callback to disconnect in the matching namespace
    *
-   * This method is typically invoked by ns3::TraceRoot but advanced
-   * users could also conceivably call it directly if they want to
-   * skip the ns3::TraceRoot.
+   * This method should behave as Connect.
    */
-  virtual void Disconnect (std::string path, CallbackBase const &cb);
+  virtual void Disconnect (std::string path, CallbackBase const &cb) = 0;
 protected:
+  /**
+   * \param path a namespace path
+   * \returns the initial element of the path.
+   *
+   * If the input path is "/foo/...", the return
+   * value is "foo".
+   */
   std::string GetElement (std::string path);
+  /**
+   * \param path a namespace path
+   * \returns the subpath.
+   *
+   * If the input path is "/foo/bar/...", the return
+   * value is "/bar/...".
+   */
   std::string GetSubpath (std::string path);
+private:
   uint32_t m_count;
 };
 
