@@ -71,6 +71,26 @@ public:
   virtual void Disconnect (std::string path, CallbackBase const &cb) = 0;
 
   virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os) = 0;
+
+
+  class SourceCollection
+  {
+  public:
+    void Print (std::ostream &os) const;
+    void AddUnique (std::string path, const TraceContext &context,
+                    std::string help);
+  private:
+    struct Source
+    {
+      std::string path;
+      TraceContext context;
+      std::string help;
+    };
+    typedef std::vector<struct Source> SourceVector;
+    SourceVector m_sources;
+  };
+  virtual void CollectSources (std::string path, const TraceContext &context, 
+                               SourceCollection *collection) {}
 protected:
   /**
    * \param path a namespace path

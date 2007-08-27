@@ -75,4 +75,34 @@ TraceResolver::GetSubpath (std::string path)
   return subpath;
 }
 
+void 
+TraceResolver::SourceCollection::AddUnique (std::string path, const TraceContext &context,
+                                            std::string help)
+{
+  for (SourceVector::const_iterator i = m_sources.begin (); i != m_sources.end (); i++)
+    {
+      if (i->path == path &&
+          i->help == help &&
+          context.IsSimilar (i->context))
+        {
+          return;
+        }
+    }
+  struct Source source;
+  source.path = path;
+  source.context = context;
+  source.help = help;
+  m_sources.push_back (source);
+}
+void 
+TraceResolver::SourceCollection::Print (std::ostream &os) const
+{
+  for (SourceVector::const_iterator i = m_sources.begin (); i != m_sources.end (); i++)
+    {
+      os << i->path << " [";
+      i->context.PrintAvailable (os, " ");
+      os << "] " << i->help << std::endl;
+    }
+}
+
 }//namespace ns3
