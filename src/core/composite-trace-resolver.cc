@@ -38,7 +38,7 @@ CompositeTraceResolver::~CompositeTraceResolver ()
 }
 
 void 
-CompositeTraceResolver::AddItem (CompositeItem *item)
+CompositeTraceResolver::AddItem (ResolveItem *item)
 {
   m_items.push_back (item);
 }
@@ -47,7 +47,7 @@ void
 CompositeTraceResolver::Add (std::string name, 
                              Callback<Ptr<TraceResolver> > createResolver)
 {
-  class MakerCompositeItem : public CompositeItem
+  class MakerResolveItem : public ResolveItem
   {
   public:
     virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
@@ -64,7 +64,7 @@ CompositeTraceResolver::Add (std::string name,
       this->maker ()->CollectSources (path, ctx, collection);
     }
     Callback<Ptr<TraceResolver> > maker;
-  } *item = new MakerCompositeItem ();
+  } *item = new MakerResolveItem ();
   item->name = name;
   item->context = TraceContext ();
   item->maker = createResolver;
@@ -85,7 +85,7 @@ CompositeTraceResolver::DoAddSource (std::string name,
                                      const TraceSource &trace, 
                                      const TraceContext &context)
 {
-  class SourceCompositeItem : public CompositeItem
+  class SourceResolveItem : public ResolveItem
   {
   public:
     virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
@@ -103,7 +103,7 @@ CompositeTraceResolver::DoAddSource (std::string name,
     }
     TraceSource *trace;
     TraceDoc doc;
-  } *item = new SourceCompositeItem ();
+  } *item = new SourceResolveItem ();
   item->name = name;
   item->context = context;
   item->trace = const_cast<TraceSource *> (&trace);
@@ -115,20 +115,20 @@ CompositeTraceResolver::DoAddSource (std::string name,
 
 
 void 
-CompositeTraceResolver::AddChild (std::string name, Ptr<Object> child)
+CompositeTraceResolver::AddComposite (std::string name, Ptr<Object> composite)
 {
-  DoAddChild (name, child, TraceContext ());
+  DoAddComposite (name, composite, TraceContext ());
 }
 void 
-CompositeTraceResolver::DoAddChild (std::string name, Ptr<Object> child, const TraceContext &context)
+CompositeTraceResolver::DoAddComposite (std::string name, Ptr<Object> composite, const TraceContext &context)
 {
-  class ChildCompositeItem : public CompositeItem
+  class CompositeResolveItem : public ResolveItem
   {
   public:
     virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context)
-    {child->GetTraceResolver ()->Connect (subpath, cb, context);}
+    {composite->GetTraceResolver ()->Connect (subpath, cb, context);}
     virtual void Disconnect (std::string subpath, const CallbackBase &cb)
-    {child->TraceDisconnect (subpath, cb);}
+    {composite->TraceDisconnect (subpath, cb);}
     virtual void CollectSources (std::string path, const TraceContext &context, 
                                  SourceCollection *collection)
     {
@@ -136,19 +136,19 @@ CompositeTraceResolver::DoAddChild (std::string name, Ptr<Object> child, const T
       path.append (this->name);
       TraceContext ctx = context;
       ctx.Union (this->context);
-      this->child->GetTraceResolver ()->CollectSources (path, ctx, collection);
+      this->composite->GetTraceResolver ()->CollectSources (path, ctx, collection);
     }
 
-    Ptr<Object> child;
-  } *item = new ChildCompositeItem ();
+    Ptr<Object> composite;
+  } *item = new CompositeResolveItem ();
   item->name = name;
   item->context = context;
-  item->child = child;
+  item->composite = composite;
   AddItem (item);
 }
 
 void
-CompositeTraceResolver::SetParent (Ptr<TraceResolver> resolver)
+CompositeTraceResolver::SetParentResolver (Ptr<TraceResolver> resolver)
 {
   m_parent = resolver;
 }
@@ -163,7 +163,7 @@ CompositeTraceResolver::Connect (std::string path, CallbackBase const &cb, const
     ConnectOperation (const CallbackBase &cb, const TraceContext &context)
       : m_cb (cb), m_context (context)
     {}
-    virtual void Do (std::string subpath, CompositeItem *item) const
+    virtual void Do (std::string subpath, ResolveItem *item) const
     {
       NS_DEBUG ("connect to path="<<subpath<<" name="<<item->name);
       TraceContext context = m_context;
@@ -261,7 +261,7 @@ CompositeTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
     DisconnectOperation (const CallbackBase &cb)
       : m_cb (cb)
     {}
-    virtual void Do (std::string subpath, CompositeItem *item) const
+    virtual void Do (std::string subpath, ResolveItem *item) const
     {
       NS_DEBUG ("disconnect from path="<<subpath<<" name="<<item->name);
       item->Disconnect (subpath, m_cb);

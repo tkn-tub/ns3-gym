@@ -198,13 +198,13 @@ Ptr<TraceResolver>
 PointToPointNetDevice::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddChild ("queue", m_queue);
+  resolver->AddComposite ("queue", m_queue);
   resolver->AddSource ("rx",
                        TraceDoc ("receive MAC packet",
                                  "const Packet &", "packet received"),
                        m_rxTrace,
                        PointToPointTraceType ());
-  resolver->SetParent (NetDevice::GetTraceResolver ());
+  resolver->SetParentResolver (NetDevice::GetTraceResolver ());
   return resolver;
 }
 

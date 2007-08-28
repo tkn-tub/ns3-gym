@@ -115,7 +115,7 @@ Queue::GetTraceResolver (void) const
                        TraceDoc ("drop packet from queue", 
                                  "const Packet &", "packet dropped"),
                        m_traceDrop, QueueTraceType (QueueTraceType::DROP));
-  resolver->SetParent (Object::GetTraceResolver ());
+  resolver->SetParentResolver (Object::GetTraceResolver ());
   return resolver;
 }
 

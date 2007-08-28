@@ -50,7 +50,7 @@ MobilityModelNotifier::GetTraceResolver (void) const
                                  "Ptr<const MobilityModel>", 
                                  "the mobility model whose course changed"),
                        m_trace);
-  resolver->SetParent (Object::GetTraceResolver ());
+  resolver->SetParentResolver (Object::GetTraceResolver ());
   return resolver;
 }
 

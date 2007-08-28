@@ -91,7 +91,7 @@ Node::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddArray ("devices", m_devices.begin (), m_devices.end (), NodeNetDeviceIndex ());
-  resolver->SetParent (Object::GetTraceResolver ());
+  resolver->SetParentResolver (Object::GetTraceResolver ());
   return resolver;
 }
 

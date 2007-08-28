@@ -361,7 +361,7 @@ public:
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
     resolver->AddSource ("basea-x", ns3::TraceDoc ("test source"), m_source);
-    resolver->SetParent (Object::GetTraceResolver ());
+    resolver->SetParentResolver (Object::GetTraceResolver ());
     return resolver;
   }
   ns3::SVTraceSource<int16_t> m_source;
@@ -385,7 +385,7 @@ public:
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
     resolver->AddSource ("deriveda-x", ns3::TraceDoc ("test source"), m_sourceDerived);
-    resolver->SetParent (BaseA::GetTraceResolver ());
+    resolver->SetParentResolver (BaseA::GetTraceResolver ());
     return resolver;
   }
   ns3::SVTraceSource<int16_t> m_sourceDerived;
@@ -412,7 +412,7 @@ public:
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
     resolver->AddSource ("baseb-x", ns3::TraceDoc ("test source"), m_source);
-    resolver->SetParent (Object::GetTraceResolver ());
+    resolver->SetParentResolver (Object::GetTraceResolver ());
     return resolver;
   }
   ns3::SVTraceSource<int16_t> m_source;
@@ -436,7 +436,7 @@ public:
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
     resolver->AddSource ("derivedb-x", ns3::TraceDoc ("test source"), m_sourceDerived);
-    resolver->SetParent (BaseB::GetTraceResolver ());
+    resolver->SetParentResolver (BaseB::GetTraceResolver ());
     return resolver;
   }
   ns3::SVTraceSource<int16_t> m_sourceDerived;

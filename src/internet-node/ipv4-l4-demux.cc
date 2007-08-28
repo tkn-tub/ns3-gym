@@ -94,9 +94,9 @@ Ipv4L4Demux::GetTraceResolver (void) const
       std::ostringstream oss (protValue);
       oss << (*i)->GetProtocolNumber ();
       Ipv4L4ProtocolTraceContextElement protocolNumber = (*i)->GetProtocolNumber ();
-      resolver->AddChild (protValue, protocol, protocolNumber);
+      resolver->AddComposite (protValue, protocol, protocolNumber);
     }
-  resolver->SetParent (Object::GetTraceResolver ());
+  resolver->SetParentResolver (Object::GetTraceResolver ());
   return resolver;
 }
 void

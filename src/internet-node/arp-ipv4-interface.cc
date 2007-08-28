@@ -46,9 +46,9 @@ ArpIpv4Interface::GetTraceResolver (void) const
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   if (GetDevice () != 0)
     {
-      resolver->AddChild ("netdevice", GetDevice ());
+      resolver->AddComposite ("netdevice", GetDevice ());
     }
-  resolver->SetParent (Ipv4Interface::GetTraceResolver ());
+  resolver->SetParentResolver (Ipv4Interface::GetTraceResolver ());
   return resolver;
 }
 
