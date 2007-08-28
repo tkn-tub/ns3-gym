@@ -39,11 +39,9 @@ def configure(conf):
     conf.sub_config('simulator')
 
     blddir = os.path.abspath(os.path.join(conf.m_blddir, conf.env.variant()))
-    conf.env['NS3_MODULE_PATH'] = [os.path.join(blddir, 'src')]
-    for module in all_modules:
-        module_path = os.path.join(blddir, 'src', module)
-        if Params.g_options.enable_rpath:
-            conf.env.append_value('RPATH', '-Wl,-rpath=%s' % (module_path,))
+    conf.env['NS3_MODULE_PATH'] = [os.path.join(blddir)]
+    if Params.g_options.enable_rpath:
+        conf.env.append_value('RPATH', '-Wl,-rpath=%s' % (os.path.join(blddir),))
 
     ## Used to link the 'run-tests' program with all of ns-3 code
     conf.env['NS3_MODULES'] = ['ns3-' + module.split('/')[-1] for module in all_modules]
@@ -63,12 +61,6 @@ def build(bld):
     bld.create_ns3_module = types.MethodType(create_ns3_module, bld)
     
     bld.add_subdirs(list(all_modules))
-
-    ## Create a single ns3 library containing all modules
-    lib = bld.create_obj('cpp', 'shlib')
-    lib.name = 'ns3'
-    lib.target = 'ns3'
-    lib.add_objects = list(bld.env_of_name('default')['NS3_MODULES'])
 
 
 class Ns3Header(Object.genobj):
