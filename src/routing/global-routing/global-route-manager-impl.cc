@@ -1110,7 +1110,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a)
 // the node at the root of the SPF tree.  This is the node for which we are
 // building the routing table.
 //
-  std::vector<Ptr<Node> >::iterator i = NodeList::Begin (); 
+  NodeList::Iterator i = NodeList::Begin (); 
   for (; i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
@@ -1183,7 +1183,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 // the node at the root of the SPF tree.  This is the node for which we are
 // building the routing table.
 //
-  std::vector<Ptr<Node> >::iterator i = NodeList::Begin (); 
+  NodeList::Iterator i = NodeList::Begin (); 
   for (; i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
@@ -1274,7 +1274,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // ID corresponding to the root vertex.  This is the one we're going to write
 // the routing information to.
 //
-  std::vector<Ptr<Node> >::iterator i = NodeList::Begin (); 
+  NodeList::Iterator i = NodeList::Begin (); 
   for (; i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
@@ -1395,7 +1395,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 // ID corresponding to the root vertex.  This is the one we're going to write
 // the routing information to.
 //
-  std::vector<Ptr<Node> >::iterator i = NodeList::Begin (); 
+  NodeList::Iterator i = NodeList::Begin (); 
   for (; i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
