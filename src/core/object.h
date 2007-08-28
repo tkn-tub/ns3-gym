@@ -170,6 +170,7 @@ private:
   mutable uint32_t m_count;
   InterfaceId m_iid;
   bool m_disposed;
+  bool m_collecting;
   Object *m_next;
 };
 

@@ -76,9 +76,6 @@ public:
     void Print (std::ostream &os) const;
     void AddUnique (std::string path, const TraceContext &context,
                     std::string help);
-    void SetFlag (void);
-    void ClearFlag (void);
-    bool IsFlagSet (void);
   private:
     struct Source
     {
@@ -88,7 +85,6 @@ public:
     };
     typedef std::vector<struct Source> SourceVector;
     SourceVector m_sources;
-    bool m_flag;
   };
   virtual void CollectSources (std::string path, const TraceContext &context, 
                                SourceCollection *collection) = 0;

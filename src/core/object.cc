@@ -23,7 +23,10 @@
 #include "singleton.h"
 #include "uid-manager.h"
 #include "trace-resolver.h"
+#include "debug.h"
 #include <vector>
+
+NS_DEBUG_COMPONENT_DEFINE ("Object");
 
 namespace {
 
@@ -173,6 +176,7 @@ Object::Object ()
   : m_count (1),
     m_iid (Object::iid),
     m_disposed (false),
+    m_collecting (false),
     m_next (this)
 {}
 Object::~Object () 
@@ -296,15 +300,23 @@ void
 Object::DoCollectSources (std::string path, const TraceContext &context, 
                           TraceResolver::SourceCollection *collection)
 {
-  Object *current = this->m_next;
-  if (collection->IsFlagSet ())
-    {
-      return;
-    }
-  collection->SetFlag ();
+  Object *current;
+  current = this;
+  do {
+    if (current->m_collecting)
+      {
+        return;
+      }
+    current = current->m_next;
+  } while (current != this);
+
+  m_collecting = true;
+
+  current = this->m_next;
   while (current != this)
     {
       NS_ASSERT (current != 0);
+      NS_DEBUG ("collect current=" << current);
       InterfaceId cur = current->m_iid;
       while (cur != Object::iid)
         {
@@ -312,12 +324,14 @@ Object::DoCollectSources (std::string path, const TraceContext &context,
           std::string fullpath = path;
           fullpath.append ("/$");
           fullpath.append (name);
+          NS_DEBUG ("collect: " << fullpath);
           current->GetTraceResolver ()->CollectSources (fullpath, context, collection);
           cur = InterfaceId::LookupParent (cur);
         }
       current = current->m_next;
     }
-  collection->ClearFlag ();
+
+  m_collecting = false;
 }
 
 } // namespace ns3

@@ -108,22 +108,4 @@ TraceResolver::SourceCollection::Print (std::ostream &os) const
     }
 }
 
-void 
-TraceResolver::SourceCollection::SetFlag (void)
-{
-  m_flag = true;
-}
-
-void 
-TraceResolver::SourceCollection::ClearFlag (void)
-{
-  m_flag = false;
-}
-bool 
-TraceResolver::SourceCollection::IsFlagSet (void)
-{
-  return m_flag;
-}
-
-
 }//namespace ns3
