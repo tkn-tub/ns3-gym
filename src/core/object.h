@@ -141,9 +141,28 @@ public:
    */
   void AddInterface (Ptr<Object> other);
 
-
+  /**
+   * \param path the path to match for the callback
+   * \param cb callback to connect
+   *
+   * Connect the input callback to all trace sources which
+   * match the input path.
+   *
+   */
   void TraceConnect (std::string path, const CallbackBase &cb);
+  /**
+   * \param path the path to match for the callback
+   * \param cb callback to disconnect
+   *
+   * Disconnect the input callback from all trace sources which
+   * match the input path.
+   */
   void TraceDisconnect (std::string path, const CallbackBase &cb);
+  /**
+   * \returns the trace resolver associated to this object.
+   *
+   * This method should be rarely called by users.
+   */
   virtual Ptr<TraceResolver> GetTraceResolver (void);
 protected:
   /**
