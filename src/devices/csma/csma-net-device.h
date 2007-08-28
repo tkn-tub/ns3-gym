@@ -421,8 +421,8 @@ private:
    * @see class CallBackTraceSource
    * @see class TraceResolver
    */
-  CallbackTraceSource<Packet &> m_rxTrace;
-  CallbackTraceSource<Packet &> m_dropTrace;
+  CallbackTraceSource<const Packet &> m_rxTrace;
+  CallbackTraceSource<const Packet &> m_dropTrace;
 
 };
 

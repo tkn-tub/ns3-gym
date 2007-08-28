@@ -40,7 +40,7 @@ private:
   void LogDevQueueEnqueue (TraceContext const &context, const Packet &p);
   void LogDevQueueDequeue (TraceContext const &context, const Packet &p);
   void LogDevQueueDrop (TraceContext const &context, const Packet &p);
-  void LogDevRx (TraceContext const &context, Packet &p);
+  void LogDevRx (TraceContext const &context, const Packet &p);
   std::ofstream m_os;
 };
 
