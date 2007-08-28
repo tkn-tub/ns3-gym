@@ -53,7 +53,7 @@ public:
    * be automatically extended to contain the input context.
    */
   template <typename T>
-  void AddSource (std::string name,
+  void AddSource (std::string name, std::string helpText,
                   TraceSource &trace, T const &context);
   /**
    * \param name name of trace source
@@ -64,18 +64,8 @@ public:
    * resolution.
    */
   void AddSource (std::string name,
+                  std::string helpText,
                   TraceSource &trace);
-  /**
-   * \param name name of child trace resolver
-   * \param createResolver a trace resolver constructor
-   *
-   * Add a child trace resolver to this resolver. This child
-   * trace resolver will match the name specified during
-   * namespace resolution. When this happens, the constructor
-   * will be invoked to create the child trace resolver.
-   */
-  void Add (std::string name, 
-            Callback<Ptr<TraceResolver> > createResolver);
 
   void AddChild (std::string name, Ptr<Object> child);
 
@@ -95,6 +85,7 @@ public:
                                SourceCollection *collection);
 
 private:
+  friend class CompositeTraceResolverTest;
   class CompositeItem 
   {
   public:
@@ -123,8 +114,12 @@ private:
                                       const Operation &operation);
   void DoAddChild (std::string name, Ptr<Object> child, const TraceContext &context);
   void DoAddSource (std::string name,
+                    std::string helpText,
                     TraceSource &trace,
                     const TraceContext &context);
+  void Add (std::string name, 
+            Callback<Ptr<TraceResolver> > createResolver);
+
 
   CompositeTraceResolver::TraceItems m_items;
   Ptr<TraceResolver> m_parent;
@@ -139,12 +134,13 @@ namespace ns3 {
 template <typename T>
 void 
 CompositeTraceResolver::AddSource (std::string name,
+                                   std::string helpText,
                                    TraceSource &trace, 
                                    T const &context)
 {
   TraceContext ctx;
   ctx.AddElement (context);
-  DoAddSource (name, trace, ctx);  
+  DoAddSource (name, helpText, trace, ctx);  
 }
 
 template <typename ITERATOR, typename INDEX>

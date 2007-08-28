@@ -199,6 +199,7 @@ PointToPointNetDevice::GetTraceResolver (void)
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddChild ("queue", m_queue);
   resolver->AddSource ("rx",
+                       "receive MAC packet",
                        m_rxTrace,
                        PointToPointTraceType ());
   resolver->SetParent (NetDevice::GetTraceResolver ());

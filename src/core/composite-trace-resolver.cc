@@ -73,13 +73,15 @@ CompositeTraceResolver::Add (std::string name,
 
 void 
 CompositeTraceResolver::AddSource (std::string name,
-                             TraceSource &trace)
+                                   std::string helpText,
+                                   TraceSource &trace)
 {
-  DoAddSource (name, trace, TraceContext ());
+  DoAddSource (name, helpText, trace, TraceContext ());
 }
 
 void 
 CompositeTraceResolver::DoAddSource (std::string name,
+                                     std::string helpText,
                                      TraceSource &trace, 
                                      const TraceContext &context)
 {
@@ -98,13 +100,15 @@ CompositeTraceResolver::DoAddSource (std::string name,
       TraceContext ctx = context;
       ctx.Union (this->context);
       // XXX help string
-      collection->AddUnique (path, ctx, "");
+      collection->AddUnique (path, ctx, helpText);
     }
     TraceSource *trace;
+    std::string helpText;
   } *item = new SourceCompositeItem ();
   item->name = name;
   item->context = context;
   item->trace = &trace;
+  item->helpText = helpText;
   AddItem (item);
 }
 
@@ -397,7 +401,7 @@ Ptr<TraceResolver>
 CompositeTraceResolverTest::CreateSubResolver (void)
 {
   Ptr<CompositeTraceResolver> subresolver = Create<CompositeTraceResolver> ();
-  subresolver->AddSource ("trace-int", m_traceInt, 
+  subresolver->AddSource ("trace-int", "test source", m_traceInt, 
                           SubTraceSourceTest (SubTraceSourceTest::INT));
   return subresolver;
 }
@@ -412,9 +416,9 @@ CompositeTraceResolverTest::RunTests (void)
 
   CompositeTraceResolver resolver;
 
-  resolver.AddSource ("trace-double-a", traceDoubleA, 
+  resolver.AddSource ("trace-double-a", "test source", traceDoubleA, 
                       TraceSourceTest (TraceSourceTest::DOUBLEA));
-  resolver.AddSource ("trace-double-b", traceDoubleB, 
+  resolver.AddSource ("trace-double-b", "test source", traceDoubleB, 
                       TraceSourceTest (TraceSourceTest::DOUBLEB));
 
   resolver.Connect ("/*", MakeCallback (&CompositeTraceResolverTest::TraceDouble, this), TraceContext ());
@@ -547,7 +551,7 @@ CompositeTraceResolverTest::RunTests (void)
 
   SVTraceSource<uint16_t> source;
 
-  resolver.AddSource ("uint16_t", source, TraceSourceTest (TraceSourceTest::UINT16_T));
+  resolver.AddSource ("uint16_t", "test source", source, TraceSourceTest (TraceSourceTest::UINT16_T));
   
 
   return ok;

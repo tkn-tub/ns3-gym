@@ -99,9 +99,12 @@ TraceResolver::SourceCollection::Print (std::ostream &os) const
 {
   for (SourceVector::const_iterator i = m_sources.begin (); i != m_sources.end (); i++)
     {
-      os << i->path << " [";
+      os << "source=" << i->path << std::endl;
+      os << "TraceContextElement=";
       i->context.PrintAvailable (os, " ");
-      os << "] " << i->help << std::endl;
+      os << std::endl;
+      os << i->help << std::endl;
+      os << std::endl;
     }
 }
 

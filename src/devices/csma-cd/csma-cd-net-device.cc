@@ -460,9 +460,11 @@ CsmaCdNetDevice::GetTraceResolver (void)
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddChild ("queue", m_queue);
   resolver->AddSource ("rx",
+                       "receive MAC packet",
                        m_rxTrace,
                        CsmaCdTraceType (CsmaCdTraceType::RX));
   resolver->AddSource ("drop",
+                       "drop MAC packet",  
                        m_dropTrace,
                        CsmaCdTraceType (CsmaCdTraceType::DROP));
   resolver->SetParent (NetDevice::GetTraceResolver ());

@@ -162,9 +162,12 @@ Ptr<TraceResolver>
 Ipv4L3Protocol::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddSource ("tx", m_txTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::TX));
-  resolver->AddSource ("rx", m_rxTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::RX));
-  resolver->AddSource ("drop", m_dropTrace, Ipv4L3ProtocolTraceContextElement (Ipv4L3ProtocolTraceContextElement::DROP));
+  resolver->AddSource ("tx", "send ipv4 packet to outgoing interface",
+                       m_txTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::TX));
+  resolver->AddSource ("rx", "receive ipv4 packet from incoming interface",
+                       m_rxTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::RX));
+  resolver->AddSource ("drop", "drop ipv4 packet",
+                       m_dropTrace, Ipv4L3ProtocolTraceContextElement (Ipv4L3ProtocolTraceContextElement::DROP));
   resolver->AddArray ("interfaces", 
                       m_interfaces.begin (), m_interfaces.end (), 
                       Ipv4L3ProtocolInterfaceIndex ());
