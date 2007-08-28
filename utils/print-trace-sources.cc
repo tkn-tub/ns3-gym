@@ -5,12 +5,14 @@
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/csma-cd-net-device.h"
 #include "ns3/queue.h"
+#include "ns3/mobility-model-notifier.h"
 
 using namespace ns3;
 
 int main (int argc, char *argv[])
 {
   Ptr<Node> node = Create<InternetNode> ();
+  node->AddInterface (Create<MobilityModelNotifier> ());
 
   Ptr<PointToPointNetDevice> p2p = Create<PointToPointNetDevice> (node);
   p2p->AddQueue (Queue::CreateDefault ());
