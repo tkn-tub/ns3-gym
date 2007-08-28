@@ -63,7 +63,8 @@ public:
   InterfaceIdTraceResolver (Ptr<Object> aggregate);
   virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   virtual void Disconnect (std::string path, CallbackBase const &cb);
-  virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os);
+  virtual void CollectSources (std::string path, const TraceContext &context, 
+                               SourceCollection *collection);
 private:
   Ptr<Object> ParseForInterface (std::string path);
   Ptr<Object> m_aggregate;
@@ -105,9 +106,10 @@ InterfaceIdTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
     }
 }
 void 
-InterfaceIdTraceResolver::PrintAvailable (std::string path, const TraceContext &context, std::ostream &os)
+InterfaceIdTraceResolver::CollectSources (std::string path, const TraceContext &context, 
+                                          SourceCollection *collection)
 {
-  
+  m_aggregate->DoCollectSources (path, context, collection);
 }
 
 
@@ -127,6 +129,12 @@ InterfaceId
 InterfaceId::LookupParent (InterfaceId iid)
 {
   return Singleton<IidTree>::Get ()->LookupParent (iid.m_iid);
+}
+std::string 
+InterfaceId::GetName (void) const
+{
+  std::string name = Singleton<IidManager>::Get ()->LookupByUid (m_iid);
+  return name;
 }
 
 bool operator == (const InterfaceId &a, const InterfaceId &b)
@@ -282,6 +290,34 @@ Object::MaybeDelete (void) const
     delete current;
     current = next;
   } while (current != end);
+}
+
+void 
+Object::DoCollectSources (std::string path, const TraceContext &context, 
+                          TraceResolver::SourceCollection *collection)
+{
+  Object *current = this->m_next;
+  if (collection->IsFlagSet ())
+    {
+      return;
+    }
+  collection->SetFlag ();
+  while (current != this)
+    {
+      NS_ASSERT (current != 0);
+      InterfaceId cur = current->m_iid;
+      while (cur != Object::iid)
+        {
+          std::string name = cur.GetName ();
+          std::string fullpath = path;
+          fullpath.append ("/$");
+          fullpath.append (name);
+          current->GetTraceResolver ()->CollectSources (fullpath, context, collection);
+          cur = InterfaceId::LookupParent (cur);
+        }
+      current = current->m_next;
+    }
+  collection->ClearFlag ();
 }
 
 } // namespace ns3

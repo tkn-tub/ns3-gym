@@ -54,7 +54,15 @@ CompositeTraceResolver::Add (std::string name,
     {maker ()->Connect (subpath, cb, context);}
     virtual void Disconnect (std::string subpath, const CallbackBase &cb)
     {maker ()->Disconnect (subpath, cb);}
-
+    virtual void CollectSources (std::string path, const TraceContext &context, 
+                                 SourceCollection *collection)
+    {
+      path.append ("/");
+      path.append (this->name);
+      TraceContext ctx = context;
+      ctx.Union (this->context);
+      this->maker ()->CollectSources (path, ctx, collection);
+    }
     Callback<Ptr<TraceResolver> > maker;
   } *item = new MakerCompositeItem ();
   item->name = name;
@@ -82,13 +90,15 @@ CompositeTraceResolver::DoAddSource (std::string name,
     {if (subpath == "") {trace->AddCallback (cb, context);}}
     virtual void Disconnect (std::string subpath, const CallbackBase &cb)
     {if (subpath == "") {trace->RemoveCallback (cb);}}
-    virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os)
+    virtual void CollectSources (std::string path, const TraceContext &context, 
+                                 SourceCollection *collection)
     {
-      os << path << "/" << this->name << " [";
+      path.append ("/");
+      path.append (this->name);
       TraceContext ctx = context;
       ctx.Union (this->context);
-      ctx.PrintAvailable (os, ",");
-      os << "]" << std::endl;
+      // XXX help string
+      collection->AddUnique (path, ctx, "");
     }
     TraceSource *trace;
   } *item = new SourceCompositeItem ();
@@ -116,13 +126,14 @@ CompositeTraceResolver::DoAddChild (std::string name, Ptr<Object> child, const T
     {child->GetTraceResolver ()->Connect (subpath, cb, context);}
     virtual void Disconnect (std::string subpath, const CallbackBase &cb)
     {child->TraceDisconnect (subpath, cb);}
-    virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os)
+    virtual void CollectSources (std::string path, const TraceContext &context, 
+                                 SourceCollection *collection)
     {
       path.append ("/");
       path.append (this->name);
       TraceContext ctx = context;
       ctx.Union (this->context);
-      this->child->GetTraceResolver ()->PrintAvailable (path, ctx, os);
+      this->child->GetTraceResolver ()->CollectSources (path, ctx, collection);
     }
 
     Ptr<Object> child;
@@ -264,19 +275,22 @@ CompositeTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
   } operation  = DisconnectOperation (cb);
   DoRecursiveOperation (path, operation);
 }
+
 void 
-CompositeTraceResolver::PrintAvailable (std::string path, const TraceContext &context, std::ostream &os)
+CompositeTraceResolver::CollectSources (std::string path, const TraceContext &context, 
+                                        SourceCollection *collection)
 {
   for (TraceItems::const_iterator i = m_items.begin (); i != m_items.end (); i++)
     {
       NS_DEBUG ("print " << (*i)->name);
-      (*i)->PrintAvailable (path, context, os);
+      (*i)->CollectSources (path, context, collection);
     }
   if (m_parent != 0)
     {
-      m_parent->PrintAvailable (path, context, os);
+      m_parent->CollectSources (path, context, collection);
     }
 }
+
 
 }//namespace ns3
 

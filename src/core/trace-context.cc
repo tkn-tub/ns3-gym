@@ -272,16 +272,23 @@ TraceContext::IsSimilar (const TraceContext &o) const
   uint16_t myI = 0;
   uint8_t otherCurrentUid;
   uint16_t otherI = 0;
-  do {
-    myCurrentUid = m_data->data[myI];
-    otherCurrentUid = o.m_data->data[otherI];
-    uint8_t mySize = ElementRegistry::GetSize (myCurrentUid);
-    uint8_t otherSize = ElementRegistry::GetSize (otherCurrentUid);
-    myI += 1 + mySize;
-    otherI += 1 + otherSize;
-  } while (myCurrentUid == otherCurrentUid && 
-           myCurrentUid != 0 && 
-           otherCurrentUid != 0);
+
+  myCurrentUid = m_data->data[myI];
+  otherCurrentUid = o.m_data->data[otherI];
+
+  while (myCurrentUid == otherCurrentUid && 
+         myCurrentUid != 0 && 
+         otherCurrentUid != 0 &&
+         myI < m_data->size &&
+         otherI < o.m_data->size)
+    {
+      uint8_t mySize = ElementRegistry::GetSize (myCurrentUid);
+      uint8_t otherSize = ElementRegistry::GetSize (otherCurrentUid);
+      myI += 1 + mySize;
+      otherI += 1 + otherSize;
+      myCurrentUid = m_data->data[myI];
+      otherCurrentUid = o.m_data->data[otherI];
+    }
   if (myCurrentUid == 0 && otherCurrentUid == 0)
     {
       return true;

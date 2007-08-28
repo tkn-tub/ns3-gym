@@ -91,7 +91,8 @@ public:
 
   virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   virtual void Disconnect (std::string path, CallbackBase const &cb);
-  virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os);
+  virtual void CollectSources (std::string path, const TraceContext &context, 
+                               SourceCollection *collection);
 
 private:
   class CompositeItem 
@@ -100,7 +101,8 @@ private:
     virtual ~CompositeItem () {}
     virtual void Connect (std::string subpath, const CallbackBase &cb, const TraceContext &context) = 0;
     virtual void Disconnect (std::string subpath, const CallbackBase &cb) = 0;
-    virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os) {}
+    virtual void CollectSources (std::string path, const TraceContext &context, 
+                                 SourceCollection *collection) = 0;
 
     std::string name;
     TraceContext context;
@@ -157,13 +159,16 @@ CompositeTraceResolver::AddArray (std::string name,
     {array->Connect (subpath, cb, context);}
     virtual void Disconnect (std::string subpath, const CallbackBase &cb)
     {array->Disconnect (subpath, cb);}
-    virtual void PrintAvailable (std::string path, const TraceContext &context, std::ostream &os)
+    virtual void CollectSources (std::string path, const TraceContext &context, 
+                                 SourceCollection *collection)
     {
       path.append ("/");
       path.append (this->name);
       TraceContext ctx = context;
       ctx.Union (this->context);
-      array->PrintAvailable (path, ctx, os);}
+      array->CollectSources (path, ctx, collection);
+    }
+
     Ptr<ArrayTraceResolver<INDEX> > array;
   } *item = new ArrayCompositeItem ();
   item->name = name;

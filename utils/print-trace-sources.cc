@@ -17,7 +17,9 @@ int main (int argc, char *argv[])
   Ptr<CsmaCdNetDevice> csma = Create<CsmaCdNetDevice> (node);
   csma->AddQueue (Queue::CreateDefault ());
 
-  NodeList::GetTraceResolver ()->PrintAvailable ("", TraceContext (), std::cout);
+  TraceResolver::SourceCollection collection;
+  NodeList::GetTraceResolver ()->CollectSources ("", TraceContext (), &collection);
+  collection.Print (std::cout);
 
   return 0;
 }

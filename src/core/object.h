@@ -24,10 +24,10 @@
 #include <stdint.h>
 #include <string>
 #include "ptr.h"
+#include "trace-resolver.h"
 
 namespace ns3 {
 
-class TraceResolver;
 class TraceContext;
 class CallbackBase;
 
@@ -60,6 +60,11 @@ public:
    * id is not a valid interface id.
    */
   static InterfaceId LookupParent (InterfaceId iid);
+
+  /**
+   * \returns the name of this interface.
+   */
+  std::string GetName (void) const;
   ~InterfaceId ();
 private:
   InterfaceId (uint16_t iid);
@@ -156,7 +161,10 @@ protected:
    */
   virtual void DoDispose (void);
 private:
+  friend class InterfaceIdTraceResolver;
   Ptr<Object> DoQueryInterface (InterfaceId iid) const;
+  void DoCollectSources (std::string path, const TraceContext &context, 
+                         TraceResolver::SourceCollection *collection);
   bool Check (void) const;
   void MaybeDelete (void) const;
   mutable uint32_t m_count;
