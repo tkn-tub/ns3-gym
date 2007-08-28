@@ -374,7 +374,7 @@ void
 CompositeTraceResolverTest::TraceDouble (TraceContext const &context, double v)
 {
   TraceSourceTest source;
-  context.Get (source);
+  context.GetElement (source);
   if (source.IsDoubleA ())
     {
       m_gotDoubleA = true;

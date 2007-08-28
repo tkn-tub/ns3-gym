@@ -34,8 +34,10 @@ namespace ns3 {
  *
  * Instances of this class are used to hold context
  * for each trace source. Each instance holds a list of
- * 'contexts'. Trace sinks can lookup these contexts
+ * TraceContextElement. Trace sinks can lookup these contexts
  * from this list with the ns3::TraceContext::Get method.
+ * They can also ask the TraceContext for the list of 
+ * TraceContextElements it contains with the PrintAvailable method.
  *
  * This class is implemented
  * using Copy On Write which means that copying unmodified
@@ -54,6 +56,9 @@ public:
 
   /**
    * \param context add context to list of trace contexts.
+   *
+   * A copy of the input context is appended at the end of the list
+   * stored in this TraceContext.
    */
   template <typename T>
   void AddElement (T const &context);
@@ -63,7 +68,7 @@ public:
    *
    * Perform the Union operation (in the sense of set theory) on the
    * two input lists of elements. This method is used in the
-   * ns3::CallbackTraceSourceSource class when multiple sinks are connected
+   * ns3::CallbackTraceSource class when multiple sinks are connected
    * to a single source to ensure that the source does not need
    * to store a single TraceContext instance per connected sink.
    * Instead, all sinks share the same TraceContext.
@@ -72,15 +77,35 @@ public:
 
   /**
    * \param context context to get from this list of trace contexts.
-   *
-   * This method cannot fail. If the requested trace context is not
-   * stored in this TraceContext, then, the program will halt.
+   * \returns true if the requested trace context element was found 
+   *          in this TraceContext, false otherwise.
    */
   template <typename T>
-  void Get (T &context) const;
+  bool GetElement (T &context) const;
 
+  /**
+   * \param os a c++ STL output stream
+   *
+   * Iterate over the list of TraceContextElement stored in this
+   * TraceContext and invoke each of their Print method.
+   */
   void Print (std::ostream &os) const;
+  /**
+   * \param os a c++ STL output stream
+   * \param separator the separator inserted between each TraceContextElement typename.
+   *
+   * Print the typename of each TraceContextElement stored in this TraceContext.
+   */
   void PrintAvailable (std::ostream &os, std::string separator) const;
+  /**
+   * \param o another trace context
+   * \returns true if the input trace context contains exactly the same set of
+   *          TraceContextElement instances, false otherwise.
+   *
+   * This method does not test for equality: the content of each matching 
+   * TraceContextElement could be different. It merely checks that both
+   * trace contexts contain the same types of TraceContextElements.
+   */
   bool IsSimilar (const TraceContext &o) const;
 private:
   friend class TraceContextTest;
@@ -123,8 +148,8 @@ TraceContext::AddElement (T const &context)
     }
 }
 template <typename T>
-void
-TraceContext::Get (T &context) const
+bool
+TraceContext::GetElement (T &context) const
 {
   TraceContextElement *parent;
   // if the following assignment fails, it is because the input
@@ -132,10 +157,7 @@ TraceContext::Get (T &context) const
   parent = &context;
   uint8_t *data = (uint8_t *) &context;
   bool found = DoGet (T::GetUid (), data);
-  if (!found)
-    {
-      NS_FATAL_ERROR ("Type not stored in TraceContext");
-    }
+  return found;
 }
 template <typename T>
 bool

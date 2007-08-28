@@ -35,10 +35,9 @@ class CallbackBase;
  *        namespace resolution.
  * \ingroup tracing
  *
- * Subclasses must implement the two pure virtal methods defined in 
- * this base class:
- *  - ns3::TraceResolver::Connect
- *  - ns3::TraceResolver::Disconnect.
+ * Although users could conceivably implement their own trace resolver
+ * subclasses, doing so is complicated so, it is recommended to use
+ * the default implementation ns3::CompositeTraceResolver instead.
  */
 class TraceResolver
 {
@@ -88,6 +87,14 @@ public:
     typedef std::vector<struct Source> SourceVector;
     SourceVector m_sources;
   };
+  /**
+   * \param path the path to the current recursive level.
+   * \param context the trace context associated to the current recursive level
+   * \param collection the collection in which to gather every trace source found.
+   *
+   * This method is invoked recursively until all trace sources have been
+   * stored in the output SourceCollection argument.
+   */
   virtual void CollectSources (std::string path, const TraceContext &context, 
                                SourceCollection *collection) = 0;
 protected:

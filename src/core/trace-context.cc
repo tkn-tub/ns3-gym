@@ -358,25 +358,25 @@ TraceContextTest::RunTests (void)
     {
       ok = false;
     }
-  ctx.Get (v0);
+  ctx.GetElement (v0);
   ctx.AddElement (v1);
-  ctx.Get (v1);
-  ctx.Get (v0);
-  ctx.Get (v1);
+  ctx.GetElement (v1);
+  ctx.GetElement (v0);
+  ctx.GetElement (v1);
 
   TraceContext copy = ctx;
-  ctx.Get (v0);
-  ctx.Get (v1);
-  copy.Get (v0);
-  copy.Get (v1);
+  ctx.GetElement (v0);
+  ctx.GetElement (v1);
+  copy.GetElement (v0);
+  copy.GetElement (v1);
   copy.AddElement (v2);
-  copy.Get (v0);
-  copy.Get (v1);
-  copy.Get (v2);
+  copy.GetElement (v0);
+  copy.GetElement (v1);
+  copy.GetElement (v2);
   ctx.AddElement (v3);
-  ctx.Get (v0);
-  ctx.Get (v1);
-  ctx.Get (v3);
+  ctx.GetElement (v0);
+  ctx.GetElement (v1);
+  ctx.GetElement (v3);
 
   if (ctx.SafeGet (v2))
     {
@@ -387,13 +387,13 @@ TraceContextTest::RunTests (void)
       ok = false;
     }
   ctx.Union (copy);
-  ctx.Get (v2);
+  ctx.GetElement (v2);
   if (copy.SafeGet (v3))
     {
       ok = false;
     }
   copy.Union (ctx);
-  copy.Get (v3);  
+  copy.GetElement (v3);  
   
   return ok;
 }
