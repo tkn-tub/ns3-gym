@@ -11,7 +11,7 @@ class TraceDoc
   typedef std::vector<std::pair<std::string,std::string> > ArgVector;
 public:
   typedef ArgVector::const_iterator Iterator;
-
+  TraceDoc ();
   TraceDoc (std::string help);
   TraceDoc (std::string help,
 	    std::string arg0Type,
@@ -37,7 +37,7 @@ public:
 	    std::string arg2Help,
 	    std::string arg3Type,
 	    std::string arg3Help);
-  std::string GetHelp (void);
+  std::string GetHelp (void) const;
   Iterator ArgsBegin (void) const;
   Iterator ArgsEnd (void) const;
 private:

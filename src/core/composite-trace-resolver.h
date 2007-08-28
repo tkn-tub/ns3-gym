@@ -30,6 +30,7 @@
 #include "sv-trace-source.h"
 #include "fv-trace-source.h"
 #include "array-trace-resolver.h"
+#include "trace-doc.h"
 
 namespace ns3 {
 
@@ -53,7 +54,7 @@ public:
    * be automatically extended to contain the input context.
    */
   template <typename T>
-  void AddSource (std::string name, std::string helpText,
+  void AddSource (std::string name, const TraceDoc &doc,
                   TraceSource &trace, T const &context);
   /**
    * \param name name of trace source
@@ -64,7 +65,7 @@ public:
    * resolution.
    */
   void AddSource (std::string name,
-                  std::string helpText,
+                  const TraceDoc &doc,
                   TraceSource &trace);
 
   void AddChild (std::string name, Ptr<Object> child);
@@ -114,7 +115,7 @@ private:
                                       const Operation &operation);
   void DoAddChild (std::string name, Ptr<Object> child, const TraceContext &context);
   void DoAddSource (std::string name,
-                    std::string helpText,
+                    const TraceDoc &doc,
                     TraceSource &trace,
                     const TraceContext &context);
   void Add (std::string name, 
@@ -134,13 +135,13 @@ namespace ns3 {
 template <typename T>
 void 
 CompositeTraceResolver::AddSource (std::string name,
-                                   std::string helpText,
+                                   const TraceDoc &doc,
                                    TraceSource &trace, 
                                    T const &context)
 {
   TraceContext ctx;
   ctx.AddElement (context);
-  DoAddSource (name, helpText, trace, ctx);  
+  DoAddSource (name, doc, trace, ctx);  
 }
 
 template <typename ITERATOR, typename INDEX>

@@ -76,13 +76,13 @@ TraceResolver::GetSubpath (std::string path)
 }
 
 void 
-TraceResolver::SourceCollection::AddUnique (std::string path, const TraceContext &context,
-                                            std::string help)
+TraceResolver::SourceCollection::AddUnique (std::string path, 
+                                            const TraceContext &context,
+                                            const TraceDoc &doc)
 {
   for (SourceVector::const_iterator i = m_sources.begin (); i != m_sources.end (); i++)
     {
       if (i->path == path &&
-          i->help == help &&
           context.IsSimilar (i->context))
         {
           return;
@@ -91,7 +91,7 @@ TraceResolver::SourceCollection::AddUnique (std::string path, const TraceContext
   struct Source source;
   source.path = path;
   source.context = context;
-  source.help = help;
+  source.doc = doc;
   m_sources.push_back (source);
 }
 void 
@@ -103,7 +103,14 @@ TraceResolver::SourceCollection::Print (std::ostream &os) const
       os << "TraceContext=[";
       i->context.PrintAvailable (os, ",");
       os << "]" << std::endl;
-      os << "help=\"" << i->help << "\"" << std::endl;
+      os << "help=\"" << i->doc.GetHelp () << "\"" << std::endl;
+      os << "const TraceContext &: the trace context associated to the connected trace source." << std::endl;
+      uint32_t k = 0;
+      for (TraceDoc::Iterator j = i->doc.ArgsBegin (); j != i->doc.ArgsEnd (); j++)
+        {
+          os << "argument " << k << "  --  " << j->first << ": " << j->second << "." << std::endl;
+          k++;
+        }
       os << std::endl;
     }
 }

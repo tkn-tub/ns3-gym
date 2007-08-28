@@ -103,11 +103,17 @@ Ptr<TraceResolver>
 Queue::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddSource ("enqueue", "store packet in queue",
+  resolver->AddSource ("enqueue", 
+                       TraceDoc ("store packet in queue",
+                                 "const Packet &", "packet queued"),
                        m_traceEnqueue, QueueTraceType (QueueTraceType::ENQUEUE));
-  resolver->AddSource ("dequeue", "remove packet from queue",  
+  resolver->AddSource ("dequeue", 
+                       TraceDoc ("remove packet from queue",
+                                 "const Packet &", "packet dequeued"),
                        m_traceDequeue, QueueTraceType (QueueTraceType::DEQUEUE));
-  resolver->AddSource ("drop", "drop packet from queue", 
+  resolver->AddSource ("drop", 
+                       TraceDoc ("drop packet from queue", 
+                                 "const Packet &", "packet dropped"),
                        m_traceDrop, QueueTraceType (QueueTraceType::DROP));
   resolver->SetParent (Object::GetTraceResolver ());
   return resolver;

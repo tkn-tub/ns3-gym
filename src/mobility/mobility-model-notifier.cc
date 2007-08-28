@@ -20,6 +20,7 @@
  */
 #include "mobility-model-notifier.h"
 #include "ns3/composite-trace-resolver.h"
+#include "ns3/trace-doc.h"
 
 namespace ns3 {
 
@@ -44,7 +45,10 @@ MobilityModelNotifier::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = 
     Create<CompositeTraceResolver> ();
-  resolver->AddSource ("course-change", "speed vector changed value",
+  resolver->AddSource ("course-change", 
+                       TraceDoc ("The value of the speed vector changed",
+                                 "Ptr<const MobilityModel>", 
+                                 "the mobility model whose course changed"),
                        m_trace);
   resolver->SetParent (Object::GetTraceResolver ());
   return resolver;

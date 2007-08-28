@@ -24,6 +24,7 @@
 #include <string>
 #include <list>
 #include "trace-context.h"
+#include "trace-doc.h"
 
 namespace ns3 {
 
@@ -74,14 +75,15 @@ public:
   {
   public:
     void Print (std::ostream &os) const;
-    void AddUnique (std::string path, const TraceContext &context,
-                    std::string help);
+    void AddUnique (std::string path, 
+                    const TraceContext &context,
+                    const TraceDoc &doc);
   private:
     struct Source
     {
       std::string path;
       TraceContext context;
-      std::string help;
+      TraceDoc doc;
     };
     typedef std::vector<struct Source> SourceVector;
     SourceVector m_sources;
