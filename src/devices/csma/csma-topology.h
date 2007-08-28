@@ -19,11 +19,11 @@
 //
 // Topology helper for multipoint channels in ns3.
 // 
-#ifndef CSMA_CD_TOPOLOGY_H
-#define CSMA_CD_TOPOLOGY_H
+#ifndef CSMA_TOPOLOGY_H
+#define CSMA_TOPOLOGY_H
 
 #include "ns3/ptr.h"
-#include "ns3/csma-cd-net-device.h"
+#include "ns3/csma-net-device.h"
 #include "ns3/node.h"
 
 // The topology class consists of only static methods thar are used to
@@ -31,16 +31,16 @@
 
 namespace ns3 {
 
-class CsmaCdChannel;
+class CsmaChannel;
 class Node;
 class DataRate;
 class Queue;
 
 /**
- * \brief A helper class to create CsmaCd Topologies 
+ * \brief A helper class to create Csma Topologies 
  *
- * CsmaCd topologies are created based on the
- * ns3::CsmaCdNetDevice subclasses and ns3::CsmaCdChannel
+ * Csma topologies are created based on the
+ * ns3::CsmaNetDevice subclasses and ns3::CsmaChannel
  * objects.  This class uses the EthernetNetDevice and
  * PacketSocket classes in order to create logical connections between
  * net devices. The PacketSocket class generates the data and the
@@ -49,30 +49,30 @@ class Queue;
  * EthernetNetDevice class filters received data packets
  * according to its destination Mac addresses.
  */
-class CsmaCdTopology {
+class CsmaTopology {
 public:
   /** 
    * \param dataRate Maximum transmission link rate 
    * \param delay propagation delay between any two nodes 
-   * \return Pointer to the created CsmaCdChannel
+   * \return Pointer to the created CsmaChannel
    * 
-   * Create a CsmaCdChannel. All nodes connected to a multipoint
+   * Create a CsmaChannel. All nodes connected to a multipoint
    * channels will receive all packets written to that channel
    */
-  static Ptr<CsmaCdChannel> CreateCsmaCdChannel(
+  static Ptr<CsmaChannel> CreateCsmaChannel(
     const DataRate& dataRate, const Time& delay);
 
 #if 0
   /**
    * \param n1 Node to be attached to the multipoint channel
-   * \param ch CsmaCdChannel to which node n1 should be attached 
+   * \param ch CsmaChannel to which node n1 should be attached 
    * \param addr MacAddress that should be assigned to the
    * EthernetNetDevice that will be added to the node.
    *
    * Add a multipoint node to a multipoint channel
    */
-  static Ptr<CsmaCdNetDevice> AddCsmaCdEthernetNode(Ptr<Node> n1, 
-                                                    Ptr<CsmaCdChannel> ch,
+  static Ptr<CsmaNetDevice> AddCsmaEthernetNode(Ptr<Node> n1, 
+                                                    Ptr<CsmaChannel> ch,
                                                     MacAddress addr);
 
   /**
@@ -86,8 +86,8 @@ public:
    * two net devices
    */
 static Ptr<PacketSocket> ConnectPacketSocket(Ptr<PacketSocketApp> app,
-                                      Ptr<CsmaCdNetDevice> ndSrc,
-                                      Ptr<CsmaCdNetDevice> ndDest);
+                                      Ptr<CsmaNetDevice> ndSrc,
+                                      Ptr<CsmaNetDevice> ndDest);
 
   /**
    * \param app Application that will be sending data to the agent
@@ -101,7 +101,7 @@ static Ptr<PacketSocket> ConnectPacketSocket(Ptr<PacketSocketApp> app,
    * net device to a destination MacAddress
    */
 static Ptr<PacketSocket> ConnectPacketSocket(Ptr<PacketSocketApp> app,
-                                      Ptr<CsmaCdNetDevice> ndSrc,
+                                      Ptr<CsmaNetDevice> ndSrc,
                                       MacAddress macAddr);
 
   /**

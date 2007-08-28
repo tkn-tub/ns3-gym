@@ -182,7 +182,6 @@ protected:
   virtual Ptr<Channel> DoGetChannel(void) const;
   /**
    * Set a new default data rate
-   * @param Data rate to set for new default
    */
   static void SetDefaultRate(const DataRate&);
 
@@ -219,7 +218,7 @@ private:
    * @param protocolNumber Protocol Number used to find protocol touse
    * @returns true if success, false on failure
    */
-  virtual bool SendTo (Packet& p, const Address& dest, 
+  virtual bool SendTo (const Packet& p, const Address& dest, 
                        uint16_t protocolNumber);
   /**
    * Start Sending a Packet Down the Wire.

@@ -3,7 +3,7 @@
 #include "ns3/trace-resolver.h"
 #include "ns3/node-list.h"
 #include "ns3/point-to-point-net-device.h"
-#include "ns3/csma-cd-net-device.h"
+#include "ns3/csma-net-device.h"
 #include "ns3/queue.h"
 #include "ns3/mobility-model-notifier.h"
 
@@ -16,7 +16,7 @@ int main (int argc, char *argv[])
 
   Ptr<PointToPointNetDevice> p2p = Create<PointToPointNetDevice> (node);
   p2p->AddQueue (Queue::CreateDefault ());
-  Ptr<CsmaCdNetDevice> csma = Create<CsmaCdNetDevice> (node);
+  Ptr<CsmaNetDevice> csma = Create<CsmaNetDevice> (node);
   csma->AddQueue (Queue::CreateDefault ());
 
   TraceResolver::SourceCollection collection;

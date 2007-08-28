@@ -37,7 +37,7 @@ def set_options(opt):
 
     opt.add_option('-d', '--debug-level',
                    action='callback',
-                   type=str, dest='debug_level', default='debug',
+                   type="string", dest='debug_level', default='debug',
                    help=('Specify the debug level, does nothing if CFLAGS is set'
                          ' in the environment. [Allowed Values: debug, optimized].'
                          ' WARNING: this option only has effect '

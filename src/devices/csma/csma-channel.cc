@@ -19,60 +19,60 @@
  * Author: Emmanuelle Laprise <emmanuelle.laprise@bluekazoo.ca>
  */
 
-#include "csma-cd-channel.h"
-#include "csma-cd-net-device.h"
+#include "csma-channel.h"
+#include "csma-net-device.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/debug.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("CsmaCdChannel");
+NS_DEBUG_COMPONENT_DEFINE ("CsmaChannel");
 
 namespace ns3 {
 
-CsmaCdDeviceRec::CsmaCdDeviceRec()
+CsmaDeviceRec::CsmaDeviceRec()
 {
   active = false;
 }
 
-CsmaCdDeviceRec::CsmaCdDeviceRec(Ptr<CsmaCdNetDevice> device)
+CsmaDeviceRec::CsmaDeviceRec(Ptr<CsmaNetDevice> device)
 {
   devicePtr = device; 
   active = true;
 }
 
 bool
-CsmaCdDeviceRec::IsActive() {
+CsmaDeviceRec::IsActive() {
   return active;
 }
 
 
 //
-// By default, you get a channel with the name "CsmaCd Channel" that 
+// By default, you get a channel with the name "Csma Channel" that 
 // has an "infitely" fast transmission speed and zero delay.
-CsmaCdChannel::CsmaCdChannel()
+CsmaChannel::CsmaChannel()
 : 
-  Channel ("CsmaCd Channel"), 
+  Channel ("Csma Channel"), 
   m_bps (DataRate(0xffffffff)),
   m_delay (Seconds(0))
 {
-  NS_DEBUG("CsmaCdChannel::CsmaCdChannel ()");
+  NS_DEBUG("CsmaChannel::CsmaChannel ()");
   Init();
 }
 
-CsmaCdChannel::CsmaCdChannel(
+CsmaChannel::CsmaChannel(
   const DataRate& bps, 
   const Time& delay)
 : 
-  Channel ("CsmaCd Channel"), 
+  Channel ("Csma Channel"), 
   m_bps (bps),
   m_delay (delay)
 {
-  NS_DEBUG("CsmaCdChannel::CsmaCdChannel (" << Channel::GetName() 
+  NS_DEBUG("CsmaChannel::CsmaChannel (" << Channel::GetName() 
     << ", " << bps.GetBitRate() << ", " << delay << ")");
   Init();
 }
 
-CsmaCdChannel::CsmaCdChannel(
+CsmaChannel::CsmaChannel(
   const std::string& name,
   const DataRate& bps, 
   const Time& delay)
@@ -81,35 +81,35 @@ CsmaCdChannel::CsmaCdChannel(
   m_bps (bps), 
   m_delay (delay)
 {
-  NS_DEBUG("CsmaCdChannel::CsmaCdChannel (" << name << ", " << 
+  NS_DEBUG("CsmaChannel::CsmaChannel (" << name << ", " << 
            bps.GetBitRate() << ", " << delay << ")");
   Init();
 }
 
-void CsmaCdChannel::Init() {
+void CsmaChannel::Init() {
   m_state = IDLE;
   m_deviceList.clear();
 }
 
 int32_t
-CsmaCdChannel::Attach(Ptr<CsmaCdNetDevice> device)
+CsmaChannel::Attach(Ptr<CsmaNetDevice> device)
 {
-  NS_DEBUG("CsmaCdChannel::Attach (" << device << ")");
+  NS_DEBUG("CsmaChannel::Attach (" << device << ")");
   NS_ASSERT(device != 0);
 
-  CsmaCdDeviceRec rec(device);
+  CsmaDeviceRec rec(device);
   
   m_deviceList.push_back(rec);
   return (m_deviceList.size() - 1);
 }
 
 bool
-CsmaCdChannel::Reattach(Ptr<CsmaCdNetDevice> device)
+CsmaChannel::Reattach(Ptr<CsmaNetDevice> device)
 {
-  NS_DEBUG("CsmaCdChannel::Reattach (" << device << ")");
+  NS_DEBUG("CsmaChannel::Reattach (" << device << ")");
   NS_ASSERT(device != 0);
 
-  std::vector<CsmaCdDeviceRec>::iterator it;
+  std::vector<CsmaDeviceRec>::iterator it;
   for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 
     {
       if (it->devicePtr == device) 
@@ -129,9 +129,9 @@ CsmaCdChannel::Reattach(Ptr<CsmaCdNetDevice> device)
 }
 
 bool
-CsmaCdChannel::Reattach(uint32_t deviceId)
+CsmaChannel::Reattach(uint32_t deviceId)
 {
-  NS_DEBUG("CsmaCdChannel::Reattach (" << deviceId << ")");
+  NS_DEBUG("CsmaChannel::Reattach (" << deviceId << ")");
   if (deviceId < m_deviceList.size())
     {
       return false;
@@ -149,15 +149,15 @@ CsmaCdChannel::Reattach(uint32_t deviceId)
 }
 
 bool
-CsmaCdChannel::Detach(uint32_t deviceId)
+CsmaChannel::Detach(uint32_t deviceId)
 {
-  NS_DEBUG("CsmaCdChannel::Detach (" << deviceId << ")");
+  NS_DEBUG("CsmaChannel::Detach (" << deviceId << ")");
 
   if (deviceId < m_deviceList.size())
     {
       if (!m_deviceList[deviceId].active)
         {
-          NS_DEBUG("CsmaCdChannel::Detach Device is already detached (" 
+          NS_DEBUG("CsmaChannel::Detach Device is already detached (" 
                    << deviceId << ")");
           return false;
         }
@@ -165,7 +165,7 @@ CsmaCdChannel::Detach(uint32_t deviceId)
       m_deviceList[deviceId].active = false;
       if ((m_state == TRANSMITTING) && (m_currentSrc == deviceId))
         {
-          NS_DEBUG("CsmaCdChannel::Detach Device is currently"
+          NS_DEBUG("CsmaChannel::Detach Device is currently"
                    << "transmitting (" << deviceId << ")");
           // Here we will need to place a warning in the packet
         }
@@ -179,12 +179,12 @@ CsmaCdChannel::Detach(uint32_t deviceId)
 }
 
 bool
-CsmaCdChannel::Detach(Ptr<CsmaCdNetDevice> device)
+CsmaChannel::Detach(Ptr<CsmaNetDevice> device)
 {
-  NS_DEBUG("CsmaCdChannel::Detach (" << device << ")");
+  NS_DEBUG("CsmaChannel::Detach (" << device << ")");
   NS_ASSERT(device != 0);
 
-  std::vector<CsmaCdDeviceRec>::iterator it;
+  std::vector<CsmaDeviceRec>::iterator it;
   for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 
     {
       if ((it->devicePtr == device) && (it->active)) 
@@ -197,27 +197,27 @@ CsmaCdChannel::Detach(Ptr<CsmaCdNetDevice> device)
 }
 
 bool
-CsmaCdChannel::TransmitStart(Packet& p, uint32_t srcId)
+CsmaChannel::TransmitStart(Packet& p, uint32_t srcId)
 {
-  NS_DEBUG ("CsmaCdChannel::TransmitStart (" << &p << ", " << srcId 
+  NS_DEBUG ("CsmaChannel::TransmitStart (" << &p << ", " << srcId 
             << ")");
-  NS_DEBUG ("CsmaCdChannel::TransmitStart (): UID is " << 
+  NS_DEBUG ("CsmaChannel::TransmitStart (): UID is " << 
             p.GetUid () << ")");
 
   if (m_state != IDLE)
     {
-      NS_DEBUG("CsmaCdChannel::TransmitStart (): state is not IDLE");
+      NS_DEBUG("CsmaChannel::TransmitStart (): state is not IDLE");
       return false;
     }
 
   if (!IsActive(srcId))
     {
-      NS_DEBUG("CsmaCdChannel::TransmitStart (): ERROR: Seclected "
+      NS_DEBUG("CsmaChannel::TransmitStart (): ERROR: Seclected "
                << "source is not currently attached to network");
       return false;
     }
 
-  NS_DEBUG("CsmaCdChannel::TransmitStart (): switch to TRANSMITTING");
+  NS_DEBUG("CsmaChannel::TransmitStart (): switch to TRANSMITTING");
   m_currentPkt = p;
   m_currentSrc = srcId;
   m_state = TRANSMITTING;
@@ -225,17 +225,17 @@ CsmaCdChannel::TransmitStart(Packet& p, uint32_t srcId)
 }
 
 bool
-CsmaCdChannel::IsActive(uint32_t deviceId) 
+CsmaChannel::IsActive(uint32_t deviceId) 
 {
     return (m_deviceList[deviceId].active);
 }
 
 bool
-CsmaCdChannel::TransmitEnd()
+CsmaChannel::TransmitEnd()
 {
-  NS_DEBUG("CsmaCdChannel::TransmitEnd (" << &m_currentPkt << ", " 
+  NS_DEBUG("CsmaChannel::TransmitEnd (" << &m_currentPkt << ", " 
            << m_currentSrc << ")");
-  NS_DEBUG("CsmaCdChannel::TransmitEnd (): UID is " << 
+  NS_DEBUG("CsmaChannel::TransmitEnd (): UID is " << 
             m_currentPkt.GetUid () << ")");
 
   NS_ASSERT(m_state == TRANSMITTING);
@@ -244,33 +244,33 @@ CsmaCdChannel::TransmitEnd()
   bool retVal = true;
 
   if (!IsActive(m_currentSrc)) {
-    NS_DEBUG("CsmaCdChannel::TransmitEnd (): ERROR: Seclected source "
+    NS_DEBUG("CsmaChannel::TransmitEnd (): ERROR: Seclected source "
              << "was detached before the end of the transmission");
     retVal = false;
   }
 
-  NS_DEBUG ("CsmaCdChannel::TransmitEnd (): Schedule event in " << 
+  NS_DEBUG ("CsmaChannel::TransmitEnd (): Schedule event in " << 
             m_delay.GetSeconds () << "sec");
 
   Simulator::Schedule (m_delay,
-                       &CsmaCdChannel::PropagationCompleteEvent,
+                       &CsmaChannel::PropagationCompleteEvent,
                        this);
   return retVal;
 }
 
 void
-CsmaCdChannel::PropagationCompleteEvent()
+CsmaChannel::PropagationCompleteEvent()
 {
-  NS_DEBUG("CsmaCdChannel::PropagationCompleteEvent (" 
+  NS_DEBUG("CsmaChannel::PropagationCompleteEvent (" 
            << &m_currentPkt << ")");
-  NS_DEBUG ("CsmaCdChannel::PropagationCompleteEvent (): UID is " << 
+  NS_DEBUG ("CsmaChannel::PropagationCompleteEvent (): UID is " << 
             m_currentPkt.GetUid () << ")");
 
   NS_ASSERT(m_state == PROPAGATING);
 
-  NS_DEBUG ("CsmaCdChannel::PropagationCompleteEvent (): Receive");
+  NS_DEBUG ("CsmaChannel::PropagationCompleteEvent (): Receive");
   
-  std::vector<CsmaCdDeviceRec>::iterator it;
+  std::vector<CsmaDeviceRec>::iterator it;
   for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 
     {
       if (it->IsActive())
@@ -283,10 +283,10 @@ CsmaCdChannel::PropagationCompleteEvent()
 
 
 uint32_t 
-CsmaCdChannel::GetNumActDevices (void)
+CsmaChannel::GetNumActDevices (void)
 {
   int numActDevices = 0;
-  std::vector<CsmaCdDeviceRec>::iterator it;
+  std::vector<CsmaDeviceRec>::iterator it;
   for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 
     {
       if (it->active)
@@ -300,24 +300,24 @@ CsmaCdChannel::GetNumActDevices (void)
 // This is not the number of active devices. This is the total number
 // of devices even if some were detached after.
 uint32_t 
-CsmaCdChannel::GetNDevices (void) const
+CsmaChannel::GetNDevices (void) const
 {
   return (m_deviceList.size());
 }
 
 Ptr<NetDevice>
-CsmaCdChannel::GetDevice (uint32_t i) const
+CsmaChannel::GetDevice (uint32_t i) const
 {
-  Ptr< CsmaCdNetDevice > netDevice;
+  Ptr< CsmaNetDevice > netDevice;
 
   netDevice = m_deviceList[i].devicePtr;
   return netDevice;
 }
 
 int32_t
-CsmaCdChannel::GetDeviceNum (Ptr<CsmaCdNetDevice> device)
+CsmaChannel::GetDeviceNum (Ptr<CsmaNetDevice> device)
 {
-  std::vector<CsmaCdDeviceRec>::iterator it;
+  std::vector<CsmaDeviceRec>::iterator it;
   int i = 0;
   for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 
     {
@@ -338,7 +338,7 @@ CsmaCdChannel::GetDeviceNum (Ptr<CsmaCdNetDevice> device)
 }
 
 bool 
-CsmaCdChannel::IsBusy (void)
+CsmaChannel::IsBusy (void)
 {
   if (m_state == IDLE) 
     {
@@ -351,19 +351,19 @@ CsmaCdChannel::IsBusy (void)
 }
 
 DataRate
-CsmaCdChannel::GetDataRate (void)
+CsmaChannel::GetDataRate (void)
 {
   return m_bps;
 }
 
 Time
-CsmaCdChannel::GetDelay (void)
+CsmaChannel::GetDelay (void)
 {
   return m_delay;
 }
 
 WireState
-CsmaCdChannel::GetState(void)
+CsmaChannel::GetState(void)
 {
   return m_state;
 }

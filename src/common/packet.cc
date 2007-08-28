@@ -128,7 +128,7 @@ Packet::GetUid (void) const
 void 
 Packet::PrintTags (std::ostream &os) const
 {
-  m_tags.Print (os);
+  m_tags.Print (os, " ");
 }
 
 void 

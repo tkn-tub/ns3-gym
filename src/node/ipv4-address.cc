@@ -171,8 +171,11 @@ Ipv4Address::IsBroadcast (void) const
 bool 
 Ipv4Address::IsMulticast (void) const
 {
-  // XXX
-  return false;
+//
+// Multicast addresses are defined as ranging from 224.0.0.0 through 
+// 239.255.255.255 (which is E0000000 through EFFFFFFF in hex).
+//
+  return (m_address >= 0xe0000000 && m_address <= 0xefffffff);
 }
 
 uint32_t

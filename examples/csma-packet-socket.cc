@@ -26,7 +26,7 @@
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
 // - DropTail queues 
-// - Tracing of queues and packet receptions to file "csma-cd-one-subnet.tr"
+// - Tracing of queues and packet receptions to file "csma-one-subnet.tr"
 
 #include <iostream>
 #include <fstream>
@@ -46,8 +46,8 @@
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
 #include "ns3/internet-node.h"
-#include "ns3/csma-cd-channel.h"
-#include "ns3/csma-cd-net-device.h"
+#include "ns3/csma-channel.h"
+#include "ns3/csma-net-device.h"
 #include "ns3/eui48-address.h"
 #include "ns3/packet-socket-address.h"
 #include "ns3/socket.h"
@@ -56,10 +56,10 @@
 
 using namespace ns3;
 
-static Ptr<CsmaCdNetDevice>
-CreateCsmaCdDevice (Ptr<Node> node, Ptr<CsmaCdChannel> channel)
+static Ptr<CsmaNetDevice>
+CreateCsmaDevice (Ptr<Node> node, Ptr<CsmaChannel> channel)
 {
-  Ptr<CsmaCdNetDevice> device = Create<CsmaCdNetDevice> (node);
+  Ptr<CsmaNetDevice> device = Create<CsmaNetDevice> (node);
   device->Attach (channel);
   Ptr<Queue> queue = Queue::CreateDefault ();
   device->AddQueue (queue);
@@ -78,14 +78,14 @@ int main (int argc, char *argv[])
   Ptr<Node> n2 = Create<Node> (); 
   Ptr<Node> n3 = Create<Node> ();
 
-  // create the shared medium used by all csma/cd devices.
-  Ptr<CsmaCdChannel> channel = Create<CsmaCdChannel> (DataRate(5000000), MilliSeconds(2));
+  // create the shared medium used by all csma devices.
+  Ptr<CsmaChannel> channel = Create<CsmaChannel> (DataRate(5000000), MilliSeconds(2));
 
   // use a helper function to connect our nodes to the shared channel.
-  Ptr<NetDevice> n0If = CreateCsmaCdDevice (n0, channel);
-  Ptr<NetDevice> n1If = CreateCsmaCdDevice (n1, channel);
-  Ptr<NetDevice> n2If = CreateCsmaCdDevice (n2, channel);
-  Ptr<NetDevice> n3If = CreateCsmaCdDevice (n3, channel);
+  Ptr<NetDevice> n0If = CreateCsmaDevice (n0, channel);
+  Ptr<NetDevice> n1If = CreateCsmaDevice (n1, channel);
+  Ptr<NetDevice> n2If = CreateCsmaDevice (n2, channel);
+  Ptr<NetDevice> n3If = CreateCsmaDevice (n3, channel);
 
 
   // create the address which identifies n1 from n0
@@ -125,8 +125,8 @@ int main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the csma-cd-packet-socket.tr file
-  AsciiTrace asciitrace ("csma-cd-packet-socket.tr");
+  // Trace output will be sent to the csma-packet-socket.tr file
+  AsciiTrace asciitrace ("csma-packet-socket.tr");
   asciitrace.TraceAllNetDeviceRx ();
   asciitrace.TraceAllQueues ();
 

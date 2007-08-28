@@ -26,7 +26,7 @@
 // - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
 //   (i.e., DataRate of 448,000 bps)
 // - DropTail queues 
-// - Tracing of queues and packet receptions to file "csma-cd-one-subnet.tr"
+// - Tracing of queues and packet receptions to file "csma-one-subnet.tr"
 
 #include <iostream>
 #include <fstream>
@@ -46,10 +46,10 @@
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
 #include "ns3/internet-node.h"
-#include "ns3/csma-cd-channel.h"
-#include "ns3/csma-cd-net-device.h"
-#include "ns3/csma-cd-topology.h"
-#include "ns3/csma-cd-ipv4-topology.h"
+#include "ns3/csma-channel.h"
+#include "ns3/csma-net-device.h"
+#include "ns3/csma-topology.h"
+#include "ns3/csma-ipv4-topology.h"
 #include "ns3/eui48-address.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/inet-socket-address.h"
@@ -68,11 +68,11 @@ int main (int argc, char *argv[])
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
 #if 0 
-  DebugComponentEnable("CsmaCdNetDevice");
+  DebugComponentEnable("CsmaNetDevice");
   DebugComponentEnable("Ipv4L3Protocol");
   DebugComponentEnable("NetDevice");
   DebugComponentEnable("Channel");
-  DebugComponentEnable("CsmaCdChannel");
+  DebugComponentEnable("CsmaChannel");
   DebugComponentEnable("PacketSocket");
 #endif
 
@@ -96,30 +96,30 @@ int main (int argc, char *argv[])
   Ptr<Node> n3 = Create<InternetNode> ();
 
   // We create the channels first without any IP addressing information
-  Ptr<CsmaCdChannel> channel0 = 
-    CsmaCdTopology::CreateCsmaCdChannel(
+  Ptr<CsmaChannel> channel0 = 
+    CsmaTopology::CreateCsmaChannel(
       DataRate(5000000), MilliSeconds(2));
 
-  uint32_t n0ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n0, channel0, 
+  uint32_t n0ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n0, channel0, 
                                          Eui48Address("10:54:23:54:23:50"));
-  uint32_t n1ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n1, channel0,
+  uint32_t n1ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n1, channel0,
                                          Eui48Address("10:54:23:54:23:51"));
-  uint32_t n2ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n2, channel0,
+  uint32_t n2ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n2, channel0,
                                          Eui48Address("10:54:23:54:23:52"));
-  uint32_t n3ifIndex = CsmaCdIpv4Topology::AddIpv4CsmaCdNode (n3, channel0,
+  uint32_t n3ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n3, channel0,
                                          Eui48Address("10:54:23:54:23:53"));
 
   // Later, we add IP addresses.  
-  CsmaCdIpv4Topology::AddIpv4Address (
+  CsmaIpv4Topology::AddIpv4Address (
       n0, n0ifIndex, Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
 
-  CsmaCdIpv4Topology::AddIpv4Address (
+  CsmaIpv4Topology::AddIpv4Address (
       n1, n1ifIndex, Ipv4Address("10.1.1.2"), Ipv4Mask("255.255.255.0"));
 
-  CsmaCdIpv4Topology::AddIpv4Address (
+  CsmaIpv4Topology::AddIpv4Address (
       n2, n2ifIndex, Ipv4Address("10.1.1.3"), Ipv4Mask("255.255.255.0"));
   
-  CsmaCdIpv4Topology::AddIpv4Address (
+  CsmaIpv4Topology::AddIpv4Address (
       n3, n3ifIndex, Ipv4Address("10.1.1.4"), Ipv4Mask("255.255.255.0"));
 
   // Create the OnOff application to send UDP datagrams of size
@@ -147,8 +147,8 @@ int main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the csma-cd-one-subnet.tr file
-  AsciiTrace asciitrace ("csma-cd-one-subnet.tr");
+  // Trace output will be sent to the csma-one-subnet.tr file
+  AsciiTrace asciitrace ("csma-one-subnet.tr");
   asciitrace.TraceAllNetDeviceRx ();
   asciitrace.TraceAllQueues ();
 
@@ -157,7 +157,7 @@ int main (int argc, char *argv[])
   // simple-point-to-point.pcap-<nodeId>-<interfaceId>
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
-  PcapTrace pcaptrace ("csma-cd-one-subnet.pcap");
+  PcapTrace pcaptrace ("csma-one-subnet.pcap");
   pcaptrace.TraceAllIp ();
 
   Simulator::Run ();

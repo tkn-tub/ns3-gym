@@ -25,24 +25,24 @@
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
-#include "csma-cd-net-device.h"
-#include "csma-cd-channel.h"
+#include "csma-net-device.h"
+#include "csma-channel.h"
 #include "ns3/ethernet-header.h"
 #include "ns3/ethernet-trailer.h"
 #include "ns3/llc-snap-header.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("CsmaCdNetDevice");
+NS_DEBUG_COMPONENT_DEFINE ("CsmaNetDevice");
 
 namespace ns3 {
 
-CsmaCdTraceType::CsmaCdTraceType (enum Type type)
+CsmaTraceType::CsmaTraceType (enum Type type)
   : m_type (type)
 {}
-CsmaCdTraceType::CsmaCdTraceType ()
+CsmaTraceType::CsmaTraceType ()
   : m_type (RX)
 {}
 void 
-CsmaCdTraceType::Print (std::ostream &os) const
+CsmaTraceType::Print (std::ostream &os) const
 {
   switch (m_type) {
   case RX:
@@ -54,65 +54,65 @@ CsmaCdTraceType::Print (std::ostream &os) const
   }
 }
 uint16_t 
-CsmaCdTraceType::GetUid (void)
+CsmaTraceType::GetUid (void)
 {
-  static uint16_t uid = AllocateUid<CsmaCdTraceType> ("CsmaCdTraceType");
+  static uint16_t uid = AllocateUid<CsmaTraceType> ("CsmaTraceType");
   return uid;
 }
 std::string 
-CsmaCdTraceType::GetName (void) const
+CsmaTraceType::GetName (void) const
 {
-  return "CsmaCdTraceType";
+  return "CsmaTraceType";
 }
 
 
-CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node)
+CsmaNetDevice::CsmaNetDevice (Ptr<Node> node)
   : NetDevice (node, Eui48Address::Allocate ()),
     m_bps (DataRate (0xffffffff))
 {
-  NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
+  NS_DEBUG ("CsmaNetDevice::CsmaNetDevice (" << node << ")");
   m_encapMode = IP_ARP;
   Init(true, true);
 }
 
-CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
-                                  CsmaCdEncapsulationMode encapMode) 
+CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Eui48Address addr, 
+                                  CsmaEncapsulationMode encapMode) 
   : NetDevice(node, addr), 
     m_bps (DataRate (0xffffffff))
 {
-  NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
+  NS_DEBUG ("CsmaNetDevice::CsmaNetDevice (" << node << ")");
   m_encapMode = encapMode;
 
   Init(true, true);
 }
 
-CsmaCdNetDevice::CsmaCdNetDevice (Ptr<Node> node, Eui48Address addr, 
-                                  CsmaCdEncapsulationMode encapMode,
+CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Eui48Address addr, 
+                                  CsmaEncapsulationMode encapMode,
                                   bool sendEnable, bool receiveEnable) 
   : NetDevice(node, addr), 
     m_bps (DataRate (0xffffffff))
 {
-  NS_DEBUG ("CsmaCdNetDevice::CsmaCdNetDevice (" << node << ")");
+  NS_DEBUG ("CsmaNetDevice::CsmaNetDevice (" << node << ")");
   m_encapMode = encapMode;
 
   Init(sendEnable, receiveEnable);
 }
 
-CsmaCdNetDevice::~CsmaCdNetDevice()
+CsmaNetDevice::~CsmaNetDevice()
 {
-  NS_DEBUG ("CsmaCdNetDevice::~CsmaCdNetDevice ()");
+  NS_DEBUG ("CsmaNetDevice::~CsmaNetDevice ()");
   m_queue = 0;
 }
 
 void 
-CsmaCdNetDevice::DoDispose ()
+CsmaNetDevice::DoDispose ()
 {
   m_channel = 0;
   NetDevice::DoDispose ();
 }
 
 //
-// Assignment operator for CsmaCdNetDevice.
+// Assignment operator for CsmaNetDevice.
 //
 // This uses the non-obvious trick of taking the source net device passed by
 // value instead of by reference.  This causes the copy constructor to be
@@ -120,16 +120,16 @@ CsmaCdNetDevice::DoDispose ()
 // here is to return the newly constructed net device.
 //
 /*
-CsmaCdNetDevice&
-CsmaCdNetDevice::operator= (const CsmaCdNetDevice nd)
+CsmaNetDevice&
+CsmaNetDevice::operator= (const CsmaNetDevice nd)
 {
-  NS_DEBUG ("CsmaCdNetDevice::operator= (" << &nd << ")");
+  NS_DEBUG ("CsmaNetDevice::operator= (" << &nd << ")");
   return *this;
 }
 */
 
 void 
-CsmaCdNetDevice::Init(bool sendEnable, bool receiveEnable)
+CsmaNetDevice::Init(bool sendEnable, bool receiveEnable)
 {
   m_txMachineState = READY;
   m_tInterframeGap = Seconds(0);
@@ -138,49 +138,48 @@ CsmaCdNetDevice::Init(bool sendEnable, bool receiveEnable)
 
   EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
   EnableMulticast();
-  EnablePointToPoint();
 
   SetSendEnable (sendEnable);
   SetReceiveEnable (receiveEnable);
 }
 
 void
-CsmaCdNetDevice::SetSendEnable (bool sendEnable)
+CsmaNetDevice::SetSendEnable (bool sendEnable)
 {
   m_sendEnable = sendEnable;
 }
 
 void
-CsmaCdNetDevice::SetReceiveEnable (bool receiveEnable)
+CsmaNetDevice::SetReceiveEnable (bool receiveEnable)
 {
   m_receiveEnable = receiveEnable;
 }
 bool
-CsmaCdNetDevice::IsSendEnabled (void)
+CsmaNetDevice::IsSendEnabled (void)
 {
   return (m_sendEnable);
 }
 
 bool
-CsmaCdNetDevice::IsReceiveEnabled (void)
+CsmaNetDevice::IsReceiveEnabled (void)
 {
   return (m_receiveEnable);
 }
 
 void 
-CsmaCdNetDevice::SetDataRate (DataRate bps)
+CsmaNetDevice::SetDataRate (DataRate bps)
 {
   m_bps = bps;
 }
 
 void 
-CsmaCdNetDevice::SetInterframeGap (Time t)
+CsmaNetDevice::SetInterframeGap (Time t)
 {
   m_tInterframeGap = t;
 }
 
 void 
-CsmaCdNetDevice::SetBackoffParams (Time slotTime, uint32_t minSlots, 
+CsmaNetDevice::SetBackoffParams (Time slotTime, uint32_t minSlots, 
                                       uint32_t maxSlots, uint32_t ceiling, 
                                       uint32_t maxRetries)
 {
@@ -191,7 +190,7 @@ CsmaCdNetDevice::SetBackoffParams (Time slotTime, uint32_t minSlots,
   m_backoff.m_maxRetries = maxRetries;
 }
 void 
-CsmaCdNetDevice::AddHeader (Packet& p, Eui48Address dest,
+CsmaNetDevice::AddHeader (Packet& p, Eui48Address dest,
                             uint16_t protocolNumber)
 {
   if (m_encapMode == RAW)
@@ -228,7 +227,7 @@ CsmaCdNetDevice::AddHeader (Packet& p, Eui48Address dest,
   p.AddTrailer(trailer);
 }
 bool 
-CsmaCdNetDevice::ProcessHeader (Packet& p, uint16_t & param)
+CsmaNetDevice::ProcessHeader (Packet& p, uint16_t & param)
 {
   if (m_encapMode == RAW)
     {
@@ -266,7 +265,7 @@ CsmaCdNetDevice::ProcessHeader (Packet& p, uint16_t & param)
 }
 
 bool
-CsmaCdNetDevice::DoNeedsArp (void) const
+CsmaNetDevice::DoNeedsArp (void) const
 {
   if ((m_encapMode == IP_ARP) || (m_encapMode == LLC))
     {
@@ -279,10 +278,14 @@ CsmaCdNetDevice::DoNeedsArp (void) const
 }
 
 bool
-CsmaCdNetDevice::SendTo (Packet& p, const Address& dest, uint16_t protocolNumber)
+CsmaNetDevice::SendTo (
+  const Packet& packet, 
+  const Address& dest, 
+  uint16_t protocolNumber)
 {
-  NS_DEBUG ("CsmaCdNetDevice::SendTo (" << &p << ")");
-  NS_DEBUG ("CsmaCdNetDevice::SendTo (): UID is " << p.GetUid () << ")");
+  Packet p = packet;
+  NS_DEBUG ("CsmaNetDevice::SendTo (" << &p << ")");
+  NS_DEBUG ("CsmaNetDevice::SendTo (): UID is " << p.GetUid () << ")");
 
   NS_ASSERT (IsLinkUp ());
 
@@ -313,10 +316,10 @@ CsmaCdNetDevice::SendTo (Packet& p, const Address& dest, uint16_t protocolNumber
 }
 
 void
-CsmaCdNetDevice::TransmitStart ()
+CsmaNetDevice::TransmitStart ()
 {
-  NS_DEBUG ("CsmaCdNetDevice::TransmitStart (" << &m_currentPkt << ")");
-  NS_DEBUG ("CsmaCdNetDevice::TransmitStart (): UID is " 
+  NS_DEBUG ("CsmaNetDevice::TransmitStart (" << &m_currentPkt << ")");
+  NS_DEBUG ("CsmaNetDevice::TransmitStart (): UID is " 
             << m_currentPkt.GetUid () << ")");
 //
 // This function is called to start the process of transmitting a packet.
@@ -344,12 +347,12 @@ CsmaCdNetDevice::TransmitStart ()
           m_backoff.IncrNumRetries();
           Time backoffTime = m_backoff.GetBackoffTime();
 
-          NS_DEBUG ("CsmaCdNetDevice::TransmitStart (): " 
+          NS_DEBUG ("CsmaNetDevice::TransmitStart (): " 
                     << "Channel busy, backing off for " 
                     << backoffTime.GetSeconds () << "sec");
 
           Simulator::Schedule (backoffTime, 
-                               &CsmaCdNetDevice::TransmitStart, 
+                               &CsmaNetDevice::TransmitStart, 
                                this);
         }
     } 
@@ -359,16 +362,16 @@ CsmaCdNetDevice::TransmitStart ()
       m_txMachineState = BUSY;
       Time tEvent = Seconds (m_bps.CalculateTxTime(m_currentPkt.GetSize()));
       
-      NS_DEBUG ("CsmaCdNetDevice::TransmitStart (): " <<
+      NS_DEBUG ("CsmaNetDevice::TransmitStart (): " <<
                 "Schedule TransmitCompleteEvent in " << 
                 tEvent.GetSeconds () << "sec");
       
       Simulator::Schedule (tEvent, 
-                           &CsmaCdNetDevice::TransmitCompleteEvent, 
+                           &CsmaNetDevice::TransmitCompleteEvent, 
                            this);
       if (!m_channel->TransmitStart (m_currentPkt, m_deviceId))
         {
-          NS_DEBUG ("CsmaCdNetDevice::TransmitStart (): " <<
+          NS_DEBUG ("CsmaNetDevice::TransmitStart (): " <<
                     "Channel transmit start did not work at " << 
                     tEvent.GetSeconds () << "sec");
           m_txMachineState = READY;
@@ -383,11 +386,11 @@ CsmaCdNetDevice::TransmitStart ()
 
 
 void
-CsmaCdNetDevice::TransmitAbort (void)
+CsmaNetDevice::TransmitAbort (void)
 {
-  NS_DEBUG ("CsmaCdNetDevice::TransmitAbort ()");
+  NS_DEBUG ("CsmaNetDevice::TransmitAbort ()");
 
-  NS_DEBUG ("CsmaCdNetDevice::TransmitAbort (): Pkt UID is " <<
+  NS_DEBUG ("CsmaNetDevice::TransmitAbort (): Pkt UID is " <<
             m_currentPkt.GetUid () << ")");
 
   // Try to transmit a new packet
@@ -400,9 +403,9 @@ CsmaCdNetDevice::TransmitAbort (void)
 }
 
 void
-CsmaCdNetDevice::TransmitCompleteEvent (void)
+CsmaNetDevice::TransmitCompleteEvent (void)
 {
-  NS_DEBUG ("CsmaCdNetDevice::TransmitCompleteEvent ()");
+  NS_DEBUG ("CsmaNetDevice::TransmitCompleteEvent ()");
 //
 // This function is called to finish the  process of transmitting a packet.
 // We need to tell the channel that we've stopped wiggling the wire and
@@ -414,24 +417,24 @@ CsmaCdNetDevice::TransmitCompleteEvent (void)
   NS_ASSERT(m_channel->GetState() == TRANSMITTING);
   m_txMachineState = GAP;
 
-  NS_DEBUG ("CsmaCdNetDevice::TransmitCompleteEvent (): Pkt UID is " << 
+  NS_DEBUG ("CsmaNetDevice::TransmitCompleteEvent (): Pkt UID is " << 
             m_currentPkt.GetUid () << ")");
   m_channel->TransmitEnd (); 
 
   NS_DEBUG (
-    "CsmaCdNetDevice::TransmitCompleteEvent (): " <<
+    "CsmaNetDevice::TransmitCompleteEvent (): " <<
     "Schedule TransmitReadyEvent in "
     << m_tInterframeGap.GetSeconds () << "sec");
 
   Simulator::Schedule (m_tInterframeGap, 
-                       &CsmaCdNetDevice::TransmitReadyEvent, 
+                       &CsmaNetDevice::TransmitReadyEvent, 
                        this);
 }
 
 void
-CsmaCdNetDevice::TransmitReadyEvent (void)
+CsmaNetDevice::TransmitReadyEvent (void)
 {
-  NS_DEBUG ("CsmaCdNetDevice::TransmitReadyEvent ()");
+  NS_DEBUG ("CsmaNetDevice::TransmitReadyEvent ()");
 //
 // This function is called to enable the transmitter after the interframe
 // gap has passed.  If there are pending transmissions, we use this opportunity
@@ -455,26 +458,26 @@ CsmaCdNetDevice::TransmitReadyEvent (void)
 }
 
 Ptr<TraceResolver>
-CsmaCdNetDevice::GetTraceResolver (void)
+CsmaNetDevice::GetTraceResolver (void)
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddChild ("queue", m_queue);
   resolver->AddSource ("rx",
                        "receive MAC packet",
                        m_rxTrace,
-                       CsmaCdTraceType (CsmaCdTraceType::RX));
+                       CsmaTraceType (CsmaTraceType::RX));
   resolver->AddSource ("drop",
                        "drop MAC packet",  
                        m_dropTrace,
-                       CsmaCdTraceType (CsmaCdTraceType::DROP));
+                       CsmaTraceType (CsmaTraceType::DROP));
   resolver->SetParent (NetDevice::GetTraceResolver ());
   return resolver;
 }
 
 bool
-CsmaCdNetDevice::Attach (Ptr<CsmaCdChannel> ch)
+CsmaNetDevice::Attach (Ptr<CsmaChannel> ch)
 {
-  NS_DEBUG ("CsmaCdNetDevice::Attach (" << &ch << ")");
+  NS_DEBUG ("CsmaNetDevice::Attach (" << &ch << ")");
 
   m_channel = ch;
 
@@ -490,15 +493,15 @@ CsmaCdNetDevice::Attach (Ptr<CsmaCdChannel> ch)
 }
 
 void
-CsmaCdNetDevice::AddQueue (Ptr<Queue> q)
+CsmaNetDevice::AddQueue (Ptr<Queue> q)
 {
-  NS_DEBUG ("CsmaCdNetDevice::AddQueue (" << q << ")");
+  NS_DEBUG ("CsmaNetDevice::AddQueue (" << q << ")");
 
   m_queue = q;
 }
 
 void
-CsmaCdNetDevice::Receive (const Packet& packet)
+CsmaNetDevice::Receive (const Packet& packet)
 {
   EthernetHeader header (false);
   EthernetTrailer trailer;
@@ -506,7 +509,7 @@ CsmaCdNetDevice::Receive (const Packet& packet)
   Eui48Address destination;
   Packet p = packet;
 
-  NS_DEBUG ("CsmaCdNetDevice::Receive UID is (" << p.GetUid() << ")");
+  NS_DEBUG ("CsmaNetDevice::Receive UID is (" << p.GetUid() << ")");
 
   // Only receive if send side of net device is enabled
   if (!IsReceiveEnabled())
@@ -534,6 +537,8 @@ CsmaCdNetDevice::Receive (const Packet& packet)
       m_dropTrace (p);
       return;
     }
+
+  m_rxTrace (p);
 //
 // protocol must be initialized to avoid a compiler warning in the RAW
 // case that breaks the optimized build.
@@ -556,19 +561,18 @@ CsmaCdNetDevice::Receive (const Packet& packet)
       break;
     }
   
-  m_rxTrace (p);
   ForwardUp (p, protocol, header.GetSource ());
   return;
 }
 
 Ptr<Queue>
-CsmaCdNetDevice::GetQueue(void) const 
+CsmaNetDevice::GetQueue(void) const 
 { 
     return m_queue;
 }
 
 Ptr<Channel>
-CsmaCdNetDevice::DoGetChannel(void) const 
+CsmaNetDevice::DoGetChannel(void) const 
 { 
     return m_channel;
 }

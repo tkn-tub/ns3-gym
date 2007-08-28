@@ -102,10 +102,10 @@ public:
  *
  * @see SPFVertex::SPFVertex ()
  * @see VertexType
- * @see GlobalRouterLSA
+ * @see GlobalRoutingLSA
  * @param lsa The Link State Advertisement used for finding initial values.
  */
-  SPFVertex(GlobalRouterLSA* lsa);
+  SPFVertex(GlobalRoutingLSA* lsa);
 
 /**
  * @brief Destroy an SPFVertex (Shortest Path First Vertex).
@@ -181,12 +181,12 @@ public:
  * @internal
  *
  * @see GlobalRouter
- * @see GlobalRouterLSA
+ * @see GlobalRoutingLSA
  * @see GlobalRouter::DiscoverLSAs ()
- * @returns A pointer to the GlobalRouterLSA found by the router represented
+ * @returns A pointer to the GlobalRoutingLSA found by the router represented
  * by this SPFVertex object.
  */
-  GlobalRouterLSA* GetLSA (void) const;
+  GlobalRoutingLSA* GetLSA (void) const;
 
 /**
  * @brief Set the Global Router Link State Advertisement returned by the 
@@ -196,13 +196,13 @@ public:
  *
  * @see SPFVertex::GetLSA ()
  * @see GlobalRouter
- * @see GlobalRouterLSA
+ * @see GlobalRoutingLSA
  * @see GlobalRouter::DiscoverLSAs ()
  * @warning Ownership of the LSA is transferred to the "this" SPFVertex.  You
  * must not delete the LSA after calling this method.
- * @param lsa A pointer to the GlobalRouterLSA.
+ * @param lsa A pointer to the GlobalRoutingLSA.
  */
-  void SetLSA (GlobalRouterLSA* lsa);
+  void SetLSA (GlobalRoutingLSA* lsa);
 
 /**
  * @brief Get the distance from the root vertex to "this" SPFVertex object.
@@ -283,8 +283,8 @@ public:
  * SPFVertex."
  *
  * @see GlobalRouter
- * @see GlobalRouterLSA
- * @see GlobalRouterLinkRecord
+ * @see GlobalRoutingLSA
+ * @see GlobalRoutingLinkRecord
  * @returns The interface index to use when forwarding packets to the host
  * or network represented by "this" SPFVertex.
  */
@@ -325,8 +325,8 @@ public:
  * by "this" SPFVertex.
  *
  * @see GlobalRouter
- * @see GlobalRouterLSA
- * @see GlobalRouterLinkRecord
+ * @see GlobalRoutingLSA
+ * @see GlobalRoutingLinkRecord
  * @param id The interface index to use when forwarding packets to the host or
  * network represented by "this" SPFVertex.
  */
@@ -368,8 +368,8 @@ public:
  * by 'this' SPFVertex."
  *
  * @see GlobalRouter
- * @see GlobalRouterLSA
- * @see GlobalRouterLinkRecord
+ * @see GlobalRoutingLSA
+ * @see GlobalRoutingLinkRecord
  * @returns The IP address to use when forwarding packets to the host
  * or network represented by "this" SPFVertex.
  */
@@ -411,8 +411,8 @@ public:
  * host represented by 'this' SPFVertex."
  *
  * @see GlobalRouter
- * @see GlobalRouterLSA
- * @see GlobalRouterLinkRecord
+ * @see GlobalRoutingLSA
+ * @see GlobalRoutingLinkRecord
  * @param nextHop The IP address to use when forwarding packets to the host
  * or network represented by "this" SPFVertex.
  */
@@ -543,7 +543,7 @@ public:
 private:
   VertexType m_vertexType;
   Ipv4Address m_vertexId;
-  GlobalRouterLSA* m_lsa;
+  GlobalRoutingLSA* m_lsa;
   uint32_t m_distanceFromRoot;
   uint32_t m_rootOif;
   Ipv4Address m_nextHop;
@@ -604,33 +604,47 @@ public:
  * State Database.
  * @internal
  *
- * The IPV4 address and the GlobalRouterLSA given as parameters are converted
+ * The IPV4 address and the GlobalRoutingLSA given as parameters are converted
  * to an STL pair and are inserted into the database map.
  *
- * @see GlobalRouterLSA
+ * @see GlobalRoutingLSA
  * @see Ipv4Address
  * @param addr The IP address associated with the LSA.  Typically the Router 
  * ID.
  * @param lsa A pointer to the Link State Advertisement for the router.
  */
-  void Insert(Ipv4Address addr, GlobalRouterLSA* lsa);
+  void Insert(Ipv4Address addr, GlobalRoutingLSA* lsa);
 
 /**
  * @brief Look up the Link State Advertisement associated with the given
- * IP Address.
+ * link state ID (address).
  * @internal
  *
  * The database map is searched for the given IPV4 address and corresponding
- * GlobalRouterLSA is returned.
+ * GlobalRoutingLSA is returned.
  *
- * @see GlobalRouterLSA
+ * @see GlobalRoutingLSA
  * @see Ipv4Address
  * @param addr The IP address associated with the LSA.  Typically the Router 
  * ID.
  * @returns A pointer to the Link State Advertisement for the router specified
  * by the IP address addr.
  */
-  GlobalRouterLSA* GetLSA (Ipv4Address addr) const;
+  GlobalRoutingLSA* GetLSA (Ipv4Address addr) const;
+/**
+ * @brief Look up the Link State Advertisement associated with the given
+ * link state ID (address).  This is a variation of the GetLSA call
+ * to allow the LSA to be found by matching addr with the LinkData field
+ * of the TransitNetwork link record.
+ * @internal
+ *
+ * @see GetLSA
+ * @param addr The IP address associated with the LSA.  Typically the Router 
+ * @returns A pointer to the Link State Advertisement for the router specified
+ * by the IP address addr.
+ * ID.
+ */
+  GlobalRoutingLSA* GetLSAByLinkData (Ipv4Address addr) const;
 
 /**
  * @brief Set all LSA flags to an initialized state, for SPF computation
@@ -641,14 +655,14 @@ public:
  * prior to each SPF calculation to reset the state of the SPFVertex structures
  * that will reference the LSAs during the calculation.
  *
- * @see GlobalRouterLSA
+ * @see GlobalRoutingLSA
  * @see SPFVertex
  */
   void Initialize ();
 
 private:
-  typedef std::map<Ipv4Address, GlobalRouterLSA*> LSDBMap_t;
-  typedef std::pair<Ipv4Address, GlobalRouterLSA*> LSDBPair_t;
+  typedef std::map<Ipv4Address, GlobalRoutingLSA*> LSDBMap_t;
+  typedef std::pair<Ipv4Address, GlobalRoutingLSA*> LSDBPair_t;
 
   LSDBMap_t m_database;
 /**
@@ -734,12 +748,14 @@ private:
   void SPFCalculate (Ipv4Address root);
   void SPFNext (SPFVertex*, CandidateQueue&);
   int SPFNexthopCalculation (SPFVertex* v, SPFVertex* w, 
-    GlobalRouterLinkRecord* l, uint32_t distance);
+    GlobalRoutingLinkRecord* l, uint32_t distance);
   void SPFVertexAddParent (SPFVertex* v);
-  GlobalRouterLinkRecord* SPFGetNextLink (SPFVertex* v, SPFVertex* w, 
-    GlobalRouterLinkRecord* prev_link);
+  GlobalRoutingLinkRecord* SPFGetNextLink (SPFVertex* v, SPFVertex* w, 
+    GlobalRoutingLinkRecord* prev_link);
   void SPFIntraAddRouter (SPFVertex* v);
+  void SPFIntraAddTransit (SPFVertex* v);
   uint32_t FindOutgoingInterfaceId (Ipv4Address a);
+  uint32_t FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask);
 };
 
 } // namespace ns3

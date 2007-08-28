@@ -31,6 +31,7 @@
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/default-value.h"
+#include "ns3/packet.h"
 #include "onoff-application.h"
 
 using namespace std;
@@ -205,7 +206,7 @@ void OnOffApplication::ScheduleStopEvent()
 void OnOffApplication::SendPacket()
 {
   NS_ASSERT (m_sendEvent.IsExpired ());
-  m_socket->Send(0, m_pktSize);
+  m_socket->Send(Packet (m_pktSize));
   m_totBytes += m_pktSize;
   m_lastStartTime = Simulator::Now();
   m_residualBits = 0;

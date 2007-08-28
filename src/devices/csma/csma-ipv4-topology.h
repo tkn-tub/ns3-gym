@@ -18,22 +18,22 @@
 // Author: Emmanuelle Laprise <emmanuelle.laprise@bluekazoo.ca>
 //
 
-#ifndef __CSMA_CD_IPV4_TOPOLOGY_H__
-#define __CSMA_CD_IPV4_TOPOLOGY_H__
+#ifndef __CSMA_IPV4_TOPOLOGY_H__
+#define __CSMA_IPV4_TOPOLOGY_H__
 
 #include "ns3/ptr.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/internet-node.h"
-#include "ns3/csma-cd-net-device.h"
+#include "ns3/csma-net-device.h"
 
 // The topology class consists of only static methods thar are used to
 // create the topology and data flows for an ns3 simulation
 
 namespace ns3 {
 
-class CsmaCdIpv4Channel;
+class CsmaIpv4Channel;
 class Node;
 class IPAddr;
 class DataRate;
@@ -41,54 +41,54 @@ class Queue;
 
 /**
  * \brief A helper class to create Topologies based on the
- * InternetNodes and CsmaCdChannels. Either the
- * SimpleCsmaCdNetDevice or the LLCCsmaCdNetDevice can be used
+ * InternetNodes and CsmaChannels. Either the
+ * SimpleCsmaNetDevice or the LLCCsmaNetDevice can be used
  * when constructing these topologies.
  */
-class CsmaCdIpv4Topology {
+class CsmaIpv4Topology {
 public:
 
   /**
-   * \param n1 Node to be attached to the Csma/Cd channel
-   * \param ch CsmaCdChannel to which node n1 should be attached
+   * \param n1 Node to be attached to the Csma channel
+   * \param ch CsmaChannel to which node n1 should be attached
    * \param addr Mac address of the node
    *
-   * Add a Csma/Cd node to a Csma/Cd channel. This function adds
-   * a EthernetCsmaCdNetDevice to the nodes so that they can
-   * connect to a CsmaCdChannel. This means that Ethernet headers
+   * Add a Csma node to a Csma channel. This function adds
+   * a EthernetCsmaNetDevice to the nodes so that they can
+   * connect to a CsmaChannel. This means that Ethernet headers
    * and trailers will be added to the packet before sending out on
    * the net device.
    * 
    * \return ifIndex of the device
    */
-  static uint32_t AddIpv4CsmaCdNode( Ptr<Node> n1,
-                                     Ptr<CsmaCdChannel> ch,
+  static uint32_t AddIpv4CsmaNode( Ptr<Node> n1,
+                                     Ptr<CsmaChannel> ch,
                                      Eui48Address addr);
 
   /**
-   * \param n1 Node to be attached to the Csma/Cd channel
-   * \param ch CsmaCdChannel to which node n1 should be attached
+   * \param n1 Node to be attached to the Csma channel
+   * \param ch CsmaChannel to which node n1 should be attached
    * \param addr Mac address of the node
    *
-   * Add a Csma/Cd node to a Csma/Cd channel. This function adds
-   * a RawCsmaCdNetDevice to the nodes so that they can connect
-   * to a CsmaCdChannel.
+   * Add a Csma node to a Csma channel. This function adds
+   * a RawCsmaNetDevice to the nodes so that they can connect
+   * to a CsmaChannel.
    */
-  static void AddIpv4RawCsmaCdNode( Ptr<Node> n1,
-                                    Ptr<CsmaCdChannel> ch,
+  static void AddIpv4RawCsmaNode( Ptr<Node> n1,
+                                    Ptr<CsmaChannel> ch,
                                     Eui48Address addr);
 
   /**
-   * \param n1 Node to be attached to the Csma/Cd channel
-   * \param ch CsmaCdChannel to which node n1 should be attached
+   * \param n1 Node to be attached to the Csma channel
+   * \param ch CsmaChannel to which node n1 should be attached
    * \param addr Mac address of the node
    *
-   * Add a Csma/Cd node to a Csma/Cd channel. This function adds
-   * a LlcCsmaCdNetDevice to the nodes so that they can connect
-   * to a CsmaCdChannel.
+   * Add a Csma node to a Csma channel. This function adds
+   * a LlcCsmaNetDevice to the nodes so that they can connect
+   * to a CsmaChannel.
    */
-  static void AddIpv4LlcCsmaCdNode( Ptr<Node> n1,
-                                    Ptr<CsmaCdChannel> ch,
+  static void AddIpv4LlcCsmaNode( Ptr<Node> n1,
+                                    Ptr<CsmaChannel> ch,
                                     Eui48Address addr);
 
 
@@ -97,11 +97,11 @@ public:
    * \param n1 Node
    * \param ndNum NetDevice number with which to associate address
    * \param addr1 Ipv4 Address for ndNum of n1
-   * \param network network mask for ndNum of node n1
+   * \param netmask1 network mask for ndNum of node n1
    * 
    * Add an Ipv4Address to the Ipv4 interface associated with the
-   * ndNum CsmaCdIpv4NetDevices on the provided
-   * CsmaCdIpv4Channel
+   * ndNum CsmaIpv4NetDevices on the provided
+   * CsmaIpv4Channel
    */
   static void AddIpv4Address(Ptr<Node> n1, int ndNum, 
                              const Ipv4Address& addr1,

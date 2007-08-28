@@ -230,6 +230,7 @@ PacketMetadataTest::PacketMetadataTest ()
   : Test ("PacketMetadata")
 {
   m_printer.SetPayloadPrinter (MakeCallback (&PacketMetadataTest::PrintPayload, this));
+  m_printer.SetSeparator ("");
 }
 
 PacketMetadataTest::~PacketMetadataTest ()

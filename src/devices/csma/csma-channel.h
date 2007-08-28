@@ -18,8 +18,8 @@
  * Author: Emmanuelle Laprise<emmanuelle.laprise@bluekazoo.ca>
  */
 
-#ifndef CSMA_CD_CHANNEL_H
-#define CSMA_CD_CHANNEL_H
+#ifndef CSMA_CHANNEL_H
+#define CSMA_CHANNEL_H
 
 #include "ns3/channel.h"
 #include "ns3/ptr.h"
@@ -29,21 +29,21 @@
 
 namespace ns3 {
 
-class CsmaCdNetDevice;
+class CsmaNetDevice;
 
   /**
-   * \brief CsmaCdNetDevice Record 
+   * \brief CsmaNetDevice Record 
    *
    * Stores the information related to each net device that is
    * connected to the channel. 
    */
-  class CsmaCdDeviceRec {
+  class CsmaDeviceRec {
   public:
-    Ptr< CsmaCdNetDevice > devicePtr; /// Pointer to the net device
+    Ptr< CsmaNetDevice > devicePtr; /// Pointer to the net device
     bool                       active;    /// Is net device enabled to TX/RX
 
-    CsmaCdDeviceRec();
-    CsmaCdDeviceRec(Ptr< CsmaCdNetDevice > device);
+    CsmaDeviceRec();
+    CsmaDeviceRec(Ptr< CsmaNetDevice > device);
     /*
      * \return If the net device pointed to by the devicePtr is active
      * and ready to RX/TX.
@@ -65,9 +65,9 @@ class CsmaCdNetDevice;
     };
 
 /**
- * \brief CsmaCd Channel.
+ * \brief Csma Channel.
  *
- * This class represents a simple Csma/Cd channel that can be used
+ * This class represents a simple Csma channel that can be used
  * when many nodes are connected to one wire. It uses a single busy
  * flag to indicate if the channel is currently in use. It does not
  * take into account the distances between stations or the speed of
@@ -84,32 +84,32 @@ class CsmaCdNetDevice;
  * packet to the channel is really connected to this channel
  *
  */
-class CsmaCdChannel : public Channel {
+class CsmaChannel : public Channel {
 public:
   /**
-   * \brief Create a CsmaCdChannel
+   * \brief Create a CsmaChannel
    *
-   * By default, you get a channel with the name "CsmaCd Channel" that
+   * By default, you get a channel with the name "Csma Channel" that
    * has an "infitely" fast transmission speed and zero delay.
    */
-  CsmaCdChannel ();
+  CsmaChannel ();
   
   /**
-   * \brief Create a CsmaCdChannel
+   * \brief Create a CsmaChannel
    *
    * \param bps The bitrate of the channel
    * \param delay Transmission delay through the channel
    */  
-  CsmaCdChannel (const DataRate& bps, const Time& delay);
+  CsmaChannel (const DataRate& bps, const Time& delay);
   
   /**
-   * \brief Create a CsmaCdChannel
+   * \brief Create a CsmaChannel
    *
    * \param name the name of the channel for identification purposes
    * \param bps The bitrate of the channel
    * \param delay Transmission delay through the channel
    */
-  CsmaCdChannel (const std::string& name,
+  CsmaChannel (const std::string& name,
                      const DataRate& bps, const Time& delay);
 
   /**
@@ -118,7 +118,7 @@ public:
    * \param device Device pointer to the netdevice to attach to the channel
    * \return The assigned device number
    */
-  int32_t Attach (Ptr<CsmaCdNetDevice> device);
+  int32_t Attach (Ptr<CsmaNetDevice> device);
   /**
    * \brief Detach a given netdevice from this channel
    *
@@ -130,7 +130,7 @@ public:
    * false if the device is not currently connected to the channel or
    * can't be found.
    */
-  bool Detach (Ptr<CsmaCdNetDevice> device);
+  bool Detach (Ptr<CsmaNetDevice> device);
   /**
    * \brief Detach a given netdevice from this channel
    *
@@ -170,7 +170,7 @@ public:
    * channel, false if the device is currently connected to the
    * channel or can't be found.
    */
-  bool Reattach(Ptr<CsmaCdNetDevice> device);
+  bool Reattach(Ptr<CsmaNetDevice> device);
   /**
    * \brief Start transmitting a packet over the channel
    *
@@ -216,7 +216,7 @@ public:
    * \param device Device pointer to the netdevice for which the device
    * number is needed
    */
-  int32_t GetDeviceNum (Ptr<CsmaCdNetDevice> device);
+  int32_t GetDeviceNum (Ptr<CsmaNetDevice> device);
   /**
    * \return Returns the state of the channel (IDLE -- free,
    * TRANSMITTING -- busy, PROPAGATING - busy )
@@ -278,7 +278,7 @@ private:
    * whole list does not have to be searched when making sure that a
    * source is attached to a channel when it is transmitting data.
    */
-  std::vector< CsmaCdDeviceRec >            m_deviceList;
+  std::vector< CsmaDeviceRec >            m_deviceList;
   /**
    * Packet that is currently being transmitted on the channel (or last
    * packet to have been transmitted on the channel if the channel is
@@ -304,4 +304,4 @@ private:
 
 } // namespace ns3
 
-#endif /* CSMA_CD_CHANNEL_H */
+#endif /* CSMA_CHANNEL_H */

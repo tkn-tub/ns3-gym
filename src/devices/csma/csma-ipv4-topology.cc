@@ -28,23 +28,22 @@
 #include "ns3/ipv4.h"
 #include "ns3/queue.h"
 
-#include "csma-cd-channel.h"
-#include "csma-cd-net-device.h"
-#include "csma-cd-ipv4-topology.h"
+#include "csma-channel.h"
+#include "csma-net-device.h"
+#include "csma-ipv4-topology.h"
 
 namespace ns3 {
 
-
 uint32_t
-CsmaCdIpv4Topology::AddIpv4CsmaCdNode(Ptr<Node> n1,
-                                      Ptr<CsmaCdChannel> ch,
+CsmaIpv4Topology::AddIpv4CsmaNode(Ptr<Node> n1,
+                                      Ptr<CsmaChannel> ch,
                                       Eui48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
   // assume full-duplex
-  Ptr<CsmaCdNetDevice> nd0 = Create<CsmaCdNetDevice> (n1, addr, 
-                                                      ns3::CsmaCdNetDevice::IP_ARP,
+  Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr, 
+                                                      ns3::CsmaNetDevice::IP_ARP,
                                                       true, true);
   nd0->AddQueue(q);
   nd0->Attach (ch);
@@ -53,47 +52,47 @@ CsmaCdIpv4Topology::AddIpv4CsmaCdNode(Ptr<Node> n1,
 
 
 void
-CsmaCdIpv4Topology::AddIpv4LlcCsmaCdNode(Ptr<Node> n1,
-                                         Ptr<CsmaCdChannel> ch,
+CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
+                                         Ptr<CsmaChannel> ch,
                                          Eui48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
-  Ptr<CsmaCdNetDevice> nd0 = Create<CsmaCdNetDevice> (n1, addr,
-                                                      ns3::CsmaCdNetDevice::LLC,
+  Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr,
+                                                      ns3::CsmaNetDevice::LLC,
                                                       true, false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
-  Ptr<CsmaCdNetDevice> nd1 = Create<CsmaCdNetDevice> (n1, addr,
-                                                      ns3::CsmaCdNetDevice::LLC,
+  Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr,
+                                                      ns3::CsmaNetDevice::LLC,
                                                       false, true);
   nd1->AddQueue(q);
   nd1->Attach (ch);
 }
 
 void
-CsmaCdIpv4Topology::AddIpv4RawCsmaCdNode(Ptr<Node> n1,
-                                         Ptr<CsmaCdChannel> ch,
+CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
+                                         Ptr<CsmaChannel> ch,
                                          Eui48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
-  Ptr<CsmaCdNetDevice> nd0 = Create<CsmaCdNetDevice> (n1, addr,
-                                                      ns3::CsmaCdNetDevice::RAW,
+  Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr,
+                                                      ns3::CsmaNetDevice::RAW,
                                                       true, false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
-  Ptr<CsmaCdNetDevice> nd1 = Create<CsmaCdNetDevice> (n1, addr,
-                                                      ns3::CsmaCdNetDevice::RAW,
+  Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr,
+                                                      ns3::CsmaNetDevice::RAW,
                                                       false, true);
   nd1->AddQueue(q);
   nd1->Attach (ch);
 }
 
 void
-CsmaCdIpv4Topology::AddIpv4Address(Ptr<Node> n1,
+CsmaIpv4Topology::AddIpv4Address(Ptr<Node> n1,
                                        int ndNum,
                                        const Ipv4Address& addr1,
                                        const Ipv4Mask& netmask1)
@@ -115,7 +114,7 @@ CsmaCdIpv4Topology::AddIpv4Address(Ptr<Node> n1,
 }
 
 void
-CsmaCdIpv4Topology::AddIpv4Routes (
+CsmaIpv4Topology::AddIpv4Routes (
   Ptr<NetDevice> nd1, Ptr<NetDevice> nd2)
 { 
   // Assert that both are Ipv4 nodes
