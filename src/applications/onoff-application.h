@@ -28,13 +28,13 @@
 #include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
+#include "ns3/data-rate.h"
 
 namespace ns3 {
 
 class Address;
 class RandomVariable;
 class Socket;
-class DataRate;
 
 /**
  * \brief Generate traffic to a single destination according to an

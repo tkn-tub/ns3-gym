@@ -92,7 +92,7 @@ AsciiTrace::LogDevQueueDrop (TraceContext const &context,
   m_os << std::endl;
 }
 void 
-AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
+AsciiTrace::LogDevRx (TraceContext const &context, const Packet &p)
 {
   m_os << "r " << Simulator::Now ().GetSeconds () << " ";
   context.Print (m_os);
