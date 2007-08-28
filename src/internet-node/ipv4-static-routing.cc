@@ -27,6 +27,11 @@ NS_DEBUG_COMPONENT_DEFINE ("Ipv4StaticRouting");
 
 namespace ns3 {
 
+Ipv4StaticRouting::Ipv4StaticRouting () 
+: m_defaultRoute (0), m_defaultMulticastRoute (0)
+{
+}
+
 void 
 Ipv4StaticRouting::AddHostRouteTo (Ipv4Address dest, 
                                    Ipv4Address nextHop, 
@@ -95,10 +100,24 @@ Ipv4StaticRouting::AddMulticastRoute(Ipv4Address origin,
   m_multicastRoutes.push_back (route);
 }
 
+void 
+Ipv4StaticRouting::SetDefaultMulticastRoute(
+  Ipv4Address origin,
+  Ipv4Address group,
+  uint32_t inputInterface,
+  std::vector<uint32_t> outputInterfaces)
+{
+  Ipv4MulticastRoute *route = new Ipv4MulticastRoute ();
+  *route = Ipv4MulticastRoute::CreateMulticastRoute (origin, group, 
+    inputInterface, outputInterfaces);
+  delete m_defaultMulticastRoute;
+  m_defaultMulticastRoute = route;
+}
+
 uint32_t 
 Ipv4StaticRouting::GetNMulticastRoutes (void) const
 {
-  return m_multicastRoutes.size ();
+  return m_multicastRoutes.size () + m_defaultMulticastRoute ? 1 : 0;
 }
 
 Ipv4MulticastRoute *
@@ -106,17 +125,54 @@ Ipv4StaticRouting::GetMulticastRoute (uint32_t index) const
 {
   NS_ASSERT_MSG(index < m_multicastRoutes.size (),
     "Ipv4StaticRouting::GetMulticastRoute ():  Index out of range");
-
-  uint32_t tmp = 0;
-  for (MulticastRoutesCI i = m_multicastRoutes.begin (); 
-       i != m_multicastRoutes.end (); 
-       i++) 
+//
+// From an external point of view the default route appears to be in slot 0
+// of the routing table.  The implementation, however, puts it in a separate 
+// place.  So, if a client asks for index 0 and we have a default multicast
+// route, we have to return it from that different place 
+// (m_defaultMulticastRoute).
+//
+  if (index == 0 && m_defaultMulticastRoute != 0)
     {
-      if (tmp  == index)
+      return m_defaultMulticastRoute;
+    }
+//
+// If there is a default multicast route present, a client will just assume
+// that it is in slot zero and there is one "extra" zeroth route in the table.
+// To return the correct indexed entry in our list, we have to decrement the
+// index to take into account the default route not being in the actual list.
+// Since we fell through to here, we've taken care of the case where the
+// index was zero.
+//
+  if (m_defaultMulticastRoute != 0)
+    {
+      NS_ASSERT(index > 0);
+      index--;
+    }
+
+  if (index < m_multicastRoutes.size ())
+    {
+      uint32_t tmp = 0;
+      for (MulticastRoutesCI i = m_multicastRoutes.begin (); 
+           i != m_multicastRoutes.end (); 
+           i++) 
         {
-          return *i;
+          if (tmp  == index)
+            {
+              return *i;
+            }
+          tmp++;
         }
-      tmp++;
+    }
+  return 0;
+}
+
+Ipv4MulticastRoute *
+Ipv4StaticRouting::GetDefaultMulticastRoute () const
+{
+  if (m_defaultMulticastRoute != 0)
+    {
+      return m_defaultMulticastRoute;
     }
   return 0;
 }
@@ -126,6 +182,9 @@ Ipv4StaticRouting::RemoveMulticastRoute(Ipv4Address origin,
                                         Ipv4Address group,
                                         uint32_t inputInterface)
 {
+//
+// This method does not attempt to delete the multicast route.
+// 
   for (MulticastRoutesI i = m_multicastRoutes.begin (); 
        i != m_multicastRoutes.end (); 
        i++) 
@@ -145,6 +204,32 @@ Ipv4StaticRouting::RemoveMulticastRoute(Ipv4Address origin,
 void 
 Ipv4StaticRouting::RemoveMulticastRoute(uint32_t index)
 {
+//
+// From an external point of view the default route appears to be in slot 0
+// of the routing table.  The implementation, however, puts it in a separate 
+// place.  So, if a client asks to delete index 0 and we have a default
+// multicast route set, we have to delete it from that different place 
+// (m_defaultMulticastRoute).
+//
+  if (index == 0 && m_defaultMulticastRoute != 0)
+    {
+      delete m_defaultMulticastRoute;
+      m_defaultMulticastRoute = 0;
+    }
+//
+// If there is a default multicast route present, a client will just assume
+// that it is in slot zero and there is one "extra" zeroth route in the table.
+// To return the correct indexed entry in our list, we have to decrement the
+// index to take into account the default route not being in the actual list.
+// Since we fell through to here, we've taken care of the case where the
+// index was zero.
+//
+  if (m_defaultMulticastRoute != 0)
+    {
+      NS_ASSERT(index > 0);
+      index--;
+    }
+
   uint32_t tmp = 0;
   for (MulticastRoutesI i = m_multicastRoutes.begin (); 
        i != m_multicastRoutes.end (); 
@@ -215,6 +300,12 @@ Ipv4StaticRouting::LookupStatic (
             }
         }
     }
+
+  if (m_defaultMulticastRoute != 0) 
+    {
+      return m_defaultMulticastRoute;
+    }
+
   return 0;
 }
 
@@ -491,6 +582,11 @@ Ipv4StaticRouting::DoDispose (void)
        i = m_multicastRoutes.erase (i)) 
     {
       delete (*i);
+    }
+  if (m_defaultMulticastRoute != 0)
+    {
+      delete m_defaultMulticastRoute;
+      m_defaultMulticastRoute = 0;
     }
   Ipv4RoutingProtocol::DoDispose ();
 }

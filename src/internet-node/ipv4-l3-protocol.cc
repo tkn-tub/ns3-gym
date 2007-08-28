@@ -355,6 +355,20 @@ Ipv4L3Protocol::AddMulticastRoute (Ipv4Address origin,
     outputInterfaces);
 }
 
+void 
+Ipv4L3Protocol::SetDefaultMulticastRoute (
+  Ipv4Address origin,
+  Ipv4Address group, 
+  uint32_t inputInterface,
+  std::vector<uint32_t> outputInterfaces)
+{
+  NS_DEBUG("Ipv4L3Protocol::SetDefaultMulticastRoute (" << origin << ", " <<
+    group << ", " << inputInterface << ", " << &outputInterfaces << ")");
+
+  m_staticRouting->SetDefaultMulticastRoute (origin, group, inputInterface,
+    outputInterfaces);
+}
+
 uint32_t 
 Ipv4L3Protocol::GetNMulticastRoutes (void) const
 {
@@ -768,7 +782,11 @@ Ipv4L3Protocol::GetIfIndexForDestination (
 {
   NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (" << destination << 
     ", " << &ifIndex << ")");
-
+//
+// The first thing we do in trying to determine a source address is to 
+// consult the routing protocols.  These will also check for a default route
+// if one has been set.
+//
   for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
        i != m_routingProtocols.end (); 
        i++)
@@ -785,13 +803,13 @@ Ipv4L3Protocol::GetIfIndexForDestination (
         }
     }
 //
-// If there's no routing table entry telling us what single interface will be
-// used to send a packet to this destination, we'll have to just pick one.  
+// If there's no routing table entry telling us what *single* interface will 
+// be used to send a packet to this destination, we'll have to just pick one.  
 // If there's only one interface on this node, a good answer isn't very hard
 // to come up with.  Before jumping to any conclusions, remember that the 
 // zeroth interface is the loopback interface, so what we actually want is
 // a situation where there are exactly two interfaces on the node, in which
-// case interface one is the "single" interface.
+// case interface one is the "single" interface connected to the outside world.
 //
   if (GetNInterfaces () == 2)
     {
@@ -802,11 +820,21 @@ Ipv4L3Protocol::GetIfIndexForDestination (
     }
 //
 // If we fall through to here, we have a node with multiple interfaces and
-// no routes to guide us in determining what interface to choose.  The last
-// choice is to use the one set in the default route.
-// 
+// no routes to guide us in determining what interface to choose.  Either
+// no default route was found (for unicast or multicast), or in the case of a
+// multicast, the default route contained multiple outbound interfaces.
+//
+// The fallback position is to just get the unicast default route and use 
+// the outgoing interface specified there.  We don't want to leave the source
+// address unset, so we just assert here.
+//
+// N.B. that in the case of a multicast with a route containing multiple
+// outgoing interfaces, the source address of packets from that node will be
+// set to the IP address of the interface set in the default unicast route.
+// Also, in the case of a broadcast, the same will be true.
+//
   NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (): "
-    "Using default route");
+    "Using default unicast route");
   Ipv4Route *route = m_staticRouting->GetDefaultRoute ();
 
   NS_ASSERT_MSG(route, 

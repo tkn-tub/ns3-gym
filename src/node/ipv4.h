@@ -244,6 +244,19 @@ public:
                                      uint32_t inputInterface) = 0;
   
   /**
+   * \brief Set the default static multicast route for a given multicast 
+   *        source and group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   * \param inputInterface The interface index over which the packet arrived.
+   * \param outputInterfaces The list of output interface indices over which 
+   *        the packet should be sent (excluding the inputInterface).
+   */
+  virtual void SetDefaultMulticastRoute (Ipv4Address origin,
+    Ipv4Address group, uint32_t inputInterface,
+    std::vector<uint32_t> outputInterfaces) = 0;
+  /**
    * \returns the number of entries in the multicast routing table.
    */
   virtual uint32_t GetNMulticastRoutes (void) const = 0;

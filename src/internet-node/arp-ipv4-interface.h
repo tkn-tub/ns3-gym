@@ -24,6 +24,7 @@
 
 #include "ipv4-interface.h"
 #include "ns3/ptr.h"
+#include "ns3/eui48-address.h"
 
 namespace ns3 {
 
@@ -46,6 +47,7 @@ class ArpIpv4Interface : public Ipv4Interface
   virtual void SendTo (Packet p, Ipv4Address dest);
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
   Ptr<Node> m_node;
+  Address MakeMulticastAddress (Ipv4Address multicastGroup);
 };
 
 }//namespace ns3

@@ -526,20 +526,29 @@ CsmaNetDevice::Receive (const Packet& packet)
   NS_DEBUG ("CsmaNetDevice::Receive ():  Pkt destination is " << 
     header.GetDestination ());
 //
-// XXX BUGBUG
-//
 // An IP host group address is mapped to an Ethernet multicast address
 // by placing the low-order 23-bits of the IP address into the low-order
 // 23 bits of the Ethernet multicast address 01-00-5E-00-00-00 (hex).
 //
-// Need to mask off the appropriate multicast bits.
+// We are going to receive all packets destined to any multicast address,
+// which means clearing the low-order 23 bits the header destination 
 //
+  Eui48Address mcDest;
+  uint8_t      mcBuf[6];
+
+  header.GetDestination ().CopyTo (mcBuf);
+  mcBuf[3] &= 0x80;
+  mcBuf[4] = 0;
+  mcBuf[5] = 0;
+  mcDest.CopyFrom (mcBuf);
+
   multicast = Eui48Address::ConvertFrom (GetMulticast ());
   broadcast = Eui48Address::ConvertFrom (GetBroadcast ());
   destination = Eui48Address::ConvertFrom (GetAddress ());
-  if ((header.GetDestination() != broadcast) &&
-      (header.GetDestination() != multicast) &&
-      (header.GetDestination() != destination))
+
+  if ((header.GetDestination () != broadcast) &&
+      (mcDest != multicast) &&
+      (header.GetDestination () != destination))
     {
       NS_DEBUG ("CsmaNetDevice::Receive ():  Dropping pkt ");
       m_dropTrace (p);

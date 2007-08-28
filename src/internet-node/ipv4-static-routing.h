@@ -49,7 +49,7 @@ class Ipv4StaticRouting : public Ipv4RoutingProtocol
 {
 
 public:
-  Ipv4StaticRouting () : m_defaultRoute (0) {}
+  Ipv4StaticRouting ();
 
   virtual bool RequestRoute (uint32_t ifIndex,
                              Ipv4Header const &ipHeader,
@@ -83,8 +83,14 @@ public:
                           uint32_t inputInterface,
                           std::vector<uint32_t> outputInterfaces);
 
+  void SetDefaultMulticastRoute (Ipv4Address origin,
+                                 Ipv4Address group,
+                                 uint32_t inputInterface,
+                                 std::vector<uint32_t> outputInterfaces);
+
   uint32_t GetNMulticastRoutes (void) const;
   Ipv4MulticastRoute *GetMulticastRoute (uint32_t i) const;
+  Ipv4MulticastRoute *GetDefaultMulticastRoute (void) const;
 
   void RemoveMulticastRoute (Ipv4Address origin,
                              Ipv4Address group,
@@ -114,6 +120,7 @@ private:
   HostRoutes m_hostRoutes;
   NetworkRoutes m_networkRoutes;
   Ipv4Route *m_defaultRoute;
+  Ipv4MulticastRoute *m_defaultMulticastRoute;
   MulticastRoutes m_multicastRoutes;
 };
 

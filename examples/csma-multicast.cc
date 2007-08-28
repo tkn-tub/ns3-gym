@@ -98,7 +98,6 @@ main (int argc, char *argv[])
   DebugComponentEnable("Ipv4Interface");
   DebugComponentEnable("ArpIpv4Interface");
   DebugComponentEnable("Ipv4LoopbackInterface");
-
 //
 // Set up default values for the simulation.  Use the DefaultValue::Bind()
 // technique to tell the system what subclass of Queue to use.  The Bind
@@ -200,10 +199,11 @@ main (int argc, char *argv[])
 // earlier.  We need to define a multicast group to send packets to.  This
 // can be any multicast address from 224.0.0.0 through 239.255.255.255
 // (avoiding the reserved routing protocol addresses).  We just pick a
-// convenient number.
+// convenient number (225.0.0.0) and or in some bits to let us verify that
+// correct Ethernet multicast addresses are constructed down in the system. 
 //
   Ipv4Address multicastSource ("10.1.1.1");
-  Ipv4Address multicastGroup ("225.0.0.0");
+  Ipv4Address multicastGroup ("225.1.2.4");
 //
 // We are going to manually configure multicast routing.  This means telling
 // node two that it should expect multicast data coming from IP address 

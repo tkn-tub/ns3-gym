@@ -105,6 +105,16 @@ Ipv4Impl::AddMulticastRoute (Ipv4Address origin,
   m_ipv4->AddMulticastRoute (origin, group, inputInterface, outputInterfaces);
 }
 
+void
+Ipv4Impl::SetDefaultMulticastRoute (Ipv4Address origin, 
+                                    Ipv4Address group,
+                                    uint32_t inputInterface,
+                                    std::vector<uint32_t> outputInterfaces)
+{
+  m_ipv4->SetDefaultMulticastRoute (origin, group, inputInterface, 
+                                    outputInterfaces);
+}
+
 uint32_t 
 Ipv4Impl::GetNMulticastRoutes (void) const
 {
@@ -208,6 +218,9 @@ Ipv4Impl::GetSourceAddress (Ipv4Address destination) const
     }
   else
     {
+//
+// If we can't find any address, just leave it 0.0.0.0
+//
       return Ipv4Address::GetAny ();
     }
 }
