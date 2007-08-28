@@ -45,6 +45,7 @@ public:
   virtual ~CompositeTraceResolver ();
   /**
    * \param name name of trace source
+   * \param doc the documentation associated to this trace source
    * \param trace a callback trace source
    * \param context the context associated to this trace source
    *
@@ -58,6 +59,7 @@ public:
                   const TraceSource &trace, T const &context);
   /**
    * \param name name of trace source
+   * \param doc the documentation associated to this trace source
    * \param trace a callback trace source
    *
    * Add a callback trace source in this resolver. This trace
@@ -68,16 +70,48 @@ public:
                   const TraceDoc &doc,
                   const TraceSource &trace);
 
+  /**
+   * \param name the name of the composite element
+   * \param composite the composite object
+   *
+   * The input composite object will be used to resolve a connection
+   * of a disconnection attempt if its name matches the trace path.
+   * 
+   */
   void AddComposite (std::string name, Ptr<Object> composite);
 
+  /**
+   * \param name the name of the composite element
+   * \param composite the composite object
+   * \param contextElement the context element associated to the composite
+   *
+   * The input composite object will be used to resolve a connection
+   * of a disconnection attempt if its name matches the trace path.
+   * The contextElement will be appended to the TraceContext during connection.
+   */
   template <typename T>
   void AddComposite (std::string name, Ptr<Object> composite, const T &contextElement);
 
+  /**
+   * \param name the name of the array
+   * \param begin an iterator which points to the first element of the array
+   * \param begin an iterator which points to the last element of the array
+   * \param index an object which can store the index of an element in the
+   *        array. In practice, this object should support a constructor
+   *        whose single argument is an array index.
+   */
   template <typename ITERATOR, typename INDEX>
   void AddArray (std::string name, 
                  ITERATOR begin, ITERATOR end, INDEX index);
 
-
+  /**
+   * \param parent the parent trace resolver
+   *
+   * The parent trace resolver is the trace resolver returned by the 
+   * GetTraceResolver method of the base class of the caller. It is 
+   * used during connection and disconnection to chain up the connect
+   * and disconnect calls to the parent.
+   */
   void SetParentResolver (Ptr<TraceResolver> parent);
 
 
