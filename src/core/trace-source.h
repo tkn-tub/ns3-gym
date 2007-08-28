@@ -23,11 +23,26 @@
 
 namespace ns3 {
 
+/**
+ * \brief the base class for all trace sources
+ *
+ * Every trace source which wishes to be connectable and disconnectable with
+ * the TraceResolver system should derive from this base class and implement
+ * all three methods below.
+ */
 class TraceSource
 {
 public:
   virtual ~TraceSource () {}
+  /**
+   * \param callback the callback to connect to this trace source
+   * \param the context associated to the input callback which should be passed
+   *        back to the user.
+   */
   virtual void AddCallback (CallbackBase const & callback, TraceContext const & context) = 0;
+  /**
+   * \param callback the callback to disconnect from this trace source
+   */
   virtual void RemoveCallback (CallbackBase const & callback) = 0;
 };
 

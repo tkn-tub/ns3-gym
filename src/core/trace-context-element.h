@@ -48,6 +48,7 @@ namespace ns3 {
  *   MyContext ();
  *   ~MyContext ();
  *   void Print (std::ostream &os) const;
+ *   std::string GetName (void) const;
  *
  *   // the user-specific API to manipulate the context.
  *   void SetData (uint8_t data);
@@ -70,6 +71,11 @@ namespace ns3 {
  * MyContext::Print (std::ostream &os) const
  * {
  *   os << "mycontext=" << (uint32_t) m_myContextData;
+ * }
+ * std::string 
+ * MyContext::GetName (void) const
+ * {
+ *   return "MyContext";
  * }
  * void 
  * MyContext::SetData (uint8_t data)
