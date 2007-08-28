@@ -100,7 +100,7 @@ Queue::~Queue()
 }
 
 Ptr<TraceResolver>
-Queue::GetTraceResolver (void)
+Queue::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddSource ("enqueue", 

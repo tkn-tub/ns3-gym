@@ -67,9 +67,9 @@ public:
   ~NodeListPriv ();
 
   uint32_t Add (Ptr<Node> node);
-  NodeList::Iterator Begin (void);
-  NodeList::Iterator End (void);
-  Ptr<TraceResolver> GetTraceResolver (void);
+  NodeList::Iterator Begin (void) const;
+  NodeList::Iterator End (void) const;
+  Ptr<TraceResolver> GetTraceResolver (void) const;
   Ptr<Node> GetNode (uint32_t n);
   uint32_t GetNNodes (void);
 
@@ -101,12 +101,12 @@ NodeListPriv::Add (Ptr<Node> node)
   
 }
 NodeList::Iterator 
-NodeListPriv::Begin (void)
+NodeListPriv::Begin (void) const
 {
   return m_nodes.begin ();
 }
 NodeList::Iterator 
-NodeListPriv::End (void)
+NodeListPriv::End (void) const
 {
   return m_nodes.end ();
 }
@@ -124,7 +124,7 @@ NodeListPriv::GetNode (uint32_t n)
 
 
 Ptr<TraceResolver>
-NodeListPriv::GetTraceResolver (void)
+NodeListPriv::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddArray ("nodes", Begin (), End (), NodeListIndex ());

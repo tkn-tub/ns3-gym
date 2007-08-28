@@ -48,7 +48,7 @@ public:
    */
   void Notify (Ptr<const MobilityModel> position) const;
 protected:
-  virtual Ptr<TraceResolver> GetTraceResolver (void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 private:
   CallbackTraceSource<Ptr<const MobilityModel> > m_trace;
 };

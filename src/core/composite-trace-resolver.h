@@ -55,7 +55,7 @@ public:
    */
   template <typename T>
   void AddSource (std::string name, const TraceDoc &doc,
-                  TraceSource &trace, T const &context);
+                  const TraceSource &trace, T const &context);
   /**
    * \param name name of trace source
    * \param trace a callback trace source
@@ -66,7 +66,7 @@ public:
    */
   void AddSource (std::string name,
                   const TraceDoc &doc,
-                  TraceSource &trace);
+                  const TraceSource &trace);
 
   void AddChild (std::string name, Ptr<Object> child);
 
@@ -116,7 +116,7 @@ private:
   void DoAddChild (std::string name, Ptr<Object> child, const TraceContext &context);
   void DoAddSource (std::string name,
                     const TraceDoc &doc,
-                    TraceSource &trace,
+                    const TraceSource &trace,
                     const TraceContext &context);
   void Add (std::string name, 
             Callback<Ptr<TraceResolver> > createResolver);
@@ -136,7 +136,7 @@ template <typename T>
 void 
 CompositeTraceResolver::AddSource (std::string name,
                                    const TraceDoc &doc,
-                                   TraceSource &trace, 
+                                   const TraceSource &trace, 
                                    T const &context)
 {
   TraceContext ctx;

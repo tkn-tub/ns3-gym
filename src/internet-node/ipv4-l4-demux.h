@@ -89,7 +89,7 @@ public:
    */
   void Remove (Ptr<Ipv4L4Protocol> protocol);
 protected:
-  Ptr<TraceResolver> GetTraceResolver (void);
+  Ptr<TraceResolver> GetTraceResolver (void) const;
   virtual void DoDispose (void);
 private:
   typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;

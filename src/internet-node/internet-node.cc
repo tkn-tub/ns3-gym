@@ -75,7 +75,7 @@ InternetNode::Construct (void)
 }
 
 Ptr<TraceResolver>
-InternetNode::GetTraceResolver ()
+InternetNode::GetTraceResolver () const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   Ptr<Ipv4L3Protocol> ipv4 = QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);

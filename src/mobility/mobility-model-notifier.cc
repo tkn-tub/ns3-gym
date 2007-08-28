@@ -41,7 +41,7 @@ MobilityModelNotifier::Notify (Ptr<const MobilityModel> position) const
 }
 
 Ptr<TraceResolver> 
-MobilityModelNotifier::GetTraceResolver (void)
+MobilityModelNotifier::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = 
     Create<CompositeTraceResolver> ();

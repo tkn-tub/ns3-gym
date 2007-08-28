@@ -166,7 +166,7 @@ private:
   virtual bool DoPeek (Packet &p) = 0;
 
 protected:
-  Ptr<TraceResolver> GetTraceResolver (void);
+  Ptr<TraceResolver> GetTraceResolver (void) const;
   // called by subclasses to notify parent of packet drops.
   void Drop (const Packet& p);
 

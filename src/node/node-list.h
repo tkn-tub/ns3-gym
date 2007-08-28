@@ -54,7 +54,7 @@ private:
 class NodeList
 {
 public:
-  typedef std::vector< Ptr<Node> >::iterator Iterator;
+  typedef std::vector< Ptr<Node> >::const_iterator Iterator;
 
   /**
    * \param node node to add

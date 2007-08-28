@@ -87,7 +87,7 @@ Node::~Node ()
 {}
 
 Ptr<TraceResolver>
-Node::GetTraceResolver (void)
+Node::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddArray ("devices", m_devices.begin (), m_devices.end (), NodeNetDeviceIndex ());

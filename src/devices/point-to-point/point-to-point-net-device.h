@@ -158,7 +158,7 @@ protected:
    *
    * @see class TraceResolver
    */
-  virtual Ptr<TraceResolver> GetTraceResolver (void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   virtual void DoDispose (void);
   /**
    * Get a copy of the attached Queue.

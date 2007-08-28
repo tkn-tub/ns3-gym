@@ -195,7 +195,7 @@ void PointToPointNetDevice::TransmitComplete (void)
 }
 
 Ptr<TraceResolver> 
-PointToPointNetDevice::GetTraceResolver (void)
+PointToPointNetDevice::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddChild ("queue", m_queue);

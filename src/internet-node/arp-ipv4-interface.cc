@@ -41,7 +41,7 @@ ArpIpv4Interface::~ArpIpv4Interface ()
 {}
 
 Ptr<TraceResolver>
-ArpIpv4Interface::GetTraceResolver (void)
+ArpIpv4Interface::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   if (GetDevice () != 0)

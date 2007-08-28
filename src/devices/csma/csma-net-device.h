@@ -212,7 +212,7 @@ protected:
    * (NOT TESTED)
    * @see class TraceResolver
    */
-  virtual Ptr<TraceResolver> GetTraceResolver (void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 
   /**
    * Get a copy of the attached Queue.

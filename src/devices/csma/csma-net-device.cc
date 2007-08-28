@@ -458,7 +458,7 @@ CsmaNetDevice::TransmitReadyEvent (void)
 }
 
 Ptr<TraceResolver>
-CsmaNetDevice::GetTraceResolver (void)
+CsmaNetDevice::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddChild ("queue", m_queue);

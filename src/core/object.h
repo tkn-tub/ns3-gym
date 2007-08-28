@@ -149,7 +149,7 @@ public:
    * match the input path.
    *
    */
-  void TraceConnect (std::string path, const CallbackBase &cb);
+  void TraceConnect (std::string path, const CallbackBase &cb) const;
   /**
    * \param path the path to match for the callback
    * \param cb callback to disconnect
@@ -157,13 +157,13 @@ public:
    * Disconnect the input callback from all trace sources which
    * match the input path.
    */
-  void TraceDisconnect (std::string path, const CallbackBase &cb);
+  void TraceDisconnect (std::string path, const CallbackBase &cb) const;
   /**
    * \returns the trace resolver associated to this object.
    *
    * This method should be rarely called by users.
    */
-  virtual Ptr<TraceResolver> GetTraceResolver (void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 protected:
   /**
    * \param iid an InterfaceId
@@ -183,13 +183,13 @@ private:
   friend class InterfaceIdTraceResolver;
   Ptr<Object> DoQueryInterface (InterfaceId iid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
-                         TraceResolver::SourceCollection *collection);
+                         TraceResolver::SourceCollection *collection) const;
   bool Check (void) const;
   void MaybeDelete (void) const;
   mutable uint32_t m_count;
   InterfaceId m_iid;
   bool m_disposed;
-  bool m_collecting;
+  mutable bool m_collecting;
   Object *m_next;
 };
 

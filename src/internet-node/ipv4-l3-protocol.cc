@@ -159,7 +159,7 @@ Ipv4L3Protocol::SetupLoopback (void)
 }
 
 Ptr<TraceResolver>
-Ipv4L3Protocol::GetTraceResolver (void)
+Ipv4L3Protocol::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddSource ("tx", 

@@ -74,7 +74,7 @@ CompositeTraceResolver::Add (std::string name,
 void 
 CompositeTraceResolver::AddSource (std::string name,
                                    const TraceDoc &doc,
-                                   TraceSource &trace)
+                                   const TraceSource &trace)
 {
   DoAddSource (name, doc, trace, TraceContext ());
 }
@@ -82,7 +82,7 @@ CompositeTraceResolver::AddSource (std::string name,
 void 
 CompositeTraceResolver::DoAddSource (std::string name,
                                      const TraceDoc &doc,
-                                     TraceSource &trace, 
+                                     const TraceSource &trace, 
                                      const TraceContext &context)
 {
   class SourceCompositeItem : public CompositeItem
@@ -106,7 +106,7 @@ CompositeTraceResolver::DoAddSource (std::string name,
   } *item = new SourceCompositeItem ();
   item->name = name;
   item->context = context;
-  item->trace = &trace;
+  item->trace = const_cast<TraceSource *> (&trace);
   item->doc = doc;
   AddItem (item);
 }

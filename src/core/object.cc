@@ -63,20 +63,20 @@ namespace ns3 {
 class InterfaceIdTraceResolver : public TraceResolver
 {
 public:
-  InterfaceIdTraceResolver (Ptr<Object> aggregate);
+  InterfaceIdTraceResolver (Ptr<const Object> aggregate);
   virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   virtual void Disconnect (std::string path, CallbackBase const &cb);
   virtual void CollectSources (std::string path, const TraceContext &context, 
                                SourceCollection *collection);
 private:
-  Ptr<Object> ParseForInterface (std::string path);
-  Ptr<Object> m_aggregate;
+  Ptr<const Object> ParseForInterface (std::string path);
+  Ptr<const Object> m_aggregate;
 };
 
-InterfaceIdTraceResolver::InterfaceIdTraceResolver (Ptr<Object> aggregate)
+InterfaceIdTraceResolver::InterfaceIdTraceResolver (Ptr<const Object> aggregate)
   : m_aggregate (aggregate)
 {}
-Ptr<Object>
+Ptr<const Object>
 InterfaceIdTraceResolver::ParseForInterface (std::string path)
 {
   std::string element = GetElement (path);
@@ -93,7 +93,7 @@ InterfaceIdTraceResolver::ParseForInterface (std::string path)
 void 
 InterfaceIdTraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
 {
-  Ptr<Object> interface = ParseForInterface (path);
+  Ptr<const Object> interface = ParseForInterface (path);
   if (interface != 0)
     {
       interface->GetTraceResolver ()->Connect (GetSubpath (path), cb, context);
@@ -102,7 +102,7 @@ InterfaceIdTraceResolver::Connect (std::string path, CallbackBase const &cb, con
 void 
 InterfaceIdTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
 {
-  Ptr<Object> interface = ParseForInterface (path);
+  Ptr<const Object> interface = ParseForInterface (path);
   if (interface != 0)
     {
       interface->TraceDisconnect (GetSubpath (path), cb);
@@ -232,12 +232,12 @@ Object::AddInterface (Ptr<Object> o)
 }
 
 void 
-Object::TraceConnect (std::string path, const CallbackBase &cb)
+Object::TraceConnect (std::string path, const CallbackBase &cb) const
 {
   GetTraceResolver ()->Connect (path, cb, TraceContext ());
 }
 void 
-Object::TraceDisconnect (std::string path, const CallbackBase &cb)
+Object::TraceDisconnect (std::string path, const CallbackBase &cb) const
 {
   GetTraceResolver ()->Disconnect (path, cb);
 }
@@ -256,7 +256,7 @@ Object::DoDispose (void)
 }
 
 Ptr<TraceResolver>
-Object::GetTraceResolver (void)
+Object::GetTraceResolver (void) const
 {
   Ptr<InterfaceIdTraceResolver> resolver =
     Create<InterfaceIdTraceResolver> (this);
@@ -298,9 +298,9 @@ Object::MaybeDelete (void) const
 
 void 
 Object::DoCollectSources (std::string path, const TraceContext &context, 
-                          TraceResolver::SourceCollection *collection)
+                          TraceResolver::SourceCollection *collection) const
 {
-  Object *current;
+  const Object *current;
   current = this;
   do {
     if (current->m_collecting)

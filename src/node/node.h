@@ -173,7 +173,7 @@ public:
   void UnregisterProtocolHandler (ProtocolHandler handler);
 
 protected:
-  virtual Ptr<TraceResolver> GetTraceResolver (void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   /**
    * The dispose method. Subclasses must override this method
    * and must chain up to it by calling Node::DoDispose at the
