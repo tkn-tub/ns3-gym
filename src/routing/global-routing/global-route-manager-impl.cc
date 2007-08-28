@@ -337,8 +337,7 @@ GlobalRouteManagerImpl::SelectRouterNodes ()
 {
   NS_DEBUG ("GlobalRouteManagerImpl::SelectRouterNodes ()");
 
-  typedef std::vector < Ptr<Node> >::iterator Iterator;
-  for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
       NS_DEBUG ("GlobalRouteManagerImpl::SelectRouterNodes (): "
@@ -366,8 +365,7 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase ()
 //
 // Walk the list of nodes looking for the GlobalRouter Interface.
 //
-  typedef std::vector < Ptr<Node> >::iterator Iterator;
-  for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
 
@@ -448,8 +446,7 @@ GlobalRouteManagerImpl::InitializeRoutes ()
 //
 // Walk the list of nodes in the system.
 //
-  typedef std::vector < Ptr<Node> >::iterator Iterator;
-  for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
+  for (NodeList::Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
 //
