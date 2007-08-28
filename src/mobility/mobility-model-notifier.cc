@@ -46,6 +46,7 @@ MobilityModelNotifier::GetTraceResolver (void)
     Create<CompositeTraceResolver> ();
   resolver->AddSource ("course-change", "speed vector changed value",
                        m_trace);
+  resolver->SetParent (Object::GetTraceResolver ());
   return resolver;
 }
 
