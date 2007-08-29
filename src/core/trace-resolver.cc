@@ -94,7 +94,7 @@ TraceResolver::SourceCollection::AddUnique (std::string path,
   source.doc = doc;
   m_sources.push_back (source);
 }
-void 
+void
 TraceResolver::SourceCollection::Print (std::ostream &os) const
 {
   for (SourceVector::const_iterator i = m_sources.begin (); i != m_sources.end (); i++)
@@ -118,6 +118,51 @@ TraceResolver::SourceCollection::Print (std::ostream &os) const
           k++;
         }
       os << std::endl;
+    }
+}
+void 
+TraceResolver::SourceCollection::PrintDoxygen (std::ostream &os) const
+{
+  uint32_t z = 0;
+  for (SourceVector::const_iterator i = m_sources.begin (); i != m_sources.end (); i++)
+    {
+      os << "///" << std::endl;
+      os << "/// \\ingroup TraceSourceList" << std::endl; 
+      os << "/// \\brief " << i->doc.GetHelp () << std::endl;
+      os << "/// \\param arg1 the trace context associated to the connected trace source." << std::endl;
+      uint32_t j = 2;
+      for (TraceDoc::Iterator l = i->doc.ArgsBegin (); l != i->doc.ArgsEnd (); l++)
+        {
+          os << "/// \\param arg" << j << " " << l->second << "." << std::endl;
+          j++;
+        }
+      os << "///" << std::endl;
+      os << "///" << std::endl;
+      os << "/// The path to this trace source is: " << i->path << "." << std::endl;
+      os << "///" << std::endl;
+      if (i->context.AvailableBegin () == i->context.AvailableEnd ())
+        {
+          os << "/// No data can be extracted from \\p arg1 with ns3::TraceContext::GetElement." << std::endl;
+        }
+      else
+        {
+          os << "/// The following classes can be extracted from \\p arg1 with " << std::endl;
+          os << "/// ns3::TraceContext::GetElement:" << std::endl;
+          for (TraceContext::Iterator m = i->context.AvailableBegin (); m != i->context.AvailableEnd (); m++)
+            {
+              os << "///  - " << (*m) << std::endl;
+            }
+        }
+      os << "void TraceSinkCallback" << z << " (const TraceContext & arg1" ;
+      j = 2;
+      for (TraceDoc::Iterator k = i->doc.ArgsBegin (); k != i->doc.ArgsEnd (); k++)
+        {
+          os << ", " << k->first << " arg" << j;
+          j++;
+        }
+      os << ");" << std::endl;
+      os << std::endl;
+      z++;
     }
 }
 

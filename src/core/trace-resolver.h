@@ -74,6 +74,7 @@ public:
   {
   public:
     void Print (std::ostream &os) const;
+    void PrintDoxygen (std::ostream &os) const;
     void AddUnique (std::string path, 
                     const TraceContext &context,
                     const TraceDoc &doc);
