@@ -122,7 +122,7 @@ UdpL4Protocol::Receive(Packet& packet,
 }
 
 void
-UdpL4Protocol::Send (Packet& packet, 
+UdpL4Protocol::Send (Packet packet, 
            Ipv4Address saddr, Ipv4Address daddr, 
            uint16_t sport, uint16_t dport)
 {

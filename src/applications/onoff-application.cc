@@ -206,8 +206,7 @@ void OnOffApplication::ScheduleStopEvent()
 void OnOffApplication::SendPacket()
 {
   NS_ASSERT (m_sendEvent.IsExpired ());
-  Packet p(m_pktSize);
-  m_socket->Send(p);
+  m_socket->Send(Packet (m_pktSize));
   m_totBytes += m_pktSize;
   m_lastStartTime = Simulator::Now();
   m_residualBits = 0;

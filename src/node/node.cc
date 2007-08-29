@@ -213,7 +213,7 @@ Node::UnregisterProtocolHandler (ProtocolHandler handler)
 }
 
 bool
-Node::ReceiveFromDevice (Ptr<NetDevice> device, Packet &packet, 
+Node::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
                          uint16_t protocol, const Address &from)
 {
   bool found = false;

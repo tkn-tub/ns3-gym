@@ -171,7 +171,7 @@ NetDevice::DisablePointToPoint (void)
 
 // Receive packet from above
 bool 
-NetDevice::Send(Packet& p, const Address& dest, uint16_t protocolNumber)
+NetDevice::Send(const Packet& p, const Address& dest, uint16_t protocolNumber)
 {
   if (m_isUp)
     {
@@ -197,7 +197,7 @@ NetDevice::GetChannel (void) const
 
 // Receive packets from below
 bool
-NetDevice::ForwardUp(Packet& p, uint16_t param, const Address &from)
+NetDevice::ForwardUp(const Packet& p, uint16_t param, const Address &from)
 {
   bool retval = false;
 

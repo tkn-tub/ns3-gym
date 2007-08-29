@@ -65,7 +65,7 @@ Ipv4EndPoint::SetPeer (Ipv4Address address, uint16_t port)
 }
 
 void 
-Ipv4EndPoint::SetRxCallback (Callback<void, Packet&, Ipv4Address, uint16_t> callback)
+Ipv4EndPoint::SetRxCallback (Callback<void,const Packet &, Ipv4Address, uint16_t> callback)
 {
   m_rxCallback = callback;
 }
@@ -77,7 +77,7 @@ Ipv4EndPoint::SetDestroyCallback (Callback<void> callback)
 }
 
 void 
-Ipv4EndPoint::ForwardUp (Packet &p, Ipv4Address saddr, uint16_t sport)
+Ipv4EndPoint::ForwardUp (const Packet &p, Ipv4Address saddr, uint16_t sport)
 {
   if (!m_rxCallback.IsNull ())
   {

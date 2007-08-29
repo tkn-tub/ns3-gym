@@ -186,7 +186,7 @@ PacketSocket::Connect(const Address &ad)
 }
 
 int
-PacketSocket::Send (Packet &p)
+PacketSocket::Send (const Packet &p)
 {
   if (m_state == STATE_OPEN ||
       m_state == STATE_BOUND)
@@ -198,7 +198,7 @@ PacketSocket::Send (Packet &p)
 }
 
 int
-PacketSocket::SendTo(const Address &address, Packet &p)
+PacketSocket::SendTo(const Address &address, const Packet &p)
 {
   PacketSocketAddress ad;
   if (m_state == STATE_CLOSED)
@@ -262,7 +262,7 @@ PacketSocket::SendTo(const Address &address, Packet &p)
 }
 
 void 
-PacketSocket::ForwardUp (Ptr<NetDevice> device, Packet &packet, 
+PacketSocket::ForwardUp (Ptr<NetDevice> device, const Packet &packet, 
                          uint16_t protocol, const Address &from)
 {
   if (m_shutdownRecv)
@@ -270,7 +270,7 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Packet &packet,
       return;
     }
 
-  //Packet p = packet; ? 
+  Packet p = packet;
 
   PacketSocketAddress address;
   address.SetPhysicalAddress (from);
@@ -279,7 +279,7 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, Packet &packet,
 
   NS_DEBUG ("PacketSocket::ForwardUp: UID is " << packet.GetUid()
             << " PacketSocket " << this);
-  NotifyDataReceived (packet, address);
+  NotifyDataReceived (p, address);
 }
 
 }//namespace ns3

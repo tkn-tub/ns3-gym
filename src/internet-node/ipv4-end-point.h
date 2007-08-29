@@ -43,17 +43,17 @@ public:
 
   void SetPeer (Ipv4Address address, uint16_t port);
 
-  void SetRxCallback (Callback<void, Packet&, Ipv4Address, uint16_t> callback);
+  void SetRxCallback (Callback<void,const Packet &, Ipv4Address, uint16_t> callback);
   void SetDestroyCallback (Callback<void> callback);
 
-  void ForwardUp (Packet &p, Ipv4Address saddr, uint16_t sport);
+  void ForwardUp (const Packet &p, Ipv4Address saddr, uint16_t sport);
 
 private:
   Ipv4Address m_localAddr;
   uint16_t m_localPort;
   Ipv4Address m_peerAddr;
   uint16_t m_peerPort;
-  Callback<void, Packet&, Ipv4Address, uint16_t> m_rxCallback;
+  Callback<void,const Packet &, Ipv4Address, uint16_t> m_rxCallback;
   Callback<void> m_destroyCallback;
 };
 
