@@ -1,4 +1,8 @@
 /**
+ * \defgroup TraceSourceList List of trace sources
+ */
+
+/**
  * \defgroup tracing Tracing
  *
  * The flexibility of the ns-3 tracing system comes at the cost of quite
@@ -92,7 +96,7 @@
  * from the trace source to the trace sink. For example, UVTraceSource and 
  * SVTraceSource trace sources require two extra arguments. The former requires
  * two unsigned 64 bit integers while the latter requires two signed 64 bit 
- * integers. More generally, users can consult the \ref trace-source-list
+ * integers. More generally, users can consult the \ref TraceSourceList
  * to figure out the arguments which a trace sink is required to receive
  * for each trace source.
  *
