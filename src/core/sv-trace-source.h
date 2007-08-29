@@ -63,7 +63,7 @@ class UVTraceSource;
 
 /**
  * \brief trace variables of type "signed integer"
- * \ingroup lowleveltracing
+ * \ingroup tracing
  *
  * This template class implements a POD type: it
  * behaves like any other variable of type "signed integer"

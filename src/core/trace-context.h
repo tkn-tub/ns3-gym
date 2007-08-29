@@ -30,7 +30,7 @@ namespace ns3 {
 
 /**
  * \brief Provide context to trace sources
- * \ingroup lowleveltracing
+ * \ingroup tracing
  *
  * Instances of this class are used to hold context
  * for each trace source. Each instance holds a list of
