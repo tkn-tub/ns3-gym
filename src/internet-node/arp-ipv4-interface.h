@@ -47,7 +47,6 @@ class ArpIpv4Interface : public Ipv4Interface
   virtual void SendTo (Packet p, Ipv4Address dest);
   virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
   Ptr<Node> m_node;
-  Address MakeMulticastAddress (Ipv4Address multicastGroup);
 };
 
 }//namespace ns3

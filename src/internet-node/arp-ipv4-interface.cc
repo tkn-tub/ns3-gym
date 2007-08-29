@@ -61,74 +61,6 @@ ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
   return resolver;
 }
 
-//
-// RFC 1112 says that an IP host group address is mapped to an Ethernet 
-// multicast address by placing the low-order 23-bits of the IP address into 
-// the low-order 23 bits of the Ethernet multicast address 01-00-5E-00-00-00 
-// (hex).  These are completely different animals and they're encapsulated
-// very nicely.  Translation: This isn't going to be very pretty.
-//
-Address
-ArpIpv4Interface::MakeMulticastAddress(Ipv4Address multicastGroup)
-{
-  NS_DEBUG ("ArpIpv4Interface::MakeMulticastAddress (" << multicastGroup <<
-    ")");
-//
-// First, get the generic multicast address from the device.  Since it is 
-// connected to this object, and this object is an IPV4 stack, we hope that
-// it is really an Eui48Address.  If it's not, then we don't know what to do.
-//
-  Address hardwareDestination = GetDevice ()->GetMulticast ();
-
-  NS_DEBUG ("ArpIpv4Interface::MakeMulticastAddress (): "
-    "Device multicast address: " << hardwareDestination);
-
-  Eui48Address etherAddr = Eui48Address::ConvertFrom (hardwareDestination);
-//
-// We now have the multicast address in an abstract 48-bit container.  We 
-// need to pull it out so we can play with it.  When we're done, we have the 
-// high order bits in etherBuffer[0], etc.
-//
-  uint8_t etherBuffer[6];
-  etherAddr.CopyTo (etherBuffer);
-//
-// If the device is playing the game correctly, the low order 23 bits of the
-// multicast base address will be zero.
-//
-  NS_ASSERT_MSG((etherBuffer[4] & 0x7f) == 0,
-    "ArpIpv4Interface::SendTo ():  Expected low order bits zeroed");
-  NS_ASSERT_MSG(etherBuffer[5] == 0, 
-    "ArpIpv4Interface::SendTo ():  Expected low order bits zeroed");
-  NS_ASSERT_MSG(etherBuffer[6] == 0, 
-    "ArpIpv4Interface::SendTo ():  Expected low order bits zeroed");
-//
-// Now we need to pull the raw bits out of the Ipv4 destination address.
-//
-  uint8_t ipBuffer[4];
-  multicastGroup.Serialize (ipBuffer);
-//
-// We need to place the low order 23 bits of the IP address into the low order
-// 23 bits of the ethernet address.
-//
-  etherBuffer[3] |= ipBuffer[1] & 0x7f;
-  etherBuffer[4] = ipBuffer[2];
-  etherBuffer[5] = ipBuffer[3];
-//
-// Now, etherBuffer has the desired ethernet multicast address.  We have to
-// suck these bits back into the Eui48Address; and then suck those bits back
-// into the abstract hardwareAddress.
-//
-  etherAddr.CopyFrom (etherBuffer);
-//
-// Implicit conversion (operator Address ()) is defined for Eui48Address, so
-// use it.
-//
-  NS_DEBUG ("ArpIpv4Interface::MakeMulticastAddress (): "
-    "multicast address is " << etherAddr);
-
-  return etherAddr;
-}
-
 void 
 ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
 {
@@ -156,7 +88,7 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
             "ArpIpv4Interface::SendTo (): Sending multicast packet over "
             "non-multicast device");
 
-          hardwareDestination = MakeMulticastAddress(dest);
+          hardwareDestination = GetDevice ()->MakeMulticastAddress(dest);
           found = true;
         }
       else

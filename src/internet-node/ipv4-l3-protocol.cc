@@ -504,6 +504,8 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protoc
   NS_DEBUG("Ipv4L3Protocol::Receive (" << &device << ", " << &p << ", " <<
     protocol << ", " << from << ")");
 
+  NS_DEBUG("Ipv4L3Protocol::Receive (): Packet from " << from);
+
   uint32_t index = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
        i != m_interfaces.end (); 
