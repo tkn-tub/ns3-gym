@@ -104,13 +104,19 @@ TraceResolver::SourceCollection::Print (std::ostream &os) const
       i->context.PrintAvailable (os, ",");
       os << "]" << std::endl;
       os << "help=\"" << i->doc.GetHelp () << "\"" << std::endl;
-      os << "const TraceContext &: the trace context associated to the connected trace source." << std::endl;
-      uint32_t k = 0;
+      os << "argument 0  --  the trace context associated to the connected trace source." << std::endl;
+      uint32_t k = 2;
       for (TraceDoc::Iterator j = i->doc.ArgsBegin (); j != i->doc.ArgsEnd (); j++)
         {
-          os << "argument " << k << "  --  " << j->first << ": " << j->second << "." << std::endl;
+          os << "argument " << k << "  --  " << j->second << "." << std::endl;
           k++;
         }
+      os << "void TraceSinkCallback (const TraceContext &";
+      for (TraceDoc::Iterator k = i->doc.ArgsBegin (); k != i->doc.ArgsEnd (); k++)
+        {
+          os << ", " << k->first;
+        }
+      os << ")" << std::endl;
       os << std::endl;
     }
 }
