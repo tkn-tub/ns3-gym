@@ -6,6 +6,7 @@ build
 .*\.sconsign
 doc/html.*
 doc/latex.*
+doc/trace-source-list.h
 .lock-wscript
 .waf*
 waf
