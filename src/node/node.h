@@ -158,7 +158,7 @@ public:
   /**
    * A protocol handler
    */
-  typedef Callback<void,Ptr<NetDevice>, Packet &,uint16_t,const Address &> ProtocolHandler;
+  typedef Callback<void,Ptr<NetDevice>, const Packet &,uint16_t,const Address &> ProtocolHandler;
   /**
    * \param handler the handler to register
    * \param protocolType the type of protocol this handler is 
@@ -210,7 +210,7 @@ private:
    */
   virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
 
-  bool ReceiveFromDevice (Ptr<NetDevice> device, Packet &packet, 
+  bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
                           uint16_t protocol, const Address &from);
   void Construct (void);
   TraceResolver *CreateDevicesTraceResolver (const TraceContext &context);

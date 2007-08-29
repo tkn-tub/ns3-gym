@@ -155,7 +155,7 @@ UdpSocket::Connect(const Address & address)
   return 0;
 }
 int 
-UdpSocket::Send (Packet &p)
+UdpSocket::Send (const Packet &p)
 {
   if (!m_connected)
     {
@@ -165,7 +165,7 @@ UdpSocket::Send (Packet &p)
   return DoSendTo (p, m_defaultAddress, m_defaultPort);
 }
 int
-UdpSocket::DoSendTo (Packet &p, const Address &address)
+UdpSocket::DoSendTo (const Packet &p, const Address &address)
 {
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
@@ -173,7 +173,7 @@ UdpSocket::DoSendTo (Packet &p, const Address &address)
   return DoSendTo (p, ipv4, port);
 }
 int
-UdpSocket::DoSendTo (Packet& p, Ipv4Address ipv4, uint16_t port)
+UdpSocket::DoSendTo (const Packet &p, Ipv4Address ipv4, uint16_t port)
 {
   if (m_endPoint == 0)
     {
@@ -195,7 +195,7 @@ UdpSocket::DoSendTo (Packet& p, Ipv4Address ipv4, uint16_t port)
   return 0;
 }
 int 
-UdpSocket::SendTo(const Address &address, Packet &p)
+UdpSocket::SendTo(const Address &address, const Packet &p)
 {
   if (m_connected)
     {
@@ -209,7 +209,7 @@ UdpSocket::SendTo(const Address &address, Packet &p)
 }
 
 void 
-UdpSocket::ForwardUp (Packet &packet, Ipv4Address ipv4, uint16_t port)
+UdpSocket::ForwardUp (const Packet &packet, Ipv4Address ipv4, uint16_t port)
 {
   if (m_shutdownRecv)
     {
@@ -217,7 +217,8 @@ UdpSocket::ForwardUp (Packet &packet, Ipv4Address ipv4, uint16_t port)
     }
   
   Address address = InetSocketAddress (ipv4, port);
-  NotifyDataReceived (packet, address);
+  Packet p = packet;
+  NotifyDataReceived (p, address);
 }
 
 }//namespace ns3

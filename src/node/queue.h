@@ -83,16 +83,14 @@ public:
   bool Enqueue (const Packet& p);
   /**
    * Remove a packet from the front of the Queue
-   * Must not be called on an empty queue.
-   * \return The packet removed from the queue
+   * \return True if the operation was successful; false otherwise
    */
-  Packet Dequeue ();
+  bool Dequeue (Packet &p);
   /**
    * Get a copy of the item at the front of the queue without removing it
-   * Must NOT be called on an empty queue
-   * \return The packet at the head of the queue.
+   * \return True if the operation was successful; false otherwise
    */
-  Packet Peek ();
+  bool Peek (Packet &p);
 
   /**
    * XXX Doesn't do anything right now, think its supposed to flush the queue
@@ -165,8 +163,8 @@ public:
 private:
 
   virtual bool DoEnqueue (const Packet& p) = 0;
-  virtual Packet DoDequeue () = 0;
-  virtual Packet DoPeek () = 0;
+  virtual bool DoDequeue (Packet &p) = 0;
+  virtual bool DoPeek (Packet &p) = 0;
 
 protected:
   // called by subclasses to notify parent of packet drops.

@@ -46,7 +46,7 @@ class Ipv4Header; // FIXME: ipv4-header.h needs to move from module
 class Ipv4RoutingProtocol : public Object
 {
 public:
-  // void (*RouteReply) (bool found, Ipv4Route route, Packet& packet, Ipv4Header const &ipHeader);
+  // void (*RouteReply) (bool found, Ipv4Route route, Packet packet, Ipv4Header const &ipHeader);
 
 
   /**
@@ -65,7 +65,7 @@ public:
    * inserted and consequently the protocol type has to change).
    *
    */
-  typedef Callback<void, bool, const Ipv4Route&, Packet&, const Ipv4Header&> RouteReplyCallback;
+  typedef Callback<void, bool, const Ipv4Route&, Packet, const Ipv4Header&> RouteReplyCallback;
 
   /**
    * \brief Asynchronously requests a route for a given packet and IP header
@@ -100,7 +100,7 @@ public:
    * insert any extra header.
    */
   virtual bool RequestRoute (const Ipv4Header &ipHeader,
-                             Packet& packet,
+                             Packet packet,
                              RouteReplyCallback routeReply) = 0;
 };
 
