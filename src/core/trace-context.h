@@ -97,6 +97,26 @@ public:
    * Print the typename of each TraceContextElement stored in this TraceContext.
    */
   void PrintAvailable (std::ostream &os, std::string separator) const;
+  class Iterator 
+  {
+  public:
+    Iterator &operator ++ (void);
+    Iterator operator ++ (int);
+    const std::string &operator * (void) const;
+    const std::string *operator -> (void) const;
+    bool operator == (const Iterator &o);
+    bool operator != (const Iterator &o);
+  private:
+    friend class TraceContext;
+    Iterator (uint8_t *buffer);
+    Iterator (uint8_t *buffer, uint16_t index);
+    void ReadOne (void);
+    uint8_t *m_buffer;
+    uint16_t m_current;
+    std::string m_name;
+  };
+  Iterator AvailableBegin (void) const;
+  Iterator AvailableEnd (void) const;
   /**
    * \param o another trace context
    * \returns true if the input trace context contains exactly the same set of
