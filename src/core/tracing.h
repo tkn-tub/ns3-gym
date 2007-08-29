@@ -12,14 +12,8 @@
  *   be connected to a set of trace sources to receive the events generated
  *   by each trace source.
  *
- * - Trace context: each trace source instance is associated with a single 
- *   trace context which can be used by each connected trace sink to
- *   identify the instance of the source of the event.
- *
  * - A trace resolver is an object which allows users to establish 
  *   connections between a set of trace sources and a set of trace sinks.
- *   The trace contexts are configured during connection by the trace
- *   resolvers.
  *
  * So, what does it look like in practice ? First, let's look at trace
  * sources. We have two types of trace sources: numeric, and, normal 
@@ -71,10 +65,8 @@
  * ns3::FvTraceSource.
  *
  * To receive these trace events, a user should specify a set of trace sinks.
- * For example, to receive the "int" and the "something events outlined
- * above, a user would declare the following functions which receive
- * as an extra first argument the context of the trace source which 
- * generated the specific event.
+ * For example, to receive the "int" and the "something" events shown in the
+ * examples above, a user would declare the following functions:
  * \code
  * // oldValue and newValue contain the previous and new values of 
  * // the connected SVTraceSource<int> trace source.
@@ -91,6 +83,18 @@
  *   std::cout << "value=" << value << ", packet " << packet << std::endl;
  * }
  * \endcode
+ * Each of these sink function takes, as a first argument, a reference to a 
+ * const TraceContext object. This context object contains information which
+ * describes the instance of the connected trace source: that information is
+ * setup during the connection process and does not change afterwards
+ * The type and the number of the other arguments to each trace sink depends
+ * on the type of the connected trace source: it conveys per-event information
+ * from the trace source to the trace sink. For example, UVTraceSource and 
+ * SVTraceSource trace sources require two extra arguments. The former requires
+ * two unsigned 64 bit integers while the latter requires two signed 64 bit 
+ * integers. More generally, users can consult the \ref trace-source-list
+ * to figure out the arguments which a trace sink is required to receive
+ * for each trace source.
  *
  * The hard part of this tracing framework is the "connection" step: there is a point
  * in the simulation scenario where the user is expected to specify which trace sources
