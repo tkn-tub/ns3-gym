@@ -55,6 +55,7 @@
  * public:
  *   void DoSomething (Packet packet, double value) 
  *   {
+ *     // report this event on packet with value
  *     m_doSomething (packet, value);
  *     // do something
  *   }
@@ -171,6 +172,75 @@
  *   std::cout << ", device-index=" << deviceIndex.Get ();
  *   std::cout << ", packet: " << packet;
  *   std::cout << std::endl;
+ * }
+ * \endcode
+ *
+ * Using existing trace sources to connect them to a set of adhoc trace sinks
+ * is not really complicated but, setting up new trace sources which can hook
+ * in this automatic connection system is a bit more complicated.
+ *
+ * So far, we know that a model author can generate trace events really easily:
+ * \code
+ * class MyModel 
+ * {
+ * public:
+ *   void DoSomething (Packet packet, double value) 
+ *   {
+ *     // report this event on packet with value
+ *     m_doSomething (packet, value);
+ *     // do something
+ *   }
+ * private:
+ *   // report every "something" function call.
+ *   CallbackTraceSource<Packet,double> m_doSomething;
+ * };
+ * \endcode
+ *
+ * To make these new trace sources available to the rest of the connection system,
+ * the first step is to make sure that your model object derives from the ns3::Object
+ * base class either directly (as shown below) or indirectly through another base class:
+ * \code
+ * class MyModel : public Object {...};
+ * // or:
+ * class SomeOtherObject : public Object {...};
+ * class MyModel : public SomeOtherObject {...};
+ * \endcode
+ *
+ * This is pretty trivial and lays the ground for the second step: overriding the
+ * ns3::Object::GetTraceResolver method:
+ * \code
+ * class MyModel : public MyParent
+ * {
+ * public:
+ *   // declare overriden method
+ *   virtual Ptr<TraceResolver> GetTraceResolver (void) const;
+ * private:
+ *   // the new trace source to export.
+ *   CallbackTraceSource<Packet> m_rxSource;
+ * };
+ * \endcode
+ *
+ * To implement this method, you could attempt to implement a new subclass of
+ * the ns3::TraceResolver base class and return an instance from this method but
+ * this would be very hard. Instead, you should use the helper class
+ * ns3::CompositeTraceResolver to register your trace sources and chain up to
+ * your parent:
+ * \code
+ * Ptr<TraceResolver>
+ * MyModel::GetTraceResolver (void) const
+ * {
+ *   // create an empty trace resolver
+ *   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
+ *   // register m_rxSource
+ *   resolver->AddSource ("rx", // the name of the trace source in the path string
+ *                        TraceDoc ("some help text to explain the purpose of this trace source",
+ *                                  "Packet", // the type of the first argument to the trace source
+ *                                  "the purpose of the first argument",
+ *                                  "type-of-second-argument", "purpose-of-second-argument"),
+ *                        m_rxSource // the trace source itself is registered);
+ *   // make sure we include the trace sources implemented in the parent.
+ *   resolver->SetParentResolver (MyParent::GetTraceResolver ());
+ *   return resolver;
  * }
  * \endcode
  *
