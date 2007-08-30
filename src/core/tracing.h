@@ -100,6 +100,80 @@
  * to figure out the arguments which a trace sink is required to receive
  * for each trace source.
  *
+ * Since there is no working magic here, defining a trace sink does not connect
+ * it directly to a set of trace sources. To connect a trace sink, a user must call
+ * ns3::NodeList::Connect. The second argument is a callback to the user's trace sink.
+ * That callback is easy to construct: call ns3::MakeCallback and you are done. The
+ * first argument is a string whose format is similar to a unix path and which is 
+ * used to uniquely identify the set of trace sources you want to connect to.
+ * The set of acceptable path strings is also documented in the \ref TraceSourceList.
+ *
+ * So, what does this look like from the perspective of a user ? If we wanted to 
+ * connect to a trace source defined somewhere deep into the a set of NetDevice objects
+ * located in some nodes of the system, we could write the following:
+ * \code
+ * void 
+ * DoSomethingTraceSink (const TraceContext &context, Packet packet)
+ * {
+ *   // for example, print the arguments
+ *   std::cout << "packet: " << packet << std::endl;
+ * }
+ * // connect the above sink to a matching trace source
+ * NodeList::Connect ("/nodes/* /devices/* /rx", MakeCallback &DoSomethingTraceSink);
+ * \endcode
+ *
+ * The connection path string "/nodes/* /devices/* /rx" matches the "rx" trace source
+ * located in every netdevice located in every node. The syntax of that path string
+ * is loosely based on regular expressions so, a user could conceivably connect
+ * to the trace sources present in only one node identified by node index:
+ * "/nodex/3/devices/* /rx".
+ *
+ * The matching algorithm used here is very useful since it allows you to connect
+ * at once a large set of trace sources to a single sink but it introduces another 
+ * problem: it becomes impossible when you receive an event in your trace sink to
+ * know from _which_ trace source the event is coming from. In our example, the
+ * trace source might be coming from the NetDevice number 2 of Node 10 or Netdevice
+ * number 0 of Node 5. In both cases, you might need to know which of these NetDevice
+ * is generating this event, if only to generate some ascii trace dump.
+ *
+ * It turns out that there are many ways to get this information. The simplest
+ * way to get this information is to use the builtin printing facility of
+ * the TraceContext object:
+ * \code
+ * void 
+ * DoSomethingTraceSink (const TraceContext &context, Packet packet)
+ * {
+ *   // for example, print the arguments
+ *   std::cout << "context=\"" << context << "\" packet: " << packet << std::endl;
+ * }
+ * \endcode
+ * The above code is going to generate output which looks like the following:
+ * \code
+ * context="nodeid=2 device=0 dev-rx" packet: IPV4(tos 0x0 ttl 64 id 0 offset ...
+ * context="nodeid=1 device=0 dev-rx" packet: IPV4(tos 0x0 ttl 64 id 0 offset ...
+ * ...
+ * \endcode
+ *
+ * Another more advanced way to get information out of a TraceContext is to call its
+ * ns3::TraceContext::GetElement method. This method takes as its first and only
+ * argument an instance of the object we want to read and the list of available
+ * object instances we can read from a TraceContext is documented, once again,
+ * in the \ref TraceSourceList. For example, we could write the following to
+ * generate adhoc trace output:
+ * \code
+ * void DeviceRxSink (const TraceContext &context, const Packet &packet)
+ * {
+ *   NodeListIndex nodeIndex;
+ *   NodeNetDeviceIndex deviceIndex;
+ *   context.GetElement (nodeIndex);
+ *   context.GetElement (deviceIndex);
+ *   std::cout << "node-index=" << nodeIndex.Get ();
+ *   std::cout << ", device-index=" << deviceIndex.Get ();
+ *   std::cout << ", packet: " << packet;
+ *   std::cout << std::endl;
+ * }
+ * \endcode
+ *
  * The hard part of this tracing framework is the "connection" step: there is a point
  * in the simulation scenario where the user is expected to specify which trace sources
  * should be connected to which trace sinks. There are many ways to do this: the
