@@ -55,7 +55,7 @@ PrintDoxygenText (const TraceResolver::SourceCollection *sources, std::ostream &
       os << "///" << std::endl;
       os << "/// The path to this trace source is: " << i->path << "." << std::endl;
       os << "///" << std::endl;
-      if (i->context.AvailableBegin () == i->context.AvailableEnd ())
+      if (i->context.Begin ().IsLast ())
         {
           os << "/// No data can be extracted from \\p arg1 with ns3::TraceContext::GetElement." << std::endl;
         }
@@ -63,9 +63,9 @@ PrintDoxygenText (const TraceResolver::SourceCollection *sources, std::ostream &
         {
           os << "/// The following classes can be extracted from \\p arg1 with " << std::endl;
           os << "/// ns3::TraceContext::GetElement:" << std::endl;
-          for (TraceContext::Iterator m = i->context.AvailableBegin (); m != i->context.AvailableEnd (); m++)
+          for (TraceContext::Iterator m = i->context.Begin (); !m.IsLast (); m.Next ())
             {
-              os << "///  - " << (*m) << std::endl;
+              os << "///  - " << m.Get () << std::endl;
             }
         }
       os << "void TraceSinkCallback" << z << " (const TraceContext & arg1" ;

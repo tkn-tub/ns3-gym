@@ -24,71 +24,51 @@
 
 namespace ns3 {
 
-TraceContext::Iterator &
-TraceContext::Iterator::operator ++ (void)
-{
-  ReadOne ();
-  return *this;
-}
-TraceContext::Iterator 
-TraceContext::Iterator::operator ++ (int)
-{
-  Iterator old (*this);
-  ReadOne ();
-  return old;
-}
-const std::string &
-TraceContext::Iterator::operator * (void) const
-{
-  return m_name;
-}
-const std::string *
-TraceContext::Iterator::operator -> (void) const
-{
-  return &m_name;
-}
-TraceContext::Iterator::Iterator (uint8_t *buffer)
+TraceContext::Iterator::Iterator ()
+  : m_buffer (0),
+    m_size (0),
+    m_current (0)
+{}
+TraceContext::Iterator::Iterator (uint8_t *buffer, uint16_t size)
   : m_buffer (buffer),
+    m_size (size),
     m_current (0)
 {
-  ReadOne ();
+  m_uid = m_buffer[m_current];
 }
-TraceContext::Iterator::Iterator (uint8_t *buffer, uint16_t index)
-  : m_buffer (buffer),
-    m_current (index)
-{}
+bool
+TraceContext::Iterator::IsLast (void) const
+{
+  if (m_buffer == 0 || m_uid == 0 || m_current >= m_size)
+    {
+      return true;
+    }
+  return false;
+}
 void
-TraceContext::Iterator::ReadOne (void)
+TraceContext::Iterator::Next (void)
 {
   if (m_buffer == 0)
     {
       return;
     }
-  uint8_t uid = m_buffer[m_current];
-  uint8_t size = ElementRegistry::GetSize (uid);
-  m_name = ElementRegistry::GetName (uid);
-  m_current += 1 + size;
-}
-bool 
-TraceContext::Iterator::operator != (const Iterator &o)
-{
-  return ! (*this == o);
-}
-bool 
-TraceContext::Iterator::operator == (const Iterator &o)
-{
-  if (m_buffer == 0 && o.m_buffer == 0)
+  if (m_uid == 0)
     {
-      return true;
+      return;
     }
-  if (m_buffer != 0 && o.m_buffer == 0 ||
-      m_buffer == 0 && o.m_buffer != 0)
+  else
     {
-      return false;
+      uint8_t size = ElementRegistry::GetSize (m_uid); 
+      m_current += 1 + size;
     }
-  return m_current == o.m_current;
+  m_uid = m_buffer[m_current];
 }
-
+std::string
+TraceContext::Iterator::Get (void) const
+{
+  std::string name = ElementRegistry::GetName (m_uid);
+  return name;
+}
 
 TraceContext::TraceContext ()
   : m_data (0)
@@ -297,29 +277,13 @@ TraceContext::Print (std::ostream &os) const
   } while (true);
 }
 TraceContext::Iterator 
-TraceContext::AvailableBegin (void) const
+TraceContext::Begin (void) const
 {
   if (m_data == 0)
     {
-      return Iterator (0);
+      return Iterator ();
     }
-  return Iterator (m_data->data);
-}
-TraceContext::Iterator 
-TraceContext::AvailableEnd (void) const
-{
-  if (m_data == 0)
-    {
-      return Iterator (0);
-    }
-  uint8_t currentUid;
-  uint16_t i = 0;
-  do {
-    currentUid = m_data->data[i];
-    uint8_t size = ElementRegistry::GetSize (currentUid);
-    i += 1 + size;
-  } while (i < m_data->size && currentUid != 0);
-  return Iterator (m_data->data, i);
+  return Iterator (m_data->data, m_data->size);
 }
 
 void 

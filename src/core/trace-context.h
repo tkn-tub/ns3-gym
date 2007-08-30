@@ -100,23 +100,19 @@ public:
   class Iterator 
   {
   public:
-    Iterator &operator ++ (void);
-    Iterator operator ++ (int);
-    const std::string &operator * (void) const;
-    const std::string *operator -> (void) const;
-    bool operator == (const Iterator &o);
-    bool operator != (const Iterator &o);
+    void Next (void);
+    bool IsLast (void) const;
+    std::string Get (void) const;
   private:
     friend class TraceContext;
-    Iterator (uint8_t *buffer);
+    Iterator ();
     Iterator (uint8_t *buffer, uint16_t index);
-    void ReadOne (void);
     uint8_t *m_buffer;
+    uint16_t m_size;
     uint16_t m_current;
-    std::string m_name;
+    uint8_t m_uid;
   };
-  Iterator AvailableBegin (void) const;
-  Iterator AvailableEnd (void) const;
+  Iterator Begin (void) const;
   /**
    * \param o another trace context
    * \returns true if the input trace context contains exactly the same set of
