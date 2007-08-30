@@ -37,11 +37,17 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
+/**
+ * \brief hold in a TraceContext the protocol number of a L4 Protocol
+ */
 class Ipv4L4ProtocolTraceContextElement : public TraceContextElement
 {
 public:
   Ipv4L4ProtocolTraceContextElement ();
   Ipv4L4ProtocolTraceContextElement (int protocolNumber);
+  /**
+   * \returns the protocol number as registered in the Ipv4L4Demux.
+   */
   int Get (void) const;
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);

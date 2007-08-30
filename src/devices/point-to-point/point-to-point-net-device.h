@@ -38,6 +38,9 @@ namespace ns3 {
 class Queue;
 class PointToPointChannel;
 
+/**
+ * \brief hold in a TraceContext the type of trace source from a PointToPointNetDevice
+ */
 class PointToPointTraceType : public TraceContextElement
 {
 public:

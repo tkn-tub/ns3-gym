@@ -64,6 +64,11 @@ CsmaTraceType::GetTypeName (void) const
 {
   return "ns3::CsmaTraceType";
 }
+enum CsmaTraceType::Type 
+CsmaTraceType::Get (void) const
+{
+  return m_type;
+}
 
 
 CsmaNetDevice::CsmaNetDevice (Ptr<Node> node)

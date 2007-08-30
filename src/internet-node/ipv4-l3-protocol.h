@@ -44,6 +44,9 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
+/**
+ * \brief hold in a TraceContext the type of trace source used by this Ipv4L3Protocol
+ */
 class Ipv4L3ProtocolTraceContextElement : public TraceContextElement
 {
 public:
@@ -54,8 +57,17 @@ public:
   };
   Ipv4L3ProtocolTraceContextElement ();
   Ipv4L3ProtocolTraceContextElement (enum Type type);
+  /**
+   * \returns true if this is a tx event, false otherwise.
+   */
   bool IsTx (void) const;
+  /**
+   * \returns true if this is a rx event, false otherwise.
+   */
   bool IsRx (void) const;
+  /**
+   * \returns true if this is a drop event, false otherwise.
+   */
   bool IsDrop (void) const;
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
@@ -64,11 +76,17 @@ private:
   enum Type m_type;
 };
 
+/**
+ * \brief hold in a TraceContext the index of an Ipv4Interface within the ipv4 stack of a Node
+ */
 class Ipv4L3ProtocolInterfaceIndex : public TraceContextElement
 {
 public:
   Ipv4L3ProtocolInterfaceIndex ();
   Ipv4L3ProtocolInterfaceIndex (uint32_t index);
+  /**
+   * \returns the index of the Ipv4Interface within a Node.
+   */
   uint32_t Get (void) const;
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);

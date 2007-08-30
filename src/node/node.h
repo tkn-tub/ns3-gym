@@ -37,11 +37,17 @@ class Packet;
 class Address;
 class CompositeTraceResolver;
 
+/**
+ * \brief hold in a TraceContext the index of a NetDevice within a Node
+ */
 class NodeNetDeviceIndex : public TraceContextElement
 {
 public:
   NodeNetDeviceIndex ();
   NodeNetDeviceIndex (uint32_t index);
+  /**
+   * \returns the index of the NetDevice within its container Node.
+   */
   uint32_t Get (void) const;
   void Print (std::ostream &os) const;
   std::string GetTypeName (void) const;

@@ -37,6 +37,9 @@ namespace ns3 {
 
 class StringEnumDefaultValue;
 
+/**
+ * \brief hold in a TraceContext the type of a trace source 
+ */
 class QueueTraceType : public TraceContextElement
 {
 public:
@@ -48,8 +51,17 @@ public:
   static uint16_t GetUid (void);
   QueueTraceType ();
   QueueTraceType (enum Type type);
+  /**
+   * \returns true if this is an enqueue event, false otherwise.
+   */
   bool IsEnqueue (void) const;
+  /**
+   * \returns true if this is a dequeue event, false otherwise.
+   */
   bool IsDequeue (void) const;
+  /**
+   * \returns true if this is a drop event, false otherwise.
+   */
   bool IsDrop (void) const;
   void Print (std::ostream &os) const;
   std::string GetTypeName (void) const;

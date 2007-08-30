@@ -32,6 +32,9 @@ class Node;
 class CallbackBase;
 class TraceResolver;
 
+/**
+ * \brief hold in a TraceContext the index of a node within a NodeList.
+ */
 class NodeListIndex : public TraceContextElement
 {
 public:
@@ -39,6 +42,9 @@ public:
   NodeListIndex (uint32_t index);
   void Print (std::ostream &os);
   static uint16_t GetUid (void);
+  /**
+   * \returns the index of the node within the NodeList
+   */
   uint32_t Get (void) const;
   std::string GetTypeName (void) const;
 private:

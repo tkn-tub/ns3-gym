@@ -41,6 +41,9 @@ namespace ns3 {
 class Queue;
 class CsmaChannel;
 
+/**
+ * \brief hold in a TraceContext the type of trace source from a CsmaNetDevice
+ */
 class CsmaTraceType : public TraceContextElement
 {
 public:
@@ -53,6 +56,10 @@ public:
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
   std::string GetTypeName (void) const;
+  /**
+   * \returns the type of the trace source which generated an event.
+   */
+  enum Type Get (void) const;
 private:
   enum Type m_type;
 };
