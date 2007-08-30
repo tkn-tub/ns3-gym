@@ -90,11 +90,10 @@ Ipv4L4Demux::GetTraceResolver (void) const
   for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       Ptr<Ipv4L4Protocol> protocol = *i;
-      std::string protValue;
-      std::ostringstream oss (protValue);
-      oss << (*i)->GetProtocolNumber ();
+      std::ostringstream oss;
+      oss << (unsigned int) (*i)->GetProtocolNumber ();
       Ipv4L4ProtocolTraceContextElement protocolNumber = (*i)->GetProtocolNumber ();
-      resolver->AddComposite (protValue, protocol, protocolNumber);
+      resolver->AddComposite (oss.str (), protocol, protocolNumber);
     }
   resolver->SetParentResolver (Object::GetTraceResolver ());
   return resolver;
