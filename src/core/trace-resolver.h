@@ -73,18 +73,20 @@ public:
   class SourceCollection
   {
   public:
-    void Print (std::ostream &os) const;
-    void PrintDoxygen (std::ostream &os) const;
-    void AddUnique (std::string path, 
-                    const TraceContext &context,
-                    const TraceDoc &doc);
-  private:
     struct Source
     {
       std::string path;
       TraceContext context;
       TraceDoc doc;
     };
+    typedef std::vector<struct Source>::const_iterator Iterator;
+    void AddUnique (std::string path, 
+                    const TraceContext &context,
+                    const TraceDoc &doc);
+
+    Iterator Begin (void) const;
+    Iterator End (void) const;
+  private:
     typedef std::vector<struct Source> SourceVector;
     SourceVector m_sources;
   };
