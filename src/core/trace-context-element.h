@@ -37,6 +37,8 @@ namespace ns3 {
  *     This method takes a c++ output stream and argument and is
  *     expected to write an ascii string describing its content
  *     in this output stream.
+ *   - a public GetTypeName method which returns the fully-qualified
+ *     c++ type name of this subclass as a string.
  *
  * A typical subclass should look like this:
  * \code
