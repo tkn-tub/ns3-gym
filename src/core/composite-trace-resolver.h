@@ -95,7 +95,7 @@ public:
   /**
    * \param name the name of the array
    * \param begin an iterator which points to the first element of the array
-   * \param begin an iterator which points to the last element of the array
+   * \param end an iterator which points to the last element of the array
    * \param index an object which can store the index of an element in the
    *        array. In practice, this object should support a constructor
    *        whose single argument is an array index.

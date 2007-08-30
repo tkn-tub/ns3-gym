@@ -36,7 +36,7 @@ public:
   virtual ~TraceSource () {}
   /**
    * \param callback the callback to connect to this trace source
-   * \param the context associated to the input callback which should be passed
+   * \param context the context associated to the input callback which should be passed
    *        back to the user.
    */
   virtual void AddCallback (CallbackBase const & callback, TraceContext const & context) = 0;
