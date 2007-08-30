@@ -356,7 +356,7 @@ public:
   void BaseGenerateTrace (int16_t v)
   { m_source = v; }
   virtual void Dispose (void) {}
-  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void)
+  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void) const
   {
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
@@ -380,7 +380,7 @@ public:
   virtual void Dispose (void) {
     BaseA::Dispose ();
   }
-  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void)
+  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void) const
   {
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
@@ -407,7 +407,7 @@ public:
   void BaseGenerateTrace (int16_t v)
   { m_source = v; }
   virtual void Dispose (void) {}
-  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void)
+  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void) const
   {
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
@@ -431,7 +431,7 @@ public:
   virtual void Dispose (void) {
     BaseB::Dispose ();
   }
-  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void)
+  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void) const
   {
     ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
       ns3::Create<ns3::CompositeTraceResolver> ();
