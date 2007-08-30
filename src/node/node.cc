@@ -53,9 +53,9 @@ NodeNetDeviceIndex::GetUid (void)
   return uid;
 }
 std::string 
-NodeNetDeviceIndex::GetName (void) const
+NodeNetDeviceIndex::GetTypeName (void) const
 {
-  return "NodeNetDeviceIndex";
+  return "ns3::NodeNetDeviceIndex";
 }
 
 

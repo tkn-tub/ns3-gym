@@ -55,9 +55,9 @@ Ipv4L4ProtocolTraceContextElement::GetUid (void)
   return uid;
 }
 std::string 
-Ipv4L4ProtocolTraceContextElement::GetName (void) const
+Ipv4L4ProtocolTraceContextElement::GetTypeName (void) const
 {
-  return "Ipv4L4ProtocolTraceContextElement";
+  return "ns3::Ipv4L4ProtocolTraceContextElement";
 }
 
 

@@ -60,9 +60,9 @@ CsmaTraceType::GetUid (void)
   return uid;
 }
 std::string 
-CsmaTraceType::GetName (void) const
+CsmaTraceType::GetTypeName (void) const
 {
-  return "CsmaTraceType";
+  return "ns3::CsmaTraceType";
 }
 
 

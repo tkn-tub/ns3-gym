@@ -33,9 +33,9 @@ static ClassIdDefaultValue g_classIdDefaultValue ("Queue", "Packet Queue",
 
 
 std::string 
-QueueTraceType::GetName (void) const
+QueueTraceType::GetTypeName (void) const
 {
-  return "QueueTraceType";
+  return "ns3::QueueTraceType";
 }
 uint16_t 
 QueueTraceType::GetUid (void)

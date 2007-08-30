@@ -44,7 +44,7 @@ public:
   NodeNetDeviceIndex (uint32_t index);
   uint32_t Get (void) const;
   void Print (std::ostream &os) const;
-  std::string GetName (void) const;
+  std::string GetTypeName (void) const;
   static uint16_t GetUid (void);
 private:
   uint32_t m_index;

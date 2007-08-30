@@ -51,9 +51,9 @@ NodeListIndex::Get (void) const
   return m_index;
 }
 std::string 
-NodeListIndex::GetName (void) const
+NodeListIndex::GetTypeName (void) const
 {
-  return "NodeListIndex";
+  return "ns3::NodeListIndex";
 }
 
 

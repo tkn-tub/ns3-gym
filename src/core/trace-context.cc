@@ -66,7 +66,7 @@ TraceContext::Iterator::Next (void)
 std::string
 TraceContext::Iterator::Get (void) const
 {
-  std::string name = ElementRegistry::GetName (m_uid);
+  std::string name = ElementRegistry::GetTypeName (m_uid);
   return name;
 }
 
@@ -298,7 +298,7 @@ TraceContext::PrintAvailable (std::ostream &os, std::string separator) const
   do {
     currentUid = m_data->data[i];
     uint8_t size = ElementRegistry::GetSize (currentUid);
-    os << ElementRegistry::GetName (currentUid);
+    os << ElementRegistry::GetTypeName (currentUid);
     i += 1 + size;
     if (i < m_data->size && currentUid != 0)
       {
@@ -371,8 +371,8 @@ template <int N>
 class Ctx : public TraceContextElement
 {
 public:
-  static uint16_t GetUid (void) {static uint16_t uid = AllocateUid<Ctx<N> > (GetName ()); return uid;}
-  static std::string GetName (void) {std::ostringstream oss; oss << "Ctx" << N; return oss.str ();}
+  static uint16_t GetUid (void) {static uint16_t uid = AllocateUid<Ctx<N> > (GetTypeName ()); return uid;}
+  static std::string GetTypeName (void) {std::ostringstream oss; oss << "Ctx" << N; return oss.str ();}
   Ctx () : m_v (0) {}
   Ctx (int v) : m_v (v) {}
   void Print (std::ostream &os) {os << N;}

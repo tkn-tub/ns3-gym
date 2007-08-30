@@ -52,7 +52,7 @@ public:
   CsmaTraceType ();
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
-  std::string GetName (void) const;
+  std::string GetTypeName (void) const;
 private:
   enum Type m_type;
 };

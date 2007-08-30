@@ -48,7 +48,7 @@ namespace ns3 {
  *   MyContext ();
  *   ~MyContext ();
  *   void Print (std::ostream &os) const;
- *   std::string GetName (void) const;
+ *   std::string GetTypeName (void) const;
  *
  *   // the user-specific API to manipulate the context.
  *   void SetData (uint8_t data);
@@ -73,8 +73,9 @@ namespace ns3 {
  *   os << "mycontext=" << (uint32_t) m_myContextData;
  * }
  * std::string 
- * MyContext::GetName (void) const
+ * MyContext::GetTypeName (void) const
  * {
+ *   // return a fully-qualified c++ type name
  *   return "MyContext";
  * }
  * void 
@@ -121,23 +122,23 @@ public:
 
   static uint32_t GetSize (uint16_t uid);
   static void Print (uint16_t uid, uint8_t *instance, std::ostream &os);
-  static std::string GetName (uint16_t uid);
+  static std::string GetTypeName (uint16_t uid);
   static void Destroy (uint16_t uid, uint8_t *instance);
 private:
-  typedef std::string (*GetNameCb) (void);
+  typedef std::string (*GetTypeNameCb) (void);
   typedef void (*PrintCb) (uint8_t *instance, std::ostream &os);
   typedef void (*DestroyCb) (uint8_t *instance);
   struct Info {
     uint32_t size;
     std::string uidString;
-    GetNameCb getName;
+    GetTypeNameCb getTypeName;
     PrintCb print;
     DestroyCb destroy;
   };
   typedef std::vector<struct Info> InfoVector;
   static InfoVector *GetInfoVector (void);
   template <typename T>
-  static std::string DoGetName (void);
+  static std::string DoGetTypeName (void);
   template <typename T>
   static void DoPrint (uint8_t *instance, std::ostream &os);
   template <typename T>
@@ -155,10 +156,10 @@ ElementRegistry::DoPrint (uint8_t *instance, std::ostream &os)
 }
 template <typename T>
 std::string
-ElementRegistry::DoGetName (void)
+ElementRegistry::DoGetTypeName (void)
 {
   static T obj;
-  return obj.GetName ();
+  return obj.GetTypeName ();
 }
 template <typename T>
 void 
@@ -187,7 +188,7 @@ ElementRegistry::AllocateUid (std::string name)
   struct Info info;
   info.size = sizeof (T);
   info.uidString = name;
-  info.getName = &ElementRegistry::DoGetName<T>;
+  info.getTypeName = &ElementRegistry::DoGetTypeName<T>;
   info.print = &ElementRegistry::DoPrint<T>;
   info.destroy = &ElementRegistry::DoDestroy<T>;
   vec->push_back (info);

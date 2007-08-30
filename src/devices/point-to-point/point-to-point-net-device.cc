@@ -54,9 +54,9 @@ PointToPointTraceType::GetUid (void)
   return uid;
 }
 std::string 
-PointToPointTraceType::GetName (void) const
+PointToPointTraceType::GetTypeName (void) const
 {
-  return "PointToPointTraceType";
+  return "ns3::PointToPointTraceType";
 }
 
 

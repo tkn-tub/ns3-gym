@@ -88,9 +88,9 @@ Ipv4L3ProtocolTraceContextElement::GetUid (void)
   return uid;
 }
 std::string 
-Ipv4L3ProtocolTraceContextElement::GetName (void) const
+Ipv4L3ProtocolTraceContextElement::GetTypeName (void) const
 {
-  return "Ipv4L3ProtocolTraceContextElement";
+  return "ns3::Ipv4L3ProtocolTraceContextElement";
 }
 
 
@@ -117,9 +117,9 @@ Ipv4L3ProtocolInterfaceIndex::GetUid (void)
   return uid;
 }
 std::string
-Ipv4L3ProtocolInterfaceIndex::GetName (void) const
+Ipv4L3ProtocolInterfaceIndex::GetTypeName (void) const
 {
-  return "Ipv4L3ProtocolInterfaceIndex";
+  return "ns3::Ipv4L3ProtocolInterfaceIndex";
 }
 
 
