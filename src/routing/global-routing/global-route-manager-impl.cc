@@ -1089,82 +1089,9 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 }
 
 //
-// XXX This should probably be a method on Ipv4
-//
 // Return the interface index corresponding to a given IP address
-//
-  uint32_t
-GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a)
-{
-//
-// We have an IP address <a> and a vertex ID of the root of the SPF tree.  
-// The question is what interface index does this address correspond to.
-// The answer is a little complicated since we have to find a pointer to
-// the node corresponding to the vertex ID, find the Ipv4 interface on that
-// node in order to iterate the interfaces and find the one corresponding to
-// the address in question.
-//
-  Ipv4Address routerId = m_spfroot->GetVertexId ();
-//
-// Walk the list of nodes in the system looking for the one corresponding to
-// the node at the root of the SPF tree.  This is the node for which we are
-// building the routing table.
-//
-  NodeList::Iterator i = NodeList::Begin (); 
-  for (; i != NodeList::End (); i++)
-    {
-      Ptr<Node> node = *i;
-
-      Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
-//
-// If the node doesn't have a GlobalRouter interface it can't be the one
-// we're interested in.
-//
-      if (rtr == 0)
-        {
-          continue;
-        }
-
-      if (rtr->GetRouterId () == routerId)
-        {
-//
-// This is the node we're building the routing table for.  We're going to need
-// the Ipv4 interface to look for the ipv4 interface index.  Since this node
-// is participating in routing IP version 4 packets, it certainly must have 
-// an Ipv4 interface.
-//
-          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
-          NS_ASSERT_MSG (ipv4, 
-            "GlobalRouteManagerImpl::FindOutgoingInterfaceId (): "
-            "QI for <Ipv4> interface failed");
-//
-// Look through the interfaces on this node for one that has the IP address
-// we're looking for.  If we find one, return the corresponding interface
-// index.
-//
-          for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++)
-            {
-              if (ipv4->GetAddress (i) == a)
-                {
-                  NS_DEBUG (
-                    "GlobalRouteManagerImpl::FindOutgoingInterfaceId (): "
-                    "Interface match for " << a);
-                  return i;
-                }
-            }
-        }
-    }
-//
-// Couldn't find it.
-//
-  return 0;
-}
-
-//
-// XXX This should probably be a method on Ipv4
-//
-// Return the interface index corresponding to a given IP address
+// This is a wrapper around GetIfIndexByIpv4Address(), but we first
+// have to find the right node pointer to pass to that function.
 //
   uint32_t
 GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
@@ -1216,17 +1143,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 // we're looking for.  If we find one, return the corresponding interface
 // index.
 //
-          for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++)
-            {
-              if (ipv4->GetAddress (i).CombineMask(amask) == 
-                  a.CombineMask(amask) )
-                {
-                  NS_DEBUG (
-                    "GlobalRouteManagerImpl::FindOutgoingInterfaceId (): "
-                    "Interface match for " << a);
-                  return i;
-                }
-            }
+          return (GetIfIndexByIpv4Address (node, a, amask) );
         }
     }
 //
@@ -1693,6 +1610,9 @@ GlobalRouteManagerImplTest::RunTests (void)
   srm->DebugSPFCalculate (lsa0->GetLinkStateId ());  // node n0
 
   Simulator::Run ();
+
+// XXX here we should do some verification of the routes built
+
   Simulator::Destroy ();
 
   // This delete clears the srm, which deletes the LSDB, which clears 
@@ -1703,7 +1623,6 @@ GlobalRouteManagerImplTest::RunTests (void)
 }
 
 // Instantiate this class for the unit tests
-// XXX here we should do some verification of the routes built
 static GlobalRouteManagerImplTest g_globalRouteManagerTest;
 
 } // namespace ns3
