@@ -37,11 +37,18 @@ public:
    * \brief This constructor does nothing
    */
   Ipv4Route ();
+
   /**
    * \brief Copy Constructor
    * \param route The route to copy
    */
   Ipv4Route (Ipv4Route const &route);
+
+  /**
+   * \brief Copy Constructor
+   * \param route The route to copy
+   */
+  Ipv4Route (Ipv4Route const *route);
 
   bool IsHost (void) const;
   /**
@@ -108,11 +115,18 @@ public:
    * \brief This constructor does nothing
    */
   Ipv4MulticastRoute ();
+
   /**
    * \brief Copy Constructor
    * \param route The route to copy
    */
   Ipv4MulticastRoute (Ipv4MulticastRoute const &route);
+
+  /**
+   * \brief Copy Constructor
+   * \param route The route to copy
+   */
+  Ipv4MulticastRoute (Ipv4MulticastRoute const *route);
 
   /**
    * \return The IPv4 address of the source of this route

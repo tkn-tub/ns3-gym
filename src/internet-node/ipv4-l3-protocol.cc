@@ -284,29 +284,29 @@ Ipv4L3Protocol::Lookup (
       NS_DEBUG ("Ipv4L3Protocol::Lookup (): "
         "Multicast destination with local source");
 //
-// We have a multicast packet originating from the current node.  We didn't
-// want to force users to construct a route in order to get packets out of a
-// node, so there will have been no route found and it is left to us to send
-// the packet.  What we'll do is to send the multicast out all of the 
-// interfaces on this node.  Note that we start with interface 1 since we 
-// don't particularly want to send the packet out the loopback.
+// We have a multicast packet originating from the current node and were not
+// able to send it using the usual RequestRoute process.  Since the usual
+// process includes trying to use a default multicast route, this means that
+// there was no specific route out of the node found, and there was no default
+// multicast route set.
 //
-      NS_DEBUG ("Ipv4StaticRouting::Lookup (): "
-        "Local source. Flooding multicast packet");
+// The fallback position is to look for a default unicast route and use that
+// to get the packet off the node if we have one.
+//
+      Ipv4Route *route = m_staticRouting->GetDefaultRoute ();
 
-      for (uint32_t i = 1; i < GetNInterfaces (); ++i)
+      if (route)
         {
-          Packet p = packet;
-          Ipv4Header h = ipHeader;
-          Ipv4Route route = 
-            Ipv4Route::CreateHostRouteTo(h.GetDestination (), i);
           NS_DEBUG ("Ipv4StaticRouting::Lookup (): "
-            "Send via interface " << i);
-          routeReply (true, route, p, h);
+            "Local source. Using unicast default route for multicast packet");
+
+          routeReply (true, *route, packet, ipHeader);
+          return;
         }
-      return;
     }
-  // No route found
+//
+// No route found
+//
   routeReply (false, Ipv4Route (), packet, ipHeader);
 }
 

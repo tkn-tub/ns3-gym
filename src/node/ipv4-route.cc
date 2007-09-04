@@ -30,11 +30,19 @@ namespace ns3 {
 
 Ipv4Route::Ipv4Route ()
 {}
+
 Ipv4Route::Ipv4Route (Ipv4Route const &route)
   : m_dest (route.m_dest),
     m_destNetworkMask (route.m_destNetworkMask),
     m_gateway (route.m_gateway),
     m_interface (route.m_interface)
+{}
+
+Ipv4Route::Ipv4Route (Ipv4Route const *route)
+  : m_dest (route->m_dest),
+    m_destNetworkMask (route->m_destNetworkMask),
+    m_gateway (route->m_gateway),
+    m_interface (route->m_interface)
 {}
 
 Ipv4Route::Ipv4Route (Ipv4Address dest,
@@ -233,6 +241,15 @@ Ipv4MulticastRoute::Ipv4MulticastRoute (Ipv4MulticastRoute const &route)
   m_group (route.m_group),
   m_inputInterface (route.m_inputInterface),
   m_outputInterfaces (route.m_outputInterfaces)
+{
+}
+
+Ipv4MulticastRoute::Ipv4MulticastRoute (Ipv4MulticastRoute const *route)
+: 
+  m_origin (route->m_origin),
+  m_group (route->m_group),
+  m_inputInterface (route->m_inputInterface),
+  m_outputInterfaces (route->m_outputInterfaces)
 {
 }
 
