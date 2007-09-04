@@ -163,10 +163,7 @@ public:
                           uint32_t inputInterface,
                           std::vector<uint32_t> outputInterfaces);
 
-  void SetDefaultMulticastRoute (Ipv4Address origin,
-                                 Ipv4Address group,
-                                 uint32_t inputInterface,
-                                 std::vector<uint32_t> outputInterfaces);
+  void SetDefaultMulticastRoute (uint32_t onputInterface);
 
   uint32_t GetNMulticastRoutes (void) const;
   Ipv4MulticastRoute *GetMulticastRoute (uint32_t i) const;

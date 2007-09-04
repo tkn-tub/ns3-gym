@@ -104,14 +104,38 @@ public:
                              const Ipv4Header &ipHeader,
                              Packet packet,
                              RouteReplyCallback routeReply) = 0;
-  /**
-   * \brief Synchronously request the interface index that will be used to
-   * send a packet to a hypothetical destination.
-   *
-   * \param destination IP address of a hypothetical destination packet
-   * \param ifIndex Reference to interface index.
-   * \returns True if the protocol has a route, false otherwise.
-   */
+/**
+ * \brief Synchronously check to see if we can determine the interface index 
+ * that will be used if a packet is sent to this destination.
+ *
+ * This method addresses a problem in the IP stack where a destination address
+ * must be present and checksummed into the IP header before the actual 
+ * interface over which the packet is sent can be determined.  The answer is
+ * to implement a known and intentional cross-layer violation.  This is the
+ * endpoint of a call chain that started up quite high in the stack (sockets)
+ * and has found its way down to the Ipv4L3Protocol which is consulting the
+ * routing protocols for what they would do if presented with a packet of the
+ * given destination.
+ *
+ * Note that the a single interface index is returned.  This means that if
+ * the destination address is a multicast, and an explicit route is present
+ * that includeds multiple output interfaces, that route cannot be used.
+ * 
+ * If there are multiple paths out of the node, the resolution is performed
+ * by Ipv4L3Protocol::GetIfIndexforDestination which has access to more 
+ * contextual information that is useful for making a determination.
+ *
+ * \param destination The Ipv4Address if the destination of a hypothetical 
+ * packet.  This may be a multicast group address.
+ * \param ifIndex A reference to the interface index over which a packet
+ * sent to this destination would be sent.
+ * \return Returns true if a route is found to the destination that involves
+ * a single output interface index, otherwise false.
+ *
+ * \see Ipv4StaticRouting
+ * \see Ipv4RoutingProtocol
+ * \see Ipv4L3Protocol
+ */
   virtual bool RequestIfIndex (Ipv4Address destination, 
                               uint32_t& ifIndex) = 0;
 
@@ -207,11 +231,13 @@ public:
    * \returns the number of entries in the routing table.
    */
   virtual uint32_t GetNRoutes (void) = 0;
+
   /**
    * \param i index of route to return
    * \returns the route whose index is i
    */
   virtual Ipv4Route GetRoute (uint32_t i) = 0;
+
   /**
    * \param i index of route to remove from routing table.
    */
@@ -244,18 +270,13 @@ public:
                                      uint32_t inputInterface) = 0;
   
   /**
-   * \brief Set the default static multicast route for a given multicast 
-   *        source and group.
+   * \brief Set the default static multicast route.
    *
-   * \param origin The Ipv4 address of the multicast source.
-   * \param group The multicast group address.
-   * \param inputInterface The interface index over which the packet arrived.
-   * \param outputInterfaces The list of output interface indices over which 
-   *        the packet should be sent (excluding the inputInterface).
+   * \param outputInterface The network output interface index over which 
+   *        packets without specific routes should be sent.
    */
-  virtual void SetDefaultMulticastRoute (Ipv4Address origin,
-    Ipv4Address group, uint32_t inputInterface,
-    std::vector<uint32_t> outputInterfaces) = 0;
+  virtual void SetDefaultMulticastRoute (uint32_t outputInterface) = 0;
+
   /**
    * \returns the number of entries in the multicast routing table.
    */
@@ -282,6 +303,7 @@ public:
    * make sure that it is never used during packet forwarding.
    */
   virtual uint32_t AddInterface (Ptr<NetDevice> device) = 0;
+
   /**
    * \returns the number of interfaces added by the user.
    */
@@ -346,39 +368,46 @@ public:
    * \param address address to associate to the underlying ipv4 interface
    */
   virtual void SetAddress (uint32_t i, Ipv4Address address) = 0;
+
   /**
    * \param i index of ipv4 interface
    * \param mask mask to associate to the underlying ipv4 interface
    */
   virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask) = 0;
+
   /**
    * \param i index of ipv4 interface
    * \returns the mask associated to the underlying ipv4 interface
    */
   virtual Ipv4Mask GetNetworkMask (uint32_t i) const = 0;
+
   /**
    * \param i index of ipv4 interface
    * \returns the address associated to the underlying ipv4 interface
    */
   virtual Ipv4Address GetAddress (uint32_t i) const = 0;
+
   /**
    * \param destination The IP address of a hypothetical destination.
    * \returns The IP address assigned to the interface that will be used
    * if we were to send a packet to destination.
    */
   virtual Ipv4Address GetSourceAddress (Ipv4Address destination) const = 0;
+
   /**
    * \param i index of ipv4 interface
    * \returns the Maximum Transmission Unit (in bytes) associated
    *          to the underlying ipv4 interface
    */
   virtual uint16_t GetMtu (uint32_t i) const = 0;
+
   /**
    * \param i index of ipv4 interface
    * \returns true if the underlying interface is in the "up" state,
    *          false otherwise.
    */
   virtual bool IsUp (uint32_t i) const = 0;
+
   /**
    * \param i index of ipv4 interface
    * 
@@ -386,6 +415,7 @@ public:
    * considered valid during ipv4 forwarding.
    */
   virtual void SetUp (uint32_t i) = 0;
+
   /**
    * \param i index of ipv4 interface
    *
@@ -393,7 +423,6 @@ public:
    * ignored during ipv4 forwarding.
    */
   virtual void SetDown (uint32_t i) = 0;
-  
 };
 
 } // namespace ns3 

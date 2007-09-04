@@ -101,15 +101,19 @@ Ipv4StaticRouting::AddMulticastRoute(Ipv4Address origin,
 }
 
 void 
-Ipv4StaticRouting::SetDefaultMulticastRoute(
-  Ipv4Address origin,
-  Ipv4Address group,
-  uint32_t inputInterface,
-  std::vector<uint32_t> outputInterfaces)
+Ipv4StaticRouting::SetDefaultMulticastRoute(uint32_t outputInterface)
 {
+  Ipv4Address origin = Ipv4Address::GetAny ();
+  Ipv4Address group = Ipv4Address::GetAny ();
+  uint32_t inputInterface = Ipv4RoutingProtocol::IF_INDEX_ANY;
+
+  std::vector<uint32_t> outputInterfaces (1);
+  outputInterfaces[0] = outputInterface;
+  
   Ipv4MulticastRoute *route = new Ipv4MulticastRoute ();
   *route = Ipv4MulticastRoute::CreateMulticastRoute (origin, group, 
     inputInterface, outputInterfaces);
+
   delete m_defaultMulticastRoute;
   m_defaultMulticastRoute = route;
 }
@@ -177,7 +181,7 @@ Ipv4StaticRouting::GetDefaultMulticastRoute () const
   return 0;
 }
 
-void 
+bool
 Ipv4StaticRouting::RemoveMulticastRoute(Ipv4Address origin,
                                         Ipv4Address group,
                                         uint32_t inputInterface)
@@ -196,9 +200,10 @@ Ipv4StaticRouting::RemoveMulticastRoute(Ipv4Address origin,
         {
           delete *i;
           m_multicastRoutes.erase (i);
-          return;
+          return true;
         }
     }
+  return false;
 }
 
 void 

@@ -356,17 +356,12 @@ Ipv4L3Protocol::AddMulticastRoute (Ipv4Address origin,
 }
 
 void 
-Ipv4L3Protocol::SetDefaultMulticastRoute (
-  Ipv4Address origin,
-  Ipv4Address group, 
-  uint32_t inputInterface,
-  std::vector<uint32_t> outputInterfaces)
+Ipv4L3Protocol::SetDefaultMulticastRoute (uint32_t outputInterface)
 {
-  NS_DEBUG("Ipv4L3Protocol::SetDefaultMulticastRoute (" << origin << ", " <<
-    group << ", " << inputInterface << ", " << &outputInterfaces << ")");
+  NS_DEBUG("Ipv4L3Protocol::SetDefaultMulticastRoute (" << outputInterface <<
+    ")");
 
-  m_staticRouting->SetDefaultMulticastRoute (origin, group, inputInterface,
-    outputInterfaces);
+  m_staticRouting->SetDefaultMulticastRoute (outputInterface);
 }
 
 uint32_t 

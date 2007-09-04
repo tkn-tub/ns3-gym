@@ -106,13 +106,9 @@ Ipv4Impl::AddMulticastRoute (Ipv4Address origin,
 }
 
 void
-Ipv4Impl::SetDefaultMulticastRoute (Ipv4Address origin, 
-                                    Ipv4Address group,
-                                    uint32_t inputInterface,
-                                    std::vector<uint32_t> outputInterfaces)
+Ipv4Impl::SetDefaultMulticastRoute (uint32_t outputInterface)
 {
-  m_ipv4->SetDefaultMulticastRoute (origin, group, inputInterface, 
-                                    outputInterfaces);
+  m_ipv4->SetDefaultMulticastRoute (outputInterface);
 }
 
 uint32_t 
