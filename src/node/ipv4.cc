@@ -74,6 +74,11 @@ GetIpv4RouteToDestination (Ptr<Node> node, Ipv4Route& route,
           route = tempRoute;
           return true;
         }
+      else if ( tempRoute.IsDefault () )
+        {
+          route = tempRoute;
+          return true;
+        }
     }
   return false;
 }
