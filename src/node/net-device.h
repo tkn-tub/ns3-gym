@@ -28,7 +28,7 @@
 #include "ns3/packet.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
-#include "mac-address.h"
+#include "address.h"
 
 namespace ns3 {
 
@@ -79,9 +79,9 @@ public:
   Ptr<Channel> GetChannel (void) const;
 
   /**
-   * \return the current MacAddress of this interface.
+   * \return the current Address of this interface.
    */
-  MacAddress GetAddress (void) const;
+  Address GetAddress (void) const;
   /**
    * \param mtu MTU value, in bytes, to set for the device
    * \return whether the MTU value was within legal bounds
@@ -137,7 +137,7 @@ public:
    * Calling this method is invalid if IsBroadcast returns
    * not true.
    */
-  MacAddress const &GetBroadcast (void) const;
+  Address const &GetBroadcast (void) const;
   /**
    * \return value of m_isMulticast flag
    */
@@ -154,11 +154,11 @@ public:
    *        is received.
    * 
    *  Called from higher layer to send packet into Network Device
-   *  to the specified destination MacAddress
+   *  to the specified destination Address
    * 
    * \return whether the Send operation succeeded 
    */
-  bool Send(Packet& p, const MacAddress& dest, uint16_t protocolNumber);
+  bool Send(const Packet& p, const Address& dest, uint16_t protocolNumber);
   /**
    * \returns the node base class which contains this network
    *          interface.
@@ -178,22 +178,35 @@ public:
   bool NeedsArp (void) const;
 
   /**
+   * \param device a pointer to the net device which is calling this callback
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   *        This protocol number is expected to be the same protocol number
+   *        given to the Send method by the user on the sender side.
+   * \param address the address of the sender
+   * \returns true if the callback could handle the packet successfully, false
+   *          otherwise.
+   */
+  typedef Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t,const Address &> ReceiveCallback;
+
+  /**
    * \param cb callback to invoke whenever a packet has been received and must
    *        be forwarded to the higher layers.
+   *
    */
-  void SetReceiveCallback (Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> cb);
+  void SetReceiveCallback (ReceiveCallback cb);
 
  protected:
   /**
    * \param node base class node pointer of device's node 
    * \param addr MAC address of this device.
    */
-  NetDevice(Ptr<Node> node, const MacAddress& addr);
+  NetDevice(Ptr<Node> node, const Address& addr);
   /**
    * Enable broadcast support. This method should be
    * called by subclasses from their constructor
    */
-  void EnableBroadcast (MacAddress broadcast);
+  void EnableBroadcast (Address broadcast);
   /**
    * Set m_isBroadcast flag to false
    */
@@ -230,6 +243,7 @@ public:
    * \param p packet sent from below up to Network Device
    * \param param Extra parameter extracted from header and needed by
    * some protocols
+   * \param address the address of the sender of this packet.
    * \returns true if the packet was forwarded successfully,
    *          false otherwise.
    *
@@ -237,7 +251,7 @@ public:
    * forwards it to the higher layers by calling this method
    * which is responsible for passing it up to the Rx callback.
    */
-  bool ForwardUp (Packet& p, uint32_t param);
+  bool ForwardUp (const Packet& p, uint16_t param, const Address &address);
 
 
   /**
@@ -247,8 +261,6 @@ public:
    * at the end of their own DoDispose method.
    */
   virtual void DoDispose (void);
-
-  Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> m_receiveCallback;
 
  private:
   /**
@@ -262,7 +274,7 @@ public:
    * method.  When the link is Up, this method is invoked to ask 
    * subclasses to forward packets. Subclasses MUST override this method.
    */
-  virtual bool SendTo (Packet& p, const MacAddress &dest, uint16_t protocolNumber) = 0;
+  virtual bool SendTo (const Packet& p, const Address &dest, uint16_t protocolNumber) = 0;
   /**
    * \returns true if this NetDevice needs the higher-layers
    *          to perform ARP over it, false otherwise.
@@ -289,14 +301,15 @@ public:
   Ptr<Node>     m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
-  MacAddress    m_address;
-  MacAddress    m_broadcast;
+  Address       m_address;
+  Address       m_broadcast;
   uint16_t      m_mtu;
   bool          m_isUp;
   bool          m_isBroadcast;
   bool          m_isMulticast;
   bool          m_isPointToPoint;
   Callback<void> m_linkChangeCallback;
+  ReceiveCallback m_receiveCallback;
 };
 
 }; // namespace ns3

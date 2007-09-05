@@ -22,7 +22,7 @@
 // George F. Riley, Georgia Tech, Spring 2007
 // Adapted from ApplicationOnOff in GTNetS.
 
-#include "ns3/ipv4-address.h"
+#include "ns3/address.h"
 #include "ns3/node.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
@@ -31,6 +31,7 @@
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/default-value.h"
+#include "ns3/packet.h"
 #include "onoff-application.h"
 
 using namespace std;
@@ -47,22 +48,20 @@ static NumericDefaultValue<uint32_t> g_defaultSize ("OnOffApplicationPacketSize"
 // Constructors
 
 OnOffApplication::OnOffApplication(Ptr<Node> n, 
-                                   const Ipv4Address  rip,
-                                   uint16_t rport,
+                                   const Address &remote,
                                    std::string iid,
                                    const  RandomVariable& ontime,
                                    const  RandomVariable& offtime)
   :  Application(n),
      m_cbrRate (g_defaultRate.GetValue ())
 {
-  Construct (n, rip, rport, iid,
+  Construct (n, remote, iid,
              ontime, offtime, 
              g_defaultSize.GetValue ());
 }
 
 OnOffApplication::OnOffApplication(Ptr<Node> n, 
-                                   const Ipv4Address  rip,
-                                   uint16_t rport,
+                                   const Address &remote,
                                    std::string iid,
                                    const  RandomVariable& ontime,
                                    const  RandomVariable& offtime,
@@ -71,22 +70,20 @@ OnOffApplication::OnOffApplication(Ptr<Node> n,
   :  Application(n),
      m_cbrRate (rate)
 {
-  Construct (n, rip, rport, iid, 
+  Construct (n, remote, iid, 
              ontime, offtime, size);
 }
 
 void
 OnOffApplication::Construct (Ptr<Node> n, 
-                             const Ipv4Address  rip,
-                             uint16_t rport,
+                             const Address &remote,
                              std::string iid,
                              const  RandomVariable& onTime,
                              const  RandomVariable& offTime,
                              uint32_t size)
 {
   m_socket = 0;
-  m_peerIp = rip;
-  m_peerPort = rport;
+  m_peer = remote;
   m_connected = false;
   m_onTime = onTime.Copy ();
   m_offTime = offTime.Copy ();
@@ -144,7 +141,7 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
       Ptr<SocketFactory> socketFactory = GetNode ()->QueryInterface<SocketFactory> (iid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
-      m_socket->Connect (m_peerIp, m_peerPort);
+      m_socket->Connect (m_peer);
     }
   // Insure no pending event
   StopApplication();
@@ -209,7 +206,7 @@ void OnOffApplication::ScheduleStopEvent()
 void OnOffApplication::SendPacket()
 {
   NS_ASSERT (m_sendEvent.IsExpired ());
-  m_socket->Send(0, m_pktSize);
+  m_socket->Send(Packet (m_pktSize));
   m_totBytes += m_pktSize;
   m_lastStartTime = Simulator::Now();
   m_residualBits = 0;

@@ -22,7 +22,7 @@
 #define POINT_TO_POINT_NET_DEVICE_H
 
 #include <string.h>
-#include "ns3/mac-address.h"
+#include "ns3/address.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
@@ -37,6 +37,14 @@ namespace ns3 {
 
 class Queue;
 class PointToPointChannel;
+
+class PointToPointTraceType : public TraceContextElement
+{
+public:
+  PointToPointTraceType ();
+  void Print (std::ostream &os) const;
+  static uint16_t GetUid (void);
+};
 
 /**
  * \class PointToPointNetDevice
@@ -63,14 +71,6 @@ class PointToPointChannel;
  */
 class PointToPointNetDevice : public NetDevice {
 public:
-  /**
-   * Enumeration of the types of traces supported in the class.
-   *
-   */
-  enum TraceType {
-    QUEUE, /**< Trace queue events on the attached queue */
-    RX,    /**< Trace packet reception events (from the channel) */
-  };
   /**
    * Construct a PointToPointNetDevice
    *
@@ -175,7 +175,6 @@ protected:
   virtual Ptr<Channel> DoGetChannel(void) const;
   /**
    * Set a new default data rate
-   * @param Data rate to set for new default
    */
   static void SetDefaultRate(const DataRate&);
 
@@ -191,7 +190,7 @@ private:
    * Adds the necessary headers and trailers to a packet of data in order to
    * respect the protocol implemented by the agent.
    */
-  void AddHeader(Packet& p, const MacAddress& dest, uint16_t protocolNumber);
+  void AddHeader(Packet& p, uint16_t protocolNumber);
   /**
    * Removes, from a packet of data, all headers and trailers that
    * relate to the protocol implemented by the agent
@@ -208,11 +207,11 @@ private:
    *
    * @see NetDevice
    * @param p a reference to the packet to send
-   * @param dest a reference to the MacAddress of the destination device
+   * @param dest a reference to the Address of the destination device
    * @param protocolNumber Protocol Number used to find protocol touse
    * @returns true if success, false on failure
    */
-  virtual bool SendTo (Packet& p, const MacAddress& dest, 
+  virtual bool SendTo (const Packet& p, const Address& dest, 
                        uint16_t protocolNumber);
   /**
    * Start Sending a Packet Down the Wire.
@@ -291,7 +290,7 @@ private:
    * @see class CallBackTraceSource
    * @see class TraceResolver
    */
-  CallbackTraceSource<Packet &> m_rxTrace;
+  CallbackTraceSource<const Packet &> m_rxTrace;
   /** 
    * Default data rate.  Used for all newly created p2p net devices
    */

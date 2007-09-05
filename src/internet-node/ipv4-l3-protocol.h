@@ -25,12 +25,11 @@
 #include <list>
 #include <stdint.h>
 #include "ns3/callback-trace-source.h"
-#include "ns3/array-trace-resolver.h"
+#include "ns3/trace-context-element.h"
 #include "ns3/ipv4-address.h"
-#include "ipv4-header.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4.h"
-#include "l3-protocol.h"
+#include "ipv4-header.h"
 #include "ipv4-static-routing.h"
 
 namespace ns3 {
@@ -45,19 +44,43 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
-
-class Ipv4L3Protocol : public L3Protocol 
+class Ipv4L3ProtocolTraceContextElement : public TraceContextElement
 {
 public:
-  static const uint16_t PROT_NUMBER;
-
-  enum TraceType {
+  enum Type {
     TX,
     RX,
     DROP,
-    INTERFACES,
   };
-  typedef ArrayTraceResolver<Ipv4Interface>::Index InterfaceIndex;
+  Ipv4L3ProtocolTraceContextElement ();
+  Ipv4L3ProtocolTraceContextElement (enum Type type);
+  bool IsTx (void) const;
+  bool IsRx (void) const;
+  bool IsDrop (void) const;
+  void Print (std::ostream &os) const;
+  static uint16_t GetUid (void);
+private:
+  enum Type m_type;
+};
+
+class Ipv4l3ProtocolInterfaceIndex : public TraceContextElement
+{
+public:
+  Ipv4l3ProtocolInterfaceIndex ();
+  Ipv4l3ProtocolInterfaceIndex (uint32_t index);
+  uint32_t Get (void) const;
+  void Print (std::ostream &os) const;
+  static uint16_t GetUid (void);
+private:
+  uint32_t m_index;
+};
+
+
+class Ipv4L3Protocol : public Object
+{
+public:
+  static const InterfaceId iid;
+  static const uint16_t PROT_NUMBER;
 
   Ipv4L3Protocol(Ptr<Node> node);
   virtual ~Ipv4L3Protocol ();
@@ -95,7 +118,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  virtual void Receive(Packet& p, Ptr<NetDevice> device);
+  void Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from);
 
   /**
    * \param packet packet to send

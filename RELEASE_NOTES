@@ -3,12 +3,16 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
-Release 3.0.5 (2007/08/XX)
+Release 3.0.5 (2007/08/15)
 ========================
 
-  - Add CSMA/CD model (Emmanuelle Laprise)
-  - Modularize ipv4 routing support (Gustavo Carneiro)
-  - Add mobility framework and basic mobility models
+  - Refactoring to support win32-based unix environments (Cygwin, mingw)
+  - "Packet socket" for allowing applications to access NetDevices directly
+  - Generalized, polymorphic Address class
+  - Add CSMA NetDevice model (from Emmanuelle Laprise)
+  - Modularize IPv4 routing support (from Gustavo Carneiro)
+  - Add mobility framework and basic mobility models 
+  - Global unicast centralized routing 
 
 Release 3.0.4 (2007/07/15)
 ========================

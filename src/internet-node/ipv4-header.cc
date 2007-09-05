@@ -28,7 +28,16 @@ NS_DEBUG_COMPONENT_DEFINE ("Ipv4Header");
 
 namespace ns3 {
 
+NS_HEADER_ENSURE_REGISTERED (Ipv4Header);
+
 bool Ipv4Header::m_calcChecksum = false;
+
+uint32_t
+Ipv4Header::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<Ipv4Header> ("Ipv4Header.ns3");
+  return uid;
+}
 
 Ipv4Header::Ipv4Header ()
   : m_payloadSize (0),
@@ -39,8 +48,6 @@ Ipv4Header::Ipv4Header ()
     m_flags (0),
     m_fragmentOffset (0),
     m_goodChecksum (true)
-{}
-Ipv4Header::~Ipv4Header ()
 {}
 
 void 
@@ -180,13 +187,13 @@ Ipv4Header::IsChecksumOk (void) const
 }
 
 std::string 
-Ipv4Header::DoGetName (void) const
+Ipv4Header::GetName (void) const
 {
   return "IPV4";
 }
 
 void 
-Ipv4Header::PrintTo (std::ostream &os) const
+Ipv4Header::Print (std::ostream &os) const
 {
   // ipv4, right ?
   std::string flags;
@@ -229,7 +236,7 @@ Ipv4Header::GetSerializedSize (void) const
 }
 
 void
-Ipv4Header::SerializeTo (Buffer::Iterator start) const
+Ipv4Header::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   
@@ -272,7 +279,7 @@ Ipv4Header::SerializeTo (Buffer::Iterator start) const
     }
 }
 uint32_t
-Ipv4Header::DeserializeFrom (Buffer::Iterator start)
+Ipv4Header::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   uint8_t verIhl = i.ReadU8 ();

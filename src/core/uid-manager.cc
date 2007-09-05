@@ -20,6 +20,7 @@
  */
 #include "uid-manager.h"
 #include "ns3/fatal-error.h"
+#include "ns3/assert.h"
 
 
 namespace ns3 {

@@ -100,8 +100,11 @@ public:
 
   uint32_t GetUid (void) const;
 
-  void PrintDefault (std::ostream &os, Buffer buffer) const;
   void Print (std::ostream &os, Buffer buffer, PacketPrinter const &printer) const;
+
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator i, uint32_t size) const;
+  uint32_t Deserialize (Buffer::Iterator i);
 
   static void PrintStats (void);
 
@@ -254,26 +257,26 @@ template <typename T>
 void 
 PacketMetadata::AddHeader (T const &header, uint32_t size)
 {
-  DoAddHeader (PacketPrinter::GetHeaderUid<T> (), size);
+  DoAddHeader (T::GetUid () << 1, size);
 }
 
 template <typename T>
 void 
 PacketMetadata::RemoveHeader (T const &header, uint32_t size)
 {
-  DoRemoveHeader (PacketPrinter::GetHeaderUid<T> (), size);
+  DoRemoveHeader (T::GetUid () << 1, size);
 }
 template <typename T>
 void 
 PacketMetadata::AddTrailer (T const &trailer, uint32_t size)
 {
-  DoAddTrailer (PacketPrinter::GetTrailerUid<T> (), size);
+  DoAddTrailer (T::GetUid () << 1, size);
 }
 template <typename T>
 void 
 PacketMetadata::RemoveTrailer (T const &trailer, uint32_t size)
 {
-  DoRemoveTrailer (PacketPrinter::GetTrailerUid<T> (), size);
+  DoRemoveTrailer (T::GetUid () << 1, size);
 }
 
 
@@ -303,24 +306,23 @@ PacketMetadata::PacketMetadata (PacketMetadata const &o)
 PacketMetadata &
 PacketMetadata::operator = (PacketMetadata const& o)
 {
-  if (m_data == o.m_data) 
+  if (m_data != o.m_data) 
     {
-      // self assignment
-      return *this;
+      // not self assignment
+      NS_ASSERT (m_data != 0);
+      m_data->m_count--;
+      if (m_data->m_count == 0) 
+        {
+          PacketMetadata::Recycle (m_data);
+        }
+      m_data = o.m_data;
+      NS_ASSERT (m_data != 0);
+      m_data->m_count++;
     }
-  NS_ASSERT (m_data != 0);
-  m_data->m_count--;
-  if (m_data->m_count == 0) 
-    {
-      PacketMetadata::Recycle (m_data);
-    }
-  m_data = o.m_data;
   m_head = o.m_head;
   m_tail = o.m_tail;
   m_used = o.m_used;
   m_packetUid = o.m_packetUid;
-  NS_ASSERT (m_data != 0);
-  m_data->m_count++;
   return *this;
 }
 PacketMetadata::~PacketMetadata ()

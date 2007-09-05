@@ -1,22 +1,20 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    common = bld.create_obj('cpp', 'shlib')
-    common.name = 'ns3-common'
-    common.target = common.name
-    common.uselib_local = ['ns3-core', 'ns3-simulator']
+    common = bld.create_ns3_module('common', ['core', 'simulator'])
     common.source = [
         'buffer.cc',
-        'chunk.cc',
-        'header.cc',
-        'trailer.cc',
+        'chunk-registry.cc',
         'packet-printer.cc',
         'packet-metadata.cc',
+        'packet-metadata-test.cc',
         'packet.cc',
         'tags.cc',
+        'tag-registry.cc',
         'pcap-writer.cc',
         'variable-tracer-test.cc',
         'trace-context.cc',
+        'trace-context-element.cc',
         'trace-resolver.cc',
         'callback-trace-source.cc',
         'empty-trace-resolver.cc',
@@ -28,10 +26,12 @@ def build(bld):
     headers = bld.create_obj('ns3header')
     headers.source = [
         'buffer.h',
-        'chunk.h',
+        'chunk-registry.h',
         'header.h',
         'trailer.h',
         'tags.h',
+        'tag-registry.h',
+        'tag.h',
         'packet.h',
         'packet-printer.h',
         'packet-metadata.h',
@@ -41,6 +41,7 @@ def build(bld):
         'pcap-writer.h',
         'callback-trace-source.h',
         'trace-context.h',
+        'trace-context-element.h',
         'trace-resolver.h',
         'empty-trace-resolver.h',
         'composite-trace-resolver.h',

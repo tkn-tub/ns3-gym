@@ -47,11 +47,7 @@ def configure(conf):
 
 
 def build(bld):
-    sim = bld.create_obj('cpp', 'shlib')
-    sim.name = 'ns3-simulator'
-    sim.target = sim.name
-    sim.uselib_local = ['ns3-core']
-
+    sim = bld.create_ns3_module('simulator', ['core'])
     sim.source = [
         'high-precision.cc',
         'time.cc',

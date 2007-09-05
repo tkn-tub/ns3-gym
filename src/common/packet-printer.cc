@@ -20,12 +20,13 @@
  */
 
 #include "packet-printer.h"
+#include "chunk-registry.h"
 
 namespace ns3 {
 
 PacketPrinter::PacketPrinter ()
   : m_forward (true),
-    m_separator ("")
+    m_separator (" ")
 {}
 
 void 
@@ -44,44 +45,10 @@ PacketPrinter::SetSeparator (std::string separator)
   m_separator = separator;
 }
 void 
-PacketPrinter::AddPayloadPrinter (PayloadPrinter printer)
+PacketPrinter::SetPayloadPrinter (PayloadPrinter printer)
 {
   m_payloadPrinter = printer;
 }
-void 
-PacketPrinter::AddDefaultPrinter (DefaultPrinter printer)
-{
-  m_defaultPrinter = printer;
-}
-
-PacketPrinter::RegisteredChunks *
-PacketPrinter::GetRegisteredChunks (void)
-{
-  static RegisteredChunks registeredChunks;
-  return &registeredChunks;
-}
-
-PacketPrinter 
-PacketPrinter::GetDefault (void)
-{
-  return *(PacketPrinter::PeekDefault ());
-}
-PacketPrinter *
-PacketPrinter::PeekDefault (void)
-{
-  static PacketPrinter *tmp = PacketPrinter::CreateStaticDefault ();
-  return tmp;
-}
-PacketPrinter *
-PacketPrinter::CreateStaticDefault (void)
-{
-  static PacketPrinter tmp;
-  tmp.PrintForward ();
-  tmp.AddPayloadPrinter (MakeCallback (&PacketPrinter::DoDefaultPrintPayload));
-  tmp.SetSeparator (" ");
-  return &tmp;
-}
-
 
 void 
 PacketPrinter::PrintChunk (uint32_t chunkUid, 
@@ -90,26 +57,22 @@ PacketPrinter::PrintChunk (uint32_t chunkUid,
                            uint32_t packetUid,
                            uint32_t size) const
 {
-  RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  NS_ASSERT (chunkUid >= 1 && chunkUid/2 <= registeredChunks->size ());
+  uint8_t *instance = ChunkRegistry::GetStaticInstance (chunkUid);
+  ChunkRegistry::Deserialize (chunkUid, instance, start);
+
   for (PrinterList::const_iterator i = m_printerList.begin (); i != m_printerList.end (); i++)
     {
       if (i->m_chunkUid == chunkUid)
         {
-          DoPrintCallback cb = (*registeredChunks)[chunkUid/2-1].printCallback;
-          cb (i->m_printer, start, os, packetUid, size);
+          ChunkRegistry::InvokePrintCallback (chunkUid, instance, os, packetUid, size, i->m_printer);
           return;
         }
     }
-  DoGetNameCallback cb = (*registeredChunks)[chunkUid/2-1].getNameCallback;
-  std::string name = cb ();
-  struct PacketPrinter::FragmentInformation info;
-  info.start = 0;
-  info.end = 0;
-  if (!m_defaultPrinter.IsNull ())
-    {
-      m_defaultPrinter (os, packetUid, size, name, info);
-    }
+  // if the over did not override this type of chunk,
+  // we print something by default.
+  std::string name = ChunkRegistry::GetName (chunkUid, instance);
+  os << name;
+  ChunkRegistry::Print (chunkUid, instance, os);
 }
 void 
 PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
@@ -119,10 +82,8 @@ PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
                                    uint32_t fragmentStart,
                                    uint32_t fragmentEnd) const
 {
-  RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  NS_ASSERT (chunkUid >= 1 && chunkUid/2 <= registeredChunks->size ());
-  DoGetNameCallback cb = (*registeredChunks)[chunkUid/2-1].getNameCallback;
-  std::string name = cb ();
+  uint8_t *instance = ChunkRegistry::GetStaticInstance (chunkUid);
+  std::string name = ChunkRegistry::GetName (chunkUid, instance);
   struct PacketPrinter::FragmentInformation info;
   info.start = fragmentStart;
   info.end = fragmentEnd;
@@ -130,14 +91,20 @@ PacketPrinter::PrintChunkFragment (uint32_t chunkUid,
     {
       if (i->m_chunkUid == chunkUid)
         {
+
           i->m_fragmentPrinter (os, packetUid, size, name, info);
           return;
         }
     }
-  if (!m_defaultPrinter.IsNull ())
-    {
-      m_defaultPrinter (os, packetUid, size, name, info);
-    }
+  // if the user did not override this type of chunk,
+  // we print something by default.
+  NS_ASSERT (info.start != 0 || info.end != 0);
+  os << name << " "
+     << "("
+     << "length " << size - (info.end + info.start) << " "
+     << "trim_start " << info.start << " "
+     << "trim_end " << info.end
+     << ")";
 }
 void 
 PacketPrinter::PrintPayload (std::ostream &os, uint32_t packetUid, uint32_t size,
@@ -149,15 +116,10 @@ PacketPrinter::PrintPayload (std::ostream &os, uint32_t packetUid, uint32_t size
   if (!m_payloadPrinter.IsNull ())
     {
       m_payloadPrinter (os, packetUid, size, info);
+      return;
     }
-}
-
-void 
-PacketPrinter::DoDefaultPrintPayload (std::ostream & os,
-                                      uint32_t packetUid,
-                                      uint32_t size,
-                                      struct PacketPrinter::FragmentInformation info)
-{
+  // if the user did not override the payload printer,
+  // we print something anyway.
   os << "DATA ("
      << "length " << size - (info.end + info.start);
   if (info.start != 0 || info.end != 0)
@@ -167,69 +129,7 @@ PacketPrinter::DoDefaultPrintPayload (std::ostream & os,
          << "trim_end " << info.end;
     }
   os << ")";
-}
 
-void 
-PacketPrinter::DoDefaultPrintDefault (std::ostream & os,
-                                      uint32_t packetUid,
-                                      uint32_t size,
-                                      std::string &name,
-                                      struct PacketPrinter::FragmentInformation info)
-{
-  NS_ASSERT_MSG (false, "This should never happen because we provide a printer for _all_ chunk types.");
 }
-
-void 
-PacketPrinter::DoDefaultPrintFragment (std::ostream & os,
-                                       uint32_t packetUid,
-                                       uint32_t size,
-                                       std::string &name,
-                                       struct PacketPrinter::FragmentInformation info)
-{
-  NS_ASSERT (info.start != 0 || info.end != 0);
-  os << name << " "
-     << "("
-     << "length " << size - (info.end + info.start) << " "
-     << "trim_start " << info.start << " "
-     << "trim_end " << info.end
-     << ")"
-    ;
-}
-
-void
-PacketPrinter::DoAddPrinter (uint32_t uid,
-                             Ptr<CallbackImplBase> printer,
-                             Callback<void,
-                             std::ostream &, 
-                             uint32_t, 
-                             uint32_t, 
-                             std::string &,
-                             struct PacketPrinter::FragmentInformation> fragmentPrinter)
-{
-  struct PacketPrinter::Printer p;
-  p.m_chunkUid = uid;
-  p.m_printer = printer;
-  p.m_fragmentPrinter = fragmentPrinter;
-  m_printerList.push_back (p);
-}
-
-bool 
-PacketPrinter::IsTrailer (uint32_t uid)
-{
-  RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  NS_ASSERT (uid >= 1 && uid/2 <= registeredChunks->size ());
-  bool isHeader = (*registeredChunks)[uid/2-1].isHeader;
-  return !isHeader;
-}
-bool 
-PacketPrinter::IsHeader (uint32_t uid)
-{
-  RegisteredChunks *registeredChunks = PacketPrinter::GetRegisteredChunks ();
-  NS_ASSERT (uid >= 1 && uid/2 <= registeredChunks->size ());
-  bool isHeader = (*registeredChunks)[uid/2-1].isHeader;
-  return isHeader;
-}
-
-
 
 } // namespace ns3

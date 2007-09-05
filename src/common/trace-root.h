@@ -328,9 +328,6 @@ public:
                         Callback<TraceResolver *,TraceContext const &> createResolver);
 private:
   static CompositeTraceResolver *GetComposite (void);
-  enum TraceType {
-    NOTHING,
-  };
 };
 
 }// namespace ns3

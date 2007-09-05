@@ -170,7 +170,7 @@ SchedulerHeap::Smallest (uint32_t a, uint32_t b) const
 }
 
 bool
-SchedulerHeap::RealIsEmpty (void) const
+SchedulerHeap::IsEmpty (void) const
 {
   return (m_heap.size () == 1)?true:false;
 }
@@ -223,9 +223,11 @@ SchedulerHeap::TopDown (uint32_t start)
 
 
 void
-SchedulerHeap::RealInsert (EventId id)
+SchedulerHeap::Insert (const EventId &id)
 {
-  EventImpl *event = id.GetEventImpl ();
+  // acquire single ref
+  EventImpl *event = id.PeekEventImpl ();
+  event->Ref ();
   Scheduler::EventKey key;
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
@@ -234,29 +236,34 @@ SchedulerHeap::RealInsert (EventId id)
 }
 
 EventId
-SchedulerHeap::RealPeekNext (void) const
+SchedulerHeap::PeekNext (void) const
 {
   std::pair<EventImpl *,Scheduler::EventKey> next = m_heap[Root ()];
   return EventId (next.first, next.second.m_ts, next.second.m_uid);
 }
-void     
-SchedulerHeap::RealRemoveNext (void)
+EventId
+SchedulerHeap::RemoveNext (void)
 {
+  std::pair<EventImpl *,Scheduler::EventKey> next = m_heap[Root ()];
   Exch (Root (), Last ());
   m_heap.pop_back ();
   TopDown (Root ());
+  return EventId (Ptr<EventImpl> (next.first, false), next.second.m_ts, next.second.m_uid);
 }
 
 
 bool
-SchedulerHeap::RealRemove (EventId id)
+SchedulerHeap::Remove (const EventId &id)
 {
   uint32_t uid = id.GetUid ();
   for (uint32_t i = 1; i < m_heap.size (); i++)
     {
       if (uid == m_heap[i].second.m_uid)
         {
-          NS_ASSERT (m_heap[i].first == id.GetEventImpl ());
+          NS_ASSERT (m_heap[i].first == id.PeekEventImpl ());
+          std::pair<EventImpl *,Scheduler::EventKey> next = m_heap[i];
+          // release single ref
+          next.first->Unref ();
           Exch (i, Last ());
           m_heap.pop_back ();
           TopDown (i);

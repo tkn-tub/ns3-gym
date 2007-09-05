@@ -27,33 +27,4 @@ namespace ns3 {
 Scheduler::~Scheduler () 
 {}
 
-void
-Scheduler::Insert (EventId id)
-{
-  return RealInsert (id);
-}
-bool 
-Scheduler::IsEmpty (void) const
-{
-  return RealIsEmpty ();
-}
-EventId
-Scheduler::PeekNext (void) const
-{
-  NS_ASSERT (!RealIsEmpty ());
-  return RealPeekNext ();
-}
-void 
-Scheduler::RemoveNext (void)
-{
-  NS_ASSERT (!RealIsEmpty ());
-  return RealRemoveNext ();
-}
-bool
-Scheduler::Remove (EventId id)
-{
-  NS_ASSERT (!RealIsEmpty ());
-  return RealRemove (id);
-}
-
 }; // namespace ns3

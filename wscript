@@ -2,12 +2,13 @@
 import sys
 import shlex
 import shutil
+import types
+import optparse
+import os.path
 
 import Params
 import Object
 import pproc as subprocess
-import optparse
-import os.path
 
 Params.g_autoconfig = 1
 
@@ -36,7 +37,7 @@ def set_options(opt):
 
     opt.add_option('-d', '--debug-level',
                    action='callback',
-                   type=str, dest='debug_level', default='debug',
+                   type="string", dest='debug_level', default='debug',
                    help=('Specify the debug level, does nothing if CFLAGS is set'
                          ' in the environment. [Allowed Values: debug, optimized].'
                          ' WARNING: this option only has effect '
@@ -135,14 +136,33 @@ def configure(conf):
     conf.sub_config('src')
 
 
+def create_ns3_program(bld, name, dependencies=('simulator',)):
+    program = bld.create_obj('cpp', 'program')
+    program.name = name
+    program.target = program.name
+    program.uselib_local = 'ns3'
+    return program
+
+
 def build(bld):
+    print "Entering directory `%s/build'" % Params.g_build.m_curdirnode.abspath()
+    Params.g_cwd_launch = Params.g_build.m_curdirnode.abspath()
+
+    bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
+
     variant_name = bld.env_of_name('default')['NS3_ACTIVE_VARIANT']
     variant_env = bld.env_of_name(variant_name)
     bld.m_allenvs['default'] = variant_env # switch to the active variant
 
     if Params.g_options.shell:
         run_shell()
-        return
+        raise SystemExit(0)
+
+    if Params.g_options.doxygen:
+        doxygen()
+        raise SystemExit(0)
+
+    check_shell()
 
     if Params.g_options.doxygen:
         doxygen()
@@ -152,6 +172,11 @@ def build(bld):
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples')
 
+    ## Create a single ns3 library containing all modules
+    lib = bld.create_obj('cpp', 'shlib')
+    lib.name = 'ns3'
+    lib.target = 'ns3'
+    lib.add_objects = list(bld.env_of_name('default')['NS3_MODULES'])
 
 def shutdown():
     #import UnitTest
@@ -193,34 +218,32 @@ def _find_program(program_name, env):
     raise ValueError("program '%s' not found; available programs are: %r"
                      % (program_name, found_programs))
 
-def _run_argv(argv):
+def _run_argv(argv, os_env=None):
     env = Params.g_build.env_of_name('default')
     if sys.platform == 'linux2':
         pathvar = 'LD_LIBRARY_PATH'
-        pathsep = ':'
     elif sys.platform == 'darwin':
         pathvar = 'DYLD_LIBRARY_PATH'
-        pathsep = ':'
     elif sys.platform == 'win32':
         pathvar = 'PATH'
-        pathsep = ';'
     elif sys.platform == 'cygwin':
         pathvar = 'PATH'
-        pathsep = ':'
     else:
         Params.warning(("Don't know how to configure "
                         "dynamic library path for the platform '%s'") % (sys.platform,))
         pathvar = None
-        pathsep = None
 
-    os_env = dict(os.environ)
+    proc_env = dict(os.environ)
+    if os_env is not None:
+        proc_env.update(os_env)
+
     if pathvar is not None:
-        if pathvar in os_env:
-            os_env[pathvar] = pathsep.join([os_env[pathvar]] + list(env['NS3_MODULE_PATH']))
+        if pathvar in proc_env:
+            proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']) + [proc_env[pathvar]])
         else:
-            os_env[pathvar] = pathsep.join(list(env['NS3_MODULE_PATH']))
+            proc_env[pathvar] = os.pathsep.join(list(env['NS3_MODULE_PATH']))
 
-    retval = subprocess.Popen(argv, env=os_env).wait()
+    retval = subprocess.Popen(argv, env=proc_env).wait()
     if retval:
         Params.fatal("Command %s exited with code %i" % (argv, retval))
 
@@ -274,13 +297,33 @@ def run_program(program_string, command_template=None):
 
     return retval
 
+def check_shell():
+    if 'NS3_MODULE_PATH' not in os.environ:
+        return
+    env = Params.g_build.env_of_name('default')
+    correct_modpath = os.pathsep.join(env['NS3_MODULE_PATH'])
+    found_modpath = os.environ['NS3_MODULE_PATH']
+    if found_modpath != correct_modpath:
+        msg = ("Detected shell (waf --shell) with incorrect configuration\n"
+               "=========================================================\n"
+               "Possible reasons for this problem:\n"
+               "  1. You switched to another ns-3 tree from inside this shell\n"
+               "  2. You switched ns-3 debug level (waf configure --debug)\n"
+               "  3. You modified the list of built ns-3 modules\n"
+               "You should correct this situation before running any program.  Possible solutions:\n"
+               "  1. Exit this shell, and start a new one\n"
+               "  2. Run a new nested shell")
+        Params.fatal(msg)
+
 
 def run_shell():
     if sys.platform == 'win32':
         shell = os.environ.get("COMSPEC", "cmd.exe")
     else:
         shell = os.environ.get("SHELL", "/bin/sh")
-    _run_argv([shell])
+
+    env = Params.g_build.env_of_name('default')
+    _run_argv([shell], {'NS3_MODULE_PATH': os.pathsep.join(env['NS3_MODULE_PATH'])})
 
 
 def doxygen():

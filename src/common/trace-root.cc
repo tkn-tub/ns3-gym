@@ -41,7 +41,7 @@ TraceRoot::Register (std::string name,
                      Callback<TraceResolver *,TraceContext const &> createResolver)
 {
   CompositeTraceResolver *resolver = GetComposite ();
-  resolver->Add (name, createResolver, TraceRoot::NOTHING);
+  resolver->Add (name, createResolver);
 }
 
 CompositeTraceResolver *

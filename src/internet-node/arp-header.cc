@@ -25,13 +25,19 @@
 
 namespace ns3 {
 
-ArpHeader::~ArpHeader ()
-{}
+NS_HEADER_ENSURE_REGISTERED (ArpHeader);
+
+uint32_t
+ArpHeader::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<ArpHeader> ("ArpHeader.ns3");
+  return uid;
+}
 
 void 
-ArpHeader::SetRequest (MacAddress sourceHardwareAddress,
+ArpHeader::SetRequest (Address sourceHardwareAddress,
                        Ipv4Address sourceProtocolAddress,
-                       MacAddress destinationHardwareAddress,
+                       Address destinationHardwareAddress,
                        Ipv4Address destinationProtocolAddress)
 {
   m_type = ARP_TYPE_REQUEST;
@@ -41,9 +47,9 @@ ArpHeader::SetRequest (MacAddress sourceHardwareAddress,
   m_ipv4Dest = destinationProtocolAddress;
 }
 void 
-ArpHeader::SetReply (MacAddress sourceHardwareAddress,
+ArpHeader::SetReply (Address sourceHardwareAddress,
                      Ipv4Address sourceProtocolAddress,
-                     MacAddress destinationHardwareAddress,
+                     Address destinationHardwareAddress,
                      Ipv4Address destinationProtocolAddress)
 {
   m_type = ARP_TYPE_REPLY;
@@ -62,12 +68,12 @@ ArpHeader::IsReply (void) const
 {
   return (m_type == ARP_TYPE_REPLY)?true:false;
 }
-MacAddress 
+Address 
 ArpHeader::GetSourceHardwareAddress (void)
 {
   return m_macSource;
 }
-MacAddress 
+Address 
 ArpHeader::GetDestinationHardwareAddress (void)
 {
   return m_macDest;
@@ -84,13 +90,13 @@ ArpHeader::GetDestinationIpv4Address (void)
 }
 
 std::string 
-ArpHeader::DoGetName (void) const
+ArpHeader::GetName (void) const
 {
   return "ARP";
 }
 
 void 
-ArpHeader::PrintTo (std::ostream &os) const
+ArpHeader::Print (std::ostream &os) const
 {
   if (IsRequest ()) 
     {
@@ -123,7 +129,7 @@ ArpHeader::GetSerializedSize (void) const
 }
 
 void
-ArpHeader::SerializeTo (Buffer::Iterator start) const
+ArpHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   NS_ASSERT (m_macSource.GetLength () == m_macDest.GetLength ());
@@ -141,7 +147,7 @@ ArpHeader::SerializeTo (Buffer::Iterator start) const
   WriteTo (i, m_ipv4Dest);
 }
 uint32_t
-ArpHeader::DeserializeFrom (Buffer::Iterator start)
+ArpHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   i.Next (2+2);

@@ -67,10 +67,12 @@ SchedulerList::IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b
 }
 
 void
-SchedulerList::RealInsert (EventId id)
+SchedulerList::Insert (const EventId &id)
 {
   Scheduler::EventKey key;
-  EventImpl *event = id.GetEventImpl ();
+  // acquire refcount on EventImpl
+  EventImpl *event = id.PeekEventImpl ();
+  event->Ref ();
   key.m_ts = id.GetTs ();
   key.m_uid = id.GetUid ();
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
@@ -84,31 +86,35 @@ SchedulerList::RealInsert (EventId id)
   m_events.push_back (std::make_pair (event, key));
 }
 bool 
-SchedulerList::RealIsEmpty (void) const
+SchedulerList::IsEmpty (void) const
 {
   return m_events.empty ();
 }
 EventId
-SchedulerList::RealPeekNext (void) const
+SchedulerList::PeekNext (void) const
 {
   std::pair<EventImpl *, EventKey> next = m_events.front ();
   return EventId (next.first, next.second.m_ts, next.second.m_uid);
 }
 
-void
-SchedulerList::RealRemoveNext (void)
+EventId
+SchedulerList::RemoveNext (void)
 {
+  std::pair<EventImpl *, EventKey> next = m_events.front ();
   m_events.pop_front ();
+  return EventId (Ptr<EventImpl> (next.first,false), next.second.m_ts, next.second.m_uid);
 }
 
 bool
-SchedulerList::RealRemove (EventId id)
+SchedulerList::Remove (const EventId &id)
 {
   for (EventsI i = m_events.begin (); i != m_events.end (); i++) 
     {
       if (i->second.m_uid == id.GetUid ())
         {
-          NS_ASSERT (id.GetEventImpl () == i->first);
+          NS_ASSERT (id.PeekEventImpl () == i->first);
+          // release single acquire ref.
+          i->first->Unref ();
           m_events.erase (i);
           return true;
         }

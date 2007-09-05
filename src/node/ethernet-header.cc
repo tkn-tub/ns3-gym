@@ -19,6 +19,8 @@
  * Author: Emmanuelle Laprise <emmanuelle.laprise@bluekazoo.ca>
  */
 
+#include <iomanip>
+#include <iostream>
 #include "ns3/assert.h"
 #include "ns3/debug.h"
 #include "ns3/header.h"
@@ -29,6 +31,15 @@ NS_DEBUG_COMPONENT_DEFINE ("EthernetHeader");
 
 namespace ns3 {
 
+NS_HEADER_ENSURE_REGISTERED (EthernetHeader);
+
+uint32_t
+EthernetHeader::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<EthernetHeader> ("EthernetHeader.ns3");
+  return uid;
+}
+
 EthernetHeader::EthernetHeader (bool hasPreamble)
   : m_enPreambleSfd (hasPreamble),
     m_lengthType (0)
@@ -37,9 +48,6 @@ EthernetHeader::EthernetHeader (bool hasPreamble)
 EthernetHeader::EthernetHeader ()
   : m_enPreambleSfd (false),
     m_lengthType (0)
-{}
-
-EthernetHeader::~EthernetHeader ()
 {}
 
 void 
@@ -65,22 +73,22 @@ EthernetHeader::GetPreambleSfd (void) const
 }
 
 void 
-EthernetHeader::SetSource (MacAddress source)
+EthernetHeader::SetSource (Eui48Address source)
 {
   m_source = source;
 }
-MacAddress
+Eui48Address
 EthernetHeader::GetSource (void) const
 {
   return m_source;
 }
 
 void 
-EthernetHeader::SetDestination (MacAddress dst)
+EthernetHeader::SetDestination (Eui48Address dst)
 {
   m_destination = dst;
 }
-MacAddress
+Eui48Address
 EthernetHeader::GetDestination (void) const
 {
   return m_destination;
@@ -99,21 +107,21 @@ EthernetHeader::GetHeaderSize (void) const
 }
 
 std::string
-EthernetHeader::DoGetName (void) const
+EthernetHeader::GetName (void) const
 {
   return "ETHERNET";
 }
 
 void 
-EthernetHeader::PrintTo (std::ostream &os) const
+EthernetHeader::Print (std::ostream &os) const
 {
   // ethernet, right ?
-  os << "(ethernet)";
   if (m_enPreambleSfd)
     {
       os << " preamble/sfd=" << m_preambleSfd << ",";
     }
-  os << " length/type=" << m_lengthType
+
+  os << " length/type=0x" << std::hex << m_lengthType << std::dec
      << ", source=" << m_source
      << ", destination=" << m_destination;
 }
@@ -123,13 +131,15 @@ EthernetHeader::GetSerializedSize (void) const
   if (m_enPreambleSfd)
     {
       return PREAMBLE_SIZE + LENGTH_SIZE + 2*MAC_ADDR_SIZE;
-    } else {
+    } 
+  else 
+    {
       return LENGTH_SIZE + 2*MAC_ADDR_SIZE;
     }
 }
 
 void
-EthernetHeader::SerializeTo (Buffer::Iterator start) const
+EthernetHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   
@@ -137,14 +147,12 @@ EthernetHeader::SerializeTo (Buffer::Iterator start) const
     {
       i.WriteU64(m_preambleSfd);
     }
-  NS_ASSERT (m_destination.GetLength () == MAC_ADDR_SIZE);
-  NS_ASSERT (m_source.GetLength () == MAC_ADDR_SIZE);
   WriteTo (i, m_destination);
   WriteTo (i, m_source);
   i.WriteU16 (m_lengthType);
 }
 uint32_t
-EthernetHeader::DeserializeFrom (Buffer::Iterator start)
+EthernetHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -153,11 +161,11 @@ EthernetHeader::DeserializeFrom (Buffer::Iterator start)
       m_enPreambleSfd = i.ReadU64 ();
     }
 
-  ReadFrom (i, m_destination, MAC_ADDR_SIZE);
-  ReadFrom (i, m_source, MAC_ADDR_SIZE);
+  ReadFrom (i, m_destination);
+  ReadFrom (i, m_source);
   m_lengthType = i.ReadU16 ();
 
   return GetSerializedSize ();
 }
 
-}; // namespace ns3
+} // namespace ns3

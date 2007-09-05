@@ -269,11 +269,11 @@ bool RngStream::CheckSeed (const uint32_t seed[6])
     }
     for (i = 3; i < 6; ++i) {
         if (seed[i] >= m2) {
-	  cout << "Seed[" << i << "] = " << seed[i] << endl; 
-            cerr << "*****************************************\n\n"
-                 << "ERROR: Seed[" << i << "] >= 4294944443, Seed is not set."
-                 << "\n\n*****************************************\n\n";
-            return (false);
+	  cerr << "Seed[" << i << "] = " << seed[i] << endl; 
+          cerr << "*****************************************\n\n"
+               << "ERROR: Seed[" << i << "] >= 4294944443, Seed is not set."
+               << "\n\n*****************************************\n\n";
+          return (false);
         }
     }
     if (seed[0] == 0 && seed[1] == 0 && seed[2] == 0) {

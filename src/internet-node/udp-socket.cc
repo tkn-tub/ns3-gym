@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/node.h"
+#include "ns3/inet-socket-address.h"
 #include "udp-socket.h"
 #include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
@@ -56,6 +57,12 @@ UdpSocket::~UdpSocket ()
   m_udp = 0;
 }
 
+enum Socket::SocketErrno
+UdpSocket::GetErrno (void) const
+{
+  return m_errno;
+}
+
 Ptr<Node>
 UdpSocket::GetNode (void) const
 {
@@ -72,12 +79,12 @@ UdpSocket::Destroy (void)
 int
 UdpSocket::FinishBind (void)
 {
-  m_endPoint->SetRxCallback (MakeCallback (&UdpSocket::ForwardUp, this));
-  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocket::Destroy, this));
   if (m_endPoint == 0)
     {
       return -1;
     }
+  m_endPoint->SetRxCallback (MakeCallback (&UdpSocket::ForwardUp, this));
+  m_endPoint->SetDestroyCallback (MakeCallback (&UdpSocket::Destroy, this));
   return 0;
 }
 
@@ -88,29 +95,35 @@ UdpSocket::Bind (void)
   return FinishBind ();
 }
 int 
-UdpSocket::Bind (Ipv4Address address)
+UdpSocket::Bind (const Address &address)
 {
-  m_endPoint = m_udp->Allocate (address);
-  return FinishBind ();
-}
-int 
-UdpSocket::Bind (uint16_t port)
-{
-  m_endPoint = m_udp->Allocate (port);
-  return FinishBind ();
-}
-int 
-UdpSocket::Bind (Ipv4Address address, uint16_t port)
-{
-  m_endPoint = m_udp->Allocate (address, port);
+  if (!InetSocketAddress::IsMatchingType (address))
+    {
+      return ERROR_INVAL;
+    }
+  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+  Ipv4Address ipv4 = transport.GetIpv4 ();
+  uint16_t port = transport.GetPort ();
+  if (ipv4 == Ipv4Address::GetAny () && port == 0)
+    {
+      m_endPoint = m_udp->Allocate ();
+    }
+  else if (ipv4 == Ipv4Address::GetAny () && port != 0)
+    {
+      m_endPoint = m_udp->Allocate (port);
+    }
+  else if (ipv4 != Ipv4Address::GetAny () && port == 0)
+    {
+      m_endPoint = m_udp->Allocate (ipv4);
+    }
+  else if (ipv4 != Ipv4Address::GetAny () && port != 0)
+    {
+      m_endPoint = m_udp->Allocate (ipv4, port);
+    }
+
   return FinishBind ();
 }
 
-enum Socket::SocketErrno
-UdpSocket::GetErrno (void) const
-{
-  return m_errno;
-}
 int 
 UdpSocket::ShutdownSend (void)
 {
@@ -124,63 +137,43 @@ UdpSocket::ShutdownRecv (void)
   return 0;
 }
 
-void 
-UdpSocket::DoClose(ns3::Callback<void, Ptr<Socket> > closeCompleted)
-{
-  // XXX: we should set the close state and check it in all API methods.
-  if (!closeCompleted.IsNull ())
-    {
-      closeCompleted (this);
-    }
-}
-void 
-UdpSocket::DoConnect(const Ipv4Address & address,
-                     uint16_t portNumber,
-                     ns3::Callback<void, Ptr<Socket> > connectionSucceeded,
-                     ns3::Callback<void, Ptr<Socket> > connectionFailed,
-                     ns3::Callback<void, Ptr<Socket> > halfClose)
-{
-  m_defaultAddress = address;
-  m_defaultPort = portNumber;
-  if (!connectionSucceeded.IsNull ())
-    {
-      connectionSucceeded (this);
-    }
-  m_connected = true;
-}
 int
-UdpSocket::DoAccept(ns3::Callback<bool, Ptr<Socket>, const Ipv4Address&, uint16_t> connectionRequest,
-                    ns3::Callback<void, Ptr<Socket>, const Ipv4Address&, uint16_t> newConnectionCreated,
-                    ns3::Callback<void, Ptr<Socket> > closeRequested)
+UdpSocket::Close(void)
 {
-  // calling accept on a udp socket is a programming error.
-  m_errno = ERROR_OPNOTSUPP;
-  return -1;
+  NotifyCloseCompleted ();
+  return 0;
+}
+
+int
+UdpSocket::Connect(const Address & address)
+{
+  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+  m_defaultAddress = transport.GetIpv4 ();
+  m_defaultPort = transport.GetPort ();
+  NotifyConnectionSucceeded ();
+  m_connected = true;
+  return 0;
 }
 int 
-UdpSocket::DoSend (const uint8_t* buffer,
-                   uint32_t size,
-                   ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
+UdpSocket::Send (const Packet &p)
 {
   if (!m_connected)
     {
       m_errno = ERROR_NOTCONN;
       return -1;
     }
-  Packet p;
-  if (buffer == 0)
-    {
-      p = Packet (size);
-    }
-  else
-    {
-      p = Packet (buffer, size);
-    }
-  return DoSendPacketTo (p, m_defaultAddress, m_defaultPort, dataSent);
+  return DoSendTo (p, m_defaultAddress, m_defaultPort);
 }
 int
-UdpSocket::DoSendPacketTo (const Packet &p, Ipv4Address daddr, uint16_t dport,
-                           ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
+UdpSocket::DoSendTo (const Packet &p, const Address &address)
+{
+  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+  Ipv4Address ipv4 = transport.GetIpv4 ();
+  uint16_t port = transport.GetPort ();
+  return DoSendTo (p, ipv4, port);
+}
+int
+UdpSocket::DoSendTo (const Packet &p, Ipv4Address ipv4, uint16_t port)
 {
   if (m_endPoint == 0)
     {
@@ -196,64 +189,36 @@ UdpSocket::DoSendPacketTo (const Packet &p, Ipv4Address daddr, uint16_t dport,
       m_errno = ERROR_SHUTDOWN;
       return -1;
     }
-  m_udp->Send (p, m_endPoint->GetLocalAddress (), daddr,
-		   m_endPoint->GetLocalPort (), dport);
-  if (!dataSent.IsNull ())
-    {
-      dataSent (this, p.GetSize ());
-    }
+  m_udp->Send (p, m_endPoint->GetLocalAddress (), ipv4,
+		   m_endPoint->GetLocalPort (), port);
+  NotifyDataSent (p.GetSize ());
   return 0;
 }
 int 
-UdpSocket::DoSendTo(const Ipv4Address &address,
-                    uint16_t port,
-                    const uint8_t *buffer,
-                    uint32_t size,
-                    ns3::Callback<void, Ptr<Socket>, uint32_t> dataSent)
+UdpSocket::SendTo(const Address &address, const Packet &p)
 {
   if (m_connected)
     {
       m_errno = ERROR_ISCONN;
       return -1;
     }
-  Packet p;
-  if (buffer == 0)
-    {
-      p = Packet (size);
-    }
-  else
-    {
-      p = Packet (buffer, size);
-    }
-  return DoSendPacketTo (p, address, port, dataSent);
-}
-void 
-UdpSocket::DoRecv(ns3::Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> callback)
-{
-  m_rxCallback = callback;
-}
-void 
-UdpSocket::DoRecvDummy(ns3::Callback<void, Ptr<Socket>, uint32_t,const Ipv4Address&, uint16_t> callback)
-{
-  m_dummyRxCallback = callback;
+  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+  Ipv4Address ipv4 = transport.GetIpv4 ();
+  uint16_t port = transport.GetPort ();
+  return DoSendTo (p, ipv4, port);
 }
 
 void 
-UdpSocket::ForwardUp (const Packet &packet, Ipv4Address saddr, uint16_t sport)
+UdpSocket::ForwardUp (const Packet &packet, Ipv4Address ipv4, uint16_t port)
 {
   if (m_shutdownRecv)
     {
       return;
     }
+  
+  Address address = InetSocketAddress (ipv4, port);
   Packet p = packet;
-  if (!m_dummyRxCallback.IsNull ())
-    {
-      m_dummyRxCallback (this, p.GetSize (), saddr, sport);
-    }
-  if (!m_rxCallback.IsNull ())
-    {
-      m_rxCallback (this, p.PeekData (), p.GetSize (), saddr, sport);
-    }
+  NotifyDataReceived (p, address);
 }
 
 }//namespace ns3

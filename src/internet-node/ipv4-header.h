@@ -29,13 +29,14 @@ namespace ns3 {
 /**
  * \brief Packet header for IPv4
  */
-class Ipv4Header : public Header {
+class Ipv4Header : public Header 
+{
 public:
+  static uint32_t GetUid (void);
   /**
    * \brief Construct a null IPv4 header
    */
   Ipv4Header ();
-  virtual ~Ipv4Header ();
   /**
    * \brief Enable checksum calculation for IP (XXX currently has no effect)
    */
@@ -139,12 +140,12 @@ public:
    */
   bool IsChecksumOk (void) const;
 
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
 
   enum FlagsE {
     DONT_FRAGMENT = (1<<0),
@@ -165,7 +166,7 @@ private:
   bool m_goodChecksum;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* IPV4_HEADER_H */
