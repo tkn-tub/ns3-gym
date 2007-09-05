@@ -221,8 +221,8 @@ main (int argc, char *argv[])
   Ptr<Ipv4> ipv4;
   ipv4 = n2->QueryInterface<Ipv4> (Ipv4::iid);
 
-  uint32_t ifIndexLan0 = ipv4->FindInterfaceForAddr(n2Lan0Addr);
-  uint32_t ifIndexLan1 = ipv4->FindInterfaceForAddr(n2Lan1Addr);
+  uint32_t ifIndexLan0 = ipv4->FindInterfaceForAddr (n2Lan0Addr);
+  uint32_t ifIndexLan1 = ipv4->FindInterfaceForAddr (n2Lan1Addr);
 //
 // Now, we need to do is to call the AddMulticastRoute () method on node 
 // two's Ipv4 interface and tell it that whenever it receives a packet on
@@ -237,6 +237,41 @@ main (int argc, char *argv[])
 
   ipv4->AddMulticastRoute (multicastSource, multicastGroup, ifIndexLan0,
     outputInterfaces);
+//
+// We need to specify how the source node handles multicasting.  There are a
+// number of ways we can deal with this, we just need to pick one.  The first
+// method is to add an explicit route out of the source node, just as we did
+// for the forwarding node.  Use this method when you want to send packets out
+// multiple interfaces or send packets out different interfaces based on the
+// differing multicast groups.  Since the source is local, there will be no 
+// input interface over which packets are received, so use  
+// Ipv4RoutingProtocol::IF_INDEX_ANY as a wildcard.
+//
+// A second way is to specify a multicast route using wildcards.  If you 
+// want to send multicasts out differing sets of interfaces based on the 
+// multicast group, you can use AddMulticastRoute () but specify the origin 
+// as a wildcard.  If you want all multicasts to go out a single set of 
+// interfaces, you can make both the origin and group a wildcard.
+//
+// If you have a simple system, where the source has a single interface, this
+// can be done via the SetDefaultMulticastRoute () method on the Ipv4 
+// interface.  This tells the system to send all multicasts out a single
+// specified network interface index.
+//
+// A last way is to specify a (or use an existing) default unicast route.  The
+// multicast routing code uses the unicast default route as a multicast "route
+// of last resort."  this method for is also on Ipv4 and is called 
+// SetDefaultRoute ().
+//
+// Since this is a simple multicast example, we use the 
+// SetDefaultMulticastRoute () approach.  We are going to first need the 
+// Ipv4 interface for node 0 which is the multicast source.  We use this
+// interface to find the output interface index, and tell node zero to send
+// its multicast traffic out that interface.
+//
+  ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
+  uint32_t ifIndexSrc = ipv4->FindInterfaceForAddr (multicastSource);
+  ipv4->SetDefaultMulticastRoute (ifIndexSrc);
 //
 // As described above, node four will be the only node listening for the
 // multicast data.  To enable forwarding bits up the protocol stack, we need

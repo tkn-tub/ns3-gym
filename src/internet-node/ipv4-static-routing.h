@@ -317,21 +317,34 @@ public:
 /**
  * @brief Add a multicast route to the static routing table.
  *
- * A multicast route must specify an origin IP address -- the address of the
- * node that originates packets destined for a given multicast group.  This
- * address may be Ipv4Address::GetAny (typically 0.0.0.0) if the multicast
- * group is open, or it may specify a single IP address if the multicast
- * group is closed.  The route must also specify the multicast group address.
+ * A multicast route must specify an origin IP address, a multicast group and
+ * an input network interface index as conditions and provide a vector of
+ * output network interface indices over which packets matching the conditions
+ * are sent.
  *
- * For each route, the input nework interface must be specified.  For 
- * forwarding operations, this is the interface index that you expect multicast
- * packets to arrive over.  If you want to specify routes off of a local node
- * for given multicast groups, this index may be set to 
- * Ipv4RoutingProtocol::IF_INDEX_ANY.
+ * Typically there are two main types of multicast routes:  routes of the 
+ * first kind are used during forwarding.  All of the conditions must be
+ * exlicitly provided.  The second kind of routes are used to get packets off
+ * of a local node.  The difference is in the input interface.  Routes for
+ * forwarding will always have an explicit input interface specified.  Routes
+ * off of a node will always set the input interface to a wildcard specified
+ * by the index Ipv4RoutingProtocol::IF_INDEX_ANY.
  *
- * For each route, a vector of output network interfaces must also be 
- * specified.  When the RequestRoute operation is performed, copies of a 
- * packet are sent out all of the specified interfaces.
+ * For routes off of a local node wildcards may be used in the origin and
+ * multicast group addresses.  The wildcard used for Ipv4Adresses is that 
+ * address returned by Ipv4Address::GetAny () -- typically "0.0.0.0".  Usage
+ * of a wildcard allows one to specify default behavior to varying degrees.
+ *
+ * For example, making the origin address a wildcard, but leaving the 
+ * multicast group specific allows one (in the case of a node with multiple
+ * interfaces) to create different routes using different output interfaces
+ * for each multicast group.
+ *
+ * If the origin and multicast addresses are made wildcards, you have created
+ * essentially a default multicast address that can forward to multiple 
+ * interfaces.  Compare this to the actual default multicast address that is
+ * limited to specifying a single output interface for compatibility with
+ * existing functionality in other systems.
  * 
  * @param origin The Ipv4Address of the origin of packets for this route.  May
  * be Ipv4Address:GetAny for open groups.
@@ -425,6 +438,12 @@ public:
  * This method causes the multicast routing table to be searched for the first
  * route that matches the parameters and removes it.
  *
+ * Wildcards may be provided to this function, but the wildcards are used to
+ * exacly match wildcards in the routes (see AddMulticastRoute).  That is,
+ * calling RemoveMulticastRoute with the origin set to "0.0.0.0" will not
+ * remove routes with any address in the origin, but will only remove routes
+ * with "0.0.0.0" set as the the origin.
+ *
  * @param origin The IP address specified as the origin of packets for the
  * route.
  * @param origin The IP address specified as the multicast group addres of
@@ -433,9 +452,8 @@ public:
  * input interface for the route.
  * @returns True if a route was found and removed, false otherwise.
  *
- * @see Ipv4Route
- * @see Ipv4StaticRouting::GetRoute
- * @see Ipv4StaticRouting::AddRoute
+ * @see Ipv4MulticastRoute
+ * @see Ipv4StaticRouting::AddMulticastRoute
  */
   bool RemoveMulticastRoute (Ipv4Address origin,
                              Ipv4Address group,

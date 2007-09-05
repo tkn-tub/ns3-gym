@@ -289,14 +289,27 @@ Ipv4StaticRouting::LookupStatic (
   Ipv4Address group,
   uint32_t    ifIndex)
 {
+//
+// We treat the "any" address (typically 0.0.0.0) as a wildcard in our matching
+// scheme.
+//
+  Ipv4Address wildcard = Ipv4Address::GetAny ();
+
   for (MulticastRoutesI i = m_multicastRoutes.begin (); 
        i != m_multicastRoutes.end (); 
        i++) 
     {
       Ipv4MulticastRoute *route = *i;
-      if (  (origin == route->GetOrigin () || 
-             origin == Ipv4Address::GetAny ()) &&
-          group == route->GetGroup ())
+//
+// We've been passed an origin address, a multicast group address and an 
+// interface index.  We have to decide if the current route in the list is
+// a match.
+//
+// The first case is the restrictive case where the origin, group and index
+// matches.  This picks up exact routes during forwarded and exact routes from
+// the local node (in which case the ifIndex is a wildcard).
+//
+      if (origin == route->GetOrigin () && group == route->GetGroup ())
         {
           if (ifIndex == Ipv4RoutingProtocol::IF_INDEX_ANY || 
               ifIndex == route->GetInputInterface ())
@@ -305,7 +318,67 @@ Ipv4StaticRouting::LookupStatic (
             }
         }
     }
+//
+// If the input interface index is not a wildcard (that means that the packet 
+// did not originally come from this node), we're done.  We don't
+// just happily forward packets we don't really know what to do with.  
+// Multicast storms are not generally considered a good thing.
+//
+  if (ifIndex != Ipv4RoutingProtocol::IF_INDEX_ANY)
+    {
+      return 0;
+    }
+//
+// Now, we're going to get a litle less restricive.  This only applies in the
+// case where the packet in question is coming from the local node.  In order
+// to avoid dependencies on the order in which routes were added, we will 
+// actually walk the list two more times, the first time looking for routes
+// with a single wildcard, and the last time looking for the first route
+// with two wildcards.
+//
+  for (MulticastRoutesI i = m_multicastRoutes.begin (); 
+       i != m_multicastRoutes.end (); 
+       i++) 
+    {
+      Ipv4MulticastRoute *route = *i;
+//
+// Here we will ignore the origin.  We know that a single source address must
+// be picked for a packet, but we may want to send multicast packets out
+// multiple interfaces.  To support this case, a user would need to add
+// a Multicast route with the route's origin set to wildcard.  N.B As a
+// result, packets sourced from a node with multiple interface may have a
+// source IP address different from that of the interface actually used to
+// send the packet.
+//
+      if (route->GetOrigin () == wildcard && group == route->GetGroup ())
+        {
+          return *i;
+        }
+    }
+//
+// Finally we want to allow users to specify a default route that specifies
+// sending all multicast packets out multiple interfaces.  The standard
+// default multicast route is patterned after other systems and limits the 
+// number of outputs to one.  If, however a client manually adds a multicast
+// route with the origin, the multicast group and the input interface index
+// all set to wildcard, she has created a default route with multiple output
+// interfaces.
+//
+  for (MulticastRoutesI i = m_multicastRoutes.begin (); 
+       i != m_multicastRoutes.end (); 
+       i++) 
+    {
+      Ipv4MulticastRoute *route = *i;
 
+      if (route->GetOrigin () == wildcard && route->GetGroup () == wildcard)
+        {
+          return *i;
+        }
+    }
+//
+// We also allow users to specify a typical default multicast route.  This
+// default route is limited to specifying a single output interface.
+//
   if (m_defaultMulticastRoute != 0) 
     {
       return m_defaultMulticastRoute;
@@ -445,33 +518,7 @@ Ipv4StaticRouting::RequestRoute (
   if (ipHeader.GetDestination ().IsMulticast ())
     {
       NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): Multicast destination");
-//
-// We have a multicast packet we're going to send.  There are two distinct
-// cases we need to support.  The first is if the current node is the source
-// of the packet.  In that case, we don't want to have to consult multicast
-// routing tables (nor build them) in order to send multicasts.  The interface
-// index (ifIndex) is Ipv4RoutingProtocol::IF_INDEX_ANY if we're the source.
-//
-// The second case is if the current packet has gotten to us by being
-// received over one of our interfaces.  In this case, ifIndex is set to the
-// index over which we received the packet.  For these packets, we need to
-// consult the multicast routing table for a disposition.
-//
-// So, first let's see if we're the source.  In this case, we don't consult
-// the routing tables, but just return false and let the caller (up in 
-// ipv4-l3-protocol) flood the multicast packet out of all of its interfaces.
-// We can't really do it here even if we wanted to since we have no easy way
-// to get to the Ipv4 interface which we would need.
-//
-      if (ifIndex == Ipv4RoutingProtocol::IF_INDEX_ANY)
-        {
-          return false;
-        }
-//
-// If we fall through to this point, we have a multicast packet that has
-// not originated at this node.  We need to deal with forwarding.  Let's
-// see if we have a route, and if so go ahead and forward this puppy.
-//
+
       Ipv4MulticastRoute *mRoute = LookupStatic(ipHeader.GetSource (),
         ipHeader.GetDestination (), ifIndex);
 
@@ -479,6 +526,7 @@ Ipv4StaticRouting::RequestRoute (
         {
           NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): "
             "Multicast route found");
+
           for (uint32_t i = 0; i < mRoute->GetNOutputInterfaces (); ++i)
             {
               Packet p = packet;
@@ -495,7 +543,7 @@ Ipv4StaticRouting::RequestRoute (
       return false; // Let other routing protocols try to handle this
     }
 //
-// See if this is a unicast packet we have a route for.
+// This is a unicast packet.  Check to see if we have a route for it.
 //
   NS_DEBUG ("Ipv4StaticRouting::RequestRoute (): Unicast destination");
   Ipv4Route *route = LookupStatic (ipHeader.GetDestination ());
