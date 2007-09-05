@@ -62,8 +62,9 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
       Ptr<ArpL3Protocol> arp = m_node->QueryInterface<ArpL3Protocol> (ArpL3Protocol::iid);
       Address hardwareDestination;
       bool found;
-
-      if (dest.IsBroadcast ())
+      
+      if (dest.IsBroadcast () || 
+          dest.IsSubnetDirectedBroadcast (GetNetworkMask ()) )
         {
           hardwareDestination = GetDevice ()->GetBroadcast ();
           found = true;

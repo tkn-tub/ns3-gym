@@ -153,10 +153,6 @@ UdpSocket::Connect(const Address & address)
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
   m_defaultPort = transport.GetPort ();
-  if (m_defaultAddress.IsBroadcast () )
-    {
-      NS_ASSERT_MSG(false, "UdpSocket::Connect, can't connect to broadcast");
-    }
   NotifyConnectionSucceeded ();
   m_connected = true;
   if (GetIpv4RouteToDestination (m_node, routeToDest, m_defaultAddress) )
@@ -196,24 +192,31 @@ UdpSocket::DoSend (const Packet &p)
       m_errno = ERROR_SHUTDOWN;
       return -1;
     } 
-  m_udp->Send (p, m_endPoint->GetLocalAddress (), m_defaultAddress,
-                  m_endPoint->GetLocalPort (), m_defaultPort);
-  NotifyDataSent (p.GetSize ());
-  return 0;
+  
+  return DoSendTo (p, m_defaultAddress, m_defaultPort);
 }
 
 
 int
 UdpSocket::DoSendTo (const Packet &p, const Address &address)
 {
-  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
-  Ipv4Address ipv4 = transport.GetIpv4 ();
-  uint16_t port = transport.GetPort ();
-  return DoSendTo (p, ipv4, port);
+  if (!m_connected)
+    {
+      InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+      Ipv4Address ipv4 = transport.GetIpv4 ();
+      uint16_t port = transport.GetPort ();
+      return DoSendTo (p, ipv4, port);
+    }
+  else
+    {
+      // connected UDP socket must use default addresses
+      return DoSendTo (p, m_defaultAddress, m_defaultPort);
+    }
 }
 int
 UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
 {
+  Ipv4Route routeToDest;
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
@@ -228,8 +231,23 @@ UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
       m_errno = ERROR_SHUTDOWN;
       return -1;
     }
-  Ipv4Route routeToDest;
-  if (GetIpv4RouteToDestination (m_node, routeToDest, dest) )
+  //
+  // If dest is sent to the limited broadcast address (all ones),
+  // convert it to send a copy of the packet out of every interface
+  //
+  if (dest.IsBroadcast ())
+    {
+      Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
+      for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++ )
+        {
+          Ipv4Address addri = ipv4->GetAddress (i);
+          Ipv4Mask maski = ipv4->GetNetworkMask (i);
+          m_udp->Send (p, addri, addri.GetSubnetDirectedBroadcast (maski),
+                       m_endPoint->GetLocalPort (), port);
+          NotifyDataSent (p.GetSize ());
+        }
+    }
+  else if (GetIpv4RouteToDestination (m_node, routeToDest, dest) )
     {
       uint32_t localIfIndex = routeToDest.GetInterface ();
       Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
