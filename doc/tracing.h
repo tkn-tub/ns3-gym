@@ -106,11 +106,59 @@
  * for each trace source: a signature of the user trace sink must match 
  * _exactly_ the signature documented in the \ref TraceSourceList.
  *
- * \section TraceConnection Connecting Trace Sources to Trace Sinks
  *
- * Since there is no working magic here, defining a trace sink does not connect
- * it directly to a set of trace sources. To connect a trace sink, a user must call
- * ns3::NodeList::Connect. The second argument is a callback to the user's trace sink.
+ * \section TraceSourceSimpleExport A simple way to connect Trace Sources with Trace Sinks
+ *
+ * The crux of the complexity of the ns-3 tracing system comes from its 
+ * flexible system used to connect trace sources to trace sinks but what is really
+ * nice about it is that it is not necessary to use it to setup simple traces.
+ * 
+ * The simplest way to export a set of trace sources to a user, for example, 
+ * during the early prototyping phases of a system, is to add a set of public methods
+ * to give to your users access to the trace source object instances you use to generate
+ * trace events:
+ * \code
+ * class MyModel 
+ * {
+ * public:
+ *   void DoSomething (Packet packet) 
+ *   {
+ *     // report this event on packet
+ *     m_doSomething (packet);
+ *     // do something
+ *   }
+ *   CallbackTraceSource<Packet> *PeekSomethingTraceSource (void) const 
+ *   {
+ *     return &m_doSomething
+ *   }
+ * private:
+ *   // report every "something" function call.
+ *   CallbackTraceSource<Packet> m_doSomething;
+ * };
+ * \endcode
+ * If your users hold a pointer to an instance of MyModel, and if they want to connect
+ * a MySomethingSink, they can simply do the following which invokes the 
+ * TraceSource::AddCallback method and creates a Callback object from the user's
+ * sink with the MakeCallback function.
+ * \code
+ * void 
+ * MySomethingSink (const TraceContext &context, Packet packet)
+ * {
+ *   // do whatever you want.
+ * }
+ * MyModel *model = ...;
+ * model->AddCallback (MakeCallback (&MySomethingSink));
+ * \endcode
+ *
+ * The full power of the tracing system comes however from its ns3::NodeList::Connect
+ * method which is described in the following sections.
+ *
+ * \section TraceConnection Connecting Trace Sources to Trace Sinks
+ * 
+ * If a trace source is integrated in the ns-3 trace connection facility, a user 
+ * should call the ns3::NodeList::Connect method to establish a connection between
+ * a trace sink and a set of matching trace sources. The second argument to that
+ * method is a callback to the user's trace sink.
  * That callback is easy to construct: call ns3::MakeCallback and you are done. The
  * first argument is a string whose format is similar to a unix path and which is 
  * used to uniquely identify the set of trace sources you want to connect to.
@@ -186,10 +234,6 @@
  *   std::cout << std::endl;
  * }
  * \endcode
- *
- * \section TraceSourceSimpleExport A simple way to export Trace Sources
- *
- * XXX
  *
  * \section ExportingTraceSources Exporting new Trace Sources
  *
