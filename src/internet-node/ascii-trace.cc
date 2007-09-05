@@ -24,14 +24,8 @@
 #include "ns3/trace-root.h"
 #include "ns3/simulator.h"
 #include "ns3/node.h"
+#include "ns3/packet.h"
 #include "ns3/queue.h"
-#include "ns3/node-list.h"
-#include "ns3/llc-snap-header.h"
-
-#include "ipv4-l3-protocol.h"
-#include "arp-header.h"
-#include "udp-header.h"
-#include "ipv4-header.h"
 
 namespace ns3 {
 
@@ -47,90 +41,62 @@ void
 AsciiTrace::TraceAllQueues (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/queue/*",
-                      MakeCallback (&AsciiTrace::LogDevQueue, this));
+  TraceRoot::Connect ("/nodes/*/devices/*/queue/enqueue",
+                      MakeCallback (&AsciiTrace::LogDevQueueEnqueue, this));
+  TraceRoot::Connect ("/nodes/*/devices/*/queue/dequeue",
+                      MakeCallback (&AsciiTrace::LogDevQueueDequeue, this));
+  TraceRoot::Connect ("/nodes/*/devices/*/queue/drop",
+                      MakeCallback (&AsciiTrace::LogDevQueueDrop, this));
 }
 void
 AsciiTrace::TraceAllNetDeviceRx (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/ipv4/interfaces/*/netdevice/rx",
+  TraceRoot::Connect ("/nodes/*/devices/*/rx",
                       MakeCallback (&AsciiTrace::LogDevRx, this));
 }
 
-void
-AsciiTrace::PrintType (Packet const &packet)
+void 
+AsciiTrace::LogDevQueueEnqueue (TraceContext const &context, 
+  Packet const &packet)
 {
-  Packet p = packet;
-  LlcSnapHeader llc;
-  p.RemoveHeader (llc);
-  switch (llc.GetType ())
-    {
-    case 0x0800: {
-      Ipv4Header ipv4;
-      p.RemoveHeader (ipv4);
-      if (ipv4.GetProtocol () == 17)
-        {
-          UdpHeader udp;
-          p.RemoveHeader (udp);
-          m_os << "udp size=" << p.GetSize ();
-        }
-    } break;
-    case 0x0806: {
-      ArpHeader arp;
-      p.RemoveHeader (arp);
-      m_os << "arp ";
-      if (arp.IsRequest ())
-        {
-          m_os << "request";
-        }
-      else
-        {
-          m_os << "reply ";
-        }
-    } break;
-    }
-} 
+  m_os << "+ ";
+  m_os << Simulator::Now ().GetSeconds () << " ";
+  context.Print (m_os);
+  m_os << " pkt-uid=" << packet.GetUid () << " ";
+  packet.Print (m_os);
+  m_os << std::endl;
+}
 
 void 
-AsciiTrace::LogDevQueue (TraceContext const &context, Packet const &packet)
+AsciiTrace::LogDevQueueDequeue (TraceContext const &context, 
+  Packet const &packet)
 {
-  enum Queue::TraceType type;
-  context.Get (type);
-  switch (type) 
-    {
-    case Queue::ENQUEUE:
-      m_os << "+ ";
-      break;
-    case Queue::DEQUEUE:
-      m_os << "- ";
-      break;
-    case Queue::DROP:
-      m_os << "d ";
-      break;
-    }
+  m_os << "- ";
   m_os << Simulator::Now ().GetSeconds () << " ";
-  NodeList::NodeIndex nodeIndex;
-  context.Get (nodeIndex);
-  m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
-  Ipv4L3Protocol::InterfaceIndex interfaceIndex;
-  context.Get (interfaceIndex);
-  m_os << "interface=" << interfaceIndex << " ";
-  m_os << "pkt-uid=" << packet.GetUid () << " ";
+  context.Print (m_os);
+  m_os << " pkt-uid=" << packet.GetUid () << " ";
+  packet.Print (m_os);
+  m_os << std::endl;
+}
+
+void 
+AsciiTrace::LogDevQueueDrop (TraceContext const &context, 
+  Packet const &packet)
+{
+  m_os << "d ";
+  m_os << Simulator::Now ().GetSeconds () << " ";
+  context.Print (m_os);
+  m_os << " pkt-uid=" << packet.GetUid () << " ";
   packet.Print (m_os);
   m_os << std::endl;
 }
 void 
-AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
+AsciiTrace::LogDevRx (TraceContext const &context, const Packet &p)
 {
   m_os << "r " << Simulator::Now ().GetSeconds () << " ";
-  NodeList::NodeIndex nodeIndex;
-  context.Get (nodeIndex);
-  m_os << "node=" << NodeList::GetNode (nodeIndex)->GetId () << " ";
-  Ipv4L3Protocol::InterfaceIndex interfaceIndex;
-  context.Get (interfaceIndex);
-  m_os << "interface=" << interfaceIndex << " ";
-  m_os << "pkt-uid=" << p.GetUid () << " ";
+  context.Print (m_os);
+  m_os << " pkt-uid=" << p.GetUid () << " ";
   p.Print (m_os);
   m_os << std::endl;  
 }

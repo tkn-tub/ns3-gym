@@ -24,12 +24,12 @@ CourseChange (Ptr<const MobilityModel> position)
 
 int main (int argc, char *argv[])
 {
-  Bind ("RandomDiscPositionX", "100");
-  Bind ("RandomDiscPositionY", "50");
-  Bind ("RandomDiscPositionRho", "Uniform:0:30");
+  DefaultValue::Bind ("RandomDiscPositionX", "100");
+  DefaultValue::Bind ("RandomDiscPositionY", "50");
+  DefaultValue::Bind ("RandomDiscPositionRho", "Uniform:0:30");
 
-  Bind ("RandomTopologyPositionType", "RandomDiscPosition");
-  Bind ("RandomTopologyMobilityType", "StaticMobilityModel");
+  DefaultValue::Bind ("RandomTopologyPositionType", "RandomDiscPosition");
+  DefaultValue::Bind ("RandomTopologyMobilityType", "StaticMobilityModel");
 
   CommandLine::Parse (argc, argv);
 

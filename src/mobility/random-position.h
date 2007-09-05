@@ -1,3 +1,4 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 #ifndef RANDOM_POSITION_H
 #define RANDOM_POSITION_H
 

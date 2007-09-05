@@ -29,8 +29,6 @@
 #include "ipv4-end-point-demux.h"
 #include "ipv4-end-point.h"
 #include "ipv4-l3-protocol.h"
-#include "ipv4-private.h"
-#include "l3-demux.h"
 #include "udp-socket.h"
 
 namespace ns3 {
@@ -138,7 +136,7 @@ UdpL4Protocol::Send (Packet packet,
 
   packet.AddHeader (udpHeader);
 
-  Ptr<Ipv4Private> ipv4 = m_node->QueryInterface<Ipv4Private> (Ipv4Private::iid);
+  Ptr<Ipv4L3Protocol> ipv4 = m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
   if (ipv4 != 0)
     {
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER);

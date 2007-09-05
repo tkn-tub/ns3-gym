@@ -1,16 +1,17 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    node = bld.create_obj('cpp', 'shlib')
-    node.name = 'ns3-node'
-    node.target = node.name
-    node.uselib_local = ['ns3-core', 'ns3-common', 'ns3-simulator']
+    node = bld.create_ns3_module('node', ['core', 'common', 'simulator'])
     node.source = [
+        'address.cc',
+        'eui48-address.cc',
+        'eui64-address.cc',
+        'inet-socket-address.cc',
+        'packet-socket-address.cc',
         'node.cc',
         'ipv4-address.cc',
         'net-device.cc',
-        'mac-address.cc',
-        'address-utils.cc',
+	'address-utils.cc',
         'llc-snap-header.cc',
         'ethernet-header.cc',
         'ethernet-trailer.cc',
@@ -21,6 +22,8 @@ def build(bld):
         'node-list.cc',
         'socket.cc',
         'socket-factory.cc',
+        'packet-socket-factory.cc',
+        'packet-socket.cc',
         'udp.cc',
         'ipv4.cc',
         'application.cc',
@@ -28,11 +31,15 @@ def build(bld):
 
     headers = bld.create_obj('ns3header')
     headers.source = [
+        'address.h',
+        'eui48-address.h',
+        'eui64-address.h',
+        'inet-socket-address.h',
+        'packet-socket-address.h',
         'node.h',
         'ipv4-address.h',
         'net-device.h',
-        'mac-address.h',
-        'address-utils.h',
+	'address-utils.h',
         'ipv4-route.h',
         'queue.h',
         'drop-tail-queue.h',
@@ -43,6 +50,7 @@ def build(bld):
         'node-list.h',
         'socket.h',
         'socket-factory.h',
+        'packet-socket-factory.h',
         'udp.h',
         'ipv4.h',
         'application.h',

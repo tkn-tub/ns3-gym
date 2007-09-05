@@ -31,7 +31,6 @@
 #include "ipv4-header.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4.h"
-#include "l3-protocol.h"
 
 namespace ns3 {
 

@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include <ostream>
+#include "address.h"
 
 namespace ns3 {
 
@@ -52,6 +53,22 @@ public:
   Ipv4Address (char const *address);
   
   /**
+   * input address is in host order.
+   * \param address The host order 32-bit address
+   */
+  void Set (uint32_t address);
+  /** 
+    * \brief Sets an Ipv4Address by parsing a the input C-string
+    *
+    * Input address is in format:
+    * hhh.xxx.xxx.lll
+    * where h is the high byte and l the
+    * low byte
+    * \param address C-string containing the address as described above
+    */
+  void Set (char const *address);
+
+  /**
    * \brief Comparison operation between two Ipv4Addresses
    * \param other address to which to compare this address
    * \return True if the addresses are equal. False otherwise.
@@ -70,10 +87,18 @@ public:
   void SetHostOrder (uint32_t ip);
   /**
    * Serialize this address to a 4-byte buffer
+   *
    * \param buf output buffer to which this address gets overwritten with this
    * Ipv4Address
    */
   void Serialize (uint8_t buf[4]) const;
+  /**
+   * \param buf buffer to read address from
+   * \returns an Ipv4Address
+   * 
+   * The input address is expected to be in network byte order format.
+   */
+  static Ipv4Address Deserialize (const uint8_t buf[4]);
   /**
    * \brief Print this address to the given output stream
    *
@@ -91,15 +116,21 @@ public:
    * (bitwise and) with a network mask, yielding an IPv4 network
    * address.
    *
-   * \param a network mask 
+   * \param mask a network mask 
    */
   Ipv4Address CombineMask (Ipv4Mask const &mask) const;
+
+  static bool IsMatchingType (const Address &address);
+  operator Address ();
+  static Ipv4Address ConvertFrom (const Address &address);
 
   static Ipv4Address GetZero (void);
   static Ipv4Address GetAny (void);
   static Ipv4Address GetBroadcast (void);
   static Ipv4Address GetLoopback (void);
 private:
+  Address ConvertTo (void) const;
+  static uint8_t GetType (void);
   uint32_t m_address;
 };
 

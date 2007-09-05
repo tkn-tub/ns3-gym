@@ -23,6 +23,7 @@
 #define UDP_HEADER_H
 
 #include <stdint.h>
+#include <string>
 #include "ns3/header.h"
 #include "ns3/ipv4-address.h"
 
@@ -30,15 +31,18 @@ namespace ns3 {
 /**
  * \brief Packet header for UDP packets
  */
-class UdpHeader : public Header {
+class UdpHeader : public Header 
+{
 public:
+  static uint32_t GetUid (void);
+
   /**
    * \brief Constructor
    *
    * Creates a null header
    */
   UdpHeader ();
-  virtual ~UdpHeader ();
+  ~UdpHeader ();
 
   /**
    * \brief Enable checksum calculation for UDP (XXX currently has no effect)
@@ -80,13 +84,13 @@ public:
                            Ipv4Address destination,
                            uint8_t protocol);
 
-private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 
+private:
   uint16_t m_sourcePort;
   uint16_t m_destinationPort;
   uint16_t m_payloadSize;
@@ -95,6 +99,6 @@ private:
   static bool m_calcChecksum;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* UDP_HEADER */

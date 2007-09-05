@@ -23,7 +23,7 @@
 #define NODE_LIST_H
 
 #include <vector>
-#include "ns3/array-trace-resolver.h"
+#include "ns3/trace-context-element.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
@@ -31,6 +31,19 @@ namespace ns3 {
 class Node;
 class TraceResolver;
 class TraceContext;
+
+class NodeListIndex : public TraceContextElement
+{
+public:
+  NodeListIndex ();
+  NodeListIndex (uint32_t index);
+  void Print (std::ostream &os);
+  static uint16_t GetUid (void);
+  uint32_t Get (void) const;
+private:
+  uint32_t m_index;
+};
+
 
 /**
  * \brief the list of simulation nodes.
@@ -40,7 +53,6 @@ class TraceContext;
 class NodeList
 {
 public:
-  typedef ArrayTraceResolver<Node>::Index NodeIndex;
   typedef std::vector< Ptr<Node> >::iterator Iterator;
 
   /**

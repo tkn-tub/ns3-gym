@@ -23,7 +23,8 @@
 #define ETHERNET_HEADER_H
 
 #include "ns3/header.h"
-#include "ns3/mac-address.h"
+#include <string>
+#include "ns3/eui48-address.h"
 
 namespace ns3 {
 
@@ -45,11 +46,10 @@ namespace ns3 {
  * the packet. Eventually the class will be improved to also support
  * VLAN tags in packet headers.
  */
-class EthernetHeader : public Header {
+class EthernetHeader : public Header 
+{
 public:
-  static const int PREAMBLE_SIZE = 8; /// size of the preamble_sfd header field
-  static const int LENGTH_SIZE = 2;   /// size of the length_type header field
-  static const int MAC_ADDR_SIZE = 6; /// size of src/dest addr header fields
+  static uint32_t GetUid (void);
 
   /**
    * \brief Construct a null ethernet header
@@ -62,7 +62,6 @@ public:
    * By default, does not add or remove an ethernet preamble
    */
   EthernetHeader ();
-  virtual ~EthernetHeader ();
   /**
    * \param size The size of the payload in bytes
    */
@@ -70,11 +69,11 @@ public:
   /**
    * \param source The source address of this packet
    */
-  void SetSource (MacAddress source);
+  void SetSource (Eui48Address source);
   /**
    * \param destination The destination address of this packet.
    */
-  void SetDestination (MacAddress destination);
+  void SetDestination (Eui48Address destination);
   /**
    * \param preambleSfd The value that the preambleSfd field should take
    */
@@ -90,11 +89,11 @@ public:
   /**
    * \return The source address of this packet
    */
-  MacAddress GetSource (void) const;
+  Eui48Address GetSource (void) const;
   /**
    * \return The destination address of this packet
    */
-  MacAddress GetDestination (void) const;  
+  Eui48Address GetDestination (void) const;  
   /**
    * \return The value of the PreambleSfd field
    */
@@ -104,12 +103,15 @@ public:
    */
   uint32_t GetHeaderSize() const;
 
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
+  static const int PREAMBLE_SIZE = 8; /// size of the preamble_sfd header field
+  static const int LENGTH_SIZE = 2;   /// size of the length_type header field
+  static const int MAC_ADDR_SIZE = 6; /// size of src/dest addr header fields
 
   /**
    * If false, the preamble/sfd are not serialised/deserialised.
@@ -117,8 +119,8 @@ private:
   bool m_enPreambleSfd;
   uint64_t m_preambleSfd;     /// Value of the Preamble/SFD fields
   uint16_t m_lengthType;      /// Length or type of the packet
-  MacAddress m_source;        /// Source address
-  MacAddress m_destination;   /// Destination address
+  Eui48Address m_source;        /// Source address
+  Eui48Address m_destination;   /// Destination address
 };
 
 }; // namespace ns3

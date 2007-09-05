@@ -222,7 +222,9 @@ HighPrecision::Compare (HighPrecision const &o) const
       HP128INC (m_nslowcmps);
       return SlowCompare (o);
     }
-
+  // The below statement is unreachable but necessary for optimized
+  // builds with gcc-4.0.x due to a compiler bug.
+  return 0;  
 }
 HighPrecision 
 HighPrecision::Zero (void)

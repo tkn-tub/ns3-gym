@@ -22,6 +22,8 @@
 #define EVENT_ID_H
 
 #include <stdint.h>
+#include "ns3/ptr.h"
+#include "event-impl.h"
 
 namespace ns3 {
 
@@ -33,7 +35,7 @@ class EventImpl;
 class EventId {
 public:
   EventId ();
-  EventId (EventImpl *impl, uint64_t ts, uint32_t uid);
+  EventId (const Ptr<EventImpl> &impl, uint64_t ts, uint32_t uid);
   /**
    * This method is syntactic sugar for the ns3::Simulator::cancel
    * method.
@@ -51,12 +53,12 @@ public:
    * they are supposed to be invoked only by
    * subclasses of the Scheduler base class.
    */
-  EventImpl *GetEventImpl (void) const;
+  EventImpl *PeekEventImpl (void) const;
   uint64_t GetTs (void) const;
   uint32_t GetUid (void) const;
 private:
   friend bool operator == (const EventId &a, const EventId &b);
-  EventImpl *m_eventImpl;
+  Ptr<EventImpl> m_eventImpl;
   uint64_t m_ts;
   uint32_t m_uid;
 };

@@ -320,7 +320,7 @@ public:
    */
   inline Buffer::Iterator End (void) const;
 
-  void TransformIntoRealBuffer (void) const;
+  Buffer CreateFullCopy (void) const;
 
   inline Buffer (Buffer const &o);
   inline Buffer &operator = (Buffer const &o);
@@ -343,6 +343,7 @@ private:
   };
 
   inline uint8_t *GetStart (void) const;
+  void TransformIntoRealBuffer (void) const;
   static void Recycle (struct Buffer::BufferData *data);
   static struct Buffer::BufferData *Create (void);
   static struct Buffer::BufferData *Allocate (uint32_t size, uint32_t start);

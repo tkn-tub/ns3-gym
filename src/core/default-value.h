@@ -31,6 +31,25 @@
 
 namespace ns3 {
 
+namespace DefaultValue
+{
+
+/**
+ * \ingroup config
+ * \param name name of variable to bind
+ * \param value value to bind to the specified variable
+ *
+ * If the variable name does not match any existing
+ * variable or if the value is not compatible with
+ * the variable type, this function will abort
+ * at runtime and print an error message detailing
+ * which variable or value triggered the problem.
+ */
+void Bind (std::string name, std::string value);
+
+}
+
+
 class DefaultValueBase
 {
 public:
@@ -82,19 +101,6 @@ class DefaultValueList
   typedef std::list<DefaultValueBase *> List;
   static List *GetList (void);
 };
-
-/**
- * \ingroup config
- * \param name name of variable to bind
- * \param value value to bind to the specified variable
- *
- * If the variable name does not match any existing
- * variable or if the value is not compatible with
- * the variable type, this function will abort
- * at runtime and print an error message detailing
- * which variable or value triggered the problem.
- */
-void Bind (std::string name, std::string value);
 
 /**
  * \brief A Boolean variable for ns3::Bind

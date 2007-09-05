@@ -52,9 +52,9 @@ MobilityModel::Set (const Position &position)
 }
 
 double 
-MobilityModel::GetDistanceFrom (const MobilityModel &other) const
+MobilityModel::GetDistanceFrom (Ptr<const MobilityModel> other) const
 {
-  Position oPosition = other.DoGet ();
+  Position oPosition = other->DoGet ();
   Position position = DoGet ();
   return CalculateDistance (position, oPosition);
 }

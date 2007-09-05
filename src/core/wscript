@@ -15,18 +15,22 @@ def configure(conf):
     e.define = 'HAVE_GETENV'
     e.run()
 
+    e = conf.create_header_configurator()
+    e.mandatory = False
+    e.name = 'signal.h'
+    e.define = 'HAVE_SIGNAL_H'
+    e.run()
+
     conf.write_config_header('ns3/core-config.h')
 
 
 
 def build(bld):
-    core = bld.create_obj('cpp', 'shlib')
-    core.name = 'ns3-core'
-    core.target = core.name
+    core = bld.create_ns3_module('core')
     core.source = [
         'callback-test.cc',
         'debug.cc',
-        'assert.cc',
+        'breakpoint.cc',
         'ptr.cc',
         'object.cc',
         'test.cc',
@@ -58,6 +62,7 @@ def build(bld):
         'object.h',
         'debug.h',
         'assert.h',
+        'breakpoint.h',
         'fatal-error.h',
         'test.h',
         'random-variable.h',

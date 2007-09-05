@@ -28,9 +28,14 @@
 
 namespace ns3 {
 
+template <typename T>
+void Foo (void) {}
+
+
 class NoCount : public Object
 {
 public:
+  NoCount (void (*fn) (void));
   NoCount (Callback<void> cb);
   ~NoCount ();
   void Nothing (void) const;
@@ -292,11 +297,21 @@ PtrTest::RunTests (void)
     callback ();
   }
 
+
 #if 0
   // as expected, fails compilation.
   {
     Ptr<const Object> p = Create<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
+  }
+  // local types are not allowed as arguments to a template.
+  {
+    class B
+    {
+    public:
+      B () {}
+    };
+    Foo<B> ();
   }
 #endif
   

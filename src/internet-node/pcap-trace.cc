@@ -82,10 +82,9 @@ PcapTrace::GetStream (uint32_t nodeId, uint32_t interfaceId)
 void 
 PcapTrace::LogIp (TraceContext const &context, Packet const &p, uint32_t interfaceIndex)
 {
-  NodeList::NodeIndex nodeIndex;
+  NodeListIndex nodeIndex;
   context.Get (nodeIndex);
-  uint32_t nodeId = NodeList::GetNode (nodeIndex)->GetId ();
-  PcapWriter *writer = GetStream (nodeId, interfaceIndex);
+  PcapWriter *writer = GetStream (nodeIndex.Get (), interfaceIndex);
   writer->WritePacket (p);
 }
 
