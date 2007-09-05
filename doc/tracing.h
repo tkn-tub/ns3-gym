@@ -147,7 +147,8 @@
  *   // do whatever you want.
  * }
  * MyModel *model = ...;
- * model->AddCallback (MakeCallback (&MySomethingSink));
+ * CallbackTraceSource<Packet> *source = model->PeekSomethingTraceSource ();
+ * source->AddCallback (MakeCallback (&MySomethingSink));
  * \endcode
  *
  * The full power of the tracing system comes however from its ns3::NodeList::Connect
