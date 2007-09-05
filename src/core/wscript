@@ -49,6 +49,7 @@ def build(bld):
         'callback-trace-source.cc',
         'composite-trace-resolver.cc',
         'trace-doc.cc',
+        'trace-source.cc',
         ]
 
     if sys.platform == 'win32':

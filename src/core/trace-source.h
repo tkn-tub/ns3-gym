@@ -23,6 +23,9 @@
 
 namespace ns3 {
 
+class CallbackBase;
+class TraceContext;
+
 /**
  * \brief the base class for all trace sources
  *
@@ -40,6 +43,10 @@ public:
    *        back to the user.
    */
   virtual void AddCallback (CallbackBase const & callback, TraceContext const & context) = 0;
+  /**
+   * \param callback the callback to connect to this trace source
+   */
+  void AddCallback (CallbackBase const & callback);
   /**
    * \param callback the callback to disconnect from this trace source
    */
