@@ -19,6 +19,8 @@
  * - A trace resolver is an object which allows users to establish 
  *   connections between a set of trace sources and a set of trace sinks.
  *
+ * \section TraceSource Generating Trace Events
+ *
  * So, what does it look like in practice ? First, let's look at trace
  * sources. We have two types of trace sources: numeric, and, normal 
  * trace sources. Numeric trace sources behave as normal c++ integers 
@@ -53,21 +55,23 @@
  * class MyModel 
  * {
  * public:
- *   void DoSomething (Packet packet, double value) 
+ *   void DoSomething (Packet packet) 
  *   {
- *     // report this event on packet with value
- *     m_doSomething (packet, value);
+ *     // report this event on packet
+ *     m_doSomething (packet);
  *     // do something
  *   }
  * private:
  *   // report every "something" function call.
- *   CallbackTraceSource<Packet,double> m_doSomething;
+ *   CallbackTraceSource<Packet> m_doSomething;
  * };
  * \endcode
  * Every type of trace source derives from the ns3::TraceSource base class.
  * As of today, the set of concrete subclasses is relatively short:
  * ns3::CallbackTraceSource, ns3::SvTraceSource, ns3::UvTraceSource, and,
  * ns3::FvTraceSource.
+ *
+ * \section TraceSink Receiving Trace Events
  *
  * To receive these trace events, a user should specify a set of trace sinks.
  * For example, to receive the "int" and the "something" events shown in the
@@ -82,10 +86,10 @@
  *   std::cout << "cwnd=" << newValue << std::endl;
  * }
  * void 
- * DoSomethingTraceSink (const TraceContext &context, Packet packet, double value)
+ * DoSomethingTraceSink (const TraceContext &context, Packet packet)
  * {
  *   // for example, print the arguments
- *   std::cout << "value=" << value << ", packet " << packet << std::endl;
+ *   std::cout << "packet " << packet << std::endl;
  * }
  * \endcode
  * Each of these sink function takes, as a first argument, a reference to a 
@@ -99,7 +103,10 @@
  * two unsigned 64 bit integers while the latter requires two signed 64 bit 
  * integers. More generally, users can consult the \ref TraceSourceList
  * to figure out the arguments which a trace sink is required to receive
- * for each trace source.
+ * for each trace source: a signature of the user trace sink must match 
+ * _exactly_ the signature documented in the \ref TraceSourceList.
+ *
+ * \section TraceConnection Connecting Trace Sources to Trace Sinks
  *
  * Since there is no working magic here, defining a trace sink does not connect
  * it directly to a set of trace sources. To connect a trace sink, a user must call
@@ -135,9 +142,14 @@
  * know from _which_ trace source the event is coming from. In our example, the
  * trace source might be coming from the NetDevice number 2 of Node 10 or Netdevice
  * number 0 of Node 5. In both cases, you might need to know which of these NetDevice
- * is generating this event, if only to generate some ascii trace dump.
+ * is generating this event, if only to generate some ascii trace dump. Another 
+ * similar use-case is that you might have connected the same trace sink to
+ * multiple types of events which have the same signature: it is quite common
+ * to receive all tx, rx, and drop events in the same trace sink and that would be
+ * quite trivial to achieve with a string such as: "/nodes/* /devices/* /*"
  *
- * It turns out that there are many ways to get this information. The simplest
+ * The source of a trace event can be retrieved from a trace sink using 
+ * different means: the simplest
  * way to get this information is to use the builtin printing facility of
  * the TraceContext object:
  * \code
@@ -175,6 +187,12 @@
  * }
  * \endcode
  *
+ * \section TraceSourceSimpleExport A simple way to export Trace Sources
+ *
+ * XXX
+ *
+ * \section ExportingTraceSources Exporting new Trace Sources
+ *
  * Using existing trace sources to connect them to a set of adhoc trace sinks
  * is not really complicated but, setting up new trace sources which can hook
  * in this automatic connection system is a bit more complicated.
@@ -184,15 +202,15 @@
  * class MyModel 
  * {
  * public:
- *   void DoSomething (Packet packet, double value) 
+ *   void DoSomething (Packet packet) 
  *   {
  *     // report this event on packet with value
- *     m_doSomething (packet, value);
+ *     m_doSomething (packet);
  *     // do something
  *   }
  * private:
  *   // report every "something" function call.
- *   CallbackTraceSource<Packet,double> m_doSomething;
+ *   CallbackTraceSource<Packet> m_doSomething;
  * };
  * \endcode
  *
@@ -276,12 +294,25 @@
  * The code above will make your "rx" trace source appear under the
  * /nodes/xx/devices/xx/my-model/rx namespace path.
  *
+ * If you have implemented a new layer 3 or 4 protocol object, the process to
+ * export your trace sources is quite similar. You need to subclass from
+ * ns3::Object, override the ns3::Object::GetTraceResolver method, make
+ * sure you chain up to your parent's GetTraceResolver method, and, finally,
+ * make sure that someone calls your new GetTraceResolver method. How to accomplish
+ * the latter should be documented in the node's API documentation which describes
+ * how to implement a new layer 3 or 4 protocol object.
+ *
+ * \section AdvancedTraceContext Creating new Trace Context Elements
+ *
  * The last important feature which model developers need to understand
- * is how to provide extra TraceContext data to trace sinks. For example,
- * if your model exports many trace sources, and if a single trace sink
- * is connected to all these trace sources at the same time, it might need
- * to know, for each event what its event source is. So, if you have a
- * TX, a RX, and a DROP trace source:
+ * is how to provide extra context information to trace sinks. For example,
+ * if your model exports both rx and tx trace sources which share the same 
+ * signature, it is quite natural for a user to connect to a single trace sink
+ * to both of them with a trace path string such as "/nodes/* /devices/* /(rx|tx)".
+ * In this case, it becomes necessary to be able, from the trace sink function,
+ * to tell which event triggered the call to the trace sink: a rx or a tx event.
+ *
+ * That example is detailed below with a TX, a RX, and a DROP source:
  * \code
  * class MyModel
  * {
@@ -291,42 +322,125 @@
  *   CallbackTraceSource<Packet> m_dropSource;
  * };
  * \endcode
- * You would like to allow your connected trace sinks to read their
- * TraceContext for the type of source:
+ * When a single sink is connected to all 3 sources here, one might want
+ * to write code like the following:
  * \code
  * void DeviceRxSink (const TraceContext &context, const Packet &packet)
  * {
- *   MyModelTraceType type;
- *   context.GetElement (type);
  *   switch (type) {
- *     case MyModelTraceType::RX:
- *       std::cout << "drop" << std::endl;
+ *     case RX:
+ *       std::cout << "rx" << std::endl;
  *       break;
- *     case MyModelTraceType::TX:
- *       std::cout << "drop" << std::endl;
+ *     case TX:
+ *       std::cout << "tx" << std::endl;
  *       break;
- *     case MyModelTraceType::DROP:
+ *     case DROP:
  *       std::cout << "drop" << std::endl;
  *       break;
  *   }
  * \endcode
- * or, more simply:
+ *
+ * \subsection AdvancedTraceContextSimpleSolution The simple solution
+ *
+ * The simplest way to do achieve the result shown above is to include
+ * in the trace source an extra explicit argument which describes the source event:
+ *   - define a small enum with 3 values
+ *   - change the signature of m_rxSource, m_txSource, and m_dropSource to include
+ *     the enum
+ *   - pass the enum value in each event
+ *
+ * The resulting code is shown below:
  * \code
- * void DeviceRxSink (const TraceContext &context, const Packet &packet)
+ * class MyModel
  * {
- *   // context contains MyModelTraceType so, 
- *   // it is going to print it
- *   std::cout << context << std::endl;
+ * public:
+ *   // define the trace type enum.
+ *   enum TraceType {
+ *     RX,
+ *     TX,
+ *     DROP
+ *   };
+ * private:
+ *   // generate events
+ *   void NotifyRxPacket (Packet p) {
+ *     m_rxSource (p, MyModel::RX);
+ *   }
+ *   void NotifyTxPacket (Packet p) {
+ *     m_rxSource (p, MyModel::TX);
+ *   }
+ *   void NotifyDropPacket (Packet p) {
+ *     m_rxSource (p, MyModel::DROP);
+ *   }
+ *   CallbackTraceSource<Packet,enum TraceType> m_rxSource;
+ *   CallbackTraceSource<Packet,enum TraceType> m_txSource;
+ *   CallbackTraceSource<Packet,enum TraceType> m_dropSource;
+ * };
+ * \endcode
+ * These 3 new sources can be connected easily to a new trace sink:
+ * \code
+ * void ASimpleTraceSink (const TraceContext &context, const Packet &packet, enum MyModel::TraceType type)
+ * {
+ *   // here, read the "type" argument
  * }
  * \endcode
  *
- * This kind of extra information is not generated magically: model
- * authors must provide to the ns3::CompositeTraceResolver that 
- * per-source extra information during registration to allow the 
- * connection system to store it safely in the user's TraceContext objects. 
+ * This solution works but it makes it impossible to connect a single trace sink to a set
+ * of trace sources which represent "rx" events in different NetDevice objects since
+ * each of them will define a different enum type with different values: since the
+ * trace sink signature must match exactly the trace source signature, it is impossible
+ * to connect at the same time to all "rx" events of different NetDevice.
+ *
+ * \subsection AdvancedTraceContextFancySolution The more complex and generic solution
+ *
+ * There is, hopefully, a way to get the best of both worlds, that is, to allow a
+ * user to connect to a lot of trace source events of the same kind but coming from different
+ * implementations and to allow the user to differentiate between these different
+ * implementations.
+ *
+ * Rather than define an adhoc enum type with a list of trace sources, you can also
+ * define a new ns3::TraceContextElement for your source sources. For example, if you
+ * define a new MyModelTraceType class which contains the type of trace, your users can
+ * then write trace sink code which looks like this:
+ * \code
+ * void AFancyTraceSink (const TraceContext &context, const Packet &packet)
+ * {
+ *   MyModelTraceType type;
+ *   if (context.GetElement (type))
+ *     {
+ *       switch (type.Get ())
+ *         {
+ *         case MyModelTraceType::RX:
+ *           std::cout << "rx" << std::endl;
+ *           break;
+ *         case MyModelTraceType::TX:
+ *           std::cout << "tx" << std::endl;
+ *           break;
+ *         case MyModelTraceType::DROP:
+ *           std::cout << "drop" << std::endl;
+ *           break;
+ *         }
+ *     }
+ * }
+ * \endcode
+ *
+ * Of course, since the type of trace is stored in the TraceContext, your users can
+ * also take the shortcut which uses the printing functionality of the TraceContext:
+ * \code
+ * void ALessFancyTraceSink (const TraceContext &context, const Packet &packet)
+ * {
+ *   std::cout << "context=\"" << context << "\" packet: " << packet << std::endl;
+ * }
+ * \endcode
+ * which will generate something like the following when the trace source comes
+ * from MyModel:
+ * \code
+ * context="my-model-rx" packet: ...
+ * \endcode
  *
  * The first step to achieve this is to define and implement a new
- * subclass of the ns3::TraceContextElement base class:
+ * subclass of the ns3::TraceContextElement base class. The exact list of
+ * public methods which must be implemented is described in the API
+ * documentation of the ns3::TraceContextElement class. 
  * \code
  * class MyModelTraceType : public TraceContextElement
  * {
@@ -352,7 +466,7 @@
  *   enum Type m_type;
  * };
  * \endcode
- * The implementation is quite straightforward:
+ * The implementation does not require much thinking:
  * \code
  * MyModelTraceType::MyModelTraceType (enum Type type)
  *  : m_type (type)
@@ -366,12 +480,15 @@
  * MyModelTraceType::GetUid (void)
  * {
  *   // use protected TraceContextElement::AllocateUid method
+ *   // the input string is used to uniquely identify this new subclass
  *   static uint16_t uid = AllocateUid<MyModelTraceType> ("ns3::MyModelTraceType");
  *   return uid;
  * }
  * void 
  * MyModelTraceType::Print (std::ostream &os) const
  * (
+ *   // this method is invoked by the print function of a TraceContext
+ *   // if it contains an instance of this TraceContextElement.
  *   switch (m_type) {
  *     case RX: os << "rx"; break;
  *     // ...
@@ -380,6 +497,9 @@
  * std::string 
  * MyModelTraceType::GetTypeName (void) const
  * {
+ *   // This method should return a fully-qualified c++ typename
+ *   // This method is used only for documentation purposes to
+ *   // generate the content of the Trace Source List.
  *   return "ns3::MyModelTraceType";
  * }
  * \endcode
