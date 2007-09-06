@@ -6,7 +6,7 @@ routing to ns-3.
 
 This extension allows the simulation user to:
 
-- manually add an Ipv4 multicast route to a router
+- manually add Ipv4 multicast routes to a router
 - specify a default outgoing interface for multicast sources (hosts) in 
   various ways
 - allow a multicast receiver (hosts) to join a multicast group, to enable
@@ -29,7 +29,7 @@ also touched are:
   virtual methods.
 - src/internet-node/ (several files have added tracing)
  
-- an example script is in examples/csma-multicast.cc
+- a heavily commented example script is in examples/csma-multicast.cc
 
 2.  API:
 
@@ -114,8 +114,30 @@ To remove a route, one uses:
  * @see Ipv4MulticastRoute
  * @see Ipv4StaticRouting::AddMulticastRoute
  */
-  Ipv4::RemoveMulticastRoute (Ipv4Address origin,                                                             Ipv4Address group,
+  Ipv4::RemoveMulticastRoute (Ipv4Address origin,
+                              Ipv4Address group,
                               uint32_t inputInterface)
+
+For symmetry with the unicast routing interface, a method is provided to 
+remove routes by index:
+
+/**
+ * @brief Remove a route from the static multicast routing table.
+ *
+ * Externally, the multicast static routing table appears simply as a table 
+ * with n entries.  The one sublety of note is that if a default multicast
+ * route has been set it will appear as the zeroth entry in the table.  This 
+ * means that if the default route has been set, calling 
+ * RemoveMulticastRoute (0) will remove the default route.
+ *
+ * @param index The index (into the multicast routing table) of the route to
+ * remove.  If the default route has been set, it will occupy index zero.
+ *
+ * @see Ipv4Route
+ * @see Ipv4StaticRouting::GetRoute
+ * @see Ipv4StaticRouting::AddRoute
+ */
+  void RemoveMulticastRoute (uint32_t index);
 
 For compatibility, and to provide simplicity, one can set a default multicast
 route for a host originating data:
