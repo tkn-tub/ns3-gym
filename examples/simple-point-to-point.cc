@@ -64,6 +64,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/point-to-point-topology.h"
 #include "ns3/onoff-application.h"
+#include "ns3/node-list.h"
 
 using namespace ns3;
 
@@ -177,6 +178,8 @@ int main (int argc, char *argv[])
   AsciiTrace asciitrace ("simple-point-to-point.tr");
   asciitrace.TraceAllQueues ();
   asciitrace.TraceAllNetDeviceRx ();
+
+  NodeList::ConnectPrinterToAll (std::cout);
 
   // Also configure some tcpdump traces; each interface will be traced
   // The output files will be named 

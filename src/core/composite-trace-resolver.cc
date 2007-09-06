@@ -63,6 +63,12 @@ CompositeTraceResolver::Add (std::string name,
       ctx.Union (this->context);
       this->maker ()->CollectSources (path, ctx, collection);
     }
+    virtual void ConnectPrinterToAll (std::ostream &os, const TraceContext &context)
+    {
+      TraceContext ctx = context;
+      ctx.Union (this->context);
+      this->maker ()->ConnectPrinterToAll (os, ctx);
+    }
     Callback<Ptr<TraceResolver> > maker;
   } *item = new MakerResolveItem ();
   item->name = name;
@@ -101,6 +107,12 @@ CompositeTraceResolver::DoAddSource (std::string name,
       ctx.Union (this->context);
       collection->AddUnique (path, ctx, this->doc);
     }
+    virtual void ConnectPrinterToAll (std::ostream &os, const TraceContext &context)
+    {
+      TraceContext ctx = context;
+      ctx.Union (this->context);
+      this->trace->ConnectPrinter (os, ctx);
+    }
     TraceSource *trace;
     TraceDoc doc;
   } *item = new SourceResolveItem ();
@@ -137,6 +149,12 @@ CompositeTraceResolver::DoAddComposite (std::string name, Ptr<Object> composite,
       TraceContext ctx = context;
       ctx.Union (this->context);
       this->composite->GetTraceResolver ()->CollectSources (path, ctx, collection);
+    }
+    virtual void ConnectPrinterToAll (std::ostream &os, const TraceContext &context)
+    {
+      TraceContext ctx = context;
+      ctx.Union (this->context);
+      this->composite->GetTraceResolver ()->ConnectPrinterToAll (os, ctx);
     }
 
     Ptr<Object> composite;
@@ -292,6 +310,19 @@ CompositeTraceResolver::CollectSources (std::string path, const TraceContext &co
     {
       m_parent->CollectSources (path, context, collection);
     }
+}
+void 
+CompositeTraceResolver::ConnectPrinterToAll (std::ostream &os, const TraceContext &context)
+{
+  for (TraceItems::const_iterator i = m_items.begin (); i != m_items.end (); i++)
+    {
+      NS_DEBUG ("print " << (*i)->name);
+      (*i)->ConnectPrinterToAll (os, context);
+    }
+  if (m_parent != 0)
+    {
+      m_parent->ConnectPrinterToAll (os, context);
+    }  
 }
 
 

@@ -19,6 +19,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "callback-trace-source.h"
+
+#ifdef RUN_SELF_TESTS
+
 #include "test.h"
 
 namespace ns3 {
@@ -93,6 +96,6 @@ CallbackTraceSourceTest::RunTests (void)
 
 CallbackTraceSourceTest g_callbackTraceTest;
 
-
-
 }//namespace ns3
+
+#endif /* RUN_SELF_TESTS */

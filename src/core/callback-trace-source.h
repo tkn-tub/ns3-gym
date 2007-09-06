@@ -44,6 +44,7 @@ public:
   CallbackTraceSource ();
   virtual void AddCallback (CallbackBase const & callback, TraceContext const & context);
   virtual void RemoveCallback (CallbackBase const & callback);
+  virtual void ConnectPrinter (std::ostream &os, const TraceContext &context);
   void operator() (void) const;
   void operator() (T1 a1) const;
   void operator() (T1 a1, T2 a2) const;
@@ -61,6 +62,92 @@ private:
 // implementation below.
 
 namespace ns3 {
+
+namespace internal {
+
+template<typename T1, typename T2, 
+         typename T3, typename T4>
+class TraceSinkPrint;
+
+template<typename T1, typename T2, 
+         typename T3, typename T4>
+class TraceSinkPrint
+{
+public:
+  static Callback<void,const TraceContext &,T1,T2,T3,T4> Make (std::ostream &os)
+  {
+    return ns3::MakeBoundCallback (&DoPrint, &os);
+  }
+private:
+  static void DoPrint (std::ostream *os, const TraceContext &context, T1 a1, T2 a2, T3 a3, T4 a4)
+  {
+    *os << "context=\"" << context << "\" arg1=\"" << a1 << "\" arg2=\"" << a2 << "\" arg3=\"" << a3 << "\" arg4=\"" << a4 << "\"" << std::endl;
+  }
+};
+
+template<typename T1, typename T2, 
+         typename T3>
+class TraceSinkPrint<T1,T2,T3,empty>
+{
+public:
+  static Callback<void,const TraceContext &,T1,T2,T3> Make (std::ostream &os)
+  {
+    return ns3::MakeBoundCallback (&DoPrint, &os);
+  }
+private:
+  static void DoPrint (std::ostream *os, const TraceContext &context, T1 a1, T2 a2, T3 a3)
+  {
+    *os << "context=\"" << context << "\" arg1=\"" << a1 << "\" arg2=\"" << a2 << "\" arg3=\"" << a3 << "\"" << std::endl;
+  }
+};
+
+template<typename T1, typename T2>
+class TraceSinkPrint<T1,T2,empty,empty>
+{
+public:
+  static Callback<void,const TraceContext &,T1,T2> Make (std::ostream &os)
+  {
+    return ns3::MakeBoundCallback (&DoPrint, &os);
+  }
+private:
+  static void DoPrint (std::ostream *os, const TraceContext &context, T1 a1, T2 a2)
+  {
+    *os << "context=\"" << context << "\" arg1=\"" << a1 << "\" arg2=\"" << a2 << "\"" << std::endl;
+  }
+};
+
+template<typename T1>
+class TraceSinkPrint<T1,empty,empty,empty>
+{
+public:
+  static Callback<void,const TraceContext &,T1> Make (std::ostream &os)
+  {
+    return ns3::MakeBoundCallback (&DoPrint, &os);
+  }
+private:
+  static void DoPrint (std::ostream *os, const TraceContext &context, T1 a1)
+  {
+    *os << "context=\"" << context << "\" arg1=\"" << a1 << "\"" << std::endl;
+  }
+};
+
+template <>
+class TraceSinkPrint<empty,empty,empty,empty>
+{
+public:
+  static Callback<void,const TraceContext &> Make (std::ostream &os)
+  {
+    return ns3::MakeBoundCallback (&DoPrint, &os);
+  }
+private:
+  static void DoPrint (std::ostream *os, const TraceContext &context)
+  {
+    *os << "context=\"" << context << std::endl;
+  }
+};
+
+} // namespace internal
+
 
 template<typename T1, typename T2, 
          typename T3, typename T4>
@@ -95,6 +182,13 @@ CallbackTraceSource<T1,T2,T3,T4>::RemoveCallback (CallbackBase const & callback)
 	  i++;
 	}
     }
+}
+template<typename T1, typename T2, 
+         typename T3, typename T4>
+void 
+CallbackTraceSource<T1,T2,T3,T4>::ConnectPrinter (std::ostream &os, const TraceContext &context)
+{
+  AddCallback (ns3::internal::TraceSinkPrint<T1,T2,T3,T4>::Make (os), context);
 }
 template<typename T1, typename T2, 
          typename T3, typename T4>

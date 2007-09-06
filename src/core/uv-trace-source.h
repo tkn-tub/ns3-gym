@@ -47,7 +47,10 @@ public:
     m_callback.AddCallback (callback, context);
   }
   virtual void RemoveCallback (CallbackBase const & callback) {
-    m_callback.RemoveCallback (callback);
+    m_callback.RemoveCallback (callback);  
+  }  
+  virtual void ConnectPrinter (std::ostream &os, const TraceContext &context) {
+    m_callback.ConnectPrinter (os, context);
   }
 
 protected:

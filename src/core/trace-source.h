@@ -21,6 +21,8 @@
 #ifndef TRACE_SOURCE_H
 #define TRACE_SOURCE_H
 
+#include <ostream>
+
 namespace ns3 {
 
 class CallbackBase;
@@ -51,6 +53,7 @@ public:
    * \param callback the callback to disconnect from this trace source
    */
   virtual void RemoveCallback (CallbackBase const & callback) = 0;
+  virtual void ConnectPrinter (std::ostream &os, TraceContext const &context) = 0;
 };
 
 } // namespace ns3

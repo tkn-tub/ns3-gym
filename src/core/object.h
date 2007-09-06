@@ -184,6 +184,7 @@ private:
   Ptr<Object> DoQueryInterface (InterfaceId iid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
                          TraceResolver::SourceCollection *collection) const;
+  void DoConnectPrinterToAll (std::ostream &os, const TraceContext &context) const;
   bool Check (void) const;
   void MaybeDelete (void) const;
   mutable uint32_t m_count;

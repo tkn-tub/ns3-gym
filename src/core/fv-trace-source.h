@@ -46,6 +46,9 @@ public:
   virtual void RemoveCallback (CallbackBase const & callback) {
     m_callback.RemoveCallback (callback);
   }
+  virtual void ConnectPrinter (std::ostream &os, const TraceContext &context) {
+    m_callback.ConnectPrinter (os, context);
+  }
 protected:
   void notify (double oldVal, double newVal) {
       if (oldVal != newVal) 
