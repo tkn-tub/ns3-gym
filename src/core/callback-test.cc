@@ -57,6 +57,14 @@ void *Test10 (bool *a, int const & b)
   return a;
 }
 
+void TestFZero (void) {}
+void TestFOne (int) {}
+void TestFTwo (int, int) {}
+void TestFThree (int, int, int) {}
+void TestFFour (int, int, int, int) {}
+void TestFFive (int, int, int, int, int) {}
+void TestFSix (int, int, int, int, int, int) {}
+
 class CallbackTest : public ns3::Test {
 private:
   bool m_test1;
@@ -73,6 +81,22 @@ public:
   void Test3 (double a);
   int Test4 (double a, int b);
   void Test8 (Callback<void, int> callback);
+
+  void TestZero (void) {}
+  void TestOne (int) {}
+  void TestTwo (int, int) {}
+  void TestThree (int, int, int) {}
+  void TestFour (int, int, int, int) {}
+  void TestFive (int, int, int, int, int) {}
+  void TestSix (int, int, int, int, int, int) {}
+
+  void TestCZero (void) const {}
+  void TestCOne (int) const {}
+  void TestCTwo (int, int) const {}
+  void TestCThree (int, int, int) const {}
+  void TestCFour (int, int, int, int) const {}
+  void TestCFive (int, int, int, int, int) const {}
+  void TestCSix (int, int, int, int, int, int) const {}
 };
 
 CallbackTest::CallbackTest ()
@@ -110,6 +134,7 @@ CallbackTest::Test8 (Callback<void,int> callback)
 {
   callback (3);
 }
+
 bool
 CallbackTest::IsWrong (void)
 {
@@ -215,6 +240,31 @@ CallbackTest::RunTests (void)
   bool v;
   MakeBoundCallback (&Test9, &v);
   MakeBoundCallback (&Test10, &v);
+
+
+  MakeCallback (&CallbackTest::TestZero, this);
+  MakeCallback (&CallbackTest::TestOne, this);
+  MakeCallback (&CallbackTest::TestTwo, this);
+  MakeCallback (&CallbackTest::TestThree, this);
+  MakeCallback (&CallbackTest::TestFour, this);
+  MakeCallback (&CallbackTest::TestFive, this);
+  MakeCallback (&CallbackTest::TestSix, this);
+
+  MakeCallback (&CallbackTest::TestCZero, this);
+  MakeCallback (&CallbackTest::TestCOne, this);
+  MakeCallback (&CallbackTest::TestCTwo, this);
+  MakeCallback (&CallbackTest::TestCThree, this);
+  MakeCallback (&CallbackTest::TestCFour, this);
+  MakeCallback (&CallbackTest::TestCFive, this);
+  MakeCallback (&CallbackTest::TestCSix, this);
+
+  MakeCallback (&TestFZero);
+  MakeCallback (&TestFOne);
+  MakeCallback (&TestFTwo);
+  MakeCallback (&TestFThree);
+  MakeCallback (&TestFFour);
+  MakeCallback (&TestFFive);
+  MakeCallback (&TestFSix);
 
   return ok;
 }
