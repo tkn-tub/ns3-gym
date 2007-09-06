@@ -25,7 +25,7 @@
 #include "ptr.h"
 #include "fatal-error.h"
 #include "empty.h"
-#include <iostream>
+#include "type-traits.h"
 
 namespace ns3 {
 
@@ -691,46 +691,50 @@ public:
   }
 private:
   T m_functor;
-  TX m_a;
+  typename TypeTraits<TX>::ReferencedType m_a;
 };
 
-template <typename R, typename TX>
-Callback<R> MakeBoundCallback (R (*fnPtr) (TX), TX a) {
+template <typename R, typename TX, typename ARG>
+Callback<R> MakeBoundCallback (R (*fnPtr) (TX), ARG a) {
   Ptr<CallbackImpl<R,empty,empty,empty,empty,empty,empty> > impl =
     Create<BoundFunctorCallbackImpl<R (*) (TX),R,TX,empty,empty,empty,empty,empty> >(fnPtr, a);
   return Callback<R> (impl);
 }
 
-template <typename R, typename TX, typename T1>
-Callback<R,T1> MakeBoundCallback (R (*fnPtr) (TX,T1), TX a) {
+template <typename R, typename TX, typename ARG, 
+          typename T1>
+Callback<R,T1> MakeBoundCallback (R (*fnPtr) (TX,T1), ARG a) {
   Ptr<CallbackImpl<R,T1,empty,empty,empty,empty,empty> > impl =
     Create<BoundFunctorCallbackImpl<R (*) (TX,T1),R,TX,T1,empty,empty,empty,empty> > (fnPtr, a);
   return Callback<R,T1> (impl);
 }
-template <typename R, typename TX, typename T1, typename T2>
-Callback<R,T1,T2> MakeBoundCallback (R (*fnPtr) (TX,T1,T2), TX a) {
+template <typename R, typename TX, typename ARG, 
+          typename T1, typename T2>
+Callback<R,T1,T2> MakeBoundCallback (R (*fnPtr) (TX,T1,T2), ARG a) {
   Ptr<CallbackImpl<R,T1,T2,empty,empty,empty,empty> > impl =
     Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2),R,TX,T1,T2,empty,empty,empty> > (fnPtr, a);
   return Callback<R,T1,T2> (impl);
 }
-template <typename R, typename TX, typename T1, typename T2,typename T3,typename T4>
-Callback<R,T1,T2,T3,T4> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4), TX a) {
+template <typename R, typename TX, typename ARG,
+          typename T1, typename T2,typename T3>
+Callback<R,T1,T2,T3> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3), ARG a) {
+  Ptr<CallbackImpl<R,T1,T2,T3,empty,empty,empty> > impl =
+    Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3),R,TX,T1,T2,T3,empty,empty> > (fnPtr, a);
+  return Callback<R,T1,T2,T3> (impl);
+}
+template <typename R, typename TX, typename ARG,
+          typename T1, typename T2,typename T3,typename T4>
+Callback<R,T1,T2,T3,T4> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4), ARG a) {
   Ptr<CallbackImpl<R,T1,T2,T3,T4,empty,empty> > impl =
     Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4),R,TX,T1,T2,T3,T4,empty> > (fnPtr, a);
   return Callback<R,T1,T2,T3,T4> (impl);
 }
-
-template <typename R, typename TX, typename T1, typename T2,typename T3,typename T4,typename T5>
-Callback<R,T1,T2,T3,T4,T5> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4,T5), TX a) {
+template <typename R, typename TX, typename ARG,
+          typename T1, typename T2,typename T3,typename T4,typename T5>
+Callback<R,T1,T2,T3,T4,T5> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4,T5), ARG a) {
   Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,empty> > impl =
     Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4,T5),R,TX,T1,T2,T3,T4,T5> > (fnPtr, a);
   return Callback<R,T1,T2,T3,T4,T5> (impl);
-}
-template <typename R, typename TX, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6>
-Callback<R,T1,T2,T3,T4,T5,T6> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4,T5,T6), TX a) {
-  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6> > impl =
-    Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4,T5),R,TX,T1,T2,T3,T4,T5> > (fnPtr, a);
-  return Callback<R,T1,T2,T3,T4,T5,T6> (impl);
 }
 
 

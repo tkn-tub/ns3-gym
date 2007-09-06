@@ -65,6 +65,13 @@ void TestFFour (int, int, int, int) {}
 void TestFFive (int, int, int, int, int) {}
 void TestFSix (int, int, int, int, int, int) {}
 
+void TestFROne (int &) {}
+void TestFRTwo (int &, int &) {}
+void TestFRThree (int &, int &, int &) {}
+void TestFRFour (int &, int &, int &, int &) {}
+void TestFRFive (int &, int &, int &, int &, int &) {}
+void TestFRSix (int &, int &, int &, int &, int &, int &) {}
+
 class CallbackTest : public ns3::Test {
 private:
   bool m_test1;
@@ -265,6 +272,28 @@ CallbackTest::RunTests (void)
   MakeCallback (&TestFFour);
   MakeCallback (&TestFFive);
   MakeCallback (&TestFSix);
+
+  MakeCallback (&TestFROne);
+  MakeCallback (&TestFRTwo);
+  MakeCallback (&TestFRThree);
+  MakeCallback (&TestFRFour);
+  MakeCallback (&TestFRFive);
+  MakeCallback (&TestFRSix);
+
+
+  MakeBoundCallback (&TestFOne, 1);
+  MakeBoundCallback (&TestFTwo, 1);
+  MakeBoundCallback (&TestFThree, 1);
+  MakeBoundCallback (&TestFFour, 1);
+  MakeBoundCallback (&TestFFive, 1);
+
+  MakeBoundCallback (&TestFROne, 1);
+  MakeBoundCallback (&TestFRTwo, 1);
+  MakeBoundCallback (&TestFRThree, 1);
+  MakeBoundCallback (&TestFRFour, 1);
+  MakeBoundCallback (&TestFRFive, 1);
+
+
 
   return ok;
 }
