@@ -101,7 +101,7 @@ public:
    * the input namespace regexp.
    */
   static void Disconnect (std::string name, const CallbackBase &cb);
-  static void ConnectPrinterToAll (std::ostream &os);
+  static void TraceAll (std::ostream &os);
   static Ptr<TraceResolver> GetTraceResolver (void);
 private:
 };

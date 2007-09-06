@@ -101,7 +101,7 @@ public:
   virtual void CollectSources (std::string path, const TraceContext &context, 
                                SourceCollection *collection) = 0;
 
-  virtual void ConnectPrinterToAll (std::ostream &os, const TraceContext &context) = 0;
+  virtual void TraceAll (std::ostream &os, const TraceContext &context) = 0;
 protected:
   /**
    * \param path a namespace path

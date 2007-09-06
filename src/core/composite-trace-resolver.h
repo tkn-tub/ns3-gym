@@ -120,7 +120,7 @@ private:
   virtual void Disconnect (std::string path, CallbackBase const &cb);
   virtual void CollectSources (std::string path, const TraceContext &context, 
                                SourceCollection *collection);
-  virtual void ConnectPrinterToAll (std::ostream &os, const TraceContext &context);
+  virtual void TraceAll (std::ostream &os, const TraceContext &context);
   friend class CompositeTraceResolverTest;
   class ResolveItem 
   {
@@ -130,7 +130,7 @@ private:
     virtual void Disconnect (std::string subpath, const CallbackBase &cb) = 0;
     virtual void CollectSources (std::string path, const TraceContext &context, 
                                  SourceCollection *collection) = 0;
-    virtual void ConnectPrinterToAll (std::ostream &os, const TraceContext &context) = 0;
+    virtual void TraceAll (std::ostream &os, const TraceContext &context) = 0;
 
     std::string name;
     TraceContext context;
@@ -201,11 +201,11 @@ CompositeTraceResolver::AddArray (std::string name,
       ctx.Union (this->context);
       array->CollectSources (path, ctx, collection);
     }
-    virtual void ConnectPrinterToAll (std::ostream &os, const TraceContext &context)
+    virtual void TraceAll (std::ostream &os, const TraceContext &context)
     {
       TraceContext ctx = context;
       ctx.Union (this->context);
-      array->ConnectPrinterToAll (os, ctx);
+      array->TraceAll (os, ctx);
     }
 
     Ptr<ArrayTraceResolver<INDEX> > array;

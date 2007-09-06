@@ -179,7 +179,7 @@ int main (int argc, char *argv[])
   asciitrace.TraceAllQueues ();
   asciitrace.TraceAllNetDeviceRx ();
 
-  NodeList::ConnectPrinterToAll (std::cout);
+  NodeList::TraceAll (std::cout);
 
   // Also configure some tcpdump traces; each interface will be traced
   // The output files will be named 

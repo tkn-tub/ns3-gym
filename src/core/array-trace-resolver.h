@@ -64,7 +64,7 @@ public:
   virtual void Disconnect (std::string path, CallbackBase const &cb);
   virtual void CollectSources (std::string path, const TraceContext &context, 
                                SourceCollection *collection);
-  virtual void ConnectPrinterToAll (std::ostream &os, const TraceContext &context);
+  virtual void TraceAll (std::ostream &os, const TraceContext &context);
 
 private:
   class IteratorBase
@@ -186,7 +186,7 @@ ArrayTraceResolver<INDEX>::CollectSources (std::string path, const TraceContext 
 
 template <typename INDEX>
 void 
-ArrayTraceResolver<INDEX>::ConnectPrinterToAll (std::ostream &os, const TraceContext &context)
+ArrayTraceResolver<INDEX>::TraceAll (std::ostream &os, const TraceContext &context)
 {
   uint32_t j = 0;
   for (m_iter->Rewind (); m_iter->HasNext (); m_iter->Next ())
@@ -195,7 +195,7 @@ ArrayTraceResolver<INDEX>::ConnectPrinterToAll (std::ostream &os, const TraceCon
         INDEX index = j;
         tmp.AddElement (index);
         Ptr<Object> obj = m_iter->Get ();
-        obj->GetTraceResolver ()->ConnectPrinterToAll (os, tmp);
+        obj->GetTraceResolver ()->TraceAll (os, tmp);
         j++;
     }
 }

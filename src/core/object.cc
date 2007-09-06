@@ -68,7 +68,7 @@ public:
   virtual void Disconnect (std::string path, CallbackBase const &cb);
   virtual void CollectSources (std::string path, const TraceContext &context, 
                                SourceCollection *collection);
-  virtual void ConnectPrinterToAll (std::ostream &os, const TraceContext &context);
+  virtual void TraceAll (std::ostream &os, const TraceContext &context);
 private:
   Ptr<const Object> ParseForInterface (std::string path);
   Ptr<const Object> m_aggregate;
@@ -116,9 +116,9 @@ InterfaceIdTraceResolver::CollectSources (std::string path, const TraceContext &
   m_aggregate->DoCollectSources (path, context, collection);
 }
 void 
-InterfaceIdTraceResolver::ConnectPrinterToAll (std::ostream &os, const TraceContext &context)
+InterfaceIdTraceResolver::TraceAll (std::ostream &os, const TraceContext &context)
 {
-  m_aggregate->DoConnectPrinterToAll (os, context);
+  m_aggregate->DoTraceAll (os, context);
 }
 
 
@@ -340,7 +340,7 @@ Object::DoCollectSources (std::string path, const TraceContext &context,
   m_collecting = false;
 }
 void 
-Object::DoConnectPrinterToAll (std::ostream &os, const TraceContext &context) const
+Object::DoTraceAll (std::ostream &os, const TraceContext &context) const
 {
   const Object *current;
   current = this;
@@ -358,7 +358,7 @@ Object::DoConnectPrinterToAll (std::ostream &os, const TraceContext &context) co
   while (current != this)
     {
       NS_ASSERT (current != 0);
-      current->GetTraceResolver ()->ConnectPrinterToAll (os, context);
+      current->GetTraceResolver ()->TraceAll (os, context);
       current = current->m_next;
     }
 

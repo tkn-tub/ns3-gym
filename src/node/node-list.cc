@@ -172,9 +172,9 @@ NodeList::Disconnect (std::string name, const CallbackBase &cb)
   SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ()->Disconnect (name, cb);
 }
 void 
-NodeList::ConnectPrinterToAll (std::ostream &os)
+NodeList::TraceAll (std::ostream &os)
 {
-  SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ()->ConnectPrinterToAll (os, TraceContext ());
+  SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ()->TraceAll (os, TraceContext ());
 }
 Ptr<TraceResolver> 
 NodeList::GetTraceResolver (void)
