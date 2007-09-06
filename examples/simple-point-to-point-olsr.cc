@@ -183,6 +183,8 @@ int main (int argc, char *argv[])
   PcapTrace pcaptrace ("simple-point-to-point-olsr.pcap");
   pcaptrace.TraceAllIp ();
 
+  Simulator::StopAt (Seconds (10));
+
   Simulator::Run ();
     
   Simulator::Destroy ();
