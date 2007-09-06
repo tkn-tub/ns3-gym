@@ -24,4 +24,4 @@ def build(bld):
 
     obj = bld.create_ns3_program('simple-point-to-point-olsr',
         ['point-to-point', 'internet-node', 'olsr'])
-    obj.source = 'simple-p2p-olsr.cc'
+    obj.source = 'simple-point-to-point-olsr.cc'

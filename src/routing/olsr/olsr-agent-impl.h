@@ -99,9 +99,8 @@ protected:
   inline uint16_t GetMessageSequenceNumber ();
 	
   void RecvOlsr (Ptr<Socket> socket,
-                 const uint8_t *dataPtr, uint32_t dataSize,
-                 const Ipv4Address &sourceAddr,
-                 uint16_t sourcePort);
+                 const Packet &receivedPacket,
+                 const Address &sourceAddress);
 
   void MprComputation ();
   void RoutingTableComputation ();

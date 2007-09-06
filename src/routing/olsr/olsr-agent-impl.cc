@@ -43,6 +43,7 @@
 #include "ns3/simulator.h"
 #include "ns3/debug.h"
 #include "ns3/random-variable.h"
+#include "ns3/inet-socket-address.h"
 
 #include <iomanip>
 
@@ -181,11 +182,11 @@ OlsrAgentImpl::OlsrAgentImpl (Ptr<Node> node)
   Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (Udp::iid);
 
   m_receiveSocket = socketFactory->CreateSocket ();
-  if (m_receiveSocket->Bind (OLSR_PORT_NUMBER))
+  if (m_receiveSocket->Bind (InetSocketAddress (OLSR_PORT_NUMBER)))
     NS_ASSERT_MSG (false, "Failed to bind() OLSR receive socket");
 
   m_sendSocket = socketFactory->CreateSocket ();
-  m_sendSocket->Connect (Ipv4Address (0xffffffff), OLSR_PORT_NUMBER);
+  m_sendSocket->Connect (InetSocketAddress (Ipv4Address (0xffffffff), OLSR_PORT_NUMBER));
 
 }
 
@@ -227,9 +228,9 @@ void OlsrAgentImpl::Start ()
   // static routing.
   m_ipv4->AddRoutingProtocol (m_routingTable, -10);
 
-  if (m_sendSocket->Bind (m_mainAddress, OLSR_PORT_NUMBER))
+  if (m_sendSocket->Bind (InetSocketAddress (m_mainAddress, OLSR_PORT_NUMBER)))
     NS_ASSERT_MSG (false, "Failed to bind() OLSR send socket");
-  m_receiveSocket->Recv (MakeCallback (&OlsrAgentImpl::RecvOlsr,  this));
+  m_receiveSocket->SetRecvCallback (MakeCallback (&OlsrAgentImpl::RecvOlsr,  this));
 
   HelloTimerExpire ();
   TcTimerExpire ();
@@ -248,27 +249,27 @@ void OlsrAgentImpl::SetMainInterface (uint32_t interface)
 // \brief Processes an incoming %OLSR packet following RFC 3626 specification.
 void
 OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
-                         const uint8_t *dataPtr, uint32_t dataSize,
-                         const Ipv4Address &sourceAddress,
-                         uint16_t sourcePort)
+                         const Packet &receivedPacket,
+                         const Address &sourceAddress)
 {
   NS_DEBUG ("OLSR node " << m_mainAddress << " received a OLSR packet");
-
+  InetSocketAddress inetSourceAddr = InetSocketAddress::ConvertFrom (sourceAddress);
+  
   // All routing messages are sent from and to port RT_PORT,
   // so we check it.
-  NS_ASSERT (sourcePort == OLSR_PORT_NUMBER);
+  NS_ASSERT (inetSourceAddr.GetPort () == OLSR_PORT_NUMBER);
   
-  Packet packet (dataPtr, dataSize);
+  Packet packet = receivedPacket;
 
   OlsrPacketHeader olsrPacketHeader;
   packet.RemoveHeader (olsrPacketHeader);
-  NS_ASSERT (olsrPacketHeader.GetPacketLength () >= olsrPacketHeader.GetSize ());
-  uint32_t sizeLeft = olsrPacketHeader.GetPacketLength () - olsrPacketHeader.GetSize ();
+  NS_ASSERT (olsrPacketHeader.GetPacketLength () >= olsrPacketHeader.GetSerializedSize ());
+  uint32_t sizeLeft = olsrPacketHeader.GetPacketLength () - olsrPacketHeader.GetSerializedSize ();
   
   while (sizeLeft)
     {
       OlsrMessageHeader messageHeader;
-      NS_ASSERT (sizeLeft >= messageHeader.GetSize ());
+      NS_ASSERT (sizeLeft >= messageHeader.GetSerializedSize ());
       if (packet.RemoveHeader (messageHeader) == 0)
         NS_ASSERT (false);
       
@@ -286,13 +287,13 @@ OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
           || messageHeader.GetOriginatorAddress () == m_mainAddress)
         {
           packet.RemoveAtStart (messageHeader.GetMessageSize ()
-                                - messageHeader.GetSize ());
+                                - messageHeader.GetSerializedSize ());
           continue;
         }
 
       // Save the original message payload for forwarding
       Packet messagePayload = packet.CreateFragment
-        (0, messageHeader.GetMessageSize () - messageHeader.GetSize ());
+        (0, messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
       
       // If the message has been processed it must not be processed again
       bool do_forwarding = true;
@@ -309,28 +310,28 @@ OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
           switch (messageHeader.GetMessageType ())
             {
             case OlsrMessageHeader::HELLO_MESSAGE:
-              helloMsg.SetMessageSize (messageHeader.GetMessageSize () - messageHeader.GetSize ());
+              helloMsg.SetMessageSize (messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
               packet.RemoveHeader (helloMsg);
               NS_DEBUG ("OLSR node received HELLO message of size " << messageHeader.GetMessageSize ());
-              ProcessHello(messageHeader, helloMsg, m_mainAddress, sourceAddress);
+              ProcessHello (messageHeader, helloMsg, m_mainAddress, inetSourceAddr.GetIpv4 ());
               break;
 
             case OlsrMessageHeader::TC_MESSAGE:
-              tcMsg.SetMessageSize (messageHeader.GetMessageSize () - messageHeader.GetSize ());
+              tcMsg.SetMessageSize (messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
               packet.RemoveHeader (tcMsg);
               NS_DEBUG ("OLSR node received TC message of size " << messageHeader.GetMessageSize ());
-              ProcessTc(messageHeader, tcMsg, sourceAddress);
+              ProcessTc (messageHeader, tcMsg, inetSourceAddr.GetIpv4 ());
               break;
 
             case OlsrMessageHeader::MID_MESSAGE:
-              midMsg.SetMessageSize (messageHeader.GetMessageSize () - messageHeader.GetSize ());
+              midMsg.SetMessageSize (messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
               packet.RemoveHeader (midMsg);
               NS_DEBUG ("OLSR node received MID message of size " << messageHeader.GetMessageSize ());
-              ProcessMid(messageHeader, midMsg, sourceAddress);
+              ProcessMid (messageHeader, midMsg, inetSourceAddr.GetIpv4 ());
               break;
 
             default:
-              packet.RemoveAtStart (messageHeader.GetMessageSize () - messageHeader.GetSize ());
+              packet.RemoveAtStart (messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
               NS_DEBUG ("OLSR message type " <<
                         int (messageHeader.GetMessageType ()) <<
                         " not implemented");
@@ -339,7 +340,7 @@ OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
       else
         {
           NS_DEBUG ("OLSR message is duplicated, not reading it.");
-          packet.RemoveAtStart (messageHeader.GetMessageSize () - messageHeader.GetSize ());
+          packet.RemoveAtStart (messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
       
           // If the message has been considered for forwarding, it should
           // not be retransmitted again
@@ -361,7 +362,7 @@ OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
           // Remaining messages are also forwarded using the default algorithm.
           if (messageHeader.GetMessageType ()  != OlsrMessageHeader::HELLO_MESSAGE)
             ForwardDefault (messageHeader, messagePayload, duplicated,
-                            m_mainAddress, sourceAddress);
+                            m_mainAddress, inetSourceAddr.GetIpv4 ());
         }
 	
     }
@@ -1069,11 +1070,11 @@ OlsrAgentImpl::SendPacket (Packet packet)
   NS_DEBUG ("OLSR node " << m_mainAddress << " sending a OLSR packet");
   // Add a header
   OlsrPacketHeader header;
-  header.SetPacketLength (header.GetSize () + packet.GetSize ());
+  header.SetPacketLength (header.GetSerializedSize () + packet.GetSize ());
   header.SetPacketSequenceNumber (GetPacketSequenceNumber ());
   packet.AddHeader (header);
   // Send it
-  m_sendSocket->Send (packet.PeekData (), packet.GetSize ());
+  m_sendSocket->Send (packet);
 }
 
 ///
@@ -1214,9 +1215,9 @@ OlsrAgentImpl::SendHello ()
   hello.SetLinkMessages (linkMessages);
   Packet packet;
   packet.AddHeader (hello);
-  NS_DEBUG ("OLSR HELLO message size: " << int (packet.GetSize () + msg.GetSize ())
+  NS_DEBUG ("OLSR HELLO message size: " << int (packet.GetSize () + msg.GetSerializedSize ())
             << " (with " << int (linkMessages.size ()) << " link messages)");
-  msg.SetMessageSize (packet.GetSize () + msg.GetSize ());
+  msg.SetMessageSize (packet.GetSize () + msg.GetSerializedSize ());
   packet.AddHeader (msg);
   QueueMessage (packet, JITTER);
 }
@@ -1248,7 +1249,7 @@ OlsrAgentImpl::SendTc ()
 
   Packet packet;
   packet.AddHeader (tc);
-  msg.SetMessageSize (packet.GetSize () + msg.GetSize ());
+  msg.SetMessageSize (packet.GetSize () + msg.GetSerializedSize ());
   packet.AddHeader (msg);
   QueueMessage (packet, JITTER);
 }
@@ -1299,7 +1300,7 @@ OlsrAgentImpl::SendMid ()
 
   Packet packet;
   packet.AddHeader (mid);
-  msg.SetMessageSize (packet.GetSize () + msg.GetSize ());
+  msg.SetMessageSize (packet.GetSize () + msg.GetSerializedSize ());
   packet.AddHeader (msg);
   QueueMessage (packet, JITTER);
 }

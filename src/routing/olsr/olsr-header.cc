@@ -96,6 +96,14 @@ OlsrPacketHeader::OlsrPacketHeader ()
 OlsrPacketHeader::~OlsrPacketHeader ()
 {}
 
+uint32_t
+OlsrPacketHeader::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<OlsrPacketHeader>
+    ("OlsrPacketHeader.nsnam.org");
+  return uid;
+}
+
 uint32_t 
 OlsrPacketHeader::GetSerializedSize (void) const
 {
@@ -103,13 +111,13 @@ OlsrPacketHeader::GetSerializedSize (void) const
 }
 
 void 
-OlsrPacketHeader::PrintTo (std::ostream &os) const
+OlsrPacketHeader::Print (std::ostream &os) const
 {
   // TODO
 }
 
 void
-OlsrPacketHeader::SerializeTo (Buffer::Iterator start) const
+OlsrPacketHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   i.WriteHtonU16 (m_packetLength);
@@ -117,7 +125,7 @@ OlsrPacketHeader::SerializeTo (Buffer::Iterator start) const
 }
 
 uint32_t
-OlsrPacketHeader::DeserializeFrom (Buffer::Iterator start)
+OlsrPacketHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   m_packetLength  = i.ReadNtohU16 ();
@@ -134,6 +142,14 @@ OlsrMessageHeader::OlsrMessageHeader ()
 OlsrMessageHeader::~OlsrMessageHeader ()
 {}
 
+uint32_t
+OlsrMessageHeader::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<OlsrMessageHeader>
+    ("OlsrMessageHeader.nsnam.org");
+  return uid;
+}
+
 uint32_t 
 OlsrMessageHeader::GetSerializedSize (void) const
 {
@@ -141,13 +157,13 @@ OlsrMessageHeader::GetSerializedSize (void) const
 }
 
 void 
-OlsrMessageHeader::PrintTo (std::ostream &os) const
+OlsrMessageHeader::Print (std::ostream &os) const
 {
   // TODO
 }
 
 void
-OlsrMessageHeader::SerializeTo (Buffer::Iterator start) const
+OlsrMessageHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   i.WriteU8 (m_messageType);
@@ -160,7 +176,7 @@ OlsrMessageHeader::SerializeTo (Buffer::Iterator start) const
 }
 
 uint32_t
-OlsrMessageHeader::DeserializeFrom (Buffer::Iterator start)
+OlsrMessageHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   m_messageType  = (MessageType) i.ReadU8 ();
@@ -183,6 +199,14 @@ OlsrMidMessageHeader::OlsrMidMessageHeader ()
 OlsrMidMessageHeader::~OlsrMidMessageHeader ()
 {}
 
+uint32_t
+OlsrMidMessageHeader::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<OlsrMidMessageHeader>
+    ("OlsrMidMessageHeader.nsnam.org");
+  return uid;
+}
+
 uint32_t 
 OlsrMidMessageHeader::GetSerializedSize (void) const
 {
@@ -190,13 +214,13 @@ OlsrMidMessageHeader::GetSerializedSize (void) const
 }
 
 void 
-OlsrMidMessageHeader::PrintTo (std::ostream &os) const
+OlsrMidMessageHeader::Print (std::ostream &os) const
 {
   // TODO
 }
 
 void
-OlsrMidMessageHeader::SerializeTo (Buffer::Iterator start) const
+OlsrMidMessageHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
 
@@ -208,7 +232,7 @@ OlsrMidMessageHeader::SerializeTo (Buffer::Iterator start) const
 }
 
 uint32_t
-OlsrMidMessageHeader::DeserializeFrom (Buffer::Iterator start)
+OlsrMidMessageHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -234,6 +258,14 @@ OlsrHelloMessageHeader::OlsrHelloMessageHeader ()
 OlsrHelloMessageHeader::~OlsrHelloMessageHeader ()
 {}
 
+uint32_t
+OlsrHelloMessageHeader::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<OlsrHelloMessageHeader>
+    ("OlsrHelloMessageHeader.nsnam.org");
+  return uid;
+}
+
 uint32_t 
 OlsrHelloMessageHeader::GetSerializedSize (void) const
 {
@@ -249,13 +281,13 @@ OlsrHelloMessageHeader::GetSerializedSize (void) const
 }
 
 void 
-OlsrHelloMessageHeader::PrintTo (std::ostream &os) const
+OlsrHelloMessageHeader::Print (std::ostream &os) const
 {
   // TODO
 }
 
 void
-OlsrHelloMessageHeader::SerializeTo (Buffer::Iterator start) const
+OlsrHelloMessageHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
 
@@ -286,7 +318,7 @@ OlsrHelloMessageHeader::SerializeTo (Buffer::Iterator start) const
 }
 
 uint32_t
-OlsrHelloMessageHeader::DeserializeFrom (Buffer::Iterator start)
+OlsrHelloMessageHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -331,6 +363,14 @@ OlsrTcMessageHeader::OlsrTcMessageHeader ()
 OlsrTcMessageHeader::~OlsrTcMessageHeader ()
 {}
 
+uint32_t
+OlsrTcMessageHeader::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<OlsrTcMessageHeader>
+    ("OlsrTcMessageHeader.nsnam.org");
+  return uid;
+}
+
 uint32_t 
 OlsrTcMessageHeader::GetSerializedSize (void) const
 {
@@ -338,13 +378,13 @@ OlsrTcMessageHeader::GetSerializedSize (void) const
 }
 
 void 
-OlsrTcMessageHeader::PrintTo (std::ostream &os) const
+OlsrTcMessageHeader::Print (std::ostream &os) const
 {
   // TODO
 }
 
 void
-OlsrTcMessageHeader::SerializeTo (Buffer::Iterator start) const
+OlsrTcMessageHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
 
@@ -359,7 +399,7 @@ OlsrTcMessageHeader::SerializeTo (Buffer::Iterator start) const
 }
 
 uint32_t
-OlsrTcMessageHeader::DeserializeFrom (Buffer::Iterator start)
+OlsrTcMessageHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -387,6 +427,14 @@ OlsrHnaMessageHeader::OlsrHnaMessageHeader ()
 OlsrHnaMessageHeader::~OlsrHnaMessageHeader ()
 {}
 
+uint32_t
+OlsrHnaMessageHeader::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<OlsrHnaMessageHeader>
+    ("OlsrHnaMessageHeader.nsnam.org");
+  return uid;
+}
+
 uint32_t 
 OlsrHnaMessageHeader::GetSerializedSize (void) const
 {
@@ -394,13 +442,13 @@ OlsrHnaMessageHeader::GetSerializedSize (void) const
 }
 
 void 
-OlsrHnaMessageHeader::PrintTo (std::ostream &os) const
+OlsrHnaMessageHeader::Print (std::ostream &os) const
 {
   // TODO
 }
 
 void
-OlsrHnaMessageHeader::SerializeTo (Buffer::Iterator start) const
+OlsrHnaMessageHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
 
@@ -412,7 +460,7 @@ OlsrHnaMessageHeader::SerializeTo (Buffer::Iterator start) const
 }
 
 uint32_t
-OlsrHnaMessageHeader::DeserializeFrom (Buffer::Iterator start)
+OlsrHnaMessageHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
 
@@ -481,7 +529,7 @@ OlsrHeaderTest::RunTests (void)
         mid1.SetInterfaceAddresses (addresses);
       }
 
-      msg1.SetMessageSize (mid1.GetSize () + msg1.GetSize ());
+      msg1.SetMessageSize (mid1.GetSerializedSize () + msg1.GetSerializedSize ());
       msg1.SetTimeToLive (255);
       msg1.SetOriginatorAddress (Ipv4Address ("11.22.33.44"));
       msg1.SetVTime (Seconds (9));
@@ -496,7 +544,7 @@ OlsrHeaderTest::RunTests (void)
         mid2.SetInterfaceAddresses (addresses);
       }
 
-      msg2.SetMessageSize (mid2.GetSize () + msg2.GetSize ());
+      msg2.SetMessageSize (mid2.GetSerializedSize () + msg2.GetSerializedSize ());
       msg2.SetTimeToLive (254);
       msg2.SetOriginatorAddress (Ipv4Address ("12.22.33.44"));
       msg2.SetVTime (Seconds (10));
@@ -504,7 +552,7 @@ OlsrHeaderTest::RunTests (void)
       msg2.SetMessageSequenceNumber (7);
 
       // Build an OLSR packet header
-      hdr.SetPacketLength (hdr.GetSize () + msg1.GetMessageSize () + msg2.GetMessageSize ());
+      hdr.SetPacketLength (hdr.GetSerializedSize () + msg1.GetMessageSize () + msg2.GetMessageSize ());
       hdr.SetPacketSequenceNumber (123);
     
 
@@ -520,7 +568,7 @@ OlsrHeaderTest::RunTests (void)
       OlsrPacketHeader hdr;
       packet.RemoveHeader (hdr);
       NS_TEST_ASSERT_EQUAL (hdr.GetPacketSequenceNumber (), 123);
-      uint32_t sizeLeft = hdr.GetPacketLength () - hdr.GetSize ();
+      uint32_t sizeLeft = hdr.GetPacketLength () - hdr.GetSerializedSize ();
       {
         OlsrMessageHeader msg1;
         OlsrMidMessageHeader mid1;
@@ -533,7 +581,7 @@ OlsrHeaderTest::RunTests (void)
         NS_TEST_ASSERT_EQUAL (msg1.GetMessageType (), OlsrMessageHeader::MID_MESSAGE);
         NS_TEST_ASSERT_EQUAL (msg1.GetMessageSequenceNumber (), 7);
 
-        mid1.SetMessageSize (msg1.GetMessageSize () - msg1.GetSize ());
+        mid1.SetMessageSize (msg1.GetMessageSize () - msg1.GetSerializedSize ());
         packet.RemoveHeader (mid1);
         NS_TEST_ASSERT_EQUAL (mid1.GetInterfaceAddresses ().size (), 2);
         NS_TEST_ASSERT_EQUAL (*mid1.GetInterfaceAddresses ().begin (), Ipv4Address ("1.2.3.4"));
@@ -554,7 +602,7 @@ OlsrHeaderTest::RunTests (void)
         NS_TEST_ASSERT_EQUAL (msg2.GetMessageType (), OlsrMessageHeader::MID_MESSAGE);
         NS_TEST_ASSERT_EQUAL (msg2.GetMessageSequenceNumber (), 7);
 
-        mid2.SetMessageSize (msg2.GetMessageSize () - msg2.GetSize ());
+        mid2.SetMessageSize (msg2.GetMessageSize () - msg2.GetSerializedSize ());
         packet.RemoveHeader (mid2);
         NS_TEST_ASSERT_EQUAL (mid2.GetInterfaceAddresses ().size (), 2);
         NS_TEST_ASSERT_EQUAL (*mid2.GetInterfaceAddresses ().begin (), Ipv4Address ("2.2.3.4"));

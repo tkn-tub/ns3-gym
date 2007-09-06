@@ -94,12 +94,14 @@ public:
 private:
   uint16_t m_packetLength;
   uint16_t m_packetSequenceNumber;
-  
-  virtual void PrintTo (std::ostream &os) const;
+
+public:  
+  static uint32_t GetUid (void);
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
-  virtual std::string DoGetName (void) const { return "OlsrPacket"; }
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual std::string GetName (void) const { return "OlsrPacket"; }
 };
 
 
@@ -198,11 +200,13 @@ private:
   uint16_t m_messageSequenceNumber;
   uint16_t m_messageSize;
 
-  virtual void PrintTo (std::ostream &os) const;
+public:  
+  static uint32_t GetUid (void);
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
-  virtual std::string DoGetName (void) const { return "OlsrMessage"; }
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual std::string GetName (void) const { return "OlsrMessage"; }
 };
 
 // 5.1.  MID Message Format
@@ -246,11 +250,13 @@ private:
   std::vector<Ipv4Address> m_interfaceAddresses;
   uint32_t m_messageSize; // has to be manually set before deserialization
 
-  virtual void PrintTo (std::ostream &os) const;
+public:  
+  static uint32_t GetUid (void);
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
-  virtual std::string DoGetName (void) const { return "OlsrMidMessage"; }
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual std::string GetName (void) const { return "OlsrMidMessage"; }
 };
 
 // 6.1.  HELLO Message Format
@@ -333,11 +339,13 @@ private:
   uint32_t m_messageSize; // has to be manually set before deserialization
   std::vector<LinkMessage> m_linkMessages;
 
-  virtual void PrintTo (std::ostream &os) const;
+public:  
+  static uint32_t GetUid (void);
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
-  virtual std::string DoGetName (void) const { return "OlsrHelloMessage"; }
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual std::string GetName (void) const { return "OlsrHelloMessage"; }
 };
 
 // 9.1.  TC Message Format
@@ -394,11 +402,13 @@ private:
 
   uint32_t m_messageSize; // has to be manually set before deserialization
 
-  virtual void PrintTo (std::ostream &os) const;
+public:  
+  static uint32_t GetUid (void);
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
-  virtual std::string DoGetName (void) const { return "OlsrTcMessage"; }
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual std::string GetName (void) const { return "OlsrTcMessage"; }
 };
 
 
@@ -456,11 +466,13 @@ private:
   std::vector<Association> m_associations;
   uint32_t m_messageSize; // has to be manually set before deserialization
 
-  virtual void PrintTo (std::ostream &os) const;
+public:  
+  static uint32_t GetUid (void);
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
-  virtual std::string DoGetName (void) const { return "OlsrHnaMessage"; }
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual std::string GetName (void) const { return "OlsrHnaMessage"; }
 };
 
 
