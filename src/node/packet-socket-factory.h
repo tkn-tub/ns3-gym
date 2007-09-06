@@ -22,7 +22,6 @@
 #define PACKET_SOCKET_FACTORY_H
 
 #include "socket-factory.h"
-#include "packet-socket.h"
 
 namespace ns3 {
 
