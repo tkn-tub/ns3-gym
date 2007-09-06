@@ -1,0 +1,213 @@
+Static multicast routing overview
+--------------------------------
+
+This is brief documentation of a proposal to add static multicast
+routing to ns-3.
+
+This extension allows the simulation user to:
+
+- manually add an Ipv4 multicast route to a router
+- specify a default outgoing interface for multicast sources (hosts) in 
+  various ways
+- allow a multicast receiver (hosts) to join a multicast group, to enable
+  reception of that group's datagrams
+
+1.  Code location:
+
+- http://code.nsnam.org/craigdo/ns-3-mc
+
+- the main source code is found in src/internet-node/ipv4-static-routing.{cc,h}
+
+also touched are:
+- src/internet-node/ipv4-l3-protocol.cc (forwarding methods for the
+  static routing API)
+- src/node/net-device.cc (provides virtual NetDevice::MakeMulticastAddress)
+- src/arp-ipv4-interface.cc (calls NetDevice::MakeMulticastAddress)
+- src/devices/csma/csma-net-device.cc (handles multicast addressing and
+  reception).
+- src/devices/point-to-point/point-to-point-net-device.cc (implements required
+  virtual methods.
+- src/internet-node/ (several files have added tracing)
+ 
+- an example script is in examples/csma-multicast.cc
+
+2.  API:
+
+The API for adding a multicast route is:
+
+/**
+ * @brief Add a multicast route to the static routing table.
+ *
+ * A multicast route must specify an origin IP address, a multicast group and
+ * an input network interface index as conditions and provide a vector of
+ * output network interface indices over which packets matching the conditions
+ * are sent.
+ *
+ * Typically there are two main types of multicast routes:  routes of the 
+ * first kind are used during forwarding.  All of the conditions must be
+ * exlicitly provided.  The second kind of routes are used to get packets off
+ * of a local node.  The difference is in the input interface.  Routes for
+ * forwarding will always have an explicit input interface specified.  Routes
+ * off of a node will always set the input interface to a wildcard specified
+ * by the index Ipv4RoutingProtocol::IF_INDEX_ANY.
+ *
+ * For routes off of a local node wildcards may be used in the origin and
+ * multicast group addresses.  The wildcard used for Ipv4Adresses is that 
+ * address returned by Ipv4Address::GetAny () -- typically "0.0.0.0".  Usage
+ * of a wildcard allows one to specify default behavior to varying degrees.
+ *
+ * For example, making the origin address a wildcard, but leaving the 
+ * multicast group specific allows one (in the case of a node with multiple
+ * interfaces) to create different routes using different output interfaces
+ * for each multicast group.
+ *
+ * If the origin and multicast addresses are made wildcards, you have created
+ * essentially a default multicast address that can forward to multiple 
+ * interfaces.  Compare this to the actual default multicast address that is
+ * limited to specifying a single output interface for compatibility with
+ * existing functionality in other systems.
+ * 
+ * @param origin The Ipv4Address of the origin of packets for this route.  May
+ * be Ipv4Address:GetAny for open groups.
+ * @param group The Ipv4Address of the multicast group or this route.
+ * @param inputInterface The input network interface index over which to 
+ * expect packets destined for this route.  May be
+ * Ipv4RoutingProtocol::IF_INDEX_ANY for packets of local origin.
+ * @param outputInterface A vector of network interface indices used to specify
+ * how to send packets to the destination(s).
+ *
+ * @see Ipv4Address
+ */
+  Ipv4::AddMulticastRoute (Ipv4Address origin,
+	                   Ipv4Address group,
+                           uint32_t inputInterface,
+                           std::vector<uint32_t> outputInterfaces)
+
+To remove a route, one uses:
+
+/**
+ * @brief Remove a route from the static multicast routing table.
+ *
+ * Externally, the multicast static routing table appears simply as a table 
+ * with n entries.  The one sublety of note is that if a default multicast
+ * route has been set it will appear as the zeroth entry in the table.  This
+ * means that the default route may be removed by calling this method with
+ * appropriate wildcard parameters.
+ *
+ * This method causes the multicast routing table to be searched for the first
+ * route that matches the parameters and removes it.
+ *
+ * Wildcards may be provided to this function, but the wildcards are used to
+ * exacly match wildcards in the routes (see AddMulticastRoute).  That is,
+ * calling RemoveMulticastRoute with the origin set to "0.0.0.0" will not
+ * remove routes with any address in the origin, but will only remove routes
+ * with "0.0.0.0" set as the the origin.
+ *
+ * @param origin The IP address specified as the origin of packets for the
+ * route.
+ * @param origin The IP address specified as the multicast group addres of
+ * the route.
+ * @param inputInterfade The network interface index specified as the expected
+ * input interface for the route.
+ * @returns True if a route was found and removed, false otherwise.
+ *
+ * @see Ipv4MulticastRoute
+ * @see Ipv4StaticRouting::AddMulticastRoute
+ */
+  Ipv4::RemoveMulticastRoute (Ipv4Address origin,                                                             Ipv4Address group,
+                              uint32_t inputInterface)
+
+For compatibility, and to provide simplicity, one can set a default multicast
+route for a host originating data:
+
+/**
+ * @brief Add a default multicast route to the static routing table.
+ *
+ * This is the multicast equivalent of the unicast version SetDefaultRoute.
+ * We tell the routing system what to do in the case where a specific route
+ * to a destination multicast group is not found.  The system forwards 
+ * packets out the specified interface in the hope that "something out there"
+ * knows better how to route the packet.  This method is only used in 
+ * initially sending packets off of a host.  The default multicast route is
+ * not consulted during forwarding -- exact routes must be specified using
+ * AddMulticastRoute for that case.
+ *
+ * Since we're basically sending packets to some entity we think may know
+ * better what to do, we don't pay attention to "subtleties" like origin
+ * address, nor do we worry about forwarding out multiple  interfaces.  If the
+ * default multicast route is set, it is returned as the selected route from 
+ * LookupStatic irrespective of origin or multicast group if another specific
+ * route is not found.
+ *
+ * @param outputInterface The network interface index used to specify where
+ * to send packets in the case of unknown routes.
+ *
+ * @see Ipv4Address
+ */
+  Ipv4::SetDefaultMulticastRoute (uint32_t outputInterface)
+
+For a host wanting to receive multicast data, the following function is used
+to join each multicast group.
+
+  /**
+   * \brief Join a multicast group for a given multicast source and 
+   *        group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   */
+  Ipv4::JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
+
+To stop receiving multicast data, the following function is used:
+
+  /**
+   * \brief Leave a multicast group for a given multicast source and 
+   *        group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   */
+   LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);
+
+There are new lookup functions implemented in Ipv4:
+
+  /**
+   * \brief Find and return the interface ID of the interface that has been
+   *        assigned the specified IP address.
+   * \param addr The IP address assigned to the interface of interest.
+   * \returns The index of the ipv4 interface with the given address.
+   *
+   * Each IP interface has an IP address associated with it.  It is often 
+   * useful to search the list of interfaces for one that corresponds to 
+   * a known IP Address.  This call takes an IP address as a parameter and
+   * returns the interface index of the first interface that has been assigned
+   * that address.  If the address is not found, this function asserts.
+   */
+  Ipv4::FindInterfaceForAddr (Ipv4Address addr) const;
+
+  /**
+   * \brief Find and return the interface ID of the interface that has been
+   *        assigned the specified (masked) IP address.
+   * \param addr The IP address assigned to the interface of interest.
+   * \param mask The address mask to be used in address matching.
+   * \returns The index of the ipv4 interface with the given address.
+   *
+   * Each IP interface has an IP address associated with it.  It is often 
+   * useful to search the list of interfaces for one that corresponds to 
+   * a known IP Address.  This call takes an IP address and an IP address
+   * mask as parameters and returns the interface index of the first interface
+   * that matches the masked IP address.
+   */
+   Ipv4::FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const;
+
+Also, there are various methods to lookup and iterate the static multicast
+routes of a node, in the Ipv4StaticRouting class.
+
+3.  Dependencies:
+
+- fix for bug 69 (source Ipv4 address is set correctly for UDP)
+- fix for OnOffApplication that receives data
+
+4.  Open issues or features not included
+
+- choose source interface on a per-group basis when a host is multihomed

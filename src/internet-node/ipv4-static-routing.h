@@ -369,14 +369,17 @@ public:
  * We tell the routing system what to do in the case where a specific route
  * to a destination multicast group is not found.  The system forwards 
  * packets out the specified interface in the hope that "something out there"
- * knows better how to route the packet.
+ * knows better how to route the packet.  This method is only used in 
+ * initially sending packets off of a host.  The default multicast route is
+ * not consulted during forwarding -- exact routes must be specified using
+ * AddMulticastRoute for that case.
  *
- * Since we're basically forwarding packets to some entity we think may know
- * better what to do, we don't pay attention to subleties like origin address
- * and input interface, nor do we worry about forwarding out multiple 
- * interfaces.  If the default multicast route is set, it is returned as the
- * selected route from LookupStatic irrespective of origin, multicast group or
- * input interface if another specific route is not found.
+ * Since we're basically sending packets to some entity we think may know
+ * better what to do, we don't pay attention to "subtleties" like origin
+ * address, nor do we worry about forwarding out multiple  interfaces.  If the
+ * default multicast route is set, it is returned as the selected route from 
+ * LookupStatic irrespective of origin or multicast group if another specific
+ * route is not found.
  *
  * @param outputInterface The network interface index used to specify where
  * to send packets in the case of unknown routes.
