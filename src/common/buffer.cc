@@ -23,7 +23,7 @@
 
 #include <iostream>
 
-NS_DEBUG_COMPONENT_DEFINE ("Packet");
+NS_DEBUG_COMPONENT_DEFINE ("Buffer");
 
 namespace ns3 {
 
