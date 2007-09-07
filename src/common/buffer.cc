@@ -246,11 +246,11 @@ Buffer::Iterator::Iterator (Buffer const*buffer, bool dummy)
 void
 Buffer::Iterator::Construct (const Buffer *buffer)
 {
-  m_zeroStart = buffer->m_data->m_initialStart-buffer->m_start;
+  m_zeroStart = buffer->m_data->m_initialStart;
   m_zeroEnd = m_zeroStart+buffer->m_zeroAreaSize;
-  m_dataStart = 0;
-  m_dataEnd = buffer->GetSize ();
-  m_data = buffer->m_data->m_data+buffer->m_start;
+  m_dataStart = buffer->m_start;
+  m_dataEnd = buffer->m_start + buffer->GetSize ();
+  m_data = buffer->m_data->m_data;
 }
 
 void 
@@ -303,28 +303,6 @@ Buffer::Iterator::IsStart (void) const
   return m_current == m_dataStart;
 }
 
-uint32_t
-Buffer::Iterator::GetIndex (uint32_t n)
-{
-  NS_ASSERT ( 
-      (m_current + n <= m_dataEnd) &&
-      ((m_current + n <= m_zeroStart) ||
-       (m_current >= m_zeroEnd) ||
-       m_zeroStart == m_zeroEnd)
-      );
-  uint32_t index;
-  if (m_current < m_zeroStart) 
-    {
-      index = m_current;
-    } 
-  else 
-    {
-      index = m_current - (m_zeroEnd-m_zeroStart);
-    }
-  return index;
-}
-
-
 void 
 Buffer::Iterator::Write (Iterator start, Iterator end)
 {
@@ -334,10 +312,12 @@ Buffer::Iterator::Write (Iterator start, Iterator end)
   NS_ASSERT (start.m_zeroEnd == end.m_zeroEnd);
   NS_ASSERT (m_data != start.m_data);
   uint32_t size = end.m_current - start.m_current;
-  uint8_t *src = start.m_data + start.GetIndex (size);
-  uint8_t *dest = m_data + GetIndex (size);
-  memcpy (dest, src, size);
-  m_current += size;
+  Iterator cur = start;
+  for (uint32_t i = 0; i < size; i++)
+    {
+      uint8_t data = cur.ReadU8 ();
+      WriteU8 (data);
+    }
 }
 
 void 

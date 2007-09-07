@@ -240,7 +240,6 @@ public:
       Iterator (Buffer const*buffer);
       Iterator (Buffer const*buffer, bool);
       void Construct (const Buffer *buffer);
-      uint32_t GetIndex (uint32_t n);
       uint32_t m_zeroStart;
       uint32_t m_zeroEnd;
       uint32_t m_dataStart;
