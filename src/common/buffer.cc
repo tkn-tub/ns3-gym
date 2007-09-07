@@ -354,6 +354,7 @@ Buffer::Iterator::WriteU8  (uint8_t  data)
   if (m_current < m_dataStart)
     {
       // XXX trying to write outside of data area
+      NS_ASSERT (false);
     }
   else if (m_current < m_zeroStart)
     {
@@ -363,6 +364,7 @@ Buffer::Iterator::WriteU8  (uint8_t  data)
   else if (m_current < m_zeroEnd)
     {
       // XXX trying to write in zero area
+      NS_ASSERT (false);
     }
   else if (m_current < m_dataEnd)
     {
@@ -372,141 +374,220 @@ Buffer::Iterator::WriteU8  (uint8_t  data)
   else 
     {
       // XXX trying to write outside of data area
+      NS_ASSERT (false);
     }
 }
 void 
 Buffer::Iterator::WriteU16 (uint16_t data)
 {
-  uint16_t *buffer = (uint16_t *)(m_data + GetIndex (2));
-  *buffer = data;
-  m_current += 2;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
 }
 void 
 Buffer::Iterator::WriteU32 (uint32_t data)
 {
-  uint32_t *buffer = (uint32_t *)(m_data + GetIndex (4));
-  *buffer = data;
-  m_current += 4;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
 }
 void 
 Buffer::Iterator::WriteU64 (uint64_t data)
 {
-  uint64_t *buffer = (uint64_t *)(m_data + GetIndex (8));
-  *buffer = data;
-  m_current += 8;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
+  data >>= 8;
+  WriteU8 (data & 0xff);
 }
 void 
 Buffer::Iterator::WriteHtonU16 (uint16_t data)
 {
-  uint8_t *current = m_data + GetIndex (2);
-  *(current+0) = (data >> 8) & 0xff;
-  *(current+1) = (data >> 0) & 0xff;
-  m_current += 2;
+  WriteU8 ((data >> 8) & 0xff);
+  WriteU8 ((data >> 0) & 0xff);
 }
 void 
 Buffer::Iterator::WriteHtonU32 (uint32_t data)
 {
-  uint8_t *current = m_data + GetIndex (4);
-  *(current+0) = (data >> 24) & 0xff;
-  *(current+1) = (data >> 16) & 0xff;
-  *(current+2) = (data >> 8) & 0xff;
-  *(current+3) = (data >> 0) & 0xff;
-  m_current += 4;
+  WriteU8 ((data >> 24) & 0xff);
+  WriteU8 ((data >> 16) & 0xff);
+  WriteU8 ((data >> 8) & 0xff);
+  WriteU8 ((data >> 0) & 0xff);
 }
 void 
 Buffer::Iterator::WriteHtonU64 (uint64_t data)
 {
-  uint8_t *current = m_data + GetIndex (8);
-  *(current+0) = (data >> 56) & 0xff;
-  *(current+1) = (data >> 48) & 0xff;
-  *(current+2) = (data >> 40) & 0xff;
-  *(current+3) = (data >> 32) & 0xff;
-  *(current+4) = (data >> 24) & 0xff;
-  *(current+5) = (data >> 16) & 0xff;
-  *(current+6) = (data >> 8) & 0xff;
-  *(current+7) = (data >> 0) & 0xff;
-  m_current += 8;
+  WriteU8 ((data >> 56) & 0xff);
+  WriteU8 ((data >> 48) & 0xff);
+  WriteU8 ((data >> 40) & 0xff);
+  WriteU8 ((data >> 32) & 0xff);
+  WriteU8 ((data >> 24) & 0xff);
+  WriteU8 ((data >> 16) & 0xff);
+  WriteU8 ((data >> 8) & 0xff);
+  WriteU8 ((data >> 0) & 0xff);
 }
 void 
 Buffer::Iterator::Write (uint8_t const*buffer, uint32_t size)
 {
-  uint8_t *current = m_data + GetIndex (size);
-  memcpy (current, buffer, size);
-  m_current += size;
+  for (uint32_t i = 0; i < size; i++)
+    {
+      WriteU8 (buffer[i]);
+    }
 }
 
 uint8_t  
 Buffer::Iterator::ReadU8 (void)
 {
-  uint8_t data = m_data[GetIndex(1)];
-  m_current++;
-  return data;
+  if (m_current < m_dataStart)
+    {
+      // XXX trying to read from outside of data area
+      NS_ASSERT (false);
+    }
+  else if (m_current < m_zeroStart)
+    {
+      uint8_t data = m_data[m_current];
+      m_current++;
+      return data;
+    }
+  else if (m_current < m_zeroEnd)
+    {
+      m_current++;
+      return 0;
+    }
+  else if (m_current < m_dataEnd)
+    {
+      uint8_t data = m_data[m_current - (m_zeroEnd-m_zeroStart)];
+      m_current++;
+      return data;
+    }
+  else 
+    {
+      // XXX trying to read from outside of data area
+      NS_ASSERT (false);
+    }
+  // to quiet compiler.
+  return 0;
 }
 uint16_t 
 Buffer::Iterator::ReadU16 (void)
 {
-  uint16_t *buffer = reinterpret_cast<uint16_t *>(m_data + GetIndex (2));
-  m_current += 2;
-  return *buffer;
+  uint8_t byte0 = ReadU8 ();
+  uint8_t byte1 = ReadU8 ();
+  uint16_t data = byte1;
+  data <<= 8;
+  data |= byte0;
+
+  return data;
 }
 uint32_t 
 Buffer::Iterator::ReadU32 (void)
 {
-  uint32_t *buffer = reinterpret_cast<uint32_t *>(m_data + GetIndex (4));
-  m_current += 4;
-  return *buffer;
+  uint8_t byte0 = ReadU8 ();
+  uint8_t byte1 = ReadU8 ();
+  uint8_t byte2 = ReadU8 ();
+  uint8_t byte3 = ReadU8 ();
+  uint32_t data = byte3;
+  data <<= 8;
+  data |= byte2;
+  data <<= 8;
+  data |= byte1;
+  data <<= 8;
+  data |= byte0;
+  return data;
 }
 uint64_t 
 Buffer::Iterator::ReadU64 (void)
 {
-  uint64_t *buffer = reinterpret_cast<uint64_t *>(m_data + GetIndex (8));
-  m_current += 8;
-  return *buffer;
+  uint8_t byte0 = ReadU8 ();
+  uint8_t byte1 = ReadU8 ();
+  uint8_t byte2 = ReadU8 ();
+  uint8_t byte3 = ReadU8 ();
+  uint8_t byte4 = ReadU8 ();
+  uint8_t byte5 = ReadU8 ();
+  uint8_t byte6 = ReadU8 ();
+  uint8_t byte7 = ReadU8 ();
+  uint32_t data = byte7;
+  data <<= 8;
+  data |= byte6;
+  data <<= 8;
+  data |= byte5;
+  data <<= 8;
+  data |= byte4;
+  data <<= 8;
+  data |= byte3;
+  data <<= 8;
+  data |= byte2;
+  data <<= 8;
+  data |= byte1;
+  data <<= 8;
+  data |= byte0;
+
+  return data;
 }
 uint16_t 
 Buffer::Iterator::ReadNtohU16 (void)
 {
-  uint8_t *current = m_data + GetIndex (2);
   uint16_t retval = 0;
-  retval |= static_cast<uint16_t> (current[0]) << 8;
-  retval |= static_cast<uint16_t> (current[1]) << 0;
-  m_current += 2;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
   return retval;
 }
 uint32_t 
 Buffer::Iterator::ReadNtohU32 (void)
 {
-  uint8_t *current = m_data + GetIndex (4);
   uint32_t retval = 0;
-  retval |= static_cast<uint32_t> (current[0]) << 24;
-  retval |= static_cast<uint32_t> (current[1]) << 16;
-  retval |= static_cast<uint32_t> (current[2]) << 8;
-  retval |= static_cast<uint32_t> (current[3]) << 0;
-  m_current += 4;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
   return retval;
 }
 uint64_t 
 Buffer::Iterator::ReadNtohU64 (void)
 {
-  uint8_t *current = m_data + GetIndex (8);
   uint64_t retval = 0;
-  retval |= static_cast<uint64_t> (current[0]) << 56;
-  retval |= static_cast<uint64_t> (current[1]) << 48;
-  retval |= static_cast<uint64_t> (current[2]) << 40;
-  retval |= static_cast<uint64_t> (current[3]) << 32;
-  retval |= static_cast<uint64_t> (current[4]) << 24;
-  retval |= static_cast<uint64_t> (current[5]) << 16;
-  retval |= static_cast<uint64_t> (current[6]) << 8;
-  retval |= static_cast<uint64_t> (current[7]) << 0;
-  m_current += 8;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
+  retval <<= 8;
+  retval |= ReadU8 ();
   return retval;
 }
 void 
-Buffer::Iterator::Read (uint8_t *buffer, uint16_t size)
+Buffer::Iterator::Read (uint8_t *buffer, uint32_t size)
 {
-  uint8_t *current = m_data + GetIndex (size);
-  memcpy (buffer, current, size);
-  m_current += size;
+  for (uint32_t i = 0; i < size; i++)
+    {
+      buffer[i] = ReadU8 ();
+    }
 }
 
 void 

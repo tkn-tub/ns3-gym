@@ -234,7 +234,7 @@ public:
        * input buffer and avance the Iterator by the number of
        * bytes read.
        */
-      void Read (uint8_t *buffer, uint16_t size);
+      void Read (uint8_t *buffer, uint32_t size);
   private:
       friend class Buffer;
       Iterator (Buffer const*buffer);
