@@ -216,14 +216,13 @@ Buffer::GetSize (void) const
 Buffer::Iterator 
 Buffer::Begin (void) const
 {
-  return Buffer::Iterator (this, 0);
+  return Buffer::Iterator (this);
 }
 Buffer::Iterator 
 Buffer::End (void) const
 {
-  return Buffer::Iterator (this, GetSize ());
+  return Buffer::Iterator (this, false);
 }
-
 
 Buffer::Iterator::Iterator ()
   : m_zeroStart (0),
@@ -232,13 +231,26 @@ Buffer::Iterator::Iterator ()
     m_current (0),
     m_data (0)
 {}
-Buffer::Iterator::Iterator (Buffer const*buffer, uint32_t current)
-  : m_zeroStart (buffer->m_data->m_initialStart-buffer->m_start),
-    m_zeroEnd (m_zeroStart+buffer->m_zeroAreaSize),
-    m_dataEnd (buffer->GetSize ()),
-    m_current (current),
-    m_data (buffer->m_data->m_data+buffer->m_start)
-{}
+Buffer::Iterator::Iterator (Buffer const*buffer)
+{
+  Construct (buffer);
+  m_current = m_dataStart;
+}
+Buffer::Iterator::Iterator (Buffer const*buffer, bool dummy)
+{
+  Construct (buffer);
+  m_current = m_dataEnd;
+}
+
+void
+Buffer::Iterator::Construct (const Buffer *buffer)
+{
+  m_zeroStart = buffer->m_data->m_initialStart-buffer->m_start;
+  m_zeroEnd = m_zeroStart+buffer->m_zeroAreaSize;
+  m_dataStart = 0;
+  m_dataEnd = buffer->GetSize ();
+  m_data = buffer->m_data->m_data+buffer->m_start;
+}
 
 void 
 Buffer::Iterator::Next (void)

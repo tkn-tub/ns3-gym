@@ -237,10 +237,13 @@ public:
       void Read (uint8_t *buffer, uint16_t size);
   private:
       friend class Buffer;
-      Iterator (Buffer const*buffer, uint32_t m_current);
+      Iterator (Buffer const*buffer);
+      Iterator (Buffer const*buffer, bool);
+      void Construct (const Buffer *buffer);
       uint32_t GetIndex (uint32_t n);
       uint32_t m_zeroStart;
       uint32_t m_zeroEnd;
+      uint32_t m_dataStart;
       uint32_t m_dataEnd;
       uint32_t m_current;
       uint8_t *m_data;
