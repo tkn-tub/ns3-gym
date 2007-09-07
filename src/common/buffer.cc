@@ -227,6 +227,7 @@ Buffer::End (void) const
 Buffer::Iterator::Iterator ()
   : m_zeroStart (0),
     m_zeroEnd (0),
+    m_dataStart (0),
     m_dataEnd (0),
     m_current (0),
     m_data (0)
@@ -299,7 +300,7 @@ Buffer::Iterator::IsEnd (void) const
 bool 
 Buffer::Iterator::IsStart (void) const
 {
-  return m_current == 0;
+  return m_current == m_dataStart;
 }
 
 uint32_t
@@ -342,15 +343,36 @@ Buffer::Iterator::Write (Iterator start, Iterator end)
 void 
 Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
 {
-  uint8_t *current = m_data + GetIndex (len);
-  memset (current, data, len);
-  m_current += len;
+  for (uint32_t i = 0; i < len; i++)
+    {
+      WriteU8 (data);
+    }
 }
 void 
 Buffer::Iterator::WriteU8  (uint8_t  data)
 {
-  m_data[GetIndex (1)] = data;
-  m_current++;
+  if (m_current < m_dataStart)
+    {
+      // XXX trying to write outside of data area
+    }
+  else if (m_current < m_zeroStart)
+    {
+      m_data[m_current] = data;
+      m_current++;
+    }
+  else if (m_current < m_zeroEnd)
+    {
+      // XXX trying to write in zero area
+    }
+  else if (m_current < m_dataEnd)
+    {
+      m_data[m_current - (m_zeroEnd-m_zeroStart)] = data;
+      m_current++;      
+    }
+  else 
+    {
+      // XXX trying to write outside of data area
+    }
 }
 void 
 Buffer::Iterator::WriteU16 (uint16_t data)
