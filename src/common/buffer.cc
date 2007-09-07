@@ -280,9 +280,7 @@ uint32_t
 Buffer::Iterator::GetDistanceFrom (Iterator const &o) const
 {
   NS_ASSERT (m_data == o.m_data);
-  int32_t start = m_current;
-  int32_t end = o.m_current;
-  int32_t diff = end - start;
+  int32_t diff = m_current - o.m_current;
   if (diff < 0)
     {
       return -diff;
