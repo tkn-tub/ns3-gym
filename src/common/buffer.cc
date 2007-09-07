@@ -1122,6 +1122,10 @@ BufferTest::RunTests (void)
   i.Prev (100);
   i.WriteU8 (1, 100);
 
+  buffer = Buffer (10);  
+  buffer.Begin ().WriteU8 (1);
+  ENSURE_WRITTEN_BYTES (buffer, 10, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00);
+
   // Bug #54
   {
     const uint32_t actualSize = 72602;
