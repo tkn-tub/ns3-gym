@@ -357,7 +357,7 @@ private:
   struct BufferData *m_data;
   uint32_t m_zeroAreaSize;
   uint32_t m_start;
-  uint32_t m_size;
+  uint32_t m_end;
 };
 
 } // namespace ns3
