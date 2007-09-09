@@ -343,7 +343,6 @@ private:
     ~BufferDataList ();
   };
 
-  uint8_t *GetStart (void) const;
   void TransformIntoRealBuffer (void) const;
   static void Recycle (struct Buffer::BufferData *data);
   static struct Buffer::BufferData *Create (void);
