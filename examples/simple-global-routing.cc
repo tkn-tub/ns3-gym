@@ -65,6 +65,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/point-to-point-topology.h"
 #include "ns3/onoff-application.h"
+#include "ns3/packet-sink.h"
 #include "ns3/global-route-manager.h"
 
 using namespace ns3;
@@ -151,6 +152,17 @@ int main (int argc, char *argv[])
   ooff->Start (Seconds (1.0));
   ooff->Stop (Seconds (10.0));
 
+  // Create a packet sink to receive these packets
+  // The last argument "true" disables output from the Receive callback
+  Ptr<PacketSink> sink = Create<PacketSink> (
+    n3, 
+    InetSocketAddress (Ipv4Address::GetAny (), 80), 
+    "Udp",
+     true);
+  // Start the sink
+  sink->Start (Seconds (1.0));
+  sink->Stop (Seconds (10.0));
+
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   ooff = Create<OnOffApplication> (
     n3, 
@@ -161,6 +173,16 @@ int main (int argc, char *argv[])
   // Start the application
   ooff->Start (Seconds (1.1));
   ooff->Stop (Seconds (10.0));
+
+  // Create a packet sink to receive these packets
+  sink = Create<PacketSink> (
+    n1, 
+    InetSocketAddress (Ipv4Address::GetAny (), 80), 
+    "Udp",
+    true);
+  // Start the sink
+  sink->Start (Seconds (1.1));
+  sink->Stop (Seconds (10.0));
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-global-routing.tr file
