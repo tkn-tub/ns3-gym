@@ -329,33 +329,19 @@ public:
   Buffer (uint32_t dataSize);
   ~Buffer ();
 private:
-  struct BufferData {
-      uint32_t m_count;
-      uint32_t m_size;
-      uint32_t m_initialStart;
-      uint32_t m_dirtyStart;
-      uint32_t m_dirtySize;
-      uint8_t m_data[1];
-  };
-  class BufferDataList : public std::vector<struct Buffer::BufferData*>
-  {
-  public:
-    ~BufferDataList ();
-  };
 
   void TransformIntoRealBuffer (void) const;
-  static void Recycle (struct Buffer::BufferData *data);
-  static struct Buffer::BufferData *Create (void);
-  static struct Buffer::BufferData *Allocate (uint32_t size, uint32_t start);
-  static void Deallocate (struct Buffer::BufferData *data);
-
-  static BufferDataList m_freeList;
-  static uint32_t m_maxTotalAddStart;
-  static uint32_t m_maxTotalAddEnd;
+  bool CheckInternalState (void) const;
+  void Initialize (uint32_t zeroSize);
+  uint32_t GetInternalSize (void) const;
+  uint32_t GetInternalEnd (void) const;
+  static void Recycle (struct BufferData *data);
+  static struct BufferData *Create (uint32_t size);
 
   struct BufferData *m_data;
+  uint32_t m_maxZeroAreaStart;
   uint32_t m_zeroAreaStart;
-  uint32_t m_zeroAreaSize;
+  uint32_t m_zeroAreaEnd;
   uint32_t m_start;
   uint32_t m_end;
 };

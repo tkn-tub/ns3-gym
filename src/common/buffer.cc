@@ -20,162 +20,193 @@
 #include "buffer.h"
 #include "ns3/assert.h"
 #include "ns3/debug.h"
-
 #include <iostream>
 
 NS_DEBUG_COMPONENT_DEFINE ("Buffer");
 
+#define DEBUG_INTERNAL_STATE(y)                                                                    \
+NS_DEBUG (y << "start="<<m_start<<", end="<<m_end<<", zero start="<<m_zeroAreaStart<<              \
+          ", zero end="<<m_zeroAreaEnd<<", count="<<m_data->m_count<<", size="<<m_data->m_size<<   \
+          ", dirty start="<<m_data->m_dirtyStart<<", dirty end="<<m_data->m_dirtyEnd)
+
+//#define USE_FREE_LIST 1
+
 namespace ns3 {
 
-Buffer::BufferDataList  Buffer::m_freeList;
-uint32_t Buffer::m_maxTotalAddStart = 0;
-uint32_t Buffer::m_maxTotalAddEnd = 0;
+struct BufferData {
+  uint32_t m_count;
+  uint32_t m_size;
+  uint32_t m_dirtyStart;
+  uint32_t m_dirtyEnd;
+  uint8_t m_data[1];
+};
+class BufferDataList : public std::vector<struct BufferData*>
+{
+public:
+  ~BufferDataList ();
+};
 
-Buffer::BufferDataList::~BufferDataList ()
+static struct BufferData *BufferAllocate (uint32_t reqSize);
+
+static void BufferDeallocate (struct BufferData *data);
+
+
+} // namespace ns3
+
+namespace ns3 {
+
+static uint32_t g_recommendedStart = 0;
+  //static uint32_t g_maxSize = 0;
+static BufferDataList  g_freeList;
+
+BufferDataList::~BufferDataList ()
 {
   for (BufferDataList::iterator i = begin ();
        i != end (); i++)
     {
-      Buffer::Deallocate (*i);
+      BufferDeallocate (*i);
     }
 }
 
-struct Buffer::BufferData *
-Buffer::Allocate (uint32_t reqSize, uint32_t reqStart)
+struct BufferData *
+BufferAllocate (uint32_t reqSize)
 {
   if (reqSize == 0) 
     {
       reqSize = 1;
     }
   NS_ASSERT (reqSize >= 1);
-  uint32_t size = reqSize - 1 + sizeof (struct Buffer::BufferData);
+  uint32_t size = reqSize - 1 + sizeof (struct BufferData);
   uint8_t *b = new uint8_t [size];
-  struct BufferData *data = reinterpret_cast<struct Buffer::BufferData*>(b);
+  struct BufferData *data = reinterpret_cast<struct BufferData*>(b);
   data->m_size = reqSize;
-  data->m_initialStart = reqStart;
-  data->m_dirtyStart = reqStart;
-  data->m_dirtySize = 0;
   data->m_count = 1;
   return data;
 }
 
 void
-Buffer::Deallocate (struct Buffer::BufferData *data)
+BufferDeallocate (struct BufferData *data)
 {
+  NS_ASSERT (data->m_count == 0);
   uint8_t *buf = reinterpret_cast<uint8_t *> (data);
   delete [] buf;
 }
 #ifdef USE_FREE_LIST
 void
-Buffer::Recycle (struct Buffer::BufferData *data)
+Buffer::Recycle (struct BufferData *data)
 {
   NS_ASSERT (data->m_count == 0);
-  /* get rid of it if it is too small for later reuse. */
-  if (data->m_size < (Buffer::m_maxTotalAddStart + Buffer::m_maxTotalAddEnd)) 
-    {
-      Buffer::Deallocate (data);
-      return; 
-    }
+  g_maxSize = std::max (g_maxSize, data->m_size);
   /* feed into free list */
-  if (Buffer::m_freeList.size () > 1000) 
+  if (data->m_size < g_maxSize ||
+      g_freeList.size () > 1000)
     {
-      Buffer::Deallocate (data);
-    } 
+      BufferDeallocate (data);
+    }
   else 
     {
-      Buffer::m_freeList.push_back (data);
+      g_freeList.push_back (data);
     }
 }
 
-Buffer::BufferData *
-Buffer::Create (void)
+BufferData *
+Buffer::Create (uint32_t dataSize)
 {
   /* try to find a buffer correctly sized. */
-  while (!Buffer::m_freeList.empty ()) 
+  while (!g_freeList.empty ()) 
     {
-      struct Buffer::BufferData *data = Buffer::m_freeList.back ();
-      Buffer::m_freeList.pop_back ();
-      if (data->m_size >= (m_maxTotalAddStart + m_maxTotalAddEnd)) 
+      struct BufferData *data = g_freeList.back ();
+      g_freeList.pop_back ();
+      if (data->m_size >= dataSize) 
         {
-          data->m_initialStart = m_maxTotalAddStart;
-          data->m_dirtyStart = m_maxTotalAddStart;
-          data->m_dirtySize = 0;
           data->m_count = 1;
           return data;
         }
-      Buffer::Deallocate (data);
+      BufferDeallocate (data);
     }
-  struct Buffer::BufferData *data = Buffer::Allocate (m_maxTotalAddStart+m_maxTotalAddEnd,
-                              m_maxTotalAddStart);
+  struct BufferData *data = BufferAllocate (datsSize);
   NS_ASSERT (data->m_count == 1);
   return data;
 }
 #else
 void
-Buffer::Recycle (struct Buffer::BufferData *data)
+Buffer::Recycle (struct BufferData *data)
 {
-  Buffer::Deallocate (data);
+  NS_ASSERT (data->m_count == 0);
+  BufferDeallocate (data);
 }
 
-Buffer::BufferData *
-Buffer::Create (void)
+BufferData *
+Buffer::Create (uint32_t size)
 {
-  return Buffer::Allocate (m_maxTotalAddStart+m_maxTotalAddEnd,
-                           m_maxTotalAddStart);
+  return BufferAllocate (size);
 }
 #endif
 
-}; // namespace ns3
-
-
-#include "ns3/assert.h"
-
-namespace ns3 {
-
-
 Buffer::Buffer ()
-  : m_data (Buffer::Create ()),
-    m_zeroAreaStart (m_data->m_initialStart),
-    m_zeroAreaSize (0),
-    m_start (m_maxTotalAddStart),
-    m_end (m_maxTotalAddStart)
 {
-  if (m_end > m_data->m_size) 
-    {
-      m_end = 0;
-    }
-  NS_ASSERT (m_end <= m_data->m_size);
+  Initialize (0);
 }
 
 Buffer::Buffer (uint32_t dataSize)
-  : m_data (Buffer::Create ()),
-    m_zeroAreaStart (m_data->m_initialStart),
-    m_zeroAreaSize (dataSize),
-    m_start (m_maxTotalAddStart),
-    m_end (m_maxTotalAddStart)
 {
-  if (m_end > m_data->m_size) 
-    {
-      m_end = 0;
-    }
-  NS_ASSERT (m_end <= m_data->m_size);
+  Initialize (dataSize);
 }
 
+bool
+Buffer::CheckInternalState (void) const
+{
+  bool offsetsOk = 
+    m_start <= m_zeroAreaStart &&
+    m_zeroAreaStart <= m_zeroAreaEnd &&
+    m_zeroAreaEnd <= m_end;
+  bool dirtyOk =
+    m_start >= m_data->m_dirtyStart &&
+    m_end <= m_data->m_dirtyEnd;
+  bool maxZeroOk = m_maxZeroAreaStart <= m_end;
+  bool internalSizeOk = m_end - (m_zeroAreaEnd - m_zeroAreaStart) <= m_data->m_size &&
+    m_start <= m_data->m_size &&
+    m_zeroAreaStart <= m_data->m_size;
+
+  NS_ASSERT (offsetsOk);
+  NS_ASSERT (dirtyOk);
+  NS_ASSERT (maxZeroOk);
+  NS_ASSERT (internalSizeOk);
+
+  return m_data->m_count > 0 && offsetsOk && dirtyOk && 
+    maxZeroOk && internalSizeOk;
+}
+
+void
+Buffer::Initialize (uint32_t zeroSize)
+{
+  m_data = Buffer::Create (0);
+  m_start = std::min (m_data->m_size, g_recommendedStart);
+  m_zeroAreaStart = m_start;
+  m_zeroAreaEnd = m_zeroAreaStart + zeroSize;
+  m_end = m_zeroAreaEnd;
+  m_maxZeroAreaStart = m_zeroAreaStart;
+  m_data->m_dirtyStart = m_start;
+  m_data->m_dirtyEnd = m_end;
+  NS_ASSERT (CheckInternalState ());
+}
 
 Buffer::Buffer (Buffer const&o)
   : m_data (o.m_data),
+    m_maxZeroAreaStart (o.m_zeroAreaStart),
     m_zeroAreaStart (o.m_zeroAreaStart),
-    m_zeroAreaSize (o.m_zeroAreaSize),
+    m_zeroAreaEnd (o.m_zeroAreaEnd),
     m_start (o.m_start),
     m_end (o.m_end)
 {
   m_data->m_count++;
-  NS_ASSERT (m_start <= m_data->m_size);
+  NS_ASSERT (CheckInternalState ());
 }
 
 Buffer &
 Buffer::operator = (Buffer const&o)
 {
+  NS_ASSERT (CheckInternalState ());
   if (m_data != o.m_data) 
     {
       // not assignment to self.
@@ -187,16 +218,19 @@ Buffer::operator = (Buffer const&o)
       m_data = o.m_data;
       m_data->m_count++;
     }
+  g_recommendedStart = std::max (g_recommendedStart, m_maxZeroAreaStart);
+  m_maxZeroAreaStart = o.m_maxZeroAreaStart;
   m_zeroAreaStart = o.m_zeroAreaStart;
-  m_zeroAreaSize = o.m_zeroAreaSize;
+  m_zeroAreaEnd = o.m_zeroAreaEnd;
   m_start = o.m_start;
   m_end = o.m_end;
-  NS_ASSERT (m_start <= m_data->m_size);
+  NS_ASSERT (CheckInternalState ());
   return *this;
 }
 
 Buffer::~Buffer ()
 {
+  g_recommendedStart = std::max (g_recommendedStart, m_maxZeroAreaStart);
   m_data->m_count--;
   if (m_data->m_count == 0) 
     {
@@ -207,17 +241,20 @@ Buffer::~Buffer ()
 uint32_t 
 Buffer::GetSize (void) const
 {
-  return (m_end - m_start) + m_zeroAreaSize;
+  NS_ASSERT (CheckInternalState ());
+  return m_end - m_start;
 }
 
 Buffer::Iterator 
 Buffer::Begin (void) const
 {
+  NS_ASSERT (CheckInternalState ());
   return Buffer::Iterator (this);
 }
 Buffer::Iterator 
 Buffer::End (void) const
 {
+  NS_ASSERT (CheckInternalState ());
   return Buffer::Iterator (this, false);
 }
 
@@ -243,10 +280,10 @@ Buffer::Iterator::Iterator (Buffer const*buffer, bool dummy)
 void
 Buffer::Iterator::Construct (const Buffer *buffer)
 {
-  m_zeroStart = buffer->m_data->m_initialStart;
-  m_zeroEnd = m_zeroStart+buffer->m_zeroAreaSize;
+  m_zeroStart = buffer->m_zeroAreaStart;
+  m_zeroEnd = buffer->m_zeroAreaEnd;
   m_dataStart = buffer->m_start;
-  m_dataEnd = buffer->m_start + buffer->GetSize ();
+  m_dataEnd = buffer->m_end;
   m_data = buffer->m_data->m_data;
 }
 
@@ -567,11 +604,23 @@ Buffer::Iterator::Read (uint8_t *buffer, uint32_t size)
     }
 }
 
+uint32_t
+Buffer::GetInternalSize (void) const
+{
+  return m_zeroAreaStart - m_start + m_end - m_zeroAreaEnd;
+}
+uint32_t
+Buffer::GetInternalEnd (void) const
+{
+  return m_end - (m_zeroAreaEnd - m_zeroAreaStart);
+}
+
 void 
 Buffer::AddAtStart (uint32_t start)
 {
-  NS_ASSERT (m_start <= m_data->m_initialStart);
+  NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
+  NS_ASSERT (isDirty || (!isDirty && m_start == m_data->m_dirtyStart));
   if (m_start >= start && !isDirty)
     {
       /* enough space in the buffer and not dirty. 
@@ -581,88 +630,55 @@ Buffer::AddAtStart (uint32_t start)
        */
       m_start -= start;
     } 
-  else if (m_end + start <= m_data->m_size && !isDirty)
+#if 0
+  // the following is an optimization
+  else if (m_start >= start)
     {
-      /* enough space but need to move data around to fit new data 
-       * To add: |.......|
-       * Before: |*****---------***|
-       * After:  |.......---------*|
-       */
-      memmove (m_data->m_data + start, m_data->m_data + m_start, m_end - m_start);
-      NS_ASSERT (start > m_start);
-      m_data->m_initialStart += start - m_start;
-      m_start = 0;
-      m_end += start;
-      m_zeroAreaStart += start - m_start;
-    } 
-  else if (m_start < start) 
-    {
-      /* not enough space in buffer
-       * To add: |..........|
-       * Before: |*****---------***|
-       * After:  |..........---------|
-       */
-      uint32_t newSize = m_end - m_start + start;
-      struct Buffer::BufferData *newData = Buffer::Allocate (newSize, 0);
-      memcpy (newData->m_data + start, m_data->m_data + m_start, m_end - m_start);
-      newData->m_initialStart = m_data->m_initialStart + start;
+      struct BufferData *newData = Buffer::Create (m_data->m_size);
+      memcpy (newData->m_data + m_start, m_data->m_data + m_start, GetInternalSize ());
       m_data->m_count--;
-      if (m_data->m_count == 0) 
+      if (m_data->m_count == 0)
         {
-          Buffer::Deallocate (m_data);
+          Buffer::Recycle (m_data);
         }
       m_data = newData;
-      m_start = 0;
-      m_end = newSize;
-      m_zeroAreaStart += start;
-    } 
-  else 
-    {
-      /* enough space in the buffer but it is dirty ! 
-       * To add:   |...|
-       * Before:   |****-------***|
-       * After:    |*...-------***|
-       */
-      NS_ASSERT (isDirty);
-      struct Buffer::BufferData *newData = Buffer::Create ();
-      memcpy (newData->m_data + m_start, m_data->m_data + m_start, m_end - m_start);
-      newData->m_initialStart = m_data->m_initialStart;
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          Recycle (m_data);
-        }
-      m_data = newData;
+
       m_start -= start;
+    }
+#endif
+  else
+    {
+      NS_ASSERT (m_start < start);
+      uint32_t newSize = GetInternalSize () + start;
+      struct BufferData *newData = Buffer::Create (newSize);
+      memcpy (newData->m_data + start, m_data->m_data + m_start, GetInternalSize ());
+      m_data->m_count--;
+      if (m_data->m_count == 0)
+        {
+          Buffer::Recycle (m_data);
+        }
+      m_data = newData;
+
+      int32_t delta = start - m_start;
+      m_start = 0;
+      m_zeroAreaStart += delta;
+      m_zeroAreaEnd += delta;
+      m_end += delta;
+      m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
     } 
   // update dirty area
   m_data->m_dirtyStart = m_start;
-  m_data->m_dirtySize = m_end - m_start;
-  // update m_maxTotalAddStart
-  uint32_t addedAtStart;
-  if (m_data->m_initialStart > m_start) 
-    {
-      addedAtStart = m_data->m_initialStart - m_start;
-    } 
-  else 
-    {
-      addedAtStart = 0;
-    }
-  if (addedAtStart > m_maxTotalAddStart) 
-    {
-      m_maxTotalAddStart = addedAtStart;
-    }
-  NS_DEBUG ("start add="<<start<<", start="<<m_start<<", size="<<m_end<<", zero="<<m_zeroAreaSize<<
-            ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initialStart<<
-            ", dirty start="<<m_data->m_dirtyStart<<", dirty size="<<m_data->m_dirtySize); 
+  m_data->m_dirtyEnd = m_end;
+  DEBUG_INTERNAL_STATE ("add start=" << start << ", ");
+  NS_ASSERT (CheckInternalState ());
 }
 void 
 Buffer::AddAtEnd (uint32_t end)
 {
-  NS_ASSERT (m_start <= m_data->m_initialStart);
-  bool isDirty = m_data->m_count > 1 &&
-      m_end < m_data->m_dirtyStart + m_data->m_dirtySize;
-  if (m_end + end <= m_data->m_size && !isDirty) 
+  NS_ASSERT (CheckInternalState ());
+  bool isDirty = m_data->m_count > 1 && m_end < m_data->m_dirtyEnd;
+  NS_ASSERT (isDirty || (!isDirty && m_end == m_data->m_dirtyEnd));
+  if (GetInternalEnd () + end <= m_data->m_size && !isDirty)
     {
       /* enough space in buffer and not dirty
        * Add:    |...|
@@ -671,203 +687,126 @@ Buffer::AddAtEnd (uint32_t end)
        */
       m_end += end;
     } 
-  else if (m_end + end <= m_data->m_size && !isDirty) 
+#if 0
+  // this is an optimization
+  else if (GetInternalEnd () + end > m_data->m_size)
     {
-      /* enough space but need to move data around to fit the extra data 
-       * Add:    |...|
-       * Before: |**-----**|
-       * After:  |*-----...|
-       */
-      uint32_t newStart = m_data->m_size - (m_end - m_start + end);
-      NS_ASSERT (newStart < m_start);
-      memmove (m_data->m_data + newStart, m_data->m_data + m_start, m_end - m_start);
-      m_data->m_initialStart -= m_start - newStart;
-      m_start = newStart;
-      m_end = m_data->m_size;
-      m_zeroAreaStart -= m_start - newStart;
-    } 
-  else if (m_start + m_end + end > m_data->m_size) 
-    {
-      /* not enough space in buffer 
-       * Add:     |.......|
-       * Before:  |***------**|
-       * After:   |------.......|
-       */
-      uint32_t newSize = m_end - m_start + end;
-      struct Buffer::BufferData *newData = Buffer::Allocate (newSize, 0);
-      memcpy (newData->m_data, m_data->m_data + m_start, m_end - m_start);
-      newData->m_initialStart = m_data->m_initialStart - m_start;
+      struct BufferData *newData = Buffer::Create (newSize);
+      memcpy (newData->m_data + m_start, m_data->m_data + m_start, GetInternalSize ());
       m_data->m_count--;
       if (m_data->m_count == 0) 
         {
-          Buffer::Deallocate (m_data);
+          Buffer::Recycle (m_data);
         }
       m_data = newData;
-      m_start = 0;
-      m_end = newSize;
-      m_zeroAreaStart -= m_start;
-    } 
-  else 
+
+      m_end += end;
+    }
+#endif
+  else
     {
-      /* enough space in the buffer but it is dirty ! 
-       * Add:     |...|
-       * Before:  |**-----*****|
-       * After:   |**-----...**|
-       */
-      NS_ASSERT (isDirty);
-      struct Buffer::BufferData *newData = Buffer::Create ();
-      memcpy (newData->m_data + m_start, m_data->m_data + m_start, m_end - m_start);
-      newData->m_initialStart = m_data->m_initialStart;
+      uint32_t newSize = GetInternalSize () + end;
+      struct BufferData *newData = Buffer::Create (newSize);
+      memcpy (newData->m_data, m_data->m_data + m_start, GetInternalSize ());
       m_data->m_count--;
-      if (m_data->m_count == 0)
+      if (m_data->m_count == 0) 
         {
-          Recycle (m_data);
+          Buffer::Recycle (m_data);
         }
       m_data = newData;
+
+
+      m_zeroAreaStart -= m_start;
+      m_zeroAreaEnd -= m_start;
+      m_end -= m_start;
+      m_start = 0;
+
       m_end += end;
     } 
   // update dirty area
   m_data->m_dirtyStart = m_start;
-  m_data->m_dirtySize = m_end;
-  // update m_maxTotalAddEnd
-  uint32_t endLoc = m_end;
-  uint32_t addedAtEnd;
-  if (m_data->m_initialStart < endLoc) 
-    {
-      addedAtEnd = endLoc - m_data->m_initialStart;
-    } 
-  else 
-    {
-      addedAtEnd = 0;
-    }
-  if (addedAtEnd > m_maxTotalAddEnd) 
-    {
-      m_maxTotalAddEnd = addedAtEnd;
-    }
-  NS_DEBUG ("end add="<<end<<", start="<<m_start<<", size="<<m_end<<", zero="<<m_zeroAreaSize<<
-            ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initialStart<<
-            ", dirty start="<<m_data->m_dirtyStart<<", dirty size="<<m_data->m_dirtySize); 
+  m_data->m_dirtyEnd = m_end;
+  DEBUG_INTERNAL_STATE ("add end=" << end << ", ");
+  NS_ASSERT (CheckInternalState ());
 }
 
 void 
 Buffer::RemoveAtStart (uint32_t start)
 {
-  if (m_zeroAreaSize == 0) 
+  NS_ASSERT (CheckInternalState ());
+  uint32_t newStart = m_start + start;
+  if (newStart <= m_zeroAreaStart)
     {
-      if ((m_end - m_start) <= start)
-        {
-          m_start = m_end;
-        }
-      else 
-        {
-          m_start += start;
-        }
+      /* only remove start of buffer 
+       */
+      m_start = newStart;
+    }
+  else if (newStart <= m_zeroAreaEnd)
+    {
+      /* remove start of buffer _and_ start of zero area
+       */
+      m_start = newStart;
+      m_zeroAreaStart = newStart;
+    } 
+  else if (newStart <= m_end)
+    {
+      /* remove start of buffer, complete zero area, and part
+       * of end of buffer 
+       */
+      m_start = newStart;
+      m_zeroAreaStart = newStart;
+      m_zeroAreaEnd = newStart;
     }
   else 
     {
-      NS_ASSERT (m_zeroAreaStart >= m_start);
-      uint32_t zeroStart = m_zeroAreaStart - m_start;
-      uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
-      uint32_t dataEnd = m_end - m_start + m_zeroAreaSize;
-      if (start <= zeroStart)
-        {
-          /* only remove start of buffer 
-           */
-          m_start += start;
-        }
-      else if (start <= zeroEnd)
-        {
-          /* remove start of buffer _and_ start of zero area
-           */
-          m_start += zeroStart;
-          uint32_t zeroDelta = start - zeroStart;
-          m_zeroAreaStart += zeroDelta;
-          m_zeroAreaSize -= zeroDelta;
-          NS_ASSERT (zeroDelta <= start);
-        } 
-      else if (start <= dataEnd) 
-        {
-          /* remove start of buffer, complete zero area, and part
-           * of end of buffer 
-           */
-          m_start += start - m_zeroAreaSize;
-          m_zeroAreaStart = m_start;
-          m_zeroAreaSize = 0;
-        } 
-      else 
-        {
-          /* remove all buffer */
-          m_start = m_end;
-          m_zeroAreaStart = m_end;
-          m_zeroAreaSize = 0;
-        }
+      /* remove all buffer */
+      m_start = m_end;
+      m_zeroAreaStart = m_end;
+      m_zeroAreaEnd = m_end;
     }
-  NS_DEBUG ("start remove="<<start<<", start="<<m_start<<", size="<<m_end<<
-            ", zero="<<m_zeroAreaSize<<
-            ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initialStart<<
-            ", dirty start="<<m_data->m_dirtyStart<<", dirty size="<<m_data->m_dirtySize); 
+  DEBUG_INTERNAL_STATE ("rem start=" << start << ", ");
+  NS_ASSERT (CheckInternalState ());
 }
 void 
 Buffer::RemoveAtEnd (uint32_t end)
 {
-  if (m_zeroAreaSize == 0) 
+  NS_ASSERT (CheckInternalState ());
+  uint32_t newEnd = m_end - std::min (end, m_end - m_start);
+  if (newEnd > m_zeroAreaEnd)
     {
-      if ((m_end - m_start) <= end) 
-        {
-          m_end = m_start;
-        } 
-      else 
-        {
-          m_end -= end;
-        }
-    } 
-  else 
-    {
-      NS_ASSERT (m_zeroAreaStart >= m_start);
-      uint32_t zeroStart = m_zeroAreaStart - m_start;
-      uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
-      uint32_t dataEnd = m_end - m_start + m_zeroAreaSize;
-      NS_ASSERT (zeroStart <= m_end - m_start);
-      NS_ASSERT (zeroEnd <= m_end - m_start + m_zeroAreaSize);
-      if (dataEnd <= end) 
-        {
-          /* remove all buffer */
-          m_zeroAreaStart = m_start;
-          m_zeroAreaSize = 0;
-          m_end = m_start;
-        } 
-      else if (dataEnd - zeroStart <= end) 
-        {
-          /* remove end of buffer, zero area, part of start of buffer */
-          NS_ASSERT (end >= m_zeroAreaSize);
-          m_end -= end - m_zeroAreaSize;
-          m_zeroAreaStart = m_end;
-          m_zeroAreaSize = 0;
-        } 
-      else if (dataEnd - zeroEnd <= end) 
-        {
-          /* remove end of buffer, part of zero area */
-          uint32_t zeroDelta = end - (dataEnd - zeroEnd);
-          m_end -= end - zeroDelta;
-          m_zeroAreaSize -= zeroDelta;
-        } 
-      else 
-        {
-          /* remove part of end of buffer */
-          m_end -= end;
-        }
+      /* remove part of end of buffer */
+      m_end = newEnd;
     }
-  NS_DEBUG ("end remove="<<end<<", start="<<m_start<<", size="<<m_end<<", zero="<<m_zeroAreaSize<<
-            ", real size="<<m_data->m_size<<", ini start="<<m_data->m_initialStart<<
-            ", dirty start="<<m_data->m_dirtyStart<<", dirty size="<<m_data->m_dirtySize); 
+  else if (newEnd > m_zeroAreaStart)
+    {
+      /* remove end of buffer, part of zero area */
+      m_end = newEnd;
+      m_zeroAreaEnd = newEnd;
+    }
+  else if (newEnd > m_start)
+    {
+      /* remove end of buffer, zero area, part of start of buffer */
+      m_end = newEnd;
+      m_zeroAreaEnd = newEnd;
+      m_zeroAreaStart = newEnd;
+    }
+  else
+    {
+      /* remove all buffer */
+      m_end = m_start;
+      m_zeroAreaEnd = m_start;
+      m_zeroAreaStart = m_start;
+    }
+  DEBUG_INTERNAL_STATE ("rem end=" << end << ", ");
+  NS_ASSERT (CheckInternalState ());
 }
 
 Buffer 
 Buffer::CreateFragment (uint32_t start, uint32_t length) const
 {
   uint32_t zeroStart = m_zeroAreaStart - m_start;
-  uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
-  if (m_zeroAreaSize != 0 &&
+  uint32_t zeroEnd = zeroStart + m_zeroAreaEnd;
+  if (m_zeroAreaEnd != 0 &&
       start + length > zeroStart &&
       start <= zeroEnd) 
     {
@@ -882,13 +821,13 @@ Buffer::CreateFragment (uint32_t start, uint32_t length) const
 Buffer 
 Buffer::CreateFullCopy (void) const
 {
-  if (m_zeroAreaSize != 0) 
+  if (m_zeroAreaEnd != 0) 
     {
       NS_ASSERT (m_zeroAreaStart >= m_start);
       NS_ASSERT (m_end - m_start >= (m_zeroAreaStart - m_start));
       Buffer tmp;
-      tmp.AddAtStart (m_zeroAreaSize);
-      tmp.Begin ().WriteU8 (0, m_zeroAreaSize);
+      tmp.AddAtStart (m_zeroAreaEnd);
+      tmp.Begin ().WriteU8 (0, m_zeroAreaEnd);
       uint32_t dataStart = m_zeroAreaStart - m_start;
       tmp.AddAtStart (dataStart);
       tmp.Begin ().Write (m_data->m_data+m_start, dataStart);
@@ -926,6 +865,7 @@ Buffer::PeekData (void) const
 #include "ns3/test.h"
 #include "ns3/random-variable.h"
 #include <iomanip>
+
 
 namespace ns3 {
 
