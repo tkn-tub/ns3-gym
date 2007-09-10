@@ -804,6 +804,7 @@ Buffer::RemoveAtEnd (uint32_t end)
 Buffer 
 Buffer::CreateFragment (uint32_t start, uint32_t length) const
 {
+  NS_ASSERT (CheckInternalState ());
   uint32_t zeroStart = m_zeroAreaStart - m_start;
   uint32_t zeroEnd = zeroStart + m_zeroAreaEnd;
   if (m_zeroAreaEnd != 0 &&
@@ -815,44 +816,49 @@ Buffer::CreateFragment (uint32_t start, uint32_t length) const
   Buffer tmp = *this;
   tmp.RemoveAtStart (start);
   tmp.RemoveAtEnd (GetSize () - (start + length));
+  NS_ASSERT (CheckInternalState ());
   return tmp;
 }
 
 Buffer 
 Buffer::CreateFullCopy (void) const
 {
+  NS_ASSERT (CheckInternalState ());
   if (m_zeroAreaEnd != 0) 
     {
-      NS_ASSERT (m_zeroAreaStart >= m_start);
-      NS_ASSERT (m_end - m_start >= (m_zeroAreaStart - m_start));
       Buffer tmp;
-      tmp.AddAtStart (m_zeroAreaEnd);
-      tmp.Begin ().WriteU8 (0, m_zeroAreaEnd);
+      tmp.AddAtStart (m_zeroAreaEnd - m_zeroAreaStart);
+      tmp.Begin ().WriteU8 (0, m_zeroAreaEnd - m_zeroAreaStart);
       uint32_t dataStart = m_zeroAreaStart - m_start;
       tmp.AddAtStart (dataStart);
       tmp.Begin ().Write (m_data->m_data+m_start, dataStart);
-      uint32_t dataEnd = m_end - m_start - (m_zeroAreaStart - m_start);
+      uint32_t dataEnd = m_end - m_zeroAreaEnd;
       tmp.AddAtEnd (dataEnd);
       Buffer::Iterator i = tmp.End ();
       i.Prev (dataEnd);
-      i.Write (m_data->m_data+m_zeroAreaStart,dataEnd);
+      i.Write (m_data->m_data+m_zeroAreaEnd,dataEnd);
       return tmp;
     }
+  NS_ASSERT (CheckInternalState ());
   return *this;
 }
 
 void
 Buffer::TransformIntoRealBuffer (void) const
 {
+  NS_ASSERT (CheckInternalState ());
   Buffer tmp = CreateFullCopy ();
   *const_cast<Buffer *> (this) = tmp;
+  NS_ASSERT (CheckInternalState ());
 }
 
 
 uint8_t const*
 Buffer::PeekData (void) const
 {
+  NS_ASSERT (CheckInternalState ());
   TransformIntoRealBuffer ();
+  NS_ASSERT (CheckInternalState ());
   return m_data->m_data + m_start;
 }
 
