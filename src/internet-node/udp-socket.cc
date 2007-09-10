@@ -22,6 +22,8 @@
 #include "ns3/debug.h"
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/ipv4-route.h"
+#include "ns3/ipv4.h"
 #include "udp-socket.h"
 #include "udp-l4-protocol.h"
 #include "ipv4-end-point.h"
@@ -175,7 +177,7 @@ int
 UdpSocket::Connect(const Address & address)
 {
   NS_DEBUG ("UdpSocket::Connect (" << address << ")");
-
+  Ipv4Route routeToDest;
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
   m_defaultPort = transport.GetPort ();
@@ -183,11 +185,17 @@ UdpSocket::Connect(const Address & address)
   m_connected = true;
 
   NS_DEBUG ("UdpSocket::Connect (): Updating local address");
-  Ptr<Ipv4> ipv4;
-  ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
-  m_endPoint->SetLocalAddress (ipv4->GetSourceAddress(m_defaultAddress));
+
+  if (GetIpv4RouteToDestination (m_node, routeToDest, m_defaultAddress) )
+    {
+      uint32_t localIfIndex = routeToDest.GetInterface ();
+      Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
+      m_endPoint->SetLocalAddress (ipv4->GetAddress(localIfIndex) );
+    }
+
   NS_DEBUG ("UdpSocket::Connect (): Local address is " << 
     m_endPoint->GetLocalAddress());
+
   return 0;
 }
 
@@ -201,6 +209,27 @@ UdpSocket::Send (const Packet &p)
       m_errno = ERROR_NOTCONN;
       return -1;
     }
+  return DoSend (p);
+}
+
+int 
+UdpSocket::DoSend (const Packet &p)
+{
+  if (m_endPoint == 0)
+    {
+      if (Bind () == -1)
+       {
+          NS_ASSERT (m_endPoint == 0);
+         return -1;
+       }
+      NS_ASSERT (m_endPoint != 0);
+    }
+  if (m_shutdownSend)
+    {
+      m_errno = ERROR_SHUTDOWN;
+      return -1;
+    } 
+  
   return DoSendTo (p, m_defaultAddress, m_defaultPort);
 }
 
@@ -208,17 +237,28 @@ int
 UdpSocket::DoSendTo (const Packet &p, const Address &address)
 {
   NS_DEBUG("UdpSocket::DoSendTo (" << &p << ", " << address << ")");
-  InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
-  Ipv4Address ipv4 = transport.GetIpv4 ();
-  uint16_t port = transport.GetPort ();
-  return DoSendTo (p, ipv4, port);
+
+  if (!m_connected)
+    {
+      InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
+      Ipv4Address ipv4 = transport.GetIpv4 ();
+      uint16_t port = transport.GetPort ();
+      return DoSendTo (p, ipv4, port);
+    }
+  else
+    {
+      // connected UDP socket must use default addresses
+      return DoSendTo (p, m_defaultAddress, m_defaultPort);
+    }
 }
 
 int
-UdpSocket::DoSendTo (const Packet &p, Ipv4Address addr, uint16_t port)
+UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
 {
   NS_DEBUG("UdpSocket::DoSendTo (" << &p << ", " << addr << ", " <<
     port << ")");
+
+  Ipv4Route routeToDest;
 
   if (m_endPoint == 0)
     {
@@ -234,18 +274,37 @@ UdpSocket::DoSendTo (const Packet &p, Ipv4Address addr, uint16_t port)
       m_errno = ERROR_SHUTDOWN;
       return -1;
     }
+  //
+  // If dest is sent to the limited broadcast address (all ones),
+  // convert it to send a copy of the packet out of every interface
+  //
+  if (dest.IsBroadcast ())
+    {
+      Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
+      for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++ )
+        {
+          Ipv4Address addri = ipv4->GetAddress (i);
+          Ipv4Mask maski = ipv4->GetNetworkMask (i);
+          m_udp->Send (p, addri, addri.GetSubnetDirectedBroadcast (maski),
+                       m_endPoint->GetLocalPort (), port);
+          NotifyDataSent (p.GetSize ());
+        }
+    }
+  else if (GetIpv4RouteToDestination (m_node, routeToDest, dest) )
+    {
+      uint32_t localIfIndex = routeToDest.GetInterface ();
+      Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
+      m_udp->Send (p, ipv4->GetAddress (localIfIndex), dest,
+		   m_endPoint->GetLocalPort (), port);
+      NotifyDataSent (p.GetSize ());
+      return 0;
+    }
+  else
+   {
+      m_errno = ERROR_NOROUTETOHOST;
+      return -1;
+   }
 
-  NS_DEBUG ("UdpSocket::DoSendTo (): Finding source address");
-  Ptr<Ipv4> ipv4;
-  ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
-
-  Ipv4Address source = ipv4->GetSourceAddress(m_defaultAddress);
-  NS_DEBUG ("UdpSocket::DoSendTo (): Source address is " << source);
-
-  NS_DEBUG("UdpSocket::DoSendTo (): Send to UDP");
-  m_udp->Send (p, source, addr, m_endPoint->GetLocalPort (), port);
-
-  NotifyDataSent (p.GetSize ());
   return 0;
 }
 
@@ -253,13 +312,6 @@ int
 UdpSocket::SendTo(const Address &address, const Packet &p)
 {
   NS_DEBUG("UdpSocket::SendTo (" << address << ", " << &p << ")");
-#if 0
-  if (m_connected)
-    {
-      m_errno = ERROR_ISCONN;
-      return -1;
-    }
-#endif
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();

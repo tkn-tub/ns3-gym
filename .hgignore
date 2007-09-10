@@ -7,5 +7,3 @@ build
 doc/html.*
 doc/latex.*
 .lock-wscript
-.waf*
-waf

@@ -74,8 +74,9 @@ ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
         m_node->QueryInterface<ArpL3Protocol> (ArpL3Protocol::iid);
       Address hardwareDestination;
       bool found;
-
-      if (dest.IsBroadcast ())
+      
+      if (dest.IsBroadcast () || 
+          dest.IsSubnetDirectedBroadcast (GetNetworkMask ()) )
         {
           NS_DEBUG ("ArpIpv4Interface::SendTo (): IsBroadcast");
           hardwareDestination = GetDevice ()->GetBroadcast ();

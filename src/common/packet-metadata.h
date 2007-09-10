@@ -306,24 +306,23 @@ PacketMetadata::PacketMetadata (PacketMetadata const &o)
 PacketMetadata &
 PacketMetadata::operator = (PacketMetadata const& o)
 {
-  if (m_data == o.m_data) 
+  if (m_data != o.m_data) 
     {
-      // self assignment
-      return *this;
+      // not self assignment
+      NS_ASSERT (m_data != 0);
+      m_data->m_count--;
+      if (m_data->m_count == 0) 
+        {
+          PacketMetadata::Recycle (m_data);
+        }
+      m_data = o.m_data;
+      NS_ASSERT (m_data != 0);
+      m_data->m_count++;
     }
-  NS_ASSERT (m_data != 0);
-  m_data->m_count--;
-  if (m_data->m_count == 0) 
-    {
-      PacketMetadata::Recycle (m_data);
-    }
-  m_data = o.m_data;
   m_head = o.m_head;
   m_tail = o.m_tail;
   m_used = o.m_used;
   m_packetUid = o.m_packetUid;
-  NS_ASSERT (m_data != 0);
-  m_data->m_count++;
   return *this;
 }
 PacketMetadata::~PacketMetadata ()

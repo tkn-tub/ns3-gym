@@ -62,6 +62,7 @@ private:
   int FinishBind (void);
   void ForwardUp (const Packet &p, Ipv4Address ipv4, uint16_t port);
   void Destroy (void);
+  int DoSend (const Packet &p);
   int DoSendTo (const Packet &p, const Address &daddr);
   int DoSendTo (const Packet &p, Ipv4Address daddr, uint16_t dport);
 

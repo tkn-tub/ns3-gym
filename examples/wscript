@@ -14,6 +14,10 @@ def build(bld):
         ['csma', 'internet-node'])
     obj.source = 'csma-one-subnet.cc'
 
+    obj = bld.create_ns3_program('csma-broadcast',
+        ['csma', 'internet-node'])
+    obj.source = 'csma-broadcast.cc'
+
     obj = bld.create_ns3_program('csma-packet-socket',
         ['csma', 'internet-node'])
     obj.source = 'csma-packet-socket.cc'

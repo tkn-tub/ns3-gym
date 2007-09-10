@@ -43,7 +43,7 @@ Ipv4EndPoint::GetLocalAddress (void)
   return m_localAddr;
 }
 
-void
+void 
 Ipv4EndPoint::SetLocalAddress (Ipv4Address address)
 {
   m_localAddr = address;

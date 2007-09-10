@@ -69,7 +69,7 @@ public:
        * to the same underlying buffer. Debug builds ensure
        * this with an assert.
        */
-      inline int32_t GetDistanceFrom (Iterator const &o) const;
+      inline uint32_t GetDistanceFrom (Iterator const &o) const;
       
       /**
        * \return true if this iterator points to the end of the byte array.
@@ -502,13 +502,21 @@ Buffer::Iterator::Prev (uint32_t delta)
   NS_ASSERT (m_current >= delta);
   m_current -= delta;
 }
-int32_t
+uint32_t
 Buffer::Iterator::GetDistanceFrom (Iterator const &o) const
 {
   NS_ASSERT (m_data == o.m_data);
   int32_t start = m_current;
   int32_t end = o.m_current;
-  return end - start;
+  int32_t diff = end - start;
+  if (diff < 0)
+    {
+      return -diff;
+    }
+  else
+    {
+      return diff;
+    }
 }
 
 bool 
