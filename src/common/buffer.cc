@@ -645,10 +645,13 @@ Buffer::AddAtStart (uint32_t start)
 
       m_start -= start;
     }
-#endif
   else
     {
       NS_ASSERT (m_start < start);
+#else
+  else
+    {
+#endif
       uint32_t newSize = GetInternalSize () + start;
       struct BufferData *newData = Buffer::Create (newSize);
       memcpy (newData->m_data + start, m_data->m_data + m_start, GetInternalSize ());
@@ -836,7 +839,7 @@ Buffer::CreateFullCopy (void) const
       tmp.AddAtEnd (dataEnd);
       Buffer::Iterator i = tmp.End ();
       i.Prev (dataEnd);
-      i.Write (m_data->m_data+m_zeroAreaEnd,dataEnd);
+      i.Write (m_data->m_data+m_zeroAreaStart,dataEnd);
       return tmp;
     }
   NS_ASSERT (CheckInternalState ());
