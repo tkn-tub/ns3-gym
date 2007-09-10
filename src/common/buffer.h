@@ -354,6 +354,7 @@ private:
   static uint32_t m_maxTotalAddEnd;
 
   struct BufferData *m_data;
+  uint32_t m_zeroAreaStart;
   uint32_t m_zeroAreaSize;
   uint32_t m_start;
   uint32_t m_end;

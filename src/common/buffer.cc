@@ -135,6 +135,7 @@ namespace ns3 {
 
 Buffer::Buffer ()
   : m_data (Buffer::Create ()),
+    m_zeroAreaStart (m_data->m_initialStart),
     m_zeroAreaSize (0),
     m_start (m_maxTotalAddStart),
     m_end (m_maxTotalAddStart)
@@ -148,6 +149,7 @@ Buffer::Buffer ()
 
 Buffer::Buffer (uint32_t dataSize)
   : m_data (Buffer::Create ()),
+    m_zeroAreaStart (m_data->m_initialStart),
     m_zeroAreaSize (dataSize),
     m_start (m_maxTotalAddStart),
     m_end (m_maxTotalAddStart)
@@ -162,6 +164,7 @@ Buffer::Buffer (uint32_t dataSize)
 
 Buffer::Buffer (Buffer const&o)
   : m_data (o.m_data),
+    m_zeroAreaStart (o.m_zeroAreaStart),
     m_zeroAreaSize (o.m_zeroAreaSize),
     m_start (o.m_start),
     m_end (o.m_end)
@@ -184,6 +187,7 @@ Buffer::operator = (Buffer const&o)
       m_data = o.m_data;
       m_data->m_count++;
     }
+  m_zeroAreaStart = o.m_zeroAreaStart;
   m_zeroAreaSize = o.m_zeroAreaSize;
   m_start = o.m_start;
   m_end = o.m_end;
@@ -568,7 +572,7 @@ Buffer::AddAtStart (uint32_t start)
 {
   NS_ASSERT (m_start <= m_data->m_initialStart);
   bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
-  if (m_start >= start && !isDirty) 
+  if (m_start >= start && !isDirty)
     {
       /* enough space in the buffer and not dirty. 
        * To add: |..|
@@ -577,7 +581,7 @@ Buffer::AddAtStart (uint32_t start)
        */
       m_start -= start;
     } 
-  else if (m_end + start <= m_data->m_size && !isDirty) 
+  else if (m_end + start <= m_data->m_size && !isDirty)
     {
       /* enough space but need to move data around to fit new data 
        * To add: |.......|
@@ -589,6 +593,7 @@ Buffer::AddAtStart (uint32_t start)
       m_data->m_initialStart += start - m_start;
       m_start = 0;
       m_end += start;
+      m_zeroAreaStart += start - m_start;
     } 
   else if (m_start < start) 
     {
@@ -609,6 +614,7 @@ Buffer::AddAtStart (uint32_t start)
       m_data = newData;
       m_start = 0;
       m_end = newSize;
+      m_zeroAreaStart += start;
     } 
   else 
     {
@@ -678,6 +684,7 @@ Buffer::AddAtEnd (uint32_t end)
       m_data->m_initialStart -= m_start - newStart;
       m_start = newStart;
       m_end = m_data->m_size;
+      m_zeroAreaStart -= m_start - newStart;
     } 
   else if (m_start + m_end + end > m_data->m_size) 
     {
@@ -698,6 +705,7 @@ Buffer::AddAtEnd (uint32_t end)
       m_data = newData;
       m_start = 0;
       m_end = newSize;
+      m_zeroAreaStart -= m_start;
     } 
   else 
     {
@@ -757,8 +765,8 @@ Buffer::RemoveAtStart (uint32_t start)
     }
   else 
     {
-      NS_ASSERT (m_data->m_initialStart >= m_start);
-      uint32_t zeroStart = m_data->m_initialStart - m_start;
+      NS_ASSERT (m_zeroAreaStart >= m_start);
+      uint32_t zeroStart = m_zeroAreaStart - m_start;
       uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
       uint32_t dataEnd = m_end - m_start + m_zeroAreaSize;
       if (start <= zeroStart)
@@ -773,6 +781,7 @@ Buffer::RemoveAtStart (uint32_t start)
            */
           m_start += zeroStart;
           uint32_t zeroDelta = start - zeroStart;
+          m_zeroAreaStart += zeroDelta;
           m_zeroAreaSize -= zeroDelta;
           NS_ASSERT (zeroDelta <= start);
         } 
@@ -782,12 +791,14 @@ Buffer::RemoveAtStart (uint32_t start)
            * of end of buffer 
            */
           m_start += start - m_zeroAreaSize;
+          m_zeroAreaStart = m_start;
           m_zeroAreaSize = 0;
         } 
       else 
         {
           /* remove all buffer */
           m_start = m_end;
+          m_zeroAreaStart = m_end;
           m_zeroAreaSize = 0;
         }
     }
@@ -812,8 +823,8 @@ Buffer::RemoveAtEnd (uint32_t end)
     } 
   else 
     {
-      NS_ASSERT (m_data->m_initialStart >= m_start);
-      uint32_t zeroStart = m_data->m_initialStart - m_start;
+      NS_ASSERT (m_zeroAreaStart >= m_start);
+      uint32_t zeroStart = m_zeroAreaStart - m_start;
       uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
       uint32_t dataEnd = m_end - m_start + m_zeroAreaSize;
       NS_ASSERT (zeroStart <= m_end - m_start);
@@ -821,6 +832,7 @@ Buffer::RemoveAtEnd (uint32_t end)
       if (dataEnd <= end) 
         {
           /* remove all buffer */
+          m_zeroAreaStart = m_start;
           m_zeroAreaSize = 0;
           m_end = m_start;
         } 
@@ -829,14 +841,15 @@ Buffer::RemoveAtEnd (uint32_t end)
           /* remove end of buffer, zero area, part of start of buffer */
           NS_ASSERT (end >= m_zeroAreaSize);
           m_end -= end - m_zeroAreaSize;
+          m_zeroAreaStart = m_end;
           m_zeroAreaSize = 0;
         } 
       else if (dataEnd - zeroEnd <= end) 
         {
           /* remove end of buffer, part of zero area */
           uint32_t zeroDelta = end - (dataEnd - zeroEnd);
-          m_zeroAreaSize -= zeroDelta;
           m_end -= end - zeroDelta;
+          m_zeroAreaSize -= zeroDelta;
         } 
       else 
         {
@@ -852,7 +865,7 @@ Buffer::RemoveAtEnd (uint32_t end)
 Buffer 
 Buffer::CreateFragment (uint32_t start, uint32_t length) const
 {
-  uint32_t zeroStart = m_data->m_initialStart - m_start;
+  uint32_t zeroStart = m_zeroAreaStart - m_start;
   uint32_t zeroEnd = zeroStart + m_zeroAreaSize;
   if (m_zeroAreaSize != 0 &&
       start + length > zeroStart &&
@@ -871,19 +884,19 @@ Buffer::CreateFullCopy (void) const
 {
   if (m_zeroAreaSize != 0) 
     {
-      NS_ASSERT (m_data->m_initialStart >= m_start);
-      NS_ASSERT (m_end - m_start >= (m_data->m_initialStart - m_start));
+      NS_ASSERT (m_zeroAreaStart >= m_start);
+      NS_ASSERT (m_end - m_start >= (m_zeroAreaStart - m_start));
       Buffer tmp;
       tmp.AddAtStart (m_zeroAreaSize);
       tmp.Begin ().WriteU8 (0, m_zeroAreaSize);
-      uint32_t dataStart = m_data->m_initialStart - m_start;
+      uint32_t dataStart = m_zeroAreaStart - m_start;
       tmp.AddAtStart (dataStart);
       tmp.Begin ().Write (m_data->m_data+m_start, dataStart);
-      uint32_t dataEnd = m_end - m_start - (m_data->m_initialStart - m_start);
+      uint32_t dataEnd = m_end - m_start - (m_zeroAreaStart - m_start);
       tmp.AddAtEnd (dataEnd);
       Buffer::Iterator i = tmp.End ();
       i.Prev (dataEnd);
-      i.Write (m_data->m_data+m_data->m_initialStart,dataEnd);
+      i.Write (m_data->m_data+m_zeroAreaStart,dataEnd);
       return tmp;
     }
   return *this;
