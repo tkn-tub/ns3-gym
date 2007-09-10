@@ -255,7 +255,7 @@ UdpSocket::DoSendTo (const Packet &p, const Address &address)
 int
 UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
 {
-  NS_DEBUG("UdpSocket::DoSendTo (" << &p << ", " << addr << ", " <<
+  NS_DEBUG("UdpSocket::DoSendTo (" << &p << ", " << dest << ", " <<
     port << ")");
 
   Ipv4Route routeToDest;
