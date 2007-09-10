@@ -163,18 +163,16 @@ Buffer::CheckInternalState (void) const
   bool dirtyOk =
     m_start >= m_data->m_dirtyStart &&
     m_end <= m_data->m_dirtyEnd;
-  bool maxZeroOk = m_maxZeroAreaStart <= m_data->m_size;
   bool internalSizeOk = m_end - (m_zeroAreaEnd - m_zeroAreaStart) <= m_data->m_size &&
     m_start <= m_data->m_size &&
     m_zeroAreaStart <= m_data->m_size;
 
   NS_ASSERT (offsetsOk);
   NS_ASSERT (dirtyOk);
-  NS_ASSERT (maxZeroOk);
   NS_ASSERT (internalSizeOk);
 
   return m_data->m_count > 0 && offsetsOk && dirtyOk && 
-    maxZeroOk && internalSizeOk;
+    internalSizeOk;
 }
 
 void
