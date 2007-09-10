@@ -243,7 +243,7 @@ PacketTest::RunTests (void)
                                  packet.GetSize ());
   if (msg != "hello world")
     {
-      Failure () << "expected size 'hello world', got " << msg << std::endl;
+      Failure () << "expected 'hello world', got '" << msg << "'" << std::endl;
       ok = false;
     }
 
