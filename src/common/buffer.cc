@@ -618,7 +618,6 @@ Buffer::AddAtStart (uint32_t start)
 {
   NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
-  NS_ASSERT (isDirty || (!isDirty && m_start == m_data->m_dirtyStart));
   if (m_start >= start && !isDirty)
     {
       /* enough space in the buffer and not dirty. 
@@ -626,6 +625,7 @@ Buffer::AddAtStart (uint32_t start)
        * Before: |*****---------***|
        * After:  |***..---------***|
        */
+      NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
       m_start -= start;
     } 
 #if 0
@@ -678,7 +678,6 @@ Buffer::AddAtEnd (uint32_t end)
 {
   NS_ASSERT (CheckInternalState ());
   bool isDirty = m_data->m_count > 1 && m_end < m_data->m_dirtyEnd;
-  NS_ASSERT (isDirty || (!isDirty && m_end == m_data->m_dirtyEnd));
   if (GetInternalEnd () + end <= m_data->m_size && !isDirty)
     {
       /* enough space in buffer and not dirty
@@ -686,6 +685,7 @@ Buffer::AddAtEnd (uint32_t end)
        * Before: |**----*****|
        * After:  |**----...**|
        */
+      NS_ASSERT (m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
       m_end += end;
     } 
 #if 0
