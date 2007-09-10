@@ -665,8 +665,8 @@ Buffer::AddAtStart (uint32_t start)
       m_zeroAreaStart += delta;
       m_zeroAreaEnd += delta;
       m_end += delta;
-      m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
     } 
+  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
   // update dirty area
   m_data->m_dirtyStart = m_start;
   m_data->m_dirtyEnd = m_end;
@@ -724,6 +724,7 @@ Buffer::AddAtEnd (uint32_t end)
 
       m_end += end;
     } 
+  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
   // update dirty area
   m_data->m_dirtyStart = m_start;
   m_data->m_dirtyEnd = m_end;
@@ -746,25 +747,32 @@ Buffer::RemoveAtStart (uint32_t start)
     {
       /* remove start of buffer _and_ start of zero area
        */
-      m_start = newStart;
-      m_zeroAreaStart = newStart;
+      uint32_t delta = newStart - m_zeroAreaStart;
+      m_start = m_zeroAreaStart;
+      m_zeroAreaEnd -= delta;
+      m_end -= delta;
     } 
   else if (newStart <= m_end)
     {
       /* remove start of buffer, complete zero area, and part
        * of end of buffer 
        */
-      m_start = newStart;
-      m_zeroAreaStart = newStart;
-      m_zeroAreaEnd = newStart;
+      NS_ASSERT (m_end >= start);
+      uint32_t zeroSize = m_zeroAreaEnd - m_zeroAreaStart;
+      m_start = newStart - zeroSize;
+      m_end -= zeroSize;
+      m_zeroAreaStart = m_start;
+      m_zeroAreaEnd = m_start;
     }
   else 
     {
       /* remove all buffer */
+      m_end -= m_zeroAreaEnd - m_zeroAreaStart;
       m_start = m_end;
-      m_zeroAreaStart = m_end;
       m_zeroAreaEnd = m_end;
+      m_zeroAreaStart = m_end;
     }
+  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
   DEBUG_INTERNAL_STATE ("rem start=" << start << ", ");
   NS_ASSERT (CheckInternalState ());
 }
@@ -798,6 +806,7 @@ Buffer::RemoveAtEnd (uint32_t end)
       m_zeroAreaEnd = m_start;
       m_zeroAreaStart = m_start;
     }
+  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
   DEBUG_INTERNAL_STATE ("rem end=" << end << ", ");
   NS_ASSERT (CheckInternalState ());
 }
