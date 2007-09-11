@@ -114,7 +114,7 @@ def configure(conf):
     
     if (os.path.basename(conf.env['CXX']).startswith("g++")
         and 'CXXFLAGS' not in os.environ):
-        variant_env.append_value('CXXFLAGS', ['-Wall', '-Werror'])
+        variant_env.append_value('CXXFLAGS', ['-Werror'])
 
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
