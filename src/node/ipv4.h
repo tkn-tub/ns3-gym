@@ -29,6 +29,7 @@
 
 namespace ns3 {
 
+class Node;
 class NetDevice;
 class Packet;
 class Ipv4Route;
@@ -272,6 +273,19 @@ public:
   virtual void SetDown (uint32_t i) = 0;
   
 };
+
+/**
+ * Convenience functions (Doxygen still needed)
+ *
+ * Return the ifIndex corresponding to the Ipv4Address provided.
+ */
+uint32_t GetIfIndexByIpv4Address (Ptr<Node> node, 
+                                  Ipv4Address a, 
+                                  Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+
+bool GetIpv4RouteToDestination (Ptr<Node> node, Ipv4Route& route, 
+                                Ipv4Address a, 
+                                Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 
 } // namespace ns3 
 

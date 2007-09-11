@@ -754,8 +754,8 @@ private:
     GlobalRoutingLinkRecord* prev_link);
   void SPFIntraAddRouter (SPFVertex* v);
   void SPFIntraAddTransit (SPFVertex* v);
-  uint32_t FindOutgoingInterfaceId (Ipv4Address a);
-  uint32_t FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask);
+  uint32_t FindOutgoingInterfaceId (Ipv4Address a, 
+    Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 };
 
 } // namespace ns3

@@ -18,6 +18,9 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
+#include "ns3/assert.h" 
+#include "ns3/node.h" 
 #include "ipv4.h"
 
 namespace ns3 {
@@ -31,5 +34,54 @@ Ipv4::Ipv4 ()
 
 Ipv4::~Ipv4 ()
 {}
+
+uint32_t 
+GetIfIndexByIpv4Address (Ptr<Node> node, Ipv4Address a, Ipv4Mask amask)
+{
+  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+  NS_ASSERT_MSG (ipv4, "GetIfIndexByIpv4Address:  No Ipv4 interface");
+  for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++)
+    {
+      if (ipv4->GetAddress (i).CombineMask(amask) == a.CombineMask(amask) )
+        {
+          return i;
+        }
+    }
+  // Mapping not found
+  NS_ASSERT_MSG (false, "GetIfIndexByIpv4Address failed");
+  return 0;
+}
+
+bool 
+GetIpv4RouteToDestination (Ptr<Node> node, Ipv4Route& route, 
+                           Ipv4Address a, Ipv4Mask amask)
+{
+  Ipv4Route tempRoute;
+  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+  NS_ASSERT_MSG (ipv4, "GetIpv4RouteToDestination:  No Ipv4 interface");
+  for (uint32_t i = 0; i < ipv4->GetNRoutes (); i++) 
+    {
+      tempRoute = ipv4->GetRoute (i);
+      // Host route found
+      if ( tempRoute.IsNetwork () == false && tempRoute.GetDest () == a ) 
+        {
+          route = tempRoute;
+          return true;
+        }
+      else if ( tempRoute.IsNetwork () && 
+                tempRoute.GetDestNetwork () == a.CombineMask(amask) )
+        {
+          route = tempRoute;
+          return true;
+        }
+      else if ( tempRoute.IsDefault () )
+        {
+          route = tempRoute;
+          return true;
+        }
+    }
+  return false;
+}
+
 
 } // namespace ns3

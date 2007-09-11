@@ -1,7 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,35 +17,15 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef EMPTY_TRACE_RESOLVER_H
-#define EMPTY_TRACE_RESOLVER_H
-
-#include "trace-resolver.h"
+#include "trace-source.h"
+#include "trace-context.h"
 
 namespace ns3 {
 
-class TraceContext;
-
-/**
- * \brief a TraceResolver instance which does not resolve anything.
- * \ingroup tracing
- *
- * Trying to resolve against this class will yield no matches and no
- * connections. Returning an instance of this class from a 
- * CreateTraceResolver method is a hand way of not implementing
- * any Tracing code.
- */
-class EmptyTraceResolver : public TraceResolver
+void 
+TraceSource::AddCallback (CallbackBase const & callback)
 {
-public:
-  /**
-   * \param o necessary context for this class.
-   *
-   * The only constructor exported by this class.
-   */
-  EmptyTraceResolver (TraceContext const &o);
-};
+  AddCallback (callback, TraceContext ());
+}
 
-}//namespace ns3
-
-#endif /* EMPTY_TRACE_RESOLVER_H */
+} // namespace ns3

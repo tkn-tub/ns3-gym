@@ -22,6 +22,7 @@
 #include "ipv4-interface.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/net-device.h"
+#include "ns3/trace-resolver.h"
 
 namespace ns3 {
 
@@ -39,16 +40,17 @@ Ipv4Interface::Ipv4Interface (Ptr<NetDevice> nd)
 Ipv4Interface::~Ipv4Interface ()
 {}
 
+void
+Ipv4Interface::DoDispose (void)
+{
+  m_netdevice = 0;
+  Object::DoDispose ();
+}
+
 Ptr<NetDevice>
 Ipv4Interface::GetDevice (void) const
 {
   return m_netdevice;
-}
-
-TraceResolver *
-Ipv4Interface::CreateTraceResolver (TraceContext const &context)
-{
-  return DoCreateTraceResolver (context);
 }
 
 void 

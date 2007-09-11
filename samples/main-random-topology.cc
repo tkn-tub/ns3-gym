@@ -15,7 +15,7 @@
 using namespace ns3;
 
 static void 
-CourseChange (Ptr<const MobilityModel> position)
+CourseChange (const TraceContext &context, Ptr<const MobilityModel> position)
 {
   Position pos = position->Get ();
   std::cout << Simulator::Now () << ", pos=" << position << ", x=" << pos.x << ", y=" << pos.y
@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
   for (uint32_t i = 0; i < 10000; i++)
     {
       Ptr<MobilityModelNotifier> notifier = Create<MobilityModelNotifier> ();
-      notifier->RegisterListener (MakeCallback (&CourseChange));
+      notifier->TraceConnect ("/course-change", MakeCallback (&CourseChange));
       objects.push_back (notifier);
     }
 

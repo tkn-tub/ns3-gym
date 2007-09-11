@@ -19,7 +19,6 @@
  * Authors: 
  *  Mathieu Lacage <mathieu.lacage@sophia.inria.fr>,
  */
-#include "ns3/empty-trace-resolver.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/eui48-address.h"
@@ -34,13 +33,6 @@ Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
 {}
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
 {}
-
-TraceResolver *
-Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
-{
-  return new EmptyTraceResolver (context);
-}
-
 void 
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {

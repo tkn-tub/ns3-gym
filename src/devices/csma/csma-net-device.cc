@@ -59,6 +59,16 @@ CsmaTraceType::GetUid (void)
   static uint16_t uid = AllocateUid<CsmaTraceType> ("CsmaTraceType");
   return uid;
 }
+std::string 
+CsmaTraceType::GetTypeName (void) const
+{
+  return "ns3::CsmaTraceType";
+}
+enum CsmaTraceType::Type 
+CsmaTraceType::Get (void) const
+{
+  return m_type;
+}
 
 
 CsmaNetDevice::CsmaNetDevice (Ptr<Node> node)
@@ -452,20 +462,23 @@ CsmaNetDevice::TransmitReadyEvent (void)
     }
 }
 
-TraceResolver *
-CsmaNetDevice::DoCreateTraceResolver (TraceContext const &context)
+Ptr<TraceResolver>
+CsmaNetDevice::GetTraceResolver (void) const
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
-  resolver->Add ("queue", 
-                 MakeCallback (&Queue::CreateTraceResolver, 
-                               PeekPointer (m_queue)));
-  resolver->Add ("rx",
-                 m_rxTrace,
-                 CsmaTraceType (CsmaTraceType::RX));
-  resolver->Add ("drop",
-                 m_dropTrace,
-                 CsmaTraceType (CsmaTraceType::DROP));
-   return resolver;
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
+  resolver->AddComposite ("queue", m_queue);
+  resolver->AddSource ("rx",
+                       TraceDoc ("receive MAC packet",
+                                 "const Packet &", "packet received"),
+                       m_rxTrace,
+                       CsmaTraceType (CsmaTraceType::RX));
+  resolver->AddSource ("drop",
+                       TraceDoc ("drop MAC packet",
+                                 "const Packet &", "packet dropped"),
+                       m_dropTrace,
+                       CsmaTraceType (CsmaTraceType::DROP));
+  resolver->SetParentResolver (NetDevice::GetTraceResolver ());
+  return resolver;
 }
 
 bool
