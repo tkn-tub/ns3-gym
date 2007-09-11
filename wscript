@@ -129,6 +129,13 @@ def configure(conf):
             if flag.startswith('-g'):
                 variant_env.append_value('CXXFLAGS', flag)
 
+    ## in optimized builds, replace -O2 with -O3
+    if 'optimized' in Params.g_options.debug_level.lower():
+        lst = variant_env['CXXFLAGS']
+        for i, flag in enumerate(lst):
+            if flag == '-O2':
+                lst[i] = '-O3'
+
     if sys.platform == 'win32':
         if os.path.basename(conf.env['CXX']).startswith("g++"):
             variant_env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
