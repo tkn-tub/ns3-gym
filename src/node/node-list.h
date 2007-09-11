@@ -29,9 +29,12 @@
 namespace ns3 {
 
 class Node;
+class CallbackBase;
 class TraceResolver;
-class TraceContext;
 
+/**
+ * \brief hold in a TraceContext the index of a node within a NodeList.
+ */
 class NodeListIndex : public TraceContextElement
 {
 public:
@@ -39,7 +42,11 @@ public:
   NodeListIndex (uint32_t index);
   void Print (std::ostream &os);
   static uint16_t GetUid (void);
+  /**
+   * \returns the index of the node within the NodeList
+   */
   uint32_t Get (void) const;
+  std::string GetTypeName (void) const;
 private:
   uint32_t m_index;
 };
@@ -53,7 +60,7 @@ private:
 class NodeList
 {
 public:
-  typedef std::vector< Ptr<Node> >::iterator Iterator;
+  typedef std::vector< Ptr<Node> >::const_iterator Iterator;
 
   /**
    * \param node node to add
@@ -74,18 +81,29 @@ public:
    */
   static Iterator End (void);
   /**
-   * \param context trace context to use for trace resolver
-   *        to create.
-   * \returns the requested trace resolver. The caller
-   *          takes ownership of the returned pointer.
-   */
-  static TraceResolver *CreateTraceResolver (TraceContext const &context);
-
-  /**
    * \param n index of requested node.
    * \returns the Node associated to index n.
    */
   static Ptr<Node> GetNode (uint32_t n);
+  /**
+   * \param name namespace regexp to match
+   * \param cb callback to connect
+   *
+   * Connect input callback to all trace sources which match
+   * the input namespace regexp.
+   */
+  static void Connect (std::string name, const CallbackBase &cb);
+  /**
+   * \param name namespace regexp to match
+   * \param cb callback to connect
+   *
+   * Disconnect input callback from all trace sources which match
+   * the input namespace regexp.
+   */
+  static void Disconnect (std::string name, const CallbackBase &cb);
+  static void TraceAll (std::ostream &os);
+  static Ptr<TraceResolver> GetTraceResolver (void);
+private:
 };
 
 }//namespace ns3

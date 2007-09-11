@@ -22,7 +22,6 @@
 #include "ns3/packet.h"
 #include "ns3/debug.h"
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/array-trace-resolver.h"
 #include "ns3/callback.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4-route.h"
@@ -88,29 +87,39 @@ Ipv4L3ProtocolTraceContextElement::GetUid (void)
   static uint16_t uid = AllocateUid<Ipv4L3ProtocolTraceContextElement> ("Ipv4L3ProtocolTraceContextElement");
   return uid;
 }
+std::string 
+Ipv4L3ProtocolTraceContextElement::GetTypeName (void) const
+{
+  return "ns3::Ipv4L3ProtocolTraceContextElement";
+}
 
 
-Ipv4l3ProtocolInterfaceIndex::Ipv4l3ProtocolInterfaceIndex ()
+Ipv4L3ProtocolInterfaceIndex::Ipv4L3ProtocolInterfaceIndex ()
   : m_index (0)
 {}
-Ipv4l3ProtocolInterfaceIndex::Ipv4l3ProtocolInterfaceIndex (uint32_t index)
+Ipv4L3ProtocolInterfaceIndex::Ipv4L3ProtocolInterfaceIndex (uint32_t index)
   : m_index (index)
 {}
 uint32_t 
-Ipv4l3ProtocolInterfaceIndex::Get (void) const
+Ipv4L3ProtocolInterfaceIndex::Get (void) const
 {
   return m_index;
 }
 void 
-Ipv4l3ProtocolInterfaceIndex::Print (std::ostream &os) const
+Ipv4L3ProtocolInterfaceIndex::Print (std::ostream &os) const
 {
   os << "ipv4-interface=" << m_index;
 }
 uint16_t 
-Ipv4l3ProtocolInterfaceIndex::GetUid (void)
+Ipv4L3ProtocolInterfaceIndex::GetUid (void)
 {
-  static uint16_t uid = AllocateUid<Ipv4l3ProtocolInterfaceIndex> ("Ipv4l3ProtocolInterfaceIndex");
+  static uint16_t uid = AllocateUid<Ipv4L3ProtocolInterfaceIndex> ("Ipv4L3ProtocolInterfaceIndex");
   return uid;
+}
+std::string
+Ipv4L3ProtocolInterfaceIndex::GetTypeName (void) const
+{
+  return "ns3::Ipv4L3ProtocolInterfaceIndex";
 }
 
 
@@ -131,10 +140,6 @@ Ipv4L3Protocol::~Ipv4L3Protocol ()
 void 
 Ipv4L3Protocol::DoDispose (void)
 {
-  for (Ipv4InterfaceList::iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
-    {
-      delete (*i);
-    }
   m_interfaces.clear ();
   m_node = 0;
   m_staticRouting->Dispose ();
@@ -145,7 +150,7 @@ Ipv4L3Protocol::DoDispose (void)
 void
 Ipv4L3Protocol::SetupLoopback (void)
 {
-  Ipv4LoopbackInterface * interface = new Ipv4LoopbackInterface (m_node);
+  Ptr<Ipv4LoopbackInterface> interface = Create<Ipv4LoopbackInterface> (m_node);
   interface->SetAddress (Ipv4Address::GetLoopback ());
   interface->SetNetworkMask (Ipv4Mask::GetLoopback ());
   uint32_t index = AddIpv4Interface (interface);
@@ -153,26 +158,27 @@ Ipv4L3Protocol::SetupLoopback (void)
   interface->SetUp ();
 }
 
-TraceResolver *
-Ipv4L3Protocol::CreateTraceResolver (TraceContext const &context)
+Ptr<TraceResolver>
+Ipv4L3Protocol::GetTraceResolver (void) const
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
-  resolver->Add ("tx", m_txTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::TX));
-  resolver->Add ("rx", m_rxTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::RX));
-  resolver->Add ("drop", m_dropTrace, Ipv4L3ProtocolTraceContextElement (Ipv4L3ProtocolTraceContextElement::DROP));
-  resolver->Add ("interfaces", 
-                 MakeCallback (&Ipv4L3Protocol::InterfacesCreateTraceResolver, this));
-  return resolver;
-}
-
-TraceResolver *
-Ipv4L3Protocol::InterfacesCreateTraceResolver (TraceContext const &context) const
-{
-  ArrayTraceResolver<Ipv4Interface *, Ipv4l3ProtocolInterfaceIndex> *resolver = 
-    new ArrayTraceResolver<Ipv4Interface *,Ipv4l3ProtocolInterfaceIndex> 
-    (context,
-     MakeCallback (&Ipv4L3Protocol::GetNInterfaces, this),
-     MakeCallback (&Ipv4L3Protocol::GetInterface, this));
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
+  resolver->AddSource ("tx", 
+                       TraceDoc ("send ipv4 packet to outgoing interface",
+                                 "const Packet &", "packet sent",
+                                 "uint32_t", "index of output ipv4 interface"),
+                       m_txTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::TX));
+  resolver->AddSource ("rx",
+                       TraceDoc ("receive ipv4 packet from incoming interface",
+                                 "const Packet &", "packet received",
+                                 "uint32_t", "index of input ipv4 interface"),
+                       m_rxTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::RX));
+  resolver->AddSource ("drop", 
+                       TraceDoc ("drop ipv4 packet",
+                                 "const Packet &", "packet dropped"),
+                       m_dropTrace, Ipv4L3ProtocolTraceContextElement (Ipv4L3ProtocolTraceContextElement::DROP));
+  resolver->AddArray ("interfaces", 
+                      m_interfaces.begin (), m_interfaces.end (), 
+                      Ipv4L3ProtocolInterfaceIndex ());
   return resolver;
 }
 
@@ -265,18 +271,18 @@ Ipv4L3Protocol::RemoveRoute (uint32_t index)
 uint32_t 
 Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
-  Ipv4Interface *interface = new ArpIpv4Interface (m_node, device);
+  Ptr<Ipv4Interface> interface = Create<ArpIpv4Interface> (m_node, device);
   return AddIpv4Interface (interface);
 }
 uint32_t 
-Ipv4L3Protocol::AddIpv4Interface (Ipv4Interface *interface)
+Ipv4L3Protocol::AddIpv4Interface (Ptr<Ipv4Interface>interface)
 {
   uint32_t index = m_nInterfaces;
   m_interfaces.push_back (interface);
   m_nInterfaces++;
   return index;
 }
-Ipv4Interface *
+Ptr<Ipv4Interface>
 Ipv4L3Protocol::GetInterface (uint32_t index) const
 {
   uint32_t tmp = 0;
@@ -296,7 +302,7 @@ Ipv4L3Protocol::GetNInterfaces (void) const
   return m_nInterfaces;
 }
 
-Ipv4Interface *
+Ptr<Ipv4Interface>
 Ipv4L3Protocol::FindInterfaceForDevice (Ptr<const NetDevice> device)
 {
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
@@ -364,7 +370,7 @@ Ipv4L3Protocol::Send (Packet const &packet,
       for (Ipv4InterfaceList::iterator ifaceIter = m_interfaces.begin ();
            ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
         {
-          Ipv4Interface *outInterface = *ifaceIter;
+          Ptr<Ipv4Interface> outInterface = *ifaceIter;
           Packet packetCopy = packet;
 
           NS_ASSERT (packetCopy.GetSize () <= outInterface->GetMtu ());
@@ -401,7 +407,7 @@ Ipv4L3Protocol::SendRealOut (bool found,
       return;
     }
   packet.AddHeader (ipHeader);
-  Ipv4Interface *outInterface = GetInterface (route.GetInterface ());
+  Ptr<Ipv4Interface> outInterface = GetInterface (route.GetInterface ());
   NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
   m_txTrace (packet, route.GetInterface ());
   if (route.IsGateway ()) 
@@ -431,7 +437,7 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
     {
-      Ipv4Interface *interface = *i;
+      Ptr<Ipv4Interface> interface = *i;
       if (interface->GetDevice () == device)
 	{
 	  if (ipHeader.GetDestination ().IsEqual (interface->GetBroadcast ())) 
@@ -481,43 +487,43 @@ Ipv4L3Protocol::ForwardUp (Packet p, Ipv4Header const&ip)
 void 
 Ipv4L3Protocol::SetAddress (uint32_t i, Ipv4Address address)
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetAddress (address);
 }
 void 
 Ipv4L3Protocol::SetNetworkMask (uint32_t i, Ipv4Mask mask)
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetNetworkMask (mask);
 }
 Ipv4Mask 
 Ipv4L3Protocol::GetNetworkMask (uint32_t i) const
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetNetworkMask ();
 }
 Ipv4Address 
 Ipv4L3Protocol::GetAddress (uint32_t i) const
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetAddress ();
 }
 uint16_t 
 Ipv4L3Protocol::GetMtu (uint32_t i) const
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetMtu ();
 }
 bool 
 Ipv4L3Protocol::IsUp (uint32_t i) const
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->IsUp ();
 }
 void 
 Ipv4L3Protocol::SetUp (uint32_t i)
 {
-  Ipv4Interface *interface = GetInterface (i);
+  Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetUp ();
 
   // If interface address and network mask have been set, add a route
@@ -533,7 +539,7 @@ Ipv4L3Protocol::SetUp (uint32_t i)
 void 
 Ipv4L3Protocol::SetDown (uint32_t ifaceIndex)
 {
-  Ipv4Interface *interface = GetInterface (ifaceIndex);
+  Ptr<Ipv4Interface> interface = GetInterface (ifaceIndex);
   interface->SetDown ();
 
   // Remove all routes that are going through this interface

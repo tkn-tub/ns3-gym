@@ -48,8 +48,6 @@ public:
    */
   ArpL3Protocol (Ptr<Node> node);
   virtual ~ArpL3Protocol ();
-
-  virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
   /**
    * \brief Recieve a packet
    */

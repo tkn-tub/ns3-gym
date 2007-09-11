@@ -62,14 +62,6 @@ public:
   static const InterfaceId iid;
   virtual ~NetDevice();
 
-  /**
-   * \param context the trace context to use to construct the
-   *        TraceResolver to return
-   * \returns a TraceResolver which can resolve all traces
-   *          performed in this object. The caller must
-   *          delete the returned object.
-   */
-  TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   /**
    * \return the channel this NetDevice is connected to. The value
@@ -282,15 +274,6 @@ public:
    * Subclasses must implement this method.
    */
   virtual bool DoNeedsArp (void) const = 0;
-  /**
-   * \param context the trace context to associated to the
-   *        trace resolver.
-   * \returns a trace resolver associated to the input context.
-   *          the caller takes ownership of the pointer returned.
-   *
-   * Subclasses must implement this method.
-   */
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
   /**
    * \returns the channel associated to this NetDevice.
    *

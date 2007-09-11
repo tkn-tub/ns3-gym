@@ -1407,27 +1407,6 @@ GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
 
 namespace ns3 {
 
-class GlobalRouterTestNode : public Node
-{
-public:
-  GlobalRouterTestNode ();
-
-private:
-  virtual void DoAddDevice (Ptr<NetDevice> device) const {};
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
-};
-
-GlobalRouterTestNode::GlobalRouterTestNode ()
-{
-//  Ptr<Ipv4L3Protocol> ipv4 = Create<Ipv4L3Protocol> (this);
-}
-
-  TraceResolver*
-GlobalRouterTestNode::DoCreateTraceResolver (TraceContext const &context)
-{
-  return 0;
-}
-
 class GlobalRouteManagerImplTest : public Test {
 public:
   GlobalRouteManagerImplTest ();

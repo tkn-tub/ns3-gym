@@ -37,6 +37,8 @@ namespace ns3 {
  *     This method takes a c++ output stream and argument and is
  *     expected to write an ascii string describing its content
  *     in this output stream.
+ *   - a public GetTypeName method which returns the fully-qualified
+ *     c++ type name of this subclass as a string.
  *
  * A typical subclass should look like this:
  * \code
@@ -48,6 +50,7 @@ namespace ns3 {
  *   MyContext ();
  *   ~MyContext ();
  *   void Print (std::ostream &os) const;
+ *   std::string GetTypeName (void) const;
  *
  *   // the user-specific API to manipulate the context.
  *   void SetData (uint8_t data);
@@ -70,6 +73,12 @@ namespace ns3 {
  * MyContext::Print (std::ostream &os) const
  * {
  *   os << "mycontext=" << (uint32_t) m_myContextData;
+ * }
+ * std::string 
+ * MyContext::GetTypeName (void) const
+ * {
+ *   // return a fully-qualified c++ type name
+ *   return "MyContext";
  * }
  * void 
  * MyContext::SetData (uint8_t data)
@@ -115,18 +124,23 @@ public:
 
   static uint32_t GetSize (uint16_t uid);
   static void Print (uint16_t uid, uint8_t *instance, std::ostream &os);
+  static std::string GetTypeName (uint16_t uid);
   static void Destroy (uint16_t uid, uint8_t *instance);
 private:
+  typedef std::string (*GetTypeNameCb) (void);
   typedef void (*PrintCb) (uint8_t *instance, std::ostream &os);
   typedef void (*DestroyCb) (uint8_t *instance);
   struct Info {
     uint32_t size;
     std::string uidString;
+    GetTypeNameCb getTypeName;
     PrintCb print;
     DestroyCb destroy;
   };
   typedef std::vector<struct Info> InfoVector;
   static InfoVector *GetInfoVector (void);
+  template <typename T>
+  static std::string DoGetTypeName (void);
   template <typename T>
   static void DoPrint (uint8_t *instance, std::ostream &os);
   template <typename T>
@@ -141,6 +155,13 @@ ElementRegistry::DoPrint (uint8_t *instance, std::ostream &os)
   // make sure we are aligned.
   memcpy ((void*)&obj, instance, sizeof (T));
   obj.Print (os);
+}
+template <typename T>
+std::string
+ElementRegistry::DoGetTypeName (void)
+{
+  static T obj;
+  return obj.GetTypeName ();
 }
 template <typename T>
 void 
@@ -169,6 +190,7 @@ ElementRegistry::AllocateUid (std::string name)
   struct Info info;
   info.size = sizeof (T);
   info.uidString = name;
+  info.getTypeName = &ElementRegistry::DoGetTypeName<T>;
   info.print = &ElementRegistry::DoPrint<T>;
   info.destroy = &ElementRegistry::DoDestroy<T>;
   vec->push_back (info);

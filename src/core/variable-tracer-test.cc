@@ -22,8 +22,8 @@
 #include "uv-trace-source.h"
 #include "sv-trace-source.h"
 #include "trace-context.h"
-#include "ns3/test.h"
-#include "ns3/callback.h"
+#include "test.h"
+#include "callback.h"
 
 
 namespace ns3 {

@@ -44,6 +44,9 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
+/**
+ * \brief hold in a TraceContext the type of trace source used by this Ipv4L3Protocol
+ */
 class Ipv4L3ProtocolTraceContextElement : public TraceContextElement
 {
 public:
@@ -54,23 +57,40 @@ public:
   };
   Ipv4L3ProtocolTraceContextElement ();
   Ipv4L3ProtocolTraceContextElement (enum Type type);
+  /**
+   * \returns true if this is a tx event, false otherwise.
+   */
   bool IsTx (void) const;
+  /**
+   * \returns true if this is a rx event, false otherwise.
+   */
   bool IsRx (void) const;
+  /**
+   * \returns true if this is a drop event, false otherwise.
+   */
   bool IsDrop (void) const;
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
+  std::string GetTypeName (void) const;
 private:
   enum Type m_type;
 };
 
-class Ipv4l3ProtocolInterfaceIndex : public TraceContextElement
+/**
+ * \brief hold in a TraceContext the index of an Ipv4Interface within the ipv4 stack of a Node
+ */
+class Ipv4L3ProtocolInterfaceIndex : public TraceContextElement
 {
 public:
-  Ipv4l3ProtocolInterfaceIndex ();
-  Ipv4l3ProtocolInterfaceIndex (uint32_t index);
+  Ipv4L3ProtocolInterfaceIndex ();
+  Ipv4L3ProtocolInterfaceIndex (uint32_t index);
+  /**
+   * \returns the index of the Ipv4Interface within a Node.
+   */
   uint32_t Get (void) const;
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
+  std::string GetTypeName (void) const;
 private:
   uint32_t m_index;
 };
@@ -84,15 +104,6 @@ public:
 
   Ipv4L3Protocol(Ptr<Node> node);
   virtual ~Ipv4L3Protocol ();
-
-  /**
-   * \param context the trace context to use to construct the
-   *        TraceResolver to return
-   * \returns a TraceResolver which can resolve all traces
-   *          performed in this object. The caller must
-   *          delete the returned object.
-   */
-  virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   /**
    * \param ttl default ttl to use
@@ -109,7 +120,7 @@ public:
    * Try to find an Ipv4Interface whose NetDevice is equal to
    * the input NetDevice.
    */
-  Ipv4Interface *FindInterfaceForDevice (Ptr<const NetDevice> device);
+  Ptr<Ipv4Interface> FindInterfaceForDevice (Ptr<const NetDevice> device);
 
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
@@ -159,7 +170,7 @@ public:
   void RemoveRoute (uint32_t i);
 
   uint32_t AddInterface (Ptr<NetDevice> device);
-  Ipv4Interface * GetInterface (uint32_t i) const;
+  Ptr<Ipv4Interface> GetInterface (uint32_t i) const;
   uint32_t GetNInterfaces (void) const;
 
   
@@ -178,6 +189,7 @@ public:
 protected:
 
   virtual void DoDispose (void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 
 private:
 
@@ -187,11 +199,10 @@ private:
                     Ipv4Header const &ipHeader);
   bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device);
   void ForwardUp (Packet p, Ipv4Header const&ip);
-  uint32_t AddIpv4Interface (Ipv4Interface *interface);
+  uint32_t AddIpv4Interface (Ptr<Ipv4Interface> interface);
   void SetupLoopback (void);
-  TraceResolver *InterfacesCreateTraceResolver (TraceContext const &context) const;
 
-  typedef std::list<Ipv4Interface*> Ipv4InterfaceList;
+  typedef std::list<Ptr<Ipv4Interface> > Ipv4InterfaceList;
   typedef std::list< std::pair< int, Ptr<Ipv4RoutingProtocol> > > Ipv4RoutingProtocolList;
 
   Ipv4InterfaceList m_interfaces;

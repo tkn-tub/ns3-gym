@@ -41,8 +41,8 @@ HierarchicalMobilityModel::HierarchicalMobilityModel (Ptr<MobilityModel> child, 
       parentNotifier = Create<MobilityModelNotifier> ();
       parent->AddInterface (parentNotifier);
     }
-  childNotifier->RegisterListener (MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
-  parentNotifier->RegisterListener (MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
+  childNotifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
+  parentNotifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
 }
 
 Ptr<MobilityModel> 
@@ -89,13 +89,13 @@ HierarchicalMobilityModel::DoGetSpeed (void) const
 }
 
 void 
-HierarchicalMobilityModel::ParentChanged (Ptr<const MobilityModel> model)
+HierarchicalMobilityModel::ParentChanged (const TraceContext &context, Ptr<const MobilityModel> model)
 {
   MobilityModel::NotifyCourseChange ();
 }
 
 void 
-HierarchicalMobilityModel::ChildChanged (Ptr<const MobilityModel> model)
+HierarchicalMobilityModel::ChildChanged (const TraceContext &context, Ptr<const MobilityModel> model)
 {
   MobilityModel::NotifyCourseChange ();
 }
