@@ -23,11 +23,12 @@
 #define UV_TRACE_SOURCE_H
 
 #include "callback-trace-source.h"
+#include "trace-source.h"
 #include <stdint.h>
 
 namespace ns3 {
 
-class UVTraceSourceBase {
+class UVTraceSourceBase : public TraceSource {
 public:
   typedef CallbackTraceSource<uint64_t, uint64_t> ChangeNotifyCallback;
 
@@ -42,11 +43,14 @@ public:
   }
   ~UVTraceSourceBase () {}
 
-  void AddCallback (CallbackBase const & callback, TraceContext const & context) {
+  virtual void AddCallback (CallbackBase const & callback, TraceContext const & context) {
     m_callback.AddCallback (callback, context);
   }
-  void RemoveCallback (CallbackBase const & callback) {
-    m_callback.RemoveCallback (callback);
+  virtual void RemoveCallback (CallbackBase const & callback) {
+    m_callback.RemoveCallback (callback);  
+  }  
+  virtual void ConnectPrinter (std::ostream &os, const TraceContext &context) {
+    m_callback.ConnectPrinter (os, context);
   }
 
 protected:
@@ -66,7 +70,7 @@ class SVTraceSource;
 
 /**
  * \brief trace variables of type "unsigned integer"
- * \ingroup lowleveltracing
+ * \ingroup tracing
  *
  * This template class implements a POD type: it
  * behaves like any other variable of type "unsigned integer"
@@ -78,7 +82,7 @@ class SVTraceSource;
  * ns3::UVTraceSource<uint32_t> :
  \code
  #include <stdint.h>
- #include "ns3/uv-trace-source.h"
+ #include "uv-trace-source.h"
 
  ns3::UVTraceSource<uint32_t> var;
  \endcode

@@ -22,7 +22,6 @@
 #include "ns3/debug.h"
 #include "ns3/assert.h"
 #include "ns3/packet.h"
-#include "ns3/empty-trace-resolver.h"
 #include "ns3/node.h"
 
 #include "udp-l4-protocol.h"
@@ -50,13 +49,6 @@ UdpL4Protocol::UdpL4Protocol (Ptr<Node> node)
 UdpL4Protocol::~UdpL4Protocol ()
 {
   NS_DEBUG("UdpL4Protocol::~UdpL4Protocol ()");
-}
-
-TraceResolver *
-UdpL4Protocol::CreateTraceResolver (TraceContext const &context)
-{
-  NS_DEBUG("UdpL4Protocol::CreateTraceResolver ()");
-  return new EmptyTraceResolver (context);
 }
 
 void

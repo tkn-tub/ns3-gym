@@ -20,9 +20,55 @@
  */
 #include "trace-context.h"
 #include "trace-context-element.h"
-#include "ns3/assert.h"
+#include "assert.h"
 
 namespace ns3 {
+
+TraceContext::Iterator::Iterator ()
+  : m_buffer (0),
+    m_size (0),
+    m_current (0)
+{}
+TraceContext::Iterator::Iterator (uint8_t *buffer, uint16_t size)
+  : m_buffer (buffer),
+    m_size (size),
+    m_current (0)
+{
+  m_uid = m_buffer[m_current];
+}
+bool
+TraceContext::Iterator::IsLast (void) const
+{
+  if (m_buffer == 0 || m_uid == 0 || m_current >= m_size)
+    {
+      return true;
+    }
+  return false;
+}
+void
+TraceContext::Iterator::Next (void)
+{
+  if (m_buffer == 0)
+    {
+      return;
+    }
+  if (m_uid == 0)
+    {
+      return;
+    }
+  else
+    {
+      uint8_t size = ElementRegistry::GetSize (m_uid); 
+      m_current += 1 + size;
+    }
+  m_uid = m_buffer[m_current];
+}
+std::string
+TraceContext::Iterator::Get (void) const
+{
+  std::string name = ElementRegistry::GetTypeName (m_uid);
+  return name;
+}
 
 TraceContext::TraceContext ()
   : m_data (0)
@@ -68,7 +114,7 @@ TraceContext::~TraceContext ()
 }
 
 void 
-TraceContext::Add (TraceContext const &o)
+TraceContext::Union (TraceContext const &o)
 {
   if (o.m_data == 0)
     {
@@ -230,10 +276,93 @@ TraceContext::Print (std::ostream &os) const
       }
   } while (true);
 }
+TraceContext::Iterator 
+TraceContext::Begin (void) const
+{
+  if (m_data == 0)
+    {
+      return Iterator ();
+    }
+  return Iterator (m_data->data, m_data->size);
+}
+
+void 
+TraceContext::PrintAvailable (std::ostream &os, std::string separator) const
+{
+  if (m_data == 0)
+    {
+      return;
+    }
+  uint8_t currentUid;
+  uint16_t i = 0;
+  do {
+    currentUid = m_data->data[i];
+    uint8_t size = ElementRegistry::GetSize (currentUid);
+    os << ElementRegistry::GetTypeName (currentUid);
+    i += 1 + size;
+    if (i < m_data->size && currentUid != 0)
+      {
+        os << separator;
+      }
+    else
+      {
+        break;
+      }
+  } while (true);
+}
+
+bool 
+TraceContext::IsSimilar (const TraceContext &o) const
+{
+  if (m_data == 0 && o.m_data == 0)
+    {
+      return true;
+    }
+  if ((m_data != 0 && o.m_data == 0) || 
+      (m_data == 0 && o.m_data != 0))
+    {
+      return false;
+    }
+  uint8_t myCurrentUid;
+  uint16_t myI = 0;
+  uint8_t otherCurrentUid;
+  uint16_t otherI = 0;
+
+  myCurrentUid = m_data->data[myI];
+  otherCurrentUid = o.m_data->data[otherI];
+
+  while (myCurrentUid == otherCurrentUid && 
+         myCurrentUid != 0 && 
+         otherCurrentUid != 0 &&
+         myI < m_data->size &&
+         otherI < o.m_data->size)
+    {
+      uint8_t mySize = ElementRegistry::GetSize (myCurrentUid);
+      uint8_t otherSize = ElementRegistry::GetSize (otherCurrentUid);
+      myI += 1 + mySize;
+      otherI += 1 + otherSize;
+      myCurrentUid = m_data->data[myI];
+      otherCurrentUid = o.m_data->data[otherI];
+    }
+  if (myCurrentUid == 0 && otherCurrentUid == 0)
+    {
+      return true;
+    }
+  else
+    {
+      return false;
+    }
+}
+
+std::ostream& operator<< (std::ostream& os, const TraceContext &context)
+{
+  context.Print (os);
+  return os;
+}
 
 }//namespace ns3
 
-#include "ns3/test.h"
+#include "test.h"
 #include <sstream>
 
 namespace ns3 {
@@ -242,8 +371,8 @@ template <int N>
 class Ctx : public TraceContextElement
 {
 public:
-  static uint16_t GetUid (void) {static uint16_t uid = AllocateUid<Ctx<N> > (GetName ()); return uid;}
-  static std::string GetName (void) {std::ostringstream oss; oss << "Ctx" << N; return oss.str ();}
+  static uint16_t GetUid (void) {static uint16_t uid = AllocateUid<Ctx<N> > (GetTypeName ()); return uid;}
+  static std::string GetTypeName (void) {std::ostringstream oss; oss << "Ctx" << N; return oss.str ();}
   Ctx () : m_v (0) {}
   Ctx (int v) : m_v (v) {}
   void Print (std::ostream &os) {os << N;}
@@ -278,31 +407,31 @@ TraceContextTest::RunTests (void)
     {
       ok = false;
     }
-  ctx.Add (v0);
-  ctx.Add (v0);
+  ctx.AddElement (v0);
+  ctx.AddElement (v0);
   if (ctx.SafeAdd (v01))
     {
       ok = false;
     }
-  ctx.Get (v0);
-  ctx.Add (v1);
-  ctx.Get (v1);
-  ctx.Get (v0);
-  ctx.Get (v1);
+  ctx.GetElement (v0);
+  ctx.AddElement (v1);
+  ctx.GetElement (v1);
+  ctx.GetElement (v0);
+  ctx.GetElement (v1);
 
   TraceContext copy = ctx;
-  ctx.Get (v0);
-  ctx.Get (v1);
-  copy.Get (v0);
-  copy.Get (v1);
-  copy.Add (v2);
-  copy.Get (v0);
-  copy.Get (v1);
-  copy.Get (v2);
-  ctx.Add (v3);
-  ctx.Get (v0);
-  ctx.Get (v1);
-  ctx.Get (v3);
+  ctx.GetElement (v0);
+  ctx.GetElement (v1);
+  copy.GetElement (v0);
+  copy.GetElement (v1);
+  copy.AddElement (v2);
+  copy.GetElement (v0);
+  copy.GetElement (v1);
+  copy.GetElement (v2);
+  ctx.AddElement (v3);
+  ctx.GetElement (v0);
+  ctx.GetElement (v1);
+  ctx.GetElement (v3);
 
   if (ctx.SafeGet (v2))
     {
@@ -312,14 +441,14 @@ TraceContextTest::RunTests (void)
     {
       ok = false;
     }
-  ctx.Add (copy);
-  ctx.Get (v2);
+  ctx.Union (copy);
+  ctx.GetElement (v2);
   if (copy.SafeGet (v3))
     {
       ok = false;
     }
-  copy.Add (ctx);
-  copy.Get (v3);  
+  copy.Union (ctx);
+  copy.GetElement (v3);  
   
   return ok;
 }

@@ -51,6 +51,11 @@ PointToPointTraceType::GetUid (void)
   static uint16_t uid = AllocateUid<PointToPointTraceType> ("PointToPointTraceType");
   return uid;
 }
+std::string 
+PointToPointTraceType::GetTypeName (void) const
+{
+  return "ns3::PointToPointTraceType";
+}
 
 
 PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
@@ -190,15 +195,17 @@ void PointToPointNetDevice::TransmitComplete (void)
   TransmitStart(p);
 }
 
-TraceResolver* PointToPointNetDevice::DoCreateTraceResolver (
-                                      TraceContext const &context)
+Ptr<TraceResolver> 
+PointToPointNetDevice::GetTraceResolver (void) const
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
-  resolver->Add ("queue", 
-                 MakeCallback (&Queue::CreateTraceResolver, PeekPointer (m_queue)));
-  resolver->Add ("rx",
-                 m_rxTrace,
-                 PointToPointTraceType ());
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
+  resolver->AddComposite ("queue", m_queue);
+  resolver->AddSource ("rx",
+                       TraceDoc ("receive MAC packet",
+                                 "const Packet &", "packet received"),
+                       m_rxTrace,
+                       PointToPointTraceType ());
+  resolver->SetParentResolver (NetDevice::GetTraceResolver ());
   return resolver;
 }
 

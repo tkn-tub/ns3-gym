@@ -41,6 +41,9 @@ namespace ns3 {
 class Queue;
 class CsmaChannel;
 
+/**
+ * \brief hold in a TraceContext the type of trace source from a CsmaNetDevice
+ */
 class CsmaTraceType : public TraceContextElement
 {
 public:
@@ -52,6 +55,11 @@ public:
   CsmaTraceType ();
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
+  std::string GetTypeName (void) const;
+  /**
+   * \returns the type of the trace source which generated an event.
+   */
+  enum Type Get (void) const;
 private:
   enum Type m_type;
 };
@@ -238,6 +246,13 @@ protected:
   virtual bool DoNeedsArp (void) const;
   virtual void DoDispose (void);
   /**
+   * Create a Trace Resolver for events in the net device.
+   * (NOT TESTED)
+   * @see class TraceResolver
+   */
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
+
+  /**
    * Get a copy of the attached Queue.
    *
    * This method is provided for any derived class that may need to get
@@ -352,12 +367,6 @@ private:
    * @see TransmitStart ()
    */
   void TransmitReadyEvent (void);
-  /**
-   * Create a Trace Resolver for events in the net device.
-   * (NOT TESTED)
-   * @see class TraceResolver
-   */
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
 
   /**
    * Aborts the transmission of the current packet

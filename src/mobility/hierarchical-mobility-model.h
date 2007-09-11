@@ -63,8 +63,8 @@ private:
   virtual void DoSet (const Position &position);
   virtual Speed DoGetSpeed (void) const;
 
-  void ParentChanged (Ptr<const MobilityModel> model);
-  void ChildChanged (Ptr<const MobilityModel> model);
+  void ParentChanged (const TraceContext &context, Ptr<const MobilityModel> model);
+  void ChildChanged (const TraceContext &context, Ptr<const MobilityModel> model);
 
   Ptr<MobilityModel> m_child;
   Ptr<MobilityModel> m_parent;

@@ -21,7 +21,6 @@
  */
 
 #include "ns3/debug.h"
-#include "ns3/empty-trace-resolver.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/eui48-address.h"
@@ -42,13 +41,6 @@ Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
 {
   NS_DEBUG("Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()");
-}
-
-TraceResolver *
-Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
-{
-  NS_DEBUG("Ipv4LoopbackInterface::DoCreateTraceResolver ()");
-  return new EmptyTraceResolver (context);
 }
 
 void 

@@ -19,7 +19,10 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "callback-trace-source.h"
-#include "ns3/test.h"
+
+#ifdef RUN_SELF_TESTS
+
+#include "test.h"
 
 namespace ns3 {
 
@@ -55,7 +58,7 @@ CallbackTraceSourceTest::CbTwo (TraceContext const &context, uint8_t a, double b
 bool 
 CallbackTraceSourceTest::RunTests (void)
 {
-  bool ok = true;
+  bool result = true;
   TraceContext ctx;
 
   CallbackTraceSource<uint8_t,double> trace;
@@ -64,32 +67,35 @@ CallbackTraceSourceTest::RunTests (void)
   m_one = false;
   m_two = false;
   trace (1, 2);
-  if (!m_one || !m_two)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (m_one);
+  NS_TEST_ASSERT (m_two);
+
   trace.RemoveCallback (MakeCallback (&CallbackTraceSourceTest::CbOne, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
-  if (m_one || !m_two)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (!m_one);
+  NS_TEST_ASSERT (m_two);
   trace.RemoveCallback (MakeCallback (&CallbackTraceSourceTest::CbTwo, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
-  if (m_one || m_two)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (!m_one);
+  NS_TEST_ASSERT (!m_two);
 
-  return ok;
+  trace.AddCallback (MakeCallback (&CallbackTraceSourceTest::CbOne, this), ctx);
+  trace.AddCallback (MakeCallback (&CallbackTraceSourceTest::CbTwo, this), ctx);
+  m_one = false;
+  m_two = false;
+  trace (1, 2);
+  NS_TEST_ASSERT (m_one);
+  NS_TEST_ASSERT (m_two);
+
+  return result;
 }
 
 CallbackTraceSourceTest g_callbackTraceTest;
 
-
-
 }//namespace ns3
+
+#endif /* RUN_SELF_TESTS */

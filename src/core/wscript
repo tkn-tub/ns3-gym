@@ -42,6 +42,14 @@ def build(bld):
         'type-name.cc',
         'component-manager.cc',
         'random-variable-default-value.cc',
+        'variable-tracer-test.cc',
+        'trace-context.cc',
+        'trace-context-element.cc',
+        'trace-resolver.cc',
+        'callback-trace-source.cc',
+        'composite-trace-resolver.cc',
+        'trace-doc.cc',
+        'trace-source.cc',
         ]
 
     if sys.platform == 'win32':
@@ -73,5 +81,16 @@ def build(bld):
         'component-manager.h',
         'type-traits.h',
         'random-variable-default-value.h',
+        'trace-source.h',
+        'uv-trace-source.h',
+        'sv-trace-source.h',
+        'fv-trace-source.h',
+        'callback-trace-source.h',
+        'trace-context.h',
+        'trace-context-element.h',
+        'trace-resolver.h',
+        'composite-trace-resolver.h',
+        'array-trace-resolver.h',
+        'trace-doc.h',
         ]
 

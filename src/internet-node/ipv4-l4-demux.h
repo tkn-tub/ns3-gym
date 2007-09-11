@@ -37,14 +37,21 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
+/**
+ * \brief hold in a TraceContext the protocol number of a L4 Protocol
+ */
 class Ipv4L4ProtocolTraceContextElement : public TraceContextElement
 {
 public:
   Ipv4L4ProtocolTraceContextElement ();
   Ipv4L4ProtocolTraceContextElement (int protocolNumber);
+  /**
+   * \returns the protocol number as registered in the Ipv4L4Demux.
+   */
   int Get (void) const;
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
+  std::string GetTypeName (void) const;
 private:
   int m_protocolNumber;
 };
@@ -59,14 +66,6 @@ public:
   Ipv4L4Demux (Ptr<Node> node);
   virtual ~Ipv4L4Demux();
 
-  /**
-   * \param context the trace context to use to construct the
-   *        TraceResolver to return
-   * \returns a TraceResolver which can resolve all traces
-   *          performed in this object. The caller must
-   *          delete the returned object.
-   */
-  TraceResolver *CreateTraceResolver (TraceContext const &context);
   /**
    * \param protocol a template for the protocol to add to this L4 Demux.
    * \returns the L4Protocol effectively added.
@@ -95,8 +94,10 @@ public:
    * returned from the Ipv4L4Protocol::Insert method.
    */
   void Remove (Ptr<Ipv4L4Protocol> protocol);
-private:
+protected:
+  Ptr<TraceResolver> GetTraceResolver (void) const;
   virtual void DoDispose (void);
+private:
   typedef std::list<Ptr<Ipv4L4Protocol> > L4List_t;
   L4List_t m_protocols;
   Ptr<Node> m_node;

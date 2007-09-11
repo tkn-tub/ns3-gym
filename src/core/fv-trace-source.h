@@ -23,11 +23,12 @@
 #define F_VARIABLE_TRACER_H
 
 #include "callback-trace-source.h"
+#include "trace-source.h"
 #include <stdint.h>
 
 namespace ns3 {
 
-class FVTraceSourceBase {
+class FVTraceSourceBase : public TraceSource {
 public:
   typedef CallbackTraceSource<double, double> ChangeNotifyCallback;
 
@@ -39,11 +40,14 @@ public:
 
   ~FVTraceSourceBase () {}
 
-  void AddCallback (CallbackBase const & callback, TraceContext const & context) {
+  virtual void AddCallback (CallbackBase const & callback, TraceContext const & context) {
     m_callback.AddCallback (callback, context);
   }
-  void RemoveCallback (CallbackBase const & callback) {
+  virtual void RemoveCallback (CallbackBase const & callback) {
     m_callback.RemoveCallback (callback);
+  }
+  virtual void ConnectPrinter (std::ostream &os, const TraceContext &context) {
+    m_callback.ConnectPrinter (os, context);
   }
 protected:
   void notify (double oldVal, double newVal) {

@@ -23,26 +23,28 @@
 
 #include <stdint.h>
 #include <vector>
-#include "ns3/fatal-error.h"
+#include "fatal-error.h"
 #include "trace-context-element.h"
 
 namespace ns3 {
 
 /**
  * \brief Provide context to trace sources
- * \ingroup lowleveltracing
+ * \ingroup tracing
  *
  * Instances of this class are used to hold context
  * for each trace source. Each instance holds a list of
- * 'contexts'. Trace sinks can lookup these contexts
+ * TraceContextElement. Trace sinks can lookup these contexts
  * from this list with the ns3::TraceContext::Get method.
+ * They can also ask the TraceContext for the list of 
+ * TraceContextElements it contains with the PrintAvailable method.
  *
  * This class is implemented
  * using Copy On Write which means that copying unmodified
  * versions of this class is very cheap. However, modifying
  * the content of this class through a call 
- * to ns3::TraceContext::Add will trigger a costly memory
- * reallocation if needed.
+ * to ns3::TraceContext::AddElement or ns3::TraceContext::Union 
+ * will trigger a costly memory reallocation if needed.
  */
 class TraceContext
 {
@@ -54,32 +56,73 @@ public:
 
   /**
    * \param context add context to list of trace contexts.
+   *
+   * A copy of the input context is appended at the end of the list
+   * stored in this TraceContext.
    */
   template <typename T>
-  void Add (T const &context);
+  void AddElement (T const &context);
 
   /**
    * \param o the other context
    *
    * Perform the Union operation (in the sense of set theory) on the
    * two input lists of elements. This method is used in the
-   * ns3::CallbackTraceSourceSource class when multiple sinks are connected
+   * ns3::CallbackTraceSource class when multiple sinks are connected
    * to a single source to ensure that the source does not need
    * to store a single TraceContext instance per connected sink.
    * Instead, all sinks share the same TraceContext.
    */
-  void Add (TraceContext const &o);
+  void Union (TraceContext const &o);
 
   /**
    * \param context context to get from this list of trace contexts.
-   *
-   * This method cannot fail. If the requested trace context is not
-   * stored in this TraceContext, then, the program will halt.
+   * \returns true if the requested trace context element was found 
+   *          in this TraceContext, false otherwise.
    */
   template <typename T>
-  void Get (T &context) const;
+  bool GetElement (T &context) const;
 
+  /**
+   * \param os a c++ STL output stream
+   *
+   * Iterate over the list of TraceContextElement stored in this
+   * TraceContext and invoke each of their Print method.
+   */
   void Print (std::ostream &os) const;
+  /**
+   * \param os a c++ STL output stream
+   * \param separator the separator inserted between each TraceContextElement typename.
+   *
+   * Print the typename of each TraceContextElement stored in this TraceContext.
+   */
+  void PrintAvailable (std::ostream &os, std::string separator) const;
+  class Iterator 
+  {
+  public:
+    void Next (void);
+    bool IsLast (void) const;
+    std::string Get (void) const;
+  private:
+    friend class TraceContext;
+    Iterator ();
+    Iterator (uint8_t *buffer, uint16_t index);
+    uint8_t *m_buffer;
+    uint16_t m_size;
+    uint16_t m_current;
+    uint8_t m_uid;
+  };
+  Iterator Begin (void) const;
+  /**
+   * \param o another trace context
+   * \returns true if the input trace context contains exactly the same set of
+   *          TraceContextElement instances, false otherwise.
+   *
+   * This method does not test for equality: the content of each matching 
+   * TraceContextElement could be different. It merely checks that both
+   * trace contexts contain the same types of TraceContextElements.
+   */
+  bool IsSimilar (const TraceContext &o) const;
 private:
   friend class TraceContextTest;
   // used exclusively for testing code.
@@ -99,13 +142,15 @@ private:
   } * m_data;
 };
 
+std::ostream& operator<< (std::ostream& os, const TraceContext &context);
+
 }//namespace ns3
 
 namespace ns3 {
 
 template <typename T>
 void 
-TraceContext::Add (T const &context)
+TraceContext::AddElement (T const &context)
 {
   const TraceContextElement *parent;
   // if the following assignment fails, it is because the input
@@ -119,8 +164,8 @@ TraceContext::Add (T const &context)
     }
 }
 template <typename T>
-void
-TraceContext::Get (T &context) const
+bool
+TraceContext::GetElement (T &context) const
 {
   TraceContextElement *parent;
   // if the following assignment fails, it is because the input
@@ -128,10 +173,7 @@ TraceContext::Get (T &context) const
   parent = &context;
   uint8_t *data = (uint8_t *) &context;
   bool found = DoGet (T::GetUid (), data);
-  if (!found)
-    {
-      NS_FATAL_ERROR ("Type not stored in TraceContext");
-    }
+  return found;
 }
 template <typename T>
 bool

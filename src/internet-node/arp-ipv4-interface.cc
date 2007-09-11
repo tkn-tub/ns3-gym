@@ -47,17 +47,16 @@ ArpIpv4Interface::~ArpIpv4Interface ()
   NS_DEBUG ("ArpIpv4Interface::~ArpIpv4Interface ()");
 }
 
-TraceResolver *
-ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
+Ptr<TraceResolver>
+ArpIpv4Interface::GetTraceResolver (void) const
 {
   NS_DEBUG ("ArpIpv4Interface::DoCreateTraceResolver ()");
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   if (GetDevice () != 0)
     {
-      resolver->Add ("netdevice",
-                     MakeCallback (&NetDevice::CreateTraceResolver, PeekPointer (GetDevice ())));
+      resolver->AddComposite ("netdevice", GetDevice ());
     }
-  
+  resolver->SetParentResolver (Ipv4Interface::GetTraceResolver ());
   return resolver;
 }
 

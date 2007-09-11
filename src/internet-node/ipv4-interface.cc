@@ -22,6 +22,7 @@
 #include "ipv4-interface.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/net-device.h"
+#include "ns3/trace-resolver.h"
 #include "ns3/debug.h"
 
 NS_DEBUG_COMPONENT_DEFINE ("Ipv4Interface");
@@ -46,18 +47,18 @@ Ipv4Interface::~Ipv4Interface ()
   NS_DEBUG ("Ipv4Interface::~Ipv4Interface ()");
 }
 
+void
+Ipv4Interface::DoDispose (void)
+{
+  m_netdevice = 0;
+  Object::DoDispose ();
+}
+
 Ptr<NetDevice>
 Ipv4Interface::GetDevice (void) const
 {
   NS_DEBUG ("Ipv4Interface::GetDevice ()");
   return m_netdevice;
-}
-
-TraceResolver *
-Ipv4Interface::CreateTraceResolver (TraceContext const &context)
-{
-  NS_DEBUG ("Ipv4Interface::CreateTraceResolver (" << &context << ")");
-  return DoCreateTraceResolver (context);
 }
 
 void 
