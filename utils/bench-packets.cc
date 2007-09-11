@@ -32,12 +32,15 @@ class BenchHeader : public Header
 public:
   BenchHeader ();
   bool IsOk (void) const;
+
+  static uint32_t GetUid (void);
+
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 private:
-  virtual std::string DoGetName (void) const;
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
   bool m_ok;
 };
 
@@ -54,8 +57,18 @@ BenchHeader<N>::IsOk (void) const
 }
 
 template <int N>
+uint32_t 
+BenchHeader<N>::GetUid (void)
+{
+  std::ostringstream oss;
+  oss << "BenchHeader" << N;
+  static uint32_t uid = AllocateUid<BenchHeader<N> > (oss.str ());
+  return uid;
+}
+
+template <int N>
 std::string 
-BenchHeader<N>::DoGetName (void) const
+BenchHeader<N>::GetName (void) const
 {
   std::ostringstream oss;
   oss << N;
@@ -64,7 +77,7 @@ BenchHeader<N>::DoGetName (void) const
 
 template <int N>
 void 
-BenchHeader<N>::PrintTo (std::ostream &os) const
+BenchHeader<N>::Print (std::ostream &os) const
 {
   NS_ASSERT (false);
 }
@@ -76,13 +89,13 @@ BenchHeader<N>::GetSerializedSize (void) const
 }
 template <int N>
 void 
-BenchHeader<N>::SerializeTo (Buffer::Iterator start) const
+BenchHeader<N>::Serialize (Buffer::Iterator start) const
 {
   start.WriteU8 (N, N);
 }
 template <int N>
 uint32_t
-BenchHeader<N>::DeserializeFrom (Buffer::Iterator start)
+BenchHeader<N>::Deserialize (Buffer::Iterator start)
 {
   m_ok = true;
   for (int i = 0; i < N; i++)
@@ -156,6 +169,7 @@ benchPtrC (uint32_t n)
   }
 }
 
+#if 0
 static void
 benchPrint (uint32_t n)
 {
@@ -171,6 +185,7 @@ benchPrint (uint32_t n)
       p.Print (std::cerr, printer);
     }  
 }
+#endif
 
 
 static void
@@ -205,7 +220,7 @@ int main (int argc, char *argv[])
   runBench (&benchPtrC, n, "c");
 
   Packet::EnableMetadata ();
-  runBench (&benchPrint, n, "print");
+  //runBench (&benchPrint, n, "print");
   PacketMetadata::SetOptOne (false);
   runBench (&benchPtrA, n, "meta-a");
   runBench (&benchPtrB, n, "meta-b");
