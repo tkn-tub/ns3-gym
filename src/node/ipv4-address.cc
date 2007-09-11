@@ -99,6 +99,11 @@ Ipv4Mask::SetHostOrder (uint32_t value)
 {
   m_mask = value;
 }
+uint32_t 
+Ipv4Mask::GetInverse (void) const
+{
+  return ~m_mask;
+}
 
 void 
 Ipv4Mask::Print (std::ostream &os) const
@@ -160,6 +165,18 @@ Ipv4Address
 Ipv4Address::CombineMask (Ipv4Mask const &mask) const
 {
   return Ipv4Address (GetHostOrder () & mask.GetHostOrder ());
+}
+
+Ipv4Address 
+Ipv4Address::GetSubnetDirectedBroadcast (Ipv4Mask const &mask) const
+{
+  return Ipv4Address (GetHostOrder () | mask.GetInverse ());
+}
+
+bool
+Ipv4Address::IsSubnetDirectedBroadcast (Ipv4Mask const &mask) const
+{
+  return ( (GetHostOrder () | mask.GetInverse ()) == GetHostOrder () );
 }
 
 bool

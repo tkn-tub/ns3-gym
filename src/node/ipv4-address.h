@@ -119,6 +119,16 @@ public:
    * \param mask a network mask 
    */
   Ipv4Address CombineMask (Ipv4Mask const &mask) const;
+  /**
+   * \brief Generate subnet-directed broadcast address corresponding to mask
+   *
+   * The subnet-directed broadcast address has the host bits set to all
+   * ones.
+   *
+   * \param mask a network mask 
+   */
+  Ipv4Address GetSubnetDirectedBroadcast (Ipv4Mask const &mask) const;
+  bool IsSubnetDirectedBroadcast (Ipv4Mask const &mask) const;
 
   static bool IsMatchingType (const Address &address);
   operator Address ();
@@ -151,6 +161,10 @@ public:
    */
   uint32_t GetHostOrder (void) const;
   void SetHostOrder (uint32_t value);
+  /**
+   * \brief Return the inverse mask in host order. 
+   */
+  uint32_t GetInverse (void) const;
 
   void Print (std::ostream &os) const;
 
