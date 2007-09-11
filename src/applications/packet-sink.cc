@@ -29,6 +29,8 @@ using namespace std;
 
 namespace ns3 {
 
+NS_DEBUG_COMPONENT_DEFINE ("PacketSink");
+
 // Constructors
 
 PacketSink::PacketSink (Ptr<Node> n, 
@@ -106,7 +108,7 @@ void PacketSink::Receive(Ptr<Socket> socket, const Packet &packet,
       if (InetSocketAddress::IsMatchingType (from))
         {
           InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-          NS_DEBUG_UNCOND ( __PRETTY_FUNCTION__ << ": Received " << 
+          NS_DEBUG ( __PRETTY_FUNCTION__ << ": Received " << 
             packet.GetSize() << " bytes from " << address.GetIpv4() << " [" 
             << address << "]---'" << packet.PeekData() << "'");
         }
