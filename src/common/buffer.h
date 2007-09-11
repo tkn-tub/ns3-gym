@@ -87,7 +87,7 @@ public:
        * Write the data in buffer and avance the iterator position
        * by one byte.
        */
-      void WriteU8 (uint8_t  data);
+      inline void WriteU8 (uint8_t  data);
       /**
        * \param data data to write in buffer
        * \param len number of times data must be written in buffer
@@ -345,6 +345,32 @@ private:
   uint32_t m_start;
   uint32_t m_end;
 };
+
+} // namespace ns3
+
+#include "ns3/assert.h"
+
+namespace ns3 {
+
+void
+Buffer::Iterator::WriteU8 (uint8_t data)
+{
+  NS_ASSERT (m_current >= m_dataStart && 
+             !(m_current >= m_zeroStart && m_current <= m_zeroEnd) &&
+             m_current <= m_dataEnd);
+
+  if (m_current < m_zeroStart)
+    {
+      m_data[m_current] = data;
+      m_current++;
+    }
+  else
+    {
+      m_data[m_current - (m_zeroEnd-m_zeroStart)] = data;
+      m_current++;      
+    }
+}
+
 
 } // namespace ns3
 

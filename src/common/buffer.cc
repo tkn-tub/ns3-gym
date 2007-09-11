@@ -668,35 +668,6 @@ Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
     }
 }
 void 
-Buffer::Iterator::WriteU8  (uint8_t  data)
-{
-  if (m_current < m_dataStart)
-    {
-      // XXX trying to write outside of data area
-      NS_ASSERT (false);
-    }
-  else if (m_current < m_zeroStart)
-    {
-      m_data[m_current] = data;
-      m_current++;
-    }
-  else if (m_current < m_zeroEnd)
-    {
-      // XXX trying to write in zero area
-      NS_ASSERT (false);
-    }
-  else if (m_current < m_dataEnd)
-    {
-      m_data[m_current - (m_zeroEnd-m_zeroStart)] = data;
-      m_current++;      
-    }
-  else 
-    {
-      // XXX trying to write outside of data area
-      NS_ASSERT (false);
-    }
-}
-void 
 Buffer::Iterator::WriteU16 (uint16_t data)
 {
   WriteU8 (data & 0xff);
