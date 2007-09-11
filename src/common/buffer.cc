@@ -281,6 +281,288 @@ Buffer::End (void) const
   return Buffer::Iterator (this, false);
 }
 
+uint32_t
+Buffer::GetInternalSize (void) const
+{
+  return m_zeroAreaStart - m_start + m_end - m_zeroAreaEnd;
+}
+uint32_t
+Buffer::GetInternalEnd (void) const
+{
+  return m_end - (m_zeroAreaEnd - m_zeroAreaStart);
+}
+
+void 
+Buffer::AddAtStart (uint32_t start)
+{
+  NS_ASSERT (CheckInternalState ());
+  bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
+  if (m_start >= start && !isDirty)
+    {
+      /* enough space in the buffer and not dirty. 
+       * To add: |..|
+       * Before: |*****---------***|
+       * After:  |***..---------***|
+       */
+      NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
+      m_start -= start;
+      g_nAddNoRealloc++;
+    } 
+#if 0
+  // the following is an optimization
+  else if (m_start >= start)
+    {
+      struct BufferData *newData = Buffer::Create (m_data->m_size);
+      memcpy (newData->m_data + m_start, m_data->m_data + m_start, GetInternalSize ());
+      m_data->m_count--;
+      if (m_data->m_count == 0)
+        {
+          Buffer::Recycle (m_data);
+        }
+      m_data = newData;
+
+      m_start -= start;
+    }
+  else
+    {
+      NS_ASSERT (m_start < start);
+#else
+  else
+    {
+#endif
+      uint32_t newSize = GetInternalSize () + start;
+      struct BufferData *newData = Buffer::Create (newSize);
+      memcpy (newData->m_data + start, m_data->m_data + m_start, GetInternalSize ());
+      m_data->m_count--;
+      if (m_data->m_count == 0)
+        {
+          Buffer::Recycle (m_data);
+        }
+      m_data = newData;
+
+      int32_t delta = start - m_start;
+      m_start = 0;
+      m_zeroAreaStart += delta;
+      m_zeroAreaEnd += delta;
+      m_end += delta;
+
+      g_nAddRealloc++;
+    } 
+  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
+  // update dirty area
+  m_data->m_dirtyStart = m_start;
+  m_data->m_dirtyEnd = m_end;
+  DEBUG_INTERNAL_STATE ("add start=" << start << ", ");
+  NS_ASSERT (CheckInternalState ());
+}
+void 
+Buffer::AddAtEnd (uint32_t end)
+{
+  NS_ASSERT (CheckInternalState ());
+  bool isDirty = m_data->m_count > 1 && m_end < m_data->m_dirtyEnd;
+  if (GetInternalEnd () + end <= m_data->m_size && !isDirty)
+    {
+      /* enough space in buffer and not dirty
+       * Add:    |...|
+       * Before: |**----*****|
+       * After:  |**----...**|
+       */
+      NS_ASSERT (m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
+      m_end += end;
+
+      g_nAddNoRealloc++;
+    } 
+#if 0
+  // this is an optimization
+  else if (GetInternalEnd () + end > m_data->m_size)
+    {
+      struct BufferData *newData = Buffer::Create (newSize);
+      memcpy (newData->m_data + m_start, m_data->m_data + m_start, GetInternalSize ());
+      m_data->m_count--;
+      if (m_data->m_count == 0) 
+        {
+          Buffer::Recycle (m_data);
+        }
+      m_data = newData;
+
+      m_end += end;
+    }
+#endif
+  else
+    {
+      uint32_t newSize = GetInternalSize () + end;
+      struct BufferData *newData = Buffer::Create (newSize);
+      memcpy (newData->m_data, m_data->m_data + m_start, GetInternalSize ());
+      m_data->m_count--;
+      if (m_data->m_count == 0) 
+        {
+          Buffer::Recycle (m_data);
+        }
+      m_data = newData;
+
+
+      m_zeroAreaStart -= m_start;
+      m_zeroAreaEnd -= m_start;
+      m_end -= m_start;
+      m_start = 0;
+
+      m_end += end;
+
+      g_nAddRealloc++;
+    } 
+  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
+  // update dirty area
+  m_data->m_dirtyStart = m_start;
+  m_data->m_dirtyEnd = m_end;
+  DEBUG_INTERNAL_STATE ("add end=" << end << ", ");
+  NS_ASSERT (CheckInternalState ());
+}
+
+void 
+Buffer::RemoveAtStart (uint32_t start)
+{
+  NS_ASSERT (CheckInternalState ());
+  uint32_t newStart = m_start + start;
+  if (newStart <= m_zeroAreaStart)
+    {
+      /* only remove start of buffer 
+       */
+      m_start = newStart;
+    }
+  else if (newStart <= m_zeroAreaEnd)
+    {
+      /* remove start of buffer _and_ start of zero area
+       */
+      uint32_t delta = newStart - m_zeroAreaStart;
+      m_start = m_zeroAreaStart;
+      m_zeroAreaEnd -= delta;
+      m_end -= delta;
+    } 
+  else if (newStart <= m_end)
+    {
+      /* remove start of buffer, complete zero area, and part
+       * of end of buffer 
+       */
+      NS_ASSERT (m_end >= start);
+      uint32_t zeroSize = m_zeroAreaEnd - m_zeroAreaStart;
+      m_start = newStart - zeroSize;
+      m_end -= zeroSize;
+      m_zeroAreaStart = m_start;
+      m_zeroAreaEnd = m_start;
+    }
+  else 
+    {
+      /* remove all buffer */
+      m_end -= m_zeroAreaEnd - m_zeroAreaStart;
+      m_start = m_end;
+      m_zeroAreaEnd = m_end;
+      m_zeroAreaStart = m_end;
+    }
+  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
+  DEBUG_INTERNAL_STATE ("rem start=" << start << ", ");
+  NS_ASSERT (CheckInternalState ());
+}
+void 
+Buffer::RemoveAtEnd (uint32_t end)
+{
+  NS_ASSERT (CheckInternalState ());
+  uint32_t newEnd = m_end - std::min (end, m_end - m_start);
+  if (newEnd > m_zeroAreaEnd)
+    {
+      /* remove part of end of buffer */
+      m_end = newEnd;
+    }
+  else if (newEnd > m_zeroAreaStart)
+    {
+      /* remove end of buffer, part of zero area */
+      m_end = newEnd;
+      m_zeroAreaEnd = newEnd;
+    }
+  else if (newEnd > m_start)
+    {
+      /* remove end of buffer, zero area, part of start of buffer */
+      m_end = newEnd;
+      m_zeroAreaEnd = newEnd;
+      m_zeroAreaStart = newEnd;
+    }
+  else
+    {
+      /* remove all buffer */
+      m_end = m_start;
+      m_zeroAreaEnd = m_start;
+      m_zeroAreaStart = m_start;
+    }
+  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
+  DEBUG_INTERNAL_STATE ("rem end=" << end << ", ");
+  NS_ASSERT (CheckInternalState ());
+}
+
+Buffer 
+Buffer::CreateFragment (uint32_t start, uint32_t length) const
+{
+  NS_ASSERT (CheckInternalState ());
+  uint32_t zeroStart = m_zeroAreaStart - m_start;
+  uint32_t zeroEnd = zeroStart + m_zeroAreaEnd;
+  if (m_zeroAreaEnd != 0 &&
+      start + length > zeroStart &&
+      start <= zeroEnd) 
+    {
+      TransformIntoRealBuffer ();
+    }
+  Buffer tmp = *this;
+  tmp.RemoveAtStart (start);
+  tmp.RemoveAtEnd (GetSize () - (start + length));
+  NS_ASSERT (CheckInternalState ());
+  return tmp;
+}
+
+Buffer 
+Buffer::CreateFullCopy (void) const
+{
+  NS_ASSERT (CheckInternalState ());
+  if (m_zeroAreaEnd != 0) 
+    {
+      Buffer tmp;
+      tmp.AddAtStart (m_zeroAreaEnd - m_zeroAreaStart);
+      tmp.Begin ().WriteU8 (0, m_zeroAreaEnd - m_zeroAreaStart);
+      uint32_t dataStart = m_zeroAreaStart - m_start;
+      tmp.AddAtStart (dataStart);
+      tmp.Begin ().Write (m_data->m_data+m_start, dataStart);
+      uint32_t dataEnd = m_end - m_zeroAreaEnd;
+      tmp.AddAtEnd (dataEnd);
+      Buffer::Iterator i = tmp.End ();
+      i.Prev (dataEnd);
+      i.Write (m_data->m_data+m_zeroAreaStart,dataEnd);
+      return tmp;
+    }
+  NS_ASSERT (CheckInternalState ());
+  return *this;
+}
+
+void
+Buffer::TransformIntoRealBuffer (void) const
+{
+  NS_ASSERT (CheckInternalState ());
+  Buffer tmp = CreateFullCopy ();
+  *const_cast<Buffer *> (this) = tmp;
+  NS_ASSERT (CheckInternalState ());
+}
+
+
+uint8_t const*
+Buffer::PeekData (void) const
+{
+  NS_ASSERT (CheckInternalState ());
+  TransformIntoRealBuffer ();
+  NS_ASSERT (CheckInternalState ());
+  return m_data->m_data + m_start;
+}
+
+/******************************************************
+ *            The buffer iterator below.
+ ******************************************************/
+
+
 Buffer::Iterator::Iterator ()
   : m_zeroStart (0),
     m_zeroEnd (0),
@@ -626,284 +908,6 @@ Buffer::Iterator::Read (uint8_t *buffer, uint32_t size)
       buffer[i] = ReadU8 ();
     }
 }
-
-uint32_t
-Buffer::GetInternalSize (void) const
-{
-  return m_zeroAreaStart - m_start + m_end - m_zeroAreaEnd;
-}
-uint32_t
-Buffer::GetInternalEnd (void) const
-{
-  return m_end - (m_zeroAreaEnd - m_zeroAreaStart);
-}
-
-void 
-Buffer::AddAtStart (uint32_t start)
-{
-  NS_ASSERT (CheckInternalState ());
-  bool isDirty = m_data->m_count > 1 && m_start > m_data->m_dirtyStart;
-  if (m_start >= start && !isDirty)
-    {
-      /* enough space in the buffer and not dirty. 
-       * To add: |..|
-       * Before: |*****---------***|
-       * After:  |***..---------***|
-       */
-      NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
-      m_start -= start;
-      g_nAddNoRealloc++;
-    } 
-#if 0
-  // the following is an optimization
-  else if (m_start >= start)
-    {
-      struct BufferData *newData = Buffer::Create (m_data->m_size);
-      memcpy (newData->m_data + m_start, m_data->m_data + m_start, GetInternalSize ());
-      m_data->m_count--;
-      if (m_data->m_count == 0)
-        {
-          Buffer::Recycle (m_data);
-        }
-      m_data = newData;
-
-      m_start -= start;
-    }
-  else
-    {
-      NS_ASSERT (m_start < start);
-#else
-  else
-    {
-#endif
-      uint32_t newSize = GetInternalSize () + start;
-      struct BufferData *newData = Buffer::Create (newSize);
-      memcpy (newData->m_data + start, m_data->m_data + m_start, GetInternalSize ());
-      m_data->m_count--;
-      if (m_data->m_count == 0)
-        {
-          Buffer::Recycle (m_data);
-        }
-      m_data = newData;
-
-      int32_t delta = start - m_start;
-      m_start = 0;
-      m_zeroAreaStart += delta;
-      m_zeroAreaEnd += delta;
-      m_end += delta;
-
-      g_nAddRealloc++;
-    } 
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
-  // update dirty area
-  m_data->m_dirtyStart = m_start;
-  m_data->m_dirtyEnd = m_end;
-  DEBUG_INTERNAL_STATE ("add start=" << start << ", ");
-  NS_ASSERT (CheckInternalState ());
-}
-void 
-Buffer::AddAtEnd (uint32_t end)
-{
-  NS_ASSERT (CheckInternalState ());
-  bool isDirty = m_data->m_count > 1 && m_end < m_data->m_dirtyEnd;
-  if (GetInternalEnd () + end <= m_data->m_size && !isDirty)
-    {
-      /* enough space in buffer and not dirty
-       * Add:    |...|
-       * Before: |**----*****|
-       * After:  |**----...**|
-       */
-      NS_ASSERT (m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
-      m_end += end;
-
-      g_nAddNoRealloc++;
-    } 
-#if 0
-  // this is an optimization
-  else if (GetInternalEnd () + end > m_data->m_size)
-    {
-      struct BufferData *newData = Buffer::Create (newSize);
-      memcpy (newData->m_data + m_start, m_data->m_data + m_start, GetInternalSize ());
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          Buffer::Recycle (m_data);
-        }
-      m_data = newData;
-
-      m_end += end;
-    }
-#endif
-  else
-    {
-      uint32_t newSize = GetInternalSize () + end;
-      struct BufferData *newData = Buffer::Create (newSize);
-      memcpy (newData->m_data, m_data->m_data + m_start, GetInternalSize ());
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          Buffer::Recycle (m_data);
-        }
-      m_data = newData;
-
-
-      m_zeroAreaStart -= m_start;
-      m_zeroAreaEnd -= m_start;
-      m_end -= m_start;
-      m_start = 0;
-
-      m_end += end;
-
-      g_nAddRealloc++;
-    } 
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
-  // update dirty area
-  m_data->m_dirtyStart = m_start;
-  m_data->m_dirtyEnd = m_end;
-  DEBUG_INTERNAL_STATE ("add end=" << end << ", ");
-  NS_ASSERT (CheckInternalState ());
-}
-
-void 
-Buffer::RemoveAtStart (uint32_t start)
-{
-  NS_ASSERT (CheckInternalState ());
-  uint32_t newStart = m_start + start;
-  if (newStart <= m_zeroAreaStart)
-    {
-      /* only remove start of buffer 
-       */
-      m_start = newStart;
-    }
-  else if (newStart <= m_zeroAreaEnd)
-    {
-      /* remove start of buffer _and_ start of zero area
-       */
-      uint32_t delta = newStart - m_zeroAreaStart;
-      m_start = m_zeroAreaStart;
-      m_zeroAreaEnd -= delta;
-      m_end -= delta;
-    } 
-  else if (newStart <= m_end)
-    {
-      /* remove start of buffer, complete zero area, and part
-       * of end of buffer 
-       */
-      NS_ASSERT (m_end >= start);
-      uint32_t zeroSize = m_zeroAreaEnd - m_zeroAreaStart;
-      m_start = newStart - zeroSize;
-      m_end -= zeroSize;
-      m_zeroAreaStart = m_start;
-      m_zeroAreaEnd = m_start;
-    }
-  else 
-    {
-      /* remove all buffer */
-      m_end -= m_zeroAreaEnd - m_zeroAreaStart;
-      m_start = m_end;
-      m_zeroAreaEnd = m_end;
-      m_zeroAreaStart = m_end;
-    }
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
-  DEBUG_INTERNAL_STATE ("rem start=" << start << ", ");
-  NS_ASSERT (CheckInternalState ());
-}
-void 
-Buffer::RemoveAtEnd (uint32_t end)
-{
-  NS_ASSERT (CheckInternalState ());
-  uint32_t newEnd = m_end - std::min (end, m_end - m_start);
-  if (newEnd > m_zeroAreaEnd)
-    {
-      /* remove part of end of buffer */
-      m_end = newEnd;
-    }
-  else if (newEnd > m_zeroAreaStart)
-    {
-      /* remove end of buffer, part of zero area */
-      m_end = newEnd;
-      m_zeroAreaEnd = newEnd;
-    }
-  else if (newEnd > m_start)
-    {
-      /* remove end of buffer, zero area, part of start of buffer */
-      m_end = newEnd;
-      m_zeroAreaEnd = newEnd;
-      m_zeroAreaStart = newEnd;
-    }
-  else
-    {
-      /* remove all buffer */
-      m_end = m_start;
-      m_zeroAreaEnd = m_start;
-      m_zeroAreaStart = m_start;
-    }
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
-  DEBUG_INTERNAL_STATE ("rem end=" << end << ", ");
-  NS_ASSERT (CheckInternalState ());
-}
-
-Buffer 
-Buffer::CreateFragment (uint32_t start, uint32_t length) const
-{
-  NS_ASSERT (CheckInternalState ());
-  uint32_t zeroStart = m_zeroAreaStart - m_start;
-  uint32_t zeroEnd = zeroStart + m_zeroAreaEnd;
-  if (m_zeroAreaEnd != 0 &&
-      start + length > zeroStart &&
-      start <= zeroEnd) 
-    {
-      TransformIntoRealBuffer ();
-    }
-  Buffer tmp = *this;
-  tmp.RemoveAtStart (start);
-  tmp.RemoveAtEnd (GetSize () - (start + length));
-  NS_ASSERT (CheckInternalState ());
-  return tmp;
-}
-
-Buffer 
-Buffer::CreateFullCopy (void) const
-{
-  NS_ASSERT (CheckInternalState ());
-  if (m_zeroAreaEnd != 0) 
-    {
-      Buffer tmp;
-      tmp.AddAtStart (m_zeroAreaEnd - m_zeroAreaStart);
-      tmp.Begin ().WriteU8 (0, m_zeroAreaEnd - m_zeroAreaStart);
-      uint32_t dataStart = m_zeroAreaStart - m_start;
-      tmp.AddAtStart (dataStart);
-      tmp.Begin ().Write (m_data->m_data+m_start, dataStart);
-      uint32_t dataEnd = m_end - m_zeroAreaEnd;
-      tmp.AddAtEnd (dataEnd);
-      Buffer::Iterator i = tmp.End ();
-      i.Prev (dataEnd);
-      i.Write (m_data->m_data+m_zeroAreaStart,dataEnd);
-      return tmp;
-    }
-  NS_ASSERT (CheckInternalState ());
-  return *this;
-}
-
-void
-Buffer::TransformIntoRealBuffer (void) const
-{
-  NS_ASSERT (CheckInternalState ());
-  Buffer tmp = CreateFullCopy ();
-  *const_cast<Buffer *> (this) = tmp;
-  NS_ASSERT (CheckInternalState ());
-}
-
-
-uint8_t const*
-Buffer::PeekData (void) const
-{
-  NS_ASSERT (CheckInternalState ());
-  TransformIntoRealBuffer ();
-  NS_ASSERT (CheckInternalState ());
-  return m_data->m_data + m_start;
-}
-
 
 } // namespace ns3
 
