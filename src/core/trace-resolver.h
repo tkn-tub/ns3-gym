@@ -70,13 +70,28 @@ public:
    */
   virtual void Disconnect (std::string path, CallbackBase const &cb) = 0;
 
+  /**
+   * \brief hold a list of trace sources
+   */
   class SourceCollection
   {
   public:
+    /**
+     * \brief describe a single trace source
+     */
     struct Source
     {
+      /**
+       * The trace path associated to this trace source
+       */
       std::string path;
+      /**
+       * The trace context associated to this trace source
+       */
       TraceContext context;
+      /**
+       * Document the signature of this trace source
+       */
       TraceDoc doc;
     };
     typedef std::vector<struct Source>::const_iterator Iterator;
@@ -84,7 +99,15 @@ public:
                     const TraceContext &context,
                     const TraceDoc &doc);
 
+    /**
+     * \returns an iterator which points to the first element of the set of
+     *          trace sources collected in this SourceCollection object.
+     */
     Iterator Begin (void) const;
+    /**
+     * \returns an iterator which points to the last element of the set of
+     *          trace sources collected in this SourceCollection object.
+     */
     Iterator End (void) const;
   private:
     typedef std::vector<struct Source> SourceVector;
@@ -101,6 +124,14 @@ public:
   virtual void CollectSources (std::string path, const TraceContext &context, 
                                SourceCollection *collection) = 0;
 
+  /**
+   * \param os the output stream to which ascii output should be written.
+   * \param context the context associated to the current recursive level.
+   *
+   * This method is invoked recursively until each trace source has been
+   * connected to a trace sink which can output an ascii representation
+   * of each trace event on the output stream specified.
+   */
   virtual void TraceAll (std::ostream &os, const TraceContext &context) = 0;
 protected:
   /**

@@ -91,6 +91,8 @@ public:
    *
    * Connect input callback to all trace sources which match
    * the input namespace regexp.
+   * A tutorial which explains how to use this method can be
+   * found in the \ref tracing section.
    */
   static void Connect (std::string name, const CallbackBase &cb);
   /**
@@ -101,9 +103,27 @@ public:
    * the input namespace regexp.
    */
   static void Disconnect (std::string name, const CallbackBase &cb);
+  /**
+   * \param os the output stream on which the content of each trace event should be
+   *        dumped in ascii format.
+   *
+   * Enable _every_ trace source accessible from the NodeList and write to the
+   * output stream an ascii representation of each trace event.
+   * This method is very useful to get quick-and-dirty trace output from a 
+   * simulation.
+   * More fancy tracing output could be generated with the ns3::NodeList::Connect
+   * method as explained in the \ref tracing section.
+   */
   static void TraceAll (std::ostream &os);
+  /**
+   * \returns the trace resolver used by the ns3::NodeList::Connect,
+   * ns3::NodeList::Disconnect, and, ns3::NodeList::TraceAll methods.
+   *
+   * Using this method directly is not really recommended. Instead, users
+   * should use one of the three methods ns3::NodeList::Connect,
+   * ns3::NodeList::Disconnect, or, ns3::NodeList::TraceAll methods.
+   */
   static Ptr<TraceResolver> GetTraceResolver (void);
-private:
 };
 
 }//namespace ns3
