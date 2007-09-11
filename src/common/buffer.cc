@@ -753,39 +753,6 @@ Buffer::Iterator::Write (uint8_t const*buffer, uint32_t size)
     }
 }
 
-uint8_t  
-Buffer::Iterator::ReadU8 (void)
-{
-  if (m_current < m_dataStart)
-    {
-      // XXX trying to read from outside of data area
-      NS_ASSERT (false);
-    }
-  else if (m_current < m_zeroStart)
-    {
-      uint8_t data = m_data[m_current];
-      m_current++;
-      return data;
-    }
-  else if (m_current < m_zeroEnd)
-    {
-      m_current++;
-      return 0;
-    }
-  else if (m_current < m_dataEnd)
-    {
-      uint8_t data = m_data[m_current - (m_zeroEnd-m_zeroStart)];
-      m_current++;
-      return data;
-    }
-  else 
-    {
-      // XXX trying to read from outside of data area
-      NS_ASSERT (false);
-    }
-  // to quiet compiler.
-  return 0;
-}
 uint16_t 
 Buffer::Iterator::ReadU16 (void)
 {
@@ -933,6 +900,40 @@ Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
     {
       WriteU8 (data);
     }
+}
+
+uint8_t  
+Buffer::Iterator::ReadU8 (void)
+{
+  if (m_current < m_dataStart)
+    {
+      // XXX trying to read from outside of data area
+      NS_ASSERT (false);
+    }
+  else if (m_current < m_zeroStart)
+    {
+      uint8_t data = m_data[m_current];
+      m_current++;
+      return data;
+    }
+  else if (m_current < m_zeroEnd)
+    {
+      m_current++;
+      return 0;
+    }
+  else if (m_current < m_dataEnd)
+    {
+      uint8_t data = m_data[m_current - (m_zeroEnd-m_zeroStart)];
+      m_current++;
+      return data;
+    }
+  else 
+    {
+      // XXX trying to read from outside of data area
+      NS_ASSERT (false);
+    }
+  // to quiet compiler.
+  return 0;
 }
 
 #endif /* BUFFER_USE_INLINE */

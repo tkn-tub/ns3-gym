@@ -184,7 +184,7 @@ public:
        * Read data and advance the Iterator by the number of bytes
        * read.
        */
-      uint8_t  ReadU8 (void);
+      BUFFER_INLINE uint8_t  ReadU8 (void);
       /**
        * \return the two bytes read in the buffer.
        *
@@ -397,6 +397,32 @@ Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
       m_current += len;
     }
 }
+
+uint8_t  
+Buffer::Iterator::ReadU8 (void)
+{
+  NS_ASSERT (m_current >= m_dataStart &&
+             m_current <= m_dataEnd);
+
+  if (m_current < m_zeroStart)
+    {
+      uint8_t data = m_data[m_current];
+      m_current++;
+      return data;
+    }
+  else if (m_current < m_zeroEnd)
+    {
+      m_current++;
+      return 0;
+    }
+  else
+    {
+      uint8_t data = m_data[m_current - (m_zeroEnd-m_zeroStart)];
+      m_current++;
+      return data;
+    }
+}
+
 
 } // namespace ns3
 
