@@ -35,7 +35,7 @@ public:
 
   static uint32_t GetUid (void);
 
-  std::string GetName (void) const;
+  static std::string GetName (void);
   void Print (std::ostream &os) const;
   uint32_t GetSerializedSize (void) const;
   void Serialize (Buffer::Iterator start) const;
@@ -60,18 +60,16 @@ template <int N>
 uint32_t 
 BenchHeader<N>::GetUid (void)
 {
-  std::ostringstream oss;
-  oss << "BenchHeader" << N;
-  static uint32_t uid = AllocateUid<BenchHeader<N> > (oss.str ());
+  static uint32_t uid = AllocateUid<BenchHeader<N> > (GetName ());
   return uid;
 }
 
 template <int N>
 std::string 
-BenchHeader<N>::GetName (void) const
+BenchHeader<N>::GetName (void)
 {
   std::ostringstream oss;
-  oss << N;
+  oss << "BenchHeader" << N;
   return oss.str ();
 }
 
