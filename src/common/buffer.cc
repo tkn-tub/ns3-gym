@@ -29,7 +29,8 @@ NS_DEBUG (y << "start="<<m_start<<", end="<<m_end<<", zero start="<<m_zeroAreaSt
           ", zero end="<<m_zeroAreaEnd<<", count="<<m_data->m_count<<", size="<<m_data->m_size<<   \
           ", dirty start="<<m_data->m_dirtyStart<<", dirty end="<<m_data->m_dirtyEnd)
 
-//#define USE_FREE_LIST 1
+#define USE_FREE_LIST 1
+//#define PRINT_STATS 1
 
 namespace ns3 {
 
@@ -56,11 +57,33 @@ static void BufferDeallocate (struct BufferData *data);
 namespace ns3 {
 
 static uint32_t g_recommendedStart = 0;
-  //static uint32_t g_maxSize = 0;
+static uint64_t g_nAddNoRealloc = 0;
+static uint64_t g_nAddRealloc = 0;
 static BufferDataList  g_freeList;
+#ifdef USE_FREE_LIST
+static uint32_t g_maxSize = 0;
+static uint64_t g_nAllocs = 0;
+static uint64_t g_nCreates = 0;
+#endif /* USE_FREE_LIST */
 
 BufferDataList::~BufferDataList ()
 {
+#ifdef PRINT_STATS
+#ifdef USE_FREE_LIST
+  double efficiency;
+  efficiency = g_nAllocs;
+  efficiency /= g_nCreates;
+  std::cout <<"buffer free list efficiency="<<efficiency<<" (lower is better)" << std::endl;
+  std::cout <<"buffer free list max size="<<g_maxSize<<std::endl;
+  std::cout <<"buffer free list recommended start="<<g_recommendedStart<<std::endl;
+#endif /* USE_FREE_LIST */
+  double addEfficiency;
+  addEfficiency = g_nAddRealloc;
+  addEfficiency /= g_nAddNoRealloc;
+  std::cout <<"buffer add efficiency=" << addEfficiency << " (lower is better)"<<std::endl;
+  //std::cout <<"n add reallocs="<< g_nAddRealloc << std::endl;
+  //std::cout <<"n add no reallocs="<< g_nAddNoRealloc << std::endl;
+#endif /* PRINT_STATS */
   for (BufferDataList::iterator i = begin ();
        i != end (); i++)
     {
@@ -103,7 +126,7 @@ Buffer::Recycle (struct BufferData *data)
     {
       BufferDeallocate (data);
     }
-  else 
+  else
     {
       g_freeList.push_back (data);
     }
@@ -113,6 +136,7 @@ BufferData *
 Buffer::Create (uint32_t dataSize)
 {
   /* try to find a buffer correctly sized. */
+  g_nCreates++;
   while (!g_freeList.empty ()) 
     {
       struct BufferData *data = g_freeList.back ();
@@ -124,7 +148,8 @@ Buffer::Create (uint32_t dataSize)
         }
       BufferDeallocate (data);
     }
-  struct BufferData *data = BufferAllocate (datsSize);
+  g_nAllocs++;
+  struct BufferData *data = BufferAllocate (dataSize);
   NS_ASSERT (data->m_count == 1);
   return data;
 }
@@ -627,6 +652,7 @@ Buffer::AddAtStart (uint32_t start)
        */
       NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
       m_start -= start;
+      g_nAddNoRealloc++;
     } 
 #if 0
   // the following is an optimization
@@ -665,6 +691,8 @@ Buffer::AddAtStart (uint32_t start)
       m_zeroAreaStart += delta;
       m_zeroAreaEnd += delta;
       m_end += delta;
+
+      g_nAddRealloc++;
     } 
   m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
   // update dirty area
@@ -687,6 +715,8 @@ Buffer::AddAtEnd (uint32_t end)
        */
       NS_ASSERT (m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
       m_end += end;
+
+      g_nAddNoRealloc++;
     } 
 #if 0
   // this is an optimization
@@ -723,6 +753,8 @@ Buffer::AddAtEnd (uint32_t end)
       m_start = 0;
 
       m_end += end;
+
+      g_nAddRealloc++;
     } 
   m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
   // update dirty area
