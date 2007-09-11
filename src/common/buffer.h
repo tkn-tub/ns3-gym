@@ -23,6 +23,13 @@
 #include <stdint.h>
 #include <vector>
 
+#define BUFFER_USE_INLINE
+#ifdef BUFFER_USE_INLINE
+#define BUFFER_INLINE inline
+#else
+#define BUFFER_INLINE
+#endif
+
 namespace ns3 {
 
 /**
@@ -87,7 +94,7 @@ public:
        * Write the data in buffer and avance the iterator position
        * by one byte.
        */
-      inline void WriteU8 (uint8_t  data);
+      BUFFER_INLINE void WriteU8 (uint8_t  data);
       /**
        * \param data data to write in buffer
        * \param len number of times data must be written in buffer
@@ -95,7 +102,7 @@ public:
        * Write the data in buffer len times and avance the iterator position
        * by len byte.
        */
-      void WriteU8 (uint8_t data, uint32_t len);
+      BUFFER_INLINE void WriteU8 (uint8_t data, uint32_t len);
       /**
        * \param data data to write in buffer
        *
@@ -240,6 +247,9 @@ public:
       Iterator (Buffer const*buffer);
       Iterator (Buffer const*buffer, bool);
       void Construct (const Buffer *buffer);
+      bool CheckNoZero (uint32_t start, uint32_t end) const;
+      bool Check (uint32_t i) const;
+
       uint32_t m_zeroStart;
       uint32_t m_zeroEnd;
       uint32_t m_dataStart;
@@ -348,6 +358,8 @@ private:
 
 } // namespace ns3
 
+#ifdef BUFFER_USE_INLINE
+
 #include "ns3/assert.h"
 
 namespace ns3 {
@@ -355,9 +367,7 @@ namespace ns3 {
 void
 Buffer::Iterator::WriteU8 (uint8_t data)
 {
-  NS_ASSERT (m_current >= m_dataStart && 
-             !(m_current >= m_zeroStart && m_current <= m_zeroEnd) &&
-             m_current <= m_dataEnd);
+  NS_ASSERT (Check (m_current));
 
   if (m_current < m_zeroStart)
     {
@@ -371,7 +381,25 @@ Buffer::Iterator::WriteU8 (uint8_t data)
     }
 }
 
+void 
+Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
+{
+  NS_ASSERT (CheckNotZero (m_current, m_current + len));
+  if (m_current <= m_zeroStart)
+    {
+      memset (&(m_data[m_current]), data, len);
+      m_current += len;
+    }
+  else
+    {
+      uint8_t *buffer = &m_data[m_current - (m_zeroEnd-m_zeroStart)];
+      memset (buffer, data, len);
+      m_current += len;
+    }
+}
 
 } // namespace ns3
+
+#endif /* BUFFER_USE_INLINE */
 
 #endif /* BUFFER_H */

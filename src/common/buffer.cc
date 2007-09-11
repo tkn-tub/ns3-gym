@@ -642,6 +642,28 @@ Buffer::Iterator::IsStart (void) const
   return m_current == m_dataStart;
 }
 
+bool 
+Buffer::Iterator::CheckNoZero (uint32_t start, uint32_t end) const
+{
+  bool ok = true;
+  for (uint32_t i = start; i < end; i++)
+    {
+      if (!Check (i))
+        {
+          ok = false;
+        }
+    }
+  return ok;
+}
+bool 
+Buffer::Iterator::Check (uint32_t i) const
+{
+  return i >= m_dataStart && 
+    !(i >= m_zeroStart && i <= m_zeroEnd) &&
+    i <= m_dataEnd;
+}
+
+
 void 
 Buffer::Iterator::Write (Iterator start, Iterator end)
 {
@@ -659,14 +681,6 @@ Buffer::Iterator::Write (Iterator start, Iterator end)
     }
 }
 
-void 
-Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
-{
-  for (uint32_t i = 0; i < len; i++)
-    {
-      WriteU8 (data);
-    }
-}
 void 
 Buffer::Iterator::WriteU16 (uint16_t data)
 {
@@ -879,6 +893,49 @@ Buffer::Iterator::Read (uint8_t *buffer, uint32_t size)
       buffer[i] = ReadU8 ();
     }
 }
+
+#ifndef BUFFER_USE_INLINE
+
+void 
+Buffer::Iterator::WriteU8  (uint8_t  data)
+{
+  if (m_current < m_dataStart)
+    {
+      // XXX trying to write outside of data area
+      NS_ASSERT (false);
+    }
+  else if (m_current < m_zeroStart)
+    {
+      m_data[m_current] = data;
+      m_current++;
+    }
+  else if (m_current < m_zeroEnd)
+    {
+      // XXX trying to write in zero area
+      NS_ASSERT (false);
+    }
+  else if (m_current < m_dataEnd)
+    {
+      m_data[m_current - (m_zeroEnd-m_zeroStart)] = data;
+      m_current++;      
+    }
+  else 
+    {
+      // XXX trying to write outside of data area
+      NS_ASSERT (false);
+    }
+}
+
+void 
+Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
+{
+  for (uint32_t i = 0; i < len; i++)
+    {
+      WriteU8 (data);
+    }
+}
+
+#endif /* BUFFER_USE_INLINE */
 
 } // namespace ns3
 
