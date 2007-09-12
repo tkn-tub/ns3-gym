@@ -1,14 +1,12 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_module('applications', ['node'])
-    obj.source = [
-        'onoff-application.cc',
+    module = bld.create_ns3_module('packet-sink', ['node'])
+    module.source = [
         'packet-sink.cc',
         ]
-
     headers = bld.create_obj('ns3header')
     headers.source = [
-        'onoff-application.h',
         'packet-sink.h',
         ]
+

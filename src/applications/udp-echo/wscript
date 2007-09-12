@@ -1,0 +1,12 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('udp-echo', ['internet-node'])
+    module.source = [
+        'udp-echo-client.cc',
+        ]
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'udp-echo-client.h',
+        ]
+

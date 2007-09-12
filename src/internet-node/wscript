@@ -2,7 +2,7 @@
 
 
 def build(bld):
-    obj = bld.create_ns3_module('internet-node', ['node', 'applications'])
+    obj = bld.create_ns3_module('internet-node', ['node'])
     obj.source = [
         'internet-node.cc',
         'ipv4-l4-demux.cc',

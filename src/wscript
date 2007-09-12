@@ -18,7 +18,9 @@ all_modules = (
     'internet-node',
     'devices/point-to-point',
     'devices/csma',
-    'applications',
+    'applications/onoff',
+    'applications/packet-sink',
+    'applications/udp-echo',
     'routing/global-routing',
     'mobility',
     )
