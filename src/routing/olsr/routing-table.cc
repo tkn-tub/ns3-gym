@@ -106,7 +106,8 @@ RoutingTable::FindSendEntry (RoutingTableEntry const &entry,
 
 
 bool
-RoutingTable::RequestRoute (const Ipv4Header &ipHeader,
+RoutingTable::RequestRoute (uint32_t ifIndex,
+                            const Ipv4Header &ipHeader,
                             Packet packet,
                             RouteReplyCallback routeReply)
 {
@@ -131,6 +132,24 @@ RoutingTable::RequestRoute (const Ipv4Header &ipHeader,
       NS_DEBUG ("Olsr node" << m_mainAddress
                 << ": RouteRequest for dest=" << ipHeader.GetDestination ()
                 << " --> NOT FOUND");
+      return false;
+    }
+}
+
+bool
+RoutingTable::RequestIfIndex (Ipv4Address destination,
+                              uint32_t& ifIndex)
+{
+  RoutingTableEntry entry1, entry2;
+  if (Lookup (destination, entry1))
+    {
+      bool foundSendEntry = FindSendEntry (entry1, entry2);
+      NS_ASSERT (foundSendEntry);
+      ifIndex = entry2.interface;
+      return true;
+    }
+  else
+    {
       return false;
     }
 }

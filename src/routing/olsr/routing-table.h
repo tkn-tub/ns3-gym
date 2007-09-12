@@ -100,9 +100,13 @@ public:
                       RoutingTableEntry &outEntry) const;
 
   // From Ipv4RoutingProtocol
-  virtual bool RequestRoute (const Ipv4Header &ipHeader,
+  virtual bool RequestRoute (uint32_t ifIndex,
+                             const Ipv4Header &ipHeader,
                              Packet packet,
                              RouteReplyCallback routeReply);
+  virtual bool RequestIfIndex (Ipv4Address destination, 
+                               uint32_t& ifIndex);
+
 };
 
 }}; // namespace ns3, olsr
