@@ -23,7 +23,10 @@
 #include <stdint.h>
 #include <vector>
 
-#define BUFFER_USE_INLINE
+//#define BUFFER_HEURISTICS 1
+#define BUFFER_USE_INLINE 1
+
+
 #ifdef BUFFER_USE_INLINE
 #define BUFFER_INLINE inline
 #else
@@ -42,6 +45,51 @@ namespace ns3 {
  * by creating new Buffers of the maximum size ever used.
  * The correct maximum size is learned at runtime during use by 
  * recording the maximum size of each packet.
+ *
+ * \internal
+ * The implementation of the Buffer class uses a COW (Copy On Write)
+ * technique to ensure that the underlying data buffer which holds
+ * the data bytes is shared among a lot of Buffer instances despite
+ * data being added or removed from them.
+ *
+ * When multiple Buffer instances hold a reference to the same 
+ * underlying BufferData object, they must be able to detect when
+ * the operation they want to perform should trigger a copy of the
+ * BufferData. If the BufferData::m_count field is one, it means that
+ * there exist only one instance of Buffer which references the 
+ * BufferData instance so, it is safe to modify it. It is also
+ * safe to modify the content of a BufferData if the modification
+ * falls outside of the "dirty area" defined by the BufferData.
+ * In every other case, the BufferData must be copied before
+ * being modified.
+ *
+ * To understand the way the Buffer::Add and Buffer::Remove methods
+ * work, you first need to understand the "virtual offsets" used to
+ * keep track of the content of buffers. Each Buffer instance
+ * contains real data bytes in its BufferData instance but it also
+ * contains "virtual zero data" which typically is used to represent
+ * application-level payload. No memory is allocated to store the
+ * zero bytes of application-level payload unless the user fragments
+ * a Buffer: this application-level payload is kept track of with
+ * a pair of integers which describe where in the buffer content
+ * the "virtual zero area" starts and ends.
+ *
+ * ***: unused bytes
+ * xxx: bytes "added" at the front of the zero area
+ * ...: bytes "added" at the back of the zero area
+ * 000: virtual zero bytes
+ *
+ * Real byte buffer:      |********xxxxxxxxxxxx.........*****|
+ *                        |--------^ m_start
+ *                        |-------------------^ m_zeroAreaStart
+ *                        |-----------------------------^ m_end - (m_zeroAreaEnd - m_zeroAreaStart)
+ * virtual byte buffer:           |xxxxxxxxxxxx0000000000000.........|
+ *                        |--------^ m_start
+ *                        |--------------------^ m_zeroAreaStart
+ *                        |---------------------------------^ m_zeroAreaEnd
+ *                        |------------------------------------------^ m_end
+ *
+ * A simple state invariant is that m_start <= m_zeroStart <= m_zeroEnd <= m_end
  */
 class Buffer {
 public:
@@ -250,11 +298,29 @@ public:
       bool CheckNoZero (uint32_t start, uint32_t end) const;
       bool Check (uint32_t i) const;
 
+    /* offset in virtual bytes from the start of the data buffer to the
+     * start of the "virtual zero area".
+     */
       uint32_t m_zeroStart;
+    /* offset in virtual bytes from the start of the data buffer to the
+     * end of the "virtual zero area".
+     */
       uint32_t m_zeroEnd;
+    /* offset in virtual bytes from the start of the data buffer to the
+     * start of the data which can be read by this iterator
+     */
       uint32_t m_dataStart;
+    /* offset in virtual bytes from the start of the data buffer to the
+     * end of the data which can be read by this iterator
+     */
       uint32_t m_dataEnd;
+    /* offset in virtual bytes from the start of the data buffer to the
+     * current position represented by this iterator.
+     */
       uint32_t m_current;
+    /* a pointer to the underlying byte buffer. All offsets are relative
+     * to this pointer.
+     */
       uint8_t *m_data;
   };
 
@@ -348,11 +414,38 @@ private:
   static void Recycle (struct BufferData *data);
   static struct BufferData *Create (uint32_t size);
 
+  /* This structure is described in the buffer.cc file.
+   */
   struct BufferData *m_data;
+#ifdef BUFFER_HEURISTICS
+  /* keep track of the maximum value of m_zeroAreaStart across
+   * the lifetime of a Buffer instance. This variable is used
+   * purely as a source of information for the heuristics which
+   * decide on the position of the zero area in new buffers.
+   * It is read from the Buffer destructor to update the global
+   * heuristic data and these global heuristic data are used from
+   * the Buffer constructor to choose an initial value for 
+   * m_zeroAreaStart.
+   * It is possible to disable all these heuristics by undefining the
+   * BUFFER_HEURISTICS macro at the top of buffer.h
+   */
   uint32_t m_maxZeroAreaStart;
+#endif /* BUFFER_HEURISTICS */
+  /* offset to the start of the virtual zero area from the start 
+   * of m_data->m_data
+   */
   uint32_t m_zeroAreaStart;
+  /* offset to the end of the virtual zero area from the start 
+   * of m_data->m_data
+   */
   uint32_t m_zeroAreaEnd;
+  /* offset to the start of the data referenced by this Buffer
+   * instance from the start of m_data->m_data
+   */
   uint32_t m_start;
+  /* offset to the end of the data referenced by this Buffer
+   * instance from the start of m_data->m_data
+   */
   uint32_t m_end;
 };
 

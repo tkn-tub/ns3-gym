@@ -29,16 +29,49 @@ NS_DEBUG (y << "start="<<m_start<<", end="<<m_end<<", zero start="<<m_zeroAreaSt
           ", zero end="<<m_zeroAreaEnd<<", count="<<m_data->m_count<<", size="<<m_data->m_size<<   \
           ", dirty start="<<m_data->m_dirtyStart<<", dirty end="<<m_data->m_dirtyEnd)
 
-#define USE_FREE_LIST 1
+#ifdef BUFFER_HEURISTICS
+#define HEURISTICS(x) x
+#else
+#define HEURISTICS(x)
+#endif
+
 //#define PRINT_STATS 1
 
 namespace ns3 {
 
+/**
+ * This data structure is variable-sized through its last member whose size
+ * is determined at allocation time and stored in the m_size field.
+ *
+ * The so-called "dirty area" describes the area in the buffer which
+ * has been reserved and used by a user. Multiple Buffer instances
+ * may reference the same BufferData object instance and may
+ * reference different parts of the underlying byte buffer. The
+ * "dirty area" is union of all the areas referenced by the Buffer
+ * instances which reference the same BufferData instance.
+ * New user data can be safely written only outside of the "dirty
+ * area" if the reference count is higher than 1 (that is, if
+ * more than one Buffer instance references the same BufferData).
+ */
 struct BufferData {
+  /* The reference count of an instance of this data structure.
+   * Each buffer which references an instance holds a count.
+   */
   uint32_t m_count;
+  /* the size of the m_data field below.
+   */
   uint32_t m_size;
+  /* offset from the start of the m_data field below to the
+   * start of the area in which user bytes were written.
+   */
   uint32_t m_dirtyStart;
+  /* offset from the start of the m_data field below to the
+   * end of the area in which user bytes were written.
+   */
   uint32_t m_dirtyEnd;
+  /* The real data buffer holds _at least_ one byte.
+   * Its real size is stored in the m_size field.
+   */
   uint8_t m_data[1];
 };
 class BufferDataList : public std::vector<struct BufferData*>
@@ -56,33 +89,33 @@ static void BufferDeallocate (struct BufferData *data);
 
 namespace ns3 {
 
+#ifdef BUFFER_HEURISTICS
 static uint32_t g_recommendedStart = 0;
 static uint64_t g_nAddNoRealloc = 0;
 static uint64_t g_nAddRealloc = 0;
 static BufferDataList  g_freeList;
-#ifdef USE_FREE_LIST
 static uint32_t g_maxSize = 0;
 static uint64_t g_nAllocs = 0;
 static uint64_t g_nCreates = 0;
-#endif /* USE_FREE_LIST */
+#endif /* BUFFER_HEURISTICS */
 
 BufferDataList::~BufferDataList ()
 {
 #ifdef PRINT_STATS
-#ifdef USE_FREE_LIST
+#ifdef BUFFER_HEURISTICS
   double efficiency;
   efficiency = g_nAllocs;
   efficiency /= g_nCreates;
   std::cout <<"buffer free list efficiency="<<efficiency<<" (lower is better)" << std::endl;
   std::cout <<"buffer free list max size="<<g_maxSize<<std::endl;
   std::cout <<"buffer free list recommended start="<<g_recommendedStart<<std::endl;
-#endif /* USE_FREE_LIST */
   double addEfficiency;
   addEfficiency = g_nAddRealloc;
   addEfficiency /= g_nAddNoRealloc;
   std::cout <<"buffer add efficiency=" << addEfficiency << " (lower is better)"<<std::endl;
   //std::cout <<"n add reallocs="<< g_nAddRealloc << std::endl;
   //std::cout <<"n add no reallocs="<< g_nAddNoRealloc << std::endl;
+#endif /* BUFFER_HEURISTICS */
 #endif /* PRINT_STATS */
   for (BufferDataList::iterator i = begin ();
        i != end (); i++)
@@ -114,7 +147,7 @@ BufferDeallocate (struct BufferData *data)
   uint8_t *buf = reinterpret_cast<uint8_t *> (data);
   delete [] buf;
 }
-#ifdef USE_FREE_LIST
+#ifdef BUFFER_HEURISTICS
 void
 Buffer::Recycle (struct BufferData *data)
 {
@@ -204,11 +237,15 @@ void
 Buffer::Initialize (uint32_t zeroSize)
 {
   m_data = Buffer::Create (0);
+#ifdef BUFFER_HEURISTICS
   m_start = std::min (m_data->m_size, g_recommendedStart);
+  m_maxZeroAreaStart = m_start;
+#else
+  m_start = 0;
+#endif /* BUFFER_HEURISTICS */
   m_zeroAreaStart = m_start;
   m_zeroAreaEnd = m_zeroAreaStart + zeroSize;
   m_end = m_zeroAreaEnd;
-  m_maxZeroAreaStart = m_zeroAreaStart;
   m_data->m_dirtyStart = m_start;
   m_data->m_dirtyEnd = m_end;
   NS_ASSERT (CheckInternalState ());
@@ -216,7 +253,9 @@ Buffer::Initialize (uint32_t zeroSize)
 
 Buffer::Buffer (Buffer const&o)
   : m_data (o.m_data),
+#ifdef BUFFER_HEURISTICS
     m_maxZeroAreaStart (o.m_zeroAreaStart),
+#endif
     m_zeroAreaStart (o.m_zeroAreaStart),
     m_zeroAreaEnd (o.m_zeroAreaEnd),
     m_start (o.m_start),
@@ -241,8 +280,10 @@ Buffer::operator = (Buffer const&o)
       m_data = o.m_data;
       m_data->m_count++;
     }
+  HEURISTICS (
   g_recommendedStart = std::max (g_recommendedStart, m_maxZeroAreaStart);
   m_maxZeroAreaStart = o.m_maxZeroAreaStart;
+  );
   m_zeroAreaStart = o.m_zeroAreaStart;
   m_zeroAreaEnd = o.m_zeroAreaEnd;
   m_start = o.m_start;
@@ -253,7 +294,7 @@ Buffer::operator = (Buffer const&o)
 
 Buffer::~Buffer ()
 {
-  g_recommendedStart = std::max (g_recommendedStart, m_maxZeroAreaStart);
+  HEURISTICS (g_recommendedStart = std::max (g_recommendedStart, m_maxZeroAreaStart));
   m_data->m_count--;
   if (m_data->m_count == 0) 
     {
@@ -306,7 +347,7 @@ Buffer::AddAtStart (uint32_t start)
        */
       NS_ASSERT (m_data->m_count == 1 || m_start == m_data->m_dirtyStart);
       m_start -= start;
-      g_nAddNoRealloc++;
+      HEURISTICS (g_nAddNoRealloc++);
     } 
 #if 0
   // the following is an optimization
@@ -322,6 +363,7 @@ Buffer::AddAtStart (uint32_t start)
       m_data = newData;
 
       m_start -= start;
+      HEURISTICS (g_nAddRealloc++);
     }
   else
     {
@@ -346,9 +388,9 @@ Buffer::AddAtStart (uint32_t start)
       m_zeroAreaEnd += delta;
       m_end += delta;
 
-      g_nAddRealloc++;
-    } 
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
+      HEURISTICS (g_nAddRealloc++);
+    }
+  HEURISTICS (m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart));
   // update dirty area
   m_data->m_dirtyStart = m_start;
   m_data->m_dirtyEnd = m_end;
@@ -370,7 +412,7 @@ Buffer::AddAtEnd (uint32_t end)
       NS_ASSERT (m_data->m_count == 1 || m_end == m_data->m_dirtyEnd);
       m_end += end;
 
-      g_nAddNoRealloc++;
+      HEURISTICS (g_nAddNoRealloc++);
     } 
 #if 0
   // this is an optimization
@@ -386,6 +428,7 @@ Buffer::AddAtEnd (uint32_t end)
       m_data = newData;
 
       m_end += end;
+      HEURISTICS (g_nAddRealloc++);
     }
 #endif
   else
@@ -408,9 +451,9 @@ Buffer::AddAtEnd (uint32_t end)
 
       m_end += end;
 
-      g_nAddRealloc++;
+      HEURISTICS (g_nAddRealloc++);
     } 
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
+  HEURISTICS (m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart));
   // update dirty area
   m_data->m_dirtyStart = m_start;
   m_data->m_dirtyEnd = m_end;
@@ -458,7 +501,7 @@ Buffer::RemoveAtStart (uint32_t start)
       m_zeroAreaEnd = m_end;
       m_zeroAreaStart = m_end;
     }
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
+  HEURISTICS (m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart));
   DEBUG_INTERNAL_STATE ("rem start=" << start << ", ");
   NS_ASSERT (CheckInternalState ());
 }
@@ -492,7 +535,7 @@ Buffer::RemoveAtEnd (uint32_t end)
       m_zeroAreaEnd = m_start;
       m_zeroAreaStart = m_start;
     }
-  m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart);
+  HEURISTICS (m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart));
   DEBUG_INTERNAL_STATE ("rem end=" << end << ", ");
   NS_ASSERT (CheckInternalState ());
 }
@@ -659,7 +702,7 @@ bool
 Buffer::Iterator::Check (uint32_t i) const
 {
   return i >= m_dataStart && 
-    !(i >= m_zeroStart && i <= m_zeroEnd) &&
+    !(i >= m_zeroStart && i < m_zeroEnd) &&
     i <= m_dataEnd;
 }
 
