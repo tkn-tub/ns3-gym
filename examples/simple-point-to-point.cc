@@ -85,6 +85,7 @@ main (int argc, char *argv[])
   DebugComponentEnable("NetDevice");
   DebugComponentEnable("PacketSocket");
   DebugComponentEnable("OnOffApplication");
+  DebugComponentEnable("Socket");
   DebugComponentEnable("UdpSocket");
   DebugComponentEnable("UdpL4Protocol");
   DebugComponentEnable("Ipv4L3Protocol");

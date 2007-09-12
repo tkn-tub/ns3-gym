@@ -59,8 +59,8 @@ main (int argc, char *argv[])
 // Users may find it convenient to turn on explicit debugging
 // for selected modules; the below lines suggest how to do this
 //
-#if 1
-  DebugComponentEnable("CsmaOneSubnet");
+#if 0
+  DebugComponentEnable("UdpEcho");
 
   DebugComponentEnable("Object");
   DebugComponentEnable("Queue");
@@ -72,6 +72,7 @@ main (int argc, char *argv[])
   DebugComponentEnable("NetDevice");
   DebugComponentEnable("PacketSocket");
   DebugComponentEnable("OnOffApplication");
+  DebugComponentEnable("Socket");
   DebugComponentEnable("UdpSocket");
   DebugComponentEnable("UdpL4Protocol");
   DebugComponentEnable("Ipv4L3Protocol");
@@ -80,7 +81,12 @@ main (int argc, char *argv[])
   DebugComponentEnable("ArpIpv4Interface");
   DebugComponentEnable("Ipv4LoopbackInterface");
   DebugComponentEnable("UdpEchoClient");
+  DebugComponentEnable("UdpEchoServer");
 #endif
+
+  DebugComponentEnable("UdpEcho");
+  DebugComponentEnable("UdpEchoClient");
+  DebugComponentEnable("UdpEchoServer");
 //
 // Set up default values for the simulation.  Use the DefaultValue::Bind()
 // technique to tell the system what subclass of Queue to use.  The Bind
@@ -165,6 +171,15 @@ main (int argc, char *argv[])
 
   NS_DEBUG("Create Applications.");
 //
+// Create a UdpEchoServer application on node 1.
+//
+  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, "0.0.0.0", 80);
+//
+// Tell the application when to start and stop.
+//
+  server->Start(Seconds(1.));
+  server->Stop (Seconds(10.0));
+//
 // Create a UdpEchoClient application to send UDP datagrams from node zero to
 // node 1.
 //
@@ -173,17 +188,8 @@ main (int argc, char *argv[])
 //
 // Tell the application when to start and stop.
 //
-  client->Start(Seconds(1.0));
+  client->Start(Seconds(2.0));
   client->Stop (Seconds(10.0));
-//
-// Create a UdpEchoServer application on node 1.
-//
-  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n0, "0.0.0.0", 80);
-//
-// Tell the application when to start and stop.
-//
-  server->Start(Seconds(0.));
-  server->Stop (Seconds(10.0));
 //
 // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
 // Trace output will be sent to the file "udp-echo.tr"

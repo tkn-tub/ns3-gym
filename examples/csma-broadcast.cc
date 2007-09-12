@@ -77,6 +77,7 @@ int main (int argc, char *argv[])
   DebugComponentEnable("Ipv4L3Protocol");
   DebugComponentEnable("OnOffApplication");
   DebugComponentEnable("PacketSocket");
+  DebugComponentEnable("Socket");
   DebugComponentEnable("UdpSocket");
   DebugComponentEnable("UdpL4Protocol");
   DebugComponentEnable("Ipv4L3Protocol");

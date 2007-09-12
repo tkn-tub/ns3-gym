@@ -19,83 +19,114 @@
  * Authors: George F. Riley<riley@ece.gatech.edu>
  *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "socket.h"
+
+#include "ns3/debug.h"
 #include "ns3/packet.h"
+#include "socket.h"
+
+NS_DEBUG_COMPONENT_DEFINE ("Socket");
 
 namespace ns3 {
 
 Socket::~Socket ()
-{}
+{
+  NS_DEBUG("Socket::~Socket ()");
+}
 
 void 
 Socket::SetCloseCallback (Callback<void,Ptr<Socket> > closeCompleted)
 {
+  NS_DEBUG("Socket::SetCloseCallback ()");
   m_closeCompleted = closeCompleted;
 }
+
 void 
-Socket::SetConnectCallback (Callback<void, Ptr<Socket> > connectionSucceeded,
-			    Callback<void, Ptr<Socket> > connectionFailed,
-			    Callback<void, Ptr<Socket> > halfClose)
+Socket::SetConnectCallback (
+  Callback<void, Ptr<Socket> > connectionSucceeded,
+  Callback<void, Ptr<Socket> > connectionFailed,
+  Callback<void, Ptr<Socket> > halfClose)
 {
+  NS_DEBUG("Socket::SetConnectCallback ()");
   m_connectionSucceeded = connectionSucceeded;
   m_connectionFailed = connectionFailed;
   m_halfClose = halfClose;
 }
+
 void 
-Socket::SetAcceptCallback (Callback<bool, Ptr<Socket>, const Address &> connectionRequest,
-			   Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
-			   Callback<void, Ptr<Socket> > closeRequested)
+Socket::SetAcceptCallback (
+  Callback<bool, Ptr<Socket>, const Address &> connectionRequest,
+  Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
+  Callback<void, Ptr<Socket> > closeRequested)
 {
+  NS_DEBUG("Socket::SetAcceptCallback ()");
   m_connectionRequest = connectionRequest;
   m_newConnectionCreated = newConnectionCreated;
   m_closeRequested = closeRequested;
 }
+
 void 
 Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
 {
+  NS_DEBUG("Socket::SetSendCallback ()");
   m_dataSent = dataSent;
 }
+
 void 
 Socket::SetRecvCallback (Callback<void, Ptr<Socket>, const Packet &,const Address&> receivedData)
 {
+  NS_DEBUG("Socket::SetRecvCallback ()");
   m_receivedData = receivedData;
 }
 
 void 
 Socket::NotifyCloseCompleted (void)
 {
+  NS_DEBUG("Socket::NotifyCloseCompleted ()");
+
   if (!m_closeCompleted.IsNull ())
     {
       m_closeCompleted (this);
     }
 }
+
 void 
 Socket::NotifyConnectionSucceeded (void)
 {
+  NS_DEBUG("Socket::NotifyConnectionSucceeded ()");
+
   if (!m_connectionSucceeded.IsNull ())
     {
       m_connectionSucceeded (this);
     }
 }
+
 void 
 Socket::NotifyConnectionFailed (void)
 {
+  NS_DEBUG("Socket::NotifyConnectionFailed ()");
+
   if (!m_connectionFailed.IsNull ())
     {
       m_connectionFailed (this);
     }
 }
+
 void 
 Socket::NotifyHalfClose (void)
 {
+  NS_DEBUG("Socket::NotifyHalfClose ()");
+
   if (!m_halfClose.IsNull ())
     {
       m_halfClose (this);
     }
 }
+
 bool 
 Socket::NotifyConnectionRequest (const Address &from)
 {
+  NS_DEBUG("Socket::NotifyConnectionRequest ()");
+
   if (!m_connectionRequest.IsNull ())
     {
       return m_connectionRequest (this, from);
@@ -106,39 +137,49 @@ Socket::NotifyConnectionRequest (const Address &from)
       return false;
     }
 }
+
 void 
 Socket::NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from)
 {
+  NS_DEBUG("Socket::NotifyNewConnectionCreated ()");
+
   if (!m_newConnectionCreated.IsNull ())
     {
       m_newConnectionCreated (socket, from);
     }
 }
+
 void 
 Socket::NotifyCloseRequested (void)
 {
+  NS_DEBUG("Socket::NotifyCloseRequested ()");
+
   if (!m_closeRequested.IsNull ())
     {
       m_closeRequested (this);
     }
 }
+
 void 
 Socket::NotifyDataSent (uint32_t size)
 {
+  NS_DEBUG("Socket::NotifyDataSent ()");
+
   if (!m_dataSent.IsNull ())
     {
       m_dataSent (this, size);
     }
 }
+
 void 
 Socket::NotifyDataReceived (const Packet &p, const Address &from)
 {
+  NS_DEBUG("Socket::NotifyDataReceived ()");
+
   if (!m_receivedData.IsNull ())
     {
       m_receivedData (this, p, from);
     }
 }
-
-
 
 }//namespace ns3
