@@ -205,6 +205,37 @@ enum CsmaEncapsulationMode {
    */
   void Receive (const Packet& p);
 
+  /**
+   * @brief Make and return a MAC multicast address using the provided
+   *        multicast group
+   *
+   * RFC 1112 says that an Ipv4 host group address is mapped to an Ethernet 
+   * multicast address by placing the low-order 23-bits of the IP address into 
+   * the low-order 23 bits of the Ethernet multicast address 
+   * 01-00-5E-00-00-00 (hex).
+   *
+   * This method performs the multicast address creation function appropriate
+   * to an EUI-48-based CSMA device.  This MAC address is encapsulated in an
+   *  abstract Address to avoid dependencies on the exact address format.
+   *
+   * A default imlementation of MakeMulticastAddress is provided, but this
+   * method simply NS_ASSERTS.  In the case of net devices that do not support
+   * multicast, clients are expected to test NetDevice::IsMulticast and avoid
+   * attempting to map multicast packets.  Subclasses of NetDevice that do
+   * support multicasting are expected to override this method and provide an
+   * implementation appropriate to the particular device.
+   *
+   * @param multicastGroup The IP address for the multicast group destination
+   * of the packet.
+   * @return The MAC multicast Address used to send packets to the provided
+   * multicast group.
+   *
+   * @see Ipv4Address
+   * @see Eui48Address
+   * @see Address
+   */
+  Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+
   bool IsSendEnabled (void);
   bool IsReceiveEnabled (void);
 

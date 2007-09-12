@@ -129,17 +129,24 @@ Ipv4L3Protocol::Ipv4L3Protocol(Ptr<Node> node)
     m_identification (0),
     m_node (node)
 {
+  NS_DEBUG("Ipv4L3Protocol::Ipv4L3Protocol ()");
+
   SetInterfaceId (Ipv4L3Protocol::iid);
   m_staticRouting = Create<Ipv4StaticRouting> ();
   AddRoutingProtocol (m_staticRouting, 0);
   SetupLoopback ();
 }
+
 Ipv4L3Protocol::~Ipv4L3Protocol ()
-{}
+{
+  NS_DEBUG("Ipv4L3Protocol::~Ipv4L3Protocol ()");
+}
 
 void 
 Ipv4L3Protocol::DoDispose (void)
 {
+  NS_DEBUG("Ipv4L3Protocol::DoDispose ()");
+
   m_interfaces.clear ();
   m_node = 0;
   m_staticRouting->Dispose ();
@@ -150,6 +157,8 @@ Ipv4L3Protocol::DoDispose (void)
 void
 Ipv4L3Protocol::SetupLoopback (void)
 {
+  NS_DEBUG("Ipv4L3Protocol::SetupLoopback ()");
+
   Ptr<Ipv4LoopbackInterface> interface = Create<Ipv4LoopbackInterface> (m_node);
   interface->SetAddress (Ipv4Address::GetLoopback ());
   interface->SetNetworkMask (Ipv4Mask::GetLoopback ());
@@ -161,6 +170,8 @@ Ipv4L3Protocol::SetupLoopback (void)
 Ptr<TraceResolver>
 Ipv4L3Protocol::GetTraceResolver (void) const
 {
+  NS_DEBUG("Ipv4L3Protocol::GetTraceResolver ()");
+
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddSource ("tx", 
                        TraceDoc ("send ipv4 packet to outgoing interface",
@@ -185,6 +196,7 @@ Ipv4L3Protocol::GetTraceResolver (void) const
 void 
 Ipv4L3Protocol::SetDefaultTtl (uint8_t ttl)
 {
+  NS_DEBUG("Ipv4L3Protocol::SetDefaultTtl ()");
   m_defaultTtl = ttl;
 }
     
@@ -194,20 +206,28 @@ Ipv4L3Protocol::AddHostRouteTo (Ipv4Address dest,
                       Ipv4Address nextHop, 
                       uint32_t interface)
 {
+  NS_DEBUG("Ipv4L3Protocol::AddHostRouteTo (" << dest << ", " << nextHop <<
+    ", " << interface << ")");
   m_staticRouting->AddHostRouteTo (dest, nextHop, interface);
 }
+
 void 
 Ipv4L3Protocol::AddHostRouteTo (Ipv4Address dest, 
 				uint32_t interface)
 {
+  NS_DEBUG("Ipv4L3Protocol::AddHostRouteTo (" << dest << ", " << 
+    interface << ")");
   m_staticRouting->AddHostRouteTo (dest, interface);
 }
+
 void 
 Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network, 
 				   Ipv4Mask networkMask, 
 				   Ipv4Address nextHop, 
 				   uint32_t interface)
 {
+  NS_DEBUG("Ipv4L3Protocol::AddNetworkRouteTo (" << network << ", " << 
+    networkMask << ", " << nextHop << ", " << interface << ")");
   m_staticRouting->AddNetworkRouteTo (network, networkMask, nextHop, interface);
 }
 void 
@@ -215,28 +235,81 @@ Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network,
 				   Ipv4Mask networkMask, 
 				   uint32_t interface)
 {
+  NS_DEBUG("Ipv4L3Protocol::AddNetworkRouteTo (" << network << ", " << 
+    networkMask << ", " << interface << ")");
   m_staticRouting->AddNetworkRouteTo (network, networkMask, interface);
 }
 void 
 Ipv4L3Protocol::SetDefaultRoute (Ipv4Address nextHop, 
 				 uint32_t interface)
 {
+  NS_DEBUG("Ipv4L3Protocol::SetDefaultRoute (" << nextHop << ", " << 
+    interface << ")");
   m_staticRouting->SetDefaultRoute (nextHop, interface);
 }
 
+void
+Ipv4L3Protocol::Lookup (
+  Ipv4Header const &ipHeader,
+  Packet packet,
+  Ipv4RoutingProtocol::RouteReplyCallback routeReply)
+{
+  NS_DEBUG("Ipv4L3Protocol::Lookup (" << &ipHeader << 
+    ", " << &packet << &routeReply << ")");
+
+  Lookup (Ipv4RoutingProtocol::IF_INDEX_ANY, ipHeader, packet, routeReply);
+}
 
 void
-Ipv4L3Protocol::Lookup (Ipv4Header const &ipHeader,
-                        Packet packet,
-                        Ipv4RoutingProtocol::RouteReplyCallback routeReply)
+Ipv4L3Protocol::Lookup (
+  uint32_t ifIndex,
+  Ipv4Header const &ipHeader,
+  Packet packet,
+  Ipv4RoutingProtocol::RouteReplyCallback routeReply)
 {
-  for (Ipv4RoutingProtocolList::const_iterator rprotoIter = m_routingProtocols.begin ();
-       rprotoIter != m_routingProtocols.end (); rprotoIter++)
+  NS_DEBUG("Ipv4L3Protocol::Lookup (" << ifIndex << ", " << &ipHeader << 
+    ", " << &packet << &routeReply << ")");
+
+  for (Ipv4RoutingProtocolList::const_iterator rprotoIter = 
+         m_routingProtocols.begin ();
+       rprotoIter != m_routingProtocols.end (); 
+       rprotoIter++)
     {
-      if ((*rprotoIter).second->RequestRoute (ipHeader, packet, routeReply))
+      NS_DEBUG("Ipv4L3Protocol::Lookup (): Requesting route");
+      if ((*rprotoIter).second->RequestRoute (ifIndex, ipHeader, packet, 
+                                              routeReply))
         return;
     }
-  // No route found
+
+  if (ipHeader.GetDestination ().IsMulticast () && 
+      ifIndex == Ipv4RoutingProtocol::IF_INDEX_ANY)
+    {
+      NS_DEBUG ("Ipv4L3Protocol::Lookup (): "
+        "Multicast destination with local source");
+//
+// We have a multicast packet originating from the current node and were not
+// able to send it using the usual RequestRoute process.  Since the usual
+// process includes trying to use a default multicast route, this means that
+// there was no specific route out of the node found, and there was no default
+// multicast route set.
+//
+// The fallback position is to look for a default unicast route and use that
+// to get the packet off the node if we have one.
+//
+      Ipv4Route *route = m_staticRouting->GetDefaultRoute ();
+
+      if (route)
+        {
+          NS_DEBUG ("Ipv4StaticRouting::Lookup (): "
+            "Local source. Using unicast default route for multicast packet");
+
+          routeReply (true, *route, packet, ipHeader);
+          return;
+        }
+    }
+//
+// No route found
+//
   routeReply (false, Ipv4Route (), packet, ipHeader);
 }
 
@@ -244,6 +317,8 @@ void
 Ipv4L3Protocol::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
                                     int priority)
 {
+  NS_DEBUG("Ipv4L3Protocol::AddRoutingProtocol (" << &routingProtocol << 
+    ", " << priority << ")");
   m_routingProtocols.push_back
     (std::pair<int, Ptr<Ipv4RoutingProtocol> > (-priority, routingProtocol));
   m_routingProtocols.sort ();
@@ -252,39 +327,99 @@ Ipv4L3Protocol::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
 uint32_t 
 Ipv4L3Protocol::GetNRoutes (void)
 {
+  NS_DEBUG("Ipv4L3Protocol::GetNRoutes ()");
   return m_staticRouting->GetNRoutes ();
 }
 
 Ipv4Route *
 Ipv4L3Protocol::GetRoute (uint32_t index)
 {
+  NS_DEBUG("Ipv4L3Protocol::GetRoute ()");
   return m_staticRouting->GetRoute (index);
 }
 
 void 
 Ipv4L3Protocol::RemoveRoute (uint32_t index)
 {
+  NS_DEBUG("Ipv4L3Protocol::RemoveRoute (" << index << ")");
   m_staticRouting->RemoveRoute (index);
 }
 
+void 
+Ipv4L3Protocol::AddMulticastRoute (Ipv4Address origin,
+                                   Ipv4Address group,
+                                   uint32_t inputInterface,
+                                   std::vector<uint32_t> outputInterfaces)
+{
+  NS_DEBUG("Ipv4L3Protocol::AddMulticastRoute (" << origin << ", " <<
+    group << ", " << inputInterface << ", " << &outputInterfaces << ")");
+
+  m_staticRouting->AddMulticastRoute (origin, group, inputInterface,
+    outputInterfaces);
+}
+
+void 
+Ipv4L3Protocol::SetDefaultMulticastRoute (uint32_t outputInterface)
+{
+  NS_DEBUG("Ipv4L3Protocol::SetDefaultMulticastRoute (" << outputInterface <<
+    ")");
+
+  m_staticRouting->SetDefaultMulticastRoute (outputInterface);
+}
+
+uint32_t 
+Ipv4L3Protocol::GetNMulticastRoutes (void) const
+{
+  NS_DEBUG("Ipv4L3Protocol::GetNMulticastRoutes ()");
+  return m_staticRouting->GetNMulticastRoutes ();
+}
+
+Ipv4MulticastRoute *
+Ipv4L3Protocol::GetMulticastRoute (uint32_t index) const
+{
+  NS_DEBUG("Ipv4L3Protocol::GetMulticastRoute (" << index << ")");
+  return m_staticRouting->GetMulticastRoute (index);
+}
+
+void 
+Ipv4L3Protocol::RemoveMulticastRoute (Ipv4Address origin,
+                                       Ipv4Address group,
+                                       uint32_t inputInterface)
+{
+  NS_DEBUG("Ipv4L3Protocol::RemoveMulticastRoute (" << origin << ", " <<
+    group << ", " << inputInterface << ")");
+  m_staticRouting->RemoveMulticastRoute (origin, group, inputInterface);
+}
+
+void 
+Ipv4L3Protocol::RemoveMulticastRoute (uint32_t index)
+{
+  NS_DEBUG("Ipv4L3Protocol::RemoveMulticastRoute (" << index << ")");
+  m_staticRouting->RemoveMulticastRoute (index);
+}
 
 uint32_t 
 Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
+  NS_DEBUG("Ipv4L3Protocol::AddInterface (" << &device << ")");
   Ptr<Ipv4Interface> interface = Create<ArpIpv4Interface> (m_node, device);
   return AddIpv4Interface (interface);
 }
+
 uint32_t 
 Ipv4L3Protocol::AddIpv4Interface (Ptr<Ipv4Interface>interface)
 {
+  NS_DEBUG("Ipv4L3Protocol::AddIpv4Interface (" << interface << ")");
   uint32_t index = m_nInterfaces;
   m_interfaces.push_back (interface);
   m_nInterfaces++;
   return index;
 }
+
 Ptr<Ipv4Interface>
 Ipv4L3Protocol::GetInterface (uint32_t index) const
 {
+  NS_DEBUG("Ipv4L3Protocol::GetInterface (" << index << ")");
   uint32_t tmp = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
@@ -296,15 +431,61 @@ Ipv4L3Protocol::GetInterface (uint32_t index) const
     }
   return 0;
 }
+
 uint32_t 
 Ipv4L3Protocol::GetNInterfaces (void) const
 {
+  NS_DEBUG("Ipv4L3Protocol::GetNInterface ()");
   return m_nInterfaces;
+}
+
+uint32_t 
+Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr) const
+{
+  NS_DEBUG("Ipv4L3Protocol::FindInterfaceForAddr (" << addr << ")");
+
+  uint32_t ifIndex = 0;
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
+       i != m_interfaces.end (); 
+       i++, ifIndex++)
+    {
+      if ((*i)->GetAddress () == addr)
+        {
+          return ifIndex;
+        }
+    }
+
+  NS_ASSERT_MSG(false, "Ipv4L3Protocol::FindInterfaceForAddr (): "
+    "Interface not found for IP address");
+  return 0;
+}
+
+uint32_t 
+Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const
+{
+  NS_DEBUG("Ipv4L3Protocol::FindInterfaceForAddr (" << addr << ", " << 
+    mask << ")");
+
+  uint32_t ifIndex = 0;
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
+       i != m_interfaces.end (); 
+       i++, ifIndex++)
+    {
+      if ((*i)->GetAddress ().CombineMask (mask) == addr.CombineMask (mask))
+        {
+          return ifIndex;
+        }
+    }
+
+  NS_ASSERT_MSG(false, "Ipv4L3Protocol::FindInterfaceForAddr (): "
+    "Interface not found for masked IP address");
+  return 0;
 }
 
 Ptr<Ipv4Interface>
 Ipv4L3Protocol::FindInterfaceForDevice (Ptr<const NetDevice> device)
 {
+  NS_DEBUG("Ipv4L3Protocol::FindInterfaceForDevice (" << &device << ")");
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
       if ((*i)->GetDevice () == device)
@@ -318,8 +499,15 @@ Ipv4L3Protocol::FindInterfaceForDevice (Ptr<const NetDevice> device)
 void 
 Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from)
 {
+  NS_DEBUG("Ipv4L3Protocol::Receive (" << &device << ", " << &p << ", " <<
+    protocol << ", " << from << ")");
+
+  NS_DEBUG("Ipv4L3Protocol::Receive (): Packet from " << from);
+
   uint32_t index = 0;
-  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
+  for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
+       i != m_interfaces.end (); 
+       i++)
     {
       if ((*i)->GetDevice () == device)
         {
@@ -337,7 +525,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protoc
       return;
     }
 
-  if (Forwarding (packet, ipHeader, device)) 
+  if (Forwarding (index, packet, ipHeader, device)) 
     {
       return;
     }
@@ -352,6 +540,9 @@ Ipv4L3Protocol::Send (Packet const &packet,
             Ipv4Address destination,
             uint8_t protocol)
 {
+  NS_DEBUG("Ipv4L3Protocol::Send (" << &packet << ", " << source << ", " <<
+    ", " << destination << ", " << protocol << ")");
+
   Ipv4Header ipHeader;
 
   ipHeader.SetSource (source);
@@ -400,36 +591,54 @@ Ipv4L3Protocol::SendRealOut (bool found,
                              Packet packet,
                              Ipv4Header const &ipHeader)
 {
+  NS_DEBUG("Ipv4L3Protocol::SendRealOut (" << found << ", " << &route << 
+    ", " << &packet << &ipHeader << ")");
+
   if (!found)
     {
-      NS_DEBUG ("no route to host. drop.");
+      NS_DEBUG ("Ipv4L3Protocol::SendRealOut (): No route to host.  Drop.");
       m_dropTrace (packet);
       return;
     }
+
+  NS_DEBUG ("Ipv4L3Protocol::SendRealOut (): Send via interface " <<
+        route.GetInterface ());
+
   packet.AddHeader (ipHeader);
   Ptr<Ipv4Interface> outInterface = GetInterface (route.GetInterface ());
   NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
   m_txTrace (packet, route.GetInterface ());
   if (route.IsGateway ()) 
     {
+      NS_DEBUG ("Ipv4L3Protocol::SendRealOut (): Send to gateway " <<
+        route.GetGateway ());
       outInterface->Send (packet, route.GetGateway ());
     } 
   else 
     {
+      NS_DEBUG ("Ipv4L3Protocol::SendRealOut (): Send to destination " <<
+        ipHeader.GetDestination ());
       outInterface->Send (packet, ipHeader.GetDestination ());
     }
 }
 
-
 bool
-Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device)
+Ipv4L3Protocol::Forwarding (
+  uint32_t ifIndex, 
+  Packet const &packet, 
+  Ipv4Header &ipHeader, 
+  Ptr<NetDevice> device)
 {
+  NS_DEBUG("Ipv4L3Protocol::Forwarding (" << ifIndex << ", " << &packet << 
+    ", " << &ipHeader << ", " << device << ")");
+
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
     {
       if ((*i)->GetAddress ().IsEqual (ipHeader.GetDestination ())) 
         {
-          NS_DEBUG ("for me 1");
+          NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+            "For me (destination match)");
           return false;
         }
     }
@@ -442,7 +651,8 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
 	{
 	  if (ipHeader.GetDestination ().IsEqual (interface->GetBroadcast ())) 
 	    {
-	      NS_DEBUG ("for me 2");
+              NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+                "For me (interface broadcast address)");
 	      return false;
 	    }
 	  break;
@@ -451,78 +661,213 @@ Ipv4L3Protocol::Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetD
       
   if (ipHeader.GetDestination ().IsBroadcast ()) 
     {
-      NS_DEBUG ("for me 3");
+      NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+        "For me (Ipv4Addr broadcast address)");
       return false;
     }
+
   if (ipHeader.GetDestination ().IsEqual (Ipv4Address::GetAny ())) 
     {
-      NS_DEBUG ("for me 4");
+      NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+        "For me (Ipv4Addr any address)");
       return false;
     }
+
   if (ipHeader.GetTtl () == 1) 
     {
       // Should send ttl expired here
       // XXX
-      NS_DEBUG ("not for me -- ttl expired. drop.");
+      NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+        "Not for me (TTL expired).  Drop");
       m_dropTrace (packet);
       return true;
     }
   ipHeader.SetTtl (ipHeader.GetTtl () - 1);
 
-  NS_DEBUG ("not for me -- forwarding.");
-  Lookup (ipHeader, packet,
+  NS_DEBUG("Ipv4L3Protocol::Forwarding (): Forwarding packet.");
+  Lookup (ifIndex, ipHeader, packet,
           MakeCallback (&Ipv4L3Protocol::SendRealOut, this));
+//
+// If this is a to a multicast address and this node is a member of the 
+// indicated group we need to return false so the multicast is forwarded up.
+// Note that we may have just forwarded this packet too.
+//
+  for (Ipv4MulticastGroupList::const_iterator i = m_multicastGroups.begin ();
+       i != m_multicastGroups.end (); i++) 
+    {
+      if ((*i).first.IsEqual (ipHeader.GetSource ()) &&
+          (*i).second.IsEqual (ipHeader.GetDestination ()))
+        {
+          NS_DEBUG("Ipv4L3Protocol::Forwarding (): "
+            "For me (Joined multicast group)");
+          return false;
+        }
+    }
+  
+  NS_DEBUG("Ipv4L3Protocol::Forwarding (): Not for me.");
   return true;
 }
-
 
 void
 Ipv4L3Protocol::ForwardUp (Packet p, Ipv4Header const&ip)
 {
+  NS_DEBUG("Ipv4L3Protocol::ForwardUp (" << &p << ", " << &ip << ")");
   Ptr<Ipv4L4Demux> demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
   Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());
   protocol->Receive (p, ip.GetSource (), ip.GetDestination ());
 }
 
 void 
+Ipv4L3Protocol::JoinMulticastGroup (Ipv4Address origin, Ipv4Address group)
+{
+  NS_DEBUG("Ipv4L3Protocol::JoinMulticastGroup (" << origin << ", " << 
+    group << ")");
+  m_multicastGroups.push_back(
+    std::pair<Ipv4Address, Ipv4Address> (origin, group));
+}
+
+void
+Ipv4L3Protocol::LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group)
+{
+  NS_DEBUG("Ipv4L3Protocol::LeaveMulticastGroup (" << origin << ", " << 
+    group << ")");
+
+  for (Ipv4MulticastGroupList::iterator i = m_multicastGroups.begin ();
+       i != m_multicastGroups.end (); 
+       i++)
+    {
+      if ((*i).first.IsEqual(origin) && (*i).second.IsEqual(group))
+        {
+          m_multicastGroups.erase (i);
+          return;
+        }
+    }
+}
+
+void 
 Ipv4L3Protocol::SetAddress (uint32_t i, Ipv4Address address)
 {
+  NS_DEBUG("Ipv4L3Protocol::SetAddress (" << i << ", " << address << ")");
   Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetAddress (address);
 }
+
 void 
 Ipv4L3Protocol::SetNetworkMask (uint32_t i, Ipv4Mask mask)
 {
+  NS_DEBUG("Ipv4L3Protocol::SetNetworkMask (" << i << ", " << mask << ")");
   Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetNetworkMask (mask);
 }
+
 Ipv4Mask 
 Ipv4L3Protocol::GetNetworkMask (uint32_t i) const
 {
+  NS_DEBUG("Ipv4L3Protocol::GetNetworkMask (" << i << ")");
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetNetworkMask ();
 }
+
 Ipv4Address 
 Ipv4L3Protocol::GetAddress (uint32_t i) const
 {
+  NS_DEBUG("Ipv4L3Protocol::GetAddress (" << i << ")");
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetAddress ();
 }
+
+bool
+Ipv4L3Protocol::GetIfIndexForDestination (
+  Ipv4Address destination, uint32_t& ifIndex) const
+{
+  NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (" << destination << 
+    ", " << &ifIndex << ")");
+//
+// The first thing we do in trying to determine a source address is to 
+// consult the routing protocols.  These will also check for a default route
+// if one has been set.
+//
+  for (Ipv4RoutingProtocolList::const_iterator i = m_routingProtocols.begin ();
+       i != m_routingProtocols.end (); 
+       i++)
+    {
+      NS_DEBUG("Ipv4L3Protocol::Lookup (): Requesting Source Address");
+      uint32_t ifIndexTmp;
+
+      if ((*i).second->RequestIfIndex (destination, ifIndexTmp))
+        {
+          NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (): "
+            "Found ifIndex " << ifIndexTmp);
+          ifIndex = ifIndexTmp;
+          return true;
+        }
+    }
+//
+// If there's no routing table entry telling us what *single* interface will 
+// be used to send a packet to this destination, we'll have to just pick one.  
+// If there's only one interface on this node, a good answer isn't very hard
+// to come up with.  Before jumping to any conclusions, remember that the 
+// zeroth interface is the loopback interface, so what we actually want is
+// a situation where there are exactly two interfaces on the node, in which
+// case interface one is the "single" interface connected to the outside world.
+//
+  if (GetNInterfaces () == 2)
+    {
+      NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (): "
+        "One Interface.  Using interface 1.");
+      ifIndex = 1;
+      return true;
+    }
+//
+// If we fall through to here, we have a node with multiple interfaces and
+// no routes to guide us in determining what interface to choose.  Either
+// no default route was found (for unicast or multicast), or in the case of a
+// multicast, the default route contained multiple outbound interfaces.
+//
+// The fallback position is to just get the unicast default route and use 
+// the outgoing interface specified there.  We don't want to leave the source
+// address unset, so we just assert here.
+//
+// N.B. that in the case of a multicast with a route containing multiple
+// outgoing interfaces, the source address of packets from that node will be
+// set to the IP address of the interface set in the default unicast route.
+// Also, in the case of a broadcast, the same will be true.
+//
+  NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (): "
+    "Using default unicast route");
+  Ipv4Route *route = m_staticRouting->GetDefaultRoute ();
+
+  NS_ASSERT_MSG(route, 
+    "Ipv4L3Protocol::GetIfIndexForDestination (): "
+    "Unable to determine outbound interface.  No default route set");
+
+  ifIndex = route->GetInterface ();
+
+  NS_DEBUG("Ipv4L3Protocol::GetIfIndexForDestination (): "
+    "Default route specifies interface " << ifIndex);
+  return true;
+}
+
 uint16_t 
 Ipv4L3Protocol::GetMtu (uint32_t i) const
 {
+  NS_DEBUG("Ipv4L3Protocol::GetMtu (" << i << ")");
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetMtu ();
 }
+
 bool 
 Ipv4L3Protocol::IsUp (uint32_t i) const
 {
+  NS_DEBUG("Ipv4L3Protocol::IsUp (" << i << ")");
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->IsUp ();
 }
+
 void 
 Ipv4L3Protocol::SetUp (uint32_t i)
 {
+  NS_DEBUG("Ipv4L3Protocol::SetUp (" << i << ")");
   Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetUp ();
 
@@ -536,9 +881,11 @@ Ipv4L3Protocol::SetUp (uint32_t i)
                          interface->GetNetworkMask (), i);
     }
 }
+
 void 
 Ipv4L3Protocol::SetDown (uint32_t ifaceIndex)
 {
+  NS_DEBUG("Ipv4L3Protocol::SetDown (" << ifaceIndex << ")");
   Ptr<Ipv4Interface> interface = GetInterface (ifaceIndex);
   interface->SetDown ();
 

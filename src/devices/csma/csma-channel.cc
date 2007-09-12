@@ -250,7 +250,7 @@ CsmaChannel::TransmitEnd()
   }
 
   NS_DEBUG ("CsmaChannel::TransmitEnd (): Schedule event in " << 
-            m_delay.GetSeconds () << "sec");
+            m_delay.GetSeconds () << " sec");
 
   Simulator::Schedule (m_delay,
                        &CsmaChannel::PropagationCompleteEvent,

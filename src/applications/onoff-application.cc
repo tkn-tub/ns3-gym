@@ -22,6 +22,7 @@
 // George F. Riley, Georgia Tech, Spring 2007
 // Adapted from ApplicationOnOff in GTNetS.
 
+#include "ns3/debug.h"
 #include "ns3/address.h"
 #include "ns3/node.h"
 #include "ns3/nstime.h"
@@ -33,6 +34,8 @@
 #include "ns3/default-value.h"
 #include "ns3/packet.h"
 #include "onoff-application.h"
+
+NS_DEBUG_COMPONENT_DEFINE ("OnOffApplication");
 
 using namespace std;
 
@@ -95,30 +98,37 @@ OnOffApplication::Construct (Ptr<Node> n,
   m_iid = iid;
 }
 
-
 OnOffApplication::~OnOffApplication()
-{}
+{
+  NS_DEBUG("OnOffApplication::~OnOffApplication()");
+}
 
 void 
 OnOffApplication::SetMaxBytes(uint32_t maxBytes)
 {
+  NS_DEBUG("OnOffApplication::SetMaxBytes(" << maxBytes << ")");
   m_maxBytes = maxBytes;
 }
 
 void
 OnOffApplication::SetDefaultRate (const DataRate &rate)
 {
+  NS_DEBUG("OnOffApplication::SetDefaultRate(" << &rate << ")");
   g_defaultRate.SetValue (rate);
 }
+
 void 
 OnOffApplication::SetDefaultSize (uint32_t size)
 {
+  NS_DEBUG("OnOffApplication::SetDefaultSize(" << size << ")");
   g_defaultSize.SetValue (size);
 }
 
 void
 OnOffApplication::DoDispose (void)
 {
+  NS_DEBUG("OnOffApplication::DoDispose()");
+
   m_socket = 0;
   delete m_onTime;
   delete m_offTime;
@@ -130,10 +140,11 @@ OnOffApplication::DoDispose (void)
   Application::DoDispose ();
 }
 
-
 // Application Methods
-void OnOffApplication::StartApplication()    // Called at time specified by Start
+void OnOffApplication::StartApplication() // Called at time specified by Start
 {
+  NS_DEBUG("OnOffApplication::StartApplication()");
+
   // Create the socket if not already
   if (!m_socket)
     {
@@ -151,8 +162,10 @@ void OnOffApplication::StartApplication()    // Called at time specified by Star
   ScheduleStartEvent();
 }
 
-void OnOffApplication::StopApplication()     // Called at time specified by Stop
+void OnOffApplication::StopApplication() // Called at time specified by Stop
 {
+  NS_DEBUG("OnOffApplication::StopApplication()");
+
   if (m_sendEvent.IsRunning ())
     { // Cancel the pending send packet event
       // Calculate residual bits since last packet sent
@@ -166,23 +179,32 @@ void OnOffApplication::StopApplication()     // Called at time specified by Stop
 // Event handlers
 void OnOffApplication::StartSending()
 {
+  NS_DEBUG("OnOffApplication::StartSending ()");
+
   ScheduleNextTx();  // Schedule the send packet event
 }
 
 void OnOffApplication::StopSending()
 {
+  NS_DEBUG("OnOffApplication::StopSending ()");
+
   Simulator::Cancel(m_sendEvent);
 }
 
 // Private helpers
 void OnOffApplication::ScheduleNextTx()
 {
+  NS_DEBUG("OnOffApplication::ScheduleNextTx ()");
+
   if (m_totBytes < m_maxBytes)
     {
       uint32_t bits = m_pktSize * 8 - m_residualBits;
+      NS_DEBUG("OnOffApplication::ScheduleNextTx (): bits = " << bits);
       Time nextTime(Seconds (bits / 
         static_cast<double>(m_cbrRate.GetBitRate()))); // Time till next packet
-      m_sendEvent = Simulator::Schedule(nextTime, &OnOffApplication::SendPacket, this);
+      NS_DEBUG("OnOffApplication::ScheduleNextTx (): nextTime = " << nextTime);
+      m_sendEvent = Simulator::Schedule(nextTime, 
+                                        &OnOffApplication::SendPacket, this);
     }
   else
     { // All done, cancel any pending events
@@ -192,12 +214,18 @@ void OnOffApplication::ScheduleNextTx()
 
 void OnOffApplication::ScheduleStartEvent()
 {  // Schedules the event to start sending data (switch to the "On" state)
+  NS_DEBUG("OnOffApplication::ScheduleStartEvent ()");
+
   Time offInterval = Seconds(m_offTime->GetValue());
+  NS_DEBUG("OnOffApplication::ScheduleStartEvent (): "
+    "start at " << offInterval);
   m_startStopEvent = Simulator::Schedule(offInterval, &OnOffApplication::StartSending, this);
 }
 
 void OnOffApplication::ScheduleStopEvent()
 {  // Schedules the event to stop sending data (switch to "Off" state)
+  NS_DEBUG("OnOffApplication::ScheduleStopEvent ()");
+
   Time onInterval = Seconds(m_onTime->GetValue());
   Simulator::Schedule(onInterval, &OnOffApplication::StopSending, this);
 }
@@ -205,6 +233,8 @@ void OnOffApplication::ScheduleStopEvent()
   
 void OnOffApplication::SendPacket()
 {
+  NS_DEBUG("OnOffApplication::SendPacket ()");
+
   NS_ASSERT (m_sendEvent.IsExpired ());
   m_socket->Send(Packet (m_pktSize));
   m_totBytes += m_pktSize;
@@ -215,6 +245,8 @@ void OnOffApplication::SendPacket()
 
 void OnOffApplication::ConnectionSucceeded(Ptr<Socket>)
 {
+  NS_DEBUG("OnOffApplication::ConnectionSucceeded ()");
+
   m_connected = true;
   ScheduleStartEvent();
 }

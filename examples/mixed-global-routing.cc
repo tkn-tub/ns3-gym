@@ -128,13 +128,13 @@ int main (int argc, char *argv[])
     CsmaTopology::CreateCsmaChannel(
       DataRate(5000000), MilliSeconds(2));
 
-  uint32_t n2ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n2, channelc0,
+  uint32_t n2ifIndex = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, channelc0,
                                          Eui48Address("10:54:23:54:23:50"));
-  uint32_t n3ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n3, channelc0,
+  uint32_t n3ifIndex = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, channelc0,
                                          Eui48Address("10:54:23:54:23:51"));
-  uint32_t n4ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n4, channelc0,
+  uint32_t n4ifIndex = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n4, channelc0,
                                          Eui48Address("10:54:23:54:23:52"));
-  uint32_t n5ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n5, channelc0,
+  uint32_t n5ifIndex = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n5, channelc0,
                                          Eui48Address("10:54:23:54:23:53"));
 
   // Later, we add IP addresses.  

@@ -673,6 +673,13 @@ PacketMetadataTest::RunTests (void)
   p = DoAddHeader (p);
   CHECK_HISTORY (p, 2, 10, 10);
 
+  p = Packet (10);
+  ADD_HEADER (p, 8);
+  ADD_TRAILER (p, 8);
+  ADD_TRAILER (p, 8);
+  p.RemoveAtStart (8+10+8);
+  CHECK_HISTORY (p, 1, 8);
+
   return ok;
 }
 
