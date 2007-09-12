@@ -137,7 +137,8 @@ main (int argc, char *argv[])
 
   uint32_t nd2Lan1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan1, 
     Eui48Address("08:00:2e:00:00:03"));
-  uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan1, 
+  uint32_t nd3 __attribute__ ((unused)) = 
+    CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan1, 
     Eui48Address("08:00:2e:00:00:04"));
   uint32_t nd4 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n4, lan1, 
     Eui48Address("08:00:2e:00:00:05"));
