@@ -66,13 +66,24 @@ int main (int argc, char *argv[])
 
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
-#if 0 
-  DebugComponentEnable("CsmaNetDevice");
-  DebugComponentEnable("Ipv4L3Protocol");
-  DebugComponentEnable("NetDevice");
+#if 1
+  DebugComponentEnable("Object");
+  DebugComponentEnable("Queue");
+  DebugComponentEnable("DropTailQueue");
   DebugComponentEnable("Channel");
   DebugComponentEnable("CsmaChannel");
+  DebugComponentEnable("NetDevice");
+  DebugComponentEnable("CsmaNetDevice");
+  DebugComponentEnable("Ipv4L3Protocol");
+  DebugComponentEnable("OnOffApplication");
   DebugComponentEnable("PacketSocket");
+  DebugComponentEnable("UdpSocket");
+  DebugComponentEnable("UdpL4Protocol");
+  DebugComponentEnable("Ipv4L3Protocol");
+  DebugComponentEnable("Ipv4StaticRouting");
+  DebugComponentEnable("Ipv4Interface");
+  DebugComponentEnable("ArpIpv4Interface");
+  DebugComponentEnable("Ipv4LoopbackInterface");
 #endif
 
   // Set up some default values for the simulation.  Use the Bind()
@@ -124,6 +135,18 @@ int main (int argc, char *argv[])
   
   CsmaIpv4Topology::AddIpv4Address (
       n2, n2ifIndex, Ipv4Address("192.168.1.2"), Ipv4Mask("255.255.255.0"));
+
+  // XXX Is this the right thing to do?
+  //
+  // The OnOff application uses a connected socket.  This socket needs to be
+  // able to figure out which interface to use as the source address for
+  // packets.  When there's one interface, this isn't too hard, but node zero
+  // has two interfaces, and limited broadcasts will be sent out both of those
+  // interfaces.  We need to provide some way to disambiguate the choice.
+  // If we supply a default route, the specified interface will be chosen.
+
+  Ptr<Ipv4> ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4->SetDefaultRoute ("192.168.1.3", n0ifIndex0);
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
