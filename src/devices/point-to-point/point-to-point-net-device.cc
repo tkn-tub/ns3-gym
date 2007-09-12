@@ -20,8 +20,6 @@
  * Revised: George Riley <riley@ece.gatech.edu>
  */
 
-#include <iostream>
-#include <cassert>
 #include "ns3/debug.h"
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
@@ -73,11 +71,14 @@ PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
 {
   NS_DEBUG ("PointToPointNetDevice::PointToPointNetDevice (" << node << ")");
 
-  // BUGBUG FIXME
-  //
-  // You _must_ support broadcast to get any sort of packet from the ARP layer.
+// BUGBUG FIXME
+//
+// You _must_ support broadcast to get any sort of packet from the ARP layer.
   EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
-  EnableMulticast();
+//
+// We want to allow multicast packets to flow across this link
+//
+  EnableMulticast (Eui48Address ("01:00:5e:00:00:00"));
   EnablePointToPoint();
 }
 
@@ -218,6 +219,8 @@ bool PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
   m_bps = m_channel->GetDataRate ();
   // GFR Comment.  Below is definitely wrong.  Interframe gap
   // is unrelated to channel delay.
+  // -- unlesss you want to introduce a default gap which is there to avoid
+  // parts of multiple packets flowing on the "wire" at the same time.
   //m_tInterframeGap = m_channel->GetDelay ();
 
   /* 

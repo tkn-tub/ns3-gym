@@ -114,6 +114,7 @@ NetDevice::IsBroadcast (void) const
 {
   return m_isBroadcast;
 }
+
 Address const &
 NetDevice::GetBroadcast (void) const
 {
@@ -140,10 +141,27 @@ NetDevice::IsMulticast (void) const
   return m_isMulticast;
 }
 
+Address 
+NetDevice::GetMulticast (void) const
+{
+  NS_ASSERT_MSG (m_isMulticast, "NetDevice::GetMulticast (): "
+    "Invalid operation when not IsMulticast ()");
+  return m_multicast;
+}
+
+Address
+NetDevice::MakeMulticastAddress(Ipv4Address multicastGroup) const
+{
+  NS_ASSERT_MSG (m_isMulticast, "NetDevice::GetMulticast (): "
+    "Invalid operation when not IsMulticast ()");
+  return m_multicast;
+}
+
 void
-NetDevice::EnableMulticast (void)
+NetDevice::EnableMulticast (Address multicast)
 {
   m_isMulticast = true;
+  m_multicast = multicast;
 }
 
 void

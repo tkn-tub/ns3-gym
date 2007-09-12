@@ -30,11 +30,19 @@ namespace ns3 {
 
 Ipv4Route::Ipv4Route ()
 {}
+
 Ipv4Route::Ipv4Route (Ipv4Route const &route)
   : m_dest (route.m_dest),
     m_destNetworkMask (route.m_destNetworkMask),
     m_gateway (route.m_gateway),
     m_interface (route.m_interface)
+{}
+
+Ipv4Route::Ipv4Route (Ipv4Route const *route)
+  : m_dest (route->m_dest),
+    m_destNetworkMask (route->m_destNetworkMask),
+    m_gateway (route->m_gateway),
+    m_interface (route->m_interface)
 {}
 
 Ipv4Route::Ipv4Route (Ipv4Address dest,
@@ -137,7 +145,6 @@ Ipv4Route::GetInterface (void) const
   return m_interface;
 }
 
-
 Ipv4Route 
 Ipv4Route::CreateHostRouteTo (Ipv4Address dest, 
 			      Ipv4Address nextHop, 
@@ -217,6 +224,110 @@ std::ostream& operator<< (std::ostream& os, Ipv4Route const& route)
     {
       NS_ASSERT (false);
     }
+  return os;
+}
+
+/*****************************************************
+ *     Ipv4MulticastRoute
+ *****************************************************/
+
+Ipv4MulticastRoute::Ipv4MulticastRoute ()
+{
+}
+
+Ipv4MulticastRoute::Ipv4MulticastRoute (Ipv4MulticastRoute const &route)
+: 
+  m_origin (route.m_origin),
+  m_group (route.m_group),
+  m_inputInterface (route.m_inputInterface),
+  m_outputInterfaces (route.m_outputInterfaces)
+{
+}
+
+Ipv4MulticastRoute::Ipv4MulticastRoute (Ipv4MulticastRoute const *route)
+: 
+  m_origin (route->m_origin),
+  m_group (route->m_group),
+  m_inputInterface (route->m_inputInterface),
+  m_outputInterfaces (route->m_outputInterfaces)
+{
+}
+
+Ipv4MulticastRoute::Ipv4MulticastRoute (
+  Ipv4Address origin, 
+  Ipv4Address group, 
+  uint32_t inputInterface, 
+  std::vector<uint32_t> outputInterfaces)
+{
+  m_origin = origin;
+  m_group = group;
+  m_inputInterface = inputInterface;
+  m_outputInterfaces = outputInterfaces;
+}
+
+Ipv4Address 
+Ipv4MulticastRoute::GetOrigin (void) const
+{
+  return m_origin;
+}
+
+Ipv4Address 
+Ipv4MulticastRoute::GetGroup (void) const
+{
+  return m_group;
+}
+
+uint32_t 
+Ipv4MulticastRoute::GetInputInterface (void) const
+{
+  return m_inputInterface;
+}
+
+uint32_t
+Ipv4MulticastRoute::GetNOutputInterfaces (void) const
+{
+  return m_outputInterfaces.size ();
+}
+
+uint32_t
+Ipv4MulticastRoute::GetOutputInterface (uint32_t n) const
+{
+  NS_ASSERT_MSG(n < m_outputInterfaces.size (), 
+    "Ipv4MulticastRoute::GetOutputInterface (): index out of bounds");
+
+  return m_outputInterfaces[n];
+}
+
+std::vector<uint32_t>
+Ipv4MulticastRoute::GetOutputInterfaces (void) const
+{
+  return m_outputInterfaces;
+}
+
+Ipv4MulticastRoute 
+Ipv4MulticastRoute::CreateMulticastRoute (
+  Ipv4Address origin, 
+  Ipv4Address group, 
+  uint32_t inputInterface,
+  std::vector<uint32_t> outputInterfaces)
+{
+  return Ipv4MulticastRoute (origin, group, inputInterface, outputInterfaces);
+}
+
+std::ostream& 
+operator<< (std::ostream& os, Ipv4MulticastRoute const& route)
+{
+  os << "origin=" << route.GetOrigin () << 
+    ", group=" << route.GetGroup () <<
+    ", input interface=" << route.GetInputInterface () <<
+    ", output interfaces=";
+
+  for (uint32_t i = 0; i < route.GetNOutputInterfaces (); ++i)
+    {
+      os << route.GetOutputInterface (i) << " ";
+
+    }
+
   return os;
 }
 
