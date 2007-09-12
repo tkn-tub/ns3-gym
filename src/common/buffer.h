@@ -384,7 +384,7 @@ Buffer::Iterator::WriteU8 (uint8_t data)
 void 
 Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
 {
-  NS_ASSERT (CheckNotZero (m_current, m_current + len));
+  NS_ASSERT (CheckNoZero (m_current, m_current + len));
   if (m_current <= m_zeroStart)
     {
       memset (&(m_data[m_current]), data, len);
