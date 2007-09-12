@@ -157,8 +157,7 @@ int main (int argc, char *argv[])
   Ptr<PacketSink> sink = Create<PacketSink> (
     n3, 
     InetSocketAddress (Ipv4Address::GetAny (), 80), 
-    "Udp",
-     true);
+    "Udp");
   // Start the sink
   sink->Start (Seconds (1.0));
   sink->Stop (Seconds (10.0));
@@ -178,8 +177,7 @@ int main (int argc, char *argv[])
   sink = Create<PacketSink> (
     n1, 
     InetSocketAddress (Ipv4Address::GetAny (), 80), 
-    "Udp",
-    true);
+    "Udp");
   // Start the sink
   sink->Start (Seconds (1.1));
   sink->Stop (Seconds (10.0));

@@ -71,6 +71,7 @@ public:
   /**
    * \brief Asynchronously requests a route for a given packet and IP header
    *
+   * \param ifIndex The interface index on which the packet was received.
    * \param ipHeader IP header of the packet
    * \param packet packet that is being sent or forwarded
    * \param routeReply callback that will receive the route reply
@@ -100,9 +101,47 @@ public:
    * immediately after the IP header, although most routing do not
    * insert any extra header.
    */
-  virtual bool RequestRoute (const Ipv4Header &ipHeader,
+  virtual bool RequestRoute (uint32_t ifIndex,
+                             const Ipv4Header &ipHeader,
                              Packet packet,
                              RouteReplyCallback routeReply) = 0;
+
+/**
+ * \brief Synchronously check to see if we can determine the interface index 
+ * that will be used if a packet is sent to this destination.
+ *
+ * This method addresses a problem in the IP stack where a destination address
+ * must be present and checksummed into the IP header before the actual 
+ * interface over which the packet is sent can be determined.  The answer is
+ * to implement a known and intentional cross-layer violation.  This is the
+ * endpoint of a call chain that started up quite high in the stack (sockets)
+ * and has found its way down to the Ipv4L3Protocol which is consulting the
+ * routing protocols for what they would do if presented with a packet of the
+ * given destination.
+ *
+ * Note that the a single interface index is returned.  This means that if
+ * the destination address is a multicast, and an explicit route is present
+ * that includeds multiple output interfaces, that route cannot be used.
+ * 
+ * If there are multiple paths out of the node, the resolution is performed
+ * by Ipv4L3Protocol::GetIfIndexforDestination which has access to more 
+ * contextual information that is useful for making a determination.
+ *
+ * \param destination The Ipv4Address if the destination of a hypothetical 
+ * packet.  This may be a multicast group address.
+ * \param ifIndex A reference to the interface index over which a packet
+ * sent to this destination would be sent.
+ * \return Returns true if a route is found to the destination that involves
+ * a single output interface index, otherwise false.
+ *
+ * \see Ipv4StaticRouting
+ * \see Ipv4RoutingProtocol
+ * \see Ipv4L3Protocol
+ */
+  virtual bool RequestIfIndex (Ipv4Address destination, 
+                              uint32_t& ifIndex) = 0;
+
+  static const uint32_t IF_INDEX_ANY = 0xffffffff;
 };
 
 /**
@@ -194,16 +233,68 @@ public:
    * \returns the number of entries in the routing table.
    */
   virtual uint32_t GetNRoutes (void) = 0;
+
   /**
    * \param i index of route to return
    * \returns the route whose index is i
    */
   virtual Ipv4Route GetRoute (uint32_t i) = 0;
+
   /**
    * \param i index of route to remove from routing table.
    */
   virtual void RemoveRoute (uint32_t i) = 0;
+
+  /**
+   * \brief Add a static multicast route for a given multicast source and 
+   *        group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   * \param inputInterface The interface index over which the packet arrived.
+   * \param outputInterfaces The list of output interface indices over which 
+   *        the packet should be sent (excluding the inputInterface).
+   */
+  virtual void AddMulticastRoute (Ipv4Address origin,
+                                  Ipv4Address group,
+                                  uint32_t inputInterface,
+                                  std::vector<uint32_t> outputInterfaces) = 0;
+  /**
+   * \brief Remove a static multicast route for a given multicast source and
+   *        group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   * \param inputInterface The interface index over which the packet arrived.
+   */
+  virtual void RemoveMulticastRoute (Ipv4Address origin,
+                                     Ipv4Address group,
+                                     uint32_t inputInterface) = 0;
   
+  /**
+   * \brief Set the default static multicast route.
+   *
+   * \param outputInterface The network output interface index over which 
+   *        packets without specific routes should be sent.
+   */
+  virtual void SetDefaultMulticastRoute (uint32_t outputInterface) = 0;
+
+  /**
+   * \returns the number of entries in the multicast routing table.
+   */
+  virtual uint32_t GetNMulticastRoutes (void) const = 0;
+
+  /**
+   * \param i index of route to return
+   * \returns the route whose index is i
+   */
+  virtual Ipv4MulticastRoute GetMulticastRoute (uint32_t i) const = 0;
+
+  /**
+   * \param i index of route to remove from routing table.
+   */
+  virtual void RemoveMulticastRoute (uint32_t i) = 0;
+
   /**
    * \param device device to add to the list of ipv4 interfaces
    *        which can be used as output interfaces during packet forwarding.
@@ -214,10 +305,41 @@ public:
    * make sure that it is never used during packet forwarding.
    */
   virtual uint32_t AddInterface (Ptr<NetDevice> device) = 0;
+
   /**
    * \returns the number of interfaces added by the user.
    */
   virtual uint32_t GetNInterfaces (void) = 0;  
+
+  /**
+   * \brief Find and return the interface ID of the interface that has been
+   *        assigned the specified IP address.
+   * \param addr The IP address assigned to the interface of interest.
+   * \returns The index of the ipv4 interface with the given address.
+   *
+   * Each IP interface has an IP address associated with it.  It is often 
+   * useful to search the list of interfaces for one that corresponds to 
+   * a known IP Address.  This call takes an IP address as a parameter and
+   * returns the interface index of the first interface that has been assigned
+   * that address.  If the address is not found, this function asserts.
+   */
+  virtual uint32_t FindInterfaceForAddr (Ipv4Address addr) const = 0;
+
+  /**
+   * \brief Find and return the interface ID of the interface that has been
+   *        assigned the specified (masked) IP address.
+   * \param addr The IP address assigned to the interface of interest.
+   * \param mask The address mask to be used in address matching.
+   * \returns The index of the ipv4 interface with the given address.
+   *
+   * Each IP interface has an IP address associated with it.  It is often 
+   * useful to search the list of interfaces for one that corresponds to 
+   * a known IP Address.  This call takes an IP address and an IP address
+   * mask as parameters and returns the interface index of the first interface
+   * that matches the masked IP address.
+   */
+  virtual uint32_t FindInterfaceForAddr (Ipv4Address addr, 
+    Ipv4Mask mask) const = 0;
 
   /**
    * \param i index of ipv4 interface
@@ -226,37 +348,77 @@ public:
   virtual Ptr<NetDevice> GetNetDevice (uint32_t i) = 0;
 
   /**
+   * \brief Join a multicast group for a given multicast source and 
+   *        group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   */
+  virtual void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group) = 0;
+
+  /**
+   * \brief Leave a multicast group for a given multicast source and 
+   *        group.
+   *
+   * \param origin The Ipv4 address of the multicast source.
+   * \param group The multicast group address.
+   */
+  virtual void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group) = 0;
+
+  /**
    * \param i index of ipv4 interface
    * \param address address to associate to the underlying ipv4 interface
    */
   virtual void SetAddress (uint32_t i, Ipv4Address address) = 0;
+
   /**
    * \param i index of ipv4 interface
    * \param mask mask to associate to the underlying ipv4 interface
    */
   virtual void SetNetworkMask (uint32_t i, Ipv4Mask mask) = 0;
+
   /**
    * \param i index of ipv4 interface
    * \returns the mask associated to the underlying ipv4 interface
    */
   virtual Ipv4Mask GetNetworkMask (uint32_t i) const = 0;
+
   /**
    * \param i index of ipv4 interface
    * \returns the address associated to the underlying ipv4 interface
    */
   virtual Ipv4Address GetAddress (uint32_t i) const = 0;
+
+  /**
+   * \param destination The IP address of a hypothetical destination.
+   * \returns The IP address assigned to the interface that will be used
+   * if we were to send a packet to destination.
+   */
+  virtual Ipv4Address GetSourceAddress (Ipv4Address destination) const = 0;
+
+  /**
+   * \param destination The IP address of a hypothetical destination.
+   * \param ifIndex filled in with the interface index that will be used to
+   *        send a packet to the hypothetical destination.
+   * \returns True if a single interface can be identified, false otherwise.
+   */
+  virtual bool GetIfIndexForDestination (Ipv4Address dest,
+    uint32_t &ifIndex) const = 0;
+
   /**
    * \param i index of ipv4 interface
    * \returns the Maximum Transmission Unit (in bytes) associated
    *          to the underlying ipv4 interface
    */
   virtual uint16_t GetMtu (uint32_t i) const = 0;
+
   /**
    * \param i index of ipv4 interface
    * \returns true if the underlying interface is in the "up" state,
    *          false otherwise.
    */
   virtual bool IsUp (uint32_t i) const = 0;
+
   /**
    * \param i index of ipv4 interface
    * 
@@ -264,6 +426,7 @@ public:
    * considered valid during ipv4 forwarding.
    */
   virtual void SetUp (uint32_t i) = 0;
+
   /**
    * \param i index of ipv4 interface
    *
@@ -271,21 +434,18 @@ public:
    * ignored during ipv4 forwarding.
    */
   virtual void SetDown (uint32_t i) = 0;
-  
-};
 
 /**
  * Convenience functions (Doxygen still needed)
  *
  * Return the ifIndex corresponding to the Ipv4Address provided.
  */
-uint32_t GetIfIndexByIpv4Address (Ptr<Node> node, 
-                                  Ipv4Address a, 
-                                  Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+  static uint32_t GetIfIndexByAddress (Ptr<Node> node, Ipv4Address a, 
+    Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 
-bool GetIpv4RouteToDestination (Ptr<Node> node, Ipv4Route& route, 
-                                Ipv4Address a, 
-                                Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+  static bool GetRouteToDestination (Ptr<Node> node, Ipv4Route& route, 
+    Ipv4Address a, Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+};
 
 } // namespace ns3 
 

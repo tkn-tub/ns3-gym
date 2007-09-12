@@ -1,5 +1,8 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
+ * Copyright 2007 University of Washington
+ * Copyright (C) 1999, 2000 Kunihiro Ishiguro, Toshiaki Takada
+ * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -12,6 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors:  Craig Dowell (craigdo@ee.washington.edu)
+ *           Tom Henderson (tomhend@u.washington.edu)
+ * 
+ * Kunihiro Ishigura, Toshiaki Takada (GNU Zebra) are attributed authors
+ * of the quagga 0.99.7/src/ospfd/ospf_spf.c code which was ported here
  */
 
 #include <utility>
@@ -1143,7 +1152,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 // we're looking for.  If we find one, return the corresponding interface
 // index.
 //
-          return (GetIfIndexByIpv4Address (node, a, amask) );
+          return (Ipv4::GetIfIndexByAddress (node, a, amask) );
         }
     }
 //
@@ -1406,27 +1415,6 @@ GlobalRouteManagerImpl::SPFVertexAddParent (SPFVertex* v)
 #include "ns3/simulator.h"
 
 namespace ns3 {
-
-class GlobalRouterTestNode : public Node
-{
-public:
-  GlobalRouterTestNode ();
-
-private:
-  virtual void DoAddDevice (Ptr<NetDevice> device) const {};
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
-};
-
-GlobalRouterTestNode::GlobalRouterTestNode ()
-{
-//  Ptr<Ipv4L3Protocol> ipv4 = Create<Ipv4L3Protocol> (this);
-}
-
-  TraceResolver*
-GlobalRouterTestNode::DoCreateTraceResolver (TraceContext const &context)
-{
-  return 0;
-}
 
 class GlobalRouteManagerImplTest : public Test {
 public:

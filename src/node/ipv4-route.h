@@ -22,6 +22,7 @@
 #define IPV4_ROUTE_H
 
 #include <list>
+#include <vector>
 #include <ostream>
 
 #include "ipv4-address.h"
@@ -36,11 +37,18 @@ public:
    * \brief This constructor does nothing
    */
   Ipv4Route ();
+
   /**
    * \brief Copy Constructor
    * \param route The route to copy
    */
   Ipv4Route (Ipv4Route const &route);
+
+  /**
+   * \brief Copy Constructor
+   * \param route The route to copy
+   */
+  Ipv4Route (Ipv4Route const *route);
 
   bool IsHost (void) const;
   /**
@@ -97,6 +105,74 @@ private:
 };
 
 std::ostream& operator<< (std::ostream& os, Ipv4Route const& route);
+
+/**
+ * \brief A record of an IPv4 multicast route
+ */
+class Ipv4MulticastRoute {
+public:
+  /**
+   * \brief This constructor does nothing
+   */
+  Ipv4MulticastRoute ();
+
+  /**
+   * \brief Copy Constructor
+   * \param route The route to copy
+   */
+  Ipv4MulticastRoute (Ipv4MulticastRoute const &route);
+
+  /**
+   * \brief Copy Constructor
+   * \param route The route to copy
+   */
+  Ipv4MulticastRoute (Ipv4MulticastRoute const *route);
+
+  /**
+   * \return The IPv4 address of the source of this route
+   */
+  Ipv4Address GetOrigin (void) const;
+
+  /**
+   * \return The IPv4 address of the multicast group of this route
+   */
+  Ipv4Address GetGroup (void) const;
+
+  /**
+   * \return The IPv4 address of the input interface of this route
+   */
+  uint32_t GetInputInterface (void) const;
+
+  /**
+   * \return The number of output interfaces of this route
+   */
+  uint32_t GetNOutputInterfaces (void) const;
+
+  /**
+   * \return A specified output interface.
+   */
+  uint32_t GetOutputInterface (uint32_t n) const;
+
+  /**
+   * \return A vector of all of the output interfaces of this route.
+   */
+  std::vector<uint32_t> GetOutputInterfaces (void) const;
+
+  static Ipv4MulticastRoute CreateMulticastRoute (Ipv4Address origin, 
+    Ipv4Address group, uint32_t inputInterface,
+    std::vector<uint32_t> outputInterfaces);
+
+private:
+  Ipv4MulticastRoute (Ipv4Address origin, Ipv4Address group, 
+    uint32_t inputInterface, std::vector<uint32_t> outputInterfaces);
+
+  Ipv4Address m_origin;
+  Ipv4Address m_group;
+  uint32_t m_inputInterface;
+  std::vector<uint32_t> m_outputInterfaces;
+};
+
+std::ostream& operator<< (std::ostream& os, Ipv4MulticastRoute const& route);
 
 }//namespace ns3
 

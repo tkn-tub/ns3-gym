@@ -19,33 +19,41 @@
  * Authors: 
  *  Mathieu Lacage <mathieu.lacage@sophia.inria.fr>,
  */
-#include "ns3/empty-trace-resolver.h"
+
+#include "ns3/debug.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/eui48-address.h"
 #include "ipv4-loopback-interface.h"
 #include "ipv4-l3-protocol.h"
 
+NS_DEBUG_COMPONENT_DEFINE ("Ipv4LoopbackInterface");
+
 namespace ns3 {
 
 Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
   : Ipv4Interface (0),
     m_node (node)
-{}
-Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
-{}
-
-TraceResolver *
-Ipv4LoopbackInterface::DoCreateTraceResolver (TraceContext const &context)
 {
-  return new EmptyTraceResolver (context);
+  NS_DEBUG("Ipv4LoopbackInterface::Ipv4LoopbackInterface ()");
+}
+
+Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
+{
+  NS_DEBUG("Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()");
 }
 
 void 
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
-  ipv4->Receive (GetDevice (), packet, Ipv4L3Protocol::PROT_NUMBER, Eui48Address ("ff:ff:ff:ff:ff:ff"));
+  NS_DEBUG("Ipv4LoopbackInterface::SendTo (" << &packet << ", " << 
+    dest << ")");
+
+  Ptr<Ipv4L3Protocol> ipv4 = 
+    m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
+
+  ipv4->Receive (GetDevice (), packet, Ipv4L3Protocol::PROT_NUMBER, 
+    Eui48Address ("ff:ff:ff:ff:ff:ff"));
 }
 
 }//namespace ns3

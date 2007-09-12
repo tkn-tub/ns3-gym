@@ -29,6 +29,7 @@
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "address.h"
+#include "ipv4-address.h"
 
 namespace ns3 {
 
@@ -62,14 +63,6 @@ public:
   static const InterfaceId iid;
   virtual ~NetDevice();
 
-  /**
-   * \param context the trace context to use to construct the
-   *        TraceResolver to return
-   * \returns a TraceResolver which can resolve all traces
-   *          performed in this object. The caller must
-   *          delete the returned object.
-   */
-  TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   /**
    * \return the channel this NetDevice is connected to. The value
@@ -138,10 +131,69 @@ public:
    * not true.
    */
   Address const &GetBroadcast (void) const;
+
   /**
    * \return value of m_isMulticast flag
    */
   bool IsMulticast (void) const;
+
+  /**
+   * \brief Return the MAC multicast base address used when mapping multicast
+   * groups to MAC multicast addresses.
+   *
+   * Typically when one constructs a multicast MAC addresses, some bits from
+   * the IP multicast group are copied into a corresponding MAC multicast 
+   * group.  In EUI-48, for example, the low order 23 bits of the multicast
+   * group are copied to the MAC multicast group base address.
+   *
+   * This method allows access to the underlying MAC multicast group base 
+   * address.  It is expected that in most cases, a net device client will
+   * allow the net device to perform the actual construction of the multicast
+   * address.  Use of this method is discouraged unless you have a good reason
+   * to perform a custom mapping.  You should prefer 
+   * NetDevice::MakeMulticastAddress which will do the RFC-specified mapping
+   * for the net device in question.
+   *
+   * \return The multicast address supported by this net device.
+   *
+   * \warning Calling this method is invalid if IsMulticast returns not true.
+   * The method NS_ASSERTs if the device is not a multicast device.
+   * \see NetDevice::MakeMulticastAddress
+   */
+  Address GetMulticast (void) const;
+
+  /**
+   * \brief Make and return a MAC multicast address using the provided
+   *        multicast group
+   *
+   * RFC 1112 says that an Ipv4 host group address is mapped to an Ethernet 
+   * multicast address by placing the low-order 23-bits of the IP address into 
+   * the low-order 23 bits of the Ethernet multicast address 
+   * 01-00-5E-00-00-00 (hex).  Similar RFCs exist for Ipv6 and Eui64 mappings.
+   * This method performs the multicast address creation function appropriate
+   * to the underlying MAC address of the device.  This MAC address is
+   * encapsulated in an abstract Address to avoid dependencies on the exact
+   * MAC address format.
+   *
+   * A default imlementation of MakeMulticastAddress is provided, but this
+   * method simply NS_ASSERTS.  In the case of net devices that do not support
+   * multicast, clients are expected to test NetDevice::IsMulticast and avoid
+   * attempting to map multicast packets.  Subclasses of NetDevice that do
+   * support multicasting are expected to override this method and provide an
+   * implementation appropriate to the particular device.
+   *
+   * \param multicastGroup The IP address for the multicast group destination
+   * of the packet.
+   * \return The MAC multicast Address used to send packets to the provided
+   * multicast group.
+   *
+   * \warning Calling this method is invalid if IsMulticast returns not true.
+   * \see Ipv4Address
+   * \see Address
+   * \see NetDevice::IsMulticast
+   */
+  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+
   /**
    * \return value of m_isPointToPoint flag
    */
@@ -212,9 +264,10 @@ public:
    */
   void DisableBroadcast (void);
   /**
-   * Set m_isMulticast flag to true
+   * Enable multicast support. This method should be
+   * called by subclasses from their constructor
    */
-  void EnableMulticast (void);
+  void EnableMulticast (Address multicast);
   /**
    * Set m_isMulticast flag to false
    */
@@ -283,15 +336,6 @@ public:
    */
   virtual bool DoNeedsArp (void) const = 0;
   /**
-   * \param context the trace context to associated to the
-   *        trace resolver.
-   * \returns a trace resolver associated to the input context.
-   *          the caller takes ownership of the pointer returned.
-   *
-   * Subclasses must implement this method.
-   */
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
-  /**
    * \returns the channel associated to this NetDevice.
    *
    * Subclasses must implement this method.
@@ -303,6 +347,7 @@ public:
   uint16_t      m_ifIndex;
   Address       m_address;
   Address       m_broadcast;
+  Address       m_multicast;
   uint16_t      m_mtu;
   bool          m_isUp;
   bool          m_isBroadcast;

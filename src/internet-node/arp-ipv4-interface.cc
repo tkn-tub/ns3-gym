@@ -31,57 +31,84 @@
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
 
+NS_DEBUG_COMPONENT_DEFINE ("ArpIpv4Interface");
+
 namespace ns3 {
 
 ArpIpv4Interface::ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device)
   : Ipv4Interface (device),
     m_node (node)
-{}
-ArpIpv4Interface::~ArpIpv4Interface ()
-{}
-
-TraceResolver *
-ArpIpv4Interface::DoCreateTraceResolver (TraceContext const &context)
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  NS_DEBUG ("ArpIpv4Interface::ArpIpv4Interface ()");
+}
+
+ArpIpv4Interface::~ArpIpv4Interface ()
+{
+  NS_DEBUG ("ArpIpv4Interface::~ArpIpv4Interface ()");
+}
+
+Ptr<TraceResolver>
+ArpIpv4Interface::GetTraceResolver (void) const
+{
+  NS_DEBUG ("ArpIpv4Interface::DoCreateTraceResolver ()");
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   if (GetDevice () != 0)
     {
-      resolver->Add ("netdevice",
-                     MakeCallback (&NetDevice::CreateTraceResolver, PeekPointer (GetDevice ())));
+      resolver->AddComposite ("netdevice", GetDevice ());
     }
-  
+  resolver->SetParentResolver (Ipv4Interface::GetTraceResolver ());
   return resolver;
 }
 
 void 
 ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
 {
+  NS_DEBUG ("ArpIpv4Interface::SendTo (" << &p << ", " << dest << ")");
+
   NS_ASSERT (GetDevice () != 0);
   if (GetDevice ()->NeedsArp ())
     {
-      Ptr<ArpL3Protocol> arp = m_node->QueryInterface<ArpL3Protocol> (ArpL3Protocol::iid);
+      NS_DEBUG ("ArpIpv4Interface::SendTo (): Needs ARP");
+      Ptr<ArpL3Protocol> arp = 
+        m_node->QueryInterface<ArpL3Protocol> (ArpL3Protocol::iid);
       Address hardwareDestination;
       bool found;
       
       if (dest.IsBroadcast () || 
           dest.IsSubnetDirectedBroadcast (GetNetworkMask ()) )
         {
+          NS_DEBUG ("ArpIpv4Interface::SendTo (): IsBroadcast");
           hardwareDestination = GetDevice ()->GetBroadcast ();
+          found = true;
+        }
+      else if (dest.IsMulticast ())
+        {
+          NS_DEBUG ("ArpIpv4Interface::SendTo (): IsMulticast");
+          NS_ASSERT_MSG(GetDevice ()->IsMulticast (),
+            "ArpIpv4Interface::SendTo (): Sending multicast packet over "
+            "non-multicast device");
+
+          hardwareDestination = GetDevice ()->MakeMulticastAddress(dest);
           found = true;
         }
       else
         {
+          NS_DEBUG ("ArpIpv4Interface::SendTo (): ARP Lookup");
           found = arp->Lookup (p, dest, GetDevice (), &hardwareDestination);
         }
 
       if (found)
         {
-          GetDevice ()->Send (p, hardwareDestination, Ipv4L3Protocol::PROT_NUMBER);
+          NS_DEBUG ("ArpIpv4Interface::SendTo (): Address Resolved.  Send.");
+          GetDevice ()->Send (p, hardwareDestination, 
+            Ipv4L3Protocol::PROT_NUMBER);
         }
     }
   else
     {
-      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), Ipv4L3Protocol::PROT_NUMBER);
+      NS_DEBUG ("ArpIpv4Interface::SendTo (): Doesn't need ARP");
+      GetDevice ()->Send (p, GetDevice ()->GetBroadcast (), 
+        Ipv4L3Protocol::PROT_NUMBER);
     }
 }
 

@@ -61,9 +61,9 @@ public:
    * 
    * \return ifIndex of the device
    */
-  static uint32_t AddIpv4CsmaNode( Ptr<Node> n1,
-                                     Ptr<CsmaChannel> ch,
-                                     Eui48Address addr);
+  static uint32_t AddIpv4CsmaNetDevice(Ptr<Node> node,
+                                       Ptr<CsmaChannel> channel,
+                                       Eui48Address addr);
 
   /**
    * \param n1 Node to be attached to the Csma channel
@@ -94,18 +94,23 @@ public:
 
 
   /** 
-   * \param n1 Node
-   * \param ndNum NetDevice number with which to associate address
-   * \param addr1 Ipv4 Address for ndNum of n1
-   * \param netmask1 network mask for ndNum of node n1
+   * \brief Create an Ipv4 interface for a net device and assign an 
+   * Ipv4Address to that interface.
+   *
+   * \param node The node to which to add the new address and corresponding 
+   *        interface.
+   * \param netDeviceNumber The NetDevice index number with which to associate
+   *        the address.
+   * \param address The Ipv4 Address for the interface.
+   * \param network The network mask for the interface
    * 
    * Add an Ipv4Address to the Ipv4 interface associated with the
-   * ndNum CsmaIpv4NetDevices on the provided
-   * CsmaIpv4Channel
+   * ndNum CsmaIpv4NetDevices on the provided CsmaIpv4Channel
    */
-  static void AddIpv4Address(Ptr<Node> n1, int ndNum, 
-                             const Ipv4Address& addr1,
-                             const Ipv4Mask& netmask1);
+  static uint32_t AddIpv4Address(Ptr<Node> node,
+                                 uint32_t netDeviceNumber, 
+                                 const Ipv4Address address,
+                                 const Ipv4Mask mask);
 
   /**
    * \param nd1 Node

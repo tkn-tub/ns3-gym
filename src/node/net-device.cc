@@ -23,6 +23,7 @@
 #include "ns3/assert.h"
 #include "ns3/object.h"
 #include "ns3/debug.h"
+#include "ns3/trace-resolver.h"
 
 
 #include "channel.h"
@@ -113,6 +114,7 @@ NetDevice::IsBroadcast (void) const
 {
   return m_isBroadcast;
 }
+
 Address const &
 NetDevice::GetBroadcast (void) const
 {
@@ -139,10 +141,27 @@ NetDevice::IsMulticast (void) const
   return m_isMulticast;
 }
 
+Address 
+NetDevice::GetMulticast (void) const
+{
+  NS_ASSERT_MSG (m_isMulticast, "NetDevice::GetMulticast (): "
+    "Invalid operation when not IsMulticast ()");
+  return m_multicast;
+}
+
+Address
+NetDevice::MakeMulticastAddress(Ipv4Address multicastGroup) const
+{
+  NS_ASSERT_MSG (m_isMulticast, "NetDevice::GetMulticast (): "
+    "Invalid operation when not IsMulticast ()");
+  return m_multicast;
+}
+
 void
-NetDevice::EnableMulticast (void)
+NetDevice::EnableMulticast (Address multicast)
 {
   m_isMulticast = true;
+  m_multicast = multicast;
 }
 
 void
@@ -181,12 +200,6 @@ NetDevice::Send(const Packet& p, const Address& dest, uint16_t protocolNumber)
     {
       return false;
     }
-}
-
-TraceResolver *
-NetDevice::CreateTraceResolver (TraceContext const &context)
-{
-  return DoCreateTraceResolver (context);
 }
 
 Ptr<Channel>

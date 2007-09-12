@@ -199,6 +199,12 @@ Packet::Deserialize (Buffer buffer)
   buffer.RemoveAtStart (metadataDeserialized);
 }
 
+std::ostream& operator<< (std::ostream& os, const Packet &packet)
+{
+  packet.Print (os);
+  return os;
+}
+
 
 } // namespace ns3
 

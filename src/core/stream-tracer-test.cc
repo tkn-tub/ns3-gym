@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "stream-tracer.h"
-#include "ns3/test.h"
+#include "test.h"
 #include <iostream>
 
 #ifdef RUN_SELF_TESTS
