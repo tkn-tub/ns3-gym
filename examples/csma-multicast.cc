@@ -85,19 +85,6 @@ main (int argc, char *argv[])
   DebugComponentEnable("Ipv4LoopbackInterface");
 #endif
 
-  DebugComponentEnable("Channel");
-  DebugComponentEnable("CsmaChannel");
-  DebugComponentEnable("CsmaMulticast");
-  DebugComponentEnable("CsmaNetDevice");
-  DebugComponentEnable("OnOffApplication");
-  DebugComponentEnable("PacketSocket");
-  DebugComponentEnable("UdpSocket");
-  DebugComponentEnable("UdpL4Protocol");
-  DebugComponentEnable("Ipv4L3Protocol");
-  DebugComponentEnable("Ipv4StaticRouting");
-  DebugComponentEnable("Ipv4Interface");
-  DebugComponentEnable("ArpIpv4Interface");
-  DebugComponentEnable("Ipv4LoopbackInterface");
 //
 // Set up default values for the simulation.  Use the DefaultValue::Bind()
 // technique to tell the system what subclass of Queue to use.  The Bind

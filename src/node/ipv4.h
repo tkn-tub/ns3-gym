@@ -105,6 +105,7 @@ public:
                              const Ipv4Header &ipHeader,
                              Packet packet,
                              RouteReplyCallback routeReply) = 0;
+
 /**
  * \brief Synchronously check to see if we can determine the interface index 
  * that will be used if a packet is sent to this destination.
@@ -396,6 +397,15 @@ public:
   virtual Ipv4Address GetSourceAddress (Ipv4Address destination) const = 0;
 
   /**
+   * \param destination The IP address of a hypothetical destination.
+   * \param ifIndex filled in with the interface index that will be used to
+   *        send a packet to the hypothetical destination.
+   * \returns True if a single interface can be identified, false otherwise.
+   */
+  virtual bool GetIfIndexForDestination (Ipv4Address dest,
+    uint32_t &ifIndex) const = 0;
+
+  /**
    * \param i index of ipv4 interface
    * \returns the Maximum Transmission Unit (in bytes) associated
    *          to the underlying ipv4 interface
@@ -424,20 +434,18 @@ public:
    * ignored during ipv4 forwarding.
    */
   virtual void SetDown (uint32_t i) = 0;
-};
 
 /**
  * Convenience functions (Doxygen still needed)
  *
  * Return the ifIndex corresponding to the Ipv4Address provided.
  */
-uint32_t GetIfIndexByIpv4Address (Ptr<Node> node, 
-                                  Ipv4Address a, 
-                                  Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+  static uint32_t GetIfIndexByAddress (Ptr<Node> node, Ipv4Address a, 
+    Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 
-bool GetIpv4RouteToDestination (Ptr<Node> node, Ipv4Route& route, 
-                                Ipv4Address a, 
-                                Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+  static bool GetRouteToDestination (Ptr<Node> node, Ipv4Route& route, 
+    Ipv4Address a, Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+};
 
 } // namespace ns3 
 
