@@ -73,22 +73,22 @@ EthernetHeader::GetPreambleSfd (void) const
 }
 
 void 
-EthernetHeader::SetSource (Eui48Address source)
+EthernetHeader::SetSource (Mac48Address source)
 {
   m_source = source;
 }
-Eui48Address
+Mac48Address
 EthernetHeader::GetSource (void) const
 {
   return m_source;
 }
 
 void 
-EthernetHeader::SetDestination (Eui48Address dst)
+EthernetHeader::SetDestination (Mac48Address dst)
 {
   m_destination = dst;
 }
-Eui48Address
+Mac48Address
 EthernetHeader::GetDestination (void) const
 {
   return m_destination;

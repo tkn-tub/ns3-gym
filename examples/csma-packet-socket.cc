@@ -48,7 +48,7 @@
 #include "ns3/internet-node.h"
 #include "ns3/csma-channel.h"
 #include "ns3/csma-net-device.h"
-#include "ns3/eui48-address.h"
+#include "ns3/mac48-address.h"
 #include "ns3/packet-socket-address.h"
 #include "ns3/socket.h"
 #include "ns3/onoff-application.h"

@@ -38,7 +38,7 @@ uint32_t
 CsmaIpv4Topology::AddIpv4CsmaNetDevice(
   Ptr<Node> node,
   Ptr<CsmaChannel> channel,
-  Eui48Address addr)
+  Mac48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
@@ -55,7 +55,7 @@ CsmaIpv4Topology::AddIpv4CsmaNetDevice(
 void
 CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
                                      Ptr<CsmaChannel> ch,
-                                     Eui48Address addr)
+                                     Mac48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
@@ -75,7 +75,7 @@ CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
 void
 CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
                                      Ptr<CsmaChannel> ch,
-                                     Eui48Address addr)
+                                     Mac48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
