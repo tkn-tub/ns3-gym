@@ -30,6 +30,7 @@ def build(bld):
     core.source = [
         'callback-test.cc',
         'debug.cc',
+        'log.cc',
         'breakpoint.cc',
         'ptr.cc',
         'object.cc',
@@ -69,6 +70,7 @@ def build(bld):
         'ptr.h',
         'object.h',
         'debug.h',
+        'log.h',
         'assert.h',
         'breakpoint.h',
         'fatal-error.h',
