@@ -94,18 +94,6 @@ main (int argc, char *argv[])
   DebugComponentEnable("Ipv4LoopbackInterface");
 #endif
 
-  DebugComponentEnable("Me");
-  DebugComponentEnable("OnOffApplication");
-  DebugComponentEnable("UdpSocket");
-  DebugComponentEnable("UdpL4Protocol");
-  DebugComponentEnable("Ipv4L3Protocol");
-  DebugComponentEnable("Ipv4StaticRouting");
-  DebugComponentEnable("PointToPointChannel");
-  DebugComponentEnable("PointToPointNetDevice");
-  DebugComponentEnable("Ipv4Interface");
-  DebugComponentEnable("ArpIpv4Interface");
-  DebugComponentEnable("Ipv4LoopbackInterface");
-
   // Set up some default values for the simulation.  Use the Bind()
   // technique to tell the system what subclass of Queue to use,
   // and what the queue limit is
