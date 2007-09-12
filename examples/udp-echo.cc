@@ -23,7 +23,7 @@
 //
 // - CBR/UDP flows from n0 to n1 and from n3 to n0
 // - DropTail queues 
-// - Tracing of queues and packet receptions to file "csma-one-subnet.tr"
+// - Tracing of queues and packet receptions to file "udp-echo.tr"
 
 #include "ns3/command-line.h"
 #include "ns3/default-value.h"
@@ -46,6 +46,7 @@
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/udp-echo-client.h"
+#include "ns3/udp-echo-server.h"
 
 using namespace ns3;
 
@@ -161,12 +162,13 @@ main (int argc, char *argv[])
   
   CsmaIpv4Topology::AddIpv4Address (n3, nd3, Ipv4Address("10.1.1.4"), 
     Ipv4Mask("255.255.255.0"));
+
+  NS_DEBUG("Create Applications.");
 //
 // Create a UdpEchoClient application to send UDP datagrams from node zero to
 // node 1.
 //
-  NS_DEBUG("Create Applications.");
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0,"10.1.1.2", 80, 
+  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", 80, 
     1, Seconds(1.), 1024);
 //
 // Tell the application when to start and stop.
@@ -174,21 +176,30 @@ main (int argc, char *argv[])
   client->Start(Seconds(1.0));
   client->Stop (Seconds(10.0));
 //
+// Create a UdpEchoServer application on node 1.
+//
+  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n0, "0.0.0.0", 80);
+//
+// Tell the application when to start and stop.
+//
+  server->Start(Seconds(0.));
+  server->Stop (Seconds(10.0));
+//
 // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
-// Trace output will be sent to the file "csma-one-subnet.tr"
+// Trace output will be sent to the file "udp-echo.tr"
 //
   NS_DEBUG("Configure Tracing.");
-  AsciiTrace asciitrace ("csma-one-subnet.tr");
+  AsciiTrace asciitrace ("udp-echo.tr");
   asciitrace.TraceAllNetDeviceRx ();
   asciitrace.TraceAllQueues ();
 //
 // Also configure some tcpdump traces; each interface will be traced.
 // The output files will be named:
-//     csma-one-subnet.pcap-<nodeId>-<interfaceId>
+//     udp-echo.pcap-<nodeId>-<interfaceId>
 // and can be read by the "tcpdump -r" command (use "-tt" option to
 // display timestamps correctly)
 //
-  PcapTrace pcaptrace ("csma-one-subnet.pcap");
+  PcapTrace pcaptrace ("udp-echo.pcap");
   pcaptrace.TraceAllIp ();
 //
 // Now, do the actual simulation.
