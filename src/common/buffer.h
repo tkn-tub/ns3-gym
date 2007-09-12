@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <vector>
 
-//#define BUFFER_HEURISTICS 1
+#define BUFFER_HEURISTICS 1
 #define BUFFER_USE_INLINE 1
 
 
