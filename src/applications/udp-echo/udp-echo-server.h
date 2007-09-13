@@ -32,27 +32,25 @@ class Packet;
 class UdpEchoServer : public Application 
 {
 public:
-  UdpEchoServer (Ptr<Node> n, Ipv4Address clientAddr, uint16_t clientPort);
+  UdpEchoServer (Ptr<Node> n, uint16_t clientPort);
   virtual ~UdpEchoServer ();
 
 protected:
   virtual void DoDispose (void);
 
 private:
-  void Construct (Ptr<Node> n, Ipv4Address clientAddr, uint16_t clientPort);
+  void Construct (Ptr<Node> n, uint16_t clientPort);
 
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
-  void Receive(Ptr<Socket> socket, const Packet &packet,
-    const Address &from);
+  void Receive(Ptr<Socket> socket, const Packet &packet, const Address &from);
 
   Ptr<Node> m_node;
-  Ipv4Address m_clientAddress;
-  uint16_t m_clientPort;
+  uint16_t m_port;
 
   Ptr<Socket> m_socket;
-  Address m_client;
+  Address m_local;
 };
 
 } // namespace ns3

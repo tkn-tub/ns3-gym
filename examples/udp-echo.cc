@@ -21,7 +21,7 @@
 //       =================
 //              LAN
 //
-// - CBR/UDP flows from n0 to n1 and from n3 to n0
+// - UDP flows from n0 to n1 and back
 // - DropTail queues 
 // - Tracing of queues and packet receptions to file "udp-echo.tr"
 
@@ -136,11 +136,6 @@ main (int argc, char *argv[])
 
   uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan, 
     Eui48Address("08:00:2e:00:00:03"));
-
-  NS_DEBUG ("nd0 = " << nd0);
-  NS_DEBUG ("nd1 = " << nd1);
-  NS_DEBUG ("nd2 = " << nd2);
-  NS_DEBUG ("nd3 = " << nd3);
 //
 // We've got the "hardware" in place.  Now we need to add IP addresses.
 //
@@ -171,25 +166,29 @@ main (int argc, char *argv[])
 
   NS_DEBUG("Create Applications.");
 //
-// Create a UdpEchoServer application on node 1.
+// Create a UdpEchoServer application on node one.
 //
-  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, "0.0.0.0", 80);
-//
-// Tell the application when to start and stop.
-//
-  server->Start(Seconds(1.));
-  server->Stop (Seconds(10.0));
+  uint16_t port = 80;
+
+  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
 //
 // Create a UdpEchoClient application to send UDP datagrams from node zero to
-// node 1.
+// node one.
 //
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", 80, 
-    1, Seconds(1.), 1024);
+  uint32_t packetSize = 1024;
+  uint32_t maxPacketCount = 1;
+  Time interPacketInterval = Seconds (1.);
+
+  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", port, 
+    maxPacketCount, interPacketInterval, packetSize);
 //
-// Tell the application when to start and stop.
+// Tell the applications when to start and stop.
 //
-  client->Start(Seconds(2.0));
-  client->Stop (Seconds(10.0));
+  server->Start(Seconds(1.));
+  client->Start(Seconds(2.));
+
+  server->Stop (Seconds(10.));
+  client->Stop (Seconds(10.));
 //
 // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
 // Trace output will be sent to the file "udp-echo.tr"

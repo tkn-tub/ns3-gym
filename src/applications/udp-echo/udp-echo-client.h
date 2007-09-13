@@ -50,6 +50,8 @@ private:
   void ScheduleTransmit (Time dt);
   void Send (void);
 
+  void Receive(Ptr<Socket> socket, const Packet &packet, const Address &from);
+
   Ptr<Node> m_node;
   Ipv4Address m_serverAddress;
   uint16_t m_serverPort;

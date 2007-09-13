@@ -99,7 +99,9 @@ UdpEchoClient::StartApplication (void)
       m_socket->Connect (m_peer);
     }
 
-  StopApplication ();
+  m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
+    const Address &>) MakeCallback(&UdpEchoClient::Receive, this));
+
   ScheduleTransmit (Seconds(0.));
 }
 
@@ -107,6 +109,14 @@ void
 UdpEchoClient::StopApplication ()
 {
   NS_DEBUG ("UdpEchoClient::StopApplication ()");
+
+  if (!m_socket) 
+    {
+      m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
+        const Address &>) NULL);
+    }
+
+  Simulator::Cancel(m_sendEvent);
 }
 
 void 
@@ -135,5 +145,23 @@ UdpEchoClient::Send (void)
       ScheduleTransmit (m_interval);
     }
 }
+
+void
+UdpEchoClient::Receive(
+  Ptr<Socket> socket, 
+  const Packet &packet,
+  const Address &from) 
+{
+  NS_DEBUG ("UdpEchoClient::Receive (" << socket << ", " << packet <<
+    ", " << from << ")");
+
+  if (InetSocketAddress::IsMatchingType (from))
+    {
+      InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
+      NS_DEBUG ("UdpEchoClient::Receive(): Received " << 
+        packet.GetSize() << " bytes from " << address.GetIpv4());
+    }
+}
+
 
 } // Namespace ns3

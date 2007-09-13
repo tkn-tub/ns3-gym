@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
 #include "ns3/debug.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
@@ -32,15 +33,14 @@ NS_DEBUG_COMPONENT_DEFINE ("UdpEchoServer");
 
 UdpEchoServer::UdpEchoServer (
   Ptr<Node> n,
-  Ipv4Address clientAddress,
-  uint16_t clientPort)
+  uint16_t port)
 : 
   Application(n)
 {
-  NS_DEBUG ("UdpEchoServer::UdpEchoServer (" << n << ", " << clientAddress <<
-    ", " << clientPort << ")");
+  NS_DEBUG ("UdpEchoServer::UdpEchoServer (" << n << ", " << 
+    port << ")");
 
-  Construct (n, clientAddress, clientPort);
+  Construct (n, port);
 }
 
 UdpEchoServer::~UdpEchoServer()
@@ -51,18 +51,15 @@ UdpEchoServer::~UdpEchoServer()
 void
 UdpEchoServer::Construct (
   Ptr<Node> n,
-  Ipv4Address clientAddress,
-  uint16_t clientPort)
+  uint16_t port)
 {
-  NS_DEBUG ("UdpEchoServer::Construct (" << n << ", " << clientAddress <<
-    ", " << clientPort << ")");
+  NS_DEBUG ("UdpEchoServer::Construct (" << n << ", " << port << ")");
 
   m_node = n;
-  m_clientAddress = clientAddress;
-  m_clientPort = clientPort;
+  m_port = port;
 
   m_socket = 0;
-  m_client = InetSocketAddress (clientAddress, clientPort);
+  m_local = InetSocketAddress (Ipv4Address::GetAny (), port);
 }
 
 void
@@ -83,7 +80,7 @@ UdpEchoServer::StartApplication (void)
       Ptr<SocketFactory> socketFactory = 
         GetNode ()->QueryInterface<SocketFactory> (iid);
       m_socket = socketFactory->CreateSocket ();
-      m_socket->Bind (m_client);
+      m_socket->Bind (m_local);
     }
 
   m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
@@ -101,7 +98,8 @@ UdpEchoServer::StopApplication ()
     }
 }
 
-void UdpEchoServer::Receive(
+void
+UdpEchoServer::Receive(
   Ptr<Socket> socket, 
   const Packet &packet,
   const Address &from) 
@@ -114,6 +112,9 @@ void UdpEchoServer::Receive(
       InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
       NS_DEBUG ("UdpEchoServer::Receive(): Received " << 
         packet.GetSize() << " bytes from " << address.GetIpv4());
+
+      NS_DEBUG ("UdpEchoServer::Receive (): Echoing packet");
+      socket->SendTo (from, packet);
     }
 }
 
