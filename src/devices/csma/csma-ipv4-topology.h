@@ -63,7 +63,7 @@ public:
    */
   static uint32_t AddIpv4CsmaNetDevice(Ptr<Node> node,
                                        Ptr<CsmaChannel> channel,
-                                       Eui48Address addr);
+                                       Mac48Address addr);
 
   /**
    * \param n1 Node to be attached to the Csma channel
@@ -76,7 +76,7 @@ public:
    */
   static void AddIpv4RawCsmaNode( Ptr<Node> n1,
                                     Ptr<CsmaChannel> ch,
-                                    Eui48Address addr);
+                                    Mac48Address addr);
 
   /**
    * \param n1 Node to be attached to the Csma channel
@@ -89,7 +89,7 @@ public:
    */
   static void AddIpv4LlcCsmaNode( Ptr<Node> n1,
                                     Ptr<CsmaChannel> ch,
-                                    Eui48Address addr);
+                                    Mac48Address addr);
 
 
 

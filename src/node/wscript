@@ -4,8 +4,8 @@ def build(bld):
     node = bld.create_ns3_module('node', ['core', 'common', 'simulator'])
     node.source = [
         'address.cc',
-        'eui48-address.cc',
-        'eui64-address.cc',
+        'mac48-address.cc',
+        'mac64-address.cc',
         'inet-socket-address.cc',
         'packet-socket-address.cc',
         'node.cc',
@@ -32,8 +32,8 @@ def build(bld):
     headers = bld.create_obj('ns3header')
     headers.source = [
         'address.h',
-        'eui48-address.h',
-        'eui64-address.h',
+        'mac48-address.h',
+        'mac64-address.h',
         'inet-socket-address.h',
         'packet-socket-address.h',
         'node.h',

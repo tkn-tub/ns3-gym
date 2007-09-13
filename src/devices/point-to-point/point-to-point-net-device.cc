@@ -24,7 +24,7 @@
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
-#include "ns3/eui48-address.h"
+#include "ns3/mac48-address.h"
 #include "ns3/llc-snap-header.h"
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
@@ -61,7 +61,7 @@ PointToPointTraceType::GetTypeName (void) const
 PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
                                               const DataRate& rate) 
 : 
-  NetDevice(node, Eui48Address::Allocate ()), 
+  NetDevice(node, Mac48Address::Allocate ()), 
   m_txMachineState (READY),
   m_bps (rate),
   m_tInterframeGap (Seconds(0)),
@@ -74,11 +74,11 @@ PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
 // BUGBUG FIXME
 //
 // You _must_ support broadcast to get any sort of packet from the ARP layer.
-  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
+  EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
 //
 // We want to allow multicast packets to flow across this link
 //
-  EnableMulticast (Eui48Address ("01:00:5e:00:00:00"));
+  EnableMulticast (Mac48Address ("01:00:5e:00:00:00"));
   EnablePointToPoint();
 }
 

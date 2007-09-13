@@ -40,7 +40,7 @@
 #include "ns3/csma-net-device.h"
 #include "ns3/csma-topology.h"
 #include "ns3/csma-ipv4-topology.h"
-#include "ns3/eui48-address.h"
+#include "ns3/mac48-address.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4.h"
@@ -120,16 +120,16 @@ main (int argc, char *argv[])
 // zero.
 //
   uint32_t nd0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, lan, 
-    Eui48Address("08:00:2e:00:00:00"));
+    Mac48Address("08:00:2e:00:00:00"));
 
   uint32_t nd1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n1, lan, 
-    Eui48Address("08:00:2e:00:00:01"));
+    Mac48Address("08:00:2e:00:00:01"));
 
   uint32_t nd2 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan, 
-    Eui48Address("08:00:2e:00:00:02"));
+    Mac48Address("08:00:2e:00:00:02"));
 
   uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan, 
-    Eui48Address("08:00:2e:00:00:03"));
+    Mac48Address("08:00:2e:00:00:03"));
 
   NS_DEBUG ("nd0 = " << nd0);
   NS_DEBUG ("nd1 = " << nd1);

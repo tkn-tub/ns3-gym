@@ -24,7 +24,7 @@
 
 #include "ns3/header.h"
 #include <string>
-#include "ns3/eui48-address.h"
+#include "ns3/mac48-address.h"
 
 namespace ns3 {
 
@@ -69,11 +69,11 @@ public:
   /**
    * \param source The source address of this packet
    */
-  void SetSource (Eui48Address source);
+  void SetSource (Mac48Address source);
   /**
    * \param destination The destination address of this packet.
    */
-  void SetDestination (Eui48Address destination);
+  void SetDestination (Mac48Address destination);
   /**
    * \param preambleSfd The value that the preambleSfd field should take
    */
@@ -89,11 +89,11 @@ public:
   /**
    * \return The source address of this packet
    */
-  Eui48Address GetSource (void) const;
+  Mac48Address GetSource (void) const;
   /**
    * \return The destination address of this packet
    */
-  Eui48Address GetDestination (void) const;  
+  Mac48Address GetDestination (void) const;  
   /**
    * \return The value of the PreambleSfd field
    */
@@ -119,8 +119,8 @@ private:
   bool m_enPreambleSfd;
   uint64_t m_preambleSfd;     /// Value of the Preamble/SFD fields
   uint16_t m_lengthType;      /// Length or type of the packet
-  Eui48Address m_source;        /// Source address
-  Eui48Address m_destination;   /// Destination address
+  Mac48Address m_source;        /// Source address
+  Mac48Address m_destination;   /// Destination address
 };
 
 }; // namespace ns3

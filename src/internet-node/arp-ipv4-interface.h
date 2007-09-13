@@ -24,7 +24,6 @@
 
 #include "ipv4-interface.h"
 #include "ns3/ptr.h"
-#include "ns3/eui48-address.h"
 
 namespace ns3 {
 

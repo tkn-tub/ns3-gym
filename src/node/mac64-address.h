@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef EUI48_ADDRESS_H
-#define EUI48_ADDRESS_H
+#ifndef EUI64_ADDRESS_H
+#define EUI64_ADDRESS_H
 
 #include <stdint.h>
 #include <ostream>
@@ -28,34 +28,33 @@ namespace ns3 {
 class Address;
 
 /**
- * \brief an EUI-48 address
+ * \brief an EUI-64 address
  *
- * This class can contain 48 bit IEEE addresses.
+ * This class can contain 64 bit IEEE addresses.
  */
-class Eui48Address
+class Mac64Address
 {
 public:
-  Eui48Address ();
+  Mac64Address ();
   /**
-   * \param str a string representing the new Eui48Address
+   * \param str a string representing the new Mac64Address
    *
    * The format of the string is "xx:xx:xx:xx:xx:xx"
    */
-  Eui48Address (const char *str);
+  Mac64Address (const char *str);
 
   /**
    * \param buffer address in network order
    *
    * Copy the input address to our internal buffer.
    */
-  void CopyFrom (const uint8_t buffer[6]);
+  void CopyFrom (const uint8_t buffer[8]);
   /**
    * \param buffer address in network order
    *
    * Copy the internal address to the input buffer.
    */
-  void CopyTo (uint8_t buffer[6]) const;
-
+  void CopyTo (uint8_t buffer[8]) const;
   /**
    * \returns a new Address instance
    *
@@ -64,21 +63,21 @@ public:
   operator Address ();
   /**
    * \param address a polymorphic address
-   * \returns a new Eui48Address from the polymorphic address
+   * \returns a new Mac64Address from the polymorphic address
    * 
    * This function performs a type check and asserts if the
    * type of the input address is not compatible with an
-   * Eui48Address.
+   * Mac64Address.
    */
-  static Eui48Address ConvertFrom (const Address &address);
+  static Mac64Address ConvertFrom (const Address &address);
   /**
    * \returns true if the address matches, false otherwise.
    */
   static bool IsMatchingType (const Address &address);
   /**
-   * Allocate a new Eui48Address.
+   * Allocate a new Mac64Address.
    */
-  static Eui48Address Allocate (void);
+  static Mac64Address Allocate (void);
 private:
   /**
    * \returns a new Address instance
@@ -87,13 +86,13 @@ private:
    */
   Address ConvertTo (void) const;
   static uint8_t GetType (void);
-  uint8_t m_address[6];
+  uint8_t m_address[8];
 };
 
-bool operator == (const Eui48Address &a, const Eui48Address &b);
-bool operator != (const Eui48Address &a, const Eui48Address &b);
-std::ostream& operator<< (std::ostream& os, const Eui48Address & address);
+bool operator == (const Mac64Address &a, const Mac64Address &b);
+bool operator != (const Mac64Address &a, const Mac64Address &b);
+std::ostream& operator<< (std::ostream& os, const Mac64Address & address);
 
 } // namespace ns3
 
-#endif /* EUI48_ADDRESS_H */
+#endif /* EUI64_ADDRESS_H */
