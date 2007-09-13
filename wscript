@@ -173,7 +173,7 @@ def build(bld):
 
     # process subfolders from here
     bld.add_subdirs('src')
-    bld.add_subdirs('samples utils examples')
+    bld.add_subdirs('samples utils examples tutorial')
 
     ## Create a single ns3 library containing all modules
     lib = bld.create_obj('cpp', 'shlib')
