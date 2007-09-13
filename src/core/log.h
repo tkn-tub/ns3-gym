@@ -74,7 +74,7 @@
  * defined with the NS_LOG_COMPONENT_DEFINE macro in the
  * same file.
  */
-#define NS_LOG(level,msg)                       \
+#define NS_LOG(level, msg)                      \
   do                                            \
     {                                           \
       if (g_log.IsEnabled (level))              \
@@ -84,39 +84,48 @@
     }                                           \
   while (false)
 
-#define NS_LOG_DEBUG(msg) \
-  NS_LOG (ns3::LOG_LEVEL_DEBUG,msg)
-
-#define NS_LOG_FUNCTION \
-  NS_LOG (ns3::LOG_LEVEL_FUNCTION, __PRETTY_PRINT__)
-
-#define NS_LOG_PARAM(msg) \
-  NS_LOG (ns3::LOG_LEVEL_PARAM,msg)
+#define NS_LOG_ERROR(msg) \
+  NS_LOG(ns3::LOG_LEVEL_ERROR, msg)
 
 #define NS_LOG_WARN(msg) \
-  NS_LOG (ns3::LOG_LEVEL_WARN,msg)
+  NS_LOG(ns3::LOG_LEVEL_WARN, msg)
 
-#define NS_LOG_ERROR(msg) \
-  NS_LOG (ns3::LOG_LEVEL_ERROR,msg)
+#define NS_LOG_DEBUG(msg) \
+  NS_LOG(ns3::LOG_LEVEL_DEBUG, msg)
 
-#define NS_LOG_UNCOND(msg) \
-  do                                            \
-    {                                           \
-      std::clog << msg << std::endl;            \
-    }                                           \
+#define NS_LOG_INFO(msg) \
+  NS_LOG(ns3::LOG_LEVEL_INFO, msg)
+
+#define NS_LOG_FUNCTION(msg) \
+  NS_LOG(ns3::LOG_LEVEL_FUNCTION, msg)
+
+#define NS_LOG_PARAM(msg) \
+  NS_LOG(ns3::LOG_LEVEL_PARAM, msg)
+
+#define NS_LOG_LOGIC(msg) \
+  NS_LOG(ns3::LOG_LEVEL_LOGIC, msg)
+
+#define NS_LOG_ALL(msg) \
+  NS_LOG(ns3::LOG_LEVEL_ALL, msg)
+
+#define NS_LOG_UNCOND(msg)              \
+  do                                    \
+    {                                   \
+      std::clog << msg << std::endl;    \
+    }                                   \
   while (false)
-
-
 
 namespace ns3 {
 
 enum LogLevel {
-  LOG_LEVEL_DEBUG    = 1<<0,
-  LOG_LEVEL_FUNCTION = 1<<1,
-  LOG_LEVEL_PARAM    = 1<<2,
-  LOG_LEVEL_WARN     = 1<<3,
-  LOG_LEVEL_ERROR    = 1<<4,
-  LOG_LEVEL_LAST     = 1<<31
+  LOG_LEVEL_ERROR    = 1<<0, // serious error messages only
+  LOG_LEVEL_WARN     = 1<<1, // add warning messages
+  LOG_LEVEL_DEBUG    = 1<<2, // add rare ad-hoc debug messages
+  LOG_LEVEL_INFO     = 1<<3, // add informational messages (e.g., banners)
+  LOG_LEVEL_FUNCTION = 1<<4, // add function tracing
+  LOG_LEVEL_PARAM    = 1<<5, // add parameters to functions
+  LOG_LEVEL_LOGIC    = 1<<6, // add control flow tracing within functions
+  LOG_LEVEL_ALL      = 1<<30 // print everything
 };
 
 /**
@@ -159,7 +168,7 @@ public:
   void Enable (enum LogLevel level);
   void Disable (enum LogLevel level);
 private:
-  uint32_t m_levels;
+  int32_t m_levels;
 };
 
 } // namespace ns3

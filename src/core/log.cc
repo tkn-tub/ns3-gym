@@ -101,11 +101,23 @@ LogComponentEnableEnvVar (void)
               cur_lev = next_lev + 1;
               next_lev = tmp.find ("|", cur_lev);
               std::string lev = tmp.substr (cur_lev, next_lev - cur_lev);
-              if (lev == "debug")
+              if (lev == "error")
+                {
+                  level |= LOG_LEVEL_ERROR;
+                }
+              else if (lev == "warn")
+                {
+                  level |= LOG_LEVEL_WARN;
+                }
+              else if (lev == "debug")
                 {
                   level |= LOG_LEVEL_DEBUG;
                 }
-              else if (lev == "func")
+              else if (lev == "info")
+                {
+                  level |= LOG_LEVEL_INFO;
+                }
+              else if (lev == "function")
                 {
                   level |= LOG_LEVEL_FUNCTION;
                 }
@@ -113,13 +125,13 @@ LogComponentEnableEnvVar (void)
                 {
                   level |= LOG_LEVEL_PARAM;
                 }
-              else if (lev == "warn")
+              else if (lev == "logic")
                 {
-                  level |= LOG_LEVEL_WARN;
+                  level |= LOG_LEVEL_LOGIC;
                 }
-              else if (lev == "error")
+              else if (lev == "all")
                 {
-                  level |= LOG_LEVEL_ERROR;
+                  level |= LOG_LEVEL_ALL;
                 }
             } while (next_lev != std::string::npos);
         }
@@ -159,7 +171,6 @@ LogComponentEnableEnvVar (void)
 #endif
 }
 
-
 LogComponent::LogComponent (char const * name)
   : m_levels (0)
 {
@@ -172,22 +183,28 @@ LogComponent::LogComponent (char const * name)
     }
   components->push_back (std::make_pair (name, this));
 }
+
 bool 
 LogComponent::IsEnabled (enum LogLevel level) const
 {
   LogComponentEnableEnvVar ();
-  return (level & m_levels) == 1;
+//  return (level & m_levels) ? 1 : 0;
+
+  return m_levels >= level;
 }
+
 bool
 LogComponent::IsNoneEnabled (void) const
 {
   return m_levels == 0;
 }
+
 void 
 LogComponent::Enable (enum LogLevel level)
 {
   m_levels |= level;
 }
+
 void 
 LogComponent::Disable (enum LogLevel level)
 {
@@ -209,6 +226,7 @@ LogComponentEnable (char const *name, enum LogLevel level)
 	}
     }  
 }
+
 void 
 LogComponentDisable (char const *name, enum LogLevel level)
 {
@@ -225,7 +243,6 @@ LogComponentDisable (char const *name, enum LogLevel level)
     }  
 }
 
-
 void 
 LogComponentPrintList (void)
 {
@@ -240,25 +257,37 @@ LogComponentPrintList (void)
           std::cout << "0" << std::endl;
           continue;
         }
-      if (i->second->IsEnabled (LOG_LEVEL_DEBUG))
+      if (i->second->IsEnabled (LOG_LEVEL_ERROR))
         {
-          std::cout << "debug";
-        }
-      if (i->second->IsEnabled (LOG_LEVEL_FUNCTION))
-        {
-          std::cout << "|func";
-        }
-      if (i->second->IsEnabled (LOG_LEVEL_PARAM))
-        {
-          std::cout << "|param";
+          std::cout << "error";
         }
       if (i->second->IsEnabled (LOG_LEVEL_WARN))
         {
           std::cout << "|warn";
         }
-      if (i->second->IsEnabled (LOG_LEVEL_ERROR))
+      if (i->second->IsEnabled (LOG_LEVEL_DEBUG))
         {
-          std::cout << "|error";
+          std::cout << "|debug";
+        }
+      if (i->second->IsEnabled (LOG_LEVEL_INFO))
+        {
+          std::cout << "|info";
+        }
+      if (i->second->IsEnabled (LOG_LEVEL_FUNCTION))
+        {
+          std::cout << "|function";
+        }
+      if (i->second->IsEnabled (LOG_LEVEL_PARAM))
+        {
+          std::cout << "|param";
+        }
+      if (i->second->IsEnabled (LOG_LEVEL_LOGIC))
+        {
+          std::cout << "|logic";
+        }
+      if (i->second->IsEnabled (LOG_LEVEL_ALL))
+        {
+          std::cout << "|all";
         }
       std::cout << std::endl;
     }

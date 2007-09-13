@@ -14,16 +14,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 
 using namespace ns3;
 
-NS_DEBUG_COMPONENT_DEFINE ("HelloSimulator");
+NS_LOG_COMPONENT_DEFINE ("HelloSimulator");
 
 int 
 main (int argc, char *argv[])
 {
-  DebugComponentEnable("HelloSimulator");
+  LogComponentEnable ("HelloSimulator", LOG_LEVEL_INFO);
 
-  NS_DEBUG("Hello Simulator");
+  NS_LOG_INFO ("Hello Simulator");
 }
