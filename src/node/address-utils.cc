@@ -32,7 +32,7 @@ void WriteTo (Buffer::Iterator &i, const Address &ad)
   ad.CopyTo (mac);
   i.Write (mac, ad.GetLength ());
 }
-void WriteTo (Buffer::Iterator &i, Eui48Address ad)
+void WriteTo (Buffer::Iterator &i, Mac48Address ad)
 {
   uint8_t mac[6];
   ad.CopyTo (mac);
@@ -49,7 +49,7 @@ void ReadFrom (Buffer::Iterator &i, Address &ad, uint32_t len)
   i.Read (mac, len);
   ad.CopyFrom (mac, len);
 }
-void ReadFrom (Buffer::Iterator &i, Eui48Address &ad)
+void ReadFrom (Buffer::Iterator &i, Mac48Address &ad)
 {
   uint8_t mac[6];
   i.Read (mac, 6);

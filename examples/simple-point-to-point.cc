@@ -64,7 +64,7 @@
 
 using namespace ns3;
 
-NS_DEBUG_COMPONENT_DEFINE ("Me");
+NS_DEBUG_COMPONENT_DEFINE ("SimplePointToPoint");
 
 int 
 main (int argc, char *argv[])
@@ -74,7 +74,7 @@ main (int argc, char *argv[])
   // for selected modules; the below lines suggest how to do this
   // remember to add #include "ns3/debug.h" before enabling these
 #if 0 
-  DebugComponentEnable("Me");
+  DebugComponentEnable("SimplePointToPoint");
   DebugComponentEnable("Object");
   DebugComponentEnable("Queue");
   DebugComponentEnable("DropTailQueue");

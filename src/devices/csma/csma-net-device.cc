@@ -69,7 +69,7 @@ CsmaTraceType::Get (void) const
 }
 
 CsmaNetDevice::CsmaNetDevice (Ptr<Node> node)
-  : NetDevice (node, Eui48Address::Allocate ()),
+  : NetDevice (node, Mac48Address::Allocate ()),
     m_bps (DataRate (0xffffffff))
 {
   NS_DEBUG ("CsmaNetDevice::CsmaNetDevice (" << node << ")");
@@ -77,7 +77,7 @@ CsmaNetDevice::CsmaNetDevice (Ptr<Node> node)
   Init(true, true);
 }
 
-CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Eui48Address addr, 
+CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Mac48Address addr, 
                               CsmaEncapsulationMode encapMode) 
   : NetDevice(node, addr), 
     m_bps (DataRate (0xffffffff))
@@ -88,7 +88,7 @@ CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Eui48Address addr,
   Init(true, true);
 }
 
-CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Eui48Address addr, 
+CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Mac48Address addr, 
                               CsmaEncapsulationMode encapMode,
                               bool sendEnable, bool receiveEnable) 
   : NetDevice(node, addr), 
@@ -138,8 +138,8 @@ CsmaNetDevice::Init(bool sendEnable, bool receiveEnable)
   m_channel = 0; 
   m_queue = 0;
 
-  EnableBroadcast (Eui48Address ("ff:ff:ff:ff:ff:ff"));
-  EnableMulticast (Eui48Address ("01:00:5e:00:00:00"));
+  EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
+  EnableMulticast (Mac48Address ("01:00:5e:00:00:00"));
 
   SetSendEnable (sendEnable);
   SetReceiveEnable (receiveEnable);
@@ -192,7 +192,7 @@ CsmaNetDevice::SetBackoffParams (Time slotTime, uint32_t minSlots,
   m_backoff.m_maxRetries = maxRetries;
 }
 void 
-CsmaNetDevice::AddHeader (Packet& p, Eui48Address dest,
+CsmaNetDevice::AddHeader (Packet& p, Mac48Address dest,
                             uint16_t protocolNumber)
 {
   if (m_encapMode == RAW)
@@ -201,7 +201,7 @@ CsmaNetDevice::AddHeader (Packet& p, Eui48Address dest,
     }
   EthernetHeader header (false);
   EthernetTrailer trailer;
-  Eui48Address source = Eui48Address::ConvertFrom (GetAddress ());
+  Mac48Address source = Mac48Address::ConvertFrom (GetAddress ());
   header.SetSource(source);
   header.SetDestination(dest);
 
@@ -295,7 +295,7 @@ CsmaNetDevice::SendTo (
   if (!IsSendEnabled())
     return false;
 
-  Eui48Address destination = Eui48Address::ConvertFrom (dest);
+  Mac48Address destination = Mac48Address::ConvertFrom (dest);
   AddHeader(p, destination, protocolNumber);
 
   // Place the packet to be sent on the send queue
@@ -509,9 +509,9 @@ CsmaNetDevice::Receive (const Packet& packet)
 {
   EthernetHeader header (false);
   EthernetTrailer trailer;
-  Eui48Address broadcast;
-  Eui48Address multicast;
-  Eui48Address destination;
+  Mac48Address broadcast;
+  Mac48Address multicast;
+  Mac48Address destination;
   Packet p = packet;
 
   NS_DEBUG ("CsmaNetDevice::Receive ():  UID is " << p.GetUid());
@@ -543,7 +543,7 @@ CsmaNetDevice::Receive (const Packet& packet)
 // We are going to receive all packets destined to any multicast address,
 // which means clearing the low-order 23 bits the header destination 
 //
-  Eui48Address mcDest;
+  Mac48Address mcDest;
   uint8_t      mcBuf[6];
 
   header.GetDestination ().CopyTo (mcBuf);
@@ -552,9 +552,9 @@ CsmaNetDevice::Receive (const Packet& packet)
   mcBuf[5] = 0;
   mcDest.CopyFrom (mcBuf);
 
-  multicast = Eui48Address::ConvertFrom (GetMulticast ());
-  broadcast = Eui48Address::ConvertFrom (GetBroadcast ());
-  destination = Eui48Address::ConvertFrom (GetAddress ());
+  multicast = Mac48Address::ConvertFrom (GetMulticast ());
+  broadcast = Mac48Address::ConvertFrom (GetBroadcast ());
+  destination = Mac48Address::ConvertFrom (GetAddress ());
 
   if ((header.GetDestination () != broadcast) &&
       (mcDest != multicast) &&
@@ -609,7 +609,7 @@ CsmaNetDevice::MakeMulticastAddress(Ipv4Address multicastGroup) const
 // primarily since we know that by construction, but also since the parameter
 // is an Ipv4Address.
 //
-  Eui48Address etherAddr = Eui48Address::ConvertFrom (hardwareDestination);
+  Mac48Address etherAddr = Mac48Address::ConvertFrom (hardwareDestination);
 //
 // We now have the multicast address in an abstract 48-bit container.  We 
 // need to pull it out so we can play with it.  When we're done, we have the 
@@ -633,11 +633,11 @@ CsmaNetDevice::MakeMulticastAddress(Ipv4Address multicastGroup) const
   etherBuffer[5] = ipBuffer[3];
 //
 // Now, etherBuffer has the desired ethernet multicast address.  We have to
-// suck these bits back into the Eui48Address,
+// suck these bits back into the Mac48Address,
 //
   etherAddr.CopyFrom (etherBuffer);
 //
-// Implicit conversion (operator Address ()) is defined for Eui48Address, so
+// Implicit conversion (operator Address ()) is defined for Mac48Address, so
 // use it by just returning the EUI-48 address which is automagically converted
 // to an Address.
 //

@@ -34,7 +34,7 @@
 #include "ns3/data-rate.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
-#include "ns3/eui48-address.h"
+#include "ns3/mac48-address.h"
 
 namespace ns3 {
 
@@ -109,7 +109,7 @@ enum CsmaEncapsulationMode {
    * \param addr The source MAC address of the net device.
    * \param pktType the type of encapsulation
    */
-  CsmaNetDevice (Ptr<Node> node, Eui48Address addr, CsmaEncapsulationMode pktType);
+  CsmaNetDevice (Ptr<Node> node, Mac48Address addr, CsmaEncapsulationMode pktType);
 
   /**
    * Construct a CsmaNetDevice
@@ -124,7 +124,7 @@ enum CsmaEncapsulationMode {
    * \param sendEnable whether this device is able to send
    * \param receiveEnable whether this device is able to receive
    */
-  CsmaNetDevice (Ptr<Node> node, Eui48Address addr,
+  CsmaNetDevice (Ptr<Node> node, Mac48Address addr,
                    CsmaEncapsulationMode pktType,
                    bool sendEnable, bool receiveEnable);
   /**
@@ -231,7 +231,7 @@ enum CsmaEncapsulationMode {
    * multicast group.
    *
    * @see Ipv4Address
-   * @see Eui48Address
+   * @see Mac48Address
    * @see Address
    */
   Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
@@ -279,7 +279,7 @@ protected:
    * \param protocolNumber In some protocols, identifies the type of
    * payload contained in this packet.
    */
-  void AddHeader (Packet& p, Eui48Address dest, 
+  void AddHeader (Packet& p, Mac48Address dest, 
                   uint16_t protocolNumber);
   /**
    * Removes, from a packet of data, all headers and trailers that

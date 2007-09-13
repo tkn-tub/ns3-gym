@@ -17,7 +17,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "eui48-address.h"
+#include "mac64-address.h"
 #include "address.h"
 #include "ns3/assert.h"
 #include <iomanip>
@@ -45,14 +45,14 @@ AsciiToLowCase (char c)
 }
 
 
-Eui48Address::Eui48Address ()
+Mac64Address::Mac64Address ()
 {
-  memset (m_address, 0, 6);
+  memset (m_address, 0, 8);
 }
-Eui48Address::Eui48Address (const char *str)
+Mac64Address::Mac64Address (const char *str)
 {
   int i = 0;
-  while (*str != 0 && i < 6) 
+  while (*str != 0 && i < 8) 
     {
       uint8_t byte = 0;
       while (*str != ASCII_COLON && *str != 0) 
@@ -80,85 +80,88 @@ Eui48Address::Eui48Address (const char *str)
   NS_ASSERT (i == 6);
 }
 void 
-Eui48Address::CopyFrom (const uint8_t buffer[6])
+Mac64Address::CopyFrom (const uint8_t buffer[8])
 {
-  memcpy (m_address, buffer, 6);
+  memcpy (m_address, buffer, 8);
 }
 void 
-Eui48Address::CopyTo (uint8_t buffer[6]) const
+Mac64Address::CopyTo (uint8_t buffer[8]) const
 {
-  memcpy (buffer, m_address, 6);
+  memcpy (buffer, m_address, 8);
 }
 
 bool 
-Eui48Address::IsMatchingType (const Address &address)
+Mac64Address::IsMatchingType (const Address &address)
 {
-  return address.CheckCompatible (GetType (), 6);
+  return address.CheckCompatible (GetType (), 8);
 }
-Eui48Address::operator Address ()
+Mac64Address::operator Address ()
 {
   return ConvertTo ();
 }
-Address 
-Eui48Address::ConvertTo (void) const
+Mac64Address 
+Mac64Address::ConvertFrom (const Address &address)
 {
-  return Address (GetType (), m_address, 6);
-}
-Eui48Address 
-Eui48Address::ConvertFrom (const Address &address)
-{
-  NS_ASSERT (address.CheckCompatible (GetType (), 6));
-  Eui48Address retval;
+  NS_ASSERT (address.CheckCompatible (GetType (), 8));
+  Mac64Address retval;
   address.CopyTo (retval.m_address);
   return retval;
 }
-Eui48Address 
-Eui48Address::Allocate (void)
+Address
+Mac64Address::ConvertTo (void) const
+{
+  return Address (GetType (), m_address, 8);
+}
+
+Mac64Address 
+Mac64Address::Allocate (void)
 {
   static uint64_t id = 0;
   id++;
-  Eui48Address address;
-  address.m_address[0] = (id >> 40) & 0xff;
-  address.m_address[1] = (id >> 32) & 0xff;
-  address.m_address[2] = (id >> 24) & 0xff;
-  address.m_address[3] = (id >> 16) & 0xff;
-  address.m_address[4] = (id >> 8) & 0xff;
-  address.m_address[5] = (id >> 0) & 0xff;
+  Mac64Address address;
+  address.m_address[0] = (id >> 56) & 0xff;
+  address.m_address[1] = (id >> 48) & 0xff;
+  address.m_address[2] = (id >> 40) & 0xff;
+  address.m_address[3] = (id >> 32) & 0xff;
+  address.m_address[4] = (id >> 24) & 0xff;
+  address.m_address[5] = (id >> 16) & 0xff;
+  address.m_address[6] = (id >> 8) & 0xff;
+  address.m_address[7] = (id >> 0) & 0xff;
   return address;
 }
 uint8_t 
-Eui48Address::GetType (void)
+Mac64Address::GetType (void)
 {
   static uint8_t type = Address::Register ();
   return type;
 }
 
-bool operator == (const Eui48Address &a, const Eui48Address &b)
+bool operator == (const Mac64Address &a, const Mac64Address &b)
 {
-  uint8_t ada[6];
-  uint8_t adb[6];
+  uint8_t ada[8];
+  uint8_t adb[8];
   a.CopyTo (ada);
   b.CopyTo (adb);
-  return memcmp (ada, adb, 6) == 0;
+  return memcmp (ada, adb, 8) == 0;
 }
-bool operator != (const Eui48Address &a, const Eui48Address &b)
+bool operator != (const Mac64Address &a, const Mac64Address &b)
 {
   return ! (a == b);
 }
 
-std::ostream& operator<< (std::ostream& os, const Eui48Address & address)
+std::ostream& operator<< (std::ostream& os, const Mac64Address & address)
 {
-  uint8_t ad[6];
+  uint8_t ad[8];
   address.CopyTo (ad);
 
   os.setf (std::ios::hex, std::ios::basefield);
   os.fill('0');
-  for (uint8_t i=0; i < 5; i++) 
+  for (uint8_t i=0; i < 7; i++) 
     {
       os << std::setw(2) << (uint32_t)ad[i] << ":";
     }
   // Final byte not suffixed by ":"
-  os << std::setw(2) << (uint32_t)ad[5];
+  os << std::setw(2) << (uint32_t)ad[7];
   os.setf (std::ios::dec, std::ios::basefield);
   os.fill(' ');
   return os;
