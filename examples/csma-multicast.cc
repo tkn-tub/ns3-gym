@@ -51,6 +51,7 @@
 #include "ns3/socket.h"
 #include "ns3/ipv4-route.h"
 #include "ns3/onoff-application.h"
+#include "ns3/packet-sink.h"
 
 using namespace ns3;
 
@@ -87,6 +88,7 @@ main (int argc, char *argv[])
   LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
   LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
   LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
 #endif
 //
 // Set up default values for the simulation.  Use the DefaultValue::Bind()
@@ -277,6 +279,8 @@ main (int argc, char *argv[])
 
   uint16_t port = 9;   // Discard port (RFC 863)
 
+  // Configure a multicast packet generator that generates a packet
+  // every few seconds
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
     InetSocketAddress (multicastGroup, port), 
@@ -290,6 +294,18 @@ main (int argc, char *argv[])
 //
   ooff->Start(Seconds(1.));
   ooff->Stop (Seconds(10.));
+
+  // Create an optional packet sink to receive these packets
+  // If you enable logging on this (above) it will print a log statement
+  // for every packet received
+  Ptr<PacketSink> sink = Create<PacketSink> (
+    n4,
+    InetSocketAddress (Ipv4Address::GetAny (), port),
+    "Udp");
+  // Start the sink
+  sink->Start (Seconds (1.0));
+  sink->Stop (Seconds (10.0));
+
 //
 // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
 // Trace output will be sent to the file "csma-multicast.tr"
