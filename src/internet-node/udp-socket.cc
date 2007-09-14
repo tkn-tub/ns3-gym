@@ -183,19 +183,6 @@ UdpSocket::Connect(const Address & address)
   NotifyConnectionSucceeded ();
   m_connected = true;
 
-  NS_LOG_LOGIC ("Updating local address");
-
-  uint32_t localIfIndex;
-
-  Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
-  
-  if (ipv4->GetIfIndexForDestination (m_defaultAddress, localIfIndex))
-    {
-      m_endPoint->SetLocalAddress (ipv4->GetAddress(localIfIndex));
-    }
-
-  NS_LOG_LOGIC ("Local address is " << m_endPoint->GetLocalAddress());
-
   return 0;
 }
 
