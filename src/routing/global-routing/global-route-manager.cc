@@ -15,12 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Authors:  Craig Dowell (craigdo@ee.washington.edu)
- *           Tom Henderson (tomhend@u.washington.edu)
+ * Author: Tom Henderson (tomhend@u.washington.edu)
  */
 
 #include "ns3/assert.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/simulation-singleton.h"
 #include "global-route-manager.h"
 #include "global-route-manager-impl.h"

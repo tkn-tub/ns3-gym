@@ -18,12 +18,12 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns3/debug.h"
+
+#include "ns3/log.h"
 #include "ipv4-address.h"
 #include "ns3/assert.h"
 
-NS_DEBUG_COMPONENT_DEFINE("Ipv4Address");
-
+NS_LOG_COMPONENT_DEFINE("Ipv4Address");
 
 namespace ns3 {
 

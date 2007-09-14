@@ -17,10 +17,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "drop-tail-queue.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("DropTailQueue");
+NS_LOG_COMPONENT_DEFINE ("DropTailQueue");
 
 namespace ns3 {
 
@@ -33,38 +33,39 @@ DropTailQueue::DropTailQueue () :
   m_packets (),
   m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
 {
-  NS_DEBUG("DropTailQueue::DropTailQueue ()");
+  NS_LOG_FUNCTION;
 }
 
 DropTailQueue::~DropTailQueue ()
 {
-  NS_DEBUG("DropTailQueue::~DropTailQueue ()");
+  NS_LOG_FUNCTION;
 }
 
 void 
 DropTailQueue::SetMaxPackets (uint32_t npackets)
 {
-  NS_DEBUG("DropTailQueue::SetMaxPackets (" << npackets << ")");
-
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << npackets << ")");
   m_maxPackets = npackets;
 }
 
 uint32_t 
 DropTailQueue::GetMaxPackets (void)
 {
-  NS_DEBUG("DropTailQueue::GetMaxPackets () <= " << m_maxPackets);
-
+  NS_LOG_FUNCTION;
+  NS_LOG_LOGIC ("returns " << m_maxPackets);
   return m_maxPackets;
 }
 
 bool 
 DropTailQueue::DoEnqueue (const Packet& p)
 {
-  NS_DEBUG("DropTailQueue::DoEnqueue (" << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
 
   if (m_packets.size () >= m_maxPackets)
     {
-      NS_DEBUG("DropTailQueue::DoEnqueue (): Queue full -- droppping pkt");
+      NS_LOG_LOGIC ("Queue full -- droppping pkt");
       Drop (p);
       return false;
     }
@@ -76,18 +77,19 @@ DropTailQueue::DoEnqueue (const Packet& p)
 bool
 DropTailQueue::DoDequeue (Packet& p)
 {
-  NS_DEBUG("DropTailQueue::DoDequeue (" << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
 
   if (m_packets.empty()) 
     {
-      NS_DEBUG("DropTailQueue::DoDequeue (): Queue empty");
+      NS_LOG_LOGIC ("Queue empty");
       return false;
     }
 
   p = m_packets.front ();
   m_packets.pop ();
 
-  NS_DEBUG("DropTailQueue::DoDequeue (): Popped " << &p << " <= true");
+  NS_LOG_LOGIC ("Popped " << &p);
 
   return true;
 }
@@ -95,11 +97,12 @@ DropTailQueue::DoDequeue (Packet& p)
 bool
 DropTailQueue::DoPeek (Packet& p)
 {
-  NS_DEBUG("DropTailQueue::DoPeek (" << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
 
   if (m_packets.empty()) 
     {
-      NS_DEBUG("DropTailQueue::DoPeek (): Queue empty");
+      NS_LOG_LOGIC ("Queue empty");
       return false;
     }
 
