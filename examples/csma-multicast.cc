@@ -63,6 +63,9 @@ main (int argc, char *argv[])
 // Users may find it convenient to turn on explicit debugging
 // for selected modules; the below lines suggest how to do this
 //
+
+NS_LOG_ALL("");
+
 #if 0
   LogComponentEnable ("CsmaMulticastExample", LOG_LEVEL_INFO);
 

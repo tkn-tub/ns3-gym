@@ -156,9 +156,12 @@ bool PointToPointNetDevice::SendTo (const Packet& packet, const Address& dest,
 //
 //
 // If there's a transmission in progress, we enque the packet for later
-// trnsmission; otherwise we send it now.
+// transmission; otherwise we send it now.
   if (m_txMachineState == READY) 
     {
+// We still enqueue and dequeue it to hit the tracing hooks
+      m_queue->Enqueue (p);
+      m_queue->Dequeue (p);
       return TransmitStart (p);
     }
   else
