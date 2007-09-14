@@ -109,28 +109,28 @@
   while (false)
 
 #define NS_LOG_ERROR(msg) \
-  NS_LOG(ns3::LOG_LEVEL_ERROR, msg)
+  NS_LOG(ns3::LOG_ERROR, msg)
 
 #define NS_LOG_WARN(msg) \
-  NS_LOG(ns3::LOG_LEVEL_WARN, msg)
+  NS_LOG(ns3::LOG_WARN, msg)
 
 #define NS_LOG_DEBUG(msg) \
-  NS_LOG(ns3::LOG_LEVEL_DEBUG, msg)
+  NS_LOG(ns3::LOG_DEBUG, msg)
 
 #define NS_LOG_INFO(msg) \
-  NS_LOG(ns3::LOG_LEVEL_INFO, msg)
+  NS_LOG(ns3::LOG_INFO, msg)
 
 #define NS_LOG_FUNCTION \
-  NS_LOG_F(ns3::LOG_LEVEL_FUNCTION)
+  NS_LOG_F(ns3::LOG_FUNCTION)
 
 #define NS_LOG_PARAM(msg) \
-  NS_LOG(ns3::LOG_LEVEL_PARAM, msg)
+  NS_LOG(ns3::LOG_PARAM, msg)
 
 #define NS_LOG_LOGIC(msg) \
-  NS_LOG(ns3::LOG_LEVEL_LOGIC, msg)
+  NS_LOG(ns3::LOG_LOGIC, msg)
 
 #define NS_LOG_ALL(msg) \
-  NS_LOG(ns3::LOG_LEVEL_ALL, msg)
+  NS_LOG(ns3::LOG_ALL, msg)
 
 #define NS_LOG_UNCOND(msg)              \
   do                                    \
@@ -160,14 +160,29 @@ namespace ns3 {
 #ifdef NS3_LOG_ENABLE
 
 enum LogLevel {
-  LOG_LEVEL_ERROR    = 1<<0, // serious error messages only
-  LOG_LEVEL_WARN     = 1<<1, // add warning messages
-  LOG_LEVEL_DEBUG    = 1<<2, // add rare ad-hoc debug messages
-  LOG_LEVEL_INFO     = 1<<3, // add informational messages (e.g., banners)
-  LOG_LEVEL_FUNCTION = 1<<4, // add function tracing
-  LOG_LEVEL_PARAM    = 1<<5, // add parameters to functions
-  LOG_LEVEL_LOGIC    = 1<<6, // add control flow tracing within functions
-  LOG_LEVEL_ALL      = 1<<30 // print everything
+  LOG_ERROR          = 0x0001, // serious error messages only
+  LOG_LEVEL_ERROR    = 0x0001,
+
+  LOG_WARN           = 0x0002, // warning messages
+  LOG_LEVEL_WARN     = 0x0003,
+
+  LOG_DEBUG          = 0x0004, // rare ad-hoc debug messages
+  LOG_LEVEL_DEBUG    = 0x0007,
+
+  LOG_INFO           = 0x0008, // informational messages (e.g., banners)
+  LOG_LEVEL_INFO     = 0x000f,
+
+  LOG_FUNCTION       = 0x0010, // function tracing
+  LOG_LEVEL_FUNCTION = 0x001f, 
+
+  LOG_PARAM          = 0x0020, // parameters to functions
+  LOG_LEVEL_PARAM    = 0x003f,
+
+  LOG_LOGIC          = 0x0040, // control flow tracing within functions
+  LOG_LEVEL_LOGIC    = 0x007f,
+
+  LOG_ALL            = 0x4000, // print everything
+  LOG_LEVEL_ALL      = 0x7fff
 };
 
 #endif

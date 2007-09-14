@@ -21,10 +21,10 @@
 #include "ns3/random-variable.h"
 #include "ns3/default-value.h"
 #include "ns3/random-variable-default-value.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include <cmath>
 
-NS_DEBUG_COMPONENT_DEFINE ("RandomPosition");
+NS_LOG_COMPONENT_DEFINE ("RandomPosition");
 
 namespace ns3 {
 
@@ -127,7 +127,7 @@ RandomDiscPosition::Get (void) const
   double rho = m_rho->GetValue ();
   double x = m_x + std::cos (theta) * rho;
   double y = m_y + std::sin (theta) * rho;
-  NS_DEBUG ("Disc position x=" << x << ", y=" << y);
+  NS_LOG_DEBUG ("Disc position x=" << x << ", y=" << y);
   return Position (x, y, 0.0);
 }
 

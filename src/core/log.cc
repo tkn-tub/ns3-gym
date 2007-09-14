@@ -92,7 +92,7 @@ LogComponentEnableEnvVar (void)
       if (equal == std::string::npos)
         {
           component = tmp;
-          level = LOG_LEVEL_DEBUG;
+          level = LOG_DEBUG;
         }
       else
         {
@@ -106,33 +106,65 @@ LogComponentEnableEnvVar (void)
               std::string lev = tmp.substr (cur_lev, next_lev - cur_lev);
               if (lev == "error")
                 {
-                  level |= LOG_LEVEL_ERROR;
+                  level |= LOG_ERROR;
                 }
               else if (lev == "warn")
                 {
-                  level |= LOG_LEVEL_WARN;
+                  level |= LOG_WARN;
                 }
               else if (lev == "debug")
                 {
-                  level |= LOG_LEVEL_DEBUG;
+                  level |= LOG_DEBUG;
                 }
               else if (lev == "info")
                 {
-                  level |= LOG_LEVEL_INFO;
+                  level |= LOG_INFO;
                 }
               else if (lev == "function")
                 {
-                  level |= LOG_LEVEL_FUNCTION;
+                  level |= LOG_FUNCTION;
                 }
               else if (lev == "param")
                 {
-                  level |= LOG_LEVEL_PARAM;
+                  level |= LOG_PARAM;
                 }
               else if (lev == "logic")
                 {
-                  level |= LOG_LEVEL_LOGIC;
+                  level |= LOG_LOGIC;
                 }
               else if (lev == "all")
+                {
+                  level |= LOG_ALL;
+                }
+              else if (lev == "errorlevel")
+                {
+                  level |= LOG_LEVEL_ERROR;
+                }
+              else if (lev == "warnlevel")
+                {
+                  level |= LOG_LEVEL_WARN;
+                }
+              else if (lev == "debuglevel")
+                {
+                  level |= LOG_LEVEL_DEBUG;
+                }
+              else if (lev == "infolevel")
+                {
+                  level |= LOG_LEVEL_INFO;
+                }
+              else if (lev == "functionlevel")
+                {
+                  level |= LOG_LEVEL_FUNCTION;
+                }
+              else if (lev == "paramlevel")
+                {
+                  level |= LOG_LEVEL_PARAM;
+                }
+              else if (lev == "logiclevel")
+                {
+                  level |= LOG_LEVEL_LOGIC;
+                }
+              else if (lev == "alllevel")
                 {
                   level |= LOG_LEVEL_ALL;
                 }
@@ -191,9 +223,7 @@ bool
 LogComponent::IsEnabled (enum LogLevel level) const
 {
   LogComponentEnableEnvVar ();
-//  return (level & m_levels) ? 1 : 0;
-
-  return m_levels >= level;
+  return (level & m_levels) ? 1 : 0;
 }
 
 bool
@@ -260,35 +290,35 @@ LogComponentPrintList (void)
           std::cout << "0" << std::endl;
           continue;
         }
-      if (i->second->IsEnabled (LOG_LEVEL_ERROR))
+      if (i->second->IsEnabled (LOG_ERROR))
         {
           std::cout << "error";
         }
-      if (i->second->IsEnabled (LOG_LEVEL_WARN))
+      if (i->second->IsEnabled (LOG_WARN))
         {
           std::cout << "|warn";
         }
-      if (i->second->IsEnabled (LOG_LEVEL_DEBUG))
+      if (i->second->IsEnabled (LOG_DEBUG))
         {
           std::cout << "|debug";
         }
-      if (i->second->IsEnabled (LOG_LEVEL_INFO))
+      if (i->second->IsEnabled (LOG_INFO))
         {
           std::cout << "|info";
         }
-      if (i->second->IsEnabled (LOG_LEVEL_FUNCTION))
+      if (i->second->IsEnabled (LOG_FUNCTION))
         {
           std::cout << "|function";
         }
-      if (i->second->IsEnabled (LOG_LEVEL_PARAM))
+      if (i->second->IsEnabled (LOG_PARAM))
         {
           std::cout << "|param";
         }
-      if (i->second->IsEnabled (LOG_LEVEL_LOGIC))
+      if (i->second->IsEnabled (LOG_LOGIC))
         {
           std::cout << "|logic";
         }
-      if (i->second->IsEnabled (LOG_LEVEL_ALL))
+      if (i->second->IsEnabled (LOG_ALL))
         {
           std::cout << "|all";
         }
