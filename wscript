@@ -119,6 +119,7 @@ def configure(conf):
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
+        variant_env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
     ## In optimized builds we still want debugging symbols, e.g. for
     ## profiling, and at least partially usable stack traces.

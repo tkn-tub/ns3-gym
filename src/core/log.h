@@ -17,8 +17,9 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef LOG_H
-#define LOG_H
+
+#ifndef __LOG_H__
+#define __LOG_H__
 
 #include <string>
 #include <iostream>
@@ -61,8 +62,17 @@
  * ns3::LogComponentDisable functions or with the NS_LOG
  * environment variable.
  */
+
+#ifdef NS3_LOG_ENABLE
+
 #define NS_LOG_COMPONENT_DEFINE(name)                                \
   static ns3::LogComponent g_log = ns3::LogComponent (name)
+
+#else
+
+#define NS_LOG_COMPONENT_DEFINE(name)
+
+#endif
 
 /**
  * \ingroup logging
@@ -74,15 +84,18 @@
  * defined with the NS_LOG_COMPONENT_DEFINE macro in the
  * same file.
  */
-#define NS_LOG(level, msg)                              \
-  do                                                    \
-    {                                                   \
-      if (g_log.IsEnabled (level))                      \
-        {                                               \
-          std::clog << __PRETTY_FUNCTION__ << " ==> " <<   \
-            msg << std::endl;                           \
-        }                                               \
-    }                                                   \
+
+#ifdef NS3_LOG_ENABLE
+
+#define NS_LOG(level, msg)                                      \
+  do                                                            \
+    {                                                           \
+      if (g_log.IsEnabled (level))                              \
+        {                                                       \
+          std::clog << __PRETTY_FUNCTION__ << " ==> " <<        \
+            msg << std::endl;                                   \
+        }                                                       \
+    }                                                           \
   while (false)
 
 #define NS_LOG_F(level)                                 \
@@ -94,7 +107,6 @@
         }                                               \
     }                                                   \
   while (false)
-
 
 #define NS_LOG_ERROR(msg) \
   NS_LOG(ns3::LOG_LEVEL_ERROR, msg)
@@ -127,7 +139,25 @@
     }                                   \
   while (false)
 
+#else
+
+#define NS_LOG(level, msg)
+#define NS_LOG_F(level)
+#define NS_LOG_ERROR(msg)
+#define NS_LOG_WARN(msg)
+#define NS_LOG_DEBUG(msg)
+#define NS_LOG_INFO(msg)
+#define NS_LOG_FUNCTION
+#define NS_LOG_PARAM(msg)
+#define NS_LOG_LOGIC(msg)
+#define NS_LOG_ALL(msg)
+#define NS_LOG_UNCOND(msg)
+
+#endif
+
 namespace ns3 {
+
+#ifdef NS3_LOG_ENABLE
 
 enum LogLevel {
   LOG_LEVEL_ERROR    = 1<<0, // serious error messages only
@@ -140,6 +170,8 @@ enum LogLevel {
   LOG_LEVEL_ALL      = 1<<30 // print everything
 };
 
+#endif
+
 /**
  * \param name a log component name
  * \ingroup logging
@@ -148,7 +180,11 @@ enum LogLevel {
  * The logging output can be later disabled with a call
  * to ns3::LogComponentDisable.
  */
+#ifdef NS3_LOG_ENABLE
 void LogComponentEnable (char const *name, enum LogLevel level);
+#else
+#define LogComponentEnable(a,b)
+#endif
 
 /**
  * \param name a log component name
@@ -158,7 +194,11 @@ void LogComponentEnable (char const *name, enum LogLevel level);
  * The logging output can be later re-enabled with a call
  * to ns3::LogComponentEnable.
  */
+#ifdef NS3_LOG_ENABLE
 void LogComponentDisable (char const *name, enum LogLevel level);
+#else
+#define LogComponentDisable(a,b)
+#endif
 
 /**
  * \ingroup logging
@@ -170,7 +210,13 @@ void LogComponentDisable (char const *name, enum LogLevel level);
  * 
  * For example: NS_LOG=print-list
  */
+#ifdef NS3_LOG_ENABLE
 void LogComponentPrintList (void);
+#else
+#define LogComponentPrintList()
+#endif
+
+#ifdef NS3_LOG_ENABLE
 
 class LogComponent {
 public:
@@ -183,6 +229,8 @@ private:
   int32_t m_levels;
 };
 
+#endif
+
 } // namespace ns3
 
-#endif /* LOG_H */
+#endif // __LOG_H__

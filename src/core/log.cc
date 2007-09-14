@@ -17,6 +17,9 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
+
+#ifdef NS3_LOG_ENABLE
+
 #include <list>
 #include <utility>
 #include <iostream>
@@ -295,4 +298,4 @@ LogComponentPrintList (void)
 
 } // namespace ns3
 
-
+#endif // NS3_LOG_ENABLE

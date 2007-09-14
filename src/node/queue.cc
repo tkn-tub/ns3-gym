@@ -214,7 +214,7 @@ bool
 Queue::IsEmpty (void)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_LOGIC ("returns" << (m_nPackets == 0));
+  NS_LOG_LOGIC ("returns " << (m_nPackets == 0));
   return m_nPackets == 0;
 }
 
