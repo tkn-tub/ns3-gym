@@ -165,7 +165,7 @@ main (int argc, char *argv[])
 //
 // Create a UdpEchoServer application on node one.
 //
-  uint16_t port = 80;
+  uint16_t port = 9;  // well-known echo port number
 
   Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
 //

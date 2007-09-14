@@ -274,9 +274,12 @@ main (int argc, char *argv[])
 // multicast group (node four will be listening).
 //
   NS_LOG_INFO ("Create Applications.");
+
+  uint16_t port = 9;   // Discard port (RFC 863)
+
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    InetSocketAddress (multicastGroup, 80), 
+    InetSocketAddress (multicastGroup, port), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0),

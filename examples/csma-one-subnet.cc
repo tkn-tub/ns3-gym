@@ -164,9 +164,10 @@ main (int argc, char *argv[])
 // Create an OnOff application to send UDP datagrams from node zero to node 1.
 //
   NS_LOG_INFO ("Create Applications.");
+  uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    InetSocketAddress ("10.1.1.2", 80), 
+    InetSocketAddress ("10.1.1.2", port), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
@@ -180,7 +181,7 @@ main (int argc, char *argv[])
 //
   ooff = Create<OnOffApplication> (
     n3, 
-    InetSocketAddress ("10.1.1.1", 80), 
+    InetSocketAddress ("10.1.1.1", port), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));

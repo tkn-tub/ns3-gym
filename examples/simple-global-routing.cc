@@ -162,9 +162,10 @@ main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
+  uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    InetSocketAddress ("10.1.3.2", 80), 
+    InetSocketAddress ("10.1.3.2", port), 
     "Udp",
     ConstantVariable (1), 
     ConstantVariable (0));
@@ -176,7 +177,7 @@ main (int argc, char *argv[])
   // The last argument "true" disables output from the Receive callback
   Ptr<PacketSink> sink = Create<PacketSink> (
     n3, 
-    InetSocketAddress (Ipv4Address::GetAny (), 80), 
+    InetSocketAddress (Ipv4Address::GetAny (), port), 
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.0));
@@ -185,7 +186,7 @@ main (int argc, char *argv[])
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   ooff = Create<OnOffApplication> (
     n3, 
-    InetSocketAddress ("10.1.2.1", 80),
+    InetSocketAddress ("10.1.2.1", port),
     "Udp",
     ConstantVariable (1), 
     ConstantVariable (0));
@@ -196,7 +197,7 @@ main (int argc, char *argv[])
   // Create a packet sink to receive these packets
   sink = Create<PacketSink> (
     n1, 
-    InetSocketAddress (Ipv4Address::GetAny (), 80), 
+    InetSocketAddress (Ipv4Address::GetAny (), port), 
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.1));

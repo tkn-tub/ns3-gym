@@ -146,17 +146,17 @@ main (int argc, char *argv[])
   CsmaIpv4Topology::AddIpv4Address (
       n2, n2ifIndex, Ipv4Address("192.168.1.2"), Ipv4Mask("255.255.255.0"));
 
-  // RFC 863 discard port indicates packet should be thrown away
+  // RFC 863 discard port ("9") indicates packet should be thrown away
   // by the system.  We allow this silent discard to be overridden
   // by the PacketSink application.
-  uint16_t discard_port = 9;
+  uint16_t port = 9;
 
   // Create the OnOff application to send UDP datagrams of size
   // 512 bytes (default) at a rate of 500 Kb/s (default) from n0
   NS_LOG_INFO ("Create Applications.");
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    InetSocketAddress ("255.255.255.255", discard_port), 
+    InetSocketAddress ("255.255.255.255", port), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
@@ -167,7 +167,7 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   Ptr<PacketSink> sink = Create<PacketSink> (
     n1,
-    InetSocketAddress (Ipv4Address::GetAny (), discard_port),
+    InetSocketAddress (Ipv4Address::GetAny (), port),
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.0));
@@ -176,7 +176,7 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   sink = Create<PacketSink> (
     n2,
-    InetSocketAddress (Ipv4Address::GetAny (), discard_port),
+    InetSocketAddress (Ipv4Address::GetAny (), port),
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.0));

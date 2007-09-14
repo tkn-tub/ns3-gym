@@ -190,9 +190,10 @@ main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
+  uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    InetSocketAddress ("10.1.3.2", 80), 
+    InetSocketAddress ("10.1.3.2", port), 
     "Udp",
     ConstantVariable (1), 
     ConstantVariable (0),
