@@ -214,8 +214,8 @@ main (int argc, char *argv[])
   // Trace output will be sent to the simple-point-to-point.tr file
   NS_LOG_INFO ("Configure Tracing.");
   AsciiTrace asciitrace ("simple-point-to-point.tr");
-  asciitrace.TraceAllNetDeviceRx ();
   asciitrace.TraceAllQueues ();
+  asciitrace.TraceAllNetDeviceRx ();
 
   // Also configure some tcpdump traces; each interface will be traced
   // The output files will be named 
