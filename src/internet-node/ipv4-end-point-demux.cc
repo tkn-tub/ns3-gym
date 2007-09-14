@@ -28,7 +28,7 @@ namespace ns3{
 NS_LOG_COMPONENT_DEFINE ("Ipv4EndPointDemux");
 
 Ipv4EndPointDemux::Ipv4EndPointDemux ()
-  : m_ephemeral (1025)
+  : m_ephemeral (49152)
 {
   NS_LOG_FUNCTION;
 }
@@ -246,9 +246,9 @@ Ipv4EndPointDemux::AllocateEphemeralPort (void)
   do 
     {
       port++;
-      if (port > 5000) 
+      if (port == 65535) 
         {
-          port = 1024;
+          port = 49152;
         }
       if (!LookupPortLocal (port)) 
         {
