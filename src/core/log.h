@@ -74,15 +74,27 @@
  * defined with the NS_LOG_COMPONENT_DEFINE macro in the
  * same file.
  */
-#define NS_LOG(level, msg)                      \
-  do                                            \
-    {                                           \
-      if (g_log.IsEnabled (level))              \
-        {                                       \
-          std::clog << msg << std::endl;        \
-        }                                       \
-    }                                           \
+#define NS_LOG(level, msg)                              \
+  do                                                    \
+    {                                                   \
+      if (g_log.IsEnabled (level))                      \
+        {                                               \
+          std::clog << __PRETTY_FUNCTION__ << " ==> " <<   \
+            msg << std::endl;                           \
+        }                                               \
+    }                                                   \
   while (false)
+
+#define NS_LOG_F(level)                                 \
+  do                                                    \
+    {                                                   \
+      if (g_log.IsEnabled (level))                      \
+        {                                               \
+          std::clog << __PRETTY_FUNCTION__ << std::endl;\
+        }                                               \
+    }                                                   \
+  while (false)
+
 
 #define NS_LOG_ERROR(msg) \
   NS_LOG(ns3::LOG_LEVEL_ERROR, msg)
@@ -96,8 +108,8 @@
 #define NS_LOG_INFO(msg) \
   NS_LOG(ns3::LOG_LEVEL_INFO, msg)
 
-#define NS_LOG_FUNCTION(msg) \
-  NS_LOG(ns3::LOG_LEVEL_FUNCTION, msg)
+#define NS_LOG_FUNCTION \
+  NS_LOG_F(ns3::LOG_LEVEL_FUNCTION)
 
 #define NS_LOG_PARAM(msg) \
   NS_LOG(ns3::LOG_LEVEL_PARAM, msg)

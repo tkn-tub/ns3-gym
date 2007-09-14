@@ -33,7 +33,7 @@
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
@@ -54,7 +54,7 @@
 
 using namespace ns3;
 
-NS_DEBUG_COMPONENT_DEFINE ("CsmaMulticast");
+NS_LOG_COMPONENT_DEFINE ("CsmaMulticastExample");
 
 int 
 main (int argc, char *argv[])
@@ -64,28 +64,30 @@ main (int argc, char *argv[])
 // for selected modules; the below lines suggest how to do this
 //
 #if 0
-  DebugComponentEnable("CsmaMulticast");
+  LogComponentEnable ("CsmaMulticastExample", LOG_LEVEL_INFO);
 
-  DebugComponentEnable("Object");
-  DebugComponentEnable("Queue");
-  DebugComponentEnable("DropTailQueue");
-  DebugComponentEnable("Channel");
-  DebugComponentEnable("CsmaChannel");
-  DebugComponentEnable("NetDevice");
-  DebugComponentEnable("CsmaNetDevice");
-  DebugComponentEnable("Ipv4L3Protocol");
-  DebugComponentEnable("OnOffApplication");
-  DebugComponentEnable("PacketSocket");
-  DebugComponentEnable("Socket");
-  DebugComponentEnable("UdpSocket");
-  DebugComponentEnable("UdpL4Protocol");
-  DebugComponentEnable("Ipv4L3Protocol");
-  DebugComponentEnable("Ipv4StaticRouting");
-  DebugComponentEnable("Ipv4Interface");
-  DebugComponentEnable("ArpIpv4Interface");
-  DebugComponentEnable("Ipv4LoopbackInterface");
+  LogComponentEnable("Object", LOG_LEVEL_ALL);
+  LogComponentEnable("Queue", LOG_LEVEL_ALL);
+  LogComponentEnable("DropTailQueue", LOG_LEVEL_ALL);
+  LogComponentEnable("Channel", LOG_LEVEL_ALL);
+  LogComponentEnable("CsmaChannel", LOG_LEVEL_ALL);
+  LogComponentEnable("NetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable("CsmaNetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable("PacketSocket", LOG_LEVEL_ALL);
+  LogComponentEnable("Socket", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpSocket", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpL4Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4StaticRouting", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4Interface", LOG_LEVEL_ALL);
+  LogComponentEnable("ArpIpv4Interface", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4LoopbackInterface", LOG_LEVEL_ALL);
+  LogComponentEnable("OnOffApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
 #endif
-
 //
 // Set up default values for the simulation.  Use the DefaultValue::Bind()
 // technique to tell the system what subclass of Queue to use.  The Bind
@@ -101,14 +103,14 @@ main (int argc, char *argv[])
 //
 // Explicitly create the nodes required by the topology (shown above).
 //
-  NS_DEBUG("Create nodes.");
+  NS_LOG_INFO ("Create nodes.");
   Ptr<Node> n0 = Create<InternetNode> ();
   Ptr<Node> n1 = Create<InternetNode> (); 
   Ptr<Node> n2 = Create<InternetNode> (); 
   Ptr<Node> n3 = Create<InternetNode> ();
   Ptr<Node> n4 = Create<InternetNode> ();
 
-  NS_DEBUG("Create channels.");
+  NS_LOG_INFO ("Create channels.");
 //
 // Explicitly create the channels required by the topology (shown above).
 //
@@ -118,7 +120,7 @@ main (int argc, char *argv[])
   Ptr<CsmaChannel> lan1 = 
     CsmaTopology::CreateCsmaChannel(DataRate(5000000), MilliSeconds(2));
 
-  NS_DEBUG("Build Topology.");
+  NS_LOG_INFO ("Build Topology.");
 //
 // Now fill out the topology by creating the net devices required to connect
 // the nodes to the channels and hooking them up.  AddIpv4CsmaNetDevice will
@@ -144,17 +146,16 @@ main (int argc, char *argv[])
   uint32_t nd4 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n4, lan1, 
     Mac48Address("08:00:2e:00:00:05"));
 
-  NS_DEBUG ("nd0 = " << nd0);
-  NS_DEBUG ("nd1 = " << nd1);
-  NS_DEBUG ("nd2Lan0 = " << nd2Lan0);
-  NS_DEBUG ("nd2Lan1 = " << nd2Lan1);
-  NS_DEBUG ("nd3 = " << nd3);
-  NS_DEBUG ("nd4 = " << nd3);
+  NS_LOG_INFO ("nd0 = " << nd0);
+  NS_LOG_INFO ("nd1 = " << nd1);
+  NS_LOG_INFO ("nd2Lan0 = " << nd2Lan0);
+  NS_LOG_INFO ("nd2Lan1 = " << nd2Lan1);
+  NS_LOG_INFO ("nd3 = " << nd3);
+  NS_LOG_INFO ("nd4 = " << nd3);
 //
 // We've got the "hardware" in place.  Now we need to add IP addresses.
 //
-  NS_DEBUG("Assign IP Addresses.");
-
+  NS_LOG_INFO ("Assign IP Addresses.");
   CsmaIpv4Topology::AddIpv4Address (n0, nd0, Ipv4Address ("10.1.1.1"), 
     Ipv4Mask ("255.255.255.0"));
 
@@ -181,7 +182,7 @@ main (int argc, char *argv[])
   CsmaIpv4Topology::AddIpv4Address (n4, nd4, Ipv4Address ("10.1.2.3"), 
     Ipv4Mask ("255.255.255.0"));
 
-  NS_DEBUG("Configure multicasting.");
+  NS_LOG_INFO ("Configure multicasting.");
 //
 // Now we can configure multicasting.  As described above, the multicast 
 // source is at node zero, which we assigned the IP address of 10.1.1.1 
@@ -272,7 +273,7 @@ main (int argc, char *argv[])
 // Create an OnOff application to send UDP datagrams from node zero to the
 // multicast group (node four will be listening).
 //
-  NS_DEBUG("Create Applications.");
+  NS_LOG_INFO ("Create Applications.");
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
     InetSocketAddress (multicastGroup, 80), 
@@ -290,7 +291,7 @@ main (int argc, char *argv[])
 // Configure tracing of all enqueue, dequeue, and NetDevice receive events.
 // Trace output will be sent to the file "csma-multicast.tr"
 //
-  NS_DEBUG("Configure Tracing.");
+  NS_LOG_INFO ("Configure Tracing.");
   AsciiTrace asciitrace ("csma-multicast.tr");
   asciitrace.TraceAllNetDeviceRx ();
   asciitrace.TraceAllQueues ();
@@ -306,8 +307,8 @@ main (int argc, char *argv[])
 //
 // Now, do the actual simulation.
 //
-  NS_DEBUG("Run Simulation.");
+  NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
   Simulator::Destroy ();
-  NS_DEBUG("Done.");
+  NS_LOG_INFO ("Done.");
 }

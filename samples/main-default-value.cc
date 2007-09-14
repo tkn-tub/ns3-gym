@@ -3,7 +3,7 @@
 #include <string>
 #include "ns3/default-value.h"
 #include "ns3/command-line.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 
 using namespace ns3;
 
@@ -76,9 +76,9 @@ int main (int argc, char* argv[])
   DefaultValue::Bind("testInt1", "57");
 
   TestClass* testclass = new TestClass ();
-  NS_DEBUG_UNCOND("TestBool1 default value (" << testclass->m_testBool1 << ")");
-  NS_DEBUG_UNCOND("TestInt1 default value (" << testclass->m_testInt1 << ")");
-  NS_DEBUG_UNCOND("TestInt2 default value (" << testclass->m_testInt2 << ")");
+  NS_LOG_UNCOND("TestBool1 default value (" << testclass->m_testBool1 << ")");
+  NS_LOG_UNCOND("TestInt1 default value (" << testclass->m_testInt1 << ")");
+  NS_LOG_UNCOND("TestInt2 default value (" << testclass->m_testInt2 << ")");
   delete testclass;
 
   return 0;

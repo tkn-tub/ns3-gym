@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include "ns3/assert.h"
-#include "ns3/debug.h"
 #include "ns3/fatal-error.h"
 #include "ns3/nstime.h"
 #include "ns3/internet-node.h"

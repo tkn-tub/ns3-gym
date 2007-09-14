@@ -19,9 +19,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "composite-trace-resolver.h"
-#include "debug.h"
+#include "log.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("CompositeTraceResolver");
+NS_LOG_COMPONENT_DEFINE ("CompositeTraceResolver");
 
 namespace ns3 {
 
@@ -174,7 +174,7 @@ CompositeTraceResolver::SetParentResolver (Ptr<TraceResolver> resolver)
 void 
 CompositeTraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
 {
-  NS_DEBUG ("connect path="<<path);
+  NS_LOG_LOGIC ("connect path="<<path);
   class ConnectOperation : public Operation
   {
   public:
@@ -183,7 +183,7 @@ CompositeTraceResolver::Connect (std::string path, CallbackBase const &cb, const
     {}
     virtual void Do (std::string subpath, ResolveItem *item) const
     {
-      NS_DEBUG ("connect to path="<<subpath<<" name="<<item->name);
+      NS_LOG_LOGIC ("connect to path="<<subpath<<" name="<<item->name);
       TraceContext context = m_context;
       context.Union (item->context);
       item->Connect (subpath, m_cb, context);
@@ -272,7 +272,7 @@ CompositeTraceResolver::DoRecursiveOperation (std::string path,
 void 
 CompositeTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
 {
-  NS_DEBUG ("disconnect path="<<path);
+  NS_LOG_LOGIC ("disconnect path="<<path);
   class DisconnectOperation : public Operation
   {
   public:
@@ -281,7 +281,7 @@ CompositeTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
     {}
     virtual void Do (std::string subpath, ResolveItem *item) const
     {
-      NS_DEBUG ("disconnect from path="<<subpath<<" name="<<item->name);
+      NS_LOG_LOGIC ("disconnect from path="<<subpath<<" name="<<item->name);
       item->Disconnect (subpath, m_cb);
     }
     virtual void DoParent (std::string path, Ptr<TraceResolver> parent) const
@@ -303,7 +303,7 @@ CompositeTraceResolver::CollectSources (std::string path, const TraceContext &co
 {
   for (TraceItems::const_iterator i = m_items.begin (); i != m_items.end (); i++)
     {
-      NS_DEBUG ("print " << (*i)->name);
+      NS_LOG_LOGIC ("print " << (*i)->name);
       (*i)->CollectSources (path, context, collection);
     }
   if (m_parent != 0)
@@ -316,7 +316,7 @@ CompositeTraceResolver::TraceAll (std::ostream &os, const TraceContext &context)
 {
   for (TraceItems::const_iterator i = m_items.begin (); i != m_items.end (); i++)
     {
-      NS_DEBUG ("print " << (*i)->name);
+      NS_LOG_LOGIC ("print " << (*i)->name);
       (*i)->TraceAll (os, context);
     }
   if (m_parent != 0)

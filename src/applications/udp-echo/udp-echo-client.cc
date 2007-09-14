@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
@@ -27,7 +27,7 @@
 
 namespace ns3 {
 
-NS_DEBUG_COMPONENT_DEFINE ("UdpEchoClient");
+NS_LOG_COMPONENT_DEFINE ("UdpEchoClientApplication");
 
 UdpEchoClient::UdpEchoClient (
   Ptr<Node> n,
@@ -39,7 +39,8 @@ UdpEchoClient::UdpEchoClient (
 : 
   Application(n)
 {
-  NS_DEBUG ("UdpEchoClient::UdpEchoClient (" << n << ", " << serverAddress <<
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << n << ", " << serverAddress <<
     ", " << serverPort << ", " << count << ", " << interval <<
     ", " << size << ")");
 
@@ -48,7 +49,7 @@ UdpEchoClient::UdpEchoClient (
 
 UdpEchoClient::~UdpEchoClient()
 {
-  NS_DEBUG ("UdpEchoClient::~UdpEchoClient ()");
+  NS_LOG_FUNCTION;
 }
 
 void
@@ -60,7 +61,8 @@ UdpEchoClient::Construct (
   Time interval,
   uint32_t size)
 {
-  NS_DEBUG ("UdpEchoClient::Construct (" << n << ", " << serverAddress <<
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << n << ", " << serverAddress <<
     ", " << serverPort << ", " << count << ", " << interval <<
     ", " << size << ")");
 
@@ -80,14 +82,14 @@ UdpEchoClient::Construct (
 void
 UdpEchoClient::DoDispose (void)
 {
-  NS_DEBUG ("UdpEchoClient::DoDispose ()");
+  NS_LOG_FUNCTION;
   Application::DoDispose ();
 }
 
 void 
 UdpEchoClient::StartApplication (void)
 {
-  NS_DEBUG ("UdpEchoClient::StartApplication ()");
+  NS_LOG_FUNCTION;
 
   if (!m_socket)
     {
@@ -108,7 +110,7 @@ UdpEchoClient::StartApplication (void)
 void 
 UdpEchoClient::StopApplication ()
 {
-  NS_DEBUG ("UdpEchoClient::StopApplication ()");
+  NS_LOG_FUNCTION;
 
   if (!m_socket) 
     {
@@ -122,14 +124,14 @@ UdpEchoClient::StopApplication ()
 void 
 UdpEchoClient::ScheduleTransmit (Time dt)
 {
-  NS_DEBUG ("UdpEchoClient::ScheduleTransmit (" << dt << ")");
+  NS_LOG_FUNCTION;
   m_sendEvent = Simulator::Schedule(dt, &UdpEchoClient::Send, this);
 }
 
 void 
 UdpEchoClient::Send (void)
 {
-  NS_DEBUG ("UdpEchoClient::Send ()");
+  NS_LOG_FUNCTION;
 
   NS_ASSERT (m_sendEvent.IsExpired ());
 
@@ -137,8 +139,7 @@ UdpEchoClient::Send (void)
   m_socket->Send (p);
   ++m_sent;
 
-  NS_DEBUG ("UdpEchoClient::Send (): Sent " << m_size << " bytes to " <<
-    m_serverAddress);
+  NS_LOG_INFO ("Sent " << m_size << " bytes to " << m_serverAddress);
 
   if (m_sent < m_count) 
     {
@@ -152,14 +153,14 @@ UdpEchoClient::Receive(
   const Packet &packet,
   const Address &from) 
 {
-  NS_DEBUG ("UdpEchoClient::Receive (" << socket << ", " << packet <<
-    ", " << from << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << socket << ", " << packet << ", " << from << ")");
 
   if (InetSocketAddress::IsMatchingType (from))
     {
       InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_DEBUG ("UdpEchoClient::Receive(): Received " << 
-        packet.GetSize() << " bytes from " << address.GetIpv4());
+      NS_LOG_INFO ("Received " << packet.GetSize() << " bytes from " << 
+        address.GetIpv4());
     }
 }
 

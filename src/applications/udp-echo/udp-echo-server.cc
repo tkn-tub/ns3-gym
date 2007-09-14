@@ -16,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
@@ -29,7 +29,7 @@
 
 namespace ns3 {
 
-NS_DEBUG_COMPONENT_DEFINE ("UdpEchoServer");
+NS_LOG_COMPONENT_DEFINE ("UdpEchoServerApplication");
 
 UdpEchoServer::UdpEchoServer (
   Ptr<Node> n,
@@ -37,15 +37,15 @@ UdpEchoServer::UdpEchoServer (
 : 
   Application(n)
 {
-  NS_DEBUG ("UdpEchoServer::UdpEchoServer (" << n << ", " << 
-    port << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << n << ", " << port << ")");
 
   Construct (n, port);
 }
 
 UdpEchoServer::~UdpEchoServer()
 {
-  NS_DEBUG ("UdpEchoServer::~UdpEchoServer ()");
+  NS_LOG_FUNCTION;
 }
 
 void
@@ -53,7 +53,8 @@ UdpEchoServer::Construct (
   Ptr<Node> n,
   uint16_t port)
 {
-  NS_DEBUG ("UdpEchoServer::Construct (" << n << ", " << port << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << n << ", " << port << ")");
 
   m_node = n;
   m_port = port;
@@ -65,14 +66,14 @@ UdpEchoServer::Construct (
 void
 UdpEchoServer::DoDispose (void)
 {
-  NS_DEBUG ("UdpEchoServer::DoDispose ()");
+  NS_LOG_FUNCTION;
   Application::DoDispose ();
 }
 
 void 
 UdpEchoServer::StartApplication (void)
 {
-  NS_DEBUG ("UdpEchoServer::StartApplication ()");
+  NS_LOG_FUNCTION;
 
   if (!m_socket)
     {
@@ -90,7 +91,8 @@ UdpEchoServer::StartApplication (void)
 void 
 UdpEchoServer::StopApplication ()
 {
-  NS_DEBUG ("UdpEchoServer::StopApplication ()");
+  NS_LOG_FUNCTION;
+
   if (!m_socket) 
     {
       m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
@@ -104,16 +106,16 @@ UdpEchoServer::Receive(
   const Packet &packet,
   const Address &from) 
 {
-  NS_DEBUG ("UdpEchoServer::Receive (" << socket << ", " << packet <<
-    ", " << from << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << socket << ", " << packet << ", " << from << ")");
 
   if (InetSocketAddress::IsMatchingType (from))
     {
       InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_DEBUG ("UdpEchoServer::Receive(): Received " << 
-        packet.GetSize() << " bytes from " << address.GetIpv4());
+      NS_LOG_INFO ("Received " << packet.GetSize() << " bytes from " << 
+        address.GetIpv4());
 
-      NS_DEBUG ("UdpEchoServer::Receive (): Echoing packet");
+      NS_LOG_LOGIC ("Echoing packet");
       socket->SendTo (from, packet);
     }
 }

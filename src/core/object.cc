@@ -23,10 +23,10 @@
 #include "singleton.h"
 #include "uid-manager.h"
 #include "trace-resolver.h"
-#include "debug.h"
+#include "log.h"
 #include <vector>
 
-NS_DEBUG_COMPONENT_DEFINE ("Object");
+NS_LOG_COMPONENT_DEFINE ("Object");
 
 namespace {
 
@@ -322,7 +322,7 @@ Object::DoCollectSources (std::string path, const TraceContext &context,
   while (current != this)
     {
       NS_ASSERT (current != 0);
-      NS_DEBUG ("collect current=" << current);
+      NS_LOG_LOGIC ("collect current=" << current);
       InterfaceId cur = current->m_iid;
       while (cur != Object::iid)
         {
@@ -330,7 +330,7 @@ Object::DoCollectSources (std::string path, const TraceContext &context,
           std::string fullpath = path;
           fullpath.append ("/$");
           fullpath.append (name);
-          NS_DEBUG ("collect: " << fullpath);
+          NS_LOG_LOGIC("collect: " << fullpath);
           current->GetTraceResolver ()->CollectSources (fullpath, context, collection);
           cur = InterfaceId::LookupParent (cur);
         }

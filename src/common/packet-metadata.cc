@@ -21,12 +21,12 @@
 #include <list>
 #include "ns3/assert.h"
 #include "ns3/fatal-error.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "packet-metadata.h"
 #include "buffer.h"
 #include "chunk-registry.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("PacketMetadata");
+NS_LOG_COMPONENT_DEFINE ("PacketMetadata");
 
 namespace ns3 {
 
@@ -610,7 +610,7 @@ PacketMetadata::ReadItems (uint16_t current,
 struct PacketMetadata::Data *
 PacketMetadata::Create (uint32_t size)
 {
-  NS_DEBUG ("create size="<<size<<", max="<<m_maxSize);
+  NS_LOG_LOGIC ("create size="<<size<<", max="<<m_maxSize);
   if (size > m_maxSize)
     {
       m_maxSize = size;
@@ -621,21 +621,21 @@ PacketMetadata::Create (uint32_t size)
       m_freeList.pop_back ();
       if (data->m_size >= size) 
         {
-          NS_DEBUG ("create found size="<<data->m_size);
+          NS_LOG_LOGIC ("create found size="<<data->m_size);
           data->m_count = 1;
           return data;
         }
       PacketMetadata::Deallocate (data);
-      NS_DEBUG ("create dealloc size="<<data->m_size);
+      NS_LOG_LOGIC ("create dealloc size="<<data->m_size);
     }
-  NS_DEBUG ("create alloc size="<<m_maxSize);
+  NS_LOG_LOGIC ("create alloc size="<<m_maxSize);
   return PacketMetadata::Allocate (m_maxSize);
 }
 
 void
 PacketMetadata::Recycle (struct PacketMetadata::Data *data)
 {
-  NS_DEBUG ("recycle size="<<data->m_size<<", list="<<m_freeList.size ());
+  NS_LOG_LOGIC ("recycle size="<<data->m_size<<", list="<<m_freeList.size ());
   NS_ASSERT (data->m_count == 0);
   if (m_freeList.size () > 1000 ||
       data->m_size < m_maxSize) 
@@ -1133,10 +1133,10 @@ PacketMetadata::Serialize (Buffer::Iterator i, uint32_t size) const
   while (current != 0xffff)
     {
       ReadItems (current, &item, &extraItem);
-      NS_DEBUG ("bytesWritten=" << bytesWritten << ", typeUid="<<item.typeUid <<
-                ", size="<<item.size<<", chunkUid="<<item.chunkUid<<
-                ", fragmentStart="<<extraItem.fragmentStart<<", fragmentEnd="<<extraItem.fragmentEnd<<
-                ", packetUid="<<extraItem.packetUid);
+      NS_LOG_LOGIC ("bytesWritten=" << bytesWritten << ", typeUid="<<
+        item.typeUid << ", size="<<item.size<<", chunkUid="<<item.chunkUid<<
+        ", fragmentStart="<<extraItem.fragmentStart<<", fragmentEnd="<<
+        extraItem.fragmentEnd<< ", packetUid="<<extraItem.packetUid);
       uint32_t uid = (item.typeUid & 0xfffffffe) >> 1;
       if (uid != 0)
         {
@@ -1215,10 +1215,10 @@ PacketMetadata::Deserialize (Buffer::Iterator i)
       size -= 4;
       extraItem.packetUid = i.ReadU32 ();
       size -= 4;
-      NS_DEBUG ("size=" << size << ", typeUid="<<item.typeUid <<
-                ", size="<<item.size<<", chunkUid="<<item.chunkUid<<
-                ", fragmentStart="<<extraItem.fragmentStart<<", fragmentEnd="<<extraItem.fragmentEnd<<
-                ", packetUid="<<extraItem.packetUid);
+      NS_LOG_LOGIC ("size=" << size << ", typeUid="<<item.typeUid <<
+        ", size="<<item.size<<", chunkUid="<<item.chunkUid<<
+        ", fragmentStart="<<extraItem.fragmentStart<<", fragmentEnd="<<
+        extraItem.fragmentEnd<< ", packetUid="<<extraItem.packetUid);
       uint32_t tmp = AddBig (0xffff, m_tail, &item, &extraItem);
       UpdateTail (tmp);
     }

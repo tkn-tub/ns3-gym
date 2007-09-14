@@ -22,7 +22,7 @@
 // George F. Riley, Georgia Tech, Spring 2007
 // Adapted from ApplicationOnOff in GTNetS.
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/address.h"
 #include "ns3/node.h"
 #include "ns3/nstime.h"
@@ -35,7 +35,7 @@
 #include "ns3/packet.h"
 #include "onoff-application.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("OnOffApplication");
+NS_LOG_COMPONENT_DEFINE ("OnOffApplication");
 
 using namespace std;
 
@@ -73,8 +73,8 @@ OnOffApplication::OnOffApplication(Ptr<Node> n,
   :  Application(n),
      m_cbrRate (rate)
 {
-  Construct (n, remote, iid, 
-             ontime, offtime, size);
+  NS_LOG_FUNCTION;
+  Construct (n, remote, iid, ontime, offtime, size);
 }
 
 void
@@ -85,6 +85,8 @@ OnOffApplication::Construct (Ptr<Node> n,
                              const  RandomVariable& offTime,
                              uint32_t size)
 {
+  NS_LOG_FUNCTION;
+
   m_socket = 0;
   m_peer = remote;
   m_connected = false;
@@ -100,34 +102,37 @@ OnOffApplication::Construct (Ptr<Node> n,
 
 OnOffApplication::~OnOffApplication()
 {
-  NS_DEBUG("OnOffApplication::~OnOffApplication()");
+  NS_LOG_FUNCTION;
 }
 
 void 
 OnOffApplication::SetMaxBytes(uint32_t maxBytes)
 {
-  NS_DEBUG("OnOffApplication::SetMaxBytes(" << maxBytes << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << maxBytes << ")");
   m_maxBytes = maxBytes;
 }
 
 void
 OnOffApplication::SetDefaultRate (const DataRate &rate)
 {
-  NS_DEBUG("OnOffApplication::SetDefaultRate(" << &rate << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &rate << ")");
   g_defaultRate.SetValue (rate);
 }
 
 void 
 OnOffApplication::SetDefaultSize (uint32_t size)
 {
-  NS_DEBUG("OnOffApplication::SetDefaultSize(" << size << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << size << ")");
   g_defaultSize.SetValue (size);
 }
 
 void
 OnOffApplication::DoDispose (void)
 {
-  NS_DEBUG("OnOffApplication::DoDispose()");
+  NS_LOG_FUNCTION;
 
   m_socket = 0;
   delete m_onTime;
@@ -143,7 +148,7 @@ OnOffApplication::DoDispose (void)
 // Application Methods
 void OnOffApplication::StartApplication() // Called at time specified by Start
 {
-  NS_DEBUG("OnOffApplication::StartApplication()");
+  NS_LOG_FUNCTION;
 
   // Create the socket if not already
   if (!m_socket)
@@ -164,7 +169,7 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
 
 void OnOffApplication::StopApplication() // Called at time specified by Stop
 {
-  NS_DEBUG("OnOffApplication::StopApplication()");
+  NS_LOG_FUNCTION;
 
   if (m_sendEvent.IsRunning ())
     { // Cancel the pending send packet event
@@ -179,14 +184,14 @@ void OnOffApplication::StopApplication() // Called at time specified by Stop
 // Event handlers
 void OnOffApplication::StartSending()
 {
-  NS_DEBUG("OnOffApplication::StartSending ()");
+  NS_LOG_FUNCTION;
 
   ScheduleNextTx();  // Schedule the send packet event
 }
 
 void OnOffApplication::StopSending()
 {
-  NS_DEBUG("OnOffApplication::StopSending ()");
+  NS_LOG_FUNCTION;
 
   Simulator::Cancel(m_sendEvent);
 }
@@ -194,15 +199,15 @@ void OnOffApplication::StopSending()
 // Private helpers
 void OnOffApplication::ScheduleNextTx()
 {
-  NS_DEBUG("OnOffApplication::ScheduleNextTx ()");
+  NS_LOG_FUNCTION;
 
   if (m_totBytes < m_maxBytes)
     {
       uint32_t bits = m_pktSize * 8 - m_residualBits;
-      NS_DEBUG("OnOffApplication::ScheduleNextTx (): bits = " << bits);
+      NS_LOG_LOGIC ("bits = " << bits);
       Time nextTime(Seconds (bits / 
         static_cast<double>(m_cbrRate.GetBitRate()))); // Time till next packet
-      NS_DEBUG("OnOffApplication::ScheduleNextTx (): nextTime = " << nextTime);
+      NS_LOG_LOGIC ("nextTime = " << nextTime);
       m_sendEvent = Simulator::Schedule(nextTime, 
                                         &OnOffApplication::SendPacket, this);
     }
@@ -214,17 +219,16 @@ void OnOffApplication::ScheduleNextTx()
 
 void OnOffApplication::ScheduleStartEvent()
 {  // Schedules the event to start sending data (switch to the "On" state)
-  NS_DEBUG("OnOffApplication::ScheduleStartEvent ()");
+  NS_LOG_FUNCTION;
 
   Time offInterval = Seconds(m_offTime->GetValue());
-  NS_DEBUG("OnOffApplication::ScheduleStartEvent (): "
-    "start at " << offInterval);
+  NS_LOG_LOGIC ("start at " << offInterval);
   m_startStopEvent = Simulator::Schedule(offInterval, &OnOffApplication::StartSending, this);
 }
 
 void OnOffApplication::ScheduleStopEvent()
 {  // Schedules the event to stop sending data (switch to "Off" state)
-  NS_DEBUG("OnOffApplication::ScheduleStopEvent ()");
+  NS_LOG_FUNCTION;
 
   Time onInterval = Seconds(m_onTime->GetValue());
   Simulator::Schedule(onInterval, &OnOffApplication::StopSending, this);
@@ -233,7 +237,7 @@ void OnOffApplication::ScheduleStopEvent()
   
 void OnOffApplication::SendPacket()
 {
-  NS_DEBUG("OnOffApplication::SendPacket ()");
+  NS_LOG_FUNCTION;
 
   NS_ASSERT (m_sendEvent.IsExpired ());
   m_socket->Send(Packet (m_pktSize));
@@ -245,7 +249,7 @@ void OnOffApplication::SendPacket()
 
 void OnOffApplication::ConnectionSucceeded(Ptr<Socket>)
 {
-  NS_DEBUG("OnOffApplication::ConnectionSucceeded ()");
+  NS_LOG_FUNCTION;
 
   m_connected = true;
   ScheduleStartEvent();
@@ -253,6 +257,7 @@ void OnOffApplication::ConnectionSucceeded(Ptr<Socket>)
   
 void OnOffApplication::ConnectionFailed(Ptr<Socket>)
 {
+  NS_LOG_FUNCTION;
   cout << "OnOffApplication, Connection Failed" << endl;
 }
 

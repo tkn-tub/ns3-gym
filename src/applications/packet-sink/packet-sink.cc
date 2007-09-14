@@ -18,7 +18,7 @@
  * Author:  Tom Henderson (tomhend@u.washington.edu)
  */
 #include "ns3/address.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/node.h"
 #include "ns3/socket.h"
@@ -31,7 +31,7 @@ using namespace std;
 
 namespace ns3 {
 
-NS_DEBUG_COMPONENT_DEFINE ("PacketSink");
+NS_LOG_COMPONENT_DEFINE ("PacketSinkApplication");
 
 // Constructors
 
@@ -99,9 +99,9 @@ void PacketSink::Receive(Ptr<Socket> socket, const Packet &packet,
   if (InetSocketAddress::IsMatchingType (from))
     {
       InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_DEBUG ( __PRETTY_FUNCTION__ << ": Received " << 
-        packet.GetSize() << " bytes from " << address.GetIpv4() << " [" 
-        << address << "]---'" << packet.PeekData() << "'");
+      NS_LOG_INFO ("Received " << packet.GetSize() << " bytes from " << 
+        address.GetIpv4() << " [" << address << "]---'" << 
+        packet.PeekData() << "'");
       // TODO:  Add a tracing source here
     }
 }

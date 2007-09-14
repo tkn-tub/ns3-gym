@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/node.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4-route.h"
@@ -30,7 +30,7 @@
 #include "ipv4-l4-demux.h"
 #include "ns3/ipv4.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("UdpSocket");
+NS_LOG_COMPONENT_DEFINE ("UdpSocket");
 
 namespace ns3 {
 
@@ -43,12 +43,12 @@ UdpSocket::UdpSocket (Ptr<Node> node, Ptr<UdpL4Protocol> udp)
     m_shutdownRecv (false),
     m_connected (false)
 {
-  NS_DEBUG("UdpSocket::UdpSocket ()");
+  NS_LOG_FUNCTION;
 }
 
 UdpSocket::~UdpSocket ()
 {
-  NS_DEBUG("UdpSocket::~UdpSocket ()");
+  NS_LOG_FUNCTION;
 
   m_node = 0;
   if (m_endPoint != 0)
@@ -72,22 +72,21 @@ UdpSocket::~UdpSocket ()
 enum Socket::SocketErrno
 UdpSocket::GetErrno (void) const
 {
-  NS_DEBUG("UdpSocket::GetErrno ()");
-
+  NS_LOG_FUNCTION;
   return m_errno;
 }
 
 Ptr<Node>
 UdpSocket::GetNode (void) const
 {
-  NS_DEBUG("UdpSocket::GetNode ()");
+  NS_LOG_FUNCTION;
   return m_node;
 }
 
 void 
 UdpSocket::Destroy (void)
 {
-  NS_DEBUG("UdpSocket::Destroy ()");
+  NS_LOG_FUNCTION;
   m_node = 0;
   m_endPoint = 0;
   m_udp = 0;
@@ -96,8 +95,7 @@ UdpSocket::Destroy (void)
 int
 UdpSocket::FinishBind (void)
 {
-  NS_DEBUG("UdpSocket::FinishBind ()");
-
+  NS_LOG_FUNCTION;
   if (m_endPoint == 0)
     {
       return -1;
@@ -110,8 +108,7 @@ UdpSocket::FinishBind (void)
 int
 UdpSocket::Bind (void)
 {
-  NS_DEBUG("UdpSocket::Bind ()");
-
+  NS_LOG_FUNCTION;
   m_endPoint = m_udp->Allocate ();
   return FinishBind ();
 }
@@ -119,11 +116,12 @@ UdpSocket::Bind (void)
 int 
 UdpSocket::Bind (const Address &address)
 {
-  NS_DEBUG("UdpSocket::Bind (" << address << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM("(" << address << ")");
 
   if (!InetSocketAddress::IsMatchingType (address))
     {
-      NS_DEBUG("UdpSocket::Bind (): Not IsMatchingType");
+      NS_LOG_ERROR ("Not IsMatchingType");
       return ERROR_INVAL;
     }
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
@@ -152,7 +150,7 @@ UdpSocket::Bind (const Address &address)
 int 
 UdpSocket::ShutdownSend (void)
 {
-  NS_DEBUG("UdpSocket::ShutDownSend ()");
+  NS_LOG_FUNCTION;
   m_shutdownSend = true;
   return 0;
 }
@@ -160,7 +158,7 @@ UdpSocket::ShutdownSend (void)
 int 
 UdpSocket::ShutdownRecv (void)
 {
-  NS_DEBUG("UdpSocket::ShutDownRecv ()");
+  NS_LOG_FUNCTION;
   m_shutdownRecv = false;
   return 0;
 }
@@ -168,7 +166,7 @@ UdpSocket::ShutdownRecv (void)
 int
 UdpSocket::Close(void)
 {
-  NS_DEBUG("UdpSocket::Close ()");
+  NS_LOG_FUNCTION;
   NotifyCloseCompleted ();
   return 0;
 }
@@ -176,7 +174,8 @@ UdpSocket::Close(void)
 int
 UdpSocket::Connect(const Address & address)
 {
-  NS_DEBUG ("UdpSocket::Connect (" << address << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << address << ")");
   Ipv4Route routeToDest;
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
@@ -184,7 +183,7 @@ UdpSocket::Connect(const Address & address)
   NotifyConnectionSucceeded ();
   m_connected = true;
 
-  NS_DEBUG ("UdpSocket::Connect (): Updating local address");
+  NS_LOG_LOGIC ("Updating local address");
 
   uint32_t localIfIndex;
 
@@ -195,8 +194,7 @@ UdpSocket::Connect(const Address & address)
       m_endPoint->SetLocalAddress (ipv4->GetAddress(localIfIndex));
     }
 
-  NS_DEBUG ("UdpSocket::Connect (): Local address is " << 
-    m_endPoint->GetLocalAddress());
+  NS_LOG_LOGIC ("Local address is " << m_endPoint->GetLocalAddress());
 
   return 0;
 }
@@ -204,7 +202,8 @@ UdpSocket::Connect(const Address & address)
 int 
 UdpSocket::Send (const Packet &p)
 {
-  NS_DEBUG("UdpSocket::Send (" << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
 
   if (!m_connected)
     {
@@ -217,6 +216,7 @@ UdpSocket::Send (const Packet &p)
 int 
 UdpSocket::DoSend (const Packet &p)
 {
+  NS_LOG_FUNCTION;
   if (m_endPoint == 0)
     {
       if (Bind () == -1)
@@ -238,11 +238,12 @@ UdpSocket::DoSend (const Packet &p)
 int
 UdpSocket::DoSendTo (const Packet &p, const Address &address)
 {
-  NS_DEBUG("UdpSocket::DoSendTo (" << &p << ", " << address << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ", " << address << ")");
 
   if (!m_connected)
     {
-      NS_DEBUG("UdpSocket::DoSendTo (): Not connected");
+      NS_LOG_LOGIC ("Not connected");
       InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
       Ipv4Address ipv4 = transport.GetIpv4 ();
       uint16_t port = transport.GetPort ();
@@ -251,7 +252,7 @@ UdpSocket::DoSendTo (const Packet &p, const Address &address)
   else
     {
       // connected UDP socket must use default addresses
-      NS_DEBUG("UdpSocket::DoSendTo (): Connected");
+      NS_LOG_LOGIC ("Connected");
       return DoSendTo (p, m_defaultAddress, m_defaultPort);
     }
 }
@@ -259,8 +260,8 @@ UdpSocket::DoSendTo (const Packet &p, const Address &address)
 int
 UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
 {
-  NS_DEBUG("UdpSocket::DoSendTo (" << &p << ", " << dest << ", " <<
-    port << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ", " << dest << ", " << port << ")");
 
   Ipv4Route routeToDest;
 
@@ -288,7 +289,7 @@ UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
   //
   if (dest.IsBroadcast ())
     {
-      NS_DEBUG("UdpSocket::DoSendTo (): Limited broadcast");
+      NS_LOG_LOGIC ("Limited broadcast");
       for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++ )
         {
           Ipv4Address addri = ipv4->GetAddress (i);
@@ -300,7 +301,7 @@ UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
     }
   else if (ipv4->GetIfIndexForDestination(dest, localIfIndex))
     {
-      NS_DEBUG("UdpSocket::DoSendTo (): Route exists");
+      NS_LOG_LOGIC ("Route exists");
       m_udp->Send (p, ipv4->GetAddress (localIfIndex), dest,
 		   m_endPoint->GetLocalPort (), port);
       NotifyDataSent (p.GetSize ());
@@ -308,7 +309,7 @@ UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
     }
   else
    {
-      NS_DEBUG("UdpSocket::DoSendTo (): ERROR_NOROUTETOHOST");
+      NS_LOG_ERROR ("ERROR_NOROUTETOHOST");
       m_errno = ERROR_NOROUTETOHOST;
       return -1;
    }
@@ -319,7 +320,8 @@ UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
 int 
 UdpSocket::SendTo(const Address &address, const Packet &p)
 {
-  NS_DEBUG("UdpSocket::SendTo (" << address << ", " << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << address << ", " << &p << ")");
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
@@ -329,8 +331,8 @@ UdpSocket::SendTo(const Address &address, const Packet &p)
 void 
 UdpSocket::ForwardUp (const Packet &packet, Ipv4Address ipv4, uint16_t port)
 {
-  NS_DEBUG("UdpSocket::ForwardUp (" << &packet << ", " << ipv4 << ", " <<
-    port << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &packet << ", " << ipv4 << ", " << port << ")");
 
   if (m_shutdownRecv)
     {

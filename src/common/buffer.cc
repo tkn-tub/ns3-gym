@@ -19,13 +19,13 @@
  */
 #include "buffer.h"
 #include "ns3/assert.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include <iostream>
 
-NS_DEBUG_COMPONENT_DEFINE ("Buffer");
+NS_LOG_COMPONENT_DEFINE ("Buffer");
 
-#define DEBUG_INTERNAL_STATE(y)                                                                    \
-NS_DEBUG (y << "start="<<m_start<<", end="<<m_end<<", zero start="<<m_zeroAreaStart<<              \
+#define LOG_INTERNAL_STATE(y)                                                                    \
+NS_LOG_LOGIC (y << "start="<<m_start<<", end="<<m_end<<", zero start="<<m_zeroAreaStart<<              \
           ", zero end="<<m_zeroAreaEnd<<", count="<<m_data->m_count<<", size="<<m_data->m_size<<   \
           ", dirty start="<<m_data->m_dirtyStart<<", dirty end="<<m_data->m_dirtyEnd)
 
@@ -394,7 +394,7 @@ Buffer::AddAtStart (uint32_t start)
   // update dirty area
   m_data->m_dirtyStart = m_start;
   m_data->m_dirtyEnd = m_end;
-  DEBUG_INTERNAL_STATE ("add start=" << start << ", ");
+  LOG_INTERNAL_STATE ("add start=" << start << ", ");
   NS_ASSERT (CheckInternalState ());
 }
 void 
@@ -457,7 +457,7 @@ Buffer::AddAtEnd (uint32_t end)
   // update dirty area
   m_data->m_dirtyStart = m_start;
   m_data->m_dirtyEnd = m_end;
-  DEBUG_INTERNAL_STATE ("add end=" << end << ", ");
+  LOG_INTERNAL_STATE ("add end=" << end << ", ");
   NS_ASSERT (CheckInternalState ());
 }
 
@@ -502,7 +502,7 @@ Buffer::RemoveAtStart (uint32_t start)
       m_zeroAreaStart = m_end;
     }
   HEURISTICS (m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart));
-  DEBUG_INTERNAL_STATE ("rem start=" << start << ", ");
+  LOG_INTERNAL_STATE ("rem start=" << start << ", ");
   NS_ASSERT (CheckInternalState ());
 }
 void 
@@ -536,7 +536,7 @@ Buffer::RemoveAtEnd (uint32_t end)
       m_zeroAreaStart = m_start;
     }
   HEURISTICS (m_maxZeroAreaStart = std::max (m_maxZeroAreaStart, m_zeroAreaStart));
-  DEBUG_INTERNAL_STATE ("rem end=" << end << ", ");
+  LOG_INTERNAL_STATE ("rem end=" << end << ", ");
   NS_ASSERT (CheckInternalState ());
 }
 

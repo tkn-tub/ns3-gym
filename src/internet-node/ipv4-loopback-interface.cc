@@ -20,14 +20,14 @@
  *  Mathieu Lacage <mathieu.lacage@sophia.inria.fr>,
  */
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/mac48-address.h"
 #include "ipv4-loopback-interface.h"
 #include "ipv4-l3-protocol.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("Ipv4LoopbackInterface");
+NS_LOG_COMPONENT_DEFINE ("Ipv4LoopbackInterface");
 
 namespace ns3 {
 
@@ -35,19 +35,19 @@ Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
   : Ipv4Interface (0),
     m_node (node)
 {
-  NS_DEBUG("Ipv4LoopbackInterface::Ipv4LoopbackInterface ()");
+  NS_LOG_FUNCTION;
 }
 
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
 {
-  NS_DEBUG("Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()");
+  NS_LOG_FUNCTION;
 }
 
 void 
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {
-  NS_DEBUG("Ipv4LoopbackInterface::SendTo (" << &packet << ", " << 
-    dest << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &packet << ", " << dest << ")");
 
   Ptr<Ipv4L3Protocol> ipv4 = 
     m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);

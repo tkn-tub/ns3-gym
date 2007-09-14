@@ -20,7 +20,7 @@
  * Revised: George Riley <riley@ece.gatech.edu>
  */
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
@@ -29,7 +29,7 @@
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("PointToPointNetDevice");
+NS_LOG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 namespace ns3 {
 
@@ -39,21 +39,27 @@ DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
            DataRate ("10Mb/s"));
 
 PointToPointTraceType::PointToPointTraceType ()
-{}
+{
+  NS_LOG_FUNCTION;
+}
 void 
 PointToPointTraceType::Print (std::ostream &os) const
 {
   os << "dev-rx";
 }
+
 uint16_t 
 PointToPointTraceType::GetUid (void)
 {
+  NS_LOG_FUNCTION;
   static uint16_t uid = AllocateUid<PointToPointTraceType> ("PointToPointTraceType");
   return uid;
 }
+
 std::string 
 PointToPointTraceType::GetTypeName (void) const
 {
+  NS_LOG_FUNCTION;
   return "ns3::PointToPointTraceType";
 }
 
@@ -69,11 +75,13 @@ PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
   m_queue (0),
   m_rxTrace ()
 {
-  NS_DEBUG ("PointToPointNetDevice::PointToPointNetDevice (" << node << ")");
-
-// BUGBUG FIXME
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << node << ")");
+//
+// XXX BUGBUG
 //
 // You _must_ support broadcast to get any sort of packet from the ARP layer.
+//
   EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
 //
 // We want to allow multicast packets to flow across this link
@@ -84,13 +92,14 @@ PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
 
 PointToPointNetDevice::~PointToPointNetDevice()
 {
-  NS_DEBUG ("PointToPointNetDevice::~PointToPointNetDevice ()");
+  NS_LOG_FUNCTION;
   m_queue = 0;
 }
 
 void 
 PointToPointNetDevice::AddHeader(Packet& p, uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION;
   LlcSnapHeader llc;
   llc.SetType (protocolNumber);
   p.AddHeader (llc);
@@ -99,6 +108,7 @@ PointToPointNetDevice::AddHeader(Packet& p, uint16_t protocolNumber)
 bool 
 PointToPointNetDevice::ProcessHeader(Packet& p, uint16_t& param)
 {
+  NS_LOG_FUNCTION;
   LlcSnapHeader llc;
   p.RemoveHeader (llc);
 
@@ -109,26 +119,30 @@ PointToPointNetDevice::ProcessHeader(Packet& p, uint16_t& param)
 
 void PointToPointNetDevice::DoDispose()
 {
+  NS_LOG_FUNCTION;
   m_channel = 0;
   NetDevice::DoDispose ();
 }
 
 void PointToPointNetDevice::SetDataRate(const DataRate& bps)
 {
+  NS_LOG_FUNCTION;
   m_bps = bps;
 }
 
 void PointToPointNetDevice::SetInterframeGap(const Time& t)
 {
+  NS_LOG_FUNCTION;
   m_tInterframeGap = t;
 }
 
 bool PointToPointNetDevice::SendTo (const Packet& packet, const Address& dest, 
                                     uint16_t protocolNumber)
 {
+  NS_LOG_FUNCTION;
   Packet p = packet;
-  NS_DEBUG ("PointToPointNetDevice::SendTo (" << &p << ", " << &dest << ")");
-  NS_DEBUG ("PointToPointNetDevice::SendTo (): UID is " << p.GetUid () << ")");
+  NS_LOG_LOGIC ("p=" << &p << ", dest=" << &dest);
+  NS_LOG_LOGIC ("UID is " << p.GetUid ());
 
   // GFR Comment. Why is this an assertion? Can't a link legitimately
   // "go down" during the simulation?  Shouldn't we just wait for it
@@ -156,9 +170,9 @@ bool PointToPointNetDevice::SendTo (const Packet& packet, const Address& dest,
   bool
 PointToPointNetDevice::TransmitStart (Packet &p)
 {
-  NS_DEBUG ("PointToPointNetDevice::TransmitStart (" << &p << ")");
-  NS_DEBUG (
-    "PointToPointNetDevice::TransmitStart (): UID is " << p.GetUid () << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_LOGIC ("UID is " << p.GetUid () << ")");
 //
 // This function is called to start the process of transmitting a packet.
 // We need to tell the channel that we've started wiggling the wire and
@@ -169,8 +183,7 @@ PointToPointNetDevice::TransmitStart (Packet &p)
   Time txTime = Seconds (m_bps.CalculateTxTime(p.GetSize()));
   Time txCompleteTime = txTime + m_tInterframeGap;
 
-  NS_DEBUG ("PointToPointNetDevice::TransmitStart (): " <<
-    "Schedule TransmitCompleteEvent in " << 
+  NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << 
     txCompleteTime.GetSeconds () << "sec");
   // Schedule the tx complete event
   Simulator::Schedule (txCompleteTime, 
@@ -181,7 +194,7 @@ PointToPointNetDevice::TransmitStart (Packet &p)
 
 void PointToPointNetDevice::TransmitComplete (void)
 {
-  NS_DEBUG ("PointToPointNetDevice::TransmitCompleteEvent ()");
+  NS_LOG_FUNCTION;
 //
 // This function is called to finish the  process of transmitting a packet.
 // We need to tell the channel that we've stopped wiggling the wire and
@@ -198,6 +211,7 @@ void PointToPointNetDevice::TransmitComplete (void)
 Ptr<TraceResolver> 
 PointToPointNetDevice::GetTraceResolver (void) const
 {
+  NS_LOG_FUNCTION;
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddComposite ("queue", m_queue);
   resolver->AddSource ("rx",
@@ -209,9 +223,11 @@ PointToPointNetDevice::GetTraceResolver (void) const
   return resolver;
 }
 
-bool PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
+bool 
+PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 {
-  NS_DEBUG ("PointToPointNetDevice::Attach (" << &ch << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &ch << ")");
 
   m_channel = ch;
 
@@ -237,14 +253,16 @@ bool PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 
 void PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 {
-  NS_DEBUG ("PointToPointNetDevice::AddQueue (" << q << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << q << ")");
 
   m_queue = q;
 }
 
 void PointToPointNetDevice::Receive (Packet& p)
 {
-  NS_DEBUG ("PointToPointNetDevice::Receive (" << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
   uint16_t protocol = 0;
   Packet packet = p;
 
@@ -255,16 +273,19 @@ void PointToPointNetDevice::Receive (Packet& p)
 
 Ptr<Queue> PointToPointNetDevice::GetQueue(void) const 
 { 
-    return m_queue;
+  NS_LOG_FUNCTION;
+  return m_queue;
 }
 
 Ptr<Channel> PointToPointNetDevice::DoGetChannel(void) const 
 { 
-    return m_channel;
+  NS_LOG_FUNCTION;
+  return m_channel;
 }
 
 bool PointToPointNetDevice::DoNeedsArp (void) const
 {
+  NS_LOG_FUNCTION;
   return false;
 }
 
