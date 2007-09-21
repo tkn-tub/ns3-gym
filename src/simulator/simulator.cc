@@ -762,7 +762,7 @@ SimulatorTests::cbaz5c (const int &, const int &, const int &, const int &, cons
 bool
 SimulatorTests::RunOneTest (void)
 {
-  bool ok = true;
+  bool result = true;
   m_a = true;
   m_b = false;
   m_c = true;
@@ -772,26 +772,16 @@ SimulatorTests::RunOneTest (void)
   Simulator::Schedule (MicroSeconds (11), &SimulatorTests::B, this, 2);
   m_idC = Simulator::Schedule (MicroSeconds (12), &SimulatorTests::C, this, 3);
 
-  if (m_idC.IsExpired ()) 
-    {
-      ok = false;
-    }
-  if (a.IsExpired ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (!m_idC.IsExpired ());
+  NS_TEST_ASSERT (!a.IsExpired ());
   Simulator::Cancel (a);
-  if (!a.IsExpired ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (a.IsExpired ());
   Simulator::Run ();
-
-  if (!m_a || !m_b || !m_c || !m_d) 
-    {
-      ok = false;
-    }
-  return ok;
+  NS_TEST_ASSERT (m_a);
+  NS_TEST_ASSERT (m_b);
+  NS_TEST_ASSERT (m_c);
+  NS_TEST_ASSERT (m_d);
+  return result;
 }
 void
 SimulatorTests::RunTestsConst (void) const
@@ -870,24 +860,26 @@ SimulatorTests::RunTestsConst (void) const
 bool 
 SimulatorTests::RunTests (void)
 {
-  bool ok = true;
+  bool result = true;
+
+  Simulator::Run (); // flush out any pending events before running our tests
 
   Simulator::SetLinkedList ();
   if (!RunOneTest ()) 
     {
-      ok = false;
+      result = false;
     }
   Simulator::Destroy ();
   Simulator::SetBinaryHeap ();
   if (!RunOneTest ()) 
     {
-      ok = false;
+      result = false;
     }
   Simulator::Destroy ();
   Simulator::SetStdMap ();
   if (!RunOneTest ()) 
     {
-      ok = false;
+      result = false;
     }
   Simulator::Destroy ();
 
@@ -1018,36 +1010,26 @@ SimulatorTests::RunTests (void)
 
   EventId nowId = Simulator::ScheduleNow (&foo0);
   m_destroyId = Simulator::ScheduleDestroy (&SimulatorTests::destroy, this);
-  if (m_destroyId.IsExpired ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (!m_destroyId.IsExpired ());
 
   Simulator::Run ();
   m_destroy = false;
   Simulator::Destroy ();
-  if (!m_destroy) 
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (m_destroy);
 
   EventId anId = Simulator::ScheduleNow (&foo0);
   EventId anotherId = anId;
-  if (anId.IsExpired () || anotherId.IsExpired ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (!(anId.IsExpired () || anotherId.IsExpired ()));
+
   Simulator::Remove (anId);
-  if (!anId.IsExpired () || !anotherId.IsExpired ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (anId.IsExpired ());
+  NS_TEST_ASSERT (anotherId.IsExpired ());
 
   Simulator::Run ();
   Simulator::Destroy ();
   
 
-  return ok;
+  return result;
 }
 
 SimulatorTests gSimulatorTests;
