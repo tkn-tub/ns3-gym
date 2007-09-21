@@ -187,15 +187,6 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
 
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
-      NS_LOG_LOGIC ("Ipv4EndPointDemux::Lookup against " << 
-                    (*i)->GetLocalAddress ()
-                    << ":" << 
-                    (*i)->GetLocalPort () 
-                    << " " << 
-                    (*i)->GetPeerAddress () 
-                    << ":" 
-                    << (*i)->GetPeerPort ());
-
       if ((*i)->GetLocalPort () != dport) 
         {
           continue;
