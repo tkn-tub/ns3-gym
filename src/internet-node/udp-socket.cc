@@ -441,7 +441,7 @@ UdpSocketTest::RunTests (void)
   // When receiving broadcast packets, all sockets sockets bound to
   // the address/port should receive a copy of the same packet.
   Ptr<Socket> rxSocket2 = socketFactory->CreateSocket ();
-  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket, this));
+  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket2, this));
   NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0);
 
   m_receivedPacket = Packet ();
