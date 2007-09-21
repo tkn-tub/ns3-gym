@@ -14,35 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Author:  Craig Dowell (craigdo@ee.washington.edu)
  */
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/assert.h"
 #include "candidate-queue.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("CandidateQueue");
+NS_LOG_COMPONENT_DEFINE ("CandidateQueue");
 
 namespace ns3 {
 
 CandidateQueue::CandidateQueue()
   : m_candidates ()
 {
-  NS_DEBUG("CandidateQueue::CandidateQueue ()");
+  NS_LOG_FUNCTION;
 }
 
 CandidateQueue::~CandidateQueue()
 {
-  NS_DEBUG("CandidateQueue::~CandidateQueue ()");
+  NS_LOG_FUNCTION;
   Clear ();
 }
 
   void
 CandidateQueue::Clear (void)
 {
-  NS_DEBUG("CandidateQueue::Clear ()");
-
+  NS_LOG_FUNCTION;
   while (!m_candidates.empty ())
     {
       SPFVertex *p = Pop ();
@@ -54,7 +51,8 @@ CandidateQueue::Clear (void)
   void
 CandidateQueue::Push (SPFVertex *vNew)
 {
-  NS_DEBUG("CandidateQueue::Push (" << vNew << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << vNew << ")");
 
   CandidateList_t::iterator i = m_candidates.begin ();  
 
@@ -72,8 +70,7 @@ CandidateQueue::Push (SPFVertex *vNew)
   SPFVertex *
 CandidateQueue::Pop (void)
 {
-  NS_DEBUG("CandidateQueue::Pop ()");
-
+  NS_LOG_FUNCTION;
   if (m_candidates.empty ())
     {
       return 0;
@@ -87,8 +84,7 @@ CandidateQueue::Pop (void)
   SPFVertex *
 CandidateQueue::Top (void) const
 {
-  NS_DEBUG("CandidateQueue::Top ()");
-
+  NS_LOG_FUNCTION;
   if (m_candidates.empty ())
     {
       return 0;
@@ -100,24 +96,21 @@ CandidateQueue::Top (void) const
   bool
 CandidateQueue::Empty (void) const
 {
-  NS_DEBUG("CandidateQueue::Empty ()");
-
+  NS_LOG_FUNCTION;
   return m_candidates.empty ();
 }
 
   uint32_t
 CandidateQueue::Size (void) const
 {
-  NS_DEBUG("CandidateQueue::Size ()");
-
+  NS_LOG_FUNCTION;
   return m_candidates.size ();
 }
 
   SPFVertex *
 CandidateQueue::Find (const Ipv4Address addr) const
 {
-  NS_DEBUG("CandidateQueue::Find ()");
-
+  NS_LOG_FUNCTION;
   CandidateList_t::const_iterator i = m_candidates.begin ();
 
   for (; i != m_candidates.end (); i++)
@@ -135,8 +128,7 @@ CandidateQueue::Find (const Ipv4Address addr) const
   void
 CandidateQueue::Reorder (void)
 {
-  NS_DEBUG("CandidateQueue::Reorder ()");
-
+  NS_LOG_FUNCTION;
   std::list<SPFVertex*> temp;
 
   while (!m_candidates.empty ()) {

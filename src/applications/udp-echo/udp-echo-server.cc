@@ -14,95 +14,109 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Author:  Tom Henderson (tomhend@u.washington.edu)
  */
-#include "ns3/address.h"
-#include "ns3/debug.h"
+
+#include "ns3/log.h"
+#include "ns3/ipv4-address.h"
+#include "ns3/nstime.h"
 #include "ns3/inet-socket-address.h"
-#include "ns3/node.h"
 #include "ns3/socket.h"
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
-#include "packet-sink.h"
 
-using namespace std;
+#include "udp-echo-server.h"
 
 namespace ns3 {
 
-NS_DEBUG_COMPONENT_DEFINE ("PacketSink");
+NS_LOG_COMPONENT_DEFINE ("UdpEchoServerApplication");
 
-// Constructors
-
-PacketSink::PacketSink (Ptr<Node> n, 
-                        const Address &local,
-                        std::string iid)
-  :  Application(n)
+UdpEchoServer::UdpEchoServer (
+  Ptr<Node> n,
+  uint16_t port)
+: 
+  Application(n)
 {
-  Construct (n, local, iid);
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << n << ", " << port << ")");
+
+  Construct (n, port);
+}
+
+UdpEchoServer::~UdpEchoServer()
+{
+  NS_LOG_FUNCTION;
 }
 
 void
-PacketSink::Construct (Ptr<Node> n, 
-                       const Address &local,
-                       std::string iid)
+UdpEchoServer::Construct (
+  Ptr<Node> n,
+  uint16_t port)
 {
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << n << ", " << port << ")");
+
+  m_node = n;
+  m_port = port;
+
   m_socket = 0;
-  m_local = local;
-  m_iid = iid;
+  m_local = InetSocketAddress (Ipv4Address::GetAny (), port);
 }
 
-PacketSink::~PacketSink()
-{}
-
 void
-PacketSink::DoDispose (void)
+UdpEchoServer::DoDispose (void)
 {
-  m_socket = 0;
-
-  // chain up
+  NS_LOG_FUNCTION;
   Application::DoDispose ();
 }
 
-
-// Application Methods
-void PacketSink::StartApplication()    // Called at time specified by Start
+void 
+UdpEchoServer::StartApplication (void)
 {
-  // Create the socket if not already
+  NS_LOG_FUNCTION;
+
   if (!m_socket)
     {
-      InterfaceId iid = InterfaceId::LookupByName (m_iid);
+      InterfaceId iid = InterfaceId::LookupByName ("Udp");
       Ptr<SocketFactory> socketFactory = 
         GetNode ()->QueryInterface<SocketFactory> (iid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind (m_local);
     }
+
   m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
-    const Address &>) MakeCallback(&PacketSink::Receive, this));
+    const Address &>) MakeCallback(&UdpEchoServer::Receive, this));
 }
 
-void PacketSink::StopApplication()     // Called at time specified by Stop
+void 
+UdpEchoServer::StopApplication ()
 {
+  NS_LOG_FUNCTION;
+
   if (!m_socket) 
     {
       m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
-                               const Address &>) NULL);
- 
+        const Address &>) NULL);
     }
 }
 
-// This LOG output inspired by the application on Joseph Kopena's wiki
-void PacketSink::Receive(Ptr<Socket> socket, const Packet &packet,
-                       const Address &from) 
+void
+UdpEchoServer::Receive(
+  Ptr<Socket> socket, 
+  const Packet &packet,
+  const Address &from) 
 {
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << socket << ", " << packet << ", " << from << ")");
+
   if (InetSocketAddress::IsMatchingType (from))
     {
       InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_DEBUG ( __PRETTY_FUNCTION__ << ": Received " << 
-        packet.GetSize() << " bytes from " << address.GetIpv4() << " [" 
-        << address << "]---'" << packet.PeekData() << "'");
-      // TODO:  Add a tracing source here
+      NS_LOG_INFO ("Received " << packet.GetSize() << " bytes from " << 
+        address.GetIpv4());
+
+      NS_LOG_LOGIC ("Echoing packet");
+      socket->SendTo (from, packet);
     }
 }
 

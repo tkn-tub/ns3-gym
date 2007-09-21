@@ -20,11 +20,11 @@
  */
 
 #include "ns3/assert.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/header.h"
 #include "ipv4-header.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("Ipv4Header");
+NS_LOG_COMPONENT_DEFINE ("Ipv4Header");
 
 namespace ns3 {
 
@@ -271,7 +271,7 @@ Ipv4Header::Serialize (Buffer::Iterator start) const
       uint8_t *data = start.PeekData ();
       uint16_t checksum = UtilsChecksumCalculate (0, data, GetSize ());
       checksum = UtilsChecksumComplete (checksum);
-      NS_DEBUG ("checksum=" <<checksum);
+      NS_LOG_LOGIC ("checksum=" <<checksum);
       i = start;
       i.Next (10);
       i.WriteU16 (checksum);

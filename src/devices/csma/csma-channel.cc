@@ -23,9 +23,9 @@
 #include "csma-net-device.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("CsmaChannel");
+NS_LOG_COMPONENT_DEFINE ("CsmaChannel");
 
 namespace ns3 {
 
@@ -55,7 +55,7 @@ CsmaChannel::CsmaChannel()
   m_bps (DataRate(0xffffffff)),
   m_delay (Seconds(0))
 {
-  NS_DEBUG("CsmaChannel::CsmaChannel ()");
+  NS_LOG_FUNCTION;
   Init();
 }
 
@@ -67,8 +67,9 @@ CsmaChannel::CsmaChannel(
   m_bps (bps),
   m_delay (delay)
 {
-  NS_DEBUG("CsmaChannel::CsmaChannel (" << Channel::GetName() 
-    << ", " << bps.GetBitRate() << ", " << delay << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << Channel::GetName() << ", " << bps.GetBitRate() << 
+    ", " << delay << ")");
   Init();
 }
 
@@ -81,8 +82,9 @@ CsmaChannel::CsmaChannel(
   m_bps (bps), 
   m_delay (delay)
 {
-  NS_DEBUG("CsmaChannel::CsmaChannel (" << name << ", " << 
-           bps.GetBitRate() << ", " << delay << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << name << ", " << bps.GetBitRate() << ", " << delay << 
+    ")");
   Init();
 }
 
@@ -94,7 +96,8 @@ void CsmaChannel::Init() {
 int32_t
 CsmaChannel::Attach(Ptr<CsmaNetDevice> device)
 {
-  NS_DEBUG("CsmaChannel::Attach (" << device << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << device << ")");
   NS_ASSERT(device != 0);
 
   CsmaDeviceRec rec(device);
@@ -106,7 +109,8 @@ CsmaChannel::Attach(Ptr<CsmaNetDevice> device)
 bool
 CsmaChannel::Reattach(Ptr<CsmaNetDevice> device)
 {
-  NS_DEBUG("CsmaChannel::Reattach (" << device << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << device << ")");
   NS_ASSERT(device != 0);
 
   std::vector<CsmaDeviceRec>::iterator it;
@@ -131,7 +135,9 @@ CsmaChannel::Reattach(Ptr<CsmaNetDevice> device)
 bool
 CsmaChannel::Reattach(uint32_t deviceId)
 {
-  NS_DEBUG("CsmaChannel::Reattach (" << deviceId << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << deviceId << ")");
+
   if (deviceId < m_deviceList.size())
     {
       return false;
@@ -151,22 +157,23 @@ CsmaChannel::Reattach(uint32_t deviceId)
 bool
 CsmaChannel::Detach(uint32_t deviceId)
 {
-  NS_DEBUG("CsmaChannel::Detach (" << deviceId << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << deviceId << ")");
 
   if (deviceId < m_deviceList.size())
     {
       if (!m_deviceList[deviceId].active)
         {
-          NS_DEBUG("CsmaChannel::Detach Device is already detached (" 
-                   << deviceId << ")");
+          NS_LOG_WARN ("CsmaChannel::Detach Device is already detached (" << 
+            deviceId << ")");
           return false;
         }
 
       m_deviceList[deviceId].active = false;
       if ((m_state == TRANSMITTING) && (m_currentSrc == deviceId))
         {
-          NS_DEBUG("CsmaChannel::Detach Device is currently"
-                   << "transmitting (" << deviceId << ")");
+          NS_LOG_WARN ("CsmaChannel::Detach Device is currently" << 
+            "transmitting (" << deviceId << ")");
           // Here we will need to place a warning in the packet
         }
 
@@ -181,7 +188,8 @@ CsmaChannel::Detach(uint32_t deviceId)
 bool
 CsmaChannel::Detach(Ptr<CsmaNetDevice> device)
 {
-  NS_DEBUG("CsmaChannel::Detach (" << device << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << device << ")");
   NS_ASSERT(device != 0);
 
   std::vector<CsmaDeviceRec>::iterator it;
@@ -199,25 +207,23 @@ CsmaChannel::Detach(Ptr<CsmaNetDevice> device)
 bool
 CsmaChannel::TransmitStart(Packet& p, uint32_t srcId)
 {
-  NS_DEBUG ("CsmaChannel::TransmitStart (" << &p << ", " << srcId 
-            << ")");
-  NS_DEBUG ("CsmaChannel::TransmitStart (): UID is " << 
-            p.GetUid () << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ", " << srcId << ")");
+  NS_LOG_INFO ("UID is " << p.GetUid () << ")");
 
   if (m_state != IDLE)
     {
-      NS_DEBUG("CsmaChannel::TransmitStart (): state is not IDLE");
+      NS_LOG_WARN ("state is not IDLE");
       return false;
     }
 
   if (!IsActive(srcId))
     {
-      NS_DEBUG("CsmaChannel::TransmitStart (): ERROR: Seclected "
-               << "source is not currently attached to network");
+      NS_LOG_ERROR ("Seclected source is not currently attached to network");
       return false;
     }
 
-  NS_DEBUG("CsmaChannel::TransmitStart (): switch to TRANSMITTING");
+  NS_LOG_LOGIC ("switch to TRANSMITTING");
   m_currentPkt = p;
   m_currentSrc = srcId;
   m_state = TRANSMITTING;
@@ -233,10 +239,9 @@ CsmaChannel::IsActive(uint32_t deviceId)
 bool
 CsmaChannel::TransmitEnd()
 {
-  NS_DEBUG("CsmaChannel::TransmitEnd (" << &m_currentPkt << ", " 
-           << m_currentSrc << ")");
-  NS_DEBUG("CsmaChannel::TransmitEnd (): UID is " << 
-            m_currentPkt.GetUid () << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &m_currentPkt << ", " << m_currentSrc << ")");
+  NS_LOG_INFO ("UID is " << m_currentPkt.GetUid () << ")");
 
   NS_ASSERT(m_state == TRANSMITTING);
   m_state = PROPAGATING;
@@ -244,13 +249,12 @@ CsmaChannel::TransmitEnd()
   bool retVal = true;
 
   if (!IsActive(m_currentSrc)) {
-    NS_DEBUG("CsmaChannel::TransmitEnd (): ERROR: Seclected source "
-             << "was detached before the end of the transmission");
+    NS_LOG_ERROR ("Seclected source was detached before the end of the"
+      "transmission");
     retVal = false;
   }
 
-  NS_DEBUG ("CsmaChannel::TransmitEnd (): Schedule event in " << 
-            m_delay.GetSeconds () << " sec");
+  NS_LOG_LOGIC ("Schedule event in " << m_delay.GetSeconds () << " sec");
 
   Simulator::Schedule (m_delay,
                        &CsmaChannel::PropagationCompleteEvent,
@@ -261,14 +265,13 @@ CsmaChannel::TransmitEnd()
 void
 CsmaChannel::PropagationCompleteEvent()
 {
-  NS_DEBUG("CsmaChannel::PropagationCompleteEvent (" 
-           << &m_currentPkt << ")");
-  NS_DEBUG ("CsmaChannel::PropagationCompleteEvent (): UID is " << 
-            m_currentPkt.GetUid () << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &m_currentPkt << ")");
+  NS_LOG_INFO ("UID is " << m_currentPkt.GetUid () << ")");
 
   NS_ASSERT(m_state == PROPAGATING);
 
-  NS_DEBUG ("CsmaChannel::PropagationCompleteEvent (): Receive");
+  NS_LOG_LOGIC ("Receive");
   
   std::vector<CsmaDeviceRec>::iterator it;
   for (it = m_deviceList.begin(); it < m_deviceList.end(); it++) 

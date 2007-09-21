@@ -42,7 +42,7 @@
 #include <string>
 #include <cassert>
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 
 #include "ns3/command-line.h"
 #include "ns3/default-value.h"
@@ -70,25 +70,41 @@
 
 using namespace ns3;
 
-int main (int argc, char *argv[])
-{
+NS_LOG_COMPONENT_DEFINE ("SimpleGlobalRoutingExample");
 
+int 
+main (int argc, char *argv[])
+{
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
 #if 0 
-  DebugComponentEnable ("Object");
-  DebugComponentEnable ("Queue");
-  DebugComponentEnable ("DropTailQueue");
-  DebugComponentEnable ("Channel");
-  DebugComponentEnable ("PointToPointChannel");
-  DebugComponentEnable ("PointToPointNetDevice");
-  DebugComponentEnable ("GlobalRouter");
-  DebugComponentEnable ("GlobalRouteMaager");
-#endif
+  LogComponentEnable ("SimpleGlobalRoutingExample", LOG_LEVEL_INFO);
 
-  // Set up some default values for the simulation.  Use the DefaultValue::Bind ()
-  // technique to tell the system what subclass of Queue to use,
-  // and what the queue limit is
+  LogComponentEnable("Object", LOG_LEVEL_ALL);
+  LogComponentEnable("Queue", LOG_LEVEL_ALL);
+  LogComponentEnable("DropTailQueue", LOG_LEVEL_ALL);
+  LogComponentEnable("Channel", LOG_LEVEL_ALL);
+  LogComponentEnable("CsmaChannel", LOG_LEVEL_ALL);
+  LogComponentEnable("NetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable("CsmaNetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable("PacketSocket", LOG_LEVEL_ALL);
+  LogComponentEnable("Socket", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpSocket", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpL4Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4StaticRouting", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4Interface", LOG_LEVEL_ALL);
+  LogComponentEnable("ArpIpv4Interface", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4LoopbackInterface", LOG_LEVEL_ALL);
+  LogComponentEnable("OnOffApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
+#endif
+  // Set up some default values for the simulation.  Use the 
+  // DefaultValue::Bind () technique to tell the system what subclass of 
+  // Queue to use, and what the queue limit is
 
   // The below Bind command tells the queue factory which class to
   // instantiate, when the queue factory is invoked in the topology code
@@ -105,12 +121,14 @@ int main (int argc, char *argv[])
 
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
+  NS_LOG_INFO ("Create nodes.");
   Ptr<Node> n0 = Create<InternetNode> ();
   Ptr<Node> n1 = Create<InternetNode> (); 
   Ptr<Node> n2 = Create<InternetNode> (); 
   Ptr<Node> n3 = Create<InternetNode> ();
 
   // We create the channels first without any IP addressing information
+  NS_LOG_INFO ("Create channels.");
   Ptr<PointToPointChannel> channel0 = 
     PointToPointTopology::AddPointToPointLink (
       n0, n2, DataRate (5000000), MilliSeconds (2));
@@ -124,6 +142,7 @@ int main (int argc, char *argv[])
       n2, n3, DataRate (1500000), MilliSeconds (10));
   
   // Later, we add IP addresses.  
+  NS_LOG_INFO ("Assign IP Addresses.");
   PointToPointTopology::AddIpv4Addresses (
       channel0, n0, Ipv4Address ("10.1.1.1"),
       n2, Ipv4Address ("10.1.1.2"));
@@ -142,9 +161,11 @@ int main (int argc, char *argv[])
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
+  NS_LOG_INFO ("Create Applications.");
+  uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    InetSocketAddress ("10.1.3.2", 80), 
+    InetSocketAddress ("10.1.3.2", port), 
     "Udp",
     ConstantVariable (1), 
     ConstantVariable (0));
@@ -156,7 +177,7 @@ int main (int argc, char *argv[])
   // The last argument "true" disables output from the Receive callback
   Ptr<PacketSink> sink = Create<PacketSink> (
     n3, 
-    InetSocketAddress (Ipv4Address::GetAny (), 80), 
+    InetSocketAddress (Ipv4Address::GetAny (), port), 
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.0));
@@ -165,7 +186,7 @@ int main (int argc, char *argv[])
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   ooff = Create<OnOffApplication> (
     n3, 
-    InetSocketAddress ("10.1.2.1", 80),
+    InetSocketAddress ("10.1.2.1", port),
     "Udp",
     ConstantVariable (1), 
     ConstantVariable (0));
@@ -176,7 +197,7 @@ int main (int argc, char *argv[])
   // Create a packet sink to receive these packets
   sink = Create<PacketSink> (
     n1, 
-    InetSocketAddress (Ipv4Address::GetAny (), 80), 
+    InetSocketAddress (Ipv4Address::GetAny (), port), 
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.1));
@@ -184,6 +205,7 @@ int main (int argc, char *argv[])
 
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-global-routing.tr file
+  NS_LOG_INFO ("Configure Tracing.");
   AsciiTrace asciitrace ("simple-global-routing.tr");
   asciitrace.TraceAllQueues ();
   asciitrace.TraceAllNetDeviceRx ();
@@ -195,9 +217,10 @@ int main (int argc, char *argv[])
   PcapTrace pcaptrace ("simple-global-routing.pcap");
   pcaptrace.TraceAllIp ();
 
+  NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
-    
   Simulator::Destroy ();
+  NS_LOG_INFO ("Done.");
 
   return 0;
 }

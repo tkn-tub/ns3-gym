@@ -17,13 +17,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/default-value.h"
 #include "ns3/component-manager.h"
 #include "queue.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("Queue");
+NS_LOG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
@@ -35,33 +35,48 @@ static ClassIdDefaultValue g_classIdDefaultValue ("Queue", "Packet Queue",
 std::string 
 QueueTraceType::GetTypeName (void) const
 {
+  NS_LOG_FUNCTION;
   return "ns3::QueueTraceType";
 }
+
 uint16_t 
 QueueTraceType::GetUid (void)
 {
+  NS_LOG_FUNCTION;
   static uint16_t uid = AllocateUid<QueueTraceType> ("QueueTraceType");
   return uid;
 }
+
 QueueTraceType::QueueTraceType ()
   : m_type (QueueTraceType::ENQUEUE)
-{}
+{
+  NS_LOG_FUNCTION;
+}
+
 QueueTraceType::QueueTraceType (enum Type type)
   : m_type (type)
-{}
+{
+  NS_LOG_FUNCTION;
+}
+
 bool 
 QueueTraceType::IsEnqueue (void) const
 {
+  NS_LOG_FUNCTION;
   return m_type == ENQUEUE;
 }
+
 bool 
 QueueTraceType::IsDequeue (void) const
 {
+  NS_LOG_FUNCTION;
   return m_type == DEQUEUE;
 }
+
 bool 
 QueueTraceType::IsDrop (void) const
 {
+  NS_LOG_FUNCTION;
   return m_type == DROP;
 }
 
@@ -90,18 +105,19 @@ Queue::Queue() :
   m_nTotalDroppedBytes(0),
   m_nTotalDroppedPackets(0)
 {
+  NS_LOG_FUNCTION;
   SetInterfaceId (Queue::iid);
-  NS_DEBUG("Queue::Queue ()");
 }
 
 Queue::~Queue()
 {
-  NS_DEBUG("Queue::~Queue ()");
+  NS_LOG_FUNCTION;
 }
 
 Ptr<TraceResolver>
 Queue::GetTraceResolver (void) const
 {
+  NS_LOG_FUNCTION;
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddSource ("enqueue", 
                        TraceDoc ("store packet in queue",
@@ -122,9 +138,9 @@ Queue::GetTraceResolver (void) const
 bool 
 Queue::Enqueue (const Packet& p)
 {
-  NS_DEBUG("Queue::Enqueue (" << &p << ")");
-
-  NS_DEBUG("Queue::Enqueue (): m_traceEnqueue (p)");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_LOGIC ("m_traceEnqueue (p)");
 
   m_traceEnqueue (p);
 
@@ -140,7 +156,8 @@ Queue::Enqueue (const Packet& p)
 bool
 Queue::Dequeue (Packet &p)
 {
-  NS_DEBUG("Queue::Dequeue (" << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
 
   bool retval = DoDequeue (p);
 
@@ -152,7 +169,7 @@ Queue::Dequeue (Packet &p)
       NS_ASSERT (m_nBytes >= 0);
       NS_ASSERT (m_nPackets >= 0);
 
-      NS_DEBUG("Queue::Dequeue (): m_traceDequeue (p)");
+      NS_LOG_LOGIC("m_traceDequeue (p)");
 
       const Packet packet = p;
       m_traceDequeue (packet);
@@ -164,16 +181,15 @@ Queue::Dequeue (Packet &p)
 void
 Queue::DequeueAll (void)
 {
-  NS_DEBUG("Queue::DequeueAll ()");
-
-  NS_ASSERT (!"Don't know what to do with dequeued packets!");
+  NS_LOG_FUNCTION;
+  NS_ASSERT_MSG (0, "Don't know what to do with dequeued packets!");
 }
 
 bool
 Queue::Peek (Packet &p)
 {
-  NS_DEBUG("Queue::Peek (" << &p << ")");
-
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
   return DoPeek (p);
 }
 
@@ -181,66 +197,63 @@ Queue::Peek (Packet &p)
 uint32_t 
 Queue::GetNPackets (void)
 {
-  NS_DEBUG("Queue::GetNPackets () <= " << m_nPackets);
-
+  NS_LOG_FUNCTION;
+  NS_LOG_LOGIC ("returns " << m_nPackets);
   return m_nPackets;
 }
 
 uint32_t
 Queue::GetNBytes (void)
 {
-  NS_DEBUG("Queue::GetNBytes () <= " << m_nBytes);
-
+  NS_LOG_FUNCTION;
+  NS_LOG_LOGIC (" returns " << m_nBytes);
   return m_nBytes;
 }
-
 
 bool
 Queue::IsEmpty (void)
 {
-  NS_DEBUG("Queue::IsEmpty () <= " << (m_nPackets == 0));
+  NS_LOG_FUNCTION;
+  NS_LOG_LOGIC ("returns " << (m_nPackets == 0));
   return m_nPackets == 0;
 }
 
 uint32_t
 Queue::GetTotalReceivedBytes (void)
 {
-  NS_DEBUG("Queue::GetTotalReceivedBytes () <= " << m_nTotalReceivedBytes);
-
+  NS_LOG_FUNCTION;
+  NS_LOG_LOGIC("returns " << m_nTotalReceivedBytes);
   return m_nTotalReceivedBytes;
 }
 
 uint32_t
 Queue::GetTotalReceivedPackets (void)
 {
-  NS_DEBUG("Queue::GetTotalReceivedPackets () <= " << m_nTotalReceivedPackets);
-
+  NS_LOG_FUNCTION;
+  NS_LOG_LOGIC ("returns " << m_nTotalReceivedPackets);
   return m_nTotalReceivedPackets;
 }
 
 uint32_t
 Queue:: GetTotalDroppedBytes (void)
 {
-  NS_DEBUG(
-    "Queue::GetTotalDroppedBytes () <= " << m_nTotalDroppedBytes
-    );
+  NS_LOG_FUNCTION;
+  NS_LOG_LOGIC ("returns " << m_nTotalDroppedBytes);
   return m_nTotalDroppedBytes;
 }
 
 uint32_t
 Queue::GetTotalDroppedPackets (void)
 {
-  NS_DEBUG(
-           "Queue::GetTotalDroppedPackets () <= " << m_nTotalDroppedPackets);
-
+  NS_LOG_FUNCTION;
+  NS_LOG_LOGIC("returns " << m_nTotalDroppedPackets);
   return m_nTotalDroppedPackets;
 }
 
 void 
 Queue::ResetStatistics (void)
 {
-  NS_DEBUG("Queue::ResetStatistics ()");
-
+  NS_LOG_FUNCTION;
   m_nTotalReceivedBytes = 0;
   m_nTotalReceivedPackets = 0;
   m_nTotalDroppedBytes = 0;
@@ -250,18 +263,20 @@ Queue::ResetStatistics (void)
 void
 Queue::Drop (const Packet& p)
 {
-  NS_DEBUG("Queue::Drop (" << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
 
   m_nTotalDroppedPackets++;
   m_nTotalDroppedBytes += p.GetSize ();
 
-  NS_DEBUG("Queue::Drop (): m_traceDrop (p)");
+  NS_LOG_LOGIC ("m_traceDrop (p)");
   m_traceDrop (p);
 }
 
 Ptr<Queue>
 Queue::CreateDefault (void)
 {
+  NS_LOG_FUNCTION;
   ClassId classId = g_classIdDefaultValue.GetValue ();
   Ptr<Queue> queue = ComponentManager::Create<Queue> (classId, Queue::iid);
   return queue;

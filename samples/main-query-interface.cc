@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/object.h"
 #include "ns3/component-manager.h"
 
@@ -79,10 +79,11 @@ private:
 void
 AnInterface::methodA (void)
 {
+  NS_LOG_FUNCTION;
   // pre-dispatch asserts
-   NS_DEBUG_UNCOND("AnInterface pre-condition::methodA");
+  NS_LOG_LOGIC ("pre-condition");
   domethodA ();
-   NS_DEBUG_UNCOND("AnInterface post-condition::methodA\n");
+  NS_LOG_LOGIC ("post-condition");
   // post-dispatch asserts
 }
 
@@ -114,12 +115,13 @@ private:
 void
 AnImplementation::methodImpl (void)
 {
-   NS_DEBUG_UNCOND("AnImplementation::methodImpl\n");
+  NS_LOG_FUNCTION;
 }
 
 
 AnImplementation::AnImplementation (void)
 {
+  NS_LOG_FUNCTION;
   // enable our interface
   SetInterfaceId (AnImplementation::iid);
 }
@@ -127,7 +129,7 @@ AnImplementation::AnImplementation (void)
 void
 AnImplementation::domethodA () 
 {
-   NS_DEBUG_UNCOND("AnImplementation::domethodA");
+  NS_LOG_FUNCTION;
 }
 
 //
@@ -201,7 +203,7 @@ ANewImplementation::ANewImplementation (void)
 void
 ANewImplementation::methodImpl (void)
 {
-   NS_DEBUG_UNCOND("ANewImplementation::methodImpl\n");
+  NS_LOG_FUNCTION;
 }
 
 const InterfaceId ANewImplementation::iid = 
@@ -238,7 +240,7 @@ AnExtendedImplementation::AnExtendedImplementation (void)
 void
 AnExtendedImplementation::methodExtendedImpl (void)
 {
-   NS_DEBUG_UNCOND("AnExtendedImplementation::methodExtendedImpl\n");
+  NS_LOG_FUNCTION;
 }
 
 const InterfaceId AnExtendedImplementation::iid = 
