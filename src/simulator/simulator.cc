@@ -862,8 +862,7 @@ SimulatorTests::RunTests (void)
 {
   bool result = true;
 
-  Simulator::Run (); // flush out any pending events before running our tests
-
+  Simulator::Destroy ();
   Simulator::SetLinkedList ();
   if (!RunOneTest ()) 
     {
