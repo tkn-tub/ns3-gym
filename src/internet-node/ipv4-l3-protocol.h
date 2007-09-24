@@ -227,7 +227,7 @@ private:
                    Packet const &packet, 
                    Ipv4Header &ipHeader, 
                    Ptr<NetDevice> device);
-  void ForwardUp (Packet p, Ipv4Header const&ip);
+  void ForwardUp (Packet p, Ipv4Header const&ip, Ptr<Ipv4Interface> incomingInterface);
   uint32_t AddIpv4Interface (Ptr<Ipv4Interface> interface);
   void SetupLoopback (void);
 

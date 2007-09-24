@@ -26,6 +26,7 @@
 #define IPV4_L4_PROTOCOL_H
 
 #include "ns3/object.h"
+#include "ipv4-interface.h"
 
 namespace ns3 {
 
@@ -59,13 +60,15 @@ public:
    * \param p packet to forward up
    * \param source source address of packet received
    * \param destination address of packet received
+   * \param incomingInterface the Ipv4Interface on which the packet arrived
    * 
    * Called from lower-level layers to send the packet up
    * in the stack. 
    */
   virtual void Receive(Packet& p, 
                        Ipv4Address const &source,
-                       Ipv4Address const &destination) = 0;
+                       Ipv4Address const &destination,
+                       Ptr<Ipv4Interface> incomingInterface) = 0;
 protected:
   virtual void DoDispose (void);
 private:

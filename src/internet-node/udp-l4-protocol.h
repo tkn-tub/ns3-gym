@@ -85,7 +85,8 @@ public:
   // inherited from Ipv4L4Protocol
   virtual void Receive(Packet& p, 
                        Ipv4Address const &source,
-                       Ipv4Address const &destination);
+                       Ipv4Address const &destination,
+                       Ptr<Ipv4Interface> interface);
 protected:
   virtual void DoDispose (void);
 private:
