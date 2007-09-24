@@ -20,10 +20,13 @@
  */
 
 #include "ns3/test.h"
+#include "ns3/packet-metadata.h"
+
 
 int main (int argc, char *argv[])
 {
 #ifdef RUN_SELF_TESTS
+  ns3::PacketMetadata::Enable ();
   ns3::TestManager::EnableVerbose ();
   bool success = ns3::TestManager::RunTests ();
   if (!success)
