@@ -234,6 +234,12 @@ private:
   
   static DataFreeList m_freeList;
   static bool m_enable;
+
+  // set to true when adding metadata to a packet is skipped because
+  // m_enable is false; used to detect enabling of metadata in the
+  // middle of a simulation, which isn't allowed.
+  static bool m_metadataSkipped;
+
   static uint32_t m_maxSize;
   static uint16_t m_chunkUid;
   

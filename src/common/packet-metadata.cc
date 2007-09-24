@@ -31,6 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("PacketMetadata");
 namespace ns3 {
 
 bool PacketMetadata::m_enable = false;
+bool PacketMetadata::m_metadataSkipped = false;
 uint32_t PacketMetadata::m_maxSize = 0;
 uint16_t PacketMetadata::m_chunkUid = 0;
 PacketMetadata::DataFreeList PacketMetadata::m_freeList;
@@ -47,6 +48,13 @@ PacketMetadata::DataFreeList::~DataFreeList ()
 void 
 PacketMetadata::Enable (void)
 {
+  NS_ASSERT_MSG (!m_metadataSkipped,
+                 "Error: attempting to enable the packet metadata "
+                 "subsystem too late in the simulation, which is not allowed.\n"
+                 "A common cause for this problem is to enable ASCII tracing "
+                 "after sending any packets.  One way to fix this problem is "
+                 "to call ns3::PacketMetadata::Enable () near the beginning of"
+                 " the program, before any packets are sent.");
   m_enable = true;
 }
 
@@ -686,6 +694,7 @@ PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
 {
   if (!m_enable)
     {
+      m_metadataSkipped = true;
       return;
     }
   struct PacketMetadata::SmallItem item;
@@ -703,6 +712,7 @@ PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
 {
   if (!m_enable) 
     {
+      m_metadataSkipped = true;
       return;
     }
   struct PacketMetadata::SmallItem item;
@@ -738,6 +748,7 @@ PacketMetadata::DoAddTrailer (uint32_t uid, uint32_t size)
 {
   if (!m_enable)
     {
+      m_metadataSkipped = true;
       return;
     }
   struct PacketMetadata::SmallItem item;
@@ -755,6 +766,7 @@ PacketMetadata::DoRemoveTrailer (uint32_t uid, uint32_t size)
 {
   if (!m_enable) 
     {
+      m_metadataSkipped = true;
       return;
     }
   struct PacketMetadata::SmallItem item;
@@ -790,6 +802,7 @@ PacketMetadata::AddAtEnd (PacketMetadata const&o)
 {
   if (!m_enable) 
     {
+      m_metadataSkipped = true;
       return;
     }
   if (m_tail == 0xffff)
@@ -846,6 +859,7 @@ PacketMetadata::AddPaddingAtEnd (uint32_t end)
 {
   if (!m_enable)
     {
+      m_metadataSkipped = true;
       return;
     }
 }
@@ -854,6 +868,7 @@ PacketMetadata::RemoveAtStart (uint32_t start)
 {
   if (!m_enable) 
     {
+      m_metadataSkipped = true;
       return;
     }
   NS_ASSERT (m_data != 0);
@@ -910,6 +925,7 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
 {
   if (!m_enable) 
     {
+      m_metadataSkipped = true;
       return;
     }
   NS_ASSERT (m_data != 0);
