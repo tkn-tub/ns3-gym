@@ -39,8 +39,8 @@
 #include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/socket.h"
-#include "ns3/single-event.h"
-#include "ns3/event-collector.h"
+#include "single-event.h"
+#include "event-collector.h"
 
 
 namespace ns3 {

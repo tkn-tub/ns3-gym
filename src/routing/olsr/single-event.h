@@ -22,8 +22,8 @@
 #define SINGLE_EVENT_H
 
 #include <list>
-#include "event-id.h"
-#include "simulator.h"
+#include "ns3/event-id.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 
