@@ -410,13 +410,13 @@ UdpSocketTest::RunTests (void)
 
 
   // Create the UDP sockets
-  Ptr<SocketFactory> socketFactory = rxNode->QueryInterface<SocketFactory> (Udp::iid);
-  Ptr<Socket> rxSocket = socketFactory->CreateSocket ();
-  NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (1234)), 0);
+  Ptr<SocketFactory> rxSocketFactory = rxNode->QueryInterface<SocketFactory> (Udp::iid);
+  Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
+  NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.2"), 1234)), 0);
   rxSocket->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket, this));
 
-  socketFactory = txNode->QueryInterface<SocketFactory> (Udp::iid);
-  Ptr<Socket> txSocket = socketFactory->CreateSocket ();
+  Ptr<SocketFactory> txSocketFactory = txNode->QueryInterface<SocketFactory> (Udp::iid);
+  Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
 
   // ------ Now the tests ------------
 
@@ -440,9 +440,9 @@ UdpSocketTest::RunTests (void)
 
   // When receiving broadcast packets, all sockets sockets bound to
   // the address/port should receive a copy of the same packet.
-  Ptr<Socket> rxSocket2 = socketFactory->CreateSocket ();
+  Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
   rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket2, this));
-  NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0);
+  NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0);
 
   m_receivedPacket = Packet ();
   m_receivedPacket2 = Packet ();

@@ -546,11 +546,13 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protoc
   NS_LOG_LOGIC ("Packet from " << from);
 
   uint32_t index = 0;
+  Ptr<Ipv4Interface> ipv4Interface;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
        i != m_interfaces.end (); 
        i++)
     {
-      if ((*i)->GetDevice () == device)
+      ipv4Interface = *i;
+      if (ipv4Interface->GetDevice () == device)
         {
           m_rxTrace (p, index);
           break;
@@ -572,7 +574,7 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protoc
     }
 
   NS_LOG_LOGIC ("Forward up");
-  ForwardUp (packet, ipHeader);
+  ForwardUp (packet, ipHeader, ipv4Interface);
 }
 
 
@@ -745,14 +747,15 @@ Ipv4L3Protocol::Forwarding (
 }
 
 void
-Ipv4L3Protocol::ForwardUp (Packet p, Ipv4Header const&ip)
+Ipv4L3Protocol::ForwardUp (Packet p, Ipv4Header const&ip,
+                           Ptr<Ipv4Interface> incomingInterface)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAM ("(" << &p << ", " << &ip << ")");
 
   Ptr<Ipv4L4Demux> demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
   Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());
-  protocol->Receive (p, ip.GetSource (), ip.GetDestination ());
+  protocol->Receive (p, ip.GetSource (), ip.GetDestination (), incomingInterface);
 }
 
 void 

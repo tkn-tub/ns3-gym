@@ -85,6 +85,7 @@ Ipv4EndPointDemux::Allocate (void)
     }
   Ipv4EndPoint *endPoint = new Ipv4EndPoint (Ipv4Address::GetAny (), port);
   m_endPoints.push_back (endPoint);
+  NS_LOG_DEBUG ("Now have >>" << m_endPoints.size () << "<< endpoints.");
   return endPoint;
 }
 
@@ -92,7 +93,7 @@ Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (Ipv4Address address)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << address << ")");
+  NS_LOG_PARAM ("(" << this << ", " << address << ")");
   uint16_t port = AllocateEphemeralPort ();
   if (port == 0) 
     {
@@ -101,6 +102,7 @@ Ipv4EndPointDemux::Allocate (Ipv4Address address)
     }
   Ipv4EndPoint *endPoint = new Ipv4EndPoint (address, port);
   m_endPoints.push_back (endPoint);
+  NS_LOG_DEBUG ("Now have >>" << m_endPoints.size () << "<< endpoints.");
   return endPoint;
 }
 
@@ -115,7 +117,7 @@ Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (Ipv4Address address, uint16_t port)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << address << ", " << port << ")");
+  NS_LOG_PARAM ("(" << this << ", " << address << ", " << port << ")");
   if (LookupLocal (address, port)) 
     {
       NS_LOG_WARN ("Duplicate address/port; failing.");
@@ -123,6 +125,7 @@ Ipv4EndPointDemux::Allocate (Ipv4Address address, uint16_t port)
     }
   Ipv4EndPoint *endPoint = new Ipv4EndPoint (address, port);
   m_endPoints.push_back (endPoint);
+  NS_LOG_DEBUG ("Now have >>" << m_endPoints.size () << "<< endpoints.");
   return endPoint;
 }
 
@@ -150,6 +153,9 @@ Ipv4EndPointDemux::Allocate (Ipv4Address localAddress, uint16_t localPort,
   Ipv4EndPoint *endPoint = new Ipv4EndPoint (localAddress, localPort);
   endPoint->SetPeer (peerAddress, peerPort);
   m_endPoints.push_back (endPoint);
+
+  NS_LOG_DEBUG ("Now have >>" << m_endPoints.size () << "<< endpoints.");
+
   return endPoint;
 }
 
@@ -175,7 +181,8 @@ Ipv4EndPointDemux::DeAllocate (Ipv4EndPoint *endPoint)
  */
 Ipv4EndPointDemux::EndPoints
 Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport, 
-                           Ipv4Address saddr, uint16_t sport)
+                           Ipv4Address saddr, uint16_t sport,
+                           Ptr<Ipv4Interface> incomingInterface)
 {
   NS_LOG_FUNCTION;
   uint32_t genericity = 3;
@@ -187,19 +194,32 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
 
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
+      NS_LOG_DEBUG ("Looking at endpoint dport=" << (*i)->GetLocalPort ()
+                    << " daddr=" << (*i)->GetLocalAddress ()
+                    << " sport=" << (*i)->GetPeerPort ()
+                    << " saddr=" << (*i)->GetPeerAddress ());
       if ((*i)->GetLocalPort () != dport) 
         {
+          NS_LOG_LOGIC ("Skipping endpoint " << &(*i)
+                        << " because endpoint dport "
+                        << (*i)->GetLocalPort ()
+                        << " does not match packet dport " << dport);
           continue;
         }
+      bool isBroadcast = 
+        (daddr.IsBroadcast () ||
+         daddr.IsSubnetDirectedBroadcast (incomingInterface->GetNetworkMask ()));
+      NS_LOG_DEBUG ("dest addr " << daddr << " broadcast? " << isBroadcast);
+
       NS_LOG_LOGIC ("Local address matches: " << 
-        bool ((*i)->GetLocalAddress () == daddr || daddr.IsBroadcast ()));
+        bool ((*i)->GetLocalAddress () == daddr || isBroadcast));
       NS_LOG_LOGIC ("Peer port matches: " << 
-        bool ((*i)->GetPeerPort () == sport || sport == 0));
+        bool ((*i)->GetPeerPort () == sport || (*i)->GetPeerPort () == 0));
       NS_LOG_LOGIC ("Peer address matches: " << 
         bool ((*i)->GetPeerAddress () == saddr ||
         (*i)->GetPeerAddress () == Ipv4Address::GetAny ()));
       
-      if ( ((*i)->GetLocalAddress () == daddr || daddr.IsBroadcast ())
+      if ( ((*i)->GetLocalAddress () == daddr || isBroadcast)
            && ((*i)->GetPeerPort () == sport || (*i)->GetPeerPort () == 0)
            && ((*i)->GetPeerAddress () == saddr || (*i)->GetPeerAddress () == Ipv4Address::GetAny ()))
         {

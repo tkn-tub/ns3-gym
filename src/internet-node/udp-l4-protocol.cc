@@ -123,8 +123,9 @@ UdpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 
 void 
 UdpL4Protocol::Receive(Packet& packet, 
-             Ipv4Address const &source,
-             Ipv4Address const &destination)
+                       Ipv4Address const &source,
+                       Ipv4Address const &destination,
+                       Ptr<Ipv4Interface> interface)
 {
   NS_LOG_FUNCTION; 
   NS_LOG_PARAM ("(" << &packet << ", " << source << ", " << destination << 
@@ -134,7 +135,7 @@ UdpL4Protocol::Receive(Packet& packet,
   packet.RemoveHeader (udpHeader);
   Ipv4EndPointDemux::EndPoints endPoints =
     m_endPoints->Lookup (destination, udpHeader.GetDestination (),
-                         source, udpHeader.GetSource ());
+                         source, udpHeader.GetSource (), interface);
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
        endPoint != endPoints.end (); endPoint++)
     {
