@@ -1,26 +1,26 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
-/***************************************************************************
- *   Copyright (C) 2004 by Francisco J. Ros                                *
- *   fjrm@dif.um.es                                                        *
- *                                                                         *
- *   Modified on 2007 for NS-3 by Gustavo J. A. M. Carneiro, INESC Porto   *
- *                                <gjc@inescporto.pt>                      *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
+/*
+ * Copyright (c) 2004 Francisco J. Ros 
+ * Copyright (c) 2007 INESC Porto
+ * All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors: Francisco J. Ros  <fjrm@dif.um.es>
+ *          Gustavo J. A. M. Carneiro <gjc@inescporto.pt>
+ */
+
 
 ///
 /// \file	OLSR.cc
@@ -30,12 +30,6 @@
 /// implemented here.
 ///
 
-#include <math.h>
-// #include <limits.h>
-// #include <address.h>
-// #include <ip.h>
-// #include <cmu-trace.h>
-#include <map>
 #include "olsr-agent-impl.h"
 #include "ns3/socket-factory.h"
 #include "ns3/udp.h"
@@ -45,7 +39,6 @@
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
 
-#include <iomanip>
 
 
 /********** Useful macros **********/
