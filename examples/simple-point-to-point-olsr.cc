@@ -212,12 +212,10 @@ main (int argc, char *argv[])
   
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-point-to-point.tr file
-#if 0 // causes: assert failed. file=../src/common/packet-metadata.cc, line=1043, cond="GetTotalSize () == data.GetSize ()"
   NS_LOG_INFO ("Configure Tracing.");
   AsciiTrace asciitrace ("simple-point-to-point-olsr.tr");
   asciitrace.TraceAllQueues ();
   asciitrace.TraceAllNetDeviceRx ();
-#endif
 
   // Also configure some tcpdump traces; each interface will be traced
   // The output files will be named 
