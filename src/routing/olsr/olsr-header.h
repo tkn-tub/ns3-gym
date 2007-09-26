@@ -182,14 +182,14 @@ public:
     return m_messageSequenceNumber;
   }
 
-  void SetMessageSize (uint16_t messageSize)
-  {
-    m_messageSize = messageSize;
-  }
-  uint16_t GetMessageSize () const
-  {
-    return m_messageSize;
-  }
+//   void SetMessageSize (uint16_t messageSize)
+//   {
+//     m_messageSize = messageSize;
+//   }
+//   uint16_t GetMessageSize () const
+//   {
+//     return m_messageSize;
+//   }
   
 private:
   MessageType m_messageType;
@@ -207,274 +207,233 @@ public:
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual std::string GetName (void) const { return "OlsrMessage"; }
-};
 
-// 5.1.  MID Message Format
-//
-//    The proposed format of a MID message is as follows:
-//
-//        0                   1                   2                   3
-//        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                    OLSR Interface Address                     |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                    OLSR Interface Address                     |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                              ...                              |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-class OlsrMidMessageHeader : public Header
-{
-public:
-
-  OlsrMidMessageHeader ();
-  virtual ~OlsrMidMessageHeader ();
-
-  void SetMessageSize (uint32_t messageSize) {
-    m_messageSize = messageSize;
-  }
-  uint32_t GetMessageSize () const {
-    return m_messageSize;
-  }
-  
-  const std::vector<Ipv4Address> & GetInterfaceAddresses () const
+  // 5.1.  MID Message Format
+  //
+  //    The proposed format of a MID message is as follows:
+  //
+  //        0                   1                   2                   3
+  //        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                    OLSR Interface Address                     |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                    OLSR Interface Address                     |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                              ...                              |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  struct Mid
   {
-    return m_interfaceAddresses;
-  }
-  void SetInterfaceAddresses (const std::vector<Ipv4Address> &addresses)
+    std::vector<Ipv4Address> interfaceAddresses;
+    void Print (std::ostream &os) const;
+    uint32_t GetSerializedSize (void) const;
+    void Serialize (Buffer::Iterator start) const;
+    uint32_t Deserialize (Buffer::Iterator start, uint32_t messageSize);
+  };
+
+  // 6.1.  HELLO Message Format
+  //
+  //        0                   1                   2                   3
+  //        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  //
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |          Reserved             |     Htime     |  Willingness  |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |   Link Code   |   Reserved    |       Link Message Size       |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                  Neighbor Interface Address                   |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                  Neighbor Interface Address                   |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       :                             .  .  .                           :
+  //       :                                                               :
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |   Link Code   |   Reserved    |       Link Message Size       |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                  Neighbor Interface Address                   |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                  Neighbor Interface Address                   |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       :                                                               :
+  //       :                                       :
+  //    (etc.)
+  struct Hello
   {
-    m_interfaceAddresses = addresses;
-  }
-  
-  
-private:
-  std::vector<Ipv4Address> m_interfaceAddresses;
-  uint32_t m_messageSize; // has to be manually set before deserialization
+    struct LinkMessage {
+      uint8_t linkCode;
+      std::vector<Ipv4Address> neighborInterfaceAddresses;
+    };
 
-public:  
-  static uint32_t GetUid (void);
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual std::string GetName (void) const { return "OlsrMidMessage"; }
-};
+    uint8_t hTime;
+    void SetHTime (Time time)
+    {
+      this->hTime = OlsrSecondsToEmf (time.GetSeconds ());
+    }
+    Time GetHTime () const
+    {
+      return Seconds (OlsrEmfToSeconds (this->hTime));
+    }
 
-// 6.1.  HELLO Message Format
-//
-//        0                   1                   2                   3
-//        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-//
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |          Reserved             |     Htime     |  Willingness  |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |   Link Code   |   Reserved    |       Link Message Size       |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                  Neighbor Interface Address                   |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                  Neighbor Interface Address                   |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       :                             .  .  .                           :
-//       :                                                               :
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |   Link Code   |   Reserved    |       Link Message Size       |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                  Neighbor Interface Address                   |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                  Neighbor Interface Address                   |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       :                                                               :
-//       :                                       :
-//    (etc.)
-class OlsrHelloMessageHeader : public Header
-{
-public:
+    uint8_t willingness;
+    std::vector<LinkMessage> linkMessages;
 
-  OlsrHelloMessageHeader ();
-  virtual ~OlsrHelloMessageHeader ();
+    void Print (std::ostream &os) const;
+    uint32_t GetSerializedSize (void) const;
+    void Serialize (Buffer::Iterator start) const;
+    uint32_t Deserialize (Buffer::Iterator start, uint32_t messageSize);
+  };
 
-  
-  struct LinkMessage {
-    uint8_t linkCode;
-    std::vector<Ipv4Address> neighborInterfaceAddresses;
+  // 9.1.  TC Message Format
+  //
+  //    The proposed format of a TC message is as follows:
+  //
+  //        0                   1                   2                   3
+  //        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |              ANSN             |           Reserved            |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |               Advertised Neighbor Main Address                |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |               Advertised Neighbor Main Address                |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                              ...                              |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  struct Tc
+  {
+    std::vector<Ipv4Address> neighborAddresses;
+    uint16_t ansn;
+
+    void Print (std::ostream &os) const;
+    uint32_t GetSerializedSize (void) const;
+    void Serialize (Buffer::Iterator start) const;
+    uint32_t Deserialize (Buffer::Iterator start, uint32_t messageSize);
   };
 
 
-  void SetMessageSize (uint32_t messageSize) {
-    m_messageSize = messageSize;
-  }
-  uint32_t GetMessageSize () const {
-    return m_messageSize;
-  }
+  // 12.1.  HNA Message Format
+  //
+  //    The proposed format of an HNA-message is:
+  //
+  //        0                   1                   2                   3
+  //        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                         Network Address                       |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                             Netmask                           |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                         Network Address                       |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                             Netmask                           |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  //       |                              ...                              |
+  //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-  void SetWillingness (uint8_t willingness)
+  // Note: HNA stands for Host Network Association
+  struct Hna
   {
-    m_willingness = willingness;
-  }
-  uint8_t GetWillingness () const
-  {
-    return m_willingness;
-  }
+    struct Association
+    {
+      Ipv4Address address;
+      Ipv4Mask mask;
+    };
+    std::vector<Association> associations;
 
-  void SetHTime (Time time)
-  {
-    m_hTime = OlsrSecondsToEmf (time.GetSeconds ());
-  }
-  Time GetHTime () const
-  {
-    return Seconds (OlsrEmfToSeconds (m_hTime));
-  }
-
-  const std::vector<LinkMessage> & GetLinkMessages () const
-  {
-    return m_linkMessages;
-  }
-  void SetLinkMessages (const std::vector<LinkMessage> &linkMessages)
-  {
-    m_linkMessages = linkMessages;
-  }
-  
-private:
-  uint8_t m_hTime;
-  uint8_t m_willingness;
-  uint32_t m_messageSize; // has to be manually set before deserialization
-  std::vector<LinkMessage> m_linkMessages;
-
-public:  
-  static uint32_t GetUid (void);
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual std::string GetName (void) const { return "OlsrHelloMessage"; }
-};
-
-// 9.1.  TC Message Format
-//
-//    The proposed format of a TC message is as follows:
-//
-//        0                   1                   2                   3
-//        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |              ANSN             |           Reserved            |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |               Advertised Neighbor Main Address                |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |               Advertised Neighbor Main Address                |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                              ...                              |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-class OlsrTcMessageHeader : public Header
-{
-public:
-
-  OlsrTcMessageHeader ();
-  virtual ~OlsrTcMessageHeader ();
-
-  void SetMessageSize (uint32_t messageSize) {
-    m_messageSize = messageSize;
-  }
-  uint32_t GetMessageSize () const {
-    return m_messageSize;
-  }
-
-  const std::vector<Ipv4Address> & GetNeighborAddresses () const
-  {
-    return m_neighborAddresses;
-  }
-  void SetNeighborAddresses (const std::vector<Ipv4Address> &addresses)
-  {
-    m_neighborAddresses = addresses;
-  }
-
-  void SetAnsn (uint16_t ansn)
-  {
-    m_ansn = ansn;
-  }
-  uint16_t GetAnsn () const
-  {
-    return m_ansn;
-  }
-  
-private:
-  std::vector<Ipv4Address> m_neighborAddresses;
-  uint16_t m_ansn;
-
-  uint32_t m_messageSize; // has to be manually set before deserialization
-
-public:  
-  static uint32_t GetUid (void);
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual std::string GetName (void) const { return "OlsrTcMessage"; }
-};
-
-
-// 12.1.  HNA Message Format
-//
-//    The proposed format of an HNA-message is:
-//
-//        0                   1                   2                   3
-//        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                         Network Address                       |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                             Netmask                           |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                         Network Address                       |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                             Netmask                           |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-//       |                              ...                              |
-//       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-// Note: HNA stands for Host Network Association
-class OlsrHnaMessageHeader : public Header
-{
-public:
-
-  OlsrHnaMessageHeader ();
-  virtual ~OlsrHnaMessageHeader ();
-
-  struct Association
-  {
-    Ipv4Address address;
-    Ipv4Mask mask;
+    void Print (std::ostream &os) const;
+    uint32_t GetSerializedSize (void) const;
+    void Serialize (Buffer::Iterator start) const;
+    uint32_t Deserialize (Buffer::Iterator start, uint32_t messageSize);
   };
 
-  void SetMessageSize (uint32_t messageSize)
-  {
-    m_messageSize = messageSize;
-  }
-  uint32_t GetMessageSize () const
-  {
-    return m_messageSize;
-  }
-
-  const std::vector<Association> & GetAssociations () const
-  {
-    return m_associations;
-  }
-  void SetAssociations (const std::vector<Association> &associations)
-  {
-    m_associations = associations;
-  }
-  
 private:
-  std::vector<Association> m_associations;
-  uint32_t m_messageSize; // has to be manually set before deserialization
+  struct
+  {
+    Mid mid;
+    Hello hello;
+    Tc tc;
+    Hna hna;
+  } m_message; // union not allowed
 
-public:  
-  static uint32_t GetUid (void);
-  virtual void Print (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void Serialize (Buffer::Iterator start) const;
-  virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual std::string GetName (void) const { return "OlsrHnaMessage"; }
+public:
+
+  Mid& GetMid ()
+  {
+    if (m_messageType == 0)
+      {
+        m_messageType = MID_MESSAGE;
+      }
+    else
+      {
+        NS_ASSERT (m_messageType == MID_MESSAGE);
+      }
+    return m_message.mid;
+  }
+
+  Hello& GetHello ()
+  {
+    if (m_messageType == 0)
+      {
+        m_messageType = HELLO_MESSAGE;
+      }
+    else
+      {
+        NS_ASSERT (m_messageType == HELLO_MESSAGE);
+      }
+    return m_message.hello;
+  }
+
+  Tc& GetTc ()
+  {
+    if (m_messageType == 0)
+      {
+        m_messageType = TC_MESSAGE;
+      }
+    else
+      {
+        NS_ASSERT (m_messageType == TC_MESSAGE);
+      }
+    return m_message.tc;
+  }
+
+  Hna& GetHna ()
+  {
+    if (m_messageType == 0)
+      {
+        m_messageType = HNA_MESSAGE;
+      }
+    else
+      {
+        NS_ASSERT (m_messageType == HNA_MESSAGE);
+      }
+    return m_message.hna;
+  }
+
+
+  const Mid& GetMid () const
+  {
+    NS_ASSERT (m_messageType == MID_MESSAGE);
+    return m_message.mid;
+  }
+
+  const Hello& GetHello () const
+  {
+    NS_ASSERT (m_messageType == HELLO_MESSAGE);
+    return m_message.hello;
+  }
+
+  const Tc& GetTc () const
+  {
+    NS_ASSERT (m_messageType == TC_MESSAGE);
+    return m_message.tc;
+  }
+
+  const Hna& GetHna () const
+  {
+    NS_ASSERT (m_messageType == HNA_MESSAGE);
+    return m_message.hna;
+  }
+
+  
 };
-
 
 }; // namespace ns3
 

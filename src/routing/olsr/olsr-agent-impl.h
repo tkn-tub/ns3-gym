@@ -124,15 +124,14 @@ protected:
   void IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple);
 
   /// A list of pending messages which are buffered awaiting for being sent.
-  std::vector<Packet> m_queuedMessages;
+  std::vector<OlsrMessageHeader> m_queuedMessages;
   SingleEvent m_queuedMessagesTimer; // timer for throttling outgoing messages
 
   void ForwardDefault (OlsrMessageHeader olsrMessage,
-                       Packet messagePayload,
                        DuplicateTuple *duplicated,
                        const Ipv4Address &localIface,
                        const Ipv4Address &senderAddress);
-  void QueueMessage (Packet message, Time delay);
+  void QueueMessage (const OlsrMessageHeader &message, Time delay);
   void SendQueuedMessages ();
   void SendHello ();
   void SendTc ();
@@ -156,26 +155,23 @@ protected:
   void RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple);
 
   void ProcessHello (const OlsrMessageHeader &msg,
-                     const OlsrHelloMessageHeader &hello,
                      const Ipv4Address &receiverIface,
                      const Ipv4Address &senderIface);
   void ProcessTc (const OlsrMessageHeader &msg,
-                  const OlsrTcMessageHeader &tc,
                   const Ipv4Address &senderIface);
   void ProcessMid (const OlsrMessageHeader &msg,
-                   const OlsrMidMessageHeader &mid,
                    const Ipv4Address &senderIface);
 
   void LinkSensing (const OlsrMessageHeader &msg,
-                    const OlsrHelloMessageHeader &hello,
+                    const OlsrMessageHeader::Hello &hello,
                     const Ipv4Address &receiverIface,
                     const Ipv4Address &sender_iface);
   void PopulateNeighborSet (const OlsrMessageHeader &msg,
-                            const OlsrHelloMessageHeader &hello);
+                            const OlsrMessageHeader::Hello &hello);
   void PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
-                                  const OlsrHelloMessageHeader &hello);
+                                  const OlsrMessageHeader::Hello &hello);
   void PopulateMprSelectorSet (const OlsrMessageHeader &msg,
-                               const OlsrHelloMessageHeader &hello);
+                               const OlsrMessageHeader::Hello &hello);
 
   int Degree (NeighborTuple const &tuple);
 

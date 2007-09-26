@@ -262,11 +262,10 @@ OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
   while (sizeLeft)
     {
       OlsrMessageHeader messageHeader;
-      NS_ASSERT (sizeLeft >= messageHeader.GetSerializedSize ());
       if (packet.RemoveHeader (messageHeader) == 0)
         NS_ASSERT (false);
       
-      sizeLeft -= messageHeader.GetMessageSize ();
+      sizeLeft -= messageHeader.GetSerializedSize ();
 
       NS_DEBUG ("Olsr Msg received with type "
                 << std::dec << int (messageHeader.GetMessageType ())
@@ -279,15 +278,11 @@ OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
       if (messageHeader.GetTimeToLive () == 0
           || messageHeader.GetOriginatorAddress () == m_mainAddress)
         {
-          packet.RemoveAtStart (messageHeader.GetMessageSize ()
+          packet.RemoveAtStart (messageHeader.GetSerializedSize ()
                                 - messageHeader.GetSerializedSize ());
           continue;
         }
 
-      // Save the original message payload for forwarding
-      Packet messagePayload = packet.CreateFragment
-        (0, messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
-      
       // If the message has been processed it must not be processed again
       bool do_forwarding = true;
       DuplicateTuple *duplicated = m_state.FindDuplicateTuple
@@ -296,35 +291,24 @@ OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
       
       if (duplicated == NULL)
         {
-          OlsrHelloMessageHeader helloMsg;
-          OlsrTcMessageHeader tcMsg;
-          OlsrMidMessageHeader midMsg;
-
           switch (messageHeader.GetMessageType ())
             {
             case OlsrMessageHeader::HELLO_MESSAGE:
-              helloMsg.SetMessageSize (messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
-              packet.RemoveHeader (helloMsg);
-              NS_DEBUG ("OLSR node received HELLO message of size " << messageHeader.GetMessageSize ());
-              ProcessHello (messageHeader, helloMsg, m_mainAddress, inetSourceAddr.GetIpv4 ());
+              NS_DEBUG ("OLSR node received HELLO message of size " << messageHeader.GetSerializedSize ());
+              ProcessHello (messageHeader, m_mainAddress, inetSourceAddr.GetIpv4 ());
               break;
 
             case OlsrMessageHeader::TC_MESSAGE:
-              tcMsg.SetMessageSize (messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
-              packet.RemoveHeader (tcMsg);
-              NS_DEBUG ("OLSR node received TC message of size " << messageHeader.GetMessageSize ());
-              ProcessTc (messageHeader, tcMsg, inetSourceAddr.GetIpv4 ());
+              NS_DEBUG ("OLSR node received TC message of size " << messageHeader.GetSerializedSize ());
+              ProcessTc (messageHeader, inetSourceAddr.GetIpv4 ());
               break;
 
             case OlsrMessageHeader::MID_MESSAGE:
-              midMsg.SetMessageSize (messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
-              packet.RemoveHeader (midMsg);
-              NS_DEBUG ("OLSR node received MID message of size " << messageHeader.GetMessageSize ());
-              ProcessMid (messageHeader, midMsg, inetSourceAddr.GetIpv4 ());
+              NS_DEBUG ("OLSR node received MID message of size " << messageHeader.GetSerializedSize ());
+              ProcessMid (messageHeader, inetSourceAddr.GetIpv4 ());
               break;
 
             default:
-              packet.RemoveAtStart (messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
               NS_DEBUG ("OLSR message type " <<
                         int (messageHeader.GetMessageType ()) <<
                         " not implemented");
@@ -333,7 +317,6 @@ OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
       else
         {
           NS_DEBUG ("OLSR message is duplicated, not reading it.");
-          packet.RemoveAtStart (messageHeader.GetMessageSize () - messageHeader.GetSerializedSize ());
       
           // If the message has been considered for forwarding, it should
           // not be retransmitted again
@@ -354,7 +337,7 @@ OlsrAgentImpl::RecvOlsr (Ptr<Socket> socket,
           // TC and MID messages are forwarded using the default algorithm.
           // Remaining messages are also forwarded using the default algorithm.
           if (messageHeader.GetMessageType ()  != OlsrMessageHeader::HELLO_MESSAGE)
-            ForwardDefault (messageHeader, messagePayload, duplicated,
+            ForwardDefault (messageHeader, duplicated,
                             m_mainAddress, inetSourceAddr.GetIpv4 ());
         }
 	
@@ -813,10 +796,10 @@ OlsrAgentImpl::RoutingTableComputation ()
 ///
 void
 OlsrAgentImpl::ProcessHello (const OlsrMessageHeader &msg,
-                             const OlsrHelloMessageHeader &hello,
                              const Ipv4Address &receiverIface,
                              const Ipv4Address &senderIface)
 {
+  const OlsrMessageHeader::Hello &hello = msg.GetHello ();
   LinkSensing (msg, hello, receiverIface, senderIface);
   PopulateNeighborSet (msg, hello);
   PopulateTwoHopNeighborSet (msg, hello);
@@ -835,9 +818,9 @@ OlsrAgentImpl::ProcessHello (const OlsrMessageHeader &msg,
 ///
 void
 OlsrAgentImpl::ProcessTc (const OlsrMessageHeader &msg,
-                          const OlsrTcMessageHeader &tc,
                           const Ipv4Address &senderIface)
 {
+  const OlsrMessageHeader::Tc &tc = msg.GetTc ();
   Time now = Simulator::Now ();
 	
   // 1. If the sender interface of this message is not in the symmetric
@@ -852,7 +835,7 @@ OlsrAgentImpl::ProcessTc (const OlsrMessageHeader &msg,
   // then further processing of this TC message MUST NOT be
   // performed.
   TopologyTuple *topologyTuple =
-    m_state.FindNewerTopologyTuple (msg.GetOriginatorAddress (), tc.GetAnsn ());
+    m_state.FindNewerTopologyTuple (msg.GetOriginatorAddress (), tc.ansn);
   if (topologyTuple != NULL)
     return;
 	
@@ -860,12 +843,12 @@ OlsrAgentImpl::ProcessTc (const OlsrMessageHeader &msg,
   //	T_last_addr == originator address AND
   //	T_seq       <  ANSN
   // MUST be removed from the topology set.
-  m_state.EraseOlderTopologyTuples (msg.GetOriginatorAddress (), tc.GetAnsn ());
+  m_state.EraseOlderTopologyTuples (msg.GetOriginatorAddress (), tc.ansn);
 
   // 4. For each of the advertised neighbor main address received in
   // the TC message:
-  for (std::vector<Ipv4Address>::const_iterator i = tc.GetNeighborAddresses ().begin ();
-       i != tc.GetNeighborAddresses ().end (); i++)
+  for (std::vector<Ipv4Address>::const_iterator i = tc.neighborAddresses.begin ();
+       i != tc.neighborAddresses.end (); i++)
     {
       const Ipv4Address &addr = *i;
       // 4.1. If there exist some tuple in the topology set where:
@@ -891,7 +874,7 @@ OlsrAgentImpl::ProcessTc (const OlsrMessageHeader &msg,
           TopologyTuple topologyTuple;;
           topologyTuple.destAddr = addr;
           topologyTuple.lastAddr = msg.GetOriginatorAddress ();
-          topologyTuple.sequenceNumber = tc.GetAnsn ();
+          topologyTuple.sequenceNumber = tc.ansn;
           topologyTuple.expirationTime = now + msg.GetVTime ();
           AddTopologyTuple (topologyTuple);
 
@@ -914,9 +897,9 @@ OlsrAgentImpl::ProcessTc (const OlsrMessageHeader &msg,
 ///
 void
 OlsrAgentImpl::ProcessMid (const OlsrMessageHeader &msg,
-                           const OlsrMidMessageHeader &mid,
                            const Ipv4Address &senderIface)
 {
+  const OlsrMessageHeader::Mid &mid = msg.GetMid ();
   Time now = Simulator::Now ();
 	
   // 1. If the sender interface of this message is not in the symmetric
@@ -926,9 +909,8 @@ OlsrAgentImpl::ProcessMid (const OlsrMessageHeader &msg,
     return;
 	
   // 2. For each interface address listed in the MID message
-  const std::vector<Ipv4Address> &addrs = mid.GetInterfaceAddresses ();
-  for (std::vector<Ipv4Address>::const_iterator i = addrs.begin ();
-       i != addrs.end (); i++)
+  for (std::vector<Ipv4Address>::const_iterator i = mid.interfaceAddresses.begin ();
+       i != mid.interfaceAddresses.end (); i++)
     {
       bool updated = false;
       IfaceAssocSet &ifaceAssoc = m_state.GetIfaceAssocSetMutable ();
@@ -970,7 +952,6 @@ OlsrAgentImpl::ProcessMid (const OlsrMessageHeader &msg,
 ///
 void
 OlsrAgentImpl::ForwardDefault (OlsrMessageHeader olsrMessage,
-                               Packet messagePayload,
                                DuplicateTuple *duplicated,
                                const Ipv4Address &localIface,
                                const Ipv4Address &senderAddress)
@@ -1009,8 +990,7 @@ OlsrAgentImpl::ForwardDefault (OlsrMessageHeader olsrMessage,
           olsrMessage.SetHopCount (olsrMessage.GetHopCount () + 1);
           // We have to introduce a random delay to avoid
           // synchronization with neighbors.
-          messagePayload.AddHeader (olsrMessage);
-          QueueMessage (messagePayload, JITTER);
+          QueueMessage (olsrMessage, JITTER);
           retransmitted = true;
         }
     }
@@ -1048,7 +1028,7 @@ OlsrAgentImpl::ForwardDefault (OlsrMessageHeader olsrMessage,
 /// \param delay maximum delay the %OLSR message is going to be buffered.
 ///
 void
-OlsrAgentImpl::QueueMessage (Packet message, Time delay)
+OlsrAgentImpl::QueueMessage (const OlsrMessageHeader &message, Time delay)
 {
   m_queuedMessages.push_back (message);
   if (not m_queuedMessagesTimer.IsRunning ())
@@ -1085,11 +1065,13 @@ OlsrAgentImpl::SendQueuedMessages ()
 
   NS_DEBUG ("Olsr node " << m_mainAddress << ": SendQueuedMessages");
 
-  for (std::vector<Packet>::const_iterator messagePkt = m_queuedMessages.begin ();
-       messagePkt != m_queuedMessages.end ();
-       messagePkt++)
+  for (std::vector<OlsrMessageHeader>::const_iterator message = m_queuedMessages.begin ();
+       message != m_queuedMessages.end ();
+       message++)
     {
-      packet.AddAtEnd (*messagePkt);
+      Packet p;
+      p.AddHeader (*message);
+      packet.AddAtEnd (p);
       if (++numMessages == OLSR_MAX_MSGS)
         {
           SendPacket (packet);
@@ -1114,20 +1096,20 @@ void
 OlsrAgentImpl::SendHello ()
 {
   OlsrMessageHeader msg;
-  OlsrHelloMessageHeader hello;
   Time now = Simulator::Now ();
 
-  msg.SetMessageType (OlsrMessageHeader::HELLO_MESSAGE);
   msg.SetVTime (OLSR_NEIGHB_HOLD_TIME);
   msg.SetOriginatorAddress (m_mainAddress);
   msg.SetTimeToLive (1);
   msg.SetHopCount (0);
   msg.SetMessageSequenceNumber (GetMessageSequenceNumber ());
+  OlsrMessageHeader::Hello &hello = msg.GetHello ();
 
   hello.SetHTime (m_helloInterval);
-  hello.SetWillingness (m_willingness);
+  hello.willingness = m_willingness;
 
-  std::vector<OlsrHelloMessageHeader::LinkMessage> linkMessages;
+  std::vector<OlsrMessageHeader::Hello::LinkMessage>
+    &linkMessages = hello.linkMessages;
 	
   for (LinkSet::const_iterator link_tuple = m_state.GetLinks ().begin ();
        link_tuple != m_state.GetLinks ().end (); link_tuple++)
@@ -1191,7 +1173,7 @@ OlsrAgentImpl::SendHello ()
             }
         }
 
-      OlsrHelloMessageHeader::LinkMessage linkMessage;
+      OlsrMessageHeader::Hello::LinkMessage linkMessage;
       linkMessage.linkCode = (link_type & 0x03) | ((nb_type << 2) & 0x0f);
       linkMessage.neighborInterfaceAddresses.push_back
         (link_tuple->neighborIfaceAddr);
@@ -1205,14 +1187,9 @@ OlsrAgentImpl::SendHello ()
 
       linkMessages.push_back (linkMessage);
     }
-  hello.SetLinkMessages (linkMessages);
-  Packet packet;
-  packet.AddHeader (hello);
-  NS_DEBUG ("OLSR HELLO message size: " << int (packet.GetSize () + msg.GetSerializedSize ())
+  NS_DEBUG ("OLSR HELLO message size: " << int (msg.GetSerializedSize ())
             << " (with " << int (linkMessages.size ()) << " link messages)");
-  msg.SetMessageSize (packet.GetSize () + msg.GetSerializedSize ());
-  packet.AddHeader (msg);
-  QueueMessage (packet, JITTER);
+  QueueMessage (msg, JITTER);
 }
 
 ///
@@ -1222,29 +1199,21 @@ void
 OlsrAgentImpl::SendTc ()
 {
   OlsrMessageHeader msg;
-  OlsrTcMessageHeader tc;
 
-  msg.SetMessageType (OlsrMessageHeader::TC_MESSAGE);
   msg.SetVTime (OLSR_TOP_HOLD_TIME);
   msg.SetOriginatorAddress (m_mainAddress);
   msg.SetTimeToLive (255);
   msg.SetHopCount (0);
   msg.SetMessageSequenceNumber (GetMessageSequenceNumber ());
   
-  tc.SetAnsn (m_ansn);
-  std::vector<Ipv4Address> neighbors;
+  OlsrMessageHeader::Tc &tc = msg.GetTc ();
+  tc.ansn = m_ansn;
   for (MprSelectorSet::const_iterator mprsel_tuple = m_state.GetMprSelectors ().begin();
        mprsel_tuple != m_state.GetMprSelectors ().end(); mprsel_tuple++)
     {
-      neighbors.push_back (mprsel_tuple->mainAddr);
+      tc.neighborAddresses.push_back (mprsel_tuple->mainAddr);
     }
-  tc.SetNeighborAddresses (neighbors);
-
-  Packet packet;
-  packet.AddHeader (tc);
-  msg.SetMessageSize (packet.GetSize () + msg.GetSerializedSize ());
-  packet.AddHeader (msg);
-  QueueMessage (packet, JITTER);
+  QueueMessage (msg, JITTER);
 }
 
 ///
@@ -1254,7 +1223,7 @@ void
 OlsrAgentImpl::SendMid ()
 {
   OlsrMessageHeader msg;
-  OlsrMidMessageHeader mid;
+  OlsrMessageHeader::Mid &mid = msg.GetMid ();
 
   // A node which has only a single interface address participating in
   // the MANET (i.e., running OLSR), MUST NOT generate any MID
@@ -1273,29 +1242,22 @@ OlsrAgentImpl::SendMid ()
   // MANET; later we may want to make this configurable. ]
 
   Ipv4Address loopback ("127.0.0.1");
-  std::vector<Ipv4Address> addresses;
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
       Ipv4Address addr = m_ipv4->GetAddress (i);
       if (addr != m_mainAddress && addr != loopback)
-        addresses.push_back (addr);
+        mid.interfaceAddresses.push_back (addr);
     }
-  if (addresses.size () == 0)
+  if (mid.interfaceAddresses.size () == 0)
     return;
-  mid.SetInterfaceAddresses (addresses);
   
-  msg.SetMessageType (OlsrMessageHeader::MID_MESSAGE);
   msg.SetVTime (OLSR_MID_HOLD_TIME);
   msg.SetOriginatorAddress (m_mainAddress);
   msg.SetTimeToLive (255);
   msg.SetHopCount (0);
   msg.SetMessageSequenceNumber (GetMessageSequenceNumber ());
 
-  Packet packet;
-  packet.AddHeader (mid);
-  msg.SetMessageSize (packet.GetSize () + msg.GetSerializedSize ());
-  packet.AddHeader (msg);
-  QueueMessage (packet, JITTER);
+  QueueMessage (msg, JITTER);
 }
 
 ///
@@ -1303,7 +1265,7 @@ OlsrAgentImpl::SendMid ()
 ///		specification). Neighbor Set is also updated if needed.
 void
 OlsrAgentImpl::LinkSensing (const OlsrMessageHeader &msg,
-                            const OlsrHelloMessageHeader &hello,
+                            const OlsrMessageHeader::Hello &hello,
                             const Ipv4Address &receiverIface,
                             const Ipv4Address &senderIface)
 {
@@ -1321,16 +1283,16 @@ OlsrAgentImpl::LinkSensing (const OlsrMessageHeader &msg,
       newLinkTuple.symTime = now - Seconds (1);
       newLinkTuple.lostTime = Seconds (0);
       newLinkTuple.time = now + msg.GetVTime ();
-      link_tuple = &AddLinkTuple (newLinkTuple, hello.GetWillingness ());
+      link_tuple = &AddLinkTuple (newLinkTuple, hello.willingness);
       created = true;
     }
   else
     updated = true;
 	
   link_tuple->asymTime = now + msg.GetVTime ();
-  for (std::vector<OlsrHelloMessageHeader::LinkMessage>::const_iterator linkMessage =
-         hello.GetLinkMessages ().begin ();
-       linkMessage != hello.GetLinkMessages ().end ();
+  for (std::vector<OlsrMessageHeader::Hello::LinkMessage>::const_iterator linkMessage =
+         hello.linkMessages.begin ();
+       linkMessage != hello.linkMessages.end ();
        linkMessage++)
     {
       int lt = linkMessage->linkCode & 0x03; // Link Type
@@ -1386,11 +1348,11 @@ OlsrAgentImpl::LinkSensing (const OlsrMessageHeader &msg,
 ///		HELLO message (following RFC 3626).
 void
 OlsrAgentImpl::PopulateNeighborSet (const OlsrMessageHeader &msg,
-                                    const OlsrHelloMessageHeader &hello)
+                                    const OlsrMessageHeader::Hello &hello)
 {
   NeighborTuple *nb_tuple = m_state.FindNeighborTuple (msg.GetOriginatorAddress ());
   if (nb_tuple != NULL)
-    nb_tuple->willingness = hello.GetWillingness ();
+    nb_tuple->willingness = hello.willingness;
 }
 
 
@@ -1399,7 +1361,7 @@ OlsrAgentImpl::PopulateNeighborSet (const OlsrMessageHeader &msg,
 ///		received HELLO message (following RFC 3626).
 void
 OlsrAgentImpl::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
-                                          const OlsrHelloMessageHeader &hello)
+                                          const OlsrMessageHeader::Hello &hello)
 {
   Time now = Simulator::Now ();
 	
@@ -1410,10 +1372,10 @@ OlsrAgentImpl::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
         {
           if (link_tuple->symTime >= now)
             {
-              typedef std::vector<OlsrHelloMessageHeader::LinkMessage> LinkMessageVec;
+              typedef std::vector<OlsrMessageHeader::Hello::LinkMessage> LinkMessageVec;
               for (LinkMessageVec::const_iterator linkMessage =
-                     hello.GetLinkMessages ().begin ();
-                   linkMessage != hello.GetLinkMessages ().end ();
+                     hello.linkMessages.begin ();
+                   linkMessage != hello.linkMessages.end ();
                    linkMessage++)
                 {
                   int nt = linkMessage->linkCode >> 2;
@@ -1483,13 +1445,13 @@ OlsrAgentImpl::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
 ///		received HELLO message (following RFC 3626).
 void
 OlsrAgentImpl::PopulateMprSelectorSet (const OlsrMessageHeader &msg,
-                                       const OlsrHelloMessageHeader &hello)
+                                       const OlsrMessageHeader::Hello &hello)
 {
   Time now = Simulator::Now ();
 	
-  typedef std::vector<OlsrHelloMessageHeader::LinkMessage> LinkMessageVec;
-  for (LinkMessageVec::const_iterator linkMessage = hello.GetLinkMessages ().begin ();
-       linkMessage != hello.GetLinkMessages ().end ();
+  typedef std::vector<OlsrMessageHeader::Hello::LinkMessage> LinkMessageVec;
+  for (LinkMessageVec::const_iterator linkMessage = hello.linkMessages.begin ();
+       linkMessage != hello.linkMessages.end ();
        linkMessage++)
     {
       int nt = linkMessage->linkCode >> 2;
