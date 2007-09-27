@@ -135,6 +135,52 @@ public:
   void SetFunction (void (*fn) (U1, U2, U3), T1 a1, T2 a2, T3 a3);
 
   /**
+   * \param memPtr the member function pointer
+   * \param objPtr the pointer to object
+   *
+   * Store this function and object in this Timer for later use by Timer::Schedule.
+   */
+  template <typename MEM_PTR, typename OBJ_PTR>
+  void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr);
+  /**
+   * \param memPtr the member function pointer
+   * \param objPtr the pointer to object
+   * \param a1 the first argument
+   *
+   * Store this function and this argument in this Timer for later use by 
+   * Timer::Schedule.
+   */
+  template <typename MEM_PTR, typename OBJ_PTR,
+            typename T1>
+  void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1);
+  /**
+   * \param memPtr the member function pointer
+   * \param objPtr the pointer to object
+   * \param a1 the first argument
+   * \param a2 the second argument
+   *
+   * Store this function and these arguments in this Timer for later use by 
+   * Timer::Schedule.
+   */
+  template <typename MEM_PTR, typename OBJ_PTR,
+            typename T1, typename T2>
+  void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1, T2 a2);
+  /**
+   * \param memPtr the member function pointer
+   * \param objPtr the pointer to object
+   * \param a1 the first argument
+   * \param a2 the second argument
+   * \param a3 the third argument
+   *
+   * Store this function and these arguments in this Timer for later use by 
+   * Timer::Schedule.
+   */
+  template <typename MEM_PTR, typename OBJ_PTR,
+            typename T1, typename T2, typename T3>
+  void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1, T2 a2, T3 a3);
+
+
+  /**
    * \param a1 the first argument
    *
    * Store this argument in this Timer for later use by Timer::Schedule.
@@ -274,6 +320,50 @@ Timer::SetArguments (T1 a1)
       return;
     }
   impl->SetArguments (a1);
+}
+
+template <typename MEM_PTR, typename OBJ_PTR>
+void 
+Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
+{
+  struct MemFnTimerImplZero : public TimerImpl
+  {
+    MemFnTimerImplZero (MEM_PTR memPtr, OBJ_PTR objPtr) 
+      : m_memPtr (memPtr), m_objPtr (objPtr) {}
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_memPtr, m_objPtr);
+    }
+    MEM_PTR m_memPtr;
+    OBJ_PTR m_objPtr;
+  } *function = new MemFnTimerImplZero (memPtr, objPtr);
+  delete m_impl;
+  m_impl = function;    
+}
+
+
+
+template <typename MEM_PTR, typename OBJ_PTR, 
+         typename T1>
+void 
+Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1)
+{
+  struct MemFnTimerImplZero : public TimerImpl
+  {
+    MemFnTimerImplZero (MEM_PTR memPtr, OBJ_PTR objPtr) 
+      : m_memPtr (memPtr), m_objPtr (objPtr) {}
+    virtual void SetArguments (typename TimerTraits<T1>::ParameterType a1) {
+      m_a1 = a1;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1);
+    }
+    MEM_PTR m_memPtr;
+    OBJ_PTR m_objPtr;
+    typename TimerTraits<T1>::StoredType m_a1;
+  } *function = new MemFnTimerImplZero (memPtr, objPtr);
+  function->SetArguments (a1);
+  delete m_impl;
+  m_impl = function;    
 }
 
 
