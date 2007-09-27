@@ -95,6 +95,8 @@ def configure(conf):
     else:
         variant_name = debug_level
 
+    variant_env['INCLUDEDIR'] = os.path.join(variant_env['PREFIX'], 'include')
+
     if Params.g_options.enable_gcov:
         variant_name += '-gcov'
         variant_env.append_value('CCFLAGS', '-fprofile-arcs')
