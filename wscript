@@ -20,7 +20,7 @@ APPNAME = 'ns'
 srcdir = '.'
 blddir = 'build'
 
-def dist_hook(srcdir, blddir):
+def dist_hook():
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
 
@@ -85,8 +85,7 @@ def set_options(opt):
 
 
 def configure(conf):
-    if not conf.check_tool('compiler_cxx'):
-        Params.fatal("No suitable compiler found")
+    conf.check_tool('compiler_cxx')
 
     # create the second environment, set the variant and set its name
     variant_env = conf.env.copy()
@@ -95,6 +94,8 @@ def configure(conf):
         variant_name = 'debug'
     else:
         variant_name = debug_level
+
+    variant_env['INCLUDEDIR'] = os.path.join(variant_env['PREFIX'], 'include')
 
     if Params.g_options.enable_gcov:
         variant_name += '-gcov'
