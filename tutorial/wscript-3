@@ -16,7 +16,3 @@ def build(bld):
     obj = bld.create_ns3_program('tutorial-3',
         ['core'])
     obj.source = 'tutorial-3.cc'
-
-    obj = bld.create_ns3_program('tutorial-4',
-        ['core'])
-    obj.source = 'tutorial-4.cc'

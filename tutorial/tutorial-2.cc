@@ -26,6 +26,7 @@
 #include "ns3/udp-echo-server.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
+#include "ns3/ascii-trace.h"
 
 NS_LOG_COMPONENT_DEFINE ("UdpEchoSimulation");
 
@@ -75,6 +76,10 @@ main (int argc, char *argv[])
 
   server->Stop (Seconds(10.));
   client->Stop (Seconds(10.));
+
+  AsciiTrace asciitrace ("tutorial.tr");
+  asciitrace.TraceAllQueues ();
+  asciitrace.TraceAllNetDeviceRx ();
 
   Simulator::Run ();
   Simulator::Destroy ();
