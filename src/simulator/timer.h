@@ -95,12 +95,41 @@ public:
   Timer (int flags);
   ~Timer ();
 
+  /**
+   * \param fn the function
+   *
+   * Store this function in this Timer for later use by Timer::Schedule.
+   */
   void SetFunction (void (*fn) (void));
+  /**
+   * \param fn the function
+   * \param a1 the first argument
+   *
+   * Store this function and this argument in this Timer for later use by 
+   * Timer::Schedule.
+   */
   template <typename U1, typename T1>
   void SetFunction (void (*fn) (U1), T1 a1);
+  /**
+   * \param fn the function
+   * \param a1 the first argument
+   * \param a2 the second argument
+   *
+   * Store this function and these arguments in this Timer for later use by 
+   * Timer::Schedule.
+   */
   template <typename U1, typename U2,
             typename T1, typename T2>
   void SetFunction (void (*fn) (U1, U2), T1 a1, T2 a2);
+  /**
+   * \param fn the function
+   * \param a1 the first argument
+   * \param a2 the second argument
+   * \param a3 the third argument
+   *
+   * Store this function and these arguments in this Timer for later use by 
+   * Timer::Schedule.
+   */
   template <typename U1, typename U2, typename U3,
             typename T1, typename T2, typename T3>
   void SetFunction (void (*fn) (U1, U2, U3), T1 a1, T2 a2, T3 a3);
@@ -225,8 +254,7 @@ Timer::SetFunction (void (*fn) (U1), T1 a1)
   } *function = new FnTimerImplOne (fn);
   function->SetArguments (a1);
   delete m_impl;
-  m_impl = function;
-  
+  m_impl = function;  
 }
 
 template <typename T1>
