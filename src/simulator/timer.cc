@@ -231,8 +231,11 @@ TimerTests::RunTests (void)
   timer.Schedule ();
 
   timer.SetFunction (&TimerTests::bazi, this, 1);
+  timer.SetArguments (3);
   timer.SetFunction (&TimerTests::bazir, this, 1);
+  timer.SetArguments (3);
   timer.SetFunction (&TimerTests::bazcir, this, 1);
+  timer.SetArguments (3);
 
   Simulator::Run ();
   Simulator::Destroy ();

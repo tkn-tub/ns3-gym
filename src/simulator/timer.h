@@ -347,9 +347,9 @@ template <typename MEM_PTR, typename OBJ_PTR,
 void 
 Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1)
 {
-  struct MemFnTimerImplZero : public TimerImpl
+  struct MemFnTimerImplOne : public TimerImplOne<typename TimerTraits<T1>::ParameterType>
   {
-    MemFnTimerImplZero (MEM_PTR memPtr, OBJ_PTR objPtr) 
+    MemFnTimerImplOne (MEM_PTR memPtr, OBJ_PTR objPtr) 
       : m_memPtr (memPtr), m_objPtr (objPtr) {}
     virtual void SetArguments (typename TimerTraits<T1>::ParameterType a1) {
       m_a1 = a1;
@@ -360,7 +360,7 @@ Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1)
     MEM_PTR m_memPtr;
     OBJ_PTR m_objPtr;
     typename TimerTraits<T1>::StoredType m_a1;
-  } *function = new MemFnTimerImplZero (memPtr, objPtr);
+  } *function = new MemFnTimerImplOne (memPtr, objPtr);
   function->SetArguments (a1);
   delete m_impl;
   m_impl = function;    
