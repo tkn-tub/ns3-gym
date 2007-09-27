@@ -697,6 +697,8 @@ PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
       m_metadataSkipped = true;
       return;
     }
+  NS_LOG_PARAM ("(uid=" << uid << ", size=" << size << ")");
+
   struct PacketMetadata::SmallItem item;
   item.next = m_head;
   item.prev = 0xffff;
@@ -715,6 +717,7 @@ PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
       m_metadataSkipped = true;
       return;
     }
+  NS_LOG_PARAM ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
   uint32_t read = ReadItems (m_head, &item, &extraItem);
