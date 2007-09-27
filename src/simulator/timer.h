@@ -9,19 +9,89 @@ namespace ns3 {
 
 class TimerImpl;
 
+/**
+ * \brief a simple Timer class
+ *
+ * A timer is used to hold together a delay, a function to invoke
+ * when the delay expires, and a set of arguments to pass to the function
+ * when the delay expires.
+ *
+ * A timer can also be used to enforce a set of predefined event lifetime
+ * management policies. These policies are specified at construction time
+ * and cannot be changed after.
+ */
 class Timer 
 {
 public:
   enum {
+    /**
+     * This policy enforces a check before each call to Timer::Schedule
+     * to verify that the timer has already expired. This policy
+     * is incompatible with CANCEL_ON_SCHEDULE REMOVE_ON_SCHEDULE, and,
+     * GARBAGE_COLLECT.
+     */
     CHECK_ON_SCHEDULE = (1<<0),
+    /**
+     * This policy enforces a check from the destructor of the Timer
+     * to verify that the timer has already expired. This policy is
+     * incompatible with CANCEL_ON_DESTROY, REMOVE_ON_DESTROY, and
+     * GARBAGE_COLLECT.
+     */
     CHECK_ON_DESTROY = (1<<1),
+    /**
+     * This policy cancels the event before scheduling a new event 
+     * for each call to Timer::Schedule. This policy
+     * is incompatible with CHECK_ON_SCHEDULE, REMOVE_ON_SCHEDULE, and,
+     * GARBAGE_COLLECT.
+     */
     CANCEL_ON_SCHEDULE = (1<<2),
+    /**
+     * This policy cancels the event from the destructor of the Timer
+     * to verify that the event has already expired. This policy is
+     * incompatible with CHECK_ON_DESTROY, REMOVE_ON_DESTROY, and
+     * GARBAGE_COLLECT.
+     */
     CANCEL_ON_DESTROY = (1<<3),
+    /**
+     * This policy removes the event from the simulation event list 
+     * before scheduling a new event for each call to Timer::Schedule. 
+     * This policy is incompatible with CHECK_ON_SCHEDULE,
+     * CANCEL_ON_SCHEDULE, and, GARBAGE_COLLECT.
+     */
     REMOVE_ON_SCHEDULE = (1<<4),
+    /**
+     * This policy removes the event from the simulation event list
+     * when the destructor of the Timer is invoked. This policy is
+     * incompatible with CHECK_ON_DESTROY, CANCEL_ON_DESTROY, and
+     * GARBAGE_COLLECT.
+     */
     REMOVE_ON_DESTROY = (1<<5),
+    /**
+     * This policy is incompatible with all other policies. Event
+     * event scheduled with this policy is kept track of by an
+     * event garbage collector which makes sure that all events
+     * of timers with a GARBAGE_COLLECT policy are cancelled at the
+     * end of the simulation.
+     */
     GARBAGE_COLLECT = (1<<6),
   };
+  /**
+   * create a timer with a default event lifetime management policy:
+   *  - CHECK_ON_SCHEDULE
+   *  - CHECK_ON_DESTROY
+   */
   Timer ();
+  /**
+   * \param flags the event lifetime management policies to use
+   *
+   * The set of flag combinations allowed is:
+   *  - none
+   *  - GARBAGE_COLLECT
+   *  - one of CANCEL_ON_DESTROY, REMOVE_ON_DESTROY, or, CHECK_ON_DESTROY
+   *  - one of CANCEL_ON_SCHEDULE, REMOVE_ON_SCHEDULE, or, CHECK_ON_SCHEDULE
+   *  - one of CANCEL_ON_DESTROY, REMOVE_ON_DESTROY, or, CHECK_ON_DESTROY ored
+   *    with one of CANCEL_ON_SCHEDULE, REMOVE_ON_SCHEDULE, or, CHECK_ON_SCHEDULE.
+   */
   Timer (int flags);
   ~Timer ();
 
@@ -35,20 +105,64 @@ public:
             typename T1, typename T2, typename T3>
   void SetFunction (void (*fn) (U1, U2, U3), T1 a1, T2 a2, T3 a3);
 
+  /**
+   * \param a1 the first argument
+   *
+   * Store this argument in this Timer for later use by Timer::Schedule.
+   */
   template <typename T1>
   void SetArguments (T1 a1);
+  /**
+   * \param a1 the first argument
+   * \param a2 the second argument
+   *
+   * Store these arguments in this Timer for later use by Timer::Schedule.
+   */
   template <typename T1, typename T2>
   void SetArguments (T1 a1, T2 a2);
+  /**
+   * \param a1 the first argument
+   * \param a2 the second argument
+   * \param a3 the third argument
+   *
+   * Store these arguments in this Timer for later use by Timer::Schedule.
+   */
   template <typename T1, typename T2, typename T3>
   void SetArguments (T1 a1, T2 a2, T3 a3);
 
-  void SetDelay (const Time &time);
+  /**
+   * \param delay the delay
+   *
+   * The next call to Schedule will schedule the timer with this delay.
+   */
+  void SetDelay (const Time &delay);
+  /**
+   * \returns the currently-configured delay for the next Schedule.
+   */
   Time GetDelay (void) const;
+  /**
+   * Cancel the currently-running event if there is one. Do nothing
+   * otherwise.
+   */
   void Cancel (void);
+  /**
+   * Remove from the simulation event-list the currently-running event 
+   * if there is one. Do nothing otherwise.
+   */
   void Remove (void);
+  /**
+   * \return true if there is no currently-running event, false otherwise.
+   */
   bool IsExpired (void) const;
+  /**
+   * \return true if there is a currently-running event, false otherwise.
+   */
   bool IsRunning (void) const;
 
+  /**
+   * Schedule a new event using the currently-configured delay, function, 
+   * and arguments.
+   */
   void Schedule (void);
 
 private:
