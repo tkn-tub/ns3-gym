@@ -128,6 +128,39 @@ public:
    */
   template <typename T1, typename T2, typename T3>
   void SetArguments (T1 a1, T2 a2, T3 a3);
+  /**
+   * \param a1 the first argument
+   * \param a2 the second argument
+   * \param a3 the third argument
+   * \param a4 the fourth argument
+   *
+   * Store these arguments in this Timer for later use by Timer::Schedule.
+   */
+  template <typename T1, typename T2, typename T3, typename T4>
+  void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4);
+  /**
+   * \param a1 the first argument
+   * \param a2 the second argument
+   * \param a3 the third argument
+   * \param a4 the fourth argument
+   * \param a5 the fifth argument
+   *
+   * Store these arguments in this Timer for later use by Timer::Schedule.
+   */
+  template <typename T1, typename T2, typename T3, typename T4, typename T5>
+  void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+  /**
+   * \param a1 the first argument
+   * \param a2 the second argument
+   * \param a3 the third argument
+   * \param a4 the fourth argument
+   * \param a5 the fifth argument
+   * \param a6 the sixth argument
+   *
+   * Store these arguments in this Timer for later use by Timer::Schedule.
+   */
+  template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+  void SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
 
   /**
    * \param delay the delay
@@ -169,10 +202,27 @@ private:
   void DoSetFunction (IntToType<0>, FN fn);
   template <typename FN>
   void DoSetFunction (IntToType<1>, FN fn);
+  template <typename FN>
+  void DoSetFunction (IntToType<2>, FN fn);
+  template <typename FN>
+  void DoSetFunction (IntToType<3>, FN fn);
+  template <typename FN>
+  void DoSetFunction (IntToType<4>, FN fn);
+  template <typename FN>
+  void DoSetFunction (IntToType<5>, FN fn);
+
   template <typename MEM_PTR, typename OBJ_PTR>
   void DoSetFunction (IntToType<0>, MEM_PTR memPtr, OBJ_PTR objPtr);
   template <typename MEM_PTR, typename OBJ_PTR>
   void DoSetFunction (IntToType<1>, MEM_PTR memPtr, OBJ_PTR objPtr);
+  template <typename MEM_PTR, typename OBJ_PTR>
+  void DoSetFunction (IntToType<2>, MEM_PTR memPtr, OBJ_PTR objPtr);
+  template <typename MEM_PTR, typename OBJ_PTR>
+  void DoSetFunction (IntToType<3>, MEM_PTR memPtr, OBJ_PTR objPtr);
+  template <typename MEM_PTR, typename OBJ_PTR>
+  void DoSetFunction (IntToType<4>, MEM_PTR memPtr, OBJ_PTR objPtr);
+  template <typename MEM_PTR, typename OBJ_PTR>
+  void DoSetFunction (IntToType<5>, MEM_PTR memPtr, OBJ_PTR objPtr);
 
   int m_flags;
   Time m_delay;
@@ -211,6 +261,31 @@ template <typename T1>
 struct TimerImplOne : public TimerImpl
 {
   virtual void SetArguments (T1 a1) = 0;
+};
+template <typename T1, typename T2>
+struct TimerImplTwo : public TimerImpl
+{
+  virtual void SetArguments (T1 a1,T2 a2) = 0;
+};
+template <typename T1, typename T2, typename T3>
+struct TimerImplThree : public TimerImpl
+{
+  virtual void SetArguments (T1 a1,T2 a2,T3 a3) = 0;
+};
+template <typename T1, typename T2, typename  T3, typename T4>
+struct TimerImplFour : public TimerImpl
+{
+  virtual void SetArguments (T1 a1,T2 a2,T3 a3, T4 a4) = 0;
+};
+template <typename T1, typename T2, typename  T3, typename T4, typename T5>
+struct TimerImplFive : public TimerImpl
+{
+  virtual void SetArguments (T1 a1,T2 a2,T3 a3, T4 a4, T5 a5) = 0;
+};
+template <typename T1, typename T2, typename  T3, typename T4, typename T5, typename T6>
+struct TimerImplSix : public TimerImpl
+{
+  virtual void SetArguments (T1 a1,T2 a2,T3 a3, T4 a4, T5 a5, T6 a6) = 0;
 };
 
 
@@ -264,27 +339,6 @@ Timer::DoSetFunction (IntToType<1>, FN fn)
   m_impl = function;  
 }
 
-
-template <typename T1>
-void 
-Timer::SetArguments (T1 a1)
-{
-  if (m_impl == 0)
-    {
-      NS_FATAL_ERROR ("You cannot set the arguments of a Timer before setting its function.");
-      return;
-    }
-  struct TimerImplOne<typename TimerTraits<T1>::ParameterType> *impl =
-    dynamic_cast<struct TimerImplOne<typename TimerTraits<T1>::ParameterType> *> (m_impl);
-  if (impl == 0)
-    {
-      NS_FATAL_ERROR ("You tried to set Timer arguments incompatible with its function.");
-      return;
-    }
-  impl->SetArguments (a1);
-}
-
-
 template <typename MEM_PTR, typename OBJ_PTR>
 void 
 Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
@@ -336,6 +390,150 @@ Timer::DoSetFunction (IntToType<1>, MEM_PTR memPtr, OBJ_PTR objPtr)
   delete m_impl;
   m_impl = function;    
 }
+
+
+template <typename T1>
+void 
+Timer::SetArguments (T1 a1)
+{
+  if (m_impl == 0)
+    {
+      NS_FATAL_ERROR ("You cannot set the arguments of a Timer before setting its function.");
+      return;
+    }
+  typedef struct TimerImplOne<
+    typename TimerTraits<T1>::ParameterType
+    > TimerImplBase;
+  TimerImplBase *impl = dynamic_cast<TimerImplBase *> (m_impl);
+  if (impl == 0)
+    {
+      NS_FATAL_ERROR ("You tried to set Timer arguments incompatible with its function.");
+      return;
+    }
+  impl->SetArguments (a1);
+}
+
+template <typename T1, typename T2>
+void 
+Timer::SetArguments (T1 a1, T2 a2)
+{
+  if (m_impl == 0)
+    {
+      NS_FATAL_ERROR ("You cannot set the arguments of a Timer before setting its function.");
+      return;
+    }
+  typedef struct TimerImplTwo<
+    typename TimerTraits<T1>::ParameterType,
+    typename TimerTraits<T2>::ParameterType
+    > TimerImplBase;
+  TimerImplBase *impl = dynamic_cast<TimerImplBase *> (m_impl);
+  if (impl == 0)
+    {
+      NS_FATAL_ERROR ("You tried to set Timer arguments incompatible with its function.");
+      return;
+    }
+  impl->SetArguments (a1, a2);
+}
+
+template <typename T1, typename T2, typename T3>
+void 
+Timer::SetArguments (T1 a1, T2 a2, T3 a3)
+{
+  if (m_impl == 0)
+    {
+      NS_FATAL_ERROR ("You cannot set the arguments of a Timer before setting its function.");
+      return;
+    }
+  typedef struct TimerImplThree<
+    typename TimerTraits<T1>::ParameterType,
+    typename TimerTraits<T2>::ParameterType,
+    typename TimerTraits<T3>::ParameterType
+    > TimerImplBase;
+  TimerImplBase *impl = dynamic_cast<TimerImplBase *> (m_impl);
+  if (impl == 0)
+    {
+      NS_FATAL_ERROR ("You tried to set Timer arguments incompatible with its function.");
+      return;
+    }
+  impl->SetArguments (a1, a2, a3);
+}
+
+template <typename T1, typename T2, typename T3, typename T4>
+void 
+Timer::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4)
+{
+  if (m_impl == 0)
+    {
+      NS_FATAL_ERROR ("You cannot set the arguments of a Timer before setting its function.");
+      return;
+    }
+  typedef struct TimerImplFour<
+    typename TimerTraits<T1>::ParameterType,
+    typename TimerTraits<T2>::ParameterType,
+    typename TimerTraits<T3>::ParameterType,
+    typename TimerTraits<T4>::ParameterType
+    > TimerImplBase;
+  TimerImplBase *impl = dynamic_cast<TimerImplBase *> (m_impl);
+  if (impl == 0)
+    {
+      NS_FATAL_ERROR ("You tried to set Timer arguments incompatible with its function.");
+      return;
+    }
+  impl->SetArguments (a1, a2, a3, a4);
+}
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+void 
+Timer::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+{
+  if (m_impl == 0)
+    {
+      NS_FATAL_ERROR ("You cannot set the arguments of a Timer before setting its function.");
+      return;
+    }
+  typedef struct TimerImplFive<
+    typename TimerTraits<T1>::ParameterType,
+    typename TimerTraits<T2>::ParameterType,
+    typename TimerTraits<T3>::ParameterType,
+    typename TimerTraits<T4>::ParameterType,
+    typename TimerTraits<T5>::ParameterType
+    > TimerImplBase;
+  TimerImplBase *impl = dynamic_cast<TimerImplBase *> (m_impl);
+  if (impl == 0)
+    {
+      NS_FATAL_ERROR ("You tried to set Timer arguments incompatible with its function.");
+      return;
+    }
+  impl->SetArguments (a1, a2, a3, a4, a5);
+}
+
+template <typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+void 
+Timer::SetArguments (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
+{
+  if (m_impl == 0)
+    {
+      NS_FATAL_ERROR ("You cannot set the arguments of a Timer before setting its function.");
+      return;
+    }
+  typedef struct TimerImplSix<
+    typename TimerTraits<T1>::ParameterType,
+    typename TimerTraits<T2>::ParameterType,
+    typename TimerTraits<T3>::ParameterType,
+    typename TimerTraits<T4>::ParameterType,
+    typename TimerTraits<T5>::ParameterType,
+    typename TimerTraits<T6>::ParameterType
+    > TimerImplBase;
+  TimerImplBase *impl = dynamic_cast<TimerImplBase *> (m_impl);
+  if (impl == 0)
+    {
+      NS_FATAL_ERROR ("You tried to set Timer arguments incompatible with its function.");
+      return;
+    }
+  impl->SetArguments (a1, a2, a3, a4, a5, a6);
+}
+
+
 
 } // namespace ns3
 
