@@ -5,7 +5,6 @@
 #include "ns3/ptr.h"
 #include "ns3/mobility-model.h"
 #include "ns3/mobility-model-notifier.h"
-#include "ns3/random-walk-2d-mobility-model.h"
 #include "ns3/random-topology.h"
 #include "ns3/default-value.h"
 #include "ns3/command-line.h"
@@ -15,7 +14,7 @@
 using namespace ns3;
 
 static void 
-CourseChange (Ptr<const MobilityModel> position)
+CourseChange (ns3::TraceContext const&, Ptr<const MobilityModel> position)
 {
   Position pos = position->Get ();
   std::cout << Simulator::Now () << ", pos=" << position << ", x=" << pos.x << ", y=" << pos.y
@@ -24,17 +23,17 @@ CourseChange (Ptr<const MobilityModel> position)
 
 int main (int argc, char *argv[])
 {
-  Bind ("RandomWalk2dMode", "Time");
-  Bind ("RandomWalk2dTime", "2s");
-  Bind ("RandomWalk2dSpeed", "Constant:1.0");
-  Bind ("RandomWalk2dBounds", "0:200:0:100");
+  DefaultValue::Bind ("RandomWalk2dMode", "Time");
+  DefaultValue::Bind ("RandomWalk2dTime", "2s");
+  DefaultValue::Bind ("RandomWalk2dSpeed", "Constant:1.0");
+  DefaultValue::Bind ("RandomWalk2dBounds", "0:200:0:100");
 
-  Bind ("RandomDiscPositionX", "100");
-  Bind ("RandomDiscPositionY", "50");
-  Bind ("RandomDiscPositionRho", "Uniform:0:30");
+  DefaultValue::Bind ("RandomDiscPositionX", "100");
+  DefaultValue::Bind ("RandomDiscPositionY", "50");
+  DefaultValue::Bind ("RandomDiscPositionRho", "Uniform:0:30");
 
-  Bind ("RandomTopologyPositionType", "RandomDiscPosition");
-  Bind ("RandomTopologyMobilityType", "RandomWalk2dMobilityModel");
+  DefaultValue::Bind ("RandomTopologyPositionType", "RandomDiscPosition");
+  DefaultValue::Bind ("RandomTopologyMobilityType", "RandomWalk2dMobilityModel");
 
   CommandLine::Parse (argc, argv);
 
@@ -44,7 +43,7 @@ int main (int argc, char *argv[])
   for (uint32_t i = 0; i < 100; i++)
     {
       Ptr<MobilityModelNotifier> notifier = Create<MobilityModelNotifier> ();
-      notifier->RegisterListener (MakeCallback (&CourseChange));
+      notifier->TraceConnect ("/course-change", MakeCallback (&CourseChange));
       objects.push_back (notifier);
     }
 
