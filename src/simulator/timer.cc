@@ -117,6 +117,16 @@ Timer::Schedule (void)
 namespace {
 void bari (int)
 {}
+void bar2i (int, int)
+{}
+void bar3i (int, int, int)
+{}
+void bar4i (int, int, int, int)
+{}
+void bar5i (int, int, int, int, int)
+{}
+void bar6i (int, int, int, int, int, int)
+{}
 void barcir (const int &)
 {}
 void barir (int &)
@@ -135,6 +145,11 @@ public:
   TimerTests ();
   virtual bool RunTests (void);
   void bazi (int) {}
+  void baz2i (int, int) {}
+  void baz3i (int, int, int) {}
+  void baz4i (int, int, int, int) {}
+  void baz5i (int, int, int, int, int) {}
+  void baz6i (int, int, int, int, int, int) {}
   void bazcir (const int&) {}
   void bazir (int&) {}
   void bazip (int *) {}
@@ -182,6 +197,29 @@ TimerTests::RunTests (void)
   timer.SetArguments (3);
   timer.SetFunction (&TimerTests::bazcir, this);
   timer.SetArguments (3);
+
+  timer.SetFunction (&bar2i);
+  timer.SetArguments (1, 1);
+  timer.SetFunction (&bar3i);
+  timer.SetArguments (1, 1, 1);
+  timer.SetFunction (&bar4i);
+  timer.SetArguments (1, 1, 1, 1);
+  timer.SetFunction (&bar5i);
+  timer.SetArguments (1, 1, 1, 1, 1);
+  //timer.SetFunction (&bar6i);
+  //timer.SetArguments (1, 1, 1, 1, 1, 1);
+
+  timer.SetFunction (&TimerTests::baz2i, this);
+  timer.SetArguments (1, 1);
+  timer.SetFunction (&TimerTests::baz3i, this);
+  timer.SetArguments (1, 1, 1);
+  timer.SetFunction (&TimerTests::baz4i, this);
+  timer.SetArguments (1, 1, 1, 1);
+  timer.SetFunction (&TimerTests::baz5i, this);
+  timer.SetArguments (1, 1, 1, 1, 1);
+  //timer.SetFunction (&TimerTests::baz6i, this);
+  //timer.SetArguments (1, 1, 1, 1, 1, 1);
+
 
   Simulator::Run ();
   Simulator::Destroy ();
