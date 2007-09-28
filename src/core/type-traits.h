@@ -42,12 +42,14 @@ private:
   struct FunctionPtrTraits <U (*) (void)>
   {
     enum {IsFunctionPointer = 1};
+    enum {nArgs = 0};
     typedef U ReturnType;
   };
   template <typename U, typename V1> 
   struct FunctionPtrTraits <U (*) (V1)>
   {
     enum {IsFunctionPointer = 1};
+    enum {nArgs = 1};
     typedef U ReturnType;
     typedef V1 Arg1Type;
   };
@@ -55,6 +57,7 @@ private:
   struct FunctionPtrTraits <U (*) (V1,V2)>
   {
     enum {IsFunctionPointer = 1};
+    enum {nArgs = 2};
     typedef U ReturnType;
     typedef V1 Arg1Type;
     typedef V2 Arg2Type;
