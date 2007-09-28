@@ -97,6 +97,7 @@ public:
   RandomWaypointMobilityModel (Ptr<RandomWaypointMobilityModelParameters> parameters);
 private:
   void Start (void);
+  void BeginPause (void);
   virtual Position DoGet (void) const;
   virtual void DoSet (const Position &position);
   virtual Speed DoGetSpeed (void) const;
@@ -104,6 +105,7 @@ private:
   StaticSpeedHelper m_helper;
   Ptr<RandomWaypointMobilityModelParameters> m_parameters;
   EventId m_event;
+  Time m_pause;
 };
 
 } // namespace ns3

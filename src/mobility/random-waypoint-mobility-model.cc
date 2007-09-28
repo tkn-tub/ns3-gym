@@ -1,3 +1,4 @@
+#include <cmath>
 #include "ns3/simulator.h"
 #include "ns3/random-variable.h"
 #include "ns3/random-variable-default-value.h"
@@ -91,23 +92,32 @@ RandomWaypointMobilityModel::RandomWaypointMobilityModel (Ptr<RandomWaypointMobi
   : m_parameters (parameters)
 {
   Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
+  NotifyCourseChange ();
+}
+
+void
+RandomWaypointMobilityModel::BeginPause (void)
+{
+  m_event = Simulator::Schedule (m_pause, &RandomWaypointMobilityModel::Start, this);
 }
 
 void
 RandomWaypointMobilityModel::Start (void)
 {
+  m_pause = Seconds (m_parameters->m_pause->GetValue ());
   Position m_current = m_helper.GetCurrentPosition ();
   Position destination = m_parameters->m_position->Get ();
   double speed = m_parameters->m_speed->GetValue ();
-  Time pause = Seconds (m_parameters->m_pause->GetValue ());
-  double dx = (destination.x - m_current.x) * speed;
-  double dy = (destination.y - m_current.y) * speed;
-  double dz = (destination.z - m_current.z) * speed;
+  double dx = (destination.x - m_current.x);
+  double dy = (destination.y - m_current.y);
+  double dz = (destination.z - m_current.z);
+  double k = speed / std::sqrt (dx*dx + dy*dy + dz*dz);
 
-  m_helper.Reset (Speed (dx,dy,dz), pause);
+  m_helper.Reset (Speed (k*dx, k*dy, k*dz), m_pause);
   Time travelDelay = Seconds (CalculateDistance (destination, m_current) / speed);
-  m_event = Simulator::Schedule (travelDelay + pause,
-				 &RandomWaypointMobilityModel::Start, this);
+  m_event = Simulator::Schedule (travelDelay,
+				 &RandomWaypointMobilityModel::BeginPause, this);
+  NotifyCourseChange ();
 }
 
 Position 
