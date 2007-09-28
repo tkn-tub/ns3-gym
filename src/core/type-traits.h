@@ -62,6 +62,58 @@ private:
     typedef V1 Arg1Type;
     typedef V2 Arg2Type;
   };
+  template <typename U, typename V1, typename V2,
+            typename V3> 
+  struct FunctionPtrTraits <U (*) (V1,V2,V3)>
+  {
+    enum {IsFunctionPointer = 1};
+    enum {nArgs = 3};
+    typedef U ReturnType;
+    typedef V1 Arg1Type;
+    typedef V2 Arg2Type;
+    typedef V3 Arg3Type;
+  };
+  template <typename U, typename V1, typename V2,
+            typename V3, typename V4> 
+  struct FunctionPtrTraits <U (*) (V1,V2,V3,V4)>
+  {
+    enum {IsFunctionPointer = 1};
+    enum {nArgs = 4};
+    typedef U ReturnType;
+    typedef V1 Arg1Type;
+    typedef V2 Arg2Type;
+    typedef V3 Arg3Type;
+    typedef V4 Arg4Type;
+  };
+  template <typename U, typename V1, typename V2,
+            typename V3, typename V4,
+            typename V5> 
+  struct FunctionPtrTraits <U (*) (V1,V2,V3,V4,V5)>
+  {
+    enum {IsFunctionPointer = 1};
+    enum {nArgs = 5};
+    typedef U ReturnType;
+    typedef V1 Arg1Type;
+    typedef V2 Arg2Type;
+    typedef V3 Arg3Type;
+    typedef V4 Arg4Type;
+    typedef V5 Arg5Type;
+  };
+  template <typename U, typename V1, typename V2,
+            typename V3, typename V4,
+            typename V5, typename V6> 
+  struct FunctionPtrTraits <U (*) (V1,V2,V3,V4,V5,V6)>
+  {
+    enum {IsFunctionPointer = 1};
+    enum {nArgs = 6};
+    typedef U ReturnType;
+    typedef V1 Arg1Type;
+    typedef V2 Arg2Type;
+    typedef V3 Arg3Type;
+    typedef V4 Arg4Type;
+    typedef V5 Arg5Type;
+    typedef V6 Arg6Type;
+  };
   template <typename U> struct PtrToMemberTraits
   {
     enum {IsPointerToMember = 0};
