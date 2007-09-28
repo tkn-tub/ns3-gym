@@ -4,6 +4,7 @@
 #include "ns3/fatal-error.h"
 #include "nstime.h"
 #include "event-id.h"
+#include "ns3/int-to-type.h"
 
 namespace ns3 {
 
@@ -100,39 +101,8 @@ public:
    *
    * Store this function in this Timer for later use by Timer::Schedule.
    */
-  void SetFunction (void (*fn) (void));
-  /**
-   * \param fn the function
-   * \param a1 the first argument
-   *
-   * Store this function and this argument in this Timer for later use by 
-   * Timer::Schedule.
-   */
-  template <typename U1, typename T1>
-  void SetFunction (void (*fn) (U1), T1 a1);
-  /**
-   * \param fn the function
-   * \param a1 the first argument
-   * \param a2 the second argument
-   *
-   * Store this function and these arguments in this Timer for later use by 
-   * Timer::Schedule.
-   */
-  template <typename U1, typename U2,
-            typename T1, typename T2>
-  void SetFunction (void (*fn) (U1, U2), T1 a1, T2 a2);
-  /**
-   * \param fn the function
-   * \param a1 the first argument
-   * \param a2 the second argument
-   * \param a3 the third argument
-   *
-   * Store this function and these arguments in this Timer for later use by 
-   * Timer::Schedule.
-   */
-  template <typename U1, typename U2, typename U3,
-            typename T1, typename T2, typename T3>
-  void SetFunction (void (*fn) (U1, U2, U3), T1 a1, T2 a2, T3 a3);
+  template <typename FN>
+  void SetFunction (FN fn);
 
   /**
    * \param memPtr the member function pointer
@@ -142,42 +112,6 @@ public:
    */
   template <typename MEM_PTR, typename OBJ_PTR>
   void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr);
-  /**
-   * \param memPtr the member function pointer
-   * \param objPtr the pointer to object
-   * \param a1 the first argument
-   *
-   * Store this function and this argument in this Timer for later use by 
-   * Timer::Schedule.
-   */
-  template <typename MEM_PTR, typename OBJ_PTR,
-            typename T1>
-  void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1);
-  /**
-   * \param memPtr the member function pointer
-   * \param objPtr the pointer to object
-   * \param a1 the first argument
-   * \param a2 the second argument
-   *
-   * Store this function and these arguments in this Timer for later use by 
-   * Timer::Schedule.
-   */
-  template <typename MEM_PTR, typename OBJ_PTR,
-            typename T1, typename T2>
-  void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1, T2 a2);
-  /**
-   * \param memPtr the member function pointer
-   * \param objPtr the pointer to object
-   * \param a1 the first argument
-   * \param a2 the second argument
-   * \param a3 the third argument
-   *
-   * Store this function and these arguments in this Timer for later use by 
-   * Timer::Schedule.
-   */
-  template <typename MEM_PTR, typename OBJ_PTR,
-            typename T1, typename T2, typename T3>
-  void SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1, T2 a2, T3 a3);
 
 
   /**
@@ -241,6 +175,15 @@ public:
   void Schedule (void);
 
 private:
+  template <typename FN>
+  void DoSetFunction (IntToType<0>, FN fn);
+  template <typename FN>
+  void DoSetFunction (IntToType<1>, FN fn);
+  template <typename MEM_PTR, typename OBJ_PTR>
+  void DoSetFunction (IntToType<0>, MEM_PTR memPtr, OBJ_PTR objPtr);
+  template <typename MEM_PTR, typename OBJ_PTR>
+  void DoSetFunction (IntToType<1>, MEM_PTR memPtr, OBJ_PTR objPtr);
+
   int m_flags;
   Time m_delay;
   EventId m_event;
@@ -255,6 +198,7 @@ private:
 #include "ns3/type-traits.h"
 
 namespace ns3 {
+
 
 template <typename T>
 struct TimerTraits;
@@ -280,28 +224,56 @@ struct TimerImplOne : public TimerImpl
 };
 
 
-template <typename U1, typename T1>
+template <typename FN>
 void 
-Timer::SetFunction (void (*fn) (U1), T1 a1)
+Timer::SetFunction (FN fn)
 {
-  struct FnTimerImplOne : public TimerImplOne<typename TimerTraits<U1>::ParameterType>
+  NS_ASSERT (TypeTraits<FN>::IsFunctionPointer);
+  DoSetFunction (IntToType<TypeTraits<FN>::FunctionPointerTraits::nArgs> (), fn);
+}
+
+template <typename FN>
+void 
+Timer::DoSetFunction (IntToType<0>, FN fn)
+{
+  struct FnTimerImplZero : public TimerImpl
   {
-    typedef void (*FN) (U1);
+    FnTimerImplZero (FN fn) 
+      : m_fn (fn) {}
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_fn);
+    }
+    FN m_fn;
+  } *function = new FnTimerImplZero (fn);
+  delete m_impl;
+  m_impl = function;
+}
+
+template <typename FN>
+void 
+Timer::DoSetFunction (IntToType<1>, FN fn)
+{
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+
+  struct FnTimerImplOne : public TimerImplOne<T1Parameter>
+  {
     FnTimerImplOne (FN fn) 
       : m_fn (fn) {}
-    virtual void SetArguments (typename TimerTraits<U1>::ParameterType a1) {
+    virtual void SetArguments (T1Parameter a1) {
       m_a1 = a1;
     }
     virtual EventId Schedule (const Time &delay) {
       return Simulator::Schedule (delay, m_fn, m_a1);
     }
     FN m_fn;
-    typename TimerTraits<T1>::StoredType m_a1;
+    T1Stored m_a1;
   } *function = new FnTimerImplOne (fn);
-  function->SetArguments (a1);
   delete m_impl;
   m_impl = function;  
 }
+
 
 template <typename T1>
 void 
@@ -322,9 +294,18 @@ Timer::SetArguments (T1 a1)
   impl->SetArguments (a1);
 }
 
+
 template <typename MEM_PTR, typename OBJ_PTR>
 void 
 Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
+{
+  NS_ASSERT (TypeTraits<MEM_PTR>::IsPointerToMember);
+  DoSetFunction (IntToType<TypeTraits<MEM_PTR>::PointerToMemberTraits::nArgs> () , memPtr, objPtr);
+}
+
+template <typename MEM_PTR, typename OBJ_PTR>
+void 
+Timer::DoSetFunction (IntToType<0>, MEM_PTR memPtr, OBJ_PTR objPtr)
 {
   struct MemFnTimerImplZero : public TimerImpl
   {
@@ -340,18 +321,19 @@ Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
   m_impl = function;    
 }
 
-
-
-template <typename MEM_PTR, typename OBJ_PTR, 
-         typename T1>
+template <typename MEM_PTR, typename OBJ_PTR>
 void 
-Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1)
+Timer::DoSetFunction (IntToType<1>, MEM_PTR memPtr, OBJ_PTR objPtr)
 {
-  struct MemFnTimerImplOne : public TimerImplOne<typename TimerTraits<T1>::ParameterType>
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  
+  struct MemFnTimerImplOne : public TimerImplOne<T1Parameter>
   {
     MemFnTimerImplOne (MEM_PTR memPtr, OBJ_PTR objPtr) 
       : m_memPtr (memPtr), m_objPtr (objPtr) {}
-    virtual void SetArguments (typename TimerTraits<T1>::ParameterType a1) {
+    virtual void SetArguments (T1Parameter a1) {
       m_a1 = a1;
     }
     virtual EventId Schedule (const Time &delay) {
@@ -359,15 +341,11 @@ Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr, T1 a1)
     }
     MEM_PTR m_memPtr;
     OBJ_PTR m_objPtr;
-    typename TimerTraits<T1>::StoredType m_a1;
+    T1Stored m_a1;
   } *function = new MemFnTimerImplOne (memPtr, objPtr);
-  function->SetArguments (a1);
   delete m_impl;
   m_impl = function;    
 }
-
-
-
 
 } // namespace ns3
 

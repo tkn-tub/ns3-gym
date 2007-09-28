@@ -85,23 +85,6 @@ Timer::~Timer ()
 }
 
 void 
-Timer::SetFunction (void (*fn) (void))
-{
-  struct FnTimerImplZero : public TimerImpl
-  {
-    typedef void (*FN) (void);
-    FnTimerImplZero (FN fn) 
-      : m_fn (fn) {}
-    virtual EventId Schedule (const Time &delay) {
-      return Simulator::Schedule (delay, m_fn);
-    }
-    FN m_fn;
-  } *function = new FnTimerImplZero (fn);
-  delete m_impl;
-  m_impl = function;
-}
-
-void 
 Timer::SetDelay (const Time &time)
 {
   m_delay = time;
@@ -202,24 +185,24 @@ TimerTests::TimerTests ()
 bool
 TimerTests::RunTests (void)
 {
-  bool ok = true;
+  bool result = true;
 
   int a = 0;
   int &b = a;
   const int &c = a;
   Timer timer = Timer (0);
 
-  timer.SetFunction (&bari, a);
+  timer.SetFunction (&bari);
   timer.SetArguments (2);
   timer.SetArguments (a);
   timer.SetArguments (b);
   timer.SetArguments (c);
-  timer.SetFunction (&barir, a);
+  timer.SetFunction (&barir);
   timer.SetArguments (2);
   timer.SetArguments (a);
   timer.SetArguments (b);
   timer.SetArguments (c);
-  timer.SetFunction (&barcir, a);
+  timer.SetFunction (&barcir);
   timer.SetArguments (2);
   timer.SetArguments (a);
   timer.SetArguments (b);
@@ -230,16 +213,16 @@ TimerTests::RunTests (void)
   timer.SetDelay (Seconds (1.0));
   timer.Schedule ();
 
-  timer.SetFunction (&TimerTests::bazi, this, 1);
+  timer.SetFunction (&TimerTests::bazi, this);
   timer.SetArguments (3);
-  timer.SetFunction (&TimerTests::bazir, this, 1);
+  timer.SetFunction (&TimerTests::bazir, this);
   timer.SetArguments (3);
-  timer.SetFunction (&TimerTests::bazcir, this, 1);
+  timer.SetFunction (&TimerTests::bazcir, this);
   timer.SetArguments (3);
 
   Simulator::Run ();
   Simulator::Destroy ();
-  return ok;
+  return result;
 }
 
 TimerTests g_tests;
