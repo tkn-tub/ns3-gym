@@ -84,6 +84,12 @@ Timer::IsRunning (void) const
 void 
 Timer::Schedule (void)
 {
+  Schedule (m_delay);
+}
+
+void 
+Timer::Schedule (Time delay)
+{
   NS_ASSERT (m_impl != 0);
   if (m_flags & CHECK_ON_SCHEDULE)
     {
@@ -100,7 +106,7 @@ Timer::Schedule (void)
     {
       Simulator::Remove (m_event);
     }
-  m_event = m_impl->Schedule (m_delay);
+  m_event = m_impl->Schedule (delay);
   if (m_flags & GARBAGE_COLLECT)
     {
       SimulationSingleton<EventGarbageCollector>::Get ()->Track (m_event);

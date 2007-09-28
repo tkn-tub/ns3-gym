@@ -190,12 +190,18 @@ public:
    * \return true if there is a currently-running event, false otherwise.
    */
   bool IsRunning (void) const;
-
   /**
    * Schedule a new event using the currently-configured delay, function, 
    * and arguments.
    */
   void Schedule (void);
+  /**
+   * \param delay the delay to use
+   *
+   * Schedule a new event using the specified delay (ignore the delay set by 
+   * Timer::SetDelay), function, and arguments.
+   */
+  void Schedule (Time delay);
 
 private:
   template <typename FN>
