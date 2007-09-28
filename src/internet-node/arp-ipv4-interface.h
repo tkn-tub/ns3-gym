@@ -39,16 +39,13 @@ class Node;
 class ArpIpv4Interface : public Ipv4Interface
 {
  public:
-  enum TraceType {
-    NETDEVICE,
-    ARP,
-  };
   ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device);
   virtual ~ArpIpv4Interface ();
 
- private:
+protected:
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
+private:
   virtual void SendTo (Packet p, Ipv4Address dest);
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
   Ptr<Node> m_node;
 };
 

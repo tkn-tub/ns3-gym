@@ -1,0 +1,19 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_module('csma', ['node'])
+    obj.source = [
+        'backoff.cc',
+        'csma-net-device.cc',
+        'csma-channel.cc',
+        'csma-topology.cc',
+        'csma-ipv4-topology.cc',
+        ]
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'backoff.h',
+        'csma-net-device.h',
+        'csma-channel.h',
+        'csma-topology.h',
+        'csma-ipv4-topology.h',
+        ]

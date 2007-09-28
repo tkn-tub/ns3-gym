@@ -23,14 +23,34 @@
 #define NODE_LIST_H
 
 #include <vector>
-#include "ns3/array-trace-resolver.h"
+#include "ns3/trace-context-element.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
 
 class Node;
+class CallbackBase;
 class TraceResolver;
-class TraceContext;
+
+/**
+ * \brief hold in a TraceContext the index of a node within a NodeList.
+ */
+class NodeListIndex : public TraceContextElement
+{
+public:
+  NodeListIndex ();
+  NodeListIndex (uint32_t index);
+  void Print (std::ostream &os);
+  static uint16_t GetUid (void);
+  /**
+   * \returns the index of the node within the NodeList
+   */
+  uint32_t Get (void) const;
+  std::string GetTypeName (void) const;
+private:
+  uint32_t m_index;
+};
+
 
 /**
  * \brief the list of simulation nodes.
@@ -40,8 +60,7 @@ class TraceContext;
 class NodeList
 {
 public:
-  typedef ArrayTraceResolver<Node>::Index NodeIndex;
-  typedef std::vector< Ptr<Node> >::iterator Iterator;
+  typedef std::vector< Ptr<Node> >::const_iterator Iterator;
 
   /**
    * \param node node to add
@@ -62,18 +81,49 @@ public:
    */
   static Iterator End (void);
   /**
-   * \param context trace context to use for trace resolver
-   *        to create.
-   * \returns the requested trace resolver. The caller
-   *          takes ownership of the returned pointer.
-   */
-  static TraceResolver *CreateTraceResolver (TraceContext const &context);
-
-  /**
    * \param n index of requested node.
    * \returns the Node associated to index n.
    */
   static Ptr<Node> GetNode (uint32_t n);
+  /**
+   * \param name namespace regexp to match
+   * \param cb callback to connect
+   *
+   * Connect input callback to all trace sources which match
+   * the input namespace regexp.
+   * A tutorial which explains how to use this method can be
+   * found in the \ref tracing section.
+   */
+  static void Connect (std::string name, const CallbackBase &cb);
+  /**
+   * \param name namespace regexp to match
+   * \param cb callback to connect
+   *
+   * Disconnect input callback from all trace sources which match
+   * the input namespace regexp.
+   */
+  static void Disconnect (std::string name, const CallbackBase &cb);
+  /**
+   * \param os the output stream on which the content of each trace event should be
+   *        dumped in ascii format.
+   *
+   * Enable _every_ trace source accessible from the NodeList and write to the
+   * output stream an ascii representation of each trace event.
+   * This method is very useful to get quick-and-dirty trace output from a 
+   * simulation.
+   * More fancy tracing output could be generated with the ns3::NodeList::Connect
+   * method as explained in the \ref tracing section.
+   */
+  static void TraceAll (std::ostream &os);
+  /**
+   * \returns the trace resolver used by the ns3::NodeList::Connect,
+   * ns3::NodeList::Disconnect, and, ns3::NodeList::TraceAll methods.
+   *
+   * Using this method directly is not really recommended. Instead, users
+   * should use one of the three methods ns3::NodeList::Connect,
+   * ns3::NodeList::Disconnect, or, ns3::NodeList::TraceAll methods.
+   */
+  static Ptr<TraceResolver> GetTraceResolver (void);
 };
 
 }//namespace ns3

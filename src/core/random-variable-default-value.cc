@@ -19,9 +19,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "random-variable-default-value.h"
-#include "ns3/debug.h"
+#include "log.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("RandomVariableDefaultValue");
+NS_LOG_COMPONENT_DEFINE ("RandomVariableDefaultValue");
 
 namespace ns3 {
 
@@ -43,7 +43,8 @@ RandomVariable *
 RandomVariableDefaultValue::GetCopy (void)
 {
   RandomVariable *variable;
-  bool ok = Parse (m_value, true, &variable);
+  bool ok;
+  ok = Parse (m_value, true, &variable);
   NS_ASSERT (ok);
   return variable;
 }
@@ -74,12 +75,12 @@ RandomVariableDefaultValue::Parse (const std::string &value,
       double constant = ReadAsDouble (v, ok);
       if (mustCreate)
 	{
-          NS_DEBUG ("create Constant constant=" << constant);
+          NS_LOG_LOGIC ("create Constant constant=" << constant);
 	  *pVariable = new ConstantVariable (constant);
 	}
       else
         {
-          NS_DEBUG ("parse  Constant constant=" << constant);
+          NS_LOG_LOGIC ("parse  Constant constant=" << constant);
         }
       return ok;
     }
@@ -98,12 +99,12 @@ RandomVariableDefaultValue::Parse (const std::string &value,
       maxVal = ReadAsDouble (max, ok);
       if (mustCreate)
 	{
-          NS_DEBUG ("create Uniform min=" << min << ", max=" << max);
+          NS_LOG_LOGIC ("create Uniform min=" << min << ", max=" << max);
 	  *pVariable = new UniformVariable (minVal, maxVal);
 	}
       else
         {
-          NS_DEBUG ("parse  Uniform min=" << min << ", max=" << max);
+          NS_LOG_LOGIC ("parse  Uniform min=" << min << ", max=" << max);
         }
       return ok;
     }

@@ -19,17 +19,24 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/assert.h"
-
 #include "llc-snap-header.h"
+#include "ns3/assert.h"
+#include <string>
 
 namespace ns3 {
+
+NS_HEADER_ENSURE_REGISTERED (LlcSnapHeader);
+
+uint32_t
+LlcSnapHeader::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<LlcSnapHeader> ("LlcSnapHeader.ns3");
+  return uid;
+}
 
 LlcSnapHeader::LlcSnapHeader ()
 {}
 
-LlcSnapHeader::~LlcSnapHeader ()
-{}
 void 
 LlcSnapHeader::SetType (uint16_t type)
 {
@@ -47,18 +54,24 @@ LlcSnapHeader::GetSerializedSize (void) const
   return 1 + 1 + 1 + 3 + 2;
 }
 
-void 
-LlcSnapHeader::PrintTo (std::ostream &os) const
+std::string
+LlcSnapHeader::GetName (void) const
 {
-  os << "(mac)"
-      << " EtherType: ";
+  return "LLCSNAP";
+}
+
+void 
+LlcSnapHeader::Print (std::ostream &os) const
+{
+  os << "(type 0x";
   os.setf (std::ios::hex, std::ios::basefield);
   os << m_etherType;
   os.setf (std::ios::dec, std::ios::basefield);
+  os << ")";
 }
 
 void
-LlcSnapHeader::SerializeTo (Buffer::Iterator start) const
+LlcSnapHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   uint8_t buf[] = {0xaa, 0xaa, 0x03, 0, 0, 0};
@@ -66,7 +79,7 @@ LlcSnapHeader::SerializeTo (Buffer::Iterator start) const
   i.WriteHtonU16 (m_etherType);
 }
 uint32_t
-LlcSnapHeader::DeserializeFrom (Buffer::Iterator start)
+LlcSnapHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   i.Next (5+1);
@@ -75,4 +88,4 @@ LlcSnapHeader::DeserializeFrom (Buffer::Iterator start)
 }
 
 
-}; // namespace ns3
+} // namespace ns3

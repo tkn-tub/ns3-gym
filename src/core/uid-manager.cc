@@ -19,7 +19,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "uid-manager.h"
-#include "ns3/fatal-error.h"
+#include "fatal-error.h"
+#include "assert.h"
 
 
 namespace ns3 {

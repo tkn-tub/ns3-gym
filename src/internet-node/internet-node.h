@@ -36,18 +36,14 @@ class Packet;
 class InternetNode : public Node 
 {
 public:
-  enum TraceType {
-    IPV4,
-  };
   InternetNode();
   InternetNode(uint32_t systemId);
   virtual ~InternetNode ();
 
 protected:
   virtual void DoDispose(void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 private:
-  virtual void DoAddDevice (Ptr<NetDevice> device) const;
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context);
   bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &p, uint16_t protocolNumber) const;
   void Construct (void);
 };

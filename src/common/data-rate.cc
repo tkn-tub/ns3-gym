@@ -23,9 +23,8 @@
 #include "ns3/nstime.h"
 #include "ns3/fatal-error.h"
 
-namespace {
 
-bool
+static bool
 DoParse (const std::string s, uint64_t *v)
 {
   std::string::size_type n = s.find_first_not_of("0123456789.");
@@ -123,7 +122,6 @@ DoParse (const std::string s, uint64_t *v)
   return true;
 }
 
-}
 
 namespace ns3 {
 

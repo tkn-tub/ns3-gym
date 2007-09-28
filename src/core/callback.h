@@ -25,6 +25,7 @@
 #include "ptr.h"
 #include "fatal-error.h"
 #include "empty.h"
+#include "type-traits.h"
 
 namespace ns3 {
 
@@ -89,55 +90,62 @@ private:
 };
 
 // declare the CallbackImpl class
-template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5>
+template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
 class CallbackImpl;
 // define CallbackImpl for 0 params
 template <typename R>
-class CallbackImpl<R,empty,empty,empty,empty,empty> : public CallbackImplBase {
+class CallbackImpl<R,empty,empty,empty,empty,empty,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (void) = 0;
 };
 // define CallbackImpl for 1 params
 template <typename R, typename T1>
-class CallbackImpl<R,T1,empty,empty,empty,empty> : public CallbackImplBase {
+class CallbackImpl<R,T1,empty,empty,empty,empty,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1) = 0;
 };
 // define CallbackImpl for 2 params
 template <typename R, typename T1, typename T2>
-class CallbackImpl<R,T1,T2,empty,empty,empty> : public CallbackImplBase {
+class CallbackImpl<R,T1,T2,empty,empty,empty,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2) = 0;
 };
 // define CallbackImpl for 3 params
 template <typename R, typename T1, typename T2, typename T3>
-class CallbackImpl<R,T1,T2,T3,empty,empty> : public CallbackImplBase {
+class CallbackImpl<R,T1,T2,T3,empty,empty,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3) = 0;
 };
 // define CallbackImpl for 4 params
 template <typename R, typename T1, typename T2, typename T3, typename T4>
-class CallbackImpl<R,T1,T2,T3,T4,empty> : public CallbackImplBase {
+class CallbackImpl<R,T1,T2,T3,T4,empty,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3, T4) = 0;
 };
 // define CallbackImpl for 5 params
 template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5>
-class CallbackImpl : public CallbackImplBase {
+class CallbackImpl<R,T1,T2,T3,T4,T5,empty> : public CallbackImplBase {
 public:
   virtual ~CallbackImpl () {}
   virtual R operator() (T1, T2, T3, T4, T5) = 0;
 };
+// define CallbackImpl for 6 params
+  template <typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+class CallbackImpl : public CallbackImplBase {
+public:
+  virtual ~CallbackImpl () {}
+  virtual R operator() (T1, T2, T3, T4, T5, T6) = 0;
+};
 
 
 // an impl for Functors:
-template <typename T, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
-class FunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5> {
+template <typename T, typename R, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6>
+class FunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6> {
 public:
   FunctorCallbackImpl (T const &functor)
     : m_functor (functor) {}
@@ -160,9 +168,12 @@ public:
   R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
       return m_functor (a1,a2,a3,a4,a5);
   }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6) {
+    return m_functor (a1,a2,a3,a4,a5,a6);
+  }
   virtual bool IsEqual (CallbackImplBase const *other) const {
-    FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5> const *otherDerived = 
-      dynamic_cast<FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5> const *> (other);
+    FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5,T6> const *otherDerived = 
+      dynamic_cast<FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5,T6> const *> (other);
     if (otherDerived == 0)
       {
         return false;
@@ -178,8 +189,8 @@ private:
 };
 
 // an impl for pointer to member functions
-template <typename OBJ_PTR, typename MEM_PTR, typename R, typename T1, typename T2, typename T3, typename T4, typename T5>
-class MemPtrCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5> {
+template <typename OBJ_PTR, typename MEM_PTR, typename R, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+class MemPtrCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,T6> {
 public:
   MemPtrCallbackImpl (OBJ_PTR const&objPtr, MEM_PTR mem_ptr)
     : m_objPtr (objPtr), m_memPtr (mem_ptr) {}
@@ -202,9 +213,12 @@ public:
   R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
     return ((CallbackTraits<OBJ_PTR>::GetReference (m_objPtr)).*m_memPtr) (a1, a2, a3, a4, a5);
   }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6) {
+    return ((CallbackTraits<OBJ_PTR>::GetReference (m_objPtr)).*m_memPtr) (a1, a2, a3, a4, a5, a6);
+  }
   virtual bool IsEqual (CallbackImplBase const *other) const {
-    MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5> const *otherDerived = 
-      dynamic_cast<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5> const *> (other);
+    MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5,T6> const *otherDerived = 
+      dynamic_cast<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5,T6> const *> (other);
     if (otherDerived == 0)
       {
         return false;
@@ -225,6 +239,7 @@ class CallbackBase {
 public:
   virtual ~CallbackBase () {}
   virtual CallbackImplBase *PeekImpl (void) const = 0;
+  virtual Ptr<CallbackImplBase> GetImpl (void) const = 0;
 };
 
 /**
@@ -259,26 +274,26 @@ public:
 template<typename R, 
    typename T1 = empty, typename T2 = empty, 
    typename T3 = empty, typename T4 = empty,
-   typename T5 = empty>
+   typename T5 = empty, typename T6 = empty>
 class Callback : public CallbackBase {
 public:
   // There are two dummy args below to ensure that this constructor is
   // always properly disambiguited by the c++ compiler
   template <typename FUNCTOR>
   Callback (FUNCTOR const &functor, bool, bool) 
-      : m_impl (Create<FunctorCallbackImpl<FUNCTOR,R,T1,T2,T3,T4,T5> > (functor))
+    : m_impl (Create<FunctorCallbackImpl<FUNCTOR,R,T1,T2,T3,T4,T5,T6> > (functor))
   {}
 
   template <typename OBJ_PTR, typename MEM_PTR>
   Callback (OBJ_PTR const &objPtr, MEM_PTR mem_ptr)
-      : m_impl (Create<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5> > (objPtr, mem_ptr))
+    : m_impl (Create<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5,T6> > (objPtr, mem_ptr))
   {}
 
-  Callback (Ptr<CallbackImpl<R,T1,T2,T3,T4,T5> > const &impl)
+  Callback (Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6> > const &impl)
       : m_impl (impl)
   {}
 
-  bool IsNull (void) {
+  bool IsNull (void) const {
     return (PeekImpl () == 0)?true:false;
   }
   void Nullify (void) {
@@ -304,14 +319,17 @@ public:
   R operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5) const {
     return (*(PeekImpl ())) (a1,a2,a3,a4,a5);
   }
+  R operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5,T6 a6) const {
+    return (*(PeekImpl ())) (a1,a2,a3,a4,a5,a6);
+  }
 
-  bool IsEqual (CallbackBase const &other) {
+  bool IsEqual (CallbackBase const &other) const {
     return PeekImpl ()->IsEqual (other.PeekImpl ());
   }
 
-  bool CheckType (CallbackBase const& other) {
+  bool CheckType (CallbackBase const& other) const {
     CallbackImplBase *otherBase = other.PeekImpl ();
-    if (dynamic_cast<CallbackImpl<R,T1,T2,T3,T4,T5> *> (otherBase) != 0)
+    if (dynamic_cast<CallbackImpl<R,T1,T2,T3,T4,T5,T6> *> (otherBase) != 0)
       {
         return true;
       }
@@ -327,14 +345,27 @@ public:
                         " got=" << typeid (other).name () << 
                         ", expected=" << typeid (*this).name ());
       }
-    const Callback<R, T1,T2,T3,T4,T5> *goodType = static_cast<const Callback<R,T1,T2,T3,T4,T5> *> (&other);
+    const Callback<R, T1,T2,T3,T4,T5,T6> *goodType = static_cast<const Callback<R,T1,T2,T3,T4,T5,T6> *> (&other);
     *this = *goodType;
   }
+  void Assign (Ptr<CallbackImplBase> other) {
+    CallbackImpl<R,T1,T2,T3,T4,T5,T6> *impl = dynamic_cast<CallbackImpl<R,T1,T2,T3,T4,T5,T6> *> (PeekPointer (other));
+    if (other == 0)
+      {
+        NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\")"
+                        " got=" << typeid (other).name () << 
+                        ", expected=" << typeid (*impl).name ());
+      }
+    *this = Callback<R,T1,T2,T3,T4,T5,T6> (impl);
+  }
+  virtual Ptr<CallbackImplBase>GetImpl (void) const {
+    return m_impl;
+  }
 private:
-  virtual CallbackImpl<R,T1,T2,T3,T4,T5> *PeekImpl (void) const {
+  virtual CallbackImpl<R,T1,T2,T3,T4,T5,T6> *PeekImpl (void) const {
     return PeekPointer (m_impl);
   }
-  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5> > m_impl;
+  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6> > m_impl;
 };
 
 /**
@@ -344,7 +375,7 @@ private:
 
 /**
  * \ingroup MakeCallback
- * \param mem_ptr class method member pointer
+ * \param memPtr class method member pointer
  * \param objPtr class instance
  * \return a wrapper Callback
  * Build Callbacks for class method members which takes no arguments
@@ -355,7 +386,7 @@ Callback<R> MakeCallback (R (T::*memPtr) (void), OBJ objPtr) {
   return Callback<R> (objPtr, memPtr);
 }
 template <typename T, typename OBJ, typename R>
-Callback<R> MakeCallback (R (T::*mem_ptr) () const, OBJ const objPtr) {
+Callback<R> MakeCallback (R (T::*mem_ptr) () const, OBJ objPtr) {
   return Callback<R> (objPtr, mem_ptr);
 }
 /**
@@ -367,11 +398,11 @@ Callback<R> MakeCallback (R (T::*mem_ptr) () const, OBJ const objPtr) {
  * and potentially return a value.
  */
 template <typename T, typename OBJ, typename R, typename T1>
-Callback<R,T1> MakeCallback (R (T::*mem_ptr) (T1), OBJ *const objPtr) {
+Callback<R,T1> MakeCallback (R (T::*mem_ptr) (T1), OBJ objPtr) {
   return Callback<R,T1> (objPtr, mem_ptr);
 }
 template <typename T, typename OBJ, typename R, typename T1>
-Callback<R,T1> MakeCallback (R (T::*mem_ptr) (T1) const, OBJ const *const objPtr) {
+Callback<R,T1> MakeCallback (R (T::*mem_ptr) (T1) const, OBJ objPtr) {
   return Callback<R,T1> (objPtr, mem_ptr);
 }
 /**
@@ -383,11 +414,11 @@ Callback<R,T1> MakeCallback (R (T::*mem_ptr) (T1) const, OBJ const *const objPtr
  * and potentially return a value.
  */
 template <typename T, typename OBJ, typename R, typename T1, typename T2>
-Callback<R,T1,T2> MakeCallback (R (T::*mem_ptr) (T1,T2), OBJ *const objPtr) {
+Callback<R,T1,T2> MakeCallback (R (T::*mem_ptr) (T1,T2), OBJ objPtr) {
   return Callback<R,T1,T2> (objPtr, mem_ptr);
 }
 template <typename T, typename OBJ, typename R, typename T1, typename T2>
-Callback<R,T1,T2> MakeCallback (R (T::*mem_ptr) (T1,T2) const, OBJ const*const objPtr) {
+Callback<R,T1,T2> MakeCallback (R (T::*mem_ptr) (T1,T2) const, OBJ objPtr) {
   return Callback<R,T1,T2> (objPtr, mem_ptr);
 }
 /**
@@ -399,11 +430,11 @@ Callback<R,T1,T2> MakeCallback (R (T::*mem_ptr) (T1,T2) const, OBJ const*const o
  * and potentially return a value.
  */
 template <typename T, typename OBJ, typename R, typename T1,typename T2, typename T3>
-Callback<R,T1,T2,T3> MakeCallback (R (T::*mem_ptr) (T1,T2,T3), OBJ *const objPtr) {
+Callback<R,T1,T2,T3> MakeCallback (R (T::*mem_ptr) (T1,T2,T3), OBJ objPtr) {
   return Callback<R,T1,T2,T3> (objPtr, mem_ptr);
 }
 template <typename T, typename OBJ, typename R, typename T1,typename T2, typename T3>
-Callback<R,T1,T2,T3> MakeCallback (R (T::*mem_ptr) (T1,T2,T3) const, OBJ const*const objPtr) {
+Callback<R,T1,T2,T3> MakeCallback (R (T::*mem_ptr) (T1,T2,T3) const, OBJ objPtr) {
   return Callback<R,T1,T2,T3> (objPtr, mem_ptr);
 }
 /**
@@ -415,11 +446,11 @@ Callback<R,T1,T2,T3> MakeCallback (R (T::*mem_ptr) (T1,T2,T3) const, OBJ const*c
  * and potentially return a value.
  */
 template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4>
-Callback<R,T1,T2,T3,T4> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4), OBJ *const objPtr) {
+Callback<R,T1,T2,T3,T4> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4), OBJ objPtr) {
   return Callback<R,T1,T2,T3,T4> (objPtr, mem_ptr);
 }
 template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4>
-Callback<R,T1,T2,T3,T4> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4) const, OBJ const*const objPtr) {
+Callback<R,T1,T2,T3,T4> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4) const, OBJ objPtr) {
   return Callback<R,T1,T2,T3,T4> (objPtr, mem_ptr);
 }
 /**
@@ -431,12 +462,28 @@ Callback<R,T1,T2,T3,T4> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4) const, OBJ c
  * and potentially return a value.
  */
 template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
-Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4,T5), OBJ *const objPtr) {
+Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4,T5), OBJ objPtr) {
   return Callback<R,T1,T2,T3,T4,T5> (objPtr, mem_ptr);
 }
 template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5>
-Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4,T5) const, OBJ const*const objPtr) {
+Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4,T5) const, OBJ objPtr) {
   return Callback<R,T1,T2,T3,T4,T5> (objPtr, mem_ptr);
+}
+/**
+ * \ingroup MakeCallback
+ * \param mem_ptr class method member pointer
+ * \param objPtr class instance
+ * \return a wrapper Callback
+ * Build Callbacks for class method members which takes five arguments
+ * and potentially return a value.
+ */
+template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5,typename T6>
+Callback<R,T1,T2,T3,T4,T5,T6> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4,T5,T6), OBJ objPtr) {
+  return Callback<R,T1,T2,T3,T4,T5,T6> (objPtr, mem_ptr);
+}
+template <typename T, typename OBJ, typename R, typename T1, typename T2, typename T3, typename T4,typename T5, typename T6>
+Callback<R,T1,T2,T3,T4,T5,T6> MakeCallback (R (T::*mem_ptr) (T1,T2,T3,T4,T5,T6) const, OBJ objPtr) {
+  return Callback<R,T1,T2,T3,T4,T5,T6> (objPtr, mem_ptr);
 }
 
 /**
@@ -504,6 +551,17 @@ Callback<R,T1,T2,T3,T4> MakeCallback (R (*fnPtr) (T1,T2,T3,T4)) {
 template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5>
 Callback<R,T1,T2,T3,T4,T5> MakeCallback (R (*fnPtr) (T1,T2,T3,T4,T5)) {
   return Callback<R,T1,T2,T3,T4,T5> (fnPtr, true, true);
+}
+/**
+ * \ingroup MakeCallback
+ * \param fnPtr function pointer
+ * \return a wrapper Callback
+ * Build Callbacks for functions which takes five arguments
+ * and potentially return a value.
+ */
+template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6>
+Callback<R,T1,T2,T3,T4,T5,T6> MakeCallback (R (*fnPtr) (T1,T2,T3,T4,T5,T6)) {
+  return Callback<R,T1,T2,T3,T4,T5,T6> (fnPtr, true, true);
 }
 
 
@@ -573,6 +631,17 @@ template <typename R, typename T1, typename T2,typename T3,typename T4,typename 
 Callback<R,T1,T2,T3,T4,T5> MakeNullCallback (void) {
   return Callback<R,T1,T2,T3,T4,T5> ();
 }
+/**
+ * \ingroup MakeCallback
+ * \overload Callback<R> MakeNullCallback (void)
+ * \return a wrapper Callback
+ * Build a null callback which takes five arguments
+ * and potentially return a value.
+ */
+template <typename R, typename T1, typename T2,typename T3,typename T4,typename T5,typename T6>
+Callback<R,T1,T2,T3,T4,T5,T6> MakeNullCallback (void) {
+  return Callback<R,T1,T2,T3,T4,T5,T6> ();
+}
 
 
 /*
@@ -582,9 +651,10 @@ Callback<R,T1,T2,T3,T4,T5> MakeNullCallback (void) {
  */
 // an impl for Bound Functors:
 template <typename T, typename R, typename TX, typename T1, typename T2, typename T3, typename T4,typename T5>
-class BoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5> {
+class BoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,empty> {
 public:
-  BoundFunctorCallbackImpl (T const &functor, TX a)
+  template <typename FUNCTOR, typename ARG>
+  BoundFunctorCallbackImpl (FUNCTOR functor, ARG a)
       : m_functor (functor), m_a (a) {}
   virtual ~BoundFunctorCallbackImpl () {}
   R operator() (void) {
@@ -621,38 +691,48 @@ public:
   }
 private:
   T m_functor;
-  TX m_a;
+  typename TypeTraits<TX>::ReferencedType m_a;
 };
 
-template <typename R, typename TX>
-Callback<R> MakeBoundCallback (R (*fnPtr) (TX), TX a) {
-  Ptr<CallbackImpl<R,empty,empty,empty,empty,empty> > impl =
+template <typename R, typename TX, typename ARG>
+Callback<R> MakeBoundCallback (R (*fnPtr) (TX), ARG a) {
+  Ptr<CallbackImpl<R,empty,empty,empty,empty,empty,empty> > impl =
     Create<BoundFunctorCallbackImpl<R (*) (TX),R,TX,empty,empty,empty,empty,empty> >(fnPtr, a);
   return Callback<R> (impl);
 }
 
-template <typename R, typename TX, typename T1>
-Callback<R,T1> MakeBoundCallback (R (*fnPtr) (TX,T1), TX a) {
-  Ptr<CallbackImpl<R,T1,empty,empty,empty,empty> > impl =
+template <typename R, typename TX, typename ARG, 
+          typename T1>
+Callback<R,T1> MakeBoundCallback (R (*fnPtr) (TX,T1), ARG a) {
+  Ptr<CallbackImpl<R,T1,empty,empty,empty,empty,empty> > impl =
     Create<BoundFunctorCallbackImpl<R (*) (TX,T1),R,TX,T1,empty,empty,empty,empty> > (fnPtr, a);
   return Callback<R,T1> (impl);
 }
-template <typename R, typename TX, typename T1, typename T2>
-Callback<R,T1,T2> MakeBoundCallback (R (*fnPtr) (TX,T1,T2), TX a) {
-  Ptr<CallbackImpl<R,T1,T2,empty,empty,empty> > impl =
+template <typename R, typename TX, typename ARG, 
+          typename T1, typename T2>
+Callback<R,T1,T2> MakeBoundCallback (R (*fnPtr) (TX,T1,T2), ARG a) {
+  Ptr<CallbackImpl<R,T1,T2,empty,empty,empty,empty> > impl =
     Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2),R,TX,T1,T2,empty,empty,empty> > (fnPtr, a);
   return Callback<R,T1,T2> (impl);
 }
-template <typename R, typename TX, typename T1, typename T2,typename T3,typename T4>
-Callback<R,T1,T2,T3,T4> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4), TX a) {
-  Ptr<CallbackImpl<R,T1,T2,T3,T4,empty> > impl =
+template <typename R, typename TX, typename ARG,
+          typename T1, typename T2,typename T3>
+Callback<R,T1,T2,T3> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3), ARG a) {
+  Ptr<CallbackImpl<R,T1,T2,T3,empty,empty,empty> > impl =
+    Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3),R,TX,T1,T2,T3,empty,empty> > (fnPtr, a);
+  return Callback<R,T1,T2,T3> (impl);
+}
+template <typename R, typename TX, typename ARG,
+          typename T1, typename T2,typename T3,typename T4>
+Callback<R,T1,T2,T3,T4> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4), ARG a) {
+  Ptr<CallbackImpl<R,T1,T2,T3,T4,empty,empty> > impl =
     Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4),R,TX,T1,T2,T3,T4,empty> > (fnPtr, a);
   return Callback<R,T1,T2,T3,T4> (impl);
 }
-
-template <typename R, typename TX, typename T1, typename T2,typename T3,typename T4,typename T5>
-Callback<R,T1,T2,T3,T4,T5> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4,T5), TX a) {
-  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5> > impl =
+template <typename R, typename TX, typename ARG,
+          typename T1, typename T2,typename T3,typename T4,typename T5>
+Callback<R,T1,T2,T3,T4,T5> MakeBoundCallback (R (*fnPtr) (TX,T1,T2,T3,T4,T5), ARG a) {
+  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,empty> > impl =
     Create<BoundFunctorCallbackImpl<R (*) (TX,T1,T2,T3,T4,T5),R,TX,T1,T2,T3,T4,T5> > (fnPtr, a);
   return Callback<R,T1,T2,T3,T4,T5> (impl);
 }

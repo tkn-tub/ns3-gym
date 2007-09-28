@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -41,8 +40,8 @@ HierarchicalMobilityModel::HierarchicalMobilityModel (Ptr<MobilityModel> child, 
       parentNotifier = Create<MobilityModelNotifier> ();
       parent->AddInterface (parentNotifier);
     }
-  childNotifier->RegisterListener (MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
-  parentNotifier->RegisterListener (MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
+  childNotifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
+  parentNotifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
 }
 
 Ptr<MobilityModel> 
@@ -89,13 +88,13 @@ HierarchicalMobilityModel::DoGetSpeed (void) const
 }
 
 void 
-HierarchicalMobilityModel::ParentChanged (Ptr<const MobilityModel> model)
+HierarchicalMobilityModel::ParentChanged (const TraceContext &context, Ptr<const MobilityModel> model)
 {
   MobilityModel::NotifyCourseChange ();
 }
 
 void 
-HierarchicalMobilityModel::ChildChanged (Ptr<const MobilityModel> model)
+HierarchicalMobilityModel::ChildChanged (const TraceContext &context, Ptr<const MobilityModel> model)
 {
   MobilityModel::NotifyCourseChange ();
 }

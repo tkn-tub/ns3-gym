@@ -19,16 +19,16 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/assert.h"
-
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 
 #include "arp-cache.h"
 #include "arp-header.h"
+#include "ipv4-interface.h"
 
 namespace ns3 {
 
-ArpCache::ArpCache (Ptr<NetDevice> device, Ipv4Interface *interface)
+ArpCache::ArpCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface)
   : m_device (device), 
     m_interface (interface),
     m_aliveTimeout (Seconds (120)),
@@ -47,7 +47,7 @@ ArpCache::GetDevice (void) const
   return m_device;
 }
 
-Ipv4Interface *
+Ptr<Ipv4Interface>
 ArpCache::GetInterface (void) const
 {
   return m_interface;
@@ -109,6 +109,8 @@ ArpCache::Lookup (Ipv4Address to)
 ArpCache::Entry *
 ArpCache::Add (Ipv4Address to)
 {
+  NS_ASSERT (m_arpCache.find (to) == m_arpCache.end ());
+
   ArpCache::Entry *entry = new ArpCache::Entry (this);
   m_arpCache[to] = entry;  
   return entry;
@@ -146,7 +148,7 @@ ArpCache::Entry::MarkDead (void)
   UpdateSeen ();
 }
 Packet 
-ArpCache::Entry::MarkAlive (MacAddress macAddress) 
+ArpCache::Entry::MarkAlive (Address macAddress) 
 {
   NS_ASSERT (m_state == WAIT_REPLY);
   //NS_ASSERT (m_waiting != 0);
@@ -180,7 +182,7 @@ ArpCache::Entry::MarkWaitReply (Packet waiting)
   UpdateSeen ();
 }
 
-MacAddress
+Address
 ArpCache::Entry::GetMacAddress (void)
 {
   NS_ASSERT (m_state == ALIVE);

@@ -1,7 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005,2006 INRIA
- * All rights reserved.
+ * Copyright (c) 2005,2006,2007 INRIA
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -24,6 +23,16 @@
 #include <stdint.h>
 #include <vector>
 
+#define BUFFER_HEURISTICS 1
+#define BUFFER_USE_INLINE 1
+
+
+#ifdef BUFFER_USE_INLINE
+#define BUFFER_INLINE inline
+#else
+#define BUFFER_INLINE
+#endif
+
 namespace ns3 {
 
 /**
@@ -36,6 +45,51 @@ namespace ns3 {
  * by creating new Buffers of the maximum size ever used.
  * The correct maximum size is learned at runtime during use by 
  * recording the maximum size of each packet.
+ *
+ * \internal
+ * The implementation of the Buffer class uses a COW (Copy On Write)
+ * technique to ensure that the underlying data buffer which holds
+ * the data bytes is shared among a lot of Buffer instances despite
+ * data being added or removed from them.
+ *
+ * When multiple Buffer instances hold a reference to the same 
+ * underlying BufferData object, they must be able to detect when
+ * the operation they want to perform should trigger a copy of the
+ * BufferData. If the BufferData::m_count field is one, it means that
+ * there exist only one instance of Buffer which references the 
+ * BufferData instance so, it is safe to modify it. It is also
+ * safe to modify the content of a BufferData if the modification
+ * falls outside of the "dirty area" defined by the BufferData.
+ * In every other case, the BufferData must be copied before
+ * being modified.
+ *
+ * To understand the way the Buffer::Add and Buffer::Remove methods
+ * work, you first need to understand the "virtual offsets" used to
+ * keep track of the content of buffers. Each Buffer instance
+ * contains real data bytes in its BufferData instance but it also
+ * contains "virtual zero data" which typically is used to represent
+ * application-level payload. No memory is allocated to store the
+ * zero bytes of application-level payload unless the user fragments
+ * a Buffer: this application-level payload is kept track of with
+ * a pair of integers which describe where in the buffer content
+ * the "virtual zero area" starts and ends.
+ *
+ * ***: unused bytes
+ * xxx: bytes "added" at the front of the zero area
+ * ...: bytes "added" at the back of the zero area
+ * 000: virtual zero bytes
+ *
+ * Real byte buffer:      |********xxxxxxxxxxxx.........*****|
+ *                        |--------^ m_start
+ *                        |-------------------^ m_zeroAreaStart
+ *                        |-----------------------------^ m_end - (m_zeroAreaEnd - m_zeroAreaStart)
+ * virtual byte buffer:           |xxxxxxxxxxxx0000000000000.........|
+ *                        |--------^ m_start
+ *                        |--------------------^ m_zeroAreaStart
+ *                        |---------------------------------^ m_zeroAreaEnd
+ *                        |------------------------------------------^ m_end
+ *
+ * A simple state invariant is that m_start <= m_zeroStart <= m_zeroEnd <= m_end
  */
 class Buffer {
 public:
@@ -44,23 +98,23 @@ public:
    */
   class Iterator {
   public:
-      inline Iterator ();
+      Iterator ();
       /**
        * go forward by one byte
        */
-      inline void Next (void);
+      void Next (void);
       /**
        * go backward by one byte
        */
-      inline void Prev (void);
+      void Prev (void);
       /**
        * \param delta number of bytes to go forward
        */
-      inline void Next (uint32_t delta);
+      void Next (uint32_t delta);
       /**
        * \param delta number of bytes to go backward
        */
-      inline void Prev (uint32_t delta);
+      void Prev (uint32_t delta);
       /**
        * \param o the second iterator
        * \return number of bytes included between the two iterators
@@ -69,18 +123,18 @@ public:
        * to the same underlying buffer. Debug builds ensure
        * this with an assert.
        */
-      inline int32_t GetDistanceFrom (Iterator const &o) const;
+      uint32_t GetDistanceFrom (Iterator const &o) const;
       
       /**
        * \return true if this iterator points to the end of the byte array.
        *     false otherwise.
        */
-      inline bool IsEnd (void) const;
+      bool IsEnd (void) const;
       /**
        * \return true if this iterator points to the start of the byte array.
        *     false otherwise.
        */
-      inline bool IsStart (void) const;
+      bool IsStart (void) const;
 
       /**
        * \param data data to write in buffer
@@ -88,7 +142,7 @@ public:
        * Write the data in buffer and avance the iterator position
        * by one byte.
        */
-      inline void WriteU8 (uint8_t  data);
+      BUFFER_INLINE void WriteU8 (uint8_t  data);
       /**
        * \param data data to write in buffer
        * \param len number of times data must be written in buffer
@@ -96,7 +150,7 @@ public:
        * Write the data in buffer len times and avance the iterator position
        * by len byte.
        */
-      inline void WriteU8 (uint8_t data, uint32_t len);
+      BUFFER_INLINE void WriteU8 (uint8_t data, uint32_t len);
       /**
        * \param data data to write in buffer
        *
@@ -106,7 +160,7 @@ public:
        * return exactly what we wrote with writeU16 if the program
        * is run on the same machine.
        */
-      inline void WriteU16 (uint16_t data);
+      void WriteU16 (uint16_t data);
       /**
        * \param data data to write in buffer
        *
@@ -116,7 +170,7 @@ public:
        * return exactly what we wrote with writeU32 if the program
        * is run on the same machine.
        */
-      inline void WriteU32 (uint32_t data);
+      void WriteU32 (uint32_t data);
       /**
        * \param data data to write in buffer
        *
@@ -126,7 +180,7 @@ public:
        * return exactly what we wrote with writeU64 if the program
        * is run on the same machine.
        */
-      inline void WriteU64 (uint64_t data);
+      void WriteU64 (uint64_t data);
       /**
        * \param data data to write in buffer
        *
@@ -134,7 +188,7 @@ public:
        * by two bytes. The data is written in network order and the
        * input data is expected to be in host order.
        */
-      inline void WriteHtonU16 (uint16_t data);
+      void WriteHtonU16 (uint16_t data);
       /**
        * \param data data to write in buffer
        *
@@ -142,7 +196,7 @@ public:
        * by four bytes. The data is written in network order and the
        * input data is expected to be in host order.
        */
-      inline void WriteHtonU32 (uint32_t data);
+      void WriteHtonU32 (uint32_t data);
       /**
        * \param data data to write in buffer
        *
@@ -150,7 +204,7 @@ public:
        * by eight bytes. The data is written in network order and the
        * input data is expected to be in host order.
        */
-      inline void WriteHtonU64 (uint64_t data);
+      void WriteHtonU64 (uint64_t data);
       /**
        * \param buffer a byte buffer to copy in the internal buffer.
        * \param size number of bytes to copy.
@@ -158,7 +212,7 @@ public:
        * Write the data in buffer and avance the iterator position
        * by size bytes.
        */
-      inline void Write (uint8_t const*buffer, uint16_t size);
+      void Write (uint8_t const*buffer, uint32_t size);
       /**
        * \param start the start of the data to copy
        * \param end the end of the data to copy
@@ -170,7 +224,7 @@ public:
        * we do to avoid overlapping copies. This is enforced 
        * in debug builds by asserts.
        */
-      inline void Write (Iterator start, Iterator end);
+      void Write (Iterator start, Iterator end);
 
       /**
        * \return the byte read in the buffer.
@@ -178,7 +232,7 @@ public:
        * Read data and advance the Iterator by the number of bytes
        * read.
        */
-      inline uint8_t  ReadU8 (void);
+      BUFFER_INLINE uint8_t  ReadU8 (void);
       /**
        * \return the two bytes read in the buffer.
        *
@@ -186,7 +240,7 @@ public:
        * read.
        * The data is read in the format written by writeU16.
        */
-      inline uint16_t ReadU16 (void);
+      uint16_t ReadU16 (void);
       /**
        * \return the four bytes read in the buffer.
        *
@@ -194,7 +248,7 @@ public:
        * read.
        * The data is read in the format written by writeU32.
        */
-      inline uint32_t ReadU32 (void);
+      uint32_t ReadU32 (void);
       /**
        * \return the eight bytes read in the buffer.
        *
@@ -202,7 +256,7 @@ public:
        * read.
        * The data is read in the format written by writeU64.
        */
-      inline uint64_t ReadU64 (void);
+      uint64_t ReadU64 (void);
       /**
        * \return the two bytes read in the buffer.
        *
@@ -210,7 +264,7 @@ public:
        * read.
        * The data is read in network format and return in host format.
        */
-      inline uint16_t ReadNtohU16 (void);
+      uint16_t ReadNtohU16 (void);
       /**
        * \return the four bytes read in the buffer.
        *
@@ -218,7 +272,7 @@ public:
        * read.
        * The data is read in network format and return in host format.
        */
-      inline uint32_t ReadNtohU32 (void);
+      uint32_t ReadNtohU32 (void);
       /**
        * \return the eight bytes read in the buffer.
        *
@@ -226,7 +280,7 @@ public:
        * read.
        * The data is read in network format and return in host format.
        */
-      inline uint64_t ReadNtohU64 (void);
+      uint64_t ReadNtohU64 (void);
       /**
        * \param buffer buffer to copy data into
        * \param size number of bytes to copy
@@ -235,22 +289,45 @@ public:
        * input buffer and avance the Iterator by the number of
        * bytes read.
        */
-      inline void Read (uint8_t *buffer, uint16_t size);
+      void Read (uint8_t *buffer, uint32_t size);
   private:
       friend class Buffer;
-      inline Iterator (Buffer const*buffer, uint32_t m_current);
-      inline uint32_t GetIndex (uint32_t n);
+      Iterator (Buffer const*buffer);
+      Iterator (Buffer const*buffer, bool);
+      void Construct (const Buffer *buffer);
+      bool CheckNoZero (uint32_t start, uint32_t end) const;
+      bool Check (uint32_t i) const;
+
+    /* offset in virtual bytes from the start of the data buffer to the
+     * start of the "virtual zero area".
+     */
       uint32_t m_zeroStart;
+    /* offset in virtual bytes from the start of the data buffer to the
+     * end of the "virtual zero area".
+     */
       uint32_t m_zeroEnd;
+    /* offset in virtual bytes from the start of the data buffer to the
+     * start of the data which can be read by this iterator
+     */
+      uint32_t m_dataStart;
+    /* offset in virtual bytes from the start of the data buffer to the
+     * end of the data which can be read by this iterator
+     */
       uint32_t m_dataEnd;
+    /* offset in virtual bytes from the start of the data buffer to the
+     * current position represented by this iterator.
+     */
       uint32_t m_current;
+    /* a pointer to the underlying byte buffer. All offsets are relative
+     * to this pointer.
+     */
       uint8_t *m_data;
   };
 
   /**
    * \return the number of bytes stored in this buffer.
    */
-  inline uint32_t GetSize (void) const;
+  uint32_t GetSize (void) const;
 
   /**
    * \return a pointer to the start of the internal 
@@ -313,393 +390,135 @@ public:
    * \return an Iterator which points to the
    * start of this Buffer.
    */
-  inline Buffer::Iterator Begin (void) const;
+  Buffer::Iterator Begin (void) const;
   /**
    * \return an Iterator which points to the
    * end of this Buffer.
    */
-  inline Buffer::Iterator End (void) const;
+  Buffer::Iterator End (void) const;
 
-  inline Buffer (Buffer const &o);
-  inline Buffer &operator = (Buffer const &o);
-  inline Buffer ();
-  inline Buffer (uint32_t dataSize);
-  inline ~Buffer ();
+  Buffer CreateFullCopy (void) const;
+
+  Buffer (Buffer const &o);
+  Buffer &operator = (Buffer const &o);
+  Buffer ();
+  Buffer (uint32_t dataSize);
+  ~Buffer ();
 private:
-  struct BufferData {
-      uint32_t m_count;
-      uint32_t m_size;
-      uint32_t m_initialStart;
-      uint32_t m_dirtyStart;
-      uint32_t m_dirtySize;
-      uint8_t m_data[1];
-  };
-  typedef std::vector<struct Buffer::BufferData*> BufferDataList;
 
-  inline uint8_t *GetStart (void) const;
   void TransformIntoRealBuffer (void) const;
-  static void Recycle (struct Buffer::BufferData *data);
-  static struct Buffer::BufferData *Create (void);
-  static struct Buffer::BufferData *Allocate (uint32_t size, uint32_t start);
-  static void Deallocate (struct Buffer::BufferData *data);
+  bool CheckInternalState (void) const;
+  void Initialize (uint32_t zeroSize);
+  uint32_t GetInternalSize (void) const;
+  uint32_t GetInternalEnd (void) const;
+  static void Recycle (struct BufferData *data);
+  static struct BufferData *Create (uint32_t size);
 
-  static BufferDataList m_freeList;
-  static uint32_t m_maxTotalAddStart;
-  static uint32_t m_maxTotalAddEnd;
-
+  /* This structure is described in the buffer.cc file.
+   */
   struct BufferData *m_data;
-  uint32_t m_zeroAreaSize;
+#ifdef BUFFER_HEURISTICS
+  /* keep track of the maximum value of m_zeroAreaStart across
+   * the lifetime of a Buffer instance. This variable is used
+   * purely as a source of information for the heuristics which
+   * decide on the position of the zero area in new buffers.
+   * It is read from the Buffer destructor to update the global
+   * heuristic data and these global heuristic data are used from
+   * the Buffer constructor to choose an initial value for 
+   * m_zeroAreaStart.
+   * It is possible to disable all these heuristics by undefining the
+   * BUFFER_HEURISTICS macro at the top of buffer.h
+   */
+  uint32_t m_maxZeroAreaStart;
+#endif /* BUFFER_HEURISTICS */
+  /* offset to the start of the virtual zero area from the start 
+   * of m_data->m_data
+   */
+  uint32_t m_zeroAreaStart;
+  /* offset to the end of the virtual zero area from the start 
+   * of m_data->m_data
+   */
+  uint32_t m_zeroAreaEnd;
+  /* offset to the start of the data referenced by this Buffer
+   * instance from the start of m_data->m_data
+   */
   uint32_t m_start;
-  uint32_t m_size;
+  /* offset to the end of the data referenced by this Buffer
+   * instance from the start of m_data->m_data
+   */
+  uint32_t m_end;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
-
-/**************************************************
-   Start of implementation of methods which 
-   need to be inline for performance reasons.
- *************************************************/
+#ifdef BUFFER_USE_INLINE
 
 #include "ns3/assert.h"
 
 namespace ns3 {
 
-Buffer::Buffer ()
-  : m_data (Buffer::Create ()),
-    m_zeroAreaSize (0),
-    m_start (m_maxTotalAddStart),
-    m_size (0)
+void
+Buffer::Iterator::WriteU8 (uint8_t data)
 {
-  if (m_start > m_data->m_size) 
+  NS_ASSERT (Check (m_current));
+
+  if (m_current < m_zeroStart)
     {
-      m_start = 0;
+      m_data[m_current] = data;
+      m_current++;
     }
-  NS_ASSERT (m_start <= m_data->m_size);
-}
-
-Buffer::Buffer (uint32_t dataSize)
-  : m_data (Buffer::Create ()),
-    m_zeroAreaSize (dataSize),
-    m_start (m_maxTotalAddStart),
-    m_size (0)
-{
-  if (m_start > m_data->m_size) 
+  else
     {
-      m_start = 0;
+      m_data[m_current - (m_zeroEnd-m_zeroStart)] = data;
+      m_current++;      
     }
-  NS_ASSERT (m_start <= m_data->m_size);
-}
-
-
-Buffer::Buffer (Buffer const&o)
-  : m_data (o.m_data),
-    m_zeroAreaSize (o.m_zeroAreaSize),
-    m_start (o.m_start),
-    m_size (o.m_size)
-{
-  m_data->m_count++;
-  NS_ASSERT (m_start <= m_data->m_size);
-}
-
-Buffer &
-Buffer::operator = (Buffer const&o)
-{
-  if (m_data != o.m_data) 
-    {
-      // not assignment to self.
-      m_data->m_count--;
-      if (m_data->m_count == 0) 
-        {
-          Recycle (m_data);
-        }
-      m_data = o.m_data;
-      m_data->m_count++;
-    }
-  m_zeroAreaSize = o.m_zeroAreaSize;
-  m_start = o.m_start;
-  m_size = o.m_size;
-  NS_ASSERT (m_start <= m_data->m_size);
-  return *this;
-}
-
-Buffer::~Buffer ()
-{
-  m_data->m_count--;
-  if (m_data->m_count == 0) 
-    {
-      Recycle (m_data);
-    }
-}
-
-
-uint8_t *
-Buffer::GetStart (void) const
-{
-  return m_data->m_data + m_start;
-}
-
-uint32_t 
-Buffer::GetSize (void) const
-{
-  return m_size + m_zeroAreaSize;
-}
-
-Buffer::Iterator 
-Buffer::Begin (void) const
-{
-  return Buffer::Iterator (this, 0);
-}
-Buffer::Iterator 
-Buffer::End (void) const
-{
-  return Buffer::Iterator (this, GetSize ());
-}
-
-
-Buffer::Iterator::Iterator ()
-  : m_zeroStart (0),
-    m_zeroEnd (0),
-    m_dataEnd (0),
-    m_current (0),
-    m_data (0)
-{}
-Buffer::Iterator::Iterator (Buffer const*buffer, uint32_t current)
-  : m_zeroStart (buffer->m_data->m_initialStart-buffer->m_start),
-    m_zeroEnd (m_zeroStart+buffer->m_zeroAreaSize),
-    m_dataEnd (buffer->GetSize ()),
-    m_current (current),
-    m_data (buffer->m_data->m_data+buffer->m_start)
-{}
-
-void 
-Buffer::Iterator::Next (void)
-{
-  NS_ASSERT (m_current + 1 <= m_dataEnd);
-  m_current++;
-}
-void 
-Buffer::Iterator::Prev (void)
-{
-  NS_ASSERT (m_current >= 1);
-  m_current--;
-}
-void 
-Buffer::Iterator::Next (uint32_t delta)
-{
-  NS_ASSERT (m_current + delta <= m_dataEnd);
-  m_current += delta;
-}
-void 
-Buffer::Iterator::Prev (uint32_t delta)
-{
-  NS_ASSERT (m_current >= delta);
-  m_current -= delta;
-}
-int32_t
-Buffer::Iterator::GetDistanceFrom (Iterator const &o) const
-{
-  NS_ASSERT (m_data == o.m_data);
-  int32_t start = m_current;
-  int32_t end = o.m_current;
-  return end - start;
-}
-
-bool 
-Buffer::Iterator::IsEnd (void) const
-{
-  return m_current == m_dataEnd;
-}
-bool 
-Buffer::Iterator::IsStart (void) const
-{
-  return m_current == 0;
-}
-
-uint32_t
-Buffer::Iterator::GetIndex (uint32_t n)
-{
-  NS_ASSERT ( 
-      (m_current + n <= m_dataEnd) &&
-      ((m_current + n <= m_zeroStart) ||
-       (m_current >= m_zeroEnd) ||
-       m_zeroStart == m_zeroEnd)
-      );
-  uint32_t index;
-  if (m_current < m_zeroStart) 
-    {
-      index = m_current;
-    } 
-  else 
-    {
-      index = m_current - (m_zeroEnd-m_zeroStart);
-    }
-  return index;
-}
-
-
-void 
-Buffer::Iterator::Write (Iterator start, Iterator end)
-{
-  NS_ASSERT (start.m_data == end.m_data);
-  NS_ASSERT (start.m_current <= end.m_current);
-  NS_ASSERT (m_data != start.m_data);
-  uint32_t size = end.m_current - start.m_current;
-  uint8_t *src = start.m_data + start.GetIndex (size);
-  uint8_t *dest = m_data + GetIndex (size);
-  memcpy (dest, src, size);
-  m_current += size;
 }
 
 void 
 Buffer::Iterator::WriteU8 (uint8_t  data, uint32_t len)
 {
-  uint8_t *current = m_data + GetIndex (len);
-  memset (current, data, len);
-  m_current += len;
-}
-void 
-Buffer::Iterator::WriteU8  (uint8_t  data)
-{
-  m_data[GetIndex (1)] = data;
-  m_current++;
-}
-void 
-Buffer::Iterator::WriteU16 (uint16_t data)
-{
-  uint16_t *buffer = (uint16_t *)(m_data + GetIndex (2));
-  *buffer = data;
-  m_current += 2;
-}
-void 
-Buffer::Iterator::WriteU32 (uint32_t data)
-{
-  uint32_t *buffer = (uint32_t *)(m_data + GetIndex (4));
-  *buffer = data;
-  m_current += 4;
-}
-void 
-Buffer::Iterator::WriteU64 (uint64_t data)
-{
-  uint64_t *buffer = (uint64_t *)(m_data + GetIndex (8));
-  *buffer = data;
-  m_current += 8;
-}
-void 
-Buffer::Iterator::WriteHtonU16 (uint16_t data)
-{
-  uint8_t *current = m_data + GetIndex (2);
-  *(current+0) = (data >> 8) & 0xff;
-  *(current+1) = (data >> 0) & 0xff;
-  m_current += 2;
-}
-void 
-Buffer::Iterator::WriteHtonU32 (uint32_t data)
-{
-  uint8_t *current = m_data + GetIndex (4);
-  *(current+0) = (data >> 24) & 0xff;
-  *(current+1) = (data >> 16) & 0xff;
-  *(current+2) = (data >> 8) & 0xff;
-  *(current+3) = (data >> 0) & 0xff;
-  m_current += 4;
-}
-void 
-Buffer::Iterator::WriteHtonU64 (uint64_t data)
-{
-  uint8_t *current = m_data + GetIndex (8);
-  *(current+0) = (data >> 56) & 0xff;
-  *(current+1) = (data >> 48) & 0xff;
-  *(current+2) = (data >> 40) & 0xff;
-  *(current+3) = (data >> 32) & 0xff;
-  *(current+4) = (data >> 24) & 0xff;
-  *(current+5) = (data >> 16) & 0xff;
-  *(current+6) = (data >> 8) & 0xff;
-  *(current+7) = (data >> 0) & 0xff;
-  m_current += 8;
-}
-void 
-Buffer::Iterator::Write (uint8_t const*buffer, uint16_t size)
-{
-  uint8_t *current = m_data + GetIndex (size);
-  memcpy (current, buffer, size);
-  m_current += size;
+  NS_ASSERT (CheckNoZero (m_current, m_current + len));
+  if (m_current <= m_zeroStart)
+    {
+      memset (&(m_data[m_current]), data, len);
+      m_current += len;
+    }
+  else
+    {
+      uint8_t *buffer = &m_data[m_current - (m_zeroEnd-m_zeroStart)];
+      memset (buffer, data, len);
+      m_current += len;
+    }
 }
 
 uint8_t  
 Buffer::Iterator::ReadU8 (void)
 {
-  uint8_t data = m_data[GetIndex(1)];
-  m_current++;
-  return data;
-}
-uint16_t 
-Buffer::Iterator::ReadU16 (void)
-{
-  uint16_t *buffer = reinterpret_cast<uint16_t *>(m_data + GetIndex (2));
-  m_current += 2;
-  return *buffer;
-}
-uint32_t 
-Buffer::Iterator::ReadU32 (void)
-{
-  uint32_t *buffer = reinterpret_cast<uint32_t *>(m_data + GetIndex (4));
-  m_current += 4;
-  return *buffer;
-}
-uint64_t 
-Buffer::Iterator::ReadU64 (void)
-{
-  uint64_t *buffer = reinterpret_cast<uint64_t *>(m_data + GetIndex (8));
-  m_current += 8;
-  return *buffer;
-}
-uint16_t 
-Buffer::Iterator::ReadNtohU16 (void)
-{
-  uint8_t *current = m_data + GetIndex (2);
-  uint16_t retval = 0;
-  retval |= static_cast<uint16_t> (current[0]) << 8;
-  retval |= static_cast<uint16_t> (current[1]) << 0;
-  m_current += 2;
-  return retval;
-}
-uint32_t 
-Buffer::Iterator::ReadNtohU32 (void)
-{
-  uint8_t *current = m_data + GetIndex (4);
-  uint32_t retval = 0;
-  retval |= static_cast<uint32_t> (current[0]) << 24;
-  retval |= static_cast<uint32_t> (current[1]) << 16;
-  retval |= static_cast<uint32_t> (current[2]) << 8;
-  retval |= static_cast<uint32_t> (current[3]) << 0;
-  m_current += 4;
-  return retval;
-}
-uint64_t 
-Buffer::Iterator::ReadNtohU64 (void)
-{
-  uint8_t *current = m_data + GetIndex (8);
-  uint64_t retval = 0;
-  retval |= static_cast<uint64_t> (current[0]) << 56;
-  retval |= static_cast<uint64_t> (current[1]) << 48;
-  retval |= static_cast<uint64_t> (current[2]) << 40;
-  retval |= static_cast<uint64_t> (current[3]) << 32;
-  retval |= static_cast<uint64_t> (current[4]) << 24;
-  retval |= static_cast<uint64_t> (current[5]) << 16;
-  retval |= static_cast<uint64_t> (current[6]) << 8;
-  retval |= static_cast<uint64_t> (current[7]) << 0;
-  m_current += 8;
-  return retval;
-}
-void 
-Buffer::Iterator::Read (uint8_t *buffer, uint16_t size)
-{
-  uint8_t *current = m_data + GetIndex (size);
-  memcpy (buffer, current, size);
-  m_current += size;
+  NS_ASSERT (m_current >= m_dataStart &&
+             m_current <= m_dataEnd);
+
+  if (m_current < m_zeroStart)
+    {
+      uint8_t data = m_data[m_current];
+      m_current++;
+      return data;
+    }
+  else if (m_current < m_zeroEnd)
+    {
+      m_current++;
+      return 0;
+    }
+  else
+    {
+      uint8_t data = m_data[m_current - (m_zeroEnd-m_zeroStart)];
+      m_current++;
+      return data;
+    }
 }
 
-}; // namespace ns3
 
+} // namespace ns3
+
+#endif /* BUFFER_USE_INLINE */
 
 #endif /* BUFFER_H */

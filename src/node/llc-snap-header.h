@@ -23,27 +23,30 @@
 #define LLC_SNAP_HEADER_H
 
 #include <stdint.h>
+#include <string>
 #include "ns3/header.h"
 
 namespace ns3 {
 
-class LlcSnapHeader : public Header {
- public:
-  LlcSnapHeader ();
-  virtual ~LlcSnapHeader ();
+class LlcSnapHeader : public Header 
+{
+public:
+  static uint32_t GetUid (void);
 
+  LlcSnapHeader ();
 
   void SetType (uint16_t type);
   uint16_t GetType (void);
 
+  std::string GetName (void) const;
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
 private:
-  virtual void PrintTo (std::ostream &os) const;
-  virtual uint32_t GetSerializedSize (void) const;
-  virtual void SerializeTo (Buffer::Iterator start) const;
-  virtual uint32_t DeserializeFrom (Buffer::Iterator start);
   uint16_t m_etherType;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* LLC_SNAP_HEADER_H */

@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Modified by Emmanuelle Laprise to remove dependance on LLC headers
  */
 #ifndef NET_DEVICE_H
 #define NET_DEVICE_H
@@ -27,7 +28,8 @@
 #include "ns3/packet.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
-#include "mac-address.h"
+#include "address.h"
+#include "ipv4-address.h"
 
 namespace ns3 {
 
@@ -61,14 +63,6 @@ public:
   static const InterfaceId iid;
   virtual ~NetDevice();
 
-  /**
-   * \param context the trace context to use to construct the
-   *        TraceResolver to return
-   * \returns a TraceResolver which can resolve all traces
-   *          performed in this object. The caller must
-   *          delete the returned object.
-   */
-  TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   /**
    * \return the channel this NetDevice is connected to. The value
@@ -78,9 +72,9 @@ public:
   Ptr<Channel> GetChannel (void) const;
 
   /**
-   * \return the current MacAddress of this interface.
+   * \return the current Address of this interface.
    */
-  MacAddress GetAddress (void) const;
+  Address GetAddress (void) const;
   /**
    * \param mtu MTU value, in bytes, to set for the device
    * \return whether the MTU value was within legal bounds
@@ -136,11 +130,70 @@ public:
    * Calling this method is invalid if IsBroadcast returns
    * not true.
    */
-  MacAddress const &GetBroadcast (void) const;
+  Address const &GetBroadcast (void) const;
+
   /**
    * \return value of m_isMulticast flag
    */
   bool IsMulticast (void) const;
+
+  /**
+   * \brief Return the MAC multicast base address used when mapping multicast
+   * groups to MAC multicast addresses.
+   *
+   * Typically when one constructs a multicast MAC addresses, some bits from
+   * the IP multicast group are copied into a corresponding MAC multicast 
+   * group.  In EUI-48, for example, the low order 23 bits of the multicast
+   * group are copied to the MAC multicast group base address.
+   *
+   * This method allows access to the underlying MAC multicast group base 
+   * address.  It is expected that in most cases, a net device client will
+   * allow the net device to perform the actual construction of the multicast
+   * address.  Use of this method is discouraged unless you have a good reason
+   * to perform a custom mapping.  You should prefer 
+   * NetDevice::MakeMulticastAddress which will do the RFC-specified mapping
+   * for the net device in question.
+   *
+   * \return The multicast address supported by this net device.
+   *
+   * \warning Calling this method is invalid if IsMulticast returns not true.
+   * The method NS_ASSERTs if the device is not a multicast device.
+   * \see NetDevice::MakeMulticastAddress
+   */
+  Address GetMulticast (void) const;
+
+  /**
+   * \brief Make and return a MAC multicast address using the provided
+   *        multicast group
+   *
+   * RFC 1112 says that an Ipv4 host group address is mapped to an Ethernet 
+   * multicast address by placing the low-order 23-bits of the IP address into 
+   * the low-order 23 bits of the Ethernet multicast address 
+   * 01-00-5E-00-00-00 (hex).  Similar RFCs exist for Ipv6 and Eui64 mappings.
+   * This method performs the multicast address creation function appropriate
+   * to the underlying MAC address of the device.  This MAC address is
+   * encapsulated in an abstract Address to avoid dependencies on the exact
+   * MAC address format.
+   *
+   * A default imlementation of MakeMulticastAddress is provided, but this
+   * method simply NS_ASSERTS.  In the case of net devices that do not support
+   * multicast, clients are expected to test NetDevice::IsMulticast and avoid
+   * attempting to map multicast packets.  Subclasses of NetDevice that do
+   * support multicasting are expected to override this method and provide an
+   * implementation appropriate to the particular device.
+   *
+   * \param multicastGroup The IP address for the multicast group destination
+   * of the packet.
+   * \return The MAC multicast Address used to send packets to the provided
+   * multicast group.
+   *
+   * \warning Calling this method is invalid if IsMulticast returns not true.
+   * \see Ipv4Address
+   * \see Address
+   * \see NetDevice::IsMulticast
+   */
+  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+
   /**
    * \return value of m_isPointToPoint flag
    */
@@ -153,11 +206,11 @@ public:
    *        is received.
    * 
    *  Called from higher layer to send packet into Network Device
-   *  to the specified destination MacAddress
+   *  to the specified destination Address
    * 
    * \return whether the Send operation succeeded 
    */
-  bool Send(Packet& p, const MacAddress& dest, uint16_t protocolNumber);
+  bool Send(const Packet& p, const Address& dest, uint16_t protocolNumber);
   /**
    * \returns the node base class which contains this network
    *          interface.
@@ -177,30 +230,44 @@ public:
   bool NeedsArp (void) const;
 
   /**
+   * \param device a pointer to the net device which is calling this callback
+   * \param packet the packet received
+   * \param protocol the 16 bit protocol number associated with this packet.
+   *        This protocol number is expected to be the same protocol number
+   *        given to the Send method by the user on the sender side.
+   * \param address the address of the sender
+   * \returns true if the callback could handle the packet successfully, false
+   *          otherwise.
+   */
+  typedef Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t,const Address &> ReceiveCallback;
+
+  /**
    * \param cb callback to invoke whenever a packet has been received and must
    *        be forwarded to the higher layers.
+   *
    */
-  void SetReceiveCallback (Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> cb);
+  void SetReceiveCallback (ReceiveCallback cb);
 
  protected:
   /**
    * \param node base class node pointer of device's node 
    * \param addr MAC address of this device.
    */
-  NetDevice(Ptr<Node> node, const MacAddress& addr);
+  NetDevice(Ptr<Node> node, const Address& addr);
   /**
    * Enable broadcast support. This method should be
    * called by subclasses from their constructor
    */
-  void EnableBroadcast (MacAddress broadcast);
+  void EnableBroadcast (Address broadcast);
   /**
    * Set m_isBroadcast flag to false
    */
   void DisableBroadcast (void);
   /**
-   * Set m_isMulticast flag to true
+   * Enable multicast support. This method should be
+   * called by subclasses from their constructor
    */
-  void EnableMulticast (void);
+  void EnableMulticast (Address multicast);
   /**
    * Set m_isMulticast flag to false
    */
@@ -227,6 +294,9 @@ public:
 
   /**
    * \param p packet sent from below up to Network Device
+   * \param param Extra parameter extracted from header and needed by
+   * some protocols
+   * \param address the address of the sender of this packet.
    * \returns true if the packet was forwarded successfully,
    *          false otherwise.
    *
@@ -234,7 +304,8 @@ public:
    * forwards it to the higher layers by calling this method
    * which is responsible for passing it up to the Rx callback.
    */
-  bool ForwardUp (Packet& p);
+  bool ForwardUp (const Packet& p, uint16_t param, const Address &address);
+
 
   /**
    * The dispose method for this NetDevice class.
@@ -248,6 +319,7 @@ public:
   /**
    * \param p packet to send
    * \param dest address of destination to which packet must be sent
+   * \param protocolNumber Number of the protocol (used with some protocols)
    * \returns true if the packet could be sent successfully, false
    *          otherwise.
    *
@@ -255,7 +327,7 @@ public:
    * method.  When the link is Up, this method is invoked to ask 
    * subclasses to forward packets. Subclasses MUST override this method.
    */
-  virtual bool SendTo (Packet& p, const MacAddress& dest) = 0;
+  virtual bool SendTo (const Packet& p, const Address &dest, uint16_t protocolNumber) = 0;
   /**
    * \returns true if this NetDevice needs the higher-layers
    *          to perform ARP over it, false otherwise.
@@ -264,33 +336,25 @@ public:
    */
   virtual bool DoNeedsArp (void) const = 0;
   /**
-   * \param context the trace context to associated to the
-   *        trace resolver.
-   * \returns a trace resolver associated to the input context.
-   *          the caller takes ownership of the pointer returned.
-   *
-   * Subclasses must implement this method.
-   */
-  virtual TraceResolver *DoCreateTraceResolver (TraceContext const &context) = 0;
-  /**
    * \returns the channel associated to this NetDevice.
    *
    * Subclasses must implement this method.
    */
   virtual Ptr<Channel> DoGetChannel (void) const = 0;
 
-  Ptr<Node>         m_node;
+  Ptr<Node>     m_node;
   std::string   m_name;
   uint16_t      m_ifIndex;
-  MacAddress    m_address;
-  MacAddress    m_broadcast;
+  Address       m_address;
+  Address       m_broadcast;
+  Address       m_multicast;
   uint16_t      m_mtu;
   bool          m_isUp;
   bool          m_isBroadcast;
   bool          m_isMulticast;
   bool          m_isPointToPoint;
   Callback<void> m_linkChangeCallback;
-  Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t> m_receiveCallback;
+  ReceiveCallback m_receiveCallback;
 };
 
 }; // namespace ns3

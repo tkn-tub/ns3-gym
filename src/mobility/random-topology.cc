@@ -69,9 +69,9 @@ RandomTopology::LayoutOne (Ptr<Object> object)
 {
   Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_mobilityModel, 
                                                                          MobilityModel::iid);
+  object->AddInterface (mobility);
   Position position = m_positionModel->Get ();
   mobility->Set (position);
-  object->AddInterface (mobility);
 }
 
 

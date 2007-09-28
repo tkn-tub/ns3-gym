@@ -31,10 +31,44 @@
 #include "ns3/object.h"
 #include "ns3/callback-trace-source.h"
 #include "ns3/trace-resolver.h"
+#include "ns3/trace-context-element.h"
 
 namespace ns3 {
 
 class StringEnumDefaultValue;
+
+/**
+ * \brief hold in a TraceContext the type of a trace source 
+ */
+class QueueTraceType : public TraceContextElement
+{
+public:
+  enum Type {
+    ENQUEUE,
+    DEQUEUE,
+    DROP
+  };
+  static uint16_t GetUid (void);
+  QueueTraceType ();
+  QueueTraceType (enum Type type);
+  /**
+   * \returns true if this is an enqueue event, false otherwise.
+   */
+  bool IsEnqueue (void) const;
+  /**
+   * \returns true if this is a dequeue event, false otherwise.
+   */
+  bool IsDequeue (void) const;
+  /**
+   * \returns true if this is a drop event, false otherwise.
+   */
+  bool IsDrop (void) const;
+  void Print (std::ostream &os) const;
+  std::string GetTypeName (void) const;
+private:
+  enum Type m_type;
+};
+
 
 /**
  * \brief Abstract base class for packet Queues
@@ -46,15 +80,8 @@ class Queue : public Object
 public:
   static const InterfaceId iid;
 
-  enum TraceType {
-    ENQUEUE,
-    DEQUEUE,
-    DROP,
-  };
   Queue ();
   virtual ~Queue ();
-
-  TraceResolver *CreateTraceResolver (TraceContext const &context);
   
   /**
    * \return true if the queue is empty; false otherwise
@@ -151,6 +178,7 @@ private:
   virtual bool DoPeek (Packet &p) = 0;
 
 protected:
+  Ptr<TraceResolver> GetTraceResolver (void) const;
   // called by subclasses to notify parent of packet drops.
   void Drop (const Packet& p);
 

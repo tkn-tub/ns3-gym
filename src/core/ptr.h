@@ -22,6 +22,7 @@
 #ifndef PTR_H
 #define PTR_H
 
+#include <iostream>
 #include <stdint.h>
 #include "assert.h"
 
@@ -64,7 +65,7 @@ private:
   template <typename U>
   friend U *PeekPointer (const Ptr<U> &p);
 
-  void Acquire (void) const;
+  inline void Acquire (void) const;
 public:
   /**
    * Create an empty smart pointer
@@ -80,7 +81,16 @@ public:
    * same, so that object is deleted if no more references to it
    * remain.
    */
-  Ptr (T *ptr);
+  Ptr (T *ptr);  
+  /**
+   * \param ptr raw pointer to manage
+   * \param ref if set to true, this method calls Ref, otherwise,
+   *        it does not call Ref.
+   *    
+   * Create a smart pointer which points to the object pointed to by
+   * the input raw pointer ptr.
+   */
+  Ptr (T *ptr, bool ref);
   Ptr (Ptr const&o);
   // allow conversions from T to T const.
   template <typename U>
@@ -187,10 +197,10 @@ struct CallbackTraits<Ptr<T> >
 };
 
 template <typename T>
-struct EventMemberImplTraits;
+struct EventMemberImplObjTraits;
 
 template <typename T>
-struct EventMemberImplTraits<Ptr<T> >
+struct EventMemberImplObjTraits<Ptr<T> >
 {
   static T &GetReference (Ptr<T> p) {
     return *PeekPointer (p);
@@ -375,6 +385,16 @@ Ptr<T>::Ptr (T *ptr)
   : m_ptr (ptr)
 {
   Acquire ();
+}
+
+template <typename T>
+Ptr<T>::Ptr (T *ptr, bool ref) 
+  : m_ptr (ptr)
+{
+  if (ref)
+    {
+      Acquire ();
+    }
 }
 
 template <typename T>

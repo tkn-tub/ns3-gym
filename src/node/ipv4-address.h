@@ -24,8 +24,11 @@
 
 #include <stdint.h>
 #include <ostream>
+#include "address.h"
 
 namespace ns3 {
+
+class Ipv4Mask;
 
 /** Ipv4 addresses are stored in host order in
   * this class.
@@ -50,6 +53,22 @@ public:
   Ipv4Address (char const *address);
   
   /**
+   * input address is in host order.
+   * \param address The host order 32-bit address
+   */
+  void Set (uint32_t address);
+  /** 
+    * \brief Sets an Ipv4Address by parsing a the input C-string
+    *
+    * Input address is in format:
+    * hhh.xxx.xxx.lll
+    * where h is the high byte and l the
+    * low byte
+    * \param address C-string containing the address as described above
+    */
+  void Set (char const *address);
+
+  /**
    * \brief Comparison operation between two Ipv4Addresses
    * \param other address to which to compare this address
    * \return True if the addresses are equal. False otherwise.
@@ -68,10 +87,18 @@ public:
   void SetHostOrder (uint32_t ip);
   /**
    * Serialize this address to a 4-byte buffer
+   *
    * \param buf output buffer to which this address gets overwritten with this
    * Ipv4Address
    */
   void Serialize (uint8_t buf[4]) const;
+  /**
+   * \param buf buffer to read address from
+   * \returns an Ipv4Address
+   * 
+   * The input address is expected to be in network byte order format.
+   */
+  static Ipv4Address Deserialize (const uint8_t buf[4]);
   /**
    * \brief Print this address to the given output stream
    *
@@ -80,14 +107,40 @@ public:
    */
   void Print (std::ostream &os) const;
 
-  bool IsBroadcast (void);
-  bool IsMulticast (void);
+  bool IsBroadcast (void) const;
+  bool IsMulticast (void) const;
+  /**
+   * \brief Combine this address with a network mask
+   *
+   * This method returns an IPv4 address that is this address combined
+   * (bitwise and) with a network mask, yielding an IPv4 network
+   * address.
+   *
+   * \param mask a network mask 
+   */
+  Ipv4Address CombineMask (Ipv4Mask const &mask) const;
+  /**
+   * \brief Generate subnet-directed broadcast address corresponding to mask
+   *
+   * The subnet-directed broadcast address has the host bits set to all
+   * ones.
+   *
+   * \param mask a network mask 
+   */
+  Ipv4Address GetSubnetDirectedBroadcast (Ipv4Mask const &mask) const;
+  bool IsSubnetDirectedBroadcast (Ipv4Mask const &mask) const;
+
+  static bool IsMatchingType (const Address &address);
+  operator Address ();
+  static Ipv4Address ConvertFrom (const Address &address);
 
   static Ipv4Address GetZero (void);
   static Ipv4Address GetAny (void);
   static Ipv4Address GetBroadcast (void);
   static Ipv4Address GetLoopback (void);
 private:
+  Address ConvertTo (void) const;
+  static uint8_t GetType (void);
   uint32_t m_address;
 };
 
@@ -108,6 +161,10 @@ public:
    */
   uint32_t GetHostOrder (void) const;
   void SetHostOrder (uint32_t value);
+  /**
+   * \brief Return the inverse mask in host order. 
+   */
+  uint32_t GetInverse (void) const;
 
   void Print (std::ostream &os) const;
 

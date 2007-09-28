@@ -3,7 +3,7 @@
 #include <string>
 #include "ns3/default-value.h"
 #include "ns3/command-line.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 
 using namespace ns3;
 
@@ -14,8 +14,8 @@ using namespace ns3;
 // value of the default parameter.  Then as other code require the values of 
 // the defaults, they query them with GetValue() to get the present value.
 static BooleanDefaultValue defaultTestBool1 ("testBool1", "helpBool", true);
-static IntegerDefaultValue<int> defaultTestInt1 ("testInt1", "helpInt1", 33);
-static IntegerDefaultValue<uint32_t> defaultTestInt2 ("testInt2", "helpInt2", 47);
+static NumericDefaultValue<int> defaultTestInt1 ("testInt1", "helpInt1", 33);
+static NumericDefaultValue<uint32_t> defaultTestInt2 ("testInt2", "helpInt2", 47);
 
 // 
 // This test class demonstrates the declaration of variables that
@@ -73,12 +73,12 @@ int main (int argc, char* argv[])
   // global variable and value (string) to overwrite the default.
   // Here, the default value of 33 for testInt1 is overwritten with 57
   // 
-  Bind("testInt1", "57");
+  DefaultValue::Bind("testInt1", "57");
 
   TestClass* testclass = new TestClass ();
-  NS_DEBUG_UNCOND("TestBool1 default value (" << testclass->m_testBool1 << ")");
-  NS_DEBUG_UNCOND("TestInt1 default value (" << testclass->m_testInt1 << ")");
-  NS_DEBUG_UNCOND("TestInt2 default value (" << testclass->m_testInt2 << ")");
+  NS_LOG_UNCOND("TestBool1 default value (" << testclass->m_testBool1 << ")");
+  NS_LOG_UNCOND("TestInt1 default value (" << testclass->m_testInt1 << ")");
+  NS_LOG_UNCOND("TestInt2 default value (" << testclass->m_testInt2 << ")");
   delete testclass;
 
   return 0;

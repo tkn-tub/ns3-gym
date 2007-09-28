@@ -4,20 +4,22 @@
 def build(bld):
     env = bld.env_of_name('default')
 
-    def create_ns_prog(name, source):
-        obj = bld.create_obj('cpp', 'program')
-        obj.target = name
-        obj.source = source
-        return obj
-
-    unit_tests = create_ns_prog('run-tests', 'run-tests.cc')
+    unit_tests = bld.create_ns3_program('run-tests')
     unit_tests.install_var  = 0 # do not install
     unit_tests.unit_test    = 1 # runs on 'waf check'
+    unit_tests.source = 'run-tests.cc'
     ## link unit test program with all ns3 modules
-    unit_tests.uselib_local = env['NS3_MODULES']
+    unit_tests.uselib_local = 'ns3'
     
-    obj = create_ns_prog('bench-simulator', 'bench-simulator.cc')
-    obj.uselib_local = "ns3-core ns3-common ns3-simulator"
+    obj = bld.create_ns3_program('bench-simulator', ['simulator'])
+    obj.source = 'bench-simulator.cc'
 
-    obj = create_ns_prog('replay-simulation', 'replay-simulation.cc')
-    obj.uselib_local = "ns3-core ns3-common ns3-simulator"
+    obj = bld.create_ns3_program('bench-packets', ['common'])
+    obj.source = 'bench-packets.cc'
+
+    obj = bld.create_ns3_program('replay-simulation', ['simulator'])
+    obj.source = 'replay-simulation.cc'
+
+    obj = bld.create_ns3_program('print-trace-sources',
+                                 ['internet-node', 'csma-cd', 'point-to-point'])
+    obj.source = 'print-trace-sources.cc'

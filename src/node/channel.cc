@@ -14,16 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Author: Craig Dowell <craigdo@ee.washingon.edu>
- *
- *	Thu Feb 15 14:50:46 PST 2007 craigdo: Created.
  */
 
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "channel.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("Channel");
+NS_LOG_COMPONENT_DEFINE ("Channel");
 
 namespace ns3 {
 
@@ -32,31 +28,35 @@ const InterfaceId Channel::iid = MakeInterfaceId ("Channel", Object::iid);
 Channel::Channel ()
   : m_name("Channel")
 {
+  NS_LOG_FUNCTION;
   SetInterfaceId (Channel::iid);
-  NS_DEBUG("Channel::Channel ()");
 }
 
 Channel::Channel (std::string name)
   : m_name(name)
 {
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << name << ")");
   SetInterfaceId (Channel::iid);
-  NS_DEBUG("Channel::Channel (" << name << ")");
 }
 
 Channel::~Channel ()
 {
-  NS_DEBUG("Channel::~Channel ()");
+  NS_LOG_FUNCTION;
 }
 
   void
 Channel::SetName(std::string name)
 {
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << name << ")");
   m_name = name;
 }
 
   std::string
 Channel::GetName(void)
 {
+  NS_LOG_FUNCTION;
   return m_name;
 }
 

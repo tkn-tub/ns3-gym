@@ -24,6 +24,7 @@
 #include "debug.h"
 #include "assert.h"
 #include "ns3/core-config.h"
+#include "fatal-error.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -53,6 +54,7 @@ DebugComponentEnableEnvVar (void)
     {
       return;
     }
+  bool allFound = true;
   std::string env = envVar;
   std::string::size_type cur = 0;
   std::string::size_type next = 0;
@@ -88,7 +90,7 @@ DebugComponentEnableEnvVar (void)
         }
       if (!found)
         {
-          std::cout << "No debug component named=\"" << tmp << "\"" << std::endl;
+          allFound = false;
         }
       if (next == std::string::npos)
         {
@@ -100,6 +102,11 @@ DebugComponentEnableEnvVar (void)
           break;
         }
     }
+  if (allFound)
+    {
+      g_firstDebug = true;
+    }
+  
 #endif
 }
 
@@ -122,7 +129,6 @@ DebugComponent::IsEnabled (void)
   if (g_firstDebug) 
     {
       DebugComponentEnableEnvVar ();
-      g_firstDebug = false;
     }
   return m_isEnabled;
 }

@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -44,7 +43,10 @@ GridTopology::LayoutOneRowFirst (Ptr<Object> object, uint32_t i)
   double x, y;
   x = m_xMin + m_deltaX * (i % m_n);
   y = m_yMin + m_deltaY * (i / m_n);
-  object->AddInterface (ComponentManager::Create (m_positionClassId, x, y));
+  Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_positionClassId,
+                                                                         MobilityModel::iid);
+  object->AddInterface (mobility);
+  mobility->Set (Position (x, y, 0.0));
 }
 
 void 
@@ -53,7 +55,10 @@ GridTopology::LayoutOneColumnFirst (Ptr<Object> object, uint32_t i)
   double x, y;
   x = m_xMin + m_deltaX * (i / m_n);
   y = m_yMin + m_deltaY * (i % m_n);
-  object->AddInterface (ComponentManager::Create (m_positionClassId, x, y));
+  Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_positionClassId, 
+                                                                         MobilityModel::iid);
+  object->AddInterface (mobility);
+  mobility->Set (Position (x, y, 0.0));
 }
 
 

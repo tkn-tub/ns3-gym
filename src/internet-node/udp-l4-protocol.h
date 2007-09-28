@@ -49,7 +49,6 @@ public:
   UdpL4Protocol (Ptr<Node> node);
   virtual ~UdpL4Protocol ();
 
-  virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
   /**
    * \return A smart Socket pointer to a UdpSocket, allocated by this instance
    * of the UDP protocol
@@ -86,7 +85,8 @@ public:
   // inherited from Ipv4L4Protocol
   virtual void Receive(Packet& p, 
                        Ipv4Address const &source,
-                       Ipv4Address const &destination);
+                       Ipv4Address const &destination,
+                       Ptr<Ipv4Interface> interface);
 protected:
   virtual void DoDispose (void);
 private:

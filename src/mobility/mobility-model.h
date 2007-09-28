@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006,2007 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -57,7 +56,7 @@ public:
    * \param position a reference to another mobility model
    * \returns the distance between the two objects. Unit is meters.
    */
-  double GetDistanceFrom (const MobilityModel &position) const;
+  double GetDistanceFrom (Ptr<const MobilityModel> position) const;
 protected:
   /**
    * Must be invoked by subclasses when the course of the

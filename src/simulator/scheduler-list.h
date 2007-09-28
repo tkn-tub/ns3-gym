@@ -37,13 +37,13 @@ class SchedulerList : public Scheduler {
   SchedulerList ();
   virtual ~SchedulerList ();
 
- private:
-  virtual void RealInsert (EventId id);
-  virtual bool RealIsEmpty (void) const;
-  virtual EventId RealPeekNext (void) const;
-  virtual void RealRemoveNext (void);
-  virtual bool RealRemove (EventId ev);
+  virtual void Insert (const EventId &id);
+  virtual bool IsEmpty (void) const;
+  virtual EventId PeekNext (void) const;
+  virtual EventId RemoveNext (void);
+  virtual bool Remove (const EventId &ev);
 
+ private:
   inline bool IsLower (Scheduler::EventKey const*a, Scheduler::EventKey const*b) const;
 
   typedef std::list<std::pair<EventImpl*, EventKey> > Events;

@@ -27,21 +27,18 @@
 
 namespace ns3 {
 
-class EventImpl;
-
 /**
  * \brief Maintain the event list
  *
  * This base class specifies the interface used to maintain the 
  * event list. If you want to provide a new event list scheduler, 
  * you need to create a subclass of this base class and implement 
- * all the private pure virtual methods defined here. Namely:
- *   - ns3::Scheduler::realInsert
- *   - ns3::Scheduler::realIsEmpty
- *   - ns3::Scheduler::realPeekNext
- *   - ns3::Scheduler::realPeekNextKey
- *   - ns3::Scheduler::realRemoveNext
- *   - ns3::Scheduler::realRemove
+ * all the pure virtual methods defined here. Namely:
+ *   - ns3::Scheduler::Insert
+ *   - ns3::Scheduler::IsEmpty
+ *   - ns3::Scheduler::PeekNext
+ *   - ns3::Scheduler::RemoveNext
+ *   - ns3::Scheduler::Remove
  *
  * If you need to provide a new event list scheduler without
  * editing the main simulator class, you need to also implement
@@ -60,41 +57,36 @@ class Scheduler {
 
   virtual ~Scheduler () = 0;
 
-  void Insert (EventId id);
-  bool IsEmpty (void) const;
-  EventId PeekNext (void) const;
-  void RemoveNext (void);
-  bool Remove (EventId);
-
-private:
   /**
-   * \param id the event id to store.
+   * \param id event to store in the event list
    *
+   * This method takes ownership of the event pointer.
    */
-  virtual void RealInsert (EventId id) = 0;
+  virtual void Insert (const EventId &id) = 0;
   /**
    * \returns true if the event list is empty and false otherwise.
    */
-  virtual bool RealIsEmpty (void) const = 0;
+  virtual bool IsEmpty (void) const = 0;
   /**
-   * \returns a the next earliest event.
+   * \returns a pointer to the next earliest event. The caller
+   *      takes ownership of the returned pointer.
    *
    * This method cannot be invoked if the list is empty.
    */
-  virtual EventId RealPeekNext (void) const = 0;
+  virtual EventId PeekNext (void) const = 0;
   /**
    * This method cannot be invoked if the list is empty.
    * Remove the next earliest event from the event list.
    */
-  virtual void RealRemoveNext (void) = 0;
+  virtual EventId RemoveNext (void) = 0;
   /**
    * \param id the id of the event to remove
-   * \returns true if the event was found and removed
+   * \returns true if the id was found and removed 
    *          successfully, false otherwise.
    *
    * This methods cannot be invoked if the list is empty.
    */
-  virtual bool RealRemove (EventId id) = 0;
+  virtual bool Remove (const EventId &id) = 0;
 };
 
 }; // namespace ns3

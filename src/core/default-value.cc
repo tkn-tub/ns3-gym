@@ -23,6 +23,52 @@
 
 namespace ns3 {
 
+namespace DefaultValue {
+
+enum BindStatus {
+  OK,
+  INVALID_VALUE,
+  NOT_FOUND
+};
+
+
+static 
+enum BindStatus
+BindSafe (std::string name, std::string value)
+{
+  for (DefaultValueList::Iterator i = DefaultValueList::Begin ();
+       i != DefaultValueList::End (); i++)
+    {
+      DefaultValueBase *cur = *i;
+      if (cur->GetName () == name)
+	{
+	  if (!cur->ParseValue (value))
+	    {
+	      return INVALID_VALUE;
+	    }
+	  return OK;
+	}
+    }
+  return NOT_FOUND;
+}
+
+void
+Bind (std::string name, std::string value)
+{
+  switch (BindSafe (name, value)) {
+  case INVALID_VALUE:
+    NS_FATAL_ERROR ("Invalid value: "<<name<<"="<<value);
+    break;
+  case NOT_FOUND:
+    NS_FATAL_ERROR ("No registered DefaultValue=\"" << name << "\"");
+    break;
+  case OK:
+    break;
+  }
+}
+
+}
+
 DefaultValueBase::DefaultValueBase (const std::string &name,
 				    const std::string &help)
   : m_name (name),
@@ -110,48 +156,6 @@ DefaultValueList::GetList (void)
 {
   static List list;
   return &list;
-}
-
-enum BindStatus {
-  OK,
-  INVALID_VALUE,
-  NOT_FOUND
-};
-
-
-static 
-enum BindStatus
-BindSafe (std::string name, std::string value)
-{
-  for (DefaultValueList::Iterator i = DefaultValueList::Begin ();
-       i != DefaultValueList::End (); i++)
-    {
-      DefaultValueBase *cur = *i;
-      if (cur->GetName () == name)
-	{
-	  if (!cur->ParseValue (value))
-	    {
-	      return INVALID_VALUE;
-	    }
-	  return OK;
-	}
-    }
-  return NOT_FOUND;
-}
-
-void
-Bind (std::string name, std::string value)
-{
-  switch (BindSafe (name, value)) {
-  case INVALID_VALUE:
-    NS_FATAL_ERROR ("Invalid value: "<<name<<"="<<value);
-    break;
-  case NOT_FOUND:
-    NS_FATAL_ERROR ("No registered DefaultValue=\"" << name << "\"");
-    break;
-  case OK:
-    break;
-  }
 }
 
 BooleanDefaultValue::BooleanDefaultValue (std::string name,
@@ -341,104 +345,53 @@ DefaultValueTest::DefaultValueTest ()
 bool 
 DefaultValueTest::RunTests (void)
 {
-  bool ok = true;
+  bool result = true;
 
   BooleanDefaultValue a ("bool-a", "help a", true);
-  if (!a.GetValue ())
-    {
-      ok = false;
-    }
-  Bind ("bool-a", "false");
-  if (a.GetValue ())
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT (a.GetValue ());
+  DefaultValue::Bind ("bool-a", "false");
+  NS_TEST_ASSERT (!a.GetValue ());
   BooleanDefaultValue b ("bool-b", "help b", false);
-  Bind ("bool-b", "true");
-  if (!b.GetValue ())
-    {
-      ok = false;
-    }
-  Bind ("bool-b", "0");
-  if (b.GetValue ())
-    {
-      ok = false;
-    }
-  Bind ("bool-b", "1");
-  if (!b.GetValue ())
-    {
-      ok = false;
-    }
-  Bind ("bool-b", "f");
-  if (b.GetValue ())
-    {
-      ok = false;
-    }
-  Bind ("bool-b", "t");
-  if (!b.GetValue ())
-    {
-      ok = false;
-    }
+  DefaultValue::Bind ("bool-b", "true");
+  NS_TEST_ASSERT (b.GetValue ());
+  DefaultValue::Bind ("bool-b", "0");
+  NS_TEST_ASSERT (!b.GetValue ());
+  DefaultValue::Bind ("bool-b", "1");
+  NS_TEST_ASSERT (b.GetValue ());
+  DefaultValue::Bind ("bool-b", "f");
+  NS_TEST_ASSERT (!b.GetValue ());
+  DefaultValue::Bind ("bool-b", "t");
+  NS_TEST_ASSERT (b.GetValue ());
 
-  Bind ("bool-b", "false");
-  if (b.GetValue ())
-    {
-      ok = false;
-    }
-  if (BindSafe ("bool-b", "tr") != INVALID_VALUE)
-    {
-      ok = false;
-    }
+  DefaultValue::Bind ("bool-b", "false");
+  NS_TEST_ASSERT (!b.GetValue ());
+  NS_TEST_ASSERT_EQUAL (DefaultValue::BindSafe ("bool-b", "tr"), DefaultValue::INVALID_VALUE)
 
-  IntegerDefaultValue<int> i ("test-i", "help-i", -1);
-  if (i.GetValue () != -1)
-    {
-      ok = false;
-    }  
-  Bind ("test-i", "-2");
-  if (i.GetValue () != -2)
-    {
-      ok = false;
-    }
-  Bind ("test-i", "+2");
-  if (i.GetValue () != 2)
-    {
-      ok = false;
-    }
-  if (i.GetType () != "int32_t(-2147483648:2147483647)")
-    {
-      ok = false;
-    }
-  IntegerDefaultValue<uint32_t> ui32 ("test-ui32", "help-ui32", 10);
-  if (ui32.GetType () != "uint32_t(0:4294967295)")
-    {
-      ok = false;
-    }
-  IntegerDefaultValue<char> c ("test-c", "help-c", 10);
-  if (c.GetValue () != 10)
-    {
-      ok = false;
-    }
-  Bind ("test-c", "257");  
+  NumericDefaultValue<int32_t> i ("test-i", "help-i", -1);
+  NS_TEST_ASSERT_EQUAL (i.GetValue (), -1);
+  DefaultValue::Bind ("test-i", "-2");
+  NS_TEST_ASSERT_EQUAL (i.GetValue (), -2);
+  DefaultValue::Bind ("test-i", "+2");
+  NS_TEST_ASSERT_EQUAL (i.GetValue (), 2);
+  NS_TEST_ASSERT_EQUAL (i.GetType (), "int32_t(-2147483648:2147483647)");
+  NumericDefaultValue<uint32_t> ui32 ("test-ui32", "help-ui32", 10);
+  NS_TEST_ASSERT_EQUAL (ui32.GetType (), "uint32_t(0:4294967295)");
+  NumericDefaultValue<int8_t> c ("test-c", "help-c", 10);
+  NS_TEST_ASSERT_EQUAL (c.GetValue (), 10);
+  DefaultValue::Bind ("test-c", "257");  
+  NumericDefaultValue<float> x ("test-x", "help-x", 10.0);
+  NumericDefaultValue<double> y ("test-y", "help-y", 10.0);
+
 
   EnumDefaultValue<enum MyEnum> e ("test-e", "help-e",
 				   MY_ENUM_C, "C",
 				   MY_ENUM_A, "A",
 				   MY_ENUM_B, "B",
 				   0, (void*)0);
-  if (e.GetValue () != MY_ENUM_C)
-    {
-      ok = false;
-    }
-  Bind ("test-e", "B");
-  if (e.GetValue () != MY_ENUM_B)
-    {
-      ok = false;
-    }
-  if (BindSafe ("test-e", "D") != INVALID_VALUE)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (e.GetValue (), MY_ENUM_C);
+  DefaultValue::Bind ("test-e", "B");
+  NS_TEST_ASSERT_EQUAL (e.GetValue (), MY_ENUM_B);
+  NS_TEST_ASSERT_EQUAL (DefaultValue::BindSafe ("test-e", "D"), DefaultValue::INVALID_VALUE);
 
   class MyEnumSubclass : public EnumDefaultValue<enum MyEnum>
   {
@@ -453,15 +406,9 @@ DefaultValueTest::RunTests (void)
       AddPossibleValue (MY_ENUM_D, "D");
     }
   } e1 ;
-  if (e1.GetValue () != MY_ENUM_B)
-    {
-      ok = false;
-    }
-  Bind ("test-e1", "D");
-  if (e1.GetValue () != MY_ENUM_D)
-    {
-      ok = false;
-    }
+  NS_TEST_ASSERT_EQUAL (e1.GetValue (), MY_ENUM_B);
+  DefaultValue::Bind ("test-e1", "D");
+  NS_TEST_ASSERT_EQUAL (e1.GetValue (), MY_ENUM_D);
 
   DefaultValueList::Remove ("test-e1");
   DefaultValueList::Remove ("test-e");
@@ -471,7 +418,7 @@ DefaultValueTest::RunTests (void)
   DefaultValueList::Remove ("test-c");
   DefaultValueList::Remove ("test-ui32");
   
-  return ok;
+  return result;
 }
 
 static DefaultValueTest g_default_value_tests;

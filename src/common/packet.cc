@@ -19,6 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "packet.h"
+#include "packet-printer.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
@@ -27,20 +28,20 @@ uint32_t Packet::m_globalUid = 0;
 
 Packet::Packet ()
   : m_buffer (),
-    m_uid (m_globalUid)
+    m_metadata (m_globalUid, 0)
 {
   m_globalUid++;
 }
 
 Packet::Packet (uint32_t size)
   : m_buffer (size),
-    m_uid (m_globalUid)
+    m_metadata (m_globalUid, size)
 {
   m_globalUid++;
 }
 Packet::Packet (uint8_t const*buffer, uint32_t size)
   : m_buffer (),
-    m_uid (m_globalUid)
+    m_metadata (m_globalUid, size)
 {
   m_globalUid++;
   m_buffer.AddAtStart (size);
@@ -48,17 +49,20 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
   i.Write (buffer, size);
 }
 
-Packet::Packet (Buffer buffer, Tags tags, uint32_t uid)
+Packet::Packet (Buffer buffer, Tags tags, PacketMetadata metadata)
   : m_buffer (buffer),
     m_tags (tags),
-    m_uid (uid)
+    m_metadata (metadata)
 {}
 
 Packet 
 Packet::CreateFragment (uint32_t start, uint32_t length) const
 {
   Buffer buffer = m_buffer.CreateFragment (start, length);
-  return Packet (buffer, m_tags, m_uid);
+  NS_ASSERT (m_buffer.GetSize () >= start + length);
+  uint32_t end = m_buffer.GetSize () - (start + length);
+  PacketMetadata metadata = m_metadata.CreateFragment (start, end);
+  return Packet (buffer, m_tags, metadata);
 }
 
 uint32_t 
@@ -70,30 +74,37 @@ Packet::GetSize (void) const
 void 
 Packet::AddAtEnd (Packet packet)
 {
-  Buffer src = packet.m_buffer;
-  m_buffer.AddAtEnd (src.GetSize ());
-  Buffer::Iterator destStart = m_buffer.End ();
+  Buffer src = packet.m_buffer.CreateFullCopy ();
+  Buffer dst = m_buffer.CreateFullCopy ();
+
+  dst.AddAtEnd (src.GetSize ());
+  Buffer::Iterator destStart = dst.End ();
   destStart.Prev (src.GetSize ());
   destStart.Write (src.Begin (), src.End ());
+  m_buffer = dst;
   /**
    * XXX: we might need to merge the tag list of the
    * other packet into the current packet.
    */
+  m_metadata.AddAtEnd (packet.m_metadata);
 }
 void
 Packet::AddPaddingAtEnd (uint32_t size)
 {
   m_buffer.AddAtEnd (size);
+  m_metadata.AddPaddingAtEnd (size);
 }
 void 
 Packet::RemoveAtEnd (uint32_t size)
 {
   m_buffer.RemoveAtEnd (size);
+  m_metadata.RemoveAtEnd (size);
 }
 void 
 Packet::RemoveAtStart (uint32_t size)
 {
   m_buffer.RemoveAtStart (size);
+  m_metadata.RemoveAtStart (size);
 }
 
 void 
@@ -111,14 +122,91 @@ Packet::PeekData (void) const
 uint32_t 
 Packet::GetUid (void) const
 {
-  return m_uid;
+  return m_metadata.GetUid ();
+}
+
+void 
+Packet::PrintTags (std::ostream &os) const
+{
+  m_tags.Print (os, " ");
 }
 
 void 
 Packet::Print (std::ostream &os) const
-{}
+{
+  m_metadata.Print (os, m_buffer, PacketPrinter ());
+}
 
-}; // namespace ns3
+void 
+Packet::Print (std::ostream &os, const PacketPrinter &printer) const
+{
+  m_metadata.Print (os, m_buffer, printer);
+}
+
+void
+Packet::EnableMetadata (void)
+{
+  PacketMetadata::Enable ();
+}
+
+Buffer 
+Packet::Serialize (void) const
+{
+  Buffer buffer;
+  uint32_t reserve;
+
+  // write metadata
+  reserve = m_metadata.GetSerializedSize ();
+  buffer.AddAtStart (reserve);
+  m_metadata.Serialize (buffer.Begin (), reserve);
+
+  // write tags
+  reserve = m_tags.GetSerializedSize ();
+  buffer.AddAtStart (reserve);
+  m_tags.Serialize (buffer.Begin (), reserve);
+  
+  // aggregate byte buffer, metadata, and tags
+  Buffer tmp = m_buffer.CreateFullCopy ();
+  buffer.AddAtStart (tmp.GetSize ());
+  buffer.Begin ().Write (tmp.Begin (), tmp.End ());
+  
+  // write byte buffer size.
+  buffer.AddAtStart (4);
+  buffer.Begin ().WriteU32 (m_buffer.GetSize ());
+
+  return buffer;
+}
+void 
+Packet::Deserialize (Buffer buffer)
+{
+  Buffer buf = buffer;
+  // read size
+  uint32_t packetSize = buf.Begin ().ReadU32 ();
+  buf.RemoveAtStart (4);
+
+  // read buffer.
+  buf.RemoveAtEnd (buf.GetSize () - packetSize);
+  m_buffer = buf;
+
+  // read tags
+  buffer.RemoveAtStart (4 + packetSize);
+  uint32_t tagsDeserialized = m_tags.Deserialize (buffer.Begin ());
+  buffer.RemoveAtStart (tagsDeserialized);
+
+  // read metadata
+  uint32_t metadataDeserialized = 
+    m_metadata.Deserialize (buffer.Begin ());
+  buffer.RemoveAtStart (metadataDeserialized);
+}
+
+std::ostream& operator<< (std::ostream& os, const Packet &packet)
+{
+  packet.Print (os);
+  return os;
+}
+
+
+} // namespace ns3
 
 
 
@@ -161,7 +249,7 @@ PacketTest::RunTests (void)
                                  packet.GetSize ());
   if (msg != "hello world")
     {
-      Failure () << "expected size 'hello world', got " << msg << std::endl;
+      Failure () << "expected 'hello world', got '" << msg << "'" << std::endl;
       ok = false;
     }
 

@@ -18,97 +18,181 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns3/wall-clock-ms.h"
+#include "ns3/system-wall-clock-ms.h"
 #include "ns3/packet.h"
-#include "ns3/chunk-constant-data.h"
-#include "ns3/chunk-udp.h"
-#include "ns3/chunk-ipv4.h"
+#include "ns3/packet-metadata.h"
 #include <iostream>
+#include <sstream>
 
 using namespace ns3;
+
+template <int N>
+class BenchHeader : public Header
+{
+public:
+  BenchHeader ();
+  bool IsOk (void) const;
+
+  static uint32_t GetUid (void);
+
+  static std::string GetName (void);
+  void Print (std::ostream &os) const;
+  uint32_t GetSerializedSize (void) const;
+  void Serialize (Buffer::Iterator start) const;
+  uint32_t Deserialize (Buffer::Iterator start);
+private:
+  bool m_ok;
+};
+
+template <int N>
+BenchHeader<N>::BenchHeader ()
+  : m_ok (false)
+{}
+
+template <int N>
+bool 
+BenchHeader<N>::IsOk (void) const
+{
+  return m_ok;
+}
+
+template <int N>
+uint32_t 
+BenchHeader<N>::GetUid (void)
+{
+  static uint32_t uid = AllocateUid<BenchHeader<N> > (GetName ());
+  return uid;
+}
+
+template <int N>
+std::string 
+BenchHeader<N>::GetName (void)
+{
+  std::ostringstream oss;
+  oss << "BenchHeader" << N;
+  return oss.str ();
+}
+
+template <int N>
+void 
+BenchHeader<N>::Print (std::ostream &os) const
+{
+  NS_ASSERT (false);
+}
+template <int N>
+uint32_t 
+BenchHeader<N>::GetSerializedSize (void) const
+{
+  return N;
+}
+template <int N>
+void 
+BenchHeader<N>::Serialize (Buffer::Iterator start) const
+{
+  start.WriteU8 (N, N);
+}
+template <int N>
+uint32_t
+BenchHeader<N>::Deserialize (Buffer::Iterator start)
+{
+  m_ok = true;
+  for (int i = 0; i < N; i++)
+    {
+      if (start.ReadU8 () != N)
+        {
+          m_ok = false;
+        }
+    }
+  return N;
+}
+
+
 
 static void 
 benchPtrA (uint32_t n)
 {
-  ChunkConstantData data = ChunkConstantData (2000, 1);
-  ChunkUdp udp;
-  ChunkIpv4 ipv4;
+  BenchHeader<25> ipv4;
+  BenchHeader<8> udp;
 
   for (uint32_t i = 0; i < n; i++) {
-      Packet p;
-      p.add (&data);
-      p.add (&udp);
-      p.add (&ipv4);
+      Packet p (2000);
+      p.AddHeader (udp);
+      p.AddHeader (ipv4);
       Packet o = p;
-      o.peek (&ipv4);
-      o.remove (&ipv4);
-      o.peek (&udp);
-      o.remove (&udp);
-      o.peek (&data);
-      o.remove (&data);
+      o.RemoveHeader (ipv4);
+      o.RemoveHeader (udp);
   }
 }
 
 static void 
 benchPtrB (uint32_t n)
 {
-  ChunkConstantData data = ChunkConstantData (2000, 1);
-  ChunkUdp udp;
-  ChunkIpv4 ipv4;
+  BenchHeader<25> ipv4;
+  BenchHeader<8> udp;
 
   for (uint32_t i = 0; i < n; i++) {
-      Packet p;
-      p.add (&data);
-      p.add (&udp);
-      p.add (&ipv4);
+      Packet p (2000);
+      p.AddHeader (udp);
+      p.AddHeader (ipv4);
   }
 }
 
 static void
 ptrC2 (Packet p)
 {
-  ChunkConstantData data = ChunkConstantData (2000, 1);
-  ChunkUdp udp;
+  BenchHeader<8> udp;
 
-  p.peek (&udp);
-  p.remove (&udp);
-  p.peek (&data);
-  p.remove (&data);
+  p.RemoveHeader (udp);
 }
 
 static void 
 ptrC1 (Packet p)
 {
-  ChunkIpv4 ipv4;
-  p.peek (&ipv4);
-  p.remove (&ipv4);
+  BenchHeader<25> ipv4;
+  p.RemoveHeader (ipv4);
   ptrC2 (p);
 }
 
 static void
 benchPtrC (uint32_t n)
 {
-  ChunkConstantData data = ChunkConstantData (2000, 1);
-  ChunkUdp udp;
-  ChunkIpv4 ipv4;
+  BenchHeader<25> ipv4;
+  BenchHeader<8> udp;
 
   for (uint32_t i = 0; i < n; i++) {
-      Packet p;
-      p.add (&data);
-      p.add (&udp);
-      p.add (&ipv4);
+      Packet p (2000);
+      p.AddHeader (udp);
+      p.AddHeader (ipv4);
       ptrC1 (p);
   }
 }
+
+#if 0
+static void
+benchPrint (uint32_t n)
+{
+  PacketPrinter printer;
+  BenchHeader<25> ipv4;
+  BenchHeader<8> udp;
+  Packet p (2000);
+  p.AddHeader (udp);
+  p.AddHeader (ipv4);
+
+  for (uint32_t i = 0; i < n; i++) 
+    {
+      p.Print (std::cerr, printer);
+    }  
+}
+#endif
 
 
 static void
 runBench (void (*bench) (uint32_t), uint32_t n, char const *name)
 {
-  WallClockMs time;
-  time.start ();
+  SystemWallClockMs time;
+  time.Start ();
   (*bench) (n);
-  unsigned long long deltaMs = time.end ();
+  unsigned long long deltaMs = time.End ();
   double ps = n;
   ps *= 1000;
   ps /= deltaMs;
@@ -119,17 +203,31 @@ int main (int argc, char *argv[])
 {
   uint32_t n = 0;
   while (argc > 0) {
-      if (strncmp ("--n=", argv[0],strlen ("--n=")) == 0) {
+      if (strncmp ("--n=", argv[0],strlen ("--n=")) == 0) 
+        {
           char const *nAscii = argv[0] + strlen ("--n=");
           n = atoi (nAscii);
-      }
+        }
       argc--;
       argv++;
   }
 
+
   runBench (&benchPtrA, n, "a");
   runBench (&benchPtrB, n, "b");
   runBench (&benchPtrC, n, "c");
+
+  Packet::EnableMetadata ();
+  //runBench (&benchPrint, n, "print");
+  PacketMetadata::SetOptOne (false);
+  runBench (&benchPtrA, n, "meta-a");
+  runBench (&benchPtrB, n, "meta-b");
+  runBench (&benchPtrC, n, "meta-c");
+  PacketMetadata::SetOptOne (true);
+  runBench (&benchPtrA, n, "meta-a-opt");
+  runBench (&benchPtrB, n, "meta-b-opt");
+  runBench (&benchPtrC, n, "meta-c-opt");
+
 
   return 0;
 }

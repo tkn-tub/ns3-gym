@@ -26,7 +26,7 @@
 #include "ns3/nstime.h"
 #include "ns3/net-device.h"
 #include "ns3/ipv4-address.h"
-#include "ns3/mac-address.h"
+#include "ns3/address.h"
 #include "ns3/ptr.h"
 #include "sgi-hashmap.h"
 
@@ -48,7 +48,7 @@ public:
    * \param device The hardware NetDevice associated with this ARP chache
    * \param interface the Ipv4Interface associated with this ARP chache
    */
-  ArpCache (Ptr<NetDevice> device, Ipv4Interface *interface);
+  ArpCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface);
   ~ArpCache ();
   /**
    * \return The NetDevice that this ARP cache is associated with
@@ -57,7 +57,7 @@ public:
   /**
    * \return the Ipv4Interface that this ARP cache is associated with
    */
-  Ipv4Interface *GetInterface (void) const;
+  Ptr<Ipv4Interface> GetInterface (void) const;
   
   void SetAliveTimeout (Time aliveTimeout);
   void SetDeadTimeout (Time deadTimeout);
@@ -101,7 +101,7 @@ public:
      * \param macAddress
      * \return 
      */
-    Packet MarkAlive (MacAddress macAddress);
+    Packet MarkAlive (Address macAddress);
     /**
      * \param waiting
      */
@@ -127,7 +127,7 @@ public:
     /**
      * \return The MacAddress of this entry
      */
-    MacAddress GetMacAddress (void);
+    Address GetMacAddress (void);
     /**
      * \return True if this entry has timedout; false otherwise.
      */
@@ -143,7 +143,7 @@ public:
     ArpCache *m_arp;
     ArpCacheEntryState_e m_state;
     Time m_lastSeen;
-    MacAddress m_macAddress;
+    Address m_macAddress;
     Packet m_waiting;
   };
 
@@ -152,7 +152,7 @@ private:
   typedef sgi::hash_map<Ipv4Address, ArpCache::Entry *, Ipv4AddressHash>::iterator CacheI;
 
   Ptr<NetDevice> m_device;
-  Ipv4Interface *m_interface;
+  Ptr<Ipv4Interface> m_interface;
   Time m_aliveTimeout;
   Time m_deadTimeout;
   Time m_waitReplyTimeout;

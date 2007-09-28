@@ -737,6 +737,51 @@ private:
   double m_sigma;
 };
 
+/**
+ * \brief Triangularly Distributed random var
+ * \ingroup randomvariable
+ * 
+ * This distribution is a triangular distribution.  The probablility density
+ * is in the shape of a triangle.
+ */
+class TriangularVariable : public RandomVariable {
+public:
+  /**
+   * Creates a triangle distribution random number generator in the
+   * range [0.0 .. 1.0), with mean of 0.5
+   */
+  TriangularVariable();
+
+  /**
+   * Creates a triangle distribution random number generator with the specified
+   * range
+   * \param s Low end of the range
+   * \param l High end of the range
+   * \param mean mean of the distribution
+   */
+  TriangularVariable(double s, double l, double mean);
+
+  TriangularVariable(const TriangularVariable& c);
+  
+  /**
+   * \return A value from this distribution
+   */
+  virtual double GetValue();
+  virtual RandomVariable*  Copy() const;
+public:
+  /**
+   * \param s Low end of the range
+   * \param l High end of the range
+   * \param mean mean of the distribution
+   * \return A triangularly distributed random number between s and l
+   */
+  static double GetSingleValue(double s, double l, double mean);
+private:
+  double m_min;
+  double m_max;
+  double m_mode;  //easier to work with the mode internally instead of the mean
+                  //they are related by the simple: mean = (min+max+mode)/3
+};
 
 }//namespace ns3
 #endif

@@ -1,81 +1,176 @@
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2006 Georgia Tech Research Corporation
+ *               2007 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors: George F. Riley<riley@ece.gatech.edu>
+ *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+
+#include "ns3/log.h"
+#include "ns3/packet.h"
 #include "socket.h"
+
+NS_LOG_COMPONENT_DEFINE ("Socket");
 
 namespace ns3 {
 
 Socket::~Socket ()
-{}
-
-void 
-Socket::Close(Callback<void, Ptr<Socket> > closeCompleted)
 {
-  DoClose (closeCompleted);
+  NS_LOG_FUNCTION;
 }
 
 void 
-Socket::Connect(const Ipv4Address & address,
-               uint16_t portNumber,
-               Callback<void, Ptr<Socket> > connectionSucceeded,
-               Callback<void, Ptr<Socket> > connectionFailed,
-               Callback<void, Ptr<Socket> > halfClose)
+Socket::SetCloseCallback (Callback<void,Ptr<Socket> > closeCompleted)
 {
-  DoConnect (address, portNumber, connectionSucceeded, connectionFailed, halfClose);
-}
-int
-Socket::Accept(Callback<bool, Ptr<Socket>, const Ipv4Address&, uint16_t> connectionRequest,
-	       Callback<void, Ptr<Socket>, const Ipv4Address&, uint16_t> newConnectionCreated,
-	       Callback<void, Ptr<Socket> > closeRequested)
-{
-  return DoAccept (connectionRequest, newConnectionCreated, closeRequested);
-}
-int 
-Socket::Send (const uint8_t* buffer,
-	      uint32_t size,
-	      Callback<void, Ptr<Socket>, uint32_t> dataSent)
-{
-  return DoSend (buffer, size, dataSent);
-}
-int 
-Socket::SendTo(const Ipv4Address &address,
-	       uint16_t port,
-	       const uint8_t *buffer,
-	       uint32_t size,
-	       Callback<void, Ptr<Socket>, uint32_t> dataSent)
-{
-  return DoSendTo (address, port, buffer, size, dataSent);
-}
-void 
-Socket::Recv(Callback<void, Ptr<Socket>, const uint8_t*, uint32_t,const Ipv4Address&, uint16_t> callback)
-{
-  DoRecv (callback);
-}
-void 
-Socket::RecvDummy(Callback<void, Ptr<Socket>, uint32_t,const Ipv4Address&, uint16_t> callback)
-{
-  DoRecvDummy (callback);
+  NS_LOG_FUNCTION;
+  m_closeCompleted = closeCompleted;
 }
 
+void 
+Socket::SetConnectCallback (
+  Callback<void, Ptr<Socket> > connectionSucceeded,
+  Callback<void, Ptr<Socket> > connectionFailed,
+  Callback<void, Ptr<Socket> > halfClose)
+{
+  NS_LOG_FUNCTION;
+  m_connectionSucceeded = connectionSucceeded;
+  m_connectionFailed = connectionFailed;
+  m_halfClose = halfClose;
+}
+
+void 
+Socket::SetAcceptCallback (
+  Callback<bool, Ptr<Socket>, const Address &> connectionRequest,
+  Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
+  Callback<void, Ptr<Socket> > closeRequested)
+{
+  NS_LOG_FUNCTION;
+  m_connectionRequest = connectionRequest;
+  m_newConnectionCreated = newConnectionCreated;
+  m_closeRequested = closeRequested;
+}
+
+void 
+Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
+{
+  NS_LOG_FUNCTION;
+  m_dataSent = dataSent;
+}
+
+void 
+Socket::SetRecvCallback (Callback<void, Ptr<Socket>, const Packet &,const Address&> receivedData)
+{
+  NS_LOG_FUNCTION;
+  m_receivedData = receivedData;
+}
+
+void 
+Socket::NotifyCloseCompleted (void)
+{
+  NS_LOG_FUNCTION;
+  if (!m_closeCompleted.IsNull ())
+    {
+      m_closeCompleted (this);
+    }
+}
+
+void 
+Socket::NotifyConnectionSucceeded (void)
+{
+  NS_LOG_FUNCTION;
+  if (!m_connectionSucceeded.IsNull ())
+    {
+      m_connectionSucceeded (this);
+    }
+}
+
+void 
+Socket::NotifyConnectionFailed (void)
+{
+  NS_LOG_FUNCTION;
+  if (!m_connectionFailed.IsNull ())
+    {
+      m_connectionFailed (this);
+    }
+}
+
+void 
+Socket::NotifyHalfClose (void)
+{
+  NS_LOG_FUNCTION;
+  if (!m_halfClose.IsNull ())
+    {
+      m_halfClose (this);
+    }
+}
 
 bool 
-Socket::RefuseAllConnections (Ptr<Socket> socket, const Ipv4Address& address, uint16_t port)
+Socket::NotifyConnectionRequest (const Address &from)
 {
-  return false;
+  NS_LOG_FUNCTION;
+  if (!m_connectionRequest.IsNull ())
+    {
+      return m_connectionRequest (this, from);
+    }
+  else
+    {
+      // refuse all incomming connections by default.
+      return false;
+    }
 }
-void 
-Socket::DummyCallbackVoidSocket (Ptr<Socket> socket)
-{}
-void
-Socket::DummyCallbackVoidSocketUi32 (Ptr<Socket> socket, uint32_t)
-{}
-void 
-Socket::DummyCallbackVoidSocketUi32Ipv4AddressUi16 (Ptr<Socket> socket, uint32_t, const Ipv4Address &, uint16_t)
-{}
-void 
-Socket::DummyCallbackVoidSocketBufferUi32Ipv4AddressUi16 (Ptr<Socket> socket, const uint8_t *, uint32_t,
-							  const Ipv4Address &, uint16_t)
-{}
-void 
-Socket::DummyCallbackVoidSocketIpv4AddressUi16 (Ptr<Socket> socket, const Ipv4Address &, uint16_t)
-{}
 
+void 
+Socket::NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from)
+{
+  NS_LOG_FUNCTION;
+  if (!m_newConnectionCreated.IsNull ())
+    {
+      m_newConnectionCreated (socket, from);
+    }
+}
+
+void 
+Socket::NotifyCloseRequested (void)
+{
+  NS_LOG_FUNCTION;
+  if (!m_closeRequested.IsNull ())
+    {
+      m_closeRequested (this);
+    }
+}
+
+void 
+Socket::NotifyDataSent (uint32_t size)
+{
+  NS_LOG_FUNCTION;
+  if (!m_dataSent.IsNull ())
+    {
+      m_dataSent (this, size);
+    }
+}
+
+void 
+Socket::NotifyDataReceived (const Packet &p, const Address &from)
+{
+  NS_LOG_FUNCTION;
+  if (!m_receivedData.IsNull ())
+    {
+      m_receivedData (this, p, from);
+    }
+}
 
 }//namespace ns3

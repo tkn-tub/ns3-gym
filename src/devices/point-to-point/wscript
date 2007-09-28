@@ -1,0 +1,17 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+
+def build(bld):
+    module = bld.create_ns3_module('point-to-point', ['node'])
+    module.source = [
+        'point-to-point-net-device.cc',
+        'point-to-point-channel.cc',
+        'point-to-point-topology.cc',
+        ]
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'point-to-point-net-device.h',
+        'point-to-point-channel.h',
+        'point-to-point-topology.h',
+        ]
+

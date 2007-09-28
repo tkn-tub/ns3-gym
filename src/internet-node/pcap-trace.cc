@@ -22,7 +22,7 @@
 
 #include <sstream>
 
-#include "ns3/trace-root.h"
+#include "ns3/node-list.h"
 #include "ns3/trace-context.h"
 #include "ns3/callback.h"
 #include "ns3/pcap-writer.h"
@@ -50,8 +50,8 @@ PcapTrace::~PcapTrace ()
 void 
 PcapTrace::TraceAllIp (void)
 {
-  TraceRoot::Connect ("/nodes/*/ipv4/(tx|rx)",
-		      MakeCallback (&PcapTrace::LogIp, this));
+  NodeList::Connect ("/nodes/*/ipv4/(tx|rx)",
+                     MakeCallback (&PcapTrace::LogIp, this));
 }
 
 PcapWriter *
@@ -82,10 +82,9 @@ PcapTrace::GetStream (uint32_t nodeId, uint32_t interfaceId)
 void 
 PcapTrace::LogIp (TraceContext const &context, Packet const &p, uint32_t interfaceIndex)
 {
-  NodeList::NodeIndex nodeIndex;
-  context.Get (nodeIndex);
-  uint32_t nodeId = NodeList::GetNode (nodeIndex)->GetId ();
-  PcapWriter *writer = GetStream (nodeId, interfaceIndex);
+  NodeListIndex nodeIndex;
+  context.GetElement (nodeIndex);
+  PcapWriter *writer = GetStream (nodeIndex.Get (), interfaceIndex);
   writer->WritePacket (p);
 }
 

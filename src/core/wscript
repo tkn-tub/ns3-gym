@@ -3,8 +3,6 @@ import sys
 
 
 def configure(conf):
-    conf.env.append_value('NS3_MODULES', 'ns3-core')
-
     e = conf.create_header_configurator()
     e.mandatory = False
     e.name = 'stdlib.h'
@@ -17,18 +15,23 @@ def configure(conf):
     e.define = 'HAVE_GETENV'
     e.run()
 
+    e = conf.create_header_configurator()
+    e.mandatory = False
+    e.name = 'signal.h'
+    e.define = 'HAVE_SIGNAL_H'
+    e.run()
+
     conf.write_config_header('ns3/core-config.h')
 
 
 
 def build(bld):
-    core = bld.create_obj('cpp', 'shlib')
-    core.name = 'ns3-core'
-    core.target = core.name
+    core = bld.create_ns3_module('core')
     core.source = [
         'callback-test.cc',
         'debug.cc',
-        'assert.cc',
+        'log.cc',
+        'breakpoint.cc',
         'ptr.cc',
         'object.cc',
         'test.cc',
@@ -39,6 +42,15 @@ def build(bld):
         'command-line.cc',
         'type-name.cc',
         'component-manager.cc',
+        'random-variable-default-value.cc',
+        'variable-tracer-test.cc',
+        'trace-context.cc',
+        'trace-context-element.cc',
+        'trace-resolver.cc',
+        'callback-trace-source.cc',
+        'composite-trace-resolver.cc',
+        'trace-doc.cc',
+        'trace-source.cc',
         ]
 
     if sys.platform == 'win32':
@@ -58,7 +70,9 @@ def build(bld):
         'ptr.h',
         'object.h',
         'debug.h',
+        'log.h',
         'assert.h',
+        'breakpoint.h',
         'fatal-error.h',
         'test.h',
         'random-variable.h',
@@ -67,5 +81,18 @@ def build(bld):
         'command-line.h',
         'type-name.h',
         'component-manager.h',
+        'type-traits.h',
+        'random-variable-default-value.h',
+        'trace-source.h',
+        'uv-trace-source.h',
+        'sv-trace-source.h',
+        'fv-trace-source.h',
+        'callback-trace-source.h',
+        'trace-context.h',
+        'trace-context-element.h',
+        'trace-resolver.h',
+        'composite-trace-resolver.h',
+        'array-trace-resolver.h',
+        'trace-doc.h',
         ]
 

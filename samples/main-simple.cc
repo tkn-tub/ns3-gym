@@ -4,7 +4,9 @@
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/socket.h"
+#include "ns3/inet-socket-address.h"
 #include "ns3/nstime.h"
+#include "ns3/packet.h"
 
 using namespace ns3;
 
@@ -12,7 +14,7 @@ static void
 GenerateTraffic (Ptr<Socket> socket, uint32_t size)
 {
   std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
-  socket->Send (0, size);
+  socket->Send (Packet (size));
   if (size > 0)
     {
       Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
@@ -24,15 +26,15 @@ GenerateTraffic (Ptr<Socket> socket, uint32_t size)
 }
 
 static void
-SocketPrinter (Ptr<Socket> socket, uint32_t size, const Ipv4Address &from, uint16_t fromPort)
+SocketPrinter (Ptr<Socket> socket, const Packet &packet, const Address &from)
 {
-  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << size << std::endl;
+  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << packet.GetSize () << std::endl;
 }
 
 static void
 PrintTraffic (Ptr<Socket> socket)
 {
-  socket->RecvDummy (MakeCallback (&SocketPrinter));
+  socket->SetRecvCallback (MakeCallback (&SocketPrinter));
 }
 
 void
@@ -44,10 +46,12 @@ RunSimulation (void)
   Ptr<SocketFactory> socketFactory = a->QueryInterface<SocketFactory> (iid);
 
   Ptr<Socket> sink = socketFactory->CreateSocket ();
-  sink->Bind (80);
+  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);
+  sink->Bind (local);
 
   Ptr<Socket> source = socketFactory->CreateSocket ();
-  source->Connect (Ipv4Address::GetLoopback (), 80);
+  InetSocketAddress remote = InetSocketAddress (Ipv4Address::GetLoopback (), 80);
+  source->Connect (remote);
 
   GenerateTraffic (source, 500);
   PrintTraffic (sink);

@@ -32,6 +32,35 @@ namespace ns3 {
 
 const InterfaceId Ipv4L4Demux::iid = MakeInterfaceId ("Ipv4L4Demux", Object::iid);
 
+Ipv4L4ProtocolTraceContextElement::Ipv4L4ProtocolTraceContextElement ()
+  : m_protocolNumber (0)
+{}
+Ipv4L4ProtocolTraceContextElement::Ipv4L4ProtocolTraceContextElement (int protocolNumber)
+  : m_protocolNumber (protocolNumber)
+{}
+int 
+Ipv4L4ProtocolTraceContextElement::Get (void) const
+{
+  return m_protocolNumber;
+}
+void 
+Ipv4L4ProtocolTraceContextElement::Print (std::ostream &os) const
+{
+  os << "ipv4-protocol=0x" << std::hex << m_protocolNumber << std::dec;
+}
+uint16_t 
+Ipv4L4ProtocolTraceContextElement::GetUid (void)
+{
+  static uint16_t uid = AllocateUid<Ipv4L4ProtocolTraceContextElement> ("Ipv4L4ProtocolTraceContextElement");
+  return uid;
+}
+std::string 
+Ipv4L4ProtocolTraceContextElement::GetTypeName (void) const
+{
+  return "ns3::Ipv4L4ProtocolTraceContextElement";
+}
+
+
 Ipv4L4Demux::Ipv4L4Demux (Ptr<Node> node)
   : m_node (node)
 {
@@ -54,21 +83,19 @@ Ipv4L4Demux::DoDispose (void)
   Object::DoDispose ();
 }
 
-TraceResolver *
-Ipv4L4Demux::CreateTraceResolver (TraceContext const &context)
+Ptr<TraceResolver>
+Ipv4L4Demux::GetTraceResolver (void) const
 {
-  CompositeTraceResolver *resolver = new CompositeTraceResolver (context);
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   for (L4List_t::const_iterator i = m_protocols.begin(); i != m_protocols.end(); ++i)
     {
       Ptr<Ipv4L4Protocol> protocol = *i;
-      std::string protValue;
-      std::ostringstream oss (protValue);
-      oss << (*i)->GetProtocolNumber ();
-      Ipv4L4ProtocolTraceType protocolNumber = (*i)->GetProtocolNumber ();
-      resolver->Add (protValue,
-                     MakeCallback (&Ipv4L4Protocol::CreateTraceResolver, PeekPointer (protocol)),
-                     protocolNumber);
+      std::ostringstream oss;
+      oss << (unsigned int) (*i)->GetProtocolNumber ();
+      Ipv4L4ProtocolTraceContextElement protocolNumber = (*i)->GetProtocolNumber ();
+      resolver->AddComposite (oss.str (), protocol, protocolNumber);
     }
+  resolver->SetParentResolver (Object::GetTraceResolver ());
   return resolver;
 }
 void

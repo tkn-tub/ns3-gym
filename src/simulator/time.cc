@@ -191,7 +191,28 @@ TimeUnit<1>::GetTimeStep (void) const
 std::ostream& 
 operator<< (std::ostream& os, Time const& time)
 {
-  os << time.GetTimeStep () << "ts";
+  std::string unit;
+  switch (TimeStepPrecision::Get ()) {
+  case TimeStepPrecision::S:
+    unit = "s";
+    break;
+  case TimeStepPrecision::MS:
+    unit = "ms";
+    break;
+  case TimeStepPrecision::US:
+    unit = "us";
+    break;
+  case TimeStepPrecision::NS:
+    unit = "ns";
+    break;
+  case TimeStepPrecision::PS:
+    unit = "ps";
+    break;
+  case TimeStepPrecision::FS:
+    unit = "fs";
+    break;
+  }
+  os << time.GetTimeStep () << unit;
   return os;
 }
 
@@ -393,12 +414,12 @@ bool TimeTests::RunTests (void)
 
   TimeStepPrecision::Set (TimeStepPrecision::NS);
 
-  Bind ("TimeStepPrecision", "S");
-  Bind ("TimeStepPrecision", "MS");
-  Bind ("TimeStepPrecision", "US");
-  Bind ("TimeStepPrecision", "NS");
-  Bind ("TimeStepPrecision", "PS");
-  Bind ("TimeStepPrecision", "FS");
+  DefaultValue::Bind ("TimeStepPrecision", "S");
+  DefaultValue::Bind ("TimeStepPrecision", "MS");
+  DefaultValue::Bind ("TimeStepPrecision", "US");
+  DefaultValue::Bind ("TimeStepPrecision", "NS");
+  DefaultValue::Bind ("TimeStepPrecision", "PS");
+  DefaultValue::Bind ("TimeStepPrecision", "FS");
 
   return ok;
 }

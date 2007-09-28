@@ -25,10 +25,12 @@
 #include <list>
 #include <stdint.h>
 #include "ns3/callback-trace-source.h"
-#include "ns3/array-trace-resolver.h"
+#include "ns3/trace-context-element.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
-#include "l3-protocol.h"
+#include "ns3/ipv4.h"
+#include "ipv4-header.h"
+#include "ipv4-static-routing.h"
 
 namespace ns3 {
 
@@ -42,31 +44,66 @@ class Node;
 class TraceResolver;
 class TraceContext;
 
-
-class Ipv4L3Protocol : public L3Protocol 
+/**
+ * \brief hold in a TraceContext the type of trace source used by this Ipv4L3Protocol
+ */
+class Ipv4L3ProtocolTraceContextElement : public TraceContextElement
 {
 public:
-  static const uint16_t PROT_NUMBER;
-
-  enum TraceType {
+  enum Type {
     TX,
     RX,
     DROP,
-    INTERFACES,
   };
-  typedef ArrayTraceResolver<Ipv4Interface>::Index InterfaceIndex;
+  Ipv4L3ProtocolTraceContextElement ();
+  Ipv4L3ProtocolTraceContextElement (enum Type type);
+  /**
+   * \returns true if this is a tx event, false otherwise.
+   */
+  bool IsTx (void) const;
+  /**
+   * \returns true if this is a rx event, false otherwise.
+   */
+  bool IsRx (void) const;
+  /**
+   * \returns true if this is a drop event, false otherwise.
+   */
+  bool IsDrop (void) const;
+  void Print (std::ostream &os) const;
+  static uint16_t GetUid (void);
+  std::string GetTypeName (void) const;
+private:
+  enum Type m_type;
+};
+
+/**
+ * \brief hold in a TraceContext the index of an Ipv4Interface within the ipv4 stack of a Node
+ */
+class Ipv4L3ProtocolInterfaceIndex : public TraceContextElement
+{
+public:
+  Ipv4L3ProtocolInterfaceIndex ();
+  Ipv4L3ProtocolInterfaceIndex (uint32_t index);
+  /**
+   * \returns the index of the Ipv4Interface within a Node.
+   */
+  uint32_t Get (void) const;
+  void Print (std::ostream &os) const;
+  static uint16_t GetUid (void);
+  std::string GetTypeName (void) const;
+private:
+  uint32_t m_index;
+};
+
+
+class Ipv4L3Protocol : public Object
+{
+public:
+  static const InterfaceId iid;
+  static const uint16_t PROT_NUMBER;
 
   Ipv4L3Protocol(Ptr<Node> node);
   virtual ~Ipv4L3Protocol ();
-
-  /**
-   * \param context the trace context to use to construct the
-   *        TraceResolver to return
-   * \returns a TraceResolver which can resolve all traces
-   *          performed in this object. The caller must
-   *          delete the returned object.
-   */
-  virtual TraceResolver *CreateTraceResolver (TraceContext const &context);
 
   /**
    * \param ttl default ttl to use
@@ -83,7 +120,7 @@ public:
    * Try to find an Ipv4Interface whose NetDevice is equal to
    * the input NetDevice.
    */
-  Ipv4Interface *FindInterfaceForDevice (Ptr<const NetDevice> device);
+  Ptr<Ipv4Interface> FindInterfaceForDevice (Ptr<const NetDevice> device);
 
   /**
    * Lower layer calls this method after calling L3Demux::Lookup
@@ -92,7 +129,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  virtual void Receive(Packet& p, Ptr<NetDevice> device);
+  void Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from);
 
   /**
    * \param packet packet to send
@@ -124,57 +161,96 @@ public:
   void SetDefaultRoute (Ipv4Address nextHop, 
                         uint32_t interface);
 
-  Ipv4Route *Lookup (Ipv4Address dest);
+  void Lookup (Ipv4Header const &ipHeader,
+               Packet packet,
+               Ipv4RoutingProtocol::RouteReplyCallback routeReply);
+
   uint32_t GetNRoutes (void);
   Ipv4Route *GetRoute (uint32_t i);
   void RemoveRoute (uint32_t i);
 
+  void AddMulticastRoute (Ipv4Address origin,
+                          Ipv4Address group,
+                          uint32_t inputInterface,
+                          std::vector<uint32_t> outputInterfaces);
+
+  void SetDefaultMulticastRoute (uint32_t onputInterface);
+
+  uint32_t GetNMulticastRoutes (void) const;
+  Ipv4MulticastRoute *GetMulticastRoute (uint32_t i) const;
+
+  void RemoveMulticastRoute (Ipv4Address origin,
+                             Ipv4Address group,
+                             uint32_t inputInterface);
+  void RemoveMulticastRoute (uint32_t i);
+
   uint32_t AddInterface (Ptr<NetDevice> device);
-  Ipv4Interface * GetInterface (uint32_t i) const;
+  Ptr<Ipv4Interface> GetInterface (uint32_t i) const;
   uint32_t GetNInterfaces (void) const;
 
+  uint32_t FindInterfaceForAddr (Ipv4Address addr) const;
+  uint32_t FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const;
   
+  void JoinMulticastGroup (Ipv4Address origin, Ipv4Address group);
+  void LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group);
+
   void SetAddress (uint32_t i, Ipv4Address address);
   void SetNetworkMask (uint32_t i, Ipv4Mask mask);
   Ipv4Mask GetNetworkMask (uint32_t t) const;
   Ipv4Address GetAddress (uint32_t i) const;
+  bool GetIfIndexForDestination (Ipv4Address destination, 
+                                 uint32_t& ifIndex) const;
   uint16_t GetMtu (uint32_t i) const;
   bool IsUp (uint32_t i) const;
   void SetUp (uint32_t i);
   void SetDown (uint32_t i);
 
+  void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
+                           int priority);
 
 protected:
-  virtual void DoDispose (void);
-private:
-  void SendRealOut (Packet const &packet, Ipv4Header const &ip, Ipv4Route const &route);
-  bool Forwarding (Packet const &packet, Ipv4Header &ipHeader, Ptr<NetDevice> device);
-  void ForwardUp (Packet p, Ipv4Header const&ip);
-  uint32_t AddIpv4Interface (Ipv4Interface *interface);
-  void SetupLoopback (void);
-  TraceResolver *InterfacesCreateTraceResolver (TraceContext const &context) const;
 
-  typedef std::list<Ipv4Interface*> Ipv4InterfaceList;
-  typedef std::list<Ipv4Route *> HostRoutes;
-  typedef std::list<Ipv4Route *>::const_iterator HostRoutesCI;
-  typedef std::list<Ipv4Route *>::iterator HostRoutesI;
-  typedef std::list<Ipv4Route *> NetworkRoutes;
-  typedef std::list<Ipv4Route *>::const_iterator NetworkRoutesCI;
-  typedef std::list<Ipv4Route *>::iterator NetworkRoutesI;
+  virtual void DoDispose (void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
+
+private:
+  void Lookup (uint32_t ifIndex,
+               Ipv4Header const &ipHeader,
+               Packet packet,
+               Ipv4RoutingProtocol::RouteReplyCallback routeReply);
+
+  void SendRealOut (bool found,
+                    Ipv4Route const &route,
+                    Packet packet,
+                    Ipv4Header const &ipHeader);
+  bool Forwarding (uint32_t ifIndex, 
+                   Packet const &packet, 
+                   Ipv4Header &ipHeader, 
+                   Ptr<NetDevice> device);
+  void ForwardUp (Packet p, Ipv4Header const&ip, Ptr<Ipv4Interface> incomingInterface);
+  uint32_t AddIpv4Interface (Ptr<Ipv4Interface> interface);
+  void SetupLoopback (void);
+
+  typedef std::list<Ptr<Ipv4Interface> > Ipv4InterfaceList;
+  typedef std::list<std::pair<Ipv4Address, Ipv4Address> > 
+    Ipv4MulticastGroupList;
+  typedef std::list< std::pair< int, Ptr<Ipv4RoutingProtocol> > > Ipv4RoutingProtocolList;
 
   Ipv4InterfaceList m_interfaces;
   uint32_t m_nInterfaces;
   uint8_t m_defaultTtl;
   uint16_t m_identification;
-  HostRoutes m_hostRoutes;
-  NetworkRoutes m_networkRoutes;
-  Ipv4Route *m_defaultRoute;
   Ptr<Node> m_node;
   CallbackTraceSource<Packet const &, uint32_t> m_txTrace;
   CallbackTraceSource<Packet const &, uint32_t> m_rxTrace;
   CallbackTraceSource<Packet const &> m_dropTrace;
+
+  Ipv4RoutingProtocolList m_routingProtocols;
+
+  Ptr<Ipv4StaticRouting> m_staticRouting;
+  Ipv4MulticastGroupList m_multicastGroups;
 };
 
 } // Namespace ns3
 
-#endif /* IPV$_L3_PROTOCOL_H */
+#endif /* IPV4_L3_PROTOCOL_H */

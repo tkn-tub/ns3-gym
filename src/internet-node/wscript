@@ -1,19 +1,10 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 
-def configure(conf):
-    conf.env.append_value('NS3_MODULES', 'ns3-internet-node')
-
-
 def build(bld):
-    obj = bld.create_obj('cpp', 'shlib')
-    obj.name = 'ns3-internet-node'
-    obj.target = obj.name
-    obj.uselib_local = ['ns3-node', 'ns3-applications']
+    obj = bld.create_ns3_module('internet-node', ['node'])
     obj.source = [
         'internet-node.cc',
-        'l3-demux.cc',
-        'l3-protocol.cc',
         'ipv4-l4-demux.cc',
         'ipv4-l4-protocol.cc',
         'ipv4-header.cc',
@@ -21,6 +12,7 @@ def build(bld):
         'ipv4-checksum.cc',
         'ipv4-interface.cc',
         'ipv4-l3-protocol.cc',
+        'ipv4-static-routing.cc',
         'ipv4-end-point.cc',
         'udp-l4-protocol.cc',
         'arp-header.cc',
@@ -28,12 +20,9 @@ def build(bld):
         'arp-ipv4-interface.cc',
         'arp-l3-protocol.cc',
         'ipv4-loopback-interface.cc',
-        'header-utils.cc',
         'udp-socket.cc',
         'ipv4-end-point-demux.cc',
-        'arp-private.cc',
         'ipv4-impl.cc',
-        'ipv4-private.cc',
         'ascii-trace.cc',
         'pcap-trace.cc',
         'udp-impl.cc',
@@ -44,4 +33,6 @@ def build(bld):
         'internet-node.h',
         'ascii-trace.h',
         'pcap-trace.h',
+        'ipv4-header.h',
+        'udp-header.h',
         ]

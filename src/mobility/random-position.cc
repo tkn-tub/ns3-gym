@@ -1,11 +1,30 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2007 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 #include "random-position.h"
 #include "ns3/random-variable.h"
 #include "ns3/default-value.h"
 #include "ns3/random-variable-default-value.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include <cmath>
 
-NS_DEBUG_COMPONENT_DEFINE ("RandomPosition");
+NS_LOG_COMPONENT_DEFINE ("RandomPosition");
 
 namespace ns3 {
 
@@ -22,19 +41,19 @@ g_rectangleY ("RandomRectanglePositionY",
 static RandomVariableDefaultValue
 g_discTheta ("RandomDiscPositionTheta",
 	     "A random variable which represents the angle (gradients) of a position in a random disc.",
-	     "Uniform:0:3.1415");
+	     "Uniform:0:6.2830");
 
 static RandomVariableDefaultValue
 g_discRho ("RandomDiscPositionRho",
 	   "A random variable which represents the radius of a position in a random disc.",
 	   "Uniform:0:200");
 
-static IntegerDefaultValue<double>
+static NumericDefaultValue<double>
 g_discX ("RandomDiscPositionX",
 	 "The x coordinate of the center of the random position disc.",
 	 0.0);
 
-static IntegerDefaultValue<double>
+static NumericDefaultValue<double>
 g_discY ("RandomDiscPositionY",
 	 "The y coordinate of the center of the random position disc.",
 	 0.0);
@@ -108,7 +127,7 @@ RandomDiscPosition::Get (void) const
   double rho = m_rho->GetValue ();
   double x = m_x + std::cos (theta) * rho;
   double y = m_y + std::sin (theta) * rho;
-  NS_DEBUG ("Disc position x=" << x << ", y=" << y);
+  NS_LOG_DEBUG ("Disc position x=" << x << ", y=" << y);
   return Position (x, y, 0.0);
 }
 

@@ -1,13 +1,35 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
-import Params
 
 def build(bld):
-    def create_ns_prog(name, source, deps=['core', 'common', 'simulator']):
-        obj = bld.create_obj('cpp', 'program')
-        obj.target = name
-        obj.uselib_local = ["ns3-%s" % dep for dep in deps]
-        obj.source = source
-        return obj
         
-    obj = create_ns_prog('simple-p2p', 'simple-p2p.cc', deps=['p2p', 'internet-node'])
+    obj = bld.create_ns3_program('simple-global-routing',
+        ['point-to-point', 'internet-node', 'global-routing'])
+    obj.source = 'simple-global-routing.cc'
 
+    obj = bld.create_ns3_program('simple-point-to-point',
+        ['point-to-point', 'internet-node'])
+    obj.source = 'simple-point-to-point.cc'
+
+    obj = bld.create_ns3_program('csma-one-subnet',
+        ['csma', 'internet-node'])
+    obj.source = 'csma-one-subnet.cc'
+
+    obj = bld.create_ns3_program('udp-echo',
+        ['csma', 'internet-node'])
+    obj.source = 'udp-echo.cc'
+
+    obj = bld.create_ns3_program('csma-broadcast',
+        ['csma', 'internet-node'])
+    obj.source = 'csma-broadcast.cc'
+
+    obj = bld.create_ns3_program('csma-packet-socket',
+        ['csma', 'internet-node'])
+    obj.source = 'csma-packet-socket.cc'
+
+    obj = bld.create_ns3_program('csma-multicast',
+        ['csma', 'internet-node'])
+    obj.source = 'csma-multicast.cc'
+
+    obj = bld.create_ns3_program( 'mixed-global-routing',
+        ['point-to-point', 'internet-node', 'global-routing' , 'csma-cd'])
+    obj.source = 'mixed-global-routing.cc'

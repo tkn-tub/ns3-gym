@@ -18,7 +18,7 @@
  */
 
 #include <string>
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/assert.h"
 #include "ns3/packet.h"
 #include "ns3/drop-tail.h"
@@ -26,6 +26,8 @@
 #include "ns3/channel.h"
 
 using namespace ns3;
+
+NS_LOG_COMPONENT_DEFINE ("ChannelSample");
 
 // ===========================================================================
 // Cook up a simplistic Internet Node
@@ -48,19 +50,19 @@ protected:
 
 FakeInternetNode::FakeInternetNode ()
 {
-  NS_DEBUG_UNCOND("FakeInternetNode::FakeInternetNode ()");
+  NS_LOG_FUNCTION;
 }
 
 FakeInternetNode::~FakeInternetNode ()
 {
-  NS_DEBUG_UNCOND("FakeInternetNode::~FakeInternetNode ()");
+  NS_LOG_FUNCTION;
 }
 
   void
 FakeInternetNode::Doit (void)
 {
-  NS_DEBUG_UNCOND("FakeInternetNode::Doit ()");
-  NS_DEBUG_UNCOND("FakeInternetNode::Doit (): **** Send outbound packet");
+  NS_LOG_FUNCTION;
+  NS_LOG_INFO ("**** Send outbound packet");
   Packet p;
 
   m_dtqOutbound.Enqueue(p);
@@ -70,9 +72,9 @@ FakeInternetNode::Doit (void)
   bool
 FakeInternetNode::UpperDoSendUp (Packet &p)
 {
-  NS_DEBUG_UNCOND("FakeInternetNode::UpperDoSendUp (" << &p << ")");
-
-  NS_DEBUG_UNCOND("FakeInternetNode::UpperDoSendUp (): **** Receive inbound packet");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_INFO ("**** Receive inbound packet");
   m_dtqInbound.Enqueue(p);
   return m_dtqInbound.Dequeue(p);
 }
@@ -80,7 +82,8 @@ FakeInternetNode::UpperDoSendUp (Packet &p)
   bool
 FakeInternetNode::UpperDoPull (Packet &p)
 {
-  NS_DEBUG_UNCOND("FakeInternetNode::DoPull (" << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
 
   return m_dtqOutbound.Dequeue(p);
 }
@@ -107,29 +110,29 @@ protected:
 
 FakePhysicalLayer::FakePhysicalLayer ()
 {
-  NS_DEBUG_UNCOND("FakePhysicalLayer::FakePhysicalLayer ()");
+  NS_LOG_FUNCTION;
 }
 
 FakePhysicalLayer::~FakePhysicalLayer ()
 {
-  NS_DEBUG_UNCOND("FakePhysicalLayer::~FakePhysicalLayer ()");
+  NS_LOG_FUNCTION;
 }
 
   bool
 FakePhysicalLayer::LowerDoNotify (LayerConnectorUpper *upper)
 {
-  NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify ()");
+  NS_LOG_FUNCTION;
 
   Packet p;
 
-  NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify (): Starting pull");
+  NS_LOG_LOGIC ("Starting pull");
 
   NS_ASSERT(m_upperPartner);
   m_upperPartner->UpperPull(p);
 
   m_dtqOutbound.Enqueue(p);
 
-  NS_DEBUG_UNCOND("FakePhysicalLayer::LowerDoNotify (): Got bits,  Notify lower");
+  NS_LOG_LOGIC ("Got bits,  Notify lower");
 
   NS_ASSERT(m_lowerPartner);
   return m_lowerPartner->LowerNotify(this);
@@ -138,7 +141,8 @@ FakePhysicalLayer::LowerDoNotify (LayerConnectorUpper *upper)
   bool
 FakePhysicalLayer::UpperDoSendUp (Packet &p)
 {
-  NS_DEBUG_UNCOND("FakePhysicalLayer::UpperDoSendUp (" << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
 
   NS_ASSERT(m_upperPartner);
   return m_upperPartner->UpperSendUp(p);
@@ -147,7 +151,8 @@ FakePhysicalLayer::UpperDoSendUp (Packet &p)
   bool
 FakePhysicalLayer::UpperDoPull (Packet &p)
 {
-  NS_DEBUG_UNCOND("FakePhysicalLayer::DoPull (" << &p << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ")");
 
   return m_dtqOutbound.Dequeue(p);
 }
@@ -164,24 +169,17 @@ public:
 
 FakeChannel::FakeChannel ()
 {
-  NS_DEBUG_UNCOND("FakeChannel::FakeChannel ()");
+  NS_LOG_FUNCTION;
 }
 
 FakeChannel::~FakeChannel ()
 {
-  NS_DEBUG_UNCOND("FakeChannel::~FakeChannel ()");
+  NS_LOG_FUNCTION;
 }
 
 int main (int argc, char *argv[])
 {
-  NS_DEBUG_UNCOND("Channel Hackorama");
-
-#if 0
-  DebugComponentEnable("Queue");
-  DebugComponentEnable("DropTailQueue");
-  DebugComponentEnable("LayerConnector");
-  DebugComponentEnable("Channel");
-#endif
+  NS_LOG_INFO ("Channel Hackorama");
 
   FakeInternetNode      node1, node2, node3, node4;
   FakePhysicalLayer     phys1, phys2, phys3, phys4;
