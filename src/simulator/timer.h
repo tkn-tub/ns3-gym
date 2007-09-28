@@ -210,6 +210,8 @@ private:
   void DoSetFunction (IntToType<4>, FN fn);
   template <typename FN>
   void DoSetFunction (IntToType<5>, FN fn);
+  template <typename FN>
+  void DoSetFunction (IntToType<6>, FN fn);
 
   template <typename MEM_PTR, typename OBJ_PTR>
   void DoSetFunction (IntToType<0>, MEM_PTR memPtr, OBJ_PTR objPtr);
@@ -223,6 +225,8 @@ private:
   void DoSetFunction (IntToType<4>, MEM_PTR memPtr, OBJ_PTR objPtr);
   template <typename MEM_PTR, typename OBJ_PTR>
   void DoSetFunction (IntToType<5>, MEM_PTR memPtr, OBJ_PTR objPtr);
+  template <typename MEM_PTR, typename OBJ_PTR>
+  void DoSetFunction (IntToType<6>, MEM_PTR memPtr, OBJ_PTR objPtr);
 
   int m_flags;
   Time m_delay;
@@ -339,6 +343,206 @@ Timer::DoSetFunction (IntToType<1>, FN fn)
   m_impl = function;  
 }
 
+template <typename FN>
+void 
+Timer::DoSetFunction (IntToType<2>, FN fn)
+{
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg2Type T2;
+  typedef typename TimerTraits<T2>::ParameterType T2Parameter;
+  typedef typename TimerTraits<T2>::StoredType T2Stored;
+
+  struct FnTimerImplTwo : public TimerImplTwo<T1Parameter,T2Parameter>
+  {
+    FnTimerImplTwo (FN fn) 
+      : m_fn (fn) {}
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2) {
+      m_a1 = a1;
+      m_a2 = a2;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_fn, m_a1, m_a2);
+    }
+    FN m_fn;
+    T1Stored m_a1;
+    T2Stored m_a2;
+  } *function = new FnTimerImplTwo (fn);
+  delete m_impl;
+  m_impl = function;  
+}
+
+template <typename FN>
+void 
+Timer::DoSetFunction (IntToType<3>, FN fn)
+{
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg2Type T2;
+  typedef typename TimerTraits<T2>::ParameterType T2Parameter;
+  typedef typename TimerTraits<T2>::StoredType T2Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg3Type T3;
+  typedef typename TimerTraits<T3>::ParameterType T3Parameter;
+  typedef typename TimerTraits<T3>::StoredType T3Stored;
+
+  struct FnTimerImplThree : public TimerImplThree<T1Parameter,T2Parameter,T3Parameter>
+  {
+    FnTimerImplThree (FN fn) 
+      : m_fn (fn) {}
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3) {
+      m_a1 = a1;
+      m_a2 = a2;
+      m_a3 = a3;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3);
+    }
+    FN m_fn;
+    T1Stored m_a1;
+    T2Stored m_a2;
+    T3Stored m_a3;
+  } *function = new FnTimerImplThree (fn);
+  delete m_impl;
+  m_impl = function;  
+}
+
+template <typename FN>
+void 
+Timer::DoSetFunction (IntToType<4>, FN fn)
+{
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg2Type T2;
+  typedef typename TimerTraits<T2>::ParameterType T2Parameter;
+  typedef typename TimerTraits<T2>::StoredType T2Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg3Type T3;
+  typedef typename TimerTraits<T3>::ParameterType T3Parameter;
+  typedef typename TimerTraits<T3>::StoredType T3Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg4Type T4;
+  typedef typename TimerTraits<T4>::ParameterType T4Parameter;
+  typedef typename TimerTraits<T4>::StoredType T4Stored;
+
+  struct FnTimerImplFour : public TimerImplFour<T1Parameter,T2Parameter,T3Parameter,T4Parameter>
+  {
+    FnTimerImplFour (FN fn) 
+      : m_fn (fn) {}
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4) {
+      m_a1 = a1;
+      m_a2 = a2;
+      m_a3 = a3;
+      m_a4 = a4;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4);
+    }
+    FN m_fn;
+    T1Stored m_a1;
+    T2Stored m_a2;
+    T3Stored m_a3;
+    T4Stored m_a4;
+  } *function = new FnTimerImplFour (fn);
+  delete m_impl;
+  m_impl = function;  
+}
+
+template <typename FN>
+void 
+Timer::DoSetFunction (IntToType<5>, FN fn)
+{
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg2Type T2;
+  typedef typename TimerTraits<T2>::ParameterType T2Parameter;
+  typedef typename TimerTraits<T2>::StoredType T2Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg3Type T3;
+  typedef typename TimerTraits<T3>::ParameterType T3Parameter;
+  typedef typename TimerTraits<T3>::StoredType T3Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg4Type T4;
+  typedef typename TimerTraits<T4>::ParameterType T4Parameter;
+  typedef typename TimerTraits<T4>::StoredType T4Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg5Type T5;
+  typedef typename TimerTraits<T5>::ParameterType T5Parameter;
+  typedef typename TimerTraits<T5>::StoredType T5Stored;
+
+  struct FnTimerImplFive : public TimerImplFive<T1Parameter,T2Parameter,T3Parameter,T4Parameter,T5Parameter>
+  {
+    FnTimerImplFive (FN fn) 
+      : m_fn (fn) {}
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4, T5Parameter a5) {
+      m_a1 = a1;
+      m_a2 = a2;
+      m_a3 = a3;
+      m_a4 = a4;
+      m_a5 = a5;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4, m_a5);
+    }
+    FN m_fn;
+    T1Stored m_a1;
+    T2Stored m_a2;
+    T3Stored m_a3;
+    T4Stored m_a4;
+    T5Stored m_a5;
+  } *function = new FnTimerImplFive (fn);
+  delete m_impl;
+  m_impl = function;  
+}
+
+template <typename FN>
+void 
+Timer::DoSetFunction (IntToType<6>, FN fn)
+{
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg2Type T2;
+  typedef typename TimerTraits<T2>::ParameterType T2Parameter;
+  typedef typename TimerTraits<T2>::StoredType T2Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg3Type T3;
+  typedef typename TimerTraits<T3>::ParameterType T3Parameter;
+  typedef typename TimerTraits<T3>::StoredType T3Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg4Type T4;
+  typedef typename TimerTraits<T4>::ParameterType T4Parameter;
+  typedef typename TimerTraits<T4>::StoredType T4Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg5Type T5;
+  typedef typename TimerTraits<T5>::ParameterType T5Parameter;
+  typedef typename TimerTraits<T5>::StoredType T5Stored;
+  typedef typename TypeTraits<FN>::FunctionPointerTraits::Arg6Type T6;
+  typedef typename TimerTraits<T6>::ParameterType T6Parameter;
+  typedef typename TimerTraits<T6>::StoredType T6Stored;
+
+  struct FnTimerImplSix : public TimerImplSix<T1Parameter,T2Parameter,T3Parameter,T4Parameter,T5Parameter,T6Parameter>
+  {
+    FnTimerImplSix (FN fn) 
+      : m_fn (fn) {}
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4, T5Parameter a5, T6Parameter a6) {
+      m_a1 = a1;
+      m_a2 = a2;
+      m_a3 = a3;
+      m_a4 = a4;
+      m_a5 = a5;
+      m_a6 = a6;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_fn, m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
+    }
+    FN m_fn;
+    T1Stored m_a1;
+    T2Stored m_a2;
+    T3Stored m_a3;
+    T4Stored m_a4;
+    T5Stored m_a5;
+    T6Stored m_a6;
+  } *function = new FnTimerImplSix (fn);
+  delete m_impl;
+  m_impl = function;  
+}
+
 template <typename MEM_PTR, typename OBJ_PTR>
 void 
 Timer::SetFunction (MEM_PTR memPtr, OBJ_PTR objPtr)
@@ -387,6 +591,211 @@ Timer::DoSetFunction (IntToType<1>, MEM_PTR memPtr, OBJ_PTR objPtr)
     OBJ_PTR m_objPtr;
     T1Stored m_a1;
   } *function = new MemFnTimerImplOne (memPtr, objPtr);
+  delete m_impl;
+  m_impl = function;    
+}
+
+template <typename MEM_PTR, typename OBJ_PTR>
+void 
+Timer::DoSetFunction (IntToType<2>, MEM_PTR memPtr, OBJ_PTR objPtr)
+{
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg2Type T2;
+  typedef typename TimerTraits<T2>::ParameterType T2Parameter;
+  typedef typename TimerTraits<T2>::StoredType T2Stored;
+  
+  struct MemFnTimerImplTwo : public TimerImplTwo<T1Parameter,T2Parameter>
+  {
+    MemFnTimerImplTwo (MEM_PTR memPtr, OBJ_PTR objPtr) 
+      : m_memPtr (memPtr), m_objPtr (objPtr) {}
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2) {
+      m_a1 = a1;
+      m_a2 = a2;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2);
+    }
+    MEM_PTR m_memPtr;
+    OBJ_PTR m_objPtr;
+    T1Stored m_a1;
+    T2Stored m_a2;
+  } *function = new MemFnTimerImplTwo (memPtr, objPtr);
+  delete m_impl;
+  m_impl = function;    
+}
+
+template <typename MEM_PTR, typename OBJ_PTR>
+void 
+Timer::DoSetFunction (IntToType<3>, MEM_PTR memPtr, OBJ_PTR objPtr)
+{
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg2Type T2;
+  typedef typename TimerTraits<T2>::ParameterType T2Parameter;
+  typedef typename TimerTraits<T2>::StoredType T2Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg3Type T3;
+  typedef typename TimerTraits<T3>::ParameterType T3Parameter;
+  typedef typename TimerTraits<T3>::StoredType T3Stored;
+  
+  struct MemFnTimerImplThree : public TimerImplThree<T1Parameter,T2Parameter,T3Parameter>
+  {
+    MemFnTimerImplThree (MEM_PTR memPtr, OBJ_PTR objPtr) 
+      : m_memPtr (memPtr), m_objPtr (objPtr) {}
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3) {
+      m_a1 = a1;
+      m_a2 = a2;
+      m_a3 = a3;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3);
+    }
+    MEM_PTR m_memPtr;
+    OBJ_PTR m_objPtr;
+    T1Stored m_a1;
+    T2Stored m_a2;
+    T3Stored m_a3;
+  } *function = new MemFnTimerImplThree (memPtr, objPtr);
+  delete m_impl;
+  m_impl = function;    
+}
+
+template <typename MEM_PTR, typename OBJ_PTR>
+void 
+Timer::DoSetFunction (IntToType<4>, MEM_PTR memPtr, OBJ_PTR objPtr)
+{
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg2Type T2;
+  typedef typename TimerTraits<T2>::ParameterType T2Parameter;
+  typedef typename TimerTraits<T2>::StoredType T2Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg3Type T3;
+  typedef typename TimerTraits<T3>::ParameterType T3Parameter;
+  typedef typename TimerTraits<T3>::StoredType T3Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg4Type T4;
+  typedef typename TimerTraits<T4>::ParameterType T4Parameter;
+  typedef typename TimerTraits<T4>::StoredType T4Stored;
+  
+  struct MemFnTimerImplFour : public TimerImplFour<T1Parameter,T2Parameter,T3Parameter,T4Parameter>
+  {
+    MemFnTimerImplFour (MEM_PTR memPtr, OBJ_PTR objPtr) 
+      : m_memPtr (memPtr), m_objPtr (objPtr) {}
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4) {
+      m_a1 = a1;
+      m_a2 = a2;
+      m_a3 = a3;
+      m_a4 = a4;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4);
+    }
+    MEM_PTR m_memPtr;
+    OBJ_PTR m_objPtr;
+    T1Stored m_a1;
+    T2Stored m_a2;
+    T3Stored m_a3;
+    T4Stored m_a4;
+  } *function = new MemFnTimerImplFour (memPtr, objPtr);
+  delete m_impl;
+  m_impl = function;    
+}
+
+template <typename MEM_PTR, typename OBJ_PTR>
+void 
+Timer::DoSetFunction (IntToType<5>, MEM_PTR memPtr, OBJ_PTR objPtr)
+{
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg2Type T2;
+  typedef typename TimerTraits<T2>::ParameterType T2Parameter;
+  typedef typename TimerTraits<T2>::StoredType T2Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg3Type T3;
+  typedef typename TimerTraits<T3>::ParameterType T3Parameter;
+  typedef typename TimerTraits<T3>::StoredType T3Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg4Type T4;
+  typedef typename TimerTraits<T4>::ParameterType T4Parameter;
+  typedef typename TimerTraits<T4>::StoredType T4Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg5Type T5;
+  typedef typename TimerTraits<T5>::ParameterType T5Parameter;
+  typedef typename TimerTraits<T5>::StoredType T5Stored;
+  
+  struct MemFnTimerImplFive : public TimerImplFive<T1Parameter,T2Parameter,T3Parameter,T4Parameter,T5Parameter>
+  {
+    MemFnTimerImplFive (MEM_PTR memPtr, OBJ_PTR objPtr) 
+      : m_memPtr (memPtr), m_objPtr (objPtr) {}
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4,T5Parameter a5) {
+      m_a1 = a1;
+      m_a2 = a2;
+      m_a3 = a3;
+      m_a4 = a4;
+      m_a5 = a5;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4, m_a5);
+    }
+    MEM_PTR m_memPtr;
+    OBJ_PTR m_objPtr;
+    T1Stored m_a1;
+    T2Stored m_a2;
+    T3Stored m_a3;
+    T4Stored m_a4;
+    T5Stored m_a5;
+  } *function = new MemFnTimerImplFive (memPtr, objPtr);
+  delete m_impl;
+  m_impl = function;    
+}
+
+template <typename MEM_PTR, typename OBJ_PTR>
+void 
+Timer::DoSetFunction (IntToType<6>, MEM_PTR memPtr, OBJ_PTR objPtr)
+{
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg1Type T1;
+  typedef typename TimerTraits<T1>::ParameterType T1Parameter;
+  typedef typename TimerTraits<T1>::StoredType T1Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg2Type T2;
+  typedef typename TimerTraits<T2>::ParameterType T2Parameter;
+  typedef typename TimerTraits<T2>::StoredType T2Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg3Type T3;
+  typedef typename TimerTraits<T3>::ParameterType T3Parameter;
+  typedef typename TimerTraits<T3>::StoredType T3Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg4Type T4;
+  typedef typename TimerTraits<T4>::ParameterType T4Parameter;
+  typedef typename TimerTraits<T4>::StoredType T4Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg5Type T5;
+  typedef typename TimerTraits<T5>::ParameterType T5Parameter;
+  typedef typename TimerTraits<T5>::StoredType T5Stored;
+  typedef typename TypeTraits<MEM_PTR>::PointerToMemberTraits::Arg6Type T6;
+  typedef typename TimerTraits<T6>::ParameterType T6Parameter;
+  typedef typename TimerTraits<T6>::StoredType T6Stored;
+  
+  struct MemFnTimerImplSix : public TimerImplSix<T1Parameter,T2Parameter,T3Parameter,T4Parameter,T5Parameter,T6Parameter>
+  {
+    MemFnTimerImplSix (MEM_PTR memPtr, OBJ_PTR objPtr) 
+      : m_memPtr (memPtr), m_objPtr (objPtr) {}
+    virtual void SetArguments (T1Parameter a1, T2Parameter a2, T3Parameter a3, T4Parameter a4,T5Parameter a5,T6Parameter a6) {
+      m_a1 = a1;
+      m_a2 = a2;
+      m_a3 = a3;
+      m_a4 = a4;
+      m_a5 = a5;
+      m_a6 = a6;
+    }
+    virtual EventId Schedule (const Time &delay) {
+      return Simulator::Schedule (delay, m_memPtr, m_objPtr, m_a1, m_a2, m_a3, m_a4, m_a5, m_a6);
+    }
+    MEM_PTR m_memPtr;
+    OBJ_PTR m_objPtr;
+    T1Stored m_a1;
+    T2Stored m_a2;
+    T3Stored m_a3;
+    T4Stored m_a4;
+    T5Stored m_a5;
+    T6Stored m_a6;
+  } *function = new MemFnTimerImplSix (memPtr, objPtr);
   delete m_impl;
   m_impl = function;    
 }
