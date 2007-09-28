@@ -21,7 +21,7 @@ static ClassIdDefaultValue
 g_position ("RandomWaypointPosition",
 	    "A random position model used to pick the next waypoint position.",
 	    RandomPosition::iid,
-	    "RandomPositionRectangle");
+	    "RandomRectanglePosition");
 
 const ClassId RandomWaypointMobilityModel::cid = 
   MakeClassId<RandomWaypointMobilityModel> ("RandomWaypointMobilityModel", MobilityModel::iid);
