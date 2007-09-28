@@ -12,57 +12,20 @@ Timer::Timer ()
     m_impl (0)
 {}
 
-Timer::Timer (int flags)
-  : m_flags (flags),
+Timer::Timer (enum SchedulePolicy schedulePolicy, 
+	      enum DestroyPolicy destroyPolicy)
+  : m_flags (schedulePolicy | destroyPolicy),
     m_delay (FemtoSeconds (0)),
     m_event (),
     m_impl (0)
-{
-  if (flags & GARBAGE_COLLECT)
-    {
-      if (flags != GARBAGE_COLLECT)
-	{
-	  NS_FATAL_ERROR ("You cannot specify another Timer flag with the GARBAGE_COLLECT flag.");
-	}
-    }
-  else
-    {
-      int onSchedule = 0;
-      if (m_flags & CHECK_ON_SCHEDULE)
-	{
-	  onSchedule++;
-	}
-      if (m_flags & CANCEL_ON_SCHEDULE)
-	{
-	  onSchedule++;
-	}
-      if (m_flags & REMOVE_ON_SCHEDULE)
-	{
-	  onSchedule++;
-	}
-      int onDestroy = 0;
-      if (m_flags & CHECK_ON_DESTROY)
-	{
-	  onDestroy++;
-	}
-      if (m_flags & CANCEL_ON_DESTROY)
-	{
-	  onDestroy++;
-	}
-      if (m_flags & REMOVE_ON_DESTROY)
-	{
-	  onDestroy++;
-	}
-      if (onSchedule > 1)
-	{
-	  NS_FATAL_ERROR ("You cannot specify more than one ON_SCHEDULE flag on a Timer.");
-	}
-      if (onDestroy > 1)
-	{
-	  NS_FATAL_ERROR ("You cannot specify more than one ON_DESTROY flag on a Timer.");
-	}
-    }
-}
+{}
+
+Timer::Timer (enum GarbageCollectPolicy policy)
+  : m_flags (GARBAGE_COLLECT),
+    m_delay (FemtoSeconds (0)),
+    m_event (),
+    m_impl (0)
+{}
 
 Timer::~Timer ()
 {
@@ -190,7 +153,7 @@ TimerTests::RunTests (void)
   int a = 0;
   int &b = a;
   const int &c = a;
-  Timer timer = Timer (0);
+  Timer timer;
 
   timer.SetFunction (&bari);
   timer.SetArguments (2);

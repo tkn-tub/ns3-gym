@@ -24,57 +24,48 @@ class TimerImpl;
 class Timer 
 {
 public:
-  enum {
-    /**
-     * This policy enforces a check before each call to Timer::Schedule
-     * to verify that the timer has already expired. This policy
-     * is incompatible with CANCEL_ON_SCHEDULE REMOVE_ON_SCHEDULE, and,
-     * GARBAGE_COLLECT.
-     */
-    CHECK_ON_SCHEDULE = (1<<0),
-    /**
-     * This policy enforces a check from the destructor of the Timer
-     * to verify that the timer has already expired. This policy is
-     * incompatible with CANCEL_ON_DESTROY, REMOVE_ON_DESTROY, and
-     * GARBAGE_COLLECT.
-     */
-    CHECK_ON_DESTROY = (1<<1),
+  enum SchedulePolicy {
     /**
      * This policy cancels the event before scheduling a new event 
-     * for each call to Timer::Schedule. This policy
-     * is incompatible with CHECK_ON_SCHEDULE, REMOVE_ON_SCHEDULE, and,
-     * GARBAGE_COLLECT.
+     * for each call to Timer::Schedule.
      */
-    CANCEL_ON_SCHEDULE = (1<<2),
-    /**
-     * This policy cancels the event from the destructor of the Timer
-     * to verify that the event has already expired. This policy is
-     * incompatible with CHECK_ON_DESTROY, REMOVE_ON_DESTROY, and
-     * GARBAGE_COLLECT.
-     */
-    CANCEL_ON_DESTROY = (1<<3),
+    CANCEL_ON_SCHEDULE = (1<<0),
     /**
      * This policy removes the event from the simulation event list 
      * before scheduling a new event for each call to Timer::Schedule. 
-     * This policy is incompatible with CHECK_ON_SCHEDULE,
-     * CANCEL_ON_SCHEDULE, and, GARBAGE_COLLECT.
      */
-    REMOVE_ON_SCHEDULE = (1<<4),
+    REMOVE_ON_SCHEDULE = (1<<1),
+    /**
+     * This policy enforces a check before each call to Timer::Schedule
+     * to verify that the timer has already expired.
+     */
+    CHECK_ON_SCHEDULE = (1<<2),
+  };
+  enum DestroyPolicy {
+    /**
+     * This policy cancels the event from the destructor of the Timer
+     * to verify that the event has already expired.
+     */
+    CANCEL_ON_DESTROY = (1<<3),
     /**
      * This policy removes the event from the simulation event list
-     * when the destructor of the Timer is invoked. This policy is
-     * incompatible with CHECK_ON_DESTROY, CANCEL_ON_DESTROY, and
-     * GARBAGE_COLLECT.
+     * when the destructor of the Timer is invoked.
      */
-    REMOVE_ON_DESTROY = (1<<5),
+    REMOVE_ON_DESTROY = (1<<4),
     /**
-     * This policy is incompatible with all other policies. Event
-     * event scheduled with this policy is kept track of by an
+     * This policy enforces a check from the destructor of the Timer
+     * to verify that the timer has already expired.
+     */
+    CHECK_ON_DESTROY = (1<<5)
+  };
+  enum GarbageCollectPolicy {
+    /**
+     * Every event scheduled with this policy is kept track of by an
      * event garbage collector which makes sure that all events
      * of timers with a GARBAGE_COLLECT policy are cancelled at the
      * end of the simulation.
      */
-    GARBAGE_COLLECT = (1<<6),
+    GARBAGE_COLLECT = (1<<6)
   };
   /**
    * create a timer with a default event lifetime management policy:
@@ -83,17 +74,16 @@ public:
    */
   Timer ();
   /**
-   * \param flags the event lifetime management policies to use
-   *
-   * The set of flag combinations allowed is:
-   *  - none
-   *  - GARBAGE_COLLECT
-   *  - one of CANCEL_ON_DESTROY, REMOVE_ON_DESTROY, or, CHECK_ON_DESTROY
-   *  - one of CANCEL_ON_SCHEDULE, REMOVE_ON_SCHEDULE, or, CHECK_ON_SCHEDULE
-   *  - one of CANCEL_ON_DESTROY, REMOVE_ON_DESTROY, or, CHECK_ON_DESTROY ored
-   *    with one of CANCEL_ON_SCHEDULE, REMOVE_ON_SCHEDULE, or, CHECK_ON_SCHEDULE.
+   * \param scheduleFlags the event lifetime management policies to use for schedule events
+   * \param destroyFlags the event lifetime management policies to use for destroy events
    */
-  Timer (int flags);
+  Timer (enum SchedulePolicy schedulePolicy, 
+	 enum DestroyPolicy destroyPolicy);
+  /**
+   * \param policy the garbage collect policy. Only one
+   *        value is possible.
+   */
+  Timer (enum GarbageCollectPolicy policy);
   ~Timer ();
 
   /**
