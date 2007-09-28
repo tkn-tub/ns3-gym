@@ -114,7 +114,119 @@ private:
     typedef W1 Arg1Type;
     typedef W2 Arg2Type;
   };
-  
+  template <typename U, typename V,
+            typename W1, typename W2,
+            typename W3> 
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3)>
+  {
+    enum {IsPointerToMember = 1};
+    enum {nArgs = 3};
+    typedef U ReturnType;
+    typedef W1 Arg1Type;
+    typedef W2 Arg2Type;
+    typedef W3 Arg3Type;
+  };
+  template <typename U, typename V,
+            typename W1, typename W2,
+            typename W3> 
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3) const>
+  {
+    enum {IsPointerToMember = 1};
+    enum {nArgs = 3};
+    typedef U ReturnType;
+    typedef W1 Arg1Type;
+    typedef W2 Arg2Type;
+    typedef W3 Arg3Type;
+  };
+  template <typename U, typename V,
+            typename W1, typename W2,
+            typename W3, typename W4> 
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4)>
+  {
+    enum {IsPointerToMember = 1};
+    enum {nArgs = 4};
+    typedef U ReturnType;
+    typedef W1 Arg1Type;
+    typedef W2 Arg2Type;
+    typedef W3 Arg3Type;
+    typedef W4 Arg4Type;
+  };
+  template <typename U, typename V,
+            typename W1, typename W2,
+            typename W3, typename W4> 
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4) const>
+  {
+    enum {IsPointerToMember = 1};
+    enum {nArgs = 4};
+    typedef U ReturnType;
+    typedef W1 Arg1Type;
+    typedef W2 Arg2Type;
+    typedef W3 Arg3Type;
+    typedef W4 Arg4Type;
+  };
+  template <typename U, typename V,
+            typename W1, typename W2,
+            typename W3, typename W4,
+            typename W5> 
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4,W5)>
+  {
+    enum {IsPointerToMember = 1};
+    enum {nArgs = 5};
+    typedef U ReturnType;
+    typedef W1 Arg1Type;
+    typedef W2 Arg2Type;
+    typedef W3 Arg3Type;
+    typedef W4 Arg4Type;
+    typedef W5 Arg5Type;
+  };
+  template <typename U, typename V,
+            typename W1, typename W2,
+            typename W3, typename W4,
+            typename W5> 
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4,W5) const>
+  {
+    enum {IsPointerToMember = 1};
+    enum {nArgs = 5};
+    typedef U ReturnType;
+    typedef W1 Arg1Type;
+    typedef W2 Arg2Type;
+    typedef W3 Arg3Type;
+    typedef W4 Arg4Type;
+    typedef W5 Arg5Type;
+  };
+  template <typename U, typename V,
+            typename W1, typename W2,
+            typename W3, typename W4,
+            typename W5, typename W6> 
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4,W5,W6)>
+  {
+    enum {IsPointerToMember = 1};
+    enum {nArgs = 6};
+    typedef U ReturnType;
+    typedef W1 Arg1Type;
+    typedef W2 Arg2Type;
+    typedef W3 Arg3Type;
+    typedef W4 Arg4Type;
+    typedef W5 Arg5Type;
+    typedef W6 Arg6Type;
+  };
+  template <typename U, typename V,
+            typename W1, typename W2,
+            typename W3, typename W4,
+            typename W5, typename W6> 
+  struct PtrToMemberTraits <U (V::*) (W1,W2,W3,W4,W5,W6) const>
+  {
+    enum {IsPointerToMember = 1};
+    enum {nArgs = 6};
+    typedef U ReturnType;
+    typedef W1 Arg1Type;
+    typedef W2 Arg2Type;
+    typedef W3 Arg3Type;
+    typedef W4 Arg4Type;
+    typedef W5 Arg5Type;
+    typedef W6 Arg6Type;
+  };
+
 public:
   typedef typename UnConst<T>::Result NonConstType;
   typedef typename ReferenceTraits<T>::ReferencedType ReferencedType;
