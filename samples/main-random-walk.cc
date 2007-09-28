@@ -10,6 +10,8 @@
 #include "ns3/command-line.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
+#include "ns3/node.h"
+#include "ns3/node-list.h"
 
 using namespace ns3;
 
@@ -39,15 +41,15 @@ int main (int argc, char *argv[])
 
   RandomTopology topology;
 
-  std::vector<Ptr<Object> > objects;
   for (uint32_t i = 0; i < 100; i++)
     {
-      Ptr<MobilityModelNotifier> notifier = Create<MobilityModelNotifier> ();
-      notifier->TraceConnect ("/course-change", MakeCallback (&CourseChange));
-      objects.push_back (notifier);
+      Ptr<Node> node = Create<Node> ();
+      node->AddInterface (Create<MobilityModelNotifier> ());
     }
 
-  topology.Layout (objects.begin (), objects.end ());
+  topology.Layout (NodeList::Begin (), NodeList::End ());
+  NodeList::Connect ("/nodes/*/$MobilityModelNotifier/course-change", 
+                     MakeCallback (&CourseChange));
 
   Simulator::StopAt (Seconds (100.0));
 
