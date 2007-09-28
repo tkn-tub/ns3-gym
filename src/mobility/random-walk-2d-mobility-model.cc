@@ -41,9 +41,9 @@ g_mode ("RandomWalk2dMode",
         "change the current speed and direction",
         RandomWalk2dMobilityModelParameters::MODE_DISTANCE, "Distance",
         RandomWalk2dMobilityModelParameters::MODE_TIME, "Time",
-        0, 0);
+        0, (void*)0);
 
-static IntegerDefaultValue<double>
+static NumericDefaultValue<double>
 g_modeDistance ("RandomWalk2dDistance",
                 "Change current direction and speed after moving this distance.",
                 2.0);
