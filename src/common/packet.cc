@@ -26,22 +26,72 @@ namespace ns3 {
 
 uint32_t Packet::m_globalUid = 0;
 
+void 
+Packet::Ref (void) const
+{
+  m_refCount++;
+}
+void 
+Packet::Unref (void) const
+{
+  m_refCount--;
+  if (m_refCount == 0)
+    {
+      delete this;
+    }
+}
+
+Ptr<Packet> 
+Packet::Copy (void) const
+{
+  // we need to invoke the copy constructor directly
+  // rather than calling Create because the copy constructor
+  // is private.
+  return Ptr<Packet> (new Packet (*this), false);
+}
+
 Packet::Packet ()
   : m_buffer (),
-    m_metadata (m_globalUid, 0)
+    m_tags (),
+    m_metadata (m_globalUid, 0),
+    m_refCount (1)
 {
   m_globalUid++;
 }
 
+Packet::Packet (const Packet &o)
+  : m_buffer (o.m_buffer),
+    m_tags (o.m_tags),
+    m_metadata (o.m_metadata),
+    m_refCount (1)
+{}
+
+Packet &
+Packet::operator = (const Packet &o)
+{
+  if (this == &o)
+    {
+      return *this;
+    }
+  m_buffer = o.m_buffer;
+  m_tags = o.m_tags;
+  m_metadata = o.m_metadata;
+  return *this;
+}
+
 Packet::Packet (uint32_t size)
   : m_buffer (size),
-    m_metadata (m_globalUid, size)
+    m_tags (),
+    m_metadata (m_globalUid, size),
+    m_refCount (1)
 {
   m_globalUid++;
 }
 Packet::Packet (uint8_t const*buffer, uint32_t size)
   : m_buffer (),
-    m_metadata (m_globalUid, size)
+    m_tags (),
+    m_metadata (m_globalUid, size),
+    m_refCount (1)
 {
   m_globalUid++;
   m_buffer.AddAtStart (size);
@@ -52,17 +102,20 @@ Packet::Packet (uint8_t const*buffer, uint32_t size)
 Packet::Packet (Buffer buffer, Tags tags, PacketMetadata metadata)
   : m_buffer (buffer),
     m_tags (tags),
-    m_metadata (metadata)
+    m_metadata (metadata),
+    m_refCount (1)
 {}
 
-Packet 
+Ptr<Packet>
 Packet::CreateFragment (uint32_t start, uint32_t length) const
 {
   Buffer buffer = m_buffer.CreateFragment (start, length);
   NS_ASSERT (m_buffer.GetSize () >= start + length);
   uint32_t end = m_buffer.GetSize () - (start + length);
   PacketMetadata metadata = m_metadata.CreateFragment (start, end);
-  return Packet (buffer, m_tags, metadata);
+  // again, call the constructor directly rather than
+  // through Create because it is private.
+  return Ptr<Packet> (new Packet (buffer, m_tags, metadata), false);
 }
 
 uint32_t 
@@ -72,9 +125,9 @@ Packet::GetSize (void) const
 }
 
 void 
-Packet::AddAtEnd (Packet packet)
+Packet::AddAtEnd (Ptr<const Packet> packet)
 {
-  Buffer src = packet.m_buffer.CreateFullCopy ();
+  Buffer src = packet->m_buffer.CreateFullCopy ();
   Buffer dst = m_buffer.CreateFullCopy ();
 
   dst.AddAtEnd (src.GetSize ());
@@ -86,7 +139,7 @@ Packet::AddAtEnd (Packet packet)
    * XXX: we might need to merge the tag list of the
    * other packet into the current packet.
    */
-  m_metadata.AddAtEnd (packet.m_metadata);
+  m_metadata.AddAtEnd (packet->m_metadata);
 }
 void
 Packet::AddPaddingAtEnd (uint32_t size)
@@ -233,20 +286,20 @@ PacketTest::RunTests (void)
 {
   bool ok = true;
 
-  Packet pkt1 (reinterpret_cast<const uint8_t*> ("hello"), 5);
-  Packet pkt2 (reinterpret_cast<const uint8_t*> (" world"), 6);
-  Packet packet;
-  packet.AddAtEnd (pkt1);
-  packet.AddAtEnd (pkt2);
+  Ptr<Packet> pkt1 = Create<Packet> (reinterpret_cast<const uint8_t*> ("hello"), 5);
+  Ptr<Packet> pkt2 = Create<Packet> (reinterpret_cast<const uint8_t*> (" world"), 6);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddAtEnd (pkt1);
+  packet->AddAtEnd (pkt2);
   
-  if (packet.GetSize () != 11)
+  if (packet->GetSize () != 11)
     {
-      Failure () << "expected size 11, got " << packet.GetSize () << std::endl;
+      Failure () << "expected size 11, got " << packet->GetSize () << std::endl;
       ok = false;
     }
 
-  std::string msg = std::string (reinterpret_cast<const char *>(packet.PeekData ()),
-                                 packet.GetSize ());
+  std::string msg = std::string (reinterpret_cast<const char *>(packet->PeekData ()),
+                                 packet->GetSize ());
   if (msg != "hello world")
     {
       Failure () << "expected 'hello world', got '" << msg << "'" << std::endl;
