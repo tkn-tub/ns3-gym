@@ -192,7 +192,7 @@ Object::~Object ()
 Ptr<Object>
 Object::DoQueryInterface (InterfaceId iid) const
 {
-  NS_ASSERT (Check ());
+  NS_ASSERT (CheckLoose ());
   const Object *currentObject = this;
   do {
     NS_ASSERT (currentObject != 0);
@@ -227,24 +227,26 @@ Object::AddInterface (Ptr<Object> o)
 {
   NS_ASSERT (!m_disposed);
   NS_ASSERT (!o->m_disposed);
-  NS_ASSERT (Check ());
-  NS_ASSERT (o->Check ());
+  NS_ASSERT (CheckLoose ());
+  NS_ASSERT (o->CheckLoose ());
   Object *other = PeekPointer (o);
   Object *next = m_next;
   m_next = other->m_next;
   other->m_next = next;
-  NS_ASSERT (Check ());
-  NS_ASSERT (o->Check ());
+  NS_ASSERT (CheckLoose ());
+  NS_ASSERT (o->CheckLoose ());
 }
 
 void 
 Object::TraceConnect (std::string path, const CallbackBase &cb) const
 {
+  NS_ASSERT (CheckLoose ());
   GetTraceResolver ()->Connect (path, cb, TraceContext ());
 }
 void 
 Object::TraceDisconnect (std::string path, const CallbackBase &cb) const
 {
+  NS_ASSERT (CheckLoose ());
   GetTraceResolver ()->Disconnect (path, cb);
 }
 
@@ -264,6 +266,7 @@ Object::DoDispose (void)
 Ptr<TraceResolver>
 Object::GetTraceResolver (void) const
 {
+  NS_ASSERT (CheckLoose ());
   Ptr<InterfaceIdTraceResolver> resolver =
     Create<InterfaceIdTraceResolver> (this);
   return resolver;
@@ -273,6 +276,28 @@ bool
 Object::Check (void) const
 {
   return (m_count > 0);
+}
+
+/* In some cases, when an event is scheduled against a subclass of
+ * Object, and if no one owns a reference directly to this object, the
+ * object is alive, has a refcount of zero and the method ran when the
+ * event expires runs against the raw pointer which means that we are
+ * manipulating an object with a refcount of zero.  So, instead we
+ * check the aggregate reference count.
+ */
+bool 
+Object::CheckLoose (void) const
+{
+  uint32_t refcount = 0;
+  const Object *current = this;
+  do
+    {
+      refcount += current->m_count;
+      current = current->m_next;
+    }
+  while (current != this);
+
+  return (refcount > 0);
 }
 
 void
