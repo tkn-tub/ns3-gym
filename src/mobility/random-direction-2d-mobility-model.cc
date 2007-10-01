@@ -24,6 +24,9 @@
 #include <algorithm>
 #include <cmath>
 #include "random-direction-2d-mobility-model.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("RandomDirection2dMobilityModel");
 
 namespace ns3 {
 
@@ -138,6 +141,7 @@ RandomDirection2dMobilityModel::Start (void)
 void
 RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
 {
+  NS_LOG_FUNCTION;
   double speed = m_parameters->m_speedVariable->GetValue ();
   const Speed vector (std::cos (direction) * speed,
                       std::sin (direction) * speed,
