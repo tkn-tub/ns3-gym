@@ -18,6 +18,7 @@ def build(bld):
         'static-speed-mobility-model.cc',
         'random-waypoint-mobility-model.cc',
         'random-walk-2d-mobility-model.cc',
+        'random-direction-2d-mobility-model.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -37,4 +38,5 @@ def build(bld):
         'static-speed-mobility-model.h',
         'random-waypoint-mobility-model.h',
         'random-walk-2d-mobility-model.h',
+        'random-direction-2d-mobility-model.h',
         ]
