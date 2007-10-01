@@ -101,16 +101,16 @@ public:
      * \param macAddress
      * \return 
      */
-    Packet MarkAlive (Address macAddress);
+    Ptr<Packet> MarkAlive (Address macAddress);
     /**
      * \param waiting
      */
-    void MarkWaitReply (Packet waiting);
+    void MarkWaitReply (Ptr<Packet> waiting);
     /**
      * \param waiting
      * \return 
      */
-    Packet UpdateWaitReply (Packet waiting);
+    Ptr<Packet> UpdateWaitReply (Ptr<Packet> waiting);
     /**
      * \return True if the state of this entry is dead; false otherwise.
      */
@@ -144,7 +144,7 @@ public:
     ArpCacheEntryState_e m_state;
     Time m_lastSeen;
     Address m_macAddress;
-    Packet m_waiting;
+    Ptr<Packet> m_waiting;
   };
 
 private:

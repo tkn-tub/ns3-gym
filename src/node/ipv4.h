@@ -66,7 +66,7 @@ public:
    * inserted and consequently the protocol type has to change).
    *
    */
-  typedef Callback<void, bool, const Ipv4Route&, Packet, const Ipv4Header&> RouteReplyCallback;
+  typedef Callback<void, bool, const Ipv4Route&, Ptr<Packet>, const Ipv4Header&> RouteReplyCallback;
 
   /**
    * \brief Asynchronously requests a route for a given packet and IP header
@@ -103,7 +103,7 @@ public:
    */
   virtual bool RequestRoute (uint32_t ifIndex,
                              const Ipv4Header &ipHeader,
-                             Packet packet,
+                             Ptr<Packet> packet,
                              RouteReplyCallback routeReply) = 0;
 
 /**

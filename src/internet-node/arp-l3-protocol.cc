@@ -82,13 +82,12 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 }
 
 void 
-ArpL3Protocol::Receive(Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from)
+ArpL3Protocol::Receive(Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol, const Address &from)
 {
   NS_LOG_FUNCTION;
   ArpCache *cache = FindCache (device);
   ArpHeader arp;
-  Packet packet = p;
-  packet.RemoveHeader (arp);
+  packet->RemoveHeader (arp);
   
   NS_LOG_LOGIC ("ARP: received "<< (arp.IsRequest ()? "request" : "reply") <<
             " node="<<m_node->GetId ()<<", got request from " <<
@@ -118,7 +117,7 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, const Packet& p, uint16_t protocol
                         arp.GetSourceIpv4Address ()
                      << " for waiting entry -- flush");
               Address from_mac = arp.GetSourceHardwareAddress ();
-              Packet waiting = entry->MarkAlive (from_mac);
+              Ptr<Packet> waiting = entry->MarkAlive (from_mac);
 	      cache->GetInterface ()->Send (waiting, arp.GetSourceIpv4Address ());
             } 
           else 
@@ -145,7 +144,7 @@ ArpL3Protocol::Receive(Ptr<NetDevice> device, const Packet& p, uint16_t protocol
     }
 }
 bool 
-ArpL3Protocol::Lookup (Packet &packet, Ipv4Address destination, 
+ArpL3Protocol::Lookup (Ptr<Packet> packet, Ipv4Address destination, 
                        Ptr<NetDevice> device,
                        Address *hardwareDestination)
 {
@@ -197,7 +196,7 @@ ArpL3Protocol::Lookup (Packet &packet, Ipv4Address destination,
             {
               NS_LOG_LOGIC ("node="<<m_node->GetId ()<<
                         ", wait reply for " << destination << " valid -- drop previous");
-              Packet old = entry->UpdateWaitReply (packet);
+              Ptr<Packet> old = entry->UpdateWaitReply (packet);
 	      // XXX report 'old' packet as 'dropped'
             }
         }
@@ -229,8 +228,8 @@ ArpL3Protocol::SendArpRequest (ArpCache const *cache, Ipv4Address to)
 		  cache->GetInterface ()->GetAddress (), 
                   cache->GetDevice ()->GetBroadcast (),
                   to);
-  Packet packet;
-  packet.AddHeader (arp);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (arp);
   cache->GetDevice ()->Send (packet, cache->GetDevice ()->GetBroadcast (), PROT_NUMBER);
 }
 
@@ -246,8 +245,8 @@ ArpL3Protocol::SendArpReply (ArpCache const *cache, Ipv4Address toIp, Address to
   arp.SetReply (cache->GetDevice ()->GetAddress (),
                 cache->GetInterface ()->GetAddress (),
                 toMac, toIp);
-  Packet packet;
-  packet.AddHeader (arp);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (arp);
   cache->GetDevice ()->Send (packet, toMac, PROT_NUMBER);
 }
 

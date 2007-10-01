@@ -82,15 +82,15 @@ public:
   virtual int ShutdownSend (void);
   virtual int ShutdownRecv (void);
   virtual int Connect(const Address &address);
-  virtual int Send (const Packet &p);
-  virtual int SendTo(const Address &address,const Packet &p);
+  virtual int Send (Ptr<Packet> p);
+  virtual int SendTo(const Address &address,Ptr<Packet> p);
 
 
 private:
 
 private:
   void Init (void);
-  void ForwardUp (Ptr<NetDevice> device, const Packet &packet, 
+  void ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
                   uint16_t protocol, const Address &from);
   int DoBind (const PacketSocketAddress &address);
   virtual void DoDispose (void);

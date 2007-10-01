@@ -141,7 +141,7 @@ public:
  */
   virtual bool RequestRoute (uint32_t ifIndex,
                              Ipv4Header const &ipHeader,
-                             Packet packet,
+                             Ptr<Packet> packet,
                              RouteReplyCallback routeReply);
 
 /**

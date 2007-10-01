@@ -22,13 +22,13 @@
 #include <list>
 #include "ns3/channel.h"
 #include "ns3/ptr.h"
-#include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
 
 namespace ns3 {
 
 class PointToPointNetDevice;
+class Packet;
 
 /**
  * \brief Simple Point To Point Channel.
@@ -84,11 +84,11 @@ public:
    * \param device pointer to the netdevice to attach to the channel
    */
   void Attach (Ptr<PointToPointNetDevice> device);
-  bool TransmitStart (Packet& p, Ptr<PointToPointNetDevice> src,
+  bool TransmitStart (Ptr<Packet> p, Ptr<PointToPointNetDevice> src,
                       const Time& txTime);
   // Below two not needed
-  //bool TransmitEnd (Packet &p, Ptr<PointToPointNetDevice> src);
-  //void PropagationCompleteEvent(Packet p, Ptr<PointToPointNetDevice> src);
+  //bool TransmitEnd (Ptr<Packet> p, Ptr<PointToPointNetDevice> src);
+  //void PropagationCompleteEvent(Ptr<Packet> p, Ptr<PointToPointNetDevice> src);
 
 
   virtual uint32_t GetNDevices (void) const;

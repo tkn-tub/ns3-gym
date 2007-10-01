@@ -23,11 +23,12 @@
 
 #include "ns3/channel.h"
 #include "ns3/ptr.h"
-#include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
 
 namespace ns3 {
+
+class Packet;
 
 class CsmaNetDevice;
 
@@ -185,7 +186,7 @@ public:
    * \return True if the channel is not busy and the transmitting net
    * device is currently active.
    */
-  bool TransmitStart (Packet& p, uint32_t srcId);
+  bool TransmitStart (Ptr<Packet> p, uint32_t srcId);
   /**
    * \brief Indicates that the net device has finished transmitting
    * the packet over the channel
@@ -284,7 +285,7 @@ private:
    * packet to have been transmitted on the channel if the channel is
    * free.)
    */
-  Packet                              m_currentPkt;
+  Ptr<Packet>                         m_currentPkt;
   /**
    * Device Id of the source that is currently transmitting on the
    * channel. Or last source to have transmitted a packet on the

@@ -137,12 +137,12 @@ public:
    * This method will eventually call the private
    * SendTo method which must be implemented by subclasses.
    */ 
-  void Send(Packet p, Ipv4Address dest);
+  void Send(Ptr<Packet> p, Ipv4Address dest);
 
 protected:
   virtual void DoDispose (void);
 private:
-  virtual void SendTo (Packet p, Ipv4Address dest) = 0;
+  virtual void SendTo (Ptr<Packet> p, Ipv4Address dest) = 0;
   Ptr<NetDevice> m_netdevice;
   bool m_ifup;
   Ipv4Address m_address;

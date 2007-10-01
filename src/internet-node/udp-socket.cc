@@ -187,10 +187,10 @@ UdpSocket::Connect(const Address & address)
 }
 
 int 
-UdpSocket::Send (const Packet &p)
+UdpSocket::Send (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAM ("(" << p << ")");
 
   if (!m_connected)
     {
@@ -201,7 +201,7 @@ UdpSocket::Send (const Packet &p)
 }
 
 int 
-UdpSocket::DoSend (const Packet &p)
+UdpSocket::DoSend (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
   if (m_endPoint == 0)
@@ -223,10 +223,10 @@ UdpSocket::DoSend (const Packet &p)
 }
 
 int
-UdpSocket::DoSendTo (const Packet &p, const Address &address)
+UdpSocket::DoSendTo (Ptr<Packet> p, const Address &address)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ", " << address << ")");
+  NS_LOG_PARAM ("(" << p << ", " << address << ")");
 
   if (!m_connected)
     {
@@ -245,10 +245,10 @@ UdpSocket::DoSendTo (const Packet &p, const Address &address)
 }
 
 int
-UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
+UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ", " << dest << ", " << port << ")");
+  NS_LOG_PARAM ("(" << p << ", " << dest << ", " << port << ")");
 
   Ipv4Route routeToDest;
 
@@ -281,9 +281,9 @@ UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
         {
           Ipv4Address addri = ipv4->GetAddress (i);
           Ipv4Mask maski = ipv4->GetNetworkMask (i);
-          m_udp->Send (p, addri, addri.GetSubnetDirectedBroadcast (maski),
+          m_udp->Send (p->Copy (), addri, addri.GetSubnetDirectedBroadcast (maski),
                        m_endPoint->GetLocalPort (), port);
-          NotifyDataSent (p.GetSize ());
+          NotifyDataSent (p->GetSize ());
         }
     }
   else if (ipv4->GetIfIndexForDestination(dest, localIfIndex))
@@ -291,7 +291,7 @@ UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
       NS_LOG_LOGIC ("Route exists");
       m_udp->Send (p, ipv4->GetAddress (localIfIndex), dest,
 		   m_endPoint->GetLocalPort (), port);
-      NotifyDataSent (p.GetSize ());
+      NotifyDataSent (p->GetSize ());
       return 0;
     }
   else
@@ -305,10 +305,10 @@ UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
 }
 
 int 
-UdpSocket::SendTo(const Address &address, const Packet &p)
+UdpSocket::SendTo(const Address &address, Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << address << ", " << &p << ")");
+  NS_LOG_PARAM ("(" << address << ", " << p << ")");
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
@@ -316,10 +316,10 @@ UdpSocket::SendTo(const Address &address, const Packet &p)
 }
 
 void 
-UdpSocket::ForwardUp (const Packet &packet, Ipv4Address ipv4, uint16_t port)
+UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &packet << ", " << ipv4 << ", " << port << ")");
+  NS_LOG_PARAM ("(" << packet << ", " << ipv4 << ", " << port << ")");
 
   if (m_shutdownRecv)
     {
@@ -327,8 +327,7 @@ UdpSocket::ForwardUp (const Packet &packet, Ipv4Address ipv4, uint16_t port)
     }
   
   Address address = InetSocketAddress (ipv4, port);
-  Packet p = packet;
-  NotifyDataReceived (p, address);
+  NotifyDataReceived (packet, address);
 }
 
 } //namespace ns3
@@ -350,15 +349,15 @@ namespace ns3 {
 
 class UdpSocketTest: public Test
 {
-  Packet m_receivedPacket;
-  Packet m_receivedPacket2;
+  Ptr<Packet> m_receivedPacket;
+  Ptr<Packet> m_receivedPacket2;
 
 public:
   virtual bool RunTests (void);
   UdpSocketTest ();
 
-  void ReceivePacket (Ptr<Socket> socket, const Packet &packet, const Address &from);
-  void ReceivePacket2 (Ptr<Socket> socket, const Packet &packet, const Address &from);
+  void ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
+  void ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
 };
 
 
@@ -366,12 +365,12 @@ UdpSocketTest::UdpSocketTest ()
   : Test ("UdpSocket") {}
 
 
-void UdpSocketTest::ReceivePacket (Ptr<Socket> socket, const Packet &packet, const Address &from)
+void UdpSocketTest::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
 {
   m_receivedPacket = packet;
 }
 
-void UdpSocketTest::ReceivePacket2 (Ptr<Socket> socket, const Packet &packet, const Address &from)
+void UdpSocketTest::ReceivePacket2 (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
 {
   m_receivedPacket2 = packet;
 }
@@ -421,20 +420,21 @@ UdpSocketTest::RunTests (void)
   // ------ Now the tests ------------
 
   // Unicast test
-  m_receivedPacket = Packet ();
+  m_receivedPacket = Create<Packet> ();
   NS_TEST_ASSERT_EQUAL (txSocket->SendTo (InetSocketAddress (Ipv4Address("10.0.0.1"), 1234),
-                                          Packet (123)), 0);
+                                          Create<Packet> (123)), 0);
   Simulator::Run ();
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket.GetSize (), 123);
+  NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
 
 
   // Simple broadcast test
 
-  m_receivedPacket = Packet ();
+  m_receivedPacket = Create<Packet> ();
   NS_TEST_ASSERT_EQUAL (txSocket->SendTo (InetSocketAddress (Ipv4Address("255.255.255.255"), 1234),
-                                          Packet (123)), 0);
+                                          Create<Packet> (123)), 0);
   Simulator::Run ();
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket.GetSize (), 123);
+  NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
+
 
   // Broadcast test with multiple receiving sockets
 
@@ -444,13 +444,13 @@ UdpSocketTest::RunTests (void)
   rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket2, this));
   NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0);
 
-  m_receivedPacket = Packet ();
-  m_receivedPacket2 = Packet ();
+  m_receivedPacket = Create<Packet> ();
+  m_receivedPacket2 = Create<Packet> ();
   NS_TEST_ASSERT_EQUAL (txSocket->SendTo (InetSocketAddress (Ipv4Address("255.255.255.255"), 1234),
-                                          Packet (123)), 0);
+                                          Create<Packet> (123)), 0);
   Simulator::Run ();
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket.GetSize (), 123);
-  NS_TEST_ASSERT_EQUAL (m_receivedPacket2.GetSize (), 123);
+  NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
+  NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 123);
 
   return result;
 }

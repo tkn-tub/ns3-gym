@@ -116,20 +116,20 @@ int main (int argc, char *argv[])
   tag.SetSimpleValue (0x56);
 
   // store the tag in a packet.
-  Packet p;
-  p.AddTag (tag);
+  Ptr<Packet> p = Create<Packet> ();
+  p->AddTag (tag);
 
   // create a copy of the packet
-  Packet aCopy = p;
+  Ptr<Packet> aCopy = p->Copy ();
 
   // read the tag from the packet copy
   MyTag tagCopy;
-  p.PeekTag (tagCopy);
+  p->PeekTag (tagCopy);
 
   // the copy and the original are the same !
   NS_ASSERT (tagCopy.GetSimpleValue () == tag.GetSimpleValue ());
 
-  aCopy.PrintTags (std::cout);
+  aCopy->PrintTags (std::cout);
   std::cout << std::endl;
 
   return 0;

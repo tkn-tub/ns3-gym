@@ -84,8 +84,7 @@ UdpEchoServer::StartApplication (void)
       m_socket->Bind (m_local);
     }
 
-  m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
-    const Address &>) MakeCallback(&UdpEchoServer::Receive, this));
+  m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::Receive, this));
 }
 
 void 
@@ -95,15 +94,15 @@ UdpEchoServer::StopApplication ()
 
   if (!m_socket) 
     {
-      m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
-        const Address &>) NULL);
+      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>, Ptr<Packet>,
+                                const Address &> ());
     }
 }
 
 void
 UdpEchoServer::Receive(
   Ptr<Socket> socket, 
-  const Packet &packet,
+  Ptr<Packet> packet,
   const Address &from) 
 {
   NS_LOG_FUNCTION;
@@ -112,7 +111,7 @@ UdpEchoServer::Receive(
   if (InetSocketAddress::IsMatchingType (from))
     {
       InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO ("Received " << packet.GetSize() << " bytes from " << 
+      NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
         address.GetIpv4());
 
       NS_LOG_LOGIC ("Echoing packet");

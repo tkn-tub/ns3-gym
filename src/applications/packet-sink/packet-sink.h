@@ -73,7 +73,7 @@ private:
                   const Address &local,
                   std::string iid);
 
-  virtual void Receive (Ptr<Socket> socket, const Packet& packet, const Address& from);
+  virtual void Receive (Ptr<Socket> socket, Ptr<Packet> packet, const Address& from);
 
   Ptr<Socket>     m_socket;       // Associated socket
   Address         m_local;        // Local address to bind to

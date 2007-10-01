@@ -122,45 +122,45 @@ UdpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 }
 
 void 
-UdpL4Protocol::Receive(Packet& packet, 
+UdpL4Protocol::Receive(Ptr<Packet> packet, 
                        Ipv4Address const &source,
                        Ipv4Address const &destination,
                        Ptr<Ipv4Interface> interface)
 {
   NS_LOG_FUNCTION; 
-  NS_LOG_PARAM ("(" << &packet << ", " << source << ", " << destination << 
+  NS_LOG_PARAM ("(" << packet << ", " << source << ", " << destination << 
     ")");
 
   UdpHeader udpHeader;
-  packet.RemoveHeader (udpHeader);
+  packet->RemoveHeader (udpHeader);
   Ipv4EndPointDemux::EndPoints endPoints =
     m_endPoints->Lookup (destination, udpHeader.GetDestination (),
                          source, udpHeader.GetSource (), interface);
   for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
        endPoint != endPoints.end (); endPoint++)
     {
-      (*endPoint)->ForwardUp (packet, source, udpHeader.GetSource ());
+      (*endPoint)->ForwardUp (packet->Copy (), source, udpHeader.GetSource ());
     }
 }
 
 void
-UdpL4Protocol::Send (Packet packet, 
-           Ipv4Address saddr, Ipv4Address daddr, 
-           uint16_t sport, uint16_t dport)
+UdpL4Protocol::Send (Ptr<Packet> packet, 
+                     Ipv4Address saddr, Ipv4Address daddr, 
+                     uint16_t sport, uint16_t dport)
 {
   NS_LOG_FUNCTION; 
-  NS_LOG_PARAM ("(" << &packet << ", " << saddr << ", " << daddr << ", " << 
+  NS_LOG_PARAM ("(" << packet << ", " << saddr << ", " << daddr << ", " << 
     sport << ", " << dport << ")");
 
   UdpHeader udpHeader;
   udpHeader.SetDestination (dport);
   udpHeader.SetSource (sport);
-  udpHeader.SetPayloadSize (packet.GetSize ());
+  udpHeader.SetPayloadSize (packet->GetSize ());
   udpHeader.InitializeChecksum (saddr,
-                               daddr,
-                               PROT_NUMBER);
+                                daddr,
+                                PROT_NUMBER);
 
-  packet.AddHeader (udpHeader);
+  packet->AddHeader (udpHeader);
 
   Ptr<Ipv4L3Protocol> ipv4 = m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
   if (ipv4 != 0)

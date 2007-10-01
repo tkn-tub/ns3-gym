@@ -129,7 +129,7 @@ public:
    *    - implement a per-NetDevice ARP cache
    *    - send back arp replies on the right device
    */
-  void Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from);
+  void Receive( Ptr<NetDevice> device, Ptr<Packet> p, uint16_t protocol, const Address &from);
 
   /**
    * \param packet packet to send
@@ -140,7 +140,7 @@ public:
    * Higher-level layers call this method to send a packet
    * down the stack to the MAC and PHY layers.
    */
-  void Send (Packet const &packet, Ipv4Address source, 
+  void Send (Ptr<Packet> packet, Ipv4Address source, 
 	     Ipv4Address destination, uint8_t protocol);
 
 
@@ -162,7 +162,7 @@ public:
                         uint32_t interface);
 
   void Lookup (Ipv4Header const &ipHeader,
-               Packet packet,
+               Ptr<Packet> packet,
                Ipv4RoutingProtocol::RouteReplyCallback routeReply);
 
   uint32_t GetNRoutes (void);
@@ -216,18 +216,18 @@ protected:
 private:
   void Lookup (uint32_t ifIndex,
                Ipv4Header const &ipHeader,
-               Packet packet,
+               Ptr<Packet> packet,
                Ipv4RoutingProtocol::RouteReplyCallback routeReply);
 
   void SendRealOut (bool found,
                     Ipv4Route const &route,
-                    Packet packet,
+                    Ptr<Packet> packet,
                     Ipv4Header const &ipHeader);
   bool Forwarding (uint32_t ifIndex, 
-                   Packet const &packet, 
+                   Ptr<Packet> packet, 
                    Ipv4Header &ipHeader, 
                    Ptr<NetDevice> device);
-  void ForwardUp (Packet p, Ipv4Header const&ip, Ptr<Ipv4Interface> incomingInterface);
+  void ForwardUp (Ptr<Packet> p, Ipv4Header const&ip, Ptr<Ipv4Interface> incomingInterface);
   uint32_t AddIpv4Interface (Ptr<Ipv4Interface> interface);
   void SetupLoopback (void);
 
@@ -241,9 +241,9 @@ private:
   uint8_t m_defaultTtl;
   uint16_t m_identification;
   Ptr<Node> m_node;
-  CallbackTraceSource<Packet const &, uint32_t> m_txTrace;
-  CallbackTraceSource<Packet const &, uint32_t> m_rxTrace;
-  CallbackTraceSource<Packet const &> m_dropTrace;
+  CallbackTraceSource<Ptr<const Packet>, uint32_t> m_txTrace;
+  CallbackTraceSource<Ptr<const Packet>, uint32_t> m_rxTrace;
+  CallbackTraceSource<Ptr<const Packet> > m_dropTrace;
 
   Ipv4RoutingProtocolList m_routingProtocols;
 

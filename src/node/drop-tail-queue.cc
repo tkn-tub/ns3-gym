@@ -58,10 +58,10 @@ DropTailQueue::GetMaxPackets (void)
 }
 
 bool 
-DropTailQueue::DoEnqueue (const Packet& p)
+DropTailQueue::DoEnqueue (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAM ("(" << p << ")");
 
   if (m_packets.size () >= m_maxPackets)
     {
@@ -74,11 +74,10 @@ DropTailQueue::DoEnqueue (const Packet& p)
   return true;
 }
 
-bool
-DropTailQueue::DoDequeue (Packet& p)
+Ptr<Packet>
+DropTailQueue::DoDequeue (void)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
 
   if (m_packets.empty()) 
     {
@@ -86,19 +85,18 @@ DropTailQueue::DoDequeue (Packet& p)
       return false;
     }
 
-  p = m_packets.front ();
+  Ptr<Packet> p = m_packets.front ();
   m_packets.pop ();
 
-  NS_LOG_LOGIC ("Popped " << &p);
+  NS_LOG_LOGIC ("Popped " << p);
 
-  return true;
+  return p;
 }
 
-bool
-DropTailQueue::DoPeek (Packet& p)
+Ptr<Packet>
+DropTailQueue::DoPeek (void)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
 
   if (m_packets.empty()) 
     {
@@ -106,9 +104,9 @@ DropTailQueue::DoPeek (Packet& p)
       return false;
     }
 
-  p = m_packets.front ();
+  Ptr<Packet> p = m_packets.front ();
 
-  return true;
+  return p;
 }
 
 }; // namespace ns3

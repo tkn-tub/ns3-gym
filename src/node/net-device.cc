@@ -24,6 +24,7 @@
 #include "ns3/object.h"
 #include "ns3/log.h"
 #include "ns3/trace-resolver.h"
+#include "ns3/packet.h"
 #include "channel.h"
 #include "net-device.h"
 #include "node.h"
@@ -212,7 +213,7 @@ NetDevice::DisablePointToPoint (void)
 
 // Receive packet from above
 bool 
-NetDevice::Send(const Packet& p, const Address& dest, uint16_t protocolNumber)
+NetDevice::Send(Ptr<Packet> p, const Address& dest, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION;
   if (m_isUp)
@@ -234,12 +235,12 @@ NetDevice::GetChannel (void) const
 
 // Receive packets from below
 bool
-NetDevice::ForwardUp(const Packet& p, uint16_t param, const Address &from)
+NetDevice::ForwardUp(Ptr<Packet> p, uint16_t param, const Address &from)
 {
   NS_LOG_FUNCTION;
   bool retval = false;
 
-  NS_LOG_LOGIC ("UID is " << p.GetUid() << " device is: " << GetName());
+  NS_LOG_LOGIC ("UID is " << p->GetUid() << " device is: " << GetName());
   
   if (!m_receiveCallback.IsNull ())
     {

@@ -78,30 +78,28 @@ void PacketSink::StartApplication()    // Called at time specified by Start
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind (m_local);
     }
-  m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
-    const Address &>) MakeCallback(&PacketSink::Receive, this));
+  m_socket->SetRecvCallback(MakeCallback(&PacketSink::Receive, this));
 }
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
 {
   if (!m_socket) 
     {
-      m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
-                               const Address &>) NULL);
+      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>, Ptr<Packet>, const Address &> ());
  
     }
 }
 
 // This LOG output inspired by the application on Joseph Kopena's wiki
-void PacketSink::Receive(Ptr<Socket> socket, const Packet &packet,
+void PacketSink::Receive(Ptr<Socket> socket, Ptr<Packet> packet,
                        const Address &from) 
 {
   if (InetSocketAddress::IsMatchingType (from))
     {
       InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO ("Received " << packet.GetSize() << " bytes from " << 
+      NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
         address.GetIpv4() << " [" << address << "]---'" << 
-        packet.PeekData() << "'");
+        packet->PeekData() << "'");
       // TODO:  Add a tracing source here
     }
 }

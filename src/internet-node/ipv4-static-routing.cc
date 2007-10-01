@@ -518,11 +518,11 @@ bool
 Ipv4StaticRouting::RequestRoute (
   uint32_t ifIndex,
   Ipv4Header const &ipHeader,
-  Packet packet,
+  Ptr<Packet> packet,
   RouteReplyCallback routeReply)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << ifIndex << &ipHeader << ", " << &packet << ", " << 
+  NS_LOG_PARAM ("(" << ifIndex << &ipHeader << ", " << packet << ", " << 
     &routeReply << ")");
 
   NS_LOG_LOGIC ("source = " << ipHeader.GetSource ());
@@ -542,7 +542,7 @@ Ipv4StaticRouting::RequestRoute (
 
           for (uint32_t i = 0; i < mRoute->GetNOutputInterfaces (); ++i)
             {
-              Packet p = packet;
+              Ptr<Packet> p = packet->Copy ();
               Ipv4Header h = ipHeader;
               Ipv4Route route = 
                 Ipv4Route::CreateHostRouteTo(h.GetDestination (), 

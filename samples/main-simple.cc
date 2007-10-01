@@ -14,7 +14,7 @@ static void
 GenerateTraffic (Ptr<Socket> socket, uint32_t size)
 {
   std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, tx bytes=" << size << std::endl;
-  socket->Send (Packet (size));
+  socket->Send (Create<Packet> (size));
   if (size > 0)
     {
       Simulator::Schedule (Seconds (0.5), &GenerateTraffic, socket, size - 50);
@@ -26,9 +26,9 @@ GenerateTraffic (Ptr<Socket> socket, uint32_t size)
 }
 
 static void
-SocketPrinter (Ptr<Socket> socket, const Packet &packet, const Address &from)
+SocketPrinter (Ptr<Socket> socket, Ptr<Packet> packet, const Address &from)
 {
-  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << packet.GetSize () << std::endl;
+  std::cout << "at=" << Simulator::Now ().GetSeconds () << "s, rx bytes=" << packet->GetSize () << std::endl;
 }
 
 static void

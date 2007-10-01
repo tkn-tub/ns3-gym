@@ -28,6 +28,7 @@
 #include "ns3/pcap-writer.h"
 #include "ns3/node-list.h"
 #include "ns3/node.h"
+#include "ns3/packet.h"
 
 #include "ipv4-l3-protocol.h"
 
@@ -80,7 +81,7 @@ PcapTrace::GetStream (uint32_t nodeId, uint32_t interfaceId)
 }
 
 void 
-PcapTrace::LogIp (TraceContext const &context, Packet const &p, uint32_t interfaceIndex)
+PcapTrace::LogIp (TraceContext const &context, Ptr<const Packet> p, uint32_t interfaceIndex)
 {
   NodeListIndex nodeIndex;
   context.GetElement (nodeIndex);
