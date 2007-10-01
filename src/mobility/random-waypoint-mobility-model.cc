@@ -1,3 +1,22 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2007 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
 #include <cmath>
 #include "ns3/simulator.h"
 #include "ns3/random-variable.h"
@@ -98,13 +117,15 @@ RandomWaypointMobilityModel::RandomWaypointMobilityModel (Ptr<RandomWaypointMobi
 void
 RandomWaypointMobilityModel::BeginPause (void)
 {
-  m_event = Simulator::Schedule (m_pause, &RandomWaypointMobilityModel::Start, this);
+  Time pause = Seconds (m_parameters->m_pause->GetValue ());
+  m_helper.Pause ();
+  NotifyCourseChange ();
+  m_event = Simulator::Schedule (pause, &RandomWaypointMobilityModel::Start, this);
 }
 
 void
 RandomWaypointMobilityModel::Start (void)
 {
-  m_pause = Seconds (m_parameters->m_pause->GetValue ());
   Position m_current = m_helper.GetCurrentPosition ();
   Position destination = m_parameters->m_position->Get ();
   double speed = m_parameters->m_speed->GetValue ();
@@ -113,7 +134,7 @@ RandomWaypointMobilityModel::Start (void)
   double dz = (destination.z - m_current.z);
   double k = speed / std::sqrt (dx*dx + dy*dy + dz*dz);
 
-  m_helper.Reset (Speed (k*dx, k*dy, k*dz), m_pause);
+  m_helper.Reset (Speed (k*dx, k*dy, k*dz));
   Time travelDelay = Seconds (CalculateDistance (destination, m_current) / speed);
   m_event = Simulator::Schedule (travelDelay,
 				 &RandomWaypointMobilityModel::BeginPause, this);
