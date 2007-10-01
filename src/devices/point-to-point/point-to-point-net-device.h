@@ -38,12 +38,16 @@ namespace ns3 {
 class Queue;
 class PointToPointChannel;
 
+/**
+ * \brief hold in a TraceContext the type of trace source from a PointToPointNetDevice
+ */
 class PointToPointTraceType : public TraceContextElement
 {
 public:
   PointToPointTraceType ();
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
+  std::string GetTypeName (void) const;
 };
 
 /**
@@ -152,6 +156,12 @@ public:
    */
   void Receive (Packet& p);
 protected:
+  /**
+   * Create a Trace Resolver for events in the net device.
+   *
+   * @see class TraceResolver
+   */
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   virtual void DoDispose (void);
   /**
    * Get a copy of the attached Queue.
@@ -237,12 +247,6 @@ private:
    *
    */
   void TransmitComplete(void);
-  /**
-   * Create a Trace Resolver for events in the net device.
-   *
-   * @see class TraceResolver
-   */
-  virtual TraceResolver* DoCreateTraceResolver (TraceContext const &context);
   virtual bool DoNeedsArp (void) const;
   /**
    * Enumeration of the states of the transmit machine of the net device.
@@ -290,7 +294,7 @@ private:
    * @see class CallBackTraceSource
    * @see class TraceResolver
    */
-  CallbackTraceSource<Packet &> m_rxTrace;
+  CallbackTraceSource<const Packet &> m_rxTrace;
   /** 
    * Default data rate.  Used for all newly created p2p net devices
    */

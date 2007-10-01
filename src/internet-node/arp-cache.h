@@ -48,7 +48,7 @@ public:
    * \param device The hardware NetDevice associated with this ARP chache
    * \param interface the Ipv4Interface associated with this ARP chache
    */
-  ArpCache (Ptr<NetDevice> device, Ipv4Interface *interface);
+  ArpCache (Ptr<NetDevice> device, Ptr<Ipv4Interface> interface);
   ~ArpCache ();
   /**
    * \return The NetDevice that this ARP cache is associated with
@@ -57,7 +57,7 @@ public:
   /**
    * \return the Ipv4Interface that this ARP cache is associated with
    */
-  Ipv4Interface *GetInterface (void) const;
+  Ptr<Ipv4Interface> GetInterface (void) const;
   
   void SetAliveTimeout (Time aliveTimeout);
   void SetDeadTimeout (Time deadTimeout);
@@ -152,7 +152,7 @@ private:
   typedef sgi::hash_map<Ipv4Address, ArpCache::Entry *, Ipv4AddressHash>::iterator CacheI;
 
   Ptr<NetDevice> m_device;
-  Ipv4Interface *m_interface;
+  Ptr<Ipv4Interface> m_interface;
   Time m_aliveTimeout;
   Time m_deadTimeout;
   Time m_waitReplyTimeout;

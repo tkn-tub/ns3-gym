@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -63,8 +62,8 @@ private:
   virtual void DoSet (const Position &position);
   virtual Speed DoGetSpeed (void) const;
 
-  void ParentChanged (Ptr<const MobilityModel> model);
-  void ChildChanged (Ptr<const MobilityModel> model);
+  void ParentChanged (const TraceContext &context, Ptr<const MobilityModel> model);
+  void ChildChanged (const TraceContext &context, Ptr<const MobilityModel> model);
 
   Ptr<MobilityModel> m_child;
   Ptr<MobilityModel> m_parent;

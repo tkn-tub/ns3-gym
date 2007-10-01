@@ -21,9 +21,9 @@
 #include "ascii-trace.h"
 
 #include "ns3/trace-context.h"
-#include "ns3/trace-root.h"
 #include "ns3/simulator.h"
 #include "ns3/node.h"
+#include "ns3/node-list.h"
 #include "ns3/packet.h"
 #include "ns3/queue.h"
 
@@ -41,19 +41,19 @@ void
 AsciiTrace::TraceAllQueues (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/devices/*/queue/enqueue",
+  NodeList::Connect ("/nodes/*/devices/*/queue/enqueue",
                       MakeCallback (&AsciiTrace::LogDevQueueEnqueue, this));
-  TraceRoot::Connect ("/nodes/*/devices/*/queue/dequeue",
+  NodeList::Connect ("/nodes/*/devices/*/queue/dequeue",
                       MakeCallback (&AsciiTrace::LogDevQueueDequeue, this));
-  TraceRoot::Connect ("/nodes/*/devices/*/queue/drop",
+  NodeList::Connect ("/nodes/*/devices/*/queue/drop",
                       MakeCallback (&AsciiTrace::LogDevQueueDrop, this));
 }
 void
 AsciiTrace::TraceAllNetDeviceRx (void)
 {
   Packet::EnableMetadata ();
-  TraceRoot::Connect ("/nodes/*/devices/*/rx",
-                      MakeCallback (&AsciiTrace::LogDevRx, this));
+  NodeList::Connect ("/nodes/*/devices/*/rx",
+                     MakeCallback (&AsciiTrace::LogDevRx, this));
 }
 
 void 
@@ -92,7 +92,7 @@ AsciiTrace::LogDevQueueDrop (TraceContext const &context,
   m_os << std::endl;
 }
 void 
-AsciiTrace::LogDevRx (TraceContext const &context, Packet &p)
+AsciiTrace::LogDevRx (TraceContext const &context, const Packet &p)
 {
   m_os << "r " << Simulator::Now ().GetSeconds () << " ";
   context.Print (m_os);

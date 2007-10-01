@@ -328,6 +328,8 @@ private:
   static uint32_t m_globalUid;
 };
 
+std::ostream& operator<< (std::ostream& os, const Packet &packet);
+
 /**
  * \defgroup packetperf Packet Performance
  * The current implementation of the byte buffers and tag list is based

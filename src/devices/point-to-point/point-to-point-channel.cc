@@ -23,9 +23,9 @@
 #include "point-to-point-net-device.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("PointToPointChannel");
+NS_LOG_COMPONENT_DEFINE ("PointToPointChannel");
 
 namespace ns3 {
 
@@ -39,7 +39,7 @@ PointToPointChannel::PointToPointChannel()
   m_delay (Seconds(0)),
   m_nDevices(0)
 {
-  NS_DEBUG("PointToPointChannel::PointToPointChannel ()");
+  NS_LOG_FUNCTION;
 }
 
 PointToPointChannel::PointToPointChannel(
@@ -51,8 +51,9 @@ PointToPointChannel::PointToPointChannel(
   m_delay (delay),
   m_nDevices(0)
 {
-  NS_DEBUG("PointToPointChannel::PointToPointChannel (" << Channel::GetName() 
-    << ", " << bps.GetBitRate() << ", " << delay << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << Channel::GetName() << ", " << bps.GetBitRate() << 
+    ", " << delay << ")");
 }
 
 PointToPointChannel::PointToPointChannel(
@@ -65,14 +66,16 @@ PointToPointChannel::PointToPointChannel(
   m_delay (delay),
   m_nDevices(0)
 {
-  NS_DEBUG("PointToPointChannel::PointToPointChannel (" << name << ", " << 
-    bps.GetBitRate() << ", " << delay << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << name << ", " << bps.GetBitRate() << ", " << 
+    delay << ")");
 }
 
-  void
+void
 PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
 {
-  NS_DEBUG("PointToPointChannel::Attach (" << device << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << device << ")");
   NS_ASSERT(m_nDevices < N_DEVICES && "Only two devices permitted");
   NS_ASSERT(device != 0);
 
@@ -90,14 +93,14 @@ PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
     }
 }
 
-bool PointToPointChannel::TransmitStart(Packet& p,
+bool
+PointToPointChannel::TransmitStart(Packet& p,
                                         Ptr<PointToPointNetDevice> src,
                                         const Time& txTime)
 {
-  NS_DEBUG ("PointToPointChannel::TransmitStart (" << &p << ", " << src << 
-            ")");
-  NS_DEBUG ("PointToPointChannel::TransmitStart (): UID is " << 
-            p.GetUid () << ")");
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &p << ", " << src << ")");
+  NS_LOG_LOGIC ("UID is " << p.GetUid () << ")");
 
   NS_ASSERT(m_link[0].m_state != INITIALIZING);
   NS_ASSERT(m_link[1].m_state != INITIALIZING);
@@ -116,12 +119,14 @@ bool PointToPointChannel::TransmitStart(Packet& p,
 uint32_t 
 PointToPointChannel::GetNDevices (void) const
 {
+  NS_LOG_FUNCTION;
   return m_nDevices;
 }
 
 Ptr<NetDevice>
 PointToPointChannel::GetDevice (uint32_t i) const
 {
+  NS_LOG_FUNCTION;
   NS_ASSERT(i < 2);
   return m_link[i].m_src;
 }
@@ -129,12 +134,14 @@ PointToPointChannel::GetDevice (uint32_t i) const
 const DataRate&
 PointToPointChannel::GetDataRate (void)
 {
+  NS_LOG_FUNCTION;
   return m_bps;
 }
 
 const Time&
 PointToPointChannel::GetDelay (void)
 {
+  NS_LOG_FUNCTION;
   return m_delay;
 }
 

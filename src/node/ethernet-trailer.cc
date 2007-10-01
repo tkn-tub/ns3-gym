@@ -20,11 +20,11 @@
  */
 
 #include "ns3/assert.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/trailer.h"
 #include "ethernet-trailer.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("EthernetTrailer");
+NS_LOG_COMPONENT_DEFINE ("EthernetTrailer");
 
 namespace ns3 {
 
@@ -62,7 +62,7 @@ EthernetTrailer::CheckFcs (const Packet& p) const
     {
       return true;
     } else {
-      NS_DEBUG("FCS calculation is not yet enabled" << std::endl);
+      NS_LOG_WARN ("FCS calculation is not yet enabled");
       return false;
     }
 }
@@ -70,7 +70,7 @@ EthernetTrailer::CheckFcs (const Packet& p) const
 void
 EthernetTrailer::CalcFcs (const Packet& p)
 {
-  NS_DEBUG("FCS calculation is not yet enabled" << std::endl);
+  NS_LOG_WARN ("FCS calculation is not yet enabled");
 }
 
 void

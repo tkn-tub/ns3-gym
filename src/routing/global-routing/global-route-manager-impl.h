@@ -1,5 +1,7 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
+ * Copyright 2007 University of Washington
+ * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -12,6 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors:  Craig Dowell (craigdo@ee.washington.edu)
+ *           Tom Henderson (tomhend@u.washington.edu)
  */
 
 #ifndef GLOBAL_ROUTE_MANAGER_IMPL_H
@@ -754,8 +759,8 @@ private:
     GlobalRoutingLinkRecord* prev_link);
   void SPFIntraAddRouter (SPFVertex* v);
   void SPFIntraAddTransit (SPFVertex* v);
-  uint32_t FindOutgoingInterfaceId (Ipv4Address a);
-  uint32_t FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask);
+  uint32_t FindOutgoingInterfaceId (Ipv4Address a, 
+    Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 };
 
 } // namespace ns3

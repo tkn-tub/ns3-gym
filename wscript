@@ -20,7 +20,7 @@ APPNAME = 'ns'
 srcdir = '.'
 blddir = 'build'
 
-def dist_hook(srcdir, blddir):
+def dist_hook():
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
 
@@ -37,7 +37,7 @@ def set_options(opt):
 
     opt.add_option('-d', '--debug-level',
                    action='callback',
-                   type="string", dest='debug_level', default='debug',
+                   type="string", dest='debug_level', default='ultradebug',
                    help=('Specify the debug level, does nothing if CFLAGS is set'
                          ' in the environment. [Allowed Values: debug, optimized].'
                          ' WARNING: this option only has effect '
@@ -85,8 +85,7 @@ def set_options(opt):
 
 
 def configure(conf):
-    if not conf.check_tool('compiler_cxx'):
-        Params.fatal("No suitable compiler found")
+    conf.check_tool('compiler_cxx')
 
     # create the second environment, set the variant and set its name
     variant_env = conf.env.copy()
@@ -95,6 +94,8 @@ def configure(conf):
         variant_name = 'debug'
     else:
         variant_name = debug_level
+
+    variant_env['INCLUDEDIR'] = os.path.join(variant_env['PREFIX'], 'include')
 
     if Params.g_options.enable_gcov:
         variant_name += '-gcov'
@@ -114,11 +115,12 @@ def configure(conf):
     
     if (os.path.basename(conf.env['CXX']).startswith("g++")
         and 'CXXFLAGS' not in os.environ):
-        variant_env.append_value('CXXFLAGS', ['-Wall', '-Werror'])
+        variant_env.append_value('CXXFLAGS', ['-Werror'])
 
     if 'debug' in Params.g_options.debug_level.lower():
         variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
+        variant_env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
     ## In optimized builds we still want debugging symbols, e.g. for
     ## profiling, and at least partially usable stack traces.
@@ -128,6 +130,13 @@ def configure(conf):
             ## this probably doesn't work for MSVC
             if flag.startswith('-g'):
                 variant_env.append_value('CXXFLAGS', flag)
+
+    ## in optimized builds, replace -O2 with -O3
+    if 'optimized' in Params.g_options.debug_level.lower():
+        lst = variant_env['CXXFLAGS']
+        for i, flag in enumerate(lst):
+            if flag == '-O2':
+                lst[i] = '-O3'
 
     if sys.platform == 'win32':
         if os.path.basename(conf.env['CXX']).startswith("g++"):
@@ -145,6 +154,9 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
 
 
 def build(bld):
+    print "Entering directory `%s/build'" % Params.g_build.m_curdirnode.abspath()
+    Params.g_cwd_launch = Params.g_build.m_curdirnode.abspath()
+
     bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
 
     variant_name = bld.env_of_name('default')['NS3_ACTIVE_VARIANT']
@@ -163,8 +175,13 @@ def build(bld):
 
     # process subfolders from here
     bld.add_subdirs('src')
-    bld.add_subdirs('samples utils examples')
+    bld.add_subdirs('samples utils examples tutorial')
 
+    ## Create a single ns3 library containing all modules
+    lib = bld.create_obj('cpp', 'shlib')
+    lib.name = 'ns3'
+    lib.target = 'ns3'
+    lib.add_objects = list(bld.env_of_name('default')['NS3_MODULES'])
 
 def shutdown():
     #import UnitTest

@@ -14,35 +14,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-// Port of ns-2/tcl/ex/simple.tcl to ns-3
-//
 // Network topology
 //
 //       n0    n1   n2   n3
 //       |     |    |    |
-//     =====================
+//       =================
+//              LAN
 //
-// - CBR/UDP flows from n0 to n1, and from n3 to n0
-// - UDP packet size of 210 bytes, with per-packet interval 0.00375 sec.
-//   (i.e., DataRate of 448,000 bps)
+// - CBR/UDP flows from n0 to n1 and from n3 to n0
 // - DropTail queues 
 // - Tracing of queues and packet receptions to file "csma-one-subnet.tr"
-
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <cassert>
 
 #include "ns3/command-line.h"
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
-#include "ns3/debug.h"
-
+#include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
-
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
 #include "ns3/internet-node.h"
@@ -50,7 +40,7 @@
 #include "ns3/csma-net-device.h"
 #include "ns3/csma-topology.h"
 #include "ns3/csma-ipv4-topology.h"
-#include "ns3/eui48-address.h"
+#include "ns3/mac48-address.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/ipv4.h"
@@ -58,109 +48,168 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/onoff-application.h"
 
-
 using namespace ns3;
 
+NS_LOG_COMPONENT_DEFINE ("CsmaOneSubnetExample");
 
-int main (int argc, char *argv[])
+int 
+main (int argc, char *argv[])
 {
-
-  // Users may find it convenient to turn on explicit debugging
-  // for selected modules; the below lines suggest how to do this
+//
+// Users may find it convenient to turn on explicit debugging
+// for selected modules; the below lines suggest how to do this
+//
 #if 0 
-  DebugComponentEnable("CsmaNetDevice");
-  DebugComponentEnable("Ipv4L3Protocol");
-  DebugComponentEnable("NetDevice");
-  DebugComponentEnable("Channel");
-  DebugComponentEnable("CsmaChannel");
-  DebugComponentEnable("PacketSocket");
+  LogComponentEnable ("CsmaOneSubnetExample", LOG_LEVEL_INFO);
+
+  LogComponentEnable("Object", LOG_LEVEL_ALL);
+  LogComponentEnable("Queue", LOG_LEVEL_ALL);
+  LogComponentEnable("DropTailQueue", LOG_LEVEL_ALL);
+  LogComponentEnable("Channel", LOG_LEVEL_ALL);
+  LogComponentEnable("CsmaChannel", LOG_LEVEL_ALL);
+  LogComponentEnable("NetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable("CsmaNetDevice", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable("PacketSocket", LOG_LEVEL_ALL);
+  LogComponentEnable("Socket", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpSocket", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpL4Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4StaticRouting", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4Interface", LOG_LEVEL_ALL);
+  LogComponentEnable("ArpIpv4Interface", LOG_LEVEL_ALL);
+  LogComponentEnable("Ipv4LoopbackInterface", LOG_LEVEL_ALL);
+  LogComponentEnable("OnOffApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
+  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
 #endif
-
-  // Set up some default values for the simulation.  Use the Bind()
-  // technique to tell the system what subclass of Queue to use,
-  // and what the queue limit is
-
-  // The below Bind command tells the queue factory which class to
-  // instantiate, when the queue factory is invoked in the topology code
+//
+// Set up default values for the simulation.  Use the DefaultValue::Bind()
+// technique to tell the system what subclass of Queue to use.  The Bind
+// command command tells the queue factory which class to instantiate when the
+// queue factory is invoked in the topology code
+//
   DefaultValue::Bind ("Queue", "DropTailQueue");
-
-  // Allow the user to override any of the defaults and the above
-  // Bind()s at run-time, via command-line arguments
+//
+// Allow the user to override any of the defaults and the above Bind() at
+// run-time, via command-line arguments
+//
   CommandLine::Parse (argc, argv);
-
-  // Here, we will explicitly create four nodes.  In more sophisticated
-  // topologies, we could configure a node factory.
+//
+// Explicitly create the nodes required by the topology (shown above).
+//
+  NS_LOG_INFO ("Create nodes.");
   Ptr<Node> n0 = Create<InternetNode> ();
   Ptr<Node> n1 = Create<InternetNode> (); 
   Ptr<Node> n2 = Create<InternetNode> (); 
   Ptr<Node> n3 = Create<InternetNode> ();
 
-  // We create the channels first without any IP addressing information
-  Ptr<CsmaChannel> channel0 = 
-    CsmaTopology::CreateCsmaChannel(
-      DataRate(5000000), MilliSeconds(2));
+  NS_LOG_INFO ("Create channels.");
+//
+// Explicitly create the channels required by the topology (shown above).
+//
+  Ptr<CsmaChannel> lan = CsmaTopology::CreateCsmaChannel(
+    DataRate(5000000), MilliSeconds(2));
 
-  uint32_t n0ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n0, channel0, 
-                                         Eui48Address("10:54:23:54:23:50"));
-  uint32_t n1ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n1, channel0,
-                                         Eui48Address("10:54:23:54:23:51"));
-  uint32_t n2ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n2, channel0,
-                                         Eui48Address("10:54:23:54:23:52"));
-  uint32_t n3ifIndex = CsmaIpv4Topology::AddIpv4CsmaNode (n3, channel0,
-                                         Eui48Address("10:54:23:54:23:53"));
+  NS_LOG_INFO ("Build Topology.");
+//
+// Now fill out the topology by creating the net devices required to connect
+// the nodes to the channels and hooking them up.  AddIpv4CsmaNetDevice will
+// create a net device, add a MAC address (in memory of the pink flamingo) and
+// connect the net device to a nodes and also to a channel. the 
+// AddIpv4CsmaNetDevice method returns a net device index for the net device
+// created on the node.  Interpret nd0 as the net device we created for node
+// zero.
+//
+  uint32_t nd0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, lan, 
+    Mac48Address("08:00:2e:00:00:00"));
 
-  // Later, we add IP addresses.  
-  CsmaIpv4Topology::AddIpv4Address (
-      n0, n0ifIndex, Ipv4Address("10.1.1.1"), Ipv4Mask("255.255.255.0"));
+  uint32_t nd1 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n1, lan, 
+    Mac48Address("08:00:2e:00:00:01"));
 
-  CsmaIpv4Topology::AddIpv4Address (
-      n1, n1ifIndex, Ipv4Address("10.1.1.2"), Ipv4Mask("255.255.255.0"));
+  uint32_t nd2 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n2, lan, 
+    Mac48Address("08:00:2e:00:00:02"));
 
-  CsmaIpv4Topology::AddIpv4Address (
-      n2, n2ifIndex, Ipv4Address("10.1.1.3"), Ipv4Mask("255.255.255.0"));
+  uint32_t nd3 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n3, lan, 
+    Mac48Address("08:00:2e:00:00:03"));
+//
+// We've got the "hardware" in place.  Now we need to add IP addresses.
+//
+  NS_LOG_INFO ("Assign IP Addresses.");
+//
+// XXX BUGBUG
+// Need a better way to get the interface index.  The point-to-point topology
+// as implemented can't return the index since it creates interfaces on both
+// sides (i.e., it does AddIpv4Addresses, not AddIpv4Address).  We need a
+// method on Ipv4 to find the interface index corresponding to a given ipv4 
+// address.
+//
+// Assign IP addresses to the net devices and associated interfaces
+// on the lan.  The AddIpv4Address method returns an Ipv4 interface index
+// which we do not need here.
+//
+  CsmaIpv4Topology::AddIpv4Address (n0, nd0, Ipv4Address("10.1.1.1"), 
+    Ipv4Mask("255.255.255.0"));
+
+  CsmaIpv4Topology::AddIpv4Address (n1, nd1, Ipv4Address("10.1.1.2"), 
+    Ipv4Mask("255.255.255.0"));
+
+  CsmaIpv4Topology::AddIpv4Address (n2, nd2, Ipv4Address("10.1.1.3"), 
+    Ipv4Mask("255.255.255.0"));
   
-  CsmaIpv4Topology::AddIpv4Address (
-      n3, n3ifIndex, Ipv4Address("10.1.1.4"), Ipv4Mask("255.255.255.0"));
-
-  // Create the OnOff application to send UDP datagrams of size
-  // 210 bytes at a rate of 448 Kb/s
-  // from n0 to n1
+  CsmaIpv4Topology::AddIpv4Address (n3, nd3, Ipv4Address("10.1.1.4"), 
+    Ipv4Mask("255.255.255.0"));
+//
+// Create an OnOff application to send UDP datagrams from node zero to node 1.
+//
+  NS_LOG_INFO ("Create Applications.");
+  uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
     n0, 
-    InetSocketAddress ("10.1.1.2", 80), 
+    InetSocketAddress ("10.1.1.2", port), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
-  // Start the application
+//
+// Tell the application when to start and stop.
+//
   ooff->Start(Seconds(1.0));
   ooff->Stop (Seconds(10.0));
-
-  // Create a similar flow from n3 to n0, starting at time 1.1 seconds
+// 
+// Create a similar flow from n3 to n0, starting at time 1.1 seconds
+//
   ooff = Create<OnOffApplication> (
     n3, 
-    InetSocketAddress ("10.1.1.1", 80), 
+    InetSocketAddress ("10.1.1.1", port), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
-  // Start the application
+
   ooff->Start(Seconds(1.1));
   ooff->Stop (Seconds(10.0));
- 
-  // Configure tracing of all enqueue, dequeue, and NetDevice receive events
-  // Trace output will be sent to the csma-one-subnet.tr file
+//
+// Configure tracing of all enqueue, dequeue, and NetDevice receive events.
+// Trace output will be sent to the file "csma-one-subnet.tr"
+//
+   NS_LOG_INFO ("Configure Tracing.");
   AsciiTrace asciitrace ("csma-one-subnet.tr");
   asciitrace.TraceAllNetDeviceRx ();
   asciitrace.TraceAllQueues ();
-
-  // Also configure some tcpdump traces; each interface will be traced
-  // The output files will be named 
-  // simple-point-to-point.pcap-<nodeId>-<interfaceId>
-  // and can be read by the "tcpdump -r" command (use "-tt" option to
-  // display timestamps correctly)
+//
+// Also configure some tcpdump traces; each interface will be traced.
+// The output files will be named:
+//     csma-one-subnet.pcap-<nodeId>-<interfaceId>
+// and can be read by the "tcpdump -r" command (use "-tt" option to
+// display timestamps correctly)
+//
   PcapTrace pcaptrace ("csma-one-subnet.pcap");
   pcaptrace.TraceAllIp ();
-
+//
+// Now, do the actual simulation.
+//
+  NS_LOG_INFO ("Run Simulation.");
   Simulator::Run ();
-    
   Simulator::Destroy ();
+  NS_LOG_INFO ("Done.");
 }

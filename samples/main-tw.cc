@@ -18,14 +18,14 @@
  */
 
 #include <string>
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/trace-writer.h"
 
 using namespace ns3;
 
 int main (int argc, char *argv[])
 {
-  NS_DEBUG_UNCOND("TraceWriter Test")
+  NS_LOG_UNCOND("TraceWriter Test")
 
   TraceWriter writer1;
   writer1.Open("trace-writer-test.txt");

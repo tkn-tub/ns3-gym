@@ -85,9 +85,7 @@ CommandLine::PrintHelp (void)
 void 
 CommandLine::Parse (int argc, char *argv[])
 {
-  argc--;
-  argv++;
-  while (argc > 0)
+  for (argc--, argv++; argc > 0; argc--, argv++)
     {
       // remove "--" or "-" heading.
       std::string param = *argv;
@@ -142,8 +140,6 @@ CommandLine::Parse (int argc, char *argv[])
               continue;
             }
         }
-      argc--;
-      argv++;
     }
 }
 

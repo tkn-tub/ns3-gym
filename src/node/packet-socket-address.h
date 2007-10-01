@@ -22,8 +22,8 @@
 
 #include "ns3/ptr.h"
 #include "address.h"
-#include "eui48-address.h"
-#include "eui64-address.h"
+#include "mac48-address.h"
+#include "mac64-address.h"
 #include "net-device.h"
 
 namespace ns3 {
@@ -54,7 +54,7 @@ class PacketSocketAddress
   /**
    * \param address a polymorphic address
    *
-   * Convert a polymorphic address to an Eui48Address instance.
+   * Convert a polymorphic address to an Mac48Address instance.
    * The conversion performs a type check.
    */
   static PacketSocketAddress ConvertFrom (const Address &address);

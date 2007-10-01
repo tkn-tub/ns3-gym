@@ -23,6 +23,7 @@
  *    - \ref config
  *    - a base class for objects which need to support reference counting 
  *      and QueryInterface: ns3::Object and ns3::InterfaceId
+ *    - a set of low-level trace facilities integrated in the ns3::Object system: \ref tracing
  *    - a ns3::ComponentManager which can be used to manage the creation
  *      of any object which derives from ns3::Object through an ns3::ClassId
  *    - a smart-pointer class ns3::Ptr designed to work together with ns3::Object
@@ -33,11 +34,10 @@
  *      ns3::Scheduler and ns3::SchedulerFactory
  *    - a simulator class used to create, schedule and cancel events: ns3::Simulator
  *
- * The "common" module contains:
+ * The "core" module contains:
  *    - a packet class to create and manipulate simulation packets: ns3::Packet, ns3::Header, 
  *      and ns3::Trailer. This packet class also supports per-packet ns3::Tag which are
  *      globs of data which can be attached to any packet.
- *    - a set of low-level trace facilities: \ref lowleveltracing
  *
  * The "node" module contains:
  *    - a ns3::Node base class which should be subclassed by any new type of

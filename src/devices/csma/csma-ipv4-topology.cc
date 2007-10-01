@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include "ns3/assert.h"
-#include "ns3/debug.h"
 #include "ns3/fatal-error.h"
 #include "ns3/nstime.h"
 #include "ns3/internet-node.h"
@@ -35,82 +34,79 @@
 namespace ns3 {
 
 uint32_t
-CsmaIpv4Topology::AddIpv4CsmaNode(Ptr<Node> n1,
-                                      Ptr<CsmaChannel> ch,
-                                      Eui48Address addr)
+CsmaIpv4Topology::AddIpv4CsmaNetDevice(
+  Ptr<Node> node,
+  Ptr<CsmaChannel> channel,
+  Mac48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
   // assume full-duplex
-  Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr, 
-                                                      ns3::CsmaNetDevice::IP_ARP,
-                                                      true, true);
-  nd0->AddQueue(q);
-  nd0->Attach (ch);
-  return nd0->GetIfIndex ();
+  Ptr<CsmaNetDevice> nd = Create<CsmaNetDevice> (node, addr, 
+    ns3::CsmaNetDevice::IP_ARP, true, true);
+
+  nd->AddQueue(q);
+  nd->Attach (channel);
+  return nd->GetIfIndex ();
 }
 
 
 void
 CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
-                                         Ptr<CsmaChannel> ch,
-                                         Eui48Address addr)
+                                     Ptr<CsmaChannel> ch,
+                                     Mac48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
   Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr,
-                                                      ns3::CsmaNetDevice::LLC,
-                                                      true, false);
+                                                  ns3::CsmaNetDevice::LLC,
+                                                  true, false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
   Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr,
-                                                      ns3::CsmaNetDevice::LLC,
-                                                      false, true);
+                                                  ns3::CsmaNetDevice::LLC,
+                                                  false, true);
   nd1->AddQueue(q);
   nd1->Attach (ch);
 }
 
 void
 CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
-                                         Ptr<CsmaChannel> ch,
-                                         Eui48Address addr)
+                                     Ptr<CsmaChannel> ch,
+                                     Mac48Address addr)
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
   Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr,
-                                                      ns3::CsmaNetDevice::RAW,
-                                                      true, false);
+                                                  ns3::CsmaNetDevice::RAW,
+                                                  true, false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
   Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr,
-                                                      ns3::CsmaNetDevice::RAW,
-                                                      false, true);
+                                                  ns3::CsmaNetDevice::RAW,
+                                                  false, true);
   nd1->AddQueue(q);
   nd1->Attach (ch);
 }
 
-void
-CsmaIpv4Topology::AddIpv4Address(Ptr<Node> n1,
-                                       int ndNum,
-                                       const Ipv4Address& addr1,
-                                       const Ipv4Mask& netmask1)
+uint32_t
+CsmaIpv4Topology::AddIpv4Address(
+  Ptr<Node>             node,
+  uint32_t              netDeviceNumber,
+  const Ipv4Address     address,
+  const Ipv4Mask        mask)
 {
+  Ptr<NetDevice> nd = node->GetDevice(netDeviceNumber);
 
-  // Duplex link is assumed to be subnetted as a /30
-  // May run this unnumbered in the future?
-  Ipv4Mask netmask(netmask1);
+  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+  uint32_t ifIndex = ipv4->AddInterface (nd);
 
-  Ptr<NetDevice> nd1 = n1->GetDevice(ndNum);
-
-  Ptr<Ipv4> ip1 = n1->QueryInterface<Ipv4> (Ipv4::iid);
-  uint32_t index1 = ip1->AddInterface (nd1);
-
-  ip1->SetAddress (index1, addr1);
-  ip1->SetNetworkMask (index1, netmask);
-  ip1->SetUp (index1);
-
+  ipv4->SetAddress (ifIndex, address);
+  ipv4->SetNetworkMask (ifIndex, mask);
+  ipv4->SetUp (ifIndex);
+  return ifIndex;
 }
 
 void
@@ -133,7 +129,7 @@ CsmaIpv4Topology::AddIpv4Routes (
           found = true;
         }
     }
-  NS_ASSERT(found);
+  NS_ASSERT (found);
 
   uint32_t index2 = 0;
   found = false;
@@ -145,7 +141,7 @@ CsmaIpv4Topology::AddIpv4Routes (
           found = true;
         }
     }
-  NS_ASSERT(found);
+  NS_ASSERT (found);
 
   ip1->AddHostRouteTo (ip2-> GetAddress (index2), index1);
   ip2->AddHostRouteTo (ip1-> GetAddress (index1), index2); 

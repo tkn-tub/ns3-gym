@@ -22,7 +22,6 @@
 // Topology helper for Csma channels in ns3.
 
 #include "ns3/assert.h"
-#include "ns3/debug.h"
 #include "ns3/queue.h"
 
 #include "csma-channel.h"

@@ -21,16 +21,17 @@
 #include <list>
 #include "ns3/assert.h"
 #include "ns3/fatal-error.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "packet-metadata.h"
 #include "buffer.h"
 #include "chunk-registry.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("PacketMetadata");
+NS_LOG_COMPONENT_DEFINE ("PacketMetadata");
 
 namespace ns3 {
 
 bool PacketMetadata::m_enable = false;
+bool PacketMetadata::m_metadataSkipped = false;
 uint32_t PacketMetadata::m_maxSize = 0;
 uint16_t PacketMetadata::m_chunkUid = 0;
 PacketMetadata::DataFreeList PacketMetadata::m_freeList;
@@ -47,6 +48,13 @@ PacketMetadata::DataFreeList::~DataFreeList ()
 void 
 PacketMetadata::Enable (void)
 {
+  NS_ASSERT_MSG (!m_metadataSkipped,
+                 "Error: attempting to enable the packet metadata "
+                 "subsystem too late in the simulation, which is not allowed.\n"
+                 "A common cause for this problem is to enable ASCII tracing "
+                 "after sending any packets.  One way to fix this problem is "
+                 "to call ns3::PacketMetadata::Enable () near the beginning of"
+                 " the program, before any packets are sent.");
   m_enable = true;
 }
 
@@ -610,7 +618,7 @@ PacketMetadata::ReadItems (uint16_t current,
 struct PacketMetadata::Data *
 PacketMetadata::Create (uint32_t size)
 {
-  NS_DEBUG ("create size="<<size<<", max="<<m_maxSize);
+  NS_LOG_LOGIC ("create size="<<size<<", max="<<m_maxSize);
   if (size > m_maxSize)
     {
       m_maxSize = size;
@@ -621,21 +629,21 @@ PacketMetadata::Create (uint32_t size)
       m_freeList.pop_back ();
       if (data->m_size >= size) 
         {
-          NS_DEBUG ("create found size="<<data->m_size);
+          NS_LOG_LOGIC ("create found size="<<data->m_size);
           data->m_count = 1;
           return data;
         }
       PacketMetadata::Deallocate (data);
-      NS_DEBUG ("create dealloc size="<<data->m_size);
+      NS_LOG_LOGIC ("create dealloc size="<<data->m_size);
     }
-  NS_DEBUG ("create alloc size="<<m_maxSize);
+  NS_LOG_LOGIC ("create alloc size="<<m_maxSize);
   return PacketMetadata::Allocate (m_maxSize);
 }
 
 void
 PacketMetadata::Recycle (struct PacketMetadata::Data *data)
 {
-  NS_DEBUG ("recycle size="<<data->m_size<<", list="<<m_freeList.size ());
+  NS_LOG_LOGIC ("recycle size="<<data->m_size<<", list="<<m_freeList.size ());
   NS_ASSERT (data->m_count == 0);
   if (m_freeList.size () > 1000 ||
       data->m_size < m_maxSize) 
@@ -686,8 +694,11 @@ PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
 {
   if (!m_enable)
     {
+      m_metadataSkipped = true;
       return;
     }
+  NS_LOG_PARAM ("(uid=" << uid << ", size=" << size << ")");
+
   struct PacketMetadata::SmallItem item;
   item.next = m_head;
   item.prev = 0xffff;
@@ -703,8 +714,10 @@ PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
 {
   if (!m_enable) 
     {
+      m_metadataSkipped = true;
       return;
     }
+  NS_LOG_PARAM ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
   uint32_t read = ReadItems (m_head, &item, &extraItem);
@@ -738,6 +751,7 @@ PacketMetadata::DoAddTrailer (uint32_t uid, uint32_t size)
 {
   if (!m_enable)
     {
+      m_metadataSkipped = true;
       return;
     }
   struct PacketMetadata::SmallItem item;
@@ -755,6 +769,7 @@ PacketMetadata::DoRemoveTrailer (uint32_t uid, uint32_t size)
 {
   if (!m_enable) 
     {
+      m_metadataSkipped = true;
       return;
     }
   struct PacketMetadata::SmallItem item;
@@ -790,6 +805,7 @@ PacketMetadata::AddAtEnd (PacketMetadata const&o)
 {
   if (!m_enable) 
     {
+      m_metadataSkipped = true;
       return;
     }
   if (m_tail == 0xffff)
@@ -846,6 +862,7 @@ PacketMetadata::AddPaddingAtEnd (uint32_t end)
 {
   if (!m_enable)
     {
+      m_metadataSkipped = true;
       return;
     }
 }
@@ -854,6 +871,7 @@ PacketMetadata::RemoveAtStart (uint32_t start)
 {
   if (!m_enable) 
     {
+      m_metadataSkipped = true;
       return;
     }
   NS_ASSERT (m_data != 0);
@@ -910,6 +928,7 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
 {
   if (!m_enable) 
     {
+      m_metadataSkipped = true;
       return;
     }
   NS_ASSERT (m_data != 0);
@@ -1133,10 +1152,10 @@ PacketMetadata::Serialize (Buffer::Iterator i, uint32_t size) const
   while (current != 0xffff)
     {
       ReadItems (current, &item, &extraItem);
-      NS_DEBUG ("bytesWritten=" << bytesWritten << ", typeUid="<<item.typeUid <<
-                ", size="<<item.size<<", chunkUid="<<item.chunkUid<<
-                ", fragmentStart="<<extraItem.fragmentStart<<", fragmentEnd="<<extraItem.fragmentEnd<<
-                ", packetUid="<<extraItem.packetUid);
+      NS_LOG_LOGIC ("bytesWritten=" << bytesWritten << ", typeUid="<<
+        item.typeUid << ", size="<<item.size<<", chunkUid="<<item.chunkUid<<
+        ", fragmentStart="<<extraItem.fragmentStart<<", fragmentEnd="<<
+        extraItem.fragmentEnd<< ", packetUid="<<extraItem.packetUid);
       uint32_t uid = (item.typeUid & 0xfffffffe) >> 1;
       if (uid != 0)
         {
@@ -1215,10 +1234,10 @@ PacketMetadata::Deserialize (Buffer::Iterator i)
       size -= 4;
       extraItem.packetUid = i.ReadU32 ();
       size -= 4;
-      NS_DEBUG ("size=" << size << ", typeUid="<<item.typeUid <<
-                ", size="<<item.size<<", chunkUid="<<item.chunkUid<<
-                ", fragmentStart="<<extraItem.fragmentStart<<", fragmentEnd="<<extraItem.fragmentEnd<<
-                ", packetUid="<<extraItem.packetUid);
+      NS_LOG_LOGIC ("size=" << size << ", typeUid="<<item.typeUid <<
+        ", size="<<item.size<<", chunkUid="<<item.chunkUid<<
+        ", fragmentStart="<<extraItem.fragmentStart<<", fragmentEnd="<<
+        extraItem.fragmentEnd<< ", packetUid="<<extraItem.packetUid);
       uint32_t tmp = AddBig (0xffff, m_tail, &item, &extraItem);
       UpdateTail (tmp);
     }

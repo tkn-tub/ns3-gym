@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -19,6 +18,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "mobility-model-notifier.h"
+#include "ns3/composite-trace-resolver.h"
+#include "ns3/trace-doc.h"
 
 namespace ns3 {
 
@@ -33,36 +34,23 @@ MobilityModelNotifier::MobilityModelNotifier ()
 }
 
 void 
-MobilityModelNotifier::RegisterListener (Listener listener)
-{
-  m_listeners.push_back (listener);
-}
-void 
-MobilityModelNotifier::UnregisterListener (Listener callback)
-{
-  for (std::list<Listener>::iterator i = m_listeners.begin ();
-       i != m_listeners.end ();)
-    {
-      Listener listener = *i;
-      if (listener.IsEqual (callback))
-	{
-	  i = m_listeners.erase (i);
-	}
-      else
-	{
-	  i++;
-	}
-    }  
-}
-void 
 MobilityModelNotifier::Notify (Ptr<const MobilityModel> position) const
 {
-  for (std::list<Listener>::const_iterator i = m_listeners.begin ();
-       i != m_listeners.end (); i++)
-    {
-      Listener listener = *i;
-      listener (position);
-    }
+  m_trace (position);
+}
+
+Ptr<TraceResolver> 
+MobilityModelNotifier::GetTraceResolver (void) const
+{
+  Ptr<CompositeTraceResolver> resolver = 
+    Create<CompositeTraceResolver> ();
+  resolver->AddSource ("course-change", 
+                       TraceDoc ("The value of the speed vector changed",
+                                 "Ptr<const MobilityModel>", 
+                                 "the mobility model whose course changed"),
+                       m_trace);
+  resolver->SetParentResolver (Object::GetTraceResolver ());
+  return resolver;
 }
 
 } // namespace ns3

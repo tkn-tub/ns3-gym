@@ -20,6 +20,7 @@
  */
 #include "packet-socket-factory.h"
 #include "node.h"
+#include "packet-socket.h"
 
 namespace ns3 {
 

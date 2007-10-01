@@ -24,8 +24,12 @@
 #include <stdint.h>
 #include <string>
 #include "ptr.h"
+#include "trace-resolver.h"
 
 namespace ns3 {
+
+class TraceContext;
+class CallbackBase;
 
 /**
  * \brief a unique identifier for an interface.
@@ -56,6 +60,11 @@ public:
    * id is not a valid interface id.
    */
   static InterfaceId LookupParent (InterfaceId iid);
+
+  /**
+   * \returns the name of this interface.
+   */
+  std::string GetName (void) const;
   ~InterfaceId ();
 private:
   InterfaceId (uint16_t iid);
@@ -131,6 +140,30 @@ public:
    * on one to get the other, and vice-versa. 
    */
   void AddInterface (Ptr<Object> other);
+
+  /**
+   * \param path the path to match for the callback
+   * \param cb callback to connect
+   *
+   * Connect the input callback to all trace sources which
+   * match the input path.
+   *
+   */
+  void TraceConnect (std::string path, const CallbackBase &cb) const;
+  /**
+   * \param path the path to match for the callback
+   * \param cb callback to disconnect
+   *
+   * Disconnect the input callback from all trace sources which
+   * match the input path.
+   */
+  void TraceDisconnect (std::string path, const CallbackBase &cb) const;
+  /**
+   * \returns the trace resolver associated to this object.
+   *
+   * This method should be rarely called by users.
+   */
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 protected:
   /**
    * \param iid an InterfaceId
@@ -147,12 +180,18 @@ protected:
    */
   virtual void DoDispose (void);
 private:
+  friend class InterfaceIdTraceResolver;
   Ptr<Object> DoQueryInterface (InterfaceId iid) const;
+  void DoCollectSources (std::string path, const TraceContext &context, 
+                         TraceResolver::SourceCollection *collection) const;
+  void DoTraceAll (std::ostream &os, const TraceContext &context) const;
   bool Check (void) const;
+  bool CheckLoose (void) const;
   void MaybeDelete (void) const;
   mutable uint32_t m_count;
   InterfaceId m_iid;
   bool m_disposed;
+  mutable bool m_collecting;
   Object *m_next;
 };
 

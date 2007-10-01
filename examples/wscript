@@ -14,9 +14,21 @@ def build(bld):
         ['csma', 'internet-node'])
     obj.source = 'csma-one-subnet.cc'
 
+    obj = bld.create_ns3_program('udp-echo',
+        ['csma', 'internet-node'])
+    obj.source = 'udp-echo.cc'
+
+    obj = bld.create_ns3_program('csma-broadcast',
+        ['csma', 'internet-node'])
+    obj.source = 'csma-broadcast.cc'
+
     obj = bld.create_ns3_program('csma-packet-socket',
         ['csma', 'internet-node'])
     obj.source = 'csma-packet-socket.cc'
+
+    obj = bld.create_ns3_program('csma-multicast',
+        ['csma', 'internet-node'])
+    obj.source = 'csma-multicast.cc'
 
     obj = bld.create_ns3_program( 'mixed-global-routing',
         ['point-to-point', 'internet-node', 'global-routing' , 'csma-cd'])

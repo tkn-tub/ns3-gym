@@ -217,6 +217,7 @@ private:
   template <int N>
   void RegisterTrailer (void);
   void CleanupPrints (void);
+  Packet DoAddHeader (Packet p);
   bool Check (const char *file, int line, std::list<int> expected);
 
 
@@ -429,6 +430,14 @@ PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t
         ok = false;                             \
       }                                         \
   }
+
+
+Packet 
+PacketMetadataTest::DoAddHeader (Packet p)
+{
+  ADD_HEADER (p, 10);
+  return p;
+}
 
 bool
 PacketMetadataTest::RunTests (void)
@@ -658,6 +667,18 @@ PacketMetadataTest::RunTests (void)
   REM_HEADER (p, 10);
   ADD_HEADER (p, 10);
   CHECK_HISTORY (p, 1, 10);
+
+  p = Packet ();
+  ADD_HEADER (p, 10);
+  p = DoAddHeader (p);
+  CHECK_HISTORY (p, 2, 10, 10);
+
+  p = Packet (10);
+  ADD_HEADER (p, 8);
+  ADD_TRAILER (p, 8);
+  ADD_TRAILER (p, 8);
+  p.RemoveAtStart (8+10+8);
+  CHECK_HISTORY (p, 1, 8);
 
   return ok;
 }

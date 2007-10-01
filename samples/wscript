@@ -26,7 +26,7 @@ def build(bld):
     obj.source = 'main-test.cc'
 
     obj = bld.create_ns3_program('main-simple',
-                                 ['node', 'internet-node', 'applications'])
+                                 ['node', 'internet-node', 'onoff'])
     obj.source = 'main-simple.cc'
 
     obj = bld.create_ns3_program('main-default-value',

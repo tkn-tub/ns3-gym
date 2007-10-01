@@ -24,17 +24,17 @@
 #include "ns3/buffer.h"
 #include "ipv4-address.h"
 #include "address.h"
-#include "eui48-address.h"
+#include "mac48-address.h"
 
 namespace ns3 {
 
 void WriteTo (Buffer::Iterator &i, Ipv4Address ad);
 void WriteTo (Buffer::Iterator &i, const Address &ad);
-void WriteTo (Buffer::Iterator &i, Eui48Address ad);
+void WriteTo (Buffer::Iterator &i, Mac48Address ad);
 
 void ReadFrom (Buffer::Iterator &i, Ipv4Address &ad);
 void ReadFrom (Buffer::Iterator &i, Address &ad, uint32_t len);
-void ReadFrom (Buffer::Iterator &i, Eui48Address &ad);
+void ReadFrom (Buffer::Iterator &i, Mac48Address &ad);
 
 };
 

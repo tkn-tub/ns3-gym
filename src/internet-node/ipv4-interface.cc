@@ -22,6 +22,10 @@
 #include "ipv4-interface.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/net-device.h"
+#include "ns3/trace-resolver.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("Ipv4Interface");
 
 namespace ns3 {
 
@@ -34,56 +38,75 @@ namespace ns3 {
 Ipv4Interface::Ipv4Interface (Ptr<NetDevice> nd) 
   : m_netdevice (nd), 
     m_ifup(false)
-{}
+{
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << &nd << ")");
+}
 
 Ipv4Interface::~Ipv4Interface ()
-{}
+{
+  NS_LOG_FUNCTION;
+}
+
+void
+Ipv4Interface::DoDispose (void)
+{
+  NS_LOG_FUNCTION;
+  m_netdevice = 0;
+  Object::DoDispose ();
+}
 
 Ptr<NetDevice>
 Ipv4Interface::GetDevice (void) const
 {
+  NS_LOG_FUNCTION;
   return m_netdevice;
-}
-
-TraceResolver *
-Ipv4Interface::CreateTraceResolver (TraceContext const &context)
-{
-  return DoCreateTraceResolver (context);
 }
 
 void 
 Ipv4Interface::SetAddress (Ipv4Address a)
 {
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << a << ")");
   m_address = a;
 }
+
 void 
 Ipv4Interface::SetNetworkMask (Ipv4Mask mask)
 {
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << mask << ")");
   m_netmask = mask;
 }
 
 Ipv4Address
 Ipv4Interface::GetBroadcast (void) const
 {
+  NS_LOG_FUNCTION;
   uint32_t mask = m_netmask.GetHostOrder ();
   uint32_t address = m_address.GetHostOrder ();
   Ipv4Address broadcast = Ipv4Address (address | (~mask));
   return broadcast;
 }
+
 Ipv4Mask 
 Ipv4Interface::GetNetworkMask (void) const
 {
+  NS_LOG_FUNCTION;
   return m_netmask;
 }
+
 Ipv4Address 
 Ipv4Interface::GetAddress (void) const
 {
+  NS_LOG_FUNCTION;
   return m_address;
 }
 
 uint16_t 
 Ipv4Interface::GetMtu (void) const
 {
+  NS_LOG_FUNCTION;
   if (m_netdevice == 0)
     {
       uint32_t mtu = (1<<16) - 1;
@@ -92,32 +115,36 @@ Ipv4Interface::GetMtu (void) const
   return m_netdevice->GetMtu ();
 }
 
-  /**
-   * These are IP interface states and may be distinct from 
-   * NetDevice states, such as found in real implementations
-   * (where the device may be down but IP interface state is still up).
-   */
+/**
+ * These are IP interface states and may be distinct from 
+ * NetDevice states, such as found in real implementations
+ * (where the device may be down but IP interface state is still up).
+ */
 bool 
 Ipv4Interface::IsUp (void) const
 {
+  NS_LOG_FUNCTION;
   return m_ifup;
 }
 
 bool 
 Ipv4Interface::IsDown (void) const
 {
+  NS_LOG_FUNCTION;
   return !m_ifup;
 }
 
 void 
 Ipv4Interface::SetUp (void)
 {
+  NS_LOG_FUNCTION;
   m_ifup = true;
 }
 
 void 
 Ipv4Interface::SetDown (void)
 {
+  NS_LOG_FUNCTION;
   m_ifup = false;
 }
 
@@ -125,7 +152,9 @@ Ipv4Interface::SetDown (void)
 void 
 Ipv4Interface::Send(Packet p, Ipv4Address dest)
 {
+  NS_LOG_FUNCTION;
   if (IsUp()) {
+    NS_LOG_LOGIC ("SendTo");
     SendTo(p, dest);
   }
 }

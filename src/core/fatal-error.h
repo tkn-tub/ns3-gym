@@ -32,9 +32,8 @@
  *
  * When this macro is hit at runtime, the user-specified 
  * error message is output and the program is halted by calling
- * the NS_DEBUG_BREAKPOINT macro. This macro is enabled
- * unconditionally in all builds, including debug and optimized 
- * builds.
+ * the NS_BREAKPOINT macro. This macro is enabled unconditionally
+ * in all builds, including debug and optimized builds.
  */
 #define NS_FATAL_ERROR(msg)				\
   do                                                    \
