@@ -97,7 +97,7 @@ public:
   RandomWaypointMobilityModel (Ptr<RandomWaypointMobilityModelParameters> parameters);
 private:
   void Start (void);
-  void BeginPause (void);
+  void BeginWalk (void);
   virtual Position DoGet (void) const;
   virtual void DoSet (const Position &position);
   virtual Speed DoGetSpeed (void) const;

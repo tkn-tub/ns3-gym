@@ -115,16 +115,7 @@ RandomWaypointMobilityModel::RandomWaypointMobilityModel (Ptr<RandomWaypointMobi
 }
 
 void
-RandomWaypointMobilityModel::BeginPause (void)
-{
-  Time pause = Seconds (m_parameters->m_pause->GetValue ());
-  m_helper.Pause ();
-  NotifyCourseChange ();
-  m_event = Simulator::Schedule (pause, &RandomWaypointMobilityModel::Start, this);
-}
-
-void
-RandomWaypointMobilityModel::Start (void)
+RandomWaypointMobilityModel::BeginWalk (void)
 {
   Position m_current = m_helper.GetCurrentPosition ();
   Position destination = m_parameters->m_position->Get ();
@@ -137,8 +128,17 @@ RandomWaypointMobilityModel::Start (void)
   m_helper.Reset (Speed (k*dx, k*dy, k*dz));
   Time travelDelay = Seconds (CalculateDistance (destination, m_current) / speed);
   m_event = Simulator::Schedule (travelDelay,
-				 &RandomWaypointMobilityModel::BeginPause, this);
+				 &RandomWaypointMobilityModel::Start, this);
   NotifyCourseChange ();
+}
+
+void
+RandomWaypointMobilityModel::Start (void)
+{
+  Time pause = Seconds (m_parameters->m_pause->GetValue ());
+  m_helper.Pause ();
+  NotifyCourseChange ();
+  m_event = Simulator::Schedule (pause, &RandomWaypointMobilityModel::BeginWalk, this);
 }
 
 Position 
