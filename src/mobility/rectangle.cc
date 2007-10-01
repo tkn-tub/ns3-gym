@@ -89,23 +89,23 @@ Rectangle::CalculateIntersection (const Position &current, const Speed &speed) c
   double xMinY = current.y + (this->xMin - current.x) / speed.dx * speed.dy;
   double yMaxX = current.x + (this->yMax - current.y) / speed.dy * speed.dx;
   double yMinX = current.x + (this->yMin - current.y) / speed.dy * speed.dx;
-  bool xMaxOk = xMaxY <= this->yMax && xMaxY >= this->yMin;
-  bool xMinOk = xMinY <= this->yMax && xMinY >= this->yMin;
-  bool yMaxOk = yMaxX <= this->xMax && yMaxX >= this->xMin;
-  bool yMinOk = yMinX <= this->xMax && yMinX >= this->xMin;
-  if (xMaxOk && speed.dx >= 0)
+  bool xMaxYOk = (xMaxY <= this->yMax && xMaxY >= this->yMin);
+  bool xMinYOk = (xMinY <= this->yMax && xMinY >= this->yMin);
+  bool yMaxXOk = (yMaxX <= this->xMax && yMaxX >= this->xMin);
+  bool yMinXOk = (yMinX <= this->xMax && yMinX >= this->xMin);
+  if (xMaxYOk && speed.dx >= 0)
     {
       return Position (this->xMax, xMaxY, 0.0);
     }
-  else if (xMinOk && speed.dx <= 0)
+  else if (xMinYOk && speed.dx <= 0)
     {
       return Position (this->xMin, xMinY, 0.0);
     }
-  else if (yMaxOk && speed.dy >= 0)
+  else if (yMaxXOk && speed.dy >= 0)
     {
       return Position (yMaxX, this->yMax, 0.0);
     }
-  else if (yMinOk && speed.dy <= 0)
+  else if (yMinXOk && speed.dy <= 0)
     {
       return Position (yMinX, this->yMin, 0.0);
     }
