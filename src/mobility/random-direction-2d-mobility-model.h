@@ -102,6 +102,7 @@ class RandomDirection2dMobilityModel : public MobilityModel
  private:
   void Start (void);
   void ResetDirectionAndSpeed (void);
+  void BeginPause (void);
   void SetDirectionAndSpeed (double direction);
   void InitializeDirectionAndSpeed (void);
   virtual void DoDispose (void);

@@ -138,6 +138,16 @@ RandomDirection2dMobilityModel::Start (void)
   double direction = UniformVariable::GetSingleValue (0, 2 * PI);
   SetDirectionAndSpeed (direction);
 }
+
+void
+RandomDirection2dMobilityModel::BeginPause (void)
+{
+  Time pause = Seconds (m_parameters->m_pauseVariable->GetValue ());
+  m_helper.Pause ();
+  m_event = Simulator::Schedule (pause, &RandomDirection2dMobilityModel::ResetDirectionAndSpeed, this);
+  NotifyCourseChange ();
+}
+
 void
 RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
 {
@@ -146,13 +156,12 @@ RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
   const Speed vector (std::cos (direction) * speed,
                       std::sin (direction) * speed,
                       0.0);
-  Time pause = Seconds (m_parameters->m_pauseVariable->GetValue ());
   Position position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
-  m_helper.Reset (vector, pause);
+  m_helper.Reset (vector);
   Position next = m_parameters->m_bounds.CalculateIntersection (position, vector);
   Time delay = Seconds (CalculateDistance (position, next) / speed);
-  m_event = Simulator::Schedule (delay + pause,
-				 &RandomDirection2dMobilityModel::ResetDirectionAndSpeed, this);
+  m_event = Simulator::Schedule (delay,
+				 &RandomDirection2dMobilityModel::BeginPause, this);
   NotifyCourseChange ();
 }
 void
