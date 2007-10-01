@@ -100,6 +100,8 @@ public:
 
   T *operator -> () const;
   T *operator -> ();
+  const T &operator * () const;
+  const T &operator * ();
   // allow if (!sp)
   bool operator! ();
   // allow if (sp)
@@ -221,73 +223,49 @@ namespace ns3 {
 template <typename T>
 Ptr<T> Create (void)
 {
-  T *obj = new T ();
-  Ptr<T> p = obj;
-  obj->Unref ();
-  return p;
+  return Ptr<T> (new T (), false);
 }
 
 template <typename T, typename T1>
 Ptr<T> Create (T1 a1)
 {
-  T *obj = new T (a1);
-  Ptr<T> p = obj;
-  obj->Unref ();
-  return p;
+  return Ptr<T> (new T (a1), false);
 }
 
 template <typename T, typename T1, typename T2>
 Ptr<T> Create (T1 a1, T2 a2)
 {
-  T *obj = new T (a1, a2);
-  Ptr<T> p = obj;
-  obj->Unref ();
-  return p;
+  return Ptr<T> (new T (a1, a2), false);
 }
 
 template <typename T, typename T1, typename T2, typename T3>
 Ptr<T> Create (T1 a1, T2 a2, T3 a3)
 {
-  T *obj = new T (a1, a2, a3);
-  Ptr<T> p = obj;
-  obj->Unref ();
-  return p;
+  return Ptr<T> (new T (a1, a2, a3), false);
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4>
 Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4)
 {
-  T *obj = new T (a1, a2, a3, a4);
-  Ptr<T> p = obj;
-  obj->Unref ();
-  return p;
+  return Ptr<T> (new T (a1, a2, a3, a4), false);
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
 Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
-  T *obj = new T (a1, a2, a3, a4, a5);
-  Ptr<T> p = obj;
-  obj->Unref ();
-  return p;
+  return Ptr<T> (new T (a1, a2, a3, a4, a5), false);
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
 Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
 {
-  T *obj = new T (a1, a2, a3, a4, a5, a6);
-  Ptr<T> p = obj;
-  obj->Unref ();
-  return p;
+  return Ptr<T> (new T (a1, a2, a3, a4, a5, a6), false);
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
 Ptr<T> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
 {
-  T *obj = new T (a1, a2, a3, a4, a5, a6, a7);
-  Ptr<T> p = obj;
-  obj->Unref ();
-  return p;
+  return Ptr<T> (new T (a1, a2, a3, a4, a5, a6, a7), false);
 }
 
 template <typename T>
@@ -450,6 +428,21 @@ Ptr<T>::operator -> () const
 {
   return m_ptr;
 }
+
+template <typename T>
+const T &
+Ptr<T>::operator * () const
+{
+  return *m_ptr;
+}
+
+template <typename T>
+const T &
+Ptr<T>::operator * ()
+{
+  return *m_ptr;
+}
+
 
 template <typename T>
 bool 
