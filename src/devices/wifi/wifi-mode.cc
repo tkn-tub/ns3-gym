@@ -1,4 +1,5 @@
 #include "wifi-mode.h"
+#include "ns3/assert.h"
 
 namespace ns3 {
 
@@ -49,6 +50,8 @@ WifiMode::WifiMode (uint32_t uid)
   : m_uid (uid)
 {}
 
+WifiModeFactory::WifiModeFactory ()
+{}
 
 WifiMode 
 WifiModeFactory::CreateBpsk (std::string uniqueName,
@@ -100,6 +103,13 @@ WifiModeFactory::AllocateUid (std::string uniqueUid)
   m_itemList.push_back (WifiModeItem ());
   uint32_t uid = m_itemList.size ();
   return uid;
+}
+
+struct WifiModeFactory::WifiModeItem *
+WifiModeFactory::Get (uint32_t uid)
+{
+  NS_ASSERT (uid > 1);
+  return &m_itemList[uid - 1];
 }
 
 WifiModeFactory *
