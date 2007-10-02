@@ -251,8 +251,6 @@ namespace ns3 {
 
 
 template <typename T>
-struct TimerTraits;
-template <typename T>
 struct TimerTraits
 {
   typedef typename TypeTraits<typename TypeTraits<T>::ReferencedType>::NonConstType StoredType;
