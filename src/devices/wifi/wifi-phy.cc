@@ -64,7 +64,7 @@ namespace ns3 {
  *       This destructor is needed.
  ****************************************************************/
 
-Phy80211Listener::~Phy80211Listener ()
+WifiPhyListener::~WifiPhyListener ()
 {}
 
 
@@ -140,21 +140,21 @@ private:
  *       short period of time.
  ****************************************************************/
 
-Phy80211::NiChange::NiChange (Time time, double delta)
+WifiPhy::NiChange::NiChange (Time time, double delta)
   : m_time (time), m_delta (delta) 
 {}
 Time
-Phy80211::NiChange::GetTime (void) const
+WifiPhy::NiChange::GetTime (void) const
 {
   return m_time;
 }
 double 
-Phy80211::NiChange::GetDelta (void) const
+WifiPhy::NiChange::GetDelta (void) const
 {
   return m_delta;
 }
 bool 
-Phy80211::NiChange::operator < (Phy80211::NiChange const &o) const
+WifiPhy::NiChange::operator < (WifiPhy::NiChange const &o) const
 {
   return (m_time < o.m_time)?true:false;
 }
@@ -162,10 +162,10 @@ Phy80211::NiChange::operator < (Phy80211::NiChange const &o) const
 
 
 /****************************************************************
- *       The actual Phy80211 class
+ *       The actual WifiPhy class
  ****************************************************************/
 
-Phy80211::Phy80211 ()
+WifiPhy::WifiPhy ()
   : m_syncing (false),
     m_endTx (Seconds (0)),
     m_endSync (Seconds (0)),
@@ -178,7 +178,7 @@ Phy80211::Phy80211 ()
     m_random (0.0, 1.0)
 {}
 
-Phy80211::~Phy80211 ()
+WifiPhy::~WifiPhy ()
 {
   m_events.clear ();
   for (ModesCI j = m_modes.begin (); j != m_modes.end (); j++) {
@@ -189,23 +189,23 @@ Phy80211::~Phy80211 ()
 
 
 void 
-Phy80211::SetPropagationModel (PropagationModel *propagation)
+WifiPhy::SetPropagationModel (PropagationModel *propagation)
 {
   m_propagation = propagation;
 }
 
 void 
-Phy80211::SetReceiveOkCallback (SyncOkCallback callback)
+WifiPhy::SetReceiveOkCallback (SyncOkCallback callback)
 {
   m_syncOkCallback = callback;
 }
 void 
-Phy80211::SetReceiveErrorCallback (SyncErrorCallback callback)
+WifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
 {
   m_syncErrorCallback = callback;
 }
 void 
-Phy80211::ReceivePacket (Packet const packet, 
+WifiPhy::ReceivePacket (Packet const packet, 
                          double rxPowerW,
                          uint8_t txMode,
                          uint8_t stuff)
@@ -221,7 +221,7 @@ Phy80211::ReceivePacket (Packet const packet,
   AppendEvent (event);
 
   switch (GetState ()) {
-  case Phy80211::SYNC:
+  case WifiPhy::SYNC:
     TRACE ("drop packet because already in Sync (power="<<
            rxPowerW<<"W)");
     if (endRx > m_endSync) 
@@ -229,7 +229,7 @@ Phy80211::ReceivePacket (Packet const packet,
         goto maybeCcaBusy;
       }
     break;
-  case Phy80211::TX:
+  case WifiPhy::TX:
     TRACE ("drop packet because already in Tx (power="<<
            rxPowerW<<"W)");
     if (endRx > m_endTx) 
@@ -237,8 +237,8 @@ Phy80211::ReceivePacket (Packet const packet,
         goto maybeCcaBusy;
       }
     break;
-  case Phy80211::CCA_BUSY:
-  case Phy80211::IDLE:
+  case WifiPhy::CCA_BUSY:
+  case WifiPhy::IDLE:
     if (rxPowerW > m_edThresholdW) 
       {
         // sync to signal
@@ -246,7 +246,7 @@ Phy80211::ReceivePacket (Packet const packet,
         SwitchToSync (rxDuration);
         m_startSyncLogger (rxDuration, rxPowerW);
         assert (m_endSyncEvent.IsExpired ());
-        m_endSyncEvent = Simulator::Schedule (rxDuration, &Phy80211::EndSync, this, 
+        m_endSyncEvent = Simulator::Schedule (rxDuration, &WifiPhy::EndSync, this, 
                                               packet,
                                               event, 
                                               stuff);
@@ -297,7 +297,7 @@ Phy80211::ReceivePacket (Packet const packet,
   event->Unref ();
 }
 void 
-Phy80211::SendPacket (Packet const packet, uint8_t txMode, uint8_t txPower, uint8_t stuff)
+WifiPhy::SendPacket (Packet const packet, uint8_t txMode, uint8_t txPower, uint8_t stuff)
 {
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
@@ -319,17 +319,17 @@ Phy80211::SendPacket (Packet const packet, uint8_t txMode, uint8_t txPower, uint
 }
 
 void 
-Phy80211::SetEdThresholdDbm (double edThreshold)
+WifiPhy::SetEdThresholdDbm (double edThreshold)
 {
   m_edThresholdW = DbmToW (edThreshold);
 }
 void 
-Phy80211::SetRxNoiseDb (double rxNoise)
+WifiPhy::SetRxNoiseDb (double rxNoise)
 {
   m_rxNoiseRatio = DbToRatio (rxNoise);
 }
 void 
-Phy80211::SetTxPowerIncrementsDbm (double txPowerBase, 
+WifiPhy::SetTxPowerIncrementsDbm (double txPowerBase, 
                                    double txPowerEnd, 
                                    int nTxPower)
 {
@@ -338,29 +338,29 @@ Phy80211::SetTxPowerIncrementsDbm (double txPowerBase,
   m_nTxPower = nTxPower;
 }
 uint32_t 
-Phy80211::GetNModes (void) const
+WifiPhy::GetNModes (void) const
 {
   return m_modes.size ();
 }
 uint32_t 
-Phy80211::GetModeBitRate (uint8_t mode) const
+WifiPhy::GetModeBitRate (uint8_t mode) const
 {
   return GetMode (mode)->GetRate ();
 }
 uint32_t 
-Phy80211::GetNTxpower (void) const
+WifiPhy::GetNTxpower (void) const
 {
   return m_nTxPower;
 }
 
 double 
-Phy80211::CalculateSnr (uint8_t txMode, double ber) const
+WifiPhy::CalculateSnr (uint8_t txMode, double ber) const
 {
   return GetSnrForBer (GetMode (txMode), ber);;
 }
 
 double 
-Phy80211::GetSnrForBer (TransmissionMode *mode, double ber) const
+WifiPhy::GetSnrForBer (TransmissionMode *mode, double ber) const
 {
   double low, high, precision;
   low = 1e-25;
@@ -383,7 +383,7 @@ Phy80211::GetSnrForBer (TransmissionMode *mode, double ber) const
 }
 
 void
-Phy80211::Configure80211a (void)
+WifiPhy::Configure80211a (void)
 {
   m_plcpPreambleDelayUs = 20;
   m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16 + 6;
@@ -413,45 +413,45 @@ Phy80211::Configure80211a (void)
 }
 
 void 
-Phy80211::RegisterListener (Phy80211Listener *listener)
+WifiPhy::RegisterListener (WifiPhyListener *listener)
 {
   m_listeners.push_back (listener);
 }
 
 bool 
-Phy80211::IsStateCcaBusy (void)
+WifiPhy::IsStateCcaBusy (void)
 {
   return GetState () == CCA_BUSY;
 }
 
 bool 
-Phy80211::IsStateIdle (void)
+WifiPhy::IsStateIdle (void)
 {
   return (GetState () == IDLE)?true:false;
 }
 bool 
-Phy80211::IsStateBusy (void)
+WifiPhy::IsStateBusy (void)
 {
   return (GetState () != IDLE)?true:false;
 }
 bool 
-Phy80211::IsStateSync (void)
+WifiPhy::IsStateSync (void)
 {
   return (GetState () == SYNC)?true:false;
 }
 bool 
-Phy80211::IsStateTx (void)
+WifiPhy::IsStateTx (void)
 {
   return (GetState () == TX)?true:false;
 }
 
 Time
-Phy80211::GetStateDuration (void)
+WifiPhy::GetStateDuration (void)
 {
   return Simulator::Now () - m_previousStateChangeTime;
 }
 Time
-Phy80211::GetDelayUntilIdle (void)
+WifiPhy::GetDelayUntilIdle (void)
 {
   Time retval;
 
@@ -480,7 +480,7 @@ Phy80211::GetDelayUntilIdle (void)
 
 
 Time
-Phy80211::CalculateTxDuration (uint32_t size, uint8_t payloadMode) const
+WifiPhy::CalculateTxDuration (uint32_t size, uint8_t payloadMode) const
 {
   uint64_t delay = m_plcpPreambleDelayUs;
   delay += m_plcpHeaderLength * 1000000 / GetMode (0)->GetDataRate ();
@@ -490,7 +490,7 @@ Phy80211::CalculateTxDuration (uint32_t size, uint8_t payloadMode) const
 }
 
 char const *
-Phy80211::StateToString (enum Phy80211State state)
+WifiPhy::StateToString (enum WifiPhyState state)
 {
   switch (state) {
   case TX:
@@ -510,67 +510,67 @@ Phy80211::StateToString (enum Phy80211State state)
     break;
   }
 }
-enum Phy80211::Phy80211State 
-Phy80211::GetState (void)
+enum WifiPhy::WifiPhyState 
+WifiPhy::GetState (void)
 {
   if (m_endTx > Simulator::Now ()) 
     {
-      return Phy80211::TX;
+      return WifiPhy::TX;
     } 
   else if (m_syncing) 
     {
-      return Phy80211::SYNC;
+      return WifiPhy::SYNC;
     } 
   else if (m_endCcaBusy > Simulator::Now ()) 
     {
-      return Phy80211::CCA_BUSY;
+      return WifiPhy::CCA_BUSY;
     } 
   else 
     {
-      return Phy80211::IDLE;
+      return WifiPhy::IDLE;
     }
 }
 
 double 
-Phy80211::DbToRatio (double dB) const
+WifiPhy::DbToRatio (double dB) const
 {
   double ratio = pow(10.0,dB/10.0);
   return ratio;
 }
 
 double 
-Phy80211::DbmToW (double dBm) const
+WifiPhy::DbmToW (double dBm) const
 {
   double mW = pow(10.0,dBm/10.0);
   return mW / 1000.0;
 }
 
 double
-Phy80211::GetEdThresholdW (void) const
+WifiPhy::GetEdThresholdW (void) const
 {
   return m_edThresholdW;
 }
 
 Time
-Phy80211::GetMaxPacketDuration (void) const
+WifiPhy::GetMaxPacketDuration (void) const
 {
   return m_maxPacketDuration;
 }
 
 void
-Phy80211::AddTxRxMode (TransmissionMode *mode)
+WifiPhy::AddTxRxMode (TransmissionMode *mode)
 {
   m_modes.push_back (mode);
 }
 
 TransmissionMode *
-Phy80211::GetMode (uint8_t mode) const
+WifiPhy::GetMode (uint8_t mode) const
 {
   return m_modes[mode];
 }
 
 double 
-Phy80211::GetPowerDbm (uint8_t power) const
+WifiPhy::GetPowerDbm (uint8_t power) const
 {
   assert (m_txPowerBaseDbm <= m_txPowerEndDbm);
   assert (m_nTxPower > 0);
@@ -579,35 +579,35 @@ Phy80211::GetPowerDbm (uint8_t power) const
 }
 
 void 
-Phy80211::NotifyTxStart (Time duration)
+WifiPhy::NotifyTxStart (Time duration)
 {
   for (ListenersCI i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyTxStart (duration);
   }
 }
 void 
-Phy80211::NotifySyncStart (Time duration)
+WifiPhy::NotifySyncStart (Time duration)
 {
   for (ListenersCI i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyRxStart (duration);
   }
 }
 void 
-Phy80211::NotifySyncEndOk (void)
+WifiPhy::NotifySyncEndOk (void)
 {
   for (ListenersCI i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyRxEndOk ();
   }
 }
 void 
-Phy80211::NotifySyncEndError (void)
+WifiPhy::NotifySyncEndError (void)
 {
   for (ListenersCI i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyRxEndError ();
   }
 }
 void 
-Phy80211::NotifyCcaBusyStart (Time duration)
+WifiPhy::NotifyCcaBusyStart (Time duration)
 {
   for (ListenersCI i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyCcaBusyStart (duration);
@@ -615,7 +615,7 @@ Phy80211::NotifyCcaBusyStart (Time duration)
 }
 
 void
-Phy80211::LogPreviousIdleAndCcaBusyStates (void)
+WifiPhy::LogPreviousIdleAndCcaBusyStates (void)
 {
   Time now = Simulator::Now ();
   Time idleStart = Max (m_endCcaBusy, m_endSync);
@@ -631,23 +631,23 @@ Phy80211::LogPreviousIdleAndCcaBusyStates (void)
 }
 
 void
-Phy80211::SwitchToTx (Time txDuration)
+WifiPhy::SwitchToTx (Time txDuration)
 {
   Time now = Simulator::Now ();
   switch (GetState ()) {
-  case Phy80211::SYNC:
+  case WifiPhy::SYNC:
     /* The packet which is being received as well
      * as its endSync event are cancelled by the caller.
      */
     m_syncing = false;
     m_stateLogger (m_startSync, now - m_startSync, 1);
     break;
-  case Phy80211::CCA_BUSY: {
+  case WifiPhy::CCA_BUSY: {
     Time ccaStart = Max (m_endSync, m_endTx);
     ccaStart = Max (ccaStart, m_startCcaBusy);
     m_stateLogger (ccaStart, now - ccaStart, 2);
   } break;
-  case Phy80211::IDLE:
+  case WifiPhy::IDLE:
     LogPreviousIdleAndCcaBusyStates ();
     break;
   default:
@@ -660,22 +660,22 @@ Phy80211::SwitchToTx (Time txDuration)
   m_startTx = now;
 }
 void
-Phy80211::SwitchToSync (Time rxDuration)
+WifiPhy::SwitchToSync (Time rxDuration)
 {
   assert (IsStateIdle () || IsStateCcaBusy ());
   assert (!m_syncing);
   Time now = Simulator::Now ();
   switch (GetState ()) {
-  case Phy80211::IDLE:
+  case WifiPhy::IDLE:
     LogPreviousIdleAndCcaBusyStates ();
     break;
-  case Phy80211::CCA_BUSY: {
+  case WifiPhy::CCA_BUSY: {
     Time ccaStart = Max (m_endSync, m_endTx);
     ccaStart = Max (ccaStart, m_startCcaBusy);
     m_stateLogger (ccaStart, now - ccaStart, 2);
   } break;
-  case Phy80211::SYNC:
-  case Phy80211::TX:
+  case WifiPhy::SYNC:
+  case WifiPhy::TX:
     assert (false);
     break;
   }
@@ -686,7 +686,7 @@ Phy80211::SwitchToSync (Time rxDuration)
   assert (IsStateSync ());
 }
 void
-Phy80211::SwitchFromSync (void)
+WifiPhy::SwitchFromSync (void)
 {
   assert (IsStateSync ());
   assert (m_syncing);
@@ -699,18 +699,18 @@ Phy80211::SwitchFromSync (void)
   assert (IsStateIdle () || IsStateCcaBusy ());
 }
 void
-Phy80211::SwitchMaybeToCcaBusy (Time duration)
+WifiPhy::SwitchMaybeToCcaBusy (Time duration)
 {
   Time now = Simulator::Now ();
   switch (GetState ()) {
-  case Phy80211::IDLE:
+  case WifiPhy::IDLE:
     LogPreviousIdleAndCcaBusyStates ();
   break;
-  case Phy80211::CCA_BUSY:
+  case WifiPhy::CCA_BUSY:
     break;
-  case Phy80211::SYNC:
+  case WifiPhy::SYNC:
     break;
-  case Phy80211::TX:
+  case WifiPhy::TX:
     break;
   }
   m_startCcaBusy = now;
@@ -718,7 +718,7 @@ Phy80211::SwitchMaybeToCcaBusy (Time duration)
 }
 
 void 
-Phy80211::AppendEvent (Ptr<RxEvent> event)
+WifiPhy::AppendEvent (Ptr<RxEvent> event)
 {
   /* attempt to remove the events which are 
    * not useful anymore. 
@@ -747,7 +747,7 @@ Phy80211::AppendEvent (Ptr<RxEvent> event)
  */
 
 double
-Phy80211::CalculateSnr (double signal, double noiseInterference, TransmissionMode *mode) const
+WifiPhy::CalculateSnr (double signal, double noiseInterference, TransmissionMode *mode) const
 {
   // thermal noise at 290K in J/s = W
   static const double BOLTZMANN = 1.3803e-23;
@@ -760,7 +760,7 @@ Phy80211::CalculateSnr (double signal, double noiseInterference, TransmissionMod
 }
 
 double
-Phy80211::CalculateNoiseInterferenceW (Ptr<RxEvent> event, NiChanges *ni) const
+WifiPhy::CalculateNoiseInterferenceW (Ptr<RxEvent> event, NiChanges *ni) const
 {
   Events::const_iterator i = m_events.begin ();
   double noiseInterference = 0.0;
@@ -795,7 +795,7 @@ Phy80211::CalculateNoiseInterferenceW (Ptr<RxEvent> event, NiChanges *ni) const
 }
 
 double
-Phy80211::CalculateChunkSuccessRate (double snir, Time duration, TransmissionMode *mode) const
+WifiPhy::CalculateChunkSuccessRate (double snir, Time duration, TransmissionMode *mode) const
 {
   if (duration == NanoSeconds (0)) {
     return 1.0;
@@ -807,7 +807,7 @@ Phy80211::CalculateChunkSuccessRate (double snir, Time duration, TransmissionMod
 }
 
 double 
-Phy80211::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
+WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
 {  
   double psr = 1.0; /* Packet Success Rate */
   NiChangesI j = ni->begin ();
@@ -894,7 +894,7 @@ Phy80211::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
 
 
 void
-Phy80211::EndSync (Packet const packet, Ptr<RxEvent> event, uint8_t stuff)
+WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event, uint8_t stuff)
 {
   assert (IsStateSync ());
   assert (event->GetEndTime () == Simulator::Now ());

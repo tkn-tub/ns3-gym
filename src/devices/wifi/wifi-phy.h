@@ -19,8 +19,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef PHY_80211_H
-#define PHY_80211_H
+#ifndef WIFI_PHY_H
+#define WIFI_PHY_H
 
 #include <vector>
 #include <list>
@@ -42,9 +42,9 @@ class RandomUniform;
 class RxEvent;
 class TraceContainer;
 
-class Phy80211Listener {
+class WifiPhyListener {
 public:
-  virtual ~Phy80211Listener ();
+  virtual ~WifiPhyListener ();
 
   /* we have received the first bit of a packet. We decided
    * that we could synchronize on this packet. It does not mean
@@ -67,14 +67,14 @@ public:
 
 
 
-class Phy80211
+class WifiPhy
 {
 public:
   typedef Callback<void,Packet const , double, uint8_t, uint8_t> SyncOkCallback;
   typedef Callback<void,Packet const , double> SyncErrorCallback;
 
-  Phy80211 ();
-  virtual ~Phy80211 ();
+  WifiPhy ();
+  virtual ~WifiPhy ();
 
   void SetPropagationModel (PropagationModel *propagation);
   void SetReceiveOkCallback (SyncOkCallback callback);
@@ -87,7 +87,7 @@ public:
                       uint8_t stuff);
   void SendPacket (Packet const packet, uint8_t txMode, uint8_t txPower, uint8_t stuff);
 
-  void RegisterListener (Phy80211Listener *listener);
+  void RegisterListener (WifiPhyListener *listener);
 
   bool IsStateCcaBusy (void);
   bool IsStateIdle (void);
@@ -112,7 +112,7 @@ public:
   double CalculateSnr (uint8_t txMode, double ber) const;
 
 private:
-  enum Phy80211State {
+  enum WifiPhyState {
     SYNC,
     TX,
     CCA_BUSY,
@@ -130,15 +130,15 @@ private:
   };
   typedef std::vector<TransmissionMode *> Modes;
   typedef std::vector<TransmissionMode *>::const_iterator ModesCI;
-  typedef std::list<Phy80211Listener *> Listeners;
-  typedef std::list<Phy80211Listener *>::const_iterator ListenersCI;
+  typedef std::list<WifiPhyListener *> Listeners;
+  typedef std::list<WifiPhyListener *>::const_iterator ListenersCI;
   typedef std::list<Ptr<RxEvent> > Events;
   typedef std::vector <NiChange> NiChanges;
   typedef std::vector <NiChange>::iterator NiChangesI;
 
 private:  
-  char const *StateToString (enum Phy80211State state);
-  enum Phy80211State GetState (void);
+  char const *StateToString (enum WifiPhyState state);
+  enum WifiPhyState GetState (void);
   double GetEdThresholdW (void) const;
   double DbmToW (double dbm) const;
   double DbToRatio (double db) const;
@@ -231,4 +231,4 @@ private:
 }; // namespace ns3
 
 
-#endif /* PHY_80211_H */
+#endif /* WIFI_PHY_H */
