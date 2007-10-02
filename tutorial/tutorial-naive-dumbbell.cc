@@ -33,7 +33,7 @@
 #include "ns3/pcap-trace.h"
 #include "ns3/global-route-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("UdpEchoSimulation");
+NS_LOG_COMPONENT_DEFINE ("DumbbellSimulation");
 
 using namespace ns3;
 
@@ -45,27 +45,23 @@ using namespace ns3;
 //       n0   n1   n2   n3             n4   n5   n6   n7
 //       |    |    |    |              |    |    |    |
 //       ================              ================
-//             lan0                          lan1
+//             lan1                          lan2
 //
 int 
 main (int argc, char *argv[])
 {
-  LogComponentEnable ("UdpEchoSimulation", LOG_LEVEL_INFO);
+  LogComponentEnable ("DumbbellSimulation", LOG_LEVEL_INFO);
+//  LogComponentEnableAll (LOG_LEVEL_ALL, LOG_DECORATE_ALL);
 
-  NS_LOG_INFO ("UDP Echo Simulation");
+  NS_LOG_INFO ("Dumbbell Topology Simulation");
 
   Ptr<Node> n0 = Create<InternetNode> ();
   Ptr<Node> n1 = Create<InternetNode> ();
   Ptr<Node> n2 = Create<InternetNode> ();
   Ptr<Node> n3 = Create<InternetNode> ();
 
-  Ptr<Node> n4 = Create<InternetNode> ();
-  Ptr<Node> n5 = Create<InternetNode> ();
-  Ptr<Node> n6 = Create<InternetNode> ();
-  Ptr<Node> n7 = Create<InternetNode> ();
-
   Ptr<CsmaChannel> lan1 = 
-    CsmaTopology::CreateCsmaChannel (DataRate (5000000), MilliSeconds (2));
+    CsmaTopology::CreateCsmaChannel (DataRate (10000000), MilliSeconds (2));
 
   uint32_t nd0 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n0, lan1, 
     "08:00:2e:00:00:00");
@@ -84,8 +80,13 @@ main (int argc, char *argv[])
   CsmaIpv4Topology::AddIpv4Address (n2, nd2, "10.1.1.3", "255.255.255.0");
   CsmaIpv4Topology::AddIpv4Address (n3, nd3, "10.1.1.4", "255.255.255.0");
 
+  Ptr<Node> n4 = Create<InternetNode> ();
+  Ptr<Node> n5 = Create<InternetNode> ();
+  Ptr<Node> n6 = Create<InternetNode> ();
+  Ptr<Node> n7 = Create<InternetNode> ();
+
   Ptr<CsmaChannel> lan2 = 
-    CsmaTopology::CreateCsmaChannel (DataRate (5000000), MilliSeconds (2));
+    CsmaTopology::CreateCsmaChannel (DataRate (10000000), MilliSeconds (2));
 
   uint32_t nd4 = CsmaIpv4Topology::AddIpv4CsmaNetDevice (n4, lan2, 
     "08:00:2e:00:00:04");
@@ -105,7 +106,7 @@ main (int argc, char *argv[])
   CsmaIpv4Topology::AddIpv4Address (n7, nd7, "10.1.2.4", "255.255.255.0");
 
   Ptr<PointToPointChannel> link = PointToPointTopology::AddPointToPointLink (
-    n3, n4, DataRate (500000), MilliSeconds (20));
+    n3, n4, DataRate (38400), MilliSeconds (20));
 
   PointToPointTopology::AddIpv4Addresses (link, n3, "10.1.3.1", 
     n4, "10.1.3.2");
