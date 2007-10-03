@@ -764,6 +764,248 @@ WifiPhy::AppendEvent (Ptr<RxEvent> event)
 /**
  * Stuff specific to the BER model here.
  */
+double 
+WifiPhy::Log2 (double val) const
+{
+  return log(val) / log(2.0);
+}
+double 
+WifiPhy::GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const
+{
+  double EbNo = snr * signalSpread / phyRate;
+  double z = sqrt(EbNo);
+  double ber = 0.5 * erfc(z);
+  return ber;
+}
+double 
+WifiPhy::GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const
+{
+  double EbNo = snr * signalSpread / phyRate;
+  double z = sqrt ((1.5 * Log2 (m) * EbNo) / (m - 1.0));
+  double z1 = ((1.0 - 1.0 / sqrt (m)) * erfc (z)) ;
+  double z2 = 1 - pow ((1-z1), 2.0);
+  double ber = z2 / Log2 (m);
+  return ber;
+}
+uint32_t
+WifiPhy::Factorial (uint32_t k) const
+{
+  uint32_t fact = 1;
+  while (k > 0) 
+    {
+      fact *= k;
+      k--;
+    }
+  return fact;
+}
+double 
+WifiPhy::Binomial (uint32_t k, double p, uint32_t n) const
+{
+  double retval = Factorial (n) / (Factorial (k) * Factorial (n-k)) * pow (p, k) * pow (1-p, n-k);
+  return retval;
+}
+double 
+WifiPhy::CalculatePdOdd (double ber, unsigned int d) const
+{
+  NS_ASSERT ((d % 2) == 1);
+  unsigned int dstart = (d + 1) / 2;
+  unsigned int dend = d;
+  double pd = 0;
+
+  for (unsigned int i = dstart; i < dend; i++) 
+    {
+      pd += Binomial (i, ber, d);
+    }
+  return pd;
+}
+double 
+WifiPhy::CalculatePdEven (double ber, unsigned int d) const
+{
+  NS_ASSERT ((d % 2) == 0);
+  unsigned int dstart = d / 2 + 1;
+  unsigned int dend = d;
+  double pd = 0;
+
+  for (unsigned int i = dstart; i < dend; i++)
+    {
+      pd +=  Binomial (i, ber, d);
+    }
+  pd += 0.5 * Binomial (d / 2, ber, d);
+
+  return pd;
+}
+
+double 
+WifiPhy::CalculatePd (double ber, unsigned int d) const
+{
+  double pd;
+  if ((d % 2) == 0) 
+    {
+      pd = CalculatePdEven (ber, d);
+    } 
+  else 
+    {
+      pd = CalculatePdOdd (ber, d);
+    }
+  return pd;
+}
+
+double
+WifiPhy::GetFecBpskBer (double snr, double nbits, 
+                         uint32_t signalSpread, uint32_t phyRate,
+                         uint32_t dFree, uint32_t adFree) const
+{
+  double ber = GetBpskBer (snr, signalSpread, phyRate);
+  if (ber == 0.0) 
+    {
+      return 1.0;
+    }
+  double pd = CalculatePd (ber, dFree);
+  double pmu = adFree * pd;
+  if (pmu > 1.0) 
+    {
+      /**
+       * If pmu is bigger than 1, then, this calculation is
+       * giving us a useless bound. A better bound in this case
+       * is 1 - ber which is necessarily bigger than the real 
+       * success rate.
+       */
+      return ber;
+    }
+  double pms = pow (1 - pmu, nbits);
+  return pms;
+}
+
+double
+WifiPhy::GetFecQamBer (double snr, uint32_t nbits, 
+                       uint32_t signalSpread,
+                       uint32_t phyRate,
+                       uint32_t m, uint32_t dFree,
+                       uint32_t adFree, uint32_t adFreePlusOne) const
+{
+  double ber = GetQamBer (snr, m, signalSpread, phyRate);
+  if (ber == 0.0) 
+    {
+      return 1.0;
+    }
+  /* first term */
+  double pd = CalculatePd (ber, dFree);
+  double pmu = adFree * pd;
+  /* second term */
+  pd = CalculatePd (ber, dFree + 1);
+  pmu += adFreePlusOne * pd;
+  if (pmu > 1.0) 
+    {
+      /**
+       * If pmu is bigger than 1, then, this calculation is
+       * giving us a useless bound. A better bound in this case
+       * is 1 - ber which is necessarily bigger than the real 
+       * success rate.
+       */
+      return ber;
+    }
+
+  double pms = pow (1 - pmu, nbits);
+  return pms;
+}
+
+double 
+WifiPhy::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
+{
+  if (mode.GetUid () == g_6mba.GetUid ())
+    {
+      return GetFecBpskBer (snr, 
+                            nbits,
+                            20000000, // signal spread
+                            6000000, // phy rate
+                            10, // dFree
+                            11 // adFree
+                            );      
+    }
+  else if (mode.GetUid () == g_9mba.GetUid ())
+    {
+      return GetFecBpskBer (snr, 
+                            nbits,
+                            20000000, // signal spread
+                            9000000, // phy rate
+                            5, // dFree
+                            8 // adFree
+                            );
+    }
+  else if (mode.GetUid () == g_12mba.GetUid ())
+    {
+      return GetFecQamBer (snr, 
+                           nbits,
+                           20000000, // signal spread
+                           12000000, // phy rate
+                           4,  // m 
+                           10, // dFree
+                           11, // adFree
+                           0   // adFreePlusOne
+                           );
+    }
+  else if (mode.GetUid () == g_18mba.GetUid ())
+    {
+      return GetFecQamBer (snr, 
+                           nbits,
+                           20000000, // signal spread
+                           18000000, // phy rate
+                           4, // m
+                           5, // dFree
+                           8, // adFree
+                           31 // adFreePlusOne
+                           );
+    }
+  else if (mode.GetUid () == g_24mba.GetUid ())
+    {
+      return GetFecQamBer (snr, 
+                           nbits,
+                           20000000, // signal spread
+                           24000000, // phy rate
+                           16, // m
+                           10, // dFree
+                           11, // adFree
+                           0   // adFreePlusOne
+                           );
+    }
+  else if (mode.GetUid () == g_36mba.GetUid ())
+    {
+      return GetFecQamBer (snr, 
+                           nbits,
+                           20000000, // signal spread
+                           36000000, // phy rate
+                           16, // m
+                           5,  // dFree
+                           8,  // adFree
+                           31  // adFreePlusOne
+                           );
+    }
+  else if (mode.GetUid () == g_48mba.GetUid ())
+    {
+      return GetFecQamBer (snr, 
+                           nbits,
+                           20000000, // signal spread
+                           48000000, // phy rate
+                           64, // m
+                           6,  // dFree
+                           1,  // adFree
+                           16  // adFreePlusOne
+                           );
+    }
+  else if (mode.GetUid () == g_54mba.GetUid ())
+    {
+      return GetFecQamBer (snr, 
+                           nbits,
+                           20000000, // signal spread
+                           54000000, // phy rate
+                           64, // m
+                           5,  // dFree
+                           8,  // adFree
+                           31  // adFreePlusOne
+                           );
+    }
+  return 0;
+}
 
 double
 WifiPhy::CalculateSnr (double signal, double noiseInterference, WifiMode mode) const
