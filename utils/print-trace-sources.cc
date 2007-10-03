@@ -53,7 +53,7 @@ PrintDoxygenText (const TraceResolver::SourceCollection *sources, std::ostream &
         }
       os << "///" << std::endl;
       os << "///" << std::endl;
-      os << "/// The path to this trace source is: " << i->path << "." << std::endl;
+      os << "/// The path to this trace source is: <b><tt>\"" << i->path << "\"</tt></b>." << std::endl;
       os << "///" << std::endl;
       if (i->context.Begin ().IsLast ())
         {
