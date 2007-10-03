@@ -21,5 +21,6 @@ def build(bld):
         'wifi-net-device.h',
         'wifi-net-device-factory.h',
         'wifi-channel.h',
+        'wifi-mode.h',
         'ssid.h',
         ]
