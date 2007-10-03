@@ -167,6 +167,10 @@ def build(bld):
         run_shell()
         raise SystemExit(0)
 
+    if Params.g_options.doxygen:
+        doxygen()
+        raise SystemExit(0)
+
     check_shell()
 
     # process subfolders from here
@@ -190,7 +194,7 @@ def shutdown():
     #ut.print_results()
 
     if Params.g_commands['check']:
-        run_program('run-tests')
+        _run_waf_check()
 
     if Params.g_options.lcov_report:
         lcov_report()
@@ -202,9 +206,17 @@ def shutdown():
     if Params.g_options.command_template:
         Params.fatal("Option --command-template requires the option --run to be given")
 
-    if Params.g_options.doxygen:
-        doxygen()
-        raise SystemExit(0)
+def _run_waf_check():
+    ## generate the trace sources list docs
+    env = Params.g_build.env_of_name('default')
+    proc_env = _get_proc_env()
+    prog = _find_program('print-trace-sources', env).m_linktask.m_outputs[0].abspath(env)
+    out = open('doc/trace-source-list.h', 'w')
+    if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
+        raise SystemExit(1)
+    out.close()
+
+    run_program('run-tests')
 
 
 def _find_program(program_name, env):
@@ -337,15 +349,8 @@ def run_shell():
 
 
 def doxygen():
-    env = Params.g_build.env_of_name('default')
-
-    ## generate the trace sources list docs
-    proc_env = _get_proc_env()
-    prog = _find_program('print-trace-sources', env).m_linktask.m_outputs[0].abspath(env)
-    out = open('doc/trace-source-list.h', 'w')
-    if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
-        raise SystemExit(1)
-    out.close()
+    if not os.path.exists('doc/trace-source-list.h'):
+        Params.warning("doc/trace-source-list.h does not exist; run waf check to generate it.")
 
     ## run doxygen
     doxygen_config = os.path.join('doc', 'doxygen.conf')
