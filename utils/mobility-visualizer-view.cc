@@ -71,7 +71,7 @@ std::map<void*, Node> g_nodes;
 GTimeVal initialTime = {-1, -1};
 gboolean firstTime = TRUE;
 double g_lookaheadTime = 0;
-G_LOCK_DEFINE (g_lookaheadTimeMux);
+GStaticMutex g_lookaheadTimeMux = G_STATIC_MUTEX_INIT;
 ViewUpdateData *g_nextData = NULL;
 
 
@@ -93,12 +93,12 @@ double get_current_time ()
 // called from the simulation thread
 void view_update (ViewUpdateData *updateData)
 {
-  while ((G_LOCK (g_lookaheadTimeMux), g_lookaheadTime) != 0 and updateData->time >= g_lookaheadTime)
+  while ((g_static_mutex_lock (&g_lookaheadTimeMux), g_lookaheadTime) != 0 and updateData->time >= g_lookaheadTime)
     {
-      G_UNLOCK (g_lookaheadTimeMux);
+      g_static_mutex_unlock (&g_lookaheadTimeMux);
       g_usleep ((gulong) 10e3);
     }
-  G_UNLOCK (g_lookaheadTimeMux);
+  g_static_mutex_unlock (&g_lookaheadTimeMux);
   g_async_queue_push (queue, updateData);
 }
 
@@ -130,9 +130,9 @@ void view_update_process (ViewUpdateData *updateData)
         }
       delete updateData;
 
-      G_LOCK (g_lookaheadTimeMux);
+      g_static_mutex_lock (&g_lookaheadTimeMux);
       g_lookaheadTime = get_current_time () + LOOKAHEAD_SECONDS;
-      G_UNLOCK (g_lookaheadTimeMux);
+      g_static_mutex_unlock (&g_lookaheadTimeMux);
     }
 }
 
