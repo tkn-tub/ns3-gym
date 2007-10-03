@@ -717,7 +717,10 @@ OlsrAgentImpl::RoutingTableComputation ()
       if (ok)
         {
           RoutingTableEntry entry;
-          bool found_entry = m_routingTable->Lookup (nb2hop_tuple.neighborMainAddr, entry);
+          bool foundEntry = m_routingTable->Lookup (nb2hop_tuple.neighborMainAddr, entry);
+          if (!foundEntry)
+            NS_FATAL_ERROR ("m_routingTable->Lookup failure");
+
           NS_ASSERT (found_entry);
           m_routingTable->AddEntry (nb2hop_tuple.twoHopNeighborAddr,
                                     entry.nextAddr,
@@ -1118,7 +1121,7 @@ OlsrAgentImpl::SendHello ()
                && link_tuple->time >= now))
         continue;
 
-      uint8_t link_type, nb_type;
+      uint8_t link_type, nb_type = 0xff;
 			
       // Establishes link type
       if (m_useL2Notifications && link_tuple->lostTime >= now)
