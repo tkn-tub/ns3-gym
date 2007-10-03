@@ -45,15 +45,24 @@ struct Node
   {
     g_object_set (m_item, "center_x", x, "center_y", y, NULL);
     
-    GooCanvasPoints *points = goo_canvas_points_new (2);
+    if (vx == 0 && vy == 0)
+      {
+        GooCanvasPoints *points = goo_canvas_points_new (0);
+        g_object_set (m_vector, "points", points, NULL);
+        goo_canvas_points_unref (points);
+      }
+    else
+      {
+        GooCanvasPoints *points = goo_canvas_points_new (2);
 
-    points->coords[0] = x;
-    points->coords[1] = y;
-    points->coords[2] = x + vx;
-    points->coords[3] = y + vy;
+        points->coords[0] = x;
+        points->coords[1] = y;
+        points->coords[2] = x + vx;
+        points->coords[3] = y + vy;
 
-    g_object_set (m_vector, "points", points, NULL);
-    goo_canvas_points_unref (points);
+        g_object_set (m_vector, "points", points, NULL);
+        goo_canvas_points_unref (points);
+      }
   }
 };
 
