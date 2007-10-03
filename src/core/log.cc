@@ -207,7 +207,7 @@ LogComponentEnableEnvVar (void)
 }
 
 LogComponent::LogComponent (char const * name)
-  : m_levels (0)
+  : m_levels (0), m_name (name)
 {
   ComponentList *components = GetComponentList ();
   for (ComponentListI i = components->begin ();
@@ -244,6 +244,13 @@ LogComponent::Disable (enum LogLevel level)
   m_levels &= ~level;
 }
 
+char const *
+LogComponent::Name (void) const
+{
+  return m_name;
+}
+
+
 void 
 LogComponentEnable (char const *name, enum LogLevel level)
 {
@@ -261,6 +268,18 @@ LogComponentEnable (char const *name, enum LogLevel level)
 }
 
 void 
+LogComponentEnableAll (enum LogLevel level)
+{
+  ComponentList *components = GetComponentList ();
+  for (ComponentListI i = components->begin ();
+       i != components->end ();
+       i++)
+    {
+      i->second->Enable (level);
+    }  
+}
+
+void 
 LogComponentDisable (char const *name, enum LogLevel level)
 {
   ComponentList *components = GetComponentList ();
@@ -273,6 +292,18 @@ LogComponentDisable (char const *name, enum LogLevel level)
 	  i->second->Disable (level);
 	  break;
 	}
+    }  
+}
+
+void 
+LogComponentDisableAll (enum LogLevel level)
+{
+  ComponentList *components = GetComponentList ();
+  for (ComponentListI i = components->begin ();
+       i != components->end ();
+       i++)
+    {
+      i->second->Disable (level);
     }  
 }
 
