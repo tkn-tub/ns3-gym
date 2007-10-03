@@ -78,16 +78,15 @@ void PacketSink::StartApplication()    // Called at time specified by Start
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind (m_local);
     }
-  m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
-    const Address &>) MakeCallback(&PacketSink::Receive, this));
+  m_socket->SetRecvCallback (MakeCallback(&PacketSink::Receive, this));
 }
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
 {
   if (!m_socket) 
     {
-      m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
-                               const Address &>) NULL);
+      m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket>, 
+        const Packet &, const Address &> ());
  
     }
 }
