@@ -191,6 +191,11 @@ public:
    */
   bool IsRunning (void) const;
   /**
+   * \returns true if this timer was suspended and not yet resumed, false
+   *          otherwise.
+   */
+  bool IsSuspended (void) const;
+  /**
    * Schedule a new event using the currently-configured delay, function, 
    * and arguments.
    */
@@ -202,6 +207,19 @@ public:
    * Timer::SetDelay), function, and arguments.
    */
   void Schedule (Time delay);
+
+  /**
+   * Cancel the timer and save the amount of time left until it was
+   * set to expire.
+   * Calling Suspend on a non-running timer is an error.
+   */
+  void Suspend (void);
+  /**
+   * Restart the timer to expire within the amount of time left saved
+   * during Suspend.
+   * Calling Resume without a prior call to Suspend is an error.
+   */
+  void Resume (void);
 
 private:
   template <typename FN>
@@ -234,10 +252,15 @@ private:
   template <typename MEM_PTR, typename OBJ_PTR>
   void DoSetFunction (IntToType<6>, MEM_PTR memPtr, OBJ_PTR objPtr);
 
+  enum {
+    TIMER_SUSPENDED = (1<<7)
+  };
+
   int m_flags;
   Time m_delay;
   EventId m_event;
   TimerImpl *m_impl;
+  Time m_delayLeft;
 };
 
 } // namespace ns3

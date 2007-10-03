@@ -79,7 +79,11 @@ Timer::IsRunning (void) const
 {
   return m_event.IsRunning ();
 }
-
+bool
+Timer::IsSuspended (void) const
+{
+  return (m_flags & TIMER_SUSPENDED) == TIMER_SUSPENDED;
+}
 
 void 
 Timer::Schedule (void)
@@ -111,6 +115,23 @@ Timer::Schedule (Time delay)
     {
       SimulationSingleton<EventGarbageCollector>::Get ()->Track (m_event);
     }
+}
+
+void
+Timer::Suspend (void)
+{
+  NS_ASSERT (IsRunning ());
+  m_delayLeft = Simulator::GetDelayLeft (m_event);
+  Simulator::Remove (m_event);
+  m_flags |= TIMER_SUSPENDED;
+}
+
+void
+Timer::Resume (void)
+{
+  NS_ASSERT (m_flags & TIMER_SUSPENDED);
+  m_event = m_impl->Schedule (m_delayLeft);
+  m_flags &= ~TIMER_SUSPENDED;
 }
 
 
@@ -171,10 +192,30 @@ TimerTests::RunTests (void)
 {
   bool result = true;
 
+  Timer timer;
+
+  timer.SetFunction (&bari);
+  timer.SetArguments (1);
+  timer.SetDelay (Seconds (10.0));
+  NS_TEST_ASSERT (!timer.IsRunning ());
+  NS_TEST_ASSERT (timer.IsExpired ());
+  NS_TEST_ASSERT (!timer.IsSuspended ());
+  timer.Schedule ();
+  NS_TEST_ASSERT (timer.IsRunning ());
+  NS_TEST_ASSERT (!timer.IsExpired ());
+  NS_TEST_ASSERT (!timer.IsSuspended ());
+  timer.Suspend ();
+  NS_TEST_ASSERT (!timer.IsRunning ());
+  NS_TEST_ASSERT (timer.IsExpired ());
+  NS_TEST_ASSERT (timer.IsSuspended ());
+  timer.Resume ();
+  NS_TEST_ASSERT (timer.IsRunning ());
+  NS_TEST_ASSERT (!timer.IsExpired ());
+  NS_TEST_ASSERT (!timer.IsSuspended ());
+
   int a = 0;
   int &b = a;
   const int &c = a;
-  Timer timer;
 
   timer.SetFunction (&bari);
   timer.SetArguments (2);
@@ -229,6 +270,7 @@ TimerTests::RunTests (void)
 
   Simulator::Run ();
   Simulator::Destroy ();
+		  
   return result;
 }
 
