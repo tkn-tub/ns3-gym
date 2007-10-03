@@ -15,6 +15,7 @@ def build(bld):
         'aarf-mac-stations.cc',
         'wifi-mac-header.cc',
         'wifi-mac-trailer.cc',
+        'mac-parameters.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
