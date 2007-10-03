@@ -20,6 +20,7 @@ int model_init (int argc, char *argv[]);
 struct Node
 {
   GooCanvasItem *m_item;
+  GooCanvasItem *m_vector;
   void create ()
   {
     GooCanvasItem *root = goo_canvas_get_root_item (GOO_CANVAS (g_canvas));
@@ -28,10 +29,31 @@ struct Node
                                      "stroke_color", "black",
                                      "fill_color", "red",
                                      NULL);
+
+    m_vector = goo_canvas_polyline_new (root, FALSE, 0,
+                                        "line_width", 0.3,
+                                        "stroke_color", "black",
+                                        "end-arrow", TRUE,
+                                        "arrow-length", 10.0,
+                                        "arrow-width", 10.0,
+                                        NULL);
+    
   }
+
+
   void update (double x, double y, double vx, double vy)
   {
     g_object_set (m_item, "center_x", x, "center_y", y, NULL);
+    
+    GooCanvasPoints *points = goo_canvas_points_new (2);
+
+    points->coords[0] = x;
+    points->coords[1] = y;
+    points->coords[2] = x + vx;
+    points->coords[3] = y + vy;
+
+    g_object_set (m_vector, "points", points, NULL);
+    goo_canvas_points_unref (points);
   }
 };
 
@@ -46,6 +68,8 @@ ViewUpdateData *g_nextData = NULL;
 
 GAsyncQueue *queue;
 
+#define TIME_SCALE 1
+
 double get_current_time ()
 {
   GTimeVal currTime;
@@ -54,7 +78,7 @@ double get_current_time ()
   relativeTime.tv_sec = currTime.tv_sec - initialTime.tv_sec + LOOKAHEAD_SECONDS;
   relativeTime.tv_usec = currTime.tv_usec;
   g_time_val_add (&relativeTime, -initialTime.tv_usec);
-  return relativeTime.tv_sec + 1.0e-6*relativeTime.tv_usec;
+  return (relativeTime.tv_sec + 1.0e-6*relativeTime.tv_usec)*TIME_SCALE;
 }
 
 // called from the simulation thread

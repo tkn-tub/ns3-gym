@@ -71,7 +71,7 @@ int model_init (int argc, char *argv[], double *x1, double *y1, double *x2, doub
   DefaultValue::Bind ("RandomWalk2dMode", "Time");
   DefaultValue::Bind ("RandomWalk2dTime", "5s");
   DefaultValue::Bind ("RandomWalk2dSpeed", "Constant:20.0");
-  DefaultValue::Bind ("RandomDirection2dSpeed", "Constant:20.0");
+  DefaultValue::Bind ("RandomDirection2dSpeed", "Uniform:10.0:20.0");
   DefaultValue::Bind ("RandomWalk2dBounds", "0:400:0:300");
   DefaultValue::Bind ("RandomDirection2dArea", "0:400:0:300");
   DefaultValue::Bind ("RandomWaypointSpeed", "Uniform:10:30");
