@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "ns3/packet.h"
 #include "ns3/channel.h"
+#include "ns3/wifi-mode.h"
 
 namespace ns3 {
 
@@ -34,7 +35,7 @@ class PropagationDelayModel;
 class WifiChannel : public Channel
 {
 public:
-  typedef Callback<void,const Packet &,double, uint64_t> ReceiveCallback;
+  typedef Callback<void,Packet,double,WifiMode,WifiMode,uint32_t> ReceiveCallback;
   WifiChannel ();
   virtual ~WifiChannel ();
 
@@ -46,14 +47,22 @@ public:
 
   void Add (Ptr<NetDevice> device,  ReceiveCallback callback);
   void Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDbm,
-             uint64_t wifiMode) const;
+             WifiMode wifiMode, WifiMode headerMode, uint32_t extra) const;
 
 private:
-  void Receive (uint32_t i, 
-                const Packet &packet, double txPowerDbm,
-                uint64_t wifiMode) const;
-
   typedef std::vector<std::pair<Ptr<NetDevice>, ReceiveCallback> > DeviceList;
+  struct ReceiveData {
+    ReceiveData (const Packet &packet, double rxPowerDbm,
+                 WifiMode txMode, WifiMode headerMode, uint32_t extra);
+    Packet m_packet;
+    double m_rxPowerDbm;
+    WifiMode m_wifiMode;
+    WifiMode m_headerMode;
+    uint32_t m_extra;
+  };
+  void Receive (uint32_t i, 
+                const struct ReceiveData &data) const;
+
   DeviceList m_deviceList;
   Ptr<PropagationLossModel> m_loss;
   Ptr<PropagationDelayModel> m_delay;

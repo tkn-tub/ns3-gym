@@ -20,9 +20,9 @@
  */
 
 #include "wifi-phy.h"
-#include "bpsk-mode.h"
-#include "qam-mode.h"
-#include "propagation-model.h"
+#include "wifi-mode.h"
+#include "wifi-channel.h"
+#include "wifi-net-device.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/random-variable.h"
@@ -58,7 +58,27 @@ std::cout << " at=" << at << std::endl;
 #endif
 
 
+
 namespace ns3 {
+
+  // Define all the WifiMode needed for 802.11a
+static WifiMode g_6mba = WifiModeFactory::CreateBpsk ("wifia-6mbs",
+                                                      20000000, 6000000 * 1 / 2, 6000000);
+static WifiMode g_9mba = WifiModeFactory::CreateBpsk ("wifia-9mbs",
+                                                      20000000, 9000000 * 3 / 4, 9000000);
+static WifiMode g_12mba = WifiModeFactory::CreateBpsk ("wifia-12mbs",
+                                                       20000000, 12000000 * 1 / 2, 12000000);
+static WifiMode g_18mba = WifiModeFactory::CreateBpsk ("wifia-18mbs",
+                                                       20000000, 18000000 * 3 / 4, 18000000);
+static WifiMode g_24mba = WifiModeFactory::CreateBpsk ("wifia-24mbs",
+                                                       20000000, 24000000 * 1 / 2, 24000000);
+static WifiMode g_36mba = WifiModeFactory::CreateBpsk ("wifia-36mbs",
+                                                       20000000, 36000000 * 3 / 4, 36000000);
+static WifiMode g_48mba = WifiModeFactory::CreateBpsk ("wifia-48mbs",
+                                                       20000000, 48000000 * 2 / 3, 48000000);
+static WifiMode g_54mba = WifiModeFactory::CreateBpsk ("wifia-54mbs",
+                                                       20000000, 54000000 * 3 / 4, 54000000);
+
 
 /****************************************************************
  *       This destructor is needed.
@@ -74,10 +94,12 @@ WifiPhyListener::~WifiPhyListener ()
 
 class RxEvent {
 public:
-  RxEvent (uint32_t size, uint8_t payloadMode, 
+  RxEvent (uint32_t size, WifiMode payloadMode, 
+           WifiMode headerMode,
            Time duration, double rxPower)
     : m_size (size),
       m_payloadMode (payloadMode),
+      m_headerMode (headerMode),
       m_startTime (Simulator::Now ()),
       m_endTime (m_startTime + duration),
       m_rxPowerW (rxPower),
@@ -118,16 +140,17 @@ public:
   uint32_t GetSize (void) const {
     return m_size;
   }
-  uint8_t GetPayloadMode (void) const {
+  WifiMode GetPayloadMode (void) const {
     return m_payloadMode;
   }
-  uint8_t GetHeaderMode (void) const {
-    return 0;
+  WifiMode GetHeaderMode (void) const {
+    return m_headerMode;
   }
 
 private:
   uint32_t m_size;
-  uint8_t m_payloadMode;
+  WifiMode m_payloadMode;
+  WifiMode m_headerMode;
   Time m_startTime;
   Time m_endTime;
   double m_rxPowerW;
@@ -165,8 +188,15 @@ WifiPhy::NiChange::operator < (WifiPhy::NiChange const &o) const
  *       The actual WifiPhy class
  ****************************************************************/
 
-WifiPhy::WifiPhy ()
-  : m_syncing (false),
+WifiPhy::WifiPhy (Ptr<WifiNetDevice> device)
+  : m_edThresholdW (DbmToW (-140)),
+    m_txGainDbm (1.0),
+    m_rxGainDbm (1.0),
+    m_rxNoiseRatio (DbToRatio (7)),
+    m_txPowerBaseDbm (16.0206),
+    m_txPowerEndDbm (16.0206),
+    m_nTxPower (1),
+    m_syncing (false),
     m_endTx (Seconds (0)),
     m_endSync (Seconds (0)),
     m_endCcaBusy (Seconds (0)),
@@ -174,6 +204,7 @@ WifiPhy::WifiPhy ()
     m_startSync (Seconds (0)),
     m_startCcaBusy (Seconds (0)),
     m_previousStateChangeTime (Seconds (0)),
+    m_device (device),
     m_endSyncEvent (),
     m_random (0.0, 1.0)
 {}
@@ -181,17 +212,16 @@ WifiPhy::WifiPhy ()
 WifiPhy::~WifiPhy ()
 {
   m_events.clear ();
-  for (ModesCI j = m_modes.begin (); j != m_modes.end (); j++) {
-    delete (*j);
-  }
-  m_modes.erase (m_modes.begin (), m_modes.end ());
+  m_modes.clear ();
 }
 
 
+
 void 
-WifiPhy::SetPropagationModel (PropagationModel *propagation)
+WifiPhy::SetChannel (Ptr<WifiChannel> channel)
 {
-  m_propagation = propagation;
+  m_channel = channel;
+  m_channel->Add (m_device, MakeCallback (&WifiPhy::ReceivePacket, this));
 }
 
 void 
@@ -206,9 +236,10 @@ WifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
 }
 void 
 WifiPhy::ReceivePacket (Packet const packet, 
-                         double rxPowerW,
-                         uint8_t txMode,
-                         uint8_t stuff)
+                        double rxPowerW,
+                        WifiMode txMode,
+                        WifiMode headerMode,
+                        uint32_t extra)
 {
   Time rxDuration = CalculateTxDuration (packet.GetSize (), txMode);
   Time endRx = Simulator::Now () + rxDuration;
@@ -216,6 +247,7 @@ WifiPhy::ReceivePacket (Packet const packet,
 
   Ptr<RxEvent> event = Create<RxEvent> (packet.GetSize (), 
                                         txMode,
+                                        headerMode,
                                         rxDuration,
                                         rxPowerW);
   AppendEvent (event);
@@ -249,7 +281,7 @@ WifiPhy::ReceivePacket (Packet const packet,
         m_endSyncEvent = Simulator::Schedule (rxDuration, &WifiPhy::EndSync, this, 
                                               packet,
                                               event, 
-                                              stuff);
+                                              extra);
       } 
     else 
       {
@@ -277,7 +309,7 @@ WifiPhy::ReceivePacket (Packet const packet,
       CalculateNoiseInterferenceW (event, &ni);
       double noiseInterferenceW = 0.0;
       Time end = Simulator::Now ();
-      for (NiChangesI i = ni.begin (); i != ni.end (); i++) 
+      for (NiChanges::const_iterator i = ni.begin (); i != ni.end (); i++) 
         {
           noiseInterferenceW += i->GetDelta ();
           if (noiseInterferenceW < threshold) 
@@ -297,7 +329,7 @@ WifiPhy::ReceivePacket (Packet const packet,
   event->Unref ();
 }
 void 
-WifiPhy::SendPacket (Packet const packet, uint8_t txMode, uint8_t txPower, uint8_t stuff)
+WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiMode headerMode, uint8_t txPower, uint32_t stuff)
 {
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
@@ -312,10 +344,10 @@ WifiPhy::SendPacket (Packet const packet, uint8_t txMode, uint8_t txPower, uint8
   }
 
   Time txDuration = CalculateTxDuration (packet.GetSize (), txMode);
-  m_startTxLogger (txDuration, GetModeBitRate (txMode), GetPowerDbm (txPower));
+  m_startTxLogger (txDuration, txMode.GetPhyRate (), GetPowerDbm (txPower));
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
-  m_propagation->Send (packet, GetPowerDbm (txPower), txMode, stuff);
+  m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDbm, txMode, headerMode, stuff);
 }
 
 void 
@@ -337,15 +369,21 @@ WifiPhy::SetTxPowerIncrementsDbm (double txPowerBase,
   m_txPowerEndDbm = txPowerEnd;
   m_nTxPower = nTxPower;
 }
+void 
+WifiPhy::SetRxTxGainDbm (double rxGainDbm, double txGainDbm)
+{
+  m_rxGainDbm = rxGainDbm;
+  m_txGainDbm = txGainDbm;
+}
 uint32_t 
 WifiPhy::GetNModes (void) const
 {
   return m_modes.size ();
 }
-uint32_t 
-WifiPhy::GetModeBitRate (uint8_t mode) const
+WifiMode 
+WifiPhy::GetMode (uint32_t mode) const
 {
-  return GetMode (mode)->GetRate ();
+  return m_modes[mode];
 }
 uint32_t 
 WifiPhy::GetNTxpower (void) const
@@ -354,13 +392,7 @@ WifiPhy::GetNTxpower (void) const
 }
 
 double 
-WifiPhy::CalculateSnr (uint8_t txMode, double ber) const
-{
-  return GetSnrForBer (GetMode (txMode), ber);;
-}
-
-double 
-WifiPhy::GetSnrForBer (TransmissionMode *mode, double ber) const
+WifiPhy::CalculateSnr (WifiMode txMode, double ber) const
 {
   double low, high, precision;
   low = 1e-25;
@@ -370,7 +402,7 @@ WifiPhy::GetSnrForBer (TransmissionMode *mode, double ber) const
     {
       assert (high >= low);
       double middle = low + (high - low) / 2;
-      if ((1 - mode->GetChunkSuccessRate (middle, 1)) > ber) 
+      if ((1 - GetChunkSuccessRate (txMode, middle, 1)) > ber) 
         {
           low = middle;
         } 
@@ -390,21 +422,20 @@ WifiPhy::Configure80211a (void)
   /* 4095 bytes at a 6Mb/s rate with a 1/2 coding rate. */
   m_maxPacketDuration = Seconds (4095.0*8.0/6000000.0*(1.0/2.0));
 
-  AddTxRxMode (new FecBpskMode (20e6, 6000000, 0.5,   10, 11));
-  AddTxRxMode (new FecBpskMode (20e6, 9000000, 0.75,  5, 8));
-  AddTxRxMode (new FecQamMode (20e6, 12000000, 0.5,   4, 10, 11, 0));
-  AddTxRxMode (new FecQamMode (20e6, 18000000, 0.75,  4, 5, 8, 31));
-  //AddTxRxMode (new FecQamMode (20e6, 24000000, 0.5,   16, 10, 11, 0));
-  AddTxRxMode (new FecQamMode (20e6, 36000000, 0.75,  16, 5, 8, 31));
-  //AddTxRxMode (new FecQamMode (20e6, 48000000, 0.666, 64, 6, 1, 16));
-  AddTxRxMode (new FecQamMode (20e6, 54000000, 0.75,  64, 5, 8, 31));
+  m_modes.push_back (g_6mba);
+  m_modes.push_back (g_9mba);
+  m_modes.push_back (g_18mba);
+  m_modes.push_back (g_24mba);
+  m_modes.push_back (g_36mba);
+  m_modes.push_back (g_48mba);
+  m_modes.push_back (g_54mba);
 
 #ifdef PHY80211_DEBUG
   for (double db = 0; db < 30; db+= 0.5) {
     std::cout <<db<<" ";
     for (uint8_t i = 0; i < GetNModes (); i++) {
-      TransmissionMode *mode = GetMode (i);
-      double ber = 1-mode->GetChunkSuccessRate (DbToRatio (db), 1);
+      WifiMode mode = GetMode (i);
+      double ber = 1-GetChunkSuccessRate (mode, DbToRatio (db), 1);
       std::cout <<ber<< " ";
     }
     std::cout << std::endl;
@@ -480,12 +511,12 @@ WifiPhy::GetDelayUntilIdle (void)
 
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, uint8_t payloadMode) const
+WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode) const
 {
   uint64_t delay = m_plcpPreambleDelayUs;
-  delay += m_plcpHeaderLength * 1000000 / GetMode (0)->GetDataRate ();
+  delay += m_plcpHeaderLength * 1000000 / GetMode (0).GetDataRate ();
   uint64_t nbits = size * 8;
-  delay += nbits * 1000000 / GetMode (payloadMode)->GetDataRate ();
+  delay += nbits * 1000000 / payloadMode.GetDataRate ();
   return MicroSeconds (delay);
 }
 
@@ -557,18 +588,6 @@ WifiPhy::GetMaxPacketDuration (void) const
   return m_maxPacketDuration;
 }
 
-void
-WifiPhy::AddTxRxMode (TransmissionMode *mode)
-{
-  m_modes.push_back (mode);
-}
-
-TransmissionMode *
-WifiPhy::GetMode (uint8_t mode) const
-{
-  return m_modes[mode];
-}
-
 double 
 WifiPhy::GetPowerDbm (uint8_t power) const
 {
@@ -581,35 +600,35 @@ WifiPhy::GetPowerDbm (uint8_t power) const
 void 
 WifiPhy::NotifyTxStart (Time duration)
 {
-  for (ListenersCI i = m_listeners.begin (); i != m_listeners.end (); i++) {
+  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyTxStart (duration);
   }
 }
 void 
 WifiPhy::NotifySyncStart (Time duration)
 {
-  for (ListenersCI i = m_listeners.begin (); i != m_listeners.end (); i++) {
+  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyRxStart (duration);
   }
 }
 void 
 WifiPhy::NotifySyncEndOk (void)
 {
-  for (ListenersCI i = m_listeners.begin (); i != m_listeners.end (); i++) {
+  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyRxEndOk ();
   }
 }
 void 
 WifiPhy::NotifySyncEndError (void)
 {
-  for (ListenersCI i = m_listeners.begin (); i != m_listeners.end (); i++) {
+  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyRxEndError ();
   }
 }
 void 
 WifiPhy::NotifyCcaBusyStart (Time duration)
 {
-  for (ListenersCI i = m_listeners.begin (); i != m_listeners.end (); i++) {
+  for (Listeners::const_iterator i = m_listeners.begin (); i != m_listeners.end (); i++) {
     (*i)->NotifyCcaBusyStart (duration);
   }
 }
@@ -747,11 +766,11 @@ WifiPhy::AppendEvent (Ptr<RxEvent> event)
  */
 
 double
-WifiPhy::CalculateSnr (double signal, double noiseInterference, TransmissionMode *mode) const
+WifiPhy::CalculateSnr (double signal, double noiseInterference, WifiMode mode) const
 {
   // thermal noise at 290K in J/s = W
   static const double BOLTZMANN = 1.3803e-23;
-  double Nt = BOLTZMANN * 290.0 * mode->GetSignalSpread ();
+  double Nt = BOLTZMANN * 290.0 * mode.GetBandwidth ();
   // receiver noise Floor (W)
   double noiseFloor = m_rxNoiseRatio * Nt;
   double noise = noiseFloor + noiseInterference;
@@ -795,14 +814,14 @@ WifiPhy::CalculateNoiseInterferenceW (Ptr<RxEvent> event, NiChanges *ni) const
 }
 
 double
-WifiPhy::CalculateChunkSuccessRate (double snir, Time duration, TransmissionMode *mode) const
+WifiPhy::CalculateChunkSuccessRate (double snir, Time duration, WifiMode mode) const
 {
   if (duration == NanoSeconds (0)) {
     return 1.0;
   }
-  uint32_t rate = mode->GetRate ();
+  uint32_t rate = mode.GetPhyRate ();
   uint64_t nbits = (uint64_t)(rate * duration.GetSeconds ());
-  double csr = mode->GetChunkSuccessRate (snir, (uint32_t)nbits);
+  double csr = GetChunkSuccessRate (mode, snir, (uint32_t)nbits);
   return csr;
 }
 
@@ -810,15 +829,15 @@ double
 WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
 {  
   double psr = 1.0; /* Packet Success Rate */
-  NiChangesI j = ni->begin ();
+  NiChanges::iterator j = ni->begin ();
   Time previous = (*j).GetTime ();
   Time plcpHeaderStart = (*j).GetTime () + MicroSeconds (m_plcpPreambleDelayUs);
   Time plcpPayloadStart = plcpHeaderStart + 
-    Seconds (m_plcpHeaderLength / GetMode (event->GetHeaderMode ())->GetDataRate ());
+    Seconds (m_plcpHeaderLength / event->GetHeaderMode ().GetDataRate ());
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
-  TransmissionMode *payloadMode = GetMode (event->GetPayloadMode ());
-  TransmissionMode *headerMode = GetMode (event->GetHeaderMode ());
+  WifiMode payloadMode = event->GetPayloadMode ();
+  WifiMode headerMode = event->GetHeaderMode ();
 
   j++;
   while (ni->end () != j) 
@@ -829,7 +848,8 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
       if (previous >= plcpPayloadStart) 
         {
           psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
-                                                          noiseInterferenceW, payloadMode), 
+                                                          noiseInterferenceW, 
+                                                          payloadMode), 
                                             current - previous,
                                             payloadMode);
         } 
@@ -894,7 +914,7 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
 
 
 void
-WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event, uint8_t stuff)
+WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event, uint32_t extra)
 {
   assert (IsStateSync ());
   assert (event->GetEndTime () == Simulator::Now ());
@@ -903,7 +923,7 @@ WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event, uint8_t stuff)
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);
   double snr = CalculateSnr (event->GetRxPowerW (),
                              noiseInterferenceW,
-                             GetMode (event->GetPayloadMode ()));
+                             event->GetPayloadMode ());
   
   /* calculate the SNIR at the start of the packet and accumulate
    * all SNIR changes in the snir vector.
@@ -918,7 +938,7 @@ WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event, uint8_t stuff)
       m_endSyncLogger (true);
       NotifySyncEndOk ();
       SwitchFromSync ();
-      m_syncOkCallback (packet, snr, event->GetPayloadMode (), stuff);
+      m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetHeaderMode (), extra);
     } 
   else 
     {

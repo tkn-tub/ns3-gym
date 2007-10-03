@@ -32,15 +32,16 @@
 #include "ns3/nstime.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
+#include "ns3/wifi-mode.h"
 
 
 namespace ns3 {
 
-class TransmissionMode;
-class PropagationModel;
 class RandomUniform;
 class RxEvent;
 class TraceContainer;
+class WifiNetDevice;
+class WifiChannel;
 
 class WifiPhyListener {
 public:
@@ -70,22 +71,18 @@ public:
 class WifiPhy
 {
 public:
-  typedef Callback<void,Packet const , double, uint8_t, uint8_t> SyncOkCallback;
+  typedef Callback<void,Packet const , double, WifiMode, WifiMode, uint32_t> SyncOkCallback;
   typedef Callback<void,Packet const , double> SyncErrorCallback;
 
-  WifiPhy ();
+  WifiPhy (Ptr<WifiNetDevice> device);
   virtual ~WifiPhy ();
 
-  void SetPropagationModel (PropagationModel *propagation);
+  void SetChannel (Ptr<WifiChannel> channel);
+
   void SetReceiveOkCallback (SyncOkCallback callback);
   void SetReceiveErrorCallback (SyncErrorCallback callback);
 
-  /* rxPower unit is Watt */
-  void ReceivePacket (Packet const packet,
-                      double rxPowerW,
-                      uint8_t txMode,
-                      uint8_t stuff);
-  void SendPacket (Packet const packet, uint8_t txMode, uint8_t txPower, uint8_t stuff);
+  void SendPacket (Packet const packet, WifiMode mode, WifiMode headeMode, uint8_t txPower, uint32_t stuff);
 
   void RegisterListener (WifiPhyListener *listener);
 
@@ -97,19 +94,21 @@ public:
   Time GetStateDuration (void);
   Time GetDelayUntilIdle (void);
 
-  Time CalculateTxDuration (uint32_t size, uint8_t payloadMode) const;
+  Time CalculateTxDuration (uint32_t size, WifiMode payloadMode) const;
 
   void Configure80211a (void);
   void SetEdThresholdDbm (double rxThreshold);
   void SetRxNoiseDb (double rxNoise);  
   void SetTxPowerIncrementsDbm (double txPowerBase, 
-              double txPowerEnd, 
-              int nTxPower);
+                                double txPowerEnd, 
+                                int nTxPower);
+  void SetRxTxGainDbm (double rxGainDbm, double txGainDbm);
   uint32_t GetNModes (void) const;
+  WifiMode GetMode (uint32_t mode) const;
   uint32_t GetModeBitRate (uint8_t mode) const;
   uint32_t GetNTxpower (void) const;
   /* return snr: W/W */
-  double CalculateSnr (uint8_t txMode, double ber) const;
+  double CalculateSnr (WifiMode txMode, double ber) const;
 
 private:
   enum WifiPhyState {
@@ -128,13 +127,10 @@ private:
     Time m_time;
     double m_delta;
   };
-  typedef std::vector<TransmissionMode *> Modes;
-  typedef std::vector<TransmissionMode *>::const_iterator ModesCI;
+  typedef std::vector<WifiMode> Modes;
   typedef std::list<WifiPhyListener *> Listeners;
-  typedef std::list<WifiPhyListener *>::const_iterator ListenersCI;
   typedef std::list<Ptr<RxEvent> > Events;
   typedef std::vector <NiChange> NiChanges;
-  typedef std::vector <NiChange>::iterator NiChangesI;
 
 private:  
   char const *StateToString (enum WifiPhyState state);
@@ -143,9 +139,7 @@ private:
   double DbmToW (double dbm) const;
   double DbToRatio (double db) const;
   Time GetMaxPacketDuration (void) const;
-  void AddTxRxMode (TransmissionMode *mode);
   void CancelRx (void);
-  TransmissionMode *GetMode (uint8_t txMode) const;
   double GetPowerDbm (uint8_t power) const;
   void NotifyTxStart (Time duration);
   void NotifyWakeup (void);
@@ -160,11 +154,17 @@ private:
   void SwitchMaybeToCcaBusy (Time duration);
   void AppendEvent (Ptr<RxEvent> event);
   double CalculateNoiseInterferenceW (Ptr<RxEvent> event, NiChanges *ni) const;
-  double CalculateSnr (double signal, double noiseInterference, TransmissionMode *mode) const;
-  double CalculateChunkSuccessRate (double snir, Time delay, TransmissionMode *mode) const;
+  double CalculateSnr (double signal, double noiseInterference, WifiMode mode) const;
+  double CalculateChunkSuccessRate (double snir, Time delay, WifiMode mode) const;
   double CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const;
-  void EndSync (Packet const packet, Ptr<RxEvent> event, uint8_t stuff);
-  double GetSnrForBer (TransmissionMode *mode, double ber) const;
+  void EndSync (Packet const packet, Ptr<RxEvent> event, uint32_t stuff);
+  double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
+  /* rxPower unit is Watt */
+  void ReceivePacket (Packet packet,
+                      double rxPowerW,
+                      WifiMode mode,
+                      WifiMode headerMode,
+                      uint32_t stuff);
 private:
   uint64_t m_txPrepareDelayUs;
   uint64_t m_plcpPreambleDelayUs;
@@ -172,6 +172,8 @@ private:
   Time     m_maxPacketDuration;
 
   double   m_edThresholdW; /* unit: W */
+  double   m_txGainDbm;
+  double   m_rxGainDbm;
   double   m_rxNoiseRatio;
   double   m_txPowerBaseDbm;
   double   m_txPowerEndDbm;
@@ -187,7 +189,8 @@ private:
   Time m_startCcaBusy;
   Time m_previousStateChangeTime;
 
-  PropagationModel *m_propagation;
+  Ptr<WifiChannel> m_channel;
+  Ptr<WifiNetDevice> m_device;
   SyncOkCallback m_syncOkCallback;
   SyncErrorCallback m_syncErrorCallback;
   Modes m_modes;
