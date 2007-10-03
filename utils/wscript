@@ -1,4 +1,5 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+import os.path
 
 def configure(conf):
     check = conf.create_pkgconfig_configurator()
@@ -36,4 +37,6 @@ def build(bld):
                                      ['internet-node', 'mobility'])
         obj.source = ['mobility-visualizer-model.cc', 'mobility-visualizer-view.cc']
         obj.uselib = 'MOBILITY_VISUALIZER'
+        if os.path.basename(obj.env['CXX']).startswith("g++"):
+            obj.env.append_value('CXXFLAGS', '-fno-strict-aliasing')
 
