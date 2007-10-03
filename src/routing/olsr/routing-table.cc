@@ -114,7 +114,9 @@ RoutingTable::RequestRoute (uint32_t ifIndex,
   if (Lookup (ipHeader.GetDestination (), entry1))
     {
       bool foundSendEntry = FindSendEntry (entry1, entry2);
-      NS_ASSERT (foundSendEntry);
+      if (!foundSendEntry)
+        NS_FATAL_ERROR ("FindSendEntry failure");
+
       Ipv4Route route = Ipv4Route::CreateHostRouteTo
         (ipHeader.GetDestination (), entry2.nextAddr, entry2.interface);
 
@@ -143,7 +145,8 @@ RoutingTable::RequestIfIndex (Ipv4Address destination,
   if (Lookup (destination, entry1))
     {
       bool foundSendEntry = FindSendEntry (entry1, entry2);
-      NS_ASSERT (foundSendEntry);
+      if (!foundSendEntry)
+        NS_FATAL_ERROR ("FindSendEntry failure");
       ifIndex = entry2.interface;
       return true;
     }
