@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include "ns3/packet.h"
 #include "ns3/channel.h"
-#include "ns3/wifi-mode.h"
+#include "wifi-mode.h"
 
 namespace ns3 {
 
