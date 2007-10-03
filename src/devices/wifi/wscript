@@ -1,0 +1,25 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_module('wifi', ['node'])
+    obj.source = [
+        'propagation-delay-model.cc',
+        'propagation-loss-model.cc',
+        'wifi-channel.cc',
+        'wifi-mode.cc',
+        'ssid.cc',
+        'wifi-phy.cc',
+        'mac-stations.cc',
+        'mac-station.cc',
+        'arf-mac-stations.cc',
+        'aarf-mac-stations.cc',
+        'wifi-mac-header.cc',
+        'wifi-mac-trailer.cc',
+        ]
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'wifi-net-device.h',
+        'wifi-net-device-factory.h',
+        'wifi-channel.h',
+        'ssid.h',
+        ]
