@@ -178,6 +178,12 @@ public:
    */
   Time GetDelay (void) const;
   /**
+   * \returns the amount of time left until this timer expires.
+   *
+   * This method returns zero if the timer is in EXPIRED state.
+   */
+  Time GetDelayLeft (void) const;
+  /**
    * Cancel the currently-running event if there is one. Do nothing
    * otherwise.
    */

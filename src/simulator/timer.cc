@@ -57,7 +57,25 @@ Timer::GetDelay (void) const
 {
   return m_delay;
 }
-
+Time
+Timer::GetDelayLeft (void) const
+{
+  switch (GetState ()) {
+  case Timer::RUNNING:
+    return Simulator::GetDelayLeft (m_event);
+    break;
+  case Timer::EXPIRED:
+    return TimeStep (0);
+    break;
+  case Timer::SUSPENDED:
+    return m_delayLeft;
+    break;
+  default:
+    NS_ASSERT (false);
+    return TimeStep (0);
+    break;
+  }
+}
 
 void 
 Timer::Cancel (void)
