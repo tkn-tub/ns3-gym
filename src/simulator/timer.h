@@ -67,6 +67,11 @@ public:
      */
     GARBAGE_COLLECT = (1<<6)
   };
+  enum State {
+    RUNNING,
+    EXPIRED,
+    SUSPENDED,
+  };
   /**
    * create a timer with a default event lifetime management policy:
    *  - CHECK_ON_SCHEDULE
@@ -195,6 +200,10 @@ public:
    *          otherwise.
    */
   bool IsSuspended (void) const;
+  /**
+   * \returns the current state of the timer.
+   */
+  enum Timer::State GetState (void) const;
   /**
    * Schedule a new event using the currently-configured delay, function, 
    * and arguments.

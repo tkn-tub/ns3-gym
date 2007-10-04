@@ -72,17 +72,34 @@ Timer::Remove (void)
 bool 
 Timer::IsExpired (void) const
 {
-  return m_event.IsExpired ();
+  return !IsSuspended () && m_event.IsExpired ();
 }
 bool 
 Timer::IsRunning (void) const
 {
-  return m_event.IsRunning ();
+  return !IsSuspended () && m_event.IsRunning ();
 }
 bool
 Timer::IsSuspended (void) const
 {
   return (m_flags & TIMER_SUSPENDED) == TIMER_SUSPENDED;
+}
+enum Timer::State 
+Timer::GetState (void) const
+{
+  if (IsRunning ())
+    {
+      return Timer::RUNNING;
+    }
+  else if (IsExpired ())
+    {
+      return Timer::EXPIRED;
+    }
+  else 
+    {
+      NS_ASSERT (IsSuspended ());
+      return Timer::SUSPENDED;
+    }
 }
 
 void 
@@ -200,18 +217,27 @@ TimerTests::RunTests (void)
   NS_TEST_ASSERT (!timer.IsRunning ());
   NS_TEST_ASSERT (timer.IsExpired ());
   NS_TEST_ASSERT (!timer.IsSuspended ());
+  NS_TEST_ASSERT_EQUAL (timer.GetState (), Timer::EXPIRED);
   timer.Schedule ();
   NS_TEST_ASSERT (timer.IsRunning ());
   NS_TEST_ASSERT (!timer.IsExpired ());
   NS_TEST_ASSERT (!timer.IsSuspended ());
+  NS_TEST_ASSERT_EQUAL (timer.GetState (), Timer::RUNNING);
   timer.Suspend ();
   NS_TEST_ASSERT (!timer.IsRunning ());
-  NS_TEST_ASSERT (timer.IsExpired ());
+  NS_TEST_ASSERT (!timer.IsExpired ());
   NS_TEST_ASSERT (timer.IsSuspended ());
+  NS_TEST_ASSERT_EQUAL (timer.GetState (), Timer::SUSPENDED);
   timer.Resume ();
   NS_TEST_ASSERT (timer.IsRunning ());
   NS_TEST_ASSERT (!timer.IsExpired ());
   NS_TEST_ASSERT (!timer.IsSuspended ());
+  NS_TEST_ASSERT_EQUAL (timer.GetState (), Timer::RUNNING);
+  timer.Cancel ();
+  NS_TEST_ASSERT (!timer.IsRunning ());
+  NS_TEST_ASSERT (timer.IsExpired ());
+  NS_TEST_ASSERT (!timer.IsSuspended ());
+  NS_TEST_ASSERT_EQUAL (timer.GetState (), Timer::EXPIRED);
 
   int a = 0;
   int &b = a;
