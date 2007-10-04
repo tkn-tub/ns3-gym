@@ -20,4 +20,4 @@ struct ViewUpdateData
 
 void view_update (ViewUpdateData *updateData);
 
-#define SAMPLE_INTERVAL (1.0/100) // due to some race condition, this is the only value that works
+#define SAMPLE_INTERVAL (1.0/30)

@@ -104,48 +104,40 @@ void view_update (ViewUpdateData *updateData)
 
 void view_update_process (ViewUpdateData *updateData)
 {
-  if (firstTime)
+  for (std::vector<NodeUpdate>::const_iterator update
+         = updateData->updateList.begin ();
+       update != updateData->updateList.end ();
+       update++)
     {
-      firstTime = FALSE;
-      g_get_current_time (&initialTime);
-
-      for (std::vector<NodeUpdate>::const_iterator update
-             = updateData->updateList.begin ();
-           update != updateData->updateList.end ();
-           update++)
+      if (g_nodes.find (update->node) == g_nodes.end ())
         {
           g_nodes[update->node].create ();
-          g_nodes[update->node].update (update->x, update->y, update->vx, update->vy);
         }
-      delete updateData;
+      g_nodes[update->node].update (update->x, update->y, update->vx, update->vy);
     }
-  else
-    {
-      for (std::vector<NodeUpdate>::const_iterator update
-             = updateData->updateList.begin ();
-           update != updateData->updateList.end ();
-           update++)
-        {
-          g_nodes[update->node].update (update->x, update->y, update->vx, update->vy);
-        }
-      delete updateData;
-
-      g_static_mutex_lock (&g_lookaheadTimeMux);
-      g_lookaheadTime = get_current_time () + LOOKAHEAD_SECONDS;
-      g_static_mutex_unlock (&g_lookaheadTimeMux);
-    }
+  delete updateData;
 }
 
 gboolean view_update_consumer ()
 {
+  if (firstTime)
+    {
+      firstTime = FALSE;
+      g_get_current_time (&initialTime);
+    }
+
+  double now = get_current_time ();
+  g_static_mutex_lock (&g_lookaheadTimeMux);
+  g_lookaheadTime = now + LOOKAHEAD_SECONDS;
+  g_static_mutex_unlock (&g_lookaheadTimeMux);
+
   if (!g_nextData)
     g_nextData = (ViewUpdateData *) g_async_queue_try_pop (queue);
 
   if (!g_nextData)
     return TRUE;
   
-  double time = get_current_time ();
-  if (g_nextData->time > time)
+  if (g_nextData->time > now)
     return TRUE;
 
   do
@@ -153,7 +145,7 @@ gboolean view_update_consumer ()
       view_update_process (g_nextData);
       g_nextData = (ViewUpdateData *) g_async_queue_try_pop (queue);
     }
-  while (g_nextData && g_nextData->time <= time);
+  while (g_nextData && g_nextData->time <= now);
 
   return TRUE;
 }
