@@ -352,6 +352,11 @@ operator != (Ptr<T1> const &lhs, Ptr<T2> const &rhs)
   return PeekPointer (lhs) != PeekPointer (rhs);
 }
 
+template <typename T>
+bool operator < (Ptr<T> const &lhs, Ptr<T> const &rhs)
+{
+  return PeekPointer<T> (lhs) < PeekPointer<T> (rhs);
+}
 
 template <typename T1, typename T2>
 Ptr<T1>
