@@ -20,3 +20,7 @@ def build(bld):
     obj = bld.create_ns3_program('tutorial-naive-dumbbell',
         ['core'])
     obj.source = 'tutorial-naive-dumbbell.cc'
+
+    obj = bld.create_ns3_program('testipv4',
+        ['core'])
+    obj.source = ['testipv4.cc', 'ipv4-address-extended.cc']
