@@ -39,11 +39,12 @@ main (int argc, char *argv[])
 
   Ipv4Mask mask2 ("255.255.0.0");
   Ipv4AddressEx::SeedNetwork (mask2, "192.168.0.0");
+  Ipv4AddressEx::SeedAddress (mask2, "0.0.0.3");
 
+  Ipv4Address network1 = Ipv4AddressEx::AllocateNetwork (mask2);
   for (uint32_t i = 0; i < 10; ++i)
     {
-      Ipv4Address network = Ipv4AddressEx::AllocateNetwork (mask2);
-      Ipv4Address address = Ipv4AddressEx::AllocateAddress (mask2, network);
+      Ipv4Address address = Ipv4AddressEx::AllocateAddress (mask2, network1);
       NS_LOG_INFO ("address = " << address);
     }
 
