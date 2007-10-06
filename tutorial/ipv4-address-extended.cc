@@ -32,6 +32,7 @@ public:
   virtual ~Ipv4NetworkManager ();
 
   Ipv4Address Allocate (const Ipv4Mask mask);
+  void Seed (const Ipv4Mask mask, const Ipv4Address network);
 
 private:
   static const uint32_t N_BITS = 32;
@@ -67,6 +68,29 @@ Ipv4NetworkManager::~Ipv4NetworkManager ()
   NS_LOG_FUNCTION;
 }
 
+void
+Ipv4NetworkManager::Seed (const Ipv4Mask mask, const Ipv4Address network)
+{
+  NS_LOG_FUNCTION;
+
+  uint32_t maskBits = mask.GetHostOrder ();
+  uint32_t networkBits = network.GetHostOrder ();
+
+  for (uint32_t i = 0; i < N_BITS; ++i)
+    {
+      if (maskBits & 1)
+        {
+          uint32_t nMaskBits = N_BITS - i;
+          NS_ASSERT(nMaskBits >= 0 && nMaskBits < N_BITS);
+          m_state[nMaskBits].network = networkBits >> (N_BITS - i);
+          return;
+        }
+      maskBits >>= 1;
+    }
+  NS_ASSERT_MSG(false, "Impossible");
+  return;
+}
+
 Ipv4Address
 Ipv4NetworkManager::Allocate (const Ipv4Mask mask)
 {
@@ -80,8 +104,9 @@ Ipv4NetworkManager::Allocate (const Ipv4Mask mask)
         {
           uint32_t nBits = N_BITS - i;
           NS_ASSERT(nBits >= 0 && nBits < N_BITS);
+          Ipv4Address addr (m_state[nBits].network << i);
           ++m_state[nBits].network;
-          return Ipv4Address (m_state[nBits].network << i);
+          return addr;
         }
       bits >>= 1;
     }
@@ -96,6 +121,7 @@ public:
   virtual ~Ipv4AddressManager ();
 
   Ipv4Address Allocate (const Ipv4Mask mask, const Ipv4Address network);
+  void Seed (const Ipv4Mask mask, const Ipv4Address address);
 
 private:
   static const uint32_t N_BITS = 32;
@@ -131,6 +157,29 @@ Ipv4AddressManager::~Ipv4AddressManager ()
   NS_LOG_FUNCTION;
 }
 
+void
+Ipv4AddressManager::Seed (const Ipv4Mask mask, const Ipv4Address address)
+{
+  NS_LOG_FUNCTION;
+
+  uint32_t maskBits = mask.GetHostOrder ();
+  uint32_t addressBits = address.GetHostOrder ();
+
+  for (uint32_t i = 0; i < N_BITS; ++i)
+    {
+      if (maskBits & 1)
+        {
+          uint32_t nMaskBits = N_BITS - i;
+          NS_ASSERT(nMaskBits >= 0 && nMaskBits < N_BITS);
+          m_state[nMaskBits].address = addressBits;
+          return;
+        }
+      maskBits >>= 1;
+    }
+  NS_ASSERT_MSG(false, "Impossible");
+  return;
+}
+
 Ipv4Address
 Ipv4AddressManager::Allocate (const Ipv4Mask mask, const Ipv4Address network)
 {
@@ -145,15 +194,24 @@ Ipv4AddressManager::Allocate (const Ipv4Mask mask, const Ipv4Address network)
         {
           uint32_t nBits = N_BITS - i;
           NS_ASSERT(nBits >= 0 && nBits < N_BITS);
+          Ipv4Address addr (net | m_state[nBits].address);
           ++m_state[nBits].address;
           NS_ASSERT_MSG((m_state[nBits].mask & m_state[nBits].address) == 0, 
             "Ipv4AddressManager::Allocate(): Overflow");
-          return Ipv4Address (net | m_state[nBits].address);
+          return addr;
         }
       bits >>= 1;
     }
   NS_ASSERT_MSG(false, "Impossible");
   return Ipv4Address (bits);
+}
+
+void
+Ipv4AddressEx::SeedAddress (const Ipv4Mask mask, const Ipv4Address address)
+{
+  NS_LOG_FUNCTION;
+
+  SimulationSingleton<Ipv4AddressManager>::Get ()->Seed (mask, address);
 }
 
 Ipv4Address
@@ -163,6 +221,14 @@ Ipv4AddressEx::AllocateAddress (const Ipv4Mask mask, const Ipv4Address network)
 
   return SimulationSingleton<Ipv4AddressManager>::Get ()->
     Allocate (mask, network);
+}
+
+void
+Ipv4AddressEx::SeedNetwork (const Ipv4Mask mask, const Ipv4Address address)
+{
+  NS_LOG_FUNCTION;
+
+  SimulationSingleton<Ipv4NetworkManager>::Get ()->Seed (mask, address);
 }
 
 Ipv4Address

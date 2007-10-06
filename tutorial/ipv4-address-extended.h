@@ -28,8 +28,14 @@ namespace ns3 {
 
 class Ipv4AddressEx : public Ipv4Address {
 public:
+  static void SeedAddress (const Ipv4Mask mask, 
+    const Ipv4Address address);
+
   static Ipv4Address AllocateAddress (const Ipv4Mask mask, 
     const Ipv4Address network);
+
+  static void SeedNetwork (const Ipv4Mask mask, 
+    const Ipv4Address address);
 
   static Ipv4Address AllocateNetwork (const Ipv4Mask mask);
 };
