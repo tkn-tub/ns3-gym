@@ -50,7 +50,7 @@ GlobalRoutingLinkRecord::GlobalRoutingLinkRecord (
   LinkType    linkType, 
   Ipv4Address linkId, 
   Ipv4Address linkData, 
-  uint32_t    metric)
+  uint16_t    metric)
 :
   m_linkId (linkId),
   m_linkData (linkData),
@@ -110,7 +110,7 @@ GlobalRoutingLinkRecord::SetLinkType (
   m_linkType = linkType;
 }
 
-  uint32_t
+  uint16_t
 GlobalRoutingLinkRecord::GetMetric (void) const
 {
   NS_LOG_FUNCTION;
@@ -118,7 +118,7 @@ GlobalRoutingLinkRecord::GetMetric (void) const
 }
 
   void
-GlobalRoutingLinkRecord::SetMetric (uint32_t metric)
+GlobalRoutingLinkRecord::SetMetric (uint16_t metric)
 {
   NS_LOG_FUNCTION;
   m_metric = metric;
@@ -202,6 +202,7 @@ GlobalRoutingLSA::CopyLinkRecords (const GlobalRoutingLSA& lsa)
       pDst->SetLinkType (pSrc->GetLinkType ());
       pDst->SetLinkId (pSrc->GetLinkId ());
       pDst->SetLinkData (pSrc->GetLinkData ());
+      pDst->SetMetric (pSrc->GetMetric ());
 
       m_linkRecords.push_back(pDst);
       pDst = 0;
@@ -397,6 +398,7 @@ GlobalRoutingLSA::Print (std::ostream &os) const
           os << "----------" << std::endl;
           os << "m_linkId = " << p->GetLinkId () << std::endl;
           os << "m_linkData = " << p->GetLinkData () << std::endl;
+          os << "m_metric = " << p->GetMetric () << std::endl;
         }
     }
   else if (m_lsType == GlobalRoutingLSA::NetworkLSA) 
@@ -547,6 +549,7 @@ GlobalRouter::DiscoverLSAs (void)
           Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
           Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
           NS_LOG_LOGIC ("Working with local address " << addrLocal);
+          uint16_t metricLocal = ipv4Local->GetMetric (ifIndexLocal);
 //
 // Now, we're going to walk over to the remote net device on the other end of 
 // the point-to-point channel we now know we have.  This is where our adjacent 
@@ -566,8 +569,7 @@ GlobalRouter::DiscoverLSAs (void)
               Ipv4Address maskLocalAddr;
               maskLocalAddr.Set(maskLocal.GetHostOrder ());
               plr->SetLinkData (maskLocalAddr);
-              // Cost is interface's configured output cost (NOTYET)
-              plr->SetMetric (1);
+              plr->SetMetric (metricLocal);
               pLSA->AddLinkRecord(plr);
               plr = 0;
               continue;
@@ -589,8 +591,7 @@ GlobalRouter::DiscoverLSAs (void)
               plr->SetLinkId (desigRtr);
               // Link Data is router's own IP address
               plr->SetLinkData (addrLocal);
-              // Cost is interface's configured output cost (NOTYET)
-              plr->SetMetric (1);
+              plr->SetMetric (metricLocal);
               pLSA->AddLinkRecord (plr);
               plr = 0;
               continue;
@@ -613,6 +614,7 @@ GlobalRouter::DiscoverLSAs (void)
           Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
           Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
           NS_LOG_LOGIC ("Working with local address " << addrLocal);
+          uint16_t metricLocal = ipv4Local->GetMetric (ifIndexLocal);
 //
 // Now, we're going to walk over to the remote net device on the other end of 
 // the point-to-point channel we now know we have.  This is where our adjacent 
@@ -659,6 +661,7 @@ GlobalRouter::DiscoverLSAs (void)
           plr->SetLinkType (GlobalRoutingLinkRecord::PointToPoint);
           plr->SetLinkId (rtrIdRemote);
           plr->SetLinkData (addrLocal);
+          plr->SetMetric (metricLocal);
           pLSA->AddLinkRecord (plr);
           plr = 0;
 
@@ -666,6 +669,7 @@ GlobalRouter::DiscoverLSAs (void)
           plr->SetLinkType (GlobalRoutingLinkRecord::StubNetwork);
           plr->SetLinkId (addrRemote);
           plr->SetLinkData (Ipv4Address(maskRemote.GetHostOrder()));  // Frown
+          plr->SetMetric (metricLocal);
           pLSA->AddLinkRecord (plr);
           plr = 0;
         }

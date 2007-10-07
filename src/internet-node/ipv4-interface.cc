@@ -37,7 +37,8 @@ namespace ns3 {
    */
 Ipv4Interface::Ipv4Interface (Ptr<NetDevice> nd) 
   : m_netdevice (nd), 
-    m_ifup(false)
+    m_ifup(false),
+    m_metric(1)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAM ("(" << &nd << ")");
@@ -94,6 +95,21 @@ Ipv4Interface::GetNetworkMask (void) const
 {
   NS_LOG_FUNCTION;
   return m_netmask;
+}
+
+void
+Ipv4Interface::SetMetric (uint16_t metric)
+{
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << metric << ")");
+  m_metric = metric;
+}
+
+uint16_t
+Ipv4Interface::GetMetric (void) const
+{
+  NS_LOG_FUNCTION;
+  return m_metric;
 }
 
 Ipv4Address 

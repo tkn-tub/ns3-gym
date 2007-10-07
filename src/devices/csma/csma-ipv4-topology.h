@@ -103,6 +103,7 @@ public:
    *        the address.
    * \param address The Ipv4 Address for the interface.
    * \param network The network mask for the interface
+   * \param metric (optional) metric (cost) to assign for routing calculations
    * 
    * Add an Ipv4Address to the Ipv4 interface associated with the
    * ndNum CsmaIpv4NetDevices on the provided CsmaIpv4Channel
@@ -110,7 +111,8 @@ public:
   static uint32_t AddIpv4Address(Ptr<Node> node,
                                  uint32_t netDeviceNumber, 
                                  const Ipv4Address address,
-                                 const Ipv4Mask mask);
+                                 const Ipv4Mask mask,
+                                 uint16_t metric = 1);
 
   /**
    * \param nd1 Node
