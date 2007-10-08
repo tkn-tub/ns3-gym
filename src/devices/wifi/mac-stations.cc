@@ -20,7 +20,6 @@
  */
 
 #include "mac-stations.h"
-#include "mac-station.h"
 
 namespace ns3 {
 
@@ -51,4 +50,52 @@ MacStations::Lookup (Mac48Address address)
   return station;
 }
 
-}; // namespace ns3
+} // namespace ns3
+
+/***************************************************************
+ *           MacStation below.
+ ***************************************************************/ 
+
+namespace ns3 {
+
+MacStation::MacStation ()
+  : m_state (DISASSOC)
+{}
+
+
+MacStation::~MacStation ()
+{}
+
+bool 
+MacStation::IsAssociated (void) const
+{
+  return m_state == GOT_ASSOC_TX_OK;
+}
+bool 
+MacStation::IsWaitAssocTxOk (void) const
+{
+  return m_state == WAIT_ASSOC_TX_OK;
+}
+void 
+MacStation::RecordWaitAssocTxOk (void)
+{
+  m_state = WAIT_ASSOC_TX_OK;
+}
+void 
+MacStation::RecordGotAssocTxOk (void)
+{
+  m_state = GOT_ASSOC_TX_OK;
+}
+void 
+MacStation::RecordGotAssocTxFailed (void)
+{
+  m_state = DISASSOC;
+}
+void 
+MacStation::RecordDisassociated (void)
+{
+  m_state = DISASSOC;
+}
+
+} // namespace ns3
+

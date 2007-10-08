@@ -24,7 +24,6 @@
 #include <stdint.h>
 
 #include "mac-stations.h"
-#include "mac-station.h"
 
 namespace ns3 {
 

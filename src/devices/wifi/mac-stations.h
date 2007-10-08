@@ -42,7 +42,43 @@ private:
   Stations m_stations;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
+namespace ns3 {
+
+class MacStation {
+public:
+  MacStation ();
+
+  virtual ~MacStation ();
+
+  bool IsAssociated (void) const;
+  bool IsWaitAssocTxOk (void) const;
+  void RecordWaitAssocTxOk (void);
+  void RecordGotAssocTxOk (void);
+  void RecordGotAssocTxFailed (void);
+  void RecordDisassociated (void);
+
+  // reception-related method
+  virtual void ReportRxOk (double rxSnr, uint8_t txMode) = 0;
+
+  // transmission-related methods
+  virtual void ReportRtsFailed (void) = 0;
+  virtual void ReportDataFailed (void) = 0;
+  virtual void ReportRtsOk (double ctsSnr, uint8_t ctsMode, uint8_t rtsSnr) = 0;
+  virtual void ReportDataOk (double ackSnr, uint8_t ackMode, uint8_t dataSnr) = 0;
+  virtual uint8_t GetDataMode (int size) = 0;
+  virtual uint8_t GetRtsMode (void) = 0;
+  virtual uint8_t SnrToSnr (double snr) = 0;
+
+private:
+  enum {
+    DISASSOC,
+    WAIT_ASSOC_TX_OK,
+    GOT_ASSOC_TX_OK
+  } m_state;
+};
+
+} // namespace ns3 
 
 #endif /* MAC_STATIONS_H */
