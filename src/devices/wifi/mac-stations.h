@@ -87,7 +87,8 @@ private:
   };
   typedef std::vector<struct WifiRate> WifiRates;
 protected:
-  
+  uint32_t GetNModes (void) const;
+  WifiMode GetMode (uint32_t i) const;
 private:
   bool IsIn (WifiMode mode) const;
   WifiMode GetControlAnswerMode (WifiMode reqMode);

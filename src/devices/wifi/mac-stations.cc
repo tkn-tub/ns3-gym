@@ -23,17 +23,72 @@
 
 namespace ns3 {
 
+/**
+ * _all_ broadcast and multicast frames are transmitted
+ * at the same constant default rate because since we don't
+ * have any kind of feedback from their transmission,
+ * we cannot adjust the rate, so, we pick one which ensures
+ * that all frames reach destination.
+ */
 class NonUnicastMacStation : public MacStation
 {
 public:
+  NonUnicastMacStation (WifiMode defaultTxMode);
+  virtual void ReportRxOk (double rxSnr, WifiMode txMode);
+  virtual void ReportRtsFailed (void);
+  virtual void ReportDataFailed (void);
+  virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual WifiMode GetDataMode (uint32_t size);
+  virtual WifiMode GetRtsMode (void);
 };
+
+NonUnicastMacStation::NonUnicastMacStation (WifiMode defaultTxMode)
+  : MacStation (defaultTxMode)
+{}
+void 
+NonUnicastMacStation::ReportRxOk (double rxSnr, WifiMode txMode)
+{
+  NS_ASSERT (false);
+}
+void 
+NonUnicastMacStation::ReportRtsFailed (void)
+{
+  NS_ASSERT (false);
+}
+void 
+NonUnicastMacStation::ReportDataFailed (void)
+{
+  NS_ASSERT (false);
+}
+void 
+NonUnicastMacStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
+{
+  NS_ASSERT (false);
+}
+void 
+NonUnicastMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+{
+  NS_ASSERT (false);
+}
+WifiMode 
+NonUnicastMacStation::GetDataMode (uint32_t size)
+{
+  return GetMode (0);
+}
+WifiMode 
+NonUnicastMacStation::GetRtsMode (void)
+{
+  return GetMode (0);
+}
+
 
 } // namespace ns3
 
 namespace ns3 {
 
 MacStations::MacStations (WifiMode defaultTxMode)
-  : m_nonUnicast (0),
+  : m_nonUnicast (new NonUnicastMacStation (defaultTxMode)),
     m_defaultTxMode (defaultTxMode)
 {}
 
@@ -231,6 +286,17 @@ MacStation::GetAckMode (WifiMode dataMode)
   return GetControlAnswerMode (dataMode);
 }
 
+uint32_t 
+MacStation::GetNModes (void) const
+{
+  return m_rates.size ();
+}
+WifiMode 
+MacStation::GetMode (uint32_t i) const
+{
+  NS_ASSERT (i > 0);
+  return m_rates[i-1].mode;
+}
 
 
 } // namespace ns3
