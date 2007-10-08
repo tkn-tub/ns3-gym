@@ -35,11 +35,13 @@ public:
   virtual ~MacStations ();
   
   MacStation *Lookup (Mac48Address address);
+  MacStation *LookupNonUnicast (void);
 private:
   typedef std::list <std::pair<Mac48Address, MacStation *> > Stations;
   typedef std::list <std::pair<Mac48Address, MacStation *> >::iterator StationsI;
   virtual class MacStation *CreateStation (void) = 0;
   Stations m_stations;
+  MacStation *m_nonUnicast;
 };
 
 } // namespace ns3

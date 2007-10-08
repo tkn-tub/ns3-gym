@@ -23,7 +23,17 @@
 
 namespace ns3 {
 
+class NonUnicastMacStation : public MacStation
+{
+public:
+};
+
+} // namespace ns3
+
+namespace ns3 {
+
 MacStations::MacStations ()
+  : m_nonUnicast (0)
 {}
 
 MacStations::~MacStations ()
@@ -32,12 +42,18 @@ MacStations::~MacStations ()
     {
       delete (*i).second;
     }
-  m_stations.erase (m_stations.begin (), m_stations.end ());
+  m_stations.clear ();
+  delete m_nonUnicast;
 }
 
 MacStation *
 MacStations::Lookup (Mac48Address address)
 {
+  if (address.IsBroadcast () ||
+      address.IsMulticast ())
+    {
+      return m_nonUnicast;
+    }
   for (StationsI i = m_stations.begin (); i != m_stations.end (); i++) 
     {
       if ((*i).first == address)
@@ -48,6 +64,12 @@ MacStations::Lookup (Mac48Address address)
   MacStation *station = CreateStation ();
   m_stations.push_back (std::make_pair (address, station));
   return station;
+}
+
+MacStation *
+MacStations::LookupNonUnicast (void)
+{
+  return m_nonUnicast;
 }
 
 } // namespace ns3
