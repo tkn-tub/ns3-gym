@@ -186,6 +186,7 @@ private:
                          TraceResolver::SourceCollection *collection) const;
   void DoTraceAll (std::ostream &os, const TraceContext &context) const;
   bool Check (void) const;
+  bool CheckLoose (void) const;
   void MaybeDelete (void) const;
   mutable uint32_t m_count;
   InterfaceId m_iid;
