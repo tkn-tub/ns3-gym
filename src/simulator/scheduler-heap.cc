@@ -2,7 +2,6 @@
 /*
  * Copyright (c) 2006 INRIA
  * Copyright (c) 2005 Mathieu Lacage
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -20,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  *
  * This code started as a c++ translation of a java-based code written in 2005
- * to implement a heap sort. Which explains the Copyright Mathieu Lacage at the
+ * to implement a heap sort. Which explains the "Copyright Mathieu Lacage" at the
  * top of this file.
  *
  * What is smart about this code ?
