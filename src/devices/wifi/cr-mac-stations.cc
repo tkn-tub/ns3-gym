@@ -26,12 +26,18 @@
 
 namespace ns3 {
 
-CrMacStation::CrMacStation (CrMacStations *stations)
-  : m_stations (stations)
+CrMacStation::CrMacStation (WifiMode dataMode, WifiMode ctlMode)
+  : MacStation (ctlMode),
+    m_dataMode (dataMode),
+    m_ctlMode (ctlMode)
 {}
 CrMacStation::~CrMacStation ()
 {}
 
+
+void 
+CrMacStation::ReportRxOk (double rxSnr, WifiMode txMode)
+{}
 void 
 CrMacStation::ReportRtsFailed (void)
 {}
@@ -39,59 +45,36 @@ void
 CrMacStation::ReportDataFailed (void)
 {}
 void 
-CrMacStation::ReportRxOk (double SNR, uint8_t mode)
+CrMacStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {}
-void CrMacStation::ReportRtsOk (double ctsSNR, uint8_t ctsMode, uint8_t rtsSnr)
+void 
+CrMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
+{}
+WifiMode 
+CrMacStation::GetDataMode (uint32_t size)
 {
-  assert (rtsSnr == 0);
+  return m_dataMode;
 }
-void CrMacStation::ReportDataOk (double ackSNR, uint8_t ackMode, uint8_t dataSnr)
-{
-  assert (dataSnr == 0);
-}
-uint8_t
-CrMacStation::GetDataMode (int size)
-{
-  return m_stations->GetDataMode ();
-}
-uint8_t
+WifiMode 
 CrMacStation::GetRtsMode (void)
 {
-  return m_stations->GetCtlMode ();
-}
-uint8_t 
-CrMacStation::SnrToSnr (double snr)
-{
-  return 0;
+  return m_ctlMode;
 }
 
 
 
-
-
-
-CrMacStations::CrMacStations (uint8_t dataMode, uint8_t ctlMode)
-  : MacStations (),
+CrMacStations::CrMacStations (WifiMode dataMode, WifiMode ctlMode)
+  : MacStations (ctlMode),
     m_dataMode (dataMode),
     m_ctlMode (ctlMode)
 {}
 CrMacStations::~CrMacStations ()
 {}
-uint8_t 
-CrMacStations::GetDataMode (void) const
-{
-  return m_dataMode;
-}
-uint8_t 
-CrMacStations::GetCtlMode (void) const
-{
-  return m_ctlMode;
-}
 
 MacStation *
-CrMacStations::CreateStation (void)
+CrMacStations::CreateStation (WifiMode defaultMode)
 {
-  return new CrMacStation (this);
+  return new CrMacStation (m_dataMode, m_ctlMode);
 }
 
-}; // namespace ns3
+} // namespace ns3

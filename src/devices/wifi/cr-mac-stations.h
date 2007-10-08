@@ -29,39 +29,38 @@ namespace ns3 {
 
 class CrMacStations : public MacStations {
 public:
-  CrMacStations (uint8_t dataMode, uint8_t ctlMode);
+  CrMacStations (WifiMode dataMode, WifiMode ctlMode);
   virtual ~CrMacStations ();
 
   uint8_t GetDataMode (void) const;
   uint8_t GetCtlMode (void) const;
 private:
-  virtual class MacStation *CreateStation (void);
+  virtual class MacStation *CreateStation (WifiMode defaultMode);
 
-  uint8_t m_dataMode;
-  uint8_t m_ctlMode;
+  WifiMode m_dataMode;
+  WifiMode m_ctlMode;
 };
 
 
 class CrMacStation : public MacStation
 {
 public:
-  CrMacStation (CrMacStations *stations);
+  CrMacStation (WifiMode dataMode, WifiMode ctlMode);
   virtual ~CrMacStation ();
 
-  virtual void ReportRxOk (double snr, uint8_t mode);
-
+  virtual void ReportRxOk (double rxSnr, WifiMode txMode);
   virtual void ReportRtsFailed (void);
   virtual void ReportDataFailed (void);
-  virtual void ReportRtsOk (double ctsSnr, uint8_t ctsMode, uint8_t rtsSnr);
-  virtual void ReportDataOk (double ackSnr, uint8_t ackMode, uint8_t dataSnr);
-  virtual uint8_t GetDataMode (int size);
-  virtual uint8_t GetRtsMode (void);
-  virtual uint8_t SnrToSnr (double snr);
+  virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual WifiMode GetDataMode (uint32_t size);
+  virtual WifiMode GetRtsMode (void);
 private:
-  CrMacStations *m_stations;
+  WifiMode m_dataMode;
+  WifiMode m_ctlMode;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 
