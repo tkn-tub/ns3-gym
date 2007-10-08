@@ -37,12 +37,13 @@ class StaticSpeedHelper
 		     const Speed &speed);
   void InitializePosition (const Position &position);
 
-  void Reset (const Speed &speed, const Time &pauseDelay);
   void Reset (const Speed &speed);
   Position GetCurrentPosition (const Rectangle &bounds) const;
   Position GetCurrentPosition (void) const;
   Speed GetSpeed (void) const;
   void SetSpeed (const Speed &speed);
+  void Pause (void);
+  void Unpause (void);
 
  private:
   void Update (void) const;
@@ -50,7 +51,7 @@ class StaticSpeedHelper
   mutable Time m_lastUpdate;
   mutable Position m_position;
   Speed m_speed;
-  Time m_pauseEnd;
+  bool m_paused;
 };
 
 } // namespace ns3

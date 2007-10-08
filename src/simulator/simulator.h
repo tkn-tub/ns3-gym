@@ -552,6 +552,13 @@ public:
    * Return the "current simulation time".
    */
   static Time Now (void);
+  /**
+   * \param id the event id to analyse
+   * \returns the delay left until the input event id expires.
+   *          if the event is not running, this method returns
+   *          zero.
+   */
+  static Time GetDelayLeft (const EventId &id);
 private:
   Simulator ();
   ~Simulator ();
