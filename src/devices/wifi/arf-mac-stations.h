@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -28,37 +27,31 @@ namespace ns3 {
 
 class ArfMacStations : public MacStations {
 public:
-  ArfMacStations (uint8_t nModes);
+  ArfMacStations (WifiMode defaultTxMode);
   virtual ~ArfMacStations ();
 
-  uint8_t GetNModes (void) const;
 private:
-  virtual class MacStation *CreateStation (void);
-  uint8_t m_nModes;
+  virtual class MacStation *CreateStation (WifiMode defaultTxMode);
 };
 
 
 class ArfMacStation : public MacStation
 {
 public:
-  ArfMacStation (ArfMacStations *stations,
+  ArfMacStation (WifiMode defaultTxMode,
                  int minTimerTimeout,
                  int minSuccessThreshold);
   virtual ~ArfMacStation ();
 
-  virtual void ReportRxOk (double rxSnr, uint8_t txMode);
-
+  virtual void ReportRxOk (double rxSnr, WifiMode txMode);
   virtual void ReportRtsFailed (void);
   virtual void ReportDataFailed (void);
-  virtual void ReportRtsOk (double ctsSnr, uint8_t ctsMode, uint8_t rtsSnr);
-  virtual void ReportDataOk (double ackSnr, uint8_t ackMode, uint8_t dataSnr);
-  virtual uint8_t GetDataMode (int size);
-  virtual uint8_t GetRtsMode (void);
-  virtual uint8_t SnrToSnr (double snr);
+  virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
+  virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual WifiMode GetDataMode (uint32_t size);
+  virtual WifiMode GetRtsMode (void);
 
 private:
-  ArfMacStations *m_stations;
-
   int m_timer;
   int m_success;
   int m_failed;

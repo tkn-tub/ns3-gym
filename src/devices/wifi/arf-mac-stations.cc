@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2004,2005,2006 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -22,16 +21,16 @@
 #include "mac-stations.h"
 #include "mac-station.h"
 #include "arf-mac-stations.h"
+#include "ns3/assert.h"
 
-#include <cassert>
 
 namespace ns3 {
   
-ArfMacStation::ArfMacStation (ArfMacStations *stations,
+ArfMacStation::ArfMacStation (WifiMode defaultTxMode,
                               int minTimerTimeout,
                               int minSuccessThreshold)
+  : MacStation (defaultTxMode)
 {
-  m_stations = stations;
   m_minTimerTimeout = minTimerTimeout;
   m_minSuccessThreshold = minSuccessThreshold;
   m_successThreshold = m_minSuccessThreshold;
@@ -50,7 +49,7 @@ ArfMacStation::~ArfMacStation ()
 int 
 ArfMacStation::GetMaxRate (void)
 {
-  return m_stations->GetNModes ();
+  return GetNModes ();
 }
 int 
 ArfMacStation::GetMinRate (void)
@@ -108,7 +107,7 @@ ArfMacStation::ReportDataFailed (void)
 
   if (m_recovery) 
     {
-      assert (m_retry >= 1);
+      NS_ASSERT (m_retry >= 1);
       if (NeedRecoveryFallback ()) 
         {
           ReportRecoveryFailure ();
@@ -121,7 +120,7 @@ ArfMacStation::ReportDataFailed (void)
     } 
   else 
     {
-      assert (m_retry >= 1);
+      NS_ASSERT (m_retry >= 1);
       if (NeedNormalFallback ()) 
         {
           ReportFailure ();
@@ -137,15 +136,15 @@ ArfMacStation::ReportDataFailed (void)
     }
 }
 void 
-ArfMacStation::ReportRxOk (double rxSnr, uint8_t txMode)
+ArfMacStation::ReportRxOk (double rxSnr, WifiMode txMode)
 {}
-void ArfMacStation::ReportRtsOk (double ctsSnr, uint8_t ctsMode, uint8_t rtsSnr)
+void ArfMacStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 {
-  assert (rtsSnr == 0);
+  NS_ASSERT (rtsSnr == 0);
 }
-void ArfMacStation::ReportDataOk (double ackSnr, uint8_t ackMode, uint8_t dataSnr)
+void ArfMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
-  assert (dataSnr == 0);
+  NS_ASSERT (dataSnr == 0);
   m_timer++;
   m_success++;
   m_failed = 0;
@@ -161,20 +160,15 @@ void ArfMacStation::ReportDataOk (double ackSnr, uint8_t ackMode, uint8_t dataSn
       m_recovery = true;
     }
 }
-uint8_t 
-ArfMacStation::SnrToSnr (double snr)
+WifiMode
+ArfMacStation::GetDataMode (uint32_t size)
 {
-  return 0;
+  return GetMode (m_rate);
 }
-uint8_t 
-ArfMacStation::GetDataMode (int size)
-{
-  return m_rate;
-}
-uint8_t 
+WifiMode
 ArfMacStation::GetRtsMode (void)
 {
-  return 0;
+  return GetMode (0);
 }
 
 void ArfMacStation::ReportRecoveryFailure (void)
@@ -199,12 +193,12 @@ int ArfMacStation::GetSuccessThreshold (void)
 }
 void ArfMacStation::SetTimerTimeout (int timerTimeout)
 {
-  assert (timerTimeout >= m_minTimerTimeout);
+  NS_ASSERT (timerTimeout >= m_minTimerTimeout);
   m_timerTimeout = timerTimeout;
 }
 void ArfMacStation::SetSuccessThreshold (int successThreshold)
 {
-  assert (successThreshold >= m_minSuccessThreshold);
+  NS_ASSERT (successThreshold >= m_minSuccessThreshold);
   m_successThreshold = successThreshold;
 }
 
@@ -212,23 +206,15 @@ void ArfMacStation::SetSuccessThreshold (int successThreshold)
 
 
 
-ArfMacStations::ArfMacStations (uint8_t nModes)
-  : m_nModes (nModes)
+ArfMacStations::ArfMacStations (WifiMode defaultTxMode)
+  : MacStations (defaultTxMode)
 {}
 ArfMacStations::~ArfMacStations ()
 {}
 MacStation *
-ArfMacStations::CreateStation (void)
+ArfMacStations::CreateStation (WifiMode defaultTxMode)
 {
-  /* XXX: use mac to access user and PHY params. */
-  return new ArfMacStation (this, 15, 10);
+  return new ArfMacStation (defaultTxMode, 15, 10);
 }
 
-uint8_t
-ArfMacStations::GetNModes (void) const
-{
-  return m_nModes;
-}
-
-
-}; // namespace ns3
+} // namespace ns3
