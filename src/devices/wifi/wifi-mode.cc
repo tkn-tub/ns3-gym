@@ -33,11 +33,23 @@ WifiMode::IsModulationQam (void) const
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->modulation == WifiMode::QAM;
 }
+enum WifiMode::ModulationType 
+WifiMode::GetModulationType (void) const
+{
+  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  return item->modulation;
+}
 uint8_t 
 WifiMode::GetConstellationSize (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->constellationSize;
+}
+bool
+WifiMode::IsMandatory (void) const
+{
+  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  return item->isMandatory;
 }
 uint32_t 
 WifiMode::GetUid (void) const
@@ -55,6 +67,7 @@ WifiModeFactory::WifiModeFactory ()
 
 WifiMode 
 WifiModeFactory::CreateBpsk (std::string uniqueName,
+			     bool isMandatory,
 			     uint32_t bandwidth,
 			     uint32_t dataRate,
 			     uint32_t phyRate)
@@ -67,10 +80,12 @@ WifiModeFactory::CreateBpsk (std::string uniqueName,
   item->phyRate = phyRate;
   item->modulation = WifiMode::BPSK;
   item->constellationSize = 2;
+  item->isMandatory = isMandatory;
   return WifiMode (uid);
 }
 WifiMode 
 WifiModeFactory::CreateQam (std::string uniqueName,
+			     bool isMandatory,
 			    uint32_t bandwidth,
 			    uint32_t dataRate,
 			    uint32_t phyRate,
@@ -84,6 +99,7 @@ WifiModeFactory::CreateQam (std::string uniqueName,
   item->phyRate = phyRate;
   item->modulation = WifiMode::QAM;
   item->constellationSize = constellationSize;
+  item->isMandatory = isMandatory;
   return WifiMode (uid);
 }
 

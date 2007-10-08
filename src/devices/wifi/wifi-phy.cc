@@ -63,20 +63,28 @@ namespace ns3 {
 
   // Define all the WifiMode needed for 802.11a
 static WifiMode g_6mba = WifiModeFactory::CreateBpsk ("wifia-6mbs",
+                                                      true,
                                                       20000000, 6000000 * 1 / 2, 6000000);
 static WifiMode g_9mba = WifiModeFactory::CreateBpsk ("wifia-9mbs",
+                                                      false,
                                                       20000000, 9000000 * 3 / 4, 9000000);
 static WifiMode g_12mba = WifiModeFactory::CreateBpsk ("wifia-12mbs",
+                                                       true,
                                                        20000000, 12000000 * 1 / 2, 12000000);
 static WifiMode g_18mba = WifiModeFactory::CreateBpsk ("wifia-18mbs",
+                                                       false,
                                                        20000000, 18000000 * 3 / 4, 18000000);
 static WifiMode g_24mba = WifiModeFactory::CreateBpsk ("wifia-24mbs",
+                                                       true,
                                                        20000000, 24000000 * 1 / 2, 24000000);
 static WifiMode g_36mba = WifiModeFactory::CreateBpsk ("wifia-36mbs",
+                                                       false,
                                                        20000000, 36000000 * 3 / 4, 36000000);
 static WifiMode g_48mba = WifiModeFactory::CreateBpsk ("wifia-48mbs",
+                                                       false,
                                                        20000000, 48000000 * 2 / 3, 48000000);
 static WifiMode g_54mba = WifiModeFactory::CreateBpsk ("wifia-54mbs",
+                                                       false,
                                                        20000000, 54000000 * 3 / 4, 54000000);
 
 

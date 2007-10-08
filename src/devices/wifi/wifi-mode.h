@@ -41,9 +41,19 @@ class WifiMode
    */
   bool IsModulationQam (void) const;
   /**
+   * \returns the type of modulation used by this mode.
+   */
+  enum ModulationType GetModulationType (void) const;
+  /**
    * \returns the size of the modulation constellation.
    */
   uint8_t GetConstellationSize (void) const;
+
+  /**
+   * \returns true if this mode is a mandatory mode, false
+   *          otherwise.
+   */
+  bool IsMandatory (void) const;
 
   /**
    * \returns the uid associated to this wireless mode.
@@ -64,10 +74,12 @@ class WifiModeFactory
 {
 public:
   static WifiMode CreateBpsk (std::string uniqueName,
+			      bool isMandatory,
 			      uint32_t bandwidth,
 			      uint32_t dataRate,
 			      uint32_t phyRate);
   static WifiMode CreateQam (std::string uniqueName,
+			      bool isMandatory,
 			     uint32_t bandwidth,
 			     uint32_t dataRate,
 			     uint32_t phyRate,
@@ -84,6 +96,7 @@ private:
     uint32_t phyRate;
     enum WifiMode::ModulationType modulation;
     uint8_t constellationSize;
+    bool isMandatory;
   };
 
   uint32_t AllocateUid (std::string uniqueName);
