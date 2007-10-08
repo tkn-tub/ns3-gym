@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2004,2005,2006 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -26,25 +25,25 @@
 
 namespace ns3 {
 
-AarfMacStations::AarfMacStations (uint8_t nMode)
-  : ArfMacStations (nMode)
+AarfMacStations::AarfMacStations (WifiMode defaultTxMode)
+  : ArfMacStations (defaultTxMode)
 {}
 AarfMacStations::~AarfMacStations ()
 {}
 MacStation *
-AarfMacStations::CreateStation (void)
+AarfMacStations::CreateStation (WifiMode defaultTxMode)
 {
-  return new AarfMacStation (this, 2.0, 60, 2.0);
+  return new AarfMacStation (defaultTxMode, 2.0, 60, 2.0);
 }
 
 
 
 
-AarfMacStation::AarfMacStation (AarfMacStations *stations,   
+AarfMacStation::AarfMacStation (WifiMode defaultTxMode,
                                 double successK,
                                 int maxSuccessThreshold,
                                 double timerK)
-  : ArfMacStation (stations, 15, 10),
+  : ArfMacStation (defaultTxMode, 15, 10),
     m_successK (successK),
     m_maxSuccessThreshold (maxSuccessThreshold),
     m_timerK (timerK)
@@ -70,4 +69,4 @@ AarfMacStation::ReportFailure (void)
   SetSuccessThreshold (GetMinSuccessThreshold ());
 }
 
-}; // namespace ns3
+} // namespace ns3

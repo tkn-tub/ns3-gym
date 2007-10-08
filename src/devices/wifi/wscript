@@ -12,6 +12,7 @@ def build(bld):
         'mac-stations.cc',
         'cr-mac-stations.cc',
         'arf-mac-stations.cc',
+        'aarf-mac-stations.cc',
         'wifi-mac-header.cc',
         'wifi-mac-trailer.cc',
         'mac-parameters.cc',

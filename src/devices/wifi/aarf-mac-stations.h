@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -27,16 +26,16 @@ namespace ns3 {
 
 class AarfMacStations : public ArfMacStations {
 public:
-  AarfMacStations (uint8_t nModes);
+  AarfMacStations (WifiMode defaultTxMode);
   virtual ~AarfMacStations ();
 private:
-  virtual class MacStation *CreateStation (void);
+  virtual class MacStation *CreateStation (WifiMode defaultTxMode);
 };
 
 class AarfMacStation : public ArfMacStation
 {
 public:
-  AarfMacStation (AarfMacStations *stations,
+  AarfMacStation (WifiMode defaultTxMode,
                   double successK,
                   int maxSuccessThreshold,
                   double timerK);
@@ -51,7 +50,7 @@ private:
   double m_timerK;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* AARF_MAC_STATIONS_H */
