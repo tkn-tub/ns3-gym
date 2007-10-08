@@ -133,6 +133,17 @@ Mac48Address::GetType (void)
   return type;
 }
 
+bool
+Mac48Address::IsBroadcast (void) const
+{
+  static Mac48Address broadcast = Mac48Address ("ff:ff:ff:ff:ff:ff");
+  return *this == broadcast;
+}
+bool 
+Mac48Address::IsMulticast (void) const
+{
+  return (m_address[0] & 0x01) == 0x01;
+}
 bool operator == (const Mac48Address &a, const Mac48Address &b)
 {
   uint8_t ada[6];

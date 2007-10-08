@@ -79,6 +79,9 @@ public:
    * Allocate a new Mac48Address.
    */
   static Mac48Address Allocate (void);
+
+  bool IsBroadcast (void) const;
+  bool IsMulticast (void) const;
 private:
   /**
    * \returns a new Address instance
