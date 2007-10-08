@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef IPV4_ADDRESS_EXTENDED_H
-#define IPV4_ADDRESS_EXTENDED_H
+#ifndef IPV4_ADDRESS_GENERATOR_H
+#define IPV4_ADDRESS_GENERATOR_H
 
 #include <stdint.h>
 #include <ostream>
@@ -26,7 +26,7 @@
 
 namespace ns3 {
 
-class Ipv4AddressEx : public Ipv4Address {
+class Ipv4AddressGenerator {
 public:
   static void SeedAddress (const Ipv4Mask mask, 
     const Ipv4Address address);
@@ -42,4 +42,4 @@ public:
 
 }; // namespace ns3
 
-#endif /* IPV4_ADDRESS_EXTENDED_H */
+#endif /* IPV4_ADDRESS_GENERATOR_H */

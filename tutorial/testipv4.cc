@@ -15,7 +15,7 @@
  */
 
 #include "ns3/log.h"
-#include "ipv4-address-extended.h"
+#include "ipv4-address-generator.h"
 
 NS_LOG_COMPONENT_DEFINE ("TestIpv4");
 
@@ -32,19 +32,21 @@ main (int argc, char *argv[])
 
   for (uint32_t i = 0; i < 10; ++i)
     {
-      Ipv4Address network = Ipv4AddressEx::AllocateNetwork (mask1);
-      Ipv4Address address = Ipv4AddressEx::AllocateAddress (mask1, network);
+      Ipv4Address network = Ipv4AddressGenerator::AllocateNetwork (mask1);
+      Ipv4Address address = Ipv4AddressGenerator::AllocateAddress (mask1, 
+        network);
       NS_LOG_INFO ("address = " << address);
     }
 
   Ipv4Mask mask2 ("255.255.0.0");
-  Ipv4AddressEx::SeedNetwork (mask2, "192.168.0.0");
-  Ipv4AddressEx::SeedAddress (mask2, "0.0.0.3");
+  Ipv4AddressGenerator::SeedNetwork (mask2, "192.168.0.0");
+  Ipv4AddressGenerator::SeedAddress (mask2, "0.0.0.3");
 
-  Ipv4Address network1 = Ipv4AddressEx::AllocateNetwork (mask2);
+  Ipv4Address network1 = Ipv4AddressGenerator::AllocateNetwork (mask2);
   for (uint32_t i = 0; i < 10; ++i)
     {
-      Ipv4Address address = Ipv4AddressEx::AllocateAddress (mask2, network1);
+      Ipv4Address address = Ipv4AddressGenerator::AllocateAddress (mask2, 
+        network1);
       NS_LOG_INFO ("address = " << address);
     }
 
@@ -52,8 +54,9 @@ main (int argc, char *argv[])
 
   for (uint32_t i = 0; i < 10; ++i)
     {
-      Ipv4Address network = Ipv4AddressEx::AllocateNetwork (mask3);
-      Ipv4Address address = Ipv4AddressEx::AllocateAddress (mask3, network);
+      Ipv4Address network = Ipv4AddressGenerator::AllocateNetwork (mask3);
+      Ipv4Address address = Ipv4AddressGenerator::AllocateAddress (mask3, 
+        network);
       NS_LOG_INFO ("address = " << address);
     }
 }

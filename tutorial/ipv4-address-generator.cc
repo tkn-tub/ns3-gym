@@ -19,17 +19,17 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/simulation-singleton.h"
-#include "ipv4-address-extended.h"
+#include "ipv4-address-generator.h"
 
-NS_LOG_COMPONENT_DEFINE("Ipv4AddressEx");
+NS_LOG_COMPONENT_DEFINE("Ipv4AddressGenerator");
 
 namespace ns3 {
 
-class Ipv4NetworkManager
+class Ipv4NetworkGeneratorImpl
 {
 public:
-  Ipv4NetworkManager ();
-  virtual ~Ipv4NetworkManager ();
+  Ipv4NetworkGeneratorImpl ();
+  virtual ~Ipv4NetworkGeneratorImpl ();
 
   Ipv4Address Allocate (const Ipv4Mask mask);
   void Seed (const Ipv4Mask mask, const Ipv4Address network);
@@ -45,7 +45,7 @@ private:
   State m_state[N_BITS];
 };
 
-Ipv4NetworkManager::Ipv4NetworkManager () 
+Ipv4NetworkGeneratorImpl::Ipv4NetworkGeneratorImpl () 
 {
   NS_LOG_FUNCTION;
 
@@ -63,13 +63,15 @@ Ipv4NetworkManager::Ipv4NetworkManager ()
     }
 }
 
-Ipv4NetworkManager::~Ipv4NetworkManager ()
+Ipv4NetworkGeneratorImpl::~Ipv4NetworkGeneratorImpl ()
 {
   NS_LOG_FUNCTION;
 }
 
-void
-Ipv4NetworkManager::Seed (const Ipv4Mask mask, const Ipv4Address network)
+  void
+Ipv4NetworkGeneratorImpl::Seed (
+  const Ipv4Mask mask, 
+  const Ipv4Address network)
 {
   NS_LOG_FUNCTION;
 
@@ -91,8 +93,8 @@ Ipv4NetworkManager::Seed (const Ipv4Mask mask, const Ipv4Address network)
   return;
 }
 
-Ipv4Address
-Ipv4NetworkManager::Allocate (const Ipv4Mask mask)
+  Ipv4Address
+Ipv4NetworkGeneratorImpl::Allocate (const Ipv4Mask mask)
 {
   NS_LOG_FUNCTION;
 
@@ -114,11 +116,11 @@ Ipv4NetworkManager::Allocate (const Ipv4Mask mask)
   return Ipv4Address (bits);
 }
 
-class Ipv4AddressManager
+class Ipv4AddressGeneratorImpl
 {
 public:
-  Ipv4AddressManager ();
-  virtual ~Ipv4AddressManager ();
+  Ipv4AddressGeneratorImpl ();
+  virtual ~Ipv4AddressGeneratorImpl ();
 
   Ipv4Address Allocate (const Ipv4Mask mask, const Ipv4Address network);
   void Seed (const Ipv4Mask mask, const Ipv4Address address);
@@ -134,7 +136,7 @@ private:
   State m_state[N_BITS];
 };
 
-Ipv4AddressManager::Ipv4AddressManager () 
+Ipv4AddressGeneratorImpl::Ipv4AddressGeneratorImpl () 
 {
   NS_LOG_FUNCTION;
 
@@ -152,13 +154,15 @@ Ipv4AddressManager::Ipv4AddressManager ()
     }
 }
 
-Ipv4AddressManager::~Ipv4AddressManager ()
+Ipv4AddressGeneratorImpl::~Ipv4AddressGeneratorImpl ()
 {
   NS_LOG_FUNCTION;
 }
 
-void
-Ipv4AddressManager::Seed (const Ipv4Mask mask, const Ipv4Address address)
+  void
+Ipv4AddressGeneratorImpl::Seed (
+  const Ipv4Mask mask, 
+  const Ipv4Address address)
 {
   NS_LOG_FUNCTION;
 
@@ -180,8 +184,10 @@ Ipv4AddressManager::Seed (const Ipv4Mask mask, const Ipv4Address address)
   return;
 }
 
-Ipv4Address
-Ipv4AddressManager::Allocate (const Ipv4Mask mask, const Ipv4Address network)
+  Ipv4Address
+Ipv4AddressGeneratorImpl::Allocate (
+  const Ipv4Mask mask,
+  const Ipv4Address network)
 {
   NS_LOG_FUNCTION;
 
@@ -197,7 +203,7 @@ Ipv4AddressManager::Allocate (const Ipv4Mask mask, const Ipv4Address network)
           Ipv4Address addr (net | m_state[nBits].address);
           ++m_state[nBits].address;
           NS_ASSERT_MSG((m_state[nBits].mask & m_state[nBits].address) == 0, 
-            "Ipv4AddressManager::Allocate(): Overflow");
+            "Ipv4AddressGeneratorImpl::Allocate(): Overflow");
           return addr;
         }
       bits >>= 1;
@@ -206,37 +212,43 @@ Ipv4AddressManager::Allocate (const Ipv4Mask mask, const Ipv4Address network)
   return Ipv4Address (bits);
 }
 
-void
-Ipv4AddressEx::SeedAddress (const Ipv4Mask mask, const Ipv4Address address)
+  void
+Ipv4AddressGenerator::SeedAddress (
+  const Ipv4Mask mask, 
+  const Ipv4Address address)
 {
   NS_LOG_FUNCTION;
 
-  SimulationSingleton<Ipv4AddressManager>::Get ()->Seed (mask, address);
+  SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()->Seed (mask, address);
 }
 
-Ipv4Address
-Ipv4AddressEx::AllocateAddress (const Ipv4Mask mask, const Ipv4Address network)
+  Ipv4Address
+Ipv4AddressGenerator::AllocateAddress (
+  const Ipv4Mask mask, 
+  const Ipv4Address network)
 {
   NS_LOG_FUNCTION;
 
-  return SimulationSingleton<Ipv4AddressManager>::Get ()->
+  return SimulationSingleton<Ipv4AddressGeneratorImpl>::Get ()->
     Allocate (mask, network);
 }
 
-void
-Ipv4AddressEx::SeedNetwork (const Ipv4Mask mask, const Ipv4Address address)
+  void
+Ipv4AddressGenerator::SeedNetwork (
+  const Ipv4Mask mask,
+  const Ipv4Address address)
 {
   NS_LOG_FUNCTION;
 
-  SimulationSingleton<Ipv4NetworkManager>::Get ()->Seed (mask, address);
+  SimulationSingleton<Ipv4NetworkGeneratorImpl>::Get ()->Seed (mask, address);
 }
 
-Ipv4Address
-Ipv4AddressEx::AllocateNetwork (const Ipv4Mask mask)
+  Ipv4Address
+Ipv4AddressGenerator::AllocateNetwork (const Ipv4Mask mask)
 {
   NS_LOG_FUNCTION;
 
-  return SimulationSingleton<Ipv4NetworkManager>::Get ()->
+  return SimulationSingleton<Ipv4NetworkGeneratorImpl>::Get ()->
     Allocate (mask);
 }
 
