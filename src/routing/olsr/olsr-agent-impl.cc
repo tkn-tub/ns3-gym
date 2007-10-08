@@ -721,7 +721,6 @@ OlsrAgentImpl::RoutingTableComputation ()
           if (!foundEntry)
             NS_FATAL_ERROR ("m_routingTable->Lookup failure");
 
-          NS_ASSERT (found_entry);
           m_routingTable->AddEntry (nb2hop_tuple.twoHopNeighborAddr,
                                     entry.nextAddr,
                                     entry.interface,
