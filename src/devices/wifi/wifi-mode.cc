@@ -3,6 +3,11 @@
 
 namespace ns3 {
 
+bool operator == (const WifiMode &a, const WifiMode &b)
+{
+  return a.GetUid () == b.GetUid ();
+}
+
 uint32_t 
 WifiMode::GetBandwidth (void) const
 {

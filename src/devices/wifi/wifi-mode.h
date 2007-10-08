@@ -70,6 +70,8 @@ private:
   uint32_t m_uid;
 };
 
+bool operator == (const WifiMode &a, const WifiMode &b);
+
 class WifiModeFactory
 {
 public:
