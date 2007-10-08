@@ -24,6 +24,7 @@
 #include <list>
 #include <utility>
 #include "ns3/mac48-address.h"
+#include "wifi-mode.h"
 
 namespace ns3 {
 
@@ -31,7 +32,7 @@ class MacStation;
 
 class MacStations {
 public:
-  MacStations ();
+  MacStations (WifiMode defaultTxMode);
   virtual ~MacStations ();
   
   MacStation *Lookup (Mac48Address address);
@@ -39,9 +40,10 @@ public:
 private:
   typedef std::list <std::pair<Mac48Address, MacStation *> > Stations;
   typedef std::list <std::pair<Mac48Address, MacStation *> >::iterator StationsI;
-  virtual class MacStation *CreateStation (void) = 0;
+  virtual class MacStation *CreateStation (WifiMode mode) = 0;
   Stations m_stations;
   MacStation *m_nonUnicast;
+  WifiMode m_defaultTxMode;
 };
 
 } // namespace ns3
@@ -50,9 +52,12 @@ namespace ns3 {
 
 class MacStation {
 public:
-  MacStation ();
-
+  MacStation (WifiMode defaultTxMode);
   virtual ~MacStation ();
+
+  void ResetModes (void);
+  void AddBasicMode (WifiMode mode);
+  void AddExtendedMode (WifiMode mode);
 
   bool IsAssociated (void) const;
   bool IsWaitAssocTxOk (void) const;
@@ -62,23 +67,38 @@ public:
   void RecordDisassociated (void);
 
   // reception-related method
-  virtual void ReportRxOk (double rxSnr, uint8_t txMode) = 0;
+  virtual void ReportRxOk (double rxSnr, WifiMode txMode) = 0;
 
   // transmission-related methods
   virtual void ReportRtsFailed (void) = 0;
   virtual void ReportDataFailed (void) = 0;
-  virtual void ReportRtsOk (double ctsSnr, uint8_t ctsMode, uint8_t rtsSnr) = 0;
-  virtual void ReportDataOk (double ackSnr, uint8_t ackMode, uint8_t dataSnr) = 0;
-  virtual uint8_t GetDataMode (int size) = 0;
-  virtual uint8_t GetRtsMode (void) = 0;
-  virtual uint8_t SnrToSnr (double snr) = 0;
+  virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr) = 0;
+  virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr) = 0;
+  virtual WifiMode GetDataMode (uint32_t size) = 0;
+  virtual WifiMode GetRtsMode (void) = 0;
+
+  WifiMode GetCtsMode (WifiMode rtsMode);
+  WifiMode GetAckMode (WifiMode dataMode);
 
 private:
+  struct WifiRate {
+    WifiRate (WifiMode mode, bool isBasic);
+    WifiMode mode; 
+    bool isBasic;
+  };
+  typedef std::vector<struct WifiRate> WifiRates;
+protected:
+  
+private:
+  bool IsIn (WifiMode mode) const;
+  WifiMode GetControlAnswerMode (WifiMode reqMode);
   enum {
     DISASSOC,
     WAIT_ASSOC_TX_OK,
     GOT_ASSOC_TX_OK
   } m_state;
+  WifiRates m_rates;
+  WifiMode m_defaultTxMode;
 };
 
 } // namespace ns3 
