@@ -151,8 +151,18 @@ NS_DEBUG_COMPONENT_DEFINE ("OlsrAgent");
 
 OlsrAgentImpl::OlsrAgentImpl (Ptr<Node> node)
   :
-  m_useL2Notifications (false)
+  m_events (Timer::GARBAGE_COLLECT),
+  m_useL2Notifications (false),
+  m_helloTimer (Timer::CHECK_ON_SCHEDULE, Timer::CANCEL_ON_DESTROY),
+  m_tcTimer (Timer::CHECK_ON_SCHEDULE, Timer::CANCEL_ON_DESTROY),
+  m_midTimer (Timer::CHECK_ON_SCHEDULE, Timer::CANCEL_ON_DESTROY)
 {
+  m_helloTimer.SetFunction (&OlsrAgentImpl::HelloTimerExpire, this);
+  m_tcTimer.SetFunction (&OlsrAgentImpl::TcTimerExpire, this);
+  m_midTimer.SetFunction (&OlsrAgentImpl::MidTimerExpire, this);
+  m_queuedMessagesTimer.SetFunction (&OlsrAgentImpl::SendQueuedMessages, this);
+
+
   SetInterfaceId (OlsrAgentImpl::iid);
 
   // Aggregate with the Node, so that OLSR dies when the node is destroyed.
@@ -881,9 +891,9 @@ OlsrAgentImpl::ProcessTc (const OlsrMessageHeader &msg,
           AddTopologyTuple (topologyTuple);
 
           // Schedules topology tuple deletion
-          Simulator::Schedule (DELAY (topologyTuple.expirationTime),
-                               &OlsrAgentImpl::TopologyTupleTimerExpire,
-                               this, topologyTuple);
+          m_events.SetFunction (&OlsrAgentImpl::TopologyTupleTimerExpire, this);
+          m_events.SetArguments (topologyTuple);
+          m_events.Schedule (DELAY (topologyTuple.expirationTime));
         }
     }
 }
@@ -1035,7 +1045,8 @@ OlsrAgentImpl::QueueMessage (const OlsrMessageHeader &message, Time delay)
   m_queuedMessages.push_back (message);
   if (not m_queuedMessagesTimer.IsRunning ())
     {
-      m_queuedMessagesTimer = Simulator::Schedule (delay, &OlsrAgentImpl::SendQueuedMessages, this);
+      m_queuedMessagesTimer.SetDelay (delay);
+      m_queuedMessagesTimer.Schedule ();
     }
 }
 
@@ -1339,9 +1350,9 @@ OlsrAgentImpl::LinkSensing (const OlsrMessageHeader &msg,
   // Schedules link tuple deletion
   if (created && link_tuple != NULL)
     {
-      m_events.Track (Simulator::Schedule
-                      (DELAY (std::min (link_tuple->time, link_tuple->symTime)),
-                       &OlsrAgentImpl::LinkTupleTimerExpire, this, *link_tuple));
+      m_events.SetFunction (&OlsrAgentImpl::LinkTupleTimerExpire, this);
+      m_events.SetArguments (*link_tuple);
+      m_events.Schedule (DELAY (std::min (link_tuple->time, link_tuple->symTime)));
     }
 }
 
@@ -1409,10 +1420,9 @@ OlsrAgentImpl::PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
                                     now + msg.GetVTime ();
                                   // Schedules nb2hop tuple
                                   // deletion
-                                  m_events.Track (Simulator::Schedule
-                                                  (DELAY (new_nb2hop_tuple.expirationTime),
-                                                   &OlsrAgentImpl::Nb2hopTupleTimerExpire, this,
-                                                   new_nb2hop_tuple));
+                                  m_events.SetFunction (&OlsrAgentImpl::Nb2hopTupleTimerExpire, this);
+                                  m_events.SetArguments (new_nb2hop_tuple);
+                                  m_events.Schedule (DELAY (new_nb2hop_tuple.expirationTime));
                                 }
                               else
                                 {
@@ -1478,10 +1488,9 @@ OlsrAgentImpl::PopulateMprSelectorSet (const OlsrMessageHeader &msg,
                       AddMprSelectorTuple (mprsel_tuple);
 
                       // Schedules mpr selector tuple deletion
-                      m_events.Track (Simulator::Schedule
-                                      (DELAY (mprsel_tuple.expirationTime),
-                                       &OlsrAgentImpl::MprSelTupleTimerExpire,
-                                       this, mprsel_tuple));
+                      m_events.SetFunction (&OlsrAgentImpl::MprSelTupleTimerExpire, this);
+                      m_events.SetArguments (mprsel_tuple);
+                      m_events.Schedule (DELAY (mprsel_tuple.expirationTime));
                     }
                   else
                     {
@@ -1874,7 +1883,7 @@ void
 OlsrAgentImpl::HelloTimerExpire ()
 {
   SendHello ();
-  m_helloTimer = Simulator::Schedule (m_helloInterval, &OlsrAgentImpl::HelloTimerExpire, this);
+  m_helloTimer.Schedule (m_helloInterval);
 }
 
 ///
@@ -1885,8 +1894,10 @@ void
 OlsrAgentImpl::TcTimerExpire ()
 {
   if (m_state.GetMprSelectors ().size () > 0)
-    SendTc ();
-  m_tcTimer = Simulator::Schedule (m_tcInterval, &OlsrAgentImpl::TcTimerExpire, this);
+    {
+      SendTc ();
+    }
+  m_tcTimer.Schedule (m_tcInterval);
 }
 
 ///
@@ -1898,15 +1909,15 @@ void
 OlsrAgentImpl::MidTimerExpire ()
 {
   SendMid ();
-  m_midTimer = Simulator::Schedule (m_midInterval, &OlsrAgentImpl::MidTimerExpire, this);
+  m_midTimer.Schedule (m_midInterval);
 }
 
 ///
-/// \brief Removes tuple_ if expired. Else timer is rescheduled to expire at tuple_->time().
+/// \brief Removes tuple if expired. Else timer is rescheduled to expire at tuple.expirationTime.
 ///
 /// The task of actually removing the tuple is left to the OLSR agent.
 ///
-/// \param e The event which has expired.
+/// \param tuple The tuple which has expired.
 ///
 void
 OlsrAgentImpl::DupTupleTimerExpire (DuplicateTuple tuple)
@@ -1916,9 +1927,11 @@ OlsrAgentImpl::DupTupleTimerExpire (DuplicateTuple tuple)
       RemoveDuplicateTuple (tuple);
     }
   else
-    m_events.Track (Simulator::Schedule
-                    (DELAY (tuple.expirationTime),
-                     &OlsrAgentImpl::DupTupleTimerExpire, this, tuple));
+    {
+      m_events.SetFunction (&OlsrAgentImpl::DupTupleTimerExpire, this);
+      m_events.SetArguments (tuple);
+      m_events.Schedule (DELAY (tuple.expirationTime));
+    }
 }
 
 ///
@@ -1948,15 +1961,16 @@ OlsrAgentImpl::LinkTupleTimerExpire (LinkTuple tuple)
       else
         NeighborLoss (tuple);
 
-      m_events.Track (Simulator::Schedule
-                      (DELAY(tuple.time),
-                       &OlsrAgentImpl::LinkTupleTimerExpire, this, tuple));
-
+      m_events.SetFunction (&OlsrAgentImpl::LinkTupleTimerExpire, this);
+      m_events.SetArguments (tuple);
+      m_events.Schedule (DELAY (tuple.time));
     }
   else
-    m_events.Track (Simulator::Schedule
-                    (DELAY (std::min (tuple.time, tuple.symTime)),
-                     &OlsrAgentImpl::LinkTupleTimerExpire, this, tuple));
+    {
+      m_events.SetFunction (&OlsrAgentImpl::LinkTupleTimerExpire, this);
+      m_events.SetArguments (tuple);
+      m_events.Schedule (DELAY (std::min (tuple.time, tuple.symTime)));
+    }
 }
 
 ///
@@ -1974,9 +1988,11 @@ OlsrAgentImpl::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple)
       RemoveTwoHopNeighborTuple (tuple);
     }
   else
-    m_events.Track (Simulator::Schedule
-                    (DELAY (tuple.expirationTime),
-                     &OlsrAgentImpl::Nb2hopTupleTimerExpire, this, tuple));
+    {
+      m_events.SetFunction (&OlsrAgentImpl::Nb2hopTupleTimerExpire, this);
+      m_events.SetArguments (tuple);
+      m_events.Schedule (DELAY (tuple.expirationTime));
+    }
 }
 
 ///
@@ -1994,9 +2010,11 @@ OlsrAgentImpl::MprSelTupleTimerExpire (MprSelectorTuple tuple)
       RemoveMprSelectorTuple (tuple);
     }
   else
-    m_events.Track (Simulator::Schedule
-                    (DELAY (tuple.expirationTime),
-                     &OlsrAgentImpl::MprSelTupleTimerExpire, this, tuple));
+    {
+      m_events.SetFunction (&OlsrAgentImpl::MprSelTupleTimerExpire, this);
+      m_events.SetArguments (tuple);
+      m_events.Schedule (DELAY (tuple.expirationTime));
+    }
 }
 
 ///
@@ -2014,9 +2032,11 @@ OlsrAgentImpl::TopologyTupleTimerExpire (TopologyTuple tuple)
       RemoveTopologyTuple (tuple);
     }
   else
-    m_events.Track (Simulator::Schedule
-                    (DELAY (tuple.expirationTime),
-                     &OlsrAgentImpl::TopologyTupleTimerExpire, this, tuple));
+    {
+      m_events.SetFunction (&OlsrAgentImpl::TopologyTupleTimerExpire, this);
+      m_events.SetArguments (tuple);
+      m_events.Schedule (DELAY (tuple.expirationTime));
+    }
 }
 
 ///
@@ -2032,9 +2052,11 @@ OlsrAgentImpl::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple)
       RemoveIfaceAssocTuple (tuple);
     }
   else
-    m_events.Track (Simulator::Schedule
-                    (DELAY (tuple.time),
-                     &OlsrAgentImpl::IfaceAssocTupleTimerExpire, this, tuple));
+    {
+      m_events.SetFunction (&OlsrAgentImpl::IfaceAssocTupleTimerExpire, this);
+      m_events.SetArguments (tuple);
+      m_events.Schedule (DELAY (tuple.time));
+    }
 }
 
 

@@ -18,9 +18,3 @@ def build(bld):
         'olsr.h',
         ]
 
-
-    ## globally useful classes, temporarily private...
-    module.source.extend([
-            'event-collector.cc',
-            'single-event.cc',
-            ])
