@@ -21,7 +21,6 @@
 #define ARF_MAC_STATIONS_H
 
 #include "mac-stations.h"
-#include "mac-station.h"
 
 namespace ns3 {
 

@@ -19,7 +19,6 @@
  */
 
 #include "mac-stations.h"
-#include "mac-station.h"
 #include "arf-mac-stations.h"
 #include "ns3/assert.h"
 
