@@ -91,7 +91,8 @@ SnrTag::Serialize (Buffer::Iterator i) const
 {
   // would need to serialize double to platform-independent format.
 }
-uint32_t Deserialize (Buffer::Iterator i)
+uint32_t 
+SnrTag::Deserialize (Buffer::Iterator i)
 {
   // would need to deserialize double from platform-independent format.
   return 0;
