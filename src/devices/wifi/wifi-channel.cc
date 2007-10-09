@@ -30,12 +30,11 @@
 namespace ns3 {
 
 WifiChannel::ReceiveData::ReceiveData (const Packet &packet, double rxPowerDbm,
-                                       WifiMode txMode, WifiMode headerMode, uint32_t extra)
+                                       WifiMode txMode, WifiMode headerMode)
   : m_packet (packet),
     m_rxPowerDbm (rxPowerDbm),
     m_wifiMode (txMode),
-    m_headerMode (headerMode),
-    m_extra (extra)
+    m_headerMode (headerMode)
 {}
 
 
@@ -62,7 +61,7 @@ WifiChannel::Add (Ptr<NetDevice> device,  ReceiveCallback callback)
 }
 void 
 WifiChannel::Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDbm,
-                   WifiMode wifiMode, WifiMode headerMode, uint32_t extra) const
+                   WifiMode wifiMode, WifiMode headerMode) const
 {
   Ptr<MobilityModel> senderMobility = sender->GetNode ()->QueryInterface<MobilityModel> (MobilityModel::iid);
   uint32_t j = 0;
@@ -74,7 +73,7 @@ WifiChannel::Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDb
           double distance = senderMobility->GetDistanceFrom (receiverMobility);
           Time delay = m_delay->GetDelay (distance);
           double rxPowerDbm = m_loss->GetRxPower (txPowerDbm, distance);
-          struct ReceiveData data = ReceiveData (packet, rxPowerDbm, wifiMode, headerMode, extra);
+          struct ReceiveData data = ReceiveData (packet, rxPowerDbm, wifiMode, headerMode);
           Simulator::Schedule (delay, &WifiChannel::Receive, this, 
                                j, data);
         }
@@ -86,7 +85,7 @@ void
 WifiChannel::Receive (uint32_t i,
                       const struct ReceiveData &data) const
 {
-  m_deviceList[i].second (data.m_packet, data.m_rxPowerDbm, data.m_wifiMode, data.m_headerMode, data.m_extra);
+  m_deviceList[i].second (data.m_packet, data.m_rxPowerDbm, data.m_wifiMode, data.m_headerMode);
 }
 
 uint32_t 

@@ -246,10 +246,9 @@ void
 WifiPhy::ReceivePacket (Packet const packet, 
                         double rxPowerW,
                         WifiMode txMode,
-                        WifiMode headerMode,
-                        uint32_t extra)
+                        WifiMode headerMode)
 {
-  Time rxDuration = CalculateTxDuration (packet.GetSize (), txMode);
+  Time rxDuration = CalculateTxDuration (packet.GetSize (), txMode, headerMode);
   Time endRx = Simulator::Now () + rxDuration;
   m_startRxLogger (rxDuration, rxPowerW);
 
@@ -288,8 +287,7 @@ WifiPhy::ReceivePacket (Packet const packet,
         assert (m_endSyncEvent.IsExpired ());
         m_endSyncEvent = Simulator::Schedule (rxDuration, &WifiPhy::EndSync, this, 
                                               packet,
-                                              event, 
-                                              extra);
+                                              event);
       } 
     else 
       {
@@ -337,7 +335,7 @@ WifiPhy::ReceivePacket (Packet const packet,
   event->Unref ();
 }
 void 
-WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiMode headerMode, uint8_t txPower, uint32_t stuff)
+WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiMode headerMode, uint8_t txPower)
 {
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
@@ -351,11 +349,11 @@ WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiMode headerMode, 
     m_endSyncEvent.Cancel ();
   }
 
-  Time txDuration = CalculateTxDuration (packet.GetSize (), txMode);
+  Time txDuration = CalculateTxDuration (packet.GetSize (), txMode, headerMode);
   m_startTxLogger (txDuration, txMode.GetPhyRate (), GetPowerDbm (txPower));
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
-  m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDbm, txMode, headerMode, stuff);
+  m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDbm, txMode, headerMode);
 }
 
 void 
@@ -519,10 +517,10 @@ WifiPhy::GetDelayUntilIdle (void)
 
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode) const
+WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiMode headerMode) const
 {
   uint64_t delay = m_plcpPreambleDelayUs;
-  delay += m_plcpHeaderLength * 1000000 / GetMode (0).GetDataRate ();
+  delay += m_plcpHeaderLength * 1000000 / headerMode.GetDataRate ();
   uint64_t nbits = size * 8;
   delay += nbits * 1000000 / payloadMode.GetDataRate ();
   return MicroSeconds (delay);
@@ -1164,7 +1162,7 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
 
 
 void
-WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event, uint32_t extra)
+WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event)
 {
   assert (IsStateSync ());
   assert (event->GetEndTime () == Simulator::Now ());
@@ -1188,7 +1186,7 @@ WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event, uint32_t extra)
       m_endSyncLogger (true);
       NotifySyncEndOk ();
       SwitchFromSync ();
-      m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetHeaderMode (), extra);
+      m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetHeaderMode ());
     } 
   else 
     {

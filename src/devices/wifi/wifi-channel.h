@@ -35,7 +35,7 @@ class PropagationDelayModel;
 class WifiChannel : public Channel
 {
 public:
-  typedef Callback<void,Packet,double,WifiMode,WifiMode,uint32_t> ReceiveCallback;
+  typedef Callback<void,Packet,double,WifiMode,WifiMode> ReceiveCallback;
   WifiChannel ();
   virtual ~WifiChannel ();
 
@@ -47,18 +47,17 @@ public:
 
   void Add (Ptr<NetDevice> device,  ReceiveCallback callback);
   void Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDbm,
-             WifiMode wifiMode, WifiMode headerMode, uint32_t extra) const;
+             WifiMode wifiMode, WifiMode headerMode) const;
 
 private:
   typedef std::vector<std::pair<Ptr<NetDevice>, ReceiveCallback> > DeviceList;
   struct ReceiveData {
     ReceiveData (const Packet &packet, double rxPowerDbm,
-                 WifiMode txMode, WifiMode headerMode, uint32_t extra);
+                 WifiMode txMode, WifiMode headerMode);
     Packet m_packet;
     double m_rxPowerDbm;
     WifiMode m_wifiMode;
     WifiMode m_headerMode;
-    uint32_t m_extra;
   };
   void Receive (uint32_t i, 
                 const struct ReceiveData &data) const;

@@ -71,7 +71,7 @@ public:
 class WifiPhy
 {
 public:
-  typedef Callback<void,Packet const , double, WifiMode, WifiMode, uint32_t> SyncOkCallback;
+  typedef Callback<void,Packet const , double, WifiMode, WifiMode> SyncOkCallback;
   typedef Callback<void,Packet const , double> SyncErrorCallback;
 
   WifiPhy (Ptr<WifiNetDevice> device);
@@ -82,7 +82,7 @@ public:
   void SetReceiveOkCallback (SyncOkCallback callback);
   void SetReceiveErrorCallback (SyncErrorCallback callback);
 
-  void SendPacket (Packet const packet, WifiMode mode, WifiMode headeMode, uint8_t txPower, uint32_t stuff);
+  void SendPacket (Packet const packet, WifiMode mode, WifiMode headerMode, uint8_t txPower);
 
   void RegisterListener (WifiPhyListener *listener);
 
@@ -94,7 +94,7 @@ public:
   Time GetStateDuration (void);
   Time GetDelayUntilIdle (void);
 
-  Time CalculateTxDuration (uint32_t size, WifiMode payloadMode) const;
+  Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiMode headerMode) const;
 
   void Configure80211a (void);
   void SetEdThresholdDbm (double rxThreshold);
@@ -157,7 +157,7 @@ private:
   double CalculateSnr (double signal, double noiseInterference, WifiMode mode) const;
   double CalculateChunkSuccessRate (double snir, Time delay, WifiMode mode) const;
   double CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const;
-  void EndSync (Packet const packet, Ptr<RxEvent> event, uint32_t stuff);
+  void EndSync (Packet const packet, Ptr<RxEvent> event);
   double Log2 (double val) const;
   double GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const;
   double GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const;
@@ -179,8 +179,7 @@ private:
   void ReceivePacket (Packet packet,
                       double rxPowerW,
                       WifiMode mode,
-                      WifiMode headerMode,
-                      uint32_t stuff);
+                      WifiMode headerMode);
 private:
   uint64_t m_txPrepareDelayUs;
   uint64_t m_plcpPreambleDelayUs;
