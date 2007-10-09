@@ -18,7 +18,8 @@ def build(bld):
         'mac-parameters.cc',
         'mac-low.cc',
         'dcf.cc',
-        'wifi-mac-queue.cc'
+        'wifi-mac-queue.cc',
+        'mac-tx-middle.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
