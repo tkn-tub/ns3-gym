@@ -123,14 +123,18 @@ CommandLine::UserDefaultValue<T>::DoParseValue (const std::string &value)
   iss.str (value);
   T v;
   iss >> v;
-  *m_valuePtr = v;
-  return !iss.bad () && !iss.fail ();
+  bool ok = (!iss.bad () && !iss.fail ());
+  if (ok)
+    {
+      *m_valuePtr = v;
+    }
+  return ok;
 }
 template <typename T>
 std::string
 CommandLine::UserDefaultValue<T>::DoGetType (void) const
 {
-  return "";
+  return TypeNameGet<T> ();
 }
 template <typename T>
 std::string
