@@ -21,6 +21,8 @@
 #include "supported-rates.h"
 #include "ns3/assert.h"
 
+#define ELEMENT_ID (1)
+
 namespace ns3 {
 
 SupportedRates::SupportedRates ()
@@ -82,18 +84,21 @@ SupportedRates::GetNRates (void) const
 uint32_t 
 SupportedRates::GetSerializedSize (void) const
 {
-  return m_nRates + 1;
+  return m_nRates + 1 + 1;
 }
 Buffer::Iterator 
-SupportedRates::Write (Buffer::Iterator start) const
+SupportedRates::Serialize (Buffer::Iterator start) const
 {
+  start.WriteU8 (ELEMENT_ID);
   start.WriteU8 (m_nRates);
   start.Write (m_rates, m_nRates);
   return start;
 }
 Buffer::Iterator 
-SupportedRates::Read (Buffer::Iterator start)
+SupportedRates::Deserialize (Buffer::Iterator start)
 {
+  uint8_t elementId = start.ReadU8 ();
+  NS_ASSERT (elementId == ELEMENT_ID);
   m_nRates = start.ReadU8 ();
   NS_ASSERT (m_nRates <= 8);
   start.Read (m_rates, m_nRates);

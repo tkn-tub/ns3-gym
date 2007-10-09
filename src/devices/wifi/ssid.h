@@ -22,10 +22,12 @@
 #define SSID_H
 
 #include <stdint.h>
+#include "ns3/buffer.h"
 
 namespace ns3 {
 
-class Ssid {
+class Ssid 
+{
 public:
   // broadcast ssid
   Ssid ();
@@ -37,11 +39,16 @@ public:
   bool IsBroadcast (void) const;
 
   uint32_t GetLength (void) const;
- 
+
+  uint32_t GetSerializedSize (void) const;
+  Buffer::Iterator Serialize (Buffer::Iterator i) const;
+  Buffer::Iterator Deserialize (Buffer::Iterator i);
 private:
-  char m_ssid[33];
+  uint8_t m_ssid[33];
   uint8_t m_length;
 };
+
+std::ostream &operator << (std::ostream &os, const Ssid &ssid);
 
 } // namespace ns3
 

@@ -38,8 +38,8 @@ public:
   uint8_t GetNRates (void) const;
 
   uint32_t GetSerializedSize (void) const;
-  Buffer::Iterator Write (Buffer::Iterator start) const;
-  Buffer::Iterator Read (Buffer::Iterator start);
+  Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  Buffer::Iterator Deserialize (Buffer::Iterator start);
 private:
   uint8_t m_nRates;
   uint8_t m_rates[8];

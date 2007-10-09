@@ -21,6 +21,8 @@
 #include "ssid.h"
 #include <cassert>
 
+#define ELEMENT_ID (0)
+
 namespace ns3 {
 
 Ssid::Ssid ()
@@ -97,5 +99,29 @@ Ssid::GetLength (void) const
   assert (size <= 32);
   return size;
 }
+
+uint32_t 
+Ssid::GetSerializedSize (void) const
+{
+  return 1 + 1 + m_length;
+}
+Buffer::Iterator 
+Ssid::Serialize (Buffer::Iterator i) const
+{
+  i.WriteU8 (ELEMENT_ID);
+  i.WriteU8 (m_length);
+  i.Write (m_ssid, m_length);
+  return i;
+}
+Buffer::Iterator 
+Ssid::Deserialize (Buffer::Iterator i)
+{
+  uint8_t elementId = i.ReadU8 ();
+  NS_ASSERT (elementId == ELEMENT_ID);
+  m_length = i.ReadU8 ();
+  i.Read (m_ssid, m_length);
+  return i;
+}
+
 
 } // namespace ns3
