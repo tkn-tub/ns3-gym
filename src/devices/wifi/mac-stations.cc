@@ -33,7 +33,7 @@ namespace ns3 {
 class NonUnicastMacStation : public MacStation
 {
 public:
-  NonUnicastMacStation (WifiMode defaultTxMode);
+  NonUnicastMacStation (MacStations *stations);
   virtual void ReportRxOk (double rxSnr, WifiMode txMode);
   virtual void ReportRtsFailed (void);
   virtual void ReportDataFailed (void);
@@ -41,10 +41,13 @@ public:
   virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
   virtual WifiMode GetDataMode (uint32_t size);
   virtual WifiMode GetRtsMode (void);
+private:
+  virtual MacStations *GetStations (void) const;
+  MacStations *m_stations;
 };
 
-NonUnicastMacStation::NonUnicastMacStation (WifiMode defaultTxMode)
-  : MacStation (defaultTxMode)
+NonUnicastMacStation::NonUnicastMacStation (MacStations *stations)
+  : m_stations (stations)
 {}
 void 
 NonUnicastMacStation::ReportRxOk (double rxSnr, WifiMode txMode)
@@ -74,12 +77,17 @@ NonUnicastMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double data
 WifiMode 
 NonUnicastMacStation::GetDataMode (uint32_t size)
 {
-  return GetMode (0);
+  return m_stations->GetBasicMode (0);
 }
 WifiMode 
 NonUnicastMacStation::GetRtsMode (void)
 {
-  return GetMode (0);
+  return m_stations->GetBasicMode (0);
+}
+MacStations *
+NonUnicastMacStation::GetStations (void) const
+{
+  return m_stations;
 }
 
 
@@ -88,13 +96,16 @@ NonUnicastMacStation::GetRtsMode (void)
 namespace ns3 {
 
 MacStations::MacStations (WifiMode defaultTxMode)
-  : m_nonUnicast (new NonUnicastMacStation (defaultTxMode)),
-    m_defaultTxMode (defaultTxMode)
-{}
+  : m_defaultTxMode (defaultTxMode),
+    m_nonUnicast (new NonUnicastMacStation (this))
+{
+  m_basicModes.push_back (m_defaultTxMode);
+  NS_ASSERT (m_defaultTxMode.IsMandatory ());
+}
 
 MacStations::~MacStations ()
 {
-  for (StationsI i = m_stations.begin (); i != m_stations.end (); i++) 
+  for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++) 
     {
       delete (*i).second;
     }
@@ -110,14 +121,14 @@ MacStations::Lookup (Mac48Address address)
     {
       return m_nonUnicast;
     }
-  for (StationsI i = m_stations.begin (); i != m_stations.end (); i++) 
+  for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++) 
     {
       if ((*i).first == address)
         {
           return (*i).second;
         }
     }
-  MacStation *station = CreateStation (m_defaultTxMode);
+  MacStation *station = CreateStation ();
   m_stations.push_back (std::make_pair (address, station));
   return station;
 }
@@ -128,6 +139,34 @@ MacStations::LookupNonUnicast (void)
   return m_nonUnicast;
 }
 
+WifiMode 
+MacStations::GetDefaultMode (void) const
+{
+  return m_defaultTxMode;
+}
+uint32_t 
+MacStations::GetNBasicModes (void) const
+{
+  return m_basicModes.size ();
+}
+WifiMode 
+MacStations::GetBasicMode (uint32_t i) const
+{
+  NS_ASSERT (i > 0);
+  return m_basicModes[i-1];
+}
+MacStations::BasicModesIterator 
+MacStations::BeginBasicModes (void) const
+{
+  return m_basicModes.begin ();
+}
+MacStations::BasicModesIterator 
+MacStations::EndBasicModes (void) const
+{
+  return m_basicModes.end ();
+}
+
+
 } // namespace ns3
 
 /***************************************************************
@@ -136,17 +175,9 @@ MacStations::LookupNonUnicast (void)
 
 namespace ns3 {
 
-MacStation::WifiRate::WifiRate (WifiMode _mode, bool _isBasic)
-  : mode (_mode), isBasic (_isBasic)
+MacStation::MacStation ()
+  : m_state (DISASSOC)
 {}
-
-MacStation::MacStation (WifiMode txMode)
-  : m_state (DISASSOC),
-    m_defaultTxMode (txMode)
-{
-  NS_ASSERT (m_defaultTxMode.IsMandatory ());
-  ResetModes ();
-}
 MacStation::~MacStation ()
 {}
 
@@ -182,36 +213,27 @@ MacStation::RecordDisassociated (void)
 }
 
 void 
-MacStation::ResetModes (void)
+MacStation::Reset (void)
 {
-  m_rates.clear ();
-  AddBasicMode (m_defaultTxMode);
+  m_modes.clear ();
+  AddSupportedMode (GetStations ()->GetDefaultMode ());
 }
 void 
-MacStation::AddBasicMode (WifiMode mode)
+MacStation::AddSupportedMode (WifiMode mode)
 {
   if (IsIn (mode))
     {
       return;
     }
-  m_rates.push_back (WifiRate (mode, true));
-}
-void 
-MacStation::AddExtendedMode (WifiMode mode)
-{
-  if (IsIn (mode))
-    {
-      return;
-    }
-  m_rates.push_back (WifiRate (mode, false));
+  m_modes.push_back (mode);
 }
 
 bool
 MacStation::IsIn (WifiMode mode) const
 {
-  for (WifiRates::const_iterator i = m_rates.begin (); i != m_rates.end (); i++)
+  for (SupportedModes::const_iterator i = m_modes.begin (); i != m_modes.end (); i++)
     {
-      if (i->mode == mode)
+      if ((*i) == mode)
         {
           return true;
         }
@@ -242,36 +264,23 @@ MacStation::GetControlAnswerMode (WifiMode reqMode)
    * received frame, unless they conflict with the requirement to use 
    * the BSSBasicRateSet parameter.
    */
-  WifiMode mode = m_defaultTxMode;
+  WifiMode mode = GetStations ()->GetDefaultMode ();
   bool found = false;
 
   // First, search the BSS Basic Rate set
-  for (WifiRates::const_iterator i = m_rates.begin (); i != m_rates.end (); i++)
+  for (MacStations::BasicModesIterator i = GetStations ()->BeginBasicModes (); 
+       i != GetStations ()->EndBasicModes (); i++)
     {
-      if (i->mode.GetPhyRate () > mode.GetPhyRate () &&
-          i->mode.GetPhyRate () <= reqMode.GetPhyRate () &&
-          i->mode.GetModulationType () == reqMode.GetModulationType () &&
-          i->isBasic)
+      if (i->GetPhyRate () > mode.GetPhyRate () &&
+          i->GetPhyRate () <= reqMode.GetPhyRate () &&
+          i->GetModulationType () == reqMode.GetModulationType ())
         {
-          mode = i->mode;
+          mode = *i;
           found = true;
         }
     }
-  if (found)
-    {
-      return mode;
-    }
-  // Then, search the mandatory rates.
-  for (WifiRates::const_iterator i = m_rates.begin (); i != m_rates.end (); i++)
-    {
-      if (i->mode.GetPhyRate () > mode.GetPhyRate () &&
-          i->mode.GetPhyRate () <= reqMode.GetPhyRate () &&
-          i->mode.GetModulationType () == reqMode.GetModulationType () &&
-          i->mode.IsMandatory ())
-        {
-          mode = i->mode;
-        }
-    }
+  // no need to search Mandatory rate set because it is included
+  // within the Basic rate set.
   return mode;
 }
 
@@ -287,15 +296,15 @@ MacStation::GetAckMode (WifiMode dataMode)
 }
 
 uint32_t 
-MacStation::GetNModes (void) const
+MacStation::GetNSupportedModes (void) const
 {
-  return m_rates.size ();
+  return m_modes.size ();
 }
 WifiMode 
-MacStation::GetMode (uint32_t i) const
+MacStation::GetSupportedMode (uint32_t i) const
 {
   NS_ASSERT (i > 0);
-  return m_rates[i-1].mode;
+  return m_modes[i-1];
 }
 
 

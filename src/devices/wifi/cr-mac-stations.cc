@@ -25,14 +25,11 @@
 
 namespace ns3 {
 
-CrMacStation::CrMacStation (WifiMode dataMode, WifiMode ctlMode)
-  : MacStation (ctlMode),
-    m_dataMode (dataMode),
-    m_ctlMode (ctlMode)
+CrMacStation::CrMacStation (CrMacStations *stations)
+  : m_stations (stations)
 {}
 CrMacStation::~CrMacStation ()
 {}
-
 
 void 
 CrMacStation::ReportRxOk (double rxSnr, WifiMode txMode)
@@ -52,12 +49,17 @@ CrMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 WifiMode 
 CrMacStation::GetDataMode (uint32_t size)
 {
-  return m_dataMode;
+  return m_stations->GetDataMode ();
 }
 WifiMode 
 CrMacStation::GetRtsMode (void)
 {
-  return m_ctlMode;
+  return m_stations->GetCtlMode ();
+}
+CrMacStations *
+CrMacStation::GetStations (void) const
+{
+  return m_stations;
 }
 
 
@@ -70,10 +72,22 @@ CrMacStations::CrMacStations (WifiMode dataMode, WifiMode ctlMode)
 CrMacStations::~CrMacStations ()
 {}
 
-MacStation *
-CrMacStations::CreateStation (WifiMode defaultMode)
+WifiMode 
+CrMacStations::GetDataMode (void) const
 {
-  return new CrMacStation (m_dataMode, m_ctlMode);
+  return m_dataMode;
+}
+WifiMode 
+CrMacStations::GetCtlMode (void) const
+{
+  return m_ctlMode;
+}
+
+
+MacStation *
+CrMacStations::CreateStation (void)
+{
+  return new CrMacStation (this);
 }
 
 } // namespace ns3

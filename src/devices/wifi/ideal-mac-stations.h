@@ -1,6 +1,7 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2005,2006 INRIA
+ * Copyright (c) 2006 INRIA
+ * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -17,30 +18,43 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef ARF_MAC_STATIONS_H
-#define ARF_MAC_STATIONS_H
+#ifndef IDEAL_MAC_STATIONS_H
+#define IDEAL_MAC_STATIONS_H
 
+#include <stdint.h>
+#include <vector>
 #include "mac-stations.h"
+#include "wifi-mode.h"
 
 namespace ns3 {
 
-class ArfMacStations : public MacStations {
-public:
-  ArfMacStations (WifiMode defaultTxMode);
-  virtual ~ArfMacStations ();
+class WifiPhy;
 
+class IdealMacStations : public MacStations {
+public:
+  IdealMacStations (WifiMode defaultTxMode);
+  virtual ~IdealMacStations ();
+  WifiMode GetMode (double snr) const;
+  // return the min snr needed to successfully transmit
+  // data with this mode at the specified ber.
+  double GetSnrThreshold (WifiMode mode) const;
+  void InitializeThresholds (const WifiPhy *phy, double ber);
 private:
   virtual class MacStation *CreateStation (void);
+
+  typedef std::vector<std::pair<double,WifiMode> > Thresholds;
+
+  Thresholds m_thresholds;
+  double m_minSnr;
+  double m_maxSnr;
 };
 
-
-class ArfMacStation : public MacStation
+class IdealMacStation : public MacStation 
 {
 public:
-  ArfMacStation (ArfMacStations *stations,
-                 int minTimerTimeout,
-                 int minSuccessThreshold);
-  virtual ~ArfMacStation ();
+  IdealMacStation (IdealMacStations *stations);
+
+  virtual ~IdealMacStation ();
 
   virtual void ReportRxOk (double rxSnr, WifiMode txMode);
   virtual void ReportRtsFailed (void);
@@ -51,47 +65,11 @@ public:
   virtual WifiMode GetRtsMode (void);
 
 private:
-  virtual ArfMacStations *GetStations (void) const;
-
-  int m_timer;
-  int m_success;
-  int m_failed;
-  bool m_recovery;
-  int m_retry;
-  
-  int m_timerTimeout;
-  int m_successThreshold;
-
-  int m_rate;
-  
-  int m_minTimerTimeout;
-  int m_minSuccessThreshold;
-
-  ArfMacStations *m_stations;
-  
-private:
-  // overriden by AarfMacStation.
-  virtual void ReportRecoveryFailure (void);
-  virtual void ReportFailure (void);
-
-  int GetMaxRate (void);
-  int GetMinRate (void);
-
-  bool NeedRecoveryFallback (void);
-  bool NeedNormalFallback (void);
-  
-protected:
-  // called by AarfMacStation.
-  int GetMinTimerTimeout (void);
-  int GetMinSuccessThreshold (void);
-  
-  int GetTimerTimeout (void);
-  int GetSuccessThreshold (void);
-  
-  void SetTimerTimeout (int timerTimeout);
-  void SetSuccessThreshold (int successThreshold);
+  virtual IdealMacStations *GetStations (void) const;
+  IdealMacStations *m_stations;
+  double m_lastSnr;
 };
 
 }; // namespace ns3
 
-#endif /* ARF_MAC_STATIONS_H */
+#endif /* MAC_STA_H */

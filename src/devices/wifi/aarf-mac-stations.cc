@@ -31,19 +31,19 @@ AarfMacStations::AarfMacStations (WifiMode defaultTxMode)
 AarfMacStations::~AarfMacStations ()
 {}
 MacStation *
-AarfMacStations::CreateStation (WifiMode defaultTxMode)
+AarfMacStations::CreateStation (void)
 {
-  return new AarfMacStation (defaultTxMode, 2.0, 60, 2.0);
+  return new AarfMacStation (this, 2.0, 60, 2.0);
 }
 
 
 
 
-AarfMacStation::AarfMacStation (WifiMode defaultTxMode,
+AarfMacStation::AarfMacStation (AarfMacStations *stations,
                                 double successK,
                                 int maxSuccessThreshold,
                                 double timerK)
-  : ArfMacStation (defaultTxMode, 15, 10),
+  : ArfMacStation (stations, 15, 10),
     m_successK (successK),
     m_maxSuccessThreshold (maxSuccessThreshold),
     m_timerK (timerK)

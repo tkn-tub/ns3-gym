@@ -20,7 +20,7 @@
 #ifndef MAC_STATIONS_H
 #define MAC_STATIONS_H
 
-#include <list>
+#include <vector>
 #include <utility>
 #include "ns3/mac48-address.h"
 #include "wifi-mode.h"
@@ -29,20 +29,41 @@ namespace ns3 {
 
 class MacStation;
 
-class MacStations {
+class MacStations 
+{
+private:
+  typedef std::vector<WifiMode> BasicModes;
 public:
+  typedef BasicModes::const_iterator BasicModesIterator;
+
   MacStations (WifiMode defaultTxMode);
   virtual ~MacStations ();
   
+  // Invoked in a STA upon dis-association
+  // or in an AP upon reboot
+  void Reset (void);
+  // Invoked in a STA upon association to store
+  // the set of rates which belong to the 
+  // BSSBasicRateSet of the associated AP
+  // and which are supported locally.
+  // Invoked in an AP to configure the BSSBasicRateSet
+  void AddBasicMode (WifiMode mode);
+
+  WifiMode GetDefaultMode (void) const;
+  uint32_t GetNBasicModes (void) const;
+  WifiMode GetBasicMode (uint32_t i) const;
+  BasicModesIterator BeginBasicModes (void) const;
+  BasicModesIterator EndBasicModes (void) const;
+
   MacStation *Lookup (Mac48Address address);
   MacStation *LookupNonUnicast (void);
 private:
-  typedef std::list <std::pair<Mac48Address, MacStation *> > Stations;
-  typedef std::list <std::pair<Mac48Address, MacStation *> >::iterator StationsI;
-  virtual class MacStation *CreateStation (WifiMode mode) = 0;
+  typedef std::vector <std::pair<Mac48Address, MacStation *> > Stations;
+  virtual class MacStation *CreateStation (void) = 0;
   Stations m_stations;
-  MacStation *m_nonUnicast;
   WifiMode m_defaultTxMode;
+  MacStation *m_nonUnicast;
+  BasicModes m_basicModes;
 };
 
 } // namespace ns3
@@ -51,12 +72,18 @@ namespace ns3 {
 
 class MacStation {
 public:
-  MacStation (WifiMode defaultTxMode);
+  MacStation ();
   virtual ~MacStation ();
 
-  void ResetModes (void);
-  void AddBasicMode (WifiMode mode);
-  void AddExtendedMode (WifiMode mode);
+  // Invoked in an AP upon disassociation of a
+  // specific STA.
+  void Reset (void);
+  // Invoked in a STA or AP to store the set of 
+  // modes supported by a destination which is
+  // also supported locally.
+  // The set of supported modes includes
+  // the BSSBasicRateSet.
+  void AddSupportedMode (WifiMode mode);
 
   bool IsAssociated (void) const;
   bool IsWaitAssocTxOk (void) const;
@@ -80,15 +107,13 @@ public:
   WifiMode GetAckMode (WifiMode dataMode);
 
 private:
-  struct WifiRate {
-    WifiRate (WifiMode mode, bool isBasic);
-    WifiMode mode; 
-    bool isBasic;
-  };
-  typedef std::vector<struct WifiRate> WifiRates;
+  typedef std::vector<WifiMode> SupportedModes;
+  virtual MacStations *GetStations (void) const = 0;
 protected:
-  uint32_t GetNModes (void) const;
-  WifiMode GetMode (uint32_t i) const;
+  uint32_t GetNSupportedModes (void) const;
+  uint32_t GetNBasicModes (void) const;
+  WifiMode GetSupportedMode (uint32_t i) const;
+  WifiMode GetBasicMode (uint32_t i) const;
 private:
   bool IsIn (WifiMode mode) const;
   WifiMode GetControlAnswerMode (WifiMode reqMode);
@@ -97,8 +122,7 @@ private:
     WAIT_ASSOC_TX_OK,
     GOT_ASSOC_TX_OK
   } m_state;
-  WifiRates m_rates;
-  WifiMode m_defaultTxMode;
+  SupportedModes m_modes;
 };
 
 } // namespace ns3 

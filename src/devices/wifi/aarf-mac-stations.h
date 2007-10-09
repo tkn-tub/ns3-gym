@@ -29,13 +29,13 @@ public:
   AarfMacStations (WifiMode defaultTxMode);
   virtual ~AarfMacStations ();
 private:
-  virtual class MacStation *CreateStation (WifiMode defaultTxMode);
+  virtual class MacStation *CreateStation (void);
 };
 
 class AarfMacStation : public ArfMacStation
 {
 public:
-  AarfMacStation (WifiMode defaultTxMode,
+  AarfMacStation (AarfMacStations *stations,
                   double successK,
                   int maxSuccessThreshold,
                   double timerK);

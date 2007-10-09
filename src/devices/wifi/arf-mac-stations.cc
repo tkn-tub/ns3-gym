@@ -25,10 +25,10 @@
 
 namespace ns3 {
   
-ArfMacStation::ArfMacStation (WifiMode defaultTxMode,
+ArfMacStation::ArfMacStation (ArfMacStations *stations,
                               int minTimerTimeout,
                               int minSuccessThreshold)
-  : MacStation (defaultTxMode)
+  : m_stations (stations)
 {
   m_minTimerTimeout = minTimerTimeout;
   m_minSuccessThreshold = minSuccessThreshold;
@@ -48,7 +48,7 @@ ArfMacStation::~ArfMacStation ()
 int 
 ArfMacStation::GetMaxRate (void)
 {
-  return GetNModes ();
+  return GetNSupportedModes ();
 }
 int 
 ArfMacStation::GetMinRate (void)
@@ -162,12 +162,14 @@ void ArfMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSn
 WifiMode
 ArfMacStation::GetDataMode (uint32_t size)
 {
-  return GetMode (m_rate);
+  return GetSupportedMode (m_rate);
 }
 WifiMode
 ArfMacStation::GetRtsMode (void)
 {
-  return GetMode (0);
+  // XXX: we could/should implement the Arf algorithm for
+  // RTS only by picking a single rate within the BasicRateSet.
+  return GetSupportedMode (0);
 }
 
 void ArfMacStation::ReportRecoveryFailure (void)
@@ -200,6 +202,11 @@ void ArfMacStation::SetSuccessThreshold (int successThreshold)
   NS_ASSERT (successThreshold >= m_minSuccessThreshold);
   m_successThreshold = successThreshold;
 }
+ArfMacStations *
+ArfMacStation::GetStations (void) const
+{
+  return m_stations;
+}
 
 
 
@@ -211,9 +218,9 @@ ArfMacStations::ArfMacStations (WifiMode defaultTxMode)
 ArfMacStations::~ArfMacStations ()
 {}
 MacStation *
-ArfMacStations::CreateStation (WifiMode defaultTxMode)
+ArfMacStations::CreateStation (void)
 {
-  return new ArfMacStation (defaultTxMode, 15, 10);
+  return new ArfMacStation (this, 15, 10);
 }
 
 } // namespace ns3

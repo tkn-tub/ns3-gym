@@ -26,15 +26,16 @@
 
 namespace ns3 {
 
-class CrMacStations : public MacStations {
+class CrMacStations : public MacStations 
+{
 public:
   CrMacStations (WifiMode dataMode, WifiMode ctlMode);
   virtual ~CrMacStations ();
 
-  uint8_t GetDataMode (void) const;
-  uint8_t GetCtlMode (void) const;
+  WifiMode GetDataMode (void) const;
+  WifiMode GetCtlMode (void) const;
 private:
-  virtual class MacStation *CreateStation (WifiMode defaultMode);
+  virtual class MacStation *CreateStation (void);
 
   WifiMode m_dataMode;
   WifiMode m_ctlMode;
@@ -44,8 +45,11 @@ private:
 class CrMacStation : public MacStation
 {
 public:
-  CrMacStation (WifiMode dataMode, WifiMode ctlMode);
+  CrMacStation (CrMacStations *stations);
   virtual ~CrMacStation ();
+
+  WifiMode GetDataMode (void) const;
+  WifiMode GetCtlMode (void) const;
 
   virtual void ReportRxOk (double rxSnr, WifiMode txMode);
   virtual void ReportRtsFailed (void);
@@ -55,8 +59,8 @@ public:
   virtual WifiMode GetDataMode (uint32_t size);
   virtual WifiMode GetRtsMode (void);
 private:
-  WifiMode m_dataMode;
-  WifiMode m_ctlMode;
+  virtual CrMacStations *GetStations (void) const;
+  CrMacStations *m_stations;
 };
 
 } // namespace ns3
