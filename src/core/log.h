@@ -92,20 +92,25 @@
     {                                                           \
       if (g_log.IsEnabled (level))                              \
         {                                                       \
-          std::clog << __PRETTY_FUNCTION__ << " ==> " <<        \
-            msg << std::endl;                                   \
+          if (g_log.IsEnabled (ns3::LOG_PREFIX_ALL))            \
+            {                                                   \
+              std::clog << g_log.Name () << ":" <<              \
+                __FUNCTION__ << "(): ";                         \
+            }                                                   \
+          std::clog << msg << std::endl;                        \
         }                                                       \
     }                                                           \
   while (false)
 
-#define NS_LOG_F(level)                                 \
-  do                                                    \
-    {                                                   \
-      if (g_log.IsEnabled (level))                      \
-        {                                               \
-          std::clog << __PRETTY_FUNCTION__ << std::endl;\
-        }                                               \
-    }                                                   \
+#define NS_LOG_F(level)                                         \
+  do                                                            \
+    {                                                           \
+      if (g_log.IsEnabled (level))                              \
+        {                                                       \
+          std::clog << g_log.Name () << ":" << __FUNCTION__ <<  \
+            "(): " << std::endl;                                \
+        }                                                       \
+    }                                                           \
   while (false)
 
 #define NS_LOG_ERROR(msg) \
@@ -129,9 +134,6 @@
 #define NS_LOG_LOGIC(msg) \
   NS_LOG(ns3::LOG_LOGIC, msg)
 
-#define NS_LOG_ALL(msg) \
-  NS_LOG(ns3::LOG_ALL, msg)
-
 #define NS_LOG_UNCOND(msg)              \
   do                                    \
     {                                   \
@@ -150,7 +152,6 @@
 #define NS_LOG_FUNCTION
 #define NS_LOG_PARAM(msg)
 #define NS_LOG_LOGIC(msg)
-#define NS_LOG_ALL(msg)
 #define NS_LOG_UNCOND(msg)
 
 #endif
@@ -160,59 +161,88 @@ namespace ns3 {
 #ifdef NS3_LOG_ENABLE
 
 enum LogLevel {
-  LOG_ERROR          = 0x0001, // serious error messages only
-  LOG_LEVEL_ERROR    = 0x0001,
+  LOG_NONE           = 0x00000000, // no logging
 
-  LOG_WARN           = 0x0002, // warning messages
-  LOG_LEVEL_WARN     = 0x0003,
+  LOG_ERROR          = 0x00000001, // serious error messages only
+  LOG_LEVEL_ERROR    = 0x00000001,
 
-  LOG_DEBUG          = 0x0004, // rare ad-hoc debug messages
-  LOG_LEVEL_DEBUG    = 0x0007,
+  LOG_WARN           = 0x00000002, // warning messages
+  LOG_LEVEL_WARN     = 0x00000003,
 
-  LOG_INFO           = 0x0008, // informational messages (e.g., banners)
-  LOG_LEVEL_INFO     = 0x000f,
+  LOG_DEBUG          = 0x00000004, // rare ad-hoc debug messages
+  LOG_LEVEL_DEBUG    = 0x00000007,
 
-  LOG_FUNCTION       = 0x0010, // function tracing
-  LOG_LEVEL_FUNCTION = 0x001f, 
+  LOG_INFO           = 0x00000008, // informational messages (e.g., banners)
+  LOG_LEVEL_INFO     = 0x0000000f,
 
-  LOG_PARAM          = 0x0020, // parameters to functions
-  LOG_LEVEL_PARAM    = 0x003f,
+  LOG_FUNCTION       = 0x00000010, // function tracing
+  LOG_LEVEL_FUNCTION = 0x0000001f, 
 
-  LOG_LOGIC          = 0x0040, // control flow tracing within functions
-  LOG_LEVEL_LOGIC    = 0x007f,
+  LOG_PARAM          = 0x00000020, // parameters to functions
+  LOG_LEVEL_PARAM    = 0x0000003f,
 
-  LOG_ALL            = 0x4000, // print everything
-  LOG_LEVEL_ALL      = 0x7fff
+  LOG_LOGIC          = 0x00000040, // control flow tracing within functions
+  LOG_LEVEL_LOGIC    = 0x0000007f,
+
+  LOG_ALL            = 0x7fffffff, // print everything
+  LOG_LEVEL_ALL      = LOG_ALL,
+
+  LOG_PREFIX_ALL     = 0x80000000
 };
 
 #endif
 
+#ifdef NS3_LOG_ENABLE
 /**
  * \param name a log component name
+ * \param level a logging level
+ * \param decorate whether or not to add function names to all logs
  * \ingroup logging
  *
  * Enable the logging output associated with that log component.
  * The logging output can be later disabled with a call
  * to ns3::LogComponentDisable.
  */
-#ifdef NS3_LOG_ENABLE
-void LogComponentEnable (char const *name, enum LogLevel level);
+  void LogComponentEnable (char const *name, enum LogLevel level);
+/**
+ * \param level a logging level
+ * \param decorate whether or not to add function names to all logs
+ * \ingroup logging
+ *
+ * Enable the logging output for all registered log components.
+ */
+  void LogComponentEnableAll (enum LogLevel level);
 #else
 #define LogComponentEnable(a,b)
+#define LogComponentEnableAll(a)
 #endif
 
+#ifdef NS3_LOG_ENABLE
 /**
  * \param name a log component name
+ * \param level a logging level
  * \ingroup logging
  *
  * Disable the logging output associated with that log component.
  * The logging output can be later re-enabled with a call
  * to ns3::LogComponentEnable.
  */
-#ifdef NS3_LOG_ENABLE
 void LogComponentDisable (char const *name, enum LogLevel level);
+
+/**
+ * \param name a log component name
+ * \param level a logging level
+ * \ingroup logging
+ *
+ * Disable the logging output associated with that log component.
+ * The logging output can be later re-enabled with a call
+ * to ns3::LogComponentEnable.
+ */
+void LogComponentDisableAll (enum LogLevel level);
+
 #else
 #define LogComponentDisable(a,b)
+#define LogComponentDisableAll(a)
 #endif
 
 /**
@@ -240,8 +270,12 @@ public:
   bool IsNoneEnabled (void) const;
   void Enable (enum LogLevel level);
   void Disable (enum LogLevel level);
+  bool Decorate (void) const;
+  char const *Name (void) const;
 private:
-  int32_t m_levels;
+  int32_t     m_levels;
+  char const *m_name;
+  bool        m_decorate;
 };
 
 #endif

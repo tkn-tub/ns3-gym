@@ -23,7 +23,8 @@ using namespace ns3;
 int 
 main (int argc, char *argv[])
 {
-  LogComponentEnable ("HelloSimulator", LOG_LEVEL_INFO);
+  LogComponentEnable ("HelloSimulator", 
+    LogLevel (LOG_LEVEL_INFO | LOG_PREFIX_ALL));
 
   NS_LOG_INFO ("Hello Simulator");
 }
