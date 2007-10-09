@@ -23,6 +23,7 @@
 #include "wifi-mode.h"
 #include "wifi-channel.h"
 #include "wifi-net-device.h"
+#include "wifi-preamble.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/random-variable.h"
@@ -103,11 +104,11 @@ WifiPhyListener::~WifiPhyListener ()
 class RxEvent {
 public:
   RxEvent (uint32_t size, WifiMode payloadMode, 
-           WifiMode headerMode,
+           enum WifiPreamble preamble,
            Time duration, double rxPower)
     : m_size (size),
       m_payloadMode (payloadMode),
-      m_headerMode (headerMode),
+      m_preamble (preamble),
       m_startTime (Simulator::Now ()),
       m_endTime (m_startTime + duration),
       m_rxPowerW (rxPower),
@@ -151,14 +152,14 @@ public:
   WifiMode GetPayloadMode (void) const {
     return m_payloadMode;
   }
-  WifiMode GetHeaderMode (void) const {
-    return m_headerMode;
+  enum WifiPreamble GetPreambleType (void) const {
+    return m_preamble;
   }
 
 private:
   uint32_t m_size;
   WifiMode m_payloadMode;
-  WifiMode m_headerMode;
+  enum WifiPreamble m_preamble;
   Time m_startTime;
   Time m_endTime;
   double m_rxPowerW;
@@ -246,15 +247,15 @@ void
 WifiPhy::ReceivePacket (Packet const packet, 
                         double rxPowerW,
                         WifiMode txMode,
-                        WifiMode headerMode)
+                        enum WifiPreamble preamble)
 {
-  Time rxDuration = CalculateTxDuration (packet.GetSize (), txMode, headerMode);
+  Time rxDuration = CalculateTxDuration (packet.GetSize (), txMode, preamble);
   Time endRx = Simulator::Now () + rxDuration;
   m_startRxLogger (rxDuration, rxPowerW);
 
   Ptr<RxEvent> event = Create<RxEvent> (packet.GetSize (), 
                                         txMode,
-                                        headerMode,
+                                        preamble,
                                         rxDuration,
                                         rxPowerW);
   AppendEvent (event);
@@ -335,7 +336,7 @@ WifiPhy::ReceivePacket (Packet const packet,
   event->Unref ();
 }
 void 
-WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiMode headerMode, uint8_t txPower)
+WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower)
 {
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
@@ -349,11 +350,11 @@ WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiMode headerMode, 
     m_endSyncEvent.Cancel ();
   }
 
-  Time txDuration = CalculateTxDuration (packet.GetSize (), txMode, headerMode);
+  Time txDuration = CalculateTxDuration (packet.GetSize (), txMode, preamble);
   m_startTxLogger (txDuration, txMode.GetPhyRate (), GetPowerDbm (txPower));
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
-  m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDbm, txMode, headerMode);
+  m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDbm, txMode, preamble);
 }
 
 void 
@@ -423,7 +424,10 @@ WifiPhy::CalculateSnr (WifiMode txMode, double ber) const
 void
 WifiPhy::Configure80211a (void)
 {
-  m_plcpPreambleDelayUs = 20;
+  m_plcpLongPreambleDelayUs = 20;
+  m_plcpShortPreambleDelayUs = 20;
+  m_longPlcpHeaderMode = g_6mba;
+  m_shortPlcpHeaderMode = g_6mba;
   m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16 + 6;
   /* 4095 bytes at a 6Mb/s rate with a 1/2 coding rate. */
   m_maxPacketDuration = Seconds (4095.0*8.0/6000000.0*(1.0/2.0));
@@ -517,10 +521,19 @@ WifiPhy::GetDelayUntilIdle (void)
 
 
 Time
-WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiMode headerMode) const
+WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble) const
 {
-  uint64_t delay = m_plcpPreambleDelayUs;
-  delay += m_plcpHeaderLength * 1000000 / headerMode.GetDataRate ();
+  uint64_t delay = 0;
+  switch (preamble) {
+  case WIFI_PREAMBLE_LONG:
+    delay += m_plcpLongPreambleDelayUs;
+    delay += m_plcpHeaderLength * 1000000 / m_longPlcpHeaderMode.GetDataRate ();
+    break;
+  case WIFI_PREAMBLE_SHORT:
+    delay += m_plcpShortPreambleDelayUs;
+    delay += m_plcpHeaderLength * 1000000 / m_shortPlcpHeaderMode.GetDataRate ();
+    break;
+  }
   uint64_t nbits = size * 8;
   delay += nbits * 1000000 / payloadMode.GetDataRate ();
   return MicroSeconds (delay);
@@ -1079,13 +1092,24 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
   double psr = 1.0; /* Packet Success Rate */
   NiChanges::iterator j = ni->begin ();
   Time previous = (*j).GetTime ();
-  Time plcpHeaderStart = (*j).GetTime () + MicroSeconds (m_plcpPreambleDelayUs);
+  uint64_t plcpPreambleDelayUs;
+  WifiMode payloadMode = event->GetPayloadMode ();
+  WifiMode headerMode;
+  switch (event->GetPreambleType ()) {
+  case WIFI_PREAMBLE_LONG:
+    plcpPreambleDelayUs = m_plcpLongPreambleDelayUs;
+    headerMode = m_longPlcpHeaderMode;
+    break;
+  case WIFI_PREAMBLE_SHORT:
+    plcpPreambleDelayUs = m_plcpShortPreambleDelayUs;
+    headerMode = m_shortPlcpHeaderMode;
+    break;
+  }
+  Time plcpHeaderStart = (*j).GetTime () + MicroSeconds (plcpPreambleDelayUs);
   Time plcpPayloadStart = plcpHeaderStart + 
-    Seconds (m_plcpHeaderLength / event->GetHeaderMode ().GetDataRate ());
+    Seconds (m_plcpHeaderLength / headerMode.GetDataRate ());
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
-  WifiMode payloadMode = event->GetPayloadMode ();
-  WifiMode headerMode = event->GetHeaderMode ();
 
   j++;
   while (ni->end () != j) 
@@ -1186,7 +1210,7 @@ WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event)
       m_endSyncLogger (true);
       NotifySyncEndOk ();
       SwitchFromSync ();
-      m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetHeaderMode ());
+      m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
     } 
   else 
     {

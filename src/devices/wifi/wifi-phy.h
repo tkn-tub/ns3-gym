@@ -33,6 +33,7 @@
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
 #include "wifi-mode.h"
+#include "wifi-preamble.h"
 
 
 namespace ns3 {
@@ -71,7 +72,7 @@ public:
 class WifiPhy
 {
 public:
-  typedef Callback<void,Packet const , double, WifiMode, WifiMode> SyncOkCallback;
+  typedef Callback<void,Packet const , double, WifiMode, enum WifiPreamble> SyncOkCallback;
   typedef Callback<void,Packet const , double> SyncErrorCallback;
 
   WifiPhy (Ptr<WifiNetDevice> device);
@@ -82,7 +83,7 @@ public:
   void SetReceiveOkCallback (SyncOkCallback callback);
   void SetReceiveErrorCallback (SyncErrorCallback callback);
 
-  void SendPacket (Packet const packet, WifiMode mode, WifiMode headerMode, uint8_t txPower);
+  void SendPacket (Packet const packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPower);
 
   void RegisterListener (WifiPhyListener *listener);
 
@@ -94,7 +95,7 @@ public:
   Time GetStateDuration (void);
   Time GetDelayUntilIdle (void);
 
-  Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiMode headerMode) const;
+  Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const;
 
   void Configure80211a (void);
   void SetEdThresholdDbm (double rxThreshold);
@@ -179,10 +180,13 @@ private:
   void ReceivePacket (Packet packet,
                       double rxPowerW,
                       WifiMode mode,
-                      WifiMode headerMode);
+                      WifiPreamble preamble);
 private:
   uint64_t m_txPrepareDelayUs;
-  uint64_t m_plcpPreambleDelayUs;
+  uint64_t m_plcpLongPreambleDelayUs;
+  uint64_t m_plcpShortPreambleDelayUs;
+  WifiMode m_longPlcpHeaderMode;
+  WifiMode m_shortPlcpHeaderMode;
   uint32_t m_plcpHeaderLength;
   Time     m_maxPacketDuration;
 

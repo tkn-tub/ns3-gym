@@ -24,6 +24,7 @@
 #include "mac-parameters.h"
 #include "wifi-phy.h"
 #include "wifi-mac-header.h"
+#include "wifi-preamble.h"
 
 namespace ns3 {
 
@@ -50,13 +51,13 @@ MacParameters::Initialize80211a (WifiPhy const*phy)
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_CTL_CTS);
   m_ctsTimeout = m_sifs;
-  m_ctsTimeout += phy->CalculateTxDuration (hdr.GetSize (), phy->GetMode (0), phy->GetMode (0));
+  m_ctsTimeout += phy->CalculateTxDuration (hdr.GetSize (), phy->GetMode (0), WIFI_PREAMBLE_LONG);
   m_ctsTimeout += m_maxPropagationDelay * Scalar (2);
   m_ctsTimeout += m_slot;
 
   hdr.SetType (WIFI_MAC_CTL_ACK);
   m_ackTimeout = m_sifs;
-  m_ackTimeout += phy->CalculateTxDuration (hdr.GetSize (), phy->GetMode (0), phy->GetMode (0));
+  m_ackTimeout += phy->CalculateTxDuration (hdr.GetSize (), phy->GetMode (0), WIFI_PREAMBLE_LONG);
   m_ackTimeout += m_maxPropagationDelay * Scalar (2);
   m_ackTimeout += m_slot;
 }

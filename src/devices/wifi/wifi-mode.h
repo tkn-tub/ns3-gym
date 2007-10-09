@@ -63,9 +63,11 @@ class WifiMode
    * should have different uids.
    */
   uint32_t GetUid (void) const;
+
+  // create an invalid WifiMode.
+  WifiMode ();
 private:
   friend class WifiModeFactory;
-  WifiMode ();
   WifiMode (uint32_t uid);
   uint32_t m_uid;
 };

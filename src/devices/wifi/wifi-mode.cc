@@ -62,6 +62,7 @@ WifiMode::GetUid (void) const
   return m_uid;
 }
 WifiMode::WifiMode ()
+  : m_uid (0)
 {}
 WifiMode::WifiMode (uint32_t uid)
   : m_uid (uid)
