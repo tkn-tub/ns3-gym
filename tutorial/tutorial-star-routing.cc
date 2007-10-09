@@ -144,7 +144,7 @@ main (int argc, char *argv[])
 
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", port, 
+  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n4, "10.1.1.2", port, 
     1, Seconds(1.), 1024);
 
   Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
@@ -158,6 +158,8 @@ main (int argc, char *argv[])
   AsciiTrace asciitrace ("tutorial.tr");
   asciitrace.TraceAllQueues ();
   asciitrace.TraceAllNetDeviceRx ();
+
+  GlobalRouteManager::PopulateRoutingTables ();
 
   Simulator::Run ();
   Simulator::Destroy ();
