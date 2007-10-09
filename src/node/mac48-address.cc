@@ -136,13 +136,18 @@ Mac48Address::GetType (void)
 bool
 Mac48Address::IsBroadcast (void) const
 {
-  static Mac48Address broadcast = Mac48Address ("ff:ff:ff:ff:ff:ff");
-  return *this == broadcast;
+  return *this == GetBroadcast ();
 }
 bool 
 Mac48Address::IsMulticast (void) const
 {
   return (m_address[0] & 0x01) == 0x01;
+}
+Mac48Address
+Mac48Address::GetBroadcast (void)
+{
+  static Mac48Address broadcast = Mac48Address ("ff:ff:ff:ff:ff:ff");
+  return broadcast;
 }
 bool operator == (const Mac48Address &a, const Mac48Address &b)
 {
