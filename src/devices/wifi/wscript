@@ -21,6 +21,7 @@ def build(bld):
         'wifi-mac-queue.cc',
         'mac-tx-middle.cc',
         'mac-rx-middle.cc',
+        'dca-txop.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
