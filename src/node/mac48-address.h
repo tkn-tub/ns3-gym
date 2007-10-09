@@ -95,6 +95,7 @@ private:
 
 bool operator == (const Mac48Address &a, const Mac48Address &b);
 bool operator != (const Mac48Address &a, const Mac48Address &b);
+bool operator < (const Mac48Address &a, const Mac48Address &b);
 std::ostream& operator<< (std::ostream& os, const Mac48Address & address);
 
 } // namespace ns3
