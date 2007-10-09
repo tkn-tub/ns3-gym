@@ -23,6 +23,7 @@ def build(bld):
         'mac-rx-middle.cc',
         'dca-txop.cc',
         'ideal-mac-stations.cc',
+        'mac-high-adhoc.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
