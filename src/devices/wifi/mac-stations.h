@@ -111,9 +111,7 @@ private:
   virtual MacStations *GetStations (void) const = 0;
 protected:
   uint32_t GetNSupportedModes (void) const;
-  uint32_t GetNBasicModes (void) const;
   WifiMode GetSupportedMode (uint32_t i) const;
-  WifiMode GetBasicMode (uint32_t i) const;
 private:
   bool IsIn (WifiMode mode) const;
   WifiMode GetControlAnswerMode (WifiMode reqMode);

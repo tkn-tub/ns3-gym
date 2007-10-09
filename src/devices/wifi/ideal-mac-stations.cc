@@ -105,18 +105,19 @@ IdealMacStation::GetDataMode (uint32_t size)
   // highest snr threshold possible which is smaller than m_lastSnr 
   // to ensure correct packet delivery.
   double maxThreshold = 0.0;
-  WifiMode mode = m_stations->GetDefaultMode ();
+  WifiMode maxMode = m_stations->GetDefaultMode ();
   for (uint32_t i = 0; i < GetNSupportedModes (); i++)
     {
-      double threshold = m_stations->GetSnrThreshold (GetSupportedMode (i));
+      WifiMode mode = GetSupportedMode (i);
+      double threshold = m_stations->GetSnrThreshold (mode);
       if (threshold > maxThreshold && 
           threshold < m_lastSnr)
         {
           maxThreshold = threshold;
-          mode = GetSupportedMode (i);
+          maxMode = mode;
         }
     }
-  return mode;
+  return maxMode;
 }
 WifiMode
 IdealMacStation::GetRtsMode (void)
@@ -125,18 +126,19 @@ IdealMacStation::GetRtsMode (void)
   // snr threshold possible which is smaller than m_lastSnr to 
   // ensure correct packet delivery.
   double maxThreshold = 0.0;
-  WifiMode mode = m_stations->GetDefaultMode ();
-  for (uint32_t i = 0; i < GetNBasicModes (); i++)
+  WifiMode maxMode = m_stations->GetDefaultMode ();
+  for (uint32_t i = 0; i < m_stations->GetNBasicModes (); i++)
     {
-      double threshold = m_stations->GetSnrThreshold (GetBasicMode (i));
+      WifiMode mode = m_stations->GetBasicMode (i);
+      double threshold = m_stations->GetSnrThreshold (mode);
       if (threshold > maxThreshold && 
           threshold < m_lastSnr)
         {
           maxThreshold = threshold;
-          mode = GetBasicMode (i);
+          maxMode = mode;
         }
     }
-  return mode;
+  return maxMode;
 }
 IdealMacStations *
 IdealMacStation::GetStations (void) const
