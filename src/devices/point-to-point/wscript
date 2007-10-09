@@ -7,11 +7,13 @@ def build(bld):
         'point-to-point-net-device.cc',
         'point-to-point-channel.cc',
         'point-to-point-topology.cc',
+        'point-to-point-ipv4-topology.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
         'point-to-point-net-device.h',
         'point-to-point-channel.h',
         'point-to-point-topology.h',
+        'point-to-point-ipv4-topology.h',
         ]
 

@@ -17,9 +17,17 @@ def build(bld):
         ['core'])
     obj.source = 'tutorial-csma-echo-pcap-trace.cc'
 
-    obj = bld.create_ns3_program('tutorial-naive-dumbbell',
+    obj = bld.create_ns3_program('tutorial-point-to-point',
         ['core'])
-    obj.source = 'tutorial-naive-dumbbell.cc'
+    obj.source = 'tutorial-point-to-point.cc'
+
+    obj = bld.create_ns3_program('tutorial-star',
+        ['core'])
+    obj.source = 'tutorial-star.cc'
+
+    obj = bld.create_ns3_program('tutorial-linear-dumbbell',
+        ['core'])
+    obj.source = 'tutorial-linear-dumbbell.cc'
 
     obj = bld.create_ns3_program('testipv4',
         ['core'])
