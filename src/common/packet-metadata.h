@@ -190,7 +190,9 @@ private:
   public:
     ~DataFreeList ();
   };
-  
+
+  friend DataFreeList::~DataFreeList ();
+
   PacketMetadata ();
   void DoAddHeader (uint32_t uid, uint32_t size);
   void DoRemoveHeader (uint32_t uid, uint32_t size);
