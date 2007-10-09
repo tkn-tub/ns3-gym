@@ -143,6 +143,7 @@ def configure(conf):
             variant_env.append_value("LINKFLAGS", "-Wl,--enable-runtime-pseudo-reloc")
 
     conf.sub_config('src')
+    conf.sub_config('utils')
 
 
 def create_ns3_program(bld, name, dependencies=('simulator',)):

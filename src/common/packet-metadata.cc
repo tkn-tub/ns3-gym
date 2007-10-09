@@ -43,6 +43,7 @@ PacketMetadata::DataFreeList::~DataFreeList ()
     {
       PacketMetadata::Deallocate (*i);
     }
+  PacketMetadata::m_enable = false;
 }
 
 void 
@@ -643,6 +644,11 @@ PacketMetadata::Create (uint32_t size)
 void
 PacketMetadata::Recycle (struct PacketMetadata::Data *data)
 {
+  if (!m_enable)
+    {
+      PacketMetadata::Deallocate (data);
+      return;
+    } 
   NS_LOG_LOGIC ("recycle size="<<data->m_size<<", list="<<m_freeList.size ());
   NS_ASSERT (data->m_count == 0);
   if (m_freeList.size () > 1000 ||

@@ -1,7 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005,2006 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -67,9 +66,10 @@ public:
   EventId ScheduleDestroy (const Ptr<EventImpl> &event);
   void Remove (const EventId &ev);
   void Cancel (const EventId &ev);
-  bool IsExpired (const EventId &ev);
+  bool IsExpired (const EventId &ev) const;
   void Run (void);
   Time Now (void) const;
+  Time GetDelayLeft (const EventId &id) const;
 
 private:
   void ProcessOneEvent (void);
@@ -251,6 +251,18 @@ SimulatorPrivate::Now (void) const
 {
   return TimeStep (m_currentTs);
 }
+Time 
+SimulatorPrivate::GetDelayLeft (const EventId &id) const
+{
+  if (IsExpired (id))
+    {
+      return TimeStep (0);
+    }
+  else
+    {
+      return TimeStep (id.GetTs () - m_currentTs);
+    }
+}
 
 void
 SimulatorPrivate::Remove (const EventId &ev)
@@ -293,12 +305,12 @@ SimulatorPrivate::Cancel (const EventId &id)
 }
 
 bool
-SimulatorPrivate::IsExpired (const EventId &ev)
+SimulatorPrivate::IsExpired (const EventId &ev) const
 {
   if (ev.GetUid () == 2)
     {
       // destroy events.
-      for (DestroyEvents::iterator i = m_destroyEvents.begin (); i != m_destroyEvents.end (); i++)
+      for (DestroyEvents::const_iterator i = m_destroyEvents.begin (); i != m_destroyEvents.end (); i++)
         {
           if (*i == ev)
             {
@@ -410,6 +422,11 @@ Time
 Simulator::Now (void)
 {
   return GetPriv ()->Now ();
+}
+Time
+Simulator::GetDelayLeft (const EventId &id)
+{
+  return GetPriv ()->GetDelayLeft (id);
 }
 
 Ptr<EventImpl>

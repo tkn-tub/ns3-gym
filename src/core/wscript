@@ -51,6 +51,7 @@ def build(bld):
         'composite-trace-resolver.cc',
         'trace-doc.cc',
         'trace-source.cc',
+        'type-traits-test.cc',
         ]
 
     if sys.platform == 'win32':
@@ -94,5 +95,6 @@ def build(bld):
         'composite-trace-resolver.h',
         'array-trace-resolver.h',
         'trace-doc.h',
+        'int-to-type.h',
         ]
 
