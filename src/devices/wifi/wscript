@@ -16,6 +16,7 @@ def build(bld):
         'wifi-mac-header.cc',
         'wifi-mac-trailer.cc',
         'mac-parameters.cc',
+        'mac-low.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
@@ -24,4 +25,5 @@ def build(bld):
         'wifi-channel.h',
         'wifi-mode.h',
         'ssid.h',
+        'wifi-preamble.h',
         ]

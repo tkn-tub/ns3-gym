@@ -54,6 +54,7 @@ public:
 
   void ConnectTo (Ptr<WifiChannel> channel);
 
+  Mac48Address GetSelfAddress (void) const;
   virtual Mac48Address GetBssid (void) const = 0;
   virtual Ssid GetSsid (void) const = 0;
 
