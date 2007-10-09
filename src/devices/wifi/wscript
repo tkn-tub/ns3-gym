@@ -25,6 +25,8 @@ def build(bld):
         'ideal-mac-stations.cc',
         'mac-high-adhoc.cc',
         'supported-rates.cc',
+        'capability-information.cc',
+        'status-code.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [

@@ -25,6 +25,7 @@ namespace ns3 {
 
 Ssid::Ssid ()
 {
+  m_length = 0;
   for (uint8_t i = 0; i < 33; i++) 
     {
       m_ssid[i] = 0;
@@ -97,28 +98,4 @@ Ssid::GetLength (void) const
   return size;
 }
 
-void
-Ssid::Peek (uint8_t ssid[32]) const
-{
-  for (uint8_t i = 0; i < 32; i++) 
-    {
-      ssid[i] = m_ssid[i];
-    }
-}
-void 
-Ssid::Set (uint8_t ssid[32], uint32_t len)
-{
-  assert (len < 32);
-  for (uint8_t i = 0; i < len; i++) 
-    {
-      m_ssid[i] = ssid[i];
-    }
-}
-
-Ssid 
-Ssid::GetBroadcast (void)
-{
-  return Ssid ("");
-}
-
-}; // namespace ns3
+} // namespace ns3

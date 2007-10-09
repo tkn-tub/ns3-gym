@@ -1,7 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2006 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as 
@@ -18,31 +17,44 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef SSID_H
-#define SSID_H
 
-#include <stdint.h>
+#include "status-code.h"
 
 namespace ns3 {
 
-class Ssid {
-public:
-  // broadcast ssid
-  Ssid ();
-  /* 0-terminated string */
-  Ssid (char const *ssid);
-  Ssid (char const ssid[32], uint8_t length);
+StatusCode::StatusCode ()
+{}
+void 
+StatusCode::SetSuccess (void)
+{
+  m_code = 0;
+}
+void 
+StatusCode::SetFailure (void)
+{
+  m_code = 1;
+}
 
-  bool IsEqual (Ssid const &o) const;
-  bool IsBroadcast (void) const;
+bool 
+StatusCode::IsSuccess (void) const
+{
+  return (m_code == 0)?true:false;
+}
+uint16_t 
+StatusCode::PeekCode (void) const
+{
+  return m_code;
+}
+void 
+StatusCode::SetCode (uint16_t code)
+{
+  m_code = code;
+}
 
-  uint32_t GetLength (void) const;
- 
-private:
-  char m_ssid[33];
-  uint8_t m_length;
-};
+uint32_t 
+StatusCode::GetSize (void) const
+{
+  return 2;
+}
 
 } // namespace ns3
-
-#endif /* SSID_H */
