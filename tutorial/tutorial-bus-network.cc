@@ -35,7 +35,7 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Bus Network Simulation");
 
-  Ipv4BusNetwork bus ("10.1.0.0", "255.255.0.0", "0.0.0.0",
+  Ipv4BusNetwork bus ("10.1.0.0", "255.255.0.0", "0.0.0.3",
     DataRate(10000000), MilliSeconds(20), 10);
 
   uint32_t port = 7;
