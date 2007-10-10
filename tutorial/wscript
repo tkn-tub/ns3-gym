@@ -36,3 +36,9 @@ def build(bld):
     obj = bld.create_ns3_program('testipv4',
         ['core'])
     obj.source = ['testipv4.cc', 'ipv4-address-generator.cc']
+
+    obj = bld.create_ns3_program('tutorial-bus-network',
+        ['core'])
+    obj.source = ['tutorial-bus-network.cc',
+                  'bus-network.cc',
+                  'ipv4-address-generator.cc']
