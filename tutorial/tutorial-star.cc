@@ -29,7 +29,7 @@
 #include "ns3/pcap-trace.h"
 #include "ns3/global-route-manager.h"
 
-NS_LOG_COMPONENT_DEFINE ("PointToPointSimulation");
+NS_LOG_COMPONENT_DEFINE ("StarSimulation");
 
 using namespace ns3;
 
@@ -46,9 +46,9 @@ using namespace ns3;
 int 
 main (int argc, char *argv[])
 {
-  LogComponentEnable ("PointToPointSimulation", LOG_LEVEL_INFO);
+  LogComponentEnable ("StarSimulation", LOG_LEVEL_INFO);
 
-  NS_LOG_INFO ("Point to Point Topology Simulation");
+  NS_LOG_INFO ("Star Topology Simulation");
 
   Ptr<Node> n0 = Create<InternetNode> ();
   Ptr<Node> n1 = Create<InternetNode> ();

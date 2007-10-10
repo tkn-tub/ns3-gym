@@ -51,10 +51,11 @@ int
 main (int argc, char *argv[])
 {
   LogComponentEnable ("DumbbellSimulation", LOG_LEVEL_INFO);
-//  LogComponentEnableAll (LOG_LEVEL_ALL, LOG_DECORATE_ALL);
 
   NS_LOG_INFO ("Dumbbell Topology Simulation");
-
+//
+// Create the lan on the left side of the dumbbell.
+//
   Ptr<Node> n0 = Create<InternetNode> ();
   Ptr<Node> n1 = Create<InternetNode> ();
   Ptr<Node> n2 = Create<InternetNode> ();
@@ -79,7 +80,9 @@ main (int argc, char *argv[])
   CsmaIpv4Topology::AddIpv4Address (n1, nd1, "10.1.1.2", "255.255.255.0");
   CsmaIpv4Topology::AddIpv4Address (n2, nd2, "10.1.1.3", "255.255.255.0");
   CsmaIpv4Topology::AddIpv4Address (n3, nd3, "10.1.1.4", "255.255.255.0");
-
+//
+// Create the lan on the right side of the dumbbell.
+//
   Ptr<Node> n4 = Create<InternetNode> ();
   Ptr<Node> n5 = Create<InternetNode> ();
   Ptr<Node> n6 = Create<InternetNode> ();
@@ -104,31 +107,62 @@ main (int argc, char *argv[])
   CsmaIpv4Topology::AddIpv4Address (n5, nd5, "10.1.2.2", "255.255.255.0");
   CsmaIpv4Topology::AddIpv4Address (n6, nd6, "10.1.2.3", "255.255.255.0");
   CsmaIpv4Topology::AddIpv4Address (n7, nd7, "10.1.2.4", "255.255.255.0");
-
+//
+// Create the point-to-point link to connect the two lans.
+//
   Ptr<PointToPointChannel> link = PointToPointTopology::AddPointToPointLink (
     n3, n4, DataRate (38400), MilliSeconds (20));
 
   PointToPointTopology::AddIpv4Addresses (link, n3, "10.1.3.1", 
     n4, "10.1.3.2");
-
+//
+// Create data flows across the link:
+//   n0 ==> n4 ==> n0
+//   n1 ==> n5 ==> n1
+//   n2 ==> n6 ==> n2
+//   n3 ==> n7 ==> n3
+//
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.2.4", port, 
-    1, Seconds(1.), 1024);
+  Ptr<UdpEchoClient> client0 = Create<UdpEchoClient> (n0, "10.1.2.1", port, 
+    100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client1 = Create<UdpEchoClient> (n1, "10.1.2.2", port, 
+    100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client2 = Create<UdpEchoClient> (n2, "10.1.2.3", port, 
+    100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client3 = Create<UdpEchoClient> (n3, "10.1.2.4", port, 
+    100, Seconds(.01), 1024);
 
-  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n7, port);
+  Ptr<UdpEchoServer> server4 = Create<UdpEchoServer> (n4, port);
+  Ptr<UdpEchoServer> server5 = Create<UdpEchoServer> (n5, port);
+  Ptr<UdpEchoServer> server6 = Create<UdpEchoServer> (n6, port);
+  Ptr<UdpEchoServer> server7 = Create<UdpEchoServer> (n7, port);
 
-  server->Start(Seconds(1.));
-  client->Start(Seconds(2.));
+  server4->Start(Seconds(1.));
+  server5->Start(Seconds(1.));
+  server6->Start(Seconds(1.));
+  server7->Start(Seconds(1.));
 
-  server->Stop (Seconds(10.));
-  client->Stop (Seconds(10.));
+  client0->Start(Seconds(2.));
+  client1->Start(Seconds(2.1));
+  client2->Start(Seconds(2.2));
+  client3->Start(Seconds(2.3));
 
-  AsciiTrace asciitrace ("tutorial-4.tr");
+  server4->Stop (Seconds(10.));
+  server5->Stop (Seconds(10.));
+  server6->Stop (Seconds(10.));
+  server7->Stop (Seconds(10.));
+
+  client0->Stop (Seconds(10.));
+  client1->Stop (Seconds(10.));
+  client2->Stop (Seconds(10.));
+  client3->Stop (Seconds(10.));
+
+  AsciiTrace asciitrace ("tutorial.tr");
   asciitrace.TraceAllQueues ();
   asciitrace.TraceAllNetDeviceRx ();
 
-  PcapTrace pcaptrace ("tutorial-4.pcap");
+  PcapTrace pcaptrace ("tutorial.pcap");
   pcaptrace.TraceAllIp ();
 
   GlobalRouteManager::PopulateRoutingTables ();
