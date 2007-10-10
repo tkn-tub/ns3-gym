@@ -21,6 +21,7 @@
 #define STATUS_CODE_H
 
 #include <stdint.h>
+#include "ns3/buffer.h"
 
 namespace ns3 {
 
@@ -31,9 +32,10 @@ public:
   void SetFailure (void);
 
   bool IsSuccess (void) const;
-  uint16_t PeekCode (void) const;
-  void SetCode (uint16_t code);
-  uint32_t GetSize (void) const;
+
+  uint32_t GetSerializedSize (void) const;
+  Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  Buffer::Iterator Deserialize (Buffer::Iterator start);
 private:
   uint16_t m_code;
 };

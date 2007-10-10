@@ -40,21 +40,22 @@ StatusCode::IsSuccess (void) const
 {
   return (m_code == 0)?true:false;
 }
-uint16_t 
-StatusCode::PeekCode (void) const
-{
-  return m_code;
-}
-void 
-StatusCode::SetCode (uint16_t code)
-{
-  m_code = code;
-}
-
 uint32_t 
-StatusCode::GetSize (void) const
+StatusCode::GetSerializedSize (void) const
 {
   return 2;
+}
+Buffer::Iterator 
+StatusCode::Serialize (Buffer::Iterator start) const
+{
+  start.WriteHtonU16 (m_code);
+  return start;
+}
+Buffer::Iterator 
+StatusCode::Deserialize (Buffer::Iterator start)
+{
+  m_code = start.ReadNtohU16 ();
+  return start;
 }
 
 } // namespace ns3

@@ -21,13 +21,29 @@
 #define CAPABILITY_INFORMATION_H
 
 #include <stdint.h>
+#include "ns3/buffer.h"
 
 namespace ns3 {
 
-class CapabilityInformation {
+class CapabilityInformation 
+{
 public:
   CapabilityInformation ();
 
+  void SetEss (void);
+  void SetIbss (void);
+
+  bool IsEss (void) const;
+  bool IsIbss (void) const;
+
+  uint32_t GetSerializedSize (void) const;
+  Buffer::Iterator Serialize (Buffer::Iterator start) const;
+  Buffer::Iterator Deserialize (Buffer::Iterator start);
+private:
+  bool Is (uint8_t n) const;
+  void Set (uint8_t n);
+  void Clear (uint8_t n);
+  uint16_t m_capability;
 };
 
 } // namespace ns3
