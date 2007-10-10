@@ -75,7 +75,8 @@ def build(bld):
         'scheduler-factory.h',
         'simulation-singleton.h',
         'time-default-value.h',
-        'timer.h'
+        'timer.h',
+        'timer-impl.h',
         ]
 
     env = bld.env_of_name('default')
