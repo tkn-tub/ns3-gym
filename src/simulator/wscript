@@ -78,6 +78,7 @@ def build(bld):
         'time-default-value.h',
         'timer.h',
         'timer-impl.h',
+        'watchdog.h',
         ]
 
     env = bld.env_of_name('default')
