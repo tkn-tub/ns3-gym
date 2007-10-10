@@ -25,13 +25,6 @@
 
 namespace ns3 {
 
-template <typename T>
-struct TimerTraits
-{
-  typedef typename TypeTraits<typename TypeTraits<T>::ReferencedType>::NonConstType StoredType;
-  typedef const StoredType &ParameterType;
-};
-
 class TimerImpl
 {
 public:  
@@ -86,6 +79,15 @@ template <typename T1, typename T2, typename  T3, typename T4, typename T5, type
 struct TimerImplSix : public TimerImpl
 {
   virtual void SetArguments (T1 a1,T2 a2,T3 a3, T4 a4, T5 a5, T6 a6) = 0;
+};
+
+
+
+template <typename T>
+struct TimerTraits
+{
+  typedef typename TypeTraits<typename TypeTraits<T>::ReferencedType>::NonConstType StoredType;
+  typedef const StoredType &ParameterType;
 };
 
 
