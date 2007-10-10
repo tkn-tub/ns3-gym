@@ -310,14 +310,14 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
           // we do not have any special ssid so this
           // beacon is as good as another.
           Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
-          m_beaconWatchdog.Ping (delay);
+          m_beaconWatchdog->Ping (delay);
           goodBeacon = true;
         } 
       else if (beacon.GetSsid ().IsEqual (m_interface->GetSsid ())) 
         {
           //beacon for our ssid.
           Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
-          m_beaconWatchdog.Ping (delay);
+          m_beaconWatchdog->Ping (delay);
           goodBeacon = true;
         }
       if (goodBeacon) 
@@ -343,7 +343,7 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
             }
           SetBssid (hdr->GetAddr3 ());
           Time delay = MicroSeconds (probeResp.GetBeaconIntervalUs () * m_maxMissedBeacons);
-          m_watchdog->Ping (delay);
+          m_beaconWatchdog->Ping (delay);
           if (m_probeRequestEvent.IsRunning ()) 
             {
               m_probeRequestEvent.Cancel ();
