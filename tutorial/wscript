@@ -5,18 +5,18 @@ def build(bld):
         ['core'])
     obj.source = 'hello-simulator.cc'
 
-    obj = bld.create_ns3_program('tutorial-1',
+    obj = bld.create_ns3_program('tutorial-csma-echo',
         ['core'])
-    obj.source = 'tutorial-1.cc'
+    obj.source = 'tutorial-csma-echo.cc'
 
-    obj = bld.create_ns3_program('tutorial-2',
+    obj = bld.create_ns3_program('tutorial-csma-echo-ascii-trace',
         ['core'])
-    obj.source = 'tutorial-2.cc'
+    obj.source = 'tutorial-csma-echo-ascii-trace.cc'
 
-    obj = bld.create_ns3_program('tutorial-3',
+    obj = bld.create_ns3_program('tutorial-csma-echo-pcap-trace',
         ['core'])
-    obj.source = 'tutorial-3.cc'
+    obj.source = 'tutorial-csma-echo-pcap-trace.cc'
 
-    obj = bld.create_ns3_program('tutorial-4',
+    obj = bld.create_ns3_program('tutorial-naive-dumbbell',
         ['core'])
-    obj.source = 'tutorial-4.cc'
+    obj.source = 'tutorial-naive-dumbbell.cc'

@@ -8,3 +8,4 @@
 ^doc/latex
 ^\.lock-wscript
 ^\.waf
+^doc/trace-source-list\.h$

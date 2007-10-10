@@ -1,7 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2005 INRIA
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -552,6 +551,13 @@ public:
    * Return the "current simulation time".
    */
   static Time Now (void);
+  /**
+   * \param id the event id to analyse
+   * \returns the delay left until the input event id expires.
+   *          if the event is not running, this method returns
+   *          zero.
+   */
+  static Time GetDelayLeft (const EventId &id);
 private:
   Simulator ();
   ~Simulator ();

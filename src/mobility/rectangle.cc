@@ -45,17 +45,17 @@ bool
 Rectangle::IsInside (const Position &position) const
 {
   return 
-    position.x <= xMax && position.x >= xMin &&
-    position.y <= yMax && position.y >= yMin;
+    position.x <= this->xMax && position.x >= this->xMin &&
+    position.y <= this->yMax && position.y >= this->yMin;
 }
 
 Rectangle::Side 
 Rectangle::GetClosestSide (const Position &position) const
 {
-  double xMinDist = std::abs (position.x - xMin);
-  double xMaxDist = std::abs (xMax - position.x);
-  double yMinDist = std::abs (position.y - yMin);
-  double yMaxDist = std::abs (yMax - position.y);
+  double xMinDist = std::abs (position.x - this->xMin);
+  double xMaxDist = std::abs (this->xMax - position.x);
+  double yMinDist = std::abs (position.y - this->yMin);
+  double yMaxDist = std::abs (this->yMax - position.y);
   double minX = std::min (xMinDist, xMaxDist);
   double minY = std::min (yMinDist, yMaxDist);
   if (minX < minY)
@@ -85,29 +85,29 @@ Rectangle::GetClosestSide (const Position &position) const
 Position
 Rectangle::CalculateIntersection (const Position &current, const Speed &speed) const
 {
-  double xMaxY = current.y + (xMax - current.x) / speed.dx * speed.dy;
-  double xMinY = current.y + (xMin - current.x) / speed.dx * speed.dy;
-  double yMaxX = current.x + (yMax - current.y) / speed.dy * speed.dx;
-  double yMinX = current.x + (yMin - current.y) / speed.dy * speed.dx;
-  bool xMaxOk = xMaxY <= yMax && xMaxY >= yMin;
-  bool xMinOk = xMinY <= yMax && xMinY >= yMin;
-  bool yMaxOk = yMaxX <= xMax && yMaxX >= xMin;
-  bool yMinOk = yMinX <= xMax && yMinX >= xMin;
-  if (xMaxOk && speed.dx >= 0)
+  double xMaxY = current.y + (this->xMax - current.x) / speed.dx * speed.dy;
+  double xMinY = current.y + (this->xMin - current.x) / speed.dx * speed.dy;
+  double yMaxX = current.x + (this->yMax - current.y) / speed.dy * speed.dx;
+  double yMinX = current.x + (this->yMin - current.y) / speed.dy * speed.dx;
+  bool xMaxYOk = (xMaxY <= this->yMax && xMaxY >= this->yMin);
+  bool xMinYOk = (xMinY <= this->yMax && xMinY >= this->yMin);
+  bool yMaxXOk = (yMaxX <= this->xMax && yMaxX >= this->xMin);
+  bool yMinXOk = (yMinX <= this->xMax && yMinX >= this->xMin);
+  if (xMaxYOk && speed.dx >= 0)
     {
-      return Position (xMax, xMaxY, 0.0);
+      return Position (this->xMax, xMaxY, 0.0);
     }
-  else if (xMinOk && speed.dx <= 0)
+  else if (xMinYOk && speed.dx <= 0)
     {
-      return Position (xMin, xMinY, 0.0);
+      return Position (this->xMin, xMinY, 0.0);
     }
-  else if (yMaxOk && speed.dy >= 0)
+  else if (yMaxXOk && speed.dy >= 0)
     {
-      return Position (yMaxX, yMax, 0.0);
+      return Position (yMaxX, this->yMax, 0.0);
     }
-  else if (yMinOk && speed.dy <= 0)
+  else if (yMinXOk && speed.dy <= 0)
     {
-      return Position (yMinX, yMin, 0.0);
+      return Position (yMinX, this->yMin, 0.0);
     }
   else
     {

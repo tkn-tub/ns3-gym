@@ -97,6 +97,21 @@ class DefaultValueList
   static Iterator End (void);
   static void Remove (const std::string &name);
   static void Add (DefaultValueBase *defaultValue);
+
+  template <typename T>
+  static const T* Get (const std::string &name)
+  {
+    for (Iterator iter = Begin (); iter != End (); iter++)
+      {
+        const DefaultValueBase *value = *iter;
+        if (value->GetName () == name)
+          {
+            return dynamic_cast<const T*> (value);
+          }
+      }
+    return NULL;
+  }
+
  private:
   typedef std::list<DefaultValueBase *> List;
   static List *GetList (void);

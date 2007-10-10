@@ -1,5 +1,13 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+import os.path
 
+def configure(conf):
+    check = conf.create_pkgconfig_configurator()
+    check.name = 'goocanvas gthread-2.0'
+    check.uselib = 'MOBILITY_VISUALIZER'
+    check.mandatory = False
+    conf.env['ENABLE_MOBILITY_VISUALIZER'] = check.run()
+    
 
 def build(bld):
     env = bld.env_of_name('default')
@@ -23,3 +31,12 @@ def build(bld):
     obj = bld.create_ns3_program('print-trace-sources',
                                  ['internet-node', 'csma-cd', 'point-to-point'])
     obj.source = 'print-trace-sources.cc'
+
+    if env['ENABLE_MOBILITY_VISUALIZER']:
+        obj = bld.create_ns3_program('mobility-visualizer',
+                                     ['internet-node', 'mobility'])
+        obj.source = ['mobility-visualizer-model.cc', 'mobility-visualizer-view.cc']
+        obj.uselib = 'MOBILITY_VISUALIZER'
+        if os.path.basename(obj.env['CXX']).startswith("g++"):
+            obj.env.append_value('CXXFLAGS', '-fno-strict-aliasing')
+

@@ -31,7 +31,8 @@ StaticSpeedHelper::StaticSpeedHelper (const Position &position)
 StaticSpeedHelper::StaticSpeedHelper (const Position &position,
 				      const Speed &speed)
   : m_position (position),
-    m_speed (speed)
+    m_speed (speed),
+    m_paused (true)
 {}
 void 
 StaticSpeedHelper::InitializePosition (const Position &position)
@@ -41,14 +42,7 @@ StaticSpeedHelper::InitializePosition (const Position &position)
   m_speed.dy = 0.0;
   m_speed.dz = 0.0;
   m_lastUpdate = Simulator::Now ();
-  m_pauseEnd = Simulator::Now ();
-}
-
-void
-StaticSpeedHelper::Reset (const Speed &speed, const Time &pauseDelay)
-{
-  Reset (speed);
-  m_pauseEnd = Simulator::Now () + pauseDelay;
+  m_paused = true;
 }
 
 Position 
@@ -61,7 +55,7 @@ StaticSpeedHelper::GetCurrentPosition (void) const
 Speed 
 StaticSpeedHelper::GetSpeed (void) const
 {
-  return m_speed;
+  return m_paused? Speed (0, 0, 0) : m_speed;
 }
 void 
 StaticSpeedHelper::SetSpeed (const Speed &speed)
@@ -73,17 +67,13 @@ StaticSpeedHelper::SetSpeed (const Speed &speed)
 void
 StaticSpeedHelper::Update (void) const
 {
+  if (m_paused)
+    {
+      return;
+    }
   Time now = Simulator::Now ();
-  if (m_pauseEnd > now)
-    {
-      return;
-    }
-  Time last = std::max (now, m_pauseEnd);
-  if (m_lastUpdate >= last)
-    {
-      return;
-    }
-  Time deltaTime = now - last;
+  NS_ASSERT (m_lastUpdate <= now);
+  Time deltaTime = now - m_lastUpdate;
   m_lastUpdate = now;
   double deltaS = deltaTime.GetSeconds ();
   m_position.x += m_speed.dx * deltaS;
@@ -96,7 +86,7 @@ StaticSpeedHelper::Reset (const Speed &speed)
 {
   Update ();
   m_speed = speed;
-  m_pauseEnd = Simulator::Now ();
+  Unpause ();
 }
 void
 StaticSpeedHelper::UpdateFull (const Rectangle &bounds) const
@@ -115,5 +105,21 @@ StaticSpeedHelper::GetCurrentPosition (const Rectangle &bounds) const
   return m_position;
 }
 
+void 
+StaticSpeedHelper::Pause (void)
+{
+  Update ();
+  m_paused = true;
+}
+
+void 
+StaticSpeedHelper::Unpause (void)
+{
+  if (m_paused)
+    {
+      m_lastUpdate = Simulator::Now ();
+      m_paused = false;
+    }
+}
 
 } // namespace ns3
