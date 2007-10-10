@@ -21,21 +21,36 @@
 #include "ns3/csma-topology.h"
 #include "ns3/csma-ipv4-topology.h"
 
-#include "bus-network.h"
+#include "ipv4-bus-network.h"
 #include "ipv4-address-generator.h"
 
 namespace ns3 {
 
-BusNetwork::BusNetwork (
-  Ipv4Mask      mask, 
+Ipv4Network::Ipv4Network (
   Ipv4Address   network, 
-  Ipv4Address   startAddress, 
+  Ipv4Mask      mask, 
+  Ipv4Address   address)
+: 
+  m_network (network), m_mask (mask), m_baseAddress (address)
+{
+}
+
+Ipv4Network::~Ipv4Network ()
+{
+}
+
+Ipv4BusNetwork::Ipv4BusNetwork (
+  Ipv4Address   network, 
+  Ipv4Mask      mask, 
+  Ipv4Address   baseAddress, 
   DataRate      bps, 
   Time          delay, 
-  uint32_t      n) 
+  uint32_t      n)
+: 
+  Ipv4Network (network, mask, baseAddress)
 {
   Ipv4AddressGenerator::SeedNetwork (mask, network);
-  Ipv4AddressGenerator::SeedAddress (mask, startAddress);
+  Ipv4AddressGenerator::SeedAddress (mask, baseAddress);
 
   m_channel = CsmaTopology::CreateCsmaChannel (bps, delay);
 
@@ -51,13 +66,12 @@ BusNetwork::BusNetwork (
     }
 }
 
-BusNetwork::~BusNetwork ()
+Ipv4BusNetwork::~Ipv4BusNetwork ()
 {
-  m_nodes.erase (m_nodes.begin (), m_nodes.end ());
 }
 
   Ptr<Node>
-BusNetwork::GetNode (uint32_t n)
+Ipv4BusNetwork::GetNode (uint32_t n)
 {
   return m_nodes[n];
 }

@@ -16,8 +16,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef BUS_NETWORK_H
-#define BUS_NETWORK_H
+#ifndef IPV4_BUS_NETWORK_H
+#define IPV4_BUS_NETWORK_H
 
 #include <list>
 #include "ns3/ptr.h"
@@ -28,18 +28,29 @@
 
 namespace ns3 {
 
-class BusNetwork
+class Ipv4Network
 {
 public:
-  BusNetwork (
-    Ipv4Mask      mask, 
+  Ipv4Network (Ipv4Address network, Ipv4Mask mask, Ipv4Address address);
+  virtual ~Ipv4Network ();
+
+  Ipv4Address m_network;
+  Ipv4Mask m_mask;
+  Ipv4Address m_baseAddress;
+};
+
+class Ipv4BusNetwork : public Ipv4Network
+{
+public:
+  Ipv4BusNetwork (
     Ipv4Address   network, 
-    Ipv4Address   startAddress, 
+    Ipv4Mask      mask, 
+    Ipv4Address   baseAddress, 
     DataRate      bps, 
     Time          delay, 
     uint32_t      n);
 
-  virtual ~BusNetwork ();
+  virtual ~Ipv4BusNetwork ();
 
   Ptr<Node> GetNode (uint32_t n);
 
@@ -50,4 +61,4 @@ private:
 
 }; // namespace ns3
 
-#endif /* BUS_NETWORK_H */
+#endif /* IPV4_BUS_NETWORK_H */

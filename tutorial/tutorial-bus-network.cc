@@ -22,7 +22,7 @@
 #include "ns3/nstime.h"
 #include "ns3/ascii-trace.h"
 
-#include "bus-network.h"
+#include "ipv4-bus-network.h"
 
 NS_LOG_COMPONENT_DEFINE ("BusNetworkSimulation");
 
@@ -32,20 +32,19 @@ int
 main (int argc, char *argv[])
 {
   LogComponentEnable ("BusNetworkSimulation", LOG_LEVEL_ALL);
-  LogComponentEnable ("BusNetwork", LOG_LEVEL_ALL);
 
   NS_LOG_INFO ("Bus Network Simulation");
 
-  BusNetwork busNetwork (Ipv4Mask ("255.255.0.0"), Ipv4Address ("10.1.0.0"),
-    Ipv4Address ("0.0.0.0"), DataRate(10000000), MilliSeconds(20), 10);
+  Ipv4BusNetwork bus ("10.1.0.0", "255.255.0.0", "0.0.0.0",
+    DataRate(10000000), MilliSeconds(20), 10);
 
   uint32_t port = 7;
 
-  Ptr<Node> n0 = busNetwork.GetNode (0);
+  Ptr<Node> n0 = bus.GetNode (0);
   Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.0.1", port, 
     1, Seconds(1.), 1024);
 
-  Ptr<Node> n1 = busNetwork.GetNode (1);
+  Ptr<Node> n1 = bus.GetNode (1);
   Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
 
   server->Start(Seconds(1.));
