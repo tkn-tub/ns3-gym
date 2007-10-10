@@ -62,6 +62,7 @@ def build(bld):
         'time-default-value.cc',
         'timer.cc',
         'event-garbage-collector.cc',
+        'watchdog.cc',
         ]
 
     headers = bld.create_obj('ns3header')
