@@ -15,7 +15,8 @@ static EnumDefaultValue<enum ModelType> g_modelType
 ("PropagationDelayModelType",
  "The type of propagation delay model to use.",
  CONSTANT_SPEED, "ConstantSpeed",
- RANDOM, "Random");
+ RANDOM, "Random",
+ 0, (void*)0);
 
 static NumericDefaultValue<double> g_speed
 ("PropagationDelayConstantSpeed",
