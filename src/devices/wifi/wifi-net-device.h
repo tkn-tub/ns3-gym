@@ -32,18 +32,13 @@
 namespace ns3 {
 
 class WifiChannel;
-class PhyWifi;
-class PropagationModel;
+class WifiPhy;
 class MacStations;
-class TraceContainer;
 class MacLow;
 class MacRxMiddle;
 class MacTxMiddle;
-class MacHighAdhoc;
 class MacParameters;
-class Dcf;
 class DcaTxop;
-class MacQueueWifie;
 class MacHighAdhoc;
 class MacHighNqsta;
 class MacHighNqap;
@@ -60,8 +55,8 @@ public:
 
 
 protected:
-  WifiNetDevice (Mac48Address address);
-  void DoForwardUp (const Packet &packet, const Mac48Address &from);
+  WifiNetDevice (Ptr<Node> node);
+  void DoForwardUp (Packet packet, const Mac48Address &from);
 private:
   virtual bool SendTo (const Packet &packet, const Address &to, uint16_t protocolNumber);
   virtual void NotifyConnected (void) = 0;
@@ -70,20 +65,20 @@ private:
 
   friend class WifiNetDeviceFactory;
 
-  PropagationModel *m_propagation;
-  PhyWifi *m_phy;
+  WifiPhy *m_phy;
   MacStations *m_stations;
   MacLow *m_low;
   MacRxMiddle *m_rxMiddle;
   MacTxMiddle *m_txMiddle;
   MacParameters *m_parameters;
-  CallbackTraceSource<Packet> m_rxTraceSource;
+  CallbackTraceSource<Packet, Mac48Address> m_rxLogger;
+  CallbackTraceSource<Packet, Mac48Address> m_txLogger;
 };
 
-class WifiAdhocNetDevice : public WifiNetDevice {
+class AdhocWifiNetDevice : public WifiNetDevice {
 public:
-  WifiAdhocNetDevice (Ptr<Node> node, Mac48Address address);
-  virtual ~WifiAdhocNetDevice ();
+  AdhocWifiNetDevice (Ptr<Node> node);
+  virtual ~AdhocWifiNetDevice ();
 
   virtual Mac48Address GetBssid (void) const;
   virtual Ssid GetSsid (void) const;
@@ -98,10 +93,11 @@ private:
   MacHighAdhoc *m_high;
 };
 
-class WifiNqstaNetDevice : public WifiNetDevice {
+class NqstaWifiNetDevice : public WifiNetDevice 
+{
 public:
-  WifiNqstaNetDevice (Ptr<Node> node, Mac48Address address);
-  virtual ~WifiNqstaNetDevice ();
+  NqstaWifiNetDevice (Ptr<Node> node);
+  virtual ~NqstaWifiNetDevice ();
 
   virtual Mac48Address GetBssid (void) const;
   virtual Ssid GetSsid (void) const;
@@ -117,10 +113,11 @@ private:
   MacHighNqsta *m_high;
 };
 
-class WifiNqapWifiNetDevice : public WifiNetDevice {
+class NqapWifiNetDevice : public WifiNetDevice 
+{
 public:
-  WifiNqapWifiNetDevice (Mac48Address address);
-  virtual ~WifiNqapWifiNetDevice ();
+  NqapWifiNetDevice (Ptr<Node> node);
+  virtual ~NqapWifiNetDevice ();
 
   virtual Mac48Address GetBssid (void) const;
   virtual Ssid GetSsid (void) const;
