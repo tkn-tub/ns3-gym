@@ -20,7 +20,6 @@
 
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/watchdog.h"
 #include "ns3/assert.h"
 
 #include "mac-high-nqsta.h"
@@ -65,9 +64,8 @@ MacHighNqsta::MacHighNqsta ()
     m_assocRequestTimeout (Seconds (0.5)),
     m_probeRequestEvent (),
     m_assocRequestEvent (),
-    m_beaconWatchdog (new Watchdog ())
+    m_beaconWatchdogEnd (Seconds (0.0))
 {
-  m_beaconWatchdog->SetFunction (&MacHighNqsta::MissedBeacons, this);
   // this is the default value for the number of beacons missed 
   // before attempting to reassociate.
   m_maxMissedBeacons = 10;
@@ -253,7 +251,23 @@ MacHighNqsta::ProbeRequestTimeout (void)
 void 
 MacHighNqsta::MissedBeacons (void)
 {
+  if (m_beaconWatchdogEnd > Simulator::Now ())
+    {
+      m_beaconWatchdog = Simulator::Schedule (Simulator::Now () - m_beaconWatchdogEnd, 
+                                              &MacHighNqsta::MissedBeacons, this);
+      return;
+    }
   m_state = BEACON_MISSED;
+}
+void 
+MacHighNqsta::RestartBeaconWatchdog (Time delay)
+{
+  m_beaconWatchdogEnd = std::max (Simulator::Now () + delay, m_beaconWatchdogEnd);
+  if (Simulator::GetDelayLeft (m_beaconWatchdog) < delay &&
+      m_beaconWatchdog.IsExpired ())
+    {
+      m_beaconWatchdog = Simulator::Schedule (delay, &MacHighNqsta::MissedBeacons, this);
+    }
 }
 bool
 MacHighNqsta::IsAssociated (void)
@@ -310,14 +324,14 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
           // we do not have any special ssid so this
           // beacon is as good as another.
           Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
-          m_beaconWatchdog->Ping (delay);
+          RestartBeaconWatchdog (delay);
           goodBeacon = true;
         } 
       else if (beacon.GetSsid ().IsEqual (m_interface->GetSsid ())) 
         {
           //beacon for our ssid.
           Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
-          m_beaconWatchdog->Ping (delay);
+          RestartBeaconWatchdog (delay);
           goodBeacon = true;
         }
       if (goodBeacon) 
@@ -343,7 +357,7 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
             }
           SetBssid (hdr->GetAddr3 ());
           Time delay = MicroSeconds (probeResp.GetBeaconIntervalUs () * m_maxMissedBeacons);
-          m_beaconWatchdog->Ping (delay);
+          RestartBeaconWatchdog (delay);
           if (m_probeRequestEvent.IsRunning ()) 
             {
               m_probeRequestEvent.Cancel ();

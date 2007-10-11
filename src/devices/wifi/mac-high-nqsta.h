@@ -75,6 +75,7 @@ private:
   bool IsAssociated (void);
   SupportedRates GetSupportedRates (void);
   void MissedBeacons (void);
+  void RestartBeaconWatchdog (Time delay);
   enum {
     ASSOCIATED,
     WAIT_PROBE_RESP,
@@ -92,7 +93,8 @@ private:
   DisAssociatedCallback m_disAssociatedCallback;
   SupportedRates m_rates;
   DcaTxop *m_dca;
-  Watchdog *m_beaconWatchdog;
+  EventId m_beaconWatchdog;
+  Time m_beaconWatchdogEnd;
   Mac48Address m_bssid;
   uint32_t m_maxMissedBeacons;
 };
