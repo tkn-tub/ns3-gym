@@ -14,11 +14,13 @@ class PropagationDelayModel : public Object
 public:
   virtual ~PropagationDelayModel ();
   virtual Time GetDelay (double distance) const = 0;
+  static Ptr<PropagationDelayModel> CreateDefault (void);
 };
 
 class RandomPropagationDelayModel : public PropagationDelayModel
 {
 public:
+  RandomPropagationDelayModel ();
   RandomPropagationDelayModel (const RandomVariable &variable);
   virtual ~RandomPropagationDelayModel ();
   virtual Time GetDelay (double distance) const;
@@ -29,7 +31,6 @@ private:
 class ConstantSpeedPropagationDelayModel : public PropagationDelayModel
 {
 public:
-  ConstantSpeedPropagationDelayModel ();
   ConstantSpeedPropagationDelayModel (double speed);
   virtual Time GetDelay (double distance) const;
   void SetSpeed (double speed);
