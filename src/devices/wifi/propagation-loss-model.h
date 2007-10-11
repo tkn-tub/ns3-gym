@@ -5,12 +5,29 @@
 
 namespace ns3 {
 
+class RandomVariable;
+
 class PropagationLossModel : public Object
 {
 public:
   virtual ~PropagationLossModel ();
   virtual double GetRxPower (double txPowerDbm,
 			     double distance) const = 0;
+
+  static Ptr<PropagationLossModel> CreateDefault (void);
+};
+
+class RandomPropagationLossModel : public PropagationLossModel
+{
+public:
+  RandomPropagationLossModel ();
+  RandomPropagationLossModel (const RandomVariable &variable);
+  virtual ~RandomPropagationLossModel ();
+
+  virtual double GetRxPower (double txPowerDbm,
+			     double distance) const;
+private:
+  RandomVariable *m_variable;
 };
 
 class FriisPropagationLossModel : public PropagationLossModel
@@ -48,8 +65,8 @@ public:
 			     double distance) const;
 private:
   double DbToW (double db) const;
+  static Ptr<PropagationLossModel> CreateDefaultReference (void);
 
-  double m_lambda;
   double m_exponent;
   Ptr<PropagationLossModel> m_reference;
 };
