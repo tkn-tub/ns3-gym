@@ -151,16 +151,6 @@ Ipv4Address::Set (char const *address)
   m_address = AsciiToIpv4Host (address);
 }
 
-bool 
-Ipv4Address::IsEqual (Ipv4Address other) const
-{
-  if (other.m_address == m_address) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 Ipv4Address
 Ipv4Address::CombineMask (Ipv4Mask const &mask) const
 {
@@ -242,7 +232,7 @@ Ipv4Address::IsMatchingType (const Address &address)
 {
   return address.CheckCompatible (GetType (), 4);
 }
-Ipv4Address::operator Address ()
+Ipv4Address::operator Address () const
 {
   return ConvertTo ();
 }
@@ -294,19 +284,6 @@ Ipv4Address::GetLoopback (void)
 {
   Ipv4Address loopback ("127.0.0.1");
   return loopback;
-}
-
-bool operator == (Ipv4Address const &a, Ipv4Address const &b)
-{
-  return a.IsEqual (b);
-}
-bool operator != (Ipv4Address const &a, Ipv4Address const &b)
-{
-  return !a.IsEqual (b);
-}
-bool operator < (Ipv4Address const &addrA, Ipv4Address const &addrB)
-{
-  return (addrA.GetHostOrder () < addrB.GetHostOrder ());
 }
 
 size_t Ipv4AddressHash::operator()(Ipv4Address const &x) const 

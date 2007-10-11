@@ -60,7 +60,7 @@ public:
    *
    * Convert an instance of this class to a polymorphic Address instance.
    */
-  operator Address ();
+  operator Address () const;
   /**
    * \param address a polymorphic address
    * \returns a new Mac64Address from the polymorphic address
