@@ -38,8 +38,7 @@
 #include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/socket.h"
-//#include "single-event.h"
-//#include "event-collector.h"
+#include "event-garbage-collector.h"
 #include "ns3/timer.h"
 
 
@@ -59,7 +58,7 @@ public:
   virtual void SetMainInterface (uint32_t interface);
 
 private:
-  Timer m_events;
+  EventGarbageCollector m_events;
 
   /// Address of the routing agent.
   Ipv4Address m_routingAgentAddr;

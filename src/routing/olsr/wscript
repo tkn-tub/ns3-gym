@@ -10,6 +10,7 @@ def build(bld):
         'olsr-agent.cc',
         'olsr-agent-impl.cc',
         'olsr.cc',
+        'event-garbage-collector.cc',
         ]
 
     headers = bld.create_obj('ns3header')
