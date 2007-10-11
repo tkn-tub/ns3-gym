@@ -39,6 +39,8 @@ WifiChannel::ReceiveData::ReceiveData (const Packet &packet, double rxPowerDbm,
 
 
 WifiChannel::WifiChannel ()
+  : m_loss (PropagationLossModel::CreateDefault ()),
+    m_delay (PropagationDelayModel::CreateDefault ())
 {}
 WifiChannel::~WifiChannel ()
 {}
