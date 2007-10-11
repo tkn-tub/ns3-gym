@@ -29,15 +29,6 @@
 
 namespace ns3 {
 
-WifiChannel::ReceiveData::ReceiveData (const Packet &packet, double rxPowerDbm,
-                                       WifiMode txMode, WifiPreamble preamble)
-  : m_packet (packet),
-    m_rxPowerDbm (rxPowerDbm),
-    m_wifiMode (txMode),
-    m_preamble (preamble)
-{}
-
-
 WifiChannel::WifiChannel ()
   : m_loss (PropagationLossModel::CreateDefault ()),
     m_delay (PropagationDelayModel::CreateDefault ())
@@ -75,19 +66,18 @@ WifiChannel::Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDb
           double distance = senderMobility->GetDistanceFrom (receiverMobility);
           Time delay = m_delay->GetDelay (distance);
           double rxPowerDbm = m_loss->GetRxPower (txPowerDbm, distance);
-          struct ReceiveData data = ReceiveData (packet, rxPowerDbm, wifiMode, preamble);
           Simulator::Schedule (delay, &WifiChannel::Receive, this, 
-                               j, data);
+                               j, packet, rxPowerDbm, wifiMode, preamble);
         }
       j++;
     }
 }
 
 void
-WifiChannel::Receive (uint32_t i,
-                      const struct ReceiveData &data) const
+WifiChannel::Receive (uint32_t i, const Packet &packet, double rxPowerDbm,
+                      WifiMode txMode, WifiPreamble preamble) const
 {
-  m_deviceList[i].second (data.m_packet, data.m_rxPowerDbm, data.m_wifiMode, data.m_preamble);
+  m_deviceList[i].second (packet, rxPowerDbm, txMode, preamble);
 }
 
 uint32_t 

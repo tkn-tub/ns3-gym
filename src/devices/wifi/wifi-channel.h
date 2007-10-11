@@ -52,16 +52,8 @@ public:
 
 private:
   typedef std::vector<std::pair<Ptr<NetDevice>, ReceiveCallback> > DeviceList;
-  struct ReceiveData {
-    ReceiveData (const Packet &packet, double rxPowerDbm,
-                 WifiMode txMode, WifiPreamble preamble);
-    Packet m_packet;
-    double m_rxPowerDbm;
-    WifiMode m_wifiMode;
-    WifiPreamble m_preamble;
-  };
-  void Receive (uint32_t i, 
-                const struct ReceiveData &data) const;
+  void Receive (uint32_t i, const Packet &packet, double rxPowerDbm,
+                WifiMode txMode, WifiPreamble preamble) const;
 
   DeviceList m_deviceList;
   Ptr<PropagationLossModel> m_loss;
