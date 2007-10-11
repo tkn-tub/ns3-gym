@@ -51,7 +51,7 @@ private:
 
   struct EventIdLessThanTs
   {
-    bool operator () (const EventId &a, const EventId &b)
+    bool operator () (const EventId &a, const EventId &b) const
     {
       return (a.GetTs () < b.GetTs ());
     }
