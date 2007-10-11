@@ -95,7 +95,7 @@ Mac48Address::IsMatchingType (const Address &address)
 {
   return address.CheckCompatible (GetType (), 6);
 }
-Mac48Address::operator Address ()
+Mac48Address::operator Address () const
 {
   return ConvertTo ();
 }
@@ -151,11 +151,7 @@ Mac48Address::GetBroadcast (void)
 }
 bool operator == (const Mac48Address &a, const Mac48Address &b)
 {
-  uint8_t ada[6];
-  uint8_t adb[6];
-  a.CopyTo (ada);
-  b.CopyTo (adb);
-  return memcmp (ada, adb, 6) == 0;
+  return memcmp (a.m_address, b.m_address, 6) == 0;
 }
 bool operator != (const Mac48Address &a, const Mac48Address &b)
 {
@@ -170,11 +166,11 @@ bool operator < (const Mac48Address &a, const Mac48Address &b)
   b.CopyTo (bP);
   for (uint8_t i = 0; i < 6; i++) 
     {
-      if (aP[i] < bP[i]) 
+       if (a.m_address[i] < b.m_address[i]) 
         {
           return true;
         } 
-      else if (aP[i] > bP[i]) 
+       else if (a.m_address[i] > b.m_address[i]) 
         {
           return false;
         }

@@ -61,7 +61,7 @@ public:
    *
    * Convert an instance of this class to a polymorphic Address instance.
    */
-  operator Address ();
+  operator Address () const;
   /**
    * \param address a polymorphic address
    * \returns a new Mac48Address from the polymorphic address
@@ -101,6 +101,9 @@ private:
    */
   Address ConvertTo (void) const;
   static uint8_t GetType (void);
+  friend bool operator < (const Mac48Address &a, const Mac48Address &b);
+  friend bool operator == (const Mac48Address &a, const Mac48Address &b);
+
   uint8_t m_address[6];
 };
 

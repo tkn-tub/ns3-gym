@@ -25,6 +25,15 @@
 
 namespace ns3 {
 
+CommandLine::List::~List ()
+{
+  for (iterator iter = begin (); iter != end (); iter++)
+    {
+      delete *iter;
+    }
+}
+
+
 CommandDefaultValue CommandLine::g_help ("help",
                                          "Print Help text for all commands",
                                          MakeCallback (&CommandLine::PrintHelp));

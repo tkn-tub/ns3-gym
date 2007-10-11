@@ -85,7 +85,12 @@ public:
     T *m_valuePtr;
   };
   static void PrintHelp (void);
-  typedef std::list<DefaultValueBase *> List;
+
+  class List : public std::list<DefaultValueBase *>
+  {
+  public:
+    ~List ();
+  };
   static List *GetUserList (void);
   static CommandDefaultValue g_help;
 };

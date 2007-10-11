@@ -131,7 +131,7 @@ public:
   bool IsSubnetDirectedBroadcast (Ipv4Mask const &mask) const;
 
   static bool IsMatchingType (const Address &address);
-  operator Address ();
+  operator Address () const;
   static Ipv4Address ConvertFrom (const Address &address);
 
   static Ipv4Address GetZero (void);
