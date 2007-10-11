@@ -21,7 +21,7 @@
 #ifndef EVENT_GARBAGE_COLLECTOR_H
 #define EVENT_GARBAGE_COLLECTOR_H
 
-#include <list>
+#include <set>
 #include "ns3/event-id.h"
 #include "ns3/simulator.h"
 
@@ -49,8 +49,18 @@ public:
 
 private:
 
-  std::list<EventId>::size_type m_nextCleanupSize;
-  std::list<EventId> m_events;
+  struct EventIdLessThanTs
+  {
+    bool operator () (const EventId &a, const EventId &b)
+    {
+      return (a.GetTs () < b.GetTs ());
+    }
+  };
+
+  typedef std::multiset<EventId, EventIdLessThanTs> EventList;
+
+  EventList::size_type m_nextCleanupSize;
+  EventList m_events;
 
   void Cleanup ();
   void Grow ();

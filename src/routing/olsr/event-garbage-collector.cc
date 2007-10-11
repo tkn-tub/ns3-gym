@@ -34,15 +34,9 @@ EventGarbageCollector::EventGarbageCollector () :
 void
 EventGarbageCollector::Track (EventId event)
 {
-  m_events.push_back (event);
+  m_events.insert (event);
   if (m_events.size () >= m_nextCleanupSize)
     Cleanup ();
-}
-
-inline bool
-EventExpiredPredicate (const EventId &event)
-{
-  return event.IsExpired ();
 }
 
 void
@@ -64,7 +58,15 @@ EventGarbageCollector::Shrink ()
 void
 EventGarbageCollector::Cleanup ()
 {
-  m_events.remove_if (EventExpiredPredicate);
+  for (EventList::iterator iter = m_events.begin (); iter != m_events.end ();)
+    {
+      if ((*iter).IsExpired ())
+        {
+          m_events.erase (iter++);
+        }
+      else
+        break; // EventIds are sorted by timestamp => further events are not expired for sure
+    }
 
   // If after cleanup we are still over the limit, increase the limit.
   if (m_events.size () >= m_nextCleanupSize)
@@ -76,7 +78,7 @@ EventGarbageCollector::Cleanup ()
 
 EventGarbageCollector::~EventGarbageCollector ()
 {
-  for (std::list<EventId>::iterator event = m_events.begin ();
+  for (EventList::iterator event = m_events.begin ();
        event != m_events.end (); event++)
     {
       Simulator::Cancel (*event);
