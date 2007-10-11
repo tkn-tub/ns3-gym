@@ -29,9 +29,9 @@
 namespace ns3 {
 
 class WifiNetDevice;
-class WifiAdhocNetDevice;
-class WifiNqstaNetDevice;
-class WifiNqapNetDevice;
+class AdhocWifiNetDevice;
+class NqstaWifiNetDevice;
+class NqapWifiNetDevice;
 class DcaTxop;
 class Position;
 
@@ -68,9 +68,9 @@ public:
 
   void SetSsid (Ssid ssid);
 
-  Ptr<WifiAdhocNetDevice> CreateAdhoc (Ptr<Node> node);
-  Ptr<WifiNqstaNetDevice> CreateNqsta (Ptr<Node> node);
-  Ptr<WifiNqapNetDevice> CreateNqap (Ptr<Node> node);
+  Ptr<AdhocWifiNetDevice> CreateAdhoc (Ptr<Node> node);
+  Ptr<NqstaWifiNetDevice> CreateNqsta (Ptr<Node> node);
+  Ptr<NqapWifiNetDevice> CreateNqap (Ptr<Node> node);
 private:
   void InitializeInterface (Ptr<WifiNetDevice> interface, Position *position) const;
   DcaTxop *CreateDca (Ptr<const WifiNetDevice> interface) const;

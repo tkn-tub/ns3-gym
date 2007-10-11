@@ -42,7 +42,7 @@ CreateAdhocNode (Ptr<WifiNetDeviceFactory> factory, Ptr<WifiChannel> channel,
                  Position position, const char *address)
 {
   Ptr<Node> node = Create<InternetNode> ();  
-  Ptr<WifiAdhocNetDevice> device = factory->CreateAdhoc (node);
+  Ptr<AdhocWifiNetDevice> device = factory->CreateAdhoc (node);
   device->ConnectTo (channel);
   Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
   mobility->Set (position);
