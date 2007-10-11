@@ -95,7 +95,7 @@ Mac48Address::IsMatchingType (const Address &address)
 {
   return address.CheckCompatible (GetType (), 6);
 }
-Mac48Address::operator Address ()
+Mac48Address::operator Address () const
 {
   return ConvertTo ();
 }
