@@ -1,0 +1,21 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    module = bld.create_ns3_module('olsr', ['internet-node'])
+    module.includes = '.'
+    module.source = [
+        'olsr-header.cc',
+        'olsr-state.cc',
+        'routing-table.cc',
+        'olsr-agent.cc',
+        'olsr-agent-impl.cc',
+        'olsr.cc',
+        'event-garbage-collector.cc',
+        ]
+
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'olsr-agent.h',
+        'olsr.h',
+        ]
+

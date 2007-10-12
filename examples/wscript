@@ -33,3 +33,7 @@ def build(bld):
     obj = bld.create_ns3_program( 'mixed-global-routing',
         ['point-to-point', 'internet-node', 'global-routing' , 'csma-cd'])
     obj.source = 'mixed-global-routing.cc'
+
+    obj = bld.create_ns3_program('simple-point-to-point-olsr',
+        ['point-to-point', 'internet-node', 'olsr'])
+    obj.source = 'simple-point-to-point-olsr.cc'

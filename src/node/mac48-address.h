@@ -61,7 +61,7 @@ public:
    *
    * Convert an instance of this class to a polymorphic Address instance.
    */
-  operator Address ();
+  operator Address () const;
   /**
    * \param address a polymorphic address
    * \returns a new Mac48Address from the polymorphic address
@@ -79,6 +79,20 @@ public:
    * Allocate a new Mac48Address.
    */
   static Mac48Address Allocate (void);
+
+  /**
+   * \returns true if this is a broadcast address, false otherwise.
+   */
+  bool IsBroadcast (void) const;
+  /**
+   * \returns true if this is a multicast address, false otherwise.
+   */
+  bool IsMulticast (void) const;
+
+  /**
+   * \returns the broadcast address
+   */
+  static Mac48Address GetBroadcast (void);
 private:
   /**
    * \returns a new Address instance
@@ -87,11 +101,15 @@ private:
    */
   Address ConvertTo (void) const;
   static uint8_t GetType (void);
+  friend bool operator < (const Mac48Address &a, const Mac48Address &b);
+  friend bool operator == (const Mac48Address &a, const Mac48Address &b);
+
   uint8_t m_address[6];
 };
 
 bool operator == (const Mac48Address &a, const Mac48Address &b);
 bool operator != (const Mac48Address &a, const Mac48Address &b);
+bool operator < (const Mac48Address &a, const Mac48Address &b);
 std::ostream& operator<< (std::ostream& os, const Mac48Address & address);
 
 } // namespace ns3

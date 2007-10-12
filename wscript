@@ -174,6 +174,10 @@ def build(bld):
 
     check_shell()
 
+    if Params.g_options.doxygen:
+        doxygen()
+        raise SystemExit(0)
+
     # process subfolders from here
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples tutorial')
