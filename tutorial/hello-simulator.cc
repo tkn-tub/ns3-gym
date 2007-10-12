@@ -15,6 +15,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/debug.h"
 
 NS_LOG_COMPONENT_DEFINE ("HelloSimulator");
 
@@ -23,8 +24,10 @@ using namespace ns3;
 int 
 main (int argc, char *argv[])
 {
-  LogComponentEnable ("HelloSimulator", 
-    LogLevel (LOG_LEVEL_INFO | LOG_PREFIX_ALL));
+  DebugComponentEnable ("Log");
+
+  //  LogComponentEnable ("HelloSimulator", 
+  //    LogLevel (LOG_LEVEL_INFO | LOG_PREFIX_ALL));
 
   NS_LOG_INFO ("Hello Simulator");
 }

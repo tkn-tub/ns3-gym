@@ -66,6 +66,12 @@ LogComponentEnableEnvVar (void)
       isFirstLog = false;
       return;
     }
+  if (env == "*")
+    {
+      LogComponentEnableAll (LOG_DEBUG);
+      isFirstLog = false;
+      return;
+    }
   bool allFound = true;
   std::string::size_type cur = 0;
   std::string::size_type next = 0;
@@ -88,7 +94,7 @@ LogComponentEnableEnvVar (void)
         }
       std::string::size_type equal = tmp.find ("=");
       std::string component;
-      int level;
+      int level = 0;
       if (equal == std::string::npos)
         {
           component = tmp;
@@ -136,52 +142,60 @@ LogComponentEnableEnvVar (void)
                 {
                   level |= LOG_ALL;
                 }
-              else if (lev == "errorlevel")
+              else if (lev == "level_error")
                 {
                   level |= LOG_LEVEL_ERROR;
                 }
-              else if (lev == "warnlevel")
+              else if (lev == "level_warn")
                 {
                   level |= LOG_LEVEL_WARN;
                 }
-              else if (lev == "debuglevel")
+              else if (lev == "level_debug")
                 {
                   level |= LOG_LEVEL_DEBUG;
                 }
-              else if (lev == "infolevel")
+              else if (lev == "level_info")
                 {
                   level |= LOG_LEVEL_INFO;
                 }
-              else if (lev == "functionlevel")
+              else if (lev == "level_function")
                 {
                   level |= LOG_LEVEL_FUNCTION;
                 }
-              else if (lev == "paramlevel")
+              else if (lev == "level_param")
                 {
                   level |= LOG_LEVEL_PARAM;
                 }
-              else if (lev == "logiclevel")
+              else if (lev == "level_logic")
                 {
                   level |= LOG_LEVEL_LOGIC;
                 }
-              else if (lev == "alllevel")
+              else if (lev == "level_all")
                 {
                   level |= LOG_LEVEL_ALL;
                 }
             } while (next_lev != std::string::npos);
         }
       bool found = false;
-      ComponentList *components = GetComponentList ();
-      for (ComponentListI i = components->begin ();
-           i != components->end ();
-           i++)
+      if (component == "*")
         {
-          if (i->first.compare (component) == 0)
+          found = true;
+          LogComponentEnableAll ((enum LogLevel)level);
+        }
+      else
+        {
+          ComponentList *components = GetComponentList ();
+          for (ComponentListI i = components->begin ();
+               i != components->end ();
+               i++)
             {
-              found = true;
-              
-              i->second->Enable ((enum LogLevel)level);
-              break;
+              if (i->first.compare (component) == 0)
+                {
+                  found = true;
+                  
+                  i->second->Enable ((enum LogLevel)level);
+                  break;
+                }
             }
         }
       if (!found)
