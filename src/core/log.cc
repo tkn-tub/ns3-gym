@@ -48,10 +48,44 @@ void
 LogComponentEnableEnvVar (void)
 {
   static bool isFirstLog = true;
+#if 0
+//
+// Interesting static constructor bug:
+//
+// The RandomDirection2dMobilityModel declares a RandomVariableDefaultValue
+// g_speedVariable.  This variable is initialized in the 
+// static_initialization_and_destruction_0 function as expected.  This causes
+// RandomVariableDefaultValue::Parse () to be called which calls NS_LOG_X
+// functions.  The macro calls LogComponent::IsEnabled () which calls 
+// LogComponentEnableEnvVar ().  The following variable called isFirstLog
+// is set after the first call to prevent the environment variable from
+// actually being parsed on every log call.
+//
+// When the RandomDirection2dMobilityModel static constructor is run, other
+// log components may not have had their static constructors run yet.  It is
+// in those other static constructors that their log components are added to
+// the list of log components.
+//
+// The end result is that if any code calls an NS_LOG_X function during its
+// static constructor, the environment variable check is "locked out" for 
+// any log component declarations (in different compilation units) that have
+// not yet been executed.
+//
+// So, the choice seems to be to either 1) parse the environment variables
+// at every log call; or 2) make LogComponentEnableEnvVar explicitly called
+// after all other static constructors are called.  This means in main ().
+// The former choice seems the only reasonable way out if we care remotely
+// about performance in logging.
+//
+// I made LogComponentEnableEnvVar a public API that you need to call in 
+// main () if you want to use environment variables to drive the log output.
+// 
   if (!isFirstLog)
     {
       return;
     }
+#endif // 0
+
 #ifdef HAVE_GETENV
   char *envVar = getenv("NS_LOG");
   if (envVar == 0)
@@ -141,6 +175,10 @@ LogComponentEnableEnvVar (void)
               else if (lev == "all")
                 {
                   level |= LOG_ALL;
+                }
+              else if (lev == "prefix")
+                {
+                  level |= LOG_PREFIX_ALL;
                 }
               else if (lev == "level_error")
                 {
@@ -236,7 +274,7 @@ LogComponent::LogComponent (char const * name)
 bool 
 LogComponent::IsEnabled (enum LogLevel level) const
 {
-  LogComponentEnableEnvVar ();
+  //  LogComponentEnableEnvVar ();
   return (level & m_levels) ? 1 : 0;
 }
 
