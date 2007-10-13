@@ -243,16 +243,6 @@ public:
   /**
    * A packet is allocated a new uid when it is created
    * empty or with zero-filled payload.
-   * 
-   * Note:  This uid is an internal uid and cannot be counted on to 
-   * provide an accurate counter of how many "simulated packets" of a 
-   * particular protocol are in the system.  It is not trivial to make
-   * this uid into such a counter, because of questions such as what
-   * should the uid be when the packet is sent over broadcast media, or
-   * when fragmentation occurs.  If a user wants to trace actual packet
-   * counts, he or she should look at e.g. the IP ID field or transport
-   * sequence numbers, or other packet or frame counters at other 
-   * protocol layers.
    *
    * \returns an integer identifier which uniquely
    *          identifies this packet.
