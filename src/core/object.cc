@@ -197,6 +197,7 @@ Object::DoQueryInterface (InterfaceId iid) const
   do {
     NS_ASSERT (currentObject != 0);
     InterfaceId cur = currentObject->m_iid;
+    NS_LOG_LOGIC("In Loop: " << cur.GetName());
     while (cur != iid && cur != Object::iid)
       {
         cur = InterfaceId::LookupParent (cur);

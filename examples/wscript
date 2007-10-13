@@ -18,6 +18,10 @@ def build(bld):
         ['csma', 'internet-node'])
     obj.source = 'csma-one-subnet.cc'
 
+    obj = bld.create_ns3_program('george',
+        ['csma', 'internet-node'])
+    obj.source = 'george.cc'
+
     obj = bld.create_ns3_program('udp-echo',
         ['csma', 'internet-node'])
     obj.source = 'udp-echo.cc'
