@@ -194,12 +194,21 @@ OlsrAgentImpl::OlsrAgentImpl (Ptr<Node> node)
 void OlsrAgentImpl::DoDispose ()
 {
   m_ipv4 = 0;
-  m_receiveSocket->Dispose ();
-  m_receiveSocket = 0;
-  m_sendSocket->Dispose ();
-  m_sendSocket = 0;  
-  m_routingTable->Dispose ();
-  m_routingTable = 0;
+  if (m_receiveSocket)
+    {
+      m_receiveSocket->Dispose ();
+      m_receiveSocket = 0;
+    }
+  if (m_sendSocket)
+    {
+      m_sendSocket->Dispose ();
+      m_sendSocket = 0;  
+    }
+  if (m_routingTable)
+    {
+      m_routingTable->Dispose ();
+      m_routingTable = 0;
+    }
 
   Object::DoDispose ();
 }
