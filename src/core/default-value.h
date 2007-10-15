@@ -340,6 +340,42 @@ public:
 };
 
 /**
+ * \brief A string variable for ns3::Bind
+ * \ingroup config
+ *
+ * Every instance of this type is automatically 
+ * registered in the variable pool which is used
+ * by ns3::Bind. 
+ */
+class StringDefaultValue : public DefaultValueBase
+{
+public:
+  StringDefaultValue (const std::string &name,
+                      const std::string &help,
+                      const std::string defaultValue);
+  StringDefaultValue (const std::string &name,
+                      const std::string &help,
+                      const std::string defaultValue, 
+                      int maxSize);
+  StringDefaultValue (const std::string &name,
+                      const std::string &help,
+                      const std::string defaultValue, 
+                      int minSize,
+                      int maxSize);
+
+  std::string GetValue (void) const;
+private:
+  virtual bool DoParseValue (const std::string &value);
+  virtual std::string DoGetType (void) const;
+  virtual std::string DoGetDefaultValue (void) const;
+
+  std::string m_defaultValue;
+  std::string m_value;
+  int m_minSize;
+  int m_maxSize;
+};
+
+/**
  * \brief Class used to call a certain function during the configuration of the
  * simulation
  * \ingroup config
