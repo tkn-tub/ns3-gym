@@ -72,7 +72,20 @@ void TestFRFour (int &, int &, int &, int &) {}
 void TestFRFive (int &, int &, int &, int &, int &) {}
 void TestFRSix (int &, int &, int &, int &, int &, int &) {}
 
-class CallbackTest : public ns3::Test {
+class X : public ns3::Test 
+{
+public:
+  X () : Test ("Callback") {}
+  void PublicParent (void) {}
+protected:
+  static void StaticProtectedParent (void) {}
+  void ProtectedParent (void) {}
+private:
+  void PrivateParent (void) {}
+};
+
+class CallbackTest : public X 
+{
 private:
   bool m_test1;
   bool m_test2;
@@ -107,8 +120,7 @@ public:
 };
 
 CallbackTest::CallbackTest ()
-  : ns3::Test ("Callback"),
-    m_test1 (false),
+  : m_test1 (false),
     m_test2 (false),
     m_test3 (false),
     m_test4 (false)
@@ -294,6 +306,14 @@ CallbackTest::RunTests (void)
   MakeBoundCallback (&TestFRFive, 1);
 
 
+  MakeCallback (&X::StaticProtectedParent);
+  MakeCallback (&X::PublicParent, this);
+  MakeCallback (&CallbackTest::ProtectedParent, this);
+  // as expected, fails.
+  //MakeCallback (&X::PrivateParent, this);
+  // unexpected, but fails too.
+  // It does fumble me.
+  //MakeCallback (&X::ProtectedParent, this);
 
   return ok;
 }
