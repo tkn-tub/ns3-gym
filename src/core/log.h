@@ -34,6 +34,21 @@
  *     messages, use the ns3::LogComponentEnable
  *     function or use the NS_LOG environment variable and 
  *     ns3::LogComponentEnableEnvVar
+ *
+ * Use the environment variable NS_LOG to define a ';'-separated list of
+ * logging components to enable. For example, NS_LOG=a;b;c;DAFD;GH
+ * would enable the components 'a', 'b', 'c', 'DAFD', and, 'GH'.
+ * NS_LOG=* will enable all available log components.
+ *
+ * For each component, the "debug" log level is enabled by default
+ * but more components can be enabled selectively with the following
+ * syntax: NS_LOG='Component1=func|param|warn;Component2=error|debug'
+ * This example would enable the 'func', 'param', and 'warn' log
+ * levels for 'Component1' and the 'error' and 'debug' log levels
+ * for 'Component2'.  The wildcard can be used here as well.  For example
+ * NS_LOG='*=level_all|prefix' would enable all log levels and prefix all
+ * prints with the component and function names.
+ *
  */
 
 /**
@@ -94,7 +109,7 @@
       if (g_log.IsEnabled (level))                              \
         {                                                       \
           std::clog << g_log.Name () << ":" << __FUNCTION__ <<  \
-            "(): " << std::endl;                                \
+            "()" << std::endl;                                \
         }                                                       \
     }                                                           \
   while (false)
@@ -180,28 +195,6 @@ enum LogLevel {
 
 #ifdef NS3_LOG_ENABLE
 /**
- * \brief Enable the logging output based on an environment variable.
- *
- * Use the environment variable NS_LOG to define a ';'-separated list of
- * logging components to enable. For example, NS_LOG=a;b;c;DAFD;GH
- * would enable the components 'a', 'b', 'c', 'DAFD', and, 'GH'.
- * NS_LOG=* will enable all available log components.
- *
- * For each component, the "debug" log level is enabled by default
- * but more components can be enabled selectively with the following
- * syntax: NS_LOG='Component1=func|param|warn;Component2=error|debug'
- * This example would enable the 'func', 'param', and 'warn' log
- * levels for 'Component1' and the 'error' and 'debug' log levels
- * for 'Component2'.  The wildcard can be used here as well.  For example
- * NS_LOG='*=level_all|prefix' would enable all log levels and prefix all
- * prints with the component and function names.
- *
- * The list of available log components can be printed on stdout
- * with the NS_LOG=print-list syntax.
- */
-  void LogComponentEnableEnvVar (void);
-
-/**
  * \param name a log component name
  * \param level a logging level
  * \param decorate whether or not to add function names to all logs
@@ -222,7 +215,6 @@ enum LogLevel {
  */
   void LogComponentEnableAll (enum LogLevel level);
 #else
-#define LogComponentEnableEnvVar()
 #define LogComponentEnable(a,b)
 #define LogComponentEnableAll(a)
 #endif
@@ -259,11 +251,6 @@ void LogComponentDisableAll (enum LogLevel level);
  * \ingroup logging
  *
  * Print the list of logging messages available.
- * The output of this function can be obtained by setting
- * the NS_LOG environment variable to the special value 
- * 'print-list'.
- * 
- * For example: NS_LOG=print-list
  */
 #ifdef NS3_LOG_ENABLE
 void LogComponentPrintList (void);
@@ -276,6 +263,7 @@ void LogComponentPrintList (void);
 class LogComponent {
 public:
   LogComponent (char const *name);
+  void EnvVarCheck (char const *name);
   bool IsEnabled (enum LogLevel level) const;
   bool IsNoneEnabled (void) const;
   void Enable (enum LogLevel level);
