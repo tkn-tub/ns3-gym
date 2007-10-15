@@ -24,6 +24,7 @@
 #include "wifi-channel.h"
 #include "wifi-net-device.h"
 #include "wifi-preamble.h"
+#include "wifi-default-parameters.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/random-variable.h"
@@ -198,13 +199,13 @@ WifiPhy::NiChange::operator < (WifiPhy::NiChange const &o) const
  ****************************************************************/
 
 WifiPhy::WifiPhy (Ptr<WifiNetDevice> device)
-  : m_edThresholdW (DbmToW (-140)),
-    m_txGainDbm (1.0),
-    m_rxGainDbm (1.0),
-    m_rxNoiseRatio (DbToRatio (7)),
-    m_txPowerBaseDbm (16.0206),
-    m_txPowerEndDbm (16.0206),
-    m_nTxPower (1),
+  : m_edThresholdW (DbmToW (WifiDefaultParameters::GetPhyEnergyDetectionThresholdDbm ())),
+    m_txGainDbm (WifiDefaultParameters::GetPhyTxGainDbm ()),
+    m_rxGainDbm (WifiDefaultParameters::GetPhyRxGainDbm ()),
+    m_rxNoiseRatio (DbToRatio (WifiDefaultParameters::GetPhyRxNoiseDb ())),
+    m_txPowerBaseDbm (WifiDefaultParameters::GetPhyTxPowerBaseDbm ()),
+    m_txPowerEndDbm (WifiDefaultParameters::GetPhyTxPowerEndDbm ()),
+    m_nTxPower (WifiDefaultParameters::GetPhyTxPowerLevels ()),
     m_syncing (false),
     m_endTx (Seconds (0)),
     m_endSync (Seconds (0)),
@@ -216,7 +217,10 @@ WifiPhy::WifiPhy (Ptr<WifiNetDevice> device)
     m_device (device),
     m_endSyncEvent (),
     m_random (0.0, 1.0)
-{}
+{
+  NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WifiDefaultParameters::PHY_STANDARD_80211a);
+  Configure80211a ();
+}
 
 WifiPhy::~WifiPhy ()
 {
@@ -357,31 +361,6 @@ WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiPreamble preamble
   m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDbm, txMode, preamble);
 }
 
-void 
-WifiPhy::SetEdThresholdDbm (double edThreshold)
-{
-  m_edThresholdW = DbmToW (edThreshold);
-}
-void 
-WifiPhy::SetRxNoiseDb (double rxNoise)
-{
-  m_rxNoiseRatio = DbToRatio (rxNoise);
-}
-void 
-WifiPhy::SetTxPowerIncrementsDbm (double txPowerBase, 
-                                   double txPowerEnd, 
-                                   int nTxPower)
-{
-  m_txPowerBaseDbm = txPowerBase;
-  m_txPowerEndDbm = txPowerEnd;
-  m_nTxPower = nTxPower;
-}
-void 
-WifiPhy::SetRxTxGainDbm (double rxGainDbm, double txGainDbm)
-{
-  m_rxGainDbm = rxGainDbm;
-  m_txGainDbm = txGainDbm;
-}
 uint32_t 
 WifiPhy::GetNModes (void) const
 {

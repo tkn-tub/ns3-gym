@@ -20,26 +20,36 @@
  */
 
 #include <cassert>
-
 #include "mac-parameters.h"
-#include "wifi-phy.h"
-#include "wifi-mac-header.h"
-#include "wifi-preamble.h"
+#include "wifi-default-parameters.h"
 
 namespace ns3 {
 
 MacParameters::MacParameters ()
 {
-  m_rtsCtsThreshold = 1000;
-  m_fragmentationThreshold = 2000;
-  m_maxSsrc = 7;
-  m_maxSlrc = 7;
+  m_rtsCtsThreshold = WifiDefaultParameters::GetRtsCtsThreshold ();
+  m_fragmentationThreshold = WifiDefaultParameters::GetFragmentationThreshold ();
+  m_maxSsrc = WifiDefaultParameters::GetMaxSsrc ();
+  m_maxSlrc = WifiDefaultParameters::GetMaxSlrc ();
+
+  // ensure something not too stupid is set by default.
+  NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WifiDefaultParameters::PHY_STANDARD_80211a);
+  uint32_t ctsAckSize = (2 + 2 + 6) * 8; // bits
+  double dataRate = (6e6 / 2); // mb/s
+  Time delay = Seconds (ctsAckSize / dataRate);
+
+  Initialize (delay, delay);
 }
 void 
-MacParameters::Initialize80211a (WifiPhy const*phy)
+MacParameters::Initialize (Time ctsDelay, Time ackDelay)
 {
+  NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WifiDefaultParameters::PHY_STANDARD_80211a);
+
+  // these values are really 802.11a specific
   m_sifs = MicroSeconds (16);
   m_slot = MicroSeconds (9);
+
+
   /* see section 9.2.10 ieee 802.11-1999 */
   m_pifs = m_sifs + m_slot;
   // 1000m 
@@ -48,16 +58,13 @@ MacParameters::Initialize80211a (WifiPhy const*phy)
      (Formal description of MAC operation, see details on the 
      Trsp timer setting at page 346)
   */
-  WifiMacHeader hdr;
-  hdr.SetType (WIFI_MAC_CTL_CTS);
   m_ctsTimeout = m_sifs;
-  m_ctsTimeout += phy->CalculateTxDuration (hdr.GetSize (), phy->GetMode (0), WIFI_PREAMBLE_LONG);
+  m_ctsTimeout += ctsDelay;
   m_ctsTimeout += m_maxPropagationDelay * Scalar (2);
   m_ctsTimeout += m_slot;
 
-  hdr.SetType (WIFI_MAC_CTL_ACK);
   m_ackTimeout = m_sifs;
-  m_ackTimeout += phy->CalculateTxDuration (hdr.GetSize (), phy->GetMode (0), WIFI_PREAMBLE_LONG);
+  m_ackTimeout += ackDelay;
   m_ackTimeout += m_maxPropagationDelay * Scalar (2);
   m_ackTimeout += m_slot;
 }
@@ -68,26 +75,6 @@ MacParameters::SetSlotTime (Time slotTime)
   m_slot = slotTime;
 }
 
-void 
-MacParameters::SetMaxSsrc (uint32_t ssrc)
-{
-  m_maxSsrc = ssrc;
-}
-void 
-MacParameters::SetMaxSlrc (uint32_t slrc)
-{
-  m_maxSlrc = slrc;
-}
-void 
-MacParameters::SetRtsCtsThreshold (uint32_t threshold)
-{
-  m_rtsCtsThreshold = threshold;
-}
-void 
-MacParameters::SetFragmentationThreshold (uint32_t threshold)
-{
-  m_fragmentationThreshold = threshold;
-}
 
 Time
 MacParameters::GetPifs (void) const
@@ -145,11 +132,6 @@ Time
 MacParameters::GetMsduLifetime (void) const
 {
   return Seconds (10);
-}
-uint32_t 
-MacParameters::GetMaxQueueSize (void) const
-{
-  return 400;
 }
 Time
 MacParameters::GetMaxPropagationDelay (void) const

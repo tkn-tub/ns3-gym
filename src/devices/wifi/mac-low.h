@@ -26,6 +26,7 @@
 
 #include "wifi-mac-header.h"
 #include "wifi-mode.h"
+#include "wifi-preamble.h"
 #include "ns3/mac48-address.h"
 #include "ns3/callback.h"
 #include "ns3/callback-trace-source.h"
@@ -151,7 +152,7 @@ public:
   MacLow ();
   ~MacLow ();
 
-  void SetInterface (Ptr<WifiNetDevice> interface);
+  void SetDevice (Ptr<WifiNetDevice> device);
   void SetPhy (WifiPhy *phy);
   void SetStations (MacStations *stations);
   void SetParameters (MacParameters *parameters);
@@ -171,8 +172,8 @@ public:
                           MacLowTransmissionParameters parameters,
                           MacLowTransmissionListener *listener);
 
-  void ReceiveOk (Packet const packet, double rxSnr, WifiMode txMode, WifiMode headerMode);
-  void ReceiveError (Packet const packet, double rxSnr);
+  void ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble preamble);
+  void ReceiveError (Packet packet, double rxSnr);
 private:
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
@@ -213,7 +214,7 @@ private:
   void SendCurrentTxPacket (void);
   void StartDataTxTimers (void);
 
-  Ptr<WifiNetDevice> m_interface;
+  Ptr<WifiNetDevice> m_device;
   WifiPhy *m_phy;
   MacStations *m_stations;
   MacParameters *m_parameters;

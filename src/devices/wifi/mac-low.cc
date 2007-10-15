@@ -305,9 +305,9 @@ MacLow::CancelAllEvents (void)
  ****************************************************************************/
 
 void
-MacLow::SetInterface (Ptr<WifiNetDevice> interface)
+MacLow::SetDevice (Ptr<WifiNetDevice> device)
 {
-  m_interface = interface;
+  m_device = device;
 }
 void
 MacLow::SetPhy (WifiPhy *phy)
@@ -384,7 +384,7 @@ MacLow::StartTransmission (Packet packet,
 }
 
 void
-MacLow::ReceiveError (Packet const packet, double rxSnr)
+MacLow::ReceiveError (Packet packet, double rxSnr)
 {
   TRACE ("rx failed ");
   m_dropError (packet);
@@ -398,7 +398,7 @@ MacLow::ReceiveError (Packet const packet, double rxSnr)
 }
 
 void 
-MacLow::ReceiveOk (Packet const packet, double rxSnr, WifiMode txMode, WifiMode headerMode)
+MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble preamble)
 {
   /* A packet is received from the PHY.
    * When we have handled this packet,
@@ -406,8 +406,7 @@ MacLow::ReceiveOk (Packet const packet, double rxSnr, WifiMode txMode, WifiMode 
    * packet queue.
    */
   WifiMacHeader hdr;
-  Packet p = packet;
-  p.RemoveHeader (hdr);
+  packet.RemoveHeader (hdr);
   
   bool isPrevNavZero = IsNavZero (Simulator::Now ());
   TRACE ("duration/id=" << hdr.GetDuration ());
@@ -416,7 +415,7 @@ MacLow::ReceiveOk (Packet const packet, double rxSnr, WifiMode txMode, WifiMode 
     {
       /* XXX see section 9.9.2.2.1 802.11e/D12.1 */
       if (isPrevNavZero &&
-          hdr.GetAddr1 () == m_interface->GetSelfAddress ()) 
+          hdr.GetAddr1 () == m_device->GetSelfAddress ()) 
         {
           TRACE ("rx RTS from=" << hdr.GetAddr2 () << ", schedule CTS");
           assert (m_sendCtsEvent.IsExpired ());
@@ -437,7 +436,7 @@ MacLow::ReceiveOk (Packet const packet, double rxSnr, WifiMode txMode, WifiMode 
         }
     } 
   else if (hdr.IsCts () &&
-           hdr.GetAddr1 () == m_interface->GetSelfAddress () &&
+           hdr.GetAddr1 () == m_device->GetSelfAddress () &&
            m_ctsTimeoutEvent.IsRunning () &&
            m_hasCurrent) 
     {
@@ -458,7 +457,7 @@ MacLow::ReceiveOk (Packet const packet, double rxSnr, WifiMode txMode, WifiMode 
                                              txMode);
     } 
   else if (hdr.IsAck () &&
-           hdr.GetAddr1 () == m_interface->GetSelfAddress () &&
+           hdr.GetAddr1 () == m_device->GetSelfAddress () &&
            (m_normalAckTimeoutEvent.IsRunning () || 
             m_fastAckTimeoutEvent.IsRunning () ||
             m_superFastAckTimeoutEvent.IsRunning ()) &&
@@ -497,7 +496,7 @@ MacLow::ReceiveOk (Packet const packet, double rxSnr, WifiMode txMode, WifiMode 
     {
       TRACE ("rx drop " << hdr.GetTypeString ());
     } 
-  else if (hdr.GetAddr1 () == m_interface->GetSelfAddress ()) 
+  else if (hdr.GetAddr1 () == m_device->GetSelfAddress ()) 
     {
       MacStation *station = GetStation (hdr.GetAddr2 ());
       station->ReportRxOk (rxSnr, txMode);
@@ -538,8 +537,8 @@ MacLow::ReceiveOk (Packet const packet, double rxSnr, WifiMode txMode, WifiMode 
   return;
  rxPacket:
   WifiMacTrailer fcs;
-  p.RemoveTrailer (fcs);
-  m_rxCallback (p, &hdr);
+  packet.RemoveTrailer (fcs);
+  m_rxCallback (packet, &hdr);
   return;
 }
 
@@ -669,7 +668,7 @@ MacLow::NotifyNav (Time at, WifiMacHeader const *hdr)
   Time duration = MicroSeconds (hdr->GetDurationUs ());
 
   if (hdr->IsCfpoll () &&
-      hdr->GetAddr2 () == m_interface->GetBssid ()) 
+      hdr->GetAddr2 () == m_device->GetBssid ()) 
     {
       m_lastNavStart = newNavStart;
       m_lastNavDuration = duration;
@@ -772,7 +771,7 @@ MacLow::SendRtsForPacket (void)
   rts.SetDsNotFrom ();
   rts.SetDsNotTo ();
   rts.SetAddr1 (m_currentHdr.GetAddr1 ());
-  rts.SetAddr2 (m_interface->GetSelfAddress ());
+  rts.SetAddr2 (m_device->GetSelfAddress ());
   WifiMode rtsTxMode = GetRtsTxMode (m_currentHdr.GetAddr1 ());
   Time duration = Seconds (0);
   if (m_txParams.HasDurationId ()) 

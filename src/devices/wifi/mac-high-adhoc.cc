@@ -41,9 +41,9 @@ MacHighAdhoc::~MacHighAdhoc ()
 {}
 
 void
-MacHighAdhoc::SetInterface (WifiNetDevice *interface)
+MacHighAdhoc::SetDevice (WifiNetDevice *device)
 {
-  m_interface = interface;
+  m_device = device;
 
 }
 void 
@@ -73,8 +73,8 @@ MacHighAdhoc::Enqueue (Packet packet, Mac48Address to)
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_DATA);
   hdr.SetAddr1 (to);
-  hdr.SetAddr2 (m_interface->GetSelfAddress ());
-  hdr.SetAddr3 (m_interface->GetBssid ());
+  hdr.SetAddr2 (m_device->GetSelfAddress ());
+  hdr.SetAddr3 (m_device->GetBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   m_dca->Queue (packet, hdr);
@@ -84,7 +84,7 @@ void
 MacHighAdhoc::Receive (Packet packet, WifiMacHeader const *hdr)
 {
   TRACE ("received size="<<packet.GetSize ()<<", from="<<hdr->GetAddr2 ());
-  m_callback (packet);
+  m_callback (packet, hdr->GetAddr2 ());
 }
 
 } // namespace ns3

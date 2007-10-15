@@ -27,8 +27,6 @@
 
 namespace ns3 {
 
-class WifiPhy;
-
 class IdealMacStations : public MacStations {
 public:
   IdealMacStations (WifiMode defaultTxMode);
@@ -37,7 +35,7 @@ public:
   // return the min snr needed to successfully transmit
   // data with this mode at the specified ber.
   double GetSnrThreshold (WifiMode mode) const;
-  void InitializeThresholds (const WifiPhy *phy, double ber);
+  void AddModeSnrThreshold (WifiMode mode, double ber);
 private:
   virtual class MacStation *CreateStation (void);
 

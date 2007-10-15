@@ -85,9 +85,9 @@ MacHighNqsta::SetDcaTxop (DcaTxop *dca)
   m_dca = dca;
 }
 void 
-MacHighNqsta::SetInterface (WifiNetDevice *interface)
+MacHighNqsta::SetDevice (WifiNetDevice *device)
 {
-  m_interface = interface;
+  m_device = device;
 }
 void 
 MacHighNqsta::SetForwardCallback (ForwardCallback callback)
@@ -155,13 +155,13 @@ MacHighNqsta::SendProbeRequest (void)
   WifiMacHeader hdr;
   hdr.SetProbeReq ();
   hdr.SetAddr1 (GetBroadcastBssid ());
-  hdr.SetAddr2 (m_interface->GetSelfAddress ());
+  hdr.SetAddr2 (m_device->GetSelfAddress ());
   hdr.SetAddr3 (GetBroadcastBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   Packet packet;
   MgtProbeRequestHeader probe;
-  probe.SetSsid (m_interface->GetSsid ());
+  probe.SetSsid (m_device->GetSsid ());
   SupportedRates rates = GetSupportedRates ();
   probe.SetSupportedRates (rates);
   packet.AddHeader (probe);
@@ -179,13 +179,13 @@ MacHighNqsta::SendAssociationRequest ()
   WifiMacHeader hdr;
   hdr.SetAssocReq ();
   hdr.SetAddr1 (GetBssid ());
-  hdr.SetAddr2 (m_interface->GetSelfAddress ());
+  hdr.SetAddr2 (m_device->GetSelfAddress ());
   hdr.SetAddr3 (GetBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   Packet packet;
   MgtAssocRequestHeader assoc;
-  assoc.SetSsid (m_interface->GetSsid ());
+  assoc.SetSsid (m_device->GetSsid ());
   SupportedRates rates = GetSupportedRates ();
   assoc.SetSupportedRates (rates);
   packet.AddHeader (assoc);
@@ -287,7 +287,7 @@ MacHighNqsta::Queue (Packet packet, Mac48Address to)
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr1 (GetBssid ());
-  hdr.SetAddr2 (m_interface->GetSelfAddress ());
+  hdr.SetAddr2 (m_device->GetSelfAddress ());
   hdr.SetAddr3 (to);
   hdr.SetDsNotFrom ();
   hdr.SetDsTo ();
@@ -298,14 +298,14 @@ void
 MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
 {
   NS_ASSERT (!hdr->IsCtl ());
-  if (hdr->GetAddr1 () != m_interface->GetSelfAddress () &&
+  if (hdr->GetAddr1 () != m_device->GetSelfAddress () &&
       !hdr->GetAddr1 ().IsBroadcast ()) 
     {
       // packet is not for us
     } 
   else if (hdr->IsData ()) 
     {
-      m_forward (packet);
+      m_forward (packet, hdr->GetAddr2 ());
     } 
   else if (hdr->IsProbeReq () ||
            hdr->IsAssocReq ()) 
@@ -319,7 +319,7 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
       MgtBeaconHeader beacon;
       packet.RemoveHeader (beacon);
       bool goodBeacon = false;
-      if (m_interface->GetSsid ().IsBroadcast ()) 
+      if (m_device->GetSsid ().IsBroadcast ()) 
         {
           // we do not have any special ssid so this
           // beacon is as good as another.
@@ -327,7 +327,7 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
           RestartBeaconWatchdog (delay);
           goodBeacon = true;
         } 
-      else if (beacon.GetSsid ().IsEqual (m_interface->GetSsid ())) 
+      else if (beacon.GetSsid ().IsEqual (m_device->GetSsid ())) 
         {
           //beacon for our ssid.
           Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
@@ -350,7 +350,7 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
         {
           MgtProbeResponseHeader probeResp;
           packet.RemoveHeader (probeResp);
-          if (!probeResp.GetSsid ().IsEqual (m_interface->GetSsid ())) 
+          if (!probeResp.GetSsid ().IsEqual (m_device->GetSsid ())) 
             {
               //not a probe resp for our ssid.
               return;

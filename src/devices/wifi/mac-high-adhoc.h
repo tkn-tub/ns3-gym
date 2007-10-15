@@ -33,12 +33,12 @@ class WifiMacHeader;
 
 class MacHighAdhoc {
 public:
-  typedef Callback<void, Packet > ForwardCallback;
+  typedef Callback<void, Packet, const Mac48Address &> ForwardCallback;
 
   MacHighAdhoc ();
   ~MacHighAdhoc ();
 
-  void SetInterface (WifiNetDevice *interface);
+  void SetDevice (WifiNetDevice *device);
   void SetForwardCallback (ForwardCallback callback);
   void SetDcaTxop (DcaTxop *dca);
 
@@ -50,7 +50,7 @@ public:
   void Receive (Packet packet, WifiMacHeader const*hdr);
 private:
   DcaTxop *m_dca;
-  WifiNetDevice *m_interface;
+  WifiNetDevice *m_device;
   ForwardCallback m_callback;
 };
 

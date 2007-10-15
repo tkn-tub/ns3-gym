@@ -35,13 +35,13 @@ class MacStations;
 
 class MacHighNqap {
 public:
-  typedef Callback<void, Packet > ForwardCallback;
+  typedef Callback<void, Packet, const Mac48Address &> ForwardCallback;
 
   MacHighNqap ();
   ~MacHighNqap ();
 
   void SetDcaTxop (DcaTxop *dca);
-  void SetInterface (WifiNetDevice *interface);
+  void SetDevice (WifiNetDevice *device);
   void SetStations (MacStations *stations);
   void SetForwardCallback (ForwardCallback callback);
   void SetSupportedRates (SupportedRates rates);
@@ -59,7 +59,7 @@ private:
   SupportedRates GetSupportedRates (void);
 
   DcaTxop *m_dca;
-  WifiNetDevice *m_interface;
+  WifiNetDevice *m_device;
   MacStations *m_stations;
   ForwardCallback m_forwardUp;
   SupportedRates m_rates;

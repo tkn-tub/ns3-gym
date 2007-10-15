@@ -33,14 +33,37 @@
 #include "mac-high-nqsta.h"
 #include "mac-high-nqap.h"
 #include "dca-txop.h"
+#include "wifi-default-parameters.h"
+#include "arf-mac-stations.h"
+#include "aarf-mac-stations.h"
+#include "ideal-mac-stations.h"
+#include "cr-mac-stations.h"
 
 namespace ns3 {
+
+static WifiMode 
+GetWifiModeForPhyMode (WifiPhy *phy, enum WifiDefaultParameters::PhyModeParameter mode)
+{
+  uint32_t phyRate = (uint32_t)mode;
+  for (uint32_t i= 0; i < phy->GetNModes (); i++)
+    {
+      WifiMode mode = phy->GetMode (i);
+      if (mode.GetPhyRate () == phyRate)
+        {
+          return mode;
+        }
+    }
+  NS_ASSERT (false);
+  return WifiMode ();
+}
+
 
 WifiNetDevice::WifiNetDevice (Ptr<Node> node)
   : NetDevice (node, Mac48Address::Allocate ())
 {
   SetMtu (2300);
   EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
+  Construct ();
 }
 
 WifiNetDevice::~WifiNetDevice ()
@@ -53,9 +76,100 @@ WifiNetDevice::~WifiNetDevice ()
   delete m_rxMiddle;
 }
 
+void
+WifiNetDevice::Construct (void)
+{
+  // the physical layer.
+  m_phy = new WifiPhy (this);
+
+  // the rate control algorithm
+  switch (WifiDefaultParameters::GetRateControlAlgorithm ()) {
+  case WifiDefaultParameters::ARF:
+    m_stations = new ArfMacStations (m_phy->GetMode (0));
+    break;
+  case WifiDefaultParameters::AARF:
+    m_stations = new AarfMacStations (m_phy->GetMode (0));
+    break;
+  case WifiDefaultParameters::CONSTANT_RATE: {
+    WifiMode dataRate = GetWifiModeForPhyMode (m_phy, WifiDefaultParameters::GetConstantDataRate ());
+    WifiMode ctlRate = GetWifiModeForPhyMode (m_phy, WifiDefaultParameters::GetConstantCtlRate ());
+    m_stations = new CrMacStations (dataRate, ctlRate);
+  } break;
+  case WifiDefaultParameters::IDEAL: {
+    double ber = WifiDefaultParameters::GetIdealRateControlBer ();
+    IdealMacStations *ideal = new IdealMacStations (m_phy->GetMode (0));
+    uint32_t nModes = m_phy->GetNModes ();
+    for (uint32_t i = 0; i < nModes; i++) 
+      {
+        WifiMode mode = m_phy->GetMode (i);
+        ideal->AddModeSnrThreshold (mode, m_phy->CalculateSnr (mode, ber));
+      }
+    m_stations = ideal;
+  } break;
+  default:
+    // NOTREACHED
+    NS_ASSERT (false);
+    break;
+  }
+
+  // MacParameters
+  MacParameters *parameters = new MacParameters ();
+  WifiMacHeader hdr;
+  hdr.SetType (WIFI_MAC_CTL_CTS);
+  Time ctsDelay = m_phy->CalculateTxDuration (hdr.GetSize (), m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
+  hdr.SetType (WIFI_MAC_CTL_ACK);
+  Time ackDelay = m_phy->CalculateTxDuration (hdr.GetSize (), m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
+  parameters->Initialize (ctsDelay, ackDelay);
+  m_parameters = parameters;
+
+  // the MacLow
+  MacLow *low = new MacLow ();
+  low->SetDevice (this);
+  low->SetPhy (m_phy);
+  low->SetStations (m_stations);
+  low->SetParameters (m_parameters);
+  m_phy->SetReceiveOkCallback (MakeCallback (&MacLow::ReceiveOk, low));
+  m_phy->SetReceiveErrorCallback (MakeCallback (&MacLow::ReceiveError, low));
+  m_low = low;
+
+  // the 'middle' rx
+  MacRxMiddle *rxMiddle = new MacRxMiddle ();
+  low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, rxMiddle));
+  m_rxMiddle = rxMiddle;
+
+  // the 'middle' tx
+  MacTxMiddle *txMiddle = new MacTxMiddle ();
+  m_txMiddle = txMiddle;
+
+}
+
+DcaTxop *
+WifiNetDevice::CreateDca (void) const
+{
+  DcaTxop *dca = new DcaTxop ();
+  dca->SetParameters (m_parameters);
+  dca->SetTxMiddle (m_txMiddle);
+  dca->SetLow (m_low);
+  dca->SetPhy (m_phy);
+  // 802.11a
+  Time difs = m_parameters->GetSifs () + 
+    m_parameters->GetSlotTime () + 
+    m_parameters->GetSlotTime ();
+  Time eifs = difs + m_parameters->GetSifs () + 
+    m_phy->CalculateTxDuration (2+2+6+4, m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
+  dca->SetDifs (difs);
+  dca->SetEifs (eifs);
+  dca->SetCwBounds (15, 1023);
+  dca->SetMaxQueueSize (400);
+  dca->SetMaxQueueDelay (Seconds (10));
+  return dca;
+}
+
+
 void 
 WifiNetDevice::ConnectTo (Ptr<WifiChannel> channel)
 {
+  m_channel = channel;
   m_phy->SetChannel (channel);
   NotifyConnected ();
 }
@@ -92,6 +206,17 @@ WifiNetDevice::GetSelfAddress (void) const
   Mac48Address self = Mac48Address::ConvertFrom (GetAddress ());
   return self;
 }
+bool 
+WifiNetDevice::DoNeedsArp (void) const
+{
+  return true;
+}
+Ptr<Channel> 
+WifiNetDevice::DoGetChannel (void) const
+{
+  return m_channel;
+}
+
 
 /*****************************************************
  *            Adhoc code
@@ -99,7 +224,18 @@ WifiNetDevice::GetSelfAddress (void) const
 
 AdhocWifiNetDevice::AdhocWifiNetDevice (Ptr<Node> node)
   : WifiNetDevice (node)
-{}
+{
+  m_ssid = WifiDefaultParameters::GetSsid ();
+  m_dca = CreateDca ();
+
+  MacHighAdhoc *high = new MacHighAdhoc ();
+  high->SetDevice (this);
+  high->SetDcaTxop (m_dca);
+  high->SetForwardCallback (MakeCallback (&AdhocWifiNetDevice::DoForwardUp, 
+                                          static_cast<WifiNetDevice *> (this)));
+  m_rxMiddle->SetForwardCallback (MakeCallback (&MacHighAdhoc::Receive, high));
+  m_high = high;
+}
 AdhocWifiNetDevice::~AdhocWifiNetDevice ()
 {
   delete m_dca;
@@ -139,7 +275,30 @@ AdhocWifiNetDevice::NotifyConnected (void)
 
 NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node)
   : WifiNetDevice (node)
-{}
+{
+  m_ssid = WifiDefaultParameters::GetSsid ();
+  m_dca = CreateDca ();
+
+  SupportedRates rates;
+  for (uint32_t i = 0; i < m_phy->GetNModes (); i++) 
+    {
+      WifiMode mode = m_phy->GetMode (i);
+      rates.AddSupportedRate (mode.GetPhyRate ());
+    }
+  
+  MacHighNqsta *high = new MacHighNqsta ();
+  high->SetDevice (this);
+  high->SetDcaTxop (m_dca);
+  high->SetForwardCallback (MakeCallback (&NqstaWifiNetDevice::DoForwardUp, 
+                                          this));
+  high->SetAssociatedCallback (MakeCallback (&NqstaWifiNetDevice::Associated, 
+                                             this));
+  high->SetDisAssociatedCallback (MakeCallback (&NqstaWifiNetDevice::DisAssociated, 
+                                                this));
+  high->SetSupportedRates (rates);
+  m_rxMiddle->SetForwardCallback (MakeCallback (&MacHighNqsta::Receive, high));
+  m_high = high;
+}
 NqstaWifiNetDevice::~NqstaWifiNetDevice ()
 {
   delete m_dca;
@@ -193,7 +352,27 @@ NqstaWifiNetDevice::DisAssociated (void)
 
 NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node)
   : WifiNetDevice (node)
-{}
+{
+  m_ssid = WifiDefaultParameters::GetSsid ();
+
+  m_dca = CreateDca ();
+
+  SupportedRates rates;
+  for (uint32_t i = 0; i < m_phy->GetNModes (); i++) 
+    {
+      rates.AddSupportedRate (m_phy->GetMode (i).GetPhyRate ());
+    }
+
+  MacHighNqap *high = new MacHighNqap ();
+  high->SetDevice (this);
+  high->SetDcaTxop (m_dca);
+  high->SetStations (m_stations);
+  high->SetForwardCallback (MakeCallback (&NqapWifiNetDevice::DoForwardUp, 
+                                          this));
+  high->SetSupportedRates (rates);
+  m_rxMiddle->SetForwardCallback (MakeCallback (&MacHighNqap::Receive, high));
+  m_high = high;
+}
 NqapWifiNetDevice::~NqapWifiNetDevice ()
 {
   delete m_dca;

@@ -72,8 +72,8 @@ public:
 class WifiPhy
 {
 public:
-  typedef Callback<void,Packet const , double, WifiMode, enum WifiPreamble> SyncOkCallback;
-  typedef Callback<void,Packet const , double> SyncErrorCallback;
+  typedef Callback<void,Packet, double, WifiMode, enum WifiPreamble> SyncOkCallback;
+  typedef Callback<void,Packet, double> SyncErrorCallback;
 
   WifiPhy (Ptr<WifiNetDevice> device);
   virtual ~WifiPhy ();
@@ -97,13 +97,6 @@ public:
 
   Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const;
 
-  void Configure80211a (void);
-  void SetEdThresholdDbm (double rxThreshold);
-  void SetRxNoiseDb (double rxNoise);  
-  void SetTxPowerIncrementsDbm (double txPowerBase, 
-                                double txPowerEnd, 
-                                int nTxPower);
-  void SetRxTxGainDbm (double rxGainDbm, double txGainDbm);
   uint32_t GetNModes (void) const;
   WifiMode GetMode (uint32_t mode) const;
   uint32_t GetModeBitRate (uint8_t mode) const;
@@ -134,6 +127,7 @@ private:
   typedef std::vector <NiChange> NiChanges;
 
 private:  
+  void Configure80211a (void);
   char const *StateToString (enum WifiPhyState state);
   enum WifiPhyState GetState (void);
   double GetEdThresholdW (void) const;

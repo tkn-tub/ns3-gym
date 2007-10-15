@@ -53,26 +53,33 @@ public:
   virtual Mac48Address GetBssid (void) const = 0;
   virtual Ssid GetSsid (void) const = 0;
 
-
-protected:
-  WifiNetDevice (Ptr<Node> node);
-  void DoForwardUp (Packet packet, const Mac48Address &from);
 private:
+  // inherited from parent.
+  virtual bool DoNeedsArp (void) const;
+  virtual Ptr<Channel> DoGetChannel (void) const;
   virtual bool SendTo (const Packet &packet, const Address &to, uint16_t protocolNumber);
+  // defined for children
   virtual void NotifyConnected (void) = 0;
   virtual bool DoSendTo (const Packet &packet, const Mac48Address &to) = 0;
-  void Associated (void);
+  // private helper
+  void Construct (void);
 
   friend class WifiNetDeviceFactory;
 
+  CallbackTraceSource<Packet, Mac48Address> m_rxLogger;
+  CallbackTraceSource<Packet, Mac48Address> m_txLogger;
+protected:
+  WifiNetDevice (Ptr<Node> node);
+  void DoForwardUp (Packet packet, const Mac48Address &from);
+  DcaTxop *CreateDca (void) const;
+
+  Ptr<WifiChannel> m_channel;
   WifiPhy *m_phy;
   MacStations *m_stations;
   MacLow *m_low;
   MacRxMiddle *m_rxMiddle;
   MacTxMiddle *m_txMiddle;
   MacParameters *m_parameters;
-  CallbackTraceSource<Packet, Mac48Address> m_rxLogger;
-  CallbackTraceSource<Packet, Mac48Address> m_txLogger;
 };
 
 class AdhocWifiNetDevice : public WifiNetDevice {
@@ -85,9 +92,10 @@ public:
   void SetSsid (Ssid ssid);
 
 private:
+  void ForwardUp (void);
   virtual bool DoSendTo (const Packet &packet, Mac48Address const & to);
   virtual void NotifyConnected (void);
-  friend class WifiNetDeviceFactory;
+
   Ssid m_ssid;
   DcaTxop *m_dca;
   MacHighAdhoc *m_high;

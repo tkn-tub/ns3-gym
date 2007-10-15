@@ -26,18 +26,13 @@
 
 namespace ns3 {
 
-class WifiPhy;
-
-class MacParameters {
+class MacParameters 
+{
 public:
   MacParameters ();
-  
-  void Initialize80211a (WifiPhy const*phy);
+
+  void Initialize (Time ctsDelay, Time ackDelay);
   void SetSlotTime (Time slotTime);
-  void SetMaxSsrc (uint32_t ssrc);
-  void SetMaxSlrc (uint32_t ssrc);
-  void SetRtsCtsThreshold (uint32_t threshold);
-  void SetFragmentationThreshold (uint32_t threshold);
 
   // XXX AP-specific
   Time GetBeaconInterval (void) const;
@@ -53,13 +48,13 @@ public:
   Time GetCtsTimeout (void) const;
   Time GetAckTimeout (void) const;
   Time GetMsduLifetime (void) const;
-  uint32_t GetMaxQueueSize (void) const;
   Time GetMaxPropagationDelay (void) const;
 
   uint32_t GetMaxMsduSize (void) const;
   double GetCapLimit (void) const;
   double GetMinEdcaTrafficProportion (void) const;
 private:
+  void Initialize80211a (void);
   Time m_ctsTimeout;
   Time m_ackTimeout;
   Time m_sifs;

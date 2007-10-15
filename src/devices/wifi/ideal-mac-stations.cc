@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ideal-mac-stations.h"
-#include "wifi-phy.h"
+#include "ns3/assert.h"
 #include <math.h>
 
 #define noIDEAL_DEBUG 1
@@ -61,15 +61,9 @@ IdealMacStations::GetSnrThreshold (WifiMode mode) const
 }
 
 void 
-IdealMacStations::InitializeThresholds (const WifiPhy *phy, double ber)
+IdealMacStations::AddModeSnrThreshold (WifiMode mode, double snr)
 {
-  uint8_t nModes = phy->GetNModes ();
-  for (uint8_t i = 0; i < nModes; i++) 
-    {
-      WifiMode mode = phy->GetMode (i);
-      double snr = phy->CalculateSnr (mode, ber);
-      m_thresholds.push_back (std::make_pair (snr,mode));
-    }
+  m_thresholds.push_back (std::make_pair (snr,mode));
 }
 
 IdealMacStation::IdealMacStation (IdealMacStations *stations)

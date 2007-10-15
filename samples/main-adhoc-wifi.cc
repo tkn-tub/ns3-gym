@@ -19,7 +19,6 @@
  */
 
 #include "ns3/wifi-net-device.h"
-#include "ns3/wifi-net-device-factory.h"
 #include "ns3/wifi-channel.h"
 #include "ns3/simulator.h"
 #include "ns3/callback.h"
@@ -38,11 +37,11 @@
 using namespace ns3;
 
 static Ptr<Node>
-CreateAdhocNode (Ptr<WifiNetDeviceFactory> factory, Ptr<WifiChannel> channel,
+CreateAdhocNode (Ptr<WifiChannel> channel,
                  Position position, const char *address)
 {
   Ptr<Node> node = Create<InternetNode> ();  
-  Ptr<AdhocWifiNetDevice> device = factory->CreateAdhoc (node);
+  Ptr<AdhocWifiNetDevice> device = Create<AdhocWifiNetDevice> (node);
   device->ConnectTo (channel);
   Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
   mobility->Set (position);
@@ -91,22 +90,21 @@ int main (int argc, char *argv[])
   //Simulator::EnableLogTo ("80211.log");
 
 
-  Ptr<WifiNetDeviceFactory> factory = Create<WifiNetDeviceFactory> ();
-  // force rts/cts on all the time.
-  factory->SetMacRtsCtsThreshold (2200);
-  factory->SetMacFragmentationThreshold (2200);
-  //factory->SetCr (5, 5);
-  //factory->SetIdeal (1e-5);
-  factory->SetAarf ();
-  //factory->SetArf ();
+  // enable rts cts all the time.
+  DefaultValue::Bind ("WifiRtsCtsThreshold", "0");
+  // disable fragmentation
+  DefaultValue::Bind ("WifiFragmentationThreshold", "2200");
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "Aarf");
+  //DefaultValue::Bind ("WifiRateControlAlgorithm", "Arf");
+
   Ptr<WifiChannel> channel = Create<WifiChannel> ();
 
-  Ptr<Node> a = CreateAdhocNode (factory, channel, 
+  Ptr<Node> a = CreateAdhocNode (channel, 
                                  Position (5.0,0.0,0.0),
                                  "192.168.0.1");
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, a);
 
-  Ptr<Node> b = CreateAdhocNode (factory, channel,
+  Ptr<Node> b = CreateAdhocNode (channel,
                                  Position (0.0, 0.0, 0.0),
                                  "192.168.0.2");
 
@@ -116,13 +114,6 @@ int main (int argc, char *argv[])
                                                    ConstantVariable (0));
   app->Start (Seconds (0.5));
   app->Stop (Seconds (43.0));
-
-#if 0
-  TraceContainer container = TraceContainer ();
-  wifiServer->RegisterTraces (&container);
-  container.SetCallback ("80211-packet-rx", 
-                         MakeCallback (&ThroughputPrinter::Receive, printer));
-#endif
 
   Simulator::Run ();
 

@@ -53,9 +53,9 @@ MacHighNqap::SetDcaTxop (DcaTxop *dca)
   m_dca->SetTxFailedCallback (MakeCallback (&MacHighNqap::TxFailed, this));
 }
 void 
-MacHighNqap::SetInterface (WifiNetDevice *interface)
+MacHighNqap::SetDevice (WifiNetDevice *device)
 {
-  m_interface = interface;
+  m_device = device;
 }
 void 
 MacHighNqap::SetStations (MacStations *stations)
@@ -83,7 +83,7 @@ MacHighNqap::ForwardDown (Packet packet, Mac48Address from, Mac48Address to)
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr1 (to);
-  hdr.SetAddr2 (m_interface->GetSelfAddress ());
+  hdr.SetAddr2 (m_device->GetSelfAddress ());
   hdr.SetAddr3 (from);
   hdr.SetDsFrom ();
   hdr.SetDsNotTo ();
@@ -92,7 +92,7 @@ MacHighNqap::ForwardDown (Packet packet, Mac48Address from, Mac48Address to)
 void 
 MacHighNqap::Queue (Packet packet, Mac48Address to)
 {
-  ForwardDown (packet, m_interface->GetSelfAddress (), to);
+  ForwardDown (packet, m_device->GetSelfAddress (), to);
 }
 SupportedRates
 MacHighNqap::GetSupportedRates (void)
@@ -106,13 +106,13 @@ MacHighNqap::SendProbeResp (Mac48Address to)
   WifiMacHeader hdr;
   hdr.SetProbeResp ();
   hdr.SetAddr1 (to);
-  hdr.SetAddr2 (m_interface->GetSelfAddress ());
-  hdr.SetAddr3 (m_interface->GetSelfAddress ());
+  hdr.SetAddr2 (m_device->GetSelfAddress ());
+  hdr.SetAddr3 (m_device->GetSelfAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   Packet packet;
   MgtProbeResponseHeader probe;
-  probe.SetSsid (m_interface->GetSsid ());
+  probe.SetSsid (m_device->GetSsid ());
   SupportedRates rates = GetSupportedRates ();
   probe.SetSupportedRates (rates);
   probe.SetBeaconIntervalUs (m_beaconIntervalUs);
@@ -127,8 +127,8 @@ MacHighNqap::SendAssocResp (Mac48Address to)
   WifiMacHeader hdr;
   hdr.SetAssocResp ();
   hdr.SetAddr1 (to);
-  hdr.SetAddr2 (m_interface->GetSelfAddress ());
-  hdr.SetAddr3 (m_interface->GetSelfAddress ());
+  hdr.SetAddr2 (m_device->GetSelfAddress ());
+  hdr.SetAddr3 (m_device->GetSelfAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
   Packet packet;
@@ -171,19 +171,19 @@ MacHighNqap::Receive (Packet packet, WifiMacHeader const *hdr)
     {
       if (!hdr->IsFromDs () && 
           hdr->IsToDs () &&
-          hdr->GetAddr1 () == m_interface->GetSelfAddress () &&
+          hdr->GetAddr1 () == m_device->GetSelfAddress () &&
           station->IsAssociated ()) 
         {
-          if (hdr->GetAddr3 () == m_interface->GetSelfAddress ()) 
+          if (hdr->GetAddr3 () == m_device->GetSelfAddress ()) 
             {
-              m_forwardUp (packet);
+              m_forwardUp (packet, hdr->GetAddr2 ());
             } 
           else 
             {
               ForwardDown (packet,
                            hdr->GetAddr2 (), 
                            hdr->GetAddr3 ());
-              m_forwardUp (packet);
+              m_forwardUp (packet, hdr->GetAddr2 ());
             }
         } 
       else if (hdr->IsFromDs () &&
@@ -205,7 +205,7 @@ MacHighNqap::Receive (Packet packet, WifiMacHeader const *hdr)
           NS_ASSERT (hdr->GetAddr1 ().IsBroadcast ());
           SendProbeResp (hdr->GetAddr2 ());
         } 
-      else if (hdr->GetAddr1 () == m_interface->GetSelfAddress ()) 
+      else if (hdr->GetAddr1 () == m_device->GetSelfAddress ()) 
         {
           if (hdr->IsAssocReq ()) 
             {

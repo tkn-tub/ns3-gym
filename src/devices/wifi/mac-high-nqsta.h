@@ -39,7 +39,7 @@ class Watchdog;
 
 class MacHighNqsta {
 public:
-  typedef Callback<void, Packet > ForwardCallback;
+  typedef Callback<void, Packet, const Mac48Address &> ForwardCallback;
   typedef Callback<void> AssociatedCallback;
   typedef Callback<void> DisAssociatedCallback;
 
@@ -47,7 +47,7 @@ public:
   ~MacHighNqsta ();
 
   void SetDcaTxop (DcaTxop *dca);
-  void SetInterface (WifiNetDevice *interface);
+  void SetDevice (WifiNetDevice *device);
   void SetForwardCallback (ForwardCallback callback);
   void SetAssociatedCallback (AssociatedCallback callback);
   void SetDisAssociatedCallback (DisAssociatedCallback callback);
@@ -87,7 +87,7 @@ private:
   Time m_assocRequestTimeout;
   EventId m_probeRequestEvent;
   EventId m_assocRequestEvent;
-  WifiNetDevice *m_interface;
+  WifiNetDevice *m_device;
   ForwardCallback m_forward;
   AssociatedCallback m_associatedCallback;
   DisAssociatedCallback m_disAssociatedCallback;

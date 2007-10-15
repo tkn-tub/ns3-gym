@@ -31,11 +31,11 @@ def build(bld):
         'mac-high-nqap.cc',
         'mac-high-nqsta.cc',
         'wifi-net-device.cc',
+        'wifi-default-parameters.cc'
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
         'wifi-net-device.h',
-        'wifi-net-device-factory.h',
         'wifi-channel.h',
         'wifi-mode.h',
         'ssid.h',
