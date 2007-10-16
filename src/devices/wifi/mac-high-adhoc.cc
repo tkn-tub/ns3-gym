@@ -22,16 +22,9 @@
 #include "dca-txop.h"
 #include "wifi-net-device.h"
 #include "ns3/packet.h"
+#include "ns3/log.h"
 
-#define noADHOC_TRACE 1
-
-#ifdef ADHOC_TRACE
-# include <iostream>
-# define TRACE(x) \
-  std::cout << "HIGH ADHOC "<<x<<std::endl;
-#else /* ADHOC_TRACE */
-# define TRACE(x)
-#endif /* ADHOC_TRACE */
+NS_LOG_COMPONENT_DEFINE ("MacHighAdhoc");
 
 namespace ns3 {
 
@@ -68,8 +61,7 @@ MacHighAdhoc::GetBssid (void) const
 void 
 MacHighAdhoc::Enqueue (Packet packet, Mac48Address to)
 {
-  TRACE ("enqueue size="<<packet.GetSize ()<<", to="<<to<<
-         ", queueSize="<<m_queue->GetSize ());
+  NS_LOG_DEBUG ("enqueue size="<<packet.GetSize ()<<", to="<<to);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_DATA);
   hdr.SetAddr1 (to);
@@ -83,7 +75,7 @@ MacHighAdhoc::Enqueue (Packet packet, Mac48Address to)
 void 
 MacHighAdhoc::Receive (Packet packet, WifiMacHeader const *hdr)
 {
-  TRACE ("received size="<<packet.GetSize ()<<", from="<<hdr->GetAddr2 ());
+  NS_LOG_DEBUG ("received size="<<packet.GetSize ()<<", from="<<hdr->GetAddr2 ());
   m_callback (packet, hdr->GetAddr2 ());
 }
 
