@@ -385,6 +385,20 @@ public:
 
   /**
    * \param i index of ipv4 interface
+   * \param metric routing metric (cost) associated to the underlying 
+   *          ipv4 interface
+   */
+  virtual void SetMetric (uint32_t i, uint16_t metric) = 0;
+
+  /**
+   * \param i index of ipv4 interface
+   * \returns routing metric (cost) associated to the underlying 
+   *          ipv4 interface
+   */
+  virtual uint16_t GetMetric (uint32_t i) const = 0;
+
+  /**
+   * \param i index of ipv4 interface
    * \returns the address associated to the underlying ipv4 interface
    */
   virtual Ipv4Address GetAddress (uint32_t i) const = 0;

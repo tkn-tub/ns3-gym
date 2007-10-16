@@ -43,23 +43,6 @@ class TimerImpl;
 class Timer 
 {
 public:
-  enum SchedulePolicy {
-    /**
-     * This policy cancels the event before scheduling a new event 
-     * for each call to Timer::Schedule.
-     */
-    CANCEL_ON_SCHEDULE = (1<<0),
-    /**
-     * This policy removes the event from the simulation event list 
-     * before scheduling a new event for each call to Timer::Schedule. 
-     */
-    REMOVE_ON_SCHEDULE = (1<<1),
-    /**
-     * This policy enforces a check before each call to Timer::Schedule
-     * to verify that the timer has already expired.
-     */
-    CHECK_ON_SCHEDULE = (1<<2),
-  };
   enum DestroyPolicy {
     /**
      * This policy cancels the event from the destructor of the Timer
@@ -77,15 +60,6 @@ public:
      */
     CHECK_ON_DESTROY = (1<<5)
   };
-  enum GarbageCollectPolicy {
-    /**
-     * Every event scheduled with this policy is kept track of by an
-     * event garbage collector which makes sure that all events
-     * of timers with a GARBAGE_COLLECT policy are cancelled at the
-     * end of the simulation.
-     */
-    GARBAGE_COLLECT = (1<<6)
-  };
   enum State {
     RUNNING,
     EXPIRED,
@@ -93,21 +67,13 @@ public:
   };
   /**
    * create a timer with a default event lifetime management policy:
-   *  - CHECK_ON_SCHEDULE
    *  - CHECK_ON_DESTROY
    */
   Timer ();
   /**
-   * \param scheduleFlags the event lifetime management policies to use for schedule events
    * \param destroyFlags the event lifetime management policies to use for destroy events
    */
-  Timer (enum SchedulePolicy schedulePolicy, 
-	 enum DestroyPolicy destroyPolicy);
-  /**
-   * \param policy the garbage collect policy. Only one
-   *        value is possible.
-   */
-  Timer (enum GarbageCollectPolicy policy);
+  Timer (enum DestroyPolicy destroyPolicy);
   ~Timer ();
 
   /**

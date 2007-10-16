@@ -1,5 +1,7 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
+ * Copyright (c) 2007 INESC Porto
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation;
@@ -12,22 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt>
  */
 
-#include "ns3/log.h"
-#include "ns3/debug.h"
+#include "olsr-agent.h"
+#include "olsr-agent-impl.h"
 
-NS_LOG_COMPONENT_DEFINE ("HelloSimulator");
+namespace ns3 {
 
-using namespace ns3;
+const InterfaceId OlsrAgent::iid = MakeInterfaceId ("OlsrAgent", Object::iid);
+const ClassId OlsrAgent::cid = MakeClassId< OlsrAgentImpl, Ptr<Node> > ("OlsrAgent", OlsrAgent::iid);
 
-int 
-main (int argc, char *argv[])
-{
-  DebugComponentEnable ("Log");
-
-  //  LogComponentEnable ("HelloSimulator", 
-  //    LogLevel (LOG_LEVEL_INFO | LOG_PREFIX_ALL));
-
-  NS_LOG_INFO ("Hello Simulator");
 }

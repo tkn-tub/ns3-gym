@@ -104,6 +104,59 @@ PointToPointTopology::AddIpv4Addresses(
 }
 
 void
+PointToPointTopology::SetIpv4Metric(
+  Ptr<const PointToPointChannel> chan,
+  Ptr<Node> n1, Ptr<Node> n2, const uint16_t metric)
+{
+
+  // The PointToPoint channel is used to find the relevant NetDevices
+  NS_ASSERT (chan->GetNDevices () == 2);
+  Ptr<NetDevice> nd1 = chan->GetDevice (0);
+  Ptr<NetDevice> nd2 = chan->GetDevice (1);
+  // Make sure that nd1 belongs to n1 and nd2 to n2
+  if ( (nd1->GetNode ()->GetId () == n2->GetId () ) && 
+       (nd2->GetNode ()->GetId () == n1->GetId () ) )
+    {
+      std::swap(nd1, nd2);
+    }
+  NS_ASSERT (nd1->GetNode ()->GetId () == n1->GetId ());
+  NS_ASSERT (nd2->GetNode ()->GetId () == n2->GetId ());
+  
+  // The NetDevice ifIndex does not correspond to the
+  // ifIndex used by Ipv4.  Therefore, we have to iterate
+  // through the NetDevices until we find the Ipv4 ifIndex
+  // that corresponds to NetDevice nd1
+  // Get interface indexes for both nodes corresponding to the right channel
+  uint32_t index = 0;
+  bool found = false;
+  Ptr<Ipv4> ip1 = n1->QueryInterface<Ipv4> (Ipv4::iid);
+  for (uint32_t i = 0; i < ip1->GetNInterfaces (); i++)
+    {
+      if (ip1 ->GetNetDevice (i) == nd1)
+        {
+          index = i;
+          found = true;
+        }
+    }
+  NS_ASSERT(found);
+  ip1->SetMetric (index, metric);
+
+  index = 0;
+  found = false;
+  Ptr<Ipv4> ip2 = n2->QueryInterface<Ipv4> (Ipv4::iid);
+  for (uint32_t i = 0; i < ip2->GetNInterfaces (); i++)
+    {
+      if (ip2 ->GetNetDevice (i) == nd2)
+        {
+          index = i;
+          found = true;
+        }
+    }
+  NS_ASSERT(found);
+  ip2->SetMetric (index, metric);
+}
+
+void
 PointToPointTopology::AddIpv4Routes (
   Ptr<Node> n1, Ptr<Node> n2, Ptr<const PointToPointChannel> chan)
 { 

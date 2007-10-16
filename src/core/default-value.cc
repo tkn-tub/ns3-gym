@@ -496,6 +496,8 @@ DefaultValueTest::RunTests (void)
   DefaultValueList::Remove ("bool-a");
   DefaultValueList::Remove ("test-i");
   DefaultValueList::Remove ("test-c");
+  DefaultValueList::Remove ("test-x");
+  DefaultValueList::Remove ("test-y");
   DefaultValueList::Remove ("test-ui32");
   
   return result;

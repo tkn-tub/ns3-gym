@@ -201,6 +201,18 @@ Ipv4Impl::GetAddress (uint32_t i) const
   return m_ipv4->GetAddress (i);
 }
 
+void
+Ipv4Impl::SetMetric (uint32_t i, uint16_t metric) 
+{
+  m_ipv4->SetMetric (i, metric);
+}
+
+uint16_t
+Ipv4Impl::GetMetric (uint32_t i) const
+{
+  return m_ipv4->GetMetric (i);
+}
+
 bool
 Ipv4Impl::GetIfIndexForDestination (Ipv4Address dest, uint32_t &ifIndex) const
 {

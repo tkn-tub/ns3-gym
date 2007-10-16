@@ -20,7 +20,6 @@
 #include "timer.h"
 #include "simulator.h"
 #include "simulation-singleton.h"
-#include "event-garbage-collector.h"
 
 namespace ns3 {
 
@@ -31,16 +30,8 @@ Timer::Timer ()
     m_impl (0)
 {}
 
-Timer::Timer (enum SchedulePolicy schedulePolicy, 
-	      enum DestroyPolicy destroyPolicy)
-  : m_flags (schedulePolicy | destroyPolicy),
-    m_delay (FemtoSeconds (0)),
-    m_event (),
-    m_impl (0)
-{}
-
-Timer::Timer (enum GarbageCollectPolicy policy)
-  : m_flags (GARBAGE_COLLECT),
+Timer::Timer (enum DestroyPolicy destroyPolicy)
+  : m_flags (destroyPolicy),
     m_delay (FemtoSeconds (0)),
     m_event (),
     m_impl (0)
@@ -149,26 +140,11 @@ void
 Timer::Schedule (Time delay)
 {
   NS_ASSERT (m_impl != 0);
-  if (m_flags & CHECK_ON_SCHEDULE)
+  if (m_event.IsRunning ())
     {
-      if (m_event.IsRunning ())
-	{
-	  NS_FATAL_ERROR ("Event is still running while re-scheduling.");
-	}
-    }
-  else if (m_flags & CANCEL_ON_SCHEDULE)
-    {
-      m_event.Cancel ();
-    }
-  else if (m_flags & REMOVE_ON_SCHEDULE)
-    {
-      Simulator::Remove (m_event);
+      NS_FATAL_ERROR ("Event is still running while re-scheduling.");
     }
   m_event = m_impl->Schedule (delay);
-  if (m_flags & GARBAGE_COLLECT)
-    {
-      SimulationSingleton<EventGarbageCollector>::Get ()->Track (m_event);
-    }
 }
 
 void

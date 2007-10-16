@@ -61,6 +61,7 @@
 #include "ns3/point-to-point-topology.h"
 #include "ns3/onoff-application.h"
 #include "ns3/packet-sink.h"
+#include "ns3/olsr.h"
 
 using namespace ns3;
 
@@ -154,10 +155,8 @@ main (int argc, char *argv[])
   // NetDevice creation, IP Address assignment, and routing) are 
   // separated because there may be a need to postpone IP Address
   // assignment (emulation) or modify to use dynamic routing
-  NS_LOG_INFO ("Add Static Routes.");
-  PointToPointTopology::AddIpv4Routes(n0, n2, channel0);
-  PointToPointTopology::AddIpv4Routes(n1, n2, channel1);
-  PointToPointTopology::AddIpv4Routes(n2, n3, channel2);
+  NS_LOG_INFO ("Enabling OLSR Routing.");
+  olsr::EnableAllNodes ();
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
@@ -214,7 +213,7 @@ main (int argc, char *argv[])
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-point-to-point.tr file
   NS_LOG_INFO ("Configure Tracing.");
-  AsciiTrace asciitrace ("simple-point-to-point.tr");
+  AsciiTrace asciitrace ("simple-point-to-point-olsr.tr");
   asciitrace.TraceAllQueues ();
   asciitrace.TraceAllNetDeviceRx ();
 
@@ -223,7 +222,7 @@ main (int argc, char *argv[])
   // simple-point-to-point.pcap-<nodeId>-<interfaceId>
   // and can be read by the "tcpdump -r" command (use "-tt" option to
   // display timestamps correctly)
-  PcapTrace pcaptrace ("simple-point-to-point.pcap");
+  PcapTrace pcaptrace ("simple-point-to-point-olsr.pcap");
   pcaptrace.TraceAllIp ();
 
   NS_LOG_INFO ("Run Simulation.");

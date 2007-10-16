@@ -21,6 +21,7 @@ all_modules = (
     'applications/onoff',
     'applications/packet-sink',
     'applications/udp-echo',
+    'routing/olsr',
     'routing/global-routing',
     'mobility',
     'devices/wifi',

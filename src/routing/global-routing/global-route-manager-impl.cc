@@ -529,7 +529,8 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 // Get w_lsa:  In case of V is Router-LSA
       if (v->GetVertexType () == SPFVertex::VertexRouter) 
         {
-          NS_LOG_LOGIC ("Examining " << v->GetVertexId () << "'s " <<
+          NS_LOG_LOGIC ("Examining link " << i << " of " << 
+            v->GetVertexId () << "'s " <<
             v->GetLSA ()->GetNLinkRecords () << " link records");
 //
 // (a) If this is a link to a stub network, examine the next link in V's LSA.
@@ -637,7 +638,8 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
               candidate.Push (w);
               NS_LOG_LOGIC ("Pushing " << 
                 w->GetVertexId () << ", parent vertexId: " << 
-                v->GetVertexId ());
+                v->GetVertexId () << ", distance: " <<
+                w->GetDistanceFromRoot ());
             }
         }
       else if (w_lsa->GetStatus () == GlobalRoutingLSA::LSA_SPF_CANDIDATE)
@@ -688,7 +690,7 @@ GlobalRouteManagerImpl::SPFNext (SPFVertex* v, CandidateQueue& candidate)
 }
 
 //
-// This method is derived from quagga ospf_next_hop_calculation() 16.1.1.  
+// This method is derived from quagga ospf_nexthop_calculation() 16.1.1.  
 //
 // Calculate nexthop from root through V (parent) to vertex W (destination)
 // with given distance from root->W.
@@ -784,11 +786,13 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 //
           w->SetOutgoingInterfaceId (
             FindOutgoingInterfaceId (l->GetLinkData ()));
-
+          w->SetDistanceFromRoot (distance);
+          w->SetParent (v);
           NS_LOG_LOGIC ("Next hop from " << 
             v->GetVertexId () << " to " << w->GetVertexId () << 
             " goes through next hop " << w->GetNextHop () <<
-            " via outgoing interface " << w->GetOutgoingInterfaceId ());
+            " via outgoing interface " << w->GetOutgoingInterfaceId () <<
+            " with distance " << distance);
         }  // end W is a router vertes
       else 
         {
@@ -804,7 +808,8 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
           w->SetParent (v);
           NS_LOG_LOGIC ("Next hop from " << 
             v->GetVertexId () << " to network " << w->GetVertexId () << 
-            " via outgoing interface " << w->GetOutgoingInterfaceId ());
+            " via outgoing interface " << w->GetOutgoingInterfaceId () <<
+            " with distance " << distance);
           return 1;
         }
     } // end v is the root
@@ -997,6 +1002,7 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
   m_spfroot= v;
   v->SetDistanceFromRoot (0);
   v->GetLSA ()->SetStatus (GlobalRoutingLSA::LSA_SPF_IN_SPFTREE);
+  NS_LOG_LOGIC ("Starting SPFCalculate for node " << root);
 
   for (;;)
     {

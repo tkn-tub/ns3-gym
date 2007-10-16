@@ -1,24 +1,32 @@
 Steps in doing an ns-3 release
 
+0. check out a clean ns-3-dev somewhere
 1. prepare the source files
    - revise and check in AUTHORS, if needed
    - revise and check in RELEASE_NOTES
    - update and check in VERSION to the latest release number
 2. make a new "architecture.pdf" document and place it in the doc/ directory
-3. cd ns-3-dev; ./waf configure; ./waf dist
+   of the ns-3-dev working directory
+3. ./waf configure; ./waf dist
+   - this will create a ns-3.0.x.tar.bz2 tarball
 4. test tarball on release platforms (waf check and maybe some other scripts)
-5. tag ns-3-dev with "release ns-3.0.X"
-  - hg tag "release ns-3.0.x"
-  - hg push 
+5. once you are happy with the tarball, tag ns-3-dev with "release ns-3.0.X"
+   - hg tag "release ns-3.0.x"
+   - hg push 
 6. clone the tagged ns-3-dev and place it on the repository
-  - ssh code.nsnam.org; sudo; su code;
-  - cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.0.x
-  - cd /home/code/repos/ns-3.0.x/.hg and edit the hgrc appropriately
-7. upload "ns-3.0.x.tar.bz2" to the releases/ directory on the server
+   - ssh code.nsnam.org; sudo; su code;
+   - cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.0.x
+   - cd /home/code/repos/ns-3.0.x/.hg and edit the hgrc appropriately
+7. upload "ns-3.0.x.tar.bz2" to the /var/www/html/releases/ directory on 
+   the www.nsnam.org server
 8. update web page
    - add link to news.html
-   - update download.html
-   - update roadmap.html
+   - update getting_started.html
+   - update documents.html
+   - update roadmap on wiki
    - build and update Doxygen directory on the server
+     -- ssh www.nsnam.org; sudo tcsh; su nsnam;
+     -- ~/bin/update-doxygen-release
    - update and upload software architecture document (PDF, HTML)
+     -- note:  HTML image generation is not currently automatic
 9. announce to ns-developers, with summary of release notes

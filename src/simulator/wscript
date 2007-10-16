@@ -61,7 +61,6 @@ def build(bld):
         'simulator.cc',
         'time-default-value.cc',
         'timer.cc',
-        'event-garbage-collector.cc',
         'watchdog.cc',
         ]
 

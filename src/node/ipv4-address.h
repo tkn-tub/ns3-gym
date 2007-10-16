@@ -73,7 +73,10 @@ public:
    * \param other address to which to compare this address
    * \return True if the addresses are equal. False otherwise.
    */
-  bool IsEqual (Ipv4Address other) const;
+  bool IsEqual (const Ipv4Address &other) const
+  {
+    return m_address == other.m_address;
+  }
 
   /** 
    * \brief Get the host-order 32-bit IP address
@@ -142,6 +145,10 @@ private:
   Address ConvertTo (void) const;
   static uint8_t GetType (void);
   uint32_t m_address;
+
+  friend bool operator == (Ipv4Address const &a, Ipv4Address const &b);
+  friend bool operator != (Ipv4Address const &a, Ipv4Address const &b);
+  friend bool operator < (Ipv4Address const &addrA, Ipv4Address const &addrB);
 };
 
 
@@ -177,9 +184,19 @@ private:
 std::ostream& operator<< (std::ostream& os, Ipv4Address const& address);
 std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask);
 
-bool operator == (Ipv4Address const &a, Ipv4Address const &b);
-bool operator != (Ipv4Address const &a, Ipv4Address const &b);
-bool operator < (Ipv4Address const &addrA, Ipv4Address const &addrB);
+inline bool operator == (const Ipv4Address &a, const Ipv4Address &b)
+{
+  return (a.m_address == b.m_address);
+}
+inline bool operator != (const Ipv4Address &a, const Ipv4Address &b)
+{
+  return (a.m_address != b.m_address);
+}
+inline bool operator < (const Ipv4Address &a, const Ipv4Address &b)
+{
+  return (a.m_address < b.m_address);
+}
+
 
 class Ipv4AddressHash : public std::unary_function<Ipv4Address, size_t> {
 public:
