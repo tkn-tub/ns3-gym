@@ -84,12 +84,12 @@ following set of platforms:
   - linux x86 gcc 4.2, 4.1, and, 3.4.
   - linux x86_64 gcc 4.0
   - MacOS X ppc and x86
+  - cygwin
 
 The current codebase is expected to fail to build on
 the following platforms:
   - gcc 3.3 and earlier
   - optimized builds on linux x86 gcc 4.0 
-  - cygwin
 
 Other platforms may or may not work: we welcome 
 patches to improve the portability of the code to these
@@ -102,17 +102,17 @@ On recent Linux systems, once you have built ns-3, it
 should be easy to run the sample programs with the
 following command:
 
-./waf --run simple-p2p
+./waf --run simple-point-to-point
 
-That program should generate a simple-p2p.tr text 
-trace file and a set of simple-p2p-xx-xx.pcap binary
+That program should generate a simple-point-to-point.tr text 
+trace file and a set of simple-point-to-point-xx-xx.pcap binary
 pcap trace files, which can be read by tcpdump.
 
 5) Getting access to the ns-3 documentation
 -------------------------------------------
 
 Once you have verified that your build of ns-3 works by running
-the simple-p2p example as outlined in 4) above, it is
+the simple-point-to-point example as outlined in 4) above, it is
 quite likely that you will want to get started on reading
 some ns-3 documentation. 
 
