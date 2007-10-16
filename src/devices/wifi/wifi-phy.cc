@@ -29,7 +29,7 @@
 #include "ns3/packet.h"
 #include "ns3/random-variable.h"
 
-#include <cassert>
+#include "ns3/assert.h"
 #include <math.h>
 
 
@@ -289,7 +289,7 @@ WifiPhy::ReceivePacket (Packet const packet,
         NotifySyncStart (rxDuration);
         SwitchToSync (rxDuration);
         m_startSyncLogger (rxDuration, rxPowerW);
-        assert (m_endSyncEvent.IsExpired ());
+        NS_ASSERT (m_endSyncEvent.IsExpired ());
         m_endSyncEvent = Simulator::Schedule (rxDuration, &WifiPhy::EndSync, this, 
                                               packet,
                                               event);
@@ -348,7 +348,7 @@ WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiPreamble preamble
    *    prevent it.
    *  - we are idle
    */
-  assert (!IsStateTx ());
+  NS_ASSERT (!IsStateTx ());
 
   if (IsStateSync ()) {
     m_endSyncEvent.Cancel ();
@@ -386,7 +386,7 @@ WifiPhy::CalculateSnr (WifiMode txMode, double ber) const
   precision = 1e-12;
   while (high - low > precision) 
     {
-      assert (high >= low);
+      NS_ASSERT (high >= low);
       double middle = low + (high - low) / 2;
       if ((1 - GetChunkSuccessRate (txMode, middle, 1)) > ber) 
         {
@@ -489,7 +489,7 @@ WifiPhy::GetDelayUntilIdle (void)
     retval = Seconds (0);
     break;
   default:
-    assert (false);
+    NS_ASSERT (false);
     // NOTREACHED
     retval = Seconds (0);
     break;
@@ -589,8 +589,8 @@ WifiPhy::GetMaxPacketDuration (void) const
 double 
 WifiPhy::GetPowerDbm (uint8_t power) const
 {
-  assert (m_txPowerBaseDbm <= m_txPowerEndDbm);
-  assert (m_nTxPower > 0);
+  NS_ASSERT (m_txPowerBaseDbm <= m_txPowerEndDbm);
+  NS_ASSERT (m_nTxPower > 0);
   double dbm = m_txPowerBaseDbm + (m_txPowerEndDbm - m_txPowerBaseDbm) / m_nTxPower;
   return dbm;
 }
@@ -637,7 +637,7 @@ WifiPhy::LogPreviousIdleAndCcaBusyStates (void)
   Time now = Simulator::Now ();
   Time idleStart = Max (m_endCcaBusy, m_endSync);
   idleStart = Max (idleStart, m_endTx);
-  assert (idleStart <= now);
+  NS_ASSERT (idleStart <= now);
   if (m_endCcaBusy > m_endSync && 
       m_endCcaBusy > m_endTx) {
     Time ccaBusyStart = Max (m_endTx, m_endSync);
@@ -668,7 +668,7 @@ WifiPhy::SwitchToTx (Time txDuration)
     LogPreviousIdleAndCcaBusyStates ();
     break;
   default:
-    assert (false);
+    NS_ASSERT (false);
     break;
   }
   m_stateLogger (now, txDuration, 0);
@@ -679,8 +679,8 @@ WifiPhy::SwitchToTx (Time txDuration)
 void
 WifiPhy::SwitchToSync (Time rxDuration)
 {
-  assert (IsStateIdle () || IsStateCcaBusy ());
-  assert (!m_syncing);
+  NS_ASSERT (IsStateIdle () || IsStateCcaBusy ());
+  NS_ASSERT (!m_syncing);
   Time now = Simulator::Now ();
   switch (GetState ()) {
   case WifiPhy::IDLE:
@@ -693,27 +693,27 @@ WifiPhy::SwitchToSync (Time rxDuration)
   } break;
   case WifiPhy::SYNC:
   case WifiPhy::TX:
-    assert (false);
+    NS_ASSERT (false);
     break;
   }
   m_previousStateChangeTime = now;
   m_syncing = true;
   m_startSync = now;
   m_endSync = now + rxDuration;
-  assert (IsStateSync ());
+  NS_ASSERT (IsStateSync ());
 }
 void
 WifiPhy::SwitchFromSync (void)
 {
-  assert (IsStateSync ());
-  assert (m_syncing);
+  NS_ASSERT (IsStateSync ());
+  NS_ASSERT (m_syncing);
 
   Time now = Simulator::Now ();
   m_stateLogger (m_startSync, now - m_startSync, 1);
   m_previousStateChangeTime = now;
   m_syncing = false;
 
-  assert (IsStateIdle () || IsStateCcaBusy ());
+  NS_ASSERT (IsStateIdle () || IsStateCcaBusy ());
 }
 void
 WifiPhy::SwitchMaybeToCcaBusy (Time duration)
@@ -1094,7 +1094,7 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
   while (ni->end () != j) 
     {
       Time current = (*j).GetTime ();
-      assert (current >= previous);
+      NS_ASSERT (current >= previous);
     
       if (previous >= plcpPayloadStart) 
         {
@@ -1121,7 +1121,7 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
             } 
           else 
             {
-              assert (current >= plcpHeaderStart);
+              NS_ASSERT (current >= plcpHeaderStart);
               psr *= CalculateChunkSuccessRate (CalculateSnr (powerW, 
                                                               noiseInterferenceW, 
                                                               headerMode), 
@@ -1167,8 +1167,8 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
 void
 WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event)
 {
-  assert (IsStateSync ());
-  assert (event->GetEndTime () == Simulator::Now ());
+  NS_ASSERT (IsStateSync ());
+  NS_ASSERT (event->GetEndTime () == Simulator::Now ());
 
   NiChanges ni;
   double noiseInterferenceW = CalculateNoiseInterferenceW (event, &ni);

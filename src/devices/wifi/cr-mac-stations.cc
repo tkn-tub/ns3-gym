@@ -21,7 +21,7 @@
 #include "mac-stations.h"
 #include "cr-mac-stations.h"
 
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 

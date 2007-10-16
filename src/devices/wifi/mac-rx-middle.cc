@@ -22,7 +22,7 @@
 #include "ns3/packet.h"
 #include "wifi-mac-header.h"
 
-#include <cassert>
+#include "ns3/assert.h"
 #include <list>
 
 #define noRX_MIDDLE_TRACE 1
@@ -63,12 +63,12 @@ public:
     return m_defragmenting;
   }
   void AccumulateFirstFragment (Packet const packet) {
-    assert (!m_defragmenting);
+    NS_ASSERT (!m_defragmenting);
     m_defragmenting = true;
     m_fragments.push_back (packet);
   }
   Packet AccumulateLastFragment (Packet const packet) {
-    assert (m_defragmenting);
+    NS_ASSERT (m_defragmenting);
     m_fragments.push_back (packet);
     m_defragmenting = false;
     Packet full;
@@ -80,7 +80,7 @@ public:
     return full;
   }
   void AccumulateFragment (Packet const packet) {
-    assert (m_defragmenting);
+    NS_ASSERT (m_defragmenting);
     m_fragments.push_back (packet);
   }
   bool IsNextFragment (uint16_t sequenceControl) {
@@ -268,7 +268,7 @@ MacRxMiddle::Receive (Packet packet, WifiMacHeader const *hdr)
   OriginatorRxStatus *originator = Lookup (hdr);
   if (hdr->IsData ()) 
     {
-      assert (SequenceControlSmaller (originator->GetLastSequenceControl (), 
+      NS_ASSERT (SequenceControlSmaller (originator->GetLastSequenceControl (), 
                                       hdr->GetSequenceControl ()));
       // filter duplicates.
       if (IsDuplicate (hdr, originator)) 

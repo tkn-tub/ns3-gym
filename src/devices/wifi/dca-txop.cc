@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cassert>
+#include "ns3/assert.h"
 
 #include "ns3/packet.h"
 
@@ -137,7 +137,7 @@ public:
   }
 
   virtual void Cancel (void) {
-    assert (false);
+    NS_ASSERT (false);
   }
 
 private:
@@ -394,9 +394,9 @@ DcaTxop::AccessGrantedNow (void)
         }
       bool found;
       m_currentPacket = m_queue->Dequeue (&m_currentHdr, &found);
-      assert (found);
+      NS_ASSERT (found);
       m_hasCurrent = true;
-      assert (m_hasCurrent);
+      NS_ASSERT (m_hasCurrent);
       uint16_t sequence = m_txMiddle->GetNextSequenceNumberfor (&m_currentHdr);
       m_currentHdr.SetSequenceNumber (sequence);
       m_currentHdr.SetFragmentNumber (0);

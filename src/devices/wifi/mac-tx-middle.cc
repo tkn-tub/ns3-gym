@@ -18,7 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cassert>
+#include "ns3/assert.h"
 
 #include "mac-tx-middle.h"
 #include "wifi-mac-header.h"
@@ -42,7 +42,7 @@ MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
       !hdr->GetAddr1 ().IsBroadcast ()) 
     {
       uint8_t tid = hdr->GetQosTid ();
-      assert (tid < 16);
+      NS_ASSERT (tid < 16);
       retval = m_qosSequences[tid];
       m_qosSequences[tid]++;
       m_qosSequences[tid] %= 4096;

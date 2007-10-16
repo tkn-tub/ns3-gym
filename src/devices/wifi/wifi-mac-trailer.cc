@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "wifi-mac-trailer.h"
-#include <cassert>
+#include "ns3/assert.h"
 
 namespace ns3 {
 

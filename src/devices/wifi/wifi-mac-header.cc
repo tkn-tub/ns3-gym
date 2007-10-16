@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include <cassert>
+#include "ns3/assert.h"
 #include "ns3/address-utils.h"
 #include "wifi-mac-header.h"
 
@@ -262,7 +262,7 @@ WifiMacHeader::SetDuration (uint16_t duration)
 void 
 WifiMacHeader::SetDurationUs (uint64_t duration_us)
 {
-  assert (duration_us <= (1<<16) - 1);
+  NS_ASSERT (duration_us <= (1<<16) - 1);
   m_duration = static_cast<uint16_t> (duration_us);
 }
 
@@ -433,7 +433,7 @@ WifiMacHeader::GetType (void) const
     break;
   }
   // NOTREACHED
-  assert (false);
+  NS_ASSERT (false);
   return (enum WifiMacType_e)-1;
 }
 bool 
@@ -592,31 +592,31 @@ WifiMacHeader::IsMoreFragments (void) const
 bool 
 WifiMacHeader::IsQosBlockAck (void) const
 {
-  assert (IsQosData ());
+  NS_ASSERT (IsQosData ());
   return (m_qosAckPolicy == 3)?true:false;
 }
 bool 
 WifiMacHeader::IsQosNoAck (void) const
 {
-  assert (IsQosData ());
+  NS_ASSERT (IsQosData ());
   return (m_qosAckPolicy == 1)?true:false;
 }
 bool 
 WifiMacHeader::IsQosAck (void) const
 {
-  assert (IsQosData ());
+  NS_ASSERT (IsQosData ());
   return (m_qosAckPolicy == 0)?true:false;
 }
 uint8_t
 WifiMacHeader::GetQosTid (void) const
 {
-  assert (IsQosData ());
+  NS_ASSERT (IsQosData ());
   return m_qosTid;
 }
 uint8_t 
 WifiMacHeader::GetQosTxopLimit (void) const
 {
-  assert (IsQosData ());
+  NS_ASSERT (IsQosData ());
   return m_qosStuff;
 }
 
@@ -704,7 +704,7 @@ WifiMacHeader::GetSize (void) const
     case SUBTYPE_CTL_BACKREQ:
     case SUBTYPE_CTL_BACKRESP:
       // NOT IMPLEMENTED
-      assert (false);
+      NS_ASSERT (false);
       break;
     }
     break;
@@ -897,11 +897,11 @@ WifiMacHeader::Serialize (Buffer::Iterator i) const
     case SUBTYPE_CTL_BACKREQ:
     case SUBTYPE_CTL_BACKRESP:
       // NOT IMPLEMENTED
-      assert (false);
+      NS_ASSERT (false);
       break;
     default:
       //NOTREACHED
-      assert (false);
+      NS_ASSERT (false);
       break;
     }
     break;
@@ -918,7 +918,7 @@ WifiMacHeader::Serialize (Buffer::Iterator i) const
     } break;
   default:
     //NOTREACHED
-    assert (false);
+    NS_ASSERT (false);
     break;
   }
 }
@@ -947,7 +947,7 @@ WifiMacHeader::Deserialize (Buffer::Iterator start)
     case SUBTYPE_CTL_BACKREQ:
     case SUBTYPE_CTL_BACKRESP:
       // NOT IMPLEMENTED
-      assert (false);
+      NS_ASSERT (false);
       break;
     }
     break;

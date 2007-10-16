@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cassert>
+#include "ns3/assert.h"
 #include "mac-parameters.h"
 #include "wifi-default-parameters.h"
 
@@ -125,7 +125,7 @@ MacParameters::GetRtsCtsThreshold (void) const
 uint32_t 
 MacParameters::GetFragmentationThreshold (void) const
 {
-  assert (GetMaxMsduSize () / 16 < m_fragmentationThreshold);
+  NS_ASSERT (GetMaxMsduSize () / 16 < m_fragmentationThreshold);
   return m_fragmentationThreshold;
 }
 Time

@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ssid.h"
-#include <cassert>
+#include "ns3/assert.h"
 
 #define ELEMENT_ID (0)
 
@@ -50,7 +50,7 @@ Ssid::Ssid (char const *ssid)
 }
 Ssid::Ssid (char const ssid[32], uint8_t length)
 {
-  assert (length <= 32);
+  NS_ASSERT (length <= 32);
   uint8_t len = 0;
   while (len < length) 
     {
@@ -96,7 +96,7 @@ Ssid::GetLength (void) const
     {
       size++;
     }
-  assert (size <= 32);
+  NS_ASSERT (size <= 32);
   return size;
 }
 

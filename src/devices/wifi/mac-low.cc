@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <cassert>
+#include "ns3/assert.h"
 
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
@@ -207,7 +207,7 @@ MacLowTransmissionParameters::HasDurationId (void) const
 Time
 MacLowTransmissionParameters::GetDurationId (void) const
 {
-  assert (m_overrideDurationId != Seconds (0));
+  NS_ASSERT (m_overrideDurationId != Seconds (0));
   return m_overrideDurationId;
 }
 bool 
@@ -218,7 +218,7 @@ MacLowTransmissionParameters::HasNextPacket (void) const
 uint32_t 
 MacLowTransmissionParameters::GetNextPacketSize (void) const
 {
-  assert (HasNextPacket ());
+  NS_ASSERT (HasNextPacket ());
   return m_nextSize;
 }
 
@@ -366,7 +366,7 @@ MacLow::StartTransmission (Packet packet,
   m_listener = listener;
   m_txParams = parameters;
 
-  //assert (m_phy->IsStateIdle ());
+  //NS_ASSERT (m_phy->IsStateIdle ());
 
   TRACE ("startTx size="<< GetCurrentSize () << ", to=" << m_currentHdr.GetAddr1());
 
@@ -380,7 +380,7 @@ MacLow::StartTransmission (Packet packet,
     }
 
   /* When this method completes, we have taken ownership of the medium. */
-  assert (m_phy->IsStateTx ());  
+  NS_ASSERT (m_phy->IsStateTx ());  
 }
 
 void
@@ -390,7 +390,7 @@ MacLow::ReceiveError (Packet packet, double rxSnr)
   m_dropError (packet);
   if (m_txParams.MustWaitFastAck ()) 
     {
-      assert (m_fastAckFailedTimeoutEvent.IsExpired ());
+      NS_ASSERT (m_fastAckFailedTimeoutEvent.IsExpired ());
       m_fastAckFailedTimeoutEvent = Simulator::Schedule (GetSifs (), 
                                                          &MacLow::FastAckFailedTimeout, this);
     }
@@ -418,7 +418,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
           hdr.GetAddr1 () == m_device->GetSelfAddress ()) 
         {
           TRACE ("rx RTS from=" << hdr.GetAddr2 () << ", schedule CTS");
-          assert (m_sendCtsEvent.IsExpired ());
+          NS_ASSERT (m_sendCtsEvent.IsExpired ());
           MacStation *station = m_stations->Lookup (hdr.GetAddr2 ());
           station->ReportRxOk (rxSnr, txMode);
           m_sendCtsEvent = Simulator::Schedule (GetSifs (),
@@ -449,7 +449,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
       
       m_ctsTimeoutEvent.Cancel ();
       m_listener->GotCts (rxSnr, txMode);
-      assert (m_sendDataEvent.IsExpired ());
+      NS_ASSERT (m_sendDataEvent.IsExpired ());
       m_sendDataEvent = Simulator::Schedule (GetSifs (), 
                                              &MacLow::SendDataAfterCts, this, 
                                              hdr.GetAddr1 (),
@@ -508,7 +508,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
       else if (hdr.IsData () || hdr.IsMgt ()) 
         {
           TRACE ("rx unicast/sendAck from=" << hdr.GetAddr2 ());
-          assert (m_sendAckEvent.IsExpired ());
+          NS_ASSERT (m_sendAckEvent.IsExpired ());
           m_sendAckEvent = Simulator::Schedule (GetSifs (),
                                                 &MacLow::SendAckAfterData, this,
                                                 hdr.GetAddr2 (), 
@@ -661,7 +661,7 @@ MacLow::NotifyNav (Time at, WifiMacHeader const *hdr)
    *
    * See section 9.9.2.2.1, 802.11e/D12.1
    */
-  assert (m_lastNavStart < at);
+  NS_ASSERT (m_lastNavStart < at);
   Time oldNavStart = m_lastNavStart;
   Time oldNavEnd = oldNavStart + m_lastNavDuration;
   Time newNavStart = at;
@@ -797,7 +797,7 @@ MacLow::SendRtsForPacket (void)
   Time txDuration = m_phy->CalculateTxDuration (GetRtsSize (), rtsTxMode, WIFI_PREAMBLE_LONG);
   Time timerDelay = txDuration + GetCtsTimeout ();
 
-  assert (m_ctsTimeoutEvent.IsExpired ());
+  NS_ASSERT (m_ctsTimeoutEvent.IsExpired ());
   m_ctsTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::CtsTimeout, this);
 
   Packet packet;
@@ -816,26 +816,26 @@ MacLow::StartDataTxTimers (void)
   if (m_txParams.MustWaitNormalAck ()) 
     {
       Time timerDelay = txDuration + GetAckTimeout ();
-      assert (m_normalAckTimeoutEvent.IsExpired ());
+      NS_ASSERT (m_normalAckTimeoutEvent.IsExpired ());
       m_normalAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::NormalAckTimeout, this);
     } 
   else if (m_txParams.MustWaitFastAck ()) 
     {
       Time timerDelay = txDuration + GetPifs ();
-      assert (m_fastAckTimeoutEvent.IsExpired ());
+      NS_ASSERT (m_fastAckTimeoutEvent.IsExpired ());
       m_fastAckTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::FastAckTimeout, this);
     } 
   else if (m_txParams.MustWaitSuperFastAck ()) 
     {
       Time timerDelay = txDuration + GetPifs ();
-      assert (m_superFastAckTimeoutEvent.IsExpired ());
+      NS_ASSERT (m_superFastAckTimeoutEvent.IsExpired ());
       m_superFastAckTimeoutEvent = Simulator::Schedule (timerDelay, 
                                                         &MacLow::SuperFastAckTimeout, this);
     } 
   else if (m_txParams.HasNextPacket ()) 
     {
       Time delay = txDuration + GetSifs ();
-      assert (m_waitSifsEvent.IsExpired ());
+      NS_ASSERT (m_waitSifsEvent.IsExpired ());
       m_waitSifsEvent = Simulator::Schedule (delay, &MacLow::WaitSifsAfterEndTx, this);
     } 
   else 
@@ -944,7 +944,7 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode)
   /* send the third step in a 
    * RTS/CTS/DATA/ACK hanshake 
    */
-  assert (m_hasCurrent);
+  NS_ASSERT (m_hasCurrent);
   WifiMode dataTxMode = GetDataTxMode (m_currentHdr.GetAddr1 (), GetCurrentSize ());
 
   TRACE ("tx " << m_currentHdr.GetTypeString () << " to=" << m_currentHdr.GetAddr2 () <<
