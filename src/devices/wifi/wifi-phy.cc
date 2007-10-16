@@ -27,38 +27,11 @@
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/random-variable.h"
-
 #include "ns3/assert.h"
+#include "ns3/log.h"
 #include <math.h>
 
-
-#define nopePHY80211_DEBUG 1
-#define nopePHY80211_STATE_DEBUG 1
-
-/* All the state transitions are marked by these macros. */
-#ifdef PHY80211_STATE_DEBUG
-#include <iostream>
-#  define STATE_FROM(from) \
-std::cout << "PHY self=" << this << " old=" << StateToString (from);
-#  define STATE_TO(to) \
-std::cout << " new=" << StateToString (to);
-#  define STATE_AT(at) \
-std::cout << " at=" << at << std::endl;
-#else
-#  define STATE_FROM(from)
-#  define STATE_TO(from)
-#  define STATE_AT(at)
-#endif
-
-#ifdef PHY80211_DEBUG
-#include <iostream>
-#  define TRACE(x) \
-  std::cout << "PHY80211 TRACE " << Simulator::Now ().GetSeconds () << " " << x << std::endl;
-#else
-#  define TRACE(x)
-#endif
-
-
+NS_LOG_COMPONENT_DEFINE ("WifiPhy");
 
 namespace ns3 {
 
@@ -265,16 +238,16 @@ WifiPhy::ReceivePacket (Packet const packet,
 
   switch (GetState ()) {
   case WifiPhy::SYNC:
-    TRACE ("drop packet because already in Sync (power="<<
-           rxPowerW<<"W)");
+    NS_LOG_DEBUG ("drop packet because already in Sync (power="<<
+                  rxPowerW<<"W)");
     if (endRx > m_endSync) 
       {
         goto maybeCcaBusy;
       }
     break;
   case WifiPhy::TX:
-    TRACE ("drop packet because already in Tx (power="<<
-           rxPowerW<<"W)");
+    NS_LOG_DEBUG ("drop packet because already in Tx (power="<<
+                  rxPowerW<<"W)");
     if (endRx > m_endTx) 
       {
         goto maybeCcaBusy;
@@ -295,8 +268,8 @@ WifiPhy::ReceivePacket (Packet const packet,
       } 
     else 
       {
-        TRACE ("drop packet because signal power too Small ("<<
-               rxPowerW<<"<"<<m_edThresholdW<<")");
+        NS_LOG_DEBUG ("drop packet because signal power too Small ("<<
+                      rxPowerW<<"<"<<m_edThresholdW<<")");
         goto maybeCcaBusy;
       }
     break;
@@ -1179,9 +1152,9 @@ WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event)
    * all SNIR changes in the snir vector.
    */
   double per = CalculatePer (event, &ni);
-  TRACE ("mode="<<((uint32_t)event->GetPayloadMode ())<<
-         ", ber="<<(1-GetMode (event->GetPayloadMode ())->GetChunkSuccessRate (snr, 1))<<
-         ", snr="<<snr<<", per="<<per<<", size="<<packet.GetSize ());
+  NS_LOG_DEBUG ("mode="<<(event->GetPayloadMode ().GetPhyRate ())<<
+                ", ber="<<(1-GetChunkSuccessRate (event->GetPayloadMode (), snr, 1))<<
+                ", snr="<<snr<<", per="<<per<<", size="<<packet.GetSize ());
   
   if (m_random.GetValue () > per) 
     {

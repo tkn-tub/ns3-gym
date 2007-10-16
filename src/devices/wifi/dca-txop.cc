@@ -19,8 +19,8 @@
  */
 
 #include "ns3/assert.h"
-
 #include "ns3/packet.h"
+#include "ns3/log.h"
 
 #include "dca-txop.h"
 #include "dcf.h"
@@ -30,18 +30,8 @@
 #include "mac-tx-middle.h"
 #include "wifi-phy.h"
 
+NS_LOG_COMPONENT_DEFINE ("DcaTxop");
 
-
-#define noDCA_TXOP_TRACE 1
-
-#ifdef DCA_TXOP_TRACE
-#include "ns3/simulator.h"
-#include <iostream>
-# define TRACE(x) \
-  std::cout <<"DCA TXOP now="<<Simulator::NowUs ()<<"us "<<x<<std::endl;
-#else /* DCA_TXOP_TRACE */
-# define TRACE(x)
-#endif /* DCA_TXOP_TRACE */
 
 namespace ns3 {
 
@@ -372,12 +362,12 @@ DcaTxop::AccessNeeded (void)
   if (!m_queue->IsEmpty () ||
       m_hasCurrent) 
     {
-      TRACE ("access needed here");
+      NS_LOG_DEBUG ("access needed here");
       return true;
     } 
   else 
     {
-      TRACE ("no access needed here");
+      NS_LOG_DEBUG ("no access needed here");
       return false;
     }
 }
@@ -389,7 +379,7 @@ DcaTxop::AccessGrantedNow (void)
     {
       if (m_queue->IsEmpty ()) 
         {
-          TRACE ("queue empty");
+          NS_LOG_DEBUG ("queue empty");
           return;
         }
       bool found;
@@ -404,7 +394,7 @@ DcaTxop::AccessGrantedNow (void)
       m_ssrc = 0;
       m_slrc = 0;
       m_fragmentNumber = 0;
-      TRACE ("dequeued size="<<m_currentPacket.GetSize ()<<
+      NS_LOG_DEBUG ("dequeued size="<<m_currentPacket.GetSize ()<<
              ", to="<<m_currentHdr.GetAddr1 ()<<
              ", seq="<<m_currentHdr.GetSequenceControl ()); 
     }
@@ -422,7 +412,7 @@ DcaTxop::AccessGrantedNow (void)
       m_hasCurrent = false;
       m_dcf->ResetCw ();
       m_dcf->StartBackoff ();
-      TRACE ("tx broadcast");
+      NS_LOG_DEBUG ("tx broadcast");
     } 
   else 
     {
@@ -435,12 +425,12 @@ DcaTxop::AccessGrantedNow (void)
           Packet fragment = GetFragmentPacket (&hdr);
           if (IsLastFragment ()) 
             {
-              TRACE ("fragmenting last fragment size="<<fragment->GetSize ());
+              NS_LOG_DEBUG ("fragmenting last fragment size="<<fragment.GetSize ());
               params.DisableNextData ();
             } 
           else 
             {
-              TRACE ("fragmenting size="<<fragment->GetSize ());
+              NS_LOG_DEBUG ("fragmenting size="<<fragment.GetSize ());
               params.EnableNextData (GetNextFragmentSize ());
             }
           Low ()->StartTransmission (fragment, &hdr, params, 
@@ -451,12 +441,12 @@ DcaTxop::AccessGrantedNow (void)
           if (NeedRts ()) 
             {
               params.EnableRts ();
-              TRACE ("tx unicast rts");
+              NS_LOG_DEBUG ("tx unicast rts");
             } 
           else 
             {
               params.DisableRts ();
-              TRACE ("tx unicast");
+              NS_LOG_DEBUG ("tx unicast");
             }
           params.DisableNextData ();
           // We need to make a copy in case we need to 
@@ -476,13 +466,13 @@ DcaTxop::AccessGrantedNow (void)
 void 
 DcaTxop::GotCts (double snr, WifiMode txMode)
 {
-  TRACE ("got cts");
+  NS_LOG_DEBUG ("got cts");
   m_ssrc = 0;
 }
 void 
 DcaTxop::MissedCts (void)
 {
-  TRACE ("missed cts");
+  NS_LOG_DEBUG ("missed cts");
   m_ssrc++;
   m_ctstimeoutTrace (m_ssrc);
   if (m_ssrc > Parameters ()->GetMaxSsrc ()) 
@@ -505,7 +495,7 @@ DcaTxop::GotAck (double snr, WifiMode txMode)
   if (!NeedFragmentation () ||
       IsLastFragment ()) 
     {
-      TRACE ("got ack. tx done.");
+      NS_LOG_DEBUG ("got ack. tx done.");
       if (!m_txOkCallback.IsNull ()) 
         {
           m_txOkCallback (m_currentHdr);
@@ -520,13 +510,13 @@ DcaTxop::GotAck (double snr, WifiMode txMode)
     } 
   else 
     {
-      TRACE ("got ack. tx not done, size="<<m_currentPacket.GetSize ());
+      NS_LOG_DEBUG ("got ack. tx not done, size="<<m_currentPacket.GetSize ());
     }
 }
 void 
 DcaTxop::MissedAck (void)
 {
-  TRACE ("missed ack");
+  NS_LOG_DEBUG ("missed ack");
   m_slrc++;
   m_acktimeoutTrace (m_slrc);
   if (m_slrc > Parameters ()->GetMaxSlrc ()) 
@@ -552,7 +542,7 @@ DcaTxop::MissedAck (void)
 void 
 DcaTxop::StartNext (void)
 {
-  TRACE ("start next packet fragment");
+  NS_LOG_DEBUG ("start next packet fragment");
   /* this callback is used only for fragments. */
   NextFragment ();
   WifiMacHeader hdr;
