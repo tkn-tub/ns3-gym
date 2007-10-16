@@ -155,4 +155,4 @@ MacParameters::GetMinEdcaTrafficProportion (void) const
   return 0.4;
 }
 
-}; // namespace ns3
+} // namespace ns3

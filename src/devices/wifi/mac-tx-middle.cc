@@ -56,4 +56,4 @@ MacTxMiddle::GetNextSequenceNumberfor (const WifiMacHeader *hdr)
   return retval;
 }
 
-}; // namespace ns3
+} // namespace ns3

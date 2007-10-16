@@ -92,6 +92,6 @@ protected:
   void SetSuccessThreshold (int successThreshold);
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* ARF_MAC_STATIONS_H */

@@ -68,6 +68,6 @@ private:
   static const double SPEED_OF_LIGHT; // m/s
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* MAC_PARAMETERS_H */

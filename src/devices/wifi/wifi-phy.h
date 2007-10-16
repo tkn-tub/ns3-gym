@@ -244,7 +244,7 @@ private:
   CallbackTraceSource<Time,Time,uint8_t> m_stateLogger;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* WIFI_PHY_H */

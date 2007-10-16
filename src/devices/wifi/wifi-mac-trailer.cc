@@ -62,4 +62,4 @@ WifiMacTrailer::Deserialize (Buffer::Iterator start)
   return 4;
 }
 
-}; // namespace ns3
+} // namespace ns3

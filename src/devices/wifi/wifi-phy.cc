@@ -1205,4 +1205,4 @@ WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event)
 
 
 
-}; // namespace ns3
+} // namespace ns3

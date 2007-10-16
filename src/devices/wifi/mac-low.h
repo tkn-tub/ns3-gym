@@ -245,6 +245,6 @@ private:
   CallbackTraceSource<Packet> m_dropError;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* MAC_LOW_H */

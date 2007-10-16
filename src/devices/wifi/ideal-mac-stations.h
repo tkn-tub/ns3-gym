@@ -67,6 +67,6 @@ private:
   double m_lastSnr;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* MAC_STA_H */

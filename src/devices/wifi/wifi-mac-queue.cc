@@ -127,4 +127,4 @@ WifiMacQueue::Flush (void)
   m_size = 0;
 }
 
-}; // namespace ns3
+} // namespace ns3

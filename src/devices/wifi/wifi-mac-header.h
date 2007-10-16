@@ -175,7 +175,7 @@ private:
   uint16_t m_qosStuff: 8;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 
 
