@@ -130,7 +130,7 @@ WifiModeFactory::AllocateUid (std::string uniqueUid)
 struct WifiModeFactory::WifiModeItem *
 WifiModeFactory::Get (uint32_t uid)
 {
-  NS_ASSERT (uid > 1);
+  NS_ASSERT (uid > 0);
   return &m_itemList[uid - 1];
 }
 
