@@ -3,79 +3,62 @@ build system (http://www.freehackers.org/~tnagy/waf.html)
 
 === Installing Waf ===
 
-If this file is part of a development release tarball, the top-level 
-ns-3 directory should contain a current waf script.
-
-However, the ns-3 Mercurial code repository does not contain the waf 
-script.  Instead, developers should check it out from a subversion 
-repository:
-
-  svn checkout http://waf.googlecode.com/svn/tags/ns3/ waf
-
-[ note: 'tags/ns3' is a tag that represents the last svn version
-tested to work correctly with ns3, although 'trunk' will likely work
- as well ]
-
-Then it can be installed system-wide with 'sudo waf-light install'.
-When preparing a distribution, the resulting 'waf' script, which is
-self contained (no external files needed), can be easily included in
-the tarball so that users downloading ns-3 can easily build it without
-having Waf installed (although Python >= 2.3 is still needed).
+The top-level ns-3 directory should contain a current waf script.
 
 === Building with Waf ===
 
-To build ns-3 with waf type the commands:
- 1. waf configure [options]
- 2. waf
+To build ns-3 with waf type the commands from the top-level directory:
+ 1. ./waf configure [options]
+ 2. ./waf
 
-To see valid configure options, type waf --help.  The most important
+To see valid configure options, type ./waf --help.  The most important
 option is -d <debug level>.  Valid debug levels (which are listed in
-waf --help) are: ultradebug, debug, release, and optimized.  It is
+waf --help) are: "debug" or "optimized".  It is
 also possible to change the flags used for compilation with (e.g.):
-CXXFLAGS="-O3" waf configure.
+CXXFLAGS="-O3" ./waf configure.
 
 [ Note:  Unlike some other build tools, to change the build target,
 the option must be supplied during the configure stage rather than
-the build stage (i.e., "waf -d optimized" will not work; instead, do
-"waf -d optimized configure; waf" ]
+the build stage (i.e., "./waf -d optimized" will not work; instead, do
+"./waf -d optimized configure; ./waf" ]
 
 The resulting binaries are placed in build/<debuglevel>/srcpath.
 
 Other waf usages include:
 
- 1. waf check
+ 1. ./waf check
     Runs the unit tests
 
- 2. waf --doxygen
+ 2. ./waf --doxygen
     Run doxygen to generate documentation
 
- 3. waf --lcov-report
+ 3. ./waf --lcov-report
     Run code coverage analysis (assuming the project was configured
 with --enable-gcov)
 
- 4. waf --run "program [args]"
+ 4. ./waf --run "program [args]"
     Run a ns3 program, given its target name, with the given
     arguments.  This takes care of automatically modifying the the
     path for finding the ns3 dynamic libraries in the environment
     before running the program.  Note: the "program [args]" string is
     parsed using POSIX shell rules.
 
- 4.1 waf --run programname --command-template "... %s ..."
+ 4.1 ./waf --run programname --command-template "... %s ..."
 
     Same as --run, but uses a command template with %s replaced by the
     actual program (whose name is given by --run).  This can be use to
     run ns-3 programs with helper tools.  For example, to run unit
     tests with valgrind, use the command:
 
-         waf --run run-tests --command-template "valgrind %s"
+         ./waf --run run-tests --command-template "valgrind %s"
 
- 5. waf --shell
+ 5. ./waf --shell
     Starts a nested system shell with modified environment to run ns3 programs.
 
- 6. waf distclean
+ 6. ./waf distclean
     Cleans out the entire build/ directory
 
- 7. waf dist
+ 7. ./waf dist
     The command 'waf dist' can be used to create a distribution tarball.
     It includes all files in the source directory, except some particular
     extensions that are blacklisted, such as back files (ending in ~).
