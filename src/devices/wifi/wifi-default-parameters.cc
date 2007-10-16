@@ -84,7 +84,8 @@ static EnumDefaultValue<enum PhyModeParameter> g_dataMode
  MODE_24MB, "24mb",
  MODE_36MB, "36mb",
  MODE_48MB, "48mb",
- MODE_54MB, "54mb");
+ MODE_54MB, "54mb",
+ 0, (void *)0);
 static EnumDefaultValue<enum PhyModeParameter> g_ctlMode
 ("WifiConstantCtlRate", 
  "The rate to use for control transmissions if using the ConstantRate rate control algorithm.",
@@ -95,7 +96,8 @@ static EnumDefaultValue<enum PhyModeParameter> g_ctlMode
  MODE_24MB, "24mb",
  MODE_36MB, "36mb",
  MODE_48MB, "48mb",
- MODE_54MB, "54mb");
+ MODE_54MB, "54mb",
+ 0, (void *)0);
 static NumericDefaultValue<double> g_idealBer
 ("WifiIdealRateControlBerThreshold",
  "The maximum Bit Error Rate acceptable at any transmission mode",
