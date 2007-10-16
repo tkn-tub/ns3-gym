@@ -53,6 +53,7 @@ WifiMacTrailer::GetSerializedSize (void) const
 void 
 WifiMacTrailer::Serialize (Buffer::Iterator start) const
 {
+  start.Prev (4);
   start.WriteU32 (0);
 }
 uint32_t
