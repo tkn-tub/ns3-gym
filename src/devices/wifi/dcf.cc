@@ -18,29 +18,22 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include <iostream>
-#include <cassert>
 #include <math.h>
 
-#include "ns3/random-variable.h"
 #include "ns3/simulator.h"
+#include "ns3/assert.h"
+#include "ns3/log.h"
 
 #include "dcf.h"
+#include "random-stream.h"
 #include "mac-parameters.h"
 
 
-
-#define noDCF_TRACE 1
-
-#ifdef DCF_TRACE
-#  include <iostream>
-#  define TRACE(x) \
-   std::cout << "DCF " << x << std::endl;
-#else /* DCF_TRACE */
-# define TRACE(x)
-#endif /* DCF_TRACE */
+NS_LOG_COMPONENT_DEFINE ("Dcf");
 
 namespace ns3 {
+
+
 
 
 DcfAccessListener::DcfAccessListener ()
@@ -67,19 +60,19 @@ Dcf::Dcf ()
     m_rxing (false)
 {
   ResetCw ();
-  m_random = new UniformVariable ();
+  m_rng = new RealRandomStream ();
 }
 
 Dcf::~Dcf ()
 {
-  delete m_random;
+  delete m_rng;
 }
 
 void 
-Dcf::ResetRng (uint32_t seed)
+Dcf::ResetRngForTest (RandomStream *stream)
 {
-  // XXX
-  // m_random->Reset (seed);
+  delete m_rng;
+  m_rng = stream;
 }
 void
 Dcf::SetParameters (MacParameters const*parameters)
@@ -124,24 +117,24 @@ Dcf::RequestAccess (void)
       /* don't do anything. We will start a backoff and maybe
        * a timer when the txop notifies us of the end-of-access.
        */
-      TRACE ("accessing. will be notified.");
+      NS_LOG_DEBUG ("accessing. will be notified.");
     } 
   else if (m_accessTimerEvent.IsRunning ()) 
     {
       /* we don't need to do anything because we have an access
        * timer which will expire soon.
        */
-      TRACE ("access timer running. will be notified");
+      NS_LOG_DEBUG ("access timer running. will be notified");
     } 
   else if (IsBackoffNotCompleted (Now ()) && m_accessTimerEvent.IsExpired ()) 
     {
       /* start timer for ongoing backoff.
        */
-      TRACE ("request access X delayed for="<<delayUntilAccessGranted);
+      NS_LOG_DEBUG ("request access X delayed for="<<delayUntilAccessGranted);
       m_accessTimerEvent = Simulator::Schedule (delayUntilAccessGranted, 
                                                 &Dcf::AccessTimeout, this);
     } 
-  else if (IsPhyBusy ()) 
+  else if (IsPhyBusy () || IsNavBusy ()) 
     {
       /* someone else has accessed the medium.
        * generate a backoff, start timer.
@@ -153,8 +146,8 @@ Dcf::RequestAccess (void)
       /* medium is IDLE, we have no backoff running but we 
        * need to wait a bit before accessing the medium.
        */
-      TRACE ("request access Y delayed for="<< delayUntilAccessGranted);
-      assert (m_accessTimerEvent.IsExpired ());
+      NS_LOG_DEBUG ("request access Y delayed for="<< delayUntilAccessGranted);
+      NS_ASSERT (m_accessTimerEvent.IsExpired ());
       m_accessTimerEvent = Simulator::Schedule (delayUntilAccessGranted, 
                                                 &Dcf::AccessTimeout, this);
     } 
@@ -162,7 +155,7 @@ Dcf::RequestAccess (void)
     {
       /* we can access the medium now.
        */
-      TRACE ("access granted immediatly");
+      NS_LOG_DEBUG ("access granted immediatly");
       m_listener->AccessGrantedNow ();
     }
 }
@@ -178,13 +171,13 @@ Dcf::AccessTimeout ()
   UpdateBackoff (Now ());
   if (m_backoffLeft.IsZero ()) 
     {
-      TRACE ("timeout access granted");
+      NS_LOG_DEBUG ("timeout access granted");
       m_listener->AccessGrantedNow ();
     } 
   else 
     {
       Time delayUntilAccessGranted  = GetDelayUntilAccessGranted (Now ());
-      TRACE ("timeout access delayed for "<< delayUntilAccessGranted);
+      NS_LOG_DEBUG ("timeout access delayed for "<< delayUntilAccessGranted);
       m_accessTimerEvent = Simulator::Schedule (delayUntilAccessGranted, 
                                                 &Dcf::AccessTimeout, this);
     }
@@ -198,10 +191,8 @@ Dcf::AccessTimeout ()
 Time
 Dcf::PickBackoffDelay (void)
 {
-  // XXX
-  //uint32_t pickedCw = m_random->GetSingleValue (0, m_cw);
-  uint32_t pickedCw = 0;
-  TRACE ("cw="<<GetCwMin ()<<
+  uint32_t pickedCw = m_rng->GetNext (0, m_cw);
+  NS_LOG_DEBUG ("cw="<<GetCwMin ()<<
          "<"<<m_cw<<"<"<<GetCwMax ()<<
          ", picked="<<pickedCw); 
   Time delay = Scalar (pickedCw) * m_parameters->GetSlotTime ();
@@ -272,7 +263,7 @@ Dcf::GetCwMax (void) const
  ***************************************************************/ 
 
 bool 
-Dcf::IsPhyBusy (void)
+Dcf::IsPhyBusy (void) const
 {
   if (m_rxing) 
     {
@@ -286,13 +277,24 @@ Dcf::IsPhyBusy (void)
   return false;
 }
 
+bool 
+Dcf::IsNavBusy (void) const
+{
+  Time lastNavEnd = m_lastNavStart + m_lastNavDuration;
+  if (lastNavEnd > Simulator::Now ())
+    {
+      return true;
+    }
+  return false;
+}
+
 void
 Dcf::StartBackoff (void)
 {
   Time backoffStart = Now ();
   Time backoffDuration = PickBackoffDelay ();
   m_backoffTrace (backoffDuration);
-  assert (m_backoffStart <= backoffStart);
+  NS_ASSERT (m_backoffStart <= backoffStart);
   m_backoffStart = backoffStart;
   m_backoffLeft = backoffDuration;
   if (m_listener->AccessNeeded () && m_accessTimerEvent.IsExpired ()) 
@@ -300,13 +302,13 @@ Dcf::StartBackoff (void)
       Time delayUntilAccessGranted  = GetDelayUntilAccessGranted (Now ());
       if (delayUntilAccessGranted.IsStrictlyPositive ()) 
         {
-          TRACE ("start at "<<backoffStart<<", for "<<backoffDuration);
+          NS_LOG_DEBUG ("start at "<<backoffStart<<", for "<<backoffDuration);
           m_accessTimerEvent = Simulator::Schedule (delayUntilAccessGranted,
                                                     &Dcf::AccessTimeout, this);
         } 
       else 
         {
-          TRACE ("access granted now");
+          NS_LOG_DEBUG ("access granted now");
           m_listener->AccessGrantedNow ();
         }
     } 
@@ -314,13 +316,13 @@ Dcf::StartBackoff (void)
     {
       if (m_accessTimerEvent.IsRunning ()) 
         {
-          TRACE ("no access needed because timer running.");
+          NS_LOG_DEBUG ("no access needed because timer running.");
         } 
       if (!m_listener->AccessNeeded ()) 
         {
-          TRACE ("no access needed.");
+          NS_LOG_DEBUG ("no access needed.");
         }
-      TRACE ("no access needed for now.");
+      NS_LOG_DEBUG ("no access needed for now.");
     }
 }
 Time
@@ -353,6 +355,7 @@ Dcf::GetAccessGrantedStart (void) const
                                         busyAccessStart,
                                         txAccessStart, 
                                         navAccessStart);
+  NS_LOG_DEBUG ("access granted start=" << accessGrantedStart);
   return accessGrantedStart;
 }
 
@@ -388,8 +391,8 @@ Dcf::UpdateBackoff (Time time)
       return;
     }
   
-  //TRACE ("time: %f, backoffstart: %f\n", time, m_backoffStart);
-  assert (time >= m_backoffStart);
+  //NS_LOG_DEBUG ("time: %f, backoffstart: %f\n", time, m_backoffStart);
+  NS_ASSERT (time >= m_backoffStart);
 
   Time mostRecentEvent = MostRecent (m_backoffStart,
                                      GetAccessGrantedStart ());
@@ -397,9 +400,9 @@ Dcf::UpdateBackoff (Time time)
     {
       Time newBackoffLeft = m_backoffLeft - (time - mostRecentEvent);
       m_backoffLeft = Max (newBackoffLeft, Seconds (0)); 
-      TRACE ("at="<<time<<", left="<< m_backoffLeft);
       m_backoffStart = time;
     }
+  NS_LOG_DEBUG ("backoff at="<<m_backoffStart<<", left="<< m_backoffLeft);
 }
 
 /***************************************************************
@@ -408,11 +411,12 @@ Dcf::UpdateBackoff (Time time)
 void
 Dcf::NotifyNavReset (Time navStart, Time duration)
 {
+  NS_LOG_DEBUG ("nav reset at="<<navStart<<", for="<<duration);
   m_lastNavStart = navStart;
   m_lastNavDuration = duration;
   Time navEnd = navStart + duration;
   Time newDelayUntilAccessGranted = GetDelayUntilAccessGranted (navEnd);
-  assert (newDelayUntilAccessGranted.IsStrictlyPositive ());
+  NS_ASSERT (newDelayUntilAccessGranted.IsStrictlyPositive ());
   /* This is quite unfortunate but we need to cancel the access timer
    * because this nav reset might have brought the time of
    * possible access closer to us than expected.
@@ -427,8 +431,8 @@ Dcf::NotifyNavReset (Time navStart, Time duration)
 void
 Dcf::NotifyNavStart (Time navStart, Time duration)
 {
-  assert (m_lastNavStart < navStart);
-  TRACE ("nav start at="<<navStart<<", for="<<duration);
+  NS_ASSERT (m_lastNavStart < navStart);
+  NS_LOG_DEBUG ("nav start at="<<navStart<<", for="<<duration);
   UpdateBackoff (navStart);
   m_lastNavStart = navStart;
   m_lastNavDuration = duration;
@@ -443,7 +447,7 @@ void
 Dcf::NotifyRxStartNow (Time duration)
 {
   Time now = Now ();
-  TRACE ("rx start at="<<now<<", for="<<duration);
+  NS_LOG_DEBUG ("rx start at="<<now<<", for="<<duration);
   UpdateBackoff (now);
   m_lastRxStart = now;
   m_lastRxDuration = duration;
@@ -453,7 +457,7 @@ void
 Dcf::NotifyRxEndOkNow (void)
 {
   Time now = Now ();
-  TRACE ("rx end ok at="<<now);
+  NS_LOG_DEBUG ("rx end ok at="<<now);
   m_lastRxEnd = now;
   m_lastRxReceivedOk = true;
   m_rxing = false;
@@ -462,7 +466,7 @@ void
 Dcf::NotifyRxEndErrorNow (void)
 {
   Time now = Now ();
-  TRACE ("rx end error at=");
+  NS_LOG_DEBUG ("rx end error at=");
   m_lastRxEnd = now;
   m_lastRxReceivedOk = false;
   m_rxing = false;
@@ -471,7 +475,7 @@ void
 Dcf::NotifyTxStartNow (Time duration)
 {
   Time now = Now ();
-  TRACE ("tx start at="<<now<<" for "<<duration);
+  NS_LOG_DEBUG ("tx start at="<<now<<" for "<<duration);
   UpdateBackoff (now);
   m_lastTxStart = now;
   m_lastTxDuration = duration;
@@ -481,7 +485,7 @@ void
 Dcf::NotifyCcaBusyStartNow (Time duration)
 {
   Time now = Now ();
-  TRACE ("busy start at="<<now<<" for "<<duration);
+  NS_LOG_DEBUG ("busy start at="<<now<<" for "<<duration);
   UpdateBackoff (now);
   m_lastBusyStart = now;
   m_lastBusyDuration = duration;
@@ -697,7 +701,14 @@ void
 DcfTest::StartTest (void)
 {
   m_dcf = new Dcf ();
-  m_dcf->ResetRng (0);
+  TestRandomStream *stream = new TestRandomStream ();
+  stream->AddNext (1);
+  stream->AddNext (1);
+  stream->AddNext (1);
+  stream->AddNext (1);
+  stream->AddNext (1);
+  stream->AddNext (1);
+  m_dcf->ResetRngForTest (stream);
   m_parameters = new MacParameters ();
   m_listener = new TestAccessListener (this);
   m_dcf->SetParameters (m_parameters);
@@ -729,6 +740,11 @@ DcfTest::RunTests (void)
 {
   m_failed = false;
 
+  //                    32        37
+  //                     | rx ok   |
+  // | idle   |  rx ok | nav busy      | difs  | backoff |
+  // 0       10       30              40      43        44
+  //
   StartTest ();
   AddRxOkEvt (10, 20);
   AddNavStart (30, 30, 2+8);
@@ -736,10 +752,15 @@ DcfTest::RunTests (void)
   AddAccessRequest (15);
   AddAccessRequest (16);
   AddAccessRequest (20);
-  ExpectAccessGranted (51);
+  ExpectAccessGranted (44);
   Simulator::Run ();
   EndTest ();
 
+  //                    32           39
+  //                     | rx ok      |
+  // | idle   |  rx ok | nav busy  |  | difs  | backoff |
+  // 0       10       30          37         42        43
+  //
   StartTest ();
   AddRxOkEvt (10, 20);
   AddNavStart (30, 30, 2+5);
@@ -747,7 +768,7 @@ DcfTest::RunTests (void)
   AddAccessRequest (15);
   AddAccessRequest (16);
   AddAccessRequest (20);
-  ExpectAccessGranted (50);
+  ExpectAccessGranted (43);
   Simulator::Run ();
   EndTest ();
 
@@ -757,6 +778,11 @@ DcfTest::RunTests (void)
   Simulator::Run ();
   EndTest ();
 
+  //                    32        39
+  //                     | rx ok   |
+  // | idle   |  rx ok | nav busy    | difs  |
+  // 0       10       30            40      43
+  //
   StartTest ();
   AddRxOkEvt (10, 20);
   AddNavStart (30, 30, 2+8);
@@ -766,6 +792,11 @@ DcfTest::RunTests (void)
   Simulator::Run ();
   EndTest ();
 
+  //                    32        39
+  //                     | rx ok   |
+  // | idle   |  rx ok | nav busy    | difs  |
+  // 0       10       30            40      43
+  //
   StartTest ();
   AddRxOkEvt (10, 20);
   AddNavStart (30, 30, 2+8);
@@ -775,6 +806,11 @@ DcfTest::RunTests (void)
   Simulator::Run ();
   EndTest ();
 
+  //                    32        39
+  //                     | rx ok   |
+  // | idle   |  rx ok | nav busy    | difs  |
+  // 0       10       30            40      43
+  //
   StartTest ();
   AddRxOkEvt (10, 20);
   AddNavStart (30, 30, 2+8);
@@ -784,6 +820,10 @@ DcfTest::RunTests (void)
   Simulator::Run ();
   EndTest ();
 
+  //
+  // | idle   |  rx error | idle   | rx ok  | difs |
+  // 0       10          30       31       38     41
+  //
   StartTest ();
   AddRxErrorEvt (10, 20);
   AddRxOkEvt (31, 7);
@@ -792,6 +832,10 @@ DcfTest::RunTests (void)
   Simulator::Run ();
   EndTest ();
 
+  //
+  // | idle   |  rx error | idle   | rx error  | eifs |
+  // 0       10          30       31          38     42
+  //
   StartTest ();
   AddRxErrorEvt (10, 20);
   AddRxErrorEvt (31, 7);
@@ -801,16 +845,28 @@ DcfTest::RunTests (void)
   EndTest ();
 
 
+  //
+  //                  30               45
+  //                   | nav busy       |
+  // | idle   |  rx ok | idle   | rx ok | difs | backoff |
+  // 0       10       30       35      45     48        49
+  //
   StartTest ();
   AddRxOkEvt (10, 20);
   AddNavStart (30, 30, 200);
   AddRxOkEvt (35, 10);
   AddNavReset (45, 45, 0);
   AddAccessRequest (32);
-  ExpectAccessGranted (48);
+  ExpectAccessGranted (49);
   Simulator::Run ();
   EndTest ();
 
+  //
+  //                  30               45
+  //                   | nav busy       |
+  // | idle   |  rx ok | idle   | rx ok | 
+  // 0       10       30       35      45 
+  //
   StartTest ();
   AddRxOkEvt (10, 20);
   AddNavStart (30, 30, 200);
@@ -819,6 +875,12 @@ DcfTest::RunTests (void)
   Simulator::Run ();
   EndTest ();
 
+  //
+  //                  30               45
+  //                   | nav busy       |
+  // | idle   |  rx ok | idle   | rx ok | difs |
+  // 0       10       30       35      45     48
+  //
   StartTest ();
   AddRxOkEvt (10, 20);
   AddNavStart (30, 30, 200);

@@ -29,7 +29,7 @@
 
 namespace ns3 {
 
-class UniformVariable;
+class RandomStream;
 class MacParameters;
 
 class DcfAccessListener {
@@ -59,8 +59,6 @@ public:
   Dcf ();
   ~Dcf ();
 
-  void ResetRng (uint32_t seed);
-
   void SetParameters (const MacParameters *parameters);
   void SetDifs (Time difs);
   void SetEifs (Time eifs);
@@ -82,6 +80,9 @@ public:
   void NotifyNavReset (Time now, Time duration);
   void NotifyNavStart (Time now, Time duration);
   void NotifyNavContinue (Time now, Time duration);
+
+  // for testing only.
+  void ResetRngForTest (RandomStream *stream);
 private:
   void AccessTimeout (void);
 
@@ -96,7 +97,8 @@ private:
   uint32_t GetCwMax (void) const;
 
   /* time calculation helpers */
-  bool IsPhyBusy (void);
+  bool IsPhyBusy (void) const;
+  bool IsNavBusy (void) const;
   bool IsBackoffNotCompleted (Time now);
   Time GetDelayUntilAccessGranted (Time now);
   Time GetAccessGrantedStart (void) const;
@@ -104,7 +106,7 @@ private:
 
   EventId m_accessTimerEvent;
 
-  UniformVariable *m_random;
+  RandomStream *m_rng;
   const MacParameters *m_parameters;
   DcfAccessListener *m_listener;
   Time m_difs;
