@@ -43,8 +43,10 @@ DcfAccessListener::~DcfAccessListener ()
 
 
 
-Dcf::Dcf ()
+Dcf::Dcf (uint32_t min, uint32_t max)
   : m_accessTimerEvent (),
+    m_cwMin (min),
+    m_cwMax (max),
     m_backoffStart (MicroSeconds (0)),
     m_backoffLeft (MicroSeconds (0)),
     m_lastNavStart (MicroSeconds (0)),
@@ -700,7 +702,7 @@ DcfTest::ExpectAccessGranted (uint64_t time)
 void 
 DcfTest::StartTest (void)
 {
-  m_dcf = new Dcf ();
+  m_dcf = new Dcf (8, 64);
   TestRandomStream *stream = new TestRandomStream ();
   stream->AddNext (1);
   stream->AddNext (1);
@@ -717,7 +719,6 @@ DcfTest::StartTest (void)
   m_parameters->SetSlotTime (MicroSeconds (1));
   m_dcf->SetDifs (MicroSeconds (3));
   m_dcf->SetEifs (MicroSeconds (4));
-  m_dcf->SetCwBounds (8, 64);
 }
 void 
 DcfTest::EndTest (void)

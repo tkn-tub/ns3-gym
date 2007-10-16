@@ -144,14 +144,14 @@ WifiNetDevice::Construct (void)
 }
 
 DcaTxop *
-WifiNetDevice::CreateDca (void) const
+WifiNetDevice::CreateDca (uint32_t minCw, uint32_t maxCw) const
 {
-  DcaTxop *dca = new DcaTxop ();
+  DcaTxop *dca = new DcaTxop (minCw, maxCw);
   dca->SetParameters (m_parameters);
   dca->SetTxMiddle (m_txMiddle);
   dca->SetLow (m_low);
   dca->SetPhy (m_phy);
-  // 802.11a
+
   Time difs = m_parameters->GetSifs () + 
     m_parameters->GetSlotTime () + 
     m_parameters->GetSlotTime ();
@@ -159,7 +159,6 @@ WifiNetDevice::CreateDca (void) const
     m_phy->CalculateTxDuration (2+2+6+4, m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
   dca->SetDifs (difs);
   dca->SetEifs (eifs);
-  dca->SetCwBounds (15, 1023);
   dca->SetMaxQueueSize (400);
   dca->SetMaxQueueDelay (Seconds (10));
   return dca;
@@ -226,7 +225,7 @@ AdhocWifiNetDevice::AdhocWifiNetDevice (Ptr<Node> node)
   : WifiNetDevice (node)
 {
   m_ssid = WifiDefaultParameters::GetSsid ();
-  m_dca = CreateDca ();
+  m_dca = CreateDca (15, 1023);
 
   MacHighAdhoc *high = new MacHighAdhoc ();
   high->SetDevice (this);
@@ -277,7 +276,7 @@ NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node)
   : WifiNetDevice (node)
 {
   m_ssid = WifiDefaultParameters::GetSsid ();
-  m_dca = CreateDca ();
+  m_dca = CreateDca (15, 1023);
 
   SupportedRates rates;
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++) 
@@ -355,7 +354,7 @@ NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node)
 {
   m_ssid = WifiDefaultParameters::GetSsid ();
 
-  m_dca = CreateDca ();
+  m_dca = CreateDca (15, 1023);
 
   SupportedRates rates;
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++) 

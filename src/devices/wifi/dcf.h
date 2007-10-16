@@ -56,13 +56,13 @@ public:
 class Dcf
 {
 public:
-  Dcf ();
+  Dcf (uint32_t minCw, uint32_t maxCw);
   ~Dcf ();
 
   void SetParameters (const MacParameters *parameters);
   void SetDifs (Time difs);
   void SetEifs (Time eifs);
-  void SetCwBounds (uint32_t min, uint32_t max);
+  void SetCwBounds (uint32_t minCw, uint32_t maxCw);
   void RegisterAccessListener (DcfAccessListener *listener);
 
   void RequestAccess (void);

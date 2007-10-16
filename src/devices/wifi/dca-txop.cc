@@ -144,14 +144,14 @@ private:
   DcaTxop *m_txop;
 };
 
-DcaTxop::DcaTxop ()
+DcaTxop::DcaTxop (uint32_t minCw, uint32_t maxCw)
   : m_accessListener (0),
     m_hasCurrent (false),
     m_ssrc (0),
     m_slrc (0)
 {
   m_transmissionListener = new DcaTxop::TransmissionListener (this);
-  m_dcf = new Dcf ();
+  m_dcf = new Dcf (minCw, maxCw);
   m_accessListener = new DcaTxop::AccessListener (this);
   m_dcf->RegisterAccessListener (m_accessListener);
   m_queue = new WifiMacQueue ();

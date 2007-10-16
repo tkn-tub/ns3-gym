@@ -44,7 +44,7 @@ public:
   typedef Callback <void, WifiMacHeader const&> TxOk;
   typedef Callback <void, WifiMacHeader const&> TxFailed;
 
-  DcaTxop ();
+  DcaTxop (uint32_t minCw, uint32_t maxCw);
   ~DcaTxop ();
 
   void SetLow (MacLow *low);
