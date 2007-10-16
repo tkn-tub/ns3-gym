@@ -30,6 +30,7 @@
 #include "ns3/ipv4.h"
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
+#include "ns3/global-route-manager.h"
 
 
 #include <iostream>
@@ -50,6 +51,8 @@ CreateAdhocNode (Ptr<WifiChannel> channel,
   Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
   uint32_t index = ipv4->AddInterface (device);
   ipv4->SetAddress (index, Ipv4Address (address));
+  ipv4->SetNetworkMask (index, Ipv4Mask ("255.255.0.0"));
+  ipv4->SetUp (index);
   return node;
 }
 
@@ -114,6 +117,8 @@ int main (int argc, char *argv[])
                                                    ConstantVariable (0));
   app->Start (Seconds (0.5));
   app->Stop (Seconds (43.0));
+
+  GlobalRouteManager::PopulateRoutingTables ();
 
   Simulator::Run ();
 
