@@ -76,7 +76,7 @@ AdvancePosition (Ptr<Node> node)
     return;
   }
   SetPosition (node, pos);
-  //std::cout << "x="<<x << std::endl;
+  //std::cout << "x="<<pos.x << std::endl;
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, node);
 }
 
