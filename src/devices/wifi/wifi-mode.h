@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <string>
 #include <vector>
+#include <ostream>
 
 namespace ns3 {
 
@@ -49,6 +50,8 @@ class WifiMode
    */
   uint8_t GetConstellationSize (void) const;
 
+  std::string GetUniqueName (void) const;
+
   /**
    * \returns true if this mode is a mandatory mode, false
    *          otherwise.
@@ -73,6 +76,7 @@ private:
 };
 
 bool operator == (const WifiMode &a, const WifiMode &b);
+std::ostream & operator << (std::ostream & os, const WifiMode &mode);
 
 class WifiModeFactory
 {

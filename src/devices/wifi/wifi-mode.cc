@@ -7,6 +7,11 @@ bool operator == (const WifiMode &a, const WifiMode &b)
 {
   return a.GetUid () == b.GetUid ();
 }
+std::ostream & operator << (std::ostream & os, const WifiMode &mode)
+{
+  os << mode.GetUniqueName ();
+  return os;
+}
 
 uint32_t 
 WifiMode::GetBandwidth (void) const
@@ -49,6 +54,12 @@ WifiMode::GetConstellationSize (void) const
 {
   struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
   return item->constellationSize;
+}
+std::string 
+WifiMode::GetUniqueName (void) const
+{
+  struct WifiModeFactory::WifiModeItem *item = WifiModeFactory::GetFactory ()->Get (m_uid);
+  return item->uniqueUid;
 }
 bool
 WifiMode::IsMandatory (void) const
@@ -130,7 +141,7 @@ WifiModeFactory::AllocateUid (std::string uniqueUid)
 struct WifiModeFactory::WifiModeItem *
 WifiModeFactory::Get (uint32_t uid)
 {
-  NS_ASSERT (uid > 0);
+  NS_ASSERT (uid > 0 && uid <= m_itemList.size ());
   return &m_itemList[uid - 1];
 }
 
