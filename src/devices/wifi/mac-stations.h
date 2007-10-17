@@ -28,6 +28,7 @@
 namespace ns3 {
 
 class MacStation;
+class NonUnicastMacStation;
 
 class MacStations 
 {
@@ -62,7 +63,7 @@ private:
   virtual class MacStation *CreateStation (void) = 0;
   Stations m_stations;
   WifiMode m_defaultTxMode;
-  MacStation *m_nonUnicast;
+  NonUnicastMacStation *m_nonUnicast;
   BasicModes m_basicModes;
 };
 
