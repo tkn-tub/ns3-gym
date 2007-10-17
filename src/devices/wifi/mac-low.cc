@@ -415,9 +415,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
           m_sendCtsEvent = Simulator::Schedule (GetSifs (),
                                                 &MacLow::SendCtsAfterRts, this,
                                                 hdr.GetAddr2 (), 
-                                                //MicroSeconds (hdr.GetDurationUs ()),
-                                                //Time (),
-                                                Seconds (0),
+                                                MicroSeconds (hdr.GetDurationUs ()),
                                                 GetCtsTxModeForRts (hdr.GetAddr2 (), txMode),
                                                 rxSnr);
         } 
@@ -783,7 +781,7 @@ MacLow::SendRtsForPacket (void)
     }
   rts.SetDurationUs (duration.GetMicroSeconds ());
 
-  NS_LOG_DEBUG ("tx RTS to="<< rts.GetAddr1 () << ", mode=" << rtsTxMode.GetPhyRate ());
+  NS_LOG_DEBUG ("tx RTS to="<< rts.GetAddr1 () << ", mode=" << rtsTxMode);
 
   Time txDuration = m_phy->CalculateTxDuration (GetRtsSize (), rtsTxMode, WIFI_PREAMBLE_LONG);
   Time timerDelay = txDuration + GetCtsTimeout ();
@@ -845,7 +843,7 @@ MacLow::SendDataPacket (void)
   WifiMode dataTxMode = GetDataTxMode (m_currentHdr.GetAddr1 (), GetCurrentSize ());
   NS_LOG_DEBUG ("tx "<< m_currentHdr.GetTypeString () << 
          ", to=" << m_currentHdr.GetAddr1 () <<
-         ", mode=" << dataTxMode.GetPhyRate ());
+         ", mode=" << dataTxMode);
   Time duration = Seconds (0);
   if (m_txParams.HasDurationId ()) 
     {
@@ -907,7 +905,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode txMode, do
   /* send a CTS when you receive a RTS 
    * right after SIFS.
    */
-  NS_LOG_DEBUG ("tx CTS to=" << source << ", mode=" << txMode.GetPhyRate ());
+  NS_LOG_DEBUG ("tx CTS to=" << source << ", mode=" << txMode);
   WifiMacHeader cts;
   cts.SetType (WIFI_MAC_CTL_CTS);
   cts.SetDsNotFrom ();
@@ -939,7 +937,7 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode)
   WifiMode dataTxMode = GetDataTxMode (m_currentHdr.GetAddr1 (), GetCurrentSize ());
 
   NS_LOG_DEBUG ("tx " << m_currentHdr.GetTypeString () << " to=" << m_currentHdr.GetAddr2 () <<
-         ", mode=" << dataTxMode.GetPhyRate () << ", seq=0x"<< m_currentHdr.GetSequenceControl ());
+         ", mode=" << dataTxMode << ", seq=0x"<< m_currentHdr.GetSequenceControl ());
 
   StartDataTxTimers ();
   Time txDuration = m_phy->CalculateTxDuration (GetCurrentSize (), dataTxMode, WIFI_PREAMBLE_LONG);
@@ -974,7 +972,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode txMode, d
   /* send an ACK when you receive 
    * a packet after SIFS. 
    */
-  NS_LOG_DEBUG ("tx ACK to=" << source << ", mode=" << txMode.GetPhyRate ());
+  NS_LOG_DEBUG ("tx ACK to=" << source << ", mode=" << txMode);
   WifiMacHeader ack;
   ack.SetType (WIFI_MAC_CTL_ACK);
   ack.SetDsNotFrom ();
