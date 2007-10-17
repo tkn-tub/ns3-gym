@@ -221,10 +221,12 @@ WifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
 }
 void 
 WifiPhy::ReceivePacket (Packet const packet, 
-                        double rxPowerW,
+                        double rxPowerDbm,
                         WifiMode txMode,
                         enum WifiPreamble preamble)
 {
+  rxPowerDbm += m_rxGainDbm;
+  double rxPowerW = DbmToW (rxPowerDbm);
   Time rxDuration = CalculateTxDuration (packet.GetSize (), txMode, preamble);
   Time endRx = Simulator::Now () + rxDuration;
   m_startRxLogger (rxDuration, rxPowerW);

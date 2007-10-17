@@ -171,7 +171,7 @@ private:
   double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
   /* rxPower unit is Watt */
   void ReceivePacket (Packet packet,
-                      double rxPowerW,
+                      double rxPowerDbm,
                       WifiMode mode,
                       WifiPreamble preamble);
 private:
