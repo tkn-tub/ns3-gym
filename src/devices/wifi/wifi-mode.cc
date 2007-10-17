@@ -92,6 +92,7 @@ WifiModeFactory::CreateBpsk (std::string uniqueName,
   WifiModeFactory *factory = GetFactory ();
   uint32_t uid = factory->AllocateUid (uniqueName);
   WifiModeItem *item = factory->Get (uid);
+  item->uniqueUid = uniqueName;
   item->bandwidth = bandwidth;
   item->dataRate = dataRate;
   item->phyRate = phyRate;
@@ -111,6 +112,7 @@ WifiModeFactory::CreateQam (std::string uniqueName,
   WifiModeFactory *factory = GetFactory ();
   uint32_t uid = factory->AllocateUid (uniqueName);
   WifiModeItem *item = factory->Get (uid);
+  item->uniqueUid = uniqueName;
   item->bandwidth = bandwidth;
   item->dataRate = dataRate;
   item->phyRate = phyRate;
