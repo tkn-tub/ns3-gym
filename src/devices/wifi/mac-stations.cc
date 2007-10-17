@@ -20,6 +20,9 @@
 
 #include "mac-stations.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("MacStations");
 
 namespace ns3 {
 
@@ -77,11 +80,15 @@ NonUnicastMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double data
 WifiMode 
 NonUnicastMacStation::GetDataMode (uint32_t size)
 {
-  return m_stations->GetBasicMode (0);
+  WifiMode mode = m_stations->GetBasicMode (0);
+  NS_LOG_DEBUG ("non-unicast size="<<size<<", mode="<<mode);
+  return mode;
 }
 WifiMode 
 NonUnicastMacStation::GetRtsMode (void)
 {
+  NS_ASSERT (false);
+  // theoretically, no rts for broadcast/multicast packets.
   return m_stations->GetBasicMode (0);
 }
 MacStations *
@@ -152,6 +159,7 @@ MacStations::GetNBasicModes (void) const
 WifiMode 
 MacStations::GetBasicMode (uint32_t i) const
 {
+  NS_ASSERT (i < m_basicModes.size ());
   return m_basicModes[i-1];
 }
 MacStations::BasicModesIterator 
