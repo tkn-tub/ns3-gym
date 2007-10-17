@@ -88,7 +88,9 @@ public:
       m_refCount (1)
   {}
   ~RxEvent ()
-  {}
+  {
+    NS_ASSERT (m_refCount == 0);
+  }
   
   void Ref (void) const {
     m_refCount++;
@@ -277,7 +279,6 @@ WifiPhy::ReceivePacket (Packet const packet,
     break;
   }
 
-  event->Unref ();
   return;
 
  maybeCcaBusy:
@@ -311,7 +312,6 @@ WifiPhy::ReceivePacket (Packet const packet,
         }
     }
 
-  event->Unref ();
 }
 void 
 WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower)
@@ -1173,7 +1173,6 @@ WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event)
       SwitchFromSync ();
       m_syncErrorCallback (packet, snr);
     }
-  event->Unref ();
 }
 
 
