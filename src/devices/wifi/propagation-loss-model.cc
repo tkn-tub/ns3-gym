@@ -1,7 +1,10 @@
 #include "propagation-loss-model.h"
 #include "ns3/default-value.h"
 #include "ns3/random-variable-default-value.h"
+#include "ns3/log.h"
 #include <math.h>
+
+NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
 
 namespace ns3 {
 
@@ -87,7 +90,9 @@ double
 RandomPropagationLossModel::GetRxPower (double txPowerDbm,
 					double distance) const
 {
-  return txPowerDbm - m_variable->GetValue ();
+  double rxPower = txPowerDbm - m_variable->GetValue ();
+  NS_LOG_DEBUG ("tx power="<<txPowerDbm<<"dbm, rx power="<<rxPower<<"Dbm");
+  return rxPower;
 }
 
 FriisPropagationLossModel::FriisPropagationLossModel ()
@@ -155,12 +160,26 @@ FriisPropagationLossModel::GetRxPower (double txPowerDbm,
    * L: system loss
    * lambda: wavelength (m)
    *
-   * Here, we ignore tx and rx gain.
+   * Here, we ignore tx and rx gain and the input and output values 
+   * are in dbm
+   * So, the formula looks like this:
+   *
+   *              10                lambda^2
+   * rx = tx +  ------- * ln (-------------------)
+   *            ln (10)        (4 * pi * d)^2 * L
+   *
+   * rx: rx power (dbm)
+   * tx: tx power (dbm)
+   * d: distance (m)
+   * L: system loss
+   * lambda: wavelength (m)
    */
-  double numerator = DbmToW (txPowerDbm) * m_lambda * m_lambda;
+  double numerator = m_lambda * m_lambda;
   double denominator = 16 * PI * PI * distance * distance * m_systemLoss;
-  double pr = numerator / denominator;
-  return DbmFromW (pr);
+  double pr = log (numerator / denominator) * 10 / log (10);
+  double rxPowerDbm = txPowerDbm + pr;
+  NS_LOG_DEBUG ("distance="<<distance<<"m, tx power="<<txPowerDbm<<"dbm, rx power="<<rxPowerDbm<<"dbm");
+  return rxPowerDbm;
 }
 
 
@@ -218,9 +237,26 @@ PathLossPropagationLossModel::GetRxPower (double txPowerDbm,
     {
       return txPowerDbm;
     }
-  double prd0 = m_reference->GetRxPower (txPowerDbm, 1.0);
-  double pr = 10*log10(prd0) - m_exponent * 10.0 * log10(distance);
-  return DbToW (pr);
+  /**
+   * The formula is:
+   * rx = 10 * ln (Pr0(tx)) / ln (10) + n * 10 * ln (d/d0) / ln (10)
+   *
+   * Pr0: rx power at reference distance d0 (W)
+   * d0: reference distance: 1.0 (m)
+   * d: distance (m)
+   * tx: tx power (db)
+   * rx: db
+   *
+   * Since we use dbm instead of db, we have:
+   *      
+   * rx = rx0 + 10 / ln (10) * (n * ln (d/d0) - ln (1000))
+   */
+  double rx0 = m_reference->GetRxPower (txPowerDbm, 1.0);
+  double rxPowerDbm = rx0 + 10 / log (10) * (m_exponent * log (distance) - log (1000));
+  NS_LOG_DEBUG ("distance="<<distance<<"m, tx power="<<txPowerDbm<<"dbm, "<<
+		"reference rx power="<<rx0<<"dbm, "<<
+		"rx power="<<rxPowerDbm<<"dbm");
+  return rxPowerDbm;
 
 }
 

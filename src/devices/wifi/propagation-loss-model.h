@@ -11,6 +11,7 @@ class PropagationLossModel : public Object
 {
 public:
   virtual ~PropagationLossModel ();
+  // returns the rx power in dbms
   virtual double GetRxPower (double txPowerDbm,
 			     double distance) const = 0;
 
