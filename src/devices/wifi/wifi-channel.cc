@@ -22,10 +22,12 @@
 #include "ns3/mobility-model.h"
 #include "ns3/net-device.h"
 #include "ns3/node.h"
+#include "ns3/log.h"
 #include "wifi-channel.h"
 #include "propagation-loss-model.h"
 #include "propagation-delay-model.h"
 
+NS_LOG_COMPONENT_DEFINE ("WifiChannel");
 
 namespace ns3 {
 
@@ -66,6 +68,8 @@ WifiChannel::Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDb
           double distance = senderMobility->GetDistanceFrom (receiverMobility);
           Time delay = m_delay->GetDelay (distance);
           double rxPowerDbm = m_loss->GetRxPower (txPowerDbm, distance);
+          NS_LOG_DEBUG ("propagation: txPower="<<txPowerDbm<<"dbm, rxPower="<<rxPowerDbm<<"dbm, "<<
+                        "distance="<<distance<<"m, delay="<<delay);
           Simulator::Schedule (delay, &WifiChannel::Receive, this, 
                                j, packet, rxPowerDbm, wifiMode, preamble);
         }
