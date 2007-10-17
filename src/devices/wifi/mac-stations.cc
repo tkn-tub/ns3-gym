@@ -136,6 +136,7 @@ MacStations::Lookup (Mac48Address address)
         }
     }
   MacStation *station = CreateStation ();
+  station->Reset ();
   m_stations.push_back (std::make_pair (address, station));
   return station;
 }
@@ -310,8 +311,8 @@ MacStation::GetNSupportedModes (void) const
 WifiMode 
 MacStation::GetSupportedMode (uint32_t i) const
 {
-  NS_ASSERT (i > 0);
-  return m_modes[i-1];
+  NS_ASSERT (i < m_modes.size ());
+  return m_modes[i];
 }
 
 
