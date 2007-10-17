@@ -160,7 +160,7 @@ WifiMode
 MacStations::GetBasicMode (uint32_t i) const
 {
   NS_ASSERT (i < m_basicModes.size ());
-  return m_basicModes[i-1];
+  return m_basicModes[i];
 }
 MacStations::BasicModesIterator 
 MacStations::BeginBasicModes (void) const
