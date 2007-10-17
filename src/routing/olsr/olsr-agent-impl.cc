@@ -422,7 +422,7 @@ OlsrAgentImpl::MprComputation()
     {
       TwoHopNeighborTuple const &twoHopNeigh = *it;
       bool ok = true;
-      NeighborTuple *nb_tuple = m_state.FindSymNeighborTuple (twoHopNeigh.neighborMainAddr);
+      const NeighborTuple *nb_tuple = m_state.FindSymNeighborTuple (twoHopNeigh.neighborMainAddr);
       if (nb_tuple == NULL)
         {
           ok = false;
@@ -711,7 +711,7 @@ OlsrAgentImpl::RoutingTableComputation ()
     {
       TwoHopNeighborTuple const &nb2hop_tuple = *it;
       bool ok = true;
-      NeighborTuple *nb_tuple = m_state.FindSymNeighborTuple
+      const NeighborTuple *nb_tuple = m_state.FindSymNeighborTuple
         (nb2hop_tuple.neighborMainAddr);
       if (nb_tuple == NULL)
         ok = false;

@@ -94,10 +94,10 @@ OlsrState::FindNeighborTuple (Ipv4Address const &mainAddr)
   return NULL;
 }
 
-NeighborTuple*
-OlsrState::FindSymNeighborTuple (Ipv4Address const &mainAddr)
+const NeighborTuple*
+OlsrState::FindSymNeighborTuple (Ipv4Address const &mainAddr) const
 {
-  for (NeighborSet::iterator it = m_neighborSet.begin ();
+  for (NeighborSet::const_iterator it = m_neighborSet.begin ();
        it != m_neighborSet.end (); it++)
     {
       if (it->neighborMainAddr == mainAddr && it->status == NeighborTuple::STATUS_SYM)

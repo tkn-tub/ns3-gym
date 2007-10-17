@@ -64,7 +64,7 @@ public:
     return m_neighborSet;
   }
   NeighborTuple* FindNeighborTuple (const Ipv4Address &mainAddr);
-  NeighborTuple* FindSymNeighborTuple (const Ipv4Address &mainAddr);
+  const NeighborTuple* FindSymNeighborTuple (const Ipv4Address &mainAddr) const;
   NeighborTuple* FindNeighborTuple (const Ipv4Address &mainAddr,
                                     uint8_t willingness);
   void EraseNeighborTuple (const NeighborTuple &neighborTuple);
