@@ -643,9 +643,9 @@ OlsrAgentImpl::MprComputation()
 /// \return the corresponding main address.
 ///
 Ipv4Address
-OlsrAgentImpl::GetMainAddress (Ipv4Address iface_addr)
+OlsrAgentImpl::GetMainAddress (Ipv4Address iface_addr) const
 {
-  IfaceAssocTuple *tuple =
+  const IfaceAssocTuple *tuple =
     m_state.FindIfaceAssocTuple (iface_addr);
   
   if (tuple != NULL)

@@ -129,6 +129,7 @@ public:
     return m_ifaceAssocSet;
   }
   IfaceAssocTuple* FindIfaceAssocTuple (const Ipv4Address &ifaceAddr);
+  const IfaceAssocTuple* FindIfaceAssocTuple (const Ipv4Address &ifaceAddr) const;
   void EraseIfaceAssocTuple (const IfaceAssocTuple &tuple);
   void InsertIfaceAssocTuple (const IfaceAssocTuple &tuple);
 

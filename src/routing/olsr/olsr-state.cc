@@ -400,6 +400,18 @@ OlsrState::FindIfaceAssocTuple (Ipv4Address const &ifaceAddr)
   return NULL;
 }
 
+const IfaceAssocTuple*
+OlsrState::FindIfaceAssocTuple (Ipv4Address const &ifaceAddr) const
+{
+  for (IfaceAssocSet::const_iterator it = m_ifaceAssocSet.begin ();
+       it != m_ifaceAssocSet.end (); it++)
+    {
+      if (it->ifaceAddr == ifaceAddr)
+        return &(*it);
+    }
+  return NULL;
+}
+
 void
 OlsrState::EraseIfaceAssocTuple (const IfaceAssocTuple &tuple)
 {

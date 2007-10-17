@@ -102,7 +102,7 @@ protected:
 
   void MprComputation ();
   void RoutingTableComputation ();
-  Ipv4Address GetMainAddress (Ipv4Address iface_addr);
+  Ipv4Address GetMainAddress (Ipv4Address iface_addr) const;
 
   // Timer handlers
   Timer m_helloTimer;
