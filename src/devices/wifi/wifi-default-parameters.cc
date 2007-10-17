@@ -65,11 +65,11 @@ static NumericDefaultValue<uint32_t> g_phyNTxPower
 static NumericDefaultValue<double> g_phyTxGain
 ("WifiPhyTxGain", 
  "Transmission gain (dbm).",
- 1.0);
+ 0.0);
 static NumericDefaultValue<double> g_phyRxGain
 ("WifiPhyRxGain", 
  "Reception gain (dbm).",
- 1.0);
+ 0.0);
 static StringDefaultValue g_ssid
 ("WifiSsid",
  "The ssid to use. \"\" is the broadcast ssid.",
