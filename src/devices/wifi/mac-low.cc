@@ -33,6 +33,9 @@
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
+#define MY_DEBUG(x) \
+ NS_LOG_DEBUG (Simulator::Now () << " " << x)
+
 namespace ns3 {
 
 class SnrTag : public Tag
@@ -353,13 +356,14 @@ MacLow::StartTransmission (Packet packet,
     }
   m_currentPacket = packet;
   m_currentHdr = *hdr;
+  m_hasCurrent = true;
   CancelAllEvents ();
   m_listener = listener;
   m_txParams = parameters;
 
   //NS_ASSERT (m_phy->IsStateIdle ());
 
-  NS_LOG_DEBUG ("startTx size="<< GetCurrentSize () << ", to=" << m_currentHdr.GetAddr1());
+  MY_DEBUG ("startTx size="<< GetCurrentSize () << ", to=" << m_currentHdr.GetAddr1());
 
   if (m_txParams.MustSendRts ()) 
     {
@@ -377,7 +381,7 @@ MacLow::StartTransmission (Packet packet,
 void
 MacLow::ReceiveError (Packet packet, double rxSnr)
 {
-  NS_LOG_DEBUG ("rx failed ");
+  MY_DEBUG ("rx failed ");
   m_dropError (packet);
   if (m_txParams.MustWaitFastAck ()) 
     {
@@ -400,7 +404,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
   packet.RemoveHeader (hdr);
   
   bool isPrevNavZero = IsNavZero (Simulator::Now ());
-  NS_LOG_DEBUG ("duration/id=" << hdr.GetDuration ());
+  MY_DEBUG ("duration/id=" << hdr.GetDuration ());
   NotifyNav (Simulator::Now (), &hdr);
   if (hdr.IsRts ()) 
     {
@@ -408,7 +412,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
       if (isPrevNavZero &&
           hdr.GetAddr1 () == m_device->GetSelfAddress ()) 
         {
-          NS_LOG_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", schedule CTS");
+          MY_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", schedule CTS");
           NS_ASSERT (m_sendCtsEvent.IsExpired ());
           MacStation *station = m_stations->Lookup (hdr.GetAddr2 ());
           station->ReportRxOk (rxSnr, txMode);
@@ -421,7 +425,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
         } 
       else 
         {
-          NS_LOG_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", cannot schedule CTS");
+          MY_DEBUG ("rx RTS from=" << hdr.GetAddr2 () << ", cannot schedule CTS");
         }
     } 
   else if (hdr.IsCts () &&
@@ -429,7 +433,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
            m_ctsTimeoutEvent.IsRunning () &&
            m_hasCurrent) 
     {
-      NS_LOG_DEBUG ("receive cts from="<<m_currentHdr.GetAddr1 ());
+      MY_DEBUG ("receive cts from="<<m_currentHdr.GetAddr1 ());
       SnrTag tag;
       packet.PeekTag (tag);
       MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
@@ -452,7 +456,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
             m_superFastAckTimeoutEvent.IsRunning ()) &&
            m_txParams.MustWaitAck ()) 
     {
-      NS_LOG_DEBUG ("receive ack from="<<m_currentHdr.GetAddr1 ());
+      MY_DEBUG ("receive ack from="<<m_currentHdr.GetAddr1 ());
       SnrTag tag;
       packet.PeekTag (tag);
       MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
@@ -483,7 +487,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
     } 
   else if (hdr.IsCtl ()) 
     {
-      NS_LOG_DEBUG ("rx drop " << hdr.GetTypeString ());
+      MY_DEBUG ("rx drop " << hdr.GetTypeString ());
     } 
   else if (hdr.GetAddr1 () == m_device->GetSelfAddress ()) 
     {
@@ -492,11 +496,11 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
       
       if (hdr.IsQosData () && hdr.IsQosNoAck ()) 
         {
-          NS_LOG_DEBUG ("rx unicast/noAck from="<<hdr.GetAddr2 ());
+          MY_DEBUG ("rx unicast/noAck from="<<hdr.GetAddr2 ());
         } 
       else if (hdr.IsData () || hdr.IsMgt ()) 
         {
-          NS_LOG_DEBUG ("rx unicast/sendAck from=" << hdr.GetAddr2 ());
+          MY_DEBUG ("rx unicast/sendAck from=" << hdr.GetAddr2 ());
           NS_ASSERT (m_sendAckEvent.IsExpired ());
           m_sendAckEvent = Simulator::Schedule (GetSifs (),
                                                 &MacLow::SendAckAfterData, this,
@@ -511,7 +515,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
     {
       if (hdr.IsData () || hdr.IsMgt ()) 
         {
-          NS_LOG_DEBUG ("rx broadcast from=" << hdr.GetAddr2 ());
+          MY_DEBUG ("rx broadcast from=" << hdr.GetAddr2 ());
           goto rxPacket;
         } 
       else 
@@ -521,7 +525,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
     } 
   else 
     {
-      //NS_LOG_DEBUG_VERBOSE ("rx not-for-me from %d", GetSource (packet));
+      //MY_DEBUG_VERBOSE ("rx not-for-me from %d", GetSource (packet));
     }
   return;
  rxPacket:
@@ -707,6 +711,7 @@ MacLow::ForwardDown (Packet const packet, WifiMacHeader const* hdr,
 void
 MacLow::CtsTimeout (void)
 {
+  MY_DEBUG ("cts timeout");
   MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
   station->ReportRtsFailed ();
   m_hasCurrent = false;
@@ -728,7 +733,7 @@ MacLow::FastAckTimeout (void)
   station->ReportDataFailed ();
   if (m_phy->IsStateIdle ()) 
     {
-      NS_LOG_DEBUG ("fast Ack idle missed");
+      MY_DEBUG ("fast Ack idle missed");
       m_listener->MissedAck ();
     }
   m_listener = 0;
@@ -740,12 +745,12 @@ MacLow::SuperFastAckTimeout ()
   station->ReportDataFailed ();
   if (m_phy->IsStateIdle ()) 
     {
-      NS_LOG_DEBUG ("super fast Ack failed");
+      MY_DEBUG ("super fast Ack failed");
       m_listener->MissedAck ();
     } 
   else 
     {
-      NS_LOG_DEBUG ("super fast Ack ok");
+      MY_DEBUG ("super fast Ack ok");
       m_listener->GotAck (0.0, WifiMode ());
     }
   m_listener = 0;
@@ -781,7 +786,7 @@ MacLow::SendRtsForPacket (void)
     }
   rts.SetDurationUs (duration.GetMicroSeconds ());
 
-  NS_LOG_DEBUG ("tx RTS to="<< rts.GetAddr1 () << ", mode=" << rtsTxMode);
+  MY_DEBUG ("tx RTS to="<< rts.GetAddr1 () << ", mode=" << rtsTxMode);
 
   Time txDuration = m_phy->CalculateTxDuration (GetRtsSize (), rtsTxMode, WIFI_PREAMBLE_LONG);
   Time timerDelay = txDuration + GetCtsTimeout ();
@@ -841,7 +846,7 @@ MacLow::SendDataPacket (void)
   StartDataTxTimers ();
 
   WifiMode dataTxMode = GetDataTxMode (m_currentHdr.GetAddr1 (), GetCurrentSize ());
-  NS_LOG_DEBUG ("tx "<< m_currentHdr.GetTypeString () << 
+  MY_DEBUG ("tx "<< m_currentHdr.GetTypeString () << 
          ", to=" << m_currentHdr.GetAddr1 () <<
          ", mode=" << dataTxMode);
   Time duration = Seconds (0);
@@ -905,7 +910,7 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode txMode, do
   /* send a CTS when you receive a RTS 
    * right after SIFS.
    */
-  NS_LOG_DEBUG ("tx CTS to=" << source << ", mode=" << txMode);
+  MY_DEBUG ("tx CTS to=" << source << ", mode=" << txMode);
   WifiMacHeader cts;
   cts.SetType (WIFI_MAC_CTL_CTS);
   cts.SetDsNotFrom ();
@@ -936,7 +941,7 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode)
   NS_ASSERT (m_hasCurrent);
   WifiMode dataTxMode = GetDataTxMode (m_currentHdr.GetAddr1 (), GetCurrentSize ());
 
-  NS_LOG_DEBUG ("tx " << m_currentHdr.GetTypeString () << " to=" << m_currentHdr.GetAddr2 () <<
+  MY_DEBUG ("tx " << m_currentHdr.GetTypeString () << " to=" << m_currentHdr.GetAddr2 () <<
          ", mode=" << dataTxMode << ", seq=0x"<< m_currentHdr.GetSequenceControl ());
 
   StartDataTxTimers ();
@@ -963,7 +968,7 @@ void
 MacLow::FastAckFailedTimeout (void)
 {
   m_listener->MissedAck ();
-  NS_LOG_DEBUG ("fast Ack busy but missed");
+  MY_DEBUG ("fast Ack busy but missed");
 }
 
 void
@@ -972,7 +977,7 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode txMode, d
   /* send an ACK when you receive 
    * a packet after SIFS. 
    */
-  NS_LOG_DEBUG ("tx ACK to=" << source << ", mode=" << txMode);
+  MY_DEBUG ("tx ACK to=" << source << ", mode=" << txMode);
   WifiMacHeader ack;
   ack.SetType (WIFI_MAC_CTL_ACK);
   ack.SetDsNotFrom ();
