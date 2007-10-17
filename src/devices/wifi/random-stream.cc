@@ -28,7 +28,9 @@ RandomStream::~RandomStream ()
 
 
 RealRandomStream::RealRandomStream ()
-{}
+{
+  m_stream.InitializeStream();
+}
 uint32_t 
 RealRandomStream::GetNext (uint32_t min, uint32_t max)
 {
