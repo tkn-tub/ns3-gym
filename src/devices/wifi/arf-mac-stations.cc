@@ -49,12 +49,12 @@ ArfMacStation::ArfMacStation (ArfMacStations *stations,
 ArfMacStation::~ArfMacStation ()
 {}
 
-int 
+uint32_t
 ArfMacStation::GetMaxRate (void)
 {
   return GetNSupportedModes ();
 }
-int 
+uint32_t
 ArfMacStation::GetMinRate (void)
 {
   return 0;
@@ -181,28 +181,28 @@ void ArfMacStation::ReportRecoveryFailure (void)
 {}
 void ArfMacStation::ReportFailure (void)
 {}
-int ArfMacStation::GetMinTimerTimeout (void)
+uint32_t ArfMacStation::GetMinTimerTimeout (void)
 {
   return m_minTimerTimeout;
 }
-int ArfMacStation::GetMinSuccessThreshold (void)
+uint32_t ArfMacStation::GetMinSuccessThreshold (void)
 {
   return m_minSuccessThreshold;
 }
-int ArfMacStation::GetTimerTimeout (void)
+uint32_t ArfMacStation::GetTimerTimeout (void)
 {
   return m_timerTimeout;
 }
-int ArfMacStation::GetSuccessThreshold (void)
+uint32_t ArfMacStation::GetSuccessThreshold (void)
 {
   return m_successThreshold;
 }
-void ArfMacStation::SetTimerTimeout (int timerTimeout)
+void ArfMacStation::SetTimerTimeout (uint32_t timerTimeout)
 {
   NS_ASSERT (timerTimeout >= m_minTimerTimeout);
   m_timerTimeout = timerTimeout;
 }
-void ArfMacStation::SetSuccessThreshold (int successThreshold)
+void ArfMacStation::SetSuccessThreshold (uint32_t successThreshold)
 {
   NS_ASSERT (successThreshold >= m_minSuccessThreshold);
   m_successThreshold = successThreshold;

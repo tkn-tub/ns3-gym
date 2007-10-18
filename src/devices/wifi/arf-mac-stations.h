@@ -55,19 +55,19 @@ public:
 private:
   virtual ArfMacStations *GetStations (void) const;
 
-  int m_timer;
-  int m_success;
-  int m_failed;
+  uint32_t m_timer;
+  uint32_t m_success;
+  uint32_t m_failed;
   bool m_recovery;
-  int m_retry;
+  uint32_t m_retry;
   
-  int m_timerTimeout;
-  int m_successThreshold;
+  uint32_t m_timerTimeout;
+  uint32_t m_successThreshold;
 
-  int m_rate;
+  uint32_t m_rate;
   
-  int m_minTimerTimeout;
-  int m_minSuccessThreshold;
+  uint32_t m_minTimerTimeout;
+  uint32_t m_minSuccessThreshold;
 
   ArfMacStations *m_stations;
   
@@ -76,22 +76,22 @@ private:
   virtual void ReportRecoveryFailure (void);
   virtual void ReportFailure (void);
 
-  int GetMaxRate (void);
-  int GetMinRate (void);
+  uint32_t GetMaxRate (void);
+  uint32_t GetMinRate (void);
 
   bool NeedRecoveryFallback (void);
   bool NeedNormalFallback (void);
   
 protected:
   // called by AarfMacStation.
-  int GetMinTimerTimeout (void);
-  int GetMinSuccessThreshold (void);
+  uint32_t GetMinTimerTimeout (void);
+  uint32_t GetMinSuccessThreshold (void);
   
-  int GetTimerTimeout (void);
-  int GetSuccessThreshold (void);
+  uint32_t GetTimerTimeout (void);
+  uint32_t GetSuccessThreshold (void);
   
-  void SetTimerTimeout (int timerTimeout);
-  void SetSuccessThreshold (int successThreshold);
+  void SetTimerTimeout (uint32_t timerTimeout);
+  void SetSuccessThreshold (uint32_t successThreshold);
 };
 
 } // namespace ns3
