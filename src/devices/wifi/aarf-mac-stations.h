@@ -26,18 +26,30 @@ namespace ns3 {
 
 class AarfMacStations : public ArfMacStations {
 public:
-  AarfMacStations (WifiMode defaultTxMode);
+  AarfMacStations (WifiMode defaultTxMode,
+                   uint32_t minTimerThreshold,
+                   uint32_t minSuccessThreshold,
+                   double successK,
+                   uint32_t maxSuccessThreshold,
+                   double timerK);
   virtual ~AarfMacStations ();
 private:
   virtual class MacStation *CreateStation (void);
+  uint32_t m_minTimerThreshold;
+  uint32_t m_minSuccessThreshold;
+  double m_successK;
+  uint32_t m_maxSuccessThreshold;
+  double m_timerK;
 };
 
 class AarfMacStation : public ArfMacStation
 {
 public:
   AarfMacStation (AarfMacStations *stations,
+                  uint32_t minTimerThreshold,
+                  uint32_t minSuccessThreshold,
                   double successK,
-                  int maxSuccessThreshold,
+                  uint32_t maxSuccessThreshold,
                   double timerK);
   virtual ~AarfMacStation ();
 
@@ -46,7 +58,7 @@ private:
   virtual void ReportFailure (void);
 
   double m_successK;
-  int m_maxSuccessThreshold;
+  uint32_t m_maxSuccessThreshold;
   double m_timerK;
 };
 

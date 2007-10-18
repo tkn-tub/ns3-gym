@@ -40,6 +40,39 @@ static EnumDefaultValue<enum RateControlAlgorithm> g_rateControlAlgorithm
  IDEAL, "Ideal",
  0, (void *)0);
 
+static NumericDefaultValue<uint32_t> g_arfSuccessThreshold
+("WifiArfSuccessThreshold",
+ "The minimum number of sucessfull transmissions to try a new rate.",
+ 10);
+
+static NumericDefaultValue<uint32_t> g_arfTimerThreshold
+("WifiArfTimerThreshold",
+ "The 'timer' threshold in the ARF algorithm.",
+ 15);
+
+static NumericDefaultValue<uint32_t> g_aarfMinSuccessThreshold
+("WifiAarfMinSuccessThreshold",
+ "The minimum value for the success threshold in the AARF algorithm.",
+ 10);
+
+static NumericDefaultValue<uint32_t> g_aarfMinTimerThreshold
+("WifiAarfMinTimerThreshold",
+ "The minimum value for the 'timer' threshold in the AARF algorithm.",
+ 15);
+
+static NumericDefaultValue<double> g_aarfSuccessK
+("WifiAarfSuccessK",
+ "Multiplication factor for the success threshold in the AARF algorithm.",
+ 2.0);
+static NumericDefaultValue<uint32_t> g_aarfMaxSuccessThreshold
+("WifiAarfMaxSuccessThreshold",
+ "Maximum value of the success threshodl in the AARF algorithm.",
+ 60);
+static NumericDefaultValue<double> g_aarfTimerK
+("WifiAarfTimerK",
+ "Multiplication factor for the timer threshold in the AARF algorithm.",
+ 2.0);
+
 static NumericDefaultValue<double> g_phyEdThreshold
 ("WifiPhyEnergyDetectionThreshold",
  "The energy of a received signal should be higher than this threshold (dbm) to allow the PHY layer to detect the signal.",
@@ -155,6 +188,42 @@ GetIdealRateControlBer (void)
 {
   return g_idealBer.GetValue ();
 }
+uint32_t
+GetArfRateControlSuccessThreshold (void)
+{
+  return g_arfSuccessThreshold.GetValue ();
+}
+uint32_t
+GetArfRateControlTimerThreshold (void)
+{
+  return g_arfTimerThreshold.GetValue ();
+}
+uint32_t
+GetAarfRateControlMinSuccessThreshold (void)
+{
+  return g_aarfMinSuccessThreshold.GetValue ();
+}
+uint32_t
+GetAarfRateControlMinTimerThreshold (void)
+{
+  return g_aarfMinTimerThreshold.GetValue ();
+}
+double
+GetAarfRateControlSuccessK (void)
+{
+  return g_aarfSuccessK.GetValue ();
+}
+uint32_t
+GetAarfRateControlMaxSuccessThreshold (void)
+{
+  return g_aarfMaxSuccessThreshold.GetValue ();
+}
+double
+GetAarfRateControlTimerK (void)
+{
+  return g_aarfTimerK.GetValue ();
+}
+
 double 
 GetPhyEnergyDetectionThresholdDbm (void)
 {

@@ -39,6 +39,13 @@ enum RateControlAlgorithm GetRateControlAlgorithm (void);
 enum PhyModeParameter GetConstantDataRate (void);
 enum PhyModeParameter GetConstantCtlRate (void);
 double GetIdealRateControlBer (void);
+uint32_t GetArfRateControlSuccessThreshold (void);
+uint32_t GetArfRateControlTimerThreshold (void);
+uint32_t GetAarfRateControlMinSuccessThreshold (void);
+uint32_t GetAarfRateControlMinTimerThreshold (void);
+double GetAarfRateControlSuccessK (void);
+uint32_t GetAarfRateControlMaxSuccessThreshold (void);
+double GetAarfRateControlTimerK (void);
 
 double GetPhyEnergyDetectionThresholdDbm (void);
 double GetPhyRxNoiseDb (void);

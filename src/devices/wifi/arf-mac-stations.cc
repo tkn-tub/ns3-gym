@@ -21,6 +21,10 @@
 #include "mac-stations.h"
 #include "arf-mac-stations.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
+#include "ns3/default-value.h"
+
+NS_LOG_COMPONENT_DEFINE ("Arf");
 
 
 namespace ns3 {
@@ -138,7 +142,9 @@ void
 ArfMacStation::ReportRxOk (double rxSnr, WifiMode txMode)
 {}
 void ArfMacStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
-{}
+{
+  NS_LOG_DEBUG ("self="<<this<<" rts ok");
+}
 void ArfMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
   m_timer++;
@@ -146,10 +152,12 @@ void ArfMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSn
   m_failed = 0;
   m_recovery = false;
   m_retry = 0;
+  NS_LOG_DEBUG ("self="<<this<<" data ok success="<<m_success<<", timer="<<m_timer);
   if ((m_success == GetSuccessThreshold () ||
        m_timer == GetTimerTimeout ()) &&
       (m_rate < (GetMaxRate () - 1))) 
     {
+      NS_LOG_DEBUG ("self="<<this<<" inc rate");
       m_rate++;
       m_timer = 0;
       m_success = 0;
@@ -209,15 +217,17 @@ ArfMacStation::GetStations (void) const
 
 
 
-ArfMacStations::ArfMacStations (WifiMode defaultTxMode)
-  : MacStations (defaultTxMode)
+ArfMacStations::ArfMacStations (WifiMode defaultTxMode, uint32_t timerThreshold, uint32_t successThreshold)
+  : MacStations (defaultTxMode),
+    m_timerThreshold (timerThreshold),
+    m_successThreshold (successThreshold)
 {}
 ArfMacStations::~ArfMacStations ()
 {}
 MacStation *
 ArfMacStations::CreateStation (void)
 {
-  return new ArfMacStation (this, 15, 10);
+  return new ArfMacStation (this, m_timerThreshold, m_successThreshold);
 }
 
 } // namespace ns3

@@ -25,25 +25,43 @@
 
 namespace ns3 {
 
-AarfMacStations::AarfMacStations (WifiMode defaultTxMode)
-  : ArfMacStations (defaultTxMode)
+AarfMacStations::AarfMacStations (WifiMode defaultTxMode, 
+                                  uint32_t minTimerThreshold,
+                                  uint32_t minSuccessThreshold,
+                                  double successK,
+                                  uint32_t maxSuccessThreshold,
+                                  double timerK)
+  : ArfMacStations (defaultTxMode, 
+                    minTimerThreshold,
+                    minSuccessThreshold),
+    m_minTimerThreshold (minTimerThreshold),
+    m_minSuccessThreshold (minSuccessThreshold),
+    m_successK (successK),
+    m_maxSuccessThreshold (maxSuccessThreshold),
+    m_timerK (timerK)
 {}
 AarfMacStations::~AarfMacStations ()
 {}
 MacStation *
 AarfMacStations::CreateStation (void)
 {
-  return new AarfMacStation (this, 2.0, 60, 2.0);
+  return new AarfMacStation (this, m_minTimerThreshold,
+                             m_minSuccessThreshold,
+                             m_successK,
+                             m_maxSuccessThreshold,
+                             m_timerK);
 }
 
 
 
 
 AarfMacStation::AarfMacStation (AarfMacStations *stations,
+                                uint32_t minTimerThreshold,
+                                uint32_t minSuccessThreshold,
                                 double successK,
-                                int maxSuccessThreshold,
+                                uint32_t maxSuccessThreshold,
                                 double timerK)
-  : ArfMacStation (stations, 15, 10),
+  : ArfMacStation (stations, minTimerThreshold, minSuccessThreshold),
     m_successK (successK),
     m_maxSuccessThreshold (maxSuccessThreshold),
     m_timerK (timerK)

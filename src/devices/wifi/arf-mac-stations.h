@@ -26,11 +26,13 @@ namespace ns3 {
 
 class ArfMacStations : public MacStations {
 public:
-  ArfMacStations (WifiMode defaultTxMode);
+  ArfMacStations (WifiMode defaultTxMode, uint32_t timerThreshold, uint32_t successThreshold);
   virtual ~ArfMacStations ();
 
 private:
   virtual class MacStation *CreateStation (void);
+  uint32_t m_timerThreshold;
+  uint32_t m_successThreshold;
 };
 
 

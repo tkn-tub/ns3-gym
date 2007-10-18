@@ -78,10 +78,17 @@ WifiNetDevice::Construct (void)
   // the rate control algorithm
   switch (WifiDefaultParameters::GetRateControlAlgorithm ()) {
   case WifiDefaultParameters::ARF:
-    m_stations = new ArfMacStations (m_phy->GetMode (0));
+    m_stations = new ArfMacStations (m_phy->GetMode (0), 
+                                     WifiDefaultParameters::GetArfRateControlTimerThreshold (),
+                                     WifiDefaultParameters::GetArfRateControlSuccessThreshold ());
     break;
   case WifiDefaultParameters::AARF:
-    m_stations = new AarfMacStations (m_phy->GetMode (0));
+    m_stations = new AarfMacStations (m_phy->GetMode (0),
+                                      WifiDefaultParameters::GetAarfRateControlMinTimerThreshold (),
+                                      WifiDefaultParameters::GetAarfRateControlMinSuccessThreshold (),
+                                      WifiDefaultParameters::GetAarfRateControlSuccessK (),
+                                      WifiDefaultParameters::GetAarfRateControlMaxSuccessThreshold (),
+                                      WifiDefaultParameters::GetAarfRateControlTimerK ());
     break;
   case WifiDefaultParameters::CONSTANT_RATE: {
     WifiMode dataRate = GetWifiModeForPhyMode (m_phy, WifiDefaultParameters::GetConstantDataRate ());
