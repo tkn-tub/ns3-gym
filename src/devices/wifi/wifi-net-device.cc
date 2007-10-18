@@ -223,6 +223,18 @@ WifiNetDevice::DoDispose (void)
   NetDevice::DoDispose ();
   // cleanup local
   m_channel = 0;
+  delete m_phy;
+  delete m_stations;
+  delete m_low;
+  delete m_rxMiddle;
+  delete m_txMiddle;
+  delete m_parameters;
+  m_phy = 0;
+  m_stations = 0;
+  m_low = 0;
+  m_rxMiddle = 0;
+  m_txMiddle = 0;
+  m_parameters = 0;
 }
 
 

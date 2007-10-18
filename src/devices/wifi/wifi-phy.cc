@@ -198,6 +198,7 @@ WifiPhy::WifiPhy (Ptr<WifiNetDevice> device)
 
 WifiPhy::~WifiPhy ()
 {
+  m_channel = 0;
   m_events.clear ();
   m_modes.clear ();
 }
