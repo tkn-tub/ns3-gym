@@ -36,7 +36,9 @@ WifiChannel::WifiChannel ()
     m_delay (PropagationDelayModel::CreateDefault ())
 {}
 WifiChannel::~WifiChannel ()
-{}
+{
+  m_deviceList.clear ();
+}
 
 void 
 WifiChannel::SetPropationLossModel (Ptr<PropagationLossModel> loss)
