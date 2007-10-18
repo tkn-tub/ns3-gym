@@ -67,14 +67,7 @@ WifiNetDevice::WifiNetDevice (Ptr<Node> node)
 }
 
 WifiNetDevice::~WifiNetDevice ()
-{
-  delete m_phy;
-  delete m_stations;
-  delete m_low;
-  delete m_parameters;
-  delete m_txMiddle;
-  delete m_rxMiddle;
-}
+{}
 
 void
 WifiNetDevice::Construct (void)
@@ -257,10 +250,7 @@ AdhocWifiNetDevice::AdhocWifiNetDevice (Ptr<Node> node)
   m_high = high;
 }
 AdhocWifiNetDevice::~AdhocWifiNetDevice ()
-{
-  delete m_dca;
-  delete m_high;
-}
+{}
 Mac48Address 
 AdhocWifiNetDevice::GetBssid (void) const
 {
@@ -288,6 +278,18 @@ AdhocWifiNetDevice::NotifyConnected (void)
 {
   NotifyLinkUp ();
 }
+void 
+AdhocWifiNetDevice::DoDispose (void)
+{
+  // chain up.
+  WifiNetDevice::DoDispose ();
+  // local cleanup
+  delete m_dca;
+  delete m_high;
+  m_dca = 0;
+  m_high = 0;
+}
+
 
 /*****************************************************
  *            STA code
@@ -320,10 +322,7 @@ NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node)
   m_high = high;
 }
 NqstaWifiNetDevice::~NqstaWifiNetDevice ()
-{
-  delete m_dca;
-  delete m_high;
-}
+{}
 Mac48Address 
 NqstaWifiNetDevice::GetBssid (void) const
 {
@@ -363,6 +362,17 @@ NqstaWifiNetDevice::DisAssociated (void)
 {
   NetDevice::NotifyLinkDown ();
 }
+void 
+NqstaWifiNetDevice::DoDispose (void)
+{
+  // chain up.
+  WifiNetDevice::DoDispose ();
+  // local cleanup
+  delete m_dca;
+  delete m_high;
+  m_dca = 0;
+  m_high = 0;
+}
 
 
 /*****************************************************
@@ -394,10 +404,7 @@ NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node)
   m_high = high;
 }
 NqapWifiNetDevice::~NqapWifiNetDevice ()
-{
-  delete m_dca;
-  delete m_high;
-}
+{}
 Mac48Address 
 NqapWifiNetDevice::GetBssid (void) const
 {
@@ -423,6 +430,17 @@ void
 NqapWifiNetDevice::NotifyConnected (void)
 {
   NotifyLinkUp ();
+}
+void 
+NqapWifiNetDevice::DoDispose (void)
+{
+  // chain up.
+  WifiNetDevice::DoDispose ();
+  // local cleanup
+  delete m_dca;
+  delete m_high;
+  m_dca = 0;
+  m_high = 0;
 }
 
 

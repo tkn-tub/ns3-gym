@@ -91,6 +91,8 @@ public:
   virtual Ssid GetSsid (void) const;
   void SetSsid (Ssid ssid);
 
+protected:
+  virtual void DoDispose (void);
 private:
   void ForwardUp (void);
   virtual bool DoSendTo (const Packet &packet, Mac48Address const & to);
@@ -110,6 +112,8 @@ public:
   virtual Mac48Address GetBssid (void) const;
   virtual Ssid GetSsid (void) const;
   void StartActiveAssociation (Ssid ssid);
+protected:
+  virtual void DoDispose (void);
 private:
   void Associated (void);
   void DisAssociated (void);
@@ -130,6 +134,8 @@ public:
   virtual Mac48Address GetBssid (void) const;
   virtual Ssid GetSsid (void) const;
   void SetSsid (Ssid ssid);
+protected:
+  virtual void DoDispose (void);
 private:
   virtual bool DoSendTo (const Packet &packet, Mac48Address const & to);
   virtual void NotifyConnected (void);
