@@ -157,7 +157,7 @@ WifiNetDevice::CreateDca (uint32_t minCw, uint32_t maxCw) const
     m_parameters->GetSlotTime ();
   // see 802.11 p85 section 9.2.10
   Time eifs = difs + m_parameters->GetSifs () + 
-    m_phy->CalculateTxDuration (2+2+6+4, m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
+    m_phy->CalculateTxDuration (8 * (2+2+6+4), m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
   dca->SetDifs (difs);
   dca->SetEifs (eifs);
   dca->SetMaxQueueSize (400);
