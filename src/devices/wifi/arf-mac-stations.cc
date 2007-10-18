@@ -138,12 +138,9 @@ void
 ArfMacStation::ReportRxOk (double rxSnr, WifiMode txMode)
 {}
 void ArfMacStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
-{
-  NS_ASSERT (rtsSnr == 0);
-}
+{}
 void ArfMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
-  NS_ASSERT (dataSnr == 0);
   m_timer++;
   m_success++;
   m_failed = 0;
