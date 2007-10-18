@@ -108,8 +108,7 @@ MacStations::MacStations (WifiMode defaultTxMode)
   : m_defaultTxMode (defaultTxMode),
     m_nonUnicast (new NonUnicastMacStation (this))
 {
-  m_basicModes.push_back (m_defaultTxMode);
-  NS_ASSERT (m_defaultTxMode.IsMandatory ());
+  Reset ();
 }
 
 MacStations::~MacStations ()
@@ -153,6 +152,23 @@ WifiMode
 MacStations::GetDefaultMode (void) const
 {
   return m_defaultTxMode;
+}
+void
+MacStations::Reset (void)
+{
+  for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++)
+    {
+      delete i->second;
+    }
+  m_stations.clear ();
+  m_basicModes.clear ();
+  m_basicModes.push_back (m_defaultTxMode);
+  NS_ASSERT (m_defaultTxMode.IsMandatory ());
+}
+void 
+MacStations::AddBasicMode (WifiMode mode)
+{
+  m_basicModes.push_back (mode);
 }
 uint32_t 
 MacStations::GetNBasicModes (void) const
