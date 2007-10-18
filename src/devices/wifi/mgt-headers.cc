@@ -288,10 +288,20 @@ MgtAssocResponseHeader::GetStatusCode (void)
 {
   return m_code;
 }
+SupportedRates 
+MgtAssocResponseHeader::GetSupportedRates (void)
+{
+  return m_rates;
+}
 void 
 MgtAssocResponseHeader::SetStatusCode (StatusCode code)
 {
   m_code = code;
+}
+void 
+MgtAssocResponseHeader::SetSupportedRates (SupportedRates rates)
+{
+  m_rates = rates;
 }
 
 uint32_t

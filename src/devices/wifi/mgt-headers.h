@@ -64,6 +64,9 @@ public:
   ~MgtAssocResponseHeader ();
 
   StatusCode GetStatusCode (void);
+  SupportedRates GetSupportedRates (void);
+
+  void SetSupportedRates (SupportedRates rates);
   void SetStatusCode (StatusCode code);
 
   static uint32_t GetUid (void);
