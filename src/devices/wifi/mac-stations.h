@@ -86,6 +86,7 @@ public:
   // the BSSBasicRateSet.
   void AddSupportedMode (WifiMode mode);
 
+  bool IsBrandNew (void) const;
   bool IsAssociated (void) const;
   bool IsWaitAssocTxOk (void) const;
   void RecordWaitAssocTxOk (void);
@@ -117,6 +118,7 @@ private:
   bool IsIn (WifiMode mode) const;
   WifiMode GetControlAnswerMode (WifiMode reqMode);
   enum {
+    BRAND_NEW,
     DISASSOC,
     WAIT_ASSOC_TX_OK,
     GOT_ASSOC_TX_OK

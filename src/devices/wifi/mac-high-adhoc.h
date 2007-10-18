@@ -30,6 +30,8 @@ class DcaTxop;
 class Packet;
 class WifiNetDevice;
 class WifiMacHeader;
+class MacStations;
+class WifiPhy;
 
 class MacHighAdhoc {
 public:
@@ -41,6 +43,8 @@ public:
   void SetDevice (WifiNetDevice *device);
   void SetForwardCallback (ForwardCallback callback);
   void SetDcaTxop (DcaTxop *dca);
+  void SetStations (MacStations *stations);
+  void SetPhy (WifiPhy *phy);
 
   Mac48Address GetBssid (void) const;
 
@@ -52,6 +56,8 @@ private:
   DcaTxop *m_dca;
   WifiNetDevice *m_device;
   ForwardCallback m_callback;
+  MacStations *m_stations;
+  WifiPhy *m_phy;
 };
 
 } // namespace ns3

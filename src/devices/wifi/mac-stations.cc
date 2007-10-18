@@ -51,7 +51,9 @@ private:
 
 NonUnicastMacStation::NonUnicastMacStation (MacStations *stations)
   : m_stations (stations)
-{}
+{
+  RecordDisassociated ();
+}
 void 
 NonUnicastMacStation::ReportRxOk (double rxSnr, WifiMode txMode)
 {
@@ -184,10 +186,16 @@ MacStations::EndBasicModes (void) const
 namespace ns3 {
 
 MacStation::MacStation ()
-  : m_state (DISASSOC)
+  : m_state (BRAND_NEW)
 {}
 MacStation::~MacStation ()
 {}
+
+bool
+MacStation::IsBrandNew (void) const
+{
+  return m_state == BRAND_NEW;
+}
 
 bool 
 MacStation::IsAssociated (void) const

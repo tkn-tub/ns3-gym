@@ -21,6 +21,8 @@
 #include "mac-high-adhoc.h"
 #include "dca-txop.h"
 #include "wifi-net-device.h"
+#include "mac-stations.h"
+#include "wifi-phy.h"
 #include "ns3/packet.h"
 #include "ns3/log.h"
 
@@ -49,6 +51,16 @@ MacHighAdhoc::SetDcaTxop (DcaTxop *dca)
 {
   m_dca = dca;
 }
+void 
+MacHighAdhoc::SetStations (MacStations *stations)
+{
+  m_stations = stations;
+}
+void 
+MacHighAdhoc::SetPhy (WifiPhy *phy)
+{
+  m_phy = phy;
+}
 
 Mac48Address 
 MacHighAdhoc::GetBssid (void) const
@@ -69,6 +81,18 @@ MacHighAdhoc::Enqueue (Packet packet, Mac48Address to)
   hdr.SetAddr3 (m_device->GetBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
+
+  MacStation *destination = m_stations->Lookup (to);
+  if (destination->IsBrandNew ())
+    {
+      // in adhoc mode, we assume that every destination
+      // supports all the rates we support.
+      for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
+        {
+          destination->AddSupportedMode (m_phy->GetMode (0));
+        }
+    }
+
   m_dca->Queue (packet, hdr);
 }
 

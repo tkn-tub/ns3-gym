@@ -158,7 +158,6 @@ WifiNetDevice::CreateDca (uint32_t minCw, uint32_t maxCw) const
   return dca;
 }
 
-
 void 
 WifiNetDevice::ConnectTo (Ptr<WifiChannel> channel)
 {
@@ -246,6 +245,8 @@ AdhocWifiNetDevice::AdhocWifiNetDevice (Ptr<Node> node)
   high->SetDcaTxop (m_dca);
   high->SetForwardCallback (MakeCallback (&AdhocWifiNetDevice::DoForwardUp, 
                                           static_cast<WifiNetDevice *> (this)));
+  high->SetPhy (m_phy);
+  high->SetStations (m_stations);
   m_rxMiddle->SetForwardCallback (MakeCallback (&MacHighAdhoc::Receive, high));
   m_high = high;
 }
@@ -390,7 +391,8 @@ NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node)
   SupportedRates rates;
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++) 
     {
-      rates.AddSupportedRate (m_phy->GetMode (i).GetPhyRate ());
+      WifiMode mode = m_phy->GetMode (i);
+      rates.AddSupportedRate (mode.GetPhyRate ());
     }
 
   MacHighNqap *high = new MacHighNqap ();
