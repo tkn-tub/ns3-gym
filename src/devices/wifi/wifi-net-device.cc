@@ -116,9 +116,9 @@ WifiNetDevice::Construct (void)
   MacParameters *parameters = new MacParameters ();
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_CTL_CTS);
-  Time ctsDelay = m_phy->CalculateTxDuration (hdr.GetSize (), m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
+  Time ctsDelay = m_phy->CalculateTxDuration (hdr.GetSize () + 4, m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
   hdr.SetType (WIFI_MAC_CTL_ACK);
-  Time ackDelay = m_phy->CalculateTxDuration (hdr.GetSize (), m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
+  Time ackDelay = m_phy->CalculateTxDuration (hdr.GetSize () + 4, m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
   parameters->Initialize (ctsDelay, ackDelay);
   m_parameters = parameters;
 
@@ -155,6 +155,7 @@ WifiNetDevice::CreateDca (uint32_t minCw, uint32_t maxCw) const
   Time difs = m_parameters->GetSifs () + 
     m_parameters->GetSlotTime () + 
     m_parameters->GetSlotTime ();
+  // see 802.11 p85 section 9.2.10
   Time eifs = difs + m_parameters->GetSifs () + 
     m_phy->CalculateTxDuration (2+2+6+4, m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
   dca->SetDifs (difs);
