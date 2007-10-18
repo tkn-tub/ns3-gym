@@ -154,6 +154,7 @@ DcaTxop::~DcaTxop ()
   delete m_navListener;
   delete m_phyListener;
   delete m_queue;
+  delete m_dcf;
 }
 
 void 
