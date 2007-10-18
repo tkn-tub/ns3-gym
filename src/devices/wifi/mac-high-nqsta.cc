@@ -28,6 +28,7 @@
 #include "mgt-headers.h"
 #include "wifi-phy.h"
 #include "dca-txop.h"
+#include "mac-stations.h"
 
 #define noNQSTA_DEBUG 1
 
@@ -75,11 +76,6 @@ MacHighNqsta::~MacHighNqsta ()
 {}
 
 void 
-MacHighNqsta::SetSupportedRates (SupportedRates rates)
-{
-  m_rates = rates;
-}
-void 
 MacHighNqsta::SetDcaTxop (DcaTxop *dca)
 {
   m_dca = dca;
@@ -104,6 +100,17 @@ MacHighNqsta::SetDisAssociatedCallback (DisAssociatedCallback callback)
 {
   m_disAssociatedCallback = callback;
 }
+void 
+MacHighNqsta::SetPhy (WifiPhy *phy)
+{
+  m_phy = phy;
+}
+void 
+MacHighNqsta::SetStations (MacStations *stations)
+{
+  m_stations = stations;
+}
+
 void 
 MacHighNqsta::SetMaxMissedBeacons (uint32_t missed)
 {
@@ -142,11 +149,6 @@ MacHighNqsta::GetBroadcastBssid (void)
 {
   return Mac48Address::GetBroadcast ();
 }
-SupportedRates
-MacHighNqsta::GetSupportedRates (void)
-{
-  return m_rates;
-}
 
 void
 MacHighNqsta::SendProbeRequest (void)
@@ -162,8 +164,7 @@ MacHighNqsta::SendProbeRequest (void)
   Packet packet;
   MgtProbeRequestHeader probe;
   probe.SetSsid (m_device->GetSsid ());
-  SupportedRates rates = GetSupportedRates ();
-  probe.SetSupportedRates (rates);
+  probe.SetSupportedRates (GetSupportedRates ());
   packet.AddHeader (probe);
   
   m_dca->Queue (packet, hdr);
@@ -173,7 +174,7 @@ MacHighNqsta::SendProbeRequest (void)
 }
 
 void
-MacHighNqsta::SendAssociationRequest ()
+MacHighNqsta::SendAssociationRequest (void)
 {
   TRACE ("send assoc request");
   WifiMacHeader hdr;
@@ -186,8 +187,7 @@ MacHighNqsta::SendAssociationRequest ()
   Packet packet;
   MgtAssocRequestHeader assoc;
   assoc.SetSsid (m_device->GetSsid ());
-  SupportedRates rates = GetSupportedRates ();
-  assoc.SetSupportedRates (rates);
+  assoc.SetSupportedRates (GetSupportedRates ());
   packet.AddHeader (assoc);
   
   m_dca->Queue (packet, hdr);
@@ -319,17 +319,9 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
       MgtBeaconHeader beacon;
       packet.RemoveHeader (beacon);
       bool goodBeacon = false;
-      if (m_device->GetSsid ().IsBroadcast ()) 
+      if (m_device->GetSsid ().IsBroadcast () ||
+          beacon.GetSsid ().IsEqual (m_device->GetSsid ()))
         {
-          // we do not have any special ssid so this
-          // beacon is as good as another.
-          Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
-          RestartBeaconWatchdog (delay);
-          goodBeacon = true;
-        } 
-      else if (beacon.GetSsid ().IsEqual (m_device->GetSsid ())) 
-        {
-          //beacon for our ssid.
           Time delay = MicroSeconds (beacon.GetBeaconIntervalUs () * m_maxMissedBeacons);
           RestartBeaconWatchdog (delay);
           goodBeacon = true;
@@ -338,11 +330,11 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
         {
           SetBssid (hdr->GetAddr3 ());
         }
-    if (goodBeacon && m_state == BEACON_MISSED) 
-      {
-        m_state = WAIT_ASSOC_RESP;
-        SendAssociationRequest ();
-      }
+      if (goodBeacon && m_state == BEACON_MISSED) 
+        {
+          m_state = WAIT_ASSOC_RESP;
+          SendAssociationRequest ();
+        }
   } 
   else if (hdr->IsProbeResp ()) 
     {
@@ -350,7 +342,7 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
         {
           MgtProbeResponseHeader probeResp;
           packet.RemoveHeader (probeResp);
-          if (!probeResp.GetSsid ().IsEqual (m_device->GetSsid ())) 
+          if (!probeResp.GetSsid ().IsEqual (m_device->GetSsid ()))
             {
               //not a probe resp for our ssid.
               return;
@@ -380,6 +372,20 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
             {
               m_state = ASSOCIATED;
               TRACE ("assoc completed"); 
+              SupportedRates rates = assocResp.GetSupportedRates ();
+              MacStation *ap = m_stations->Lookup (hdr->GetAddr2 ());
+              for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
+                {
+                  WifiMode mode = m_phy->GetMode (i);
+                  if (rates.IsSupportedRate (mode.GetPhyRate ()))
+                    {
+                      ap->AddSupportedMode (mode);
+                      if (rates.IsBasicRate (mode.GetPhyRate ()))
+                        {
+                          m_stations->AddBasicMode (mode);
+                        }
+                    }
+                }
               m_associatedCallback ();
             } 
           else 
@@ -389,6 +395,18 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
             }
         }
     }
+}
+
+SupportedRates
+MacHighNqsta::GetSupportedRates (void) const
+{
+  SupportedRates rates;
+  for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
+    {
+      WifiMode mode = m_phy->GetMode (i);
+      rates.AddSupportedRate (mode.GetPhyRate ());
+    }
+  return rates;
 }
 
 } // namespace ns3

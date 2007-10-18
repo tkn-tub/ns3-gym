@@ -35,7 +35,8 @@ namespace ns3 {
 class WifiMacHeader;
 class WifiNetDevice;
 class DcaTxop;
-class Watchdog;
+class WifiPhy;
+class MacStations;
 
 class MacHighNqsta {
 public:
@@ -51,7 +52,8 @@ public:
   void SetForwardCallback (ForwardCallback callback);
   void SetAssociatedCallback (AssociatedCallback callback);
   void SetDisAssociatedCallback (DisAssociatedCallback callback);
-  void SetSupportedRates (SupportedRates rates);
+  void SetPhy (WifiPhy *phy);
+  void SetStations (MacStations *stations);
 
   void SetMaxMissedBeacons (uint32_t missed);
   void SetProbeRequestTimeout (Time timeout);
@@ -68,14 +70,14 @@ private:
   void SetBssid (Mac48Address bssid);
   Mac48Address GetBroadcastBssid (void);
   void SendProbeRequest (void);
-  void SendAssociationRequest ();
+  void SendAssociationRequest (void);
   void TryToEnsureAssociated (void);
   void AssocRequestTimeout (void);
   void ProbeRequestTimeout (void);
   bool IsAssociated (void);
-  SupportedRates GetSupportedRates (void);
   void MissedBeacons (void);
   void RestartBeaconWatchdog (Time delay);
+  SupportedRates GetSupportedRates (void) const;
   enum {
     ASSOCIATED,
     WAIT_PROBE_RESP,
@@ -91,12 +93,13 @@ private:
   ForwardCallback m_forward;
   AssociatedCallback m_associatedCallback;
   DisAssociatedCallback m_disAssociatedCallback;
-  SupportedRates m_rates;
   DcaTxop *m_dca;
   EventId m_beaconWatchdog;
   Time m_beaconWatchdogEnd;
   Mac48Address m_bssid;
   uint32_t m_maxMissedBeacons;
+  WifiPhy *m_phy;
+  MacStations *m_stations;
 };
 
 } // namespace ns3

@@ -308,13 +308,6 @@ NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node)
 {
   m_ssid = WifiDefaultParameters::GetSsid ();
   m_dca = CreateDca (15, 1023);
-
-  SupportedRates rates;
-  for (uint32_t i = 0; i < m_phy->GetNModes (); i++) 
-    {
-      WifiMode mode = m_phy->GetMode (i);
-      rates.AddSupportedRate (mode.GetPhyRate ());
-    }
   
   MacHighNqsta *high = new MacHighNqsta ();
   high->SetDevice (this);
@@ -325,7 +318,8 @@ NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node)
                                              this));
   high->SetDisAssociatedCallback (MakeCallback (&NqstaWifiNetDevice::DisAssociated, 
                                                 this));
-  high->SetSupportedRates (rates);
+  high->SetStations (m_stations);
+  high->SetPhy (m_phy);
   m_rxMiddle->SetForwardCallback (MakeCallback (&MacHighNqsta::Receive, high));
   m_high = high;
 }
