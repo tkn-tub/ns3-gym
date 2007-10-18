@@ -23,6 +23,7 @@
 #include "wifi-net-device.h"
 #include "wifi-mac-header.h"
 #include "mgt-headers.h"
+#include "wifi-phy.h"
 #include "ns3/assert.h"
 
 #define noNQAP_DEBUG 1
@@ -62,15 +63,15 @@ MacHighNqap::SetStations (MacStations *stations)
 {
   m_stations = stations;
 }
+void
+MacHighNqap::SetPhy (WifiPhy *phy)
+{
+  m_phy = phy;
+}
 void 
 MacHighNqap::SetForwardCallback (ForwardCallback callback)
 {
   m_forwardUp = callback;
-}
-void 
-MacHighNqap::SetSupportedRates (SupportedRates rates)
-{
-  m_rates = rates;
 }
 void 
 MacHighNqap::SetBeaconIntervalUs (uint64_t us)
@@ -94,11 +95,6 @@ MacHighNqap::Queue (Packet packet, Mac48Address to)
 {
   ForwardDown (packet, m_device->GetSelfAddress (), to);
 }
-SupportedRates
-MacHighNqap::GetSupportedRates (void)
-{
-  return m_rates;
-}
 void
 MacHighNqap::SendProbeResp (Mac48Address to)
 {
@@ -113,7 +109,20 @@ MacHighNqap::SendProbeResp (Mac48Address to)
   Packet packet;
   MgtProbeResponseHeader probe;
   probe.SetSsid (m_device->GetSsid ());
-  SupportedRates rates = GetSupportedRates ();
+  // send the set of supported rates and make sure that we indicate
+  // the Basic Rate set in this set of supported rates.
+  SupportedRates rates;
+  for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
+    {
+      WifiMode mode = m_phy->GetMode (i);
+      rates.AddSupportedRate (mode.GetPhyRate ());
+    }
+  // set the basic rates
+  for (uint32_t j = 0; j < m_stations->GetNBasicModes (); j++)
+    {
+      WifiMode mode = m_stations->GetBasicMode (j);
+      rates.SetBasicRate (mode.GetPhyRate ());
+    }
   probe.SetSupportedRates (rates);
   probe.SetBeaconIntervalUs (m_beaconIntervalUs);
   packet.AddHeader (probe);
@@ -121,7 +130,7 @@ MacHighNqap::SendProbeResp (Mac48Address to)
   m_dca->Queue (packet, hdr);
 }
 void
-MacHighNqap::SendAssocResp (Mac48Address to)
+MacHighNqap::SendAssocResp (Mac48Address to, bool success)
 {
   TRACE ("send assoc response to="<<to);
   WifiMacHeader hdr;
@@ -134,7 +143,14 @@ MacHighNqap::SendAssocResp (Mac48Address to)
   Packet packet;
   MgtAssocResponseHeader assoc;
   StatusCode code;
-  code.SetSuccess ();
+  if (success)
+    {
+      code.SetSuccess ();
+    }
+  else
+    {
+      code.SetFailure ();
+    }
   assoc.SetStatusCode (code);
   packet.AddHeader (assoc);
   
@@ -209,8 +225,44 @@ MacHighNqap::Receive (Packet packet, WifiMacHeader const *hdr)
         {
           if (hdr->IsAssocReq ()) 
             {
-              station->RecordWaitAssocTxOk ();
-              SendAssocResp (hdr->GetAddr2 ());
+              // first, verify that the the station's supported
+              // rate set is compatible with our Basic Rate set
+              MgtAssocRequestHeader assocReq;
+              packet.RemoveHeader (assocReq);
+              SupportedRates rates = assocReq.GetSupportedRates ();
+              bool problem = false;
+              for (uint32_t i = 0; i < m_stations->GetNBasicModes (); i++)
+                {
+                  WifiMode mode = m_stations->GetBasicMode (i);
+                  if (!rates.IsSupportedRate (mode.GetPhyRate ()))
+                    {
+                      problem = true;
+                      break;
+                    }
+                }
+              if (problem)
+                {
+                  // one of the Basic Rate set mode is not
+                  // supported by the station. So, we return an assoc
+                  // response with an error status.
+                  SendAssocResp (hdr->GetAddr2 (), false);
+                }
+              else
+                {
+                  // station supports all rates in Basic Rate Set.
+                  // record all its supported modes in its associated MacStation
+                  for (uint32_t j = 0; j < m_phy->GetNModes (); j++)
+                    {
+                      WifiMode mode = m_phy->GetMode (j);
+                      if (rates.IsSupportedRate (mode.GetPhyRate ()))
+                        {
+                          station->AddSupportedMode (mode);
+                        }
+                    }
+                  station->RecordWaitAssocTxOk ();
+                  // send assoc response with success status.
+                  SendAssocResp (hdr->GetAddr2 (), true);
+                }
             } 
           else if (hdr->IsDisassociation ()) 
             {

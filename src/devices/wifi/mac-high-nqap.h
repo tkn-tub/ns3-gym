@@ -24,7 +24,6 @@
 #include "ns3/mac48-address.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
-#include "supported-rates.h"
 
 namespace ns3 {
 
@@ -32,6 +31,7 @@ class WifiMacHeader;
 class WifiNetDevice;
 class DcaTxop;
 class MacStations;
+class WifiPhy;
 
 class MacHighNqap {
 public:
@@ -43,8 +43,8 @@ public:
   void SetDcaTxop (DcaTxop *dca);
   void SetDevice (WifiNetDevice *device);
   void SetStations (MacStations *stations);
+  void SetPhy (WifiPhy *phy);
   void SetForwardCallback (ForwardCallback callback);
-  void SetSupportedRates (SupportedRates rates);
   void SetBeaconIntervalUs (uint64_t us);
 
   void Queue (Packet packet, Mac48Address to);
@@ -55,14 +55,13 @@ private:
   void TxOk (WifiMacHeader const &hdr);
   void TxFailed (WifiMacHeader const &hdr);
   void SendProbeResp (Mac48Address to);
-  void SendAssocResp (Mac48Address to);
-  SupportedRates GetSupportedRates (void);
+  void SendAssocResp (Mac48Address to, bool success);
 
   DcaTxop *m_dca;
   WifiNetDevice *m_device;
   MacStations *m_stations;
+  WifiPhy *m_phy;
   ForwardCallback m_forwardUp;
-  SupportedRates m_rates;
   uint64_t m_beaconIntervalUs;
 };
 

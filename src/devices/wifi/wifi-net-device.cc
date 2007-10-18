@@ -389,20 +389,25 @@ NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node)
 
   m_dca = CreateDca (15, 1023);
 
-  SupportedRates rates;
-  for (uint32_t i = 0; i < m_phy->GetNModes (); i++) 
+  // By default, we configure the Basic Rate Set to be the set
+  // of rates we support which are mandatory.
+  // This could be trivially made user-configurable
+  for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      rates.AddSupportedRate (mode.GetPhyRate ());
-    }
+      if (mode.IsMandatory ())
+        {
+          m_stations->AddBasicMode (mode);
+        }
+    }  
 
   MacHighNqap *high = new MacHighNqap ();
   high->SetDevice (this);
   high->SetDcaTxop (m_dca);
   high->SetStations (m_stations);
+  high->SetPhy (m_phy);
   high->SetForwardCallback (MakeCallback (&NqapWifiNetDevice::DoForwardUp, 
                                           this));
-  high->SetSupportedRates (rates);
   m_rxMiddle->SetForwardCallback (MakeCallback (&MacHighNqap::Receive, high));
   m_high = high;
 }
