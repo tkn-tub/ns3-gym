@@ -89,8 +89,9 @@ MacHighAdhoc::Enqueue (Packet packet, Mac48Address to)
       // supports all the rates we support.
       for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
         {
-          destination->AddSupportedMode (m_phy->GetMode (0));
+          destination->AddSupportedMode (m_phy->GetMode (i));
         }
+      destination->RecordDisassociated ();
     }
 
   m_dca->Queue (packet, hdr);
