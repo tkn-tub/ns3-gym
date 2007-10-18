@@ -540,21 +540,21 @@ MacLow::GetAckSize (void) const
 {
   WifiMacHeader ack;
   ack.SetType (WIFI_MAC_CTL_ACK);
-  return ack.GetSize ();
+  return ack.GetSize () + 4;
 }
 uint32_t 
 MacLow::GetRtsSize (void) const
 {
   WifiMacHeader rts;
   rts.SetType (WIFI_MAC_CTL_RTS);
-  return rts.GetSize ();
+  return rts.GetSize () + 4;
 }
 uint32_t 
 MacLow::GetCtsSize (void) const
 {
   WifiMacHeader cts;
   cts.SetType (WIFI_MAC_CTL_CTS);
-  return cts.GetSize ();
+  return cts.GetSize () + 4;
 }
 Time
 MacLow::GetSifs (void) const
@@ -621,7 +621,7 @@ MacLow::CalculateOverallTxTime (uint32_t dataSize, Mac48Address to,
       txTime += GetSifs () * Scalar (2);
     }
   txTime += m_phy->CalculateTxDuration (dataSize, dataMode, WIFI_PREAMBLE_LONG);
-  if (params.MustWaitAck ()) 
+  if (params.MustWaitAck ())
     {
       WifiMode ackMode = GetAckTxModeForData (m_currentHdr.GetAddr1 (), dataMode);
       txTime += GetSifs ();
@@ -786,10 +786,10 @@ MacLow::SendRtsForPacket (void)
     }
   rts.SetDurationUs (duration.GetMicroSeconds ());
 
-  MY_DEBUG ("tx RTS to="<< rts.GetAddr1 () << ", mode=" << rtsTxMode);
-
   Time txDuration = m_phy->CalculateTxDuration (GetRtsSize (), rtsTxMode, WIFI_PREAMBLE_LONG);
   Time timerDelay = txDuration + GetCtsTimeout ();
+
+  MY_DEBUG ("tx RTS to="<< rts.GetAddr1 () << ", mode=" << rtsTxMode << ", cts timeout=" << GetCtsTimeout ());
 
   NS_ASSERT (m_ctsTimeoutEvent.IsExpired ());
   m_ctsTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::CtsTimeout, this);
