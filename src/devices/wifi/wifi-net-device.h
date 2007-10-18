@@ -70,6 +70,7 @@ private:
 protected:
   WifiNetDevice (Ptr<Node> node);
   void DoForwardUp (Packet packet, const Mac48Address &from);
+  virtual void DoDispose (void);
   DcaTxop *CreateDca (uint32_t minCw, uint32_t maxCw) const;
 
   Ptr<WifiChannel> m_channel;

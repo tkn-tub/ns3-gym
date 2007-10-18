@@ -216,6 +216,14 @@ WifiNetDevice::DoGetChannel (void) const
 {
   return m_channel;
 }
+void 
+WifiNetDevice::DoDispose (void)
+{
+  // chain up.
+  NetDevice::DoDispose ();
+  // cleanup local
+  m_channel = 0;
+}
 
 
 /*****************************************************
