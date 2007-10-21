@@ -97,8 +97,8 @@ GridTopology::LayoutRowFirst (const T &begin, const T &end)
   uint32_t j = 0;
   for (T i = begin; i != end; i++)
     {
-      j++;
       LayoutOneRowFirst (*i, j);
+      j++;
     }  
 }
 
@@ -109,8 +109,8 @@ GridTopology::LayoutColumnFirst (const T &begin, const T &end)
   uint32_t j = 0;
   for (T i = begin; i != end; i++)
     {
-      j++;
       LayoutOneColumnFirst (*i, j);
+      j++;
     }
 }
 
