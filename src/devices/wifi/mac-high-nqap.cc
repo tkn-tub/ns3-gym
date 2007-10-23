@@ -25,18 +25,13 @@
 #include "mgt-headers.h"
 #include "wifi-phy.h"
 #include "ns3/assert.h"
-
-#define noNQAP_DEBUG 1
-
-#ifdef NQAP_DEBUG
-#include <iostream>
+#include "ns3/log.h"
 #include "ns3/simulator.h"
-#  define TRACE(x) \
-std::cout << "NQAP now=" << Simulator::NowUs () << "us " << x << std::endl;
-#else
-#  define TRACE(x)
-#endif
 
+NS_LOG_COMPONENT_DEFINE ("MacHighNqap");
+
+#define TRACE(x) \
+NS_LOG_DEBUG(Simulator::Now () << " " << x);
 
 namespace ns3 {
 

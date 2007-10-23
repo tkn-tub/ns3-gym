@@ -21,6 +21,7 @@
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
 
 #include "mac-high-nqsta.h"
 #include "wifi-mac-header.h"
@@ -30,15 +31,10 @@
 #include "dca-txop.h"
 #include "mac-stations.h"
 
-#define noNQSTA_DEBUG 1
+NS_LOG_COMPONENT_DEFINE ("MacHighNqsta");
 
-#ifdef NQSTA_DEBUG
-#include <iostream>
-#  define TRACE(x) \
-  std::cout << "NQSTA now=" << Simulator::Now () << " " << x << std::endl;
-#else
-#  define TRACE(x)
-#endif
+#define TRACE(x) \
+NS_LOG_DEBUG (Simulator::Now () << " " << x);
 
 /*
  * The state machine for this NQSTA is:
@@ -176,7 +172,7 @@ MacHighNqsta::SendProbeRequest (void)
 void
 MacHighNqsta::SendAssociationRequest (void)
 {
-  TRACE ("send assoc request");
+  TRACE ("send assoc request to=" << GetBssid ());
   WifiMacHeader hdr;
   hdr.SetAssocReq ();
   hdr.SetAddr1 (GetBssid ());
