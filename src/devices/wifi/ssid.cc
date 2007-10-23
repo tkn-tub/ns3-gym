@@ -126,6 +126,7 @@ Ssid::Deserialize (Buffer::Iterator i)
   uint8_t elementId = i.ReadU8 ();
   NS_ASSERT (elementId == ELEMENT_ID);
   m_length = i.ReadU8 ();
+  NS_ASSERT (m_length <= 32);
   i.Read (m_ssid, m_length);
   return i;
 }
