@@ -71,7 +71,7 @@ PacketPrinter::PrintChunk (uint32_t chunkUid,
   // if the over did not override this type of chunk,
   // we print something by default.
   std::string name = ChunkRegistry::GetName (chunkUid, instance);
-  os << name;
+  os << name << " ";
   ChunkRegistry::Print (chunkUid, instance, os);
 }
 void 
