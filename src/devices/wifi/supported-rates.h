@@ -36,6 +36,7 @@ public:
   bool IsBasicRate (uint32_t bs) const;
 
   uint8_t GetNRates (void) const;
+  uint32_t GetRate (uint8_t i) const;
 
   uint32_t GetSerializedSize (void) const;
   Buffer::Iterator Serialize (Buffer::Iterator start) const;
@@ -44,6 +45,8 @@ private:
   uint8_t m_nRates;
   uint8_t m_rates[8];
 };
+
+std::ostream &operator << (std::ostream &os, const SupportedRates &rates);
 
 } // namespace ns3
 

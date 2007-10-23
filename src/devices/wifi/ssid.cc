@@ -99,6 +99,14 @@ Ssid::GetLength (void) const
   return size;
 }
 
+char *
+Ssid::PeekString (void) const
+{
+  // it is safe to return a pointer to the buffer because it is
+  // guaranteed to be zero-terminated.
+  return (char *)m_ssid;
+}
+
 uint32_t 
 Ssid::GetSerializedSize (void) const
 {
@@ -120,6 +128,13 @@ Ssid::Deserialize (Buffer::Iterator i)
   m_length = i.ReadU8 ();
   i.Read (m_ssid, m_length);
   return i;
+}
+
+std::ostream &
+operator << (std::ostream &os, const Ssid &ssid)
+{
+  os << ssid.PeekString ();
+  return os;
 }
 
 

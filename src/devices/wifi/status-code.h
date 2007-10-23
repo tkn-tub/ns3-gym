@@ -40,6 +40,8 @@ private:
   uint16_t m_code;
 };
 
+std::ostream &operator << (std::ostream &os, const StatusCode &code);
+
 } // namespace ns3
 
 #endif /* STATUS_CODE_H */

@@ -82,6 +82,11 @@ SupportedRates::GetNRates (void) const
   return m_nRates;
 }
 uint32_t 
+SupportedRates::GetRate (uint8_t i) const
+{
+  return m_rates[i] * 500000;
+}
+uint32_t 
 SupportedRates::GetSerializedSize (void) const
 {
   return m_nRates + 1 + 1;
@@ -103,6 +108,20 @@ SupportedRates::Deserialize (Buffer::Iterator start)
   NS_ASSERT (m_nRates <= 8);
   start.Read (m_rates, m_nRates);
   return start;
+}
+
+std::ostream &operator << (std::ostream &os, const SupportedRates &rates)
+{
+  for (uint8_t i = 0; i < rates.GetNRates (); i++)
+    {
+      uint32_t rate = rates.GetRate (i);
+      os << rate << "mbs";
+      if (i < rates.GetNRates () - 1)
+        {
+          os << " ";
+        }
+    }
+  return os;
 }
 
 } // namespace ns3

@@ -58,4 +58,18 @@ StatusCode::Deserialize (Buffer::Iterator start)
   return start;
 }
 
+std::ostream &
+operator << (std::ostream &os, const StatusCode &code)
+{
+  if (code.IsSuccess ())
+    {
+      os << "success";
+    }
+  else
+    {
+      os << "failure";
+    }
+  return os;
+}
+
 } // namespace ns3
