@@ -31,6 +31,7 @@
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/global-route-manager.h"
+#include "ns3/packet.h"
 
 
 #include <iostream>
@@ -89,6 +90,8 @@ AdvancePosition (Ptr<Node> node)
 int main (int argc, char *argv[])
 {
   Simulator::SetLinkedList ();
+
+  Packet::EnableMetadata ();
 
   //Simulator::EnableLogTo ("80211.log");
 
