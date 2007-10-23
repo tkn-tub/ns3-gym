@@ -19,21 +19,17 @@
  */
 
 #include "mac-rx-middle.h"
-#include "ns3/packet.h"
 #include "wifi-mac-header.h"
 
 #include "ns3/assert.h"
+#include "ns3/log.h"
+#include "ns3/packet.h"
+#include "ns3/simulator.h"
 #include <list>
 
-#define noRX_MIDDLE_TRACE 1
+NS_LOG_COMPONENT_DEFINE ("MacRxMiddle");
 
-#ifdef RX_MIDDLE_TRACE
-#include <iostream>
-# define TRACE(x) \
-  std::cout <<"RX MIDDLE "<<x<<std::endl;
-#else /* RX_MIDDLE_TRACE */
-# define TRACE(x)
-#endif /* RX_MIDDLE_TRACE */
+#define TRACE(x) NS_LOG_DEBUG(Simulator::Now () << " " << x)
 
 namespace ns3 {
 
