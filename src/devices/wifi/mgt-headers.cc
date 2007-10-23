@@ -73,7 +73,8 @@ MgtProbeRequestHeader::GetName (void) const
 void 
 MgtProbeRequestHeader::Print (std::ostream &os) const
 {
-  //XXX
+  os << "ssid="<<m_ssid<<", "
+     << "rates="<<m_rates;
 }
 void
 MgtProbeRequestHeader::Serialize (Buffer::Iterator start) const
@@ -159,7 +160,8 @@ MgtProbeResponseHeader::GetSerializedSize (void) const
 void 
 MgtProbeResponseHeader::Print (std::ostream &os) const
 {
-  //XXX
+  os << "ssid="<<m_ssid<<", "
+     << "rates="<<m_rates;
 }
 void 
 MgtProbeResponseHeader::Serialize (Buffer::Iterator start) const
@@ -256,7 +258,8 @@ MgtAssocRequestHeader::GetSerializedSize (void) const
 void 
 MgtAssocRequestHeader::Print (std::ostream &os) const
 {
-  //XXX
+  os << "ssid="<<m_ssid<<", "
+     << "rates="<<m_rates;
 }
 void 
 MgtAssocRequestHeader::Serialize (Buffer::Iterator start) const
@@ -329,7 +332,8 @@ MgtAssocResponseHeader::GetSerializedSize (void) const
 void 
 MgtAssocResponseHeader::Print (std::ostream &os) const
 {
-  //XXX
+  os << "status code="<<m_code<<", "
+     << "rates="<<m_rates;
 }
 void 
 MgtAssocResponseHeader::Serialize (Buffer::Iterator start) const
