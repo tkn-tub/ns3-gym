@@ -112,6 +112,7 @@ SupportedRates::Deserialize (Buffer::Iterator start)
 
 std::ostream &operator << (std::ostream &os, const SupportedRates &rates)
 {
+  os << "[";
   for (uint8_t i = 0; i < rates.GetNRates (); i++)
     {
       uint32_t rate = rates.GetRate (i);
@@ -121,6 +122,7 @@ std::ostream &operator << (std::ostream &os, const SupportedRates &rates)
           os << " ";
         }
     }
+  os << "]";
   return os;
 }
 
