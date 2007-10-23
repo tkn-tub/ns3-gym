@@ -38,6 +38,7 @@ public:
   bool IsBroadcast (void) const;
 
   uint32_t GetLength (void) const;
+  char *PeekString (void) const;
 
   uint32_t GetSerializedSize (void) const;
   Buffer::Iterator Serialize (Buffer::Iterator i) const;
