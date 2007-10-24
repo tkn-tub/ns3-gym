@@ -90,20 +90,9 @@ MacHighNqap::Queue (Packet packet, Mac48Address to)
 {
   ForwardDown (packet, m_device->GetSelfAddress (), to);
 }
-void
-MacHighNqap::SendProbeResp (Mac48Address to)
+SupportedRates
+MacHighNqap::GetSupportedRates (void) const
 {
-  TRACE ("send probe response to="<<to);
-  WifiMacHeader hdr;
-  hdr.SetProbeResp ();
-  hdr.SetAddr1 (to);
-  hdr.SetAddr2 (m_device->GetSelfAddress ());
-  hdr.SetAddr3 (m_device->GetSelfAddress ());
-  hdr.SetDsNotFrom ();
-  hdr.SetDsNotTo ();
-  Packet packet;
-  MgtProbeResponseHeader probe;
-  probe.SetSsid (m_device->GetSsid ());
   // send the set of supported rates and make sure that we indicate
   // the Basic Rate set in this set of supported rates.
   SupportedRates rates;
@@ -118,10 +107,26 @@ MacHighNqap::SendProbeResp (Mac48Address to)
       WifiMode mode = m_stations->GetBasicMode (j);
       rates.SetBasicRate (mode.GetPhyRate ());
     }
-  probe.SetSupportedRates (rates);
+  return rates;
+}
+void
+MacHighNqap::SendProbeResp (Mac48Address to)
+{
+  TRACE ("send probe response to="<<to);
+  WifiMacHeader hdr;
+  hdr.SetProbeResp ();
+  hdr.SetAddr1 (to);
+  hdr.SetAddr2 (m_device->GetSelfAddress ());
+  hdr.SetAddr3 (m_device->GetSelfAddress ());
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  Packet packet;
+  MgtProbeResponseHeader probe;
+  probe.SetSsid (m_device->GetSsid ());
+  probe.SetSupportedRates (GetSupportedRates ());
   probe.SetBeaconIntervalUs (m_beaconIntervalUs);
   packet.AddHeader (probe);
-  
+
   m_dca->Queue (packet, hdr);
 }
 void
@@ -146,6 +151,7 @@ MacHighNqap::SendAssocResp (Mac48Address to, bool success)
     {
       code.SetFailure ();
     }
+  assoc.SetSupportedRates (GetSupportedRates ());
   assoc.SetStatusCode (code);
   packet.AddHeader (assoc);
   

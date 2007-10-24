@@ -24,6 +24,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
+#include "supported-rates.h"
 
 namespace ns3 {
 
@@ -56,6 +57,7 @@ private:
   void TxFailed (WifiMacHeader const &hdr);
   void SendProbeResp (Mac48Address to);
   void SendAssocResp (Mac48Address to, bool success);
+  SupportedRates GetSupportedRates (void) const;
 
   DcaTxop *m_dca;
   WifiNetDevice *m_device;
