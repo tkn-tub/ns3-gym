@@ -18,6 +18,7 @@
 
 #include "ns3/log.h"
 #include "channel.h"
+#include "net-device.h"
 
 NS_LOG_COMPONENT_DEFINE ("Channel");
 
@@ -58,6 +59,12 @@ Channel::GetName(void)
 {
   NS_LOG_FUNCTION;
   return m_name;
+}
+
+  Ptr<NetDevice>
+Channel::GetDevice (uint32_t i) const
+{
+  return DoGetDevice (i);
 }
 
 } // namespace ns3

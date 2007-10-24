@@ -92,12 +92,18 @@ public:
 
 
   virtual uint32_t GetNDevices (void) const;
-  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
+  /*
+   * DoGetDevice
+   */
+  Ptr<PointToPointNetDevice> GetDevice (uint32_t i) const;
 
   virtual const DataRate& GetDataRate (void);
   virtual const Time&     GetDelay (void);
 
 private:
+
+  virtual Ptr<NetDevice> DoGetDevice (uint32_t i) const;
+
   DataRate      m_bps;
   Time          m_delay;
   int32_t       m_nDevices;
