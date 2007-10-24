@@ -22,6 +22,7 @@
 
 #include "ns3/header.h"
 #include "ns3/mac48-address.h"
+#include "ns3/nstime.h"
 #include <stdint.h>
 
 namespace ns3 {
@@ -88,8 +89,8 @@ public:
   void SetAddr3 (Mac48Address address);
   void SetAddr4 (Mac48Address address);
   void SetType (enum WifiMacType_e type);
-  void SetDuration (uint16_t duration);
-  void SetDurationUs (uint64_t duration);
+  void SetRawDuration (uint16_t duration);
+  void SetDuration (Time duration);
   void SetId (uint16_t id);
   void SetSequenceNumber (uint16_t seq);
   void SetFragmentNumber (uint8_t frag);
@@ -125,8 +126,8 @@ public:
   bool IsDisassociation (void) const;
   bool IsAuthentication (void) const;
   bool IsDeauthentication (void) const;
-  uint16_t GetDuration (void) const;
-  uint64_t GetDurationUs (void) const;
+  uint16_t GetRawDuration (void) const;
+  Time GetDuration (void) const;
   uint16_t GetSequenceControl (void) const;
   uint16_t GetSequenceNumber (void) const;
   uint16_t GetFragmentNumber (void) const;
@@ -138,7 +139,6 @@ public:
   uint8_t GetQosTid (void) const;
   uint8_t GetQosTxopLimit (void) const;
 
-  void SetDurationS (double duration);
   uint32_t GetSize (void) const;
   char const *GetTypeString (void) const;
 

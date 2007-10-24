@@ -254,14 +254,15 @@ WifiMacHeader::SetType (enum WifiMacType_e type)
   m_ctrlFromDs = 0;
 }
 void 
-WifiMacHeader::SetDuration (uint16_t duration)
+WifiMacHeader::SetRawDuration (uint16_t duration)
 {
   m_duration = duration;
 }
 void 
-WifiMacHeader::SetDurationUs (uint64_t duration_us)
+WifiMacHeader::SetDuration (Time duration)
 {
-  NS_ASSERT (duration_us <= (1<<16) - 1);
+  int64_t duration_us = duration.GetMicroSeconds ();
+  NS_ASSERT (duration_us >= 0 && duration_us <= 0x7fff);
   m_duration = static_cast<uint16_t> (duration_us);
 }
 
@@ -554,14 +555,14 @@ WifiMacHeader::IsDeauthentication (void) const
 
 
 uint16_t 
-WifiMacHeader::GetDuration (void) const
+WifiMacHeader::GetRawDuration (void) const
 {
   return m_duration;
 }
-uint64_t 
-WifiMacHeader::GetDurationUs (void) const
+Time
+WifiMacHeader::GetDuration (void) const
 {
-  return m_duration;
+  return MicroSeconds (m_duration);
 }
 uint16_t 
 WifiMacHeader::GetSequenceControl (void) const
@@ -672,15 +673,6 @@ WifiMacHeader::SetQosControl (uint16_t qos)
   m_qosEosp = (qos >> 4) & 0x0001;
   m_qosAckPolicy = (qos >> 5) & 0x0003;
   m_qosStuff = (qos >> 8) & 0x00ff;
-}
-
-
-void 
-WifiMacHeader::SetDurationS (double duration)
-{
-  uint16_t us = (uint16_t)(duration * 1000000);
-  us &= 0x7fff;
-  SetDuration (us);
 }
 
 uint32_t 

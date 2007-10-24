@@ -194,6 +194,8 @@ private:
   WifiMode GetDataTxMode (Mac48Address to, uint32_t size) const;
   WifiMode GetCtsTxModeForRts (Mac48Address to, WifiMode rtsTxMode) const;
   WifiMode GetAckTxModeForData (Mac48Address to, WifiMode dataTxMode) const;
+  Time GetCtsDuration (Mac48Address to, WifiMode rtsTxMode) const;
+  Time GetAckDuration (Mac48Address to, WifiMode dataTxMode) const;
   void NotifyNav (Time at, WifiMacHeader const*hdr);
   bool IsNavZero (Time at);
   void MaybeCancelPrevious (void);
