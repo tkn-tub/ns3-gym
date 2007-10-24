@@ -168,6 +168,13 @@ MacStations::Reset (void)
 void 
 MacStations::AddBasicMode (WifiMode mode)
 {
+  for (uint32_t i = 0; i < GetNBasicModes (); i++)
+    {
+      if (GetBasicMode (i) == mode)
+        {
+          return;
+        }
+    }
   m_basicModes.push_back (mode);
 }
 uint32_t 
