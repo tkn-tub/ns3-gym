@@ -69,11 +69,13 @@ bool
 SupportedRates::IsSupportedRate (uint32_t bs) const
 {
   uint8_t rate = bs / 500000;
-  for (uint8_t i = 0; i < m_nRates; i++) {
-    if (rate == m_rates[i]) {
-      return true;
+  for (uint8_t i = 0; i < m_nRates; i++) 
+    {
+      if (rate == m_rates[i]) 
+        {
+          return true;
+        }
     }
-  }
   return false;
 }
 uint8_t 
