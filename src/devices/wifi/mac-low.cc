@@ -712,6 +712,7 @@ MacLow::ForwardDown (Packet const packet, WifiMacHeader const* hdr,
 {
   MY_DEBUG ("send " << hdr->GetTypeString () <<
             ", to=" << hdr->GetAddr1 () <<
+            ", size=" << packet.GetSize () <<
             ", mode=" << txMode <<
             ", duration=" << hdr->GetDuration () <<
             ", seq=0x"<< std::hex << m_currentHdr.GetSequenceControl () << std::dec);
