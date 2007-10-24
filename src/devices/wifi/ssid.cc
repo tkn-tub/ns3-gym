@@ -41,6 +41,8 @@ Ssid::Ssid (char const *ssid)
       ssid++;
       len++;
     }
+  NS_ASSERT (len <= 32);
+  m_length = len;
   while (len < 33) 
     {
       m_ssid[len] = 0;
@@ -56,6 +58,7 @@ Ssid::Ssid (char const ssid[32], uint8_t length)
       m_ssid[len] = ssid[len];
       len++;
     }
+  m_length = length;
   while (len < 33) 
     {
       m_ssid[len] = 0;
@@ -115,6 +118,7 @@ Ssid::GetSerializedSize (void) const
 Buffer::Iterator 
 Ssid::Serialize (Buffer::Iterator i) const
 {
+  NS_ASSERT (m_length <= 32);
   i.WriteU8 (ELEMENT_ID);
   i.WriteU8 (m_length);
   i.Write (m_ssid, m_length);
