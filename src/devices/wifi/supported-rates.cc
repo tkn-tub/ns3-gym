@@ -20,6 +20,9 @@
 
 #include "supported-rates.h"
 #include "ns3/assert.h"
+#include "ns3/log.h"
+
+NS_LOG_COMPONENT_DEFINE ("SupportedRates");
 
 #define ELEMENT_ID (1)
 
@@ -33,8 +36,13 @@ void
 SupportedRates::AddSupportedRate (uint32_t bs)
 {
   NS_ASSERT (m_nRates < 8);
+  if (IsSupportedRate (bs))
+    {
+      return;
+    }
   m_rates[m_nRates] = bs/500000;
   m_nRates++;
+  NS_LOG_DEBUG ("add rate="<<bs<<", n rates="<<(uint32_t)m_nRates);
 }
 void 
 SupportedRates::SetBasicRate (uint32_t bs)
@@ -42,8 +50,13 @@ SupportedRates::SetBasicRate (uint32_t bs)
   uint8_t rate = bs / 500000;
   for (uint8_t i = 0; i < m_nRates; i++)
     {
+      if ((rate | 0x80) == m_rates[i])
+        {
+          return;
+        }
       if (rate == m_rates[i])
         {
+          NS_LOG_DEBUG ("set basic rate="<<bs<<", n rates="<<(uint32_t)m_nRates);
           m_rates[i] |= 0x80;
           return;
         }
@@ -54,11 +67,10 @@ SupportedRates::SetBasicRate (uint32_t bs)
 bool 
 SupportedRates::IsBasicRate (uint32_t bs) const
 {
-  uint8_t rate = bs / 500000;
+  uint8_t rate = (bs / 500000) | 0x80;
   for (uint8_t i = 0; i < m_nRates; i++)
     {
-      if (rate == m_rates[i] && 
-          m_rates[i] & 0x80)
+      if (rate == m_rates[i])
         {
           return true;
         }
@@ -71,7 +83,8 @@ SupportedRates::IsSupportedRate (uint32_t bs) const
   uint8_t rate = bs / 500000;
   for (uint8_t i = 0; i < m_nRates; i++) 
     {
-      if (rate == m_rates[i]) 
+      if (rate == m_rates[i] ||
+          (rate|0x80) == m_rates[i]) 
         {
           return true;
         }
@@ -86,7 +99,7 @@ SupportedRates::GetNRates (void) const
 uint32_t 
 SupportedRates::GetRate (uint8_t i) const
 {
-  return m_rates[i] * 500000;
+  return (m_rates[i]&0x7f) * 500000;
 }
 uint32_t 
 SupportedRates::GetSerializedSize (void) const
@@ -118,6 +131,10 @@ std::ostream &operator << (std::ostream &os, const SupportedRates &rates)
   for (uint8_t i = 0; i < rates.GetNRates (); i++)
     {
       uint32_t rate = rates.GetRate (i);
+      if (rates.IsBasicRate (rate))
+        {
+          os << "*";
+        }
       os << rate << "mbs";
       if (i < rates.GetNRates () - 1)
         {
