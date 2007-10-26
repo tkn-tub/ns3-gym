@@ -33,20 +33,76 @@ class NetDevice;
 class PropagationLossModel;
 class PropagationDelayModel;
 
+/**
+ * \brief A 802.11 Channel
+ *
+ * This channel subclass can be used to connect together a set of 
+ * ns3::WifiNetDevice network interfaces. A WifiChannel contains
+ * a PropagationLossModel and a PropagationDelayModel which can
+ * be overriden by the WifiChannel::SetPropagationLossModel
+ * and the WifiChannel::SetPropagationDelayModel methods. By default,
+ * The PropagationDelayModel is a ns3::ConstantSpeedPropagationModel,
+ * and the PropagationLossModel is a ns3::PathLossPropagationModel.
+ */
 class WifiChannel : public Channel
 {
 public:
+  /**
+   * arg1: the packet to receive
+   * arg2: the rx power of the packet to receive (dbm)
+   * arg3: the tx mode of the packet to receive
+   * arg4: the preamble of the packet to receive
+   */
   typedef Callback<void,Packet,double,WifiMode,WifiPreamble> ReceiveCallback;
   WifiChannel ();
   virtual ~WifiChannel ();
 
+  /**
+   * \returns the number of network interfaces connected to 
+   *          this channel.
+   *
+   * Overriden from the NetDevice base class.
+   */
   virtual uint32_t GetNDevices (void) const;
+  /**
+   * \param i index of the requested network interface.
+   * \returns the requested network interfaces connected to 
+   *          this channel.
+   *
+   * Overriden from the NetDevice base class.
+   * Indexes start at 0 and end at n-1.
+   */
   virtual Ptr<NetDevice> GetDevice (uint32_t i) const ;
 
+  /**
+   * \param loss the new propagation loss model.
+   */
   void SetPropationLossModel (Ptr<PropagationLossModel> loss);
+  /**
+   * \param loss the new propagation delay model.
+   */
   void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay);
 
+  /**
+   * \param device the device to add to the list of connected
+   *        devices.
+   * \param callback the callback to invoke when a packet must
+   *        be received.
+   *
+   * This method should not be invoked by normal users. It is 
+   * currently invoked only from WifiPhy::SetChannel.
+   */
   void Add (Ptr<NetDevice> device,  ReceiveCallback callback);
+  /**
+   * \param sender the device from which the packet is originating.
+   * \param packet the packet to send
+   * \param txPowerDbm the tx power associated to the packet
+   * \param wifiMode the tx mode associated to the packet
+   * \param preamble the preamble associated to the packet
+   *
+   * This method should not be invoked by normal users. It is 
+   * currently invoked only from WifiPhy::Send.
+   */
   void Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDbm,
              WifiMode wifiMode, WifiPreamble preamble) const;
 

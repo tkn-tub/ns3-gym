@@ -42,14 +42,34 @@ class MacHighAdhoc;
 class MacHighNqsta;
 class MacHighNqap;
 
+/**
+ * \brief the base class for 802.11 network interfaces
+ *
+ */
 class WifiNetDevice : public NetDevice {
 public:
   virtual ~WifiNetDevice ();
 
+  /**
+   * \param channel the channel to connect this 802.11 
+   *        interface to.
+   */
   void ConnectTo (Ptr<WifiChannel> channel);
 
+  /**
+   * \returns the Mac48Address of this 802.11 interface.
+   *
+   * This method is equivalent to NetDevice::GetAddress. The only
+   * difference is its return type.
+   */
   Mac48Address GetSelfAddress (void) const;
+  /**
+   * \returns the bssid of this 802.11 interface.
+   */
   virtual Mac48Address GetBssid (void) const = 0;
+  /**
+   * \returns the ssid of this 802.11 interface.
+   */
   virtual Ssid GetSsid (void) const = 0;
 
 private:
@@ -82,6 +102,12 @@ protected:
   MacParameters *m_parameters;
 };
 
+/**
+ * \brief a 802.11 adhoc network interface
+ *
+ * This network interface is a very simple pass-through 
+ * from the higher layers down to the MAC DCF layer.
+ */
 class AdhocWifiNetDevice : public WifiNetDevice {
 public:
   AdhocWifiNetDevice (Ptr<Node> node);
@@ -103,6 +129,16 @@ private:
   MacHighAdhoc *m_high;
 };
 
+/**
+ * \brief a 802.11 STA network interface 
+ *
+ * This network interface implements the MAC-level STA 
+ * active probing, association, and disassociation prototols.
+ *
+ * By default, it starts a new probing phase whenever a new 
+ * data packet must be sent and the STA is not yet associated
+ * to the AP.
+ */
 class NqstaWifiNetDevice : public WifiNetDevice 
 {
 public:
@@ -111,6 +147,13 @@ public:
 
   virtual Mac48Address GetBssid (void) const;
   virtual Ssid GetSsid (void) const;
+
+  /**
+   * \param ssid the ssid we want to associate with
+   *
+   * Start a new active probing phase with the specified
+   * ssid.
+   */
   void StartActiveAssociation (Ssid ssid);
 protected:
   virtual void DoDispose (void);
@@ -125,6 +168,14 @@ private:
   MacHighNqsta *m_high;
 };
 
+/**
+ * \brief a 802.11 AP network interface
+ *
+ * This network interface implements the MAC-level
+ * AP-side of the beacon, probing, and, association
+ * protocols. By default, every STA which tries
+ * to associate is accepted.
+ */
 class NqapWifiNetDevice : public WifiNetDevice 
 {
 public:
