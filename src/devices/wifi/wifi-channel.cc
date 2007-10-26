@@ -67,11 +67,10 @@ WifiChannel::Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDb
       if (sender != i->first)
         {
           Ptr<MobilityModel> receiverMobility = i->first->GetNode ()->QueryInterface<MobilityModel> (MobilityModel::iid);
-          double distance = senderMobility->GetDistanceFrom (receiverMobility);
-          Time delay = m_delay->GetDelay (distance);
-          double rxPowerDbm = m_loss->GetRxPower (txPowerDbm, distance);
+          Time delay = m_delay->GetDelay (senderMobility, receiverMobility);
+          double rxPowerDbm = m_loss->GetRxPower (txPowerDbm, senderMobility, receiverMobility);
           NS_LOG_DEBUG ("propagation: txPower="<<txPowerDbm<<"dbm, rxPower="<<rxPowerDbm<<"dbm, "<<
-                        "distance="<<distance<<"m, delay="<<delay);
+                        "distance="<<senderMobility->GetDistanceFrom (receiverMobility)<<"m, delay="<<delay);
           Simulator::Schedule (delay, &WifiChannel::Receive, this, 
                                j, packet, rxPowerDbm, wifiMode, preamble);
         }

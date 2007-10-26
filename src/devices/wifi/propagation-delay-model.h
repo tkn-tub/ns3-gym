@@ -7,13 +7,15 @@
 
 namespace ns3 {
 
+class MobilityModel;
+
 class RandomVariable;
 
 class PropagationDelayModel : public Object
 {
 public:
   virtual ~PropagationDelayModel ();
-  virtual Time GetDelay (double distance) const = 0;
+  virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
   static Ptr<PropagationDelayModel> CreateDefault (void);
 };
 
@@ -23,7 +25,7 @@ public:
   RandomPropagationDelayModel ();
   RandomPropagationDelayModel (const RandomVariable &variable);
   virtual ~RandomPropagationDelayModel ();
-  virtual Time GetDelay (double distance) const;
+  virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 private:
   RandomVariable *m_variable;
 };
@@ -32,7 +34,7 @@ class ConstantSpeedPropagationDelayModel : public PropagationDelayModel
 {
 public:
   ConstantSpeedPropagationDelayModel (double speed);
-  virtual Time GetDelay (double distance) const;
+  virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   void SetSpeed (double speed);
   double GetSpeed (void) const;
 private:

@@ -2,6 +2,8 @@
 #include "ns3/default-value.h"
 #include "ns3/random-variable-default-value.h"
 #include "ns3/log.h"
+#include "ns3/mobility-model.h"
+#include "ns3/static-mobility-model.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
@@ -88,7 +90,8 @@ RandomPropagationLossModel::~RandomPropagationLossModel ()
 
 double 
 RandomPropagationLossModel::GetRxPower (double txPowerDbm,
-					double distance) const
+					Ptr<MobilityModel> a,
+					Ptr<MobilityModel> b) const
 {
   double rxPower = txPowerDbm - m_variable->GetValue ();
   NS_LOG_DEBUG ("tx power="<<txPowerDbm<<"dbm, rx power="<<rxPower<<"Dbm");
@@ -142,7 +145,8 @@ FriisPropagationLossModel::DbmFromW (double w) const
 
 double 
 FriisPropagationLossModel::GetRxPower (double txPowerDbm,
-				       double distance) const
+				       Ptr<MobilityModel> a,
+				       Ptr<MobilityModel> b) const
 {
   /*
    * Friis free space equation:
@@ -174,6 +178,7 @@ FriisPropagationLossModel::GetRxPower (double txPowerDbm,
    * L: system loss
    * lambda: wavelength (m)
    */
+  double distance = a->GetDistanceFrom (b);
   double numerator = m_lambda * m_lambda;
   double denominator = 16 * PI * PI * distance * distance * m_systemLoss;
   double pr = log (numerator / denominator) * 10 / log (10);
@@ -231,8 +236,10 @@ PathLossPropagationLossModel::DbToW (double db) const
   
 double 
 PathLossPropagationLossModel::GetRxPower (double txPowerDbm,
-					  double distance) const
+					  Ptr<MobilityModel> a,
+					  Ptr<MobilityModel> b) const
 {
+  double distance = a->GetDistanceFrom (b);
   if (distance <= 1.0)
     {
       return txPowerDbm;
@@ -251,7 +258,9 @@ PathLossPropagationLossModel::GetRxPower (double txPowerDbm,
    *      
    * rx = rx0 + 10 / ln (10) * (n * ln (d/d0) - ln (1000))
    */
-  double rx0 = m_reference->GetRxPower (txPowerDbm, 1.0);
+  static Ptr<StaticMobilityModel> zero = Create<StaticMobilityModel> (Position (0.0, 0.0, 0.0));
+  static Ptr<StaticMobilityModel> one = Create<StaticMobilityModel> (Position (1.0, 1.0, 1.0));
+  double rx0 = m_reference->GetRxPower (txPowerDbm, zero, one);
   double rxPowerDbm = rx0 + 10 / log (10) * (m_exponent * log (distance) - log (1000));
   NS_LOG_DEBUG ("distance="<<distance<<"m, tx power="<<txPowerDbm<<"dbm, "<<
 		"reference rx power="<<rx0<<"dbm, "<<
@@ -259,6 +268,5 @@ PathLossPropagationLossModel::GetRxPower (double txPowerDbm,
   return rxPowerDbm;
 
 }
-
 
 } // namespace ns3

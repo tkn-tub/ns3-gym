@@ -5,6 +5,8 @@
 
 namespace ns3 {
 
+class MobilityModel;
+
 class RandomVariable;
 
 class PropagationLossModel : public Object
@@ -13,7 +15,8 @@ public:
   virtual ~PropagationLossModel ();
   // returns the rx power in dbms
   virtual double GetRxPower (double txPowerDbm,
-			     double distance) const = 0;
+			     Ptr<MobilityModel> a,
+			     Ptr<MobilityModel> b) const = 0;
 
   static Ptr<PropagationLossModel> CreateDefault (void);
 };
@@ -26,7 +29,8 @@ public:
   virtual ~RandomPropagationLossModel ();
 
   virtual double GetRxPower (double txPowerDbm,
-			     double distance) const;
+			     Ptr<MobilityModel> a,
+			     Ptr<MobilityModel> b) const;
 private:
   RandomVariable *m_variable;
 };
@@ -42,7 +46,8 @@ public:
   double GetSystemLoss (void) const;
 
   virtual double GetRxPower (double txPowerDbm,
-			     double distance) const;
+			     Ptr<MobilityModel> a,
+			     Ptr<MobilityModel> b) const;
 private:
   double DbmToW (double dbm) const;
   double DbmFromW (double w) const;
@@ -63,7 +68,8 @@ public:
   void SetReferenceModel (Ptr<PropagationLossModel> model);
   
   virtual double GetRxPower (double txPowerDbm,
-			     double distance) const;
+			     Ptr<MobilityModel> a,
+			     Ptr<MobilityModel> b) const;
 private:
   double DbToW (double db) const;
   static Ptr<PropagationLossModel> CreateDefaultReference (void);

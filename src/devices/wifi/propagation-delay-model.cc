@@ -2,6 +2,7 @@
 #include "ns3/random-variable.h"
 #include "ns3/default-value.h"
 #include "ns3/random-variable-default-value.h"
+#include "ns3/mobility-model.h"
 
 namespace ns3 {
 
@@ -60,7 +61,7 @@ RandomPropagationDelayModel::~RandomPropagationDelayModel ()
   delete m_variable;
 }
 Time 
-RandomPropagationDelayModel::GetDelay (double distance) const
+RandomPropagationDelayModel::GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
   return Seconds (m_variable->GetValue ());
 }
@@ -69,8 +70,9 @@ ConstantSpeedPropagationDelayModel::ConstantSpeedPropagationDelayModel (double s
   : m_speed (speed)
 {}
 Time 
-ConstantSpeedPropagationDelayModel::GetDelay (double distance) const
+ConstantSpeedPropagationDelayModel::GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
+  double distance = a->GetDistanceFrom (b);
   double seconds = distance / m_speed;
   return Seconds (seconds);
 }
