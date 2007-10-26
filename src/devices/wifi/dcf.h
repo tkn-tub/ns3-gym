@@ -17,7 +17,6 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-
 #ifndef DCF_H
 #define DCF_H
 
