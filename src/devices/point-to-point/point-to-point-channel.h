@@ -51,8 +51,6 @@ class PointToPointNetDevice;
  */
 class PointToPointChannel : public Channel {
 public:
-// Each point to point link has exactly two net devices
-  static const int N_DEVICES = 2;
   /**
    * \brief Create a PointToPointChannel
    *
@@ -84,20 +82,44 @@ public:
    * \param device pointer to the netdevice to attach to the channel
    */
   void Attach (Ptr<PointToPointNetDevice> device);
+
+  /**
+   * \brief Attach a given netdevice to this channel
+   * \param p Packet to transmit
+   * \param src Source PointToPointNetDevice
+   * \param txTime Transmit time to apply
+   */
   bool TransmitStart (Packet& p, Ptr<PointToPointNetDevice> src,
                       const Time& txTime);
-  // Below two not needed
-  //bool TransmitEnd (Packet &p, Ptr<PointToPointNetDevice> src);
-  //void PropagationCompleteEvent(Packet p, Ptr<PointToPointNetDevice> src);
-
-
+  /**
+   * \brief Get number of devices on this channel
+   * \returns number of devices on this channel
+   */
   virtual uint32_t GetNDevices (void) const;
-  virtual Ptr<NetDevice> GetDevice (uint32_t i) const;
-
-  virtual const DataRate& GetDataRate (void);
-  virtual const Time&     GetDelay (void);
+  /*
+   * \brief Get PointToPointNetDevice corresponding to index i on this channel
+   * \param i Index number of the device requested
+   * \returns Ptr to PointToPointNetDevice requested
+   */
+  Ptr<PointToPointNetDevice> GetDevice (uint32_t i) const;
+  /*
+   * \brief Get reference to DataRate for this channel
+   * \returns const reference to underlying DataRate object
+   */
+  const DataRate& GetDataRate (void);
+  /*
+   * \brief Get reference to Time object storing the delay on this channel
+   * \returns const reference to underlying Time object
+   */
+  const Time&     GetDelay (void);
 
 private:
+
+  // Each point to point link has exactly two net devices
+  static const int N_DEVICES = 2;
+
+  virtual Ptr<NetDevice> DoGetDevice (uint32_t i) const;
+
   DataRate      m_bps;
   Time          m_delay;
   int32_t       m_nDevices;
