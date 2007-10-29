@@ -107,9 +107,9 @@ class RandomWalk2dMobilityModelParameters : public Object
  * either a fixed distance has been walked or until a fixed amount
  * of time.
  *
- * The parameters of the model can be specified either with the ns3::Bind
- * function and the variables "RandomWalk2dSpeed", "RandomWalk2dMode", 
- * "RandomWalk2dDistance", "RandomWalk2dTime", and, "RandomWalk2dBounds" or
+ * The parameters of the model can be specified either with the DefaultValue::Bind
+ * function and the variables \valueref{RandomWalk2dSpeed}, \valueref{RandomWalk2dMode}, 
+ * \valueref{RandomWalk2dDistance}, \valueref{RandomWalk2dTime}, and, \valueref{RandomWalk2dBounds} or
  * with an instance of the RandomWalk2dMobilityModelParameters class which
  * must be fed to the RandomWalk2dMobilityModel constructors.
  */
