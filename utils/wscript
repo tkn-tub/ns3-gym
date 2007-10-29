@@ -28,9 +28,9 @@ def build(bld):
     obj = bld.create_ns3_program('replay-simulation', ['simulator'])
     obj.source = 'replay-simulation.cc'
 
-    obj = bld.create_ns3_program('print-trace-sources',
+    obj = bld.create_ns3_program('print-introspected-doxygen',
                                  ['internet-node', 'csma-cd', 'point-to-point'])
-    obj.source = 'print-trace-sources.cc'
+    obj.source = 'print-introspected-doxygen.cc'
 
     if env['ENABLE_MOBILITY_VISUALIZER']:
         obj = bld.create_ns3_program('mobility-visualizer',
