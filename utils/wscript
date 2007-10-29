@@ -40,6 +40,3 @@ def build(bld):
         if os.path.basename(obj.env['CXX']).startswith("g++"):
             obj.env.append_value('CXXFLAGS', '-fno-strict-aliasing')
 
-    obj = bld.create_ns3_program('print-default-values',
-                                 ['core'])
-    obj.source = 'print-default-values.cc'
