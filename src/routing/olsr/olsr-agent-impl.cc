@@ -37,7 +37,7 @@
 #include "ns3/debug.h"
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
-
+#include "ns3/composite-trace-resolver.h"
 
 
 /********** Useful macros **********/
@@ -256,6 +256,27 @@ void AgentImpl::SetMainInterface (uint32_t interface)
 }
 
 
+Ptr<TraceResolver> 
+AgentImpl::GetTraceResolver (void) const
+{
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
+  resolver->AddSource ("rx",
+                       TraceDoc ("receive OLSR packet",
+                                 "const olsr::PacketHeader &", "header of OLSR packet received",
+                                 "const olsr::MessageList &", "list of OLSR messages contained in the packet"
+                                 ),
+                       m_rxPacketTrace);
+  resolver->AddSource ("tx",
+                       TraceDoc ("send OLSR packet",
+                                 "const olsr::PacketHeader &", "header of OLSR packet sent",
+                                 "const olsr::MessageList &", "list of OLSR messages contained in the packet"
+                                 ),
+                       m_txPacketTrace);
+  resolver->SetParentResolver (Object::GetTraceResolver ());
+  return resolver;
+}
+
+
 //
 // \brief Processes an incoming %OLSR packet following RFC 3626 specification.
 void
@@ -276,10 +297,12 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
   packet.RemoveHeader (olsrPacketHeader);
   NS_ASSERT (olsrPacketHeader.GetPacketLength () >= olsrPacketHeader.GetSerializedSize ());
   uint32_t sizeLeft = olsrPacketHeader.GetPacketLength () - olsrPacketHeader.GetSerializedSize ();
+
+  MessageList messages;
   
   while (sizeLeft)
     {
-      olsr::MessageHeader messageHeader;
+      MessageHeader messageHeader;
       if (packet.RemoveHeader (messageHeader) == 0)
         NS_ASSERT (false);
       
@@ -289,7 +312,15 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
                 << std::dec << int (messageHeader.GetMessageType ())
                 << " TTL=" << int (messageHeader.GetTimeToLive ())
                 << " origAddr=" << messageHeader.GetOriginatorAddress ());
+      messages.push_back (messageHeader);
+    }
 
+  m_rxPacketTrace (olsrPacketHeader, messages);
+
+  for (MessageList::const_iterator messageIter = messages.begin ();
+       messageIter != messages.end (); messageIter++)
+    {
+      const MessageHeader &messageHeader = *messageIter;
       // If ttl is less than or equal to zero, or
       // the receiver is the same as the originator,
       // the message must be silently dropped
@@ -1059,14 +1090,19 @@ AgentImpl::QueueMessage (const olsr::MessageHeader &message, Time delay)
 }
 
 void
-AgentImpl::SendPacket (Packet packet)
+AgentImpl::SendPacket (Packet packet, const MessageList &containedMessages)
 {
   NS_DEBUG ("OLSR node " << m_mainAddress << " sending a OLSR packet");
+
   // Add a header
   olsr::PacketHeader header;
   header.SetPacketLength (header.GetSerializedSize () + packet.GetSize ());
   header.SetPacketSequenceNumber (GetPacketSequenceNumber ());
   packet.AddHeader (header);
+
+  // Trace it
+  m_txPacketTrace (header, containedMessages);
+
   // Send it
   m_sendSocket->Send (packet);
 }
@@ -1086,6 +1122,8 @@ AgentImpl::SendQueuedMessages ()
 
   NS_DEBUG ("Olsr node " << m_mainAddress << ": SendQueuedMessages");
 
+  MessageList msglist;
+
   for (std::vector<olsr::MessageHeader>::const_iterator message = m_queuedMessages.begin ();
        message != m_queuedMessages.end ();
        message++)
@@ -1093,9 +1131,11 @@ AgentImpl::SendQueuedMessages ()
       Packet p;
       p.AddHeader (*message);
       packet.AddAtEnd (p);
+      msglist.push_back (*message);
       if (++numMessages == OLSR_MAX_MSGS)
         {
-          SendPacket (packet);
+          SendPacket (packet, msglist);
+          msglist.clear ();
           // Reset variables for next packet
           numMessages = 0;
           packet = Packet ();
@@ -1104,7 +1144,7 @@ AgentImpl::SendQueuedMessages ()
 
   if (packet.GetSize ())
     {
-      SendPacket (packet);
+      SendPacket (packet, msglist);
     }
 
   m_queuedMessages.clear ();

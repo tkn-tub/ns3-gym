@@ -434,6 +434,36 @@ public:
   
 };
 
+
+static inline std::ostream& operator<< (std::ostream& os, const PacketHeader & packet)
+{
+  packet.Print (os);
+  return os;
+}
+
+static inline std::ostream& operator<< (std::ostream& os, const MessageHeader & message)
+{
+  message.Print (os);
+  return os;
+}
+
+typedef std::vector<MessageHeader> MessageList;
+
+static inline std::ostream& operator<< (std::ostream& os, const MessageList & messages)
+{
+  os << "[";
+  for (std::vector<MessageHeader>::const_iterator messageIter = messages.begin ();
+       messageIter != messages.end (); messageIter++)
+    {
+      messageIter->Print (os);
+      if (messageIter+1 != messages.end ())
+        os << ", ";
+    }
+  os << "]";
+  return os;
+}
+
+
 }} // namespace olsr, ns3
 
 #endif /* OLSR_HEADER_H */

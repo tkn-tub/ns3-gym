@@ -39,6 +39,7 @@
 #include "ns3/socket.h"
 #include "event-garbage-collector.h"
 #include "ns3/timer.h"
+#include "ns3/callback-trace-source.h"
 
 
 namespace ns3 {
@@ -88,7 +89,9 @@ private:
 	
 protected:
   void DoDispose ();
-  void SendPacket (Packet packet);
+  Ptr<TraceResolver> GetTraceResolver (void) const;
+
+  void SendPacket (Packet packet, const MessageList &containedMessages);
 	
   /// Increments packet sequence number and returns the new value.
   inline uint16_t GetPacketSequenceNumber ();
@@ -122,7 +125,7 @@ protected:
   void IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple);
 
   /// A list of pending messages which are buffered awaiting for being sent.
-  std::vector<olsr::MessageHeader> m_queuedMessages;
+  olsr::MessageList m_queuedMessages;
   Timer m_queuedMessagesTimer; // timer for throttling outgoing messages
 
   void ForwardDefault (olsr::MessageHeader olsrMessage,
@@ -176,6 +179,12 @@ protected:
   Ipv4Address m_mainAddress;
   Ptr<Socket> m_receiveSocket; // UDP socket for receving OSLR packets
   Ptr<Socket> m_sendSocket; // UDP socket for sending OSLR packets
+
+  CallbackTraceSource <const PacketHeader &,
+                       const MessageList &> m_rxPacketTrace;
+  CallbackTraceSource <const PacketHeader &,
+                       const MessageList &> m_txPacketTrace;
+
 };
 
 }} // namespace ns3
