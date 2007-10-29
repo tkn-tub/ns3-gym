@@ -42,16 +42,15 @@
 
 
 namespace ns3 {
+namespace olsr {
 
-using namespace olsr;
 
-
-class OlsrAgentImpl : public OlsrAgent
+class AgentImpl : public Agent
 {
   friend class OlsrTest;
 
 public:
-  OlsrAgentImpl (Ptr<Node> node);
+  AgentImpl (Ptr<Node> node);
 
   virtual void Start ();
   virtual void SetMainInterface (uint32_t interface);
@@ -123,14 +122,14 @@ protected:
   void IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple);
 
   /// A list of pending messages which are buffered awaiting for being sent.
-  std::vector<OlsrMessageHeader> m_queuedMessages;
+  std::vector<olsr::MessageHeader> m_queuedMessages;
   Timer m_queuedMessagesTimer; // timer for throttling outgoing messages
 
-  void ForwardDefault (OlsrMessageHeader olsrMessage,
+  void ForwardDefault (olsr::MessageHeader olsrMessage,
                        DuplicateTuple *duplicated,
                        const Ipv4Address &localIface,
                        const Ipv4Address &senderAddress);
-  void QueueMessage (const OlsrMessageHeader &message, Time delay);
+  void QueueMessage (const olsr::MessageHeader &message, Time delay);
   void SendQueuedMessages ();
   void SendHello ();
   void SendTc ();
@@ -153,24 +152,24 @@ protected:
   void AddIfaceAssocTuple (const IfaceAssocTuple &tuple);
   void RemoveIfaceAssocTuple (const IfaceAssocTuple &tuple);
 
-  void ProcessHello (const OlsrMessageHeader &msg,
+  void ProcessHello (const olsr::MessageHeader &msg,
                      const Ipv4Address &receiverIface,
                      const Ipv4Address &senderIface);
-  void ProcessTc (const OlsrMessageHeader &msg,
+  void ProcessTc (const olsr::MessageHeader &msg,
                   const Ipv4Address &senderIface);
-  void ProcessMid (const OlsrMessageHeader &msg,
+  void ProcessMid (const olsr::MessageHeader &msg,
                    const Ipv4Address &senderIface);
 
-  void LinkSensing (const OlsrMessageHeader &msg,
-                    const OlsrMessageHeader::Hello &hello,
+  void LinkSensing (const olsr::MessageHeader &msg,
+                    const olsr::MessageHeader::Hello &hello,
                     const Ipv4Address &receiverIface,
                     const Ipv4Address &sender_iface);
-  void PopulateNeighborSet (const OlsrMessageHeader &msg,
-                            const OlsrMessageHeader::Hello &hello);
-  void PopulateTwoHopNeighborSet (const OlsrMessageHeader &msg,
-                                  const OlsrMessageHeader::Hello &hello);
-  void PopulateMprSelectorSet (const OlsrMessageHeader &msg,
-                               const OlsrMessageHeader::Hello &hello);
+  void PopulateNeighborSet (const olsr::MessageHeader &msg,
+                            const olsr::MessageHeader::Hello &hello);
+  void PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
+                                  const olsr::MessageHeader::Hello &hello);
+  void PopulateMprSelectorSet (const olsr::MessageHeader &msg,
+                               const olsr::MessageHeader::Hello &hello);
 
   int Degree (NeighborTuple const &tuple);
 
@@ -179,6 +178,6 @@ protected:
   Ptr<Socket> m_sendSocket; // UDP socket for sending OSLR packets
 };
 
-} // namespace ns3
+}} // namespace ns3
 
 #endif
