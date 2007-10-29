@@ -209,7 +209,7 @@ public:
  * @brief Add a network route to the static routing table.
  *
  * @param network The Ipv4Address network for this route.
- * @param networkmask The Ipv4Mask to extract the network.
+ * @param networkMask The Ipv4Mask to extract the network.
  * @param nextHop The next hop in the route to the destination network.
  * @param interface The network interface index used to send packets to the
  * destination.
@@ -225,7 +225,7 @@ public:
  * @brief Add a network route to the static routing table.
  *
  * @param network The Ipv4Address network for this route.
- * @param networkmask The Ipv4Mask to extract the network.
+ * @param networkMask The Ipv4Mask to extract the network.
  * @param interface The network interface index used to send packets to the
  * destination.
  *
@@ -352,7 +352,7 @@ public:
  * @param inputInterface The input network interface index over which to 
  * expect packets destined for this route.  May be
  * Ipv4RoutingProtocol::IF_INDEX_ANY for packets of local origin.
- * @param outputInterface A vector of network interface indices used to specify
+ * @param outputInterfaces A vector of network interface indices used to specify
  * how to send packets to the destination(s).
  *
  * @see Ipv4Address
@@ -411,7 +411,7 @@ public:
  *
  * @param i The index (into the routing table) of the multicast route to
  * retrieve.  If the default route has been set, it will occupy index zero.
- * @return If route <i> is set, a pointer to that Ipv4MulticastRoute is
+ * @return If route \e i is set, a pointer to that Ipv4MulticastRoute is
  * returned, otherwise a zero pointer is returned.
  *
  * @see Ipv4MulticastRoute
@@ -449,11 +449,11 @@ public:
  *
  * @param origin The IP address specified as the origin of packets for the
  * route.
- * @param origin The IP address specified as the multicast group addres of
+ * @param group The IP address specified as the multicast group addres of
  * the route.
- * @param inputInterfade The network interface index specified as the expected
+ * @param inputInterface The network interface index specified as the expected
  * input interface for the route.
- * @returns True if a route was found and removed, false otherwise.
+ * @returns true if a route was found and removed, false otherwise.
  *
  * @see Ipv4MulticastRoute
  * @see Ipv4StaticRouting::AddMulticastRoute

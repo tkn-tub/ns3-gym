@@ -52,16 +52,18 @@ public:
   /**
    * \param i index of NetDevice to retrieve
    * \returns one of the NetDevices connected to this channel.
-   *
-   * This method must be implemented by subclasses.
    */
-  virtual Ptr<NetDevice> GetDevice (uint32_t i) const = 0;
+  Ptr<NetDevice> GetDevice (uint32_t i) const;
 
 protected:
   virtual      ~Channel ();
   std::string   m_name;
 
 private:
+   /*
+   * This method must be implemented by subclasses.
+   */
+  virtual Ptr<NetDevice> DoGetDevice (uint32_t i) const = 0;
 };
 
 }; // namespace ns3

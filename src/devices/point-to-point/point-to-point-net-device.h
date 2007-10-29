@@ -54,24 +54,13 @@ public:
  * \class PointToPointNetDevice
  * \brief A Device for a Point to Point Network Link.
  *
- * Ns-3 takes a four-layer view of a protocol stack.  This is the same model
- * that TCP uses.  In this view, layers 5-7 of the OSI reference model are
- * grouped together into an application layer; layer four (transport / TCP) is
- * broken out; layer three (network / IP) is broken out; and layers 1-2 are
- * grouped together.  We call this grouping of layers one and two a NetDevice
- * and represent it as a class in the system.
- *
- * The NetDevice class is specialized according to the needs of the specific
- * kind of network link.  In this case, the link is a PointToPoint link.  The
- * PointToPoint link is a family of classes that includes this class, the
- * PointToPointNetDevice, a PointToPointChannel class that represents the 
- * actual medium across which bits are sent, a PointToPointIpv4Interface class
- * that provides the hook to tie a general purpose node to this specific
- * link, and finally, a PointToPointTopology object that is responsible for
- * putting all of the pieces together.
- *
- * This is the PointToPointNetDevice class that represents, essentially, the
- * PC card that is used to connect to the PointToPoint network.
+ * This PointToPointNetDevice class specializes the NetDevice abstract
+ * base class.  Together with a PointToPointChannel (and a peer 
+ * PointToPointNetDevice), the class models, with some level of 
+ * abstraction, a generic point-to-point or serial link.  
+ * Key parameters or objects that can be specified for this device 
+ * include a queue, data rate, and interframe transmission gap (the 
+ * propagation delay is set in the PointToPointChannel).
  */
 class PointToPointNetDevice : public NetDevice {
 public:
@@ -79,20 +68,21 @@ public:
    * Construct a PointToPointNetDevice
    *
    * This is the constructor for the PointToPointNetDevice.  It takes as a
-   * parameter the Node to which this device is connected.  Ownership of the
-   * Node pointer is not implied and the node must not be deleded.
+   * parameter a pointer to the Node to which this device is connected, 
+   * as well as an optional DataRate object.
    *
    * @see PointToPointTopology::AddPointToPointLink ()
    * @param node the Node to which this device is connected.
+   * @param rate (optional) DataRate object
    */
   PointToPointNetDevice (Ptr<Node> node,
-                         const DataRate& = g_defaultRate.GetValue());
+                         const DataRate& rate = g_defaultRate.GetValue());
   /**
    * Destroy a PointToPointNetDevice
    *
    * This is the destructor for the PointToPointNetDevice.
    */
-  virtual ~PointToPointNetDevice();
+  virtual ~PointToPointNetDevice ();
   /**
    * Set the Data Rate used for transmission of packets.  The data rate is
    * set in the Attach () method from the corresponding field in the channel
@@ -101,7 +91,7 @@ public:
    * @see Attach ()
    * @param bps the data rate at which this object operates
    */
-  void SetDataRate(const DataRate& bps);
+  void SetDataRate (const DataRate& bps);
   /**
    * Set the inteframe gap used to separate packets.  The interframe gap
    * defines the minimum space required between packets sent by this device.
@@ -112,7 +102,7 @@ public:
    * @see Attach ()
    * @param t the interframe gap time
    */
-  void SetInterframeGap(const Time& t);
+  void SetInterframeGap (const Time& t);
   /**
    * Attach the device to a channel.
    *
@@ -127,7 +117,7 @@ public:
    * @see SetInterframeGap ()
    * @param ch a pointer to the channel to which this object is being attached.
    */
-  bool Attach(Ptr<PointToPointChannel> ch);
+  bool Attach (Ptr<PointToPointChannel> ch);
   /**
    * Attach a queue to the PointToPointNetDevice.
    *
@@ -142,7 +132,7 @@ public:
    * @param queue a pointer to the queue for which object is assuming
    *        ownership.
    */
-  void AddQueue(Ptr<Queue> queue);
+  void AddQueue (Ptr<Queue> queue);
   /**
    * Receive a packet from a connected PointToPointChannel.
    *
@@ -155,13 +145,15 @@ public:
    * @param p a reference to the received packet
    */
   void Receive (Packet& p);
-protected:
+
+private:
   /**
    * Create a Trace Resolver for events in the net device.
    *
    * @see class TraceResolver
    */
   virtual Ptr<TraceResolver> GetTraceResolver (void) const;
+
   virtual void DoDispose (void);
   /**
    * Get a copy of the attached Queue.
@@ -173,6 +165,7 @@ protected:
    * @returns a pointer to the queue.
    */
   Ptr<Queue> GetQueue(void) const; 
+
   /**
    * Get a copy of the attached Channel
    *
@@ -183,6 +176,7 @@ protected:
    * @returns a pointer to the channel
    */
   virtual Ptr<Channel> DoGetChannel(void) const;
+
   /**
    * Set a new default data rate
    */
@@ -192,7 +186,6 @@ protected:
    * Get the current default rate.
    * @returns a const reference to current default
    */
-
   static const DataRate& GetDefaultRate();
 
 private:
