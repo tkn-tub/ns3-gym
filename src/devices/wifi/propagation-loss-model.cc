@@ -44,27 +44,27 @@ static EnumDefaultValue<enum ModelType> g_modelType
  0, (void *)0);
 
 static NumericDefaultValue<double> g_friisLambda
-("FriisPropagationLambda",
+("FriisPropagationLossLambda",
  "The wavelength to use by default for every FriisPropagationLossModel (default is 5.15 GHz at 300 000 km/s).",
  300000000.0 / 5.150e9);
 
 static NumericDefaultValue<double> g_friisSystemLoss
-("FriisPropagationSystemLoss",
+("FriisPropagationLossSystemLoss",
  "The system loss to use by default for every FriisPropagationLossModel",
  1.0);
 
 static RandomVariableDefaultValue g_random
-("RandomPropagation",
+("RandomPropagationLossDistribution",
  "The distribution (in dbm) to choose the propagation loss.",
  "Constant:1.0");
 
 static NumericDefaultValue<double> g_pathLossExponent
-("PathLossPropagationExponent",
+("PathLossPropagationLossExponent",
  "The exponent of the Path Loss propagation model",
  3.0);
 
 static EnumDefaultValue<enum ModelType> g_pathLossReference
-("PathLossPropagationReferenceType",
+("PathLossPropagationLossReferenceType",
  "The type of reference propagation model.",
  FRIIS, "Friis",
  RANDOM, "Random", 
