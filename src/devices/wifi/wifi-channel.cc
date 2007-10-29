@@ -91,7 +91,7 @@ WifiChannel::GetNDevices (void) const
   return m_deviceList.size ();
 }
 Ptr<NetDevice> 
-WifiChannel::GetDevice (uint32_t i) const
+WifiChannel::DoGetDevice (uint32_t i) const
 {
   return m_deviceList[i].first;
 }
