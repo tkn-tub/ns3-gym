@@ -50,7 +50,7 @@ public:
 
   /**
    * \returns the default propagation loss model as specified
-   * by the PropagationLossModelType ns3::DefaultValue.
+   * by \valueref{PropagationLossModelType}.
    */
   static Ptr<PropagationLossModel> CreateDefault (void);
 };
@@ -62,7 +62,7 @@ class RandomPropagationLossModel : public PropagationLossModel
 {
 public:
   /**
-   * Use the default parameters from RandomPropagation.
+   * Use the default parameters from \valueref{RandomPropagationLossDistribution}.
    */
   RandomPropagationLossModel ();
   /**
@@ -88,7 +88,8 @@ class FriisPropagationLossModel : public PropagationLossModel
 {
 public:
   /**
-   * Use the default parameters from \valueref{FriisPropagationLambda}.
+   * Use the default parameters from \valueref{FriisPropagationLossLambda},
+   * and \valueref{FriisPropagationLossSystemLoss}.
    */
   FriisPropagationLossModel ();
   /**
@@ -143,8 +144,8 @@ class PathLossPropagationLossModel : public PropagationLossModel
 public:
   /**
    * Use the default parameters from
-   * PathLossPropagationExponent, and,
-   * PathLossPropagationReferenceType
+   * \valueref{PathLossPropagationLossExponent}, and,
+   * \valueref{PathLossPropagationLossReferenceType}
    * to create a new propagation loss model.
    */
   PathLossPropagationLossModel ();
