@@ -88,7 +88,7 @@ class FriisPropagationLossModel : public PropagationLossModel
 {
 public:
   /**
-   * Use the default parameters from FriisPropagationLambda.
+   * Use the default parameters from \valueref{FriisPropagationLambda}.
    */
   FriisPropagationLossModel ();
   /**
