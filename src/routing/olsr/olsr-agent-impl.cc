@@ -281,8 +281,8 @@ AgentImpl::GetTraceResolver (void) const
 // \brief Processes an incoming %OLSR packet following RFC 3626 specification.
 void
 AgentImpl::RecvOlsr (Ptr<Socket> socket,
-                         const Packet &receivedPacket,
-                         const Address &sourceAddress)
+                     Ptr<Packet> receivedPacket,
+                     const Address &sourceAddress)
 {
   NS_DEBUG ("OLSR node " << m_mainAddress << " received a OLSR packet");
   InetSocketAddress inetSourceAddr = InetSocketAddress::ConvertFrom (sourceAddress);
@@ -291,10 +291,10 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
   // so we check it.
   NS_ASSERT (inetSourceAddr.GetPort () == OLSR_PORT_NUMBER);
   
-  Packet packet = receivedPacket;
+  Ptr<Packet> packet = receivedPacket;
 
   olsr::PacketHeader olsrPacketHeader;
-  packet.RemoveHeader (olsrPacketHeader);
+  packet->RemoveHeader (olsrPacketHeader);
   NS_ASSERT (olsrPacketHeader.GetPacketLength () >= olsrPacketHeader.GetSerializedSize ());
   uint32_t sizeLeft = olsrPacketHeader.GetPacketLength () - olsrPacketHeader.GetSerializedSize ();
 
@@ -303,7 +303,7 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
   while (sizeLeft)
     {
       MessageHeader messageHeader;
-      if (packet.RemoveHeader (messageHeader) == 0)
+      if (packet->RemoveHeader (messageHeader) == 0)
         NS_ASSERT (false);
       
       sizeLeft -= messageHeader.GetSerializedSize ();
@@ -327,8 +327,8 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
       if (messageHeader.GetTimeToLive () == 0
           || messageHeader.GetOriginatorAddress () == m_mainAddress)
         {
-          packet.RemoveAtStart (messageHeader.GetSerializedSize ()
-                                - messageHeader.GetSerializedSize ());
+          packet->RemoveAtStart (messageHeader.GetSerializedSize ()
+                                 - messageHeader.GetSerializedSize ());
           continue;
         }
 
@@ -1090,15 +1090,16 @@ AgentImpl::QueueMessage (const olsr::MessageHeader &message, Time delay)
 }
 
 void
-AgentImpl::SendPacket (Packet packet, const MessageList &containedMessages)
+AgentImpl::SendPacket (Ptr<Packet> packet, 
+                       const MessageList &containedMessages)
 {
   NS_DEBUG ("OLSR node " << m_mainAddress << " sending a OLSR packet");
 
   // Add a header
   olsr::PacketHeader header;
-  header.SetPacketLength (header.GetSerializedSize () + packet.GetSize ());
+  header.SetPacketLength (header.GetSerializedSize () + packet->GetSize ());
   header.SetPacketSequenceNumber (GetPacketSequenceNumber ());
-  packet.AddHeader (header);
+  packet->AddHeader (header);
 
   // Trace it
   m_txPacketTrace (header, containedMessages);
@@ -1117,7 +1118,7 @@ AgentImpl::SendPacket (Packet packet, const MessageList &containedMessages)
 void
 AgentImpl::SendQueuedMessages ()
 {
-  Packet packet;
+  Ptr<Packet> packet = Create<Packet> ();
   int numMessages = 0;
 
   NS_DEBUG ("Olsr node " << m_mainAddress << ": SendQueuedMessages");
@@ -1128,9 +1129,9 @@ AgentImpl::SendQueuedMessages ()
        message != m_queuedMessages.end ();
        message++)
     {
-      Packet p;
-      p.AddHeader (*message);
-      packet.AddAtEnd (p);
+      Ptr<Packet> p = Create<Packet> ();
+      p->AddHeader (*message);
+      packet->AddAtEnd (p);
       msglist.push_back (*message);
       if (++numMessages == OLSR_MAX_MSGS)
         {
@@ -1138,11 +1139,11 @@ AgentImpl::SendQueuedMessages ()
           msglist.clear ();
           // Reset variables for next packet
           numMessages = 0;
-          packet = Packet ();
+          packet = Create<Packet> ();
         }
     }
 
-  if (packet.GetSize ())
+  if (packet->GetSize ())
     {
       SendPacket (packet, msglist);
     }
@@ -1560,7 +1561,7 @@ AgentImpl::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
 /// \param p the packet which couldn't be delivered by the MAC layer.
 ///
 void
-OLSR::mac_failed(Packet* p) {
+OLSR::mac_failed(Ptr<Packet> p) {
 	double now		= Simulator::Now ();
 	struct hdr_ip* ih	= HDR_IP(p);
 	struct hdr_cmn* ch	= HDR_CMN(p);
