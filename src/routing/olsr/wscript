@@ -17,5 +17,6 @@ def build(bld):
     headers.source = [
         'olsr-agent.h',
         'olsr.h',
+        'olsr-header.h',
         ]
 
