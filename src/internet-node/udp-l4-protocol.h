@@ -73,7 +73,7 @@ public:
    * \param sport The source port number
    * \param dport The destination port number
    */
-  void Send (Packet packet,
+  void Send (Ptr<Packet> packet,
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport);
   /**
@@ -84,7 +84,7 @@ public:
    * \param interface the interface from which the packet is coming.
    */
   // inherited from Ipv4L4Protocol
-  virtual void Receive(Packet& p, 
+  virtual void Receive(Ptr<Packet> p, 
                        Ipv4Address const &source,
                        Ipv4Address const &destination,
                        Ptr<Ipv4Interface> interface);

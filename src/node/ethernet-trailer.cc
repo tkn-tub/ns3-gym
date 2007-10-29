@@ -56,7 +56,7 @@ EthernetTrailer::EnableFcs (bool enable)
 }
 
 bool
-EthernetTrailer::CheckFcs (const Packet& p) const
+EthernetTrailer::CheckFcs (Ptr<Packet> p) const
 {
   if (!m_calcFcs)
     {
@@ -68,7 +68,7 @@ EthernetTrailer::CheckFcs (const Packet& p) const
 }
 
 void
-EthernetTrailer::CalcFcs (const Packet& p)
+EthernetTrailer::CalcFcs (Ptr<Packet> p)
 {
   NS_LOG_WARN ("FCS calculation is not yet enabled");
 }

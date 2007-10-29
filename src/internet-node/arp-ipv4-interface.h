@@ -45,7 +45,7 @@ class ArpIpv4Interface : public Ipv4Interface
 protected:
   virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 private:
-  virtual void SendTo (Packet p, Ipv4Address dest);
+  virtual void SendTo (Ptr<Packet> p, Ipv4Address dest);
   Ptr<Node> m_node;
 };
 

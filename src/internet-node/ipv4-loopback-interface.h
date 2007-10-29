@@ -42,7 +42,7 @@ class Ipv4LoopbackInterface : public Ipv4Interface
   virtual ~Ipv4LoopbackInterface ();
 
  private:
-  virtual void SendTo (Packet p, Ipv4Address dest);
+  virtual void SendTo (Ptr<Packet> p, Ipv4Address dest);
 
   Ptr<Node> m_node;
 };

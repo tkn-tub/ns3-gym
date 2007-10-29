@@ -23,6 +23,7 @@
 #include "net-device.h"
 #include "application.h"
 #include "packet-socket-factory.h"
+#include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
 
@@ -199,7 +200,7 @@ Node::UnregisterProtocolHandler (ProtocolHandler handler)
 }
 
 bool
-Node::ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
+Node::ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet> packet, 
                          uint16_t protocol, const Address &from)
 {
   bool found = false;

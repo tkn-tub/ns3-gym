@@ -51,7 +51,7 @@ public:
   /**
    * \brief Recieve a packet
    */
-  void Receive(Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from);
+  void Receive(Ptr<NetDevice> device, Ptr<Packet> p, uint16_t protocol, const Address &from);
   /**
    * \brief Perform an ARP lookup
    * \param p
@@ -60,7 +60,7 @@ public:
    * \param hardwareDestination
    * \return 
    */
-  bool Lookup (Packet &p, Ipv4Address destination, 
+  bool Lookup (Ptr<Packet> p, Ipv4Address destination, 
 	       Ptr<NetDevice> device,
 	       Address *hardwareDestination);
 protected:

@@ -24,6 +24,7 @@
 #include "ns3/net-device.h"
 #include "ns3/trace-resolver.h"
 #include "ns3/log.h"
+#include "ns3/packet.h"
 
 NS_LOG_COMPONENT_DEFINE ("Ipv4Interface");
 
@@ -166,7 +167,7 @@ Ipv4Interface::SetDown (void)
 
 // public wrapper on private virtual function
 void 
-Ipv4Interface::Send(Packet p, Ipv4Address dest)
+Ipv4Interface::Send(Ptr<Packet> p, Ipv4Address dest)
 {
   NS_LOG_FUNCTION;
   if (IsUp()) {

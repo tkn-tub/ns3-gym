@@ -23,6 +23,7 @@
 
 #include <string>
 #include <vector>
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -39,7 +40,7 @@ public:
   void TraceAllIp (void);
 private:
   PcapWriter *GetStream (uint32_t nodeId, uint32_t interfaceId);
-  void LogIp (TraceContext const &context, Packet const &p, uint32_t interfaceIndex);
+  void LogIp (TraceContext const &context, Ptr<const Packet> p, uint32_t interfaceIndex);
   std::string m_filename;
   struct Trace {
     uint32_t nodeId;

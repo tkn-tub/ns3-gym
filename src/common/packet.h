@@ -30,6 +30,7 @@
 #include "tag.h"
 #include "ns3/callback.h"
 #include "ns3/assert.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -74,6 +75,11 @@ class PacketPrinter;
  */
 class Packet {
 public:
+  void Ref (void) const;
+  void Unref (void) const;
+
+  Ptr<Packet> Copy (void) const;
+
   /**
    * Create an empty packet with a new uid (as returned
    * by getUid).
@@ -107,7 +113,7 @@ public:
    * \param length length of fragment to create
    * \returns a fragment of the original packet
    */
-  Packet CreateFragment (uint32_t start, uint32_t length) const;
+  Ptr<Packet> CreateFragment (uint32_t start, uint32_t length) const;
   /**
    * \returns the size in bytes of the packet (including the zero-filled
    *          initial payload)
@@ -210,7 +216,7 @@ public:
    *
    * \param packet packet to concatenate
    */
-  void AddAtEnd (Packet packet);
+  void AddAtEnd (Ptr<const Packet> packet);
   /**
    * \param size number of padding bytes to add.
    */
@@ -332,9 +338,12 @@ public:
   void Deserialize (Buffer buffer);
 private:
   Packet (Buffer buffer, Tags tags, PacketMetadata metadata);
+  Packet (const Packet &o);
+  Packet &operator = (const Packet &o);
   Buffer m_buffer;
   Tags m_tags;
   PacketMetadata m_metadata;
+  mutable uint32_t m_refCount;
   static uint32_t m_globalUid;
 };
 
