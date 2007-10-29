@@ -43,6 +43,10 @@ class TimerImpl;
 class Timer 
 {
 public:
+  /**
+   * The policy to use to manager the internal timer when and
+   * instance of the Timer class is destroyed.
+   */
   enum DestroyPolicy {
     /**
      * This policy cancels the event from the destructor of the Timer
@@ -71,7 +75,7 @@ public:
    */
   Timer ();
   /**
-   * \param destroyFlags the event lifetime management policies to use for destroy events
+   * \param destroyPolicy the event lifetime management policies to use for destroy events
    */
   Timer (enum DestroyPolicy destroyPolicy);
   ~Timer ();

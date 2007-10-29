@@ -308,7 +308,7 @@ CsmaChannel::GetNDevices (void) const
   return (m_deviceList.size());
 }
 
-Ptr<NetDevice>
+Ptr<CsmaNetDevice>
 CsmaChannel::GetDevice (uint32_t i) const
 {
   Ptr< CsmaNetDevice > netDevice;
@@ -369,6 +369,12 @@ WireState
 CsmaChannel::GetState(void)
 {
   return m_state;
+}
+
+Ptr<NetDevice>
+CsmaChannel::DoGetDevice (uint32_t i) const
+{
+  return GetDevice (i);
 }
 
 } // namespace ns3

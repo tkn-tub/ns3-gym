@@ -88,6 +88,19 @@
 
 #ifdef NS3_LOG_ENABLE
 
+/**
+ * \param level the log level
+ * \param msg the message to log
+ *
+ * This macro allows you to log an arbitrary message at a specific
+ * log level. The log message is expected to be a C++ ostream
+ * message such as "my string" << aNumber << "my oth stream".
+ *
+ * Typical usage looks like:
+ * \code
+ * NS_LOG (LOG_DEBUG, "a number="<<aNumber<<", anotherNumber="<<anotherNumber);
+ * \endcode
+ */
 #define NS_LOG(level, msg)                                      \
   do                                                            \
     {                                                           \
@@ -197,7 +210,6 @@ enum LogLevel {
 /**
  * \param name a log component name
  * \param level a logging level
- * \param decorate whether or not to add function names to all logs
  * \ingroup logging
  *
  * Enable the logging output associated with that log component.
@@ -208,7 +220,6 @@ enum LogLevel {
 
 /**
  * \param level a logging level
- * \param decorate whether or not to add function names to all logs
  * \ingroup logging
  *
  * Enable the logging output for all registered log components.
@@ -232,13 +243,10 @@ enum LogLevel {
 void LogComponentDisable (char const *name, enum LogLevel level);
 
 /**
- * \param name a log component name
  * \param level a logging level
  * \ingroup logging
  *
- * Disable the logging output associated with that log component.
- * The logging output can be later re-enabled with a call
- * to ns3::LogComponentEnable.
+ * Disable all logging for all components.
  */
 void LogComponentDisableAll (enum LogLevel level);
 

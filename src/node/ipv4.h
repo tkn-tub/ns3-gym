@@ -411,13 +411,13 @@ public:
   virtual Ipv4Address GetSourceAddress (Ipv4Address destination) const = 0;
 
   /**
-   * \param destination The IP address of a hypothetical destination.
+   * \param dest The IP address of a hypothetical destination.
    * \param ifIndex filled in with the interface index that will be used to
    *        send a packet to the hypothetical destination.
-   * \returns True if a single interface can be identified, false otherwise.
+   * \returns true if a single interface can be identified, false otherwise.
    */
   virtual bool GetIfIndexForDestination (Ipv4Address dest,
-    uint32_t &ifIndex) const = 0;
+                                         uint32_t &ifIndex) const = 0;
 
   /**
    * \param i index of ipv4 interface

@@ -97,9 +97,9 @@ public:
    */
   Ipv4Mask GetNetworkMask (void) const;
   /**
-   * \param configured routing metric (cost) of this interface
+   * \param metric configured routing metric (cost) of this interface
    */
-  void SetMetric (uint16_t);
+  void SetMetric (uint16_t metric);
   /**
    * \returns configured routing metric (cost) of this interface
    */
