@@ -5,6 +5,8 @@ Steps in doing an ns-3 release
    - revise and check in AUTHORS, if needed
    - revise and check in RELEASE_NOTES
    - update and check in VERSION to the latest release number
+   - confirm that Doxygen builds cleanly and without warnings
+     (./waf --doxygen), and check in any necessary changes 
 2. make a new "architecture.pdf" document and place it in the doc/ directory
    of the ns-3-dev working directory
 3. ./waf configure; ./waf dist
