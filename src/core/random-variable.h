@@ -71,7 +71,7 @@ public:
    * \brief Returns a random double from the underlying distribution
    * \return A floating point random value
    */
-  virtual double  GetValue() = 0;     
+  virtual double  GetValue() = 0;
 
   /**
    * \brief Returns a random integer integer from the underlying distribution
@@ -173,19 +173,19 @@ public:
    */
   static void SetRunNumber(uint32_t n);
 private:
-  static void Initialize();    // Initialize  the RNG system
   static void GetRandomSeeds(uint32_t seeds[6]);
 private:
-  static bool initialized;     // True if package seed is set 
   static bool useDevRandom;    // True if using /dev/random desired
   static bool globalSeedSet;   // True if global seed has been specified
   static int  devRandom;       // File handle for /dev/random
   static uint32_t globalSeed[6]; // The global seed to use
-  static uint32_t runNumber;
   friend class RandomVariableInitializer;
 protected:
   static unsigned long heuristic_sequence;
   static RngStream* m_static_generator;
+  static uint32_t runNumber;
+  static void Initialize();    // Initialize  the RNG system
+  static bool initialized;     // True if package seed is set 
   RngStream* m_generator;  //underlying generator being wrapped
 };
 
