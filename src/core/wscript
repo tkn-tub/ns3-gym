@@ -29,7 +29,6 @@ def build(bld):
     core = bld.create_ns3_module('core')
     core.source = [
         'callback-test.cc',
-        'debug.cc',
         'log.cc',
         'breakpoint.cc',
         'ptr.cc',
@@ -70,7 +69,6 @@ def build(bld):
         'callback.h',
         'ptr.h',
         'object.h',
-        'debug.h',
         'log.h',
         'assert.h',
         'breakpoint.h',

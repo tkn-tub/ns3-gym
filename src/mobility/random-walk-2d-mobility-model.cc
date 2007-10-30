@@ -24,10 +24,10 @@
 #include "ns3/rectangle-default-value.h"
 #include "ns3/random-variable-default-value.h"
 #include "ns3/simulator.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include <cmath>
 
-NS_DEBUG_COMPONENT_DEFINE ("RandomWalk2d");
+NS_LOG_COMPONENT_DEFINE ("RandomWalk2d");
 
 namespace ns3 {
 

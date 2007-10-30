@@ -34,7 +34,7 @@
 #include "ns3/udp.h"
 #include "ns3/internet-node.h"
 #include "ns3/simulator.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
 #include "ns3/composite-trace-resolver.h"
@@ -143,7 +143,7 @@
 namespace ns3 {
 namespace olsr {
 
-NS_DEBUG_COMPONENT_DEFINE ("OlsrAgent");
+NS_LOG_COMPONENT_DEFINE ("OlsrAgent");
 
 
 /********** OLSR class **********/
@@ -232,7 +232,7 @@ void AgentImpl::Start ()
       NS_ASSERT (m_mainAddress != Ipv4Address ());
     }
 
-  NS_DEBUG ("Starting OLSR on node " << m_mainAddress);
+  NS_LOG_DEBUG ("Starting OLSR on node " << m_mainAddress);
 
   m_routingTable = Create<RoutingTable> (m_ipv4, m_mainAddress);
   // Add OLSR as routing protocol, with slightly lower priority than
@@ -247,7 +247,7 @@ void AgentImpl::Start ()
   TcTimerExpire ();
   MidTimerExpire ();
 
-  NS_DEBUG ("OLSR on node " << m_mainAddress << " started");
+  NS_LOG_DEBUG ("OLSR on node " << m_mainAddress << " started");
 }
 
 void AgentImpl::SetMainInterface (uint32_t interface)
@@ -284,7 +284,7 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
                          const Packet &receivedPacket,
                          const Address &sourceAddress)
 {
-  NS_DEBUG ("OLSR node " << m_mainAddress << " received a OLSR packet");
+  NS_LOG_DEBUG ("OLSR node " << m_mainAddress << " received a OLSR packet");
   InetSocketAddress inetSourceAddr = InetSocketAddress::ConvertFrom (sourceAddress);
   
   // All routing messages are sent from and to port RT_PORT,
@@ -308,7 +308,7 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
       
       sizeLeft -= messageHeader.GetSerializedSize ();
 
-      NS_DEBUG ("Olsr Msg received with type "
+      NS_LOG_DEBUG ("Olsr Msg received with type "
                 << std::dec << int (messageHeader.GetMessageType ())
                 << " TTL=" << int (messageHeader.GetTimeToLive ())
                 << " origAddr=" << messageHeader.GetOriginatorAddress ());
@@ -343,29 +343,29 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
           switch (messageHeader.GetMessageType ())
             {
             case olsr::MessageHeader::HELLO_MESSAGE:
-              NS_DEBUG ("OLSR node received HELLO message of size " << messageHeader.GetSerializedSize ());
+              NS_LOG_DEBUG ("OLSR node received HELLO message of size " << messageHeader.GetSerializedSize ());
               ProcessHello (messageHeader, m_mainAddress, inetSourceAddr.GetIpv4 ());
               break;
 
             case olsr::MessageHeader::TC_MESSAGE:
-              NS_DEBUG ("OLSR node received TC message of size " << messageHeader.GetSerializedSize ());
+              NS_LOG_DEBUG ("OLSR node received TC message of size " << messageHeader.GetSerializedSize ());
               ProcessTc (messageHeader, inetSourceAddr.GetIpv4 ());
               break;
 
             case olsr::MessageHeader::MID_MESSAGE:
-              NS_DEBUG ("OLSR node received MID message of size " << messageHeader.GetSerializedSize ());
+              NS_LOG_DEBUG ("OLSR node received MID message of size " << messageHeader.GetSerializedSize ());
               ProcessMid (messageHeader, inetSourceAddr.GetIpv4 ());
               break;
 
             default:
-              NS_DEBUG ("OLSR message type " <<
+              NS_LOG_DEBUG ("OLSR message type " <<
                         int (messageHeader.GetMessageType ()) <<
                         " not implemented");
             }
         }
       else
         {
-          NS_DEBUG ("OLSR message is duplicated, not reading it.");
+          NS_LOG_DEBUG ("OLSR message is duplicated, not reading it.");
       
           // If the message has been considered for forwarding, it should
           // not be retransmitted again
@@ -1092,7 +1092,7 @@ AgentImpl::QueueMessage (const olsr::MessageHeader &message, Time delay)
 void
 AgentImpl::SendPacket (Packet packet, const MessageList &containedMessages)
 {
-  NS_DEBUG ("OLSR node " << m_mainAddress << " sending a OLSR packet");
+  NS_LOG_DEBUG ("OLSR node " << m_mainAddress << " sending a OLSR packet");
 
   // Add a header
   olsr::PacketHeader header;
@@ -1120,7 +1120,7 @@ AgentImpl::SendQueuedMessages ()
   Packet packet;
   int numMessages = 0;
 
-  NS_DEBUG ("Olsr node " << m_mainAddress << ": SendQueuedMessages");
+  NS_LOG_DEBUG ("Olsr node " << m_mainAddress << ": SendQueuedMessages");
 
   MessageList msglist;
 
@@ -1248,8 +1248,8 @@ AgentImpl::SendHello ()
 
       linkMessages.push_back (linkMessage);
     }
-  NS_DEBUG ("OLSR HELLO message size: " << int (msg.GetSerializedSize ())
-            << " (with " << int (linkMessages.size ()) << " link messages)");
+  NS_LOG_DEBUG ("OLSR HELLO message size: " << int (msg.GetSerializedSize ())
+                << " (with " << int (linkMessages.size ()) << " link messages)");
   QueueMessage (msg, JITTER);
 }
 

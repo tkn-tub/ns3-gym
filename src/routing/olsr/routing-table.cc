@@ -28,11 +28,11 @@
 #include "routing-table.h"
 #include "ns3/packet.h"
 #include "ns3/ipv4-header.h"
-#include "ns3/debug.h"
+#include "ns3/log.h"
 
 namespace ns3 { namespace olsr {
 
-NS_DEBUG_COMPONENT_DEFINE ("OlsrRoutingTable");
+NS_LOG_COMPONENT_DEFINE ("OlsrRoutingTable");
 
 ///
 /// \brief Clears the routing table and frees the memory assigned to each one of its entries.
@@ -119,19 +119,19 @@ RoutingTable::RequestRoute (uint32_t ifIndex,
       Ipv4Route route = Ipv4Route::CreateHostRouteTo
         (ipHeader.GetDestination (), entry2.nextAddr, entry2.interface);
 
-      NS_DEBUG ("Olsr node" << m_mainAddress
-                << ": RouteRequest for dest=" << ipHeader.GetDestination ()
-                << " --> destHop=" << entry2.nextAddr
-                << " interface=" << entry2.interface);
+      NS_LOG_DEBUG ("Olsr node" << m_mainAddress
+                    << ": RouteRequest for dest=" << ipHeader.GetDestination ()
+                    << " --> destHop=" << entry2.nextAddr
+                    << " interface=" << entry2.interface);
       
       routeReply (true, route, packet, ipHeader);
       return true;
     }
   else
     {
-      NS_DEBUG ("Olsr node" << m_mainAddress
-                << ": RouteRequest for dest=" << ipHeader.GetDestination ()
-                << " --> NOT FOUND");
+      NS_LOG_DEBUG ("Olsr node" << m_mainAddress
+                    << ": RouteRequest for dest=" << ipHeader.GetDestination ()
+                    << " --> NOT FOUND");
       return false;
     }
 }
