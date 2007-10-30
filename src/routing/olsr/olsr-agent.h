@@ -25,7 +25,7 @@
 #include "ns3/component-manager.h"
 
 namespace ns3 {
-
+namespace olsr {
 
 /**
  * \brief Class implementing the OLSR state machine
@@ -38,12 +38,12 @@ namespace ns3 {
  * Example:
  *
  * \code
- * Ptr<OlsrAgent> olsr = ComponentManager::Create<OlsrAgent, Ptr<Node> > (OlsrAgent::cid, OlsrAgent::iid, node);
+ * Ptr<olsr::Agent> olsr = ComponentManager::Create<olsr::Agent, Ptr<Node> > (olsr::Agent::cid, olsr::Agent::iid, node);
  * agent->SetMainInterface (2);
  * agent->Start ();
  * \endcode
  */
-class OlsrAgent : public Object
+class Agent : public Object
 {
 public:
   static const InterfaceId iid;
@@ -75,7 +75,7 @@ public:
 };
 
 
-}; // namespace ns3
+}} // namespace olsr, ns3
 
 #endif /* OLSR_AGENT_H */
 

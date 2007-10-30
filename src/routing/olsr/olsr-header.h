@@ -29,10 +29,10 @@
 
 
 namespace ns3 {
+namespace olsr {
 
-
-double OlsrEmfToSeconds (uint8_t emf);
-uint8_t OlsrSecondsToEmf (double seconds);
+double EmfToSeconds (uint8_t emf);
+uint8_t SecondsToEmf (double seconds);
 
 // 3.3.  Packet Format
 //
@@ -66,11 +66,11 @@ uint8_t OlsrSecondsToEmf (double seconds);
 //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //       :                                                               :
 //                (etc.)
-class OlsrPacketHeader : public Header
+class PacketHeader : public Header
 {
 public:
-  OlsrPacketHeader ();
-  virtual ~OlsrPacketHeader ();
+  PacketHeader ();
+  virtual ~PacketHeader ();
 
   void SetPacketLength (uint16_t length)
   {
@@ -113,7 +113,7 @@ public:
 //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //       |  Time To Live |   Hop Count   |    Message Sequence Number    |
 //       +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-class OlsrMessageHeader : public Header
+class MessageHeader : public Header
 {
 public:
 
@@ -124,8 +124,8 @@ public:
     HNA_MESSAGE   = 4,
   };
 
-  OlsrMessageHeader ();
-  virtual ~OlsrMessageHeader ();
+  MessageHeader ();
+  virtual ~MessageHeader ();
 
   void SetMessageType (MessageType messageType)
   {
@@ -138,11 +138,11 @@ public:
 
   void SetVTime (Time time)
   {
-    m_vTime = OlsrSecondsToEmf (time.GetSeconds ());
+    m_vTime = SecondsToEmf (time.GetSeconds ());
   }
   Time GetVTime () const
   {
-    return Seconds (OlsrEmfToSeconds (m_vTime));
+    return Seconds (EmfToSeconds (m_vTime));
   }
 
   void SetOriginatorAddress (Ipv4Address originatorAddress)
@@ -265,11 +265,11 @@ public:
     uint8_t hTime;
     void SetHTime (Time time)
     {
-      this->hTime = OlsrSecondsToEmf (time.GetSeconds ());
+      this->hTime = SecondsToEmf (time.GetSeconds ());
     }
     Time GetHTime () const
     {
-      return Seconds (OlsrEmfToSeconds (this->hTime));
+      return Seconds (EmfToSeconds (this->hTime));
     }
 
     uint8_t willingness;
@@ -434,7 +434,37 @@ public:
   
 };
 
-}; // namespace ns3
+
+static inline std::ostream& operator<< (std::ostream& os, const PacketHeader & packet)
+{
+  packet.Print (os);
+  return os;
+}
+
+static inline std::ostream& operator<< (std::ostream& os, const MessageHeader & message)
+{
+  message.Print (os);
+  return os;
+}
+
+typedef std::vector<MessageHeader> MessageList;
+
+static inline std::ostream& operator<< (std::ostream& os, const MessageList & messages)
+{
+  os << "[";
+  for (std::vector<MessageHeader>::const_iterator messageIter = messages.begin ();
+       messageIter != messages.end (); messageIter++)
+    {
+      messageIter->Print (os);
+      if (messageIter+1 != messages.end ())
+        os << ", ";
+    }
+  os << "]";
+  return os;
+}
+
+
+}} // namespace olsr, ns3
 
 #endif /* OLSR_HEADER_H */
 

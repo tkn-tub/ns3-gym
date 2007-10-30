@@ -22,8 +22,9 @@
 #include "olsr-agent-impl.h"
 
 namespace ns3 {
+namespace olsr {
 
-const InterfaceId OlsrAgent::iid = MakeInterfaceId ("OlsrAgent", Object::iid);
-const ClassId OlsrAgent::cid = MakeClassId< OlsrAgentImpl, Ptr<Node> > ("OlsrAgent", OlsrAgent::iid);
+const InterfaceId Agent::iid = MakeInterfaceId ("OlsrAgent", Object::iid);
+const ClassId Agent::cid = MakeClassId< AgentImpl, Ptr<Node> > ("OlsrAgent", Agent::iid);
 
-}
+}}

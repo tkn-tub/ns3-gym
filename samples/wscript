@@ -1,9 +1,6 @@
 ## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
 
 def build(bld):
-    obj = bld.create_ns3_program('main-debug')
-    obj.source = ['main-debug.cc', 'main-debug-other.cc']
-
     obj = bld.create_ns3_program('main-callback')
     obj.source = 'main-callback.cc'
 

@@ -118,7 +118,6 @@ def configure(conf):
         variant_env.append_value('CXXFLAGS', ['-Werror'])
 
     if 'debug' in Params.g_options.debug_level.lower():
-        variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
