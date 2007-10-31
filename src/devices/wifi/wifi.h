@@ -1,4 +1,6 @@
 /**
+ * \defgroup Wifi Wifi Models
+ *
  * \section Wifi Models
  *
  * The set of 802.11 models provided in ns-3 attempts to provide
