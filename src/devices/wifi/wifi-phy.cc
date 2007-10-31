@@ -247,7 +247,6 @@ WifiPhy::ReceivePacket (Packet const packet,
   double rxPowerW = DbmToW (rxPowerDbm);
   Time rxDuration = CalculateTxDuration (packet.GetSize (), txMode, preamble);
   Time endRx = Simulator::Now () + rxDuration;
-  m_startRxLogger (rxDuration, rxPowerW);
 
   Ptr<RxEvent> event = Create<RxEvent> (packet.GetSize (), 
                                         txMode,
@@ -280,7 +279,6 @@ WifiPhy::ReceivePacket (Packet const packet,
         // sync to signal
         NotifySyncStart (rxDuration);
         SwitchToSync (rxDuration);
-        m_startSyncLogger (rxDuration, rxPowerW);
         NS_ASSERT (m_endSyncEvent.IsExpired ());
         m_endSyncEvent = Simulator::Schedule (rxDuration, &WifiPhy::EndSync, this, 
                                               packet,
@@ -345,7 +343,6 @@ WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiPreamble preamble
   }
 
   Time txDuration = CalculateTxDuration (packet.GetSize (), txMode, preamble);
-  m_startTxLogger (txDuration, txMode.GetPhyRate (), GetPowerDbm (txPower));
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
   m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDbm, txMode, preamble);
@@ -1176,7 +1173,6 @@ WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event)
   
   if (m_random.GetValue () > per) 
     {
-      m_endSyncLogger (true);
       NotifySyncEndOk ();
       SwitchFromSync ();
       m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
@@ -1184,7 +1180,6 @@ WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event)
   else 
     {
       /* failure. */
-      m_endSyncLogger (false);
       NotifySyncEndError ();
       SwitchFromSync ();
       m_syncErrorCallback (packet, snr);

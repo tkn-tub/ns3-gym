@@ -213,31 +213,6 @@ private:
   EventId m_endSyncEvent;
   Events m_events;
   UniformVariable m_random;
-  /* param1: - true: sync completed ok
-   *   - false: sync completed with failure
-   * Invoked when the last bit of a Signal (which was
-   * synchronized upon) is received.
-   * Reports whether or not the signal was received
-   * successfully.
-   */
-  CallbackTraceSource<bool> m_endSyncLogger;
-  /* param1: Duration 
-   * param2: signal Energy (w)
-   * Invoked whenever the first bit of a signal is received.
-   */
-  CallbackTraceSource<Time,double> m_startRxLogger;
-  /* param1: Duration
-   * param2: signal Energy (w)
-   * Invoked whenever the first bit of a signal is 
-   * synchronized upon.
-   */
-  CallbackTraceSource<Time,double> m_startSyncLogger;
-  /* param1: Duration 
-   * param2: tx Mode (bit rate: bit/s)
-   * param3: tx Power (dbm)
-   * Invoked whenever we send the first bit of a signal.
-   */
-  CallbackTraceSource<Time, uint32_t, double> m_startTxLogger;
   CallbackTraceSource<Time,Time,enum WifiPhy::State> m_stateLogger;
 };
 
