@@ -32,11 +32,18 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/global-route-manager.h"
 #include "ns3/packet.h"
+#include "ns3/node-list.h"
 
 
 #include <iostream>
 
 using namespace ns3;
+
+static void
+WifiNetDeviceTrace (const TraceContext &context, Packet p, Mac48Address address)
+{
+  std::cout << context << " ad=" << address << " p: " << p << std::endl;
+}
 
 static Ptr<Node>
 CreateApNode (Ptr<WifiChannel> channel,
@@ -156,6 +163,8 @@ int main (int argc, char *argv[])
   app->Stop (Seconds (43.0));
 
   GlobalRouteManager::PopulateRoutingTables ();
+
+  NodeList::Connect ("/nodes/*/devices/*/*", MakeCallback (&WifiNetDeviceTrace));
 
   Simulator::Run ();
 

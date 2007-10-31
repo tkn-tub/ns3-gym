@@ -20,6 +20,7 @@
 #include "ns3/packet.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/node.h"
+#include "ns3/composite-trace-resolver.h"
 
 #include "wifi-net-device.h"
 #include "wifi-phy.h"
@@ -40,6 +41,44 @@
 #include "cr-mac-stations.h"
 
 namespace ns3 {
+
+WifiNetDeviceTraceType::WifiNetDeviceTraceType ()
+  : m_type (RX)
+{}
+
+WifiNetDeviceTraceType::WifiNetDeviceTraceType (enum Type type)
+  : m_type (type)
+{}
+enum WifiNetDeviceTraceType::Type 
+WifiNetDeviceTraceType::Get (void) const
+{
+  return m_type;
+}
+uint16_t 
+WifiNetDeviceTraceType::GetUid (void)
+{
+  static uint16_t uid = AllocateUid<WifiNetDeviceTraceType> ("ns3::WifiNetDeviceTraceType");
+  return uid;
+}
+void 
+WifiNetDeviceTraceType::Print (std::ostream &os) const
+{
+  os << "event=";
+  switch (m_type) {
+  case RX: 
+    os << "rx"; 
+    break;
+  case TX: 
+    os << "tx";
+    break;
+  }
+}
+std::string 
+WifiNetDeviceTraceType::GetTypeName (void) const
+{
+   return "ns3::WifiNetDeviceTraceType";
+}
+
 
 static WifiMode 
 GetWifiModeForPhyMode (WifiPhy *phy, enum WifiDefaultParameters::PhyModeParameter mode)
@@ -163,6 +202,27 @@ WifiNetDevice::CreateDca (uint32_t minCw, uint32_t maxCw) const
   dca->SetMaxQueueSize (400);
   dca->SetMaxQueueDelay (Seconds (10));
   return dca;
+}
+
+Ptr<TraceResolver> 
+WifiNetDevice::GetTraceResolver (void) const
+{
+  Ptr<CompositeTraceResolver> resolver = 
+    Create<CompositeTraceResolver> ();
+  resolver->AddSource ("rx", 
+                       TraceDoc ("Receive a packet",
+                                 "Packet", "the packet received",
+                                 "Mac48Address", "the sender of the packet"),
+                       m_rxLogger,
+                       WifiNetDeviceTraceType (WifiNetDeviceTraceType::RX));
+  resolver->AddSource ("tx", 
+                       TraceDoc ("Send a packet",
+                                 "Packet", "the packet to send",
+                                 "Mac48Address", "the destination of the packet"),
+                       m_txLogger,
+                       WifiNetDeviceTraceType (WifiNetDeviceTraceType::TX));
+  resolver->SetParentResolver (NetDevice::GetTraceResolver ());
+  return resolver;
 }
 
 void 
