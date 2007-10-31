@@ -41,4 +41,5 @@ def build(bld):
         'wifi-mode.h',
         'ssid.h',
         'wifi-preamble.h',
+        'wifi-phy.h',
         ]

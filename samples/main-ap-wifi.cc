@@ -20,6 +20,8 @@
 
 #include "ns3/wifi-net-device.h"
 #include "ns3/wifi-channel.h"
+#include "ns3/wifi-phy.h"
+
 #include "ns3/simulator.h"
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
@@ -43,6 +45,26 @@ static void
 WifiNetDeviceTrace (const TraceContext &context, Packet p, Mac48Address address)
 {
   std::cout << context << " ad=" << address << " p: " << p << std::endl;
+}
+static void
+WifiPhyStateTrace (const TraceContext &context, Time start, Time duration, enum WifiPhy::State state)
+{
+  std::cout << context << " state=";
+  switch (state) {
+  case WifiPhy::TX:
+    std::cout << "tx      ";
+    break;
+  case WifiPhy::SYNC:
+    std::cout << "sync    ";
+    break;
+  case WifiPhy::CCA_BUSY:
+    std::cout << "cca-busy";
+    break;
+  case WifiPhy::IDLE:
+    std::cout << "idle    ";
+    break;
+  }
+  std::cout << " start="<<start<<" duration="<<duration<<std::endl;
 }
 
 static Ptr<Node>
@@ -165,6 +187,7 @@ int main (int argc, char *argv[])
   GlobalRouteManager::PopulateRoutingTables ();
 
   NodeList::Connect ("/nodes/*/devices/*/*", MakeCallback (&WifiNetDeviceTrace));
+  NodeList::Connect ("/nodes/*/devices/*/phy/state", MakeCallback (&WifiPhyStateTrace));
 
   Simulator::Run ();
 

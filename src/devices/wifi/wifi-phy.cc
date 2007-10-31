@@ -29,6 +29,7 @@
 #include "ns3/random-variable.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
+#include "ns3/composite-trace-resolver.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("WifiPhy");
@@ -203,6 +204,20 @@ WifiPhy::~WifiPhy ()
   m_modes.clear ();
 }
 
+Ptr<TraceResolver> 
+WifiPhy::GetTraceResolver (void) const
+{
+  Ptr<CompositeTraceResolver> resolver =
+    Create<CompositeTraceResolver> ();
+  resolver->AddSource ("state",
+                       TraceDoc ("The WifiPhy state",
+                                 "Time", "start time",
+                                 "Time", "duration", 
+                                 "enum WifiPhy::State", "the state of the PHY layer."),
+                       m_stateLogger);
+  resolver->SetParentResolver (Object::GetTraceResolver ());
+  return resolver;
+}
 
 
 void 
@@ -494,7 +509,7 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble 
 }
 
 char const *
-WifiPhy::StateToString (enum WifiPhyState state)
+WifiPhy::StateToString (enum State state)
 {
   switch (state) {
   case TX:
@@ -514,7 +529,7 @@ WifiPhy::StateToString (enum WifiPhyState state)
     break;
   }
 }
-enum WifiPhy::WifiPhyState 
+enum WifiPhy::State 
 WifiPhy::GetState (void)
 {
   if (m_endTx > Simulator::Now ()) 
@@ -617,9 +632,9 @@ WifiPhy::LogPreviousIdleAndCcaBusyStates (void)
       m_endCcaBusy > m_endTx) {
     Time ccaBusyStart = Max (m_endTx, m_endSync);
     ccaBusyStart = Max (ccaBusyStart, m_startCcaBusy);
-    m_stateLogger (ccaBusyStart, idleStart - ccaBusyStart, 2);
+    m_stateLogger (ccaBusyStart, idleStart - ccaBusyStart, WifiPhy::CCA_BUSY);
   }
-  m_stateLogger (idleStart, now - idleStart, 3);
+  m_stateLogger (idleStart, now - idleStart, WifiPhy::IDLE);
 }
 
 void
@@ -632,12 +647,12 @@ WifiPhy::SwitchToTx (Time txDuration)
      * as its endSync event are cancelled by the caller.
      */
     m_syncing = false;
-    m_stateLogger (m_startSync, now - m_startSync, 1);
+    m_stateLogger (m_startSync, now - m_startSync, WifiPhy::SYNC);
     break;
   case WifiPhy::CCA_BUSY: {
     Time ccaStart = Max (m_endSync, m_endTx);
     ccaStart = Max (ccaStart, m_startCcaBusy);
-    m_stateLogger (ccaStart, now - ccaStart, 2);
+    m_stateLogger (ccaStart, now - ccaStart, WifiPhy::CCA_BUSY);
   } break;
   case WifiPhy::IDLE:
     LogPreviousIdleAndCcaBusyStates ();
@@ -646,7 +661,7 @@ WifiPhy::SwitchToTx (Time txDuration)
     NS_ASSERT (false);
     break;
   }
-  m_stateLogger (now, txDuration, 0);
+  m_stateLogger (now, txDuration, WifiPhy::TX);
   m_previousStateChangeTime = now;
   m_endTx = now + txDuration;
   m_startTx = now;
@@ -664,7 +679,7 @@ WifiPhy::SwitchToSync (Time rxDuration)
   case WifiPhy::CCA_BUSY: {
     Time ccaStart = Max (m_endSync, m_endTx);
     ccaStart = Max (ccaStart, m_startCcaBusy);
-    m_stateLogger (ccaStart, now - ccaStart, 2);
+    m_stateLogger (ccaStart, now - ccaStart, WifiPhy::CCA_BUSY);
   } break;
   case WifiPhy::SYNC:
   case WifiPhy::TX:
@@ -684,7 +699,7 @@ WifiPhy::SwitchFromSync (void)
   NS_ASSERT (m_syncing);
 
   Time now = Simulator::Now ();
-  m_stateLogger (m_startSync, now - m_startSync, 1);
+  m_stateLogger (m_startSync, now - m_startSync, WifiPhy::SYNC);
   m_previousStateChangeTime = now;
   m_syncing = false;
 

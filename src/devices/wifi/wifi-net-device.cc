@@ -221,6 +221,7 @@ WifiNetDevice::GetTraceResolver (void) const
                                  "Mac48Address", "the destination of the packet"),
                        m_txLogger,
                        WifiNetDeviceTraceType (WifiNetDeviceTraceType::TX));
+  resolver->AddComposite ("phy", m_phy);
   resolver->SetParentResolver (NetDevice::GetTraceResolver ());
   return resolver;
 }

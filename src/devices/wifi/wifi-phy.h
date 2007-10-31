@@ -72,6 +72,12 @@ public:
 class WifiPhy : public Object
 {
 public:
+  enum State {
+    SYNC,
+    TX,
+    CCA_BUSY,
+    IDLE
+  };
   typedef Callback<void,Packet, double, WifiMode, enum WifiPreamble> SyncOkCallback;
   typedef Callback<void,Packet, double> SyncErrorCallback;
 
@@ -105,12 +111,6 @@ public:
   double CalculateSnr (WifiMode txMode, double ber) const;
 
 private:
-  enum WifiPhyState {
-    SYNC,
-    TX,
-    CCA_BUSY,
-    IDLE
-  };
   class NiChange {
   public:
     NiChange (Time time, double delta);
@@ -126,10 +126,12 @@ private:
   typedef std::list<Ptr<RxEvent> > Events;
   typedef std::vector <NiChange> NiChanges;
 
-private:  
+private:
+  // inherited from ns3::Object.
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   void Configure80211a (void);
-  char const *StateToString (enum WifiPhyState state);
-  enum WifiPhyState GetState (void);
+  char const *StateToString (enum State state);
+  enum WifiPhy::State GetState (void);
   double GetEdThresholdW (void) const;
   double DbmToW (double dbm) const;
   double DbToRatio (double db) const;
@@ -236,12 +238,7 @@ private:
    * Invoked whenever we send the first bit of a signal.
    */
   CallbackTraceSource<Time, uint32_t, double> m_startTxLogger;
-  /* 80211-phy-state
-   * param1: Start
-   * param2: Duration
-   * param3: state: 0 -> TX, 1 -> SYNC, 2 -> CCA, 3 -> IDLE
-   */
-  CallbackTraceSource<Time,Time,uint8_t> m_stateLogger;
+  CallbackTraceSource<Time,Time,enum WifiPhy::State> m_stateLogger;
 };
 
 } // namespace ns3
