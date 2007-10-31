@@ -68,46 +68,163 @@ public:
 };
 
 
-
+/**
+ * \brief 802.11 PHY layer model
+ *
+ * This PHY implements a model of 802.11a. The model
+ * implemented here is based on the model described
+ * in "Yet Another Network Simulator", 
+ * (http://cutebugs.net/files/wns2-yans.pdf).
+ *
+ * This PHY model depends on a channel loss and delay
+ * model as provided by the ns3::PropagationLossModel
+ * and ns3::PropagationDelayModel classes.
+ * 
+ */
 class WifiPhy : public Object
 {
 public:
+  /**
+   * The state of the PHY layer.
+   */
   enum State {
+    /**
+     * The PHY layer is synchronized upon a packet.
+     */
     SYNC,
+    /**
+     * The PHY layer is sending a packet.
+     */
     TX,
+    /**
+     * The PHY layer has sense the medium busy through
+     * the CCA mechanism
+     */
     CCA_BUSY,
+    /**
+     * The PHY layer is IDLE.
+     */
     IDLE
   };
+  /**
+   * arg1: packet received successfully
+   * arg2: snr of packet
+   * arg3: mode of packet
+   * arg4: type of preamble used for packet.
+   */
   typedef Callback<void,Packet, double, WifiMode, enum WifiPreamble> SyncOkCallback;
+  /**
+   * arg1: packet received unsuccessfully
+   * arg2: snr of packet
+   */
   typedef Callback<void,Packet, double> SyncErrorCallback;
 
+  /**
+   * \param device the device which contains this PHY.
+   *
+   * Create a new PHY layer instance initialized with values
+   * coming from \valueref{WifiPhyEnergyDetectionThreshold},
+   * \valueref{WifiPhyRxNoise}, \valueref{WifiPhyTxPowerBase},
+   * \valueref{WifiPhyTxPowerEnd}, \valueref{WifiPhyTxPowerLevels},
+   * \valueref{WifiPhyTxGain}, and, \valueref{WifiPhyRxGain}
+   */
   WifiPhy (Ptr<WifiNetDevice> device);
   virtual ~WifiPhy ();
 
+  /**
+   * \param channel the channel to connect to.
+   */
   void SetChannel (Ptr<WifiChannel> channel);
 
+  /**
+   * \param callback the callback to invoke
+   *        upon successful packet reception.
+   */
   void SetReceiveOkCallback (SyncOkCallback callback);
+  /**
+   * \param callback the callback to invoke
+   *        upon erronous packet reception.
+   */
   void SetReceiveErrorCallback (SyncErrorCallback callback);
 
-  void SendPacket (Packet const packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPower);
+  /**
+   * \param packet the packet to send
+   * \param mode the transmission mode to use to send this packet
+   * \param preamble the type of preamble to use to send this packet.
+   * \param txPowerLevel a power level to use to send this packet. The real
+   *        transmission power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
+   */
+  void SendPacket (Packet const packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPowerLevel);
 
+  /**
+   * \param listener the new listener
+   *
+   * Add the input listener to the list of objects to be notified of
+   * PHY-level events.
+   */
   void RegisterListener (WifiPhyListener *listener);
 
+  /**
+   * \returns true of the current state of the PHY layer is WifiPhy:LCCA_BUSY, false otherwise.
+   */
   bool IsStateCcaBusy (void);
+  /**
+   * \returns true of the current state of the PHY layer is WifiPhy::IDLE, false otherwise.
+   */
   bool IsStateIdle (void);
+  /**
+   * \returns true of the current state of the PHY layer is not WifiPhy::IDLE, false otherwise.
+   */
   bool IsStateBusy (void);
+  /**
+   * \returns true of the current state of the PHY layer is WifiPhy::SYNC, false otherwise.
+   */
   bool IsStateSync (void);
+  /**
+   * \returns true of the current state of the PHY layer is WifiPhy::TX, false otherwise.
+   */
   bool IsStateTx (void);
+  /**
+   * \returns the amount of time since the current state has started.
+   */
   Time GetStateDuration (void);
+  /**
+   * \returns the predicted delay until this PHY can become WifiPhy::IDLE.
+   *
+   * The PHY will never become WifiPhy::IDLE _before_ the delay returned by
+   * this method but it could become really idle later.
+   */
   Time GetDelayUntilIdle (void);
 
+  /**
+   * \param size the number of bytes in the packet to send
+   * \param payloadMode the transmission mode to use for this packet
+   * \param preamble the type of preamble to use for this packet.
+   * \returns the total amount of time this PHY will stay busy for
+   *          the transmission of these bytes.
+   */
   Time CalculateTxDuration (uint32_t size, WifiMode payloadMode, enum WifiPreamble preamble) const;
 
+  /**
+   * \returns the number of transmission modes supported by this PHY.
+   */
   uint32_t GetNModes (void) const;
+  /**
+   * \param mode index in array of supported modes
+   * \returns the mode whose index is specified.
+   */
   WifiMode GetMode (uint32_t mode) const;
-  uint32_t GetModeBitRate (uint8_t mode) const;
+  /**
+   * \returns the number of tx power levels available for this PHY.
+   */
   uint32_t GetNTxpower (void) const;
   /* return snr: W/W */
+  /**
+   * \param txMode the transmission mode
+   * \param ber the probability of bit error rate
+   * \returns the minimum snr which is required to achieve
+   *          the requested ber for the specified transmission mode.
+   */
   double CalculateSnr (WifiMode txMode, double ber) const;
 
 private:
