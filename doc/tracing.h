@@ -497,6 +497,8 @@
  *   };
  *   // called from MyModel::GetTraceResolver
  *   MyModelTraceType (enum Type type);
+ *   // needed for by the tracing subsystem.
+ *   MyModelTraceType ();
  *   // called from trace sink
  *   enum Type Get (void) const;
  *   // needed by the tracing subsystem
@@ -513,6 +515,10 @@
  * \endcode
  * The implementation does not require much thinking:
  * \code
+ * MyModelTraceType::MyModelTraceType ()
+ *  : m_type (RX)
+ * {// an arbitrary default value.
+ * }
  * MyModelTraceType::MyModelTraceType (enum Type type)
  *  : m_type (type)
  * {}
