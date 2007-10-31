@@ -531,14 +531,14 @@
  * }
  * void 
  * MyModelTraceType::Print (std::ostream &os) const
- * (
+ * {
  *   // this method is invoked by the print function of a TraceContext
  *   // if it contains an instance of this TraceContextElement.
  *   switch (m_type) {
  *     case RX: os << "rx"; break;
  *     // ...
  *   }
- * )
+ * }
  * std::string 
  * MyModelTraceType::GetTypeName (void) const
  * {
