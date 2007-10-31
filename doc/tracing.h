@@ -516,7 +516,7 @@
  * MyModelTraceType::MyModelTraceType (enum Type type)
  *  : m_type (type)
  * {}
- * enum Type 
+ * enum MyModelTraceType::Type 
  * MyModelTraceType::Get (void) const
  * {
  *   return m_type;
