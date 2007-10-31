@@ -48,8 +48,6 @@ namespace olsr {
 
 class AgentImpl : public Agent
 {
-  friend class OlsrTest;
-
 public:
   AgentImpl (Ptr<Node> node);
 
