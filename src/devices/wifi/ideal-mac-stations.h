@@ -27,6 +27,20 @@
 
 namespace ns3 {
 
+/**
+ * \brief Ideal rate control algorithm
+ *
+ * This class implements an 'ideal' rate control algorithm
+ * similar to RBAR in spirit (see <i>A rate-adaptive MAC
+ * protocol for multihop wireless networks</i> by G. Holland,
+ * N. Vaidya, and P. Bahl.): every station keeps track of the
+ * snr of every packet received and sends back this snr to the
+ * original transmitter by an out-of-band mechanism. Each 
+ * transmitter keeps track of the last snr sent back by a receiver
+ * and uses it to pick a transmission mode based on a set
+ * of snr thresholds built from a target ber and transmission 
+ * mode-specific snr/ber curves.
+ */
 class IdealMacStations : public MacStations {
 public:
   IdealMacStations (WifiMode defaultTxMode);

@@ -31,56 +31,177 @@ namespace ns3 {
 class RandomStream;
 class MacParameters;
 
+/**
+ * \brief listen to DCF events
+ *
+ * If you want to call methods from the ns3::Dcf class,
+ * you need to provide an instance of this class
+ * to be notified of the DCF evens.
+ */
 class DcfAccessListener {
 public:
   DcfAccessListener ();
   virtual ~DcfAccessListener ();
 
-  /* Tell the listener than it can start
+  /**
+   * Tell the listener than it can start
    * accessing the medium right now.
    */
   virtual void AccessGrantedNow (void) = 0;
-  /* ask the listener if there are candidates 
+  /**
+   * ask the listener if there are candidates 
    * who need access to the medium.
+   *
+   * \return true if access to the medium is 
+   *         needed, false otherwise.
    */
   virtual bool AccessNeeded (void) = 0;
-  /* ask the listener if it is currently
+  /**
+   * ask the listener if it is currently
    * performing an access which was granted 
    * earlier to him and if it will notify
    * the Dcf when the access is complete.
+   *
+   * \return true if the listener expects to call
+   *         Dcf::RequestAccess later, false otherwise.
    */
   virtual bool AccessingAndWillNotify (void) = 0;
 };
 
+/**
+ * \brief the Distributed Coordination Function
+ *
+ * This class implements the DCF as described in IEEE 802.11-1999
+ * section 9.2, p72.
+ *
+ * This implementation is based on the technique described in
+ * <i>Scalable simulation of large-scale wireless networks with
+ * bounded inaccuracies.</i>, by Z. Ji, J. Zhou, M. Takai, and R. Bagrodia. 
+ */
 class Dcf
 {
 public:
+  /**
+   * \param minCw the minimum value for CW
+   * \param maxCW the maximum value for CW
+   */
   Dcf (uint32_t minCw, uint32_t maxCw);
   ~Dcf ();
 
+  /**
+   * \param parameters
+   *
+   * Must be invoked after construction to configure
+   * a set of parameters.
+   */
   void SetParameters (const MacParameters *parameters);
+  /**
+   * \param difs the difs
+   *
+   * Must be invoked after construction.
+   */
   void SetDifs (Time difs);
+  /**
+   * \param eifs the eifs
+   *
+   * Must be invoked after construction.
+   */
   void SetEifs (Time eifs);
+  /**
+   * \param minCw the minimum value for CW
+   * \param maxCw the maximum value for CW
+   *
+   * Reset the cw bounds and CW to minCW.
+   */
   void SetCwBounds (uint32_t minCw, uint32_t maxCw);
+  /**
+   * \param listener the listener
+   *
+   * This listener is notified of DCF-specific events
+   * when they happen. You _must_ register a listener
+   * before calling Dcf::RequestAccess.
+   */
   void RegisterAccessListener (DcfAccessListener *listener);
 
+  /**
+   * Request access to the medium. This method will grant
+   * access by calling the DcfAccessListener::AccessGrantedNow
+   * method
+   */
   void RequestAccess (void);
 
+  /**
+   * Reset the CW to CWmin
+   * This method is typically invoked after a successfully
+   * transmission or after the maximum number of retries has
+   * been reached.
+   */
   void ResetCw (void);
+  /**
+   * Update the CW to a new value. This method is typically
+   * invoked after a failed transmission before calling
+   * Dcf::StartBackoff.
+   */
   void UpdateFailedCw (void);
+  /**
+   * Start a backoff now by picking a backoff duration
+   * in the [0, cw] interval.
+   */
   void StartBackoff (void);
 
-  /* notification methods. */
+  /**
+   * \param duration expected duration of reception
+   *
+   * Notify the DCF that a packet reception started 
+   * for the expected duration.
+   */
   void NotifyRxStartNow (Time duration);
+  /**
+   * Notify the DCF that a packet reception was just
+   * completed successfully.
+   */
   void NotifyRxEndOkNow (void);
+  /**
+   * Notify the DCF that a packet reception was just
+   * completed unsuccessfully.
+   */
   void NotifyRxEndErrorNow (void);
+  /**
+   * \param duration expected duration of transmission
+   *
+   * Notify the DCF that a packet transmission was
+   * just started and is expected to last for the specified
+   * duration.
+   */
   void NotifyTxStartNow (Time duration);
+  /**
+   * \param duration expected duration of cca busy period
+   *
+   * Notify the DCF that a CCA busy period has just started.
+   */
   void NotifyCcaBusyStartNow (Time duration);
+  /**
+   * \param now the time at which a NAV starts
+   * \param duration the value of the received NAV.
+   */
   void NotifyNavReset (Time now, Time duration);
+  /**
+   * \param now the time at which a NAV starts
+   * \param duration the value of the received NAV.
+   */
   void NotifyNavStart (Time now, Time duration);
+  /**
+   * \param now the time at which a NAV starts
+   * \param duration the value of the received NAV.
+   */
   void NotifyNavContinue (Time now, Time duration);
 
-  // for testing only.
+  /**
+   * \param stream a random stream
+   *
+   * This method is used for testing only to force a predictable
+   * set of random numbers to be used.
+   */
   void ResetRngForTest (RandomStream *stream);
 private:
   void AccessTimeout (void);

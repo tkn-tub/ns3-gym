@@ -38,12 +38,39 @@ class WifiPhy;
 class MacParameters;
 class MacTxMiddle;
 
+/**
+ * \brief handle packet fragmentation and retransmissions.
+ *
+ * This class implements the packet fragmentation and 
+ * retransmission policy. It uses the ns3::MacLow and ns3::Dcf
+ * helper classes to respectively send packets and decide when 
+ * to send them. Packets are stored in a ns3::WifiMacQueue until
+ * they can be sent.
+ *
+ * The policy currently implemented uses a simple fragmentation
+ * threshold: any packet bigger than this threshold is fragmented
+ * in fragments whose size is smaller than the threshold.
+ *
+ * The retransmission policy is also very simple: every packet is
+ * retransmitted until it is either successfully transmitted or
+ * it has been retransmitted up until the ssrc or slrc thresholds.
+ *
+ * The rts/cts policy is similar to the fragmentation policy: when
+ * a packet is bigger than a threshold, the rts/cts protocol is used.
+ */
 class DcaTxop 
 {
 public:
   typedef Callback <void, WifiMacHeader const&> TxOk;
   typedef Callback <void, WifiMacHeader const&> TxFailed;
 
+  /**
+   * \param minCw forwarded to ns3::Dcf constructor
+   * \param maxCw forwarded to ns3::Dcf constructor
+   *
+   * Initialized from \valueref{WifiMaxSsrc}, \valueref{WifiMaxSlrc},
+   * \valueref{WifiRtsCtsThreshold}, and, \valueref{WifiFragmentationThreshold}.
+   */
   DcaTxop (uint32_t minCw, uint32_t maxCw);
   ~DcaTxop ();
 
@@ -51,7 +78,15 @@ public:
   void SetPhy (Ptr<WifiPhy> phy);
   void SetParameters (MacParameters *parameters);
   void SetTxMiddle (MacTxMiddle *txMiddle);
+  /**
+   * \param callback the callback to invoke when a 
+   * packet transmission was completed successfully.
+   */
   void SetTxOkCallback (TxOk callback);
+  /**
+   * \param callback the callback to invoke when a 
+   * packet transmission was completed unsuccessfully.
+   */
   void SetTxFailedCallback (TxFailed callback);
 
   void SetDifs (Time difs);
@@ -60,6 +95,13 @@ public:
   void SetMaxQueueSize (uint32_t size);
   void SetMaxQueueDelay (Time delay);
 
+  /**
+   * \param packet packet to send
+   * \param hdr header of packet to send.
+   *
+   * Store the packet in the internal queue until it
+   * can be sent safely.
+   */
   void Queue (Packet packet, WifiMacHeader const &hdr);
 private:
   class AccessListener;

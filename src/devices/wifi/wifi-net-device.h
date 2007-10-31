@@ -168,6 +168,9 @@ private:
 class NqstaWifiNetDevice : public WifiNetDevice 
 {
 public:
+  /**
+   * The ssid is initialized from \valueref{WifiSsid}.
+   */
   NqstaWifiNetDevice (Ptr<Node> node);
   virtual ~NqstaWifiNetDevice ();
 
@@ -205,6 +208,9 @@ private:
 class NqapWifiNetDevice : public WifiNetDevice 
 {
 public:
+  /**
+   * The ssid is initialized from \valueref{WifiSsid}.
+   */
   NqapWifiNetDevice (Ptr<Node> node);
   virtual ~NqapWifiNetDevice ();
 

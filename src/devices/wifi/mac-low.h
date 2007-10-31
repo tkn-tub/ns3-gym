@@ -42,93 +42,223 @@ class MacStations;
 class MacStation;
 class MacParameters;
 
+/**
+ * \brief listen to events coming from ns3::MacLow.
+ */
 class MacLowTransmissionListener {
 public:
   MacLowTransmissionListener ();
   virtual ~MacLowTransmissionListener ();
 
+  /**
+   * \param snr the snr of the cts
+   * \param txMode the txMode of the cts
+   *
+   * ns3::MacLow received an expected CTS within
+   * CtsTimeout.
+   */
   virtual void GotCts (double snr, WifiMode txMode) = 0;
+  /**
+   * ns3::MacLow did not receive an expected CTS
+   * within CtsTimeout.
+   */
   virtual void MissedCts (void) = 0;
-  /* Do not rely on the gotAck method to be
-   * given valid parameters when SuperFastAck is
-   * enabled.
+  /**
+   * \param snr the snr of the ack
+   * \param txMode the transmission mode of the ack
+   *
+   * ns3::MacLow received an expected ACL within
+   * AckTimeout. The <i>snr</i> and <i>txMode</i>
+   * arguments are not valid when SUPER_FAST_ACK is 
+   * used.
    */
   virtual void GotAck (double snr, WifiMode txMode) = 0;
+  /**
+   * ns3::MacLow did not receive an expected ACK within
+   * AckTimeout.
+   */
   virtual void MissedAck (void) = 0;
+  /**
+   * Invoked when ns3::MacLow wants to start a new transmission
+   * as configured by MacLowTransmissionParameters::EnableNextData.
+   * The listener is expected to call again MacLow::StartTransmission
+   * with the "next" data to send.
+   */
   virtual void StartNext (void) = 0;
 
-  /* Invoked if this transmission was canceled 
+  /**
+   * Invoked if this transmission was canceled 
    * one way or another. When this method is invoked,
    * you can assume that the packet has not been passed
-   * down the stack to the PHY. You are responsible
-   * for freeing the packet if you want to.
+   * down the stack to the PHY.
    */
   virtual void Cancel (void) = 0;
 };
 
 
+/**
+ * \brief listen to NAV events
+ *
+ * This class is typically connected to an instance of ns3::Dcf
+ * and calls to its methods are forwards to the corresponding
+ * ns3::Dcf methods.
+ */
 class MacLowNavListener {
 public:
   MacLowNavListener ();
   virtual ~MacLowNavListener ();
+  /**
+   * \param now start of NAV timer
+   * \param duration duration of NAV timer
+   */
   virtual void NavStart (Time now, Time duration) = 0;
+  /**
+   * \param now start of NAV timer
+   * \param duration duration of NAV timer
+   */
   virtual void NavContinue (Time now, Time duration) = 0;
+  /**
+   * \param now start of NAV timer
+   * \param duration duration of NAV timer
+   */
   virtual void NavReset (Time now, Time duration) = 0;
 };
 
+/**
+ * \brief control how a packet is transmitted.
+ *
+ * The ns3::MacLow::StartTransmission method expects
+ * an instance of this class to describe how the packet
+ * should be transmitted.
+ */
 class MacLowTransmissionParameters {
 public:
   MacLowTransmissionParameters ();
     
-  /* If ACK is enabled, we wait ACKTimeout for an ACK.
+  /**
+   * Wait ACKTimeout for an ACK. If we get an ACK
+   * on time, call MacLowTransmissionListener::GotAck.
+   * Call MacLowTransmissionListener::MissedAck otherwise.
    */
   void EnableAck (void);
-  /* If FastAck is enabled, we:
-   *   - wait PIFS after end-of-tx. If idle, report
-   *     FastAckMissed.
+  /**
+   *   - wait PIFS after end-of-tx. If idle, call
+   *     MacLowTransmissionListener::MissedAck.
    *   - if busy at end-of-tx+PIFS, wait end-of-rx
-   *   - if Ack ok at end-of-rx, report FastAck ok.
-   *   - if Ack not ok at end-of-rx, report FastAckMissed
+   *   - if Ack ok at end-of-rx, call 
+   *     MacLowTransmissionListener::GotAck.
+   *   - if Ack not ok at end-of-rx, report call 
+   *     MacLowTransmissionListener::MissedAck
    *     at end-of-rx+SIFS.
+   *
    * This is really complicated but it is needed for
    * proper HCCA support.
    */
   void EnableFastAck (void);
-  /* If SuperFastAck is enabled, we:
-   *   - if busy at end-of-tx+PIFS, report gotAck
-   *   - if idle at end-of-tx+PIFS, report missedAck
+  /** 
+   *  - if busy at end-of-tx+PIFS, call 
+   *    MacLowTransmissionListener::GotAck
+   *  - if idle at end-of-tx+PIFS, call
+   *    MacLowTransmissionListener::MissedAck
    */
   void EnableSuperFastAck (void);
-  /* If RTS is enabled, we wait CTSTimeout for a CTS.
-   * Otherwise, no RTS is sent.
+  /**
+   * Send a RTS, and wait CTSTimeout for a CTS. If we get a 
+   * CTS on time, call MacLowTransmissionListener::GotCts
+   * and send data. Otherwise, call MacLowTransmissionListener::MissedCts
+   * and do not send data.
    */
   void EnableRts (void);
-  /* If NextData is enabled, we add the transmission duration
-   * of the nextData to the durationId and we notify the
-   * transmissionListener at the end of the current
-   * transmission + SIFS.
+  /**
+   * \param size size of next data to send after current packet is
+   *        sent.
+   *
+   * Add the transmission duration of the next data to the 
+   * durationId of the outgoing packet and call 
+   * MacLowTransmissionListener::StartNext at the end of 
+   * the current transmission + SIFS.
    */
   void EnableNextData (uint32_t size);
   
-  /* If we enable this, we ignore all other durationId 
-   * calculation and simply force the packet's durationId
-   * field to this value.
+  /**
+   * \param durationId the value to set in the duration/Id field of
+   *        the outgoing packet.
+   *
+   * Ignore all other durationId calculation and simply force the 
+   * packet's durationId field to this value.
    */
   void EnableOverrideDurationId (Time durationId);
   
+  /**
+   * Do not wait for Ack after data transmission. Typically
+   * used for Broadcast and multicast frames.
+   */
   void DisableAck (void);
+  /**
+   * Do not send rts and wait for cts before sending data.
+   */
   void DisableRts (void);
+  /**
+   * Do not attempt to send data burst after current transmission
+   */
   void DisableNextData (void);
+  /**
+   * Do not force the duration/id field of the packet: its
+   * value is automatically calculated by the MacLow before
+   * calling WifiPhy::Send.
+   */
   void DisableOverrideDurationId (void);
 
+  /**
+   * \returns true if must wait for ACK after data transmission,
+   *          false otherwise.
+   *
+   * This methods returns true when any of MustWaitNormalAck,
+   * MustWaitFastAck, or MustWaitSuperFastAck return true.
+   */
   bool MustWaitAck (void) const;
+  /**
+   * \returns true if normal ACK protocol should be used, false
+   *          otherwise.
+   *
+   * \sa EnableAck
+   */
   bool MustWaitNormalAck (void) const;
+  /**
+   * \returns true if fast ack protocol should be used, false 
+   *          otherwise.
+   *
+   * \sa EnableFastAck
+   */
   bool MustWaitFastAck (void) const;
+  /**
+   * \returns true if super fast ack protocol should be used, false 
+   *          otherwise.
+   *
+   * \sa EnableSuperFastAck
+   */
   bool MustWaitSuperFastAck (void) const;
+  /**
+   * \returns true if RTS should be sent and CTS waited for before 
+   *          sending data, false otherwise.
+   */
   bool MustSendRts (void) const;
+  /**
+   * \returns true if a duration/id was forced with 
+   *         EnableOverrideDurationId, false otherwise.
+   */
   bool HasDurationId (void) const;
+  /**
+   * \returns the duration/id forced by EnableOverrideDurationId
+   */
   Time GetDurationId (void) const;
+  /**
+   * \returns true if EnableNextData was called, false otherwise.
+   */
   bool HasNextPacket (void) const;
+  /**
+   * \returns the size specified by EnableNextData.
+   */
   uint32_t GetNextPacketSize (void) const;
 
 private:
@@ -144,6 +274,9 @@ private:
 };
 
 
+/**
+ * \brief handle RTS/CTS/DATA/ACK transactions.
+ */
 class MacLow {
 public:
   typedef Callback<void, Packet , WifiMacHeader const*> MacLowRxCallback;
@@ -155,23 +288,62 @@ public:
   void SetPhy (Ptr<WifiPhy> phy);
   void SetStations (MacStations *stations);
   void SetParameters (MacParameters *parameters);
+  /**
+   * \param callback the callback which receives every incoming packet.
+   *
+   * This callback typically forwards incoming packets to
+   * an instance of ns3::MacRxMiddle.
+   */
   void SetRxCallback (MacLowRxCallback callback);
+  /**
+   * \param listener listen to NAV events for every incoming
+   *        and outgoing packet.
+   */
   void RegisterNavListener (MacLowNavListener *listener);
 
-  /* This transmission time includes the time required for
+  /**
+   * \param payloadSize size of packet to send (does not include the 802.11 MAC header and checksum)
+   * \param to destination address of packet.
+   * \param parameters transmission parameters of packet.
+   *
+   * This transmission time includes the time required for
    * the next packet transmission if one was selected.
    */
   Time CalculateTransmissionTime (uint32_t payloadSize,
                                   Mac48Address to,
                                   MacLowTransmissionParameters const&parameters) const;
 
-  /* start the transmission of the currently-stored data. */
+  /**
+   * \param packet packet to send
+   * \param hdr 802.11 header for packet to send
+   * \param parameters the transmission parameters to use for this packet.
+   * \param listener listen to transmission events.
+   *
+   * Start the transmission of the input packet and notify the listener
+   * of transmission events.
+   */
   void StartTransmission (Packet packet, 
                           WifiMacHeader const*hdr, 
                           MacLowTransmissionParameters parameters,
                           MacLowTransmissionListener *listener);
 
+  /**
+   * \param packet packet received
+   * \param rxSnr snr of packet received
+   * \param txMode transmission mode of packet received
+   * \param preamble type of preamble used for the packet received
+   *
+   * This method is typically invoked by the lower PHY layer to notify
+   * the MAC layer that a packet was successfully received.
+   */
   void ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble preamble);
+  /**
+   * \param packet packet received.
+   * \param rxSnr snr of packet received.
+   *
+   * This method is typically invoked by the lower PHY layer to notify
+   * the MAC layer that a packet was unsuccessfully received.
+   */
   void ReceiveError (Packet packet, double rxSnr);
 private:
   void CancelAllEvents (void);

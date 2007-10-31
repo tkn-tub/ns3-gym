@@ -24,6 +24,20 @@
 
 namespace ns3 {
 
+/**
+ * \brief ARF Rate control algorithm
+ *
+ * This class implements the so-called ARF algorithm which was
+ * initially described in <i>WaveLAN-II: A High-performance wireless 
+ * LAN for the unlicensed band</i>, by A. Kamerman and L. Monteban. in
+ * Bell Lab Technical Journal, pages 118-133, Summer 1997.
+ *
+ * This implementation differs from the initial description in that it
+ * uses a packet-based timer rather than a time-based timer as described 
+ * in XXX (I cannot find back the original paper which described how
+ * the time-based timer could be easily replaced with a packet-based 
+ * timer.)
+ */
 class ArfMacStations : public MacStations {
 public:
   ArfMacStations (WifiMode defaultTxMode, uint32_t timerThreshold, uint32_t successThreshold);

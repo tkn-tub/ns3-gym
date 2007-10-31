@@ -6,11 +6,13 @@
  * and to provide a not-so-slow PHY-level model of the 802.11a
  * specification.
  *
- * The current implementation provides roughly 3 levels of models:
+ * The current implementation provides roughly 4 levels of models:
  *   - the PHY layer models
  *   - the so-called MAC low models: they implement DCF
  *   - the so-called MAC high models: they implement the MAC-level
  *     beacon generation, probing, and association state machines.
+ *   - a set of Rate control algorithms used by the MAC low models.
+ * 
  *
  * We have today 3 MAC high models:
  *   - a simple adhoc state machine which does not perform any
@@ -24,13 +26,26 @@
  *     accepts every attempt to associate. This AP state machine
  *     is implemented by the ns3::NqapWifiNetDevice.
  *
- * The PHY layer implements the model described in 
- * "Yet Another Network Simulator", (http://cutebugs.net/files/wns2-yans.pdf)
- * The implementation is located in the ns3::WifiPhy class.
+ * The MAC low layer is split in 3 components:
+ *   - ns3::MacLow which takes care of RTS/CTS/DATA/ACK transactions.
+ *   - ns3::Dcf which implements the DCF function.
+ *   - ns3::DcaTxop which handles the packet queue, packet fragmentation,
+ *     and packet retransmissions if they are needed.
  *
- * The MAC low models attempt to implement the 802.11 DCF function
- * in an optimized way through the technique described in XXX.
- * This implementation is located in the ns3::Dcf class.
+ * The PHY layer implements a single model in ns3::WifiPhy.
+ *
+ * It also provides a set of Rate control algorithms:
+ *   - ns3::ArfMacStations (initialized from \valueref{WifiArfTimerThreshold}, and,
+ *     \valueref{WifiArfSuccessThreshold})
+ *   - ns3::AArfMacStations (initialized from \valueref{WifiAarfMinSuccessThreshold},
+ *     \valueref{WifiAarfMinTimerThreshold}, \valueref{WifiAarfSuccessK}, 
+ *     \valueref{WifiAarfMaxSuccessThreshold}, and, \valueref{WifiAarfTimerK}
+ *   - ns3::IdealMacStations (initialized from \valueref{WifiIdealRateControlBerThreshold})
+ *   - ns3::CrMacStations (initialized from \valueref{WifiConstantDataRate}, and,
+ *     \valueref{WifiConstantCtlRate}).
+ *
+ * The type of rate control algorithm is controlled through \valueref{WifiRateControlAlgorithm}.
+ *
  *
  * \section Wifi Tutorial
  *

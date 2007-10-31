@@ -20,26 +20,6 @@
 #ifndef WIFI_MAC_QUEUE_H
 #define WIFI_MAC_QUEUE_H
 
-/* This queue implements what is needed for the 802.11e standard
- * Specifically, it refers to 802.11e/D9, section 9.9.1.6, paragraph 6.
- *
- * When a packet is received by the MAC, to be sent to the PHY, 
- * it is queued in the internal queue after being tagged by the 
- * current time. If the queue is non-Empty (quite likely), we
- * notify m_packetNotify. This information is forwarded to 
- * The associated MacLow80211 which might try to dequeue packets
- * from this queue if it is not doing anything else more important.
- *
- * If it is doing something too important to handle new packets,
- * the MacLow80211 is supposed to try to dequeue packets the next 
- * time it can.
- *
- * When a packet is dequeued, the queue checks its timestamp 
- * to verify whether or not it should be dropped. If 
- * dot11EDCATableMSDULifetime has elapsed, it is dropped.
- * Otherwise, it is returned to the caller.
- */
-
 #include <deque>
 #include <utility>
 #include "ns3/packet.h"
@@ -50,6 +30,21 @@ namespace ns3 {
 
 class MacParameters;
 
+/**
+ * \brief a 802.11e-specific queue.
+ *
+ * This queue implements what is needed for the 802.11e standard
+ * Specifically, it refers to 802.11e/D9, section 9.9.1.6, paragraph 6.
+ *
+ * When a packet is received by the MAC, to be sent to the PHY, 
+ * it is queued in the internal queue after being tagged by the 
+ * current time.
+ *
+ * When a packet is dequeued, the queue checks its timestamp 
+ * to verify whether or not it should be dropped. If 
+ * dot11EDCATableMSDULifetime has elapsed, it is dropped.
+ * Otherwise, it is returned to the caller.
+ */
 class WifiMacQueue {
 public:
   WifiMacQueue ();

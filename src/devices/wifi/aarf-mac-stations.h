@@ -24,6 +24,14 @@
 
 namespace ns3 {
 
+/**
+ * \brief AARF Rate control algorithm
+ *
+ * This class implements the AARF rate control algorithm which
+ * was initially described in <i>IEEE 802.11 Rate Adaptation:
+ * A Practical Approach</i>, by M. Lacage, M.H. Manshaei, and 
+ * T. Turletti.
+ */
 class AarfMacStations : public ArfMacStations {
 public:
   AarfMacStations (WifiMode defaultTxMode,
