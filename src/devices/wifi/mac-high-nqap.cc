@@ -22,6 +22,7 @@
 #include "dca-txop.h"
 #include "wifi-net-device.h"
 #include "wifi-mac-header.h"
+#include "wifi-default-parameters.h"
 #include "mgt-headers.h"
 #include "wifi-phy.h"
 #include "ns3/assert.h"
@@ -36,7 +37,7 @@ NS_LOG_DEBUG(Simulator::Now () << " " << x);
 namespace ns3 {
 
 MacHighNqap::MacHighNqap ()
-  : m_beaconIntervalUs (500000)
+  : m_beaconInterval (WifiDefaultParameters::GetApBeaconInterval ())
 {}
 MacHighNqap::~MacHighNqap ()
 {
@@ -71,9 +72,9 @@ MacHighNqap::SetForwardCallback (ForwardCallback callback)
   m_forwardUp = callback;
 }
 void 
-MacHighNqap::SetBeaconIntervalUs (uint64_t us)
+MacHighNqap::SetBeaconInterval (Time interval)
 {
-  m_beaconIntervalUs = us;
+  m_beaconInterval = interval;
 }
 void 
 MacHighNqap::ForwardDown (Packet packet, Mac48Address from, Mac48Address to)
@@ -126,7 +127,7 @@ MacHighNqap::SendProbeResp (Mac48Address to)
   MgtProbeResponseHeader probe;
   probe.SetSsid (m_device->GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
-  probe.SetBeaconIntervalUs (m_beaconIntervalUs);
+  probe.SetBeaconIntervalUs (m_beaconInterval.GetMicroSeconds ());
   packet.AddHeader (probe);
 
   m_dca->Queue (packet, hdr);

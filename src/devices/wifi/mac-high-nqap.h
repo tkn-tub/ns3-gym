@@ -24,6 +24,7 @@
 #include "ns3/mac48-address.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
+#include "ns3/nstime.h"
 #include "supported-rates.h"
 
 namespace ns3 {
@@ -46,7 +47,7 @@ public:
   void SetStations (MacStations *stations);
   void SetPhy (Ptr<WifiPhy> phy);
   void SetForwardCallback (ForwardCallback callback);
-  void SetBeaconIntervalUs (uint64_t us);
+  void SetBeaconInterval (Time interval);
 
   void Queue (Packet packet, Mac48Address to);
 
@@ -64,7 +65,7 @@ private:
   MacStations *m_stations;
   Ptr<WifiPhy> m_phy;
   ForwardCallback m_forwardUp;
-  uint64_t m_beaconIntervalUs;
+  Time m_beaconInterval;
 };
 
 } // namespace ns3
