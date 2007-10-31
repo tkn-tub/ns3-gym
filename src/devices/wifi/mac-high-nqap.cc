@@ -39,7 +39,9 @@ MacHighNqap::MacHighNqap ()
   : m_beaconIntervalUs (500000)
 {}
 MacHighNqap::~MacHighNqap ()
-{}
+{
+  m_phy = 0;
+}
 
 void 
 MacHighNqap::SetDcaTxop (DcaTxop *dca)
@@ -59,7 +61,7 @@ MacHighNqap::SetStations (MacStations *stations)
   m_stations = stations;
 }
 void
-MacHighNqap::SetPhy (WifiPhy *phy)
+MacHighNqap::SetPhy (Ptr<WifiPhy> phy)
 {
   m_phy = phy;
 }

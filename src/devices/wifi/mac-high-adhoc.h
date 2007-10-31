@@ -44,7 +44,7 @@ public:
   void SetForwardCallback (ForwardCallback callback);
   void SetDcaTxop (DcaTxop *dca);
   void SetStations (MacStations *stations);
-  void SetPhy (WifiPhy *phy);
+  void SetPhy (Ptr<WifiPhy> phy);
 
   Mac48Address GetBssid (void) const;
 
@@ -57,7 +57,7 @@ private:
   WifiNetDevice *m_device;
   ForwardCallback m_callback;
   MacStations *m_stations;
-  WifiPhy *m_phy;
+  Ptr<WifiPhy> m_phy;
 };
 
 } // namespace ns3

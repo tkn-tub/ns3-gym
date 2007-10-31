@@ -165,7 +165,7 @@ DcaTxop::SetLow (MacLow *low)
   m_low->RegisterNavListener (m_navListener);
 }
 void
-DcaTxop::SetPhy (WifiPhy *phy)
+DcaTxop::SetPhy (Ptr<WifiPhy> phy)
 {
   m_phyListener = new DcaTxop::PhyListener (m_dcf);
   phy->RegisterListener (m_phyListener);

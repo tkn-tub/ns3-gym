@@ -69,7 +69,9 @@ MacHighNqsta::MacHighNqsta ()
 }
 
 MacHighNqsta::~MacHighNqsta ()
-{}
+{
+  m_phy = 0;
+}
 
 void 
 MacHighNqsta::SetDcaTxop (DcaTxop *dca)
@@ -97,7 +99,7 @@ MacHighNqsta::SetDisAssociatedCallback (DisAssociatedCallback callback)
   m_disAssociatedCallback = callback;
 }
 void 
-MacHighNqsta::SetPhy (WifiPhy *phy)
+MacHighNqsta::SetPhy (Ptr<WifiPhy> phy)
 {
   m_phy = phy;
 }

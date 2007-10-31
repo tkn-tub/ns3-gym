@@ -120,7 +120,7 @@ protected:
   DcaTxop *CreateDca (uint32_t minCw, uint32_t maxCw) const;
 
   Ptr<WifiChannel> m_channel;
-  WifiPhy *m_phy;
+  Ptr<WifiPhy> m_phy;
   MacStations *m_stations;
   MacLow *m_low;
   MacRxMiddle *m_rxMiddle;

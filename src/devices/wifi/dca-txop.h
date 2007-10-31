@@ -48,7 +48,7 @@ public:
   ~DcaTxop ();
 
   void SetLow (MacLow *low);
-  void SetPhy (WifiPhy *phy);
+  void SetPhy (Ptr<WifiPhy> phy);
   void SetParameters (MacParameters *parameters);
   void SetTxMiddle (MacTxMiddle *txMiddle);
   void SetTxOkCallback (TxOk callback);

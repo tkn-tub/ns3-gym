@@ -52,7 +52,7 @@ public:
   void SetForwardCallback (ForwardCallback callback);
   void SetAssociatedCallback (AssociatedCallback callback);
   void SetDisAssociatedCallback (DisAssociatedCallback callback);
-  void SetPhy (WifiPhy *phy);
+  void SetPhy (Ptr<WifiPhy> phy);
   void SetStations (MacStations *stations);
 
   void SetMaxMissedBeacons (uint32_t missed);
@@ -98,7 +98,7 @@ private:
   Time m_beaconWatchdogEnd;
   Mac48Address m_bssid;
   uint32_t m_maxMissedBeacons;
-  WifiPhy *m_phy;
+  Ptr<WifiPhy> m_phy;
   MacStations *m_stations;
 };
 

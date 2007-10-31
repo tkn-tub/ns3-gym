@@ -152,7 +152,7 @@ public:
   ~MacLow ();
 
   void SetDevice (Ptr<WifiNetDevice> device);
-  void SetPhy (WifiPhy *phy);
+  void SetPhy (Ptr<WifiPhy> phy);
   void SetStations (MacStations *stations);
   void SetParameters (MacParameters *parameters);
   void SetRxCallback (MacLowRxCallback callback);
@@ -216,7 +216,7 @@ private:
   void StartDataTxTimers (void);
 
   Ptr<WifiNetDevice> m_device;
-  WifiPhy *m_phy;
+  Ptr<WifiPhy> m_phy;
   MacStations *m_stations;
   MacParameters *m_parameters;
   MacLowRxCallback m_rxCallback;

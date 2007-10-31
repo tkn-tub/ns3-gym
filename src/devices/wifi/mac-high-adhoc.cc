@@ -33,7 +33,9 @@ namespace ns3 {
 MacHighAdhoc::MacHighAdhoc ()
 {}
 MacHighAdhoc::~MacHighAdhoc ()
-{}
+{
+  m_phy = 0;
+}
 
 void
 MacHighAdhoc::SetDevice (WifiNetDevice *device)
@@ -57,7 +59,7 @@ MacHighAdhoc::SetStations (MacStations *stations)
   m_stations = stations;
 }
 void 
-MacHighAdhoc::SetPhy (WifiPhy *phy)
+MacHighAdhoc::SetPhy (Ptr<WifiPhy> phy)
 {
   m_phy = phy;
 }

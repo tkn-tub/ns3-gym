@@ -44,7 +44,7 @@ public:
   void SetDcaTxop (DcaTxop *dca);
   void SetDevice (WifiNetDevice *device);
   void SetStations (MacStations *stations);
-  void SetPhy (WifiPhy *phy);
+  void SetPhy (Ptr<WifiPhy> phy);
   void SetForwardCallback (ForwardCallback callback);
   void SetBeaconIntervalUs (uint64_t us);
 
@@ -62,7 +62,7 @@ private:
   DcaTxop *m_dca;
   WifiNetDevice *m_device;
   MacStations *m_stations;
-  WifiPhy *m_phy;
+  Ptr<WifiPhy> m_phy;
   ForwardCallback m_forwardUp;
   uint64_t m_beaconIntervalUs;
 };

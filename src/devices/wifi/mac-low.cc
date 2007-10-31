@@ -237,6 +237,7 @@ MacLow::MacLow ()
 MacLow::~MacLow ()
 {
   CancelAllEvents ();
+  m_phy = 0;
 }
 
 void
@@ -304,7 +305,7 @@ MacLow::SetDevice (Ptr<WifiNetDevice> device)
   m_device = device;
 }
 void
-MacLow::SetPhy (WifiPhy *phy)
+MacLow::SetPhy (Ptr<WifiPhy> phy)
 {
   m_phy = phy;
 }

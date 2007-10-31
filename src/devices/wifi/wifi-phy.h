@@ -27,6 +27,7 @@
 #include "ns3/callback.h"
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
+#include "ns3/object.h"
 #include "ns3/callback-trace-source.h"
 #include "ns3/nstime.h"
 #include "ns3/ptr.h"
@@ -68,7 +69,7 @@ public:
 
 
 
-class WifiPhy
+class WifiPhy : public Object
 {
 public:
   typedef Callback<void,Packet, double, WifiMode, enum WifiPreamble> SyncOkCallback;

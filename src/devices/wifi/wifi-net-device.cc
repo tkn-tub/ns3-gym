@@ -81,7 +81,7 @@ WifiNetDeviceTraceType::GetTypeName (void) const
 
 
 static WifiMode 
-GetWifiModeForPhyMode (WifiPhy *phy, enum WifiDefaultParameters::PhyModeParameter mode)
+GetWifiModeForPhyMode (Ptr<WifiPhy> phy, enum WifiDefaultParameters::PhyModeParameter mode)
 {
   uint32_t phyRate = (uint32_t)mode;
   for (uint32_t i= 0; i < phy->GetNModes (); i++)
@@ -112,7 +112,7 @@ void
 WifiNetDevice::Construct (void)
 {
   // the physical layer.
-  m_phy = new WifiPhy (this);
+  m_phy = Create<WifiPhy> (this);
 
   // the rate control algorithm
   switch (WifiDefaultParameters::GetRateControlAlgorithm ()) {
@@ -282,7 +282,6 @@ WifiNetDevice::DoDispose (void)
   NetDevice::DoDispose ();
   // cleanup local
   m_channel = 0;
-  delete m_phy;
   delete m_stations;
   delete m_low;
   delete m_rxMiddle;
