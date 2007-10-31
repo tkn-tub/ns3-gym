@@ -83,7 +83,7 @@ class Dcf
 public:
   /**
    * \param minCw the minimum value for CW
-   * \param maxCW the maximum value for CW
+   * \param maxCw the maximum value for CW
    */
   Dcf (uint32_t minCw, uint32_t maxCw);
   ~Dcf ();

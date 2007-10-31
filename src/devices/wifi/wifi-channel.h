@@ -70,7 +70,7 @@ public:
    */
   void SetPropationLossModel (Ptr<PropagationLossModel> loss);
   /**
-   * \param loss the new propagation delay model.
+   * \param delay the new propagation delay model.
    */
   void SetPropagationDelayModel (Ptr<PropagationDelayModel> delay);
 
