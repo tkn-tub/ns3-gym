@@ -77,8 +77,12 @@ RandomVariable::RandomVariable()
 }
 
 RandomVariable::RandomVariable(const RandomVariable& r)
+  :m_generator(0)
 {
-  m_generator = new RngStream(*r.m_generator);
+  if(r.m_generator)
+  {
+    m_generator = new RngStream(*r.m_generator);
+  }
 }
 
 RandomVariable::~RandomVariable()
