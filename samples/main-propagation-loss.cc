@@ -52,7 +52,7 @@ int main (int argc, char *argv[])
   DefaultValue::Bind ("FriisPropagationLossLambda", "0.6");
   DefaultValue::Bind ("FriisPropagationLossSystemLoss", "1.0");
 
-  PrintOne (10, 0, 1000, 5);
+  PrintOne (-10, 20, 5, 0, 1000, 5);
 #endif
 
   DefaultValue::Bind ("PropagationLossModelType", "LogDistance");
