@@ -36,6 +36,7 @@ def build(bld):
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
+        'propagation-loss-model.h',
         'wifi-net-device.h',
         'wifi-channel.h',
         'wifi-mode.h',
