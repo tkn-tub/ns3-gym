@@ -182,20 +182,19 @@ FriisPropagationLossModel::GetRxPower (double txPowerDbm,
    * where Pt, Gr, Gr and P are in Watt units
    * L is in meter units.
    *
-   *       Pt * Gt * Gr * (lambda^2)
-   *   P = --------------------------
-   *       (4 * pi * d)^2 * L
+   *           Gt * Gr * (lambda^2)
+   *   P = Pt ---------------------
+   *           (4 * pi * d)^2 * L
    *
-   * Gt: tx gain (W)
-   * Gr: rx gain (W)
+   * Gt: tx gain (unit-less)
+   * Gr: rx gain (unit-less)
    * Pt: tx power (W)
    * d: distance (m)
    * L: system loss
    * lambda: wavelength (m)
    *
    * Here, we ignore tx and rx gain and the input and output values 
-   * are in dbm
-   * So, the formula looks like this:
+   * are in dbm:
    *
    *              10                lambda^2
    * rx = tx +  ------- * ln (-------------------)
@@ -285,7 +284,7 @@ LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
     }
   /**
    * The formula is:
-   * rx = 10 * ln (Pr0(tx)) / ln (10) - n * 10 * ln (d/d0) / ln (10)
+   * rx = 10 * log (Pr0(tx)) - n * 10 * log (d/d0)
    *
    * Pr0: rx power at reference distance d0 (W)
    * d0: reference distance: 1.0 (m)
@@ -295,7 +294,7 @@ LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
    *
    * Since we use dbm instead of db, we have:
    *      
-   * rx = rx0 - 10 / ln (10) * (n * ln (d/d0) - ln (1000))
+   * rx = rx0 - 10 (n * log (d/d0) - ln (1000))
    */
   static Ptr<StaticMobilityModel> zero = Create<StaticMobilityModel> (Position (0.0, 0.0, 0.0));
   static Ptr<StaticMobilityModel> one = Create<StaticMobilityModel> (Position (1.0, 1.0, 1.0));
