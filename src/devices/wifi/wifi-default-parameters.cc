@@ -116,12 +116,12 @@ static NumericDefaultValue<uint32_t> g_phyNTxPower
  1);
 static NumericDefaultValue<double> g_phyTxGain
 ("WifiPhyTxGain", 
- "Transmission gain (dbm).",
- 1.0);
+ "Transmission gain (dB).",
+ 0.0);
 static NumericDefaultValue<double> g_phyRxGain
 ("WifiPhyRxGain", 
- "Reception gain (dbm).",
- 1.0);
+ "Reception gain (dB).",
+ 0.0);
 static StringDefaultValue g_ssid
 ("WifiSsid",
  "The ssid to use. \"\" is the broadcast ssid.",
@@ -273,12 +273,12 @@ GetPhyTxPowerLevels (void)
 }
 
 double 
-GetPhyTxGainDbm (void)
+GetPhyTxGainDb (void)
 {
   return g_phyTxGain.GetValue ();
 }
 double 
-GetPhyRxGainDbm (void)
+GetPhyRxGainDb (void)
 {
   return g_phyRxGain.GetValue ();
 }

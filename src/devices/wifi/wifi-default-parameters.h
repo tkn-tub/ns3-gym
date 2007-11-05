@@ -71,8 +71,8 @@ double GetPhyRxNoiseDb (void);
 double GetPhyTxPowerBaseDbm (void);
 double GetPhyTxPowerEndDbm (void);
 uint32_t GetPhyTxPowerLevels (void);
-double GetPhyTxGainDbm (void);
-double GetPhyRxGainDbm (void);
+double GetPhyTxGainDb (void);
+double GetPhyRxGainDb (void);
 
 Ssid GetSsid (void);
 

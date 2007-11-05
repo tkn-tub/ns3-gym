@@ -304,8 +304,8 @@ private:
   Time     m_maxPacketDuration;
 
   double   m_edThresholdW; /* unit: W */
-  double   m_txGainDbm;
-  double   m_rxGainDbm;
+  double   m_txGainDb;
+  double   m_rxGainDb;
   double   m_rxNoiseRatio;
   double   m_txPowerBaseDbm;
   double   m_txPowerEndDbm;

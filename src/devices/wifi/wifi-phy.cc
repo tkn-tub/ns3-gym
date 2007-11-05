@@ -175,8 +175,8 @@ WifiPhy::NiChange::operator < (WifiPhy::NiChange const &o) const
 
 WifiPhy::WifiPhy (Ptr<WifiNetDevice> device)
   : m_edThresholdW (DbmToW (WifiDefaultParameters::GetPhyEnergyDetectionThresholdDbm ())),
-    m_txGainDbm (WifiDefaultParameters::GetPhyTxGainDbm ()),
-    m_rxGainDbm (WifiDefaultParameters::GetPhyRxGainDbm ()),
+    m_txGainDb (WifiDefaultParameters::GetPhyTxGainDb ()),
+    m_rxGainDb (WifiDefaultParameters::GetPhyRxGainDb ()),
     m_rxNoiseRatio (DbToRatio (WifiDefaultParameters::GetPhyRxNoiseDb ())),
     m_txPowerBaseDbm (WifiDefaultParameters::GetPhyTxPowerBaseDbm ()),
     m_txPowerEndDbm (WifiDefaultParameters::GetPhyTxPowerEndDbm ()),
@@ -243,7 +243,7 @@ WifiPhy::ReceivePacket (Packet const packet,
                         WifiMode txMode,
                         enum WifiPreamble preamble)
 {
-  rxPowerDbm += m_rxGainDbm;
+  rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
   Time rxDuration = CalculateTxDuration (packet.GetSize (), txMode, preamble);
   Time endRx = Simulator::Now () + rxDuration;
@@ -276,6 +276,7 @@ WifiPhy::ReceivePacket (Packet const packet,
   case WifiPhy::IDLE:
     if (rxPowerW > m_edThresholdW) 
       {
+        NS_LOG_DEBUG ("sync power="<<rxPowerW<<"W)");
         // sync to signal
         NotifySyncStart (rxDuration);
         SwitchToSync (rxDuration);
@@ -283,7 +284,7 @@ WifiPhy::ReceivePacket (Packet const packet,
         m_endSyncEvent = Simulator::Schedule (rxDuration, &WifiPhy::EndSync, this, 
                                               packet,
                                               event);
-      } 
+      }
     else 
       {
         NS_LOG_DEBUG ("drop packet because signal power too Small ("<<
@@ -345,7 +346,7 @@ WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiPreamble preamble
   Time txDuration = CalculateTxDuration (packet.GetSize (), txMode, preamble);
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
-  m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDbm, txMode, preamble);
+  m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
 }
 
 uint32_t 
