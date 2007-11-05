@@ -82,7 +82,35 @@ private:
 /**
  * \brief a Friis propagation loss model
  *
- * XXX: link to model description.
+ * The Friis propagation loss model was first described in
+ * "A Note on a Simple Transmission Formula", by 
+ * "Harald T. Friis".
+ * 
+ * The original equation was described as:
+ *  \f$ \frac{P_r}{P_t} = \frac{A_r A_t}{d^2\lambda^2} \f$
+ *  with the following equation for the case of an
+ *  isotropic antenna with no heat loss:
+ *  \f$ A_{isotr.} = \frac{\lambda^2}{4\pi} \f$
+ *
+ * The final equation becomes:
+ * \f$ \frac{P_r}{P_t} = \frac{\lambda^2}{(4 \pi d)^2} \f$
+ *
+ * Modern extensions to this original equation are:
+ * \f$ P_r = \frac{P_t G_t G_r \lambda^2}{(4 \pi d)^2 L}\f$
+ *
+ * With:
+ *  - \f$ P_r \f$ : reception power (W)
+ *  - \f$ P_t \f$ : transmission power (W)
+ *  - \f$ G_t \f$ : transmission gain (unit-less)
+ *  - \f$ G_r \f$ : reception gain (unit-less)
+ *  - \f$ \lambda \f$ : wavelength (m)
+ *  - \f$ d \f$ : distance (m)
+ *  - \f$ L \f$ : system loss (unit-less)
+ *
+ * This model is obviously valid only when \f$ d \gg \frac{2 a^2}{\lambda} \f$ 
+ * which means that the model is invalid for small distance values.
+ * The current implementation rejects any distance smaller than 
+ * \valueref{FriisPropagationLossMinDistance}.
  */
 class FriisPropagationLossModel : public PropagationLossModel
 {

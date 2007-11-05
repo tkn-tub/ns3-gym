@@ -52,6 +52,10 @@ static NumericDefaultValue<double> g_friisSystemLoss
 ("FriisPropagationLossSystemLoss",
  "The system loss to use by default for every FriisPropagationLossModel",
  1.0);
+static NumericDefaultValue<double> g_friisPropagationLossMinDistance
+("FriisPropagationLossMinDistance",
+ "The distance under which the propagation model refuses to give results (m)",
+ 0.5);
 
 static RandomVariableDefaultValue g_random
 ("RandomPropagationLossDistribution",
@@ -198,6 +202,11 @@ FriisPropagationLossModel::GetRxPower (double txPowerDbm,
    * lambda: wavelength (m)
    */
   double distance = a->GetDistanceFrom (b);
+  if (distance <= g_friisPropagationLossMinDistance.GetValue ())
+    {
+      NS_FATAL_ERROR ("The friis propagation loss model is invalid when d="<<
+                      distance<<"m << "<<g_friisPropagationLossMinDistance.GetValue ()<<"m");
+    }
   double numerator = m_lambda * m_lambda;
   double denominator = 16 * PI * PI * distance * distance * m_systemLoss;
   double pr = log (numerator / denominator) * 10 / log (10);
