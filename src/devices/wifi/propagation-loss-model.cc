@@ -285,7 +285,7 @@ LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
     }
   /**
    * The formula is:
-   * rx = 10 * ln (Pr0(tx)) / ln (10) + n * 10 * ln (d/d0) / ln (10)
+   * rx = 10 * ln (Pr0(tx)) / ln (10) - n * 10 * ln (d/d0) / ln (10)
    *
    * Pr0: rx power at reference distance d0 (W)
    * d0: reference distance: 1.0 (m)
@@ -295,17 +295,16 @@ LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
    *
    * Since we use dbm instead of db, we have:
    *      
-   * rx = rx0 + 10 / ln (10) * (n * ln (d/d0) - ln (1000))
+   * rx = rx0 - 10 / ln (10) * (n * ln (d/d0) - ln (1000))
    */
   static Ptr<StaticMobilityModel> zero = Create<StaticMobilityModel> (Position (0.0, 0.0, 0.0));
   static Ptr<StaticMobilityModel> one = Create<StaticMobilityModel> (Position (1.0, 1.0, 1.0));
   double rx0 = m_reference->GetRxPower (txPowerDbm, zero, one);
-  double rxPowerDbm = rx0 + 10 / log (10) * (m_exponent * log (distance) - log (1000));
-  NS_LOG_DEBUG ("distance="<<distance<<"m, tx power="<<txPowerDbm<<"dbm, "<<
-		"reference rx power="<<rx0<<"dbm, "<<
-		"rx power="<<rxPowerDbm<<"dbm");
+  double rxPowerDbm = rx0 - 10 / log (10) * (m_exponent * log (distance / m_referenceDistance) - log (1000));
+  NS_LOG_DEBUG ("distance="<<distance<<"m, tx-power="<<txPowerDbm<<"dbm, "<<
+		"reference-rx-power="<<rx0<<"dbm, "<<
+		"rx-power="<<rxPowerDbm<<"dbm");
   return rxPowerDbm;
-
 }
 
 } // namespace ns3
