@@ -163,20 +163,33 @@ private:
 };
 
 /**
- * \brief a Path Loss propagation model.
+ * \brief a log distance propagation model.
  *
- * XXX: link to description model.
+ * This model calculates the reception power with a so-called
+ * log-distance propagation model:
+ * \f$ L = L_0 + 10 n log_{10}(\frac{d}{d_0})\f$
+ *
+ * where:
+ *  - \f$ n \f$ : the path loss distance exponent
+ *  - \f$ d_0 \f$ : reference distance (m)
+ *  - \f$ L_0 \f$ : path loss at reference distance (dB)
+ *  - \f$ d \f$ : distance (m)
+ *  - \f$ L \f$ : path loss (dB)
+ *
+ * When the path loss is requested at a distance smaller than
+ * the reference distance, the tx power is returned.
+ *
  */
-class PathLossPropagationLossModel : public PropagationLossModel
+class LogDistancePropagationLossModel : public PropagationLossModel
 {
 public:
   /**
    * Use the default parameters from
-   * \valueref{PathLossPropagationLossExponent}, and,
-   * \valueref{PathLossPropagationLossReferenceType}
+   * \valueref{LogDistancePropagationLossExponent}, and,
+   * \valueref{LogDistancePropagationLossReferenceType}
    * to create a new propagation loss model.
    */
-  PathLossPropagationLossModel ();
+  LogDistancePropagationLossModel ();
 
   /**
    * \param n the path loss exponent.
@@ -192,6 +205,8 @@ public:
    * \param model the reference propagation model
    */
   void SetReferenceModel (Ptr<PropagationLossModel> model);
+
+  void SetReferenceDistance (double referenceDistance);
   
   virtual double GetRxPower (double txPowerDbm,
 			     Ptr<MobilityModel> a,
@@ -201,6 +216,7 @@ private:
   static Ptr<PropagationLossModel> CreateDefaultReference (void);
 
   double m_exponent;
+  double m_referenceDistance;
   Ptr<PropagationLossModel> m_reference;
 };
 

@@ -32,13 +32,13 @@ namespace ns3 {
 enum ModelType {
   FRIIS,
   RANDOM,
-  PATH_LOSS
+  LOG_DISTANCE
 };
 
 static EnumDefaultValue<enum ModelType> g_modelType
 ("PropagationLossModelType",
  "The type of propagation loss model.",
- PATH_LOSS, "PathLoss",
+ LOG_DISTANCE, "LogDistance",
  FRIIS, "Friis",
  RANDOM, "Random",
  0, (void *)0);
@@ -62,13 +62,18 @@ static RandomVariableDefaultValue g_random
  "The distribution (in dbm) to choose the propagation loss.",
  "Constant:1.0");
 
-static NumericDefaultValue<double> g_pathLossExponent
-("PathLossPropagationLossExponent",
+static NumericDefaultValue<double> g_logDistanceExponent
+("LogDistancePropagationLossExponent",
  "The exponent of the Path Loss propagation model",
  3.0);
 
-static EnumDefaultValue<enum ModelType> g_pathLossReference
-("PathLossPropagationLossReferenceType",
+static NumericDefaultValue<double> g_logDistanceReferenceDistance
+("LogDistancePropagationLossReferenceDistance",
+ "The distance at which the reference loss is calculated (m)",
+ 1.0);
+
+static EnumDefaultValue<enum ModelType> g_logDistanceReferenceType
+("LogDistancePropagationLossReferenceType",
  "The type of reference propagation model.",
  FRIIS, "Friis",
  RANDOM, "Random", 
@@ -89,8 +94,8 @@ PropagationLossModel::CreateDefault (void)
   case RANDOM:
     return Create<RandomPropagationLossModel> ();
     break;
-  case PATH_LOSS:
-    return Create<PathLossPropagationLossModel> ();
+  case LOG_DISTANCE:
+    return Create<LogDistancePropagationLossModel> ();
     break;
   default:
     NS_ASSERT (false);
@@ -216,38 +221,44 @@ FriisPropagationLossModel::GetRxPower (double txPowerDbm,
 }
 
 
-PathLossPropagationLossModel::PathLossPropagationLossModel ()
-  : m_exponent (g_pathLossExponent.GetValue ()),
+LogDistancePropagationLossModel::LogDistancePropagationLossModel ()
+  : m_exponent (g_logDistanceExponent.GetValue ()),
+    m_referenceDistance (g_logDistanceReferenceDistance.GetValue ()),
     m_reference (CreateDefaultReference ())
 {}
 
 void 
-PathLossPropagationLossModel::SetPathLossExponent (double n)
+LogDistancePropagationLossModel::SetPathLossExponent (double n)
 {
   m_exponent = n;
 }
 void 
-PathLossPropagationLossModel::SetReferenceModel (Ptr<PropagationLossModel> model)
+LogDistancePropagationLossModel::SetReferenceDistance (double referenceDistance)
+{
+  m_referenceDistance = referenceDistance;
+}
+void 
+LogDistancePropagationLossModel::SetReferenceModel (Ptr<PropagationLossModel> model)
 {
   m_reference = model;
 }
 double 
-PathLossPropagationLossModel::GetPathLossExponent (void) const
+LogDistancePropagationLossModel::GetPathLossExponent (void) const
 {
   return m_exponent;
 }
 
 Ptr<PropagationLossModel>
-PathLossPropagationLossModel::CreateDefaultReference (void)
+LogDistancePropagationLossModel::CreateDefaultReference (void)
 {
-  switch (g_pathLossReference.GetValue ()) {
+  switch (g_logDistanceReferenceType.GetValue ()) {
   case RANDOM:
     return Create<RandomPropagationLossModel> ();
     break;
   case FRIIS:
     return Create<FriisPropagationLossModel> ();
     break;
-  case PATH_LOSS:
+  case LOG_DISTANCE:
   default:
     NS_ASSERT (false);
     return 0;
@@ -256,16 +267,16 @@ PathLossPropagationLossModel::CreateDefaultReference (void)
 }
 
 double
-PathLossPropagationLossModel::DbToW (double db) const
+LogDistancePropagationLossModel::DbToW (double db) const
 {
   return pow(10.0,db/10.0);
 }
 
   
 double 
-PathLossPropagationLossModel::GetRxPower (double txPowerDbm,
-					  Ptr<MobilityModel> a,
-					  Ptr<MobilityModel> b) const
+LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
+                                             Ptr<MobilityModel> a,
+                                             Ptr<MobilityModel> b) const
 {
   double distance = a->GetDistanceFrom (b);
   if (distance <= 1.0)
