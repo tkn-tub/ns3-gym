@@ -32,11 +32,14 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/global-route-manager.h"
 #include "ns3/packet.h"
+#include "ns3/socket.h"
+#include "ns3/socket-factory.h"
 
 
 #include <iostream>
 
 using namespace ns3;
+static uint32_t g_bytesTotal = 0;
 
 static Ptr<Node>
 CreateAdhocNode (Ptr<WifiChannel> channel,
@@ -75,8 +78,8 @@ static void
 AdvancePosition (Ptr<Node> node) 
 {
   Position pos = GetPosition (node);
-  pos.x += 5.0;
-  if (pos.x >= 210.0) {
+  pos.x += 50.0;
+  if (pos.x >= 2100.0) {
     return;
   }
   SetPosition (node, pos);
@@ -84,8 +87,38 @@ AdvancePosition (Ptr<Node> node)
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, node);
 }
 
+static void
+Printer (Ptr<Node> node)
+{
+  Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
+  Position position = mobility->Get ();
+  double mbs = ((g_bytesTotal * 8.0) / 1000000);
+  g_bytesTotal = 0;
+  std::cout << position.x << " " << mbs << std::endl;
+  if (Simulator::Now ().GetSeconds () < 43.0)
+    {
+      Simulator::Schedule (Seconds (1.0), &Printer, node);
+    }
+}
 
+static void
+ReceivePacket (Ptr<Socket> socket, const Packet &packet, const Address &address)
+{
+  g_bytesTotal += packet.GetSize ();
+}
 
+static Ptr<Socket>
+SetupUdpReceive (Ptr<Node> node, uint16_t port)
+{
+  InterfaceId iid = InterfaceId::LookupByName ("Udp");
+  Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (iid);
+
+  Ptr<Socket> sink = socketFactory->CreateSocket ();
+  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), port);
+  sink->Bind (local);
+  sink->SetRecvCallback (MakeCallback (&ReceivePacket));
+  return sink;
+}
 
 int main (int argc, char *argv[])
 {
@@ -94,7 +127,6 @@ int main (int argc, char *argv[])
   Packet::EnableMetadata ();
 
   //Simulator::EnableLogTo ("80211.log");
-
 
   // enable rts cts all the time.
   DefaultValue::Bind ("WifiRtsCtsThreshold", "0");
@@ -108,18 +140,24 @@ int main (int argc, char *argv[])
   Ptr<Node> a = CreateAdhocNode (channel, 
                                  Position (5.0,0.0,0.0),
                                  "192.168.0.1");
-  Simulator::Schedule (Seconds (1.0), &AdvancePosition, a);
-
   Ptr<Node> b = CreateAdhocNode (channel,
                                  Position (0.0, 0.0, 0.0),
                                  "192.168.0.2");
 
+  Simulator::Schedule (Seconds (1.0), &AdvancePosition, b);
+
   Ptr<Application> app = Create<OnOffApplication> (a, InetSocketAddress ("192.168.0.2", 10), 
                                                    "Udp", 
                                                    ConstantVariable (42),
-                                                   ConstantVariable (0));
+                                                   ConstantVariable (0),
+                                                   DataRate (60000000),
+                                                   2048);
+
   app->Start (Seconds (0.5));
   app->Stop (Seconds (43.0));
+
+  Simulator::Schedule (Seconds (0.5), &Printer, b);
+  Ptr<Socket> recvSink = SetupUdpReceive (b, 10);
 
   GlobalRouteManager::PopulateRoutingTables ();
 
