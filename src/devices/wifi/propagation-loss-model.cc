@@ -128,7 +128,8 @@ RandomPropagationLossModel::GetRxPower (double txPowerDbm,
 
 FriisPropagationLossModel::FriisPropagationLossModel ()
   : m_lambda (g_friisLambda.GetValue ()),
-    m_systemLoss (g_friisSystemLoss.GetValue ())
+    m_systemLoss (g_friisSystemLoss.GetValue ()),
+    m_minDistance (g_friisPropagationLossMinDistance.GetValue ())
 {}
 void 
 FriisPropagationLossModel::SetSystemLoss (double systemLoss)
@@ -207,10 +208,9 @@ FriisPropagationLossModel::GetRxPower (double txPowerDbm,
    * lambda: wavelength (m)
    */
   double distance = a->GetDistanceFrom (b);
-  if (distance <= g_friisPropagationLossMinDistance.GetValue ())
+  if (distance <= m_minDistance)
     {
-      NS_FATAL_ERROR ("The friis propagation loss model is invalid when d="<<
-                      distance<<"m << "<<g_friisPropagationLossMinDistance.GetValue ()<<"m");
+      return txPowerDbm;
     }
   double numerator = m_lambda * m_lambda;
   double denominator = 16 * PI * PI * distance * distance * m_systemLoss;

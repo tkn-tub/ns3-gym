@@ -107,17 +107,18 @@ private:
  *  - \f$ d \f$ : distance (m)
  *  - \f$ L \f$ : system loss (unit-less)
  *
- * This model is obviously valid only when \f$ d \gg \frac{2 a^2}{\lambda} \f$ 
- * which means that the model is invalid for small distance values.
- * The current implementation rejects any distance smaller than 
- * \valueref{FriisPropagationLossMinDistance}.
+ *
+ * This model is invalid for small distance values.
+ * The current implementation returns the txpower as the rxpower
+ * for any distance smaller than \valueref{FriisPropagationLossMinDistance}.
  */
 class FriisPropagationLossModel : public PropagationLossModel
 {
 public:
   /**
    * Use the default parameters from \valueref{FriisPropagationLossLambda},
-   * and \valueref{FriisPropagationLossSystemLoss}.
+   * \valueref{FriisPropagationLossSystemLoss}, and,
+   * \valueref{FriisPropagationLossMinDistance}.
    */
   FriisPropagationLossModel ();
   /**
@@ -141,6 +142,15 @@ public:
    * Set the system loss used by the Friis propagation model.
    */
   void SetSystemLoss (double systemLoss);
+
+  /**
+   * \param minDistance the minimum distance
+   *
+   * Below this distance, the txpower is returned
+   * unmodified as the rxpower.
+   */
+  void SetMinDistance (double minDistance);
+
   /**
    * \returns the current wavelength (m)
    */
@@ -160,6 +170,7 @@ private:
   static const double PI;
   double m_lambda;
   double m_systemLoss;
+  double m_minDistance;
 };
 
 /**
