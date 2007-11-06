@@ -1172,7 +1172,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 // we're looking for.  If we find one, return the corresponding interface
 // index.
 //
-          return (Ipv4::GetIfIndexByAddress (node, a, amask) );
+          return (ipv4->GetIfIndexByAddress (a, amask) );
         }
     }
 //

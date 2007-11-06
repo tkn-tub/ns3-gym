@@ -449,16 +449,16 @@ public:
    */
   virtual void SetDown (uint32_t i) = 0;
 
-/**
- * Convenience functions (Doxygen still needed)
- *
- * Return the ifIndex corresponding to the Ipv4Address provided.
- */
-  static uint32_t GetIfIndexByAddress (Ptr<Node> node, Ipv4Address a, 
-    Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
-
-  static bool GetRouteToDestination (Ptr<Node> node, Ipv4Route& route, 
-    Ipv4Address a, Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
+  /**
+   * \brief Convenience function to return the ifIndex corresponding
+   * to the Ipv4Address provided
+   *
+   * \param addr Ipv4Address
+   * \param mask corresponding Ipv4Mask
+   * \returns ifIndex corresponding to a/amask
+   */
+  virtual uint32_t GetIfIndexByAddress (Ipv4Address addr, 
+    Ipv4Mask mask = Ipv4Mask("255.255.255.255"));
 };
 
 } // namespace ns3 
