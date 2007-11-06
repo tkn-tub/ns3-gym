@@ -54,11 +54,11 @@ void
 Gnuplot::GenerateOutput (std::ostream &os)
 {
   os << "set terminal png" << std::endl;
-  os << "set output '" << m_pngFilename << std::endl;
+  os << "set output '" << m_pngFilename << "'" << std::endl;
   os << "plot ";
   for (Datasets::const_iterator i = m_datasets.begin (); i != m_datasets.end ();)
     {
-      os << "'-' title " << (*i)->m_title;
+      os << "'-' title '" << (*i)->m_title << "'";
       i++;
       if (i != m_datasets.end ())
 	{
@@ -66,7 +66,7 @@ Gnuplot::GenerateOutput (std::ostream &os)
 	}
     }
   os << std::endl;
-  for (Datasets::const_iterator i = m_datasets.begin (); i != m_datasets.end ();)
+  for (Datasets::const_iterator i = m_datasets.begin (); i != m_datasets.end (); i++)
     {
       for (GnuplotDataset::Dataset::const_iterator j = (*i)->m_dataset.begin ();
 	   j != (*i)->m_dataset.end (); j++)
