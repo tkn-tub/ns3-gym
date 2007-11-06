@@ -223,7 +223,6 @@ public:
 			     Ptr<MobilityModel> a,
 			     Ptr<MobilityModel> b) const;
 private:
-  double DbToW (double db) const;
   static Ptr<PropagationLossModel> CreateDefaultReference (void);
 
   double m_exponent;
