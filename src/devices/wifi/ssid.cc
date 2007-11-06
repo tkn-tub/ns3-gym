@@ -127,7 +127,8 @@ Ssid::Serialize (Buffer::Iterator i) const
 Buffer::Iterator 
 Ssid::Deserialize (Buffer::Iterator i)
 {
-  uint8_t elementId = i.ReadU8 ();
+  uint8_t elementId;
+  elementId = i.ReadU8 ();
   NS_ASSERT (elementId == ELEMENT_ID);
   m_length = i.ReadU8 ();
   NS_ASSERT (m_length <= 32);

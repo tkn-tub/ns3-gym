@@ -117,7 +117,8 @@ SupportedRates::Serialize (Buffer::Iterator start) const
 Buffer::Iterator 
 SupportedRates::Deserialize (Buffer::Iterator start)
 {
-  uint8_t elementId = start.ReadU8 ();
+  uint8_t elementId;
+  elementId = start.ReadU8 ();
   NS_ASSERT (elementId == ELEMENT_ID);
   m_nRates = start.ReadU8 ();
   NS_ASSERT (m_nRates <= 8);

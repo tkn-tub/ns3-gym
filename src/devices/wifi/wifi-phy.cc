@@ -1071,6 +1071,12 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
     plcpPreambleDelayUs = m_plcpShortPreambleDelayUs;
     headerMode = m_shortPlcpHeaderMode;
     break;
+  default:
+    NS_ASSERT (false);
+    // only to quiet compiler. Really stupid.
+    plcpPreambleDelayUs = 0;
+    headerMode = m_shortPlcpHeaderMode;
+    break;
   }
   Time plcpHeaderStart = (*j).GetTime () + MicroSeconds (plcpPreambleDelayUs);
   Time plcpPayloadStart = plcpHeaderStart + 
