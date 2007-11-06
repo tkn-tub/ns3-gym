@@ -103,7 +103,6 @@ PropagationLossModel::CreateDefault (void)
     break;
   }
 }
-
 RandomPropagationLossModel::RandomPropagationLossModel ()
   : m_variable (g_random.GetCopy ())
 {}
@@ -196,9 +195,9 @@ FriisPropagationLossModel::GetRxPower (double txPowerDbm,
    * Here, we ignore tx and rx gain and the input and output values 
    * are in dbm:
    *
-   *              10                lambda^2
-   * rx = tx +  ------- * ln (-------------------)
-   *            ln (10)        (4 * pi * d)^2 * L
+   *                           lambda^2
+   * rx = tx +  10 log10 (-------------------)
+   *                       (4 * pi * d)^2 * L
    *
    * rx: rx power (dbm)
    * tx: tx power (dbm)
@@ -213,7 +212,7 @@ FriisPropagationLossModel::GetRxPower (double txPowerDbm,
     }
   double numerator = m_lambda * m_lambda;
   double denominator = 16 * PI * PI * distance * distance * m_systemLoss;
-  double pr = log (numerator / denominator) * 10 / log (10);
+  double pr = 10 * log10 (numerator / denominator);
   double rxPowerDbm = txPowerDbm + pr;
   NS_LOG_DEBUG ("distance="<<distance<<"m, tx power="<<txPowerDbm<<"dbm, rx power="<<rxPowerDbm<<"dbm");
   return rxPowerDbm;
@@ -264,13 +263,6 @@ LogDistancePropagationLossModel::CreateDefaultReference (void)
     break;
   }
 }
-
-double
-LogDistancePropagationLossModel::DbToW (double db) const
-{
-  return pow(10.0,db/10.0);
-}
-
   
 double 
 LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
@@ -278,7 +270,7 @@ LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
                                              Ptr<MobilityModel> b) const
 {
   double distance = a->GetDistanceFrom (b);
-  if (distance <= 1.0)
+  if (distance <= m_referenceDistance)
     {
       return txPowerDbm;
     }
@@ -292,14 +284,15 @@ LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
    * tx: tx power (db)
    * rx: db
    *
-   * Since we use dbm instead of db, we have:
+   * Which, in our case is:
    *      
-   * rx = rx0 - 10 (n * log (d/d0) - ln (1000))
+   * rx = rx0(tx) - 10 * n * log (d/d0)
    */
   static Ptr<StaticMobilityModel> zero = Create<StaticMobilityModel> (Position (0.0, 0.0, 0.0));
-  static Ptr<StaticMobilityModel> one = Create<StaticMobilityModel> (Position (1.0, 1.0, 1.0));
-  double rx0 = m_reference->GetRxPower (txPowerDbm, zero, one);
-  double rxPowerDbm = rx0 - 10 / log (10) * (m_exponent * log (distance / m_referenceDistance) - log (1000));
+  static Ptr<StaticMobilityModel> reference = Create<StaticMobilityModel> (Position (m_referenceDistance, 0.0, 0.0));
+  double rx0 = m_reference->GetRxPower (txPowerDbm, zero, reference);
+  double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
+  double rxPowerDbm = rx0 - pathLossDb;
   NS_LOG_DEBUG ("distance="<<distance<<"m, tx-power="<<txPowerDbm<<"dbm, "<<
 		"reference-rx-power="<<rx0<<"dbm, "<<
 		"rx-power="<<rxPowerDbm<<"dbm");
