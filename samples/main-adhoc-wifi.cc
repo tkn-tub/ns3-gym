@@ -158,17 +158,20 @@ int main (int argc, char *argv[])
   Gnuplot gnuplot = Gnuplot ("rate-control.png");
 
   g_output = new GnuplotDataset ("aarf");
+  g_output->SetStyle (GnuplotDataset::LINES);
   RunOneExperiment ();
   gnuplot.AddDataset (*g_output);
   delete g_output;
 
   g_output = new GnuplotDataset ("arf");
+  g_output->SetStyle (GnuplotDataset::LINES);
   DefaultValue::Bind ("WifiRateControlAlgorithm", "Arf");
   RunOneExperiment ();
   gnuplot.AddDataset (*g_output);
   delete g_output;
 
   g_output = new GnuplotDataset ("ideal");
+  g_output->SetStyle (GnuplotDataset::LINES);
   DefaultValue::Bind ("WifiRateControlAlgorithm", "Ideal");
   RunOneExperiment ();
   gnuplot.AddDataset (*g_output);
