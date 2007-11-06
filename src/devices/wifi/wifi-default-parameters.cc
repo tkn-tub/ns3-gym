@@ -25,6 +25,13 @@ namespace ns3 {
 
 namespace WifiDefaultParameters {
 
+static EnumDefaultValue<enum PhyStandard> g_phyStandard
+("WifiPhyStandard", 
+ "Describe the set of physical-layer tx modes and parameters",
+ PHY_STANDARD_80211a, "80211a",
+ PHY_STANDARD_holland, "holland",
+ 0, (void*)0);
+
 static NumericDefaultValue<uint32_t> g_maxSsrc
 ("WifiMaxSsrc", 
  "The MAC maximum number of short retransmission retries (rts retransmissions).",
@@ -185,7 +192,7 @@ GetApBeaconInterval (void)
 enum PhyStandard 
 GetPhyStandard (void)
 {
-  return PHY_STANDARD_80211a;
+  return g_phyStandard.GetValue ();
 }
 enum RateControlAlgorithm 
 GetRateControlAlgorithm (void)

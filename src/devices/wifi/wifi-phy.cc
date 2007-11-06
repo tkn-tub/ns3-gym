@@ -193,8 +193,17 @@ WifiPhy::WifiPhy (Ptr<WifiNetDevice> device)
     m_endSyncEvent (),
     m_random (0.0, 1.0)
 {
-  NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WifiDefaultParameters::PHY_STANDARD_80211a);
-  Configure80211a ();
+  switch (WifiDefaultParameters::GetPhyStandard ()) {
+  case WifiDefaultParameters::PHY_STANDARD_80211a:
+    Configure80211a ();
+    break;
+  case WifiDefaultParameters::PHY_STANDARD_holland:
+    ConfigureHolland ();
+    break;
+  default:
+    NS_ASSERT (false);
+    break;
+  }
 }
 
 WifiPhy::~WifiPhy ()
@@ -389,7 +398,7 @@ WifiPhy::CalculateSnr (WifiMode txMode, double ber) const
 }
 
 void
-WifiPhy::Configure80211a (void)
+WifiPhy::Configure80211aParameters (void)
 {
   m_plcpLongPreambleDelayUs = 20;
   m_plcpShortPreambleDelayUs = 20;
@@ -398,15 +407,11 @@ WifiPhy::Configure80211a (void)
   m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16 + 6;
   /* 4095 bytes at a 6Mb/s rate with a 1/2 coding rate. */
   m_maxPacketDuration = Seconds (4095.0*8.0/6000000.0*(1.0/2.0));
+}
 
-  m_modes.push_back (g_6mba);
-  m_modes.push_back (g_9mba);
-  m_modes.push_back (g_18mba);
-  m_modes.push_back (g_24mba);
-  m_modes.push_back (g_36mba);
-  m_modes.push_back (g_48mba);
-  m_modes.push_back (g_54mba);
-
+void
+WifiPhy::PrintModes (void) const
+{
 #ifdef PHY80211_DEBUG
   for (double db = 0; db < 30; db+= 0.5) {
     std::cout <<db<<" ";
@@ -418,6 +423,35 @@ WifiPhy::Configure80211a (void)
     std::cout << std::endl;
   }
 #endif
+}
+
+void
+WifiPhy::Configure80211a (void)
+{
+  Configure80211aParameters ();
+  m_modes.push_back (g_6mba);
+  m_modes.push_back (g_9mba);
+  m_modes.push_back (g_12mba);
+  m_modes.push_back (g_18mba);
+  m_modes.push_back (g_24mba);
+  m_modes.push_back (g_36mba);
+  m_modes.push_back (g_48mba);
+  m_modes.push_back (g_54mba);
+
+  PrintModes ();
+}
+
+void
+WifiPhy::ConfigureHolland (void)
+{
+  Configure80211aParameters ();
+  m_modes.push_back (g_6mba);
+  m_modes.push_back (g_12mba);
+  m_modes.push_back (g_18mba);
+  m_modes.push_back (g_36mba);
+  m_modes.push_back (g_54mba);
+
+  PrintModes ();
 }
 
 void 

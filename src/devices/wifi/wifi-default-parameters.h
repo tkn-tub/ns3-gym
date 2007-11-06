@@ -30,6 +30,7 @@ namespace WifiDefaultParameters {
 
 enum PhyStandard {
   PHY_STANDARD_80211a,
+  PHY_STANDARD_holland,
 };
 enum RateControlAlgorithm {
   CONSTANT_RATE,

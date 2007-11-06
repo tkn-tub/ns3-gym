@@ -246,7 +246,10 @@ private:
 private:
   // inherited from ns3::Object.
   virtual Ptr<TraceResolver> GetTraceResolver (void) const;
+  void Configure80211aParameters (void);
+  void PrintModes (void) const;
   void Configure80211a (void);
+  void ConfigureHolland (void);
   char const *StateToString (enum State state);
   enum WifiPhy::State GetState (void);
   double GetEdThresholdW (void) const;

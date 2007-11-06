@@ -32,7 +32,8 @@ MacParameters::MacParameters ()
   m_maxSlrc = WifiDefaultParameters::GetMaxSlrc ();
 
   // ensure something not too stupid is set by default.
-  NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WifiDefaultParameters::PHY_STANDARD_80211a);
+  NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WifiDefaultParameters::PHY_STANDARD_80211a ||
+             WifiDefaultParameters::GetPhyStandard () == WifiDefaultParameters::PHY_STANDARD_Holland);
   uint32_t ctsAckSize = (2 + 2 + 6) * 8; // bits
   double dataRate = (6e6 / 2); // mb/s
   Time delay = Seconds (ctsAckSize / dataRate);
@@ -42,7 +43,8 @@ MacParameters::MacParameters ()
 void 
 MacParameters::Initialize (Time ctsDelay, Time ackDelay)
 {
-  NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WifiDefaultParameters::PHY_STANDARD_80211a);
+  NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WifiDefaultParameters::PHY_STANDARD_80211a ||
+             WifiDefaultParameters::GetPhyStandard () == WifiDefaultParameters::PHY_STANDARD_Holland);
 
   // these values are really 802.11a specific
   m_sifs = MicroSeconds (16);
