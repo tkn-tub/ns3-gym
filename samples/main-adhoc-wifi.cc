@@ -34,12 +34,15 @@
 #include "ns3/packet.h"
 #include "ns3/socket.h"
 #include "ns3/socket-factory.h"
+#include "ns3/command-line.h"
+#include "ns3/gnuplot.h"
 
 
 #include <iostream>
 
 using namespace ns3;
 static uint32_t g_bytesTotal = 0;
+static GnuplotDataset *g_output = 0;
 
 static Ptr<Node>
 CreateAdhocNode (Ptr<WifiChannel> channel,
@@ -80,11 +83,12 @@ AdvancePosition (Ptr<Node> node)
   Position pos = GetPosition (node);
   double mbs = ((g_bytesTotal * 8.0) / 1000000);
   g_bytesTotal = 0;
-  std::cout << pos.x << " " << mbs << std::endl;
-  pos.x += 5.0;
-  if (pos.x >= 210.0) {
-    return;
-  }
+  g_output->Add (pos.x, mbs);
+  pos.x += 10.0;
+  if (pos.x >= 210.0) 
+    {
+      return;
+    }
   SetPosition (node, pos);
   //std::cout << "x="<<pos.x << std::endl;
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, node);
@@ -109,21 +113,9 @@ SetupUdpReceive (Ptr<Node> node, uint16_t port)
   return sink;
 }
 
-int main (int argc, char *argv[])
+static void
+RunOneExperiment (void)
 {
-  Simulator::SetLinkedList ();
-
-  Packet::EnableMetadata ();
-
-  //Simulator::EnableLogTo ("80211.log");
-
-  // enable rts cts all the time.
-  DefaultValue::Bind ("WifiRtsCtsThreshold", "0");
-  // disable fragmentation
-  DefaultValue::Bind ("WifiFragmentationThreshold", "2200");
-  DefaultValue::Bind ("WifiRateControlAlgorithm", "Aarf");
-  //DefaultValue::Bind ("WifiRateControlAlgorithm", "Arf");
-
   Ptr<WifiChannel> channel = Create<WifiChannel> ();
 
   Ptr<Node> a = CreateAdhocNode (channel, 
@@ -135,13 +127,13 @@ int main (int argc, char *argv[])
 
   Ptr<Application> app = Create<OnOffApplication> (a, InetSocketAddress ("192.168.0.2", 10), 
                                                    "Udp", 
-                                                   ConstantVariable (45),
+                                                   ConstantVariable (250),
                                                    ConstantVariable (0),
                                                    DataRate (60000000),
                                                    2000);
 
   app->Start (Seconds (0.5));
-  app->Stop (Seconds (45.0));
+  app->Stop (Seconds (250.0));
 
   Simulator::Schedule (Seconds (1.5), &AdvancePosition, b);
   Ptr<Socket> recvSink = SetupUdpReceive (b, 10);
@@ -151,6 +143,38 @@ int main (int argc, char *argv[])
   Simulator::Run ();
 
   Simulator::Destroy ();
+}
+
+int main (int argc, char *argv[])
+{
+  Simulator::SetLinkedList ();
+
+  // enable rts cts all the time.
+  DefaultValue::Bind ("WifiRtsCtsThreshold", "0");
+  // disable fragmentation
+  DefaultValue::Bind ("WifiFragmentationThreshold", "2200");
+  CommandLine::Parse (argc, argv);
+
+  Gnuplot gnuplot = Gnuplot ("rate-control.png");
+
+  g_output = new GnuplotDataset ("aarf");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+  g_output = new GnuplotDataset ("arf");
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "Arf");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+  g_output = new GnuplotDataset ("ideal");
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "Ideal");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+  gnuplot.GenerateOutput (std::cout);
 
   return 0;
 }
