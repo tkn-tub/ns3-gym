@@ -78,27 +78,16 @@ static void
 AdvancePosition (Ptr<Node> node) 
 {
   Position pos = GetPosition (node);
-  pos.x += 50.0;
-  if (pos.x >= 2100.0) {
+  double mbs = ((g_bytesTotal * 8.0) / 1000000);
+  g_bytesTotal = 0;
+  std::cout << pos.x << " " << mbs << std::endl;
+  pos.x += 5.0;
+  if (pos.x >= 210.0) {
     return;
   }
   SetPosition (node, pos);
   //std::cout << "x="<<pos.x << std::endl;
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, node);
-}
-
-static void
-Printer (Ptr<Node> node)
-{
-  Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
-  Position position = mobility->Get ();
-  double mbs = ((g_bytesTotal * 8.0) / 1000000);
-  g_bytesTotal = 0;
-  std::cout << position.x << " " << mbs << std::endl;
-  if (Simulator::Now ().GetSeconds () < 43.0)
-    {
-      Simulator::Schedule (Seconds (1.0), &Printer, node);
-    }
 }
 
 static void
@@ -144,19 +133,17 @@ int main (int argc, char *argv[])
                                  Position (0.0, 0.0, 0.0),
                                  "192.168.0.2");
 
-  Simulator::Schedule (Seconds (1.0), &AdvancePosition, b);
-
   Ptr<Application> app = Create<OnOffApplication> (a, InetSocketAddress ("192.168.0.2", 10), 
                                                    "Udp", 
-                                                   ConstantVariable (42),
+                                                   ConstantVariable (45),
                                                    ConstantVariable (0),
                                                    DataRate (60000000),
-                                                   2048);
+                                                   2000);
 
   app->Start (Seconds (0.5));
-  app->Stop (Seconds (43.0));
+  app->Stop (Seconds (45.0));
 
-  Simulator::Schedule (Seconds (0.5), &Printer, b);
+  Simulator::Schedule (Seconds (1.5), &AdvancePosition, b);
   Ptr<Socket> recvSink = SetupUdpReceive (b, 10);
 
   GlobalRouteManager::PopulateRoutingTables ();
