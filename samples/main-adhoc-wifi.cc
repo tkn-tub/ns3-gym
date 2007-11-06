@@ -151,6 +151,7 @@ int main (int argc, char *argv[])
 
   // disable fragmentation
   DefaultValue::Bind ("WifiFragmentationThreshold", "2200");
+  DefaultValue::Bind ("WifiPhyStandard", "holland");
   CommandLine::Parse (argc, argv);
 
   Gnuplot gnuplot = Gnuplot ("rate-control.png");
@@ -173,7 +174,7 @@ int main (int argc, char *argv[])
 
   g_output = new GnuplotDataset ("ideal");
   g_output->SetStyle (GnuplotDataset::LINES);
-  DefaultValue::Bind ("WifiRtsCtsThreshold", "0");
+  DefaultValue::Bind ("WifiRtsCtsThreshold", "2200");
   DefaultValue::Bind ("WifiRateControlAlgorithm", "Ideal");
   RunOneExperiment ();
   gnuplot.AddDataset (*g_output);
