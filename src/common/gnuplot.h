@@ -29,13 +29,26 @@ namespace ns3 {
 class GnuplotDataset
 {
 public:
+  enum Style {
+    LINES,
+    POINTS,
+    LINES_POINTS,
+    DOTS,
+    IMPULSES,
+    STEPS,
+    FSTEPS,
+    HISTEPS,
+  };
+
   GnuplotDataset (std::string title);
+  void SetStyle (enum Style style);
   void Add (double x, double y);
 private:
   friend class Gnuplot;
   typedef std::vector<std::pair<double,double> > Dataset;
   Dataset m_dataset;
   std::string m_title;
+  enum Style m_style;
 };
 
 class Gnuplot

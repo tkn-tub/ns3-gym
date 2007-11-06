@@ -23,8 +23,14 @@
 namespace ns3 {
 
 GnuplotDataset::GnuplotDataset (std::string title)
-  : m_title (title)
+  : m_title (title),
+    m_style (LINES)
 {}
+void 
+GnuplotDataset::SetStyle (enum Style style)
+{
+  m_style = style;
+}
 void 
 GnuplotDataset::Add (double x, double y)
 {
@@ -59,6 +65,32 @@ Gnuplot::GenerateOutput (std::ostream &os)
   for (Datasets::const_iterator i = m_datasets.begin (); i != m_datasets.end ();)
     {
       os << "'-' title '" << (*i)->m_title << "'";
+      switch ((*i)->m_style) {
+      case GnuplotDataset::LINES:
+	os << " with lines";
+	break;
+      case GnuplotDataset::POINTS:
+	os << " with points";
+	break;
+      case GnuplotDataset::LINES_POINTS:
+	os << " with linespoints";
+	break;
+      case GnuplotDataset::DOTS:
+	os << " with dots";
+	break;
+      case GnuplotDataset::IMPULSES:
+	os << " with impulses";
+	break;
+      case GnuplotDataset::STEPS:
+	os << " with steps";
+	break;
+      case GnuplotDataset::FSTEPS:
+	os << " with fsteps";
+	break;
+      case GnuplotDataset::HISTEPS:
+	os << " with histeps";
+	break;
+      }
       i++;
       if (i != m_datasets.end ())
 	{
