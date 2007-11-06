@@ -84,7 +84,7 @@ AdvancePosition (Ptr<Node> node)
   double mbs = ((g_bytesTotal * 8.0) / 1000000);
   g_bytesTotal = 0;
   g_output->Add (pos.x, mbs);
-  pos.x += 10.0;
+  pos.x += 1.0;
   if (pos.x >= 210.0) 
     {
       return;
@@ -149,8 +149,6 @@ int main (int argc, char *argv[])
 {
   Simulator::SetLinkedList ();
 
-  // enable rts cts all the time.
-  DefaultValue::Bind ("WifiRtsCtsThreshold", "0");
   // disable fragmentation
   DefaultValue::Bind ("WifiFragmentationThreshold", "2200");
   CommandLine::Parse (argc, argv);
@@ -159,12 +157,15 @@ int main (int argc, char *argv[])
 
   g_output = new GnuplotDataset ("aarf");
   g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRtsCtsThreshold", "2200");
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "Aarf");
   RunOneExperiment ();
   gnuplot.AddDataset (*g_output);
   delete g_output;
 
   g_output = new GnuplotDataset ("arf");
   g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRtsCtsThreshold", "2200");
   DefaultValue::Bind ("WifiRateControlAlgorithm", "Arf");
   RunOneExperiment ();
   gnuplot.AddDataset (*g_output);
@@ -172,6 +173,7 @@ int main (int argc, char *argv[])
 
   g_output = new GnuplotDataset ("ideal");
   g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRtsCtsThreshold", "0");
   DefaultValue::Bind ("WifiRateControlAlgorithm", "Ideal");
   RunOneExperiment ();
   gnuplot.AddDataset (*g_output);
