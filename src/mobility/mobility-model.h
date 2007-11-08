@@ -43,11 +43,11 @@ public:
   /**
    * \returns the current position
    */
-  Position Get (void) const;
+  Position GetPosition (void) const;
   /**
    * \param position the position to set.
    */
-  void Set (const Position &position);
+  void SetPosition (const Position &position);
   /**
    * \returns the current position.
    */
@@ -70,14 +70,14 @@ private:
    * Concrete subclasses of this base class must 
    * implement this method.
    */
-  virtual Position DoGet (void) const = 0;
+  virtual Position DoGetPosition (void) const = 0;
   /**
    * \param position the position to set.
    *
    * Concrete subclasses of this base class must 
    * implement this method.
    */
-  virtual void DoSet (const Position &position) = 0;
+  virtual void DoSetPosition (const Position &position) = 0;
   /**
    * \returns the current speed.
    *

@@ -48,7 +48,7 @@ Sample ()
     {
       Ptr<Node> node = *nodeIter;
       Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
-      Position pos = mobility->Get ();
+      Position pos = mobility->GetPosition ();
       Speed vel = mobility->GetSpeed ();
 
       NodeUpdate update;

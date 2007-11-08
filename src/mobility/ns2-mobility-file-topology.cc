@@ -97,7 +97,7 @@ Ns2MobilityFileTopology::LayoutObjectStore (const ObjectStore &store) const
 	    {
 	      double value = ReadDouble (line.substr (endNodeId + 9, std::string::npos));
 	      std::string coordinate = line.substr (endNodeId + 6, 1);
-              Position position = model->Get ();
+              Position position = model->GetPosition ();
 	      if (coordinate == "X")
 		{
                   position.x = value;
@@ -117,7 +117,7 @@ Ns2MobilityFileTopology::LayoutObjectStore (const ObjectStore &store) const
                 {
                   continue;
                 }
-              model->Set (position);
+              model->SetPosition (position);
 	    }
 	  else 
 	    {

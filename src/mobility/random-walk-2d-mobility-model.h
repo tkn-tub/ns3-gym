@@ -132,8 +132,8 @@ class RandomWalk2dMobilityModel : public MobilityModel
   void Rebound (Time timeLeft);
   void DoWalk (Time timeLeft);
   virtual void DoDispose (void);
-  virtual Position DoGet (void) const;
-  virtual void DoSet (const Position &position);
+  virtual Position DoGetPosition (void) const;
+  virtual void DoSetPosition (const Position &position);
   virtual Speed DoGetSpeed (void) const;
 
   StaticSpeedHelper m_helper;

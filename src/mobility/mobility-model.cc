@@ -34,9 +34,9 @@ MobilityModel::~MobilityModel ()
 {}
 
 Position
-MobilityModel::Get (void) const
+MobilityModel::GetPosition (void) const
 {
-  return DoGet ();
+  return DoGetPosition ();
 }
 Speed 
 MobilityModel::GetSpeed (void) const
@@ -45,16 +45,16 @@ MobilityModel::GetSpeed (void) const
 }
 
 void 
-MobilityModel::Set (const Position &position)
+MobilityModel::SetPosition (const Position &position)
 {
-  DoSet (position);
+  DoSetPosition (position);
 }
 
 double 
 MobilityModel::GetDistanceFrom (Ptr<const MobilityModel> other) const
 {
-  Position oPosition = other->DoGet ();
-  Position position = DoGet ();
+  Position oPosition = other->DoGetPosition ();
+  Position position = DoGetPosition ();
   return CalculateDistance (position, oPosition);
 }
 

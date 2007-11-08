@@ -57,24 +57,24 @@ HierarchicalMobilityModel::GetParent (void) const
 }
 
 Position 
-HierarchicalMobilityModel::DoGet (void) const
+HierarchicalMobilityModel::DoGetPosition (void) const
 {
-  Position parentPosition = m_parent->Get ();
-  Position childPosition = m_child->Get ();
+  Position parentPosition = m_parent->GetPosition ();
+  Position childPosition = m_child->GetPosition ();
   return Position (parentPosition.x + childPosition.x,
 		   parentPosition.y + childPosition.y,
 		   parentPosition.z + childPosition.z);
 }
 void 
-HierarchicalMobilityModel::DoSet (const Position &position)
+HierarchicalMobilityModel::DoSetPosition (const Position &position)
 {
-  // This implementation of DoSet is really an arbitraty choice.
+  // This implementation of DoSetPosition is really an arbitraty choice.
   // anything else would have been ok.
-  Position parentPosition = m_parent->Get ();
+  Position parentPosition = m_parent->GetPosition ();
   Position childPosition (position.x - parentPosition.x,
 			  position.y - parentPosition.y,
 			  position.z - parentPosition.z);
-  m_child->Set (childPosition);
+  m_child->SetPosition (childPosition);
 }
 Speed 
 HierarchicalMobilityModel::DoGetSpeed (void) const

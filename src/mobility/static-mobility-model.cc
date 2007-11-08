@@ -37,12 +37,12 @@ StaticMobilityModel::~StaticMobilityModel ()
 {}
 
 Position
-StaticMobilityModel::DoGet (void) const
+StaticMobilityModel::DoGetPosition (void) const
 {
   return m_position;
 }
 void 
-StaticMobilityModel::DoSet (const Position &position)
+StaticMobilityModel::DoSetPosition (const Position &position)
 {
   m_position = position;
   NotifyCourseChange ();

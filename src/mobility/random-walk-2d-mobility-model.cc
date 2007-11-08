@@ -210,12 +210,12 @@ RandomWalk2dMobilityModel::DoDispose (void)
   MobilityModel::DoDispose ();
 }
 Position
-RandomWalk2dMobilityModel::DoGet (void) const
+RandomWalk2dMobilityModel::DoGetPosition (void) const
 {
   return m_helper.GetCurrentPosition (m_parameters->m_bounds);
 }
 void
-RandomWalk2dMobilityModel::DoSet (const Position &position)
+RandomWalk2dMobilityModel::DoSetPosition (const Position &position)
 {
   NS_ASSERT (m_parameters->m_bounds.IsInside (position));
   m_helper.InitializePosition (position);

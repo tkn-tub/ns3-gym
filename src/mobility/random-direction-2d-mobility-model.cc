@@ -188,12 +188,12 @@ RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
   SetDirectionAndSpeed (direction);
 }
 Position
-RandomDirection2dMobilityModel::DoGet (void) const
+RandomDirection2dMobilityModel::DoGetPosition (void) const
 {
   return m_helper.GetCurrentPosition (m_parameters->m_bounds);
 }
 void
-RandomDirection2dMobilityModel::DoSet (const Position &position)
+RandomDirection2dMobilityModel::DoSetPosition (const Position &position)
 {
   m_helper.InitializePosition (position);
   Simulator::Remove (m_event);

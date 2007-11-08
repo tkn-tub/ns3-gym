@@ -17,7 +17,7 @@ using namespace ns3;
 static void 
 CourseChange (const TraceContext &context, Ptr<const MobilityModel> position)
 {
-  Position pos = position->Get ();
+  Position pos = position->GetPosition ();
   std::cout << Simulator::Now () << ", pos=" << position << ", x=" << pos.x << ", y=" << pos.y
             << ", z=" << pos.z << std::endl;
 }

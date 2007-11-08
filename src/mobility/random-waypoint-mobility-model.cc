@@ -142,12 +142,12 @@ RandomWaypointMobilityModel::Start (void)
 }
 
 Position 
-RandomWaypointMobilityModel::DoGet (void) const
+RandomWaypointMobilityModel::DoGetPosition (void) const
 {
   return m_helper.GetCurrentPosition ();
 }
 void 
-RandomWaypointMobilityModel::DoSet (const Position &position)
+RandomWaypointMobilityModel::DoSetPosition (const Position &position)
 {
   m_helper.InitializePosition (position);
   Simulator::Remove (m_event);

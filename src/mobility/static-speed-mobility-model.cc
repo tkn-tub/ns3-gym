@@ -57,12 +57,12 @@ StaticSpeedMobilityModel::SetSpeed (const Speed speed)
 
 
 Position
-StaticSpeedMobilityModel::DoGet (void) const
+StaticSpeedMobilityModel::DoGetPosition (void) const
 {
   return m_helper.GetCurrentPosition ();
 }
 void 
-StaticSpeedMobilityModel::DoSet (const Position &position)
+StaticSpeedMobilityModel::DoSetPosition (const Position &position)
 {
   m_helper.InitializePosition (position);
   NotifyCourseChange ();
