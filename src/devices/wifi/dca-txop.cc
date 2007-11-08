@@ -155,6 +155,12 @@ DcaTxop::~DcaTxop ()
   delete m_phyListener;
   delete m_queue;
   delete m_dcf;
+  m_accessListener = 0;
+  m_transmissionListener = 0;
+  m_navListener = 0;
+  m_phyListener = 0;
+  m_queue = 0;
+  m_dcf = 0;
 }
 
 void 
