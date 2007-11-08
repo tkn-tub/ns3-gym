@@ -79,6 +79,7 @@ public:
   void SetAssocResp (void);
   void SetProbeReq (void);
   void SetProbeResp (void);
+  void SetBeacon (void);
   void SetTypeData (void);
   void SetDsFrom (void);
   void SetDsNotFrom (void);

@@ -119,6 +119,12 @@ WifiMacHeader::SetProbeResp (void)
   m_ctrlSubtype = 5;
 }
 void 
+WifiMacHeader::SetBeacon (void)
+{
+  m_ctrlType = TYPE_MGT;
+  m_ctrlSubtype = 8;
+}
+void 
 WifiMacHeader::SetTypeData (void)
 {
   m_ctrlType = TYPE_DATA;
