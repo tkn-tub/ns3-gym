@@ -18,11 +18,11 @@ using namespace ns3;
 static void 
 CourseChange (ns3::TraceContext const&, Ptr<const MobilityModel> mobility)
 {
-  Position pos = mobility->GetPosition ();
-  Speed vel = mobility->GetSpeed ();
+  Vector pos = mobility->GetPosition ();
+  Vector vel = mobility->GetSpeed ();
   std::cout << Simulator::Now () << ", model=" << mobility << ", POS: x=" << pos.x << ", y=" << pos.y
-            << ", z=" << pos.z << "; VEL:" << vel.dx << ", y=" << vel.dy
-            << ", z=" << vel.dz << std::endl;
+            << ", z=" << pos.z << "; VEL:" << vel.x << ", y=" << vel.y
+            << ", z=" << vel.z << std::endl;
 }
 
 int main (int argc, char *argv[])

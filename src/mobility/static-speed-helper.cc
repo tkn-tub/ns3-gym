@@ -25,40 +25,40 @@ namespace ns3 {
 
 StaticSpeedHelper::StaticSpeedHelper ()
 {}
-StaticSpeedHelper::StaticSpeedHelper (const Position &position)
+StaticSpeedHelper::StaticSpeedHelper (const Vector &position)
   : m_position (position)
 {}
-StaticSpeedHelper::StaticSpeedHelper (const Position &position,
-				      const Speed &speed)
+StaticSpeedHelper::StaticSpeedHelper (const Vector &position,
+				      const Vector &speed)
   : m_position (position),
     m_speed (speed),
     m_paused (true)
 {}
 void 
-StaticSpeedHelper::InitializePosition (const Position &position)
+StaticSpeedHelper::InitializePosition (const Vector &position)
 {
   m_position = position;
-  m_speed.dx = 0.0;
-  m_speed.dy = 0.0;
-  m_speed.dz = 0.0;
+  m_speed.x = 0.0;
+  m_speed.y = 0.0;
+  m_speed.z = 0.0;
   m_lastUpdate = Simulator::Now ();
   m_paused = true;
 }
 
-Position 
+Vector
 StaticSpeedHelper::GetCurrentPosition (void) const
 {
   Update ();
   return m_position;
 }
 
-Speed 
+Vector 
 StaticSpeedHelper::GetSpeed (void) const
 {
-  return m_paused? Speed (0, 0, 0) : m_speed;
+  return m_paused? Vector (0.0, 0.0, 0.0) : m_speed;
 }
 void 
-StaticSpeedHelper::SetSpeed (const Speed &speed)
+StaticSpeedHelper::SetSpeed (const Vector &speed)
 {
   Update ();
   m_speed = speed;
@@ -76,13 +76,13 @@ StaticSpeedHelper::Update (void) const
   Time deltaTime = now - m_lastUpdate;
   m_lastUpdate = now;
   double deltaS = deltaTime.GetSeconds ();
-  m_position.x += m_speed.dx * deltaS;
-  m_position.y += m_speed.dy * deltaS;
-  m_position.z += m_speed.dz * deltaS;
+  m_position.x += m_speed.x * deltaS;
+  m_position.y += m_speed.y * deltaS;
+  m_position.z += m_speed.z * deltaS;
 }
 
 void 
-StaticSpeedHelper::Reset (const Speed &speed)
+StaticSpeedHelper::Reset (const Vector &speed)
 {
   Update ();
   m_speed = speed;
@@ -98,7 +98,7 @@ StaticSpeedHelper::UpdateFull (const Rectangle &bounds) const
   m_position.y = std::max (bounds.yMin, m_position.y);
 }
 
-Position 
+Vector 
 StaticSpeedHelper::GetCurrentPosition (const Rectangle &bounds) const
 {
   UpdateFull (bounds);

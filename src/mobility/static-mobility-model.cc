@@ -28,7 +28,7 @@ StaticMobilityModel::StaticMobilityModel ()
 {
   SetInterfaceId (StaticMobilityModel::iid);
 }
-StaticMobilityModel::StaticMobilityModel (const Position &position)
+StaticMobilityModel::StaticMobilityModel (const Vector &position)
   : m_position (position)
 {
   SetInterfaceId (StaticMobilityModel::iid);
@@ -36,21 +36,21 @@ StaticMobilityModel::StaticMobilityModel (const Position &position)
 StaticMobilityModel::~StaticMobilityModel ()
 {}
 
-Position
+Vector
 StaticMobilityModel::DoGetPosition (void) const
 {
   return m_position;
 }
 void 
-StaticMobilityModel::DoSetPosition (const Position &position)
+StaticMobilityModel::DoSetPosition (const Vector &position)
 {
   m_position = position;
   NotifyCourseChange ();
 }
-Speed 
+Vector
 StaticMobilityModel::DoGetSpeed (void) const
 {
-  return Speed ();
+  return Vector (0.0, 0.0, 0.0);
 }
 
 }; // namespace ns3

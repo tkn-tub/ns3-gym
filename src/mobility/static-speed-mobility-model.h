@@ -25,7 +25,6 @@
 #include "ns3/nstime.h"
 #include "ns3/component-manager.h"
 #include "static-speed-helper.h"
-#include "speed.h"
 
 namespace ns3 {
 
@@ -48,15 +47,15 @@ public:
    * Create a position located at coordinates (x,y,z) with
    * speed (0,0,0).
    */
-  StaticSpeedMobilityModel (const Position &position);
+  StaticSpeedMobilityModel (const Vector &position);
   /**
    *
    * Create a position located at coordinates (x,y,z) with
    * speed (dx,dy,dz).
    * Unit is meters and meters/s
    */
-  StaticSpeedMobilityModel (const Position &position,
-                            const Speed &speed);
+  StaticSpeedMobilityModel (const Vector &position,
+                            const Vector &speed);
   virtual ~StaticSpeedMobilityModel ();
 
   /**
@@ -65,11 +64,11 @@ public:
    * Set the current speed now to (dx,dy,dz)
    * Unit is meters/s
    */
-  void SetSpeed (const Speed speed);
+  void SetSpeed (const Vector &speed);
 private:
-  virtual Position DoGetPosition (void) const;
-  virtual void DoSetPosition (const Position &position);
-  virtual Speed DoGetSpeed (void) const;
+  virtual Vector DoGetPosition (void) const;
+  virtual void DoSetPosition (const Vector &position);
+  virtual Vector DoGetSpeed (void) const;
   void Update (void) const;
   StaticSpeedHelper m_helper;
 };

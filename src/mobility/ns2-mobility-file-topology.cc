@@ -97,7 +97,7 @@ Ns2MobilityFileTopology::LayoutObjectStore (const ObjectStore &store) const
 	    {
 	      double value = ReadDouble (line.substr (endNodeId + 9, std::string::npos));
 	      std::string coordinate = line.substr (endNodeId + 6, 1);
-              Position position = model->GetPosition ();
+              Vector position = model->GetPosition ();
 	      if (coordinate == "X")
 		{
                   position.x = value;
@@ -129,7 +129,7 @@ Ns2MobilityFileTopology::LayoutObjectStore (const ObjectStore &store) const
 	      double zSpeed = ReadDouble (line.substr (ySpeedEnd + 1, std::string::npos));
 	      NS_LOG_DEBUG ("at=" << at << "xSpeed=" << xSpeed << ", ySpeed=" << ySpeed << ", zSpeed=" << zSpeed);
 	      Simulator::Schedule (Seconds (at), &StaticSpeedMobilityModel::SetSpeed, model,
-				   Speed (xSpeed, ySpeed, zSpeed));
+				   Vector (xSpeed, ySpeed, zSpeed));
 	    }
 	}
       file.close();

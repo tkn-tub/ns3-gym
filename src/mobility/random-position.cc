@@ -91,12 +91,12 @@ RandomRectanglePosition::~RandomRectanglePosition ()
   m_x = 0;
   m_y = 0;
 }
-Position
+Vector
 RandomRectanglePosition::Get (void) const
 {
   double x = m_x->GetValue ();
   double y = m_y->GetValue ();
-  return Position (x, y, 0.0);
+  return Vector (x, y, 0.0);
 }
 
 RandomDiscPosition::RandomDiscPosition ()
@@ -120,7 +120,7 @@ RandomDiscPosition::~RandomDiscPosition ()
   m_theta = 0;
   m_rho = 0;
 }
-Position
+Vector
 RandomDiscPosition::Get (void) const
 {
   double theta = m_theta->GetValue ();
@@ -128,7 +128,7 @@ RandomDiscPosition::Get (void) const
   double x = m_x + std::cos (theta) * rho;
   double y = m_y + std::sin (theta) * rho;
   NS_LOG_DEBUG ("Disc position x=" << x << ", y=" << y);
-  return Position (x, y, 0.0);
+  return Vector (x, y, 0.0);
 }
 
 

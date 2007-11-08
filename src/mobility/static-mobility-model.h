@@ -44,15 +44,15 @@ public:
    * Create a position located at coordinates (x,y,z).
    * Unit is meters
    */
-  StaticMobilityModel (const Position &position);
+  StaticMobilityModel (const Vector &position);
   virtual ~StaticMobilityModel ();
 
 private:
-  virtual Position DoGetPosition (void) const;
-  virtual void DoSetPosition (const Position &position);
-  virtual Speed DoGetSpeed (void) const;
+  virtual Vector DoGetPosition (void) const;
+  virtual void DoSetPosition (const Vector &position);
+  virtual Vector DoGetSpeed (void) const;
 
-  Position m_position;
+  Vector m_position;
 };
 
 }; // namespace ns3

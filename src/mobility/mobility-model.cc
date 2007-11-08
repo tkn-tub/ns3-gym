@@ -33,19 +33,19 @@ MobilityModel::MobilityModel ()
 MobilityModel::~MobilityModel ()
 {}
 
-Position
+Vector
 MobilityModel::GetPosition (void) const
 {
   return DoGetPosition ();
 }
-Speed 
+Vector
 MobilityModel::GetSpeed (void) const
 {
   return DoGetSpeed ();
 }
 
 void 
-MobilityModel::SetPosition (const Position &position)
+MobilityModel::SetPosition (const Vector &position)
 {
   DoSetPosition (position);
 }
@@ -53,8 +53,8 @@ MobilityModel::SetPosition (const Position &position)
 double 
 MobilityModel::GetDistanceFrom (Ptr<const MobilityModel> other) const
 {
-  Position oPosition = other->DoGetPosition ();
-  Position position = DoGetPosition ();
+  Vector oPosition = other->DoGetPosition ();
+  Vector position = DoGetPosition ();
   return CalculateDistance (position, oPosition);
 }
 

@@ -46,7 +46,7 @@ GridTopology::LayoutOneRowFirst (Ptr<Object> object, uint32_t i)
   Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_positionClassId,
                                                                          MobilityModel::iid);
   object->AddInterface (mobility);
-  mobility->SetPosition (Position (x, y, 0.0));
+  mobility->SetPosition (Vector (x, y, 0.0));
 }
 
 void 
@@ -58,7 +58,7 @@ GridTopology::LayoutOneColumnFirst (Ptr<Object> object, uint32_t i)
   Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_positionClassId, 
                                                                          MobilityModel::iid);
   object->AddInterface (mobility);
-  mobility->SetPosition (Position (x, y, 0.0));
+  mobility->SetPosition (Vector (x, y, 0.0));
 }
 
 

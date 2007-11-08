@@ -21,8 +21,7 @@
 #define STATIC_SPEED_HELPER_H
 
 #include "ns3/nstime.h"
-#include "position.h"
-#include "speed.h"
+#include "vector.h"
 
 namespace ns3 {
 
@@ -32,16 +31,16 @@ class StaticSpeedHelper
 {
  public:
   StaticSpeedHelper ();
-  StaticSpeedHelper (const Position &position);
-  StaticSpeedHelper (const Position &position,
-		     const Speed &speed);
-  void InitializePosition (const Position &position);
+  StaticSpeedHelper (const Vector &position);
+  StaticSpeedHelper (const Vector &position,
+		     const Vector &speed);
+  void InitializePosition (const Vector &position);
 
-  void Reset (const Speed &speed);
-  Position GetCurrentPosition (const Rectangle &bounds) const;
-  Position GetCurrentPosition (void) const;
-  Speed GetSpeed (void) const;
-  void SetSpeed (const Speed &speed);
+  void Reset (const Vector &speed);
+  Vector GetCurrentPosition (const Rectangle &bounds) const;
+  Vector GetCurrentPosition (void) const;
+  Vector GetSpeed (void) const;
+  void SetSpeed (const Vector &speed);
   void Pause (void);
   void Unpause (void);
 
@@ -49,8 +48,8 @@ class StaticSpeedHelper
   void Update (void) const;
   void UpdateFull (const Rectangle &rectangle) const;
   mutable Time m_lastUpdate;
-  mutable Position m_position;
-  Speed m_speed;
+  mutable Vector m_position;
+  Vector m_speed;
   bool m_paused;
 };
 

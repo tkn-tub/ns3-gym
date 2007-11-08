@@ -58,9 +58,9 @@ public:
   Ptr<MobilityModel> GetParent (void) const;
   
 private:
-  virtual Position DoGetPosition (void) const;
-  virtual void DoSetPosition (const Position &position);
-  virtual Speed DoGetSpeed (void) const;
+  virtual Vector DoGetPosition (void) const;
+  virtual void DoSetPosition (const Vector &position);
+  virtual Vector DoGetSpeed (void) const;
 
   void ParentChanged (const TraceContext &context, Ptr<const MobilityModel> model);
   void ChildChanged (const TraceContext &context, Ptr<const MobilityModel> model);

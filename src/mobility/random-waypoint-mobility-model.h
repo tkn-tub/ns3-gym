@@ -98,9 +98,9 @@ public:
 private:
   void Start (void);
   void BeginWalk (void);
-  virtual Position DoGetPosition (void) const;
-  virtual void DoSetPosition (const Position &position);
-  virtual Speed DoGetSpeed (void) const;
+  virtual Vector DoGetPosition (void) const;
+  virtual void DoSetPosition (const Vector &position);
+  virtual Vector DoGetSpeed (void) const;
 
   StaticSpeedHelper m_helper;
   Ptr<RandomWaypointMobilityModelParameters> m_parameters;

@@ -56,34 +56,34 @@ HierarchicalMobilityModel::GetParent (void) const
   return m_parent;
 }
 
-Position 
+Vector
 HierarchicalMobilityModel::DoGetPosition (void) const
 {
-  Position parentPosition = m_parent->GetPosition ();
-  Position childPosition = m_child->GetPosition ();
-  return Position (parentPosition.x + childPosition.x,
+  Vector parentPosition = m_parent->GetPosition ();
+  Vector childPosition = m_child->GetPosition ();
+  return Vector (parentPosition.x + childPosition.x,
 		   parentPosition.y + childPosition.y,
 		   parentPosition.z + childPosition.z);
 }
 void 
-HierarchicalMobilityModel::DoSetPosition (const Position &position)
+HierarchicalMobilityModel::DoSetPosition (const Vector &position)
 {
   // This implementation of DoSetPosition is really an arbitraty choice.
   // anything else would have been ok.
-  Position parentPosition = m_parent->GetPosition ();
-  Position childPosition (position.x - parentPosition.x,
+  Vector parentPosition = m_parent->GetPosition ();
+  Vector childPosition (position.x - parentPosition.x,
 			  position.y - parentPosition.y,
 			  position.z - parentPosition.z);
   m_child->SetPosition (childPosition);
 }
-Speed 
+Vector
 HierarchicalMobilityModel::DoGetSpeed (void) const
 {
-  Speed parentSpeed = m_parent->GetSpeed ();
-  Speed childSpeed = m_child->GetSpeed ();
-  Speed speed (parentSpeed.dx + childSpeed.dx,
-               parentSpeed.dy + childSpeed.dy,
-               parentSpeed.dz + childSpeed.dz);
+  Vector parentSpeed = m_parent->GetSpeed ();
+  Vector childSpeed = m_child->GetSpeed ();
+  Vector speed (parentSpeed.x + childSpeed.x,
+               parentSpeed.y + childSpeed.y,
+               parentSpeed.z + childSpeed.z);
   return speed;
 }
 
