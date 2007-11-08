@@ -3,6 +3,7 @@
 def build(bld):
     mobility = bld.create_ns3_module('mobility', ['core', 'simulator'])
     mobility.source = [
+        'vector.cc',
         'grid-topology.cc',
         'hierarchical-mobility-model.cc',
         'mobility-model.cc',
@@ -24,6 +25,7 @@ def build(bld):
 
     headers = bld.create_obj('ns3header')
     headers.source = [
+        'vector.h',
         'grid-topology.h',
         'hierarchical-mobility-model.h',
         'mobility-model.h',
