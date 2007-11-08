@@ -251,7 +251,7 @@ MacHighNqsta::MissedBeacons (void)
 {
   if (m_beaconWatchdogEnd > Simulator::Now ())
     {
-      m_beaconWatchdog = Simulator::Schedule (Simulator::Now () - m_beaconWatchdogEnd, 
+      m_beaconWatchdog = Simulator::Schedule (m_beaconWatchdogEnd - Simulator::Now (),
                                               &MacHighNqsta::MissedBeacons, this);
       return;
     }
