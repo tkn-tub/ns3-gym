@@ -41,12 +41,12 @@
 
 using namespace ns3;
 
-static void
+void
 WifiNetDeviceTrace (const TraceContext &context, Packet p, Mac48Address address)
 {
   std::cout << context << " ad=" << address << " p: " << p << std::endl;
 }
-static void
+void
 WifiPhyStateTrace (const TraceContext &context, Time start, Time duration, enum WifiPhy::State state)
 {
   std::cout << context << " state=";
@@ -71,11 +71,13 @@ static Ptr<Node>
 CreateApNode (Ptr<WifiChannel> channel,
               Position position, 
               const char *ipAddress,
-              Ssid ssid)
+              Ssid ssid, 
+              Time at)
 {
   Ptr<Node> node = Create<InternetNode> ();  
   Ptr<NqapWifiNetDevice> device = Create<NqapWifiNetDevice> (node);
   device->SetSsid (ssid);
+  Simulator::Schedule (at, &NqapWifiNetDevice::StartBeaconing, device);
   device->ConnectTo (channel);
   Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
   mobility->Set (position);
@@ -164,7 +166,8 @@ int main (int argc, char *argv[])
   Ptr<Node> a = CreateApNode (channel, 
                               Position (5.0,0.0,0.0),
                               "192.168.0.1",
-                              ssid);
+                              ssid, 
+                              Seconds (0.1));
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, a);
 
   Ptr<Node> b = CreateStaNode (channel,
@@ -186,8 +189,8 @@ int main (int argc, char *argv[])
 
   GlobalRouteManager::PopulateRoutingTables ();
 
-  NodeList::Connect ("/nodes/*/devices/*/*", MakeCallback (&WifiNetDeviceTrace));
-  NodeList::Connect ("/nodes/*/devices/*/phy/state", MakeCallback (&WifiPhyStateTrace));
+  //NodeList::Connect ("/nodes/*/devices/*/*", MakeCallback (&WifiNetDeviceTrace));
+  //NodeList::Connect ("/nodes/*/devices/*/phy/state", MakeCallback (&WifiPhyStateTrace));
 
   Simulator::Run ();
 

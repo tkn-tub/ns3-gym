@@ -448,6 +448,16 @@ NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node)
   m_ssid = WifiDefaultParameters::GetSsid ();
 
   m_dca = CreateDca (15, 1023);
+  m_beaconDca = CreateDca (15, 1023);
+  /**
+   * We use a DIFS value for the beacons smaller than the 802.11 default
+   * value to ensure that the beacon queue will get access to the medium
+   * even when a lot of data has been queued. This is an 'extension' of
+   * 802.11 which is a first step towards 802.11e but it is a nice way 
+   * to get timely beacons without a lot of other hacks.
+   */
+  Time beaconDifs = m_parameters->GetSifs () + m_parameters->GetSlotTime ();
+  m_beaconDca->SetDifs (beaconDifs);
 
   // By default, we configure the Basic Rate Set to be the set
   // of rates we support which are mandatory.
@@ -464,6 +474,7 @@ NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node)
   MacHighNqap *high = new MacHighNqap ();
   high->SetDevice (this);
   high->SetDcaTxop (m_dca);
+  high->SetBeaconDcaTxop (m_beaconDca);
   high->SetStations (m_stations);
   high->SetPhy (m_phy);
   high->SetForwardCallback (MakeCallback (&NqapWifiNetDevice::DoForwardUp, 
@@ -488,6 +499,11 @@ NqapWifiNetDevice::SetSsid (Ssid ssid)
 {
   m_ssid = ssid;
 }
+void
+NqapWifiNetDevice::StartBeaconing (void)
+{
+  m_high->StartBeaconing ();
+}
 bool
 NqapWifiNetDevice::DoSendTo (const Packet &packet, Mac48Address const & to)
 {
@@ -506,9 +522,11 @@ NqapWifiNetDevice::DoDispose (void)
   WifiNetDevice::DoDispose ();
   // local cleanup
   delete m_dca;
+  delete m_beaconDca;
   delete m_high;
   m_dca = 0;
   m_high = 0;
+  m_beaconDca = 0;
 }
 
 

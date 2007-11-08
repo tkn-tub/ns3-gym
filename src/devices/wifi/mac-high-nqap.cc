@@ -52,6 +52,13 @@ MacHighNqap::SetDcaTxop (DcaTxop *dca)
   m_dca->SetTxFailedCallback (MakeCallback (&MacHighNqap::TxFailed, this));
 }
 void 
+MacHighNqap::SetBeaconDcaTxop (DcaTxop *dca)
+{
+  // we do not need to be notified when a beacon has been transmitted
+  // successfully or not.
+  m_beaconDca = dca;
+}
+void 
 MacHighNqap::SetDevice (WifiNetDevice *device)
 {
   m_device = device;
@@ -75,6 +82,11 @@ void
 MacHighNqap::SetBeaconInterval (Time interval)
 {
   m_beaconInterval = interval;
+}
+void
+MacHighNqap::StartBeaconing (void)
+{
+  SendOneBeacon ();
 }
 void 
 MacHighNqap::ForwardDown (Packet packet, Mac48Address from, Mac48Address to)
@@ -159,6 +171,27 @@ MacHighNqap::SendAssocResp (Mac48Address to, bool success)
   packet.AddHeader (assoc);
   
   m_dca->Queue (packet, hdr);
+}
+void
+MacHighNqap::SendOneBeacon (void)
+{
+  TRACE ("send probe response to="<<Mac48Address::GetBroadcast ());
+  WifiMacHeader hdr;
+  hdr.SetBeacon ();
+  hdr.SetAddr1 (Mac48Address::GetBroadcast ());
+  hdr.SetAddr2 (m_device->GetSelfAddress ());
+  hdr.SetAddr3 (m_device->GetSelfAddress ());
+  hdr.SetDsNotFrom ();
+  hdr.SetDsNotTo ();
+  Packet packet;
+  MgtBeaconHeader beacon;
+  beacon.SetSsid (m_device->GetSsid ());
+  beacon.SetSupportedRates (GetSupportedRates ());
+  beacon.SetBeaconIntervalUs (m_beaconInterval.GetMicroSeconds ());
+  packet.AddHeader (beacon);
+
+  m_beaconDca->Queue (packet, hdr);
+  Simulator::Schedule (m_beaconInterval, &MacHighNqap::SendOneBeacon, this);
 }
 void 
 MacHighNqap::TxOk (WifiMacHeader const &hdr)

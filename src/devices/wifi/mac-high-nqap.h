@@ -43,6 +43,7 @@ public:
   ~MacHighNqap ();
 
   void SetDcaTxop (DcaTxop *dca);
+  void SetBeaconDcaTxop (DcaTxop *dca);
   void SetDevice (WifiNetDevice *device);
   void SetStations (MacStations *stations);
   void SetPhy (Ptr<WifiPhy> phy);
@@ -51,6 +52,8 @@ public:
 
   void Queue (Packet packet, Mac48Address to);
 
+  void StartBeaconing (void);
+
   void Receive (Packet packet, WifiMacHeader const *hdr);
 private:
   void ForwardDown (Packet packet, Mac48Address from, Mac48Address to);
@@ -58,9 +61,11 @@ private:
   void TxFailed (WifiMacHeader const &hdr);
   void SendProbeResp (Mac48Address to);
   void SendAssocResp (Mac48Address to, bool success);
+  void SendOneBeacon (void);
   SupportedRates GetSupportedRates (void) const;
 
   DcaTxop *m_dca;
+  DcaTxop *m_beaconDca;
   WifiNetDevice *m_device;
   MacStations *m_stations;
   Ptr<WifiPhy> m_phy;

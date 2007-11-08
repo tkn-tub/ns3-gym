@@ -217,6 +217,7 @@ public:
   virtual Mac48Address GetBssid (void) const;
   virtual Ssid GetSsid (void) const;
   void SetSsid (Ssid ssid);
+  void StartBeaconing (void);
 protected:
   virtual void DoDispose (void);
 private:
@@ -225,6 +226,7 @@ private:
   friend class WifiNetDeviceFactory;
   Ssid m_ssid;
   DcaTxop *m_dca;
+  DcaTxop *m_beaconDca;
   MacHighNqap *m_high;
 };
 
