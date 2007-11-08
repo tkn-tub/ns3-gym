@@ -48,7 +48,7 @@ public:
    */
   void SetPosition (const Vector &position);
   /**
-   * \returns the current position.
+   * \returns the current velocity.
    */
   Vector GetVelocity (void) const;
   /**
@@ -78,7 +78,7 @@ private:
    */
   virtual void DoSetPosition (const Vector &position) = 0;
   /**
-   * \returns the current speed.
+   * \returns the current velocity.
    *
    * Concrete subclasses of this base class must 
    * implement this method.
