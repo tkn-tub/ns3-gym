@@ -23,6 +23,7 @@
 #include "ns3/simulator.h"
 #include "ns3/tag.h"
 #include "ns3/log.h"
+#include "ns3/node.h"
 
 #include "mac-low.h"
 #include "wifi-phy.h"
@@ -34,7 +35,7 @@
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
 #define MY_DEBUG(x) \
- NS_LOG_DEBUG (Simulator::Now () << " " << x)
+  NS_LOG_DEBUG (Simulator::Now () << " " << m_device->GetNode ()->GetId () << " " << x)
 
 namespace ns3 {
 
@@ -364,7 +365,7 @@ MacLow::StartTransmission (Packet packet,
 
   //NS_ASSERT (m_phy->IsStateIdle ());
 
-  MY_DEBUG ("startTx size="<< GetCurrentSize () << ", to=" << m_currentHdr.GetAddr1());
+  MY_DEBUG ("startTx size="<< GetCurrentSize () << ", to=" << m_currentHdr.GetAddr1()<<", listener="<<m_listener);
 
   if (m_txParams.MustSendRts ()) 
     {
@@ -732,45 +733,54 @@ MacLow::CtsTimeout (void)
   MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
   station->ReportRtsFailed ();
   m_hasCurrent = false;
-  m_listener->MissedCts ();
+  MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
+  listener->MissedCts ();
 }
 void
 MacLow::NormalAckTimeout (void)
 {
+  MY_DEBUG ("normal ack timeout");
   MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
   station->ReportDataFailed ();
-  m_listener->MissedAck ();
+  MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
+  listener->MissedAck ();
 }
 void
 MacLow::FastAckTimeout (void)
 {
   MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
   station->ReportDataFailed ();
+  MacLowTransmissionListener *listener = m_listener;
+  m_listener = 0;
   if (m_phy->IsStateIdle ()) 
     {
       MY_DEBUG ("fast Ack idle missed");
-      m_listener->MissedAck ();
+      listener->MissedAck ();
     }
-  m_listener = 0;
+  else
+    {
+      MY_DEBUG ("fast Ack ok");
+    }
 }
 void
 MacLow::SuperFastAckTimeout ()
 {
   MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
   station->ReportDataFailed ();
+  MacLowTransmissionListener *listener = m_listener;
+  m_listener = 0;
   if (m_phy->IsStateIdle ()) 
     {
       MY_DEBUG ("super fast Ack failed");
-      m_listener->MissedAck ();
+      listener->MissedAck ();
     } 
   else 
     {
       MY_DEBUG ("super fast Ack ok");
-      m_listener->GotAck (0.0, WifiMode ());
+      listener->GotAck (0.0, WifiMode ());
     }
-  m_listener = 0;
 }
 
 void
@@ -974,7 +984,9 @@ MacLow::WaitSifsAfterEndTx (void)
 void
 MacLow::FastAckFailedTimeout (void)
 {
-  m_listener->MissedAck ();
+  MacLowTransmissionListener *listener = m_listener;
+  m_listener = 0;
+  listener->MissedAck ();
   MY_DEBUG ("fast Ack busy but missed");
 }
 
