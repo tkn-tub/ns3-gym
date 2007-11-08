@@ -19,7 +19,7 @@ static void
 CourseChange (ns3::TraceContext const&, Ptr<const MobilityModel> mobility)
 {
   Vector pos = mobility->GetPosition ();
-  Vector vel = mobility->GetSpeed ();
+  Vector vel = mobility->GetVelocity ();
   std::cout << Simulator::Now () << ", model=" << mobility << ", POS: x=" << pos.x << ", y=" << pos.y
             << ", z=" << pos.z << "; VEL:" << vel.x << ", y=" << vel.y
             << ", z=" << vel.z << std::endl;

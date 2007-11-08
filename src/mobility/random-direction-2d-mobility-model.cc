@@ -200,9 +200,9 @@ RandomDirection2dMobilityModel::DoSetPosition (const Vector &position)
   m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
 }
 Vector
-RandomDirection2dMobilityModel::DoGetSpeed (void) const
+RandomDirection2dMobilityModel::DoGetVelocity (void) const
 {
-  return m_helper.GetSpeed ();
+  return m_helper.GetVelocity ();
 }
 
 

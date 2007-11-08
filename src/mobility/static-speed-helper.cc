@@ -53,7 +53,7 @@ StaticSpeedHelper::GetCurrentPosition (void) const
 }
 
 Vector 
-StaticSpeedHelper::GetSpeed (void) const
+StaticSpeedHelper::GetVelocity (void) const
 {
   return m_paused? Vector (0.0, 0.0, 0.0) : m_speed;
 }

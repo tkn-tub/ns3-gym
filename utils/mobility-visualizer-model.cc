@@ -49,7 +49,7 @@ Sample ()
       Ptr<Node> node = *nodeIter;
       Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
       Vector pos = mobility->GetPosition ();
-      Vector vel = mobility->GetSpeed ();
+      Vector vel = mobility->GetVelocity ();
 
       NodeUpdate update;
       update.node = PeekPointer<Node> (node);

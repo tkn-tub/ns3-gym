@@ -68,9 +68,9 @@ StaticSpeedMobilityModel::DoSetPosition (const Vector &position)
   NotifyCourseChange ();
 }
 Vector
-StaticSpeedMobilityModel::DoGetSpeed (void) const
+StaticSpeedMobilityModel::DoGetVelocity (void) const
 {
-  return m_helper.GetSpeed ();
+  return m_helper.GetVelocity ();
 }
 
 }; // namespace ns3

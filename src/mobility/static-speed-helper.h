@@ -39,7 +39,7 @@ class StaticSpeedHelper
   void Reset (const Vector &speed);
   Vector GetCurrentPosition (const Rectangle &bounds) const;
   Vector GetCurrentPosition (void) const;
-  Vector GetSpeed (void) const;
+  Vector GetVelocity (void) const;
   void SetSpeed (const Vector &speed);
   void Pause (void);
   void Unpause (void);

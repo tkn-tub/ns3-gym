@@ -48,7 +48,7 @@ StaticMobilityModel::DoSetPosition (const Vector &position)
   NotifyCourseChange ();
 }
 Vector
-StaticMobilityModel::DoGetSpeed (void) const
+StaticMobilityModel::DoGetVelocity (void) const
 {
   return Vector (0.0, 0.0, 0.0);
 }

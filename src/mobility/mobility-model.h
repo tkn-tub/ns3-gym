@@ -50,7 +50,7 @@ public:
   /**
    * \returns the current position.
    */
-  Vector GetSpeed (void) const;
+  Vector GetVelocity (void) const;
   /**
    * \param position a reference to another mobility model
    * \returns the distance between the two objects. Unit is meters.
@@ -83,7 +83,7 @@ private:
    * Concrete subclasses of this base class must 
    * implement this method.
    */
-  virtual Vector DoGetSpeed (void) const = 0;
+  virtual Vector DoGetVelocity (void) const = 0;
 };
 
 }; // namespace ns3

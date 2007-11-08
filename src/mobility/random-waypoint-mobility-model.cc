@@ -154,9 +154,9 @@ RandomWaypointMobilityModel::DoSetPosition (const Vector &position)
   Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
 }
 Vector
-RandomWaypointMobilityModel::DoGetSpeed (void) const
+RandomWaypointMobilityModel::DoGetVelocity (void) const
 {
-  return m_helper.GetSpeed ();
+  return m_helper.GetVelocity ();
 }
 
 

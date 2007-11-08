@@ -100,7 +100,7 @@ private:
   void BeginWalk (void);
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetSpeed (void) const;
+  virtual Vector DoGetVelocity (void) const;
 
   StaticSpeedHelper m_helper;
   Ptr<RandomWaypointMobilityModelParameters> m_parameters;

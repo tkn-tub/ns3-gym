@@ -39,9 +39,9 @@ MobilityModel::GetPosition (void) const
   return DoGetPosition ();
 }
 Vector
-MobilityModel::GetSpeed (void) const
+MobilityModel::GetVelocity (void) const
 {
-  return DoGetSpeed ();
+  return DoGetVelocity ();
 }
 
 void 

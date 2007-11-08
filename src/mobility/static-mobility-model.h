@@ -50,7 +50,7 @@ public:
 private:
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetSpeed (void) const;
+  virtual Vector DoGetVelocity (void) const;
 
   Vector m_position;
 };

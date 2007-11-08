@@ -134,7 +134,7 @@ class RandomWalk2dMobilityModel : public MobilityModel
   virtual void DoDispose (void);
   virtual Vector DoGetPosition (void) const;
   virtual void DoSetPosition (const Vector &position);
-  virtual Vector DoGetSpeed (void) const;
+  virtual Vector DoGetVelocity (void) const;
 
   StaticSpeedHelper m_helper;
   EventId m_event;

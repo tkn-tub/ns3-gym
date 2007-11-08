@@ -77,10 +77,10 @@ HierarchicalMobilityModel::DoSetPosition (const Vector &position)
   m_child->SetPosition (childPosition);
 }
 Vector
-HierarchicalMobilityModel::DoGetSpeed (void) const
+HierarchicalMobilityModel::DoGetVelocity (void) const
 {
-  Vector parentSpeed = m_parent->GetSpeed ();
-  Vector childSpeed = m_child->GetSpeed ();
+  Vector parentSpeed = m_parent->GetVelocity ();
+  Vector childSpeed = m_child->GetVelocity ();
   Vector speed (parentSpeed.x + childSpeed.x,
                parentSpeed.y + childSpeed.y,
                parentSpeed.z + childSpeed.z);
