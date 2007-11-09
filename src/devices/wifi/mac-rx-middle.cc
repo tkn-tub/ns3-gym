@@ -167,7 +167,7 @@ MacRxMiddle::Lookup (WifiMacHeader const *hdr)
           m_qosOriginatorStatus[std::make_pair(source, hdr->GetQosTid ())] = originator;
         }
     } 
-  else 
+  else
     {
       /* - management frames
        * - qos data broadcast frames
@@ -284,15 +284,22 @@ MacRxMiddle::Receive (Packet packet, WifiMacHeader const *hdr)
       TRACE ("forwarding data from="<<hdr->GetAddr2 ()<<
              ", seq="<<hdr->GetSequenceNumber ()<<
              ", frag="<<hdr->GetFragmentNumber ());
-      originator->SetSequenceControl (hdr->GetSequenceControl ());
+      if (!hdr->GetAddr1 ().IsBroadcast ())
+        {
+          originator->SetSequenceControl (hdr->GetSequenceControl ());
+        }
       m_callback (agregate, hdr);
     } 
   else 
     {
       TRACE ("forwarding "<<hdr->GetTypeString ()<<
+             ", from="<<hdr->GetAddr2 ()<<
              ", seq="<<hdr->GetSequenceNumber ()<<
              ", frag="<<hdr->GetFragmentNumber ());
-      originator->SetSequenceControl (hdr->GetSequenceControl ());
+      if (!hdr->GetAddr1 ().IsBroadcast ())
+        {
+          originator->SetSequenceControl (hdr->GetSequenceControl ());
+        }
       m_callback (packet, hdr);
     }
 }
