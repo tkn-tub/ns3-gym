@@ -125,8 +125,8 @@ public:
   virtual void StartNext (void) {
     m_txop->StartNext ();
   }
-
   virtual void Cancel (void) {
+    m_txop->Cancel ();
     NS_ASSERT (false);
   }
 
@@ -567,6 +567,21 @@ DcaTxop::StartNext (void)
       params.EnableNextData (GetNextFragmentSize ());
     }
   Low ()->StartTransmission (fragment, &hdr, params, m_transmissionListener);
+}
+
+void
+DcaTxop::Cancel (void)
+{
+  NS_LOG_DEBUG ("transmission cancelled");
+  /**
+   * This will typically happen in a station when another 
+   * higher-priority DCF gets access to the medium. The only
+   * thing we have to do to deal with this case is to record 
+   * the current access as failed and request another access
+   * for later.
+   */
+  m_dcf->UpdateFailedCw ();
+  m_dcf->RequestAccess ();
 }
 
 } // namespace ns3

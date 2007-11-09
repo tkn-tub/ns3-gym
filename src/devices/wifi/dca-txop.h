@@ -123,6 +123,7 @@ private:
   void GotAck (double snr, WifiMode txMode);
   void MissedAck (void);
   void StartNext (void);
+  void Cancel (void);
 
   bool NeedRts (void);
   bool NeedFragmentation (void);
