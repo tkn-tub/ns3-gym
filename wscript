@@ -118,7 +118,6 @@ def configure(conf):
         variant_env.append_value('CXXFLAGS', ['-Werror'])
 
     if 'debug' in Params.g_options.debug_level.lower():
-        variant_env.append_value('CXXDEFINES', 'NS3_DEBUG_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_ASSERT_ENABLE')
         variant_env.append_value('CXXDEFINES', 'NS3_LOG_ENABLE')
 
@@ -173,6 +172,10 @@ def build(bld):
         raise SystemExit(0)
 
     check_shell()
+
+    if Params.g_options.doxygen:
+        doxygen()
+        raise SystemExit(0)
 
     # process subfolders from here
     bld.add_subdirs('src')

@@ -82,7 +82,7 @@ public:
     LinkType    linkType, 
     Ipv4Address linkId, 
     Ipv4Address linkData, 
-    uint32_t    metric);
+    uint16_t    metric);
 
 /**
  * @brief Destroy a Global Routing Link Record.
@@ -176,7 +176,7 @@ public:
  *
  * @returns The metric field of the Global Routing Link Record.
  */
-  uint32_t GetMetric(void) const;
+  uint16_t GetMetric(void) const;
 
 /**
  * @brief Set the Metric Data field of the Global Routing Link Record.
@@ -189,7 +189,7 @@ public:
  *
  * @param metric The new metric for the current Global Routing Link Record.
  */
-  void SetMetric(uint32_t metric);
+  void SetMetric(uint16_t metric);
 
 private:
 /**
@@ -230,7 +230,7 @@ private:
  * of two hops relate to the cost of sending a packet); rather you should
  * use something like delay.
  */
-  uint32_t m_metric;  
+  uint16_t m_metric;  
 };
 
 /**  

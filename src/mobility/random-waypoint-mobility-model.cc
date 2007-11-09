@@ -117,15 +117,15 @@ RandomWaypointMobilityModel::RandomWaypointMobilityModel (Ptr<RandomWaypointMobi
 void
 RandomWaypointMobilityModel::BeginWalk (void)
 {
-  Position m_current = m_helper.GetCurrentPosition ();
-  Position destination = m_parameters->m_position->Get ();
+  Vector m_current = m_helper.GetCurrentPosition ();
+  Vector destination = m_parameters->m_position->Get ();
   double speed = m_parameters->m_speed->GetValue ();
   double dx = (destination.x - m_current.x);
   double dy = (destination.y - m_current.y);
   double dz = (destination.z - m_current.z);
   double k = speed / std::sqrt (dx*dx + dy*dy + dz*dz);
 
-  m_helper.Reset (Speed (k*dx, k*dy, k*dz));
+  m_helper.Reset (Vector (k*dx, k*dy, k*dz));
   Time travelDelay = Seconds (CalculateDistance (destination, m_current) / speed);
   m_event = Simulator::Schedule (travelDelay,
 				 &RandomWaypointMobilityModel::Start, this);
@@ -141,22 +141,22 @@ RandomWaypointMobilityModel::Start (void)
   m_event = Simulator::Schedule (pause, &RandomWaypointMobilityModel::BeginWalk, this);
 }
 
-Position 
-RandomWaypointMobilityModel::DoGet (void) const
+Vector
+RandomWaypointMobilityModel::DoGetPosition (void) const
 {
   return m_helper.GetCurrentPosition ();
 }
 void 
-RandomWaypointMobilityModel::DoSet (const Position &position)
+RandomWaypointMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.InitializePosition (position);
   Simulator::Remove (m_event);
   Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
 }
-Speed 
-RandomWaypointMobilityModel::DoGetSpeed (void) const
+Vector
+RandomWaypointMobilityModel::DoGetVelocity (void) const
 {
-  return m_helper.GetSpeed ();
+  return m_helper.GetVelocity ();
 }
 
 

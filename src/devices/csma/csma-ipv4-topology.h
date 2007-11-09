@@ -49,8 +49,8 @@ class CsmaIpv4Topology {
 public:
 
   /**
-   * \param n1 Node to be attached to the Csma channel
-   * \param ch CsmaChannel to which node n1 should be attached
+   * \param node Node to be attached to the Csma channel
+   * \param channel CsmaChannel to which node n1 should be attached
    * \param addr Mac address of the node
    *
    * Add a Csma node to a Csma channel. This function adds
@@ -102,7 +102,8 @@ public:
    * \param netDeviceNumber The NetDevice index number with which to associate
    *        the address.
    * \param address The Ipv4 Address for the interface.
-   * \param network The network mask for the interface
+   * \param mask The network mask for the interface
+   * \param metric (optional) metric (cost) to assign for routing calculations
    * 
    * Add an Ipv4Address to the Ipv4 interface associated with the
    * ndNum CsmaIpv4NetDevices on the provided CsmaIpv4Channel
@@ -110,7 +111,8 @@ public:
   static uint32_t AddIpv4Address(Ptr<Node> node,
                                  uint32_t netDeviceNumber, 
                                  const Ipv4Address address,
-                                 const Ipv4Mask mask);
+                                 const Ipv4Mask mask,
+                                 uint16_t metric = 1);
 
   /**
    * \param nd1 Node

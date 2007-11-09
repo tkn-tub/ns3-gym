@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 INRIA
+ * Copyright (c) 2007 INESC Porto
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,34 +15,16 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ * Author: Gustavo J. A. M. Carneiro  <gjc@inescporto.pt>
  */
-#include "position.h"
-#include <cmath>
+
+#include "olsr-agent.h"
+#include "olsr-agent-impl.h"
 
 namespace ns3 {
+namespace olsr {
 
+const InterfaceId Agent::iid = MakeInterfaceId ("OlsrAgent", Object::iid);
+const ClassId Agent::cid = MakeClassId< AgentImpl, Ptr<Node> > ("OlsrAgent", Agent::iid);
 
-Position::Position (double _x, double _y, double _z)
-  : x (_x),
-    y (_y),
-    z (_z)
-{}
-
-Position::Position ()
-  : x (0.0),
-    y (0.0),
-    z (0.0)
-{}
-
-double 
-CalculateDistance (const Position &a, const Position &b)
-{
-  double dx = b.x - a.x;
-  double dy = b.y - a.y;
-  double dz = b.z - a.z;
-  double distance = std::sqrt (dx * dx + dy * dy + dz * dz);
-  return distance;
-}
-
-} // namespace ns3
+}}

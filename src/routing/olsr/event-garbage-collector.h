@@ -1,7 +1,6 @@
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
 /*
  * Copyright (c) 2007 INESC Porto
- * All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -21,9 +20,9 @@
 #ifndef EVENT_GARBAGE_COLLECTOR_H
 #define EVENT_GARBAGE_COLLECTOR_H
 
-#include <list>
-#include "event-id.h"
-#include "simulator.h"
+#include <set>
+#include "ns3/event-id.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 
@@ -49,8 +48,18 @@ public:
 
 private:
 
-  std::list<EventId>::size_type m_nextCleanupSize;
-  std::list<EventId> m_events;
+  struct EventIdLessThanTs
+  {
+    bool operator () (const EventId &a, const EventId &b) const
+    {
+      return (a.GetTs () < b.GetTs ());
+    }
+  };
+
+  typedef std::multiset<EventId, EventIdLessThanTs> EventList;
+
+  EventList::size_type m_nextCleanupSize;
+  EventList m_events;
 
   void Cleanup ();
   void Grow ();

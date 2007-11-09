@@ -24,6 +24,15 @@
 
 namespace ns3 {
 
+CommandLine::List::~List ()
+{
+  for (iterator iter = begin (); iter != end (); iter++)
+    {
+      delete *iter;
+    }
+}
+
+
 CommandDefaultValue CommandLine::g_help ("help",
                                          "Print Help text for all commands",
                                          MakeCallback (&CommandLine::PrintHelp));
@@ -109,8 +118,15 @@ CommandLine::Parse (int argc, char *argv[])
       std::string name, value;
       if (cur == std::string::npos)
         {
+          if (argc == 1)
+            {
+              // invalid argument. ignore it.
+              continue;
+            }
+          argv++;
+          argc--;
           name = param;
-          value = "";
+          value = *argv;
         }
       else
         {
@@ -124,7 +140,12 @@ CommandLine::Parse (int argc, char *argv[])
           DefaultValueBase *item = *i;
           if (item->GetName () == name)
             {
-              item->ParseValue (value);
+              if (!item->ParseValue (value))
+                {
+                  std::cerr << "Warning: failed to parse command line argument `"
+                            << name << "' of type '" << item->GetType ()
+                            << "' with value `" << value << "'." << std::endl;
+                }
               continue;
             }
         }
@@ -144,3 +165,83 @@ CommandLine::Parse (int argc, char *argv[])
 }
 
 }//namespace ns3
+
+
+
+#ifdef RUN_SELF_TESTS
+#include "test.h"
+#include <iostream>
+#include <sstream>
+
+namespace ns3 {
+
+
+class CommandLineTest : public Test
+{
+public:
+  CommandLineTest () : Test ("CommandLine") {}
+  virtual bool RunTests (void)
+  {
+    bool result = true;
+
+    // redirect stderr temporarily (else warnings appear during unit testing, which is not nice)
+    std::ostringstream nullout;
+    std::streambuf *origcerr = std::cerr.rdbuf (nullout.rdbuf ());
+    {
+      char *argv[] = {"run-tests", "--loops", "bad-value", NULL};
+      int argc = sizeof (argv) / sizeof (argv[0]) - 1;
+      
+      uint32_t loops = 123;
+      CommandLine::AddArgValue ("loops","a test of the command line", loops);
+      CommandLine::Parse (argc, argv);
+      
+      NS_TEST_ASSERT_EQUAL (loops, 123);
+    }
+
+    {
+      char *argv[] = {"run-tests", "--loops=bad-value", NULL};
+      int argc = sizeof (argv) / sizeof (argv[0]) - 1;
+      
+      uint32_t loops = 123;
+      CommandLine::AddArgValue ("loops","a test of the command line", loops);
+      CommandLine::Parse (argc, argv);
+      
+      NS_TEST_ASSERT_EQUAL (loops, 123);
+    }
+
+    {
+      char *argv[] = {"run-tests", "--loops", "456", NULL};
+      int argc = sizeof (argv) / sizeof (argv[0]) - 1;
+      
+      uint32_t loops = 123;
+      CommandLine::AddArgValue ("loops","a test of the command line", loops);
+      CommandLine::Parse (argc, argv);
+      
+      NS_TEST_ASSERT_EQUAL (loops, 456);
+    }
+
+    {
+      char *argv[] = {"run-tests", "--loops=456", NULL};
+      int argc = sizeof (argv) / sizeof (argv[0]) - 1;
+      
+      uint32_t loops = 123;
+      CommandLine::AddArgValue ("loops","a test of the command line", loops);
+      CommandLine::Parse (argc, argv);
+      
+      NS_TEST_ASSERT_EQUAL (loops, 456);
+    }
+
+    // unredirect cerr
+    std::cerr.rdbuf (origcerr);
+
+
+    return result;
+  }
+};
+
+
+static CommandLineTest g_commandLineTests;
+
+}//namespace ns3
+
+#endif /* RUN_SELF_TESTS */

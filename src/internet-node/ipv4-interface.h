@@ -97,6 +97,14 @@ public:
    */
   Ipv4Mask GetNetworkMask (void) const;
   /**
+   * \param metric configured routing metric (cost) of this interface
+   */
+  void SetMetric (uint16_t metric);
+  /**
+   * \returns configured routing metric (cost) of this interface
+   */
+  uint16_t GetMetric (void) const;
+  /**
    * \returns the ipv4 address of this interface
    */
   Ipv4Address GetAddress (void) const;
@@ -147,6 +155,7 @@ private:
   bool m_ifup;
   Ipv4Address m_address;
   Ipv4Mask m_netmask;
+  uint16_t m_metric;
 };
 
 }; // namespace ns3

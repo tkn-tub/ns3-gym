@@ -95,7 +95,7 @@ Mac48Address::IsMatchingType (const Address &address)
 {
   return address.CheckCompatible (GetType (), 6);
 }
-Mac48Address::operator Address ()
+Mac48Address::operator Address () const
 {
   return ConvertTo ();
 }
@@ -133,18 +133,47 @@ Mac48Address::GetType (void)
   return type;
 }
 
+bool
+Mac48Address::IsBroadcast (void) const
+{
+  return *this == GetBroadcast ();
+}
+bool 
+Mac48Address::IsMulticast (void) const
+{
+  return (m_address[0] & 0x01) == 0x01;
+}
+Mac48Address
+Mac48Address::GetBroadcast (void)
+{
+  static Mac48Address broadcast = Mac48Address ("ff:ff:ff:ff:ff:ff");
+  return broadcast;
+}
 bool operator == (const Mac48Address &a, const Mac48Address &b)
 {
-  uint8_t ada[6];
-  uint8_t adb[6];
-  a.CopyTo (ada);
-  b.CopyTo (adb);
-  return memcmp (ada, adb, 6) == 0;
+  return memcmp (a.m_address, b.m_address, 6) == 0;
 }
 bool operator != (const Mac48Address &a, const Mac48Address &b)
 {
   return ! (a == b);
 }
+
+bool operator < (const Mac48Address &a, const Mac48Address &b)
+{
+  for (uint8_t i = 0; i < 6; i++) 
+    {
+      if (a.m_address[i] < b.m_address[i]) 
+        {
+          return true;
+        } 
+      else if (a.m_address[i] > b.m_address[i]) 
+        {
+          return false;
+        }
+    }
+  return false;
+}
+
 
 std::ostream& operator<< (std::ostream& os, const Mac48Address & address)
 {

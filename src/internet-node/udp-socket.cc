@@ -452,6 +452,8 @@ UdpSocketTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (m_receivedPacket.GetSize (), 123);
   NS_TEST_ASSERT_EQUAL (m_receivedPacket2.GetSize (), 123);
 
+  Simulator::Destroy ();
+
   return result;
 }
 

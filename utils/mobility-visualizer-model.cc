@@ -48,15 +48,15 @@ Sample ()
     {
       Ptr<Node> node = *nodeIter;
       Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
-      Position pos = mobility->Get ();
-      Speed vel = mobility->GetSpeed ();
+      Vector pos = mobility->GetPosition ();
+      Vector vel = mobility->GetVelocity ();
 
       NodeUpdate update;
       update.node = PeekPointer<Node> (node);
       update.x = pos.x;
       update.y = pos.y;
-      update.vx = vel.dx;
-      update.vy = vel.dy;
+      update.vx = vel.x;
+      update.vy = vel.y;
       data->updateList.push_back (update);
     }
   data->time = Simulator::Now ().GetSeconds ();

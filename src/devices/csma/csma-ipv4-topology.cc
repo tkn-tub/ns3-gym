@@ -96,7 +96,8 @@ CsmaIpv4Topology::AddIpv4Address(
   Ptr<Node>             node,
   uint32_t              netDeviceNumber,
   const Ipv4Address     address,
-  const Ipv4Mask        mask)
+  const Ipv4Mask        mask,
+  uint16_t              metric)
 {
   Ptr<NetDevice> nd = node->GetDevice(netDeviceNumber);
 
@@ -105,6 +106,7 @@ CsmaIpv4Topology::AddIpv4Address(
 
   ipv4->SetAddress (ifIndex, address);
   ipv4->SetNetworkMask (ifIndex, mask);
+  ipv4->SetMetric (ifIndex, metric);
   ipv4->SetUp (ifIndex);
   return ifIndex;
 }

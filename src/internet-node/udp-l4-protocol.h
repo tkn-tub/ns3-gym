@@ -77,10 +77,11 @@ public:
              Ipv4Address saddr, Ipv4Address daddr, 
              uint16_t sport, uint16_t dport);
   /**
-   * \brief Recieve a packet up the protocol stack
+   * \brief Receive a packet up the protocol stack
    * \param p The Packet to dump the contents into
    * \param source The source's Ipv4Address
    * \param destination The destinations Ipv4Address
+   * \param interface the interface from which the packet is coming.
    */
   // inherited from Ipv4L4Protocol
   virtual void Receive(Packet& p, 

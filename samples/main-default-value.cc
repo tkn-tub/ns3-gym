@@ -62,7 +62,7 @@ int main (int argc, char* argv[])
   //utilize the loops variable to show that it can be read from the command line
   if(loops>0)
   {
-    cout<<"You requested "<<loops<<" iterations of a loop";
+    std::cerr<<"You requested "<<loops<<" iterations of a loop";
     for(uint32_t i=0;i<loops;++i)
       cout<<"iteration "<<i;
   }

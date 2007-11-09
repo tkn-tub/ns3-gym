@@ -22,8 +22,7 @@
 
 namespace ns3 {
 
-class Position;
-class Speed;
+class Vector;
 
 /**
  * \brief a 2d rectangle
@@ -51,9 +50,9 @@ public:
    * Create a zero-sized rectangle located at coordinates (0.0,0.0)
    */
   Rectangle ();
-  bool IsInside (const Position &position) const;
-  Side GetClosestSide (const Position &position) const;
-  Position CalculateIntersection (const Position &current, const Speed &speed) const;
+  bool IsInside (const Vector &position) const;
+  Side GetClosestSide (const Vector &position) const;
+  Vector CalculateIntersection (const Vector &current, const Vector &speed) const;
 
   double xMin;
   double xMax;

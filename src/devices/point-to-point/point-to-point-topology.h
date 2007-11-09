@@ -70,6 +70,20 @@ public:
     Ptr<Node> n1, const Ipv4Address& addr1,
     Ptr<Node> n2, const Ipv4Address& addr2);
 
+  /** 
+   * \param chan PointToPointChannel to use
+   * \param n1 Node
+   * \param n2 Node
+   * \param metric link metric to assign on Ipv4Link on chan between n1 and n2
+   * 
+   * Add a non-unit-cost link metric (bidirectionally) to the Ipv4 
+   * interfaces associated with the two PointToPointNetDevices on the 
+   * provided PointToPointChannel
+   */
+  static void SetIpv4Metric(
+    Ptr<const PointToPointChannel> chan,
+    Ptr<Node> n1, Ptr<Node> n2, const uint16_t metric);
+
   /**
    * \param channel PointToPointChannel to use
    * \param n1 Node

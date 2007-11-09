@@ -227,6 +227,7 @@ main (int argc, char *argv[])
   pcaptrace.TraceAllIp ();
 
   NS_LOG_INFO ("Run Simulation.");
+  Simulator::StopAt (Seconds (10));
   Simulator::Run ();    
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");

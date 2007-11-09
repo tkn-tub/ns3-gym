@@ -22,7 +22,7 @@
 
 #include "ns3/object.h"
 #include "ns3/component-manager.h"
-#include "position.h"
+#include "vector.h"
 
 namespace ns3 {
 
@@ -42,7 +42,7 @@ public:
   /**
    * \returns the next randomly-choosen position.
    */
-  virtual Position Get (void) const = 0;
+  virtual Vector Get (void) const = 0;
 };
 
 /**
@@ -67,7 +67,7 @@ public:
   RandomRectanglePosition (const RandomVariable &x,
 			   const RandomVariable &y);
   virtual ~RandomRectanglePosition ();
-  virtual Position Get (void) const;
+  virtual Vector Get (void) const;
 private:
   RandomVariable *m_x;
   RandomVariable *m_y;
@@ -102,7 +102,7 @@ public:
 		      const RandomVariable &rho,
 		      double x, double y);
   virtual ~RandomDiscPosition ();
-  virtual Position Get (void) const;
+  virtual Vector Get (void) const;
 private:
   RandomVariable *m_theta;
   RandomVariable *m_rho;

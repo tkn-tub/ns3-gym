@@ -32,22 +32,23 @@
  *     send information out on screen. All logging messages 
  *     are disabled by default. To enable selected logging 
  *     messages, use the ns3::LogComponentEnable
- *     function. 
- * 
- * Alternatively, you can use the NS_LOG
- * environment variable to define a ';'-separated list of
+ *     function or use the NS_LOG environment variable and 
+ *     ns3::LogComponentEnableEnvVar
+ *
+ * Use the environment variable NS_LOG to define a ';'-separated list of
  * logging components to enable. For example, NS_LOG=a;b;c;DAFD;GH
  * would enable the components 'a', 'b', 'c', 'DAFD', and, 'GH'.
+ * NS_LOG=* will enable all available log components.
  *
  * For each component, the "debug" log level is enabled by default
  * but more components can be enabled selectively with the following
  * syntax: NS_LOG='Component1=func|param|warn;Component2=error|debug'
  * This example would enable the 'func', 'param', and 'warn' log
  * levels for 'Component1' and the 'error' and 'debug' log levels
- * for 'Component2'.
+ * for 'Component2'.  The wildcard can be used here as well.  For example
+ * NS_LOG='*=level_all|prefix' would enable all log levels and prefix all
+ * prints with the component and function names.
  *
- * The list of available log components can be printed on stdout
- * with the NS_LOG=print-list syntax.
  */
 
 /**
@@ -87,6 +88,19 @@
 
 #ifdef NS3_LOG_ENABLE
 
+/**
+ * \param level the log level
+ * \param msg the message to log
+ *
+ * This macro allows you to log an arbitrary message at a specific
+ * log level. The log message is expected to be a C++ ostream
+ * message such as "my string" << aNumber << "my oth stream".
+ *
+ * Typical usage looks like:
+ * \code
+ * NS_LOG (LOG_DEBUG, "a number="<<aNumber<<", anotherNumber="<<anotherNumber);
+ * \endcode
+ */
 #define NS_LOG(level, msg)                                      \
   do                                                            \
     {                                                           \
@@ -108,7 +122,7 @@
       if (g_log.IsEnabled (level))                              \
         {                                                       \
           std::clog << g_log.Name () << ":" << __FUNCTION__ <<  \
-            "(): " << std::endl;                                \
+            "()" << std::endl;                                \
         }                                                       \
     }                                                           \
   while (false)
@@ -187,7 +201,7 @@ enum LogLevel {
   LOG_ALL            = 0x7fffffff, // print everything
   LOG_LEVEL_ALL      = LOG_ALL,
 
-  LOG_PREFIX_ALL     = 0x80000000
+  LOG_PREFIX_ALL     = 0x80000000  // prefix all trace prints with function
 };
 
 #endif
@@ -196,7 +210,6 @@ enum LogLevel {
 /**
  * \param name a log component name
  * \param level a logging level
- * \param decorate whether or not to add function names to all logs
  * \ingroup logging
  *
  * Enable the logging output associated with that log component.
@@ -204,9 +217,9 @@ enum LogLevel {
  * to ns3::LogComponentDisable.
  */
   void LogComponentEnable (char const *name, enum LogLevel level);
+
 /**
  * \param level a logging level
- * \param decorate whether or not to add function names to all logs
  * \ingroup logging
  *
  * Enable the logging output for all registered log components.
@@ -230,13 +243,10 @@ enum LogLevel {
 void LogComponentDisable (char const *name, enum LogLevel level);
 
 /**
- * \param name a log component name
  * \param level a logging level
  * \ingroup logging
  *
- * Disable the logging output associated with that log component.
- * The logging output can be later re-enabled with a call
- * to ns3::LogComponentEnable.
+ * Disable all logging for all components.
  */
 void LogComponentDisableAll (enum LogLevel level);
 
@@ -249,11 +259,6 @@ void LogComponentDisableAll (enum LogLevel level);
  * \ingroup logging
  *
  * Print the list of logging messages available.
- * The output of this function can be obtained by setting
- * the NS_LOG environment variable to the special value 
- * 'print-list'.
- * 
- * For example: NS_LOG=print-list
  */
 #ifdef NS3_LOG_ENABLE
 void LogComponentPrintList (void);
@@ -266,6 +271,7 @@ void LogComponentPrintList (void);
 class LogComponent {
 public:
   LogComponent (char const *name);
+  void EnvVarCheck (char const *name);
   bool IsEnabled (enum LogLevel level) const;
   bool IsNoneEnabled (void) const;
   void Enable (enum LogLevel level);
