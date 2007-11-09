@@ -381,7 +381,7 @@ DefaultValueTest::RunTests (void)
   DefaultValue::Bind ("test-c", "257");  
   NumericDefaultValue<float> x ("test-x", "help-x", 10.0);
   NumericDefaultValue<double> y ("test-y", "help-y", 10.0);
-
+  DefaultValue::Bind ("test-y", "-3");  
 
   EnumDefaultValue<enum MyEnum> e ("test-e", "help-e",
 				   MY_ENUM_C, "C",
