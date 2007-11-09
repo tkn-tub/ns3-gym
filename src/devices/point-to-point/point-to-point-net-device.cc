@@ -151,7 +151,10 @@ void PointToPointNetDevice::DoDispose()
 void PointToPointNetDevice::SetDataRate(const DataRate& bps)
 {
   NS_LOG_FUNCTION;
-  m_bps = bps;
+  if (!m_channel || bps <= m_channel->GetDataRate ())
+    {
+      m_bps = bps;
+    }
 }
 
 void PointToPointNetDevice::SetInterframeGap(const Time& t)

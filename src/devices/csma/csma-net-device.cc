@@ -198,7 +198,10 @@ void
 CsmaNetDevice::SetDataRate (DataRate bps)
 {
   NS_LOG_FUNCTION;
-  m_bps = bps;
+  if (!m_channel || bps <= m_channel->GetDataRate ())
+    {
+      m_bps = bps;
+    }
 }
 
 void 

@@ -73,11 +73,17 @@ class DataRate
   DataRate (const std::string s);
   
   bool operator <  (const DataRate& rhs);
+  bool operator <  (const DataRate& rhs) const;
   bool operator <= (const DataRate& rhs);
+  bool operator <= (const DataRate& rhs) const;
   bool operator >  (const DataRate& rhs);
+  bool operator >  (const DataRate& rhs) const;
   bool operator >= (const DataRate& rhs);
+  bool operator >= (const DataRate& rhs) const;
   bool operator == (const DataRate& rhs);
+  bool operator == (const DataRate& rhs) const;
   bool operator != (const DataRate& rhs);
+  bool operator != (const DataRate& rhs) const;
   
   /**
    * \brief Calculate transmission time

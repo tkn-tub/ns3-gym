@@ -150,7 +150,17 @@ bool DataRate::operator < (const DataRate& rhs)
 	return m_bps<rhs.m_bps;
 }
 
+bool DataRate::operator < (const DataRate& rhs) const
+{
+	return m_bps<rhs.m_bps;
+}
+
 bool DataRate::operator <= (const DataRate& rhs)
+{
+	return m_bps<=rhs.m_bps;
+}
+
+bool DataRate::operator <= (const DataRate& rhs) const
 {
 	return m_bps<=rhs.m_bps;
 }
@@ -160,7 +170,17 @@ bool DataRate::operator >  (const DataRate& rhs)
 	return m_bps>rhs.m_bps;
 }
 
+bool DataRate::operator >  (const DataRate& rhs) const
+{
+	return m_bps>rhs.m_bps;
+}
+
 bool DataRate::operator >= (const DataRate& rhs)
+{
+	return m_bps>=rhs.m_bps;
+}
+
+bool DataRate::operator >= (const DataRate& rhs) const
 {
 	return m_bps>=rhs.m_bps;
 }
@@ -170,7 +190,17 @@ bool DataRate::operator == (const DataRate& rhs)
 	return m_bps==rhs.m_bps;
 }
 
+bool DataRate::operator == (const DataRate& rhs) const
+{
+	return m_bps==rhs.m_bps;
+}
+
 bool DataRate::operator != (const DataRate& rhs)
+{
+	return m_bps!=rhs.m_bps;
+}
+
+bool DataRate::operator != (const DataRate& rhs) const
 {
 	return m_bps!=rhs.m_bps;
 }
