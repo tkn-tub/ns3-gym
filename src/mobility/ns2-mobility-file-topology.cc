@@ -20,14 +20,14 @@
  */
 #include <fstream>
 #include <sstream>
-#include "ns3/debug.h"
+#include "ns3/log.h"
 #include "ns3/simulator.h"
 #include "ns3/node-list.h"
 #include "ns3/node.h"
 #include "ns2-mobility-file-topology.h"
 #include "static-speed-mobility-model.h"
 
-NS_DEBUG_COMPONENT_DEFINE ("Ns2MobilityFileTopology");
+NS_LOG_COMPONENT_DEFINE ("Ns2MobilityFileTopology");
 
 namespace ns3 {
 
@@ -97,27 +97,27 @@ Ns2MobilityFileTopology::LayoutObjectStore (const ObjectStore &store) const
 	    {
 	      double value = ReadDouble (line.substr (endNodeId + 9, std::string::npos));
 	      std::string coordinate = line.substr (endNodeId + 6, 1);
-              Position position = model->Get ();
+              Vector position = model->GetPosition ();
 	      if (coordinate == "X")
 		{
                   position.x = value;
-		  NS_DEBUG ("X=" << value);
+		  NS_LOG_DEBUG ("X=" << value);
 		}
 	      else if (coordinate == "Y")
 		{
                   position.y = value;
-		  NS_DEBUG ("Y=" << value);
+		  NS_LOG_DEBUG ("Y=" << value);
 		}
 	      else if (coordinate == "Z")
 		{
                   position.z = value;
-		  NS_DEBUG ("Z=" << value);
+		  NS_LOG_DEBUG ("Z=" << value);
 		}
               else
                 {
                   continue;
                 }
-              model->Set (position);
+              model->SetPosition (position);
 	    }
 	  else 
 	    {
@@ -127,9 +127,9 @@ Ns2MobilityFileTopology::LayoutObjectStore (const ObjectStore &store) const
 	      double xSpeed = ReadDouble (line.substr (endNodeId + 10, xSpeedEnd - endNodeId - 10));
 	      double ySpeed = ReadDouble (line.substr (xSpeedEnd + 1, ySpeedEnd - xSpeedEnd - 1));
 	      double zSpeed = ReadDouble (line.substr (ySpeedEnd + 1, std::string::npos));
-	      NS_DEBUG ("at=" << at << "xSpeed=" << xSpeed << ", ySpeed=" << ySpeed << ", zSpeed=" << zSpeed);
+	      NS_LOG_DEBUG ("at=" << at << "xSpeed=" << xSpeed << ", ySpeed=" << ySpeed << ", zSpeed=" << zSpeed);
 	      Simulator::Schedule (Seconds (at), &StaticSpeedMobilityModel::SetSpeed, model,
-				   Speed (xSpeed, ySpeed, zSpeed));
+				   Vector (xSpeed, ySpeed, zSpeed));
 	    }
 	}
       file.close();

@@ -17,26 +17,26 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "position.h"
+#include "vector.h"
 #include <cmath>
 
 namespace ns3 {
 
 
-Position::Position (double _x, double _y, double _z)
+Vector::Vector (double _x, double _y, double _z)
   : x (_x),
     y (_y),
     z (_z)
 {}
 
-Position::Position ()
+Vector::Vector ()
   : x (0.0),
     y (0.0),
     z (0.0)
 {}
 
 double 
-CalculateDistance (const Position &a, const Position &b)
+CalculateDistance (const Vector &a, const Vector &b)
 {
   double dx = b.x - a.x;
   double dy = b.y - a.y;

@@ -21,8 +21,7 @@
 #define MOBILITY_MODEL_H
 
 #include "ns3/object.h"
-#include "position.h"
-#include "speed.h"
+#include "vector.h"
 
 namespace ns3 {
 
@@ -43,15 +42,15 @@ public:
   /**
    * \returns the current position
    */
-  Position Get (void) const;
+  Vector GetPosition (void) const;
   /**
    * \param position the position to set.
    */
-  void Set (const Position &position);
+  void SetPosition (const Vector &position);
   /**
-   * \returns the current position.
+   * \returns the current velocity.
    */
-  Speed GetSpeed (void) const;
+  Vector GetVelocity (void) const;
   /**
    * \param position a reference to another mobility model
    * \returns the distance between the two objects. Unit is meters.
@@ -70,21 +69,21 @@ private:
    * Concrete subclasses of this base class must 
    * implement this method.
    */
-  virtual Position DoGet (void) const = 0;
+  virtual Vector DoGetPosition (void) const = 0;
   /**
    * \param position the position to set.
    *
    * Concrete subclasses of this base class must 
    * implement this method.
    */
-  virtual void DoSet (const Position &position) = 0;
+  virtual void DoSetPosition (const Vector &position) = 0;
   /**
-   * \returns the current speed.
+   * \returns the current velocity.
    *
    * Concrete subclasses of this base class must 
    * implement this method.
    */
-  virtual Speed DoGetSpeed (void) const = 0;
+  virtual Vector DoGetVelocity (void) const = 0;
 };
 
 }; // namespace ns3

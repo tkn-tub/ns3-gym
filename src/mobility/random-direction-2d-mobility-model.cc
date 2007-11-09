@@ -153,12 +153,12 @@ RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
 {
   NS_LOG_FUNCTION;
   double speed = m_parameters->m_speedVariable->GetValue ();
-  const Speed vector (std::cos (direction) * speed,
-                      std::sin (direction) * speed,
-                      0.0);
-  Position position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
+  const Vector vector (std::cos (direction) * speed,
+                       std::sin (direction) * speed,
+                       0.0);
+  Vector position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
   m_helper.Reset (vector);
-  Position next = m_parameters->m_bounds.CalculateIntersection (position, vector);
+  Vector next = m_parameters->m_bounds.CalculateIntersection (position, vector);
   Time delay = Seconds (CalculateDistance (position, next) / speed);
   m_event = Simulator::Schedule (delay,
 				 &RandomDirection2dMobilityModel::BeginPause, this);
@@ -169,7 +169,7 @@ RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
 {
   double direction = UniformVariable::GetSingleValue (0, PI);
   
-  Position position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
+  Vector position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
   switch (m_parameters->m_bounds.GetClosestSide (position))
     {
     case Rectangle::RIGHT:
@@ -187,22 +187,22 @@ RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
     }
   SetDirectionAndSpeed (direction);
 }
-Position
-RandomDirection2dMobilityModel::DoGet (void) const
+Vector
+RandomDirection2dMobilityModel::DoGetPosition (void) const
 {
   return m_helper.GetCurrentPosition (m_parameters->m_bounds);
 }
 void
-RandomDirection2dMobilityModel::DoSet (const Position &position)
+RandomDirection2dMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.InitializePosition (position);
   Simulator::Remove (m_event);
   m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
 }
-Speed 
-RandomDirection2dMobilityModel::DoGetSpeed (void) const
+Vector
+RandomDirection2dMobilityModel::DoGetVelocity (void) const
 {
-  return m_helper.GetSpeed ();
+  return m_helper.GetVelocity ();
 }
 
 

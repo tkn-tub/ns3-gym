@@ -20,7 +20,6 @@
  */
 
 #include "command-line.h"
-#include "ns3/debug.h"
 #include <unistd.h>
 
 namespace ns3 {

@@ -18,8 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "rectangle.h"
-#include "position.h"
-#include "speed.h"
+#include "vector.h"
 #include "ns3/assert.h"
 #include <cmath>
 #include <algorithm>
@@ -42,7 +41,7 @@ Rectangle::Rectangle ()
 {}
 
 bool 
-Rectangle::IsInside (const Position &position) const
+Rectangle::IsInside (const Vector &position) const
 {
   return 
     position.x <= this->xMax && position.x >= this->xMin &&
@@ -50,7 +49,7 @@ Rectangle::IsInside (const Position &position) const
 }
 
 Rectangle::Side 
-Rectangle::GetClosestSide (const Position &position) const
+Rectangle::GetClosestSide (const Vector &position) const
 {
   double xMinDist = std::abs (position.x - this->xMin);
   double xMaxDist = std::abs (this->xMax - position.x);
@@ -82,38 +81,38 @@ Rectangle::GetClosestSide (const Position &position) const
     }
 }
 
-Position
-Rectangle::CalculateIntersection (const Position &current, const Speed &speed) const
+Vector
+Rectangle::CalculateIntersection (const Vector &current, const Vector &speed) const
 {
-  double xMaxY = current.y + (this->xMax - current.x) / speed.dx * speed.dy;
-  double xMinY = current.y + (this->xMin - current.x) / speed.dx * speed.dy;
-  double yMaxX = current.x + (this->yMax - current.y) / speed.dy * speed.dx;
-  double yMinX = current.x + (this->yMin - current.y) / speed.dy * speed.dx;
+  double xMaxY = current.y + (this->xMax - current.x) / speed.x * speed.y;
+  double xMinY = current.y + (this->xMin - current.x) / speed.x * speed.y;
+  double yMaxX = current.x + (this->yMax - current.y) / speed.y * speed.x;
+  double yMinX = current.x + (this->yMin - current.y) / speed.y * speed.x;
   bool xMaxYOk = (xMaxY <= this->yMax && xMaxY >= this->yMin);
   bool xMinYOk = (xMinY <= this->yMax && xMinY >= this->yMin);
   bool yMaxXOk = (yMaxX <= this->xMax && yMaxX >= this->xMin);
   bool yMinXOk = (yMinX <= this->xMax && yMinX >= this->xMin);
-  if (xMaxYOk && speed.dx >= 0)
+  if (xMaxYOk && speed.x >= 0)
     {
-      return Position (this->xMax, xMaxY, 0.0);
+      return Vector (this->xMax, xMaxY, 0.0);
     }
-  else if (xMinYOk && speed.dx <= 0)
+  else if (xMinYOk && speed.x <= 0)
     {
-      return Position (this->xMin, xMinY, 0.0);
+      return Vector (this->xMin, xMinY, 0.0);
     }
-  else if (yMaxXOk && speed.dy >= 0)
+  else if (yMaxXOk && speed.y >= 0)
     {
-      return Position (yMaxX, this->yMax, 0.0);
+      return Vector (yMaxX, this->yMax, 0.0);
     }
-  else if (yMinXOk && speed.dy <= 0)
+  else if (yMinXOk && speed.y <= 0)
     {
-      return Position (yMinX, this->yMin, 0.0);
+      return Vector (yMinX, this->yMin, 0.0);
     }
   else
     {
       NS_ASSERT (false);
       // quiet compiler
-      return Position (0.0, 0.0, 0.0);
+      return Vector (0.0, 0.0, 0.0);
     }
 
 }

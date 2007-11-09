@@ -33,13 +33,13 @@ StaticSpeedMobilityModel::StaticSpeedMobilityModel ()
 {
   SetInterfaceId (StaticSpeedMobilityModel::iid);
 }
-StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Position &position)
+StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Vector &position)
   : m_helper (position)
 {
   SetInterfaceId (StaticSpeedMobilityModel::iid);
 }
-StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Position &position,
-                                                    const Speed &speed)
+StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Vector &position,
+                                                    const Vector &speed)
   : m_helper (position, speed)
 {
   SetInterfaceId (StaticSpeedMobilityModel::iid);
@@ -49,28 +49,28 @@ StaticSpeedMobilityModel::~StaticSpeedMobilityModel ()
 {}
 
 void 
-StaticSpeedMobilityModel::SetSpeed (const Speed speed)
+StaticSpeedMobilityModel::SetSpeed (const Vector &speed)
 {
   m_helper.SetSpeed (speed);
   NotifyCourseChange ();
 }
 
 
-Position
-StaticSpeedMobilityModel::DoGet (void) const
+Vector
+StaticSpeedMobilityModel::DoGetPosition (void) const
 {
   return m_helper.GetCurrentPosition ();
 }
 void 
-StaticSpeedMobilityModel::DoSet (const Position &position)
+StaticSpeedMobilityModel::DoSetPosition (const Vector &position)
 {
   m_helper.InitializePosition (position);
   NotifyCourseChange ();
 }
-Speed 
-StaticSpeedMobilityModel::DoGetSpeed (void) const
+Vector
+StaticSpeedMobilityModel::DoGetVelocity (void) const
 {
-  return m_helper.GetSpeed ();
+  return m_helper.GetVelocity ();
 }
 
 }; // namespace ns3

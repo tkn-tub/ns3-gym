@@ -42,7 +42,6 @@ namespace ns3{
 //-----------------------------------------------------------------------------
 // RandomVariable methods
 
-uint32_t      RandomVariable::runNumber = 0;
 bool          RandomVariable::initialized = false;   // True if RngStream seed set 
 bool          RandomVariable::useDevRandom = false;  // True if use /dev/random
 bool          RandomVariable::globalSeedSet = false; // True if GlobalSeed called
@@ -50,6 +49,7 @@ int           RandomVariable::devRandom = -1;
 uint32_t      RandomVariable::globalSeed[6];
 unsigned long RandomVariable::heuristic_sequence;
 RngStream*    RandomVariable::m_static_generator = 0;
+uint32_t      RandomVariable::runNumber = 0;
 
 //the static object random_variable_initializer initializes the static members
 //of RandomVariable
@@ -58,9 +58,9 @@ static class RandomVariableInitializer
   public:
   RandomVariableInitializer()
   {
-    RandomVariable::Initialize(); // sets the static package seed
-    RandomVariable::m_static_generator = new RngStream();
-    RandomVariable::m_static_generator->InitializeStream();
+//     RandomVariable::Initialize(); // sets the static package seed
+//     RandomVariable::m_static_generator = new RngStream();
+//     RandomVariable::m_static_generator->InitializeStream();
   }
   ~RandomVariableInitializer()
   {
@@ -69,15 +69,20 @@ static class RandomVariableInitializer
 } random_variable_initializer;
 
 RandomVariable::RandomVariable() 
+  : m_generator(NULL)
 {
-  m_generator = new RngStream();
-  m_generator->InitializeStream();
-  m_generator->ResetNthSubstream(RandomVariable::runNumber);
+//   m_generator = new RngStream();
+//   m_generator->InitializeStream();
+//   m_generator->ResetNthSubstream(RandomVariable::runNumber);
 }
 
 RandomVariable::RandomVariable(const RandomVariable& r)
+  :m_generator(0)
 {
-  m_generator = new RngStream(*r.m_generator);
+  if(r.m_generator)
+  {
+    m_generator = new RngStream(*r.m_generator);
+  }
 }
 
 RandomVariable::~RandomVariable()
@@ -97,6 +102,12 @@ void RandomVariable::UseDevRandom(bool udr)
 
 void RandomVariable::GetSeed(uint32_t seed[6])
 {
+  if(!m_generator)
+  {
+    m_generator = new RngStream();
+    m_generator->InitializeStream();
+    m_generator->ResetNthSubstream(RandomVariable::runNumber);
+  }
   m_generator->GetState(seed);
 }
 
@@ -202,6 +213,16 @@ UniformVariable::UniformVariable(const UniformVariable& c)
 
 double UniformVariable::GetValue()
 {
+  if(!RandomVariable::initialized)
+  {
+    RandomVariable::Initialize();
+  }
+  if(!m_generator)
+  {
+    m_generator = new RngStream();
+    m_generator->InitializeStream();
+    m_generator->ResetNthSubstream(RandomVariable::runNumber);
+  }
   return m_min + m_generator->RandU01() * (m_max - m_min);
 }
 
@@ -212,6 +233,12 @@ RandomVariable* UniformVariable::Copy() const
 
 double UniformVariable::GetSingleValue(double s, double l)
 {
+  if(!RandomVariable::m_static_generator)
+  {
+    RandomVariable::Initialize(); // sets the static package seed
+    RandomVariable::m_static_generator = new RngStream();
+    RandomVariable::m_static_generator->InitializeStream();
+  }
   return s + m_static_generator->RandU01() * (l - s);;
 }
 
@@ -305,6 +332,16 @@ ExponentialVariable::ExponentialVariable(const ExponentialVariable& c)
 
 double ExponentialVariable::GetValue()
 {
+  if(!RandomVariable::initialized)
+  {
+    RandomVariable::Initialize();
+  }
+  if(!m_generator)
+  {
+    m_generator = new RngStream();
+    m_generator->InitializeStream();
+    m_generator->ResetNthSubstream(RandomVariable::runNumber);
+  }
   double r = -m_mean*log(m_generator->RandU01());
   if (m_bound != 0 && r > m_bound) return m_bound;
   return r;
@@ -316,6 +353,12 @@ RandomVariable* ExponentialVariable::Copy() const
 }
 double ExponentialVariable::GetSingleValue(double m, double b/*=0*/)
 {
+  if(!RandomVariable::m_static_generator)
+  {
+    RandomVariable::Initialize(); // sets the static package seed
+    RandomVariable::m_static_generator = new RngStream();
+    RandomVariable::m_static_generator->InitializeStream();
+  }
   double r = -m*log(m_static_generator->RandU01());
   if (b != 0 && r > b) return b;
   return r;
@@ -341,6 +384,16 @@ ParetoVariable::ParetoVariable(const ParetoVariable& c)
 
 double ParetoVariable::GetValue()
 {
+  if(!RandomVariable::initialized)
+  {
+    RandomVariable::Initialize();
+  }
+  if(!m_generator)
+  {
+    m_generator = new RngStream();
+    m_generator->InitializeStream();
+    m_generator->ResetNthSubstream(RandomVariable::runNumber);
+  }
   double scale = m_mean * ( m_shape - 1.0) / m_shape;
   double r = (scale * ( 1.0 / pow(m_generator->RandU01(), 1.0 / m_shape)));
   if (m_bound != 0 && r > m_bound) return m_bound;
@@ -354,6 +407,12 @@ RandomVariable* ParetoVariable::Copy() const
 
 double ParetoVariable::GetSingleValue(double m, double s, double b/*=0*/)
 {
+  if(!RandomVariable::m_static_generator)
+  {
+    RandomVariable::Initialize(); // sets the static package seed
+    RandomVariable::m_static_generator = new RngStream();
+    RandomVariable::m_static_generator->InitializeStream();
+  }
   double scale = m * ( s - 1.0) / s;
   double r = (scale * ( 1.0 / pow(m_static_generator->RandU01(), 1.0 / s)));
   if (b != 0 && r > b) return b;
@@ -375,6 +434,16 @@ WeibullVariable::WeibullVariable(const WeibullVariable& c)
 
 double WeibullVariable::GetValue()
 {
+  if(!RandomVariable::initialized)
+  {
+    RandomVariable::Initialize();
+  }
+  if(!m_generator)
+  {
+    m_generator = new RngStream();
+    m_generator->InitializeStream();
+    m_generator->ResetNthSubstream(RandomVariable::runNumber);
+  }
   double exponent = 1.0 / m_alpha;
   double r = m_mean * pow( -log(m_generator->RandU01()), exponent);
   if (m_bound != 0 && r > m_bound) return m_bound;
@@ -388,6 +457,12 @@ RandomVariable* WeibullVariable::Copy() const
 
 double WeibullVariable::GetSingleValue(double m, double s, double b/*=0*/)
 {
+  if(!RandomVariable::m_static_generator)
+  {
+    RandomVariable::Initialize(); // sets the static package seed
+    RandomVariable::m_static_generator = new RngStream();
+    RandomVariable::m_static_generator->InitializeStream();
+  }
   double exponent = 1.0 / s;
   double r = m * pow( -log(m_static_generator->RandU01()), exponent);
   if (b != 0 && r > b) return b;
@@ -412,6 +487,16 @@ NormalVariable::NormalVariable(const NormalVariable& c)
 
 double NormalVariable::GetValue()
 {
+  if(!RandomVariable::initialized)
+  {
+    RandomVariable::Initialize();
+  }
+  if(!m_generator)
+  {
+    m_generator = new RngStream();
+    m_generator->InitializeStream();
+    m_generator->ResetNthSubstream(RandomVariable::runNumber);
+  }
   if (m_nextValid)
     { // use previously generated
       m_nextValid = false;
@@ -445,6 +530,12 @@ RandomVariable* NormalVariable::Copy() const
 
 double NormalVariable::GetSingleValue(double m, double v, double b)
 {
+  if(!RandomVariable::m_static_generator)
+  {
+    RandomVariable::Initialize(); // sets the static package seed
+    RandomVariable::m_static_generator = new RngStream();
+    RandomVariable::m_static_generator->InitializeStream();
+  }
   if (m_static_nextValid)
     { // use previously generated
       m_static_nextValid = false;
@@ -495,6 +586,16 @@ EmpiricalVariable::~EmpiricalVariable() { }
 double EmpiricalVariable::GetValue()
 { // Return a value from the empirical distribution
   // This code based (loosely) on code by Bruce Mah (Thanks Bruce!)
+  if(!RandomVariable::initialized)
+  {
+    RandomVariable::Initialize();
+  }
+  if(!m_generator)
+  {
+    m_generator = new RngStream();
+    m_generator->InitializeStream();
+    m_generator->ResetNthSubstream(RandomVariable::runNumber);
+  }
   if (emp.size() == 0) return 0.0; // HuH? No empirical data
   if (!validated) Validate();      // Insure in non-decreasing
   double r = m_generator->RandU01();
@@ -642,6 +743,16 @@ LogNormalVariable::LogNormalVariable (double mu, double sigma)
 double
 LogNormalVariable::GetValue ()
 {
+  if(!RandomVariable::initialized)
+  {
+    RandomVariable::Initialize();
+  }
+  if(!m_generator)
+  {
+    m_generator = new RngStream();
+    m_generator->InitializeStream();
+    m_generator->ResetNthSubstream(RandomVariable::runNumber);
+  }
   double u, v, r2, normal, z;
 
   do
@@ -665,6 +776,12 @@ LogNormalVariable::GetValue ()
 
 double LogNormalVariable::GetSingleValue (double mu, double sigma)
 {
+  if(!RandomVariable::m_static_generator)
+  {
+    RandomVariable::Initialize(); // sets the static package seed
+    RandomVariable::m_static_generator = new RngStream();
+    RandomVariable::m_static_generator->InitializeStream();
+  }
   double u, v, r2, normal, z;
   do
     {
@@ -698,6 +815,16 @@ TriangularVariable::TriangularVariable(const TriangularVariable& c)
 
 double TriangularVariable::GetValue()
 {
+  if(!RandomVariable::initialized)
+  {
+    RandomVariable::Initialize();
+  }
+  if(!m_generator)
+  {
+    m_generator = new RngStream();
+    m_generator->InitializeStream();
+    m_generator->ResetNthSubstream(RandomVariable::runNumber);
+  }
   double u = m_generator->RandU01();
   if(u <= (m_mode - m_min) / (m_max - m_min) )
     return m_min + sqrt(u * (m_max - m_min) * (m_mode - m_min) );
@@ -712,6 +839,12 @@ RandomVariable* TriangularVariable::Copy() const
 
 double TriangularVariable::GetSingleValue(double s, double l, double mean)
 {
+  if(!RandomVariable::m_static_generator)
+  {
+    RandomVariable::Initialize(); // sets the static package seed
+    RandomVariable::m_static_generator = new RngStream();
+    RandomVariable::m_static_generator->InitializeStream();
+  }
   double mode = 3.0*mean-s-l;
   double u = m_static_generator->RandU01();
   if(u <= (mode - s) / (l - s) )
