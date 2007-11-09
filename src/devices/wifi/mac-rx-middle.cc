@@ -186,9 +186,10 @@ MacRxMiddle::Lookup (WifiMacHeader const *hdr)
 
 bool
 MacRxMiddle::IsDuplicate (WifiMacHeader const*hdr, 
-         OriginatorRxStatus *originator) const
+                          OriginatorRxStatus *originator) const
 {
-  if (originator->GetLastSequenceControl () == hdr->GetSequenceControl ()) 
+  if (hdr->IsRetry () &&
+      originator->GetLastSequenceControl () == hdr->GetSequenceControl ()) 
     {
       return true;
     }
@@ -265,7 +266,7 @@ MacRxMiddle::Receive (Packet packet, WifiMacHeader const *hdr)
   if (hdr->IsData ()) 
     {
       NS_ASSERT (SequenceControlSmaller (originator->GetLastSequenceControl (), 
-                                      hdr->GetSequenceControl ()));
+                                         hdr->GetSequenceControl ()));
       // filter duplicates.
       if (IsDuplicate (hdr, originator)) 
         {

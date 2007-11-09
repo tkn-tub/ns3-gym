@@ -402,8 +402,8 @@ DcaTxop::AccessGrantedNow (void)
       m_slrc = 0;
       m_fragmentNumber = 0;
       NS_LOG_DEBUG ("dequeued size="<<m_currentPacket.GetSize ()<<
-             ", to="<<m_currentHdr.GetAddr1 ()<<
-             ", seq="<<m_currentHdr.GetSequenceControl ()); 
+                    ", to="<<m_currentHdr.GetAddr1 ()<<
+                    ", seq="<<m_currentHdr.GetSequenceControl ()); 
     }
   MacLowTransmissionParameters params;
   params.DisableOverrideDurationId ();
@@ -535,8 +535,7 @@ DcaTxop::MissedAck (void)
     } 
   else 
     {
-      // XXX
-      //SetRetry (m_currentTxPacket); 
+      m_currentHdr.SetRetry ();
       if (!m_txFailedCallback.IsNull ()) 
         {
           m_txFailedCallback (m_currentHdr);
