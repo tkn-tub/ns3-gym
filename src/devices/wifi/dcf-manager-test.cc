@@ -108,6 +108,7 @@ void
 DcfManagerTest::NotifyAccessGranted (uint32_t i)
 {
   bool result = true;
+  NS_TEST_ASSERT (!m_expectedAccessGranted.empty ());
   std::pair<uint64_t, uint32_t> expected = m_expectedAccessGranted.front ();
   m_expectedAccessGranted.pop_front ();
   NS_TEST_ASSERT_EQUAL (MicroSeconds (expected.first), Simulator::Now ());
@@ -121,6 +122,7 @@ void
 DcfManagerTest::NotifyInternalCollision (uint32_t i)
 {
   bool result = true;
+  NS_TEST_ASSERT (!m_expectedInternalCollision.empty ());
   std::pair<uint64_t, uint32_t> expected = m_expectedInternalCollision.front ();
   m_expectedInternalCollision.pop_front ();
   NS_TEST_ASSERT_EQUAL (MicroSeconds (expected.first), Simulator::Now ());
@@ -134,6 +136,7 @@ void
 DcfManagerTest::NotifyCollision (uint32_t i)
 {
   bool result = true;
+  NS_TEST_ASSERT (!m_expectedCollision.empty ());
   std::pair<uint64_t, uint32_t> expected = m_expectedCollision.front ();
   m_expectedCollision.pop_front ();
   NS_TEST_ASSERT_EQUAL (MicroSeconds (expected.first), Simulator::Now ());
@@ -264,7 +267,7 @@ DcfManagerTest::RunTests (void)
   StartTest ();
   AddDcfState (2, 5, 1);
   AddAccessRequest (10, 0);
-  //ExpectAccessGranted (10, 0);
+  ExpectAccessGranted (10, 0);
   EndTest ();
 
   return m_result;
