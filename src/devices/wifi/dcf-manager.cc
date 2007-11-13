@@ -16,6 +16,9 @@ namespace ns3 {
  *      Implement the DCF state holder
  ****************************************************************/
 
+DcfState::~DcfState ()
+{}
+
 void 
 DcfState::SetAifsn (uint32_t aifsn)
 {
@@ -82,6 +85,18 @@ DcfState::GetBackoffStart (void) const
 /****************************************************************
  *      Implement the DCF manager of all DCF state holders
  ****************************************************************/
+
+void 
+DcfManager::SetParameters (const MacParameters *parameters)
+{
+  m_parameters = parameters;
+}
+
+void 
+DcfManager::SetAckTxDuration (Time ackTxDuration)
+{
+  m_ackTxTime = ackTxDuration;
+}
 
 void 
 DcfManager::Add (DcfState *dcf)

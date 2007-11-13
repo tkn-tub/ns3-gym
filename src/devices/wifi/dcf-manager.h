@@ -44,6 +44,7 @@ private:
 
 class DcfManager
 {
+public:
   void SetParameters (const MacParameters *parameters);
 
   // at the lowest mandatory rate.
@@ -133,7 +134,7 @@ private:
   bool m_sleeping;
   Time m_ackTxTime;
   EventId m_accessTimeout;
-  MacParameters *m_parameters;
+  const MacParameters *m_parameters;
 };
 
 } // namespace ns3
