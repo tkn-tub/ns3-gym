@@ -45,6 +45,8 @@ private:
 class DcfManager
 {
 public:
+  DcfManager ();
+
   void SetParameters (const MacParameters *parameters);
 
   // at the lowest mandatory rate.

@@ -86,6 +86,21 @@ DcfState::GetBackoffStart (void) const
  *      Implement the DCF manager of all DCF state holders
  ****************************************************************/
 
+DcfManager::DcfManager ()
+  : m_lastNavStart (MicroSeconds (0)),
+    m_lastNavDuration (MicroSeconds (0)),
+    m_lastRxStart (MicroSeconds (0)),
+    m_lastRxDuration (MicroSeconds (0)),
+    m_lastRxReceivedOk (true),
+    m_lastRxEnd (MicroSeconds (0)),
+    m_lastTxStart (MicroSeconds (0)),
+    m_lastTxDuration (MicroSeconds (0)),
+    m_lastBusyStart (MicroSeconds (0)),
+    m_lastBusyDuration (MicroSeconds (0)),
+    m_rxing (false)
+
+{}
+
 void 
 DcfManager::SetParameters (const MacParameters *parameters)
 {
@@ -227,7 +242,7 @@ DcfManager::GetAccessGrantStart (void) const
   if (m_lastRxEnd >= m_lastRxStart) 
     {
       rxAccessStart = m_lastRxEnd + m_parameters->GetSifs ();
-      if (!m_lastRxReceivedOk) 
+      if (!m_lastRxReceivedOk)
         {
           rxAccessStart += m_ackTxTime;
         } 
