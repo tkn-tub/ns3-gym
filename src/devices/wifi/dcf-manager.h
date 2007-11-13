@@ -11,6 +11,8 @@ class MacParameters;
 class DcfState
 {
 public:
+  DcfState ();
+
   virtual ~DcfState ();
 
   void SetAifsn (uint32_t aifsn);

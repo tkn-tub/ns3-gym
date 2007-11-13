@@ -16,6 +16,11 @@ namespace ns3 {
  *      Implement the DCF state holder
  ****************************************************************/
 
+DcfState::DcfState ()
+  : m_backoffSlots (0),
+    m_backoffStart (Seconds (0.0))
+{}
+
 DcfState::~DcfState ()
 {}
 
@@ -30,6 +35,7 @@ DcfState::SetCwBounds (uint32_t minCw, uint32_t maxCw)
 {
   m_cwMin = minCw;
   m_cwMax = maxCw;
+  ResetCw ();
 }
 
 void 
