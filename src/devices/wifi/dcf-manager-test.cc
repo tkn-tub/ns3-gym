@@ -1,0 +1,177 @@
+/* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
+#ifdef RUN_SELF_TESTS
+
+#include "ns3/test.h"
+#include "ns3/simulator.h"
+#include "dcf-manager.h"
+#include "mac-parameters.h"
+
+#define TEST_ASSERT_EQUAL(got, expected)			\
+  if ((got) != (expected))					\
+      {								\
+	std::clog << __FILE__ << ":" <<__LINE__			\
+		  << ": expected " << (expected)		\
+		  << ", got " << (got) << std::endl;		\
+      }
+
+
+namespace ns3 {
+
+class DcfManagerTest;
+
+class DcfStateTest : public DcfState 
+{
+public:
+  DcfStateTest (DcfManagerTest *test, uint32_t i);
+private:
+  virtual bool NeedsAccess (void) const;
+  virtual void NotifyAccessGranted (void);
+  virtual void NotifyInternalCollision (void);
+  virtual void NotifyCollision (void);
+
+  DcfManagerTest *m_test;
+  uint32_t m_i;
+};
+
+
+class DcfManagerTest : public Test
+{
+public:
+  DcfManagerTest ();
+  virtual bool RunTests (void);
+
+
+  void NotifyAccessGranted (uint32_t i);
+  void NotifyInternalCollision (uint32_t i);
+  void NotifyCollision (uint32_t i);
+
+
+private:
+  void StartTest (void);
+  void AddDcfState (uint32_t cwMin, uint32_t cwMax, uint32_t aifsn);
+  void EndTest (void);
+  void ExpectAccessGranted (uint64_t time, uint32_t from);
+
+  typedef std::vector<DcfStateTest> DcfStates;
+  typedef std::vector<std::pair<uint64_t, uint32_t> > ExpectedAccessGranted;
+
+  DcfManager *m_dcfManager;
+  MacParameters *m_parameters;
+  DcfStates m_dcfStates;
+  ExpectedAccessGranted m_expectedAccessGranted;
+  bool m_result;
+};
+
+
+
+DcfStateTest::DcfStateTest (DcfManagerTest *test, uint32_t i) 
+  : m_test (test), m_i(i)
+{}
+bool 
+DcfStateTest::NeedsAccess (void) const
+{
+  return true;
+}
+void 
+DcfStateTest::NotifyAccessGranted (void)
+{
+  m_test->NotifyAccessGranted (m_i);
+}
+void
+DcfStateTest::NotifyInternalCollision (void)
+{
+  m_test->NotifyInternalCollision (m_i);
+}
+void 
+DcfStateTest::NotifyCollision (void)
+{
+  m_test->NotifyCollision (m_i);
+}
+
+
+
+DcfManagerTest::DcfManagerTest ()
+  : Test ("DcfManager")
+{}
+bool 
+DcfManagerTest::RunTests (void)
+{
+  m_result = true;
+
+  StartTest ();
+  AddDcfState (2, 5, 1);  
+  EndTest ();
+
+  return m_result;
+}
+
+void 
+DcfManagerTest::NotifyAccessGranted (uint32_t i)
+{
+  bool result = true;
+  std::pair<uint64_t, uint32_t> expected = m_expectedAccessGranted.front ();
+  NS_TEST_ASSERT_EQUAL (MicroSeconds (expected.first), Simulator::Now ());
+  NS_TEST_ASSERT_EQUAL (expected.second, i);
+  if (!result)
+    {
+      m_result = result;
+    }
+}
+void 
+DcfManagerTest::NotifyInternalCollision (uint32_t i)
+{}
+void 
+DcfManagerTest::NotifyCollision (uint32_t i)
+{}
+
+
+void 
+DcfManagerTest::ExpectAccessGranted (uint64_t time, uint32_t from)
+{
+  m_expectedAccessGranted.push_back (std::make_pair (time, from));
+}
+
+void
+DcfManagerTest::StartTest (void)
+{
+  m_dcfManager = new DcfManager ();
+  m_parameters = new MacParameters ();
+  m_parameters->SetSlotTime (MicroSeconds (1));
+  m_dcfManager->SetParameters (m_parameters);
+  m_dcfManager->SetAckTxDuration (MicroSeconds (10));
+}
+
+void
+DcfManagerTest::AddDcfState (uint32_t cwMin, uint32_t cwMax, uint32_t aifsn)
+{
+  DcfStateTest state = DcfStateTest (this, m_dcfStates.size ());
+  state.SetCwBounds (cwMin, cwMax);
+  state.SetAifsn (aifsn);
+  m_dcfStates.push_back (state);
+  DcfStateTest &st = m_dcfStates.back ();
+  m_dcfManager->Add (&st);
+}
+
+void
+DcfManagerTest::EndTest (void)
+{
+  bool result = true;
+  Simulator::Run ();
+  NS_TEST_ASSERT (!m_expectedAccessGranted.empty ());
+  m_expectedAccessGranted.clear ();
+  Simulator::Destroy ();
+  m_dcfStates.clear ();
+  delete m_dcfManager;
+  delete m_parameters;
+  if (!result)
+    {
+      m_result = result;
+    }
+}
+
+
+static DcfManagerTest g_dcf_manager_test;
+
+} // namespace ns3
+
+#endif /* RUN_SELF_TESTS */
