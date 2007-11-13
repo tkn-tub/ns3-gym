@@ -51,14 +51,24 @@ private:
   void AddDcfState (uint32_t cwMin, uint32_t cwMax, uint32_t aifsn);
   void EndTest (void);
   void ExpectAccessGranted (uint64_t time, uint32_t from);
-
+  void ExpectInternalCollision (uint64_t time, uint32_t from);
+  void ExpectCollision (uint64_t time, uint32_t from);
+  void AddRxOkEvt (uint64_t at, uint64_t duration);
+  void AddRxErrorEvt (uint64_t at, uint64_t duration);
+  void AddTxEvt (uint64_t at, uint64_t duration);
+  void AddNavReset (uint64_t at, uint64_t duration);
+  void AddNavStart (uint64_t at, uint64_t duration);
+  void AddAccessRequest (uint64_t time, uint32_t from);
+  
   typedef std::vector<DcfStateTest> DcfStates;
-  typedef std::vector<std::pair<uint64_t, uint32_t> > ExpectedAccessGranted;
+  typedef std::list<std::pair<uint64_t, uint32_t> > ExpectedEvent;
 
   DcfManager *m_dcfManager;
   MacParameters *m_parameters;
   DcfStates m_dcfStates;
-  ExpectedAccessGranted m_expectedAccessGranted;
+  ExpectedEvent m_expectedAccessGranted;
+  ExpectedEvent m_expectedInternalCollision;
+  ExpectedEvent m_expectedCollision;
   bool m_result;
 };
 
@@ -93,23 +103,13 @@ DcfStateTest::NotifyCollision (void)
 DcfManagerTest::DcfManagerTest ()
   : Test ("DcfManager")
 {}
-bool 
-DcfManagerTest::RunTests (void)
-{
-  m_result = true;
-
-  StartTest ();
-  AddDcfState (2, 5, 1);  
-  EndTest ();
-
-  return m_result;
-}
 
 void 
 DcfManagerTest::NotifyAccessGranted (uint32_t i)
 {
   bool result = true;
   std::pair<uint64_t, uint32_t> expected = m_expectedAccessGranted.front ();
+  m_expectedAccessGranted.pop_front ();
   NS_TEST_ASSERT_EQUAL (MicroSeconds (expected.first), Simulator::Now ());
   NS_TEST_ASSERT_EQUAL (expected.second, i);
   if (!result)
@@ -119,16 +119,46 @@ DcfManagerTest::NotifyAccessGranted (uint32_t i)
 }
 void 
 DcfManagerTest::NotifyInternalCollision (uint32_t i)
-{}
+{
+  bool result = true;
+  std::pair<uint64_t, uint32_t> expected = m_expectedInternalCollision.front ();
+  m_expectedInternalCollision.pop_front ();
+  NS_TEST_ASSERT_EQUAL (MicroSeconds (expected.first), Simulator::Now ());
+  NS_TEST_ASSERT_EQUAL (expected.second, i);
+  if (!result)
+    {
+      m_result = result;
+    }
+}
 void 
 DcfManagerTest::NotifyCollision (uint32_t i)
-{}
+{
+  bool result = true;
+  std::pair<uint64_t, uint32_t> expected = m_expectedCollision.front ();
+  m_expectedCollision.pop_front ();
+  NS_TEST_ASSERT_EQUAL (MicroSeconds (expected.first), Simulator::Now ());
+  NS_TEST_ASSERT_EQUAL (expected.second, i);
+  if (!result)
+    {
+      m_result = result;
+    }
+}
 
 
 void 
 DcfManagerTest::ExpectAccessGranted (uint64_t time, uint32_t from)
 {
   m_expectedAccessGranted.push_back (std::make_pair (time, from));
+}
+void 
+DcfManagerTest::ExpectInternalCollision (uint64_t time, uint32_t from)
+{
+  m_expectedInternalCollision.push_back (std::make_pair (time, from));
+}
+void 
+DcfManagerTest::ExpectCollision (uint64_t time, uint32_t from)
+{
+  m_expectedCollision.push_back (std::make_pair (time, from));
 }
 
 void
@@ -158,7 +188,11 @@ DcfManagerTest::EndTest (void)
   bool result = true;
   Simulator::Run ();
   NS_TEST_ASSERT (!m_expectedAccessGranted.empty ());
+  NS_TEST_ASSERT (!m_expectedInternalCollision.empty ());
+  NS_TEST_ASSERT (!m_expectedCollision.empty ());
   m_expectedAccessGranted.clear ();
+  m_expectedInternalCollision.clear ();
+  m_expectedCollision.clear ();
   Simulator::Destroy ();
   m_dcfStates.clear ();
   delete m_dcfManager;
@@ -168,6 +202,71 @@ DcfManagerTest::EndTest (void)
       m_result = result;
     }
 }
+
+void 
+DcfManagerTest::AddRxOkEvt (uint64_t at, uint64_t duration)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifyRxStartNow, m_dcfManager, 
+                       MicroSeconds (duration));
+  Simulator::Schedule (MicroSeconds (at+duration) - Now (), 
+                       &DcfManager::NotifyRxEndOkNow, m_dcfManager);
+}
+void 
+DcfManagerTest::AddRxErrorEvt (uint64_t at, uint64_t duration)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifyRxStartNow, m_dcfManager, 
+                       MicroSeconds (duration));
+  Simulator::Schedule (MicroSeconds (at+duration) - Now (), 
+                       &DcfManager::NotifyRxEndErrorNow, m_dcfManager);
+}
+void 
+DcfManagerTest::AddTxEvt (uint64_t at, uint64_t duration)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifyTxStartNow, m_dcfManager, 
+                       MicroSeconds (duration));
+}
+void 
+DcfManagerTest::AddNavReset (uint64_t at, uint64_t duration)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifyNavResetNow, m_dcfManager, 
+                       MicroSeconds (duration));
+}
+void 
+DcfManagerTest::AddNavStart (uint64_t at, uint64_t duration)
+{
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManager::NotifyNavStartNow, m_dcfManager, 
+                       MicroSeconds (duration));
+}
+void 
+DcfManagerTest::AddAccessRequest (uint64_t time, uint32_t from)
+{
+  Simulator::Schedule (MicroSeconds (time) - Now (), 
+                       &DcfManager::RequestAccess, 
+		       m_dcfManager, &m_dcfStates[from]);
+}
+
+
+
+
+bool 
+DcfManagerTest::RunTests (void)
+{
+  m_result = true;
+
+  StartTest ();
+  AddDcfState (2, 5, 1);
+  AddAccessRequest (10, 0);
+  ExpectAccessGranted (10, 0);
+  EndTest ();
+
+  return m_result;
+}
+
 
 
 static DcfManagerTest g_dcf_manager_test;
