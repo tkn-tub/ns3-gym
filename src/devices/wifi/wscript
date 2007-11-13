@@ -32,7 +32,8 @@ def build(bld):
         'mac-high-nqsta.cc',
         'wifi-net-device.cc',
         'wifi-default-parameters.cc',
-        'random-stream.cc'
+        'random-stream.cc',
+        'dcf-manager.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
