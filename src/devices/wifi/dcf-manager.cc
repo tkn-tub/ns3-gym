@@ -196,7 +196,7 @@ DcfManager::RequestAccess (DcfState *state)
    * backoff running for this DcfState, start a new backoff
    * if needed.
    */ 
-  if (state->GetBackoffSlots () == 0 && 
+  if (GetBackoffEndFor (state) <= Simulator::Now () && 
       IsBusy ())
     {
       MY_DEBUG ("medium is busy: collision");
@@ -219,8 +219,8 @@ DcfManager::DoGrantAccess (void)
   for (States::const_iterator i = m_states.begin (); i != m_states.end (); k++)
     {
       DcfState *state = *i;
-      if (state->GetBackoffSlots () == 0 && state->NeedsAccess () &&
-          GetBackoffStartFor (state) < Simulator::Now ())
+      if (state->NeedsAccess () &&
+          GetBackoffEndFor (state) < Simulator::Now ())
         {
           /**
            * This is the first dcf we find with an expired backoff and which
@@ -233,8 +233,8 @@ DcfManager::DoGrantAccess (void)
           for (States::const_iterator j = i; j != m_states.end (); j++, k++)
             {
               DcfState *state = *j;
-              if (state->GetBackoffSlots () == 0 && state->NeedsAccess () &&
-                  GetBackoffStartFor (state) < Simulator::Now ())
+              if (state->NeedsAccess () &&
+                  GetBackoffEndFor (state) < Simulator::Now ())
                 {
                   MY_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision.");
                   /**
@@ -283,11 +283,11 @@ DcfManager::GetAccessGrantStart (void) const
                                         busyAccessStart,
                                         txAccessStart, 
                                         navAccessStart);
-  MY_DEBUG ("access grant start=" << accessGrantedStart <<
-                ", rx access start=" << rxAccessStart <<
-                ", busy access start=" << busyAccessStart <<
-                ", tx access start=" << txAccessStart <<
-                ", nav access start=" << navAccessStart);
+  NS_LOG_INFO ("access grant start=" << accessGrantedStart <<
+               ", rx access start=" << rxAccessStart <<
+               ", busy access start=" << busyAccessStart <<
+               ", tx access start=" << txAccessStart <<
+               ", nav access start=" << navAccessStart);
   return accessGrantedStart;
 }
 
