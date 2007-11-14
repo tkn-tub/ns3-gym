@@ -6,15 +6,6 @@
 #include "dcf-manager.h"
 #include "mac-parameters.h"
 
-#define TEST_ASSERT_EQUAL(got, expected)			\
-  if ((got) != (expected))					\
-      {								\
-	std::clog << __FILE__ << ":" <<__LINE__			\
-		  << ": expected " << (expected)		\
-		  << ", got " << (got) << std::endl;		\
-      }
-
-
 namespace ns3 {
 
 class DcfManagerTest;
@@ -90,11 +81,15 @@ DcfStateTest::NotifyAccessGranted (void)
 void
 DcfStateTest::NotifyInternalCollision (void)
 {
+  UpdateFailedCw ();
+  StartBackoffNow (0);
   m_test->NotifyInternalCollision (m_i);
 }
 void 
 DcfStateTest::NotifyCollision (void)
 {
+  UpdateFailedCw ();
+  StartBackoffNow (0);
   m_test->NotifyCollision (m_i);
 }
 
@@ -265,7 +260,7 @@ DcfManagerTest::RunTests (void)
   m_result = true;
 
   StartTest ();
-  AddDcfState (2, 5, 1);
+  AddDcfState (8, 64, 1);
   AddAccessRequest (10, 0);
   ExpectAccessGranted (10, 0);
   EndTest ();

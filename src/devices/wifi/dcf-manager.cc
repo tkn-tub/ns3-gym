@@ -190,6 +190,7 @@ DcfManager::RequestAccess (DcfState *state)
   if (state->GetBackoffSlots () == 0 && 
       IsBusy ())
     {
+      NS_LOG_DEBUG ("medium is busy: collision");
       /* someone else has accessed the medium.
        * generate a backoff.
        */
@@ -203,7 +204,8 @@ DcfManager::RequestAccess (DcfState *state)
 void
 DcfManager::DoGrantAccess (void)
 {
-  for (States::const_iterator i = m_states.begin (); i != m_states.end (); )
+  uint32_t k = 0;
+  for (States::const_iterator i = m_states.begin (); i != m_states.end (); k++)
     {
       DcfState *state = *i;
       if (state->GetBackoffSlots () == 0 && state->NeedsAccess ())
@@ -212,13 +214,16 @@ DcfManager::DoGrantAccess (void)
            * This is the first dcf we find with an expired backoff and which
            * needs access to the medium. i.e., it has data to send.
            */
+          NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. access granted.");
           state->NotifyAccessGranted ();
           i++; // go to the next item in the list.
-          for (States::const_iterator j = i; j != m_states.end (); j++)
+          k++;
+          for (States::const_iterator j = i; j != m_states.end (); j++, k++)
             {
               DcfState *state = *j;
               if (state->GetBackoffSlots () == 0 && state->NeedsAccess ())
                 {
+                  NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision.");
                   /**
                    * all other dcfs with a lower priority whose backoff
                    * has expired and which needed access to the medium
@@ -271,7 +276,8 @@ DcfManager::GetAccessGrantStart (void) const
 void
 DcfManager::UpdateBackoff (void)
 {
-  for (States::const_iterator i = m_states.begin (); i != m_states.end (); i++)
+  uint32_t k = 0;
+  for (States::const_iterator i = m_states.begin (); i != m_states.end (); i++, k++)
     {
       DcfState *state = *i;
 
@@ -289,6 +295,7 @@ DcfManager::UpdateBackoff (void)
            */
           if (nIntSlots > state->GetAifsn ())
             {
+              NS_LOG_DEBUG ("dcf " << k << " dec backoff slots=" << nIntSlots - state->GetAifsn ());
               state->UpdateBackoffSlotsNow (nIntSlots - state->GetAifsn ());
             }
         }
@@ -321,6 +328,7 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
        * backoff is expected to end.
        */
       Time expectedBackoffEnd = GetAccessGrantStart () + Scalar (minNSlots) * m_parameters->GetSlotTime ();
+      NS_LOG_DEBUG ("min n slots=" << minNSlots << ", expected backoff end="<<expectedBackoffEnd);
       /**
        * It is not possible that the backoff was expected to end before now
        * because if it were possible, this would mean that we have missed
