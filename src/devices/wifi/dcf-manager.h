@@ -49,7 +49,8 @@ class DcfManager
 public:
   DcfManager ();
 
-  void SetParameters (const MacParameters *parameters);
+  void SetSlotTime (Time slotTime);
+  void SetSifs (Time sifs);
 
   // at the lowest mandatory rate.
   // used for EIFS calculation.
@@ -138,7 +139,8 @@ private:
   bool m_sleeping;
   Time m_ackTxTime;
   EventId m_accessTimeout;
-  const MacParameters *m_parameters;
+  Time m_slotTime;
+  Time m_sifs;
 };
 
 } // namespace ns3

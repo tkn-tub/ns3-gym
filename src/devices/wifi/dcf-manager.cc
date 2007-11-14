@@ -103,14 +103,20 @@ DcfManager::DcfManager ()
     m_lastTxDuration (MicroSeconds (0)),
     m_lastBusyStart (MicroSeconds (0)),
     m_lastBusyDuration (MicroSeconds (0)),
-    m_rxing (false)
-
+    m_rxing (false),
+    m_slotTime (Seconds (0.0)),
+    m_sifs (Seconds (0.0))
 {}
 
 void 
-DcfManager::SetParameters (const MacParameters *parameters)
+DcfManager::SetSlotTime (Time slotTime)
 {
-  m_parameters = parameters;
+  m_slotTime = slotTime;
+}
+void 
+DcfManager::SetSifs (Time sifs)
+{
+  m_sifs = sifs;
 }
 
 void 
@@ -252,7 +258,7 @@ DcfManager::GetAccessGrantStart (void) const
   Time rxAccessStart;
   if (m_lastRxEnd >= m_lastRxStart) 
     {
-      rxAccessStart = m_lastRxEnd + m_parameters->GetSifs ();
+      rxAccessStart = m_lastRxEnd + m_sifs;
       if (!m_lastRxReceivedOk)
         {
           /* to handle EIFS */
@@ -261,11 +267,11 @@ DcfManager::GetAccessGrantStart (void) const
     } 
   else 
     {
-      rxAccessStart = m_lastRxStart + m_lastRxDuration + m_parameters->GetSifs ();
+      rxAccessStart = m_lastRxStart + m_lastRxDuration + m_sifs;
     }
-  Time busyAccessStart = m_lastBusyStart + m_lastBusyDuration + m_parameters->GetSifs ();
-  Time txAccessStart = m_lastTxStart + m_lastTxDuration + m_parameters->GetSifs ();
-  Time navAccessStart = m_lastNavStart + m_lastNavDuration + m_parameters->GetSifs ();
+  Time busyAccessStart = m_lastBusyStart + m_lastBusyDuration + m_sifs;
+  Time txAccessStart = m_lastTxStart + m_lastTxDuration + m_sifs;
+  Time navAccessStart = m_lastNavStart + m_lastNavDuration + m_sifs;
   Time accessGrantedStart = MostRecent (rxAccessStart, 
                                         busyAccessStart,
                                         txAccessStart, 
@@ -290,7 +296,7 @@ DcfManager::UpdateBackoff (void)
                                          GetAccessGrantStart ());
       if (mostRecentEvent < Simulator::Now ())
         {
-          Scalar nSlots = (Simulator::Now () - mostRecentEvent) / m_parameters->GetSlotTime ();
+          Scalar nSlots = (Simulator::Now () - mostRecentEvent) / m_slotTime;
           uint32_t nIntSlots = lrint (nSlots.GetDouble ());
           /**
            * For each DcfState, calculate how many backoff slots elapsed since
@@ -332,7 +338,7 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
        * If one of the DcfState needs access to the medium, calculate when its
        * backoff is expected to end.
        */
-      Time expectedBackoffEnd = GetAccessGrantStart () + Scalar (minNSlots) * m_parameters->GetSlotTime ();
+      Time expectedBackoffEnd = GetAccessGrantStart () + Scalar (minNSlots) * m_slotTime;
       NS_LOG_DEBUG ("min n slots=" << minNSlots << ", expected backoff end="<<expectedBackoffEnd);
       /**
        * It is not possible that the backoff was expected to end before now
