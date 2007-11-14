@@ -183,12 +183,9 @@ DcfManagerTest::EndTest (void)
 {
   bool result = true;
   Simulator::Run ();
-  NS_TEST_ASSERT (!m_expectedAccessGranted.empty ());
-  NS_TEST_ASSERT (!m_expectedInternalCollision.empty ());
-  NS_TEST_ASSERT (!m_expectedCollision.empty ());
-  m_expectedAccessGranted.clear ();
-  m_expectedInternalCollision.clear ();
-  m_expectedCollision.clear ();
+  NS_TEST_ASSERT (m_expectedAccessGranted.empty ());
+  NS_TEST_ASSERT (m_expectedInternalCollision.empty ());
+  NS_TEST_ASSERT (m_expectedCollision.empty ());
   Simulator::Destroy ();
   for (DcfStates::const_iterator i = m_dcfStates.begin (); i != m_dcfStates.end (); i++)
     {
