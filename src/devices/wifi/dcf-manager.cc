@@ -10,6 +10,9 @@
 
 NS_LOG_COMPONENT_DEFINE ("DcfManager");
 
+#define MY_DEBUG(x) \
+  NS_LOG_DEBUG (Simulator::Now () << " " x)
+
 namespace ns3 {
 
 /****************************************************************
@@ -185,7 +188,7 @@ DcfManager::RequestAccess (DcfState *state)
       /* we don't need to do anything because we have an access
        * timer which will expire soon.
        */
-      NS_LOG_DEBUG ("access timer running. will be notified");
+      MY_DEBUG ("access timer running. will be notified");
       return;
     }
   /**
@@ -196,7 +199,7 @@ DcfManager::RequestAccess (DcfState *state)
   if (state->GetBackoffSlots () == 0 && 
       IsBusy ())
     {
-      NS_LOG_DEBUG ("medium is busy: collision");
+      MY_DEBUG ("medium is busy: collision");
       /* someone else has accessed the medium.
        * generate a backoff.
        */
@@ -210,26 +213,30 @@ DcfManager::RequestAccess (DcfState *state)
 void
 DcfManager::DoGrantAccess (void)
 {
+  Time accessGrantStart = GetAccessGrantStart ();
+
   uint32_t k = 0;
   for (States::const_iterator i = m_states.begin (); i != m_states.end (); k++)
     {
       DcfState *state = *i;
-      if (state->GetBackoffSlots () == 0 && state->NeedsAccess ())
+      if (state->GetBackoffSlots () == 0 && state->NeedsAccess () &&
+          GetBackoffStartFor (state) < Simulator::Now ())
         {
           /**
            * This is the first dcf we find with an expired backoff and which
            * needs access to the medium. i.e., it has data to send.
            */
-          NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. access granted.");
+          MY_DEBUG ("dcf " << k << " needs access. backoff expired. access granted.");
           state->NotifyAccessGranted ();
           i++; // go to the next item in the list.
           k++;
           for (States::const_iterator j = i; j != m_states.end (); j++, k++)
             {
               DcfState *state = *j;
-              if (state->GetBackoffSlots () == 0 && state->NeedsAccess ())
+              if (state->GetBackoffSlots () == 0 && state->NeedsAccess () &&
+                  GetBackoffStartFor (state) < Simulator::Now ())
                 {
-                  NS_LOG_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision.");
+                  MY_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision.");
                   /**
                    * all other dcfs with a lower priority whose backoff
                    * has expired and which needed access to the medium
@@ -276,12 +283,27 @@ DcfManager::GetAccessGrantStart (void) const
                                         busyAccessStart,
                                         txAccessStart, 
                                         navAccessStart);
-  NS_LOG_DEBUG ("access grant start=" << accessGrantedStart <<
+  MY_DEBUG ("access grant start=" << accessGrantedStart <<
                 ", rx access start=" << rxAccessStart <<
                 ", busy access start=" << busyAccessStart <<
                 ", tx access start=" << txAccessStart <<
                 ", nav access start=" << navAccessStart);
   return accessGrantedStart;
+}
+
+Time
+DcfManager::GetBackoffStartFor (DcfState *state)
+{
+  Time mostRecentEvent = MostRecent (state->GetBackoffStart (),
+                                     GetAccessGrantStart () + Scalar (state->GetAifsn ()) * m_slotTime);
+  
+  return mostRecentEvent;
+}
+
+Time
+DcfManager::GetBackoffEndFor (DcfState *state)
+{
+  return GetBackoffStartFor (state) + Scalar (state->GetBackoffSlots ()) * m_slotTime;
 }
 
 void
@@ -292,11 +314,11 @@ DcfManager::UpdateBackoff (void)
     {
       DcfState *state = *i;
 
-      Time mostRecentEvent = MostRecent (state->GetBackoffStart (),
-                                         GetAccessGrantStart ());
-      if (mostRecentEvent < Simulator::Now ())
+      Time backoffStart = GetBackoffStartFor (state);
+      if (backoffStart <= Simulator::Now ())
         {
-          Scalar nSlots = (Simulator::Now () - mostRecentEvent) / m_slotTime;
+          Scalar nSlots = (Simulator::Now () - backoffStart) / m_slotTime;
+          // XXX: rounding should be nicer.
           uint32_t nIntSlots = lrint (nSlots.GetDouble ());
           /**
            * For each DcfState, calculate how many backoff slots elapsed since
@@ -306,8 +328,8 @@ DcfManager::UpdateBackoff (void)
            */
           if (nIntSlots > state->GetAifsn ())
             {
-              NS_LOG_DEBUG ("dcf " << k << " dec backoff slots=" << nIntSlots - state->GetAifsn ());
-              state->UpdateBackoffSlotsNow (nIntSlots - state->GetAifsn ());
+              MY_DEBUG ("dcf " << k << " dec backoff slots=" << nIntSlots);
+              state->UpdateBackoffSlotsNow (nIntSlots);
             }
         }
     }
@@ -321,25 +343,19 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
    * if there is one, how many slots for AIFS+backoff does it require ?
    */
   bool accessTimeoutNeeded = false;
-  uint32_t minNSlots = 0xffffffff;
-  Time backoffStart;
+  Time expectedBackoffEnd = MaxSeconds ();
   for (States::const_iterator i = m_states.begin (); i != m_states.end (); i++)
     {
       DcfState *state = *i;
       if (state->NeedsAccess ())
         {
           accessTimeoutNeeded = true;
-          minNSlots = std::min (state->GetAifsn () + state->GetBackoffSlots (), minNSlots);
+          expectedBackoffEnd = std::min (expectedBackoffEnd, GetBackoffEndFor (state));
         }
     }
   if (accessTimeoutNeeded)
     {
-      /**
-       * If one of the DcfState needs access to the medium, calculate when its
-       * backoff is expected to end.
-       */
-      Time expectedBackoffEnd = GetAccessGrantStart () + Scalar (minNSlots) * m_slotTime;
-      NS_LOG_DEBUG ("min n slots=" << minNSlots << ", expected backoff end="<<expectedBackoffEnd);
+      MY_DEBUG ("expected backoff end="<<expectedBackoffEnd);
       /**
        * It is not possible that the backoff was expected to end before now
        * because if it were possible, this would mean that we have missed
@@ -366,56 +382,50 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
 void 
 DcfManager::NotifyRxStartNow (Time duration)
 {
-  Time now = Simulator::Now ();
-  NS_LOG_DEBUG ("rx start at="<<now<<", for="<<duration);
+  MY_DEBUG ("rx start for="<<duration);
   UpdateBackoff ();
-  m_lastRxStart = now;
+  m_lastRxStart = Simulator::Now ();
   m_lastRxDuration = duration;
   m_rxing = true;
 }
 void 
 DcfManager::NotifyRxEndOkNow (void)
 {
-  Time now = Simulator::Now ();
-  NS_LOG_DEBUG ("rx end ok at="<<now);
-  m_lastRxEnd = now;
+  MY_DEBUG ("rx end ok");
+  m_lastRxEnd = Simulator::Now ();
   m_lastRxReceivedOk = true;
   m_rxing = false;
 }
 void 
 DcfManager::NotifyRxEndErrorNow (void)
 {
-  Time now = Simulator::Now ();
-  NS_LOG_DEBUG ("rx end error at=");
-  m_lastRxEnd = now;
+  MY_DEBUG ("rx end error");
+  m_lastRxEnd = Simulator::Now ();
   m_lastRxReceivedOk = false;
   m_rxing = false;
 }
 void 
 DcfManager::NotifyTxStartNow (Time duration)
 {
-  Time now = Simulator::Now ();
-  NS_LOG_DEBUG ("tx start at="<<now<<" for "<<duration);
+  MY_DEBUG ("tx start for "<<duration);
   UpdateBackoff ();
-  m_lastTxStart = now;
+  m_lastTxStart = Simulator::Now ();
   m_lastTxDuration = duration;
 }
 void 
 DcfManager::NotifyCcaBusyStartNow (Time duration)
 {
-  Time now = Simulator::Now ();
-  NS_LOG_DEBUG ("busy start at="<<now<<" for "<<duration);
+  MY_DEBUG ("busy start for "<<duration);
   UpdateBackoff ();
-  m_lastBusyStart = now;
+  m_lastBusyStart = Simulator::Now ();
   m_lastBusyDuration = duration;
 }
 void 
 DcfManager::NotifyNavResetNow (Time duration)
 {
-  Time now = Simulator::Now ();
-  NS_LOG_DEBUG ("nav reset at="<<now<<", for="<<duration);
+  MY_DEBUG ("nav reset for="<<duration);
   UpdateBackoff ();
-  m_lastNavStart = now;
+  m_lastNavStart = Simulator::Now ();
   m_lastNavDuration = duration;
   UpdateBackoff ();
   /**
@@ -429,12 +439,11 @@ DcfManager::NotifyNavResetNow (Time duration)
 void 
 DcfManager::NotifyNavStartNow (Time duration)
 {
-  Time now = Simulator::Now ();
-  NS_ASSERT (m_lastNavStart < now);
-  NS_LOG_DEBUG ("nav start at="<<now<<", for="<<duration);
+  NS_ASSERT (m_lastNavStart < Simulator::Now ());
+  MY_DEBUG ("nav start for="<<duration);
   UpdateBackoff ();
   // XXX handle 
-  m_lastNavStart = now;
+  m_lastNavStart = Simulator::Now ();
   m_lastNavDuration = duration;
 }
 

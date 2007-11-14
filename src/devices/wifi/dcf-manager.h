@@ -117,6 +117,8 @@ private:
    * be granted
    */
   Time GetAccessGrantStart (void) const;
+  Time GetBackoffStartFor (DcfState *state);
+  Time GetBackoffEndFor (DcfState *state);
   void DoRestartAccessTimeoutIfNeeded (void);
   void AccessTimeout (void);
   void DoGrantAccess (void);
