@@ -318,7 +318,6 @@ DcfManager::UpdateBackoff (void)
       if (backoffStart <= Simulator::Now ())
         {
           Scalar nSlots = (Simulator::Now () - backoffStart) / m_slotTime;
-          // XXX: rounding should be nicer.
           uint32_t nIntSlots = lrint (nSlots.GetDouble ());
           /**
            * For each DcfState, calculate how many backoff slots elapsed since
@@ -356,12 +355,6 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
   if (accessTimeoutNeeded)
     {
       MY_DEBUG ("expected backoff end="<<expectedBackoffEnd);
-      /**
-       * It is not possible that the backoff was expected to end before now
-       * because if it were possible, this would mean that we have missed
-       * a backoff expiration ! And that would be a bug.
-       */
-      NS_ASSERT (expectedBackoffEnd >= Simulator::Now ());
       if (expectedBackoffEnd > Simulator::Now ())
         {
           Time expectedBackoffDelay = expectedBackoffEnd - Simulator::Now ();
