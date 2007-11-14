@@ -38,7 +38,7 @@ public:
 
 
 private:
-  void StartTest (void);
+  void StartTest (uint64_t slotTime, uint64_t ackTxDuration);
   void AddDcfState (uint32_t cwMin, uint32_t cwMax, uint32_t aifsn);
   void EndTest (void);
   void ExpectAccessGranted (uint64_t time, uint32_t from);
@@ -160,13 +160,13 @@ DcfManagerTest::ExpectCollision (uint64_t time, uint32_t from)
 }
 
 void
-DcfManagerTest::StartTest (void)
+DcfManagerTest::StartTest (uint64_t slotTime, uint64_t ackTxDuration)
 {
   m_dcfManager = new DcfManager ();
   m_parameters = new MacParameters ();
-  m_parameters->SetSlotTime (MicroSeconds (1));
+  m_parameters->SetSlotTime (MicroSeconds (slotTime));
   m_dcfManager->SetParameters (m_parameters);
-  m_dcfManager->SetAckTxDuration (MicroSeconds (10));
+  m_dcfManager->SetAckTxDuration (MicroSeconds (ackTxDuration));
 }
 
 void
@@ -259,10 +259,10 @@ DcfManagerTest::RunTests (void)
 {
   m_result = true;
 
-  StartTest ();
-  AddDcfState (8, 64, 1);
-  AddAccessRequest (10, 0);
-  ExpectAccessGranted (10, 0);
+  StartTest (1 /* slot time */, 10 /* ack tx dur */);
+  AddDcfState (8 /* cwmin */, 64 /* cwmax */, 1 /* aifsn */);
+  AddAccessRequest (10 /* at */ , 0 /* from */);
+  ExpectAccessGranted (10 /* at */, 0 /* from */);
   EndTest ();
 
   return m_result;

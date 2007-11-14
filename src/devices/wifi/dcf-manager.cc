@@ -255,6 +255,7 @@ DcfManager::GetAccessGrantStart (void) const
       rxAccessStart = m_lastRxEnd + m_parameters->GetSifs ();
       if (!m_lastRxReceivedOk)
         {
+          /* to handle EIFS */
           rxAccessStart += m_ackTxTime;
         } 
     } 
@@ -269,7 +270,11 @@ DcfManager::GetAccessGrantStart (void) const
                                         busyAccessStart,
                                         txAccessStart, 
                                         navAccessStart);
-  NS_LOG_DEBUG ("access grant start=" << accessGrantedStart);
+  NS_LOG_DEBUG ("access grant start=" << accessGrantedStart <<
+                ", rx access start=" << rxAccessStart <<
+                ", busy access start=" << busyAccessStart <<
+                ", tx access start=" << txAccessStart <<
+                ", nav access start=" << navAccessStart);
   return accessGrantedStart;
 }
 
