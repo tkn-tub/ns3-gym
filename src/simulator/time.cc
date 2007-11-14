@@ -272,7 +272,7 @@ Time MaxSeconds (void)
 {
   // XXX: I am fairly certain other compilers use other non-standard
   // post-fixes to indicate 64 bit constants.
-  return TimeStep (0xffffffffffffffffLL);
+  return TimeStep (0x7fffffffffffffffLL);
 }
 
 /*
