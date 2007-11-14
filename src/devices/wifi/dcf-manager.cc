@@ -435,9 +435,13 @@ DcfManager::NotifyNavStartNow (Time duration)
   NS_ASSERT (m_lastNavStart < Simulator::Now ());
   MY_DEBUG ("nav start for="<<duration);
   UpdateBackoff ();
-  // XXX handle 
-  m_lastNavStart = Simulator::Now ();
-  m_lastNavDuration = duration;
+  Time newNavEnd = Simulator::Now () + duration;
+  Time lastNavEnd = m_lastNavStart + m_lastNavDuration;
+  if (newNavEnd > lastNavEnd)
+    {
+      m_lastNavStart = Simulator::Now ();
+      m_lastNavDuration = duration;
+    }
 }
 
 } // namespace ns3
