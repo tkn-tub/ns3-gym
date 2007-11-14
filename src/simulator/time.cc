@@ -268,6 +268,12 @@ Time FemtoSeconds (uint64_t fs)
   uint64_t ts = TimeUnit<1>::UnitsToTimestep(fs, TimeStepPrecision::FS_FACTOR);
   return TimeStep(ts);
 }
+Time MaxSeconds (void)
+{
+  // XXX: I am fairly certain other compilers use other non-standard
+  // post-fixes to indicate 64 bit constants.
+  return TimeStep (0xffffffffffffffffLL);
+}
 
 /*
  * The timestep value passed to this function must be of the precision

@@ -577,6 +577,12 @@ Time PicoSeconds (uint64_t ps);
  */
 Time FemtoSeconds (uint64_t fs);
 
+/**
+ * \brief create a ns3::Time instance which represents
+ * the maximum value representable in a simulation.
+ */
+Time MaxSeconds (void);
+
 // internal function not publicly documented
 Time TimeStep (uint64_t ts);
 
