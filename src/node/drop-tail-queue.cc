@@ -95,7 +95,7 @@ DropTailQueue::DoDequeue (Packet& p)
 }
 
 bool
-DropTailQueue::DoPeek (Packet& p)
+DropTailQueue::DoPeek (Packet& p) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << &p);

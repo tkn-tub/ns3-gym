@@ -59,7 +59,7 @@ public:
 private:
   virtual bool DoEnqueue (const Packet& p);
   virtual bool DoDequeue (Packet &p);
-  virtual bool DoPeek (Packet &p);
+  virtual bool DoPeek (Packet &p) const;
 
 private:
   std::queue<Packet> m_packets;

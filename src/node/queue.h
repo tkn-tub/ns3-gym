@@ -86,7 +86,7 @@ public:
   /**
    * \return true if the queue is empty; false otherwise
    */
-  bool IsEmpty (void);
+  bool IsEmpty (void) const;
   /**
    * Place a packet into the rear of the Queue
    * \return True if the operation was successful; false otherwise
@@ -101,7 +101,7 @@ public:
    * Get a copy of the item at the front of the queue without removing it
    * \return True if the operation was successful; false otherwise
    */
-  bool Peek (Packet &p);
+  bool Peek (Packet &p) const;
 
   /**
    * XXX Doesn't do anything right now, think its supposed to flush the queue
@@ -110,11 +110,11 @@ public:
   /**
    * \return The number of packets currently stored in the Queue
    */
-  uint32_t GetNPackets (void);
+  uint32_t GetNPackets (void) const;
   /**
    * \return The number of bytes currently occupied by the packets in the Queue
    */
-  uint32_t GetNBytes (void);
+  uint32_t GetNBytes (void) const;
 
   /**
    * \return The total number of bytes recieved by this Queue since the
@@ -122,25 +122,25 @@ public:
    * whichever happened more recently
    * 
    */
-  uint32_t GetTotalReceivedBytes (void);
+  uint32_t GetTotalReceivedBytes (void) const;
   /**
    * \return The total number of packets recieved by this Queue since the
    * simulation began, or since ResetStatistics was called, according to 
    * whichever happened more recently
    */
-  uint32_t GetTotalReceivedPackets (void);
+  uint32_t GetTotalReceivedPackets (void) const;
   /**
    * \return The total number of bytes dropped by this Queue since the
    * simulation began, or since ResetStatistics was called, according to 
    * whichever happened more recently
    */
-  uint32_t GetTotalDroppedBytes (void);
+  uint32_t GetTotalDroppedBytes (void) const;
   /**
    * \return The total number of bytes dropped by this Queue since the
    * simulation began, or since ResetStatistics was called, according to 
    * whichever happened more recently
    */
-  uint32_t GetTotalDroppedPackets (void);
+  uint32_t GetTotalDroppedPackets (void) const;
   /**
    * Resets the counts for dropped packets, dropped bytes, recieved packets, and
    * recieved bytes.
@@ -175,7 +175,7 @@ private:
 
   virtual bool DoEnqueue (const Packet& p) = 0;
   virtual bool DoDequeue (Packet &p) = 0;
-  virtual bool DoPeek (Packet &p) = 0;
+  virtual bool DoPeek (Packet &p) const = 0;
 
 protected:
   Ptr<TraceResolver> GetTraceResolver (void) const;

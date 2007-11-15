@@ -186,7 +186,7 @@ Queue::DequeueAll (void)
 }
 
 bool
-Queue::Peek (Packet &p)
+Queue::Peek (Packet &p) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << &p);
@@ -195,7 +195,7 @@ Queue::Peek (Packet &p)
 
 
 uint32_t 
-Queue::GetNPackets (void)
+Queue::GetNPackets (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC ("returns " << m_nPackets);
@@ -203,7 +203,7 @@ Queue::GetNPackets (void)
 }
 
 uint32_t
-Queue::GetNBytes (void)
+Queue::GetNBytes (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC (" returns " << m_nBytes);
@@ -211,7 +211,7 @@ Queue::GetNBytes (void)
 }
 
 bool
-Queue::IsEmpty (void)
+Queue::IsEmpty (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC ("returns " << (m_nPackets == 0));
@@ -219,7 +219,7 @@ Queue::IsEmpty (void)
 }
 
 uint32_t
-Queue::GetTotalReceivedBytes (void)
+Queue::GetTotalReceivedBytes (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC("returns " << m_nTotalReceivedBytes);
@@ -227,7 +227,7 @@ Queue::GetTotalReceivedBytes (void)
 }
 
 uint32_t
-Queue::GetTotalReceivedPackets (void)
+Queue::GetTotalReceivedPackets (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC ("returns " << m_nTotalReceivedPackets);
@@ -235,7 +235,7 @@ Queue::GetTotalReceivedPackets (void)
 }
 
 uint32_t
-Queue:: GetTotalDroppedBytes (void)
+Queue:: GetTotalDroppedBytes (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC ("returns " << m_nTotalDroppedBytes);
@@ -243,7 +243,7 @@ Queue:: GetTotalDroppedBytes (void)
 }
 
 uint32_t
-Queue::GetTotalDroppedPackets (void)
+Queue::GetTotalDroppedPackets (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC("returns " << m_nTotalDroppedPackets);
