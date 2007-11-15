@@ -341,6 +341,11 @@ LogComponentPrintList (void)
     }
 }
 
+
+ParameterLogger g_parameterLogger;
+EndParameterListStruct EndParameterList;
+
+
 } // namespace ns3
 
 #endif // NS3_LOG_ENABLE

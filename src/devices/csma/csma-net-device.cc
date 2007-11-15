@@ -87,7 +87,7 @@ CsmaNetDevice::CsmaNetDevice (Ptr<Node> node)
     m_receiveErrorModel (0)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << node << ")");
+  NS_LOG_PARAMS (this << node);
   m_encapMode = IP_ARP;
   Init(true, true);
 }
@@ -99,7 +99,7 @@ CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Mac48Address addr,
     m_receiveErrorModel (0)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << node << ")");
+  NS_LOG_PARAMS (this << node);
   m_encapMode = encapMode;
 
   Init(true, true);
@@ -112,7 +112,7 @@ CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Mac48Address addr,
     m_bps (DataRate (0xffffffff))
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << node << ")");
+  NS_LOG_PARAMS (this << node);
   m_encapMode = encapMode;
 
   Init(sendEnable, receiveEnable);
@@ -145,7 +145,7 @@ CsmaNetDevice&
 CsmaNetDevice::operator= (const CsmaNetDevice nd)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &nd << ")");
+  NS_LOG_PARAMS (this << &nd);
   return *this;
 }
 */
@@ -513,7 +513,7 @@ bool
 CsmaNetDevice::Attach (Ptr<CsmaChannel> ch)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &ch << ")");
+  NS_LOG_PARAMS (this << &ch);
 
   m_channel = ch;
 
@@ -532,7 +532,7 @@ void
 CsmaNetDevice::AddQueue (Ptr<Queue> q)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << q << ")");
+  NS_LOG_PARAMS (this << q);
 
   m_queue = q;
 }
@@ -649,7 +649,7 @@ Address
 CsmaNetDevice::MakeMulticastAddress(Ipv4Address multicastGroup) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << multicastGroup << ")");
+  NS_LOG_PARAMS (this << multicastGroup);
 //
 // First, get the generic multicast address.
 //

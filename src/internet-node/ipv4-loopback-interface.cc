@@ -47,7 +47,7 @@ void
 Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &packet << ", " << dest << ")");
+  NS_LOG_PARAMS (this << &packet << dest);
 
   Ptr<Ipv4L3Protocol> ipv4 = 
     m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);

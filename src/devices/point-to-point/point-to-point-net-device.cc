@@ -99,7 +99,7 @@ PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
   m_receiveErrorModel (0)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << node << ")");
+  NS_LOG_PARAMS (this << node);
 //
 // XXX BUGBUG
 //
@@ -201,7 +201,7 @@ bool PointToPointNetDevice::SendTo (const Packet& packet, const Address& dest,
 PointToPointNetDevice::TransmitStart (Packet &p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
   NS_LOG_LOGIC ("UID is " << p.GetUid () << ")");
 //
 // This function is called to start the process of transmitting a packet.
@@ -262,7 +262,7 @@ bool
 PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &ch << ")");
+  NS_LOG_PARAMS (this << &ch);
 
   m_channel = ch;
 
@@ -289,7 +289,7 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 void PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << q << ")");
+  NS_LOG_PARAMS (this << q);
 
   m_queue = q;
 }
@@ -306,7 +306,7 @@ void PointToPointNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
 void PointToPointNetDevice::Receive (Packet& p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
   uint16_t protocol = 0;
   Packet packet = p;
 

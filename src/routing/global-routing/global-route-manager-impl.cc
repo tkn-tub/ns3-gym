@@ -975,7 +975,7 @@ GlobalRouteManagerImpl::DebugSPFCalculate (Ipv4Address root)
 GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << root << ")");
+  NS_LOG_PARAMS (this << root);
 
   SPFVertex *v;
 //

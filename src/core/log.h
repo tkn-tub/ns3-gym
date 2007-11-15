@@ -75,6 +75,7 @@
 
 #endif
 
+
 /**
  * \ingroup logging
  * \param msg message to output
@@ -87,6 +88,84 @@
  */
 
 #ifdef NS3_LOG_ENABLE
+
+
+namespace ns3 {
+
+struct EndParameterListStruct {};
+extern EndParameterListStruct EndParameterList;
+
+struct ParameterName
+{
+  const char *name;
+  ParameterName (const char *name_) : name (name_) {}
+};
+
+class ParameterLogger : public std::ostream
+{
+  int m_itemNumber;
+  const char *m_parameterName;
+public:
+  ParameterLogger ()
+    : m_itemNumber (0)
+  {}
+
+  template<typename T>
+  ParameterLogger& operator<< (T param)
+  {
+    switch (m_itemNumber)
+      {
+      case 0: // first item is actually the function name
+        if (m_parameterName)
+          {
+            std::clog << m_parameterName << "=" << param;
+            m_parameterName = 0;
+          }
+        else
+          {
+            std::clog << param;
+          }
+        break;
+      case 1:
+        if (m_parameterName)
+          {
+            std::clog << ", " << m_parameterName << "=" << param;
+            m_parameterName = 0;
+          }
+        else
+          {
+            std::clog << ", " << param;
+          }
+        break;
+      default: // parameter following a previous parameter
+        std::clog << ", " << param;
+        break;
+      }
+    m_itemNumber++;
+    return *this;
+  }
+
+  ParameterLogger&
+  operator << (ParameterName paramName)
+  {
+    m_parameterName = paramName.name;
+    return *this;
+  }
+  
+  ParameterLogger&
+  operator << (EndParameterListStruct dummy)
+  {
+    std::clog << ")" << std::endl;
+    m_itemNumber = 0;
+    return *this;
+  }
+};
+
+extern ParameterLogger g_parameterLogger;
+
+}
+
+
 
 /**
  * \param level the log level
@@ -142,8 +221,33 @@
 #define NS_LOG_FUNCTION \
   NS_LOG_F(ns3::LOG_FUNCTION)
 
-#define NS_LOG_PARAM(msg) \
-  NS_LOG(ns3::LOG_PARAM, msg)
+
+
+#define NS_LOG_PARAMS(parameters)                       \
+  do                                                    \
+    {                                                   \
+      if (g_log.IsEnabled (ns3::LOG_PARAM))             \
+        {                                               \
+          g_parameterLogger << __PRETTY_FUNCTION__      \
+                            << parameters               \
+                            << EndParameterList;        \
+        }                                               \
+    }                                                   \
+  while (false)
+
+
+#define NS_LOG_PARAMS_BEGIN()                           \
+      if (g_log.IsEnabled (ns3::LOG_PARAM))             \
+        {                                               \
+          g_parameterLogger << __PRETTY_FUNCTION__;
+
+#define NS_LOG_PARAM(param) \
+          g_parameterLogger << ParameterName (#param) << param;
+
+#define NS_LOG_PARAMS_END()                             \
+          g_parameterLogger << EndParameterList;        \
+        }
+
 
 #define NS_LOG_LOGIC(msg) \
   NS_LOG(ns3::LOG_LOGIC, msg)

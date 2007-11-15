@@ -522,8 +522,7 @@ Ipv4StaticRouting::RequestRoute (
   RouteReplyCallback routeReply)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << ifIndex << &ipHeader << ", " << &packet << ", " << 
-    &routeReply << ")");
+  NS_LOG_PARAMS (this << ifIndex << &ipHeader << &packet << &routeReply);
 
   NS_LOG_LOGIC ("source = " << ipHeader.GetSource ());
 
@@ -576,7 +575,7 @@ bool
 Ipv4StaticRouting::RequestIfIndex (Ipv4Address destination, uint32_t& ifIndex)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << destination << ", " << &ifIndex << ")");
+  NS_LOG_PARAMS (this << destination << &ifIndex);
 //
 // First, see if this is a multicast packet we have a route for.  If we
 // have a route, then send the packet down each of the specified interfaces.
