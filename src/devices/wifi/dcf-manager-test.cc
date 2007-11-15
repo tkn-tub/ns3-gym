@@ -42,8 +42,8 @@ private:
   void AddDcfState (uint32_t cwMin, uint32_t cwMax, uint32_t aifsn);
   void EndTest (void);
   void ExpectAccessGranted (uint64_t time, uint32_t from);
-  void ExpectInternalCollision (uint64_t time, uint32_t from);
-  void ExpectCollision (uint64_t time, uint32_t from);
+  void ExpectInternalCollision (uint64_t time, uint32_t from, uint32_t nSlots);
+  void ExpectCollision (uint64_t time, uint32_t from, uint32_t nSlots);
   void AddRxOkEvt (uint64_t at, uint64_t duration);
   void AddRxErrorEvt (uint64_t at, uint64_t duration);
   void AddTxEvt (uint64_t at, uint64_t duration);
@@ -51,15 +51,21 @@ private:
   void AddNavStart (uint64_t at, uint64_t duration);
   void AddAccessRequest (uint64_t time, uint32_t from);
   
+  struct ExpectedCollision {
+    uint64_t at;
+    uint32_t from;
+    uint32_t nSlots;
+  };
   typedef std::vector<DcfStateTest *> DcfStates;
-  typedef std::list<std::pair<uint64_t, uint32_t> > ExpectedEvent;
+  typedef std::list<std::pair<uint64_t, uint32_t> > ExpectedAccess;
+  typedef std::list<struct ExpectedCollision> ExpectedCollisions;
 
   DcfManager *m_dcfManager;
   MacParameters *m_parameters;
   DcfStates m_dcfStates;
-  ExpectedEvent m_expectedAccessGranted;
-  ExpectedEvent m_expectedInternalCollision;
-  ExpectedEvent m_expectedCollision;
+  ExpectedAccess m_expectedAccessGranted;
+  ExpectedCollisions m_expectedInternalCollision;
+  ExpectedCollisions m_expectedCollision;
   bool m_result;
 };
 
@@ -81,15 +87,11 @@ DcfStateTest::NotifyAccessGranted (void)
 void
 DcfStateTest::NotifyInternalCollision (void)
 {
-  UpdateFailedCw ();
-  StartBackoffNow (0);
   m_test->NotifyInternalCollision (m_i);
 }
 void 
 DcfStateTest::NotifyCollision (void)
 {
-  UpdateFailedCw ();
-  StartBackoffNow (0);
   m_test->NotifyCollision (m_i);
 }
 
@@ -106,8 +108,8 @@ DcfManagerTest::NotifyAccessGranted (uint32_t i)
   NS_TEST_ASSERT (!m_expectedAccessGranted.empty ());
   std::pair<uint64_t, uint32_t> expected = m_expectedAccessGranted.front ();
   m_expectedAccessGranted.pop_front ();
-  NS_TEST_ASSERT_EQUAL (MicroSeconds (expected.first), Simulator::Now ());
-  NS_TEST_ASSERT_EQUAL (expected.second, i);
+  NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.first));
+  NS_TEST_ASSERT_EQUAL (i, expected.second);
   if (!result)
     {
       m_result = result;
@@ -118,10 +120,19 @@ DcfManagerTest::NotifyInternalCollision (uint32_t i)
 {
   bool result = true;
   NS_TEST_ASSERT (!m_expectedInternalCollision.empty ());
-  std::pair<uint64_t, uint32_t> expected = m_expectedInternalCollision.front ();
+  struct ExpectedCollision expected = m_expectedInternalCollision.front ();
   m_expectedInternalCollision.pop_front ();
-  NS_TEST_ASSERT_EQUAL (MicroSeconds (expected.first), Simulator::Now ());
-  NS_TEST_ASSERT_EQUAL (expected.second, i);
+  NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.at));
+  NS_TEST_ASSERT_EQUAL (i, expected.from);
+  uint32_t k = 0;
+  for (DcfStates::const_iterator j = m_dcfStates.begin (); j != m_dcfStates.end (); j++, k++)
+    {
+      if (i == k)
+        {
+          DcfState *state = *j;
+          state->StartBackoffNow (expected.nSlots);
+        }
+    }
   if (!result)
     {
       m_result = result;
@@ -132,10 +143,12 @@ DcfManagerTest::NotifyCollision (uint32_t i)
 {
   bool result = true;
   NS_TEST_ASSERT (!m_expectedCollision.empty ());
-  std::pair<uint64_t, uint32_t> expected = m_expectedCollision.front ();
+  struct ExpectedCollision expected = m_expectedCollision.front ();
   m_expectedCollision.pop_front ();
-  NS_TEST_ASSERT_EQUAL (MicroSeconds (expected.first), Simulator::Now ());
-  NS_TEST_ASSERT_EQUAL (expected.second, i);
+  NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.at));
+  NS_TEST_ASSERT_EQUAL (i, expected.from);
+  DcfState *state = m_dcfStates[i];
+  state->StartBackoffNow (expected.nSlots);
   if (!result)
     {
       m_result = result;
@@ -149,14 +162,22 @@ DcfManagerTest::ExpectAccessGranted (uint64_t time, uint32_t from)
   m_expectedAccessGranted.push_back (std::make_pair (time, from));
 }
 void 
-DcfManagerTest::ExpectInternalCollision (uint64_t time, uint32_t from)
+DcfManagerTest::ExpectInternalCollision (uint64_t time, uint32_t nSlots, uint32_t from)
 {
-  m_expectedInternalCollision.push_back (std::make_pair (time, from));
+  struct ExpectedCollision col;
+  col.at = time;
+  col.from = from;
+  col.nSlots = nSlots;
+  m_expectedInternalCollision.push_back (col);
 }
 void 
-DcfManagerTest::ExpectCollision (uint64_t time, uint32_t from)
+DcfManagerTest::ExpectCollision (uint64_t time, uint32_t nSlots, uint32_t from)
 {
-  m_expectedCollision.push_back (std::make_pair (time, from));
+  struct ExpectedCollision col;
+  col.at = time;
+  col.from = from;
+  col.nSlots = nSlots;
+  m_expectedCollision.push_back (col);
 }
 
 void
@@ -258,10 +279,25 @@ DcfManagerTest::RunTests (void)
   StartTest (1 /* slot time */, 3 /* sifs */, 10 /* ack tx dur */);
   AddDcfState (8 /* cwmin */, 64 /* cwmax */, 1 /* aifsn */);
   AddAccessRequest (1 /* at */ , 0 /* from */);
-  ExpectAccessGranted (4 /* at */, 0 /* from */);
-  AddAccessRequest (10 /* at */ , 0 /* from */);
-  ExpectAccessGranted (10 /* at */, 0 /* from */);
+  ExpectAccessGranted (4, 0);
+  AddAccessRequest (10, 0);
+  ExpectAccessGranted (10, 0);
   EndTest ();
+
+  //
+  //  20          60     66      70        74        78  80    100       104      108
+  //   |    rx     | sifs | aifsn | bslot0  | bslot1  |   | rx   | blot2   | bslot3 |
+  //
+  // 
+  StartTest (4, 6 , 10);
+  AddDcfState (8, 64, 1);
+  AddRxOkEvt (20, 40);
+  AddRxOkEvt (80, 20);
+  AddAccessRequest (30, 0);
+  ExpectCollision (30, 4, 0); // backoff: 4 slots
+  ExpectAccessGranted (108, 0);
+  EndTest ();
+
 
   return m_result;
 }
