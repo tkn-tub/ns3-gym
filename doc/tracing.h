@@ -497,6 +497,8 @@
  *   };
  *   // called from MyModel::GetTraceResolver
  *   MyModelTraceType (enum Type type);
+ *   // needed for by the tracing subsystem.
+ *   MyModelTraceType ();
  *   // called from trace sink
  *   enum Type Get (void) const;
  *   // needed by the tracing subsystem
@@ -513,10 +515,14 @@
  * \endcode
  * The implementation does not require much thinking:
  * \code
+ * MyModelTraceType::MyModelTraceType ()
+ *  : m_type (RX)
+ * {// an arbitrary default value.
+ * }
  * MyModelTraceType::MyModelTraceType (enum Type type)
  *  : m_type (type)
  * {}
- * enum Type 
+ * enum MyModelTraceType::Type 
  * MyModelTraceType::Get (void) const
  * {
  *   return m_type;
@@ -531,14 +537,14 @@
  * }
  * void 
  * MyModelTraceType::Print (std::ostream &os) const
- * (
+ * {
  *   // this method is invoked by the print function of a TraceContext
  *   // if it contains an instance of this TraceContextElement.
  *   switch (m_type) {
  *     case RX: os << "rx"; break;
  *     // ...
  *   }
- * )
+ * }
  * std::string 
  * MyModelTraceType::GetTypeName (void) const
  * {

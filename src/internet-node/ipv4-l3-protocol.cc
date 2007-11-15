@@ -233,7 +233,7 @@ Ipv4L3Protocol::AddHostRouteTo (Ipv4Address dest,
                       uint32_t interface)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << dest << ", " << nextHop << ", " << interface << ")");
+  NS_LOG_PARAMS (this << dest << nextHop << interface);
   m_staticRouting->AddHostRouteTo (dest, nextHop, interface);
 }
 
@@ -242,7 +242,7 @@ Ipv4L3Protocol::AddHostRouteTo (Ipv4Address dest,
 				uint32_t interface)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << dest << ", " << interface << ")");
+  NS_LOG_PARAMS (this << dest << interface);
   m_staticRouting->AddHostRouteTo (dest, interface);
 }
 
@@ -253,8 +253,7 @@ Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network,
 				   uint32_t interface)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << network << ", " << networkMask << ", " << nextHop << 
-    ", " << interface << ")");
+  NS_LOG_PARAMS (this << network << networkMask << nextHop << interface);
   m_staticRouting->AddNetworkRouteTo (network, networkMask, nextHop, interface);
 }
 
@@ -264,8 +263,7 @@ Ipv4L3Protocol::AddNetworkRouteTo (Ipv4Address network,
 				   uint32_t interface)
 {
   NS_LOG_FUNCTION; 
-  NS_LOG_PARAM ("(" << network << ", " << networkMask << ", " << interface << 
-    ")");
+  NS_LOG_PARAMS (this << network << networkMask << interface);
   m_staticRouting->AddNetworkRouteTo (network, networkMask, interface);
 }
 
@@ -274,7 +272,7 @@ Ipv4L3Protocol::SetDefaultRoute (Ipv4Address nextHop,
 				 uint32_t interface)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << nextHop << ", " << interface << ")");
+  NS_LOG_PARAMS (this << nextHop << interface);
   m_staticRouting->SetDefaultRoute (nextHop, interface);
 }
 
@@ -285,7 +283,7 @@ Ipv4L3Protocol::Lookup (
   Ipv4RoutingProtocol::RouteReplyCallback routeReply)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &ipHeader << ", " << &packet << &routeReply << ")");
+  NS_LOG_PARAMS (this << &ipHeader << &packet << &routeReply);
 
   Lookup (Ipv4RoutingProtocol::IF_INDEX_ANY, ipHeader, packet, routeReply);
 }
@@ -298,8 +296,7 @@ Ipv4L3Protocol::Lookup (
   Ipv4RoutingProtocol::RouteReplyCallback routeReply)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << ifIndex << ", " << &ipHeader << ", " << &packet << 
-    &routeReply << ")");
+  NS_LOG_PARAMS (this << ifIndex << &ipHeader << &packet << &routeReply);
 
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter = 
          m_routingProtocols.begin ();
@@ -348,7 +345,7 @@ Ipv4L3Protocol::AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
                                     int priority)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &routingProtocol << ", " << priority << ")");
+  NS_LOG_PARAMS (this << &routingProtocol << priority);
   m_routingProtocols.push_back
     (std::pair<int, Ptr<Ipv4RoutingProtocol> > (-priority, routingProtocol));
   m_routingProtocols.sort ();
@@ -372,7 +369,7 @@ void
 Ipv4L3Protocol::RemoveRoute (uint32_t index)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM("(" << index << ")");
+  NS_LOG_PARAMS (this << index);
   m_staticRouting->RemoveRoute (index);
 }
 
@@ -383,8 +380,7 @@ Ipv4L3Protocol::AddMulticastRoute (Ipv4Address origin,
                                    std::vector<uint32_t> outputInterfaces)
 {
   NS_LOG_FUNCTION; 
-  NS_LOG_PARAM ("(" << origin << ", " << group << ", " << inputInterface << 
-    ", " << &outputInterfaces << ")");
+  NS_LOG_PARAMS (this << origin << group << inputInterface << &outputInterfaces);
 
   m_staticRouting->AddMulticastRoute (origin, group, inputInterface,
     outputInterfaces);
@@ -394,7 +390,7 @@ void
 Ipv4L3Protocol::SetDefaultMulticastRoute (uint32_t outputInterface)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << outputInterface << ")");
+  NS_LOG_PARAMS (this << outputInterface);
 
   m_staticRouting->SetDefaultMulticastRoute (outputInterface);
 }
@@ -410,7 +406,7 @@ Ipv4MulticastRoute *
 Ipv4L3Protocol::GetMulticastRoute (uint32_t index) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << index << ")");
+  NS_LOG_PARAMS (this << index);
   return m_staticRouting->GetMulticastRoute (index);
 }
 
@@ -420,8 +416,7 @@ Ipv4L3Protocol::RemoveMulticastRoute (Ipv4Address origin,
                                        uint32_t inputInterface)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << origin << ", " << group << ", " << inputInterface << 
-    ")");
+  NS_LOG_PARAMS (this << origin << group << inputInterface);
   m_staticRouting->RemoveMulticastRoute (origin, group, inputInterface);
 }
 
@@ -429,7 +424,7 @@ void
 Ipv4L3Protocol::RemoveMulticastRoute (uint32_t index)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << index << ")");
+  NS_LOG_PARAMS (this << index);
   m_staticRouting->RemoveMulticastRoute (index);
 }
 
@@ -437,7 +432,7 @@ uint32_t
 Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &device << ")");
+  NS_LOG_PARAMS (this << &device);
   Ptr<Ipv4Interface> interface = Create<ArpIpv4Interface> (m_node, device);
   return AddIpv4Interface (interface);
 }
@@ -446,7 +441,7 @@ uint32_t
 Ipv4L3Protocol::AddIpv4Interface (Ptr<Ipv4Interface>interface)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << interface << ")");
+  NS_LOG_PARAMS (this << interface);
   uint32_t index = m_nInterfaces;
   m_interfaces.push_back (interface);
   m_nInterfaces++;
@@ -457,7 +452,7 @@ Ptr<Ipv4Interface>
 Ipv4L3Protocol::GetInterface (uint32_t index) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << index << ")");
+  NS_LOG_PARAMS (this << index);
   uint32_t tmp = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
@@ -481,7 +476,7 @@ uint32_t
 Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << addr << ")");
+  NS_LOG_PARAMS (this << addr);
 
   uint32_t ifIndex = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
@@ -503,7 +498,7 @@ uint32_t
 Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr, Ipv4Mask mask) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << addr << ", " << mask << ")");
+  NS_LOG_PARAMS (this << addr << mask);
 
   uint32_t ifIndex = 0;
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); 
@@ -525,7 +520,7 @@ Ptr<Ipv4Interface>
 Ipv4L3Protocol::FindInterfaceForDevice (Ptr<const NetDevice> device)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &device << ")");
+  NS_LOG_PARAMS (this << &device);
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin (); i != m_interfaces.end (); i++)
     {
       if ((*i)->GetDevice () == device)
@@ -540,8 +535,7 @@ void
 Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &device << ", " << &p << ", " << protocol << ", " << 
-    from << ")");
+  NS_LOG_PARAMS (this << &device << &p << protocol <<  from);
 
   NS_LOG_LOGIC ("Packet from " << from);
 
@@ -585,8 +579,7 @@ Ipv4L3Protocol::Send (Packet const &packet,
             uint8_t protocol)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &packet << ", " << source << ", " << ", " << 
-    destination << ", " << protocol << ")");
+  NS_LOG_PARAMS (this << &packet << source << destination << protocol);
 
   Ipv4Header ipHeader;
 
@@ -637,8 +630,7 @@ Ipv4L3Protocol::SendRealOut (bool found,
                              Ipv4Header const &ipHeader)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << found << ", " << &route << ", " << &packet << 
-    &ipHeader << ")");
+  NS_LOG_PARAMS (this << found << &route << &packet << &ipHeader);
 
   if (!found)
     {
@@ -673,8 +665,7 @@ Ipv4L3Protocol::Forwarding (
   Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << ifIndex << ", " << &packet << ", " << &ipHeader << 
-    ", " << device << ")");
+  NS_LOG_PARAMS (ifIndex << &packet << &ipHeader<< device);
 
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
@@ -751,7 +742,7 @@ Ipv4L3Protocol::ForwardUp (Packet p, Ipv4Header const&ip,
                            Ptr<Ipv4Interface> incomingInterface)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ", " << &ip << ")");
+  NS_LOG_PARAMS (this << &p << &ip);
 
   Ptr<Ipv4L4Demux> demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
   Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());
@@ -762,7 +753,7 @@ void
 Ipv4L3Protocol::JoinMulticastGroup (Ipv4Address origin, Ipv4Address group)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << origin << ", " << group << ")");
+  NS_LOG_PARAMS (this << origin << group);
   m_multicastGroups.push_back(
     std::pair<Ipv4Address, Ipv4Address> (origin, group));
 }
@@ -771,7 +762,7 @@ void
 Ipv4L3Protocol::LeaveMulticastGroup (Ipv4Address origin, Ipv4Address group)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << origin << ", " << group << ")");
+  NS_LOG_PARAMS (this << origin << group);
 
   for (Ipv4MulticastGroupList::iterator i = m_multicastGroups.begin ();
        i != m_multicastGroups.end (); 
@@ -789,7 +780,7 @@ void
 Ipv4L3Protocol::SetAddress (uint32_t i, Ipv4Address address)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << i << ", " << address << ")");
+  NS_LOG_PARAMS (this << i << address);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetAddress (address);
 }
@@ -798,7 +789,7 @@ void
 Ipv4L3Protocol::SetNetworkMask (uint32_t i, Ipv4Mask mask)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << i << ", " << mask << ")");
+  NS_LOG_PARAMS (this << i << mask);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetNetworkMask (mask);
 }
@@ -807,7 +798,7 @@ Ipv4Mask
 Ipv4L3Protocol::GetNetworkMask (uint32_t i) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << i << ")");
+  NS_LOG_PARAMS (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetNetworkMask ();
 }
@@ -816,7 +807,7 @@ Ipv4Address
 Ipv4L3Protocol::GetAddress (uint32_t i) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << i << ")");
+  NS_LOG_PARAMS (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetAddress ();
 }
@@ -825,7 +816,7 @@ void
 Ipv4L3Protocol::SetMetric (uint32_t i, uint16_t metric)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << i << ", " << metric << ")");
+  NS_LOG_PARAMS ("(" << i << ", " << metric << ")");
   Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetMetric (metric);
 }
@@ -834,7 +825,7 @@ uint16_t
 Ipv4L3Protocol::GetMetric (uint32_t i) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << i << ")");
+  NS_LOG_PARAMS ("(" << i << ")");
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetMetric ();
 }
@@ -844,7 +835,7 @@ Ipv4L3Protocol::GetIfIndexForDestination (
   Ipv4Address destination, uint32_t& ifIndex) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << destination << ", " << &ifIndex << ")");
+  NS_LOG_PARAMS (this << destination << &ifIndex);
 //
 // The first thing we do in trying to determine a source address is to 
 // consult the routing protocols.  These will also check for a default route
@@ -911,7 +902,7 @@ uint16_t
 Ipv4L3Protocol::GetMtu (uint32_t i) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << i << ")");
+  NS_LOG_PARAMS (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->GetMtu ();
 }
@@ -920,7 +911,7 @@ bool
 Ipv4L3Protocol::IsUp (uint32_t i) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << i << ")");
+  NS_LOG_PARAMS (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   return interface->IsUp ();
 }
@@ -929,7 +920,7 @@ void
 Ipv4L3Protocol::SetUp (uint32_t i)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << i << ")");
+  NS_LOG_PARAMS (this << i);
   Ptr<Ipv4Interface> interface = GetInterface (i);
   interface->SetUp ();
 
@@ -948,7 +939,7 @@ void
 Ipv4L3Protocol::SetDown (uint32_t ifaceIndex)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << ifaceIndex << ")");
+  NS_LOG_PARAMS (this << ifaceIndex);
   Ptr<Ipv4Interface> interface = GetInterface (ifaceIndex);
   interface->SetDown ();
 

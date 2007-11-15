@@ -64,7 +64,7 @@ void
 ArpIpv4Interface::SendTo (Packet p, Ipv4Address dest)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ", " << dest << ")");
+  NS_LOG_PARAMS (this << &p << dest);
 
   NS_ASSERT (GetDevice () != 0);
   if (GetDevice ()->NeedsArp ())

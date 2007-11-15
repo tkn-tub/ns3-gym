@@ -28,6 +28,7 @@
 #include "ns3/ethernet-header.h"
 #include "ns3/ethernet-trailer.h"
 #include "ns3/llc-snap-header.h"
+#include "ns3/error-model.h"
 
 NS_LOG_COMPONENT_DEFINE ("CsmaNetDevice");
 
@@ -82,10 +83,11 @@ CsmaTraceType::Get (void) const
 
 CsmaNetDevice::CsmaNetDevice (Ptr<Node> node)
   : NetDevice (node, Mac48Address::Allocate ()),
-    m_bps (DataRate (0xffffffff))
+    m_bps (DataRate (0xffffffff)),
+    m_receiveErrorModel (0)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << node << ")");
+  NS_LOG_PARAMS (this << node);
   m_encapMode = IP_ARP;
   Init(true, true);
 }
@@ -93,10 +95,11 @@ CsmaNetDevice::CsmaNetDevice (Ptr<Node> node)
 CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Mac48Address addr, 
                               CsmaEncapsulationMode encapMode) 
   : NetDevice(node, addr), 
-    m_bps (DataRate (0xffffffff))
+    m_bps (DataRate (0xffffffff)),
+    m_receiveErrorModel (0)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << node << ")");
+  NS_LOG_PARAMS (this << node);
   m_encapMode = encapMode;
 
   Init(true, true);
@@ -109,7 +112,7 @@ CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Mac48Address addr,
     m_bps (DataRate (0xffffffff))
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << node << ")");
+  NS_LOG_PARAMS (this << node);
   m_encapMode = encapMode;
 
   Init(sendEnable, receiveEnable);
@@ -142,7 +145,7 @@ CsmaNetDevice&
 CsmaNetDevice::operator= (const CsmaNetDevice nd)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &nd << ")");
+  NS_LOG_PARAMS (this << &nd);
   return *this;
 }
 */
@@ -195,7 +198,10 @@ void
 CsmaNetDevice::SetDataRate (DataRate bps)
 {
   NS_LOG_FUNCTION;
-  m_bps = bps;
+  if (!m_channel || bps <= m_channel->GetDataRate ())
+    {
+      m_bps = bps;
+    }
 }
 
 void 
@@ -507,7 +513,7 @@ bool
 CsmaNetDevice::Attach (Ptr<CsmaChannel> ch)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &ch << ")");
+  NS_LOG_PARAMS (this << &ch);
 
   m_channel = ch;
 
@@ -526,9 +532,18 @@ void
 CsmaNetDevice::AddQueue (Ptr<Queue> q)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << q << ")");
+  NS_LOG_PARAMS (this << q);
 
   m_queue = q;
+}
+
+void CsmaNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
+{
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << em << ")");
+  
+  m_receiveErrorModel = em; 
+  AddInterface (em);
 }
 
 void
@@ -593,38 +608,48 @@ CsmaNetDevice::Receive (const Packet& packet)
       return;
     }
 
-  m_rxTrace (p);
+  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (p) )
+    {
+      NS_LOG_LOGIC ("Dropping pkt due to error model ");
+      m_dropTrace (packet);
+      // Do not forward up; let this packet go
+    }
+  else
+    {
+      m_rxTrace (p);
 //
 // protocol must be initialized to avoid a compiler warning in the RAW
 // case that breaks the optimized build.
 //
-  uint16_t protocol = 0;
+      uint16_t protocol = 0;
 
-  switch (m_encapMode)
-    {
-    case ETHERNET_V1:
-    case IP_ARP:
-      protocol = header.GetLengthType();
-      break;
-    case LLC: {
-      LlcSnapHeader llc;
-      p.RemoveHeader (llc);
-      protocol = llc.GetType ();
-    } break;
-    case RAW:
-      NS_ASSERT (false);
-      break;
+      switch (m_encapMode)
+        {
+        case ETHERNET_V1:
+        case IP_ARP:
+          protocol = header.GetLengthType();
+          break;
+        case LLC: 
+          {
+            LlcSnapHeader llc;
+            p.RemoveHeader (llc);
+            protocol = llc.GetType ();
+          } 
+          break;
+        case RAW:
+          NS_ASSERT (false);
+          break;
+        }
+      ForwardUp (p, protocol, header.GetSource ());
+      return;
     }
-  
-  ForwardUp (p, protocol, header.GetSource ());
-  return;
 }
 
 Address
 CsmaNetDevice::MakeMulticastAddress(Ipv4Address multicastGroup) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << multicastGroup << ")");
+  NS_LOG_PARAMS (this << multicastGroup);
 //
 // First, get the generic multicast address.
 //
@@ -686,5 +711,6 @@ CsmaNetDevice::DoGetChannel(void) const
   NS_LOG_FUNCTION;
   return m_channel;
 }
+
 
 } // namespace ns3

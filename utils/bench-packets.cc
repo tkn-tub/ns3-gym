@@ -211,13 +211,19 @@ int main (int argc, char *argv[])
       argc--;
       argv++;
   }
+  if (n == 0)
+    {
+      std::cerr << "Error-- number of packets must be specified " <<
+        "by command-line argument --n=(number of packets)" << std::endl;
+      exit (1);
+    }
+  std::cout << "Running bench-packets with n=" << n << std::endl;
 
-
+  Packet::EnableMetadata ();
   runBench (&benchPtrA, n, "a");
   runBench (&benchPtrB, n, "b");
   runBench (&benchPtrC, n, "c");
 
-  Packet::EnableMetadata ();
   //runBench (&benchPrint, n, "print");
   PacketMetadata::SetOptOne (false);
   runBench (&benchPtrA, n, "meta-a");

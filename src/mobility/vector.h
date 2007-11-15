@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef POSITION_H
-#define POSITION_H
+#ifndef VECTOR_H
+#define VECTOR_H
 
 namespace ns3 {
 
@@ -27,37 +27,37 @@ namespace ns3 {
  *
  * Unit is meters.
  */
-class Position
+class Vector
 {
 public:
   /**
-   * \param _x x coordinate of position vector
-   * \param _y y coordinate of position vector
-   * \param _z z coordinate of position vector
+   * \param _x x coordinate of vector vector
+   * \param _y y coordinate of vector vector
+   * \param _z z coordinate of vector vector
    *
-   * Create position vector (_x, _y, _z)
+   * Create vector vector (_x, _y, _z)
    */
-  Position (double _x, double _y, double _z);
+  Vector (double _x, double _y, double _z);
   /**
-   * Create position vector (0.0, 0.0, 0.0)
+   * Create vector vector (0.0, 0.0, 0.0)
    */
-  Position ();
+  Vector ();
   /**
-   * x coordinate of position vector
+   * x coordinate of vector vector
    */
   double x;
   /**
-   * y coordinate of position vector
+   * y coordinate of vector vector
    */
   double y;
   /**
-   * z coordinate of position vector
+   * z coordinate of vector vector
    */
   double z;
 };
 
-double CalculateDistance (const Position &a, const Position &b);
+double CalculateDistance (const Vector &a, const Vector &b);
 
 } // namespace ns3
 
-#endif /* POSITION_H */
+#endif /* VECTOR_H */

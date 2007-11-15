@@ -52,7 +52,7 @@ CandidateQueue::Clear (void)
 CandidateQueue::Push (SPFVertex *vNew)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << vNew << ")");
+  NS_LOG_PARAMS (this << vNew);
 
   CandidateList_t::iterator i = m_candidates.begin ();  
 

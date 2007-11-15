@@ -117,7 +117,7 @@ int
 UdpSocket::Bind (const Address &address)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM("(" << address << ")");
+  NS_LOG_PARAMS (this << address);
 
   if (!InetSocketAddress::IsMatchingType (address))
     {
@@ -175,7 +175,7 @@ int
 UdpSocket::Connect(const Address & address)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << address << ")");
+  NS_LOG_PARAMS (this << address);
   Ipv4Route routeToDest;
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   m_defaultAddress = transport.GetIpv4 ();
@@ -190,7 +190,7 @@ int
 UdpSocket::Send (const Packet &p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
 
   if (!m_connected)
     {
@@ -226,7 +226,7 @@ int
 UdpSocket::DoSendTo (const Packet &p, const Address &address)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ", " << address << ")");
+  NS_LOG_PARAMS (this << &p << address);
 
   if (!m_connected)
     {
@@ -248,7 +248,7 @@ int
 UdpSocket::DoSendTo (const Packet &p, Ipv4Address dest, uint16_t port)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ", " << dest << ", " << port << ")");
+  NS_LOG_PARAMS (this << &p << dest << port);
 
   Ipv4Route routeToDest;
 
@@ -308,7 +308,7 @@ int
 UdpSocket::SendTo(const Address &address, const Packet &p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << address << ", " << &p << ")");
+  NS_LOG_PARAMS (this << address << &p);
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
@@ -319,7 +319,7 @@ void
 UdpSocket::ForwardUp (const Packet &packet, Ipv4Address ipv4, uint16_t port)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &packet << ", " << ipv4 << ", " << port << ")");
+  NS_LOG_PARAMS (this << &packet << ipv4 << port);
 
   if (m_shutdownRecv)
     {

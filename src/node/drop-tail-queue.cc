@@ -45,7 +45,7 @@ void
 DropTailQueue::SetMaxPackets (uint32_t npackets)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << npackets << ")");
+  NS_LOG_PARAMS (this << npackets);
   m_maxPackets = npackets;
 }
 
@@ -61,7 +61,7 @@ bool
 DropTailQueue::DoEnqueue (const Packet& p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
 
   if (m_packets.size () >= m_maxPackets)
     {
@@ -78,7 +78,7 @@ bool
 DropTailQueue::DoDequeue (Packet& p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
 
   if (m_packets.empty()) 
     {
@@ -98,7 +98,7 @@ bool
 DropTailQueue::DoPeek (Packet& p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
 
   if (m_packets.empty()) 
     {

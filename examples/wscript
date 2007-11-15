@@ -14,6 +14,10 @@ def build(bld):
         ['point-to-point', 'internet-node'])
     obj.source = 'simple-point-to-point.cc'
 
+    obj = bld.create_ns3_program('simple-error-model',
+        ['point-to-point', 'internet-node'])
+    obj.source = 'simple-error-model.cc'
+
     obj = bld.create_ns3_program('csma-one-subnet',
         ['csma', 'internet-node'])
     obj.source = 'csma-one-subnet.cc'

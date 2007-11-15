@@ -143,9 +143,9 @@ RandomWalk2dMobilityModel::Start (void)
 {
   double speed = m_parameters->m_speed->GetValue ();
   double direction = m_parameters->m_direction->GetValue ();
-  Speed vector (std::cos (direction) * speed,
-                std::sin (direction) * speed,
-                0.0);
+  Vector vector (std::cos (direction) * speed,
+                 std::sin (direction) * speed,
+                 0.0);
   m_helper.Reset (vector);
 
   Time delayLeft;
@@ -163,11 +163,11 @@ RandomWalk2dMobilityModel::Start (void)
 void
 RandomWalk2dMobilityModel::DoWalk (Time delayLeft)
 {
-  Position position = m_helper.GetCurrentPosition ();
-  Speed speed = m_helper.GetSpeed ();
-  Position nextPosition = position;
-  nextPosition.x += speed.dx * delayLeft.GetSeconds ();
-  nextPosition.y += speed.dy * delayLeft.GetSeconds ();
+  Vector position = m_helper.GetCurrentPosition ();
+  Vector speed = m_helper.GetVelocity ();
+  Vector nextPosition = position;
+  nextPosition.x += speed.x * delayLeft.GetSeconds ();
+  nextPosition.y += speed.y * delayLeft.GetSeconds ();
   if (m_parameters->m_bounds.IsInside (nextPosition))
     {
       m_event = Simulator::Schedule (delayLeft, &RandomWalk2dMobilityModel::Start, this);
@@ -175,7 +175,7 @@ RandomWalk2dMobilityModel::DoWalk (Time delayLeft)
   else
     {
       nextPosition = m_parameters->m_bounds.CalculateIntersection (position, speed);
-      Time delay = Seconds ((nextPosition.x - position.x) / speed.dx);
+      Time delay = Seconds ((nextPosition.x - position.x) / speed.x);
       m_event = Simulator::Schedule (delay, &RandomWalk2dMobilityModel::Rebound, this,
                                      delayLeft - delay);      
     }  
@@ -185,17 +185,17 @@ RandomWalk2dMobilityModel::DoWalk (Time delayLeft)
 void
 RandomWalk2dMobilityModel::Rebound (Time delayLeft)
 {
-  Position position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
-  Speed speed = m_helper.GetSpeed ();
+  Vector position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
+  Vector speed = m_helper.GetVelocity ();
   switch (m_parameters->m_bounds.GetClosestSide (position))
     {
     case Rectangle::RIGHT:
     case Rectangle::LEFT:
-      speed.dx = - speed.dx;
+      speed.x = - speed.x;
       break;
     case Rectangle::TOP:
     case Rectangle::BOTTOM:
-      speed.dy = - speed.dy;
+      speed.y = - speed.y;
       break;
     }
   m_helper.Reset (speed);
@@ -209,23 +209,23 @@ RandomWalk2dMobilityModel::DoDispose (void)
   // chain up
   MobilityModel::DoDispose ();
 }
-Position
-RandomWalk2dMobilityModel::DoGet (void) const
+Vector
+RandomWalk2dMobilityModel::DoGetPosition (void) const
 {
   return m_helper.GetCurrentPosition (m_parameters->m_bounds);
 }
 void
-RandomWalk2dMobilityModel::DoSet (const Position &position)
+RandomWalk2dMobilityModel::DoSetPosition (const Vector &position)
 {
   NS_ASSERT (m_parameters->m_bounds.IsInside (position));
   m_helper.InitializePosition (position);
   Simulator::Remove (m_event);
   m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
 }
-Speed 
-RandomWalk2dMobilityModel::DoGetSpeed (void) const
+Vector
+RandomWalk2dMobilityModel::DoGetVelocity (void) const
 {
-  return m_helper.GetSpeed ();
+  return m_helper.GetVelocity ();
 }
 
 
