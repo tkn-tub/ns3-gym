@@ -111,4 +111,69 @@ DropTailQueue::DoPeek (Packet& p)
   return true;
 }
 
+} // namespace ns3
+
+
+#ifdef RUN_SELF_TESTS
+
+#include "ns3/test.h"
+
+namespace ns3 {
+
+class DropTailQueueTest: public Test {
+public:
+  virtual bool RunTests (void);
+  DropTailQueueTest ();
+};
+
+
+DropTailQueueTest::DropTailQueueTest ()
+  : Test ("DropTailQueue") {}
+
+
+bool
+DropTailQueueTest::RunTests (void)
+{
+  bool result = true;
+
+  DropTailQueue queue;
+  queue.SetMaxPackets (3);
+  
+  Packet p1, p2, p3, p4;
+
+  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 0);
+  queue.Enqueue (p1);
+  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 1);
+  queue.Enqueue (p2);
+  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 2);
+  queue.Enqueue (p3);
+  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 3);
+  queue.Enqueue (p4); // will be dropped
+  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 3);
+
+  Packet p;
+
+  NS_TEST_ASSERT (queue.Dequeue (p));
+  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 2);
+  NS_TEST_ASSERT_EQUAL (p.GetUid (), p1.GetUid ());
+
+  NS_TEST_ASSERT (queue.Dequeue (p));
+  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 1);
+  NS_TEST_ASSERT_EQUAL (p.GetUid (), p2.GetUid ());
+
+  NS_TEST_ASSERT (queue.Dequeue (p));
+  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 0);
+  NS_TEST_ASSERT_EQUAL (p.GetUid (), p3.GetUid ());
+
+  NS_TEST_ASSERT (!queue.Dequeue (p));
+
+  return result;
+}
+
+
+static DropTailQueueTest gDropTailQueueTest;
+
 }; // namespace ns3
+
+#endif /* RUN_SELF_TESTS */
+
