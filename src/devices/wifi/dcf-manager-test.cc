@@ -257,6 +257,8 @@ DcfManagerTest::RunTests (void)
 
   StartTest (1 /* slot time */, 3 /* sifs */, 10 /* ack tx dur */);
   AddDcfState (8 /* cwmin */, 64 /* cwmax */, 1 /* aifsn */);
+  AddAccessRequest (1 /* at */ , 0 /* from */);
+  ExpectAccessGranted (4 /* at */, 0 /* from */);
   AddAccessRequest (10 /* at */ , 0 /* from */);
   ExpectAccessGranted (10 /* at */, 0 /* from */);
   EndTest ();
