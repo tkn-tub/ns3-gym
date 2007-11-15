@@ -40,6 +40,7 @@ namespace ns3 {
 
 class Queue;
 class CsmaChannel;
+class ErrorModel;
 
 /**
  * \brief hold in a TraceContext the type of trace source from a CsmaNetDevice
@@ -192,6 +193,16 @@ enum CsmaEncapsulationMode {
    *        ownership.
    */
   void AddQueue (Ptr<Queue> queue);
+  /**
+   * Attach a receive ErrorModel to the CsmaNetDevice.
+   *
+   * The CsmaNetDevice may optionally include an ErrorModel in
+   * the packet receive chain.
+   *
+   * @see ErrorModel
+   * @param em a pointer to the ErrorModel 
+   */
+  void AddReceiveErrorModel(Ptr<ErrorModel> em);
   /**
    * Receive a packet from a connected CsmaChannel.
    *
@@ -453,6 +464,12 @@ private:
    * @see class DropTailQueue
    */
   Ptr<Queue> m_queue;
+
+  /**
+   * Error model for receive packet events
+   */
+  Ptr<ErrorModel> m_receiveErrorModel;
+
   /**
    * NOT TESTED
    * The trace source for the packet reception events that the device can
