@@ -6,6 +6,7 @@
 #include "dcf-manager.h"
 #include "mac-parameters.h"
 
+
 namespace ns3 {
 
 class DcfManagerTest;
@@ -14,12 +15,25 @@ class DcfStateTest : public DcfState
 {
 public:
   DcfStateTest (DcfManagerTest *test, uint32_t i);
+  void QueueTx (uint64_t txTime, uint64_t expectedGrantTime);
 private:
+  friend class DcfManagerTest;
   virtual bool NeedsAccess (void) const;
   virtual void NotifyAccessGranted (void);
   virtual void NotifyInternalCollision (void);
   virtual void NotifyCollision (void);
 
+  typedef std::pair<uint64_t,uint64_t> ExpectedGrant;
+  typedef std::list<ExpectedGrant> ExpectedGrants;
+  struct ExpectedCollision {
+    uint64_t at;
+    uint32_t nSlots;
+  };
+  typedef std::list<struct ExpectedCollision> ExpectedCollisions;
+
+  ExpectedCollisions m_expectedInternalCollision;
+  ExpectedCollisions m_expectedCollision;
+  ExpectedGrants m_expectedGrants;
   DcfManagerTest *m_test;
   uint32_t m_i;
 };
@@ -41,31 +55,21 @@ private:
   void StartTest (uint64_t slotTime, uint64_t sifs, uint64_t ackTxDuration);
   void AddDcfState (uint32_t aifsn);
   void EndTest (void);
-  void ExpectAccessGranted (uint64_t time, uint32_t from);
   void ExpectInternalCollision (uint64_t time, uint32_t from, uint32_t nSlots);
   void ExpectCollision (uint64_t time, uint32_t from, uint32_t nSlots);
   void AddRxOkEvt (uint64_t at, uint64_t duration);
   void AddRxErrorEvt (uint64_t at, uint64_t duration);
-  void AddTxEvt (uint64_t at, uint64_t duration);
   void AddNavReset (uint64_t at, uint64_t duration);
   void AddNavStart (uint64_t at, uint64_t duration);
-  void AddAccessRequest (uint64_t time, uint32_t from);
+  void AddAccessRequest (uint64_t at, uint64_t txTime, 
+                         uint64_t expectedGrantTime, uint32_t from);
+  void DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, DcfStateTest *state);
   
-  struct ExpectedCollision {
-    uint64_t at;
-    uint32_t from;
-    uint32_t nSlots;
-  };
   typedef std::vector<DcfStateTest *> DcfStates;
-  typedef std::list<std::pair<uint64_t, uint32_t> > ExpectedAccess;
-  typedef std::list<struct ExpectedCollision> ExpectedCollisions;
 
   DcfManager *m_dcfManager;
   MacParameters *m_parameters;
   DcfStates m_dcfStates;
-  ExpectedAccess m_expectedAccessGranted;
-  ExpectedCollisions m_expectedInternalCollision;
-  ExpectedCollisions m_expectedCollision;
   bool m_result;
 };
 
@@ -74,10 +78,15 @@ private:
 DcfStateTest::DcfStateTest (DcfManagerTest *test, uint32_t i) 
   : m_test (test), m_i(i)
 {}
+void 
+DcfStateTest::QueueTx (uint64_t txTime, uint64_t expectedGrantTime)
+{
+  m_expectedGrants.push_back (std::make_pair (txTime, expectedGrantTime));
+}
 bool 
 DcfStateTest::NeedsAccess (void) const
 {
-  return true;
+  return !m_expectedGrants.empty ();
 }
 void 
 DcfStateTest::NotifyAccessGranted (void)
@@ -104,12 +113,13 @@ DcfManagerTest::DcfManagerTest ()
 void 
 DcfManagerTest::NotifyAccessGranted (uint32_t i)
 {
+  DcfStateTest *state = m_dcfStates[i];
   bool result = true;
-  NS_TEST_ASSERT (!m_expectedAccessGranted.empty ());
-  std::pair<uint64_t, uint32_t> expected = m_expectedAccessGranted.front ();
-  m_expectedAccessGranted.pop_front ();
-  NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.first));
-  NS_TEST_ASSERT_EQUAL (i, expected.second);
+  NS_TEST_ASSERT (!state->m_expectedGrants.empty ());
+  std::pair<uint64_t, uint64_t> expected = state->m_expectedGrants.front ();
+  state->m_expectedGrants.pop_front ();
+  NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.second));
+  m_dcfManager->NotifyTxStartNow (MicroSeconds (expected.first));
   if (!result)
     {
       m_result = result;
@@ -118,21 +128,13 @@ DcfManagerTest::NotifyAccessGranted (uint32_t i)
 void 
 DcfManagerTest::NotifyInternalCollision (uint32_t i)
 {
+  DcfStateTest *state = m_dcfStates[i];
   bool result = true;
-  NS_TEST_ASSERT (!m_expectedInternalCollision.empty ());
-  struct ExpectedCollision expected = m_expectedInternalCollision.front ();
-  m_expectedInternalCollision.pop_front ();
+  NS_TEST_ASSERT (!state->m_expectedInternalCollision.empty ());
+  struct DcfStateTest::ExpectedCollision expected = state->m_expectedInternalCollision.front ();
+  state->m_expectedInternalCollision.pop_front ();
   NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.at));
-  NS_TEST_ASSERT_EQUAL (i, expected.from);
-  uint32_t k = 0;
-  for (DcfStates::const_iterator j = m_dcfStates.begin (); j != m_dcfStates.end (); j++, k++)
-    {
-      if (i == k)
-        {
-          DcfState *state = *j;
-          state->StartBackoffNow (expected.nSlots);
-        }
-    }
+  state->StartBackoffNow (expected.nSlots);
   if (!result)
     {
       m_result = result;
@@ -141,13 +143,12 @@ DcfManagerTest::NotifyInternalCollision (uint32_t i)
 void 
 DcfManagerTest::NotifyCollision (uint32_t i)
 {
+  DcfStateTest *state = m_dcfStates[i];
   bool result = true;
-  NS_TEST_ASSERT (!m_expectedCollision.empty ());
-  struct ExpectedCollision expected = m_expectedCollision.front ();
-  m_expectedCollision.pop_front ();
+  NS_TEST_ASSERT (!state->m_expectedCollision.empty ());
+  struct DcfStateTest::ExpectedCollision expected = state->m_expectedCollision.front ();
+  state->m_expectedCollision.pop_front ();
   NS_TEST_ASSERT_EQUAL (Simulator::Now (), MicroSeconds (expected.at));
-  NS_TEST_ASSERT_EQUAL (i, expected.from);
-  DcfState *state = m_dcfStates[i];
   state->StartBackoffNow (expected.nSlots);
   if (!result)
     {
@@ -157,27 +158,22 @@ DcfManagerTest::NotifyCollision (uint32_t i)
 
 
 void 
-DcfManagerTest::ExpectAccessGranted (uint64_t time, uint32_t from)
-{
-  m_expectedAccessGranted.push_back (std::make_pair (time, from));
-}
-void 
 DcfManagerTest::ExpectInternalCollision (uint64_t time, uint32_t nSlots, uint32_t from)
 {
-  struct ExpectedCollision col;
+  DcfStateTest *state = m_dcfStates[from];
+  struct DcfStateTest::ExpectedCollision col;
   col.at = time;
-  col.from = from;
   col.nSlots = nSlots;
-  m_expectedInternalCollision.push_back (col);
+  state->m_expectedInternalCollision.push_back (col);
 }
 void 
 DcfManagerTest::ExpectCollision (uint64_t time, uint32_t nSlots, uint32_t from)
 {
-  struct ExpectedCollision col;
+  DcfStateTest *state = m_dcfStates[from];
+  struct DcfStateTest::ExpectedCollision col;
   col.at = time;
-  col.from = from;
   col.nSlots = nSlots;
-  m_expectedCollision.push_back (col);
+  state->m_expectedCollision.push_back (col);
 }
 
 void
@@ -203,13 +199,14 @@ DcfManagerTest::EndTest (void)
 {
   bool result = true;
   Simulator::Run ();
-  NS_TEST_ASSERT (m_expectedAccessGranted.empty ());
-  NS_TEST_ASSERT (m_expectedInternalCollision.empty ());
-  NS_TEST_ASSERT (m_expectedCollision.empty ());
   Simulator::Destroy ();
   for (DcfStates::const_iterator i = m_dcfStates.begin (); i != m_dcfStates.end (); i++)
     {
-      delete *i;
+      DcfStateTest *state = *i;
+      NS_TEST_ASSERT (state->m_expectedGrants.empty ());
+      NS_TEST_ASSERT (state->m_expectedInternalCollision.empty ());
+      NS_TEST_ASSERT (state->m_expectedCollision.empty ());
+      delete state;
     }
   m_dcfStates.clear ();
   delete m_dcfManager;
@@ -238,13 +235,7 @@ DcfManagerTest::AddRxErrorEvt (uint64_t at, uint64_t duration)
   Simulator::Schedule (MicroSeconds (at+duration) - Now (), 
                        &DcfManager::NotifyRxEndErrorNow, m_dcfManager);
 }
-void 
-DcfManagerTest::AddTxEvt (uint64_t at, uint64_t duration)
-{
-  Simulator::Schedule (MicroSeconds (at) - Now (), 
-                       &DcfManager::NotifyTxStartNow, m_dcfManager, 
-                       MicroSeconds (duration));
-}
+
 void 
 DcfManagerTest::AddNavReset (uint64_t at, uint64_t duration)
 {
@@ -260,11 +251,19 @@ DcfManagerTest::AddNavStart (uint64_t at, uint64_t duration)
                        MicroSeconds (duration));
 }
 void 
-DcfManagerTest::AddAccessRequest (uint64_t time, uint32_t from)
+DcfManagerTest::AddAccessRequest (uint64_t at, uint64_t txTime, 
+                                  uint64_t expectedGrantTime, uint32_t from)
 {
-  Simulator::Schedule (MicroSeconds (time) - Now (), 
-                       &DcfManager::RequestAccess, 
-		       m_dcfManager, m_dcfStates[from]);
+  Simulator::Schedule (MicroSeconds (at) - Now (), 
+                       &DcfManagerTest::DoAccessRequest, this,
+                       txTime, expectedGrantTime, m_dcfStates[from]);
+}
+
+void
+DcfManagerTest::DoAccessRequest (uint64_t txTime, uint64_t expectedGrantTime, DcfStateTest *state)
+{
+  state->QueueTx (txTime, expectedGrantTime);
+  m_dcfManager->RequestAccess (state);
 }
 
 
@@ -275,12 +274,13 @@ DcfManagerTest::RunTests (void)
 {
   m_result = true;
 
-  StartTest (1 /* slot time */, 3 /* sifs */, 10 /* ack tx dur */);
+  //  0      3       4    5      8       9  10   12
+  //  | sifs | aifsn | tx | sifs | aifsn |   | tx | 
+  //
+  StartTest (1, 3, 10);
   AddDcfState (1);
-  AddAccessRequest (1 /* at */ , 0 /* from */);
-  ExpectAccessGranted (4, 0);
-  AddAccessRequest (10, 0);
-  ExpectAccessGranted (10, 0);
+  AddAccessRequest (1, 1, 4, 0);
+  AddAccessRequest (10, 2, 10, 0);
   EndTest ();
 
   // The test below mainly intends to test the case where the medium
@@ -288,31 +288,29 @@ DcfManagerTest::RunTests (void)
   // must not be decremented for this backoff slot. This is the case
   // below for the backoff slot starting at time 78us.
   //
-  //  20          60     66      70        74        78  80    100     106      110      114      118
-  //   |    rx     | sifs | aifsn | bslot0  | bslot1  |   | rx   | sifs  |  aifsn | bslot2 | bslot3 |
+  //  20          60     66      70        74        78  80    100     106      110      114      118   120
+  //   |    rx     | sifs | aifsn | bslot0  | bslot1  |   | rx   | sifs  |  aifsn | bslot2 | bslot3 | tx  |
   //        |
   //       30 request access. backoff slots: 4
   StartTest (4, 6 , 10);
   AddDcfState (1);
   AddRxOkEvt (20, 40);
   AddRxOkEvt (80, 20);
-  AddAccessRequest (30, 0);
+  AddAccessRequest (30, 2, 118, 0);
   ExpectCollision (30, 4, 0); // backoff: 4 slots
-  ExpectAccessGranted (118, 0);
   EndTest ();
 
   // Test the case where the backoff slots is zero.
   //
-  //  20          60     66      70
-  //   |    rx     | sifs | aifsn |
+  //  20          60     66      70   72
+  //   |    rx     | sifs | aifsn | tx | 
   //        |
   //       30 request access. backoff slots: 0
   StartTest (4, 6 , 10);
   AddDcfState (1);
   AddRxOkEvt (20, 40);
-  AddAccessRequest (30, 0);
+  AddAccessRequest (30, 2, 70, 0);
   ExpectCollision (30, 0, 0); // backoff: 0 slots
-  ExpectAccessGranted (70, 0);
   EndTest ();
 
   // The test below is subject to some discussion because I am 
@@ -323,46 +321,63 @@ DcfManagerTest::RunTests (void)
   // the end of difs and access the medium ?
   // Here, we wait until the end of difs and access the medium.
   //
-  //  20    60     66      70
-  //   | rx  | sifs | aifsn |
+  //  20    60     66      70   72
+  //   | rx  | sifs | aifsn | tx |
   //           |
   //          62 request access.
   //
   StartTest (4, 6 , 10);
   AddDcfState (1);
   AddRxOkEvt (20, 40);
-  AddAccessRequest (62, 0);
-  ExpectAccessGranted (70, 0);
+  AddAccessRequest (62, 2, 70, 0);
   EndTest ();
 
 
   // Test an EIFS
   // 
-  //  20          60     66           76      80       84       88       92       96
-  //   |    rx     | sifs | acktxttime | aifsn | bslot0 | bslot1 | bslot2 | bslot3 |
+  //  20          60     66           76      80       84       88       92       96   98
+  //   |    rx     | sifs | acktxttime | aifsn | bslot0 | bslot1 | bslot2 | bslot3 | tx |
   //        |      | <---------eifs----------->|
   //       30 request access. backoff slots: 4
   StartTest (4, 6, 10);
   AddDcfState (1);
   AddRxErrorEvt (20, 40);
-  AddAccessRequest (30, 0);
+  AddAccessRequest (30, 2, 96, 0);
   ExpectCollision (30, 4, 0); // backoff: 4 slots  
-  ExpectAccessGranted (96, 0);
   EndTest ();
 
   // Test an EIFS which is interupted by a successfull transmission.
   // 
-  //  20          60      66  69     75     81      85       89       93       97      101
-  //   |    rx     | sifs  |   |  rx  | sifs | aifsn | bslot0 | bslot1 | bslot2 | bslot3 |
+  //  20          60      66  69     75     81      85       89       93       97      101  103
+  //   |    rx     | sifs  |   |  rx  | sifs | aifsn | bslot0 | bslot1 | bslot2 | bslot3 | tx |
   //        |      | <--eifs-->|
   //       30 request access. backoff slots: 4
   StartTest (4, 6, 10);
   AddDcfState (1);
   AddRxErrorEvt (20, 40);
-  AddAccessRequest (30, 0);
+  AddAccessRequest (30, 2, 101, 0);
   ExpectCollision (30, 4, 0); // backoff: 4 slots  
   AddRxOkEvt (69, 6);
-  ExpectAccessGranted (101, 0);
+  EndTest ();
+
+
+  // Test two DCFs which suffer an internal collision. the first DCF has a higher
+  // priority than the second DCF.
+  //
+  //      20          60      66      70       74       78    88
+  // DCF0  |    rx     | sifs  | aifsn | bslot0 | bslot1 | tx  |
+  // DCF1  |    rx     | sifs  | aifsn | aifsn  | aifsn  |     | sifs | aifsn | aifsn | aifsn | bslot |  tx  |
+  //                                                                 94      98     102     106     110    112
+  StartTest (4, 6, 10);
+  AddDcfState (1); // high priority DCF
+  AddDcfState (3); // low priority DCF
+  AddRxOkEvt (20, 40);
+  AddAccessRequest (30, 10, 78, 0);
+  ExpectCollision (30, 2, 0); // backoff: 2 slot
+
+  AddAccessRequest (40, 2, 110, 1);
+  ExpectCollision (40, 0, 1); // backoff: 0 slot
+  ExpectInternalCollision (78, 1, 1); // backoff: 1 slot
   EndTest ();
 
   return m_result;
