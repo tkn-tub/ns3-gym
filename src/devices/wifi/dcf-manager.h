@@ -38,6 +38,9 @@ private:
 
   uint32_t m_aifsn;
   uint32_t m_backoffSlots;
+  // the backoffStart variable is used to keep track of the
+  // time at which a backoff was started or the time at which
+  // the backoff counter was last updated.
   Time m_backoffStart;
   uint32_t m_cwMin;
   uint32_t m_cwMax;
