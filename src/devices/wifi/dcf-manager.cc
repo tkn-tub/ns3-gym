@@ -220,7 +220,7 @@ DcfManager::DoGrantAccess (void)
     {
       DcfState *state = *i;
       if (state->NeedsAccess () &&
-          GetBackoffEndFor (state) < Simulator::Now ())
+          GetBackoffEndFor (state) <= Simulator::Now ())
         {
           /**
            * This is the first dcf we find with an expired backoff and which
