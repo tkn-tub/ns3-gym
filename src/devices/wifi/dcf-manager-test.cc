@@ -351,6 +351,21 @@ DcfManagerTest::RunTests (void)
   ExpectAccessGranted (96, 0);
   EndTest ();
 
+  // Test an EIFS which is interupted by a successfull transmission.
+  // 
+  //  20          60      66  69     75     81      85       89       93       97      101
+  //   |    rx     | sifs  |   |  rx  | sifs | aifsn | bslot0 | bslot1 | bslot2 | bslot3 |
+  //        |      | <--eifs-->|
+  //       30 request access. backoff slots: 4
+  StartTest (4, 6, 10);
+  AddDcfState (8, 64, 1);
+  AddRxErrorEvt (20, 40);
+  AddAccessRequest (30, 0);
+  ExpectCollision (30, 4, 0); // backoff: 4 slots  
+  AddRxOkEvt (69, 6);
+  ExpectAccessGranted (101, 0);
+  EndTest ();
+
 
   
 
