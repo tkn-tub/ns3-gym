@@ -62,6 +62,30 @@ PointToPointTopology::AddPointToPointLink(
   return channel;
 }
 
+Ptr<PointToPointNetDevice> 
+PointToPointTopology::GetNetDevice (Ptr<Node> n, Ptr<PointToPointChannel> chan)
+{
+  Ptr<PointToPointNetDevice> found = 0;
+
+  // The PointToPoint channel is used to find the relevant NetDevice
+  NS_ASSERT (chan->GetNDevices () == 2);
+  Ptr<PointToPointNetDevice> nd1 = chan->GetDevice (0);
+  Ptr<PointToPointNetDevice> nd2 = chan->GetDevice (1);
+  if ( nd1->GetNode ()->GetId () == n->GetId () ) 
+    {
+      found = nd1;
+    }
+  else if ( nd2->GetNode ()->GetId () == n->GetId () ) 
+    {
+      found = nd2;
+    }
+  else
+    {
+      NS_ASSERT (found);
+    }
+  return found;
+}
+
 void
 PointToPointTopology::AddIpv4Addresses(
   Ptr<const PointToPointChannel> chan,
