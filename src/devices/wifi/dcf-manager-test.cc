@@ -285,8 +285,8 @@ DcfManagerTest::RunTests (void)
   EndTest ();
 
   //
-  //  20          60     66      70        74        78  80    100       104      108
-  //   |    rx     | sifs | aifsn | bslot0  | bslot1  |   | rx   | blot2   | bslot3 |
+  //  20          60     66      70        74        78  80    100     106      110      114      118
+  //   |    rx     | sifs | aifsn | bslot0  | bslot1  |   | rx   | sifs  |  aifsn | bslot2 | bslot3 |
   //
   // 
   StartTest (4, 6 , 10);
@@ -295,7 +295,7 @@ DcfManagerTest::RunTests (void)
   AddRxOkEvt (80, 20);
   AddAccessRequest (30, 0);
   ExpectCollision (30, 4, 0); // backoff: 4 slots
-  ExpectAccessGranted (108, 0);
+  ExpectAccessGranted (118, 0);
   EndTest ();
 
 
