@@ -185,19 +185,10 @@ void
 DcfManager::RequestAccess (DcfState *state)
 {
   UpdateBackoff ();
-  if (m_accessTimeout.IsRunning ())
-    {
-      /* we don't need to do anything because we have an access
-       * timer which will expire soon.
-       */
-      MY_DEBUG ("access timer running. will be notified");
-      return;
-    }
   /**
-   * Since no access timeout is running, and if we have no
-   * backoff running for this DcfState, start a new backoff
-   * if needed.
-   */ 
+   * If there is a collision, generate a backoff
+   * by notifying the collision to the user.
+   */
   if (state->GetBackoffSlots () == 0 && 
       IsBusy ())
     {
@@ -207,7 +198,6 @@ DcfManager::RequestAccess (DcfState *state)
        */
       state->NotifyCollision ();
     }
-
   DoGrantAccess ();
   DoRestartAccessTimeoutIfNeeded ();  
 }
