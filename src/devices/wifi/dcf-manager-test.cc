@@ -39,7 +39,7 @@ public:
 
 private:
   void StartTest (uint64_t slotTime, uint64_t sifs, uint64_t ackTxDuration);
-  void AddDcfState (uint32_t cwMin, uint32_t cwMax, uint32_t aifsn);
+  void AddDcfState (uint32_t aifsn);
   void EndTest (void);
   void ExpectAccessGranted (uint64_t time, uint32_t from);
   void ExpectInternalCollision (uint64_t time, uint32_t from, uint32_t nSlots);
@@ -190,10 +190,9 @@ DcfManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t ackTxDurat
 }
 
 void
-DcfManagerTest::AddDcfState (uint32_t cwMin, uint32_t cwMax, uint32_t aifsn)
+DcfManagerTest::AddDcfState (uint32_t aifsn)
 {
   DcfStateTest *state = new DcfStateTest (this, m_dcfStates.size ());
-  state->SetCwBounds (cwMin, cwMax);
   state->SetAifsn (aifsn);
   m_dcfStates.push_back (state);
   m_dcfManager->Add (state);
@@ -277,7 +276,7 @@ DcfManagerTest::RunTests (void)
   m_result = true;
 
   StartTest (1 /* slot time */, 3 /* sifs */, 10 /* ack tx dur */);
-  AddDcfState (8 /* cwmin */, 64 /* cwmax */, 1 /* aifsn */);
+  AddDcfState (1);
   AddAccessRequest (1 /* at */ , 0 /* from */);
   ExpectAccessGranted (4, 0);
   AddAccessRequest (10, 0);
@@ -294,7 +293,7 @@ DcfManagerTest::RunTests (void)
   //        |
   //       30 request access. backoff slots: 4
   StartTest (4, 6 , 10);
-  AddDcfState (8, 64, 1);
+  AddDcfState (1);
   AddRxOkEvt (20, 40);
   AddRxOkEvt (80, 20);
   AddAccessRequest (30, 0);
@@ -309,7 +308,7 @@ DcfManagerTest::RunTests (void)
   //        |
   //       30 request access. backoff slots: 0
   StartTest (4, 6 , 10);
-  AddDcfState (8, 64, 1);
+  AddDcfState (1);
   AddRxOkEvt (20, 40);
   AddAccessRequest (30, 0);
   ExpectCollision (30, 0, 0); // backoff: 0 slots
@@ -330,7 +329,7 @@ DcfManagerTest::RunTests (void)
   //          62 request access.
   //
   StartTest (4, 6 , 10);
-  AddDcfState (8, 64, 1);
+  AddDcfState (1);
   AddRxOkEvt (20, 40);
   AddAccessRequest (62, 0);
   ExpectAccessGranted (70, 0);
@@ -344,7 +343,7 @@ DcfManagerTest::RunTests (void)
   //        |      | <---------eifs----------->|
   //       30 request access. backoff slots: 4
   StartTest (4, 6, 10);
-  AddDcfState (8, 64, 1);
+  AddDcfState (1);
   AddRxErrorEvt (20, 40);
   AddAccessRequest (30, 0);
   ExpectCollision (30, 4, 0); // backoff: 4 slots  
@@ -358,16 +357,13 @@ DcfManagerTest::RunTests (void)
   //        |      | <--eifs-->|
   //       30 request access. backoff slots: 4
   StartTest (4, 6, 10);
-  AddDcfState (8, 64, 1);
+  AddDcfState (1);
   AddRxErrorEvt (20, 40);
   AddAccessRequest (30, 0);
   ExpectCollision (30, 4, 0); // backoff: 4 slots  
   AddRxOkEvt (69, 6);
   ExpectAccessGranted (101, 0);
   EndTest ();
-
-
-  
 
   return m_result;
 }
