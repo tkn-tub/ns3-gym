@@ -29,7 +29,7 @@ private:
   uint32_t GetBackoffSlots (void) const;
   Time GetBackoffStart (void) const;
 
-  void UpdateBackoffSlotsNow (uint32_t nSlots);
+  void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
 
   virtual bool NeedsAccess (void) const = 0;
   virtual void NotifyAccessGranted (void) = 0;
