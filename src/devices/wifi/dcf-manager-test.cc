@@ -284,11 +284,15 @@ DcfManagerTest::RunTests (void)
   ExpectAccessGranted (10, 0);
   EndTest ();
 
+  // The test below mainly intends to test the case where the medium
+  // becomes busy in the middle of a backoff slot: the backoff counter
+  // must not be decremented for this backoff slot. This is the case
+  // below for the backoff slot starting at time 78us.
   //
   //  20          60     66      70        74        78  80    100     106      110      114      118
   //   |    rx     | sifs | aifsn | bslot0  | bslot1  |   | rx   | sifs  |  aifsn | bslot2 | bslot3 |
-  //
-  // 
+  //        |
+  //       30 request access. backoff slots: 4
   StartTest (4, 6 , 10);
   AddDcfState (8, 64, 1);
   AddRxOkEvt (20, 40);
@@ -298,6 +302,25 @@ DcfManagerTest::RunTests (void)
   ExpectAccessGranted (118, 0);
   EndTest ();
 
+  // The test below is subject to some discussion because I am 
+  // not sure I understand the intent of the spec here.
+  // i.e., what happens if you make a request to get access
+  // to the medium during the difs idle time after a busy period ?
+  // do you need to start a backoff ? Or do you need to wait until
+  // the end of difs and access the medium ?
+  // Here, we wait until the end of difs and access the medium.
+  //
+  //  20    60     66      70
+  //   | rx  | sifs | aifsn |
+  //           |
+  //          62 request access.
+  //
+  StartTest (4, 6 , 10);
+  AddDcfState (8, 64, 1);
+  AddRxOkEvt (20, 40);
+  AddAccessRequest (62, 0);
+  ExpectAccessGranted (70, 0);
+  EndTest ();
 
   return m_result;
 }
