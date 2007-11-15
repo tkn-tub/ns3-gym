@@ -54,8 +54,9 @@ class RandomRectanglePosition : public RandomPosition
 public:
   static const ClassId cid;
   /**
-   * Create a random position model based on the
-   * Bind default values.
+   * Create a random position model with construction
+   * values from \valueref{RandomRectanglePositionX}, and
+   * \valueref{RandomRectanglePositionY}
    */
   RandomRectanglePosition ();
   /**
@@ -82,8 +83,11 @@ class RandomDiscPosition : public RandomPosition
 public:
   static const ClassId cid;
   /**
-   * Create a random position model based on the
-   * Bind default values.
+   * Create a random position model with construction
+   * values from \valueref{RandomDiscPositionTheta},
+   * \valueref{RandomDiscPositionRho}, 
+   * \valueref{RandomDiscPositionX}, and,
+   * \valueref{RandomDiscPositionY}.
    */
   RandomDiscPosition ();
   /**

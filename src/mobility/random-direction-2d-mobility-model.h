@@ -41,7 +41,9 @@ class RandomDirection2dMobilityModelParameters : public Object
 {
  public:
   /**
-   * Create a default parameter object from Bind default values.
+   * Create from \valueref{RandomDirection2dSpeed},
+   * \valueref{RandomDirection2dPause}, and,
+   * \valueref{RandomDirection2dArea}.
    */
   RandomDirection2dMobilityModelParameters ();
   /**
@@ -91,7 +93,9 @@ class RandomDirection2dMobilityModel : public MobilityModel
   static const ClassId cid;
 
   /**
-   * Create a RandomDirection model from the default Bind values.
+   * Create from \valueref{RandomDirection2dSpeed},
+   * \valueref{RandomDirection2dPause}, and,
+   * \valueref{RandomDirection2dArea}.
    */
   RandomDirection2dMobilityModel ();
   /**

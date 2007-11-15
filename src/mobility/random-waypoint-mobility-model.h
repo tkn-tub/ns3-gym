@@ -38,7 +38,8 @@ class RandomWaypointMobilityModelParameters : public Object
 {
 public:
   /**
-   * Defaults parameters based on the Bind values.
+   * Default parameters from \valueref{RandomWaypointPause},
+   * and, \valueref{RandomWaypointPosition}.
    */
   RandomWaypointMobilityModelParameters ();
   /**
@@ -88,7 +89,8 @@ public:
   static const ClassId cid;
 
   /**
-   * Create a waypoint mobility model from the Bind default values.
+   * Default parameters from \valueref{RandomWaypointPause},
+   * and, \valueref{RandomWaypointPosition}.
    */
   RandomWaypointMobilityModel ();
   /**
