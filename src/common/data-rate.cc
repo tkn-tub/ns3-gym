@@ -145,19 +145,9 @@ uint64_t DataRate::Parse(const std::string s)
   return v;
 }
 
-bool DataRate::operator < (const DataRate& rhs)
-{
-	return m_bps<rhs.m_bps;
-}
-
 bool DataRate::operator < (const DataRate& rhs) const
 {
 	return m_bps<rhs.m_bps;
-}
-
-bool DataRate::operator <= (const DataRate& rhs)
-{
-	return m_bps<=rhs.m_bps;
 }
 
 bool DataRate::operator <= (const DataRate& rhs) const
@@ -165,19 +155,9 @@ bool DataRate::operator <= (const DataRate& rhs) const
 	return m_bps<=rhs.m_bps;
 }
 
-bool DataRate::operator >  (const DataRate& rhs)
-{
-	return m_bps>rhs.m_bps;
-}
-
 bool DataRate::operator >  (const DataRate& rhs) const
 {
 	return m_bps>rhs.m_bps;
-}
-
-bool DataRate::operator >= (const DataRate& rhs)
-{
-	return m_bps>=rhs.m_bps;
 }
 
 bool DataRate::operator >= (const DataRate& rhs) const
@@ -185,19 +165,9 @@ bool DataRate::operator >= (const DataRate& rhs) const
 	return m_bps>=rhs.m_bps;
 }
 
-bool DataRate::operator == (const DataRate& rhs)
-{
-	return m_bps==rhs.m_bps;
-}
-
 bool DataRate::operator == (const DataRate& rhs) const
 {
 	return m_bps==rhs.m_bps;
-}
-
-bool DataRate::operator != (const DataRate& rhs)
-{
-	return m_bps!=rhs.m_bps;
 }
 
 bool DataRate::operator != (const DataRate& rhs) const
