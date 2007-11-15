@@ -226,7 +226,7 @@ DcfManager::DoGrantAccess (void)
             {
               DcfState *state = *j;
               if (state->NeedsAccess () &&
-                  GetBackoffEndFor (state) < Simulator::Now ())
+                  GetBackoffEndFor (state) <= Simulator::Now ())
                 {
                   MY_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision.");
                   /**
