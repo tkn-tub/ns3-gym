@@ -268,7 +268,10 @@ extern ParameterLogger g_parameterLogger;
 #define NS_LOG_DEBUG(msg)
 #define NS_LOG_INFO(msg)
 #define NS_LOG_FUNCTION
-#define NS_LOG_PARAM(msg)
+#define NS_LOG_PARAMS(parameters)
+#define NS_LOG_PARAMS_BEGIN()
+#define NS_LOG_PARAM(param)
+#define NS_LOG_PARAMS_END()
 #define NS_LOG_LOGIC(msg)
 #define NS_LOG_UNCOND(msg)
 
