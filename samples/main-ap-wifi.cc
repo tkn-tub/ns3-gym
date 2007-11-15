@@ -69,7 +69,7 @@ WifiPhyStateTrace (const TraceContext &context, Time start, Time duration, enum 
 
 static Ptr<Node>
 CreateApNode (Ptr<WifiChannel> channel,
-              Position position, 
+              Vector position, 
               const char *ipAddress,
               Ssid ssid, 
               Time at)
@@ -80,7 +80,7 @@ CreateApNode (Ptr<WifiChannel> channel,
   Simulator::Schedule (at, &NqapWifiNetDevice::StartBeaconing, device);
   device->ConnectTo (channel);
   Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
-  mobility->Set (position);
+  mobility->SetPosition (position);
   node->AddInterface (mobility);
   
   Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
@@ -93,7 +93,7 @@ CreateApNode (Ptr<WifiChannel> channel,
 
 static Ptr<Node>
 CreateStaNode (Ptr<WifiChannel> channel,
-               Position position, 
+               Vector position, 
                const char *ipAddress,
                Ssid ssid)
 {
@@ -103,7 +103,7 @@ CreateStaNode (Ptr<WifiChannel> channel,
                           ssid);
   device->ConnectTo (channel);
   Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
-  mobility->Set (position);
+  mobility->SetPosition (position);
   node->AddInterface (mobility);
   
   Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
@@ -115,23 +115,23 @@ CreateStaNode (Ptr<WifiChannel> channel,
 }
 
 static void
-SetPosition (Ptr<Node> node, Position position)
+SetPosition (Ptr<Node> node, Vector position)
 {
   Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
-  mobility->Set (position);
+  mobility->SetPosition (position);
 }
 
-static Position
+static Vector
 GetPosition (Ptr<Node> node)
 {
   Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
-  return mobility->Get ();
+  return mobility->GetPosition ();
 }
 
 static void 
 AdvancePosition (Ptr<Node> node) 
 {
-  Position pos = GetPosition (node);
+  Vector pos = GetPosition (node);
   pos.x += 5.0;
   if (pos.x >= 210.0) {
     return;
@@ -164,19 +164,19 @@ int main (int argc, char *argv[])
   Ssid ssid = Ssid ("mathieu");
 
   Ptr<Node> a = CreateApNode (channel, 
-                              Position (5.0,0.0,0.0),
+                              Vector (5.0,0.0,0.0),
                               "192.168.0.1",
                               ssid, 
                               Seconds (0.1));
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, a);
 
   Ptr<Node> b = CreateStaNode (channel,
-                               Position (0.0, 0.0, 0.0),
+                               Vector (0.0, 0.0, 0.0),
                                "192.168.0.2",
                                ssid);
 
   Ptr<Node> c = CreateStaNode (channel,
-                               Position (0.0, 0.0, 0.0),
+                               Vector (0.0, 0.0, 0.0),
                                "192.168.0.3",
                                ssid);
 
