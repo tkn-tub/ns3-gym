@@ -65,6 +65,7 @@ void
 DcfState::StartBackoffNow (uint32_t nSlots)
 {
   NS_ASSERT (m_backoffSlots == 0);
+  MY_DEBUG ("start backoff="<<nSlots<<" slots");
   m_backoffSlots = nSlots;
   m_backoffStart = Simulator::Now ();
 }
@@ -196,7 +197,7 @@ DcfManager::RequestAccess (DcfState *state)
    * backoff running for this DcfState, start a new backoff
    * if needed.
    */ 
-  if (GetBackoffEndFor (state) <= Simulator::Now () && 
+  if (state->GetBackoffSlots () == 0 && 
       IsBusy ())
     {
       MY_DEBUG ("medium is busy: collision");
