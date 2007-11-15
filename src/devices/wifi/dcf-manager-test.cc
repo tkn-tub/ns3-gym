@@ -302,6 +302,20 @@ DcfManagerTest::RunTests (void)
   ExpectAccessGranted (118, 0);
   EndTest ();
 
+  // Test the case where the backoff slots is zero.
+  //
+  //  20          60     66      70
+  //   |    rx     | sifs | aifsn |
+  //        |
+  //       30 request access. backoff slots: 0
+  StartTest (4, 6 , 10);
+  AddDcfState (8, 64, 1);
+  AddRxOkEvt (20, 40);
+  AddAccessRequest (30, 0);
+  ExpectCollision (30, 0, 0); // backoff: 0 slots
+  ExpectAccessGranted (70, 0);
+  EndTest ();
+
   // The test below is subject to some discussion because I am 
   // not sure I understand the intent of the spec here.
   // i.e., what happens if you make a request to get access
@@ -321,6 +335,24 @@ DcfManagerTest::RunTests (void)
   AddAccessRequest (62, 0);
   ExpectAccessGranted (70, 0);
   EndTest ();
+
+
+  // Test an EIFS
+  // 
+  //  20          60     66           76      80       84       88       92       96
+  //   |    rx     | sifs | acktxttime | aifsn | bslot0 | bslot1 | bslot2 | bslot3 |
+  //        |      | <---------eifs----------->|
+  //       30 request access. backoff slots: 4
+  StartTest (4, 6, 10);
+  AddDcfState (8, 64, 1);
+  AddRxErrorEvt (20, 40);
+  AddAccessRequest (30, 0);
+  ExpectCollision (30, 4, 0); // backoff: 4 slots  
+  ExpectAccessGranted (96, 0);
+  EndTest ();
+
+
+  
 
   return m_result;
 }
