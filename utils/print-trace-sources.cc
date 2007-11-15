@@ -6,6 +6,7 @@
 #include "ns3/csma-net-device.h"
 #include "ns3/queue.h"
 #include "ns3/mobility-model-notifier.h"
+#include "ns3/default-value.h"
 
 using namespace ns3;
 
@@ -35,7 +36,7 @@ PrintSimpleText (const TraceResolver::SourceCollection *sources, std::ostream &o
       os << std::endl;
     }
 }
-void
+static void
 PrintDoxygenText (const TraceResolver::SourceCollection *sources, std::ostream &os)
 {
   uint32_t z = 0;
@@ -81,6 +82,37 @@ PrintDoxygenText (const TraceResolver::SourceCollection *sources, std::ostream &
     }
 }
 
+static void
+PrintOneDefaultValue (DefaultValueBase *value, std::ostream &os)
+{
+  os << "///  <li> \\anchor DefaultValue" << value->GetName ()
+     << " " << value->GetName () << std::endl;
+  os << "///    <ul>" << std::endl;
+  os << "///         <li>Type: " << value->GetType () << "</td></tr>" << std::endl;
+  os << "///         <li>Default value: " << value->GetDefaultValue () << "</td></tr>" << std::endl;
+  os << "///         <li>Description: " << value->GetHelp () << "</td></tr>" << std::endl;
+  os << "///    </ul>" << std::endl;
+  os << "///  </li>" << std::endl;
+}
+
+static void
+PrintDefaultValuesDoxygen (std::ostream &os)
+{
+  os << "/// \\page ListOfDefaultValues The list of default values" << std::endl;
+  os << "/// \\defgroup ListOfDefaultValuesGroup The list of default values" << std::endl;
+  os << "/// <ul>" << std::endl;
+  for (DefaultValueList::Iterator i = DefaultValueList::Begin ();
+       i != DefaultValueList::End (); i++)
+    {
+      if ((*i)->GetName () == "help")
+	{
+	  continue;
+	}
+      PrintOneDefaultValue (*i, os);
+    }
+  os << "/// </ul>" << std::endl;
+}
+
 
 int main (int argc, char *argv[])
 {
@@ -95,6 +127,9 @@ int main (int argc, char *argv[])
   TraceResolver::SourceCollection collection;
   NodeList::GetTraceResolver ()->CollectSources ("", TraceContext (), &collection);
   PrintDoxygenText (&collection, std::cout);
+
+
+  PrintDefaultValuesDoxygen (std::cout);
 
   return 0;
 }
