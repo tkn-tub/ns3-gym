@@ -219,14 +219,14 @@ DcfManager::DoGrantAccess (void)
            * needs access to the medium. i.e., it has data to send.
            */
           MY_DEBUG ("dcf " << k << " needs access. backoff expired. access granted.");
-          state->NotifyAccessGranted ();
           i++; // go to the next item in the list.
           k++;
+          std::vector<DcfState *> internalCollisionStates;
           for (States::const_iterator j = i; j != m_states.end (); j++, k++)
             {
-              DcfState *state = *j;
-              if (state->NeedsAccess () &&
-                  GetBackoffEndFor (state) <= Simulator::Now ())
+              DcfState *otherState = *j;
+              if (otherState->NeedsAccess () &&
+                  GetBackoffEndFor (otherState) <= Simulator::Now ())
                 {
                   MY_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision.");
                   /**
@@ -234,8 +234,22 @@ DcfManager::DoGrantAccess (void)
                    * has expired and which needed access to the medium
                    * must be notified that we did get an internal collision.
                    */
-                  state->NotifyInternalCollision ();
+                  internalCollisionStates.push_back (otherState);
                 }
+            }
+
+          /**
+           * Now, we notify all of these changes in one go. It is necessary to 
+           * perform first the calculations of which states are colliding and then
+           * only apply the changes because applying the changes through notification
+           * could change the global state of the manager, and, thus, could change
+           * the result of the calculations. 
+           */
+          state->NotifyAccessGranted ();
+          for (std::vector<DcfState *>::const_iterator k = internalCollisionStates.begin ();
+               k != internalCollisionStates.end (); k++)
+            {
+              (*k)->NotifyInternalCollision ();
             }
           break;
         }
