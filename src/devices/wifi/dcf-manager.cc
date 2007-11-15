@@ -341,29 +341,30 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
       DcfState *state = *i;
       if (state->NeedsAccess ())
         {
-          accessTimeoutNeeded = true;
-          expectedBackoffEnd = std::min (expectedBackoffEnd, GetBackoffEndFor (state));
+          Time tmp = GetBackoffEndFor (state);
+          if (tmp > Simulator::Now ())
+            {
+              accessTimeoutNeeded = true;
+              expectedBackoffEnd = std::min (expectedBackoffEnd, tmp);
+            }
         }
     }
   if (accessTimeoutNeeded)
     {
       MY_DEBUG ("expected backoff end="<<expectedBackoffEnd);
-      if (expectedBackoffEnd > Simulator::Now ())
+      Time expectedBackoffDelay = expectedBackoffEnd - Simulator::Now ();
+      if (m_accessTimeout.IsRunning () &&
+          Simulator::GetDelayLeft (m_accessTimeout) > expectedBackoffDelay)
         {
-          Time expectedBackoffDelay = expectedBackoffEnd - Simulator::Now ();
-          if (m_accessTimeout.IsRunning () &&
-              Simulator::GetDelayLeft (m_accessTimeout) > expectedBackoffDelay)
-            {
-              m_accessTimeout.Cancel ();
-            }
-          if (m_accessTimeout.IsExpired ())
-            {
-              m_accessTimeout = Simulator::Schedule (expectedBackoffDelay,
-                                                     &DcfManager::AccessTimeout, this);
-            }
+          m_accessTimeout.Cancel ();
+        }
+      if (m_accessTimeout.IsExpired ())
+        {
+          m_accessTimeout = Simulator::Schedule (expectedBackoffDelay,
+                                                 &DcfManager::AccessTimeout, this);
         }
     }
-}
+    }
 
 void 
 DcfManager::NotifyRxStartNow (Time duration)
