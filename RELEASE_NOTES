@@ -3,6 +3,11 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
+Release 3.0.8 (2007/11/15)
+========================
+   - A simple error model
+   - Source files for ns-3 tutorial
+
 Release 3.0.7 (2007/10/15)
 ========================
   - OLSR routing protocol
