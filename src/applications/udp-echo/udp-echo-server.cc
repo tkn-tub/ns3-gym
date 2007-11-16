@@ -38,7 +38,7 @@ UdpEchoServer::UdpEchoServer (
   Application(n)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << n << ", " << port << ")");
+  NS_LOG_PARAMS (this << n << port);
 
   Construct (n, port);
 }
@@ -54,7 +54,7 @@ UdpEchoServer::Construct (
   uint16_t port)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << n << ", " << port << ")");
+  NS_LOG_PARAMS (this << n << port);
 
   m_node = n;
   m_port = port;
@@ -106,7 +106,7 @@ UdpEchoServer::Receive(
   const Address &from) 
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << socket << ", " << packet << ", " << from << ")");
+  NS_LOG_PARAMS (this << socket << packet << from);
 
   if (InetSocketAddress::IsMatchingType (from))
     {

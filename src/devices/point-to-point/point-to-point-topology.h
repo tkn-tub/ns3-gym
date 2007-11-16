@@ -56,6 +56,17 @@ public:
     Ptr<Node> n1, Ptr<Node> n2, const DataRate& dataRate, const Time& delay);
 
   /** 
+   * \param n Node
+   * \param chan PointToPointChannel connected to node n
+   * \return Pointer to the corresponding PointToPointNetDevice
+   * 
+   * Utility function to retrieve a PointToPointNetDevice pointer
+   * corresponding to the input parameters
+   */
+  static Ptr<PointToPointNetDevice> GetNetDevice(
+    Ptr<Node> n, Ptr<PointToPointChannel> chan);
+
+  /** 
    * \param chan PointToPointChannel to use
    * \param n1 Node
    * \param addr1 Ipv4 Address for n1

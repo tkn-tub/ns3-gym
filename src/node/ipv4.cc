@@ -36,13 +36,11 @@ Ipv4::~Ipv4 ()
 {}
 
 uint32_t 
-Ipv4::GetIfIndexByAddress (Ptr<Node> node, Ipv4Address a, Ipv4Mask amask)
+Ipv4::GetIfIndexByAddress (Ipv4Address addr, Ipv4Mask mask)
 {
-  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
-  NS_ASSERT_MSG (ipv4, "Ipv4::GetIfIndexByAddress:  No Ipv4 interface");
-  for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++)
+  for (uint32_t i = 0; i < GetNInterfaces (); i++)
     {
-      if (ipv4->GetAddress (i).CombineMask(amask) == a.CombineMask(amask) )
+      if (GetAddress (i).CombineMask(mask) == addr.CombineMask(mask) )
         {
           return i;
         }
@@ -50,46 +48,6 @@ Ipv4::GetIfIndexByAddress (Ptr<Node> node, Ipv4Address a, Ipv4Mask amask)
   // Mapping not found
   NS_ASSERT_MSG (false, "Ipv4::GetIfIndexByAddress failed");
   return 0;
-}
-
-//
-// XXX BUGBUG I don't think this is really the right approach here.  The call
-// to GetRoute () filters down into Ipv4L3Protocol where it translates into
-// a call into the Ipv4 static routing package.  This bypasses any other
-// routing packages.  At a minimum, the name is misleading.
-//
-bool 
-Ipv4::GetRouteToDestination (
-  Ptr<Node> node, 
-  Ipv4Route& route, 
-  Ipv4Address a, 
-  Ipv4Mask amask)
-{
-  Ipv4Route tempRoute;
-  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
-  NS_ASSERT_MSG (ipv4, "Ipv4::GetRouteToDestination:  No Ipv4 interface");
-  for (uint32_t i = 0; i < ipv4->GetNRoutes (); i++) 
-    {
-      tempRoute = ipv4->GetRoute (i);
-      // Host route found
-      if ( tempRoute.IsNetwork () == false && tempRoute.GetDest () == a ) 
-        {
-          route = tempRoute;
-          return true;
-        }
-      else if ( tempRoute.IsNetwork () && 
-                tempRoute.GetDestNetwork () == a.CombineMask(amask) )
-        {
-          route = tempRoute;
-          return true;
-        }
-      else if ( tempRoute.IsDefault () )
-        {
-          route = tempRoute;
-          return true;
-        }
-    }
-  return false;
 }
 
 } // namespace ns3

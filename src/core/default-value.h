@@ -219,6 +219,7 @@ private:
   virtual bool DoParseValue (const std::string &value);
   virtual std::string DoGetType (void) const;
   virtual std::string DoGetDefaultValue (void) const;
+  T RealMin (void) const;
   T m_defaultValue;
   T m_minValue;
   T m_maxValue;
@@ -340,6 +341,42 @@ public:
 };
 
 /**
+ * \brief A string variable for ns3::Bind
+ * \ingroup config
+ *
+ * Every instance of this type is automatically 
+ * registered in the variable pool which is used
+ * by ns3::Bind. 
+ */
+class StringDefaultValue : public DefaultValueBase
+{
+public:
+  StringDefaultValue (const std::string &name,
+                      const std::string &help,
+                      const std::string defaultValue);
+  StringDefaultValue (const std::string &name,
+                      const std::string &help,
+                      const std::string defaultValue, 
+                      int maxSize);
+  StringDefaultValue (const std::string &name,
+                      const std::string &help,
+                      const std::string defaultValue, 
+                      int minSize,
+                      int maxSize);
+
+  std::string GetValue (void) const;
+private:
+  virtual bool DoParseValue (const std::string &value);
+  virtual std::string DoGetType (void) const;
+  virtual std::string DoGetDefaultValue (void) const;
+
+  std::string m_defaultValue;
+  std::string m_value;
+  int m_minSize;
+  int m_maxSize;
+};
+
+/**
  * \brief Class used to call a certain function during the configuration of the
  * simulation
  * \ingroup config
@@ -377,7 +414,7 @@ NumericDefaultValue<T>::NumericDefaultValue (std::string name,
 					     T defaultValue)
   : DefaultValueBase (name, help),
     m_defaultValue (defaultValue),
-    m_minValue (std::numeric_limits<T>::min ()),
+    m_minValue (RealMin ()),
     m_maxValue (std::numeric_limits<T>::max ()),
     m_value (defaultValue)
 {
@@ -468,6 +505,21 @@ NumericDefaultValue<T>::DoGetDefaultValue (void) const
   oss << m_defaultValue;
   return oss.str ();
 }
+
+template <typename T>
+T
+NumericDefaultValue<T>::RealMin (void) const
+{
+  if (std::numeric_limits<T>::is_integer) 
+    {
+      return std::numeric_limits<T>::min ();
+    }
+  else 
+    {
+      return -std::numeric_limits<T>::max ();
+    }
+}
+
 
 /**************************************************************
  **************************************************************/

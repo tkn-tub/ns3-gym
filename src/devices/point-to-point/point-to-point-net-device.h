@@ -37,6 +37,7 @@ namespace ns3 {
 
 class Queue;
 class PointToPointChannel;
+class ErrorModel;
 
 /**
  * \brief hold in a TraceContext the type of trace source from a PointToPointNetDevice
@@ -44,10 +45,21 @@ class PointToPointChannel;
 class PointToPointTraceType : public TraceContextElement
 {
 public:
+  enum Type {
+    RX,
+    DROP
+  };
+  PointToPointTraceType (enum Type type);
   PointToPointTraceType ();
   void Print (std::ostream &os) const;
   static uint16_t GetUid (void);
   std::string GetTypeName (void) const;
+  /**
+   * \returns the type of the trace source which generated an event.
+   */
+  enum Type Get (void) const;
+private:
+  enum Type m_type;
 };
 
 /**
@@ -133,6 +145,16 @@ public:
    *        ownership.
    */
   void AddQueue (Ptr<Queue> queue);
+  /**
+   * Attach a receive ErrorModel to the PointToPointNetDevice.
+   *
+   * The PointToPointNetDevice may optionally include an ErrorModel in
+   * the packet receive chain.
+   *
+   * @see ErrorModel
+   * @param em a pointer to the ErrorModel 
+   */
+  void AddReceiveErrorModel(Ptr<ErrorModel> em);
   /**
    * Receive a packet from a connected PointToPointChannel.
    *
@@ -288,11 +310,23 @@ private:
    * @see class TraceResolver
    */
   CallbackTraceSource<const Packet &> m_rxTrace;
+  /**
+   * The trace source for the packet drop events that the device can
+   * fire.
+   *
+   * @see class CallBackTraceSource
+   * @see class TraceResolver
+   */
+  CallbackTraceSource<const Packet &> m_dropTrace;
   /** 
    * Default data rate.  Used for all newly created p2p net devices
    */
    static DataRateDefaultValue g_defaultRate;
 
+  /**
+   * Error model for receive packet events
+   */
+  Ptr<ErrorModel> m_receiveErrorModel;
 };
 
 }; // namespace ns3

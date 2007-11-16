@@ -317,6 +317,86 @@ CommandDefaultValue::DoGetDefaultValue (void) const
 }
 
 
+StringDefaultValue::StringDefaultValue (const std::string &name,
+                                        const std::string &help,
+                                        const std::string defaultValue)
+  : DefaultValueBase (name, help),
+    m_defaultValue (defaultValue),
+    m_value (defaultValue),
+    m_minSize (0),
+    m_maxSize (-1)
+{
+  DefaultValueList::Add (this);
+}
+StringDefaultValue::StringDefaultValue (const std::string &name,
+                                        const std::string &help,
+                                        const std::string defaultValue,
+                                        int maxSize)
+  : DefaultValueBase (name, help),
+    m_defaultValue (defaultValue),
+    m_value (defaultValue),
+    m_minSize (0),
+    m_maxSize (maxSize)
+{
+  DefaultValueList::Add (this);
+}
+StringDefaultValue::StringDefaultValue (const std::string &name,
+                                        const std::string &help,
+                                        const std::string defaultValue,
+                                        int minSize,
+                                        int maxSize)
+  : DefaultValueBase (name, help),
+    m_defaultValue (defaultValue),
+    m_value (defaultValue),
+    m_minSize (minSize),
+    m_maxSize (maxSize)
+{
+  DefaultValueList::Add (this);
+}
+
+
+std::string 
+StringDefaultValue::GetValue (void) const
+{
+  return m_value;
+}
+
+bool 
+StringDefaultValue::DoParseValue (const std::string &value)
+{
+  if ((int)value.size () < m_minSize)
+    {
+      return false;
+    }
+  if (m_maxSize != -1 && (int)value.size () > m_maxSize)
+    {
+      return false;
+    }
+  m_value = value;
+  return true;
+}
+std::string 
+StringDefaultValue::DoGetType (void) const
+{
+  if (m_maxSize == -1)
+    {
+      return "string:0";
+    }
+  else 
+    {
+      std::ostringstream oss;
+      oss << "string:0:" << m_maxSize;
+      return oss.str ();
+    }
+}
+std::string 
+StringDefaultValue::DoGetDefaultValue (void) const
+{
+  return m_defaultValue;
+}
+
+
+
 }//namespace ns3
 
 #ifdef RUN_SELF_TESTS
@@ -381,7 +461,7 @@ DefaultValueTest::RunTests (void)
   DefaultValue::Bind ("test-c", "257");  
   NumericDefaultValue<float> x ("test-x", "help-x", 10.0);
   NumericDefaultValue<double> y ("test-y", "help-y", 10.0);
-
+  DefaultValue::Bind ("test-y", "-3");  
 
   EnumDefaultValue<enum MyEnum> e ("test-e", "help-e",
 				   MY_ENUM_C, "C",

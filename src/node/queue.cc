@@ -139,7 +139,7 @@ bool
 Queue::Enqueue (const Packet& p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
   NS_LOG_LOGIC ("m_traceEnqueue (p)");
 
   m_traceEnqueue (p);
@@ -157,7 +157,7 @@ bool
 Queue::Dequeue (Packet &p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
 
   bool retval = DoDequeue (p);
 
@@ -189,7 +189,7 @@ bool
 Queue::Peek (Packet &p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
   return DoPeek (p);
 }
 
@@ -264,7 +264,7 @@ void
 Queue::Drop (const Packet& p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
 
   m_nTotalDroppedPackets++;
   m_nTotalDroppedBytes += p.GetSize ();

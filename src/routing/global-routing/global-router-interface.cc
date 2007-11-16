@@ -58,8 +58,7 @@ GlobalRoutingLinkRecord::GlobalRoutingLinkRecord (
   m_metric (metric)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << linkType << ", " << linkId << ", " << linkData << 
-    ", " << metric << ")");
+  NS_LOG_PARAMS (this << linkType << linkId << linkData << metric);
 }
 
 GlobalRoutingLinkRecord::~GlobalRoutingLinkRecord ()
@@ -157,8 +156,7 @@ GlobalRoutingLSA::GlobalRoutingLSA (
   m_status(status)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << status << ", " << linkStateId << ", " << 
-    advertisingRtr << ")");
+  NS_LOG_PARAMS (this << status << linkStateId << advertisingRtr);
 }
 
 GlobalRoutingLSA::GlobalRoutingLSA (GlobalRoutingLSA& lsa)
