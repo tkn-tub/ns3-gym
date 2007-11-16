@@ -380,6 +380,21 @@ DcfManagerTest::RunTests (void)
   ExpectInternalCollision (78, 1, 1); // backoff: 1 slot
   EndTest ();
 
+
+  // test simple NAV count
+  //
+  // 
+  StartTest (4, 6, 10);
+  AddDcfState (1);
+  AddRxOkEvt (20, 40);
+  AddNavStart (60, 11);
+  AddRxOkEvt (66, 5);
+  AddNavStart (71, 0);
+  AddAccessRequest (30, 10, 89, 0);
+  ExpectCollision (30, 2, 0); // backoff: 2 slot
+  EndTest ();
+ 
+
   return m_result;
 }
 
