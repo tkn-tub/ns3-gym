@@ -381,16 +381,18 @@ DcfManagerTest::RunTests (void)
   EndTest ();
 
 
-  // test simple NAV count
   //
+  // test simple NAV count. This scenario modelizes a simple DATA+ACK handshake
+  // where the data rate used for the ACK is higher than expected by the DATA source
+  // so, the data exchange completes before the end of nav.
   // 
   StartTest (4, 6, 10);
   AddDcfState (1);
   AddRxOkEvt (20, 40);
-  AddNavStart (60, 11);
+  AddNavStart (60, 15);
   AddRxOkEvt (66, 5);
   AddNavStart (71, 0);
-  AddAccessRequest (30, 10, 89, 0);
+  AddAccessRequest (30, 10, 93, 0);
   ExpectCollision (30, 2, 0); // backoff: 2 slot
   EndTest ();
  
