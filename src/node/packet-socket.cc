@@ -222,22 +222,26 @@ PacketSocket::SendTo(const Address &address, const Packet &p)
   PacketSocketAddress ad;
   if (m_state == STATE_CLOSED)
     {
+      NS_LOG_LOGIC ("ERROR_BADF");
       m_errno = ERROR_BADF;
       return -1;
     }
   if (m_state == STATE_OPEN)
     {
       // XXX should return another error here.
+      NS_LOG_LOGIC ("ERROR_INVAL");
       m_errno = ERROR_INVAL;
       return -1;
     }
   if (m_shutdownSend)
     {
+      NS_LOG_LOGIC ("ERROR_SHUTDOWN");
       m_errno = ERROR_SHUTDOWN;
       return -1;
     }
   if (!PacketSocketAddress::IsMatchingType (address))
     {
+      NS_LOG_LOGIC ("ERROR_AFNOSUPPORT");
       m_errno = ERROR_AFNOSUPPORT;
       return -1;
     }
@@ -250,6 +254,7 @@ PacketSocket::SendTo(const Address &address, const Packet &p)
       Ptr<NetDevice> device = m_node->GetDevice (ad.GetSingleDevice ());
       if (!device->Send (p, dest, ad.GetProtocol ()))
         {
+          NS_LOG_LOGIC ("error: NetDevice::Send error");
           error = true;
         }
     }
@@ -260,6 +265,7 @@ PacketSocket::SendTo(const Address &address, const Packet &p)
           Ptr<NetDevice> device = m_node->GetDevice (i);
           if (!device->Send (p, dest, ad.GetProtocol ()))
             {
+              NS_LOG_LOGIC ("error: NetDevice::Send error");
               error = true;
             }
         }
@@ -271,6 +277,7 @@ PacketSocket::SendTo(const Address &address, const Packet &p)
 
   if (error)
     {
+      NS_LOG_LOGIC ("ERROR_INVAL 2");
       m_errno = ERROR_INVAL;
       return -1;
     }
