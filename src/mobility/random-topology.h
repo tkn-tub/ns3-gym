@@ -41,8 +41,9 @@ class RandomTopology
 {
  public:
   /**
-   * Create a default random topology based
-   * on Bind configuration.
+   * Create a default random topology with construction
+   * values from \valueref{RandomTopologyPositionType}, and,
+   * \valueref{RandomTopologyMobilityType}.
    */
   RandomTopology ();
   /**

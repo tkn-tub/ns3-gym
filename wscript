@@ -214,8 +214,8 @@ def _run_waf_check():
     ## generate the trace sources list docs
     env = Params.g_build.env_of_name('default')
     proc_env = _get_proc_env()
-    prog = _find_program('print-trace-sources', env).m_linktask.m_outputs[0].abspath(env)
-    out = open('doc/trace-source-list.h', 'w')
+    prog = _find_program('print-introspected-doxygen', env).m_linktask.m_outputs[0].abspath(env)
+    out = open('doc/introspected-doxygen.h', 'w')
     if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
         raise SystemExit(1)
     out.close()
@@ -353,8 +353,8 @@ def run_shell():
 
 
 def doxygen():
-    if not os.path.exists('doc/trace-source-list.h'):
-        Params.warning("doc/trace-source-list.h does not exist; run waf check to generate it.")
+    if not os.path.exists('doc/introspected-doxygen.h'):
+        Params.warning("doc/introspected-doxygen.h does not exist; run waf check to generate it.")
 
     ## run doxygen
     doxygen_config = os.path.join('doc', 'doxygen.conf')

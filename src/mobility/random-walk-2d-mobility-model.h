@@ -44,7 +44,10 @@ class RandomWalk2dMobilityModelParameters : public Object
  public:
   /**
    * Instantiate a set of RandomWalk parameters initialized
-   * with the Bind default values.
+   * with construction values from \valueref{RandomWalk2dMode},
+   * \valueref{RandomWalk2dDistance}, \valueref{RandomWalk2dTime},
+   * \valueref{RandomWalk2dSpeed}, \valueref{RandomWalk2dDirection},
+   * and, \valueref{RandomWalk2dBounds}.
    */
   RandomWalk2dMobilityModelParameters ();
   virtual ~RandomWalk2dMobilityModelParameters ();
@@ -104,9 +107,9 @@ class RandomWalk2dMobilityModelParameters : public Object
  * either a fixed distance has been walked or until a fixed amount
  * of time.
  *
- * The parameters of the model can be specified either with the ns3::Bind
- * function and the variables "RandomWalk2dSpeed", "RandomWalk2dMode", 
- * "RandomWalk2dDistance", "RandomWalk2dTime", and, "RandomWalk2dBounds" or
+ * The parameters of the model can be specified either with the DefaultValue::Bind
+ * function and the variables \valueref{RandomWalk2dSpeed}, \valueref{RandomWalk2dMode}, 
+ * \valueref{RandomWalk2dDistance}, \valueref{RandomWalk2dTime}, and, \valueref{RandomWalk2dBounds} or
  * with an instance of the RandomWalk2dMobilityModelParameters class which
  * must be fed to the RandomWalk2dMobilityModel constructors.
  */
@@ -115,7 +118,13 @@ class RandomWalk2dMobilityModel : public MobilityModel
  public:
   static const ClassId cid;
   /**
-   * Create a new position object located at position (0,0,0)
+   * Instantiate a set of RandomWalk parameters initialized
+   * with construction values from \valueref{RandomWalk2dMode},
+   * \valueref{RandomWalk2dDistance}, \valueref{RandomWalk2dTime},
+   * \valueref{RandomWalk2dSpeed}, \valueref{RandomWalk2dDirection},
+   * and, \valueref{RandomWalk2dBounds}.
+   *
+   * The default position is (0,0,0)
    */
   RandomWalk2dMobilityModel ();
   /**
