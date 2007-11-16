@@ -20,7 +20,6 @@
 #include "ns3/point-to-point-channel.h"
 #include "ns3/mac48-address.h"
 #include "ns3/point-to-point-net-device.h"
-#include "ns3/point-to-point-ipv4-topology.h"
 #include "ns3/udp-echo-client.h"
 #include "ns3/udp-echo-server.h"
 #include "ns3/simulator.h"
@@ -28,6 +27,8 @@
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
 #include "ns3/global-route-manager.h"
+
+#include "point-to-point-ipv4-topology.h"
 
 NS_LOG_COMPONENT_DEFINE ("StarSimulation");
 
