@@ -395,6 +395,22 @@ DcfManagerTest::RunTests (void)
   AddAccessRequest (30, 10, 93, 0);
   ExpectCollision (30, 2, 0); // backoff: 2 slot
   EndTest ();
+
+
+  //
+  // test more complex NAV handling by a CF-poll. This scenario modelizes a 
+  // simple DATA+ACK handshake interrupted by a CF-poll which resets the
+  // NAV counter.
+  // 
+  StartTest (4, 6, 10);
+  AddDcfState (1);
+  AddRxOkEvt (20, 40);
+  AddNavStart (60, 15);
+  AddRxOkEvt (66, 5);
+  AddNavReset (71, 2);
+  AddAccessRequest (30, 10, 91, 0);
+  ExpectCollision (30, 2, 0); // backoff: 2 slot
+  EndTest ();
  
 
   return m_result;
