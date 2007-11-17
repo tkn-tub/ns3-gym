@@ -46,13 +46,13 @@ static GnuplotDataset *g_output = 0;
 
 static Ptr<Node>
 CreateAdhocNode (Ptr<WifiChannel> channel,
-                 Position position, const char *address)
+                 Vector position, const char *address)
 {
   Ptr<Node> node = Create<InternetNode> ();  
   Ptr<AdhocWifiNetDevice> device = Create<AdhocWifiNetDevice> (node);
   device->ConnectTo (channel);
   Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
-  mobility->Set (position);
+  mobility->SetPosition (position);
   node->AddInterface (mobility);
   
   Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
@@ -64,23 +64,23 @@ CreateAdhocNode (Ptr<WifiChannel> channel,
 }
 
 static void
-SetPosition (Ptr<Node> node, Position position)
+SetPosition (Ptr<Node> node, Vector position)
 {
   Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
-  mobility->Set (position);
+  mobility->SetPosition (position);
 }
 
-static Position
+static Vector
 GetPosition (Ptr<Node> node)
 {
   Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
-  return mobility->Get ();
+  return mobility->GetPosition ();
 }
 
 static void 
 AdvancePosition (Ptr<Node> node) 
 {
-  Position pos = GetPosition (node);
+  Vector pos = GetPosition (node);
   double mbs = ((g_bytesTotal * 8.0) / 1000000);
   g_bytesTotal = 0;
   g_output->Add (pos.x, mbs);
@@ -119,10 +119,10 @@ RunOneExperiment (void)
   Ptr<WifiChannel> channel = Create<WifiChannel> ();
 
   Ptr<Node> a = CreateAdhocNode (channel, 
-                                 Position (5.0,0.0,0.0),
+                                 Vector (5.0,0.0,0.0),
                                  "192.168.0.1");
   Ptr<Node> b = CreateAdhocNode (channel,
-                                 Position (0.0, 0.0, 0.0),
+                                 Vector (0.0, 0.0, 0.0),
                                  "192.168.0.2");
 
   Ptr<Application> app = Create<OnOffApplication> (a, InetSocketAddress ("192.168.0.2", 10), 

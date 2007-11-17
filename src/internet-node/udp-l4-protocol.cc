@@ -83,7 +83,7 @@ Ipv4EndPoint *
 UdpL4Protocol::Allocate (Ipv4Address address)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << address << ")");
+  NS_LOG_PARAMS (this << address);
   return m_endPoints->Allocate (address);
 }
 
@@ -91,7 +91,7 @@ Ipv4EndPoint *
 UdpL4Protocol::Allocate (uint16_t port)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << port << ")");
+  NS_LOG_PARAMS (this << port);
   return m_endPoints->Allocate (port);
 }
 
@@ -99,7 +99,7 @@ Ipv4EndPoint *
 UdpL4Protocol::Allocate (Ipv4Address address, uint16_t port)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << address << ", " << port << ")");
+  NS_LOG_PARAMS (this << address << port);
   return m_endPoints->Allocate (address, port);
 }
 Ipv4EndPoint *
@@ -107,8 +107,7 @@ UdpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
                Ipv4Address peerAddress, uint16_t peerPort)
 {
   NS_LOG_FUNCTION; 
-  NS_LOG_PARAM ("(" << localAddress << ", " << localPort << ", " << 
-    peerAddress << ", " << peerPort << ")");
+  NS_LOG_PARAMS (this << localAddress << localPort << peerAddress << peerPort);
   return m_endPoints->Allocate (localAddress, localPort,
                                 peerAddress, peerPort);
 }
@@ -117,7 +116,7 @@ void
 UdpL4Protocol::DeAllocate (Ipv4EndPoint *endPoint)
 {
   NS_LOG_FUNCTION; 
-  NS_LOG_PARAM ("(" << endPoint << ")");
+  NS_LOG_PARAMS (this << endPoint);
   m_endPoints->DeAllocate (endPoint);
 }
 
@@ -128,8 +127,7 @@ UdpL4Protocol::Receive(Packet& packet,
                        Ptr<Ipv4Interface> interface)
 {
   NS_LOG_FUNCTION; 
-  NS_LOG_PARAM ("(" << &packet << ", " << source << ", " << destination << 
-    ")");
+  NS_LOG_PARAMS (this << &packet << source << destination);
 
   UdpHeader udpHeader;
   packet.RemoveHeader (udpHeader);
@@ -149,8 +147,7 @@ UdpL4Protocol::Send (Packet packet,
            uint16_t sport, uint16_t dport)
 {
   NS_LOG_FUNCTION; 
-  NS_LOG_PARAM ("(" << &packet << ", " << saddr << ", " << daddr << ", " << 
-    sport << ", " << dport << ")");
+  NS_LOG_PARAMS (this << &packet << saddr << daddr << sport << dport);
 
   UdpHeader udpHeader;
   udpHeader.SetDestination (dport);

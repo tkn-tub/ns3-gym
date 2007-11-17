@@ -55,16 +55,18 @@ DcfState::UpdateFailedCw (void)
   m_cw = cw;
 }
 void 
-DcfState::UpdateBackoffSlotsNow (uint32_t nSlots)
+DcfState::UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound)
 {
   uint32_t n = std::min (nSlots, m_backoffSlots);
   m_backoffSlots -= n;
+  m_backoffStart = backoffUpdateBound;
 }
 
 void 
 DcfState::StartBackoffNow (uint32_t nSlots)
 {
   NS_ASSERT (m_backoffSlots == 0);
+  MY_DEBUG ("start backoff="<<nSlots<<" slots");
   m_backoffSlots = nSlots;
   m_backoffStart = Simulator::Now ();
 }
@@ -183,20 +185,11 @@ void
 DcfManager::RequestAccess (DcfState *state)
 {
   UpdateBackoff ();
-  if (m_accessTimeout.IsRunning ())
-    {
-      /* we don't need to do anything because we have an access
-       * timer which will expire soon.
-       */
-      MY_DEBUG ("access timer running. will be notified");
-      return;
-    }
   /**
-   * Since no access timeout is running, and if we have no
-   * backoff running for this DcfState, start a new backoff
-   * if needed.
-   */ 
-  if (GetBackoffEndFor (state) <= Simulator::Now () && 
+   * If there is a collision, generate a backoff
+   * by notifying the collision to the user.
+   */
+  if (state->GetBackoffSlots () == 0 && 
       IsBusy ())
     {
       MY_DEBUG ("medium is busy: collision");
@@ -205,7 +198,6 @@ DcfManager::RequestAccess (DcfState *state)
        */
       state->NotifyCollision ();
     }
-
   DoGrantAccess ();
   DoRestartAccessTimeoutIfNeeded ();  
 }
@@ -220,21 +212,21 @@ DcfManager::DoGrantAccess (void)
     {
       DcfState *state = *i;
       if (state->NeedsAccess () &&
-          GetBackoffEndFor (state) < Simulator::Now ())
+          GetBackoffEndFor (state) <= Simulator::Now ())
         {
           /**
            * This is the first dcf we find with an expired backoff and which
            * needs access to the medium. i.e., it has data to send.
            */
           MY_DEBUG ("dcf " << k << " needs access. backoff expired. access granted.");
-          state->NotifyAccessGranted ();
           i++; // go to the next item in the list.
           k++;
+          std::vector<DcfState *> internalCollisionStates;
           for (States::const_iterator j = i; j != m_states.end (); j++, k++)
             {
-              DcfState *state = *j;
-              if (state->NeedsAccess () &&
-                  GetBackoffEndFor (state) < Simulator::Now ())
+              DcfState *otherState = *j;
+              if (otherState->NeedsAccess () &&
+                  GetBackoffEndFor (otherState) <= Simulator::Now ())
                 {
                   MY_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision.");
                   /**
@@ -242,8 +234,22 @@ DcfManager::DoGrantAccess (void)
                    * has expired and which needed access to the medium
                    * must be notified that we did get an internal collision.
                    */
-                  state->NotifyInternalCollision ();
+                  internalCollisionStates.push_back (otherState);
                 }
+            }
+
+          /**
+           * Now, we notify all of these changes in one go. It is necessary to 
+           * perform first the calculations of which states are colliding and then
+           * only apply the changes because applying the changes through notification
+           * could change the global state of the manager, and, thus, could change
+           * the result of the calculations. 
+           */
+          state->NotifyAccessGranted ();
+          for (std::vector<DcfState *>::const_iterator k = internalCollisionStates.begin ();
+               k != internalCollisionStates.end (); k++)
+            {
+              (*k)->NotifyInternalCollision ();
             }
           break;
         }
@@ -318,7 +324,7 @@ DcfManager::UpdateBackoff (void)
       if (backoffStart <= Simulator::Now ())
         {
           Scalar nSlots = (Simulator::Now () - backoffStart) / m_slotTime;
-          uint32_t nIntSlots = lrint (nSlots.GetDouble ());
+          uint32_t nIntSlots = lrint (nSlots.GetDouble ());          
           /**
            * For each DcfState, calculate how many backoff slots elapsed since
            * the last time its backoff counter was updated. If the number of 
@@ -328,7 +334,8 @@ DcfManager::UpdateBackoff (void)
           if (nIntSlots > state->GetAifsn ())
             {
               MY_DEBUG ("dcf " << k << " dec backoff slots=" << nIntSlots);
-              state->UpdateBackoffSlotsNow (nIntSlots);
+              Time backoffUpdateBound = backoffStart + Scalar (nIntSlots) * m_slotTime;
+              state->UpdateBackoffSlotsNow (nIntSlots, backoffUpdateBound);
             }
         }
     }
@@ -348,29 +355,30 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
       DcfState *state = *i;
       if (state->NeedsAccess ())
         {
-          accessTimeoutNeeded = true;
-          expectedBackoffEnd = std::min (expectedBackoffEnd, GetBackoffEndFor (state));
+          Time tmp = GetBackoffEndFor (state);
+          if (tmp > Simulator::Now ())
+            {
+              accessTimeoutNeeded = true;
+              expectedBackoffEnd = std::min (expectedBackoffEnd, tmp);
+            }
         }
     }
   if (accessTimeoutNeeded)
     {
       MY_DEBUG ("expected backoff end="<<expectedBackoffEnd);
-      if (expectedBackoffEnd > Simulator::Now ())
+      Time expectedBackoffDelay = expectedBackoffEnd - Simulator::Now ();
+      if (m_accessTimeout.IsRunning () &&
+          Simulator::GetDelayLeft (m_accessTimeout) > expectedBackoffDelay)
         {
-          Time expectedBackoffDelay = expectedBackoffEnd - Simulator::Now ();
-          if (m_accessTimeout.IsRunning () &&
-              Simulator::GetDelayLeft (m_accessTimeout) > expectedBackoffDelay)
-            {
-              m_accessTimeout.Cancel ();
-            }
-          if (m_accessTimeout.IsExpired ())
-            {
-              m_accessTimeout = Simulator::Schedule (expectedBackoffDelay,
-                                                     &DcfManager::AccessTimeout, this);
-            }
+          m_accessTimeout.Cancel ();
+        }
+      if (m_accessTimeout.IsExpired ())
+        {
+          m_accessTimeout = Simulator::Schedule (expectedBackoffDelay,
+                                                 &DcfManager::AccessTimeout, this);
         }
     }
-}
+    }
 
 void 
 DcfManager::NotifyRxStartNow (Time duration)

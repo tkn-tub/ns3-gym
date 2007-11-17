@@ -360,62 +360,62 @@ TimeTests::~TimeTests ()
 
 bool TimeTests::RunTests (void)
 {
-  bool ok = true;
+  bool result = true;
 
   Time t0, t1;
 
-  CheckOld(&ok);
+  CheckOld(&result);
 
   t0 = MilliSeconds ((uint64_t)10.0);
   t1 = MilliSeconds ((uint64_t)11.0);
 
-  CheckOperations(t0, t1, &ok);
+  CheckOperations(t0, t1, &result);
 
   //  t0 = Seconds ((uint64_t)10.0);
   //  t1 = Seconds ((uint64_t)11.0);
 
-  //  CheckOperations(t0, t1, &ok);
+  //  CheckOperations(t0, t1, &result);
 
-  CheckConversions((uint64_t)5, &ok);
-  CheckConversions((uint64_t)0, &ok);
-  CheckConversions((uint64_t)783, &ok);
-  CheckConversions((uint64_t)1132, &ok);
-  //  CheckConversions((uint64_t)3341039, &ok);
+  CheckConversions((uint64_t)5, &result);
+  CheckConversions((uint64_t)0, &result);
+  CheckConversions((uint64_t)783, &result);
+  CheckConversions((uint64_t)1132, &result);
+  //  CheckConversions((uint64_t)3341039, &result);
 
   // Now vary the precision and check the conversions
   if (TimeStepPrecision::Get () != TimeStepPrecision::NS) {
-    ok = false;
+    result = false;
   }
 
-  CheckPrecision(TimeStepPrecision::US, 7, &ok);
+  CheckPrecision(TimeStepPrecision::US, 7, &result);
 
-  CheckConversions((uint64_t)7, &ok);
-  CheckConversions((uint64_t)546, &ok);
-  CheckConversions((uint64_t)6231, &ok);
-  //  CheckConversions((uint64_t)1234639, &ok);
+  CheckConversions((uint64_t)7, &result);
+  CheckConversions((uint64_t)546, &result);
+  CheckConversions((uint64_t)6231, &result);
+  //  CheckConversions((uint64_t)1234639, &result);
 
-  CheckPrecision(TimeStepPrecision::MS, 3, &ok);
+  CheckPrecision(TimeStepPrecision::MS, 3, &result);
 
-  CheckConversions((uint64_t)3, &ok);
-  CheckConversions((uint64_t)134, &ok);
-  CheckConversions((uint64_t)2341, &ok);
-  //  CheckConversions((uint64_t)8956239, &ok);
+  CheckConversions((uint64_t)3, &result);
+  CheckConversions((uint64_t)134, &result);
+  CheckConversions((uint64_t)2341, &result);
+  //  CheckConversions((uint64_t)8956239, &result);
 
-  CheckPrecision(TimeStepPrecision::PS, 21, &ok);
+  CheckPrecision(TimeStepPrecision::PS, 21, &result);
 
-  CheckConversions((uint64_t)4, &ok);
-  CheckConversions((uint64_t)342, &ok);
-  CheckConversions((uint64_t)1327, &ok);
-  //  CheckConversions((uint64_t)5439627, &ok);
+  CheckConversions((uint64_t)4, &result);
+  CheckConversions((uint64_t)342, &result);
+  CheckConversions((uint64_t)1327, &result);
+  //  CheckConversions((uint64_t)5439627, &result);
 
-  CheckPrecision(TimeStepPrecision::NS, 12, &ok);
-  CheckConversions((uint64_t)12, &ok);
+  CheckPrecision(TimeStepPrecision::NS, 12, &result);
+  CheckConversions((uint64_t)12, &result);
 
-  CheckPrecision(TimeStepPrecision::S, 7, &ok);
-  CheckConversions((uint64_t)7, &ok);
+  CheckPrecision(TimeStepPrecision::S, 7, &result);
+  CheckConversions((uint64_t)7, &result);
 
-  CheckPrecision(TimeStepPrecision::FS, 5, &ok);
-  CheckConversions((uint64_t)5, &ok);
+  CheckPrecision(TimeStepPrecision::FS, 5, &result);
+  CheckConversions((uint64_t)5, &result);
 
   TimeStepPrecision::Set (TimeStepPrecision::NS);
 
@@ -426,7 +426,17 @@ bool TimeTests::RunTests (void)
   DefaultValue::Bind ("TimeStepPrecision", "PS");
   DefaultValue::Bind ("TimeStepPrecision", "FS");
 
-  return ok;
+
+  Time tooBig = TimeStep (0x8000000000000000LL);
+  NS_TEST_ASSERT (tooBig.IsNegative ());
+  tooBig = TimeStep (0xffffffffffffffffLL);
+  NS_TEST_ASSERT (tooBig.IsNegative ());
+  tooBig = TimeStep (0x7fffffffffffffffLL);
+  NS_TEST_ASSERT (tooBig.IsPositive ());
+  tooBig += TimeStep (1);
+  NS_TEST_ASSERT (tooBig.IsNegative ());
+
+  return result;
 }
 
 void TimeTests::CheckOld (bool *ok)

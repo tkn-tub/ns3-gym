@@ -1,6 +1,6 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 /*
- * Copyright (c) 2007 INRIA
+ * Copyright (c) 2007 University of Washington
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -14,35 +14,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "position.h"
-#include <cmath>
+
+#ifndef IPV4_ADDRESS_GENERATOR_H
+#define IPV4_ADDRESS_GENERATOR_H
+
+#include <stdint.h>
+#include <ostream>
+
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
 
+class Ipv4AddressGenerator {
+public:
+  static void SeedAddress (const Ipv4Mask mask, 
+    const Ipv4Address address);
 
-Position::Position (double _x, double _y, double _z)
-  : x (_x),
-    y (_y),
-    z (_z)
-{}
+  static Ipv4Address AllocateAddress (const Ipv4Mask mask, 
+    const Ipv4Address network);
 
-Position::Position ()
-  : x (0.0),
-    y (0.0),
-    z (0.0)
-{}
+  static void SeedNetwork (const Ipv4Mask mask, 
+    const Ipv4Address address);
 
-double 
-CalculateDistance (const Position &a, const Position &b)
-{
-  double dx = b.x - a.x;
-  double dy = b.y - a.y;
-  double dz = b.z - a.z;
-  double distance = std::sqrt (dx * dx + dy * dy + dz * dz);
-  return distance;
-}
+  static Ipv4Address AllocateNetwork (const Ipv4Mask mask);
+};
 
-} // namespace ns3
+}; // namespace ns3
+
+#endif /* IPV4_ADDRESS_GENERATOR_H */

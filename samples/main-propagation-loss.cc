@@ -30,10 +30,10 @@ PrintOne (double minTxpower, double maxTxpower, double stepTxpower, double min, 
   Ptr<StaticMobilityModel> b = Create<StaticMobilityModel> ();
   Ptr<PropagationLossModel> model = PropagationLossModel::CreateDefault ();
 
-  a->Set (Position (0.0, 0.0, 0.0));
+  a->SetPosition (Vector (0.0, 0.0, 0.0));
   for (double x = min; x < max; x+= step)
     {
-      b->Set (Position (x, 0.0, 0.0));
+      b->SetPosition (Vector (x, 0.0, 0.0));
       std::cout << x << " ";
       for (double txpower = minTxpower; txpower < maxTxpower; txpower += stepTxpower)
         {

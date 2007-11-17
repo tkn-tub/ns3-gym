@@ -93,7 +93,7 @@ Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (Ipv4Address address)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << this << ", " << address << ")");
+  NS_LOG_PARAMS (this << address);
   uint16_t port = AllocateEphemeralPort ();
   if (port == 0) 
     {
@@ -117,7 +117,7 @@ Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (Ipv4Address address, uint16_t port)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << this << ", " << address << ", " << port << ")");
+  NS_LOG_PARAMS (this << address << port);
   if (LookupLocal (address, port)) 
     {
       NS_LOG_WARN ("Duplicate address/port; failing.");
@@ -134,10 +134,7 @@ Ipv4EndPointDemux::Allocate (Ipv4Address localAddress, uint16_t localPort,
 			     Ipv4Address peerAddress, uint16_t peerPort)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(localAddress=" << localAddress
-    << ", localPort=" << localPort
-    << ", peerAddress=" << peerAddress
-    << ", peerPort=" << peerPort << ")");
+  NS_LOG_PARAMS (this << localAddress << localPort << peerAddress << peerPort);
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
       if ((*i)->GetLocalPort () == localPort &&
@@ -189,8 +186,15 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
   Ipv4EndPoint *generic = 0;
   EndPoints retval;
 
-  NS_LOG_PARAM ("(daddr=" << daddr << ", dport=" << dport
-    << ", saddr=" << saddr << ", sport=" << sport << ")");
+  //NS_LOG_PARAMS (this << daddr << dport << saddr << sport);
+  NS_LOG_PARAMS_BEGIN ();
+  NS_LOG_PARAM (this);
+  NS_LOG_PARAM (daddr);
+  NS_LOG_PARAM (dport);
+  NS_LOG_PARAM (saddr);
+  NS_LOG_PARAM (sport);
+  NS_LOG_PARAM (incomingInterface);
+  NS_LOG_PARAMS_END ();
 
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {

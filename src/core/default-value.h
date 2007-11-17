@@ -219,6 +219,7 @@ private:
   virtual bool DoParseValue (const std::string &value);
   virtual std::string DoGetType (void) const;
   virtual std::string DoGetDefaultValue (void) const;
+  T RealMin (void) const;
   T m_defaultValue;
   T m_minValue;
   T m_maxValue;
@@ -413,7 +414,7 @@ NumericDefaultValue<T>::NumericDefaultValue (std::string name,
 					     T defaultValue)
   : DefaultValueBase (name, help),
     m_defaultValue (defaultValue),
-    m_minValue (std::numeric_limits<T>::min ()),
+    m_minValue (RealMin ()),
     m_maxValue (std::numeric_limits<T>::max ()),
     m_value (defaultValue)
 {
@@ -504,6 +505,21 @@ NumericDefaultValue<T>::DoGetDefaultValue (void) const
   oss << m_defaultValue;
   return oss.str ();
 }
+
+template <typename T>
+T
+NumericDefaultValue<T>::RealMin (void) const
+{
+  if (std::numeric_limits<T>::is_integer) 
+    {
+      return std::numeric_limits<T>::min ();
+    }
+  else 
+    {
+      return -std::numeric_limits<T>::max ();
+    }
+}
+
 
 /**************************************************************
  **************************************************************/

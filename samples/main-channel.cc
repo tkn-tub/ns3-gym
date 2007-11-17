@@ -73,7 +73,7 @@ FakeInternetNode::Doit (void)
 FakeInternetNode::UpperDoSendUp (Packet &p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
   NS_LOG_INFO ("**** Receive inbound packet");
   m_dtqInbound.Enqueue(p);
   return m_dtqInbound.Dequeue(p);
@@ -83,7 +83,7 @@ FakeInternetNode::UpperDoSendUp (Packet &p)
 FakeInternetNode::UpperDoPull (Packet &p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
 
   return m_dtqOutbound.Dequeue(p);
 }
@@ -142,7 +142,7 @@ FakePhysicalLayer::LowerDoNotify (LayerConnectorUpper *upper)
 FakePhysicalLayer::UpperDoSendUp (Packet &p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
 
   NS_ASSERT(m_upperPartner);
   return m_upperPartner->UpperSendUp(p);
@@ -152,7 +152,7 @@ FakePhysicalLayer::UpperDoSendUp (Packet &p)
 FakePhysicalLayer::UpperDoPull (Packet &p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
 
   return m_dtqOutbound.Dequeue(p);
 }

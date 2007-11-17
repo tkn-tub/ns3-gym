@@ -109,7 +109,7 @@ void
 OnOffApplication::SetMaxBytes(uint32_t maxBytes)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << maxBytes << ")");
+  NS_LOG_PARAMS (this << maxBytes);
   m_maxBytes = maxBytes;
 }
 
@@ -117,7 +117,7 @@ void
 OnOffApplication::SetDefaultRate (const DataRate &rate)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &rate << ")");
+  NS_LOG_PARAMS (&rate);
   g_defaultRate.SetValue (rate);
 }
 
@@ -125,7 +125,7 @@ void
 OnOffApplication::SetDefaultSize (uint32_t size)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << size << ")");
+  NS_LOG_PARAMS (size);
   g_defaultSize.SetValue (size);
 }
 

@@ -17,20 +17,32 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "speed.h"
+#include "vector.h"
+#include <cmath>
 
 namespace ns3 {
 
-Speed::Speed (double _dx, double _dy, double _dz)
-  : dx (_dx),
-    dy (_dy),
-    dz (_dz)
+
+Vector::Vector (double _x, double _y, double _z)
+  : x (_x),
+    y (_y),
+    z (_z)
 {}
 
-Speed::Speed ()
-  : dx (0.0),
-    dy (0.0),
-    dz (0.0)
+Vector::Vector ()
+  : x (0.0),
+    y (0.0),
+    z (0.0)
 {}
+
+double 
+CalculateDistance (const Vector &a, const Vector &b)
+{
+  double dx = b.x - a.x;
+  double dy = b.y - a.y;
+  double dz = b.z - a.z;
+  double distance = std::sqrt (dx * dx + dy * dy + dz * dz);
+  return distance;
+}
 
 } // namespace ns3

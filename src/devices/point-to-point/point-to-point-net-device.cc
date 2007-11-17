@@ -26,6 +26,7 @@
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/mac48-address.h"
 #include "ns3/llc-snap-header.h"
+#include "ns3/error-model.h"
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
 
@@ -38,14 +39,28 @@ DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
            "The default data rate for point to point links",
            DataRate ("10Mb/s"));
 
-PointToPointTraceType::PointToPointTraceType ()
+PointToPointTraceType::PointToPointTraceType (enum Type type)
+  : m_type (type)
 {
   NS_LOG_FUNCTION;
 }
+PointToPointTraceType::PointToPointTraceType ()
+  : m_type (RX)
+{
+  NS_LOG_FUNCTION;
+}
+
 void 
 PointToPointTraceType::Print (std::ostream &os) const
 {
-  os << "dev-rx";
+  switch (m_type) {
+  case RX:
+    os << "dev-rx";
+    break;
+  case DROP:
+    os << "dev-drop";
+    break;
+  }
 }
 
 uint16_t 
@@ -63,6 +78,12 @@ PointToPointTraceType::GetTypeName (void) const
   return "ns3::PointToPointTraceType";
 }
 
+enum PointToPointTraceType::Type
+PointToPointTraceType::Get (void) const
+{
+  NS_LOG_FUNCTION;
+  return m_type;
+}
 
 PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
                                               const DataRate& rate) 
@@ -73,10 +94,12 @@ PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
   m_tInterframeGap (Seconds(0)),
   m_channel (0), 
   m_queue (0),
-  m_rxTrace ()
+  m_rxTrace (),
+  m_dropTrace (),
+  m_receiveErrorModel (0)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << node << ")");
+  NS_LOG_PARAMS (this << node);
 //
 // XXX BUGBUG
 //
@@ -94,6 +117,7 @@ PointToPointNetDevice::~PointToPointNetDevice()
 {
   NS_LOG_FUNCTION;
   m_queue = 0;
+  m_receiveErrorModel = 0;
 }
 
 void 
@@ -127,7 +151,10 @@ void PointToPointNetDevice::DoDispose()
 void PointToPointNetDevice::SetDataRate(const DataRate& bps)
 {
   NS_LOG_FUNCTION;
-  m_bps = bps;
+  if (!m_channel || bps <= m_channel->GetDataRate ())
+    {
+      m_bps = bps;
+    }
 }
 
 void PointToPointNetDevice::SetInterframeGap(const Time& t)
@@ -174,7 +201,7 @@ bool PointToPointNetDevice::SendTo (const Packet& packet, const Address& dest,
 PointToPointNetDevice::TransmitStart (Packet &p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
   NS_LOG_LOGIC ("UID is " << p.GetUid () << ")");
 //
 // This function is called to start the process of transmitting a packet.
@@ -221,7 +248,12 @@ PointToPointNetDevice::GetTraceResolver (void) const
                        TraceDoc ("receive MAC packet",
                                  "const Packet &", "packet received"),
                        m_rxTrace,
-                       PointToPointTraceType ());
+                       PointToPointTraceType (PointToPointTraceType::RX));
+  resolver->AddSource ("drop",
+                       TraceDoc ("drop MAC packet",
+                                 "const Packet &", "packet dropped"),
+                       m_dropTrace,
+                       PointToPointTraceType (PointToPointTraceType::DROP));
   resolver->SetParentResolver (NetDevice::GetTraceResolver ());
   return resolver;
 }
@@ -230,7 +262,7 @@ bool
 PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &ch << ")");
+  NS_LOG_PARAMS (this << &ch);
 
   m_channel = ch;
 
@@ -257,21 +289,38 @@ PointToPointNetDevice::Attach (Ptr<PointToPointChannel> ch)
 void PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << q << ")");
+  NS_LOG_PARAMS (this << q);
 
   m_queue = q;
+}
+
+void PointToPointNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
+{
+  NS_LOG_FUNCTION;
+  NS_LOG_PARAM ("(" << em << ")");
+
+  m_receiveErrorModel = em;
+  AddInterface (em);
 }
 
 void PointToPointNetDevice::Receive (Packet& p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ")");
+  NS_LOG_PARAMS (this << &p);
   uint16_t protocol = 0;
   Packet packet = p;
 
-  m_rxTrace (packet);
-  ProcessHeader(packet, protocol);
-  ForwardUp (packet, protocol, GetBroadcast ());
+  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (p) ) 
+    {
+      m_dropTrace (packet);
+      // Do not forward up; let this packet go
+    }
+  else 
+    {
+      m_rxTrace (packet);
+      ProcessHeader(packet, protocol);
+      ForwardUp (packet, protocol, GetBroadcast ());
+    }
 }
 
 Ptr<Queue> PointToPointNetDevice::GetQueue(void) const 

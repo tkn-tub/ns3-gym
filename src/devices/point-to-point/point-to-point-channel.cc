@@ -52,8 +52,7 @@ PointToPointChannel::PointToPointChannel(
   m_nDevices(0)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << Channel::GetName() << ", " << bps.GetBitRate() << 
-    ", " << delay << ")");
+  NS_LOG_PARAMS (this << Channel::GetName() << bps.GetBitRate() << delay);
 }
 
 PointToPointChannel::PointToPointChannel(
@@ -67,15 +66,14 @@ PointToPointChannel::PointToPointChannel(
   m_nDevices(0)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << name << ", " << bps.GetBitRate() << ", " << 
-    delay << ")");
+  NS_LOG_PARAMS (this << name << bps.GetBitRate() << delay);
 }
 
 void
 PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << device << ")");
+  NS_LOG_PARAMS (this << device);
   NS_ASSERT(m_nDevices < N_DEVICES && "Only two devices permitted");
   NS_ASSERT(device != 0);
 
@@ -99,7 +97,7 @@ PointToPointChannel::TransmitStart(Packet& p,
                                         const Time& txTime)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << &p << ", " << src << ")");
+  NS_LOG_PARAMS (this << &p << src);
   NS_LOG_LOGIC ("UID is " << p.GetUid () << ")");
 
   NS_ASSERT(m_link[0].m_state != INITIALIZING);
