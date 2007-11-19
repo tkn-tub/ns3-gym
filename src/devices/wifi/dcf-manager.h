@@ -20,12 +20,12 @@ public:
   void ResetCw (void);
   void UpdateFailedCw (void);
   void StartBackoffNow (uint32_t nSlots);
+  uint32_t GetCw (void) const;
 
 private:
   friend class DcfManager;
 
   uint32_t GetAifsn (void) const;
-  uint32_t GetCw (void) const;
   uint32_t GetBackoffSlots (void) const;
   Time GetBackoffStart (void) const;
 
