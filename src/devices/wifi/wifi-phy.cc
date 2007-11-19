@@ -520,6 +520,12 @@ WifiPhy::GetDelayUntilIdle (void)
   return retval;
 }
 
+Time 
+WifiPhy::GetLastRxStartTime (void) const
+{
+  return m_startSync;
+}
+
 
 Time
 WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble) const

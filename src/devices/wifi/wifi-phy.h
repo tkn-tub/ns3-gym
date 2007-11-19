@@ -196,6 +196,8 @@ public:
    */
   Time GetDelayUntilIdle (void);
 
+  Time GetLastRxStartTime (void) const;
+
   /**
    * \param size the number of bytes in the packet to send
    * \param payloadMode the transmission mode to use for this packet
