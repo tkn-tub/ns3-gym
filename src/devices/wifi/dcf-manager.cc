@@ -326,19 +326,10 @@ DcfManager::UpdateBackoff (void)
         {
           Scalar nSlots = (Simulator::Now () - backoffStart) / m_slotTime;
           uint32_t nIntSlots = lrint (nSlots.GetDouble ());          
-          /**
-           * For each DcfState, calculate how many backoff slots elapsed since
-           * the last time its backoff counter was updated. If the number of 
-           * slots is smaller than its AIFSN, the backoff did not start, so,
-           * we do not update it.
-           */
-          if (nIntSlots >= state->GetAifsn ())
-            {
-              uint32_t n = std::min (nIntSlots, state->GetBackoffSlots ());
-              MY_DEBUG ("dcf " << k << " dec backoff slots=" << n);
-              Time backoffUpdateBound = backoffStart + Scalar (n) * m_slotTime;
-              state->UpdateBackoffSlotsNow (n, backoffUpdateBound);
-            }
+          uint32_t n = std::min (nIntSlots, state->GetBackoffSlots ());
+          MY_DEBUG ("dcf " << k << " dec backoff slots=" << n);
+          Time backoffUpdateBound = backoffStart + Scalar (n) * m_slotTime;
+          state->UpdateBackoffSlotsNow (n, backoffUpdateBound);
         }
     }
 }
