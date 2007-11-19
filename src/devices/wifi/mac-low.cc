@@ -769,6 +769,9 @@ void
 MacLow::CtsTimeout (void)
 {
   MY_DEBUG ("cts timeout");
+  // XXX: should check that there was no rx start before now.
+  // we should restart a new cts timeout now until the expected
+  // end of rx if there was a rx start before now.
   MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
   station->ReportRtsFailed ();
   m_hasCurrent = false;
@@ -780,6 +783,9 @@ void
 MacLow::NormalAckTimeout (void)
 {
   MY_DEBUG ("normal ack timeout");
+  // XXX: should check that there was no rx start before now.
+  // we should restart a new ack timeout now until the expected
+  // end of rx if there was a rx start before now.
   MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
   station->ReportDataFailed ();
   MacLowTransmissionListener *listener = m_listener;
