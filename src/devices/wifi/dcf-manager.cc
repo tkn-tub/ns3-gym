@@ -11,7 +11,7 @@
 NS_LOG_COMPONENT_DEFINE ("DcfManager");
 
 #define MY_DEBUG(x) \
-  NS_LOG_DEBUG (Simulator::Now () << " " x)
+  NS_LOG_DEBUG (Simulator::Now () << " " << this << " " << x)
 
 namespace ns3 {
 
@@ -60,6 +60,7 @@ DcfState::UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound)
   uint32_t n = std::min (nSlots, m_backoffSlots);
   m_backoffSlots -= n;
   m_backoffStart = backoffUpdateBound;
+  MY_DEBUG ("update slots="<<nSlots<<" slots, backoff="<<m_backoffSlots);
 }
 
 void 
@@ -218,7 +219,7 @@ DcfManager::DoGrantAccess (void)
            * This is the first dcf we find with an expired backoff and which
            * needs access to the medium. i.e., it has data to send.
            */
-          MY_DEBUG ("dcf " << k << " needs access. backoff expired. access granted.");
+          MY_DEBUG ("dcf " << k << " needs access. backoff expired. access granted. slots="<<state->GetBackoffSlots ());
           i++; // go to the next item in the list.
           k++;
           std::vector<DcfState *> internalCollisionStates;
@@ -331,7 +332,7 @@ DcfManager::UpdateBackoff (void)
            * slots is smaller than its AIFSN, the backoff did not start, so,
            * we do not update it.
            */
-          if (nIntSlots > state->GetAifsn ())
+          if (nIntSlots >= state->GetAifsn ())
             {
               MY_DEBUG ("dcf " << k << " dec backoff slots=" << nIntSlots);
               Time backoffUpdateBound = backoffStart + Scalar (nIntSlots) * m_slotTime;
@@ -378,7 +379,7 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
                                                  &DcfManager::AccessTimeout, this);
         }
     }
-    }
+}
 
 void 
 DcfManager::NotifyRxStartNow (Time duration)
