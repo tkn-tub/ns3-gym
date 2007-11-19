@@ -57,8 +57,7 @@ DcfState::UpdateFailedCw (void)
 void 
 DcfState::UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound)
 {
-  uint32_t n = std::min (nSlots, m_backoffSlots);
-  m_backoffSlots -= n;
+  m_backoffSlots -= nSlots;
   m_backoffStart = backoffUpdateBound;
   MY_DEBUG ("update slots="<<nSlots<<" slots, backoff="<<m_backoffSlots);
 }
@@ -229,7 +228,8 @@ DcfManager::DoGrantAccess (void)
               if (otherState->NeedsAccess () &&
                   GetBackoffEndFor (otherState) <= Simulator::Now ())
                 {
-                  MY_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision.");
+                  MY_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision. slots=" << 
+                            otherState->GetBackoffSlots ());
                   /**
                    * all other dcfs with a lower priority whose backoff
                    * has expired and which needed access to the medium
@@ -334,9 +334,10 @@ DcfManager::UpdateBackoff (void)
            */
           if (nIntSlots >= state->GetAifsn ())
             {
-              MY_DEBUG ("dcf " << k << " dec backoff slots=" << nIntSlots);
-              Time backoffUpdateBound = backoffStart + Scalar (nIntSlots) * m_slotTime;
-              state->UpdateBackoffSlotsNow (nIntSlots, backoffUpdateBound);
+              uint32_t n = std::min (nIntSlots, state->GetBackoffSlots ());
+              MY_DEBUG ("dcf " << k << " dec backoff slots=" << n);
+              Time backoffUpdateBound = backoffStart + Scalar (n) * m_slotTime;
+              state->UpdateBackoffSlotsNow (n, backoffUpdateBound);
             }
         }
     }
