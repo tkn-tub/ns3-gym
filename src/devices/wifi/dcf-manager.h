@@ -21,6 +21,7 @@ public:
   void UpdateFailedCw (void);
   void StartBackoffNow (uint32_t nSlots);
   uint32_t GetCw (void) const;
+  bool IsAccessRequested (void) const;
 
 private:
   friend class DcfManager;
@@ -28,13 +29,16 @@ private:
   uint32_t GetAifsn (void) const;
   uint32_t GetBackoffSlots (void) const;
   Time GetBackoffStart (void) const;
-
   void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
+  void NotifyAccessRequested (void);
+  void NotifyAccessGranted (void);
+  void NotifyCollision (void);
+  void NotifyInternalCollision (void);
 
-  virtual bool NeedsAccess (void) const = 0;
-  virtual void NotifyAccessGranted (void) = 0;
-  virtual void NotifyInternalCollision (void) = 0;
-  virtual void NotifyCollision (void) = 0;
+
+  virtual void DoNotifyAccessGranted (void) = 0;
+  virtual void DoNotifyInternalCollision (void) = 0;
+  virtual void DoNotifyCollision (void) = 0;
 
   uint32_t m_aifsn;
   uint32_t m_backoffSlots;
@@ -45,6 +49,7 @@ private:
   uint32_t m_cwMin;
   uint32_t m_cwMax;
   uint32_t m_cw;
+  bool m_accessRequested;
 };
 
 class DcfManager

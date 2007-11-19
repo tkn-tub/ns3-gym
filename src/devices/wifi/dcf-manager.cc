@@ -21,7 +21,8 @@ namespace ns3 {
 
 DcfState::DcfState ()
   : m_backoffSlots (0),
-    m_backoffStart (Seconds (0.0))
+    m_backoffStart (Seconds (0.0)),
+    m_accessRequested (false)
 {}
 
 DcfState::~DcfState ()
@@ -90,6 +91,33 @@ Time
 DcfState::GetBackoffStart (void) const
 {
   return m_backoffStart;
+}
+bool 
+DcfState::IsAccessRequested (void) const
+{
+  return m_accessRequested;
+}
+void 
+DcfState::NotifyAccessRequested (void)
+{
+  m_accessRequested = true;
+}
+void 
+DcfState::NotifyAccessGranted (void)
+{
+  NS_ASSERT (m_accessRequested);
+  m_accessRequested = false;
+  DoNotifyAccessGranted ();
+}
+void 
+DcfState::NotifyCollision (void)
+{
+  DoNotifyCollision ();
+}
+void 
+DcfState::NotifyInternalCollision (void)
+{
+  DoNotifyInternalCollision ();
 }
 
 
@@ -185,6 +213,8 @@ void
 DcfManager::RequestAccess (DcfState *state)
 {
   UpdateBackoff ();
+  NS_ASSERT (!state->IsAccessRequested ());
+  state->NotifyAccessRequested ();
   /**
    * If there is a collision, generate a backoff
    * by notifying the collision to the user.
@@ -211,7 +241,7 @@ DcfManager::DoGrantAccess (void)
   for (States::const_iterator i = m_states.begin (); i != m_states.end (); k++)
     {
       DcfState *state = *i;
-      if (state->NeedsAccess () &&
+      if (state->IsAccessRequested () && 
           GetBackoffEndFor (state) <= Simulator::Now ())
         {
           /**
@@ -225,7 +255,7 @@ DcfManager::DoGrantAccess (void)
           for (States::const_iterator j = i; j != m_states.end (); j++, k++)
             {
               DcfState *otherState = *j;
-              if (otherState->NeedsAccess () &&
+              if (otherState->IsAccessRequested () &&
                   GetBackoffEndFor (otherState) <= Simulator::Now ())
                 {
                   MY_DEBUG ("dcf " << k << " needs access. backoff expired. internal collision. slots=" << 
@@ -346,7 +376,7 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
   for (States::const_iterator i = m_states.begin (); i != m_states.end (); i++)
     {
       DcfState *state = *i;
-      if (state->NeedsAccess ())
+      if (state->IsAccessRequested ())
         {
           Time tmp = GetBackoffEndFor (state);
           if (tmp > Simulator::Now ())
