@@ -31,18 +31,19 @@
 
 namespace ns3 {
 
-class Dcf;
+class DcfState;
+class DcfManager;
 class WifiMacQueue;
 class MacLow;
-class WifiPhy;
 class MacParameters;
 class MacTxMiddle;
+class RandomStream;
 
 /**
  * \brief handle packet fragmentation and retransmissions.
  *
  * This class implements the packet fragmentation and 
- * retransmission policy. It uses the ns3::MacLow and ns3::Dcf
+ * retransmission policy. It uses the ns3::MacLow and ns3::DcfManager
  * helper classes to respectively send packets and decide when 
  * to send them. Packets are stored in a ns3::WifiMacQueue until
  * they can be sent.
@@ -65,17 +66,19 @@ public:
   typedef Callback <void, WifiMacHeader const&> TxFailed;
 
   /**
-   * \param minCw forwarded to ns3::Dcf constructor
-   * \param maxCw forwarded to ns3::Dcf constructor
+   * \param minCw forwarded to ns3::DcfState constructor
+   * \param maxCw forwarded to ns3::DcfState constructor
+   * \param aifsn forwarded to ns3::DcfState constructor
+   * \param manager the manager which will be responsible
+   *        for controlling access to this DcaTxop.
    *
    * Initialized from \valueref{WifiMaxSsrc}, \valueref{WifiMaxSlrc},
    * \valueref{WifiRtsCtsThreshold}, and, \valueref{WifiFragmentationThreshold}.
    */
-  DcaTxop (uint32_t minCw, uint32_t maxCw);
+  DcaTxop (uint32_t cwMin, uint32_t cwMax, uint32_t aifsn, DcfManager *manager);
   ~DcaTxop ();
 
   void SetLow (MacLow *low);
-  void SetPhy (Ptr<WifiPhy> phy);
   void SetParameters (MacParameters *parameters);
   void SetTxMiddle (MacTxMiddle *txMiddle);
   /**
@@ -89,9 +92,6 @@ public:
    */
   void SetTxFailedCallback (TxFailed callback);
 
-  void SetDifs (Time difs);
-  void SetEifs (Time eifs);
-  void SetCwBounds (uint32_t min, uint32_t max);
   void SetMaxQueueSize (uint32_t size);
   void SetMaxQueueDelay (Time delay);
 
@@ -103,21 +103,24 @@ public:
    * can be sent safely.
    */
   void Queue (Packet packet, WifiMacHeader const &hdr);
+
 private:
-  class AccessListener;
   class TransmissionListener;
   class NavListener;
   class PhyListener;
-  friend class AccessListener;
+  class Dcf;
+  friend class Dcf;
   friend class TransmissionListener;
 
   MacLow *Low (void);
   MacParameters *Parameters (void);
 
+  /* dcf notifications forwarded here */
+  bool NeedsAccess (void) const;
+  void NotifyAccessGranted (void);
+  void NotifyInternalCollision (void);
+  void NotifyCollision (void);
   /* event handlers */
-  void AccessGrantedNow (void);
-  bool AccessingAndWillNotify (void);
-  bool AccessNeeded (void);
   void GotCts (double snr, WifiMode txMode);
   void MissedCts (void);
   void GotAck (double snr, WifiMode txMode);
@@ -125,6 +128,8 @@ private:
   void StartNext (void);
   void Cancel (void);
 
+  void RestartAccessIfNeeded (void);
+  void StartAccessIfNeeded (void);
   bool NeedRts (void);
   bool NeedFragmentation (void);
   uint32_t GetNFragments (void);
@@ -136,6 +141,7 @@ private:
   Packet GetFragmentPacket (WifiMacHeader *hdr);
 
   Dcf *m_dcf;
+  DcfManager *m_manager;
   TxOk m_txOkCallback;
   TxFailed m_txFailedCallback;
   WifiMacQueue *m_queue;
@@ -143,11 +149,10 @@ private:
   MacLow *m_low;
   MacParameters *m_parameters;
   TransmissionListener *m_transmissionListener;
-  AccessListener *m_accessListener;
-  NavListener *m_navListener;
-  PhyListener *m_phyListener;
+  RandomStream *m_rng;
   
 
+  bool m_accessOngoing;
   Packet m_currentPacket;
   bool m_hasCurrent;
   WifiMacHeader m_currentHdr;

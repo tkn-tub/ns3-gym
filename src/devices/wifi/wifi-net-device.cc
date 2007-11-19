@@ -34,6 +34,7 @@
 #include "mac-high-nqsta.h"
 #include "mac-high-nqap.h"
 #include "dca-txop.h"
+#include "dcf-manager.h"
 #include "wifi-default-parameters.h"
 #include "arf-mac-stations.h"
 #include "aarf-mac-stations.h"
@@ -41,6 +42,10 @@
 #include "cr-mac-stations.h"
 
 namespace ns3 {
+
+/***************************************************************
+ *         hold an enumeration of the trace types
+ ***************************************************************/
 
 WifiNetDeviceTraceType::WifiNetDeviceTraceType ()
   : m_type (RX)
@@ -79,6 +84,9 @@ WifiNetDeviceTraceType::GetTypeName (void) const
    return "ns3::WifiNetDeviceTraceType";
 }
 
+/***************************************************************
+ *         a static helper
+ ***************************************************************/
 
 static WifiMode 
 GetWifiModeForPhyMode (Ptr<WifiPhy> phy, enum WifiDefaultParameters::PhyModeParameter mode)
@@ -95,6 +103,57 @@ GetWifiModeForPhyMode (Ptr<WifiPhy> phy, enum WifiDefaultParameters::PhyModePara
   NS_ASSERT (false);
   return WifiMode ();
 }
+
+/***************************************************************
+ *         Listener for Nav events. Forwards to DcfManager
+ ***************************************************************/
+
+class WifiNetDevice::NavListener : public ns3::MacLowNavListener {
+public:
+  NavListener (ns3::DcfManager *dcf)
+    : m_dcf (dcf) {}
+  virtual ~NavListener () {}
+  virtual void NavStart (Time duration) {
+    m_dcf->NotifyNavStartNow (duration);
+  }
+  virtual void NavReset (Time duration) {
+    m_dcf->NotifyNavResetNow (duration);
+  }
+private:
+  ns3::DcfManager *m_dcf;
+};
+
+/***************************************************************
+ *         Listener for PHY events. Forwards to DcfManager
+ ***************************************************************/
+
+class WifiNetDevice::PhyListener : public ns3::WifiPhyListener {
+public:
+  PhyListener (ns3::DcfManager *dcf)
+    : m_dcf (dcf) {}
+  virtual ~PhyListener () {}
+  virtual void NotifyRxStart (Time duration) {
+    m_dcf->NotifyRxStartNow (duration);
+  }
+  virtual void NotifyRxEndOk (void) {
+    m_dcf->NotifyRxEndOkNow ();
+  }
+  virtual void NotifyRxEndError (void) {
+    m_dcf->NotifyRxEndErrorNow ();
+  }
+  virtual void NotifyTxStart (Time duration) {
+    m_dcf->NotifyTxStartNow (duration);
+  }
+  virtual void NotifyCcaBusyStart (Time duration) {
+    m_dcf->NotifyCcaBusyStartNow (duration);
+  }
+private:
+  ns3::DcfManager *m_dcf;
+};
+
+/***************************************************************
+ *              The NetDevice itself
+ ***************************************************************/
 
 
 WifiNetDevice::WifiNetDevice (Ptr<Node> node)
@@ -180,25 +239,24 @@ WifiNetDevice::Construct (void)
   MacTxMiddle *txMiddle = new MacTxMiddle ();
   m_txMiddle = txMiddle;
 
+  m_manager = new DcfManager ();
+  Time ackTxDuration = m_phy->CalculateTxDuration (8 * (2+2+6+4), m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
+  m_manager->SetAckTxDuration (ackTxDuration);
+  m_manager->SetSlotTime (m_parameters->GetSlotTime ());
+  m_manager->SetSifs (m_parameters->GetSifs ());
+  m_phyListener = new WifiNetDevice::PhyListener (m_manager);
+  m_phy->RegisterListener (m_phyListener);
+  m_navListener = new WifiNetDevice::NavListener (m_manager);
+  m_low->RegisterNavListener (m_navListener);
 }
 
 DcaTxop *
-WifiNetDevice::CreateDca (uint32_t minCw, uint32_t maxCw) const
+WifiNetDevice::CreateDca (uint32_t minCw, uint32_t maxCw, uint32_t aifsn) const
 {
-  DcaTxop *dca = new DcaTxop (minCw, maxCw);
+  DcaTxop *dca = new DcaTxop (minCw, maxCw, aifsn, m_manager);
   dca->SetParameters (m_parameters);
   dca->SetTxMiddle (m_txMiddle);
   dca->SetLow (m_low);
-  dca->SetPhy (m_phy);
-
-  Time difs = m_parameters->GetSifs () + 
-    m_parameters->GetSlotTime () + 
-    m_parameters->GetSlotTime ();
-  // see 802.11 p85 section 9.2.10
-  Time eifs = difs + m_parameters->GetSifs () + 
-    m_phy->CalculateTxDuration (8 * (2+2+6+4), m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
-  dca->SetDifs (difs);
-  dca->SetEifs (eifs);
   dca->SetMaxQueueSize (400);
   dca->SetMaxQueueDelay (Seconds (10));
   return dca;
@@ -288,6 +346,9 @@ WifiNetDevice::DoDispose (void)
   delete m_rxMiddle;
   delete m_txMiddle;
   delete m_parameters;
+  delete m_manager;
+  delete m_phyListener;
+  delete m_navListener;
   m_phy = 0;
   m_stations = 0;
   m_low = 0;
@@ -305,7 +366,7 @@ AdhocWifiNetDevice::AdhocWifiNetDevice (Ptr<Node> node)
   : WifiNetDevice (node)
 {
   m_ssid = WifiDefaultParameters::GetSsid ();
-  m_dca = CreateDca (15, 1023);
+  m_dca = CreateDca (15, 1023, 2);
 
   MacHighAdhoc *high = new MacHighAdhoc ();
   high->SetDevice (this);
@@ -367,7 +428,7 @@ NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node)
   : WifiNetDevice (node)
 {
   m_ssid = WifiDefaultParameters::GetSsid ();
-  m_dca = CreateDca (15, 1023);
+  m_dca = CreateDca (15, 1023, 2);
   
   MacHighNqsta *high = new MacHighNqsta ();
   high->SetDevice (this);
@@ -447,17 +508,10 @@ NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node)
 {
   m_ssid = WifiDefaultParameters::GetSsid ();
 
-  m_dca = CreateDca (15, 1023);
-  m_beaconDca = CreateDca (15, 1023);
-  /**
-   * We use a DIFS value for the beacons smaller than the 802.11 default
-   * value to ensure that the beacon queue will get access to the medium
-   * even when a lot of data has been queued. This is an 'extension' of
-   * 802.11 which is a first step towards 802.11e but it is a nice way 
-   * to get timely beacons without a lot of other hacks.
-   */
-  Time beaconDifs = m_parameters->GetSifs () + m_parameters->GetSlotTime ();
-  m_beaconDca->SetDifs (beaconDifs);
+  // The Beacon DCA is higher priority than
+  // the normal DCA so, we create it first.
+  m_beaconDca = CreateDca (0, 0, 1);
+  m_dca = CreateDca (15, 1023, 2);
 
   // By default, we configure the Basic Rate Set to be the set
   // of rates we support which are mandatory.

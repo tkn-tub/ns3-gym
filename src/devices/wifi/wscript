@@ -17,7 +17,6 @@ def build(bld):
         'wifi-mac-trailer.cc',
         'mac-parameters.cc',
         'mac-low.cc',
-        'dcf.cc',
         'wifi-mac-queue.cc',
         'mac-tx-middle.cc',
         'mac-rx-middle.cc',

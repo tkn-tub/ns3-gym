@@ -35,7 +35,8 @@
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
 #define MY_DEBUG(x) \
-  NS_LOG_DEBUG (Simulator::Now () << " " << m_device->GetNode ()->GetId () << " " << x)
+  NS_LOG_DEBUG (Simulator::Now () << " " << m_device->GetNode ()->GetId () << ":" << \
+                m_device->GetIfIndex () << " " << x)
 
 namespace ns3 {
 
@@ -305,6 +306,11 @@ MacLow::SetDevice (Ptr<WifiNetDevice> device)
 {
   m_device = device;
 }
+Ptr<NetDevice> 
+MacLow::GetDevice (void) const
+{
+  return m_device;
+}
 void
 MacLow::SetPhy (Ptr<WifiPhy> phy)
 {
@@ -405,12 +411,17 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
   WifiMacHeader hdr;
   packet.RemoveHeader (hdr);
   
-  bool isPrevNavZero = IsNavZero (Simulator::Now ());
+  bool isPrevNavZero = IsNavZero ();
   MY_DEBUG ("duration/id=" << hdr.GetDuration ());
-  NotifyNav (Simulator::Now (), &hdr);
+  NotifyNav (hdr, txMode, preamble);
   if (hdr.IsRts ()) 
     {
-      /* XXX see section 9.9.2.2.1 802.11e/D12.1 */
+      /* see section 9.2.5.7 802.11-1999
+       * A STA that is addressed by an RTS frame shall transmit a CTS frame after a SIFS 
+       * period if the NAV at the STA receiving the RTS frame indicates that the medium is 
+       * idle. If the NAV at the STA receiving the RTS indicates the medium is not idle, 
+       * that STA shall not respond to the RTS frame.
+       */
       if (isPrevNavZero &&
           hdr.GetAddr1 () == m_device->GetSelfAddress ()) 
         {
@@ -656,56 +667,82 @@ MacLow::CalculateTransmissionTime (uint32_t dataSize, Mac48Address to,
   return txTime;
 }
 
-
 void
-MacLow::NotifyNav (Time at, WifiMacHeader const *hdr)
+MacLow::NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble preamble)
 {
-  /* XXX
-   * We might need to do something special for the
-   * subtle case of RTS/CTS. I don't know what.
-   *
-   * See section 9.9.2.2.1, 802.11e/D12.1
-   */
-  NS_ASSERT (m_lastNavStart < at);
-  Time oldNavStart = m_lastNavStart;
-  Time oldNavEnd = oldNavStart + m_lastNavDuration;
-  Time newNavStart = at;
-  Time duration = hdr->GetDuration ();
+  NS_ASSERT (m_lastNavStart <= Simulator::Now ());
+  Time duration = hdr.GetDuration ();
 
-  if (hdr->IsCfpoll () &&
-      hdr->GetAddr2 () == m_device->GetBssid ()) 
+  if (hdr.IsCfpoll () &&
+      hdr.GetAddr2 () == m_device->GetBssid ()) 
     {
-      m_lastNavStart = newNavStart;
-      m_lastNavDuration = duration;
-      for (NavListenersCI i = m_navListeners.begin (); i != m_navListeners.end (); i++) 
-        {
-          // XXX !!!!!!!
-          (*i)->NavReset (newNavStart, duration);
-        }
+      // see section 9.3.2.2 802.11-1999
+      DoNavResetNow (duration);
       return;
     }
-
-  if (oldNavEnd > newNavStart) 
+  // XXX Note that we should also handle CF_END specially here
+  // but we don't for now because we do not generate them.
+  else if (hdr.GetAddr1 () == m_device->GetSelfAddress ())
     {
-      Time newNavEnd = newNavStart + duration;
-      /* The two NAVs overlap */
-      if (newNavEnd > oldNavEnd) 
+      // see section 9.2.5.4 802.11-1999
+      bool navUpdated = DoNavStartNow (duration);
+      if (hdr.IsRts () && navUpdated)
         {
-          for (NavListenersCI i = m_navListeners.begin (); i != m_navListeners.end (); i++) 
-            {
-              (*i)->NavContinue (newNavStart, duration);
-            }
-        }
-    } 
-  else 
-    {
-      m_lastNavStart = newNavStart;
-      m_lastNavDuration = duration;
-      for (NavListenersCI i = m_navListeners.begin (); i != m_navListeners.end (); i++) 
-        {
-          (*i)->NavStart (newNavStart, duration);
+          /**
+           * A STA that used information from an RTS frame as the most recent basis to update its NAV setting 
+           * is permitted to reset its NAV if no PHY-RXSTART.indication is detected from the PHY during a 
+           * period with a duration of (2 * aSIFSTime) + (CTS_Time) + (2 * aSlotTime) starting at the 
+           * PHY-RXEND.indication corresponding to the detection of the RTS frame. The “CTS_Time” shall 
+           * be calculated using the length of the CTS frame and the data rate at which the RTS frame 
+           * used for the most recent NAV update was received.
+           */
+          WifiMacHeader cts;
+          cts.SetType (WIFI_MAC_CTL_CTS);
+          Time navCounterResetCtsMissedDelay = 
+            m_phy->CalculateTxDuration (cts.GetSerializedSize (), txMode, preamble) +
+            Scalar (2) * m_parameters->GetSifs () + Scalar (2) * m_parameters->GetSlotTime ();
+          m_navCounterResetCtsMissed = Simulator::Schedule (navCounterResetCtsMissedDelay,
+                                                            &MacLow::NavCounterResetCtsMissed, this,
+                                                            Simulator::Now ());
         }
     }
+}
+
+void
+MacLow::NavCounterResetCtsMissed (Time rtsEndRxTime)
+{
+  if (m_phy->GetLastRxStartTime () > rtsEndRxTime)
+    {
+      DoNavResetNow (Seconds (0.0));
+    }
+}
+
+void
+MacLow::DoNavResetNow (Time duration)
+{
+  for (NavListenersCI i = m_navListeners.begin (); i != m_navListeners.end (); i++) 
+    {
+      (*i)->NavReset (duration);
+    }
+  m_lastNavStart = Simulator::Now ();
+  m_lastNavStart = duration;
+}
+bool
+MacLow::DoNavStartNow (Time duration)
+{
+  for (NavListenersCI i = m_navListeners.begin (); i != m_navListeners.end (); i++) 
+    {
+      (*i)->NavStart (duration);
+    }
+  Time newNavEnd = Simulator::Now () + duration;
+  Time oldNavEnd = m_lastNavStart + m_lastNavDuration;
+  if (newNavEnd > oldNavEnd)
+    {
+      m_lastNavStart = Simulator::Now ();
+      m_lastNavDuration = duration;
+      return true;
+    }
+  return false;
 }
 
 void
@@ -719,11 +756,13 @@ MacLow::ForwardDown (Packet const packet, WifiMacHeader const* hdr,
             ", duration=" << hdr->GetDuration () <<
             ", seq=0x"<< std::hex << m_currentHdr.GetSequenceControl () << std::dec);
   m_phy->SendPacket (packet, txMode, WIFI_PREAMBLE_LONG, 0);
-  /* Note that it is really important to notify the NAV 
-   * thing _after_ forwarding the packet to the PHY.
+  /* 
+   * We have to notify the NAV of transmitted packets because of the 802.11e
+   * requirement from section 9.9.1.4 that each EDCAF update its NAV from the
+   * transmission of any other EDCAF within the same QSTA.
    */
   Time txDuration = m_phy->CalculateTxDuration (packet.GetSize (), txMode, WIFI_PREAMBLE_LONG);
-  NotifyNav (Simulator::Now ()+txDuration, hdr);
+  Simulator::Schedule (txDuration, &MacLow::NotifyNav, this, *hdr, txMode, WIFI_PREAMBLE_LONG);
 }
 
 void
@@ -904,9 +943,9 @@ MacLow::SendDataPacket (void)
 }
 
 bool 
-MacLow::IsNavZero (Time now)
+MacLow::IsNavZero (void) const
 {
-  if (m_lastNavStart + m_lastNavDuration > now) 
+  if (m_lastNavStart + m_lastNavDuration > Simulator::Now ()) 
     {
       return false;
     } 

@@ -111,17 +111,12 @@ public:
    * \param now start of NAV timer
    * \param duration duration of NAV timer
    */
-  virtual void NavStart (Time now, Time duration) = 0;
+  virtual void NavStart (Time duration) = 0;
   /**
    * \param now start of NAV timer
    * \param duration duration of NAV timer
    */
-  virtual void NavContinue (Time now, Time duration) = 0;
-  /**
-   * \param now start of NAV timer
-   * \param duration duration of NAV timer
-   */
-  virtual void NavReset (Time now, Time duration) = 0;
+  virtual void NavReset (Time duration) = 0;
 };
 
 /**
@@ -288,6 +283,7 @@ public:
   void SetPhy (Ptr<WifiPhy> phy);
   void SetStations (MacStations *stations);
   void SetParameters (MacParameters *parameters);
+  Ptr<NetDevice> GetDevice (void) const;
   /**
    * \param callback the callback which receives every incoming packet.
    *
@@ -368,10 +364,13 @@ private:
   WifiMode GetAckTxModeForData (Mac48Address to, WifiMode dataTxMode) const;
   Time GetCtsDuration (Mac48Address to, WifiMode rtsTxMode) const;
   Time GetAckDuration (Mac48Address to, WifiMode dataTxMode) const;
-  void NotifyNav (Time at, WifiMacHeader const*hdr);
-  bool IsNavZero (Time at);
+  void NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble preamble);
+  void DoNavResetNow (Time duration);
+  bool DoNavStartNow (Time duration);
+  bool IsNavZero (void) const;
   void MaybeCancelPrevious (void);
   
+  void NavCounterResetCtsMissed (Time rtsEndRxTime);
   void NormalAckTimeout (void);
   void FastAckTimeout (void);
   void SuperFastAckTimeout (void);
@@ -405,6 +404,7 @@ private:
   EventId m_sendAckEvent;
   EventId m_sendDataEvent;
   EventId m_waitSifsEvent;
+  EventId m_navCounterResetCtsMissed;
 
   Packet m_currentPacket;
   bool m_hasCurrent;
