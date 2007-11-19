@@ -418,6 +418,15 @@ DcfManagerTest::RunTests (void)
   AddRxOkEvt (20, 40);
   AddAccessRequest (80, 10, 80, 0);
   EndTest ();
+
+
+  StartTest (4, 6, 10);
+  AddDcfState (2);
+  AddRxOkEvt (20, 40);
+  AddRxOkEvt (78, 8);
+  AddAccessRequest (30, 50, 108, 0);
+  ExpectCollision (30, 3, 0); // backoff: 3 slots
+  EndTest ();
  
 
   return m_result;
