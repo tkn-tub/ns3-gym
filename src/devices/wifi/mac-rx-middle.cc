@@ -265,8 +265,19 @@ MacRxMiddle::Receive (Packet packet, WifiMacHeader const *hdr)
   OriginatorRxStatus *originator = Lookup (hdr);
   if (hdr->IsData ()) 
     {
-      NS_ASSERT (SequenceControlSmaller (originator->GetLastSequenceControl (), 
-                                         hdr->GetSequenceControl ()));
+      /**
+       * Note that the check below is not deterministic: it is possible
+       * for sequence numbers to loop back to zero once they reach 0xfff0
+       * and to go up to 0xf7f0 in which case the check below will report the
+       * two sequence numbers to not have the correct order relationship.
+       * This is why this check generates a warning only.
+       */
+      if (!SequenceControlSmaller (originator->GetLastSequenceControl (), 
+                                   hdr->GetSequenceControl ()))
+        {
+          NS_LOG_UNCOND ("Sequence numbers have looped back. last recorded="<<originator->GetLastSequenceControl ()<<
+                         " currently seen="<< hdr->GetSequenceControl ());
+        }
       // filter duplicates.
       if (IsDuplicate (hdr, originator)) 
         {
