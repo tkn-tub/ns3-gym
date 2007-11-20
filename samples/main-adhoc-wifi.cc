@@ -116,6 +116,8 @@ SetupUdpReceive (Ptr<Node> node, uint16_t port)
 static void
 RunOneExperiment (void)
 {
+  g_bytesTotal = 0;
+
   Ptr<WifiChannel> channel = Create<WifiChannel> ();
 
   Ptr<Node> a = CreateAdhocNode (channel, 
@@ -151,23 +153,92 @@ int main (int argc, char *argv[])
 
   // disable fragmentation
   DefaultValue::Bind ("WifiFragmentationThreshold", "2200");
-  DefaultValue::Bind ("WifiPhyStandard", "holland");
   CommandLine::Parse (argc, argv);
 
   Gnuplot gnuplot = Gnuplot ("rate-control.png");
+
+  DefaultValue::Bind ("WifiRtsCtsThreshold", "2200");
+
+  g_output = new GnuplotDataset ("54mb");
+  g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "ConstantRate");
+  DefaultValue::Bind ("WifiConstantDataRate", "54mb");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+  g_output = new GnuplotDataset ("48mb");
+  g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "ConstantRate");
+  DefaultValue::Bind ("WifiConstantDataRate", "48mb");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+  g_output = new GnuplotDataset ("36mb");
+  g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "ConstantRate");
+  DefaultValue::Bind ("WifiConstantDataRate", "36mb");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+  g_output = new GnuplotDataset ("24mb");
+  g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "ConstantRate");
+  DefaultValue::Bind ("WifiConstantDataRate", "24mb");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+  g_output = new GnuplotDataset ("18mb");
+  g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "ConstantRate");
+  DefaultValue::Bind ("WifiConstantDataRate", "18mb");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+  g_output = new GnuplotDataset ("12mb");
+  g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "ConstantRate");
+  DefaultValue::Bind ("WifiConstantDataRate", "12mb");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+  g_output = new GnuplotDataset ("9mb");
+  g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "ConstantRate");
+  DefaultValue::Bind ("WifiConstantDataRate", "9mb");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+  g_output = new GnuplotDataset ("6mb");
+  g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "ConstantRate");
+  DefaultValue::Bind ("WifiConstantDataRate", "6mb");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
+
+
+  DefaultValue::Bind ("WifiPhyStandard", "holland");
+
+#if 0
+  g_output = new GnuplotDataset ("arf");
+  g_output->SetStyle (GnuplotDataset::LINES);
+  DefaultValue::Bind ("WifiRtsCtsThreshold", "2200");
+  DefaultValue::Bind ("WifiRateControlAlgorithm", "Arf");
+  RunOneExperiment ();
+  gnuplot.AddDataset (*g_output);
+  delete g_output;
 
   g_output = new GnuplotDataset ("aarf");
   g_output->SetStyle (GnuplotDataset::LINES);
   DefaultValue::Bind ("WifiRtsCtsThreshold", "2200");
   DefaultValue::Bind ("WifiRateControlAlgorithm", "Aarf");
-  RunOneExperiment ();
-  gnuplot.AddDataset (*g_output);
-  delete g_output;
-
-  g_output = new GnuplotDataset ("arf");
-  g_output->SetStyle (GnuplotDataset::LINES);
-  DefaultValue::Bind ("WifiRtsCtsThreshold", "2200");
-  DefaultValue::Bind ("WifiRateControlAlgorithm", "Arf");
   RunOneExperiment ();
   gnuplot.AddDataset (*g_output);
   delete g_output;
@@ -179,7 +250,7 @@ int main (int argc, char *argv[])
   RunOneExperiment ();
   gnuplot.AddDataset (*g_output);
   delete g_output;
-
+#endif
   gnuplot.GenerateOutput (std::cout);
 
   return 0;
