@@ -285,7 +285,7 @@ WifiPhy::ReceivePacket (Packet const packet,
   case WifiPhy::IDLE:
     if (rxPowerW > m_edThresholdW) 
       {
-        NS_LOG_DEBUG ("sync power="<<rxPowerW<<"W)");
+        NS_LOG_DEBUG ("sync (power="<<rxPowerW<<"W)");
         // sync to signal
         NotifySyncStart (rxDuration);
         SwitchToSync (rxDuration);
@@ -412,12 +412,13 @@ WifiPhy::Configure80211aParameters (void)
 void
 WifiPhy::PrintModes (void) const
 {
-#ifdef PHY80211_DEBUG
-  for (double db = 0; db < 30; db+= 0.5) {
-    std::cout <<db<<" ";
+#if 0
+  for (double db = -10; db < 30; db+= 0.5) {
+    double snr = DbToRatio (db);
+    std::cout <<snr<<" ";
     for (uint8_t i = 0; i < GetNModes (); i++) {
       WifiMode mode = GetMode (i);
-      double ber = 1-GetChunkSuccessRate (mode, DbToRatio (db), 1);
+      double ber = 1-GetChunkSuccessRate (mode,snr, 2000*8);
       std::cout <<ber<< " ";
     }
     std::cout << std::endl;
@@ -801,6 +802,7 @@ WifiPhy::GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const
   double EbNo = snr * signalSpread / phyRate;
   double z = sqrt(EbNo);
   double ber = 0.5 * erfc(z);
+  NS_LOG_INFO ("bpsk snr="<<snr<<" ber="<<ber);
   return ber;
 }
 double 
@@ -811,6 +813,7 @@ WifiPhy::GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t 
   double z1 = ((1.0 - 1.0 / sqrt (m)) * erfc (z)) ;
   double z2 = 1 - pow ((1-z1), 2.0);
   double ber = z2 / Log2 (m);
+  NS_LOG_INFO ("Qam m="<<m<<" rate=" << phyRate << " snr="<<snr<<" ber="<<ber);
   return ber;
 }
 uint32_t
@@ -888,16 +891,7 @@ WifiPhy::GetFecBpskBer (double snr, double nbits,
     }
   double pd = CalculatePd (ber, dFree);
   double pmu = adFree * pd;
-  if (pmu > 1.0) 
-    {
-      /**
-       * If pmu is bigger than 1, then, this calculation is
-       * giving us a useless bound. A better bound in this case
-       * is 1 - ber which is necessarily bigger than the real 
-       * success rate.
-       */
-      return ber;
-    }
+  pmu = std::min (pmu, 1.0);
   double pms = pow (1 - pmu, nbits);
   return pms;
 }
@@ -920,17 +914,7 @@ WifiPhy::GetFecQamBer (double snr, uint32_t nbits,
   /* second term */
   pd = CalculatePd (ber, dFree + 1);
   pmu += adFreePlusOne * pd;
-  if (pmu > 1.0) 
-    {
-      /**
-       * If pmu is bigger than 1, then, this calculation is
-       * giving us a useless bound. A better bound in this case
-       * is 1 - ber which is necessarily bigger than the real 
-       * success rate.
-       */
-      return ber;
-    }
-
+  pmu = std::min (pmu, 1.0);
   double pms = pow (1 - pmu, nbits);
   return pms;
 }
