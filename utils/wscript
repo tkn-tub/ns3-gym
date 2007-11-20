@@ -12,7 +12,7 @@ def configure(conf):
 def build(bld):
     env = bld.env_of_name('default')
 
-    unit_tests = bld.create_ns3_program('run-tests')
+    unit_tests = bld.create_ns3_program('run-tests', ['common'])
     unit_tests.install_var  = 0 # do not install
     unit_tests.unit_test    = 1 # runs on 'waf check'
     unit_tests.source = 'run-tests.cc'

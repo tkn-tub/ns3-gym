@@ -150,6 +150,7 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
     program.name = name
     program.target = program.name
     program.uselib_local = 'ns3'
+    program.ns3_module_dependencies = ['ns3-'+dep for dep in dependencies]
     return program
 
 
@@ -178,14 +179,10 @@ def build(bld):
         raise SystemExit(0)
 
     # process subfolders from here
+    bld.add_subdirs('lib') # first subdirs are processed last by WAF
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples tutorial')
 
-    ## Create a single ns3 library containing all modules
-    lib = bld.create_obj('cpp', 'shlib')
-    lib.name = 'ns3'
-    lib.target = 'ns3'
-    lib.add_objects = list(bld.env_of_name('default')['NS3_MODULES'])
 
 
 def shutdown():
@@ -214,11 +211,17 @@ def _run_waf_check():
     ## generate the trace sources list docs
     env = Params.g_build.env_of_name('default')
     proc_env = _get_proc_env()
-    prog = _find_program('print-introspected-doxygen', env).m_linktask.m_outputs[0].abspath(env)
-    out = open('doc/introspected-doxygen.h', 'w')
-    if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
-        raise SystemExit(1)
-    out.close()
+    try:
+        prog = _find_program('print-introspected-doxygen', env).m_linktask.m_outputs[0].abspath(env)
+    except ValueError: # could happen if print-introspected-doxygen is
+                       # not built because of waf configure
+                       # --enable-modules=xxx
+        pass
+    else:
+        out = open('doc/introspected-doxygen.h', 'w')
+        if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
+            raise SystemExit(1)
+        out.close()
 
     run_program('run-tests')
 
