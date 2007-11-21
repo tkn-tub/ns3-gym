@@ -95,7 +95,7 @@ OnOffApplication::Construct (Ptr<Node> n,
   m_pktSize = size;
   m_residualBits = 0;
   m_lastStartTime = Seconds (0);
-  m_maxBytes = 0xffffffff;
+  m_maxBytes = 0;
   m_totBytes = 0;
   m_iid = iid;
 }
@@ -201,7 +201,7 @@ void OnOffApplication::ScheduleNextTx()
 {
   NS_LOG_FUNCTION;
 
-  if (m_totBytes < m_maxBytes)
+  if (m_maxBytes != 0 || m_totBytes < m_maxBytes)
     {
       uint32_t bits = m_pktSize * 8 - m_residualBits;
       NS_LOG_LOGIC ("bits = " << bits);
