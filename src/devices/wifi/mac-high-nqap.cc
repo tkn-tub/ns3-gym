@@ -28,11 +28,13 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
+#include "ns3/node.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacHighNqap");
 
 #define TRACE(x) \
-NS_LOG_DEBUG(Simulator::Now () << " " << x);
+  NS_LOG_DEBUG(Simulator::Now () << " " << m_phy->GetDevice ()->GetNode ()->GetId () << ":" << \
+               m_phy->GetDevice ()->GetIfIndex () << " " << x);
 
 namespace ns3 {
 

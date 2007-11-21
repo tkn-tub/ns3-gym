@@ -22,6 +22,7 @@
 #include "ns3/simulator.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
+#include "ns3/node.h"
 
 #include "mac-high-nqsta.h"
 #include "wifi-mac-header.h"
@@ -34,7 +35,8 @@
 NS_LOG_COMPONENT_DEFINE ("MacHighNqsta");
 
 #define TRACE(x) \
-NS_LOG_DEBUG (Simulator::Now () << " " << x);
+  NS_LOG_DEBUG (Simulator::Now () << " " << m_phy->GetDevice ()->GetNode ()->GetId () << ":" << \
+                m_phy->GetDevice ()->GetIfIndex () << " " << x);
 
 /*
  * The state machine for this NQSTA is:
@@ -255,7 +257,9 @@ MacHighNqsta::MissedBeacons (void)
                                               &MacHighNqsta::MissedBeacons, this);
       return;
     }
+  TRACE ("beacon missed");
   m_state = BEACON_MISSED;
+  TryToEnsureAssociated ();
 }
 void 
 MacHighNqsta::RestartBeaconWatchdog (Time delay)
