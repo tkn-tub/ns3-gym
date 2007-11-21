@@ -131,6 +131,8 @@ public:
   WifiPhy (Ptr<WifiNetDevice> device);
   virtual ~WifiPhy ();
 
+  Ptr<WifiNetDevice> GetDevice (void) const;
+
   /**
    * \param channel the channel to connect to.
    */

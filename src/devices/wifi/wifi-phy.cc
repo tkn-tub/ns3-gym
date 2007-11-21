@@ -213,6 +213,12 @@ WifiPhy::~WifiPhy ()
   m_modes.clear ();
 }
 
+Ptr<WifiNetDevice> 
+WifiPhy::GetDevice (void) const
+{
+  return m_device;
+}
+
 Ptr<TraceResolver> 
 WifiPhy::GetTraceResolver (void) const
 {
