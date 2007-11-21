@@ -118,9 +118,10 @@ AdvancePosition (Ptr<Node> node)
 {
   Vector pos = GetPosition (node);
   pos.x += 5.0;
-  if (pos.x >= 210.0) {
-    return;
-  }
+  if (pos.x >= 210.0) 
+    {
+      return;
+    }
   SetPosition (node, pos);
   //std::cout << "x="<<pos.x << std::endl;
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, node);
