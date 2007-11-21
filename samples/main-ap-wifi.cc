@@ -26,13 +26,10 @@
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
 #include "ns3/node.h"
-#include "ns3/internet-node.h"
 #include "ns3/onoff-application.h"
 #include "ns3/static-mobility-model.h"
-#include "ns3/ipv4.h"
 #include "ns3/random-variable.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/global-route-manager.h"
+#include "ns3/packet-socket-address.h"
 #include "ns3/packet.h"
 #include "ns3/node-list.h"
 
@@ -70,47 +67,35 @@ WifiPhyStateTrace (const TraceContext &context, Time start, Time duration, enum 
 static Ptr<Node>
 CreateApNode (Ptr<WifiChannel> channel,
               Vector position, 
-              const char *ipAddress,
+              const char *macAddress,
               Ssid ssid, 
               Time at)
 {
-  Ptr<Node> node = Create<InternetNode> ();  
-  Ptr<NqapWifiNetDevice> device = Create<NqapWifiNetDevice> (node);
+  Ptr<Node> node = Create<Node> ();  
+  Ptr<NqapWifiNetDevice> device = Create<NqapWifiNetDevice> (node, Mac48Address (macAddress));
   device->SetSsid (ssid);
   Simulator::Schedule (at, &NqapWifiNetDevice::StartBeaconing, device);
   device->ConnectTo (channel);
   Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
   mobility->SetPosition (position);
   node->AddInterface (mobility);
-  
-  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
-  uint32_t index = ipv4->AddInterface (device);
-  ipv4->SetAddress (index, Ipv4Address (ipAddress));
-  ipv4->SetNetworkMask (index, Ipv4Mask ("255.255.0.0"));
-  ipv4->SetUp (index);
   return node;
 }
 
 static Ptr<Node>
 CreateStaNode (Ptr<WifiChannel> channel,
                Vector position, 
-               const char *ipAddress,
+               const char *macAddress,
                Ssid ssid)
 {
-  Ptr<Node> node = Create<InternetNode> ();  
-  Ptr<NqstaWifiNetDevice> device = Create<NqstaWifiNetDevice> (node);
+  Ptr<Node> node = Create<Node> ();  
+  Ptr<NqstaWifiNetDevice> device = Create<NqstaWifiNetDevice> (node, Mac48Address (macAddress));
   Simulator::ScheduleNow (&NqstaWifiNetDevice::StartActiveAssociation, device, 
                           ssid);
   device->ConnectTo (channel);
   Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
   mobility->SetPosition (position);
   node->AddInterface (mobility);
-  
-  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
-  uint32_t index = ipv4->AddInterface (device);
-  ipv4->SetAddress (index, Ipv4Address (ipAddress));
-  ipv4->SetNetworkMask (index, Ipv4Mask ("255.255.0.0"));
-  ipv4->SetUp (index);
   return node;
 }
 
@@ -165,29 +150,31 @@ int main (int argc, char *argv[])
 
   Ptr<Node> a = CreateApNode (channel, 
                               Vector (5.0,0.0,0.0),
-                              "192.168.0.1",
+                              "00:00:00:00:00:01",
                               ssid, 
                               Seconds (0.1));
   Simulator::Schedule (Seconds (1.0), &AdvancePosition, a);
 
   Ptr<Node> b = CreateStaNode (channel,
                                Vector (0.0, 0.0, 0.0),
-                               "192.168.0.2",
+                               "00:00:00:00:00:02",
                                ssid);
 
   Ptr<Node> c = CreateStaNode (channel,
                                Vector (0.0, 0.0, 0.0),
-                               "192.168.0.3",
+                               "00:00:00:00:00:03",
                                ssid);
 
-  Ptr<Application> app = Create<OnOffApplication> (b, InetSocketAddress ("192.168.0.3", 10), 
-                                                   "Udp", 
+  PacketSocketAddress destination = PacketSocketAddress ();
+  destination.SetProtocol (1);
+  destination.SetSingleDevice (0);
+  destination.SetPhysicalAddress (Mac48Address ("00:00:00:00:00:03"));
+  Ptr<Application> app = Create<OnOffApplication> (b, destination, 
+                                                   "Packet", 
                                                    ConstantVariable (42),
                                                    ConstantVariable (0));
   app->Start (Seconds (0.5));
   app->Stop (Seconds (43.0));
-
-  GlobalRouteManager::PopulateRoutingTables ();
 
   //NodeList::Connect ("/nodes/*/devices/*/*", MakeCallback (&WifiNetDeviceTrace));
   //NodeList::Connect ("/nodes/*/devices/*/phy/state", MakeCallback (&WifiPhyStateTrace));
