@@ -39,12 +39,47 @@ namespace ns3 {
 typedef std::list<std::pair <std::string, LogComponent *> > ComponentList;
 typedef std::list<std::pair <std::string, LogComponent *> >::iterator ComponentListI;
 
+static class PrintList
+{
+public:
+  PrintList ();
+} g_printList;
+
 static 
 ComponentList *GetComponentList (void)
 {
   static ComponentList components;
   return &components;
 }
+
+
+
+PrintList::PrintList ()
+{
+#ifdef HAVE_GETENV
+  char *envVar = getenv("NS_LOG");
+  if (envVar == 0)
+    {
+      return;
+    }
+  std::string env = envVar;
+  std::string::size_type cur = 0;
+  std::string::size_type next = 0;
+  while (next != std::string::npos)
+    {
+      next = env.find_first_of (";", cur);
+      std::string tmp = std::string (env, cur, next-cur);
+      if (tmp == "print-list")
+        {
+          LogComponentPrintList ();
+          exit (0);
+          break;
+        }
+      cur = next + 1;
+    }
+#endif  
+}
+
 
 LogComponent::LogComponent (char const * name)
   : m_levels (0), m_name (name)
