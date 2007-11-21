@@ -175,7 +175,7 @@ MacHighNqap::SendAssocResp (Mac48Address to, bool success)
 void
 MacHighNqap::SendOneBeacon (void)
 {
-  TRACE ("send probe response to="<<Mac48Address::GetBroadcast ());
+  TRACE ("send beacon to="<<Mac48Address::GetBroadcast ());
   WifiMacHeader hdr;
   hdr.SetBeacon ();
   hdr.SetAddr1 (Mac48Address::GetBroadcast ());
