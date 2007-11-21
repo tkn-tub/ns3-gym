@@ -159,8 +159,12 @@ private:
 WifiNetDevice::WifiNetDevice (Ptr<Node> node)
   : NetDevice (node, Mac48Address::Allocate ())
 {
-  SetMtu (2300);
-  EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
+  Construct ();
+}
+
+WifiNetDevice::WifiNetDevice (Ptr<Node> node, Mac48Address self)
+  : NetDevice (node, self)
+{
   Construct ();
 }
 
@@ -170,6 +174,9 @@ WifiNetDevice::~WifiNetDevice ()
 void
 WifiNetDevice::Construct (void)
 {
+  SetMtu (2300);
+  EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
+
   // the physical layer.
   m_phy = Create<WifiPhy> (this);
 
@@ -365,6 +372,16 @@ WifiNetDevice::DoDispose (void)
 AdhocWifiNetDevice::AdhocWifiNetDevice (Ptr<Node> node)
   : WifiNetDevice (node)
 {
+  DoConstruct ();
+}
+AdhocWifiNetDevice::AdhocWifiNetDevice (Ptr<Node> node, Mac48Address self)
+  : WifiNetDevice (node, self)
+{
+  DoConstruct ();
+}
+void
+AdhocWifiNetDevice::DoConstruct (void)
+{
   m_ssid = WifiDefaultParameters::GetSsid ();
   m_dca = CreateDca (15, 1023, 2);
 
@@ -378,6 +395,7 @@ AdhocWifiNetDevice::AdhocWifiNetDevice (Ptr<Node> node)
   m_rxMiddle->SetForwardCallback (MakeCallback (&MacHighAdhoc::Receive, high));
   m_high = high;
 }
+
 AdhocWifiNetDevice::~AdhocWifiNetDevice ()
 {}
 Mac48Address 
@@ -427,6 +445,16 @@ AdhocWifiNetDevice::DoDispose (void)
 NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node)
   : WifiNetDevice (node)
 {
+  DoConstruct ();
+}
+NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node, Mac48Address self)
+  : WifiNetDevice (node, self)
+{
+  DoConstruct ();
+}
+void
+NqstaWifiNetDevice::DoConstruct (void)
+{
   m_ssid = WifiDefaultParameters::GetSsid ();
   m_dca = CreateDca (15, 1023, 2);
   
@@ -444,6 +472,7 @@ NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node)
   m_rxMiddle->SetForwardCallback (MakeCallback (&MacHighNqsta::Receive, high));
   m_high = high;
 }
+
 NqstaWifiNetDevice::~NqstaWifiNetDevice ()
 {}
 Mac48Address 
@@ -505,6 +534,17 @@ NqstaWifiNetDevice::DoDispose (void)
 
 NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node)
   : WifiNetDevice (node)
+{
+  DoConstruct ();
+}
+NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node, Mac48Address self)
+  : WifiNetDevice (node, self)
+{
+  DoConstruct ();
+
+}
+void
+NqapWifiNetDevice::DoConstruct (void)
 {
   m_ssid = WifiDefaultParameters::GetSsid ();
 

@@ -118,6 +118,7 @@ private:
   CallbackTraceSource<Packet, Mac48Address> m_txLogger;
 protected:
   WifiNetDevice (Ptr<Node> node);
+  WifiNetDevice (Ptr<Node> node, Mac48Address self);
   void DoForwardUp (Packet packet, const Mac48Address &from);
   virtual void DoDispose (void);
   DcaTxop *CreateDca (uint32_t minCw, uint32_t maxCw, uint32_t aifsn) const;
@@ -143,6 +144,7 @@ protected:
 class AdhocWifiNetDevice : public WifiNetDevice {
 public:
   AdhocWifiNetDevice (Ptr<Node> node);
+  AdhocWifiNetDevice (Ptr<Node> node, Mac48Address self);
   virtual ~AdhocWifiNetDevice ();
 
   virtual Mac48Address GetBssid (void) const;
@@ -152,6 +154,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
+  void DoConstruct (void);
   void ForwardUp (void);
   virtual bool DoSendTo (const Packet &packet, Mac48Address const & to);
   virtual void NotifyConnected (void);
@@ -178,6 +181,7 @@ public:
    * The ssid is initialized from \valueref{WifiSsid}.
    */
   NqstaWifiNetDevice (Ptr<Node> node);
+  NqstaWifiNetDevice (Ptr<Node> node, Mac48Address self);
   virtual ~NqstaWifiNetDevice ();
 
   virtual Mac48Address GetBssid (void) const;
@@ -193,6 +197,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
+  void DoConstruct (void);
   void Associated (void);
   void DisAssociated (void);
   virtual bool DoSendTo (const Packet &packet, Mac48Address const & to);
@@ -218,6 +223,7 @@ public:
    * The ssid is initialized from \valueref{WifiSsid}.
    */
   NqapWifiNetDevice (Ptr<Node> node);
+  NqapWifiNetDevice (Ptr<Node> node, Mac48Address self);
   virtual ~NqapWifiNetDevice ();
 
   virtual Mac48Address GetBssid (void) const;
@@ -227,6 +233,7 @@ public:
 protected:
   virtual void DoDispose (void);
 private:
+  void DoConstruct (void);
   virtual bool DoSendTo (const Packet &packet, Mac48Address const & to);
   virtual void NotifyConnected (void);
   friend class WifiNetDeviceFactory;
