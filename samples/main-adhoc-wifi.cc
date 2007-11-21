@@ -24,13 +24,10 @@
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
 #include "ns3/node.h"
-#include "ns3/internet-node.h"
 #include "ns3/onoff-application.h"
 #include "ns3/static-mobility-model.h"
-#include "ns3/ipv4.h"
 #include "ns3/random-variable.h"
-#include "ns3/inet-socket-address.h"
-#include "ns3/global-route-manager.h"
+#include "ns3/packet-socket-address.h"
 #include "ns3/packet.h"
 #include "ns3/socket.h"
 #include "ns3/socket-factory.h"
@@ -48,18 +45,13 @@ static Ptr<Node>
 CreateAdhocNode (Ptr<WifiChannel> channel,
                  Vector position, const char *address)
 {
-  Ptr<Node> node = Create<InternetNode> ();  
-  Ptr<AdhocWifiNetDevice> device = Create<AdhocWifiNetDevice> (node);
+  Ptr<Node> node = Create<Node> ();  
+  Ptr<AdhocWifiNetDevice> device = Create<AdhocWifiNetDevice> (node, Mac48Address (address));
   device->ConnectTo (channel);
   Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
   mobility->SetPosition (position);
   node->AddInterface (mobility);
   
-  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
-  uint32_t index = ipv4->AddInterface (device);
-  ipv4->SetAddress (index, Ipv4Address (address));
-  ipv4->SetNetworkMask (index, Ipv4Mask ("255.255.0.0"));
-  ipv4->SetUp (index);
   return node;
 }
 
@@ -101,14 +93,12 @@ ReceivePacket (Ptr<Socket> socket, const Packet &packet, const Address &address)
 }
 
 static Ptr<Socket>
-SetupUdpReceive (Ptr<Node> node, uint16_t port)
+SetupPacketReceive (Ptr<Node> node, uint16_t port)
 {
-  InterfaceId iid = InterfaceId::LookupByName ("Udp");
+  InterfaceId iid = InterfaceId::LookupByName ("Packet");
   Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (iid);
-
   Ptr<Socket> sink = socketFactory->CreateSocket ();
-  InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), port);
-  sink->Bind (local);
+  sink->Bind ();
   sink->SetRecvCallback (MakeCallback (&ReceivePacket));
   return sink;
 }
@@ -122,13 +112,17 @@ RunOneExperiment (void)
 
   Ptr<Node> a = CreateAdhocNode (channel, 
                                  Vector (5.0,0.0,0.0),
-                                 "192.168.0.1");
+                                 "00:00:00:00:00:01");
   Ptr<Node> b = CreateAdhocNode (channel,
                                  Vector (0.0, 0.0, 0.0),
-                                 "192.168.0.2");
+                                 "00:00:00:00:00:02");
 
-  Ptr<Application> app = Create<OnOffApplication> (a, InetSocketAddress ("192.168.0.2", 10), 
-                                                   "Udp", 
+  PacketSocketAddress destination = PacketSocketAddress ();
+  destination.SetProtocol (1);
+  destination.SetSingleDevice (0);
+  destination.SetPhysicalAddress (Mac48Address ("00:00:00:00:00:02"));
+  Ptr<Application> app = Create<OnOffApplication> (a, destination, 
+                                                   "Packet", 
                                                    ConstantVariable (250),
                                                    ConstantVariable (0),
                                                    DataRate (60000000),
@@ -138,9 +132,7 @@ RunOneExperiment (void)
   app->Stop (Seconds (250.0));
 
   Simulator::Schedule (Seconds (1.5), &AdvancePosition, b);
-  Ptr<Socket> recvSink = SetupUdpReceive (b, 10);
-
-  GlobalRouteManager::PopulateRoutingTables ();
+  Ptr<Socket> recvSink = SetupPacketReceive (b, 10);
 
   Simulator::Run ();
 
@@ -155,7 +147,7 @@ int main (int argc, char *argv[])
   DefaultValue::Bind ("WifiFragmentationThreshold", "2200");
   CommandLine::Parse (argc, argv);
 
-  Gnuplot gnuplot = Gnuplot ("rate-control.png");
+  Gnuplot gnuplot = Gnuplot ("reference-rates.png");
 
   DefaultValue::Bind ("WifiRtsCtsThreshold", "2200");
 
@@ -223,10 +215,12 @@ int main (int argc, char *argv[])
   gnuplot.AddDataset (*g_output);
   delete g_output;
 
+  gnuplot.GenerateOutput (std::cout);
+
+  gnuplot = Gnuplot ("rate-control.png");
 
   DefaultValue::Bind ("WifiPhyStandard", "holland");
 
-#if 0
   g_output = new GnuplotDataset ("arf");
   g_output->SetStyle (GnuplotDataset::LINES);
   DefaultValue::Bind ("WifiRtsCtsThreshold", "2200");
@@ -250,7 +244,7 @@ int main (int argc, char *argv[])
   RunOneExperiment ();
   gnuplot.AddDataset (*g_output);
   delete g_output;
-#endif
+
   gnuplot.GenerateOutput (std::cout);
 
   return 0;
