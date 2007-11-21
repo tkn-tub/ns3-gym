@@ -558,6 +558,14 @@ public:
    *          zero.
    */
   static Time GetDelayLeft (const EventId &id);
+
+  /**
+   * \returns the maximum simulation time at which an event 
+   *          can be scheduled.
+   *
+   * The returned value will always be bigger than or equal to Simulator::Now.
+   */
+  static Time GetMaximumSimulationTime (void);
 private:
   Simulator ();
   ~Simulator ();
