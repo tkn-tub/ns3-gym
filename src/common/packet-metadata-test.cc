@@ -199,7 +199,7 @@ class PacketMetadataTest : public Test {
 public:
   PacketMetadataTest ();
   virtual ~PacketMetadataTest ();
-  bool CheckHistory (Packet p, const char *file, int line, uint32_t n, ...);
+  bool CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...);
   virtual bool RunTests (void);
 private:
   template <int N>
@@ -217,7 +217,7 @@ private:
   template <int N>
   void RegisterTrailer (void);
   void CleanupPrints (void);
-  Packet DoAddHeader (Packet p);
+  Ptr<Packet> DoAddHeader (Ptr<Packet> p);
   bool Check (const char *file, int line, std::list<int> expected);
 
 
@@ -358,7 +358,7 @@ PacketMetadataTest::Check (const char *file, int line, std::list<int> expected)
 }
 
 bool 
-PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t n, ...)
+PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...)
 {
   m_headerError = false;
   m_trailerError = false;
@@ -373,7 +373,7 @@ PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t
   va_end (ap);
 
   m_printer.PrintForward ();
-  p.Print (Failure (), m_printer);
+  p->Print (Failure (), m_printer);
   bool ok = Check (file, line, expected);
   CleanupPrints ();
   if (!ok)
@@ -382,7 +382,7 @@ PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t
     }
 
   m_printer.PrintBackward ();
-  p.Print (Failure (), m_printer);
+  p->Print (Failure (), m_printer);
   expected.reverse ();
   ok = Check (file, line, expected);
   CleanupPrints ();
@@ -393,25 +393,25 @@ PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t
   {                                             \
     HistoryHeader<n> header;                    \
     RegisterHeader<n> ();                       \
-    p.AddHeader (header);                       \
+    p->AddHeader (header);                      \
   }
 #define ADD_TRAILER(p, n)                       \
   {                                             \
     HistoryTrailer<n> trailer;                  \
     RegisterTrailer<n> ();                      \
-    p.AddTrailer (trailer);                     \
+    p->AddTrailer (trailer);                    \
   }
 #define REM_HEADER(p, n)                        \
   {                                             \
     HistoryHeader<n> header;                    \
     RegisterHeader<n> ();                       \
-    p.RemoveHeader (header);                    \
+    p->RemoveHeader (header);                   \
   }
 #define REM_TRAILER(p, n)                       \
   {                                             \
     HistoryTrailer<n> trailer;                  \
     RegisterTrailer<n> ();                      \
-    p.RemoveTrailer (trailer);                  \
+    p->RemoveTrailer (trailer);                 \
   }
 #define CHECK_HISTORY(p, ...)                   \
   {                                             \
@@ -421,9 +421,9 @@ PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t
         ok = false;                             \
       }                                         \
     Buffer buffer;                              \
-    buffer = p.Serialize ();                    \
-    Packet otherPacket;                         \
-    otherPacket.Deserialize  (buffer);          \
+    buffer = p->Serialize ();                   \
+    Ptr<Packet> otherPacket = Create<Packet> ();\
+    otherPacket->Deserialize  (buffer);         \
     if (!CheckHistory (otherPacket, __FILE__,   \
                       __LINE__, __VA_ARGS__))   \
       {                                         \
@@ -432,8 +432,8 @@ PacketMetadataTest::CheckHistory (Packet p, const char *file, int line, uint32_t
   }
 
 
-Packet 
-PacketMetadataTest::DoAddHeader (Packet p)
+Ptr<Packet>
+PacketMetadataTest::DoAddHeader (Ptr<Packet> p)
 {
   ADD_HEADER (p, 10);
   return p;
@@ -446,14 +446,14 @@ PacketMetadataTest::RunTests (void)
 
   PacketMetadata::Enable ();
 
-  Packet p = Packet (0);
-  Packet p1 = Packet (0);
+  Ptr<Packet> p = Create<Packet> (0);
+  Ptr<Packet> p1 = Create<Packet> (0);
 
-  p = Packet (10);
+  p = Create<Packet> (10);
   ADD_TRAILER (p, 100);
   CHECK_HISTORY (p, 2, 10, 100);
 
-  p = Packet (10);
+  p = Create<Packet> (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
@@ -466,7 +466,7 @@ PacketMetadataTest::RunTests (void)
   CHECK_HISTORY (p, 6, 
                  6, 5, 3, 2, 1, 10);
 
-  p = Packet (10);
+  p = Create<Packet> (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
@@ -474,7 +474,7 @@ PacketMetadataTest::RunTests (void)
   CHECK_HISTORY (p, 3, 
                  2, 1, 10);
 
-  p = Packet (10);
+  p = Create<Packet> (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
@@ -483,7 +483,7 @@ PacketMetadataTest::RunTests (void)
   CHECK_HISTORY (p, 2, 
                  1, 10);
 
-  p = Packet (10);
+  p = Create<Packet> (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
@@ -492,11 +492,11 @@ PacketMetadataTest::RunTests (void)
   REM_HEADER (p, 1);
   CHECK_HISTORY (p, 1, 10);
 
-  p = Packet (10);
+  p = Create<Packet> (10);
   ADD_HEADER (p, 1);
   ADD_HEADER (p, 2);
   ADD_HEADER (p, 3);
-  p1 = p;
+  p1 = p->Copy ();
   REM_HEADER (p1, 3);
   REM_HEADER (p1, 2);
   REM_HEADER (p1, 1);
@@ -524,88 +524,88 @@ PacketMetadataTest::RunTests (void)
   REM_TRAILER (p, 5);
   CHECK_HISTORY (p, 5, 
                  3, 2, 1, 10, 4);
-  p1 = p;
+  p1 = p->Copy ();
   REM_TRAILER (p, 4);
   CHECK_HISTORY (p, 4, 
                  3, 2, 1, 10);
   CHECK_HISTORY (p1, 5, 
                  3, 2, 1, 10, 4);
-  p1.RemoveAtStart (3);
+  p1->RemoveAtStart (3);
   CHECK_HISTORY (p1, 4, 
                  2, 1, 10, 4);
-  p1.RemoveAtStart (1);
+  p1->RemoveAtStart (1);
   CHECK_HISTORY (p1, 4, 
                  1, 1, 10, 4);
-  p1.RemoveAtStart (1);
+  p1->RemoveAtStart (1);
   CHECK_HISTORY (p1, 3, 
                  1, 10, 4);
-  p1.RemoveAtEnd (4);
+  p1->RemoveAtEnd (4);
   CHECK_HISTORY (p1, 2, 
                  1, 10);
-  p1.RemoveAtStart (1);
+  p1->RemoveAtStart (1);
   CHECK_HISTORY (p1, 1, 10);
 
-  p = Packet (10);
+  p = Create<Packet> (10);
   ADD_HEADER (p, 8);
   ADD_TRAILER (p, 8);
   ADD_TRAILER (p, 8);
-  p.RemoveAtStart (8+10+8);
+  p->RemoveAtStart (8+10+8);
   CHECK_HISTORY (p, 1, 8);
 
-  p = Packet (10);
+  p = Create<Packet> (10);
   ADD_HEADER (p, 10);
   ADD_HEADER (p, 8);
   ADD_TRAILER (p, 6);
   ADD_TRAILER (p, 7);
   ADD_TRAILER (p, 9);
-  p.RemoveAtStart (5);
-  p.RemoveAtEnd (12);
+  p->RemoveAtStart (5);
+  p->RemoveAtEnd (12);
   CHECK_HISTORY (p, 5, 3, 10, 10, 6, 4);
 
-  p = Packet (10);
+  p = Create<Packet> (10);
   ADD_HEADER (p, 10);
   ADD_TRAILER (p, 6);
-  p.RemoveAtEnd (18);
+  p->RemoveAtEnd (18);
   ADD_TRAILER (p, 5);
   ADD_HEADER (p, 3);
   CHECK_HISTORY (p, 3, 3, 8, 5);
-  p.RemoveAtStart (12);
+  p->RemoveAtStart (12);
   CHECK_HISTORY (p, 1, 4);
-  p.RemoveAtEnd (2);
+  p->RemoveAtEnd (2);
   CHECK_HISTORY (p, 1, 2);
   ADD_HEADER (p, 10);
   CHECK_HISTORY (p, 2, 10, 2);
-  p.RemoveAtEnd (5);
+  p->RemoveAtEnd (5);
   CHECK_HISTORY (p, 1, 7);
 
-  Packet p2 = Packet (0);
-  Packet p3 = Packet (0);
+  Ptr<Packet> p2 = Create<Packet> (0);
+  Ptr<Packet> p3 = Create<Packet> (0);
 
-  p = Packet (40);
+  p = Create<Packet> (40);
   ADD_HEADER (p, 5);
   ADD_HEADER (p, 8);
   CHECK_HISTORY (p, 3, 8, 5, 40);
-  p1 = p.CreateFragment (0, 5);
-  p2 = p.CreateFragment (5, 5);
-  p3 = p.CreateFragment (10, 43);
+  p1 = p->CreateFragment (0, 5);
+  p2 = p->CreateFragment (5, 5);
+  p3 = p->CreateFragment (10, 43);
   CHECK_HISTORY (p1, 1, 5);
   CHECK_HISTORY (p2, 2, 3, 2);
   CHECK_HISTORY (p3, 2, 3, 40);
-  p1.AddAtEnd (p2);
+  p1->AddAtEnd (p2);
   CHECK_HISTORY (p1, 2, 8, 2);
   CHECK_HISTORY (p2, 2, 3, 2);
-  p1.AddAtEnd (p3);
+  p1->AddAtEnd (p3);
   CHECK_HISTORY (p1, 3, 8, 5, 40);
   CHECK_HISTORY (p2, 2, 3, 2);
   CHECK_HISTORY (p3, 2, 3, 40);
-  p1 = p.CreateFragment (0, 5);
+  p1 = p->CreateFragment (0, 5);
   CHECK_HISTORY (p1, 1, 5);
 
-  p3 = Packet (50);
+  p3 = Create<Packet> (50);
   ADD_HEADER (p3, 8);
   CHECK_HISTORY (p3, 2, 8, 50);
   CHECK_HISTORY (p1, 1, 5);
-  p1.AddAtEnd (p3);
+  p1->AddAtEnd (p3);
   CHECK_HISTORY (p1, 3, 5, 8, 50);
   ADD_HEADER (p1, 5);
   CHECK_HISTORY (p1, 4, 5, 5, 8, 50);
@@ -613,71 +613,71 @@ PacketMetadataTest::RunTests (void)
   CHECK_HISTORY (p1, 5, 5, 5, 8, 50, 2);
   REM_HEADER (p1, 5);
   CHECK_HISTORY (p1, 4, 5, 8, 50, 2);
-  p1.RemoveAtEnd (60);
+  p1->RemoveAtEnd (60);
   CHECK_HISTORY (p1, 1, 5);
-  p1.AddAtEnd (p2);
+  p1->AddAtEnd (p2);
   CHECK_HISTORY (p1, 2, 8, 2);
   CHECK_HISTORY (p2, 2, 3, 2);
 
-  p3 = Packet (40);
+  p3 = Create<Packet> (40);
   ADD_HEADER (p3, 5);
   ADD_HEADER (p3, 5);
   CHECK_HISTORY (p3, 3, 5, 5, 40);
-  p1 = p3.CreateFragment (0, 5);
-  p2 = p3.CreateFragment (5, 5);
+  p1 = p3->CreateFragment (0, 5);
+  p2 = p3->CreateFragment (5, 5);
   CHECK_HISTORY (p1, 1, 5);
   CHECK_HISTORY (p2, 1, 5);
-  p1.AddAtEnd (p2);
+  p1->AddAtEnd (p2);
   CHECK_HISTORY (p1, 2, 5, 5);
 
-  p = Packet (0);
+  p = Create<Packet> (0);
   CHECK_HISTORY (p, 0);
 
-  p3 = Packet (0);
+  p3 = Create<Packet> (0);
   ADD_HEADER (p3, 5);
   ADD_HEADER (p3, 5);
   CHECK_HISTORY (p3, 2, 5, 5);
-  p1 = p3.CreateFragment (0, 4);
-  p2 = p3.CreateFragment (9, 1);
+  p1 = p3->CreateFragment (0, 4);
+  p2 = p3->CreateFragment (9, 1);
   CHECK_HISTORY (p1, 1, 4);
   CHECK_HISTORY (p2, 1, 1);
-  p1.AddAtEnd (p2);
+  p1->AddAtEnd (p2);
   CHECK_HISTORY (p1, 2, 4, 1);
 
 
-  p = Packet (2000);
+  p = Create<Packet> (2000);
   CHECK_HISTORY (p, 1, 2000);
   
-  p = Packet ();
+  p = Create<Packet> ();
   ADD_TRAILER (p, 10);
   ADD_HEADER (p, 5);
-  p1 = p.CreateFragment (0, 8);
-  p2 = p.CreateFragment (8, 7);
-  p1.AddAtEnd (p2);
+  p1 = p->CreateFragment (0, 8);
+  p2 = p->CreateFragment (8, 7);
+  p1->AddAtEnd (p2);
   CHECK_HISTORY (p, 2, 5, 10);
 
-  p = Packet ();
+  p = Create<Packet> ();
   ADD_TRAILER (p, 10);
   REM_TRAILER (p, 10);
   ADD_TRAILER (p, 10);
   CHECK_HISTORY (p, 1, 10);
 
-  p = Packet ();
+  p = Create<Packet> ();
   ADD_HEADER (p, 10);
   REM_HEADER (p, 10);
   ADD_HEADER (p, 10);
   CHECK_HISTORY (p, 1, 10);
 
-  p = Packet ();
+  p = Create<Packet> ();
   ADD_HEADER (p, 10);
   p = DoAddHeader (p);
   CHECK_HISTORY (p, 2, 10, 10);
 
-  p = Packet (10);
+  p = Create<Packet> (10);
   ADD_HEADER (p, 8);
   ADD_TRAILER (p, 8);
   ADD_TRAILER (p, 8);
-  p.RemoveAtStart (8+10+8);
+  p->RemoveAtStart (8+10+8);
   CHECK_HISTORY (p, 1, 8);
 
   return ok;

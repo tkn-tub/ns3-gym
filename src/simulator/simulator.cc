@@ -70,6 +70,7 @@ public:
   void Run (void);
   Time Now (void) const;
   Time GetDelayLeft (const EventId &id) const;
+  Time GetMaximumSimulationTime (void) const;
 
 private:
   void ProcessOneEvent (void);
@@ -333,6 +334,15 @@ SimulatorPrivate::IsExpired (const EventId &ev) const
     }
 }
 
+Time 
+SimulatorPrivate::GetMaximumSimulationTime (void) const
+{
+  // XXX: I am fairly certain other compilers use other non-standard
+  // post-fixes to indicate 64 bit constants.
+  return TimeStep (0x7fffffffffffffffLL);
+}
+
+
 
 }; // namespace ns3
 
@@ -504,7 +514,13 @@ Time Now (void)
   return Time (Simulator::Now ());
 }
 
-}; // namespace ns3
+Time 
+Simulator::GetMaximumSimulationTime (void)
+{
+  return GetPriv ()->GetMaximumSimulationTime ();
+}
+
+} // namespace ns3
 
 
 #ifdef RUN_SELF_TESTS

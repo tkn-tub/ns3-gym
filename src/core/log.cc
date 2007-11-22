@@ -39,12 +39,47 @@ namespace ns3 {
 typedef std::list<std::pair <std::string, LogComponent *> > ComponentList;
 typedef std::list<std::pair <std::string, LogComponent *> >::iterator ComponentListI;
 
+static class PrintList
+{
+public:
+  PrintList ();
+} g_printList;
+
 static 
 ComponentList *GetComponentList (void)
 {
   static ComponentList components;
   return &components;
 }
+
+
+
+PrintList::PrintList ()
+{
+#ifdef HAVE_GETENV
+  char *envVar = getenv("NS_LOG");
+  if (envVar == 0)
+    {
+      return;
+    }
+  std::string env = envVar;
+  std::string::size_type cur = 0;
+  std::string::size_type next = 0;
+  while (next != std::string::npos)
+    {
+      next = env.find_first_of (";", cur);
+      std::string tmp = std::string (env, cur, next-cur);
+      if (tmp == "print-list")
+        {
+          LogComponentPrintList ();
+          exit (0);
+          break;
+        }
+      cur = next + 1;
+    }
+#endif  
+}
+
 
 LogComponent::LogComponent (char const * name)
   : m_levels (0), m_name (name)
@@ -75,23 +110,10 @@ LogComponent::EnvVarCheck (char const * name)
 
   std::string::size_type cur = 0;
   std::string::size_type next = 0;
-  while (true)
+  while (next != std::string::npos)
     {
       next = env.find_first_of (";", cur);
-      std::string tmp = std::string (env, cur, next);
-      {
-        /* The following code is a workaround for a bug in the g++
-         * c++ string library. Its goal is to remove any trailing ';'
-         * from the string even though there should not be any in
-         * it. This code should be safe even if the bug is not there.
-         */
-        std::string::size_type trailing = tmp.find_first_of (";");
-        tmp = tmp.substr (0, trailing);
-      }
-      if (tmp.size () == 0)
-        {
-          break;
-        }
+      std::string tmp = std::string (env, cur, next-cur);
       std::string::size_type equal = tmp.find ("=");
       std::string component;
       if (equal == std::string::npos)
@@ -189,15 +211,7 @@ LogComponent::EnvVarCheck (char const * name)
               Enable ((enum LogLevel)level);
             }
         }
-      if (next == std::string::npos)
-        {
-          break;
-        }
       cur = next + 1;
-      if (cur >= env.size ()) 
-        {
-          break;
-        }
     }
 #endif
 }

@@ -72,7 +72,7 @@ Socket::SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent)
 }
 
 void 
-Socket::SetRecvCallback (Callback<void, Ptr<Socket>, const Packet &,const Address&> receivedData)
+Socket::SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> receivedData)
 {
   NS_LOG_FUNCTION;
   m_receivedData = receivedData;
@@ -164,7 +164,7 @@ Socket::NotifyDataSent (uint32_t size)
 }
 
 void 
-Socket::NotifyDataReceived (const Packet &p, const Address &from)
+Socket::NotifyDataReceived (Ptr<Packet> p, const Address &from)
 {
   NS_LOG_FUNCTION;
   if (!m_receivedData.IsNull ())

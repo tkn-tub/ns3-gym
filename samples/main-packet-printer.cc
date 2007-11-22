@@ -49,7 +49,7 @@ void DefaultPrint (void)
 {
   // We create a packet with 1000 bytes of zero payload
   // and add 3 headers to this packet.
-  Packet p (1000);
+  Ptr<Packet> p = Create<Packet> (1000);
   Ipv4Header ipv4;
   UdpHeader udp;
   ipv4.SetSource (Ipv4Address ("192.168.0.1"));
@@ -57,36 +57,36 @@ void DefaultPrint (void)
   udp.SetSource (1025);
   udp.SetDestination (80);
   udp.SetPayloadSize (1000);
-  p.AddHeader (udp);
-  p.AddHeader (ipv4);
+  p->AddHeader (udp);
+  p->AddHeader (ipv4);
 
-  std::cout << "full packet size=" << p.GetSize () << std::endl;
+  std::cout << "full packet size=" << p->GetSize () << std::endl;
   // Here, invoke the default Print routine, directed to std out
-  p.Print (std::cout);
+  p->Print (std::cout);
   std::cout << std::endl;
 
 
   // Now, we fragment our packet in 3 consecutive pieces.
-  Packet p1 = p.CreateFragment (0, 2);
-  Packet p2 = p.CreateFragment (2, 1000);
-  Packet p3 = p.CreateFragment (1002, 26);
+  Ptr<Packet> p1 = p->CreateFragment (0, 2);
+  Ptr<Packet> p2 = p->CreateFragment (2, 1000);
+  Ptr<Packet> p3 = p->CreateFragment (1002, 26);
 
   std::cout << "fragment1" << std::endl;
-  p1.Print (std::cout);
+  p1->Print (std::cout);
   std::cout << std::endl;
   std::cout << "fragment2" << std::endl;
-  p2.Print (std::cout);
+  p2->Print (std::cout);
   std::cout << std::endl;
   std::cout << "fragment3" << std::endl;
-  p3.Print (std::cout);
+  p3->Print (std::cout);
   std::cout << std::endl;
 
   // And, finally, we re-aggregate the 3 consecutive pieces.
-  Packet aggregate = p1;
-  aggregate.AddAtEnd (p2);
-  aggregate.AddAtEnd (p3);
+  Ptr<Packet> aggregate = p1->Copy ();
+  aggregate->AddAtEnd (p2);
+  aggregate->AddAtEnd (p3);
   std::cout << "aggregated" << std::endl;
-  aggregate.Print (std::cout);
+  aggregate->Print (std::cout);
   std::cout << std::endl;
 }
 
@@ -128,7 +128,7 @@ void NonDefaultPrint (void)
 
 
   // We create a packet with 1000 bytes of zero payload
-  Packet p (1000);
+  Ptr<Packet> p = Create<Packet> (1000);
   Ipv4Header ipv4;
   UdpHeader udp;
   ipv4.SetSource (Ipv4Address ("192.168.0.1"));
@@ -136,35 +136,35 @@ void NonDefaultPrint (void)
   udp.SetSource (1025);
   udp.SetDestination (80);
   udp.SetPayloadSize (1000);
-  p.AddHeader (udp);
-  p.AddHeader (ipv4);
+  p->AddHeader (udp);
+  p->AddHeader (ipv4);
 
-  std::cout << "full packet size=" << p.GetSize () << std::endl;
-  p.Print (std::cout, printer);
+  std::cout << "full packet size=" << p->GetSize () << std::endl;
+  p->Print (std::cout, printer);
   std::cout << std::endl;
 
 
   // fragment our packet in 3 pieces
-  Packet p1 = p.CreateFragment (0, 2);
-  Packet p2 = p.CreateFragment (2, 1000);
-  Packet p3 = p.CreateFragment (1002, 26);
+  Ptr<Packet> p1 = p->CreateFragment (0, 2);
+  Ptr<Packet> p2 = p->CreateFragment (2, 1000);
+  Ptr<Packet> p3 = p->CreateFragment (1002, 26);
   std::cout << "fragment1" << std::endl;
-  p1.Print (std::cout, printer);
+  p1->Print (std::cout, printer);
   std::cout << std::endl;
   std::cout << "fragment2" << std::endl;
-  p2.Print (std::cout, printer);
+  p2->Print (std::cout, printer);
   std::cout << std::endl;
   std::cout << "fragment3" << std::endl;
-  p3.Print (std::cout, printer);
+  p3->Print (std::cout, printer);
   std::cout << std::endl;
 
   // aggregate all 3 fragments of the original packet
   // to reconstruct a copy of the original packet.
-  Packet aggregate = p1;
-  aggregate.AddAtEnd (p2);
-  aggregate.AddAtEnd (p3);
+  Ptr<Packet> aggregate = p1->Copy ();
+  aggregate->AddAtEnd (p2);
+  aggregate->AddAtEnd (p3);
   std::cout << "aggregated" << std::endl;
-  aggregate.Print (std::cout, printer);
+  aggregate->Print (std::cout, printer);
   std::cout << std::endl;
 }
 

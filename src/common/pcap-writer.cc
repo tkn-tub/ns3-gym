@@ -89,7 +89,7 @@ PcapWriter::WriteHeader (uint32_t network)
 
 
 void 
-PcapWriter::WritePacket (Packet const packet)
+PcapWriter::WritePacket (Ptr<const Packet> packet)
 {
   if (m_writer != 0) 
     {
@@ -98,9 +98,9 @@ PcapWriter::WritePacket (Packet const packet)
       uint64_t us = current % 1000000;
       Write32 (s & 0xffffffff);
       Write32 (us & 0xffffffff);
-      Write32 (packet.GetSize ());
-      Write32 (packet.GetSize ());
-      WriteData (packet.PeekData (), packet.GetSize ());
+      Write32 (packet->GetSize ());
+      Write32 (packet->GetSize ());
+      WriteData (packet->PeekData (), packet->GetSize ());
     }
 }
 

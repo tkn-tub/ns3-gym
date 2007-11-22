@@ -58,10 +58,10 @@ DropTailQueue::GetMaxPackets (void)
 }
 
 bool 
-DropTailQueue::DoEnqueue (const Packet& p)
+DropTailQueue::DoEnqueue (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p);
+  NS_LOG_PARAMS (this << p);
 
   if (m_packets.size () >= m_maxPackets)
     {
@@ -74,11 +74,11 @@ DropTailQueue::DoEnqueue (const Packet& p)
   return true;
 }
 
-bool
-DropTailQueue::DoDequeue (Packet& p)
+Ptr<Packet>
+DropTailQueue::DoDequeue (void)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p);
+  NS_LOG_PARAMS (this);
 
   if (m_packets.empty()) 
     {
@@ -86,19 +86,19 @@ DropTailQueue::DoDequeue (Packet& p)
       return false;
     }
 
-  p = m_packets.front ();
+  Ptr<Packet> p = m_packets.front ();
   m_packets.pop ();
 
-  NS_LOG_LOGIC ("Popped " << &p);
+  NS_LOG_LOGIC ("Popped " << p);
 
-  return true;
+  return p;
 }
 
-bool
-DropTailQueue::DoPeek (Packet& p)
+Ptr<Packet>
+DropTailQueue::DoPeek (void) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p);
+  NS_LOG_PARAMS (this);
 
   if (m_packets.empty()) 
     {
@@ -106,9 +106,9 @@ DropTailQueue::DoPeek (Packet& p)
       return false;
     }
 
-  p = m_packets.front ();
+  Ptr<Packet> p = m_packets.front ();
 
-  return true;
+  return p;
 }
 
 } // namespace ns3
@@ -139,7 +139,11 @@ DropTailQueueTest::RunTests (void)
   DropTailQueue queue;
   queue.SetMaxPackets (3);
   
-  Packet p1, p2, p3, p4;
+  Ptr<Packet> p1, p2, p3, p4;
+  p1 = Create<Packet> ();
+  p2 = Create<Packet> ();
+  p3 = Create<Packet> ();
+  p4 = Create<Packet> ();
 
   NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 0);
   queue.Enqueue (p1);
@@ -151,21 +155,25 @@ DropTailQueueTest::RunTests (void)
   queue.Enqueue (p4); // will be dropped
   NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 3);
 
-  Packet p;
+  Ptr<Packet> p;
 
-  NS_TEST_ASSERT (queue.Dequeue (p));
+  p = queue.Dequeue ();
+  NS_TEST_ASSERT (p != 0);
   NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 2);
-  NS_TEST_ASSERT_EQUAL (p.GetUid (), p1.GetUid ());
+  NS_TEST_ASSERT_EQUAL (p->GetUid (), p1->GetUid ());
 
-  NS_TEST_ASSERT (queue.Dequeue (p));
+  p = queue.Dequeue ();
+  NS_TEST_ASSERT (p != 0);
   NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 1);
-  NS_TEST_ASSERT_EQUAL (p.GetUid (), p2.GetUid ());
+  NS_TEST_ASSERT_EQUAL (p->GetUid (), p2->GetUid ());
 
-  NS_TEST_ASSERT (queue.Dequeue (p));
+  p = queue.Dequeue ();
+  NS_TEST_ASSERT (p != 0);
   NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 0);
-  NS_TEST_ASSERT_EQUAL (p.GetUid (), p3.GetUid ());
+  NS_TEST_ASSERT_EQUAL (p->GetUid (), p3->GetUid ());
 
-  NS_TEST_ASSERT (!queue.Dequeue (p));
+  p = queue.Dequeue ();
+  NS_TEST_ASSERT (p == 0);
 
   return result;
 }

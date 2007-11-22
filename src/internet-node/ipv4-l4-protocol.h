@@ -65,7 +65,7 @@ public:
    * Called from lower-level layers to send the packet up
    * in the stack. 
    */
-  virtual void Receive(Packet& p, 
+  virtual void Receive(Ptr<Packet> p, 
                        Ipv4Address const &source,
                        Ipv4Address const &destination,
                        Ptr<Ipv4Interface> incomingInterface) = 0;

@@ -147,7 +147,7 @@ ArpCache::Entry::MarkDead (void)
   //NS_ASSERT (m_waiting != 0);
   UpdateSeen ();
 }
-Packet 
+Ptr<Packet>
 ArpCache::Entry::MarkAlive (Address macAddress) 
 {
   NS_ASSERT (m_state == WAIT_REPLY);
@@ -155,25 +155,25 @@ ArpCache::Entry::MarkAlive (Address macAddress)
   m_macAddress = macAddress;
   m_state = ALIVE;
   UpdateSeen ();
-  Packet waiting = m_waiting;
+  Ptr<Packet> waiting = m_waiting;
   //m_waiting = 0;
   return waiting;
 }
 
-Packet 
-ArpCache::Entry::UpdateWaitReply (Packet waiting)
+Ptr<Packet>
+ArpCache::Entry::UpdateWaitReply (Ptr<Packet> waiting)
 {
   NS_ASSERT (m_state == WAIT_REPLY);
   /* We are already waiting for an answer so
    * we dump the previously waiting packet and
    * replace it with this one.
    */
-  Packet old = m_waiting;
+  Ptr<Packet> old = m_waiting;
   m_waiting = waiting;
   return old;
 }
 void 
-ArpCache::Entry::MarkWaitReply (Packet waiting)
+ArpCache::Entry::MarkWaitReply (Ptr<Packet> waiting)
 {
   NS_ASSERT (m_state == ALIVE || m_state == DEAD);
   //NS_ASSERT (m_waiting == 0);

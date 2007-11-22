@@ -86,22 +86,22 @@ public:
   /**
    * \return true if the queue is empty; false otherwise
    */
-  bool IsEmpty (void);
+  bool IsEmpty (void) const;
   /**
    * Place a packet into the rear of the Queue
    * \return True if the operation was successful; false otherwise
    */
-  bool Enqueue (const Packet& p);
+  bool Enqueue (Ptr<Packet> p);
   /**
    * Remove a packet from the front of the Queue
-   * \return True if the operation was successful; false otherwise
+   * \return 0 if the operation was not successful; the packet otherwise.
    */
-  bool Dequeue (Packet &p);
+  Ptr<Packet> Dequeue (void);
   /**
    * Get a copy of the item at the front of the queue without removing it
-   * \return True if the operation was successful; false otherwise
+   * \return 0 if the operation was not successful; the packet otherwise.
    */
-  bool Peek (Packet &p);
+  Ptr<Packet> Peek (void) const;
 
   /**
    * XXX Doesn't do anything right now, think its supposed to flush the queue
@@ -110,11 +110,11 @@ public:
   /**
    * \return The number of packets currently stored in the Queue
    */
-  uint32_t GetNPackets (void);
+  uint32_t GetNPackets (void) const;
   /**
    * \return The number of bytes currently occupied by the packets in the Queue
    */
-  uint32_t GetNBytes (void);
+  uint32_t GetNBytes (void) const;
 
   /**
    * \return The total number of bytes recieved by this Queue since the
@@ -122,25 +122,25 @@ public:
    * whichever happened more recently
    * 
    */
-  uint32_t GetTotalReceivedBytes (void);
+  uint32_t GetTotalReceivedBytes (void) const;
   /**
    * \return The total number of packets recieved by this Queue since the
    * simulation began, or since ResetStatistics was called, according to 
    * whichever happened more recently
    */
-  uint32_t GetTotalReceivedPackets (void);
+  uint32_t GetTotalReceivedPackets (void) const;
   /**
    * \return The total number of bytes dropped by this Queue since the
    * simulation began, or since ResetStatistics was called, according to 
    * whichever happened more recently
    */
-  uint32_t GetTotalDroppedBytes (void);
+  uint32_t GetTotalDroppedBytes (void) const;
   /**
    * \return The total number of bytes dropped by this Queue since the
    * simulation began, or since ResetStatistics was called, according to 
    * whichever happened more recently
    */
-  uint32_t GetTotalDroppedPackets (void);
+  uint32_t GetTotalDroppedPackets (void) const;
   /**
    * Resets the counts for dropped packets, dropped bytes, recieved packets, and
    * recieved bytes.
@@ -173,19 +173,19 @@ public:
 
 private:
 
-  virtual bool DoEnqueue (const Packet& p) = 0;
-  virtual bool DoDequeue (Packet &p) = 0;
-  virtual bool DoPeek (Packet &p) = 0;
+  virtual bool DoEnqueue (Ptr<Packet> p) = 0;
+  virtual Ptr<Packet> DoDequeue (void) = 0;
+  virtual Ptr<Packet> DoPeek (void) const = 0;
 
 protected:
   Ptr<TraceResolver> GetTraceResolver (void) const;
   // called by subclasses to notify parent of packet drops.
-  void Drop (const Packet& p);
+  void Drop (Ptr<Packet> packet);
 
 private:
-  CallbackTraceSource<const Packet &> m_traceEnqueue;
-  CallbackTraceSource<const Packet &> m_traceDequeue;
-  CallbackTraceSource<const Packet &> m_traceDrop;
+  CallbackTraceSource<Ptr<const Packet> > m_traceEnqueue;
+  CallbackTraceSource<Ptr<const Packet> > m_traceDequeue;
+  CallbackTraceSource<Ptr<const Packet> > m_traceDrop;
 
   uint32_t m_nBytes;
   uint32_t m_nTotalReceivedBytes;

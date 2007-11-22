@@ -201,17 +201,17 @@ Ipv4L3Protocol::GetTraceResolver (void) const
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddSource ("tx", 
                        TraceDoc ("send ipv4 packet to outgoing interface",
-                                 "const Packet &", "packet sent",
+                                 "Ptr<const Packet>", "packet sent",
                                  "uint32_t", "index of output ipv4 interface"),
                        m_txTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::TX));
   resolver->AddSource ("rx",
                        TraceDoc ("receive ipv4 packet from incoming interface",
-                                 "const Packet &", "packet received",
+                                 "Ptr<const Packet>", "packet received",
                                  "uint32_t", "index of input ipv4 interface"),
                        m_rxTrace, Ipv4L3ProtocolTraceContextElement(Ipv4L3ProtocolTraceContextElement::RX));
   resolver->AddSource ("drop", 
                        TraceDoc ("drop ipv4 packet",
-                                 "const Packet &", "packet dropped"),
+                                 "Ptr<const Packet>", "packet dropped"),
                        m_dropTrace, Ipv4L3ProtocolTraceContextElement (Ipv4L3ProtocolTraceContextElement::DROP));
   resolver->AddArray ("interfaces", 
                       m_interfaces.begin (), m_interfaces.end (), 
@@ -279,11 +279,11 @@ Ipv4L3Protocol::SetDefaultRoute (Ipv4Address nextHop,
 void
 Ipv4L3Protocol::Lookup (
   Ipv4Header const &ipHeader,
-  Packet packet,
+  Ptr<Packet> packet,
   Ipv4RoutingProtocol::RouteReplyCallback routeReply)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &ipHeader << &packet << &routeReply);
+  NS_LOG_PARAMS (this << &ipHeader << packet << &routeReply);
 
   Lookup (Ipv4RoutingProtocol::IF_INDEX_ANY, ipHeader, packet, routeReply);
 }
@@ -292,11 +292,11 @@ void
 Ipv4L3Protocol::Lookup (
   uint32_t ifIndex,
   Ipv4Header const &ipHeader,
-  Packet packet,
+  Ptr<Packet> packet,
   Ipv4RoutingProtocol::RouteReplyCallback routeReply)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << ifIndex << &ipHeader << &packet << &routeReply);
+  NS_LOG_PARAMS (this << ifIndex << &ipHeader << packet << &routeReply);
 
   for (Ipv4RoutingProtocolList::const_iterator rprotoIter = 
          m_routingProtocols.begin ();
@@ -532,10 +532,10 @@ Ipv4L3Protocol::FindInterfaceForDevice (Ptr<const NetDevice> device)
 }  
 
 void 
-Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protocol, const Address &from)
+Ipv4L3Protocol::Receive( Ptr<NetDevice> device, Ptr<Packet> packet, uint16_t protocol, const Address &from)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &device << &p << protocol <<  from);
+  NS_LOG_PARAMS (this << &device << packet << protocol <<  from);
 
   NS_LOG_LOGIC ("Packet from " << from);
 
@@ -548,14 +548,13 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protoc
       ipv4Interface = *i;
       if (ipv4Interface->GetDevice () == device)
         {
-          m_rxTrace (p, index);
+          m_rxTrace (packet, index);
           break;
         }
       index++;
     }
-  Packet packet = p;
   Ipv4Header ipHeader;
-  packet.RemoveHeader (ipHeader);
+  packet->RemoveHeader (ipHeader);
 
   if (!ipHeader.IsChecksumOk ()) 
     {
@@ -573,20 +572,20 @@ Ipv4L3Protocol::Receive( Ptr<NetDevice> device, const Packet& p, uint16_t protoc
 
 
 void 
-Ipv4L3Protocol::Send (Packet const &packet, 
+Ipv4L3Protocol::Send (Ptr<Packet> packet, 
             Ipv4Address source, 
             Ipv4Address destination,
             uint8_t protocol)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &packet << source << destination << protocol);
+  NS_LOG_PARAMS (this << packet << source << destination << protocol);
 
   Ipv4Header ipHeader;
 
   ipHeader.SetSource (source);
   ipHeader.SetDestination (destination);
   ipHeader.SetProtocol (protocol);
-  ipHeader.SetPayloadSize (packet.GetSize ());
+  ipHeader.SetPayloadSize (packet->GetSize ());
   ipHeader.SetTtl (m_defaultTtl);
   ipHeader.SetMayFragment ();
   ipHeader.SetIdentification (m_identification);
@@ -600,10 +599,10 @@ Ipv4L3Protocol::Send (Packet const &packet,
            ifaceIter != m_interfaces.end (); ifaceIter++, ifaceIndex++)
         {
           Ptr<Ipv4Interface> outInterface = *ifaceIter;
-          Packet packetCopy = packet;
+          Ptr<Packet> packetCopy = packet->Copy ();
 
-          NS_ASSERT (packetCopy.GetSize () <= outInterface->GetMtu ());
-          packetCopy.AddHeader (ipHeader);
+          NS_ASSERT (packetCopy->GetSize () <= outInterface->GetMtu ());
+          packetCopy->AddHeader (ipHeader);
           m_txTrace (packetCopy, ifaceIndex);
           outInterface->Send (packetCopy, destination);
         }
@@ -626,11 +625,11 @@ Ipv4L3Protocol::Send (Packet const &packet,
 void
 Ipv4L3Protocol::SendRealOut (bool found,
                              Ipv4Route const &route,
-                             Packet packet,
+                             Ptr<Packet> packet,
                              Ipv4Header const &ipHeader)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << found << &route << &packet << &ipHeader);
+  NS_LOG_PARAMS (this << found << &route << packet << &ipHeader);
 
   if (!found)
     {
@@ -641,9 +640,9 @@ Ipv4L3Protocol::SendRealOut (bool found,
 
   NS_LOG_LOGIC ("Send via interface " << route.GetInterface ());
 
-  packet.AddHeader (ipHeader);
+  packet->AddHeader (ipHeader);
   Ptr<Ipv4Interface> outInterface = GetInterface (route.GetInterface ());
-  NS_ASSERT (packet.GetSize () <= outInterface->GetMtu ());
+  NS_ASSERT (packet->GetSize () <= outInterface->GetMtu ());
   m_txTrace (packet, route.GetInterface ());
   if (route.IsGateway ()) 
     {
@@ -660,12 +659,12 @@ Ipv4L3Protocol::SendRealOut (bool found,
 bool
 Ipv4L3Protocol::Forwarding (
   uint32_t ifIndex, 
-  Packet const &packet, 
+  Ptr<Packet> packet, 
   Ipv4Header &ipHeader, 
   Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (ifIndex << &packet << &ipHeader<< device);
+  NS_LOG_PARAMS (ifIndex << packet << &ipHeader<< device);
 
   for (Ipv4InterfaceList::const_iterator i = m_interfaces.begin ();
        i != m_interfaces.end (); i++) 
@@ -738,11 +737,11 @@ Ipv4L3Protocol::Forwarding (
 }
 
 void
-Ipv4L3Protocol::ForwardUp (Packet p, Ipv4Header const&ip,
+Ipv4L3Protocol::ForwardUp (Ptr<Packet> p, Ipv4Header const&ip,
                            Ptr<Ipv4Interface> incomingInterface)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p << &ip);
+  NS_LOG_PARAMS (this << p << &ip);
 
   Ptr<Ipv4L4Demux> demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
   Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());

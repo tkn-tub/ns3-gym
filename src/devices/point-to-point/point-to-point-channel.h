@@ -22,13 +22,13 @@
 #include <list>
 #include "ns3/channel.h"
 #include "ns3/ptr.h"
-#include "ns3/packet.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
 
 namespace ns3 {
 
 class PointToPointNetDevice;
+class Packet;
 
 /**
  * \brief Simple Point To Point Channel.
@@ -75,7 +75,7 @@ public:
    * \param delay Transmission delay through the channel
    */
   PointToPointChannel (const std::string& name,
-                 const DataRate& bps, const Time& delay);
+                       const DataRate& bps, const Time& delay);
 
   /**
    * \brief Attach a given netdevice to this channel
@@ -89,8 +89,9 @@ public:
    * \param src Source PointToPointNetDevice
    * \param txTime Transmit time to apply
    */
-  bool TransmitStart (Packet& p, Ptr<PointToPointNetDevice> src,
+  bool TransmitStart (Ptr<Packet> p, Ptr<PointToPointNetDevice> src,
                       const Time& txTime);
+
   /**
    * \brief Get number of devices on this channel
    * \returns number of devices on this channel

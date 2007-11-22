@@ -121,25 +121,25 @@ Queue::GetTraceResolver (void) const
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddSource ("enqueue", 
                        TraceDoc ("store packet in queue",
-                                 "const Packet &", "packet queued"),
+                                 "Ptr<const Packet>", "packet queued"),
                        m_traceEnqueue, QueueTraceType (QueueTraceType::ENQUEUE));
   resolver->AddSource ("dequeue", 
                        TraceDoc ("remove packet from queue",
-                                 "const Packet &", "packet dequeued"),
+                                 "Ptr<const Packet>", "packet dequeued"),
                        m_traceDequeue, QueueTraceType (QueueTraceType::DEQUEUE));
   resolver->AddSource ("drop", 
                        TraceDoc ("drop packet from queue", 
-                                 "const Packet &", "packet dropped"),
+                                 "Ptr<const Packet>", "packet dropped"),
                        m_traceDrop, QueueTraceType (QueueTraceType::DROP));
   resolver->SetParentResolver (Object::GetTraceResolver ());
   return resolver;
 }
 
 bool 
-Queue::Enqueue (const Packet& p)
+Queue::Enqueue (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p);
+  NS_LOG_PARAMS (this << p);
   NS_LOG_LOGIC ("m_traceEnqueue (p)");
 
   m_traceEnqueue (p);
@@ -147,35 +147,33 @@ Queue::Enqueue (const Packet& p)
   bool retval = DoEnqueue (p);
   if (retval)
     {
-      m_nBytes += p.GetSize ();
+      m_nBytes += p->GetSize ();
       m_nPackets++;
     }
   return retval;
 }
 
-bool
-Queue::Dequeue (Packet &p)
+Ptr<Packet>
+Queue::Dequeue (void)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p);
+  NS_LOG_PARAMS (this);
 
-  bool retval = DoDequeue (p);
+  Ptr<Packet> packet = DoDequeue ();
 
-  if (retval)
+  if (packet != 0)
     {
-      m_nBytes -= p.GetSize ();
+      m_nBytes -= packet->GetSize ();
       m_nPackets--;
 
       NS_ASSERT (m_nBytes >= 0);
       NS_ASSERT (m_nPackets >= 0);
 
-      NS_LOG_LOGIC("m_traceDequeue (p)");
+      NS_LOG_LOGIC("m_traceDequeue (packet)");
 
-      const Packet packet = p;
       m_traceDequeue (packet);
     }
-
-  return retval;
+  return packet;
 }
 
 void
@@ -185,17 +183,17 @@ Queue::DequeueAll (void)
   NS_ASSERT_MSG (0, "Don't know what to do with dequeued packets!");
 }
 
-bool
-Queue::Peek (Packet &p)
+Ptr<Packet>
+Queue::Peek (void) const
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p);
-  return DoPeek (p);
+  NS_LOG_PARAMS (this);
+  return DoPeek ();
 }
 
 
 uint32_t 
-Queue::GetNPackets (void)
+Queue::GetNPackets (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC ("returns " << m_nPackets);
@@ -203,7 +201,7 @@ Queue::GetNPackets (void)
 }
 
 uint32_t
-Queue::GetNBytes (void)
+Queue::GetNBytes (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC (" returns " << m_nBytes);
@@ -211,7 +209,7 @@ Queue::GetNBytes (void)
 }
 
 bool
-Queue::IsEmpty (void)
+Queue::IsEmpty (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC ("returns " << (m_nPackets == 0));
@@ -219,7 +217,7 @@ Queue::IsEmpty (void)
 }
 
 uint32_t
-Queue::GetTotalReceivedBytes (void)
+Queue::GetTotalReceivedBytes (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC("returns " << m_nTotalReceivedBytes);
@@ -227,7 +225,7 @@ Queue::GetTotalReceivedBytes (void)
 }
 
 uint32_t
-Queue::GetTotalReceivedPackets (void)
+Queue::GetTotalReceivedPackets (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC ("returns " << m_nTotalReceivedPackets);
@@ -235,7 +233,7 @@ Queue::GetTotalReceivedPackets (void)
 }
 
 uint32_t
-Queue:: GetTotalDroppedBytes (void)
+Queue:: GetTotalDroppedBytes (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC ("returns " << m_nTotalDroppedBytes);
@@ -243,7 +241,7 @@ Queue:: GetTotalDroppedBytes (void)
 }
 
 uint32_t
-Queue::GetTotalDroppedPackets (void)
+Queue::GetTotalDroppedPackets (void) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_LOGIC("returns " << m_nTotalDroppedPackets);
@@ -261,13 +259,13 @@ Queue::ResetStatistics (void)
 }
 
 void
-Queue::Drop (const Packet& p)
+Queue::Drop (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p);
+  NS_LOG_PARAMS (this << p);
 
   m_nTotalDroppedPackets++;
-  m_nTotalDroppedBytes += p.GetSize ();
+  m_nTotalDroppedBytes += p->GetSize ();
 
   NS_LOG_LOGIC ("m_traceDrop (p)");
   m_traceDrop (p);

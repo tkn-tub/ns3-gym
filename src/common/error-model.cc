@@ -62,7 +62,7 @@ ErrorModel::CreateDefault (void)
 }
 
 bool
-ErrorModel::IsCorrupt (Packet& p)
+ErrorModel::IsCorrupt (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
   bool result;
@@ -176,7 +176,7 @@ RateErrorModel::SetRandomVariable (const RandomVariable &ranvar)
 }
 
 bool 
-RateErrorModel::DoCorrupt (Packet& p) 
+RateErrorModel::DoCorrupt (Ptr<Packet> p) 
 { 
   NS_LOG_FUNCTION;
   if (!m_enable)
@@ -199,27 +199,27 @@ RateErrorModel::DoCorrupt (Packet& p)
 }
 
 bool
-RateErrorModel::DoCorruptPkt (Packet& p)
+RateErrorModel::DoCorruptPkt (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
   return (m_ranvar->GetValue () < m_rate);
 }
 
 bool
-RateErrorModel::DoCorruptByte (Packet& p)
+RateErrorModel::DoCorruptByte (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
   // compute pkt error rate, assume uniformly distributed byte error
-  double per = 1 - pow (1.0 - m_rate, p.GetSize ());
+  double per = 1 - pow (1.0 - m_rate, p->GetSize ());
   return (m_ranvar->GetValue () < per);
 }
 
 bool
-RateErrorModel::DoCorruptBit(Packet& p)
+RateErrorModel::DoCorruptBit(Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
   // compute pkt error rate, assume uniformly distributed bit error
-  double per = 1 - pow (1.0 - m_rate, (8 * p.GetSize ()) );
+  double per = 1 - pow (1.0 - m_rate, (8 * p->GetSize ()) );
   return (m_ranvar->GetValue () < per);
 }
 
@@ -270,14 +270,14 @@ ListErrorModel::SetList (const std::list<uint32_t> &packetlist)
 // converted to a dynamically-sized array of uint32_t to avoid 
 // list iteration below.
 bool 
-ListErrorModel::DoCorrupt (Packet& p) 
+ListErrorModel::DoCorrupt (Ptr<Packet> p) 
 { 
   NS_LOG_FUNCTION;
   if (!m_enable)
     {
       return false;  
     }
-  uint32_t uid = p.GetUid ();
+  uint32_t uid = p->GetUid ();
   for (PacketListCI i = m_packetList.begin (); 
     i != m_packetList.end (); i++) 
     {

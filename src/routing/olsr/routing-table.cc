@@ -106,7 +106,7 @@ RoutingTable::FindSendEntry (RoutingTableEntry const &entry,
 bool
 RoutingTable::RequestRoute (uint32_t ifIndex,
                             const Ipv4Header &ipHeader,
-                            Packet packet,
+                            Ptr<Packet> packet,
                             RouteReplyCallback routeReply)
 {
   RoutingTableEntry entry1, entry2;

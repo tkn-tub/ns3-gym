@@ -24,6 +24,7 @@
 #include "ns3/net-device.h"
 #include "ns3/node.h"
 #include "ns3/mac48-address.h"
+#include "ns3/packet.h"
 #include "ipv4-loopback-interface.h"
 #include "ipv4-l3-protocol.h"
 
@@ -44,10 +45,10 @@ Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
 }
 
 void 
-Ipv4LoopbackInterface::SendTo (Packet packet, Ipv4Address dest)
+Ipv4LoopbackInterface::SendTo (Ptr<Packet> packet, Ipv4Address dest)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &packet << dest);
+  NS_LOG_PARAMS (this << packet << dest);
 
   Ptr<Ipv4L3Protocol> ipv4 = 
     m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);

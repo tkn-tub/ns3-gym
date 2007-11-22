@@ -214,7 +214,7 @@ enum CsmaEncapsulationMode {
    * @see CsmaChannel
    * \param p a reference to the received packet
    */
-  void Receive (const Packet& p);
+  void Receive (Ptr<Packet> p);
 
   /**
    * @brief Make and return a MAC multicast address using the provided
@@ -290,7 +290,7 @@ protected:
    * \param protocolNumber In some protocols, identifies the type of
    * payload contained in this packet.
    */
-  void AddHeader (Packet& p, Mac48Address dest, 
+  void AddHeader (Ptr<Packet> p, Mac48Address dest, 
                   uint16_t protocolNumber);
   /**
    * Removes, from a packet of data, all headers and trailers that
@@ -302,7 +302,7 @@ protected:
    * \return Returns true if the packet should be forwarded up the
    * protocol stack.
    */
-  bool ProcessHeader (Packet& p, uint16_t & param);
+  bool ProcessHeader (Ptr<Packet> p, uint16_t & param);
 
 private:
   // disable copy constructor and operator =
@@ -327,7 +327,7 @@ private:
    * \param protocolNumber -- this parameter is not used here
    * \return true if success, false on failure
    */
-  virtual bool SendTo (const Packet& p, const Address& dest, uint16_t protocolNumber);
+  virtual bool SendTo (Ptr<Packet> p, const Address& dest, uint16_t protocolNumber);
 
   /**
    * Start Sending a Packet Down the Wire.
@@ -449,7 +449,7 @@ private:
    * currently transmitting) or packet that is currently being
    * transmitted.
    */
-  Packet m_currentPkt;
+  Ptr<Packet> m_currentPkt;
   /**
    * The CsmaChannel to which this CsmaNetDevice has been
    * attached.
@@ -478,8 +478,8 @@ private:
    * @see class CallBackTraceSource
    * @see class TraceResolver
    */
-  CallbackTraceSource<const Packet &> m_rxTrace;
-  CallbackTraceSource<const Packet &> m_dropTrace;
+  CallbackTraceSource<Ptr<const Packet> > m_rxTrace;
+  CallbackTraceSource<Ptr<const Packet> > m_dropTrace;
 
 };
 

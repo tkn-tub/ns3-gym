@@ -24,9 +24,10 @@
 
 #include "ns3/callback.h"
 #include <stdint.h>
-#include "packet.h"
 
 namespace ns3 {
+
+class Packet;
 
 /**
  * \brief Pcap output for Packet logger
@@ -62,7 +63,7 @@ public:
   /**
    * \param packet packet to write to output file
    */
-  void WritePacket (Packet const packet);
+  void WritePacket (Ptr<const Packet> packet);
 
 private:
   void WriteData (uint8_t const*buffer, uint32_t size);
