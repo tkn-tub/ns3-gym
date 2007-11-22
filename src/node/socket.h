@@ -121,7 +121,7 @@ public:
    * \param receivedData Invoked whenever new data is received.
    *
    */
-  void SetRecvCallback (Callback<void, Ptr<Socket>, const Packet &,const Address&> receivedData);
+  void SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> receivedData);
 
   /** 
    * \param address the address to try to allocate
@@ -174,7 +174,7 @@ public:
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  virtual int Send (const Packet &p) = 0;
+  virtual int Send (Ptr<Packet> p) = 0;
   
   /**
    * \brief Send data to a specified peer.
@@ -183,7 +183,7 @@ public:
    * \returns -1 in case of error or the number of bytes copied in the 
    *          internal buffer and accepted for transmission.
    */
-  virtual int SendTo(const Address &address,const Packet &p) = 0;
+  virtual int SendTo(const Address &address,Ptr<Packet> p) = 0;
 
 protected:
   void NotifyCloseCompleted (void);
@@ -194,7 +194,7 @@ protected:
   void NotifyNewConnectionCreated (Ptr<Socket> socket, const Address &from);
   void NotifyCloseRequested (void);
   void NotifyDataSent (uint32_t size);
-  void NotifyDataReceived (const Packet &p, const Address &from);
+  void NotifyDataReceived (Ptr<Packet> p, const Address &from);
 
   Callback<void,Ptr<Socket> >    m_closeCompleted;
   Callback<void, Ptr<Socket> >   m_connectionSucceeded;
@@ -204,7 +204,7 @@ protected:
   Callback<bool, Ptr<Socket>, const Address &>   m_connectionRequest;
   Callback<void, Ptr<Socket>, const Address&>    m_newConnectionCreated;
   Callback<void, Ptr<Socket>, uint32_t>          m_dataSent;
-  Callback<void, Ptr<Socket>, const Packet &,const Address&> m_receivedData;
+  Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> m_receivedData;
 };
 
 } //namespace ns3

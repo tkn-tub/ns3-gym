@@ -240,7 +240,8 @@ void OnOffApplication::SendPacket()
   NS_LOG_FUNCTION;
 
   NS_ASSERT (m_sendEvent.IsExpired ());
-  m_socket->Send(Packet (m_pktSize));
+  Ptr<Packet> packet = Create<Packet> (m_pktSize);
+  m_socket->Send (packet);
   m_totBytes += m_pktSize;
   m_lastStartTime = Simulator::Now();
   m_residualBits = 0;

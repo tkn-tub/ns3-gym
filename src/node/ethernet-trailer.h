@@ -23,10 +23,12 @@
 #define ETHERNET_TRAILER_H
 
 #include "ns3/trailer.h"
-#include "ns3/packet.h"
 #include <string>
 
 namespace ns3 {
+
+class Packet;
+
 /**
  * \brief Packet trailer for Ethernet
  *
@@ -55,7 +57,7 @@ public:
    * calculated. The packet should not currently contain an FCS
    * trailer.
    */
-  void CalcFcs (const Packet& p);
+  void CalcFcs (Ptr<Packet> p);
   /**
    * \brief Sets the FCS to a new value
    * \param fcs New FCS value
@@ -74,7 +76,7 @@ public:
    * If FCS checking is disabled, this method will always
    * return true.
    */
-  bool CheckFcs (const Packet& p) const;
+  bool CheckFcs (Ptr<Packet> p) const;
 
   /**
    *\return Returns the size of the trailer

@@ -92,13 +92,13 @@ PointToPointChannel::Attach(Ptr<PointToPointNetDevice> device)
 }
 
 bool
-PointToPointChannel::TransmitStart(Packet& p,
-                                        Ptr<PointToPointNetDevice> src,
-                                        const Time& txTime)
+PointToPointChannel::TransmitStart(Ptr<Packet> p,
+                                   Ptr<PointToPointNetDevice> src,
+                                   const Time& txTime)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p << src);
-  NS_LOG_LOGIC ("UID is " << p.GetUid () << ")");
+  NS_LOG_PARAMS (this << p << src);
+  NS_LOG_LOGIC ("UID is " << p->GetUid () << ")");
 
   NS_ASSERT(m_link[0].m_state != INITIALIZING);
   NS_ASSERT(m_link[1].m_state != INITIALIZING);

@@ -23,6 +23,7 @@
 #include "packet-socket-address.h"
 #include "ns3/log.h"
 #include "ns3/node.h"
+#include "ns3/packet.h"
 
 NS_LOG_COMPONENT_DEFINE ("PacketSocket");
 
@@ -203,7 +204,7 @@ PacketSocket::Connect(const Address &ad)
 }
 
 int
-PacketSocket::Send (const Packet &p)
+PacketSocket::Send (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
   if (m_state == STATE_OPEN ||
@@ -216,7 +217,7 @@ PacketSocket::Send (const Packet &p)
 }
 
 int
-PacketSocket::SendTo(const Address &address, const Packet &p)
+PacketSocket::SendTo(const Address &address, Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
   PacketSocketAddress ad;
@@ -272,7 +273,7 @@ PacketSocket::SendTo(const Address &address, const Packet &p)
     }
   if (!error)
     {
-      NotifyDataSent (p.GetSize ());
+      NotifyDataSent (p->GetSize ());
     }
 
   if (error)
@@ -288,7 +289,7 @@ PacketSocket::SendTo(const Address &address, const Packet &p)
 }
 
 void 
-PacketSocket::ForwardUp (Ptr<NetDevice> device, const Packet &packet, 
+PacketSocket::ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
                          uint16_t protocol, const Address &from)
 {
   NS_LOG_FUNCTION;
@@ -297,15 +298,13 @@ PacketSocket::ForwardUp (Ptr<NetDevice> device, const Packet &packet,
       return;
     }
 
-  Packet p = packet;
-
   PacketSocketAddress address;
   address.SetPhysicalAddress (from);
   address.SetSingleDevice (device->GetIfIndex ());
   address.SetProtocol (protocol);
 
-  NS_LOG_LOGIC ("UID is " << packet.GetUid() << " PacketSocket " << this);
-  NotifyDataReceived (p, address);
+  NS_LOG_LOGIC ("UID is " << packet->GetUid() << " PacketSocket " << this);
+  NotifyDataReceived (packet, address);
 }
 
 }//namespace ns3

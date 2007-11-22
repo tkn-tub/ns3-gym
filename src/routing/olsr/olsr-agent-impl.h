@@ -89,7 +89,7 @@ protected:
   void DoDispose ();
   Ptr<TraceResolver> GetTraceResolver (void) const;
 
-  void SendPacket (Packet packet, const MessageList &containedMessages);
+  void SendPacket (Ptr<Packet> packet, const MessageList &containedMessages);
 	
   /// Increments packet sequence number and returns the new value.
   inline uint16_t GetPacketSequenceNumber ();
@@ -97,7 +97,7 @@ protected:
   inline uint16_t GetMessageSequenceNumber ();
 	
   void RecvOlsr (Ptr<Socket> socket,
-                 const Packet &receivedPacket,
+                 Ptr<Packet> receivedPacket,
                  const Address &sourceAddress);
 
   void MprComputation ();

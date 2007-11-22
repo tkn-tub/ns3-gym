@@ -225,7 +225,7 @@ CsmaNetDevice::SetBackoffParams (Time slotTime, uint32_t minSlots,
 }
 
 void 
-CsmaNetDevice::AddHeader (Packet& p, Mac48Address dest,
+CsmaNetDevice::AddHeader (Ptr<Packet> p, Mac48Address dest,
                             uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION;
@@ -243,7 +243,7 @@ CsmaNetDevice::AddHeader (Packet& p, Mac48Address dest,
   switch (m_encapMode) 
     {
     case ETHERNET_V1:
-      lengthType = p.GetSize() + header.GetSerializedSize() + trailer.GetSerializedSize();
+      lengthType = p->GetSize() + header.GetSerializedSize() + trailer.GetSerializedSize();
       break;
     case IP_ARP:
       lengthType = protocolNumber;
@@ -251,20 +251,20 @@ CsmaNetDevice::AddHeader (Packet& p, Mac48Address dest,
     case LLC: {
       LlcSnapHeader llc;
       llc.SetType (protocolNumber);
-      p.AddHeader (llc);
+      p->AddHeader (llc);
     } break;
     case RAW:
       NS_ASSERT (false);
       break;
     }
   header.SetLengthType (lengthType);
-  p.AddHeader(header);
+  p->AddHeader(header);
   trailer.CalcFcs(p);
-  p.AddTrailer(trailer);
+  p->AddTrailer(trailer);
 }
 
 bool 
-CsmaNetDevice::ProcessHeader (Packet& p, uint16_t & param)
+CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
 {
   NS_LOG_FUNCTION;
   if (m_encapMode == RAW)
@@ -274,9 +274,9 @@ CsmaNetDevice::ProcessHeader (Packet& p, uint16_t & param)
   EthernetHeader header (false);
   EthernetTrailer trailer;
       
-  p.RemoveTrailer(trailer);
+  p->RemoveTrailer(trailer);
   trailer.CheckFcs(p);
-  p.RemoveHeader(header);
+  p->RemoveHeader(header);
 
   if ((header.GetDestination() != GetBroadcast ()) &&
       (header.GetDestination() != GetAddress ()))
@@ -292,7 +292,7 @@ CsmaNetDevice::ProcessHeader (Packet& p, uint16_t & param)
       break;
     case LLC: {
       LlcSnapHeader llc;
-      p.RemoveHeader (llc);
+      p->RemoveHeader (llc);
       param = llc.GetType ();
     } break;
     case RAW:
@@ -317,15 +317,13 @@ CsmaNetDevice::DoNeedsArp (void) const
 }
 
 bool
-CsmaNetDevice::SendTo (
-  const Packet& packet, 
-  const Address& dest, 
-  uint16_t protocolNumber)
+CsmaNetDevice::SendTo (Ptr<Packet> packet, 
+                       const Address& dest, 
+                       uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION;
-  Packet p = packet;
-  NS_LOG_LOGIC ("p=" << &p);
-  NS_LOG_LOGIC ("UID is " << p.GetUid () << ")");
+  NS_LOG_LOGIC ("p=" << packet);
+  NS_LOG_LOGIC ("UID is " << packet->GetUid () << ")");
 
   NS_ASSERT (IsLinkUp ());
 
@@ -334,10 +332,10 @@ CsmaNetDevice::SendTo (
     return false;
 
   Mac48Address destination = Mac48Address::ConvertFrom (dest);
-  AddHeader(p, destination, protocolNumber);
+  AddHeader(packet, destination, protocolNumber);
 
   // Place the packet to be sent on the send queue
-  if (m_queue->Enqueue(p) == false )
+  if (m_queue->Enqueue(packet) == false )
     {
       return false;
     }
@@ -347,7 +345,8 @@ CsmaNetDevice::SendTo (
   if (m_txMachineState == READY) 
     {
       // Store the next packet to be transmitted
-      if (m_queue->Dequeue (m_currentPkt))
+      m_currentPkt = m_queue->Dequeue ();
+      if (m_currentPkt != 0)
         {
           TransmitStart();
         }
@@ -359,8 +358,8 @@ void
 CsmaNetDevice::TransmitStart ()
 {
   NS_LOG_FUNCTION;
-  NS_LOG_LOGIC ("m_currentPkt=" << &m_currentPkt);
-  NS_LOG_LOGIC ("UID is " << m_currentPkt.GetUid ());
+  NS_LOG_LOGIC ("m_currentPkt=" << m_currentPkt);
+  NS_LOG_LOGIC ("UID is " << m_currentPkt->GetUid ());
 //
 // This function is called to start the process of transmitting a packet.
 // We need to tell the channel that we've started wiggling the wire and
@@ -399,7 +398,7 @@ CsmaNetDevice::TransmitStart ()
     {
       // Channel is free, transmit packet
       m_txMachineState = BUSY;
-      Time tEvent = Seconds (m_bps.CalculateTxTime(m_currentPkt.GetSize()));
+      Time tEvent = Seconds (m_bps.CalculateTxTime(m_currentPkt->GetSize()));
       
       NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << 
         tEvent.GetSeconds () << "sec");
@@ -426,12 +425,11 @@ void
 CsmaNetDevice::TransmitAbort (void)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt.GetUid () << ")");
+  NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt->GetUid () << ")");
 
   // Try to transmit a new packet
-  bool found;
-  found = m_queue->Dequeue (m_currentPkt);
-  NS_ASSERT_MSG(found, "IsEmpty false but no Packet on queue?");
+  m_currentPkt = m_queue->Dequeue ();
+  NS_ASSERT_MSG(m_currentPkt != 0, "IsEmpty false but no Packet on queue?");
   m_backoff.ResetBackoffTime();
   m_txMachineState = READY;
   TransmitStart ();
@@ -452,7 +450,7 @@ CsmaNetDevice::TransmitCompleteEvent (void)
   NS_ASSERT(m_channel->GetState() == TRANSMITTING);
   m_txMachineState = GAP;
 
-  NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt.GetUid () << ")");
+  NS_LOG_LOGIC ("Pkt UID is " << m_currentPkt->GetUid () << ")");
   m_channel->TransmitEnd (); 
 
   NS_LOG_LOGIC ("Schedule TransmitReadyEvent in "
@@ -482,9 +480,8 @@ CsmaNetDevice::TransmitReadyEvent (void)
     }
   else
     {
-      bool found;
-      found = m_queue->Dequeue (m_currentPkt);
-      NS_ASSERT_MSG(found, "IsEmpty false but no Packet on queue?");
+      m_currentPkt = m_queue->Dequeue ();
+      NS_ASSERT_MSG(m_currentPkt != 0, "IsEmpty false but no Packet on queue?");
       TransmitStart ();
     }
 }
@@ -497,12 +494,12 @@ CsmaNetDevice::GetTraceResolver (void) const
   resolver->AddComposite ("queue", m_queue);
   resolver->AddSource ("rx",
                        TraceDoc ("receive MAC packet",
-                                 "const Packet &", "packet received"),
+                                 "Ptr<const Packet>", "packet received"),
                        m_rxTrace,
                        CsmaTraceType (CsmaTraceType::RX));
   resolver->AddSource ("drop",
                        TraceDoc ("drop MAC packet",
-                                 "const Packet &", "packet dropped"),
+                                 "Ptr<const Packet>", "packet dropped"),
                        m_dropTrace,
                        CsmaTraceType (CsmaTraceType::DROP));
   resolver->SetParentResolver (NetDevice::GetTraceResolver ());
@@ -547,7 +544,7 @@ void CsmaNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
 }
 
 void
-CsmaNetDevice::Receive (const Packet& packet)
+CsmaNetDevice::Receive (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION;
 
@@ -556,26 +553,25 @@ CsmaNetDevice::Receive (const Packet& packet)
   Mac48Address broadcast;
   Mac48Address multicast;
   Mac48Address destination;
-  Packet p = packet;
 
-  NS_LOG_LOGIC ("UID is " << p.GetUid());
+  NS_LOG_LOGIC ("UID is " << packet->GetUid());
 
   // Only receive if send side of net device is enabled
   if (!IsReceiveEnabled())
     {
-      m_dropTrace (p);
+      m_dropTrace (packet);
       return;
     }
 
   if (m_encapMode == RAW)
     {
       ForwardUp (packet, 0, GetBroadcast ());
-      m_dropTrace (p);
+      m_dropTrace (packet);
       return;
     }
-  p.RemoveTrailer(trailer);
-  trailer.CheckFcs(p);
-  p.RemoveHeader(header);
+  packet->RemoveTrailer(trailer);
+  trailer.CheckFcs(packet);
+  packet->RemoveHeader(header);
 
   NS_LOG_LOGIC ("Pkt destination is " << header.GetDestination ());
 //
@@ -604,11 +600,11 @@ CsmaNetDevice::Receive (const Packet& packet)
       (header.GetDestination () != destination))
     {
       NS_LOG_LOGIC ("Dropping pkt ");
-      m_dropTrace (p);
+      m_dropTrace (packet);
       return;
     }
 
-  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (p) )
+  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) )
     {
       NS_LOG_LOGIC ("Dropping pkt due to error model ");
       m_dropTrace (packet);
@@ -616,7 +612,7 @@ CsmaNetDevice::Receive (const Packet& packet)
     }
   else
     {
-      m_rxTrace (p);
+      m_rxTrace (packet);
 //
 // protocol must be initialized to avoid a compiler warning in the RAW
 // case that breaks the optimized build.
@@ -632,7 +628,7 @@ CsmaNetDevice::Receive (const Packet& packet)
         case LLC: 
           {
             LlcSnapHeader llc;
-            p.RemoveHeader (llc);
+            packet->RemoveHeader (llc);
             protocol = llc.GetType ();
           } 
           break;
@@ -640,8 +636,7 @@ CsmaNetDevice::Receive (const Packet& packet)
           NS_ASSERT (false);
           break;
         }
-      ForwardUp (p, protocol, header.GetSource ());
-      return;
+      ForwardUp (packet, protocol, header.GetSource ());
     }
 }
 

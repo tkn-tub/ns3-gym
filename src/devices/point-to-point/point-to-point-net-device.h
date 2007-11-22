@@ -166,7 +166,7 @@ public:
    * @see PointToPointChannel
    * @param p a reference to the received packet
    */
-  void Receive (Packet& p);
+  void Receive (Ptr<Packet> p);
 
 private:
   /**
@@ -215,14 +215,14 @@ private:
    * Adds the necessary headers and trailers to a packet of data in order to
    * respect the protocol implemented by the agent.
    */
-  void AddHeader(Packet& p, uint16_t protocolNumber);
+  void AddHeader(Ptr<Packet> p, uint16_t protocolNumber);
   /**
    * Removes, from a packet of data, all headers and trailers that
    * relate to the protocol implemented by the agent
    * \return Returns true if the packet should be forwarded up the
    * protocol stack.
    */
-  bool ProcessHeader(Packet& p, uint16_t& param);
+  bool ProcessHeader(Ptr<Packet> p, uint16_t& param);
   /**
    * Send a Packet Down the Wire.
    *
@@ -236,7 +236,7 @@ private:
    * @param protocolNumber Protocol Number used to find protocol touse
    * @returns true if success, false on failure
    */
-  virtual bool SendTo (const Packet& p, const Address& dest, 
+  virtual bool SendTo (Ptr<Packet> p, const Address& dest, 
                        uint16_t protocolNumber);
   /**
    * Start Sending a Packet Down the Wire.
@@ -253,7 +253,7 @@ private:
    * @param p a reference to the packet to send
    * @returns true if success, false on failure
    */
-  bool TransmitStart (Packet &p);
+  bool TransmitStart (Ptr<Packet> p);
   /**
    * Stop Sending a Packet Down the Wire and Begin the Interframe Gap.
    *
@@ -309,7 +309,7 @@ private:
    * @see class CallBackTraceSource
    * @see class TraceResolver
    */
-  CallbackTraceSource<const Packet &> m_rxTrace;
+  CallbackTraceSource<Ptr<const Packet> > m_rxTrace;
   /**
    * The trace source for the packet drop events that the device can
    * fire.
@@ -317,7 +317,7 @@ private:
    * @see class CallBackTraceSource
    * @see class TraceResolver
    */
-  CallbackTraceSource<const Packet &> m_dropTrace;
+  CallbackTraceSource<Ptr<const Packet> > m_dropTrace;
   /** 
    * Default data rate.  Used for all newly created p2p net devices
    */

@@ -25,7 +25,6 @@
 #include <string>
 #include <stdint.h>
 #include "ns3/callback.h"
-#include "ns3/packet.h"
 #include "ns3/object.h"
 #include "ns3/ptr.h"
 #include "address.h"
@@ -37,6 +36,7 @@ class Node;
 class TraceResolver;
 class TraceContext;
 class Channel;
+class Packet;
 
 /**
  * \brief Network layer to device interface
@@ -210,7 +210,7 @@ public:
    * 
    * \return whether the Send operation succeeded 
    */
-  bool Send(const Packet& p, const Address& dest, uint16_t protocolNumber);
+  bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
   /**
    * \returns the node base class which contains this network
    *          interface.
@@ -239,7 +239,7 @@ public:
    * \returns true if the callback could handle the packet successfully, false
    *          otherwise.
    */
-  typedef Callback<bool,Ptr<NetDevice>,const Packet &,uint16_t,const Address &> ReceiveCallback;
+  typedef Callback<bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &> ReceiveCallback;
 
   /**
    * \param cb callback to invoke whenever a packet has been received and must
@@ -304,7 +304,7 @@ public:
    * forwards it to the higher layers by calling this method
    * which is responsible for passing it up to the Rx callback.
    */
-  bool ForwardUp (const Packet& p, uint16_t param, const Address &address);
+  bool ForwardUp (Ptr<Packet> p, uint16_t param, const Address &address);
 
 
   /**
@@ -327,7 +327,7 @@ public:
    * method.  When the link is Up, this method is invoked to ask 
    * subclasses to forward packets. Subclasses MUST override this method.
    */
-  virtual bool SendTo (const Packet& p, const Address &dest, uint16_t protocolNumber) = 0;
+  virtual bool SendTo (Ptr<Packet> p, const Address &dest, uint16_t protocolNumber) = 0;
   /**
    * \returns true if this NetDevice needs the higher-layers
    *          to perform ARP over it, false otherwise.

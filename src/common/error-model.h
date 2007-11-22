@@ -52,7 +52,7 @@ class RandomVariable;
  * rem->SetRandomVariable (UniformVariable ());
  * rem->SetRate (0.001);
  * ...
- * Packet p;
+ * Ptr<Packet> p;
  * if (rem->IsCorrupt (p))
  *   {
  *     dropTrace(p);
@@ -82,7 +82,7 @@ public:
   * \returns true if the Packet is to be considered as errored/corrupted
   * \param pkt Packet to apply error model to
   */
-  bool IsCorrupt (Packet& pkt);
+  bool IsCorrupt (Ptr<Packet> pkt);
  /**
   * Reset any state associated with the error model
   */
@@ -107,7 +107,7 @@ private:
   /*
    * These methods must be implemented by subclasses
    */
-  virtual bool DoCorrupt (Packet&) = 0;
+  virtual bool DoCorrupt (Ptr<Packet>) = 0;
   virtual void DoReset (void) = 0;
 
 };
@@ -167,10 +167,10 @@ public:
   void SetRandomVariable (const RandomVariable &ranvar);
 
 private:
-  virtual bool DoCorrupt (Packet& p);
-  virtual bool DoCorruptPkt (Packet& p);
-  virtual bool DoCorruptByte (Packet& p);
-  virtual bool DoCorruptBit (Packet& p);
+  virtual bool DoCorrupt (Ptr<Packet> p);
+  virtual bool DoCorruptPkt (Ptr<Packet> p);
+  virtual bool DoCorruptByte (Ptr<Packet> p);
+  virtual bool DoCorruptBit (Ptr<Packet> p);
   virtual void DoReset (void);
 
   enum ErrorUnit m_unit;
@@ -221,7 +221,7 @@ public:
   void SetList (const std::list<uint32_t> &packetlist);
 
 private:
-  virtual bool DoCorrupt (Packet& p);
+  virtual bool DoCorrupt (Ptr<Packet> p);
   virtual void DoReset (void);
 
   typedef std::list<uint32_t> PacketList;

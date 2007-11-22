@@ -23,6 +23,7 @@
 
 #include <string>
 #include <fstream>
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -37,10 +38,10 @@ public:
   void TraceAllQueues (void);
   void TraceAllNetDeviceRx (void);
 private:
-  void LogDevQueueEnqueue (TraceContext const &context, const Packet &p);
-  void LogDevQueueDequeue (TraceContext const &context, const Packet &p);
-  void LogDevQueueDrop (TraceContext const &context, const Packet &p);
-  void LogDevRx (TraceContext const &context, const Packet &p);
+  void LogDevQueueEnqueue (TraceContext const &context, Ptr<const Packet> p);
+  void LogDevQueueDequeue (TraceContext const &context, Ptr<const Packet> p);
+  void LogDevQueueDrop (TraceContext const &context, Ptr<const Packet> p);
+  void LogDevRx (TraceContext const &context, Ptr<const Packet> p);
   std::ofstream m_os;
 };
 

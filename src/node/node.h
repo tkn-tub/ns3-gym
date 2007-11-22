@@ -26,6 +26,7 @@
 #include "ns3/object.h"
 #include "ns3/callback.h"
 #include "ns3/trace-context-element.h"
+#include "ns3/ptr.h"
 
 namespace ns3 {
 
@@ -154,7 +155,7 @@ public:
   /**
    * A protocol handler
    */
-  typedef Callback<void,Ptr<NetDevice>, const Packet &,uint16_t,const Address &> ProtocolHandler;
+  typedef Callback<void,Ptr<NetDevice>, Ptr<Packet>,uint16_t,const Address &> ProtocolHandler;
   /**
    * \param handler the handler to register
    * \param protocolType the type of protocol this handler is 
@@ -198,7 +199,7 @@ private:
    */
   virtual void NotifyDeviceAdded (Ptr<NetDevice> device);
 
-  bool ReceiveFromDevice (Ptr<NetDevice> device, const Packet &packet, 
+  bool ReceiveFromDevice (Ptr<NetDevice> device, Ptr<Packet>, 
                           uint16_t protocol, const Address &from);
   void Construct (void);
 

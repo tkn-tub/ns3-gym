@@ -121,20 +121,20 @@ PointToPointNetDevice::~PointToPointNetDevice()
 }
 
 void 
-PointToPointNetDevice::AddHeader(Packet& p, uint16_t protocolNumber)
+PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION;
   LlcSnapHeader llc;
   llc.SetType (protocolNumber);
-  p.AddHeader (llc);
+  p->AddHeader (llc);
 }
 
 bool 
-PointToPointNetDevice::ProcessHeader(Packet& p, uint16_t& param)
+PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
 {
   NS_LOG_FUNCTION;
   LlcSnapHeader llc;
-  p.RemoveHeader (llc);
+  p->RemoveHeader (llc);
 
   param = llc.GetType ();
 
@@ -163,19 +163,18 @@ void PointToPointNetDevice::SetInterframeGap(const Time& t)
   m_tInterframeGap = t;
 }
 
-bool PointToPointNetDevice::SendTo (const Packet& packet, const Address& dest, 
+bool PointToPointNetDevice::SendTo (Ptr<Packet> packet, const Address& dest, 
                                     uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION;
-  Packet p = packet;
-  NS_LOG_LOGIC ("p=" << &p << ", dest=" << &dest);
-  NS_LOG_LOGIC ("UID is " << p.GetUid ());
+  NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
+  NS_LOG_LOGIC ("UID is " << packet->GetUid ());
 
   // GFR Comment. Why is this an assertion? Can't a link legitimately
   // "go down" during the simulation?  Shouldn't we just wait for it
   // to come back up?
   NS_ASSERT (IsLinkUp ());
-  AddHeader(p, protocolNumber);
+  AddHeader(packet, protocolNumber);
 
 //
 // This class simulates a point to point device.  In the case of a serial
@@ -187,22 +186,22 @@ bool PointToPointNetDevice::SendTo (const Packet& packet, const Address& dest,
   if (m_txMachineState == READY) 
     {
 // We still enqueue and dequeue it to hit the tracing hooks
-      m_queue->Enqueue (p);
-      m_queue->Dequeue (p);
-      return TransmitStart (p);
+      m_queue->Enqueue (packet);
+      packet = m_queue->Dequeue ();
+      return TransmitStart (packet);
     }
   else
     {
-      return m_queue->Enqueue(p);
+      return m_queue->Enqueue(packet);
     }
 }
 
   bool
-PointToPointNetDevice::TransmitStart (Packet &p)
+PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p);
-  NS_LOG_LOGIC ("UID is " << p.GetUid () << ")");
+  NS_LOG_PARAMS (this << p);
+  NS_LOG_LOGIC ("UID is " << p->GetUid () << ")");
 //
 // This function is called to start the process of transmitting a packet.
 // We need to tell the channel that we've started wiggling the wire and
@@ -210,7 +209,7 @@ PointToPointNetDevice::TransmitStart (Packet &p)
 //
   NS_ASSERT_MSG(m_txMachineState == READY, "Must be READY to transmit");
   m_txMachineState = BUSY;
-  Time txTime = Seconds (m_bps.CalculateTxTime(p.GetSize()));
+  Time txTime = Seconds (m_bps.CalculateTxTime(p->GetSize()));
   Time txCompleteTime = txTime + m_tInterframeGap;
 
   NS_LOG_LOGIC ("Schedule TransmitCompleteEvent in " << 
@@ -233,8 +232,11 @@ void PointToPointNetDevice::TransmitComplete (void)
 //
   NS_ASSERT_MSG(m_txMachineState == BUSY, "Must be BUSY if transmitting");
   m_txMachineState = READY;
-  Packet p;
-  if (!m_queue->Dequeue(p)) return; // Nothing to do at this point
+  Ptr<Packet> p = m_queue->Dequeue ();
+  if (p == 0)
+    {
+      return; // Nothing to do at this point
+    }
   TransmitStart(p);
 }
 
@@ -246,7 +248,7 @@ PointToPointNetDevice::GetTraceResolver (void) const
   resolver->AddComposite ("queue", m_queue);
   resolver->AddSource ("rx",
                        TraceDoc ("receive MAC packet",
-                                 "const Packet &", "packet received"),
+                                 "Ptr<const Packet>", "packet received"),
                        m_rxTrace,
                        PointToPointTraceType (PointToPointTraceType::RX));
   resolver->AddSource ("drop",
@@ -303,14 +305,13 @@ void PointToPointNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
   AddInterface (em);
 }
 
-void PointToPointNetDevice::Receive (Packet& p)
+void PointToPointNetDevice::Receive (Ptr<Packet> packet)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &p);
+  NS_LOG_PARAMS (this << packet);
   uint16_t protocol = 0;
-  Packet packet = p;
 
-  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (p) ) 
+  if (m_receiveErrorModel && m_receiveErrorModel->IsCorrupt (packet) ) 
     {
       m_dropTrace (packet);
       // Do not forward up; let this packet go

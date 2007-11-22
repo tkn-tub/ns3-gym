@@ -99,8 +99,7 @@ UdpEchoClient::StartApplication (void)
       m_socket->Connect (m_peer);
     }
 
-  m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
-    const Address &>) MakeCallback(&UdpEchoClient::Receive, this));
+  m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::Receive, this));
 
   ScheduleTransmit (Seconds(0.));
 }
@@ -112,8 +111,8 @@ UdpEchoClient::StopApplication ()
 
   if (!m_socket) 
     {
-      m_socket->SetRecvCallback((Callback<void, Ptr<Socket>, const Packet &,
-        const Address &>) NULL);
+      m_socket->SetRecvCallback(MakeNullCallback<void, Ptr<Socket>, Ptr<Packet>,
+                                const Address &> ());
     }
 
   Simulator::Cancel(m_sendEvent);
@@ -133,7 +132,7 @@ UdpEchoClient::Send (void)
 
   NS_ASSERT (m_sendEvent.IsExpired ());
 
-  Packet p (m_size);
+  Ptr<Packet> p = Create<Packet> (m_size);
   m_socket->Send (p);
   ++m_sent;
 
@@ -148,7 +147,7 @@ UdpEchoClient::Send (void)
 void
 UdpEchoClient::Receive(
   Ptr<Socket> socket, 
-  const Packet &packet,
+  Ptr<Packet> packet,
   const Address &from) 
 {
   NS_LOG_FUNCTION;
@@ -157,7 +156,7 @@ UdpEchoClient::Receive(
   if (InetSocketAddress::IsMatchingType (from))
     {
       InetSocketAddress address = InetSocketAddress::ConvertFrom (from);
-      NS_LOG_INFO ("Received " << packet.GetSize() << " bytes from " << 
+      NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
         address.GetIpv4());
     }
 }

@@ -115,12 +115,12 @@ benchPtrA (uint32_t n)
   BenchHeader<8> udp;
 
   for (uint32_t i = 0; i < n; i++) {
-      Packet p (2000);
-      p.AddHeader (udp);
-      p.AddHeader (ipv4);
-      Packet o = p;
-      o.RemoveHeader (ipv4);
-      o.RemoveHeader (udp);
+    Ptr<Packet> p = Create<Packet> (2000);
+    p->AddHeader (udp);
+    p->AddHeader (ipv4);
+    Ptr<Packet> o = p->Copy ();
+    o->RemoveHeader (ipv4);
+    o->RemoveHeader (udp);
   }
 }
 
@@ -131,25 +131,25 @@ benchPtrB (uint32_t n)
   BenchHeader<8> udp;
 
   for (uint32_t i = 0; i < n; i++) {
-      Packet p (2000);
-      p.AddHeader (udp);
-      p.AddHeader (ipv4);
+    Ptr<Packet> p = Create<Packet> (2000);
+    p->AddHeader (udp);
+    p->AddHeader (ipv4);
   }
 }
 
 static void
-ptrC2 (Packet p)
+ptrC2 (Ptr<Packet> p)
 {
   BenchHeader<8> udp;
 
-  p.RemoveHeader (udp);
+  p->RemoveHeader (udp);
 }
 
 static void 
-ptrC1 (Packet p)
+ptrC1 (Ptr<Packet> p)
 {
   BenchHeader<25> ipv4;
-  p.RemoveHeader (ipv4);
+  p->RemoveHeader (ipv4);
   ptrC2 (p);
 }
 
@@ -160,10 +160,10 @@ benchPtrC (uint32_t n)
   BenchHeader<8> udp;
 
   for (uint32_t i = 0; i < n; i++) {
-      Packet p (2000);
-      p.AddHeader (udp);
-      p.AddHeader (ipv4);
-      ptrC1 (p);
+    Ptr<Packet> p = Create<Packet> (2000);
+    p->AddHeader (udp);
+    p->AddHeader (ipv4);
+    ptrC1 (p);
   }
 }
 
@@ -174,13 +174,13 @@ benchPrint (uint32_t n)
   PacketPrinter printer;
   BenchHeader<25> ipv4;
   BenchHeader<8> udp;
-  Packet p (2000);
-  p.AddHeader (udp);
-  p.AddHeader (ipv4);
+  Ptr<Packet> p = Create<Packet> (2000);
+  p->AddHeader (udp);
+  p->AddHeader (ipv4);
 
   for (uint32_t i = 0; i < n; i++) 
     {
-      p.Print (std::cerr, printer);
+      p->Print (std::cerr, printer);
     }  
 }
 #endif
