@@ -379,10 +379,10 @@ MacHighNqsta::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
               for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
                 {
                   WifiMode mode = m_phy->GetMode (i);
-                  if (rates.IsSupportedRate (mode.GetPhyRate ()))
+                  if (rates.IsSupportedRate (mode.GetDataRate ()))
                     {
                       ap->AddSupportedMode (mode);
-                      if (rates.IsBasicRate (mode.GetPhyRate ()))
+                      if (rates.IsBasicRate (mode.GetDataRate ()))
                         {
                           m_stations->AddBasicMode (mode);
                         }
@@ -406,7 +406,7 @@ MacHighNqsta::GetSupportedRates (void) const
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      rates.AddSupportedRate (mode.GetPhyRate ());
+      rates.AddSupportedRate (mode.GetDataRate ());
     }
   return rates;
 }

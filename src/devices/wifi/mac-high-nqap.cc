@@ -116,13 +116,13 @@ MacHighNqap::GetSupportedRates (void) const
   for (uint32_t i = 0; i < m_phy->GetNModes (); i++)
     {
       WifiMode mode = m_phy->GetMode (i);
-      rates.AddSupportedRate (mode.GetPhyRate ());
+      rates.AddSupportedRate (mode.GetDataRate ());
     }
   // set the basic rates
   for (uint32_t j = 0; j < m_stations->GetNBasicModes (); j++)
     {
       WifiMode mode = m_stations->GetBasicMode (j);
-      rates.SetBasicRate (mode.GetPhyRate ());
+      rates.SetBasicRate (mode.GetDataRate ());
     }
   return rates;
 }
@@ -273,7 +273,7 @@ MacHighNqap::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
               for (uint32_t i = 0; i < m_stations->GetNBasicModes (); i++)
                 {
                   WifiMode mode = m_stations->GetBasicMode (i);
-                  if (!rates.IsSupportedRate (mode.GetPhyRate ()))
+                  if (!rates.IsSupportedRate (mode.GetDataRate ()))
                     {
                       problem = true;
                       break;
@@ -293,7 +293,7 @@ MacHighNqap::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
                   for (uint32_t j = 0; j < m_phy->GetNModes (); j++)
                     {
                       WifiMode mode = m_phy->GetMode (j);
-                      if (rates.IsSupportedRate (mode.GetPhyRate ()))
+                      if (rates.IsSupportedRate (mode.GetDataRate ()))
                         {
                           station->AddSupportedMode (mode);
                         }

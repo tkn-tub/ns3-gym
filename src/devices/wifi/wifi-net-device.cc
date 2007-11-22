@@ -95,7 +95,7 @@ GetWifiModeForPhyMode (Ptr<WifiPhy> phy, enum WifiDefaultParameters::PhyModePara
   for (uint32_t i= 0; i < phy->GetNModes (); i++)
     {
       WifiMode mode = phy->GetMode (i);
-      if (mode.GetPhyRate () == phyRate)
+      if (mode.GetDataRate () == phyRate)
         {
           return mode;
         }
