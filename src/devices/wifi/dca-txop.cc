@@ -326,6 +326,7 @@ DcaTxop::NotifyAccessGranted (void)
       m_currentHdr.SetSequenceNumber (sequence);
       m_currentHdr.SetFragmentNumber (0);
       m_currentHdr.SetNoMoreFragments ();
+      m_currentHdr.SetNoRetry ();
       m_ssrc = 0;
       m_slrc = 0;
       m_fragmentNumber = 0;
