@@ -909,7 +909,7 @@ MacLow::SendDataPacket (void)
   StartDataTxTimers ();
 
   WifiMode dataTxMode = GetDataTxMode (m_currentHdr.GetAddr1 (), GetCurrentSize ());
-  Time duration = Seconds (0);
+  Time duration = Seconds (0.0);
   if (m_txParams.HasDurationId ()) 
     {
       duration += m_txParams.GetDurationId ();
