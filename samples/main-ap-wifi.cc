@@ -39,7 +39,7 @@
 using namespace ns3;
 
 void
-WifiNetDeviceTrace (const TraceContext &context, Packet p, Mac48Address address)
+WifiNetDeviceTrace (const TraceContext &context, Ptr<const Packet> p, Mac48Address address)
 {
   std::cout << context << " ad=" << address << " p: " << p << std::endl;
 }

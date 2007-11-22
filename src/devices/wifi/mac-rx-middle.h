@@ -35,19 +35,19 @@ class OriginatorRxStatus;
 class MacRxMiddle
 {
 public:
-  typedef Callback<void, Packet , WifiMacHeader const *> ForwardUpCallback;
+  typedef Callback<void, Ptr<Packet> , WifiMacHeader const *> ForwardUpCallback;
 
   MacRxMiddle ();
   ~MacRxMiddle ();
 
   void SetForwardCallback (ForwardUpCallback callback);
 
-  void Receive (Packet packet, WifiMacHeader const *hdr);
+  void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
 private:
   OriginatorRxStatus *Lookup (WifiMacHeader const*hdr);
   bool IsDuplicate (WifiMacHeader const *hdr, OriginatorRxStatus *originator) const;
-  Packet HandleFragments (Packet packet, WifiMacHeader const*hdr,
-                          OriginatorRxStatus *originator, bool *complete);
+  Ptr<Packet> HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
+                               OriginatorRxStatus *originator);
   bool SequenceControlSmaller (int seqa, int seqb);
 
   typedef std::map <Mac48Address, OriginatorRxStatus *, std::less<Mac48Address> > Originators;

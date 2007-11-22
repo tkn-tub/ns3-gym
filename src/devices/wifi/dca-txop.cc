@@ -96,7 +96,7 @@ private:
 
 DcaTxop::DcaTxop (uint32_t minCw, uint32_t maxCw, uint32_t aifsn, DcfManager *manager)
   : m_manager (manager),
-    m_hasCurrent (false),
+    m_currentPacket (0),
     m_ssrc (0),
     m_slrc (0)
 
@@ -158,7 +158,7 @@ DcaTxop::SetMaxQueueDelay (Time delay)
 }
 
 void 
-DcaTxop::Queue (Packet packet, WifiMacHeader const &hdr)
+DcaTxop::Queue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
 {
   m_queue->Enqueue (packet, hdr);
   StartAccessIfNeeded ();
@@ -167,7 +167,7 @@ DcaTxop::Queue (Packet packet, WifiMacHeader const &hdr)
 void
 DcaTxop::RestartAccessIfNeeded (void)
 {
-  if ((m_hasCurrent ||
+  if ((m_currentPacket != 0 ||
        !m_queue->IsEmpty ()) &&
       !m_dcf->IsAccessRequested ())
     {
@@ -178,7 +178,7 @@ DcaTxop::RestartAccessIfNeeded (void)
 void
 DcaTxop::StartAccessIfNeeded (void)
 {
-  if (!m_hasCurrent &&
+  if (m_currentPacket == 0 &&
       !m_queue->IsEmpty () &&
       !m_dcf->IsAccessRequested ())
     {
@@ -203,7 +203,7 @@ DcaTxop::Parameters (void)
 bool
 DcaTxop::NeedRts (void)
 {
-  if (m_currentPacket.GetSize () > Parameters ()->GetRtsCtsThreshold ()) 
+  if (m_currentPacket->GetSize () > Parameters ()->GetRtsCtsThreshold ()) 
     {
       return true;
     } 
@@ -216,7 +216,7 @@ DcaTxop::NeedRts (void)
 bool
 DcaTxop::NeedFragmentation (void)
 {
-  if (m_currentPacket.GetSize () > Parameters ()->GetFragmentationThreshold ()) 
+  if (m_currentPacket->GetSize () > Parameters ()->GetFragmentationThreshold ()) 
     {
       return true;
     } 
@@ -229,7 +229,7 @@ DcaTxop::NeedFragmentation (void)
 uint32_t
 DcaTxop::GetNFragments (void)
 {
-  uint32_t nFragments = m_currentPacket.GetSize () / Parameters ()->GetFragmentationThreshold () + 1;
+  uint32_t nFragments = m_currentPacket->GetSize () / Parameters ()->GetFragmentationThreshold () + 1;
   return nFragments;
 }
 void
@@ -241,7 +241,7 @@ DcaTxop::NextFragment (void)
 uint32_t
 DcaTxop::GetLastFragmentSize (void)
 {
-  uint32_t lastFragmentSize = m_currentPacket.GetSize () %
+  uint32_t lastFragmentSize = m_currentPacket->GetSize () %
     Parameters ()->GetFragmentationThreshold ();
   return lastFragmentSize;
 }
@@ -283,23 +283,23 @@ DcaTxop::GetNextFragmentSize (void)
     }
 }
 
-Packet 
+Ptr<Packet>
 DcaTxop::GetFragmentPacket (WifiMacHeader *hdr)
 {
   *hdr = m_currentHdr;
   hdr->SetFragmentNumber (m_fragmentNumber);
   uint32_t startOffset = m_fragmentNumber * GetFragmentSize ();
-  Packet fragment;
+  Ptr<Packet> fragment;
   if (IsLastFragment ()) 
     {
       hdr->SetNoMoreFragments ();
-      fragment = m_currentPacket.CreateFragment (startOffset, 
+      fragment = m_currentPacket->CreateFragment (startOffset, 
                                                  GetLastFragmentSize ());
     } 
   else 
     {
       hdr->SetMoreFragments ();
-      fragment = m_currentPacket.CreateFragment (startOffset, 
+      fragment = m_currentPacket->CreateFragment (startOffset, 
                                                  GetFragmentSize ());
     }
   return fragment;
@@ -308,23 +308,20 @@ DcaTxop::GetFragmentPacket (WifiMacHeader *hdr)
 bool 
 DcaTxop::NeedsAccess (void) const
 {
-  return !m_queue->IsEmpty () || m_hasCurrent;
+  return !m_queue->IsEmpty () || m_currentPacket != 0;
 }
 void 
 DcaTxop::NotifyAccessGranted (void)
 {
-  if (!m_hasCurrent) 
+  if (m_currentPacket == 0) 
     {
       if (m_queue->IsEmpty ()) 
         {
           MY_DEBUG ("queue empty");
           return;
         }
-      bool found;
-      m_currentPacket = m_queue->Dequeue (&m_currentHdr, &found);
-      NS_ASSERT (found);
-      m_hasCurrent = true;
-      NS_ASSERT (m_hasCurrent);
+      m_currentPacket = m_queue->Dequeue (&m_currentHdr);
+      NS_ASSERT (m_currentPacket != 0);
       uint16_t sequence = m_txMiddle->GetNextSequenceNumberfor (&m_currentHdr);
       m_currentHdr.SetSequenceNumber (sequence);
       m_currentHdr.SetFragmentNumber (0);
@@ -332,7 +329,7 @@ DcaTxop::NotifyAccessGranted (void)
       m_ssrc = 0;
       m_slrc = 0;
       m_fragmentNumber = 0;
-      MY_DEBUG ("dequeued size="<<m_currentPacket.GetSize ()<<
+      MY_DEBUG ("dequeued size="<<m_currentPacket->GetSize ()<<
                     ", to="<<m_currentHdr.GetAddr1 ()<<
                     ", seq="<<m_currentHdr.GetSequenceControl ()); 
     }
@@ -347,7 +344,7 @@ DcaTxop::NotifyAccessGranted (void)
                                  &m_currentHdr,
                                  params,
                                  m_transmissionListener);
-      m_hasCurrent = false;
+      m_currentPacket = 0;
       m_dcf->ResetCw ();
       m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
       MY_DEBUG ("tx broadcast");
@@ -360,15 +357,15 @@ DcaTxop::NotifyAccessGranted (void)
         {
           params.DisableRts ();
           WifiMacHeader hdr;
-          Packet fragment = GetFragmentPacket (&hdr);
+          Ptr<Packet> fragment = GetFragmentPacket (&hdr);
           if (IsLastFragment ()) 
             {
-              MY_DEBUG ("fragmenting last fragment size="<<fragment.GetSize ());
+              MY_DEBUG ("fragmenting last fragment size="<<fragment->GetSize ());
               params.DisableNextData ();
             } 
           else 
             {
-              MY_DEBUG ("fragmenting size="<<fragment.GetSize ());
+              MY_DEBUG ("fragmenting size="<<fragment->GetSize ());
               params.EnableNextData (GetNextFragmentSize ());
             }
           Low ()->StartTransmission (fragment, &hdr, params, 
@@ -387,14 +384,7 @@ DcaTxop::NotifyAccessGranted (void)
               MY_DEBUG ("tx unicast");
             }
           params.DisableNextData ();
-          // We need to make a copy in case we need to 
-          // retransmit the packet: the MacLow modifies the input
-          // Packet so, we would retransmit a modified packet
-          // if we were not to make a copy.
-          // XXX the comment above and the code below do not
-          // make sense anymore. So, we should remove both.
-          Packet copy = m_currentPacket;
-          Low ()->StartTransmission (copy, &m_currentHdr,
+          Low ()->StartTransmission (m_currentPacket, &m_currentHdr,
                                      params, m_transmissionListener);
         }
     }
@@ -428,7 +418,7 @@ DcaTxop::MissedCts (void)
   if (m_ssrc > Parameters ()->GetMaxSsrc ()) 
     {
       // to reset the dcf.
-      m_hasCurrent = false;
+      m_currentPacket = 0;
       m_dcf->ResetCw ();
     } 
   else 
@@ -454,14 +444,14 @@ DcaTxop::GotAck (double snr, WifiMode txMode)
       /* we are not fragmenting or we are done fragmenting
        * so we can get rid of that packet now.
        */
-      m_hasCurrent = false;
+      m_currentPacket = 0;
       m_dcf->ResetCw ();
       m_dcf->StartBackoffNow (m_rng->GetNext (0, m_dcf->GetCw ()));
       RestartAccessIfNeeded ();
     } 
   else 
     {
-      MY_DEBUG ("got ack. tx not done, size="<<m_currentPacket.GetSize ());
+      MY_DEBUG ("got ack. tx not done, size="<<m_currentPacket->GetSize ());
     }
 }
 void 
@@ -473,7 +463,7 @@ DcaTxop::MissedAck (void)
   if (m_slrc > Parameters ()->GetMaxSlrc ()) 
     {
       // to reset the dcf.    
-      m_hasCurrent = false;
+      m_currentPacket = 0;
       m_dcf->ResetCw ();
     } 
   else 
@@ -495,7 +485,7 @@ DcaTxop::StartNext (void)
   /* this callback is used only for fragments. */
   NextFragment ();
   WifiMacHeader hdr;
-  Packet fragment = GetFragmentPacket (&hdr);
+  Ptr<Packet> fragment = GetFragmentPacket (&hdr);
   MacLowTransmissionParameters params;
   params.EnableAck ();
   params.DisableRts ();

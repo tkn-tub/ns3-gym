@@ -161,11 +161,11 @@ MacHighNqsta::SendProbeRequest (void)
   hdr.SetAddr3 (GetBroadcastBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  Packet packet;
+  Ptr<Packet> packet = Create<Packet> ();
   MgtProbeRequestHeader probe;
   probe.SetSsid (m_device->GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
-  packet.AddHeader (probe);
+  packet->AddHeader (probe);
   
   m_dca->Queue (packet, hdr);
 
@@ -184,11 +184,11 @@ MacHighNqsta::SendAssociationRequest (void)
   hdr.SetAddr3 (GetBssid ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  Packet packet;
+  Ptr<Packet> packet = Create<Packet> ();
   MgtAssocRequestHeader assoc;
   assoc.SetSsid (m_device->GetSsid ());
   assoc.SetSupportedRates (GetSupportedRates ());
-  packet.AddHeader (assoc);
+  packet->AddHeader (assoc);
   
   m_dca->Queue (packet, hdr);
 
@@ -278,14 +278,14 @@ MacHighNqsta::IsAssociated (void)
 }
 
 void 
-MacHighNqsta::Queue (Packet packet, Mac48Address to)
+MacHighNqsta::Queue (Ptr<const Packet> packet, Mac48Address to)
 {
   if (!IsAssociated ()) 
     {
       TryToEnsureAssociated ();
       return;
     }
-  //TRACE ("enqueue size="<<packet.GetSize ()<<", to="<<to);
+  //TRACE ("enqueue size="<<packet->GetSize ()<<", to="<<to);
   WifiMacHeader hdr;
   hdr.SetTypeData ();
   hdr.SetAddr1 (GetBssid ());
@@ -297,7 +297,7 @@ MacHighNqsta::Queue (Packet packet, Mac48Address to)
 }
 
 void 
-MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
+MacHighNqsta::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   NS_ASSERT (!hdr->IsCtl ());
   if (hdr->GetAddr1 () != m_device->GetSelfAddress () &&
@@ -319,7 +319,7 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
   else if (hdr->IsBeacon ()) 
     {
       MgtBeaconHeader beacon;
-      packet.RemoveHeader (beacon);
+      packet->RemoveHeader (beacon);
       bool goodBeacon = false;
       if (m_device->GetSsid ().IsBroadcast () ||
           beacon.GetSsid ().IsEqual (m_device->GetSsid ()))
@@ -343,7 +343,7 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
       if (m_state == WAIT_PROBE_RESP) 
         {
           MgtProbeResponseHeader probeResp;
-          packet.RemoveHeader (probeResp);
+          packet->RemoveHeader (probeResp);
           if (!probeResp.GetSsid ().IsEqual (m_device->GetSsid ()))
             {
               //not a probe resp for our ssid.
@@ -365,7 +365,7 @@ MacHighNqsta::Receive (Packet packet, WifiMacHeader const *hdr)
       if (m_state == WAIT_ASSOC_RESP) 
         {
           MgtAssocResponseHeader assocResp;
-          packet.RemoveHeader (assocResp);
+          packet->RemoveHeader (assocResp);
           if (m_assocRequestEvent.IsRunning ()) 
             {
               m_assocRequestEvent.Cancel ();

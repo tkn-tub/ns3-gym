@@ -253,17 +253,17 @@ WifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
   m_syncErrorCallback = callback;
 }
 void 
-WifiPhy::ReceivePacket (Packet const packet, 
+WifiPhy::ReceivePacket (Ptr<Packet> packet, 
                         double rxPowerDbm,
                         WifiMode txMode,
                         enum WifiPreamble preamble)
 {
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
-  Time rxDuration = CalculateTxDuration (packet.GetSize (), txMode, preamble);
+  Time rxDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
   Time endRx = Simulator::Now () + rxDuration;
 
-  Ptr<RxEvent> event = Create<RxEvent> (packet.GetSize (), 
+  Ptr<RxEvent> event = Create<RxEvent> (packet->GetSize (), 
                                         txMode,
                                         preamble,
                                         rxDuration,
@@ -344,7 +344,7 @@ WifiPhy::ReceivePacket (Packet const packet,
 
 }
 void 
-WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower)
+WifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble preamble, uint8_t txPower)
 {
   /* Transmission can happen if:
    *  - we are syncing on a packet. It is the responsability of the
@@ -358,7 +358,7 @@ WifiPhy::SendPacket (Packet const packet, WifiMode txMode, WifiPreamble preamble
     m_endSyncEvent.Cancel ();
   }
 
-  Time txDuration = CalculateTxDuration (packet.GetSize (), txMode, preamble);
+  Time txDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
   m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
@@ -1189,7 +1189,7 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
 
 
 void
-WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event)
+WifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
 {
   NS_ASSERT (IsStateSync ());
   NS_ASSERT (event->GetEndTime () == Simulator::Now ());
@@ -1206,7 +1206,7 @@ WifiPhy::EndSync (Packet const packet, Ptr<RxEvent> event)
   double per = CalculatePer (event, &ni);
   NS_LOG_DEBUG ("mode="<<(event->GetPayloadMode ().GetPhyRate ())<<
                 ", ber="<<(1-GetChunkSuccessRate (event->GetPayloadMode (), snr, 1))<<
-                ", snr="<<snr<<", per="<<per<<", size="<<packet.GetSize ());
+                ", snr="<<snr<<", per="<<per<<", size="<<packet->GetSize ());
   
   if (m_random.GetValue () > per) 
     {

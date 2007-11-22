@@ -112,12 +112,12 @@ public:
    * arg3: mode of packet
    * arg4: type of preamble used for packet.
    */
-  typedef Callback<void,Packet, double, WifiMode, enum WifiPreamble> SyncOkCallback;
+  typedef Callback<void,Ptr<Packet>, double, WifiMode, enum WifiPreamble> SyncOkCallback;
   /**
    * arg1: packet received unsuccessfully
    * arg2: snr of packet
    */
-  typedef Callback<void,Packet, double> SyncErrorCallback;
+  typedef Callback<void,Ptr<Packet>, double> SyncErrorCallback;
 
   /**
    * \param device the device which contains this PHY.
@@ -156,7 +156,7 @@ public:
    * \param txPowerLevel a power level to use to send this packet. The real
    *        transmission power is calculated as txPowerMin + txPowerLevel * (txPowerMax - txPowerMin) / nTxLevels
    */
-  void SendPacket (Packet const packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPowerLevel);
+  void SendPacket (Ptr<const Packet> packet, WifiMode mode, enum WifiPreamble preamble, uint8_t txPowerLevel);
 
   /**
    * \param listener the new listener
@@ -278,7 +278,7 @@ private:
   double CalculateSnr (double signal, double noiseInterference, WifiMode mode) const;
   double CalculateChunkSuccessRate (double snir, Time delay, WifiMode mode) const;
   double CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const;
-  void EndSync (Packet const packet, Ptr<RxEvent> event);
+  void EndSync (Ptr<Packet> packet, Ptr<RxEvent> event);
   double Log2 (double val) const;
   double GetBpskBer (double snr, uint32_t signalSpread, uint32_t phyRate) const;
   double GetQamBer (double snr, unsigned int m, uint32_t signalSpread, uint32_t phyRate) const;
@@ -297,7 +297,7 @@ private:
                        uint32_t adFree, uint32_t adFreePlusOne) const;
   double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
   /* rxPower unit is Watt */
-  void ReceivePacket (Packet packet,
+  void ReceivePacket (Ptr<Packet> packet,
                       double rxPowerDbm,
                       WifiMode mode,
                       WifiPreamble preamble);

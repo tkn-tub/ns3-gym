@@ -37,7 +37,7 @@ class WifiPhy;
 
 class MacHighNqap {
 public:
-  typedef Callback<void, Packet, const Mac48Address &> ForwardCallback;
+  typedef Callback<void, Ptr<Packet>, const Mac48Address &> ForwardCallback;
 
   MacHighNqap ();
   ~MacHighNqap ();
@@ -50,13 +50,13 @@ public:
   void SetForwardCallback (ForwardCallback callback);
   void SetBeaconInterval (Time interval);
 
-  void Queue (Packet packet, Mac48Address to);
+  void Queue (Ptr<const Packet> packet, Mac48Address to);
 
   void StartBeaconing (void);
 
-  void Receive (Packet packet, WifiMacHeader const *hdr);
+  void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
 private:
-  void ForwardDown (Packet packet, Mac48Address from, Mac48Address to);
+  void ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to);
   void TxOk (WifiMacHeader const &hdr);
   void TxFailed (WifiMacHeader const &hdr);
   void SendProbeResp (Mac48Address to);

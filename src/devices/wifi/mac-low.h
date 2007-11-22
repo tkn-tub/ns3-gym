@@ -274,7 +274,7 @@ private:
  */
 class MacLow {
 public:
-  typedef Callback<void, Packet , WifiMacHeader const*> MacLowRxCallback;
+  typedef Callback<void, Ptr<Packet> , WifiMacHeader const*> MacLowRxCallback;
 
   MacLow ();
   ~MacLow ();
@@ -318,7 +318,7 @@ public:
    * Start the transmission of the input packet and notify the listener
    * of transmission events.
    */
-  void StartTransmission (Packet packet, 
+  void StartTransmission (Ptr<const Packet> packet, 
                           WifiMacHeader const*hdr, 
                           MacLowTransmissionParameters parameters,
                           MacLowTransmissionListener *listener);
@@ -332,7 +332,7 @@ public:
    * This method is typically invoked by the lower PHY layer to notify
    * the MAC layer that a packet was successfully received.
    */
-  void ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble preamble);
+  void ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamble preamble);
   /**
    * \param packet packet received.
    * \param rxSnr snr of packet received.
@@ -340,7 +340,7 @@ public:
    * This method is typically invoked by the lower PHY layer to notify
    * the MAC layer that a packet was unsuccessfully received.
    */
-  void ReceiveError (Packet packet, double rxSnr);
+  void ReceiveError (Ptr<Packet> packet, double rxSnr);
 private:
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
@@ -353,7 +353,7 @@ private:
   uint32_t GetCurrentSize (void) const;
   Time NowUs (void) const;
   MacStation *GetStation (Mac48Address to) const;
-  void ForwardDown (Packet const packet, WifiMacHeader const *hdr, 
+  void ForwardDown (Ptr<const Packet> packet, WifiMacHeader const *hdr, 
                     WifiMode txMode);
   Time CalculateOverallTxTime (uint32_t size,
                                Mac48Address to,
@@ -406,8 +406,7 @@ private:
   EventId m_waitSifsEvent;
   EventId m_navCounterResetCtsMissed;
 
-  Packet m_currentPacket;
-  bool m_hasCurrent;
+  Ptr<Packet> m_currentPacket;
   WifiMacHeader m_currentHdr;
   MacLowTransmissionParameters m_txParams;
   MacLowTransmissionListener *m_listener;
@@ -415,7 +414,7 @@ private:
   Time m_lastNavStart;
   Time m_lastNavDuration;
 
-  CallbackTraceSource<Packet> m_dropError;
+  CallbackTraceSource<Ptr<const Packet> > m_dropError;
 };
 
 } // namespace ns3

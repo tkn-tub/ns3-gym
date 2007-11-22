@@ -230,7 +230,7 @@ MacLow::MacLow ()
     m_sendAckEvent (),
     m_sendDataEvent (),
     m_waitSifsEvent (),
-    m_hasCurrent (false)
+    m_currentPacket (0)
 {
   m_lastNavDuration = Seconds (0);
   m_lastNavStart = Seconds (0);
@@ -339,7 +339,7 @@ MacLow::RegisterNavListener (MacLowNavListener *listener)
 
 
 void 
-MacLow::StartTransmission (Packet packet, 
+MacLow::StartTransmission (Ptr<const Packet> packet, 
                            WifiMacHeader const*hdr, 
                            MacLowTransmissionParameters parameters,
                            MacLowTransmissionListener *listener)
@@ -358,13 +358,8 @@ MacLow::StartTransmission (Packet packet,
    * QapScheduler has taken access to the channel from
    * one of the Edca of the QAP.
    */
-  if (m_hasCurrent) 
-    {
-      m_hasCurrent = false;
-    }
-  m_currentPacket = packet;
+  m_currentPacket = packet->Copy ();
   m_currentHdr = *hdr;
-  m_hasCurrent = true;
   CancelAllEvents ();
   m_listener = listener;
   m_txParams = parameters;
@@ -387,7 +382,7 @@ MacLow::StartTransmission (Packet packet,
 }
 
 void
-MacLow::ReceiveError (Packet packet, double rxSnr)
+MacLow::ReceiveError (Ptr<Packet> packet, double rxSnr)
 {
   MY_DEBUG ("rx failed ");
   m_dropError (packet);
@@ -401,7 +396,7 @@ MacLow::ReceiveError (Packet packet, double rxSnr)
 }
 
 void 
-MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble preamble)
+MacLow::ReceiveOk (Ptr<Packet> packet, double rxSnr, WifiMode txMode, WifiPreamble preamble)
 {
   /* A packet is received from the PHY.
    * When we have handled this packet,
@@ -409,7 +404,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
    * packet queue.
    */
   WifiMacHeader hdr;
-  packet.RemoveHeader (hdr);
+  packet->RemoveHeader (hdr);
   
   bool isPrevNavZero = IsNavZero ();
   MY_DEBUG ("duration/id=" << hdr.GetDuration ());
@@ -444,11 +439,11 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
   else if (hdr.IsCts () &&
            hdr.GetAddr1 () == m_device->GetSelfAddress () &&
            m_ctsTimeoutEvent.IsRunning () &&
-           m_hasCurrent) 
+           m_currentPacket != 0) 
     {
       MY_DEBUG ("receive cts from="<<m_currentHdr.GetAddr1 ());
       SnrTag tag;
-      packet.PeekTag (tag);
+      packet->PeekTag (tag);
       MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
       station->ReportRxOk (rxSnr, txMode);
       station->ReportRtsOk (rxSnr, txMode, tag.Get ());
@@ -471,7 +466,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
     {
       MY_DEBUG ("receive ack from="<<m_currentHdr.GetAddr1 ());
       SnrTag tag;
-      packet.PeekTag (tag);
+      packet->PeekTag (tag);
       MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
       station->ReportRxOk (rxSnr, txMode);
       station->ReportDataOk (rxSnr, txMode, tag.Get ());
@@ -543,7 +538,7 @@ MacLow::ReceiveOk (Packet packet, double rxSnr, WifiMode txMode, WifiPreamble pr
   return;
  rxPacket:
   WifiMacTrailer fcs;
-  packet.RemoveTrailer (fcs);
+  packet->RemoveTrailer (fcs);
   m_rxCallback (packet, &hdr);
   return;
 }
@@ -605,7 +600,7 @@ uint32_t
 MacLow::GetCurrentSize (void) const
 {
   WifiMacTrailer fcs;
-  return m_currentPacket.GetSize () + m_currentHdr.GetSize () + fcs.GetSerializedSize ();
+  return m_currentPacket->GetSize () + m_currentHdr.GetSize () + fcs.GetSerializedSize ();
 }
 
 WifiMode
@@ -746,12 +741,12 @@ MacLow::DoNavStartNow (Time duration)
 }
 
 void
-MacLow::ForwardDown (Packet const packet, WifiMacHeader const* hdr, 
+MacLow::ForwardDown (Ptr<const Packet> packet, WifiMacHeader const* hdr, 
                      WifiMode txMode)
 {
   MY_DEBUG ("send " << hdr->GetTypeString () <<
             ", to=" << hdr->GetAddr1 () <<
-            ", size=" << packet.GetSize () <<
+            ", size=" << packet->GetSize () <<
             ", mode=" << txMode <<
             ", duration=" << hdr->GetDuration () <<
             ", seq=0x"<< std::hex << m_currentHdr.GetSequenceControl () << std::dec);
@@ -761,7 +756,7 @@ MacLow::ForwardDown (Packet const packet, WifiMacHeader const* hdr,
    * requirement from section 9.9.1.4 that each EDCAF update its NAV from the
    * transmission of any other EDCAF within the same QSTA.
    */
-  Time txDuration = m_phy->CalculateTxDuration (packet.GetSize (), txMode, WIFI_PREAMBLE_LONG);
+  Time txDuration = m_phy->CalculateTxDuration (packet->GetSize (), txMode, WIFI_PREAMBLE_LONG);
   Simulator::Schedule (txDuration, &MacLow::NotifyNav, this, *hdr, txMode, WIFI_PREAMBLE_LONG);
 }
 
@@ -774,7 +769,7 @@ MacLow::CtsTimeout (void)
   // end of rx if there was a rx start before now.
   MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
   station->ReportRtsFailed ();
-  m_hasCurrent = false;
+  m_currentPacket = 0;
   MacLowTransmissionListener *listener = m_listener;
   m_listener = 0;
   listener->MissedCts ();
@@ -862,10 +857,10 @@ MacLow::SendRtsForPacket (void)
   NS_ASSERT (m_ctsTimeoutEvent.IsExpired ());
   m_ctsTimeoutEvent = Simulator::Schedule (timerDelay, &MacLow::CtsTimeout, this);
 
-  Packet packet;
-  packet.AddHeader (rts);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (rts);
   WifiMacTrailer fcs;
-  packet.AddTrailer (fcs);
+  packet->AddTrailer (fcs);
 
   ForwardDown (packet, &rts, rtsTxMode);
 }
@@ -940,12 +935,12 @@ MacLow::SendDataPacket (void)
     }
   m_currentHdr.SetDuration (duration);
 
-  m_currentPacket.AddHeader (m_currentHdr);
+  m_currentPacket->AddHeader (m_currentHdr);
   WifiMacTrailer fcs;
-  m_currentPacket.AddTrailer (fcs);
+  m_currentPacket->AddTrailer (fcs);
 
   ForwardDown (m_currentPacket, &m_currentHdr, dataTxMode);
-  m_hasCurrent = false;
+  m_currentPacket = 0;
 }
 
 bool 
@@ -984,14 +979,14 @@ MacLow::SendCtsAfterRts (Mac48Address source, Time duration, WifiMode rtsTxMode,
   NS_ASSERT (duration >= MicroSeconds (0));
   cts.SetDuration (duration);
 
-  Packet packet;
-  packet.AddHeader (cts);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (cts);
   WifiMacTrailer fcs;
-  packet.AddTrailer (fcs);
+  packet->AddTrailer (fcs);
 
   struct SnrTag tag;
   tag.Set (rtsSnr);
-  packet.AddTag (tag);
+  packet->AddTag (tag);
 
   ForwardDown (packet, &cts, ctsTxMode);
 }
@@ -1002,7 +997,7 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode)
   /* send the third step in a 
    * RTS/CTS/DATA/ACK hanshake 
    */
-  NS_ASSERT (m_hasCurrent);
+  NS_ASSERT (m_currentPacket != 0);
   WifiMode dataTxMode = GetDataTxMode (m_currentHdr.GetAddr1 (), GetCurrentSize ());
 
   StartDataTxTimers ();
@@ -1012,12 +1007,12 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode)
   NS_ASSERT (duration >= MicroSeconds (0));
   m_currentHdr.SetDuration (duration);
 
-  m_currentPacket.AddHeader (m_currentHdr);
+  m_currentPacket->AddHeader (m_currentHdr);
   WifiMacTrailer fcs;
-  m_currentPacket.AddTrailer (fcs);
+  m_currentPacket->AddTrailer (fcs);
 
   ForwardDown (m_currentPacket, &m_currentHdr, dataTxMode);
-  m_hasCurrent = false;
+  m_currentPacket = 0;
 }
 
 void 
@@ -1052,14 +1047,14 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   NS_ASSERT (duration >= MicroSeconds (0));
   ack.SetDuration (duration);
 
-  Packet packet;
-  packet.AddHeader (ack);
+  Ptr<Packet> packet = Create<Packet> ();
+  packet->AddHeader (ack);
   WifiMacTrailer fcs;
-  packet.AddTrailer (fcs);
+  packet->AddTrailer (fcs);
 
   struct SnrTag tag;
   tag.Set (dataSnr);
-  packet.AddTag (tag);
+  packet->AddTag (tag);
 
   ForwardDown (packet, &ack, ackTxMode);
 }

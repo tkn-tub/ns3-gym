@@ -106,20 +106,20 @@ private:
   // inherited from parent.
   virtual bool DoNeedsArp (void) const;
   virtual Ptr<Channel> DoGetChannel (void) const;
-  virtual bool SendTo (const Packet &packet, const Address &to, uint16_t protocolNumber);
+  virtual bool SendTo (Ptr<Packet> packet, const Address &to, uint16_t protocolNumber);
   virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   // defined for children
   virtual void NotifyConnected (void) = 0;
-  virtual bool DoSendTo (const Packet &packet, const Mac48Address &to) = 0;
+  virtual bool DoSendTo (Ptr<const Packet> packet, const Mac48Address &to) = 0;
   // private helper
   void Construct (void);
 
-  CallbackTraceSource<Packet, Mac48Address> m_rxLogger;
-  CallbackTraceSource<Packet, Mac48Address> m_txLogger;
+  CallbackTraceSource<Ptr<const Packet>, Mac48Address> m_rxLogger;
+  CallbackTraceSource<Ptr<const Packet>, Mac48Address> m_txLogger;
 protected:
   WifiNetDevice (Ptr<Node> node);
   WifiNetDevice (Ptr<Node> node, Mac48Address self);
-  void DoForwardUp (Packet packet, const Mac48Address &from);
+  void DoForwardUp (Ptr<Packet> packet, const Mac48Address &from);
   virtual void DoDispose (void);
   DcaTxop *CreateDca (uint32_t minCw, uint32_t maxCw, uint32_t aifsn) const;
 
@@ -156,7 +156,7 @@ protected:
 private:
   void DoConstruct (void);
   void ForwardUp (void);
-  virtual bool DoSendTo (const Packet &packet, Mac48Address const & to);
+  virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyConnected (void);
 
   Ssid m_ssid;
@@ -200,7 +200,7 @@ private:
   void DoConstruct (void);
   void Associated (void);
   void DisAssociated (void);
-  virtual bool DoSendTo (const Packet &packet, Mac48Address const & to);
+  virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyConnected (void);
   friend class WifiNetDeviceFactory;
   Ssid m_ssid;
@@ -234,7 +234,7 @@ protected:
   virtual void DoDispose (void);
 private:
   void DoConstruct (void);
-  virtual bool DoSendTo (const Packet &packet, Mac48Address const & to);
+  virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyConnected (void);
   friend class WifiNetDeviceFactory;
   Ssid m_ssid;

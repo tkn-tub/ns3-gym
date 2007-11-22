@@ -53,7 +53,7 @@ public:
    * arg3: the tx mode of the packet to receive
    * arg4: the preamble of the packet to receive
    */
-  typedef Callback<void,Packet,double,WifiMode,WifiPreamble> ReceiveCallback;
+  typedef Callback<void,Ptr<Packet>,double,WifiMode,WifiPreamble> ReceiveCallback;
   WifiChannel ();
   virtual ~WifiChannel ();
 
@@ -94,12 +94,12 @@ public:
    * This method should not be invoked by normal users. It is 
    * currently invoked only from WifiPhy::Send.
    */
-  void Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDbm,
+  void Send (Ptr<NetDevice> sender, Ptr<const Packet> packet, double txPowerDbm,
              WifiMode wifiMode, WifiPreamble preamble) const;
 
 private:
   typedef std::vector<std::pair<Ptr<NetDevice>, ReceiveCallback> > DeviceList;
-  void Receive (uint32_t i, const Packet &packet, double rxPowerDbm,
+  void Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
                 WifiMode txMode, WifiPreamble preamble) const;
   /**
    * \param i index of the requested network interface.

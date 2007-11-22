@@ -40,7 +40,7 @@ class MacStations;
 
 class MacHighNqsta {
 public:
-  typedef Callback<void, Packet, const Mac48Address &> ForwardCallback;
+  typedef Callback<void, Ptr<Packet>, const Mac48Address &> ForwardCallback;
   typedef Callback<void> AssociatedCallback;
   typedef Callback<void> DisAssociatedCallback;
 
@@ -63,9 +63,9 @@ public:
 
   void StartActiveAssociation (void);
 
-  void Queue (Packet packet, Mac48Address to);
+  void Queue (Ptr<const Packet> packet, Mac48Address to);
 
-  void Receive (Packet packet, WifiMacHeader const *hdr);
+  void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
 private:
   void SetBssid (Mac48Address bssid);
   Mac48Address GetBroadcastBssid (void);

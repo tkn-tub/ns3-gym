@@ -73,9 +73,9 @@ MacHighAdhoc::GetBssid (void) const
 }
 
 void 
-MacHighAdhoc::Enqueue (Packet packet, Mac48Address to)
+MacHighAdhoc::Enqueue (Ptr<const Packet> packet, Mac48Address to)
 {
-  NS_LOG_DEBUG ("enqueue size="<<packet.GetSize ()<<", to="<<to);
+  NS_LOG_DEBUG ("enqueue size="<<packet->GetSize ()<<", to="<<to);
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_DATA);
   hdr.SetAddr1 (to);
@@ -100,9 +100,9 @@ MacHighAdhoc::Enqueue (Packet packet, Mac48Address to)
 }
 
 void 
-MacHighAdhoc::Receive (Packet packet, WifiMacHeader const *hdr)
+MacHighAdhoc::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
-  NS_LOG_DEBUG ("received size="<<packet.GetSize ()<<", from="<<hdr->GetAddr2 ());
+  NS_LOG_DEBUG ("received size="<<packet->GetSize ()<<", from="<<hdr->GetAddr2 ());
   m_callback (packet, hdr->GetAddr2 ());
 }
 

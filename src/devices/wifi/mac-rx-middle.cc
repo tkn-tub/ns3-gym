@@ -36,8 +36,8 @@ namespace ns3 {
 
 class OriginatorRxStatus {
 private:
-  typedef std::list<Packet> Fragments;
-  typedef std::list<Packet>::const_iterator FragmentsCI;
+  typedef std::list<Ptr<const Packet> > Fragments;
+  typedef std::list<Ptr<const Packet> >::const_iterator FragmentsCI;
 
   bool m_defragmenting;
   uint16_t m_lastSequenceControl;
@@ -49,33 +49,29 @@ public:
     m_defragmenting = false;
   }
   ~OriginatorRxStatus () {
-    for (FragmentsCI i = m_fragments.begin (); i != m_fragments.end (); i++) 
-      {
-        // XXX ?
-      }
-    m_fragments.erase (m_fragments.begin (), m_fragments.end ());
+    m_fragments.clear ();
   }
   bool IsDeFragmenting (void) {
     return m_defragmenting;
   }
-  void AccumulateFirstFragment (Packet const packet) {
+  void AccumulateFirstFragment (Ptr<const Packet> packet) {
     NS_ASSERT (!m_defragmenting);
     m_defragmenting = true;
     m_fragments.push_back (packet);
   }
-  Packet AccumulateLastFragment (Packet const packet) {
+  Ptr<Packet> AccumulateLastFragment (Ptr<const Packet> packet) {
     NS_ASSERT (m_defragmenting);
     m_fragments.push_back (packet);
     m_defragmenting = false;
-    Packet full;
+    Ptr<Packet> full = Create<Packet> ();
     for (FragmentsCI i = m_fragments.begin (); i != m_fragments.end (); i++) 
       {
-        full.AddAtEnd (*i);
+        full->AddAtEnd (*i);
       }
     m_fragments.erase (m_fragments.begin (), m_fragments.end ());
     return full;
   }
-  void AccumulateFragment (Packet const packet) {
+  void AccumulateFragment (Ptr<const Packet> packet) {
     NS_ASSERT (m_defragmenting);
     m_fragments.push_back (packet);
   }
@@ -196,9 +192,9 @@ MacRxMiddle::IsDuplicate (WifiMacHeader const*hdr,
   return false;
 }
 
-Packet 
-MacRxMiddle::HandleFragments (Packet packet, WifiMacHeader const*hdr,
-             OriginatorRxStatus *originator, bool *complete)
+Ptr<Packet>
+MacRxMiddle::HandleFragments (Ptr<Packet> packet, WifiMacHeader const*hdr,
+                              OriginatorRxStatus *originator)
 {
   if (originator->IsDeFragmenting ()) 
     {
@@ -208,7 +204,7 @@ MacRxMiddle::HandleFragments (Packet packet, WifiMacHeader const*hdr,
             {
               TRACE ("accumulate fragment seq="<<hdr->GetSequenceNumber ()<<
                      ", frag="<<hdr->GetFragmentNumber ()<<
-                     ", size="<<packet.GetSize ());
+                     ", size="<<packet->GetSize ());
               originator->AccumulateFragment (packet);
               originator->SetSequenceControl (hdr->GetSequenceControl ());
             } 
@@ -216,8 +212,7 @@ MacRxMiddle::HandleFragments (Packet packet, WifiMacHeader const*hdr,
             {
               TRACE ("non-ordered fragment");
             }
-          *complete = false;
-          return Packet ();
+          return 0;
         } 
       else 
         {
@@ -226,16 +221,14 @@ MacRxMiddle::HandleFragments (Packet packet, WifiMacHeader const*hdr,
               TRACE ("accumulate last fragment seq="<<hdr->GetSequenceNumber ()<<
                      ", frag="<<hdr->GetFragmentNumber ()<<
                      ", size="<<hdr->GetSize ());
-              packet = originator->AccumulateLastFragment (packet);
+              Ptr<Packet> p = originator->AccumulateLastFragment (packet);
               originator->SetSequenceControl (hdr->GetSequenceControl ());
-              *complete = true;
-              return packet;
+              return p;
             } 
           else 
             {
               TRACE ("non-ordered fragment");
-              *complete = false;
-              return Packet ();
+              return 0;
             }
         }
     } 
@@ -245,22 +238,20 @@ MacRxMiddle::HandleFragments (Packet packet, WifiMacHeader const*hdr,
         {
           TRACE ("accumulate first fragment seq="<<hdr->GetSequenceNumber ()<<
                  ", frag="<<hdr->GetFragmentNumber ()<<
-                 ", size="<<packet.GetSize ());
+                 ", size="<<packet->GetSize ());
           originator->AccumulateFirstFragment (packet);
           originator->SetSequenceControl (hdr->GetSequenceControl ());
-          *complete = false;
-          return Packet ();
+          return 0;
         } 
       else 
         {
-          *complete = true;
           return packet;
         }
     }
 }
 
 void
-MacRxMiddle::Receive (Packet packet, WifiMacHeader const *hdr)
+MacRxMiddle::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   OriginatorRxStatus *originator = Lookup (hdr);
   if (hdr->IsData ()) 
@@ -286,9 +277,8 @@ MacRxMiddle::Receive (Packet packet, WifiMacHeader const *hdr)
                  ", frag="<<hdr->GetFragmentNumber ());
           return;
         }
-      bool complete;
-      Packet agregate = HandleFragments (packet, hdr, originator, &complete);
-      if (!complete) 
+      Ptr<Packet> agregate = HandleFragments (packet, hdr, originator);
+      if (agregate == 0) 
         {
           return;
         }

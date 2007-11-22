@@ -53,8 +53,8 @@ public:
   void SetMaxSize (uint32_t maxSize);
   void SetMaxDelay (Time delay);
 
-  void Enqueue (Packet packet, WifiMacHeader const &hdr);
-  Packet Dequeue (WifiMacHeader *hdr, bool *found);
+  void Enqueue (Ptr<const Packet> packet, WifiMacHeader const &hdr);
+  Ptr<const Packet> Dequeue (WifiMacHeader *hdr);
 
   void Flush (void);
 
@@ -64,10 +64,10 @@ public:
 private:
   void Cleanup (void);
   struct Item {
-    Item (Packet packet, 
+    Item (Ptr<const Packet> packet, 
           WifiMacHeader const&hdr, 
           Time tstamp);
-    Packet packet;
+    Ptr<const Packet> packet;
     WifiMacHeader hdr;
     Time tstamp;
   };

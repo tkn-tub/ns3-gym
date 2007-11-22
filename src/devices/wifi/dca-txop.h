@@ -102,7 +102,7 @@ public:
    * Store the packet in the internal queue until it
    * can be sent safely.
    */
-  void Queue (Packet packet, WifiMacHeader const &hdr);
+  void Queue (Ptr<const Packet> packet, WifiMacHeader const &hdr);
 
 private:
   class TransmissionListener;
@@ -138,7 +138,7 @@ private:
   uint32_t GetFragmentSize (void);
   bool IsLastFragment (void);
   void NextFragment (void);
-  Packet GetFragmentPacket (WifiMacHeader *hdr);
+  Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
 
   Dcf *m_dcf;
   DcfManager *m_manager;
@@ -153,8 +153,7 @@ private:
   
 
   bool m_accessOngoing;
-  Packet m_currentPacket;
-  bool m_hasCurrent;
+  Ptr<const Packet> m_currentPacket;
   WifiMacHeader m_currentHdr;
   uint32_t m_ssrc;
   uint32_t m_slrc;

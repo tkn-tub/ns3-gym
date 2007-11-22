@@ -35,7 +35,7 @@ class WifiPhy;
 
 class MacHighAdhoc {
 public:
-  typedef Callback<void, Packet, const Mac48Address &> ForwardCallback;
+  typedef Callback<void, Ptr<Packet>, const Mac48Address &> ForwardCallback;
 
   MacHighAdhoc ();
   ~MacHighAdhoc ();
@@ -48,10 +48,10 @@ public:
 
   Mac48Address GetBssid (void) const;
 
-  void Enqueue (Packet packet, Mac48Address to);
+  void Enqueue (Ptr<const Packet> packet, Mac48Address to);
 
   /* invoked by the MacLows. */
-  void Receive (Packet packet, WifiMacHeader const*hdr);
+  void Receive (Ptr<Packet> packet, WifiMacHeader const*hdr);
 private:
   DcaTxop *m_dca;
   WifiNetDevice *m_device;

@@ -91,7 +91,7 @@ MacHighNqap::StartBeaconing (void)
   SendOneBeacon ();
 }
 void 
-MacHighNqap::ForwardDown (Packet packet, Mac48Address from, Mac48Address to)
+MacHighNqap::ForwardDown (Ptr<const Packet> packet, Mac48Address from, Mac48Address to)
 {
   WifiMacHeader hdr;
   hdr.SetTypeData ();
@@ -103,7 +103,7 @@ MacHighNqap::ForwardDown (Packet packet, Mac48Address from, Mac48Address to)
   m_dca->Queue (packet, hdr);  
 }
 void 
-MacHighNqap::Queue (Packet packet, Mac48Address to)
+MacHighNqap::Queue (Ptr<const Packet> packet, Mac48Address to)
 {
   ForwardDown (packet, m_device->GetSelfAddress (), to);
 }
@@ -137,12 +137,12 @@ MacHighNqap::SendProbeResp (Mac48Address to)
   hdr.SetAddr3 (m_device->GetSelfAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  Packet packet;
+  Ptr<Packet> packet = Create<Packet> ();
   MgtProbeResponseHeader probe;
   probe.SetSsid (m_device->GetSsid ());
   probe.SetSupportedRates (GetSupportedRates ());
   probe.SetBeaconIntervalUs (m_beaconInterval.GetMicroSeconds ());
-  packet.AddHeader (probe);
+  packet->AddHeader (probe);
 
   m_dca->Queue (packet, hdr);
 }
@@ -157,7 +157,7 @@ MacHighNqap::SendAssocResp (Mac48Address to, bool success)
   hdr.SetAddr3 (m_device->GetSelfAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  Packet packet;
+  Ptr<Packet> packet = Create<Packet> ();
   MgtAssocResponseHeader assoc;
   StatusCode code;
   if (success)
@@ -170,7 +170,7 @@ MacHighNqap::SendAssocResp (Mac48Address to, bool success)
     }
   assoc.SetSupportedRates (GetSupportedRates ());
   assoc.SetStatusCode (code);
-  packet.AddHeader (assoc);
+  packet->AddHeader (assoc);
   
   m_dca->Queue (packet, hdr);
 }
@@ -185,12 +185,12 @@ MacHighNqap::SendOneBeacon (void)
   hdr.SetAddr3 (m_device->GetSelfAddress ());
   hdr.SetDsNotFrom ();
   hdr.SetDsNotTo ();
-  Packet packet;
+  Ptr<Packet> packet = Create<Packet> ();
   MgtBeaconHeader beacon;
   beacon.SetSsid (m_device->GetSsid ());
   beacon.SetSupportedRates (GetSupportedRates ());
   beacon.SetBeaconIntervalUs (m_beaconInterval.GetMicroSeconds ());
-  packet.AddHeader (beacon);
+  packet->AddHeader (beacon);
 
   m_beaconDca->Queue (packet, hdr);
   Simulator::Schedule (m_beaconInterval, &MacHighNqap::SendOneBeacon, this);
@@ -218,7 +218,7 @@ MacHighNqap::TxFailed (WifiMacHeader const &hdr)
     }
 }
 void 
-MacHighNqap::Receive (Packet packet, WifiMacHeader const *hdr)
+MacHighNqap::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   MacStation *station = m_stations->Lookup (hdr->GetAddr2 ());
 
@@ -267,7 +267,7 @@ MacHighNqap::Receive (Packet packet, WifiMacHeader const *hdr)
               // first, verify that the the station's supported
               // rate set is compatible with our Basic Rate set
               MgtAssocRequestHeader assocReq;
-              packet.RemoveHeader (assocReq);
+              packet->RemoveHeader (assocReq);
               SupportedRates rates = assocReq.GetSupportedRates ();
               bool problem = false;
               for (uint32_t i = 0; i < m_stations->GetNBasicModes (); i++)

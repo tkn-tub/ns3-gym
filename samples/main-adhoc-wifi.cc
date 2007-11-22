@@ -87,9 +87,9 @@ AdvancePosition (Ptr<Node> node)
 }
 
 static void
-ReceivePacket (Ptr<Socket> socket, const Packet &packet, const Address &address)
+ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &address)
 {
-  g_bytesTotal += packet.GetSize ();
+  g_bytesTotal += packet->GetSize ();
 }
 
 static Ptr<Socket>

@@ -57,7 +57,7 @@ WifiChannel::Add (Ptr<NetDevice> device,  ReceiveCallback callback)
   m_deviceList.push_back (std::make_pair (device, callback));
 }
 void 
-WifiChannel::Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDbm,
+WifiChannel::Send (Ptr<NetDevice> sender, Ptr<const Packet> packet, double txPowerDbm,
                    WifiMode wifiMode, WifiPreamble preamble) const
 {
   Ptr<MobilityModel> senderMobility = sender->GetNode ()->QueryInterface<MobilityModel> (MobilityModel::iid);
@@ -71,15 +71,16 @@ WifiChannel::Send (Ptr<NetDevice> sender, const Packet &packet, double txPowerDb
           double rxPowerDbm = m_loss->GetRxPower (txPowerDbm, senderMobility, receiverMobility);
           NS_LOG_DEBUG ("propagation: txPower="<<txPowerDbm<<"dbm, rxPower="<<rxPowerDbm<<"dbm, "<<
                         "distance="<<senderMobility->GetDistanceFrom (receiverMobility)<<"m, delay="<<delay);
+          Ptr<Packet> copy = packet->Copy ();
           Simulator::Schedule (delay, &WifiChannel::Receive, this, 
-                               j, packet, rxPowerDbm, wifiMode, preamble);
+                               j, copy, rxPowerDbm, wifiMode, preamble);
         }
       j++;
     }
 }
 
 void
-WifiChannel::Receive (uint32_t i, const Packet &packet, double rxPowerDbm,
+WifiChannel::Receive (uint32_t i, Ptr<Packet> packet, double rxPowerDbm,
                       WifiMode txMode, WifiPreamble preamble) const
 {
   m_deviceList[i].second (packet, rxPowerDbm, txMode, preamble);

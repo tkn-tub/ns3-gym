@@ -299,29 +299,27 @@ WifiNetDevice::ConnectTo (Ptr<WifiChannel> channel)
   NotifyConnected ();
 }
 bool
-WifiNetDevice::SendTo (const Packet &packet, const Address &to, uint16_t protocolNumber)
+WifiNetDevice::SendTo (Ptr<Packet> packet, const Address &to, uint16_t protocolNumber)
 {
   NS_ASSERT (Mac48Address::IsMatchingType (to));
 
   Mac48Address realTo = Mac48Address::ConvertFrom (to);
 
-  Packet p = packet;
-
   LlcSnapHeader llc;
   llc.SetType (protocolNumber);
-  p.AddHeader (llc);
+  packet->AddHeader (llc);
 
-  m_txLogger (p, realTo);
+  m_txLogger (packet, realTo);
 
-  return DoSendTo (p, realTo);
+  return DoSendTo (packet, realTo);
 }
 void 
-WifiNetDevice::DoForwardUp (Packet packet, const Mac48Address &from)
+WifiNetDevice::DoForwardUp (Ptr<Packet> packet, const Mac48Address &from)
 {
   m_rxLogger (packet, from);
 
   LlcSnapHeader llc;
-  packet.RemoveHeader (llc);
+  packet->RemoveHeader (llc);
   NetDevice::ForwardUp (packet, llc.GetType (), from);
 }
 Mac48Address 
@@ -415,7 +413,7 @@ AdhocWifiNetDevice::SetSsid (Ssid ssid)
   m_ssid = ssid;
 }
 bool
-AdhocWifiNetDevice::DoSendTo (const Packet &packet, Mac48Address const &to)
+AdhocWifiNetDevice::DoSendTo (Ptr<const Packet> packet, Mac48Address const &to)
 {
   m_high->Enqueue (packet, to);
   return true;
@@ -492,7 +490,7 @@ NqstaWifiNetDevice::StartActiveAssociation (Ssid ssid)
   m_high->StartActiveAssociation ();
 }
 bool
-NqstaWifiNetDevice::DoSendTo (const Packet &packet, Mac48Address const &to)
+NqstaWifiNetDevice::DoSendTo (Ptr<const Packet> packet, Mac48Address const &to)
 {
   m_high->Queue (packet, to);
   return true;
@@ -599,7 +597,7 @@ NqapWifiNetDevice::StartBeaconing (void)
   m_high->StartBeaconing ();
 }
 bool
-NqapWifiNetDevice::DoSendTo (const Packet &packet, Mac48Address const & to)
+NqapWifiNetDevice::DoSendTo (Ptr<const Packet> packet, Mac48Address const & to)
 {
   m_high->Queue (packet, to);
   return true;

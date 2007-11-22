@@ -27,9 +27,9 @@ using namespace std;
 
 namespace ns3 {
 
-WifiMacQueue::Item::Item (Packet packet, 
-                            WifiMacHeader const &hdr, 
-                            Time tstamp)
+WifiMacQueue::Item::Item (Ptr<const Packet> packet, 
+                          WifiMacHeader const &hdr, 
+                          Time tstamp)
   : packet (packet), hdr (hdr), tstamp (tstamp)
 {}
 
@@ -53,7 +53,7 @@ WifiMacQueue::SetMaxDelay (Time delay)
   m_maxDelay = delay;
 }
 void 
-WifiMacQueue::Enqueue (Packet packet, WifiMacHeader const &hdr)
+WifiMacQueue::Enqueue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
 {
   Cleanup ();
   if (m_size == m_maxSize) 
@@ -88,8 +88,8 @@ WifiMacQueue::Cleanup (void)
   m_queue.erase (m_queue.begin (), end);
 }
 
-Packet 
-WifiMacQueue::Dequeue (WifiMacHeader *hdr, bool *found)
+Ptr<const Packet>
+WifiMacQueue::Dequeue (WifiMacHeader *hdr)
 {
   Cleanup ();
   if (!m_queue.empty ()) 
@@ -98,11 +98,9 @@ WifiMacQueue::Dequeue (WifiMacHeader *hdr, bool *found)
       m_queue.pop_front ();
       m_size--;
       *hdr = i.hdr;
-      *found = true;
       return i.packet;
     }
-  *found = false;
-  return Packet ();
+  return 0;
 }
 
 
