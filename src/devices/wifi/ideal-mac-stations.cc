@@ -67,7 +67,8 @@ IdealMacStations::AddModeSnrThreshold (WifiMode mode, double snr)
 }
 
 IdealMacStation::IdealMacStation (IdealMacStations *stations)
-  : m_stations (stations)
+  : m_stations (stations),
+    m_lastSnr (0.0)
 {}
 IdealMacStation::~IdealMacStation ()
 {}
