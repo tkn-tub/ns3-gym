@@ -25,11 +25,11 @@ namespace ns3 {
 
 namespace WifiDefaultParameters {
 
-static EnumDefaultValue<enum PhyStandard> g_phyStandard
+static EnumDefaultValue<enum WifiPhyStandard> g_phyStandard
 ("WifiPhyStandard", 
  "Describe the set of physical-layer tx modes and parameters",
- PHY_STANDARD_80211a, "80211a",
- PHY_STANDARD_holland, "holland",
+ WIFI_PHY_STANDARD_80211a, "80211a",
+ WIFI_PHY_STANDARD_holland, "holland",
  0, (void*)0);
 
 static NumericDefaultValue<uint32_t> g_maxSsrc
@@ -189,7 +189,7 @@ GetApBeaconInterval (void)
 {
   return g_apBeaconInterval.GetValue ();
 }
-enum PhyStandard 
+enum WifiPhyStandard 
 GetPhyStandard (void)
 {
   return g_phyStandard.GetValue ();

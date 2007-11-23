@@ -34,6 +34,7 @@
 #include "ns3/random-variable.h"
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
+#include "wifi-phy-standard.h"
 
 
 namespace ns3 {
@@ -338,6 +339,7 @@ private:
   Events m_events;
   UniformVariable m_random;
   CallbackTraceSource<Time,Time,enum WifiPhy::State> m_stateLogger;
+  WifiPhyStandard m_standard;
 };
 
 } // namespace ns3

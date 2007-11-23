@@ -23,15 +23,13 @@
 #include <stdint.h>
 #include "ns3/nstime.h"
 #include "ssid.h"
+#include "wifi-phy-standard.h"
 
 namespace ns3 {
 
 namespace WifiDefaultParameters {
 
-enum PhyStandard {
-  PHY_STANDARD_80211a,
-  PHY_STANDARD_holland,
-};
+
 enum RateControlAlgorithm {
   CONSTANT_RATE,
   ARF,
@@ -54,7 +52,7 @@ uint32_t GetMaxSlrc (void);
 uint32_t GetRtsCtsThreshold (void);
 uint32_t GetFragmentationThreshold (void);
 Time GetApBeaconInterval (void);
-enum PhyStandard GetPhyStandard (void);
+enum WifiPhyStandard GetPhyStandard (void);
 enum RateControlAlgorithm GetRateControlAlgorithm (void);
 enum PhyModeParameter GetConstantDataRate (void);
 enum PhyModeParameter GetConstantCtlRate (void);

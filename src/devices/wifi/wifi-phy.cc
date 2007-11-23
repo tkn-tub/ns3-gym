@@ -192,13 +192,14 @@ WifiPhy::WifiPhy (Ptr<WifiNetDevice> device)
     m_previousStateChangeTime (Seconds (0)),
     m_device (device),
     m_endSyncEvent (),
-    m_random (0.0, 1.0)
+    m_random (0.0, 1.0),
+    m_standard (WifiDefaultParameters::GetPhyStandard ())
 {
-  switch (WifiDefaultParameters::GetPhyStandard ()) {
-  case WifiDefaultParameters::PHY_STANDARD_80211a:
+  switch (m_standard) {
+  case WIFI_PHY_STANDARD_80211a:
     Configure80211a ();
     break;
-  case WifiDefaultParameters::PHY_STANDARD_holland:
+  case WIFI_PHY_STANDARD_holland:
     ConfigureHolland ();
     break;
   default:
@@ -407,11 +408,11 @@ WifiPhy::CalculateSnr (WifiMode txMode, double ber) const
 void
 WifiPhy::Configure80211aParameters (void)
 {
-  m_plcpLongPreambleDelayUs = 20;
-  m_plcpShortPreambleDelayUs = 20;
+  m_plcpLongPreambleDelayUs = 16;
+  m_plcpShortPreambleDelayUs = 16;
   m_longPlcpHeaderMode = g_6mba;
   m_shortPlcpHeaderMode = g_6mba;
-  m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6 + 16 + 6;
+  m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6;
   /* 4095 bytes at a 6Mb/s rate with a 1/2 coding rate. */
   m_maxPacketDuration = Seconds (4095.0*8.0/6000000.0*(1.0/2.0));
 }
@@ -539,18 +540,19 @@ Time
 WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble preamble) const
 {
   uint64_t delay = 0;
-  switch (preamble) {
-  case WIFI_PREAMBLE_LONG:
+  switch (m_standard) {
+  case WIFI_PHY_STANDARD_80211a:
+  case WIFI_PHY_STANDARD_holland: {
     delay += m_plcpLongPreambleDelayUs;
-    delay += m_plcpHeaderLength * 1000000 / m_longPlcpHeaderMode.GetDataRate ();
-    break;
-  case WIFI_PREAMBLE_SHORT:
-    delay += m_plcpShortPreambleDelayUs;
-    delay += m_plcpHeaderLength * 1000000 / m_shortPlcpHeaderMode.GetDataRate ();
+    // symbol duration is 4us
+    delay += 4;
+    delay += lrint (ceil ((size * 8 + 16 + 6) / payloadMode.GetDataRate () / 4e-6) * 4);
+  } break;
+  default:
+    // quiet compiler.
+    NS_ASSERT (false);
     break;
   }
-  uint64_t nbits = size * 8;
-  delay += nbits * 1000000 / payloadMode.GetDataRate ();
   return MicroSeconds (delay);
 }
 
