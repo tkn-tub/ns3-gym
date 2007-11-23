@@ -414,7 +414,7 @@ WifiPhy::Configure80211aParameters (void)
   m_shortPlcpHeaderMode = g_6mba;
   m_plcpHeaderLength = 4 + 1 + 12 + 1 + 6;
   /* 4095 bytes at a 6Mb/s rate with a 1/2 coding rate. */
-  m_maxPacketDuration = Seconds (4095.0*8.0/6000000.0*(1.0/2.0));
+  m_maxPacketDuration = CalculateTxDuration (4095, g_6mba, WIFI_PREAMBLE_LONG);
 }
 
 void
