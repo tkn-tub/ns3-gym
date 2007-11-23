@@ -115,9 +115,11 @@ DcaTxop::~DcaTxop ()
   delete m_transmissionListener;
   delete m_queue;
   delete m_dcf;
+  delete m_rng;
   m_transmissionListener = 0;
   m_queue = 0;
   m_dcf = 0;
+  m_rng = 0;
 }
 
 void 
