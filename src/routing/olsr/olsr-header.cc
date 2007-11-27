@@ -21,6 +21,7 @@
 #include "ns3/assert.h"
 
 #include "olsr-header.h"
+#include "ns3/log.h"
 
 #define IPV4_ADDRESS_SIZE 4
 #define OLSR_MSG_HEADER_SIZE 12
@@ -28,6 +29,10 @@
 
 namespace ns3 {
 namespace olsr {
+
+
+NS_LOG_COMPONENT_DEFINE("OlsrHeader");
+
 
 /// Scaling factor used in RFC 3626.
 #define OLSR_C 0.0625
@@ -161,6 +166,7 @@ MessageHeader::GetSerializedSize (void) const
       size += m_message.mid.GetSerializedSize ();
       break;
     case HELLO_MESSAGE:
+      NS_LOG_DEBUG ("Hello Message Size: " << size << " + " << m_message.hello.GetSerializedSize ());
       size += m_message.hello.GetSerializedSize ();
       break;
     case TC_MESSAGE:
@@ -187,7 +193,7 @@ MessageHeader::Serialize (Buffer::Iterator start) const
   Buffer::Iterator i = start;
   i.WriteU8 (m_messageType);
   i.WriteU8 (m_vTime);
-  i.WriteHtonU16 (GetSerializedSize () - OLSR_MSG_HEADER_SIZE);
+  i.WriteHtonU16 (GetSerializedSize ());
   i.WriteHtonU32 (m_originatorAddress.GetHostOrder ());
   i.WriteU8 (m_timeToLive);
   i.WriteU8 (m_hopCount);
@@ -230,16 +236,16 @@ MessageHeader::Deserialize (Buffer::Iterator start)
   switch (m_messageType)
     {
     case MID_MESSAGE:
-      size += m_message.mid.Deserialize (i, m_messageSize);
+      size += m_message.mid.Deserialize (i, m_messageSize - OLSR_MSG_HEADER_SIZE);
       break;
     case HELLO_MESSAGE:
-      size += m_message.hello.Deserialize (i, m_messageSize);
+      size += m_message.hello.Deserialize (i, m_messageSize - OLSR_MSG_HEADER_SIZE);
       break;
     case TC_MESSAGE:
-      size += m_message.tc.Deserialize (i, m_messageSize);
+      size += m_message.tc.Deserialize (i, m_messageSize - OLSR_MSG_HEADER_SIZE);
       break;
     case HNA_MESSAGE:
-      size += m_message.hna.Deserialize (i, m_messageSize);
+      size += m_message.hna.Deserialize (i, m_messageSize - OLSR_MSG_HEADER_SIZE);
       break;
     default:
       NS_ASSERT (false);
