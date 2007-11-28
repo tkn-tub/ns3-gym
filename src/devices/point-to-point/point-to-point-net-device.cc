@@ -253,7 +253,7 @@ PointToPointNetDevice::GetTraceResolver (void) const
                        PointToPointTraceType (PointToPointTraceType::RX));
   resolver->AddSource ("drop",
                        TraceDoc ("drop MAC packet",
-                                 "const Packet &", "packet dropped"),
+                                 "Ptr<const Packet>", "packet dropped"),
                        m_dropTrace,
                        PointToPointTraceType (PointToPointTraceType::DROP));
   resolver->SetParentResolver (NetDevice::GetTraceResolver ());
