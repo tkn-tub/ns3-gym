@@ -948,11 +948,11 @@ MacLow::IsNavZero (void) const
 {
   if (m_lastNavStart + m_lastNavDuration > Simulator::Now ()) 
     {
-      return false;
+      return true;
     } 
   else 
     {
-      return true;
+      return false;
     }
 }
 
