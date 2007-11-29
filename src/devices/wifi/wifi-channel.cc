@@ -41,7 +41,7 @@ WifiChannel::~WifiChannel ()
 }
 
 void 
-WifiChannel::SetPropationLossModel (Ptr<PropagationLossModel> loss)
+WifiChannel::SetPropagationLossModel (Ptr<PropagationLossModel> loss)
 {
   m_loss = loss;
 }
