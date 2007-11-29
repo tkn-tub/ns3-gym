@@ -372,7 +372,7 @@ DcfManager::DoRestartAccessTimeoutIfNeeded (void)
    * if there is one, how many slots for AIFS+backoff does it require ?
    */
   bool accessTimeoutNeeded = false;
-  Time expectedBackoffEnd = MaxSeconds ();
+  Time expectedBackoffEnd = Simulator::GetMaximumSimulationTime ();
   for (States::const_iterator i = m_states.begin (); i != m_states.end (); i++)
     {
       DcfState *state = *i;
