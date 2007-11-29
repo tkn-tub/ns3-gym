@@ -45,7 +45,7 @@ MobilityModelNotifier::GetTraceResolver (void) const
   Ptr<CompositeTraceResolver> resolver = 
     Create<CompositeTraceResolver> ();
   resolver->AddSource ("course-change", 
-                       TraceDoc ("The value of the speed vector changed",
+                       TraceDoc ("The value of the position and/or velocity vector changed",
                                  "Ptr<const MobilityModel>", 
                                  "the mobility model whose course changed"),
                        m_trace);
