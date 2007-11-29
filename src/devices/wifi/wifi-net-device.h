@@ -101,7 +101,6 @@ public:
 private:
   class PhyListener;
   class NavListener;
-  friend class WifiNetDeviceFactory;
 
   // inherited from parent.
   virtual bool DoNeedsArp (void) const;
@@ -202,7 +201,6 @@ private:
   void DisAssociated (void);
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyConnected (void);
-  friend class WifiNetDeviceFactory;
   Ssid m_ssid;
   DcaTxop *m_dca;
   MacHighNqsta *m_high;
@@ -236,7 +234,6 @@ private:
   void DoConstruct (void);
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyConnected (void);
-  friend class WifiNetDeviceFactory;
   Ssid m_ssid;
   DcaTxop *m_dca;
   DcaTxop *m_beaconDca;
