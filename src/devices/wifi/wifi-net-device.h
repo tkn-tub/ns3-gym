@@ -80,7 +80,7 @@ public:
    * \param channel the channel to connect this 802.11 
    *        interface to.
    */
-  void ConnectTo (Ptr<WifiChannel> channel);
+  void Attach (Ptr<WifiChannel> channel);
 
   /**
    * \returns the Mac48Address of this 802.11 interface.
@@ -108,7 +108,7 @@ private:
   virtual bool SendTo (Ptr<Packet> packet, const Address &to, uint16_t protocolNumber);
   virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   // defined for children
-  virtual void NotifyConnected (void) = 0;
+  virtual void NotifyAttached (void) = 0;
   virtual bool DoSendTo (Ptr<const Packet> packet, const Mac48Address &to) = 0;
   // private helper
   void Construct (void);
@@ -156,7 +156,7 @@ private:
   void DoConstruct (void);
   void ForwardUp (void);
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
-  virtual void NotifyConnected (void);
+  virtual void NotifyAttached (void);
 
   Ssid m_ssid;
   DcaTxop *m_dca;
@@ -200,7 +200,7 @@ private:
   void Associated (void);
   void DisAssociated (void);
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
-  virtual void NotifyConnected (void);
+  virtual void NotifyAttached (void);
   Ssid m_ssid;
   DcaTxop *m_dca;
   MacHighNqsta *m_high;
@@ -233,7 +233,7 @@ protected:
 private:
   void DoConstruct (void);
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
-  virtual void NotifyConnected (void);
+  virtual void NotifyAttached (void);
   Ssid m_ssid;
   DcaTxop *m_dca;
   DcaTxop *m_beaconDca;

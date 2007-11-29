@@ -47,7 +47,7 @@ CreateAdhocNode (Ptr<WifiChannel> channel,
 {
   Ptr<Node> node = Create<Node> ();  
   Ptr<AdhocWifiNetDevice> device = Create<AdhocWifiNetDevice> (node, Mac48Address (address));
-  device->ConnectTo (channel);
+  device->Attach (channel);
   Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
   mobility->SetPosition (position);
   node->AddInterface (mobility);

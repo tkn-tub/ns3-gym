@@ -292,11 +292,11 @@ WifiNetDevice::GetTraceResolver (void) const
 }
 
 void 
-WifiNetDevice::ConnectTo (Ptr<WifiChannel> channel)
+WifiNetDevice::Attach (Ptr<WifiChannel> channel)
 {
   m_channel = channel;
   m_phy->SetChannel (channel);
-  NotifyConnected ();
+  NotifyAttached ();
 }
 bool
 WifiNetDevice::SendTo (Ptr<Packet> packet, const Address &to, uint16_t protocolNumber)
@@ -419,7 +419,7 @@ AdhocWifiNetDevice::DoSendTo (Ptr<const Packet> packet, Mac48Address const &to)
   return true;
 }
 void
-AdhocWifiNetDevice::NotifyConnected (void)
+AdhocWifiNetDevice::NotifyAttached (void)
 {
   NotifyLinkUp ();
 }
@@ -496,7 +496,7 @@ NqstaWifiNetDevice::DoSendTo (Ptr<const Packet> packet, Mac48Address const &to)
   return true;
 }
 void
-NqstaWifiNetDevice::NotifyConnected (void)
+NqstaWifiNetDevice::NotifyAttached (void)
 {
   // do nothing because link status is kept track of in
   // ::Associated and ::Disassociated
@@ -603,7 +603,7 @@ NqapWifiNetDevice::DoSendTo (Ptr<const Packet> packet, Mac48Address const & to)
   return true;
 }
 void
-NqapWifiNetDevice::NotifyConnected (void)
+NqapWifiNetDevice::NotifyAttached (void)
 {
   NotifyLinkUp ();
 }
