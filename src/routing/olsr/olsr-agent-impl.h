@@ -37,7 +37,7 @@
 #include "ns3/packet.h"
 #include "ns3/node.h"
 #include "ns3/socket.h"
-#include "event-garbage-collector.h"
+#include "ns3/event-garbage-collector.h"
 #include "ns3/timer.h"
 #include "ns3/callback-trace-source.h"
 
