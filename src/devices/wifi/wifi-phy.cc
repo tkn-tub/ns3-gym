@@ -546,7 +546,7 @@ WifiPhy::CalculateTxDuration (uint32_t size, WifiMode payloadMode, WifiPreamble 
     delay += m_plcpLongPreambleDelayUs;
     // symbol duration is 4us
     delay += 4;
-    delay += lrint (ceil ((size * 8 + 16 + 6) / payloadMode.GetDataRate () / 4e-6) * 4);
+    delay += lrint (ceil ((size * 8.0 + 16.0 + 6.0) / payloadMode.GetDataRate () / 4e-6) * 4);
   } break;
   default:
     // quiet compiler.
