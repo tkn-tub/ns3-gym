@@ -4,9 +4,11 @@ def build(bld):
     module = bld.create_ns3_module('contrib', ['simulator'])
     module.source = [
         'event-garbage-collector.cc',
+        'gnuplot.cc',
         ]
 
     headers = bld.create_obj('ns3header')
     headers.source = [
         'event-garbage-collector.h',
+        'gnuplot.h',
         ]
