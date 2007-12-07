@@ -998,12 +998,17 @@ MacLow::SendDataAfterCts (Mac48Address source, Time duration, WifiMode txMode)
    * RTS/CTS/DATA/ACK hanshake 
    */
   NS_ASSERT (m_currentPacket != 0);
-  WifiMode dataTxMode = GetDataTxMode (m_currentHdr.GetAddr1 (), GetCurrentSize ());
-
   StartDataTxTimers ();
+
+  WifiMode dataTxMode = GetDataTxMode (m_currentHdr.GetAddr1 (), GetCurrentSize ());
+  Time newDuration = Seconds (0);
+  newDuration += GetSifs ();
+  newDuration += GetAckDuration (m_currentHdr.GetAddr1 (), dataTxMode);
   Time txDuration = m_phy->CalculateTxDuration (GetCurrentSize (), dataTxMode, WIFI_PREAMBLE_LONG);
   duration -= txDuration;
   duration -= GetSifs ();
+
+  duration = std::max (duration, newDuration);
   NS_ASSERT (duration >= MicroSeconds (0));
   m_currentHdr.SetDuration (duration);
 
