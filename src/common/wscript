@@ -13,7 +13,6 @@ def build(bld):
         'tag-registry.cc',
         'pcap-writer.cc',
         'data-rate.cc',
-        'gnuplot.cc',
         'error-model.cc',
         ]
 
@@ -31,6 +30,5 @@ def build(bld):
         'packet-metadata.h',
         'pcap-writer.h',
         'data-rate.h',
-        'gnuplot.h',
         'error-model.h',
         ]
