@@ -946,7 +946,7 @@ MacLow::SendDataPacket (void)
 bool 
 MacLow::IsNavZero (void) const
 {
-  if (m_lastNavStart + m_lastNavDuration > Simulator::Now ()) 
+  if (m_lastNavStart + m_lastNavDuration < Simulator::Now ()) 
     {
       return true;
     } 
