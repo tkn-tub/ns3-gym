@@ -14,6 +14,7 @@ all_modules = (
     'core',
     'common',
     'simulator',
+    'contrib',
     'node',
     'internet-node',
     'devices/point-to-point',
@@ -82,12 +83,15 @@ class Ns3Header(Object.genobj):
         Object.genobj.__init__(self, 'other')
         self.inst_var = 'INCLUDEDIR'
         self.inst_dir = 'ns3'
+        self.sub_dir = None # if not None, header files will be published as ns3/sub_dir/file.h
         self.env = env
         if not self.env:
             self.env = Params.g_build.m_allenvs['default']
 
     def apply(self):
         ns3_dir_node = Params.g_build.m_srcnode.find_dir("ns3")
+        if self.sub_dir is not None:
+            ns3_dir_node = ns3_dir_node.find_dir(self.sub_dir)
         for filename in self.to_list(self.source):
             src_node = self.path.find_source(filename)
             if src_node is None:
@@ -99,10 +103,14 @@ class Ns3Header(Object.genobj):
             task.set_outputs([dst_node])
 
     def install(self):
+        if self.sub_dir is None:
+            inst_dir = self.inst_dir
+        else:
+            inst_dir = os.path.join(self.inst_dir, self.sub_dir)
         for i in self.m_tasks:
             current = Params.g_build.m_curdirnode
             lst = map(lambda a: a.relpath_gen(current), i.m_outputs)
-            Common.install_files(self.inst_var, self.inst_dir, lst)
+            Common.install_files(self.inst_var, inst_dir, lst)
 
 def _ns3_headers_inst(task):
     assert len(task.m_inputs) == len(task.m_outputs)

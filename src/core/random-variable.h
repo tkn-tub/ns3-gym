@@ -193,20 +193,24 @@ protected:
 /**
  * \brief The uniform distribution RNG for NS-3.
  * \ingroup randomvariable
+ *
  * This class supports the creation of objects that return random numbers
  * from a fixed uniform distribution.  It also supports the generation of 
  * single random numbers from various uniform distributions.
+ *
+ * The low end of the range is always included and the high end
+ * of the range is always excluded.
  * \code
  * UniformVariable x(0,10);
- * x.GetValue();  //will always return numbers [0,10]
- * UniformVariable::GetSingleValue(100,1000); //returns a value [100,1000]
+ * x.GetValue();  //will always return numbers [0,10)
+ * UniformVariable::GetSingleValue(100,1000); //returns a value [100,1000)
  * \endcode
  */
 class UniformVariable : public RandomVariable {
 public:
   /**
    * Creates a uniform random number generator in the
-   * range [0.0 .. 1.0)
+   * range [0.0 .. 1.0).
    */
   UniformVariable();
 
@@ -334,9 +338,19 @@ private:
 /**
  * \brief Exponentially Distributed random var
  * \ingroup randomvariable
+ *
  * This class supports the creation of objects that return random numbers
  * from a fixed exponential distribution.  It also supports the generation of 
  * single random numbers from various exponential distributions.
+ *
+ * The probability density function of an exponential variable 
+ * is defined over the interval [0, +inf) as:
+ * \f$ \alpha  e^{-\alpha x} \f$
+ * where \f$ \alpha = \frac{1}{mean} \f$ 
+ *
+ * The bounded version is defined over the internal [0,+inf) as:
+ * \f$ \left\{ \begin{array}{cl} \alpha  e^{-\alpha x} & x < bound \\ bound & x > bound \end{array}\right. \f$
+ * 
  * \code
  * ExponentialVariable x(3.14);
  * x.GetValue();  //will always return with mean 3.14
@@ -394,9 +408,18 @@ private:
 /**
  * \brief ParetoVariable distributed random var
  * \ingroup randomvariable
+ *
  * This class supports the creation of objects that return random numbers
  * from a fixed pareto distribution.  It also supports the generation of 
  * single random numbers from various pareto distributions.
+ *
+ * The probability density function is defined over the range [\f$x_m\f$,+inf) as:
+ * \f$ k \frac{x_m^k}{x^{k+1}}\f$ where \f$x_m > 0\f$ is called the location 
+ * parameter and \f$ k > 0\f$ is called the pareto index or shape.
+ * 
+ * The parameter \f$ x_m \f$ can be infered from the mean and the parameter \f$ k \f$
+ * with the equation \f$ x_m = mean \frac{k-1}{k},  k > 1\f$.
+ *
  * \code
  * ParetoVariable x(3.14);
  * x.GetValue();  //will always return with mean 3.14
@@ -468,9 +491,16 @@ private:
 /**
  * \brief WeibullVariable distributed random var
  * \ingroup randomvariable
+ *
  * This class supports the creation of objects that return random numbers
  * from a fixed weibull distribution.  It also supports the generation of 
  * single random numbers from various weibull distributions.
+ *
+ * The probability density function is defined over the interval [0, +inf]
+ * as: \f$ \frac{k}{\lambda}\left(\frac{x}{\lambda}\right)^{k-1}e^{-\left(\frac{x}{\lambda}\right)^k} \f$
+ * where \f$ k > 0\f$ is the shape parameter and \f$ \lambda > 0\f$  is the scale parameter. The
+ * specified mean is related to the scale and shape parameters by the following relation:
+ * \f$ mean = \lambda\Gamma\left(1+\frac{1}{k}\right) \f$ where \f$ \Gamma \f$ is the Gamma function.
  */
 class WeibullVariable : public RandomVariable {
 public:
@@ -533,11 +563,16 @@ private:
 /**
  * \brief Class NormalVariable defines a random variable with a
  * normal (Gaussian) distribution.
+ * \ingroup randomvariable
  * 
  * This class supports the creation of objects that return random numbers
  * from a fixed normal distribution.  It also supports the generation of 
  * single random numbers from various normal distributions.
- * \ingroup randomvariable
+ *
+ * The density probability function is defined over the interval (-inf,+inf)
+ * as: \f$ \frac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x-\mu)^2}{s\sigma^2}}\f$
+ * where \f$ mean = \mu \f$ and \f$ variance = \sigma^2 \f$
+ *
  */
 class NormalVariable : public RandomVariable { // Normally Distributed random var
 
@@ -588,7 +623,7 @@ private:
  *
  * Defines a random variable  that has a specified, empirical 
  * distribution.  The distribution is specified by a
- * series of calls the the CDF member function, specifying a
+ * series of calls to the CDF member function, specifying a
  * value and the probability that the function value is less than
  * the specified value.  When values are requested,
  * a uniform random variable is used to select a probabililty,
@@ -693,6 +728,7 @@ private:
 /**
  * \brief Log-normal Distributed random var
  * \ingroup randomvariable
+ *
  * LogNormalVariable defines a random variable with log-normal
  * distribution.  If one takes the natural logarithm of random
  * variable following the log-normal distribution, the obtained values
@@ -700,23 +736,22 @@ private:
  *  This class supports the creation of objects that return random numbers
  * from a fixed lognormal distribution.  It also supports the generation of
  * single random numbers from various lognormal distributions.
+ *
+ * The probability density function is defined over the interval [0,+inf) as:
+ * \f$ \frac{1}{x\sigma\sqrt{2\pi}} e^{-\frac{(ln(x) - \mu)^2}{2\sigma^2}}\f$
+ * where \f$ mean = e^{\mu+\frac{\sigma^2}{2}} \f$ and 
+ * \f$ variance = (e^{\sigma^2}-1)e^{2\mu+\sigma^2}\f$
+ *
+ * The \f$ \mu \f$ and \f$ \sigma \f$ parameters can be calculated from the mean
+ * and standard deviation with the following equations:
+ * \f$ \mu = ln(mean) - \frac{1}{2}ln\left(1+\frac{stddev}{mean^2}\right)\f$, and,
+ * \f$ \sigma = \sqrt{ln\left(1+\frac{stddev}{mean^2}\right)}\f$
  */
 class LogNormalVariable : public RandomVariable { 
 public:
   /**
-   * \param mu Mean value of the underlying normal distribution.
-   * \param sigma Standard deviation of the underlying normal distribution.
-   *
-   * Notice: the parameters mu and sigma are _not_ the mean and standard
-   * deviation of the log-normal distribution.  To obtain the
-   * parameters mu and sigma for a given mean and standard deviation
-   * of the log-normal distribution the following convertion can be
-   * used:
-   * \code
-   * double tmp = log (1 + pow (stddev/mean, 2));
-   * double sigma = sqrt (tmp);
-   * double mu = log (mean) - 0.5*tmp;
-   * \endcode
+   * \param mu mu parameter of the lognormal distribution
+   * \param sigma sigma parameter of the lognormal distribution
    */
   LogNormalVariable (double mu, double sigma);
 
@@ -727,8 +762,8 @@ public:
   virtual RandomVariable* Copy() const;
 public:
   /**
-   * \param mu Mean value of the underlying normal distribution.
-   * \param sigma Standard deviation of the underlying normal distribution.
+   * \param mu mu parameter of the underlying normal distribution
+   * \param sigma sigma parameter of the underlying normal distribution
    * \return A random number from the distribution specified by mu and sigma
    */
   static double GetSingleValue(double mu, double sigma);
