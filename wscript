@@ -144,6 +144,10 @@ def configure(conf):
     conf.sub_config('src')
     conf.sub_config('utils')
 
+    if Params.g_options.enable_modules:
+        conf.env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
+                                           Params.g_options.enable_modules.split(',')]
+
 
 def create_ns3_program(bld, name, dependencies=('simulator',)):
     program = bld.create_obj('cpp', 'program')
@@ -179,9 +183,55 @@ def build(bld):
         raise SystemExit(0)
 
     # process subfolders from here
-    bld.add_subdirs('lib') # first subdirs are processed last by WAF
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples tutorial')
+
+    ## if --enabled-modules option was given, we disable building the
+    ## modules that were not enabled, and programs that depend on
+    ## disabled modules.
+    env = bld.env()
+
+    if Params.g_options.enable_modules:
+        Params.warning("the option --enable-modules is being applied to this build only;"
+                       " to make it permanent it needs to be given to waf configure.")
+        env['NS3_ENABLED_MODULES'] = ['ns3-'+mod for mod in
+                                      Params.g_options.enable_modules.split(',')]
+
+    if env['NS3_ENABLED_MODULES']:
+        modules = env['NS3_ENABLED_MODULES']
+        changed = True
+        while changed:
+            changed = False
+            for module in modules:
+                module_obj = Object.name_to_obj(module)
+                if module_obj is None:
+                    raise ValueError("module %s not found" % module)
+                for dep in module_obj.add_objects:
+                    if not dep.startswith('ns3-'):
+                        continue
+                    if dep not in modules:
+                        modules.append(dep)
+                        changed = True
+
+        ## remove objects that depend on modules not listed
+        for obj in list(Object.g_allobjs):
+            if hasattr(obj, 'ns3_module_dependencies'):
+                for dep in obj.ns3_module_dependencies:
+                    if dep not in modules:
+                        Object.g_allobjs.remove(obj)
+                        break
+            if obj.name in env['NS3_MODULES'] and obj.name not in modules:
+                Object.g_allobjs.remove(obj)
+
+    ## Create a single ns3 library containing all enabled modules
+    lib = bld.create_obj('cpp', 'shlib')
+    lib.name = 'ns3'
+    lib.target = 'ns3'
+    if env['NS3_ENABLED_MODULES']:
+        lib.add_objects = list(modules)
+    else:
+        lib.add_objects = list(env['NS3_MODULES'])
+
 
 
 
