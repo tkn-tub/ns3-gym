@@ -434,8 +434,8 @@ std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa)
 const InterfaceId GlobalRouter::iid = 
   MakeInterfaceId ("GlobalRouter", Object::iid);
 
-GlobalRouter::GlobalRouter (Ptr<Node> node)
-  : m_node(node), m_LSAs()
+GlobalRouter::GlobalRouter ()
+  : m_LSAs()
 {
   NS_LOG_FUNCTION;
   SetInterfaceId (GlobalRouter::iid);
@@ -452,7 +452,6 @@ void
 GlobalRouter::DoDispose ()
 {
   NS_LOG_FUNCTION;
-  m_node = 0;
   Object::DoDispose ();
 }
 
@@ -491,8 +490,9 @@ GlobalRouter::GetRouterId (void) const
 GlobalRouter::DiscoverLSAs (void)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_LOGIC("For node " << m_node->GetId () );
-  NS_ASSERT_MSG(m_node, 
+  Ptr<Node> node = QueryInterface<Node> (Node::iid);
+  NS_LOG_LOGIC("For node " << node->GetId () );
+  NS_ASSERT_MSG(node, 
     "GlobalRouter::DiscoverLSAs (): <Node> interface not set");
 
   ClearLSAs ();
@@ -506,7 +506,7 @@ GlobalRouter::DiscoverLSAs (void)
 // Ipv4 interface.  This is where the information regarding the attached 
 // interfaces lives.
 //
-  Ptr<Ipv4> ipv4Local = m_node->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ipv4Local = node->QueryInterface<Ipv4> (Ipv4::iid);
   NS_ASSERT_MSG(ipv4Local, 
     "GlobalRouter::DiscoverLSAs (): QI for <Ipv4> interface failed");
 //
@@ -523,11 +523,11 @@ GlobalRouter::DiscoverLSAs (void)
 // as the number of devices may include those for stub networks (e.g., 
 // ethernets, etc.).  
 //
-  uint32_t numDevices = m_node->GetNDevices();
+  uint32_t numDevices = node->GetNDevices();
   NS_LOG_LOGIC ("numDevices = " << numDevices);
   for (uint32_t i = 0; i < numDevices; ++i)
     {
-      Ptr<NetDevice> ndLocal = m_node->GetDevice(i);
+      Ptr<NetDevice> ndLocal = node->GetDevice(i);
 
       if (ndLocal->IsBroadcast () && !ndLocal->IsPointToPoint () )
         {
@@ -543,7 +543,7 @@ GlobalRouter::DiscoverLSAs (void)
 // is a function to do this used down in the guts of the stack, but it's not 
 // exported so we had to whip up an equivalent.
 //
-          uint32_t ifIndexLocal = FindIfIndexForDevice(m_node, ndLocal);
+          uint32_t ifIndexLocal = FindIfIndexForDevice(node, ndLocal);
           Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
           Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
           NS_LOG_LOGIC ("Working with local address " << addrLocal);
@@ -580,11 +580,11 @@ GlobalRouter::DiscoverLSAs (void)
               plr->SetLinkType (GlobalRoutingLinkRecord::TransitNetwork);
               // Link ID is IP interface address of designated router
               Ipv4Address desigRtr = 
-                FindDesignatedRouterForLink (m_node, ndLocal);
+                FindDesignatedRouterForLink (node, ndLocal);
               if (desigRtr == addrLocal) 
                 {
                   listOfDRInterfaces.push_back (ndLocal);
-                  NS_LOG_LOGIC (m_node->GetId () << " is a DR");
+                  NS_LOG_LOGIC (node->GetId () << " is a DR");
                 }
               plr->SetLinkId (desigRtr);
               // Link Data is router's own IP address
@@ -604,7 +604,7 @@ GlobalRouter::DiscoverLSAs (void)
 // is a function to do this used down in the guts of the stack, but it's not 
 // exported so we had to whip up an equivalent.
 //
-          uint32_t ifIndexLocal = FindIfIndexForDevice(m_node, ndLocal);
+          uint32_t ifIndexLocal = FindIfIndexForDevice(node, ndLocal);
 //
 // Now that we have the Ipv4 interface index, we can get the address and mask
 // we need.
@@ -691,7 +691,7 @@ GlobalRouter::DiscoverLSAs (void)
         {
 // Build one NetworkLSA for each interface that is a DR
           Ptr<NetDevice> ndLocal = *i;
-          uint32_t ifIndexLocal = FindIfIndexForDevice(m_node, ndLocal);
+          uint32_t ifIndexLocal = FindIfIndexForDevice(node, ndLocal);
           Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
           Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
 
@@ -729,7 +729,7 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<Node> node,
   Ptr<NetDevice> ndLocal) const
 {
   uint32_t ifIndexLocal = FindIfIndexForDevice(node, ndLocal);
-  Ptr<Ipv4> ipv4Local = m_node->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ipv4Local = QueryInterface<Ipv4> (Ipv4::iid);
   NS_ASSERT (ipv4Local);
   Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
   Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);

@@ -563,12 +563,9 @@ public:
   static const InterfaceId iid;
 
 /**
- * @brief Create a Global Router class and aggregate its interface onto the 
- * Node provided.
- *
- * @param node The existing Node onto which this router will be aggregated.
+ * @brief Create a Global Router class 
  */
-  GlobalRouter (Ptr<Node> node);
+  GlobalRouter ();
 
 /**
  * @brief Get the Router ID associated with this Global Router.
@@ -645,8 +642,6 @@ private:
   uint32_t FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd) const;
   Ipv4Address FindDesignatedRouterForLink (Ptr<Node> node,   
     Ptr<NetDevice> ndLocal) const;
-
-  Ptr<Node>     m_node;
 
   typedef std::list<GlobalRoutingLSA*> ListOfLSAs_t;
   ListOfLSAs_t m_LSAs;

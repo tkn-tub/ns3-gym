@@ -366,7 +366,7 @@ GlobalRouteManagerImpl::SelectRouterNodes ()
       NS_LOG_LOGIC ("Adding GlobalRouter interface to node " << 
         node->GetId ());
 
-      Ptr<GlobalRouter> globalRouter = Create<GlobalRouter> (node);
+      Ptr<GlobalRouter> globalRouter = Create<GlobalRouter> ();
       node->AddInterface (globalRouter);
     }
 }
