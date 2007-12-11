@@ -60,6 +60,34 @@ NodeNetDeviceIndex::GetTypeName (void) const
 }
 
 
+NodeApplicationIndex::NodeApplicationIndex ()
+  : m_index (0)
+{}
+NodeApplicationIndex::NodeApplicationIndex (uint32_t index)
+  : m_index (index)
+{}
+uint32_t 
+NodeApplicationIndex::Get (void) const
+{
+  return m_index;
+}
+void 
+NodeApplicationIndex::Print (std::ostream &os) const
+{
+  os << "device=" << m_index;
+}
+uint16_t 
+NodeApplicationIndex::GetUid (void)
+{
+  static uint16_t uid = AllocateUid<NodeApplicationIndex> ("NodeApplicationIndex");
+  return uid;
+}
+std::string 
+NodeApplicationIndex::GetTypeName (void) const
+{
+  return "ns3::NodeApplicationIndex";
+}
+
 
 Node::Node()
   : m_id(0), 
@@ -92,6 +120,7 @@ Node::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddArray ("devices", m_devices.begin (), m_devices.end (), NodeNetDeviceIndex ());
+  resolver->AddArray ("applications", m_applications.begin (), m_applications.end (), NodeApplicationIndex ());
   resolver->SetParentResolver (Object::GetTraceResolver ());
   return resolver;
 }
