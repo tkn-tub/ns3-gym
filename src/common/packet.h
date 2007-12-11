@@ -158,15 +158,27 @@ public:
   template <typename T>
   uint32_t RemoveTrailer (T &trailer);
   /**
+   * \param tag a pointer to the tag to attach to this packet.
+   *
    * Attach a tag to this packet. The tag is fully copied
    * in a packet-specific internal buffer. This operation 
    * is expected to be really fast. The copy constructor of the
    * tag is invoked to copy it into the tag buffer.
    *
-   * \param tag a pointer to the tag to attach to this packet.
+   * Note that adding a tag is a const operation which is pretty 
+   * un-intuitive. The rationale is that the content and behavior of
+   * a packet is _not_ changed when a tag is added to a packet: any
+   * code which was not aware of the new tag is going to work just
+   * the same if the new tag is added. The real reason why adding a
+   * tag was made a const operation is to allow a trace sink which gets
+   * a packet to tag the packet, even if the packet is const (and most
+   * trace sources should use const packets because it would be
+   * totally evil to allow a trace sink to modify the content of a
+   * packet).
+   *
    */
   template <typename T>
-  void AddTag (T const &tag);
+  void AddTag (T const &tag) const;
   /**
    * Remove a tag from this packet. The data stored internally
    * for this tag is copied in the input tag if an instance
@@ -450,7 +462,7 @@ Packet::RemoveTrailer (T &trailer)
 
 
 template <typename T>
-void Packet::AddTag (T const& tag)
+void Packet::AddTag (T const& tag) const
 {
   const Tag *parent;
   // if the following assignment fails, it is because the
