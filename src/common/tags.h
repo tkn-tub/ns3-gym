@@ -44,7 +44,7 @@ public:
   inline ~Tags ();
 
   template <typename T>
-  void Add (T const&tag);
+  void Add (T const&tag) const;
 
   template <typename T>
   bool Remove (T &tag);
@@ -71,8 +71,8 @@ private:
   };
 
   bool Remove (uint32_t id);
-  struct Tags::TagData *AllocData (void);
-  void FreeData (struct TagData *data);
+  struct Tags::TagData *AllocData (void) const;
+  void FreeData (struct TagData *data) const;
 
   static struct Tags::TagData *gFree;
   static uint32_t gN_free;
@@ -96,7 +96,7 @@ namespace ns3 {
 
 template <typename T>
 void 
-Tags::Add (T const&tag)
+Tags::Add (T const&tag) const
 {
   const Tag *parent;
   // if the following assignment fails, it is because the
@@ -116,7 +116,7 @@ Tags::Add (T const&tag)
   void *buf = &newStart->m_data;
   new (buf) T (tag);
   newStart->m_next = m_next;
-  m_next = newStart;
+  const_cast<Tags *> (this)->m_next = newStart;
 }
 
 template <typename T>

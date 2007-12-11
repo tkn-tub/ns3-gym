@@ -30,7 +30,7 @@ struct Tags::TagData *Tags::gFree = 0;
 uint32_t Tags::gN_free = 0;
 
 struct Tags::TagData *
-Tags::AllocData (void)
+Tags::AllocData (void) const
 {
   struct Tags::TagData *retval;
   if (gFree != 0) 
@@ -47,7 +47,7 @@ Tags::AllocData (void)
 }
 
 void
-Tags::FreeData (struct TagData *data)
+Tags::FreeData (struct TagData *data) const
 {
   if (gN_free > 1000) 
     {
@@ -61,7 +61,7 @@ Tags::FreeData (struct TagData *data)
 }
 #else
 struct Tags::TagData *
-Tags::AllocData (void)
+Tags::AllocData (void) const
 {
   struct Tags::TagData *retval;
   retval = new struct Tags::TagData ();
@@ -69,7 +69,7 @@ Tags::AllocData (void)
 }
 
 void
-Tags::FreeData (struct TagData *data)
+Tags::FreeData (struct TagData *data) const
 {
   delete data;
 }
