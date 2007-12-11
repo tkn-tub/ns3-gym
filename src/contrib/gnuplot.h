@@ -39,16 +39,32 @@ public:
     FSTEPS,
     HISTEPS,
   };
+  enum ErrorBars {
+    NONE,
+    X,
+    Y,
+    XY
+  };
 
   GnuplotDataset (std::string title);
   void SetStyle (enum Style style);
+  void SetErrorBars (enum ErrorBars errorBars);
   void Add (double x, double y);
+  void Add (double x, double y, double errorDelta);
+  void Add (double x, double y, double errorDeltaX, double errorDeltaY);
 private:
   friend class Gnuplot;
-  typedef std::vector<std::pair<double,double> > Dataset;
+  struct Data {
+    double x;
+    double y;
+    double dx;
+    double dy;
+  };
+  typedef std::vector<struct Data> Dataset;
   Dataset m_dataset;
   std::string m_title;
   enum Style m_style;
+  enum ErrorBars m_errorBars;
 };
 
 class Gnuplot
