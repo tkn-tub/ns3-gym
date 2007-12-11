@@ -29,6 +29,7 @@
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/data-rate.h"
+#include "ns3/callback-trace-source.h"
 
 namespace ns3 {
 
@@ -135,8 +136,10 @@ private:
   EventId         m_sendEvent;    // Eventid of pending "send packet" event
   bool            m_sending;      // True if currently in sending state
   std::string     m_iid;
+  CallbackTraceSource<Ptr<const Packet> > m_txTrace;
   
 private:
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   void ScheduleNextTx();
   void ScheduleStartEvent();
   void ScheduleStopEvent();

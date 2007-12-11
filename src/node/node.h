@@ -58,6 +58,25 @@ private:
 };
 
 /**
+ * \brief hold in a TraceContext the index of an Application within a Node
+ */
+class NodeApplicationIndex : public TraceContextElement
+{
+public:
+  NodeApplicationIndex ();
+  NodeApplicationIndex (uint32_t index);
+  /**
+   * \returns the index of the Application within its container Node.
+   */
+  uint32_t Get (void) const;
+  void Print (std::ostream &os) const;
+  std::string GetTypeName (void) const;
+  static uint16_t GetUid (void);
+private:
+  uint32_t m_index;
+};
+
+/**
  * \brief A network Node.
  *
  * This class holds together:

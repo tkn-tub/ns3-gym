@@ -33,6 +33,7 @@
 #include "ns3/socket-factory.h"
 #include "ns3/default-value.h"
 #include "ns3/packet.h"
+#include "ns3/composite-trace-resolver.h"
 #include "onoff-application.h"
 
 NS_LOG_COMPONENT_DEFINE ("OnOffApplication");
@@ -241,6 +242,7 @@ void OnOffApplication::SendPacket()
 
   NS_ASSERT (m_sendEvent.IsExpired ());
   Ptr<Packet> packet = Create<Packet> (m_pktSize);
+  m_txTrace (packet);
   m_socket->Send (packet);
   m_totBytes += m_pktSize;
   m_lastStartTime = Simulator::Now();
@@ -260,6 +262,19 @@ void OnOffApplication::ConnectionFailed(Ptr<Socket>)
 {
   NS_LOG_FUNCTION;
   cout << "OnOffApplication, Connection Failed" << endl;
+}
+
+Ptr<TraceResolver> 
+OnOffApplication::GetTraceResolver (void) const
+{
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
+  resolver->AddSource ("tx",
+                       TraceDoc ("A new packet is created and is sent",
+                                 "Ptr<const Packet>",
+                                 "The newly-created packet."),
+                       m_txTrace);
+  resolver->SetParentResolver (Application::GetTraceResolver ());
+  return resolver;
 }
 
 } // Namespace ns3

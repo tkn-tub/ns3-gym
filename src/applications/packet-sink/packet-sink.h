@@ -24,6 +24,8 @@
 #include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
+#include "ns3/callback-trace-source.h"
+#include "ns3/address.h"
 
 namespace ns3 {
 
@@ -68,6 +70,8 @@ private:
   // inherited from Application base class.
   virtual void StartApplication (void);    // Called at time specified by Start
   virtual void StopApplication (void);     // Called at time specified by Stop
+  // inherited from Object base class.
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 
   void Construct (Ptr<Node> n,
                   const Address &local,
@@ -78,6 +82,7 @@ private:
   Ptr<Socket>     m_socket;       // Associated socket
   Address         m_local;        // Local address to bind to
   std::string     m_iid;          // Protocol name (e.g., "Udp")
+  CallbackTraceSource<Ptr<const Packet>, const Address &> m_rxTrace;
   
 };
 
