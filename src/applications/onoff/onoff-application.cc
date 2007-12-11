@@ -269,7 +269,7 @@ OnOffApplication::GetTraceResolver (void) const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
   resolver->AddSource ("tx",
-                       TraceDoc ("A new packet is created is sent",
+                       TraceDoc ("A new packet is created and is sent",
                                  "Ptr<const Packet>",
                                  "The newly-created packet."),
                        m_txTrace);
