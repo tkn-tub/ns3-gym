@@ -18,13 +18,15 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "gnuplot.h"
+#include "ns3/assert.h"
 #include <ostream>
 
 namespace ns3 {
 
 GnuplotDataset::GnuplotDataset (std::string title)
   : m_title (title),
-    m_style (LINES)
+    m_style (LINES),
+    m_errorBars (NONE)
 {}
 void 
 GnuplotDataset::SetStyle (enum Style style)
@@ -32,9 +34,31 @@ GnuplotDataset::SetStyle (enum Style style)
   m_style = style;
 }
 void 
+GnuplotDataset::SetErrorBars (enum ErrorBars errorBars)
+{
+  m_errorBars = errorBars;
+}
+void 
 GnuplotDataset::Add (double x, double y)
 {
-  m_dataset.push_back (std::make_pair (x,y));
+  NS_ASSERT (m_errorBars == NONE);
+  struct Data data;
+  data.x = x;
+  data.y = y;
+  data.dx = 0.0;
+  data.dy = 0.0;
+  m_dataset.push_back (data);
+}
+void 
+GnuplotDataset::Add (double x, double y, double errorDelta)
+{
+  NS_ASSERT (m_errorBars == X || m_errorBars == Y);
+  struct Data data;
+  data.x = x;
+  data.y = y;
+  data.dx = errorDelta;
+  data.dy = errorDelta;
+  m_dataset.push_back (data);
 }
 
 Gnuplot::Gnuplot (std::string pngFilename)
@@ -67,13 +91,41 @@ Gnuplot::GenerateOutput (std::ostream &os)
       os << "'-' title '" << (*i)->m_title << "'";
       switch ((*i)->m_style) {
       case GnuplotDataset::LINES:
-	os << " with lines";
+        os << " with lines";
 	break;
       case GnuplotDataset::POINTS:
-	os << " with points";
+        switch ((*i)->m_errorBars)
+          {
+          case GnuplotDataset::NONE:
+            os << " with points";
+            break;
+          case GnuplotDataset::X:
+            os << " with xerrorbars";
+            break;
+          case GnuplotDataset::Y:
+            os << " with yerrorbars";
+            break;
+          case GnuplotDataset::XY:
+            os << " with xyerrorbars";
+            break;
+          }
 	break;
       case GnuplotDataset::LINES_POINTS:
-	os << " with linespoints";
+        switch ((*i)->m_errorBars)
+          {
+          case GnuplotDataset::NONE:
+            os << " with linespoints";
+            break;
+          case GnuplotDataset::X:
+            os << " with xerrorlines";
+            break;
+          case GnuplotDataset::Y:
+            os << " with yerrorlines";
+            break;
+          case GnuplotDataset::XY:
+            os << " with xyerrorlines";
+            break;
+          }
 	break;
       case GnuplotDataset::DOTS:
 	os << " with dots";
@@ -103,7 +155,20 @@ Gnuplot::GenerateOutput (std::ostream &os)
       for (GnuplotDataset::Dataset::const_iterator j = (*i)->m_dataset.begin ();
 	   j != (*i)->m_dataset.end (); j++)
 	{
-	  os << j->first << " " << j->second << std::endl;
+          switch ((*i)->m_errorBars) {
+          case GnuplotDataset::NONE:
+            os << j->x << " " << j->y << std::endl;
+            break;
+          case GnuplotDataset::X:
+            os << j->x << " " << j->y << " " << j->dx << std::endl;
+            break;
+          case GnuplotDataset::Y:
+            os << j->x << " " << j->y << " " << j->dy << std::endl;
+            break;
+          case GnuplotDataset::XY:
+            os << j->x << " " << j->y << " " << j->dx << " " << j->dy << std::endl;
+            break;
+          }
 	}
       os << "e" << std::endl;
     }
