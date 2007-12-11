@@ -25,6 +25,7 @@
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
+#include "ns3/composite-trace-resolver.h"
 #include "packet-sink.h"
 
 using namespace std;
@@ -101,8 +102,23 @@ void PacketSink::Receive(Ptr<Socket> socket, Ptr<Packet> packet,
       NS_LOG_INFO ("Received " << packet->GetSize() << " bytes from " << 
         address.GetIpv4() << " [" << address << "]---'" << 
         packet->PeekData() << "'");
-      // TODO:  Add a tracing source here
     }
+  m_rxTrace (packet, from);
+}
+
+Ptr<TraceResolver> 
+PacketSink::GetTraceResolver (void) const
+{
+  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
+  resolver->AddSource ("rx",
+                       TraceDoc ("A new packet has been received",
+                                 "Ptr<const Packet>",
+                                 "The newly-received packet.",
+                                 "const Address &",
+                                 "The source address of the received packet."),
+                       m_rxTrace);
+  resolver->SetParentResolver (Application::GetTraceResolver ());
+  return resolver;
 }
 
 } // Namespace ns3
