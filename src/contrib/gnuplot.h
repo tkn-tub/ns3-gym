@@ -73,12 +73,16 @@ public:
   Gnuplot (std::string pngFilename);
   ~Gnuplot ();
 
+  void SetLegend (std::string xLegend, std::string yLegend);
+
   void AddDataset (const GnuplotDataset &dataset);
 
   void GenerateOutput (std::ostream &os);
 private:
   typedef std::vector<GnuplotDataset *> Datasets;
   Datasets m_datasets;
+  std::string m_xLegend;
+  std::string m_yLegend;
   std::string m_pngFilename;
 };
 
