@@ -38,6 +38,7 @@ class MacLow;
 class MacParameters;
 class MacTxMiddle;
 class RandomStream;
+class MacStations;
 
 /**
  * \brief handle packet fragmentation and retransmissions.
@@ -80,6 +81,7 @@ public:
 
   void SetLow (MacLow *low);
   void SetParameters (MacParameters *parameters);
+  void SetStations (MacStations *stations);
   void SetTxMiddle (MacTxMiddle *txMiddle);
   /**
    * \param callback the callback to invoke when a 
@@ -147,6 +149,7 @@ private:
   WifiMacQueue *m_queue;
   MacTxMiddle *m_txMiddle;
   MacLow *m_low;
+  MacStations *m_stations;
   MacParameters *m_parameters;
   TransmissionListener *m_transmissionListener;
   RandomStream *m_rng;

@@ -75,6 +75,8 @@ double GetPhyRxGainDb (void);
 
 Ssid GetSsid (void);
 
+bool GetIsLowLatency (void);
+
 } // namespace WifiDefaultParameters
 
 } // namespace ns3

@@ -72,11 +72,12 @@ public:
   virtual void ReportDataFailed (void);
   virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
   virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual WifiMode GetDataMode (uint32_t size);
-  virtual WifiMode GetRtsMode (void);
 
 private:
   virtual IdealMacStations *GetStations (void) const;
+  virtual WifiMode DoGetDataMode (uint32_t size);
+  virtual WifiMode DoGetRtsMode (void);
+
   IdealMacStations *m_stations;
   double m_lastSnr;
 };

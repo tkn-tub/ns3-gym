@@ -23,6 +23,7 @@
 #include <vector>
 #include <utility>
 #include "ns3/mac48-address.h"
+#include "ns3/packet.h"
 #include "wifi-mode.h"
 
 namespace ns3 {
@@ -56,6 +57,8 @@ public:
   BasicModesIterator BeginBasicModes (void) const;
   BasicModesIterator EndBasicModes (void) const;
 
+  bool IsLowLatency (void) const;
+
   MacStation *Lookup (Mac48Address address);
   MacStation *LookupNonUnicast (void);
 private:
@@ -65,6 +68,7 @@ private:
   WifiMode m_defaultTxMode;
   NonUnicastMacStation *m_nonUnicast;
   BasicModes m_basicModes;
+  bool m_isLowLatency;
 };
 
 } // namespace ns3
@@ -94,6 +98,10 @@ public:
   void RecordGotAssocTxFailed (void);
   void RecordDisassociated (void);
 
+  void PrepareForQueue (Ptr<const Packet> packet, uint32_t fullPacketSize);
+  WifiMode GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSize);
+  WifiMode GetRtsMode (Ptr<const Packet> packet);
+
   // reception-related method
   virtual void ReportRxOk (double rxSnr, WifiMode txMode) = 0;
 
@@ -102,8 +110,6 @@ public:
   virtual void ReportDataFailed (void) = 0;
   virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr) = 0;
   virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr) = 0;
-  virtual WifiMode GetDataMode (uint32_t size) = 0;
-  virtual WifiMode GetRtsMode (void) = 0;
 
   WifiMode GetCtsMode (WifiMode rtsMode);
   WifiMode GetAckMode (WifiMode dataMode);
@@ -111,6 +117,8 @@ public:
 private:
   typedef std::vector<WifiMode> SupportedModes;
   virtual MacStations *GetStations (void) const = 0;
+  virtual WifiMode DoGetDataMode (uint32_t size) = 0;
+  virtual WifiMode DoGetRtsMode (void) = 0;
 protected:
   uint32_t GetNSupportedModes (void) const;
   WifiMode GetSupportedMode (uint32_t i) const;

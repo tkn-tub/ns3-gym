@@ -264,6 +264,7 @@ WifiNetDevice::CreateDca (uint32_t minCw, uint32_t maxCw, uint32_t aifsn) const
   dca->SetParameters (m_parameters);
   dca->SetTxMiddle (m_txMiddle);
   dca->SetLow (m_low);
+  dca->SetStations (m_stations);
   dca->SetMaxQueueSize (400);
   dca->SetMaxQueueDelay (Seconds (10));
   return dca;

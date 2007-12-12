@@ -165,12 +165,12 @@ void ArfMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSn
     }
 }
 WifiMode
-ArfMacStation::GetDataMode (uint32_t size)
+ArfMacStation::DoGetDataMode (uint32_t size)
 {
   return GetSupportedMode (m_rate);
 }
 WifiMode
-ArfMacStation::GetRtsMode (void)
+ArfMacStation::DoGetRtsMode (void)
 {
   // XXX: we could/should implement the Arf algorithm for
   // RTS only by picking a single rate within the BasicRateSet.

@@ -31,6 +31,8 @@
 #include "mac-low.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
+#include "wifi-mac-trailer.h"
+#include "mac-stations.h"
 #include "wifi-phy.h"
 #include "random-stream.h"
 
@@ -132,6 +134,11 @@ DcaTxop::SetParameters (MacParameters *parameters)
 {
   m_parameters = parameters;
 }
+void
+DcaTxop::SetStations (MacStations *stations)
+{
+  m_stations = stations;
+}
 void 
 DcaTxop::SetTxMiddle (MacTxMiddle *txMiddle)
 {
@@ -162,6 +169,10 @@ DcaTxop::SetMaxQueueDelay (Time delay)
 void 
 DcaTxop::Queue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
 {
+  WifiMacTrailer fcs;
+  uint32_t fullPacketSize = hdr.GetSerializedSize () + packet->GetSize () + fcs.GetSerializedSize ();
+  MacStation *station = m_stations->Lookup (hdr.GetAddr1 ());
+  station->PrepareForQueue (packet, fullPacketSize);
   m_queue->Enqueue (packet, hdr);
   StartAccessIfNeeded ();
 }

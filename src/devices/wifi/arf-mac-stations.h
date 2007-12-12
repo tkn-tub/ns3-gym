@@ -63,11 +63,11 @@ public:
   virtual void ReportDataFailed (void);
   virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
   virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual WifiMode GetDataMode (uint32_t size);
-  virtual WifiMode GetRtsMode (void);
 
 private:
   virtual ArfMacStations *GetStations (void) const;
+  virtual WifiMode DoGetDataMode (uint32_t size);
+  virtual WifiMode DoGetRtsMode (void);
 
   uint32_t m_timer;
   uint32_t m_success;
