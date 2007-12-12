@@ -27,6 +27,19 @@ namespace ns3 {
 
 class Socket;
 
+/**
+ * \brief API to create UDP socket instances 
+ *
+ * This abstract class defines the API for UDP sockets.
+ * This class also can hold the global default variables used to
+ * initialize newly created sockets, such as values that are
+ * set through the sysctl or proc interfaces in Linux.
+
+ * All UDP implementations must provide an implementation of CreateSocket
+ * below.
+ * 
+ * \see UdpImpl
+ */
 class Udp : public SocketFactory
 {
 public:
@@ -34,6 +47,12 @@ public:
 
   Udp ();
 
+  /**
+   * \return smart pointer to Socket
+   * 
+   * API for creating socket instances; must be implemented by UDP 
+   * implementations..
+   */
   virtual Ptr<Socket> CreateSocket (void) = 0;
 };
 
