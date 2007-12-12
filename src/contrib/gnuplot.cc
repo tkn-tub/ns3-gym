@@ -75,6 +75,13 @@ Gnuplot::~Gnuplot ()
 }
 
 void 
+Gnuplot::SetLegend (std::string xLegend, std::string yLegend)
+{
+  m_xLegend = xLegend;
+  m_yLegend = yLegend;
+}
+
+void 
 Gnuplot::AddDataset (const GnuplotDataset &dataset)
 {
   m_datasets.push_back (new GnuplotDataset (dataset));
@@ -85,6 +92,8 @@ Gnuplot::GenerateOutput (std::ostream &os)
 {
   os << "set terminal png" << std::endl;
   os << "set output '" << m_pngFilename << "'" << std::endl;
+  os << "set xlabel '" << m_xLegend << "'" << std::endl;
+  os << "set ylabel '" << m_yLegend << "'" << std::endl;
   os << "plot ";
   for (Datasets::const_iterator i = m_datasets.begin (); i != m_datasets.end ();)
     {
