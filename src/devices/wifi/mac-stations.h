@@ -110,6 +110,8 @@ public:
   virtual void ReportDataFailed (void) = 0;
   virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr) = 0;
   virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr) = 0;
+  virtual void ReportFinalRtsFailed (void) = 0;
+  virtual void ReportFinalDataFailed (void) = 0;
 
   WifiMode GetCtsMode (WifiMode rtsMode);
   WifiMode GetAckMode (WifiMode dataMode);

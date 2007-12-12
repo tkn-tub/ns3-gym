@@ -44,6 +44,9 @@ public:
   virtual void ReportDataFailed (void);
   virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
   virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
+  virtual void ReportFinalRtsFailed (void);
+  virtual void ReportFinalDataFailed (void);
+
 private:
   virtual MacStations *GetStations (void) const;
   virtual WifiMode DoGetDataMode (uint32_t size);
@@ -81,6 +84,13 @@ NonUnicastMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double data
 {
   NS_ASSERT (false);
 }
+void 
+NonUnicastMacStation::ReportFinalRtsFailed (void)
+{}
+void 
+NonUnicastMacStation::ReportFinalDataFailed (void)
+{}
+
 WifiMode 
 NonUnicastMacStation::DoGetDataMode (uint32_t size)
 {

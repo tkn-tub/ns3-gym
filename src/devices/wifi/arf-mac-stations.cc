@@ -164,6 +164,13 @@ void ArfMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSn
       m_recovery = true;
     }
 }
+void 
+ArfMacStation::ReportFinalRtsFailed (void)
+{}
+void 
+ArfMacStation::ReportFinalDataFailed (void)
+{}
+
 WifiMode
 ArfMacStation::DoGetDataMode (uint32_t size)
 {

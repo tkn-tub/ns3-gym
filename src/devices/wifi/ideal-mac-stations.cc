@@ -93,6 +93,13 @@ IdealMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
   TRACE ("got cts for rts snr="<<dataSnr);
   m_lastSnr = dataSnr;
 }
+void 
+IdealMacStation::ReportFinalRtsFailed (void)
+{}
+void 
+IdealMacStation::ReportFinalDataFailed (void)
+{}
+
 WifiMode
 IdealMacStation::DoGetDataMode (uint32_t size)
 {
