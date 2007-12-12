@@ -431,6 +431,8 @@ DcaTxop::MissedCts (void)
   m_ctstimeoutTrace (m_ssrc);
   if (m_ssrc > Parameters ()->GetMaxSsrc ()) 
     {
+      MacStation *station = m_stations->Lookup (m_currentHdr.GetAddr1 ());
+      station->ReportFinalRtsFailed ();
       // to reset the dcf.
       m_currentPacket = 0;
       m_dcf->ResetCw ();
@@ -476,6 +478,8 @@ DcaTxop::MissedAck (void)
   m_acktimeoutTrace (m_slrc);
   if (m_slrc > Parameters ()->GetMaxSlrc ()) 
     {
+      MacStation *station = m_stations->Lookup (m_currentHdr.GetAddr1 ());
+      station->ReportFinalDataFailed ();
       // to reset the dcf.    
       m_currentPacket = 0;
       m_dcf->ResetCw ();
