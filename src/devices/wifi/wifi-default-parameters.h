@@ -35,6 +35,7 @@ enum RateControlAlgorithm {
   ARF,
   AARF,
   ONOE,
+  AMRR,
   IDEAL
 };
 enum PhyModeParameter {

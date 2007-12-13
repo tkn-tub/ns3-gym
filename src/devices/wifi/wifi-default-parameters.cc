@@ -65,6 +65,7 @@ static EnumDefaultValue<enum RateControlAlgorithm> g_rateControlAlgorithm
  AARF, "Aarf",
  IDEAL, "Ideal",
  ONOE, "Onoe",
+ AMRR, "Amrr",
  0, (void *)0);
 
 static NumericDefaultValue<uint32_t> g_arfSuccessThreshold
