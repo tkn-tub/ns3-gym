@@ -40,6 +40,7 @@
 #include "aarf-mac-stations.h"
 #include "ideal-mac-stations.h"
 #include "cr-mac-stations.h"
+#include "onoe-mac-stations.h"
 
 namespace ns3 {
 
@@ -210,6 +211,9 @@ WifiNetDevice::Construct (void)
         ideal->AddModeSnrThreshold (mode, m_phy->CalculateSnr (mode, ber));
       }
     m_stations = ideal;
+  } break;
+  case WifiDefaultParameters::ONOE: {
+    m_stations = new OnoeMacStations (m_phy->GetMode (0));
   } break;
   default:
     // NOTREACHED
