@@ -207,8 +207,8 @@ WifiMode
 AmrrMacStation::DoGetDataMode (uint32_t size)
 {
   UpdateMode ();
-  //XXX
-  return GetSupportedMode (0);
+  NS_ASSERT (m_txrate < GetNSupportedModes ());
+  return GetSupportedMode (m_txrate);
 }
 WifiMode 
 AmrrMacStation::DoGetRtsMode (void)
