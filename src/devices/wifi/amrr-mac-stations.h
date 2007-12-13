@@ -79,6 +79,7 @@ private:
   uint32_t m_tx_ok;
   uint32_t m_tx_err;
   uint32_t m_tx_retr;
+  uint32_t m_retry;
   uint32_t m_txrate;
   uint32_t m_successThreshold;
   uint32_t m_success;

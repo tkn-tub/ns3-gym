@@ -81,6 +81,7 @@ AmrrMacStation::ReportRtsFailed (void)
 void 
 AmrrMacStation::ReportDataFailed (void)
 {
+  m_retry++;
   m_tx_retr++;
 }
 void 
@@ -89,6 +90,7 @@ AmrrMacStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 void 
 AmrrMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {
+  m_retry = 0;
   m_tx_ok++;
 }
 void 
@@ -97,6 +99,7 @@ AmrrMacStation::ReportFinalRtsFailed (void)
 void 
 AmrrMacStation::ReportFinalDataFailed (void)
 {
+  m_retry = 0;
   m_tx_err++;
 }
 bool
@@ -208,7 +211,46 @@ AmrrMacStation::DoGetDataMode (uint32_t size)
 {
   UpdateMode ();
   NS_ASSERT (m_txrate < GetNSupportedModes ());
-  return GetSupportedMode (m_txrate);
+  uint32_t rateIndex;
+  if (m_retry < 1)
+    {
+      rateIndex = m_txrate;
+    }
+  else if (m_retry < 2)
+    {
+      if (m_txrate > 0)
+        {
+          rateIndex = m_txrate - 1;
+        }
+      else
+        {
+          rateIndex = m_txrate;
+        }
+    }
+  else if (m_retry < 3)
+    {
+      if (m_txrate > 1)
+        {
+          rateIndex = m_txrate - 2;
+        }
+      else
+        {
+          rateIndex = m_txrate;
+        }
+    }
+  else
+    {
+      if (m_txrate > 2)
+        {
+          rateIndex = m_txrate - 3;
+        }
+      else
+        {
+          rateIndex = m_txrate;
+        }
+    }
+
+  return GetSupportedMode (rateIndex);
 }
 WifiMode 
 AmrrMacStation::DoGetRtsMode (void)
