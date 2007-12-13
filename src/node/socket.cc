@@ -78,6 +78,36 @@ Socket::SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&>
   m_receivedData = receivedData;
 }
 
+int Socket::Send (const uint8_t* buf, uint32_t size)
+{
+  NS_LOG_FUNCTION;
+  Ptr<Packet> p;
+  if (buf)
+    {
+      p = Create<Packet> (buf, size);
+    }
+  else
+    {
+      p = Create<Packet> (size);
+    }
+  return Send (p);
+}
+
+int Socket::SendTo (const Address &address, const uint8_t* buf, uint32_t size)
+{
+  NS_LOG_FUNCTION;
+  Ptr<Packet> p;
+  if(buf)
+    {
+      p = Create<Packet> (buf, size);
+    }
+  else
+    {
+      p = Create<Packet> (size);
+    }
+  return SendTo (address,p);
+}
+
 void 
 Socket::NotifyCloseCompleted (void)
 {
