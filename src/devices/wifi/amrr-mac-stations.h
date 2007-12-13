@@ -35,6 +35,10 @@ private:
   virtual MacStation *CreateStation (void);
 
   Time m_updatePeriod;
+  double m_failureRatio;
+  double m_successRatio;
+  uint32_t m_maxSuccessThreshold;
+  uint32_t m_minSuccessThreshold;
 };
 
 /**
@@ -61,16 +65,24 @@ private:
 
   void UpdateRetry (void);
   void UpdateMode (void);
+  void ResetCnt (void);
+  void IncreaseRate (void);
+  void DecreaseRate (void);
+  bool IsMinRate (void) const;
+  bool IsMaxRate (void) const;
+  bool IsSuccess (void) const;
+  bool IsFailure (void) const;
+  bool IsEnough (void) const;
 
   AmrrMacStations *m_stations;
   Time m_nextModeUpdate;
-  uint32_t m_shortRetry;
-  uint32_t m_longRetry;
   uint32_t m_tx_ok;
   uint32_t m_tx_err;
   uint32_t m_tx_retr;
-  uint32_t m_tx_upper;
   uint32_t m_txrate;
+  uint32_t m_successThreshold;
+  uint32_t m_success;
+  bool m_recovery;
 };
 
 } // namespace ns3
