@@ -72,12 +72,14 @@ private:
   void UpdateMode (void);
 
   OnoeMacStations *m_stations;
+  Time m_nextModeUpdate;
   uint32_t m_shortRetry;
   uint32_t m_longRetry;
-  Time m_nextModeUpdate;
   uint32_t m_tx_ok;
   uint32_t m_tx_err;
   uint32_t m_tx_retr;
+  uint32_t m_tx_upper;
+  uint32_t m_txrate;
 };
 
 } // namespace ns3
