@@ -61,7 +61,8 @@ OnoeMacStation::OnoeMacStation (OnoeMacStations *stations)
     m_tx_ok (0),
     m_tx_err (0),
     m_tx_retr (0),
-    m_tx_upper (0)
+    m_tx_upper (0),
+    m_txrate (0)
 {}
 OnoeMacStation::~OnoeMacStation ()
 {}
@@ -114,6 +115,7 @@ OnoeMacStation::UpdateMode (void)
     {
       return;
     }
+  m_nextModeUpdate = Simulator::Now () + m_stations->m_updatePeriod;
   /**
    * The following 20 lines of code were copied from the Onoe
    * rate control kernel module used in the madwifi driver.
@@ -163,6 +165,7 @@ OnoeMacStation::UpdateMode (void)
   }
 
   if (nrate != m_txrate) {
+    NS_ASSERT (nrate < GetNSupportedModes ());
     m_txrate = nrate;
     m_tx_ok = m_tx_err = m_tx_retr = m_tx_upper = 0;
   } else if (enough)

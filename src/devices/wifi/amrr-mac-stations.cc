@@ -51,7 +51,11 @@ static NumericDefaultValue<uint32_t> g_minSuccessThreshold
 
 AmrrMacStations::AmrrMacStations (WifiMode defaultTxMode)
   : MacStations (defaultTxMode),
-    m_updatePeriod (g_updatePeriod.GetValue ())
+    m_updatePeriod (g_updatePeriod.GetValue ()),
+    m_failureRatio (g_failureRatio.GetValue ()),
+    m_successRatio (g_successRatio.GetValue ()),
+    m_maxSuccessThreshold (g_maxSuccessThreshold.GetValue ()),
+    m_minSuccessThreshold (g_minSuccessThreshold.GetValue ())
 {}
 MacStation *
 AmrrMacStations::CreateStation (void)
@@ -65,6 +69,8 @@ AmrrMacStation::AmrrMacStation (AmrrMacStations *stations)
     m_tx_ok (0),
     m_tx_err (0),
     m_tx_retr (0),
+    m_retry (0),
+    m_txrate (0),
     m_successThreshold (m_stations->m_minSuccessThreshold),
     m_success (0),
     m_recovery (false)
@@ -138,6 +144,7 @@ void
 AmrrMacStation::IncreaseRate (void)
 {
   m_txrate++;
+  NS_ASSERT (m_txrate < GetNSupportedModes ());
 }
 void 
 AmrrMacStation::DecreaseRate (void)
@@ -152,6 +159,7 @@ AmrrMacStation::UpdateMode (void)
     {
       return;
     }
+  m_nextModeUpdate = Simulator::Now () + m_stations->m_updatePeriod;
 
   bool needChange = false;
 
