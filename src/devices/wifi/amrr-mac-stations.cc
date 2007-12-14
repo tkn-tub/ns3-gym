@@ -116,7 +116,8 @@ AmrrMacStation::IsMinRate (void) const
 bool
 AmrrMacStation::IsMaxRate (void) const
 {
-  return (m_txrate + 1 < GetNSupportedModes ());
+  NS_ASSERT (m_txrate + 1 <= GetNSupportedModes ());
+  return (m_txrate + 1 == GetNSupportedModes ());
 }
 bool
 AmrrMacStation::IsSuccess (void) const
@@ -160,12 +161,15 @@ AmrrMacStation::UpdateMode (void)
       return;
     }
   m_nextModeUpdate = Simulator::Now () + m_stations->m_updatePeriod;
+  NS_LOG_DEBUG ("Update");
 
   bool needChange = false;
 
   if (IsSuccess () && IsEnough ()) 
     {
       m_success++;
+      NS_LOG_DEBUG ("success="<<m_success<<" successThreshold="<<m_successThreshold<<
+                    " rate="<<m_txrate<<" n-supported-rates="<<GetNSupportedModes ());
       if (m_success >= m_successThreshold &&
           !IsMaxRate ()) 
         {
@@ -205,6 +209,7 @@ AmrrMacStation::UpdateMode (void)
     }
   if (IsEnough () || needChange) 
     {
+      NS_LOG_DEBUG ("Reset");
       ResetCnt ();
     }
 }
