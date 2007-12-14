@@ -38,7 +38,7 @@ static NumericDefaultValue<double> g_failureRatio
  1.0/3.0);
 static NumericDefaultValue<double> g_successRatio
 ("WifiAmrrSuccessRatio",
- "Ratio of successful transmissions needed to switch to a higher rate",
+ "Ratio of erronous transmissions needed to switch to a higher rate",
  1.0/10.0);
 static NumericDefaultValue<uint32_t> g_maxSuccessThreshold
 ("WifiAmrrMaxSuccessThreshold",
@@ -122,7 +122,7 @@ AmrrMacStation::IsMaxRate (void) const
 bool
 AmrrMacStation::IsSuccess (void) const
 {
-  return m_tx_ok > (m_tx_retr + m_tx_err) * m_stations->m_successRatio;
+  return (m_tx_retr + m_tx_err) < m_tx_ok * m_stations->m_successRatio;
 }
 bool
 AmrrMacStation::IsFailure (void) const
@@ -168,7 +168,8 @@ AmrrMacStation::UpdateMode (void)
   if (IsSuccess () && IsEnough ()) 
     {
       m_success++;
-      NS_LOG_DEBUG ("success="<<m_success<<" successThreshold="<<m_successThreshold<<
+      NS_LOG_DEBUG ("++ success="<<m_success<<" successThreshold="<<m_successThreshold<<
+                    " tx_ok="<<m_tx_ok<<" tx_err="<<m_tx_err<<" tx_retr="<<m_tx_retr<<
                     " rate="<<m_txrate<<" n-supported-rates="<<GetNSupportedModes ());
       if (m_success >= m_successThreshold &&
           !IsMaxRate ()) 
@@ -186,6 +187,9 @@ AmrrMacStation::UpdateMode (void)
   else if (IsFailure ()) 
     {
       m_success = 0;
+      NS_LOG_DEBUG ("-- success="<<m_success<<" successThreshold="<<m_successThreshold<<
+                    " tx_ok="<<m_tx_ok<<" tx_err="<<m_tx_err<<" tx_retr="<<m_tx_retr<<
+                    " rate="<<m_txrate<<" n-supported-rates="<<GetNSupportedModes ());
       if (!IsMinRate ()) 
         {
           if (m_recovery) 
