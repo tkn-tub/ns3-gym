@@ -73,7 +73,8 @@ void
 DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
 {
   TimestampTag tag;
-  bool found = packet->PeekTag (tag);
+  bool found;
+  found = packet->PeekTag (tag);
   NS_ASSERT (found);
   tag.GetTxTime ();
 
