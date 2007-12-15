@@ -450,7 +450,8 @@ MacStation::GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSize)
       return DoGetDataMode (fullPacketSize);
     }
   TxModeTag tag;
-  bool found = packet->PeekTag (tag);
+  bool found;
+  found = packet->PeekTag (tag);
   NS_ASSERT (found);
   return tag.GetDataMode ();
 }
@@ -462,7 +463,8 @@ MacStation::GetRtsMode (Ptr<const Packet> packet)
       return DoGetRtsMode ();
     }
   TxModeTag tag;
-  bool found = packet->PeekTag (tag);
+  bool found;
+  found = packet->PeekTag (tag);
   NS_ASSERT (found);
   return tag.GetRtsMode ();
 }
