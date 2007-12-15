@@ -199,7 +199,7 @@ public:
    */
   bool IsPointToPoint (void) const;
   /**
-   * \param p packet sent from above down to Network Device
+   * \param packet packet sent from above down to Network Device
    * \param dest mac address of the destination (already resolved)
    * \param protocolNumber identifies the type of payload contained in
    *        this packet. Used to call the right L3Protocol when the packet
