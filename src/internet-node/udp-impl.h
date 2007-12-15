@@ -30,6 +30,7 @@ class UdpL4Protocol;
 
 /**
  * \brief Object to create UDP socket instances 
+ * \internal
  *
  * This class implements the API for UDP sockets.
  * It is a socket factory (deriving from class SocketFactory) and can
@@ -43,10 +44,11 @@ public:
   virtual ~UdpImpl ();
 
   /**
-   * \return smart pointer to Socket
-   * 
-   * Implements a method to create a UdpImpl-based socket and return
+   * \brief Implements a method to create a UdpImpl-based socket and return
    * a base class smart pointer to the socket.
+   * \internal
+   *
+   * \return smart pointer to Socket
    */
   virtual Ptr<Socket> CreateSocket (void);
 
