@@ -188,45 +188,45 @@ public:
     std::ostringstream nullout;
     std::streambuf *origcerr = std::cerr.rdbuf (nullout.rdbuf ());
     {
-      char *argv[] = {"run-tests", "--loops", "bad-value", NULL};
+      const char *argv[] = {"run-tests", "--loops", "bad-value", NULL};
       int argc = sizeof (argv) / sizeof (argv[0]) - 1;
       
       uint32_t loops = 123;
       CommandLine::AddArgValue ("loops","a test of the command line", loops);
-      CommandLine::Parse (argc, argv);
+      CommandLine::Parse (argc, const_cast<char **> (argv));
       
       NS_TEST_ASSERT_EQUAL (loops, 123);
     }
 
     {
-      char *argv[] = {"run-tests", "--loops=bad-value", NULL};
+      const char *argv[] = {"run-tests", "--loops=bad-value", NULL};
       int argc = sizeof (argv) / sizeof (argv[0]) - 1;
       
       uint32_t loops = 123;
       CommandLine::AddArgValue ("loops","a test of the command line", loops);
-      CommandLine::Parse (argc, argv);
+      CommandLine::Parse (argc, const_cast<char **> (argv));
       
       NS_TEST_ASSERT_EQUAL (loops, 123);
     }
 
     {
-      char *argv[] = {"run-tests", "--loops", "456", NULL};
+      const char *argv[] = {"run-tests", "--loops", "456", NULL};
       int argc = sizeof (argv) / sizeof (argv[0]) - 1;
       
       uint32_t loops = 123;
       CommandLine::AddArgValue ("loops","a test of the command line", loops);
-      CommandLine::Parse (argc, argv);
+      CommandLine::Parse (argc, const_cast<char **> (argv));
       
       NS_TEST_ASSERT_EQUAL (loops, 456);
     }
 
     {
-      char *argv[] = {"run-tests", "--loops=456", NULL};
+      const char *argv[] = {"run-tests", "--loops=456", NULL};
       int argc = sizeof (argv) / sizeof (argv[0]) - 1;
       
       uint32_t loops = 123;
       CommandLine::AddArgValue ("loops","a test of the command line", loops);
-      CommandLine::Parse (argc, argv);
+      CommandLine::Parse (argc, const_cast<char **> (argv));
       
       NS_TEST_ASSERT_EQUAL (loops, 456);
     }
