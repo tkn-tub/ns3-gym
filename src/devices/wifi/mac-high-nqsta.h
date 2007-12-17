@@ -38,6 +38,16 @@ class DcaTxop;
 class WifiPhy;
 class MacStations;
 
+/**
+ * \brief a non-QoS STA state machine
+ *
+ * This state machine handles association, disassociation,
+ * authentication and beacon monitoring. It does not perform
+ * channel scanning.
+ * If the station detects a certain number of missed beacons
+ * while associated, it automatically attempts a new association
+ * sequence.
+ */
 class MacHighNqsta {
 public:
   typedef Callback<void, Ptr<Packet>, const Mac48Address &> ForwardCallback;
@@ -55,12 +65,31 @@ public:
   void SetPhy (Ptr<WifiPhy> phy);
   void SetStations (MacStations *stations);
 
+  /**
+   * \param missed the number of beacons which must be missed
+   * before a new association sequence is started.
+   */
   void SetMaxMissedBeacons (uint32_t missed);
+  /**
+   * \param timeout
+   *
+   * If no probe response is received within the specified
+   * timeout, the station sends a new probe request.
+   */
   void SetProbeRequestTimeout (Time timeout);
+  /**
+   * \param timeout
+   *
+   * If no association response is received within the specified
+   * timeout, the station sends a new association request.
+   */
   void SetAssocRequestTimeout (Time timeout);
 
   Mac48Address GetBssid (void) const;
 
+  /**
+   * Start an active association sequence immediately.
+   */
   void StartActiveAssociation (void);
 
   void Queue (Ptr<const Packet> packet, Mac48Address to);

@@ -35,6 +35,18 @@ class DcaTxop;
 class MacStations;
 class WifiPhy;
 
+/**
+ * \brief non-QoS AP state machine
+ *
+ * Handle association, dis-association and authentication,
+ * of STAs within an IBSS.
+ * This class uses two output queues, each of which is server by
+ * a single DCF
+ *   - the highest priority DCF serves the queue which contains
+ *     only beacons.
+ *   - the lowest priority DCF serves the queue which contains all
+ *     other frames, including user data frames.
+ */
 class MacHighNqap {
 public:
   typedef Callback<void, Ptr<Packet>, const Mac48Address &> ForwardCallback;
@@ -52,6 +64,9 @@ public:
 
   void Queue (Ptr<const Packet> packet, Mac48Address to);
 
+  /**
+   * Start beacon transmission immediately.
+   */
   void StartBeaconing (void);
 
   void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
