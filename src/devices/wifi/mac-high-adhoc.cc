@@ -103,7 +103,10 @@ void
 MacHighAdhoc::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
 {
   NS_LOG_DEBUG ("received size="<<packet->GetSize ()<<", from="<<hdr->GetAddr2 ());
-  m_callback (packet, hdr->GetAddr2 ());
+  if (hdr->GetAddr1 ().IsBroadcast () || hdr->GetAddr1 () == m_device->GetSelfAddress ())
+    {
+      m_callback (packet, hdr->GetAddr2 ());
+    }
 }
 
 } // namespace ns3
