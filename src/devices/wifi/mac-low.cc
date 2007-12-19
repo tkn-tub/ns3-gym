@@ -230,7 +230,8 @@ MacLow::MacLow ()
     m_sendAckEvent (),
     m_sendDataEvent (),
     m_waitSifsEvent (),
-    m_currentPacket (0)
+    m_currentPacket (0),
+    m_listener (0)
 {
   m_lastNavDuration = Seconds (0);
   m_lastNavStart = Seconds (0);
@@ -294,6 +295,7 @@ MacLow::CancelAllEvents (void)
   if (oneRunning && m_listener != 0) 
     {
       m_listener->Cancel ();
+      m_listener = 0;
     }
 }
 
