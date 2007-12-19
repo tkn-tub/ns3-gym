@@ -75,7 +75,10 @@ DelayJitterEstimation::RecordRx (Ptr<const Packet> packet)
   TimestampTag tag;
   bool found;
   found = packet->PeekTag (tag);
-  NS_ASSERT (found);
+  if (!found)
+    {
+      return;
+    }
   tag.GetTxTime ();
 
   Time delta = (Simulator::Now () - m_previousRx) - (tag.GetTxTime () - m_previousRxTx);
