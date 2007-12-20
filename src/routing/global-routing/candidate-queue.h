@@ -23,9 +23,11 @@
 
 #include <stdint.h>
 #include <list>
-#include "global-route-manager-impl.h"
+#include "ns3/ipv4-address.h"
 
 namespace ns3 {
+
+class SPFVertex;
 
 /**  
  * \brief A Candidate Queue used in static routing.
