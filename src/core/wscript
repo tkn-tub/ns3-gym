@@ -51,6 +51,7 @@ def build(bld):
         'trace-doc.cc',
         'trace-source.cc',
         'type-traits-test.cc',
+        'array-trace-resolver.cc',
         ]
 
     if sys.platform == 'win32':

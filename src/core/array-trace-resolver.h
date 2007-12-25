@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <string>
+#include <sstream>
 #include "callback.h"
 #include "trace-resolver.h"
 #include "object.h"
@@ -78,6 +79,17 @@ private:
   };
   IteratorBase *m_iter;
 };
+
+class ArrayTraceResolverMatcher
+{
+public:
+  ArrayTraceResolverMatcher (std::string element);
+  bool Matches (uint32_t i) const;
+  bool StringToUint32 (std::string str, uint32_t *value) const;
+private:
+  std::string m_element;
+};
+
 }//namespace ns3
 
 
@@ -133,19 +145,20 @@ ArrayTraceResolver<INDEX>::Connect (std::string path, CallbackBase const &cb, co
     }
   std::string id = GetElement (path);
   std::string subpath = GetSubpath (path);
-  if (id == "*")
-  {
-    uint32_t j = 0;
-    for (m_iter->Rewind (); m_iter->HasNext (); m_iter->Next ())
-      {
-        TraceContext tmp = context;
-        INDEX index = j;
-        tmp.AddElement (index);
-        Ptr<Object> obj = m_iter->Get ();
-        obj->GetTraceResolver ()->Connect (subpath, cb, tmp);
-        j++;
-      }
-  }
+  ArrayTraceResolverMatcher matcher = ArrayTraceResolverMatcher (id);
+  uint32_t i = 0;
+  for (m_iter->Rewind (); m_iter->HasNext (); m_iter->Next ())
+    {
+      if (matcher.Matches (i))
+        {
+          TraceContext tmp = context;
+          INDEX index = i;
+          tmp.AddElement (index);
+          Ptr<Object> obj = m_iter->Get ();
+          obj->GetTraceResolver ()->Connect (subpath, cb, tmp);
+        }
+        i++;
+    }
 }
 template <typename INDEX>
 void 
@@ -157,14 +170,17 @@ ArrayTraceResolver<INDEX>::Disconnect (std::string path, CallbackBase const &cb)
     }
   std::string id = GetElement (path);
   std::string subpath = GetSubpath (path);
-  if (id == "*")
-  {
-    for (m_iter->Rewind (); m_iter->HasNext (); m_iter->Next ())
-      {
-        Ptr<Object> obj = m_iter->Get ();
-        obj->TraceDisconnect (subpath, cb);
-      }
-  }
+  ArrayTraceResolverMatcher matcher = ArrayTraceResolverMatcher (id);
+  uint32_t i = 0;
+  for (m_iter->Rewind (); m_iter->HasNext (); m_iter->Next ())
+    {
+      if (matcher.Matches (i))
+        {
+          Ptr<Object> obj = m_iter->Get ();
+          obj->TraceDisconnect (subpath, cb);
+        }
+      i++;
+    }
 }
 template <typename INDEX>
 void 
