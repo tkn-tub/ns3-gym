@@ -81,11 +81,14 @@ class Ns3Header(Object.genobj):
         self.inst_var = 'INCLUDEDIR'
         self.inst_dir = 'ns3'
         self.sub_dir = None # if not None, header files will be published as ns3/sub_dir/file.h
+        self.module = None # module name
         self.env = env
         if not self.env:
             self.env = Params.g_build.m_allenvs['default']
 
     def apply(self):
+        if self.module is None:
+            Params.fatal("'module' missing on ns3headers object %s" % self)
         ns3_dir_node = Params.g_build.m_srcnode.find_dir("ns3")
         if self.sub_dir is not None:
             ns3_dir_node = ns3_dir_node.find_dir(self.sub_dir)

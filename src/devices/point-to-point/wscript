@@ -9,6 +9,7 @@ def build(bld):
         'point-to-point-topology.cc',
         ]
     headers = bld.create_obj('ns3header')
+    headers.module = 'point-to-point'
     headers.source = [
         'point-to-point-net-device.h',
         'point-to-point-channel.h',

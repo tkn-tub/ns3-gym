@@ -7,6 +7,7 @@ def build(bld):
         'udp-echo-server.cc',
         ]
     headers = bld.create_obj('ns3header')
+    headers.module = 'udp-echo'
     headers.source = [
         'udp-echo-client.h',
         'udp-echo-server.h',

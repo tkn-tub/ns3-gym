@@ -31,6 +31,7 @@ def build(bld):
         ]
 
     headers = bld.create_obj('ns3header')
+    headers.module = 'node'
     headers.source = [
         'address.h',
         'mac48-address.h',

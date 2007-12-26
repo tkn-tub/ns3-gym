@@ -9,6 +9,7 @@ def build(bld):
         'candidate-queue.cc',
         ]
     headers = bld.create_obj('ns3header')
+    headers.module = 'global-routing'
     headers.source = [
         'global-router-interface.h',
         'global-route-manager.h',

@@ -67,6 +67,7 @@ def build(bld):
             ])
     
     headers = bld.create_obj('ns3header')
+    headers.module = 'core'
     headers.source = [
         'system-wall-clock-ms.h',
         'empty.h',

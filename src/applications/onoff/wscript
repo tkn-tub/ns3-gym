@@ -6,6 +6,7 @@ def build(bld):
         'onoff-application.cc',
         ]
     headers = bld.create_obj('ns3header')
+    headers.module = 'onoff'
     headers.source = [
         'onoff-application.h',
         ]

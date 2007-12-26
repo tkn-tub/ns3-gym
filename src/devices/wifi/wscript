@@ -38,6 +38,7 @@ def build(bld):
         'constant-rate-wifi-manager.cc',
         ]
     headers = bld.create_obj('ns3header')
+    headers.module = 'wifi'
     headers.source = [
         'propagation-delay-model.h',
         'propagation-loss-model.h',
