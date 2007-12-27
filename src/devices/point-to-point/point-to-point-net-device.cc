@@ -299,7 +299,7 @@ void PointToPointNetDevice::AddQueue (Ptr<Queue> q)
 void PointToPointNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAM ("(" << em << ")");
+  NS_LOG_PARAMS ("(" << em << ")");
 
   m_receiveErrorModel = em;
   AddInterface (em);
