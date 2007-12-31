@@ -85,7 +85,7 @@ void PacketSink::StartApplication()    // Called at time specified by Start
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
 {
-  if (!m_socket) 
+  if (m_socket) 
     {
       m_socket->SetRecvCallback (MakeNullCallback<void, Ptr<Socket>, 
         Ptr<Packet>, const Address &> ());
