@@ -68,10 +68,10 @@ public:
   ~InterfaceId ();
 private:
   InterfaceId (uint16_t iid);
-  friend InterfaceId MakeInterfaceId (std::string name, const InterfaceId &parent);
+  friend InterfaceId MakeInterfaceId (std::string name, InterfaceId parent);
   friend InterfaceId MakeObjectInterfaceId (void);
-  friend bool operator == (const InterfaceId &a, const InterfaceId &b);
-  friend bool operator != (const InterfaceId &a, const InterfaceId &b);
+  friend bool operator == (InterfaceId a, InterfaceId b);
+  friend bool operator != (InterfaceId a, InterfaceId b);
   uint16_t m_iid;
 };
 
@@ -86,7 +86,7 @@ private:
  * itself.
  */
 InterfaceId
-MakeInterfaceId (std::string name, const InterfaceId &parent);
+MakeInterfaceId (std::string name, InterfaceId parent);
 
 /**
  * \brief a base class which provides memory management and object aggregation

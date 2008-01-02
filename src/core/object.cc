@@ -40,15 +40,15 @@ class IidManager : public ns3::UidManager
 class IidTree
 {
 public:
-  void SetParent (uint16_t child, const uint16_t *parent);
+  void SetParent (uint16_t child, uint16_t parent);
   uint16_t LookupParent (uint16_t child);
 
 private:
-  std::vector<const uint16_t *> m_parents;
+  std::vector<uint16_t> m_parents;
 };
 
 void 
-IidTree::SetParent (uint16_t child, const uint16_t *parent)
+IidTree::SetParent (uint16_t child, uint16_t parent)
 {
   m_parents.resize (child+1);
   m_parents[child] = parent;
@@ -57,7 +57,7 @@ uint16_t
 IidTree::LookupParent (uint16_t child)
 {
   NS_ASSERT (child < m_parents.size ());
-  return *(m_parents[child]);
+  return m_parents[child];
 }
 
 } // anonymous namespace
@@ -158,23 +158,23 @@ InterfaceId::GetName (void) const
   return name;
 }
 
-bool operator == (const InterfaceId &a, const InterfaceId &b)
+bool operator == (InterfaceId a, InterfaceId b)
 {
   return a.m_iid == b.m_iid;
 }
 
-bool operator != (const InterfaceId &a, const InterfaceId &b)
+bool operator != (InterfaceId a, InterfaceId b)
 {
   return a.m_iid != b.m_iid;
 }
 
 InterfaceId
-MakeInterfaceId (std::string name, const InterfaceId &parent)
+MakeInterfaceId (std::string name, InterfaceId parent)
 {
   uint32_t uid = Singleton<IidManager>::Get ()->Allocate (name);
   NS_ASSERT (uid <= 0xffff);
   InterfaceId iid = uid;
-  Singleton<IidTree>::Get ()->SetParent (iid.m_iid, &parent.m_iid);
+  Singleton<IidTree>::Get ()->SetParent (iid.m_iid, parent.m_iid);
   return iid;
 }
 
@@ -182,7 +182,7 @@ InterfaceId
 MakeObjectInterfaceId (void)
 {
   InterfaceId iid = Singleton<IidManager>::Get ()->Allocate ("Object");
-  Singleton<IidTree>::Get ()->SetParent (iid.m_iid, &iid.m_iid);
+  Singleton<IidTree>::Get ()->SetParent (iid.m_iid, iid.m_iid);
   return iid;
 }
 
