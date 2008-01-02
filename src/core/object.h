@@ -59,7 +59,7 @@ public:
    * This method cannot fail: it will crash if the input
    * id is not a valid interface id.
    */
-  static InterfaceId LookupParent (InterfaceId iid);
+  InterfaceId GetParent (void) const;
 
   /**
    * \returns the name of this interface.

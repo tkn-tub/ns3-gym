@@ -21,7 +21,6 @@
 #include "object.h"
 #include "assert.h"
 #include "singleton.h"
-#include "uid-manager.h"
 #include "trace-resolver.h"
 #include "log.h"
 #include <vector>
@@ -34,30 +33,89 @@ NS_LOG_COMPONENT_DEFINE ("Object");
 
 namespace {
 
-class IidManager : public ns3::UidManager
-{};
-
-class IidTree
+class IidManager
 {
 public:
-  void SetParent (uint16_t child, uint16_t parent);
-  uint16_t LookupParent (uint16_t child);
-
+  uint16_t AllocateUid (std::string name);
+  void SetParent (uint16_t uid, uint16_t parent);
+  uint16_t GetUid (std::string name) const;
+  std::string GetName (uint16_t uid) const;
+  uint16_t GetParent (uint16_t uid) const;
 private:
-  std::vector<uint16_t> m_parents;
+  struct IidInformation {
+    std::string name;
+    uint16_t parent;
+  };
+  typedef std::vector<struct IidInformation>::const_iterator Iterator;
+
+  struct IidManager::IidInformation *LookupInformation (uint16_t uid) const;
+
+  std::vector<struct IidInformation> m_information;
 };
 
-void 
-IidTree::SetParent (uint16_t child, uint16_t parent)
+uint16_t 
+IidManager::AllocateUid (std::string name)
 {
-  m_parents.resize (child+1);
-  m_parents[child] = parent;
+  uint16_t j = 1;
+  for (Iterator i = m_information.begin (); i != m_information.end (); i++)
+    {
+      if (i->name == name)
+        {
+          NS_FATAL_ERROR ("Trying to allocate twice the same uid: " << name);
+          return 0;
+        }
+      j++;
+    }
+  struct IidInformation information;
+  information.name = name;
+  information.parent = 0;
+  m_information.push_back (information);
+  uint32_t uid = m_information.size ();
+  NS_ASSERT (uid <= 0xffff);
+  return uid;
+}
+
+struct IidManager::IidInformation *
+IidManager::LookupInformation (uint16_t uid) const
+{
+  NS_ASSERT (uid <= m_information.size ());
+  return const_cast<struct IidInformation *> (&m_information[uid-1]);
+}
+
+void 
+IidManager::SetParent (uint16_t uid, uint16_t parent)
+{
+  NS_ASSERT (parent <= m_information.size ());
+  struct IidInformation *information = LookupInformation (uid);
+  information->parent = parent;
+}
+
+uint16_t 
+IidManager::GetUid (std::string name) const
+{
+  uint32_t j = 1;
+  for (Iterator i = m_information.begin (); i != m_information.end (); i++)
+    {
+      if (i->name == name)
+        {
+          NS_ASSERT (j <= 0xffff);
+          return j;
+        }
+      j++;
+    }
+  return 0;
+}
+std::string 
+IidManager::GetName (uint16_t uid) const
+{
+  struct IidInformation *information = LookupInformation (uid);
+  return information->name;
 }
 uint16_t 
-IidTree::LookupParent (uint16_t child)
+IidManager::GetParent (uint16_t uid) const
 {
-  NS_ASSERT (child < m_parents.size ());
-  return m_parents[child];
+  struct IidInformation *information = LookupInformation (uid);
+  return information->parent;
 }
 
 } // anonymous namespace
@@ -142,19 +200,20 @@ InterfaceId::~InterfaceId ()
 InterfaceId 
 InterfaceId::LookupByName (std::string name)
 {
-  uint32_t uid = Singleton<IidManager>::Get ()->LookupByName (name);
-  NS_ASSERT (uid != 0 && uid <= 0xffff);
+  uint16_t uid = Singleton<IidManager>::Get ()->GetUid (name);
+  NS_ASSERT (uid != 0);
   return InterfaceId (uid);
 }
 InterfaceId 
-InterfaceId::LookupParent (InterfaceId iid)
+InterfaceId::GetParent (void) const
 {
-  return Singleton<IidTree>::Get ()->LookupParent (iid.m_iid);
+  uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_iid);
+  return InterfaceId (parent);
 }
 std::string 
 InterfaceId::GetName (void) const
 {
-  std::string name = Singleton<IidManager>::Get ()->LookupByUid (m_iid);
+  std::string name = Singleton<IidManager>::Get ()->GetName (m_iid);
   return name;
 }
 
@@ -171,19 +230,19 @@ bool operator != (InterfaceId a, InterfaceId b)
 InterfaceId
 MakeInterfaceId (std::string name, InterfaceId parent)
 {
-  uint32_t uid = Singleton<IidManager>::Get ()->Allocate (name);
-  NS_ASSERT (uid <= 0xffff);
-  InterfaceId iid = uid;
-  Singleton<IidTree>::Get ()->SetParent (iid.m_iid, parent.m_iid);
-  return iid;
+  uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
+  NS_ASSERT (uid != 0);
+  Singleton<IidManager>::Get ()->SetParent (uid, parent.m_iid);
+  return InterfaceId (uid);
 }
 
 InterfaceId
 MakeObjectInterfaceId (void)
 {
-  InterfaceId iid = Singleton<IidManager>::Get ()->Allocate ("Object");
-  Singleton<IidTree>::Get ()->SetParent (iid.m_iid, iid.m_iid);
-  return iid;
+  uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid ("Object");
+  NS_ASSERT (uid == 1);
+  Singleton<IidManager>::Get ()->SetParent (uid, uid);
+  return InterfaceId (uid);
 }
 
 
@@ -221,7 +280,7 @@ Object::DoQueryInterface (InterfaceId iid) const
     InterfaceId cur = currentObject->m_iid;
     while (cur != iid && cur != Object::iid ())
       {
-        cur = InterfaceId::LookupParent (cur);
+        cur = cur.GetParent ();
       }
     if (cur == iid)
       {
@@ -379,7 +438,7 @@ Object::DoCollectSources (std::string path, const TraceContext &context,
           fullpath.append (name);
           NS_LOG_LOGIC("collect: " << fullpath);
           current->GetTraceResolver ()->CollectSources (fullpath, context, collection);
-          cur = InterfaceId::LookupParent (cur);
+          cur = cur.GetParent ();
         }
       current = current->m_next;
     }
