@@ -30,8 +30,6 @@
 
 namespace ns3 {
 
-const InterfaceId Ipv4L4Demux::iid = MakeInterfaceId ("Ipv4L4Demux", Object::iid);
-
 Ipv4L4ProtocolTraceContextElement::Ipv4L4ProtocolTraceContextElement ()
   : m_protocolNumber (0)
 {}
@@ -60,6 +58,12 @@ Ipv4L4ProtocolTraceContextElement::GetTypeName (void) const
   return "ns3::Ipv4L4ProtocolTraceContextElement";
 }
 
+InterfaceId 
+Ipv4L4Demux::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("Ipv4L4Demux", Object::iid ());
+  return iid;
+}
 
 Ipv4L4Demux::Ipv4L4Demux (Ptr<Node> node)
   : m_node (node)

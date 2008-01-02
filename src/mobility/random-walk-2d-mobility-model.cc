@@ -32,7 +32,7 @@ NS_LOG_COMPONENT_DEFINE ("RandomWalk2d");
 namespace ns3 {
 
 const ClassId RandomWalk2dMobilityModel::cid = 
-  MakeClassId<RandomWalk2dMobilityModel> ("RandomWalk2dMobilityModel", RandomWalk2dMobilityModel::iid);
+  MakeClassId<RandomWalk2dMobilityModel> ("RandomWalk2dMobilityModel", RandomWalk2dMobilityModel::iid ());
 
 
 static EnumDefaultValue<RandomWalk2dMobilityModelParameters::Mode> 

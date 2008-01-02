@@ -40,18 +40,17 @@ g_pause ("RandomWaypointPause",
 static ClassIdDefaultValue
 g_position ("RandomWaypointPosition",
 	    "A random position model used to pick the next waypoint position.",
-	    RandomPosition::iid,
+	    RandomPosition::iid (),
 	    "RandomRectanglePosition");
 
 const ClassId RandomWaypointMobilityModel::cid = 
-  MakeClassId<RandomWaypointMobilityModel> ("RandomWaypointMobilityModel", MobilityModel::iid);
+  MakeClassId<RandomWaypointMobilityModel> ("RandomWaypointMobilityModel", MobilityModel::iid ());
 
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters ()
   : m_speed (g_speed.GetCopy ()),
     m_pause (g_pause.GetCopy ())
 {
-  m_position = ComponentManager::Create<RandomPosition> (g_position.GetValue (), 
-							 RandomPosition::iid);
+  m_position = ComponentManager::Create<RandomPosition> (g_position.GetValue ());
 }
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters (Ptr<RandomPosition> randomPosition,
 									      const RandomVariable &speed,

@@ -28,20 +28,19 @@ namespace ns3 {
 static ClassIdDefaultValue
 g_position ("RandomTopologyPositionType",
             "The type of initial random position in a 3d topology.",
-            RandomPosition::iid,
+            RandomPosition::iid (),
             "RandomRectanglePosition");
 
 static ClassIdDefaultValue
 g_mobility ("RandomTopologyMobilityType",
             "The type of mobility model attached to an object in a 3d topology.",
-            MobilityModel::iid,
+            MobilityModel::iid (),
             "StaticMobilityModel");
 
 RandomTopology::RandomTopology ()
   : m_mobilityModel (g_mobility.GetValue ())
 {
-  m_positionModel = ComponentManager::Create<RandomPosition> (g_position.GetValue (), 
-                                                              RandomPosition::iid);
+  m_positionModel = ComponentManager::Create<RandomPosition> (g_position.GetValue ());
 }
 RandomTopology::RandomTopology (Ptr<RandomPosition> positionModel, ClassId mobilityModel)
   : m_positionModel (positionModel),
@@ -67,8 +66,7 @@ RandomTopology::SetPositionModel (Ptr<RandomPosition> positionModel)
 void 
 RandomTopology::LayoutOne (Ptr<Object> object)
 {
-  Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_mobilityModel, 
-                                                                         MobilityModel::iid);
+  Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_mobilityModel);
   object->AddInterface (mobility);
   Vector position = m_positionModel->Get ();
   mobility->SetPosition (position);

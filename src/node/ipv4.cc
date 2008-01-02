@@ -25,7 +25,12 @@
 
 namespace ns3 {
 
-const InterfaceId Ipv4::iid = MakeInterfaceId ("Ipv4", Object::iid);
+InterfaceId 
+Ipv4::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("Ipv4", Object::iid ());
+  return iid;
+}
 
 Ipv4::Ipv4 ()
 {}

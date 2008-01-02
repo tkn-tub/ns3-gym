@@ -34,10 +34,14 @@ NS_LOG_COMPONENT_DEFINE ("ErrorModel");
 namespace ns3 {
 
 static ClassIdDefaultValue g_classIdErrorModelDefaultValue ("ErrorModel",
-  "Error Model", ErrorModel::iid, "RateErrorModel");
+                                                            "Error Model", ErrorModel::iid (), 
+                                                            "RateErrorModel");
 
-const InterfaceId ErrorModel::iid = 
-  MakeInterfaceId ("ErrorModel", Object::iid);
+InterfaceId ErrorModel::iid (void)
+{ 
+  static InterfaceId iid = MakeInterfaceId ("ErrorModel", Object::iid ());
+  return iid;
+}
 
 ErrorModel::ErrorModel () :
   m_enable (true) 
@@ -55,8 +59,7 @@ ErrorModel::CreateDefault (void)
 { 
   NS_LOG_FUNCTION;
   ClassId classId = g_classIdErrorModelDefaultValue.GetValue ();
-  Ptr<ErrorModel> em = ComponentManager::Create<ErrorModel> (classId, 
-    ErrorModel::iid);
+  Ptr<ErrorModel> em = ComponentManager::Create<ErrorModel> (classId);
   return em;
 }
 
@@ -103,12 +106,10 @@ ErrorModel::IsEnabled (void) const
 // RateErrorModel
 //
 
-const InterfaceId RateErrorModel::iid = 
-  MakeInterfaceId ("RateErrorModel", ErrorModel::iid);
 
 const ClassId RateErrorModel::cid =
-  MakeClassId<RateErrorModel> ("RateErrorModel", ErrorModel::iid,
-  RateErrorModel::iid);
+  MakeClassId<RateErrorModel> ("RateErrorModel", ErrorModel::iid (),
+                               RateErrorModel::iid ());
 
 // Defaults for rate/size
 static NumericDefaultValue<double> g_defaultRateErrorModelErrorRate
@@ -121,6 +122,13 @@ static EnumDefaultValue<enum ErrorUnit>
     EU_PKT, "EU_PKT",
     EU_BIT, "EU_BIT", 
     0, (void*)0);
+
+InterfaceId RateErrorModel::iid (void)
+{ 
+  static InterfaceId iid = MakeInterfaceId ("RateErrorModel", ErrorModel::iid ());
+  return iid;
+}
+
 
 RateErrorModel::RateErrorModel () : 
   m_unit (g_defaultRateErrorModelErrorUnit.GetValue() ),
@@ -232,12 +240,15 @@ RateErrorModel::DoReset (void)
 // ListErrorModel
 //
 
-const InterfaceId ListErrorModel::iid = 
-  MakeInterfaceId ("ListErrorModel", ErrorModel::iid);
-
 const ClassId ListErrorModel::cid =
-  MakeClassId<ListErrorModel> ("ListErrorModel", ErrorModel::iid,
-  ListErrorModel::iid);
+  MakeClassId<ListErrorModel> ("ListErrorModel", ErrorModel::iid (),
+                               ListErrorModel::iid ());
+
+InterfaceId ListErrorModel::iid (void)
+{ 
+  static InterfaceId iid = MakeInterfaceId ("ListErrorModel", ErrorModel::iid ());
+  return iid;
+}
 
 ListErrorModel::ListErrorModel ()  
 {

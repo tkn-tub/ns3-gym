@@ -58,14 +58,19 @@ g_discY ("RandomDiscPositionY",
 	 "The y coordinate of the center of the random position disc.",
 	 0.0);
 
-const InterfaceId RandomPosition::iid = MakeInterfaceId ("RandomPosition", Object::iid);
+InterfaceId 
+RandomPosition::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("RandomPosition", Object::iid ());
+  return iid;
+}
 
 const ClassId RandomRectanglePosition::cid = 
   MakeClassId<RandomRectanglePosition> ("RandomRectanglePosition", 
-					RandomPosition::iid);
+					RandomPosition::iid ());
 const ClassId RandomDiscPosition::cid = 
   MakeClassId<RandomDiscPosition> ("RandomDiscPosition", 
-				   RandomPosition::iid);
+				   RandomPosition::iid ());
 
 RandomPosition::RandomPosition ()
 {

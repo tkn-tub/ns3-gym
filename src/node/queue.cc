@@ -27,9 +27,8 @@ NS_LOG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
-const InterfaceId Queue::iid = MakeInterfaceId ("Queue", Object::iid);
 static ClassIdDefaultValue g_classIdDefaultValue ("Queue", "Packet Queue",
-                                                  Queue::iid, "DropTailQueue");
+                                                  Queue::iid (), "DropTailQueue");
 
 
 std::string 
@@ -95,6 +94,13 @@ QueueTraceType::Print (std::ostream &os) const
     os << "drop";
     break;
   }
+}
+
+InterfaceId 
+Queue::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("Queue", Object::iid ());
+  return iid;
 }
 
 Queue::Queue() : 
@@ -275,7 +281,7 @@ Queue::CreateDefault (void)
 {
   NS_LOG_FUNCTION;
   ClassId classId = g_classIdDefaultValue.GetValue ();
-  Ptr<Queue> queue = ComponentManager::Create<Queue> (classId, Queue::iid);
+  Ptr<Queue> queue = ComponentManager::Create<Queue> (classId);
   return queue;
 }
 

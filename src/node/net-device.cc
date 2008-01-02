@@ -33,7 +33,11 @@ NS_LOG_COMPONENT_DEFINE ("NetDevice");
 
 namespace ns3 {
 
-const InterfaceId NetDevice::iid = MakeInterfaceId ("NetDevice", Object::iid);
+InterfaceId NetDevice::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("NetDevice", Object::iid ());
+  return iid;
+}
 
 NetDevice::NetDevice(Ptr<Node> node, const Address& addr) : 
   m_node (node), 

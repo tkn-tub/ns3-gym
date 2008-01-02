@@ -23,7 +23,12 @@
 
 namespace ns3 {
 
-const InterfaceId MobilityModel::iid = MakeInterfaceId ("MobilityModel", Object::iid);
+InterfaceId 
+MobilityModel::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("MobilityModel", Object::iid ());
+  return iid;
+}
 
 MobilityModel::MobilityModel ()
 {}

@@ -33,8 +33,14 @@ NS_LOG_COMPONENT_DEFINE ("ArpL3Protocol");
 
 namespace ns3 {
 
-const InterfaceId ArpL3Protocol::iid = MakeInterfaceId ("ArpL3Protocol", Object::iid);
 const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
+
+InterfaceId 
+ArpL3Protocol::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("ArpL3Protocol", Object::iid ());
+  return iid;
+}
 
 ArpL3Protocol::ArpL3Protocol (Ptr<Node> node)
   : m_node (node)

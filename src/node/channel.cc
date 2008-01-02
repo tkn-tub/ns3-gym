@@ -24,7 +24,12 @@ NS_LOG_COMPONENT_DEFINE ("Channel");
 
 namespace ns3 {
 
-const InterfaceId Channel::iid = MakeInterfaceId ("Channel", Object::iid);
+InterfaceId 
+Channel::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("Channel", Object::iid ());
+  return iid;
+}
 
 Channel::Channel ()
   : m_name("Channel")

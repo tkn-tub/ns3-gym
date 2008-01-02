@@ -22,12 +22,14 @@
 
 namespace ns3 {
 
-const InterfaceId StaticSpeedMobilityModel::iid = 
-  MakeInterfaceId ("StaticSpeedMobilityModel", MobilityModel::iid);
 const ClassId StaticSpeedMobilityModel::cid = 
   MakeClassId<StaticSpeedMobilityModel> ("StaticSpeedMobilityModel", 
-                                         StaticSpeedMobilityModel::iid);
-
+                                         StaticSpeedMobilityModel::iid ());
+InterfaceId StaticSpeedMobilityModel::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("StaticSpeedMobilityModel", MobilityModel::iid ());
+  return iid;
+}
 
 StaticSpeedMobilityModel::StaticSpeedMobilityModel ()
 {}

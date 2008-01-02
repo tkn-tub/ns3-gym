@@ -29,7 +29,12 @@
 
 namespace ns3{
 
-const InterfaceId Node::iid = MakeInterfaceId ("Node", Object::iid);
+InterfaceId 
+Node::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("Node", Object::iid ());
+  return iid;
+}
 
 NodeNetDeviceIndex::NodeNetDeviceIndex ()
   : m_index (0)

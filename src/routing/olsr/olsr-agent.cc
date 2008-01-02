@@ -24,7 +24,14 @@
 namespace ns3 {
 namespace olsr {
 
-const InterfaceId Agent::iid = MakeInterfaceId ("OlsrAgent", Object::iid);
-const ClassId Agent::cid = MakeClassId< AgentImpl, Ptr<Node> > ("OlsrAgent", Agent::iid);
+const ClassId Agent::cid = MakeClassId< AgentImpl, Ptr<Node> > ("OlsrAgent", Agent::iid ());
+
+InterfaceId 
+Agent::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("OlsrAgent", Object::iid ());
+  return iid;
+}
+
 
 }}

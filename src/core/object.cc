@@ -175,12 +175,17 @@ MakeObjectInterfaceId (void)
 }
 
 
-const InterfaceId Object::iid = MakeObjectInterfaceId ();
+InterfaceId 
+Object::iid (void)
+{
+  static InterfaceId iid = MakeObjectInterfaceId ();
+  return iid;
+}
 
 
 Object::Object ()
   : m_count (1),
-    m_iid (Object::iid),
+    m_iid (Object::iid ()),
     m_disposed (false),
     m_collecting (false),
     m_next (this)
@@ -197,7 +202,7 @@ Object::DoQueryInterface (InterfaceId iid) const
   do {
     NS_ASSERT (currentObject != 0);
     InterfaceId cur = currentObject->m_iid;
-    while (cur != iid && cur != Object::iid)
+    while (cur != iid && cur != Object::iid ())
       {
         cur = InterfaceId::LookupParent (cur);
       }
@@ -349,7 +354,7 @@ Object::DoCollectSources (std::string path, const TraceContext &context,
       NS_ASSERT (current != 0);
       NS_LOG_LOGIC ("collect current=" << current);
       InterfaceId cur = current->m_iid;
-      while (cur != Object::iid)
+      while (cur != Object::iid ())
         {
           std::string name = cur.GetName ();
           std::string fullpath = path;
@@ -404,7 +409,10 @@ namespace {
 class BaseA : public ns3::Object
 {
 public:
-  static const ns3::InterfaceId iid;
+  static ns3::InterfaceId iid (void) {
+    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("BaseA", Object::iid ());
+    return iid;
+  }
   BaseA ()
   {}
   void BaseGenerateTrace (int16_t v)
@@ -424,7 +432,10 @@ public:
 class DerivedA : public BaseA
 {
 public:
-  static const ns3::InterfaceId iid;
+  static ns3::InterfaceId iid (void) {
+    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("DerivedA", BaseA::iid ());
+    return iid;
+  }
   DerivedA (int v)
   {}
   void DerivedGenerateTrace (int16_t v)
@@ -443,15 +454,13 @@ public:
   ns3::SVTraceSource<int16_t> m_sourceDerived;
 };
 
-const ns3::InterfaceId BaseA::iid = 
-  ns3::MakeInterfaceId ("BaseA", Object::iid);
-const ns3::InterfaceId DerivedA::iid = 
-  ns3::MakeInterfaceId ("DerivedA", BaseA::iid);;
-
 class BaseB : public ns3::Object
 {
 public:
-  static const ns3::InterfaceId iid;
+  static ns3::InterfaceId iid (void) {
+    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("BaseB", Object::iid ());
+    return iid;
+  }
   BaseB ()
   {}
   void BaseGenerateTrace (int16_t v)
@@ -471,7 +480,10 @@ public:
 class DerivedB : public BaseB
 {
 public:
-  static const ns3::InterfaceId iid;
+  static ns3::InterfaceId iid (void) {
+    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("DerivedB", BaseB::iid ());
+    return iid;
+  }
   DerivedB (int v)
   {}
   void DerivedGenerateTrace (int16_t v)
@@ -489,11 +501,6 @@ public:
   }
   ns3::SVTraceSource<int16_t> m_sourceDerived;
 };
-
-const ns3::InterfaceId BaseB::iid = 
-  ns3::MakeInterfaceId ("BaseB", Object::iid);
-const ns3::InterfaceId DerivedB::iid = 
-  ns3::MakeInterfaceId ("DerivedB", BaseB::iid);;
 
 } // namespace anonymous
 
@@ -547,11 +554,11 @@ ObjectTest::RunTests (void)
 
   Ptr<BaseA> baseA = CreateObject<BaseA> ();
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (), baseA);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid ()), 0);
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (), 0);
   baseA = CreateObject<DerivedA> (10);
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (), baseA);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid), baseA);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid ()), baseA);
   NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedA> (), 0);
 
   baseA = CreateObject<BaseA> ();

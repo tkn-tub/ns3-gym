@@ -22,7 +22,11 @@
 
 namespace ns3 {
 
-const InterfaceId SocketFactory::iid = MakeInterfaceId ("SocketFactory", Object::iid);
+InterfaceId SocketFactory::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("SocketFactory", Object::iid ());
+  return iid;
+}
 
 SocketFactory::SocketFactory ()
 {}

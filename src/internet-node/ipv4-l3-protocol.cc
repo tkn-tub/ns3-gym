@@ -40,8 +40,14 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4L3Protocol");
 
 namespace ns3 {
 
-const InterfaceId Ipv4L3Protocol::iid = MakeInterfaceId ("Ipv4L3Protocol", Object::iid);
 const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
+
+InterfaceId 
+Ipv4L3Protocol::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("Ipv4L3Protocol", Object::iid ());
+  return iid;
+}
 
 Ipv4L3ProtocolTraceContextElement::Ipv4L3ProtocolTraceContextElement ()
   : m_type (TX)

@@ -22,6 +22,13 @@
 
 namespace ns3 {
 
+InterfaceId 
+HierarchicalMobilityModel::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("HierarchicalMobilityModel", MobilityModel::iid ());
+  return iid;
+}
+
 HierarchicalMobilityModel::HierarchicalMobilityModel (Ptr<MobilityModel> child, Ptr<MobilityModel> parent)
   : m_child (child),
     m_parent (parent)

@@ -91,7 +91,7 @@ public:
    * as a supported interface.
    */
   MakeClassId (std::string name, 
-               const InterfaceId &iid);
+               InterfaceId iid);
   /**
    * \param name name of ClassId
    * \param iid0 interface id
@@ -101,8 +101,8 @@ public:
    * as supported interfaces.
    */
   MakeClassId (std::string name, 
-               const InterfaceId &iid0, 
-               const InterfaceId iid1);
+               InterfaceId iid0, 
+               InterfaceId iid1);
   /**
    * \param name name of ClassId
    * \param iid0 interface id
@@ -113,9 +113,9 @@ public:
    * and iid2 as supported interfaces.
    */
   MakeClassId (std::string name, 
-               const InterfaceId &iid0, 
-               const InterfaceId &iid1,
-               const InterfaceId &iid2);
+               InterfaceId iid0, 
+               InterfaceId iid1,
+               InterfaceId iid2);
   /**
    * \param name name of ClassId
    * \param iid0 interface id
@@ -127,10 +127,10 @@ public:
    * iid2, and iid3 as supported interfaces.
    */
   MakeClassId (std::string name, 
-               const InterfaceId &iid0, 
-               const InterfaceId &iid1,
-               const InterfaceId &iid2,
-               const InterfaceId &iid3);
+               InterfaceId iid0, 
+               InterfaceId iid1,
+               InterfaceId iid2,
+               InterfaceId iid3);
   /**
    * \param name name of ClassId
    * \param iid0 interface id
@@ -143,15 +143,15 @@ public:
    * iid2, iid3, and iid4 as supported interfaces.
    */
   MakeClassId (std::string name, 
-               const InterfaceId &iid0, 
-               const InterfaceId &iid1,
-               const InterfaceId &iid2,
-               const InterfaceId &iid3,
-               const InterfaceId &iid4);
+               InterfaceId iid0, 
+               InterfaceId iid1,
+               InterfaceId iid2,
+               InterfaceId iid3,
+               InterfaceId iid4);
 private:
   typedef ObjectMaker<T,T1,T2,T3,T4,T5> MakerType;
   static Callback<Ptr<Object>,T1,T2,T3,T4,T5> m_callback;
-  void Register (const InterfaceId *array [], uint32_t n);
+  void Register (InterfaceId array [], uint32_t n);
 };
 
 
@@ -345,9 +345,9 @@ public:
 
 private:
   friend void RegisterCallback (ClassId classId, CallbackBase *callback, 
-                                std::vector<const InterfaceId *> supportedInterfaces);
+                                std::vector<InterfaceId> supportedInterfaces);
   static void Register (ClassId classId, CallbackBase *callback, 
-                        std::vector<const InterfaceId *> supportedInterfaces);
+                        std::vector<InterfaceId> supportedInterfaces);
 
   template <typename T1, typename T2,
             typename T3, typename T4,
@@ -358,7 +358,7 @@ private:
     ClassIdEntry (ClassId classId);
     ClassId m_classId;
     CallbackBase *m_callback;
-    std::vector<const InterfaceId *> m_supportedInterfaces;
+    std::vector<InterfaceId> m_supportedInterfaces;
   };
 
   typedef std::vector<struct ClassIdEntry> List;
@@ -386,7 +386,7 @@ public:
    */
   ClassIdDefaultValue (std::string name, 
                        std::string help,
-                       const InterfaceId &iid,
+                       InterfaceId iid,
                        std::string defaultValue);
   /**
    * \returns the ClassId of the object selected by the user.
@@ -410,7 +410,7 @@ private:
   virtual std::string DoGetDefaultValue (void) const;
   std::string m_defaultName;
   std::string m_name;
-  const InterfaceId *m_interfaceId;
+  InterfaceId m_interfaceId;
 };
 
 } // namespace ns3 
@@ -473,16 +473,16 @@ struct ObjectMaker {
 namespace ns3 {
   
 void RegisterCallback (ClassId classId, ns3::CallbackBase *callback, 
-                       std::vector<const InterfaceId *> supportedInterfaces);
+                       std::vector<InterfaceId> supportedInterfaces);
 
 
 
 template <typename T, typename T1, typename T2,
           typename T3, typename T4, typename T5>
 void 
-MakeClassId<T,T1,T2,T3,T4,T5>::Register (const InterfaceId *array [], uint32_t n) 
+MakeClassId<T,T1,T2,T3,T4,T5>::Register (InterfaceId array [], uint32_t n) 
 {
-  std::vector<const InterfaceId *> supportedInterfaces;
+  std::vector<InterfaceId> supportedInterfaces;
   for (uint32_t i = 0; i < n; i++)
     {
       supportedInterfaces.push_back (array[i]);
@@ -495,63 +495,63 @@ template <typename T, typename T1, typename T2,
 MakeClassId<T,T1,T2,T3,T4,T5>::MakeClassId (std::string name) 
   : ClassId (name) 
 {
-  const InterfaceId *array[] = {};
-  Register (array, sizeof (array)/sizeof(InterfaceId *));
+  InterfaceId array[] = {};
+  Register (array, sizeof (array)/sizeof(InterfaceId));
 }
 template <typename T, typename T1, typename T2,
           typename T3, typename T4, typename T5>
 MakeClassId<T,T1,T2,T3,T4,T5>::MakeClassId (std::string name, 
-                                   const InterfaceId &iid) 
+                                            InterfaceId iid) 
   : ClassId (name) 
 {
-  const InterfaceId *array[] = {&iid};
-  Register (array, sizeof (array)/sizeof(InterfaceId *));
+  InterfaceId array[] = {iid};
+  Register (array, sizeof (array)/sizeof(InterfaceId));
 }
 template <typename T, typename T1, typename T2,
           typename T3, typename T4, typename T5>
 MakeClassId<T,T1,T2,T3,T4,T5>::MakeClassId (std::string name, 
-                                   const InterfaceId &iid0, 
-                                   const InterfaceId iid1) 
+                                            InterfaceId iid0, 
+                                            InterfaceId iid1) 
   : ClassId (name) 
 {
-  const InterfaceId *array[] = {&iid0, &iid1};
-  Register (array, sizeof (array)/sizeof(InterfaceId *));
+  InterfaceId array[] = {iid0, iid1};
+  Register (array, sizeof (array)/sizeof(InterfaceId));
 }
 template <typename T, typename T1, typename T2,
           typename T3, typename T4, typename T5>
 MakeClassId<T,T1,T2,T3,T4,T5>::MakeClassId (std::string name, 
-                                   const InterfaceId &iid0, 
-                                   const InterfaceId &iid1,
-                                   const InterfaceId &iid2)
+                                            InterfaceId iid0, 
+                                            InterfaceId iid1,
+                                            InterfaceId iid2)
   : ClassId (name) 
 {
-  const InterfaceId *array[] = {&iid0, &iid1, &iid2};
-  Register (array, sizeof (array)/sizeof(InterfaceId *));
+  InterfaceId array[] = {iid0, iid1, iid2};
+  Register (array, sizeof (array)/sizeof(InterfaceId));
 }
 template <typename T, typename T1, typename T2,
           typename T3, typename T4, typename T5>
 MakeClassId<T,T1,T2,T3,T4,T5>::MakeClassId (std::string name, 
-                                   const InterfaceId &iid0, 
-                                   const InterfaceId &iid1,
-                                   const InterfaceId &iid2,
-                                   const InterfaceId &iid3)
+                                            InterfaceId iid0, 
+                                            InterfaceId iid1,
+                                            InterfaceId iid2,
+                                            InterfaceId iid3)
   : ClassId (name) 
 {
-  const InterfaceId *array[] = {&iid0, &iid1, &iid2, &iid3};
-  Register (array, sizeof (array)/sizeof(InterfaceId *));
+  InterfaceId array[] = {iid0, iid1, iid2, iid3};
+  Register (array, sizeof (array)/sizeof(InterfaceId));
 }
 template <typename T, typename T1, typename T2,
           typename T3, typename T4, typename T5>
 MakeClassId<T,T1,T2,T3,T4,T5>::MakeClassId (std::string name, 
-                                   const InterfaceId &iid0, 
-                                   const InterfaceId &iid1,
-                                   const InterfaceId &iid2,
-                                   const InterfaceId &iid3,
-                                   const InterfaceId &iid4)
+                                            InterfaceId iid0, 
+                                            InterfaceId iid1,
+                                            InterfaceId iid2,
+                                            InterfaceId iid3,
+                                            InterfaceId iid4)
   : ClassId (name) 
 {
-  const InterfaceId *array[] = {&iid0, &iid1, iid2, &iid3, &iid4};
-  Register (array, sizeof (array)/sizeof(InterfaceId *));
+  InterfaceId array[] = {iid0, iid1, iid2, iid3, iid4};
+  Register (array, sizeof (array)/sizeof(InterfaceId));
 }
 
 template <typename T, typename T1, typename T2,

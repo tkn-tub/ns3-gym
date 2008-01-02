@@ -24,8 +24,13 @@
 
 namespace ns3 {
 
-const InterfaceId PacketSocketFactory::iid = MakeInterfaceId ("Packet", 
-                                                              SocketFactory::iid);
+InterfaceId 
+PacketSocketFactory::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("Packet", 
+                                            SocketFactory::iid ());
+  return iid;
+}
 
 PacketSocketFactory::PacketSocketFactory ()
 {}

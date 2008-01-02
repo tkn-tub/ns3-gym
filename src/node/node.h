@@ -96,7 +96,7 @@ private:
 class Node : public Object
 {
 public:
-  static const InterfaceId iid;
+  static InterfaceId iid (void);
 
   /**
    * Must be invoked by subclasses only.

@@ -36,8 +36,8 @@ namespace ns3 {
 class StaticSpeedMobilityModel : public MobilityModel 
 {
 public:
-  static const InterfaceId iid;
   static const ClassId cid;
+  static InterfaceId iid (void);
   /**
    * Create position located at coordinates (0,0,0) with
    * speed (0,0,0).

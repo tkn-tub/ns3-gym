@@ -22,7 +22,7 @@
 namespace ns3 {
 
 const ClassId StaticMobilityModel::cid = MakeClassId<StaticMobilityModel> ("StaticMobilityModel", 
-                                                                           MobilityModel::iid);
+                                                                           MobilityModel::iid ());
   
 StaticMobilityModel::StaticMobilityModel ()
 {}

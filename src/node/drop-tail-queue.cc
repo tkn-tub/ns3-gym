@@ -25,7 +25,7 @@ NS_LOG_COMPONENT_DEFINE ("DropTailQueue");
 namespace ns3 {
 
 const ClassId DropTailQueue::cid = 
-  MakeClassId<DropTailQueue> ("DropTailQueue", Queue::iid);
+  MakeClassId<DropTailQueue> ("DropTailQueue", Queue::iid ());
 
 
 DropTailQueue::DropTailQueue () :

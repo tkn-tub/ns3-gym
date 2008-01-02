@@ -431,8 +431,12 @@ std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa)
 //
 // ---------------------------------------------------------------------------
 
-const InterfaceId GlobalRouter::iid = 
-  MakeInterfaceId ("GlobalRouter", Object::iid);
+InterfaceId 
+GlobalRouter::iid (void)
+{
+  static InterfaceId iid = MakeInterfaceId ("GlobalRouter", Object::iid ());
+  return iid;
+}
 
 GlobalRouter::GlobalRouter ()
   : m_LSAs()

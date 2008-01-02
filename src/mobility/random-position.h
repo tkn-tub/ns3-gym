@@ -36,7 +36,7 @@ class RandomVariable;
 class RandomPosition : public Object
 {
 public:
-  static const InterfaceId iid;
+  static InterfaceId iid (void);
   RandomPosition ();
   virtual ~RandomPosition ();
   /**
