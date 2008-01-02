@@ -56,10 +56,10 @@ main (int argc, char *argv[])
 //
 // Create the lan on the left side of the dumbbell.
 //
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> ();
-  Ptr<Node> n2 = Create<InternetNode> ();
-  Ptr<Node> n3 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> ();
+  Ptr<Node> n2 = CreateObject<InternetNode> ();
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
 
   Ptr<CsmaChannel> lan1 = 
     CsmaTopology::CreateCsmaChannel (DataRate (10000000), MilliSeconds (2));
@@ -83,10 +83,10 @@ main (int argc, char *argv[])
 //
 // Create the lan on the right side of the dumbbell.
 //
-  Ptr<Node> n4 = Create<InternetNode> ();
-  Ptr<Node> n5 = Create<InternetNode> ();
-  Ptr<Node> n6 = Create<InternetNode> ();
-  Ptr<Node> n7 = Create<InternetNode> ();
+  Ptr<Node> n4 = CreateObject<InternetNode> ();
+  Ptr<Node> n5 = CreateObject<InternetNode> ();
+  Ptr<Node> n6 = CreateObject<InternetNode> ();
+  Ptr<Node> n7 = CreateObject<InternetNode> ();
 
   Ptr<CsmaChannel> lan2 = 
     CsmaTopology::CreateCsmaChannel (DataRate (10000000), MilliSeconds (2));
@@ -124,19 +124,19 @@ main (int argc, char *argv[])
 //
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client0 = Create<UdpEchoClient> (n0, "10.1.2.1", port, 
+  Ptr<UdpEchoClient> client0 = CreateObject<UdpEchoClient> (n0, "10.1.2.1", port, 
     100, Seconds(.01), 1024);
-  Ptr<UdpEchoClient> client1 = Create<UdpEchoClient> (n1, "10.1.2.2", port, 
+  Ptr<UdpEchoClient> client1 = CreateObject<UdpEchoClient> (n1, "10.1.2.2", port, 
     100, Seconds(.01), 1024);
-  Ptr<UdpEchoClient> client2 = Create<UdpEchoClient> (n2, "10.1.2.3", port, 
+  Ptr<UdpEchoClient> client2 = CreateObject<UdpEchoClient> (n2, "10.1.2.3", port, 
     100, Seconds(.01), 1024);
-  Ptr<UdpEchoClient> client3 = Create<UdpEchoClient> (n3, "10.1.2.4", port, 
+  Ptr<UdpEchoClient> client3 = CreateObject<UdpEchoClient> (n3, "10.1.2.4", port, 
     100, Seconds(.01), 1024);
 
-  Ptr<UdpEchoServer> server4 = Create<UdpEchoServer> (n4, port);
-  Ptr<UdpEchoServer> server5 = Create<UdpEchoServer> (n5, port);
-  Ptr<UdpEchoServer> server6 = Create<UdpEchoServer> (n6, port);
-  Ptr<UdpEchoServer> server7 = Create<UdpEchoServer> (n7, port);
+  Ptr<UdpEchoServer> server4 = CreateObject<UdpEchoServer> (n4, port);
+  Ptr<UdpEchoServer> server5 = CreateObject<UdpEchoServer> (n5, port);
+  Ptr<UdpEchoServer> server6 = CreateObject<UdpEchoServer> (n6, port);
+  Ptr<UdpEchoServer> server7 = CreateObject<UdpEchoServer> (n7, port);
 
   server4->Start(Seconds(1.));
   server5->Start(Seconds(1.));

@@ -26,9 +26,7 @@ namespace ns3 {
 const InterfaceId MobilityModel::iid = MakeInterfaceId ("MobilityModel", Object::iid);
 
 MobilityModel::MobilityModel ()
-{
-  SetInterfaceId (MobilityModel::iid);
-}
+{}
 
 MobilityModel::~MobilityModel ()
 {}

@@ -438,7 +438,6 @@ GlobalRouter::GlobalRouter ()
   : m_LSAs()
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (GlobalRouter::iid);
   m_routerId.Set(GlobalRouteManager::AllocateRouterId ());
 }
 

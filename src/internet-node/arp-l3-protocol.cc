@@ -40,7 +40,6 @@ ArpL3Protocol::ArpL3Protocol (Ptr<Node> node)
   : m_node (node)
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (ArpL3Protocol::iid);
 }
 
 ArpL3Protocol::~ArpL3Protocol ()

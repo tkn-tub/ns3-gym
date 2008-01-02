@@ -383,9 +383,9 @@ UdpSocketTest::RunTests (void)
   // Create topology
   
   // Receiver Node
-  Ptr<Node> rxNode = Create<InternetNode> ();
-  Ptr<PointToPointNetDevice> rxDev = Create<PointToPointNetDevice> (rxNode);
-  rxDev->AddQueue(Create<DropTailQueue> ());
+  Ptr<Node> rxNode = CreateObject<InternetNode> ();
+  Ptr<PointToPointNetDevice> rxDev = CreateObject<PointToPointNetDevice> (rxNode);
+  rxDev->AddQueue(CreateObject<DropTailQueue> ());
   Ptr<Ipv4> ipv4 = rxNode->QueryInterface<Ipv4> (Ipv4::iid);
   uint32_t netdev_idx = ipv4->AddInterface (rxDev);
   ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.1"));
@@ -393,9 +393,9 @@ UdpSocketTest::RunTests (void)
   ipv4->SetUp (netdev_idx);
 
   // Sender Node
-  Ptr<Node> txNode = Create<InternetNode> ();
-  Ptr<PointToPointNetDevice> txDev = Create<PointToPointNetDevice> (txNode);
-  txDev->AddQueue(Create<DropTailQueue> ());
+  Ptr<Node> txNode = CreateObject<InternetNode> ();
+  Ptr<PointToPointNetDevice> txDev = CreateObject<PointToPointNetDevice> (txNode);
+  txDev->AddQueue(CreateObject<DropTailQueue> ());
   ipv4 = txNode->QueryInterface<Ipv4> (Ipv4::iid);
   netdev_idx = ipv4->AddInterface (txDev);
   ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.2"));
@@ -403,7 +403,7 @@ UdpSocketTest::RunTests (void)
   ipv4->SetUp (netdev_idx);
 
   // link the two nodes
-  Ptr<PointToPointChannel> channel = Create<PointToPointChannel> ();
+  Ptr<PointToPointChannel> channel = CreateObject<PointToPointChannel> ();
   rxDev->Attach (channel);
   txDev->Attach (channel);
 

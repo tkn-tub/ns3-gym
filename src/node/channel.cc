@@ -30,7 +30,6 @@ Channel::Channel ()
   : m_name("Channel")
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (Channel::iid);
 }
 
 Channel::Channel (std::string name)
@@ -38,7 +37,6 @@ Channel::Channel (std::string name)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << name);
-  SetInterfaceId (Channel::iid);
 }
 
 Channel::~Channel ()

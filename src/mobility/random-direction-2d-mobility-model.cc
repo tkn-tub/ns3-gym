@@ -103,7 +103,7 @@ RandomDirection2dMobilityModelParameters::GetCurrent (void)
       g_speedVariable.IsDirty () ||
       g_pauseVariable.IsDirty ())
     {
-      parameters = Create<RandomDirection2dMobilityModelParameters> ();
+      parameters = CreateObject<RandomDirection2dMobilityModelParameters> ();
       g_bounds.ClearDirtyFlag ();
       g_speedVariable.ClearDirtyFlag ();
       g_pauseVariable.ClearDirtyFlag ();
@@ -115,14 +115,12 @@ RandomDirection2dMobilityModelParameters::GetCurrent (void)
 RandomDirection2dMobilityModel::RandomDirection2dMobilityModel ()
   : m_parameters (RandomDirection2dMobilityModelParameters::GetCurrent ())
 {
-  SetInterfaceId (RandomDirection2dMobilityModel::iid);
   m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
 }
 RandomDirection2dMobilityModel::RandomDirection2dMobilityModel 
 (Ptr<RandomDirection2dMobilityModelParameters> parameters)
   : m_parameters (parameters)
 {
-  SetInterfaceId (RandomDirection2dMobilityModel::iid);
   m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
 }
 void 

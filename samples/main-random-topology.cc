@@ -38,7 +38,7 @@ int main (int argc, char *argv[])
   std::vector<Ptr<Object> > objects;
   for (uint32_t i = 0; i < 10000; i++)
     {
-      Ptr<MobilityModelNotifier> notifier = Create<MobilityModelNotifier> ();
+      Ptr<MobilityModelNotifier> notifier = CreateObject<MobilityModelNotifier> ();
       notifier->TraceConnect ("/course-change", MakeCallback (&CourseChange));
       objects.push_back (notifier);
     }

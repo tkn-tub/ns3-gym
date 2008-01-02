@@ -122,8 +122,6 @@ AnImplementation::methodImpl (void)
 AnImplementation::AnImplementation (void)
 {
   NS_LOG_FUNCTION;
-  // enable our interface
-  SetInterfaceId (AnImplementation::iid);
 }
 
 void
@@ -233,7 +231,7 @@ private:
 
 AnExtendedImplementation::AnExtendedImplementation (void)
 {
-  pImpl = Create<AnImplementation> (); 
+  pImpl = CreateObject<AnImplementation> (); 
   SetInterfaceId (AnExtendedImplementation::iid);
 }
 

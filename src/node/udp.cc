@@ -25,8 +25,6 @@ namespace ns3 {
 const InterfaceId Udp::iid = MakeInterfaceId ("Udp", SocketFactory::iid);
 
 Udp::Udp ()
-{
-  SetInterfaceId (Udp::iid);
-}
+{}
 
 } // namespace ns3

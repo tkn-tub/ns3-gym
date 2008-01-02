@@ -98,7 +98,7 @@ PtrTest::RunTests (void)
   Callback<void> cb = MakeCallback (&PtrTest::DestroyNotify, this);
   m_nDestroyed = false;
   {
-    Ptr<NoCount> p = Create<NoCount> (cb);
+    Ptr<NoCount> p = CreateObject<NoCount> (cb);
   }
   if (m_nDestroyed != 1)
     {
@@ -108,7 +108,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p;
-    p = Create<NoCount> (cb);
+    p = CreateObject<NoCount> (cb);
     p = p;
   }
   if (m_nDestroyed != 1)
@@ -119,7 +119,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = Create<NoCount> (cb);
+    p1 = CreateObject<NoCount> (cb);
     Ptr<NoCount> p2 = p1;
   }
   if (m_nDestroyed != 1)
@@ -130,7 +130,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = Create<NoCount> (cb);
+    p1 = CreateObject<NoCount> (cb);
     Ptr<NoCount> p2;
     p2 = p1;
   }
@@ -142,8 +142,8 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = Create<NoCount> (cb);
-    Ptr<NoCount> p2 = Create<NoCount> (cb);
+    p1 = CreateObject<NoCount> (cb);
+    Ptr<NoCount> p2 = CreateObject<NoCount> (cb);
     p2 = p1;
   }
   if (m_nDestroyed != 2)
@@ -154,9 +154,9 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = Create<NoCount> (cb);
+    p1 = CreateObject<NoCount> (cb);
     Ptr<NoCount> p2;
-    p2 = Create<NoCount> (cb);
+    p2 = CreateObject<NoCount> (cb);
     p2 = p1;
   }
   if (m_nDestroyed != 2)
@@ -167,8 +167,8 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = Create<NoCount> (cb);
-    p1 = Create<NoCount> (cb);
+    p1 = CreateObject<NoCount> (cb);
+    p1 = CreateObject<NoCount> (cb);
   }
   if (m_nDestroyed != 2)
     {
@@ -180,8 +180,8 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p1;
     {
       Ptr<NoCount> p2;
-      p1 = Create<NoCount> (cb);
-      p2 = Create<NoCount> (cb);
+      p1 = CreateObject<NoCount> (cb);
+      p2 = CreateObject<NoCount> (cb);
       p2 = p1;
     }
     if (m_nDestroyed != 1)
@@ -199,8 +199,8 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p1;
     {
       Ptr<NoCount> p2;
-      p1 = Create<NoCount> (cb);
-      p2 = Create<NoCount> (cb);
+      p1 = CreateObject<NoCount> (cb);
+      p2 = CreateObject<NoCount> (cb);
       p2 = CallTest (p1);
     }
     if (m_nDestroyed != 1)
@@ -242,7 +242,7 @@ PtrTest::RunTests (void)
   {
     NoCount *raw;
     {
-      Ptr<NoCount> p = Create<NoCount> (cb);
+      Ptr<NoCount> p = CreateObject<NoCount> (cb);
       {
         Ptr<NoCount const> p1 = p;
       }
@@ -259,7 +259,7 @@ PtrTest::RunTests (void)
 
   m_nDestroyed = 0;
   {
-    Ptr<NoCount> p = Create<NoCount> (cb);
+    Ptr<NoCount> p = CreateObject<NoCount> (cb);
     const NoCount *v1 = PeekPointer (p);
     NoCount *v2 = PeekPointer (p);
     v1->Nothing ();
@@ -271,8 +271,8 @@ PtrTest::RunTests (void)
     }
 
   {
-    Ptr<Object> p0 = Create<NoCount> (cb);
-    Ptr<NoCount> p1 = Create<NoCount> (cb);
+    Ptr<Object> p0 = CreateObject<NoCount> (cb);
+    Ptr<NoCount> p1 = CreateObject<NoCount> (cb);
     if (p0 == p1)
       {
         ok = false;
@@ -287,12 +287,12 @@ PtrTest::RunTests (void)
   }
 
   {
-    Ptr<NoCount> p = Create<NoCount> (cb);
+    Ptr<NoCount> p = CreateObject<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
     callback ();
   }
   {
-    Ptr<const NoCount> p = Create<NoCount> (cb);
+    Ptr<const NoCount> p = CreateObject<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
     callback ();
   }
@@ -301,7 +301,7 @@ PtrTest::RunTests (void)
 #if 0
   // as expected, fails compilation.
   {
-    Ptr<const Object> p = Create<NoCount> (cb);
+    Ptr<const Object> p = CreateObject<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
   }
   // local types are not allowed as arguments to a template.

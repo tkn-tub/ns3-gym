@@ -126,7 +126,7 @@ RandomWalk2dMobilityModelParameters::GetCurrent (void)
       g_modeTime.IsDirty () ||
       g_rectangle.IsDirty ())
     {
-      parameters = Create<RandomWalk2dMobilityModelParameters> ();
+      parameters = CreateObject<RandomWalk2dMobilityModelParameters> ();
     }
   return parameters;
 }
@@ -134,7 +134,6 @@ RandomWalk2dMobilityModelParameters::GetCurrent (void)
 RandomWalk2dMobilityModel::RandomWalk2dMobilityModel ()
   : m_parameters (RandomWalk2dMobilityModelParameters::GetCurrent ())
 {
-  SetInterfaceId (RandomWalk2dMobilityModel::iid);
   m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
 }
 

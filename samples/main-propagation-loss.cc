@@ -26,8 +26,8 @@ using namespace ns3;
 static void
 PrintOne (double minTxpower, double maxTxpower, double stepTxpower, double min, double max, double step)
 {
-  Ptr<StaticMobilityModel> a = Create<StaticMobilityModel> ();
-  Ptr<StaticMobilityModel> b = Create<StaticMobilityModel> ();
+  Ptr<StaticMobilityModel> a = CreateObject<StaticMobilityModel> ();
+  Ptr<StaticMobilityModel> b = CreateObject<StaticMobilityModel> ();
   Ptr<PropagationLossModel> model = PropagationLossModel::CreateDefault ();
 
   a->SetPosition (Vector (0.0, 0.0, 0.0));

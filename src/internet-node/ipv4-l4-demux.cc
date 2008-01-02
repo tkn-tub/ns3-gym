@@ -63,9 +63,7 @@ Ipv4L4ProtocolTraceContextElement::GetTypeName (void) const
 
 Ipv4L4Demux::Ipv4L4Demux (Ptr<Node> node)
   : m_node (node)
-{
-  SetInterfaceId (Ipv4L4Demux::iid);
-}
+{}
 
 Ipv4L4Demux::~Ipv4L4Demux()
 {}

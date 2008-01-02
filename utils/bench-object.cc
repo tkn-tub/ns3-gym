@@ -28,7 +28,7 @@ int main (int argc, char *argv[])
   std::vector< Ptr<BaseA> > objlist;
 
   for (int i = 0; i < nobjects; ++i)
-    objlist.push_back (Create<BaseA> ());
+    objlist.push_back (CreateObject<BaseA> ());
 
   for (int swapCounter = nswaps; swapCounter; --swapCounter)
     {

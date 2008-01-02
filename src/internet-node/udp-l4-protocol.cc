@@ -68,7 +68,7 @@ Ptr<Socket>
 UdpL4Protocol::CreateSocket (void)
 {
   NS_LOG_FUNCTION;
-  Ptr<Socket> socket = Create<UdpSocket> (m_node, this);
+  Ptr<Socket> socket = CreateObject<UdpSocket> (m_node, this);
   return socket;
 }
 

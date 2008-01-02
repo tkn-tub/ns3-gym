@@ -45,15 +45,15 @@ PointToPointTopology::AddPointToPointLink(
   const DataRate& bps,
   const Time& delay)
 {
-  Ptr<PointToPointChannel> channel = Create<PointToPointChannel> (bps, delay);
+  Ptr<PointToPointChannel> channel = CreateObject<PointToPointChannel> (bps, delay);
 
-  Ptr<PointToPointNetDevice> net1 = Create<PointToPointNetDevice> (n1);
+  Ptr<PointToPointNetDevice> net1 = CreateObject<PointToPointNetDevice> (n1);
 
   Ptr<Queue> q = Queue::CreateDefault ();
   net1->AddQueue(q);
   net1->Attach (channel);
   
-  Ptr<PointToPointNetDevice> net2 = Create<PointToPointNetDevice> (n2);
+  Ptr<PointToPointNetDevice> net2 = CreateObject<PointToPointNetDevice> (n2);
 
   q = Queue::CreateDefault ();
   net2->AddQueue(q);

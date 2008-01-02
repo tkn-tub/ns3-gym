@@ -178,7 +178,7 @@ WifiNetDevice::Construct (void)
   EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
 
   // the physical layer.
-  m_phy = Create<WifiPhy> (this);
+  m_phy = CreateObject<WifiPhy> (this);
 
   // the rate control algorithm
   switch (WifiDefaultParameters::GetRateControlAlgorithm ()) {

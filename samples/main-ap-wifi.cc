@@ -71,12 +71,12 @@ CreateApNode (Ptr<WifiChannel> channel,
               Ssid ssid, 
               Time at)
 {
-  Ptr<Node> node = Create<Node> ();  
-  Ptr<NqapWifiNetDevice> device = Create<NqapWifiNetDevice> (node, Mac48Address (macAddress));
+  Ptr<Node> node = CreateObject<Node> ();  
+  Ptr<NqapWifiNetDevice> device = CreateObject<NqapWifiNetDevice> (node, Mac48Address (macAddress));
   device->SetSsid (ssid);
   Simulator::Schedule (at, &NqapWifiNetDevice::StartBeaconing, device);
   device->Attach (channel);
-  Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
+  Ptr<MobilityModel> mobility = CreateObject<StaticMobilityModel> ();
   mobility->SetPosition (position);
   node->AddInterface (mobility);
   return node;
@@ -88,12 +88,12 @@ CreateStaNode (Ptr<WifiChannel> channel,
                const char *macAddress,
                Ssid ssid)
 {
-  Ptr<Node> node = Create<Node> ();  
-  Ptr<NqstaWifiNetDevice> device = Create<NqstaWifiNetDevice> (node, Mac48Address (macAddress));
+  Ptr<Node> node = CreateObject<Node> ();  
+  Ptr<NqstaWifiNetDevice> device = CreateObject<NqstaWifiNetDevice> (node, Mac48Address (macAddress));
   Simulator::ScheduleNow (&NqstaWifiNetDevice::StartActiveAssociation, device, 
                           ssid);
   device->Attach (channel);
-  Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
+  Ptr<MobilityModel> mobility = CreateObject<StaticMobilityModel> ();
   mobility->SetPosition (position);
   node->AddInterface (mobility);
   return node;
@@ -146,7 +146,7 @@ int main (int argc, char *argv[])
   DefaultValue::Bind ("WifiRateControlAlgorithm", "Aarf");
   //DefaultValue::Bind ("WifiRateControlAlgorithm", "Arf");
 
-  Ptr<WifiChannel> channel = Create<WifiChannel> ();
+  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
   Ssid ssid = Ssid ("mathieu");
 
   Ptr<Node> a = CreateApNode (channel, 
@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
   destination.SetProtocol (1);
   destination.SetSingleDevice (0);
   destination.SetPhysicalAddress (Mac48Address ("00:00:00:00:00:03"));
-  Ptr<Application> app = Create<OnOffApplication> (b, destination, 
+  Ptr<Application> app = CreateObject<OnOffApplication> (b, destination, 
                                                    "Packet", 
                                                    ConstantVariable (42),
                                                    ConstantVariable (0));

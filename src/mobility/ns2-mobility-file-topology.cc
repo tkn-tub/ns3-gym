@@ -53,7 +53,7 @@ Ns2MobilityFileTopology::GetMobilityModel (std::string idString, const ObjectSto
     object->QueryInterface<StaticSpeedMobilityModel> (StaticSpeedMobilityModel::iid);
   if (model == 0)
     {
-      model = Create<StaticSpeedMobilityModel> ();
+      model = CreateObject<StaticSpeedMobilityModel> ();
       object->AddInterface (model);
     }
   return model;

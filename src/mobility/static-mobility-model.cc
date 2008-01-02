@@ -25,14 +25,10 @@ const ClassId StaticMobilityModel::cid = MakeClassId<StaticMobilityModel> ("Stat
                                                                            MobilityModel::iid);
   
 StaticMobilityModel::StaticMobilityModel ()
-{
-  SetInterfaceId (StaticMobilityModel::iid);
-}
+{}
 StaticMobilityModel::StaticMobilityModel (const Vector &position)
   : m_position (position)
-{
-  SetInterfaceId (StaticMobilityModel::iid);
-}
+{}
 StaticMobilityModel::~StaticMobilityModel ()
 {}
 

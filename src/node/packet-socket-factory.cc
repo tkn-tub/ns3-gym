@@ -28,14 +28,12 @@ const InterfaceId PacketSocketFactory::iid = MakeInterfaceId ("Packet",
                                                               SocketFactory::iid);
 
 PacketSocketFactory::PacketSocketFactory ()
-{
-  SetInterfaceId (PacketSocketFactory::iid);
-}
+{}
 
 Ptr<Socket> PacketSocketFactory::CreateSocket (void)
 {
   Ptr<Node> node = QueryInterface<Node> (Node::iid);
-  Ptr<PacketSocket> socket = Create<PacketSocket> (node);
+  Ptr<PacketSocket> socket = CreateObject<PacketSocket> (node);
   return socket;
 } 
 } // namespace ns3

@@ -106,7 +106,6 @@ Queue::Queue() :
   m_nTotalDroppedPackets(0)
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (Queue::iid);
 }
 
 Queue::~Queue()

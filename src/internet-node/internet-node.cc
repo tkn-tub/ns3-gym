@@ -51,8 +51,8 @@ InternetNode::~InternetNode ()
 void
 InternetNode::Construct (void)
 {
-  Ptr<Ipv4L3Protocol> ipv4 = Create<Ipv4L3Protocol> (this);
-  Ptr<ArpL3Protocol> arp = Create<ArpL3Protocol> (this);
+  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> (this);
+  Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> (this);
   // XXX remove the PeekPointer below.
   RegisterProtocolHandler (MakeCallback (&Ipv4L3Protocol::Receive, PeekPointer (ipv4)), 
                            Ipv4L3Protocol::PROT_NUMBER, 0);
@@ -60,12 +60,12 @@ InternetNode::Construct (void)
                            ArpL3Protocol::PROT_NUMBER, 0);
 
 
-  Ptr<Ipv4L4Demux> ipv4L4Demux = Create<Ipv4L4Demux> (this);
-  Ptr<UdpL4Protocol> udp = Create<UdpL4Protocol> (this);
+  Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObject<Ipv4L4Demux> (this);
+  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> (this);
   ipv4L4Demux->Insert (udp);
 
-  Ptr<UdpImpl> udpImpl = Create<UdpImpl> (udp);
-  Ptr<Ipv4Impl> ipv4Impl = Create<Ipv4Impl> (ipv4);
+  Ptr<UdpImpl> udpImpl = CreateObject<UdpImpl> (udp);
+  Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> (ipv4);
 
   Object::AddInterface (ipv4);
   Object::AddInterface (arp);

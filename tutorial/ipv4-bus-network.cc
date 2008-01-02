@@ -56,7 +56,7 @@ Ipv4BusNetwork::Ipv4BusNetwork (
 
   for (uint32_t i = 0; i < n; ++i)
     {
-      Ptr<Node> node = Create<InternetNode> ();
+      Ptr<Node> node = CreateObject<InternetNode> ();
       uint32_t nd = CsmaIpv4Topology::AddIpv4CsmaNetDevice (node, m_channel, 
         Mac48Address::Allocate ());
       Ipv4Address address = Ipv4AddressGenerator::AllocateAddress (mask, 

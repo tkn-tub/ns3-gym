@@ -128,10 +128,10 @@ main (int argc, char *argv[])
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> (); 
-  Ptr<Node> n2 = Create<InternetNode> (); 
-  Ptr<Node> n3 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> (); 
+  Ptr<Node> n2 = CreateObject<InternetNode> (); 
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
@@ -182,7 +182,7 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
 
   // Create a flow from n3 to n1, starting at time 1.1 seconds
-  Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
     n3, 
     InetSocketAddress ("10.1.1.1", port),
     "Udp",
@@ -193,7 +193,7 @@ main (int argc, char *argv[])
   ooff->Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  Ptr<PacketSink> sink = Create<PacketSink> (
+  Ptr<PacketSink> sink = CreateObject<PacketSink> (
     n1, 
     InetSocketAddress (Ipv4Address::GetAny (), port), 
     "Udp");

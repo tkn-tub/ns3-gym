@@ -29,9 +29,7 @@ const ClassId MobilityModelNotifier::cid =
 				    MobilityModelNotifier::iid);
 
 MobilityModelNotifier::MobilityModelNotifier ()
-{
-  SetInterfaceId (MobilityModelNotifier::iid);
-}
+{}
 
 void 
 MobilityModelNotifier::Notify (Ptr<const MobilityModel> position) const

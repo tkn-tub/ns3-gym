@@ -42,7 +42,7 @@ CsmaIpv4Topology::AddIpv4CsmaNetDevice(
   Ptr<Queue> q = Queue::CreateDefault ();
 
   // assume full-duplex
-  Ptr<CsmaNetDevice> nd = Create<CsmaNetDevice> (node, addr, 
+  Ptr<CsmaNetDevice> nd = CreateObject<CsmaNetDevice> (node, addr, 
     ns3::CsmaNetDevice::IP_ARP, true, true);
 
   nd->AddQueue(q);
@@ -58,13 +58,13 @@ CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
-  Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr,
+  Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> (n1, addr,
                                                   ns3::CsmaNetDevice::LLC,
                                                   true, false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
-  Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr,
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> (n1, addr,
                                                   ns3::CsmaNetDevice::LLC,
                                                   false, true);
   nd1->AddQueue(q);
@@ -78,13 +78,13 @@ CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
-  Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr,
+  Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> (n1, addr,
                                                   ns3::CsmaNetDevice::RAW,
                                                   true, false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
-  Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr,
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> (n1, addr,
                                                   ns3::CsmaNetDevice::RAW,
                                                   false, true);
   nd1->AddQueue(q);

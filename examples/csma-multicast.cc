@@ -106,11 +106,11 @@ main (int argc, char *argv[])
 // Explicitly create the nodes required by the topology (shown above).
 //
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> (); 
-  Ptr<Node> n2 = Create<InternetNode> (); 
-  Ptr<Node> n3 = Create<InternetNode> ();
-  Ptr<Node> n4 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> (); 
+  Ptr<Node> n2 = CreateObject<InternetNode> (); 
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
+  Ptr<Node> n4 = CreateObject<InternetNode> ();
 
   NS_LOG_INFO ("Create channels.");
 //
@@ -281,7 +281,7 @@ main (int argc, char *argv[])
 
   // Configure a multicast packet generator that generates a packet
   // every few seconds
-  Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
     n0, 
     InetSocketAddress (multicastGroup, port), 
     "Udp",
@@ -298,7 +298,7 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   // If you enable logging on this (above) it will print a log statement
   // for every packet received
-  Ptr<PacketSink> sink = Create<PacketSink> (
+  Ptr<PacketSink> sink = CreateObject<PacketSink> (
     n4,
     InetSocketAddress (Ipv4Address::GetAny (), port),
     "Udp");

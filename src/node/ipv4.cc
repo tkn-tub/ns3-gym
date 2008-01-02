@@ -28,9 +28,7 @@ namespace ns3 {
 const InterfaceId Ipv4::iid = MakeInterfaceId ("Ipv4", Object::iid);
 
 Ipv4::Ipv4 ()
-{
-  SetInterfaceId (Ipv4::iid);
-}
+{}
 
 Ipv4::~Ipv4 ()
 {}

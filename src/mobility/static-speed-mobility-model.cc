@@ -30,20 +30,14 @@ const ClassId StaticSpeedMobilityModel::cid =
 
 
 StaticSpeedMobilityModel::StaticSpeedMobilityModel ()
-{
-  SetInterfaceId (StaticSpeedMobilityModel::iid);
-}
+{}
 StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Vector &position)
   : m_helper (position)
-{
-  SetInterfaceId (StaticSpeedMobilityModel::iid);
-}
+{}
 StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Vector &position,
                                                     const Vector &speed)
   : m_helper (position, speed)
-{
-  SetInterfaceId (StaticSpeedMobilityModel::iid);
-}
+{}
 
 StaticSpeedMobilityModel::~StaticSpeedMobilityModel ()
 {}

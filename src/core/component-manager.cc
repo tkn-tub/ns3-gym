@@ -241,9 +241,7 @@ public:
 const ns3::InterfaceId B::iid = MakeInterfaceId ("B", Object::iid);
 
 B::B ()
-{
-  SetInterfaceId (B::iid);
-}
+{}
 
 
 class A : public ns3::Object
@@ -277,8 +275,7 @@ A::A ()
     m_oneBoolInvoked (false),
     m_oneUi32Invoked (false)
 {
-  SetInterfaceId (A::iid);
-  ns3::Ptr<B> b = ns3::Create<B> ();
+  ns3::Ptr<B> b = ns3::CreateObject<B> ();
   AddInterface (b);
 }
 
@@ -288,8 +285,7 @@ A::A (bool bo)
     m_oneUi32Invoked (false),
     m_bool (bo)
 {
-  SetInterfaceId (A::iid);
-  ns3::Ptr<B> b = ns3::Create<B> ();
+  ns3::Ptr<B> b = ns3::CreateObject<B> ();
   AddInterface (b);
 }
 
@@ -299,8 +295,7 @@ A::A (uint32_t i)
     m_oneUi32Invoked (true),
     m_ui32 (i)
 {
-  SetInterfaceId (A::iid);
-  ns3::Ptr<B> b = ns3::Create<B> ();
+  ns3::Ptr<B> b = ns3::CreateObject<B> ();
   AddInterface (b);
 }
 

@@ -406,9 +406,7 @@ class BaseA : public ns3::Object
 public:
   static const ns3::InterfaceId iid;
   BaseA ()
-  {
-    SetInterfaceId (BaseA::iid);
-  }
+  {}
   void BaseGenerateTrace (int16_t v)
   { m_source = v; }
   virtual void Dispose (void) {}
@@ -428,9 +426,7 @@ class DerivedA : public BaseA
 public:
   static const ns3::InterfaceId iid;
   DerivedA (int v)
-  {
-    SetInterfaceId (DerivedA::iid);
-  }
+  {}
   void DerivedGenerateTrace (int16_t v)
   { m_sourceDerived = v; }
   virtual void Dispose (void) {
@@ -457,9 +453,7 @@ class BaseB : public ns3::Object
 public:
   static const ns3::InterfaceId iid;
   BaseB ()
-  {
-    SetInterfaceId (BaseB::iid);
-  }
+  {}
   void BaseGenerateTrace (int16_t v)
   { m_source = v; }
   virtual void Dispose (void) {}
@@ -479,9 +473,7 @@ class DerivedB : public BaseB
 public:
   static const ns3::InterfaceId iid;
   DerivedB (int v)
-  {
-    SetInterfaceId (DerivedB::iid);
-  }
+  {}
   void DerivedGenerateTrace (int16_t v)
   { m_sourceDerived = v; }
   virtual void Dispose (void) {
@@ -553,17 +545,17 @@ ObjectTest::RunTests (void)
 {
   bool result = true;
 
-  Ptr<BaseA> baseA = Create<BaseA> ();
+  Ptr<BaseA> baseA = CreateObject<BaseA> ();
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (BaseA::iid), baseA);
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid), 0);
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (DerivedA::iid), 0);
-  baseA = Create<DerivedA> (10);
+  baseA = CreateObject<DerivedA> (10);
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (BaseA::iid), baseA);
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid), baseA);
   NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedA> (DerivedA::iid), 0);
 
-  baseA = Create<BaseA> ();
-  Ptr<BaseB> baseB = Create<BaseB> ();
+  baseA = CreateObject<BaseA> ();
+  Ptr<BaseB> baseB = CreateObject<BaseB> ();
   Ptr<BaseB> baseBCopy = baseB;
   baseA->AddInterface (baseB);
   NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseA> (BaseA::iid), 0);
@@ -576,8 +568,8 @@ ObjectTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (baseB->QueryInterface<DerivedA> (DerivedA::iid), 0);
   NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<BaseA> (BaseA::iid), 0);
 
-  baseA = Create<DerivedA> (1);
-  baseB = Create<DerivedB> (1);
+  baseA = CreateObject<DerivedA> (1);
+  baseB = CreateObject<DerivedB> (1);
   baseBCopy = baseB;
   baseA->AddInterface (baseB);
   NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedB> (DerivedB::iid), 0);
@@ -589,20 +581,20 @@ ObjectTest::RunTests (void)
   NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<DerivedB> (DerivedB::iid), 0);
   NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseB> (BaseB::iid), 0)
 
-  baseA = Create<BaseA> ();
-  baseB = Create<BaseB> ();
+  baseA = CreateObject<BaseA> ();
+  baseB = CreateObject<BaseB> ();
   baseA->AddInterface (baseB);
   baseA = 0;
   baseA = baseB->QueryInterface<BaseA> (BaseA::iid);
 
-  baseA = Create<BaseA> ();
+  baseA = CreateObject<BaseA> ();
   baseA->TraceConnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
   m_baseATrace = false;
   baseA->BaseGenerateTrace (1);
   NS_TEST_ASSERT (m_baseATrace);
   baseA->TraceDisconnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
 
-  baseB = Create<BaseB> ();
+  baseB = CreateObject<BaseB> ();
   baseB->TraceConnect ("/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
   m_baseBTrace = false;
   baseB->BaseGenerateTrace (2);
@@ -639,8 +631,8 @@ ObjectTest::RunTests (void)
   baseA->TraceDisconnect ("/$BaseA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
 
   Ptr<DerivedA> derivedA;
-  derivedA = Create<DerivedA> (1);
-  baseB = Create<BaseB> ();
+  derivedA = CreateObject<DerivedA> (1);
+  baseB = CreateObject<BaseB> ();
   derivedA->AddInterface (baseB);
   baseB->TraceConnect ("/$DerivedA/deriveda-x", MakeCallback (&ObjectTest::DerivedATrace, this));
   baseB->TraceConnect ("/$DerivedA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));

@@ -158,8 +158,7 @@ Ipv4L3Protocol::Ipv4L3Protocol(Ptr<Node> node)
     m_node (node)
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (Ipv4L3Protocol::iid);
-  m_staticRouting = Create<Ipv4StaticRouting> ();
+  m_staticRouting = CreateObject<Ipv4StaticRouting> ();
   AddRoutingProtocol (m_staticRouting, 0);
   SetupLoopback ();
 }
@@ -185,7 +184,7 @@ Ipv4L3Protocol::SetupLoopback (void)
 {
   NS_LOG_FUNCTION;
 
-  Ptr<Ipv4LoopbackInterface> interface = Create<Ipv4LoopbackInterface> (m_node);
+  Ptr<Ipv4LoopbackInterface> interface = CreateObject<Ipv4LoopbackInterface> (m_node);
   interface->SetAddress (Ipv4Address::GetLoopback ());
   interface->SetNetworkMask (Ipv4Mask::GetLoopback ());
   uint32_t index = AddIpv4Interface (interface);
@@ -433,7 +432,7 @@ Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << &device);
-  Ptr<Ipv4Interface> interface = Create<ArpIpv4Interface> (m_node, device);
+  Ptr<Ipv4Interface> interface = CreateObject<ArpIpv4Interface> (m_node, device);
   return AddIpv4Interface (interface);
 }
 

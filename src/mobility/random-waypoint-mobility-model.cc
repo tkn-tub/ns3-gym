@@ -96,7 +96,7 @@ RandomWaypointMobilityModelParameters::GetCurrent (void)
       g_pause.IsDirty () ||
       g_speed.IsDirty ())
     {
-      parameters = Create<RandomWaypointMobilityModelParameters> ();
+      parameters = CreateObject<RandomWaypointMobilityModelParameters> ();
     }
   return parameters;
 }

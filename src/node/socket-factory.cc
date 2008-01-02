@@ -25,8 +25,6 @@ namespace ns3 {
 const InterfaceId SocketFactory::iid = MakeInterfaceId ("SocketFactory", Object::iid);
 
 SocketFactory::SocketFactory ()
-{
-  SetInterfaceId (SocketFactory::iid);
-}
+{}
 
 } // namespace ns3

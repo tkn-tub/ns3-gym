@@ -17,10 +17,7 @@ const InterfaceId AnObject::iid = MakeInterfaceId ("AnObject", Object::iid);
 const ClassId AnObject::cid = MakeClassId<AnObject, int, double> ("AnObject", AnObject::iid);
 
 AnObject::AnObject (int a, double b)
-{
-  // enable our interface
-  SetInterfaceId (AnObject::iid);
-}
+{}
 void
 AnObject::DoDispose (void)
 {

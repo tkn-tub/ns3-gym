@@ -47,7 +47,6 @@ NetDevice::NetDevice(Ptr<Node> node, const Address& addr) :
   m_isPointToPoint (false)
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (NetDevice::iid);
   m_node->AddDevice (this);
 }
 

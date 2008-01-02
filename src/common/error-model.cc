@@ -43,7 +43,6 @@ ErrorModel::ErrorModel () :
   m_enable (true) 
 {
   NS_LOG_FUNCTION;  
-  SetInterfaceId (ErrorModel::iid);
 }
 
 ErrorModel::~ErrorModel ()
@@ -130,7 +129,6 @@ RateErrorModel::RateErrorModel () :
   NS_LOG_FUNCTION;
   // Assume a uniform random variable if user does not specify
   m_ranvar = new UniformVariable ();
-  SetInterfaceId (RateErrorModel::iid);
 }
 
 RateErrorModel::~RateErrorModel () 
@@ -244,7 +242,6 @@ const ClassId ListErrorModel::cid =
 ListErrorModel::ListErrorModel ()  
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (ListErrorModel::iid);
 }
 
 ListErrorModel::~ListErrorModel () 

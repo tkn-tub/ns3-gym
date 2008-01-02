@@ -69,7 +69,6 @@ const ClassId RandomDiscPosition::cid =
 
 RandomPosition::RandomPosition ()
 {
-  Object::SetInterfaceId (RandomPosition::iid);
 }
 
 RandomPosition::~RandomPosition ()

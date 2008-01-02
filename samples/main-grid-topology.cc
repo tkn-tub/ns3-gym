@@ -17,7 +17,7 @@ int main (int argc, char *argv[])
   // create an array of empty nodes for testing purposes 
   for (uint32_t i = 0; i < 120; i++)
     {
-      nodes.push_back (Create<InternetNode> ());
+      nodes.push_back (CreateObject<InternetNode> ());
     }
 
   // setup the grid itself: objects are layed out

@@ -48,7 +48,7 @@ class RandomVariable;
  * Typical code (simplified) to use an ErrorModel may look something like 
  * this:
  * \code 
- * Ptr<ErrorModel> rem = Create<RateErrorModel> ();
+ * Ptr<ErrorModel> rem = CreateObject<RateErrorModel> ();
  * rem->SetRandomVariable (UniformVariable ());
  * rem->SetRate (0.001);
  * ...

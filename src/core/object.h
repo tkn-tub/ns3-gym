@@ -166,14 +166,6 @@ public:
   virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 protected:
   /**
-   * \param iid an InterfaceId
-   *
-   * Every subclass which defines a new InterfaceId for itself
-   * should register this InterfaceId by calling this method
-   * from its constructor.
-   */
-  void SetInterfaceId (InterfaceId iid);
-  /**
    * This method is called by Object::Dispose.
    * Subclasses are expected to override this method and chain
    * up to their parent's implementation once they are done.
@@ -181,6 +173,23 @@ protected:
   virtual void DoDispose (void);
 private:
   friend class InterfaceIdTraceResolver;
+  template <typename T>
+  friend Ptr<T> CreateObject (void);
+  template <typename T, typename T1>
+  friend Ptr<T> CreateObject (T1 a1);
+  template <typename T, typename T1, typename T2>
+  friend Ptr<T> CreateObject (T1 a1, T2 a2);
+  template <typename T, typename T1, typename T2, typename T3>
+  friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3);
+  template <typename T, typename T1, typename T2, typename T3, typename T4>
+  friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4);
+  template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+  friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+  template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+  friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
+  template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+  friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
+
   Ptr<Object> DoQueryInterface (InterfaceId iid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
                          TraceResolver::SourceCollection *collection) const;
@@ -188,12 +197,45 @@ private:
   bool Check (void) const;
   bool CheckLoose (void) const;
   void MaybeDelete (void) const;
+  /**
+   * \param iid an InterfaceId
+   *
+   * Every subclass which defines a new InterfaceId for itself
+   * should register this InterfaceId by calling this method
+   * from its constructor.
+   */
+  void SetInterfaceId (InterfaceId iid);
+
   mutable uint32_t m_count;
   InterfaceId m_iid;
   bool m_disposed;
   mutable bool m_collecting;
   Object *m_next;
 };
+
+template <typename T>
+Ptr<T> CreateObject (void);
+
+template <typename T, typename T1>
+Ptr<T> CreateObject (T1 a1);
+
+template <typename T, typename T1, typename T2>
+Ptr<T> CreateObject (T1 a1, T2 a2);
+
+template <typename T, typename T1, typename T2, typename T3>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 } // namespace ns3
 
@@ -226,6 +268,71 @@ Object::QueryInterface (InterfaceId iid) const
     }
   return 0;
 }
+
+template <typename T>
+Ptr<T> CreateObject (void)
+{
+  Ptr<T> p = Ptr<T> (new T (), false);
+  p->SetInterfaceId (T::iid);
+  return p;
+}
+
+template <typename T, typename T1>
+Ptr<T> CreateObject (T1 a1)
+{
+  Ptr<T> p = Ptr<T> (new T (a1), false);
+  p->SetInterfaceId (T::iid);
+  return p;
+}
+
+template <typename T, typename T1, typename T2>
+Ptr<T> CreateObject (T1 a1, T2 a2)
+{
+  Ptr<T> p = Ptr<T> (new T (a1, a2), false);
+  p->SetInterfaceId (T::iid);
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3)
+{
+  Ptr<T> p = Ptr<T> (new T (a1, a2, a3), false);
+  p->SetInterfaceId (T::iid);
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
+{
+  Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4), false);
+  p->SetInterfaceId (T::iid);
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+{
+  Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5), false);
+  p->SetInterfaceId (T::iid);
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
+{
+  Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5, a6), false);
+  p->SetInterfaceId (T::iid);
+  return p;
+}
+
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
+Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
+{
+  Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5, a6, a7), false);
+  p->SetInterfaceId (T::iid);
+  return p;
+}
+
 
 } // namespace ns3
 

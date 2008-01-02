@@ -106,9 +106,8 @@ Node::Node(uint32_t sid)
 void
 Node::Construct (void)
 {
-  SetInterfaceId (Node::iid);
   m_id = NodeList::Add (this);
-  Ptr<PacketSocketFactory> socketFactory = Create<PacketSocketFactory> ();
+  Ptr<PacketSocketFactory> socketFactory = CreateObject<PacketSocketFactory> ();
   AddInterface (socketFactory);
 }
   

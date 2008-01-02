@@ -89,13 +89,13 @@ PropagationLossModel::CreateDefault (void)
 {
   switch (g_modelType.GetValue ()) {
   case FRIIS:
-    return Create<FriisPropagationLossModel> ();
+    return CreateObject<FriisPropagationLossModel> ();
     break;
   case RANDOM:
-    return Create<RandomPropagationLossModel> ();
+    return CreateObject<RandomPropagationLossModel> ();
     break;
   case LOG_DISTANCE:
-    return Create<LogDistancePropagationLossModel> ();
+    return CreateObject<LogDistancePropagationLossModel> ();
     break;
   default:
     NS_ASSERT (false);
@@ -251,10 +251,10 @@ LogDistancePropagationLossModel::CreateDefaultReference (void)
 {
   switch (g_logDistanceReferenceType.GetValue ()) {
   case RANDOM:
-    return Create<RandomPropagationLossModel> ();
+    return CreateObject<RandomPropagationLossModel> ();
     break;
   case FRIIS:
-    return Create<FriisPropagationLossModel> ();
+    return CreateObject<FriisPropagationLossModel> ();
     break;
   case LOG_DISTANCE:
   default:
@@ -288,8 +288,8 @@ LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
    *      
    * rx = rx0(tx) - 10 * n * log (d/d0)
    */
-  static Ptr<StaticMobilityModel> zero = Create<StaticMobilityModel> (Vector (0.0, 0.0, 0.0));
-  static Ptr<StaticMobilityModel> reference = Create<StaticMobilityModel> (Vector (m_referenceDistance, 0.0, 0.0));
+  static Ptr<StaticMobilityModel> zero = CreateObject<StaticMobilityModel> (Vector (0.0, 0.0, 0.0));
+  static Ptr<StaticMobilityModel> reference = CreateObject<StaticMobilityModel> (Vector (m_referenceDistance, 0.0, 0.0));
   double rx0 = m_reference->GetRxPower (txPowerDbm, zero, reference);
   double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);
   double rxPowerDbm = rx0 - pathLossDb;
