@@ -38,13 +38,20 @@ class IidManager
 public:
   uint16_t AllocateUid (std::string name);
   void SetParent (uint16_t uid, uint16_t parent);
+  void AddConstructor (uint16_t uid, ns3::CallbackBase callback, uint32_t nArguments);
   uint16_t GetUid (std::string name) const;
   std::string GetName (uint16_t uid) const;
   uint16_t GetParent (uint16_t uid) const;
+  ns3::CallbackBase GetConstructor (uint16_t uid, uint32_t nArguments);
 private:
+  struct ConstructorInformation {
+    ns3::CallbackBase cb;
+    uint32_t nArguments;
+  };
   struct IidInformation {
     std::string name;
     uint16_t parent;
+    std::vector<struct ConstructorInformation> constructors;
   };
   typedef std::vector<struct IidInformation>::const_iterator Iterator;
 
@@ -89,6 +96,24 @@ IidManager::SetParent (uint16_t uid, uint16_t parent)
   struct IidInformation *information = LookupInformation (uid);
   information->parent = parent;
 }
+void 
+IidManager::AddConstructor (uint16_t uid, ns3::CallbackBase callback, uint32_t nArguments)
+{
+  struct IidInformation *information = LookupInformation (uid);
+  struct ConstructorInformation constructor;
+  constructor.cb = callback;
+  constructor.nArguments = nArguments;
+  for (std::vector<struct ConstructorInformation>::const_iterator i = information->constructors.begin ();
+       i != information->constructors.end (); i++)
+    {
+      if (i->nArguments == nArguments)
+        {
+          NS_FATAL_ERROR ("registered two constructors on the same type with the same number of arguments.");
+          break;
+        }
+    }
+  information->constructors.push_back (constructor);
+}
 
 uint16_t 
 IidManager::GetUid (std::string name) const
@@ -116,6 +141,21 @@ IidManager::GetParent (uint16_t uid) const
 {
   struct IidInformation *information = LookupInformation (uid);
   return information->parent;
+}
+ns3::CallbackBase 
+IidManager::GetConstructor (uint16_t uid, uint32_t nArguments)
+{
+  struct IidInformation *information = LookupInformation (uid);
+  for (std::vector<struct ConstructorInformation>::const_iterator i = information->constructors.begin ();
+       i != information->constructors.end (); i++)
+    {
+      if (i->nArguments == nArguments)
+        {
+          return i->cb;
+        } 
+    }
+  NS_FATAL_ERROR ("Requested constructor with "<<nArguments<<" arguments not found");
+  return ns3::CallbackBase ();
 }
 
 } // anonymous namespace
@@ -191,6 +231,13 @@ InterfaceIdTraceResolver::TraceAll (std::ostream &os, const TraceContext &contex
  *         The InterfaceId class
  *********************************************************************/
 
+InterfaceId::InterfaceId (std::string name)
+{
+  uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
+  NS_ASSERT (uid != 0);
+  m_iid = uid;
+}
+
 
 InterfaceId::InterfaceId (uint16_t iid)
   : m_iid (iid)
@@ -205,6 +252,12 @@ InterfaceId::LookupByName (std::string name)
   return InterfaceId (uid);
 }
 InterfaceId 
+InterfaceId::SetParent (InterfaceId iid)
+{
+  Singleton<IidManager>::Get ()->SetParent (m_iid, iid.m_iid);
+  return *this;
+}
+InterfaceId 
 InterfaceId::GetParent (void) const
 {
   uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_iid);
@@ -215,6 +268,29 @@ InterfaceId::GetName (void) const
 {
   std::string name = Singleton<IidManager>::Get ()->GetName (m_iid);
   return name;
+}
+
+void
+InterfaceId::DoAddConstructor (CallbackBase cb, uint32_t nArguments)
+{
+  Singleton<IidManager>::Get ()->AddConstructor (m_iid, cb, nArguments);
+}
+
+CallbackBase
+InterfaceId::LookupConstructor (uint32_t nArguments)
+{
+  CallbackBase constructor = Singleton<IidManager>::Get ()->GetConstructor (m_iid, nArguments);
+  return constructor;
+}
+
+Ptr<Object> 
+InterfaceId::CreateObject (void)
+{
+  CallbackBase cb = LookupConstructor (0);
+  Callback<Ptr<Object> > realCb;
+  realCb.Assign (cb);
+  Ptr<Object> object = realCb ();
+  return object;
 }
 
 bool operator == (InterfaceId a, InterfaceId b)
@@ -486,7 +562,9 @@ class BaseA : public ns3::Object
 {
 public:
   static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("BaseA", Object::iid ());
+    static ns3::InterfaceId iid = ns3::InterfaceId ("BaseA")
+      .SetParent (Object::iid ())
+      .AddConstructor<BaseA> ();
     return iid;
   }
   BaseA ()
@@ -509,7 +587,9 @@ class DerivedA : public BaseA
 {
 public:
   static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("DerivedA", BaseA::iid ());
+    static ns3::InterfaceId iid = ns3::InterfaceId ("DerivedA")
+      .SetParent (BaseA::iid ())
+      .AddConstructor<DerivedA,int> ();
     return iid;
   }
   DerivedA (int v)
@@ -534,7 +614,9 @@ class BaseB : public ns3::Object
 {
 public:
   static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("BaseB", Object::iid ());
+    static ns3::InterfaceId iid = ns3::InterfaceId ("BaseB")
+      .SetParent (Object::iid ())
+      .AddConstructor<BaseB> ();
     return iid;
   }
   BaseB ()
@@ -557,7 +639,9 @@ class DerivedB : public BaseB
 {
 public:
   static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("DerivedB", BaseB::iid ());
+    static ns3::InterfaceId iid = ns3::InterfaceId ("DerivedB")
+      .SetParent (BaseB::iid ())
+      .AddConstructor<DerivedB,int> ();
     return iid;
   }
   DerivedB (int v)
@@ -738,6 +822,17 @@ ObjectTest::RunTests (void)
   derivedA->BaseGenerateTrace (11);
   NS_TEST_ASSERT (m_derivedATrace);
   baseB->TraceDisconnect ("/$DerivedA/*", MakeCallback (&ObjectTest::BaseATrace, this));
+
+  // Test the object creation code of InterfaceId
+  Ptr<Object> a = BaseA::iid ().CreateObject ();
+  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (), a);
+  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (DerivedA::iid ()), 0);
+  NS_TEST_ASSERT_EQUAL (a->QueryInterface<DerivedA> (), 0);
+  a = DerivedA::iid ().CreateObject (10);
+  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (), a);
+  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (DerivedA::iid ()), a);
+  NS_TEST_ASSERT_UNEQUAL (a->QueryInterface<DerivedA> (), 0);
+
 
   return result;
 }

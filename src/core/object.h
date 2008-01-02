@@ -25,11 +25,14 @@
 #include <string>
 #include "ptr.h"
 #include "trace-resolver.h"
+#include "callback.h"
+#include "empty.h"
 
 namespace ns3 {
 
 class TraceContext;
 class CallbackBase;
+class Object;
 
 /**
  * \brief a unique identifier for an interface.
@@ -65,13 +68,47 @@ public:
    * \returns the name of this interface.
    */
   std::string GetName (void) const;
+
+  InterfaceId (std::string);
+
+  InterfaceId SetParent (InterfaceId iid);
+  template <typename T>
+  InterfaceId AddConstructor (void);
+  template <typename T, typename T1>
+  InterfaceId AddConstructor (void);
+  template <typename T, typename T1, typename T2>
+  InterfaceId AddConstructor (void);
+  template <typename T, typename T1, typename T2, typename T3>
+  InterfaceId AddConstructor (void);
+  template <typename T, typename T1, typename T2, typename T3, typename T4>
+  InterfaceId AddConstructor (void);
+  template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+  InterfaceId AddConstructor (void);
+
+
+  Ptr<Object> CreateObject (void);
+  template <typename T1>
+  Ptr<Object> CreateObject (T1 a1);
+  template <typename T1, typename T2>
+  Ptr<Object> CreateObject (T1 a1, T2 a2);
+  template <typename T1, typename T2, typename T3>
+  Ptr<Object> CreateObject (T1 a1, T2 a2, T3 a3);
+  template <typename T1, typename T2, typename T3, typename T4>
+  Ptr<Object> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4);
+  template <typename T1, typename T2, typename T3, typename T4, typename T5>
+  Ptr<Object> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+
   ~InterfaceId ();
 private:
-  InterfaceId (uint16_t iid);
   friend InterfaceId MakeInterfaceId (std::string name, InterfaceId parent);
   friend InterfaceId MakeObjectInterfaceId (void);
   friend bool operator == (InterfaceId a, InterfaceId b);
   friend bool operator != (InterfaceId a, InterfaceId b);
+
+  InterfaceId (uint16_t iid);
+  void DoAddConstructor (CallbackBase callback, uint32_t nArguments);
+  CallbackBase LookupConstructor (uint32_t nArguments);
+  
   uint16_t m_iid;
 };
 
@@ -244,6 +281,139 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 } // namespace ns3
 
 namespace ns3 {
+
+
+template <typename T>
+InterfaceId 
+InterfaceId::AddConstructor (void)
+{
+  struct Maker {
+    static Ptr<Object> Create (void) {
+      return ns3::CreateObject<T> ();
+    }
+  };
+  CallbackBase cb = MakeCallback (&Maker::Create);
+  DoAddConstructor (cb, 0);
+  return *this;
+}
+template <typename T, typename T1>
+InterfaceId 
+InterfaceId::AddConstructor (void)
+{
+  struct Maker {
+    static Ptr<Object> Create (T1 a1) {
+      return ns3::CreateObject<T> (a1);
+    }
+  };
+  CallbackBase cb = MakeCallback (&Maker::Create);
+  DoAddConstructor (cb, 1);
+  return *this;
+}
+template <typename T, typename T1, typename T2>
+InterfaceId 
+InterfaceId::AddConstructor (void)
+{
+  struct Maker {
+    static Ptr<Object> Create (T1 a1, T2 a2) {
+      return ns3::CreateObject<T> (a1, a2);
+    }
+  };
+  CallbackBase cb = MakeCallback (&Maker::Create);
+  DoAddConstructor (cb, 2);
+  return *this;
+}
+template <typename T, typename T1, typename T2, typename T3>
+InterfaceId 
+InterfaceId::AddConstructor (void)
+{
+  struct Maker {
+    static Ptr<Object> Create (T1 a1, T2 a2, T3 a3) {
+      return ns3::CreateObject<T> (a1, a2, a3);
+    }
+  };
+  CallbackBase cb = MakeCallback (&Maker::Create);
+  DoAddConstructor (cb, 3);
+  return *this;
+}
+template <typename T, typename T1, typename T2, typename T3, typename T4>
+InterfaceId 
+InterfaceId::AddConstructor (void)
+{
+  struct Maker {
+    static Ptr<Object> Create (T1 a1, T2 a2, T3 a3, T4 a4) {
+      return ns3::CreateObject<T> (a1, a2, a3, a4);
+    }
+  };
+  CallbackBase cb = MakeCallback (&Maker::Create);
+  DoAddConstructor (cb, 4);
+  return *this;
+}
+template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
+InterfaceId 
+InterfaceId::AddConstructor (void)
+{
+  struct Maker {
+    static Ptr<Object> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) {
+      return ns3::CreateObject<T> (a1, a2, a3, a4, a5);
+    }
+  };
+  CallbackBase cb = MakeCallback (&Maker::Create);
+  DoAddConstructor (cb, 5);
+  return *this;
+}
+
+template <typename T1>
+Ptr<Object> 
+InterfaceId::CreateObject (T1 a1)
+{
+  CallbackBase cb = LookupConstructor (1);
+  Callback<Ptr<Object>,T1> realCb;
+  realCb.Assign (cb);
+  Ptr<Object> object = realCb (a1);
+  return object;
+}
+template <typename T1, typename T2>
+Ptr<Object> 
+InterfaceId::CreateObject (T1 a1, T2 a2)
+{
+  CallbackBase cb = LookupConstructor (2);
+  Callback<Ptr<Object>,T1,T2> realCb;
+  realCb.Assign (cb);
+  Ptr<Object> object = realCb (a1,a2);
+  return object;
+}
+template <typename T1, typename T2, typename T3>
+Ptr<Object> 
+InterfaceId::CreateObject (T1 a1, T2 a2, T3 a3)
+{
+  CallbackBase cb = LookupConstructor (3);
+  Callback<Ptr<Object>,T1,T2,T3> realCb;
+  realCb.Assign (cb);
+  Ptr<Object> object = realCb (a1,a2,a3);
+  return object;
+}
+template <typename T1, typename T2, typename T3, typename T4>
+Ptr<Object> 
+InterfaceId::CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
+{
+  CallbackBase cb = LookupConstructor (4);
+  Callback<Ptr<Object>,T1,T2,T3,T4> realCb;
+  realCb.Assign (cb);
+  Ptr<Object> object = realCb (a1,a2,a3,a4);
+  return object;
+}
+  template <typename T1, typename T2, typename T3, typename T4, typename T5>
+Ptr<Object> 
+InterfaceId::CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+{
+  CallbackBase cb = LookupConstructor (5);
+  Callback<Ptr<Object>,T1,T2,T3,T4,T5> realCb;
+  realCb.Assign (cb);
+  Ptr<Object> object = realCb (a1,a2,a3,a4,a5);
+  return object;
+}
+
+
 
 void
 Object::Ref (void) const
