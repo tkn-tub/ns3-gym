@@ -28,6 +28,10 @@
 
 NS_LOG_COMPONENT_DEFINE ("Object");
 
+/*********************************************************************
+ *         Helper code
+ *********************************************************************/
+
 namespace {
 
 class IidManager : public ns3::UidManager
@@ -57,6 +61,10 @@ IidTree::LookupParent (uint16_t child)
 }
 
 } // anonymous namespace
+
+/*********************************************************************
+ *         The InterfaceId TraceResolver
+ *********************************************************************/
 
 namespace ns3 {
 
@@ -121,6 +129,10 @@ InterfaceIdTraceResolver::TraceAll (std::ostream &os, const TraceContext &contex
   m_aggregate->DoTraceAll (os, context);
 }
 
+/*********************************************************************
+ *         The InterfaceId class
+ *********************************************************************/
+
 
 InterfaceId::InterfaceId (uint16_t iid)
   : m_iid (iid)
@@ -173,6 +185,11 @@ MakeObjectInterfaceId (void)
   Singleton<IidTree>::Get ()->SetParent (iid.m_iid, &iid.m_iid);
   return iid;
 }
+
+
+/*********************************************************************
+ *         The Object implementation
+ *********************************************************************/
 
 
 InterfaceId 
