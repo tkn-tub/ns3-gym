@@ -264,7 +264,6 @@ public:
 
   /**
    * \param classId class id of the constructor to invoke.
-   * \param iid interface id to query for
    * \return a pointer to the instance created.
    *
    * Create an instance of the object identified by its
@@ -272,11 +271,10 @@ public:
    * result.
    */
   template <typename T>
-  static Ptr<T> Create (ClassId classId, InterfaceId iid);
+  static Ptr<T> Create (ClassId classId);
 
   /**
    * \param classId class id of the constructor to invoke.
-   * \param iid interface id to query for
    * \param a1 first argument to pass to constructor
    * \return a pointer to the instance created.
    *
@@ -285,11 +283,10 @@ public:
    * result.
    */
   template <typename T, typename T1>
-  static Ptr<T> Create (ClassId classId, InterfaceId iid, T1 a1);
+  static Ptr<T> Create (ClassId classId, T1 a1);
 
   /**
    * \param classId class id of the constructor to invoke.
-   * \param iid interface id to query for
    * \param a1 first argument to pass to constructor
    * \param a2 second argument to pass to constructor
    * \return a pointer to the instance created.
@@ -299,11 +296,10 @@ public:
    * result.
    */
   template <typename T, typename T1, typename T2>
-  static Ptr<T> Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2);
+  static Ptr<T> Create (ClassId classId, T1 a1, T2 a2);
 
   /**
    * \param classId class id of the constructor to invoke.
-   * \param iid interface id to query for
    * \param a1 first argument to pass to constructor
    * \param a2 second argument to pass to constructor
    * \param a3 third argument to pass to constructor
@@ -314,11 +310,10 @@ public:
    * result.
    */
   template <typename T, typename T1, typename T2, typename T3>
-  static Ptr<T> Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2, T3 a3);
+  static Ptr<T> Create (ClassId classId, T1 a1, T2 a2, T3 a3);
 
   /**
    * \param classId class id of the constructor to invoke.
-   * \param iid interface id to query for
    * \param a1 first argument to pass to constructor
    * \param a2 second argument to pass to constructor
    * \param a3 third argument to pass to constructor
@@ -330,11 +325,10 @@ public:
    * result.
    */
   template <typename T, typename T1, typename T2, typename T3, typename T4>
-  static Ptr<T> Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2, T3 a3, T4 a4);
+  static Ptr<T> Create (ClassId classId, T1 a1, T2 a2, T3 a3, T4 a4);
 
   /**
    * \param classId class id of the constructor to invoke.
-   * \param iid interface id to query for
    * \param a1 first argument to pass to constructor
    * \param a2 second argument to pass to constructor
    * \param a3 third argument to pass to constructor
@@ -347,11 +341,11 @@ public:
    * result.
    */
   template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-  static Ptr<T> Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+  static Ptr<T> Create (ClassId classId, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
 private:
   friend void RegisterCallback (ClassId classId, CallbackBase *callback, 
-                                   std::vector<const InterfaceId *> supportedInterfaces);
+                                std::vector<const InterfaceId *> supportedInterfaces);
   static void Register (ClassId classId, CallbackBase *callback, 
                         std::vector<const InterfaceId *> supportedInterfaces);
 
@@ -627,56 +621,56 @@ ComponentManager::Create (ClassId classId, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 
 template <typename T>
 Ptr<T>
-ComponentManager::Create (ClassId classId, InterfaceId iid)
+ComponentManager::Create (ClassId classId)
 {
   Ptr<Object> obj = Create (classId);
-  Ptr<T> i = obj->QueryInterface<T> (iid);
+  Ptr<T> i = obj->QueryInterface<T> ();
   return i;
 }
 
 template <typename T, typename T1>
 Ptr<T>
-ComponentManager::Create (ClassId classId, InterfaceId iid, T1 a1)
+ComponentManager::Create (ClassId classId, T1 a1)
 {
   Ptr<Object> obj = Create (classId, a1);
-  Ptr<T> i = obj->QueryInterface<T> (iid);
+  Ptr<T> i = obj->QueryInterface<T> ();
   return i;
 }
 
 template <typename T, typename T1, typename T2>
 Ptr<T>
-ComponentManager::Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2)
+ComponentManager::Create (ClassId classId, T1 a1, T2 a2)
 {
   Ptr<Object> obj = Create (classId, a1, a2);
-  Ptr<T> i = obj->QueryInterface<T> (iid);
+  Ptr<T> i = obj->QueryInterface<T> ();
   return i;
 }
 
 
 template <typename T, typename T1, typename T2, typename T3>
 Ptr<T>
-ComponentManager::Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2, T3 a3)
+ComponentManager::Create (ClassId classId, T1 a1, T2 a2, T3 a3)
 {
   Ptr<Object> obj = Create (classId, a1, a2, a3);
-  Ptr<T> i = obj->QueryInterface<T> (iid);
+  Ptr<T> i = obj->QueryInterface<T> ();
   return i;
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4>
 Ptr<T>
-ComponentManager::Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2, T3 a3, T4 a4)
+ComponentManager::Create (ClassId classId, T1 a1, T2 a2, T3 a3, T4 a4)
 {
   Ptr<Object> obj = Create (classId, a1, a2, a3, a4);
-  Ptr<T> i = obj->QueryInterface<T> (iid);
+  Ptr<T> i = obj->QueryInterface<T> ();
   return i;
 }
 
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
 Ptr<T>
-ComponentManager::Create (ClassId classId, InterfaceId iid, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+ComponentManager::Create (ClassId classId, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
   Ptr<Object> obj = Create (classId, a1, a2, a3, a4, a5);
-  Ptr<T> i = obj->QueryInterface<T> (iid);
+  Ptr<T> i = obj->QueryInterface<T> ();
   return i;
 }
 

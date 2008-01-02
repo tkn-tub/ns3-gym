@@ -341,14 +341,14 @@ ComponentManagerTest::RunTests (void)
   bool ok = true;
 
   Ptr<A> a = 0;
-  a = ComponentManager::Create<A> (A::cidZero, A::iid);
+  a = ComponentManager::Create<A> (A::cidZero);
   if (a == 0 ||
       !a->m_zeroInvoked)
     {
       ok = false;
     }
 
-  a = ComponentManager::Create<A,bool> (A::cidOneBool, A::iid, true);
+  a = ComponentManager::Create<A,bool> (A::cidOneBool, true);
   if (a == 0 ||
       !a->m_oneBoolInvoked ||
       !a->m_bool)
@@ -356,7 +356,7 @@ ComponentManagerTest::RunTests (void)
       ok = false;
     }
 
-  a = ComponentManager::Create<A,bool> (A::cidOneBool, A::iid, false);
+  a = ComponentManager::Create<A,bool> (A::cidOneBool, false);
   if (a == 0 ||
       !a->m_oneBoolInvoked ||
       a->m_bool)
@@ -364,7 +364,7 @@ ComponentManagerTest::RunTests (void)
       ok = false;
     }
 
-  a = ComponentManager::Create<A,uint32_t> (A::cidOneUi32, A::iid, 10);
+  a = ComponentManager::Create<A,uint32_t> (A::cidOneUi32, 10);
   if (a == 0 ||
       !a->m_oneUi32Invoked ||
       a->m_ui32 != 10)
@@ -372,7 +372,7 @@ ComponentManagerTest::RunTests (void)
       ok = false;
     }
 
-  a = ComponentManager::Create<A> (A::cidOneUi32, A::iid, (uint32_t)10);
+  a = ComponentManager::Create<A> (A::cidOneUi32, (uint32_t)10);
   if (a == 0 ||
       !a->m_oneUi32Invoked ||
       a->m_ui32 != 10)
@@ -380,7 +380,7 @@ ComponentManagerTest::RunTests (void)
       ok = false;
     }
 
-  Ptr<B> b = ComponentManager::Create<B,uint32_t> (A::cidOneUi32, B::iid, 10);
+  Ptr<B> b = ComponentManager::Create<B,uint32_t> (A::cidOneUi32, 10);
   if (b == 0)
     {
       ok = false;

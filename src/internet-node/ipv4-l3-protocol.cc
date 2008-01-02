@@ -742,7 +742,7 @@ Ipv4L3Protocol::ForwardUp (Ptr<Packet> p, Ipv4Header const&ip,
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << p << &ip);
 
-  Ptr<Ipv4L4Demux> demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
+  Ptr<Ipv4L4Demux> demux = m_node->QueryInterface<Ipv4L4Demux> ();
   Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());
   protocol->Receive (p, ip.GetSource (), ip.GetDestination (), incomingInterface);
 }

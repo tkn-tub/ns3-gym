@@ -51,7 +51,7 @@ Ipv4LoopbackInterface::SendTo (Ptr<Packet> packet, Ipv4Address dest)
   NS_LOG_PARAMS (this << packet << dest);
 
   Ptr<Ipv4L3Protocol> ipv4 = 
-    m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
+    m_node->QueryInterface<Ipv4L3Protocol> ();
 
   ipv4->Receive (0, packet, Ipv4L3Protocol::PROT_NUMBER, 
                  Mac48Address ("ff:ff:ff:ff:ff:ff"));

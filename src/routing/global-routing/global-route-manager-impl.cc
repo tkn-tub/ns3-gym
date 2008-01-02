@@ -392,7 +392,7 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase ()
       Ptr<Node> node = *i;
 
       Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+        node->QueryInterface<GlobalRouter> ();
 //      
 // Ignore nodes that aren't participating in routing.
 //
@@ -476,7 +476,7 @@ GlobalRouteManagerImpl::InitializeRoutes ()
 // participating in routing.
 //
       Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+        node->QueryInterface<GlobalRouter> ();
 //
 // if the node has a global router interface, then run the global routing
 // algorithms.
@@ -1145,7 +1145,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
       Ptr<Node> node = *i;
 
       Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+        node->QueryInterface<GlobalRouter> ();
 //
 // If the node doesn't have a GlobalRouter interface it can't be the one
 // we're interested in.
@@ -1163,7 +1163,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 // is participating in routing IP version 4 packets, it certainly must have 
 // an Ipv4 interface.
 //
-          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
             "GlobalRouteManagerImpl::FindOutgoingInterfaceId (): "
             "QI for <Ipv4> interface failed");
@@ -1229,7 +1229,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // in question cannot be the router we want, so we continue.
 // 
       Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+        node->QueryInterface<GlobalRouter> ();
 
       if (rtr == 0)
         {
@@ -1252,7 +1252,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // for that interface.  If the node is acting as an IP version 4 router, it
 // should absolutely have an Ipv4 interface.
 //
-          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
             "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
             "QI for <Ipv4> interface failed");
@@ -1346,7 +1346,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 // in question cannot be the router we want, so we continue.
 // 
       Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+        node->QueryInterface<GlobalRouter> ();
 
       if (rtr == 0)
         {
@@ -1369,7 +1369,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 // for that interface.  If the node is acting as an IP version 4 router, it
 // should absolutely have an Ipv4 interface.
 //
-          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
             "GlobalRouteManagerImpl::SPFIntraAddTransit (): "
             "QI for <Ipv4> interface failed");

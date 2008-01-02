@@ -211,7 +211,7 @@ main (int argc, char *argv[])
 // a fine time to find the interface indices on node two.
 //
   Ptr<Ipv4> ipv4;
-  ipv4 = n2->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = n2->QueryInterface<Ipv4> ();
 
   uint32_t ifIndexLan0 = ipv4->FindInterfaceForAddr (n2Lan0Addr);
   uint32_t ifIndexLan1 = ipv4->FindInterfaceForAddr (n2Lan1Addr);
@@ -261,7 +261,7 @@ main (int argc, char *argv[])
 // interface to find the output interface index, and tell node zero to send
 // its multicast traffic out that interface.
 //
-  ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = n0->QueryInterface<Ipv4> ();
   uint32_t ifIndexSrc = ipv4->FindInterfaceForAddr (multicastSource);
   ipv4->SetDefaultMulticastRoute (ifIndexSrc);
 //
@@ -269,7 +269,7 @@ main (int argc, char *argv[])
 // multicast data.  To enable forwarding bits up the protocol stack, we need
 // to tell the stack to join the multicast group.
 //
-  ipv4 = n4->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = n4->QueryInterface<Ipv4> ();
   ipv4->JoinMulticastGroup (multicastSource, multicastGroup);
 //
 // Create an OnOff application to send UDP datagrams from node zero to the

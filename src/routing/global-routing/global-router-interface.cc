@@ -489,7 +489,7 @@ GlobalRouter::GetRouterId (void) const
 GlobalRouter::DiscoverLSAs (void)
 {
   NS_LOG_FUNCTION;
-  Ptr<Node> node = QueryInterface<Node> (Node::iid);
+  Ptr<Node> node = QueryInterface<Node> ();
   NS_LOG_LOGIC("For node " << node->GetId () );
   NS_ASSERT_MSG(node, 
     "GlobalRouter::DiscoverLSAs (): <Node> interface not set");
@@ -505,7 +505,7 @@ GlobalRouter::DiscoverLSAs (void)
 // Ipv4 interface.  This is where the information regarding the attached 
 // interfaces lives.
 //
-  Ptr<Ipv4> ipv4Local = node->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ipv4Local = node->QueryInterface<Ipv4> ();
   NS_ASSERT_MSG(ipv4Local, 
     "GlobalRouter::DiscoverLSAs (): QI for <Ipv4> interface failed");
 //
@@ -624,7 +624,7 @@ GlobalRouter::DiscoverLSAs (void)
 // device for its node, then ask that node for its Ipv4 interface.
 //
           Ptr<Node> nodeRemote = ndRemote->GetNode();
-          Ptr<Ipv4> ipv4Remote = nodeRemote->QueryInterface<Ipv4> (Ipv4::iid);
+          Ptr<Ipv4> ipv4Remote = nodeRemote->QueryInterface<Ipv4> ();
           NS_ASSERT_MSG(ipv4Remote, 
             "GlobalRouter::DiscoverLSAs (): QI for remote <Ipv4> failed");
 //
@@ -632,7 +632,7 @@ GlobalRouter::DiscoverLSAs (void)
 // well get it now.
 //
           Ptr<GlobalRouter> srRemote = 
-            nodeRemote->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+            nodeRemote->QueryInterface<GlobalRouter> ();
           NS_ASSERT_MSG(srRemote, 
             "GlobalRouter::DiscoverLSAs():QI for remote <GlobalRouter> failed");
           Ipv4Address rtrIdRemote = srRemote->GetRouterId();
@@ -710,7 +710,7 @@ GlobalRouter::DiscoverLSAs (void)
               NS_ASSERT (tempNd);
               Ptr<Node> tempNode = tempNd->GetNode ();
               uint32_t tempIfIndex = FindIfIndexForDevice (tempNode, tempNd);
-              Ptr<Ipv4> tempIpv4 = tempNode->QueryInterface<Ipv4> (Ipv4::iid);
+              Ptr<Ipv4> tempIpv4 = tempNode->QueryInterface<Ipv4> ();
               NS_ASSERT (tempIpv4);
               Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
               pLSA->AddAttachedRouter (tempAddr);
@@ -728,7 +728,7 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<Node> node,
   Ptr<NetDevice> ndLocal) const
 {
   uint32_t ifIndexLocal = FindIfIndexForDevice(node, ndLocal);
-  Ptr<Ipv4> ipv4Local = QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ipv4Local = QueryInterface<Ipv4> ();
   NS_ASSERT (ipv4Local);
   Ipv4Address addrLocal = ipv4Local->GetAddress(ifIndexLocal);
   Ipv4Mask maskLocal = ipv4Local->GetNetworkMask(ifIndexLocal);
@@ -744,7 +744,7 @@ GlobalRouter::FindDesignatedRouterForLink (Ptr<Node> node,
       NS_ASSERT (tempNd);
       Ptr<Node> tempNode = tempNd->GetNode ();
       uint32_t tempIfIndex = FindIfIndexForDevice (tempNode, tempNd);
-      Ptr<Ipv4> tempIpv4 = tempNode->QueryInterface<Ipv4> (Ipv4::iid);
+      Ptr<Ipv4> tempIpv4 = tempNode->QueryInterface<Ipv4> ();
       NS_ASSERT (tempIpv4);
       Ipv4Address tempAddr = tempIpv4->GetAddress(tempIfIndex);
       if (tempAddr < addrLocal)
@@ -835,7 +835,7 @@ GlobalRouter::GetAdjacent(Ptr<NetDevice> nd, Ptr<Channel> ch) const
 GlobalRouter::FindIfIndexForDevice(Ptr<Node> node, Ptr<NetDevice> nd) const
 {
   NS_LOG_FUNCTION;
-  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> ();
   NS_ASSERT_MSG(ipv4, "QI for <Ipv4> interface failed");
   for (uint32_t i = 0; i < ipv4->GetNInterfaces(); ++i )
     {

@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
        j != nodes.end (); j++)
     {
       Ptr<Object> object = *j;
-      Ptr<MobilityModel> position = object->QueryInterface<MobilityModel> (MobilityModel::iid);
+      Ptr<MobilityModel> position = object->QueryInterface<MobilityModel> ();
       NS_ASSERT (position != 0);
       Vector pos = position->GetPosition ();
       std::cout << "x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << std::endl;

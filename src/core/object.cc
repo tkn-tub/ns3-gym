@@ -91,7 +91,7 @@ InterfaceIdTraceResolver::ParseForInterface (std::string path)
   Ptr<Object> interface = m_aggregate->QueryInterface<Object> (interfaceId);
   return interface;
 }
-void 
+void  
 InterfaceIdTraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
 {
   Ptr<const Object> interface = ParseForInterface (path);
@@ -546,46 +546,46 @@ ObjectTest::RunTests (void)
   bool result = true;
 
   Ptr<BaseA> baseA = CreateObject<BaseA> ();
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (BaseA::iid), baseA);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (), baseA);
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid), 0);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (DerivedA::iid), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (), 0);
   baseA = CreateObject<DerivedA> (10);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (BaseA::iid), baseA);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (), baseA);
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid), baseA);
-  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedA> (DerivedA::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedA> (), 0);
 
   baseA = CreateObject<BaseA> ();
   Ptr<BaseB> baseB = CreateObject<BaseB> ();
   Ptr<BaseB> baseBCopy = baseB;
   baseA->AddInterface (baseB);
-  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseA> (BaseA::iid), 0);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (DerivedA::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseB> (BaseB::iid), 0);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedB> (DerivedB::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseB> (BaseB::iid), 0);
-  NS_TEST_ASSERT_EQUAL (baseB->QueryInterface<DerivedB> (DerivedB::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseA> (BaseA::iid), 0);
-  NS_TEST_ASSERT_EQUAL (baseB->QueryInterface<DerivedA> (DerivedA::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<BaseA> (BaseA::iid), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseA> (), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseB> (), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedB> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseB> (), 0);
+  NS_TEST_ASSERT_EQUAL (baseB->QueryInterface<DerivedB> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseA> (), 0);
+  NS_TEST_ASSERT_EQUAL (baseB->QueryInterface<DerivedA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<BaseA> (), 0);
 
   baseA = CreateObject<DerivedA> (1);
   baseB = CreateObject<DerivedB> (1);
   baseBCopy = baseB;
   baseA->AddInterface (baseB);
-  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedB> (DerivedB::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseB> (BaseB::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<DerivedA> (DerivedA::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseA> (BaseA::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<DerivedA> (DerivedA::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<BaseA> (BaseA::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<DerivedB> (DerivedB::iid), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseB> (BaseB::iid), 0)
+  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedB> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseB> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<DerivedA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<DerivedA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<BaseA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<DerivedB> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseB> (), 0)
 
   baseA = CreateObject<BaseA> ();
   baseB = CreateObject<BaseB> ();
   baseA->AddInterface (baseB);
   baseA = 0;
-  baseA = baseB->QueryInterface<BaseA> (BaseA::iid);
+  baseA = baseB->QueryInterface<BaseA> ();
 
   baseA = CreateObject<BaseA> ();
   baseA->TraceConnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));

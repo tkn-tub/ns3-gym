@@ -47,7 +47,7 @@ Sample ()
   for (NodeList::Iterator nodeIter = NodeList::Begin (); nodeIter != NodeList::End (); nodeIter++)
     {
       Ptr<Node> node = *nodeIter;
-      Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
+      Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> ();
       Vector pos = mobility->GetPosition ();
       Vector vel = mobility->GetVelocity ();
 

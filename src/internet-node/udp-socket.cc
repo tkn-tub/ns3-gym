@@ -268,7 +268,7 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
     }
 
   uint32_t localIfIndex;
-  Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> ();
 
   //
   // If dest is sent to the limited broadcast address (all ones),
@@ -386,7 +386,7 @@ UdpSocketTest::RunTests (void)
   Ptr<Node> rxNode = CreateObject<InternetNode> ();
   Ptr<PointToPointNetDevice> rxDev = CreateObject<PointToPointNetDevice> (rxNode);
   rxDev->AddQueue(CreateObject<DropTailQueue> ());
-  Ptr<Ipv4> ipv4 = rxNode->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ipv4 = rxNode->QueryInterface<Ipv4> ();
   uint32_t netdev_idx = ipv4->AddInterface (rxDev);
   ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.1"));
   ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
@@ -396,7 +396,7 @@ UdpSocketTest::RunTests (void)
   Ptr<Node> txNode = CreateObject<InternetNode> ();
   Ptr<PointToPointNetDevice> txDev = CreateObject<PointToPointNetDevice> (txNode);
   txDev->AddQueue(CreateObject<DropTailQueue> ());
-  ipv4 = txNode->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = txNode->QueryInterface<Ipv4> ();
   netdev_idx = ipv4->AddInterface (txDev);
   ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.2"));
   ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
@@ -409,12 +409,12 @@ UdpSocketTest::RunTests (void)
 
 
   // Create the UDP sockets
-  Ptr<SocketFactory> rxSocketFactory = rxNode->QueryInterface<SocketFactory> (Udp::iid);
+  Ptr<SocketFactory> rxSocketFactory = rxNode->QueryInterface<Udp> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
   NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.2"), 1234)), 0);
   rxSocket->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket, this));
 
-  Ptr<SocketFactory> txSocketFactory = txNode->QueryInterface<SocketFactory> (Udp::iid);
+  Ptr<SocketFactory> txSocketFactory = txNode->QueryInterface<Udp> ();
   Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
 
   // ------ Now the tests ------------

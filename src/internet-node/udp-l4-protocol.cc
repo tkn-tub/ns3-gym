@@ -159,7 +159,7 @@ UdpL4Protocol::Send (Ptr<Packet> packet,
 
   packet->AddHeader (udpHeader);
 
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
+  Ptr<Ipv4L3Protocol> ipv4 = m_node->QueryInterface<Ipv4L3Protocol> ();
   if (ipv4 != 0)
     {
       NS_LOG_LOGIC ("Sending to IP");

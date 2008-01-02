@@ -117,9 +117,13 @@ public:
    */
   inline void Unref (void) const;
   /**
-   * \param iid the interface requested
    * \returns a pointer to the requested interface or zero if it could not be found.
-   * 
+   */
+  template <typename T>
+  Ptr<T> QueryInterface (void) const;
+  /**
+   * \param iid the interface id of the requested interface
+   * \returns a pointer to the requested interface or zero if it could not be found.
    */
   template <typename T>
   Ptr<T> QueryInterface (InterfaceId iid) const;
@@ -255,6 +259,18 @@ Object::Unref (void) const
     {
       MaybeDelete ();
     }
+}
+
+template <typename T>
+Ptr<T> 
+Object::QueryInterface () const
+{
+  Ptr<Object> found = DoQueryInterface (T::iid);
+  if (found != 0)
+    {
+      return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));
+    }
+  return 0;
 }
 
 template <typename T>

@@ -34,7 +34,7 @@ void
 EnableNode (Ptr<Node> node)
 {
   ComponentManager::Create<olsr::Agent, Ptr<Node> >
-    (olsr::Agent::cid, olsr::Agent::iid, node)->Start ();
+    (olsr::Agent::cid, node)->Start ();
 }
 
 

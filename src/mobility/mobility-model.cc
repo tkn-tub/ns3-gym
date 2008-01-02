@@ -59,8 +59,7 @@ MobilityModel::GetDistanceFrom (Ptr<const MobilityModel> other) const
 void
 MobilityModel::NotifyCourseChange (void) const
 {
-  Ptr<MobilityModelNotifier> notifier = 
-    QueryInterface<MobilityModelNotifier> (MobilityModelNotifier::iid);
+  Ptr<MobilityModelNotifier> notifier = QueryInterface<MobilityModelNotifier> ();
   if (notifier != 0)
     {
       notifier->Notify (this);

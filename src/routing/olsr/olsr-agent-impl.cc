@@ -175,7 +175,7 @@ AgentImpl::AgentImpl (Ptr<Node> node)
 
   m_linkTupleTimerFirstTime = true;
 
-  m_ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+  m_ipv4 = node->QueryInterface<Ipv4> ();
   NS_ASSERT (m_ipv4);
 
   Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (Udp::iid);

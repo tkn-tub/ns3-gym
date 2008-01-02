@@ -186,9 +186,9 @@ main (int argc, char *argv[])
   // This will likely set by some global StaticRouting object in the future
   NS_LOG_INFO ("Set Default Routes.");
   Ptr<Ipv4> ipv4;
-  ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = n0->QueryInterface<Ipv4> ();
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
-  ipv4 = n3->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = n3->QueryInterface<Ipv4> ();
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
 
   //
@@ -205,8 +205,7 @@ main (int argc, char *argv[])
   NS_ASSERT (em != 0);
   // Now, query interface on the resulting em pointer to see if a 
   // RateErrorModel interface exists.  If so, set the packet error rate
-  Ptr<RateErrorModel> bem = em->QueryInterface<RateErrorModel> 
-    (RateErrorModel::iid);
+  Ptr<RateErrorModel> bem = em->QueryInterface<RateErrorModel> ();
   if (bem)
     { 
       bem->SetRandomVariable (UniformVariable ());
