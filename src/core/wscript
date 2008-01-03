@@ -52,6 +52,7 @@ def build(bld):
         'trace-source.cc',
         'type-traits-test.cc',
         'array-trace-resolver.cc',
+        'interface-id-default-value.cc',
         ]
 
     if sys.platform == 'win32':
@@ -95,5 +96,6 @@ def build(bld):
         'array-trace-resolver.h',
         'trace-doc.h',
         'int-to-type.h',
+        'interface-id-default-value.h',
         ]
 
