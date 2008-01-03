@@ -29,7 +29,8 @@ const ClassId Agent::cid = MakeClassId< AgentImpl, Ptr<Node> > ("OlsrAgent", Age
 InterfaceId 
 Agent::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("OlsrAgent", Object::iid ());
+  static InterfaceId iid = InterfaceId ("OlsrAgent")
+    .SetParent<Object> ();
   return iid;
 }
 

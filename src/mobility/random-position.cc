@@ -61,7 +61,8 @@ g_discY ("RandomDiscPositionY",
 InterfaceId 
 RandomPosition::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("RandomPosition", Object::iid ());
+  static InterfaceId iid = InterfaceId ("RandomPosition")
+    .SetParent<Object> ();
   return iid;
 }
 

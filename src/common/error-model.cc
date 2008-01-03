@@ -39,7 +39,8 @@ static ClassIdDefaultValue g_classIdErrorModelDefaultValue ("ErrorModel",
 
 InterfaceId ErrorModel::iid (void)
 { 
-  static InterfaceId iid = MakeInterfaceId ("ErrorModel", Object::iid ());
+  static InterfaceId iid = InterfaceId ("ErrorModel")
+    .SetParent<Object> ();
   return iid;
 }
 
@@ -125,7 +126,8 @@ static EnumDefaultValue<enum ErrorUnit>
 
 InterfaceId RateErrorModel::iid (void)
 { 
-  static InterfaceId iid = MakeInterfaceId ("RateErrorModel", ErrorModel::iid ());
+  static InterfaceId iid = InterfaceId ("RateErrorModel")
+    .SetParent<ErrorModel> ();
   return iid;
 }
 
@@ -246,7 +248,8 @@ const ClassId ListErrorModel::cid =
 
 InterfaceId ListErrorModel::iid (void)
 { 
-  static InterfaceId iid = MakeInterfaceId ("ListErrorModel", ErrorModel::iid ());
+  static InterfaceId iid = InterfaceId ("ListErrorModel")
+    .SetParent<ErrorModel> ();
   return iid;
 }
 

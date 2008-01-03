@@ -38,7 +38,8 @@ const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
 InterfaceId 
 ArpL3Protocol::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("ArpL3Protocol", Object::iid ());
+  static InterfaceId iid = InterfaceId ("ArpL3Protocol")
+    .SetParent<Object> ();
   return iid;
 }
 

@@ -303,34 +303,22 @@ bool operator != (InterfaceId a, InterfaceId b)
   return a.m_iid != b.m_iid;
 }
 
-InterfaceId
-MakeInterfaceId (std::string name, InterfaceId parent)
-{
-  uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
-  NS_ASSERT (uid != 0);
-  Singleton<IidManager>::Get ()->SetParent (uid, parent.m_iid);
-  return InterfaceId (uid);
-}
-
-InterfaceId
-MakeObjectInterfaceId (void)
-{
-  uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid ("Object");
-  NS_ASSERT (uid == 1);
-  Singleton<IidManager>::Get ()->SetParent (uid, uid);
-  return InterfaceId (uid);
-}
-
-
 /*********************************************************************
  *         The Object implementation
  *********************************************************************/
 
+static InterfaceId
+GetObjectIid (void)
+{
+  InterfaceId iid = InterfaceId ("Object");
+  iid.SetParent (iid);
+  return iid;
+}
 
 InterfaceId 
 Object::iid (void)
 {
-  static InterfaceId iid = MakeObjectInterfaceId ();
+  static InterfaceId iid = GetObjectIid ();
   return iid;
 }
 

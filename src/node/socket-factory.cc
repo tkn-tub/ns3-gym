@@ -24,7 +24,8 @@ namespace ns3 {
 
 InterfaceId SocketFactory::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("SocketFactory", Object::iid ());
+  static InterfaceId iid = InterfaceId ("SocketFactory")
+    .SetParent<Object> ();
   return iid;
 }
 

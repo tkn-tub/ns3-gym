@@ -27,7 +27,8 @@ namespace ns3 {
 InterfaceId 
 Channel::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("Channel", Object::iid ());
+  static InterfaceId iid = InterfaceId ("Channel")
+    .SetParent<Object> ();
   return iid;
 }
 

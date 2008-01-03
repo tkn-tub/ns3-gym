@@ -35,7 +35,8 @@ namespace ns3 {
 
 InterfaceId NetDevice::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("NetDevice", Object::iid ());
+  static InterfaceId iid = InterfaceId ("NetDevice")
+    .SetParent<Object> ();
   return iid;
 }
 

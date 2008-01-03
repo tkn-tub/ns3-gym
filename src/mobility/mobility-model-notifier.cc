@@ -29,7 +29,8 @@ const ClassId MobilityModelNotifier::cid =
 InterfaceId 
 MobilityModelNotifier::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("MobilityModelNotifier", Object::iid ());
+  static InterfaceId iid = InterfaceId ("MobilityModelNotifier")
+    .SetParent<Object> ();
   return iid;
 }
 

@@ -26,7 +26,8 @@ namespace ns3 {
 InterfaceId 
 MobilityModel::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("MobilityModel", Object::iid ());
+  static InterfaceId iid = InterfaceId ("MobilityModel")
+    .SetParent<Object> ();
   return iid;
 }
 

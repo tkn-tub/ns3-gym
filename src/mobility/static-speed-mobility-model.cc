@@ -27,7 +27,8 @@ const ClassId StaticSpeedMobilityModel::cid =
                                          StaticSpeedMobilityModel::iid ());
 InterfaceId StaticSpeedMobilityModel::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("StaticSpeedMobilityModel", MobilityModel::iid ());
+  static InterfaceId iid = InterfaceId ("StaticSpeedMobilityModel")
+    .SetParent<MobilityModel> ();
   return iid;
 }
 

@@ -61,7 +61,8 @@ Ipv4L4ProtocolTraceContextElement::GetTypeName (void) const
 InterfaceId 
 Ipv4L4Demux::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("Ipv4L4Demux", Object::iid ());
+  static InterfaceId iid = InterfaceId ("Ipv4L4Demux")
+    .SetParent<Object> ();
   return iid;
 }
 

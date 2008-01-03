@@ -28,7 +28,8 @@ namespace ns3 {
 InterfaceId 
 Ipv4::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("Ipv4", Object::iid ());
+  static InterfaceId iid = InterfaceId ("Ipv4")
+    .SetParent<Object> ();
   return iid;
 }
 

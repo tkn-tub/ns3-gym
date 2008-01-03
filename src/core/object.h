@@ -37,10 +37,6 @@ class Object;
 /**
  * \brief a unique identifier for an interface.
  *
- * Instances of this class can be created only through
- * calls to ns3::MakeInterfaceId.
- *
- * Note: This class is quite similar to COM's UUIDs.
  */
 class InterfaceId
 {
@@ -56,8 +52,7 @@ public:
   static InterfaceId LookupByName (std::string name);
   /**
    * \param iid a unique id 
-   * \returns the parent of the requested id, as registered
-   *          by ns3::MakeInterfaceId.
+   * \returns the parent of the requested id
    *
    * This method cannot fail: it will crash if the input
    * id is not a valid interface id.
@@ -72,6 +67,9 @@ public:
   InterfaceId (std::string);
 
   InterfaceId SetParent (InterfaceId iid);
+  template <typename T>
+  InterfaceId SetParent (void);
+
   template <typename T>
   InterfaceId AddConstructor (void);
   template <typename T, typename T1>
@@ -100,8 +98,6 @@ public:
 
   ~InterfaceId ();
 private:
-  friend InterfaceId MakeInterfaceId (std::string name, InterfaceId parent);
-  friend InterfaceId MakeObjectInterfaceId (void);
   friend bool operator == (InterfaceId a, InterfaceId b);
   friend bool operator != (InterfaceId a, InterfaceId b);
 
@@ -111,19 +107,6 @@ private:
   
   uint16_t m_iid;
 };
-
-/**
- * \param name of the new InterfaceId to create.
- * \param parent the "parent" of the InterfaceId to create.
- * \returns a new InterfaceId
- * \relates InterfaceId
- *
- * Every InterfaceId is a child of another InterfaceId. The
- * top-most InterfaceId is Object::iid and its parent is 
- * itself.
- */
-InterfaceId
-MakeInterfaceId (std::string name, InterfaceId parent);
 
 /**
  * \brief a base class which provides memory management and object aggregation
@@ -282,6 +265,12 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 namespace ns3 {
 
+template <typename T>
+InterfaceId 
+InterfaceId::SetParent (void)
+{
+  return SetParent (T::iid ());
+}
 
 template <typename T>
 InterfaceId 

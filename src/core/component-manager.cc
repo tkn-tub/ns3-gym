@@ -235,7 +235,8 @@ class B : public ns3::Object
 {
 public:
   static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("B", Object::iid ());
+    static ns3::InterfaceId iid = ns3::InterfaceId ("B")
+      .SetParent<Object> ();
     return iid;
   }
 
@@ -254,7 +255,8 @@ public:
   static const ns3::ClassId cidOneUi32;
   static const ns3::ClassId cidOther;
   static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("A", Object::iid ());
+    static ns3::InterfaceId iid = ns3::InterfaceId ("A")
+      .SetParent<Object> ();
     return iid;
   }
 
@@ -308,7 +310,8 @@ class X : public A
 {
 public:
   static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("X", A::iid ());
+    static ns3::InterfaceId iid = ns3::InterfaceId ("X")
+      .SetParent<A> ();
     return iid;
   }
 
@@ -317,7 +320,8 @@ class C : public X
 {
 public:
   static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("C", X::iid ());
+    static ns3::InterfaceId iid = ns3::InterfaceId ("C")
+      .SetParent<X> ();
     return iid;
   }
 };
@@ -325,7 +329,8 @@ class D : public C
 {
 public:
   static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::MakeInterfaceId ("D", C::iid ());
+    static ns3::InterfaceId iid = ns3::InterfaceId ("D")
+      .SetParent<C> ();
     return iid;
   }
   static const ns3::ClassId cid;

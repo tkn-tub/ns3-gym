@@ -434,7 +434,8 @@ std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa)
 InterfaceId 
 GlobalRouter::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("GlobalRouter", Object::iid ());
+  static InterfaceId iid = InterfaceId ("GlobalRouter")
+    .SetParent<Object> ();
   return iid;
 }
 

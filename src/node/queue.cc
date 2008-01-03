@@ -99,7 +99,8 @@ QueueTraceType::Print (std::ostream &os) const
 InterfaceId 
 Queue::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("Queue", Object::iid ());
+  static InterfaceId iid = InterfaceId ("Queue")
+    .SetParent<Object> ();
   return iid;
 }
 

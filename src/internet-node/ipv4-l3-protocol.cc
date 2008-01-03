@@ -45,7 +45,8 @@ const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 InterfaceId 
 Ipv4L3Protocol::iid (void)
 {
-  static InterfaceId iid = MakeInterfaceId ("Ipv4L3Protocol", Object::iid ());
+  static InterfaceId iid = InterfaceId ("Ipv4L3Protocol")
+    .SetParent<Object> ();
   return iid;
 }
 
