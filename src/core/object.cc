@@ -273,7 +273,7 @@ InterfaceId::GetRegisteredN (void)
 InterfaceId 
 InterfaceId::GetRegistered (uint32_t i)
 {
-  return Singleton<IidManager>::Get ()->GetRegistered (i);
+  return InterfaceId (Singleton<IidManager>::Get ()->GetRegistered (i));
 }
 
 InterfaceId 

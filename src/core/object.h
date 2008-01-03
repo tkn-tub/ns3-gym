@@ -103,7 +103,7 @@ private:
   friend bool operator == (InterfaceId a, InterfaceId b);
   friend bool operator != (InterfaceId a, InterfaceId b);
 
-  InterfaceId (uint16_t iid);
+  explicit InterfaceId (uint16_t iid);
   void DoAddConstructor (CallbackBase callback, uint32_t nArguments);
   CallbackBase LookupConstructor (uint32_t nArguments);
   
