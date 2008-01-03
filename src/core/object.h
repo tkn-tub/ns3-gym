@@ -298,7 +298,7 @@ InterfaceId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (T1 a1) {
-      return ns3::CreateObject<T> (a1);
+      return ns3::CreateObject<T,T1> (a1);
     }
   };
   CallbackBase cb = MakeCallback (&Maker::Create);
@@ -311,7 +311,7 @@ InterfaceId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (T1 a1, T2 a2) {
-      return ns3::CreateObject<T> (a1, a2);
+      return ns3::CreateObject<T,T1,T2> (a1, a2);
     }
   };
   CallbackBase cb = MakeCallback (&Maker::Create);
@@ -324,7 +324,7 @@ InterfaceId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (T1 a1, T2 a2, T3 a3) {
-      return ns3::CreateObject<T> (a1, a2, a3);
+      return ns3::CreateObject<T,T1,T2,T3> (a1, a2, a3);
     }
   };
   CallbackBase cb = MakeCallback (&Maker::Create);
@@ -337,7 +337,7 @@ InterfaceId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (T1 a1, T2 a2, T3 a3, T4 a4) {
-      return ns3::CreateObject<T> (a1, a2, a3, a4);
+      return ns3::CreateObject<T,T1,T2,T3,T4> (a1, a2, a3, a4);
     }
   };
   CallbackBase cb = MakeCallback (&Maker::Create);
@@ -350,7 +350,7 @@ InterfaceId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) {
-      return ns3::CreateObject<T> (a1, a2, a3, a4, a5);
+      return ns3::CreateObject<T,T1,T2,T3,T4,T5> (a1, a2, a3, a4, a5);
     }
   };
   CallbackBase cb = MakeCallback (&Maker::Create);
