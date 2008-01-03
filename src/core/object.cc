@@ -669,10 +669,13 @@ public:
   static ns3::InterfaceId iid (void) {
     static ns3::InterfaceId iid = ns3::InterfaceId ("DerivedB")
       .SetParent (BaseB::iid ())
-      .AddConstructor<DerivedB,int> ();
+      .AddConstructor<DerivedB,int> ()
+      .AddConstructor<DerivedB,int,int &> ();
     return iid;
   }
   DerivedB (int v)
+  {}
+  DerivedB (int v1, int &v2)
   {}
   void DerivedGenerateTrace (int16_t v)
   { m_sourceDerived = v; }
