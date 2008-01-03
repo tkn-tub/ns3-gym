@@ -30,6 +30,8 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (Ipv4L4Demux);
+
 Ipv4L4ProtocolTraceContextElement::Ipv4L4ProtocolTraceContextElement ()
   : m_protocolNumber (0)
 {}

@@ -52,7 +52,6 @@
 #include "ns3/pcap-trace.h"
 #include "ns3/internet-node.h"
 #include "ns3/default-value.h"
-#include "ns3/component-manager.h"
 #include "ns3/random-variable.h"
 #include "ns3/point-to-point-channel.h"
 #include "ns3/point-to-point-net-device.h"

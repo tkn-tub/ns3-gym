@@ -23,7 +23,6 @@
 
 #include <list>
 #include "ns3/object.h"
-#include "ns3/component-manager.h"
 
 namespace ns3 {
 
@@ -138,7 +137,6 @@ class RateErrorModel : public ErrorModel
 {
 public:
   static InterfaceId iid (void);
-  static const ClassId cid;
 
   RateErrorModel ();
   virtual ~RateErrorModel ();
@@ -205,7 +203,6 @@ class ListErrorModel : public ErrorModel
 {
 public:
   static InterfaceId iid (void);
-  static const ClassId cid;
   ListErrorModel ();
   virtual ~ListErrorModel ();
 

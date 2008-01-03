@@ -42,6 +42,8 @@ namespace ns3 {
 
 const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 
+NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol);
+
 InterfaceId 
 Ipv4L3Protocol::iid (void)
 {

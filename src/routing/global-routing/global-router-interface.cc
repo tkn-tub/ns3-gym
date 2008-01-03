@@ -431,6 +431,8 @@ std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa)
 //
 // ---------------------------------------------------------------------------
 
+NS_OBJECT_ENSURE_REGISTERED (GlobalRouter);
+
 InterfaceId 
 GlobalRouter::iid (void)
 {

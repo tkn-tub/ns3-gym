@@ -33,6 +33,8 @@ NS_LOG_COMPONENT_DEFINE ("NetDevice");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (NetDevice);
+
 InterfaceId NetDevice::iid (void)
 {
   static InterfaceId iid = InterfaceId ("NetDevice")

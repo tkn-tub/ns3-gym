@@ -20,15 +20,17 @@
 #include "ns3/log.h"
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/default-value.h"
-#include "ns3/component-manager.h"
+#include "ns3/interface-id-default-value.h"
 #include "queue.h"
 
 NS_LOG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
-static ClassIdDefaultValue g_classIdDefaultValue ("Queue", "Packet Queue",
-                                                  Queue::iid (), "DropTailQueue");
+static InterfaceIdDefaultValue g_interfaceIdDefaultValue ("Queue", "Packet Queue",
+                                                          Queue::iid (), "DropTailQueue");
+
+NS_OBJECT_ENSURE_REGISTERED (Queue);
 
 
 std::string 
@@ -281,8 +283,8 @@ Ptr<Queue>
 Queue::CreateDefault (void)
 {
   NS_LOG_FUNCTION;
-  ClassId classId = g_classIdDefaultValue.GetValue ();
-  Ptr<Queue> queue = ComponentManager::Create<Queue> (classId);
+  InterfaceId interfaceId = g_interfaceIdDefaultValue.GetValue ();
+  Ptr<Queue> queue = interfaceId.CreateObject ()->QueryInterface<Queue> ();
   return queue;
 }
 

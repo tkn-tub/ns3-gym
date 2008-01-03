@@ -31,9 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("RandomDirection2dMobilityModel");
 namespace ns3 {
 
 const double RandomDirection2dMobilityModel::PI = 3.14159265358979323846;
-const ClassId RandomDirection2dMobilityModel::cid = 
-  MakeClassId<RandomDirection2dMobilityModel> ("RandomDirection2dMobilityModel",
-                                               MobilityModel::iid ());
+
+NS_OBJECT_ENSURE_REGISTERED (RandomDirection2dMobilityModel);
 
 
 static RandomVariableDefaultValue 
@@ -109,6 +108,16 @@ RandomDirection2dMobilityModelParameters::GetCurrent (void)
       g_pauseVariable.ClearDirtyFlag ();
     }
   return parameters;
+}
+
+InterfaceId
+RandomDirection2dMobilityModel::iid (void)
+{
+  static InterfaceId iid = InterfaceId ("RandomDirection2dMobilityModel")
+    .SetParent<MobilityModel> ()
+    .AddConstructor<RandomDirection2dMobilityModel> ()
+    .AddConstructor<RandomDirection2dMobilityModel,Ptr<RandomDirection2dMobilityModelParameters> > ();
+  return iid;
 }
 
 

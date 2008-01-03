@@ -22,13 +22,15 @@
 
 namespace ns3 {
 
-const ClassId StaticSpeedMobilityModel::cid = 
-  MakeClassId<StaticSpeedMobilityModel> ("StaticSpeedMobilityModel", 
-                                         StaticSpeedMobilityModel::iid ());
+NS_OBJECT_ENSURE_REGISTERED (StaticSpeedMobilityModel);
+
 InterfaceId StaticSpeedMobilityModel::iid (void)
 {
   static InterfaceId iid = InterfaceId ("StaticSpeedMobilityModel")
-    .SetParent<MobilityModel> ();
+    .SetParent<MobilityModel> ()
+    .AddConstructor<StaticSpeedMobilityModel> ()
+    .AddConstructor<StaticSpeedMobilityModel,const Vector &> ()
+    .AddConstructor<StaticSpeedMobilityModel,const Vector &,const Vector &> ();
   return iid;
 }
 

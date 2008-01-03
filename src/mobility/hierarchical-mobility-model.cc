@@ -22,6 +22,8 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (HierarchicalMobilityModel);
+
 InterfaceId 
 HierarchicalMobilityModel::iid (void)
 {

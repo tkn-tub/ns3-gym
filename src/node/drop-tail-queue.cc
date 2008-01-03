@@ -24,9 +24,15 @@ NS_LOG_COMPONENT_DEFINE ("DropTailQueue");
 
 namespace ns3 {
 
-const ClassId DropTailQueue::cid = 
-  MakeClassId<DropTailQueue> ("DropTailQueue", Queue::iid ());
+NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
 
+InterfaceId DropTailQueue::iid (void) 
+{
+  static InterfaceId iid = InterfaceId ("DropTailQueue")
+    .SetParent<Queue> ()
+    .AddConstructor<DropTailQueue> ();
+  return iid;
+}
 
 DropTailQueue::DropTailQueue () :
   Queue (),

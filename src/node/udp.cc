@@ -22,6 +22,8 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (Udp);
+
 InterfaceId Udp::iid (void)
 {
   static InterfaceId iid = InterfaceId ("Udp")

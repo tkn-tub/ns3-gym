@@ -23,7 +23,6 @@
 #include <stdint.h>
 #include "mobility-model.h"
 #include "ns3/nstime.h"
-#include "ns3/component-manager.h"
 #include "static-speed-helper.h"
 
 namespace ns3 {
@@ -36,7 +35,6 @@ namespace ns3 {
 class StaticSpeedMobilityModel : public MobilityModel 
 {
 public:
-  static const ClassId cid;
   static InterfaceId iid (void);
   /**
    * Create position located at coordinates (0,0,0) with

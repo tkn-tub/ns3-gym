@@ -28,14 +28,18 @@
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
 #include "ns3/default-value.h"
+#include "ns3/interface-id-default-value.h"
 
 NS_LOG_COMPONENT_DEFINE ("ErrorModel");
 
 namespace ns3 {
 
-static ClassIdDefaultValue g_classIdErrorModelDefaultValue ("ErrorModel",
-                                                            "Error Model", ErrorModel::iid (), 
-                                                            "RateErrorModel");
+static InterfaceIdDefaultValue g_interfaceIdErrorModelDefaultValue ("ErrorModel",
+                                                                    "Error Model", 
+                                                                    ErrorModel::iid (), 
+                                                                    "RateErrorModel");
+
+NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
 
 InterfaceId ErrorModel::iid (void)
 { 
@@ -59,8 +63,8 @@ Ptr<ErrorModel>
 ErrorModel::CreateDefault (void)
 { 
   NS_LOG_FUNCTION;
-  ClassId classId = g_classIdErrorModelDefaultValue.GetValue ();
-  Ptr<ErrorModel> em = ComponentManager::Create<ErrorModel> (classId);
+  InterfaceId interfaceId = g_interfaceIdErrorModelDefaultValue.GetValue ();
+  Ptr<ErrorModel> em = interfaceId.CreateObject ()->QueryInterface<ErrorModel> ();
   return em;
 }
 
@@ -107,11 +111,6 @@ ErrorModel::IsEnabled (void) const
 // RateErrorModel
 //
 
-
-const ClassId RateErrorModel::cid =
-  MakeClassId<RateErrorModel> ("RateErrorModel", ErrorModel::iid (),
-                               RateErrorModel::iid ());
-
 // Defaults for rate/size
 static NumericDefaultValue<double> g_defaultRateErrorModelErrorRate
   ("RateErrorModelErrorRate", "The error rate for the error model", 0.0);
@@ -124,10 +123,13 @@ static EnumDefaultValue<enum ErrorUnit>
     EU_BIT, "EU_BIT", 
     0, (void*)0);
 
+NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
+
 InterfaceId RateErrorModel::iid (void)
 { 
   static InterfaceId iid = InterfaceId ("RateErrorModel")
-    .SetParent<ErrorModel> ();
+    .SetParent<ErrorModel> ()
+    .AddConstructor<RateErrorModel> ();
   return iid;
 }
 
@@ -242,14 +244,13 @@ RateErrorModel::DoReset (void)
 // ListErrorModel
 //
 
-const ClassId ListErrorModel::cid =
-  MakeClassId<ListErrorModel> ("ListErrorModel", ErrorModel::iid (),
-                               ListErrorModel::iid ());
+NS_OBJECT_ENSURE_REGISTERED (ListErrorModel);
 
 InterfaceId ListErrorModel::iid (void)
 { 
   static InterfaceId iid = InterfaceId ("ListErrorModel")
-    .SetParent<ErrorModel> ();
+    .SetParent<ErrorModel> ()
+    .AddConstructor<ListErrorModel> ();
   return iid;
 }
 

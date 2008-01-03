@@ -148,6 +148,17 @@ NS_LOG_COMPONENT_DEFINE ("OlsrAgent");
 
 /********** OLSR class **********/
 
+NS_OBJECT_ENSURE_REGISTERED (AgentImpl);
+
+InterfaceId 
+AgentImpl::iid (void)
+{
+  static InterfaceId iid = InterfaceId ("OlsrAgentImpl")
+    .SetParent<Agent> ()
+    .AddConstructor<AgentImpl,Ptr<Node> > ();
+  return iid;
+}
+
 
 AgentImpl::AgentImpl (Ptr<Node> node)
   :

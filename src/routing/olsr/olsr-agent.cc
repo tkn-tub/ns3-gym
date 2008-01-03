@@ -19,12 +19,18 @@
  */
 
 #include "olsr-agent.h"
-#include "olsr-agent-impl.h"
+#include "ns3/interface-id-default-value.h"
 
 namespace ns3 {
 namespace olsr {
 
-const ClassId Agent::cid = MakeClassId< AgentImpl, Ptr<Node> > ("OlsrAgent", Agent::iid ());
+static InterfaceIdDefaultValue g_defaultImpl =
+  InterfaceIdDefaultValue ("OlsrAgentType",
+                           "The type of OlsrAgent implementation",
+                           Agent::iid (),
+                           "OlsrAgentImpl");
+
+NS_OBJECT_ENSURE_REGISTERED (Agent);
 
 InterfaceId 
 Agent::iid (void)
@@ -32,6 +38,14 @@ Agent::iid (void)
   static InterfaceId iid = InterfaceId ("OlsrAgent")
     .SetParent<Object> ();
   return iid;
+}
+
+Ptr<Agent> 
+Agent::CreateDefault (Ptr<Node> node)
+{
+  InterfaceId iid = g_defaultImpl.GetValue ();
+  Ptr<Agent> agent = iid.CreateObject (node)->QueryInterface<Agent> ();
+  return agent;
 }
 
 

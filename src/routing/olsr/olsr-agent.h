@@ -22,7 +22,6 @@
 #define OLSR_AGENT_H
 
 #include "ns3/node.h"
-#include "ns3/component-manager.h"
 
 namespace ns3 {
 namespace olsr {
@@ -38,7 +37,7 @@ namespace olsr {
  * Example:
  *
  * \code
- * Ptr<olsr::Agent> olsr = ComponentManager::Create<olsr::Agent, Ptr<Node> > (olsr::Agent::cid, olsr::Agent::iid, node);
+ * Ptr<olsr::Agent> olsr = Agend::CreateDefault ();
  * agent->SetMainInterface (2);
  * agent->Start ();
  * \endcode
@@ -47,7 +46,8 @@ class Agent : public Object
 {
 public:
   static InterfaceId iid (void);
-  static const ClassId cid;
+
+  static Ptr<Agent> CreateDefault (Ptr<Node> node);
 
   /**
    * \brief Sets the main interface to be used by OLSR

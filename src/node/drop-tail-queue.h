@@ -23,7 +23,6 @@
 #include <queue>
 #include "ns3/packet.h"
 #include "ns3/queue.h"
-#include "ns3/component-manager.h"
 
 namespace ns3 {
 
@@ -36,7 +35,7 @@ const int DTQ_NPACKETS_MAX_DEFAULT = 100;
  */
 class DropTailQueue : public Queue {
 public:
-  static const ClassId cid;
+  static InterfaceId iid (void);
   /**
    * \brief DropTailQueue Constructor
    *

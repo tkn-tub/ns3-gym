@@ -35,6 +35,8 @@ namespace ns3 {
 
 const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
 
+NS_OBJECT_ENSURE_REGISTERED (ArpL3Protocol);
+
 InterfaceId 
 ArpL3Protocol::iid (void)
 {

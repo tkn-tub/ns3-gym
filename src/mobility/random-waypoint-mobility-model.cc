@@ -21,11 +21,13 @@
 #include "ns3/simulator.h"
 #include "ns3/random-variable.h"
 #include "ns3/random-variable-default-value.h"
-#include "ns3/component-manager.h"
+#include "ns3/interface-id-default-value.h"
 #include "random-waypoint-mobility-model.h"
 #include "random-position.h"
 
 namespace ns3 {
+
+NS_OBJECT_ENSURE_REGISTERED (RandomWaypointMobilityModel);
 
 static RandomVariableDefaultValue
 g_speed ("RandomWaypointSpeed",
@@ -37,20 +39,18 @@ g_pause ("RandomWaypointPause",
 	 "A random variable used to pick the pause of a random waypoint model.",
 	 "Constant:2");
 
-static ClassIdDefaultValue
+static InterfaceIdDefaultValue
 g_position ("RandomWaypointPosition",
 	    "A random position model used to pick the next waypoint position.",
 	    RandomPosition::iid (),
 	    "RandomRectanglePosition");
 
-const ClassId RandomWaypointMobilityModel::cid = 
-  MakeClassId<RandomWaypointMobilityModel> ("RandomWaypointMobilityModel", MobilityModel::iid ());
 
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters ()
   : m_speed (g_speed.GetCopy ()),
     m_pause (g_pause.GetCopy ())
 {
-  m_position = ComponentManager::Create<RandomPosition> (g_position.GetValue ());
+  m_position = g_position.GetValue ().CreateObject ()->QueryInterface<RandomPosition> ();
 }
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters (Ptr<RandomPosition> randomPosition,
 									      const RandomVariable &speed,
@@ -98,6 +98,16 @@ RandomWaypointMobilityModelParameters::GetCurrent (void)
       parameters = CreateObject<RandomWaypointMobilityModelParameters> ();
     }
   return parameters;
+}
+
+InterfaceId
+RandomWaypointMobilityModel::iid (void)
+{
+  static InterfaceId iid = InterfaceId ("RandomWaypointMobilityModel")
+    .SetParent<MobilityModel> ()
+    .AddConstructor<RandomWaypointMobilityModel> ()
+    .AddConstructor<RandomWaypointMobilityModel,Ptr<RandomWaypointMobilityModelParameters> > ();
+  return iid;
 }
 
 RandomWaypointMobilityModel::RandomWaypointMobilityModel ()

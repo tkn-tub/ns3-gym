@@ -33,8 +33,7 @@ EnableAllNodes (void)
 void
 EnableNode (Ptr<Node> node)
 {
-  ComponentManager::Create<olsr::Agent, Ptr<Node> >
-    (olsr::Agent::cid, node)->Start ();
+  olsr::Agent::CreateDefault (node);
 }
 
 

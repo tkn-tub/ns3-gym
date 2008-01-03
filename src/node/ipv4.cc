@@ -25,6 +25,8 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (Ipv4);
+
 InterfaceId 
 Ipv4::iid (void)
 {

@@ -21,7 +21,6 @@
 #define RANDOM_POSITION_H
 
 #include "ns3/object.h"
-#include "ns3/component-manager.h"
 #include "vector.h"
 
 namespace ns3 {
@@ -52,7 +51,7 @@ public:
 class RandomRectanglePosition : public RandomPosition
 {
 public:
-  static const ClassId cid;
+  static InterfaceId iid (void);
   /**
    * Create a random position model with construction
    * values from \valueref{RandomRectanglePositionX}, and
@@ -81,7 +80,7 @@ private:
 class RandomDiscPosition : public RandomPosition
 {
 public:
-  static const ClassId cid;
+  static InterfaceId iid (void);
   /**
    * Create a random position model with construction
    * values from \valueref{RandomDiscPositionTheta},

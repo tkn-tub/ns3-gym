@@ -22,16 +22,17 @@
 #include "random-topology.h"
 #include "random-position.h"
 #include "mobility-model.h"
+#include "ns3/interface-id-default-value.h"
 
 namespace ns3 {
 
-static ClassIdDefaultValue
+static InterfaceIdDefaultValue
 g_position ("RandomTopologyPositionType",
             "The type of initial random position in a 3d topology.",
             RandomPosition::iid (),
             "RandomRectanglePosition");
 
-static ClassIdDefaultValue
+static InterfaceIdDefaultValue
 g_mobility ("RandomTopologyMobilityType",
             "The type of mobility model attached to an object in a 3d topology.",
             MobilityModel::iid (),
@@ -40,9 +41,9 @@ g_mobility ("RandomTopologyMobilityType",
 RandomTopology::RandomTopology ()
   : m_mobilityModel (g_mobility.GetValue ())
 {
-  m_positionModel = ComponentManager::Create<RandomPosition> (g_position.GetValue ());
+  m_positionModel = g_position.GetValue ().CreateObject ()->QueryInterface<RandomPosition> ();
 }
-RandomTopology::RandomTopology (Ptr<RandomPosition> positionModel, ClassId mobilityModel)
+RandomTopology::RandomTopology (Ptr<RandomPosition> positionModel, InterfaceId mobilityModel)
   : m_positionModel (positionModel),
     m_mobilityModel (mobilityModel)
 {}
@@ -52,9 +53,9 @@ RandomTopology::~RandomTopology ()
 }
 
 void 
-RandomTopology::SetMobilityModel (ClassId classId)
+RandomTopology::SetMobilityModel (InterfaceId interfaceId)
 {
-  m_mobilityModel = classId;
+  m_mobilityModel = interfaceId;
 }
 
 void 
@@ -66,7 +67,7 @@ RandomTopology::SetPositionModel (Ptr<RandomPosition> positionModel)
 void 
 RandomTopology::LayoutOne (Ptr<Object> object)
 {
-  Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_mobilityModel);
+  Ptr<MobilityModel> mobility = m_mobilityModel.CreateObject ()->QueryInterface<MobilityModel> ();
   object->AddInterface (mobility);
   Vector position = m_positionModel->Get ();
   mobility->SetPosition (position);
