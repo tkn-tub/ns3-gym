@@ -66,6 +66,11 @@ public:
    */
   std::string GetName (void) const;
 
+  /**
+   * \returns true if this InterfaceId has a constructor
+   */
+  bool HasConstructor (void) const;
+
   InterfaceId (std::string);
 
   InterfaceId SetParent (InterfaceId iid);

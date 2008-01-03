@@ -43,6 +43,7 @@ public:
   std::string GetName (uint16_t uid) const;
   uint16_t GetParent (uint16_t uid) const;
   ns3::CallbackBase GetConstructor (uint16_t uid, uint32_t nArguments);
+  bool HasConstructor (uint16_t uid);
   uint32_t GetRegisteredN (void);
   uint16_t GetRegistered (uint32_t i);
 private:
@@ -158,6 +159,13 @@ IidManager::GetConstructor (uint16_t uid, uint32_t nArguments)
     }
   NS_FATAL_ERROR ("Requested constructor with "<<nArguments<<" arguments not found");
   return ns3::CallbackBase ();
+}
+
+bool 
+IidManager::HasConstructor (uint16_t uid)
+{
+  struct IidInformation *information = LookupInformation (uid);
+  return !information->constructors.empty ();
 }
 
 uint32_t 
@@ -293,6 +301,13 @@ InterfaceId::GetName (void) const
 {
   std::string name = Singleton<IidManager>::Get ()->GetName (m_iid);
   return name;
+}
+
+bool 
+InterfaceId::HasConstructor (void) const
+{
+  bool hasConstructor = Singleton<IidManager>::Get ()->HasConstructor (m_iid);
+  return hasConstructor;
 }
 
 void
