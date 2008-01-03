@@ -74,7 +74,10 @@ def set_options(opt):
                          ' It should be a shell command string containing %s inside,'
                          ' which will be replaced by the actual program.'),
                    type="string", default=None, dest='command_template')
-
+    opt.add_option('--valgrind',
+                   help=('Change the default command template to run programs and unit tests with valgrind'),
+                   action="store_true", default=False,
+                   dest='valgrind')
     opt.add_option('--shell',
                    help=('Run a shell with an environment suitably modified to run locally built programs'),
                    action="store_true", default=False,
@@ -233,6 +236,13 @@ def build(bld):
         lib.add_objects = list(env['NS3_MODULES'])
 
 
+def get_command_template():
+    if Params.g_options.valgrind:
+        if Params.g_options.command_template:
+            Params.fatal("Options --command-template and --valgrind are conflicting")
+        return "valgrind %s"
+    else:
+        return (Params.g_options.command_template or '%s')
 
 
 def shutdown():
@@ -251,7 +261,7 @@ def shutdown():
         lcov_report()
 
     if Params.g_options.run:
-        run_program(Params.g_options.run, Params.g_options.command_template)
+        run_program(Params.g_options.run, get_command_template())
         raise SystemExit(0)
 
     if Params.g_options.command_template:
@@ -273,7 +283,7 @@ def _run_waf_check():
             raise SystemExit(1)
         out.close()
 
-    run_program('run-tests')
+    run_program('run-tests', get_command_template())
 
 
 def _find_program(program_name, env):
