@@ -43,6 +43,8 @@ public:
   std::string GetName (uint16_t uid) const;
   uint16_t GetParent (uint16_t uid) const;
   ns3::CallbackBase GetConstructor (uint16_t uid, uint32_t nArguments);
+  uint32_t GetRegisteredN (void);
+  uint16_t GetRegistered (uint32_t i);
 private:
   struct ConstructorInformation {
     ns3::CallbackBase cb;
@@ -158,6 +160,18 @@ IidManager::GetConstructor (uint16_t uid, uint32_t nArguments)
   return ns3::CallbackBase ();
 }
 
+uint32_t 
+IidManager::GetRegisteredN (void)
+{
+  return m_information.size ();
+}
+uint16_t 
+IidManager::GetRegistered (uint32_t i)
+{
+  return i;
+}
+
+
 } // anonymous namespace
 
 /*********************************************************************
@@ -251,6 +265,17 @@ InterfaceId::LookupByName (std::string name)
   NS_ASSERT (uid != 0);
   return InterfaceId (uid);
 }
+uint32_t 
+InterfaceId::GetRegisteredN (void)
+{
+  return Singleton<IidManager>::Get ()->GetRegisteredN ();
+}
+InterfaceId 
+InterfaceId::GetRegistered (uint32_t i)
+{
+  return Singleton<IidManager>::Get ()->GetRegistered (i);
+}
+
 InterfaceId 
 InterfaceId::SetParent (InterfaceId iid)
 {

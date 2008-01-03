@@ -50,6 +50,8 @@ public:
    * name is not a valid interface name.
    */
   static InterfaceId LookupByName (std::string name);
+  static uint32_t GetRegisteredN (void);
+  static InterfaceId GetRegistered (uint32_t i);
   /**
    * \param iid a unique id 
    * \returns the parent of the requested id
