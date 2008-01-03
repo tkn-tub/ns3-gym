@@ -68,7 +68,7 @@ InterfaceIdDefaultValue::DoGetType (void) const
       if (iid.HasConstructor ())
 	{
 	  InterfaceId tmp = iid;
-	  // doe this interface id supports the requested interface id ?
+	  // does this interface id supports the requested interface id ?
 	  do {
 	    if (tmp == m_interfaceId)
 	      {
