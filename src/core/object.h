@@ -28,6 +28,16 @@
 #include "callback.h"
 #include "empty.h"
 
+#define NS_OBJECT_ENSURE_REGISTERED(type)       \
+  static struct X##type##RegistrationClass      \
+  {                                             \
+    X##type##RegistrationClass () {             \
+      ns3::InterfaceId iid = type::iid ();      \
+      iid.GetParent ();                         \
+    }                                           \
+} x_##type##RegistrationVariable
+
+
 namespace ns3 {
 
 class TraceContext;
