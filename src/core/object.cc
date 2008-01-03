@@ -176,7 +176,7 @@ IidManager::GetRegisteredN (void)
 uint16_t 
 IidManager::GetRegistered (uint32_t i)
 {
-  return i;
+  return i + 1;
 }
 
 
@@ -346,6 +346,8 @@ bool operator != (InterfaceId a, InterfaceId b)
 /*********************************************************************
  *         The Object implementation
  *********************************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (Object);
 
 static InterfaceId
 GetObjectIid (void)
@@ -692,6 +694,11 @@ public:
   }
   ns3::SVTraceSource<int16_t> m_sourceDerived;
 };
+
+NS_OBJECT_ENSURE_REGISTERED (BaseA);
+NS_OBJECT_ENSURE_REGISTERED (DerivedA);
+NS_OBJECT_ENSURE_REGISTERED (BaseB);
+NS_OBJECT_ENSURE_REGISTERED (DerivedB);
 
 } // namespace anonymous
 
