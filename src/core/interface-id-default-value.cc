@@ -46,6 +46,7 @@ InterfaceIdDefaultValue::DoParseValue (const std::string &value)
 		  m_name = value;
 		  return true;
 		}
+	      tmp = tmp.GetParent ();
 	    } while (tmp != Object::iid ());
 	  }
 	iid = iid.GetParent ();
@@ -78,6 +79,7 @@ InterfaceIdDefaultValue::DoGetType (void) const
 		  }
 		oss << iid.GetName ();
 	      }
+	    tmp = tmp.GetParent ();
 	  } while (tmp != Object::iid ());
 	}
     }
