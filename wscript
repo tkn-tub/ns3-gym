@@ -162,7 +162,6 @@ def create_ns3_program(bld, name, dependencies=('simulator',)):
 
 
 def build(bld):
-    print "Entering directory `%s/build'" % Params.g_build.m_curdirnode.abspath()
     Params.g_cwd_launch = Params.g_build.m_curdirnode.abspath()
 
     bld.create_ns3_program = types.MethodType(create_ns3_program, bld)
@@ -185,6 +184,7 @@ def build(bld):
         doxygen()
         raise SystemExit(0)
 
+    print "Entering directory `%s/build'" % Params.g_build.m_curdirnode.abspath()
     # process subfolders from here
     bld.add_subdirs('src')
     bld.add_subdirs('samples utils examples tutorial')
