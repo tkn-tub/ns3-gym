@@ -54,7 +54,9 @@ public:
   /**
    * \param n node associated to this application
    * \param remote remote ip address
-   * \param iid
+   * \param iid interface ID of the socket factory to use. Note this
+   * factory should create sockets compatible with the specified
+   * remote address.
    * \param ontime on time random variable
    * \param offtime off time random variable
    */
@@ -67,7 +69,9 @@ public:
   /**
    * \param n node associated to this application
    * \param remote remote ip address
-   * \param iid
+   * \param iid interface ID of the socket factory to use. Note this
+   * factory should create sockets compatible with the specified
+   * remote address.
    * \param ontime on time random variable
    * \param offtime off time random variable
    * \param rate data rate when on
