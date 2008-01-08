@@ -82,6 +82,7 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 * Other-network-topologies::
 * Nonlinear-Thinking::
 * Summary::
+* Object-Model::
 * The-Doxygen-Documentation-System::
 * How-To-Change-Things::
 * How-To-Set-Default-Values::
@@ -3481,7 +3482,7 @@ thorougly understand what we've gone over so far.
 @c Object Model
 @c ========================================================================
 
-@node Object Model
+@node Object-Model
 @chapter Object Model
 
 There are two distinctly different meanings associated with the term Object
