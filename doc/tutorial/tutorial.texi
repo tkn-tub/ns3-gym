@@ -3772,7 +3772,7 @@ Interface to the external world.  This circle and line are called a lollipop
 because of its superficial similarity to a kind of childs candy.  
 
 @sp 1
-@center @image{lollipop,,,,png}
+@center @image{oneif,,,,png}
 
 You could declare this interface quite simply using a non-virtual class as 
 follows,
