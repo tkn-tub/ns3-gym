@@ -28,6 +28,7 @@
 #include "breakpoint.h"
 
 /**
+ * \ingroup core
  * \defgroup assert Assert
  * \brief assert functions and macros
  *

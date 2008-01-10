@@ -1,4 +1,5 @@
 /**
+ * \ingroup devices
  * \defgroup Wifi Wifi Models
  *
  * \section Wifi Models

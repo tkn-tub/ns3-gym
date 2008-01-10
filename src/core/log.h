@@ -25,6 +25,7 @@
 #include <iostream>
 
 /**
+ * \ingroup core
  * \defgroup logging Logging
  * \brief Logging functions and macros
  *
