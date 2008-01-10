@@ -451,13 +451,15 @@ public:
 
   /**
    * \brief Convenience function to return the ifIndex corresponding
-   * to the Ipv4Address provided
+   * to the Ipv4Address provided.  If an Ipv4Mask is provided also,
+   * then the address is masked, which allows one to determine the 
+   * interface corresponding to a network prefix.
    *
    * \param addr Ipv4Address
    * \param mask corresponding Ipv4Mask
    * \returns ifIndex corresponding to a/amask
    */
-  virtual uint32_t GetIfIndexByAddress (Ipv4Address addr, 
+  uint32_t GetIfIndexByAddress (Ipv4Address addr, 
     Ipv4Mask mask = Ipv4Mask("255.255.255.255"));
 };
 
