@@ -3943,7 +3943,7 @@ If you can get to Interface B from Interface A, and you can get to Interface C
 from Interface B, then a QueryInterface on Interface A looking for Interface C
 must also succeed.
 
-@subsection
+@subsection Creating the InterfaceId
 The final piece of this puzzle is to locate where the interface Ids actually
 come from.  The answer is from a static initializer that must be located in 
 the @code{.cc} file corresponding to the Interface.  For example, to 
