@@ -130,7 +130,7 @@ PointToPointTopology::AddIpv4Addresses(
 void
 PointToPointTopology::SetIpv4Metric(
   Ptr<const PointToPointChannel> chan,
-  Ptr<Node> n1, Ptr<Node> n2, const uint16_t metric)
+  Ptr<Node> n1, Ptr<Node> n2, uint16_t metric)
 {
 
   // The PointToPoint channel is used to find the relevant NetDevices

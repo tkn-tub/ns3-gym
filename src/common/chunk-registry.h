@@ -54,7 +54,7 @@ public:
   static bool IsTrailer (uint32_t uid);
   static void InvokePrintCallback (uint32_t uid, uint8_t *instance, std::ostream &os,
 				   uint32_t packetUid, uint32_t size, 
-				   Ptr<CallbackImplBase> callback);
+				   CallbackBase callback);
 private:
   typedef uint8_t *(*GetStaticInstanceCb) (void);
   typedef uint32_t (*DeserializeCb) (uint8_t *, Buffer::Iterator);
@@ -62,7 +62,7 @@ private:
   typedef std::string (*GetNameCb) (uint8_t *);
   typedef void (*InvokePrintCallbackCb) (uint8_t *instance, std::ostream &os,
 					 uint32_t packetUid, uint32_t size, 
-					 Ptr<CallbackImplBase> callback);
+					 CallbackBase callback);
   struct Info {
     std::string uidString;
     bool isHeader;
@@ -85,7 +85,7 @@ private:
   template <typename T>
   static void DoInvokePrintCallback (uint8_t *instance, std::ostream &os,
 				     uint32_t packetUid, uint32_t size, 
-				     Ptr<CallbackImplBase> callback);
+                                     CallbackBase callback);
   template <typename T>
   static uint32_t GetUid (bool isHeader, std::string uidString);
 
@@ -167,7 +167,7 @@ template <typename T>
 void 
 ChunkRegistry::DoInvokePrintCallback (uint8_t *instance, std::ostream &os,
 				      uint32_t packetUid, uint32_t size, 
-				      Ptr<CallbackImplBase> callback)
+				      CallbackBase callback)
 {
   T *obj = reinterpret_cast<T *> (instance);
   Callback<void,std::ostream&,uint32_t,uint32_t,const T*> cb;

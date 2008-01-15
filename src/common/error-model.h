@@ -37,7 +37,7 @@ class RandomVariable;
  * It is part of the Object framework and can be aggregated to 
  * other ns3 objects and handled by the Ptr class.
  *
- * The main method is IsCorrupt(Packet& p) which returns true if 
+ * The main method is IsCorrupt(Ptr<Packet> p) which returns true if 
  * the packet is to be corrupted according to the underlying model.
  * Depending on the error model, the packet itself may have its packet
  * data buffer errored or not, or side information may be returned to

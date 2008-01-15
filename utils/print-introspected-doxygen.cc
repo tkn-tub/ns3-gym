@@ -99,6 +99,7 @@ static void
 PrintDefaultValuesDoxygen (std::ostream &os)
 {
   os << "/// \\page ListOfDefaultValues The list of default values" << std::endl;
+  os << "/// \\ingroup core" << std::endl;
   os << "/// \\defgroup ListOfDefaultValuesGroup The list of default values" << std::endl;
   os << "/// <ul>" << std::endl;
   for (DefaultValueList::Iterator i = DefaultValueList::Begin ();

@@ -67,8 +67,8 @@ public:
   typedef Callback <void, WifiMacHeader const&> TxFailed;
 
   /**
-   * \param minCw forwarded to ns3::DcfState constructor
-   * \param maxCw forwarded to ns3::DcfState constructor
+   * \param cwMin forwarded to ns3::DcfState constructor
+   * \param cwMax forwarded to ns3::DcfState constructor
    * \param aifsn forwarded to ns3::DcfState constructor
    * \param manager the manager which will be responsible
    *        for controlling access to this DcaTxop.

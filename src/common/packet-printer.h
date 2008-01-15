@@ -134,7 +134,7 @@ private:
   struct Printer
   {
     uint32_t m_chunkUid;
-    Ptr<CallbackImplBase> m_printer;
+    CallbackBase m_printer;
     Callback<void,std::ostream &,uint32_t,uint32_t,std::string &,
              struct PacketPrinter::FragmentInformation> m_fragmentPrinter;
   };
@@ -158,7 +158,7 @@ PacketPrinter::SetHeaderPrinter (Callback<void,std::ostream &,uint32_t,uint32_t,
 {
   Printer p;
   p.m_chunkUid = T::GetUid ();
-  p.m_printer = printer.GetImpl ();
+  p.m_printer = printer;
   p.m_fragmentPrinter = fragmentPrinter;
   m_printerList.push_back (p);
 }
@@ -170,7 +170,7 @@ PacketPrinter::SetTrailerPrinter (Callback<void,std::ostream &,uint32_t,uint32_t
 {
   Printer p;
   p.m_chunkUid = T::GetUid ();
-  p.m_printer = printer.GetImpl ();
+  p.m_printer = printer;
   p.m_fragmentPrinter = fragmentPrinter;
   m_printerList.push_back (p);
 }

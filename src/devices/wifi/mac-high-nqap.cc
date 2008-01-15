@@ -231,14 +231,17 @@ MacHighNqap::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
         {
           if (hdr->GetAddr3 () == m_device->GetSelfAddress ()) 
             {
+              TRACE ("frame for me from="<<hdr->GetAddr2 ());
               m_forwardUp (packet, hdr->GetAddr2 ());
             } 
           else 
             {
+              TRACE ("forwarding frame from="<<hdr->GetAddr2 ()<<", to="<<hdr->GetAddr3 ());
+              Ptr<Packet> copy = packet->Copy ();
               ForwardDown (packet,
                            hdr->GetAddr2 (), 
                            hdr->GetAddr3 ());
-              m_forwardUp (packet, hdr->GetAddr2 ());
+              m_forwardUp (copy, hdr->GetAddr2 ());
             }
         } 
       else if (hdr->IsFromDs () &&

@@ -177,6 +177,17 @@ public:
   virtual int Send (Ptr<Packet> p) = 0;
   
   /**
+   * \brief Send data (or dummy data) to the remote host
+   * \param buf A pointer to a raw byte buffer of some data to send.  If this 
+   * is 0, we send dummy data whose size is specified by the second parameter
+   * \param size the number of bytes to copy from the buffer
+   * 
+   * This is provided so as to have an API which is closer in appearance 
+   * to that of real network or BSD sockets.  
+   */
+  int Send (const uint8_t* buf, uint32_t size);
+  
+  /**
    * \brief Send data to a specified peer.
    * \param address IP Address of remote host
    * \param p packet to send
@@ -184,6 +195,20 @@ public:
    *          internal buffer and accepted for transmission.
    */
   virtual int SendTo(const Address &address,Ptr<Packet> p) = 0;
+
+  /**
+   * \brief Send data to a specified peer.
+   * \param address IP Address of remote host
+   * \param buf A pointer to a raw byte buffer of some data to send.  If this 
+   * is 0, we send dummy data whose size is specified by the third parameter
+   * \param size the number of bytes to copy from the buffer
+   * \returns -1 in case of error or the number of bytes copied in the 
+   *          internal buffer and accepted for transmission.
+   *
+   * This is provided so as to have an API which is closer in appearance 
+   * to that of real network or BSD sockets.
+   */
+  int SendTo(const Address &address, const uint8_t* buf, uint32_t size);
 
 protected:
   void NotifyCloseCompleted (void);

@@ -762,6 +762,8 @@ case WIFI_MAC_ ## x: \
     return "ERROR";
   }
 #undef FOO
+  // needed to make gcc 4.0.1 ppc darwin happy.
+  return "BIG_ERROR";
 }
 
 uint32_t

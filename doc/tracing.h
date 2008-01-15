@@ -1,8 +1,10 @@
 /**
+ * \ingroup core
  * \defgroup TraceSourceList List of trace sources
  */
 
 /**
+ * \ingroup core
  * \defgroup tracing Tracing
  *
  * The flexibility of the ns-3 tracing system comes at the cost of quite
@@ -55,7 +57,7 @@
  * class MyModel 
  * {
  * public:
- *   void DoSomething (Packet packet) 
+ *   void DoSomething (Ptr<Packet> packet) 
  *   {
  *     // report this event on packet
  *     m_doSomething (packet);
@@ -63,7 +65,7 @@
  *   }
  * private:
  *   // report every "something" function call.
- *   CallbackTraceSource<Packet> m_doSomething;
+ *   CallbackTraceSource<Ptr<Packet> > m_doSomething;
  * };
  * \endcode
  * Every type of trace source derives from the ns3::TraceSource base class.
@@ -86,10 +88,10 @@
  *   std::cout << "cwnd=" << newValue << std::endl;
  * }
  * void 
- * DoSomethingTraceSink (const TraceContext &context, Packet packet)
+ * DoSomethingTraceSink (const TraceContext &context, Ptr<Packet> packet)
  * {
- *   // for example, print the arguments
- *   std::cout << "packet " << packet << std::endl;
+ *   // for example, print the packet
+ *   std::cout << "packet " << packet->Print () << std::endl;
  * }
  * \endcode
  * Each of these sink function takes, as a first argument, a reference to a 
@@ -121,19 +123,19 @@
  * class MyModel 
  * {
  * public:
- *   void DoSomething (Packet packet) 
+ *   void DoSomething (Ptr<Packet> packet) 
  *   {
  *     // report this event on packet
  *     m_doSomething (packet);
  *     // do something
  *   }
- *   CallbackTraceSource<Packet> *PeekSomethingTraceSource (void) const 
+ *   CallbackTraceSource<Ptr<Packet>> *PeekSomethingTraceSource (void) const 
  *   {
  *     return &m_doSomething
  *   }
  * private:
  *   // report every "something" function call.
- *   CallbackTraceSource<Packet> m_doSomething;
+ *   CallbackTraceSource<Ptr<Packet>> m_doSomething;
  * };
  * \endcode
  * If your users hold a pointer to an instance of MyModel, and if they want to connect
@@ -142,12 +144,12 @@
  * sink with the MakeCallback function.
  * \code
  * void 
- * MySomethingSink (const TraceContext &context, Packet packet)
+ * MySomethingSink (const TraceContext &context, Ptr<Packet> packet)
  * {
  *   // do whatever you want.
  * }
  * MyModel *model = ...;
- * CallbackTraceSource<Packet> *source = model->PeekSomethingTraceSource ();
+ * CallbackTraceSource<Ptr<Packet>> *source = model->PeekSomethingTraceSource ();
  * source->AddCallback (MakeCallback (&MySomethingSink));
  * \endcode
  *
@@ -170,13 +172,13 @@
  * located in some nodes of the system, we could write the following:
  * \code
  * void 
- * DoSomethingTraceSink (const TraceContext &context, Packet packet)
+ * DoSomethingTraceSink (const TraceContext &context, Ptr<Packet> packet)
  * {
- *   // for example, print the arguments
- *   std::cout << "packet: " << packet << std::endl;
+ *   // for example, print the packet
+ *   std::cout << "packet: " << packet->Print () << std::endl;
  * }
  * // connect the above sink to a matching trace source
- * NodeList::Connect ("/nodes/* /devices/* /rx", MakeCallback &DoSomethingTraceSink);
+ * NodeList::Connect ("/nodes/* /devices/* /rx", MakeCallback (&DoSomethingTraceSink));
  * \endcode
  *
  * The connection path string "/nodes/* /devices/* /rx" matches the "rx" trace source
@@ -203,10 +205,10 @@
  * the TraceContext object:
  * \code
  * void 
- * DoSomethingTraceSink (const TraceContext &context, Packet packet)
+ * DoSomethingTraceSink (const TraceContext &context, Ptr<Packet> packet)
  * {
- *   // for example, print the arguments
- *   std::cout << "context=\"" << context << "\" packet: " << packet << std::endl;
+ *   // for example, print the packet
+ *   std::cout << "context=\"" << context << "\" packet: " << packet->Print () << std::endl;
  * }
  * \endcode
  * The above code is going to generate output which looks like the following:
@@ -223,7 +225,7 @@
  * in the \ref TraceSourceList. For example, we could write the following to
  * generate adhoc trace output:
  * \code
- * void DeviceRxSink (const TraceContext &context, const Packet &packet)
+ * void DeviceRxSink (const TraceContext &context, Ptr<const Packet> packet)
  * {
  *   NodeListIndex nodeIndex;
  *   NodeNetDeviceIndex deviceIndex;
@@ -231,7 +233,7 @@
  *   context.GetElement (deviceIndex);
  *   std::cout << "node-index=" << nodeIndex.Get ();
  *   std::cout << ", device-index=" << deviceIndex.Get ();
- *   std::cout << ", packet: " << packet;
+ *   std::cout << ", packet: " << packet->Print ();
  *   std::cout << std::endl;
  * }
  * \endcode
@@ -247,7 +249,7 @@
  * class MyModel 
  * {
  * public:
- *   void DoSomething (Packet packet) 
+ *   void DoSomething (Ptr<Packet> packet) 
  *   {
  *     // report this event on packet with value
  *     m_doSomething (packet);
@@ -255,7 +257,7 @@
  *   }
  * private:
  *   // report every "something" function call.
- *   CallbackTraceSource<Packet> m_doSomething;
+ *   CallbackTraceSource<Ptr<Packet>> m_doSomething;
  * };
  * \endcode
  *
@@ -279,7 +281,7 @@
  *   virtual Ptr<TraceResolver> GetTraceResolver (void) const;
  * private:
  *   // the new trace source to export.
- *   CallbackTraceSource<Packet> m_rxSource;
+ *   CallbackTraceSource<Ptr<Packet>> m_rxSource;
  * };
  * \endcode
  *
@@ -362,15 +364,15 @@
  * class MyModel
  * {
  * private:
- *   CallbackTraceSource<Packet> m_rxSource;
- *   CallbackTraceSource<Packet> m_txSource;
- *   CallbackTraceSource<Packet> m_dropSource;
+ *   CallbackTraceSource<Ptr<Packet>> m_rxSource;
+ *   CallbackTraceSource<Ptr<Packet>> m_txSource;
+ *   CallbackTraceSource<Ptr<Packet>> m_dropSource;
  * };
  * \endcode
  * When a single sink is connected to all 3 sources here, one might want
  * to write code like the following:
  * \code
- * void DeviceRxSink (const TraceContext &context, const Packet &packet)
+ * void DeviceRxSink (const TraceContext &context, Ptr<const Packet> &packet)
  * {
  *   switch (type) {
  *     case RX:
@@ -407,23 +409,23 @@
  *   };
  * private:
  *   // generate events
- *   void NotifyRxPacket (Packet p) {
+ *   void NotifyRxPacket (Ptr<Packet> p) {
  *     m_rxSource (p, MyModel::RX);
  *   }
- *   void NotifyTxPacket (Packet p) {
+ *   void NotifyTxPacket (Ptr<Packet> p) {
  *     m_rxSource (p, MyModel::TX);
  *   }
- *   void NotifyDropPacket (Packet p) {
+ *   void NotifyDropPacket (Ptr<Packet> p) {
  *     m_rxSource (p, MyModel::DROP);
  *   }
- *   CallbackTraceSource<Packet,enum TraceType> m_rxSource;
- *   CallbackTraceSource<Packet,enum TraceType> m_txSource;
- *   CallbackTraceSource<Packet,enum TraceType> m_dropSource;
+ *   CallbackTraceSource<Ptr<Packet>,enum TraceType> m_rxSource;
+ *   CallbackTraceSource<Ptr<Packet>,enum TraceType> m_txSource;
+ *   CallbackTraceSource<Ptr<Packet>,enum TraceType> m_dropSource;
  * };
  * \endcode
  * These 3 new sources can be connected easily to a new trace sink:
  * \code
- * void ASimpleTraceSink (const TraceContext &context, const Packet &packet, enum MyModel::TraceType type)
+ * void ASimpleTraceSink (const TraceContext &context, Ptr<const Packet> packet, enum MyModel::TraceType type)
  * {
  *   // here, read the "type" argument
  * }
@@ -447,7 +449,7 @@
  * define a new MyModelTraceType class which contains the type of trace, your users can
  * then write trace sink code which looks like this:
  * \code
- * void AFancyTraceSink (const TraceContext &context, const Packet &packet)
+ * void AFancyTraceSink (const TraceContext &context, Ptr<const Packet> packet)
  * {
  *   MyModelTraceType type;
  *   if (context.GetElement (type))
@@ -471,9 +473,9 @@
  * Of course, since the type of trace is stored in the TraceContext, your users can
  * also take the shortcut which uses the printing functionality of the TraceContext:
  * \code
- * void ALessFancyTraceSink (const TraceContext &context, const Packet &packet)
+ * void ALessFancyTraceSink (const TraceContext &context, Ptr<const Packet> packet)
  * {
- *   std::cout << "context=\"" << context << "\" packet: " << packet << std::endl;
+ *   std::cout << "context=\"" << context << "\" packet: " << packet->Print () << std::endl;
  * }
  * \endcode
  * which will generate something like the following when the trace source comes

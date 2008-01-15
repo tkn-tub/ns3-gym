@@ -75,18 +75,18 @@ public:
   CallbackImplBase ()
     : m_count (1) {}
   virtual ~CallbackImplBase () {}
-  void Ref (void) {
+  void Ref (void) const {
     m_count++;
   }
-  void Unref (void) {
+  void Unref (void) const {
     m_count--;
     if (m_count == 0) {
       delete this;
     }
   }
-  virtual bool IsEqual (CallbackImplBase const *other) const = 0;
+  virtual bool IsEqual (Ptr<const CallbackImplBase> other) const = 0;
 private:
-  uint32_t m_count;
+  mutable uint32_t m_count;
 };
 
 // declare the CallbackImpl class
@@ -171,9 +171,9 @@ public:
   R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6) {
     return m_functor (a1,a2,a3,a4,a5,a6);
   }
-  virtual bool IsEqual (CallbackImplBase const *other) const {
+  virtual bool IsEqual (Ptr<const CallbackImplBase> other) const {
     FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5,T6> const *otherDerived = 
-      dynamic_cast<FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5,T6> const *> (other);
+      dynamic_cast<FunctorCallbackImpl<T,R,T1,T2,T3,T4,T5,T6> const *> (PeekPointer(other));
     if (otherDerived == 0)
       {
         return false;
@@ -216,9 +216,9 @@ public:
   R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5,T6 a6) {
     return ((CallbackTraits<OBJ_PTR>::GetReference (m_objPtr)).*m_memPtr) (a1, a2, a3, a4, a5, a6);
   }
-  virtual bool IsEqual (CallbackImplBase const *other) const {
+  virtual bool IsEqual (Ptr<const CallbackImplBase> other) const {
     MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5,T6> const *otherDerived = 
-      dynamic_cast<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5,T6> const *> (other);
+      dynamic_cast<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5,T6> const *> (PeekPointer (other));
     if (otherDerived == 0)
       {
         return false;
@@ -237,9 +237,11 @@ private:
 
 class CallbackBase {
 public:
-  virtual ~CallbackBase () {}
-  virtual CallbackImplBase *PeekImpl (void) const = 0;
-  virtual Ptr<CallbackImplBase> GetImpl (void) const = 0;
+  CallbackBase () : m_impl () {}
+  Ptr<CallbackImplBase> GetImpl (void) const {return m_impl;}
+protected:
+  CallbackBase (Ptr<CallbackImplBase> impl) : m_impl (impl) {}
+  Ptr<CallbackImplBase> m_impl;
 };
 
 /**
@@ -277,59 +279,69 @@ template<typename R,
    typename T5 = empty, typename T6 = empty>
 class Callback : public CallbackBase {
 public:
+  Callback () {}
+
   // There are two dummy args below to ensure that this constructor is
   // always properly disambiguited by the c++ compiler
   template <typename FUNCTOR>
   Callback (FUNCTOR const &functor, bool, bool) 
-    : m_impl (Create<FunctorCallbackImpl<FUNCTOR,R,T1,T2,T3,T4,T5,T6> > (functor))
+    : CallbackBase (Create<FunctorCallbackImpl<FUNCTOR,R,T1,T2,T3,T4,T5,T6> > (functor))
   {}
 
   template <typename OBJ_PTR, typename MEM_PTR>
   Callback (OBJ_PTR const &objPtr, MEM_PTR mem_ptr)
-    : m_impl (Create<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5,T6> > (objPtr, mem_ptr))
+    : CallbackBase (Create<MemPtrCallbackImpl<OBJ_PTR,MEM_PTR,R,T1,T2,T3,T4,T5,T6> > (objPtr, mem_ptr))
   {}
 
   Callback (Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6> > const &impl)
-      : m_impl (impl)
+    : CallbackBase (impl)
   {}
 
   bool IsNull (void) const {
-    return (PeekImpl () == 0)?true:false;
+    return (DoPeekImpl () == 0)?true:false;
   }
   void Nullify (void) {
     m_impl = 0;
   }
 
-  Callback () : m_impl () {}
   R operator() (void) const {
-    return (*(PeekImpl ())) ();
+    return (*(DoPeekImpl ())) ();
   }
   R operator() (T1 a1) const {
-    return (*(PeekImpl ())) (a1);
+    return (*(DoPeekImpl ())) (a1);
   }
   R operator() (T1 a1, T2 a2) const {
-    return (*(PeekImpl ())) (a1,a2);
+    return (*(DoPeekImpl ())) (a1,a2);
   }
   R operator() (T1 a1, T2 a2, T3 a3) const {
-    return (*(PeekImpl ())) (a1,a2,a3);
+    return (*(DoPeekImpl ())) (a1,a2,a3);
   }
   R operator() (T1 a1, T2 a2, T3 a3, T4 a4) const {
-    return (*(PeekImpl ())) (a1,a2,a3,a4);
+    return (*(DoPeekImpl ())) (a1,a2,a3,a4);
   }
   R operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5) const {
-    return (*(PeekImpl ())) (a1,a2,a3,a4,a5);
+    return (*(DoPeekImpl ())) (a1,a2,a3,a4,a5);
   }
   R operator() (T1 a1, T2 a2, T3 a3, T4 a4,T5 a5,T6 a6) const {
-    return (*(PeekImpl ())) (a1,a2,a3,a4,a5,a6);
+    return (*(DoPeekImpl ())) (a1,a2,a3,a4,a5,a6);
   }
 
-  bool IsEqual (CallbackBase const &other) const {
-    return PeekImpl ()->IsEqual (other.PeekImpl ());
+  bool IsEqual (const CallbackBase &other) const {
+    return m_impl->IsEqual (other.GetImpl ());
   }
 
-  bool CheckType (CallbackBase const& other) const {
-    CallbackImplBase *otherBase = other.PeekImpl ();
-    if (dynamic_cast<CallbackImpl<R,T1,T2,T3,T4,T5,T6> *> (otherBase) != 0)
+  bool CheckType (const CallbackBase & other) const {
+    return DoCheckType (other.GetImpl ());
+  }
+  void Assign (const CallbackBase &other) {
+    DoAssign (other.GetImpl ());
+  }
+private:
+  CallbackImpl<R,T1,T2,T3,T4,T5,T6> *DoPeekImpl (void) const {
+    return static_cast<CallbackImpl<R,T1,T2,T3,T4,T5,T6> *> (PeekPointer (m_impl));
+  }
+  bool DoCheckType (Ptr<const CallbackImplBase> other) const {
+    if (dynamic_cast<const CallbackImpl<R,T1,T2,T3,T4,T5,T6> *> (PeekPointer (other)) != 0)
       {
         return true;
       }
@@ -338,37 +350,19 @@ public:
         return false;
       }
   }
-  void Assign (CallbackBase const &other) {
-    if (!CheckType (other))
+  void DoAssign (Ptr<const CallbackImplBase> other) {
+    if (!DoCheckType (other))
       {
         NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\")"
                         " got=" << typeid (other).name () << 
                         ", expected=" << typeid (*this).name ());
       }
-    const Callback<R, T1,T2,T3,T4,T5,T6> *goodType = static_cast<const Callback<R,T1,T2,T3,T4,T5,T6> *> (&other);
-    *this = *goodType;
+    m_impl = const_cast<CallbackImplBase *> (PeekPointer (other));
   }
-  void Assign (Ptr<CallbackImplBase> other) {
-    CallbackImpl<R,T1,T2,T3,T4,T5,T6> *impl = dynamic_cast<CallbackImpl<R,T1,T2,T3,T4,T5,T6> *> (PeekPointer (other));
-    if (other == 0)
-      {
-        NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\")"
-                        " got=" << typeid (other).name () << 
-                        ", expected=" << typeid (*impl).name ());
-      }
-    *this = Callback<R,T1,T2,T3,T4,T5,T6> (impl);
-  }
-  virtual Ptr<CallbackImplBase>GetImpl (void) const {
-    return m_impl;
-  }
-private:
-  virtual CallbackImpl<R,T1,T2,T3,T4,T5,T6> *PeekImpl (void) const {
-    return PeekPointer (m_impl);
-  }
-  Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6> > m_impl;
 };
 
 /**
+ * \ingroup core
  * \defgroup MakeCallback MakeCallback
  *
  */
@@ -675,9 +669,9 @@ public:
   R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
       return m_functor (m_a,a1,a2,a3,a4,a5);
   }
-  virtual bool IsEqual (CallbackImplBase const *other) const {
+  virtual bool IsEqual (Ptr<const CallbackImplBase> other) const {
     BoundFunctorCallbackImpl<T,R,TX,T1,T2,T3,T4,T5> const *otherDerived = 
-      dynamic_cast<BoundFunctorCallbackImpl<T,R,TX,T1,T2,T3,T4,T5> const *> (other);
+      dynamic_cast<BoundFunctorCallbackImpl<T,R,TX,T1,T2,T3,T4,T5> const *> (PeekPointer (other));
     if (otherDerived == 0)
       {
         return false;

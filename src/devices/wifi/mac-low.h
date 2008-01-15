@@ -108,12 +108,10 @@ public:
   MacLowNavListener ();
   virtual ~MacLowNavListener ();
   /**
-   * \param now start of NAV timer
    * \param duration duration of NAV timer
    */
   virtual void NavStart (Time duration) = 0;
   /**
-   * \param now start of NAV timer
    * \param duration duration of NAV timer
    */
   virtual void NavReset (Time duration) = 0;

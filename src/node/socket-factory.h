@@ -28,6 +28,22 @@ namespace ns3 {
 
 class Socket;
 
+/**
+ * \brief Object to create transport layer instances that provide a 
+ * socket API to applications.
+ *
+ * This base class defines the API for creating sockets.  
+ * The socket factory also can hold the global variables used to
+ * initialize newly created sockets, such as values that are
+ * set through the sysctl or proc interfaces in Linux.
+
+ * If you want to write a new transport protocol accessible through
+ * sockets, you need to subclass this factory class, implement CreateSocket, 
+ * instantiate the object, and aggregate it to the node.  
+ * 
+ * \see Udp
+ * \see UdpImpl
+ */
 class SocketFactory : public Object
 {
 public:
@@ -35,6 +51,11 @@ public:
 
   SocketFactory ();
 
+  /**
+   * \return smart pointer to Socket
+   * 
+   * Base class method for creating socket instances.
+   */
   virtual Ptr<Socket> CreateSocket (void) = 0;
 };
 

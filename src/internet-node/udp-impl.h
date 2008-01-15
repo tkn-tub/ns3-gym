@@ -28,12 +28,28 @@ namespace ns3 {
 
 class UdpL4Protocol;
 
+/**
+ * \brief Object to create UDP socket instances 
+ * \internal
+ *
+ * This class implements the API for UDP sockets.
+ * It is a socket factory (deriving from class SocketFactory) and can
+ * also hold global variables used to initialize newly created sockets, 
+ * such as values that are set through the sysctl or proc interfaces in Linux.
+ */
 class UdpImpl : public Udp
 {
 public:
   UdpImpl (Ptr<UdpL4Protocol> udp);
   virtual ~UdpImpl ();
 
+  /**
+   * \brief Implements a method to create a UdpImpl-based socket and return
+   * a base class smart pointer to the socket.
+   * \internal
+   *
+   * \return smart pointer to Socket
+   */
   virtual Ptr<Socket> CreateSocket (void);
 
 protected:

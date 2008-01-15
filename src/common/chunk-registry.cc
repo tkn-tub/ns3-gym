@@ -105,7 +105,7 @@ ChunkRegistry::GetName (uint32_t uid, uint8_t *instance)
 void 
 ChunkRegistry::InvokePrintCallback (uint32_t uid, uint8_t *instance, std::ostream &os,
 				    uint32_t packetUid, uint32_t size, 
-				    Ptr<CallbackImplBase> callback)
+                                    CallbackBase callback)
 {
   InfoVector *vec = GetInfoVector ();
   NS_ASSERT (uid >= 1 && uid <= vec->size ());

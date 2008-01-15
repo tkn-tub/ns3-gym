@@ -31,6 +31,29 @@
 
 namespace ns3 {
 
+/**
+ * \ingroup internetNode
+ *
+ * \section InternetNode Overview
+ *
+ * The InternetNode module contains an implementation of TCP, UDP, and
+ * IPv4.  ns-3 Applications sit above this module, and ns-3 NetDevices
+ * sit below it...
+ *
+ * InternetNode is implemented as a subclass of Node but this may be
+ * refactored in the future to 
+ */
+
+/*
+ * \brief Container class for various TCP/IP objects and interfaces
+ * aggregated to a Node.
+ *
+ * This class exists primarily to assemble the layer-3/4 stack of a Node 
+ * from constituent parts, including implementations of TCP, IPv4, UDP, 
+ * and ARP.  It provides only constructors and destructors as its public
+ * API.  Internally, the various protocols are instantiated, aggregated
+ * to a Node, and plumbed together.
+ */
 class InternetNode : public Node 
 {
 public:

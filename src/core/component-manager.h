@@ -63,7 +63,6 @@ protected:
 private:
   ClassId (uint32_t classId);
   friend class ComponentManager;
-  friend ClassId AllocateClassId (std::string name);
   friend bool operator == (const ClassId &a, const ClassId &b);
   uint32_t m_classId;
 };
