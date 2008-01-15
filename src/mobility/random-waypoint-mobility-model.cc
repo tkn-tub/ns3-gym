@@ -103,11 +103,11 @@ RandomWaypointMobilityModelParameters::GetCurrent (void)
 TypeId
 RandomWaypointMobilityModel::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("RandomWaypointMobilityModel")
+  static TypeId tid = TypeId ("RandomWaypointMobilityModel")
     .SetParent<MobilityModel> ()
     .AddConstructor<RandomWaypointMobilityModel> ()
     .AddConstructor<RandomWaypointMobilityModel,Ptr<RandomWaypointMobilityModelParameters> > ();
-  return iid;
+  return tid;
 }
 
 RandomWaypointMobilityModel::RandomWaypointMobilityModel ()

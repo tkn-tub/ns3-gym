@@ -91,9 +91,9 @@ UdpEchoClient::StartApplication (void)
 
   if (!m_socket)
     {
-      TypeId iid = TypeId::LookupByName ("Udp");
+      TypeId tid = TypeId::LookupByName ("Udp");
       Ptr<SocketFactory> socketFactory = 
-        GetNode ()->QueryInterface<SocketFactory> (iid);
+        GetNode ()->QueryInterface<SocketFactory> (tid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
       m_socket->Connect (m_peer);

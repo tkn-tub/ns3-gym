@@ -26,9 +26,9 @@ namespace ns3 {
 TypeId 
 MobilityModel::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("MobilityModel")
+  static TypeId tid = TypeId ("MobilityModel")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 MobilityModel::MobilityModel ()

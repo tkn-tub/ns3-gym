@@ -153,10 +153,10 @@ NS_OBJECT_ENSURE_REGISTERED (AgentImpl);
 TypeId 
 AgentImpl::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("OlsrAgentImpl")
+  static TypeId tid = TypeId ("OlsrAgentImpl")
     .SetParent<Agent> ()
     .AddConstructor<AgentImpl,Ptr<Node> > ();
-  return iid;
+  return tid;
 }
 
 

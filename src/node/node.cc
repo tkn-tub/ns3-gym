@@ -34,9 +34,9 @@ NS_OBJECT_ENSURE_REGISTERED (Node);
 TypeId 
 Node::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("Node")
+  static TypeId tid = TypeId ("Node")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 NodeNetDeviceIndex::NodeNetDeviceIndex ()

@@ -12,14 +12,14 @@ public:
   /**
    * \param name the name of this default value.
    * \param help the help text associated to this default value
-   * \param iid the interface id which all objects created
+   * \param tid the interface id which all objects created
    *        through this "default value" must support.
    * \param defaultValue the name of the object to create
    *        by default.
    */
   TypeIdDefaultValue (std::string name, 
 			   std::string help,
-			   TypeId iid,
+			   TypeId tid,
 			   std::string defaultValue);
   /**
    * \returns the TypeId of the object selected by the user.

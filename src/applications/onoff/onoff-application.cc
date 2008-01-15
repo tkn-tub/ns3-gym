@@ -53,20 +53,20 @@ static NumericDefaultValue<uint32_t> g_defaultSize ("OnOffApplicationPacketSize"
 
 OnOffApplication::OnOffApplication(Ptr<Node> n, 
                                    const Address &remote,
-                                   std::string iid,
+                                   std::string tid,
                                    const  RandomVariable& ontime,
                                    const  RandomVariable& offtime)
   :  Application(n),
      m_cbrRate (g_defaultRate.GetValue ())
 {
-  Construct (n, remote, iid,
+  Construct (n, remote, tid,
              ontime, offtime, 
              g_defaultSize.GetValue ());
 }
 
 OnOffApplication::OnOffApplication(Ptr<Node> n, 
                                    const Address &remote,
-                                   std::string iid,
+                                   std::string tid,
                                    const  RandomVariable& ontime,
                                    const  RandomVariable& offtime,
                                    DataRate  rate,
@@ -75,13 +75,13 @@ OnOffApplication::OnOffApplication(Ptr<Node> n,
      m_cbrRate (rate)
 {
   NS_LOG_FUNCTION;
-  Construct (n, remote, iid, ontime, offtime, size);
+  Construct (n, remote, tid, ontime, offtime, size);
 }
 
 void
 OnOffApplication::Construct (Ptr<Node> n, 
                              const Address &remote,
-                             std::string iid,
+                             std::string tid,
                              const  RandomVariable& onTime,
                              const  RandomVariable& offTime,
                              uint32_t size)
@@ -98,7 +98,7 @@ OnOffApplication::Construct (Ptr<Node> n,
   m_lastStartTime = Seconds (0);
   m_maxBytes = 0;
   m_totBytes = 0;
-  m_iid = iid;
+  m_tid = tid;
 }
 
 OnOffApplication::~OnOffApplication()
@@ -154,8 +154,8 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
   // Create the socket if not already
   if (!m_socket)
     {
-      TypeId iid = TypeId::LookupByName (m_iid);
-      Ptr<SocketFactory> socketFactory = GetNode ()->QueryInterface<SocketFactory> (iid);
+      TypeId tid = TypeId::LookupByName (m_tid);
+      Ptr<SocketFactory> socketFactory = GetNode ()->QueryInterface<SocketFactory> (tid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
       m_socket->Connect (m_peer);

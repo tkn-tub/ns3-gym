@@ -28,10 +28,10 @@ NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
 
 TypeId DropTailQueue::GetTypeId (void) 
 {
-  static TypeId iid = TypeId ("DropTailQueue")
+  static TypeId tid = TypeId ("DropTailQueue")
     .SetParent<Queue> ()
     .AddConstructor<DropTailQueue> ();
-  return iid;
+  return tid;
 }
 
 DropTailQueue::DropTailQueue () :

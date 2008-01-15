@@ -47,9 +47,9 @@ NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol);
 TypeId 
 Ipv4L3Protocol::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("Ipv4L3Protocol")
+  static TypeId tid = TypeId ("Ipv4L3Protocol")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 Ipv4L3ProtocolTraceContextElement::Ipv4L3ProtocolTraceContextElement ()

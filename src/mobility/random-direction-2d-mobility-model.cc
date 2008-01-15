@@ -113,11 +113,11 @@ RandomDirection2dMobilityModelParameters::GetCurrent (void)
 TypeId
 RandomDirection2dMobilityModel::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("RandomDirection2dMobilityModel")
+  static TypeId tid = TypeId ("RandomDirection2dMobilityModel")
     .SetParent<MobilityModel> ()
     .AddConstructor<RandomDirection2dMobilityModel> ()
     .AddConstructor<RandomDirection2dMobilityModel,Ptr<RandomDirection2dMobilityModelParameters> > ();
-  return iid;
+  return tid;
 }
 
 

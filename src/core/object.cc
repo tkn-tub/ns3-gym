@@ -257,12 +257,12 @@ TypeId::TypeId (std::string name)
 {
   uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
   NS_ASSERT (uid != 0);
-  m_iid = uid;
+  m_tid = uid;
 }
 
 
-TypeId::TypeId (uint16_t iid)
-  : m_iid (iid)
+TypeId::TypeId (uint16_t tid)
+  : m_tid (tid)
 {}
 TypeId::~TypeId ()
 {}
@@ -285,41 +285,41 @@ TypeId::GetRegistered (uint32_t i)
 }
 
 TypeId 
-TypeId::SetParent (TypeId iid)
+TypeId::SetParent (TypeId tid)
 {
-  Singleton<IidManager>::Get ()->SetParent (m_iid, iid.m_iid);
+  Singleton<IidManager>::Get ()->SetParent (m_tid, tid.m_tid);
   return *this;
 }
 TypeId 
 TypeId::GetParent (void) const
 {
-  uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_iid);
+  uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_tid);
   return TypeId (parent);
 }
 std::string 
 TypeId::GetName (void) const
 {
-  std::string name = Singleton<IidManager>::Get ()->GetName (m_iid);
+  std::string name = Singleton<IidManager>::Get ()->GetName (m_tid);
   return name;
 }
 
 bool 
 TypeId::HasConstructor (void) const
 {
-  bool hasConstructor = Singleton<IidManager>::Get ()->HasConstructor (m_iid);
+  bool hasConstructor = Singleton<IidManager>::Get ()->HasConstructor (m_tid);
   return hasConstructor;
 }
 
 void
 TypeId::DoAddConstructor (CallbackBase cb, uint32_t nArguments)
 {
-  Singleton<IidManager>::Get ()->AddConstructor (m_iid, cb, nArguments);
+  Singleton<IidManager>::Get ()->AddConstructor (m_tid, cb, nArguments);
 }
 
 CallbackBase
 TypeId::LookupConstructor (uint32_t nArguments)
 {
-  CallbackBase constructor = Singleton<IidManager>::Get ()->GetConstructor (m_iid, nArguments);
+  CallbackBase constructor = Singleton<IidManager>::Get ()->GetConstructor (m_tid, nArguments);
   return constructor;
 }
 
@@ -335,12 +335,12 @@ TypeId::CreateObject (void)
 
 bool operator == (TypeId a, TypeId b)
 {
-  return a.m_iid == b.m_iid;
+  return a.m_tid == b.m_tid;
 }
 
 bool operator != (TypeId a, TypeId b)
 {
-  return a.m_iid != b.m_iid;
+  return a.m_tid != b.m_tid;
 }
 
 /*********************************************************************
@@ -352,22 +352,22 @@ NS_OBJECT_ENSURE_REGISTERED (Object);
 static TypeId
 GetObjectIid (void)
 {
-  TypeId iid = TypeId ("Object");
-  iid.SetParent (iid);
-  return iid;
+  TypeId tid = TypeId ("Object");
+  tid.SetParent (tid);
+  return tid;
 }
 
 TypeId 
 Object::GetTypeId (void)
 {
-  static TypeId iid = GetObjectIid ();
-  return iid;
+  static TypeId tid = GetObjectIid ();
+  return tid;
 }
 
 
 Object::Object ()
   : m_count (1),
-    m_iid (Object::GetTypeId ()),
+    m_tid (Object::GetTypeId ()),
     m_disposed (false),
     m_collecting (false),
     m_next (this)
@@ -377,18 +377,18 @@ Object::~Object ()
   m_next = 0;
 }
 Ptr<Object>
-Object::DoQueryInterface (TypeId iid) const
+Object::DoQueryInterface (TypeId tid) const
 {
   NS_ASSERT (CheckLoose ());
   const Object *currentObject = this;
   do {
     NS_ASSERT (currentObject != 0);
-    TypeId cur = currentObject->m_iid;
-    while (cur != iid && cur != Object::GetTypeId ())
+    TypeId cur = currentObject->m_tid;
+    while (cur != tid && cur != Object::GetTypeId ())
       {
         cur = cur.GetParent ();
       }
-    if (cur == iid)
+    if (cur == tid)
       {
         return const_cast<Object *> (currentObject);
       }
@@ -438,10 +438,10 @@ Object::TraceDisconnect (std::string path, const CallbackBase &cb) const
 }
 
 void 
-Object::SetTypeId (TypeId iid)
+Object::SetTypeId (TypeId tid)
 {
   NS_ASSERT (Check ());
-  m_iid = iid;
+  m_tid = tid;
 }
 
 void
@@ -535,7 +535,7 @@ Object::DoCollectSources (std::string path, const TraceContext &context,
     {
       NS_ASSERT (current != 0);
       NS_LOG_LOGIC ("collect current=" << current);
-      TypeId cur = current->m_iid;
+      TypeId cur = current->m_tid;
       while (cur != Object::GetTypeId ())
         {
           std::string name = cur.GetName ();
@@ -592,10 +592,10 @@ class BaseA : public ns3::Object
 {
 public:
   static ns3::TypeId GetTypeId (void) {
-    static ns3::TypeId iid = ns3::TypeId ("BaseA")
+    static ns3::TypeId tid = ns3::TypeId ("BaseA")
       .SetParent (Object::GetTypeId ())
       .AddConstructor<BaseA> ();
-    return iid;
+    return tid;
   }
   BaseA ()
   {}
@@ -617,10 +617,10 @@ class DerivedA : public BaseA
 {
 public:
   static ns3::TypeId GetTypeId (void) {
-    static ns3::TypeId iid = ns3::TypeId ("DerivedA")
+    static ns3::TypeId tid = ns3::TypeId ("DerivedA")
       .SetParent (BaseA::GetTypeId ())
       .AddConstructor<DerivedA,int> ();
-    return iid;
+    return tid;
   }
   DerivedA (int v)
   {}
@@ -644,10 +644,10 @@ class BaseB : public ns3::Object
 {
 public:
   static ns3::TypeId GetTypeId (void) {
-    static ns3::TypeId iid = ns3::TypeId ("BaseB")
+    static ns3::TypeId tid = ns3::TypeId ("BaseB")
       .SetParent (Object::GetTypeId ())
       .AddConstructor<BaseB> ();
-    return iid;
+    return tid;
   }
   BaseB ()
   {}
@@ -669,11 +669,11 @@ class DerivedB : public BaseB
 {
 public:
   static ns3::TypeId GetTypeId (void) {
-    static ns3::TypeId iid = ns3::TypeId ("DerivedB")
+    static ns3::TypeId tid = ns3::TypeId ("DerivedB")
       .SetParent (BaseB::GetTypeId ())
       .AddConstructor<DerivedB,int> ()
       .AddConstructor<DerivedB,int,int &> ();
-    return iid;
+    return tid;
   }
   DerivedB (int v)
   {}

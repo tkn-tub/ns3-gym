@@ -37,9 +37,9 @@ NS_OBJECT_ENSURE_REGISTERED (NetDevice);
 
 TypeId NetDevice::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("NetDevice")
+  static TypeId tid = TypeId ("NetDevice")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 NetDevice::NetDevice(Ptr<Node> node, const Address& addr) : 

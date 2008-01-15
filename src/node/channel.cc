@@ -29,9 +29,9 @@ NS_OBJECT_ENSURE_REGISTERED (Channel);
 TypeId 
 Channel::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("Channel")
+  static TypeId tid = TypeId ("Channel")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 Channel::Channel ()

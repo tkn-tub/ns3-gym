@@ -43,9 +43,9 @@ NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
 
 TypeId ErrorModel::GetTypeId (void)
 { 
-  static TypeId iid = TypeId ("ErrorModel")
+  static TypeId tid = TypeId ("ErrorModel")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 ErrorModel::ErrorModel () :
@@ -127,10 +127,10 @@ NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
 
 TypeId RateErrorModel::GetTypeId (void)
 { 
-  static TypeId iid = TypeId ("RateErrorModel")
+  static TypeId tid = TypeId ("RateErrorModel")
     .SetParent<ErrorModel> ()
     .AddConstructor<RateErrorModel> ();
-  return iid;
+  return tid;
 }
 
 
@@ -248,10 +248,10 @@ NS_OBJECT_ENSURE_REGISTERED (ListErrorModel);
 
 TypeId ListErrorModel::GetTypeId (void)
 { 
-  static TypeId iid = TypeId ("ListErrorModel")
+  static TypeId tid = TypeId ("ListErrorModel")
     .SetParent<ErrorModel> ()
     .AddConstructor<ListErrorModel> ();
-  return iid;
+  return tid;
 }
 
 ListErrorModel::ListErrorModel ()  

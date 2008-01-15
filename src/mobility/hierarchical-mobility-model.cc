@@ -27,9 +27,9 @@ NS_OBJECT_ENSURE_REGISTERED (HierarchicalMobilityModel);
 TypeId 
 HierarchicalMobilityModel::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("HierarchicalMobilityModel")
+  static TypeId tid = TypeId ("HierarchicalMobilityModel")
     .SetParent<MobilityModel> ();
-  return iid;
+  return tid;
 }
 
 HierarchicalMobilityModel::HierarchicalMobilityModel (Ptr<MobilityModel> child, Ptr<MobilityModel> parent)

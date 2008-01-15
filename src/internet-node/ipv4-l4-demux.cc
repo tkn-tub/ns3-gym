@@ -63,9 +63,9 @@ Ipv4L4ProtocolTraceContextElement::GetTypeName (void) const
 TypeId 
 Ipv4L4Demux::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("Ipv4L4Demux")
+  static TypeId tid = TypeId ("Ipv4L4Demux")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 Ipv4L4Demux::Ipv4L4Demux (Ptr<Node> node)

@@ -40,9 +40,9 @@ NS_OBJECT_ENSURE_REGISTERED (ArpL3Protocol);
 TypeId 
 ArpL3Protocol::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("ArpL3Protocol")
+  static TypeId tid = TypeId ("ArpL3Protocol")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 ArpL3Protocol::ArpL3Protocol (Ptr<Node> node)

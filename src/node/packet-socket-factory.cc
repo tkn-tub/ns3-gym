@@ -29,9 +29,9 @@ NS_OBJECT_ENSURE_REGISTERED (PacketSocketFactory);
 TypeId 
 PacketSocketFactory::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("Packet")
+  static TypeId tid = TypeId ("Packet")
     .SetParent<SocketFactory> ();
-  return iid;
+  return tid;
 }
 
 PacketSocketFactory::PacketSocketFactory ()

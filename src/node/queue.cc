@@ -101,9 +101,9 @@ QueueTraceType::Print (std::ostream &os) const
 TypeId 
 Queue::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("Queue")
+  static TypeId tid = TypeId ("Queue")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 Queue::Queue() : 

@@ -85,12 +85,12 @@ CsmaTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app,
 }
 
 Ptr<Socket>
-CsmaTopology::CreatePacketSocket(Ptr<Node> n1, std::string iid_name)
+CsmaTopology::CreatePacketSocket(Ptr<Node> n1, std::string tid_name)
 {
-  TypeId iid = TypeId::LookupByName (iid_name);
+  TypeId tid = TypeId::LookupByName (tid_name);
 
   Ptr<SocketFactory> socketFactory =
-    n1->QueryInterface<SocketFactory> (iid);
+    n1->QueryInterface<SocketFactory> (tid);
 
   Ptr<Socket> socket = socketFactory->CreateSocket ();
 

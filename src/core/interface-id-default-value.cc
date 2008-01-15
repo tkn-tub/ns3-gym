@@ -4,12 +4,12 @@ namespace ns3 {
 
 TypeIdDefaultValue::TypeIdDefaultValue (std::string name, 
 						  std::string help,
-						  TypeId iid,
+						  TypeId tid,
 						  std::string defaultValue)
   : DefaultValueBase (name, help),
     m_defaultName (defaultValue),
     m_name (defaultValue),
-    m_interfaceId (iid)
+    m_interfaceId (tid)
 {
   DefaultValueList::Add (this);
 }
@@ -33,13 +33,13 @@ TypeIdDefaultValue::DoParseValue (const std::string &value)
 {
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
-      TypeId iid = TypeId::GetRegistered (i);
+      TypeId tid = TypeId::GetRegistered (i);
       do {
-	if (iid.GetName () == value &&
-	    iid.HasConstructor ())
+	if (tid.GetName () == value &&
+	    tid.HasConstructor ())
 	  {
 	    // check that it really supports the requested interface.
-	    TypeId tmp = iid;
+	    TypeId tmp = tid;
 	    do {
 	      if (tmp == m_interfaceId)
 		{
@@ -49,8 +49,8 @@ TypeIdDefaultValue::DoParseValue (const std::string &value)
 	      tmp = tmp.GetParent ();
 	    } while (tmp != Object::GetTypeId ());
 	  }
-	iid = iid.GetParent ();
-      } while (iid != Object::GetTypeId ());
+	tid = tid.GetParent ();
+      } while (tid != Object::GetTypeId ());
     }
   return false;
 }
@@ -63,11 +63,11 @@ TypeIdDefaultValue::DoGetType (void) const
   bool first = true;
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
-      TypeId iid = TypeId::GetRegistered (i);
+      TypeId tid = TypeId::GetRegistered (i);
       // can this interface id be used to create objects ?
-      if (iid.HasConstructor ())
+      if (tid.HasConstructor ())
 	{
-	  TypeId tmp = iid;
+	  TypeId tmp = tid;
 	  // does this interface id supports the requested interface id ?
 	  do {
 	    if (tmp == m_interfaceId)
@@ -77,7 +77,7 @@ TypeIdDefaultValue::DoGetType (void) const
 		    oss << "|";
 		    first = false;
 		  }
-		oss << iid.GetName ();
+		oss << tid.GetName ();
 	      }
 	    tmp = tmp.GetParent ();
 	  } while (tmp != Object::GetTypeId ());

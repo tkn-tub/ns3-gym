@@ -132,11 +132,11 @@ RandomWalk2dMobilityModelParameters::GetCurrent (void)
 TypeId
 RandomWalk2dMobilityModel::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("RandomWalkMobilityModel")
+  static TypeId tid = TypeId ("RandomWalkMobilityModel")
     .SetParent<MobilityModel> ()
     .AddConstructor<RandomWalk2dMobilityModel> ()
     .AddConstructor<RandomWalk2dMobilityModel,Ptr<RandomWalk2dMobilityModelParameters> > ();
-  return iid;
+  return tid;
 }
 
 RandomWalk2dMobilityModel::RandomWalk2dMobilityModel ()

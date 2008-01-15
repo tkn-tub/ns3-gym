@@ -32,8 +32,8 @@
   static struct X##type##RegistrationClass      \
   {                                             \
     X##type##RegistrationClass () {             \
-      ns3::TypeId iid = type::GetTypeId ();      \
-      iid.GetParent ();                         \
+      ns3::TypeId tid = type::GetTypeId ();      \
+      tid.GetParent ();                         \
     }                                           \
 } x_##type##RegistrationVariable
 
@@ -63,7 +63,7 @@ public:
   static uint32_t GetRegisteredN (void);
   static TypeId GetRegistered (uint32_t i);
   /**
-   * \param iid a unique id 
+   * \param tid a unique id 
    * \returns the parent of the requested id
    *
    * This method cannot fail: it will crash if the input
@@ -83,7 +83,7 @@ public:
 
   TypeId (std::string);
 
-  TypeId SetParent (TypeId iid);
+  TypeId SetParent (TypeId tid);
   template <typename T>
   TypeId SetParent (void);
 
@@ -118,11 +118,11 @@ private:
   friend bool operator == (TypeId a, TypeId b);
   friend bool operator != (TypeId a, TypeId b);
 
-  explicit TypeId (uint16_t iid);
+  explicit TypeId (uint16_t tid);
   void DoAddConstructor (CallbackBase callback, uint32_t nArguments);
   CallbackBase LookupConstructor (uint32_t nArguments);
   
-  uint16_t m_iid;
+  uint16_t m_tid;
 };
 
 /**
@@ -159,11 +159,11 @@ public:
   template <typename T>
   Ptr<T> QueryInterface (void) const;
   /**
-   * \param iid the interface id of the requested interface
+   * \param tid the interface id of the requested interface
    * \returns a pointer to the requested interface or zero if it could not be found.
    */
   template <typename T>
-  Ptr<T> QueryInterface (TypeId iid) const;
+  Ptr<T> QueryInterface (TypeId tid) const;
   /**
    * Run the DoDispose methods of this object and all the
    * objects aggregated to it.
@@ -231,7 +231,7 @@ private:
   template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
   friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
-  Ptr<Object> DoQueryInterface (TypeId iid) const;
+  Ptr<Object> DoQueryInterface (TypeId tid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
                          TraceResolver::SourceCollection *collection) const;
   void DoTraceAll (std::ostream &os, const TraceContext &context) const;
@@ -239,16 +239,16 @@ private:
   bool CheckLoose (void) const;
   void MaybeDelete (void) const;
   /**
-   * \param iid an TypeId
+   * \param tid an TypeId
    *
    * Every subclass which defines a new TypeId for itself
    * should register this TypeId by calling this method
    * from its constructor.
    */
-  void SetTypeId (TypeId iid);
+  void SetTypeId (TypeId tid);
 
   mutable uint32_t m_count;
-  TypeId m_iid;
+  TypeId m_tid;
   bool m_disposed;
   mutable bool m_collecting;
   Object *m_next;
@@ -451,9 +451,9 @@ Object::QueryInterface () const
 
 template <typename T>
 Ptr<T> 
-Object::QueryInterface (TypeId iid) const
+Object::QueryInterface (TypeId tid) const
 {
-  Ptr<Object> found = DoQueryInterface (iid);
+  Ptr<Object> found = DoQueryInterface (tid);
   if (found != 0)
     {
       return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));

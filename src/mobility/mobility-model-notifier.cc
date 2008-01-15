@@ -26,10 +26,10 @@ namespace ns3 {
 TypeId 
 MobilityModelNotifier::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("MobilityModelNotifier")
+  static TypeId tid = TypeId ("MobilityModelNotifier")
     .SetParent<Object> ()
     .AddConstructor<MobilityModelNotifier> ();
-  return iid;
+  return tid;
 }
 
 MobilityModelNotifier::MobilityModelNotifier ()

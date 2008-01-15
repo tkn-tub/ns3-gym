@@ -436,9 +436,9 @@ NS_OBJECT_ENSURE_REGISTERED (GlobalRouter);
 TypeId 
 GlobalRouter::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("GlobalRouter")
+  static TypeId tid = TypeId ("GlobalRouter")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 GlobalRouter::GlobalRouter ()

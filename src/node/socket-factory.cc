@@ -26,9 +26,9 @@ NS_OBJECT_ENSURE_REGISTERED (SocketFactory);
 
 TypeId SocketFactory::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("SocketFactory")
+  static TypeId tid = TypeId ("SocketFactory")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 SocketFactory::SocketFactory ()

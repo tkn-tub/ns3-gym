@@ -35,16 +35,16 @@ NS_OBJECT_ENSURE_REGISTERED (Agent);
 TypeId 
 Agent::GetTypeId (void)
 {
-  static TypeId iid = TypeId ("OlsrAgent")
+  static TypeId tid = TypeId ("OlsrAgent")
     .SetParent<Object> ();
-  return iid;
+  return tid;
 }
 
 Ptr<Agent> 
 Agent::CreateDefault (Ptr<Node> node)
 {
-  TypeId iid = g_defaultImpl.GetValue ();
-  Ptr<Agent> agent = iid.CreateObject (node)->QueryInterface<Agent> ();
+  TypeId tid = g_defaultImpl.GetValue ();
+  Ptr<Agent> agent = tid.CreateObject (node)->QueryInterface<Agent> ();
   return agent;
 }
 
