@@ -37,7 +37,9 @@
  *   - ns3::DcaTxop which handles the packet queue, packet fragmentation,
  *     and packet retransmissions if they are needed.
  *
- * The PHY layer implements a single model in the ns3::WifiPhy class.
+ * The PHY layer implements a single model in the ns3::WifiPhy class: the
+ * physical layer model implemented there is described fully in a paper titled
+ * "Yet Another Network Simulator", available there: http://cutebugs.net/files/wns2-yans.pdf
  *
  * It also provides a set of Rate control algorithms:
  *   - ns3::ArfMacStations (initialized from \valueref{WifiArfTimerThreshold}, and,
