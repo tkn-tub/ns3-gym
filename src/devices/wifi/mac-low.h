@@ -296,8 +296,8 @@ public:
   void RegisterNavListener (MacLowNavListener *listener);
 
   /**
-   * \param payloadSize size of packet to send (does not include the 802.11 MAC header and checksum)
-   * \param to destination address of packet.
+   * \param packet to send (does not include the 802.11 MAC header and checksum)
+   * \param hdr header associated to the packet to send.
    * \param parameters transmission parameters of packet.
    *
    * This transmission time includes the time required for
