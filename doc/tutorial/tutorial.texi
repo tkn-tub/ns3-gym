@@ -82,6 +82,7 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 * Other-network-topologies::
 * Nonlinear-Thinking::
 * Summary::
+* Object-Model::
 * The-Doxygen-Documentation-System::
 * How-To-Change-Things::
 * How-To-Set-Default-Values::
@@ -406,7 +407,7 @@ on the target system as described in the Getting Started section of the
 @cindex tarball
 The @command{ns-3} code is available in Mercurial repositories on the server
 code.nsnam.org.  You can download a tarball, but we recommend working with
-Mercurial -- it will make your life easier in the long run.
+Mercurial --- it will make your life easier in the long run.
 
 @cindex repository
 If you go to the following link: @uref{http://code.nsnam.org/},
@@ -421,7 +422,7 @@ but it is a development area with unreleased code present, so you may want to
 consider downloading an official release.
 
 There will be a number of released repositories present at code.nsnam.org.
-These repos will have names like ns-3.0.1 -- which referes to release 3.0.1 
+These repos will have names like ns-3.0.1 --- which referes to release 3.0.1 
 of the network simulator (or if you like, release 0.1 of @command{ns-3}).  
 Since the releases are changing at a rate of one per month, I will stick with 
 the more constant ns-3-dev here, but you can replace the string ns-3-dev with
@@ -571,7 +572,7 @@ a @emph{host} or sometimes an @emph{end system}.  Because @command{ns-3} is a
 @emph{network} simulator, not specifically an @emph{Internet} simulator, we 
 intentionally do not use the term host since it is closely associated with
 the Internet and its protocols.  Instead, we use a more generic term also
-used by other simulators that originates in Graph Theory -- the @emph{node}.
+used by other simulators that originates in Graph Theory --- the @emph{node}.
 
 @cindex Node!class
 In @command{ns-3} the basic computing device abstraction is called the 
@@ -978,7 +979,7 @@ memory leaks.
 Now, we want to make this feature available as widely as possible to objects
 in the @command{ns-3} system.  The basic operations of the smart pointer class
 are the same across any intrusively reference counted object.  C++ provides a
-mechanism to achieve this kind of generic behavior -- the template.  Let's
+mechanism to achieve this kind of generic behavior --- the template.  Let's
 examine the declaration of the smart pointer in more detail.  First consider
 the way you might declare and use a built-in pointer.  For the sake of
 simplicity, just assume that a C++ object of the class @code{MyClass} exists.
@@ -1316,7 +1317,7 @@ see constructions that respect the type corrrectness of the constructor, as
 in @code{Seconds (1.)} and @code{MilliSeconds (2)}.  Notice that the code
 @code{Seconds (1)} will work just as well as @code{Seconds (1.)} since the 
 integer 1 will be automatically promoted to a double 1. in the former code.
-The converse will not work -- i.e., you cannot write code that says 
+The converse will not work --- i.e., you cannot write code that says 
 @code{MilliSeconds (2.)} since a @emph{type demotion} would be required that 
 could lose information and the compiler will not do such things ``behind your
 back.''  Don't be thrown off by this kind of automatic conversion.
@@ -1328,7 +1329,7 @@ to the node.  When we add the net device, we also specify the network to which
 the net device is connected and provide a MAC address appropriate to the 
 device and network types.  Since we're creating an IP version 4 network using 
 a Csma channel, you may expect that we'll be using topology helpers 
-appropriate to those types -- the CsmaIpv4Topology helper.  As you may expect,
+appropriate to those types --- the CsmaIpv4Topology helper.  As you may expect,
 we'll need to include some files to get the appropriate definitions:
 
 @verbatim
@@ -1696,7 +1697,7 @@ associated with real-world systems.
 @cindex time
 @cindex event
 In a @emph{discrete event simulator} time is not something that @emph{flows},
-nor is it something to be measured -- it is the driving force behind the
+nor is it something to be measured --- it is the driving force behind the
 progress of the simulation.  Time is progressed forward by the simulation 
 engine and anything that happens in the simulation is ultimately caused by
 an @emph{event}.  An event is some action in the system that is 
@@ -1715,7 +1716,7 @@ terms of absolute time.  For example, one could schedule an event to start
 the flow of a first packet at, say, ten simulated seconds.  In this case, the 
 simulation would start its clock at zero seconds and look for the first event 
 in its @emph{event queue}.  It would immediately jump time forward by ten 
-seconds and @emph{fire} the scheduled event -- that is, make the event happen.
+seconds and @emph{fire} the scheduled event --- that is, make the event happen.
 
 @cindex functor
 @cindex function object
@@ -1723,7 +1724,7 @@ seconds and @emph{fire} the scheduled event -- that is, make the event happen.
 @cindex Callback
 In @command{ns-3} an event is basically a pre-packaged function call called a 
 @emph{functor}.  Functors are also known as @emph{function objects}, which is
-a more descriptive term -- an object (in the object-oriented programming 
+a more descriptive term --- an object (in the object-oriented programming 
 sense) that can be called as if it was a function.  Typically one uses a
 functor to implement @emph{deferred execution} of a function or method.  The
 most commonly encoutered form of deferred execution is in a @emph{callback}
@@ -2017,7 +2018,7 @@ expose the fewest ``knobs.''
 @cindex ASCII
 The ASCII trace wrapper is a wrapper around the @command{ns-3} low-level 
 tracing system that lets you get access to underlying trace events easily.  
-The output of a trace of a simulation run is an ASCII file -- thus the name.  
+The output of a trace of a simulation run is an ASCII file --- thus the name.  
 In the spririt of keeping things simple, you won't be able to control or 
 configure the output.  The details are all hidden from you, and are therefore 
 inaccessible at this level.  Be assured that as you learn more and more about
@@ -2081,7 +2082,7 @@ Each line in the file corresponds to a @emph{trace event}.  A trace event
 happens whenever specific conditions happen in the simulation.  In this case
 we are tracing events on the @emph{device queue} present in every net device
 on every node in the simulation.  The device queue is a queue through which
-every packet destined for a channel must pass -- it is the device
+every packet destined for a channel must pass --- it is the device
 @emph{transmit} queue.  Note that each line in the trace file begins with a
 lone character (has a space after it).  This character will have the following
 meaning:
@@ -2145,7 +2146,7 @@ node in question.  In our simulation, this corresponds to the
 @cindex unique ID
 @cindex packet
 The next line (reference 04) is a more readable form of the operation code
-seen in the first line -- i.e., the character @code{+} means 
+seen in the first line --- i.e., the character @code{+} means 
 @code{queue-enqueue}.  Reference number 05 indicates that the @emph{unique id}
 of the packet being enqueued is @code{9}.  The fact that the first packet we
 see has a unique ID of 9 should indicates to you that other things have 
@@ -2159,7 +2160,7 @@ a zero (not computed) checksum (note the indentation to make parsing this
 trace event a little easier).  Reference 08 and 09 are the source and
 destination addresses of this packet.  The packet is from the MAC address we
 assigned to the node zero net device in the script, and is destined for the
-broadcast address -- this is a broadcast packet.
+broadcast address --- this is a broadcast packet.
 
 @cindex Address Resolution Protocol
 @cindex ARP
@@ -2268,7 +2269,7 @@ application started at 2. seconds and there were two ARP packets transmitted
 across the network (two milliseconds + data transmission time each way).  The
 packet unique identifier (reference 05) is 7.  Notice that this is a lower
 number than the ARP request packet, which had a unique ID of 9.  This tells
-us that the UDP packet was actually created before the ARP request packet --
+us that the UDP packet was actually created before the ARP request packet ---
 which makes perfect sense since it was the attempt to send packet 7 that 
 triggered sending the ARP request packet 9.  Note that this an Ethernet
 packet (reference 06) like all other packets in this simulation, however this 
@@ -2391,7 +2392,7 @@ is composed of the base file name, followed by a @code{'-'}, a node id followed
 by a @code{'-}', and an IP interface index.  You will soon see a file named
 @code{tutorial.pcap-0-1}, for example.  This will be the trace file generated
 as events are detected on node zero, interface index one.  N.B. Interface 
-indices are different that net device indices -- interface index zero 
+indices are different that net device indices --- interface index zero 
 corresponds to the loopback interface and interface index one corresponds to
 the first net device you added to a node.
 
@@ -2688,7 +2689,7 @@ net mask suitable for a point to point network.  This is typically a /30
 address but we don't force that in this API.
 
 After setting up the address on node zero, we do the same for the node on
-the other end of the ``spoke'' -- in this case node one, with its single
+the other end of the ``spoke'' --- in this case node one, with its single
 net device.  Note that the network number is the same on both sides of this
 network.
 
@@ -2702,7 +2703,7 @@ network.
 
 The following code repeats this pattern assining similar IP addresses to the
 remaining net devices.  Note that there are no @code{Mac48Address} address
-assignments -- they are not required.
+assignments --- they are not required.
 
 The rest of the code you should recognize and understand.  We are just going
 to echo one packet across the point-to-point link.  You should be now be able
@@ -3120,14 +3121,14 @@ been perfectly linear in our script implementations, just like any other C++
 program, an @command{ns-3} script can use any features of the language you
 desire.  If you will look back at the @code{linear-dumbbell.cc}
 example, you may notice that the code to create the left and right sides of
-the dumbbell is operationally identical -- only the names change.  An obvious
+the dumbbell is operationally identical --- only the names change.  An obvious
 improvement of this program would be to use subroutines to create the sides.
 Since we are working with C++, we should probably do this in an 
 object-oriented way.  Since object-oriented design is somewhat of a black art
 to some people, we'll take some time here and outline a simple methodology 
 you can follow.
 
-@section Object Design 101 -- Class Ipv4BusNetwork
+@section Object Design 101 --- Class Ipv4BusNetwork
 If you are a master of object oriented design, feel free to skip or skim this
 section, in which we derive a simplistic but fully operational bus network 
 class.
@@ -3151,7 +3152,7 @@ give you a starting point for required classes and member variables.
 
 Immediately we can notice that at the highest level we are talking about the
 noun @emph{network}.  This probably won't surprise you.  We also have an 
-adjective that modifies the noun -- @emph{bus}.  This should lead us to our 
+adjective that modifies the noun --- @emph{bus}.  This should lead us to our 
 first class defintion.  Usually class names are constructed in the same way
 as an English language sentence would be spoken.  For example, one would speak
 of a @emph{bus network} in conversation, so we would normally create a
@@ -3476,6 +3477,797 @@ examining the lower levels of the system in more detail.  We are going to
 explain how to change the behavior of the system and eventually how to write
 new models and applications.  This is a good time to make sure that you
 thorougly understand what we've gone over so far.
+
+@c ========================================================================
+@c Object Model
+@c ========================================================================
+
+@node Object-Model
+@chapter Object Model
+
+There are two distinctly different meanings associated with the term Object
+Model.  The first speaks to the implementation of an object system --- a system
+view; and the second speaks to the application programming interface (classes
+or objects) one uses to access some service or system --- an application view.
+
+As an example of the system view sense of the term, the C++ language has an
+associated object model that describes how objects are laid out in memory,
+how virtual functions work, how inheritance is implemented, constructor and
+destructor execution ordering, template instantiation, etc.
+
+In the case of the application view, the Document Object Model is a good
+example.  In the words of W3C, the Document Object Model (DOM) is an
+application programming interface (API) for HTML and XML documents. It defines
+the logical structure of documents and the way a document is accessed and
+manipulated.
+
+The Component Object Model (COM) from Microsoft actually spans both meanings
+of the term and extends further into policy statements.  From a system
+perspective, COM specifies an interface definition language, the layout of
+objects virtual function tables, the formats of Globally Unique Identifiers
+and also specifies lifetime management mechanisms for objects via reference
+counting.  From the point of view of the API, COM specifies a number of
+Interfaces as well as functions such as CoCreateInstance and various
+threading models.  The COM specification extends to policy by disallowing
+implementation inheritance.
+
+The @command{ns-3} object model takes the C++ language (system level) object 
+model as its basis, and extends that model by providing an API for software
+componentry.  You will find terms like Component, Interface and QueryInterface
+in the following discussion.  It is important to understand from the outset
+that this is the @command{ns-3} object model, and not any other object model.
+Richard Feynman (an American physicist) once described the behavior of matter 
+and light on a very small scale in the following way,
+
+@quotation
+``They do not behave like waves, they do not behave like particles, they do
+not behave like clouds, or billiard balls, or weights on springs, or like
+anything that you have ever seen.''
+@end quotation
+
+Just as students of quantum mechanics must rid themselves of preconceptions
+regarding the behavior of matter at small scales, you should rid yourself of
+any preconceptions you may have about components, interfaces and APIs for
+software componentry before continuing.  To paraphrase Feynman, @command{ns-3}
+components do not behave like COM Components, or Java Beans, or CORBA
+objects, or clouds or weights on springs, or like anything that you have 
+ever seen  they are @command{ns-3} components.
+
+@section The C++ Object Model is the Root of all Things
+@command{Ns-3} is primarily a C++ system.  The system is written in C++ and
+one can use standard C++ mechanisms for creating and using ns-3 objects.  We 
+do not change this at all, nor do we make any pronouncements about the 
+superiority of one mechanism or another.  What we will do is provide 
+convenience functions that we think will make creating and managing simulation
+objects easier.
+  
+Previously, you have seen objects created using the template function 
+@code{Create} as in the following example:
+
+@verbatim
+  Ptr<Node> n0 = Create<InternetNode> ();
+@end verbatim
+
+This line of code, while it may be unfamiliar to some, is pure C++.  If you
+were to look in the header file ptr.h, you would find the following definition
+of the @code{Create} template.
+
+@verbatim
+  template <typename T>
+  Ptr<T> Create (void)
+  {
+    T *obj = new T ();
+    Ptr<T> p = obj;
+    obj->Unref ();
+    return p;
+  }
+@end verbatim
+
+As you can see, this template creates objects of type @code{T} using the
+operator @code{new}.  Its a little harder to find the corresponding delete ---
+it's in the file @code{object.cc} inside the method @code{Object::MaybeDelete},
+but when that @code{Ptr} which you see above goes out of scope it will call
+@code{Unref} and ultimately the C++ @code{delete} operator will be called.
+
+The ns-3 system uses the C++ @code{new} and @code{delete} operators, so there
+is really no reason that you as a user of the ns-3 system are forbidden from
+using these or any other C++ mechanism.  If you so desire, you can take on
+the responsibility for managing object lifetime (i.e., do not use the 
+@code{Ptr} smart pointer), work directly with the @code{new} and @code{delete}
+operators and call methods like any C++ object as in the following example:
+
+@verbatim
+  MyClass *obj = new MyClass ();
+  obj->Method();
+  delete obj;
+@end verbatim
+
+You, as a competent model author, are encouraged to use whatever methods you
+think are appropriate in your private code.  Remember, however, that the
+public ns-3 APIs do use smart pointers to pass objects around in an effort to
+reduce the burden of object lifetime management.  If you do intend to export
+an API publicly, you should use the same object lifetime management approaches
+as those found in the ns-3 public API if only for consistency.
+
+These APIs are there for convenience and consistency, but do not change the
+fact that in ns-3 all of the objects are really just C++ objects, ultimately
+created using the C++ new operator with C++ constructor semantics and are
+ultimately deleted using the C++ delete operator, following C++ destructor
+semantics.  Although it may sometimes appear so, there is really no system-
+level magic going on in ns-3.  Ns-3 components and interfaces are C++ objects
+just like any other object and our object model is simply a collection of APIs
+built on the normal C++ object model.
+
+@section Interfaces
+There are many different ideas floating around of what exactly the term
+@emph{Interface} means.  Originally an interface just meant a communication
+boundary between two entities.  As the concepts of object oriented programming
+(OOP) were surfacing in the 1980s, the term interface was applied to the
+collection of access methods for the modular entities that were being defined.
+
+Two distinct approaches developed regarding specifying access mechanisms for
+objects.  The OOP purists were very concerned about object reuse and were led
+to Abstract Data Types (ADT).  These were eventually implemented in the case
+of C++, as pure virtual methods in Abstract Base Classes (ABC).  Another group
+of folks was more interested in simply specifying object access methods in one
+place and using inheritance as the primary reuse mechanism.
+
+Bjarne Stroustroup, the creator of C++, embraced both approaches.  He makes
+the following interesting observation:
+
+@quotation
+``Many classes [@dots{}] are useful both as themselves and also as bases for
+derived classes. [@dots{}] Some classes, such as class @strong{Shape},
+represent abstract concepts for which objects cannot exist.''
+@end quotation
+
+@command{Ns-3} does not pick and enforce a particular approach.  In 
+@command{ns-3} an interface is determined completely by a class declaration
+just as any C++ object interface is declared.  If you think of an object as
+an abstract concept that should be implemented by derived classes, by all
+means, use the Abstract Base Class approach to interface declaration.  If you
+think that an object should be completely concrete and you foresee no need
+to ever modify its behavior, feel free to avoid declaring any methods virtual.
+If you think that an object could be useful as a base class, feel free to
+declare its methods virtual.  If you like to use the PIMPL idiom, again, feel
+free.  If you want to use any combination of these techniques, feel free.  
+We make no restrictions.
+
+When we speak of an ns-3 interface, we do not worry about interface definition
+languages, or pure virtual classes, or registries  we just think about C++
+object declarations and their associated methods.  When we instantiate an
+@command{ns-3} Interface, it is the C++ object model that dictates how that
+object is brought into existence.  When a method is called on an @command{ns-3}
+Interface, it is the C++ object model that dictates how that method is 
+dispatched.
+
+The only difference between a vanilla C++ object and an ns-3 Interface, is
+that an object acting as an ns-3 Interface must inherit from the base class
+Object.  This inheritance gives the Interface object a very useful capability.
+
+@section The Ns-3 Capital I Interface and QueryInterface
+One thing that Microsoft got right in the Component Object Model was the idea
+of Interface aggregation and discovery via QueryInterface.  We have embraced
+these ideas in @command{ns-3}.  This was done primarily to address a common
+problem in large software systems.  A good example of this problem happens
+in the @command{ns-3} Node class.
+
+If one were to take the standard OOP view of specializing a @code{Node} into
+an internet host, for example, one would typically inherit from the @code{Node}
+base class and include functionality to implement such things as internet
+routing and a TCP / IP protocol stack.  Other types of @code{Node}s might 
+inherit from the node class and specialize in different ways, or further
+specialize the internet host class, treating it as a base class.  This can
+result in a complicated inheritance tree in which some specializations are
+simply not available to other branches of the tree which can make reuse
+difficult or impossible.  This is known as the @emph{weak base class} problem
+and creates pressure to drive functionality up the inheritance tree into the
+base classes.  This, in turn, results in @emph{base class bloat} and the 
+resulting @emph{swiss army knife} base classes which end up trying to do
+everything in one place.
+
+Even if one successfully avoided these swiss army knife base classes, one
+would also want to be able to treat new specializations of @code{Node}
+generically in the system.  This means one would pass references to the base
+class (@code{Node}) across public APIs.  This introduces @emph{upcasts} prior
+to passing across public APIs and corresponding @emph{downcasts} on the other
+side in order to gain access to required specialized functions.  As the
+inheritance tree becomes more complicated, this approach can cause another
+related problem known as the @emph{fragile base class} problem.  This happens
+when changes to the base class cause unexpected problems in the various and 
+sundry subclasses.  
+
+These effects seem always to result in a positive feedback loop driving
+everything into the base class and destroying much of the encapsulation which
+is a hallmark of the object oriented approach.
+
+@subsection Interface Composition
+There is a completely different way to address the Node specialization
+problem.  Instead of approaching the situation using inheritance, one can
+look at the problem as one of composition.  We can look at the @code{Node}
+class as a container of sorts that holds other objects.  In this case, the
+objects would be instances of the classes implementing the internetwork
+routing code, or the TCP / IP protocol stack described above.  This approach
+preserves the encapsulation and solves the weak base class, base class bloat
+and fragile base class problems; but the question of method dispatch 
+immediately comes to mind.
+
+In many systems, @emph{delegation} is used.  The base class, @code{Node},
+in this approach would provide methods that simply forward to the objects
+implementing the desired functionality.  This situation clearly does not
+address the base class bloat problem since dispatch methods must be added
+to the base class.  The situation is mitigated somewhat by pushing the
+implementation of the dispatch methods to contained objects, but the
+fundamental problems are still present.  What is really needed is a way
+to compose objects but at the same time keep the interfaces to those
+objects separated.
+
+Composition, usually called @emph{aggregation}, along with runtime Interface
+discovery is the solution that Microsoft originally championed and that 
+@command{ns-3} has adopted.  In our example a @code{Node} would contain 
+separate Interface objects implementing internetwork routing and TCP/IP.
+These contained objects have interfaces in the C++ sense of collections of
+method signatures.  When objects are capable of participating in this
+aggregation process, they are called @command{ns-3} Interfaces and they
+receive the functionality required for this participation by inheriting
+from the base class @code{Object}.
+
+@subsection Object, interfaces and Interfaces
+As mentioned above, the class that implements the aggregation mechanism for
+@command{ns-3} objects is called @code{Object}.  The class named @code{Object}
+is simply a base class that you will inherit from if you want your objects
+to support aggregation and QueryInterface.  Many systems have a base class
+that implements common functionality and these base classes are typically
+called Object.  The @command{ns-3} version of this object base class relates
+primarily to Interface aggregation, although it does provide methods to help
+with intrusive reference counting and tracing as well.
+
+When a C++ object inherits from the ns-3 Object base class, it is conceptually
+promoted to an ns-3 Interface (note the capital I in Interface) irrespective
+of how the object was declared (e.g., as an abstract base class, concrete
+class, with virtual methods, etc.).   In ns-3, you should associate
+inheritance from the class named @code{Object} with promotion of an object to 
+the status of Interface rather than the form of the Interface declaration.
+
+When you inherit from @code{Object}, you will get new methods and an
+Interface Identifier.  The Interface Identifer, or @emph{iid}, is the 
+@command{ns-3} version of the @emph{Universally Unique ID} (UUID) or 
+@emph{Globally Unique ID} (GUID) found in other systems.  Unlike the GUID, it
+is really a dynamically created process-local ID.  For now, consider it as
+simply a number which the system will generate for you that uniquely
+identifies an Interface class within the ns-3 system and allows you to
+specify an interface type to @code{QueryInterface}.
+
+To summarize, when you instantiate an object that inherits from the 
+@code{Object} class, you will have a C++ object that has four important 
+properties:  
+
+@itemize @bullet
+@item The object has a C++ interface defined by the collection of method signatures in its inheritance tree; 
+@item The object has an Interface ID that uniquely identifies the C++ interface of its class;
+@item The object is a container that has the ability to aggregate other interfaces;
+@item The object exports a method that allows for discovery of aggregated interfaces (@code{QueryInterface}) according to Interface ID.
+@end itemize
+
+It is crucially important to understand what we have described here.  A given
+C++ class has an object access interface that is essentially the collection
+of method signatures specified in its inheritance tree.  This is a C++ object
+model thing.  Ns-3 provides a base class from which the class in question can
+inherit and be promoted to the status of Interface.  Once a class becomes
+an Interface it has inherited the ability to set its own interface identifier
+(@code{iid}), and exports methods to aggregate and search other Interfaces
+that are added to its aggregation.
+
+That last detail is important.  In @command{ns-3} Interfaces are both
+containers and specifications for object method access.  We have previously
+mentioned the @code{Node} class acts as a container.  In fact, the @code{Node}
+class inherits from @code{Object} and is itself also an @command{ns-3}
+Interface.  When the @code{Node} object is created it is really an aggregation
+of one Interface, the @code{Node} Interface.  This is generally true ---
+Interfaces are both containers and Interfaces.
+
+@subsection Aggregations
+The figure below shows how an Interface could be illustrated in detail.  The 
+line with the circle at the top of the diagram represents the appearance of the
+Interface to the external world.  This circle and line are called a lollipop
+because of its superficial similarity to a kind of childs candy.  
+
+@sp 1
+@center @image{oneif,,,,png}
+
+You could declare this interface quite simply using a non-virtual class as 
+follows,
+
+@verbatim
+  class A : public Object {
+  public:
+    static const InterfaceId iid;
+    void MethodA (void);
+  };
+@end verbatim
+
+The methods that are then available via the Interface labeled @code{A} in the
+figure above are the methods inherited from the @code{Object} base class (
+@code{QueryInterface}, @code{Ref}, and @code{Unref}) and those from class 
+@code{A} (@code{MethodA}).  Note that you must declare an @code{InterfaceId}
+for your Interface class, and it must be declared static to make it class-wide
+in scope.  This @code{iid} can be thought of as a kind of type information
+that uniquely identifies objects as being instantiated from this class.
+
+You can think of the arc and arrow device coming off each side of the
+Interface as part of a connector.  These connectors allow @code{QueryInterface}
+to search aggregations for a particular @code{iid}.  The figure below shows an
+aggregation of three Interfaces: A, B and C.  The class declarations for 
+classes @code{B} and @code{C} are substantially similar to that of class 
+@code{A}.
+
+@sp 1
+@center @image{threeif,,,,png}
+
+You can visualize these Interfaces as being snapped together like Lego
+building blocks if you like.  When the Interfaces are aggregated, a
+@code{QueryInterface} search path is formed through the connectors.  In order
+to create this aggregation we first need to create the Interface objects.
+These are just normal, everyday C++ objects that we can create using the
+@code{Create} template function and manage using smart pointers.  The 
+following code should be obvious to you by now:
+
+@verbatim
+  Ptr<A> a = Create<A> ();
+  Ptr<B> b = Create<B> ();
+  Ptr<C> c = Create<C> ();
+@end verbatim
+
+When you create an aggregation, you pick one of the Interfaces to act as
+the container.  In this case well pick Interface A.  In order to aggregate
+an Interface, you simply call the method @code{AddInterface} that your class
+inherited from @code{Object}.  The following code will aggregate Interface 
+@code{B} and Interface @code{C} onto the Interface (and container) @code{A}.
+
+@verbatim
+  a->AddInterface (b);
+  a->AddInterface (c);
+@end verbatim
+
+Thats all there is to it.  Now that you have those connectors snapped
+together, you can ask each of the Interfaces in the aggregation for any of
+the Interfaces in the aggregation.  Lets look at a simple example:
+
+@verbatim
+  Ptr<B> newB = a->QueryInterface<B> (B:iid);
+@end verbatim
+
+The left hand side of this assignment declares a smart pointer to the class
+@code{B} to help with memory management of the returned Interface pointer.
+Object lifetime management is very important when dealing with Interfaces
+and our smart pointer will simply take care of it all for you.
+
+The right hand side illustrates the basic idea of @code{QueryInterface}.  We
+take a take a (smart) pointer to Interface @code{A} and ask it to search the
+aggregation for an interface associated with an interface identifier with
+the value of @code{B:iid} which is passed as a parameter.  Recall that 
+@code{B::iid} is the @code{static InterfaceId} of the Interface class 
+@code{B}.  Observe that @code{QueryInterface} is a template function and the
+type specified in the angle brackets, here @code{<B>}, tells it what kind of 
+smart pointer to return.  In this case @code{QueryInterface} will find an
+Interface object of type @code{B::iid} in its list of Interfaces and return a
+smart pointer to @code{B} as instructed.  
+
+Now that you have those connectors snapped together, you can ask each of
+the Interfaces in the aggregation for any of the Interfaces in the
+aggregation.  For example we could walk the Interfaces asking each for the
+next in the aggregation.  First we would ask the Interface pointed to by the
+smart pointer a to look for the InterfaceId representing @code{B}:
+
+@verbatim
+  Ptr<B> newB = a->QueryInterface<B> (B:iid);
+@end verbatim
+
+Next, we can ask the Interface pointed to by the smart pointer @code{newB}
+to look for the @code{InterfaceId} representing @code{C}:
+
+@verbatim
+  Ptr<C> newC = newB->QueryInterface<C> (C:iid);
+@end verbatim
+
+Then, we can ask the Interface pointed to by the smart pointer @code{newC}
+to look for the InterfaceId representing A and complete our circuit of the 
+aggregation:
+
+@verbatim
+  Ptr<A> newA = newC->QueryInterface<A> (A:iid);
+@end verbatim
+
+@code{QueryInterface} (often abbreviated QI) has some important properties
+that we need to go over.  Technically, QI is a @emph{symmetric}, 
+@emph{reflexive} and @emph{transitive} operation with respect to the set of
+aggregated Interfaces.
+
+@subsubsection Symmetry
+The symmetric nature of QI guarantees that if one performs a QI on a given
+Interface for the Interface Id of that same interface, that 
+@code{QueryInterface} must succeed.  The existence of interface A in the
+aggregation implies the reachability of Interface A in the aggregation.  This
+is usually written (by Microsoft) as,
+
+@center must succeed (A >> A)
+
+We can illustrate this property with the code snippet,
+
+@verbatim
+  Ptr<A> symmetricA = a->QueryInterface<A> (A:iid);
+  NS_ASSERT (symmetricA);
+@end verbatim
+
+Here we take as given an interface (smart) pointer named a on which we
+perform a QI looking for the InterfaceId of that same Interface.  This call
+must always succeed and a smart pointer to the Interface a is returned by QI.
+
+@subsubsection Reflexivity
+Calls to QI must also be reflexive.  This means that if you successfully QI
+for interface B from interface A, then you must always be able to QI for A
+from B.  This is usually written as,
+
+@center must succeed (A >> B, then B >> A)
+
+This property can be illustrated with the code snippet,
+
+@verbatim
+  Ptr<B> b = a->QueryInterface<B> (B:iid);
+  Ptr<A> reflexiveA = b->QueryInterface<A> (A:iid);
+  NS_ASSERT (reflexiveA);
+@end verbatim
+
+If the first @code{QueryInterface} on Interface A looking for Interface B 
+succeeds, then a @code{QueryInterface} on Interface B looking for Interface A 
+must succeed.
+
+@subsubsection Transitivity
+@code{QueryInteface} must also be transitive.  This means that if one can
+find Interface B from Interface A, and Interface C from Interface B, then one
+must also be able to find interface C from Interface A.  This is usually
+written as,
+
+@center must succeed (A >> B, and B >> C, then A >> C)
+
+This property can be illustrated with the code snippet,
+
+@verbatim
+  Ptr<B> b = a->QueryInterface<B> (B:iid);
+  Ptr<C> c = b->QueryInterface<C> (C:iid);
+  Ptr<C> transitiveC = a->QueryInterface<C> (C:iid);
+  NS_ASSERT (transitiveC);
+@end verbatim
+
+If you can get to Interface B from Interface A, and you can get to Interface C
+from Interface B, then a QueryInterface on Interface A looking for Interface C
+must also succeed.
+
+@subsection Creating the InterfaceId
+The final piece of this puzzle is to locate where the interface Ids actually
+come from.  The answer is from a static initializer that must be located in 
+the @code{.cc} file corresponding to the Interface.  For example, to 
+initialize the Interface Id for the class A above, you would simply add the
+following code to the source file that implements class A,
+
+@verbatim
+  const InterfaceId A::iid = 
+    MakeInterfaceId (``A'', Object::iid);
+@end verbatim
+
+This code is guaranteed by the C++ language definition to be executed before
+your main procedure is entered.  The call to MakeInterfaceId will assign a
+process-local unique identifier to your class and associate your interface
+with the name (string) ``A.''  This allows you to look up an InterfaceId by
+a human readable string.
+
+An advanced ns-3 specific feature of QueryInterface is exposed here.  
+@code{MakeInterfaceId} takes an @code{InterfaceId} as a parameter.  This is
+the @code{iid} of the base class from which you inherited.  In most cases
+this will be @code{Object::iid}, which is the @code{InterfaceId} of the
+@code{Object} base class.  In @command{ns-3}, the @code{Object} base class
+has its own @code{iid} and you can QI for that @code{iid}.  The @code{Object}
+base class has a rough equivalence to the @emph{IUnknown} Interface in
+Microsofts COM, so you can QI for @code{Object::iid} in @command{ns-3}f just
+as you might QI for IID_IUnknown in COM.
+
+The InterfaceId you pass to @code{MakeInterfaceId} is used to create an
+inheritance tree in the ns-3 interface manager.  This inheritance tree is also
+walked in @code{QueryInterface} Interface searches.  Consider a simple case
+of a base class and a derived class as shown below,
+
+@verbatim
+  class Base : public Object
+  {
+  public:
+    static const InterfaceId iid;
+    ...
+  };
+
+  class Derived : public Base
+  {
+  public:
+    static const InterfaceId iid;
+    ...
+  };
+@end verbatim
+
+To assign the InterfaceId for each of these classes, we could add two calls
+to @code{MakeInterfaceId} reflecting the class hierarchy we just created.
+
+@verbatim
+  const InterfaceId Base::iid = 
+    MakeInterfaceId (``Base'', Object::iid);
+
+  const InterfaceId Derived::iid = 
+    MakeInterfaceId (``Derived'', Base::iid);
+@end verbatim
+
+The first Interface is shown to inherit from class @code{Object} and the
+second inherits from class @code{Base}.  We could create these interfaces
+as we usually do,
+
+@verbatim
+Ptr<Base> base = Create<Base> ();
+Ptr<Derived> derived = Create<Derived> ();
+@end verbatim
+
+The derived and base @code{InterfaceIds} are either present or not present
+based on the inheritance tree.  For example, a QI for the @code{Base
+InterfaceId} must succeed when done against a @code{Ptr<Base>}; but a QI for
+the @code{Derived InterfaceId} must fail when done against a @code{Ptr<Base>}.
+However, a QI for the @code{Base InterfaceId} must succeed when done against a
+@code{Ptr<Derived>}; and a QI for the @code{Derived InterfaceId} must succeed
+when done against a @code{Ptr<Derived>}.
+
+This feature allows you to use implementation inheritance to easily create
+new Interfaces.  You are prevented from doing so in Microsoft COM, but this
+was almost universally identified as a problem.
+
+@subsection A Real Example
+At this point you may be asking yourself what the point of all of this is,
+since you already had those pointers laying around when you created the
+objects.  The typical case is that you would forget about the pointers to the
+contained objects and only export a single Interface.  Other Interfaces could
+be discovered using QI.
+
+Generally one tends to think of one of the Interfaces in the aggregation
+as being the container and other Interfaces being aggregated to that
+container.  In the case of a Node, for example, it is quite natural to think
+of the Node as being the container which contains Interfaces for the protocol
+stacks, internet routing, etc.  So, lets start developing an example by
+calling the container Interface Node instead of A.  The creation of this
+Interface is found all over our example programs.  For example, you will 
+find code like the following in @code{samples/simple-point-to-point.cc}:
+
+@verbatim
+  Ptr<Node> n = Create<InternetNode> ();
+@end verbatim
+
+This code is described in detail in previous sections, but the important thing
+to realize here is that the resulting @code{Node} is an @command{ns-3}
+Interface.  This is not at all obvious -- you must look at the source code to
+see that this is true.  Take a look at @code{src/node/node.h} and find the
+class declaration for class @code{Node}.  There you will find,
+
+@verbatim
+  class Node : public Object
+  {
+  public:
+    static const InterfaceId iid;
+    ...
+  };
+@end verbatim
+
+Class @code{Node} inherits from class @code{Object} and provides an
+@code{InterfaceId}, therefore it is an @command{ns-3} interface.  You now 
+know you can use @code{AddInterface} for aggregation and @code{QueryInterface}
+for Interface discovery against any @code{Node} in the system.
+
+We spoke of a protocol stack that is aggregated to a @code{Node} in our
+discussions above, what we see in the real @command{ns-3} code is that this
+is represented by the @code{Ipv4} Interface.  If you look in 
+@code{src/node/ipv4.h} you will find,
+
+@verbatim
+  class Ipv4 : public Object
+  {
+  public:
+    static const InterfaceId iid;
+    ...
+  };
+@end verbatim
+
+Since class @code{Ipv4} inherits from class @code{Object} and has a 
+@code{static InterfaceId}, it is an @command{ns-3} Interface.  If you look in
+@code{src/node/ipv4.cc} you will find,
+
+@verbatim
+  const InterfaceId Ipv4::iid = 
+    MakeInterfaceId (``Ipv4'', Object::iid);
+@end verbatim
+
+After all of this reading you now know that this code snippet is asking the
+system to create a unique @code{InterfaceId} for the @code{Ipv4} class and
+declares that @code{Ipv4} inherits from class @code{Object}.
+
+It turns out that the Ipv4 class is an abstract base class (ABC).  There are
+a number of pure virtual methods declared in that class.  This means that
+an @code{Ipv4} object may not be instantiated.  What is instantiated is an
+implementation class, called @code{Ipv4Impl}.  This class inherits from
+@code{Ipv4} and provides the required virtual methods.  This is where
+understanding what is an Interface and what is not gets tricky.  The 
+Interface is the @code{Ipv4} class since that is where the @code{InterfaceId}
+is found.  The fact that you see @code{ipv4::iid} tells you that the
+@code{Ipv4} class is the Interface and has the associated @code{InterfaceId}.
+The class @code{Ipv4Impl} provides an implementation for the pure virtual
+methods in @code{Ipv4}.  Since class @code{Ipv4} cannot be instantiated, one
+instantiates the @code{Ipv4Impl} class to create an @code{Ipv4} Interface.
+Once the @code{Ipv4Impl} class is instantiated, the pointer to it is
+immediately cast to an @code{Ipv4} pointer.  Clients will then use the
+@code{Ipv4} object access methods (see @code{ipv4.h}) to talk to the
+@code{Ipv4Impl} object over the @code{Ipv4} Interface.  I urge you to not go
+any further until you thoroughly understand what youve just read.
+
+If you now look in the file, @code{src/internet-node/internet-node.cc} you
+will see the following code in @code{InternetNode::Construct} that creates the
+@code{Ipv4} Interface and aggregates it to the @code{Node} interface (recall
+that class @code{Node} is an Interface and class @code{InternetNode} inherits
+from class @code{Node}):
+
+@verbatim
+  Ptr<Ipv4Impl> ipv4Impl = Create<Ipv4Impl> (ipv4);
+  ...
+  Object::AddInterface (ipv4Impl);
+@end verbatim
+
+Note that the parameter @code{ipv4} passed to the @code{Create} template
+function is actually a pointer to an @code{Ipv4L3Protocol} which you can
+ignore at this point --- it doesn't really have anything to do with the 
+@code{Ipv4} Interface.
+
+This last example does illustrate that the fact that whether an @command{ns-3}
+object is or is not an Interface can be quite well hidden.  The designers of
+the system had long and involved discussions on this issue and in the end
+decided that mnemonic aids such as Hungarian notation were a stylistic thing
+and you should just refer to the system documentation to determine what
+objects are ns-3 Interfaces and what those Interfaces actually are (RTFM ---
+Read the Fine Manual).
+
+In this case, you know that the class @code{Ipv4Impl} inherits from some
+Interface since there is a call to @code{AddInterface} that refers to it.
+You can go to the header file @code{src/internet-node/ipv4-impl.h} and find
+that @code{Ipv4Impl} inherits from class @code{Ipv4}.  You then go to file
+@code{src/node/ipv4.h} and see that it inherits from @code{Object} and
+contains an @code{InterfaceId}.  Thus the Interface added is really the 
+@code{Ipv4} Interface with the interface Id @code{Ipv4::iid}.
+
+Returning to some @command{ns-3} example code, lets take a look at 
+@code{src/examples/simple-point-to-point.cc} again.  You will find the 
+following code:
+
+@verbatim
+  Ptr<Node> n0 = Create<InternetNode> ();
+  ...
+  Ptr<Ipv4> ipv4;
+  ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4->SetDefaultRoute (Ipv4Address (``10.1.1.2''), 1);
+@end verbatim
+
+The first line creates an @code{InternetNode} object and casts the resulting
+smart pointer to a @code{Node}.  The next line declares a smart pointer to an
+@code{Ipv4} object.  Because youve been through the code with us, you know
+that both the @code{Node} and the @code{Ipv4} objects are Interfaces.  They 
+should be able to participate in a @code{QueryInterface}.
+
+The next line confirms it.  We do a @code{QueryInterface} on the @code{Node},
+looking for the @code{Ipv4} Interface (@code{Ipv4::iid}).  
+@code{QueryInterface} then returns a smart pointer to its aggregated 
+@code{Ipv4} Interface.  [Recall that this Interface was aggregated in
+@code{InternetNode::Construct}.  We knew to start looking for the aggregation
+in @code{InternetNode} since we originally created an @code{InternetNode} in 
+the @code{Create} template function and then implicitly cast it to a 
+@code{Node}.]
+
+Once you have the @code{Ipv4} smart pointer, you simply use it as if it were
+any other C++ object.  The last line shows this by setting the default route 
+for the node.
+
+@section Caveats
+There are a few things that you should remember but which may not be 
+immediately obvious.  
+
+@subsection Interface Ids are Associated with Classes not Objects
+Interfaces are identified by an @code{InterfaceId} that is associated with
+the Interface class, not the Interface object.  That is indicated by the
+@code{static} keyword in the declaration of the @code{iid} in the class.  The
+interface Id for a given Interface class exists independently of any objects
+of that class that you may instantiate; and all objects of a given Interface
+type share the same @code{InterfaceId}.
+
+You cannot add more than one Interface of a given type (@code{iid}) to an
+aggregation.  If you need to contain a number of Interfaces of the same type
+in the same aggregation, you will need to provide a separate container over
+which you can iterate.  For example, the @code{Node} class provides methods,
+
+@verbatim
+  uint32_t GetNDevices (void) const;
+  Ptr<NetDevice> GetDevice (uint32_t index) const;
+@end verbatim
+
+that are used iterate over the multiple @code{NetDevice} Interfaces associated
+with it.
+
+@emph{Interface Ids do not identify objects.}
+
+@subsection Dont use QI to Check Your Own Type.
+It is tempting to use @code{QueryInterface} as a form of runtime type
+information.  Dont do it.  You have no control over what other object may be
+added to your aggregation and this may cause problems.  Someone else may have
+appropriated (reimplemented) your type and aggregated themselves onto your 
+aggregation.
+
+Consider a socket factory implementation.  Sockets can be either UDP sockets
+or TCP sockets.  A socket factory will have a generic @code{SocketFactory}
+Interface and either a UDP specific interface for setting UDP parameters or a
+similar TCP-specific interface.
+
+Consider what might happen if you declared your socket factory as a partially
+abstract base class, and then provided separate implementations for UDP and
+TCP specific methods of this factory in separate concrete classes.  Now 
+consider what might happen if you used QueryInterface in your base class
+to determine if you were a UDP or a TCP factory.
+
+If a factory, say the UDP version, were not aggregated to any other Interface,
+the base class could QueryInterface on itself for the UDP-specific interface.
+It could then infer that it was a UDP implementation and would then do any 
+UDP-specific tasks it could.  [Experienced C++ folks are cringing about how
+horrible this design is, but bear with me --- its a simple illustration of 
+a specific and perhaps not-too-obvious problem.]
+
+If another factory, say the TCP version, were not aggregated to any other
+Interface, the base class could QueryInterface on itself for the UDP-specific
+interface.  If this failed, it could then infer that it had a TCP
+implementation and would then do any TCP-specific tasks it could.
+
+Now, what happens when these two working objects are aggregated together.
+Since the Interfaces are conceptually snapped together the TCP implementation
+would suddenly begin finding the UDP Interface from the other class factory
+and fail.
+
+@emph{Interface Ids should not be used as run-time type information.}
+
+@section Connecting the Dots
+This may all sound very complicated to you if this is your first exposure to
+these concepts.  It may be annoying if I tell you that its really not as hard
+as it sounds.  Rest assured that if you take some time, look at and understand
+the examples and write a little test code it will all come together for you.
+Grep around the system for AddInterface and QueryInterface and take a look at
+how we have used them.  This will also give you a good idea of what our core
+Interfaces are.  If you grep for @code{::iid} you will find most, if not all
+of the interface declarations in the system.  The more you see this idiom in
+use, the more comfortable you will be with the idea and the more you will see
+how this addresses the weak base class, swiss army knife base class, and
+fragile base class problems I explained at the beginning.
+
+As I alluded to earlier, the developers had long discussions regarding how to
+make navigating the QueryInterface environment easier.  The primary issue was
+how we could make it easier to convey to you, the model writer, that an object
+was an Interface.  One suggestion was to adopt the convention that classes
+that implement Interfaces begin with the letter I.  Microsoft does this, as
+exemplified by the class IUnknown.  We also toyed with the idea of beginning
+our header files with i- as in i-ipv4.h. We considered forcing some structure
+on Interfaces with a pure virtual class specification, the names of which
+begin with an I; and corresponding implementations, the names of which begin
+with a C.
+
+In the end we decided that we were really discussing issues of programming
+style, and we really could not come up with a strong reason to impose any
+particular solution.  In the end, we decided that we would not impose any
+structure on the source code, nor impose any naming convention.  We will
+rely on our documentation system (Doxygen) to break out all objects with
+InterfaceIds in their class hierarchy into a separate section.  For now,
+until this is implemented, grep is your friend.
 
 @c ========================================================================
 @c Doxygen

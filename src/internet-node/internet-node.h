@@ -32,7 +32,7 @@
 namespace ns3 {
 
 /**
- * \defgroup InternetNode InternetNode
+ * \ingroup internetNode
  *
  * \section InternetNode Overview
  *

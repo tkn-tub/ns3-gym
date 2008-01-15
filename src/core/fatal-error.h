@@ -25,6 +25,7 @@
 #include <iostream>
 
 /**
+ * \ingroup core
  * \defgroup error Error
  * \brief fatal error handling
  *

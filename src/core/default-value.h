@@ -25,6 +25,7 @@
 #include "callback.h"
 
 /**
+ * \ingroup core
  * \defgroup config Simulation configuration
  *
  */

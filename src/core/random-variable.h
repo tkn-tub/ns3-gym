@@ -26,6 +26,7 @@
 #include <stdint.h>
 
 /**
+ * \ingroup core
  * \defgroup randomvariable Random Variable Distributions
  *
  */

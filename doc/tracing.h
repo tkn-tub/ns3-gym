@@ -1,8 +1,10 @@
 /**
+ * \ingroup core
  * \defgroup TraceSourceList List of trace sources
  */
 
 /**
+ * \ingroup core
  * \defgroup tracing Tracing
  *
  * The flexibility of the ns-3 tracing system comes at the cost of quite

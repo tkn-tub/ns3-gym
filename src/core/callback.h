@@ -362,6 +362,7 @@ private:
 };
 
 /**
+ * \ingroup core
  * \defgroup MakeCallback MakeCallback
  *
  */
