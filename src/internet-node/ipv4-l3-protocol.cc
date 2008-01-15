@@ -45,7 +45,7 @@ const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol);
 
 TypeId 
-Ipv4L3Protocol::iid (void)
+Ipv4L3Protocol::GetTypeId (void)
 {
   static TypeId iid = TypeId ("Ipv4L3Protocol")
     .SetParent<Object> ();

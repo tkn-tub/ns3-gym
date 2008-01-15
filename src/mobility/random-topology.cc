@@ -29,13 +29,13 @@ namespace ns3 {
 static TypeIdDefaultValue
 g_position ("RandomTopologyPositionType",
             "The type of initial random position in a 3d topology.",
-            RandomPosition::iid (),
+            RandomPosition::GetTypeId (),
             "RandomRectanglePosition");
 
 static TypeIdDefaultValue
 g_mobility ("RandomTopologyMobilityType",
             "The type of mobility model attached to an object in a 3d topology.",
-            MobilityModel::iid (),
+            MobilityModel::GetTypeId (),
             "StaticMobilityModel");
 
 RandomTopology::RandomTopology ()

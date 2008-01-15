@@ -36,12 +36,12 @@ namespace ns3 {
 
 static TypeIdDefaultValue g_interfaceIdErrorModelDefaultValue ("ErrorModel",
                                                                     "Error Model", 
-                                                                    ErrorModel::iid (), 
+                                                                    ErrorModel::GetTypeId (), 
                                                                     "RateErrorModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
 
-TypeId ErrorModel::iid (void)
+TypeId ErrorModel::GetTypeId (void)
 { 
   static TypeId iid = TypeId ("ErrorModel")
     .SetParent<Object> ();
@@ -125,7 +125,7 @@ static EnumDefaultValue<enum ErrorUnit>
 
 NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
 
-TypeId RateErrorModel::iid (void)
+TypeId RateErrorModel::GetTypeId (void)
 { 
   static TypeId iid = TypeId ("RateErrorModel")
     .SetParent<ErrorModel> ()
@@ -246,7 +246,7 @@ RateErrorModel::DoReset (void)
 
 NS_OBJECT_ENSURE_REGISTERED (ListErrorModel);
 
-TypeId ListErrorModel::iid (void)
+TypeId ListErrorModel::GetTypeId (void)
 { 
   static TypeId iid = TypeId ("ListErrorModel")
     .SetParent<ErrorModel> ()

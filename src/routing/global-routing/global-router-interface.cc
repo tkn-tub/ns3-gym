@@ -434,7 +434,7 @@ std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa)
 NS_OBJECT_ENSURE_REGISTERED (GlobalRouter);
 
 TypeId 
-GlobalRouter::iid (void)
+GlobalRouter::GetTypeId (void)
 {
   static TypeId iid = TypeId ("GlobalRouter")
     .SetParent<Object> ();

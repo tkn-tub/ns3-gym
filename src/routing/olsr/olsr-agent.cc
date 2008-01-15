@@ -27,13 +27,13 @@ namespace olsr {
 static TypeIdDefaultValue g_defaultImpl =
   TypeIdDefaultValue ("OlsrAgentType",
                            "The type of OlsrAgent implementation",
-                           Agent::iid (),
+                           Agent::GetTypeId (),
                            "OlsrAgentImpl");
 
 NS_OBJECT_ENSURE_REGISTERED (Agent);
 
 TypeId 
-Agent::iid (void)
+Agent::GetTypeId (void)
 {
   static TypeId iid = TypeId ("OlsrAgent")
     .SetParent<Object> ();

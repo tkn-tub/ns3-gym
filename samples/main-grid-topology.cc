@@ -27,7 +27,7 @@ int main (int argc, char *argv[])
   GridTopology grid (-100, -100, 20, 5, 20);
 
   // each object will be attached a static position.
-  grid.SetMobilityModel (StaticMobilityModel::iid ());
+  grid.SetMobilityModel (StaticMobilityModel::GetTypeId ());
 
   // finalize the setup by attaching to each object
   // in the input array a position and initializing

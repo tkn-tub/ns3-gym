@@ -62,7 +62,7 @@ private:
 class Ipv4L4Demux : public Object
 {
 public:
-  static TypeId iid (void);
+  static TypeId GetTypeId (void);
   Ipv4L4Demux (Ptr<Node> node);
   virtual ~Ipv4L4Demux();
 

@@ -32,7 +32,7 @@ namespace ns3{
 NS_OBJECT_ENSURE_REGISTERED (Node);
 
 TypeId 
-Node::iid (void)
+Node::GetTypeId (void)
 {
   static TypeId iid = TypeId ("Node")
     .SetParent<Object> ();

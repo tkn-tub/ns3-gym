@@ -32,7 +32,7 @@
   static struct X##type##RegistrationClass      \
   {                                             \
     X##type##RegistrationClass () {             \
-      ns3::TypeId iid = type::iid ();      \
+      ns3::TypeId iid = type::GetTypeId ();      \
       iid.GetParent ();                         \
     }                                           \
 } x_##type##RegistrationVariable
@@ -135,7 +135,7 @@ private:
 class Object
 {
 public:
-  static TypeId iid (void);
+  static TypeId GetTypeId (void);
 
   Object ();
   virtual ~Object ();
@@ -286,7 +286,7 @@ template <typename T>
 TypeId 
 TypeId::SetParent (void)
 {
-  return SetParent (T::iid ());
+  return SetParent (T::GetTypeId ());
 }
 
 template <typename T>
@@ -441,7 +441,7 @@ template <typename T>
 Ptr<T> 
 Object::QueryInterface () const
 {
-  Ptr<Object> found = DoQueryInterface (T::iid ());
+  Ptr<Object> found = DoQueryInterface (T::GetTypeId ());
   if (found != 0)
     {
       return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));
@@ -465,7 +465,7 @@ template <typename T>
 Ptr<T> CreateObject (void)
 {
   Ptr<T> p = Ptr<T> (new T (), false);
-  p->SetTypeId (T::iid ());
+  p->SetTypeId (T::GetTypeId ());
   return p;
 }
 
@@ -473,7 +473,7 @@ template <typename T, typename T1>
 Ptr<T> CreateObject (T1 a1)
 {
   Ptr<T> p = Ptr<T> (new T (a1), false);
-  p->SetTypeId (T::iid ());
+  p->SetTypeId (T::GetTypeId ());
   return p;
 }
 
@@ -481,7 +481,7 @@ template <typename T, typename T1, typename T2>
 Ptr<T> CreateObject (T1 a1, T2 a2)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2), false);
-  p->SetTypeId (T::iid ());
+  p->SetTypeId (T::GetTypeId ());
   return p;
 }
 
@@ -489,7 +489,7 @@ template <typename T, typename T1, typename T2, typename T3>
 Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2, a3), false);
-  p->SetTypeId (T::iid ());
+  p->SetTypeId (T::GetTypeId ());
   return p;
 }
 
@@ -497,7 +497,7 @@ template <typename T, typename T1, typename T2, typename T3, typename T4>
 Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4), false);
-  p->SetTypeId (T::iid ());
+  p->SetTypeId (T::GetTypeId ());
   return p;
 }
 
@@ -505,7 +505,7 @@ template <typename T, typename T1, typename T2, typename T3, typename T4, typena
 Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5), false);
-  p->SetTypeId (T::iid ());
+  p->SetTypeId (T::GetTypeId ());
   return p;
 }
 
@@ -513,7 +513,7 @@ template <typename T, typename T1, typename T2, typename T3, typename T4, typena
 Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5, a6), false);
-  p->SetTypeId (T::iid ());
+  p->SetTypeId (T::GetTypeId ());
   return p;
 }
 
@@ -521,7 +521,7 @@ template <typename T, typename T1, typename T2, typename T3, typename T4, typena
 Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5, a6, a7), false);
-  p->SetTypeId (T::iid ());
+  p->SetTypeId (T::GetTypeId ());
   return p;
 }
 

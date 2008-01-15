@@ -96,7 +96,7 @@ private:
 class Node : public Object
 {
 public:
-  static TypeId iid (void);
+  static TypeId GetTypeId (void);
 
   /**
    * Must be invoked by subclasses only.

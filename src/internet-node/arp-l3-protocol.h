@@ -40,7 +40,7 @@ class TraceContext;
 class ArpL3Protocol : public Object
 {
 public:
-  static TypeId iid (void);
+  static TypeId GetTypeId (void);
   static const uint16_t PROT_NUMBER;
   /**
    * \brief Constructor

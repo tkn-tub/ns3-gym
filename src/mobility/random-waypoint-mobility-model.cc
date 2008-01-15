@@ -42,7 +42,7 @@ g_pause ("RandomWaypointPause",
 static TypeIdDefaultValue
 g_position ("RandomWaypointPosition",
 	    "A random position model used to pick the next waypoint position.",
-	    RandomPosition::iid (),
+	    RandomPosition::GetTypeId (),
 	    "RandomRectanglePosition");
 
 
@@ -101,7 +101,7 @@ RandomWaypointMobilityModelParameters::GetCurrent (void)
 }
 
 TypeId
-RandomWaypointMobilityModel::iid (void)
+RandomWaypointMobilityModel::GetTypeId (void)
 {
   static TypeId iid = TypeId ("RandomWaypointMobilityModel")
     .SetParent<MobilityModel> ()

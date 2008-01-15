@@ -27,7 +27,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (Channel);
 
 TypeId 
-Channel::iid (void)
+Channel::GetTypeId (void)
 {
   static TypeId iid = TypeId ("Channel")
     .SetParent<Object> ();

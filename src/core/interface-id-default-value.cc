@@ -47,10 +47,10 @@ TypeIdDefaultValue::DoParseValue (const std::string &value)
 		  return true;
 		}
 	      tmp = tmp.GetParent ();
-	    } while (tmp != Object::iid ());
+	    } while (tmp != Object::GetTypeId ());
 	  }
 	iid = iid.GetParent ();
-      } while (iid != Object::iid ());
+      } while (iid != Object::GetTypeId ());
     }
   return false;
 }
@@ -80,7 +80,7 @@ TypeIdDefaultValue::DoGetType (void) const
 		oss << iid.GetName ();
 	      }
 	    tmp = tmp.GetParent ();
-	  } while (tmp != Object::iid ());
+	  } while (tmp != Object::GetTypeId ());
 	}
     }
   oss << ")";

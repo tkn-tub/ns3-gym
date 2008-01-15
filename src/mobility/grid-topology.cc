@@ -28,7 +28,7 @@ GridTopology::GridTopology (double xMin, double yMin, uint32_t n, double deltaX,
     m_n (n),
     m_deltaX (deltaX),
     m_deltaY (deltaY),
-    m_positionTypeId (StaticMobilityModel::iid ())
+    m_positionTypeId (StaticMobilityModel::GetTypeId ())
 {}
 
 void 

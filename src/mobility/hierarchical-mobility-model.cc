@@ -25,7 +25,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (HierarchicalMobilityModel);
 
 TypeId 
-HierarchicalMobilityModel::iid (void)
+HierarchicalMobilityModel::GetTypeId (void)
 {
   static TypeId iid = TypeId ("HierarchicalMobilityModel")
     .SetParent<MobilityModel> ();

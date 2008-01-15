@@ -35,7 +35,7 @@ class NetDevice;
 class Channel : public Object
 {
 public:
-  static TypeId iid (void);
+  static TypeId GetTypeId (void);
 
   Channel ();
   Channel (std::string name);

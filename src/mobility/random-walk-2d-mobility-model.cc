@@ -130,7 +130,7 @@ RandomWalk2dMobilityModelParameters::GetCurrent (void)
 }
 
 TypeId
-RandomWalk2dMobilityModel::iid (void)
+RandomWalk2dMobilityModel::GetTypeId (void)
 {
   static TypeId iid = TypeId ("RandomWalkMobilityModel")
     .SetParent<MobilityModel> ()

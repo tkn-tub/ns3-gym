@@ -28,7 +28,7 @@ namespace ns3 {
 NS_OBJECT_ENSURE_REGISTERED (Ipv4);
 
 TypeId 
-Ipv4::iid (void)
+Ipv4::GetTypeId (void)
 {
   static TypeId iid = TypeId ("Ipv4")
     .SetParent<Object> ();

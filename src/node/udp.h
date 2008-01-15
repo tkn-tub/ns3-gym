@@ -43,7 +43,7 @@ class Socket;
 class Udp : public SocketFactory
 {
 public:
-  static TypeId iid (void);
+  static TypeId GetTypeId (void);
 
   Udp ();
 

@@ -151,7 +151,7 @@ NS_LOG_COMPONENT_DEFINE ("OlsrAgent");
 NS_OBJECT_ENSURE_REGISTERED (AgentImpl);
 
 TypeId 
-AgentImpl::iid (void)
+AgentImpl::GetTypeId (void)
 {
   static TypeId iid = TypeId ("OlsrAgentImpl")
     .SetParent<Agent> ()
@@ -189,7 +189,7 @@ AgentImpl::AgentImpl (Ptr<Node> node)
   m_ipv4 = node->QueryInterface<Ipv4> ();
   NS_ASSERT (m_ipv4);
 
-  Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (Udp::iid ());
+  Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (Udp::GetTypeId ());
 
   m_receiveSocket = socketFactory->CreateSocket ();
   if (m_receiveSocket->Bind (InetSocketAddress (OLSR_PORT_NUMBER)))

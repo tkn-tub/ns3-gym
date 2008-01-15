@@ -115,7 +115,7 @@ class RandomWalk2dMobilityModelParameters : public Object
 class RandomWalk2dMobilityModel : public MobilityModel 
 {
  public:
-  static TypeId iid (void);
+  static TypeId GetTypeId (void);
   /**
    * Instantiate a set of RandomWalk parameters initialized
    * with construction values from \valueref{RandomWalk2dMode},

@@ -358,7 +358,7 @@ GetObjectIid (void)
 }
 
 TypeId 
-Object::iid (void)
+Object::GetTypeId (void)
 {
   static TypeId iid = GetObjectIid ();
   return iid;
@@ -367,7 +367,7 @@ Object::iid (void)
 
 Object::Object ()
   : m_count (1),
-    m_iid (Object::iid ()),
+    m_iid (Object::GetTypeId ()),
     m_disposed (false),
     m_collecting (false),
     m_next (this)
@@ -384,7 +384,7 @@ Object::DoQueryInterface (TypeId iid) const
   do {
     NS_ASSERT (currentObject != 0);
     TypeId cur = currentObject->m_iid;
-    while (cur != iid && cur != Object::iid ())
+    while (cur != iid && cur != Object::GetTypeId ())
       {
         cur = cur.GetParent ();
       }
@@ -536,7 +536,7 @@ Object::DoCollectSources (std::string path, const TraceContext &context,
       NS_ASSERT (current != 0);
       NS_LOG_LOGIC ("collect current=" << current);
       TypeId cur = current->m_iid;
-      while (cur != Object::iid ())
+      while (cur != Object::GetTypeId ())
         {
           std::string name = cur.GetName ();
           std::string fullpath = path;
@@ -591,9 +591,9 @@ namespace {
 class BaseA : public ns3::Object
 {
 public:
-  static ns3::TypeId iid (void) {
+  static ns3::TypeId GetTypeId (void) {
     static ns3::TypeId iid = ns3::TypeId ("BaseA")
-      .SetParent (Object::iid ())
+      .SetParent (Object::GetTypeId ())
       .AddConstructor<BaseA> ();
     return iid;
   }
@@ -616,9 +616,9 @@ public:
 class DerivedA : public BaseA
 {
 public:
-  static ns3::TypeId iid (void) {
+  static ns3::TypeId GetTypeId (void) {
     static ns3::TypeId iid = ns3::TypeId ("DerivedA")
-      .SetParent (BaseA::iid ())
+      .SetParent (BaseA::GetTypeId ())
       .AddConstructor<DerivedA,int> ();
     return iid;
   }
@@ -643,9 +643,9 @@ public:
 class BaseB : public ns3::Object
 {
 public:
-  static ns3::TypeId iid (void) {
+  static ns3::TypeId GetTypeId (void) {
     static ns3::TypeId iid = ns3::TypeId ("BaseB")
-      .SetParent (Object::iid ())
+      .SetParent (Object::GetTypeId ())
       .AddConstructor<BaseB> ();
     return iid;
   }
@@ -668,9 +668,9 @@ public:
 class DerivedB : public BaseB
 {
 public:
-  static ns3::TypeId iid (void) {
+  static ns3::TypeId GetTypeId (void) {
     static ns3::TypeId iid = ns3::TypeId ("DerivedB")
-      .SetParent (BaseB::iid ())
+      .SetParent (BaseB::GetTypeId ())
       .AddConstructor<DerivedB,int> ()
       .AddConstructor<DerivedB,int,int &> ();
     return iid;
@@ -752,11 +752,11 @@ ObjectTest::RunTests (void)
 
   Ptr<BaseA> baseA = CreateObject<BaseA> ();
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (), baseA);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid ()), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::GetTypeId ()), 0);
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (), 0);
   baseA = CreateObject<DerivedA> (10);
   NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (), baseA);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::iid ()), baseA);
+  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::GetTypeId ()), baseA);
   NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedA> (), 0);
 
   baseA = CreateObject<BaseA> ();
@@ -862,13 +862,13 @@ ObjectTest::RunTests (void)
   baseB->TraceDisconnect ("/$DerivedA/*", MakeCallback (&ObjectTest::BaseATrace, this));
 
   // Test the object creation code of TypeId
-  Ptr<Object> a = BaseA::iid ().CreateObject ();
+  Ptr<Object> a = BaseA::GetTypeId ().CreateObject ();
   NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (), a);
-  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (DerivedA::iid ()), 0);
+  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (DerivedA::GetTypeId ()), 0);
   NS_TEST_ASSERT_EQUAL (a->QueryInterface<DerivedA> (), 0);
-  a = DerivedA::iid ().CreateObject (10);
+  a = DerivedA::GetTypeId ().CreateObject (10);
   NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (), a);
-  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (DerivedA::iid ()), a);
+  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (DerivedA::GetTypeId ()), a);
   NS_TEST_ASSERT_UNEQUAL (a->QueryInterface<DerivedA> (), 0);
 
 

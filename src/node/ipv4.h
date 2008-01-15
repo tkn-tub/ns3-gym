@@ -157,7 +157,7 @@ public:
 class Ipv4 : public Object
 {
 public:
-  static TypeId iid (void);
+  static TypeId GetTypeId (void);
   Ipv4 ();
   virtual ~Ipv4 ();
 

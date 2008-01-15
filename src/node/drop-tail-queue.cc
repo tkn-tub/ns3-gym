@@ -26,7 +26,7 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
 
-TypeId DropTailQueue::iid (void) 
+TypeId DropTailQueue::GetTypeId (void) 
 {
   static TypeId iid = TypeId ("DropTailQueue")
     .SetParent<Queue> ()
