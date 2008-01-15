@@ -2,9 +2,9 @@
 
 namespace ns3 {
 
-InterfaceIdDefaultValue::InterfaceIdDefaultValue (std::string name, 
+TypeIdDefaultValue::TypeIdDefaultValue (std::string name, 
 						  std::string help,
-						  InterfaceId iid,
+						  TypeId iid,
 						  std::string defaultValue)
   : DefaultValueBase (name, help),
     m_defaultName (defaultValue),
@@ -13,33 +13,33 @@ InterfaceIdDefaultValue::InterfaceIdDefaultValue (std::string name,
 {
   DefaultValueList::Add (this);
 }
-InterfaceId 
-InterfaceIdDefaultValue::GetValue (void) const
+TypeId 
+TypeIdDefaultValue::GetValue (void) const
 {
-  return InterfaceId::LookupByName (m_name);
+  return TypeId::LookupByName (m_name);
 }
 void 
-InterfaceIdDefaultValue::SetValue (InterfaceId interfaceId)
+TypeIdDefaultValue::SetValue (TypeId interfaceId)
 {
   m_name = interfaceId.GetName ();
 }
 void 
-InterfaceIdDefaultValue::SetValue (std::string name)
+TypeIdDefaultValue::SetValue (std::string name)
 {
   m_name = name;
 }
 bool 
-InterfaceIdDefaultValue::DoParseValue (const std::string &value)
+TypeIdDefaultValue::DoParseValue (const std::string &value)
 {
-  for (uint32_t i = 0; i < InterfaceId::GetRegisteredN (); i++)
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
-      InterfaceId iid = InterfaceId::GetRegistered (i);
+      TypeId iid = TypeId::GetRegistered (i);
       do {
 	if (iid.GetName () == value &&
 	    iid.HasConstructor ())
 	  {
 	    // check that it really supports the requested interface.
-	    InterfaceId tmp = iid;
+	    TypeId tmp = iid;
 	    do {
 	      if (tmp == m_interfaceId)
 		{
@@ -56,18 +56,18 @@ InterfaceIdDefaultValue::DoParseValue (const std::string &value)
 }
 
 std::string 
-InterfaceIdDefaultValue::DoGetType (void) const
+TypeIdDefaultValue::DoGetType (void) const
 {
   std::ostringstream oss;
   oss << "(";
   bool first = true;
-  for (uint32_t i = 0; i < InterfaceId::GetRegisteredN (); i++)
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
-      InterfaceId iid = InterfaceId::GetRegistered (i);
+      TypeId iid = TypeId::GetRegistered (i);
       // can this interface id be used to create objects ?
       if (iid.HasConstructor ())
 	{
-	  InterfaceId tmp = iid;
+	  TypeId tmp = iid;
 	  // does this interface id supports the requested interface id ?
 	  do {
 	    if (tmp == m_interfaceId)
@@ -88,7 +88,7 @@ InterfaceIdDefaultValue::DoGetType (void) const
 }
 
 std::string 
-InterfaceIdDefaultValue::DoGetDefaultValue (void) const
+TypeIdDefaultValue::DoGetDefaultValue (void) const
 {
   return m_name;
 }

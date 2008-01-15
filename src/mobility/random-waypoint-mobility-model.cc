@@ -39,7 +39,7 @@ g_pause ("RandomWaypointPause",
 	 "A random variable used to pick the pause of a random waypoint model.",
 	 "Constant:2");
 
-static InterfaceIdDefaultValue
+static TypeIdDefaultValue
 g_position ("RandomWaypointPosition",
 	    "A random position model used to pick the next waypoint position.",
 	    RandomPosition::iid (),
@@ -100,10 +100,10 @@ RandomWaypointMobilityModelParameters::GetCurrent (void)
   return parameters;
 }
 
-InterfaceId
+TypeId
 RandomWaypointMobilityModel::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("RandomWaypointMobilityModel")
+  static TypeId iid = TypeId ("RandomWaypointMobilityModel")
     .SetParent<MobilityModel> ()
     .AddConstructor<RandomWaypointMobilityModel> ()
     .AddConstructor<RandomWaypointMobilityModel,Ptr<RandomWaypointMobilityModelParameters> > ();

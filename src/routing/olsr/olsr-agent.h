@@ -45,7 +45,7 @@ namespace olsr {
 class Agent : public Object
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
 
   static Ptr<Agent> CreateDefault (Ptr<Node> node);
 

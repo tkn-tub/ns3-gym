@@ -35,7 +35,7 @@ class RandomVariable;
 class RandomPosition : public Object
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
   RandomPosition ();
   virtual ~RandomPosition ();
   /**
@@ -51,7 +51,7 @@ public:
 class RandomRectanglePosition : public RandomPosition
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
   /**
    * Create a random position model with construction
    * values from \valueref{RandomRectanglePositionX}, and
@@ -80,7 +80,7 @@ private:
 class RandomDiscPosition : public RandomPosition
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
   /**
    * Create a random position model with construction
    * values from \valueref{RandomDiscPositionTheta},

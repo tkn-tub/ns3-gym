@@ -35,7 +35,7 @@ const int DTQ_NPACKETS_MAX_DEFAULT = 100;
  */
 class DropTailQueue : public Queue {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
   /**
    * \brief DropTailQueue Constructor
    *

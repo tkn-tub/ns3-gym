@@ -293,7 +293,7 @@ public:
  * @returns The interface index to use when forwarding packets to the host
  * or network represented by "this" SPFVertex.
  */
-  uint32_t GetOutgoingInterfaceId (void) const;
+  uint32_t GetOutgoingTypeId (void) const;
 
 /**
  * @brief Set the interface ID that should be used to begin forwarding packets
@@ -335,7 +335,7 @@ public:
  * @param id The interface index to use when forwarding packets to the host or
  * network represented by "this" SPFVertex.
  */
-  void SetOutgoingInterfaceId (uint32_t id);
+  void SetOutgoingTypeId (uint32_t id);
 
 /**
  * @brief Get the IP address that should be used to begin forwarding packets 
@@ -759,7 +759,7 @@ private:
     GlobalRoutingLinkRecord* prev_link);
   void SPFIntraAddRouter (SPFVertex* v);
   void SPFIntraAddTransit (SPFVertex* v);
-  uint32_t FindOutgoingInterfaceId (Ipv4Address a, 
+  uint32_t FindOutgoingTypeId (Ipv4Address a, 
     Ipv4Mask amask = Ipv4Mask("255.255.255.255"));
 };
 

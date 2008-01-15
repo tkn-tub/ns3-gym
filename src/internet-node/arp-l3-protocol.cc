@@ -37,10 +37,10 @@ const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
 
 NS_OBJECT_ENSURE_REGISTERED (ArpL3Protocol);
 
-InterfaceId 
+TypeId 
 ArpL3Protocol::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("ArpL3Protocol")
+  static TypeId iid = TypeId ("ArpL3Protocol")
     .SetParent<Object> ();
   return iid;
 }

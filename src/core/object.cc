@@ -183,15 +183,15 @@ IidManager::GetRegistered (uint32_t i)
 } // anonymous namespace
 
 /*********************************************************************
- *         The InterfaceId TraceResolver
+ *         The TypeId TraceResolver
  *********************************************************************/
 
 namespace ns3 {
 
-class InterfaceIdTraceResolver : public TraceResolver
+class TypeIdTraceResolver : public TraceResolver
 {
 public:
-  InterfaceIdTraceResolver (Ptr<const Object> aggregate);
+  TypeIdTraceResolver (Ptr<const Object> aggregate);
   virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
   virtual void Disconnect (std::string path, CallbackBase const &cb);
   virtual void CollectSources (std::string path, const TraceContext &context, 
@@ -202,11 +202,11 @@ private:
   Ptr<const Object> m_aggregate;
 };
 
-InterfaceIdTraceResolver::InterfaceIdTraceResolver (Ptr<const Object> aggregate)
+TypeIdTraceResolver::TypeIdTraceResolver (Ptr<const Object> aggregate)
   : m_aggregate (aggregate)
 {}
 Ptr<const Object>
-InterfaceIdTraceResolver::ParseForInterface (std::string path)
+TypeIdTraceResolver::ParseForInterface (std::string path)
 {
   std::string element = GetElement (path);
   std::string::size_type dollar_pos = element.find ("$");
@@ -215,12 +215,12 @@ InterfaceIdTraceResolver::ParseForInterface (std::string path)
       return 0;
     }
   std::string interfaceName = element.substr (1, std::string::npos);
-  InterfaceId interfaceId = InterfaceId::LookupByName (interfaceName);
+  TypeId interfaceId = TypeId::LookupByName (interfaceName);
   Ptr<Object> interface = m_aggregate->QueryInterface<Object> (interfaceId);
   return interface;
 }
 void  
-InterfaceIdTraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
+TypeIdTraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
 {
   Ptr<const Object> interface = ParseForInterface (path);
   if (interface != 0)
@@ -229,7 +229,7 @@ InterfaceIdTraceResolver::Connect (std::string path, CallbackBase const &cb, con
     }
 }
 void 
-InterfaceIdTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
+TypeIdTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
 {
   Ptr<const Object> interface = ParseForInterface (path);
   if (interface != 0)
@@ -238,22 +238,22 @@ InterfaceIdTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
     }
 }
 void 
-InterfaceIdTraceResolver::CollectSources (std::string path, const TraceContext &context, 
+TypeIdTraceResolver::CollectSources (std::string path, const TraceContext &context, 
                                           SourceCollection *collection)
 {
   m_aggregate->DoCollectSources (path, context, collection);
 }
 void 
-InterfaceIdTraceResolver::TraceAll (std::ostream &os, const TraceContext &context)
+TypeIdTraceResolver::TraceAll (std::ostream &os, const TraceContext &context)
 {
   m_aggregate->DoTraceAll (os, context);
 }
 
 /*********************************************************************
- *         The InterfaceId class
+ *         The TypeId class
  *********************************************************************/
 
-InterfaceId::InterfaceId (std::string name)
+TypeId::TypeId (std::string name)
 {
   uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
   NS_ASSERT (uid != 0);
@@ -261,70 +261,70 @@ InterfaceId::InterfaceId (std::string name)
 }
 
 
-InterfaceId::InterfaceId (uint16_t iid)
+TypeId::TypeId (uint16_t iid)
   : m_iid (iid)
 {}
-InterfaceId::~InterfaceId ()
+TypeId::~TypeId ()
 {}
-InterfaceId 
-InterfaceId::LookupByName (std::string name)
+TypeId 
+TypeId::LookupByName (std::string name)
 {
   uint16_t uid = Singleton<IidManager>::Get ()->GetUid (name);
   NS_ASSERT (uid != 0);
-  return InterfaceId (uid);
+  return TypeId (uid);
 }
 uint32_t 
-InterfaceId::GetRegisteredN (void)
+TypeId::GetRegisteredN (void)
 {
   return Singleton<IidManager>::Get ()->GetRegisteredN ();
 }
-InterfaceId 
-InterfaceId::GetRegistered (uint32_t i)
+TypeId 
+TypeId::GetRegistered (uint32_t i)
 {
-  return InterfaceId (Singleton<IidManager>::Get ()->GetRegistered (i));
+  return TypeId (Singleton<IidManager>::Get ()->GetRegistered (i));
 }
 
-InterfaceId 
-InterfaceId::SetParent (InterfaceId iid)
+TypeId 
+TypeId::SetParent (TypeId iid)
 {
   Singleton<IidManager>::Get ()->SetParent (m_iid, iid.m_iid);
   return *this;
 }
-InterfaceId 
-InterfaceId::GetParent (void) const
+TypeId 
+TypeId::GetParent (void) const
 {
   uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_iid);
-  return InterfaceId (parent);
+  return TypeId (parent);
 }
 std::string 
-InterfaceId::GetName (void) const
+TypeId::GetName (void) const
 {
   std::string name = Singleton<IidManager>::Get ()->GetName (m_iid);
   return name;
 }
 
 bool 
-InterfaceId::HasConstructor (void) const
+TypeId::HasConstructor (void) const
 {
   bool hasConstructor = Singleton<IidManager>::Get ()->HasConstructor (m_iid);
   return hasConstructor;
 }
 
 void
-InterfaceId::DoAddConstructor (CallbackBase cb, uint32_t nArguments)
+TypeId::DoAddConstructor (CallbackBase cb, uint32_t nArguments)
 {
   Singleton<IidManager>::Get ()->AddConstructor (m_iid, cb, nArguments);
 }
 
 CallbackBase
-InterfaceId::LookupConstructor (uint32_t nArguments)
+TypeId::LookupConstructor (uint32_t nArguments)
 {
   CallbackBase constructor = Singleton<IidManager>::Get ()->GetConstructor (m_iid, nArguments);
   return constructor;
 }
 
 Ptr<Object> 
-InterfaceId::CreateObject (void)
+TypeId::CreateObject (void)
 {
   CallbackBase cb = LookupConstructor (0);
   Callback<Ptr<Object> > realCb;
@@ -333,12 +333,12 @@ InterfaceId::CreateObject (void)
   return object;
 }
 
-bool operator == (InterfaceId a, InterfaceId b)
+bool operator == (TypeId a, TypeId b)
 {
   return a.m_iid == b.m_iid;
 }
 
-bool operator != (InterfaceId a, InterfaceId b)
+bool operator != (TypeId a, TypeId b)
 {
   return a.m_iid != b.m_iid;
 }
@@ -349,18 +349,18 @@ bool operator != (InterfaceId a, InterfaceId b)
 
 NS_OBJECT_ENSURE_REGISTERED (Object);
 
-static InterfaceId
+static TypeId
 GetObjectIid (void)
 {
-  InterfaceId iid = InterfaceId ("Object");
+  TypeId iid = TypeId ("Object");
   iid.SetParent (iid);
   return iid;
 }
 
-InterfaceId 
+TypeId 
 Object::iid (void)
 {
-  static InterfaceId iid = GetObjectIid ();
+  static TypeId iid = GetObjectIid ();
   return iid;
 }
 
@@ -377,13 +377,13 @@ Object::~Object ()
   m_next = 0;
 }
 Ptr<Object>
-Object::DoQueryInterface (InterfaceId iid) const
+Object::DoQueryInterface (TypeId iid) const
 {
   NS_ASSERT (CheckLoose ());
   const Object *currentObject = this;
   do {
     NS_ASSERT (currentObject != 0);
-    InterfaceId cur = currentObject->m_iid;
+    TypeId cur = currentObject->m_iid;
     while (cur != iid && cur != Object::iid ())
       {
         cur = cur.GetParent ();
@@ -438,7 +438,7 @@ Object::TraceDisconnect (std::string path, const CallbackBase &cb) const
 }
 
 void 
-Object::SetInterfaceId (InterfaceId iid)
+Object::SetTypeId (TypeId iid)
 {
   NS_ASSERT (Check ());
   m_iid = iid;
@@ -454,8 +454,8 @@ Ptr<TraceResolver>
 Object::GetTraceResolver (void) const
 {
   NS_ASSERT (CheckLoose ());
-  Ptr<InterfaceIdTraceResolver> resolver =
-    Create<InterfaceIdTraceResolver> (this);
+  Ptr<TypeIdTraceResolver> resolver =
+    Create<TypeIdTraceResolver> (this);
   return resolver;
 }
 
@@ -535,7 +535,7 @@ Object::DoCollectSources (std::string path, const TraceContext &context,
     {
       NS_ASSERT (current != 0);
       NS_LOG_LOGIC ("collect current=" << current);
-      InterfaceId cur = current->m_iid;
+      TypeId cur = current->m_iid;
       while (cur != Object::iid ())
         {
           std::string name = cur.GetName ();
@@ -591,8 +591,8 @@ namespace {
 class BaseA : public ns3::Object
 {
 public:
-  static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::InterfaceId ("BaseA")
+  static ns3::TypeId iid (void) {
+    static ns3::TypeId iid = ns3::TypeId ("BaseA")
       .SetParent (Object::iid ())
       .AddConstructor<BaseA> ();
     return iid;
@@ -616,8 +616,8 @@ public:
 class DerivedA : public BaseA
 {
 public:
-  static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::InterfaceId ("DerivedA")
+  static ns3::TypeId iid (void) {
+    static ns3::TypeId iid = ns3::TypeId ("DerivedA")
       .SetParent (BaseA::iid ())
       .AddConstructor<DerivedA,int> ();
     return iid;
@@ -643,8 +643,8 @@ public:
 class BaseB : public ns3::Object
 {
 public:
-  static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::InterfaceId ("BaseB")
+  static ns3::TypeId iid (void) {
+    static ns3::TypeId iid = ns3::TypeId ("BaseB")
       .SetParent (Object::iid ())
       .AddConstructor<BaseB> ();
     return iid;
@@ -668,8 +668,8 @@ public:
 class DerivedB : public BaseB
 {
 public:
-  static ns3::InterfaceId iid (void) {
-    static ns3::InterfaceId iid = ns3::InterfaceId ("DerivedB")
+  static ns3::TypeId iid (void) {
+    static ns3::TypeId iid = ns3::TypeId ("DerivedB")
       .SetParent (BaseB::iid ())
       .AddConstructor<DerivedB,int> ()
       .AddConstructor<DerivedB,int,int &> ();
@@ -861,7 +861,7 @@ ObjectTest::RunTests (void)
   NS_TEST_ASSERT (m_derivedATrace);
   baseB->TraceDisconnect ("/$DerivedA/*", MakeCallback (&ObjectTest::BaseATrace, this));
 
-  // Test the object creation code of InterfaceId
+  // Test the object creation code of TypeId
   Ptr<Object> a = BaseA::iid ().CreateObject ();
   NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (), a);
   NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (DerivedA::iid ()), 0);

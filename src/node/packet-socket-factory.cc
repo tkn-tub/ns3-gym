@@ -26,10 +26,10 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (PacketSocketFactory);
 
-InterfaceId 
+TypeId 
 PacketSocketFactory::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("Packet")
+  static TypeId iid = TypeId ("Packet")
     .SetParent<SocketFactory> ();
   return iid;
 }

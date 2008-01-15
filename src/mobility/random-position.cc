@@ -60,10 +60,10 @@ g_discY ("RandomDiscPositionY",
 
 NS_OBJECT_ENSURE_REGISTERED (RandomPosition);
 
-InterfaceId 
+TypeId 
 RandomPosition::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("RandomPosition")
+  static TypeId iid = TypeId ("RandomPosition")
     .SetParent<Object> ();
   return iid;
 }
@@ -77,10 +77,10 @@ RandomPosition::~RandomPosition ()
 
 NS_OBJECT_ENSURE_REGISTERED (RandomRectanglePosition);
 
-InterfaceId
+TypeId
 RandomRectanglePosition::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("RandomRectanglePosition")
+  static TypeId iid = TypeId ("RandomRectanglePosition")
     .SetParent<RandomPosition> ()
     .AddConstructor<RandomRectanglePosition> ()
     .AddConstructor<RandomRectanglePosition, const RandomVariable &, const RandomVariable &> ();
@@ -113,10 +113,10 @@ RandomRectanglePosition::Get (void) const
 
 NS_OBJECT_ENSURE_REGISTERED (RandomDiscPosition);
 
-InterfaceId
+TypeId
 RandomDiscPosition::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("RandomDiscPosition")
+  static TypeId iid = TypeId ("RandomDiscPosition")
     .SetParent<RandomPosition> ()
     .AddConstructor<RandomDiscPosition> ()
     .AddConstructor<RandomDiscPosition, const RandomVariable &, const RandomVariable &, double, double> ();

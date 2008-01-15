@@ -86,7 +86,7 @@ private:
 class RandomWaypointMobilityModel : public MobilityModel
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
   /**
    * Default parameters from \valueref{RandomWaypointPause},
    * and, \valueref{RandomWaypointPosition}.

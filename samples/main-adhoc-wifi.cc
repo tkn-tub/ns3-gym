@@ -95,7 +95,7 @@ ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &address)
 static Ptr<Socket>
 SetupPacketReceive (Ptr<Node> node, uint16_t port)
 {
-  InterfaceId iid = InterfaceId::LookupByName ("Packet");
+  TypeId iid = TypeId::LookupByName ("Packet");
   Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (iid);
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   sink->Bind ();

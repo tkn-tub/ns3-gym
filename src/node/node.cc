@@ -31,10 +31,10 @@ namespace ns3{
 
 NS_OBJECT_ENSURE_REGISTERED (Node);
 
-InterfaceId 
+TypeId 
 Node::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("Node")
+  static TypeId iid = TypeId ("Node")
     .SetParent<Object> ();
   return iid;
 }

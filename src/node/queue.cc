@@ -27,7 +27,7 @@ NS_LOG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
-static InterfaceIdDefaultValue g_interfaceIdDefaultValue ("Queue", "Packet Queue",
+static TypeIdDefaultValue g_interfaceIdDefaultValue ("Queue", "Packet Queue",
                                                           Queue::iid (), "DropTailQueue");
 
 NS_OBJECT_ENSURE_REGISTERED (Queue);
@@ -98,10 +98,10 @@ QueueTraceType::Print (std::ostream &os) const
   }
 }
 
-InterfaceId 
+TypeId 
 Queue::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("Queue")
+  static TypeId iid = TypeId ("Queue")
     .SetParent<Object> ();
   return iid;
 }
@@ -283,7 +283,7 @@ Ptr<Queue>
 Queue::CreateDefault (void)
 {
   NS_LOG_FUNCTION;
-  InterfaceId interfaceId = g_interfaceIdDefaultValue.GetValue ();
+  TypeId interfaceId = g_interfaceIdDefaultValue.GetValue ();
   Ptr<Queue> queue = interfaceId.CreateObject ()->QueryInterface<Queue> ();
   return queue;
 }

@@ -33,7 +33,7 @@ namespace ns3 {
 class MobilityModelNotifier : public Object
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
 
   /**
    * Create a new position notifier

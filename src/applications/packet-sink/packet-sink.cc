@@ -73,7 +73,7 @@ void PacketSink::StartApplication()    // Called at time specified by Start
   // Create the socket if not already
   if (!m_socket)
     {
-      InterfaceId iid = InterfaceId::LookupByName (m_iid);
+      TypeId iid = TypeId::LookupByName (m_iid);
       Ptr<SocketFactory> socketFactory = 
         GetNode ()->QueryInterface<SocketFactory> (iid);
       m_socket = socketFactory->CreateSocket ();

@@ -54,7 +54,7 @@ class RandomTopology
    * specified position and mobility models.
    */
   RandomTopology (Ptr<RandomPosition> positionModel,
-                  InterfaceId mobilityModel);
+                  TypeId mobilityModel);
 
   ~RandomTopology ();
 
@@ -62,7 +62,7 @@ class RandomTopology
    * \param interfaceId the type of mobility model attached to each
    *        input object if it does not have one already.
    */
-  void SetMobilityModel (InterfaceId interfaceId);
+  void SetMobilityModel (TypeId interfaceId);
   /**
    * \param positionModel the position model used to initialize
    *        the position of each object.
@@ -90,7 +90,7 @@ class RandomTopology
   void Layout (const T &begin, const T &end);
  private:
   Ptr<RandomPosition> m_positionModel;
-  InterfaceId m_mobilityModel;
+  TypeId m_mobilityModel;
 };
 
 } // namespace ns3

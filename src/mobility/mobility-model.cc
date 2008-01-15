@@ -23,10 +23,10 @@
 
 namespace ns3 {
 
-InterfaceId 
+TypeId 
 MobilityModel::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("MobilityModel")
+  static TypeId iid = TypeId ("MobilityModel")
     .SetParent<Object> ();
   return iid;
 }

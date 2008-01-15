@@ -78,7 +78,7 @@ private:
 class Queue : public Object
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
 
   Queue ();
   virtual ~Queue ();

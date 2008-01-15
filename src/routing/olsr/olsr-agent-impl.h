@@ -49,7 +49,7 @@ namespace olsr {
 class AgentImpl : public Agent
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
 
   AgentImpl (Ptr<Node> node);
 

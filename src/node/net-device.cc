@@ -35,9 +35,9 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (NetDevice);
 
-InterfaceId NetDevice::iid (void)
+TypeId NetDevice::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("NetDevice")
+  static TypeId iid = TypeId ("NetDevice")
     .SetParent<Object> ();
   return iid;
 }

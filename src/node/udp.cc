@@ -24,9 +24,9 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Udp);
 
-InterfaceId Udp::iid (void)
+TypeId Udp::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("Udp")
+  static TypeId iid = TypeId ("Udp")
     .SetParent<SocketFactory> ();
   return iid;
 }

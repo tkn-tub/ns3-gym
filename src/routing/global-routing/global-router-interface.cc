@@ -433,10 +433,10 @@ std::ostream& operator<< (std::ostream& os, GlobalRoutingLSA& lsa)
 
 NS_OBJECT_ENSURE_REGISTERED (GlobalRouter);
 
-InterfaceId 
+TypeId 
 GlobalRouter::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("GlobalRouter")
+  static TypeId iid = TypeId ("GlobalRouter")
     .SetParent<Object> ();
   return iid;
 }

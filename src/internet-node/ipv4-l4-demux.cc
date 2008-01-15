@@ -60,10 +60,10 @@ Ipv4L4ProtocolTraceContextElement::GetTypeName (void) const
   return "ns3::Ipv4L4ProtocolTraceContextElement";
 }
 
-InterfaceId 
+TypeId 
 Ipv4L4Demux::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("Ipv4L4Demux")
+  static TypeId iid = TypeId ("Ipv4L4Demux")
     .SetParent<Object> ();
   return iid;
 }

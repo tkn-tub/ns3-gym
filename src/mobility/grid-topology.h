@@ -47,14 +47,14 @@ class GridTopology
    * \param interfaceId the interfaceId of the position object to attach to each
    *        input object.
    */
-  void SetMobilityModel (InterfaceId interfaceId);
+  void SetMobilityModel (TypeId interfaceId);
 
   /**
    * \param begin an iterator to the first object to layout.
    * \param end an iterator to the last object to layout.
    *
    * Attach a position (the type of position is specified through 
-   * the InterfaceId given to SetMobilityModelModel) to each input object
+   * the TypeId given to SetMobilityModelModel) to each input object
    * and configure its initial location with a set
    * of coordinates arranged according to a regular rectangular grid,
    * one row after the other.
@@ -67,7 +67,7 @@ class GridTopology
    * \param end an iterator to the last object to layout.
    *
    * Attach a position (the type of position is specified through 
-   * the InterfaceId given to SetMobilityModelModel) to each input object
+   * the TypeId given to SetMobilityModelModel) to each input object
    * and configure its initial location with a set
    * of coordinates arranged according to a regular rectangular grid,
    * one column after the other.
@@ -83,7 +83,7 @@ class GridTopology
   uint32_t m_n;
   double m_deltaX;
   double m_deltaY;
-  InterfaceId m_positionInterfaceId;
+  TypeId m_positionTypeId;
 };
 
 } // namespace ns3

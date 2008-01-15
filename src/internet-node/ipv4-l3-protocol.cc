@@ -44,10 +44,10 @@ const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol);
 
-InterfaceId 
+TypeId 
 Ipv4L3Protocol::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("Ipv4L3Protocol")
+  static TypeId iid = TypeId ("Ipv4L3Protocol")
     .SetParent<Object> ();
   return iid;
 }

@@ -35,7 +35,7 @@ namespace ns3 {
 class MobilityModel : public Object
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
   MobilityModel ();
   virtual ~MobilityModel () = 0;
 

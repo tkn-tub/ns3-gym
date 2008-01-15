@@ -6,7 +6,7 @@
 
 namespace ns3 {
 
-class InterfaceIdDefaultValue : public DefaultValueBase
+class TypeIdDefaultValue : public DefaultValueBase
 {
 public:
   /**
@@ -17,20 +17,20 @@ public:
    * \param defaultValue the name of the object to create
    *        by default.
    */
-  InterfaceIdDefaultValue (std::string name, 
+  TypeIdDefaultValue (std::string name, 
 			   std::string help,
-			   InterfaceId iid,
+			   TypeId iid,
 			   std::string defaultValue);
   /**
-   * \returns the InterfaceId of the object selected by the user.
+   * \returns the TypeId of the object selected by the user.
    */
-  InterfaceId GetValue (void) const;
+  TypeId GetValue (void) const;
   /**
    * \param interfaceId the new ClassId selected.
    *
    * Override the currently-selected value.
    */
-  void SetValue (InterfaceId interfaceId);
+  void SetValue (TypeId interfaceId);
   /**
    * \param name the new object selected.
    *
@@ -43,7 +43,7 @@ private:
   virtual std::string DoGetDefaultValue (void) const;
   std::string m_defaultName;
   std::string m_name;
-  InterfaceId m_interfaceId;
+  TypeId m_interfaceId;
 };
 
 } // namespace ns3

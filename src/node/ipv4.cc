@@ -27,10 +27,10 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Ipv4);
 
-InterfaceId 
+TypeId 
 Ipv4::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("Ipv4")
+  static TypeId iid = TypeId ("Ipv4")
     .SetParent<Object> ();
   return iid;
 }

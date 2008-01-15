@@ -24,18 +24,18 @@
 namespace ns3 {
 namespace olsr {
 
-static InterfaceIdDefaultValue g_defaultImpl =
-  InterfaceIdDefaultValue ("OlsrAgentType",
+static TypeIdDefaultValue g_defaultImpl =
+  TypeIdDefaultValue ("OlsrAgentType",
                            "The type of OlsrAgent implementation",
                            Agent::iid (),
                            "OlsrAgentImpl");
 
 NS_OBJECT_ENSURE_REGISTERED (Agent);
 
-InterfaceId 
+TypeId 
 Agent::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("OlsrAgent")
+  static TypeId iid = TypeId ("OlsrAgent")
     .SetParent<Object> ();
   return iid;
 }
@@ -43,7 +43,7 @@ Agent::iid (void)
 Ptr<Agent> 
 Agent::CreateDefault (Ptr<Node> node)
 {
-  InterfaceId iid = g_defaultImpl.GetValue ();
+  TypeId iid = g_defaultImpl.GetValue ();
   Ptr<Agent> agent = iid.CreateObject (node)->QueryInterface<Agent> ();
   return agent;
 }

@@ -26,10 +26,10 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Channel);
 
-InterfaceId 
+TypeId 
 Channel::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("Channel")
+  static TypeId iid = TypeId ("Channel")
     .SetParent<Object> ();
   return iid;
 }

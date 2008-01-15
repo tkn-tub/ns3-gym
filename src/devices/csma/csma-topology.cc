@@ -87,7 +87,7 @@ CsmaTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app,
 Ptr<Socket>
 CsmaTopology::CreatePacketSocket(Ptr<Node> n1, std::string iid_name)
 {
-  InterfaceId iid = InterfaceId::LookupByName (iid_name);
+  TypeId iid = TypeId::LookupByName (iid_name);
 
   Ptr<SocketFactory> socketFactory =
     n1->QueryInterface<SocketFactory> (iid);

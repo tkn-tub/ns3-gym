@@ -77,7 +77,7 @@ UdpEchoServer::StartApplication (void)
 
   if (!m_socket)
     {
-      InterfaceId iid = InterfaceId::LookupByName ("Udp");
+      TypeId iid = TypeId::LookupByName ("Udp");
       Ptr<SocketFactory> socketFactory = 
         GetNode ()->QueryInterface<SocketFactory> (iid);
       m_socket = socketFactory->CreateSocket ();

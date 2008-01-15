@@ -34,16 +34,16 @@ NS_LOG_COMPONENT_DEFINE ("ErrorModel");
 
 namespace ns3 {
 
-static InterfaceIdDefaultValue g_interfaceIdErrorModelDefaultValue ("ErrorModel",
+static TypeIdDefaultValue g_interfaceIdErrorModelDefaultValue ("ErrorModel",
                                                                     "Error Model", 
                                                                     ErrorModel::iid (), 
                                                                     "RateErrorModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
 
-InterfaceId ErrorModel::iid (void)
+TypeId ErrorModel::iid (void)
 { 
-  static InterfaceId iid = InterfaceId ("ErrorModel")
+  static TypeId iid = TypeId ("ErrorModel")
     .SetParent<Object> ();
   return iid;
 }
@@ -63,7 +63,7 @@ Ptr<ErrorModel>
 ErrorModel::CreateDefault (void)
 { 
   NS_LOG_FUNCTION;
-  InterfaceId interfaceId = g_interfaceIdErrorModelDefaultValue.GetValue ();
+  TypeId interfaceId = g_interfaceIdErrorModelDefaultValue.GetValue ();
   Ptr<ErrorModel> em = interfaceId.CreateObject ()->QueryInterface<ErrorModel> ();
   return em;
 }
@@ -125,9 +125,9 @@ static EnumDefaultValue<enum ErrorUnit>
 
 NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
 
-InterfaceId RateErrorModel::iid (void)
+TypeId RateErrorModel::iid (void)
 { 
-  static InterfaceId iid = InterfaceId ("RateErrorModel")
+  static TypeId iid = TypeId ("RateErrorModel")
     .SetParent<ErrorModel> ()
     .AddConstructor<RateErrorModel> ();
   return iid;
@@ -246,9 +246,9 @@ RateErrorModel::DoReset (void)
 
 NS_OBJECT_ENSURE_REGISTERED (ListErrorModel);
 
-InterfaceId ListErrorModel::iid (void)
+TypeId ListErrorModel::iid (void)
 { 
-  static InterfaceId iid = InterfaceId ("ListErrorModel")
+  static TypeId iid = TypeId ("ListErrorModel")
     .SetParent<ErrorModel> ()
     .AddConstructor<ListErrorModel> ();
   return iid;

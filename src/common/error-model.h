@@ -66,7 +66,7 @@ class RandomVariable;
 class ErrorModel : public Object
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
   /**
    * A factory method to generate a preconfigured default ErrorModel for use
    * \return an ErrorModel smart pointer that is the default ErrorModel 
@@ -136,7 +136,7 @@ enum ErrorUnit
 class RateErrorModel : public ErrorModel
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
 
   RateErrorModel ();
   virtual ~RateErrorModel ();
@@ -202,7 +202,7 @@ private:
 class ListErrorModel : public ErrorModel
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
   ListErrorModel ();
   virtual ~ListErrorModel ();
 

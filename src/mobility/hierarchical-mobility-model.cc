@@ -24,10 +24,10 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (HierarchicalMobilityModel);
 
-InterfaceId 
+TypeId 
 HierarchicalMobilityModel::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("HierarchicalMobilityModel")
+  static TypeId iid = TypeId ("HierarchicalMobilityModel")
     .SetParent<MobilityModel> ();
   return iid;
 }

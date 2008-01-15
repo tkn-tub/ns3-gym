@@ -32,7 +32,7 @@
   static struct X##type##RegistrationClass      \
   {                                             \
     X##type##RegistrationClass () {             \
-      ns3::InterfaceId iid = type::iid ();      \
+      ns3::TypeId iid = type::iid ();      \
       iid.GetParent ();                         \
     }                                           \
 } x_##type##RegistrationVariable
@@ -48,7 +48,7 @@ class Object;
  * \brief a unique identifier for an interface.
  *
  */
-class InterfaceId
+class TypeId
 {
 public:
   /**
@@ -59,9 +59,9 @@ public:
    * This method cannot fail: it will crash if the input 
    * name is not a valid interface name.
    */
-  static InterfaceId LookupByName (std::string name);
+  static TypeId LookupByName (std::string name);
   static uint32_t GetRegisteredN (void);
-  static InterfaceId GetRegistered (uint32_t i);
+  static TypeId GetRegistered (uint32_t i);
   /**
    * \param iid a unique id 
    * \returns the parent of the requested id
@@ -69,7 +69,7 @@ public:
    * This method cannot fail: it will crash if the input
    * id is not a valid interface id.
    */
-  InterfaceId GetParent (void) const;
+  TypeId GetParent (void) const;
 
   /**
    * \returns the name of this interface.
@@ -77,28 +77,28 @@ public:
   std::string GetName (void) const;
 
   /**
-   * \returns true if this InterfaceId has a constructor
+   * \returns true if this TypeId has a constructor
    */
   bool HasConstructor (void) const;
 
-  InterfaceId (std::string);
+  TypeId (std::string);
 
-  InterfaceId SetParent (InterfaceId iid);
+  TypeId SetParent (TypeId iid);
   template <typename T>
-  InterfaceId SetParent (void);
+  TypeId SetParent (void);
 
   template <typename T>
-  InterfaceId AddConstructor (void);
+  TypeId AddConstructor (void);
   template <typename T, typename T1>
-  InterfaceId AddConstructor (void);
+  TypeId AddConstructor (void);
   template <typename T, typename T1, typename T2>
-  InterfaceId AddConstructor (void);
+  TypeId AddConstructor (void);
   template <typename T, typename T1, typename T2, typename T3>
-  InterfaceId AddConstructor (void);
+  TypeId AddConstructor (void);
   template <typename T, typename T1, typename T2, typename T3, typename T4>
-  InterfaceId AddConstructor (void);
+  TypeId AddConstructor (void);
   template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-  InterfaceId AddConstructor (void);
+  TypeId AddConstructor (void);
 
 
   Ptr<Object> CreateObject (void);
@@ -113,12 +113,12 @@ public:
   template <typename T1, typename T2, typename T3, typename T4, typename T5>
   Ptr<Object> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
 
-  ~InterfaceId ();
+  ~TypeId ();
 private:
-  friend bool operator == (InterfaceId a, InterfaceId b);
-  friend bool operator != (InterfaceId a, InterfaceId b);
+  friend bool operator == (TypeId a, TypeId b);
+  friend bool operator != (TypeId a, TypeId b);
 
-  explicit InterfaceId (uint16_t iid);
+  explicit TypeId (uint16_t iid);
   void DoAddConstructor (CallbackBase callback, uint32_t nArguments);
   CallbackBase LookupConstructor (uint32_t nArguments);
   
@@ -135,7 +135,7 @@ private:
 class Object
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
 
   Object ();
   virtual ~Object ();
@@ -163,7 +163,7 @@ public:
    * \returns a pointer to the requested interface or zero if it could not be found.
    */
   template <typename T>
-  Ptr<T> QueryInterface (InterfaceId iid) const;
+  Ptr<T> QueryInterface (TypeId iid) const;
   /**
    * Run the DoDispose methods of this object and all the
    * objects aggregated to it.
@@ -213,7 +213,7 @@ protected:
    */
   virtual void DoDispose (void);
 private:
-  friend class InterfaceIdTraceResolver;
+  friend class TypeIdTraceResolver;
   template <typename T>
   friend Ptr<T> CreateObject (void);
   template <typename T, typename T1>
@@ -231,7 +231,7 @@ private:
   template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
   friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
-  Ptr<Object> DoQueryInterface (InterfaceId iid) const;
+  Ptr<Object> DoQueryInterface (TypeId iid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
                          TraceResolver::SourceCollection *collection) const;
   void DoTraceAll (std::ostream &os, const TraceContext &context) const;
@@ -239,16 +239,16 @@ private:
   bool CheckLoose (void) const;
   void MaybeDelete (void) const;
   /**
-   * \param iid an InterfaceId
+   * \param iid an TypeId
    *
-   * Every subclass which defines a new InterfaceId for itself
-   * should register this InterfaceId by calling this method
+   * Every subclass which defines a new TypeId for itself
+   * should register this TypeId by calling this method
    * from its constructor.
    */
-  void SetInterfaceId (InterfaceId iid);
+  void SetTypeId (TypeId iid);
 
   mutable uint32_t m_count;
-  InterfaceId m_iid;
+  TypeId m_iid;
   bool m_disposed;
   mutable bool m_collecting;
   Object *m_next;
@@ -283,15 +283,15 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 namespace ns3 {
 
 template <typename T>
-InterfaceId 
-InterfaceId::SetParent (void)
+TypeId 
+TypeId::SetParent (void)
 {
   return SetParent (T::iid ());
 }
 
 template <typename T>
-InterfaceId 
-InterfaceId::AddConstructor (void)
+TypeId 
+TypeId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (void) {
@@ -303,8 +303,8 @@ InterfaceId::AddConstructor (void)
   return *this;
 }
 template <typename T, typename T1>
-InterfaceId 
-InterfaceId::AddConstructor (void)
+TypeId 
+TypeId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (T1 a1) {
@@ -316,8 +316,8 @@ InterfaceId::AddConstructor (void)
   return *this;
 }
 template <typename T, typename T1, typename T2>
-InterfaceId 
-InterfaceId::AddConstructor (void)
+TypeId 
+TypeId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (T1 a1, T2 a2) {
@@ -329,8 +329,8 @@ InterfaceId::AddConstructor (void)
   return *this;
 }
 template <typename T, typename T1, typename T2, typename T3>
-InterfaceId 
-InterfaceId::AddConstructor (void)
+TypeId 
+TypeId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (T1 a1, T2 a2, T3 a3) {
@@ -342,8 +342,8 @@ InterfaceId::AddConstructor (void)
   return *this;
 }
 template <typename T, typename T1, typename T2, typename T3, typename T4>
-InterfaceId 
-InterfaceId::AddConstructor (void)
+TypeId 
+TypeId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (T1 a1, T2 a2, T3 a3, T4 a4) {
@@ -355,8 +355,8 @@ InterfaceId::AddConstructor (void)
   return *this;
 }
 template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-InterfaceId 
-InterfaceId::AddConstructor (void)
+TypeId 
+TypeId::AddConstructor (void)
 {
   struct Maker {
     static Ptr<Object> Create (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) {
@@ -370,7 +370,7 @@ InterfaceId::AddConstructor (void)
 
 template <typename T1>
 Ptr<Object> 
-InterfaceId::CreateObject (T1 a1)
+TypeId::CreateObject (T1 a1)
 {
   CallbackBase cb = LookupConstructor (1);
   Callback<Ptr<Object>,T1> realCb;
@@ -380,7 +380,7 @@ InterfaceId::CreateObject (T1 a1)
 }
 template <typename T1, typename T2>
 Ptr<Object> 
-InterfaceId::CreateObject (T1 a1, T2 a2)
+TypeId::CreateObject (T1 a1, T2 a2)
 {
   CallbackBase cb = LookupConstructor (2);
   Callback<Ptr<Object>,T1,T2> realCb;
@@ -390,7 +390,7 @@ InterfaceId::CreateObject (T1 a1, T2 a2)
 }
 template <typename T1, typename T2, typename T3>
 Ptr<Object> 
-InterfaceId::CreateObject (T1 a1, T2 a2, T3 a3)
+TypeId::CreateObject (T1 a1, T2 a2, T3 a3)
 {
   CallbackBase cb = LookupConstructor (3);
   Callback<Ptr<Object>,T1,T2,T3> realCb;
@@ -400,7 +400,7 @@ InterfaceId::CreateObject (T1 a1, T2 a2, T3 a3)
 }
 template <typename T1, typename T2, typename T3, typename T4>
 Ptr<Object> 
-InterfaceId::CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
+TypeId::CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
 {
   CallbackBase cb = LookupConstructor (4);
   Callback<Ptr<Object>,T1,T2,T3,T4> realCb;
@@ -410,7 +410,7 @@ InterfaceId::CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
 }
   template <typename T1, typename T2, typename T3, typename T4, typename T5>
 Ptr<Object> 
-InterfaceId::CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+TypeId::CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
   CallbackBase cb = LookupConstructor (5);
   Callback<Ptr<Object>,T1,T2,T3,T4,T5> realCb;
@@ -451,7 +451,7 @@ Object::QueryInterface () const
 
 template <typename T>
 Ptr<T> 
-Object::QueryInterface (InterfaceId iid) const
+Object::QueryInterface (TypeId iid) const
 {
   Ptr<Object> found = DoQueryInterface (iid);
   if (found != 0)
@@ -465,7 +465,7 @@ template <typename T>
 Ptr<T> CreateObject (void)
 {
   Ptr<T> p = Ptr<T> (new T (), false);
-  p->SetInterfaceId (T::iid ());
+  p->SetTypeId (T::iid ());
   return p;
 }
 
@@ -473,7 +473,7 @@ template <typename T, typename T1>
 Ptr<T> CreateObject (T1 a1)
 {
   Ptr<T> p = Ptr<T> (new T (a1), false);
-  p->SetInterfaceId (T::iid ());
+  p->SetTypeId (T::iid ());
   return p;
 }
 
@@ -481,7 +481,7 @@ template <typename T, typename T1, typename T2>
 Ptr<T> CreateObject (T1 a1, T2 a2)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2), false);
-  p->SetInterfaceId (T::iid ());
+  p->SetTypeId (T::iid ());
   return p;
 }
 
@@ -489,7 +489,7 @@ template <typename T, typename T1, typename T2, typename T3>
 Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2, a3), false);
-  p->SetInterfaceId (T::iid ());
+  p->SetTypeId (T::iid ());
   return p;
 }
 
@@ -497,7 +497,7 @@ template <typename T, typename T1, typename T2, typename T3, typename T4>
 Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4), false);
-  p->SetInterfaceId (T::iid ());
+  p->SetTypeId (T::iid ());
   return p;
 }
 
@@ -505,7 +505,7 @@ template <typename T, typename T1, typename T2, typename T3, typename T4, typena
 Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5), false);
-  p->SetInterfaceId (T::iid ());
+  p->SetTypeId (T::iid ());
   return p;
 }
 
@@ -513,7 +513,7 @@ template <typename T, typename T1, typename T2, typename T3, typename T4, typena
 Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5, a6), false);
-  p->SetInterfaceId (T::iid ());
+  p->SetTypeId (T::iid ());
   return p;
 }
 
@@ -521,7 +521,7 @@ template <typename T, typename T1, typename T2, typename T3, typename T4, typena
 Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5, a6, a7), false);
-  p->SetInterfaceId (T::iid ());
+  p->SetTypeId (T::iid ());
   return p;
 }
 

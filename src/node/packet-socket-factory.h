@@ -34,7 +34,7 @@ class Socket;
 class PacketSocketFactory : public SocketFactory
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
 
   PacketSocketFactory ();
 

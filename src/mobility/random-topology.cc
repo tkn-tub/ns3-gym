@@ -26,13 +26,13 @@
 
 namespace ns3 {
 
-static InterfaceIdDefaultValue
+static TypeIdDefaultValue
 g_position ("RandomTopologyPositionType",
             "The type of initial random position in a 3d topology.",
             RandomPosition::iid (),
             "RandomRectanglePosition");
 
-static InterfaceIdDefaultValue
+static TypeIdDefaultValue
 g_mobility ("RandomTopologyMobilityType",
             "The type of mobility model attached to an object in a 3d topology.",
             MobilityModel::iid (),
@@ -43,7 +43,7 @@ RandomTopology::RandomTopology ()
 {
   m_positionModel = g_position.GetValue ().CreateObject ()->QueryInterface<RandomPosition> ();
 }
-RandomTopology::RandomTopology (Ptr<RandomPosition> positionModel, InterfaceId mobilityModel)
+RandomTopology::RandomTopology (Ptr<RandomPosition> positionModel, TypeId mobilityModel)
   : m_positionModel (positionModel),
     m_mobilityModel (mobilityModel)
 {}
@@ -53,7 +53,7 @@ RandomTopology::~RandomTopology ()
 }
 
 void 
-RandomTopology::SetMobilityModel (InterfaceId interfaceId)
+RandomTopology::SetMobilityModel (TypeId interfaceId)
 {
   m_mobilityModel = interfaceId;
 }

@@ -89,7 +89,7 @@ class RandomDirection2dMobilityModelParameters : public Object
 class RandomDirection2dMobilityModel : public MobilityModel
 {
  public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
 
   /**
    * Create from \valueref{RandomDirection2dSpeed},

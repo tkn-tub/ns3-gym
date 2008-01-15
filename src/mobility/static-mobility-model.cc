@@ -23,10 +23,10 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (StaticMobilityModel);
 
-InterfaceId
+TypeId
 StaticMobilityModel::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("StaticMobilityModel")
+  static TypeId iid = TypeId ("StaticMobilityModel")
     .SetParent<MobilityModel> ()
     .AddConstructor<StaticMobilityModel> ()
     .AddConstructor<StaticMobilityModel,const Vector &> ();

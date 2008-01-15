@@ -150,10 +150,10 @@ NS_LOG_COMPONENT_DEFINE ("OlsrAgent");
 
 NS_OBJECT_ENSURE_REGISTERED (AgentImpl);
 
-InterfaceId 
+TypeId 
 AgentImpl::iid (void)
 {
-  static InterfaceId iid = InterfaceId ("OlsrAgentImpl")
+  static TypeId iid = TypeId ("OlsrAgentImpl")
     .SetParent<Agent> ()
     .AddConstructor<AgentImpl,Ptr<Node> > ();
   return iid;

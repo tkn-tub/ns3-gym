@@ -99,7 +99,7 @@ private:
 class Ipv4L3Protocol : public Object
 {
 public:
-  static InterfaceId iid (void);
+  static TypeId iid (void);
   static const uint16_t PROT_NUMBER;
 
   Ipv4L3Protocol(Ptr<Node> node);
