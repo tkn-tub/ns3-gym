@@ -19,7 +19,7 @@
  */
 
 #include "olsr-agent.h"
-#include "ns3/interface-id-default-value.h"
+#include "ns3/type-id-default-value.h"
 
 namespace ns3 {
 namespace olsr {

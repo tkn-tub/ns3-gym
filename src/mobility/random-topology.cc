@@ -22,7 +22,7 @@
 #include "random-topology.h"
 #include "random-position.h"
 #include "mobility-model.h"
-#include "ns3/interface-id-default-value.h"
+#include "ns3/type-id-default-value.h"
 
 namespace ns3 {
 

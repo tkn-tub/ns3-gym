@@ -28,7 +28,7 @@
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
 #include "ns3/default-value.h"
-#include "ns3/interface-id-default-value.h"
+#include "ns3/type-id-default-value.h"
 
 NS_LOG_COMPONENT_DEFINE ("ErrorModel");
 

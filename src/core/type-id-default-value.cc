@@ -1,4 +1,4 @@
-#include "interface-id-default-value.h"
+#include "type-id-default-value.h"
 
 namespace ns3 {
 

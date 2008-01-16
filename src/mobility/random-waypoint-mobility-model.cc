@@ -21,7 +21,7 @@
 #include "ns3/simulator.h"
 #include "ns3/random-variable.h"
 #include "ns3/random-variable-default-value.h"
-#include "ns3/interface-id-default-value.h"
+#include "ns3/type-id-default-value.h"
 #include "random-waypoint-mobility-model.h"
 #include "random-position.h"
 

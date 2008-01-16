@@ -20,7 +20,7 @@
 #include "ns3/log.h"
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/default-value.h"
-#include "ns3/interface-id-default-value.h"
+#include "ns3/type-id-default-value.h"
 #include "queue.h"
 
 NS_LOG_COMPONENT_DEFINE ("Queue");
