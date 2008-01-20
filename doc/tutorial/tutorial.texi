@@ -9,9 +9,9 @@
 Primary documentation for the @command{ns-3} project is available in
 three forms:
 @itemize @bullet
-@item ns-3 Manual:  Documentation of the public APIs of the simulator
+@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
 @item Tutorial (this document)
-@item ns-3 wiki (http://www.nsnam.org/wiki/index.php)
+@item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
 
 This document is written in GNU Texinfo and is to be maintained in
@@ -26,9 +26,9 @@ This is an @command{ns-3} tutorial.
 Primary documentation for the @command{ns-3} project is available in
 three forms:
 @itemize @bullet
-@item ns-3 Manual:  Documentation of the public APIs of the simulator
+@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
 @item Tutorial (this document)
-@item ns-3 wiki (http://www.nsnam.org/wiki/index.php)
+@item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
  
 This document is written in GNU Texinfo and is to be maintained in
@@ -69,7 +69,7 @@ along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
 @node Top, Introduction, Full Table of Contents 
 @top ns-3 Tutorial (html version)
 
-For a pdf version of this manual, 
+For a pdf version of this tutorial, 
 see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 
 @insertcopying
