@@ -78,9 +78,14 @@ void PacketSink::StartApplication()    // Called at time specified by Start
         GetNode ()->QueryInterface<SocketFactory> (iid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind (m_local);
+      m_socket->Listen (0);
     }
 
   m_socket->SetRecvCallback (MakeCallback(&PacketSink::Receive, this));
+  m_socket->SetAcceptCallback (
+            MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
+            MakeNullCallback<void, Ptr<Socket>, const Address&> (),
+            MakeCallback(&PacketSink::CloseConnection, this) );
 }
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
@@ -104,6 +109,11 @@ void PacketSink::Receive(Ptr<Socket> socket, Ptr<Packet> packet,
         packet->PeekData() << "'");
     }
   m_rxTrace (packet, from);
+}
+
+void PacketSink::CloseConnection (Ptr<Socket> socket)
+{
+  socket->Close ();
 }
 
 Ptr<TraceResolver> 

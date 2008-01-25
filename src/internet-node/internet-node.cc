@@ -28,9 +28,11 @@
 #include "ipv4-l4-demux.h"
 #include "internet-node.h"
 #include "udp-l4-protocol.h"
+#include "tcp-l4-protocol.h"
 #include "ipv4-l3-protocol.h"
 #include "arp-l3-protocol.h"
 #include "udp-impl.h"
+#include "tcp-impl.h"
 #include "ipv4-impl.h"
 
 namespace ns3 {
@@ -62,15 +64,20 @@ InternetNode::Construct (void)
 
   Ptr<Ipv4L4Demux> ipv4L4Demux = Create<Ipv4L4Demux> (this);
   Ptr<UdpL4Protocol> udp = Create<UdpL4Protocol> (this);
+  Ptr<TcpL4Protocol> tcp = Create<TcpL4Protocol> (this);
+
   ipv4L4Demux->Insert (udp);
+  ipv4L4Demux->Insert (tcp);
 
   Ptr<UdpImpl> udpImpl = Create<UdpImpl> (udp);
+  Ptr<TcpImpl> tcpImpl = Create<TcpImpl> (tcp);
   Ptr<Ipv4Impl> ipv4Impl = Create<Ipv4Impl> (ipv4);
 
   Object::AddInterface (ipv4);
   Object::AddInterface (arp);
   Object::AddInterface (ipv4Impl);
   Object::AddInterface (udpImpl);
+  Object::AddInterface (tcpImpl);
   Object::AddInterface (ipv4L4Demux);
 }
 
