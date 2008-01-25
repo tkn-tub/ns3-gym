@@ -55,6 +55,7 @@ TcpSocket::TcpSocket (Ptr<Node> node, Ptr<TcpL4Protocol> tcp)
     m_closeNotified (false),
     m_closeRequestNotified (false),
     m_closeOnEmpty (false),
+    m_pendingClose (false),
     m_nextTxSequence (0),
     m_highTxMark (0),
     m_highestRxAck (0),
