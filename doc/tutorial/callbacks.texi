@@ -1,0 +1,330 @@
+@node ns-3 Callbacks
+@chapter ns-3 Callbacks
+
+Some new users to @command{ns-3} are unfamiliar with an extensively used 
+programming idiom used throughout the code:  the ``ns-3 callback''.  This 
+chapter provides some motivation on the callback, guidance on how to use
+it, and details on its implementation.
+
+@menu
+* Motivation::
+* Using the Callback API::
+* Callback locations in ns-3::
+* Implementation details::
+@end menu
+
+@node Motivation
+@section Motivation
+
+Consider that you have two simulation models A and B, and you wish
+to have them pass information between them during the simulation.  One
+way that you can do that is that you can make A and B each explicitly
+knowledgable about the other, so that they can invoke methods on each
+other. 
+
+@example
+class A {
+public:
+  void ReceiveInput ( // parameters );
+  ...
+}
+
+(in another source file:)
+
+class B {
+public:
+  void ReceiveInput ( // parameters);
+  void DoSomething (void);
+  ...
+
+private:
+  A* a_instance; // pointer to an A
+}
+
+void
+B::DoSomething()
+{
+  // Tell a_instance that something happened
+  a_instance->ReceiveInput ( // parameters);
+  ...
+}
+@end example
+
+This certainly works, but it has the drawback that it introduces a 
+dependency on A and B to know about the other at compile time (this
+makes it harder to have independent compilation units in the simulator)
+and is not generalized; if in a later usage scenario, B needs to talk 
+to a completely different C object, the source code for B needs to be 
+changed to add a ``c_instance'' and so forth.  It is easy to see that 
+this is a brute force mechanism of communication that can lead to 
+programming cruft in the models.  
+
+This is not to say that objects should not know about one another
+if there is a hard dependency between them, but that often the model 
+can be made more flexible if its interactions are less constrained at 
+compile time.
+
+This is not an abstract problem for network simulation research,
+but rather it has been a source of problems in previous simulators,
+when researchers want to extend or modify the system to do different
+things (as they are apt to do in research).  Consider, for example,
+a user who wants to add an IPsec security protocol sublayer
+between TCP and IP:  
+@verbatim
+------------                   -----------
+|   TCP    |                   |  TCP    |
+------------                   -----------
+     |           becomes ->        |
+-----------                    -----------
+|   IP    |                    | IPsec   |
+-----------                    -----------
+                                   |
+                               -----------
+                               |   IP    |
+                               -----------
+@end verbatim
+If the simulator has
+made assumptions, and hard coded into the code, that IP always talks 
+to a transport protocol above, the user may be forced to hack the 
+system to get the desired interconnections.  
+
+An alternative that provides this flexibility is to use a level of 
+indirection that is commonly known in programming as a callback.  
+A callback function is not invoked explicitly by the caller but is 
+rather delegated to another function that receives the callback 
+function's address and can call it.
+
+You may be familiar with function pointers in C or C++; these can
+be used to implement callbacks.  For more information on introductory
+callbacks, an online reference is:  
+@uref{http://www.inquiry.com/techtips/cpp_pro/10min/10min0300.asp,,Declaring Function Pointers and Implementing Callbacks} and
+@uref{http://en.wikipedia.org/wiki/Callback_(computer_science),,Callback (computer science)-- Wikipedia}.
+
+The callback API in @command{ns-3} is designed to minimize the overall
+coupling between various pieces of of the simulator
+by making each module depend on the callback API
+itself rather than depend on other modules. It acts as a sort of
+third-party to which work is delegated and which forwards this
+work to the proper target module. This callback API, being based
+on C++ templates,
+is type-safe; that is, it performs static type checks to enforce
+proper signature compatibility between callers and callees.  It
+is therefore more type-safe to use than traditional function
+pointers, but the syntax may look imposing at first.  This section
+is designed to walk you through the callback system so that you
+can be comfortable using it in @command{ns-3}.
+
+@node Using the Callback API
+@section Using the Callback API
+
+The Callback API is fairly minimal, providing only two services:
+@itemize @bullet
+@item callback type declaration: a way to declare a type of callback
+with a given signature, and,
+@item callback instantiation: a way to instantiate a
+template-generated forwarding callback which can forward any calls
+to another C++ class member method or C++ function.
+@end itemize
+
+This is best observed via walking through an example, based on
+@code{samples/main-callback.cc}.
+
+@node Using the Callback API with static functions
+@subsection Using the Callback API with static functions
+
+Consider a function:
+@example
+static double
+CbOne (double a, double b)
+{
+  std::cout << "invoke cbOne a=" << a << ", b=" << b << std::endl;
+  return a;
+}
+@end example
+
+Consider also the following main program snippett:
+@example
+int main (int argc, char *argv[])
+{
+  // return type: double
+  // first arg type: double
+  // second arg type: double
+  Callback<double, double, double> one;
+}
+@end example
+
+This class template Callback implements what is known as the Functor 
+Design Pattern. It is used to declare the type of a callback.  It contains
+one mandatory argument (the return type of the function to be assigned
+to this callback) and up to five optional arguments, which each specify
+the type of the arguments (if your function has more than five arguments,
+then this can be handled by extending the callback implementation).   
+
+So in the above, we have a declared a callback named "one" that will
+eventually hold a function pointer.  The function that it will hold
+must return double and must support two double arguments.  If one
+tries to pass a function whose signature does not match the declared
+callback, the compilation will fail.
+
+Now, we need to tie together this callback instance and the actual
+target function (CbOne).  Notice above that CbOne has the same function
+signature types as the callback-- this is important.  We can
+pass in any such properly-typed function to this callback.  Let's 
+look at this more closely:
+@verbatim
+static double CbOne (double a, double b) {}
+          ^           ^          ^
+          |        ---|    ------|
+          |        |       | 
+Callback<double, double, double> one;
+@end verbatim
+You can only bind a function to a callback if they have the matching
+signature.  The first template argument is the return type, and the
+additional template arguments are the types of the arguments of
+the function signature.
+
+Now, let's bind our callback "one" to the function that matches its
+signature:
+@example
+  // build callback instance which points to cbOne function
+  one = MakeCallback (&CbOne);
+@end example
+
+Then, later in the program, if the callback is to be used, it can be
+used as follows:
+@example
+// this is not a null callback
+  NS_ASSERT (!one.IsNull ());
+  // invoke cbOne function through callback instance
+  double retOne;
+  retOne = one (10.0, 20.0);
+@end example
+
+The check @code{IsNull()} ensures that the callback is not null; that there 
+is a function to call behind this callback.  Then, @code{one()} returns the
+same result as if @code{CbOne()} had been called directly.
+
+
+@node Using the Callback API with member functions
+@subsection Using the Callback API with member functions
+
+Generally, you will not be calling static functions but instead
+public member functions of an object.  In this case, an extra 
+argument is needed to the MakeCallback function, to tell the system
+on which object the function should be invoked.  Consider this example,
+also from main-callback.cc:
+
+@example
+class MyCb {
+public:
+  int CbTwo (double a) {
+      std::cout << "invoke cbTwo a=" << a << std::endl;
+      return -5;
+  }
+};
+
+int main ()
+{
+  ...
+  // return type: int
+  // first arg type: double
+  Callback<int, double> two;
+  MyCb cb;
+  // build callback instance which points to MyCb::cbTwo
+  two = MakeCallback (&MyCb::CbTwo, &cb);
+  ...
+}
+@end example
+
+Here, we pass a (raw) pointer to the @code{MakeCallback<>} function,
+that says, when @code{two ()} is invoked, to call the @code{CbTwo} function
+on the object pointed to by @code{&cb}.   
+
+A variation of this is used when objects are referred to by ns-3 smart
+pointers.  The MakeCallback API takes a raw pointer, so we need to
+call @code{PeekPointer ()} to obtain this raw pointer.  So the example
+above would look like:
+
+@example
+class MyCb : public Object {
+public:
+  int CbTwo (double a) {
+      std::cout << "invoke cbTwo a=" << a << std::endl;
+      return -5;
+  }
+};
+
+int main ()
+{
+  ...
+  // return type: int
+  // first arg type: double
+  Callback<int, double> two;
+  Ptr<MyCb> cb = CreateObject<MyCb> ();
+  // build callback instance which points to MyCb::cbTwo
+  two = MakeCallback (&MyCb::CbTwo, PeekPointer (cb));
+  ...
+}
+@end example
+
+@node Building Null Callbacks
+@subsection Building Null Callbacks
+
+It is possible for callbacks to be null; hence it may be wise to
+check before using them.  There is a special construct for a null
+callback, which is preferable to simply passing "0" as an argument;
+it is the @code{MakeNullCallback<>} construct:
+@example
+  two = MakeNullCallback<int, double> ();
+  // invoking a null callback is just like
+  // invoking a null function pointer:
+  // it will crash at runtime.
+  //int retTwoNull = two (20.0);
+  NS_ASSERT (two.IsNull ());
+@end example
+
+@node Callback locations in ns-3
+@section Callback locations in @command{ns-3}
+
+Where are callbacks frequently used in @command{ns-3}?  Here are some of the
+more visible ones to typical users:
+
+@subsection Socket API
+@subsection Layer-2/Layer-3 API
+@subsection Tracing subsystem
+@subsection Routing
+Route Reply
+
+@node Implementation details
+@section Implementation details
+
+This section is advanced explanation for C++ experts interested in
+the implementation, and may be skipped by most users.
+
+This code was originally written based on the techniques described 
+@uref{http://www.codeproject.com/cpp/TTLFunction.asp,,here}.
+It was subsequently rewritten to follow the architecture
+outlined in 
+@uref{http://www.amazon.com/Modern-C\%2B\%2B-Design-Programming-Patterns/dp/0201704315/ref=pd_bbs_sr_1/102-0157303-1900156?ie=UTF8\&s=books\&qid=1187982662\&sr=1-1,,Modern C++ Design: Generic Programming and Design Patterns Applied-- Alexandrescu}, chapter 5, "Generalized Functors".
+
+This code uses:
+@itemize @bullet
+@item default template parameters to saves users from having to
+specify empty parameters when the number of parameters
+is smaller than the maximum supported number
+@item the pimpl idiom: the Callback class is passed around by
+value and delegates the crux of the work to its pimpl pointer.
+@item two pimpl implementations which derive from CallbackImpl
+FunctorCallbackImpl can be used with any functor-type
+while MemPtrCallbackImpl can be used with pointers to
+member functions.
+@item a reference list implementation to implement the Callback's
+value semantics.
+@end itemize
+
+This code most notably departs from the Alexandrescu
+implementation in that it does not use type lists to specify
+and pass around the types of the callback arguments.
+Of course, it also does not use copy-destruction semantics
+and relies on a reference list rather than autoPtr to hold
+the pointer.

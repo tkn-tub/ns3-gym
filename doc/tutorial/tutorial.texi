@@ -82,6 +82,7 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 * The-Basics::
 * Some-Prerequisites::
 * A-First-ns-3-Script::
+* ns-3 Callbacks::
 * Simulation Output::
 * Other-network-topologies::
 * Nonlinear-Thinking::
@@ -94,6 +95,7 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 @end menu
 
 @include introduction.texi
+@include callbacks.texi
 @include output.texi
 @include other.texi
 
