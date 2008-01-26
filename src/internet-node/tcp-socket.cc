@@ -910,9 +910,8 @@ void TcpSocket::CommonNewAck (SequenceNumber ack, bool skipTimer)
     {
       m_retxEvent.Cancel ();
     }
-  uint32_t numberAck = ack - m_highestRxAck; // Number bytes ack'ed
   NS_LOG_LOGIC ("TCP " << this << " NewAck " << ack 
-           << " numberAck " << numberAck);
+           << " numberAck " << (ack - m_highestRxAck)); // Number bytes ack'ed
   m_highestRxAck = ack;         // Note the highest recieved Ack
   if (ack > m_nextTxSequence) 
     {

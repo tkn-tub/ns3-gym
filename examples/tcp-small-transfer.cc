@@ -70,6 +70,9 @@ void
 ApplicationTraceSink (const TraceContext &context, Ptr<const Packet> packet,
   const Address &addr)
 {
+// g_log is not declared in optimized builds
+// should convert this to use of some other flag than the logging system
+#ifdef NS3_LOG_ENABLE
   if (!g_log.IsNoneEnabled ()) {
     if (InetSocketAddress::IsMatchingType (addr) )
       {
@@ -89,6 +92,7 @@ ApplicationTraceSink (const TraceContext &context, Ptr<const Packet> packet,
         std::cout << std::endl << std::endl;
     }
   }
+#endif
 }
 
 void CloseConnection (Ptr<Socket> localSocket)
