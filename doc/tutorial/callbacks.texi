@@ -22,7 +22,7 @@ way that you can do that is that you can make A and B each explicitly
 knowledgable about the other, so that they can invoke methods on each
 other. 
 
-@example
+@verbatim
 class A {
 public:
   void ReceiveInput ( // parameters );
@@ -48,7 +48,7 @@ B::DoSomething()
   a_instance->ReceiveInput ( // parameters);
   ...
 }
-@end example
+@end verbatim
 
 This certainly works, but it has the drawback that it introduces a 
 dependency on A and B to know about the other at compile time (this
@@ -133,17 +133,17 @@ This is best observed via walking through an example, based on
 @subsection Using the Callback API with static functions
 
 Consider a function:
-@example
+@verbatim
 static double
 CbOne (double a, double b)
 {
   std::cout << "invoke cbOne a=" << a << ", b=" << b << std::endl;
   return a;
 }
-@end example
+@end verbatim
 
 Consider also the following main program snippett:
-@example
+@verbatim
 int main (int argc, char *argv[])
 {
   // return type: double
@@ -151,7 +151,7 @@ int main (int argc, char *argv[])
   // second arg type: double
   Callback<double, double, double> one;
 }
-@end example
+@end verbatim
 
 This class template Callback implements what is known as the Functor 
 Design Pattern. It is used to declare the type of a callback.  It contains
@@ -185,20 +185,20 @@ the function signature.
 
 Now, let's bind our callback "one" to the function that matches its
 signature:
-@example
+@verbatim
   // build callback instance which points to cbOne function
   one = MakeCallback (&CbOne);
-@end example
+@end verbatim
 
 Then, later in the program, if the callback is to be used, it can be
 used as follows:
-@example
+@verbatim
 // this is not a null callback
   NS_ASSERT (!one.IsNull ());
   // invoke cbOne function through callback instance
   double retOne;
   retOne = one (10.0, 20.0);
-@end example
+@end verbatim
 
 The check @code{IsNull()} ensures that the callback is not null; that there 
 is a function to call behind this callback.  Then, @code{one()} returns the
@@ -214,7 +214,7 @@ argument is needed to the MakeCallback function, to tell the system
 on which object the function should be invoked.  Consider this example,
 also from main-callback.cc:
 
-@example
+@verbatim
 class MyCb {
 public:
   int CbTwo (double a) {
@@ -234,7 +234,7 @@ int main ()
   two = MakeCallback (&MyCb::CbTwo, &cb);
   ...
 }
-@end example
+@end verbatim
 
 Here, we pass a (raw) pointer to the @code{MakeCallback<>} function,
 that says, when @code{two ()} is invoked, to call the @code{CbTwo} function
@@ -245,7 +245,7 @@ pointers.  The MakeCallback API takes a raw pointer, so we need to
 call @code{PeekPointer ()} to obtain this raw pointer.  So the example
 above would look like:
 
-@example
+@verbatim
 class MyCb : public Object {
 public:
   int CbTwo (double a) {
@@ -265,7 +265,7 @@ int main ()
   two = MakeCallback (&MyCb::CbTwo, PeekPointer (cb));
   ...
 }
-@end example
+@end verbatim
 
 @node Building Null Callbacks
 @subsection Building Null Callbacks
@@ -274,14 +274,14 @@ It is possible for callbacks to be null; hence it may be wise to
 check before using them.  There is a special construct for a null
 callback, which is preferable to simply passing "0" as an argument;
 it is the @code{MakeNullCallback<>} construct:
-@example
+@verbatim
   two = MakeNullCallback<int, double> ();
   // invoking a null callback is just like
   // invoking a null function pointer:
   // it will crash at runtime.
   //int retTwoNull = two (20.0);
   NS_ASSERT (two.IsNull ());
-@end example
+@end verbatim
 
 @node Callback locations in ns-3
 @section Callback locations in @command{ns-3}

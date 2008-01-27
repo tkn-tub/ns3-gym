@@ -77,13 +77,16 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 
 @menu
 * Introduction::
+Part 1:  Overview
 * Overview::
 * Resources::
 * The-Basics::
 * Some-Prerequisites::
 * A-First-ns-3-Script::
+Part 2:  Details
 * ns-3 Callbacks::
 * Simulation Output::
+* ns-3 routing overview::
 * Other-network-topologies::
 * Nonlinear-Thinking::
 * Summary::
@@ -92,12 +95,15 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 * How-To-Change-Things::
 * How-To-Set-Default-Values::
 * How-To-Write-A-New-Application::
+@ Troubleshooting
 @end menu
 
 @include introduction.texi
 @include callbacks.texi
 @include output.texi
+@include routing.texi
 @include other.texi
+@include troubleshoot.texi
 
 @printindex cp
 
