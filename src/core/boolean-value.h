@@ -18,6 +18,10 @@ public:
   virtual Ptr<Value> Copy (void) const;
   virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+
+  BooleanValue (Ptr<const Value> value);
+  operator Ptr<Value> () const;
+  operator Ptr<const Value> () const;
 private:
   bool m_value;
 };

@@ -99,7 +99,7 @@ ParamSpecHelper<T,U,V>::Set (ObjectBase * object, Ptr<const Value> parameter) co
     {
       return false;
     }
-  V v = *value;
+  V v = value->Get ();
   DoSet (obj, v);
   return true;
 }
@@ -118,7 +118,7 @@ ParamSpecHelper<T,U,V>::Get (const ObjectBase * object, Ptr<Value> parameter) co
       return false;
     }
   V v = DoGet (obj);
-  *value = v;
+  value->Set (v);
   return true;
 }
 template <typename T, typename U, typename V>
@@ -130,7 +130,7 @@ ParamSpecHelper<T,U,V>::Check (Ptr<const Value> parameter) const
     {
       return false;
     }
-  V v = *value;
+  V v = value->Get ();
   DoCheck (v);
   return true;
 }
@@ -178,7 +178,7 @@ template <typename T, typename U, typename V>
 void 
 MemberMethodParamSpecHelper<T,U,V>::DoSet (T *object, const V &v) const
 {
-  (object->m_setter) (v);
+  (object->*m_setter) (v);
 }
 template <typename T, typename U, typename V>
 V 

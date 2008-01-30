@@ -1,4 +1,5 @@
 #include "boolean-value.h"
+#include "fatal-error.h"
 
 namespace ns3 {
 
@@ -55,6 +56,23 @@ BooleanValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spe
     {
       return false;
     }  
+}
+BooleanValue::BooleanValue (Ptr<const Value> value)
+{
+  const BooleanValue *v = dynamic_cast<const BooleanValue *> (PeekPointer (value));
+  if (v == 0)
+    {
+      NS_FATAL_ERROR ("assigning non-Boolean value to Boolean value.");
+    }
+  m_value = v->m_value;
+}
+BooleanValue::operator Ptr<Value> () const
+{
+  return Create<BooleanValue> (*this);
+}
+BooleanValue::operator Ptr<const Value> () const
+{
+  return Create<BooleanValue> (*this);
 }
 
 } // namespace ns3
