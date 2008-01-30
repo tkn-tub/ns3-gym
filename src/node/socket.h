@@ -197,6 +197,13 @@ public:
   virtual int SendTo(const Address &address,Ptr<Packet> p) = 0;
 
   /**
+   * \brief Listen for incoming connections.
+   * \param queueLimit maximum number of incoming request to queue
+   * \returns XXX an error code
+   */
+  virtual int Listen(uint32_t queueLimit);
+
+  /**
    * \brief Send data to a specified peer.
    * \param address IP Address of remote host
    * \param buf A pointer to a raw byte buffer of some data to send.  If this 

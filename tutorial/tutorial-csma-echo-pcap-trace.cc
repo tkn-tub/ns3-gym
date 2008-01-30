@@ -80,7 +80,9 @@ main (int argc, char *argv[])
 
   AsciiTrace asciitrace ("tutorial.tr");
   asciitrace.TraceAllQueues ();
+#if 0
   asciitrace.TraceAllNetDeviceRx ();
+#endif
 
   PcapTrace pcaptrace ("tutorial.pcap");
   pcaptrace.TraceAllIp ();

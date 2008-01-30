@@ -45,3 +45,25 @@ def build(bld):
     obj = bld.create_ns3_program('simple-point-to-point-olsr',
         ['point-to-point', 'internet-node', 'olsr'])
     obj.source = 'simple-point-to-point-olsr.cc'
+
+    obj = bld.create_ns3_program('tcp-large-transfer',
+        ['point-to-point', 'internet-node'])
+    obj.source = 'tcp-large-transfer.cc'
+
+    obj = bld.create_ns3_program('tcp-large-transfer-errors',
+        ['point-to-point', 'internet-node'])
+    obj.source = 'tcp-large-transfer-errors.cc'
+
+    obj = bld.create_ns3_program('tcp-nonlistening-server',
+        ['point-to-point', 'internet-node'])
+    obj.source = 'tcp-nonlistening-server.cc'
+
+    obj = bld.create_ns3_program('tcp-small-transfer',
+        ['point-to-point', 'internet-node'])
+    obj.source = 'tcp-small-transfer.cc'
+
+    obj = bld.create_ns3_program('tcp-small-transfer-oneloss',
+        ['point-to-point', 'internet-node'])
+    obj.source = 'tcp-small-transfer-oneloss.cc'
+
+
