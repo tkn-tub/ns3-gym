@@ -31,6 +31,7 @@
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
+#include "ns3/object-base.h"
 
 namespace ns3 {
 
@@ -73,7 +74,7 @@ class PacketPrinter;
  * The performance aspects of the Packet API are discussed in 
  * \ref packetperf
  */
-class Packet {
+class Packet : public ObjectBase {
 public:
   void Ref (void) const;
   void Unref (void) const;

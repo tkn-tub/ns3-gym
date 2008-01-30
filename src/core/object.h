@@ -132,7 +132,7 @@ private:
  * BonoboObject in Bonobo: it provides three main methods: Ref, Unref and
  * QueryInterface.
  */
-class Object
+class Object : public ObjectBase
 {
 public:
   static TypeId GetTypeId (void);

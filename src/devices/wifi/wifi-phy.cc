@@ -30,6 +30,7 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/composite-trace-resolver.h"
+#include "ns3/object-base.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("WifiPhy");
@@ -76,7 +77,8 @@ WifiPhyListener::~WifiPhyListener ()
  *       Phy event class
  ****************************************************************/
 
-class RxEvent {
+class RxEvent : public ObjectBase 
+{
 public:
   RxEvent (uint32_t size, WifiMode payloadMode, 
            enum WifiPreamble preamble,
