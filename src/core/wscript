@@ -53,6 +53,9 @@ def build(bld):
         'type-traits-test.cc',
         'array-trace-resolver.cc',
         'type-id-default-value.cc',
+        'value.cc',
+        'param-spec.cc',
+        'boolean-value.cc',
         ]
 
     if sys.platform == 'win32':
