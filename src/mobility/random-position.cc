@@ -118,8 +118,7 @@ RandomDiscPosition::GetTypeId (void)
 {
   static TypeId tid = TypeId ("RandomDiscPosition")
     .SetParent<RandomPosition> ()
-    .AddConstructor<RandomDiscPosition> ()
-    .AddConstructor<RandomDiscPosition, const RandomVariable &, const RandomVariable &, double, double> ();
+    .AddConstructor<RandomDiscPosition> ();
   return tid;
 }   
 
