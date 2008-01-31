@@ -410,7 +410,7 @@ Object::Dispose (void)
 }
 
 void 
-Object::AddInterface (Ptr<Object> o)
+Object::AggregateObject (Ptr<Object> o)
 {
   NS_ASSERT (!m_disposed);
   NS_ASSERT (!o->m_disposed);
@@ -762,7 +762,7 @@ ObjectTest::RunTests (void)
   baseA = CreateObject<BaseA> ();
   Ptr<BaseB> baseB = CreateObject<BaseB> ();
   Ptr<BaseB> baseBCopy = baseB;
-  baseA->AddInterface (baseB);
+  baseA->AggregateObject (baseB);
   NS_TEST_ASSERT_UNEQUAL (baseA->GetObject<BaseA> (), 0);
   NS_TEST_ASSERT_EQUAL (baseA->GetObject<DerivedA> (), 0);
   NS_TEST_ASSERT_UNEQUAL (baseA->GetObject<BaseB> (), 0);
@@ -776,7 +776,7 @@ ObjectTest::RunTests (void)
   baseA = CreateObject<DerivedA> (1);
   baseB = CreateObject<DerivedB> (1);
   baseBCopy = baseB;
-  baseA->AddInterface (baseB);
+  baseA->AggregateObject (baseB);
   NS_TEST_ASSERT_UNEQUAL (baseA->GetObject<DerivedB> (), 0);
   NS_TEST_ASSERT_UNEQUAL (baseA->GetObject<BaseB> (), 0);
   NS_TEST_ASSERT_UNEQUAL (baseB->GetObject<DerivedA> (), 0);
@@ -788,7 +788,7 @@ ObjectTest::RunTests (void)
 
   baseA = CreateObject<BaseA> ();
   baseB = CreateObject<BaseB> ();
-  baseA->AddInterface (baseB);
+  baseA->AggregateObject (baseB);
   baseA = 0;
   baseA = baseB->GetObject<BaseA> ();
 
@@ -806,7 +806,7 @@ ObjectTest::RunTests (void)
   NS_TEST_ASSERT (m_baseBTrace);
   baseB->TraceDisconnect ("/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
 
-  baseA->AddInterface (baseB);
+  baseA->AggregateObject (baseB);
 
   baseA->TraceConnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
   m_baseATrace = false;
@@ -838,7 +838,7 @@ ObjectTest::RunTests (void)
   Ptr<DerivedA> derivedA;
   derivedA = CreateObject<DerivedA> (1);
   baseB = CreateObject<BaseB> ();
-  derivedA->AddInterface (baseB);
+  derivedA->AggregateObject (baseB);
   baseB->TraceConnect ("/$DerivedA/deriveda-x", MakeCallback (&ObjectTest::DerivedATrace, this));
   baseB->TraceConnect ("/$DerivedA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
   m_derivedATrace = false;

@@ -116,7 +116,7 @@ Node::Construct (void)
 {
   m_id = NodeList::Add (this);
   Ptr<PacketSocketFactory> socketFactory = CreateObject<PacketSocketFactory> ();
-  AddInterface (socketFactory);
+  AggregateObject (socketFactory);
 }
   
 Node::~Node ()

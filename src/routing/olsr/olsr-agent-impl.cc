@@ -173,7 +173,7 @@ AgentImpl::AgentImpl (Ptr<Node> node)
   m_queuedMessagesTimer.SetFunction (&AgentImpl::SendQueuedMessages, this);
 
   // Aggregate with the Node, so that OLSR dies when the node is destroyed.
-  node->AddInterface (this);
+  node->AggregateObject (this);
 
   m_packetSequenceNumber = OLSR_MAX_SEQ_NUM;
   m_messageSequenceNumber = OLSR_MAX_SEQ_NUM;

@@ -94,7 +94,7 @@ int model_init (int argc, char *argv[], double *x1, double *y1, double *x2, doub
   for (uint32_t i = 0; i < g_numNodes; i++)
     {
       Ptr<Node> node = CreateObject<Node> ();
-      node->AddInterface (CreateObject<MobilityModelNotifier> ());
+      node->AggregateObject (CreateObject<MobilityModelNotifier> ());
     }
 
   topology.Layout (NodeList::Begin (), NodeList::End ());

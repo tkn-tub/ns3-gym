@@ -78,7 +78,7 @@ CreateApNode (Ptr<WifiChannel> channel,
   device->Attach (channel);
   Ptr<MobilityModel> mobility = CreateObject<StaticMobilityModel> ();
   mobility->SetPosition (position);
-  node->AddInterface (mobility);
+  node->AggregateObject (mobility);
   return node;
 }
 
@@ -95,7 +95,7 @@ CreateStaNode (Ptr<WifiChannel> channel,
   device->Attach (channel);
   Ptr<MobilityModel> mobility = CreateObject<StaticMobilityModel> ();
   mobility->SetPosition (position);
-  node->AddInterface (mobility);
+  node->AggregateObject (mobility);
   return node;
 }
 

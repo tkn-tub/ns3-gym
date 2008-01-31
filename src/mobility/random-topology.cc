@@ -68,7 +68,7 @@ void
 RandomTopology::LayoutOne (Ptr<Object> object)
 {
   Ptr<MobilityModel> mobility = m_mobilityModel.CreateObject ()->GetObject<MobilityModel> ();
-  object->AddInterface (mobility);
+  object->AggregateObject (mobility);
   Vector position = m_positionModel->Get ();
   mobility->SetPosition (position);
 }

@@ -53,7 +53,7 @@ Ns2MobilityFileTopology::GetMobilityModel (std::string idString, const ObjectSto
   if (model == 0)
     {
       model = CreateObject<StaticSpeedMobilityModel> ();
-      object->AddInterface (model);
+      object->AggregateObject (model);
     }
   return model;
 }

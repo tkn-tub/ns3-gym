@@ -117,7 +117,7 @@ PrintDefaultValuesDoxygen (std::ostream &os)
 int main (int argc, char *argv[])
 {
   Ptr<Node> node = CreateObject<InternetNode> ();
-  node->AddInterface (CreateObject<MobilityModelNotifier> ());
+  node->AggregateObject (CreateObject<MobilityModelNotifier> ());
 
   Ptr<PointToPointNetDevice> p2p = CreateObject<PointToPointNetDevice> (node);
   p2p->AddQueue (Queue::CreateDefault ());

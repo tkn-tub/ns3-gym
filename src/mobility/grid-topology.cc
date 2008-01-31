@@ -44,7 +44,7 @@ GridTopology::LayoutOneRowFirst (Ptr<Object> object, uint32_t i)
   x = m_xMin + m_deltaX * (i % m_n);
   y = m_yMin + m_deltaY * (i / m_n);
   Ptr<MobilityModel> mobility = m_positionTypeId.CreateObject ()->GetObject<MobilityModel> ();
-  object->AddInterface (mobility);
+  object->AggregateObject (mobility);
   mobility->SetPosition (Vector (x, y, 0.0));
 }
 
@@ -55,7 +55,7 @@ GridTopology::LayoutOneColumnFirst (Ptr<Object> object, uint32_t i)
   x = m_xMin + m_deltaX * (i / m_n);
   y = m_yMin + m_deltaY * (i % m_n);
   Ptr<MobilityModel> mobility = m_positionTypeId.CreateObject ()->GetObject<MobilityModel> ();
-  object->AddInterface (mobility);
+  object->AggregateObject (mobility);
   mobility->SetPosition (Vector (x, y, 0.0));
 }
 

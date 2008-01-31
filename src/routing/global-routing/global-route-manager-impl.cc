@@ -367,7 +367,7 @@ GlobalRouteManagerImpl::SelectRouterNodes ()
         node->GetId ());
 
       Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> ();
-      node->AddInterface (globalRouter);
+      node->AggregateObject (globalRouter);
     }
 }
 

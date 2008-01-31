@@ -180,7 +180,7 @@ public:
    * method returns, it becomes possible to call GetObject
    * on one to get the other, and vice-versa. 
    */
-  void AddInterface (Ptr<Object> other);
+  void AggregateObject (Ptr<Object> other);
 
   /**
    * \param path the path to match for the callback

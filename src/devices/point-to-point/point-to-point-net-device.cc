@@ -302,7 +302,7 @@ void PointToPointNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
   NS_LOG_PARAMS ("(" << em << ")");
 
   m_receiveErrorModel = em;
-  AddInterface (em);
+  AggregateObject (em);
 }
 
 void PointToPointNetDevice::Receive (Ptr<Packet> packet)
