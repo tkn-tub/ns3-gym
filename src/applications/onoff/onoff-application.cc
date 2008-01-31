@@ -155,7 +155,7 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
   if (!m_socket)
     {
       TypeId tid = TypeId::LookupByName (m_tid);
-      Ptr<SocketFactory> socketFactory = GetNode ()->QueryInterface<SocketFactory> (tid);
+      Ptr<SocketFactory> socketFactory = GetNode ()->GetObject<SocketFactory> (tid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
       m_socket->Connect (m_peer);

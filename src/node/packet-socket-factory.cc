@@ -39,7 +39,7 @@ PacketSocketFactory::PacketSocketFactory ()
 
 Ptr<Socket> PacketSocketFactory::CreateSocket (void)
 {
-  Ptr<Node> node = QueryInterface<Node> ();
+  Ptr<Node> node = GetObject<Node> ();
   Ptr<PacketSocket> socket = CreateObject<PacketSocket> (node);
   return socket;
 } 

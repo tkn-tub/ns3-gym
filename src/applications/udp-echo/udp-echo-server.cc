@@ -79,7 +79,7 @@ UdpEchoServer::StartApplication (void)
     {
       TypeId tid = TypeId::LookupByName ("Udp");
       Ptr<SocketFactory> socketFactory = 
-        GetNode ()->QueryInterface<SocketFactory> (tid);
+        GetNode ()->GetObject<SocketFactory> (tid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind (m_local);
     }

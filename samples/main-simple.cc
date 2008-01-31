@@ -43,7 +43,7 @@ RunSimulation (void)
   Ptr<Node> a = CreateObject<InternetNode> ();
 
   TypeId tid = TypeId::LookupByName ("Udp");
-  Ptr<SocketFactory> socketFactory = a->QueryInterface<SocketFactory> (tid);
+  Ptr<SocketFactory> socketFactory = a->GetObject<SocketFactory> (tid);
 
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);

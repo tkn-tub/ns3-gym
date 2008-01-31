@@ -102,14 +102,14 @@ CreateStaNode (Ptr<WifiChannel> channel,
 static void
 SetPosition (Ptr<Node> node, Vector position)
 {
-  Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> ();
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
   mobility->SetPosition (position);
 }
 
 static Vector
 GetPosition (Ptr<Node> node)
 {
-  Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> ();
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
   return mobility->GetPosition ();
 }
 

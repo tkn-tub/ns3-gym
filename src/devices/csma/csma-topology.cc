@@ -90,7 +90,7 @@ CsmaTopology::CreatePacketSocket(Ptr<Node> n1, std::string tid_name)
   TypeId tid = TypeId::LookupByName (tid_name);
 
   Ptr<SocketFactory> socketFactory =
-    n1->QueryInterface<SocketFactory> (tid);
+    n1->GetObject<SocketFactory> (tid);
 
   Ptr<Socket> socket = socketFactory->CreateSocket ();
 

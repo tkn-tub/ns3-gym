@@ -168,7 +168,7 @@ void RttEstimator::InitialEstimate (Time e)
 Ptr<RttEstimator> RttEstimator::CreateDefault ()
 {
   TypeId tid = defaultTid.GetValue ();
-  Ptr<RttEstimator> rtte = tid.CreateObject (0.1, initialEstimate)->QueryInterface<RttEstimator> ();
+  Ptr<RttEstimator> rtte = tid.CreateObject (0.1, initialEstimate)->GetObject<RttEstimator> ();
   return rtte;
 }
 

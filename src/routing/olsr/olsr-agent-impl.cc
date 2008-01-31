@@ -186,10 +186,10 @@ AgentImpl::AgentImpl (Ptr<Node> node)
 
   m_linkTupleTimerFirstTime = true;
 
-  m_ipv4 = node->QueryInterface<Ipv4> ();
+  m_ipv4 = node->GetObject<Ipv4> ();
   NS_ASSERT (m_ipv4);
 
-  Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (Udp::GetTypeId ());
+  Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (Udp::GetTypeId ());
 
   m_receiveSocket = socketFactory->CreateSocket ();
   if (m_receiveSocket->Bind (InetSocketAddress (OLSR_PORT_NUMBER)))

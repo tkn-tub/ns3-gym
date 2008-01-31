@@ -64,7 +64,7 @@ ErrorModel::CreateDefault (void)
 { 
   NS_LOG_FUNCTION;
   TypeId interfaceId = g_interfaceIdErrorModelDefaultValue.GetValue ();
-  Ptr<ErrorModel> em = interfaceId.CreateObject ()->QueryInterface<ErrorModel> ();
+  Ptr<ErrorModel> em = interfaceId.CreateObject ()->GetObject<ErrorModel> ();
   return em;
 }
 

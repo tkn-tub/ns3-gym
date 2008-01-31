@@ -130,7 +130,7 @@ private:
  *
  * Note: This base class is quite similar in spirit to IUnknown in COM or
  * BonoboObject in Bonobo: it provides three main methods: Ref, Unref and
- * QueryInterface.
+ * GetObject.
  */
 class Object
 {
@@ -157,13 +157,13 @@ public:
    * \returns a pointer to the requested interface or zero if it could not be found.
    */
   template <typename T>
-  Ptr<T> QueryInterface (void) const;
+  Ptr<T> GetObject (void) const;
   /**
    * \param tid the interface id of the requested interface
    * \returns a pointer to the requested interface or zero if it could not be found.
    */
   template <typename T>
-  Ptr<T> QueryInterface (TypeId tid) const;
+  Ptr<T> GetObject (TypeId tid) const;
   /**
    * Run the DoDispose methods of this object and all the
    * objects aggregated to it.
@@ -177,7 +177,7 @@ public:
    * \param other another object pointer
    *
    * This method aggregates the two objects together: after this
-   * method returns, it becomes possible to call QueryInterface
+   * method returns, it becomes possible to call GetObject
    * on one to get the other, and vice-versa. 
    */
   void AddInterface (Ptr<Object> other);
@@ -231,7 +231,7 @@ private:
   template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
   friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
-  Ptr<Object> DoQueryInterface (TypeId tid) const;
+  Ptr<Object> DoGetObject (TypeId tid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
                          TraceResolver::SourceCollection *collection) const;
   void DoTraceAll (std::ostream &os, const TraceContext &context) const;
@@ -439,9 +439,9 @@ Object::Unref (void) const
 
 template <typename T>
 Ptr<T> 
-Object::QueryInterface () const
+Object::GetObject () const
 {
-  Ptr<Object> found = DoQueryInterface (T::GetTypeId ());
+  Ptr<Object> found = DoGetObject (T::GetTypeId ());
   if (found != 0)
     {
       return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));
@@ -451,9 +451,9 @@ Object::QueryInterface () const
 
 template <typename T>
 Ptr<T> 
-Object::QueryInterface (TypeId tid) const
+Object::GetObject (TypeId tid) const
 {
-  Ptr<Object> found = DoQueryInterface (tid);
+  Ptr<Object> found = DoGetObject (tid);
   if (found != 0)
     {
       return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));

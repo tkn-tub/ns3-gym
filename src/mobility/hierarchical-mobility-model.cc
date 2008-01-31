@@ -37,9 +37,9 @@ HierarchicalMobilityModel::HierarchicalMobilityModel (Ptr<MobilityModel> child, 
     m_parent (parent)
 {
   Ptr<MobilityModelNotifier> childNotifier = 
-    m_child->QueryInterface<MobilityModelNotifier> ();
+    m_child->GetObject<MobilityModelNotifier> ();
   Ptr<MobilityModelNotifier> parentNotifier = 
-    m_parent->QueryInterface<MobilityModelNotifier> ();
+    m_parent->GetObject<MobilityModelNotifier> ();
   if (childNotifier == 0)
     {
       childNotifier = CreateObject<MobilityModelNotifier> ();

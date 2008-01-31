@@ -41,7 +41,7 @@ g_mobility ("RandomTopologyMobilityType",
 RandomTopology::RandomTopology ()
   : m_mobilityModel (g_mobility.GetValue ())
 {
-  m_positionModel = g_position.GetValue ().CreateObject ()->QueryInterface<RandomPosition> ();
+  m_positionModel = g_position.GetValue ().CreateObject ()->GetObject<RandomPosition> ();
 }
 RandomTopology::RandomTopology (Ptr<RandomPosition> positionModel, TypeId mobilityModel)
   : m_positionModel (positionModel),
@@ -67,7 +67,7 @@ RandomTopology::SetPositionModel (Ptr<RandomPosition> positionModel)
 void 
 RandomTopology::LayoutOne (Ptr<Object> object)
 {
-  Ptr<MobilityModel> mobility = m_mobilityModel.CreateObject ()->QueryInterface<MobilityModel> ();
+  Ptr<MobilityModel> mobility = m_mobilityModel.CreateObject ()->GetObject<MobilityModel> ();
   object->AddInterface (mobility);
   Vector position = m_positionModel->Get ();
   mobility->SetPosition (position);

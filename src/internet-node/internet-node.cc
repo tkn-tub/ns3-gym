@@ -85,7 +85,7 @@ Ptr<TraceResolver>
 InternetNode::GetTraceResolver () const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  Ptr<Ipv4L3Protocol> ipv4 = QueryInterface<Ipv4L3Protocol> ();
+  Ptr<Ipv4L3Protocol> ipv4 = GetObject<Ipv4L3Protocol> ();
   resolver->AddComposite ("ipv4", ipv4);
   resolver->SetParentResolver (Node::GetTraceResolver ());
   return resolver;

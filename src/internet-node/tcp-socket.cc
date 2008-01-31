@@ -234,7 +234,7 @@ TcpSocket::Connect (const Address & address)
   m_defaultPort = transport.GetPort ();
   
   uint32_t localIfIndex;
-  Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> ();
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
   if (ipv4->GetIfIndexForDestination (m_defaultAddress, localIfIndex))
     {
@@ -557,7 +557,7 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << p << "tcpHeader " << fromAddress);
   uint32_t localIfIndex;
-  Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> ();
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   switch (a)
   {
     case SYN_ACK_TX:

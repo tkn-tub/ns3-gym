@@ -205,9 +205,9 @@ main (int argc, char *argv[])
   // This will likely set by some global StaticRouting object in the future
   NS_LOG_INFO ("Set Default Routes.");
   Ptr<Ipv4> ipv4;
-  ipv4 = n0->QueryInterface<Ipv4> ();
+  ipv4 = n0->GetObject<Ipv4> ();
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
-  ipv4 = n3->QueryInterface<Ipv4> ();
+  ipv4 = n3->GetObject<Ipv4> ();
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
   
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events

@@ -50,7 +50,7 @@ RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters ()
   : m_speed (g_speed.GetCopy ()),
     m_pause (g_pause.GetCopy ())
 {
-  m_position = g_position.GetValue ().CreateObject ()->QueryInterface<RandomPosition> ();
+  m_position = g_position.GetValue ().CreateObject ()->GetObject<RandomPosition> ();
 }
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters (Ptr<RandomPosition> randomPosition,
 									      const RandomVariable &speed,

@@ -284,7 +284,7 @@ Queue::CreateDefault (void)
 {
   NS_LOG_FUNCTION;
   TypeId interfaceId = g_interfaceIdDefaultValue.GetValue ();
-  Ptr<Queue> queue = interfaceId.CreateObject ()->QueryInterface<Queue> ();
+  Ptr<Queue> queue = interfaceId.CreateObject ()->GetObject<Queue> ();
   return queue;
 }
 

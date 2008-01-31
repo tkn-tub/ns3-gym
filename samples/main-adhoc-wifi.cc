@@ -58,14 +58,14 @@ CreateAdhocNode (Ptr<WifiChannel> channel,
 static void
 SetPosition (Ptr<Node> node, Vector position)
 {
-  Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> ();
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
   mobility->SetPosition (position);
 }
 
 static Vector
 GetPosition (Ptr<Node> node)
 {
-  Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> ();
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
   return mobility->GetPosition ();
 }
 
@@ -96,7 +96,7 @@ static Ptr<Socket>
 SetupPacketReceive (Ptr<Node> node, uint16_t port)
 {
   TypeId tid = TypeId::LookupByName ("Packet");
-  Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (tid);
+  Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   sink->Bind ();
   sink->SetRecvCallback (MakeCallback (&ReceivePacket));

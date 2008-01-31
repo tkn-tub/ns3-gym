@@ -75,7 +75,7 @@ void PacketSink::StartApplication()    // Called at time specified by Start
     {
       TypeId tid = TypeId::LookupByName (m_tid);
       Ptr<SocketFactory> socketFactory = 
-        GetNode ()->QueryInterface<SocketFactory> (tid);
+        GetNode ()->GetObject<SocketFactory> (tid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind (m_local);
       m_socket->Listen (0);
