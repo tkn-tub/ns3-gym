@@ -2,7 +2,6 @@
 #define BOOLEAN_VALUE_H
 
 #include "value.h"
-#include "param-spec.h"
 #include "param-spec-helper.h"
 #include "ptr.h"
 
@@ -15,13 +14,12 @@ public:
   void Set (bool value);
   bool Get (void) const;
 
-  virtual Ptr<Value> Copy (void) const;
+  virtual PValue Copy (void) const;
   virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
 
-  BooleanValue (Ptr<const Value> value);
-  operator Ptr<Value> () const;
-  operator Ptr<const Value> () const;
+  BooleanValue (PValue value);
+  operator PValue () const;
 private:
   bool m_value;
 };

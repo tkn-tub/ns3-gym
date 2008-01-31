@@ -8,10 +8,10 @@ class ParamSpecHelper : public ParamSpec
 {
 public:
   ParamSpecHelper (V initialValue);
-  virtual bool Set (ObjectBase * object, Ptr<const Value> parameter) const;
-  virtual bool Get (const ObjectBase * object, Ptr<Value> parameter) const;
-  virtual bool Check (Ptr<const Value> parameter) const;
-  virtual Ptr<Value> CreateInitialValue (void) const;
+  virtual bool Set (ObjectBase * object, PValue value) const;
+  virtual bool Get (const ObjectBase * object, PValue value) const;
+  virtual bool Check (PValue value) const;
+  virtual PValue CreateInitialValue (void) const;
 
 private:
   virtual void DoSet (T *object, const V &v) const = 0;
@@ -87,9 +87,9 @@ ParamSpecHelper<T,U,V>::ParamSpecHelper (V initialValue)
 {}
 template <typename T, typename U, typename V>
 bool 
-ParamSpecHelper<T,U,V>::Set (ObjectBase * object, Ptr<const Value> parameter) const
+ParamSpecHelper<T,U,V>::Set (ObjectBase * object, PValue val) const
 {
-  const U *value = dynamic_cast<const U*> (PeekPointer (parameter));
+  const U *value = val.DynCast<const U*> ();
   if (value == 0)
     {
       return false;
@@ -105,9 +105,9 @@ ParamSpecHelper<T,U,V>::Set (ObjectBase * object, Ptr<const Value> parameter) co
 }
 template <typename T, typename U, typename V>
 bool 
-ParamSpecHelper<T,U,V>::Get (const ObjectBase * object, Ptr<Value> parameter) const
+ParamSpecHelper<T,U,V>::Get (const ObjectBase * object, PValue val) const
 {
-  U *value = dynamic_cast<U*> (PeekPointer (parameter));
+  U *value = val.DynCast<U*> ();
   if (value == 0)
     {
       return false;
@@ -123,14 +123,14 @@ ParamSpecHelper<T,U,V>::Get (const ObjectBase * object, Ptr<Value> parameter) co
 }
 template <typename T, typename U, typename V>
 bool 
-ParamSpecHelper<T,U,V>::Check (Ptr<const Value> parameter) const
+ParamSpecHelper<T,U,V>::Check (PValue value) const
 {
-  const U *value = dynamic_cast<const U*> (PeekPointer (parameter));
-  if (value == 0)
+  const U *val = value.DynCast<const U*> ();
+  if (val == 0)
     {
       return false;
     }
-  V v = value->Get ();
+  V v = val->Get ();
   DoCheck (v);
   return true;
 }
@@ -141,10 +141,10 @@ ParamSpecHelper<T,U,V>::DoCheck (const V &v) const
   return true;
 }
 template <typename T, typename U, typename V>
-Ptr<Value>
+PValue
 ParamSpecHelper<T,U,V>::CreateInitialValue (void) const
 {
-  return Create<U> (m_initialValue);
+  return PValue::Create<U> (m_initialValue);
 }
 
 

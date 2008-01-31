@@ -54,7 +54,6 @@ def build(bld):
         'array-trace-resolver.cc',
         'type-id-default-value.cc',
         'value.cc',
-        'param-spec.cc',
         'boolean-value.cc',
         'value-test.cc',
         ]
@@ -102,6 +101,5 @@ def build(bld):
         'int-to-type.h',
         'type-id-default-value.h',
         'value.h',
-        'param-spec.h',
         ]
 

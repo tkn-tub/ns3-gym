@@ -287,12 +287,12 @@ public:
    * the program terminates with a message.
    */
   bool Set (std::string name, std::string value);
-  bool Set (std::string name, Ptr<const Value> value);
+  bool Set (std::string name, PValue value);
 
   void SetWithTid (TypeId tid, std::string name, std::string value);
-  void SetWithTid (TypeId tid, std::string name, Ptr<const Value> value);
+  void SetWithTid (TypeId tid, std::string name, PValue value);
   void SetWithTid (TypeId tid, uint32_t position, std::string value);
-  void SetWithTid (TypeId tid, uint32_t position, Ptr<const Value> value);
+  void SetWithTid (TypeId tid, uint32_t position, PValue value);
 
   /**
    * Clear the content of this instance.
@@ -317,7 +317,7 @@ private:
   friend class Object;
   struct Param {
     Ptr<const ParamSpec> spec;
-    Ptr<const Value> value;
+    PValue value;
   };
   typedef std::vector<struct Param> Params;
   typedef Params::iterator Iterator;
@@ -325,9 +325,9 @@ private:
 
 
 
-  bool DoSet (Ptr<const ParamSpec> spec, Ptr<const Value> param);
+  bool DoSet (Ptr<const ParamSpec> spec, PValue param);
   bool DoSet (Ptr<const ParamSpec> spec, std::string value);
-  void DoSetOne (Ptr<const ParamSpec> spec, Ptr<const Value> param);
+  void DoSetOne (Ptr<const ParamSpec> spec, PValue param);
   std::string LookupParameterFullNameByParamSpec (Ptr<const ParamSpec> spec) const;
 
   Params m_parameters;
@@ -353,7 +353,7 @@ public:
    * Set a single parameter.
    */
   bool Set (std::string name, std::string value);
-  bool Set (std::string name, Ptr<const Value> value);
+  bool Set (std::string name, PValue value);
   /**
    * \param name the name of the parameter to read
    * \param value a reference to the string where the value of the 
@@ -367,7 +367,7 @@ public:
    *        parameter should be stored.
    * \returns true if the requested parameter was found, false otherwise.
    */
-  Ptr<const Value> Get (std::string name) const;
+  PValue Get (std::string name) const;
 
   /**
    * Increment the reference count. This method should not be called
@@ -473,8 +473,8 @@ private:
   void DoTraceAll (std::ostream &os, const TraceContext &context) const;
   bool Check (void) const;
   bool CheckLoose (void) const;
-  bool DoSet (std::string name, Ptr<const Value> value);
-  bool DoGet (std::string name, Ptr<Value> value) const;
+  bool DoSet (std::string name, PValue value);
+  bool DoGet (std::string name, PValue value) const;
   /**
    * Attempt to delete this object. This method iterates
    * over all aggregated objects to check if they all 
@@ -730,8 +730,8 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
 
 template <typename T>
 Ptr<T> 
-CreateObjectWith (std::string n1, Ptr<const Value> v1,
-                  std::string n2 = "", Ptr<const Value> v2 = 0)
+CreateObjectWith (std::string n1, PValue v1,
+                  std::string n2 = "", PValue v2 = PValue ())
               
 {
   Parameters parameters;

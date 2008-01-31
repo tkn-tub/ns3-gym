@@ -16,10 +16,10 @@ BooleanValue::Get (void) const
 {
   return m_value;
 }
-Ptr<Value>
+PValue
 BooleanValue::Copy (void) const
 {
-  return Create<BooleanValue> (*this);
+  return PValue::Create<BooleanValue> (*this);
 }
 std::string 
 BooleanValue::SerializeToString (Ptr<const ParamSpec> spec) const
@@ -57,22 +57,18 @@ BooleanValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spe
       return false;
     }  
 }
-BooleanValue::BooleanValue (Ptr<const Value> value)
+BooleanValue::BooleanValue (PValue value)
 {
-  const BooleanValue *v = dynamic_cast<const BooleanValue *> (PeekPointer (value));
+  const BooleanValue *v = value.DynCast<const BooleanValue *> ();
   if (v == 0)
     {
       NS_FATAL_ERROR ("assigning non-Boolean value to Boolean value.");
     }
   m_value = v->m_value;
 }
-BooleanValue::operator Ptr<Value> () const
+BooleanValue::operator PValue () const
 {
-  return Create<BooleanValue> (*this);
-}
-BooleanValue::operator Ptr<const Value> () const
-{
-  return Create<BooleanValue> (*this);
+  return PValue::Create<BooleanValue> (*this);
 }
 
 } // namespace ns3

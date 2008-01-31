@@ -23,7 +23,6 @@
 #include "singleton.h"
 #include "trace-resolver.h"
 #include "value.h"
-#include "param-spec.h"
 #include "log.h"
 #include <vector>
 #include <sstream>
@@ -62,7 +61,6 @@ public:
   uint32_t GetParametersN (uint16_t uid) const;
   std::string GetParameterName (uint16_t uid, uint32_t i) const;
   uint32_t GetParameterFlags (uint16_t uid, uint32_t i) const;
-  const ns3::Value *GetParameterInitialValue (uint16_t uid, uint32_t i) const;
   uint32_t GetParameterUid (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::ParamSpec> GetParameterParamSpec (uint16_t uid, uint32_t i) const;
 private:
@@ -594,7 +592,7 @@ Parameters::Parameters (const Parameters &o)
     {
       struct Param param;
       param.spec = i->spec;
-      param.value = i->value->Copy ();
+      param.value = i->value.Copy ();
       m_parameters.push_back (param);
     }
 }
@@ -606,7 +604,7 @@ Parameters::operator = (const Parameters &o)
     {
       struct Param param;
       param.spec = i->spec;
-      param.value = i->value->Copy ();
+      param.value = i->value.Copy ();
       m_parameters.push_back (param);
     }
   return *this;
@@ -617,7 +615,7 @@ Parameters::~Parameters ()
 }
 
 bool 
-Parameters::Set (std::string name, Ptr<const Value> value)
+Parameters::Set (std::string name, PValue value)
 {
   Ptr<const ParamSpec> spec = TypeId::LookupParamSpecByFullName (name);
   bool ok = DoSet (spec, value);
@@ -637,7 +635,7 @@ Parameters::SetWithTid (TypeId tid, std::string name, std::string value)
   DoSet (spec, value);
 }
 void 
-Parameters::SetWithTid (TypeId tid, std::string name, Ptr<const Value> value)
+Parameters::SetWithTid (TypeId tid, std::string name, PValue value)
 {
   Ptr<const ParamSpec> spec = tid.LookupParamSpecByName (name);
   DoSet (spec, value);
@@ -649,14 +647,14 @@ Parameters::SetWithTid (TypeId tid, uint32_t position, std::string value)
   DoSet (spec, value);
 }
 void 
-Parameters::SetWithTid (TypeId tid, uint32_t position, Ptr<const Value> value)
+Parameters::SetWithTid (TypeId tid, uint32_t position, PValue value)
 {
   Ptr<const ParamSpec> spec = tid.LookupParamSpecByPosition (position);
   DoSet (spec, value);
 }
 
 void
-Parameters::DoSetOne (Ptr<const ParamSpec> spec, Ptr<const Value> value)
+Parameters::DoSetOne (Ptr<const ParamSpec> spec, PValue value)
 {
   // get rid of any previous value stored in this
   // vector of values.
@@ -671,11 +669,11 @@ Parameters::DoSetOne (Ptr<const ParamSpec> spec, Ptr<const Value> value)
   // store the new value.
   struct Param p;
   p.spec = spec;
-  p.value = value->Copy ();
+  p.value = value.Copy ();
   m_parameters.push_back (p);
 }
 bool
-Parameters::DoSet (Ptr<const ParamSpec> spec, Ptr<const Value> value)
+Parameters::DoSet (Ptr<const ParamSpec> spec, PValue value)
 {
   if (spec == 0)
     {
@@ -696,8 +694,8 @@ Parameters::DoSet (Ptr<const ParamSpec> spec, std::string value)
     {
       return false;
     }
-  Ptr<Value> v = spec->CreateInitialValue ();
-  bool ok = v->DeserializeFromString (value, spec);
+  PValue v = spec->CreateInitialValue ();
+  bool ok = v.DeserializeFromString (value, spec);
   if (!ok)
     {
       return false;
@@ -747,7 +745,7 @@ Parameters::SerializeToString (void) const
   for (Params::const_iterator i = m_parameters.begin (); i != m_parameters.end (); i++)
     {
       std::string name = LookupParameterFullNameByParamSpec (i->spec);
-      oss << name << "=" << i->value->SerializeToString (PeekPointer (i->spec));
+      oss << name << "=" << i->value.SerializeToString (PeekPointer (i->spec));
       if (i != m_parameters.end ())
         {
           oss << "|";
@@ -792,8 +790,8 @@ Parameters::DeserializeFromString (std::string str)
                 value = str.substr (equal+1, next - (equal+1));
                 cur++;
               }
-            Ptr<Value> val = spec->CreateInitialValue ();
-            bool ok = val->DeserializeFromString (value, spec);
+            PValue val = spec->CreateInitialValue ();
+            bool ok = val.DeserializeFromString (value, spec);
             if (!ok)
               {
                 // XXX invalid value
@@ -892,7 +890,7 @@ Object::Construct (const Parameters &parameters)
         if (!found)
           {
             // No matching parameter value so we set the default value.
-            Ptr<Value> initial = paramSpec->CreateInitialValue ();
+            PValue initial = paramSpec->CreateInitialValue ();
             paramSpec->Set (this, initial);
             NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                           tid.GetParameterName (i)<<"\" from local");
@@ -903,7 +901,7 @@ Object::Construct (const Parameters &parameters)
   NotifyConstructionCompleted ();
 }
 bool
-Object::DoSet (std::string name, Ptr<const Value> value)
+Object::DoSet (std::string name, PValue value)
 {
   Ptr<const ParamSpec> spec = m_tid.LookupParamSpecByName (name);
   if (spec == 0)
@@ -918,7 +916,7 @@ Object::DoSet (std::string name, Ptr<const Value> value)
   return true;
 }
 bool
-Object::Set (std::string name, Ptr<const Value> value)
+Object::Set (std::string name, PValue value)
 {
   return DoSet (name, value);
 }
@@ -930,13 +928,13 @@ Object::Set (std::string name, std::string value)
     {
       return false;
     }
-  Ptr<Value> parameter = spec->CreateInitialValue ();
-  bool ok = parameter->DeserializeFromString (value, spec);
+  PValue v = spec->CreateInitialValue ();
+  bool ok = v.DeserializeFromString (value, spec);
   if (!ok)
     {
       return false;
     }
-  spec->Set (this, parameter);
+  spec->Set (this, v);
   if (!ok)
     {
       return false;
@@ -951,34 +949,34 @@ Object::Get (std::string name, std::string &value) const
     {
       return false;
     }
-  Ptr<Value> parameter = paramSpec->CreateInitialValue ();
-  bool ok = paramSpec->Get (this, parameter);
+  PValue v = paramSpec->CreateInitialValue ();
+  bool ok = paramSpec->Get (this, v);
   if (ok)
     {
-      value = parameter->SerializeToString (paramSpec);
+      value = v.SerializeToString (paramSpec);
     }
   return ok;
 }
 
-Ptr<const Value>
+PValue
 Object::Get (std::string name) const
 {
   Ptr<const ParamSpec> paramSpec = m_tid.LookupParamSpecByName (name);
   if (paramSpec == 0)
     {
-      return 0;
+      return PValue ();
     }
-  Ptr<Value> value = paramSpec->CreateInitialValue ();
+  PValue value = paramSpec->CreateInitialValue ();
   bool ok = paramSpec->Get (this, value);
   if (!ok)
     {
-      return 0;
+      return PValue ();
     }
   return value;
 }
 
 bool 
-Object::DoGet (std::string name, Ptr<Value> parameter) const
+Object::DoGet (std::string name, PValue parameter) const
 {
   Ptr<const ParamSpec> paramSpec = m_tid.LookupParamSpecByName (name);
   if (paramSpec == 0)
