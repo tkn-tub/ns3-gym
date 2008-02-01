@@ -282,9 +282,22 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
           Ipv4Address addri = ipv4->GetAddress (i);
           Ipv4Mask maski = ipv4->GetNetworkMask (i);
           Ipv4Address bcast = addri.GetSubnetDirectedBroadcast (maski);
-          NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << bcast
+          Ipv4Address saddr;
+
+          if (m_endPoint->GetLocalAddress () == Ipv4Address::GetAny ())
+            {
+              // source address = interface address
+              saddr = addri;
+            }
+          else
+            {
+              // Bind was called on the socket to set an address; use it
+              saddr = m_endPoint->GetLocalAddress ();
+            }
+          
+          NS_LOG_LOGIC ("Sending one copy from " << saddr << " to " << bcast
                         << " (mask is " << maski << ")");
-          m_udp->Send (p->Copy (), addri, bcast,
+          m_udp->Send (p->Copy (), saddr, bcast,
                        m_endPoint->GetLocalPort (), port);
           NotifyDataSent (p->GetSize ());
         }
@@ -292,8 +305,21 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
     }
   else if (ipv4->GetIfIndexForDestination(dest, localIfIndex))
     {
+      Ipv4Address saddr;
+
+      if (m_endPoint->GetLocalAddress () == Ipv4Address::GetAny ())
+        {
+          // source address = interface address
+          saddr = ipv4->GetAddress (localIfIndex);
+        }
+      else
+        {
+          // Bind was called on the socket to set an address; use it
+          saddr = m_endPoint->GetLocalAddress ();
+        }
+
       NS_LOG_LOGIC ("Route exists");
-      m_udp->Send (p, ipv4->GetAddress (localIfIndex), dest,
+      m_udp->Send (p, saddr, dest,
 		   m_endPoint->GetLocalPort (), port);
       NotifyDataSent (p->GetSize ());
       return 0;
