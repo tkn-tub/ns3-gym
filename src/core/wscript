@@ -40,7 +40,6 @@ def build(bld):
         'default-value.cc',
         'command-line.cc',
         'type-name.cc',
-        'component-manager.cc',
         'random-variable-default-value.cc',
         'variable-tracer-test.cc',
         'trace-context.cc',
@@ -52,6 +51,7 @@ def build(bld):
         'trace-source.cc',
         'type-traits-test.cc',
         'array-trace-resolver.cc',
+        'type-id-default-value.cc',
         ]
 
     if sys.platform == 'win32':
@@ -80,7 +80,6 @@ def build(bld):
         'default-value.h',
         'command-line.h',
         'type-name.h',
-        'component-manager.h',
         'type-traits.h',
         'random-variable-default-value.h',
         'trace-source.h',
@@ -95,5 +94,6 @@ def build(bld):
         'array-trace-resolver.h',
         'trace-doc.h',
         'int-to-type.h',
+        'type-id-default-value.h',
         ]
 

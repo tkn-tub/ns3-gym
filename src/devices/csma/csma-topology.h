@@ -106,14 +106,14 @@ static Ptr<PacketSocket> ConnectPacketSocket(Ptr<PacketSocketApp> app,
 
   /**
    * \param n1 Node from which socketfactory should be tested.
-   * \param iid_name Interface identifier ("Packet", in this case)
+   * \param tid_name Interface identifier ("Packet", in this case)
    *
    * This is a test function to make sure that a socket can be created
    * by using the socketfactory interface provided in the
    * netdevicenode.
    */
 static  Ptr<Socket> CreatePacketSocket(Ptr<Node> n1, 
-                                       std::string iid_name);
+                                       std::string tid_name);
 #endif
 
 };

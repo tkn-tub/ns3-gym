@@ -45,15 +45,15 @@ PointToPointTopology::AddPointToPointLink(
   const DataRate& bps,
   const Time& delay)
 {
-  Ptr<PointToPointChannel> channel = Create<PointToPointChannel> (bps, delay);
+  Ptr<PointToPointChannel> channel = CreateObject<PointToPointChannel> (bps, delay);
 
-  Ptr<PointToPointNetDevice> net1 = Create<PointToPointNetDevice> (n1);
+  Ptr<PointToPointNetDevice> net1 = CreateObject<PointToPointNetDevice> (n1);
 
   Ptr<Queue> q = Queue::CreateDefault ();
   net1->AddQueue(q);
   net1->Attach (channel);
   
-  Ptr<PointToPointNetDevice> net2 = Create<PointToPointNetDevice> (n2);
+  Ptr<PointToPointNetDevice> net2 = CreateObject<PointToPointNetDevice> (n2);
 
   q = Queue::CreateDefault ();
   net2->AddQueue(q);
@@ -111,14 +111,14 @@ PointToPointTopology::AddIpv4Addresses(
   NS_ASSERT (nd1->GetNode ()->GetId () == n1->GetId ());
   NS_ASSERT (nd2->GetNode ()->GetId () == n2->GetId ());
   
-  Ptr<Ipv4> ip1 = n1->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ip1 = n1->GetObject<Ipv4> ();
   uint32_t index1 = ip1->AddInterface (nd1);
 
   ip1->SetAddress (index1, addr1);
   ip1->SetNetworkMask (index1, netmask);
   ip1->SetUp (index1);
 
-  Ptr<Ipv4> ip2 = n2->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ip2 = n2->GetObject<Ipv4> ();
   uint32_t index2 = ip2->AddInterface (nd2);
 
   ip2->SetAddress (index2, addr2);
@@ -153,7 +153,7 @@ PointToPointTopology::SetIpv4Metric(
   // Get interface indexes for both nodes corresponding to the right channel
   uint32_t index = 0;
   bool found = false;
-  Ptr<Ipv4> ip1 = n1->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ip1 = n1->GetObject<Ipv4> ();
   for (uint32_t i = 0; i < ip1->GetNInterfaces (); i++)
     {
       if (ip1 ->GetNetDevice (i) == nd1)
@@ -167,7 +167,7 @@ PointToPointTopology::SetIpv4Metric(
 
   index = 0;
   found = false;
-  Ptr<Ipv4> ip2 = n2->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ip2 = n2->GetObject<Ipv4> ();
   for (uint32_t i = 0; i < ip2->GetNInterfaces (); i++)
     {
       if (ip2 ->GetNetDevice (i) == nd2)
@@ -212,8 +212,8 @@ PointToPointTopology::AddIpv4Routes (
     }
 
   // Assert that both are Ipv4 nodes
-  Ptr<Ipv4> ip1 = nd1->GetNode ()->QueryInterface<Ipv4> (Ipv4::iid);
-  Ptr<Ipv4> ip2 = nd2->GetNode ()->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ip1 = nd1->GetNode ()->GetObject<Ipv4> ();
+  Ptr<Ipv4> ip2 = nd2->GetNode ()->GetObject<Ipv4> ();
   NS_ASSERT(ip1 != 0 && ip2 != 0);
 
   // Get interface indexes for both nodes corresponding to the right channel

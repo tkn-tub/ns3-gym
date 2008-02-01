@@ -100,10 +100,10 @@ main (int argc, char *argv[])
 // Explicitly create the nodes required by the topology (shown above).
 //
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> (); 
-  Ptr<Node> n2 = Create<InternetNode> (); 
-  Ptr<Node> n3 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> (); 
+  Ptr<Node> n2 = CreateObject<InternetNode> (); 
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
 
   NS_LOG_INFO ("Create channels.");
 //
@@ -167,7 +167,7 @@ main (int argc, char *argv[])
 //
   uint16_t port = 9;  // well-known echo port number
 
-  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
+  Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
 //
 // Create a UdpEchoClient application to send UDP datagrams from node zero to
 // node one.
@@ -176,7 +176,7 @@ main (int argc, char *argv[])
   uint32_t maxPacketCount = 1;
   Time interPacketInterval = Seconds (1.);
 
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", port, 
+  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", port, 
     maxPacketCount, interPacketInterval, packetSize);
 //
 // Tell the applications when to start and stop.

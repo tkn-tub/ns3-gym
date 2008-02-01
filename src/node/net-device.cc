@@ -33,7 +33,14 @@ NS_LOG_COMPONENT_DEFINE ("NetDevice");
 
 namespace ns3 {
 
-const InterfaceId NetDevice::iid = MakeInterfaceId ("NetDevice", Object::iid);
+NS_OBJECT_ENSURE_REGISTERED (NetDevice);
+
+TypeId NetDevice::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("NetDevice")
+    .SetParent<Object> ();
+  return tid;
+}
 
 NetDevice::NetDevice(Ptr<Node> node, const Address& addr) : 
   m_node (node), 
@@ -47,7 +54,6 @@ NetDevice::NetDevice(Ptr<Node> node, const Address& addr) :
   m_isPointToPoint (false)
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (NetDevice::iid);
   m_node->AddDevice (this);
 }
 

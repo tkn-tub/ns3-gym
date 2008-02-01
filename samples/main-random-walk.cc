@@ -45,8 +45,8 @@ int main (int argc, char *argv[])
 
   for (uint32_t i = 0; i < 100; i++)
     {
-      Ptr<Node> node = Create<Node> ();
-      node->AddInterface (Create<MobilityModelNotifier> ());
+      Ptr<Node> node = CreateObject<Node> ();
+      node->AggregateObject (CreateObject<MobilityModelNotifier> ());
     }
 
   topology.Layout (NodeList::Begin (), NodeList::End ());

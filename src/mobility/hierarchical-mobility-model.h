@@ -33,7 +33,7 @@ namespace ns3 {
 class HierarchicalMobilityModel : public MobilityModel
 {
 public:
-  static const InterfaceId iid;
+  static TypeId GetTypeId (void);
 
   /**
    * \param child the "relative" mobility model

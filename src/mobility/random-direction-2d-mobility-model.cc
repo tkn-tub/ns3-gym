@@ -31,9 +31,8 @@ NS_LOG_COMPONENT_DEFINE ("RandomDirection2dMobilityModel");
 namespace ns3 {
 
 const double RandomDirection2dMobilityModel::PI = 3.14159265358979323846;
-const ClassId RandomDirection2dMobilityModel::cid = 
-  MakeClassId<RandomDirection2dMobilityModel> ("RandomDirection2dMobilityModel",
-                                               MobilityModel::iid);
+
+NS_OBJECT_ENSURE_REGISTERED (RandomDirection2dMobilityModel);
 
 
 static RandomVariableDefaultValue 
@@ -103,7 +102,7 @@ RandomDirection2dMobilityModelParameters::GetCurrent (void)
       g_speedVariable.IsDirty () ||
       g_pauseVariable.IsDirty ())
     {
-      parameters = Create<RandomDirection2dMobilityModelParameters> ();
+      parameters = CreateObject<RandomDirection2dMobilityModelParameters> ();
       g_bounds.ClearDirtyFlag ();
       g_speedVariable.ClearDirtyFlag ();
       g_pauseVariable.ClearDirtyFlag ();
@@ -111,18 +110,26 @@ RandomDirection2dMobilityModelParameters::GetCurrent (void)
   return parameters;
 }
 
+TypeId
+RandomDirection2dMobilityModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("RandomDirection2dMobilityModel")
+    .SetParent<MobilityModel> ()
+    .AddConstructor<RandomDirection2dMobilityModel> ()
+    .AddConstructor<RandomDirection2dMobilityModel,Ptr<RandomDirection2dMobilityModelParameters> > ();
+  return tid;
+}
+
 
 RandomDirection2dMobilityModel::RandomDirection2dMobilityModel ()
   : m_parameters (RandomDirection2dMobilityModelParameters::GetCurrent ())
 {
-  SetInterfaceId (RandomDirection2dMobilityModel::iid);
   m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
 }
 RandomDirection2dMobilityModel::RandomDirection2dMobilityModel 
 (Ptr<RandomDirection2dMobilityModelParameters> parameters)
   : m_parameters (parameters)
 {
-  SetInterfaceId (RandomDirection2dMobilityModel::iid);
   m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
 }
 void 

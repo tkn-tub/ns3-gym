@@ -47,7 +47,7 @@ class Socket;
 class SocketFactory : public Object
 {
 public:
-  static const InterfaceId iid;
+  static TypeId GetTypeId (void);
 
   SocketFactory ();
 

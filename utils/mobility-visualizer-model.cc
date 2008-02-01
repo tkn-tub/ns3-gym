@@ -14,6 +14,7 @@
 #include "ns3/node.h"
 #include "ns3/node-list.h"
 #include "ns3/rectangle-default-value.h"
+#include "ns3/type-id-default-value.h"
 
 #include "mobility-visualizer.h"
 
@@ -47,7 +48,7 @@ Sample ()
   for (NodeList::Iterator nodeIter = NodeList::Begin (); nodeIter != NodeList::End (); nodeIter++)
     {
       Ptr<Node> node = *nodeIter;
-      Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
+      Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
       Vector pos = mobility->GetPosition ();
       Vector vel = mobility->GetVelocity ();
 
@@ -92,15 +93,15 @@ int model_init (int argc, char *argv[], double *x1, double *y1, double *x2, doub
 
   for (uint32_t i = 0; i < g_numNodes; i++)
     {
-      Ptr<Node> node = Create<Node> ();
-      node->AddInterface (Create<MobilityModelNotifier> ());
+      Ptr<Node> node = CreateObject<Node> ();
+      node->AggregateObject (CreateObject<MobilityModelNotifier> ());
     }
 
   topology.Layout (NodeList::Begin (), NodeList::End ());
 
   Simulator::Schedule (g_sampleInterval, Sample);
 
-  ClassId mobType = DefaultValueListGet<ClassIdDefaultValue> ("RandomTopologyMobilityType")->GetValue ();
+  TypeId mobType = DefaultValueListGet<TypeIdDefaultValue> ("RandomTopologyMobilityType")->GetValue ();
   if (mobType.GetName () == "RandomWalk2dMobilityModel")
     {
       Rectangle bounds = DefaultValueListGet<RectangleDefaultValue> ("RandomWalk2dBounds")->GetValue ();

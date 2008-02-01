@@ -20,7 +20,6 @@
 #ifndef STATIC_MOBILITY_MODEL_H
 #define STATIC_MOBILITY_MODEL_H
 
-#include "ns3/component-manager.h"
 #include "mobility-model.h"
 
 namespace ns3 {
@@ -33,7 +32,7 @@ namespace ns3 {
 class StaticMobilityModel : public MobilityModel 
 {
 public:
-  static const ClassId cid;
+  static TypeId GetTypeId (void);
   /**
    * Create a position located at coordinates (0,0,0)
    */

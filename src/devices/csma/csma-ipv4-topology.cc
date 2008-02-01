@@ -42,7 +42,7 @@ CsmaIpv4Topology::AddIpv4CsmaNetDevice(
   Ptr<Queue> q = Queue::CreateDefault ();
 
   // assume full-duplex
-  Ptr<CsmaNetDevice> nd = Create<CsmaNetDevice> (node, addr, 
+  Ptr<CsmaNetDevice> nd = CreateObject<CsmaNetDevice> (node, addr, 
     ns3::CsmaNetDevice::IP_ARP, true, true);
 
   nd->AddQueue(q);
@@ -58,13 +58,13 @@ CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
-  Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr,
+  Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> (n1, addr,
                                                   ns3::CsmaNetDevice::LLC,
                                                   true, false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
-  Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr,
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> (n1, addr,
                                                   ns3::CsmaNetDevice::LLC,
                                                   false, true);
   nd1->AddQueue(q);
@@ -78,13 +78,13 @@ CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
 {
   Ptr<Queue> q = Queue::CreateDefault ();
 
-  Ptr<CsmaNetDevice> nd0 = Create<CsmaNetDevice> (n1, addr,
+  Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> (n1, addr,
                                                   ns3::CsmaNetDevice::RAW,
                                                   true, false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
-  Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr,
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> (n1, addr,
                                                   ns3::CsmaNetDevice::RAW,
                                                   false, true);
   nd1->AddQueue(q);
@@ -101,7 +101,7 @@ CsmaIpv4Topology::AddIpv4Address(
 {
   Ptr<NetDevice> nd = node->GetDevice(netDeviceNumber);
 
-  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   uint32_t ifIndex = ipv4->AddInterface (nd);
 
   ipv4->SetAddress (ifIndex, address);
@@ -116,8 +116,8 @@ CsmaIpv4Topology::AddIpv4Routes (
   Ptr<NetDevice> nd1, Ptr<NetDevice> nd2)
 { 
   // Assert that both are Ipv4 nodes
-  Ptr<Ipv4> ip1 = nd1->GetNode ()->QueryInterface<Ipv4> (Ipv4::iid);
-  Ptr<Ipv4> ip2 = nd2->GetNode ()->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ip1 = nd1->GetNode ()->GetObject<Ipv4> ();
+  Ptr<Ipv4> ip2 = nd2->GetNode ()->GetObject<Ipv4> ();
   NS_ASSERT(ip1 != 0 && ip2 != 0);
 
   // Get interface indexes for both nodes corresponding to the right channel

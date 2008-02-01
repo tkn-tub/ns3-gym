@@ -40,8 +40,17 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4L3Protocol");
 
 namespace ns3 {
 
-const InterfaceId Ipv4L3Protocol::iid = MakeInterfaceId ("Ipv4L3Protocol", Object::iid);
 const uint16_t Ipv4L3Protocol::PROT_NUMBER = 0x0800;
+
+NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol);
+
+TypeId 
+Ipv4L3Protocol::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("Ipv4L3Protocol")
+    .SetParent<Object> ();
+  return tid;
+}
 
 Ipv4L3ProtocolTraceContextElement::Ipv4L3ProtocolTraceContextElement ()
   : m_type (TX)
@@ -158,8 +167,7 @@ Ipv4L3Protocol::Ipv4L3Protocol(Ptr<Node> node)
     m_node (node)
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (Ipv4L3Protocol::iid);
-  m_staticRouting = Create<Ipv4StaticRouting> ();
+  m_staticRouting = CreateObject<Ipv4StaticRouting> ();
   AddRoutingProtocol (m_staticRouting, 0);
   SetupLoopback ();
 }
@@ -185,7 +193,7 @@ Ipv4L3Protocol::SetupLoopback (void)
 {
   NS_LOG_FUNCTION;
 
-  Ptr<Ipv4LoopbackInterface> interface = Create<Ipv4LoopbackInterface> (m_node);
+  Ptr<Ipv4LoopbackInterface> interface = CreateObject<Ipv4LoopbackInterface> (m_node);
   interface->SetAddress (Ipv4Address::GetLoopback ());
   interface->SetNetworkMask (Ipv4Mask::GetLoopback ());
   uint32_t index = AddIpv4Interface (interface);
@@ -433,7 +441,7 @@ Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << &device);
-  Ptr<Ipv4Interface> interface = Create<ArpIpv4Interface> (m_node, device);
+  Ptr<Ipv4Interface> interface = CreateObject<ArpIpv4Interface> (m_node, device);
   return AddIpv4Interface (interface);
 }
 
@@ -743,7 +751,7 @@ Ipv4L3Protocol::ForwardUp (Ptr<Packet> p, Ipv4Header const&ip,
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << p << &ip);
 
-  Ptr<Ipv4L4Demux> demux = m_node->QueryInterface<Ipv4L4Demux> (Ipv4L4Demux::iid);
+  Ptr<Ipv4L4Demux> demux = m_node->GetObject<Ipv4L4Demux> ();
   Ptr<Ipv4L4Protocol> protocol = demux->GetProtocol (ip.GetProtocol ());
   protocol->Receive (p, ip.GetSource (), ip.GetDestination (), incomingInterface);
 }

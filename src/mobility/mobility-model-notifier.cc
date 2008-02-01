@@ -23,15 +23,17 @@
 
 namespace ns3 {
 
-const InterfaceId MobilityModelNotifier::iid = MakeInterfaceId ("MobilityModelNotifier", Object::iid);
-const ClassId MobilityModelNotifier::cid = 
-  MakeClassId<MobilityModelNotifier> ("MobilityModelNotifier", 
-				    MobilityModelNotifier::iid);
+TypeId 
+MobilityModelNotifier::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("MobilityModelNotifier")
+    .SetParent<Object> ()
+    .AddConstructor<MobilityModelNotifier> ();
+  return tid;
+}
 
 MobilityModelNotifier::MobilityModelNotifier ()
-{
-  SetInterfaceId (MobilityModelNotifier::iid);
-}
+{}
 
 void 
 MobilityModelNotifier::Notify (Ptr<const MobilityModel> position) const

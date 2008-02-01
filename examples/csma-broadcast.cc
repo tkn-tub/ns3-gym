@@ -107,9 +107,9 @@ main (int argc, char *argv[])
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> (); 
-  Ptr<Node> n2 = Create<InternetNode> (); 
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> (); 
+  Ptr<Node> n2 = CreateObject<InternetNode> (); 
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
@@ -154,7 +154,7 @@ main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 512 bytes (default) at a rate of 500 Kb/s (default) from n0
   NS_LOG_INFO ("Create Applications.");
-  Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
     n0, 
     InetSocketAddress ("255.255.255.255", port), 
     "Udp",
@@ -165,7 +165,7 @@ main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
   
   // Create an optional packet sink to receive these packets
-  Ptr<PacketSink> sink = Create<PacketSink> (
+  Ptr<PacketSink> sink = CreateObject<PacketSink> (
     n1,
     InetSocketAddress (Ipv4Address::GetAny (), port),
     "Udp");
@@ -174,7 +174,7 @@ main (int argc, char *argv[])
   sink->Stop (Seconds (10.0));
 
   // Create an optional packet sink to receive these packets
-  sink = Create<PacketSink> (
+  sink = CreateObject<PacketSink> (
     n2,
     InetSocketAddress (Ipv4Address::GetAny (), port),
     "Udp");

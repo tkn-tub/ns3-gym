@@ -25,12 +25,18 @@
 
 namespace ns3 {
 
-const InterfaceId Ipv4::iid = MakeInterfaceId ("Ipv4", Object::iid);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4);
+
+TypeId 
+Ipv4::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("Ipv4")
+    .SetParent<Object> ();
+  return tid;
+}
 
 Ipv4::Ipv4 ()
-{
-  SetInterfaceId (Ipv4::iid);
-}
+{}
 
 Ipv4::~Ipv4 ()
 {}

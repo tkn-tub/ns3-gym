@@ -36,7 +36,7 @@ CsmaTopology::CreateCsmaChannel(
   const DataRate& bps,
   const Time& delay)
 {
-  Ptr<CsmaChannel> channel = Create<CsmaChannel> (bps, delay);
+  Ptr<CsmaChannel> channel = CreateObject<CsmaChannel> (bps, delay);
 
   return channel;
 }
@@ -48,7 +48,7 @@ CsmaTopology::AddCsmaEthernetNode(
   Ptr<CsmaChannel> ch,
   MacAddress addr)
 {
-  Ptr<CsmaNetDevice> nd1 = Create<CsmaNetDevice> (n1, addr, 
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> (n1, addr, 
                                                       ns3::CsmaNetDevice::ETHERNET_V1);
 
   Ptr<Queue> q = Queue::CreateDefault ();
@@ -63,7 +63,7 @@ CsmaTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app,
                                         Ptr<CsmaNetDevice> ndSrc,
                                         Ptr<CsmaNetDevice> ndDest)
 {
-  Ptr<PacketSocket> socket = Create<PacketSocket> ();
+  Ptr<PacketSocket> socket = CreateObject<PacketSocket> ();
   socket->Bind(ndSrc);
   socket->Connect(ndDest->GetAddress());
   app->Connect(socket);
@@ -76,7 +76,7 @@ CsmaTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app,
                                         Ptr<CsmaNetDevice> ndSrc,
                                         MacAddress macAddr)
 {
-  Ptr<PacketSocket> socket = Create<PacketSocket> ();
+  Ptr<PacketSocket> socket = CreateObject<PacketSocket> ();
   socket->Bind(ndSrc);
   socket->Connect(macAddr);
   app->Connect(socket);
@@ -85,12 +85,12 @@ CsmaTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app,
 }
 
 Ptr<Socket>
-CsmaTopology::CreatePacketSocket(Ptr<Node> n1, std::string iid_name)
+CsmaTopology::CreatePacketSocket(Ptr<Node> n1, std::string tid_name)
 {
-  InterfaceId iid = InterfaceId::LookupByName (iid_name);
+  TypeId tid = TypeId::LookupByName (tid_name);
 
   Ptr<SocketFactory> socketFactory =
-    n1->QueryInterface<SocketFactory> (iid);
+    n1->GetObject<SocketFactory> (tid);
 
   Ptr<Socket> socket = socketFactory->CreateSocket ();
 

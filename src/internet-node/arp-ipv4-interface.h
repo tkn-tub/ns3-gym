@@ -34,7 +34,7 @@ class Node;
  *
  * If you need to use ARP on top of a specific NetDevice, you
  * can use this Ipv4Interface subclass to wrap it for the Ipv4 class
- * when calling Ipv4::AddInterface.
+ * when calling Ipv4::AggregateObject.
  */
 class ArpIpv4Interface : public Ipv4Interface
 {

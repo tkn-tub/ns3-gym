@@ -60,13 +60,13 @@ void
 WifiChannel::Send (Ptr<NetDevice> sender, Ptr<const Packet> packet, double txPowerDbm,
                    WifiMode wifiMode, WifiPreamble preamble) const
 {
-  Ptr<MobilityModel> senderMobility = sender->GetNode ()->QueryInterface<MobilityModel> (MobilityModel::iid);
+  Ptr<MobilityModel> senderMobility = sender->GetNode ()->GetObject<MobilityModel> ();
   uint32_t j = 0;
   for (DeviceList::const_iterator i = m_deviceList.begin (); i != m_deviceList.end (); i++)
     {
       if (sender != i->first)
         {
-          Ptr<MobilityModel> receiverMobility = i->first->GetNode ()->QueryInterface<MobilityModel> (MobilityModel::iid);
+          Ptr<MobilityModel> receiverMobility = i->first->GetNode ()->GetObject<MobilityModel> ();
           Time delay = m_delay->GetDelay (senderMobility, receiverMobility);
           double rxPowerDbm = m_loss->GetRxPower (txPowerDbm, senderMobility, receiverMobility);
           NS_LOG_DEBUG ("propagation: txPower="<<txPowerDbm<<"dbm, rxPower="<<rxPowerDbm<<"dbm, "<<

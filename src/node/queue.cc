@@ -20,16 +20,17 @@
 #include "ns3/log.h"
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/default-value.h"
-#include "ns3/component-manager.h"
+#include "ns3/type-id-default-value.h"
 #include "queue.h"
 
 NS_LOG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
-const InterfaceId Queue::iid = MakeInterfaceId ("Queue", Object::iid);
-static ClassIdDefaultValue g_classIdDefaultValue ("Queue", "Packet Queue",
-                                                  Queue::iid, "DropTailQueue");
+static TypeIdDefaultValue g_interfaceIdDefaultValue ("Queue", "Packet Queue",
+                                                          Queue::GetTypeId (), "DropTailQueue");
+
+NS_OBJECT_ENSURE_REGISTERED (Queue);
 
 
 std::string 
@@ -97,6 +98,14 @@ QueueTraceType::Print (std::ostream &os) const
   }
 }
 
+TypeId 
+Queue::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("Queue")
+    .SetParent<Object> ();
+  return tid;
+}
+
 Queue::Queue() : 
   m_nBytes(0), 
   m_nTotalReceivedBytes(0),
@@ -106,7 +115,6 @@ Queue::Queue() :
   m_nTotalDroppedPackets(0)
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (Queue::iid);
 }
 
 Queue::~Queue()
@@ -275,8 +283,8 @@ Ptr<Queue>
 Queue::CreateDefault (void)
 {
   NS_LOG_FUNCTION;
-  ClassId classId = g_classIdDefaultValue.GetValue ();
-  Ptr<Queue> queue = ComponentManager::Create<Queue> (classId, Queue::iid);
+  TypeId interfaceId = g_interfaceIdDefaultValue.GetValue ();
+  Ptr<Queue> queue = interfaceId.CreateObject ()->GetObject<Queue> ();
   return queue;
 }
 

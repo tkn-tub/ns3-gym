@@ -24,13 +24,20 @@ NS_LOG_COMPONENT_DEFINE ("Channel");
 
 namespace ns3 {
 
-const InterfaceId Channel::iid = MakeInterfaceId ("Channel", Object::iid);
+NS_OBJECT_ENSURE_REGISTERED (Channel);
+
+TypeId 
+Channel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("Channel")
+    .SetParent<Object> ();
+  return tid;
+}
 
 Channel::Channel ()
   : m_name("Channel")
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (Channel::iid);
 }
 
 Channel::Channel (std::string name)
@@ -38,7 +45,6 @@ Channel::Channel (std::string name)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << name);
-  SetInterfaceId (Channel::iid);
 }
 
 Channel::~Channel ()

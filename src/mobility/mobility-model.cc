@@ -23,12 +23,16 @@
 
 namespace ns3 {
 
-const InterfaceId MobilityModel::iid = MakeInterfaceId ("MobilityModel", Object::iid);
+TypeId 
+MobilityModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("MobilityModel")
+    .SetParent<Object> ();
+  return tid;
+}
 
 MobilityModel::MobilityModel ()
-{
-  SetInterfaceId (MobilityModel::iid);
-}
+{}
 
 MobilityModel::~MobilityModel ()
 {}
@@ -61,8 +65,7 @@ MobilityModel::GetDistanceFrom (Ptr<const MobilityModel> other) const
 void
 MobilityModel::NotifyCourseChange (void) const
 {
-  Ptr<MobilityModelNotifier> notifier = 
-    QueryInterface<MobilityModelNotifier> (MobilityModelNotifier::iid);
+  Ptr<MobilityModelNotifier> notifier = GetObject<MobilityModelNotifier> ();
   if (notifier != 0)
     {
       notifier->Notify (this);

@@ -45,7 +45,7 @@ int main (int argc, char *argv[])
 	  uint32_t n = atoi (*argv + strlen ("--n="));
 	  for (uint32_t i = 0; i < n; i++)
 	    {
-	      Ptr<MobilityModelNotifier> notifier = Create<MobilityModelNotifier> ();
+	      Ptr<MobilityModelNotifier> notifier = CreateObject<MobilityModelNotifier> ();
 	      notifier->RegisterListener (MakeCallback (&CourseChange));
 	      objects.push_back (notifier);
 	    }

@@ -17,7 +17,7 @@ int main (int argc, char *argv[])
   // create an array of empty nodes for testing purposes 
   for (uint32_t i = 0; i < 120; i++)
     {
-      nodes.push_back (Create<InternetNode> ());
+      nodes.push_back (CreateObject<InternetNode> ());
     }
 
   // setup the grid itself: objects are layed out
@@ -27,7 +27,7 @@ int main (int argc, char *argv[])
   GridTopology grid (-100, -100, 20, 5, 20);
 
   // each object will be attached a static position.
-  grid.SetMobilityModel (StaticMobilityModel::cid);
+  grid.SetMobilityModel (StaticMobilityModel::GetTypeId ());
 
   // finalize the setup by attaching to each object
   // in the input array a position and initializing
@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
        j != nodes.end (); j++)
     {
       Ptr<Object> object = *j;
-      Ptr<MobilityModel> position = object->QueryInterface<MobilityModel> (MobilityModel::iid);
+      Ptr<MobilityModel> position = object->GetObject<MobilityModel> ();
       NS_ASSERT (position != 0);
       Vector pos = position->GetPosition ();
       std::cout << "x=" << pos.x << ", y=" << pos.y << ", z=" << pos.z << std::endl;

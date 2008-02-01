@@ -40,10 +40,10 @@ PrintTraffic (Ptr<Socket> socket)
 void
 RunSimulation (void)
 {
-  Ptr<Node> a = Create<InternetNode> ();
+  Ptr<Node> a = CreateObject<InternetNode> ();
 
-  InterfaceId iid = InterfaceId::LookupByName ("Udp");
-  Ptr<SocketFactory> socketFactory = a->QueryInterface<SocketFactory> (iid);
+  TypeId tid = TypeId::LookupByName ("Udp");
+  Ptr<SocketFactory> socketFactory = a->GetObject<SocketFactory> (tid);
 
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), 80);

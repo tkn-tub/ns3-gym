@@ -558,9 +558,9 @@ public:
 /**
  * @brief The Interface ID of the Global Router interface.
  *
- * @see Object::QueryInterface ()
+ * @see Object::GetObject ()
  */
-  static const InterfaceId iid;
+  static TypeId GetTypeId (void);
 
 /**
  * @brief Create a Global Router class 

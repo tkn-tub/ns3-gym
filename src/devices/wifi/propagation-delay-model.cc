@@ -56,10 +56,10 @@ PropagationDelayModel::CreateDefault (void)
 {
   switch (g_modelType.GetValue ()) {
   case CONSTANT_SPEED:
-    return Create<ConstantSpeedPropagationDelayModel> (g_speed.GetValue ());
+    return CreateObject<ConstantSpeedPropagationDelayModel> (g_speed.GetValue ());
     break;
   case RANDOM:
-    return Create<RandomPropagationDelayModel> ();
+    return CreateObject<RandomPropagationDelayModel> ();
     break;
   default:
     NS_ASSERT (false);

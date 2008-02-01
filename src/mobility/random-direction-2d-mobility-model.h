@@ -25,7 +25,6 @@
 #include "ns3/ptr.h"
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
-#include "ns3/component-manager.h"
 #include "ns3/rectangle.h"
 #include "mobility-model.h"
 #include "static-speed-helper.h"
@@ -90,7 +89,7 @@ class RandomDirection2dMobilityModelParameters : public Object
 class RandomDirection2dMobilityModel : public MobilityModel
 {
  public:
-  static const ClassId cid;
+  static TypeId GetTypeId (void);
 
   /**
    * Create from \valueref{RandomDirection2dSpeed},

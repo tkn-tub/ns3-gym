@@ -151,14 +151,14 @@ SPFVertex::GetDistanceFromRoot (void) const
 }
 
   void 
-SPFVertex::SetOutgoingInterfaceId (uint32_t id)
+SPFVertex::SetOutgoingTypeId (uint32_t id)
 {
   NS_LOG_FUNCTION;
   m_rootOif = id;
 }
 
   uint32_t 
-SPFVertex::GetOutgoingInterfaceId (void) const
+SPFVertex::GetOutgoingTypeId (void) const
 {
   NS_LOG_FUNCTION;
   return m_rootOif;
@@ -366,8 +366,8 @@ GlobalRouteManagerImpl::SelectRouterNodes ()
       NS_LOG_LOGIC ("Adding GlobalRouter interface to node " << 
         node->GetId ());
 
-      Ptr<GlobalRouter> globalRouter = Create<GlobalRouter> ();
-      node->AddInterface (globalRouter);
+      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> ();
+      node->AggregateObject (globalRouter);
     }
 }
 
@@ -392,7 +392,7 @@ GlobalRouteManagerImpl::BuildGlobalRoutingDatabase ()
       Ptr<Node> node = *i;
 
       Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+        node->GetObject<GlobalRouter> ();
 //      
 // Ignore nodes that aren't participating in routing.
 //
@@ -476,7 +476,7 @@ GlobalRouteManagerImpl::InitializeRoutes ()
 // participating in routing.
 //
       Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+        node->GetObject<GlobalRouter> ();
 //
 // if the node has a global router interface, then run the global routing
 // algorithms.
@@ -784,14 +784,14 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 // from the perspective of <v> -- remember that <l> is the link "from"
 // <v> "to" <w>.
 //
-          w->SetOutgoingInterfaceId (
-            FindOutgoingInterfaceId (l->GetLinkData ()));
+          w->SetOutgoingTypeId (
+            FindOutgoingTypeId (l->GetLinkData ()));
           w->SetDistanceFromRoot (distance);
           w->SetParent (v);
           NS_LOG_LOGIC ("Next hop from " << 
             v->GetVertexId () << " to " << w->GetVertexId () << 
             " goes through next hop " << w->GetNextHop () <<
-            " via outgoing interface " << w->GetOutgoingInterfaceId () <<
+            " via outgoing interface " << w->GetOutgoingTypeId () <<
             " with distance " << distance);
         }  // end W is a router vertes
       else 
@@ -801,14 +801,14 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
           GlobalRoutingLSA* w_lsa = w->GetLSA ();
           NS_ASSERT (w_lsa->GetLSType () == GlobalRoutingLSA::NetworkLSA);
 // Find outgoing interface ID for this network
-          w->SetOutgoingInterfaceId (
-            FindOutgoingInterfaceId (w_lsa->GetLinkStateId (), 
+          w->SetOutgoingTypeId (
+            FindOutgoingTypeId (w_lsa->GetLinkStateId (), 
             w_lsa->GetNetworkLSANetworkMask () ));
           w->SetDistanceFromRoot (distance);
           w->SetParent (v);
           NS_LOG_LOGIC ("Next hop from " << 
             v->GetVertexId () << " to network " << w->GetVertexId () << 
-            " via outgoing interface " << w->GetOutgoingInterfaceId () <<
+            " via outgoing interface " << w->GetOutgoingTypeId () <<
             " with distance " << distance);
           return 1;
         }
@@ -833,17 +833,17 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
  * it can be inherited from the parent network).
  */
                 w->SetNextHop(linkRemote->GetLinkData ());
-                w->SetOutgoingInterfaceId (v->GetOutgoingInterfaceId ());
+                w->SetOutgoingTypeId (v->GetOutgoingTypeId ());
                 NS_LOG_LOGIC ("Next hop from " << 
                   v->GetVertexId () << " to " << w->GetVertexId () << 
                   " goes through next hop " << w->GetNextHop () <<
-                  " via outgoing interface " << w->GetOutgoingInterfaceId ());
+                  " via outgoing interface " << w->GetOutgoingTypeId ());
             }
         }
       else 
         {
           w->SetNextHop (v->GetNextHop ());
-          w->SetOutgoingInterfaceId (v->GetOutgoingInterfaceId ());
+          w->SetOutgoingTypeId (v->GetOutgoingTypeId ());
         }
     }
   else 
@@ -862,7 +862,7 @@ GlobalRouteManagerImpl::SPFNexthopCalculation (
 // (are inherited).
 //
       w->SetNextHop (v->GetNextHop ());
-      w->SetOutgoingInterfaceId (v->GetOutgoingInterfaceId ());
+      w->SetOutgoingTypeId (v->GetOutgoingTypeId ());
     }
 //
 // In all cases, we need valid values for the distance metric and a parent.
@@ -1122,7 +1122,7 @@ GlobalRouteManagerImpl::SPFCalculate (Ipv4Address root)
 // have to find the right node pointer to pass to that function.
 //
   uint32_t
-GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
+GlobalRouteManagerImpl::FindOutgoingTypeId (Ipv4Address a, Ipv4Mask amask)
 {
   NS_LOG_FUNCTION;
 //
@@ -1145,7 +1145,7 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
       Ptr<Node> node = *i;
 
       Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+        node->GetObject<GlobalRouter> ();
 //
 // If the node doesn't have a GlobalRouter interface it can't be the one
 // we're interested in.
@@ -1163,9 +1163,9 @@ GlobalRouteManagerImpl::FindOutgoingInterfaceId (Ipv4Address a, Ipv4Mask amask)
 // is participating in routing IP version 4 packets, it certainly must have 
 // an Ipv4 interface.
 //
-          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+          Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
-            "GlobalRouteManagerImpl::FindOutgoingInterfaceId (): "
+            "GlobalRouteManagerImpl::FindOutgoingTypeId (): "
             "QI for <Ipv4> interface failed");
 //
 // Look through the interfaces on this node for one that has the IP address
@@ -1229,7 +1229,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // in question cannot be the router we want, so we continue.
 // 
       Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+        node->GetObject<GlobalRouter> ();
 
       if (rtr == 0)
         {
@@ -1252,7 +1252,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // for that interface.  If the node is acting as an IP version 4 router, it
 // should absolutely have an Ipv4 interface.
 //
-          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+          Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
             "GlobalRouteManagerImpl::SPFIntraAddRouter (): "
             "QI for <Ipv4> interface failed");
@@ -1290,7 +1290,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
               NS_LOG_LOGIC (" Node " << node->GetId () <<
                 " add route to " << lr->GetLinkData () <<
                 " using next hop " << v->GetNextHop () <<
-                " via interface " << v->GetOutgoingInterfaceId ());
+                " via interface " << v->GetOutgoingTypeId ());
 //
 // Here's why we did all of that work.  We're going to add a host route to the
 // host address found in the m_linkData field of the point-to-point link
@@ -1305,7 +1305,7 @@ GlobalRouteManagerImpl::SPFIntraAddRouter (SPFVertex* v)
 // which the packets should be send for forwarding.
 //
               ipv4->AddHostRouteTo (lr->GetLinkData (), v->GetNextHop (),
-                v->GetOutgoingInterfaceId ());
+                v->GetOutgoingTypeId ());
             }
 //
 // Done adding the routes for the selected node.
@@ -1346,7 +1346,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 // in question cannot be the router we want, so we continue.
 // 
       Ptr<GlobalRouter> rtr = 
-        node->QueryInterface<GlobalRouter> (GlobalRouter::iid);
+        node->GetObject<GlobalRouter> ();
 
       if (rtr == 0)
         {
@@ -1369,7 +1369,7 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
 // for that interface.  If the node is acting as an IP version 4 router, it
 // should absolutely have an Ipv4 interface.
 //
-          Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+          Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
           NS_ASSERT_MSG (ipv4, 
             "GlobalRouteManagerImpl::SPFIntraAddTransit (): "
             "QI for <Ipv4> interface failed");
@@ -1387,11 +1387,11 @@ GlobalRouteManagerImpl::SPFIntraAddTransit (SPFVertex* v)
           Ipv4Address tempip = lsa->GetLinkStateId ();
           tempip = tempip.CombineMask (tempmask);
           ipv4->AddNetworkRouteTo (tempip, tempmask, v->GetNextHop (),
-            v->GetOutgoingInterfaceId ());
+            v->GetOutgoingTypeId ());
           NS_LOG_LOGIC ("Node " << node->GetId () <<
             " add network route to " << tempip <<
             " using next hop " << v->GetNextHop () <<
-            " via interface " << v->GetOutgoingInterfaceId ());
+            " via interface " << v->GetOutgoingTypeId ());
         }
     } 
 }

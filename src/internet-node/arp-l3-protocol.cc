@@ -33,14 +33,22 @@ NS_LOG_COMPONENT_DEFINE ("ArpL3Protocol");
 
 namespace ns3 {
 
-const InterfaceId ArpL3Protocol::iid = MakeInterfaceId ("ArpL3Protocol", Object::iid);
 const uint16_t ArpL3Protocol::PROT_NUMBER = 0x0806;
+
+NS_OBJECT_ENSURE_REGISTERED (ArpL3Protocol);
+
+TypeId 
+ArpL3Protocol::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ArpL3Protocol")
+    .SetParent<Object> ();
+  return tid;
+}
 
 ArpL3Protocol::ArpL3Protocol (Ptr<Node> node)
   : m_node (node)
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (ArpL3Protocol::iid);
 }
 
 ArpL3Protocol::~ArpL3Protocol ()
@@ -72,7 +80,7 @@ ArpL3Protocol::FindCache (Ptr<NetDevice> device)
 	  return *i;
 	}
     }
-  Ptr<Ipv4L3Protocol> ipv4 = m_node->QueryInterface<Ipv4L3Protocol> (Ipv4L3Protocol::iid);
+  Ptr<Ipv4L3Protocol> ipv4 = m_node->GetObject<Ipv4L3Protocol> ();
   Ptr<Ipv4Interface> interface = ipv4->FindInterfaceForDevice (device);
   ArpCache * cache = new ArpCache (device, interface);
   NS_ASSERT (device->IsBroadcast ());

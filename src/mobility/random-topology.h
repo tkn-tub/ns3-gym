@@ -23,7 +23,6 @@
 
 #include "ns3/ptr.h"
 #include "ns3/object.h"
-#include "ns3/component-manager.h"
 
 namespace ns3 {
 
@@ -55,15 +54,15 @@ class RandomTopology
    * specified position and mobility models.
    */
   RandomTopology (Ptr<RandomPosition> positionModel,
-                  ClassId mobilityModel);
+                  TypeId mobilityModel);
 
   ~RandomTopology ();
 
   /**
-   * \param classId the type of mobility model attached to each
+   * \param interfaceId the type of mobility model attached to each
    *        input object if it does not have one already.
    */
-  void SetMobilityModel (ClassId classId);
+  void SetMobilityModel (TypeId interfaceId);
   /**
    * \param positionModel the position model used to initialize
    *        the position of each object.
@@ -91,7 +90,7 @@ class RandomTopology
   void Layout (const T &begin, const T &end);
  private:
   Ptr<RandomPosition> m_positionModel;
-  ClassId m_mobilityModel;
+  TypeId m_mobilityModel;
 };
 
 } // namespace ns3

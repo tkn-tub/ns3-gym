@@ -28,13 +28,13 @@ GridTopology::GridTopology (double xMin, double yMin, uint32_t n, double deltaX,
     m_n (n),
     m_deltaX (deltaX),
     m_deltaY (deltaY),
-    m_positionClassId (StaticMobilityModel::cid)
+    m_positionTypeId (StaticMobilityModel::GetTypeId ())
 {}
 
 void 
-GridTopology::SetMobilityModel (ClassId classId)
+GridTopology::SetMobilityModel (TypeId interfaceId)
 {
-  m_positionClassId = classId;
+  m_positionTypeId = interfaceId;
 }
 
 void 
@@ -43,9 +43,8 @@ GridTopology::LayoutOneRowFirst (Ptr<Object> object, uint32_t i)
   double x, y;
   x = m_xMin + m_deltaX * (i % m_n);
   y = m_yMin + m_deltaY * (i / m_n);
-  Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_positionClassId,
-                                                                         MobilityModel::iid);
-  object->AddInterface (mobility);
+  Ptr<MobilityModel> mobility = m_positionTypeId.CreateObject ()->GetObject<MobilityModel> ();
+  object->AggregateObject (mobility);
   mobility->SetPosition (Vector (x, y, 0.0));
 }
 
@@ -55,9 +54,8 @@ GridTopology::LayoutOneColumnFirst (Ptr<Object> object, uint32_t i)
   double x, y;
   x = m_xMin + m_deltaX * (i / m_n);
   y = m_yMin + m_deltaY * (i % m_n);
-  Ptr<MobilityModel> mobility = ComponentManager::Create<MobilityModel> (m_positionClassId, 
-                                                                         MobilityModel::iid);
-  object->AddInterface (mobility);
+  Ptr<MobilityModel> mobility = m_positionTypeId.CreateObject ()->GetObject<MobilityModel> ();
+  object->AggregateObject (mobility);
   mobility->SetPosition (Vector (x, y, 0.0));
 }
 

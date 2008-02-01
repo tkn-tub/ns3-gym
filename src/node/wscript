@@ -25,6 +25,7 @@ def build(bld):
         'packet-socket-factory.cc',
         'packet-socket.cc',
         'udp.cc',
+        'tcp.cc',
         'ipv4.cc',
         'application.cc',
         ]
@@ -52,6 +53,7 @@ def build(bld):
         'socket-factory.h',
         'packet-socket-factory.h',
         'udp.h',
+        'tcp.h',
         'ipv4.h',
         'application.h',
         ]

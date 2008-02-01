@@ -23,7 +23,6 @@
 
 #include "ns3/object.h"
 #include "ns3/nstime.h"
-#include "ns3/component-manager.h"
 #include "ns3/event-id.h"
 #include "ns3/rectangle.h"
 #include "mobility-model.h"
@@ -116,7 +115,7 @@ class RandomWalk2dMobilityModelParameters : public Object
 class RandomWalk2dMobilityModel : public MobilityModel 
 {
  public:
-  static const ClassId cid;
+  static TypeId GetTypeId (void);
   /**
    * Instantiate a set of RandomWalk parameters initialized
    * with construction values from \valueref{RandomWalk2dMode},

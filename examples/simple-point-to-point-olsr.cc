@@ -118,10 +118,10 @@ main (int argc, char *argv[])
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> (); 
-  Ptr<Node> n2 = Create<InternetNode> (); 
-  Ptr<Node> n3 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> (); 
+  Ptr<Node> n2 = CreateObject<InternetNode> (); 
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
@@ -162,7 +162,7 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
     n0, 
     InetSocketAddress ("10.1.3.2", port), 
     "Udp",
@@ -173,7 +173,7 @@ main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
 
   // Create an optional packet sink to receive these packets
-  Ptr<PacketSink> sink = Create<PacketSink> (
+  Ptr<PacketSink> sink = CreateObject<PacketSink> (
     n3,
     InetSocketAddress (Ipv4Address::GetAny (), port),
     "Udp");
@@ -182,7 +182,7 @@ main (int argc, char *argv[])
   sink->Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  ooff = Create<OnOffApplication> (
+  ooff = CreateObject<OnOffApplication> (
     n3, 
     InetSocketAddress ("10.1.2.1", port), 
     "Udp",
@@ -193,7 +193,7 @@ main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
 
   // Create a packet sink to receive these packets
-  sink = Create<PacketSink> (
+  sink = CreateObject<PacketSink> (
     n1,
     InetSocketAddress (Ipv4Address::GetAny (), port),
     "Udp");
@@ -205,9 +205,9 @@ main (int argc, char *argv[])
   // This will likely set by some global StaticRouting object in the future
   NS_LOG_INFO ("Set Default Routes.");
   Ptr<Ipv4> ipv4;
-  ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = n0->GetObject<Ipv4> ();
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
-  ipv4 = n3->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = n3->GetObject<Ipv4> ();
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
   
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events

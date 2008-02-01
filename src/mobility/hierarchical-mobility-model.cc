@@ -22,23 +22,33 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (HierarchicalMobilityModel);
+
+TypeId 
+HierarchicalMobilityModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("HierarchicalMobilityModel")
+    .SetParent<MobilityModel> ();
+  return tid;
+}
+
 HierarchicalMobilityModel::HierarchicalMobilityModel (Ptr<MobilityModel> child, Ptr<MobilityModel> parent)
   : m_child (child),
     m_parent (parent)
 {
   Ptr<MobilityModelNotifier> childNotifier = 
-    m_child->QueryInterface<MobilityModelNotifier> (MobilityModelNotifier::iid);
+    m_child->GetObject<MobilityModelNotifier> ();
   Ptr<MobilityModelNotifier> parentNotifier = 
-    m_parent->QueryInterface<MobilityModelNotifier> (MobilityModelNotifier::iid);
+    m_parent->GetObject<MobilityModelNotifier> ();
   if (childNotifier == 0)
     {
-      childNotifier = Create<MobilityModelNotifier> ();
-      child->AddInterface (childNotifier);
+      childNotifier = CreateObject<MobilityModelNotifier> ();
+      child->AggregateObject (childNotifier);
     }
   if (parentNotifier == 0)
     {
-      parentNotifier = Create<MobilityModelNotifier> ();
-      parent->AddInterface (parentNotifier);
+      parentNotifier = CreateObject<MobilityModelNotifier> ();
+      parent->AggregateObject (parentNotifier);
     }
   childNotifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
   parentNotifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));

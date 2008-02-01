@@ -71,7 +71,7 @@ ArpIpv4Interface::SendTo (Ptr<Packet> p, Ipv4Address dest)
     {
       NS_LOG_LOGIC ("Needs ARP");
       Ptr<ArpL3Protocol> arp = 
-        m_node->QueryInterface<ArpL3Protocol> (ArpL3Protocol::iid);
+        m_node->GetObject<ArpL3Protocol> ();
       Address hardwareDestination;
       bool found;
       

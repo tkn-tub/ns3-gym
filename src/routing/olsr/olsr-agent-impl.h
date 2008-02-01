@@ -49,6 +49,8 @@ namespace olsr {
 class AgentImpl : public Agent
 {
 public:
+  static TypeId GetTypeId (void);
+
   AgentImpl (Ptr<Node> node);
 
   virtual void Start ();

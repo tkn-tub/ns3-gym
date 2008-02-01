@@ -120,13 +120,13 @@ main (int argc, char *argv[])
   CommandLine::Parse (argc, argv);
 
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> (); 
-  Ptr<Node> n2 = Create<InternetNode> (); 
-  Ptr<Node> n3 = Create<InternetNode> ();
-  Ptr<Node> n4 = Create<InternetNode> (); 
-  Ptr<Node> n5 = Create<InternetNode> (); 
-  Ptr<Node> n6 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> (); 
+  Ptr<Node> n2 = CreateObject<InternetNode> (); 
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
+  Ptr<Node> n4 = CreateObject<InternetNode> (); 
+  Ptr<Node> n5 = CreateObject<InternetNode> (); 
+  Ptr<Node> n6 = CreateObject<InternetNode> ();
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
@@ -191,7 +191,7 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
     n0, 
     InetSocketAddress ("10.1.3.2", port), 
     "Udp",

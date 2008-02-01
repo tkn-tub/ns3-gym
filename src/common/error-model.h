@@ -23,7 +23,6 @@
 
 #include <list>
 #include "ns3/object.h"
-#include "ns3/component-manager.h"
 
 namespace ns3 {
 
@@ -48,7 +47,7 @@ class RandomVariable;
  * Typical code (simplified) to use an ErrorModel may look something like 
  * this:
  * \code 
- * Ptr<ErrorModel> rem = Create<RateErrorModel> ();
+ * Ptr<ErrorModel> rem = CreateObject<RateErrorModel> ();
  * rem->SetRandomVariable (UniformVariable ());
  * rem->SetRate (0.001);
  * ...
@@ -67,7 +66,7 @@ class RandomVariable;
 class ErrorModel : public Object
 {
 public:
-  static const InterfaceId iid;
+  static TypeId GetTypeId (void);
   /**
    * A factory method to generate a preconfigured default ErrorModel for use
    * \return an ErrorModel smart pointer that is the default ErrorModel 
@@ -137,8 +136,7 @@ enum ErrorUnit
 class RateErrorModel : public ErrorModel
 {
 public:
-  static const InterfaceId iid;
-  static const ClassId cid;
+  static TypeId GetTypeId (void);
 
   RateErrorModel ();
   virtual ~RateErrorModel ();
@@ -204,8 +202,7 @@ private:
 class ListErrorModel : public ErrorModel
 {
 public:
-  static const InterfaceId iid;
-  static const ClassId cid;
+  static TypeId GetTypeId (void);
   ListErrorModel ();
   virtual ~ListErrorModel ();
 

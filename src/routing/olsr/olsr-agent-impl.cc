@@ -148,6 +148,17 @@ NS_LOG_COMPONENT_DEFINE ("OlsrAgent");
 
 /********** OLSR class **********/
 
+NS_OBJECT_ENSURE_REGISTERED (AgentImpl);
+
+TypeId 
+AgentImpl::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("OlsrAgentImpl")
+    .SetParent<Agent> ()
+    .AddConstructor<AgentImpl,Ptr<Node> > ();
+  return tid;
+}
+
 
 AgentImpl::AgentImpl (Ptr<Node> node)
   :
@@ -161,11 +172,8 @@ AgentImpl::AgentImpl (Ptr<Node> node)
   m_midTimer.SetFunction (&AgentImpl::MidTimerExpire, this);
   m_queuedMessagesTimer.SetFunction (&AgentImpl::SendQueuedMessages, this);
 
-
-  SetInterfaceId (AgentImpl::iid);
-
   // Aggregate with the Node, so that OLSR dies when the node is destroyed.
-  node->AddInterface (this);
+  node->AggregateObject (this);
 
   m_packetSequenceNumber = OLSR_MAX_SEQ_NUM;
   m_messageSequenceNumber = OLSR_MAX_SEQ_NUM;
@@ -178,10 +186,10 @@ AgentImpl::AgentImpl (Ptr<Node> node)
 
   m_linkTupleTimerFirstTime = true;
 
-  m_ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+  m_ipv4 = node->GetObject<Ipv4> ();
   NS_ASSERT (m_ipv4);
 
-  Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (Udp::iid);
+  Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (Udp::GetTypeId ());
 
   m_receiveSocket = socketFactory->CreateSocket ();
   if (m_receiveSocket->Bind (InetSocketAddress (OLSR_PORT_NUMBER)))
@@ -234,7 +242,7 @@ void AgentImpl::Start ()
 
   NS_LOG_DEBUG ("Starting OLSR on node " << m_mainAddress);
 
-  m_routingTable = Create<RoutingTable> (m_ipv4, m_mainAddress);
+  m_routingTable = CreateObject<RoutingTable> (m_ipv4, m_mainAddress);
   // Add OLSR as routing protocol, with slightly lower priority than
   // static routing.
   m_ipv4->AddRoutingProtocol (m_routingTable, -10);

@@ -38,20 +38,20 @@ NS_LOG_COMPONENT_DEFINE ("PacketSinkApplication");
 
 PacketSink::PacketSink (Ptr<Node> n, 
                         const Address &local,
-                        std::string iid)
+                        std::string tid)
   :  Application(n)
 {
-  Construct (n, local, iid);
+  Construct (n, local, tid);
 }
 
 void
 PacketSink::Construct (Ptr<Node> n, 
                        const Address &local,
-                       std::string iid)
+                       std::string tid)
 {
   m_socket = 0;
   m_local = local;
-  m_iid = iid;
+  m_tid = tid;
 }
 
 PacketSink::~PacketSink()
@@ -73,14 +73,19 @@ void PacketSink::StartApplication()    // Called at time specified by Start
   // Create the socket if not already
   if (!m_socket)
     {
-      InterfaceId iid = InterfaceId::LookupByName (m_iid);
+      TypeId tid = TypeId::LookupByName (m_tid);
       Ptr<SocketFactory> socketFactory = 
-        GetNode ()->QueryInterface<SocketFactory> (iid);
+        GetNode ()->GetObject<SocketFactory> (tid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind (m_local);
+      m_socket->Listen (0);
     }
 
   m_socket->SetRecvCallback (MakeCallback(&PacketSink::Receive, this));
+  m_socket->SetAcceptCallback (
+            MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
+            MakeNullCallback<void, Ptr<Socket>, const Address&> (),
+            MakeCallback(&PacketSink::CloseConnection, this) );
 }
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
@@ -104,6 +109,11 @@ void PacketSink::Receive(Ptr<Socket> socket, Ptr<Packet> packet,
         packet->PeekData() << "'");
     }
   m_rxTrace (packet, from);
+}
+
+void PacketSink::CloseConnection (Ptr<Socket> socket)
+{
+  socket->Close ();
 }
 
 Ptr<TraceResolver> 

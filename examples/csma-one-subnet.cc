@@ -100,10 +100,10 @@ main (int argc, char *argv[])
 // Explicitly create the nodes required by the topology (shown above).
 //
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> (); 
-  Ptr<Node> n2 = Create<InternetNode> (); 
-  Ptr<Node> n3 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> (); 
+  Ptr<Node> n2 = CreateObject<InternetNode> (); 
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
 
   NS_LOG_INFO ("Create channels.");
 //
@@ -165,7 +165,7 @@ main (int argc, char *argv[])
 //
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
     n0, 
     InetSocketAddress ("10.1.1.2", port), 
     "Udp",
@@ -179,7 +179,7 @@ main (int argc, char *argv[])
 // 
 // Create a similar flow from n3 to n0, starting at time 1.1 seconds
 //
-  ooff = Create<OnOffApplication> (
+  ooff = CreateObject<OnOffApplication> (
     n3, 
     InetSocketAddress ("10.1.1.1", port), 
     "Udp",

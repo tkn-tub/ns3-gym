@@ -21,7 +21,6 @@
 #define RANDOM_POSITION_H
 
 #include "ns3/object.h"
-#include "ns3/component-manager.h"
 #include "vector.h"
 
 namespace ns3 {
@@ -36,7 +35,7 @@ class RandomVariable;
 class RandomPosition : public Object
 {
 public:
-  static const InterfaceId iid;
+  static TypeId GetTypeId (void);
   RandomPosition ();
   virtual ~RandomPosition ();
   /**
@@ -52,7 +51,7 @@ public:
 class RandomRectanglePosition : public RandomPosition
 {
 public:
-  static const ClassId cid;
+  static TypeId GetTypeId (void);
   /**
    * Create a random position model with construction
    * values from \valueref{RandomRectanglePositionX}, and
@@ -81,7 +80,7 @@ private:
 class RandomDiscPosition : public RandomPosition
 {
 public:
-  static const ClassId cid;
+  static TypeId GetTypeId (void);
   /**
    * Create a random position model with construction
    * values from \valueref{RandomDiscPositionTheta},

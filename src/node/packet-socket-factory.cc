@@ -24,18 +24,23 @@
 
 namespace ns3 {
 
-const InterfaceId PacketSocketFactory::iid = MakeInterfaceId ("Packet", 
-                                                              SocketFactory::iid);
+NS_OBJECT_ENSURE_REGISTERED (PacketSocketFactory);
+
+TypeId 
+PacketSocketFactory::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("Packet")
+    .SetParent<SocketFactory> ();
+  return tid;
+}
 
 PacketSocketFactory::PacketSocketFactory ()
-{
-  SetInterfaceId (PacketSocketFactory::iid);
-}
+{}
 
 Ptr<Socket> PacketSocketFactory::CreateSocket (void)
 {
-  Ptr<Node> node = QueryInterface<Node> (Node::iid);
-  Ptr<PacketSocket> socket = Create<PacketSocket> (node);
+  Ptr<Node> node = GetObject<Node> ();
+  Ptr<PacketSocket> socket = CreateObject<PacketSocket> (node);
   return socket;
 } 
 } // namespace ns3

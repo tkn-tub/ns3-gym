@@ -28,22 +28,30 @@
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
 #include "ns3/default-value.h"
+#include "ns3/type-id-default-value.h"
 
 NS_LOG_COMPONENT_DEFINE ("ErrorModel");
 
 namespace ns3 {
 
-static ClassIdDefaultValue g_classIdErrorModelDefaultValue ("ErrorModel",
-  "Error Model", ErrorModel::iid, "RateErrorModel");
+static TypeIdDefaultValue g_interfaceIdErrorModelDefaultValue ("ErrorModel",
+                                                                    "Error Model", 
+                                                                    ErrorModel::GetTypeId (), 
+                                                                    "RateErrorModel");
 
-const InterfaceId ErrorModel::iid = 
-  MakeInterfaceId ("ErrorModel", Object::iid);
+NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
+
+TypeId ErrorModel::GetTypeId (void)
+{ 
+  static TypeId tid = TypeId ("ErrorModel")
+    .SetParent<Object> ();
+  return tid;
+}
 
 ErrorModel::ErrorModel () :
   m_enable (true) 
 {
   NS_LOG_FUNCTION;  
-  SetInterfaceId (ErrorModel::iid);
 }
 
 ErrorModel::~ErrorModel ()
@@ -55,9 +63,8 @@ Ptr<ErrorModel>
 ErrorModel::CreateDefault (void)
 { 
   NS_LOG_FUNCTION;
-  ClassId classId = g_classIdErrorModelDefaultValue.GetValue ();
-  Ptr<ErrorModel> em = ComponentManager::Create<ErrorModel> (classId, 
-    ErrorModel::iid);
+  TypeId interfaceId = g_interfaceIdErrorModelDefaultValue.GetValue ();
+  Ptr<ErrorModel> em = interfaceId.CreateObject ()->GetObject<ErrorModel> ();
   return em;
 }
 
@@ -104,13 +111,6 @@ ErrorModel::IsEnabled (void) const
 // RateErrorModel
 //
 
-const InterfaceId RateErrorModel::iid = 
-  MakeInterfaceId ("RateErrorModel", ErrorModel::iid);
-
-const ClassId RateErrorModel::cid =
-  MakeClassId<RateErrorModel> ("RateErrorModel", ErrorModel::iid,
-  RateErrorModel::iid);
-
 // Defaults for rate/size
 static NumericDefaultValue<double> g_defaultRateErrorModelErrorRate
   ("RateErrorModelErrorRate", "The error rate for the error model", 0.0);
@@ -123,6 +123,17 @@ static EnumDefaultValue<enum ErrorUnit>
     EU_BIT, "EU_BIT", 
     0, (void*)0);
 
+NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
+
+TypeId RateErrorModel::GetTypeId (void)
+{ 
+  static TypeId tid = TypeId ("RateErrorModel")
+    .SetParent<ErrorModel> ()
+    .AddConstructor<RateErrorModel> ();
+  return tid;
+}
+
+
 RateErrorModel::RateErrorModel () : 
   m_unit (g_defaultRateErrorModelErrorUnit.GetValue() ),
   m_rate (g_defaultRateErrorModelErrorRate.GetValue() )
@@ -130,7 +141,6 @@ RateErrorModel::RateErrorModel () :
   NS_LOG_FUNCTION;
   // Assume a uniform random variable if user does not specify
   m_ranvar = new UniformVariable ();
-  SetInterfaceId (RateErrorModel::iid);
 }
 
 RateErrorModel::~RateErrorModel () 
@@ -234,17 +244,19 @@ RateErrorModel::DoReset (void)
 // ListErrorModel
 //
 
-const InterfaceId ListErrorModel::iid = 
-  MakeInterfaceId ("ListErrorModel", ErrorModel::iid);
+NS_OBJECT_ENSURE_REGISTERED (ListErrorModel);
 
-const ClassId ListErrorModel::cid =
-  MakeClassId<ListErrorModel> ("ListErrorModel", ErrorModel::iid,
-  ListErrorModel::iid);
+TypeId ListErrorModel::GetTypeId (void)
+{ 
+  static TypeId tid = TypeId ("ListErrorModel")
+    .SetParent<ErrorModel> ()
+    .AddConstructor<ListErrorModel> ();
+  return tid;
+}
 
 ListErrorModel::ListErrorModel ()  
 {
   NS_LOG_FUNCTION;
-  SetInterfaceId (ListErrorModel::iid);
 }
 
 ListErrorModel::~ListErrorModel () 

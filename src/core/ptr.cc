@@ -23,35 +23,13 @@
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
-#include "callback.h"
-#include "object.h"
 
 namespace ns3 {
 
+class NoCount;
+
 template <typename T>
 void Foo (void) {}
-
-
-class NoCount : public Object
-{
-public:
-  NoCount (void (*fn) (void));
-  NoCount (Callback<void> cb);
-  ~NoCount ();
-  void Nothing (void) const;
-private:
-  Callback<void> m_cb;
-};
-NoCount::NoCount (Callback<void> cb)
-  : m_cb (cb)
-{}
-NoCount::~NoCount ()
-{
-  m_cb ();
-}
-void
-NoCount::Nothing () const
-{}
 
 class PtrTest : Test
 {
@@ -59,12 +37,65 @@ public:
   PtrTest ();
   virtual ~PtrTest ();
   virtual bool RunTests (void);
-private:
   void DestroyNotify (void);
+private:
   Ptr<NoCount> CallTest (Ptr<NoCount> p);
   Ptr<NoCount> const CallTestConst (Ptr<NoCount> const p);
   uint32_t m_nDestroyed;
 };
+
+
+class Base
+{
+public:
+  Base ();
+  virtual ~Base ();
+  void Ref (void) const;
+  void Unref (void) const;
+private:
+  mutable uint32_t m_count;
+};
+
+class NoCount : public Base
+{
+public:
+  NoCount (PtrTest *test);
+  ~NoCount ();
+  void Nothing (void) const;
+private:
+  PtrTest *m_test;
+};
+
+Base::Base ()
+  : m_count (1)
+{}
+Base::~Base ()
+{}
+void 
+Base::Ref (void) const
+{
+  m_count++;
+}
+void 
+Base::Unref (void) const
+{
+  m_count--;
+  if (m_count == 0)
+    {
+      delete this;
+    }
+}
+
+NoCount::NoCount (PtrTest *test)
+  : m_test (test)
+{}
+NoCount::~NoCount ()
+{
+  m_test->DestroyNotify ();
+}
+void
+NoCount::Nothing () const
+{}
 
 PtrTest::PtrTest ()
   : Test ("Ptr")
@@ -95,10 +126,9 @@ PtrTest::RunTests (void)
 {
   bool ok = true;
 
-  Callback<void> cb = MakeCallback (&PtrTest::DestroyNotify, this);
   m_nDestroyed = false;
   {
-    Ptr<NoCount> p = Create<NoCount> (cb);
+    Ptr<NoCount> p = Create<NoCount> (this);
   }
   if (m_nDestroyed != 1)
     {
@@ -108,7 +138,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p;
-    p = Create<NoCount> (cb);
+    p = Create<NoCount> (this);
     p = p;
   }
   if (m_nDestroyed != 1)
@@ -119,7 +149,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = Create<NoCount> (cb);
+    p1 = Create<NoCount> (this);
     Ptr<NoCount> p2 = p1;
   }
   if (m_nDestroyed != 1)
@@ -130,7 +160,7 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = Create<NoCount> (cb);
+    p1 = Create<NoCount> (this);
     Ptr<NoCount> p2;
     p2 = p1;
   }
@@ -142,8 +172,8 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = Create<NoCount> (cb);
-    Ptr<NoCount> p2 = Create<NoCount> (cb);
+    p1 = Create<NoCount> (this);
+    Ptr<NoCount> p2 = Create<NoCount> (this);
     p2 = p1;
   }
   if (m_nDestroyed != 2)
@@ -154,9 +184,9 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = Create<NoCount> (cb);
+    p1 = Create<NoCount> (this);
     Ptr<NoCount> p2;
-    p2 = Create<NoCount> (cb);
+    p2 = Create<NoCount> (this);
     p2 = p1;
   }
   if (m_nDestroyed != 2)
@@ -167,8 +197,8 @@ PtrTest::RunTests (void)
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p1;
-    p1 = Create<NoCount> (cb);
-    p1 = Create<NoCount> (cb);
+    p1 = Create<NoCount> (this);
+    p1 = Create<NoCount> (this);
   }
   if (m_nDestroyed != 2)
     {
@@ -180,8 +210,8 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p1;
     {
       Ptr<NoCount> p2;
-      p1 = Create<NoCount> (cb);
-      p2 = Create<NoCount> (cb);
+      p1 = Create<NoCount> (this);
+      p2 = Create<NoCount> (this);
       p2 = p1;
     }
     if (m_nDestroyed != 1)
@@ -199,8 +229,8 @@ PtrTest::RunTests (void)
     Ptr<NoCount> p1;
     {
       Ptr<NoCount> p2;
-      p1 = Create<NoCount> (cb);
-      p2 = Create<NoCount> (cb);
+      p1 = Create<NoCount> (this);
+      p2 = Create<NoCount> (this);
       p2 = CallTest (p1);
     }
     if (m_nDestroyed != 1)
@@ -242,7 +272,7 @@ PtrTest::RunTests (void)
   {
     NoCount *raw;
     {
-      Ptr<NoCount> p = Create<NoCount> (cb);
+      Ptr<NoCount> p = Create<NoCount> (this);
       {
         Ptr<NoCount const> p1 = p;
       }
@@ -259,7 +289,7 @@ PtrTest::RunTests (void)
 
   m_nDestroyed = 0;
   {
-    Ptr<NoCount> p = Create<NoCount> (cb);
+    Ptr<NoCount> p = Create<NoCount> (this);
     const NoCount *v1 = PeekPointer (p);
     NoCount *v2 = PeekPointer (p);
     v1->Nothing ();
@@ -271,8 +301,8 @@ PtrTest::RunTests (void)
     }
 
   {
-    Ptr<Object> p0 = Create<NoCount> (cb);
-    Ptr<NoCount> p1 = Create<NoCount> (cb);
+    Ptr<Base> p0 = Create<NoCount> (this);
+    Ptr<NoCount> p1 = Create<NoCount> (this);
     if (p0 == p1)
       {
         ok = false;
@@ -285,23 +315,23 @@ PtrTest::RunTests (void)
         ok = false;
       }
   }
-
+#if 0
   {
-    Ptr<NoCount> p = Create<NoCount> (cb);
+    Ptr<NoCount> p = CreateObject<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
     callback ();
   }
   {
-    Ptr<const NoCount> p = Create<NoCount> (cb);
+    Ptr<const NoCount> p = CreateObject<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
     callback ();
   }
-
+#endif
 
 #if 0
   // as expected, fails compilation.
   {
-    Ptr<const Object> p = Create<NoCount> (cb);
+    Ptr<const Base> p = Create<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
   }
   // local types are not allowed as arguments to a template.

@@ -45,12 +45,12 @@ static Ptr<Node>
 CreateAdhocNode (Ptr<WifiChannel> channel,
                  Vector position, const char *address)
 {
-  Ptr<Node> node = Create<Node> ();  
-  Ptr<AdhocWifiNetDevice> device = Create<AdhocWifiNetDevice> (node, Mac48Address (address));
+  Ptr<Node> node = CreateObject<Node> ();  
+  Ptr<AdhocWifiNetDevice> device = CreateObject<AdhocWifiNetDevice> (node, Mac48Address (address));
   device->Attach (channel);
-  Ptr<MobilityModel> mobility = Create<StaticMobilityModel> ();
+  Ptr<MobilityModel> mobility = CreateObject<StaticMobilityModel> ();
   mobility->SetPosition (position);
-  node->AddInterface (mobility);
+  node->AggregateObject (mobility);
   
   return node;
 }
@@ -58,14 +58,14 @@ CreateAdhocNode (Ptr<WifiChannel> channel,
 static void
 SetPosition (Ptr<Node> node, Vector position)
 {
-  Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
   mobility->SetPosition (position);
 }
 
 static Vector
 GetPosition (Ptr<Node> node)
 {
-  Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> (MobilityModel::iid);
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
   return mobility->GetPosition ();
 }
 
@@ -95,8 +95,8 @@ ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address &address)
 static Ptr<Socket>
 SetupPacketReceive (Ptr<Node> node, uint16_t port)
 {
-  InterfaceId iid = InterfaceId::LookupByName ("Packet");
-  Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (iid);
+  TypeId tid = TypeId::LookupByName ("Packet");
+  Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   sink->Bind ();
   sink->SetRecvCallback (MakeCallback (&ReceivePacket));
@@ -108,7 +108,7 @@ RunOneExperiment (void)
 {
   g_bytesTotal = 0;
 
-  Ptr<WifiChannel> channel = Create<WifiChannel> ();
+  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
 
   Ptr<Node> a = CreateAdhocNode (channel, 
                                  Vector (5.0,0.0,0.0),
@@ -121,7 +121,7 @@ RunOneExperiment (void)
   destination.SetProtocol (1);
   destination.SetSingleDevice (0);
   destination.SetPhysicalAddress (Mac48Address ("00:00:00:00:00:02"));
-  Ptr<Application> app = Create<OnOffApplication> (a, destination, 
+  Ptr<Application> app = CreateObject<OnOffApplication> (a, destination, 
                                                    "Packet", 
                                                    ConstantVariable (250),
                                                    ConstantVariable (0),

@@ -49,12 +49,11 @@ Ns2MobilityFileTopology::GetMobilityModel (std::string idString, const ObjectSto
     {
       return 0;
     }
-  Ptr<StaticSpeedMobilityModel> model = 
-    object->QueryInterface<StaticSpeedMobilityModel> (StaticSpeedMobilityModel::iid);
+  Ptr<StaticSpeedMobilityModel> model = object->GetObject<StaticSpeedMobilityModel> ();
   if (model == 0)
     {
-      model = Create<StaticSpeedMobilityModel> ();
-      object->AddInterface (model);
+      model = CreateObject<StaticSpeedMobilityModel> ();
+      object->AggregateObject (model);
     }
   return model;
 }

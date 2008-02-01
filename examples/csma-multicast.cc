@@ -106,11 +106,11 @@ main (int argc, char *argv[])
 // Explicitly create the nodes required by the topology (shown above).
 //
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> (); 
-  Ptr<Node> n2 = Create<InternetNode> (); 
-  Ptr<Node> n3 = Create<InternetNode> ();
-  Ptr<Node> n4 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> (); 
+  Ptr<Node> n2 = CreateObject<InternetNode> (); 
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
+  Ptr<Node> n4 = CreateObject<InternetNode> ();
 
   NS_LOG_INFO ("Create channels.");
 //
@@ -211,7 +211,7 @@ main (int argc, char *argv[])
 // a fine time to find the interface indices on node two.
 //
   Ptr<Ipv4> ipv4;
-  ipv4 = n2->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = n2->GetObject<Ipv4> ();
 
   uint32_t ifIndexLan0 = ipv4->FindInterfaceForAddr (n2Lan0Addr);
   uint32_t ifIndexLan1 = ipv4->FindInterfaceForAddr (n2Lan1Addr);
@@ -261,7 +261,7 @@ main (int argc, char *argv[])
 // interface to find the output interface index, and tell node zero to send
 // its multicast traffic out that interface.
 //
-  ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = n0->GetObject<Ipv4> ();
   uint32_t ifIndexSrc = ipv4->FindInterfaceForAddr (multicastSource);
   ipv4->SetDefaultMulticastRoute (ifIndexSrc);
 //
@@ -269,7 +269,7 @@ main (int argc, char *argv[])
 // multicast data.  To enable forwarding bits up the protocol stack, we need
 // to tell the stack to join the multicast group.
 //
-  ipv4 = n4->QueryInterface<Ipv4> (Ipv4::iid);
+  ipv4 = n4->GetObject<Ipv4> ();
   ipv4->JoinMulticastGroup (multicastSource, multicastGroup);
 //
 // Create an OnOff application to send UDP datagrams from node zero to the
@@ -281,7 +281,7 @@ main (int argc, char *argv[])
 
   // Configure a multicast packet generator that generates a packet
   // every few seconds
-  Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
     n0, 
     InetSocketAddress (multicastGroup, port), 
     "Udp",
@@ -298,7 +298,7 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   // If you enable logging on this (above) it will print a log statement
   // for every packet received
-  Ptr<PacketSink> sink = Create<PacketSink> (
+  Ptr<PacketSink> sink = CreateObject<PacketSink> (
     n4,
     InetSocketAddress (Ipv4Address::GetAny (), port),
     "Udp");

@@ -3,8 +3,11 @@
 
 This file contains ns-3 release notes (most recent releases first).
 
-Release 3.0.10 (pending)
+Release 3.0.10 (2008/01/15)
 ========================
+   - Add tutorial document content;
+   - Valgrind option for "waf" tool;
+   - Doxygen organization changes.
 
 Release 3.0.9 (2007/12/15)
 ========================

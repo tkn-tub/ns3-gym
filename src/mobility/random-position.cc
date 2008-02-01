@@ -58,22 +58,34 @@ g_discY ("RandomDiscPositionY",
 	 "The y coordinate of the center of the random position disc.",
 	 0.0);
 
-const InterfaceId RandomPosition::iid = MakeInterfaceId ("RandomPosition", Object::iid);
+NS_OBJECT_ENSURE_REGISTERED (RandomPosition);
 
-const ClassId RandomRectanglePosition::cid = 
-  MakeClassId<RandomRectanglePosition> ("RandomRectanglePosition", 
-					RandomPosition::iid);
-const ClassId RandomDiscPosition::cid = 
-  MakeClassId<RandomDiscPosition> ("RandomDiscPosition", 
-				   RandomPosition::iid);
+TypeId 
+RandomPosition::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("RandomPosition")
+    .SetParent<Object> ();
+  return tid;
+}
 
 RandomPosition::RandomPosition ()
 {
-  Object::SetInterfaceId (RandomPosition::iid);
 }
 
 RandomPosition::~RandomPosition ()
 {}
+
+NS_OBJECT_ENSURE_REGISTERED (RandomRectanglePosition);
+
+TypeId
+RandomRectanglePosition::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("RandomRectanglePosition")
+    .SetParent<RandomPosition> ()
+    .AddConstructor<RandomRectanglePosition> ()
+    .AddConstructor<RandomRectanglePosition, const RandomVariable &, const RandomVariable &> ();
+  return tid;
+}
 
 RandomRectanglePosition::RandomRectanglePosition ()
   : m_x (g_rectangleX.GetCopy ()),
@@ -98,6 +110,18 @@ RandomRectanglePosition::Get (void) const
   double y = m_y->GetValue ();
   return Vector (x, y, 0.0);
 }
+
+NS_OBJECT_ENSURE_REGISTERED (RandomDiscPosition);
+
+TypeId
+RandomDiscPosition::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("RandomDiscPosition")
+    .SetParent<RandomPosition> ()
+    .AddConstructor<RandomDiscPosition> ()
+    .AddConstructor<RandomDiscPosition, const RandomVariable &, const RandomVariable &, double, double> ();
+  return tid;
+}   
 
 RandomDiscPosition::RandomDiscPosition ()
   : m_theta (g_discTheta.GetCopy ()),

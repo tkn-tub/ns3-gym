@@ -99,7 +99,6 @@ static void
 PrintDefaultValuesDoxygen (std::ostream &os)
 {
   os << "/// \\page ListOfDefaultValues The list of default values" << std::endl;
-  os << "/// \\ingroup core" << std::endl;
   os << "/// \\defgroup ListOfDefaultValuesGroup The list of default values" << std::endl;
   os << "/// <ul>" << std::endl;
   for (DefaultValueList::Iterator i = DefaultValueList::Begin ();
@@ -117,12 +116,12 @@ PrintDefaultValuesDoxygen (std::ostream &os)
 
 int main (int argc, char *argv[])
 {
-  Ptr<Node> node = Create<InternetNode> ();
-  node->AddInterface (Create<MobilityModelNotifier> ());
+  Ptr<Node> node = CreateObject<InternetNode> ();
+  node->AggregateObject (CreateObject<MobilityModelNotifier> ());
 
-  Ptr<PointToPointNetDevice> p2p = Create<PointToPointNetDevice> (node);
+  Ptr<PointToPointNetDevice> p2p = CreateObject<PointToPointNetDevice> (node);
   p2p->AddQueue (Queue::CreateDefault ());
-  Ptr<CsmaNetDevice> csma = Create<CsmaNetDevice> (node);
+  Ptr<CsmaNetDevice> csma = CreateObject<CsmaNetDevice> (node);
   csma->AddQueue (Queue::CreateDefault ());
 
   TraceResolver::SourceCollection collection;

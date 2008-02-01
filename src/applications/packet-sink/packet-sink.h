@@ -56,11 +56,11 @@ public:
   /**
    * \param n node associated to this application
    * \param local local address to bind to
-   * \param iid string to identify transport protocol of interest
+   * \param tid string to identify transport protocol of interest
    */
   PacketSink (Ptr<Node> n,
               const Address &local,
-              std::string iid);
+              std::string tid);
 
   virtual ~PacketSink ();
 
@@ -75,13 +75,14 @@ private:
 
   void Construct (Ptr<Node> n,
                   const Address &local,
-                  std::string iid);
+                  std::string tid);
 
   virtual void Receive (Ptr<Socket> socket, Ptr<Packet> packet, const Address& from);
+  virtual void CloseConnection (Ptr<Socket> socket);
 
   Ptr<Socket>     m_socket;       // Associated socket
   Address         m_local;        // Local address to bind to
-  std::string     m_iid;          // Protocol name (e.g., "Udp")
+  std::string     m_tid;          // Protocol name (e.g., "Udp")
   CallbackTraceSource<Ptr<const Packet>, const Address &> m_rxTrace;
   
 };

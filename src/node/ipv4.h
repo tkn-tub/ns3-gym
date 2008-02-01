@@ -157,7 +157,7 @@ public:
 class Ipv4 : public Object
 {
 public:
-  static const InterfaceId iid;
+  static TypeId GetTypeId (void);
   Ipv4 ();
   virtual ~Ipv4 ();
 
@@ -451,15 +451,13 @@ public:
 
   /**
    * \brief Convenience function to return the ifIndex corresponding
-   * to the Ipv4Address provided.  If an Ipv4Mask is provided also,
-   * then the address is masked, which allows one to determine the 
-   * interface corresponding to a network prefix.
+   * to the Ipv4Address provided
    *
    * \param addr Ipv4Address
    * \param mask corresponding Ipv4Mask
    * \returns ifIndex corresponding to a/amask
    */
-  uint32_t GetIfIndexByAddress (Ipv4Address addr, 
+  virtual uint32_t GetIfIndexByAddress (Ipv4Address addr, 
     Ipv4Mask mask = Ipv4Mask("255.255.255.255"));
 };
 

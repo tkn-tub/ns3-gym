@@ -22,11 +22,16 @@
 
 namespace ns3 {
 
-const InterfaceId Udp::iid = MakeInterfaceId ("Udp", SocketFactory::iid);
+NS_OBJECT_ENSURE_REGISTERED (Udp);
+
+TypeId Udp::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("Udp")
+    .SetParent<SocketFactory> ();
+  return tid;
+}
 
 Udp::Udp ()
-{
-  SetInterfaceId (Udp::iid);
-}
+{}
 
 } // namespace ns3

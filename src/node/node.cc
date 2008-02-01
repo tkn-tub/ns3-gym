@@ -29,7 +29,15 @@
 
 namespace ns3{
 
-const InterfaceId Node::iid = MakeInterfaceId ("Node", Object::iid);
+NS_OBJECT_ENSURE_REGISTERED (Node);
+
+TypeId 
+Node::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("Node")
+    .SetParent<Object> ();
+  return tid;
+}
 
 NodeNetDeviceIndex::NodeNetDeviceIndex ()
   : m_index (0)
@@ -106,10 +114,9 @@ Node::Node(uint32_t sid)
 void
 Node::Construct (void)
 {
-  SetInterfaceId (Node::iid);
   m_id = NodeList::Add (this);
-  Ptr<PacketSocketFactory> socketFactory = Create<PacketSocketFactory> ();
-  AddInterface (socketFactory);
+  Ptr<PacketSocketFactory> socketFactory = CreateObject<PacketSocketFactory> ();
+  AggregateObject (socketFactory);
 }
   
 Node::~Node ()

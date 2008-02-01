@@ -33,7 +33,7 @@ PointToPointIpv4Topology::CreateChannel (
   const DataRate& bps,
   const Time& delay)
 {
-  return Create<PointToPointChannel> (bps, delay);
+  return CreateObject<PointToPointChannel> (bps, delay);
 }
 
   uint32_t
@@ -43,7 +43,7 @@ PointToPointIpv4Topology::AddNetDevice (
 {
   NS_ASSERT (channel->GetNDevices () <= 1);
 
-  Ptr<PointToPointNetDevice> nd = Create<PointToPointNetDevice> (node);
+  Ptr<PointToPointNetDevice> nd = CreateObject<PointToPointNetDevice> (node);
 
   Ptr<Queue> q = Queue::CreateDefault ();
   nd->AddQueue(q);
@@ -60,7 +60,7 @@ PointToPointIpv4Topology::AddAddress (
   Ipv4Mask mask)
 {
   Ptr<NetDevice> nd = node->GetDevice(netDeviceNumber);
-  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> (Ipv4::iid);
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   uint32_t ifIndex = ipv4->AddInterface (nd);
 
   ipv4->SetAddress (ifIndex, address);

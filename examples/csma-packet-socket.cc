@@ -61,7 +61,7 @@ NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
 static Ptr<CsmaNetDevice>
 CreateCsmaDevice (Ptr<Node> node, Ptr<CsmaChannel> channel)
 {
-  Ptr<CsmaNetDevice> device = Create<CsmaNetDevice> (node);
+  Ptr<CsmaNetDevice> device = CreateObject<CsmaNetDevice> (node);
   device->Attach (channel);
   Ptr<Queue> queue = Queue::CreateDefault ();
   device->AddQueue (queue);
@@ -102,14 +102,14 @@ main (int argc, char *argv[])
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.
   NS_LOG_INFO ("Create nodes.");
-  Ptr<Node> n0 = Create<Node> ();
-  Ptr<Node> n1 = Create<Node> (); 
-  Ptr<Node> n2 = Create<Node> (); 
-  Ptr<Node> n3 = Create<Node> ();
+  Ptr<Node> n0 = CreateObject<Node> ();
+  Ptr<Node> n1 = CreateObject<Node> (); 
+  Ptr<Node> n2 = CreateObject<Node> (); 
+  Ptr<Node> n3 = CreateObject<Node> ();
 
   // create the shared medium used by all csma devices.
   NS_LOG_INFO ("Create channels.");
-  Ptr<CsmaChannel> channel = Create<CsmaChannel> (DataRate(5000000), MilliSeconds(2));
+  Ptr<CsmaChannel> channel = CreateObject<CsmaChannel> (DataRate(5000000), MilliSeconds(2));
 
   // use a helper function to connect our nodes to the shared channel.
   NS_LOG_INFO ("Build Topology.");
@@ -134,7 +134,7 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   // from n0 to n1
   NS_LOG_INFO ("Create Applications.");
-  Ptr<OnOffApplication> ooff = Create<OnOffApplication> (
+  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
     n0, 
     n0ToN1,
     "Packet",
@@ -145,7 +145,7 @@ main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
 
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
-  ooff = Create<OnOffApplication> (
+  ooff = CreateObject<OnOffApplication> (
     n3, 
     n3ToN0,
     "Packet",

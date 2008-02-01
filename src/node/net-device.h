@@ -60,7 +60,7 @@ class Packet;
 class NetDevice : public Object
 {
 public:
-  static const InterfaceId iid;
+  static TypeId GetTypeId (void);
   virtual ~NetDevice();
 
 

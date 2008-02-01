@@ -21,7 +21,6 @@
 #define MOBILITY_MODEL_NOTIFIER_H
 
 #include "ns3/object.h"
-#include "ns3/component-manager.h"
 #include "ns3/callback.h"
 #include "ns3/callback-trace-source.h"
 #include "mobility-model.h"
@@ -34,8 +33,7 @@ namespace ns3 {
 class MobilityModelNotifier : public Object
 {
 public:
-  static const InterfaceId iid;
-  static const ClassId cid;
+  static TypeId GetTypeId (void);
 
   /**
    * Create a new position notifier

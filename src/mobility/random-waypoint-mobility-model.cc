@@ -21,11 +21,13 @@
 #include "ns3/simulator.h"
 #include "ns3/random-variable.h"
 #include "ns3/random-variable-default-value.h"
-#include "ns3/component-manager.h"
+#include "ns3/type-id-default-value.h"
 #include "random-waypoint-mobility-model.h"
 #include "random-position.h"
 
 namespace ns3 {
+
+NS_OBJECT_ENSURE_REGISTERED (RandomWaypointMobilityModel);
 
 static RandomVariableDefaultValue
 g_speed ("RandomWaypointSpeed",
@@ -37,21 +39,18 @@ g_pause ("RandomWaypointPause",
 	 "A random variable used to pick the pause of a random waypoint model.",
 	 "Constant:2");
 
-static ClassIdDefaultValue
+static TypeIdDefaultValue
 g_position ("RandomWaypointPosition",
 	    "A random position model used to pick the next waypoint position.",
-	    RandomPosition::iid,
+	    RandomPosition::GetTypeId (),
 	    "RandomRectanglePosition");
 
-const ClassId RandomWaypointMobilityModel::cid = 
-  MakeClassId<RandomWaypointMobilityModel> ("RandomWaypointMobilityModel", MobilityModel::iid);
 
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters ()
   : m_speed (g_speed.GetCopy ()),
     m_pause (g_pause.GetCopy ())
 {
-  m_position = ComponentManager::Create<RandomPosition> (g_position.GetValue (), 
-							 RandomPosition::iid);
+  m_position = g_position.GetValue ().CreateObject ()->GetObject<RandomPosition> ();
 }
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters (Ptr<RandomPosition> randomPosition,
 									      const RandomVariable &speed,
@@ -96,9 +95,19 @@ RandomWaypointMobilityModelParameters::GetCurrent (void)
       g_pause.IsDirty () ||
       g_speed.IsDirty ())
     {
-      parameters = Create<RandomWaypointMobilityModelParameters> ();
+      parameters = CreateObject<RandomWaypointMobilityModelParameters> ();
     }
   return parameters;
+}
+
+TypeId
+RandomWaypointMobilityModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("RandomWaypointMobilityModel")
+    .SetParent<MobilityModel> ()
+    .AddConstructor<RandomWaypointMobilityModel> ()
+    .AddConstructor<RandomWaypointMobilityModel,Ptr<RandomWaypointMobilityModelParameters> > ();
+  return tid;
 }
 
 RandomWaypointMobilityModel::RandomWaypointMobilityModel ()

@@ -31,9 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("RandomWalk2d");
 
 namespace ns3 {
 
-const ClassId RandomWalk2dMobilityModel::cid = 
-  MakeClassId<RandomWalk2dMobilityModel> ("RandomWalk2dMobilityModel", RandomWalk2dMobilityModel::iid);
-
+NS_OBJECT_ENSURE_REGISTERED (RandomWalk2dMobilityModel);
 
 static EnumDefaultValue<RandomWalk2dMobilityModelParameters::Mode> 
 g_mode ("RandomWalk2dMode",
@@ -126,15 +124,30 @@ RandomWalk2dMobilityModelParameters::GetCurrent (void)
       g_modeTime.IsDirty () ||
       g_rectangle.IsDirty ())
     {
-      parameters = Create<RandomWalk2dMobilityModelParameters> ();
+      parameters = CreateObject<RandomWalk2dMobilityModelParameters> ();
     }
   return parameters;
+}
+
+TypeId
+RandomWalk2dMobilityModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("RandomWalkMobilityModel")
+    .SetParent<MobilityModel> ()
+    .AddConstructor<RandomWalk2dMobilityModel> ()
+    .AddConstructor<RandomWalk2dMobilityModel,Ptr<RandomWalk2dMobilityModelParameters> > ();
+  return tid;
 }
 
 RandomWalk2dMobilityModel::RandomWalk2dMobilityModel ()
   : m_parameters (RandomWalk2dMobilityModelParameters::GetCurrent ())
 {
-  SetInterfaceId (RandomWalk2dMobilityModel::iid);
+  m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
+}
+
+RandomWalk2dMobilityModel::RandomWalk2dMobilityModel (Ptr<RandomWalk2dMobilityModelParameters> parameters)
+  : m_parameters (parameters)
+{
   m_event = Simulator::ScheduleNow (&RandomWalk2dMobilityModel::Start, this);
 }
 

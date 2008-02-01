@@ -22,28 +22,27 @@
 
 namespace ns3 {
 
-const InterfaceId StaticSpeedMobilityModel::iid = 
-  MakeInterfaceId ("StaticSpeedMobilityModel", MobilityModel::iid);
-const ClassId StaticSpeedMobilityModel::cid = 
-  MakeClassId<StaticSpeedMobilityModel> ("StaticSpeedMobilityModel", 
-                                         StaticSpeedMobilityModel::iid);
+NS_OBJECT_ENSURE_REGISTERED (StaticSpeedMobilityModel);
 
+TypeId StaticSpeedMobilityModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("StaticSpeedMobilityModel")
+    .SetParent<MobilityModel> ()
+    .AddConstructor<StaticSpeedMobilityModel> ()
+    .AddConstructor<StaticSpeedMobilityModel,const Vector &> ()
+    .AddConstructor<StaticSpeedMobilityModel,const Vector &,const Vector &> ();
+  return tid;
+}
 
 StaticSpeedMobilityModel::StaticSpeedMobilityModel ()
-{
-  SetInterfaceId (StaticSpeedMobilityModel::iid);
-}
+{}
 StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Vector &position)
   : m_helper (position)
-{
-  SetInterfaceId (StaticSpeedMobilityModel::iid);
-}
+{}
 StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Vector &position,
                                                     const Vector &speed)
   : m_helper (position, speed)
-{
-  SetInterfaceId (StaticSpeedMobilityModel::iid);
-}
+{}
 
 StaticSpeedMobilityModel::~StaticSpeedMobilityModel ()
 {}

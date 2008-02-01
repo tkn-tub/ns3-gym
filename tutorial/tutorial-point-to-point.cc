@@ -47,8 +47,8 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Point to Point Topology Simulation");
 
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> ();
 
   Ptr<PointToPointChannel> link = PointToPointTopology::AddPointToPointLink (
     n0, n1, DataRate (38400), MilliSeconds (20));
@@ -58,10 +58,10 @@ main (int argc, char *argv[])
 
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", port, 
+  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", port, 
     1, Seconds(1.), 1024);
 
-  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
+  Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
 
   server->Start(Seconds(1.));
   client->Start(Seconds(2.));

@@ -211,7 +211,7 @@ ArrayTraceResolverTest::RunOne (uint32_t n, std::string str,
   std::vector<Ptr<ObjectTraceTester> > vec;
   for (uint32_t i = 0; i < n; i++)
     {
-      vec.push_back (Create<ObjectTraceTester> ());
+      vec.push_back (CreateObject<ObjectTraceTester> ());
     }
   ArrayTraceResolver<ObjectTraceTesterIndex> resolver;
   resolver.SetIterators (vec.begin (), vec.end ());

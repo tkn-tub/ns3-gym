@@ -54,7 +54,7 @@ public:
   /**
    * \param n node associated to this application
    * \param remote remote ip address
-   * \param iid interface ID of the socket factory to use. Note this
+   * \param tid  TypeId of the socket factory to use. Note this
    * factory should create sockets compatible with the specified
    * remote address.
    * \param ontime on time random variable
@@ -62,14 +62,14 @@ public:
    */
   OnOffApplication(Ptr<Node> n,
                    const Address &remote,
-                   std::string iid,
+                   std::string tid,
                    const RandomVariable& ontime,
                    const RandomVariable& offtime);
 
   /**
    * \param n node associated to this application
    * \param remote remote ip address
-   * \param iid interface ID of the socket factory to use. Note this
+   * \param tid  TypeId of the socket factory to use. Note this
    * factory should create sockets compatible with the specified
    * remote address.
    * \param ontime on time random variable
@@ -79,7 +79,7 @@ public:
    */
   OnOffApplication(Ptr<Node> n,
                    const Address &remote,
-                   std::string iid,
+                   std::string tid,
                    const RandomVariable& ontime,
                    const RandomVariable& offtime,
                    DataRate  rate,
@@ -114,7 +114,7 @@ private:
 
   void Construct (Ptr<Node> n,
                   const Address &remote,
-                  std::string iid,
+                  std::string tid,
                   const RandomVariable& ontime,
                   const RandomVariable& offtime,
                   uint32_t size);
@@ -139,7 +139,7 @@ private:
   EventId         m_startStopEvent;     // Event id for next start or stop event
   EventId         m_sendEvent;    // Eventid of pending "send packet" event
   bool            m_sending;      // True if currently in sending state
-  std::string     m_iid;
+  std::string     m_tid;
   CallbackTraceSource<Ptr<const Packet> > m_txTrace;
   
 private:
