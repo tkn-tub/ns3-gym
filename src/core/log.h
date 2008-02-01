@@ -117,6 +117,9 @@ public:
     switch (m_itemNumber)
       {
       case 0: // first item is actually the function name
+        std::clog << param << " (";
+        break;
+      case 1: // first parameter
         if (m_parameterName)
           {
             std::clog << m_parameterName << "=" << param;
@@ -127,7 +130,7 @@ public:
             std::clog << param;
           }
         break;
-      case 1:
+      default: // parameter following a previous parameter
         if (m_parameterName)
           {
             std::clog << ", " << m_parameterName << "=" << param;
@@ -137,9 +140,6 @@ public:
           {
             std::clog << ", " << param;
           }
-        break;
-      default: // parameter following a previous parameter
-        std::clog << ", " << param;
         break;
       }
     m_itemNumber++;
