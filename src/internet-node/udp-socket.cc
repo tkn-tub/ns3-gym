@@ -276,15 +276,19 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   //
   if (dest.IsBroadcast ())
     {
-      NS_LOG_LOGIC ("Limited broadcast");
+      NS_LOG_LOGIC ("Limited broadcast start.");
       for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++ )
         {
           Ipv4Address addri = ipv4->GetAddress (i);
           Ipv4Mask maski = ipv4->GetNetworkMask (i);
-          m_udp->Send (p->Copy (), addri, addri.GetSubnetDirectedBroadcast (maski),
+          Ipv4Address bcast = addri.GetSubnetDirectedBroadcast (maski);
+          NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << bcast
+                        << " (mask is " << maski << ")");
+          m_udp->Send (p->Copy (), addri, bcast,
                        m_endPoint->GetLocalPort (), port);
           NotifyDataSent (p->GetSize ());
         }
+      NS_LOG_LOGIC ("Limited broadcast end.");
     }
   else if (ipv4->GetIfIndexForDestination(dest, localIfIndex))
     {
