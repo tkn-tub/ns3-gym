@@ -349,29 +349,21 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
       
       if (duplicated == NULL)
         {
-          // Note: normally inetSourceAddr.GetIpv4 () should be equal
-          // to messageHeader.GetOriginatorAddress (), but something
-          // was broken inside NS-3 UDP sockets and the ability to
-          // override source address (via Bind()) is no longer
-          // available.  Bottom line is, OLSR packets are no longer
-          // being sent with the main address, and to work around this
-          // issue we look at the Originator Address field of OLSR
-          // messages contained in the packet.
           switch (messageHeader.GetMessageType ())
             {
             case olsr::MessageHeader::HELLO_MESSAGE:
               NS_LOG_DEBUG ("OLSR node received HELLO message of size " << messageHeader.GetSerializedSize ());
-              ProcessHello (messageHeader, m_mainAddress, messageHeader.GetOriginatorAddress ());
+              ProcessHello (messageHeader, m_mainAddress, inetSourceAddr.GetIpv4 ());
               break;
 
             case olsr::MessageHeader::TC_MESSAGE:
               NS_LOG_DEBUG ("OLSR node received TC message of size " << messageHeader.GetSerializedSize ());
-              ProcessTc (messageHeader, messageHeader.GetOriginatorAddress ());
+              ProcessTc (messageHeader, inetSourceAddr.GetIpv4 ());
               break;
 
             case olsr::MessageHeader::MID_MESSAGE:
               NS_LOG_DEBUG ("OLSR node received MID message of size " << messageHeader.GetSerializedSize ());
-              ProcessMid (messageHeader, messageHeader.GetOriginatorAddress ());
+              ProcessMid (messageHeader, inetSourceAddr.GetIpv4 ());
               break;
 
             default:
@@ -404,7 +396,7 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
           // Remaining messages are also forwarded using the default algorithm.
           if (messageHeader.GetMessageType ()  != olsr::MessageHeader::HELLO_MESSAGE)
             ForwardDefault (messageHeader, duplicated,
-                            m_mainAddress, messageHeader.GetOriginatorAddress ());
+                            m_mainAddress, inetSourceAddr.GetIpv4 ());
         }
 	
     }
