@@ -14,7 +14,7 @@ The @command{ns-3} simulator is a discrete-event network
 simulator targeted primarily for research and educational use.  
 The @uref{http://www.nsnam.org,,@command{ns-3} project}, started in 
 2006, is an open-source project.  The goal of the project is to
-build a new netework simulator primarily for research and educational use.  
+build a new network simulator primarily for research and educational use.  
 
 The purpose of this tutorial is to introduce new @command{ns-3} users to the 
 system in a structured way.  It is sometimes difficult for new users to
@@ -31,14 +31,14 @@ into the workings of the system.
 Primary documentation for the @command{ns-3} project is available in
 three forms:
 @itemize @bullet
-@item ns-3 Manual:  Documentation of the public APIs of the simulator
+@item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
 @item Tutorial (this document)
-@item ns-3 wiki (http://www.nsnam.org/wiki/index.php)
+@item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
- 
+
 A few key points are worth noting at the onset:
 @itemize @bullet
-@item @command{ns-3} is not an extension of @command{ns-2}; it is a new
+@item @command{ns-3} is not an extension of @uref{http://www.isi.edu/nsnam/ns,,ns-2}; it is a new
 simulator.  The two simulators are both written in C++ but @command{ns-3}
 is a new simulator that does not support the @command{ns-2} APIs.
 Some models from @command{ns-2} have already been ported from @command{ns-2}
@@ -322,11 +322,11 @@ There is a similar book on Multicast Sockets,
 that covers material you may need to understand for the multicast examples.
 
 @c ========================================================================
-@c The Basics
+@c Downloading and Compiling 
 @c ========================================================================
 
-@node The-Basics
-@chapter The Basics
+@node Downloading and Compiling
+@chapter Downloading and Compiling
 
 @cindex Linux
 @cindex Cygwin
