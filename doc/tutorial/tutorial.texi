@@ -80,7 +80,7 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 Part 1:  Overview
 * Overview::
 * Resources::
-* The-Basics::
+* Downloading and Compiling::
 * Some-Prerequisites::
 * A-First-ns-3-Script::
 Part 2:  Details
