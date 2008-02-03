@@ -1252,7 +1252,7 @@ AgentImpl::SendHello ()
             }
           if (!ok)
             {
-              NS_ASSERT (!"Link tuple has no corresponding neighbor tuple\n");
+              continue;
             }
         }
 
