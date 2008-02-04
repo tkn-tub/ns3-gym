@@ -3,8 +3,8 @@
 #include "object.h"
 #include "boolean-value.h"
 #include "int-value.h"
-#if 0
 #include "uint-value.h"
+#if 0
 #include "fp-value.h"
 #include "enum-value.h"
 #endif
@@ -58,9 +58,10 @@ public:
 		     MakeIntParamSpec (&ParamSpecObjectTest::DoSetInt16,
 				       &ParamSpecObjectTest::DoGetInt16, 
 				       6))
-#if 0
       .AddParameter ("TestUint8", "help text",
-		     MakeUintParamSpec (1, &ParamSpecObjectTest::m_uint8))
+		     MakeUintParamSpec (&ParamSpecObjectTest::m_uint8,
+					1))
+#if 0
       .AddParameter ("TestFloat", "help text",
 		     MakeFpParamSpec (-1.1, &ParamSpecObjectTest::m_float))
       .AddParameter ("TestEnum", "help text",
@@ -224,7 +225,6 @@ ParamSpecTest::RunTests (void)
   CHECK_GET_STR (p, "TestInt16SetGet", "0");
   CHECK_GET_PARAM (p, "TestInt16SetGet", IntValue, 0);
 
-#if 0  
   CHECK_GET_STR (p, "TestUint8", "1");
   CHECK_GET_PARAM (p, "TestUint8", UintValue, 1);
   NS_TEST_ASSERT (p->Set ("TestUint8", UintValue (0)));
@@ -245,7 +245,7 @@ ParamSpecTest::RunTests (void)
   NS_TEST_ASSERT (!p->Set ("TestUint8", UintValue (-1)));
   CHECK_GET_STR (p, "TestUint8", "255");
   CHECK_GET_PARAM (p, "TestUint8", UintValue, 255);
-
+#if 0  
   CHECK_GET_STR (p, "TestFloat", "-1.1");
   NS_TEST_ASSERT (p->Set ("TestFloat", FpValue ((float)+2.3)));
   CHECK_GET_PARAM (p, "TestFloat", FpValue, (float)+2.3);

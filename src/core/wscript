@@ -57,6 +57,7 @@ def build(bld):
         'boolean-value.cc',
         'value-test.cc',
         'int-value.cc',
+        'uint-value.cc',
         ]
 
     if sys.platform == 'win32':
