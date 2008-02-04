@@ -2,8 +2,8 @@
 #include "test.h"
 #include "object.h"
 #include "boolean-value.h"
-#if 0
 #include "int-value.h"
+#if 0
 #include "uint-value.h"
 #include "fp-value.h"
 #include "enum-value.h"
@@ -48,15 +48,17 @@ public:
 					   false))
       .AddParameter ("TestPtr", "help text", 
 		     MakePtrParamSpec (&ParamSpecObjectTest::m_derived))
-#if 0
       .AddParameter ("TestInt16", "help text",
-		     MakeIntParamSpec (-2, &ParamSpecObjectTest::m_int16))
+		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16, 
+				       -2))
       .AddParameter ("TestInt16WithBounds", "help text",
-		     MakeIntParamSpec (-2, -5, 10, 
-				       &ParamSpecObjectTest::m_int16WithBounds))
+		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16WithBounds,
+				       -2, -5, 10))
       .AddParameter ("TestInt16SetGet", "help text",
-		     MakeIntParamSpec (6, &ParamSpecObjectTest::DoSetInt16,
-				       &ParamSpecObjectTest::DoGetInt16))
+		     MakeIntParamSpec (&ParamSpecObjectTest::DoSetInt16,
+				       &ParamSpecObjectTest::DoGetInt16, 
+				       6))
+#if 0
       .AddParameter ("TestUint8", "help text",
 		     MakeUintParamSpec (1, &ParamSpecObjectTest::m_uint8))
       .AddParameter ("TestFloat", "help text",
@@ -175,7 +177,6 @@ ParamSpecTest::RunTests (void)
   derived = p->Get ("TestPtr");
   NS_TEST_ASSERT (derived != 0);
 
-#if 0
   CHECK_GET_STR (p, "TestInt16", "-2");
   CHECK_GET_PARAM (p, "TestInt16", IntValue, -2);
 
@@ -222,7 +223,8 @@ ParamSpecTest::RunTests (void)
   NS_TEST_ASSERT (p->Set ("TestInt16SetGet", IntValue (0)));
   CHECK_GET_STR (p, "TestInt16SetGet", "0");
   CHECK_GET_PARAM (p, "TestInt16SetGet", IntValue, 0);
-  
+
+#if 0  
   CHECK_GET_STR (p, "TestUint8", "1");
   CHECK_GET_PARAM (p, "TestUint8", UintValue, 1);
   NS_TEST_ASSERT (p->Set ("TestUint8", UintValue (0)));

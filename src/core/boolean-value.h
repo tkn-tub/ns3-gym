@@ -49,7 +49,7 @@ namespace ns3 {
 template <typename T>
 Ptr<ParamSpec> MakeBooleanParamSpec (bool T::*v, bool initialValue)
 {
-  return Create<MemberVariableParamSpecHelper<T,BooleanValue,bool> > (v, initialValue);
+  return MakeMemberVariableParamSpec (v, BooleanValue (initialValue));
 }
 
 template <typename T>
@@ -57,21 +57,21 @@ Ptr<ParamSpec> MakeBooleanParamSpec (void (T::*setter) (bool),
 				     bool (T::*getter) (void) const,
 				     bool initialValue)
 {
-  return Create<MemberMethodParamSpecHelper<T,BooleanValue,bool> > (setter, getter, initialValue);
+  return MakeMemberMethodParamSpec (setter, getter, BooleanValue (initialValue));
 }
 
 template <typename T>
 Ptr<ParamSpec> MakeBooleanParamSpec (bool (T::*getter) (void) const,
 				     bool initialValue)
 {
-  return Create<MemberMethodGetterParamSpecHelper<T,BooleanValue,bool> > (getter, initialValue);
+  return MakeMemberMethodGetterParamSpec (getter, BooleanValue (initialValue));
 }
 
 template <typename T>
 Ptr<ParamSpec> MakeBooleanParamSpec (void (T::*setter) (bool),
 				     bool initialValue)
 {
-  return Create<MemberMethodSetterParamSpecHelper<T,BooleanValue,bool> > (setter, initialValue);
+  return MakeMemberMethodSetterParamSpec (setter, BooleanValue (initialValue));
 }
 
 } // namespace ns3

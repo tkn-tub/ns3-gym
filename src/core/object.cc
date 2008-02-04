@@ -908,12 +908,13 @@ Object::DoSet (std::string name, PValue value)
     {
       return false;
     }
-  bool ok = spec->Set (this, value);
+  bool ok = spec->Check (value);
   if (!ok)
     {
       return false;
     }
-  return true;
+  ok = spec->Set (this, value);
+  return ok;
 }
 bool
 Object::Set (std::string name, PValue value)
@@ -934,12 +935,13 @@ Object::Set (std::string name, std::string value)
     {
       return false;
     }
-  spec->Set (this, v);
+  ok = spec->Check (v);
   if (!ok)
     {
       return false;
     }
-  return true;
+  ok = spec->Set (this, v);
+  return ok;
 }
 bool 
 Object::Get (std::string name, std::string &value) const
