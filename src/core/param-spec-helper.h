@@ -31,7 +31,8 @@ public:
   virtual bool Set (ObjectBase * object, PValue value) const;
   virtual bool Get (const ObjectBase * object, PValue value) const;
   virtual bool Check (PValue value) const;
-  virtual PValue CreateInitialValue (void) const;
+  virtual PValue GetInitialValue (void) const;
+  virtual PValue CreateValue (void) const;
 
 private:
   virtual void DoSet (T *object, const U *v) const = 0;
@@ -244,9 +245,16 @@ ParamSpecHelper<T,U,CHECKER>::Check (PValue value) const
 }
 template <typename T, typename U, typename CHECKER>
 PValue
-ParamSpecHelper<T,U,CHECKER>::CreateInitialValue (void) const
+ParamSpecHelper<T,U,CHECKER>::GetInitialValue (void) const
 {
   return m_initialValue;
+}
+
+template <typename T, typename U, typename CHECKER>
+PValue
+ParamSpecHelper<T,U,CHECKER>::CreateValue (void) const
+{
+  return m_initialValue.Copy ();
 }
 
 } // namespace ns3

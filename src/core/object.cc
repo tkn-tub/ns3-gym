@@ -694,7 +694,7 @@ Parameters::DoSet (Ptr<const ParamSpec> spec, std::string value)
     {
       return false;
     }
-  PValue v = spec->CreateInitialValue ();
+  PValue v = spec->CreateValue ();
   bool ok = v.DeserializeFromString (value, spec);
   if (!ok)
     {
@@ -790,7 +790,7 @@ Parameters::DeserializeFromString (std::string str)
                 value = str.substr (equal+1, next - (equal+1));
                 cur++;
               }
-            PValue val = spec->CreateInitialValue ();
+            PValue val = spec->CreateValue ();
             bool ok = val.DeserializeFromString (value, spec);
             if (!ok)
               {
@@ -890,7 +890,7 @@ Object::Construct (const Parameters &parameters)
         if (!found)
           {
             // No matching parameter value so we set the default value.
-            PValue initial = paramSpec->CreateInitialValue ();
+            PValue initial = paramSpec->GetInitialValue ();
             paramSpec->Set (this, initial);
             NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                           tid.GetParameterName (i)<<"\" from local");
@@ -929,7 +929,7 @@ Object::Set (std::string name, std::string value)
     {
       return false;
     }
-  PValue v = spec->CreateInitialValue ();
+  PValue v = spec->CreateValue ();
   bool ok = v.DeserializeFromString (value, spec);
   if (!ok)
     {
@@ -951,7 +951,7 @@ Object::Get (std::string name, std::string &value) const
     {
       return false;
     }
-  PValue v = paramSpec->CreateInitialValue ();
+  PValue v = paramSpec->CreateValue ();
   bool ok = paramSpec->Get (this, v);
   if (ok)
     {
@@ -968,7 +968,7 @@ Object::Get (std::string name) const
     {
       return PValue ();
     }
-  PValue value = paramSpec->CreateInitialValue ();
+  PValue value = paramSpec->CreateValue ();
   bool ok = paramSpec->Get (this, value);
   if (!ok)
     {

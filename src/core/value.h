@@ -74,7 +74,8 @@ public:
   virtual bool Set (ObjectBase * object, PValue value) const = 0;
   virtual bool Get (const ObjectBase * object, PValue value) const = 0;
   virtual bool Check (PValue value) const = 0;
-  virtual PValue CreateInitialValue (void) const = 0;
+  virtual PValue GetInitialValue (void) const = 0;
+  virtual PValue CreateValue (void) const = 0;
 private:
   mutable uint32_t m_count;
 };
@@ -246,7 +247,10 @@ public:
         }
       return true;
     }
-    virtual PValue CreateInitialValue (void) const {
+    virtual PValue GetInitialValue (void) const {
+      return CreateValue ();
+    }
+    virtual PValue CreateValue (void) const {
       return PValue::Create<PtrValue<U> > (Ptr<U> (0));
     }
 private:
