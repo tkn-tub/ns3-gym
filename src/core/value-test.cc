@@ -4,9 +4,9 @@
 #include "boolean-value.h"
 #include "int-value.h"
 #include "uint-value.h"
+#include "enum-value.h"
 #if 0
 #include "fp-value.h"
-#include "enum-value.h"
 #endif
 namespace ns3 {
 
@@ -61,14 +61,14 @@ public:
       .AddParameter ("TestUint8", "help text",
 		     MakeUintParamSpec (&ParamSpecObjectTest::m_uint8,
 					1))
-#if 0
-      .AddParameter ("TestFloat", "help text",
-		     MakeFpParamSpec (-1.1, &ParamSpecObjectTest::m_float))
       .AddParameter ("TestEnum", "help text",
 		     MakeEnumParamSpec (&ParamSpecObjectTest::m_enum,
 					TEST_A, "TestA",
 					TEST_B, "TestB",
 					TEST_C, "TestC"))
+#if 0
+      .AddParameter ("TestFloat", "help text",
+		     MakeFpParamSpec (-1.1, &ParamSpecObjectTest::m_float))
 #endif
       ;
         
@@ -249,7 +249,7 @@ ParamSpecTest::RunTests (void)
   CHECK_GET_STR (p, "TestFloat", "-1.1");
   NS_TEST_ASSERT (p->Set ("TestFloat", FpValue ((float)+2.3)));
   CHECK_GET_PARAM (p, "TestFloat", FpValue, (float)+2.3);
-
+#endif
   CHECK_GET_STR (p, "TestEnum", "TestA");
   CHECK_GET_PARAM (p, "TestEnum", EnumValue, ParamSpecObjectTest::TEST_A);
   NS_TEST_ASSERT (p->Set ("TestEnum", EnumValue (ParamSpecObjectTest::TEST_C)));
@@ -264,7 +264,6 @@ ParamSpecTest::RunTests (void)
   NS_TEST_ASSERT (!p->Set ("TestEnum", EnumValue (5)));
   CHECK_GET_STR (p, "TestEnum", "TestB");
   CHECK_GET_PARAM (p, "TestEnum", EnumValue, ParamSpecObjectTest::TEST_B);
-#endif
 
 #if 0
   p->Set ("TestBoolName", "true");
