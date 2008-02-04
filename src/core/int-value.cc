@@ -1,5 +1,5 @@
 #include "int-value.h"
-#include "object.h"
+#include "fatal-error.h"
 #include <sstream>
 
 namespace ns3 {
