@@ -14,6 +14,7 @@
 #include "ns3/node.h"
 #include "ns3/node-list.h"
 #include "ns3/rectangle-default-value.h"
+#include "ns3/type-id-default-value.h"
 
 #include "mobility-visualizer.h"
 
@@ -100,7 +101,7 @@ int model_init (int argc, char *argv[], double *x1, double *y1, double *x2, doub
 
   Simulator::Schedule (g_sampleInterval, Sample);
 
-  ClassId mobType = DefaultValueListGet<ClassIdDefaultValue> ("RandomTopologyMobilityType")->GetValue ();
+  TypeId mobType = DefaultValueListGet<TypeIdDefaultValue> ("RandomTopologyMobilityType")->GetValue ();
   if (mobType.GetName () == "RandomWalk2dMobilityModel")
     {
       Rectangle bounds = DefaultValueListGet<RectangleDefaultValue> ("RandomWalk2dBounds")->GetValue ();
