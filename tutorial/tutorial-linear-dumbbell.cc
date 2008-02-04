@@ -124,14 +124,14 @@ main (int argc, char *argv[])
 //
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client0 = CreateObject<UdpEchoClient> (n0, "10.1.2.1", port, 
-    100, Seconds(.01), 1024);
-  Ptr<UdpEchoClient> client1 = CreateObject<UdpEchoClient> (n1, "10.1.2.2", port, 
-    100, Seconds(.01), 1024);
-  Ptr<UdpEchoClient> client2 = CreateObject<UdpEchoClient> (n2, "10.1.2.3", port, 
-    100, Seconds(.01), 1024);
-  Ptr<UdpEchoClient> client3 = CreateObject<UdpEchoClient> (n3, "10.1.2.4", port, 
-    100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client0 = CreateObject<UdpEchoClient> (n0, "10.1.2.1", 
+    port, 100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client1 = CreateObject<UdpEchoClient> (n1, "10.1.2.2", 
+    port, 100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client2 = CreateObject<UdpEchoClient> (n2, "10.1.2.3", 
+    port, 100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client3 = CreateObject<UdpEchoClient> (n3, "10.1.2.4", 
+    port, 100, Seconds(.01), 1024);
 
   Ptr<UdpEchoServer> server4 = CreateObject<UdpEchoServer> (n4, port);
   Ptr<UdpEchoServer> server5 = CreateObject<UdpEchoServer> (n5, port);

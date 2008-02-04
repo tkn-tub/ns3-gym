@@ -1845,11 +1845,11 @@ source code for the script should look like the following:
   }
 @end verbatim
 
-@cindex csma-echo.cc
+@cindex tutorial-csma-echo.cc
 Just to make sure you don't get caught up in debugging typographical errors
 we have provided this source code for you (along with a copyright header) in
 the @code{tutorial} subdirectory of the @command{ns-3} distribution as 
-@code{csma-echo.cc}.  We used this opportunity to do some ``clean up''
+@code{tutorial-csma-echo.cc}.  We used this opportunity to do some ``clean up''
 of some of our example cases by passing parameters using implicit conversion 
 sequences and removing some of the named parameters. [These were used for
 pedagogic purposes and were not actually necessary.]
@@ -1891,28 +1891,28 @@ local directory.  The required libraries are linked for you for free.
 
 All that needed to be done in order to build the new simulation using the new
 source file was to copy the two lines describing the @code{hello-simulator} 
-program and change the names to @code{csma-echo}.  You can see these lines
-in the @code{wscript} file,
+program and change the names to @code{tutorial-csma-echo}.  You can see these 
+lines in the @code{wscript} file,
 
 @verbatim
   def build(bld):
     obj = bld.create_ns3_program('hello-simulator')
     obj.source = 'hello-simulator.cc'
 
-    obj = bld.create_ns3_program('csma-echo')
-    obj.source = 'csma-echo.cc'
+    obj = bld.create_ns3_program('tutorial-csma-echo')
+    obj.source = 'tutorial-csma-echo.cc'
 
     ...
 @end verbatim
 
 When you built the system above, you actually already built this new 
 simulation and a number of other examples.  Since you have already configured
-@code{Waf} and built the @code{csma-echo} script, you can run the simulation
-in the same way as you ran the @code{hello-simulator} script using the 
-@code{waf --run} command:
+@code{Waf} and built the @code{tutorial-csma-echo} script, you can run the 
+simulation in the same way as you ran the @code{hello-simulator} script using 
+the @code{waf --run} command:
 
 @verbatim
-~/repos/ns-3-dev/tutorial > waf --run csma-echo
+~/repos/ns-3-dev/tutorial > waf --run tutorial-csma-echo
 Entering directory `~/repos/ns-3-dev/build'
 Compilation finished successfully
 UDP Echo Simulation

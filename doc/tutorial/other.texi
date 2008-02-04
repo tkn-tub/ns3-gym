@@ -37,13 +37,13 @@ you old-timers) cable.  This topology is shown below.
 @center @image{pp,,,,png}
 
 We have provided a file for you in the @code{tutorial}
-directory called @code{point-to-point.cc}.  You should now be familiar enough
-with the system to pick out fairly easily what has been changed.  Let's focus
-on the following lines:
+directory called @code{tutorial-point-to-point.cc}.  You should now be
+familiar enough with the system to pick out fairly easily what has been
+changed.  Let's focus on the following lines:
 
 @verbatim
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> ();
 
   Ptr<PointToPointChannel> link = PointToPointTopology::AddPointToPointLink (
     n0, n1, DataRate (38400), MilliSeconds (20));
@@ -79,7 +79,7 @@ to echo one packet across the point-to-point link.  You should be now be able
 to build and run this example and to locate and interpret the ASCII trace 
 file.  This is left as an exercise for you.
 
-The file @code{point-to-point.cc} is reproduced here for your 
+The file @code{tutorial-point-to-point.cc} is reproduced here for your 
 convenience:
 
 @verbatim
@@ -132,8 +132,8 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Point to Point Topology Simulation");
 
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> ();
 
   Ptr<PointToPointChannel> link = PointToPointTopology::AddPointToPointLink (
     n0, n1, DataRate (38400), MilliSeconds (20));
@@ -143,10 +143,10 @@ main (int argc, char *argv[])
 
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", port, 
-    1, Seconds(1.), 1024);
+  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
+    port, 1, Seconds(1.), 1024);
 
-  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
+  Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
 
   server->Start(Seconds(1.));
   client->Start(Seconds(2.));
@@ -167,7 +167,7 @@ main (int argc, char *argv[])
 A point-to-point network is considered a special case of a star network.  As
 you might expect, the process of constructing a star network is an extension
 of the very simple process used for a point-to-point link.  We have provided
-a file for you in the @code{tutorial} directory called @code{star.cc}
+a file for you in the @code{tutorial} directory called @code{tutorial-star.cc}
 that implements a simple star network as seen below.
 
 @sp 1
@@ -190,13 +190,13 @@ six nodes surrounding (@code{n1} - @code{n6}).  You should be able to easily
 find and understand the code that creates these nodes.
 
 @verbatim
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> ();
-  Ptr<Node> n2 = Create<InternetNode> ();
-  Ptr<Node> n3 = Create<InternetNode> ();
-  Ptr<Node> n4 = Create<InternetNode> ();
-  Ptr<Node> n5 = Create<InternetNode> ();
-  Ptr<Node> n6 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> ();
+  Ptr<Node> n2 = CreateObject<InternetNode> ();
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
+  Ptr<Node> n4 = CreateObject<InternetNode> ();
+  Ptr<Node> n5 = CreateObject<InternetNode> ();
+  Ptr<Node> n6 = CreateObject<InternetNode> ();
 @end verbatim
 
 Next, we get into the differences between the @code{PointToPointTopology}
@@ -290,7 +290,7 @@ to echo one packet across the point-to-point link.  You should be now be able
 to build and run this example and to locate and interpret the ASCII trace 
 file.  This is left as an exercise for you.
 
-The file @code{star.cc} is reproduced here for your convenience:
+The file @code{tutorial-star.cc} is reproduced here for your convenience:
 
 @verbatim
 /* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
@@ -345,13 +345,13 @@ main (int argc, char *argv[])
 
   NS_LOG_INFO ("Star Topology Simulation");
 
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> ();
-  Ptr<Node> n2 = Create<InternetNode> ();
-  Ptr<Node> n3 = Create<InternetNode> ();
-  Ptr<Node> n4 = Create<InternetNode> ();
-  Ptr<Node> n5 = Create<InternetNode> ();
-  Ptr<Node> n6 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> ();
+  Ptr<Node> n2 = CreateObject<InternetNode> ();
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
+  Ptr<Node> n4 = CreateObject<InternetNode> ();
+  Ptr<Node> n5 = CreateObject<InternetNode> ();
+  Ptr<Node> n6 = CreateObject<InternetNode> ();
 
   Ptr<PointToPointChannel> link01 = 
     PointToPointIpv4Topology::CreateChannel (DataRate (38400), 
@@ -439,10 +439,10 @@ main (int argc, char *argv[])
 
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", port, 
-    1, Seconds(1.), 1024);
+  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
+    port, 1, Seconds(1.), 1024);
 
-  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
+  Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
 
   server->Start(Seconds(1.));
   client->Start(Seconds(2.));
@@ -470,7 +470,7 @@ is that you have now created an internetwork.  This means you will need to
 enable internetwork routing.
 
 We have provided a file for you in the @code{tutorial} directory called 
-@code{star-routing.cc} to show you how this is done.  This extremely
+@code{tutorial-star-routing.cc} to show you how this is done.  This extremely
 tricky and difficult change is shown below:
 
 @verbatim 
@@ -483,11 +483,11 @@ build internetwork routing tables for all of the nodes in the simulation.
 We changed the client application so that it runs on node four:
 
 @verbatim
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n4, "10.1.1.2", port,
-    1, Seconds(1.), 1024);
+  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n4, "10.1.1.2", 
+    port, 1, Seconds(1.), 1024);
 @end verbatim
 
-Now if you build and run @code{star-routing.cc} you can examine the
+Now if you build and run @code{tutorial-star-routing.cc} you can examine the
 @code{tutorial.tr} file and see that your UDP echo packets are now correctly
 routed through the topology.
 
@@ -508,7 +508,7 @@ The following is a representation of the topology.
 
 We have provided a file that constructs this dumbbell network and creates 
 enough data flowing across the choke point that some packets will be dropped.
-The file is called @code{linear-dumbbell.cc} and is located in the 
+The file is called @code{tutorial-linear-dumbbell.cc} and is located in the 
 @code{tutorial} directory.  We have already covered all of the code used to
 create this network, so we will just quickly go over the main sections of the
 script.
@@ -521,10 +521,10 @@ process to create our first example.
 //
 // Create the lan on the left side of the dumbbell.
 //
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> ();
-  Ptr<Node> n2 = Create<InternetNode> ();
-  Ptr<Node> n3 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> ();
+  Ptr<Node> n2 = CreateObject<InternetNode> ();
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
 
   Ptr<CsmaChannel> lan1 = 
     CsmaTopology::CreateCsmaChannel (DataRate (10000000), MilliSeconds (2));
@@ -554,10 +554,10 @@ have been changed.
 //
 // Create the lan on the right side of the dumbbell.
 //
-  Ptr<Node> n4 = Create<InternetNode> ();
-  Ptr<Node> n5 = Create<InternetNode> ();
-  Ptr<Node> n6 = Create<InternetNode> ();
-  Ptr<Node> n7 = Create<InternetNode> ();
+  Ptr<Node> n4 = CreateObject<InternetNode> ();
+  Ptr<Node> n5 = CreateObject<InternetNode> ();
+  Ptr<Node> n6 = CreateObject<InternetNode> ();
+  Ptr<Node> n7 = CreateObject<InternetNode> ();
 
   Ptr<CsmaChannel> lan2 = 
     CsmaTopology::CreateCsmaChannel (DataRate (10000000), MilliSeconds (2));
@@ -615,19 +615,19 @@ clients to slowly bring up the data rates.
 //
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client0 = Create<UdpEchoClient> (n0, "10.1.2.1", port, 
-    100, Seconds(.01), 1024);
-  Ptr<UdpEchoClient> client1 = Create<UdpEchoClient> (n1, "10.1.2.2", port, 
-    100, Seconds(.01), 1024);
-  Ptr<UdpEchoClient> client2 = Create<UdpEchoClient> (n2, "10.1.2.3", port, 
-    100, Seconds(.01), 1024);
-  Ptr<UdpEchoClient> client3 = Create<UdpEchoClient> (n3, "10.1.2.4", port, 
-    100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client0 = CreateObject<UdpEchoClient> (n0, "10.1.2.1", 
+    port, 100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client1 = CreateObject<UdpEchoClient> (n1, "10.1.2.2", 
+    port, 100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client2 = CreateObject<UdpEchoClient> (n2, "10.1.2.3", 
+    port, 100, Seconds(.01), 1024);
+  Ptr<UdpEchoClient> client3 = CreateObject<UdpEchoClient> (n3, "10.1.2.4", 
+    port, 100, Seconds(.01), 1024);
 
-  Ptr<UdpEchoServer> server4 = Create<UdpEchoServer> (n4, port);
-  Ptr<UdpEchoServer> server5 = Create<UdpEchoServer> (n5, port);
-  Ptr<UdpEchoServer> server6 = Create<UdpEchoServer> (n6, port);
-  Ptr<UdpEchoServer> server7 = Create<UdpEchoServer> (n7, port);
+  Ptr<UdpEchoServer> server4 = CreateObject<UdpEchoServer> (n4, port);
+  Ptr<UdpEchoServer> server5 = CreateObject<UdpEchoServer> (n5, port);
+  Ptr<UdpEchoServer> server6 = CreateObject<UdpEchoServer> (n6, port);
+  Ptr<UdpEchoServer> server7 = CreateObject<UdpEchoServer> (n7, port);
 
   server4->Start(Seconds(1.));
   server5->Start(Seconds(1.));
@@ -651,10 +651,10 @@ clients to slowly bring up the data rates.
 @end verbatim
 
 The remainder of the file should be quite familiar to you.  Go ahead and 
-run @code{linear-dumbbell}.  Now take a look at the trace (@code{tutorial.tr})
-file.  You will now see trace lines that begin with @code{d}.  Alternatively 
-you can search for the string ``queue-drop'' which is the expansion of the 
-drop code.
+run @code{tutorial-linear-dumbbell}.  Now take a look at the trace 
+(@code{tutorial.tr}) file.  You will now see trace lines that begin with 
+@code{d}.  Alternatively you can search for the string ``queue-drop'' which
+is the expansion of the drop code ('d').
 
 Interpretation of a dropped packet is straightforward.  We have expanded
 the first @code{queue-drop} trace for you below.  See the section on ASCII 
@@ -699,7 +699,7 @@ overhead.  We're going to remedy that situation shortly.
 We have written a number of @command{ns-3} scripts in C++.  Although we have 
 been perfectly linear in our script implementations, just like any other C++ 
 program, an @command{ns-3} script can use any features of the language you
-desire.  If you will look back at the @code{linear-dumbbell.cc}
+desire.  If you will look back at the @code{tutorial-linear-dumbbell.cc}
 example, you may notice that the code to create the left and right sides of
 the dumbbell is operationally identical --- only the names change.  An obvious
 improvement of this program would be to use subroutines to create the sides.
@@ -841,12 +841,12 @@ hiding).  Let's use this guidance to finish up our class declarations:
 @end verbatim
 
 That's it.  We have actually already walked through almost all of the code
-required to construct a bus network in our @code{csma-echo.cc} 
+required to construct a bus network in our @code{tutorial-csma-echo.cc} 
 example, so let's just jump forward and take a look at an implementation
 of this thing.  We provide an implementation for you in the files 
 @code{ipv4-bus-network.h} and @code{ipv4-bus-network.cc} located in the
 @code{tutorial} directory.  We also provide an example that uses the new
-class in the file @code{bus-network.cc}.
+class in the file @code{tutorial-bus-network.cc}.
 
 The interesting method from our current perspective is the Ipv4BusNetwork
 constructor, shown below:
@@ -869,7 +869,7 @@ constructor, shown below:
   
     for (uint32_t i = 0; i < n; ++i)
       {
-        Ptr<Node> node = Create<InternetNode> ();
+        Ptr<Node> node = CreateObject<InternetNode> ();
         uint32_t nd = CsmaIpv4Topology::AddIpv4CsmaNetDevice (node, m_channel, 
           Mac48Address::Allocate ());
         Ipv4Address address = Ipv4AddressGenerator::AllocateAddress (mask, 
@@ -978,7 +978,7 @@ For your convenience, we reproduce the entire bus network implementation below:
   
     for (uint32_t i = 0; i < n; ++i)
       {
-        Ptr<Node> node = Create<InternetNode> ();
+        Ptr<Node> node = CreateObject<InternetNode> ();
         uint32_t nd = CsmaIpv4Topology::AddIpv4CsmaNetDevice (node, m_channel, 
           Mac48Address::Allocate ());
         Ipv4Address address = Ipv4AddressGenerator::AllocateAddress (mask, 
@@ -1125,7 +1125,7 @@ Previously, you have seen objects created using the template function
 @code{Create} as in the following example:
 
 @verbatim
-  Ptr<Node> n0 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
 @end verbatim
 
 This line of code, while it may be unfamiliar to some, is pure C++.  If you
@@ -1393,9 +1393,9 @@ These are just normal, everyday C++ objects that we can create using the
 following code should be obvious to you by now:
 
 @verbatim
-  Ptr<A> a = Create<A> ();
-  Ptr<B> b = Create<B> ();
-  Ptr<C> c = Create<C> ();
+  Ptr<A> a = CreateObject<A> ();
+  Ptr<B> b = CreateObject<B> ();
+  Ptr<C> c = CreateObject<C> ();
 @end verbatim
 
 When you create an aggregation, you pick one of the Interfaces to act as
@@ -1588,8 +1588,8 @@ second inherits from class @code{Base}.  We could create these interfaces
 as we usually do,
 
 @verbatim
-Ptr<Base> base = Create<Base> ();
-Ptr<Derived> derived = Create<Derived> ();
+Ptr<Base> base = CreateObject<Base> ();
+Ptr<Derived> derived = CreateObject<Derived> ();
 @end verbatim
 
 The derived and base @code{InterfaceIds} are either present or not present
@@ -1621,7 +1621,7 @@ Interface is found all over our example programs.  For example, you will
 find code like the following in @code{samples/simple-point-to-point.cc}:
 
 @verbatim
-  Ptr<Node> n = Create<InternetNode> ();
+  Ptr<Node> n = CreateObject<InternetNode> ();
 @end verbatim
 
 This code is described in detail in previous sections, but the important thing
@@ -1696,7 +1696,7 @@ that class @code{Node} is an Interface and class @code{InternetNode} inherits
 from class @code{Node}):
 
 @verbatim
-  Ptr<Ipv4Impl> ipv4Impl = Create<Ipv4Impl> (ipv4);
+  Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> (ipv4);
   ...
   Object::AddInterface (ipv4Impl);
 @end verbatim
@@ -1727,7 +1727,7 @@ Returning to some @command{ns-3} example code, lets take a look at
 following code:
 
 @verbatim
-  Ptr<Node> n0 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
   ...
   Ptr<Ipv4> ipv4;
   ipv4 = n0->QueryInterface<Ipv4> (Ipv4::iid);
