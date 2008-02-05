@@ -4,31 +4,63 @@
 @c ========================================================================
 
 @c ========================================================================
-@c Introduction
+@c Tutorial Goals
 @c ========================================================================
 
-@node Introduction
-@chapter Introduction
+@node Tutorial Goals
+@unnumbered Tutorial Goals
 
-The @command{ns-3} simulator is a discrete-event network
+@c This is an unnumbered section, like a preface.  Numbering
+@c starts with section 1 (Introduction)
+
+The goal of this ns-3 tutorial is to introduce new users of ns-3 to enough
+of the system to enable them to author simple simulation scripts and extract
+useful information from the simulations.  We begin by introducing some of the
+other important resources that are available to those interested in using or
+writing scripts, models and even those interested in making contributions to
+the core ns-3 system.  We provide an overview of some of the 
+important abstractions, design patterns and idioms used when writing 
+ns-3 scripts, and then dig right in by begining to write simulation 
+scripts, run them and interpret results.
+
+After completing this tutorial, one should be able to:
+@itemize @bullet
+@item Find documentation resources in the distribution and on the web;
+@item Download and compile the ns-3 system;
+@item Understand the key software conventions of ns-3;
+@item Modify configuration parameters of existing scripts;
+@item Change the simulation output (tracing, logging, statistics);
+@item Extend the simulator to use new objects
+@item Write new ns-3 applications;
+@item See how to port code from ns-2;
+@item ... (more to follow)
+@end itemize
+
+@c ========================================================================
+@c PART:  Introduction
+@c ========================================================================
+@c The below chapters are under the major heading "Introduction"
+@c This is similar to the Latex \part command
+@c
+@c ========================================================================
+@c Overview
+@c ========================================================================
+@node Overview
+@chapter Overview
+
+@menu
+* For ns-2 users::
+* Contributing::
+* Tutorial organization::
+@end menu
+
+The ns-3 simulator is a discrete-event network
 simulator targeted primarily for research and educational use.  
-The @uref{http://www.nsnam.org,,@command{ns-3} project}, started in 
+The @uref{http://www.nsnam.org,,ns-3 project}, started in 
 2006, is an open-source project.  The goal of the project is to
 build a new network simulator primarily for research and educational use.  
 
-The purpose of this tutorial is to introduce new @command{ns-3} users to the 
-system in a structured way.  It is sometimes difficult for new users to
-glean essential information from detailed manuals and to convert this
-information into working simulations.  In this tutorial, we will build 
-several example simulations, introducing and explaining key concepts and
-features as we go.
-
-As the tutorial unfolds, we will introduce the full @command{ns-3} 
-documentation 
-and provide pointers to source code for those interested in delving deeper
-into the workings of the system.
-
-Primary documentation for the @command{ns-3} project is available in
+Primary documentation for the ns-3 project is available in
 three forms:
 @itemize @bullet
 @item @uref{http://www.nsnam.org/doxygen/index.html,,ns-3 Doxygen/Manual}:  Documentation of the public APIs of the simulator
@@ -36,71 +68,145 @@ three forms:
 @item @uref{http://www.nsnam.org/wiki/index.php,, ns-3 wiki}
 @end itemize
 
+The purpose of this tutorial is to introduce new ns-3 users to the 
+system in a structured way.  It is sometimes difficult for new users to
+glean essential information from detailed manuals and to convert this
+information into working simulations.  In this tutorial, we will build 
+several example simulations, introducing and explaining key concepts and
+features as we go.
+
+As the tutorial unfolds, we will introduce the full ns-3 
+documentation 
+and provide pointers to source code for those interested in delving deeper
+into the workings of the system.
+
 A few key points are worth noting at the onset:
 @itemize @bullet
-@item @command{ns-3} is not an extension of @uref{http://www.isi.edu/nsnam/ns,,ns-2}; it is a new
-simulator.  The two simulators are both written in C++ but @command{ns-3}
-is a new simulator that does not support the @command{ns-2} APIs.
-Some models from @command{ns-2} have already been ported from @command{ns-2}
-to @command{ns-3}. The project will continue to maintain @command{ns-2} while
-@command{ns-3} is being built, and will study transition and
+@item ns-3 is not an extension of @uref{http://www.isi.edu/nsnam/ns,,ns-2}; 
+it is a new
+simulator.  The two simulators are both written in C++ but ns-3
+is a new simulator that does not support the ns-2 APIs.
+Some models from ns-2 have already been ported from ns-2
+to ns-3. The project will continue to maintain ns-2 while
+ns-3 is being built, and will study transition and
 integration mechanisms.
-@item @command{ns-3} is open-source, and the project strives to maintain
+@item ns-3 is open-source, and the project strives to maintain
 an open environment for researchers to contribute and share their
 software.  
 @end itemize
  
-The goal of this tutorial is to introduce new users of @command{ns-3} to enough
-of the system to enable them to author simple simulation scripts and extract
-useful information from the simulations.  We begin by introducing some of the
-other important resources that are available to those interested in using or
-writing scripts, models and even those interested in making contributions to
-the core @command{ns-3} system.  We provide an overview of some of the 
-important abstractions, design patterns and idioms used when writing 
-@command{ns-3} scripts, and then dig right in by begining to write simulation 
-scripts, run them and interpret results.
+@node For ns-2 users
+@section For ns-2 users
 
-After completing this tutorial, one should be able to:
+For those familiar with ns-2, the most visible outward change 
+when moving to ns-3 is the choice of scripting language.  
+ns-2 is typically scripted in Tcl and results of simulations can
+be visualized using the Network Animator @command{nam}.  In 
+ns-3 there is currently no visualization module, and Python
+bindings have been developed (Tcl bindings have been prototyped
+using @uref{http://www.swig.org,,SWIG}, but are not supported by the 
+current development team).  
+In this tutorial, we will concentrate on 
+scripting directly in C++ and interpreting results via trace files.  
+
+But there are similarities as well (both, for example, are based
+on C++ objects, and some code from ns-2 has already been ported
+to ns-3).  We will try to highlight differences between ns-2 and ns-3
+as we proceed in this tutorial.
+
+@node Contributing
+@section Contributing
+
+@cindex software configuration management
+ns-3 is a research and educational simulator, by and for the
+research community.  It will rely on the ongoing contributions of 
+the community to develop new models, debug or maintain
+existing ones, and share results.  There are a few policies
+that we hope will encourage people to contribute to ns-3 like they
+have for ns-2:
 @itemize @bullet
-@item Find documentation resources in the distribution and on the web;
-@item Download and compile the @command{ns-3} system;
-@item Use the provided devices to author network simulations of fairly  
-significant complexity;
-@item Use the default value system to configure simulations;
-@item Write new @command{ns-3} applications;
-@item Use the tracing subsystem.
+@item open source licensing based on GNU GPLv2 compatibility
+@item @uref{http://www.nsnam.org/wiki/index.php,,wiki}
+@item @uref{http://www.nsnam.org/wiki/index.php/Contributed_Code,,Contributed Code} page, similar to ns-2's popular 
+@uref{http://nsnam.isi.edu/nsnam/index.php/Contributed_Code,,Contributed Code} 
+page
+@item @code{src/contrib} directory (we will host your contributed code)
+@item open @uref{http://www.nsnam.org/bugzilla,,bug tracker}
+@item ns-3 developers will gladly help potential contributors to get
+started with the simulator (please contact @uref{http://www.nsnam.org/people.html,,one of us})
+@end itemize  
+
+If you are an ns user, please consider to provide your feedback,
+bug fixes, or code to the project.  
+
+@node Tutorial organization
+@section Tutorial organization
+
+The tutorial assumes that new users might follow a path such as follows:
+
+@itemize @bullet
+@item browse the source code and documentation, to get a feel for 
+the simulator and what it might be like to handle;
+@item try to download and build a copy;
+@item try to run a few sample programs, and perhaps change some configurations;
+@item look at simulation output, and try to adjust it
+@item study the software architecture of the system, to consider hacking it or 
+extending it;
+@item write new models or port existing code to ns-3, and eventually post those
+models back to the community.
 @end itemize
 
+As a result, we have tried to organize the tutorial along the above
+broad sequences of events.
+
 @c ========================================================================
-@c Overview
+@c Browsing ns-3
 @c ========================================================================
 
-@node Overview
-@chapter Overview
+@node Browsing
+@chapter Browsing ns-3
 
-This chapter is a brief tour of @command{ns-3}.  It introduces the
-concept of discrete event simulation, provides a brief overview of
-@command{ns-3}, and provides a short contextual introduction for
-the existing @command{ns-2} user community.
+@menu
+* Source code::
+* Doxygen::
+* Other documentation::
+@end menu
 
-@node Discrete Event Simulation
-@section Discrete Event Simulation  
+@node Source code
+@section Source code 
 
-@node ns-3 Overview
-@section ns-3 Overview
+The most recent code can be browsed on our web server at the following link:
+@uref{http://code.nsnam.org/?sort=lastchange}.  If you click on the bold
+repository names on the left of the page, you will see changelogs for
+these repositories, and links to the @emph{manifest}.  From the manifest
+links, one can browse the source tree.
 
-@node For ns-2 users
-@section For @command{ns-2} users
+The top-level directory will look something like:
+@verbatim
+  AUTHORS  RELEASE_NOTES  examples/  src/       waf*
+  LICENSE  VERSION        ns3/       tutorial/  waf.bat*
+  README   doc/           samples/   utils/     wscript
+@end verbatim
+The source code is mainly in the @code{src} directory.  Example
+scripts are in the @code{examples} directory.  Both are good directories
+to start browsing some code.
 
-For those familiar with @command{ns-2}, the most visible outward change 
-when moving to @command{ns-3} is the choice of scripting language.  
-@command{ns-2} is typically scripted in Tcl and results of simulations are
-often visualized using the Network Animator @command{nam}.  In 
-@command{ns-3} there is currently no visualization module, and multiple 
-language bindings are allowed.  In this tutorial, we will concentrate on 
-scripting directly in C++ and interpreting results via trace files.  Scripting
-in other languages will typically be done via straightforward bindings of the 
-target language into the underlying C++.
+For ns-2 users, who may be familiar with the @code{simple.tcl} example script
+in the ns-2 documentation, an analogous script is found in 
+@code{examples/simple-point-to-point.cc} with a Python equivalent found
+in @emph{(pending Python merge)}. 
+
+@node Doxygen
+@section Doxygen
+
+We document all of APIs using @uref{http://www.stack.nl/~dimitri/doxygen/,,Doxygen}.  Current builds of this documentation are available at:
+@uref{http://www.nsnam.org/doxygen/index.html}, which are worth an initial
+look.  
+
+@node Other documentation
+@section Other documentation
+
+See:  @uref{http://www.nsnam.org/documents.html}.
 
 @c ========================================================================
 @c Resources
@@ -121,9 +227,9 @@ target language into the underlying C++.
 @section The Web
 
 @cindex www.nsnam.org
-There are several important resources of which any @command{ns-3} user must be
+There are several important resources of which any ns-3 user must be
 aware.  The main web site is located at @uref{http://www.nsnam.org}
-and provides access to basic information about the @command{ns-3} system.  
+and provides access to basic information about the ns-3 system.  
 Detailed documentation is available through the main web site at
 @uref{http://www.nsnam.org/documents.html}.
 
@@ -133,7 +239,7 @@ You can find documents relating to the system architecture from this page,
 and also gain access to the detailed software documentation.  The software
 system is documented in great detail using 
 @uref{http://www.stack.nl/~dimitri/doxygen/,,Doxygen}.  There is a Wiki that
-complements the main @command{ns-3} web site which you will find at 
+complements the main ns-3 web site which you will find at 
 @uref{http://www.nsnam.org/wiki/}.
 
 You will find user and developer FAQs there as well as troubleshooting guides, 
@@ -157,7 +263,7 @@ the most well known.
 
 @cindex software configuration management
 @cindex Mercurial
-The @command{ns-3} project uses Mercurial as its source code management system.
+The ns-3 project uses Mercurial as its source code management system.
 Although you do not need to know much about Mercurial in order to complete
 this tutorial, we recommend becoming familiar with Mercurial and using it 
 to access the source code.  Mercurial has a web site at 
@@ -169,8 +275,8 @@ also provides a tutorial at
 and a QuickStart guide at
 @uref{http://www.selenic.com/mercurial/wiki/index.cgi/QuickStart/}.
 
-You can also find vital information about using Mercurial and @command{ns-3}
-on the main @command{ns-3} web site.
+You can also find vital information about using Mercurial and ns-3
+on the main ns-3 web site.
 
 @node Waf
 @section Waf
@@ -187,9 +293,9 @@ use in a very large and highly configurable system.  Because of this, many
 alternatives have been developed.  Recently these systems have been developed
 using the Python language.
 
-The build system @code{Waf} is used on the @command{ns-3} project.  It is one 
+The build system @code{Waf} is used on the ns-3 project.  It is one 
 of the new generation of Python-based build systems.  You will not need to 
-understand any Python to build the existing @command{ns-3} system, and will 
+understand any Python to build the existing ns-3 system, and will 
 only have to understand a tiny and intuitively obvious subset of Python in 
 order to extend the system in most cases.
 
@@ -200,7 +306,7 @@ found at @uref{http://freehackers.org/\~tnagy/waf.html}.
 @section Environment, Idioms, and Design Patterns
 
 @cindex C++
-As mentioned above, scripting in @command{ns-3} is done in C++.  A working 
+As mentioned above, scripting in ns-3 is done in C++.  A working 
 knowledge of C++ and object-oriented concepts is assumed in this document.
 We will take some time to review some of the more advanced concepts or 
 possibly unfamiliar language features, idioms and design patterns as they 
@@ -217,26 +323,26 @@ before proceeding.
 
 @cindex toolchain
 @cindex GNU
-The @command{ns-3} system uses the GNU ``toolchain'' for development.  
+The ns-3 system uses the GNU ``toolchain'' for development.  
 A software toolchain is the set of programming tools available in the given 
 environment. For a quick review of what is included in the GNU toolchain see,
 @uref{http://en.wikipedia.org/wiki/GNU_toolchain}.
 
 @cindex Linux
-Typically a @command{ns-3} author will work in Linux or a Linux-like
+Typically an ns-3 author will work in Linux or a Linux-like
 environment.  For those running under Windows, there do exist environments 
-which simulate the Linux environment to various degrees.  The @command{ns-3} 
+which simulate the Linux environment to various degrees.  The ns-3 
 project supports development in the Cygwin and the MinGW environments for 
 these users.  See @uref{http://www.cygwin.com/} and 
 @uref{http://www.mingw.org/} for details on downloading and using these
-systems.  I use Cygwin in these cases since it provides all of the Linux tools
-I know and love.  It can, however, sometimes be problematic due to the way it 
+systems.  Cygwin provides many of the popular Linux system commands.
+It can, however, sometimes be problematic due to the way it 
 actually does its emulation, and sometimes interactions with other Windows
 software can cause problems.
 
 @cindex Cygwin
 @cindex MinGW
-If you do use Cygwin or MinGW; and use Logitech products, I will save you
+If you do use Cygwin or MinGW; and use Logitech products, we will save you
 quite a bit of heartburn right off the bat and encourage you to take a look
 at the @uref{http://www.mingw.org/MinGWiki/index.php/FAQ,,MinGW FAQ}.
 
@@ -254,7 +360,7 @@ running.  Beware of Logitech.
 In any system, there are a number of problems to be solved that happen 
 repeatedly.  Often the solutions to these problems can be generalized and
 applied in a similar way across the system.  These solutions are called
-Design Patterns.  The @command{ns-3} system relies on several classic design
+Design Patterns.  The ns-3 system relies on several classic design
 patterns.
 
 @cindex design pattern
@@ -269,34 +375,34 @@ intent  of the following code without having to reflect on the details:
 
 These low-level constructs, or idioms, extend upward in complexity, eventually
 becoming implementations of design patterns.  As you are exposed to more 
-and more of the @command{ns-3} system, you will begin to recognize and be 
+and more of the ns-3 system, you will begin to recognize and be 
 comfortable with the C++ implementations (idioms) of several important design
 patterns.
 
 @cindex functor
 @cindex callback
 @cindex smart pointer
-The @command{ns-3} code relies heavily on 
+The ns-3 code relies heavily on 
 @emph{Generalized Functors, Callbacks, 
 Smart Pointers, Singletons, and Object Factories}.  Although we will 
 not assume any detailed knowledge of the idioms and design patterns used 
-in the @command{ns-3}
+in the ns-3
 system, it will be useful for readers who intend to delve deeply into the
 system to understand some important related concepts.  We recommend two 
 resources: @uref{http://www.amazon.com/Design-Patterns-Object-Oriented-Addison-Wesley-Professional/dp/0201633612/,,Design Patterns: Elements of Reusable Object-Oriented Software, Gamma et. al.} and
 @uref{http://www.amazon.com/exec/obidos/ASIN/0201704315,,Modern C++ Design: Generic Programming and Design Patterns Applied, Alexandrescu}.
 
 Gamma addresses the abstract design patterns, and Alexandrescu addresses the
-C++ idioms you will often see throughout the @command{ns-3} code.
+C++ idioms you will often see throughout the ns-3 code.
 
 @cindex template
-Almost any use of @command{ns-3} will require some basic knowledge of C++ 
+Almost any use of ns-3 will require some basic knowledge of C++ 
 templates.
 We will discuss the high-level uses in this tutorial.  However, if you venture
 deeply into the source code, you will see fairly heavy use of relatively
 sophisticated C++ templates in some of low-level modules of the system.  The
 You don't have to be a template guru to complete this tutorial but if you
-expect to work in @command{ns-3} at a low level you will have to be 
+expect to work in ns-3 within the simulation core, you will have to be 
 somewhat fluent
 with templates.  If you  want to truly grok C++ templates we recommend,
 @uref{http://www.amazon.com/Templates-Complete-Guide-David-Vandevoorde/dp/0201734842/,,C++ Templates: The Complete Guide, Vandevoorde and Josuttis}.
@@ -340,21 +446,21 @@ toolchain installed and verified.
 @cindex Waf
 We are going to assume that you have Mercurial and Waf installed and running
 on the target system as described in the Getting Started section of the 
-@command{ns-3} web site: @uref{http://www.nsnam.org/getting_started.html}.
+ns-3 web site: @uref{http://www.nsnam.org/getting_started.html}.
 
 @section Downloading
 @cindex tarball
-The @command{ns-3} code is available in Mercurial repositories on the server
+The ns-3 code is available in Mercurial repositories on the server
 code.nsnam.org.  You can download a tarball, but we recommend working with
 Mercurial --- it will make your life easier in the long run.
 
 @cindex repository
 If you go to the following link: @uref{http://code.nsnam.org/},
 you will see a number of repositories.  Many are the private repositories of
-the @command{ns-3} development team.  The repositories of interest to you 
+the ns-3 development team.  The repositories of interest to you 
 will be
 prefixed with ``ns-3''.  The current development snapshot (unreleased) of
-@command{ns-3} may be found at: @uref{http://code.nsnam.org/ns-3-dev/}.
+ns-3 may be found at: @uref{http://code.nsnam.org/ns-3-dev/}.
 
 The developers attempt to keep this repository in a consistent, working state
 but it is a development area with unreleased code present, so you may want to
@@ -362,7 +468,7 @@ consider downloading an official release.
 
 There will be a number of released repositories present at code.nsnam.org.
 These repos will have names like ns-3.0.1 --- which referes to release 3.0.1 
-of the network simulator (or if you like, release 0.1 of @command{ns-3}).  
+of the network simulator (or if you like, release 0.1 of ns-3).  
 Since the releases are changing at a rate of one per month, I will stick with 
 the more constant ns-3-dev here, but you can replace the string ns-3-dev with
 your choice of release (e.g., ns-3.0.5) below.  You can find the latest 
@@ -370,11 +476,12 @@ version  of the code either by inspection of the repository list or by going
 to the ``Getting Started'' web page and looking for the latest release 
 identifier.
 
-I typically create a directory called @code{repos} in my home directory under
-which I keep all of my local Mercurial repositories.  @emph{Hint:  I will
+One practice is to create a directory called @code{repos} in one's home 
+directory under which one can keep local Mercurial repositories.  
+@emph{Hint:  we will
 assume you do this later in the tutorial.} If you adopt that approach, you 
-can get a copy of the development version of @command{ns-3} by typing 
-the following into your Linux shell (I use bash).
+can get a copy of any of the development versions of ns-3 by typing 
+the following into your Linux shell (assuming you have installed Mercurial):
 
 @verbatim
   cd
@@ -405,14 +512,14 @@ look something like the following:
   README   doc/           samples/   utils/     wscript
 @end verbatim
 
-You are now ready to build the @command{ns-3} distribution.
+You are now ready to build the ns-3 distribution.
 
 @section Building
 @cindex Waf!build
 @cindex Waf!configure
 @cindex Waf!debug
 @cindex Waf!compile
-We use Waf to build the @command{ns-3} project.  The first thing you 
+We use Waf to build the ns-3 project.  The first thing you 
 will need to do is to configure the build.  For reasons that will become clear
 later, we are going to work with debug builds in the tutorial.  To explain to 
 Waf that it should do debug builds you will need to execute the following 
@@ -452,10 +559,10 @@ you should see output that looks similar to the following,
 @end verbatim
 
 The build system is now configured and you can build the debug versions of 
-the @command{ns-3} programs by simply typing,
+the ns-3 programs by simply typing,
 
 @verbatim
-  ./waf
+  ./waf check
 @end verbatim
 
 You will see many Waf status messages displayed as the system compiles.  The
@@ -465,12 +572,14 @@ most important is the last one,
   Compilation finished successfully
 @end verbatim
 
+and you will see a number of software unit tests subsequently execute.
+
 @section Running a Script
 @cindex Waf!run
 We typically run scripts under the control of Waf.  This allows the build 
 system to ensure that the shared library paths are set correctly and that
 the libraries are available at run time.  To run a program, simply use the
-@code{run} option in Waf.  Let's run the @command{ns-3} equivalent of the hello
+@code{run} option in Waf.  Let's run the ns-3 equivalent of the hello
 world program by typing the following:
 
 @verbatim
@@ -485,7 +594,10 @@ produces the following output.
   Hello Simulator
 @end verbatim
 
-@emph{Congratulations.  You are now an @command{ns-3} user.}
+If you want to run programs under another tool such as gdb or valgrind,
+see this @uref{http://www.nsnam.org/wiki/index.php/User_FAQ#How_to_run_NS-3_programs_under_another_tool,,wiki entry}.
+
+@emph{Congratulations.  You are now an ns-3 user.}
 
 @c ========================================================================
 @c Some Prerequisites
@@ -502,19 +614,19 @@ through this chapter just to ensure you are starting on a firm foundation.
 @section Abstractions
 
 In this section, we'll review some terms that are commonly used in
-networking, but have a specific meaning in @command{ns-3}.
+networking, but have a specific meaning in ns-3.
 
 @subsection Node
 @cindex Node
 In Internet jargon, a computing device that connects to a network is called
-a @emph{host} or sometimes an @emph{end system}.  Because @command{ns-3} is a 
+a @emph{host} or sometimes an @emph{end system}.  Because ns-3 is a 
 @emph{network} simulator, not specifically an @emph{Internet} simulator, we 
 intentionally do not use the term host since it is closely associated with
 the Internet and its protocols.  Instead, we use a more generic term also
 used by other simulators that originates in Graph Theory --- the @emph{node}.
 
 @cindex Node!class
-In @command{ns-3} the basic computing device abstraction is called the 
+In ns-3 the basic computing device abstraction is called the 
 node.  This abstraction is represented in C++ by the class @code{Node}.  The 
 @code{Node} class provides methods for managing the representations of 
 computing devices in simulations.  Developers are expected to specialize the 
@@ -527,7 +639,7 @@ and automatically provides core IPv4 networking protocols.
 You should think of a @code{Node} as a computer to which you will add 
 functionality.  One adds things like applications, protocol stacks and
 peripheral cards with their associated drivers to enable the computer to do
-useful work.  We use the same basic model in @command{ns-3}.
+useful work.  We use the same basic model in ns-3.
 
 @subsection Application
 @cindex Application
@@ -542,14 +654,14 @@ goal.
 @cindex system call
 Often, the line of separation between system and application software is made
 at the privilege level change that happens in operating system traps.
-In @command{ns-3} there is no real concept of operating system and especially
+In ns-3 there is no real concept of operating system and especially
 no concept of privilege levels or system calls.  We do, however, have the
 idea of an application.  Just as software applications run on computers to
-perform tasks in the ``real world,'' @command{ns-3} applications run on
-@command{ns-3} @code{Node}s to drive simulations in the simulated world.
+perform tasks in the ``real world,'' ns-3 applications run on
+ns-3 @code{Node}s to drive simulations in the simulated world.
 
 @cindex Application!class
-In @command{ns-3} the basic abstraction for a user program that generates some
+In ns-3 the basic abstraction for a user program that generates some
 activity to be simulated is the application.  This abstraction is represented 
 in C++ by the class @code{Application}.  The @code{Application} class provides 
 methods for managing the representations of our version of user-level 
@@ -567,7 +679,7 @@ In the real world, one can connect a computer to a network.  Often the media
 over which data flows in these netowrks are called @emph{channels}.  When
 you connect your Ethernet cable to the plug in the wall, you are connecting 
 your computer to an Ethernet communication channel.  In the simulated world
-of @command{ns-3} one connects a @code{Node} to an object representing a
+of ns-3 one connects a @code{Node} to an object representing a
 communication channel.  Here the basic communication subnetwork abstraction 
 is called the channel and is represented in C++ by the class @code{Channel}.  
 
@@ -602,7 +714,7 @@ devices (NICs) are controlled using @emph{network device drivers}
 collectively known as @emph{net devices}.  In Unix and Linux you refer
 to these net devices by names such as @emph{eth0}.
 
-In @command{ns-3} the @emph{net device} abstraction covers both the software 
+In ns-3 the @emph{net device} abstraction covers both the software 
 driver and the simulated hardware.  A net device is ``attached'' to a 
 @code{Node} in order to enable the @code{Node} to communicate with other 
 @code{Node}s in the simulation via @code{Channel}s.  Just as in a real
@@ -619,13 +731,13 @@ Just as an Ethernet NIC is designed to work with an Ethernet network, the
 
 @subsection Topology Helpers
 In a real network, you will find host computers with added (or built-in)
-NICs.  In @command{ns-3} we would say that you will find @code{Nodes} with 
+NICs.  In ns-3 we would say that you will find @code{Nodes} with 
 attached @code{NetDevices}.  In a large simulated network you will need to 
 arrange many connections between @code{Node}s, @code{NetDevice}s and 
 @code{Channel}s.
 
 Since connecting a @code{NetDevice} to a @code{Node}, and a @code{NetDevice}
-to a @code{Channel} is such a common task in @command{ns-3} we provide what we
+to a @code{Channel} is such a common task in ns-3 we provide what we
 call @emph{topology helpers} to make this as easy as possible.  Topology 
 helpers perform much of the dirty work of creating and connecting net devices.
 For example, it may take several distinct method calls to create a NetDevice,
@@ -652,7 +764,7 @@ examine this in some detail here.
 @cindex InternetNode
 @cindex CreateObject
 @cindex Ptr
-In @command{ns-3}, if we want to create an @code{InternetNode} in a 
+In ns-3, if we want to create an @code{InternetNode} in a 
 script, we will 
 typically do something like the following example:
 
@@ -884,12 +996,12 @@ points where variables must be valid and become discardable to determine when
 underlying data can be freed.
 
 @cindex reference counting!intrusive
-The @command{ns-3} smart pointer mechanism uses a mechanism called intrusive 
+The ns-3 smart pointer mechanism uses a mechanism called intrusive 
 reference counting to determine when a memory block should be automatically 
 deallocated.  The term ``intrusive'' means that a reference count (a count of
 variables required to have valid data) is stored in the object being managed
 instead of in a proxy object.  This means that each piece of memory managed by
-a @command{ns-3} smart pointer includes a reference count.  When a smart 
+a ns-3 smart pointer includes a reference count.  When a smart 
 pointer to a reference counted object is created, this reference count is 
 incremented.  This indicates that a new variable requires a valid data object 
 be present.  When a smart pointer to a reference counted object is destroyed
@@ -916,7 +1028,7 @@ a boon if you have experience with ``manual'' memory management and finding
 memory leaks.
 
 Now, we want to make this feature available as widely as possible to objects
-in the @command{ns-3} system.  The basic operations of the smart pointer class
+in the ns-3 system.  The basic operations of the smart pointer class
 are the same across any intrusively reference counted object.  C++ provides a
 mechanism to achieve this kind of generic behavior --- the template.  Let's
 examine the declaration of the smart pointer in more detail.  First consider
@@ -1076,7 +1188,7 @@ the compiler will quite appropriately complain that there is no conversion
 between these completely unrelated objects (CsmaChannel and Node).
 
 @subsection Summary
-Going back to our infamous first line of @command{ns-3} code, we said that if 
+Going back to our infamous first line of ns-3 code, we said that if 
 we want to create an InternetNode in a script, we will typically do something 
 like:
 
@@ -1106,9 +1218,9 @@ this tutorial.
 @chapter A First ns-3 script
 @cindex design pattern
 @cindex idiom
-Lets build a simple network using the @command{ns-3} design patterns, idioms,
+Lets build a simple network using the ns-3 design patterns, idioms,
 classes and helpers we have just looked at.  If you downloaded the system as
-was suggested above, you will have a release of @command{ns-3} in a directory 
+was suggested above, you will have a release of ns-3 in a directory 
 called @code{repos} under your home directory.  Change into that directory, 
 where you should see a directory structure something like the following.
 
@@ -1140,8 +1252,8 @@ see some copyright information and the following C++ code:
   }
 @end verbatim
 
-This is the @command{ns-3} version of the ubiquitous hello-world program.  It 
-uses the @command{ns-3} Log module to print ``Hello Simulator'' into the
+This is the ns-3 version of the ubiquitous hello-world program.  It 
+uses the ns-3 Log module to print ``Hello Simulator'' into the
  standard error output stream.
 
 @cindex logging
@@ -1162,7 +1274,7 @@ files.  Put the following code after the include statement in @code{simple.cc}.
 @end verbatim
 
 @cindex include files
-The @command{ns-3} build system places the core include files it needs into a 
+The ns-3 build system places the core include files it needs into a 
 directory called @code{ns-3} and so whenever you need to include one of the
 core files you need to explicitly code this.  The file @code{ptr.h} defines
 the generic smart pointer that we use.  The file @code{internet-node.h}
@@ -1315,9 +1427,9 @@ nd3.  You can add multiple net devices to each node resulting in a situation
 similar to a multi-homed host.  Each time you add a net device, you will get
 a new index.  Since the IP address for a multi-homed host is associated with
 a net device, we need to provide that index (which we have saved) to the
-topology helper.  We provide an IP version four address via the @command{ns-3} 
+topology helper.  We provide an IP version four address via the ns-3 
 class @code{Ipv4Address} which takes a dotted decimal string as a constructor 
-parameter.  We also provide a network mask using the @command{ns-3} class
+parameter.  We also provide a network mask using the ns-3 class
 @code{Ipv4Mask} which also takes a dotted decimal string.  The code to 
 perform the IP address assignment, then, looks like the following:
 
@@ -1398,9 +1510,9 @@ convince our nodes to try and send some data over the network.
 
 @section Using Applications
 @cindex Create
-As mentioned above, we use @code{Application}s in @command{ns-3} to generate 
+As mentioned above, we use @code{Application}s in ns-3 to generate 
 the data used to drive simulations.  An @code{Application} is added to a 
-@command{ns-3} node conceptually just as if you would add an application to a 
+ns-3 node conceptually just as if you would add an application to a 
 computer.  When an application is created (using the @code{Create} template) 
 we tell the application which @code{Node} it belongs to (and therefore on 
 which node it is running) by passing a smart pointer to that @code{Node} in 
@@ -1487,7 +1599,7 @@ Or you can rely on implicit conversion sequences as we just saw:
 @end verbatim
 
 Which approach to take is a matter of style, really, and you will probably
-see all three approaches taken in the @command{ns-3} code.  You should be 
+see all three approaches taken in the ns-3 code.  You should be 
 comfortable seeing and using all three methods.
 
 @subsection A UDP Echo Server Application
@@ -1507,7 +1619,7 @@ following code:
 
 We only need to tell the application which node to reside on and which port
 to listen on for UDP packets.  The code to actually create the
-@code{UdpEchoServer} application uses the now quite familiar @command{ns-3} object
+@code{UdpEchoServer} application uses the now quite familiar ns-3 object
 creation idiom.
 
 @subsection A UDP Echo Client-Server Simulation
@@ -1586,14 +1698,14 @@ following (let's change the log component name and program banner from
 @section Using the Simulation Engine
 @cindex model
 @cindex simulation executive
-You could say that the heart of the @command{ns-3} system is the 
+You could say that the heart of the ns-3 system is the 
 @emph{simulation engine} (sometimes called the simulation executive in other 
 systems).
 
 In a computer simulation, a computer @emph{model} of a real world @emph{system}
 is constructed.  This is typically done to minimize cost since you do not have
 to actually buy, install and maintain physical hardware.  In the case of
-@command{ns-3}, a model is a representation of a networking component that is
+ns-3, a model is a representation of a networking component that is
 designed to imitate some number of important behaviors or characteristics of 
 an actual component in a real network.  A system is a collection of models
 arranged for the purpose of analyzing some behavior.
@@ -1604,7 +1716,7 @@ arranged for the purpose of analyzing some behavior.
 @cindex InternetNode
 @cindex NIC
 @cindex CSMA
-We have already encountered several @command{ns-3} models without specifically 
+We have already encountered several ns-3 models without specifically 
 calling them so.  The @code{InternetNode}, @code{CsmaNetDevice} and 
 @code{CsmaChannel} objects are models of an Internet computing node, a CSMA
 network interface card (NIC), and a network cable able to move data to and
@@ -1624,7 +1736,7 @@ channel residing in our universe.
 @cindex Ethernet
 No model will fully implement @emph{all} of the behaviors of a piece of
 hardware.  It is important to understand what is being modeled by the 
-@command{ns-3} components you are using and what is not.  For example, the Csma
+ns-3 components you are using and what is not.  For example, the Csma
 components we use in this tutorial model a highly abstract multiple access
 network that is topologically equivalent to an Ethernet.  It is not necessarily
 true that results found in a simulation using the Csma models will apply to
@@ -1661,7 +1773,7 @@ seconds and @emph{fire} the scheduled event --- that is, make the event happen.
 @cindex function object
 @cindex callback
 @cindex Callback
-In @command{ns-3} an event is basically a pre-packaged function call called a 
+In ns-3 an event is basically a pre-packaged function call called a 
 @emph{functor}.  Functors are also known as @emph{function objects}, which is
 a more descriptive term --- an object (in the object-oriented programming 
 sense) that can be called as if it was a function.  Typically one uses a
@@ -1673,9 +1785,9 @@ to complete.  One asks the I/O subsytem to notify you when an operation is
 complete by calling some function you provide.  This provided function is
 known as a callback function.  [Imagine calling someone on the telephone and
 asking them to do something for you.  You also ask them to @emph{call you back}
-when they are done.]  Events in the @command{ns-3} system work conceptually
+when they are done.]  Events in the ns-3 system work conceptually
 the same way, except that instead of an I/O completion driving the process,
-the arrival of some simulated time drives the process.  The @command{ns-3} 
+the arrival of some simulated time drives the process.  The ns-3 
 deferred exectution mechanism is via a class called @code{Callback}.
 
 @cindex Time
@@ -1688,7 +1800,7 @@ events directly for some time, but you should know that they are happening
 @section Driving the Simulation
 @cindex Application
 As mentioned previously, time is the driving force behind the progress of
-a @command{ns-3} simulation.  Events are scheduled to happen at certain times
+a ns-3 simulation.  Events are scheduled to happen at certain times
 by calling methods of the simulation engine, either directly or indirectly
 through, for example, an @code{Application}.
 
@@ -1738,7 +1850,7 @@ start event of the client, just as you would start a server application before
 you would attempt to start a client application in the real world.
 
 @cindex socket!sendto
-The @command{ns-3} equivalent of the call to @code{sendo} in the client will 
+The ns-3 equivalent of the call to @code{sendo} in the client will 
 schedule (immediately) the transmission of a UDP packet over the just created
 socket.  This will cause the packet to percolate down the protocol stack and
 eventually into the channel.  The channel will schedule a reception event in
@@ -1763,7 +1875,7 @@ the following static methods:
   Simulator::Destroy ();
 @end verbatim
 
-We now have the makings of a complete @command{ns-3} network simulation.  The 
+We now have the makings of a complete ns-3 network simulation.  The 
 source code for the script should look like the following:
 
 @verbatim
@@ -1848,7 +1960,7 @@ source code for the script should look like the following:
 @cindex tutorial-csma-echo.cc
 Just to make sure you don't get caught up in debugging typographical errors
 we have provided this source code for you (along with a copyright header) in
-the @code{tutorial} subdirectory of the @command{ns-3} distribution as 
+the @code{tutorial} subdirectory of the ns-3 distribution as 
 @code{tutorial-csma-echo.cc}.  We used this opportunity to do some ``clean up''
 of some of our example cases by passing parameters using implicit conversion 
 sequences and removing some of the named parameters. [These were used for
@@ -1861,7 +1973,7 @@ the script before we run it.  As mentioned before, we use the Waf build system
 which is Python-based.  We have to change gears slightly and switch ourselves
 to Python mode in order to proceed.
 
-In each subdirectory of the @command{ns-3} distribution in which there are
+In each subdirectory of the ns-3 distribution in which there are
 source files, you will find two files:  one will be named @code{waf} and one
 will be named @code{wscript}.  The former, @code{waf}, is a link that allows
 one to start the build process from any subdirectory.  We can ignore that one.
@@ -1918,7 +2030,3 @@ Compilation finished successfully
 UDP Echo Simulation
 ~/repos/ns-3-dev/tutorial >
 @end verbatim
-
-Wow!  Wasn't that cool!  I'm sure you can barely contain yourself at this
-point.  Okay, well, maybe we should figure out how to get some useful
-information out of that simulation.  It did run ... I promise.
