@@ -341,8 +341,8 @@ a GlobalRouter interface to each one as follows:
   for (Iterator i = NodeList::Begin (); i != NodeList::End (); i++)
     {
       Ptr<Node> node = *i;
-      Ptr<GlobalRouter> globalRouter = Create<GlobalRouter> (node);
-      node->AddInterface (globalRouter);
+      Ptr<GlobalRouter> globalRouter = CreateObject<GlobalRouter> (node);
+      node->AggregateObject (globalRouter);
     }
 @end verbatim
 

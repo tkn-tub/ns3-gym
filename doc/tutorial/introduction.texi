@@ -650,14 +650,14 @@ objects of these classes into existance, and manage their lifetimes.  Let's
 examine this in some detail here.
 
 @cindex InternetNode
-@cindex Create
+@cindex CreateObject
 @cindex Ptr
 In @command{ns-3}, if we want to create an @code{InternetNode} in a 
 script, we will 
 typically do something like the following example:
 
 @verbatim
-  Ptr<Node> p = Create<InternetNode> ();
+  Ptr<Node> p = CreateObject<InternetNode> ();
 @end verbatim
 
 @cindex smart pointer
@@ -677,7 +677,7 @@ convenience, the angle brackets you see in the code indicate that we are
 using C++ @emph{templates}.  
 
 @verbatim
-  Ptr<Node> p = Create<InternetNode> ();
+  Ptr<Node> p = CreateObject<InternetNode> ();
 @end verbatim
 
 The purpose of templates is to allow a programmer to write one version of code
@@ -955,21 +955,21 @@ you use smart pointers just as if they were built-in pointers:
 @end verbatim
 
 @subsection Object Creation
-@cindex Create
+@cindex CreateObject
 On the right hand side of the line of code we're examining (reproduced below
 for convenience) is the creation of an @code{InternetNode} object.
 
 @verbatim
-  ... = Create<InternetNode> ();
+  ... = CreateObject<InternetNode> ();
 @end verbatim
 
 @cindex template!function
 This turns out to be an instance of use of a C++ @emph{function template}. The
-definition of the @code{Create<typename T>()} template calls the new operator
-to create an object of the type T.  It then creates a new smart pointer of
-the appropriate type (i.e., @code{Ptr<T>}).  This new smart pointer is
-assigned initial responsibility for the new object which has its reference
-count set to one.
+definition of the @code{CreateObject<typename T>()} template calls the new 
+operator to create an object of the type T.  It then creates a new smart 
+pointer of the appropriate type (i.e., @code{Ptr<T>}).  This new smart 
+pointer is assigned initial responsibility for the new object which has its 
+reference count set to one.
 
 Since the underlying creation mechanism is via the @code{new} operator, and
 you can pass parameters to the constructor for an object, we provide several
@@ -979,7 +979,7 @@ parameter to the @code{Create} function like this,
 
 @verbatim
   int parm = 1;
-  ... = Create<MyClass> (parm);
+  ... = CreateObject<MyClass> (parm);
 @end verbatim
 
 We provide Create templates with up to seven parameters, so you could 
@@ -987,7 +987,7 @@ conceivably use the @code{Create} template in situations such as,
 
 @verbatim
   int parm = 1;
-  ... = Create<MyClass> (p1, p2, p3, p4, p5, p6, p7);
+  ... = CreateObject<MyClass> (p1, p2, p3, p4, p5, p6, p7);
 @end verbatim
 
 @subsection Type Safety
@@ -995,7 +995,7 @@ Lets take one final look at the now infamous example line of code that we
 have been examining for some time (again reproduced below).
 
 @verbatim
-  Ptr<Node> p = Create<InternetNode> ();
+  Ptr<Node> p = CreateObject<InternetNode> ();
 @end verbatim
 
 @cindex smart pointer
@@ -1057,19 +1057,19 @@ This is a rather involved way of saying there's an invisible pointer cast
 to a base class happening in the assignment.  That means that
 
 @verbatim
-  Ptr<Node> p = Create<InternetNode> ();
+  Ptr<Node> p = CreateObject<InternetNode> ();
 @end verbatim
 
 or,
 
 @verbatim
-  Ptr<Channel> p = Create<CsmaChannel> ();
+  Ptr<Channel> p = CreateObject<CsmaChannel> ();
 @end verbatim
 
 will work just fine.  Of course, if you try something @emph{bad} (TM), like:
 
 @verbatim
-  Ptr<Node> p = Create<CsmaChannel> ();
+  Ptr<Node> p = CreateObject<CsmaChannel> ();
 @end verbatim
 
 the compiler will quite appropriately complain that there is no conversion
@@ -1081,7 +1081,7 @@ we want to create an InternetNode in a script, we will typically do something
 like:
 
 @verbatim
-  Ptr<Node> p = Create<InternetNode> ();
+  Ptr<Node> p = CreateObject<InternetNode> ();
 @end verbatim
 
 @cindex Create
@@ -1174,10 +1174,10 @@ of code after the call to @code{NS_LOG_INFO} in the simple.cc file right
 after the call to @code{NS_LOG_INFO}.
 
 @verbatim
-  Ptr<Node> n0 = Create<InternetNode> ();
-  Ptr<Node> n1 = Create<InternetNode> ();
-  Ptr<Node> n2 = Create<InternetNode> ();
-  Ptr<Node> n3 = Create<InternetNode> ();
+  Ptr<Node> n0 = CreateObject<InternetNode> ();
+  Ptr<Node> n1 = CreateObject<InternetNode> ();
+  Ptr<Node> n2 = CreateObject<InternetNode> ();
+  Ptr<Node> n3 = CreateObject<InternetNode> ();
 @end verbatim
 
 As we now understand, this will create four @code{InternetNode} objects on
@@ -1359,10 +1359,10 @@ something like the following,
 
     NS_LOG_INFO ("Hello Simulator");
 
-    Ptr<Node> n0 = Create<InternetNode> ();
-    Ptr<Node> n1 = Create<InternetNode> ();
-    Ptr<Node> n2 = Create<InternetNode> ();
-    Ptr<Node> n3 = Create<InternetNode> ();
+    Ptr<Node> n0 = CreateObject<InternetNode> ();
+    Ptr<Node> n1 = CreateObject<InternetNode> ();
+    Ptr<Node> n2 = CreateObject<InternetNode> ();
+    Ptr<Node> n3 = CreateObject<InternetNode> ();
 
     Ptr<CsmaChannel> lan = 
       CsmaTopology::CreateCsmaChannel (DataRate (5000000), MilliSeconds (2));
@@ -1423,8 +1423,8 @@ following code:
   uint32_t maxPacketCount = 1;
   Time interPacketInterval = Seconds (1.);
 
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", port, 
-    maxPacketCount, interPacketInterval, packetSize);
+  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
+    port, maxPacketCount, interPacketInterval, packetSize);
 @end verbatim
 
 @cindex packet
@@ -1466,7 +1466,7 @@ explicit named variable as in the following:
   Ipv4Address addr ("10.1.1.2");
   ...
 
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, addr, port, 
+  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, addr, port, 
     maxPacketCount, interPacketInterval, packetSize);
 @end verbatim
 
@@ -1474,7 +1474,7 @@ explicit named variable as in the following:
 You can use the unnamed parameter idiom that we have previously seen:
 
 @verbatim
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, 
+  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, 
     Ipv4Address ("10.1.1.2"), port, maxPacketCount, interPacketInterval, 
     packetSize);
 @end verbatim
@@ -1482,8 +1482,8 @@ You can use the unnamed parameter idiom that we have previously seen:
 Or you can rely on implicit conversion sequences as we just saw:
 
 @verbatim
-  Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", port, 
-    maxPacketCount, interPacketInterval, packetSize);
+  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
+    port, maxPacketCount, interPacketInterval, packetSize);
 @end verbatim
 
 Which approach to take is a matter of style, really, and you will probably
@@ -1502,7 +1502,7 @@ In order to create the UDP echo server application we will need to add the
 following code:
 
 @verbatim
-  Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
+  Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
 @end verbatim
 
 We only need to tell the application which node to reside on and which port
@@ -1538,10 +1538,10 @@ following (let's change the log component name and program banner from
 
     NS_LOG_INFO ("UDP Echo Simulation");
 
-    Ptr<Node> n0 = Create<InternetNode> ();
-    Ptr<Node> n1 = Create<InternetNode> ();
-    Ptr<Node> n2 = Create<InternetNode> ();
-    Ptr<Node> n3 = Create<InternetNode> ();
+    Ptr<Node> n0 = CreateObject<InternetNode> ();
+    Ptr<Node> n1 = CreateObject<InternetNode> ();
+    Ptr<Node> n2 = CreateObject<InternetNode> ();
+    Ptr<Node> n3 = CreateObject<InternetNode> ();
 
     Ptr<CsmaChannel> lan = 
       CsmaTopology::CreateCsmaChannel (DataRate (5000000), MilliSeconds (2));
@@ -1575,10 +1575,10 @@ following (let's change the log component name and program banner from
     uint32_t maxPacketCount = 1;
     Time interPacketInterval = Seconds (1.);
 
-    Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", port, 
-      maxPacketCount, interPacketInterval, packetSize);
+    Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
+      port, maxPacketCount, interPacketInterval, packetSize);
 
-    Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
+    Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
 
   }
 @end verbatim
@@ -1792,10 +1792,10 @@ source code for the script should look like the following:
 
     NS_LOG_INFO ("UDP Echo Simulation");
 
-    Ptr<Node> n0 = Create<InternetNode> ();
-    Ptr<Node> n1 = Create<InternetNode> ();
-    Ptr<Node> n2 = Create<InternetNode> ();
-    Ptr<Node> n3 = Create<InternetNode> ();
+    Ptr<Node> n0 = CreateObject<InternetNode> ();
+    Ptr<Node> n1 = CreateObject<InternetNode> ();
+    Ptr<Node> n2 = CreateObject<InternetNode> ();
+    Ptr<Node> n3 = CreateObject<InternetNode> ();
 
     Ptr<CsmaChannel> lan = 
       CsmaTopology::CreateCsmaChannel (DataRate (5000000), MilliSeconds (2));
@@ -1829,10 +1829,10 @@ source code for the script should look like the following:
     uint32_t maxPacketCount = 1;
     Time interPacketInterval = Seconds (1.);
 
-    Ptr<UdpEchoClient> client = Create<UdpEchoClient> (n0, "10.1.1.2", port, 
-      maxPacketCount, interPacketInterval, packetSize);
+    Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
+      port, maxPacketCount, interPacketInterval, packetSize);
 
-    Ptr<UdpEchoServer> server = Create<UdpEchoServer> (n1, port);
+    Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
 
     server->Start(Seconds(1.));
     client->Start(Seconds(2.));

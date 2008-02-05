@@ -1882,7 +1882,7 @@ will see the following code in @code{InternetNode::Construct} that creates the
 @verbatim
   Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> (ipv4);
   ...
-  Object::AddInterface (ipv4Impl);
+  Object::AggregateObject (ipv4Impl);
 @end verbatim
 
 Note that the parameter @code{ipv4} passed to the @code{CreateObject} template
