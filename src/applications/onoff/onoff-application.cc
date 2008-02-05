@@ -195,6 +195,7 @@ void OnOffApplication::StopSending()
   NS_LOG_FUNCTION;
 
   Simulator::Cancel(m_sendEvent);
+  m_socket->Close ();
 }
 
 // Private helpers

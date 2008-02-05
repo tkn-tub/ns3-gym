@@ -21,7 +21,7 @@
 //
 // Network topology
 //
-//  n0
+//   n0
 //     \ 5 Mb/s, 2ms
 //      \          1.5Mb/s, 10ms
 //       n2 -------------------------n3
@@ -151,12 +151,11 @@ main (int argc, char *argv[])
       channel2, n2, Ipv4Address("10.1.3.1"),
       n3, Ipv4Address("10.1.3.2"));
 
-  // Finally, we add static routes.  These three steps (Channel and
-  // NetDevice creation, IP Address assignment, and routing) are 
-  // separated because there may be a need to postpone IP Address
-  // assignment (emulation) or modify to use dynamic routing
+
+  // Enable OLSR
   NS_LOG_INFO ("Enabling OLSR Routing.");
   olsr::EnableAllNodes ();
+
 
   // Create the OnOff application to send UDP datagrams of size
   // 210 bytes at a rate of 448 Kb/s
@@ -170,7 +169,6 @@ main (int argc, char *argv[])
     ConstantVariable(0));
   // Start the application
   ooff->Start(Seconds(1.0));
-  ooff->Stop (Seconds(10.0));
 
   // Create an optional packet sink to receive these packets
   Ptr<PacketSink> sink = CreateObject<PacketSink> (
@@ -179,7 +177,6 @@ main (int argc, char *argv[])
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.0));
-  sink->Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   ooff = CreateObject<OnOffApplication> (
@@ -189,8 +186,7 @@ main (int argc, char *argv[])
     ConstantVariable(1), 
     ConstantVariable(0));
   // Start the application
-  ooff->Start(Seconds(1.1));
-  ooff->Stop (Seconds(10.0));
+  ooff->Start (Seconds(1.1));
 
   // Create a packet sink to receive these packets
   sink = CreateObject<PacketSink> (
@@ -199,17 +195,7 @@ main (int argc, char *argv[])
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.1));
-  sink->Stop (Seconds (10.0));
 
-  // Here, finish off packet routing configuration
-  // This will likely set by some global StaticRouting object in the future
-  NS_LOG_INFO ("Set Default Routes.");
-  Ptr<Ipv4> ipv4;
-  ipv4 = n0->GetObject<Ipv4> ();
-  ipv4->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
-  ipv4 = n3->GetObject<Ipv4> ();
-  ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
-  
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
   // Trace output will be sent to the simple-point-to-point.tr file
   NS_LOG_INFO ("Configure Tracing.");
@@ -226,8 +212,8 @@ main (int argc, char *argv[])
   pcaptrace.TraceAllIp ();
 
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::StopAt (Seconds (10));
-  Simulator::Run ();    
+  Simulator::StopAt (Seconds (30));
+  Simulator::Run ();
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");
 }

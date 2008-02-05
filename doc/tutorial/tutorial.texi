@@ -66,7 +66,7 @@ along with this program.  If not, see @uref{http://www.gnu.org/licenses/}.
 @contents
 
 @ifnottex
-@node Top, Introduction, Full Table of Contents 
+@node Top, Overview, Full Table of Contents 
 @top ns-3 Tutorial (html version)
 
 For a pdf version of this tutorial, 
@@ -76,14 +76,15 @@ see @uref{http://www.nsnam.org/docs/tutorial.pdf}.
 @end ifnottex
 
 @menu
-* Introduction::
-Part 1:  Overview
+* Tutorial Goals::
+Part 1:  Getting Started with ns-3
 * Overview::
+* Browsing::
 * Resources::
-* The-Basics::
+* Downloading and Compiling::
 * Some-Prerequisites::
 * A-First-ns-3-Script::
-Part 2:  Details
+Part 2-:  Details
 * ns-3 Callbacks::
 * Simulation Output::
 * ns-3 routing overview::

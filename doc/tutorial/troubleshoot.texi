@@ -66,12 +66,12 @@ socketFactory.
 
 Let's look around line 136 of tcp-point-to-point, as gdb suggests:
 @verbatim
-  Ptr<SocketFactory> socketFactory = n2->QueryInterface<SocketFactory> (Tcp::iid);
+  Ptr<SocketFactory> socketFactory = n2->GetObject<SocketFactory> (Tcp::iid);
   Ptr<Socket> localSocket = socketFactory->CreateSocket ();
   localSocket->Bind ();
 @end verbatim
 
-The culprit here is that the return value of QueryInterface is not being
+The culprit here is that the return value of GetObject is not being
 checked and may be null.  
 
 Sometimes you may need to use the @uref{http://valgrind.org,,valgrind memory

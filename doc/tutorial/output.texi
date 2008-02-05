@@ -108,7 +108,7 @@ to the popular trace points that log "+", "-", "d", and "r" events.
 
 Try running the following program from the command line:
 @verbatim
-  ./waf --run csma-echo-ascii-trace
+  ./waf --run tutorial-csma-echo-ascii-trace
 @end verbatim
 
 @cindex tutorial.tr
@@ -391,12 +391,12 @@ format, including X, Y, and Z.  We encourage users to exploit the
 many tools available for analyzing pcap traces; below, we show how
 tcpdump and Wireshark can be used..
 
-@cindex csma-echo-ascii-trace.cc
-@cindex csma-echo-pcap-trace.cc
+@cindex tutorial-csma-echo-ascii-trace.cc
+@cindex tutorial-csma-echo-pcap-trace.cc
 The code used to enable pcap tracing is similar to that for ASCII tracing.  
-We have provided another file, @code{csma-echo-pcap-trace.cc} that uses the
-pcap trace wrapper.  We have added the code to include the pcap trace wrapper
-defintions:
+We have provided another file, @code{tutorial-csma-echo-pcap-trace.cc} that 
+uses the pcap trace wrapper.  We have added the code to include the pcap 
+trace wrapper defintions:
 
 @verbatim
   #include "ns3/pcap-trace.h"
@@ -432,7 +432,7 @@ You may run the new program just like all of the others so far:
 
 @cindex Waf
 @verbatim
-  ./waf --run csma-echo-pcap-trace
+  ./waf --run tutorial-csma-echo-pcap-trace
 @end verbatim
 
 If you look at the top level directory of your distribution, you should now

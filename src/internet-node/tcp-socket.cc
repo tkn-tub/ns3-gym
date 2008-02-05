@@ -121,6 +121,7 @@ TcpSocket::Destroy (void)
   m_node = 0;
   m_endPoint = 0;
   m_tcp = 0;
+  m_retxEvent.Cancel ();
 }
 int
 TcpSocket::FinishBind (void)
