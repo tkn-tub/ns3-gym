@@ -98,6 +98,7 @@ TcpSocket::~TcpSocket ()
     }
   m_tcp = 0;
   delete m_pendingData; //prevents leak
+  m_retxEvent.Cancel ();
 }
 
 enum Socket::SocketErrno
@@ -121,7 +122,6 @@ TcpSocket::Destroy (void)
   m_node = 0;
   m_endPoint = 0;
   m_tcp = 0;
-  m_retxEvent.Cancel ();
 }
 int
 TcpSocket::FinishBind (void)
