@@ -36,6 +36,8 @@ you old-timers) cable.  This topology is shown below.
 @sp 1
 @center @image{pp,,,,png}
 
+@cindex CreateObject
+@cindex InternetNode
 We have provided a file for you in the @code{tutorial}
 directory called @code{tutorial-point-to-point.cc}.  You should now be
 familiar enough with the system to pick out fairly easily what has been
@@ -1065,6 +1067,7 @@ thorougly understand what we've gone over so far.
 @node Object-Model
 @chapter Object Model
 
+@cindex Object Model
 There are two distinctly different meanings associated with the term Object
 Model.  The first speaks to the implementation of an object system --- a system
 view; and the second speaks to the application programming interface (classes
@@ -1075,12 +1078,18 @@ associated object model that describes how objects are laid out in memory,
 how virtual functions work, how inheritance is implemented, constructor and
 destructor execution ordering, template instantiation, etc.
 
+@cindex API
+@cindex DOM
+@cindex Document Object Model
 In the case of the application view, the Document Object Model is a good
 example.  In the words of W3C, the Document Object Model (DOM) is an
 application programming interface (API) for HTML and XML documents. It defines
 the logical structure of documents and the way a document is accessed and
 manipulated.
 
+@cindex API
+@cindex COM
+@cindex Component Object Model
 The Component Object Model (COM) from Microsoft actually spans both meanings
 of the term and extends further into policy statements.  From a system
 perspective, COM specifies an interface definition language, the layout of
@@ -1091,6 +1100,7 @@ Interfaces as well as functions such as CoCreateInstance and various
 threading models.  The COM specification extends to policy by disallowing
 implementation inheritance.
 
+@cindex Feynman
 The @command{ns-3} object model takes the C++ language (system level) object 
 model as its basis, and extends that model by providing an API for software
 componentry.  You may find terms like Component, Interface and QueryInterface
@@ -1122,8 +1132,9 @@ superiority of one mechanism or another.  What we will do is provide
 convenience functions that we think will make creating and managing simulation
 objects easier.
   
+@cindex CreateObject
 Previously, you have seen objects created using the template function 
-@code{Create} as in the following example:
+@code{CreateObject} as in the following example:
 
 @verbatim
   Ptr<Node> n0 = CreateObject<InternetNode> ();
@@ -1131,25 +1142,27 @@ Previously, you have seen objects created using the template function
 
 This line of code, while it may be unfamiliar to some, is pure C++.  If you
 were to look in the header file ptr.h, you would find the following definition
-of the @code{Create} template.
+of the @code{CreateObject} template.
 
 @verbatim
   template <typename T>
-  Ptr<T> Create (void)
+  Ptr<T> CreateObject (void)
   {
-    T *obj = new T ();
-    Ptr<T> p = obj;
-    obj->Unref ();
+    Ptr<T> p = Ptr<T> (new T (), false);
+    p->SetTypeId (T::GetTypeId ());
     return p;
   }
 @end verbatim
 
+@cindex template
 As you can see, this template creates objects of type @code{T} using the
 operator @code{new}.  Its a little harder to find the corresponding delete ---
 it's in the file @code{object.cc} inside the method @code{Object::MaybeDelete},
 but when that @code{Ptr} which you see above goes out of scope it will call
 @code{Unref} and ultimately the C++ @code{delete} operator will be called.
 
+@cindex new
+@cindex delete
 The ns-3 system uses the C++ @code{new} and @code{delete} operators, so there
 is really no reason that you as a user of the ns-3 system are forbidden from
 using these or any other C++ mechanism.  If you so desire, you can take on
@@ -1163,6 +1176,7 @@ operators and call methods like any C++ object as in the following example:
   delete obj;
 @end verbatim
 
+@cindex model
 You, as a competent model author, are encouraged to use whatever methods you
 think are appropriate in your private code.  Remember, however, that the
 public ns-3 APIs do use smart pointers to pass objects around in an effort to
@@ -1179,13 +1193,20 @@ level magic going on in ns-3.  Ns-3 components and interfaces are C++ objects
 just like any other object and our object model is simply a collection of APIs
 built on the normal C++ object model.
 
-@section Interfaces
+@cindex Interface
+@cindex Abstract Data Type
+@cindex ADT
+@cindex Abstract Base Class
+@cindex ABC
+@section Interface
 There are many different ideas floating around of what exactly the term
 @emph{interface} means.  Originally an interface just meant a communication
 boundary between two entities.  As the concepts of object oriented programming
 (OOP) were surfacing in the 1980s, the term interface was applied to the
 collection of access methods for the modular entities that were being defined.
 
+@cindex OOP
+@cindex Object Oriented Programming
 Two distinct approaches developed regarding specifying access mechanisms for
 objects.  The OOP purists were very concerned about object reuse and were led
 to Abstract Data Types (ADT).  These were eventually implemented in the case
@@ -1202,6 +1223,7 @@ derived classes. [@dots{}] Some classes, such as class @strong{Shape},
 represent abstract concepts for which objects cannot exist.''
 @end quotation
 
+@cindex PIMPL
 @command{Ns-3} does not pick and enforce a particular approach.  In 
 @command{ns-3} an interface is determined completely by a class declaration
 just as any C++ object interface is declared.  If you think of an object as
@@ -1214,30 +1236,37 @@ declare its methods virtual.  If you like to use the PIMPL idiom, again, feel
 free.  If you want to use any combination of these techniques, feel free.  
 We make no restrictions.
 
+@cindex API
 When we speak of an ns-3 interface, we do not worry about interface definition
 languages, or pure virtual classes, or registries  we just think about C++
-object declarations and their associated methods.  When we instantiate an
-@command{ns-3} interface, it is the C++ object model that dictates how that
+object declarations and their associated methods.  We tend to think of 
+interfaces to objects as simply a private or public API.  When we instantiate
+an @command{ns-3} interface, it is the C++ object model that dictates how that
 object is brought into existence.  When a method is called on an @command{ns-3}
 Interface, it is the C++ object model that dictates how that method is 
 dispatched.
 
-The only difference between a vanilla C++ object and an ns-3 object with a
-specifically defined interface, is that an object acting as an ns-3 interface
- must inherit from the base class Object.  This inheritance gives the Object
-a very useful capability conceptually similar to a COM Interface.
+We do, however, provide a base class that endows vanilla C++ objects with 
+capabilities that can be seen as conceptually similar to those provided by
+Microsoft Component Model @emph{Interfaces}.
 
-@section The Ns-3 Interface and GetObject
+@section The Ns-3 Object and GetObject
+@cindex Component Object Model
 One thing that Microsoft arguably got right in the Component Object Model was
 the idea of Interface aggregation and discovery via QueryInterface.  We have 
 embraced these ideas in @command{ns-3}.  This was done primarily to address a 
 common problem in large software systems.  A good example of this problem 
 happens in the @command{ns-3} Node class.
 
+@cindex OOP
+@cindex weak base class
+@cindex base class bloat
+@cindex Swiss Army Knife class
+@cindex Node
 If one were to take the standard OOP view of specializing a @code{Node} into
 an internet host, for example, one would typically inherit from the @code{Node}
 base class and include functionality to implement such things as internet
-routing and a TCP / IP protocol stack.  Other types of @code{Node}s might 
+routing and a TCP/IP protocol stack.  Other types of @code{Node}s might 
 inherit from the node class and specialize in different ways, or further
 specialize the internet host class, treating it as a base class.  This can
 result in a complicated inheritance tree in which some specializations are
@@ -1264,16 +1293,18 @@ everything into the base class and destroying much of the encapsulation which
 is a hallmark of the object oriented approach.
 
 @subsection Interface Composition
+@cindex Node
 There is a completely different way to address the Node specialization
 problem.  Instead of approaching the situation using inheritance, one can
 look at the problem as one of composition.  We can look at the @code{Node}
 class as a container of sorts that holds other objects.  In this case, the
 objects would be instances of the classes implementing the internetwork
-routing code, or the TCP / IP protocol stack described above.  This approach
+routing code, or the TCP/IP protocol stack described above.  This approach
 preserves the encapsulation and solves the weak base class, base class bloat
 and fragile base class problems; but the question of method dispatch 
 immediately comes to mind.
 
+@cindex delegation
 In many systems, @emph{delegation} is used.  The base class, @code{Node},
 in this approach would provide methods that simply forward to the objects
 implementing the desired functionality.  This situation clearly does not
@@ -1284,27 +1315,33 @@ fundamental problems are still present.  What is really needed is a way
 to compose objects but at the same time keep the interfaces to those
 objects separated.
 
+@cindex aggregation
 Composition, usually called @emph{aggregation}, along with runtime Interface
 discovery is the solution that Microsoft originally championed and that 
 @command{ns-3} has adopted --- albeit with many simplifications and a few name
 changes.
 
 @subsection Objects and Interfaces
+@cindex COM
+@cindex QueryInterface
 Now that we have mentioned Microsoft COM and are almost obligated to mention 
 the terms Interface and QueryInterface.  For those familiar with COM, loosely
 speaking, QueryInterface is to COM as GetObject is to @command{ns-3}.
 The analogy, while good conceptually, is superficial from an implementation 
 point of view.
 
+@cindex Node
 Addressing our current example of a @code{Node}, generically speaking, each
 node needs to aggregate an object that will implement internetwork routing 
 and TCP/IP.  The system will need to provide a mechanism for locating the
 aggregated objects and allow a client to discover them.  
 
+@cindex aggregation
+@cindex Object
 These aggregated objects have interfaces in the C++ sense of collections of
 method signatures.  In @command{ns-3}, when objects are capable of 
 participating in this aggregation process, they are called @command{ns-3} 
-@code{Objects}.  @code{Object}s receive the functionality required for this
+@code{Objects}.  @code{Objects} receive the functionality required for this
  participation by inheriting from the @command{ns-3} base class @code{Object}.
 
 Note well that when we write the word @code{Object} (note the uppercase 'O' in
@@ -1324,7 +1361,7 @@ Once an object has inherited from class @code{Object} it has the ability to
 also means that it can provide a service to @emph{discover} other objects in
 its aggregation via the method @code{GetObject}.
 
-
+@cindex base class
 Technically, the class named @code{Object} is simply a base class that you
 will inherit from if you want your @code{Objects} to support aggregation and
 discovery.  Many systems have a base class that implements common 
@@ -1340,13 +1377,16 @@ In ns-3, you should associate inheritance from the class named @code{Object}
 with promotion of an object to the status of some locatable @code{Object}
 rather than with the form of the class declaration.
 
+@cindex COM
+@cindex CORBA
+@cindex ORBit
 For those of you unfamiliar with Microsoft COM, CORBA or ORBit, this might 
 sound obvious.  For those of with such a background, the point we are making 
 is that there is no such thing in @command{ns-3} as a separate Interface
 declaration, no such thing as an Interface Definiition Language, no such thing
 as a UUID or GUID, etc.  In @command{ns-3} we just work with C++ objects that
 may be given some very useful abilities by inheriting from the @command{ns-3}
-base class @code{Object}.  @command{Ns-3} @code{Object}s are not required to
+base class @code{Object}.  @command{Ns-3} @code{Objects} are not required to
 inherit from classes composed of pure virtual methods in order to define an
 Interface.  It's all really just ``plain old C++.''
 
@@ -1354,13 +1394,17 @@ To summarize, when you instantiate an object that inherits from the
 @code{Object} class, you will have a C++ object that has four important 
 properties:  
 
+@cindex AggregateObject
+@cindex GetObject
 @itemize @bullet
 @item The @code{Object} has a C++ interface defined by the collection of method signatures in its inheritance tree; 
 @item The @code{Object} has some way to identify its underlying class uniquely;
-@item The @code{Object} is a kind of container that has the ability to aggregate other @code{Object}s using the method @code{AggregateObject};
-@item The @code{Object} exports a method called @code{GetObject} that allows for discovery of other aggregated @code{Object}s.
+@item The @code{Object} is a kind of container that has the ability to aggregate other @code{Objects} using the method @code{AggregateObject};
+@item The @code{Object} exports a method called @code{GetObject} that allows for discovery of other aggregated @code{Objects}.
 @end itemize
 
+@cindex base class
+@cindex Object
 It is crucially important to understand what we have described here
 (especially for those coming from other systems that provide similar 
 functionality).  A given C++ class has an object access interface that is
@@ -1371,7 +1415,7 @@ which the class in question can inherit and be promoted to the status of
 ability to aggregate and search for other @code{Objects} that are added to
 its aggregation.
 
-That last detail is important.  In @command{ns-3} @code{Object}s are both
+That last detail is important.  In @command{ns-3} @code{Objects} are both
 containers and specifications for a object method access.  We have previously
 mentioned that the @code{Node} class acts as a container.  In fact, the 
 @code{Node} class inherits from @code{Object} and is itself an @command{ns-3} 
@@ -1382,10 +1426,11 @@ aggregation, the @code{Node} class also describes a public interface.  THis
 public interface (API) is declared just as any C++ object is declared, via its
 class methods as specified in the inheritance tree.  For those steeped in 
 COM or CORBA, this is where the concept of Interface works in @command{ns-3}.
-Remember that it is generally true that @code{Object}s are both aggregations
+Remember that it is generally true that @code{Objects} are both aggregations
 and APIs.
 
 @subsection Aggregations
+@cindex aggregate
 The figure below shows how an @code{Object} could be illustrated in detail.
 The line with the circle at the top of the diagram represents the appearance 
 of the @code{Object} API to the external world.  This circle and line are 
@@ -1393,8 +1438,9 @@ together called a lollipop because of its superficial similarity to a kind of
 childs candy.  
 
 @sp 1
-@center @image{oneif,,,,png}
+@center @image{oneobj,,,,png}
 
+@cindex API
 You could declare this API and associated @code{Object} quite simply using a
 non-virtual class as follows,
 
@@ -1417,7 +1463,7 @@ non-virtual class as follows,
   };
 @end verbatim
 
-The methods that are then available via the Interface labeled @code{A} in the
+The methods that are then available via the API labeled @code{A} in the
 figure above are the methods inherited from the @code{Object} base class 
 (@code{GetObject}, @code{Ref}, and @code{Unref}) and those from class 
 @code{A} (@code{MethodA}).
@@ -1429,19 +1475,19 @@ identifies @code{Objects} at run-time as being instantiated from a particular
 class.  We'll have much more to say about @code{TypiId} shortly.
 
 You can think of the arc and arrow device coming off each side of the 
-illustrated @code{Object}s as part of a connector.  These connectors allow 
+illustrated @code{Objects} as part of a connector.  These connectors allow 
 @code{GetObject} to search aggregations for an instance of a class type.
-The figure below shows an aggregation of three @code{Object}s: A, B and C.
+The figure below shows an aggregation of three @code{Objects}: A, B and C.
 The class declarations for classes @code{B} and @code{C} are substantially 
 similar to that of class @code{A}.
 
 @sp 1
-@center @image{threeif,,,,png}
+@center @image{threeobj,,,,png}
 
-You can visualize these @code{Object}s as being snapped together like Lego
-building blocks if you like.  When @code{Object}s are aggregated, a
+You can visualize these @code{Objects} as being snapped together like Lego
+building blocks if you like.  When @code{Objects} are aggregated, a
 @code{GetObject} search path is formed through the connectors.  In order
-to create this aggregation you will first need to create the Interface objects.
+to create this aggregation you will first need to create the @code{Objects}.
 These are just normal, everyday C++ objects that we can create using the
 @code{CreateObject} template function and manage using smart pointers.  The 
 following code should be obvious to you by now:
@@ -1452,21 +1498,25 @@ following code should be obvious to you by now:
   Ptr<C> c = CreateObject<C> ();
 @end verbatim
 
-When you create an aggregation, you pick one of the @code{Object}s of the
+@cindex aggregation
+When you create an aggregation, you pick one of the @code{Objects} of the
 aggregation to think of as the container.  In this case well pick @code{Object}
 A.  In order to aggregate an @code{Object}, you simply call the method
 @code{AggregateObject} that your class has inherited from class @code{Object}.
 The following code will aggregate @code{Object B} and @code{Object C} onto
 the @code{Object} (and container/aggregation) @code{A}.
 
+@cindex AggregateObject
+@cindex GetObject
+@cindex Object
 @verbatim
   a->AggregateObject (b);
   a->AggregateObject (c);
 @end verbatim
 
 Thats all there is to it.  Now that you have those connectors snapped
-together, you can ask each of the @code{Object}s in the aggregation for any of
-the other @code{Object}s in the aggregation.  Lets look at a simple example:
+together, you can ask each of the @code{Objects} in the aggregation for any of
+the other @code{Objects} in the aggregation.  Lets look at a simple example:
 
 @verbatim
   Ptr<B> newB = a->GetObject<B> ();
@@ -1497,8 +1547,8 @@ This may be summarized by saying that @code{AggregateObject} takes an
 object instance of that type.
 
 Now that you have those conceptual connectors snapped together, you can ask 
-each of the @code{Object}s in the aggregation for any of the @code{Object}s
-in the aggregation.  For example we could walk the @code{Object}s asking each
+each of the @code{Objects} in the aggregation for any of the @code{Objects}
+in the aggregation.  For example we could walk the @code{Objects} asking each
 for the next in the aggregation.  First we would ask the @code{Object} pointed
 to by the smart pointer @code{a} to look for the @code{Object} @code{class B}:
 
@@ -1513,6 +1563,7 @@ to look for the @code{Object} representing @code{class C}:
   Ptr<C> newC = newB->GetObject<C> ();
 @end verbatim
 
+@cindex Object
 Then, we can ask the @code{Object} pointed to by the smart pointer @code{newC}
 to look for the @code{Object} representing @code{class A} and complete our
 circuit of the aggregation:
@@ -1521,12 +1572,14 @@ circuit of the aggregation:
   Ptr<A> newA = newC->GetObject<A> ();
 @end verbatim
 
+@cindex GetObject
 @code{GetObject} has some important properties that we need to go over.
 Technically, @code{GetObject} is a @emph{symmetric}, @emph{reflexive} and 
 @emph{transitive} operation with respect to the set of aggregated 
-@code{Object}s.
+@code{Objects}.
 
 @subsubsection Symmetry
+@cindex symmetry
 The symmetric nature of @code{GetObject} guarantees that if one performs a 
 @code{GetObject} on a given @code{Object} for the class of that same
 @code{Object}, that @code{GetObject} must succeed.  In other words, the
@@ -1549,6 +1602,7 @@ same @code{Object}.  This call must always succeed and a smart pointer to the
 aggregated instance of that class is returned.
 
 @subsubsection Reflexivity
+@cindex reflexivity
 Calls to @code{GetObject} must also be reflexive.  This means that if you
 successfully @code{GetObject} for @code{Object B} from @code{Object A}, then
 you must always be able to @code{GetObject} for @code{A} from @code{B}.  This
@@ -1569,6 +1623,7 @@ succeeds, then a @code{GetObject} on @code{Object B} looking @code{Object A}
 must succeed.
 
 @subsubsection Transitivity
+@cindex transitivity
 @code{GetObject} must also be transitive.  This means that if one can
 find @code{Object B} from @code{Object A}, and @code{Object C} from
 @code{Object B}, then one must also be able to find @code{Object C} from
@@ -1590,6 +1645,8 @@ If you can get to @code{Object B} from @code{Object A}, and you can get to
 @code{Object A} looking for @code{Object C} must also succeed.
 
 @subsection Creating the TypeId
+@cindex TypeId
+@cindex GetTypeId
 The final piece of this puzzle is the @code{TypeId}.  Recall that the
 declaration our eample object above included the following code
 
@@ -1634,6 +1691,7 @@ the boundaries should make sense to you.
   }
 @end verbatim
 
+@cindex function-local variable
 You are obviously looking at a global function associated with your class
 that simply returns a @code{TypeId}.  Now, what about the rest.  The code
 
@@ -1739,18 +1797,36 @@ use implementation inheritance to easily create new @code{Objects}.  You are
 prevented from doing so in Microsoft COM, but this was almost universally
 identified as a problem.
 
+So, looking at the entire @code{GetTypeId} declaration again,
+
+@verbatim
+  static ns3::TypeId GetTypeId (void)
+  {
+    static ns3::TypeId tid = ns3::TypeId ("A")
+      .SetParent (Object::GetTypeId ())
+      .AddConstructor<A> ();
+    return tid;
+  }
+@end verbatim
+
+it should be clear what is happening.
+
 @subsection A Very Real Example
+@cindex Node
+@cindex AggregateObject
+@cindex GetObject
+@cindex Object
 At this point you may be asking yourself what the point of all of this is,
 since you already had those pointers laying around when you created the
 objects.  The typical case is that one will create and aggregate some number
-of @code{Object}s in a constructor and return only a pointer to a single
+of @code{Objects} in a constructor and return only a pointer to a single
 @code{Object} as in our canonical example with @code{class Node}.  In this
 case, the @code{Node} would be created and the @code{Node} constructor might
-create and call @code{AggregateObject} to aggregate the @code{Object}s for
+create and call @code{AggregateObject} to aggregate the @code{Objects} for
 internetwork routing and TCP/IP.  From an external point of view, these 
 aggregated objects may be discovered at run-time using @code{GetObject}.
 
-Generally one tends to think of one of the @code{Object}s in the aggregation
+Generally one tends to think of one of the @code{Objects} in the aggregation
 as being the container and other @code{Objects} being aggregated to that
 container.  In the case of a Node, for example, it is quite natural to think
 of the Node as being the container which contains protocol stacks, internet
@@ -1782,6 +1858,9 @@ declaration for @code{InternetNode}.
   };
 @end verbatim
 
+@cindex GetTypeId
+@cindex TypeId
+@cindex Object
 There is no declaration of a @code{static TypeId GetTypeId (void)} in this
 class.  This means that the @code{InternetNode} is really not an @code{Object}
 for which you can @code{GetObject}.  It turns out that the @code{InternetNode}
@@ -1851,6 +1930,7 @@ system to create a unique @code{TypeId} for the @code{Ipv4} class and
 declares that @code{Ipv4} inherits from class @code{Object}.  This is what
 makes an @code{Ipv4} an @code{Object}.
 
+@cindex Ipv4
 It turns out that the Ipv4 class is an abstract base class (ABC).  There are
 a number of pure virtual methods declared in that class.  This means that
 an @code{Ipv4} object may not be instantiated.  This is reflected by the fact
@@ -1863,6 +1943,7 @@ required virtual methods.  This is where understanding what is an
 that you see @code{GetTypeId} there tells you that the @code{Ipv4} class is
 the class for which you can @code{GetObject}.
 
+@cindex implementation class
 The class @code{Ipv4Impl} provides an implementation for the pure virtual
 methods in @code{Ipv4}.  Since class @code{Ipv4} cannot be instantiated, one
 instantiates the @code{Ipv4Impl} class to create an @code{Ipv4} @code{Object}.
@@ -1897,6 +1978,7 @@ This is exactly the same thing that is happening in the case of the
   Ptr<Node> n = CreateObject<InternetNode> ();
 @end verbatim
 
+@cindex implementation object
 @code{CreateObject} is being called to create an implementation object,
 in this case @code{InternetNode}, which implements the methods of the 
 @code{Node Object}.  It is the resulting @code{Node Object} which you would
@@ -1915,16 +1997,19 @@ Rather you should understand that the @emph{proper} @code{Object} is the
   Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
 @end verbatim
 
+@cindex CreateObject
 This does illustrate that the fact that whether an object created by 
 @code{CreateObject} is or is not an @code{Object} in the usual sense can be
 quite well hidden if you are casually looking at the object creation code.
 The designers of the system had long and involved discussions on this issue 
 and in the end decided that mnemonic aids such as Hungarian notation were a
 stylistic thing and you should just refer to the system documentation to
-determine what objects are @command{ns-3} @code{Object}s and what the APIs 
-of those @code{Object}s actually are (RTFM --- as in Read the Fine Manual, 
+determine what objects are @command{ns-3} @code{Objects} and what the APIs 
+of those @code{Objects} actually are (RTFM --- as in Read the Fine Manual, 
 of course).
 
+@cindex AggregateObject
+@cindex Object
 In the case of @code{Ipv4Impl}, you know that the class inherits somehow 
 from @code{Object} since there is a call to @code{AggregateObject} that
 refers to an instance of an @code{Ipv4Impl}.  You will have to go to
@@ -1946,6 +2031,10 @@ code in this file:
   ipv4->SetDefaultRoute (Ipv4Address (``10.1.1.2''), 1);
 @end verbatim
 
+@cindex InternetNode
+@cindex Node
+@cindex Object
+@cindex GetObject
 The first line creates an @code{InternetNode} implementation object and casts
 the resulting smart pointer to a @code{Node} as we have discussed extensively.
 The next line shown declares a smart pointer to an @code{Ipv4 Object}.  We
@@ -1962,13 +2051,18 @@ There are a few things that you should remember but which may not be
 immediately obvious.  
 
 @subsection Ns-3 Objects are Associated with Classes not C++ objects
+@cindex Object
+@cindex GetObject
+@cindex iterate
+@cindex aggregation
+@cindex GetNDevices
 Okay, you can see some of the problems with the terminology popping up again.
 We are reminding you that when you do a GetObject you are providing the key
 to the lookup by giving a class name and not anything that is unique to a
 C++ object.
 
 You cannot add more than one @code{Object} of a given type (class name) to an
-aggregation.  If you need to contain a number of @code{Object}s of the same
+aggregation.  If you need to contain a number of @code{Objects} of the same
 type in the same aggregation, you will need to provide a separate container 
 over which you can iterate.  For example, the @code{Node} class provides 
 methods,
@@ -1978,12 +2072,13 @@ methods,
   Ptr<NetDevice> GetDevice (uint32_t index) const;
 @end verbatim
 
-that are used iterate over the multiple @code{NetDevice} @code{Object}s
+that are used iterate over the multiple @code{NetDevice} @code{Objects}
 associated with it.
 
 @emph{Remember:  Object types do not identify objects.}
 
-@subsection Dont use QI to Check Your Own Type.
+@subsection Dont use GetObject to Check Your Own Type.
+@cindex GetObject
 It is tempting to use @code{GetObject} as a form of runtime type
 information.  Dont do it.  You have no control over what @emph{other}
 object may be added to your aggregation.  Someone else may have
@@ -2015,20 +2110,25 @@ interface.  If this failed, it could then infer that it had a TCP
 implementation and would then do any TCP-specific tasks it could.
 
 Now, what happens when these two working objects are aggregated together by
-some innocent end-user.  Since the @code{Object}s are conceptually snapped
+some innocent end-user.  Since the @code{Objects} are conceptually snapped
 together, the TCP implementation would suddenly begin finding the UDP 
 Interface from the other class factory and think it was the UPD implementation.
 
 @emph{Objects should not be used as run-time type information.}
 
 @section Connecting the Dots
+@cindex Object
+@cindex GetObject
+@cindex AggregateObject
+@cindex GetTypeId
+@cindex API
 This may all sound very complicated to you if this is your first exposure to
 these concepts.  It may be annoying if I tell you that its really not as hard
 as it sounds.  Rest assured that if you take some time, look at and understand
 the examples and write a little test code it will all come together for you.
 Grep around the system for @code{AggregateObject} and @code{GetObject} and
 take a look at how we have used them.  This will also give you a good idea of
-what our core @code{Object}s and associated APIs are.  If you grep for 
+what our core @code{Objects} and associated APIs are.  If you grep for 
 @code{GetTypeId} you will find most, if not all of the @code{Object} API
 interface declarations in the system.  The more you see this idiom in
 use, the more comfortable you will be with the idea and the more you will see
@@ -2055,8 +2155,9 @@ form of extra confusion or extra complexity somewhere in the system.  The
 resulting system is extremely flexible and easy to use.  It is, unfortunately,
 sometimes hard to document and talk about.
 
+@cindex Feynman
 If it helps you to think in terms of Microsoft COM and Interfaces, by all means
-do so, just be aware that even though @command{ns-3} @code{Object}s descend
+do so, just be aware that even though @command{ns-3} @code{Objects} descend
 from COM in some sense, there are subtle differences that may get you lost or
 into trouble.  So to paraphrase Feynman one more time,
 
