@@ -61,12 +61,12 @@ class TypeId
 {
 public:
   enum {
-    PARAM_READ = 1<<0,
-    PARAM_WRITE = 1<<1,
+    PARAM_GET = 1<<0,
+    PARAM_SET = 1<<1,
     PARAM_CONSTRUCT = 1<<2,
-    PARAM_RWC = PARAM_READ | PARAM_WRITE | PARAM_CONSTRUCT,
-    PARAM_NO_READ = 0,
-    PARAM_NO_WRITE = 0,
+    PARAM_SGC = PARAM_GET | PARAM_SET | PARAM_CONSTRUCT,
+    PARAM_NO_GET = 0,
+    PARAM_NO_SET = 0,
     PARAM_NO_CONSTRUCT = 0,
   };
 
@@ -240,26 +240,32 @@ private:
   friend bool operator == (TypeId a, TypeId b);
   friend bool operator != (TypeId a, TypeId b);
 
+  struct ParameterInfo {
+    Ptr<const ParamSpec> spec;
+    uint32_t flags;
+  };
+
   /**
    * \param name the name of the requested parameter
    * \returns the ParamSpec associated to the requested parameter
    */
-  Ptr<const ParamSpec> LookupParamSpecByName (std::string name) const;
+  bool LookupParameterByName (std::string name, struct ParameterInfo *info) const;
   /**
    * \param i the position of the requested parameter
    * \returns the ParamSpec associated to the requested parameter
    */
-  Ptr<const ParamSpec> LookupParamSpecByPosition (uint32_t i) const;
+  bool LookupParameterByPosition (uint32_t i, struct ParameterInfo *info) const;
   /**
    * \param fullName the full name of the requested parameter
    * \returns the ParamSpec associated to the requested parameter
    */
-  static Ptr<const ParamSpec> LookupParamSpecByFullName (std::string fullName);
+  static bool LookupParameterByFullName (std::string fullName, struct ParameterInfo *info);
 
   explicit TypeId (uint16_t tid);
   void DoAddConstructor (CallbackBase callback, uint32_t nArguments);
   CallbackBase LookupConstructor (uint32_t nArguments) const;
   Ptr<const ParamSpec> GetParameterParamSpec (uint32_t i) const;
+  uint32_t GetParameterFlags (uint32_t i) const;
   
   uint16_t m_tid;
 };
@@ -473,8 +479,6 @@ private:
   void DoTraceAll (std::ostream &os, const TraceContext &context) const;
   bool Check (void) const;
   bool CheckLoose (void) const;
-  bool DoSet (std::string name, PValue value);
-  bool DoGet (std::string name, PValue value) const;
   /**
    * Attempt to delete this object. This method iterates
    * over all aggregated objects to check if they all 

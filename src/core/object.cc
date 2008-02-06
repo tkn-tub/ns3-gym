@@ -385,8 +385,8 @@ TypeId::LookupByName (std::string name)
   NS_ASSERT (uid != 0);
   return TypeId (uid);
 }
-Ptr<const ParamSpec>
-TypeId::LookupParamSpecByFullName (std::string fullName)
+bool
+TypeId::LookupParameterByFullName (std::string fullName, struct TypeId::ParameterInfo *info)
 {
   std::string::size_type pos = fullName.find ("::");
   if (pos == std::string::npos)
@@ -396,7 +396,7 @@ TypeId::LookupParamSpecByFullName (std::string fullName)
   std::string tidName = fullName.substr (0, pos);
   std::string paramName = fullName.substr (pos+2, fullName.size () - (pos+2));
   TypeId tid = LookupByName (tidName);
-  return tid.LookupParamSpecByName (paramName);
+  return tid.LookupParameterByName (paramName, info);
 }
 uint32_t 
 TypeId::GetRegisteredN (void)
@@ -409,21 +409,29 @@ TypeId::GetRegistered (uint32_t i)
   return TypeId (Singleton<IidManager>::Get ()->GetRegistered (i));
 }
 
-Ptr<const ParamSpec>
-TypeId::LookupParamSpecByName (std::string name) const
+bool
+TypeId::LookupParameterByName (std::string name, struct TypeId::ParameterInfo *info) const
 {
-  for (uint32_t i = 0; i < GetParametersN (); i++)
-    {
-      std::string paramName = GetParameterName (i);
-      if (paramName == name)
-        {
-          return GetParameterParamSpec (i);
-        }
-    }
-  return 0;
+  TypeId tid = TypeId (0);
+  TypeId nextTid = *this;
+  do {
+    tid = nextTid;
+    for (uint32_t i = 0; i < GetParametersN (); i++)
+      {
+        std::string paramName = GetParameterName (i);
+        if (paramName == name)
+          {
+            info->spec = GetParameterParamSpec (i);
+            info->flags = GetParameterFlags (i);
+            return true;
+          }
+      }
+    nextTid = tid.GetParent ();
+  } while (nextTid != tid);
+  return false;
 }
-Ptr<const ParamSpec>
-TypeId::LookupParamSpecByPosition (uint32_t i) const
+bool
+TypeId::LookupParameterByPosition (uint32_t i, struct TypeId::ParameterInfo *info) const
 {
   uint32_t cur = 0;
   TypeId tid = TypeId (0);
@@ -434,13 +442,15 @@ TypeId::LookupParamSpecByPosition (uint32_t i) const
       {
         if (cur == i)
           {
-            return tid.GetParameterParamSpec (j);
+            info->spec = tid.GetParameterParamSpec (j);
+            info->flags = tid.GetParameterFlags (j);
+            return true;
           }
         cur++;
       }
     nextTid = tid.GetParent ();
   } while (nextTid != tid);
-  return 0;
+  return false;
 }
 
 
@@ -506,7 +516,7 @@ TypeId::AddParameter (std::string name,
                       std::string help, 
                       Ptr<const ParamSpec> param)
 {
-  Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, 0, param);
+  Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, PARAM_SGC, param);
   return *this;
 }
 
@@ -567,6 +577,13 @@ TypeId::GetParameterParamSpec (uint32_t i) const
   Ptr<const ParamSpec> param = Singleton<IidManager>::Get ()->GetParameterParamSpec (m_tid, i);
   return param;
 }
+uint32_t 
+TypeId::GetParameterFlags (uint32_t i) const
+{
+  // Used exclusively by the Object class.
+  uint32_t flags = Singleton<IidManager>::Get ()->GetParameterFlags (m_tid, i);
+  return flags;
+}
 
 
 bool operator == (TypeId a, TypeId b)
@@ -617,40 +634,46 @@ Parameters::~Parameters ()
 bool 
 Parameters::Set (std::string name, PValue value)
 {
-  Ptr<const ParamSpec> spec = TypeId::LookupParamSpecByFullName (name);
-  bool ok = DoSet (spec, value);
+  struct TypeId::ParameterInfo info;
+  TypeId::LookupParameterByFullName (name, &info);
+  bool ok = DoSet (info.spec, value);
   return ok;
 }
 bool 
 Parameters::Set (std::string name, std::string value)
 {
-  Ptr<const ParamSpec> spec = TypeId::LookupParamSpecByFullName (name);
-  bool ok = DoSet (spec,value);
+  struct TypeId::ParameterInfo info;
+  TypeId::LookupParameterByFullName (name, &info);
+  bool ok = DoSet (info.spec,value);
   return ok;
 }
 void 
 Parameters::SetWithTid (TypeId tid, std::string name, std::string value)
 {
-  Ptr<const ParamSpec> spec = tid.LookupParamSpecByName (name);
-  DoSet (spec, value);
+  struct TypeId::ParameterInfo info;
+  tid.LookupParameterByName (name, &info);
+  DoSet (info.spec, value);
 }
 void 
 Parameters::SetWithTid (TypeId tid, std::string name, PValue value)
 {
-  Ptr<const ParamSpec> spec = tid.LookupParamSpecByName (name);
-  DoSet (spec, value);
+  struct TypeId::ParameterInfo info;
+  tid.LookupParameterByName (name, &info);
+  DoSet (info.spec, value);
 }
 void 
 Parameters::SetWithTid (TypeId tid, uint32_t position, std::string value)
 {
-  Ptr<const ParamSpec> spec = tid.LookupParamSpecByPosition (position);
-  DoSet (spec, value);
+  struct TypeId::ParameterInfo info;
+  tid.LookupParameterByPosition (position, &info);
+  DoSet (info.spec, value);
 }
 void 
 Parameters::SetWithTid (TypeId tid, uint32_t position, PValue value)
 {
-  Ptr<const ParamSpec> spec = tid.LookupParamSpecByPosition (position);
-  DoSet (spec, value);
+  struct TypeId::ParameterInfo info;
+  tid.LookupParameterByPosition (position, &info);
+  DoSet (info.spec, value);
 }
 
 void
@@ -770,8 +793,8 @@ Parameters::DeserializeFromString (std::string str)
     else
       {
         std::string name = str.substr (cur, equal-cur);
-        Ptr<const ParamSpec> spec = TypeId::LookupParamSpecByFullName (name);
-        if (spec == 0)
+        struct TypeId::ParameterInfo info;
+        if (!TypeId::LookupParameterByFullName (name, &info))
           {
             // XXX invalid name.
             break;
@@ -790,8 +813,8 @@ Parameters::DeserializeFromString (std::string str)
                 value = str.substr (equal+1, next - (equal+1));
                 cur++;
               }
-            PValue val = spec->CreateValue ();
-            bool ok = val.DeserializeFromString (value, spec);
+            PValue val = info.spec->CreateValue ();
+            bool ok = val.DeserializeFromString (value, info.spec);
             if (!ok)
               {
                 // XXX invalid value
@@ -799,7 +822,7 @@ Parameters::DeserializeFromString (std::string str)
               }
             else
               {
-                DoSetOne (spec, val);
+                DoSetOne (info.spec, val);
               }
           }
       }
@@ -855,6 +878,10 @@ Object::Construct (const Parameters &parameters)
         Ptr<const ParamSpec> paramSpec = tid.GetParameterParamSpec (i);
         NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
                       tid.GetParameterName (i)<<"\"");
+        if (!(tid.GetParameterFlags (i) & TypeId::PARAM_CONSTRUCT))
+          {
+            continue;
+          }
         bool found = false;
         // is this parameter stored in this Parameters instance ?
         for (Parameters::Params::const_iterator j = parameters.m_parameters.begin ();
@@ -901,61 +928,68 @@ Object::Construct (const Parameters &parameters)
   NotifyConstructionCompleted ();
 }
 bool
-Object::DoSet (std::string name, PValue value)
+Object::Set (std::string name, PValue value)
 {
-  Ptr<const ParamSpec> spec = m_tid.LookupParamSpecByName (name);
-  if (spec == 0)
+  struct TypeId::ParameterInfo info;
+  if (!m_tid.LookupParameterByName (name, &info))
     {
       return false;
     }
-  bool ok = spec->Check (value);
+  if (!(info.flags & TypeId::PARAM_SET))
+    {
+      return false;
+    }
+  bool ok = info.spec->Check (value);
   if (!ok)
     {
       return false;
     }
-  ok = spec->Set (this, value);
+  ok = info.spec->Set (this, value);
   return ok;
-}
-bool
-Object::Set (std::string name, PValue value)
-{
-  return DoSet (name, value);
 }
 bool
 Object::Set (std::string name, std::string value)
 {
-  Ptr<const ParamSpec> spec = m_tid.LookupParamSpecByName (name);
-  if (spec == 0)
+  struct TypeId::ParameterInfo info;
+  if (!m_tid.LookupParameterByName (name, &info))
     {
       return false;
     }
-  PValue v = spec->CreateValue ();
-  bool ok = v.DeserializeFromString (value, spec);
+  if (!(info.flags & TypeId::PARAM_SET))
+    {
+      return false;
+    }
+  PValue v = info.spec->CreateValue ();
+  bool ok = v.DeserializeFromString (value, info.spec);
   if (!ok)
     {
       return false;
     }
-  ok = spec->Check (v);
+  ok = info.spec->Check (v);
   if (!ok)
     {
       return false;
     }
-  ok = spec->Set (this, v);
+  ok = info.spec->Set (this, v);
   return ok;
 }
 bool 
 Object::Get (std::string name, std::string &value) const
 {
-  Ptr<const ParamSpec> paramSpec = m_tid.LookupParamSpecByName (name);
-  if (paramSpec == 0)
+  struct TypeId::ParameterInfo info;
+  if (!m_tid.LookupParameterByName (name, &info))
     {
       return false;
     }
-  PValue v = paramSpec->CreateValue ();
-  bool ok = paramSpec->Get (this, v);
+  if (!(info.flags & TypeId::PARAM_GET))
+    {
+      return false;
+    }
+  PValue v = info.spec->CreateValue ();
+  bool ok = info.spec->Get (this, v);
   if (ok)
     {
-      value = v.SerializeToString (paramSpec);
+      value = v.SerializeToString (info.spec);
     }
   return ok;
 }
@@ -963,32 +997,23 @@ Object::Get (std::string name, std::string &value) const
 PValue
 Object::Get (std::string name) const
 {
-  Ptr<const ParamSpec> paramSpec = m_tid.LookupParamSpecByName (name);
-  if (paramSpec == 0)
+  struct TypeId::ParameterInfo info;
+  if (!m_tid.LookupParameterByName (name, &info))
     {
       return PValue ();
     }
-  PValue value = paramSpec->CreateValue ();
-  bool ok = paramSpec->Get (this, value);
+  if (!(info.flags & TypeId::PARAM_GET))
+    {
+      return PValue ();
+    }
+  PValue value = info.spec->CreateValue ();
+  bool ok = info.spec->Get (this, value);
   if (!ok)
     {
       return PValue ();
     }
   return value;
 }
-
-bool 
-Object::DoGet (std::string name, PValue parameter) const
-{
-  Ptr<const ParamSpec> paramSpec = m_tid.LookupParamSpecByName (name);
-  if (paramSpec == 0)
-    {
-      return false;
-    }
-  bool ok = paramSpec->Get (this, parameter);
-  return ok;
-}
-
 
 Ptr<Object>
 Object::DoQueryInterface (TypeId tid) const
