@@ -23,11 +23,11 @@
 
 #include <list>
 #include "ns3/object.h"
+#include "ns3/random-variable.h"
 
 namespace ns3 {
 
 class Packet;
-class RandomVariable;
 
 /**
  * \brief General error model that can be used to corrupt packets
@@ -174,7 +174,7 @@ private:
   enum ErrorUnit m_unit;
   double m_rate;
 
-  RandomVariable* m_ranvar;
+  RandomVariable m_ranvar;
 };
 
 /**

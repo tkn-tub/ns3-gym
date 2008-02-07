@@ -21,11 +21,10 @@
 #define RANDOM_POSITION_H
 
 #include "ns3/object.h"
+#include "ns3/random-variable.h"
 #include "vector.h"
 
 namespace ns3 {
-
-class RandomVariable;
 
 /**
  * \brief choose a position at random.
@@ -69,8 +68,8 @@ public:
   virtual ~RandomRectanglePosition ();
   virtual Vector Get (void) const;
 private:
-  RandomVariable *m_x;
-  RandomVariable *m_y;
+  RandomVariable m_x;
+  RandomVariable m_y;
 };
 
 /**
@@ -107,8 +106,8 @@ public:
   virtual ~RandomDiscPosition ();
   virtual Vector Get (void) const;
 private:
-  RandomVariable *m_theta;
-  RandomVariable *m_rho;
+  RandomVariable m_theta;
+  RandomVariable m_rho;
   double m_x;
   double m_y;
 };

@@ -88,26 +88,21 @@ RandomRectanglePosition::GetTypeId (void)
 }
 
 RandomRectanglePosition::RandomRectanglePosition ()
-  : m_x (g_rectangleX.GetCopy ()),
-    m_y (g_rectangleY.GetCopy ())
+  : m_x (g_rectangleX.Get ()),
+    m_y (g_rectangleY.Get ())
 {}
 RandomRectanglePosition::RandomRectanglePosition (const RandomVariable &x,
 						  const RandomVariable &y)
-  : m_x (x.Copy ()),
-    m_y (y.Copy ())
+  : m_x (x),
+    m_y (y)
 {}
 RandomRectanglePosition::~RandomRectanglePosition ()
-{
-  delete m_x;
-  delete m_y;
-  m_x = 0;
-  m_y = 0;
-}
+{}
 Vector
 RandomRectanglePosition::Get (void) const
 {
-  double x = m_x->GetValue ();
-  double y = m_y->GetValue ();
+  double x = m_x.GetValue ();
+  double y = m_y.GetValue ();
   return Vector (x, y, 0.0);
 }
 
@@ -123,31 +118,26 @@ RandomDiscPosition::GetTypeId (void)
 }   
 
 RandomDiscPosition::RandomDiscPosition ()
-  : m_theta (g_discTheta.GetCopy ()),
-    m_rho (g_discRho.GetCopy ()),
+  : m_theta (g_discTheta.Get ()),
+    m_rho (g_discRho.Get ()),
     m_x (g_discX.GetValue ()),
     m_y (g_discY.GetValue ())
 {}
 RandomDiscPosition::RandomDiscPosition (const RandomVariable &theta,
 					const RandomVariable &rho,
 					double x, double y)
-  : m_theta (theta.Copy ()),
-    m_rho (rho.Copy ()),
+  : m_theta (theta),
+    m_rho (rho),
     m_x (0.0),
     m_y (0.0)
 {}
 RandomDiscPosition::~RandomDiscPosition ()
-{
-  delete m_theta;
-  delete m_rho;
-  m_theta = 0;
-  m_rho = 0;
-}
+{}
 Vector
 RandomDiscPosition::Get (void) const
 {
-  double theta = m_theta->GetValue ();
-  double rho = m_rho->GetValue ();
+  double theta = m_theta.GetValue ();
+  double rho = m_rho.GetValue ();
   double x = m_x + std::cos (theta) * rho;
   double y = m_y + std::sin (theta) * rho;
   NS_LOG_DEBUG ("Disc position x=" << x << ", y=" << y);

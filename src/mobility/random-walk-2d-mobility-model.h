@@ -25,12 +25,12 @@
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
 #include "ns3/rectangle.h"
+#include "ns3/random-variable.h"
 #include "mobility-model.h"
 #include "static-speed-helper.h"
 
 namespace ns3 {
 
-class RandomVariable;
 
 /**
  * \brief parameters to control a random walk 2d model
@@ -93,8 +93,8 @@ class RandomWalk2dMobilityModelParameters : public Object
   enum Mode m_mode;
   double m_modeDistance;
   Time m_modeTime;
-  RandomVariable *m_speed;
-  RandomVariable *m_direction;
+  RandomVariable m_speed;
+  RandomVariable m_direction;
   Rectangle m_bounds;
 };
 

@@ -54,8 +54,8 @@ static RectangleDefaultValue
 
 RandomDirection2dMobilityModelParameters::RandomDirection2dMobilityModelParameters ()
   : m_bounds (g_bounds.GetValue ()),
-    m_speedVariable (g_speedVariable.GetCopy ()),
-    m_pauseVariable (g_pauseVariable.GetCopy ())
+    m_speedVariable (g_speedVariable.Get ()),
+    m_pauseVariable (g_pauseVariable.Get ())
     
 {}
 RandomDirection2dMobilityModelParameters::RandomDirection2dMobilityModelParameters 
@@ -63,29 +63,22 @@ RandomDirection2dMobilityModelParameters::RandomDirection2dMobilityModelParamete
  const RandomVariable &speedVariable,
  const RandomVariable &pauseVariable)
   : m_bounds (bounds),
-    m_speedVariable (speedVariable.Copy ()),
-    m_pauseVariable (pauseVariable.Copy ())
+    m_speedVariable (speedVariable),
+    m_pauseVariable (pauseVariable)
 {}
 
 RandomDirection2dMobilityModelParameters::~RandomDirection2dMobilityModelParameters ()
-{
-  delete m_speedVariable;
-  delete m_pauseVariable;
-  m_speedVariable = 0;
-  m_pauseVariable = 0;
-}
+{}
 
 void 
 RandomDirection2dMobilityModelParameters::SetSpeed (const RandomVariable &speedVariable)
 {
-  delete m_speedVariable;
-  m_speedVariable = speedVariable.Copy ();
+  m_speedVariable = speedVariable;
 }
 void 
 RandomDirection2dMobilityModelParameters::SetPause (const RandomVariable &pauseVariable)
 {
-  delete m_pauseVariable;
-  m_pauseVariable = pauseVariable.Copy ();
+  m_pauseVariable = pauseVariable;
 }
 void 
 RandomDirection2dMobilityModelParameters::SetBounds (const Rectangle &bounds)
@@ -149,7 +142,7 @@ RandomDirection2dMobilityModel::Start (void)
 void
 RandomDirection2dMobilityModel::BeginPause (void)
 {
-  Time pause = Seconds (m_parameters->m_pauseVariable->GetValue ());
+  Time pause = Seconds (m_parameters->m_pauseVariable.GetValue ());
   m_helper.Pause ();
   m_event = Simulator::Schedule (pause, &RandomDirection2dMobilityModel::ResetDirectionAndSpeed, this);
   NotifyCourseChange ();
@@ -159,7 +152,7 @@ void
 RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
 {
   NS_LOG_FUNCTION;
-  double speed = m_parameters->m_speedVariable->GetValue ();
+  double speed = m_parameters->m_speedVariable.GetValue ();
   const Vector vector (std::cos (direction) * speed,
                        std::sin (direction) * speed,
                        0.0);

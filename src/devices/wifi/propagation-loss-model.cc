@@ -104,23 +104,21 @@ PropagationLossModel::CreateDefault (void)
   }
 }
 RandomPropagationLossModel::RandomPropagationLossModel ()
-  : m_variable (g_random.GetCopy ())
+  : m_variable (g_random.Get ())
 {}
 
 RandomPropagationLossModel::RandomPropagationLossModel (const RandomVariable &variable)
-  : m_variable (variable.Copy ())
+  : m_variable (variable)
 {}
 RandomPropagationLossModel::~RandomPropagationLossModel ()
-{
-  delete m_variable;
-}
+{}
 
 double 
 RandomPropagationLossModel::GetRxPower (double txPowerDbm,
 					Ptr<MobilityModel> a,
 					Ptr<MobilityModel> b) const
 {
-  double rxPower = txPowerDbm - m_variable->GetValue ();
+  double rxPower = txPowerDbm - m_variable.GetValue ();
   NS_LOG_DEBUG ("tx power="<<txPowerDbm<<"dbm, rx power="<<rxPower<<"Dbm");
   return rxPower;
 }
