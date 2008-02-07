@@ -100,7 +100,7 @@ Ptr<ParamSpec>
 MakeRectangleParamSpec (Rectangle T::*memberVariable,
                         Rectangle initialValue)
 {
-  return MakeMemberVariableParamSpec (memberVariable, initialValue);
+  return MakeMemberVariableParamSpec (memberVariable, RectangleValue (initialValue));
 }
 
 
