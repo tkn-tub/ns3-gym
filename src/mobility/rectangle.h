@@ -20,6 +20,9 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 
+#include "ns3/value.h"
+#include "ns3/param-spec-helper.h"
+
 namespace ns3 {
 
 class Vector;
@@ -58,7 +61,48 @@ public:
   double xMax;
   double yMin;
   double yMax;
+
+  Rectangle (PValue value);
+  operator PValue () const;
 };
+
+class RectangleValue : public Value
+{
+public:
+  RectangleValue (const Rectangle &rectangle);
+
+  void Set (const Rectangle &v);
+  Rectangle Get (void) const;
+
+  // inherited from Parameter base class
+  virtual PValue Copy (void) const;
+  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+
+  RectangleValue (PValue value);
+  operator PValue () const;
+
+private:
+  void ReadAsDouble (std::string value, double &v, bool &ok);
+  Rectangle m_rectangle;
+};
+
+template <typename T>
+Ptr<ParamSpec> MakeRectangleParamSpec (Rectangle T::*memberVariable,
+                                       Rectangle initialValue);
+
+} // namespace ns3
+
+namespace ns3 {
+
+template <typename T>
+Ptr<ParamSpec>
+MakeRectangleParamSpec (Rectangle T::*memberVariable,
+                        Rectangle initialValue)
+{
+  return MakeMemberVariableParamSpec (memberVariable, initialValue);
+}
+
 
 } // namespace ns3
 
