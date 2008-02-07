@@ -6,9 +6,7 @@
 #include "uint-value.h"
 #include "enum-value.h"
 #include "random-variable.h"
-#if 0
 #include "fp-value.h"
-#endif
 namespace ns3 {
 
 class ParamSpecTest : public Test
@@ -70,10 +68,8 @@ public:
       .AddParameter ("TestRandom", "help text",
 		     MakeRandomVariableParamSpec (&ParamSpecObjectTest::m_random,
 						  ConstantVariable (1.0)))
-#if 0
       .AddParameter ("TestFloat", "help text",
-		     MakeFpParamSpec (-1.1, &ParamSpecObjectTest::m_float))
-#endif
+		     MakeFpParamSpec (&ParamSpecObjectTest::m_float, -1.1))
       ;
         
     return tid;
@@ -250,11 +246,11 @@ ParamSpecTest::RunTests (void)
   NS_TEST_ASSERT (!p->Set ("TestUint8", UintValue (-1)));
   CHECK_GET_STR (p, "TestUint8", "255");
   CHECK_GET_PARAM (p, "TestUint8", UintValue, 255);
-#if 0  
+
   CHECK_GET_STR (p, "TestFloat", "-1.1");
   NS_TEST_ASSERT (p->Set ("TestFloat", FpValue ((float)+2.3)));
   CHECK_GET_PARAM (p, "TestFloat", FpValue, (float)+2.3);
-#endif
+
   CHECK_GET_STR (p, "TestEnum", "TestA");
   CHECK_GET_PARAM (p, "TestEnum", EnumValue, ParamSpecObjectTest::TEST_A);
   NS_TEST_ASSERT (p->Set ("TestEnum", EnumValue (ParamSpecObjectTest::TEST_C)));

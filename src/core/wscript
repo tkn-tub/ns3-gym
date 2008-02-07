@@ -59,6 +59,7 @@ def build(bld):
         'int-value.cc',
         'uint-value.cc',
         'enum-value.cc',
+        'fp-value.cc',
         ]
 
     if sys.platform == 'win32':
