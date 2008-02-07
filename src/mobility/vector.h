@@ -20,6 +20,9 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include "ns3/value.h"
+#include "ns3/param-spec-helper.h"
+
 namespace ns3 {
 
 /**
@@ -54,9 +57,46 @@ public:
    * z coordinate of vector vector
    */
   double z;
+
+  Vector (PValue value);
+  operator PValue () const;
 };
 
 double CalculateDistance (const Vector &a, const Vector &b);
+
+class VectorValue : public Value
+{
+public:
+  VectorValue (const Vector &vector);
+
+  void Set (const Vector &vector);
+  Vector Get (void) const;
+
+  virtual PValue Copy (void) const;
+  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+
+  VectorValue (PValue value);
+  operator PValue () const;
+private:
+  Vector m_vector;
+};
+
+template <typename T>
+Ptr<ParamSpec>
+MakeVectorParamSpec (Vector T::*memberVariable, const Vector &initialValue);
+
+} // namespace ns3
+
+namespace ns3 {
+
+template <typename T>
+Ptr<ParamSpec>
+MakeVectorParamSpec (Vector T::*memberVariable, const Vector &initialValue)
+{
+  return MakeMemberVariableParamSpec (memberVariable, VectorValue (initialValue));
+}
+
 
 } // namespace ns3
 

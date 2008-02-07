@@ -18,7 +18,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "vector.h"
+#include "ns3/fatal-error.h"
 #include <cmath>
+#include <sstream>
 
 namespace ns3 {
 
@@ -35,6 +37,21 @@ Vector::Vector ()
     z (0.0)
 {}
 
+Vector::Vector (PValue value)
+{
+  const VectorValue *v = value.DynCast<const VectorValue *> ();
+  if (v == 0)
+    {
+      NS_FATAL_ERROR ("Expected value of type Vector");
+    }
+  *this = v->Get ();
+}
+Vector::operator PValue () const
+{
+  return PValue::Create<VectorValue> (*this);
+}
+
+
 double 
 CalculateDistance (const Vector &a, const Vector &b)
 {
@@ -44,5 +61,50 @@ CalculateDistance (const Vector &a, const Vector &b)
   double distance = std::sqrt (dx * dx + dy * dy + dz * dz);
   return distance;
 }
+
+
+
+VectorValue::VectorValue (const Vector &vector)
+  : m_vector (vector)
+{}
+
+void 
+VectorValue::Set (const Vector &vector)
+{
+  m_vector = vector;
+}
+Vector 
+VectorValue::Get (void) const
+{
+  return m_vector;
+}
+
+PValue
+VectorValue::Copy (void) const
+{
+  return PValue::Create<VectorValue> (*this);
+}
+std::string 
+VectorValue::SerializeToString (Ptr<const ParamSpec> spec) const
+{
+  std::ostringstream oss;
+  oss << m_vector.x << ":" << m_vector.y << ":" << m_vector.z;
+  return oss.str ();
+}
+bool 
+VectorValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+{
+  // XXX implement parsing
+  return false;
+}
+
+VectorValue::VectorValue (PValue value)
+  : m_vector (value)
+{}
+VectorValue::operator PValue () const
+{
+  return m_vector;
+}
+
 
 } // namespace ns3
