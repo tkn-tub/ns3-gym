@@ -105,5 +105,6 @@ def build(bld):
         'int-to-type.h',
         'type-id-default-value.h',
         'value.h',
+        'param-spec-helper.h',
         ]
 
