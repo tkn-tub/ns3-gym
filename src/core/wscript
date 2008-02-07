@@ -106,5 +106,9 @@ def build(bld):
         'type-id-default-value.h',
         'value.h',
         'param-spec-helper.h',
+        'int-value.h',
+        'uint-value.h',
+        'fp-value.h',
+        'enum-value.h',
         ]
 
