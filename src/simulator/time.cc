@@ -22,6 +22,7 @@
 #include "nstime.h"
 #include "ns3/fatal-error.h"
 #include "ns3/default-value.h"
+#include "ns3/object.h"
 #include <math.h>
 
 namespace ns3 {
@@ -241,6 +242,20 @@ TimeUnit<1>::UnitsToTimestep (uint64_t unitValue,
   return unitValue;
 }
 
+TimeUnit<1>::TimeUnit (PValue value)
+{
+  const TimeValue *v = value.DynCast<const TimeValue *> ();
+  if (v == 0)
+    {
+      NS_FATAL_ERROR ("Expected value of type TimeValue.");
+    }
+  *this = v->Get ();
+}
+TimeUnit<1>::operator PValue () const
+{
+  return PValue::Create<TimeValue> (*this);
+}
+
 Time MilliSeconds (uint64_t ms)
 {
   uint64_t ts = TimeUnit<1>::UnitsToTimestep(ms, TimeStepPrecision::MS_FACTOR);
@@ -268,6 +283,86 @@ Time FemtoSeconds (uint64_t fs)
   uint64_t ts = TimeUnit<1>::UnitsToTimestep(fs, TimeStepPrecision::FS_FACTOR);
   return TimeStep(ts);
 }
+
+TimeValue::TimeValue (const Time time)
+  : m_time (time)
+{}
+void 
+TimeValue::Set (Time time)
+{
+  m_time = time;
+}
+Time 
+TimeValue::Get (void) const
+{
+  return m_time;
+}
+PValue
+TimeValue::Copy (void) const
+{
+  return PValue::Create<TimeValue> (*this);
+}
+std::string 
+TimeValue::SerializeToString (Ptr<const ParamSpec> spec) const
+{
+  std::ostringstream oss;
+  oss << m_time.GetSeconds () << "s";
+  return oss.str ();
+}
+bool 
+TimeValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+{
+  std::string::size_type n = value.find_first_not_of("0123456789.");
+  if (n == std::string::npos)
+    {
+      return false;
+    }
+  std::string trailer = value.substr(n, value.size ()-1-n);
+  std::istringstream iss;
+  iss.str (value.substr(0, n));
+
+  if (trailer == std::string("s"))
+    {
+      double v;
+      iss >> v;
+      m_time = Seconds (v);
+      return !iss.bad () && !iss.fail ();
+    }
+  uint64_t integer;
+  iss >> integer;
+  if (iss.bad () || iss.fail ())
+    {
+      return false;
+    }
+  if (trailer == std::string("ms"))
+    {
+      m_time = MilliSeconds (integer);
+      return true;
+    }
+  if (trailer == std::string("us"))
+    {
+      m_time = MicroSeconds (integer);
+      return true;
+    }
+  if (trailer == std::string("ns"))
+    {
+      m_time = NanoSeconds (integer);
+      return true;
+    }
+  if (trailer == std::string("ps"))
+    {
+      m_time = PicoSeconds (integer);
+      return true;
+    }
+  if (trailer == std::string("fs"))
+    {
+      m_time = FemtoSeconds (integer);
+      return true;
+    }
+  return false;
+}
+
+
 /*
  * The timestep value passed to this function must be of the precision
  * of TimeStepPrecision::Get
@@ -287,7 +382,7 @@ TimeUnit<0>::GetDouble (void) const
   return GetHighPrecision ().GetDouble ();
 }
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #ifdef RUN_SELF_TESTS

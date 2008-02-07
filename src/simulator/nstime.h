@@ -20,9 +20,11 @@
 #ifndef TIME_H
 #define TIME_H
 
+#include "ns3/assert.h"
+#include "ns3/value.h"
+#include "ns3/param-spec-helper.h"
 #include <stdint.h>
 #include <math.h>
-#include "ns3/assert.h"
 #include <ostream>
 #include "high-precision.h"
 #include "cairo-wideint-private.h"
@@ -334,6 +336,8 @@ TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
 // additional methods that should not be available for N!=1
 // \class TimeUnit<1>
 
+class TimeValue;
+
 template <>
 class TimeUnit<1>
 {
@@ -431,6 +435,9 @@ public:
 
   static uint64_t UnitsToTimestep (uint64_t unitValue, 
                                    uint64_t unitFactor);
+
+  TimeUnit (PValue value);
+  operator PValue () const;
 private:
   HighPrecision m_data;
 
@@ -662,6 +669,41 @@ typedef TimeUnit<-1> TimeInvert;
 typedef TimeUnit<2> TimeSquare;
 
 
-}; // namespace ns3
+class TimeValue : public Value
+{
+public:
+  TimeValue (Time time);
+
+  void Set (Time time);
+  Time Get (void) const;
+
+  // inherited from Value base class.
+  virtual PValue Copy (void) const;
+  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+
+  TimeValue (PValue value);
+  operator PValue () const;
+private:
+  Time m_time;
+};
+
+template <typename T>
+Ptr<ParamSpec> MakeTimeParamSpec (Time T::*memberVariable,
+                                  Time initialValue);
+
+} // namespace ns3
+
+namespace ns3 {
+
+template <typename T>
+Ptr<ParamSpec> MakeTimeParamSpec (Time T::*memberVariable,
+                                  Time initialValue)
+{
+  return MakeMemberVariableParamSpec (memberVariable, TimeValue (initialValue));
+}
+
+
+} // namespace ns3
 
 #endif /* TIME_H */
