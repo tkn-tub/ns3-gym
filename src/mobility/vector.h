@@ -86,6 +86,18 @@ template <typename T>
 Ptr<ParamSpec>
 MakeVectorParamSpec (Vector T::*memberVariable, const Vector &initialValue);
 
+template <typename T>
+Ptr<ParamSpec>
+MakeVectorParamSpec (void (T::*setter) (const Vector &), 
+                     Vector (T::*getter) (void) const,
+                     const Vector &initialValue);
+
+template <typename T>
+Ptr<ParamSpec>
+MakeVectorParamSpec (Vector (T::*getter) (void) const,
+                     const Vector &initialValue);
+
+
 } // namespace ns3
 
 namespace ns3 {
@@ -96,6 +108,25 @@ MakeVectorParamSpec (Vector T::*memberVariable, const Vector &initialValue)
 {
   return MakeMemberVariableParamSpec (memberVariable, VectorValue (initialValue));
 }
+
+template <typename T>
+Ptr<ParamSpec>
+MakeVectorParamSpec (void (T::*setter) (const Vector &), 
+                     Vector (T::*getter) (void) const,
+                     const Vector &initialValue)
+{
+  return MakeMemberMethodParamSpec (setter, getter, VectorValue (initialValue));
+}
+
+template <typename T>
+Ptr<ParamSpec>
+MakeVectorParamSpec (Vector (T::*getter) (void) const,
+                     const Vector &initialValue)
+{
+  return MakeMemberMethodGetterParamSpec (getter, VectorValue (initialValue));
+}
+
+
 
 
 } // namespace ns3
