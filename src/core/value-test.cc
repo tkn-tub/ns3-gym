@@ -5,6 +5,7 @@
 #include "int-value.h"
 #include "uint-value.h"
 #include "enum-value.h"
+#include "random-variable.h"
 #if 0
 #include "fp-value.h"
 #endif
@@ -66,6 +67,9 @@ public:
 					TEST_A, "TestA",
 					TEST_B, "TestB",
 					TEST_C, "TestC"))
+      .AddParameter ("TestRandom", "help text",
+		     MakeRandomVariableParamSpec (&ParamSpecObjectTest::m_random,
+						  ConstantVariable (1.0)))
 #if 0
       .AddParameter ("TestFloat", "help text",
 		     MakeFpParamSpec (-1.1, &ParamSpecObjectTest::m_float))
@@ -97,6 +101,7 @@ private:
   uint8_t m_uint8;
   float m_float;
   enum TestEnum m_enum;
+  RandomVariable m_random;
 };
 
 
@@ -264,6 +269,11 @@ ParamSpecTest::RunTests (void)
   NS_TEST_ASSERT (!p->Set ("TestEnum", EnumValue (5)));
   CHECK_GET_STR (p, "TestEnum", "TestB");
   CHECK_GET_PARAM (p, "TestEnum", EnumValue, ParamSpecObjectTest::TEST_B);
+
+  RandomVariable ran = p->Get ("TestRandom");
+  NS_TEST_ASSERT (p->Set ("TestRandom", UniformVariable (0.0, 1.0)));
+  NS_TEST_ASSERT (p->Set ("TestRandom", ConstantVariable (10.0)));
+  
 
 #if 0
   p->Set ("TestBoolName", "true");

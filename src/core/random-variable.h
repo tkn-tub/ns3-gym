@@ -24,6 +24,7 @@
 #include <vector>
 #include <algorithm>
 #include <stdint.h>
+#include "value.h"
 
 /**
  * \ingroup core
@@ -158,11 +159,17 @@ public:
    * \endcode
    */
   static void SetRunNumber(uint32_t n);
+
+
+  RandomVariable (PValue value);
+  operator PValue () const;
+
 private:
+  friend class RandomVariableValue;
   RandomVariableBase *m_variable;
 protected:
   RandomVariable (const RandomVariableBase &variable);
-  RandomVariableBase *Peek (void);
+  RandomVariableBase *Peek (void) const;
 };
 
 /**
@@ -648,5 +655,39 @@ public:
   static double GetSingleValue(double s, double l, double mean);
 };
 
+
+class RandomVariableValue : public Value
+{
+public:
+  RandomVariableValue (RandomVariable variable);
+  void Set (RandomVariable variable);
+  RandomVariable Get (void) const;
+
+  virtual PValue Copy (void) const;
+  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+
+  RandomVariableValue (PValue value);
+  operator PValue () const;
+private:
+  RandomVariable m_variable;
+};
+
+template <typename T>
+Ptr<ParamSpec> MakeRandomVariableParamSpec (RandomVariable T::*m_memberVariable,
+                                            RandomVariable initialValue);
+
 }//namespace ns3
+
+
+namespace ns3 {
+
+template <typename T>
+Ptr<ParamSpec> MakeRandomVariableParamSpec (RandomVariable T::*memberVariable,
+                                            RandomVariable initialValue)
+{
+  return MakeMemberVariableParamSpec (memberVariable, RandomVariableValue (initialValue));
+}
+
+} // namespace ns3
 #endif

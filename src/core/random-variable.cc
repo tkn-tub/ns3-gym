@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>       
+#include <sstream>
 
 
 #include "assert.h"
@@ -249,6 +250,10 @@ RandomVariable::RandomVariable (const RandomVariableBase &variable)
 RandomVariable &
 RandomVariable::operator = (const RandomVariable &o)
 {
+  if (&o == this)
+    {
+      return *this;
+    }
   delete m_variable;
   m_variable = o.m_variable->Copy ();
   return *this;
@@ -290,9 +295,23 @@ RandomVariable::SetRunNumber(uint32_t n)
   RandomVariableBase::SetRunNumber (n);
 }
 RandomVariableBase *
-RandomVariable::Peek (void)
+RandomVariable::Peek (void) const
 {
   return m_variable;
+}
+RandomVariable::RandomVariable (PValue value)
+{
+  const RandomVariableValue *v = value.DynCast<const RandomVariableValue *> ();
+  if (v == 0)
+    {
+      NS_FATAL_ERROR ("assigning non-RandomVariable value to RandomVariable value.");
+    }
+  m_variable = v->Get ().m_variable->Copy ();
+
+}
+RandomVariable::operator PValue () const
+{
+  return PValue::Create<RandomVariableValue> (*this);
 }
 
 
@@ -316,6 +335,9 @@ public:
   UniformVariableImpl(double s, double l);
 
   UniformVariableImpl(const UniformVariableImpl& c);
+
+  double GetMin (void) const;
+  double GetMax (void) const;
   
   /**
    * \return A value between low and high values specified by the constructor
@@ -343,6 +365,18 @@ UniformVariableImpl::UniformVariableImpl(double s, double l)
 
 UniformVariableImpl::UniformVariableImpl(const UniformVariableImpl& c) 
   : RandomVariableBase(c), m_min(c.m_min), m_max(c.m_max) { }
+
+double 
+UniformVariableImpl::GetMin (void) const
+{
+  return m_min;
+}
+double 
+UniformVariableImpl::GetMax (void) const
+{
+  return m_max;
+}
+
 
 double UniformVariableImpl::GetValue()
 {
@@ -1561,6 +1595,78 @@ TriangularVariable::GetSingleValue(double s, double l, double mean)
 {
   return TriangularVariableImpl::GetSingleValue (s,l,mean);
 }
+
+
+RandomVariableValue::RandomVariableValue (RandomVariable variable)
+  : m_variable (variable)
+{}
+void 
+RandomVariableValue::Set (RandomVariable variable)
+{
+  m_variable = variable;
+}
+RandomVariable 
+RandomVariableValue::Get (void) const
+{
+  return m_variable;
+}
+
+PValue 
+RandomVariableValue::Copy (void) const
+{
+  return PValue::Create<RandomVariableValue> (m_variable);
+}
+std::string 
+RandomVariableValue::SerializeToString (Ptr<const ParamSpec> spec) const
+{
+  std::ostringstream oss;
+  RandomVariableBase *base = m_variable.Peek ();
+  ConstantVariableImpl *constant = dynamic_cast<ConstantVariableImpl *> (base);
+  if (constant != 0)
+    {
+      oss << "Constant:" << constant->GetValue ();
+      return oss.str ();
+    }
+  UniformVariableImpl *uniform = dynamic_cast<UniformVariableImpl *> (base);
+  if (uniform != 0)
+    {
+      oss << "Uniform:" << uniform->GetMin () << ":" << uniform->GetMax ();
+      return oss.str ();
+    }
+  // XXX: support other distributions
+  return "";
+}
+bool 
+RandomVariableValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+{
+  std::string::size_type tmp;
+  tmp = value.find (":");
+  if (tmp == std::string::npos)
+    {
+      return false;
+    }
+  std::string type = value.substr (0, tmp);
+  if (value == "Constant")
+    {
+      // XXX
+      return true;
+    }
+  else if (value == "Uniform")
+    {
+      // XXX
+      return true;
+    }
+  // XXX: support other distributions.
+  return false;
+}
+RandomVariableValue::RandomVariableValue (PValue value)
+  : m_variable (value)
+{}
+RandomVariableValue::operator PValue () const
+{
+  return m_variable;
+}
+
 
 
 
