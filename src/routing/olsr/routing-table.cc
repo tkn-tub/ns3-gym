@@ -40,6 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("OlsrRoutingTable");
 void
 RoutingTable::Clear ()
 {
+  NS_LOG_FUNCTION;
   m_table.clear ();
 }
 
@@ -119,7 +120,7 @@ RoutingTable::RequestRoute (uint32_t ifIndex,
       Ipv4Route route = Ipv4Route::CreateHostRouteTo
         (ipHeader.GetDestination (), entry2.nextAddr, entry2.interface);
 
-      NS_LOG_DEBUG ("Olsr node" << m_mainAddress
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress
                     << ": RouteRequest for dest=" << ipHeader.GetDestination ()
                     << " --> destHop=" << entry2.nextAddr
                     << " interface=" << entry2.interface);
@@ -129,9 +130,19 @@ RoutingTable::RequestRoute (uint32_t ifIndex,
     }
   else
     {
-      NS_LOG_DEBUG ("Olsr node" << m_mainAddress
+      NS_LOG_DEBUG ("Olsr node " << m_mainAddress
                     << ": RouteRequest for dest=" << ipHeader.GetDestination ()
-                    << " --> NOT FOUND");
+                    << " --> NOT FOUND; ** Dumping routing table...");
+#if 0
+      for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
+           iter != m_table.end (); iter++)
+        {
+          NS_LOG_DEBUG ("dest=" << iter->first << " --> next=" << iter->second.nextAddr
+                        << " via interface " << iter->second.interface);
+        }
+
+      NS_LOG_DEBUG ("** Routing table dump end.");
+#endif
       return false;
     }
 }
@@ -172,6 +183,14 @@ RoutingTable::AddEntry (Ipv4Address const &dest,
                         uint32_t interface,
                         uint32_t distance)
 {
+  NS_LOG_PARAMS_BEGIN ();
+  NS_LOG_PARAM (this);
+  NS_LOG_PARAM (dest);
+  NS_LOG_PARAM (next);
+  NS_LOG_PARAM (interface);
+  NS_LOG_PARAM (distance);
+  NS_LOG_PARAM (m_mainAddress);
+  NS_LOG_PARAMS_END ();
   // Creates a new rt entry with specified values
   RoutingTableEntry &entry = m_table[dest];
 
@@ -187,6 +206,14 @@ RoutingTable::AddEntry (Ipv4Address const &dest,
                         Ipv4Address const &interfaceAddress,
                         uint32_t distance)
 {
+  NS_LOG_PARAMS_BEGIN ();
+  NS_LOG_PARAM (this);
+  NS_LOG_PARAM (dest);
+  NS_LOG_PARAM (next);
+  NS_LOG_PARAM (interfaceAddress);
+  NS_LOG_PARAM (distance);
+  NS_LOG_PARAM (m_mainAddress);
+  NS_LOG_PARAMS_END ();
   RoutingTableEntry entry;
   NS_ASSERT (m_ipv4);
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)

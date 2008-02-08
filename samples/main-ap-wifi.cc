@@ -78,7 +78,7 @@ CreateApNode (Ptr<WifiChannel> channel,
   device->Attach (channel);
   Ptr<MobilityModel> mobility = CreateObject<StaticMobilityModel> ();
   mobility->SetPosition (position);
-  node->AddInterface (mobility);
+  node->AggregateObject (mobility);
   return node;
 }
 
@@ -95,21 +95,21 @@ CreateStaNode (Ptr<WifiChannel> channel,
   device->Attach (channel);
   Ptr<MobilityModel> mobility = CreateObject<StaticMobilityModel> ();
   mobility->SetPosition (position);
-  node->AddInterface (mobility);
+  node->AggregateObject (mobility);
   return node;
 }
 
 static void
 SetPosition (Ptr<Node> node, Vector position)
 {
-  Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> ();
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
   mobility->SetPosition (position);
 }
 
 static Vector
 GetPosition (Ptr<Node> node)
 {
-  Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> ();
+  Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
   return mobility->GetPosition ();
 }
 

@@ -46,11 +46,11 @@ HierarchicalMobilityModel::SetChild (Ptr<MobilityModel> model)
 {
   m_child = model;
   Ptr<MobilityModelNotifier> notifier = 
-    m_child->QueryInterface<MobilityModelNotifier> ();
+    m_child->GetObject<MobilityModelNotifier> ();
   if (notifier == 0)
     {
       notifier = CreateObject<MobilityModelNotifier> ();
-      m_child->AddInterface (notifier);
+      m_child->AggregateObject (notifier);
     }
   notifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
 }
@@ -60,11 +60,11 @@ HierarchicalMobilityModel::SetParent (Ptr<MobilityModel> model)
 {
   m_parent = model;
   Ptr<MobilityModelNotifier> notifier = 
-    m_parent->QueryInterface<MobilityModelNotifier> ();
+    m_parent->GetObject<MobilityModelNotifier> ();
   if (notifier == 0)
     {
       notifier = CreateObject<MobilityModelNotifier> ();
-      m_parent->AddInterface (notifier);
+      m_parent->AggregateObject (notifier);
     }
   notifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
 }

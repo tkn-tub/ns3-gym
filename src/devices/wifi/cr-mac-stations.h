@@ -54,18 +54,18 @@ public:
   CrMacStation (CrMacStations *stations);
   virtual ~CrMacStation ();
 
-  WifiMode GetDataMode (void) const;
-  WifiMode GetCtlMode (void) const;
-
   virtual void ReportRxOk (double rxSnr, WifiMode txMode);
   virtual void ReportRtsFailed (void);
   virtual void ReportDataFailed (void);
   virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
   virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual WifiMode GetDataMode (uint32_t size);
-  virtual WifiMode GetRtsMode (void);
+  virtual void ReportFinalRtsFailed (void);
+  virtual void ReportFinalDataFailed (void);
+
 private:
   virtual CrMacStations *GetStations (void) const;
+  virtual WifiMode DoGetDataMode (uint32_t size);
+  virtual WifiMode DoGetRtsMode (void);
   CrMacStations *m_stations;
 };
 

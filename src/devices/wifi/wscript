@@ -34,6 +34,8 @@ def build(bld):
         'random-stream.cc',
         'dcf-manager.cc',
         'dcf-manager-test.cc',
+        'onoe-mac-stations.cc',
+        'amrr-mac-stations.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [

@@ -5,10 +5,12 @@ def build(bld):
     module.source = [
         'event-garbage-collector.cc',
         'gnuplot.cc',
+        'delay-jitter-estimation.cc',
         ]
 
     headers = bld.create_obj('ns3header')
     headers.source = [
         'event-garbage-collector.h',
         'gnuplot.h',
+        'delay-jitter-estimation.h',
         ]

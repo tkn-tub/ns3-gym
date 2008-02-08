@@ -64,6 +64,8 @@ static EnumDefaultValue<enum RateControlAlgorithm> g_rateControlAlgorithm
  CONSTANT_RATE, "ConstantRate",
  AARF, "Aarf",
  IDEAL, "Ideal",
+ ONOE, "Onoe",
+ AMRR, "Amrr",
  0, (void *)0);
 
 static NumericDefaultValue<uint32_t> g_arfSuccessThreshold
@@ -161,7 +163,10 @@ static NumericDefaultValue<double> g_idealBer
 ("WifiIdealRateControlBerThreshold",
  "The maximum Bit Error Rate acceptable at any transmission mode",
  10e-6);
-
+static BooleanDefaultValue g_isLowLatency
+("WifiMacPhyIsLowLatency",
+ "Is the communication latency between the MAC and PHY low ?",
+ true);
 
 
 uint32_t 
@@ -294,7 +299,11 @@ GetSsid (void)
 {
   return Ssid (g_ssid.GetValue ().c_str ());
 }
-
+bool 
+GetIsLowLatency (void)
+{
+  return g_isLowLatency.GetValue ();
+}
 
 } // namespace WifiDefaultParameters
 

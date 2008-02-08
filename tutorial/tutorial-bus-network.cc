@@ -41,8 +41,8 @@ main (int argc, char *argv[])
   uint32_t port = 7;
 
   Ptr<Node> n0 = bus.GetNode (0);
-  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.0.1", port, 
-    1, Seconds(1.), 1024);
+  Ptr<UdpEchoClient> client =  CreateObject<UdpEchoClient> (n0, "10.1.0.1", 
+    port, 1, Seconds(1.), 1024);
 
   Ptr<Node> n1 = bus.GetNode (1);
   Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);

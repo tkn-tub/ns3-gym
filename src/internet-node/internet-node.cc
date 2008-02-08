@@ -73,19 +73,19 @@ InternetNode::Construct (void)
   Ptr<TcpImpl> tcpImpl = CreateObject<TcpImpl> (tcp);
   Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> (ipv4);
 
-  Object::AddInterface (ipv4);
-  Object::AddInterface (arp);
-  Object::AddInterface (ipv4Impl);
-  Object::AddInterface (udpImpl);
-  Object::AddInterface (tcpImpl);
-  Object::AddInterface (ipv4L4Demux);
+  Object::AggregateObject (ipv4);
+  Object::AggregateObject (arp);
+  Object::AggregateObject (ipv4Impl);
+  Object::AggregateObject (udpImpl);
+  Object::AggregateObject (tcpImpl);
+  Object::AggregateObject (ipv4L4Demux);
 }
 
 Ptr<TraceResolver>
 InternetNode::GetTraceResolver () const
 {
   Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  Ptr<Ipv4L3Protocol> ipv4 = QueryInterface<Ipv4L3Protocol> ();
+  Ptr<Ipv4L3Protocol> ipv4 = GetObject<Ipv4L3Protocol> ();
   resolver->AddComposite ("ipv4", ipv4);
   resolver->SetParentResolver (Node::GetTraceResolver ());
   return resolver;

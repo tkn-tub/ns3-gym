@@ -46,13 +46,20 @@ CrMacStation::ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr)
 void 
 CrMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
 {}
+void 
+CrMacStation::ReportFinalRtsFailed (void)
+{}
+void 
+CrMacStation::ReportFinalDataFailed (void)
+{}
+
 WifiMode 
-CrMacStation::GetDataMode (uint32_t size)
+CrMacStation::DoGetDataMode (uint32_t size)
 {
   return m_stations->GetDataMode ();
 }
 WifiMode 
-CrMacStation::GetRtsMode (void)
+CrMacStation::DoGetRtsMode (void)
 {
   return m_stations->GetCtlMode ();
 }

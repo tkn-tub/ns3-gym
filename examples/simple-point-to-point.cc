@@ -72,29 +72,7 @@ main (int argc, char *argv[])
   // Users may find it convenient to turn on explicit debugging
   // for selected modules; the below lines suggest how to do this
 #if 0 
-  LogComponentEnable ("SimplePointToPointExample", LOG_LEVEL_INFO);
-
-  LogComponentEnable("Object", LOG_LEVEL_ALL);
-  LogComponentEnable("Queue", LOG_LEVEL_ALL);
-  LogComponentEnable("DropTailQueue", LOG_LEVEL_ALL);
-  LogComponentEnable("Channel", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaChannel", LOG_LEVEL_ALL);
-  LogComponentEnable("NetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("CsmaNetDevice", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("Socket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpSocket", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpL4Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4L3Protocol", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4StaticRouting", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("ArpIpv4Interface", LOG_LEVEL_ALL);
-  LogComponentEnable("Ipv4LoopbackInterface", LOG_LEVEL_ALL);
-  LogComponentEnable("OnOffApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("PacketSinkApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEchoClientApplication", LOG_LEVEL_ALL);
-  LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
+  LogComponentEnable ("SimplePointToPointExample", LOG_LEVEL_ALL);
 #endif
 
   // Set up some default values for the simulation.  Use the Bind()
@@ -107,8 +85,6 @@ main (int argc, char *argv[])
 
   DefaultValue::Bind ("OnOffApplicationPacketSize", "210");
   DefaultValue::Bind ("OnOffApplicationDataRate", "448kb/s");
-
-  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
 
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
@@ -170,8 +146,7 @@ main (int argc, char *argv[])
     ConstantVariable(1), 
     ConstantVariable(0));
   // Start the application
-  ooff->Start(Seconds(1.0));
-  ooff->Stop (Seconds(10.0));
+  ooff->Start (Seconds(1.0));
 
   // Create an optional packet sink to receive these packets
   Ptr<PacketSink> sink = CreateObject<PacketSink> (
@@ -180,7 +155,6 @@ main (int argc, char *argv[])
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.0));
-  sink->Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   ooff = CreateObject<OnOffApplication> (
@@ -191,7 +165,6 @@ main (int argc, char *argv[])
     ConstantVariable(0));
   // Start the application
   ooff->Start(Seconds(1.1));
-  ooff->Stop (Seconds(10.0));
 
   // Create a packet sink to receive these packets
   sink = CreateObject<PacketSink> (
@@ -200,15 +173,35 @@ main (int argc, char *argv[])
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.1));
-  sink->Stop (Seconds (10.0));
+
+  // TCP
+  // Create a file transfer from n0 to n3, starting at time 1.2
+  uint16_t servPort = 500;
+
+  ooff = CreateObject<OnOffApplication> (
+    n0, 
+    InetSocketAddress ("10.1.3.2", servPort), 
+    "Tcp",
+    ConstantVariable(1), 
+    ConstantVariable(0));
+  // Start the application
+  ooff->Start (Seconds(1.2));
+  ooff->Stop (Seconds(1.35));
+
+  // Create a packet sink to receive these TCP packets
+  sink = Create<PacketSink> (
+    n3,
+    InetSocketAddress (Ipv4Address::GetAny (), servPort),
+    "Tcp");
+  sink->Start (Seconds (1.2));
 
   // Here, finish off packet routing configuration
   // This will likely set by some global StaticRouting object in the future
   NS_LOG_INFO ("Set Default Routes.");
   Ptr<Ipv4> ipv4;
-  ipv4 = n0->QueryInterface<Ipv4> ();
+  ipv4 = n0->GetObject<Ipv4> ();
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.1.2"), 1);
-  ipv4 = n3->QueryInterface<Ipv4> ();
+  ipv4 = n3->GetObject<Ipv4> ();
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.1"), 1);
   
   // Configure tracing of all enqueue, dequeue, and NetDevice receive events
@@ -227,7 +220,7 @@ main (int argc, char *argv[])
   pcaptrace.TraceAllIp ();
 
   NS_LOG_INFO ("Run Simulation.");
-  Simulator::StopAt (Seconds (10));
+  Simulator::StopAt (Seconds (3.0));
   Simulator::Run ();    
   Simulator::Destroy ();
   NS_LOG_INFO ("Done.");

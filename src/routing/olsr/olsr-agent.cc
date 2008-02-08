@@ -44,7 +44,7 @@ Ptr<Agent>
 Agent::CreateDefault (Ptr<Node> node)
 {
   TypeId tid = g_defaultImpl.GetValue ();
-  Ptr<Agent> agent = tid.CreateObject (node)->QueryInterface<Agent> ();
+  Ptr<Agent> agent = tid.CreateObject (node)->GetObject<Agent> ();
   return agent;
 }
 

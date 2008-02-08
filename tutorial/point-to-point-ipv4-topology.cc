@@ -60,7 +60,7 @@ PointToPointIpv4Topology::AddAddress (
   Ipv4Mask mask)
 {
   Ptr<NetDevice> nd = node->GetDevice(netDeviceNumber);
-  Ptr<Ipv4> ipv4 = node->QueryInterface<Ipv4> ();
+  Ptr<Ipv4> ipv4 = node->GetObject<Ipv4> ();
   uint32_t ifIndex = ipv4->AddInterface (nd);
 
   ipv4->SetAddress (ifIndex, address);

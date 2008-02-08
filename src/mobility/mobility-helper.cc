@@ -47,7 +47,7 @@ MobilityHelper::SetPositionAllocator (std::string type,
   pos.Set (n7, v7);
   pos.Set (n8, v8);
   pos.Set (n9, v9);
-  m_position = pos.Create ()->QueryInterface<PositionAllocator> ();
+  m_position = pos.Create ()->GetObject<PositionAllocator> ();
 }
 
 void 
@@ -77,7 +77,7 @@ MobilityHelper::SetMobilityModel (std::string type,
 void 
 MobilityHelper::PushReferenceMobilityModel (Ptr<Object> reference)
 {
-  Ptr<MobilityModel> mobility = reference->QueryInterface<MobilityModel> ();
+  Ptr<MobilityModel> mobility = reference->GetObject<MobilityModel> ();
   m_mobilityStack.push_back (mobility);
 }
 void 
@@ -99,10 +99,10 @@ MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
   for (std::vector<Ptr<Object> >::const_iterator i = objects.begin (); i != objects.end (); i++)
     {
       Ptr<Object> object = *i;
-      Ptr<MobilityModel> model = object->QueryInterface<MobilityModel> ();
+      Ptr<MobilityModel> model = object->GetObject<MobilityModel> ();
       if (model == 0)
 	{
-	  model = m_mobility.Create ()->QueryInterface<MobilityModel> ();
+	  model = m_mobility.Create ()->GetObject<MobilityModel> ();
 	  if (model == 0)
 	    {
 	      NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<< 
@@ -110,7 +110,7 @@ MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
 	    }
 	  if (m_mobilityStack.empty ())
 	    {
-	      object->AddInterface (model);
+	      object->AggregateObject (model);
 	    }
 	  else
 	    {
@@ -119,7 +119,7 @@ MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
 	      Ptr<MobilityModel> hierarchical = 
 		CreateObjectWith<HierarchicalMobilityModel> ("child", model,
 							     "parent", parent);
-	      object->AddInterface (hierarchical);
+	      object->AggregateObject (hierarchical);
 	    }
 	}
       Vector position = m_position->GetNext ();
@@ -127,10 +127,10 @@ MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
       if (m_notifierEnabled)
 	{
 	  Ptr<MobilityModelNotifier> notifier = 
-	    object->QueryInterface<MobilityModelNotifier> ();
+	    object->GetObject<MobilityModelNotifier> ();
 	  if (notifier == 0)
 	    {
-	      object->AddInterface (CreateObject<MobilityModelNotifier> ());
+	      object->AggregateObject (CreateObject<MobilityModelNotifier> ());
 	    }
 	}
     }

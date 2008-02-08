@@ -540,7 +540,7 @@ void CsmaNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
   NS_LOG_PARAM ("(" << em << ")");
   
   m_receiveErrorModel = em; 
-  AddInterface (em);
+  AggregateObject (em);
 }
 
 void

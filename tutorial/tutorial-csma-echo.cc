@@ -65,8 +65,8 @@ main (int argc, char *argv[])
 
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", port, 
-    1, Seconds(1.), 1024);
+  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2",
+    port, 1, Seconds(1.), 1024);
 
   Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
 

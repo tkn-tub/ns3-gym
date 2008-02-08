@@ -98,6 +98,7 @@ TcpSocket::~TcpSocket ()
     }
   m_tcp = 0;
   delete m_pendingData; //prevents leak
+  m_retxEvent.Cancel ();
 }
 
 enum Socket::SocketErrno
@@ -234,7 +235,7 @@ TcpSocket::Connect (const Address & address)
   m_defaultPort = transport.GetPort ();
   
   uint32_t localIfIndex;
-  Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> ();
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
   if (ipv4->GetIfIndexForDestination (m_defaultAddress, localIfIndex))
     {
@@ -495,7 +496,9 @@ bool TcpSocket::ProcessAction (Actions_t a)
     case SYN_TX:
       NS_LOG_LOGIC ("TcpSocket " << this <<" Action SYN_TX");
       // TCP SYN Flag consumes one byte
-      m_nextTxSequence+= 1;
+      // is the above correct? we're SENDING a syn, not acking back -- Raj
+      // commented out for now
+      // m_nextTxSequence+= 1;
       SendEmptyPacket (TcpHeader::SYN);
       break;
     case SYN_ACK_TX:
@@ -537,11 +540,7 @@ bool TcpSocket::ProcessAction (Actions_t a)
       NS_LOG_LOGIC ("TcpSocket " << this <<" Action APP_NOTIFY");
       break;
     case SERV_NOTIFY:
-      NS_LOG_LOGIC ("TcpSocket " << this <<" Action SERV_NOTIFY");
-      NS_LOG_LOGIC ("TcpSocket " << this << " Connected!");
-      NotifyConnectionSucceeded ();
-      m_connected = true; // ! This is bogus; fix when we clone the tcp
-      m_endPoint->SetPeer (m_defaultAddress, m_defaultPort);
+      NS_ASSERT (false); // This should be processed in ProcessPacketAction
       break;
     case LAST_ACTION:
       NS_LOG_LOGIC ("TcpSocket " << this <<" Action LAST_ACTION");
@@ -557,7 +556,7 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << p << "tcpHeader " << fromAddress);
   uint32_t localIfIndex;
-  Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> ();
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   switch (a)
   {
     case SYN_ACK_TX:
@@ -571,15 +570,16 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
           m_endPoint->SetLocalAddress (ipv4->GetAddress (localIfIndex));
         }
       // TCP SYN consumes one byte
-      m_nextRxSequence++;
+      m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
       SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
       break;
     case ACK_TX_1:
       NS_LOG_LOGIC ("TcpSocket " << this <<" Action ACK_TX_1");
       // TCP SYN consumes one byte
-      m_nextRxSequence++;
+      m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
       SendEmptyPacket (TcpHeader::ACK);
       m_rxWindowSize = tcpHeader.GetWindowSize ();
+      m_nextTxSequence = tcpHeader.GetAckNumber ();
       if (tcpHeader.GetAckNumber () > m_highestRxAck)
       {
         m_highestRxAck = tcpHeader.GetAckNumber ();
@@ -653,6 +653,15 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
         }
       break;
     }
+    case SERV_NOTIFY:
+      NS_LOG_LOGIC ("TcpSocket " << this <<" Action SERV_NOTIFY");
+      NS_LOG_LOGIC ("TcpSocket " << this << " Connected!");
+      NotifyConnectionSucceeded ();
+      m_connected = true; // ! This is bogus; fix when we clone the tcp
+      m_endPoint->SetPeer (m_defaultAddress, m_defaultPort);
+      //treat the connection orientation final ack as a newack
+      CommonNewAck (tcpHeader.GetAckNumber (), true);
+      break;
     default:
       break;
   }

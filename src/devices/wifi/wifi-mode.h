@@ -27,6 +27,14 @@
 
 namespace ns3 {
 
+/**
+ * \brief represent a single transmission mode
+ *
+ * A WifiMode is implemented by a single integer which is used
+ * to lookup in a global array the characteristics of the
+ * associated transmission mode. It is thus extremely cheap to
+ * keep a WifiMode variable around.
+ */
 class WifiMode
 {
  public:
@@ -69,6 +77,10 @@ class WifiMode
    */
   uint8_t GetConstellationSize (void) const;
 
+  /**
+   * \returns a human-readable representation of this WifiMode
+   * instance.
+   */
   std::string GetUniqueName (void) const;
 
   /**
@@ -86,7 +98,12 @@ class WifiMode
    */
   uint32_t GetUid (void) const;
 
-  // create an invalid WifiMode.
+  /**
+   * Create an invalid WifiMode. Calling any method on the
+   * instance created will trigger an assert. This is useful
+   * to separate the declaration of a WifiMode variable from
+   * its initialization.
+   */
   WifiMode ();
 private:
   friend class WifiModeFactory;
@@ -97,16 +114,47 @@ private:
 bool operator == (const WifiMode &a, const WifiMode &b);
 std::ostream & operator << (std::ostream & os, const WifiMode &mode);
 
+/**
+ * \brief create WifiMode class instances and keep track of them.
+ *
+ * This factory ensures that each WifiMode created has a unique name
+ * and assigns to each of them a unique integer.
+ */
 class WifiModeFactory
 {
 public:
+  /**
+   * \param uniqueName the name of the associated WifiMode. This name
+   *        must be unique accross _all_ instances.
+   * \param isMandatory true if this WifiMode is mandatory, false otherwise.
+   * \param bandwidth the bandwidth (Hz) of the signal generated when the
+   *        associated WifiMode is used.
+   * \param dataRate the rate (bits/second) at which the user data is transmitted
+   * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
+   *        The phyRate includes FEC so, is typically higher than the dataRate.
+   *
+   * Create a BPSK WifiMode.
+   */
   static WifiMode CreateBpsk (std::string uniqueName,
 			      bool isMandatory,
 			      uint32_t bandwidth,
 			      uint32_t dataRate,
 			      uint32_t phyRate);
+  /**
+   * \param uniqueName the name of the associated WifiMode. This name
+   *        must be unique accross _all_ instances.
+   * \param isMandatory true if this WifiMode is mandatory, false otherwise.
+   * \param bandwidth the bandwidth (Hz) of the signal generated when the
+   *        associated WifiMode is used.
+   * \param dataRate the rate (bits/second) at which the user data is transmitted
+   * \param phyRate the rate (bits/second) at which the encoded user data is transmitted
+   *        The phyRate includes FEC so, is typically higher than the dataRate.
+   * \param constellationSize the number of elements included in the QAM constellation. 
+   *
+   * Create a QAM WifiMode.
+   */
   static WifiMode CreateQam (std::string uniqueName,
-			      bool isMandatory,
+                             bool isMandatory,
 			     uint32_t bandwidth,
 			     uint32_t dataRate,
 			     uint32_t phyRate,
@@ -116,6 +164,11 @@ private:
   static WifiModeFactory *GetFactory ();
   WifiModeFactory ();
 
+  /**
+   * This is the data associated to a unique WifiMode.
+   * The integer stored in a WifiMode is in fact an index
+   * in an array of WifiModeItem objects.
+   */
   struct WifiModeItem {
     std::string uniqueUid;
     uint32_t bandwidth;

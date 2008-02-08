@@ -19,8 +19,10 @@
  */
 
 #include "mac-stations.h"
+#include "wifi-default-parameters.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
+#include "ns3/tag.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacStations");
 
@@ -42,10 +44,13 @@ public:
   virtual void ReportDataFailed (void);
   virtual void ReportRtsOk (double ctsSnr, WifiMode ctsMode, double rtsSnr);
   virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr);
-  virtual WifiMode GetDataMode (uint32_t size);
-  virtual WifiMode GetRtsMode (void);
+  virtual void ReportFinalRtsFailed (void);
+  virtual void ReportFinalDataFailed (void);
+
 private:
   virtual MacStations *GetStations (void) const;
+  virtual WifiMode DoGetDataMode (uint32_t size);
+  virtual WifiMode DoGetRtsMode (void);
   MacStations *m_stations;
 };
 
@@ -79,15 +84,22 @@ NonUnicastMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double data
 {
   NS_ASSERT (false);
 }
+void 
+NonUnicastMacStation::ReportFinalRtsFailed (void)
+{}
+void 
+NonUnicastMacStation::ReportFinalDataFailed (void)
+{}
+
 WifiMode 
-NonUnicastMacStation::GetDataMode (uint32_t size)
+NonUnicastMacStation::DoGetDataMode (uint32_t size)
 {
   WifiMode mode = m_stations->GetBasicMode (0);
   NS_LOG_DEBUG ("non-unicast size="<<size<<", mode="<<mode);
   return mode;
 }
 WifiMode 
-NonUnicastMacStation::GetRtsMode (void)
+NonUnicastMacStation::DoGetRtsMode (void)
 {
   NS_ASSERT (false);
   // theoretically, no rts for broadcast/multicast packets.
@@ -106,7 +118,8 @@ namespace ns3 {
 
 MacStations::MacStations (WifiMode defaultTxMode)
   : m_defaultTxMode (defaultTxMode),
-    m_nonUnicast (new NonUnicastMacStation (this))
+    m_nonUnicast (new NonUnicastMacStation (this)),
+    m_isLowLatency (WifiDefaultParameters::GetIsLowLatency ())
 {
   Reset ();
 }
@@ -198,9 +211,83 @@ MacStations::EndBasicModes (void) const
 {
   return m_basicModes.end ();
 }
+bool
+MacStations::IsLowLatency (void) const
+{
+  return m_isLowLatency;
+}
 
 
 } // namespace ns3
+
+/***************************************************************
+ *           Packet Mode Tagger
+ ***************************************************************/ 
+
+namespace ns3 {
+
+class TxModeTag : public Tag
+{
+public:
+  TxModeTag ();
+  TxModeTag (WifiMode rtsMode, WifiMode dataMode);
+  WifiMode GetRtsMode (void) const;
+  WifiMode GetDataMode (void) const;
+
+  static uint32_t GetUid (void);
+  void Print (std::ostream &os) const;
+  void Serialize (ns3::Buffer::Iterator start) const;
+  uint32_t Deserialize (ns3::Buffer::Iterator start);
+  uint32_t GetSerializedSize (void) const;
+private:
+  WifiMode m_rtsMode;
+  WifiMode m_dataMode;
+};
+
+TxModeTag::TxModeTag ()
+{}
+TxModeTag::TxModeTag (WifiMode rtsMode, WifiMode dataMode)
+  : m_rtsMode (rtsMode),
+    m_dataMode (dataMode)
+{}
+WifiMode 
+TxModeTag::GetRtsMode (void) const
+{
+  return m_rtsMode;
+}
+WifiMode 
+TxModeTag::GetDataMode (void) const
+{
+  return m_dataMode;
+}
+
+uint32_t 
+TxModeTag::GetUid (void)
+{
+  static uint32_t uid = Tag::AllocateUid<TxModeTag> ("ns3.wifi.TxModeTag");
+  return uid;
+}
+void 
+TxModeTag::Print (std::ostream &os) const
+{
+  os << "rts="<<m_rtsMode<<" data="<<m_dataMode;
+}
+void 
+TxModeTag::Serialize (ns3::Buffer::Iterator start) const
+{}
+uint32_t 
+TxModeTag::Deserialize (ns3::Buffer::Iterator start)
+{
+  return 0;
+}
+uint32_t 
+TxModeTag::GetSerializedSize (void) const
+{
+  return 0;
+}
+
+} // namespace ns3
+
 
 /***************************************************************
  *           MacStation below.
@@ -344,6 +431,42 @@ MacStation::GetSupportedMode (uint32_t i) const
 {
   NS_ASSERT (i < m_modes.size ());
   return m_modes[i];
+}
+void 
+MacStation::PrepareForQueue (Ptr<const Packet> packet, uint32_t fullPacketSize)
+{
+  if (GetStations ()->IsLowLatency ())
+    {
+      return;
+    }
+  TxModeTag tag = TxModeTag (DoGetRtsMode (), DoGetDataMode (fullPacketSize));
+  packet->AddTag (tag);
+}
+WifiMode 
+MacStation::GetDataMode (Ptr<const Packet> packet, uint32_t fullPacketSize)
+{
+  if (GetStations ()->IsLowLatency ())
+    {
+      return DoGetDataMode (fullPacketSize);
+    }
+  TxModeTag tag;
+  bool found;
+  found = packet->PeekTag (tag);
+  NS_ASSERT (found);
+  return tag.GetDataMode ();
+}
+WifiMode 
+MacStation::GetRtsMode (Ptr<const Packet> packet)
+{
+  if (GetStations ()->IsLowLatency ())
+    {
+      return DoGetRtsMode ();
+    }
+  TxModeTag tag;
+  bool found;
+  found = packet->PeekTag (tag);
+  NS_ASSERT (found);
+  return tag.GetRtsMode ();
 }
 
 

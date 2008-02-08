@@ -34,6 +34,8 @@ enum RateControlAlgorithm {
   CONSTANT_RATE,
   ARF,
   AARF,
+  ONOE,
+  AMRR,
   IDEAL
 };
 enum PhyModeParameter {
@@ -74,6 +76,8 @@ double GetPhyTxGainDb (void);
 double GetPhyRxGainDb (void);
 
 Ssid GetSsid (void);
+
+bool GetIsLowLatency (void);
 
 } // namespace WifiDefaultParameters
 

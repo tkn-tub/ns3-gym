@@ -296,15 +296,15 @@ public:
   void RegisterNavListener (MacLowNavListener *listener);
 
   /**
-   * \param payloadSize size of packet to send (does not include the 802.11 MAC header and checksum)
-   * \param to destination address of packet.
+   * \param packet to send (does not include the 802.11 MAC header and checksum)
+   * \param hdr header associated to the packet to send.
    * \param parameters transmission parameters of packet.
    *
    * This transmission time includes the time required for
    * the next packet transmission if one was selected.
    */
-  Time CalculateTransmissionTime (uint32_t payloadSize,
-                                  Mac48Address to,
+  Time CalculateTransmissionTime (Ptr<const Packet> packet,
+                                  WifiMacHeader const*hdr, 
                                   MacLowTransmissionParameters const&parameters) const;
 
   /**
@@ -348,16 +348,16 @@ private:
   Time GetPifs (void) const;
   Time GetAckTimeout (void) const;
   Time GetCtsTimeout (void) const;
-  uint32_t GetCurrentSize (void) const;
+  uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   Time NowUs (void) const;
   MacStation *GetStation (Mac48Address to) const;
   void ForwardDown (Ptr<const Packet> packet, WifiMacHeader const *hdr, 
                     WifiMode txMode);
-  Time CalculateOverallTxTime (uint32_t size,
-                               Mac48Address to,
+  Time CalculateOverallTxTime (Ptr<const Packet> packet,
+                               WifiMacHeader const*hdr, 
                                MacLowTransmissionParameters const &params) const;
-  WifiMode GetRtsTxMode (Mac48Address to) const;
-  WifiMode GetDataTxMode (Mac48Address to, uint32_t size) const;
+  WifiMode GetRtsTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
+  WifiMode GetDataTxMode (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   WifiMode GetCtsTxModeForRts (Mac48Address to, WifiMode rtsTxMode) const;
   WifiMode GetAckTxModeForData (Mac48Address to, WifiMode dataTxMode) const;
   Time GetCtsDuration (Mac48Address to, WifiMode rtsTxMode) const;

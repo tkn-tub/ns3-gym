@@ -78,21 +78,24 @@ public:
    * \param closeCompleted Callback invoked when the close operation is
    *        completed.
    */
-  void SetCloseCallback (Callback<void,Ptr<Socket> > closeCompleted);
+  void SetCloseCallback (Callback<void, Ptr<Socket> > closeCompleted);
 
   /**
-   * \param connectionSucceeded this callback is invoked when the connection request
-   *        initiated by the user is successfully completed. The callback is passed
-   *        back a pointer to the same socket object.
-   * \param connectionFailed this callback is invoked when the connection request
-   *        initiated by the user is unsuccessfully completed. The callback is passed
-   *        back a pointer to the same socket object. 
-   * \param halfClose XXX When exactly is this callback invoked ? If it invoked when the
-   *        other side closes the connection ? Or when I call Close ?
+   * \param connectionSucceeded this callback is invoked when the 
+   *        connection request initiated by the user is successfully 
+   *        completed. The callback is passed  back a pointer to 
+   *        the same socket object.
+   * \param connectionFailed this callback is invoked when the 
+   *        connection request initiated by the user is unsuccessfully 
+   *        completed. The callback is passed back a pointer to the 
+   *        same socket object. 
+   * \param halfClose XXX When exactly is this callback invoked? If 
+   *        it invoked when the other side closes the connection ? 
+   *        Or when I call Close ?
    */
   void SetConnectCallback (Callback<void, Ptr<Socket> > connectionSucceeded,
-                          Callback<void, Ptr<Socket> > connectionFailed,
-                          Callback<void, Ptr<Socket> > halfClose);
+                          Callback<void,  Ptr<Socket> > connectionFailed,
+                          Callback<void,  Ptr<Socket> > halfClose);
   /**
    * \brief Accept connection requests from remote hosts
    * \param connectionRequest Callback for connection request from peer. 
@@ -100,28 +103,31 @@ public:
    *        ip address and the port number of the connection originator. 
    *        This callback must return true to accept the incoming connection,
    *        false otherwise. If the connection is accepted, the 
-   *        "newConnectionCreated" callback will be invoked later to give access
-   *        to the user to the socket created to match this new connection. If the
-   *        user does not explicitely specify this callback, all incoming 
-   *        connections will be refused.
+   *        "newConnectionCreated" callback will be invoked later to 
+   *        give access to the user to the socket created to match 
+   *        this new connection. If the user does not explicitly 
+   *        specify this callback, all incoming  connections will be refused.
    * \param newConnectionCreated Callback for new connection: when a new
    *        is accepted, it is created and the corresponding socket is passed
-   *        back to the user through this callback. This user callback is passed
-   *        a pointer to the new socket, and the ip address and port number
-   *        of the connection originator.
+   *        back to the user through this callback. This user callback is 
+   *        passed a pointer to the new socket, and the ip address and 
+   *        port number of the connection originator.
    * \param closeRequested Callback for connection close request from peer.
    *        XXX: when is this callback invoked ?
    */
-  void SetAcceptCallback (Callback<bool, Ptr<Socket>, const Address &> connectionRequest,
-                                 Callback<void, Ptr<Socket>, const Address&> newConnectionCreated,
-                                 Callback<void, Ptr<Socket> > closeRequested);
+  void SetAcceptCallback (Callback<bool, Ptr<Socket>, 
+                            const Address &> connectionRequest,
+                          Callback<void, Ptr<Socket>, 
+                            const Address&> newConnectionCreated,
+                          Callback<void, Ptr<Socket> > closeRequested);
   void SetSendCallback (Callback<void, Ptr<Socket>, uint32_t> dataSent);
   /**
    * \brief Receive data
    * \param receivedData Invoked whenever new data is received.
    *
    */
-  void SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,const Address&> receivedData);
+  void SetRecvCallback (Callback<void, Ptr<Socket>, Ptr<Packet>,
+                          const Address&> receivedData);
 
   /** 
    * \param address the address to try to allocate

@@ -93,8 +93,15 @@ IdealMacStation::ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr)
   TRACE ("got cts for rts snr="<<dataSnr);
   m_lastSnr = dataSnr;
 }
+void 
+IdealMacStation::ReportFinalRtsFailed (void)
+{}
+void 
+IdealMacStation::ReportFinalDataFailed (void)
+{}
+
 WifiMode
-IdealMacStation::GetDataMode (uint32_t size)
+IdealMacStation::DoGetDataMode (uint32_t size)
 {
   // We search within the Supported rate set the mode with the 
   // highest snr threshold possible which is smaller than m_lastSnr 
@@ -115,7 +122,7 @@ IdealMacStation::GetDataMode (uint32_t size)
   return maxMode;
 }
 WifiMode
-IdealMacStation::GetRtsMode (void)
+IdealMacStation::DoGetRtsMode (void)
 {
   // We search within the Basic rate set the mode with the highest 
   // snr threshold possible which is smaller than m_lastSnr to 

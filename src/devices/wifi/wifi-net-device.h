@@ -102,10 +102,11 @@ private:
   class PhyListener;
   class NavListener;
 
-  // inherited from parent.
+  // inherited from NetDevice
   virtual bool DoNeedsArp (void) const;
   virtual Ptr<Channel> DoGetChannel (void) const;
   virtual bool SendTo (Ptr<Packet> packet, const Address &to, uint16_t protocolNumber);
+  // inherited from Object
   virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   // defined for children
   virtual void NotifyAttached (void) = 0;
@@ -119,8 +120,9 @@ protected:
   WifiNetDevice (Ptr<Node> node);
   WifiNetDevice (Ptr<Node> node, Mac48Address self);
   void DoForwardUp (Ptr<Packet> packet, const Mac48Address &from);
-  virtual void DoDispose (void);
   DcaTxop *CreateDca (uint32_t minCw, uint32_t maxCw, uint32_t aifsn) const;
+  // inherited from Object
+  virtual void DoDispose (void);
 
   Ptr<WifiChannel> m_channel;
   Ptr<WifiPhy> m_phy;
@@ -151,10 +153,12 @@ public:
   void SetSsid (Ssid ssid);
 
 protected:
+  // inherited from Object
   virtual void DoDispose (void);
 private:
   void DoConstruct (void);
   void ForwardUp (void);
+  // inherited from WifiNetDefice
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyAttached (void);
 
@@ -194,13 +198,16 @@ public:
    */
   void StartActiveAssociation (Ssid ssid);
 protected:
+  // inherited from Object
   virtual void DoDispose (void);
 private:
   void DoConstruct (void);
   void Associated (void);
   void DisAssociated (void);
+  // inherited from WifiNetDefice
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyAttached (void);
+
   Ssid m_ssid;
   DcaTxop *m_dca;
   MacHighNqsta *m_high;
@@ -229,11 +236,14 @@ public:
   void SetSsid (Ssid ssid);
   void StartBeaconing (void);
 protected:
+  // inherited from Object
   virtual void DoDispose (void);
 private:
   void DoConstruct (void);
+  // inherited from WifiNetDefice
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyAttached (void);
+
   Ssid m_ssid;
   DcaTxop *m_dca;
   DcaTxop *m_beaconDca;

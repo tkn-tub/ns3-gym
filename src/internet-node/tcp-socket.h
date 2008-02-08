@@ -131,7 +131,6 @@ private:
   
   //sequence info, reciever side
   SequenceNumber m_nextRxSequence;
-  SequenceNumber m_nextAckSequence;
 
   //history data
   UnAckData_t m_bufferedData;

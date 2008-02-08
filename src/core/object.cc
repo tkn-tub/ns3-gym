@@ -328,7 +328,7 @@ TypeIdTraceResolver::ParseForInterface (std::string path)
     }
   std::string interfaceName = element.substr (1, std::string::npos);
   TypeId interfaceId = TypeId::LookupByName (interfaceName);
-  Ptr<Object> interface = m_aggregate->QueryInterface<Object> (interfaceId);
+  Ptr<Object> interface = m_aggregate->GetObject<Object> (interfaceId);
   return interface;
 }
 void  
@@ -972,7 +972,7 @@ Object::Get (std::string name) const
 }
 
 Ptr<Object>
-Object::DoQueryInterface (TypeId tid) const
+Object::DoGetObject (TypeId tid) const
 {
   NS_ASSERT (CheckLoose ());
   const Object *currentObject = this;
@@ -1007,7 +1007,7 @@ void
 Object::NotifyConstructionCompleted (void)
 {}
 void 
-Object::AddInterface (Ptr<Object> o)
+Object::AggregateObject (Ptr<Object> o)
 {
   NS_ASSERT (!m_disposed);
   NS_ASSERT (!o->m_disposed);
@@ -1345,46 +1345,46 @@ ObjectTest::RunTests (void)
   bool result = true;
 
   Ptr<BaseA> baseA = CreateObject<BaseA> ();
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (), baseA);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::GetTypeId ()), 0);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->GetObject<BaseA> (), baseA);
+  NS_TEST_ASSERT_EQUAL (baseA->GetObject<BaseA> (DerivedA::GetTypeId ()), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->GetObject<DerivedA> (), 0);
   baseA = CreateObject<DerivedA> ();
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (), baseA);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<BaseA> (DerivedA::GetTypeId ()), baseA);
-  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedA> (), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->GetObject<BaseA> (), baseA);
+  NS_TEST_ASSERT_EQUAL (baseA->GetObject<BaseA> (DerivedA::GetTypeId ()), baseA);
+  NS_TEST_ASSERT_UNEQUAL (baseA->GetObject<DerivedA> (), 0);
 
   baseA = CreateObject<BaseA> ();
   Ptr<BaseB> baseB = CreateObject<BaseB> ();
   Ptr<BaseB> baseBCopy = baseB;
-  baseA->AddInterface (baseB);
-  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseA> (), 0);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedA> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseB> (), 0);
-  NS_TEST_ASSERT_EQUAL (baseA->QueryInterface<DerivedB> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseB> (), 0);
-  NS_TEST_ASSERT_EQUAL (baseB->QueryInterface<DerivedB> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseA> (), 0);
-  NS_TEST_ASSERT_EQUAL (baseB->QueryInterface<DerivedA> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<BaseA> (), 0);
+  baseA->AggregateObject (baseB);
+  NS_TEST_ASSERT_UNEQUAL (baseA->GetObject<BaseA> (), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->GetObject<DerivedA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseA->GetObject<BaseB> (), 0);
+  NS_TEST_ASSERT_EQUAL (baseA->GetObject<DerivedB> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->GetObject<BaseB> (), 0);
+  NS_TEST_ASSERT_EQUAL (baseB->GetObject<DerivedB> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->GetObject<BaseA> (), 0);
+  NS_TEST_ASSERT_EQUAL (baseB->GetObject<DerivedA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseBCopy->GetObject<BaseA> (), 0);
 
   baseA = CreateObject<DerivedA> ();
   baseB = CreateObject<DerivedB> ();
   baseBCopy = baseB;
-  baseA->AddInterface (baseB);
-  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<DerivedB> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseA->QueryInterface<BaseB> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<DerivedA> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseA> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<DerivedA> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseBCopy->QueryInterface<BaseA> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<DerivedB> (), 0);
-  NS_TEST_ASSERT_UNEQUAL (baseB->QueryInterface<BaseB> (), 0)
+  baseA->AggregateObject (baseB);
+  NS_TEST_ASSERT_UNEQUAL (baseA->GetObject<DerivedB> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseA->GetObject<BaseB> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->GetObject<DerivedA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->GetObject<BaseA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseBCopy->GetObject<DerivedA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseBCopy->GetObject<BaseA> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->GetObject<DerivedB> (), 0);
+  NS_TEST_ASSERT_UNEQUAL (baseB->GetObject<BaseB> (), 0)
 
   baseA = CreateObject<BaseA> ();
   baseB = CreateObject<BaseB> ();
-  baseA->AddInterface (baseB);
+  baseA->AggregateObject (baseB);
   baseA = 0;
-  baseA = baseB->QueryInterface<BaseA> ();
+  baseA = baseB->GetObject<BaseA> ();
 
   baseA = CreateObject<BaseA> ();
   baseA->TraceConnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
@@ -1400,7 +1400,7 @@ ObjectTest::RunTests (void)
   NS_TEST_ASSERT (m_baseBTrace);
   baseB->TraceDisconnect ("/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
 
-  baseA->AddInterface (baseB);
+  baseA->AggregateObject (baseB);
 
   baseA->TraceConnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
   m_baseATrace = false;
@@ -1432,7 +1432,7 @@ ObjectTest::RunTests (void)
   Ptr<DerivedA> derivedA;
   derivedA = CreateObject<DerivedA> ();
   baseB = CreateObject<BaseB> ();
-  derivedA->AddInterface (baseB);
+  derivedA->AggregateObject (baseB);
   baseB->TraceConnect ("/$DerivedA/deriveda-x", MakeCallback (&ObjectTest::DerivedATrace, this));
   baseB->TraceConnect ("/$DerivedA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
   m_derivedATrace = false;
@@ -1457,13 +1457,13 @@ ObjectTest::RunTests (void)
 
   // Test the object creation code of TypeId
   Ptr<Object> a = BaseA::GetTypeId ().CreateObject ();
-  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (), a);
-  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (DerivedA::GetTypeId ()), 0);
-  NS_TEST_ASSERT_EQUAL (a->QueryInterface<DerivedA> (), 0);
+  NS_TEST_ASSERT_EQUAL (a->GetObject<BaseA> (), a);
+  NS_TEST_ASSERT_EQUAL (a->GetObject<BaseA> (DerivedA::GetTypeId ()), 0);
+  NS_TEST_ASSERT_EQUAL (a->GetObject<DerivedA> (), 0);
   a = DerivedA::GetTypeId ().CreateObject ();
-  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (), a);
-  NS_TEST_ASSERT_EQUAL (a->QueryInterface<BaseA> (DerivedA::GetTypeId ()), a);
-  NS_TEST_ASSERT_UNEQUAL (a->QueryInterface<DerivedA> (), 0);
+  NS_TEST_ASSERT_EQUAL (a->GetObject<BaseA> (), a);
+  NS_TEST_ASSERT_EQUAL (a->GetObject<BaseA> (DerivedA::GetTypeId ()), a);
+  NS_TEST_ASSERT_UNEQUAL (a->GetObject<DerivedA> (), 0);
 
 
   return result;

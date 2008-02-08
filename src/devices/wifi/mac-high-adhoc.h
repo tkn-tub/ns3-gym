@@ -33,6 +33,13 @@ class WifiMacHeader;
 class MacStations;
 class WifiPhy;
 
+/**
+ * \brief the Adhoc state machine
+ *
+ * For now, this class is really empty but it should contain
+ * the code for the distributed generation of beacons in an adhoc 
+ * network.
+ */
 class MacHighAdhoc {
 public:
   typedef Callback<void, Ptr<Packet>, const Mac48Address &> ForwardCallback;

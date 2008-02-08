@@ -21,21 +21,25 @@
  *   - a simple adhoc state machine which does not perform any
  *     kind of beacon generation, probing, or association. This
  *     state machine is implemented by the ns3::AdhocWifiNetDevice
- *     class.
+ *     and ns3::MacHighAdhoc classes.
  *   - an active probing and association state machine which handles
  *     automatic re-association whenever too many beacons are missed
- *     is implemented by the ns3::NqstaWifiNetDevice class.
+ *     is implemented by the ns3::NqstaWifiNetDevice and 
+ *     ns3::MacHighNqsta classes.
  *   - an access point which generates periodic beacons, and which
  *     accepts every attempt to associate. This AP state machine
- *     is implemented by the ns3::NqapWifiNetDevice.
+ *     is implemented by the ns3::NqapWifiNetDevice and 
+ *     ns3::MacHighNqap classes.
  *
  * The MAC low layer is split in 3 components:
  *   - ns3::MacLow which takes care of RTS/CTS/DATA/ACK transactions.
- *   - ns3::Dcf which implements the DCF function.
+ *   - ns3::DcfManager and ns3::DcfState which implements the DCF function.
  *   - ns3::DcaTxop which handles the packet queue, packet fragmentation,
  *     and packet retransmissions if they are needed.
  *
- * The PHY layer implements a single model in ns3::WifiPhy.
+ * The PHY layer implements a single model in the ns3::WifiPhy class: the
+ * physical layer model implemented there is described fully in a paper titled
+ * "Yet Another Network Simulator", available there: http://cutebugs.net/files/wns2-yans.pdf
  *
  * It also provides a set of Rate control algorithms:
  *   - ns3::ArfMacStations (initialized from \valueref{WifiArfTimerThreshold}, and,
@@ -46,6 +50,8 @@
  *   - ns3::IdealMacStations (initialized from \valueref{WifiIdealRateControlBerThreshold})
  *   - ns3::CrMacStations (initialized from \valueref{WifiConstantDataRate}, and,
  *     \valueref{WifiConstantCtlRate}).
+ *   - ns3::OnoeMacStations
+ *   - ns3::AmrrMacStations
  *
  * The type of rate control algorithm is controlled through \valueref{WifiRateControlAlgorithm}.
  *

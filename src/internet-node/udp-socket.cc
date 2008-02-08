@@ -268,7 +268,7 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
     }
 
   uint32_t localIfIndex;
-  Ptr<Ipv4> ipv4 = m_node->QueryInterface<Ipv4> ();
+  Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
 
   //
   // If dest is sent to the limited broadcast address (all ones),
@@ -276,15 +276,19 @@ UdpSocket::DoSendTo (Ptr<Packet> p, Ipv4Address dest, uint16_t port)
   //
   if (dest.IsBroadcast ())
     {
-      NS_LOG_LOGIC ("Limited broadcast");
+      NS_LOG_LOGIC ("Limited broadcast start.");
       for (uint32_t i = 0; i < ipv4->GetNInterfaces (); i++ )
         {
           Ipv4Address addri = ipv4->GetAddress (i);
           Ipv4Mask maski = ipv4->GetNetworkMask (i);
-          m_udp->Send (p->Copy (), addri, addri.GetSubnetDirectedBroadcast (maski),
+          Ipv4Address bcast = addri.GetSubnetDirectedBroadcast (maski);
+          NS_LOG_LOGIC ("Sending one copy from " << addri << " to " << bcast
+                        << " (mask is " << maski << ")");
+          m_udp->Send (p->Copy (), addri, bcast,
                        m_endPoint->GetLocalPort (), port);
           NotifyDataSent (p->GetSize ());
         }
+      NS_LOG_LOGIC ("Limited broadcast end.");
     }
   else if (ipv4->GetIfIndexForDestination(dest, localIfIndex))
     {
@@ -386,7 +390,7 @@ UdpSocketTest::RunTests (void)
   Ptr<Node> rxNode = CreateObject<InternetNode> ();
   Ptr<PointToPointNetDevice> rxDev = CreateObject<PointToPointNetDevice> (rxNode);
   rxDev->AddQueue(CreateObject<DropTailQueue> ());
-  Ptr<Ipv4> ipv4 = rxNode->QueryInterface<Ipv4> ();
+  Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
   uint32_t netdev_idx = ipv4->AddInterface (rxDev);
   ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.1"));
   ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
@@ -396,7 +400,7 @@ UdpSocketTest::RunTests (void)
   Ptr<Node> txNode = CreateObject<InternetNode> ();
   Ptr<PointToPointNetDevice> txDev = CreateObject<PointToPointNetDevice> (txNode);
   txDev->AddQueue(CreateObject<DropTailQueue> ());
-  ipv4 = txNode->QueryInterface<Ipv4> ();
+  ipv4 = txNode->GetObject<Ipv4> ();
   netdev_idx = ipv4->AddInterface (txDev);
   ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.2"));
   ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
@@ -409,12 +413,12 @@ UdpSocketTest::RunTests (void)
 
 
   // Create the UDP sockets
-  Ptr<SocketFactory> rxSocketFactory = rxNode->QueryInterface<Udp> ();
+  Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<Udp> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
   NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.2"), 1234)), 0);
   rxSocket->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket, this));
 
-  Ptr<SocketFactory> txSocketFactory = txNode->QueryInterface<Udp> ();
+  Ptr<SocketFactory> txSocketFactory = txNode->GetObject<Udp> ();
   Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
 
   // ------ Now the tests ------------

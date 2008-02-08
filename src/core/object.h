@@ -390,13 +390,13 @@ public:
    * \returns a pointer to the requested interface or zero if it could not be found.
    */
   template <typename T>
-  Ptr<T> QueryInterface (void) const;
+  Ptr<T> GetObject (void) const;
   /**
    * \param tid the interface id of the requested interface
    * \returns a pointer to the requested interface or zero if it could not be found.
    */
   template <typename T>
-  Ptr<T> QueryInterface (TypeId tid) const;
+  Ptr<T> GetObject (TypeId tid) const;
   /**
    * Run the DoDispose methods of this object and all the
    * objects aggregated to it.
@@ -410,10 +410,10 @@ public:
    * \param other another object pointer
    *
    * This method aggregates the two objects together: after this
-   * method returns, it becomes possible to call QueryInterface
+   * method returns, it becomes possible to call GetObject
    * on one to get the other, and vice-versa. 
    */
-  void AddInterface (Ptr<Object> other);
+  void AggregateObject (Ptr<Object> other);
 
   /**
    * \param path the path to match for the callback
@@ -471,7 +471,7 @@ private:
 
 
   bool DoSet (Ptr<const ParamSpec> spec, PValue value);
-  Ptr<Object> DoQueryInterface (TypeId tid) const;
+  Ptr<Object> DoGetObject (TypeId tid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
                          TraceResolver::SourceCollection *collection) const;
   void DoTraceAll (std::ostream &os, const TraceContext &context) const;
@@ -627,9 +627,9 @@ Object::Unref (void) const
 
 template <typename T>
 Ptr<T> 
-Object::QueryInterface () const
+Object::GetObject () const
 {
-  Ptr<Object> found = DoQueryInterface (T::GetTypeId ());
+  Ptr<Object> found = DoGetObject (T::GetTypeId ());
   if (found != 0)
     {
       return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));
@@ -639,9 +639,9 @@ Object::QueryInterface () const
 
 template <typename T>
 Ptr<T> 
-Object::QueryInterface (TypeId tid) const
+Object::GetObject (TypeId tid) const
 {
-  Ptr<Object> found = DoQueryInterface (tid);
+  Ptr<Object> found = DoGetObject (tid);
   if (found != 0)
     {
       return Ptr<T> (dynamic_cast<T *> (PeekPointer (found)));

@@ -167,13 +167,14 @@ AgentImpl::AgentImpl (Ptr<Node> node)
   m_tcTimer (Timer::CANCEL_ON_DESTROY),
   m_midTimer (Timer::CANCEL_ON_DESTROY)
 {
+  NS_LOG_DEBUG ("Created olsr::AgentImpl");
   m_helloTimer.SetFunction (&AgentImpl::HelloTimerExpire, this);
   m_tcTimer.SetFunction (&AgentImpl::TcTimerExpire, this);
   m_midTimer.SetFunction (&AgentImpl::MidTimerExpire, this);
   m_queuedMessagesTimer.SetFunction (&AgentImpl::SendQueuedMessages, this);
 
   // Aggregate with the Node, so that OLSR dies when the node is destroyed.
-  node->AddInterface (this);
+  node->AggregateObject (this);
 
   m_packetSequenceNumber = OLSR_MAX_SEQ_NUM;
   m_messageSequenceNumber = OLSR_MAX_SEQ_NUM;
@@ -186,10 +187,10 @@ AgentImpl::AgentImpl (Ptr<Node> node)
 
   m_linkTupleTimerFirstTime = true;
 
-  m_ipv4 = node->QueryInterface<Ipv4> ();
+  m_ipv4 = node->GetObject<Ipv4> ();
   NS_ASSERT (m_ipv4);
 
-  Ptr<SocketFactory> socketFactory = node->QueryInterface<SocketFactory> (Udp::GetTypeId ());
+  Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (Udp::GetTypeId ());
 
   m_receiveSocket = socketFactory->CreateSocket ();
   if (m_receiveSocket->Bind (InetSocketAddress (OLSR_PORT_NUMBER)))
@@ -345,6 +346,18 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
       DuplicateTuple *duplicated = m_state.FindDuplicateTuple
         (messageHeader.GetOriginatorAddress (),
          messageHeader.GetMessageSequenceNumber ());
+
+      // Get main address of the peer, which may be different from the packet source address
+      const IfaceAssocTuple *ifaceAssoc = m_state.FindIfaceAssocTuple (inetSourceAddr.GetIpv4 ());
+      Ipv4Address peerMainAddress;
+      if (ifaceAssoc != NULL)
+        {
+          peerMainAddress = ifaceAssoc->mainAddr;
+        }
+      else
+        {
+          peerMainAddress = inetSourceAddr.GetIpv4 () ;
+        }
       
       if (duplicated == NULL)
         {
@@ -352,17 +365,17 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
             {
             case olsr::MessageHeader::HELLO_MESSAGE:
               NS_LOG_DEBUG ("OLSR node received HELLO message of size " << messageHeader.GetSerializedSize ());
-              ProcessHello (messageHeader, m_mainAddress, inetSourceAddr.GetIpv4 ());
+              ProcessHello (messageHeader, m_mainAddress, peerMainAddress);
               break;
 
             case olsr::MessageHeader::TC_MESSAGE:
               NS_LOG_DEBUG ("OLSR node received TC message of size " << messageHeader.GetSerializedSize ());
-              ProcessTc (messageHeader, inetSourceAddr.GetIpv4 ());
+              ProcessTc (messageHeader, peerMainAddress);
               break;
 
             case olsr::MessageHeader::MID_MESSAGE:
               NS_LOG_DEBUG ("OLSR node received MID message of size " << messageHeader.GetSerializedSize ());
-              ProcessMid (messageHeader, inetSourceAddr.GetIpv4 ());
+              ProcessMid (messageHeader, peerMainAddress);
               break;
 
             default:
@@ -395,7 +408,7 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
           // Remaining messages are also forwarded using the default algorithm.
           if (messageHeader.GetMessageType ()  != olsr::MessageHeader::HELLO_MESSAGE)
             ForwardDefault (messageHeader, duplicated,
-                            m_mainAddress, inetSourceAddr.GetIpv4 ());
+                            m_mainAddress, peerMainAddress);
         }
 	
     }
@@ -775,13 +788,13 @@ AgentImpl::RoutingTableComputation ()
         {
           RoutingTableEntry entry;
           bool foundEntry = m_routingTable->Lookup (nb2hop_tuple.neighborMainAddr, entry);
-          if (!foundEntry)
-            NS_FATAL_ERROR ("m_routingTable->Lookup failure");
-
-          m_routingTable->AddEntry (nb2hop_tuple.twoHopNeighborAddr,
-                                    entry.nextAddr,
-                                    entry.interface,
-                                    2);
+          if (foundEntry)
+            {
+              m_routingTable->AddEntry (nb2hop_tuple.twoHopNeighborAddr,
+                                        entry.nextAddr,
+                                        entry.interface,
+                                        2);
+            }
         }
     }
   
@@ -1239,7 +1252,7 @@ AgentImpl::SendHello ()
             }
           if (!ok)
             {
-              NS_ASSERT (!"Link tuple has no corresponding neighbor tuple\n");
+              continue;
             }
         }
 

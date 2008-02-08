@@ -62,17 +62,17 @@ Ns2MobilityHelper::GetMobilityModel (std::string idString, const ObjectStore &st
     {
       return 0;
     }
-  Ptr<StaticSpeedMobilityModel> model = object->QueryInterface<StaticSpeedMobilityModel> ();
+  Ptr<StaticSpeedMobilityModel> model = object->GetObject<StaticSpeedMobilityModel> ();
   if (model == 0)
     {
       model = CreateObject<StaticSpeedMobilityModel> ();
-      object->AddInterface (model);
+      object->AggregateObject (model);
     }
-  Ptr<MobilityModelNotifier> notifier = object->QueryInterface<MobilityModelNotifier> ();
+  Ptr<MobilityModelNotifier> notifier = object->GetObject<MobilityModelNotifier> ();
   if (notifier == 0)
     {
       notifier = CreateObject<MobilityModelNotifier> ();
-      object->AddInterface (notifier);
+      object->AggregateObject (notifier);
     }
   return model;
 }

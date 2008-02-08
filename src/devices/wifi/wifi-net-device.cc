@@ -40,6 +40,8 @@
 #include "aarf-mac-stations.h"
 #include "ideal-mac-stations.h"
 #include "cr-mac-stations.h"
+#include "onoe-mac-stations.h"
+#include "amrr-mac-stations.h"
 
 namespace ns3 {
 
@@ -178,7 +180,7 @@ WifiNetDevice::Construct (void)
   EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
 
   // the physical layer.
-  m_phy = CreateObject<WifiPhy> (this);
+  m_phy = Create<WifiPhy> (this);
 
   // the rate control algorithm
   switch (WifiDefaultParameters::GetRateControlAlgorithm ()) {
@@ -210,6 +212,12 @@ WifiNetDevice::Construct (void)
         ideal->AddModeSnrThreshold (mode, m_phy->CalculateSnr (mode, ber));
       }
     m_stations = ideal;
+  } break;
+  case WifiDefaultParameters::ONOE: {
+    m_stations = new OnoeMacStations (m_phy->GetMode (0));
+  } break;
+  case WifiDefaultParameters::AMRR: {
+    m_stations = new AmrrMacStations (m_phy->GetMode (0));
   } break;
   default:
     // NOTREACHED
@@ -264,6 +272,7 @@ WifiNetDevice::CreateDca (uint32_t minCw, uint32_t maxCw, uint32_t aifsn) const
   dca->SetParameters (m_parameters);
   dca->SetTxMiddle (m_txMiddle);
   dca->SetLow (m_low);
+  dca->SetStations (m_stations);
   dca->SetMaxQueueSize (400);
   dca->SetMaxQueueDelay (Seconds (10));
   return dca;

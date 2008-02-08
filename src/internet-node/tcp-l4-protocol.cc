@@ -450,7 +450,7 @@ TcpL4Protocol::Send (Ptr<Packet> packet,
   packet->AddHeader (tcpHeader);
 
   Ptr<Ipv4L3Protocol> ipv4 = 
-    m_node->QueryInterface<Ipv4L3Protocol> ();
+    m_node->GetObject<Ipv4L3Protocol> ();
   if (ipv4 != 0)
     {
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER);
@@ -472,7 +472,7 @@ TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
   packet->AddHeader (outgoingHeader);
 
   Ptr<Ipv4L3Protocol> ipv4 = 
-    m_node->QueryInterface<Ipv4L3Protocol> ();
+    m_node->GetObject<Ipv4L3Protocol> ();
   if (ipv4 != 0)
     {
       ipv4->Send (packet, saddr, daddr, PROT_NUMBER);

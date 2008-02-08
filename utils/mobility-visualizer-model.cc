@@ -49,7 +49,7 @@ Sample ()
   for (NodeList::Iterator nodeIter = NodeList::Begin (); nodeIter != NodeList::End (); nodeIter++)
     {
       Ptr<Node> node = *nodeIter;
-      Ptr<MobilityModel> mobility = node->QueryInterface<MobilityModel> ();
+      Ptr<MobilityModel> mobility = node->GetObject<MobilityModel> ();
       Vector pos = mobility->GetPosition ();
       Vector vel = mobility->GetVelocity ();
 
@@ -101,6 +101,8 @@ int model_init (int argc, char *argv[], double *x1, double *y1, double *x2, doub
   mobility.Layout (NodeList::Begin (), NodeList::End ());
 
   Simulator::Schedule (g_sampleInterval, Sample);
+
+  // XXX: The following is not really going to work with the params.
 
   if (mobility.GetMobilityModelType () == "RandomWalk2dMobilityModel")
     {

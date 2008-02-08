@@ -173,9 +173,9 @@ int main (int argc, char *argv[])
   PointToPointTopology::AddIpv4Routes(n0, n1, channel0);
   PointToPointTopology::AddIpv4Routes(n1, n2, channel1);
   Ptr<Ipv4> ipv4;
-  ipv4 = n0->QueryInterface<Ipv4> ();
+  ipv4 = n0->GetObject<Ipv4> ();
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.3.2"), 1);
-  ipv4 = n2->QueryInterface<Ipv4> ();
+  ipv4 = n2->GetObject<Ipv4> ();
   ipv4->SetDefaultRoute (Ipv4Address ("10.1.2.1"), 1);
 
 
@@ -191,7 +191,7 @@ int main (int argc, char *argv[])
   uint16_t servPort = 50000;
 
   Ptr<SocketFactory> socketFactory = 
-    n0->QueryInterface<SocketFactory> ();
+    n0->GetObject<SocketFactory> ();
   Ptr<Socket> localSocket = socketFactory->CreateSocket ();
   localSocket->Bind ();
 
