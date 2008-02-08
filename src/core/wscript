@@ -60,6 +60,7 @@ def build(bld):
         'uint-value.cc',
         'enum-value.cc',
         'fp-value.cc',
+        'object-factory.cc',
         ]
 
     if sys.platform == 'win32':
@@ -110,5 +111,6 @@ def build(bld):
         'uint-value.h',
         'fp-value.h',
         'enum-value.h',
+        'object-factory.h',
         ]
 
