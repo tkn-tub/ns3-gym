@@ -22,6 +22,7 @@ public:
   virtual PValue Copy (void) const = 0;
   virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const = 0;
   virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec) = 0;
+  virtual bool ConvertFrom (PValue value, Ptr<const ParamSpec> spec);
 private:
   friend class PValue;
   uint32_t m_count;
@@ -38,6 +39,7 @@ public:
   PValue Copy (void) const;
   std::string SerializeToString (Ptr<const ParamSpec> spec) const;
   bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+  bool ConvertFrom (PValue value, Ptr<const ParamSpec> spec);
 
   template <typename T>
   static PValue Create (void);
@@ -52,6 +54,8 @@ public:
   template <typename T>
   operator Ptr<T> ();
 
+  PValue (const char *value);
+  PValue (std::string value);
 private:
   PValue (Value *value);
   Value *m_value;
@@ -96,6 +100,29 @@ MakePtrParamSpec (Ptr<U> (T::*getter) (void) const);
 } // namespace ns3
 
 namespace ns3 {
+
+/********************************************************
+ *   A class used to hold std::string values.
+ ********************************************************/
+
+class StringValue : public Value
+{
+public:
+  StringValue (const char *value);
+  StringValue (std::string value);
+  void Set (std::string value);
+  std::string Get (void) const;
+
+  virtual PValue Copy (void) const;
+  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+
+  StringValue (PValue value);
+  operator PValue () const;
+private:
+  std::string m_value;
+};
+
 
 /********************************************************
  *   The class used to access the pointer stored in a

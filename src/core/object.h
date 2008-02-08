@@ -294,12 +294,9 @@ public:
    * value of that parameter. If any of these checks fails,
    * the program terminates with a message.
    */
-  bool Set (std::string name, std::string value);
   bool Set (std::string name, PValue value);
 
-  void SetWithTid (TypeId tid, std::string name, std::string value);
   void SetWithTid (TypeId tid, std::string name, PValue value);
-  void SetWithTid (TypeId tid, uint32_t position, std::string value);
   void SetWithTid (TypeId tid, uint32_t position, PValue value);
 
   /**
@@ -334,7 +331,6 @@ private:
 
 
   bool DoSet (Ptr<const ParamSpec> spec, PValue param);
-  bool DoSet (Ptr<const ParamSpec> spec, std::string value);
   void DoSetOne (Ptr<const ParamSpec> spec, PValue param);
   std::string LookupParameterFullNameByParamSpec (Ptr<const ParamSpec> spec) const;
 
@@ -360,7 +356,6 @@ public:
    *
    * Set a single parameter.
    */
-  bool Set (std::string name, std::string value);
   bool Set (std::string name, PValue value);
   /**
    * \param name the name of the parameter to read
@@ -475,6 +470,7 @@ private:
   friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 
+  bool DoSet (Ptr<const ParamSpec> spec, PValue value);
   Ptr<Object> DoQueryInterface (TypeId tid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
                          TraceResolver::SourceCollection *collection) const;
@@ -738,18 +734,6 @@ template <typename T>
 Ptr<T> 
 CreateObjectWith (std::string n1, PValue v1,
                   std::string n2 = "", PValue v2 = PValue ())
-              
-{
-  Parameters parameters;
-  parameters.SetWithTid (T::GetTypeId (), n1, v1);
-  parameters.SetWithTid (T::GetTypeId (), n2, v2);
-  return CreateObject<T> (parameters);
-}
-
-template <typename T>
-Ptr<T> 
-CreateObjectWith (std::string n1, std::string v1,
-                  std::string n2 = "", std::string v2 = "")
               
 {
   Parameters parameters;

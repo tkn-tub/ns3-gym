@@ -1,5 +1,6 @@
 #include "value.h"
 #include "log.h"
+#include "fatal-error.h"
 #include <sstream>
 
 NS_LOG_COMPONENT_DEFINE ("Value");
@@ -19,6 +20,11 @@ Value::operator = (const Value &o)
 }
 Value::~Value ()
 {}
+bool 
+Value::ConvertFrom (PValue value, Ptr<const ParamSpec> spec)
+{
+  return false;
+}
 
 PValue::PValue ()
   : m_value (0)
@@ -90,6 +96,24 @@ PValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
 {
   return m_value->DeserializeFromString (value, spec);
 }
+bool 
+PValue::ConvertFrom (PValue value, Ptr<const ParamSpec> spec)
+{
+  const StringValue *str = value.DynCast<const StringValue *> ();
+  if (str == 0)
+    {
+      return false;
+    }
+  return DeserializeFromString (str->Get (), spec);
+}
+
+PValue::PValue (const char *value)
+  : m_value (new StringValue (value))
+{}
+PValue::PValue (std::string value)
+  : m_value (new StringValue (value))
+{}
+
 
 ParamSpec::ParamSpec ()
   : m_count (1)
@@ -110,6 +134,54 @@ ParamSpec::Unref (void) const
 }
 ParamSpec::~ParamSpec ()
 {}
+
+
+StringValue::StringValue (const char *value)
+  : m_value (value)
+{}
+StringValue::StringValue (std::string value)
+  : m_value (value)
+{}
+void 
+StringValue::Set (std::string value)
+{
+  m_value = value;
+}
+std::string 
+StringValue::Get (void) const
+{
+  return m_value;
+}
+PValue 
+StringValue::Copy (void) const
+{
+  return PValue::Create<StringValue> (*this);
+}
+std::string 
+StringValue::SerializeToString (Ptr<const ParamSpec> spec) const
+{
+  return m_value;
+}
+bool 
+StringValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+{
+  m_value = value;
+  return true;
+}
+StringValue::StringValue (PValue value)
+{
+  const StringValue *v = value.DynCast<const StringValue *> ();
+  if (v == 0)
+    {
+      NS_FATAL_ERROR ("Expected value of type String.");
+    }
+  m_value = v->Get ();
+}
+StringValue::operator PValue () const
+{
+  return PValue::Create<StringValue> (*this);
+}
+
 
 std::string 
 PtrValueBase::SerializeToString (Ptr<const ParamSpec> spec) const

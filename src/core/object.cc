@@ -643,33 +643,11 @@ Parameters::Set (std::string name, PValue value)
   bool ok = DoSet (info.spec, value);
   return ok;
 }
-bool 
-Parameters::Set (std::string name, std::string value)
-{
-  struct TypeId::ParameterInfo info;
-  TypeId::LookupParameterByFullName (name, &info);
-  bool ok = DoSet (info.spec,value);
-  return ok;
-}
-void 
-Parameters::SetWithTid (TypeId tid, std::string name, std::string value)
-{
-  struct TypeId::ParameterInfo info;
-  tid.LookupParameterByName (name, &info);
-  DoSet (info.spec, value);
-}
 void 
 Parameters::SetWithTid (TypeId tid, std::string name, PValue value)
 {
   struct TypeId::ParameterInfo info;
   tid.LookupParameterByName (name, &info);
-  DoSet (info.spec, value);
-}
-void 
-Parameters::SetWithTid (TypeId tid, uint32_t position, std::string value)
-{
-  struct TypeId::ParameterInfo info;
-  tid.LookupParameterByPosition (position, &info);
   DoSet (info.spec, value);
 }
 void 
@@ -709,30 +687,14 @@ Parameters::DoSet (Ptr<const ParamSpec> spec, PValue value)
   bool ok = spec->Check (value);
   if (!ok)
     {
-      return false;
+      PValue v = spec->CreateValue ();
+      ok = v.ConvertFrom (value, spec);
+      if (!ok)
+        {
+          return false;
+        }
     }
   DoSetOne (spec, value);
-  return true;
-}
-bool
-Parameters::DoSet (Ptr<const ParamSpec> spec, std::string value)
-{
-  if (spec == 0)
-    {
-      return false;
-    }
-  PValue v = spec->CreateValue ();
-  bool ok = v.DeserializeFromString (value, spec);
-  if (!ok)
-    {
-      return false;
-    }
-  ok = spec->Check (v);
-  if (!ok)
-    {
-      return false;
-    }
-  DoSetOne (spec, v);
   return true;
 }
 void 
@@ -894,7 +856,7 @@ Object::Construct (const Parameters &parameters)
             if (j->spec == paramSpec)
               {
                 // We have a matching parameter value.
-                paramSpec->Set (this, j->value);
+                DoSet (paramSpec, j->value);
                 NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                               tid.GetParameterName (i)<<"\"");
                 found = true;
@@ -910,7 +872,7 @@ Object::Construct (const Parameters &parameters)
                 if (j->spec == paramSpec)
                   {
                     // We have a matching parameter value.
-                    paramSpec->Set (this, j->value);
+                    DoSet (paramSpec, j->value);
                     NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                                   tid.GetParameterName (i)<<"\" from global");
                     found = true;
@@ -932,6 +894,28 @@ Object::Construct (const Parameters &parameters)
   NotifyConstructionCompleted ();
 }
 bool
+Object::DoSet (Ptr<const ParamSpec> spec, PValue value)
+{
+  bool ok = spec->Check (value);
+  if (!ok)
+    {
+      PValue v = spec->CreateValue ();
+      ok = v.ConvertFrom (value, spec);
+      if (!ok)
+        {
+          return false;
+        }
+      value = v;
+      ok = spec->Check (value);
+      if (!ok)
+        {
+          return false;
+        }
+    }
+  ok = spec->Set (this, value);
+  return ok;
+}
+bool
 Object::Set (std::string name, PValue value)
 {
   struct TypeId::ParameterInfo info;
@@ -943,39 +927,7 @@ Object::Set (std::string name, PValue value)
     {
       return false;
     }
-  bool ok = info.spec->Check (value);
-  if (!ok)
-    {
-      return false;
-    }
-  ok = info.spec->Set (this, value);
-  return ok;
-}
-bool
-Object::Set (std::string name, std::string value)
-{
-  struct TypeId::ParameterInfo info;
-  if (!m_tid.LookupParameterByName (name, &info))
-    {
-      return false;
-    }
-  if (!(info.flags & TypeId::PARAM_SET))
-    {
-      return false;
-    }
-  PValue v = info.spec->CreateValue ();
-  bool ok = v.DeserializeFromString (value, info.spec);
-  if (!ok)
-    {
-      return false;
-    }
-  ok = info.spec->Check (v);
-  if (!ok)
-    {
-      return false;
-    }
-  ok = info.spec->Set (this, v);
-  return ok;
+  return DoSet (info.spec, value);
 }
 bool 
 Object::Get (std::string name, std::string &value) const
