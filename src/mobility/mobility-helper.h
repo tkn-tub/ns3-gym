@@ -9,6 +9,7 @@
 namespace ns3 {
 
 class PositionAllocator;
+class MobilityModel;
 
 class MobilityHelper
 {
@@ -42,6 +43,9 @@ public:
 			 std::string n8 = "", PValue v8 = PValue (),
 			 std::string n9 = "", PValue v9 = PValue ());
 
+  void PushReferenceMobilityModel (Ptr<Object> reference);
+  void PopReferenceMobilityModel (void);
+
   std::string GetMobilityModelType (void) const;
 
   template <typename T>
@@ -49,6 +53,7 @@ public:
 private:
   void Layout (const std::vector<Ptr<Object> > &objects);
 
+  std::vector<Ptr<MobilityModel> > m_mobilityStack;
   bool m_notifierEnabled;
   ObjectFactory m_mobility;
   Ptr<PositionAllocator> m_position;

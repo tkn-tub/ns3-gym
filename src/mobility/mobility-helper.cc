@@ -2,6 +2,7 @@
 #include "mobility-model.h"
 #include "mobility-model-notifier.h"
 #include "position-allocator.h"
+#include "hierarchical-mobility-model.h"
 
 namespace ns3 {
 
@@ -73,6 +74,19 @@ MobilityHelper::SetMobilityModel (std::string type,
   m_mobility.Set (n9, v9);
 }
 
+void 
+MobilityHelper::PushReferenceMobilityModel (Ptr<Object> reference)
+{
+  Ptr<MobilityModel> mobility = reference->QueryInterface<MobilityModel> ();
+  m_mobilityStack.push_back (mobility);
+}
+void 
+MobilityHelper::PopReferenceMobilityModel (void)
+{
+  m_mobilityStack.pop_back ();
+}
+
+
 std::string 
 MobilityHelper::GetMobilityModelType (void) const
 {
@@ -94,7 +108,19 @@ MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
 	      NS_FATAL_ERROR ("The requested mobility model is not a mobility model: \""<< 
 			      m_mobility.GetTypeId ().GetName ()<<"\"");
 	    }
-	  object->AddInterface (model);
+	  if (m_mobilityStack.empty ())
+	    {
+	      object->AddInterface (model);
+	    }
+	  else
+	    {
+	      // we need to setup a hierarchical mobility model
+	      Ptr<MobilityModel> parent = m_mobilityStack.back ();
+	      Ptr<MobilityModel> hierarchical = 
+		CreateObjectWith<HierarchicalMobilityModel> ("child", model,
+							     "parent", parent);
+	      object->AddInterface (hierarchical);
+	    }
 	}
       Vector position = m_position->GetNext ();
       model->SetPosition (position);
