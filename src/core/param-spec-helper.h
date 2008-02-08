@@ -7,11 +7,11 @@ template <typename T, typename U, typename V>
 Ptr<ParamSpec>
 MakeMemberVariableParamSpec (U T::*memberVariable, V initialValue);
 
-template <typename T, typename U, typename V>
+template <typename T, typename U, typename V, typename W>
 Ptr<ParamSpec>
 MakeMemberMethodParamSpec (void (T::*setter) (U), 
-			   U (T::*getter) (void) const, 
-			   V initialValue);
+			   V (T::*getter) (void) const, 
+			   W initialValue);
 
 
 } // namespace ns3
