@@ -362,6 +362,15 @@ TimeValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
   return false;
 }
 
+TimeValue::TimeValue (PValue value)
+  : m_time (value)
+{}
+
+TimeValue::operator PValue () const
+{
+  return m_time;
+}
+
 
 /*
  * The timestep value passed to this function must be of the precision
