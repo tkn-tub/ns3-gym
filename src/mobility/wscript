@@ -16,7 +16,7 @@ def build(bld):
         'random-waypoint-mobility-model.cc',
         'random-walk-2d-mobility-model.cc',
         'random-direction-2d-mobility-model.cc',
-        'ns2-mobility-file-topology.cc',
+        'ns2-mobility-helper.cc',
         'mobility-helper.cc',
         ]
 
@@ -35,6 +35,6 @@ def build(bld):
         'random-waypoint-mobility-model.h',
         'random-walk-2d-mobility-model.h',
         'random-direction-2d-mobility-model.h',
-        'ns2-mobility-file-topology.h',
+        'ns2-mobility-helper.h',
         'mobility-helper.h',
         ]
