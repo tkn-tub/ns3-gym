@@ -365,6 +365,10 @@ TypeIdTraceResolver::TraceAll (std::ostream &os, const TraceContext &context)
  *         The TypeId class
  *********************************************************************/
 
+TypeId::TypeId ()
+  : m_tid (0)
+{}
+
 TypeId::TypeId (std::string name)
 {
   uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);

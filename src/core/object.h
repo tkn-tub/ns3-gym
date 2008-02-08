@@ -233,6 +233,8 @@ public:
                        uint32_t flags,
                        Ptr<const ParamSpec> spec);
 
+  // construct an invalid TypeId.
+  TypeId ();
   ~TypeId ();
 private:
   friend class Object;
