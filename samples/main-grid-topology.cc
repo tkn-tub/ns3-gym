@@ -1,10 +1,13 @@
 /* -*-  Mode: C++; c-file-style: "gnu"; indent-tabs-mode:nil; -*- */
 
 #include "ns3/ptr.h"
-#include "ns3/grid-topology.h"
-#include "ns3/static-mobility-model.h"
-#include "ns3/internet-node.h"
+#include "ns3/node.h"
 #include "ns3/command-line.h"
+#include "ns3/mobility-model.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/uint-value.h"
+#include "ns3/fp-value.h"
+#include "ns3/enum-value.h"
 
 using namespace ns3;
 
@@ -17,22 +20,30 @@ int main (int argc, char *argv[])
   // create an array of empty nodes for testing purposes 
   for (uint32_t i = 0; i < 120; i++)
     {
-      nodes.push_back (CreateObject<InternetNode> ());
+      nodes.push_back (CreateObject<Node> ());
     }
 
+  MobilityHelper mobility;
   // setup the grid itself: objects are layed out
   // started from (-100,-100) with 20 objects per row, 
   // the x interval between each object is 5 meters
   // and the y interval between each object is 20 meters
-  GridTopology grid (-100, -100, 20, 5, 20);
-
+  mobility.SetPositionAllocator ("GridPositionAllocator",
+                                 "MinX", FpValue (-100.0),
+                                 "MinY", FpValue (-100.0),
+                                 "DeltaX", FpValue (5.0),
+                                 "DeltaY", FpValue (20.0),
+                                 "GridWidth", UintValue (20),
+                                 "LayoutType", "RowFirst");
   // each object will be attached a static position.
-  grid.SetMobilityModel (StaticMobilityModel::GetTypeId ());
+  // i.e., once set by the "position allocator", the
+  // position will never change.
+  mobility.SetMobilityModel ("StaticMobilityModel");
 
   // finalize the setup by attaching to each object
   // in the input array a position and initializing
   // this position with the calculated coordinates.
-  grid.LayoutRowFirst (nodes.begin (), nodes.end ());
+  mobility.Layout (nodes.begin (), nodes.end ());
 
   // iterate our nodes and print their position.
   for (std::vector<Ptr<Object> >::const_iterator j = nodes.begin ();

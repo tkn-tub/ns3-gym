@@ -4,12 +4,10 @@ def build(bld):
     mobility = bld.create_ns3_module('mobility', ['core', 'simulator'])
     mobility.source = [
         'vector.cc',
-        'grid-topology.cc',
         'hierarchical-mobility-model.cc',
         'mobility-model.cc',
         'mobility-model-notifier.cc',
-        'random-position.cc',
-        'random-topology.cc',
+        'position-allocator.cc',
         'rectangle.cc',
         'rectangle-default-value.cc',
         'static-mobility-model.cc',
@@ -19,17 +17,16 @@ def build(bld):
         'random-walk-2d-mobility-model.cc',
         'random-direction-2d-mobility-model.cc',
         'ns2-mobility-file-topology.cc',
+        'mobility-helper.cc',
         ]
 
     headers = bld.create_obj('ns3header')
     headers.source = [
         'vector.h',
-        'grid-topology.h',
         'hierarchical-mobility-model.h',
         'mobility-model.h',
         'mobility-model-notifier.h',
-        'random-position.h',
-        'random-topology.h',
+        'position-allocator.h',
         'rectangle.h',
         'rectangle-default-value.h',
         'static-mobility-model.h',
@@ -39,4 +36,5 @@ def build(bld):
         'random-walk-2d-mobility-model.h',
         'random-direction-2d-mobility-model.h',
         'ns2-mobility-file-topology.h',
+        'mobility-helper.h',
         ]

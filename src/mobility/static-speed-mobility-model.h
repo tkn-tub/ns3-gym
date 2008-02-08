@@ -41,19 +41,6 @@ public:
    * speed (0,0,0).
    */
   StaticSpeedMobilityModel ();
-  /**
-   * Create a position located at coordinates (x,y,z) with
-   * speed (0,0,0).
-   */
-  StaticSpeedMobilityModel (const Vector &position);
-  /**
-   *
-   * Create a position located at coordinates (x,y,z) with
-   * speed (dx,dy,dz).
-   * Unit is meters and meters/s
-   */
-  StaticSpeedMobilityModel (const Vector &position,
-                            const Vector &speed);
   virtual ~StaticSpeedMobilityModel ();
 
   /**

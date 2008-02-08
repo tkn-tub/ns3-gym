@@ -27,7 +27,18 @@ TypeId
 MobilityModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("MobilityModel")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddParameter ("position", "The current position of the mobility model.",
+                   TypeId::PARAM_SGC,
+                   MakeVectorParamSpec (&MobilityModel::SetPosition,
+                                        &MobilityModel::GetPosition,
+                                        Vector (0.0, 0.0, 0.0)))
+    .AddParameter ("velocity", "The current velocity of the mobility model.",
+                   TypeId::PARAM_GET,
+                   MakeVectorParamSpec (&MobilityModel::GetVelocity,
+                                        Vector (0.0, 0.0, 0.0) // ignored initial value.
+                                        ))
+    ;
   return tid;
 }
 

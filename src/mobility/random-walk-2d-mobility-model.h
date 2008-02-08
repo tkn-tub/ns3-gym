@@ -33,72 +33,6 @@ namespace ns3 {
 
 
 /**
- * \brief parameters to control a random walk 2d model
- *
- * A single parameter object can be shared by multiple random
- * walk models.
- */
-class RandomWalk2dMobilityModelParameters : public Object
-{
- public:
-  /**
-   * Instantiate a set of RandomWalk parameters initialized
-   * with construction values from \valueref{RandomWalk2dMode},
-   * \valueref{RandomWalk2dDistance}, \valueref{RandomWalk2dTime},
-   * \valueref{RandomWalk2dSpeed}, \valueref{RandomWalk2dDirection},
-   * and, \valueref{RandomWalk2dBounds}.
-   */
-  RandomWalk2dMobilityModelParameters ();
-  virtual ~RandomWalk2dMobilityModelParameters ();
-  /**
-   * \param speed the random variable used to pick a new
-   *        speed when the direction is changed.
-   *
-   */
-  void SetSpeed (const RandomVariable &speed);
-  /**
-   * \param direction the random variable used to pick a new
-   *        direction.
-   */
-  void SetDirection (const RandomVariable &direction);
-  /**
-   * \param distance the distance before a direction change
-   *
-   * Unit is meters.
-   * "time" mode is incompatible with "distance" mode.
-   */
-  void SetModeDistance (double distance);
-  /**
-   * \param time the delay before a direction change.
-   *
-   * "time" mode is incompatible with "distance" mode.
-   */
-  void SetModeTime (Time time);
-
-  /**
-   * \param bounds the bounds of the random walk
-   */
-  void SetBounds (const Rectangle &bounds);
-
-
-  // needed public for internal default value code.
-  enum Mode  {
-    MODE_DISTANCE,
-    MODE_TIME
-  };
- private:
-  friend class RandomWalk2dMobilityModel;
-  static Ptr<RandomWalk2dMobilityModelParameters> GetCurrent (void);
-
-  enum Mode m_mode;
-  double m_modeDistance;
-  Time m_modeTime;
-  RandomVariable m_speed;
-  RandomVariable m_direction;
-  Rectangle m_bounds;
-};
-
-/**
  * \brief a 2D random walk position model
  *
  * Each instance moves with a speed and direction choosen at random
@@ -116,6 +50,12 @@ class RandomWalk2dMobilityModel : public MobilityModel
 {
  public:
   static TypeId GetTypeId (void);
+
+  enum Mode  {
+    MODE_DISTANCE,
+    MODE_TIME
+  };
+
   /**
    * Instantiate a set of RandomWalk parameters initialized
    * with construction values from \valueref{RandomWalk2dMode},
@@ -126,14 +66,6 @@ class RandomWalk2dMobilityModel : public MobilityModel
    * The default position is (0,0,0)
    */
   RandomWalk2dMobilityModel ();
-  /**
-   * \param parameters the parameters to use to control
-   * the movement of this mobile object.
-   *
-   * Create a new position object located at position (0,0,0) with
-   * the specified parameters.
-   */
-  RandomWalk2dMobilityModel (Ptr<RandomWalk2dMobilityModelParameters> parameters);
 
  private:
   void Start (void);
@@ -146,7 +78,12 @@ class RandomWalk2dMobilityModel : public MobilityModel
 
   StaticSpeedHelper m_helper;
   EventId m_event;
-  Ptr<RandomWalk2dMobilityModelParameters> m_parameters;
+  enum Mode m_mode;
+  double m_modeDistance;
+  Time m_modeTime;
+  RandomVariable m_speed;
+  RandomVariable m_direction;
+  Rectangle m_bounds;
 };
 
 

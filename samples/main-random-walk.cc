@@ -4,14 +4,14 @@
 
 #include "ns3/ptr.h"
 #include "ns3/mobility-model.h"
-#include "ns3/mobility-model-notifier.h"
-#include "ns3/random-topology.h"
+#include "ns3/position-allocator.h"
 #include "ns3/default-value.h"
 #include "ns3/command-line.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
 #include "ns3/node.h"
 #include "ns3/node-list.h"
+#include "ns3/mobility-helper.h"
 
 using namespace ns3;
 
@@ -32,24 +32,27 @@ int main (int argc, char *argv[])
   DefaultValue::Bind ("RandomWalk2dSpeed", "Constant:1.0");
   DefaultValue::Bind ("RandomWalk2dBounds", "0:200:0:100");
 
-  DefaultValue::Bind ("RandomDiscPositionX", "100");
-  DefaultValue::Bind ("RandomDiscPositionY", "50");
-  DefaultValue::Bind ("RandomDiscPositionRho", "Uniform:0:30");
-
-  DefaultValue::Bind ("RandomTopologyPositionType", "RandomDiscPosition");
   DefaultValue::Bind ("RandomTopologyMobilityType", "RandomWalk2dMobilityModel");
 
   CommandLine::Parse (argc, argv);
 
-  RandomTopology topology;
-
   for (uint32_t i = 0; i < 100; i++)
     {
       Ptr<Node> node = CreateObject<Node> ();
-      node->AddInterface (CreateObject<MobilityModelNotifier> ());
     }
 
-  topology.Layout (NodeList::Begin (), NodeList::End ());
+  MobilityHelper mobility;
+  mobility.EnableNotifier ();
+  mobility.SetPositionAllocator ("RandomDiscPositionAllocator",
+                                 "X", "100.0",
+                                 "Y", "100.0",
+                                 "Rho", "Uniform:0:30");
+  mobility.SetMobilityModel ("RandomWalk2dMobilityModel",
+                             "Mode", "Time",
+                             "Time", "2s",
+                             "Speed", "Constant:1.0",
+                             "Bounds", "0:200:0:100");
+  mobility.Layout (NodeList::Begin (), NodeList::End ());
   NodeList::Connect ("/nodes/*/$MobilityModelNotifier/course-change", 
                      MakeCallback (&CourseChange));
 

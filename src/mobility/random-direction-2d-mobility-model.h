@@ -33,50 +33,6 @@
 namespace ns3 {
 
 /**
- * \brief the parameters to control a RandomDirection mobility model.
- */
-class RandomDirection2dMobilityModelParameters : public Object
-{
- public:
-  /**
-   * Create from \valueref{RandomDirection2dSpeed},
-   * \valueref{RandomDirection2dPause}, and,
-   * \valueref{RandomDirection2dArea}.
-   */
-  RandomDirection2dMobilityModelParameters ();
-  /**
-   * \param bounds the 2d bounds of the mobility model
-   * \param speedVariable the random variable used to pick a random speed
-   * \param pauseVariable the random variable used to pick a random pause delay
-   */
-  RandomDirection2dMobilityModelParameters (const Rectangle &bounds,
-                               const RandomVariable &speedVariable,
-                               const RandomVariable &pauseVariable);
-  virtual ~RandomDirection2dMobilityModelParameters ();
-
-  /**
-   * \param speedVariable the random variable used to pick a random speed.
-   */
-  void SetSpeed (const RandomVariable &speedVariable);
-  /**
-   * \param pauseVariable the random variable used to pick a random pause delay.
-   */
-  void SetPause (const RandomVariable &pauseVariable);
-  /**
-   * \param bounds the 2d bounds of the mobility model.
-   */
-  void SetBounds (const Rectangle &bounds);
- private:
-  friend class RandomDirection2dMobilityModel;
-
-  static Ptr<RandomDirection2dMobilityModelParameters> GetCurrent (void);
-
-  Rectangle m_bounds;
-  RandomVariable m_speedVariable;
-  RandomVariable m_pauseVariable;
-};
-
-/**
  * \brief a RandomDirection mobility model
  *
  * The movement of objects is based on random directions: each object
@@ -96,11 +52,6 @@ class RandomDirection2dMobilityModel : public MobilityModel
    * \valueref{RandomDirection2dArea}.
    */
   RandomDirection2dMobilityModel ();
-  /**
-   * \param parameters the parameters which control the behavior of the model.
-   * Create a RandomDirection model using the parameters specified.
-   */
-  RandomDirection2dMobilityModel (Ptr<RandomDirection2dMobilityModelParameters> parameters);
  private:
   void Start (void);
   void ResetDirectionAndSpeed (void);
@@ -113,7 +64,9 @@ class RandomDirection2dMobilityModel : public MobilityModel
   virtual Vector DoGetVelocity (void) const;
 
   static const double PI;
-  Ptr<RandomDirection2dMobilityModelParameters> m_parameters;
+  Rectangle m_bounds;
+  RandomVariable m_speed;
+  RandomVariable m_pause;
   EventId m_event;
   StaticSpeedHelper m_helper;
 };

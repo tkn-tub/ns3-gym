@@ -21,6 +21,7 @@
 #define STATIC_MOBILITY_MODEL_H
 
 #include "mobility-model.h"
+#include "vector.h"
 
 namespace ns3 {
 
@@ -37,13 +38,6 @@ public:
    * Create a position located at coordinates (0,0,0)
    */
   StaticMobilityModel ();
-  /**
-   * \param position the initial position.
-   *
-   * Create a position located at coordinates (x,y,z).
-   * Unit is meters
-   */
-  StaticMobilityModel (const Vector &position);
   virtual ~StaticMobilityModel ();
 
 private:
