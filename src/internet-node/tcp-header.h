@@ -26,7 +26,7 @@
 #include "ns3/buffer.h"
 #include "ns3/tcp.h"
 #include "ns3/ipv4-address.h"
-#include "sequence-number.h"
+#include "ns3/sequence-number.h"
 
 namespace ns3 {
 
