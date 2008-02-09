@@ -35,8 +35,8 @@ public:
   virtual PValue CreateValue (void) const;
 
 private:
-  virtual void DoSet (T *object, const U *v) const = 0;
-  virtual void DoGet (const T *object, U *v) const = 0;
+  virtual bool DoSet (T *object, const U *v) const = 0;
+  virtual bool DoGet (const T *object, U *v) const = 0;
   PValue m_initialValue;
   CHECKER m_checker;
 };
@@ -62,11 +62,13 @@ MakeMemberVariableParamSpecWithChecker (U T::*memberVariable, V initialValue, CH
 	m_memberVariable (memberVariable)
 	{}
     private:
-      virtual void DoSet (T *object, const V *v) const {
+      virtual bool DoSet (T *object, const V *v) const {
 	(object->*m_memberVariable) = v->Get ();
+	return true;
       }
-      virtual void DoGet (const T *object, V *v) const {
+      virtual bool DoGet (const T *object, V *v) const {
 	v->Set (object->*m_memberVariable);
+	return true;
       }
       
       U T::*m_memberVariable;
@@ -99,11 +101,13 @@ MakeMemberMethodParamSpecWithChecker (void (T::*setter) (U),
 	m_getter (getter)
 	{}
     private:
-      virtual void DoSet (T *object, const W *v) const {
+      virtual bool DoSet (T *object, const W *v) const {
 	(object->*m_setter) (v->Get ());
+	return true;
       }
-      virtual void DoGet (const T *object, W *v) const {
+      virtual bool DoGet (const T *object, W *v) const {
 	v->Set ((object->*m_getter) ());
+	return true;
       }
       void (T::*m_setter) (U);
       V (T::*m_getter) (void) const;
@@ -137,9 +141,12 @@ MakeMemberMethodGetterParamSpecWithChecker (U (T::*getter) (void) const,
 	m_getter (getter)
 	{}
     private:
-      virtual void DoSet (T *object, const V *v) const {}
-      virtual void DoGet (const T *object, V *v) const {
+      virtual bool DoSet (T *object, const V *v) const {
+	return false;
+      }
+      virtual bool DoGet (const T *object, V *v) const {
 	v->Set ((object->*m_getter) ());
+	return true;
       }
       U (T::*m_getter) (void) const;
     };
@@ -171,11 +178,12 @@ MakeMemberMethodSetterParamSpecWithChecker (void (T::*setter) (U),
 	m_setter (setter)
 	{}
     private:
-      virtual void DoSet (T *object, const V *v) const {
+      virtual bool DoSet (T *object, const V *v) const {
 	(object->*m_setter) (v->Get ());
+	return true;
       }
       virtual void DoGet (const T *object, V *v) const {
-	v->Set ((object->*m_setter) ());
+	return false;
       }
       void (T::*m_setter) (U);
     };
@@ -212,8 +220,7 @@ ParamSpecHelper<T,U,CHECKER>::Set (ObjectBase * object, PValue val) const
     {
       return false;
     }
-  DoSet (obj, value);
-  return true;
+  return DoSet (obj, value);
 }
 template <typename T, typename U, typename CHECKER>
 bool 
@@ -229,8 +236,7 @@ ParamSpecHelper<T,U,CHECKER>::Get (const ObjectBase * object, PValue val) const
     {
       return false;
     }
-  DoGet (obj, value);
-  return true;
+  return DoGet (obj, value);
 }
 template <typename T, typename U, typename CHECKER>
 bool 
