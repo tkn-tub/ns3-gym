@@ -140,13 +140,6 @@ public:
    *          index is \i i.
    */
   std::string GetParameterFullName (uint32_t i) const;
-  /**
-   * \param i index into parameter array
-   * \param value the value to validate
-   * \returns true if the input value is a valid value
-   *          associated to the parameter whose index is \i i.
-   */
-  bool CheckParameterValue (uint32_t i, std::string value) const;
 
   Ptr<Object> CreateObject (const Parameters &parameters) const;
 
