@@ -895,9 +895,12 @@ Ipv4L3Protocol::GetIfIndexForDestination (
   NS_LOG_LOGIC ("Using default unicast route");
   Ipv4Route *route = m_staticRouting->GetDefaultRoute ();
 
-  NS_ASSERT_MSG(route, 
-    "Ipv4L3Protocol::GetIfIndexForDestination (): "
-    "Unable to determine outbound interface.  No default route set");
+  if (route == NULL)
+    {
+      NS_LOG_LOGIC ("Ipv4L3Protocol::GetIfIndexForDestination (): "
+                    "Unable to determine outbound interface.  No default route set");
+      return false;
+    }
 
   ifIndex = route->GetInterface ();
 
