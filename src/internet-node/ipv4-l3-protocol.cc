@@ -639,6 +639,7 @@ Ipv4L3Protocol::SendRealOut (bool found,
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << found << &route << packet << &ipHeader);
 
+  packet->AddHeader (ipHeader);
   if (!found)
     {
       NS_LOG_WARN ("No route to host.  Drop.");
@@ -648,7 +649,6 @@ Ipv4L3Protocol::SendRealOut (bool found,
 
   NS_LOG_LOGIC ("Send via interface " << route.GetInterface ());
 
-  packet->AddHeader (ipHeader);
   Ptr<Ipv4Interface> outInterface = GetInterface (route.GetInterface ());
   NS_ASSERT (packet->GetSize () <= outInterface->GetMtu ());
   m_txTrace (packet, route.GetInterface ());
