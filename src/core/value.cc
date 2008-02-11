@@ -26,6 +26,27 @@ Value::ConvertFrom (PValue value, Ptr<const ParamSpec> spec)
   return false;
 }
 
+/***************************************************************
+ *   Big interesting warning.
+ *   ------------------------
+ *
+ * One might wonder why we re-implement a smart pointer below 
+ * in the PValue class. This is a very good question and the answer
+ * is unfortunately pretty complicated.
+ *
+ * 1) We could have requested the user to use Ptr<Value> and save us
+ *    a lot of pain. This, however, does not work because our smart 
+ *    pointer needs a special constructor which can be used to convert
+ *    objects of type Ptr<T> into a PtrValue<T> to hold the pointer.
+ *
+ * 2) We could have made the m_value member variable below a Ptr<Value>
+ *    rather than store a raw pointer. This, however, does not work
+ *    because this would mean that the constructor PValue (Value *)
+ *    should be morphed into PValue (Ptr<Value>) which, unfortunately,
+ *    would conflict with the template constructor PValue (Ptr<T>)...
+ *
+ * This is definitely not fun.   
+ */
 PValue::PValue ()
   : m_value (0)
 {}
