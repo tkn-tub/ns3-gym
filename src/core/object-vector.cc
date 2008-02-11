@@ -58,11 +58,13 @@ ObjectVectorValue::Copy (void) const
 std::string 
 ObjectVectorValue::SerializeToString (Ptr<const ParamSpec> spec) const
 {
+  // XXX
   return "";
 }
 bool 
 ObjectVectorValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
 {
+  // XXX ?? Can we implement this correctly ?? I doubt it very much.
   return true;
 }
 
