@@ -61,6 +61,7 @@ def build(bld):
         'enum-value.cc',
         'fp-value.cc',
         'object-factory.cc',
+        'object-vector.cc',
         ]
 
     if sys.platform == 'win32':

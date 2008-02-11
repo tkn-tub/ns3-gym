@@ -7,6 +7,8 @@
 #include "enum-value.h"
 #include "random-variable.h"
 #include "fp-value.h"
+#include "object-vector.h"
+
 namespace ns3 {
 
 class ParamSpecTest : public Test
@@ -70,9 +72,21 @@ public:
 						  ConstantVariable (1.0)))
       .AddParameter ("TestFloat", "help text",
 		     MakeFpParamSpec (&ParamSpecObjectTest::m_float, -1.1))
+      .AddParameter ("TestVector1", "help text",
+		     MakeObjectVectorParamSpec (&ParamSpecObjectTest::m_vector1))
+      .AddParameter ("TestVector2", "help text",
+		     MakeObjectVectorParamSpec (&ParamSpecObjectTest::DoGetVectorN,
+						&ParamSpecObjectTest::DoGetVector))
       ;
         
     return tid;
+  }
+
+  void AddToVector1 (void) {
+    m_vector1.push_back (CreateObject<Derived> ());
+  }
+  void AddToVector2 (void) {
+    m_vector2.push_back (CreateObject<Derived> ());
   }
 
 private:
@@ -88,6 +102,12 @@ private:
   void DoSetInt16 (int16_t v) {
     m_int16SetGet = v;
   }
+  uint32_t DoGetVectorN (void) const {
+    return m_vector2.size ();
+  }
+  Ptr<Derived> DoGetVector (uint32_t i) const {
+    return m_vector2[i];
+  }
   bool m_boolTestA;
   bool m_boolTest;
   Ptr<Derived> m_derived;
@@ -98,6 +118,8 @@ private:
   float m_float;
   enum TestEnum m_enum;
   RandomVariable m_random;
+  std::vector<Ptr<Derived> > m_vector1;
+  std::vector<Ptr<Derived> > m_vector2;
 };
 
 
@@ -118,7 +140,6 @@ private:
     got = v;						\
     NS_TEST_ASSERT_EQUAL (got.Get (), expected.Get ());	\
   }
-
 
 NS_OBJECT_ENSURE_REGISTERED (ParamSpecObjectTest);
 
@@ -269,21 +290,51 @@ ParamSpecTest::RunTests (void)
   RandomVariable ran = p->Get ("TestRandom");
   NS_TEST_ASSERT (p->Set ("TestRandom", UniformVariable (0.0, 1.0)));
   NS_TEST_ASSERT (p->Set ("TestRandom", ConstantVariable (10.0)));
+
+  {
+    ObjectVector vector = p->Get ("TestVector1");
+    NS_TEST_ASSERT_EQUAL (vector.GetN (), 0);
+    p->AddToVector1 ();
+    NS_TEST_ASSERT_EQUAL (vector.GetN (), 0);
+    vector = p->Get ("TestVector1");
+    NS_TEST_ASSERT_EQUAL (vector.GetN (), 1);
+    Ptr<Object> a = vector.Get (0);
+    NS_TEST_ASSERT_UNEQUAL (a, 0);
+    p->AddToVector1 ();
+    NS_TEST_ASSERT_EQUAL (vector.GetN (), 1);
+    vector = p->Get ("TestVector1");
+    NS_TEST_ASSERT_EQUAL (vector.GetN (), 2);
+  }
+
+  {
+    ObjectVector vector = p->Get ("TestVector2");
+    NS_TEST_ASSERT_EQUAL (vector.GetN (), 0);
+    p->AddToVector2 ();
+    NS_TEST_ASSERT_EQUAL (vector.GetN (), 0);
+    vector = p->Get ("TestVector2");
+    NS_TEST_ASSERT_EQUAL (vector.GetN (), 1);
+    Ptr<Object> a = vector.Get (0);
+    NS_TEST_ASSERT_UNEQUAL (a, 0);
+    p->AddToVector2 ();
+    NS_TEST_ASSERT_EQUAL (vector.GetN (), 1);
+    vector = p->Get ("TestVector2");
+    NS_TEST_ASSERT_EQUAL (vector.GetN (), 2);
+  }
   
 
 #if 0
-  p->Set ("TestBoolName", "true");
-  NS_TEST_ASSERT_EQUAL (p->Get ("TestBoolName"), "true");
-  p->Set ("TestBoolName", "false");
-  NS_TEST_ASSERT_EQUAL (p->Get ("TestBoolName"), "false");
+  p->Set ("TestBool"TestVector2"", "true");
+  NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "true");
+  p->Set ("TestBool", "false");
+  NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "false");
 
-  Parameters::GetGlobal ()->Set ("TestBoolName", "true");
+  Parameters::GetGlobal ()->Set ("TestBool", "true");
   p = CreateObjectWith<ParamSpecObjectTest> ();
-  NS_TEST_ASSERT_EQUAL (p->Get ("TestBoolName"), "true");
+  NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "true");
 
-  Parameters::GetGlobal ()->Set ("TestBoolName", "false");
+  Parameters::GetGlobal ()->Set ("TestBool", "false");
   p = CreateObjectWith<ParamSpecObjectTest> ();
-  NS_TEST_ASSERT_EQUAL (p->Get ("TestBoolName"), "false");
+  NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "false");
 #endif
   return result;
 }
