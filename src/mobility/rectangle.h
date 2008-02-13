@@ -71,6 +71,7 @@ std::istream &operator >> (std::istream &is, Rectangle &rectangle);
 
 
 class RectangleValue : public Value {};
+class RectangleParamSpec : public ParamSpec {};
 
 template <typename T1>
 Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1,
@@ -87,13 +88,13 @@ template <typename T1>
 Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1,
                                        Rectangle initialValue)
 {
-  return MakeClassValueHelperParamSpec<Rectangle,RectangleValue> (a1, initialValue);
+  return MakeClassValueHelperParamSpec<Rectangle,RectangleValue,RectangleParamSpec> (a1, initialValue);
 }
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1, T2 a2,
                                        Rectangle initialValue)
 {
-  return MakeClassValueHelperParamSpec<Rectangle,RectangleValue> (a1, a2, initialValue);
+  return MakeClassValueHelperParamSpec<Rectangle,RectangleValue,RectangleParamSpec> (a1, a2, initialValue);
 }
 
 } // namespace ns3

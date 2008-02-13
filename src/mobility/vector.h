@@ -65,6 +65,7 @@ public:
 double CalculateDistance (const Vector &a, const Vector &b);
 
 class VectorValue : public Value {};
+class VectorParamSpec : public ParamSpec {};
 
 std::ostream &operator << (std::ostream &os, const Vector &vector);
 std::istream &operator >> (std::istream &is, Vector &vector);
@@ -86,7 +87,7 @@ template <typename T1>
 Ptr<ParamSpec>
 MakeVectorParamSpec (T1 a1, const Vector &initialValue)
 {
-  return MakeClassValueHelperParamSpec<Vector,VectorValue> (a1, initialValue);
+  return MakeClassValueHelperParamSpec<Vector,VectorValue,VectorParamSpec> (a1, initialValue);
 }
 
 template <typename T1, typename T2>
@@ -94,7 +95,7 @@ Ptr<ParamSpec>
 MakeVectorParamSpec (T1 a1, T2 a2,
                      const Vector &initialValue)
 {
-  return MakeClassValueHelperParamSpec<Vector,VectorValue> (a1, a2, initialValue);
+  return MakeClassValueHelperParamSpec<Vector,VectorValue,VectorParamSpec> (a1, a2, initialValue);
 }
 
 } // namespace ns3

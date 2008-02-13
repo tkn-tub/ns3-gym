@@ -671,6 +671,7 @@ typedef TimeUnit<2> TimeSquare;
 
 
 class TimeValue : public Value {};
+class TimeParamSpec : public ParamSpec {};
 
 template <typename T1>
 Ptr<ParamSpec> MakeTimeParamSpec (T1 a1,
@@ -688,14 +689,14 @@ template <typename T1>
 Ptr<ParamSpec> MakeTimeParamSpec (T1 a1,
                                   Time initialValue)
 {
-  return MakeClassValueHelperParamSpec<Time,TimeValue> (a1, initialValue);
+  return MakeClassValueHelperParamSpec<Time,TimeValue,TimeParamSpec> (a1, initialValue);
 }
 
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2,
                                   Time initialValue)
 {
-  return MakeClassValueHelperParamSpec<Time,TimeValue> (a1, a2, initialValue);
+  return MakeClassValueHelperParamSpec<Time,TimeValue,TimeParamSpec> (a1, a2, initialValue);
 }
 
 

@@ -666,6 +666,7 @@ std::istream &operator >> (std::istream &os, RandomVariable &var);
 
 
 class RandomVariableValue : public Value {};
+class RandomVariableParamSpec : public ParamSpec {};
 
 template <typename T1>
 Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1,
@@ -684,14 +685,16 @@ template <typename T1>
 Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1,
                                             RandomVariable initialValue)
 {
-  return MakeClassValueHelperParamSpec<RandomVariable, RandomVariableValue> (a1, initialValue);
+  return MakeClassValueHelperParamSpec<RandomVariable, 
+    RandomVariableValue, RandomVariableParamSpec> (a1, initialValue);
 }
 
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2,
                                             RandomVariable initialValue)
 {
-  return MakeClassValueHelperParamSpec<RandomVariable, RandomVariableValue> (a1, a2, initialValue);
+  return MakeClassValueHelperParamSpec<RandomVariable, 
+    RandomVariableValue,RandomVariableParamSpec> (a1, a2, initialValue);
 }
 
 

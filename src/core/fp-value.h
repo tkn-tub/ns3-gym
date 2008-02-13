@@ -25,6 +25,7 @@ private:
   double m_value;
 };
 
+class FpParamSpec : public ParamSpec {};
 
 template <typename T1>
 Ptr<ParamSpec> MakeFpParamSpec (T1 a1,
@@ -68,36 +69,36 @@ private:
 template <typename T1>
 Ptr<ParamSpec> 
 MakeFpParamSpec (T1 a1,
-		  double initialValue)
+		 double initialValue)
 {
-  return MakeParamSpecHelperWithChecker (a1, FpValue (initialValue),
-					 FpValueChecker::Create (a1));
+  return MakeParamSpecHelperWithChecker<FpParamSpec> (a1, FpValue (initialValue),
+						      FpValueChecker::Create (a1));
 }
 
 template <typename T1>
 Ptr<ParamSpec> MakeFpParamSpec (T1 a1,
-				 double initialValue,
-				 double minValue,
-				 double maxValue)
+				double initialValue,
+				double minValue,
+				double maxValue)
 {
-  return MakeParamSpecHelperWithChecker (a1, FpValue (initialValue),
-					 FpValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker<FpParamSpec> (a1, FpValue (initialValue),
+						      FpValueChecker (minValue, maxValue));
 }
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeFpParamSpec (T1 a1, T2 a2, 
-				 double initialValue)
+				double initialValue)
 {
-  return MakeParamSpecHelperWithChecker (a1, a2, FpValue (initialValue),
-					 FpValueChecker::Create (a1));
+  return MakeParamSpecHelperWithChecker<FpParamSpec> (a1, a2, FpValue (initialValue),
+						      FpValueChecker::Create (a1));
 }
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeFpParamSpec (T1 a1, T2 a2,
-				 double initialValue,
-				 double minValue,
-				 double maxValue)
+				double initialValue,
+				double minValue,
+				double maxValue)
 {
-  return MakeParamSpecHelperWithChecker (a1, a2, FpValue (initialValue),
-					 FpValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker<FpParamSpec> (a1, a2, FpValue (initialValue),
+						      FpValueChecker (minValue, maxValue));
 }
 
 } // namespace ns3

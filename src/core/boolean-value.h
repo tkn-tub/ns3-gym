@@ -24,6 +24,8 @@ private:
   bool m_value;
 };
 
+class BooleanParamSpec : public ParamSpec {};
+
 
 template <typename T1>
 Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, bool initialValue);
@@ -40,13 +42,13 @@ namespace ns3 {
 template <typename T1>
 Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, bool initialValue)
 {
-  return MakeParamSpecHelper (a1, BooleanValue (initialValue));
+  return MakeParamSpecHelper<BooleanParamSpec> (a1, BooleanValue (initialValue));
 }
 
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, T2 a2, bool initialValue)
 {
-  return MakeParamSpecHelper (a1, a2, BooleanValue (initialValue));
+  return MakeParamSpecHelper<BooleanParamSpec> (a1, a2, BooleanValue (initialValue));
 }
 
 

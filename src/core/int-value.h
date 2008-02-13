@@ -24,6 +24,8 @@ private:
   int64_t m_value;
 };
 
+class IntParamSpec : public ParamSpec {};
+
 template <typename T1>
 Ptr<ParamSpec> MakeIntParamSpec (T1 a1,
 				 int64_t initialValue);
@@ -76,8 +78,8 @@ Ptr<ParamSpec>
 MakeIntParamSpec (T1 a1,
 		  int64_t initialValue)
 {
-  return MakeParamSpecHelperWithChecker (a1, IntValue (initialValue),
-					 IntValueChecker::Create (a1));
+  return MakeParamSpecHelperWithChecker<IntParamSpec> (a1, IntValue (initialValue),
+						       IntValueChecker::Create (a1));
 }
 
 template <typename T1>
@@ -86,15 +88,15 @@ Ptr<ParamSpec> MakeIntParamSpec (T1 a1,
 				 int64_t minValue,
 				 int64_t maxValue)
 {
-  return MakeParamSpecHelperWithChecker (a1, IntValue (initialValue),
-					 IntValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker<IntParamSpec> (a1, IntValue (initialValue),
+						       IntValueChecker (minValue, maxValue));
 }
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2, 
 				 int64_t initialValue)
 {
-  return MakeParamSpecHelperWithChecker (a1, a2, IntValue (initialValue),
-					 IntValueChecker::Create (a1));
+  return MakeParamSpecHelperWithChecker<IntParamSpec> (a1, a2, IntValue (initialValue),
+						       IntValueChecker::Create (a1));
 }
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2,
@@ -102,8 +104,8 @@ Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2,
 				 int64_t minValue,
 				 int64_t maxValue)
 {
-  return MakeParamSpecHelperWithChecker (a1, a2, IntValue (initialValue),
-					 IntValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker<IntParamSpec> (a1, a2, IntValue (initialValue),
+						       IntValueChecker (minValue, maxValue));
 }
 
 } // namespace ns3

@@ -3,19 +3,19 @@
 
 namespace ns3 {
 
-template <typename T1, typename V>
+template <typename BASE, typename T1, typename V>
 Ptr<ParamSpec>
 MakeParamSpecHelper (T1 a1, V initialValue);
 
-template <typename T1, typename T2, typename V>
+template <typename BASE, typename T1, typename T2, typename V>
 Ptr<ParamSpec>
 MakeParamSpecHelper (T1 a1, T2 a2, V initialValue);
 
-template <typename T1, typename V, typename CHECKER>
+template <typename BASE, typename T1, typename V, typename CHECKER>
 Ptr<ParamSpec>
 MakeParamSpecHelperWithChecker (T1 a1, V initialValue, CHECKER checker);
 
-template <typename T1, typename T2, typename V, typename CHECKER>
+template <typename BASE, typename T1, typename T2, typename V, typename CHECKER>
 Ptr<ParamSpec>
 MakeParamSpecHelperWithChecker (T1 a1, T2 a2, V initialValue, CHECKER checker);
 
@@ -29,16 +29,59 @@ MakeParamSpecHelperWithChecker (T1 a1, T2 a2, V initialValue, CHECKER checker);
 
 namespace ns3 {
 
-template <typename T, typename U, typename CHECKER>
-class ParamSpecHelper : public ParamSpec
+template <typename BASE, typename T, typename U, typename CHECKER>
+class ParamSpecHelper : public BASE
 {
 public:
-  ParamSpecHelper (PValue initialValue, CHECKER checker);
-  virtual bool Set (ObjectBase * object, PValue value) const;
-  virtual bool Get (const ObjectBase * object, PValue value) const;
-  virtual bool Check (PValue value) const;
-  virtual PValue GetInitialValue (void) const;
-  virtual PValue CreateValue (void) const;
+  ParamSpecHelper (PValue initialValue, CHECKER checker)
+  : m_initialValue (initialValue),
+    m_checker (checker) {}
+
+  virtual bool Set (ObjectBase * object, PValue val) const {
+    const U *value = val.DynCast<const U*> ();
+    if (value == 0)
+      {
+	return false;
+      }
+    T *obj = dynamic_cast<T *> (object);
+    if (obj == 0)
+      {
+	return false;
+      }
+    return DoSet (obj, value);
+  }
+
+  virtual bool Get (const ObjectBase * object, PValue val) const {
+    U *value = val.DynCast<U*> ();
+    if (value == 0)
+      {
+	return false;
+      }
+    const T *obj = dynamic_cast<const T *> (object);
+    if (obj == 0)
+      {
+	return false;
+      }
+    return DoGet (obj, value);
+  }
+
+  virtual bool Check (PValue value) const {
+    const U *val = value.DynCast<const U*> ();
+    if (val == 0)
+      {
+	return false;
+      }
+    return m_checker.Check (val->Get ());
+  }
+
+  virtual PValue GetInitialValue (void) const {
+    return m_initialValue;
+  }
+
+  virtual PValue CreateValue (void) const {
+    return m_initialValue.Copy ();
+  }
+
 
 private:
   virtual bool DoSet (T *object, const U *v) const = 0;
@@ -54,15 +97,15 @@ public:
   bool Check (const T &value) const {return true;}
 };
 
-template <typename T, typename U, typename V, typename CHECKER>
+template <typename BASE, typename T, typename U, typename V, typename CHECKER>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperOne (U T::*memberVariable, V initialValue, CHECKER checker)
 {
-  class MemberVariable : public ParamSpecHelper<T,V,CHECKER>
+  class MemberVariable : public ParamSpecHelper<BASE,T,V,CHECKER>
     {
     public:
       MemberVariable (U T::*memberVariable, V initialValue, CHECKER checker)
-	: ParamSpecHelper<T,V,CHECKER> (initialValue, checker),
+	: ParamSpecHelper<BASE,T,V,CHECKER> (initialValue, checker),
 	m_memberVariable (memberVariable)
 	{}
     private:
@@ -79,25 +122,25 @@ DoMakeParamSpecHelperOne (U T::*memberVariable, V initialValue, CHECKER checker)
     };
   return Ptr<ParamSpec> (new MemberVariable (memberVariable, initialValue, checker), false);
 }
-template <typename T, typename U, typename V>
+template <typename BASE, typename T, typename U, typename V>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperOne (U T::*memberVariable, V initialValue)
 {
-  return DoMakeParamSpecHelperOne (memberVariable, initialValue, ParamSpecHelperSimpleChecker<U> ());
+  return DoMakeParamSpecHelperOne<BASE> (memberVariable, initialValue, ParamSpecHelperSimpleChecker<U> ());
 }
 
 
-template <typename T, typename U, typename V, typename CHECKER>
+template <typename BASE, typename T, typename U, typename V, typename CHECKER>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperOne (U (T::*getter) (void) const, 
 			  V initialValue, CHECKER checker)
 {
-  class MemberMethod : public ParamSpecHelper<T,V,CHECKER>
+  class MemberMethod : public ParamSpecHelper<BASE,T,V,CHECKER>
     {
     public:
       MemberMethod (U (T::*getter) (void) const,
 		    V initialValue, CHECKER checker)
-	: ParamSpecHelper<T,V,CHECKER> (initialValue, checker),
+	: ParamSpecHelper<BASE,T,V,CHECKER> (initialValue, checker),
 	m_getter (getter)
 	{}
     private:
@@ -113,27 +156,27 @@ DoMakeParamSpecHelperOne (U (T::*getter) (void) const,
   return Ptr<ParamSpec> (new MemberMethod (getter, initialValue, checker), false);
 }
 
-template <typename T, typename U, typename V>
+template <typename BASE, typename T, typename U, typename V>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperOne (U (T::*getter) (void) const, 
 			  V initialValue)
 {
-  return DoMakeParamSpecHelperOne (getter, initialValue, ParamSpecHelperSimpleChecker<U> ());
+  return DoMakeParamSpecHelperOne<BASE> (getter, initialValue, ParamSpecHelperSimpleChecker<U> ());
 }
 
 
 
-template <typename T, typename U, typename V, typename CHECKER>
+template <typename BASE, typename T, typename U, typename V, typename CHECKER>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperOne (void (T::*setter) (U), 
 			  V initialValue, CHECKER checker)
 {
-  class MemberMethod : public ParamSpecHelper<T,V,CHECKER>
+  class MemberMethod : public ParamSpecHelper<BASE,T,V,CHECKER>
     {
     public:
       MemberMethod (void (T::*setter) (U), 
 		    V initialValue, CHECKER checker)
-	: ParamSpecHelper<T,V,CHECKER> (initialValue, checker),
+	: ParamSpecHelper<BASE,T,V,CHECKER> (initialValue, checker),
 	m_setter (setter)
 	{}
     private:
@@ -149,30 +192,30 @@ DoMakeParamSpecHelperOne (void (T::*setter) (U),
   return Ptr<ParamSpec> (new MemberMethod (setter, initialValue, checker), false);
 }
 
-template <typename T, typename U, typename V>
+template <typename BASE, typename T, typename U, typename V>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperOne (void (T::*setter) (U), 
 			  V initialValue)
 {
-  return DoMakeParamSpecHelperOne (setter, initialValue, 
-				   ParamSpecHelperSimpleChecker<typename TypeTraits<U>::ReferencedType> ());
+  return DoMakeParamSpecHelperOne<BASE> (setter, initialValue, 
+					 ParamSpecHelperSimpleChecker<typename TypeTraits<U>::ReferencedType> ());
 }
 
 
-template <typename T, typename U, typename V, typename W, typename CHECKER>
+template <typename BASE, typename T, typename U, typename V, typename W, typename CHECKER>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperTwo (void (T::*setter) (U), 
 			  V (T::*getter) (void) const, 
 			  W initialValue, 
 			  CHECKER checker = ParamSpecHelperSimpleChecker<V> ())
 {
-  class MemberMethod : public ParamSpecHelper<T,W,CHECKER>
+  class MemberMethod : public ParamSpecHelper<BASE,T,W,CHECKER>
     {
     public:
       MemberMethod (void (T::*setter) (U), 
 		    V (T::*getter) (void) const,
 		    W initialValue, CHECKER checker)
-	: ParamSpecHelper<T,W,CHECKER> (initialValue, checker),
+	: ParamSpecHelper<BASE,T,W,CHECKER> (initialValue, checker),
 	m_setter (setter),
 	m_getter (getter)
 	{}
@@ -191,125 +234,60 @@ DoMakeParamSpecHelperTwo (void (T::*setter) (U),
   return Ptr<ParamSpec> (new MemberMethod (setter, getter, initialValue, checker), false);
 }
 
-template <typename T, typename U, typename V, typename W>
+template <typename BASE, typename T, typename U, typename V, typename W>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperTwo (void (T::*setter) (U), 
 		      V (T::*getter) (void) const, 
 		      W initialValue)
 {
-  return DoMakeParamSpecHelperTwo (setter, getter, initialValue, ParamSpecHelperSimpleChecker<V> ());
+  return DoMakeParamSpecHelperTwo<BASE> (setter, getter, initialValue, ParamSpecHelperSimpleChecker<V> ());
 }
 
-template <typename T, typename U, typename V, typename W, typename CHECKER>
+template <typename BASE, typename T, typename U, typename V, typename W, typename CHECKER>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperTwo (V (T::*getter) (void) const, 
 			  void (T::*setter) (U), 
 			  W initialValue, 
 			  CHECKER checker)
 {
-  return DoMakeParamSpecHelperTwo (setter, getter, initialValue, checker);
+  return DoMakeParamSpecHelperTwo<BASE> (setter, getter, initialValue, checker);
 }
 
-template <typename T, typename U, typename V, typename W, typename CHECKER>
+template <typename BASE, typename T, typename U, typename V, typename W, typename CHECKER>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperTwo (V (T::*getter) (void) const, 
 			  void (T::*setter) (U), 
 			  W initialValue)
 {
-  return DoMakeParamSpecHelperTwo (setter, getter, initialValue);
+  return DoMakeParamSpecHelperTwo<BASE> (setter, getter, initialValue);
 }
 
-
-template <typename T, typename U, typename CHECKER>
-ParamSpecHelper<T,U,CHECKER>::ParamSpecHelper (PValue initialValue, CHECKER checker)
-  : m_initialValue (initialValue),
-    m_checker (checker)
-{}
-template <typename T, typename U, typename CHECKER>
-bool 
-ParamSpecHelper<T,U,CHECKER>::Set (ObjectBase * object, PValue val) const
-{
-  const U *value = val.DynCast<const U*> ();
-  if (value == 0)
-    {
-      return false;
-    }
-  T *obj = dynamic_cast<T *> (object);
-  if (obj == 0)
-    {
-      return false;
-    }
-  return DoSet (obj, value);
-}
-template <typename T, typename U, typename CHECKER>
-bool 
-ParamSpecHelper<T,U,CHECKER>::Get (const ObjectBase * object, PValue val) const
-{
-  U *value = val.DynCast<U*> ();
-  if (value == 0)
-    {
-      return false;
-    }
-  const T *obj = dynamic_cast<const T *> (object);
-  if (obj == 0)
-    {
-      return false;
-    }
-  return DoGet (obj, value);
-}
-template <typename T, typename U, typename CHECKER>
-bool 
-ParamSpecHelper<T,U,CHECKER>::Check (PValue value) const
-{
-  const U *val = value.DynCast<const U*> ();
-  if (val == 0)
-    {
-      return false;
-    }
-  return m_checker.Check (val->Get ());
-}
-template <typename T, typename U, typename CHECKER>
-PValue
-ParamSpecHelper<T,U,CHECKER>::GetInitialValue (void) const
-{
-  return m_initialValue;
-}
-
-template <typename T, typename U, typename CHECKER>
-PValue
-ParamSpecHelper<T,U,CHECKER>::CreateValue (void) const
-{
-  return m_initialValue.Copy ();
-}
-
-
-
-template <typename T1, typename V>
+template <typename BASE, typename T1, typename V>
 Ptr<ParamSpec>
 MakeParamSpecHelper (T1 a1, V initialValue)
 {
-  return DoMakeParamSpecHelperOne (a1, initialValue);
+  return DoMakeParamSpecHelperOne<BASE> (a1, initialValue);
 }
 
-template <typename T1, typename T2, typename V>
+template <typename BASE, typename T1, typename T2, typename V>
 Ptr<ParamSpec>
 MakeParamSpecHelper (T1 a1, T2 a2, V initialValue)
 {
-  return DoMakeParamSpecHelperTwo (a1, a2, initialValue);
+  return DoMakeParamSpecHelperTwo<BASE> (a1, a2, initialValue);
 }
 
-template <typename T1, typename V, typename CHECKER>
+template <typename BASE, typename T1, typename V, typename CHECKER>
 Ptr<ParamSpec>
 MakeParamSpecHelperWithChecker (T1 a1, V initialValue, CHECKER checker)
 {
-  return DoMakeParamSpecHelperOne (a1, initialValue, checker);
+  return DoMakeParamSpecHelperOne<BASE> (a1, initialValue, checker);
 }
 
-template <typename T1, typename T2, typename V, typename CHECKER>
+template <typename BASE, typename T1, typename T2, typename V, typename CHECKER>
 Ptr<ParamSpec>
 MakeParamSpecHelperWithChecker (T1 a1, T2 a2, V initialValue, CHECKER checker)
 {
-  return DoMakeParamSpecHelperTwo (a1, a2, initialValue, checker);
+  return DoMakeParamSpecHelperTwo<BASE> (a1, a2, initialValue, checker);
 }
 
 } // namespace ns3
