@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef EUI48_ADDRESS_H
-#define EUI48_ADDRESS_H
+#ifndef MAC48_ADDRESS_H
+#define MAC48_ADDRESS_H
 
 #include <stdint.h>
 #include <ostream>
@@ -149,4 +149,4 @@ MakeMac48AddressParamSpec (T1 a1, T2 a2, Mac48Address address)
 
 } // namespace ns3
 
-#endif /* EUI48_ADDRESS_H */
+#endif /* MAC48_ADDRESS_H */
