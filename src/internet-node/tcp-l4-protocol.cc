@@ -353,11 +353,11 @@ TcpL4Protocol::Allocate (void)
 }
 
 Ipv4EndPoint *
-TcpL4Protocol::Allocate (Ipv4Address address)
+TcpL4Protocol::Allocate (Ipv4Address address, Ipv4Address localInterface)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << address);
-  return m_endPoints->Allocate (address);
+  return m_endPoints->Allocate (address, localInterface);
 }
 
 Ipv4EndPoint *
@@ -369,21 +369,23 @@ TcpL4Protocol::Allocate (uint16_t port)
 }
 
 Ipv4EndPoint *
-TcpL4Protocol::Allocate (Ipv4Address address, uint16_t port)
+TcpL4Protocol::Allocate (Ipv4Address address, uint16_t port, Ipv4Address localInterface)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << address << port);
-  return m_endPoints->Allocate (address, port);
+  return m_endPoints->Allocate (address, port, localInterface);
 }
 
 Ipv4EndPoint *
 TcpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
-               Ipv4Address peerAddress, uint16_t peerPort)
+                         Ipv4Address peerAddress, uint16_t peerPort,
+                         Ipv4Address localInterface)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << localAddress << localPort << peerAddress << peerPort);
   return m_endPoints->Allocate (localAddress, localPort,
-                                peerAddress, peerPort);
+                                peerAddress, peerPort,
+                                localInterface);
 }
 
 void 

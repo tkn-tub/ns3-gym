@@ -127,6 +127,16 @@ UdpSocket::Bind (const Address &address)
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
+
+  Ipv4Address localInterface = Ipv4Address::GetAny ();
+  if (ipv4 != Ipv4Address::GetAny ())
+    {
+      Ptr<Ipv4> ipv4_api = m_node->GetObject<Ipv4> ();
+      // Assert that the given address matches an existing local interface
+      NS_ASSERT (ipv4_api->FindInterfaceForAddr (ipv4) != 0);
+      localInterface = ipv4;
+    }
+
   if (ipv4 == Ipv4Address::GetAny () && port == 0)
     {
       m_endPoint = m_udp->Allocate ();
@@ -137,11 +147,11 @@ UdpSocket::Bind (const Address &address)
     }
   else if (ipv4 != Ipv4Address::GetAny () && port == 0)
     {
-      m_endPoint = m_udp->Allocate (ipv4);
+      m_endPoint = m_udp->Allocate (ipv4, localInterface);
     }
   else if (ipv4 != Ipv4Address::GetAny () && port != 0)
     {
-      m_endPoint = m_udp->Allocate (ipv4, port);
+      m_endPoint = m_udp->Allocate (ipv4, port, localInterface);
     }
 
   return FinishBind ();
@@ -388,35 +398,55 @@ UdpSocketTest::RunTests (void)
   
   // Receiver Node
   Ptr<Node> rxNode = CreateObject<InternetNode> ();
-  Ptr<PointToPointNetDevice> rxDev = CreateObject<PointToPointNetDevice> (rxNode);
-  rxDev->AddQueue(CreateObject<DropTailQueue> ());
-  Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
-  uint32_t netdev_idx = ipv4->AddInterface (rxDev);
-  ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.1"));
-  ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
-  ipv4->SetUp (netdev_idx);
+  Ptr<PointToPointNetDevice> rxDev1, rxDev2;
+  { // first interface
+    rxDev1 = CreateObject<PointToPointNetDevice> (rxNode);
+    rxDev1->AddQueue(CreateObject<DropTailQueue> ());
+    Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
+    uint32_t netdev_idx = ipv4->AddInterface (rxDev1);
+    ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.1"));
+    ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
+    ipv4->SetUp (netdev_idx);
+  }
 
+  { // second interface
+    rxDev2 = CreateObject<PointToPointNetDevice> (rxNode);
+    rxDev2->AddQueue(CreateObject<DropTailQueue> ());
+    Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
+    uint32_t netdev_idx = ipv4->AddInterface (rxDev2);
+    ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.1.1"));
+    ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
+    ipv4->SetUp (netdev_idx);
+  }
+  
   // Sender Node
   Ptr<Node> txNode = CreateObject<InternetNode> ();
-  Ptr<PointToPointNetDevice> txDev = CreateObject<PointToPointNetDevice> (txNode);
-  txDev->AddQueue(CreateObject<DropTailQueue> ());
-  ipv4 = txNode->GetObject<Ipv4> ();
-  netdev_idx = ipv4->AddInterface (txDev);
-  ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.2"));
-  ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
-  ipv4->SetUp (netdev_idx);
+  Ptr<PointToPointNetDevice> txDev;
+  {
+    txDev = CreateObject<PointToPointNetDevice> (txNode);
+    txDev->AddQueue(CreateObject<DropTailQueue> ());
+    Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
+    uint32_t netdev_idx = ipv4->AddInterface (txDev);
+    ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.2"));
+    ipv4->SetNetworkMask (netdev_idx, Ipv4Mask (0xffff0000U));
+    ipv4->SetUp (netdev_idx);
+  }
 
   // link the two nodes
   Ptr<PointToPointChannel> channel = CreateObject<PointToPointChannel> ();
-  rxDev->Attach (channel);
+  rxDev1->Attach (channel);
   txDev->Attach (channel);
 
 
   // Create the UDP sockets
   Ptr<SocketFactory> rxSocketFactory = rxNode->GetObject<Udp> ();
   Ptr<Socket> rxSocket = rxSocketFactory->CreateSocket ();
-  NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.2"), 1234)), 0);
+  NS_TEST_ASSERT_EQUAL (rxSocket->Bind (InetSocketAddress (Ipv4Address ("10.0.0.1"), 1234)), 0);
   rxSocket->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket, this));
+
+  Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
+  rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket2, this));
+  NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("10.0.1.1"), 1234)), 0);
 
   Ptr<SocketFactory> txSocketFactory = txNode->GetObject<Udp> ();
   Ptr<Socket> txSocket = txSocketFactory->CreateSocket ();
@@ -425,26 +455,33 @@ UdpSocketTest::RunTests (void)
 
   // Unicast test
   m_receivedPacket = Create<Packet> ();
+  m_receivedPacket2 = Create<Packet> ();
   NS_TEST_ASSERT_EQUAL (txSocket->SendTo (InetSocketAddress (Ipv4Address("10.0.0.1"), 1234),
                                           Create<Packet> (123)), 0);
   Simulator::Run ();
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
+  NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0); // second interface should receive it
 
 
   // Simple broadcast test
 
   m_receivedPacket = Create<Packet> ();
+  m_receivedPacket2 = Create<Packet> ();
   NS_TEST_ASSERT_EQUAL (txSocket->SendTo (InetSocketAddress (Ipv4Address("255.255.255.255"), 1234),
                                           Create<Packet> (123)), 0);
   Simulator::Run ();
   NS_TEST_ASSERT_EQUAL (m_receivedPacket->GetSize (), 123);
+  // second socket should not receive it (it is bound specifically to the second interface's address
+  NS_TEST_ASSERT_EQUAL (m_receivedPacket2->GetSize (), 0);
 
 
   // Broadcast test with multiple receiving sockets
 
   // When receiving broadcast packets, all sockets sockets bound to
-  // the address/port should receive a copy of the same packet.
-  Ptr<Socket> rxSocket2 = rxSocketFactory->CreateSocket ();
+  // the address/port should receive a copy of the same packet -- if
+  // the socket address matches.
+  rxSocket2->Dispose ();
+  rxSocket2 = rxSocketFactory->CreateSocket ();
   rxSocket2->SetRecvCallback (MakeCallback (&UdpSocketTest::ReceivePacket2, this));
   NS_TEST_ASSERT_EQUAL (rxSocket2->Bind (InetSocketAddress (Ipv4Address ("0.0.0.0"), 1234)), 0);
 

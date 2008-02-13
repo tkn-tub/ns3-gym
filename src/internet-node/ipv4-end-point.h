@@ -33,7 +33,7 @@ class Packet;
 
 class Ipv4EndPoint {
 public:
-  Ipv4EndPoint (Ipv4Address address, uint16_t port);
+  Ipv4EndPoint (Ipv4Address address, uint16_t port, Ipv4Address localInterface);
   ~Ipv4EndPoint ();
 
   Ipv4Address GetLocalAddress (void);
@@ -41,6 +41,8 @@ public:
   uint16_t GetLocalPort (void);
   Ipv4Address GetPeerAddress (void);
   uint16_t GetPeerPort (void);
+  Ipv4Address GetLocalInterface (void) const;
+  void SetLocalInterface (Ipv4Address localInterface);
 
   void SetPeer (Ipv4Address address, uint16_t port);
 
@@ -56,6 +58,11 @@ private:
   uint16_t m_peerPort;
   Callback<void,Ptr<Packet>, Ipv4Address, uint16_t> m_rxCallback;
   Callback<void> m_destroyCallback;
+
+  // If the corresponding socket is bound to a specific local
+  // interface, m_localInterface contains that interface's ipv4
+  // address, else it contains the value Ipv4Address::GetAny ().
+  Ipv4Address m_localInterface;
 };
 
 }; // namespace ns3

@@ -497,8 +497,8 @@ Ipv4L3Protocol::FindInterfaceForAddr (Ipv4Address addr) const
         }
     }
 
-  NS_ASSERT_MSG(false, "Ipv4L3Protocol::FindInterfaceForAddr (): "
-    "Interface not found for IP address");
+  NS_FATAL_ERROR ("Ipv4L3Protocol::FindInterfaceForAddr (): "
+                  "Interface not found for IP address " << addr);
   return 0;
 }
 

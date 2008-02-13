@@ -83,14 +83,14 @@ Ipv4EndPointDemux::Allocate (void)
       NS_LOG_WARN ("Ephemeral port allocation failed.");
       return 0;
     }
-  Ipv4EndPoint *endPoint = new Ipv4EndPoint (Ipv4Address::GetAny (), port);
+  Ipv4EndPoint *endPoint = new Ipv4EndPoint (Ipv4Address::GetAny (), port, Ipv4Address::GetAny ());
   m_endPoints.push_back (endPoint);
   NS_LOG_DEBUG ("Now have >>" << m_endPoints.size () << "<< endpoints.");
   return endPoint;
 }
 
 Ipv4EndPoint *
-Ipv4EndPointDemux::Allocate (Ipv4Address address)
+Ipv4EndPointDemux::Allocate (Ipv4Address address, Ipv4Address localInterface)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << address);
@@ -100,7 +100,7 @@ Ipv4EndPointDemux::Allocate (Ipv4Address address)
       NS_LOG_WARN ("Ephemeral port allocation failed.");
       return 0;
     }
-  Ipv4EndPoint *endPoint = new Ipv4EndPoint (address, port);
+  Ipv4EndPoint *endPoint = new Ipv4EndPoint (address, port, localInterface);
   m_endPoints.push_back (endPoint);
   NS_LOG_DEBUG ("Now have >>" << m_endPoints.size () << "<< endpoints.");
   return endPoint;
@@ -110,20 +110,22 @@ Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (uint16_t port)
 {
   NS_LOG_FUNCTION;
-  return Allocate (Ipv4Address::GetAny (), port);
+  NS_LOG_PARAMS (this <<  port);
+
+  return Allocate (Ipv4Address::GetAny (), port, Ipv4Address::GetAny ());
 }
 
 Ipv4EndPoint *
-Ipv4EndPointDemux::Allocate (Ipv4Address address, uint16_t port)
+Ipv4EndPointDemux::Allocate (Ipv4Address address, uint16_t port, Ipv4Address localInterface)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << address << port);
+  NS_LOG_PARAMS (this << address << port << localInterface);
   if (LookupLocal (address, port)) 
     {
       NS_LOG_WARN ("Duplicate address/port; failing.");
       return 0;
     }
-  Ipv4EndPoint *endPoint = new Ipv4EndPoint (address, port);
+  Ipv4EndPoint *endPoint = new Ipv4EndPoint (address, port, localInterface);
   m_endPoints.push_back (endPoint);
   NS_LOG_DEBUG ("Now have >>" << m_endPoints.size () << "<< endpoints.");
   return endPoint;
@@ -131,7 +133,8 @@ Ipv4EndPointDemux::Allocate (Ipv4Address address, uint16_t port)
 
 Ipv4EndPoint *
 Ipv4EndPointDemux::Allocate (Ipv4Address localAddress, uint16_t localPort,
-			     Ipv4Address peerAddress, uint16_t peerPort)
+			     Ipv4Address peerAddress, uint16_t peerPort,
+                             Ipv4Address localInterface)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << localAddress << localPort << peerAddress << peerPort);
@@ -147,7 +150,7 @@ Ipv4EndPointDemux::Allocate (Ipv4Address localAddress, uint16_t localPort,
           return 0;
         }
     }
-  Ipv4EndPoint *endPoint = new Ipv4EndPoint (localAddress, localPort);
+  Ipv4EndPoint *endPoint = new Ipv4EndPoint (localAddress, localPort, localInterface);
   endPoint->SetPeer (peerAddress, peerPort);
   m_endPoints.push_back (endPoint);
 
@@ -213,17 +216,34 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
       bool isBroadcast = 
         (daddr.IsBroadcast () ||
          daddr.IsSubnetDirectedBroadcast (incomingInterface->GetNetworkMask ()));
-      NS_LOG_DEBUG ("dest addr " << daddr << " broadcast? " << isBroadcast);
+      Ipv4Address incomingInterfaceAddr = incomingInterface->GetAddress ();
 
-      NS_LOG_LOGIC ("Local address matches: " << 
-        bool ((*i)->GetLocalAddress () == daddr || isBroadcast));
+      NS_LOG_DEBUG ("dest addr " << daddr << " broadcast? " << isBroadcast
+                    << " localInterface="<< (*i)->GetLocalInterface ());
+      bool localAddressMatches;
+      if (isBroadcast)
+        {
+          if ((*i)->GetLocalInterface () == Ipv4Address::GetAny ())
+            {
+              localAddressMatches = true;
+            }
+          else
+            {
+              localAddressMatches = ((*i)->GetLocalInterface () == incomingInterfaceAddr);
+            }
+        }
+      else
+        {
+          localAddressMatches = ((*i)->GetLocalAddress () == daddr);
+        }
+      NS_LOG_LOGIC ("Local address matches: " << localAddressMatches);
       NS_LOG_LOGIC ("Peer port matches: " << 
         bool ((*i)->GetPeerPort () == sport || (*i)->GetPeerPort () == 0));
       NS_LOG_LOGIC ("Peer address matches: " << 
         bool ((*i)->GetPeerAddress () == saddr ||
         (*i)->GetPeerAddress () == Ipv4Address::GetAny ()));
       
-      if ( ((*i)->GetLocalAddress () == daddr || isBroadcast)
+      if ( localAddressMatches
            && ((*i)->GetPeerPort () == sport || (*i)->GetPeerPort () == 0)
            && ((*i)->GetPeerAddress () == saddr || (*i)->GetPeerAddress () == Ipv4Address::GetAny ()))
         {

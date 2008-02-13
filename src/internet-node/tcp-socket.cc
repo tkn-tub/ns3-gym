@@ -155,6 +155,14 @@ TcpSocket::Bind (const Address &address)
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
+  Ipv4Address localInterface = Ipv4Address::GetAny ();
+  if (ipv4 != Ipv4Address::GetAny ())
+    {
+      Ptr<Ipv4> ipv4_api = m_node->GetObject<Ipv4> ();
+      // Assert that the given address matches an existing local interface
+      NS_ASSERT (ipv4_api->FindInterfaceForAddr (ipv4) != 0);
+      localInterface = ipv4;
+    }
   if (ipv4 == Ipv4Address::GetAny () && port == 0)
     {
       m_endPoint = m_tcp->Allocate ();
@@ -167,12 +175,12 @@ TcpSocket::Bind (const Address &address)
     }
   else if (ipv4 != Ipv4Address::GetAny () && port == 0)
     {
-      m_endPoint = m_tcp->Allocate (ipv4);
+      m_endPoint = m_tcp->Allocate (ipv4, localInterface);
       NS_LOG_LOGIC ("TcpSocket "<<this<<" got an endpoint: "<<m_endPoint);
     }
   else if (ipv4 != Ipv4Address::GetAny () && port != 0)
     {
-      m_endPoint = m_tcp->Allocate (ipv4, port);
+      m_endPoint = m_tcp->Allocate (ipv4, port, localInterface);
       NS_LOG_LOGIC ("TcpSocket "<<this<<" got an endpoint: "<<m_endPoint);
     }
 
