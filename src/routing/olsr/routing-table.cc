@@ -122,7 +122,7 @@ RoutingTable::RequestRoute (uint32_t ifIndex,
 
       NS_LOG_DEBUG ("Olsr node " << m_mainAddress
                     << ": RouteRequest for dest=" << ipHeader.GetDestination ()
-                    << " --> destHop=" << entry2.nextAddr
+                    << " --> nestHop=" << entry2.nextAddr
                     << " interface=" << entry2.interface);
       
       routeReply (true, route, packet, ipHeader);
@@ -130,10 +130,10 @@ RoutingTable::RequestRoute (uint32_t ifIndex,
     }
   else
     {
+#ifdef NS3_LOG_ENABLE
       NS_LOG_DEBUG ("Olsr node " << m_mainAddress
                     << ": RouteRequest for dest=" << ipHeader.GetDestination ()
                     << " --> NOT FOUND; ** Dumping routing table...");
-#if 0
       for (std::map<Ipv4Address, RoutingTableEntry>::const_iterator iter = m_table.begin ();
            iter != m_table.end (); iter++)
         {
@@ -191,6 +191,9 @@ RoutingTable::AddEntry (Ipv4Address const &dest,
   NS_LOG_PARAM (distance);
   NS_LOG_PARAM (m_mainAddress);
   NS_LOG_PARAMS_END ();
+
+  NS_ASSERT (distance > 0);
+
   // Creates a new rt entry with specified values
   RoutingTableEntry &entry = m_table[dest];
 
@@ -214,8 +217,11 @@ RoutingTable::AddEntry (Ipv4Address const &dest,
   NS_LOG_PARAM (distance);
   NS_LOG_PARAM (m_mainAddress);
   NS_LOG_PARAMS_END ();
-  RoutingTableEntry entry;
+
+  NS_ASSERT (distance > 0);
   NS_ASSERT (m_ipv4);
+
+  RoutingTableEntry entry;
   for (uint32_t i = 0; i < m_ipv4->GetNInterfaces (); i++)
     {
       if (m_ipv4->GetAddress (i) == interfaceAddress)

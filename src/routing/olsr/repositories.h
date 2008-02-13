@@ -56,6 +56,15 @@ operator == (const IfaceAssocTuple &a, const IfaceAssocTuple &b)
           && a.mainAddr == b.mainAddr);
 }
 
+static inline std::ostream&
+operator << (std::ostream &os, const IfaceAssocTuple &tuple)
+{
+  os << "IfaceAssocTuple(ifaceAddr=" << tuple.ifaceAddr
+     << ", mainAddr=" << tuple.mainAddr
+     << ", time=" << tuple.time << ")";
+  return os;
+}
+
 /// A Link Tuple.
 struct LinkTuple
 {
@@ -67,8 +76,6 @@ struct LinkTuple
   Time symTime;
   /// The link is considered unidirectional until this time.
   Time asymTime;
-  /// The link is considered lost until this time (used for link layer notification).
-  Time lostTime;
   /// Time at which this tuple expires and must be removed.
   Time time;
 };
@@ -78,6 +85,17 @@ operator == (const LinkTuple &a, const LinkTuple &b)
 {
   return (a.localIfaceAddr == b.localIfaceAddr
           && a.neighborIfaceAddr == b.neighborIfaceAddr);
+}
+
+static inline std::ostream&
+operator << (std::ostream &os, const LinkTuple &tuple)
+{
+  os << "LinkTuple(localIfaceAddr=" << tuple.localIfaceAddr
+     << ", neighborIfaceAddr=" << tuple.neighborIfaceAddr
+     << ", symTime=" << tuple.symTime
+     << ", asymTime=" << tuple.asymTime
+     << ", expTime=" << tuple.time;
+  return os;
 }
 
 /// A Neighbor Tuple.
@@ -102,6 +120,15 @@ operator == (const NeighborTuple &a, const NeighborTuple &b)
           && a.willingness == b.willingness);
 }
 
+static inline std::ostream&
+operator << (std::ostream &os, const NeighborTuple &tuple)
+{
+  os << "NeighborTuple(neighborMainAddr=" << tuple.neighborMainAddr
+     << ", status=" << (tuple.status == NeighborTuple::STATUS_SYM? "SYM" : "NOT_SYM")
+     << ", willingness=" << (int) tuple.willingness << ")";
+  return os;
+}
+
 /// A 2-hop Tuple.
 struct TwoHopNeighborTuple
 {
@@ -112,6 +139,16 @@ struct TwoHopNeighborTuple
   /// Time at which this tuple expires and must be removed.
   Time expirationTime;        // previously called 'time_'
 };
+
+static inline std::ostream&
+operator << (std::ostream &os, const TwoHopNeighborTuple &tuple)
+{
+  os << "TwoHopNeighborTuple(neighborMainAddr=" << tuple.neighborMainAddr
+     << ", twoHopNeighborAddr=" << tuple.twoHopNeighborAddr
+     << ", expirationTime=" << tuple.expirationTime
+     << ")";
+  return os;
+}
 
 static inline bool
 operator == (const TwoHopNeighborTuple &a, const TwoHopNeighborTuple &b)
@@ -180,6 +217,17 @@ operator == (const TopologyTuple &a, const TopologyTuple &b)
   return (a.destAddr == b.destAddr
           && a.lastAddr == b.lastAddr
           && a.sequenceNumber == b.sequenceNumber);
+}
+
+static inline std::ostream&
+operator << (std::ostream &os, const TopologyTuple &tuple)
+{
+  os << "TopologyTuple(destAddr=" << tuple.destAddr
+     << ", lastAddr=" << tuple.lastAddr
+     << ", sequenceNumber=" << (int) tuple.sequenceNumber
+     << ", expirationTime=" << tuple.expirationTime
+     << ")";
+  return os;
 }
 
 

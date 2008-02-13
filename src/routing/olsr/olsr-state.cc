@@ -149,6 +149,16 @@ OlsrState::EraseNeighborTuple (const Ipv4Address &mainAddr)
 void
 OlsrState::InsertNeighborTuple (NeighborTuple const &tuple)
 {
+  for (NeighborSet::iterator it = m_neighborSet.begin ();
+       it != m_neighborSet.end (); it++)
+    {
+      if (it->neighborMainAddr == tuple.neighborMainAddr)
+        {
+          // Update it
+          *it = tuple;
+          return;
+        }
+    }
   m_neighborSet.push_back (tuple);
 }
 

@@ -77,8 +77,6 @@ private:
   Time m_midInterval;
   /// Willingness for forwarding packets on behalf of other nodes.
   uint8_t m_willingness;
-  /// Determines if layer 2 notifications are enabled or not.
-  bool m_useL2Notifications;
 	
   /// Routing table.
   Ptr<RoutingTable> m_routingTable;
@@ -124,6 +122,8 @@ protected:
   void TopologyTupleTimerExpire (TopologyTuple tuple);
   void IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple);
 
+  void IncrementAnsn ();
+
   /// A list of pending messages which are buffered awaiting for being sent.
   olsr::MessageList m_queuedMessages;
   Timer m_queuedMessagesTimer; // timer for throttling outgoing messages
@@ -141,7 +141,7 @@ protected:
   void NeighborLoss (const LinkTuple &tuple);
   void AddDuplicateTuple (const DuplicateTuple &tuple);
   void RemoveDuplicateTuple (const DuplicateTuple &tuple);
-  LinkTuple & AddLinkTuple (const LinkTuple &tuple, uint8_t willingness);
+  void LinkTupleAdded (const LinkTuple &tuple, uint8_t willingness);
   void RemoveLinkTuple (const LinkTuple &tuple);
   void LinkTupleUpdated (const LinkTuple &tuple);
   void AddNeighborTuple (const NeighborTuple &tuple);
@@ -177,8 +177,11 @@ protected:
   int Degree (NeighborTuple const &tuple);
 
   Ipv4Address m_mainAddress;
-  Ptr<Socket> m_receiveSocket; // UDP socket for receving OSLR packets
-  Ptr<Socket> m_sendSocket; // UDP socket for sending OSLR packets
+
+  // One socket per interface, each bound to that interface's address
+  // (reason: for OLSR Link Sensing we need to know on which interface
+  // HELLO messages arrive)
+  std::map< Ptr<Socket>, Ipv4Address > m_socketAddresses;
 
   CallbackTraceSource <const PacketHeader &,
                        const MessageList &> m_rxPacketTrace;

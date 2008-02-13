@@ -63,6 +63,10 @@ public:
   {
     return m_neighborSet;
   }
+  NeighborSet & GetNeighbors ()
+  {
+    return m_neighborSet;
+  }
   NeighborTuple* FindNeighborTuple (const Ipv4Address &mainAddr);
   const NeighborTuple* FindSymNeighborTuple (const Ipv4Address &mainAddr) const;
   NeighborTuple* FindNeighborTuple (const Ipv4Address &mainAddr,
@@ -73,6 +77,10 @@ public:
 
   // Two-hop neighbor
   const TwoHopNeighborSet & GetTwoHopNeighbors () const
+  {
+    return m_twoHopNeighborSet;
+  }
+  TwoHopNeighborSet & GetTwoHopNeighbors ()
   {
     return m_twoHopNeighborSet;
   }
