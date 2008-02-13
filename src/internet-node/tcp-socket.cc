@@ -664,7 +664,7 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
     case SERV_NOTIFY:
       NS_LOG_LOGIC ("TcpSocket " << this <<" Action SERV_NOTIFY");
       NS_LOG_LOGIC ("TcpSocket " << this << " Connected!");
-      NotifyConnectionSucceeded ();
+      NotifyNewConnectionCreated (this, fromAddress);
       m_connected = true; // ! This is bogus; fix when we clone the tcp
       m_endPoint->SetPeer (m_defaultAddress, m_defaultPort);
       //treat the connection orientation final ack as a newack
