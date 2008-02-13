@@ -2255,20 +2255,23 @@ AgentImpl::MidTimerExpire ()
 /// \param tuple The tuple which has expired.
 ///
 void
-AgentImpl::DupTupleTimerExpire (DuplicateTuple tuple)
+AgentImpl::DupTupleTimerExpire (DuplicateTuple tuple_)
 {
-  DuplicateTuple *tuplePtr =
-    m_state.FindDuplicateTuple (tuple.address, tuple.sequenceNumber);
-
-  if (tuplePtr && tuplePtr->expirationTime < Simulator::Now ())
+  DuplicateTuple *tuple =
+    m_state.FindDuplicateTuple (tuple_.address, tuple_.sequenceNumber);
+  if (tuple == NULL)
     {
-      RemoveDuplicateTuple (*tuplePtr);
+      return;
+    }
+  if (tuple->expirationTime < Simulator::Now ())
+    {
+      RemoveDuplicateTuple (*tuple);
     }
   else
     {
-      m_events.Track (Simulator::Schedule (DELAY (tuple.expirationTime),
+      m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
                                            &AgentImpl::DupTupleTimerExpire, this,
-                                           *tuplePtr));
+                                           *tuple));
     }
 }
 
@@ -2290,8 +2293,11 @@ AgentImpl::LinkTupleTimerExpire (LinkTuple tuple_)
 
   // the tuple parameter may be a stale copy; get a newer version from m_state
   LinkTuple *tuple = m_state.FindLinkTuple (tuple_.neighborIfaceAddr);
-  
-  if (tuple && tuple->time < now)
+  if (tuple == NULL)
+    {
+      return;
+    }
+  if (tuple->time < now)
     {
       RemoveLinkTuple (*tuple);
     }
@@ -2327,8 +2333,11 @@ AgentImpl::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple_)
   TwoHopNeighborTuple *tuple;
   tuple = m_state.FindTwoHopNeighborTuple (tuple_.neighborMainAddr,
                                            tuple_.twoHopNeighborAddr);
-
-  if (tuple && tuple->expirationTime < Simulator::Now ())
+  if (tuple == NULL)
+    {
+      return;
+    }
+  if (tuple->expirationTime < Simulator::Now ())
     {
       RemoveTwoHopNeighborTuple (*tuple);
     }
@@ -2350,9 +2359,12 @@ AgentImpl::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple_)
 void
 AgentImpl::MprSelTupleTimerExpire (MprSelectorTuple tuple_)
 {
-  MprSelectorTuple *tuple;
-  tuple = m_state.FindMprSelectorTuple (tuple_.mainAddr);
-  if (tuple && tuple->expirationTime < Simulator::Now ())
+  MprSelectorTuple *tuple = m_state.FindMprSelectorTuple (tuple_.mainAddr);
+  if (tuple == NULL)
+    {
+      return;
+    }
+  if (tuple->expirationTime < Simulator::Now ())
     {
       RemoveMprSelectorTuple (*tuple);
     }
@@ -2376,7 +2388,11 @@ AgentImpl::TopologyTupleTimerExpire (TopologyTuple tuple_)
 {
   TopologyTuple *tuple = m_state.FindTopologyTuple (tuple_.destAddr,
                                                     tuple_.lastAddr);
-  if (tuple && tuple->expirationTime < Simulator::Now ())
+  if (tuple == NULL)
+    {
+      return;
+    }
+  if (tuple->expirationTime < Simulator::Now ())
     {
       RemoveTopologyTuple (*tuple);
     }
@@ -2397,7 +2413,11 @@ void
 AgentImpl::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple_)
 {
   IfaceAssocTuple *tuple = m_state.FindIfaceAssocTuple (tuple_.ifaceAddr);
-  if (tuple && tuple->time < Simulator::Now ())
+  if (tuple == NULL)
+    {
+      return;
+    }
+  if (tuple->time < Simulator::Now ())
     {
       RemoveIfaceAssocTuple (*tuple);
     }
