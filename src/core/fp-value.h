@@ -26,11 +26,11 @@ private:
 };
 
 
-template <typename U, typename T>
-Ptr<ParamSpec> MakeFpParamSpec (U T::*memberVariable,
+template <typename T1>
+Ptr<ParamSpec> MakeFpParamSpec (T1 a1,
 				double initialValue);
-template <typename U, typename T>
-Ptr<ParamSpec> MakeFpParamSpec (U T::*memberVariable,
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeFpParamSpec (T1 a1, T2 a2,
 				double initialValue,
 				double minValue,
 				double maxValue);
@@ -42,37 +42,65 @@ namespace ns3 {
 class FpValueChecker
 {
 public:
-  FpValueChecker (double min, double max);
-  bool Check (double v) const;
+  FpValueChecker (double minValue, double maxValue);
+  bool Check (double value) const;
+
+  template <typename T, typename U>
+  static FpValueChecker Create (U T::*) {
+    return FpValueChecker (-std::numeric_limits<U>::max (),
+			   std::numeric_limits<U>::max ());
+  }
+  template <typename T, typename U>
+  static FpValueChecker Create (U (T::*) (void) const) {
+    return FpValueChecker (-std::numeric_limits<U>::max (),
+			   std::numeric_limits<U>::max ());
+  }
+  template <typename T, typename U>
+  static FpValueChecker Create (void (T::*) (U)) {
+    return FpValueChecker (-std::numeric_limits<U>::max (),
+			   std::numeric_limits<U>::max ());
+  }
 private:
   double m_min;
   double m_max;
 };
 
-template <typename U, typename T>
-Ptr<ParamSpec>
-MakeFpParamSpec (U T::*memberVariable,
-		 double initialValue)
+template <typename T1>
+Ptr<ParamSpec> 
+MakeFpParamSpec (T1 a1,
+		  double initialValue)
 {
-  double minValue = -std::numeric_limits<U>::max ();
-  double maxValue = std::numeric_limits<U>::max ();
-  return MakeMemberVariableParamSpecWithChecker (memberVariable, 
-						 FpValue (initialValue), 
-						 FpValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker (a1, FpValue (initialValue),
+					 FpValueChecker::Create (a1));
 }
 
-template <typename U, typename T>
-Ptr<ParamSpec>
-MakeFpParamSpec (U T::*memberVariable,
-		 double initialValue,
-		 double minValue,
-		 double maxValue)
+template <typename T1>
+Ptr<ParamSpec> MakeFpParamSpec (T1 a1,
+				 double initialValue,
+				 double minValue,
+				 double maxValue)
 {
-  return MakeMemberVariableParamSpecWithChecker (memberVariable, 
-						 FpValue (initialValue), 
-						 FpValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker (a1, FpValue (initialValue),
+					 FpValueChecker (minValue, maxValue));
+}
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeFpParamSpec (T1 a1, T2 a2, 
+				 double initialValue)
+{
+  return MakeParamSpecHelperWithChecker (a1, a2, FpValue (initialValue),
+					 FpValueChecker::Create (a1));
+}
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeFpParamSpec (T1 a1, T2 a2,
+				 double initialValue,
+				 double minValue,
+				 double maxValue)
+{
+  return MakeParamSpecHelperWithChecker (a1, a2, FpValue (initialValue),
+					 FpValueChecker (minValue, maxValue));
 }
 
 } // namespace ns3
+
 
 #endif /* FP_VALUE_H */

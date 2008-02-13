@@ -82,52 +82,33 @@ private:
   Vector m_vector;
 };
 
-template <typename T>
+template <typename T1>
 Ptr<ParamSpec>
-MakeVectorParamSpec (Vector T::*memberVariable, const Vector &initialValue);
+MakeVectorParamSpec (T1 a1, const Vector &initialValue);
 
-template <typename T>
+template <typename T1, typename T2>
 Ptr<ParamSpec>
-MakeVectorParamSpec (void (T::*setter) (const Vector &), 
-                     Vector (T::*getter) (void) const,
+MakeVectorParamSpec (T1 a1, T2 a2,
                      const Vector &initialValue);
-
-template <typename T>
-Ptr<ParamSpec>
-MakeVectorParamSpec (Vector (T::*getter) (void) const,
-                     const Vector &initialValue);
-
 
 } // namespace ns3
 
 namespace ns3 {
 
-template <typename T>
+template <typename T1>
 Ptr<ParamSpec>
-MakeVectorParamSpec (Vector T::*memberVariable, const Vector &initialValue)
+MakeVectorParamSpec (T1 a1, const Vector &initialValue)
 {
-  return MakeMemberVariableParamSpec (memberVariable, VectorValue (initialValue));
+  return MakeParamSpecHelper (a1, VectorValue (initialValue));
 }
 
-template <typename T>
+template <typename T1, typename T2>
 Ptr<ParamSpec>
-MakeVectorParamSpec (void (T::*setter) (const Vector &), 
-                     Vector (T::*getter) (void) const,
+MakeVectorParamSpec (T1 a1, T2 a2,
                      const Vector &initialValue)
 {
-  return MakeMemberMethodParamSpec (setter, getter, VectorValue (initialValue));
+  return MakeParamSpecHelper (a1, a2, VectorValue (initialValue));
 }
-
-template <typename T>
-Ptr<ParamSpec>
-MakeVectorParamSpec (Vector (T::*getter) (void) const,
-                     const Vector &initialValue)
-{
-  return MakeMemberMethodGetterParamSpec (getter, VectorValue (initialValue));
-}
-
-
-
 
 } // namespace ns3
 

@@ -24,24 +24,22 @@ private:
   uint64_t m_value;
 };
 
-template <typename U, typename T>
-Ptr<const ParamSpec> MakeUintParamSpec (uint64_t initialValue,
-					U T::*memberVariable);
-template <typename U, typename T>
-Ptr<const ParamSpec> MakePtrUintParamSpec (uint64_t initialValue,
-					   uint64_t minValue,
-					   uint64_t maxValue,
-					   U T::*memberVariable);
-template <typename U, typename T>
-Ptr<const ParamSpec> MakeUintParamSpec (uint64_t initialValue,
-					void (T::*setter) (U),
-					U (T::*getter) (void) const);
-template <typename U, typename T>
-Ptr<const ParamSpec> MakeUintParamSpec (uint64_t initialValue,
-					uint64_t minValue,
-					uint64_t maxValue,
-					void (T::*setter) (U),
-					U (T::*getter) (void) const);
+template <typename T1>
+Ptr<ParamSpec> MakeUintParamSpec (T1 a1,
+				 uint64_t initialValue);
+template <typename T1>
+Ptr<ParamSpec> MakeUintParamSpec (T1 a1,
+				 uint64_t initialValue,
+				 uint64_t minValue,
+				 uint64_t maxValue);
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2,
+				 uint64_t initialValue);
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2,
+				 uint64_t initialValue,
+				 uint64_t minValue,
+				 uint64_t maxValue);
 
 } // namespace ns3
 
@@ -52,56 +50,61 @@ class UintValueChecker
 public:
   UintValueChecker (uint64_t minValue, uint64_t maxValue);
   bool Check (const uint64_t &value) const;
+
+  template <typename T, typename U>
+  static UintValueChecker Create (U T::*) {
+    return UintValueChecker (std::numeric_limits<U>::min (),
+			    std::numeric_limits<U>::max ());
+  }
+  template <typename T, typename U>
+  static UintValueChecker Create (U (T::*) (void) const) {
+    return UintValueChecker (std::numeric_limits<U>::min (),
+			    std::numeric_limits<U>::max ());
+  }
+  template <typename T, typename U>
+  static UintValueChecker Create (void (T::*) (U)) {
+    return UintValueChecker (std::numeric_limits<U>::min (),
+			    std::numeric_limits<U>::max ());
+  }
 private:
   uint64_t m_minValue;
   uint64_t m_maxValue;
 };
 
-template <typename U, typename T>
-Ptr<const ParamSpec> 
-MakeUintParamSpec (U T::*memberVariable,
-		   uint64_t initialValue)
+template <typename T1>
+Ptr<ParamSpec> 
+MakeUintParamSpec (T1 a1,
+		  uint64_t initialValue)
 {
-  uint64_t minValue = std::numeric_limits<U>::min ();
-  uint64_t maxValue = std::numeric_limits<U>::max ();
-  return MakeMemberVariableParamSpecWithChecker (memberVariable, UintValue (initialValue),
-						 UintValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker (a1, UintValue (initialValue),
+					 UintValueChecker::Create (a1));
 }
 
-template <typename U, typename T>
-Ptr<const ParamSpec> 
-MakeUintParamSpec (U T::*memberVariable,
-		   uint64_t initialValue,
-		   uint64_t minValue,
-		   uint64_t maxValue)
+template <typename T1>
+Ptr<ParamSpec> MakeUintParamSpec (T1 a1,
+				 uint64_t initialValue,
+				 uint64_t minValue,
+				 uint64_t maxValue)
 {
-  return MakeMemberVariableParamSpecWithChecker (memberVariable, UintValue (initialValue),
-						 UintValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker (a1, UintValue (initialValue),
+					 UintValueChecker (minValue, maxValue));
 }
-
-template <typename U, typename T>
-Ptr<const ParamSpec> 
-MakeUintParamSpec (void (T::*setter) (U),
-		   U (T::*getter) (void) const,
-		   uint64_t initialValue)
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2, 
+				 uint64_t initialValue)
 {
-  uint64_t minValue = std::numeric_limits<U>::min ();
-  uint64_t maxValue = std::numeric_limits<U>::max ();
-  return MakeMemberMethodParamSpecWithChecker (setter, getter, UintValue (initialValue),
-					       UintValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker (a1, a2, UintValue (initialValue),
+					 UintValueChecker::Create (a1));
 }
-template <typename U, typename T>
-Ptr<const ParamSpec> 
-MakeUintParamSpec (void (T::*setter) (U),
-		   U (T::*getter) (void) const,
-		   uint64_t initialValue,
-		   uint64_t minValue,
-		   uint64_t maxValue)
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2,
+				 uint64_t initialValue,
+				 uint64_t minValue,
+				 uint64_t maxValue)
 {
-  return MakeMemberMethodParamSpecWithChecker (setter, getter, UintValue (initialValue),
-					       UintValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker (a1, a2, UintValue (initialValue),
+					 UintValueChecker (minValue, maxValue));
 }
-
 
 } // namespace ns3
 

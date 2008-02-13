@@ -24,21 +24,19 @@ private:
   int64_t m_value;
 };
 
-template <typename U, typename T>
-Ptr<ParamSpec> MakeIntParamSpec (U T::*memberVariable,
+template <typename T1>
+Ptr<ParamSpec> MakeIntParamSpec (T1 a1,
 				 int64_t initialValue);
-template <typename U, typename T>
-Ptr<ParamSpec> MakeIntParamSpec (U T::*memberVariable,
+template <typename T1>
+Ptr<ParamSpec> MakeIntParamSpec (T1 a1,
 				 int64_t initialValue,
 				 int64_t minValue,
 				 int64_t maxValue);
-template <typename U, typename T>
-Ptr<ParamSpec> MakeIntParamSpec (void (T::*setter) (U),
-				 U (T::*getter) (void) const,
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2,
 				 int64_t initialValue);
-template <typename U, typename T>
-Ptr<ParamSpec> MakeIntParamSpec (void (T::*setter) (U),
-				 U (T::*getter) (void) const,
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2,
 				 int64_t initialValue,
 				 int64_t minValue,
 				 int64_t maxValue);
@@ -52,53 +50,61 @@ class IntValueChecker
 public:
   IntValueChecker (int64_t minValue, int64_t maxValue);
   bool Check (const int64_t &value) const;
+
+  template <typename T, typename U>
+  static IntValueChecker Create (U T::*) {
+    return IntValueChecker (std::numeric_limits<U>::min (),
+			    std::numeric_limits<U>::max ());
+  }
+  template <typename T, typename U>
+  static IntValueChecker Create (U (T::*) (void) const) {
+    return IntValueChecker (std::numeric_limits<U>::min (),
+			    std::numeric_limits<U>::max ());
+  }
+  template <typename T, typename U>
+  static IntValueChecker Create (void (T::*) (U)) {
+    return IntValueChecker (std::numeric_limits<U>::min (),
+			    std::numeric_limits<U>::max ());
+  }
 private:
   int64_t m_minValue;
   int64_t m_maxValue;
 };
 
-
-template <typename U, typename T>
+template <typename T1>
 Ptr<ParamSpec> 
-MakeIntParamSpec (U T::*memberVariable,
+MakeIntParamSpec (T1 a1,
 		  int64_t initialValue)
 {
-  int64_t minValue = std::numeric_limits<U>::min ();
-  int64_t maxValue = std::numeric_limits<U>::max ();
-  return MakeMemberVariableParamSpecWithChecker (memberVariable, IntValue (initialValue),
-						 IntValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker (a1, IntValue (initialValue),
+					 IntValueChecker::Create (a1));
 }
 
-template <typename U, typename T>
-Ptr<ParamSpec> MakeIntParamSpec (U T::*memberVariable,
+template <typename T1>
+Ptr<ParamSpec> MakeIntParamSpec (T1 a1,
 				 int64_t initialValue,
 				 int64_t minValue,
 				 int64_t maxValue)
 {
-  return MakeMemberVariableParamSpecWithChecker (memberVariable, IntValue (initialValue),
-						 IntValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker (a1, IntValue (initialValue),
+					 IntValueChecker (minValue, maxValue));
 }
-template <typename U, typename T>
-Ptr<ParamSpec> MakeIntParamSpec (void (T::*setter) (U),
-				 U (T::*getter) (void) const,
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2, 
 				 int64_t initialValue)
 {
-  int64_t minValue = std::numeric_limits<U>::min ();
-  int64_t maxValue = std::numeric_limits<U>::max ();
-  return MakeMemberMethodParamSpecWithChecker (setter, getter, IntValue (initialValue),
-					       IntValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker (a1, a2, IntValue (initialValue),
+					 IntValueChecker::Create (a1));
 }
-template <typename U, typename T>
-Ptr<ParamSpec> MakeIntParamSpec (void (T::*setter) (U),
-				 U (T::*getter) (void) const,
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2,
 				 int64_t initialValue,
 				 int64_t minValue,
 				 int64_t maxValue)
 {
-  return MakeMemberMethodParamSpecWithChecker (setter, getter, IntValue (initialValue),
-					       IntValueChecker (minValue, maxValue));
+  return MakeParamSpecHelperWithChecker (a1, a2, IntValue (initialValue),
+					 IntValueChecker (minValue, maxValue));
 }
-
 
 } // namespace ns3
 

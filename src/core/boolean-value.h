@@ -25,20 +25,11 @@ private:
 };
 
 
-template <typename T>
-Ptr<ParamSpec> MakeBooleanParamSpec (bool T::*v, bool initialValue);
+template <typename T1>
+Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, bool initialValue);
 
-template <typename T>
-Ptr<ParamSpec> MakeBooleanParamSpec (bool (T::*getter) (void) const, 
-				     bool initialValue);
-
-template <typename T>
-Ptr<ParamSpec> MakeBooleanParamSpec (bool (T::*getter) (void) const,
-				     void (T::*setter) (bool),
-				     bool initialValue);
-template <typename T>
-Ptr<ParamSpec> MakeBooleanParamSpec (void (T::*setter) (bool),
-				     bool initialValue);
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, T2 a2, bool initialValue);
 
 } // namespace ns3
 
@@ -46,33 +37,19 @@ Ptr<ParamSpec> MakeBooleanParamSpec (void (T::*setter) (bool),
 // Implementation of template functions below.
 namespace ns3 {
 
-template <typename T>
-Ptr<ParamSpec> MakeBooleanParamSpec (bool T::*v, bool initialValue)
+template <typename T1>
+Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, bool initialValue)
 {
-  return MakeMemberVariableParamSpec (v, BooleanValue (initialValue));
+  return MakeParamSpecHelper (a1, BooleanValue (initialValue));
 }
 
-template <typename T>
-Ptr<ParamSpec> MakeBooleanParamSpec (void (T::*setter) (bool),
-				     bool (T::*getter) (void) const,
-				     bool initialValue)
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, T2 a2, bool initialValue)
 {
-  return MakeMemberMethodParamSpec (setter, getter, BooleanValue (initialValue));
+  return MakeParamSpecHelper (a1, a2, BooleanValue (initialValue));
 }
 
-template <typename T>
-Ptr<ParamSpec> MakeBooleanParamSpec (bool (T::*getter) (void) const,
-				     bool initialValue)
-{
-  return MakeMemberMethodGetterParamSpec (getter, BooleanValue (initialValue));
-}
 
-template <typename T>
-Ptr<ParamSpec> MakeBooleanParamSpec (void (T::*setter) (bool),
-				     bool initialValue)
-{
-  return MakeMemberMethodSetterParamSpec (setter, BooleanValue (initialValue));
-}
 
 } // namespace ns3
 

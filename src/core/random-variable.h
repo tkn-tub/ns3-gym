@@ -673,21 +673,33 @@ private:
   RandomVariable m_variable;
 };
 
-template <typename T>
-Ptr<ParamSpec> MakeRandomVariableParamSpec (RandomVariable T::*m_memberVariable,
+template <typename T1>
+Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1,
                                             RandomVariable initialValue);
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2,
+                                            RandomVariable initialValue);
+
 
 }//namespace ns3
 
 
 namespace ns3 {
 
-template <typename T>
-Ptr<ParamSpec> MakeRandomVariableParamSpec (RandomVariable T::*memberVariable,
+template <typename T1>
+Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1,
                                             RandomVariable initialValue)
 {
-  return MakeMemberVariableParamSpec (memberVariable, RandomVariableValue (initialValue));
+  return MakeParamSpecHelper (a1, RandomVariableValue (initialValue));
 }
+
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2,
+                                            RandomVariable initialValue)
+{
+  return MakeParamSpecHelper (a1, a2, RandomVariableValue (initialValue));
+}
+
 
 } // namespace ns3
 #endif

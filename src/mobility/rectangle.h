@@ -87,22 +87,29 @@ private:
   Rectangle m_rectangle;
 };
 
-template <typename T>
-Ptr<ParamSpec> MakeRectangleParamSpec (Rectangle T::*memberVariable,
+template <typename T1>
+Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1,
+                                       Rectangle initialValue);
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1, T2 a2,
                                        Rectangle initialValue);
 
 } // namespace ns3
 
 namespace ns3 {
 
-template <typename T>
-Ptr<ParamSpec>
-MakeRectangleParamSpec (Rectangle T::*memberVariable,
-                        Rectangle initialValue)
+template <typename T1>
+Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1,
+                                       Rectangle initialValue)
 {
-  return MakeMemberVariableParamSpec (memberVariable, RectangleValue (initialValue));
+  return MakeParamSpecHelper (a1, RectangleValue (initialValue));
 }
-
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1, T2 a2,
+                                       Rectangle initialValue)
+{
+  return MakeParamSpecHelper (a1, a2, RectangleValue (initialValue));
+}
 
 } // namespace ns3
 

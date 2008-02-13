@@ -688,19 +688,30 @@ private:
   Time m_time;
 };
 
-template <typename T>
-Ptr<ParamSpec> MakeTimeParamSpec (Time T::*memberVariable,
+template <typename T1>
+Ptr<ParamSpec> MakeTimeParamSpec (T1 a1,
                                   Time initialValue);
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2,
+                                  Time initialValue);
+
 
 } // namespace ns3
 
 namespace ns3 {
 
-template <typename T>
-Ptr<ParamSpec> MakeTimeParamSpec (Time T::*memberVariable,
+template <typename T1>
+Ptr<ParamSpec> MakeTimeParamSpec (T1 a1,
                                   Time initialValue)
 {
-  return MakeMemberVariableParamSpec (memberVariable, TimeValue (initialValue));
+  return MakeParamSpecHelper (a1, TimeValue (initialValue));
+}
+
+template <typename T1, typename T2>
+Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2,
+                                  Time initialValue)
+{
+  return MakeParamSpecHelper (a1, a2, TimeValue (initialValue));
 }
 
 
