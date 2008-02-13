@@ -185,6 +185,36 @@ uint64_t DataRate::GetBitRate() const
   return m_bps;
 }
 
+DataRate::DataRate (PValue value)
+{
+  *this = ClassValueHelperExtractFrom<DataRate,DataRateValue> (value);
+}
+DataRate::operator PValue () const
+{
+  return ClassValueHelperConvertTo<DataRate,DataRateValue> (this);
+}
+
+std::ostream &operator << (std::ostream &os, const DataRate &rate)
+{
+  os << rate.GetBitRate () << "bps";
+  return os;
+}
+std::istream &operator >> (std::istream &is, DataRate &rate)
+{
+  std::string value;
+  is >> value;
+  uint64_t v;
+  bool ok = DoParse (value, &v);
+  if (!ok)
+    {
+      is.setstate (std::ios_base::failbit);
+    }
+  rate = DataRate (v);
+  return is;
+}
+
+
+
 double operator*(const DataRate& lhs, const Time& rhs)
 {
   return rhs.GetSeconds()*lhs.GetBitRate();
