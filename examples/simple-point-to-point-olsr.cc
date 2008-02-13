@@ -24,7 +24,7 @@
 //   n0
 //     \ 5 Mb/s, 2ms
 //      \          1.5Mb/s, 10ms
-//       n2 -------------------------n3
+//       n2 -------------------------n3---------n4
 //      /
 //     / 5 Mb/s, 2ms
 //   n1
@@ -122,6 +122,7 @@ main (int argc, char *argv[])
   Ptr<Node> n1 = CreateObject<InternetNode> (); 
   Ptr<Node> n2 = CreateObject<InternetNode> (); 
   Ptr<Node> n3 = CreateObject<InternetNode> ();
+  Ptr<Node> n4 = CreateObject<InternetNode> ();
 
   // We create the channels first without any IP addressing information
   NS_LOG_INFO ("Create channels.");
@@ -136,6 +137,10 @@ main (int argc, char *argv[])
   Ptr<PointToPointChannel> channel2 = 
     PointToPointTopology::AddPointToPointLink (
       n2, n3, DataRate(1500000), MilliSeconds(10));
+
+  Ptr<PointToPointChannel> channel3 = 
+    PointToPointTopology::AddPointToPointLink (
+      n3, n4, DataRate(1500000), MilliSeconds(10));
   
   // Later, we add IP addresses.  
   NS_LOG_INFO ("Assign IP Addresses.");
@@ -151,6 +156,9 @@ main (int argc, char *argv[])
       channel2, n2, Ipv4Address("10.1.3.1"),
       n3, Ipv4Address("10.1.3.2"));
 
+  PointToPointTopology::AddIpv4Addresses (
+      channel3, n3, Ipv4Address("10.1.4.1"),
+      n4, Ipv4Address("10.1.4.2"));
 
   // Enable OLSR
   NS_LOG_INFO ("Enabling OLSR Routing.");
@@ -163,7 +171,7 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
     n0, 
-    InetSocketAddress ("10.1.3.2", port), 
+    InetSocketAddress ("10.1.4.2", port), 
     "Udp",
     ConstantVariable(1), 
     ConstantVariable(0));
@@ -172,15 +180,15 @@ main (int argc, char *argv[])
 
   // Create an optional packet sink to receive these packets
   Ptr<PacketSink> sink = CreateObject<PacketSink> (
-    n3,
+    n4,
     InetSocketAddress (Ipv4Address::GetAny (), port),
     "Udp");
   // Start the sink
   sink->Start (Seconds (1.0));
 
-  // Create a similar flow from n3 to n1, starting at time 1.1 seconds
+  // Create a similar flow from n4 to n1, starting at time 1.1 seconds
   ooff = CreateObject<OnOffApplication> (
-    n3, 
+    n4, 
     InetSocketAddress ("10.1.2.1", port), 
     "Udp",
     ConstantVariable(1), 
