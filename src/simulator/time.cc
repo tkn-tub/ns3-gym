@@ -189,7 +189,7 @@ TimeUnit<1>::GetTimeStep (void) const
 
 
 std::ostream& 
-operator<< (std::ostream& os, Time const& time)
+operator<< (std::ostream& os, const Time & time)
 {
   std::string unit;
   switch (TimeStepPrecision::Get ()) {
@@ -214,6 +214,60 @@ operator<< (std::ostream& os, Time const& time)
   }
   os << time.GetTimeStep () << unit;
   return os;
+}
+std::istream& operator>> (std::istream& is, Time & time)
+{
+  std::string value;
+  is >> value;
+  std::string::size_type n = value.find_first_not_of("0123456789.");
+  if (n == std::string::npos)
+    {
+      is.setstate (std::ios_base::failbit);
+      return is;
+    }
+  std::string trailer = value.substr(n, value.size ()-1-n);
+  std::istringstream iss;
+  iss.str (value.substr(0, n));
+
+  if (trailer == std::string("s"))
+    {
+      double v;
+      iss >> v;
+      time = Seconds (v);
+      return is;
+    }
+  uint64_t integer;
+  iss >> integer;
+  if (is.bad () || is.fail ())
+    {
+      is.setstate (std::ios_base::failbit);
+    }
+  else if (trailer == std::string("ms"))
+    {
+      time = MilliSeconds (integer);
+    }
+  else if (trailer == std::string("us"))
+    {
+      time = MicroSeconds (integer);
+    }
+  else if (trailer == std::string("ns"))
+    {
+      time = NanoSeconds (integer);
+    }
+  else if (trailer == std::string("ps"))
+    {
+      time = PicoSeconds (integer);
+    }
+  else if (trailer == std::string("fs"))
+    {
+      time = FemtoSeconds (integer);
+    }
+  else
+    {
+      is.setstate (std::ios_base::failbit);
+      // XXX: problem ?
+    }
+  return is;
 }
 
 Time Seconds (double seconds)
@@ -244,16 +298,11 @@ TimeUnit<1>::UnitsToTimestep (uint64_t unitValue,
 
 TimeUnit<1>::TimeUnit (PValue value)
 {
-  const TimeValue *v = value.DynCast<const TimeValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("Expected value of type TimeValue.");
-    }
-  *this = v->Get ();
+  *this = ClassValueHelperExtractFrom<Time,TimeValue> (value);
 }
 TimeUnit<1>::operator PValue () const
 {
-  return PValue::Create<TimeValue> (*this);
+  return ClassValueHelperConvertTo<Time,TimeValue> (this);
 }
 
 Time MilliSeconds (uint64_t ms)
@@ -282,93 +331,6 @@ Time FemtoSeconds (uint64_t fs)
 {
   uint64_t ts = TimeUnit<1>::UnitsToTimestep(fs, TimeStepPrecision::FS_FACTOR);
   return TimeStep(ts);
-}
-
-TimeValue::TimeValue (const Time time)
-  : m_time (time)
-{}
-void 
-TimeValue::Set (Time time)
-{
-  m_time = time;
-}
-Time 
-TimeValue::Get (void) const
-{
-  return m_time;
-}
-PValue
-TimeValue::Copy (void) const
-{
-  return PValue::Create<TimeValue> (*this);
-}
-std::string 
-TimeValue::SerializeToString (Ptr<const ParamSpec> spec) const
-{
-  std::ostringstream oss;
-  oss << m_time.GetSeconds () << "s";
-  return oss.str ();
-}
-bool 
-TimeValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
-{
-  std::string::size_type n = value.find_first_not_of("0123456789.");
-  if (n == std::string::npos)
-    {
-      return false;
-    }
-  std::string trailer = value.substr(n, value.size ()-1-n);
-  std::istringstream iss;
-  iss.str (value.substr(0, n));
-
-  if (trailer == std::string("s"))
-    {
-      double v;
-      iss >> v;
-      m_time = Seconds (v);
-      return !iss.bad () && !iss.fail ();
-    }
-  uint64_t integer;
-  iss >> integer;
-  if (iss.bad () || iss.fail ())
-    {
-      return false;
-    }
-  if (trailer == std::string("ms"))
-    {
-      m_time = MilliSeconds (integer);
-      return true;
-    }
-  if (trailer == std::string("us"))
-    {
-      m_time = MicroSeconds (integer);
-      return true;
-    }
-  if (trailer == std::string("ns"))
-    {
-      m_time = NanoSeconds (integer);
-      return true;
-    }
-  if (trailer == std::string("ps"))
-    {
-      m_time = PicoSeconds (integer);
-      return true;
-    }
-  if (trailer == std::string("fs"))
-    {
-      m_time = FemtoSeconds (integer);
-      return true;
-    }
-  return false;
-}
-
-TimeValue::TimeValue (PValue value)
-  : m_time (value)
-{}
-
-TimeValue::operator PValue () const
-{
-  return m_time;
 }
 
 

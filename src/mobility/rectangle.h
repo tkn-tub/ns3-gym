@@ -21,7 +21,7 @@
 #define RECTANGLE_H
 
 #include "ns3/value.h"
-#include "ns3/param-spec-helper.h"
+#include "ns3/class-value-helper.h"
 
 namespace ns3 {
 
@@ -66,26 +66,11 @@ public:
   operator PValue () const;
 };
 
-class RectangleValue : public Value
-{
-public:
-  RectangleValue (const Rectangle &rectangle);
+std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
+std::istream &operator >> (std::istream &is, Rectangle &rectangle);
 
-  void Set (const Rectangle &v);
-  Rectangle Get (void) const;
 
-  // inherited from Parameter base class
-  virtual PValue Copy (void) const;
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
-
-  RectangleValue (PValue value);
-  operator PValue () const;
-
-private:
-  void ReadAsDouble (std::string value, double &v, bool &ok);
-  Rectangle m_rectangle;
-};
+class RectangleValue : public Value {};
 
 template <typename T1>
 Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1,
@@ -102,13 +87,13 @@ template <typename T1>
 Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1,
                                        Rectangle initialValue)
 {
-  return MakeParamSpecHelper (a1, RectangleValue (initialValue));
+  return MakeClassValueHelperParamSpec<Rectangle,RectangleValue> (a1, initialValue);
 }
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1, T2 a2,
                                        Rectangle initialValue)
 {
-  return MakeParamSpecHelper (a1, a2, RectangleValue (initialValue));
+  return MakeClassValueHelperParamSpec<Rectangle,RectangleValue> (a1, a2, initialValue);
 }
 
 } // namespace ns3

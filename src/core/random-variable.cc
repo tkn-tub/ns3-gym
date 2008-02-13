@@ -300,18 +300,13 @@ RandomVariable::Peek (void) const
   return m_variable;
 }
 RandomVariable::RandomVariable (PValue value)
+  : m_variable (0)
 {
-  const RandomVariableValue *v = value.DynCast<const RandomVariableValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("assigning non-RandomVariable value to RandomVariable value.");
-    }
-  m_variable = v->Get ().m_variable->Copy ();
-
+  *this = ClassValueHelperExtractFrom<RandomVariable,RandomVariableValue> (value);
 }
 RandomVariable::operator PValue () const
 {
-  return PValue::Create<RandomVariableValue> (*this);
+  return ClassValueHelperConvertTo<RandomVariable,RandomVariableValue> (this);
 }
 
 
@@ -1597,76 +1592,53 @@ TriangularVariable::GetSingleValue(double s, double l, double mean)
 }
 
 
-RandomVariableValue::RandomVariableValue (RandomVariable variable)
-  : m_variable (variable)
-{}
-void 
-RandomVariableValue::Set (RandomVariable variable)
+std::ostream &operator << (std::ostream &os, const RandomVariable &var)
 {
-  m_variable = variable;
-}
-RandomVariable 
-RandomVariableValue::Get (void) const
-{
-  return m_variable;
-}
-
-PValue 
-RandomVariableValue::Copy (void) const
-{
-  return PValue::Create<RandomVariableValue> (m_variable);
-}
-std::string 
-RandomVariableValue::SerializeToString (Ptr<const ParamSpec> spec) const
-{
-  std::ostringstream oss;
-  RandomVariableBase *base = m_variable.Peek ();
+  RandomVariableBase *base = var.Peek ();
   ConstantVariableImpl *constant = dynamic_cast<ConstantVariableImpl *> (base);
   if (constant != 0)
     {
-      oss << "Constant:" << constant->GetValue ();
-      return oss.str ();
+      os << "Constant:" << constant->GetValue ();
+      return os;
     }
   UniformVariableImpl *uniform = dynamic_cast<UniformVariableImpl *> (base);
   if (uniform != 0)
     {
-      oss << "Uniform:" << uniform->GetMin () << ":" << uniform->GetMax ();
-      return oss.str ();
+      os << "Uniform:" << uniform->GetMin () << ":" << uniform->GetMax ();
+      return os;
     }
   // XXX: support other distributions
-  return "";
+  os.setstate (std::ios_base::badbit);
+  return os;
 }
-bool 
-RandomVariableValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+std::istream &operator >> (std::istream &is, RandomVariable &var)
 {
+  std::string value;
+  is >> value;
   std::string::size_type tmp;
   tmp = value.find (":");
   if (tmp == std::string::npos)
     {
-      return false;
+      is.setstate (std::ios_base::badbit);
+      return is;
     }
   std::string type = value.substr (0, tmp);
   if (value == "Constant")
     {
-      // XXX
-      return true;
+      // XXX parse
+      var = ConstantVariable ();
     }
   else if (value == "Uniform")
     {
-      // XXX
-      return true;
+      // XXX parse
+      var = UniformVariable ();
     }
-  // XXX: support other distributions.
-  return false;
+  else
+    {
+      // XXX: support other distributions.
+    }
+  return is;
 }
-RandomVariableValue::RandomVariableValue (PValue value)
-  : m_variable (value)
-{}
-RandomVariableValue::operator PValue () const
-{
-  return m_variable;
-}
-
 
 
 

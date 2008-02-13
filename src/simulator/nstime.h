@@ -22,7 +22,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/value.h"
-#include "ns3/param-spec-helper.h"
+#include "ns3/class-value-helper.h"
 #include <stdint.h>
 #include <math.h>
 #include <ostream>
@@ -520,7 +520,8 @@ private:
 typedef TimeUnit<1> Time;
 
 
-std::ostream& operator<< (std::ostream& os, Time const& time);
+std::ostream& operator<< (std::ostream& os, const Time & time);
+std::istream& operator>> (std::istream& is, Time & time);
 
 /**
  * \brief create ns3::Time instances in units of seconds.
@@ -669,24 +670,7 @@ typedef TimeUnit<-1> TimeInvert;
 typedef TimeUnit<2> TimeSquare;
 
 
-class TimeValue : public Value
-{
-public:
-  TimeValue (Time time);
-
-  void Set (Time time);
-  Time Get (void) const;
-
-  // inherited from Value base class.
-  virtual PValue Copy (void) const;
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
-
-  TimeValue (PValue value);
-  operator PValue () const;
-private:
-  Time m_time;
-};
+class TimeValue : public Value {};
 
 template <typename T1>
 Ptr<ParamSpec> MakeTimeParamSpec (T1 a1,
@@ -704,14 +688,14 @@ template <typename T1>
 Ptr<ParamSpec> MakeTimeParamSpec (T1 a1,
                                   Time initialValue)
 {
-  return MakeParamSpecHelper (a1, TimeValue (initialValue));
+  return MakeClassValueHelperParamSpec<Time,TimeValue> (a1, initialValue);
 }
 
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2,
                                   Time initialValue)
 {
-  return MakeParamSpecHelper (a1, a2, TimeValue (initialValue));
+  return MakeClassValueHelperParamSpec<Time,TimeValue> (a1, a2, initialValue);
 }
 
 

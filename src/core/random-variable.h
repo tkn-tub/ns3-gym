@@ -24,7 +24,10 @@
 #include <vector>
 #include <algorithm>
 #include <stdint.h>
+#include <istream>
+#include <ostream>
 #include "value.h"
+#include "class-value-helper.h"
 
 /**
  * \ingroup core
@@ -166,6 +169,9 @@ public:
 
 private:
   friend class RandomVariableValue;
+  friend std::ostream &operator << (std::ostream &os, const RandomVariable &var);
+  friend std::istream &operator >> (std::istream &os, RandomVariable &var);
+
   RandomVariableBase *m_variable;
 protected:
   RandomVariable (const RandomVariableBase &variable);
@@ -655,23 +661,11 @@ public:
   static double GetSingleValue(double s, double l, double mean);
 };
 
+std::ostream &operator << (std::ostream &os, const RandomVariable &var);
+std::istream &operator >> (std::istream &os, RandomVariable &var);
 
-class RandomVariableValue : public Value
-{
-public:
-  RandomVariableValue (RandomVariable variable);
-  void Set (RandomVariable variable);
-  RandomVariable Get (void) const;
 
-  virtual PValue Copy (void) const;
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
-
-  RandomVariableValue (PValue value);
-  operator PValue () const;
-private:
-  RandomVariable m_variable;
-};
+class RandomVariableValue : public Value {};
 
 template <typename T1>
 Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1,
@@ -690,14 +684,14 @@ template <typename T1>
 Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1,
                                             RandomVariable initialValue)
 {
-  return MakeParamSpecHelper (a1, RandomVariableValue (initialValue));
+  return MakeClassValueHelperParamSpec<RandomVariable, RandomVariableValue> (a1, initialValue);
 }
 
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2,
                                             RandomVariable initialValue)
 {
-  return MakeParamSpecHelper (a1, a2, RandomVariableValue (initialValue));
+  return MakeClassValueHelperParamSpec<RandomVariable, RandomVariableValue> (a1, a2, initialValue);
 }
 
 

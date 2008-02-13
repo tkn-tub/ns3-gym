@@ -113,5 +113,6 @@ def build(bld):
         'fp-value.h',
         'enum-value.h',
         'object-factory.h',
+        'class-value-helper.h',
         ]
 

@@ -21,7 +21,7 @@
 #define VECTOR_H
 
 #include "ns3/value.h"
-#include "ns3/param-spec-helper.h"
+#include "ns3/class-value-helper.h"
 
 namespace ns3 {
 
@@ -64,23 +64,10 @@ public:
 
 double CalculateDistance (const Vector &a, const Vector &b);
 
-class VectorValue : public Value
-{
-public:
-  VectorValue (const Vector &vector);
+class VectorValue : public Value {};
 
-  void Set (const Vector &vector);
-  Vector Get (void) const;
-
-  virtual PValue Copy (void) const;
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
-
-  VectorValue (PValue value);
-  operator PValue () const;
-private:
-  Vector m_vector;
-};
+std::ostream &operator << (std::ostream &os, const Vector &vector);
+std::istream &operator >> (std::istream &is, Vector &vector);
 
 template <typename T1>
 Ptr<ParamSpec>
@@ -99,7 +86,7 @@ template <typename T1>
 Ptr<ParamSpec>
 MakeVectorParamSpec (T1 a1, const Vector &initialValue)
 {
-  return MakeParamSpecHelper (a1, VectorValue (initialValue));
+  return MakeClassValueHelperParamSpec<Vector,VectorValue> (a1, initialValue);
 }
 
 template <typename T1, typename T2>
@@ -107,7 +94,7 @@ Ptr<ParamSpec>
 MakeVectorParamSpec (T1 a1, T2 a2,
                      const Vector &initialValue)
 {
-  return MakeParamSpecHelper (a1, a2, VectorValue (initialValue));
+  return MakeClassValueHelperParamSpec<Vector,VectorValue> (a1, a2, initialValue);
 }
 
 } // namespace ns3

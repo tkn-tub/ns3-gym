@@ -121,102 +121,31 @@ Rectangle::CalculateIntersection (const Vector &current, const Vector &speed) co
 
 Rectangle::Rectangle (PValue value)
 {
-  const RectangleValue *v = value.DynCast<const RectangleValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("expecting value of type Rectangle.");
-    }
-  *this = v->Get ();
+  *this = ClassValueHelperExtractFrom<Rectangle,RectangleValue> (value);
 }
 Rectangle::operator PValue () const
 {
-  return PValue::Create<RectangleValue> (*this);
+  return ClassValueHelperConvertTo<Rectangle,RectangleValue> (this);
 }
 
-
-
-RectangleValue::RectangleValue (const Rectangle &rectangle)
-  : m_rectangle (rectangle)
-{}
-
-void 
-RectangleValue::Set (const Rectangle &v)
+std::ostream &
+operator << (std::ostream &os, const Rectangle &rectangle)
 {
-  m_rectangle = v;
+  os << rectangle.xMin << "|" << rectangle.xMax << "|" << rectangle.yMin << "|" << rectangle.yMax;
+  return os;
 }
-Rectangle 
-RectangleValue::Get (void) const
-{
-  return m_rectangle;
-}
-
-PValue
-RectangleValue::Copy (void) const
-{
-  return PValue::Create<RectangleValue> (*this);
-}
-std::string 
-RectangleValue::SerializeToString (Ptr<const ParamSpec> spec) const
-{
-  std::ostringstream oss;
-  oss << m_rectangle.xMin << "|" << m_rectangle.xMax << "|" << m_rectangle.yMin << "|" << m_rectangle.yMax;
-  return oss.str ();
-}
-void
-RectangleValue::ReadAsDouble (std::string value, double &v, bool &ok)
-{
-  std::istringstream iss;
-  iss.str (value);
-  double local;
-  iss >> local;
-  bool good = !iss.bad () && !iss.fail ();
-  if (good)
+std::istream &
+operator >> (std::istream &is, Rectangle &rectangle)
+ {
+  char c1, c2, c3;
+  is >> rectangle.xMin >> c1 >> rectangle.xMax >> c2 >> rectangle.yMin >> c3 >> rectangle.yMax;
+  if (c1 != '|' ||
+      c2 != '|' ||
+      c3 != '|')
     {
-      v = local;
+      is.setstate (std::ios_base::failbit);
     }
-  else
-    {
-      ok = false;
-    }
-}
-bool 
-RectangleValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
-{
-  bool ok = true;
-  std::istringstream iss;
-  iss.str (value);
-  std::string::size_type cur = 0, next = 0;
-  next = value.find ("|", cur);
-  if (next == std::string::npos)
-    {
-      return false;
-    }
-  ReadAsDouble (value.substr (cur, next-cur), m_rectangle.xMin, ok);
-  cur = next + 1;
-  next = value.find ("|", cur);
-  if (next == std::string::npos)
-    {
-      return false;
-    }
-  ReadAsDouble (value.substr (cur, next-cur), m_rectangle.xMax, ok);
-  cur = next + 1;
-  next = value.find ("|", cur);
-  if (next == std::string::npos)
-    {
-      return false;
-    }
-  ReadAsDouble (value.substr (cur, next-cur), m_rectangle.yMin, ok);
-  cur = next + 1;
-  ReadAsDouble (value.substr (cur, value.size ()-cur), m_rectangle.yMax, ok);
-  return ok;
-}
-
-RectangleValue::RectangleValue (PValue value)
-  : m_rectangle (value)
-{}
-RectangleValue::operator PValue () const
-{
-  return m_rectangle;
+  return is;
 }
 
 

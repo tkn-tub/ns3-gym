@@ -39,16 +39,11 @@ Vector::Vector ()
 
 Vector::Vector (PValue value)
 {
-  const VectorValue *v = value.DynCast<const VectorValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("Expected value of type Vector");
-    }
-  *this = v->Get ();
+  *this = ClassValueHelperExtractFrom<Vector,VectorValue> (value);
 }
 Vector::operator PValue () const
 {
-  return PValue::Create<VectorValue> (*this);
+  return ClassValueHelperConvertTo<Vector,VectorValue> (this);
 }
 
 
@@ -62,49 +57,21 @@ CalculateDistance (const Vector &a, const Vector &b)
   return distance;
 }
 
-
-
-VectorValue::VectorValue (const Vector &vector)
-  : m_vector (vector)
-{}
-
-void 
-VectorValue::Set (const Vector &vector)
+std::ostream &operator << (std::ostream &os, const Vector &vector)
 {
-  m_vector = vector;
+  os << vector.x << ":" << vector.y << ":" << vector.z;
+  return os;
 }
-Vector 
-VectorValue::Get (void) const
+std::istream &operator >> (std::istream &is, Vector &vector)
 {
-  return m_vector;
+  char c1, c2;
+  is >> vector.x >> c1 >> vector.y >> c2 >> vector.z;
+  if (c1 != ':' ||
+      c2 != ':')
+    {
+      is.setstate (std::ios_base::failbit);
+    }
+  return is;
 }
-
-PValue
-VectorValue::Copy (void) const
-{
-  return PValue::Create<VectorValue> (*this);
-}
-std::string 
-VectorValue::SerializeToString (Ptr<const ParamSpec> spec) const
-{
-  std::ostringstream oss;
-  oss << m_vector.x << ":" << m_vector.y << ":" << m_vector.z;
-  return oss.str ();
-}
-bool 
-VectorValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
-{
-  // XXX implement parsing
-  return false;
-}
-
-VectorValue::VectorValue (PValue value)
-  : m_vector (value)
-{}
-VectorValue::operator PValue () const
-{
-  return m_vector;
-}
-
 
 } // namespace ns3
