@@ -48,7 +48,8 @@ namespace ns3 {
  */
 class DataRate
 {
-  public:
+public:
+  DataRate ();
   /**
    * \brief Integer constructor
    *
@@ -57,23 +58,7 @@ class DataRate
    * non-trivial bitrate availiable.
    */
   DataRate (uint64_t bps);
-  
-  /**
-   * \brief String constructor
-   *
-   * Construct a DataRate from a string.  The supported strings have a 
-   * numerical portion, followed by units in the following format:
-   * - Prefix: nothing, "k", "M", "G"
-   * - Data Unit: "b, "B"
-   * - Time Suffix: "ps", "/s" \n
-   * The prefixes are SI powers of 10 (10^0,10^3,10^6,10^9 respectively).\n
-   * The units are the bit, and the (8-bit) byte respectively.\n
-   * Both time suffixes denote "per second".  Some supported examples include
-   * "20B/s", "56kbps", "4.4MB/s", and "100Gb/s".  Any malformed string causes
-   * a fatal error.
-   */
-  DataRate (const std::string s);
-  
+    
   bool operator <  (const DataRate& rhs) const;
   bool operator <= (const DataRate& rhs) const;
   bool operator >  (const DataRate& rhs) const;
@@ -103,11 +88,13 @@ private:
   static uint64_t Parse(const std::string);
 };
 
+DataRate MakeDataRate (std::string rate);
+
 std::ostream &operator << (std::ostream &os, const DataRate &rate);
 std::istream &operator >> (std::istream &is, DataRate &rate);
 
 class DataRateValue : public Value {};
-class DataRateParamSpec : public Value {};
+class DataRateParamSpec : public ParamSpec {};
 
 template <typename T1>
 Ptr<ParamSpec>
