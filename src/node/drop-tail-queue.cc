@@ -18,6 +18,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/uint-value.h"
 #include "drop-tail-queue.h"
 
 NS_LOG_COMPONENT_DEFINE ("DropTailQueue");
@@ -30,14 +31,18 @@ TypeId DropTailQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("DropTailQueue")
     .SetParent<Queue> ()
-    .AddConstructor<DropTailQueue> ();
+    .AddConstructor<DropTailQueue> ()
+    .AddParameter ("MaxPackets", "The maximum number of packets accepted by this DropTailQueue.",
+                   MakeUintParamSpec (&DropTailQueue::m_maxPackets,
+                                      100))
+    ;
+  
   return tid;
 }
 
 DropTailQueue::DropTailQueue () :
   Queue (),
-  m_packets (),
-  m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
+  m_packets ()
 {
   NS_LOG_FUNCTION;
 }
@@ -45,22 +50,6 @@ DropTailQueue::DropTailQueue () :
 DropTailQueue::~DropTailQueue ()
 {
   NS_LOG_FUNCTION;
-}
-
-void 
-DropTailQueue::SetMaxPackets (uint32_t npackets)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << npackets);
-  m_maxPackets = npackets;
-}
-
-uint32_t 
-DropTailQueue::GetMaxPackets (void)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_LOGIC ("returns " << m_maxPackets);
-  return m_maxPackets;
 }
 
 bool 
@@ -143,7 +132,7 @@ DropTailQueueTest::RunTests (void)
   bool result = true;
 
   DropTailQueue queue;
-  queue.SetMaxPackets (3);
+  queue.Set ("MaxPackets", UintValue (3));
   
   Ptr<Packet> p1, p2, p3, p4;
   p1 = Create<Packet> ();
