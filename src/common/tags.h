@@ -128,7 +128,15 @@ Tags::Remove (T &tag)
   // input to this function is not a subclass of the Tag class.
   parent = &tag;
   NS_ASSERT (sizeof (T) <= Tags::SIZE);
-  return Remove (T::GetUid ());
+  if (Peek (tag))
+    {
+      Remove (T::GetUid ());
+      return true;
+    }
+  else
+    {
+      return false;
+    }
 }
 
 template <typename T>
