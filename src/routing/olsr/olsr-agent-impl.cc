@@ -231,9 +231,9 @@ void AgentImpl::Start ()
   NS_LOG_DEBUG ("Starting OLSR on node " << m_mainAddress);
 
   m_routingTable = CreateObject<RoutingTable> (m_ipv4, m_mainAddress);
-  // Add OLSR as routing protocol, with slightly lower priority than
+  // Add OLSR as routing protocol, with slightly higher priority than
   // static routing.
-  m_ipv4->AddRoutingProtocol (m_routingTable, -10);
+  m_ipv4->AddRoutingProtocol (m_routingTable, 10);
 
   Ptr<SocketFactory> socketFactory = GetObject<SocketFactory> (Udp::GetTypeId ());
 
