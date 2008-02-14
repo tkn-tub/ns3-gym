@@ -81,8 +81,9 @@ public:
   {}
 
   ~RoutingTable () {}
-  
+
   void Clear ();
+  uint32_t GetSize () const { return m_table.size (); }
   void RemoveEntry (const Ipv4Address &dest);
   void AddEntry (const Ipv4Address &dest,
                  const Ipv4Address &next,

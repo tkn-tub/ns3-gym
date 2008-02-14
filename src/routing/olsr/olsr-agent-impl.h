@@ -187,6 +187,7 @@ protected:
                        const MessageList &> m_rxPacketTrace;
   CallbackTraceSource <const PacketHeader &,
                        const MessageList &> m_txPacketTrace;
+  CallbackTraceSource <uint32_t> m_routingTableChanged;
 
 };
 

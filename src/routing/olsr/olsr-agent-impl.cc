@@ -296,6 +296,11 @@ AgentImpl::GetTraceResolver (void) const
                                  "const olsr::MessageList &", "list of OLSR messages contained in the packet"
                                  ),
                        m_txPacketTrace);
+  resolver->AddSource ("RoutingTableChanged",
+                       TraceDoc ("the OLSR routing table has changed",
+                                 "uint32_t", "size of the new routing table"
+                                 ),
+                       m_routingTableChanged);
   resolver->SetParentResolver (Object::GetTraceResolver ());
   return resolver;
 }
@@ -970,6 +975,7 @@ AgentImpl::RoutingTableComputation ()
     }
 
   NS_LOG_DEBUG ("Node " << m_mainAddress << ": RoutingTableComputation end.");
+  m_routingTableChanged (m_routingTable->GetSize ());
 }
 
 
