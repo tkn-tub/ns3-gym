@@ -350,6 +350,12 @@ public:
    * Set a single parameter.
    */
   bool Set (std::string name, PValue value);
+
+  bool SetUint (std::string name, uint64_t value);
+  bool SetInt (std::string name, int64_t value);
+  bool SetFp (std::string name, double value);
+  bool SetEnum (std::string name, int value);
+
   /**
    * \param name the name of the parameter to read
    * \param value a reference to the string where the value of the 
@@ -364,6 +370,11 @@ public:
    * \returns true if the requested parameter was found, false otherwise.
    */
   PValue Get (std::string name) const;
+
+  uint64_t GetUint (std::string name) const;
+  int64_t GetInt (std::string name) const;
+  double GetFp (std::string name) const;
+  int GetEnum (std::string name) const;
 
   /**
    * Increment the reference count. This method should not be called
