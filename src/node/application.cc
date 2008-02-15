@@ -59,9 +59,8 @@ void Application::Start(const Time& startTime)
 
 void Application::Start(const RandomVariable& startVar)
 {
-  RandomVariable *v = startVar.Copy ();
-  ScheduleStart (Seconds (v->GetValue ()));
-  delete v;
+  RandomVariable v = startVar;
+  ScheduleStart (Seconds (v.GetValue ()));
 }
 
    
@@ -72,9 +71,8 @@ void Application::Stop(const Time& stopTime)
 
 void Application::Stop(const RandomVariable& stopVar)
 {
-  RandomVariable *v = stopVar.Copy ();
-  ScheduleStop (Seconds (v->GetValue ()));
-  delete v;
+  RandomVariable v = stopVar;
+  ScheduleStop (Seconds (v.GetValue ()));
 }
   
 Ptr<Node> Application::GetNode() const

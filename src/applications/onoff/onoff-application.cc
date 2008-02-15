@@ -91,8 +91,8 @@ OnOffApplication::Construct (Ptr<Node> n,
   m_socket = 0;
   m_peer = remote;
   m_connected = false;
-  m_onTime = onTime.Copy ();
-  m_offTime = offTime.Copy ();
+  m_onTime = onTime;
+  m_offTime = offTime;
   m_pktSize = size;
   m_residualBits = 0;
   m_lastStartTime = Seconds (0);
@@ -136,12 +136,6 @@ OnOffApplication::DoDispose (void)
   NS_LOG_FUNCTION;
 
   m_socket = 0;
-  delete m_onTime;
-  delete m_offTime;
-
-  m_onTime = 0;
-  m_offTime = 0;
-
   // chain up
   Application::DoDispose ();
 }
@@ -223,7 +217,7 @@ void OnOffApplication::ScheduleStartEvent()
 {  // Schedules the event to start sending data (switch to the "On" state)
   NS_LOG_FUNCTION;
 
-  Time offInterval = Seconds(m_offTime->GetValue());
+  Time offInterval = Seconds(m_offTime.GetValue());
   NS_LOG_LOGIC ("start at " << offInterval);
   m_startStopEvent = Simulator::Schedule(offInterval, &OnOffApplication::StartSending, this);
 }
@@ -232,7 +226,7 @@ void OnOffApplication::ScheduleStopEvent()
 {  // Schedules the event to stop sending data (switch to "Off" state)
   NS_LOG_FUNCTION;
 
-  Time onInterval = Seconds(m_onTime->GetValue());
+  Time onInterval = Seconds(m_onTime.GetValue());
   Simulator::Schedule(onInterval, &OnOffApplication::StopSending, this);
 }
 

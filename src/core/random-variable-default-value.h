@@ -33,10 +33,10 @@ class RandomVariableDefaultValue : public DefaultValueBase
 			      std::string help,
 			      std::string defaultValue);
 
-  RandomVariable *GetCopy (void);
+  RandomVariable Get (void) const;
 private:
-  bool Parse (const std::string &value, bool mustCreate, RandomVariable **pVariable);
-  double ReadAsDouble (const std::string value, bool &ok);
+  bool Parse (const std::string &value, bool mustCreate, RandomVariable *pVariable) const;
+  double ReadAsDouble (const std::string value, bool &ok) const;
   virtual bool DoParseValue (const std::string &value);
   virtual std::string DoGetType (void) const;
   virtual std::string DoGetDefaultValue (void) const;

@@ -26,12 +26,11 @@
 #include "ns3/nstime.h"
 #include "ns3/event-id.h"
 #include "ns3/rectangle.h"
+#include "ns3/random-variable.h"
 #include "mobility-model.h"
 #include "static-speed-helper.h"
 
 namespace ns3 {
-
-class RandomVariable;
 
 /**
  * \brief the parameters to control a RandomDirection mobility model.
@@ -73,8 +72,8 @@ class RandomDirection2dMobilityModelParameters : public Object
   static Ptr<RandomDirection2dMobilityModelParameters> GetCurrent (void);
 
   Rectangle m_bounds;
-  RandomVariable *m_speedVariable;
-  RandomVariable *m_pauseVariable;
+  RandomVariable m_speedVariable;
+  RandomVariable m_pauseVariable;
 };
 
 /**

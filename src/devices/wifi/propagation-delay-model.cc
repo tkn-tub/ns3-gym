@@ -69,20 +69,18 @@ PropagationDelayModel::CreateDefault (void)
 }
 
 RandomPropagationDelayModel::RandomPropagationDelayModel ()
-  : m_variable (g_random.GetCopy ())
+  : m_variable (g_random.Get ())
 {}
 
 RandomPropagationDelayModel::RandomPropagationDelayModel (const RandomVariable &variable)
-  : m_variable (variable.Copy ())
+  : m_variable (variable)
 {}
 RandomPropagationDelayModel::~RandomPropagationDelayModel ()
-{
-  delete m_variable;
-}
+{}
 Time 
 RandomPropagationDelayModel::GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const
 {
-  return Seconds (m_variable->GetValue ());
+  return Seconds (m_variable.GetValue ());
 }
 
 ConstantSpeedPropagationDelayModel::ConstantSpeedPropagationDelayModel (double speed)

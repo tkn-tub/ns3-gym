@@ -69,30 +69,23 @@ RandomWalk2dMobilityModelParameters::RandomWalk2dMobilityModelParameters ()
   : m_mode (g_mode.GetValue ()),
     m_modeDistance (g_modeDistance.GetValue ()),
     m_modeTime (g_modeTime.GetValue ()),
-    m_speed (g_speed.GetCopy ()),
-    m_direction (g_direction.GetCopy ()),
+    m_speed (g_speed.Get ()),
+    m_direction (g_direction.Get ()),
     m_bounds (g_rectangle.GetValue ())
 {}
 
 RandomWalk2dMobilityModelParameters::~RandomWalk2dMobilityModelParameters ()
-{
-  delete m_speed;
-  delete m_direction;
-  m_speed = 0;
-  m_direction = 0;
-}
+{}
 
 void 
 RandomWalk2dMobilityModelParameters::SetSpeed (const RandomVariable &speed)
 {
-  delete m_speed;
-  m_speed = speed.Copy ();
+  m_speed = speed;
 }
 void 
 RandomWalk2dMobilityModelParameters::SetDirection (const RandomVariable &direction)
 {
-  delete m_direction;
-  m_direction = direction.Copy ();
+  m_direction = direction;
 }
 void 
 RandomWalk2dMobilityModelParameters::SetModeDistance (double distance)
@@ -154,8 +147,8 @@ RandomWalk2dMobilityModel::RandomWalk2dMobilityModel (Ptr<RandomWalk2dMobilityMo
 void
 RandomWalk2dMobilityModel::Start (void)
 {
-  double speed = m_parameters->m_speed->GetValue ();
-  double direction = m_parameters->m_direction->GetValue ();
+  double speed = m_parameters->m_speed.GetValue ();
+  double direction = m_parameters->m_direction.GetValue ();
   Vector vector (std::cos (direction) * speed,
                  std::sin (direction) * speed,
                  0.0);

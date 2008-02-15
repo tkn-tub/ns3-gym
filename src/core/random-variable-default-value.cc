@@ -39,17 +39,17 @@ RandomVariableDefaultValue::RandomVariableDefaultValue (std::string name,
   DefaultValueList::Add (this);
 }
 
-RandomVariable *
-RandomVariableDefaultValue::GetCopy (void)
+RandomVariable
+RandomVariableDefaultValue::Get (void) const
 {
-  RandomVariable *variable;
+  RandomVariable variable;
   bool ok;
   ok = Parse (m_value, true, &variable);
   NS_ASSERT (ok);
   return variable;
 }
 double
-RandomVariableDefaultValue::ReadAsDouble (std::string value, bool &ok)
+RandomVariableDefaultValue::ReadAsDouble (std::string value, bool &ok) const
 {
   double v;
   std::istringstream iss;
@@ -60,7 +60,7 @@ RandomVariableDefaultValue::ReadAsDouble (std::string value, bool &ok)
 }
 bool
 RandomVariableDefaultValue::Parse (const std::string &value, 
-				   bool mustCreate, RandomVariable **pVariable)
+				   bool mustCreate, RandomVariable *pVariable) const
 {
   std::string::size_type pos = value.find_first_of(":");
   if (pos == std::string::npos)
@@ -76,7 +76,7 @@ RandomVariableDefaultValue::Parse (const std::string &value,
       if (mustCreate)
 	{
           NS_LOG_LOGIC ("create Constant constant=" << constant);
-	  *pVariable = new ConstantVariable (constant);
+	  *pVariable = ConstantVariable (constant);
 	}
       else
         {
@@ -100,7 +100,7 @@ RandomVariableDefaultValue::Parse (const std::string &value,
       if (mustCreate)
 	{
           NS_LOG_LOGIC ("create Uniform min=" << min << ", max=" << max);
-	  *pVariable = new UniformVariable (minVal, maxVal);
+	  *pVariable = UniformVariable (minVal, maxVal);
 	}
       else
         {

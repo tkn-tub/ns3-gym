@@ -21,12 +21,11 @@
 #define PROPAGATION_LOSS_MODEL_H
 
 #include "ns3/object.h"
+#include "ns3/random-variable.h"
 
 namespace ns3 {
 
 class MobilityModel;
-
-class RandomVariable;
 
 /**
  * \brief Modelize the propagation loss through a transmission medium
@@ -76,7 +75,7 @@ public:
 			     Ptr<MobilityModel> a,
 			     Ptr<MobilityModel> b) const;
 private:
-  RandomVariable *m_variable;
+  RandomVariable m_variable;
 };
 
 /**

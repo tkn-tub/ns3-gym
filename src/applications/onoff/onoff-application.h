@@ -30,6 +30,7 @@
 #include "ns3/ptr.h"
 #include "ns3/data-rate.h"
 #include "ns3/callback-trace-source.h"
+#include "ns3/random-variable.h"
 
 namespace ns3 {
 
@@ -128,8 +129,8 @@ private:
   Ptr<Socket>     m_socket;       // Associated socket
   Address         m_peer;         // Peer address
   bool            m_connected;    // True if connected
-  RandomVariable* m_onTime;       // rng for On Time
-  RandomVariable* m_offTime;      // rng for Off Time
+  RandomVariable m_onTime;       // rng for On Time
+  RandomVariable m_offTime;      // rng for Off Time
   DataRate        m_cbrRate;      // Rate that data is generated
   uint32_t        m_pktSize;      // Size of packets
   uint32_t        m_residualBits; // Number of generated, but not sent, bits

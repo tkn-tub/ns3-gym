@@ -23,12 +23,11 @@
 #include "ns3/ptr.h"
 #include "ns3/object.h"
 #include "ns3/nstime.h"
+#include "ns3/random-variable.h"
 
 namespace ns3 {
 
 class MobilityModel;
-
-class RandomVariable;
 
 /**
  * \brief calculate a propagation delay.
@@ -71,7 +70,7 @@ public:
   virtual ~RandomPropagationDelayModel ();
   virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 private:
-  RandomVariable *m_variable;
+  RandomVariable m_variable;
 };
 
 /**

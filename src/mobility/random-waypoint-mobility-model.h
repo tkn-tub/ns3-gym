@@ -25,10 +25,9 @@
 #include "mobility-model.h"
 #include "random-position.h"
 #include "ns3/ptr.h"
+#include "ns3/random-variable.h"
 
 namespace ns3 {
-
-class RandomVariable;
 
 /**
  * \brief the parameters which control the behavior of a random waypoint
@@ -66,8 +65,8 @@ private:
   friend class RandomWaypointMobilityModel;
   static Ptr<RandomWaypointMobilityModelParameters> GetCurrent (void);
   virtual void DoDispose (void);
-  RandomVariable *m_speed;
-  RandomVariable *m_pause;
+  RandomVariable m_speed;
+  RandomVariable m_pause;
   Ptr<RandomPosition> m_position;
 };
 

@@ -33,7 +33,7 @@
 
 namespace ns3{
 
-class RngStream;
+class RandomVariableBase;
 
 /**
  * \brief The basic RNG for NS-3.
@@ -44,46 +44,31 @@ class RngStream;
  * the University of Montreal.
  * 
  * NS-3 has a rich set of  random number generators.
- * Class RandomVariable defines the base class functionalty
+ * Class RandomVariableBase defines the base class functionalty
  * required for all random number generators.  By default, the underlying
  * generator is seeded with the time of day, and then deterministically
  * creates a sequence of seeds for each subsequent generator that is created.
  * The rest of the documentation outlines how to change this behavior.
  */
-class RandomVariable { 
-
+class RandomVariable
+{ 
 public:
-  /**
-   * \brief Constructor for a random number generator with a random seed.
-   */
   RandomVariable();
-  
-  /**
-   * \brief Copy constructor
-   */  
-  RandomVariable(const RandomVariable&);
-  
-  /**
-   * \brief Destructor for a random number generator with a random seed.
-   */
-  virtual ~RandomVariable();
+  RandomVariable(const RandomVariable&o);
+  RandomVariable &operator = (const RandomVariable &o);
+  ~RandomVariable();
   
   /**
    * \brief Returns a random double from the underlying distribution
    * \return A floating point random value
    */
-  virtual double  GetValue() = 0;
+  double GetValue (void) const;
 
   /**
    * \brief Returns a random integer integer from the underlying distribution
    * \return  Integer cast of ::GetValue()
    */
-  virtual uint32_t GetIntValue();
-
-  /**
-   * \return A copy of this object
-   */  
-  virtual RandomVariable*   Copy() const = 0;
+  uint32_t GetIntValue (void) const;
   
   /**
    * \brief Get the internal state of the RNG
@@ -94,7 +79,7 @@ public:
    * \param seed Output parameter; gets overwritten with the internal state of
    * of the RNG.
    */
-  virtual void GetSeed(uint32_t seed[6]);
+  void GetSeed(uint32_t seed[6]) const;
   
   /**
    * \brief Set seeding behavior
@@ -104,7 +89,7 @@ public:
    * generator is seeded with data from /dev/random instead of
    * being seeded based upon the time of day.  For this to be effective,
    * it must be called before the creation of the first instance of a 
-   * RandomVariable or subclass.  Example:
+   * RandomVariableBase or subclass.  Example:
    * \code
    * RandomVariable::UseDevRandom();
    * UniformVariable x(2,3);  //these are seeded randomly
@@ -174,22 +159,11 @@ public:
    */
   static void SetRunNumber(uint32_t n);
 private:
-  static void GetRandomSeeds(uint32_t seeds[6]);
-private:
-  static bool useDevRandom;    // True if using /dev/random desired
-  static bool globalSeedSet;   // True if global seed has been specified
-  static int  devRandom;       // File handle for /dev/random
-  static uint32_t globalSeed[6]; // The global seed to use
-  friend class RandomVariableInitializer;
+  RandomVariableBase *m_variable;
 protected:
-  static unsigned long heuristic_sequence;
-  static RngStream* m_static_generator;
-  static uint32_t runNumber;
-  static void Initialize();    // Initialize  the RNG system
-  static bool initialized;     // True if package seed is set 
-  RngStream* m_generator;  //underlying generator being wrapped
+  RandomVariable (const RandomVariableBase &variable);
+  RandomVariableBase *Peek (void);
 };
-
 
 /**
  * \brief The uniform distribution RNG for NS-3.
@@ -207,7 +181,8 @@ protected:
  * UniformVariable::GetSingleValue(100,1000); //returns a value [100,1000)
  * \endcode
  */
-class UniformVariable : public RandomVariable {
+class UniformVariable : public RandomVariable 
+{
 public:
   /**
    * Creates a uniform random number generator in the
@@ -221,14 +196,6 @@ public:
    * \param l High end of the range
    */
   UniformVariable(double s, double l);
-
-  UniformVariable(const UniformVariable& c);
-  
-  /**
-   * \return A value between low and high values specified by the constructor
-   */
-  virtual double GetValue();
-  virtual RandomVariable*  Copy() const;
 public:
   /**
    * \param s Low end of the range
@@ -236,50 +203,36 @@ public:
    * \return A uniformly distributed random number between s and l
    */
   static double GetSingleValue(double s, double l);
-private:
-  double m_min;
-  double m_max;
 };
 
 /**
  * \brief A random variable that returns a constant
  * \ingroup randomvariable
  *
- * Class ConstantVariable defines a random number generator that
+ * Class ConstantVariableImpl defines a random number generator that
  * returns the same value every sample.
  */
 class ConstantVariable : public RandomVariable { 
 
 public:
   /**
-   * Construct a ConstantVariable RNG that returns zero every sample
+   * Construct a ConstantVariableImpl RNG that returns zero every sample
    */
   ConstantVariable();
   
   /**
-   * Construct a ConstantVariable RNG that returns the specified value
+   * Construct a ConstantVariableImpl RNG that returns the specified value
    * every sample.
    * \param c Unchanging value for this RNG.
    */
   ConstantVariable(double c);
 
-
-  ConstantVariable(const ConstantVariable& c) ;
-
   /**
    * \brief Specify a new constant RNG for this generator.
    * \param c New constant value for this RNG.
    */
-  void    NewConstant(double c);
+  void SetConstant(double c);
 
-  /**
-   * \return The constant value specified
-   */
-  virtual double  GetValue();
-  virtual uint32_t GetIntValue();
-  virtual RandomVariable*   Copy() const;
-private:
-  double m_const;
 };
 
 /**
@@ -291,14 +244,14 @@ private:
  * increases for a period, then wraps around to the low value 
  * and begins monotonicaly increasing again.
  */
-class SequentialVariable : public RandomVariable {
-
+class SequentialVariable : public RandomVariable 
+{
 public:
   /**
-   * \brief Constructor for the SequentialVariable RNG.
+   * \brief Constructor for the SequentialVariableImpl RNG.
    *
    * The four parameters define the sequence.  For example
-   * SequentialVariable(0,5,1,2) creates a RNG that has the sequence
+   * SequentialVariableImpl(0,5,1,2) creates a RNG that has the sequence
    * 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 0, 0 ...
    * \param f First value of the sequence.
    * \param l One more than the last value of the sequence.
@@ -308,32 +261,17 @@ public:
   SequentialVariable(double f, double l, double i = 1, uint32_t c = 1);
 
   /**
-   * \brief Constructor for the SequentialVariable RNG.
+   * \brief Constructor for the SequentialVariableImpl RNG.
    *
    * Differs from the first only in that the increment parameter is a
    * random variable
    * \param f First value of the sequence.
    * \param l One more than the last value of the sequence.
-   * \param i Reference to a RandomVariable for the sequence increment
+   * \param i Reference to a RandomVariableBase for the sequence increment
    * \param c Number of times each member of the sequence is repeated
    */
   SequentialVariable(double f, double l, const RandomVariable& i, uint32_t c = 1);
 
-  SequentialVariable(const SequentialVariable& c);
-  
-  ~SequentialVariable();
-  /**
-   * \return The next value in the Sequence
-   */
-  virtual double GetValue();
-  virtual RandomVariable*  Copy() const;
-private:
-  double m_min;
-  double m_max;
-  RandomVariable*  m_increment;
-  uint32_t  m_consecutive;
-  double m_current;
-  uint32_t  m_currentConsecutive;
 };
 
 /**
@@ -353,14 +291,15 @@ private:
  * \f$ \left\{ \begin{array}{cl} \alpha  e^{-\alpha x} & x < bound \\ bound & x > bound \end{array}\right. \f$
  * 
  * \code
- * ExponentialVariable x(3.14);
+ * ExponentialVariableImpl x(3.14);
  * x.GetValue();  //will always return with mean 3.14
- * ExponentialVariable::GetSingleValue(20.1); //returns with mean 20.1
- * ExponentialVariable::GetSingleValue(108); //returns with mean 108
+ * ExponentialVariableImpl::GetSingleValue(20.1); //returns with mean 20.1
+ * ExponentialVariableImpl::GetSingleValue(108); //returns with mean 108
  * \endcode
  *
  */
-class ExponentialVariable : public RandomVariable { 
+class ExponentialVariable : public RandomVariable 
+{ 
 public:
   /**
    * Constructs an exponential random variable  with a mean
@@ -387,27 +326,16 @@ public:
    */
   ExponentialVariable(double m, double b);
 
-  ExponentialVariable(const ExponentialVariable& c);
-  
-  /**
-   * \return A random value from this exponential distribution
-   */
-  virtual double GetValue();
-  virtual RandomVariable* Copy() const;
-public:
   /**
    * \param m The mean of the distribution from which the return value is drawn
    * \param b The upper bound value desired, beyond which values get clipped
    * \return A random number from an exponential distribution with mean m
    */
   static double GetSingleValue(double m, double b=0);
-private:
-  double m_mean;  // Mean value of RV
-  double m_bound; // Upper bound on value (if non-zero)
 };
 
 /**
- * \brief ParetoVariable distributed random var
+ * \brief ParetoVariableImpl distributed random var
  * \ingroup randomvariable
  *
  * This class supports the creation of objects that return random numbers
@@ -422,19 +350,20 @@ private:
  * with the equation \f$ x_m = mean \frac{k-1}{k},  k > 1\f$.
  *
  * \code
- * ParetoVariable x(3.14);
+ * ParetoVariableImpl x(3.14);
  * x.GetValue();  //will always return with mean 3.14
- * ParetoVariable::GetSingleValue(20.1); //returns with mean 20.1
- * ParetoVariable::GetSingleValue(108); //returns with mean 108
+ * ParetoVariableImpl::GetSingleValue(20.1); //returns with mean 20.1
+ * ParetoVariableImpl::GetSingleValue(108); //returns with mean 108
  * \endcode
  */
-class ParetoVariable : public RandomVariable {
+class ParetoVariable : public RandomVariable
+{
 public:
   /**
    * Constructs a pareto random variable with a mean of 1 and a shape
    * parameter of 1.5
    */
-  ParetoVariable();
+  ParetoVariable ();
 
   /**
    * Constructs a pareto random variable with specified mean and shape
@@ -465,14 +394,6 @@ public:
    */
   ParetoVariable(double m, double s, double b);
 
-  ParetoVariable(const ParetoVariable& c);
-  
-  /**
-   * \return A random value from this Pareto distribution
-   */
-  virtual double GetValue();
-  virtual RandomVariable* Copy() const;
-public:
   /**
    * \param m The mean value of the distribution from which the return value
    * is drawn.
@@ -483,14 +404,10 @@ public:
    * parameter s.
    */
   static double GetSingleValue(double m, double s, double b=0);
-private:
-  double m_mean;  // Mean value of RV
-  double m_shape; // Shape parameter
-  double m_bound; // Upper bound on value (if non-zero)
 };
 
 /**
- * \brief WeibullVariable distributed random var
+ * \brief WeibullVariableImpl distributed random var
  * \ingroup randomvariable
  *
  * This class supports the creation of objects that return random numbers
@@ -530,7 +447,7 @@ public:
    /**
    * \brief Constructs a weibull random variable with the specified mean
    * \brief value, shape (alpha), and upper bound.
-   * Since WeibullVariable distributions can theoretically return unbounded values,
+   * Since WeibullVariableImpl distributions can theoretically return unbounded values,
    * it is sometimes usefull to specify a fixed upper limit.  Note however
    * that when the upper limit is specified, the true mean of the distribution
    * is slightly smaller than the mean value specified.
@@ -539,15 +456,6 @@ public:
    * \param b Upper limit on returned values
    */
   WeibullVariable(double m, double s, double b);
-
-  WeibullVariable(const WeibullVariable& c);
-  
-  /**
-   * \return A random value from this Weibull distribution
-   */
-  virtual double GetValue();
-  virtual RandomVariable* Copy() const;
-public:
   /**
    * \param m Mean value for the distribution.
    * \param s Shape (alpha) parameter for the distribution.
@@ -555,14 +463,10 @@ public:
    * \return Random number from a distribution specified by m,s, and b
    */
   static double GetSingleValue(double m, double s, double b=0);
-private:
-  double m_mean;  // Mean value of RV
-  double m_alpha; // Shape parameter
-  double m_bound; // Upper bound on value (if non-zero)
 };
 
 /**
- * \brief Class NormalVariable defines a random variable with a
+ * \brief Class NormalVariableImpl defines a random variable with a
  * normal (Gaussian) distribution.
  * \ingroup randomvariable
  * 
@@ -575,8 +479,8 @@ private:
  * where \f$ mean = \mu \f$ and \f$ variance = \sigma^2 \f$
  *
  */
-class NormalVariable : public RandomVariable { // Normally Distributed random var
-
+class NormalVariable : public RandomVariable
+{
 public:
    static const double INFINITE_VALUE;
   /**
@@ -589,37 +493,20 @@ public:
    * \brief Construct a normal random variable with specified mean and variance
    * \param m Mean value
    * \param v Variance
-   * \param b Bound.  The NormalVariable is bounded within +-bound.
+   * \param b Bound.  The NormalVariableImpl is bounded within +-bound.
    */ 
   NormalVariable(double m, double v, double b = INFINITE_VALUE);
-
-  NormalVariable(const NormalVariable& c);
-  
-  /**
-   * \return A value from this normal distribution
-   */
-  virtual double GetValue();
-  virtual RandomVariable* Copy() const;
-public:
   /**
    * \param m Mean value
    * \param v Variance
-   * \param b Bound.  The NormalVariable is bounded within +-bound.
+   * \param b Bound.  The NormalVariableImpl is bounded within +-bound.
    * \return A random number from a distribution specified by m,v, and b.
    */ 
   static double GetSingleValue(double m, double v, double b = INFINITE_VALUE);
-private:
-  double m_mean;      // Mean value of RV
-  double m_variance;  // Mean value of RV
-  double m_bound;     // Bound on value (absolute value)
-  bool   m_nextValid; // True if next valid
-  double m_next;      // The algorithm produces two values at a time
-  static bool   m_static_nextValid;
-  static double m_static_next;
 };
 
 /**
- * \brief EmpiricalVariable distribution random var
+ * \brief EmpiricalVariableImpl distribution random var
  * \ingroup randomvariable
  *
  * Defines a random variable  that has a specified, empirical 
@@ -634,37 +521,18 @@ private:
 class EmpiricalVariable : public RandomVariable {
 public:
   /**
-   * Constructor for the EmpiricalVariable random variables.
+   * Constructor for the EmpiricalVariableImpl random variables.
    */
   explicit EmpiricalVariable();
 
-  virtual ~EmpiricalVariable();
-  EmpiricalVariable(const EmpiricalVariable& c);
-  /**
-   * \return A value from this empirical distribution
-   */
-  virtual double GetValue();
-  virtual RandomVariable* Copy() const;
   /**
    * \brief Specifies a point in the empirical distribution
    * \param v The function value for this point
    * \param c Probability that the function is less than or equal to v
    */
-  virtual void CDF(double v, double c);  // Value, prob <= Value
-
-private:
-  class ValueCDF {
-  public:
-    ValueCDF();
-    ValueCDF(double v, double c);
-    ValueCDF(const ValueCDF& c);
-    double value;
-    double    cdf;
-  };
-  virtual void Validate();  // Insure non-decreasing emiprical values
-  virtual double Interpolate(double, double, double, double, double);
-  bool validated; // True if non-decreasing validated
-  std::vector<ValueCDF> emp;       // Empicical CDF
+  void CDF(double v, double c);  // Value, prob <= Value
+protected:
+  EmpiricalVariable (const RandomVariableBase &variable);
 };
 
 /**
@@ -672,20 +540,13 @@ private:
  * \ingroup randomvariable
  *
  * Defines an empirical distribution where all values are integers.
- * Indentical to EmpiricalVariable, but with slightly different
+ * Indentical to EmpiricalVariableImpl, but with slightly different
  * interpolation between points.
  */
-class IntEmpiricalVariable : public EmpiricalVariable {
+class IntEmpiricalVariable : public EmpiricalVariable 
+{
 public:
-
   IntEmpiricalVariable();
-  
-  virtual RandomVariable* Copy() const;
-  /**
-   * \return An integer value from this empirical distribution
-   */
-  virtual uint32_t GetIntValue();
-  virtual double Interpolate(double, double, double, double, double);
 };
 
 /**
@@ -697,8 +558,8 @@ public:
  * the RNG to return a known sequence, perhaps to
  * compare NS-3 to some other simulator
  */
-class DeterministicVariable : public RandomVariable {
-
+class DeterministicVariable : public RandomVariable
+{
 public:
   /**
    * \brief Constructor
@@ -707,22 +568,11 @@ public:
    * on successive calls to ::Value().  Note that the d pointer is copied
    * for use by the generator (shallow-copy), not its contents, so the 
    * contents of the array d points to have to remain unchanged for the use 
-   * of DeterministicVariable to be meaningful.
+   * of DeterministicVariableImpl to be meaningful.
    * \param d Pointer to array of random values to return in sequence
    * \param c Number of values in the array
    */
   explicit DeterministicVariable(double* d, uint32_t c);
-
-  virtual ~DeterministicVariable();
-  /**
-   * \return The next value in the deterministic sequence
-   */
-  virtual double GetValue();
-  virtual RandomVariable* Copy() const;
-private:
-  uint32_t   count;
-  uint32_t   next;
-  double* data;
 };
 
 
@@ -730,7 +580,7 @@ private:
  * \brief Log-normal Distributed random var
  * \ingroup randomvariable
  *
- * LogNormalVariable defines a random variable with log-normal
+ * LogNormalVariableImpl defines a random variable with log-normal
  * distribution.  If one takes the natural logarithm of random
  * variable following the log-normal distribution, the obtained values
  * follow a normal distribution.
@@ -748,7 +598,8 @@ private:
  * \f$ \mu = ln(mean) - \frac{1}{2}ln\left(1+\frac{stddev}{mean^2}\right)\f$, and,
  * \f$ \sigma = \sqrt{ln\left(1+\frac{stddev}{mean^2}\right)}\f$
  */
-class LogNormalVariable : public RandomVariable { 
+class LogNormalVariable : public RandomVariable 
+{
 public:
   /**
    * \param mu mu parameter of the lognormal distribution
@@ -757,20 +608,11 @@ public:
   LogNormalVariable (double mu, double sigma);
 
   /**
-   * \return A random value from this distribution
-   */
-  virtual double GetValue ();
-  virtual RandomVariable* Copy() const;
-public:
-  /**
    * \param mu mu parameter of the underlying normal distribution
    * \param sigma sigma parameter of the underlying normal distribution
    * \return A random number from the distribution specified by mu and sigma
    */
   static double GetSingleValue(double mu, double sigma);
-private:
-  double m_mu;
-  double m_sigma;
 };
 
 /**
@@ -780,7 +622,8 @@ private:
  * This distribution is a triangular distribution.  The probablility density
  * is in the shape of a triangle.
  */
-class TriangularVariable : public RandomVariable {
+class TriangularVariable : public RandomVariable 
+{
 public:
   /**
    * Creates a triangle distribution random number generator in the
@@ -796,15 +639,6 @@ public:
    * \param mean mean of the distribution
    */
   TriangularVariable(double s, double l, double mean);
-
-  TriangularVariable(const TriangularVariable& c);
-  
-  /**
-   * \return A value from this distribution
-   */
-  virtual double GetValue();
-  virtual RandomVariable*  Copy() const;
-public:
   /**
    * \param s Low end of the range
    * \param l High end of the range
@@ -812,11 +646,6 @@ public:
    * \return A triangularly distributed random number between s and l
    */
   static double GetSingleValue(double s, double l, double mean);
-private:
-  double m_min;
-  double m_max;
-  double m_mode;  //easier to work with the mode internally instead of the mean
-                  //they are related by the simple: mean = (min+max+mode)/3
 };
 
 }//namespace ns3

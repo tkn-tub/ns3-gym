@@ -140,13 +140,12 @@ RateErrorModel::RateErrorModel () :
 {
   NS_LOG_FUNCTION;
   // Assume a uniform random variable if user does not specify
-  m_ranvar = new UniformVariable ();
+  m_ranvar = UniformVariable ();
 }
 
 RateErrorModel::~RateErrorModel () 
 {
   NS_LOG_FUNCTION;
-  delete m_ranvar;
 }
 
 enum ErrorUnit 
@@ -181,8 +180,7 @@ void
 RateErrorModel::SetRandomVariable (const RandomVariable &ranvar)
 {
   NS_LOG_FUNCTION;
-  delete m_ranvar;
-  m_ranvar = ranvar.Copy ();
+  m_ranvar = ranvar;
 }
 
 bool 
@@ -212,7 +210,7 @@ bool
 RateErrorModel::DoCorruptPkt (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
-  return (m_ranvar->GetValue () < m_rate);
+  return (m_ranvar.GetValue () < m_rate);
 }
 
 bool
@@ -221,7 +219,7 @@ RateErrorModel::DoCorruptByte (Ptr<Packet> p)
   NS_LOG_FUNCTION;
   // compute pkt error rate, assume uniformly distributed byte error
   double per = 1 - pow (1.0 - m_rate, p->GetSize ());
-  return (m_ranvar->GetValue () < per);
+  return (m_ranvar.GetValue () < per);
 }
 
 bool
@@ -230,7 +228,7 @@ RateErrorModel::DoCorruptBit(Ptr<Packet> p)
   NS_LOG_FUNCTION;
   // compute pkt error rate, assume uniformly distributed bit error
   double per = 1 - pow (1.0 - m_rate, (8 * p->GetSize ()) );
-  return (m_ranvar->GetValue () < per);
+  return (m_ranvar.GetValue () < per);
 }
 
 void 

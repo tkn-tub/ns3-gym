@@ -47,16 +47,16 @@ g_position ("RandomWaypointPosition",
 
 
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters ()
-  : m_speed (g_speed.GetCopy ()),
-    m_pause (g_pause.GetCopy ())
+  : m_speed (g_speed.Get ()),
+    m_pause (g_pause.Get ())
 {
   m_position = g_position.GetValue ().CreateObject ()->GetObject<RandomPosition> ();
 }
 RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters (Ptr<RandomPosition> randomPosition,
 									      const RandomVariable &speed,
 									      const RandomVariable &pause)
-  : m_speed (speed.Copy ()),
-    m_pause (pause.Copy ()),
+  : m_speed (speed),
+    m_pause (pause),
     m_position (randomPosition)
 {}
 void 
@@ -67,23 +67,17 @@ RandomWaypointMobilityModelParameters::SetWaypointPositionModel (Ptr<RandomPosit
 void 
 RandomWaypointMobilityModelParameters::SetSpeed (const RandomVariable &speed)
 {
-  delete m_speed;
-  m_speed = speed.Copy ();
+  m_speed = speed;
 }
 void 
 RandomWaypointMobilityModelParameters::SetPause (const RandomVariable &pause)
 {
-  delete m_pause;
-  m_pause = pause.Copy ();
+  m_pause = pause;
 }
 void 
 RandomWaypointMobilityModelParameters::DoDispose (void)
 {
   m_position = 0;
-  delete m_pause;
-  delete m_speed;
-  m_pause = 0;
-  m_speed = 0;  
 }
 
 Ptr<RandomWaypointMobilityModelParameters>
@@ -128,7 +122,7 @@ RandomWaypointMobilityModel::BeginWalk (void)
 {
   Vector m_current = m_helper.GetCurrentPosition ();
   Vector destination = m_parameters->m_position->Get ();
-  double speed = m_parameters->m_speed->GetValue ();
+  double speed = m_parameters->m_speed.GetValue ();
   double dx = (destination.x - m_current.x);
   double dy = (destination.y - m_current.y);
   double dz = (destination.z - m_current.z);
@@ -144,7 +138,7 @@ RandomWaypointMobilityModel::BeginWalk (void)
 void
 RandomWaypointMobilityModel::Start (void)
 {
-  Time pause = Seconds (m_parameters->m_pause->GetValue ());
+  Time pause = Seconds (m_parameters->m_pause.GetValue ());
   m_helper.Pause ();
   NotifyCourseChange ();
   m_event = Simulator::Schedule (pause, &RandomWaypointMobilityModel::BeginWalk, this);
