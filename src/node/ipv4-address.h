@@ -40,7 +40,7 @@ public:
    * input address is in host order.
    * \param address The host order 32-bit address
    */
-  Ipv4Address (uint32_t address);
+  explicit Ipv4Address (uint32_t address);
   /** 
     * \brief Constructs an Ipv4Address by parsing a the input C-string
     *
