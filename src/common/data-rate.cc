@@ -125,6 +125,8 @@ DoParse (const std::string s, uint64_t *v)
 
 namespace ns3 {
 
+VALUE_HELPER_CPP (DataRate);
+
 DataRate::DataRate ()
   : m_bps (0)
 {}
@@ -171,15 +173,6 @@ double DataRate::CalculateTxTime(uint32_t bytes) const
 uint64_t DataRate::GetBitRate() const
 {
   return m_bps;
-}
-
-DataRate::DataRate (PValue value)
-{
-  *this = ClassValueHelperExtractFrom<DataRate,DataRateValue> (value);
-}
-DataRate::operator PValue () const
-{
-  return ClassValueHelperConvertTo<DataRate,DataRateValue> (this);
 }
 
 DataRate MakeDataRate (std::string rate)

@@ -23,7 +23,7 @@
 #include <stdint.h>
 #include <ostream>
 #include "ns3/value.h"
-#include "ns3/class-value-helper.h"
+#include "ns3/value-helper.h"
 
 namespace ns3 {
 
@@ -96,8 +96,7 @@ public:
    */
   static Mac48Address GetBroadcast (void);
 
-  Mac48Address (PValue value);
-  operator PValue () const;
+  VALUE_HELPER_HEADER_1 (Mac48Address);
 private:
   /**
    * \returns a new Address instance
@@ -112,40 +111,13 @@ private:
   uint8_t m_address[6];
 };
 
+VALUE_HELPER_HEADER_2 (Mac48Address);
+
 bool operator == (const Mac48Address &a, const Mac48Address &b);
 bool operator != (const Mac48Address &a, const Mac48Address &b);
 bool operator < (const Mac48Address &a, const Mac48Address &b);
 std::ostream& operator<< (std::ostream& os, const Mac48Address & address);
 std::istream& operator>> (std::istream& is, const Mac48Address & address);
-
-class Mac48AddressValue : public Value {};
-class Mac48AddressParamSpec : public ParamSpec {};
-
-template <typename T1>
-Ptr<ParamSpec>
-MakeMac48AddressParamSpec (T1 a1, Mac48Address address);
-
-template <typename T1, typename T2>
-Ptr<ParamSpec>
-MakeMac48AddressParamSpec (T1 a1, T2 a2, Mac48Address address);
-
-} // namespace ns3
-
-namespace ns3 {
-
-template <typename T1>
-Ptr<ParamSpec>
-MakeMac48AddressParamSpec (T1 a1, Mac48Address address)
-{
-  return MakeClassValueHelperParamSpec<Mac48Address,Mac48AddressValue,Mac48AddressParamSpec> (a1, address);
-}
-
-template <typename T1, typename T2>
-Ptr<ParamSpec>
-MakeMac48AddressParamSpec (T1 a1, T2 a2, Mac48Address address)
-{
-  return MakeClassValueHelperParamSpec<Mac48Address,Mac48AddressValue,Mac48AddressParamSpec> (a1, a2, address);
-}
 
 } // namespace ns3
 

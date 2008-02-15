@@ -114,5 +114,6 @@ def build(bld):
         'enum-value.h',
         'object-factory.h',
         'class-value-helper.h',
+        'value-helper.h',
         ]
 

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <ostream>
 #include "ns3/value.h"
-#include "ns3/class-value-helper.h"
+#include "ns3/value-helper.h"
 
 namespace ns3 {
 
@@ -154,8 +154,7 @@ public:
    */
   static uint8_t Register (void);
 
-  Address (PValue value);
-  operator PValue () const;
+  VALUE_HELPER_HEADER_1 (Address);
 private:
   friend bool operator == (const Address &a, const Address &b);
   friend bool operator < (const Address &a, const Address &b);
@@ -166,46 +165,15 @@ private:
   uint8_t m_data[MAX_SIZE];
 };
 
+VALUE_HELPER_HEADER_2 (Address);
+
 bool operator == (const Address &a, const Address &b);
 bool operator != (const Address &a, const Address &b);
 bool operator < (const Address &a, const Address &b);
 std::ostream& operator<< (std::ostream& os, const Address & address);
 std::istream& operator>> (std::istream& is, Address & address);
 
-class AddressValue : public Value {};
-class AddressParamSpec : public ParamSpec {};
-
-template <typename T1>
-Ptr<ParamSpec>
-MakeAddressParamSpec (T1 a1, Address initialValue);
-
-template <typename T1, typename T2>
-Ptr<ParamSpec>
-MakeAddressParamSpec (T1 a1, T2 a2, Address initialValue);
 
 } // namespace ns3
-
-namespace ns3 {
-
-template <typename T1>
-Ptr<ParamSpec>
-MakeAddressParamSpec (T1 a1, Address initialValue)
-{
-  return MakeClassValueHelperParamSpec<Address,AddressValue,AddressParamSpec>
-    (a1, initialValue);
-}
-
-template <typename T1, typename T2>
-Ptr<ParamSpec>
-MakeAddressParamSpec (T1 a1, T2 a2, Address initialValue)
-{
-  return MakeClassValueHelperParamSpec<Address,AddressValue,AddressParamSpec>
-    (a1, a2, initialValue);
-}
-
-
-
-} // namespace ns3
-
 
 #endif /* ADDRESS_H */

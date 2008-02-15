@@ -119,14 +119,7 @@ Rectangle::CalculateIntersection (const Vector &current, const Vector &speed) co
 
 }
 
-Rectangle::Rectangle (PValue value)
-{
-  *this = ClassValueHelperExtractFrom<Rectangle,RectangleValue> (value);
-}
-Rectangle::operator PValue () const
-{
-  return ClassValueHelperConvertTo<Rectangle,RectangleValue> (this);
-}
+VALUE_HELPER_CPP (Rectangle);
 
 std::ostream &
 operator << (std::ostream &os, const Rectangle &rectangle)

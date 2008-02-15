@@ -24,6 +24,8 @@
 
 namespace ns3 {
 
+VALUE_HELPER_CPP (Vector);
+
 
 Vector::Vector (double _x, double _y, double _z)
   : x (_x),
@@ -36,16 +38,6 @@ Vector::Vector ()
     y (0.0),
     z (0.0)
 {}
-
-Vector::Vector (PValue value)
-{
-  *this = ClassValueHelperExtractFrom<Vector,VectorValue> (value);
-}
-Vector::operator PValue () const
-{
-  return ClassValueHelperConvertTo<Vector,VectorValue> (this);
-}
-
 
 double 
 CalculateDistance (const Vector &a, const Vector &b)

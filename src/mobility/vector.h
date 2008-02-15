@@ -21,7 +21,7 @@
 #define VECTOR_H
 
 #include "ns3/value.h"
-#include "ns3/class-value-helper.h"
+#include "ns3/value-helper.h"
 
 namespace ns3 {
 
@@ -58,45 +58,15 @@ public:
    */
   double z;
 
-  Vector (PValue value);
-  operator PValue () const;
+  VALUE_HELPER_HEADER_1 (Vector);
 };
 
 double CalculateDistance (const Vector &a, const Vector &b);
 
-class VectorValue : public Value {};
-class VectorParamSpec : public ParamSpec {};
+VALUE_HELPER_HEADER_2 (Vector);
 
 std::ostream &operator << (std::ostream &os, const Vector &vector);
 std::istream &operator >> (std::istream &is, Vector &vector);
-
-template <typename T1>
-Ptr<ParamSpec>
-MakeVectorParamSpec (T1 a1, const Vector &initialValue);
-
-template <typename T1, typename T2>
-Ptr<ParamSpec>
-MakeVectorParamSpec (T1 a1, T2 a2,
-                     const Vector &initialValue);
-
-} // namespace ns3
-
-namespace ns3 {
-
-template <typename T1>
-Ptr<ParamSpec>
-MakeVectorParamSpec (T1 a1, const Vector &initialValue)
-{
-  return MakeClassValueHelperParamSpec<Vector,VectorValue,VectorParamSpec> (a1, initialValue);
-}
-
-template <typename T1, typename T2>
-Ptr<ParamSpec>
-MakeVectorParamSpec (T1 a1, T2 a2,
-                     const Vector &initialValue)
-{
-  return MakeClassValueHelperParamSpec<Vector,VectorValue,VectorParamSpec> (a1, a2, initialValue);
-}
 
 } // namespace ns3
 

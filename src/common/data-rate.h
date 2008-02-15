@@ -28,7 +28,7 @@
 #include "ns3/nstime.h"
 #include "ns3/default-value.h"
 #include "ns3/value.h"
-#include "ns3/class-value-helper.h"
+#include "ns3/value-helper.h"
 
 namespace ns3 {
 
@@ -80,9 +80,8 @@ public:
    * \return The underlying bitrate in bits per second
    */
   uint64_t GetBitRate() const;
-  
-  DataRate (PValue value);
-  operator PValue () const;
+
+  VALUE_HELPER_HEADER_1 (DataRate);
 private:
   uint64_t m_bps;
   static uint64_t Parse(const std::string);
@@ -93,16 +92,7 @@ DataRate MakeDataRate (std::string rate);
 std::ostream &operator << (std::ostream &os, const DataRate &rate);
 std::istream &operator >> (std::istream &is, DataRate &rate);
 
-class DataRateValue : public Value {};
-class DataRateParamSpec : public ParamSpec {};
-
-template <typename T1>
-Ptr<ParamSpec>
-MakeDataRateParamSpec (T1 a1, DataRate initialValue);
-
-template <typename T1, typename T2>
-Ptr<ParamSpec>
-MakeDataRateParamSpec (T1 a1, T2 a2, DataRate initialValue);
+VALUE_HELPER_HEADER_2 (DataRate);
 
 /**
  * \param lhs
@@ -129,25 +119,5 @@ private:
 };
 
 } //namespace ns3
-
-namespace ns3 {
-
-template <typename T1>
-Ptr<ParamSpec>
-MakeDataRateParamSpec (T1 a1, DataRate initialValue)
-{
-  return MakeClassValueHelperParamSpec<DataRate,DataRateValue,DataRateParamSpec>
-    (a1, initialValue);
-}
-
-template <typename T1, typename T2>
-Ptr<ParamSpec>
-MakeDataRateParamSpec (T1 a1, T2 a2, DataRate initialValue)
-{
-  return MakeClassValueHelperParamSpec<DataRate,DataRateValue,DataRateParamSpec>
-    (a1, a2, initialValue);
-}
-
-} // namespace ns3
 
 #endif /* DATA_RATE_H */
