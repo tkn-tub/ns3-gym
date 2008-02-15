@@ -691,12 +691,21 @@ Parameters::DoSet (Ptr<const ParamSpec> spec, PValue value)
   bool ok = spec->Check (value);
   if (!ok)
     {
+      // attempt to convert to string.
+      std::string str = value.SerializeToString (0);
+      // attempt to convert back to value.
       PValue v = spec->CreateValue ();
-      ok = v.ConvertFrom (value, spec);
+      ok = v.DeserializeFromString (str, spec);
       if (!ok)
         {
           return false;
         }
+      ok = spec->Check (v);
+      if (!ok)
+        {
+          return false;
+        }
+      value = v;
     }
   DoSetOne (spec, value);
   return true;
@@ -903,18 +912,21 @@ Object::DoSet (Ptr<const ParamSpec> spec, PValue value)
   bool ok = spec->Check (value);
   if (!ok)
     {
+      // attempt to convert to string
+      std::string str = value.SerializeToString (0);
+      // attempt to convert back from string.
       PValue v = spec->CreateValue ();
-      ok = v.ConvertFrom (value, spec);
+      ok = v.DeserializeFromString (str, spec);
+      if (!ok)
+        {
+          return false;
+        }
+      ok = spec->Check (v);
       if (!ok)
         {
           return false;
         }
       value = v;
-      ok = spec->Check (value);
-      if (!ok)
-        {
-          return false;
-        }
     }
   ok = spec->Set (this, value);
   return ok;

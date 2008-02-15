@@ -22,7 +22,6 @@ public:
   virtual PValue Copy (void) const = 0;
   virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const = 0;
   virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec) = 0;
-  virtual bool ConvertFrom (PValue value, Ptr<const ParamSpec> spec);
 private:
   friend class PValue;
   uint32_t m_count;
@@ -39,7 +38,6 @@ public:
   PValue Copy (void) const;
   std::string SerializeToString (Ptr<const ParamSpec> spec) const;
   bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
-  bool ConvertFrom (PValue value, Ptr<const ParamSpec> spec);
 
   template <typename T>
   static PValue Create (void);
