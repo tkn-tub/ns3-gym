@@ -107,11 +107,5 @@ ObjectVectorParamSpec::GetInitialValue (void) const
 {
   return PValue::Create<ObjectVectorValue> ();
 }
-PValue 
-ObjectVectorParamSpec::CreateValue (void) const
-{
-  return PValue::Create<ObjectVectorValue> ();
-}
-
 
 } // name

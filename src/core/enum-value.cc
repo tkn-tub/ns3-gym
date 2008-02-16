@@ -134,12 +134,4 @@ EnumParamSpec::GetInitialValue (void) const
   return PValue::Create<EnumValue> (m_valueSet.front ().first);
 }
 
-PValue
-EnumParamSpec::CreateValue (void) const
-{
-  return PValue::Create<EnumValue> (m_valueSet.front ().first);
-}
-
-
-
 } // namespace ns3

@@ -694,7 +694,7 @@ Parameters::DoSet (Ptr<const ParamSpec> spec, PValue value)
       // attempt to convert to string.
       std::string str = value.SerializeToString (0);
       // attempt to convert back to value.
-      PValue v = spec->CreateValue ();
+      PValue v = spec->GetInitialValue ().Copy ();
       ok = v.DeserializeFromString (str, spec);
       if (!ok)
         {
@@ -792,7 +792,7 @@ Parameters::DeserializeFromString (std::string str)
                 value = str.substr (equal+1, next - (equal+1));
                 cur++;
               }
-            PValue val = info.spec->CreateValue ();
+            PValue val = info.spec->GetInitialValue ().Copy ();
             bool ok = val.DeserializeFromString (value, info.spec);
             if (!ok)
               {
@@ -915,7 +915,7 @@ Object::DoSet (Ptr<const ParamSpec> spec, PValue value)
       // attempt to convert to string
       std::string str = value.SerializeToString (0);
       // attempt to convert back from string.
-      PValue v = spec->CreateValue ();
+      PValue v = spec->GetInitialValue ().Copy ();
       ok = v.DeserializeFromString (str, spec);
       if (!ok)
         {
@@ -978,7 +978,7 @@ Object::Get (std::string name, std::string &value) const
     {
       return false;
     }
-  PValue v = info.spec->CreateValue ();
+  PValue v = info.spec->GetInitialValue ().Copy ();
   bool ok = info.spec->Get (this, v);
   if (ok)
     {
@@ -999,7 +999,7 @@ Object::Get (std::string name) const
     {
       return PValue ();
     }
-  PValue value = info.spec->CreateValue ();
+  PValue value = info.spec->GetInitialValue ().Copy ();
   bool ok = info.spec->Get (this, value);
   if (!ok)
     {

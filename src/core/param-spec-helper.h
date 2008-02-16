@@ -78,11 +78,6 @@ public:
     return m_initialValue;
   }
 
-  virtual PValue CreateValue (void) const {
-    return m_initialValue.Copy ();
-  }
-
-
 private:
   virtual bool DoSet (T *object, const U *v) const = 0;
   virtual bool DoGet (const T *object, U *v) const = 0;
