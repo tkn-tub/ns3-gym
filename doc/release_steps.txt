@@ -14,15 +14,15 @@ Steps in doing an ns-3 release
    - hg tag "release ns-3.0.x"
    - hg push 
 5. clone the tagged ns-3-dev and place it on the repository
-   - ssh code.nsnam.org; sudo; su code;
+   - ssh code.nsnam.org; sudo tcsh; su code;
    - cp -r /home/code/repos/ns-3-dev /home/code/repos/ns-3.0.x
    - cd /home/code/repos/ns-3.0.x/.hg and edit the hgrc appropriately:
      "description = ns-3.0.x release
       name = ns-3.0.x"
 6. upload "ns-3.0.x.tar.bz2" to the /var/www/html/releases/ directory on 
    the www.nsnam.org server
-   - give it 600 permissions, and user/group = apache
-8. update web pages on www.nsnam.org (source is in the www/ module)
+   - give it 644 file permissions, and user/group = apache
+7. update web pages on www.nsnam.org (source is in the www/ module)
    - add link to news.html
    - update getting_started.html
    - update documents.html
@@ -32,4 +32,4 @@ Steps in doing an ns-3 release
      -- edit ~/bin/update-doxygen-release file and change RELEASE variable 
         to the right version number 
      -- run ~/bin/update-doxygen-release
-9. announce to ns-developers, with summary of release notes
+8. announce to ns-developers, with summary of release notes
