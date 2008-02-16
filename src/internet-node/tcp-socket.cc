@@ -752,11 +752,13 @@ bool TcpSocket::SendPendingData (bool withAck)
       m_tcp->SendPacket (p, header,
                          m_endPoint->GetLocalAddress (),
                          m_defaultAddress);
-      m_rtt->SentSeq(m_nextTxSequence, sz);           // notify the RTT
-      NotifyDataSent (p->GetSize () );                // notify the application
-      nPacketsSent++;                                 // Count sent this loop
-      m_nextTxSequence += sz;                         // Advance next tx sequence
-      m_highTxMark = std::max (m_nextTxSequence, m_highTxMark);// Note the high water mark
+      m_rtt->SentSeq(m_nextTxSequence, sz);       // notify the RTT
+      // Notify the application
+      Simulator::ScheduleNow(&TcpSocket::NotifyDataSent, this, p->GetSize ());
+      nPacketsSent++;                             // Count sent this loop
+      m_nextTxSequence += sz;                     // Advance next tx sequence
+      // Note the high water mark
+      m_highTxMark = std::max (m_nextTxSequence, m_highTxMark);
     }
   NS_LOG_LOGIC ("Sent "<<nPacketsSent<<" packets");
   NS_LOG_LOGIC("RETURN SendPendingData");
