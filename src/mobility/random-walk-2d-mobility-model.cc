@@ -39,30 +39,31 @@ RandomWalk2dMobilityModel::GetTypeId (void)
     .AddConstructor<RandomWalk2dMobilityModel> ()
     .AddParameter ("bounds",
                    "Bounds of the area to cruise.",
-                   MakeRectangleParamSpec (&RandomWalk2dMobilityModel::m_bounds,
-                                           Rectangle (0.0, 0.0, 100.0, 100.0)))
+                   Rectangle (0.0, 0.0, 100.0, 100.0),
+                   MakeRectangleParamSpec (&RandomWalk2dMobilityModel::m_bounds))
     .AddParameter ("time",
                    "Change current direction and speed after moving for this delay.",
-                   MakeTimeParamSpec (&RandomWalk2dMobilityModel::m_modeTime,
-                                      Seconds (1.0)))
+                   Seconds (1.0),
+                   MakeTimeParamSpec (&RandomWalk2dMobilityModel::m_modeTime))
     .AddParameter ("distance",
                    "Change current direction and speed after moving for this distance.",
-                   MakeTimeParamSpec (&RandomWalk2dMobilityModel::m_modeTime,
-                                      Seconds (1.0)))
+                   Seconds (1.0),
+                   MakeTimeParamSpec (&RandomWalk2dMobilityModel::m_modeTime))
     .AddParameter ("mode",
                    "The mode indicates the condition used to "
                    "change the current speed and direction",
+                   EnumValue (RandomWalk2dMobilityModel::MODE_DISTANCE),
                    MakeEnumParamSpec (&RandomWalk2dMobilityModel::m_mode, 
                                       RandomWalk2dMobilityModel::MODE_DISTANCE, "Distance",
                                       RandomWalk2dMobilityModel::MODE_TIME, "Time"))
     .AddParameter ("direction",
                    "A random variable used to pick the direction (gradients).",
-                   MakeRandomVariableParamSpec (&RandomWalk2dMobilityModel::m_direction,
-                                                UniformVariable (0.0, 6.283184)))
+                   UniformVariable (0.0, 6.283184),
+                   MakeRandomVariableParamSpec (&RandomWalk2dMobilityModel::m_direction))
     .AddParameter ("speed",
                    "A random variable used to pick the speed (m/s).",
-                   MakeRandomVariableParamSpec (&RandomWalk2dMobilityModel::m_speed,
-                                                UniformVariable (2.0, 4.0)));
+                   UniformVariable (2.0, 4.0),
+                   MakeRandomVariableParamSpec (&RandomWalk2dMobilityModel::m_speed));
   return tid;
 }
 

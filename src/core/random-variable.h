@@ -669,11 +669,9 @@ class RandomVariableValue : public Value {};
 class RandomVariableParamSpec : public ParamSpec {};
 
 template <typename T1>
-Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1,
-                                            RandomVariable initialValue);
+Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1);
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2,
-                                            RandomVariable initialValue);
+Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2);
 
 
 }//namespace ns3
@@ -682,19 +680,17 @@ Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2,
 namespace ns3 {
 
 template <typename T1>
-Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1,
-                                            RandomVariable initialValue)
+Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1)
 {
   return MakeClassValueHelperParamSpec<RandomVariable, 
-    RandomVariableValue, RandomVariableParamSpec> (a1, initialValue);
+    RandomVariableValue, RandomVariableParamSpec> (a1);
 }
 
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2,
-                                            RandomVariable initialValue)
+Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2)
 {
   return MakeClassValueHelperParamSpec<RandomVariable, 
-    RandomVariableValue,RandomVariableParamSpec> (a1, a2, initialValue);
+    RandomVariableValue,RandomVariableParamSpec> (a1, a2);
 }
 
 

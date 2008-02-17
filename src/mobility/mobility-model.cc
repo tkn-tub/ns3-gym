@@ -30,14 +30,13 @@ MobilityModel::GetTypeId (void)
     .SetParent<Object> ()
     .AddParameter ("position", "The current position of the mobility model.",
                    TypeId::PARAM_SGC,
+                   Vector (0.0, 0.0, 0.0),
                    MakeVectorParamSpec (&MobilityModel::SetPosition,
-                                        &MobilityModel::GetPosition,
-                                        Vector (0.0, 0.0, 0.0)))
+                                        &MobilityModel::GetPosition))
     .AddParameter ("velocity", "The current velocity of the mobility model.",
                    TypeId::PARAM_GET,
-                   MakeVectorParamSpec (&MobilityModel::GetVelocity,
-                                        Vector (0.0, 0.0, 0.0) // ignored initial value.
-                                        ))
+                   Vector (0.0, 0.0, 0.0), // ignored initial value.
+                   MakeVectorParamSpec (&MobilityModel::GetVelocity))
     ;
   return tid;
 }

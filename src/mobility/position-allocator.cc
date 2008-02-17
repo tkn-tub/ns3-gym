@@ -54,16 +54,22 @@ GridPositionAllocator::GetTypeId (void)
     .SetGroupName ("Mobility")
     .AddConstructor<GridPositionAllocator> ()
     .AddParameter ("GridWidth", "The number of objects layed out on a line.",
-                   MakeIntParamSpec (&GridPositionAllocator::m_n, 10))
+                   IntValue (10),
+                   MakeIntParamSpec (&GridPositionAllocator::m_n))
     .AddParameter ("MinX", "The x coordinate where the grid starts.",
-                   MakeFpParamSpec (&GridPositionAllocator::m_xMin, 0.0))
+                   FpValue (1.0),
+                   MakeFpParamSpec (&GridPositionAllocator::m_xMin))
     .AddParameter ("MinY", "The y coordinate where the grid starts.",
-                   MakeFpParamSpec (&GridPositionAllocator::m_yMin, 0.0))
+                   FpValue (0.0),
+                   MakeFpParamSpec (&GridPositionAllocator::m_yMin))
     .AddParameter ("DeltaX", "The x space between objects.",
-                   MakeFpParamSpec (&GridPositionAllocator::m_deltaX, 1.0))
+                   FpValue (1.0),
+                   MakeFpParamSpec (&GridPositionAllocator::m_deltaX))
     .AddParameter ("DeltaY", "The y space between objects.",
-                   MakeFpParamSpec (&GridPositionAllocator::m_deltaY, 1.0))
+                   FpValue (1.0),
+                   MakeFpParamSpec (&GridPositionAllocator::m_deltaY))
     .AddParameter ("LayoutType", "The type of layout.",
+                   EnumValue (ROW_FIRST),
                    MakeEnumParamSpec (&GridPositionAllocator::m_layoutType,
                                       ROW_FIRST, "RowFirst",
                                       COLUMN_FIRST, "ColumnFirst"))
@@ -104,12 +110,12 @@ RandomRectanglePositionAllocator::GetTypeId (void)
     .AddConstructor<RandomRectanglePositionAllocator> ()
     .AddParameter ("X",
                    "A random variable which represents the x coordinate of a position in a random rectangle.",
-                   MakeRandomVariableParamSpec (&RandomRectanglePositionAllocator::m_x,
-                                                UniformVariable (0.0, 1.0)))
+                   UniformVariable (0.0, 1.0),
+                   MakeRandomVariableParamSpec (&RandomRectanglePositionAllocator::m_x))
     .AddParameter ("Y",
                    "A random variable which represents the y coordinate of a position in a random rectangle.",
-                   MakeRandomVariableParamSpec (&RandomRectanglePositionAllocator::m_y,
-                                                UniformVariable (0.0, 1.0)));
+                   UniformVariable (0.0, 1.0),
+                   MakeRandomVariableParamSpec (&RandomRectanglePositionAllocator::m_y));
   return tid;
 }
 
@@ -136,18 +142,20 @@ RandomDiscPositionAllocator::GetTypeId (void)
     .AddConstructor<RandomDiscPositionAllocator> ()
     .AddParameter ("Theta",
                    "A random variable which represents the angle (gradients) of a position in a random disc.",
-                   MakeRandomVariableParamSpec (&RandomDiscPositionAllocator::m_theta,
-                                                UniformVariable (0.0, 6.2830)))
+                   UniformVariable (0.0, 6.2830),
+                   MakeRandomVariableParamSpec (&RandomDiscPositionAllocator::m_theta))
     .AddParameter ("Rho",
                    "A random variable which represents the radius of a position in a random disc.",
-                   MakeRandomVariableParamSpec (&RandomDiscPositionAllocator::m_rho,
-                                                UniformVariable (0.0, 200.0)))
+                   UniformVariable (0.0, 200.0),
+                   MakeRandomVariableParamSpec (&RandomDiscPositionAllocator::m_rho))
     .AddParameter ("X",
                    "The x coordinate of the center of the random position disc.",
-                   MakeFpParamSpec (&RandomDiscPositionAllocator::m_x, 0.0))
+                   FpValue (0.0),
+                   MakeFpParamSpec (&RandomDiscPositionAllocator::m_x))
     .AddParameter ("Y",
                    "The y coordinate of the center of the random position disc.",
-                   MakeFpParamSpec (&RandomDiscPositionAllocator::m_y, 0.0));
+                   FpValue (0.0),
+                   MakeFpParamSpec (&RandomDiscPositionAllocator::m_y));
   return tid;
 }   
 

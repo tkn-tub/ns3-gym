@@ -57,11 +57,12 @@ public:
                      std::string name,
                      std::string help, 
                      uint32_t flags,
+                     ns3::PValue initialValue,
                      ns3::Ptr<const ns3::ParamSpec> spec);
   uint32_t GetParametersN (uint16_t uid) const;
   std::string GetParameterName (uint16_t uid, uint32_t i) const;
   uint32_t GetParameterFlags (uint16_t uid, uint32_t i) const;
-  uint32_t GetParameterUid (uint16_t uid, uint32_t i) const;
+  ns3::PValue GetParameterInitialValue (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::ParamSpec> GetParameterParamSpec (uint16_t uid, uint32_t i) const;
 private:
   struct ConstructorInformation {
@@ -72,7 +73,7 @@ private:
     std::string name;
     std::string help;
     uint32_t flags;
-    uint32_t uid;
+    ns3::PValue initialValue;
     ns3::Ptr<const ns3::ParamSpec> param;
   };
   struct IidInformation {
@@ -242,6 +243,7 @@ IidManager::AddParameter (uint16_t uid,
                           std::string name,
                           std::string help, 
                           uint32_t flags,
+                          ns3::PValue initialValue,
                           ns3::Ptr<const ns3::ParamSpec> spec)
 {
   struct IidInformation *information = LookupInformation (uid);
@@ -258,6 +260,7 @@ IidManager::AddParameter (uint16_t uid,
   param.name = name;
   param.help = help;
   param.flags = flags;
+  param.initialValue = initialValue;
   param.param = spec;
   information->parameters.push_back (param);
 }
@@ -283,6 +286,13 @@ IidManager::GetParameterFlags (uint16_t uid, uint32_t i) const
   NS_ASSERT (i < information->parameters.size ());
   return information->parameters[i].flags;
 }
+ns3::PValue 
+IidManager::GetParameterInitialValue (uint16_t uid, uint32_t i) const
+{
+  struct IidInformation *information = LookupInformation (uid);
+  NS_ASSERT (i < information->parameters.size ());
+  return information->parameters[i].initialValue;
+}
 ns3::Ptr<const ns3::ParamSpec>
 IidManager::GetParameterParamSpec (uint16_t uid, uint32_t i) const
 {
@@ -290,7 +300,6 @@ IidManager::GetParameterParamSpec (uint16_t uid, uint32_t i) const
   NS_ASSERT (i < information->parameters.size ());
   return information->parameters[i].param;
 }
-
 
 } // anonymous namespace
 
@@ -427,6 +436,7 @@ TypeId::LookupParameterByName (std::string name, struct TypeId::ParameterInfo *i
           {
             info->spec = GetParameterParamSpec (i);
             info->flags = GetParameterFlags (i);
+            info->initialValue = tid.GetParameterInitialValue (i);
             return true;
           }
       }
@@ -448,6 +458,7 @@ TypeId::LookupParameterByPosition (uint32_t i, struct TypeId::ParameterInfo *inf
           {
             info->spec = tid.GetParameterParamSpec (j);
             info->flags = tid.GetParameterFlags (j);
+            info->initialValue = tid.GetParameterInitialValue (j);
             return true;
           }
         cur++;
@@ -518,9 +529,10 @@ TypeId::DoAddConstructor (CallbackBase cb, uint32_t nArguments)
 TypeId 
 TypeId::AddParameter (std::string name,
                       std::string help, 
+                      PValue initialValue,
                       Ptr<const ParamSpec> param)
 {
-  Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, PARAM_SGC, param);
+  Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, PARAM_SGC, initialValue, param);
   return *this;
 }
 
@@ -528,9 +540,10 @@ TypeId
 TypeId::AddParameter (std::string name,
                       std::string help, 
                       uint32_t flags,
+                      PValue initialValue,
                       Ptr<const ParamSpec> param)
 {
-  Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, flags, param);
+  Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, flags, initialValue, param);
   return *this;
 }
 
@@ -573,6 +586,12 @@ std::string
 TypeId::GetParameterFullName (uint32_t i) const
 {
   return GetName () + "::" + GetParameterName (i);
+}
+PValue 
+TypeId::GetParameterInitialValue (uint32_t i) const
+{
+  PValue value = Singleton<IidManager>::Get ()->GetParameterInitialValue (m_tid, i);
+  return value;
 }
 Ptr<const ParamSpec>
 TypeId::GetParameterParamSpec (uint32_t i) const
@@ -640,7 +659,7 @@ Parameters::Set (std::string name, PValue value)
 {
   struct TypeId::ParameterInfo info;
   TypeId::LookupParameterByFullName (name, &info);
-  bool ok = DoSet (info.spec, value);
+  bool ok = DoSet (&info, value);
   return ok;
 }
 void 
@@ -648,14 +667,14 @@ Parameters::SetWithTid (TypeId tid, std::string name, PValue value)
 {
   struct TypeId::ParameterInfo info;
   tid.LookupParameterByName (name, &info);
-  DoSet (info.spec, value);
+  DoSet (&info, value);
 }
 void 
 Parameters::SetWithTid (TypeId tid, uint32_t position, PValue value)
 {
   struct TypeId::ParameterInfo info;
   tid.LookupParameterByPosition (position, &info);
-  DoSet (info.spec, value);
+  DoSet (&info, value);
 }
 
 void
@@ -678,23 +697,36 @@ Parameters::DoSetOne (Ptr<const ParamSpec> spec, PValue value)
   m_parameters.push_back (p);
 }
 bool
-Parameters::DoSet (Ptr<const ParamSpec> spec, PValue value)
+Parameters::DoSet (struct TypeId::ParameterInfo *info, PValue value)
 {
-  if (spec == 0)
+  if (info->spec == 0)
     {
       return false;
     }
-  bool ok = spec->Check (value);
+  bool ok = info->spec->Check (value);
   if (!ok)
     {
-      PValue v = spec->CreateValue ();
-      ok = v.ConvertFrom (value, spec);
+      // attempt to convert to string.
+      const StringValue *str = value.DynCast<const StringValue *> ();
+      if (str == 0)
+        {
+          return false;
+        }
+      // attempt to convert back to value.
+      PValue v = info->initialValue.Copy ();
+      ok = v.DeserializeFromString (str->Get (), info->spec);
       if (!ok)
         {
           return false;
         }
+      ok = info->spec->Check (v);
+      if (!ok)
+        {
+          return false;
+        }
+      value = v;
     }
-  DoSetOne (spec, value);
+  DoSetOne (info->spec, value);
   return true;
 }
 void 
@@ -779,7 +811,7 @@ Parameters::DeserializeFromString (std::string str)
                 value = str.substr (equal+1, next - (equal+1));
                 cur++;
               }
-            PValue val = info.spec->CreateValue ();
+            PValue val = info.initialValue.Copy ();
             bool ok = val.DeserializeFromString (value, info.spec);
             if (!ok)
               {
@@ -842,6 +874,7 @@ Object::Construct (const Parameters &parameters)
     for (uint32_t i = 0; i < tid.GetParametersN (); i++)
       {
         Ptr<const ParamSpec> paramSpec = tid.GetParameterParamSpec (i);
+        PValue initial = tid.GetParameterInitialValue (i);
         NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
                       tid.GetParameterName (i)<<"\"");
         if (!(tid.GetParameterFlags (i) & TypeId::PARAM_CONSTRUCT))
@@ -856,7 +889,7 @@ Object::Construct (const Parameters &parameters)
             if (j->spec == paramSpec)
               {
                 // We have a matching parameter value.
-                DoSet (paramSpec, j->value);
+                DoSet (paramSpec, initial, j->value);
                 NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                               tid.GetParameterName (i)<<"\"");
                 found = true;
@@ -872,7 +905,7 @@ Object::Construct (const Parameters &parameters)
                 if (j->spec == paramSpec)
                   {
                     // We have a matching parameter value.
-                    DoSet (paramSpec, j->value);
+                    DoSet (paramSpec, initial, j->value);
                     NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                                   tid.GetParameterName (i)<<"\" from global");
                     found = true;
@@ -883,7 +916,6 @@ Object::Construct (const Parameters &parameters)
         if (!found)
           {
             // No matching parameter value so we set the default value.
-            PValue initial = paramSpec->GetInitialValue ();
             paramSpec->Set (this, initial);
             NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
                           tid.GetParameterName (i)<<"\" from local");
@@ -894,23 +926,30 @@ Object::Construct (const Parameters &parameters)
   NotifyConstructionCompleted ();
 }
 bool
-Object::DoSet (Ptr<const ParamSpec> spec, PValue value)
+Object::DoSet (Ptr<const ParamSpec> spec, PValue initialValue, PValue value)
 {
   bool ok = spec->Check (value);
   if (!ok)
     {
-      PValue v = spec->CreateValue ();
-      ok = v.ConvertFrom (value, spec);
+      // attempt to convert to string
+      const StringValue *str = value.DynCast<const StringValue *> ();
+      if (str == 0)
+        {
+          return false;
+        }
+      // attempt to convert back from string.
+      PValue v = initialValue.Copy ();
+      ok = v.DeserializeFromString (str->Get (), spec);
+      if (!ok)
+        {
+          return false;
+        }
+      ok = spec->Check (v);
       if (!ok)
         {
           return false;
         }
       value = v;
-      ok = spec->Check (value);
-      if (!ok)
-        {
-          return false;
-        }
     }
   ok = spec->Set (this, value);
   return ok;
@@ -927,7 +966,7 @@ Object::Set (std::string name, PValue value)
     {
       return false;
     }
-  return DoSet (info.spec, value);
+  return DoSet (info.spec, info.initialValue, value);
 }
 bool 
 Object::Get (std::string name, std::string &value) const
@@ -941,7 +980,7 @@ Object::Get (std::string name, std::string &value) const
     {
       return false;
     }
-  PValue v = info.spec->CreateValue ();
+  PValue v = info.initialValue.Copy ();
   bool ok = info.spec->Get (this, v);
   if (ok)
     {
@@ -962,7 +1001,7 @@ Object::Get (std::string name) const
     {
       return PValue ();
     }
-  PValue value = info.spec->CreateValue ();
+  PValue value = info.initialValue.Copy ();
   bool ok = info.spec->Get (this, value);
   if (!ok)
     {

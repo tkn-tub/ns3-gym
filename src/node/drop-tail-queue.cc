@@ -33,8 +33,8 @@ TypeId DropTailQueue::GetTypeId (void)
     .SetParent<Queue> ()
     .AddConstructor<DropTailQueue> ()
     .AddParameter ("MaxPackets", "The maximum number of packets accepted by this DropTailQueue.",
-                   MakeUintParamSpec (&DropTailQueue::m_maxPackets,
-                                      100))
+                   UintValue (100),
+                   MakeUintParamSpec (&DropTailQueue::m_maxPackets))
     ;
   
   return tid;
@@ -131,8 +131,8 @@ DropTailQueueTest::RunTests (void)
 {
   bool result = true;
 
-  DropTailQueue queue;
-  queue.Set ("MaxPackets", UintValue (3));
+  Ptr<DropTailQueue> queue = CreateObject<DropTailQueue> ();
+  NS_TEST_ASSERT (queue->Set ("MaxPackets", UintValue (3)));
   
   Ptr<Packet> p1, p2, p3, p4;
   p1 = Create<Packet> ();
@@ -140,34 +140,34 @@ DropTailQueueTest::RunTests (void)
   p3 = Create<Packet> ();
   p4 = Create<Packet> ();
 
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 0);
-  queue.Enqueue (p1);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 1);
-  queue.Enqueue (p2);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 2);
-  queue.Enqueue (p3);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 3);
-  queue.Enqueue (p4); // will be dropped
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 3);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 0);
+  queue->Enqueue (p1);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 1);
+  queue->Enqueue (p2);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 2);
+  queue->Enqueue (p3);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 3);
+  queue->Enqueue (p4); // will be dropped
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 3);
 
   Ptr<Packet> p;
 
-  p = queue.Dequeue ();
+  p = queue->Dequeue ();
   NS_TEST_ASSERT (p != 0);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 2);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 2);
   NS_TEST_ASSERT_EQUAL (p->GetUid (), p1->GetUid ());
 
-  p = queue.Dequeue ();
+  p = queue->Dequeue ();
   NS_TEST_ASSERT (p != 0);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 1);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 1);
   NS_TEST_ASSERT_EQUAL (p->GetUid (), p2->GetUid ());
 
-  p = queue.Dequeue ();
+  p = queue->Dequeue ();
   NS_TEST_ASSERT (p != 0);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 0);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 0);
   NS_TEST_ASSERT_EQUAL (p->GetUid (), p3->GetUid ());
 
-  p = queue.Dequeue ();
+  p = queue->Dequeue ();
   NS_TEST_ASSERT (p == 0);
 
   return result;

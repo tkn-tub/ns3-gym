@@ -21,7 +21,7 @@
 #define RECTANGLE_H
 
 #include "ns3/value.h"
-#include "ns3/class-value-helper.h"
+#include "ns3/value-helper.h"
 
 namespace ns3 {
 
@@ -62,40 +62,13 @@ public:
   double yMin;
   double yMax;
 
-  Rectangle (PValue value);
-  operator PValue () const;
+  VALUE_HELPER_HEADER_1 (Rectangle);
 };
 
 std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
 std::istream &operator >> (std::istream &is, Rectangle &rectangle);
 
-
-class RectangleValue : public Value {};
-class RectangleParamSpec : public ParamSpec {};
-
-template <typename T1>
-Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1,
-                                       Rectangle initialValue);
-template <typename T1, typename T2>
-Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1, T2 a2,
-                                       Rectangle initialValue);
-
-} // namespace ns3
-
-namespace ns3 {
-
-template <typename T1>
-Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1,
-                                       Rectangle initialValue)
-{
-  return MakeClassValueHelperParamSpec<Rectangle,RectangleValue,RectangleParamSpec> (a1, initialValue);
-}
-template <typename T1, typename T2>
-Ptr<ParamSpec> MakeRectangleParamSpec (T1 a1, T2 a2,
-                                       Rectangle initialValue)
-{
-  return MakeClassValueHelperParamSpec<Rectangle,RectangleValue,RectangleParamSpec> (a1, a2, initialValue);
-}
+VALUE_HELPER_HEADER_2 (Rectangle);
 
 } // namespace ns3
 

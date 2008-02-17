@@ -20,11 +20,6 @@ Value::operator = (const Value &o)
 }
 Value::~Value ()
 {}
-bool 
-Value::ConvertFrom (PValue value, Ptr<const ParamSpec> spec)
-{
-  return false;
-}
 
 /***************************************************************
  *   Big interesting warning.
@@ -116,16 +111,6 @@ bool
 PValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
 {
   return m_value->DeserializeFromString (value, spec);
-}
-bool 
-PValue::ConvertFrom (PValue value, Ptr<const ParamSpec> spec)
-{
-  const StringValue *str = value.DynCast<const StringValue *> ();
-  if (str == 0)
-    {
-      return false;
-    }
-  return DeserializeFromString (str->Get (), spec);
 }
 
 PValue::PValue (const char *value)

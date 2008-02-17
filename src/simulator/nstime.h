@@ -674,11 +674,9 @@ class TimeValue : public Value {};
 class TimeParamSpec : public ParamSpec {};
 
 template <typename T1>
-Ptr<ParamSpec> MakeTimeParamSpec (T1 a1,
-                                  Time initialValue);
+Ptr<ParamSpec> MakeTimeParamSpec (T1 a1);
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2,
-                                  Time initialValue);
+Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2);
 
 
 } // namespace ns3
@@ -686,17 +684,15 @@ Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2,
 namespace ns3 {
 
 template <typename T1>
-Ptr<ParamSpec> MakeTimeParamSpec (T1 a1,
-                                  Time initialValue)
+Ptr<ParamSpec> MakeTimeParamSpec (T1 a1)
 {
-  return MakeClassValueHelperParamSpec<Time,TimeValue,TimeParamSpec> (a1, initialValue);
+  return MakeClassValueHelperParamSpec<Time,TimeValue,TimeParamSpec> (a1);
 }
 
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2,
-                                  Time initialValue)
+Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2)
 {
-  return MakeClassValueHelperParamSpec<Time,TimeValue,TimeParamSpec> (a1, a2, initialValue);
+  return MakeClassValueHelperParamSpec<Time,TimeValue,TimeParamSpec> (a1, a2);
 }
 
 

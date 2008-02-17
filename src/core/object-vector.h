@@ -21,6 +21,7 @@ public:
   Ptr<Object> Get (uint32_t i) const;
 
   ObjectVector (PValue value);
+  operator PValue () const;
 private:
   friend class ObjectVectorParamSpec;
   std::vector<Ptr<Object> > m_objects;
@@ -68,8 +69,6 @@ public:
   virtual bool Set (ObjectBase * object, PValue value) const;
   virtual bool Get (const ObjectBase * object, PValue value) const;
   virtual bool Check (PValue value) const;
-  virtual PValue GetInitialValue (void) const;
-  virtual PValue CreateValue (void) const;
 private:
   virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const = 0;
   virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const = 0;

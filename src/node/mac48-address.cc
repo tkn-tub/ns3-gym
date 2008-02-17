@@ -25,6 +25,8 @@
 
 namespace ns3 {
 
+VALUE_HELPER_CPP (Mac48Address);
+
 #define ASCII_a (0x41)
 #define ASCII_z (0x5a)
 #define ASCII_A (0x61)
@@ -149,16 +151,6 @@ Mac48Address::GetBroadcast (void)
   static Mac48Address broadcast = Mac48Address ("ff:ff:ff:ff:ff:ff");
   return broadcast;
 }
-
-Mac48Address::Mac48Address (PValue value)
-{
-  *this = ClassValueHelperExtractFrom<Mac48Address,Mac48AddressValue> (value);
-}
-Mac48Address::operator PValue () const
-{
-  return ClassValueHelperConvertTo<Mac48Address,Mac48AddressValue> (this);
-}
-
 
 bool operator == (const Mac48Address &a, const Mac48Address &b)
 {

@@ -27,19 +27,15 @@ private:
 class UintParamSpec : public ParamSpec {};
 
 template <typename T1>
-Ptr<ParamSpec> MakeUintParamSpec (T1 a1,
-				 uint64_t initialValue);
+Ptr<ParamSpec> MakeUintParamSpec (T1 a1);
 template <typename T1>
 Ptr<ParamSpec> MakeUintParamSpec (T1 a1,
-				 uint64_t initialValue,
 				 uint64_t minValue,
 				 uint64_t maxValue);
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2,
-				 uint64_t initialValue);
+Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2);
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2,
-				 uint64_t initialValue,
 				 uint64_t minValue,
 				 uint64_t maxValue);
 
@@ -75,36 +71,32 @@ private:
 
 template <typename T1>
 Ptr<ParamSpec> 
-MakeUintParamSpec (T1 a1,
-		  uint64_t initialValue)
+MakeUintParamSpec (T1 a1)
 {
-  return MakeParamSpecHelperWithChecker<UintParamSpec> (a1, UintValue (initialValue),
+  return MakeParamSpecHelperWithChecker<UintParamSpec,UintValue> (a1,
 							UintValueChecker::Create (a1));
 }
 
 template <typename T1>
 Ptr<ParamSpec> MakeUintParamSpec (T1 a1,
-				 uint64_t initialValue,
 				 uint64_t minValue,
 				 uint64_t maxValue)
 {
-  return MakeParamSpecHelperWithChecker<UintParamSpec> (a1, UintValue (initialValue),
+  return MakeParamSpecHelperWithChecker<UintParamSpec,UintValue> (a1,
 							UintValueChecker (minValue, maxValue));
 }
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2, 
-				 uint64_t initialValue)
+Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2)
 {
-  return MakeParamSpecHelperWithChecker<UintParamSpec> (a1, a2, UintValue (initialValue),
+  return MakeParamSpecHelperWithChecker<UintParamSpec,UintValue> (a1, a2,
 							UintValueChecker::Create (a1));
 }
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2,
-				 uint64_t initialValue,
 				 uint64_t minValue,
 				 uint64_t maxValue)
 {
-  return MakeParamSpecHelperWithChecker<UintParamSpec> (a1, a2, UintValue (initialValue),
+  return MakeParamSpecHelperWithChecker<UintParamSpec,UintValue> (a1, a2,
 							UintValueChecker (minValue, maxValue));
 }
 
