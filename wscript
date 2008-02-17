@@ -20,6 +20,7 @@ APPNAME = 'ns'
 srcdir = '.'
 blddir = 'build'
 
+
 def dist_hook():
     shutil.rmtree("doc/html", True)
     shutil.rmtree("doc/latex", True)
@@ -272,12 +273,13 @@ def _run_waf_check():
     env = Params.g_build.env_of_name('default')
     proc_env = _get_proc_env()
     try:
-        prog = _find_program('print-introspected-doxygen', env).m_linktask.m_outputs[0].abspath(env)
+        program_obj = _find_program('print-introspected-doxygen', env)
     except ValueError: # could happen if print-introspected-doxygen is
                        # not built because of waf configure
                        # --enable-modules=xxx
         pass
     else:
+        prog = program_obj.path.find_build(program_obj.get_target_name()).abspath(env)
         out = open('doc/introspected-doxygen.h', 'w')
         if subprocess.Popen([prog], stdout=out, env=proc_env).wait():
             raise SystemExit(1)
@@ -356,7 +358,7 @@ def run_program(program_string, command_template=None):
             Params.fatal(str(ex))
 
         try:
-            program_node, = program_obj.m_linktask.m_outputs
+            program_node = program_obj.path.find_build(program_obj.get_target_name())
         except AttributeError:
             Params.fatal("%s does not appear to be a program" % (program_name,))
 
@@ -370,7 +372,7 @@ def run_program(program_string, command_template=None):
         except ValueError, ex:
             Params.fatal(str(ex))
         try:
-            program_node, = program_obj.m_linktask.m_outputs
+            program_node = program_obj.path.find_build(program_obj.get_target_name())
         except AttributeError:
             Params.fatal("%s does not appear to be a program" % (program_name,))
 
