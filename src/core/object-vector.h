@@ -42,6 +42,8 @@ MakeObjectVectorParamSpec (INDEX (T::*getN) (void) const,
 			   Ptr<U> (T::*get) (INDEX) const);
 
 
+Ptr<AttributeChecker> MakeObjectVectorChecker (void);
+
 } // namespace ns3
 
 namespace ns3 {
@@ -55,8 +57,8 @@ public:
   ObjectVector Get (void) const;
 
   virtual PValue Copy (void) const;
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
 private:
   friend class ObjectVectorParamSpec;
@@ -68,7 +70,6 @@ class ObjectVectorParamSpec : public ParamSpec
 public:
   virtual bool Set (ObjectBase * object, PValue value) const;
   virtual bool Get (const ObjectBase * object, PValue value) const;
-  virtual bool Check (PValue value) const;
 private:
   virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const = 0;
   virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const = 0;

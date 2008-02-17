@@ -15,8 +15,8 @@ public:
   int64_t Get (void) const;
 
   virtual PValue Copy (void) const;
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
   IntValue (PValue value);
   operator PValue () const;
@@ -28,77 +28,62 @@ class IntParamSpec : public ParamSpec {};
 
 template <typename T1>
 Ptr<ParamSpec> MakeIntParamSpec (T1 a1);
-template <typename T1>
-Ptr<ParamSpec> MakeIntParamSpec (T1 a1,
-				 int64_t minValue,
-				 int64_t maxValue);
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2);
-template <typename T1, typename T2>
-Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2,
-				 int64_t minValue,
-				 int64_t maxValue);
+
+template <typename T>
+Ptr<AttributeChecker> MakeIntChecker (void);
+
+template <typename T>
+Ptr<AttributeChecker> MakeIntChecker (T min, T max);
 
 } // namespace ns3
 
 namespace ns3 {
 
-class IntValueChecker
-{
-public:
-  IntValueChecker (int64_t minValue, int64_t maxValue);
-  bool Check (const int64_t &value) const;
-
-  template <typename T, typename U>
-  static IntValueChecker Create (U T::*) {
-    return IntValueChecker (std::numeric_limits<U>::min (),
-			    std::numeric_limits<U>::max ());
-  }
-  template <typename T, typename U>
-  static IntValueChecker Create (U (T::*) (void) const) {
-    return IntValueChecker (std::numeric_limits<U>::min (),
-			    std::numeric_limits<U>::max ());
-  }
-  template <typename T, typename U>
-  static IntValueChecker Create (void (T::*) (U)) {
-    return IntValueChecker (std::numeric_limits<U>::min (),
-			    std::numeric_limits<U>::max ());
-  }
-private:
-  int64_t m_minValue;
-  int64_t m_maxValue;
-};
-
 template <typename T1>
 Ptr<ParamSpec> 
 MakeIntParamSpec (T1 a1)
 {
-  return MakeParamSpecHelperWithChecker<IntParamSpec,IntValue> (a1,
-						       IntValueChecker::Create (a1));
-}
-
-template <typename T1>
-Ptr<ParamSpec> MakeIntParamSpec (T1 a1,
-				 int64_t minValue,
-				 int64_t maxValue)
-{
-  return MakeParamSpecHelperWithChecker<IntParamSpec,IntValue> (a1,
-						       IntValueChecker (minValue, maxValue));
+  return MakeParamSpecHelper<IntParamSpec,IntValue> (a1);
 }
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2)
 {
-  return MakeParamSpecHelperWithChecker<IntParamSpec,IntValue> (a1, a2,
-						       IntValueChecker::Create (a1));
+  return MakeParamSpecHelper<IntParamSpec,IntValue> (a1, a2);
 }
-template <typename T1, typename T2>
-Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2,
-				 int64_t minValue,
-				 int64_t maxValue)
+
+template <typename T>
+Ptr<AttributeChecker>
+MakeIntChecker (void)
 {
-  return MakeParamSpecHelperWithChecker<IntParamSpec,IntValue> (a1, a2,
-						       IntValueChecker (minValue, maxValue));
+  return MakeIntChecker (std::numeric_limits<T>::min (),
+			 std::numeric_limits<T>::max ());
 }
+
+template <typename T>
+Ptr<AttributeChecker>
+MakeIntChecker (T min, T max)
+{
+  struct IntChecker : public AttributeChecker
+  {
+    IntChecker (int64_t minValue, int64_t maxValue)
+      : m_minValue (minValue),
+      m_maxValue (maxValue) {}
+    virtual bool Check (PValue value) const {
+      const IntValue *v = value.DynCast<const IntValue *> ();
+      if (v == 0)
+	{
+	  return false;
+	}
+      return v->Get () >= m_minValue && v->Get () <= m_maxValue;
+    }
+    int64_t m_minValue;
+    int64_t m_maxValue;
+  } *checker = new IntChecker (min, max);
+  return Ptr<AttributeChecker> (checker, false);
+}
+
 
 } // namespace ns3
 

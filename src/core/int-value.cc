@@ -24,14 +24,14 @@ IntValue::Get (void) const
   return m_value;
 }
 std::string 
-IntValue::SerializeToString (Ptr<const ParamSpec> spec) const
+IntValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   std::ostringstream oss;
   oss << m_value;
   return oss.str ();
 }
 bool 
-IntValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+IntValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   int64_t v;
   std::istringstream iss;
@@ -58,18 +58,6 @@ IntValue::operator PValue () const
 {
   return PValue::Create<IntValue> (*this);
 }
-
-
-IntValueChecker::IntValueChecker (int64_t minValue, int64_t maxValue)
-  : m_minValue (minValue),
-    m_maxValue (maxValue)
-{}
-bool 
-IntValueChecker::Check (const int64_t &value) const
-{
-  return value >= m_minValue && value <= m_maxValue;
-}
-
 
 
 } // namespace ns3

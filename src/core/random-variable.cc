@@ -309,6 +309,12 @@ RandomVariable::operator PValue () const
   return ClassValueHelperConvertTo<RandomVariable,RandomVariableValue> (this);
 }
 
+Ptr<AttributeChecker> 
+MakeRandomVariableChecker (void)
+{
+  return MakeSimpleAttributeChecker<RandomVariableValue> ();
+}
+
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

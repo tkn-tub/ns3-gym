@@ -10,6 +10,7 @@
 #define VALUE_HELPER_HEADER_2(type)				\
   class type##Value : public Value {};				\
   class type##ParamSpec : public ParamSpec {};			\
+  Ptr<AttributeChecker> Make##type##Checker (void);		\
   template <typename T1>					\
   Ptr<ParamSpec> Make##type##ParamSpec (T1 a1)			\
   {								\
@@ -24,6 +25,10 @@
   }
 
 #define VALUE_HELPER_CPP(type)						\
+  Ptr<AttributeChecker> Make##type##Checker (void)			\
+  {									\
+    return MakeSimpleAttributeChecker<type> ();				\
+  }									\
   type::type (PValue value)						\
   {									\
     *this = ClassValueHelperExtractFrom<type,type##Value> (value);	\

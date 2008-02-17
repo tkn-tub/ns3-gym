@@ -15,8 +15,8 @@ public:
   bool Get (void) const;
 
   virtual PValue Copy (void) const;
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
   BooleanValue (PValue value);
   operator PValue () const;
@@ -32,6 +32,8 @@ Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1);
 
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, T2 a2);
+
+Ptr<AttributeChecker> MakeBooleanChecker (void);
 
 } // namespace ns3
 
@@ -50,8 +52,6 @@ Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, T2 a2)
 {
   return MakeParamSpecHelper<BooleanParamSpec,BooleanValue> (a1, a2);
 }
-
-
 
 } // namespace ns3
 

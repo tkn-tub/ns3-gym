@@ -103,14 +103,14 @@ PValue::Copy (void) const
   return m_value->Copy ();
 }
 std::string 
-PValue::SerializeToString (Ptr<const ParamSpec> spec) const
+PValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
-  return m_value->SerializeToString (spec);
+  return m_value->SerializeToString (checker);
 }
 bool 
-PValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+PValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
-  return m_value->DeserializeFromString (value, spec);
+  return m_value->DeserializeFromString (value, checker);
 }
 
 PValue::PValue (const char *value)
@@ -141,6 +141,25 @@ ParamSpec::Unref (void) const
 ParamSpec::~ParamSpec ()
 {}
 
+AttributeChecker::AttributeChecker ()
+  : m_count (1)
+{}
+void 
+AttributeChecker::Ref (void) const
+{
+  m_count++;
+}
+void 
+AttributeChecker::Unref (void) const
+{
+  m_count--;
+  if (m_count == 0)
+    {
+      delete this;
+    }
+}
+AttributeChecker::~AttributeChecker ()
+{}
 
 StringValue::StringValue (const char *value)
   : m_value (value)
@@ -164,12 +183,12 @@ StringValue::Copy (void) const
   return PValue::Create<StringValue> (*this);
 }
 std::string 
-StringValue::SerializeToString (Ptr<const ParamSpec> spec) const
+StringValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   return m_value;
 }
 bool 
-StringValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+StringValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   m_value = value;
   return true;
@@ -190,7 +209,7 @@ StringValue::operator PValue () const
 
 
 std::string 
-PtrValueBase::SerializeToString (Ptr<const ParamSpec> spec) const
+PtrValueBase::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   std::ostringstream oss;
   oss << PeekObjectBase ();
@@ -198,7 +217,7 @@ PtrValueBase::SerializeToString (Ptr<const ParamSpec> spec) const
 }
 
 bool 
-PtrValueBase::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+PtrValueBase::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   // XXX
   return false;

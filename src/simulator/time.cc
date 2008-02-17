@@ -305,6 +305,11 @@ TimeUnit<1>::operator PValue () const
   return ClassValueHelperConvertTo<Time,TimeValue> (this);
 }
 
+Ptr<AttributeChecker> MakeTimeChecker (void)
+{
+  return MakeSimpleAttributeChecker<Time> ();
+}
+
 Time MilliSeconds (uint64_t ms)
 {
   uint64_t ts = TimeUnit<1>::UnitsToTimestep(ms, TimeStepPrecision::MS_FACTOR);

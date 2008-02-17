@@ -9,6 +9,7 @@
 namespace ns3 {
 
 class ParamSpec;
+class AttributeChecker;
 class PValue;
 
 class Value
@@ -20,8 +21,8 @@ public:
   virtual ~Value ();
 
   virtual PValue Copy (void) const = 0;
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const = 0;
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec) = 0;
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const = 0;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) = 0;
 private:
   friend class PValue;
   uint32_t m_count;
@@ -36,8 +37,8 @@ public:
   ~PValue ();
 
   PValue Copy (void) const;
-  std::string SerializeToString (Ptr<const ParamSpec> spec) const;
-  bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+  std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
   template <typename T>
   static PValue Create (void);
@@ -75,11 +76,25 @@ public:
    */
   virtual bool Set (ObjectBase * object, PValue value) const = 0;
   virtual bool Get (const ObjectBase * object, PValue value) const = 0;
+private:
+  mutable uint32_t m_count;
+};
+
+class AttributeChecker : public ObjectBase
+{
+public:
+  AttributeChecker ();
+  void Ref (void) const;
+  void Unref (void) const;
+  virtual ~AttributeChecker ();
   virtual bool Check (PValue value) const = 0;
 private:
   mutable uint32_t m_count;
 };
 
+template <typename T>
+Ptr<AttributeChecker>
+MakeSimpleAttributeChecker (void);
 
 template <typename T, typename U>
 Ptr<const ParamSpec>
@@ -110,8 +125,8 @@ public:
   std::string Get (void) const;
 
   virtual PValue Copy (void) const;
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
   StringValue (PValue value);
   operator PValue () const;
@@ -130,8 +145,8 @@ class PtrValueBase : public Value
 public:
   virtual ObjectBase *PeekObjectBase (void) const = 0;
   virtual bool SetObjectBase (ObjectBase *object) = 0;
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec);
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 };
 
 /********************************************************
@@ -253,23 +268,6 @@ public:
         }
       return value->SetObjectBase (PeekPointer (DoGet (obj)));
     }
-    virtual bool Check (PValue val) const {
-      const PtrValueBase *value = val.DynCast<const PtrValueBase *> ();
-      if (value == 0)
-        {
-          return false;
-        }
-      if (value->PeekObjectBase () == 0)
-        {
-          return true;
-        }
-      U *ptr = dynamic_cast<U*> (value->PeekObjectBase ());
-      if (ptr == 0)
-        {
-          return false;
-        }
-      return true;
-    }
 private:
   virtual void DoSet (T *object, Ptr<U> value) const = 0;
   virtual Ptr<U> DoGet (const T *object) const = 0;
@@ -339,6 +337,47 @@ MakePtrParamSpec (Ptr<U> (T::*getter) (void) const)
   spec->m_getter = getter;
   return Ptr<const ParamSpec> (spec, false);
 }
+
+template <typename T>
+Ptr<AttributeChecker>
+MakePtrChecker (void)
+{
+  struct PtrChecker : public AttributeChecker
+  {
+    virtual bool Check (PValue val) const {
+      const PtrValueBase *value = val.DynCast<const PtrValueBase *> ();
+      if (value == 0)
+        {
+          return false;
+        }
+      if (value->PeekObjectBase () == 0)
+        {
+          return true;
+        }
+      T *ptr = dynamic_cast<T*> (value->PeekObjectBase ());
+      if (ptr == 0)
+        {
+          return false;
+        }
+      return true;
+    }
+  } *checker = new PtrChecker ();
+  return Ptr<AttributeChecker> (checker, false);
+}
+
+template <typename T>
+Ptr<AttributeChecker>
+MakeSimpleAttributeChecker (void)
+{
+  struct SimpleAttributeChecker : public AttributeChecker
+  {
+    virtual bool Check (PValue value) const {
+      return value.DynCast<const T *> () != 0;
+    }
+  } *checker = new SimpleAttributeChecker ();
+  return Ptr<AttributeChecker> (checker, false);
+}
+
 
 } // namespace ns3
 

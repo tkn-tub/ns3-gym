@@ -26,12 +26,12 @@ public:
   virtual PValue Copy (void) const {
     return PValue::Create<ClassValue<T,U> > (*this);
   }
-  virtual std::string SerializeToString (Ptr<const ParamSpec> spec) const {
+  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const {
     std::ostringstream oss;
     oss << m_value;
     return oss.str ();
   }
-  virtual bool DeserializeFromString (std::string value, Ptr<const ParamSpec> spec) {
+  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) {
     std::istringstream iss;
     iss.str (value);
     iss >> m_value;

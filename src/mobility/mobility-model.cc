@@ -32,11 +32,13 @@ MobilityModel::GetTypeId (void)
                    TypeId::PARAM_SGC,
                    Vector (0.0, 0.0, 0.0),
                    MakeVectorParamSpec (&MobilityModel::SetPosition,
-                                        &MobilityModel::GetPosition))
+                                        &MobilityModel::GetPosition),
+                   MakeVectorChecker ())
     .AddParameter ("velocity", "The current velocity of the mobility model.",
                    TypeId::PARAM_GET,
                    Vector (0.0, 0.0, 0.0), // ignored initial value.
-                   MakeVectorParamSpec (&MobilityModel::GetVelocity))
+                   MakeVectorParamSpec (&MobilityModel::GetVelocity),
+                   MakeVectorChecker ())
     ;
   return tid;
 }

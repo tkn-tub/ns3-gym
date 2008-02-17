@@ -673,6 +673,7 @@ Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1);
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2);
 
+Ptr<AttributeChecker> MakeRandomVariableChecker (void);
 
 }//namespace ns3
 

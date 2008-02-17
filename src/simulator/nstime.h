@@ -678,6 +678,9 @@ Ptr<ParamSpec> MakeTimeParamSpec (T1 a1);
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2);
 
+Ptr<AttributeChecker> MakeTimeChecker (void);
+
+
 
 } // namespace ns3
 
@@ -694,6 +697,7 @@ Ptr<ParamSpec> MakeTimeParamSpec (T1 a1, T2 a2)
 {
   return MakeClassValueHelperParamSpec<Time,TimeValue,TimeParamSpec> (a1, a2);
 }
+
 
 
 } // namespace ns3

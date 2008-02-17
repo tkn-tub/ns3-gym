@@ -32,10 +32,12 @@ HierarchicalMobilityModel::GetTypeId (void)
     .AddConstructor<HierarchicalMobilityModel> ()
     .AddParameter ("child", "The child mobility model.",
                    Ptr<MobilityModel> (0),
-                   MakePtrParamSpec (&HierarchicalMobilityModel::SetChild))
+                   MakePtrParamSpec (&HierarchicalMobilityModel::SetChild),
+                   MakePtrChecker<MobilityModel> ())
     .AddParameter ("parent", "The parent mobility model.",
                    Ptr<MobilityModel> (0),
-                   MakePtrParamSpec (&HierarchicalMobilityModel::SetParent))
+                   MakePtrParamSpec (&HierarchicalMobilityModel::SetParent),
+                   MakePtrChecker<MobilityModel> ())
     ;
   return tid;
 }

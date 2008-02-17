@@ -22,7 +22,7 @@ BooleanValue::Copy (void) const
   return PValue::Create<BooleanValue> (*this);
 }
 std::string 
-BooleanValue::SerializeToString (Ptr<const ParamSpec> spec) const
+BooleanValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   std::string value;
   if (m_value)
@@ -36,7 +36,7 @@ BooleanValue::SerializeToString (Ptr<const ParamSpec> spec) const
   return value;
 }
 bool 
-BooleanValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+BooleanValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   if (value == "true" ||
       value == "1" ||
@@ -69,6 +69,11 @@ BooleanValue::BooleanValue (PValue value)
 BooleanValue::operator PValue () const
 {
   return PValue::Create<BooleanValue> (*this);
+}
+
+Ptr<AttributeChecker> MakeBooleanChecker (void)
+{
+  return MakeSimpleAttributeChecker<BooleanValue> ();
 }
 
 } // namespace ns3

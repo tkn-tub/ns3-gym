@@ -61,13 +61,13 @@ ObjectVectorValue::Copy (void) const
   return PValue::Create<ObjectVectorValue> (*this);
 }
 std::string 
-ObjectVectorValue::SerializeToString (Ptr<const ParamSpec> spec) const
+ObjectVectorValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   // XXX
   return "";
 }
 bool 
-ObjectVectorValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+ObjectVectorValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   // XXX ?? Can we implement this correctly ?? I doubt it very much.
   return true;
@@ -101,11 +101,10 @@ ObjectVectorParamSpec::Get (const ObjectBase * object, PValue value) const
     }
   return true;
 }
-bool 
-ObjectVectorParamSpec::Check (PValue value) const
+Ptr<AttributeChecker> 
+MakeObjectVectorChecker (void)
 {
-  const ObjectVectorValue *v = value.DynCast<const ObjectVectorValue *> ();
-  return v != 0;
+  return MakeSimpleAttributeChecker<ObjectVectorValue> ();
 }
 
 } // name

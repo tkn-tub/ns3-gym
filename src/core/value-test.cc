@@ -43,47 +43,57 @@ public:
       .SetParent<Object> ()
       .AddParameter ("TestBoolName", "help text",
 		     BooleanValue (false),
-		     MakeBooleanParamSpec (&ParamSpecObjectTest::m_boolTest))
+		     MakeBooleanParamSpec (&ParamSpecObjectTest::m_boolTest),
+		     MakeBooleanChecker ())
       .AddParameter ("TestBoolA", "help text",
 		     BooleanValue (false),
 		     MakeBooleanParamSpec (&ParamSpecObjectTest::DoSetTestB,
-					   &ParamSpecObjectTest::DoGetTestB))
+					   &ParamSpecObjectTest::DoGetTestB),
+		     MakeBooleanChecker ())
       .AddParameter ("TestPtr", "help text", 
 		     Ptr<Derived> (0),
-		     MakePtrParamSpec (&ParamSpecObjectTest::m_derived))
+		     MakePtrParamSpec (&ParamSpecObjectTest::m_derived),
+		     MakePtrChecker<Derived> ())
       .AddParameter ("TestInt16", "help text",
 		     IntValue (-2),
-		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16))
+		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16),
+		     MakeIntChecker<int16_t> ())
       .AddParameter ("TestInt16WithBounds", "help text",
 		     IntValue (-2),
-		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16WithBounds,
-				       -5, 10))
+		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16WithBounds),
+		     MakeIntChecker (-5, 10))
       .AddParameter ("TestInt16SetGet", "help text",
 		     IntValue (6),
 		     MakeIntParamSpec (&ParamSpecObjectTest::DoSetInt16,
-				       &ParamSpecObjectTest::DoGetInt16))
+				       &ParamSpecObjectTest::DoGetInt16),
+		     MakeIntChecker<int16_t> ())
       .AddParameter ("TestUint8", "help text",
 		     UintValue (1),
-		     MakeUintParamSpec (&ParamSpecObjectTest::m_uint8))
+		     MakeUintParamSpec (&ParamSpecObjectTest::m_uint8),
+		     MakeUintChecker<uint8_t> ())
       .AddParameter ("TestEnum", "help text",
 		     EnumValue (TEST_A),
-		     MakeEnumParamSpec (&ParamSpecObjectTest::m_enum,
-					TEST_A, "TestA",
-					TEST_B, "TestB",
-					TEST_C, "TestC"))
+		     MakeEnumParamSpec (&ParamSpecObjectTest::m_enum),
+		     MakeEnumChecker (TEST_A, "TestA",
+				      TEST_B, "TestB",
+				      TEST_C, "TestC"))
       .AddParameter ("TestRandom", "help text",
 		     ConstantVariable (1.0),
-		     MakeRandomVariableParamSpec (&ParamSpecObjectTest::m_random))
+		     MakeRandomVariableParamSpec (&ParamSpecObjectTest::m_random),
+		     MakeRandomVariableChecker ())
       .AddParameter ("TestFloat", "help text",
 		     FpValue (-1.1),
-		     MakeFpParamSpec (&ParamSpecObjectTest::m_float))
+		     MakeFpParamSpec (&ParamSpecObjectTest::m_float),
+		     MakeFpChecker<float> ())
       .AddParameter ("TestVector1", "help text",
 		     ObjectVector (),
-		     MakeObjectVectorParamSpec (&ParamSpecObjectTest::m_vector1))
+		     MakeObjectVectorParamSpec (&ParamSpecObjectTest::m_vector1),
+		     MakeObjectVectorChecker ())
       .AddParameter ("TestVector2", "help text",
 		     ObjectVector (),
 		     MakeObjectVectorParamSpec (&ParamSpecObjectTest::DoGetVectorN,
-						&ParamSpecObjectTest::DoGetVector))
+						&ParamSpecObjectTest::DoGetVector),
+		     MakeObjectVectorChecker ())
       ;
         
     return tid;

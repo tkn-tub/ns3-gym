@@ -11,14 +11,6 @@ template <typename BASE, typename V, typename T1, typename T2>
 Ptr<ParamSpec>
 MakeParamSpecHelper (T1 a1, T2 a2);
 
-template <typename BASE, typename V, typename T1, typename CHECKER>
-Ptr<ParamSpec>
-MakeParamSpecHelperWithChecker (T1 a1, CHECKER checker);
-
-template <typename BASE, typename V, typename T1, typename T2, typename CHECKER>
-Ptr<ParamSpec>
-MakeParamSpecHelperWithChecker (T1 a1, T2 a2, CHECKER checker);
-
 } // namespace ns3
 
 /***************************************************************
@@ -29,12 +21,11 @@ MakeParamSpecHelperWithChecker (T1 a1, T2 a2, CHECKER checker);
 
 namespace ns3 {
 
-template <typename BASE, typename T, typename U, typename CHECKER>
+template <typename BASE, typename T, typename U>
 class ParamSpecHelper : public BASE
 {
 public:
-  ParamSpecHelper (CHECKER checker)
-    : m_checker (checker) {}
+  ParamSpecHelper () {}
 
   virtual bool Set (ObjectBase * object, PValue val) const {
     const U *value = val.DynCast<const U*> ();
@@ -64,43 +55,26 @@ public:
     return DoGet (obj, value);
   }
 
-  virtual bool Check (PValue value) const {
-    const U *val = value.DynCast<const U*> ();
-    if (val == 0)
-      {
-	return false;
-      }
-    return m_checker.Check (val->Get ());
-  }
-
 
 private:
   virtual bool DoSet (T *object, const U *v) const = 0;
   virtual bool DoGet (const T *object, U *v) const = 0;
-  CHECKER m_checker;
 };
 
-template <typename T>
-class ParamSpecHelperSimpleChecker
-{
-public:
-  bool Check (const T &value) const {return true;}
-};
-
-template <typename BASE, typename V, typename T, typename U, typename CHECKER>
+template <typename BASE, typename V, typename T, typename U>
 Ptr<ParamSpec>
-DoMakeParamSpecHelperOne (U T::*memberVariable, CHECKER checker)
+DoMakeParamSpecHelperOne (U T::*memberVariable)
 {
-  class MemberVariable : public ParamSpecHelper<BASE,T,V,CHECKER>
+  class MemberVariable : public ParamSpecHelper<BASE,T,V>
     {
     public:
-      MemberVariable (U T::*memberVariable, CHECKER checker)
-	: ParamSpecHelper<BASE,T,V,CHECKER> (checker),
+      MemberVariable (U T::*memberVariable)
+	: ParamSpecHelper<BASE,T,V> (),
 	m_memberVariable (memberVariable)
 	{}
     private:
       virtual bool DoSet (T *object, const V *v) const {
-	(object->*m_memberVariable) = v->Get ();
+	(object->*m_memberVariable) = U (v->Get ());
 	return true;
       }
       virtual bool DoGet (const T *object, V *v) const {
@@ -110,27 +84,18 @@ DoMakeParamSpecHelperOne (U T::*memberVariable, CHECKER checker)
       
       U T::*m_memberVariable;
     };
-  return Ptr<ParamSpec> (new MemberVariable (memberVariable, checker), false);
+  return Ptr<ParamSpec> (new MemberVariable (memberVariable), false);
 }
+
 template <typename BASE, typename V, typename T, typename U>
 Ptr<ParamSpec>
-DoMakeParamSpecHelperOne (U T::*memberVariable)
+DoMakeParamSpecHelperOne (U (T::*getter) (void) const)
 {
-  return DoMakeParamSpecHelperOne<BASE,V> (memberVariable, ParamSpecHelperSimpleChecker<U> ());
-}
-
-
-template <typename BASE, typename V, typename T, typename U, typename CHECKER>
-Ptr<ParamSpec>
-DoMakeParamSpecHelperOne (U (T::*getter) (void) const, 
-			  CHECKER checker)
-{
-  class MemberMethod : public ParamSpecHelper<BASE,T,V,CHECKER>
+  class MemberMethod : public ParamSpecHelper<BASE,T,V>
     {
     public:
-      MemberMethod (U (T::*getter) (void) const,
-		    CHECKER checker)
-	: ParamSpecHelper<BASE,T,V,CHECKER> (checker),
+      MemberMethod (U (T::*getter) (void) const)
+	: ParamSpecHelper<BASE,T,V> (),
 	m_getter (getter)
 	{}
     private:
@@ -143,29 +108,19 @@ DoMakeParamSpecHelperOne (U (T::*getter) (void) const,
       }
       U (T::*m_getter) (void) const;
     };
-  return Ptr<ParamSpec> (new MemberMethod (getter, checker), false);
+  return Ptr<ParamSpec> (new MemberMethod (getter), false);
 }
+
 
 template <typename BASE, typename V, typename T, typename U>
 Ptr<ParamSpec>
-DoMakeParamSpecHelperOne (U (T::*getter) (void) const)
+DoMakeParamSpecHelperOne (void (T::*setter) (U))
 {
-  return DoMakeParamSpecHelperOne<BASE,V> (getter, ParamSpecHelperSimpleChecker<U> ());
-}
-
-
-
-template <typename BASE, typename V, typename T, typename U, typename CHECKER>
-Ptr<ParamSpec>
-DoMakeParamSpecHelperOne (void (T::*setter) (U), 
-			  CHECKER checker)
-{
-  class MemberMethod : public ParamSpecHelper<BASE,T,V,CHECKER>
+  class MemberMethod : public ParamSpecHelper<BASE,T,V>
     {
     public:
-      MemberMethod (void (T::*setter) (U), 
-		    CHECKER checker)
-	: ParamSpecHelper<BASE,T,V,CHECKER> (checker),
+      MemberMethod (void (T::*setter) (U))
+	: ParamSpecHelper<BASE,T,V> (),
 	m_setter (setter)
 	{}
     private:
@@ -178,31 +133,20 @@ DoMakeParamSpecHelperOne (void (T::*setter) (U),
       }
       void (T::*m_setter) (U);
     };
-  return Ptr<ParamSpec> (new MemberMethod (setter, checker), false);
+  return Ptr<ParamSpec> (new MemberMethod (setter), false);
 }
 
-template <typename BASE, typename V, typename T, typename U>
-Ptr<ParamSpec>
-DoMakeParamSpecHelperOne (void (T::*setter) (U))
-{
-  return DoMakeParamSpecHelperOne<BASE,V> (setter,
-					 ParamSpecHelperSimpleChecker<typename TypeTraits<U>::ReferencedType> ());
-}
-
-
-template <typename BASE, typename W, typename T, typename U, typename V, typename CHECKER>
+template <typename BASE, typename W, typename T, typename U, typename V>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperTwo (void (T::*setter) (U), 
-			  V (T::*getter) (void) const, 
-			  CHECKER checker = ParamSpecHelperSimpleChecker<V> ())
+			  V (T::*getter) (void) const)
 {
-  class MemberMethod : public ParamSpecHelper<BASE,T,W,CHECKER>
+  class MemberMethod : public ParamSpecHelper<BASE,T,W>
     {
     public:
       MemberMethod (void (T::*setter) (U), 
-		    V (T::*getter) (void) const,
-		    CHECKER checker)
-	: ParamSpecHelper<BASE,T,W,CHECKER> (checker),
+		    V (T::*getter) (void) const)
+	: ParamSpecHelper<BASE,T,W> (),
 	m_setter (setter),
 	m_getter (getter)
 	{}
@@ -218,27 +162,10 @@ DoMakeParamSpecHelperTwo (void (T::*setter) (U),
       void (T::*m_setter) (U);
       V (T::*m_getter) (void) const;
     };
-  return Ptr<ParamSpec> (new MemberMethod (setter, getter, checker), false);
+  return Ptr<ParamSpec> (new MemberMethod (setter, getter), false);
 }
 
 template <typename BASE, typename W, typename T, typename U, typename V>
-Ptr<ParamSpec>
-DoMakeParamSpecHelperTwo (void (T::*setter) (U), 
-		      V (T::*getter) (void) const)
-{
-  return DoMakeParamSpecHelperTwo<BASE,W> (setter, getter, ParamSpecHelperSimpleChecker<V> ());
-}
-
-template <typename BASE, typename W, typename T, typename U, typename V, typename CHECKER>
-Ptr<ParamSpec>
-DoMakeParamSpecHelperTwo (V (T::*getter) (void) const, 
-			  void (T::*setter) (U), 
-			  CHECKER checker)
-{
-  return DoMakeParamSpecHelperTwo<BASE,W> (setter, getter, checker);
-}
-
-template <typename BASE, typename W, typename T, typename U, typename V, typename CHECKER>
 Ptr<ParamSpec>
 DoMakeParamSpecHelperTwo (V (T::*getter) (void) const, 
 			  void (T::*setter) (U))
@@ -258,20 +185,6 @@ Ptr<ParamSpec>
 MakeParamSpecHelper (T1 a1, T2 a2)
 {
   return DoMakeParamSpecHelperTwo<BASE,V> (a1, a2);
-}
-
-template <typename BASE, typename V, typename T1, typename CHECKER>
-Ptr<ParamSpec>
-MakeParamSpecHelperWithChecker (T1 a1, CHECKER checker)
-{
-  return DoMakeParamSpecHelperOne<BASE,V> (a1, checker);
-}
-
-template <typename BASE, typename V, typename T1, typename T2, typename CHECKER>
-Ptr<ParamSpec>
-MakeParamSpecHelperWithChecker (T1 a1, T2 a2, CHECKER checker)
-{
-  return DoMakeParamSpecHelperTwo<BASE,V> (a1, a2, checker);
 }
 
 } // namespace ns3

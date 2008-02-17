@@ -24,14 +24,14 @@ FpValue::Get (void) const
   return m_value;
 }
 std::string 
-FpValue::SerializeToString (Ptr<const ParamSpec> spec) const
+FpValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   std::ostringstream oss;
   oss << m_value;
   return oss.str ();
 }
 bool 
-FpValue::DeserializeFromString (std::string value, Ptr<const ParamSpec> spec)
+FpValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   double v;
   std::istringstream iss;
@@ -57,18 +57,6 @@ FpValue::FpValue (PValue value)
 FpValue::operator PValue () const
 {
   return PValue::Create<FpValue> (*this);
-}
-
-
-
-FpValueChecker::FpValueChecker (double min, double max)
-  : m_min (min),
-    m_max (max)
-{}
-bool 
-FpValueChecker::Check (double v) const
-{
-  return v >= m_min && v <= m_max;
 }
 
 } // namespace ns3

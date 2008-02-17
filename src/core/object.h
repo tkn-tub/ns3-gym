@@ -213,7 +213,8 @@ public:
   TypeId AddParameter (std::string name,
                        std::string help, 
                        PValue initialValue,
-                       Ptr<const ParamSpec> spec);
+                       Ptr<const ParamSpec> spec,
+                       Ptr<const AttributeChecker> checker);
 
   /**
    * \param name the name of the new parameter
@@ -229,7 +230,8 @@ public:
                        std::string help, 
                        uint32_t flags,
                        PValue initialValue,
-                       Ptr<const ParamSpec> spec);
+                       Ptr<const ParamSpec> spec,
+                       Ptr<const AttributeChecker> checker);
 
   // construct an invalid TypeId.
   TypeId ();
@@ -244,6 +246,7 @@ private:
     Ptr<const ParamSpec> spec;
     PValue initialValue;
     uint32_t flags;
+    Ptr<const AttributeChecker> checker;
   };
 
   /**
@@ -267,6 +270,7 @@ private:
   CallbackBase LookupConstructor (uint32_t nArguments) const;
   Ptr<const ParamSpec> GetParameterParamSpec (uint32_t i) const;
   uint32_t GetParameterFlags (uint32_t i) const;
+  Ptr<const AttributeChecker> GetParameterChecker (uint32_t i) const;
   
   uint16_t m_tid;
 };
@@ -320,7 +324,7 @@ public:
 private:
   friend class Object;
   struct Param {
-    Ptr<const ParamSpec> spec;
+    Ptr<const AttributeChecker> checker;
     PValue value;
   };
   typedef std::vector<struct Param> Params;
@@ -330,8 +334,8 @@ private:
 
 
   bool DoSet (struct TypeId::ParameterInfo *info, PValue param);
-  void DoSetOne (Ptr<const ParamSpec> spec, PValue param);
-  std::string LookupParameterFullNameByParamSpec (Ptr<const ParamSpec> spec) const;
+  void DoSetOne (Ptr<const AttributeChecker> checker, PValue param);
+  std::string LookupParameterFullNameByChecker (Ptr<const AttributeChecker> checker) const;
 
   Params m_parameters;
 };
@@ -469,7 +473,8 @@ private:
   friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 
-  bool DoSet (Ptr<const ParamSpec> spec, PValue intialValue, PValue value);
+  bool DoSet (Ptr<const ParamSpec> spec, PValue intialValue, 
+              Ptr<const AttributeChecker> checker, PValue value);
   Ptr<Object> DoGetObject (TypeId tid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
                          TraceResolver::SourceCollection *collection) const;
