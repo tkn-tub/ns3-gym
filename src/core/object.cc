@@ -23,10 +23,6 @@
 #include "singleton.h"
 #include "trace-resolver.h"
 #include "value.h"
-#include "uint-value.h"
-#include "int-value.h"
-#include "fp-value.h"
-#include "enum-value.h"
 #include "log.h"
 #include <vector>
 #include <sstream>
@@ -933,27 +929,6 @@ Object::Set (std::string name, PValue value)
     }
   return DoSet (info.spec, value);
 }
-bool
-Object::SetUint (std::string name, uint64_t value)
-{
-  return Set (name, UintValue (value));
-}
-bool 
-Object::SetInt (std::string name, int64_t value)
-{
-  return Set (name, IntValue (value));
-}
-bool 
-Object::SetFp (std::string name, double value)
-{
-  return Set (name, FpValue (value));
-}
-bool 
-Object::SetEnum (std::string name, int value)
-{
-  return Set (name, EnumValue (value));
-}
-
 bool 
 Object::Get (std::string name, std::string &value) const
 {
@@ -995,31 +970,6 @@ Object::Get (std::string name) const
     }
   return value;
 }
-uint64_t 
-Object::GetUint (std::string name) const
-{
-  UintValue value = Get (name);
-  return value.Get ();
-}
-int64_t 
-Object::GetInt (std::string name) const
-{
-  IntValue value = Get (name);
-  return value.Get ();
-}
-double 
-Object::GetFp (std::string name) const
-{
-  FpValue value = Get (name);
-  return value.Get ();
-}
-int
-Object::GetEnum (std::string name) const
-{
-  EnumValue value = Get (name);
-  return value.Get ();
-}
-
 
 Ptr<Object>
 Object::DoGetObject (TypeId tid) const
