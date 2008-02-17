@@ -45,7 +45,7 @@ namespace ns3 {
 // Defaults for rate/size
 static DataRateDefaultValue g_defaultRate ("OnOffApplicationDataRate", 
                                            "The data rate in on state for OnOffApplication",
-                                           DataRate ("500kb/s"));
+                                           MakeDataRate ("500kb/s"));
 static NumericDefaultValue<uint32_t> g_defaultSize ("OnOffApplicationPacketSize", 
                                                     "The size of packets sent in on state for OnOffApplication",
                                                     512, 1);

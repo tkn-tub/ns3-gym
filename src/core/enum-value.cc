@@ -127,11 +127,4 @@ EnumParamSpec::Check (PValue value) const
   return false;
 }
 
-PValue
-EnumParamSpec::GetInitialValue (void) const
-{
-  NS_ASSERT (!m_valueSet.empty ());
-  return PValue::Create<EnumValue> (m_valueSet.front ().first);
-}
-
 } // namespace ns3

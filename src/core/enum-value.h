@@ -36,7 +36,6 @@ public:
   virtual bool Get (const ObjectBase* object, PValue value) const;
   virtual bool Check (PValue value) const;
 
-  virtual PValue GetInitialValue (void) const;
 private:
   virtual bool DoSet (ObjectBase *object, const EnumValue *value) const = 0;
   virtual bool DoGet (const ObjectBase *object, EnumValue *value) const = 0;

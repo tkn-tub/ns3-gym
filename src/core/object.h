@@ -141,6 +141,8 @@ public:
    */
   std::string GetParameterFullName (uint32_t i) const;
 
+  PValue GetParameterInitialValue (uint32_t i) const;
+
   Ptr<Object> CreateObject (const Parameters &parameters) const;
 
 
@@ -209,7 +211,9 @@ public:
    * Record in this TypeId the fact that a new parameter exists.
    */
   TypeId AddParameter (std::string name,
-                       std::string help, Ptr<const ParamSpec> spec);
+                       std::string help, 
+                       PValue initialValue,
+                       Ptr<const ParamSpec> spec);
 
   /**
    * \param name the name of the new parameter
@@ -224,6 +228,7 @@ public:
   TypeId AddParameter (std::string name,
                        std::string help, 
                        uint32_t flags,
+                       PValue initialValue,
                        Ptr<const ParamSpec> spec);
 
   // construct an invalid TypeId.
@@ -237,6 +242,7 @@ private:
 
   struct ParameterInfo {
     Ptr<const ParamSpec> spec;
+    PValue initialValue;
     uint32_t flags;
   };
 
@@ -323,7 +329,7 @@ private:
 
 
 
-  bool DoSet (Ptr<const ParamSpec> spec, PValue param);
+  bool DoSet (struct TypeId::ParameterInfo *info, PValue param);
   void DoSetOne (Ptr<const ParamSpec> spec, PValue param);
   std::string LookupParameterFullNameByParamSpec (Ptr<const ParamSpec> spec) const;
 
@@ -474,7 +480,7 @@ private:
   friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 
-  bool DoSet (Ptr<const ParamSpec> spec, PValue value);
+  bool DoSet (Ptr<const ParamSpec> spec, PValue intialValue, PValue value);
   Ptr<Object> DoGetObject (TypeId tid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
                          TraceResolver::SourceCollection *collection) const;

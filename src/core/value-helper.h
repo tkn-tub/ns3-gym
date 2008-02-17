@@ -11,18 +11,16 @@
   class type##Value : public Value {};				\
   class type##ParamSpec : public ParamSpec {};			\
   template <typename T1>					\
-  Ptr<ParamSpec> Make##type##ParamSpec (T1 a1,			\
-					type initialValue)	\
+  Ptr<ParamSpec> Make##type##ParamSpec (T1 a1)			\
   {								\
     return MakeClassValueHelperParamSpec< type ,		\
-      type##Value, type##ParamSpec> (a1, initialValue);		\
+      type##Value, type##ParamSpec> (a1);			\
   }								\
   template <typename T1, typename T2>				\
-    Ptr<ParamSpec> Make##type##ParamSpec (T1 a1, T2 a2,		\
-					  type initialValue)	\
+    Ptr<ParamSpec> Make##type##ParamSpec (T1 a1, T2 a2)	\
   {								\
     return MakeClassValueHelperParamSpec<type,			\
-      type##Value,type##ParamSpec> (a1, a2, initialValue);	\
+      type##Value,type##ParamSpec> (a1, a2);			\
   }
 
 #define VALUE_HELPER_CPP(type)						\

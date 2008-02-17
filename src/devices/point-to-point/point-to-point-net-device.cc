@@ -37,7 +37,7 @@ namespace ns3 {
 DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
            "PointToPointLinkDataRate", 
            "The default data rate for point to point links",
-           DataRate ("10Mb/s"));
+           MakeDataRate ("10Mb/s"));
 
 PointToPointTraceType::PointToPointTraceType (enum Type type)
   : m_type (type)

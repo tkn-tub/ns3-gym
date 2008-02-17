@@ -42,39 +42,46 @@ public:
     static TypeId tid = TypeId ("ParamSpecObjectTest")
       .SetParent<Object> ()
       .AddParameter ("TestBoolName", "help text",
-		     MakeBooleanParamSpec (&ParamSpecObjectTest::m_boolTest, false))
+		     BooleanValue (false),
+		     MakeBooleanParamSpec (&ParamSpecObjectTest::m_boolTest))
       .AddParameter ("TestBoolA", "help text",
+		     BooleanValue (false),
 		     MakeBooleanParamSpec (&ParamSpecObjectTest::DoSetTestB,
-					   &ParamSpecObjectTest::DoGetTestB, 
-					   false))
+					   &ParamSpecObjectTest::DoGetTestB))
       .AddParameter ("TestPtr", "help text", 
+		     Ptr<Derived> (0),
 		     MakePtrParamSpec (&ParamSpecObjectTest::m_derived))
       .AddParameter ("TestInt16", "help text",
-		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16, 
-				       -2))
+		     IntValue (-2),
+		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16))
       .AddParameter ("TestInt16WithBounds", "help text",
+		     IntValue (-2),
 		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16WithBounds,
-				       -2, -5, 10))
+				       -5, 10))
       .AddParameter ("TestInt16SetGet", "help text",
+		     IntValue (6),
 		     MakeIntParamSpec (&ParamSpecObjectTest::DoSetInt16,
-				       &ParamSpecObjectTest::DoGetInt16, 
-				       6))
+				       &ParamSpecObjectTest::DoGetInt16))
       .AddParameter ("TestUint8", "help text",
-		     MakeUintParamSpec (&ParamSpecObjectTest::m_uint8,
-					1))
+		     UintValue (1),
+		     MakeUintParamSpec (&ParamSpecObjectTest::m_uint8))
       .AddParameter ("TestEnum", "help text",
+		     EnumValue (TEST_A),
 		     MakeEnumParamSpec (&ParamSpecObjectTest::m_enum,
 					TEST_A, "TestA",
 					TEST_B, "TestB",
 					TEST_C, "TestC"))
       .AddParameter ("TestRandom", "help text",
-		     MakeRandomVariableParamSpec (&ParamSpecObjectTest::m_random,
-						  ConstantVariable (1.0)))
+		     ConstantVariable (1.0),
+		     MakeRandomVariableParamSpec (&ParamSpecObjectTest::m_random))
       .AddParameter ("TestFloat", "help text",
-		     MakeFpParamSpec (&ParamSpecObjectTest::m_float, -1.1))
+		     FpValue (-1.1),
+		     MakeFpParamSpec (&ParamSpecObjectTest::m_float))
       .AddParameter ("TestVector1", "help text",
+		     ObjectVector (),
 		     MakeObjectVectorParamSpec (&ParamSpecObjectTest::m_vector1))
       .AddParameter ("TestVector2", "help text",
+		     ObjectVector (),
 		     MakeObjectVectorParamSpec (&ParamSpecObjectTest::DoGetVectorN,
 						&ParamSpecObjectTest::DoGetVector))
       ;

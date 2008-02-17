@@ -36,6 +36,11 @@ ObjectVector::ObjectVector (PValue value)
   *this = v->Get ();
 }
 
+ObjectVector::operator PValue () const
+{
+  return PValue::Create<ObjectVectorValue> ();
+}
+
 ObjectVectorValue::ObjectVectorValue ()
   : m_vector ()
 {}
@@ -101,11 +106,6 @@ ObjectVectorParamSpec::Check (PValue value) const
 {
   const ObjectVectorValue *v = value.DynCast<const ObjectVectorValue *> ();
   return v != 0;
-}
-PValue 
-ObjectVectorParamSpec::GetInitialValue (void) const
-{
-  return PValue::Create<ObjectVectorValue> ();
 }
 
 } // name

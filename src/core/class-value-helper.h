@@ -78,17 +78,17 @@ ClassValueHelperConvertTo (const T *self)
 
 template <typename T, typename U, typename BASE, typename T1>
 Ptr<ParamSpec>
-MakeClassValueHelperParamSpec (T1 a1, const T &initialValue)
+MakeClassValueHelperParamSpec (T1 a1)
 {
-  return MakeParamSpecHelper<BASE> (a1, ClassValue<T,U> (initialValue));
+  return MakeParamSpecHelper<BASE,ClassValue<T,U> > (a1);
 }
 
 
 template <typename T, typename U, typename BASE, typename T1, typename T2>
 Ptr<ParamSpec>
-MakeClassValueHelperParamSpec (T1 a1, T2 a2, const T &initialValue)
+MakeClassValueHelperParamSpec (T1 a1, T2 a2)
 {
-  return MakeParamSpecHelper<BASE> (a1, a2, ClassValue<T,U> (initialValue));
+  return MakeParamSpecHelper<BASE,ClassValue<T,U> > (a1, a2);
 }
 
 } // namespace ns3

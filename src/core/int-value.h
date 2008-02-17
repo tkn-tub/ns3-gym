@@ -27,19 +27,15 @@ private:
 class IntParamSpec : public ParamSpec {};
 
 template <typename T1>
-Ptr<ParamSpec> MakeIntParamSpec (T1 a1,
-				 int64_t initialValue);
+Ptr<ParamSpec> MakeIntParamSpec (T1 a1);
 template <typename T1>
 Ptr<ParamSpec> MakeIntParamSpec (T1 a1,
-				 int64_t initialValue,
 				 int64_t minValue,
 				 int64_t maxValue);
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2,
-				 int64_t initialValue);
+Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2);
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2,
-				 int64_t initialValue,
 				 int64_t minValue,
 				 int64_t maxValue);
 
@@ -75,36 +71,32 @@ private:
 
 template <typename T1>
 Ptr<ParamSpec> 
-MakeIntParamSpec (T1 a1,
-		  int64_t initialValue)
+MakeIntParamSpec (T1 a1)
 {
-  return MakeParamSpecHelperWithChecker<IntParamSpec> (a1, IntValue (initialValue),
+  return MakeParamSpecHelperWithChecker<IntParamSpec,IntValue> (a1,
 						       IntValueChecker::Create (a1));
 }
 
 template <typename T1>
 Ptr<ParamSpec> MakeIntParamSpec (T1 a1,
-				 int64_t initialValue,
 				 int64_t minValue,
 				 int64_t maxValue)
 {
-  return MakeParamSpecHelperWithChecker<IntParamSpec> (a1, IntValue (initialValue),
+  return MakeParamSpecHelperWithChecker<IntParamSpec,IntValue> (a1,
 						       IntValueChecker (minValue, maxValue));
 }
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2, 
-				 int64_t initialValue)
+Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2)
 {
-  return MakeParamSpecHelperWithChecker<IntParamSpec> (a1, a2, IntValue (initialValue),
+  return MakeParamSpecHelperWithChecker<IntParamSpec,IntValue> (a1, a2,
 						       IntValueChecker::Create (a1));
 }
 template <typename T1, typename T2>
 Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2,
-				 int64_t initialValue,
 				 int64_t minValue,
 				 int64_t maxValue)
 {
-  return MakeParamSpecHelperWithChecker<IntParamSpec> (a1, a2, IntValue (initialValue),
+  return MakeParamSpecHelperWithChecker<IntParamSpec,IntValue> (a1, a2,
 						       IntValueChecker (minValue, maxValue));
 }
 
