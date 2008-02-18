@@ -34,8 +34,7 @@ Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2);
 template <typename T>
 Ptr<AttributeChecker> MakeIntChecker (void);
 
-template <typename T>
-Ptr<AttributeChecker> MakeIntChecker (T min, T max);
+Ptr<AttributeChecker> MakeIntChecker (int64_t min, int64_t max);
 
 } // namespace ns3
 
@@ -60,30 +59,6 @@ MakeIntChecker (void)
   return MakeIntChecker (std::numeric_limits<T>::min (),
 			 std::numeric_limits<T>::max ());
 }
-
-template <typename T>
-Ptr<AttributeChecker>
-MakeIntChecker (T min, T max)
-{
-  struct IntChecker : public AttributeChecker
-  {
-    IntChecker (int64_t minValue, int64_t maxValue)
-      : m_minValue (minValue),
-      m_maxValue (maxValue) {}
-    virtual bool Check (PValue value) const {
-      const IntValue *v = value.DynCast<const IntValue *> ();
-      if (v == 0)
-	{
-	  return false;
-	}
-      return v->Get () >= m_minValue && v->Get () <= m_maxValue;
-    }
-    int64_t m_minValue;
-    int64_t m_maxValue;
-  } *checker = new IntChecker (min, max);
-  return Ptr<AttributeChecker> (checker, false);
-}
-
 
 } // namespace ns3
 

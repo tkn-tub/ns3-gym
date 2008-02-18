@@ -59,4 +59,27 @@ UintValue::operator PValue () const
   return PValue::Create<UintValue> (*this);
 }
 
+
+Ptr<AttributeChecker> MakeUintChecker (uint64_t min, uint64_t max)
+{
+  struct Checker : public AttributeChecker
+  {
+    Checker (uint64_t minValue, uint64_t maxValue)
+      : m_minValue (minValue),
+      m_maxValue (maxValue) {}
+    virtual bool Check (PValue value) const {
+      const UintValue *v = value.DynCast<const UintValue *> ();
+      if (v == 0)
+	{
+	  return false;
+	}
+      return v->Get () >= m_minValue && v->Get () <= m_maxValue;
+    }
+    uint64_t m_minValue;
+    uint64_t m_maxValue;
+  } *checker = new Checker (min, max);
+  return Ptr<AttributeChecker> (checker, false);
+}
+
+
 } // namespace ns3

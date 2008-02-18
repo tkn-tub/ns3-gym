@@ -59,4 +59,26 @@ FpValue::operator PValue () const
   return PValue::Create<FpValue> (*this);
 }
 
+Ptr<AttributeChecker> MakeFpChecker (double min, double max)
+{
+  struct Checker : public AttributeChecker
+  {
+    Checker (double minValue, double maxValue)
+      : m_minValue (minValue),
+      m_maxValue (maxValue) {}
+    virtual bool Check (PValue value) const {
+      const FpValue *v = value.DynCast<const FpValue *> ();
+      if (v == 0)
+	{
+	  return false;
+	}
+      return v->Get () >= m_minValue && v->Get () <= m_maxValue;
+    }
+    double m_minValue;
+    double m_maxValue;
+  } *checker = new Checker (min, max);
+  return Ptr<AttributeChecker> (checker, false);
+}
+
+
 } // namespace ns3
