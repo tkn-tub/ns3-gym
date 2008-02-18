@@ -21,10 +21,10 @@ public:
 
   std::string GetName (void) const;
   std::string GetHelp (void) const;
-  PValue GetInitialValue (void) const;
+  PValue GetValue (void) const;
   Ptr<const AttributeChecker> GetChecker (void) const;
   
-  void SetInitialValue (PValue value);
+  void SetValue (PValue value);
 
   static void Bind (std::string name, PValue value);
 

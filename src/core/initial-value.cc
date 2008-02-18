@@ -33,7 +33,7 @@ InitialValue::GetHelp (void) const
   return m_help;
 }
 PValue 
-InitialValue::GetInitialValue (void) const
+InitialValue::GetValue (void) const
 {
   return m_initialValue;
 }
@@ -44,7 +44,7 @@ InitialValue::GetChecker (void) const
 }
   
 void 
-InitialValue::SetInitialValue (PValue value)
+InitialValue::SetValue (PValue value)
 {
   if (!m_checker->Check (value))
     {
@@ -60,11 +60,13 @@ InitialValue::Bind (std::string name, PValue value)
     {
       if ((*i)->GetName () == name)
 	{
-	  (*i)->SetInitialValue (value);
+	  (*i)->SetValue (value);
 	  return;
 	}
     }
-  NS_FATAL_ERROR ("InitialValue name=\""<<name<<"\" not found.");
+  // since we did not find a matching InitialValue,
+  // we attempt to configure the global parameters list.
+  Parameters::GetGlobal ()->Set (name, value);
 }
 InitialValue::Iterator 
 InitialValue::Begin (void)
@@ -117,7 +119,7 @@ InitialValueTests::RunTests (void)
 {
   bool result = true;
 
-  NS_TEST_ASSERT_EQUAL (10, UintValue (g_uint.GetInitialValue ()).Get ());
+  NS_TEST_ASSERT_EQUAL (10, UintValue (g_uint.GetValue ()).Get ());
 
   return result;
 }
