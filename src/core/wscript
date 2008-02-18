@@ -62,6 +62,7 @@ def build(bld):
         'fp-value.cc',
         'object-factory.cc',
         'object-vector.cc',
+        'initial-value.cc',
         ]
 
     if sys.platform == 'win32':
@@ -115,5 +116,6 @@ def build(bld):
         'object-factory.h',
         'class-value-helper.h',
         'value-helper.h',
+        'initial-value.h',
         ]
 
