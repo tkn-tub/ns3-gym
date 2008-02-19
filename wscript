@@ -348,7 +348,7 @@ def run_program(program_string, command_template=None):
     """
     env = Params.g_build.env_of_name('default')
 
-    if command_template is None:
+    if command_template in (None, '%s'):
         argv = shlex.split(program_string)
         program_name = argv[0]
 
