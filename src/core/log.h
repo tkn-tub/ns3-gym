@@ -29,20 +29,21 @@
  * \defgroup logging Logging
  * \brief Logging functions and macros
  *
- *   LOG functionality: macros which allow developers to
- *     send information out on screen. All logging messages 
- *     are disabled by default. To enable selected logging 
- *     messages, use the ns3::LogComponentEnable
- *     function or use the NS_LOG environment variable and 
- *     ns3::LogComponentEnableEnvVar
+ * LOG functionality: macros which allow developers to
+ * send information out on screen. All logging messages 
+ * are disabled by default. To enable selected logging 
+ * messages, use the ns3::LogComponentEnable
+ * function or use the NS_LOG environment variable 
  *
  * Use the environment variable NS_LOG to define a ';'-separated list of
- * logging components to enable. For example, NS_LOG=a;b;c;DAFD;GH
- * would enable the components 'a', 'b', 'c', 'DAFD', and, 'GH'.
- * NS_LOG=* will enable all available log components.
+ * logging components to enable. For example (using bash syntax), 
+ * NS_LOG="OlsrAgent" would enable one component; 
+ * NS_LOG="OlsrAgent;Ipv4L3Protocol" would enable two
+ * components, etc.  NS_LOG="*" will enable all available log components.
+ * For each component, the "debug" log level is enabled by default.
  *
- * For each component, the "debug" log level is enabled by default
- * but more components can be enabled selectively with the following
+ * To obtain more components than just debug log level, more components 
+ * can be enabled selectively with the following
  * syntax: NS_LOG='Component1=func|param|warn;Component2=error|debug'
  * This example would enable the 'func', 'param', and 'warn' log
  * levels for 'Component1' and the 'error' and 'debug' log levels
