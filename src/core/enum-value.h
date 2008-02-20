@@ -7,7 +7,7 @@
 
 namespace ns3 {
 
-class EnumValue : public Value
+class EnumValue : public AttributeValue
 {
 public:
   EnumValue (int v);

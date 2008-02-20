@@ -45,7 +45,7 @@ class TraceContext;
 class CallbackBase;
 class Object;
 class AttributeAccessor;
-class Value;
+class AttributeValue;
 class Parameters;
 
 /**

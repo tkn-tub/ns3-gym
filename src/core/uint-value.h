@@ -7,7 +7,7 @@
 
 namespace ns3 {
 
-class UintValue : public Value
+class UintValue : public AttributeValue
 {
 public:
   UintValue (uint64_t value);

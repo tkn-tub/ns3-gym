@@ -8,8 +8,8 @@
   operator Attribute () const;
 
 #define VALUE_HELPER_HEADER_2(type)					\
-  class type##Value : public Value {};					\
-  class type##Accessor : public AttributeAccessor {};				\
+  class type##Value : public AttributeValue {};				\
+  class type##Accessor : public AttributeAccessor {};			\
   Ptr<const AttributeChecker> Make##type##Checker (void);		\
   template <typename T1>						\
   Ptr<const AttributeAccessor> Make##type##Accessor (T1 a1)		\

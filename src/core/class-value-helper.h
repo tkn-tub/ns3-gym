@@ -22,7 +22,7 @@ public:
     return m_value;
   }
 
-  // inherited from Value base class
+  // inherited from AttributeValue base class
   virtual Attribute Copy (void) const {
     return Attribute::Create<ClassValue<T,U> > (*this);
   }

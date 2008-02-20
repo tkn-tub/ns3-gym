@@ -665,7 +665,7 @@ std::ostream &operator << (std::ostream &os, const RandomVariable &var);
 std::istream &operator >> (std::istream &os, RandomVariable &var);
 
 
-class RandomVariableValue : public Value {};
+class RandomVariableValue : public AttributeValue {};
 class RandomVariableAccessor : public AttributeAccessor {};
 
 template <typename T1>

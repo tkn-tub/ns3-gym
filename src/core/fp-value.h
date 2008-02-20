@@ -7,7 +7,7 @@
 
 namespace ns3 {
 
-class FpValue : public Value
+class FpValue : public AttributeValue
 {
 public:
   FpValue (double value);

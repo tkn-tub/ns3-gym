@@ -12,13 +12,13 @@ class AttributeAccessor;
 class AttributeChecker;
 class Attribute;
 
-class Value
+class AttributeValue
 {
 public:
-  Value ();
-  Value (const Value &o);
-  Value &operator = (const Value &o);
-  virtual ~Value ();
+  AttributeValue ();
+  AttributeValue (const AttributeValue &o);
+  AttributeValue &operator = (const AttributeValue &o);
+  virtual ~AttributeValue ();
 
   virtual Attribute Copy (void) const = 0;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const = 0;
@@ -56,8 +56,8 @@ public:
   Attribute (const char *value);
   Attribute (std::string value);
 private:
-  Attribute (Value *value);
-  Value *m_value;
+  Attribute (AttributeValue *value);
+  AttributeValue *m_value;
 };
 
 class AttributeAccessor : public ObjectBase
@@ -116,7 +116,7 @@ namespace ns3 {
  *   A class used to hold std::string values.
  ********************************************************/
 
-class StringValue : public Value
+class StringValue : public AttributeValue
 {
 public:
   StringValue (const char *value);
@@ -137,10 +137,10 @@ private:
 
 /********************************************************
  *   The class used to access the pointer stored in a
- *   PtrValue<T> Value instance.
+ *   PtrValue<T> AttributeValue instance.
  ********************************************************/
 
-class PtrValueBase : public Value
+class PtrValueBase : public AttributeValue
 {
 public:
   virtual ObjectBase *PeekObjectBase (void) const = 0;
@@ -150,7 +150,7 @@ public:
 };
 
 /********************************************************
- *        Store the content of a Ptr<T> in a Value
+ *        Store the content of a Ptr<T> in a AttributeValue
  ********************************************************/
 
 template <typename T>

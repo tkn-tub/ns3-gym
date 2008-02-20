@@ -7,7 +7,7 @@
 
 namespace ns3 {
 
-class BooleanValue : public Value
+class BooleanValue : public AttributeValue
 {
 public:
   BooleanValue (bool value);

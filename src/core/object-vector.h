@@ -48,7 +48,7 @@ Ptr<const AttributeChecker> MakeObjectVectorChecker (void);
 
 namespace ns3 {
 
-class ObjectVectorValue : public Value
+class ObjectVectorValue : public AttributeValue
 {
 public:
   ObjectVectorValue ();

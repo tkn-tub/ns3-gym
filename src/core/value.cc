@@ -3,22 +3,22 @@
 #include "fatal-error.h"
 #include <sstream>
 
-NS_LOG_COMPONENT_DEFINE ("Value");
+NS_LOG_COMPONENT_DEFINE ("AttributeValue");
 
 namespace ns3 {
 
-Value::Value ()
+AttributeValue::AttributeValue ()
   : m_count (1)
 {}
-Value::Value (const Value &o)
+AttributeValue::AttributeValue (const AttributeValue &o)
   : m_count (1)
 {}
-Value &
-Value::operator = (const Value &o)
+AttributeValue &
+AttributeValue::operator = (const AttributeValue &o)
 {
   return *this;
 }
-Value::~Value ()
+AttributeValue::~AttributeValue ()
 {}
 
 /***************************************************************
@@ -29,15 +29,15 @@ Value::~Value ()
  * in the Attribute class. This is a very good question and the answer
  * is unfortunately pretty complicated.
  *
- * 1) We could have requested the user to use Ptr<Value> and save us
+ * 1) We could have requested the user to use Ptr<AttributeValue> and save us
  *    a lot of pain. This, however, does not work because our smart 
  *    pointer needs a special constructor which can be used to convert
  *    objects of type Ptr<T> into a PtrValue<T> to hold the pointer.
  *
- * 2) We could have made the m_value member variable below a Ptr<Value>
+ * 2) We could have made the m_value member variable below a Ptr<AttributeValue>
  *    rather than store a raw pointer. This, however, does not work
- *    because this would mean that the constructor Attribute (Value *)
- *    should be morphed into Attribute (Ptr<Value>) which, unfortunately,
+ *    because this would mean that the constructor Attribute (AttributeValue *)
+ *    should be morphed into Attribute (Ptr<AttributeValue>) which, unfortunately,
  *    would conflict with the template constructor Attribute (Ptr<T>)...
  *
  * This is definitely not fun.   
@@ -91,7 +91,7 @@ Attribute::~Attribute ()
 	}
     }
 }
-Attribute::Attribute (Value *value)
+Attribute::Attribute (AttributeValue *value)
   : m_value (value)
 {
   NS_LOG_DEBUG ("this="<<m_value<<" count="<<((m_value!=0)?m_value->m_count:666));

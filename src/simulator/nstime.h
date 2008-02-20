@@ -670,7 +670,7 @@ typedef TimeUnit<-1> TimeInvert;
 typedef TimeUnit<2> TimeSquare;
 
 
-class TimeValue : public Value {};
+class TimeValue : public AttributeValue {};
 class TimeAccessor : public AttributeAccessor {};
 
 template <typename T1>
