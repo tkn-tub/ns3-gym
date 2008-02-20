@@ -547,7 +547,7 @@ TypeId::AddParameter (std::string name,
                       Ptr<const ParamSpec> param,
                       Ptr<const AttributeChecker> checker)
 {
-  Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, PARAM_SGC, initialValue, param, checker);
+  Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, ATTR_SGC, initialValue, param, checker);
   return *this;
 }
 
@@ -901,7 +901,7 @@ Object::Construct (const Parameters &parameters)
         Ptr<const AttributeChecker> checker = tid.GetParameterChecker (i);
         NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
                       tid.GetParameterName (i)<<"\"");
-        if (!(tid.GetParameterFlags (i) & TypeId::PARAM_CONSTRUCT))
+        if (!(tid.GetParameterFlags (i) & TypeId::ATTR_CONSTRUCT))
           {
             continue;
           }
@@ -987,7 +987,7 @@ Object::Set (std::string name, PValue value)
     {
       return false;
     }
-  if (!(info.flags & TypeId::PARAM_SET))
+  if (!(info.flags & TypeId::ATTR_SET))
     {
       return false;
     }
@@ -1001,7 +1001,7 @@ Object::Get (std::string name, std::string &value) const
     {
       return false;
     }
-  if (!(info.flags & TypeId::PARAM_GET))
+  if (!(info.flags & TypeId::ATTR_GET))
     {
       return false;
     }
@@ -1022,7 +1022,7 @@ Object::Get (std::string name) const
     {
       return PValue ();
     }
-  if (!(info.flags & TypeId::PARAM_GET))
+  if (!(info.flags & TypeId::ATTR_GET))
     {
       return PValue ();
     }

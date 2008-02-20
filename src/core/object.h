@@ -61,13 +61,10 @@ class TypeId
 {
 public:
   enum {
-    PARAM_GET = 1<<0,
-    PARAM_SET = 1<<1,
-    PARAM_CONSTRUCT = 1<<2,
-    PARAM_SGC = PARAM_GET | PARAM_SET | PARAM_CONSTRUCT,
-    PARAM_NO_GET = 0,
-    PARAM_NO_SET = 0,
-    PARAM_NO_CONSTRUCT = 0,
+    ATTR_GET = 1<<0,
+    ATTR_SET = 1<<1,
+    ATTR_CONSTRUCT = 1<<2,
+    ATTR_SGC = ATTR_GET | ATTR_SET | ATTR_CONSTRUCT,
   };
 
   /**
