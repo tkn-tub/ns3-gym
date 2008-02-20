@@ -305,7 +305,7 @@ TimeUnit<1>::operator Attribute () const
   return ClassValueHelperConvertTo<Time,TimeValue> (this);
 }
 
-Ptr<AttributeChecker> MakeTimeChecker (void)
+Ptr<const AttributeChecker> MakeTimeChecker (void)
 {
   return MakeSimpleAttributeChecker<Time> ();
 }

@@ -104,7 +104,7 @@ EnumChecker::Check (Attribute value) const
   return false;
 }
 
-Ptr<AttributeChecker> 
+Ptr<const AttributeChecker> 
 MakeEnumChecker (int v1, std::string n1,
 		 int v2, std::string n2,
 		 int v3, std::string n3,

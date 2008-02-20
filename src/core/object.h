@@ -44,7 +44,7 @@ namespace ns3 {
 class TraceContext;
 class CallbackBase;
 class Object;
-class Accessor;
+class AttributeAccessor;
 class Value;
 class Parameters;
 
@@ -210,7 +210,7 @@ public:
   TypeId AddParameter (std::string name,
                        std::string help, 
                        Attribute initialValue,
-                       Ptr<const Accessor> spec,
+                       Ptr<const AttributeAccessor> spec,
                        Ptr<const AttributeChecker> checker);
 
   /**
@@ -227,7 +227,7 @@ public:
                        std::string help, 
                        uint32_t flags,
                        Attribute initialValue,
-                       Ptr<const Accessor> spec,
+                       Ptr<const AttributeAccessor> spec,
                        Ptr<const AttributeChecker> checker);
 
   // construct an invalid TypeId.
@@ -240,7 +240,7 @@ private:
   friend bool operator != (TypeId a, TypeId b);
 
   struct ParameterInfo {
-    Ptr<const Accessor> spec;
+    Ptr<const AttributeAccessor> spec;
     Attribute initialValue;
     uint32_t flags;
     Ptr<const AttributeChecker> checker;
@@ -265,7 +265,7 @@ private:
   explicit TypeId (uint16_t tid);
   void DoAddConstructor (CallbackBase callback, uint32_t nArguments);
   CallbackBase LookupConstructor (uint32_t nArguments) const;
-  Ptr<const Accessor> GetParameterAccessor (uint32_t i) const;
+  Ptr<const AttributeAccessor> GetParameterAccessor (uint32_t i) const;
   uint32_t GetParameterFlags (uint32_t i) const;
   Ptr<const AttributeChecker> GetParameterChecker (uint32_t i) const;
   
@@ -470,7 +470,7 @@ private:
   friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 
-  bool DoSet (Ptr<const Accessor> spec, Attribute intialValue, 
+  bool DoSet (Ptr<const AttributeAccessor> spec, Attribute intialValue, 
               Ptr<const AttributeChecker> checker, Attribute value);
   Ptr<Object> DoGetObject (TypeId tid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 

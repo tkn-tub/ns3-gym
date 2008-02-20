@@ -4,11 +4,11 @@
 namespace ns3 {
 
 template <typename BASE, typename V, typename T1>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1);
 
 template <typename BASE, typename V, typename T1, typename T2>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1, T2 a2);
 
 } // namespace ns3
@@ -62,7 +62,7 @@ private:
 };
 
 template <typename BASE, typename V, typename T, typename U>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (U T::*memberVariable)
 {
   class MemberVariable : public AccessorHelper<BASE,T,V>
@@ -84,11 +84,11 @@ DoMakeAccessorHelperOne (U T::*memberVariable)
       
       U T::*m_memberVariable;
     };
-  return Ptr<Accessor> (new MemberVariable (memberVariable), false);
+  return Ptr<const AttributeAccessor> (new MemberVariable (memberVariable), false);
 }
 
 template <typename BASE, typename V, typename T, typename U>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (U (T::*getter) (void) const)
 {
   class MemberMethod : public AccessorHelper<BASE,T,V>
@@ -108,12 +108,12 @@ DoMakeAccessorHelperOne (U (T::*getter) (void) const)
       }
       U (T::*m_getter) (void) const;
     };
-  return Ptr<Accessor> (new MemberMethod (getter), false);
+  return Ptr<const AttributeAccessor> (new MemberMethod (getter), false);
 }
 
 
 template <typename BASE, typename V, typename T, typename U>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (void (T::*setter) (U))
 {
   class MemberMethod : public AccessorHelper<BASE,T,V>
@@ -133,11 +133,11 @@ DoMakeAccessorHelperOne (void (T::*setter) (U))
       }
       void (T::*m_setter) (U);
     };
-  return Ptr<Accessor> (new MemberMethod (setter), false);
+  return Ptr<const AttributeAccessor> (new MemberMethod (setter), false);
 }
 
 template <typename BASE, typename W, typename T, typename U, typename V>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 DoMakeAccessorHelperTwo (void (T::*setter) (U), 
 			  V (T::*getter) (void) const)
 {
@@ -162,11 +162,11 @@ DoMakeAccessorHelperTwo (void (T::*setter) (U),
       void (T::*m_setter) (U);
       V (T::*m_getter) (void) const;
     };
-  return Ptr<Accessor> (new MemberMethod (setter, getter), false);
+  return Ptr<const AttributeAccessor> (new MemberMethod (setter, getter), false);
 }
 
 template <typename BASE, typename W, typename T, typename U, typename V>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 DoMakeAccessorHelperTwo (V (T::*getter) (void) const, 
 			  void (T::*setter) (U))
 {
@@ -174,14 +174,14 @@ DoMakeAccessorHelperTwo (V (T::*getter) (void) const,
 }
 
 template <typename BASE, typename V, typename T1>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1)
 {
   return DoMakeAccessorHelperOne<BASE,V> (a1);
 }
 
 template <typename BASE, typename V, typename T1, typename T2>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1, T2 a2)
 {
   return DoMakeAccessorHelperTwo<BASE,V> (a1, a2);

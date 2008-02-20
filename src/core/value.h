@@ -8,7 +8,7 @@
 
 namespace ns3 {
 
-class Accessor;
+class AttributeAccessor;
 class AttributeChecker;
 class Attribute;
 
@@ -60,13 +60,13 @@ private:
   Value *m_value;
 };
 
-class Accessor : public ObjectBase
+class AttributeAccessor : public ObjectBase
 {
 public:
-  Accessor ();
+  AttributeAccessor ();
   void Ref (void) const;
   void Unref (void) const;
-  virtual ~Accessor ();
+  virtual ~AttributeAccessor ();
 
   /**
    * \param object the object instance to set the value in
@@ -97,14 +97,14 @@ Ptr<AttributeChecker>
 MakeSimpleAttributeChecker (void);
 
 template <typename T, typename U>
-Ptr<const Accessor>
+Ptr<const AttributeAccessor>
 MakePtrAccessor (Ptr<U> T::*memberVariable);
 
 template <typename T, typename U>
-Ptr<const Accessor>
+Ptr<const AttributeAccessor>
 MakePtrAccessor (void (T::*setter) (Ptr<U>));
 template <typename T, typename U>
-Ptr<const Accessor>
+Ptr<const AttributeAccessor>
 MakePtrAccessor (Ptr<U> (T::*getter) (void) const);
 
 
@@ -232,7 +232,7 @@ Attribute::operator Ptr<T> ()
  ********************************************************/
 
 template <typename T, typename U>
-class PtrAccessor : public Accessor
+class PtrAccessor : public AttributeAccessor
 {
 public:
   virtual ~PtrAccessor () {}
@@ -275,7 +275,7 @@ private:
 
 
 template <typename T, typename U>
-Ptr<const Accessor>
+Ptr<const AttributeAccessor>
 MakePtrAccessor (Ptr<U> T::*memberVariable)
 {
   struct MemberVariable : public PtrAccessor<T,U>
@@ -292,11 +292,11 @@ MakePtrAccessor (Ptr<U> T::*memberVariable)
     }
   } *spec = new MemberVariable ();
   spec->m_memberVariable = memberVariable;
-  return Ptr<const Accessor> (spec, false);
+  return Ptr<const AttributeAccessor> (spec, false);
 }
 
 template <typename T, typename U>
-Ptr<const Accessor>
+Ptr<const AttributeAccessor>
 MakePtrAccessor (void (T::*setter) (Ptr<U>))
 {
   struct MemberMethod : public PtrAccessor<T,U>
@@ -314,11 +314,11 @@ MakePtrAccessor (void (T::*setter) (Ptr<U>))
     }
   } *spec = new MemberMethod ();
   spec->m_setter = setter;
-  return Ptr<const Accessor> (spec, false);
+  return Ptr<const AttributeAccessor> (spec, false);
 }
 
 template <typename T, typename U>
-Ptr<const Accessor>
+Ptr<const AttributeAccessor>
 MakePtrAccessor (Ptr<U> (T::*getter) (void) const)
 {
   struct MemberMethod : public PtrAccessor<T,U>
@@ -335,7 +335,7 @@ MakePtrAccessor (Ptr<U> (T::*getter) (void) const)
     }
   } *spec = new MemberMethod ();
   spec->m_getter = getter;
-  return Ptr<const Accessor> (spec, false);
+  return Ptr<const AttributeAccessor> (spec, false);
 }
 
 template <typename T>

@@ -60,7 +60,7 @@ UintValue::operator Attribute () const
 }
 
 
-Ptr<AttributeChecker> MakeUintChecker (uint64_t min, uint64_t max)
+Ptr<const AttributeChecker> MakeUintChecker (uint64_t min, uint64_t max)
 {
   struct Checker : public AttributeChecker
   {
@@ -78,7 +78,7 @@ Ptr<AttributeChecker> MakeUintChecker (uint64_t min, uint64_t max)
     uint64_t m_minValue;
     uint64_t m_maxValue;
   } *checker = new Checker (min, max);
-  return Ptr<AttributeChecker> (checker, false);
+  return Ptr<const AttributeChecker> (checker, false);
 }
 
 

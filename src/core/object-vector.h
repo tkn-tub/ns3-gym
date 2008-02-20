@@ -28,21 +28,21 @@ private:
 };
 
 template <typename T, typename U>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (U T::*memberVector);
 
 template <typename T, typename U, typename INDEX>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (Ptr<U> (T::*get) (INDEX) const,
 			   INDEX (T::*getN) (void) const);
 
 template <typename T, typename U, typename INDEX>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (INDEX (T::*getN) (void) const,
 			   Ptr<U> (T::*get) (INDEX) const);
 
 
-Ptr<AttributeChecker> MakeObjectVectorChecker (void);
+Ptr<const AttributeChecker> MakeObjectVectorChecker (void);
 
 } // namespace ns3
 
@@ -65,7 +65,7 @@ private:
   ObjectVector m_vector;
 };
 
-class ObjectVectorAccessor : public Accessor
+class ObjectVectorAccessor : public AttributeAccessor
 {
 public:
   virtual bool Set (ObjectBase * object, Attribute value) const;
@@ -76,7 +76,7 @@ private:
 };
 
 template <typename T, typename U>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (U T::*memberVector)
 {
   struct MemberStdContainer : public ObjectVectorAccessor
@@ -97,11 +97,11 @@ MakeObjectVectorAccessor (U T::*memberVector)
     U T::*m_memberVector;
   } *spec = new MemberStdContainer ();
   spec->m_memberVector = memberVector;
-  return Ptr<Accessor> (spec, false);
+  return Ptr<const AttributeAccessor> (spec, false);
 }
 
 template <typename T, typename U, typename INDEX>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (Ptr<U> (T::*get) (INDEX) const,
 			   INDEX (T::*getN) (void) const)
 {
@@ -125,11 +125,11 @@ MakeObjectVectorAccessor (Ptr<U> (T::*get) (INDEX) const,
   } *spec = new MemberGetters ();
   spec->m_get = get;
   spec->m_getN = getN;
-  return Ptr<Accessor> (spec, false);
+  return Ptr<const AttributeAccessor> (spec, false);
 }
 
 template <typename T, typename U, typename INDEX>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (INDEX (T::*getN) (void) const,
 			   Ptr<U> (T::*get) (INDEX) const)
 {

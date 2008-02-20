@@ -309,7 +309,7 @@ RandomVariable::operator Attribute () const
   return ClassValueHelperConvertTo<RandomVariable,RandomVariableValue> (this);
 }
 
-Ptr<AttributeChecker> 
+Ptr<const AttributeChecker> 
 MakeRandomVariableChecker (void)
 {
   return MakeSimpleAttributeChecker<RandomVariableValue> ();

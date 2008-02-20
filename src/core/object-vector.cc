@@ -101,7 +101,7 @@ ObjectVectorAccessor::Get (const ObjectBase * object, Attribute value) const
     }
   return true;
 }
-Ptr<AttributeChecker> 
+Ptr<const AttributeChecker> 
 MakeObjectVectorChecker (void)
 {
   return MakeSimpleAttributeChecker<ObjectVectorValue> ();

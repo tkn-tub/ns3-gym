@@ -59,7 +59,7 @@ IntValue::operator Attribute () const
   return Attribute::Create<IntValue> (*this);
 }
 
-Ptr<AttributeChecker>
+Ptr<const AttributeChecker>
 MakeIntChecker (int64_t min, int64_t max)
 {
   struct IntChecker : public AttributeChecker

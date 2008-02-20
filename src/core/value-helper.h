@@ -7,25 +7,25 @@
   type (Attribute value); \
   operator Attribute () const;
 
-#define VALUE_HELPER_HEADER_2(type)				\
-  class type##Value : public Value {};				\
-  class type##Accessor : public Accessor {};			\
-  Ptr<AttributeChecker> Make##type##Checker (void);		\
-  template <typename T1>					\
-  Ptr<Accessor> Make##type##Accessor (T1 a1)			\
-  {								\
-    return MakeClassValueHelperAccessor< type ,		\
-      type##Value, type##Accessor> (a1);			\
-  }								\
-  template <typename T1, typename T2>				\
-    Ptr<Accessor> Make##type##Accessor (T1 a1, T2 a2)	\
-  {								\
-    return MakeClassValueHelperAccessor<type,			\
-      type##Value,type##Accessor> (a1, a2);			\
+#define VALUE_HELPER_HEADER_2(type)					\
+  class type##Value : public Value {};					\
+  class type##Accessor : public AttributeAccessor {};				\
+  Ptr<const AttributeChecker> Make##type##Checker (void);		\
+  template <typename T1>						\
+  Ptr<const AttributeAccessor> Make##type##Accessor (T1 a1)		\
+  {									\
+    return MakeClassValueHelperAccessor< type ,				\
+      type##Value, type##Accessor> (a1);				\
+  }									\
+  template <typename T1, typename T2>					\
+  Ptr<const AttributeAccessor> Make##type##Accessor (T1 a1, T2 a2)	\
+  {									\
+    return MakeClassValueHelperAccessor<type,				\
+      type##Value,type##Accessor> (a1, a2);				\
   }
 
 #define VALUE_HELPER_CPP(type)						\
-  Ptr<AttributeChecker> Make##type##Checker (void)			\
+  Ptr<const AttributeChecker> Make##type##Checker (void)		\
   {									\
     return MakeSimpleAttributeChecker<type> ();				\
   }									\

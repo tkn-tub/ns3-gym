@@ -671,14 +671,14 @@ typedef TimeUnit<2> TimeSquare;
 
 
 class TimeValue : public Value {};
-class TimeAccessor : public Accessor {};
+class TimeAccessor : public AttributeAccessor {};
 
 template <typename T1>
-Ptr<Accessor> MakeTimeAccessor (T1 a1);
+Ptr<const AttributeAccessor> MakeTimeAccessor (T1 a1);
 template <typename T1, typename T2>
-Ptr<Accessor> MakeTimeAccessor (T1 a1, T2 a2);
+Ptr<const AttributeAccessor> MakeTimeAccessor (T1 a1, T2 a2);
 
-Ptr<AttributeChecker> MakeTimeChecker (void);
+Ptr<const AttributeChecker> MakeTimeChecker (void);
 
 
 
@@ -687,13 +687,13 @@ Ptr<AttributeChecker> MakeTimeChecker (void);
 namespace ns3 {
 
 template <typename T1>
-Ptr<Accessor> MakeTimeAccessor (T1 a1)
+Ptr<const AttributeAccessor> MakeTimeAccessor (T1 a1)
 {
   return MakeClassValueHelperAccessor<Time,TimeValue,TimeAccessor> (a1);
 }
 
 template <typename T1, typename T2>
-Ptr<Accessor> MakeTimeAccessor (T1 a1, T2 a2)
+Ptr<const AttributeAccessor> MakeTimeAccessor (T1 a1, T2 a2)
 {
   return MakeClassValueHelperAccessor<Time,TimeValue,TimeAccessor> (a1, a2);
 }

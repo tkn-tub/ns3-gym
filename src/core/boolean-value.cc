@@ -71,7 +71,7 @@ BooleanValue::operator Attribute () const
   return Attribute::Create<BooleanValue> (*this);
 }
 
-Ptr<AttributeChecker> MakeBooleanChecker (void)
+Ptr<const AttributeChecker> MakeBooleanChecker (void)
 {
   return MakeSimpleAttributeChecker<BooleanValue> ();
 }

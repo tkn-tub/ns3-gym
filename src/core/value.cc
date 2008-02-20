@@ -121,16 +121,16 @@ Attribute::Attribute (std::string value)
 {}
 
 
-Accessor::Accessor ()
+AttributeAccessor::AttributeAccessor ()
   : m_count (1)
 {}
 void 
-Accessor::Ref (void) const
+AttributeAccessor::Ref (void) const
 {
   m_count++;
 }
 void 
-Accessor::Unref (void) const
+AttributeAccessor::Unref (void) const
 {
   m_count--;
   if (m_count == 0)
@@ -138,7 +138,7 @@ Accessor::Unref (void) const
       delete this;
     }
 }
-Accessor::~Accessor ()
+AttributeAccessor::~AttributeAccessor ()
 {}
 
 AttributeChecker::AttributeChecker ()

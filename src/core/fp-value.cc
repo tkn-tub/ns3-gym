@@ -59,7 +59,7 @@ FpValue::operator Attribute () const
   return Attribute::Create<FpValue> (*this);
 }
 
-Ptr<AttributeChecker> MakeFpChecker (double min, double max)
+Ptr<const AttributeChecker> MakeFpChecker (double min, double max)
 {
   struct Checker : public AttributeChecker
   {
@@ -77,7 +77,7 @@ Ptr<AttributeChecker> MakeFpChecker (double min, double max)
     double m_minValue;
     double m_maxValue;
   } *checker = new Checker (min, max);
-  return Ptr<AttributeChecker> (checker, false);
+  return Ptr<const AttributeChecker> (checker, false);
 }
 
 

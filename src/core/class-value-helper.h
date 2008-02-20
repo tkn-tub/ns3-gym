@@ -77,7 +77,7 @@ ClassValueHelperConvertTo (const T *self)
 
 
 template <typename T, typename U, typename BASE, typename T1>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeClassValueHelperAccessor (T1 a1)
 {
   return MakeAccessorHelper<BASE,ClassValue<T,U> > (a1);
@@ -85,7 +85,7 @@ MakeClassValueHelperAccessor (T1 a1)
 
 
 template <typename T, typename U, typename BASE, typename T1, typename T2>
-Ptr<Accessor>
+Ptr<const AttributeAccessor>
 MakeClassValueHelperAccessor (T1 a1, T2 a2)
 {
   return MakeAccessorHelper<BASE,ClassValue<T,U> > (a1, a2);

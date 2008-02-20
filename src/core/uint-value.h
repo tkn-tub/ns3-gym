@@ -24,37 +24,37 @@ private:
   uint64_t m_value;
 };
 
-class UintAccessor : public Accessor {};
+class UintAccessor : public AttributeAccessor {};
 
 template <typename T1>
-Ptr<Accessor> MakeUintAccessor (T1 a1);
+Ptr<const AttributeAccessor> MakeUintAccessor (T1 a1);
 template <typename T1, typename T2>
-Ptr<Accessor> MakeUintAccessor (T1 a1, T2 a2);
+Ptr<const AttributeAccessor> MakeUintAccessor (T1 a1, T2 a2);
 
 template <typename T>
-Ptr<AttributeChecker> MakeUintChecker (void);
+Ptr<const AttributeChecker> MakeUintChecker (void);
 
-Ptr<AttributeChecker> MakeUintChecker (uint64_t min, uint64_t max);
+Ptr<const AttributeChecker> MakeUintChecker (uint64_t min, uint64_t max);
 
 } // namespace ns3
 
 namespace ns3 {
 
 template <typename T1>
-Ptr<Accessor> 
+Ptr<const AttributeAccessor> 
 MakeUintAccessor (T1 a1)
 {
   return MakeAccessorHelper<UintAccessor,UintValue> (a1);
 }
 
 template <typename T1, typename T2>
-Ptr<Accessor> MakeUintAccessor (T1 a1, T2 a2)
+Ptr<const AttributeAccessor> MakeUintAccessor (T1 a1, T2 a2)
 {
   return MakeAccessorHelper<UintAccessor,UintValue> (a1, a2);
 }
 
 template <typename T>
-Ptr<AttributeChecker> MakeUintChecker (void)
+Ptr<const AttributeChecker> MakeUintChecker (void)
 {
   return MakeUintChecker (std::numeric_limits<T>::min (),
 			  std::numeric_limits<T>::max ());

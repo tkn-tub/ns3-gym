@@ -24,16 +24,16 @@ private:
   bool m_value;
 };
 
-class BooleanAccessor : public Accessor {};
+class BooleanAccessor : public AttributeAccessor {};
 
 
 template <typename T1>
-Ptr<Accessor> MakeBooleanAccessor (T1 a1);
+Ptr<const AttributeAccessor> MakeBooleanAccessor (T1 a1);
 
 template <typename T1, typename T2>
-Ptr<Accessor> MakeBooleanAccessor (T1 a1, T2 a2);
+Ptr<const AttributeAccessor> MakeBooleanAccessor (T1 a1, T2 a2);
 
-Ptr<AttributeChecker> MakeBooleanChecker (void);
+Ptr<const AttributeChecker> MakeBooleanChecker (void);
 
 } // namespace ns3
 
@@ -42,13 +42,13 @@ Ptr<AttributeChecker> MakeBooleanChecker (void);
 namespace ns3 {
 
 template <typename T1>
-Ptr<Accessor> MakeBooleanAccessor (T1 a1)
+Ptr<const AttributeAccessor> MakeBooleanAccessor (T1 a1)
 {
   return MakeAccessorHelper<BooleanAccessor,BooleanValue> (a1);
 }
 
 template <typename T1, typename T2>
-Ptr<Accessor> MakeBooleanAccessor (T1 a1, T2 a2)
+Ptr<const AttributeAccessor> MakeBooleanAccessor (T1 a1, T2 a2)
 {
   return MakeAccessorHelper<BooleanAccessor,BooleanValue> (a1, a2);
 }

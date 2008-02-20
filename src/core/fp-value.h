@@ -25,17 +25,17 @@ private:
   double m_value;
 };
 
-class FpAccessor : public Accessor {};
+class FpAccessor : public AttributeAccessor {};
 
 template <typename T1>
-Ptr<Accessor> MakeFpAccessor (T1 a1);
+Ptr<const AttributeAccessor> MakeFpAccessor (T1 a1);
 template <typename T1, typename T2>
-Ptr<Accessor> MakeFpAccessor (T1 a1, T2 a2);
+Ptr<const AttributeAccessor> MakeFpAccessor (T1 a1, T2 a2);
 
 template <typename T>
-Ptr<AttributeChecker> MakeFpChecker (void);
+Ptr<const AttributeChecker> MakeFpChecker (void);
 
-Ptr<AttributeChecker> MakeFpChecker (double min, double max);
+Ptr<const AttributeChecker> MakeFpChecker (double min, double max);
 
 
 
@@ -44,18 +44,18 @@ Ptr<AttributeChecker> MakeFpChecker (double min, double max);
 namespace ns3 {
 
 template <typename T1>
-Ptr<Accessor> MakeFpAccessor (T1 a1)
+Ptr<const AttributeAccessor> MakeFpAccessor (T1 a1)
 {
   return MakeAccessorHelper<FpAccessor,FpValue> (a1);
 }
 template <typename T1, typename T2>
-Ptr<Accessor> MakeFpAccessor (T1 a1, T2 a2)
+Ptr<const AttributeAccessor> MakeFpAccessor (T1 a1, T2 a2)
 {
   return MakeAccessorHelper<FpAccessor,FpValue> (a1, a2);
 }
 
 template <typename T>
-Ptr<AttributeChecker> MakeFpChecker (void)
+Ptr<const AttributeChecker> MakeFpChecker (void)
 {
   return MakeFpChecker (-std::numeric_limits<T>::max (),
 			std::numeric_limits<T>::max ());
