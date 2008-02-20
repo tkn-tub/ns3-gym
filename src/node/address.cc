@@ -107,15 +107,7 @@ Address::Register (void)
   return type;
 }
 
-Address::Address (Attribute value)
-{
-  *this = ClassValueHelperExtractFrom<Address,AddressValue> (value);
-}
-Address::operator Attribute () const
-{
-  return ClassValueHelperConvertTo<Address,AddressValue> (this);
-}
-
+VALUE_HELPER_CPP (Address);
 
 bool operator == (const Address &a, const Address &b)
 {
