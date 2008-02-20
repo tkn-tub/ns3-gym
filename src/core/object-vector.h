@@ -23,22 +23,22 @@ public:
   ObjectVector (Attribute value);
   operator Attribute () const;
 private:
-  friend class ObjectVectorParamSpec;
+  friend class ObjectVectorAccessor;
   std::vector<Ptr<Object> > m_objects;
 };
 
 template <typename T, typename U>
-Ptr<ParamSpec>
-MakeObjectVectorParamSpec (U T::*memberVector);
+Ptr<Accessor>
+MakeObjectVectorAccessor (U T::*memberVector);
 
 template <typename T, typename U, typename INDEX>
-Ptr<ParamSpec>
-MakeObjectVectorParamSpec (Ptr<U> (T::*get) (INDEX) const,
+Ptr<Accessor>
+MakeObjectVectorAccessor (Ptr<U> (T::*get) (INDEX) const,
 			   INDEX (T::*getN) (void) const);
 
 template <typename T, typename U, typename INDEX>
-Ptr<ParamSpec>
-MakeObjectVectorParamSpec (INDEX (T::*getN) (void) const,
+Ptr<Accessor>
+MakeObjectVectorAccessor (INDEX (T::*getN) (void) const,
 			   Ptr<U> (T::*get) (INDEX) const);
 
 
@@ -61,11 +61,11 @@ public:
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
 private:
-  friend class ObjectVectorParamSpec;
+  friend class ObjectVectorAccessor;
   ObjectVector m_vector;
 };
 
-class ObjectVectorParamSpec : public ParamSpec
+class ObjectVectorAccessor : public Accessor
 {
 public:
   virtual bool Set (ObjectBase * object, Attribute value) const;
@@ -76,10 +76,10 @@ private:
 };
 
 template <typename T, typename U>
-Ptr<ParamSpec>
-MakeObjectVectorParamSpec (U T::*memberVector)
+Ptr<Accessor>
+MakeObjectVectorAccessor (U T::*memberVector)
 {
-  struct MemberStdContainer : public ObjectVectorParamSpec
+  struct MemberStdContainer : public ObjectVectorAccessor
   {
     virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const {
       const T *obj = dynamic_cast<const T *> (object);
@@ -97,15 +97,15 @@ MakeObjectVectorParamSpec (U T::*memberVector)
     U T::*m_memberVector;
   } *spec = new MemberStdContainer ();
   spec->m_memberVector = memberVector;
-  return Ptr<ParamSpec> (spec, false);
+  return Ptr<Accessor> (spec, false);
 }
 
 template <typename T, typename U, typename INDEX>
-Ptr<ParamSpec>
-MakeObjectVectorParamSpec (Ptr<U> (T::*get) (INDEX) const,
+Ptr<Accessor>
+MakeObjectVectorAccessor (Ptr<U> (T::*get) (INDEX) const,
 			   INDEX (T::*getN) (void) const)
 {
-  struct MemberGetters : public ObjectVectorParamSpec
+  struct MemberGetters : public ObjectVectorAccessor
   {
     virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const {
       const T *obj = dynamic_cast<const T *> (object);
@@ -125,15 +125,15 @@ MakeObjectVectorParamSpec (Ptr<U> (T::*get) (INDEX) const,
   } *spec = new MemberGetters ();
   spec->m_get = get;
   spec->m_getN = getN;
-  return Ptr<ParamSpec> (spec, false);
+  return Ptr<Accessor> (spec, false);
 }
 
 template <typename T, typename U, typename INDEX>
-Ptr<ParamSpec>
-MakeObjectVectorParamSpec (INDEX (T::*getN) (void) const,
+Ptr<Accessor>
+MakeObjectVectorAccessor (INDEX (T::*getN) (void) const,
 			   Ptr<U> (T::*get) (INDEX) const)
 {
-  return MakeObjectVectorParamSpec (get, getN);
+  return MakeObjectVectorAccessor (get, getN);
 }
 
 } // namespace ns3

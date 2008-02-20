@@ -31,13 +31,13 @@ MobilityModel::GetTypeId (void)
     .AddParameter ("position", "The current position of the mobility model.",
                    TypeId::ATTR_SGC,
                    Vector (0.0, 0.0, 0.0),
-                   MakeVectorParamSpec (&MobilityModel::SetPosition,
+                   MakeVectorAccessor (&MobilityModel::SetPosition,
                                         &MobilityModel::GetPosition),
                    MakeVectorChecker ())
     .AddParameter ("velocity", "The current velocity of the mobility model.",
                    TypeId::ATTR_GET,
                    Vector (0.0, 0.0, 0.0), // ignored initial value.
-                   MakeVectorParamSpec (&MobilityModel::GetVelocity),
+                   MakeVectorAccessor (&MobilityModel::GetVelocity),
                    MakeVectorChecker ())
     ;
   return tid;

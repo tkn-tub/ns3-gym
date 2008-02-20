@@ -44,7 +44,7 @@ namespace ns3 {
 class TraceContext;
 class CallbackBase;
 class Object;
-class ParamSpec;
+class Accessor;
 class Value;
 class Parameters;
 
@@ -202,7 +202,7 @@ public:
    * \param name the name of the new parameter
    * \param help some help text which describes the purpose of this
    *        parameter
-   * \param param an instance of the associated ParamSpec subclass
+   * \param param an instance of the associated Accessor subclass
    * \returns this TypeId instance
    *
    * Record in this TypeId the fact that a new parameter exists.
@@ -210,7 +210,7 @@ public:
   TypeId AddParameter (std::string name,
                        std::string help, 
                        Attribute initialValue,
-                       Ptr<const ParamSpec> spec,
+                       Ptr<const Accessor> spec,
                        Ptr<const AttributeChecker> checker);
 
   /**
@@ -218,7 +218,7 @@ public:
    * \param help some help text which describes the purpose of this
    *        parameter
    * \param flags flags which describe how this parameter can be read and/or written.
-   * \param param an instance of the associated ParamSpec subclass
+   * \param param an instance of the associated Accessor subclass
    * \returns this TypeId instance
    *
    * Record in this TypeId the fact that a new parameter exists.
@@ -227,7 +227,7 @@ public:
                        std::string help, 
                        uint32_t flags,
                        Attribute initialValue,
-                       Ptr<const ParamSpec> spec,
+                       Ptr<const Accessor> spec,
                        Ptr<const AttributeChecker> checker);
 
   // construct an invalid TypeId.
@@ -240,7 +240,7 @@ private:
   friend bool operator != (TypeId a, TypeId b);
 
   struct ParameterInfo {
-    Ptr<const ParamSpec> spec;
+    Ptr<const Accessor> spec;
     Attribute initialValue;
     uint32_t flags;
     Ptr<const AttributeChecker> checker;
@@ -248,24 +248,24 @@ private:
 
   /**
    * \param name the name of the requested parameter
-   * \returns the ParamSpec associated to the requested parameter
+   * \returns the Accessor associated to the requested parameter
    */
   bool LookupParameterByName (std::string name, struct ParameterInfo *info) const;
   /**
    * \param i the position of the requested parameter
-   * \returns the ParamSpec associated to the requested parameter
+   * \returns the Accessor associated to the requested parameter
    */
   bool LookupParameterByPosition (uint32_t i, struct ParameterInfo *info) const;
   /**
    * \param fullName the full name of the requested parameter
-   * \returns the ParamSpec associated to the requested parameter
+   * \returns the Accessor associated to the requested parameter
    */
   static bool LookupParameterByFullName (std::string fullName, struct ParameterInfo *info);
 
   explicit TypeId (uint16_t tid);
   void DoAddConstructor (CallbackBase callback, uint32_t nArguments);
   CallbackBase LookupConstructor (uint32_t nArguments) const;
-  Ptr<const ParamSpec> GetParameterParamSpec (uint32_t i) const;
+  Ptr<const Accessor> GetParameterAccessor (uint32_t i) const;
   uint32_t GetParameterFlags (uint32_t i) const;
   Ptr<const AttributeChecker> GetParameterChecker (uint32_t i) const;
   
@@ -470,7 +470,7 @@ private:
   friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 
-  bool DoSet (Ptr<const ParamSpec> spec, Attribute intialValue, 
+  bool DoSet (Ptr<const Accessor> spec, Attribute intialValue, 
               Ptr<const AttributeChecker> checker, Attribute value);
   Ptr<Object> DoGetObject (TypeId tid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 

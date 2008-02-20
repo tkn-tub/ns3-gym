@@ -24,7 +24,7 @@ private:
   int m_v;
 };
 
-class EnumParamSpec : public ParamSpec {};
+class EnumAccessor : public Accessor {};
 class EnumChecker : public AttributeChecker
 {
 public:
@@ -42,10 +42,10 @@ private:
 };
 
 template <typename T1>
-Ptr<ParamSpec> MakeEnumParamSpec (T1 a1);
+Ptr<Accessor> MakeEnumAccessor (T1 a1);
 
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeEnumParamSpec (T1 a1, T2 a2);
+Ptr<Accessor> MakeEnumAccessor (T1 a1, T2 a2);
 
 Ptr<AttributeChecker> MakeEnumChecker (int v1, std::string n1,
 				       int v2 = 0, std::string n2 = "",
@@ -66,15 +66,15 @@ Ptr<AttributeChecker> MakeEnumChecker (int v1, std::string n1,
 namespace ns3 {
 
 template <typename T1>
-Ptr<ParamSpec> MakeEnumParamSpec (T1 a1)
+Ptr<Accessor> MakeEnumAccessor (T1 a1)
 {
-  return MakeParamSpecHelper<EnumParamSpec,EnumValue> (a1);
+  return MakeAccessorHelper<EnumAccessor,EnumValue> (a1);
 }
 
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeEnumParamSpec (T1 a1, T2 a2)
+Ptr<Accessor> MakeEnumAccessor (T1 a1, T2 a2)
 {
-  return MakeParamSpecHelper<EnumParamSpec,EnumValue> (a1, a2);
+  return MakeAccessorHelper<EnumAccessor,EnumValue> (a1, a2);
 }
 
 } // namespace ns3

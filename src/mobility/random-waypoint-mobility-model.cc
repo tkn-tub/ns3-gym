@@ -39,17 +39,17 @@ RandomWaypointMobilityModel::GetTypeId (void)
     .AddParameter ("speed",
                    "A random variable used to pick the speed of a random waypoint model.",
                    UniformVariable (0.3, 0.7),
-                   MakeRandomVariableParamSpec (&RandomWaypointMobilityModel::m_speed),
+                   MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_speed),
                    MakeRandomVariableChecker ())
     .AddParameter ("pause",
                    "A random variable used to pick the pause of a random waypoint model.",
                    ConstantVariable (2.0),
-                   MakeRandomVariableParamSpec (&RandomWaypointMobilityModel::m_pause),
+                   MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_pause),
                    MakeRandomVariableChecker ())
     .AddParameter ("position",
                    "The position model used to pick a destination point.",
                    Ptr<PositionAllocator> (0),
-                   MakePtrParamSpec (&RandomWaypointMobilityModel::m_position),
+                   MakePtrAccessor (&RandomWaypointMobilityModel::m_position),
                    MakePtrChecker<PositionAllocator> ());
   
   return tid;

@@ -24,12 +24,12 @@ private:
   int64_t m_value;
 };
 
-class IntParamSpec : public ParamSpec {};
+class IntAccessor : public Accessor {};
 
 template <typename T1>
-Ptr<ParamSpec> MakeIntParamSpec (T1 a1);
+Ptr<Accessor> MakeIntAccessor (T1 a1);
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2);
+Ptr<Accessor> MakeIntAccessor (T1 a1, T2 a2);
 
 template <typename T>
 Ptr<AttributeChecker> MakeIntChecker (void);
@@ -41,15 +41,15 @@ Ptr<AttributeChecker> MakeIntChecker (int64_t min, int64_t max);
 namespace ns3 {
 
 template <typename T1>
-Ptr<ParamSpec> 
-MakeIntParamSpec (T1 a1)
+Ptr<Accessor> 
+MakeIntAccessor (T1 a1)
 {
-  return MakeParamSpecHelper<IntParamSpec,IntValue> (a1);
+  return MakeAccessorHelper<IntAccessor,IntValue> (a1);
 }
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeIntParamSpec (T1 a1, T2 a2)
+Ptr<Accessor> MakeIntAccessor (T1 a1, T2 a2)
 {
-  return MakeParamSpecHelper<IntParamSpec,IntValue> (a1, a2);
+  return MakeAccessorHelper<IntAccessor,IntValue> (a1, a2);
 }
 
 template <typename T>

@@ -8,7 +8,7 @@
 
 namespace ns3 {
 
-class ParamSpec;
+class Accessor;
 class AttributeChecker;
 class Attribute;
 
@@ -60,13 +60,13 @@ private:
   Value *m_value;
 };
 
-class ParamSpec : public ObjectBase
+class Accessor : public ObjectBase
 {
 public:
-  ParamSpec ();
+  Accessor ();
   void Ref (void) const;
   void Unref (void) const;
-  virtual ~ParamSpec ();
+  virtual ~Accessor ();
 
   /**
    * \param object the object instance to set the value in
@@ -97,15 +97,15 @@ Ptr<AttributeChecker>
 MakeSimpleAttributeChecker (void);
 
 template <typename T, typename U>
-Ptr<const ParamSpec>
-MakePtrParamSpec (Ptr<U> T::*memberVariable);
+Ptr<const Accessor>
+MakePtrAccessor (Ptr<U> T::*memberVariable);
 
 template <typename T, typename U>
-Ptr<const ParamSpec>
-MakePtrParamSpec (void (T::*setter) (Ptr<U>));
+Ptr<const Accessor>
+MakePtrAccessor (void (T::*setter) (Ptr<U>));
 template <typename T, typename U>
-Ptr<const ParamSpec>
-MakePtrParamSpec (Ptr<U> (T::*getter) (void) const);
+Ptr<const Accessor>
+MakePtrAccessor (Ptr<U> (T::*getter) (void) const);
 
 
 } // namespace ns3
@@ -227,15 +227,15 @@ Attribute::operator Ptr<T> ()
 }
 
 /********************************************************
- *              The ParamSpec associated to 
+ *              The Accessor associated to 
  *               PtrValue<T>
  ********************************************************/
 
 template <typename T, typename U>
-class PtrParamSpec : public ParamSpec
+class PtrAccessor : public Accessor
 {
 public:
-  virtual ~PtrParamSpec () {}
+  virtual ~PtrAccessor () {}
   virtual bool Set (ObjectBase * object, Attribute val) const {
       T *obj = dynamic_cast<T *> (object);
       if (obj == 0)
@@ -275,10 +275,10 @@ private:
 
 
 template <typename T, typename U>
-Ptr<const ParamSpec>
-MakePtrParamSpec (Ptr<U> T::*memberVariable)
+Ptr<const Accessor>
+MakePtrAccessor (Ptr<U> T::*memberVariable)
 {
-  struct MemberVariable : public PtrParamSpec<T,U>
+  struct MemberVariable : public PtrAccessor<T,U>
   {
     Ptr<U> T::*m_memberVariable;
     virtual MemberVariable *Copy (void) const {
@@ -292,14 +292,14 @@ MakePtrParamSpec (Ptr<U> T::*memberVariable)
     }
   } *spec = new MemberVariable ();
   spec->m_memberVariable = memberVariable;
-  return Ptr<const ParamSpec> (spec, false);
+  return Ptr<const Accessor> (spec, false);
 }
 
 template <typename T, typename U>
-Ptr<const ParamSpec>
-MakePtrParamSpec (void (T::*setter) (Ptr<U>))
+Ptr<const Accessor>
+MakePtrAccessor (void (T::*setter) (Ptr<U>))
 {
-  struct MemberMethod : public PtrParamSpec<T,U>
+  struct MemberMethod : public PtrAccessor<T,U>
   {
     void (T::*m_setter) (Ptr<U>);
     virtual MemberMethod *Copy (void) const {
@@ -314,14 +314,14 @@ MakePtrParamSpec (void (T::*setter) (Ptr<U>))
     }
   } *spec = new MemberMethod ();
   spec->m_setter = setter;
-  return Ptr<const ParamSpec> (spec, false);
+  return Ptr<const Accessor> (spec, false);
 }
 
 template <typename T, typename U>
-Ptr<const ParamSpec>
-MakePtrParamSpec (Ptr<U> (T::*getter) (void) const)
+Ptr<const Accessor>
+MakePtrAccessor (Ptr<U> (T::*getter) (void) const)
 {
-  struct MemberMethod : public PtrParamSpec<T,U>
+  struct MemberMethod : public PtrAccessor<T,U>
   {
     void (T::*m_getter) (Ptr<U>);
     virtual MemberMethod *Copy (void) const {
@@ -335,7 +335,7 @@ MakePtrParamSpec (Ptr<U> (T::*getter) (void) const)
     }
   } *spec = new MemberMethod ();
   spec->m_getter = getter;
-  return Ptr<const ParamSpec> (spec, false);
+  return Ptr<const Accessor> (spec, false);
 }
 
 template <typename T>

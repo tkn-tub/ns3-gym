@@ -24,12 +24,12 @@ private:
   uint64_t m_value;
 };
 
-class UintParamSpec : public ParamSpec {};
+class UintAccessor : public Accessor {};
 
 template <typename T1>
-Ptr<ParamSpec> MakeUintParamSpec (T1 a1);
+Ptr<Accessor> MakeUintAccessor (T1 a1);
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2);
+Ptr<Accessor> MakeUintAccessor (T1 a1, T2 a2);
 
 template <typename T>
 Ptr<AttributeChecker> MakeUintChecker (void);
@@ -41,16 +41,16 @@ Ptr<AttributeChecker> MakeUintChecker (uint64_t min, uint64_t max);
 namespace ns3 {
 
 template <typename T1>
-Ptr<ParamSpec> 
-MakeUintParamSpec (T1 a1)
+Ptr<Accessor> 
+MakeUintAccessor (T1 a1)
 {
-  return MakeParamSpecHelper<UintParamSpec,UintValue> (a1);
+  return MakeAccessorHelper<UintAccessor,UintValue> (a1);
 }
 
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeUintParamSpec (T1 a1, T2 a2)
+Ptr<Accessor> MakeUintAccessor (T1 a1, T2 a2)
 {
-  return MakeParamSpecHelper<UintParamSpec,UintValue> (a1, a2);
+  return MakeAccessorHelper<UintAccessor,UintValue> (a1, a2);
 }
 
 template <typename T>

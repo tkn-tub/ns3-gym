@@ -121,16 +121,16 @@ Attribute::Attribute (std::string value)
 {}
 
 
-ParamSpec::ParamSpec ()
+Accessor::Accessor ()
   : m_count (1)
 {}
 void 
-ParamSpec::Ref (void) const
+Accessor::Ref (void) const
 {
   m_count++;
 }
 void 
-ParamSpec::Unref (void) const
+Accessor::Unref (void) const
 {
   m_count--;
   if (m_count == 0)
@@ -138,7 +138,7 @@ ParamSpec::Unref (void) const
       delete this;
     }
 }
-ParamSpec::~ParamSpec ()
+Accessor::~Accessor ()
 {}
 
 AttributeChecker::AttributeChecker ()

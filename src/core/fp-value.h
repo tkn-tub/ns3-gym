@@ -25,12 +25,12 @@ private:
   double m_value;
 };
 
-class FpParamSpec : public ParamSpec {};
+class FpAccessor : public Accessor {};
 
 template <typename T1>
-Ptr<ParamSpec> MakeFpParamSpec (T1 a1);
+Ptr<Accessor> MakeFpAccessor (T1 a1);
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeFpParamSpec (T1 a1, T2 a2);
+Ptr<Accessor> MakeFpAccessor (T1 a1, T2 a2);
 
 template <typename T>
 Ptr<AttributeChecker> MakeFpChecker (void);
@@ -44,14 +44,14 @@ Ptr<AttributeChecker> MakeFpChecker (double min, double max);
 namespace ns3 {
 
 template <typename T1>
-Ptr<ParamSpec> MakeFpParamSpec (T1 a1)
+Ptr<Accessor> MakeFpAccessor (T1 a1)
 {
-  return MakeParamSpecHelper<FpParamSpec,FpValue> (a1);
+  return MakeAccessorHelper<FpAccessor,FpValue> (a1);
 }
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeFpParamSpec (T1 a1, T2 a2)
+Ptr<Accessor> MakeFpAccessor (T1 a1, T2 a2)
 {
-  return MakeParamSpecHelper<FpParamSpec,FpValue> (a1, a2);
+  return MakeAccessorHelper<FpAccessor,FpValue> (a1, a2);
 }
 
 template <typename T>

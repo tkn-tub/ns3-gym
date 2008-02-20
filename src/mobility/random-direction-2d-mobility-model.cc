@@ -43,15 +43,15 @@ RandomDirection2dMobilityModel::GetTypeId (void)
     .AddConstructor<RandomDirection2dMobilityModel> ()
     .AddParameter ("bounds", "The 2d bounding area",
                    Rectangle (-100, 100, -100, 100),
-                   MakeRectangleParamSpec (&RandomDirection2dMobilityModel::m_bounds),
+                   MakeRectangleAccessor (&RandomDirection2dMobilityModel::m_bounds),
                    MakeRectangleChecker ())
     .AddParameter ("speed", "A random variable to control the speed (m/s).",
                    UniformVariable (1.0, 2.0),
-                   MakeRandomVariableParamSpec (&RandomDirection2dMobilityModel::m_speed),
+                   MakeRandomVariableAccessor (&RandomDirection2dMobilityModel::m_speed),
                    MakeRandomVariableChecker ())
     .AddParameter ("pause", "A random variable to control the pause (s).",
                    ConstantVariable (2.0),
-                   MakeRandomVariableParamSpec (&RandomDirection2dMobilityModel::m_pause),
+                   MakeRandomVariableAccessor (&RandomDirection2dMobilityModel::m_pause),
                    MakeRandomVariableChecker ())
     ;
   return tid;

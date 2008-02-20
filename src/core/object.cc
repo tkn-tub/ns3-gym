@@ -58,13 +58,13 @@ public:
                      std::string help, 
                      uint32_t flags,
                      ns3::Attribute initialValue,
-                     ns3::Ptr<const ns3::ParamSpec> spec,
+                     ns3::Ptr<const ns3::Accessor> spec,
                      ns3::Ptr<const ns3::AttributeChecker> checker);
   uint32_t GetParametersN (uint16_t uid) const;
   std::string GetParameterName (uint16_t uid, uint32_t i) const;
   uint32_t GetParameterFlags (uint16_t uid, uint32_t i) const;
   ns3::Attribute GetParameterInitialValue (uint16_t uid, uint32_t i) const;
-  ns3::Ptr<const ns3::ParamSpec> GetParameterParamSpec (uint16_t uid, uint32_t i) const;
+  ns3::Ptr<const ns3::Accessor> GetParameterAccessor (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::AttributeChecker> GetParameterChecker (uint16_t uid, uint32_t i) const;
 private:
   struct ConstructorInformation {
@@ -76,7 +76,7 @@ private:
     std::string help;
     uint32_t flags;
     ns3::Attribute initialValue;
-    ns3::Ptr<const ns3::ParamSpec> param;
+    ns3::Ptr<const ns3::Accessor> param;
     ns3::Ptr<const ns3::AttributeChecker> checker;
   };
   struct IidInformation {
@@ -247,7 +247,7 @@ IidManager::AddParameter (uint16_t uid,
                           std::string help, 
                           uint32_t flags,
                           ns3::Attribute initialValue,
-                          ns3::Ptr<const ns3::ParamSpec> spec,
+                          ns3::Ptr<const ns3::Accessor> spec,
                           ns3::Ptr<const ns3::AttributeChecker> checker)
 {
   struct IidInformation *information = LookupInformation (uid);
@@ -298,8 +298,8 @@ IidManager::GetParameterInitialValue (uint16_t uid, uint32_t i) const
   NS_ASSERT (i < information->parameters.size ());
   return information->parameters[i].initialValue;
 }
-ns3::Ptr<const ns3::ParamSpec>
-IidManager::GetParameterParamSpec (uint16_t uid, uint32_t i) const
+ns3::Ptr<const ns3::Accessor>
+IidManager::GetParameterAccessor (uint16_t uid, uint32_t i) const
 {
   struct IidInformation *information = LookupInformation (uid);
   NS_ASSERT (i < information->parameters.size ());
@@ -446,7 +446,7 @@ TypeId::LookupParameterByName (std::string name, struct TypeId::ParameterInfo *i
         std::string paramName = GetParameterName (i);
         if (paramName == name)
           {
-            info->spec = GetParameterParamSpec (i);
+            info->spec = GetParameterAccessor (i);
             info->flags = GetParameterFlags (i);
             info->initialValue = tid.GetParameterInitialValue (i);
             info->checker = tid.GetParameterChecker (i);
@@ -469,7 +469,7 @@ TypeId::LookupParameterByPosition (uint32_t i, struct TypeId::ParameterInfo *inf
       {
         if (cur == i)
           {
-            info->spec = tid.GetParameterParamSpec (j);
+            info->spec = tid.GetParameterAccessor (j);
             info->flags = tid.GetParameterFlags (j);
             info->initialValue = tid.GetParameterInitialValue (j);
             info->checker = tid.GetParameterChecker (j);
@@ -544,7 +544,7 @@ TypeId
 TypeId::AddParameter (std::string name,
                       std::string help, 
                       Attribute initialValue,
-                      Ptr<const ParamSpec> param,
+                      Ptr<const Accessor> param,
                       Ptr<const AttributeChecker> checker)
 {
   Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, ATTR_SGC, initialValue, param, checker);
@@ -556,7 +556,7 @@ TypeId::AddParameter (std::string name,
                       std::string help, 
                       uint32_t flags,
                       Attribute initialValue,
-                      Ptr<const ParamSpec> param,
+                      Ptr<const Accessor> param,
                       Ptr<const AttributeChecker> checker)
 {
   Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, flags, initialValue, param, checker);
@@ -609,11 +609,11 @@ TypeId::GetParameterInitialValue (uint32_t i) const
   Attribute value = Singleton<IidManager>::Get ()->GetParameterInitialValue (m_tid, i);
   return value;
 }
-Ptr<const ParamSpec>
-TypeId::GetParameterParamSpec (uint32_t i) const
+Ptr<const Accessor>
+TypeId::GetParameterAccessor (uint32_t i) const
 {
   // Used exclusively by the Object class.
-  Ptr<const ParamSpec> param = Singleton<IidManager>::Get ()->GetParameterParamSpec (m_tid, i);
+  Ptr<const Accessor> param = Singleton<IidManager>::Get ()->GetParameterAccessor (m_tid, i);
   return param;
 }
 uint32_t 
@@ -777,7 +777,7 @@ Parameters::LookupParameterFullNameByChecker (Ptr<const AttributeChecker> checke
             }
         }
     }
-  NS_FATAL_ERROR ("Could not find requested ParamSpec.");
+  NS_FATAL_ERROR ("Could not find requested Accessor.");
   // quiet compiler.
   return "";
 }
@@ -896,7 +896,7 @@ Object::Construct (const Parameters &parameters)
     NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetParametersN ());
     for (uint32_t i = 0; i < tid.GetParametersN (); i++)
       {
-        Ptr<const ParamSpec> paramSpec = tid.GetParameterParamSpec (i);
+        Ptr<const Accessor> paramSpec = tid.GetParameterAccessor (i);
         Attribute initial = tid.GetParameterInitialValue (i);
         Ptr<const AttributeChecker> checker = tid.GetParameterChecker (i);
         NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
@@ -950,7 +950,7 @@ Object::Construct (const Parameters &parameters)
   NotifyConstructionCompleted ();
 }
 bool
-Object::DoSet (Ptr<const ParamSpec> spec, Attribute initialValue, 
+Object::DoSet (Ptr<const Accessor> spec, Attribute initialValue, 
                Ptr<const AttributeChecker> checker, Attribute value)
 {
   bool ok = checker->Check (value);

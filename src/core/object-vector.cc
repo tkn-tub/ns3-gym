@@ -74,13 +74,13 @@ ObjectVectorValue::DeserializeFromString (std::string value, Ptr<const Attribute
 }
 
 bool 
-ObjectVectorParamSpec::Set (ObjectBase * object, Attribute value) const
+ObjectVectorAccessor::Set (ObjectBase * object, Attribute value) const
 {
   // not allowed.
   return false;
 }
 bool 
-ObjectVectorParamSpec::Get (const ObjectBase * object, Attribute value) const
+ObjectVectorAccessor::Get (const ObjectBase * object, Attribute value) const
 {
   ObjectVectorValue *v = value.DynCast<ObjectVectorValue *> ();
   if (v == 0)

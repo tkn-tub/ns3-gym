@@ -666,12 +666,12 @@ std::istream &operator >> (std::istream &os, RandomVariable &var);
 
 
 class RandomVariableValue : public Value {};
-class RandomVariableParamSpec : public ParamSpec {};
+class RandomVariableAccessor : public Accessor {};
 
 template <typename T1>
-Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1);
+Ptr<Accessor> MakeRandomVariableAccessor (T1 a1);
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2);
+Ptr<Accessor> MakeRandomVariableAccessor (T1 a1, T2 a2);
 
 Ptr<AttributeChecker> MakeRandomVariableChecker (void);
 
@@ -681,17 +681,17 @@ Ptr<AttributeChecker> MakeRandomVariableChecker (void);
 namespace ns3 {
 
 template <typename T1>
-Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1)
+Ptr<Accessor> MakeRandomVariableAccessor (T1 a1)
 {
-  return MakeClassValueHelperParamSpec<RandomVariable, 
-    RandomVariableValue, RandomVariableParamSpec> (a1);
+  return MakeClassValueHelperAccessor<RandomVariable, 
+    RandomVariableValue, RandomVariableAccessor> (a1);
 }
 
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeRandomVariableParamSpec (T1 a1, T2 a2)
+Ptr<Accessor> MakeRandomVariableAccessor (T1 a1, T2 a2)
 {
-  return MakeClassValueHelperParamSpec<RandomVariable, 
-    RandomVariableValue,RandomVariableParamSpec> (a1, a2);
+  return MakeClassValueHelperAccessor<RandomVariable, 
+    RandomVariableValue,RandomVariableAccessor> (a1, a2);
 }
 
 

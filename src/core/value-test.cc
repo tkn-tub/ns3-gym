@@ -11,10 +11,10 @@
 
 namespace ns3 {
 
-class ParamSpecTest : public Test
+class AccessorTest : public Test
 {
 public:
-  ParamSpecTest ();
+  AccessorTest ();
   virtual bool RunTests (void);
 private:
 };
@@ -30,7 +30,7 @@ public:
   }
 };
 
-class ParamSpecObjectTest : public Object
+class AccessorObjectTest : public Object
 {
 public:
   enum TestEnum {
@@ -39,60 +39,60 @@ public:
     TEST_C
   };
   static TypeId GetTypeId (void) {
-    static TypeId tid = TypeId ("ParamSpecObjectTest")
+    static TypeId tid = TypeId ("AccessorObjectTest")
       .SetParent<Object> ()
       .AddParameter ("TestBoolName", "help text",
 		     BooleanValue (false),
-		     MakeBooleanParamSpec (&ParamSpecObjectTest::m_boolTest),
+		     MakeBooleanAccessor (&AccessorObjectTest::m_boolTest),
 		     MakeBooleanChecker ())
       .AddParameter ("TestBoolA", "help text",
 		     BooleanValue (false),
-		     MakeBooleanParamSpec (&ParamSpecObjectTest::DoSetTestB,
-					   &ParamSpecObjectTest::DoGetTestB),
+		     MakeBooleanAccessor (&AccessorObjectTest::DoSetTestB,
+					   &AccessorObjectTest::DoGetTestB),
 		     MakeBooleanChecker ())
       .AddParameter ("TestPtr", "help text", 
 		     Ptr<Derived> (0),
-		     MakePtrParamSpec (&ParamSpecObjectTest::m_derived),
+		     MakePtrAccessor (&AccessorObjectTest::m_derived),
 		     MakePtrChecker<Derived> ())
       .AddParameter ("TestInt16", "help text",
 		     IntValue (-2),
-		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16),
+		     MakeIntAccessor (&AccessorObjectTest::m_int16),
 		     MakeIntChecker<int16_t> ())
       .AddParameter ("TestInt16WithBounds", "help text",
 		     IntValue (-2),
-		     MakeIntParamSpec (&ParamSpecObjectTest::m_int16WithBounds),
+		     MakeIntAccessor (&AccessorObjectTest::m_int16WithBounds),
 		     MakeIntChecker (-5, 10))
       .AddParameter ("TestInt16SetGet", "help text",
 		     IntValue (6),
-		     MakeIntParamSpec (&ParamSpecObjectTest::DoSetInt16,
-				       &ParamSpecObjectTest::DoGetInt16),
+		     MakeIntAccessor (&AccessorObjectTest::DoSetInt16,
+				       &AccessorObjectTest::DoGetInt16),
 		     MakeIntChecker<int16_t> ())
       .AddParameter ("TestUint8", "help text",
 		     UintValue (1),
-		     MakeUintParamSpec (&ParamSpecObjectTest::m_uint8),
+		     MakeUintAccessor (&AccessorObjectTest::m_uint8),
 		     MakeUintChecker<uint8_t> ())
       .AddParameter ("TestEnum", "help text",
 		     EnumValue (TEST_A),
-		     MakeEnumParamSpec (&ParamSpecObjectTest::m_enum),
+		     MakeEnumAccessor (&AccessorObjectTest::m_enum),
 		     MakeEnumChecker (TEST_A, "TestA",
 				      TEST_B, "TestB",
 				      TEST_C, "TestC"))
       .AddParameter ("TestRandom", "help text",
 		     ConstantVariable (1.0),
-		     MakeRandomVariableParamSpec (&ParamSpecObjectTest::m_random),
+		     MakeRandomVariableAccessor (&AccessorObjectTest::m_random),
 		     MakeRandomVariableChecker ())
       .AddParameter ("TestFloat", "help text",
 		     FpValue (-1.1),
-		     MakeFpParamSpec (&ParamSpecObjectTest::m_float),
+		     MakeFpAccessor (&AccessorObjectTest::m_float),
 		     MakeFpChecker<float> ())
       .AddParameter ("TestVector1", "help text",
 		     ObjectVector (),
-		     MakeObjectVectorParamSpec (&ParamSpecObjectTest::m_vector1),
+		     MakeObjectVectorAccessor (&AccessorObjectTest::m_vector1),
 		     MakeObjectVectorChecker ())
       .AddParameter ("TestVector2", "help text",
 		     ObjectVector (),
-		     MakeObjectVectorParamSpec (&ParamSpecObjectTest::DoGetVectorN,
-						&ParamSpecObjectTest::DoGetVector),
+		     MakeObjectVectorAccessor (&AccessorObjectTest::DoGetVectorN,
+						&AccessorObjectTest::DoGetVector),
 		     MakeObjectVectorChecker ())
       ;
         
@@ -158,20 +158,20 @@ private:
     NS_TEST_ASSERT_EQUAL (got.Get (), expected.Get ());	\
   }
 
-NS_OBJECT_ENSURE_REGISTERED (ParamSpecObjectTest);
+NS_OBJECT_ENSURE_REGISTERED (AccessorObjectTest);
 
-ParamSpecTest::ParamSpecTest ()
-  : Test ("ParamSpec")
+AccessorTest::AccessorTest ()
+  : Test ("Accessor")
 {}
 bool 
-ParamSpecTest::RunTests (void)
+AccessorTest::RunTests (void)
 {
   bool result = true;
 
   Parameters params;
-  Ptr<ParamSpecObjectTest> p;
-  NS_TEST_ASSERT (params.Set ("ParamSpecObjectTest::TestBoolName", "false"));
-  p = CreateObject<ParamSpecObjectTest> (params);
+  Ptr<AccessorObjectTest> p;
+  NS_TEST_ASSERT (params.Set ("AccessorObjectTest::TestBoolName", "false"));
+  p = CreateObject<AccessorObjectTest> (params);
   CHECK_GET_STR (p, "TestBoolName", "false");
   CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, false);
 
@@ -183,11 +183,11 @@ ParamSpecTest::RunTests (void)
   CHECK_GET_STR (p, "TestBoolName", "false");
   CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, false);
 
-  p = CreateObjectWith<ParamSpecObjectTest> ("TestBoolName", "true");
+  p = CreateObjectWith<AccessorObjectTest> ("TestBoolName", "true");
   CHECK_GET_STR (p, "TestBoolName", "true");
   CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, true);
 
-  p = CreateObjectWith<ParamSpecObjectTest> ("TestBoolName", BooleanValue (true));
+  p = CreateObjectWith<AccessorObjectTest> ("TestBoolName", BooleanValue (true));
   CHECK_GET_STR (p, "TestBoolName", "true");
   CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, true);
 
@@ -208,10 +208,10 @@ ParamSpecTest::RunTests (void)
   NS_TEST_ASSERT (stored == derived);
   Ptr<Object> storedBase = p->Get ("TestPtr");
   NS_TEST_ASSERT (stored == storedBase);
-  Ptr<ParamSpecObjectTest> x = p->Get ("TestPtr");
+  Ptr<AccessorObjectTest> x = p->Get ("TestPtr");
   NS_TEST_ASSERT (x == 0);
 
-  p = CreateObjectWith<ParamSpecObjectTest> ("TestPtr", Create<Derived> ());
+  p = CreateObjectWith<AccessorObjectTest> ("TestPtr", Create<Derived> ());
   NS_TEST_ASSERT (p != 0);
   derived = 0;
   derived = p->Get ("TestPtr");
@@ -290,19 +290,19 @@ ParamSpecTest::RunTests (void)
   CHECK_GET_PARAM (p, "TestFloat", FpValue, (float)+2.3);
 
   CHECK_GET_STR (p, "TestEnum", "TestA");
-  CHECK_GET_PARAM (p, "TestEnum", EnumValue, ParamSpecObjectTest::TEST_A);
-  NS_TEST_ASSERT (p->Set ("TestEnum", EnumValue (ParamSpecObjectTest::TEST_C)));
+  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AccessorObjectTest::TEST_A);
+  NS_TEST_ASSERT (p->Set ("TestEnum", EnumValue (AccessorObjectTest::TEST_C)));
   CHECK_GET_STR (p, "TestEnum", "TestC");
-  CHECK_GET_PARAM (p, "TestEnum", EnumValue, ParamSpecObjectTest::TEST_C);
+  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AccessorObjectTest::TEST_C);
   NS_TEST_ASSERT (p->Set ("TestEnum", "TestB"));
   CHECK_GET_STR (p, "TestEnum", "TestB");
-  CHECK_GET_PARAM (p, "TestEnum", EnumValue, ParamSpecObjectTest::TEST_B);
+  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AccessorObjectTest::TEST_B);
   NS_TEST_ASSERT (!p->Set ("TestEnum", "TestD"));
   CHECK_GET_STR (p, "TestEnum", "TestB");
-  CHECK_GET_PARAM (p, "TestEnum", EnumValue, ParamSpecObjectTest::TEST_B);
+  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AccessorObjectTest::TEST_B);
   NS_TEST_ASSERT (!p->Set ("TestEnum", EnumValue (5)));
   CHECK_GET_STR (p, "TestEnum", "TestB");
-  CHECK_GET_PARAM (p, "TestEnum", EnumValue, ParamSpecObjectTest::TEST_B);
+  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AccessorObjectTest::TEST_B);
 
   RandomVariable ran = p->Get ("TestRandom");
   NS_TEST_ASSERT (p->Set ("TestRandom", UniformVariable (0.0, 1.0)));
@@ -346,11 +346,11 @@ ParamSpecTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "false");
 
   Parameters::GetGlobal ()->Set ("TestBool", "true");
-  p = CreateObjectWith<ParamSpecObjectTest> ();
+  p = CreateObjectWith<AccessorObjectTest> ();
   NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "true");
 
   Parameters::GetGlobal ()->Set ("TestBool", "false");
-  p = CreateObjectWith<ParamSpecObjectTest> ();
+  p = CreateObjectWith<AccessorObjectTest> ();
   NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "false");
 #endif
   return result;
@@ -358,7 +358,7 @@ ParamSpecTest::RunTests (void)
 
 
 
-static ParamSpecTest g_parameterTest;
+static AccessorTest g_parameterTest;
 
 } // namespace ns3
 

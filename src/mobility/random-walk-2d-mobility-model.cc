@@ -40,34 +40,34 @@ RandomWalk2dMobilityModel::GetTypeId (void)
     .AddParameter ("bounds",
                    "Bounds of the area to cruise.",
                    Rectangle (0.0, 0.0, 100.0, 100.0),
-                   MakeRectangleParamSpec (&RandomWalk2dMobilityModel::m_bounds),
+                   MakeRectangleAccessor (&RandomWalk2dMobilityModel::m_bounds),
                    MakeRectangleChecker ())
     .AddParameter ("time",
                    "Change current direction and speed after moving for this delay.",
                    Seconds (1.0),
-                   MakeTimeParamSpec (&RandomWalk2dMobilityModel::m_modeTime),
+                   MakeTimeAccessor (&RandomWalk2dMobilityModel::m_modeTime),
                    MakeTimeChecker ())
     .AddParameter ("distance",
                    "Change current direction and speed after moving for this distance.",
                    Seconds (1.0),
-                   MakeTimeParamSpec (&RandomWalk2dMobilityModel::m_modeTime),
+                   MakeTimeAccessor (&RandomWalk2dMobilityModel::m_modeTime),
                    MakeTimeChecker ())
     .AddParameter ("mode",
                    "The mode indicates the condition used to "
                    "change the current speed and direction",
                    EnumValue (RandomWalk2dMobilityModel::MODE_DISTANCE),
-                   MakeEnumParamSpec (&RandomWalk2dMobilityModel::m_mode),
+                   MakeEnumAccessor (&RandomWalk2dMobilityModel::m_mode),
                    MakeEnumChecker (RandomWalk2dMobilityModel::MODE_DISTANCE, "Distance",
                                     RandomWalk2dMobilityModel::MODE_TIME, "Time"))
     .AddParameter ("direction",
                    "A random variable used to pick the direction (gradients).",
                    UniformVariable (0.0, 6.283184),
-                   MakeRandomVariableParamSpec (&RandomWalk2dMobilityModel::m_direction),
+                   MakeRandomVariableAccessor (&RandomWalk2dMobilityModel::m_direction),
                    MakeRandomVariableChecker ())
     .AddParameter ("speed",
                    "A random variable used to pick the speed (m/s).",
                    UniformVariable (2.0, 4.0),
-                   MakeRandomVariableParamSpec (&RandomWalk2dMobilityModel::m_speed),
+                   MakeRandomVariableAccessor (&RandomWalk2dMobilityModel::m_speed),
                    MakeRandomVariableChecker ());
   return tid;
 }

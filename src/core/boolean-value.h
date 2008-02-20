@@ -24,14 +24,14 @@ private:
   bool m_value;
 };
 
-class BooleanParamSpec : public ParamSpec {};
+class BooleanAccessor : public Accessor {};
 
 
 template <typename T1>
-Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1);
+Ptr<Accessor> MakeBooleanAccessor (T1 a1);
 
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, T2 a2);
+Ptr<Accessor> MakeBooleanAccessor (T1 a1, T2 a2);
 
 Ptr<AttributeChecker> MakeBooleanChecker (void);
 
@@ -42,15 +42,15 @@ Ptr<AttributeChecker> MakeBooleanChecker (void);
 namespace ns3 {
 
 template <typename T1>
-Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1)
+Ptr<Accessor> MakeBooleanAccessor (T1 a1)
 {
-  return MakeParamSpecHelper<BooleanParamSpec,BooleanValue> (a1);
+  return MakeAccessorHelper<BooleanAccessor,BooleanValue> (a1);
 }
 
 template <typename T1, typename T2>
-Ptr<ParamSpec> MakeBooleanParamSpec (T1 a1, T2 a2)
+Ptr<Accessor> MakeBooleanAccessor (T1 a1, T2 a2)
 {
-  return MakeParamSpecHelper<BooleanParamSpec,BooleanValue> (a1, a2);
+  return MakeAccessorHelper<BooleanAccessor,BooleanValue> (a1, a2);
 }
 
 } // namespace ns3
