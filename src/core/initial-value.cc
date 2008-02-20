@@ -4,6 +4,7 @@
 #include "int-value.h"
 #include "fp-value.h"
 #include "enum-value.h"
+#include "object.h"
 
 namespace ns3 {
 
