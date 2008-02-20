@@ -29,10 +29,10 @@ int main (int argc, char *argv[])
   // the x interval between each object is 5 meters
   // and the y interval between each object is 20 meters
   mobility.SetPositionAllocator ("GridPositionAllocator",
-                                 "MinX", FpValue (-100.0),
-                                 "MinY", FpValue (-100.0),
-                                 "DeltaX", FpValue (5.0),
-                                 "DeltaY", FpValue (20.0),
+                                 "MinX", Double (-100.0),
+                                 "MinY", Double (-100.0),
+                                 "DeltaX", Double (5.0),
+                                 "DeltaY", Double (20.0),
                                  "GridWidth", Uinteger (20),
                                  "LayoutType", "RowFirst");
   // each object will be attached a static position.

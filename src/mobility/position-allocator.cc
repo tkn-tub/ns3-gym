@@ -58,21 +58,21 @@ GridPositionAllocator::GetTypeId (void)
                    MakeIntegerAccessor (&GridPositionAllocator::m_n),
                    MakeIntegerChecker<uint32_t> ())
     .AddParameter ("MinX", "The x coordinate where the grid starts.",
-                   FpValue (1.0),
-                   MakeFpAccessor (&GridPositionAllocator::m_xMin),
-                   MakeFpChecker<double> ())
+                   Double (1.0),
+                   MakeDoubleAccessor (&GridPositionAllocator::m_xMin),
+                   MakeDoubleChecker<double> ())
     .AddParameter ("MinY", "The y coordinate where the grid starts.",
-                   FpValue (0.0),
-                   MakeFpAccessor (&GridPositionAllocator::m_yMin),
-                   MakeFpChecker<double> ())
+                   Double (0.0),
+                   MakeDoubleAccessor (&GridPositionAllocator::m_yMin),
+                   MakeDoubleChecker<double> ())
     .AddParameter ("DeltaX", "The x space between objects.",
-                   FpValue (1.0),
-                   MakeFpAccessor (&GridPositionAllocator::m_deltaX),
-                   MakeFpChecker<double> ())
+                   Double (1.0),
+                   MakeDoubleAccessor (&GridPositionAllocator::m_deltaX),
+                   MakeDoubleChecker<double> ())
     .AddParameter ("DeltaY", "The y space between objects.",
-                   FpValue (1.0),
-                   MakeFpAccessor (&GridPositionAllocator::m_deltaY),
-                   MakeFpChecker<double> ())
+                   Double (1.0),
+                   MakeDoubleAccessor (&GridPositionAllocator::m_deltaY),
+                   MakeDoubleChecker<double> ())
     .AddParameter ("LayoutType", "The type of layout.",
                    Enum (ROW_FIRST),
                    MakeEnumAccessor (&GridPositionAllocator::m_layoutType),
@@ -159,14 +159,14 @@ RandomDiscPositionAllocator::GetTypeId (void)
                    MakeRandomVariableChecker ())
     .AddParameter ("X",
                    "The x coordinate of the center of the random position disc.",
-                   FpValue (0.0),
-                   MakeFpAccessor (&RandomDiscPositionAllocator::m_x),
-                   MakeFpChecker<double> ())
+                   Double (0.0),
+                   MakeDoubleAccessor (&RandomDiscPositionAllocator::m_x),
+                   MakeDoubleChecker<double> ())
     .AddParameter ("Y",
                    "The y coordinate of the center of the random position disc.",
-                   FpValue (0.0),
-                   MakeFpAccessor (&RandomDiscPositionAllocator::m_y),
-                   MakeFpChecker<double> ())
+                   Double (0.0),
+                   MakeDoubleAccessor (&RandomDiscPositionAllocator::m_y),
+                   MakeDoubleChecker<double> ())
     ;
   return tid;
 }   

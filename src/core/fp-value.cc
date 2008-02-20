@@ -4,62 +4,42 @@
 
 namespace ns3 {
 
-FpValue::FpValue (double value)
+Double::Double ()
+{}
+Double::Double (double value)
   : m_value (value)
 {}
-Attribute
-FpValue::Copy (void) const
-{
-  return Attribute::Create<FpValue> (*this);
-}
-
 void 
-FpValue::Set (double value)
+Double::Set (double value)
 {
   m_value = value;
 }
 double 
-FpValue::Get (void) const
+Double::Get (void) const
 {
   return m_value;
 }
-std::string 
-FpValue::SerializeToString (Ptr<const AttributeChecker> checker) const
+Double::operator double () const
 {
-  std::ostringstream oss;
-  oss << m_value;
-  return oss.str ();
+  return m_value;
 }
-bool 
-FpValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
+std::ostream & operator << (std::ostream &os, const Double &value)
+{
+  os << value.Get ();
+  return os;
+}
+std::istream & operator >> (std::istream &is, Double &value)
 {
   double v;
-  std::istringstream iss;
-  iss.str (value);
-  iss >> v;
-  bool ok = !iss.bad () && !iss.fail ();
-  if (ok)
-    {
-      m_value = v;
-    }
-  return ok;
+  is >> v;
+  value.Set (v);
+  return is;
 }
 
-FpValue::FpValue (Attribute value)
-{
-  const FpValue *v = value.DynCast<const FpValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("assigning non-Fp value to Fp value.");
-    }
-  m_value = v->m_value;
-}
-FpValue::operator Attribute () const
-{
-  return Attribute::Create<FpValue> (*this);
-}
+ATTRIBUTE_VALUE_IMPLEMENT (Double);
+  ATTRIBUTE_CONVERTER_IMPLEMENT (Double);
 
-Ptr<const AttributeChecker> MakeFpChecker (double min, double max)
+Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max)
 {
   struct Checker : public AttributeChecker
   {
@@ -67,7 +47,7 @@ Ptr<const AttributeChecker> MakeFpChecker (double min, double max)
       : m_minValue (minValue),
       m_maxValue (maxValue) {}
     virtual bool Check (Attribute value) const {
-      const FpValue *v = value.DynCast<const FpValue *> ();
+      const DoubleValue *v = value.DynCast<const DoubleValue *> ();
       if (v == 0)
 	{
 	  return false;

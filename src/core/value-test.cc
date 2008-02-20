@@ -82,9 +82,9 @@ public:
 		     MakeRandomVariableAccessor (&AccessorObjectTest::m_random),
 		     MakeRandomVariableChecker ())
       .AddParameter ("TestFloat", "help text",
-		     FpValue (-1.1),
-		     MakeFpAccessor (&AccessorObjectTest::m_float),
-		     MakeFpChecker<float> ())
+		     Double (-1.1),
+		     MakeDoubleAccessor (&AccessorObjectTest::m_float),
+		     MakeDoubleChecker<float> ())
       .AddParameter ("TestVector1", "help text",
 		     ObjectVector (),
 		     MakeObjectVectorAccessor (&AccessorObjectTest::m_vector1),
@@ -285,8 +285,8 @@ AccessorTest::RunTests (void)
   CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
 
   CHECK_GET_STR (p, "TestFloat", "-1.1");
-  NS_TEST_ASSERT (p->Set ("TestFloat", FpValue ((float)+2.3)));
-  CHECK_GET_PARAM (p, "TestFloat", FpValue, (float)+2.3);
+  NS_TEST_ASSERT (p->Set ("TestFloat", Double ((float)+2.3)));
+  CHECK_GET_PARAM (p, "TestFloat", Double, (float)+2.3);
 
   CHECK_GET_STR (p, "TestEnum", "TestA");
   CHECK_GET_PARAM (p, "TestEnum", Enum, AccessorObjectTest::TEST_A);
