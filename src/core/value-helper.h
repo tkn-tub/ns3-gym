@@ -83,7 +83,7 @@
 #define ATTRIBUTE_CHECKER_IMPLEMENT(type)				\
   Ptr<const AttributeChecker> Make##type##Checker (void)		\
   {									\
-    return MakeSimpleAttributeChecker<type##Value> ();				\
+    return MakeSimpleAttributeChecker<type##Value> ();			\
   }									\
 
 #define ATTRIBUTE_CONVERTER_IMPLEMENT(type)				\
