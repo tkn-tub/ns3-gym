@@ -42,11 +42,11 @@ public:
     static TypeId tid = TypeId ("AccessorObjectTest")
       .SetParent<Object> ()
       .AddParameter ("TestBoolName", "help text",
-		     BooleanValue (false),
+		     Boolean (false),
 		     MakeBooleanAccessor (&AccessorObjectTest::m_boolTest),
 		     MakeBooleanChecker ())
       .AddParameter ("TestBoolA", "help text",
-		     BooleanValue (false),
+		     Boolean (false),
 		     MakeBooleanAccessor (&AccessorObjectTest::DoSetTestB,
 					   &AccessorObjectTest::DoGetTestB),
 		     MakeBooleanChecker ())
@@ -172,31 +172,31 @@ AccessorTest::RunTests (void)
   NS_TEST_ASSERT (params.Set ("AccessorObjectTest::TestBoolName", "false"));
   p = CreateObject<AccessorObjectTest> (params);
   CHECK_GET_STR (p, "TestBoolName", "false");
-  CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, false);
+  CHECK_GET_PARAM (p, "TestBoolName", Boolean, false);
 
   NS_TEST_ASSERT (p->Set ("TestBoolName", "true"));
   CHECK_GET_STR (p, "TestBoolName", "true");
-  CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, true);
+  CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
 
-  NS_TEST_ASSERT (p->Set ("TestBoolName", BooleanValue (false)));
+  NS_TEST_ASSERT (p->Set ("TestBoolName", Boolean (false)));
   CHECK_GET_STR (p, "TestBoolName", "false");
-  CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, false);
+  CHECK_GET_PARAM (p, "TestBoolName", Boolean, false);
 
   p = CreateObjectWith<AccessorObjectTest> ("TestBoolName", "true");
   CHECK_GET_STR (p, "TestBoolName", "true");
-  CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, true);
+  CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
 
-  p = CreateObjectWith<AccessorObjectTest> ("TestBoolName", BooleanValue (true));
+  p = CreateObjectWith<AccessorObjectTest> ("TestBoolName", Boolean (true));
   CHECK_GET_STR (p, "TestBoolName", "true");
-  CHECK_GET_PARAM (p, "TestBoolName", BooleanValue, true);
+  CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
 
   NS_TEST_ASSERT (p->Set ("TestBoolA", "false"));
   CHECK_GET_STR (p, "TestBoolA", "false");
-  CHECK_GET_PARAM (p, "TestBoolA", BooleanValue, false);
+  CHECK_GET_PARAM (p, "TestBoolA", Boolean, false);
 
   NS_TEST_ASSERT (p->Set ("TestBoolA", "true"));
   CHECK_GET_STR (p, "TestBoolA", "true");
-  CHECK_GET_PARAM (p, "TestBoolA", BooleanValue, true);
+  CHECK_GET_PARAM (p, "TestBoolA", Boolean, true);
 
 
   Ptr<Derived> derived = p->Get ("TestPtr");

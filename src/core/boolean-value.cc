@@ -3,77 +3,64 @@
 
 namespace ns3 {
 
-BooleanValue::BooleanValue (bool value)
+Boolean::Boolean ()
+  : m_value (false)
+{}
+Boolean::Boolean (bool value)
   : m_value (value)
 {}
 void 
-BooleanValue::Set (bool value)
+Boolean::Set (bool value)
 {
   m_value = value;
 }
 bool 
-BooleanValue::Get (void) const
+Boolean::Get (void) const
 {
   return m_value;
 }
-Attribute
-BooleanValue::Copy (void) const
+Boolean::operator bool () const
 {
-  return Attribute::Create<BooleanValue> (*this);
-}
-std::string 
-BooleanValue::SerializeToString (Ptr<const AttributeChecker> checker) const
-{
-  std::string value;
-  if (m_value)
-    {
-      value = "true";
-    }
-  else
-    {
-      value = "false";
-    }
-  return value;
-}
-bool 
-BooleanValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
-{
-  if (value == "true" ||
-      value == "1" ||
-      value == "t")
-    {
-      m_value = true;
-      return true;
-    }
-  else if (value == "false" ||
-	   value == "0" ||
-	   value == "f")
-    {
-      m_value = false;
-      return true;
-    }
-  else
-    {
-      return false;
-    }  
-}
-BooleanValue::BooleanValue (Attribute value)
-{
-  const BooleanValue *v = value.DynCast<const BooleanValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("assigning non-Boolean value to Boolean value.");
-    }
-  m_value = v->m_value;
-}
-BooleanValue::operator Attribute () const
-{
-  return Attribute::Create<BooleanValue> (*this);
+  return m_value;
 }
 
-Ptr<const AttributeChecker> MakeBooleanChecker (void)
+std::ostream & operator << (std::ostream &os, const Boolean &value)
 {
-  return MakeSimpleAttributeChecker<BooleanValue> ();
+  if (value.Get ())
+    {
+      os << "true";
+    }
+  else
+    {
+      os << "false";
+    }
+  return os;
 }
+std::istream & operator >> (std::istream &is, Boolean &value)
+{
+  std::string v;
+  is >> v;
+  if (v == "true" ||
+      v == "1" ||
+      v == "t")
+    {
+      value.Set (true);
+    }
+  else if (v == "false" ||
+	   v == "0" ||
+	   v == "f")
+    {
+      value.Set (false);
+    }
+  else
+    {
+      is.setstate (std::ios_base::badbit);
+    }  
+  return is;
+}
+
+ATTRIBUTE_CONVERTER_IMPLEMENT (Boolean);
+ATTRIBUTE_VALUE_IMPLEMENT (Boolean);
+ATTRIBUTE_CHECKER_IMPLEMENT (Boolean);
 
 } // namespace ns3
