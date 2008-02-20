@@ -96,8 +96,8 @@ InitialValue::GetVector (void)
 namespace {
 
 static ns3::InitialValue g_uint = ns3::InitialValue ("TestUint", "help text",
-						     ns3::UintValue (10),
-						     ns3::MakeUintChecker<uint32_t> ());
+						     ns3::Uinteger (10),
+						     ns3::MakeUintegerChecker<uint32_t> ());
 
 }
 
@@ -120,7 +120,7 @@ InitialValueTests::RunTests (void)
 {
   bool result = true;
 
-  NS_TEST_ASSERT_EQUAL (10, UintValue (g_uint.GetValue ()).Get ());
+  NS_TEST_ASSERT_EQUAL (10, Uinteger (g_uint.GetValue ()).Get ());
 
   return result;
 }

@@ -54,9 +54,9 @@ GridPositionAllocator::GetTypeId (void)
     .SetGroupName ("Mobility")
     .AddConstructor<GridPositionAllocator> ()
     .AddParameter ("GridWidth", "The number of objects layed out on a line.",
-                   IntValue (10),
-                   MakeIntAccessor (&GridPositionAllocator::m_n),
-                   MakeIntChecker<uint32_t> ())
+                   Integer (10),
+                   MakeIntegerAccessor (&GridPositionAllocator::m_n),
+                   MakeIntegerChecker<uint32_t> ())
     .AddParameter ("MinX", "The x coordinate where the grid starts.",
                    FpValue (1.0),
                    MakeFpAccessor (&GridPositionAllocator::m_xMin),

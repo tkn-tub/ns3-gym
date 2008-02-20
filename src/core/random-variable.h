@@ -72,7 +72,7 @@ public:
    * \brief Returns a random integer integer from the underlying distribution
    * \return  Integer cast of ::GetValue()
    */
-  uint32_t GetIntValue (void) const;
+  uint32_t GetInteger (void) const;
   
   /**
    * \brief Get the internal state of the RNG

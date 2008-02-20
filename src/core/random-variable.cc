@@ -52,7 +52,7 @@ public:
   RandomVariableBase (const RandomVariableBase &o);
   virtual ~RandomVariableBase();
   virtual double  GetValue() = 0;
-  virtual uint32_t GetIntValue();
+  virtual uint32_t GetInteger();
   virtual RandomVariableBase*   Copy(void) const = 0;
   virtual void GetSeed(uint32_t seed[6]);
 
@@ -127,7 +127,7 @@ RandomVariableBase::~RandomVariableBase()
   delete m_generator;
 }
 
-uint32_t RandomVariableBase::GetIntValue() 
+uint32_t RandomVariableBase::GetInteger() 
 {
   return (uint32_t)GetValue();
 }
@@ -269,9 +269,9 @@ RandomVariable::GetValue (void) const
 }
 
 uint32_t 
-RandomVariable::GetIntValue (void) const
+RandomVariable::GetInteger (void) const
 {
-  return m_variable->GetIntValue ();
+  return m_variable->GetInteger ();
 }
 void 
 RandomVariable::GetSeed(uint32_t seed[6]) const
@@ -455,7 +455,7 @@ public:
    * \return The constant value specified
    */
   virtual double  GetValue();
-  virtual uint32_t GetIntValue();
+  virtual uint32_t GetInteger();
   virtual RandomVariableBase*   Copy(void) const;
 private:
   double m_const;
@@ -478,7 +478,7 @@ double ConstantVariableImpl::GetValue()
   return m_const;
 }
 
-uint32_t ConstantVariableImpl::GetIntValue()
+uint32_t ConstantVariableImpl::GetInteger()
 {
   return (uint32_t)m_const;
 }
@@ -1276,7 +1276,7 @@ public:
   /**
    * \return An integer value from this empirical distribution
    */
-  virtual uint32_t GetIntValue();
+  virtual uint32_t GetInteger();
 private:
   virtual double Interpolate(double, double, double, double, double);
 };
@@ -1284,7 +1284,7 @@ private:
 
 IntEmpiricalVariableImpl::IntEmpiricalVariableImpl() { }
 
-uint32_t IntEmpiricalVariableImpl::GetIntValue()
+uint32_t IntEmpiricalVariableImpl::GetInteger()
 {
   return (uint32_t)GetValue();
 }

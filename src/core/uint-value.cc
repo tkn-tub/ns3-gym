@@ -4,63 +4,43 @@
 
 namespace ns3 {
 
-UintValue::UintValue (uint64_t value)
+Uinteger::Uinteger (uint64_t value)
   : m_value (value)
 {}
-Attribute
-UintValue::Copy (void) const
-{
-  return Attribute::Create<UintValue> (*this);
-}
-
+Uinteger::Uinteger ()
+{}
 void 
-UintValue::Set (uint64_t value)
+Uinteger::Set (uint64_t value)
 {
   m_value = value;
 }
 uint64_t 
-UintValue::Get (void) const
+Uinteger::Get (void) const
 {
   return m_value;
 }
-std::string 
-UintValue::SerializeToString (Ptr<const AttributeChecker> checker) const
+Uinteger::operator uint64_t () const
 {
-  std::ostringstream oss;
-  oss << m_value;
-  return oss.str ();
+  return m_value;
 }
-bool 
-UintValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
+std::ostream & operator << (std::ostream &os, const Uinteger &uinteger)
+{
+  os << uinteger.Get ();
+  return os;
+}
+std::istream & operator >> (std::istream &is, Uinteger &uinteger)
 {
   uint64_t v;
-  std::istringstream iss;
-  iss.str (value);
-  iss >> v;
-  bool ok = !iss.bad () && !iss.fail ();
-  if (ok)
-    {
-      m_value = v;
-    }
-  return ok;
+  is >> v;
+  uinteger.Set (v);
+  return is;
 }
 
-UintValue::UintValue (Attribute value)
-{
-  const UintValue *v = value.DynCast<const UintValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("assigning non-Uint value to Uint value.");
-    }
-  m_value = v->m_value;
-}
-UintValue::operator Attribute () const
-{
-  return Attribute::Create<UintValue> (*this);
-}
+ATTRIBUTE_CONVERTER_IMPLEMENT(Uinteger);
+ATTRIBUTE_VALUE_IMPLEMENT(Uinteger);
 
 
-Ptr<const AttributeChecker> MakeUintChecker (uint64_t min, uint64_t max)
+Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max)
 {
   struct Checker : public AttributeChecker
   {
@@ -68,12 +48,12 @@ Ptr<const AttributeChecker> MakeUintChecker (uint64_t min, uint64_t max)
       : m_minValue (minValue),
       m_maxValue (maxValue) {}
     virtual bool Check (Attribute value) const {
-      const UintValue *v = value.DynCast<const UintValue *> ();
+      const UintegerValue *v = value.DynCast<const UintegerValue *> ();
       if (v == 0)
 	{
 	  return false;
 	}
-      return v->Get () >= m_minValue && v->Get () <= m_maxValue;
+      return v->Get ().Get () >= m_minValue && v->Get ().Get () <= m_maxValue;
     }
     uint64_t m_minValue;
     uint64_t m_maxValue;

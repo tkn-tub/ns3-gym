@@ -33,7 +33,7 @@ int main (int argc, char *argv[])
                                  "MinY", FpValue (-100.0),
                                  "DeltaX", FpValue (5.0),
                                  "DeltaY", FpValue (20.0),
-                                 "GridWidth", UintValue (20),
+                                 "GridWidth", Uinteger (20),
                                  "LayoutType", "RowFirst");
   // each object will be attached a static position.
   // i.e., once set by the "position allocator", the

@@ -33,9 +33,9 @@ TypeId DropTailQueue::GetTypeId (void)
     .SetParent<Queue> ()
     .AddConstructor<DropTailQueue> ()
     .AddParameter ("MaxPackets", "The maximum number of packets accepted by this DropTailQueue.",
-                   UintValue (100),
-                   MakeUintAccessor (&DropTailQueue::m_maxPackets),
-                   MakeUintChecker<uint32_t> ())
+                   Uinteger (100),
+                   MakeUintegerAccessor (&DropTailQueue::m_maxPackets),
+                   MakeUintegerChecker<uint32_t> ())
     ;
   
   return tid;
@@ -133,7 +133,7 @@ DropTailQueueTest::RunTests (void)
   bool result = true;
 
   Ptr<DropTailQueue> queue = CreateObject<DropTailQueue> ();
-  NS_TEST_ASSERT (queue->Set ("MaxPackets", UintValue (3)));
+  NS_TEST_ASSERT (queue->Set ("MaxPackets", Uinteger (3)));
   
   Ptr<Packet> p1, p2, p3, p4;
   p1 = Create<Packet> ();

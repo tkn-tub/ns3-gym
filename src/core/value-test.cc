@@ -55,22 +55,22 @@ public:
 		     MakePtrAccessor (&AccessorObjectTest::m_derived),
 		     MakePtrChecker<Derived> ())
       .AddParameter ("TestInt16", "help text",
-		     IntValue (-2),
-		     MakeIntAccessor (&AccessorObjectTest::m_int16),
-		     MakeIntChecker<int16_t> ())
+		     Integer (-2),
+		     MakeIntegerAccessor (&AccessorObjectTest::m_int16),
+		     MakeIntegerChecker<int16_t> ())
       .AddParameter ("TestInt16WithBounds", "help text",
-		     IntValue (-2),
-		     MakeIntAccessor (&AccessorObjectTest::m_int16WithBounds),
-		     MakeIntChecker (-5, 10))
+		     Integer (-2),
+		     MakeIntegerAccessor (&AccessorObjectTest::m_int16WithBounds),
+		     MakeIntegerChecker (-5, 10))
       .AddParameter ("TestInt16SetGet", "help text",
-		     IntValue (6),
-		     MakeIntAccessor (&AccessorObjectTest::DoSetInt16,
+		     Integer (6),
+		     MakeIntegerAccessor (&AccessorObjectTest::DoSetInt16,
 				       &AccessorObjectTest::DoGetInt16),
-		     MakeIntChecker<int16_t> ())
+		     MakeIntegerChecker<int16_t> ())
       .AddParameter ("TestUint8", "help text",
-		     UintValue (1),
-		     MakeUintAccessor (&AccessorObjectTest::m_uint8),
-		     MakeUintChecker<uint8_t> ())
+		     Uinteger (1),
+		     MakeUintegerAccessor (&AccessorObjectTest::m_uint8),
+		     MakeUintegerChecker<uint8_t> ())
       .AddParameter ("TestEnum", "help text",
 		     EnumValue (TEST_A),
 		     MakeEnumAccessor (&AccessorObjectTest::m_enum),
@@ -152,8 +152,7 @@ private:
   {							\
     const type expected = value;			\
     type got = value;					\
-    Attribute v = p->Get (name);				\
-    NS_TEST_ASSERT (v.DynCast<type *> () != 0);		\
+    Attribute v = p->Get (name);			\
     got = v;						\
     NS_TEST_ASSERT_EQUAL (got.Get (), expected.Get ());	\
   }
@@ -218,72 +217,72 @@ AccessorTest::RunTests (void)
   NS_TEST_ASSERT (derived != 0);
 
   CHECK_GET_STR (p, "TestInt16", "-2");
-  CHECK_GET_PARAM (p, "TestInt16", IntValue, -2);
+  CHECK_GET_PARAM (p, "TestInt16", Integer, -2);
 
   NS_TEST_ASSERT (p->Set ("TestInt16", "-5"));
   CHECK_GET_STR (p, "TestInt16", "-5");
-  CHECK_GET_PARAM (p, "TestInt16", IntValue, -5);
+  CHECK_GET_PARAM (p, "TestInt16", Integer, -5);
 
-  NS_TEST_ASSERT (p->Set ("TestInt16", IntValue (+2)));
+  NS_TEST_ASSERT (p->Set ("TestInt16", Integer (+2)));
   CHECK_GET_STR (p, "TestInt16", "2");
-  CHECK_GET_PARAM (p, "TestInt16", IntValue, +2);
+  CHECK_GET_PARAM (p, "TestInt16", Integer, +2);
 
-  NS_TEST_ASSERT (p->Set ("TestInt16", IntValue (-32768)));
+  NS_TEST_ASSERT (p->Set ("TestInt16", Integer (-32768)));
   CHECK_GET_STR (p, "TestInt16", "-32768");
-  CHECK_GET_PARAM (p, "TestInt16", IntValue, -32768);
+  CHECK_GET_PARAM (p, "TestInt16", Integer, -32768);
 
-  NS_TEST_ASSERT (!p->Set ("TestInt16", IntValue (-32769)));
+  NS_TEST_ASSERT (!p->Set ("TestInt16", Integer (-32769)));
   CHECK_GET_STR (p, "TestInt16", "-32768");
-  CHECK_GET_PARAM (p, "TestInt16", IntValue, -32768);
+  CHECK_GET_PARAM (p, "TestInt16", Integer, -32768);
 
-  NS_TEST_ASSERT (p->Set ("TestInt16", IntValue (32767)));
+  NS_TEST_ASSERT (p->Set ("TestInt16", Integer (32767)));
   CHECK_GET_STR (p, "TestInt16", "32767");
-  CHECK_GET_PARAM (p, "TestInt16", IntValue, 32767);
+  CHECK_GET_PARAM (p, "TestInt16", Integer, 32767);
 
-  NS_TEST_ASSERT (!p->Set ("TestInt16", IntValue (32768)));
+  NS_TEST_ASSERT (!p->Set ("TestInt16", Integer (32768)));
   CHECK_GET_STR (p, "TestInt16", "32767");
-  CHECK_GET_PARAM (p, "TestInt16", IntValue, 32767);
+  CHECK_GET_PARAM (p, "TestInt16", Integer, 32767);
 
-  NS_TEST_ASSERT (p->Set ("TestInt16WithBounds", IntValue (10)));
+  NS_TEST_ASSERT (p->Set ("TestInt16WithBounds", Integer (10)));
   CHECK_GET_STR (p, "TestInt16WithBounds", "10");
-  CHECK_GET_PARAM (p, "TestInt16WithBounds", IntValue, 10);
-  NS_TEST_ASSERT (!p->Set ("TestInt16WithBounds", IntValue (11)));
+  CHECK_GET_PARAM (p, "TestInt16WithBounds", Integer, 10);
+  NS_TEST_ASSERT (!p->Set ("TestInt16WithBounds", Integer (11)));
   CHECK_GET_STR (p, "TestInt16WithBounds", "10");
-  CHECK_GET_PARAM (p, "TestInt16WithBounds", IntValue, 10);
+  CHECK_GET_PARAM (p, "TestInt16WithBounds", Integer, 10);
 
-  NS_TEST_ASSERT (p->Set ("TestInt16WithBounds", IntValue (-5)));
+  NS_TEST_ASSERT (p->Set ("TestInt16WithBounds", Integer (-5)));
   CHECK_GET_STR (p, "TestInt16WithBounds", "-5");
-  CHECK_GET_PARAM (p, "TestInt16WithBounds", IntValue, -5);
-  NS_TEST_ASSERT (!p->Set ("TestInt16WithBounds", IntValue (-6)));
+  CHECK_GET_PARAM (p, "TestInt16WithBounds", Integer, -5);
+  NS_TEST_ASSERT (!p->Set ("TestInt16WithBounds", Integer (-6)));
   CHECK_GET_STR (p, "TestInt16WithBounds", "-5");
-  CHECK_GET_PARAM (p, "TestInt16WithBounds", IntValue, -5);
+  CHECK_GET_PARAM (p, "TestInt16WithBounds", Integer, -5);
 
   CHECK_GET_STR (p, "TestInt16SetGet", "6");
-  CHECK_GET_PARAM (p, "TestInt16SetGet", IntValue, 6);
-  NS_TEST_ASSERT (p->Set ("TestInt16SetGet", IntValue (0)));
+  CHECK_GET_PARAM (p, "TestInt16SetGet", Integer, 6);
+  NS_TEST_ASSERT (p->Set ("TestInt16SetGet", Integer (0)));
   CHECK_GET_STR (p, "TestInt16SetGet", "0");
-  CHECK_GET_PARAM (p, "TestInt16SetGet", IntValue, 0);
+  CHECK_GET_PARAM (p, "TestInt16SetGet", Integer, 0);
 
   CHECK_GET_STR (p, "TestUint8", "1");
-  CHECK_GET_PARAM (p, "TestUint8", UintValue, 1);
-  NS_TEST_ASSERT (p->Set ("TestUint8", UintValue (0)));
+  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 1);
+  NS_TEST_ASSERT (p->Set ("TestUint8", Uinteger (0)));
   CHECK_GET_STR (p, "TestUint8", "0");
-  CHECK_GET_PARAM (p, "TestUint8", UintValue, 0);
-  NS_TEST_ASSERT (p->Set ("TestUint8", UintValue (255)));
+  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 0);
+  NS_TEST_ASSERT (p->Set ("TestUint8", Uinteger (255)));
   CHECK_GET_STR (p, "TestUint8", "255");
-  CHECK_GET_PARAM (p, "TestUint8", UintValue, 255);
+  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
   NS_TEST_ASSERT (p->Set ("TestUint8", "255"));
   CHECK_GET_STR (p, "TestUint8", "255");
-  CHECK_GET_PARAM (p, "TestUint8", UintValue, 255);
+  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
   NS_TEST_ASSERT (!p->Set ("TestUint8", "256"));
   CHECK_GET_STR (p, "TestUint8", "255");
-  CHECK_GET_PARAM (p, "TestUint8", UintValue, 255);
+  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
   NS_TEST_ASSERT (!p->Set ("TestUint8", "-1"));
   CHECK_GET_STR (p, "TestUint8", "255");
-  CHECK_GET_PARAM (p, "TestUint8", UintValue, 255);
-  NS_TEST_ASSERT (!p->Set ("TestUint8", UintValue (-1)));
+  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
+  NS_TEST_ASSERT (!p->Set ("TestUint8", Uinteger (-1)));
   CHECK_GET_STR (p, "TestUint8", "255");
-  CHECK_GET_PARAM (p, "TestUint8", UintValue, 255);
+  CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
 
   CHECK_GET_STR (p, "TestFloat", "-1.1");
   NS_TEST_ASSERT (p->Set ("TestFloat", FpValue ((float)+2.3)));

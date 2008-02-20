@@ -4,80 +4,65 @@
 
 namespace ns3 {
 
-IntValue::IntValue (int64_t value)
+Integer::Integer (int64_t value)
   : m_value (value)
 {}
-Attribute
-IntValue::Copy (void) const
-{
-  return Attribute::Create<IntValue> (*this);
-}
-
+Integer::Integer ()
+  : m_value (0)
+{}
 void 
-IntValue::Set (int64_t value)
+Integer::Set (int64_t value)
 {
   m_value = value;
 }
 int64_t 
-IntValue::Get (void) const
+Integer::Get (void) const
 {
   return m_value;
 }
-std::string 
-IntValue::SerializeToString (Ptr<const AttributeChecker> checker) const
+
+Integer::operator int64_t () const
 {
-  std::ostringstream oss;
-  oss << m_value;
-  return oss.str ();
+  return m_value;
 }
-bool 
-IntValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
+
+ATTRIBUTE_VALUE_IMPLEMENT (Integer);
+
+std::ostream &operator << (std::ostream &os, const Integer &integer)
+{
+  os << integer.Get ();
+  return os;
+}
+std::istream &operator >> (std::istream &is, Integer &integer)
 {
   int64_t v;
-  std::istringstream iss;
-  iss.str (value);
-  iss >> v;
-  bool ok = !iss.bad () && !iss.fail ();
-  if (ok)
-    {
-      m_value = v;
-    }
-  return ok;
+  is >> v;
+  integer.Set (v);
+  return is;
 }
 
-IntValue::IntValue (Attribute value)
-{
-  const IntValue *v = value.DynCast<const IntValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("assigning non-Int value to Int value.");
-    }
-  m_value = v->m_value;
-}
-IntValue::operator Attribute () const
-{
-  return Attribute::Create<IntValue> (*this);
-}
+ATTRIBUTE_CONVERTER_IMPLEMENT (Integer);
+
 
 Ptr<const AttributeChecker>
-MakeIntChecker (int64_t min, int64_t max)
+MakeIntegerChecker (int64_t min, int64_t max)
 {
-  struct IntChecker : public AttributeChecker
+  struct IntegerChecker : public AttributeChecker
   {
-    IntChecker (int64_t minValue, int64_t maxValue)
+    IntegerChecker (int64_t minValue, int64_t maxValue)
       : m_minValue (minValue),
       m_maxValue (maxValue) {}
     virtual bool Check (Attribute value) const {
-      const IntValue *v = value.DynCast<const IntValue *> ();
+      const IntegerValue *v = value.DynCast<const IntegerValue *> ();
       if (v == 0)
 	{
 	  return false;
 	}
-      return v->Get () >= m_minValue && v->Get () <= m_maxValue;
+      return v->Get ().Get () >= m_minValue && v->Get ().Get() <= m_maxValue;
     }
     int64_t m_minValue;
     int64_t m_maxValue;
-  } *checker = new IntChecker (min, max);
+  } *checker = new IntegerChecker (min, max);
   return Ptr<AttributeChecker> (checker, false);
 }
 
