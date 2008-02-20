@@ -26,7 +26,7 @@
 #include <stdint.h>
 #include <istream>
 #include <ostream>
-#include "value.h"
+#include "attribute.h"
 #include "class-value-helper.h"
 
 /**

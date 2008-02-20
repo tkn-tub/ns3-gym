@@ -27,7 +27,7 @@
 #include <stdint.h>
 #include "ns3/nstime.h"
 #include "ns3/default-value.h"
-#include "ns3/value.h"
+#include "ns3/attribute.h"
 #include "ns3/value-helper.h"
 
 namespace ns3 {

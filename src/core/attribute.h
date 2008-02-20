@@ -1,5 +1,5 @@
-#ifndef VALUE_H
-#define VALUE_H
+#ifndef ATTRIBUTE_H
+#define ATTRIBUTE_H
 
 #include <string>
 #include <stdint.h>
@@ -381,4 +381,4 @@ MakeSimpleAttributeChecker (void)
 
 } // namespace ns3
 
-#endif /* VALUE_H */
+#endif /* ATTRIBUTE_H */

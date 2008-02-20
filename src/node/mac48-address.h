@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 #include <ostream>
-#include "ns3/value.h"
+#include "ns3/attribute.h"
 #include "ns3/value-helper.h"
 
 namespace ns3 {

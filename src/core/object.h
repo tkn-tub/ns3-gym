@@ -26,7 +26,7 @@
 #include "ptr.h"
 #include "trace-resolver.h"
 #include "callback.h"
-#include "value.h"
+#include "attribute.h"
 #include "object-base.h"
 
 #define NS_OBJECT_ENSURE_REGISTERED(type)       \

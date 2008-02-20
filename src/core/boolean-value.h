@@ -1,7 +1,7 @@
 #ifndef BOOLEAN_VALUE_H
 #define BOOLEAN_VALUE_H
 
-#include "value.h"
+#include "attribute.h"
 #include "param-spec-helper.h"
 #include "ptr.h"
 

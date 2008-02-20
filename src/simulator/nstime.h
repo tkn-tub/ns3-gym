@@ -21,7 +21,7 @@
 #define TIME_H
 
 #include "ns3/assert.h"
-#include "ns3/value.h"
+#include "ns3/attribute.h"
 #include "ns3/class-value-helper.h"
 #include <stdint.h>
 #include <math.h>

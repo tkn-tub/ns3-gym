@@ -1,7 +1,7 @@
 #ifndef OBJECT_FACTORY_H
 #define OBJECT_FACTORY_H
 
-#include "value.h"
+#include "attribute.h"
 #include "object.h"
 
 namespace ns3 {

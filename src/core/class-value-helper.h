@@ -1,7 +1,7 @@
 #ifndef CLASS_VALUE_HELPER_H
 #define CLASS_VALUE_HELPER_H
 
-#include "value.h"
+#include "attribute.h"
 #include "param-spec-helper.h"
 #include "fatal-error.h"
 #include <sstream>

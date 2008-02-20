@@ -4,7 +4,7 @@
 #include <vector>
 #include "object.h"
 #include "ptr.h"
-#include "value.h"
+#include "attribute.h"
 
 namespace ns3 {
 

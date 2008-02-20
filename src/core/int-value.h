@@ -1,7 +1,7 @@
 #ifndef INT_VALUE_H
 #define INT_VALUE_H
 
-#include "value.h"
+#include "attribute.h"
 #include "param-spec-helper.h"
 #include <stdint.h>
 

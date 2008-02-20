@@ -22,7 +22,7 @@
 #include "assert.h"
 #include "singleton.h"
 #include "trace-resolver.h"
-#include "value.h"
+#include "attribute.h"
 #include "log.h"
 #include <vector>
 #include <sstream>

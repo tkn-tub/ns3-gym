@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "ns3/object-factory.h"
-#include "ns3/value.h"
+#include "ns3/attribute.h"
 #include "position-allocator.h"
 
 namespace ns3 {
