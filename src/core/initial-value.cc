@@ -9,7 +9,7 @@
 namespace ns3 {
 
 InitialValue::InitialValue (std::string name, std::string help,
-			    PValue initialValue,
+			    Attribute initialValue,
 			    Ptr<const AttributeChecker> checker)
   : m_name (name),
     m_help (help),
@@ -33,7 +33,7 @@ InitialValue::GetHelp (void) const
 {
   return m_help;
 }
-PValue 
+Attribute 
 InitialValue::GetValue (void) const
 {
   return m_initialValue;
@@ -45,7 +45,7 @@ InitialValue::GetChecker (void) const
 }
   
 void 
-InitialValue::SetValue (PValue value)
+InitialValue::SetValue (Attribute value)
 {
   if (!m_checker->Check (value))
     {
@@ -55,7 +55,7 @@ InitialValue::SetValue (PValue value)
 }
 
 void 
-InitialValue::Bind (std::string name, PValue value)
+InitialValue::Bind (std::string name, Attribute value)
 {
   for (Iterator i = Begin (); i != End (); i++)
     {

@@ -14,12 +14,12 @@ public:
   void Set (int64_t value);
   int64_t Get (void) const;
 
-  virtual PValue Copy (void) const;
+  virtual Attribute Copy (void) const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
-  IntValue (PValue value);
-  operator PValue () const;
+  IntValue (Attribute value);
+  operator Attribute () const;
 private:
   int64_t m_value;
 };

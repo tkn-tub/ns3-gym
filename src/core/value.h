@@ -10,7 +10,7 @@ namespace ns3 {
 
 class ParamSpec;
 class AttributeChecker;
-class PValue;
+class Attribute;
 
 class Value
 {
@@ -20,43 +20,43 @@ public:
   Value &operator = (const Value &o);
   virtual ~Value ();
 
-  virtual PValue Copy (void) const = 0;
+  virtual Attribute Copy (void) const = 0;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const = 0;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) = 0;
 private:
-  friend class PValue;
+  friend class Attribute;
   uint32_t m_count;
 };
 
-class PValue
+class Attribute
 {
 public:
-  PValue ();
-  PValue (const PValue &o);
-  PValue &operator = (const PValue &o);
-  ~PValue ();
+  Attribute ();
+  Attribute (const Attribute &o);
+  Attribute &operator = (const Attribute &o);
+  ~Attribute ();
 
-  PValue Copy (void) const;
+  Attribute Copy (void) const;
   std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
   template <typename T>
-  static PValue Create (void);
+  static Attribute Create (void);
   template <typename T, typename T1>
-  static PValue Create (T1 a1);
+  static Attribute Create (T1 a1);
 
   template <typename T>
   T DynCast (void) const;
 
   template <typename T>
-  PValue (Ptr<T> pointer);
+  Attribute (Ptr<T> pointer);
   template <typename T>
   operator Ptr<T> ();
 
-  PValue (const char *value);
-  PValue (std::string value);
+  Attribute (const char *value);
+  Attribute (std::string value);
 private:
-  PValue (Value *value);
+  Attribute (Value *value);
   Value *m_value;
 };
 
@@ -74,8 +74,8 @@ public:
    * \returns true if the value is valid and it could be set
    *          successfully, false otherwise.
    */
-  virtual bool Set (ObjectBase * object, PValue value) const = 0;
-  virtual bool Get (const ObjectBase * object, PValue value) const = 0;
+  virtual bool Set (ObjectBase * object, Attribute value) const = 0;
+  virtual bool Get (const ObjectBase * object, Attribute value) const = 0;
 private:
   mutable uint32_t m_count;
 };
@@ -87,7 +87,7 @@ public:
   void Ref (void) const;
   void Unref (void) const;
   virtual ~AttributeChecker ();
-  virtual bool Check (PValue value) const = 0;
+  virtual bool Check (Attribute value) const = 0;
 private:
   mutable uint32_t m_count;
 };
@@ -124,12 +124,12 @@ public:
   void Set (std::string value);
   std::string Get (void) const;
 
-  virtual PValue Copy (void) const;
+  virtual Attribute Copy (void) const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
-  StringValue (PValue value);
-  operator PValue () const;
+  StringValue (Attribute value);
+  operator Attribute () const;
 private:
   std::string m_value;
 };
@@ -172,45 +172,45 @@ public:
     m_pointer = ptr;
     return true;
   }
-  virtual PValue Copy (void) const {
-    return PValue::Create<PtrValue<T> > (*this);
+  virtual Attribute Copy (void) const {
+    return Attribute::Create<PtrValue<T> > (*this);
   }
 private:
   Ptr<T> m_pointer;
 };
 
 /********************************************************
- *        The implementation of the PValue 
+ *        The implementation of the Attribute 
  *          class template methods.
  ********************************************************/
 
 
 template <typename T>
-PValue 
-PValue::Create (void)
+Attribute 
+Attribute::Create (void)
 {
-  return PValue (new T ());
+  return Attribute (new T ());
 }
 template <typename T, typename T1>
-PValue 
-PValue::Create (T1 a1)
+Attribute 
+Attribute::Create (T1 a1)
 {
-  return PValue (new T (a1));
+  return Attribute (new T (a1));
 }
 
 template <typename T>
 T
-PValue::DynCast (void) const
+Attribute::DynCast (void) const
 {
   return dynamic_cast<T> (m_value);
 }
 
 template <typename T>
-PValue::PValue (Ptr<T> pointer)
+Attribute::Attribute (Ptr<T> pointer)
   : m_value (new PtrValue<T> (pointer))
 {}
 template <typename T>
-PValue::operator Ptr<T> ()
+Attribute::operator Ptr<T> ()
 {
   PtrValueBase *value = DynCast<PtrValueBase *> ();
   if (value == 0)
@@ -236,7 +236,7 @@ class PtrParamSpec : public ParamSpec
 {
 public:
   virtual ~PtrParamSpec () {}
-  virtual bool Set (ObjectBase * object, PValue val) const {
+  virtual bool Set (ObjectBase * object, Attribute val) const {
       T *obj = dynamic_cast<T *> (object);
       if (obj == 0)
         {
@@ -255,7 +255,7 @@ public:
       DoSet (obj, ptr);
       return true;
     }
-    virtual bool Get (const ObjectBase * object, PValue val) const {
+    virtual bool Get (const ObjectBase * object, Attribute val) const {
       const T *obj = dynamic_cast<const T *> (object);
       if (obj == 0)
         {
@@ -344,7 +344,7 @@ MakePtrChecker (void)
 {
   struct PtrChecker : public AttributeChecker
   {
-    virtual bool Check (PValue val) const {
+    virtual bool Check (Attribute val) const {
       const PtrValueBase *value = val.DynCast<const PtrValueBase *> ();
       if (value == 0)
         {
@@ -371,7 +371,7 @@ MakeSimpleAttributeChecker (void)
 {
   struct SimpleAttributeChecker : public AttributeChecker
   {
-    virtual bool Check (PValue value) const {
+    virtual bool Check (Attribute value) const {
       return value.DynCast<const T *> () != 0;
     }
   } *checker = new SimpleAttributeChecker ();

@@ -57,13 +57,13 @@ public:
                      std::string name,
                      std::string help, 
                      uint32_t flags,
-                     ns3::PValue initialValue,
+                     ns3::Attribute initialValue,
                      ns3::Ptr<const ns3::ParamSpec> spec,
                      ns3::Ptr<const ns3::AttributeChecker> checker);
   uint32_t GetParametersN (uint16_t uid) const;
   std::string GetParameterName (uint16_t uid, uint32_t i) const;
   uint32_t GetParameterFlags (uint16_t uid, uint32_t i) const;
-  ns3::PValue GetParameterInitialValue (uint16_t uid, uint32_t i) const;
+  ns3::Attribute GetParameterInitialValue (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::ParamSpec> GetParameterParamSpec (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::AttributeChecker> GetParameterChecker (uint16_t uid, uint32_t i) const;
 private:
@@ -75,7 +75,7 @@ private:
     std::string name;
     std::string help;
     uint32_t flags;
-    ns3::PValue initialValue;
+    ns3::Attribute initialValue;
     ns3::Ptr<const ns3::ParamSpec> param;
     ns3::Ptr<const ns3::AttributeChecker> checker;
   };
@@ -246,7 +246,7 @@ IidManager::AddParameter (uint16_t uid,
                           std::string name,
                           std::string help, 
                           uint32_t flags,
-                          ns3::PValue initialValue,
+                          ns3::Attribute initialValue,
                           ns3::Ptr<const ns3::ParamSpec> spec,
                           ns3::Ptr<const ns3::AttributeChecker> checker)
 {
@@ -291,7 +291,7 @@ IidManager::GetParameterFlags (uint16_t uid, uint32_t i) const
   NS_ASSERT (i < information->parameters.size ());
   return information->parameters[i].flags;
 }
-ns3::PValue 
+ns3::Attribute 
 IidManager::GetParameterInitialValue (uint16_t uid, uint32_t i) const
 {
   struct IidInformation *information = LookupInformation (uid);
@@ -543,7 +543,7 @@ TypeId::DoAddConstructor (CallbackBase cb, uint32_t nArguments)
 TypeId 
 TypeId::AddParameter (std::string name,
                       std::string help, 
-                      PValue initialValue,
+                      Attribute initialValue,
                       Ptr<const ParamSpec> param,
                       Ptr<const AttributeChecker> checker)
 {
@@ -555,7 +555,7 @@ TypeId
 TypeId::AddParameter (std::string name,
                       std::string help, 
                       uint32_t flags,
-                      PValue initialValue,
+                      Attribute initialValue,
                       Ptr<const ParamSpec> param,
                       Ptr<const AttributeChecker> checker)
 {
@@ -603,10 +603,10 @@ TypeId::GetParameterFullName (uint32_t i) const
 {
   return GetName () + "::" + GetParameterName (i);
 }
-PValue 
+Attribute 
 TypeId::GetParameterInitialValue (uint32_t i) const
 {
-  PValue value = Singleton<IidManager>::Get ()->GetParameterInitialValue (m_tid, i);
+  Attribute value = Singleton<IidManager>::Get ()->GetParameterInitialValue (m_tid, i);
   return value;
 }
 Ptr<const ParamSpec>
@@ -678,7 +678,7 @@ Parameters::~Parameters ()
 }
 
 bool 
-Parameters::Set (std::string name, PValue value)
+Parameters::Set (std::string name, Attribute value)
 {
   struct TypeId::ParameterInfo info;
   TypeId::LookupParameterByFullName (name, &info);
@@ -686,14 +686,14 @@ Parameters::Set (std::string name, PValue value)
   return ok;
 }
 void 
-Parameters::SetWithTid (TypeId tid, std::string name, PValue value)
+Parameters::SetWithTid (TypeId tid, std::string name, Attribute value)
 {
   struct TypeId::ParameterInfo info;
   tid.LookupParameterByName (name, &info);
   DoSet (&info, value);
 }
 void 
-Parameters::SetWithTid (TypeId tid, uint32_t position, PValue value)
+Parameters::SetWithTid (TypeId tid, uint32_t position, Attribute value)
 {
   struct TypeId::ParameterInfo info;
   tid.LookupParameterByPosition (position, &info);
@@ -701,7 +701,7 @@ Parameters::SetWithTid (TypeId tid, uint32_t position, PValue value)
 }
 
 void
-Parameters::DoSetOne (Ptr<const AttributeChecker> checker, PValue value)
+Parameters::DoSetOne (Ptr<const AttributeChecker> checker, Attribute value)
 {
   // get rid of any previous value stored in this
   // vector of values.
@@ -720,7 +720,7 @@ Parameters::DoSetOne (Ptr<const AttributeChecker> checker, PValue value)
   m_parameters.push_back (p);
 }
 bool
-Parameters::DoSet (struct TypeId::ParameterInfo *info, PValue value)
+Parameters::DoSet (struct TypeId::ParameterInfo *info, Attribute value)
 {
   if (info->checker == 0)
     {
@@ -736,7 +736,7 @@ Parameters::DoSet (struct TypeId::ParameterInfo *info, PValue value)
           return false;
         }
       // attempt to convert back to value.
-      PValue v = info->initialValue.Copy ();
+      Attribute v = info->initialValue.Copy ();
       ok = v.DeserializeFromString (str->Get (), info->checker);
       if (!ok)
         {
@@ -834,7 +834,7 @@ Parameters::DeserializeFromString (std::string str)
                 value = str.substr (equal+1, next - (equal+1));
                 cur++;
               }
-            PValue val = info.initialValue.Copy ();
+            Attribute val = info.initialValue.Copy ();
             bool ok = val.DeserializeFromString (value, info.checker);
             if (!ok)
               {
@@ -897,7 +897,7 @@ Object::Construct (const Parameters &parameters)
     for (uint32_t i = 0; i < tid.GetParametersN (); i++)
       {
         Ptr<const ParamSpec> paramSpec = tid.GetParameterParamSpec (i);
-        PValue initial = tid.GetParameterInitialValue (i);
+        Attribute initial = tid.GetParameterInitialValue (i);
         Ptr<const AttributeChecker> checker = tid.GetParameterChecker (i);
         NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
                       tid.GetParameterName (i)<<"\"");
@@ -950,8 +950,8 @@ Object::Construct (const Parameters &parameters)
   NotifyConstructionCompleted ();
 }
 bool
-Object::DoSet (Ptr<const ParamSpec> spec, PValue initialValue, 
-               Ptr<const AttributeChecker> checker, PValue value)
+Object::DoSet (Ptr<const ParamSpec> spec, Attribute initialValue, 
+               Ptr<const AttributeChecker> checker, Attribute value)
 {
   bool ok = checker->Check (value);
   if (!ok)
@@ -963,7 +963,7 @@ Object::DoSet (Ptr<const ParamSpec> spec, PValue initialValue,
           return false;
         }
       // attempt to convert back from string.
-      PValue v = initialValue.Copy ();
+      Attribute v = initialValue.Copy ();
       ok = v.DeserializeFromString (str->Get (), checker);
       if (!ok)
         {
@@ -980,7 +980,7 @@ Object::DoSet (Ptr<const ParamSpec> spec, PValue initialValue,
   return ok;
 }
 bool
-Object::Set (std::string name, PValue value)
+Object::Set (std::string name, Attribute value)
 {
   struct TypeId::ParameterInfo info;
   if (!m_tid.LookupParameterByName (name, &info))
@@ -1005,7 +1005,7 @@ Object::Get (std::string name, std::string &value) const
     {
       return false;
     }
-  PValue v = info.initialValue.Copy ();
+  Attribute v = info.initialValue.Copy ();
   bool ok = info.spec->Get (this, v);
   if (ok)
     {
@@ -1014,23 +1014,23 @@ Object::Get (std::string name, std::string &value) const
   return ok;
 }
 
-PValue
+Attribute
 Object::Get (std::string name) const
 {
   struct TypeId::ParameterInfo info;
   if (!m_tid.LookupParameterByName (name, &info))
     {
-      return PValue ();
+      return Attribute ();
     }
   if (!(info.flags & TypeId::ATTR_GET))
     {
-      return PValue ();
+      return Attribute ();
     }
-  PValue value = info.initialValue.Copy ();
+  Attribute value = info.initialValue.Copy ();
   bool ok = info.spec->Get (this, value);
   if (!ok)
     {
-      return PValue ();
+      return Attribute ();
     }
   return value;
 }

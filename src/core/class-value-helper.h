@@ -23,8 +23,8 @@ public:
   }
 
   // inherited from Value base class
-  virtual PValue Copy (void) const {
-    return PValue::Create<ClassValue<T,U> > (*this);
+  virtual Attribute Copy (void) const {
+    return Attribute::Create<ClassValue<T,U> > (*this);
   }
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const {
     std::ostringstream oss;
@@ -38,7 +38,7 @@ public:
     return !iss.bad () && !iss.fail ();
   }
 
-  ClassValue (PValue value) 
+  ClassValue (Attribute value) 
     {
       ClassValue<T,U> *v = value.DynCast<ClassValue<T,U> *> ();
       if (v == 0)
@@ -47,9 +47,9 @@ public:
 	}
       m_value = v->Get ();
     }
-  operator PValue () const
+  operator Attribute () const
   {
-    return PValue::Create<ClassValue<T,U> > (*this);
+    return Attribute::Create<ClassValue<T,U> > (*this);
   }
 
 private:
@@ -58,7 +58,7 @@ private:
 
 template <typename T,typename U>
 T
-ClassValueHelperExtractFrom (PValue value)
+ClassValueHelperExtractFrom (Attribute value)
 {
   ClassValue<T,U> *v = value.DynCast<ClassValue<T,U> *> ();
   if (v == 0)
@@ -69,10 +69,10 @@ ClassValueHelperExtractFrom (PValue value)
 }
 
 template <typename T,typename U>
-PValue
+Attribute
 ClassValueHelperConvertTo (const T *self)
 {
-  return PValue::Create<ClassValue<T,U> > (*self);
+  return Attribute::Create<ClassValue<T,U> > (*self);
 }
 
 

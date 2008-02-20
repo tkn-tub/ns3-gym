@@ -16,17 +16,17 @@ public:
   typedef Vector::const_iterator Iterator;
 
   InitialValue (std::string name, std::string help,
-		PValue initialValue,
+		Attribute initialValue,
 		Ptr<const AttributeChecker> checker);
 
   std::string GetName (void) const;
   std::string GetHelp (void) const;
-  PValue GetValue (void) const;
+  Attribute GetValue (void) const;
   Ptr<const AttributeChecker> GetChecker (void) const;
   
-  void SetValue (PValue value);
+  void SetValue (Attribute value);
 
-  static void Bind (std::string name, PValue value);
+  static void Bind (std::string name, Attribute value);
 
   static Iterator Begin (void);
   static Iterator End (void);
@@ -34,7 +34,7 @@ private:
   static Vector *GetVector (void);
   std::string m_name;
   std::string m_help;
-  PValue m_initialValue;
+  Attribute m_initialValue;
   Ptr<const AttributeChecker> m_checker;
 };
 

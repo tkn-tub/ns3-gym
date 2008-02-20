@@ -14,12 +14,12 @@ public:
   void Set (int v);
   int Get (void) const;
 
-  virtual PValue Copy (void) const;
+  virtual Attribute Copy (void) const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
-  EnumValue (PValue value);
-  operator PValue () const;
+  EnumValue (Attribute value);
+  operator Attribute () const;
 private:
   int m_v;
 };
@@ -33,7 +33,7 @@ public:
   void AddDefault (int v, std::string name);
   void Add (int v, std::string name);
 
-  virtual bool Check (PValue value) const;
+  virtual bool Check (Attribute value) const;
 
 private:
   friend class EnumValue;

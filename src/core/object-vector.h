@@ -20,8 +20,8 @@ public:
   uint32_t GetN (void) const;
   Ptr<Object> Get (uint32_t i) const;
 
-  ObjectVector (PValue value);
-  operator PValue () const;
+  ObjectVector (Attribute value);
+  operator Attribute () const;
 private:
   friend class ObjectVectorParamSpec;
   std::vector<Ptr<Object> > m_objects;
@@ -56,7 +56,7 @@ public:
 
   ObjectVector Get (void) const;
 
-  virtual PValue Copy (void) const;
+  virtual Attribute Copy (void) const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
@@ -68,8 +68,8 @@ private:
 class ObjectVectorParamSpec : public ParamSpec
 {
 public:
-  virtual bool Set (ObjectBase * object, PValue value) const;
-  virtual bool Get (const ObjectBase * object, PValue value) const;
+  virtual bool Set (ObjectBase * object, Attribute value) const;
+  virtual bool Get (const ObjectBase * object, Attribute value) const;
 private:
   virtual bool DoGetN (const ObjectBase *object, uint32_t *n) const = 0;
   virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const = 0;

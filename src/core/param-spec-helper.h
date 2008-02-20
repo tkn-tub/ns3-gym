@@ -27,7 +27,7 @@ class ParamSpecHelper : public BASE
 public:
   ParamSpecHelper () {}
 
-  virtual bool Set (ObjectBase * object, PValue val) const {
+  virtual bool Set (ObjectBase * object, Attribute val) const {
     const U *value = val.DynCast<const U*> ();
     if (value == 0)
       {
@@ -41,7 +41,7 @@ public:
     return DoSet (obj, value);
   }
 
-  virtual bool Get (const ObjectBase * object, PValue val) const {
+  virtual bool Get (const ObjectBase * object, Attribute val) const {
     U *value = val.DynCast<U*> ();
     if (value == 0)
       {

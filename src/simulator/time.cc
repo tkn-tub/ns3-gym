@@ -296,11 +296,11 @@ TimeUnit<1>::UnitsToTimestep (uint64_t unitValue,
   return unitValue;
 }
 
-TimeUnit<1>::TimeUnit (PValue value)
+TimeUnit<1>::TimeUnit (Attribute value)
 {
   *this = ClassValueHelperExtractFrom<Time,TimeValue> (value);
 }
-TimeUnit<1>::operator PValue () const
+TimeUnit<1>::operator Attribute () const
 {
   return ClassValueHelperConvertTo<Time,TimeValue> (this);
 }

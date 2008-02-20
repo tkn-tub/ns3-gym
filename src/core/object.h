@@ -138,7 +138,7 @@ public:
    */
   std::string GetParameterFullName (uint32_t i) const;
 
-  PValue GetParameterInitialValue (uint32_t i) const;
+  Attribute GetParameterInitialValue (uint32_t i) const;
 
   Ptr<Object> CreateObject (const Parameters &parameters) const;
 
@@ -209,7 +209,7 @@ public:
    */
   TypeId AddParameter (std::string name,
                        std::string help, 
-                       PValue initialValue,
+                       Attribute initialValue,
                        Ptr<const ParamSpec> spec,
                        Ptr<const AttributeChecker> checker);
 
@@ -226,7 +226,7 @@ public:
   TypeId AddParameter (std::string name,
                        std::string help, 
                        uint32_t flags,
-                       PValue initialValue,
+                       Attribute initialValue,
                        Ptr<const ParamSpec> spec,
                        Ptr<const AttributeChecker> checker);
 
@@ -241,7 +241,7 @@ private:
 
   struct ParameterInfo {
     Ptr<const ParamSpec> spec;
-    PValue initialValue;
+    Attribute initialValue;
     uint32_t flags;
     Ptr<const AttributeChecker> checker;
   };
@@ -294,10 +294,10 @@ public:
    * value of that parameter. If any of these checks fails,
    * the program terminates with a message.
    */
-  bool Set (std::string name, PValue value);
+  bool Set (std::string name, Attribute value);
 
-  void SetWithTid (TypeId tid, std::string name, PValue value);
-  void SetWithTid (TypeId tid, uint32_t position, PValue value);
+  void SetWithTid (TypeId tid, std::string name, Attribute value);
+  void SetWithTid (TypeId tid, uint32_t position, Attribute value);
 
   /**
    * Clear the content of this instance.
@@ -322,7 +322,7 @@ private:
   friend class Object;
   struct Param {
     Ptr<const AttributeChecker> checker;
-    PValue value;
+    Attribute value;
   };
   typedef std::vector<struct Param> Params;
   typedef Params::iterator Iterator;
@@ -330,8 +330,8 @@ private:
 
 
 
-  bool DoSet (struct TypeId::ParameterInfo *info, PValue param);
-  void DoSetOne (Ptr<const AttributeChecker> checker, PValue param);
+  bool DoSet (struct TypeId::ParameterInfo *info, Attribute param);
+  void DoSetOne (Ptr<const AttributeChecker> checker, Attribute param);
   std::string LookupParameterFullNameByChecker (Ptr<const AttributeChecker> checker) const;
 
   Params m_parameters;
@@ -356,7 +356,7 @@ public:
    *
    * Set a single parameter.
    */
-  bool Set (std::string name, PValue value);
+  bool Set (std::string name, Attribute value);
   /**
    * \param name the name of the parameter to read
    * \param value a reference to the string where the value of the 
@@ -370,7 +370,7 @@ public:
    *        parameter should be stored.
    * \returns true if the requested parameter was found, false otherwise.
    */
-  PValue Get (std::string name) const;
+  Attribute Get (std::string name) const;
 
   /**
    * Increment the reference count. This method should not be called
@@ -470,8 +470,8 @@ private:
   friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
 
 
-  bool DoSet (Ptr<const ParamSpec> spec, PValue intialValue, 
-              Ptr<const AttributeChecker> checker, PValue value);
+  bool DoSet (Ptr<const ParamSpec> spec, Attribute intialValue, 
+              Ptr<const AttributeChecker> checker, Attribute value);
   Ptr<Object> DoGetObject (TypeId tid) const;
   void DoCollectSources (std::string path, const TraceContext &context, 
                          TraceResolver::SourceCollection *collection) const;
@@ -733,8 +733,8 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
 
 template <typename T>
 Ptr<T> 
-CreateObjectWith (std::string n1, PValue v1,
-                  std::string n2 = "", PValue v2 = PValue ())
+CreateObjectWith (std::string n1, Attribute v1,
+                  std::string n2 = "", Attribute v2 = Attribute ())
               
 {
   Parameters parameters;

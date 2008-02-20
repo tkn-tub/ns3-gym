@@ -164,8 +164,8 @@ public:
   static void SetRunNumber(uint32_t n);
 
 
-  RandomVariable (PValue value);
-  operator PValue () const;
+  RandomVariable (Attribute value);
+  operator Attribute () const;
 
 private:
   friend class RandomVariableValue;

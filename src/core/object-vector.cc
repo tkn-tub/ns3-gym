@@ -26,7 +26,7 @@ ObjectVector::Get (uint32_t i) const
   return m_objects[i];
 }
 
-ObjectVector::ObjectVector (PValue value)
+ObjectVector::ObjectVector (Attribute value)
 {
   const ObjectVectorValue *v = value.DynCast<const ObjectVectorValue *> ();
   if (v == 0)
@@ -36,9 +36,9 @@ ObjectVector::ObjectVector (PValue value)
   *this = v->Get ();
 }
 
-ObjectVector::operator PValue () const
+ObjectVector::operator Attribute () const
 {
-  return PValue::Create<ObjectVectorValue> ();
+  return Attribute::Create<ObjectVectorValue> ();
 }
 
 ObjectVectorValue::ObjectVectorValue ()
@@ -55,10 +55,10 @@ ObjectVectorValue::Get (void) const
   return m_vector;
 }
 
-PValue 
+Attribute 
 ObjectVectorValue::Copy (void) const
 {
-  return PValue::Create<ObjectVectorValue> (*this);
+  return Attribute::Create<ObjectVectorValue> (*this);
 }
 std::string 
 ObjectVectorValue::SerializeToString (Ptr<const AttributeChecker> checker) const
@@ -74,13 +74,13 @@ ObjectVectorValue::DeserializeFromString (std::string value, Ptr<const Attribute
 }
 
 bool 
-ObjectVectorParamSpec::Set (ObjectBase * object, PValue value) const
+ObjectVectorParamSpec::Set (ObjectBase * object, Attribute value) const
 {
   // not allowed.
   return false;
 }
 bool 
-ObjectVectorParamSpec::Get (const ObjectBase * object, PValue value) const
+ObjectVectorParamSpec::Get (const ObjectBase * object, Attribute value) const
 {
   ObjectVectorValue *v = value.DynCast<ObjectVectorValue *> ();
   if (v == 0)

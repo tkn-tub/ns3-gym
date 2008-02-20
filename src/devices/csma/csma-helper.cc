@@ -11,10 +11,10 @@ CsmaHelper::CsmaHelper ()
 
 void 
 CsmaHelper::SetQueue (std::string type,
-		      std::string n1, PValue v1,
-		      std::string n2, PValue v2,
-		      std::string n3, PValue v3,
-		      std::string n4, PValue v4)
+		      std::string n1, Attribute v1,
+		      std::string n2, Attribute v2,
+		      std::string n3, Attribute v3,
+		      std::string n4, Attribute v4)
 {
   m_queueFactory.SetTypeId (type);
   m_queueFactory.Set (n1, v1);
@@ -28,13 +28,13 @@ CsmaHelper::SetQueue (std::string type,
    * by this helper.
    */
 void 
-CsmaHelper::SetDeviceParameter (std::string n1, PValue v1)
+CsmaHelper::SetDeviceParameter (std::string n1, Attribute v1)
 {
   m_deviceFactory.Set (n1, v1);
 }
 
 void 
-CsmaHelper::SetChannelParameter (std::string n1, PValue v1)
+CsmaHelper::SetChannelParameter (std::string n1, Attribute v1)
 {
   m_csmaFactory.Set (n1, v1);
 }

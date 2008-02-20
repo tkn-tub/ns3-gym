@@ -19,10 +19,10 @@ EnumValue::Get (void) const
   return m_v;
 }
 
-PValue
+Attribute
 EnumValue::Copy (void) const
 {
-  return PValue::Create<EnumValue> (*this);
+  return Attribute::Create<EnumValue> (*this);
 }
 std::string 
 EnumValue::SerializeToString (Ptr<const AttributeChecker> checker) const
@@ -57,7 +57,7 @@ EnumValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker>
   return false;
 }
 
-EnumValue::EnumValue (PValue value)
+EnumValue::EnumValue (Attribute value)
 {
   const EnumValue *v = value.DynCast<const EnumValue *> ();
   if (v == 0)
@@ -66,9 +66,9 @@ EnumValue::EnumValue (PValue value)
     }
   m_v = v->m_v;
 }
-EnumValue::operator PValue () const
+EnumValue::operator Attribute () const
 {
-  return PValue::Create<EnumValue> (*this);
+  return Attribute::Create<EnumValue> (*this);
 }
 
 
@@ -87,7 +87,7 @@ EnumChecker::Add (int v, std::string name)
   m_valueSet.push_back (std::make_pair (v, name));
 }
 bool 
-EnumChecker::Check (PValue value) const
+EnumChecker::Check (Attribute value) const
 {
   const EnumValue *p = value.DynCast<const EnumValue *> ();
   if (p == 0)

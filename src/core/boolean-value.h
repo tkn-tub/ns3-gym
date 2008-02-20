@@ -14,12 +14,12 @@ public:
   void Set (bool value);
   bool Get (void) const;
 
-  virtual PValue Copy (void) const;
+  virtual Attribute Copy (void) const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
-  BooleanValue (PValue value);
-  operator PValue () const;
+  BooleanValue (Attribute value);
+  operator Attribute () const;
 private:
   bool m_value;
 };

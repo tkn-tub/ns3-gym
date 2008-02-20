@@ -299,12 +299,12 @@ RandomVariable::Peek (void) const
 {
   return m_variable;
 }
-RandomVariable::RandomVariable (PValue value)
+RandomVariable::RandomVariable (Attribute value)
   : m_variable (0)
 {
   *this = ClassValueHelperExtractFrom<RandomVariable,RandomVariableValue> (value);
 }
-RandomVariable::operator PValue () const
+RandomVariable::operator Attribute () const
 {
   return ClassValueHelperConvertTo<RandomVariable,RandomVariableValue> (this);
 }

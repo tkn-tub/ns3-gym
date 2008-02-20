@@ -7,10 +7,10 @@ namespace ns3 {
 IntValue::IntValue (int64_t value)
   : m_value (value)
 {}
-PValue
+Attribute
 IntValue::Copy (void) const
 {
-  return PValue::Create<IntValue> (*this);
+  return Attribute::Create<IntValue> (*this);
 }
 
 void 
@@ -45,7 +45,7 @@ IntValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> 
   return ok;
 }
 
-IntValue::IntValue (PValue value)
+IntValue::IntValue (Attribute value)
 {
   const IntValue *v = value.DynCast<const IntValue *> ();
   if (v == 0)
@@ -54,9 +54,9 @@ IntValue::IntValue (PValue value)
     }
   m_value = v->m_value;
 }
-IntValue::operator PValue () const
+IntValue::operator Attribute () const
 {
-  return PValue::Create<IntValue> (*this);
+  return Attribute::Create<IntValue> (*this);
 }
 
 Ptr<AttributeChecker>
@@ -67,7 +67,7 @@ MakeIntChecker (int64_t min, int64_t max)
     IntChecker (int64_t minValue, int64_t maxValue)
       : m_minValue (minValue),
       m_maxValue (maxValue) {}
-    virtual bool Check (PValue value) const {
+    virtual bool Check (Attribute value) const {
       const IntValue *v = value.DynCast<const IntValue *> ();
       if (v == 0)
 	{

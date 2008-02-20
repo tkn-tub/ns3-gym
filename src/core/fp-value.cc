@@ -7,10 +7,10 @@ namespace ns3 {
 FpValue::FpValue (double value)
   : m_value (value)
 {}
-PValue
+Attribute
 FpValue::Copy (void) const
 {
-  return PValue::Create<FpValue> (*this);
+  return Attribute::Create<FpValue> (*this);
 }
 
 void 
@@ -45,7 +45,7 @@ FpValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> c
   return ok;
 }
 
-FpValue::FpValue (PValue value)
+FpValue::FpValue (Attribute value)
 {
   const FpValue *v = value.DynCast<const FpValue *> ();
   if (v == 0)
@@ -54,9 +54,9 @@ FpValue::FpValue (PValue value)
     }
   m_value = v->m_value;
 }
-FpValue::operator PValue () const
+FpValue::operator Attribute () const
 {
-  return PValue::Create<FpValue> (*this);
+  return Attribute::Create<FpValue> (*this);
 }
 
 Ptr<AttributeChecker> MakeFpChecker (double min, double max)
@@ -66,7 +66,7 @@ Ptr<AttributeChecker> MakeFpChecker (double min, double max)
     Checker (double minValue, double maxValue)
       : m_minValue (minValue),
       m_maxValue (maxValue) {}
-    virtual bool Check (PValue value) const {
+    virtual bool Check (Attribute value) const {
       const FpValue *v = value.DynCast<const FpValue *> ();
       if (v == 0)
 	{

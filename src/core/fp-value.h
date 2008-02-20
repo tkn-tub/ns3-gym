@@ -12,15 +12,15 @@ class FpValue : public Value
 public:
   FpValue (double value);
 
-  virtual PValue Copy (void) const;
+  virtual Attribute Copy (void) const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
   void Set (double value);
   double Get (void) const;
 
-  FpValue (PValue value);
-  operator PValue () const;
+  FpValue (Attribute value);
+  operator Attribute () const;
 private:
   double m_value;
 };

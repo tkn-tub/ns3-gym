@@ -16,10 +16,10 @@ BooleanValue::Get (void) const
 {
   return m_value;
 }
-PValue
+Attribute
 BooleanValue::Copy (void) const
 {
-  return PValue::Create<BooleanValue> (*this);
+  return Attribute::Create<BooleanValue> (*this);
 }
 std::string 
 BooleanValue::SerializeToString (Ptr<const AttributeChecker> checker) const
@@ -57,7 +57,7 @@ BooleanValue::DeserializeFromString (std::string value, Ptr<const AttributeCheck
       return false;
     }  
 }
-BooleanValue::BooleanValue (PValue value)
+BooleanValue::BooleanValue (Attribute value)
 {
   const BooleanValue *v = value.DynCast<const BooleanValue *> ();
   if (v == 0)
@@ -66,9 +66,9 @@ BooleanValue::BooleanValue (PValue value)
     }
   m_value = v->m_value;
 }
-BooleanValue::operator PValue () const
+BooleanValue::operator Attribute () const
 {
-  return PValue::Create<BooleanValue> (*this);
+  return Attribute::Create<BooleanValue> (*this);
 }
 
 Ptr<AttributeChecker> MakeBooleanChecker (void)

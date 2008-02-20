@@ -11,15 +11,15 @@ class UintValue : public Value
 {
 public:
   UintValue (uint64_t value);
-  virtual PValue Copy (void) const;
+  virtual Attribute Copy (void) const;
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
   void Set (uint64_t value);
   uint64_t Get (void) const;
 
-  UintValue (PValue value);
-  operator PValue () const;
+  UintValue (Attribute value);
+  operator Attribute () const;
 private:
   uint64_t m_value;
 };

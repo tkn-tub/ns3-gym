@@ -26,15 +26,15 @@ MobilityHelper::SetPositionAllocator (Ptr<PositionAllocator> allocator)
 }
 void 
 MobilityHelper::SetPositionAllocator (std::string type,
-				      std::string n1, PValue v1,
-				      std::string n2, PValue v2,
-				      std::string n3, PValue v3,
-				      std::string n4, PValue v4,
-				      std::string n5, PValue v5,
-				      std::string n6, PValue v6,
-				      std::string n7, PValue v7,
-				      std::string n8, PValue v8,
-				      std::string n9, PValue v9)
+				      std::string n1, Attribute v1,
+				      std::string n2, Attribute v2,
+				      std::string n3, Attribute v3,
+				      std::string n4, Attribute v4,
+				      std::string n5, Attribute v5,
+				      std::string n6, Attribute v6,
+				      std::string n7, Attribute v7,
+				      std::string n8, Attribute v8,
+				      std::string n9, Attribute v9)
 {
   ObjectFactory pos;
   pos.SetTypeId (type);
@@ -52,15 +52,15 @@ MobilityHelper::SetPositionAllocator (std::string type,
 
 void 
 MobilityHelper::SetMobilityModel (std::string type,
-				  std::string n1, PValue v1,
-				  std::string n2, PValue v2,
-				  std::string n3, PValue v3,
-				  std::string n4, PValue v4,
-				  std::string n5, PValue v5,
-				  std::string n6, PValue v6,
-				  std::string n7, PValue v7,
-				  std::string n8, PValue v8,
-				  std::string n9, PValue v9)
+				  std::string n1, Attribute v1,
+				  std::string n2, Attribute v2,
+				  std::string n3, Attribute v3,
+				  std::string n4, Attribute v4,
+				  std::string n5, Attribute v5,
+				  std::string n6, Attribute v6,
+				  std::string n7, Attribute v7,
+				  std::string n8, Attribute v8,
+				  std::string n9, Attribute v9)
 {
   m_mobility.SetTypeId (type);
   m_mobility.Set (n1, v1);

@@ -107,11 +107,11 @@ Address::Register (void)
   return type;
 }
 
-Address::Address (PValue value)
+Address::Address (Attribute value)
 {
   *this = ClassValueHelperExtractFrom<Address,AddressValue> (value);
 }
-Address::operator PValue () const
+Address::operator Attribute () const
 {
   return ClassValueHelperConvertTo<Address,AddressValue> (this);
 }

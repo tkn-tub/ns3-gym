@@ -152,7 +152,7 @@ private:
   {							\
     const type expected = value;			\
     type got = value;					\
-    PValue v = p->Get (name);				\
+    Attribute v = p->Get (name);				\
     NS_TEST_ASSERT (v.DynCast<type *> () != 0);		\
     got = v;						\
     NS_TEST_ASSERT_EQUAL (got.Get (), expected.Get ());	\

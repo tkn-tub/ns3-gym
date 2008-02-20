@@ -26,7 +26,7 @@ Value::~Value ()
  *   ------------------------
  *
  * One might wonder why we re-implement a smart pointer below 
- * in the PValue class. This is a very good question and the answer
+ * in the Attribute class. This is a very good question and the answer
  * is unfortunately pretty complicated.
  *
  * 1) We could have requested the user to use Ptr<Value> and save us
@@ -36,16 +36,16 @@ Value::~Value ()
  *
  * 2) We could have made the m_value member variable below a Ptr<Value>
  *    rather than store a raw pointer. This, however, does not work
- *    because this would mean that the constructor PValue (Value *)
- *    should be morphed into PValue (Ptr<Value>) which, unfortunately,
- *    would conflict with the template constructor PValue (Ptr<T>)...
+ *    because this would mean that the constructor Attribute (Value *)
+ *    should be morphed into Attribute (Ptr<Value>) which, unfortunately,
+ *    would conflict with the template constructor Attribute (Ptr<T>)...
  *
  * This is definitely not fun.   
  */
-PValue::PValue ()
+Attribute::Attribute ()
   : m_value (0)
 {}
-PValue::PValue (const PValue &o)
+Attribute::Attribute (const Attribute &o)
   : m_value (o.m_value)
 {
   if (m_value != 0)
@@ -54,8 +54,8 @@ PValue::PValue (const PValue &o)
       NS_LOG_DEBUG ("this="<<m_value<<" ++count="<<m_value->m_count);
     }
 }
-PValue &
-PValue::operator = (const PValue &o)
+Attribute &
+Attribute::operator = (const Attribute &o)
 {
   if (&o != this)
     {
@@ -78,7 +78,7 @@ PValue::operator = (const PValue &o)
     }
   return *this;
 }
-PValue::~PValue ()
+Attribute::~Attribute ()
 {
   if (m_value != 0) 
     {
@@ -91,32 +91,32 @@ PValue::~PValue ()
 	}
     }
 }
-PValue::PValue (Value *value)
+Attribute::Attribute (Value *value)
   : m_value (value)
 {
   NS_LOG_DEBUG ("this="<<m_value<<" count="<<((m_value!=0)?m_value->m_count:666));
 }
 
-PValue 
-PValue::Copy (void) const
+Attribute 
+Attribute::Copy (void) const
 {
   return m_value->Copy ();
 }
 std::string 
-PValue::SerializeToString (Ptr<const AttributeChecker> checker) const
+Attribute::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   return m_value->SerializeToString (checker);
 }
 bool 
-PValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
+Attribute::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   return m_value->DeserializeFromString (value, checker);
 }
 
-PValue::PValue (const char *value)
+Attribute::Attribute (const char *value)
   : m_value (new StringValue (value))
 {}
-PValue::PValue (std::string value)
+Attribute::Attribute (std::string value)
   : m_value (new StringValue (value))
 {}
 
@@ -177,10 +177,10 @@ StringValue::Get (void) const
 {
   return m_value;
 }
-PValue 
+Attribute 
 StringValue::Copy (void) const
 {
-  return PValue::Create<StringValue> (*this);
+  return Attribute::Create<StringValue> (*this);
 }
 std::string 
 StringValue::SerializeToString (Ptr<const AttributeChecker> checker) const
@@ -193,7 +193,7 @@ StringValue::DeserializeFromString (std::string value, Ptr<const AttributeChecke
   m_value = value;
   return true;
 }
-StringValue::StringValue (PValue value)
+StringValue::StringValue (Attribute value)
 {
   const StringValue *v = value.DynCast<const StringValue *> ();
   if (v == 0)
@@ -202,9 +202,9 @@ StringValue::StringValue (PValue value)
     }
   m_value = v->Get ();
 }
-StringValue::operator PValue () const
+StringValue::operator Attribute () const
 {
-  return PValue::Create<StringValue> (*this);
+  return Attribute::Create<StringValue> (*this);
 }
 
 
