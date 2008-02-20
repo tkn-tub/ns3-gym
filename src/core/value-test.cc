@@ -72,7 +72,7 @@ public:
 		     MakeUintegerAccessor (&AccessorObjectTest::m_uint8),
 		     MakeUintegerChecker<uint8_t> ())
       .AddParameter ("TestEnum", "help text",
-		     EnumValue (TEST_A),
+		     Enum (TEST_A),
 		     MakeEnumAccessor (&AccessorObjectTest::m_enum),
 		     MakeEnumChecker (TEST_A, "TestA",
 				      TEST_B, "TestB",
@@ -289,19 +289,19 @@ AccessorTest::RunTests (void)
   CHECK_GET_PARAM (p, "TestFloat", FpValue, (float)+2.3);
 
   CHECK_GET_STR (p, "TestEnum", "TestA");
-  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AccessorObjectTest::TEST_A);
-  NS_TEST_ASSERT (p->Set ("TestEnum", EnumValue (AccessorObjectTest::TEST_C)));
+  CHECK_GET_PARAM (p, "TestEnum", Enum, AccessorObjectTest::TEST_A);
+  NS_TEST_ASSERT (p->Set ("TestEnum", Enum (AccessorObjectTest::TEST_C)));
   CHECK_GET_STR (p, "TestEnum", "TestC");
-  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AccessorObjectTest::TEST_C);
+  CHECK_GET_PARAM (p, "TestEnum", Enum, AccessorObjectTest::TEST_C);
   NS_TEST_ASSERT (p->Set ("TestEnum", "TestB"));
   CHECK_GET_STR (p, "TestEnum", "TestB");
-  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AccessorObjectTest::TEST_B);
+  CHECK_GET_PARAM (p, "TestEnum", Enum, AccessorObjectTest::TEST_B);
   NS_TEST_ASSERT (!p->Set ("TestEnum", "TestD"));
   CHECK_GET_STR (p, "TestEnum", "TestB");
-  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AccessorObjectTest::TEST_B);
-  NS_TEST_ASSERT (!p->Set ("TestEnum", EnumValue (5)));
+  CHECK_GET_PARAM (p, "TestEnum", Enum, AccessorObjectTest::TEST_B);
+  NS_TEST_ASSERT (!p->Set ("TestEnum", Enum (5)));
   CHECK_GET_STR (p, "TestEnum", "TestB");
-  CHECK_GET_PARAM (p, "TestEnum", EnumValue, AccessorObjectTest::TEST_B);
+  CHECK_GET_PARAM (p, "TestEnum", Enum, AccessorObjectTest::TEST_B);
 
   RandomVariable ran = p->Get ("TestRandom");
   NS_TEST_ASSERT (p->Set ("TestRandom", UniformVariable (0.0, 1.0)));

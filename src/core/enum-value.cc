@@ -5,27 +5,27 @@
 namespace ns3 {
 
 
-EnumValue::EnumValue (int v)
+Enum::Enum (int v)
   : m_v (v)
 {}
 void 
-EnumValue::Set (int v)
+Enum::Set (int v)
 {
   m_v = v;
 }
 int 
-EnumValue::Get (void) const
+Enum::Get (void) const
 {
   return m_v;
 }
 
 Attribute
-EnumValue::Copy (void) const
+Enum::Copy (void) const
 {
-  return Attribute::Create<EnumValue> (*this);
+  return Attribute::Create<Enum> (*this);
 }
 std::string 
-EnumValue::SerializeToString (Ptr<const AttributeChecker> checker) const
+Enum::SerializeToString (Ptr<const AttributeChecker> checker) const
 {
   const EnumChecker *p = dynamic_cast<const EnumChecker *> (PeekPointer (checker));
   NS_ASSERT (p != 0);
@@ -37,12 +37,12 @@ EnumValue::SerializeToString (Ptr<const AttributeChecker> checker) const
 	}
     }
   
-  NS_FATAL_ERROR ("The user has set an invalid C++ value in this EnumValue");
+  NS_FATAL_ERROR ("The user has set an invalid C++ value in this Enum");
   // quiet compiler.
   return "";
 }
 bool 
-EnumValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
+Enum::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
 {
   const EnumChecker *p = dynamic_cast<const EnumChecker *> (PeekPointer (checker));
   NS_ASSERT (p != 0);
@@ -57,18 +57,18 @@ EnumValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker>
   return false;
 }
 
-EnumValue::EnumValue (Attribute value)
+Enum::Enum (Attribute value)
 {
-  const EnumValue *v = value.DynCast<const EnumValue *> ();
+  const Enum *v = value.DynCast<const Enum *> ();
   if (v == 0)
     {
       NS_FATAL_ERROR ("assigning non-Enum value to Enum value.");
     }
   m_v = v->m_v;
 }
-EnumValue::operator Attribute () const
+Enum::operator Attribute () const
 {
-  return Attribute::Create<EnumValue> (*this);
+  return Attribute::Create<Enum> (*this);
 }
 
 
@@ -89,7 +89,7 @@ EnumChecker::Add (int v, std::string name)
 bool 
 EnumChecker::Check (Attribute value) const
 {
-  const EnumValue *p = value.DynCast<const EnumValue *> ();
+  const Enum *p = value.DynCast<const Enum *> ();
   if (p == 0)
     {
       return false;

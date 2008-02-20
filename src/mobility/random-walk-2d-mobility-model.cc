@@ -55,7 +55,7 @@ RandomWalk2dMobilityModel::GetTypeId (void)
     .AddParameter ("mode",
                    "The mode indicates the condition used to "
                    "change the current speed and direction",
-                   EnumValue (RandomWalk2dMobilityModel::MODE_DISTANCE),
+                   Enum (RandomWalk2dMobilityModel::MODE_DISTANCE),
                    MakeEnumAccessor (&RandomWalk2dMobilityModel::m_mode),
                    MakeEnumChecker (RandomWalk2dMobilityModel::MODE_DISTANCE, "Distance",
                                     RandomWalk2dMobilityModel::MODE_TIME, "Time"))

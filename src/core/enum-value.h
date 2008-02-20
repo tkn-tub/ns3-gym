@@ -7,10 +7,10 @@
 
 namespace ns3 {
 
-class EnumValue : public AttributeValue
+class Enum : public AttributeValue
 {
 public:
-  EnumValue (int v);
+  Enum (int v);
   void Set (int v);
   int Get (void) const;
 
@@ -18,7 +18,7 @@ public:
   virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 
-  EnumValue (Attribute value);
+  Enum (Attribute value);
   operator Attribute () const;
 private:
   int m_v;
@@ -36,7 +36,7 @@ public:
   virtual bool Check (Attribute value) const;
 
 private:
-  friend class EnumValue;
+  friend class Enum;
   typedef std::list<std::pair<int,std::string> > ValueSet;
   ValueSet m_valueSet;
 };
@@ -68,13 +68,13 @@ namespace ns3 {
 template <typename T1>
 Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1)
 {
-  return MakeAccessorHelper<EnumAccessor,EnumValue> (a1);
+  return MakeAccessorHelper<EnumAccessor,Enum> (a1);
 }
 
 template <typename T1, typename T2>
 Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1, T2 a2)
 {
-  return MakeAccessorHelper<EnumAccessor,EnumValue> (a1, a2);
+  return MakeAccessorHelper<EnumAccessor,Enum> (a1, a2);
 }
 
 } // namespace ns3

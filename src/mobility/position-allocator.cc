@@ -74,7 +74,7 @@ GridPositionAllocator::GetTypeId (void)
                    MakeFpAccessor (&GridPositionAllocator::m_deltaY),
                    MakeFpChecker<double> ())
     .AddParameter ("LayoutType", "The type of layout.",
-                   EnumValue (ROW_FIRST),
+                   Enum (ROW_FIRST),
                    MakeEnumAccessor (&GridPositionAllocator::m_layoutType),
                    MakeEnumChecker (ROW_FIRST, "RowFirst",
                                     COLUMN_FIRST, "ColumnFirst"))
