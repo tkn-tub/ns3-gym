@@ -6,16 +6,15 @@
 #include "fatal-error.h"
 
 #define ATTRIBUTE_ACCESSOR_DEFINE(type)					\
-  class type##Accessor : public AttributeAccessor {};			\
   template <typename T1>						\
   Ptr<const AttributeAccessor> Make##type##Accessor (T1 a1)		\
   {									\
-    return MakeAccessorHelper<type##Accessor,type##Value> (a1);		\
+    return MakeAccessorHelper<type##Value> (a1);		\
   }									\
   template <typename T1, typename T2>					\
   Ptr<const AttributeAccessor> Make##type##Accessor (T1 a1, T2 a2)	\
   {									\
-    return MakeAccessorHelper<type##Accessor,type##Value> (a1, a2);	\
+    return MakeAccessorHelper<type##Value> (a1, a2);	\
   }
 
 #define ATTRIBUTE_VALUE_DEFINE(type)					\

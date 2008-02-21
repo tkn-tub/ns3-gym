@@ -3,11 +3,11 @@
 
 namespace ns3 {
 
-template <typename BASE, typename V, typename T1>
+template <typename V, typename T1>
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1);
 
-template <typename BASE, typename V, typename T1, typename T2>
+template <typename V, typename T1, typename T2>
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1, T2 a2);
 
@@ -21,8 +21,8 @@ MakeAccessorHelper (T1 a1, T2 a2);
 
 namespace ns3 {
 
-template <typename BASE, typename T, typename U>
-class AccessorHelper : public BASE
+template <typename T, typename U>
+class AccessorHelper : public AttributeAccessor
 {
 public:
   AccessorHelper () {}
@@ -61,15 +61,15 @@ private:
   virtual bool DoGet (const T *object, U *v) const = 0;
 };
 
-template <typename BASE, typename V, typename T, typename U>
+template <typename V, typename T, typename U>
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (U T::*memberVariable)
 {
-  class MemberVariable : public AccessorHelper<BASE,T,V>
+  class MemberVariable : public AccessorHelper<T,V>
     {
     public:
       MemberVariable (U T::*memberVariable)
-	: AccessorHelper<BASE,T,V> (),
+	: AccessorHelper<T,V> (),
 	m_memberVariable (memberVariable)
 	{}
     private:
@@ -87,15 +87,15 @@ DoMakeAccessorHelperOne (U T::*memberVariable)
   return Ptr<const AttributeAccessor> (new MemberVariable (memberVariable), false);
 }
 
-template <typename BASE, typename V, typename T, typename U>
+template <typename V, typename T, typename U>
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (U (T::*getter) (void) const)
 {
-  class MemberMethod : public AccessorHelper<BASE,T,V>
+  class MemberMethod : public AccessorHelper<T,V>
     {
     public:
       MemberMethod (U (T::*getter) (void) const)
-	: AccessorHelper<BASE,T,V> (),
+	: AccessorHelper<T,V> (),
 	m_getter (getter)
 	{}
     private:
@@ -112,15 +112,15 @@ DoMakeAccessorHelperOne (U (T::*getter) (void) const)
 }
 
 
-template <typename BASE, typename V, typename T, typename U>
+template <typename V, typename T, typename U>
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperOne (void (T::*setter) (U))
 {
-  class MemberMethod : public AccessorHelper<BASE,T,V>
+  class MemberMethod : public AccessorHelper<T,V>
     {
     public:
       MemberMethod (void (T::*setter) (U))
-	: AccessorHelper<BASE,T,V> (),
+	: AccessorHelper<T,V> (),
 	m_setter (setter)
 	{}
     private:
@@ -136,17 +136,17 @@ DoMakeAccessorHelperOne (void (T::*setter) (U))
   return Ptr<const AttributeAccessor> (new MemberMethod (setter), false);
 }
 
-template <typename BASE, typename W, typename T, typename U, typename V>
+template <typename W, typename T, typename U, typename V>
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperTwo (void (T::*setter) (U), 
 			  V (T::*getter) (void) const)
 {
-  class MemberMethod : public AccessorHelper<BASE,T,W>
+  class MemberMethod : public AccessorHelper<T,W>
     {
     public:
       MemberMethod (void (T::*setter) (U), 
 		    V (T::*getter) (void) const)
-	: AccessorHelper<BASE,T,W> (),
+	: AccessorHelper<T,W> (),
 	m_setter (setter),
 	m_getter (getter)
 	{}
@@ -165,26 +165,26 @@ DoMakeAccessorHelperTwo (void (T::*setter) (U),
   return Ptr<const AttributeAccessor> (new MemberMethod (setter, getter), false);
 }
 
-template <typename BASE, typename W, typename T, typename U, typename V>
+template <typename W, typename T, typename U, typename V>
 Ptr<const AttributeAccessor>
 DoMakeAccessorHelperTwo (V (T::*getter) (void) const, 
 			  void (T::*setter) (U))
 {
-  return DoMakeAccessorHelperTwo<BASE,W> (setter, getter);
+  return DoMakeAccessorHelperTwo<W> (setter, getter);
 }
 
-template <typename BASE, typename V, typename T1>
+template <typename V, typename T1>
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1)
 {
-  return DoMakeAccessorHelperOne<BASE,V> (a1);
+  return DoMakeAccessorHelperOne<V> (a1);
 }
 
-template <typename BASE, typename V, typename T1, typename T2>
+template <typename V, typename T1, typename T2>
 Ptr<const AttributeAccessor>
 MakeAccessorHelper (T1 a1, T2 a2)
 {
-  return DoMakeAccessorHelperTwo<BASE,V> (a1, a2);
+  return DoMakeAccessorHelperTwo<V> (a1, a2);
 }
 
 } // namespace ns3

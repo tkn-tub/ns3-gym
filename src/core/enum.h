@@ -24,7 +24,6 @@ private:
   int m_v;
 };
 
-class EnumAccessor : public AttributeAccessor {};
 class EnumChecker : public AttributeChecker
 {
 public:
@@ -68,13 +67,13 @@ namespace ns3 {
 template <typename T1>
 Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1)
 {
-  return MakeAccessorHelper<EnumAccessor,Enum> (a1);
+  return MakeAccessorHelper<Enum> (a1);
 }
 
 template <typename T1, typename T2>
 Ptr<const AttributeAccessor> MakeEnumAccessor (T1 a1, T2 a2)
 {
-  return MakeAccessorHelper<EnumAccessor,Enum> (a1, a2);
+  return MakeAccessorHelper<Enum> (a1, a2);
 }
 
 } // namespace ns3
