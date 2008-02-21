@@ -980,7 +980,7 @@ Object::DoSet (Ptr<const AttributeAccessor> spec, Attribute initialValue,
   return ok;
 }
 bool
-Object::Set (std::string name, Attribute value)
+Object::SetAttribute (std::string name, Attribute value)
 {
   struct TypeId::AttributeInfo info;
   if (!m_tid.LookupAttributeByName (name, &info))
@@ -994,7 +994,7 @@ Object::Set (std::string name, Attribute value)
   return DoSet (info.accessor, info.initialValue, info.checker, value);
 }
 bool 
-Object::Get (std::string name, std::string &value) const
+Object::GetAttribute (std::string name, std::string &value) const
 {
   struct TypeId::AttributeInfo info;
   if (!m_tid.LookupAttributeByName (name, &info))
@@ -1015,7 +1015,7 @@ Object::Get (std::string name, std::string &value) const
 }
 
 Attribute
-Object::Get (std::string name) const
+Object::GetAttribute (std::string name) const
 {
   struct TypeId::AttributeInfo info;
   if (!m_tid.LookupAttributeByName (name, &info))

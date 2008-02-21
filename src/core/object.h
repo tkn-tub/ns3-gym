@@ -356,21 +356,21 @@ public:
    *
    * Set a single attribute.
    */
-  bool Set (std::string name, Attribute value);
+  bool SetAttribute (std::string name, Attribute value);
   /**
    * \param name the name of the attribute to read
    * \param value a reference to the string where the value of the 
    *        attribute should be stored.
    * \returns true if the requested attribute was found, false otherwise.
    */
-  bool Get (std::string name, std::string &value) const;
+  bool GetAttribute (std::string name, std::string &value) const;
   /**
    * \param name the name of the attribute to read
    * \param value a reference to the object where the value of the 
    *        attribute should be stored.
    * \returns true if the requested attribute was found, false otherwise.
    */
-  Attribute Get (std::string name) const;
+  Attribute GetAttribute (std::string name) const;
 
   /**
    * Increment the reference count. This method should not be called
@@ -733,7 +733,7 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
 
 template <typename T>
 Ptr<T> 
-CreateObjectWith (std::string n1, Attribute v1,
+CreateObjectWith (std::string n1 = "", Attribute v1 = Attribute (),
                   std::string n2 = "", Attribute v2 = Attribute ())
               
 {
