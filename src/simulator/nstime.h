@@ -22,7 +22,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/attribute.h"
-#include "ns3/value-helper.h"
+#include "ns3/attribute-helper.h"
 #include <stdint.h>
 #include <math.h>
 #include <ostream>

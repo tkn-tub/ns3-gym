@@ -2,7 +2,7 @@
 #define UINTEGER_H
 
 #include "attribute.h"
-#include "value-helper.h"
+#include "attribute-helper.h"
 #include <stdint.h>
 
 namespace ns3 {

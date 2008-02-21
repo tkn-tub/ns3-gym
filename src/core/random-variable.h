@@ -27,7 +27,7 @@
 #include <istream>
 #include <ostream>
 #include "attribute.h"
-#include "value-helper.h"
+#include "attribute-helper.h"
 
 /**
  * \ingroup core

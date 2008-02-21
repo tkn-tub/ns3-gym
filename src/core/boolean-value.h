@@ -2,7 +2,7 @@
 #define BOOLEAN_VALUE_H
 
 #include "attribute.h"
-#include "value-helper.h"
+#include "attribute-helper.h"
 
 namespace ns3 {
 

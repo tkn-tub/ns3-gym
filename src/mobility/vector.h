@@ -21,7 +21,7 @@
 #define VECTOR_H
 
 #include "ns3/attribute.h"
-#include "ns3/value-helper.h"
+#include "ns3/attribute-helper.h"
 
 namespace ns3 {
 
