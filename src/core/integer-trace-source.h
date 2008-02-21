@@ -39,10 +39,10 @@ public:
     return *this;
   }
 
-  void AddCallback (const CallbackBase & callback) {
+  void Connect (const CallbackBase & callback) {
     m_callback.AddCallback (callback);
   }
-  void RemoveCallback (const CallbackBase & callback) {
+  void Disconnect (const CallbackBase & callback) {
     m_callback.RemoveCallback (callback);
   }
 protected:

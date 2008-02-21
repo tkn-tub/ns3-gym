@@ -9,6 +9,7 @@
 #include "double.h"
 #include "object-vector.h"
 #include "integer-trace-source.h"
+#include "trace-source-accessor.h"
 
 namespace ns3 {
 
@@ -18,6 +19,10 @@ public:
   AttributeTest ();
   virtual bool RunTests (void);
 private:
+  void NotifySource1 (int64_t old, int64_t n) {
+    m_gotNew = n;
+  }
+  int64_t m_gotNew;
 };
 
 class Derived : public Object
@@ -104,6 +109,8 @@ public:
 		     MakeIntegerTraceSourceAccessor (&AttributeObjectTest::DoSetIntSrc,
 						     &AttributeObjectTest::DoGetIntSrc),
 		     MakeIntegerChecker<int8_t> ())
+      .AddTraceSource ("Source1", "help test",
+		       MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1))
       ;
         
     return tid;
@@ -384,6 +391,15 @@ AttributeTest::RunTests (void)
   NS_TEST_ASSERT (!p->SetAttribute ("IntegerTraceSource2", Integer (128)));
   NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource2", Integer (-128)));
   NS_TEST_ASSERT (!p->SetAttribute ("IntegerTraceSource2", Integer (-129)));
+
+  m_gotNew = -2;
+  NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource1", Integer (-1)));
+  NS_TEST_ASSERT (p->TraceSourceConnect ("Source1", MakeCallback (&AttributeTest::NotifySource1, this)));
+  NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource1", Integer (0)));
+  NS_TEST_ASSERT_EQUAL (m_gotNew, 0);
+  NS_TEST_ASSERT (p->TraceSourceDisconnect ("Source1", MakeCallback (&AttributeTest::NotifySource1, this)));
+  NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource1", Integer (1)));
+  NS_TEST_ASSERT_EQUAL (m_gotNew, 0);
 
   return result;
 }

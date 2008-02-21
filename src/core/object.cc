@@ -23,6 +23,7 @@
 #include "singleton.h"
 #include "trace-resolver.h"
 #include "attribute.h"
+#include "trace-source-accessor.h"
 #include "log.h"
 #include <vector>
 #include <sstream>
@@ -66,6 +67,15 @@ public:
   ns3::Attribute GetAttributeInitialValue (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::AttributeAccessor> GetAttributeAccessor (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::AttributeChecker> GetAttributeChecker (uint16_t uid, uint32_t i) const;
+  void AddTraceSource (uint16_t uid,
+                       std::string name, 
+                       std::string help,
+                       ns3::Ptr<const ns3::TraceSourceAccessor> accessor);
+  uint32_t GetTraceSourceN (uint16_t uid) const;
+  std::string GetTraceSourceName (uint16_t uid, uint32_t i) const;
+  std::string GetTraceSourceHelp (uint16_t uid, uint32_t i) const;
+  ns3::Ptr<const ns3::TraceSourceAccessor> GetTraceSourceAccessor (uint16_t uid, uint32_t i) const;
+
 private:
   struct ConstructorInformation {
     ns3::CallbackBase cb;
@@ -79,6 +89,11 @@ private:
     ns3::Ptr<const ns3::AttributeAccessor> param;
     ns3::Ptr<const ns3::AttributeChecker> checker;
   };
+  struct TraceSourceInformation {
+    std::string name;
+    std::string help;
+    ns3::Ptr<const ns3::TraceSourceAccessor> accessor;
+  };
   struct IidInformation {
     std::string name;
     uint16_t parent;
@@ -86,6 +101,7 @@ private:
     std::string groupName;
     std::vector<struct ConstructorInformation> constructors;
     std::vector<struct AttributeInformation> attributes;
+    std::vector<struct TraceSourceInformation> traceSources;
   };
   typedef std::vector<struct IidInformation>::const_iterator Iterator;
 
@@ -311,6 +327,47 @@ IidManager::GetAttributeChecker (uint16_t uid, uint32_t i) const
   struct IidInformation *information = LookupInformation (uid);
   NS_ASSERT (i < information->attributes.size ());
   return information->attributes[i].checker;
+}
+
+void 
+IidManager::AddTraceSource (uint16_t uid,
+                            std::string name, 
+                            std::string help,
+                            ns3::Ptr<const ns3::TraceSourceAccessor> accessor)
+{
+  struct IidInformation *information  = LookupInformation (uid);
+  struct TraceSourceInformation source;
+  source.name = name;
+  source.help = help;
+  source.accessor = accessor;
+  information->traceSources.push_back (source);
+}
+uint32_t 
+IidManager::GetTraceSourceN (uint16_t uid) const
+{
+  struct IidInformation *information = LookupInformation (uid);
+  return information->traceSources.size ();
+}
+std::string 
+IidManager::GetTraceSourceName (uint16_t uid, uint32_t i) const
+{
+  struct IidInformation *information = LookupInformation (uid);
+  NS_ASSERT (i < information->traceSources.size ());
+  return information->traceSources[i].name;
+}
+std::string 
+IidManager::GetTraceSourceHelp (uint16_t uid, uint32_t i) const
+{
+  struct IidInformation *information = LookupInformation (uid);
+  NS_ASSERT (i < information->traceSources.size ());
+  return information->traceSources[i].help;
+}
+ns3::Ptr<const ns3::TraceSourceAccessor> 
+IidManager::GetTraceSourceAccessor (uint16_t uid, uint32_t i) const
+{
+  struct IidInformation *information = LookupInformation (uid);
+  NS_ASSERT (i < information->traceSources.size ());
+  return information->traceSources[i].accessor;
 }
 
 } // anonymous namespace
@@ -631,6 +688,56 @@ TypeId::GetAttributeChecker (uint32_t i) const
   return checker;
 }
 
+uint32_t 
+TypeId::GetTraceSourceN (void) const
+{
+  return Singleton<IidManager>::Get ()->GetTraceSourceN (m_tid);
+}
+std::string 
+TypeId::GetTraceSourceName (uint32_t i) const
+{
+  return Singleton<IidManager>::Get ()->GetTraceSourceName (m_tid, i);
+}
+std::string 
+TypeId::GetTraceSourceHelp (uint32_t i) const
+{
+  return Singleton<IidManager>::Get ()->GetTraceSourceHelp (m_tid, i);
+}
+Ptr<const TraceSourceAccessor> 
+TypeId::GetTraceSourceAccessor (uint32_t i) const
+{
+  return Singleton<IidManager>::Get ()->GetTraceSourceAccessor (m_tid, i);
+}
+
+TypeId 
+TypeId::AddTraceSource (std::string name,
+                        std::string help,
+                        Ptr<const TraceSourceAccessor> accessor)
+{
+  Singleton<IidManager>::Get ()->AddTraceSource (m_tid, name, help, accessor);
+  return *this;
+}
+
+
+Ptr<const TraceSourceAccessor> 
+TypeId::LookupTraceSourceByName (std::string name) const
+{
+  TypeId tid = TypeId (0);
+  TypeId nextTid = *this;
+  do {
+    tid = nextTid;
+    for (uint32_t i = 0; i < tid.GetTraceSourceN (); i++)
+      {
+        std::string srcName = tid.GetTraceSourceName (i);
+        if (srcName == name)
+          {
+            return tid.GetTraceSourceAccessor (i);
+          }
+      }
+    nextTid = tid.GetParent ();
+  } while (nextTid != tid);
+  return 0;
+}
 
 bool operator == (TypeId a, TypeId b)
 {
@@ -1034,6 +1141,30 @@ Object::GetAttribute (std::string name) const
     }
   return value;
 }
+
+bool 
+Object::TraceSourceConnect (std::string name, const CallbackBase &cb)
+{
+  Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
+  if (accessor == 0)
+    {
+      return false;
+    }
+  bool ok = accessor->Connect (this, cb);
+  return ok;
+}
+bool 
+Object::TraceSourceDisconnect (std::string name, const CallbackBase &cb)
+{
+  Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
+  if (accessor == 0)
+    {
+      return false;
+    }
+  bool ok = accessor->Disconnect (this, cb);
+  return ok;
+}
+
 
 Ptr<Object>
 Object::DoGetObject (TypeId tid) const

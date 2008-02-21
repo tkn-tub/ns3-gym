@@ -47,6 +47,7 @@ class Object;
 class AttributeAccessor;
 class AttributeValue;
 class AttributeList;
+class TraceSourceAccessor;
 
 /**
  * \brief a unique identifier for an interface.
@@ -140,6 +141,11 @@ public:
 
   Attribute GetAttributeInitialValue (uint32_t i) const;
 
+  uint32_t GetTraceSourceN (void) const;
+  std::string GetTraceSourceName (uint32_t i) const;
+  std::string GetTraceSourceHelp (uint32_t i) const;
+  Ptr<const TraceSourceAccessor> GetTraceSourceAccessor (uint32_t i) const;
+
   Ptr<Object> CreateObject (const AttributeList &attributes) const;
 
 
@@ -227,8 +233,12 @@ public:
                        std::string help, 
                        uint32_t flags,
                        Attribute initialValue,
-                       Ptr<const AttributeAccessor> spec,
+                       Ptr<const AttributeAccessor> accessor,
                        Ptr<const AttributeChecker> checker);
+
+  TypeId AddTraceSource (std::string name,
+                         std::string help,
+                         Ptr<const TraceSourceAccessor> accessor);
 
   // construct an invalid TypeId.
   TypeId ();
@@ -245,6 +255,8 @@ private:
     uint32_t flags;
     Ptr<const AttributeChecker> checker;
   };
+
+  Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
 
   /**
    * \param name the name of the requested attribute
@@ -371,6 +383,9 @@ public:
    * \returns true if the requested attribute was found, false otherwise.
    */
   Attribute GetAttribute (std::string name) const;
+
+  bool TraceSourceConnect (std::string name, const CallbackBase &cb);
+  bool TraceSourceDisconnect (std::string name, const CallbackBase &cb);
 
   /**
    * Increment the reference count. This method should not be called

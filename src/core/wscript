@@ -64,6 +64,7 @@ def build(bld):
         'object-vector.cc',
         'initial-value.cc',
         'event-trace-source.cc',
+        'trace-source-accessor.cc',
         ]
 
     if sys.platform == 'win32':
@@ -119,5 +120,7 @@ def build(bld):
         'attribute-helper.h',
         'initial-value.h',
         'event-trace-source.h',
+        'integer-trace-source.h',
+        'trace-source-accessor.h',
         ]
 
