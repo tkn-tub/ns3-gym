@@ -1,8 +1,9 @@
 #ifndef VALUE_HELPER_H
 #define VALUE_HELPER_H
 
-#include "class-value-helper.h"
-
+#include "param-spec-helper.h"
+#include <sstream>
+#include "fatal-error.h"
 
 #define ATTRIBUTE_ACCESSOR_DEFINE(type)					\
   class type##Accessor : public AttributeAccessor {};			\
