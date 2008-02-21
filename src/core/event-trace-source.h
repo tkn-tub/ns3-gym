@@ -40,8 +40,8 @@ class EventTraceSource
 {
 public:
   EventTraceSource ();
-  void AddCallback (const CallbackBase & callback);
-  void RemoveCallback (const CallbackBase & callback);
+  void Connect (const CallbackBase & callback);
+  void Disconnect (const CallbackBase & callback);
   void operator() (void) const;
   void operator() (T1 a1) const;
   void operator() (T1 a1, T2 a2) const;
@@ -68,7 +68,7 @@ EventTraceSource<T1,T2,T3,T4>::EventTraceSource ()
 template<typename T1, typename T2, 
          typename T3, typename T4>
 void 
-EventTraceSource<T1,T2,T3,T4>::AddCallback (const CallbackBase & callback)
+EventTraceSource<T1,T2,T3,T4>::Connect (const CallbackBase & callback)
 {
   Callback<void,T1,T2,T3,T4> cb;
   cb.Assign (callback);
@@ -77,7 +77,7 @@ EventTraceSource<T1,T2,T3,T4>::AddCallback (const CallbackBase & callback)
 template<typename T1, typename T2, 
          typename T3, typename T4>
 void 
-EventTraceSource<T1,T2,T3,T4>::RemoveCallback (const CallbackBase & callback)
+EventTraceSource<T1,T2,T3,T4>::Disconnect (const CallbackBase & callback)
 {
   for (typename CallbackList::iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); /* empty */)

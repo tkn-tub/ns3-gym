@@ -61,29 +61,29 @@ EventTraceSourceTest::RunTests (void)
   bool result = true;
 
   EventTraceSource<uint8_t,double> trace;
-  trace.AddCallback (MakeCallback (&EventTraceSourceTest::CbOne, this));
-  trace.AddCallback (MakeCallback (&EventTraceSourceTest::CbTwo, this));
+  trace.Connect (MakeCallback (&EventTraceSourceTest::CbOne, this));
+  trace.Connect (MakeCallback (&EventTraceSourceTest::CbTwo, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
   NS_TEST_ASSERT (m_one);
   NS_TEST_ASSERT (m_two);
 
-  trace.RemoveCallback (MakeCallback (&EventTraceSourceTest::CbOne, this));
+  trace.Disconnect (MakeCallback (&EventTraceSourceTest::CbOne, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
   NS_TEST_ASSERT (!m_one);
   NS_TEST_ASSERT (m_two);
-  trace.RemoveCallback (MakeCallback (&EventTraceSourceTest::CbTwo, this));
+  trace.Disconnect (MakeCallback (&EventTraceSourceTest::CbTwo, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
   NS_TEST_ASSERT (!m_one);
   NS_TEST_ASSERT (!m_two);
 
-  trace.AddCallback (MakeCallback (&EventTraceSourceTest::CbOne, this));
-  trace.AddCallback (MakeCallback (&EventTraceSourceTest::CbTwo, this));
+  trace.Connect (MakeCallback (&EventTraceSourceTest::CbOne, this));
+  trace.Connect (MakeCallback (&EventTraceSourceTest::CbTwo, this));
   m_one = false;
   m_two = false;
   trace (1, 2);

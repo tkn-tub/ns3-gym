@@ -40,10 +40,10 @@ public:
   }
 
   void Connect (const CallbackBase & callback) {
-    m_callback.AddCallback (callback);
+    m_callback.Connect (callback);
   }
   void Disconnect (const CallbackBase & callback) {
-    m_callback.RemoveCallback (callback);
+    m_callback.Disconnect (callback);
   }
 protected:
   void Notify (int64_t oldVal, int64_t newVal) {

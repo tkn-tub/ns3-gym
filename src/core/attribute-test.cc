@@ -20,9 +20,13 @@ public:
   virtual bool RunTests (void);
 private:
   void NotifySource1 (int64_t old, int64_t n) {
-    m_gotNew = n;
+    m_got1 = n;
   }
-  int64_t m_gotNew;
+  void NotifySource2 (double a, int b, float c) {
+    m_got2 = a;
+  }
+  int64_t m_got1;
+  double m_got2;
 };
 
 class Derived : public Object
@@ -111,6 +115,9 @@ public:
 		     MakeIntegerChecker<int8_t> ())
       .AddTraceSource ("Source1", "help test",
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1))
+
+      .AddTraceSource ("Source2", "help text",
+		       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb))
       ;
         
     return tid;
@@ -121,6 +128,10 @@ public:
   }
   void AddToVector2 (void) {
     m_vector2.push_back (CreateObject<Derived> ());
+  }
+
+  void InvokeCb (double a, int b, float c) {
+    m_cb (a,b,c);
   }
 
 private:
@@ -162,6 +173,7 @@ private:
   std::vector<Ptr<Derived> > m_vector2;
   IntegerTraceSource<int8_t> m_intSrc1;
   IntegerTraceSource<int8_t> m_intSrc2;
+  EventTraceSource<double, int, float> m_cb;
 };
 
 
@@ -392,14 +404,27 @@ AttributeTest::RunTests (void)
   NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource2", Integer (-128)));
   NS_TEST_ASSERT (!p->SetAttribute ("IntegerTraceSource2", Integer (-129)));
 
-  m_gotNew = -2;
+  m_got1 = -2;
   NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource1", Integer (-1)));
   NS_TEST_ASSERT (p->TraceSourceConnect ("Source1", MakeCallback (&AttributeTest::NotifySource1, this)));
   NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource1", Integer (0)));
-  NS_TEST_ASSERT_EQUAL (m_gotNew, 0);
+  NS_TEST_ASSERT_EQUAL (m_got1, 0);
   NS_TEST_ASSERT (p->TraceSourceDisconnect ("Source1", MakeCallback (&AttributeTest::NotifySource1, this)));
   NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource1", Integer (1)));
-  NS_TEST_ASSERT_EQUAL (m_gotNew, 0);
+  NS_TEST_ASSERT_EQUAL (m_got1, 0);
+
+  m_got2 = 4.3;
+  p->InvokeCb (1.0, -5, 0.0);
+  NS_TEST_ASSERT_EQUAL (m_got2, 4.3);
+  NS_TEST_ASSERT (p->TraceSourceConnect ("Source2", MakeCallback (&AttributeTest::NotifySource2, this)));
+  NS_TEST_ASSERT_EQUAL (m_got2, 4.3);
+  p->InvokeCb (1.0, -5, 0.0);
+  NS_TEST_ASSERT_EQUAL (m_got2, 1.0);
+  NS_TEST_ASSERT (p->TraceSourceDisconnect ("Source2", MakeCallback (&AttributeTest::NotifySource2, this)));
+  p->InvokeCb (-1.0, -5, 0.0);
+  NS_TEST_ASSERT_EQUAL (m_got2, 1.0);
+  
+
 
   return result;
 }
