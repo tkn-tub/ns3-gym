@@ -41,55 +41,55 @@ public:
   static TypeId GetTypeId (void) {
     static TypeId tid = TypeId ("AttributeObjectTest")
       .SetParent<Object> ()
-      .AddParameter ("TestBoolName", "help text",
+      .AddAttribute ("TestBoolName", "help text",
 		     Boolean (false),
 		     MakeBooleanAccessor (&AttributeObjectTest::m_boolTest),
 		     MakeBooleanChecker ())
-      .AddParameter ("TestBoolA", "help text",
+      .AddAttribute ("TestBoolA", "help text",
 		     Boolean (false),
 		     MakeBooleanAccessor (&AttributeObjectTest::DoSetTestB,
 					   &AttributeObjectTest::DoGetTestB),
 		     MakeBooleanChecker ())
-      .AddParameter ("TestPtr", "help text", 
+      .AddAttribute ("TestPtr", "help text", 
 		     Ptr<Derived> (0),
 		     MakePtrAccessor (&AttributeObjectTest::m_derived),
 		     MakePtrChecker<Derived> ())
-      .AddParameter ("TestInt16", "help text",
+      .AddAttribute ("TestInt16", "help text",
 		     Integer (-2),
 		     MakeIntegerAccessor (&AttributeObjectTest::m_int16),
 		     MakeIntegerChecker<int16_t> ())
-      .AddParameter ("TestInt16WithBounds", "help text",
+      .AddAttribute ("TestInt16WithBounds", "help text",
 		     Integer (-2),
 		     MakeIntegerAccessor (&AttributeObjectTest::m_int16WithBounds),
 		     MakeIntegerChecker (-5, 10))
-      .AddParameter ("TestInt16SetGet", "help text",
+      .AddAttribute ("TestInt16SetGet", "help text",
 		     Integer (6),
 		     MakeIntegerAccessor (&AttributeObjectTest::DoSetInt16,
 				       &AttributeObjectTest::DoGetInt16),
 		     MakeIntegerChecker<int16_t> ())
-      .AddParameter ("TestUint8", "help text",
+      .AddAttribute ("TestUint8", "help text",
 		     Uinteger (1),
 		     MakeUintegerAccessor (&AttributeObjectTest::m_uint8),
 		     MakeUintegerChecker<uint8_t> ())
-      .AddParameter ("TestEnum", "help text",
+      .AddAttribute ("TestEnum", "help text",
 		     Enum (TEST_A),
 		     MakeEnumAccessor (&AttributeObjectTest::m_enum),
 		     MakeEnumChecker (TEST_A, "TestA",
 				      TEST_B, "TestB",
 				      TEST_C, "TestC"))
-      .AddParameter ("TestRandom", "help text",
+      .AddAttribute ("TestRandom", "help text",
 		     ConstantVariable (1.0),
 		     MakeRandomVariableAccessor (&AttributeObjectTest::m_random),
 		     MakeRandomVariableChecker ())
-      .AddParameter ("TestFloat", "help text",
+      .AddAttribute ("TestFloat", "help text",
 		     Double (-1.1),
 		     MakeDoubleAccessor (&AttributeObjectTest::m_float),
 		     MakeDoubleChecker<float> ())
-      .AddParameter ("TestVector1", "help text",
+      .AddAttribute ("TestVector1", "help text",
 		     ObjectVector (),
 		     MakeObjectVectorAccessor (&AttributeObjectTest::m_vector1),
 		     MakeObjectVectorChecker ())
-      .AddParameter ("TestVector2", "help text",
+      .AddAttribute ("TestVector2", "help text",
 		     ObjectVector (),
 		     MakeObjectVectorAccessor (&AttributeObjectTest::DoGetVectorN,
 						&AttributeObjectTest::DoGetVector),
@@ -167,7 +167,7 @@ AttributeTest::RunTests (void)
 {
   bool result = true;
 
-  Parameters params;
+  Attributes params;
   Ptr<AttributeObjectTest> p;
   NS_TEST_ASSERT (params.Set ("AttributeObjectTest::TestBoolName", "false"));
   p = CreateObject<AttributeObjectTest> (params);
@@ -344,11 +344,11 @@ AttributeTest::RunTests (void)
   p->Set ("TestBool", "false");
   NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "false");
 
-  Parameters::GetGlobal ()->Set ("TestBool", "true");
+  Attributes::GetGlobal ()->Set ("TestBool", "true");
   p = CreateObjectWith<AttributeObjectTest> ();
   NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "true");
 
-  Parameters::GetGlobal ()->Set ("TestBool", "false");
+  Attributes::GetGlobal ()->Set ("TestBool", "false");
   p = CreateObjectWith<AttributeObjectTest> ();
   NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "false");
 #endif

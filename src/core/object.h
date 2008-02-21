@@ -46,7 +46,7 @@ class CallbackBase;
 class Object;
 class AttributeAccessor;
 class AttributeValue;
-class Parameters;
+class Attributes;
 
 /**
  * \brief a unique identifier for an interface.
@@ -55,7 +55,7 @@ class Parameters;
  * subclass of the Object base class:
  *  - the base class of the subclass
  *  - the set of accessible constructors in the subclass
- *  - the set of 'parameters' accessible in the subclass
+ *  - the set of 'attributes' accessible in the subclass
  */
 class TypeId
 {
@@ -122,25 +122,25 @@ public:
   bool HasConstructor (void) const;
 
   /**
-   * \returns the number of parameters associated to this TypeId
+   * \returns the number of attributes associated to this TypeId
    */
-  uint32_t GetParametersN (void) const;
+  uint32_t GetAttributesN (void) const;
   /**
-   * \param i index into parameter array
-   * \returns the name associated to the parameter whose
+   * \param i index into attribute array
+   * \returns the name associated to the attribute whose
    *          index is \i i.
    */
-  std::string GetParameterName (uint32_t i) const;
+  std::string GetAttributeName (uint32_t i) const;
   /**
-   * \param i index into parameter array
-   * \returns the full name associated to the parameter whose
+   * \param i index into attribute array
+   * \returns the full name associated to the attribute whose
    *          index is \i i.
    */
-  std::string GetParameterFullName (uint32_t i) const;
+  std::string GetAttributeFullName (uint32_t i) const;
 
-  Attribute GetParameterInitialValue (uint32_t i) const;
+  Attribute GetAttributeInitialValue (uint32_t i) const;
 
-  Ptr<Object> CreateObject (const Parameters &parameters) const;
+  Ptr<Object> CreateObject (const Attributes &attributes) const;
 
 
   Ptr<Object> CreateObject (void) const;
@@ -199,31 +199,31 @@ public:
   TypeId AddConstructor (void);
 
   /**
-   * \param name the name of the new parameter
+   * \param name the name of the new attribute
    * \param help some help text which describes the purpose of this
-   *        parameter
+   *        attribute
    * \param param an instance of the associated Accessor subclass
    * \returns this TypeId instance
    *
-   * Record in this TypeId the fact that a new parameter exists.
+   * Record in this TypeId the fact that a new attribute exists.
    */
-  TypeId AddParameter (std::string name,
+  TypeId AddAttribute (std::string name,
                        std::string help, 
                        Attribute initialValue,
                        Ptr<const AttributeAccessor> spec,
                        Ptr<const AttributeChecker> checker);
 
   /**
-   * \param name the name of the new parameter
+   * \param name the name of the new attribute
    * \param help some help text which describes the purpose of this
-   *        parameter
-   * \param flags flags which describe how this parameter can be read and/or written.
+   *        attribute
+   * \param flags flags which describe how this attribute can be read and/or written.
    * \param param an instance of the associated Accessor subclass
    * \returns this TypeId instance
    *
-   * Record in this TypeId the fact that a new parameter exists.
+   * Record in this TypeId the fact that a new attribute exists.
    */
-  TypeId AddParameter (std::string name,
+  TypeId AddAttribute (std::string name,
                        std::string help, 
                        uint32_t flags,
                        Attribute initialValue,
@@ -235,63 +235,63 @@ public:
   ~TypeId ();
 private:
   friend class Object;
-  friend class Parameters;
+  friend class Attributes;
   friend bool operator == (TypeId a, TypeId b);
   friend bool operator != (TypeId a, TypeId b);
 
-  struct ParameterInfo {
-    Ptr<const AttributeAccessor> spec;
+  struct AttributeInfo {
+    Ptr<const AttributeAccessor> accessor;
     Attribute initialValue;
     uint32_t flags;
     Ptr<const AttributeChecker> checker;
   };
 
   /**
-   * \param name the name of the requested parameter
-   * \returns the Accessor associated to the requested parameter
+   * \param name the name of the requested attribute
+   * \returns the Accessor associated to the requested attribute
    */
-  bool LookupParameterByName (std::string name, struct ParameterInfo *info) const;
+  bool LookupAttributeByName (std::string name, struct AttributeInfo *info) const;
   /**
-   * \param i the position of the requested parameter
-   * \returns the Accessor associated to the requested parameter
+   * \param i the position of the requested attribute
+   * \returns the Accessor associated to the requested attribute
    */
-  bool LookupParameterByPosition (uint32_t i, struct ParameterInfo *info) const;
+  bool LookupAttributeByPosition (uint32_t i, struct AttributeInfo *info) const;
   /**
-   * \param fullName the full name of the requested parameter
-   * \returns the Accessor associated to the requested parameter
+   * \param fullName the full name of the requested attribute
+   * \returns the Accessor associated to the requested attribute
    */
-  static bool LookupParameterByFullName (std::string fullName, struct ParameterInfo *info);
+  static bool LookupAttributeByFullName (std::string fullName, struct AttributeInfo *info);
 
   explicit TypeId (uint16_t tid);
   void DoAddConstructor (CallbackBase callback, uint32_t nArguments);
   CallbackBase LookupConstructor (uint32_t nArguments) const;
-  Ptr<const AttributeAccessor> GetParameterAccessor (uint32_t i) const;
-  uint32_t GetParameterFlags (uint32_t i) const;
-  Ptr<const AttributeChecker> GetParameterChecker (uint32_t i) const;
+  Ptr<const AttributeAccessor> GetAttributeAccessor (uint32_t i) const;
+  uint32_t GetAttributeFlags (uint32_t i) const;
+  Ptr<const AttributeChecker> GetAttributeChecker (uint32_t i) const;
   
   uint16_t m_tid;
 };
 
 
 /**
- * \brief a container of parameters to be used during object's construction
+ * \brief a container of attributes to be used during object's construction
  *        and in ns3::Object::Set.
  *
  */
-class Parameters
+class Attributes
 {
 public:
-  Parameters ();
-  Parameters (const Parameters &o);
-  Parameters &operator = (const Parameters &o);
-  ~Parameters ();
+  Attributes ();
+  Attributes (const Attributes &o);
+  Attributes &operator = (const Attributes &o);
+  ~Attributes ();
   /**
-   * \param name the name of the parameter to set
+   * \param name the name of the attribute to set
    * \param value the value to set
    *
-   * This method checks that a parameter with the requested
+   * This method checks that a attribute with the requested
    * name exists and that the value specified is an acceptable
-   * value of that parameter. If any of these checks fails,
+   * value of that attribute. If any of these checks fails,
    * the program terminates with a message.
    */
   bool Set (std::string name, Attribute value);
@@ -305,36 +305,36 @@ public:
   void Reset (void);
 
   /**
-   * \returns the global parameter container
+   * \returns the global attribute container
    *
-   * The global parameter container can be used to specify
-   * a set of parameter values without having to re-specify
+   * The global attribute container can be used to specify
+   * a set of attribute values without having to re-specify
    * them for each object when it is created. This container
    * is checked only during object construction and 
    * it is always checked last, after any per-object
    * container is checked.
    */
-  static Parameters *GetGlobal (void);
+  static Attributes *GetGlobal (void);
 
   std::string SerializeToString (void) const;
   bool DeserializeFromString (std::string value);
 private:
   friend class Object;
-  struct Param {
+  struct Attr {
     Ptr<const AttributeChecker> checker;
     Attribute value;
   };
-  typedef std::vector<struct Param> Params;
-  typedef Params::iterator Iterator;
-  typedef Params::const_iterator CIterator;
+  typedef std::vector<struct Attr> Attrs;
+  typedef Attrs::iterator Iterator;
+  typedef Attrs::const_iterator CIterator;
 
 
 
-  bool DoSet (struct TypeId::ParameterInfo *info, Attribute param);
+  bool DoSet (struct TypeId::AttributeInfo *info, Attribute param);
   void DoSetOne (Ptr<const AttributeChecker> checker, Attribute param);
-  std::string LookupParameterFullNameByChecker (Ptr<const AttributeChecker> checker) const;
+  std::string LookupAttributeFullNameByChecker (Ptr<const AttributeChecker> checker) const;
 
-  Params m_parameters;
+  Attrs m_attributes;
 };
 
 
@@ -351,24 +351,24 @@ public:
   virtual ~Object ();
 
   /**
-   * \param name the name of the parameter to set
-   * \param value the name of the parameter to set
+   * \param name the name of the attribute to set
+   * \param value the name of the attribute to set
    *
-   * Set a single parameter.
+   * Set a single attribute.
    */
   bool Set (std::string name, Attribute value);
   /**
-   * \param name the name of the parameter to read
+   * \param name the name of the attribute to read
    * \param value a reference to the string where the value of the 
-   *        parameter should be stored.
-   * \returns true if the requested parameter was found, false otherwise.
+   *        attribute should be stored.
+   * \returns true if the requested attribute was found, false otherwise.
    */
   bool Get (std::string name, std::string &value) const;
   /**
-   * \param name the name of the parameter to read
+   * \param name the name of the attribute to read
    * \param value a reference to the object where the value of the 
-   *        parameter should be stored.
-   * \returns true if the requested parameter was found, false otherwise.
+   *        attribute should be stored.
+   * \returns true if the requested attribute was found, false otherwise.
    */
   Attribute Get (std::string name) const;
 
@@ -450,7 +450,7 @@ private:
   friend class TypeIdTraceResolver;
 
   template <typename T>
-  friend Ptr<T> CreateObject (const Parameters &parameters);
+  friend Ptr<T> CreateObject (const Attributes &attributes);
 
   template <typename T>
   friend Ptr<T> CreateObject (void);
@@ -494,14 +494,14 @@ private:
    */
   void SetTypeId (TypeId tid);
   /**
-   * \param parameters the parameter values used to initialize 
+   * \param attributes the attribute values used to initialize 
    *        the member variables of this object's instance.
    *
    * Invoked from ns3::CreateObject only.
    * Initialize all the member variables which were
    * registered with the associated TypeId.
    */
-  void Construct (const Parameters &parameters);
+  void Construct (const Attributes &attributes);
 
   /**
    * The reference count for this object. Each aggregate
@@ -551,8 +551,8 @@ TypeId
 TypeId::AddConstructor (void)
 {
   struct Maker {
-    static Ptr<Object> Create (const Parameters &parameters) {
-      return ns3::CreateObject<T> (parameters);
+    static Ptr<Object> Create (const Attributes &attributes) {
+      return ns3::CreateObject<T> (attributes);
     }
   };
   CallbackBase cb = MakeCallback (&Maker::Create);
@@ -656,11 +656,11 @@ Object::GetObject (TypeId tid) const
 
 
 template <typename T>
-Ptr<T> CreateObject (const Parameters &parameters)
+Ptr<T> CreateObject (const Attributes &attributes)
 {
   Ptr<T> p = Ptr<T> (new T (), false);
   p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (parameters);
+  p->Object::Construct (attributes);
   return p;  
 }
 
@@ -669,7 +669,7 @@ Ptr<T> CreateObject (void)
 {
   Ptr<T> p = Ptr<T> (new T (), false);
   p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (Parameters ());
+  p->Object::Construct (Attributes ());
   return p;
 }
 
@@ -678,7 +678,7 @@ Ptr<T> CreateObject (T1 a1)
 {
   Ptr<T> p = Ptr<T> (new T (a1), false);
   p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (Parameters ());
+  p->Object::Construct (Attributes ());
   return p;
 }
 
@@ -687,7 +687,7 @@ Ptr<T> CreateObject (T1 a1, T2 a2)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2), false);
   p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (Parameters ());
+  p->Object::Construct (Attributes ());
   return p;
 }
 template <typename T, typename T1, typename T2, typename T3>
@@ -737,10 +737,10 @@ CreateObjectWith (std::string n1, Attribute v1,
                   std::string n2 = "", Attribute v2 = Attribute ())
               
 {
-  Parameters parameters;
-  parameters.SetWithTid (T::GetTypeId (), n1, v1);
-  parameters.SetWithTid (T::GetTypeId (), n2, v2);
-  return CreateObject<T> (parameters);
+  Attributes attributes;
+  attributes.SetWithTid (T::GetTypeId (), n1, v1);
+  attributes.SetWithTid (T::GetTypeId (), n2, v2);
+  return CreateObject<T> (attributes);
 }
 
 } // namespace ns3

@@ -30,11 +30,11 @@ HierarchicalMobilityModel::GetTypeId (void)
   static TypeId tid = TypeId ("HierarchicalMobilityModel")
     .SetParent<MobilityModel> ()
     .AddConstructor<HierarchicalMobilityModel> ()
-    .AddParameter ("child", "The child mobility model.",
+    .AddAttribute ("child", "The child mobility model.",
                    Ptr<MobilityModel> (0),
                    MakePtrAccessor (&HierarchicalMobilityModel::SetChild),
                    MakePtrChecker<MobilityModel> ())
-    .AddParameter ("parent", "The parent mobility model.",
+    .AddAttribute ("parent", "The parent mobility model.",
                    Ptr<MobilityModel> (0),
                    MakePtrAccessor (&HierarchicalMobilityModel::SetParent),
                    MakePtrChecker<MobilityModel> ())

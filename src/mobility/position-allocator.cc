@@ -53,27 +53,27 @@ GridPositionAllocator::GetTypeId (void)
     .SetParent<PositionAllocator> ()
     .SetGroupName ("Mobility")
     .AddConstructor<GridPositionAllocator> ()
-    .AddParameter ("GridWidth", "The number of objects layed out on a line.",
+    .AddAttribute ("GridWidth", "The number of objects layed out on a line.",
                    Integer (10),
                    MakeIntegerAccessor (&GridPositionAllocator::m_n),
                    MakeIntegerChecker<uint32_t> ())
-    .AddParameter ("MinX", "The x coordinate where the grid starts.",
+    .AddAttribute ("MinX", "The x coordinate where the grid starts.",
                    Double (1.0),
                    MakeDoubleAccessor (&GridPositionAllocator::m_xMin),
                    MakeDoubleChecker<double> ())
-    .AddParameter ("MinY", "The y coordinate where the grid starts.",
+    .AddAttribute ("MinY", "The y coordinate where the grid starts.",
                    Double (0.0),
                    MakeDoubleAccessor (&GridPositionAllocator::m_yMin),
                    MakeDoubleChecker<double> ())
-    .AddParameter ("DeltaX", "The x space between objects.",
+    .AddAttribute ("DeltaX", "The x space between objects.",
                    Double (1.0),
                    MakeDoubleAccessor (&GridPositionAllocator::m_deltaX),
                    MakeDoubleChecker<double> ())
-    .AddParameter ("DeltaY", "The y space between objects.",
+    .AddAttribute ("DeltaY", "The y space between objects.",
                    Double (1.0),
                    MakeDoubleAccessor (&GridPositionAllocator::m_deltaY),
                    MakeDoubleChecker<double> ())
-    .AddParameter ("LayoutType", "The type of layout.",
+    .AddAttribute ("LayoutType", "The type of layout.",
                    Enum (ROW_FIRST),
                    MakeEnumAccessor (&GridPositionAllocator::m_layoutType),
                    MakeEnumChecker (ROW_FIRST, "RowFirst",
@@ -113,12 +113,12 @@ RandomRectanglePositionAllocator::GetTypeId (void)
     .SetParent<PositionAllocator> ()
     .SetGroupName ("Mobility")
     .AddConstructor<RandomRectanglePositionAllocator> ()
-    .AddParameter ("X",
+    .AddAttribute ("X",
                    "A random variable which represents the x coordinate of a position in a random rectangle.",
                    UniformVariable (0.0, 1.0),
                    MakeRandomVariableAccessor (&RandomRectanglePositionAllocator::m_x),
                    MakeRandomVariableChecker ())
-    .AddParameter ("Y",
+    .AddAttribute ("Y",
                    "A random variable which represents the y coordinate of a position in a random rectangle.",
                    UniformVariable (0.0, 1.0),
                    MakeRandomVariableAccessor (&RandomRectanglePositionAllocator::m_y),
@@ -147,22 +147,22 @@ RandomDiscPositionAllocator::GetTypeId (void)
     .SetParent<PositionAllocator> ()
     .SetGroupName ("Mobility")
     .AddConstructor<RandomDiscPositionAllocator> ()
-    .AddParameter ("Theta",
+    .AddAttribute ("Theta",
                    "A random variable which represents the angle (gradients) of a position in a random disc.",
                    UniformVariable (0.0, 6.2830),
                    MakeRandomVariableAccessor (&RandomDiscPositionAllocator::m_theta),
                    MakeRandomVariableChecker ())
-    .AddParameter ("Rho",
+    .AddAttribute ("Rho",
                    "A random variable which represents the radius of a position in a random disc.",
                    UniformVariable (0.0, 200.0),
                    MakeRandomVariableAccessor (&RandomDiscPositionAllocator::m_rho),
                    MakeRandomVariableChecker ())
-    .AddParameter ("X",
+    .AddAttribute ("X",
                    "The x coordinate of the center of the random position disc.",
                    Double (0.0),
                    MakeDoubleAccessor (&RandomDiscPositionAllocator::m_x),
                    MakeDoubleChecker<double> ())
-    .AddParameter ("Y",
+    .AddAttribute ("Y",
                    "The y coordinate of the center of the random position disc.",
                    Double (0.0),
                    MakeDoubleAccessor (&RandomDiscPositionAllocator::m_y),

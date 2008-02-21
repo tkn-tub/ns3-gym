@@ -53,25 +53,25 @@ public:
   bool HasConstructor (uint16_t uid);
   uint32_t GetRegisteredN (void);
   uint16_t GetRegistered (uint32_t i);
-  void AddParameter (uint16_t uid, 
+  void AddAttribute (uint16_t uid, 
                      std::string name,
                      std::string help, 
                      uint32_t flags,
                      ns3::Attribute initialValue,
                      ns3::Ptr<const ns3::AttributeAccessor> spec,
                      ns3::Ptr<const ns3::AttributeChecker> checker);
-  uint32_t GetParametersN (uint16_t uid) const;
-  std::string GetParameterName (uint16_t uid, uint32_t i) const;
-  uint32_t GetParameterFlags (uint16_t uid, uint32_t i) const;
-  ns3::Attribute GetParameterInitialValue (uint16_t uid, uint32_t i) const;
-  ns3::Ptr<const ns3::AttributeAccessor> GetParameterAccessor (uint16_t uid, uint32_t i) const;
-  ns3::Ptr<const ns3::AttributeChecker> GetParameterChecker (uint16_t uid, uint32_t i) const;
+  uint32_t GetAttributesN (uint16_t uid) const;
+  std::string GetAttributeName (uint16_t uid, uint32_t i) const;
+  uint32_t GetAttributeFlags (uint16_t uid, uint32_t i) const;
+  ns3::Attribute GetAttributeInitialValue (uint16_t uid, uint32_t i) const;
+  ns3::Ptr<const ns3::AttributeAccessor> GetAttributeAccessor (uint16_t uid, uint32_t i) const;
+  ns3::Ptr<const ns3::AttributeChecker> GetAttributeChecker (uint16_t uid, uint32_t i) const;
 private:
   struct ConstructorInformation {
     ns3::CallbackBase cb;
     uint32_t nArguments;
   };
-  struct ParameterInformation {
+  struct AttributeInformation {
     std::string name;
     std::string help;
     uint32_t flags;
@@ -85,7 +85,7 @@ private:
     std::string typeName;
     std::string groupName;
     std::vector<struct ConstructorInformation> constructors;
-    std::vector<struct ParameterInformation> parameters;
+    std::vector<struct AttributeInformation> attributes;
   };
   typedef std::vector<struct IidInformation>::const_iterator Iterator;
 
@@ -242,7 +242,7 @@ IidManager::GetRegistered (uint32_t i)
 }
 
 void 
-IidManager::AddParameter (uint16_t uid, 
+IidManager::AddAttribute (uint16_t uid, 
                           std::string name,
                           std::string help, 
                           uint32_t flags,
@@ -251,66 +251,66 @@ IidManager::AddParameter (uint16_t uid,
                           ns3::Ptr<const ns3::AttributeChecker> checker)
 {
   struct IidInformation *information = LookupInformation (uid);
-  for (std::vector<struct ParameterInformation>::const_iterator j = information->parameters.begin ();
-       j != information->parameters.end (); j++)
+  for (std::vector<struct AttributeInformation>::const_iterator j = information->attributes.begin ();
+       j != information->attributes.end (); j++)
     {
       if (j->name == name)
         {
-          NS_FATAL_ERROR ("Registered the same parameter twice name=\""<<name<<"\" in TypeId=\""<<information->name<<"\"");
+          NS_FATAL_ERROR ("Registered the same attribute twice name=\""<<name<<"\" in TypeId=\""<<information->name<<"\"");
           return;
         }
     }
-  struct ParameterInformation param;
+  struct AttributeInformation param;
   param.name = name;
   param.help = help;
   param.flags = flags;
   param.initialValue = initialValue;
   param.param = spec;
   param.checker = checker;
-  information->parameters.push_back (param);
+  information->attributes.push_back (param);
 }
 
 
 uint32_t 
-IidManager::GetParametersN (uint16_t uid) const
+IidManager::GetAttributesN (uint16_t uid) const
 {
   struct IidInformation *information = LookupInformation (uid);
-  return information->parameters.size ();
+  return information->attributes.size ();
 }
 std::string 
-IidManager::GetParameterName (uint16_t uid, uint32_t i) const
+IidManager::GetAttributeName (uint16_t uid, uint32_t i) const
 {
   struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->parameters.size ());
-  return information->parameters[i].name;
+  NS_ASSERT (i < information->attributes.size ());
+  return information->attributes[i].name;
 }
 uint32_t
-IidManager::GetParameterFlags (uint16_t uid, uint32_t i) const
+IidManager::GetAttributeFlags (uint16_t uid, uint32_t i) const
 {
   struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->parameters.size ());
-  return information->parameters[i].flags;
+  NS_ASSERT (i < information->attributes.size ());
+  return information->attributes[i].flags;
 }
 ns3::Attribute 
-IidManager::GetParameterInitialValue (uint16_t uid, uint32_t i) const
+IidManager::GetAttributeInitialValue (uint16_t uid, uint32_t i) const
 {
   struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->parameters.size ());
-  return information->parameters[i].initialValue;
+  NS_ASSERT (i < information->attributes.size ());
+  return information->attributes[i].initialValue;
 }
 ns3::Ptr<const ns3::AttributeAccessor>
-IidManager::GetParameterAccessor (uint16_t uid, uint32_t i) const
+IidManager::GetAttributeAccessor (uint16_t uid, uint32_t i) const
 {
   struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->parameters.size ());
-  return information->parameters[i].param;
+  NS_ASSERT (i < information->attributes.size ());
+  return information->attributes[i].param;
 }
 ns3::Ptr<const ns3::AttributeChecker>
-IidManager::GetParameterChecker (uint16_t uid, uint32_t i) const
+IidManager::GetAttributeChecker (uint16_t uid, uint32_t i) const
 {
   struct IidInformation *information = LookupInformation (uid);
-  NS_ASSERT (i < information->parameters.size ());
-  return information->parameters[i].checker;
+  NS_ASSERT (i < information->attributes.size ());
+  return information->attributes[i].checker;
 }
 
 } // anonymous namespace
@@ -411,7 +411,7 @@ TypeId::LookupByName (std::string name)
   return TypeId (uid);
 }
 bool
-TypeId::LookupParameterByFullName (std::string fullName, struct TypeId::ParameterInfo *info)
+TypeId::LookupAttributeByFullName (std::string fullName, struct TypeId::AttributeInfo *info)
 {
   std::string::size_type pos = fullName.find ("::");
   if (pos == std::string::npos)
@@ -421,7 +421,7 @@ TypeId::LookupParameterByFullName (std::string fullName, struct TypeId::Paramete
   std::string tidName = fullName.substr (0, pos);
   std::string paramName = fullName.substr (pos+2, fullName.size () - (pos+2));
   TypeId tid = LookupByName (tidName);
-  return tid.LookupParameterByName (paramName, info);
+  return tid.LookupAttributeByName (paramName, info);
 }
 uint32_t 
 TypeId::GetRegisteredN (void)
@@ -435,21 +435,21 @@ TypeId::GetRegistered (uint32_t i)
 }
 
 bool
-TypeId::LookupParameterByName (std::string name, struct TypeId::ParameterInfo *info) const
+TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInfo *info) const
 {
   TypeId tid = TypeId (0);
   TypeId nextTid = *this;
   do {
     tid = nextTid;
-    for (uint32_t i = 0; i < GetParametersN (); i++)
+    for (uint32_t i = 0; i < GetAttributesN (); i++)
       {
-        std::string paramName = GetParameterName (i);
+        std::string paramName = GetAttributeName (i);
         if (paramName == name)
           {
-            info->spec = GetParameterAccessor (i);
-            info->flags = GetParameterFlags (i);
-            info->initialValue = tid.GetParameterInitialValue (i);
-            info->checker = tid.GetParameterChecker (i);
+            info->accessor = GetAttributeAccessor (i);
+            info->flags = GetAttributeFlags (i);
+            info->initialValue = tid.GetAttributeInitialValue (i);
+            info->checker = tid.GetAttributeChecker (i);
             return true;
           }
       }
@@ -458,21 +458,21 @@ TypeId::LookupParameterByName (std::string name, struct TypeId::ParameterInfo *i
   return false;
 }
 bool
-TypeId::LookupParameterByPosition (uint32_t i, struct TypeId::ParameterInfo *info) const
+TypeId::LookupAttributeByPosition (uint32_t i, struct TypeId::AttributeInfo *info) const
 {
   uint32_t cur = 0;
   TypeId tid = TypeId (0);
   TypeId nextTid = *this;
   do {
     tid = nextTid;
-    for (uint32_t j = 0; j < tid.GetParametersN (); j++)
+    for (uint32_t j = 0; j < tid.GetAttributesN (); j++)
       {
         if (cur == i)
           {
-            info->spec = tid.GetParameterAccessor (j);
-            info->flags = tid.GetParameterFlags (j);
-            info->initialValue = tid.GetParameterInitialValue (j);
-            info->checker = tid.GetParameterChecker (j);
+            info->accessor = tid.GetAttributeAccessor (j);
+            info->flags = tid.GetAttributeFlags (j);
+            info->initialValue = tid.GetAttributeInitialValue (j);
+            info->checker = tid.GetAttributeChecker (j);
             return true;
           }
         cur++;
@@ -541,25 +541,25 @@ TypeId::DoAddConstructor (CallbackBase cb, uint32_t nArguments)
 }
 
 TypeId 
-TypeId::AddParameter (std::string name,
+TypeId::AddAttribute (std::string name,
                       std::string help, 
                       Attribute initialValue,
                       Ptr<const AttributeAccessor> param,
                       Ptr<const AttributeChecker> checker)
 {
-  Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, ATTR_SGC, initialValue, param, checker);
+  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, ATTR_SGC, initialValue, param, checker);
   return *this;
 }
 
 TypeId 
-TypeId::AddParameter (std::string name,
+TypeId::AddAttribute (std::string name,
                       std::string help, 
                       uint32_t flags,
                       Attribute initialValue,
                       Ptr<const AttributeAccessor> param,
                       Ptr<const AttributeChecker> checker)
 {
-  Singleton<IidManager>::Get ()->AddParameter (m_tid, name, help, flags, initialValue, param, checker);
+  Singleton<IidManager>::Get ()->AddAttribute (m_tid, name, help, flags, initialValue, param, checker);
   return *this;
 }
 
@@ -574,60 +574,60 @@ TypeId::LookupConstructor (uint32_t nArguments) const
 Ptr<Object> 
 TypeId::CreateObject (void) const
 {
-  return CreateObject (Parameters ());
+  return CreateObject (Attributes ());
 }
 Ptr<Object> 
-TypeId::CreateObject (const Parameters &parameters) const
+TypeId::CreateObject (const Attributes &attributes) const
 {
   CallbackBase cb = LookupConstructor (0);
-  Callback<Ptr<Object>,const Parameters &> realCb;
+  Callback<Ptr<Object>,const Attributes &> realCb;
   realCb.Assign (cb);
-  Ptr<Object> object = realCb (parameters);
+  Ptr<Object> object = realCb (attributes);
   return object;  
 }
 
 uint32_t 
-TypeId::GetParametersN (void) const
+TypeId::GetAttributesN (void) const
 {
-  uint32_t n = Singleton<IidManager>::Get ()->GetParametersN (m_tid);
+  uint32_t n = Singleton<IidManager>::Get ()->GetAttributesN (m_tid);
   return n;
 }
 std::string 
-TypeId::GetParameterName (uint32_t i) const
+TypeId::GetAttributeName (uint32_t i) const
 {
-  std::string name = Singleton<IidManager>::Get ()->GetParameterName (m_tid, i);
+  std::string name = Singleton<IidManager>::Get ()->GetAttributeName (m_tid, i);
   return name;
 }
 std::string 
-TypeId::GetParameterFullName (uint32_t i) const
+TypeId::GetAttributeFullName (uint32_t i) const
 {
-  return GetName () + "::" + GetParameterName (i);
+  return GetName () + "::" + GetAttributeName (i);
 }
 Attribute 
-TypeId::GetParameterInitialValue (uint32_t i) const
+TypeId::GetAttributeInitialValue (uint32_t i) const
 {
-  Attribute value = Singleton<IidManager>::Get ()->GetParameterInitialValue (m_tid, i);
+  Attribute value = Singleton<IidManager>::Get ()->GetAttributeInitialValue (m_tid, i);
   return value;
 }
 Ptr<const AttributeAccessor>
-TypeId::GetParameterAccessor (uint32_t i) const
+TypeId::GetAttributeAccessor (uint32_t i) const
 {
   // Used exclusively by the Object class.
-  Ptr<const AttributeAccessor> param = Singleton<IidManager>::Get ()->GetParameterAccessor (m_tid, i);
+  Ptr<const AttributeAccessor> param = Singleton<IidManager>::Get ()->GetAttributeAccessor (m_tid, i);
   return param;
 }
 uint32_t 
-TypeId::GetParameterFlags (uint32_t i) const
+TypeId::GetAttributeFlags (uint32_t i) const
 {
   // Used exclusively by the Object class.
-  uint32_t flags = Singleton<IidManager>::Get ()->GetParameterFlags (m_tid, i);
+  uint32_t flags = Singleton<IidManager>::Get ()->GetAttributeFlags (m_tid, i);
   return flags;
 }
 Ptr<const AttributeChecker>
-TypeId::GetParameterChecker (uint32_t i) const
+TypeId::GetAttributeChecker (uint32_t i) const
 {
   // Used exclusively by the Object class.
-  Ptr<const AttributeChecker> checker = Singleton<IidManager>::Get ()->GetParameterChecker (m_tid, i);
+  Ptr<const AttributeChecker> checker = Singleton<IidManager>::Get ()->GetAttributeChecker (m_tid, i);
   return checker;
 }
 
@@ -643,84 +643,84 @@ bool operator != (TypeId a, TypeId b)
 }
 
 /*********************************************************************
- *         The Parameters container implementation
+ *         The Attributes container implementation
  *********************************************************************/
 
-Parameters::Parameters ()
+Attributes::Attributes ()
 {}
 
-Parameters::Parameters (const Parameters &o)
+Attributes::Attributes (const Attributes &o)
 {
-  for (Params::const_iterator i = o.m_parameters.begin (); i != o.m_parameters.end (); i++)
+  for (Attrs::const_iterator i = o.m_attributes.begin (); i != o.m_attributes.end (); i++)
     {
-      struct Param param;
-      param.checker = i->checker;
-      param.value = i->value.Copy ();
-      m_parameters.push_back (param);
+      struct Attr attr;
+      attr.checker = i->checker;
+      attr.value = i->value.Copy ();
+      m_attributes.push_back (attr);
     }
 }
-Parameters &
-Parameters::operator = (const Parameters &o)
+Attributes &
+Attributes::operator = (const Attributes &o)
 {
   Reset ();
-  for (Params::const_iterator i = o.m_parameters.begin (); i != o.m_parameters.end (); i++)
+  for (Attrs::const_iterator i = o.m_attributes.begin (); i != o.m_attributes.end (); i++)
     {
-      struct Param param;
-      param.checker = i->checker;
-      param.value = i->value.Copy ();
-      m_parameters.push_back (param);
+      struct Attr attr;
+      attr.checker = i->checker;
+      attr.value = i->value.Copy ();
+      m_attributes.push_back (attr);
     }
   return *this;
 }
-Parameters::~Parameters ()
+Attributes::~Attributes ()
 {
   Reset ();
 }
 
 bool 
-Parameters::Set (std::string name, Attribute value)
+Attributes::Set (std::string name, Attribute value)
 {
-  struct TypeId::ParameterInfo info;
-  TypeId::LookupParameterByFullName (name, &info);
+  struct TypeId::AttributeInfo info;
+  TypeId::LookupAttributeByFullName (name, &info);
   bool ok = DoSet (&info, value);
   return ok;
 }
 void 
-Parameters::SetWithTid (TypeId tid, std::string name, Attribute value)
+Attributes::SetWithTid (TypeId tid, std::string name, Attribute value)
 {
-  struct TypeId::ParameterInfo info;
-  tid.LookupParameterByName (name, &info);
+  struct TypeId::AttributeInfo info;
+  tid.LookupAttributeByName (name, &info);
   DoSet (&info, value);
 }
 void 
-Parameters::SetWithTid (TypeId tid, uint32_t position, Attribute value)
+Attributes::SetWithTid (TypeId tid, uint32_t position, Attribute value)
 {
-  struct TypeId::ParameterInfo info;
-  tid.LookupParameterByPosition (position, &info);
+  struct TypeId::AttributeInfo info;
+  tid.LookupAttributeByPosition (position, &info);
   DoSet (&info, value);
 }
 
 void
-Parameters::DoSetOne (Ptr<const AttributeChecker> checker, Attribute value)
+Attributes::DoSetOne (Ptr<const AttributeChecker> checker, Attribute value)
 {
   // get rid of any previous value stored in this
   // vector of values.
-  for (Params::iterator k = m_parameters.begin (); k != m_parameters.end (); k++)
+  for (Attrs::iterator k = m_attributes.begin (); k != m_attributes.end (); k++)
     {
       if (k->checker == checker)
         {
-          m_parameters.erase (k);
+          m_attributes.erase (k);
           break;
         }
     }
   // store the new value.
-  struct Param p;
-  p.checker = checker;
-  p.value = value.Copy ();
-  m_parameters.push_back (p);
+  struct Attr attr;
+  attr.checker = checker;
+  attr.value = value.Copy ();
+  m_attributes.push_back (attr);
 }
 bool
-Parameters::DoSet (struct TypeId::ParameterInfo *info, Attribute value)
+Attributes::DoSet (struct TypeId::AttributeInfo *info, Attribute value)
 {
   if (info->checker == 0)
     {
@@ -753,27 +753,27 @@ Parameters::DoSet (struct TypeId::ParameterInfo *info, Attribute value)
   return true;
 }
 void 
-Parameters::Reset (void)
+Attributes::Reset (void)
 {
-  m_parameters.clear ();
+  m_attributes.clear ();
 }
-Parameters *
-Parameters::GetGlobal (void)
+Attributes *
+Attributes::GetGlobal (void)
 {
-  return Singleton<Parameters>::Get ();
+  return Singleton<Attributes>::Get ();
 }
 
 std::string
-Parameters::LookupParameterFullNameByChecker (Ptr<const AttributeChecker> checker) const
+Attributes::LookupAttributeFullNameByChecker (Ptr<const AttributeChecker> checker) const
 {
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
       TypeId tid = TypeId::GetRegistered (i);
-      for (uint32_t j = 0; j < tid.GetParametersN (); j++)
+      for (uint32_t j = 0; j < tid.GetAttributesN (); j++)
         {
-          if (checker == tid.GetParameterChecker (j))
+          if (checker == tid.GetAttributeChecker (j))
             {
-              return tid.GetParameterFullName (j);
+              return tid.GetAttributeFullName (j);
             }
         }
     }
@@ -783,14 +783,14 @@ Parameters::LookupParameterFullNameByChecker (Ptr<const AttributeChecker> checke
 }
 
 std::string 
-Parameters::SerializeToString (void) const
+Attributes::SerializeToString (void) const
 {
   std::ostringstream oss;
-  for (Params::const_iterator i = m_parameters.begin (); i != m_parameters.end (); i++)
+  for (Attrs::const_iterator i = m_attributes.begin (); i != m_attributes.end (); i++)
     {
-      std::string name = LookupParameterFullNameByChecker (i->checker);
+      std::string name = LookupAttributeFullNameByChecker (i->checker);
       oss << name << "=" << i->value.SerializeToString (i->checker);
-      if (i != m_parameters.end ())
+      if (i != m_attributes.end ())
         {
           oss << "|";
         }
@@ -798,7 +798,7 @@ Parameters::SerializeToString (void) const
   return oss.str ();
 }
 bool 
-Parameters::DeserializeFromString (std::string str)
+Attributes::DeserializeFromString (std::string str)
 {
   Reset ();
 
@@ -808,14 +808,14 @@ Parameters::DeserializeFromString (std::string str)
     std::string::size_type equal = str.find ("=", cur);
     if (equal == std::string::npos)
       {
-        // XXX: invalid parameter.
+        // XXX: invalid attribute.
         break;
       }
     else
       {
         std::string name = str.substr (cur, equal-cur);
-        struct TypeId::ParameterInfo info;
-        if (!TypeId::LookupParameterByFullName (name, &info))
+        struct TypeId::AttributeInfo info;
+        if (!TypeId::LookupAttributeByFullName (name, &info))
           {
             // XXX invalid name.
             break;
@@ -887,51 +887,51 @@ Object::~Object ()
   m_next = 0;
 }
 void
-Object::Construct (const Parameters &parameters)
+Object::Construct (const Attributes &attributes)
 {
   // loop over the inheritance tree back to the Object base class.
   TypeId tid = m_tid;
   do {
-    // loop over all parameters in object type
-    NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetParametersN ());
-    for (uint32_t i = 0; i < tid.GetParametersN (); i++)
+    // loop over all attributes in object type
+    NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributesN ());
+    for (uint32_t i = 0; i < tid.GetAttributesN (); i++)
       {
-        Ptr<const AttributeAccessor> paramSpec = tid.GetParameterAccessor (i);
-        Attribute initial = tid.GetParameterInitialValue (i);
-        Ptr<const AttributeChecker> checker = tid.GetParameterChecker (i);
+        Ptr<const AttributeAccessor> paramSpec = tid.GetAttributeAccessor (i);
+        Attribute initial = tid.GetAttributeInitialValue (i);
+        Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
         NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
-                      tid.GetParameterName (i)<<"\"");
-        if (!(tid.GetParameterFlags (i) & TypeId::ATTR_CONSTRUCT))
+                      tid.GetAttributeName (i)<<"\"");
+        if (!(tid.GetAttributeFlags (i) & TypeId::ATTR_CONSTRUCT))
           {
             continue;
           }
         bool found = false;
-        // is this parameter stored in this Parameters instance ?
-        for (Parameters::Params::const_iterator j = parameters.m_parameters.begin ();
-             j != parameters.m_parameters.end (); j++)
+        // is this attribute stored in this Attributes instance ?
+        for (Attributes::Attrs::const_iterator j = attributes.m_attributes.begin ();
+             j != attributes.m_attributes.end (); j++)
           {
             if (j->checker == checker)
               {
-                // We have a matching parameter value.
+                // We have a matching attribute value.
                 DoSet (paramSpec, initial, checker, j->value);
                 NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                              tid.GetParameterName (i)<<"\"");
+                              tid.GetAttributeName (i)<<"\"");
                 found = true;
                 break;
               }
           }
         if (!found)
           {
-            // is this parameter stored in the global instance instance ?
-            for (Parameters::Params::const_iterator j = Parameters::GetGlobal ()->m_parameters.begin ();
-                 j != Parameters::GetGlobal ()->m_parameters.end (); j++)
+            // is this attribute stored in the global instance instance ?
+            for (Attributes::Attrs::const_iterator j = Attributes::GetGlobal ()->m_attributes.begin ();
+                 j != Attributes::GetGlobal ()->m_attributes.end (); j++)
               {
                 if (j->checker == checker)
                   {
-                    // We have a matching parameter value.
+                    // We have a matching attribute value.
                     DoSet (paramSpec, initial, checker, j->value);
                     NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                  tid.GetParameterName (i)<<"\" from global");
+                                  tid.GetAttributeName (i)<<"\" from global");
                     found = true;
                     break;
                   }
@@ -939,10 +939,10 @@ Object::Construct (const Parameters &parameters)
           }
         if (!found)
           {
-            // No matching parameter value so we set the default value.
+            // No matching attribute value so we set the default value.
             paramSpec->Set (this, initial);
             NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                          tid.GetParameterName (i)<<"\" from local");
+                          tid.GetAttributeName (i)<<"\" from local");
           }
       }
     tid = tid.GetParent ();
@@ -982,8 +982,8 @@ Object::DoSet (Ptr<const AttributeAccessor> spec, Attribute initialValue,
 bool
 Object::Set (std::string name, Attribute value)
 {
-  struct TypeId::ParameterInfo info;
-  if (!m_tid.LookupParameterByName (name, &info))
+  struct TypeId::AttributeInfo info;
+  if (!m_tid.LookupAttributeByName (name, &info))
     {
       return false;
     }
@@ -991,13 +991,13 @@ Object::Set (std::string name, Attribute value)
     {
       return false;
     }
-  return DoSet (info.spec, info.initialValue, info.checker, value);
+  return DoSet (info.accessor, info.initialValue, info.checker, value);
 }
 bool 
 Object::Get (std::string name, std::string &value) const
 {
-  struct TypeId::ParameterInfo info;
-  if (!m_tid.LookupParameterByName (name, &info))
+  struct TypeId::AttributeInfo info;
+  if (!m_tid.LookupAttributeByName (name, &info))
     {
       return false;
     }
@@ -1006,7 +1006,7 @@ Object::Get (std::string name, std::string &value) const
       return false;
     }
   Attribute v = info.initialValue.Copy ();
-  bool ok = info.spec->Get (this, v);
+  bool ok = info.accessor->Get (this, v);
   if (ok)
     {
       value = v.SerializeToString (info.checker);
@@ -1017,8 +1017,8 @@ Object::Get (std::string name, std::string &value) const
 Attribute
 Object::Get (std::string name) const
 {
-  struct TypeId::ParameterInfo info;
-  if (!m_tid.LookupParameterByName (name, &info))
+  struct TypeId::AttributeInfo info;
+  if (!m_tid.LookupAttributeByName (name, &info))
     {
       return Attribute ();
     }
@@ -1027,7 +1027,7 @@ Object::Get (std::string name) const
       return Attribute ();
     }
   Attribute value = info.initialValue.Copy ();
-  bool ok = info.spec->Get (this, value);
+  bool ok = info.accessor->Get (this, value);
   if (!ok)
     {
       return Attribute ();

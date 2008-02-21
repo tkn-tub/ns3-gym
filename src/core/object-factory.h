@@ -22,7 +22,7 @@ public:
 
 private:
   TypeId m_tid;
-  Parameters m_parameters;
+  Attributes m_parameters;
 };
 
 } // namespace ns3

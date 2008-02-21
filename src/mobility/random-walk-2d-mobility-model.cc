@@ -37,34 +37,34 @@ RandomWalk2dMobilityModel::GetTypeId (void)
     .SetParent<MobilityModel> ()
     .SetGroupName ("Mobility")
     .AddConstructor<RandomWalk2dMobilityModel> ()
-    .AddParameter ("bounds",
+    .AddAttribute ("bounds",
                    "Bounds of the area to cruise.",
                    Rectangle (0.0, 0.0, 100.0, 100.0),
                    MakeRectangleAccessor (&RandomWalk2dMobilityModel::m_bounds),
                    MakeRectangleChecker ())
-    .AddParameter ("time",
+    .AddAttribute ("time",
                    "Change current direction and speed after moving for this delay.",
                    Seconds (1.0),
                    MakeTimeAccessor (&RandomWalk2dMobilityModel::m_modeTime),
                    MakeTimeChecker ())
-    .AddParameter ("distance",
+    .AddAttribute ("distance",
                    "Change current direction and speed after moving for this distance.",
                    Seconds (1.0),
                    MakeTimeAccessor (&RandomWalk2dMobilityModel::m_modeTime),
                    MakeTimeChecker ())
-    .AddParameter ("mode",
+    .AddAttribute ("mode",
                    "The mode indicates the condition used to "
                    "change the current speed and direction",
                    Enum (RandomWalk2dMobilityModel::MODE_DISTANCE),
                    MakeEnumAccessor (&RandomWalk2dMobilityModel::m_mode),
                    MakeEnumChecker (RandomWalk2dMobilityModel::MODE_DISTANCE, "Distance",
                                     RandomWalk2dMobilityModel::MODE_TIME, "Time"))
-    .AddParameter ("direction",
+    .AddAttribute ("direction",
                    "A random variable used to pick the direction (gradients).",
                    UniformVariable (0.0, 6.283184),
                    MakeRandomVariableAccessor (&RandomWalk2dMobilityModel::m_direction),
                    MakeRandomVariableChecker ())
-    .AddParameter ("speed",
+    .AddAttribute ("speed",
                    "A random variable used to pick the speed (m/s).",
                    UniformVariable (2.0, 4.0),
                    MakeRandomVariableAccessor (&RandomWalk2dMobilityModel::m_speed),

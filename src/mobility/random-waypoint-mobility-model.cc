@@ -36,17 +36,17 @@ RandomWaypointMobilityModel::GetTypeId (void)
     .SetParent<MobilityModel> ()
     .SetGroupName ("Mobility")
     .AddConstructor<RandomWaypointMobilityModel> ()
-    .AddParameter ("speed",
+    .AddAttribute ("speed",
                    "A random variable used to pick the speed of a random waypoint model.",
                    UniformVariable (0.3, 0.7),
                    MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_speed),
                    MakeRandomVariableChecker ())
-    .AddParameter ("pause",
+    .AddAttribute ("pause",
                    "A random variable used to pick the pause of a random waypoint model.",
                    ConstantVariable (2.0),
                    MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_pause),
                    MakeRandomVariableChecker ())
-    .AddParameter ("position",
+    .AddAttribute ("position",
                    "The position model used to pick a destination point.",
                    Ptr<PositionAllocator> (0),
                    MakePtrAccessor (&RandomWaypointMobilityModel::m_position),

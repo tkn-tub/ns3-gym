@@ -32,7 +32,7 @@ TypeId DropTailQueue::GetTypeId (void)
   static TypeId tid = TypeId ("DropTailQueue")
     .SetParent<Queue> ()
     .AddConstructor<DropTailQueue> ()
-    .AddParameter ("MaxPackets", "The maximum number of packets accepted by this DropTailQueue.",
+    .AddAttribute ("MaxPackets", "The maximum number of packets accepted by this DropTailQueue.",
                    Uinteger (100),
                    MakeUintegerAccessor (&DropTailQueue::m_maxPackets),
                    MakeUintegerChecker<uint32_t> ())
