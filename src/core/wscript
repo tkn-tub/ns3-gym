@@ -63,6 +63,7 @@ def build(bld):
         'object-factory.cc',
         'object-vector.cc',
         'initial-value.cc',
+        'event-trace-source.cc',
         ]
 
     if sys.platform == 'win32':
@@ -117,5 +118,6 @@ def build(bld):
         'object-factory.h',
         'attribute-helper.h',
         'initial-value.h',
+        'event-trace-source.h',
         ]
 

@@ -8,6 +8,7 @@
 #include "random-variable.h"
 #include "double.h"
 #include "object-vector.h"
+#include "integer-trace-source.h"
 
 namespace ns3 {
 
@@ -94,6 +95,15 @@ public:
 		     MakeObjectVectorAccessor (&AttributeObjectTest::DoGetVectorN,
 						&AttributeObjectTest::DoGetVector),
 		     MakeObjectVectorChecker ())
+      .AddAttribute ("IntegerTraceSource1", "help text",
+		     Integer (-2),
+		     MakeIntegerTraceSourceAccessor (&AttributeObjectTest::m_intSrc1),
+		     MakeIntegerChecker<int8_t> ())
+      .AddAttribute ("IntegerTraceSource2", "help text",
+		     Integer (-2),
+		     MakeIntegerTraceSourceAccessor (&AttributeObjectTest::DoSetIntSrc,
+						     &AttributeObjectTest::DoGetIntSrc),
+		     MakeIntegerChecker<int8_t> ())
       ;
         
     return tid;
@@ -125,6 +135,12 @@ private:
   Ptr<Derived> DoGetVector (uint32_t i) const {
     return m_vector2[i];
   }
+  void DoSetIntSrc (int8_t v) {
+    m_intSrc2 = v;
+  }
+  int8_t DoGetIntSrc (void) const {
+    return m_intSrc2;
+  }
   bool m_boolTestA;
   bool m_boolTest;
   Ptr<Derived> m_derived;
@@ -137,6 +153,8 @@ private:
   RandomVariable m_random;
   std::vector<Ptr<Derived> > m_vector1;
   std::vector<Ptr<Derived> > m_vector2;
+  IntegerTraceSource<int8_t> m_intSrc1;
+  IntegerTraceSource<int8_t> m_intSrc2;
 };
 
 
@@ -346,6 +364,26 @@ AttributeTest::RunTests (void)
   p = CreateObjectWith<AttributeObjectTest> ();
   boolV = p->GetAttribute ("TestBoolName");
   NS_TEST_ASSERT_EQUAL (boolV, Boolean (false));
+
+  Integer i = p->GetAttribute ("IntegerTraceSource1");
+  NS_TEST_ASSERT_EQUAL (i.Get (), -2);
+  NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource1", Integer (+5)));
+  i = p->GetAttribute ("IntegerTraceSource1");
+  NS_TEST_ASSERT_EQUAL (i.Get (), +5);
+  NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource1", Integer (127)));
+  NS_TEST_ASSERT (!p->SetAttribute ("IntegerTraceSource1", Integer (128)));
+  NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource1", Integer (-128)));
+  NS_TEST_ASSERT (!p->SetAttribute ("IntegerTraceSource1", Integer (-129)));
+
+  i = p->GetAttribute ("IntegerTraceSource2");
+  NS_TEST_ASSERT_EQUAL (i.Get (), -2);
+  NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource2", Integer (+5)));
+  i = p->GetAttribute ("IntegerTraceSource2");
+  NS_TEST_ASSERT_EQUAL (i.Get (), +5);
+  NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource2", Integer (127)));
+  NS_TEST_ASSERT (!p->SetAttribute ("IntegerTraceSource2", Integer (128)));
+  NS_TEST_ASSERT (p->SetAttribute ("IntegerTraceSource2", Integer (-128)));
+  NS_TEST_ASSERT (!p->SetAttribute ("IntegerTraceSource2", Integer (-129)));
 
   return result;
 }
