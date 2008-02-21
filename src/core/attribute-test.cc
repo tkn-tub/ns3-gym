@@ -1,7 +1,7 @@
 #ifdef RUN_SELF_TESTS
 #include "test.h"
 #include "object.h"
-#include "boolean-value.h"
+#include "boolean.h"
 #include "int-value.h"
 #include "uint-value.h"
 #include "enum-value.h"

@@ -1,4 +1,4 @@
-#include "boolean-value.h"
+#include "boolean.h"
 #include "fatal-error.h"
 
 namespace ns3 {
