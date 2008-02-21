@@ -60,7 +60,7 @@ public:
                      ns3::Attribute initialValue,
                      ns3::Ptr<const ns3::AttributeAccessor> spec,
                      ns3::Ptr<const ns3::AttributeChecker> checker);
-  uint32_t GetAttributesN (uint16_t uid) const;
+  uint32_t GetAttributeListN (uint16_t uid) const;
   std::string GetAttributeName (uint16_t uid, uint32_t i) const;
   uint32_t GetAttributeFlags (uint16_t uid, uint32_t i) const;
   ns3::Attribute GetAttributeInitialValue (uint16_t uid, uint32_t i) const;
@@ -272,7 +272,7 @@ IidManager::AddAttribute (uint16_t uid,
 
 
 uint32_t 
-IidManager::GetAttributesN (uint16_t uid) const
+IidManager::GetAttributeListN (uint16_t uid) const
 {
   struct IidInformation *information = LookupInformation (uid);
   return information->attributes.size ();
@@ -441,7 +441,7 @@ TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInfo *i
   TypeId nextTid = *this;
   do {
     tid = nextTid;
-    for (uint32_t i = 0; i < GetAttributesN (); i++)
+    for (uint32_t i = 0; i < GetAttributeListN (); i++)
       {
         std::string paramName = GetAttributeName (i);
         if (paramName == name)
@@ -465,7 +465,7 @@ TypeId::LookupAttributeByPosition (uint32_t i, struct TypeId::AttributeInfo *inf
   TypeId nextTid = *this;
   do {
     tid = nextTid;
-    for (uint32_t j = 0; j < tid.GetAttributesN (); j++)
+    for (uint32_t j = 0; j < tid.GetAttributeListN (); j++)
       {
         if (cur == i)
           {
@@ -574,22 +574,22 @@ TypeId::LookupConstructor (uint32_t nArguments) const
 Ptr<Object> 
 TypeId::CreateObject (void) const
 {
-  return CreateObject (Attributes ());
+  return CreateObject (AttributeList ());
 }
 Ptr<Object> 
-TypeId::CreateObject (const Attributes &attributes) const
+TypeId::CreateObject (const AttributeList &attributes) const
 {
   CallbackBase cb = LookupConstructor (0);
-  Callback<Ptr<Object>,const Attributes &> realCb;
+  Callback<Ptr<Object>,const AttributeList &> realCb;
   realCb.Assign (cb);
   Ptr<Object> object = realCb (attributes);
   return object;  
 }
 
 uint32_t 
-TypeId::GetAttributesN (void) const
+TypeId::GetAttributeListN (void) const
 {
-  uint32_t n = Singleton<IidManager>::Get ()->GetAttributesN (m_tid);
+  uint32_t n = Singleton<IidManager>::Get ()->GetAttributeListN (m_tid);
   return n;
 }
 std::string 
@@ -643,13 +643,13 @@ bool operator != (TypeId a, TypeId b)
 }
 
 /*********************************************************************
- *         The Attributes container implementation
+ *         The AttributeList container implementation
  *********************************************************************/
 
-Attributes::Attributes ()
+AttributeList::AttributeList ()
 {}
 
-Attributes::Attributes (const Attributes &o)
+AttributeList::AttributeList (const AttributeList &o)
 {
   for (Attrs::const_iterator i = o.m_attributes.begin (); i != o.m_attributes.end (); i++)
     {
@@ -659,8 +659,8 @@ Attributes::Attributes (const Attributes &o)
       m_attributes.push_back (attr);
     }
 }
-Attributes &
-Attributes::operator = (const Attributes &o)
+AttributeList &
+AttributeList::operator = (const AttributeList &o)
 {
   Reset ();
   for (Attrs::const_iterator i = o.m_attributes.begin (); i != o.m_attributes.end (); i++)
@@ -672,13 +672,13 @@ Attributes::operator = (const Attributes &o)
     }
   return *this;
 }
-Attributes::~Attributes ()
+AttributeList::~AttributeList ()
 {
   Reset ();
 }
 
 bool 
-Attributes::Set (std::string name, Attribute value)
+AttributeList::Set (std::string name, Attribute value)
 {
   struct TypeId::AttributeInfo info;
   TypeId::LookupAttributeByFullName (name, &info);
@@ -686,14 +686,14 @@ Attributes::Set (std::string name, Attribute value)
   return ok;
 }
 void 
-Attributes::SetWithTid (TypeId tid, std::string name, Attribute value)
+AttributeList::SetWithTid (TypeId tid, std::string name, Attribute value)
 {
   struct TypeId::AttributeInfo info;
   tid.LookupAttributeByName (name, &info);
   DoSet (&info, value);
 }
 void 
-Attributes::SetWithTid (TypeId tid, uint32_t position, Attribute value)
+AttributeList::SetWithTid (TypeId tid, uint32_t position, Attribute value)
 {
   struct TypeId::AttributeInfo info;
   tid.LookupAttributeByPosition (position, &info);
@@ -701,7 +701,7 @@ Attributes::SetWithTid (TypeId tid, uint32_t position, Attribute value)
 }
 
 void
-Attributes::DoSetOne (Ptr<const AttributeChecker> checker, Attribute value)
+AttributeList::DoSetOne (Ptr<const AttributeChecker> checker, Attribute value)
 {
   // get rid of any previous value stored in this
   // vector of values.
@@ -720,7 +720,7 @@ Attributes::DoSetOne (Ptr<const AttributeChecker> checker, Attribute value)
   m_attributes.push_back (attr);
 }
 bool
-Attributes::DoSet (struct TypeId::AttributeInfo *info, Attribute value)
+AttributeList::DoSet (struct TypeId::AttributeInfo *info, Attribute value)
 {
   if (info->checker == 0)
     {
@@ -753,23 +753,23 @@ Attributes::DoSet (struct TypeId::AttributeInfo *info, Attribute value)
   return true;
 }
 void 
-Attributes::Reset (void)
+AttributeList::Reset (void)
 {
   m_attributes.clear ();
 }
-Attributes *
-Attributes::GetGlobal (void)
+AttributeList *
+AttributeList::GetGlobal (void)
 {
-  return Singleton<Attributes>::Get ();
+  return Singleton<AttributeList>::Get ();
 }
 
 std::string
-Attributes::LookupAttributeFullNameByChecker (Ptr<const AttributeChecker> checker) const
+AttributeList::LookupAttributeFullNameByChecker (Ptr<const AttributeChecker> checker) const
 {
   for (uint32_t i = 0; i < TypeId::GetRegisteredN (); i++)
     {
       TypeId tid = TypeId::GetRegistered (i);
-      for (uint32_t j = 0; j < tid.GetAttributesN (); j++)
+      for (uint32_t j = 0; j < tid.GetAttributeListN (); j++)
         {
           if (checker == tid.GetAttributeChecker (j))
             {
@@ -783,7 +783,7 @@ Attributes::LookupAttributeFullNameByChecker (Ptr<const AttributeChecker> checke
 }
 
 std::string 
-Attributes::SerializeToString (void) const
+AttributeList::SerializeToString (void) const
 {
   std::ostringstream oss;
   for (Attrs::const_iterator i = m_attributes.begin (); i != m_attributes.end (); i++)
@@ -798,7 +798,7 @@ Attributes::SerializeToString (void) const
   return oss.str ();
 }
 bool 
-Attributes::DeserializeFromString (std::string str)
+AttributeList::DeserializeFromString (std::string str)
 {
   Reset ();
 
@@ -887,14 +887,14 @@ Object::~Object ()
   m_next = 0;
 }
 void
-Object::Construct (const Attributes &attributes)
+Object::Construct (const AttributeList &attributes)
 {
   // loop over the inheritance tree back to the Object base class.
   TypeId tid = m_tid;
   do {
     // loop over all attributes in object type
-    NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributesN ());
-    for (uint32_t i = 0; i < tid.GetAttributesN (); i++)
+    NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributeListN ());
+    for (uint32_t i = 0; i < tid.GetAttributeListN (); i++)
       {
         Ptr<const AttributeAccessor> paramSpec = tid.GetAttributeAccessor (i);
         Attribute initial = tid.GetAttributeInitialValue (i);
@@ -906,8 +906,8 @@ Object::Construct (const Attributes &attributes)
             continue;
           }
         bool found = false;
-        // is this attribute stored in this Attributes instance ?
-        for (Attributes::Attrs::const_iterator j = attributes.m_attributes.begin ();
+        // is this attribute stored in this AttributeList instance ?
+        for (AttributeList::Attrs::const_iterator j = attributes.m_attributes.begin ();
              j != attributes.m_attributes.end (); j++)
           {
             if (j->checker == checker)
@@ -923,8 +923,8 @@ Object::Construct (const Attributes &attributes)
         if (!found)
           {
             // is this attribute stored in the global instance instance ?
-            for (Attributes::Attrs::const_iterator j = Attributes::GetGlobal ()->m_attributes.begin ();
-                 j != Attributes::GetGlobal ()->m_attributes.end (); j++)
+            for (AttributeList::Attrs::const_iterator j = AttributeList::GetGlobal ()->m_attributes.begin ();
+                 j != AttributeList::GetGlobal ()->m_attributes.end (); j++)
               {
                 if (j->checker == checker)
                   {

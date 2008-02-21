@@ -63,7 +63,7 @@ InitialValue::Bind (std::string name, Attribute value)
     }
   // since we did not find a matching InitialValue,
   // we attempt to configure the global parameters list.
-  Attributes::GetGlobal ()->Set (name, value);
+  AttributeList::GetGlobal ()->Set (name, value);
 }
 InitialValue::Iterator 
 InitialValue::Begin (void)

@@ -46,7 +46,7 @@ class CallbackBase;
 class Object;
 class AttributeAccessor;
 class AttributeValue;
-class Attributes;
+class AttributeList;
 
 /**
  * \brief a unique identifier for an interface.
@@ -124,7 +124,7 @@ public:
   /**
    * \returns the number of attributes associated to this TypeId
    */
-  uint32_t GetAttributesN (void) const;
+  uint32_t GetAttributeListN (void) const;
   /**
    * \param i index into attribute array
    * \returns the name associated to the attribute whose
@@ -140,7 +140,7 @@ public:
 
   Attribute GetAttributeInitialValue (uint32_t i) const;
 
-  Ptr<Object> CreateObject (const Attributes &attributes) const;
+  Ptr<Object> CreateObject (const AttributeList &attributes) const;
 
 
   Ptr<Object> CreateObject (void) const;
@@ -235,7 +235,7 @@ public:
   ~TypeId ();
 private:
   friend class Object;
-  friend class Attributes;
+  friend class AttributeList;
   friend bool operator == (TypeId a, TypeId b);
   friend bool operator != (TypeId a, TypeId b);
 
@@ -278,13 +278,13 @@ private:
  *        and in ns3::Object::Set.
  *
  */
-class Attributes
+class AttributeList
 {
 public:
-  Attributes ();
-  Attributes (const Attributes &o);
-  Attributes &operator = (const Attributes &o);
-  ~Attributes ();
+  AttributeList ();
+  AttributeList (const AttributeList &o);
+  AttributeList &operator = (const AttributeList &o);
+  ~AttributeList ();
   /**
    * \param name the name of the attribute to set
    * \param value the value to set
@@ -314,7 +314,7 @@ public:
    * it is always checked last, after any per-object
    * container is checked.
    */
-  static Attributes *GetGlobal (void);
+  static AttributeList *GetGlobal (void);
 
   std::string SerializeToString (void) const;
   bool DeserializeFromString (std::string value);
@@ -450,7 +450,7 @@ private:
   friend class TypeIdTraceResolver;
 
   template <typename T>
-  friend Ptr<T> CreateObject (const Attributes &attributes);
+  friend Ptr<T> CreateObject (const AttributeList &attributes);
 
   template <typename T>
   friend Ptr<T> CreateObject (void);
@@ -501,7 +501,7 @@ private:
    * Initialize all the member variables which were
    * registered with the associated TypeId.
    */
-  void Construct (const Attributes &attributes);
+  void Construct (const AttributeList &attributes);
 
   /**
    * The reference count for this object. Each aggregate
@@ -551,7 +551,7 @@ TypeId
 TypeId::AddConstructor (void)
 {
   struct Maker {
-    static Ptr<Object> Create (const Attributes &attributes) {
+    static Ptr<Object> Create (const AttributeList &attributes) {
       return ns3::CreateObject<T> (attributes);
     }
   };
@@ -656,7 +656,7 @@ Object::GetObject (TypeId tid) const
 
 
 template <typename T>
-Ptr<T> CreateObject (const Attributes &attributes)
+Ptr<T> CreateObject (const AttributeList &attributes)
 {
   Ptr<T> p = Ptr<T> (new T (), false);
   p->SetTypeId (T::GetTypeId ());
@@ -669,7 +669,7 @@ Ptr<T> CreateObject (void)
 {
   Ptr<T> p = Ptr<T> (new T (), false);
   p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (Attributes ());
+  p->Object::Construct (AttributeList ());
   return p;
 }
 
@@ -678,7 +678,7 @@ Ptr<T> CreateObject (T1 a1)
 {
   Ptr<T> p = Ptr<T> (new T (a1), false);
   p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (Attributes ());
+  p->Object::Construct (AttributeList ());
   return p;
 }
 
@@ -687,7 +687,7 @@ Ptr<T> CreateObject (T1 a1, T2 a2)
 {
   Ptr<T> p = Ptr<T> (new T (a1, a2), false);
   p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (Attributes ());
+  p->Object::Construct (AttributeList ());
   return p;
 }
 template <typename T, typename T1, typename T2, typename T3>
@@ -737,7 +737,7 @@ CreateObjectWith (std::string n1, Attribute v1,
                   std::string n2 = "", Attribute v2 = Attribute ())
               
 {
-  Attributes attributes;
+  AttributeList attributes;
   attributes.SetWithTid (T::GetTypeId (), n1, v1);
   attributes.SetWithTid (T::GetTypeId (), n2, v2);
   return CreateObject<T> (attributes);

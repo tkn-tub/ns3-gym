@@ -167,7 +167,7 @@ AttributeTest::RunTests (void)
 {
   bool result = true;
 
-  Attributes params;
+  AttributeList params;
   Ptr<AttributeObjectTest> p;
   NS_TEST_ASSERT (params.Set ("AttributeObjectTest::TestBoolName", "false"));
   p = CreateObject<AttributeObjectTest> (params);
@@ -344,11 +344,11 @@ AttributeTest::RunTests (void)
   p->Set ("TestBool", "false");
   NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "false");
 
-  Attributes::GetGlobal ()->Set ("TestBool", "true");
+  AttributeList::GetGlobal ()->Set ("TestBool", "true");
   p = CreateObjectWith<AttributeObjectTest> ();
   NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "true");
 
-  Attributes::GetGlobal ()->Set ("TestBool", "false");
+  AttributeList::GetGlobal ()->Set ("TestBool", "false");
   p = CreateObjectWith<AttributeObjectTest> ();
   NS_TEST_ASSERT_EQUAL (p->Get ("TestBool"), "false");
 #endif
