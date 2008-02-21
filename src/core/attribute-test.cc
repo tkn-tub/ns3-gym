@@ -4,7 +4,7 @@
 #include "boolean.h"
 #include "integer.h"
 #include "uinteger.h"
-#include "enum-value.h"
+#include "enum.h"
 #include "random-variable.h"
 #include "double.h"
 #include "object-vector.h"

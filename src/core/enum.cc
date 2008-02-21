@@ -1,4 +1,4 @@
-#include "enum-value.h"
+#include "enum.h"
 #include "fatal-error.h"
 #include <sstream>
 

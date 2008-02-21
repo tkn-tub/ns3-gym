@@ -19,7 +19,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "random-walk-2d-mobility-model.h"
-#include "ns3/enum-value.h"
+#include "ns3/enum.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
 #include <cmath>

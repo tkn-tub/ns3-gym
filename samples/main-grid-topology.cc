@@ -7,7 +7,6 @@
 #include "ns3/mobility-helper.h"
 #include "ns3/uinteger.h"
 #include "ns3/double.h"
-#include "ns3/enum-value.h"
 
 using namespace ns3;
 
