@@ -298,17 +298,20 @@ TimeUnit<1>::UnitsToTimestep (uint64_t unitValue,
 
 TimeUnit<1>::TimeUnit (Attribute value)
 {
-  *this = ClassValueHelperExtractFrom<Time,TimeValue> (value);
+  const TimeValue *v = value.DynCast<const TimeValue *> ();
+  if (v == 0)
+    {
+      NS_FATAL_ERROR ("Unexpected type of value. Expected \"TimeValue\"");
+    }
+  *this = v->Get ();
 }
 TimeUnit<1>::operator Attribute () const
 {
-  return ClassValueHelperConvertTo<Time,TimeValue> (this);
+  return Attribute::Create<TimeValue> (*this);
 }
 
-Ptr<const AttributeChecker> MakeTimeChecker (void)
-{
-  return MakeSimpleAttributeChecker<Time> ();
-}
+ATTRIBUTE_VALUE_IMPLEMENT (Time);
+ATTRIBUTE_CHECKER_IMPLEMENT (Time);
 
 Time MilliSeconds (uint64_t ms)
 {

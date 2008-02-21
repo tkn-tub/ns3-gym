@@ -22,7 +22,7 @@
 
 #include "ns3/assert.h"
 #include "ns3/attribute.h"
-#include "ns3/class-value-helper.h"
+#include "ns3/value-helper.h"
 #include <stdint.h>
 #include <math.h>
 #include <ostream>
@@ -669,36 +669,9 @@ typedef TimeUnit<0> Scalar;
 typedef TimeUnit<-1> TimeInvert;
 typedef TimeUnit<2> TimeSquare;
 
-
-class TimeValue : public AttributeValue {};
-class TimeAccessor : public AttributeAccessor {};
-
-template <typename T1>
-Ptr<const AttributeAccessor> MakeTimeAccessor (T1 a1);
-template <typename T1, typename T2>
-Ptr<const AttributeAccessor> MakeTimeAccessor (T1 a1, T2 a2);
-
-Ptr<const AttributeChecker> MakeTimeChecker (void);
-
-
-
-} // namespace ns3
-
-namespace ns3 {
-
-template <typename T1>
-Ptr<const AttributeAccessor> MakeTimeAccessor (T1 a1)
-{
-  return MakeClassValueHelperAccessor<Time,TimeValue,TimeAccessor> (a1);
-}
-
-template <typename T1, typename T2>
-Ptr<const AttributeAccessor> MakeTimeAccessor (T1 a1, T2 a2)
-{
-  return MakeClassValueHelperAccessor<Time,TimeValue,TimeAccessor> (a1, a2);
-}
-
-
+ATTRIBUTE_ACCESSOR_DEFINE (Time);
+ATTRIBUTE_VALUE_DEFINE (Time);
+ATTRIBUTE_CHECKER_DEFINE (Time);
 
 } // namespace ns3
 
