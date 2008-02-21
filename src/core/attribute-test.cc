@@ -102,12 +102,12 @@ public:
 		     MakeObjectVectorChecker ())
       .AddAttribute ("IntegerTraceSource1", "help text",
 		     Integer (-2),
-		     MakeIntegerTraceSourceAccessor (&AttributeObjectTest::m_intSrc1),
+		     MakeIntegerAccessor (&AttributeObjectTest::m_intSrc1),
 		     MakeIntegerChecker<int8_t> ())
       .AddAttribute ("IntegerTraceSource2", "help text",
 		     Integer (-2),
-		     MakeIntegerTraceSourceAccessor (&AttributeObjectTest::DoSetIntSrc,
-						     &AttributeObjectTest::DoGetIntSrc),
+		     MakeIntegerAccessor (&AttributeObjectTest::DoSetIntSrc,
+					  &AttributeObjectTest::DoGetIntSrc),
 		     MakeIntegerChecker<int8_t> ())
       .AddTraceSource ("Source1", "help test",
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1))

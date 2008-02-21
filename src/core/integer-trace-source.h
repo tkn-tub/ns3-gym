@@ -127,18 +127,6 @@ private:
   T m_var;
 };
 
-template <typename T1>
-Ptr<const AttributeAccessor> MakeIntegerTraceSourceAccessor (T1 a1)
-{
-  return MakeAccessorHelper<IntegerValue> (a1);
-}
-template <typename T1, typename T2>
-Ptr<const AttributeAccessor> MakeIntegerTraceSourceAccessor (T1 a1, T2 a2)
-{
-  return MakeAccessorHelper<IntegerValue> (a1, a2);
-}
-
-
 template <typename T>
 IntegerTraceSource<T> &operator += (IntegerTraceSource<T> &lhs, IntegerTraceSource<T> const &rhs) {
   lhs.Set (lhs.Get () + rhs.Get ());
