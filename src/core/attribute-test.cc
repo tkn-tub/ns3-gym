@@ -6,7 +6,7 @@
 #include "uinteger.h"
 #include "enum-value.h"
 #include "random-variable.h"
-#include "fp-value.h"
+#include "double.h"
 #include "object-vector.h"
 
 namespace ns3 {
