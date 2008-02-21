@@ -18,7 +18,7 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/uint-value.h"
+#include "ns3/uinteger.h"
 #include "drop-tail-queue.h"
 
 NS_LOG_COMPONENT_DEFINE ("DropTailQueue");

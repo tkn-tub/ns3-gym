@@ -3,7 +3,7 @@
 #include "object.h"
 #include "boolean.h"
 #include "integer.h"
-#include "uint-value.h"
+#include "uinteger.h"
 #include "enum-value.h"
 #include "random-variable.h"
 #include "fp-value.h"

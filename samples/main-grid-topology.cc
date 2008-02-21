@@ -5,7 +5,7 @@
 #include "ns3/command-line.h"
 #include "ns3/mobility-model.h"
 #include "ns3/mobility-helper.h"
-#include "ns3/uint-value.h"
+#include "ns3/uinteger.h"
 #include "ns3/fp-value.h"
 #include "ns3/enum-value.h"
 

@@ -1,9 +1,5 @@
 #include "initial-value.h"
 #include "fatal-error.h"
-#include "uint-value.h"
-#include "integer.h"
-#include "fp-value.h"
-#include "enum-value.h"
 #include "object.h"
 
 namespace ns3 {
@@ -91,7 +87,7 @@ InitialValue::GetVector (void)
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
-#include "uint-value.h"
+#include "uinteger.h"
 
 namespace {
 

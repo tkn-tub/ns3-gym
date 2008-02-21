@@ -1,4 +1,4 @@
-#include "uint-value.h"
+#include "uinteger.h"
 #include "fatal-error.h"
 #include <sstream>
 
