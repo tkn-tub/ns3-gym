@@ -1,5 +1,5 @@
-#ifndef BOOLEAN_VALUE_H
-#define BOOLEAN_VALUE_H
+#ifndef BOOLEAN_H
+#define BOOLEAN_H
 
 #include "attribute.h"
 #include "attribute-helper.h"
@@ -30,4 +30,4 @@ ATTRIBUTE_ACCESSOR_DEFINE (Boolean);
 
 } // namespace ns3
 
-#endif /* BOOLEAN_PARAMETER_H */
+#endif /* BOOLEAN_H */
