@@ -498,13 +498,13 @@ TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInfo *i
   TypeId nextTid = *this;
   do {
     tid = nextTid;
-    for (uint32_t i = 0; i < GetAttributeListN (); i++)
+    for (uint32_t i = 0; i < tid.GetAttributeListN (); i++)
       {
-        std::string paramName = GetAttributeName (i);
+        std::string paramName = tid.GetAttributeName (i);
         if (paramName == name)
           {
-            info->accessor = GetAttributeAccessor (i);
-            info->flags = GetAttributeFlags (i);
+            info->accessor = tid.GetAttributeAccessor (i);
+            info->flags = tid.GetAttributeFlags (i);
             info->initialValue = tid.GetAttributeInitialValue (i);
             info->checker = tid.GetAttributeChecker (i);
             return true;
