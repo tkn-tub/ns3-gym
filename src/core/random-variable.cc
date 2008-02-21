@@ -302,19 +302,20 @@ RandomVariable::Peek (void) const
 RandomVariable::RandomVariable (Attribute value)
   : m_variable (0)
 {
-  *this = ClassValueHelperExtractFrom<RandomVariable,RandomVariableValue> (value);
+  const RandomVariableValue *v = value.DynCast<const RandomVariableValue *> ();
+  if (v == 0)
+    {
+      NS_FATAL_ERROR ("Unexpected type of value. Expected \"RandomVariableValue\"");
+    }
+  *this = v->Get ();
 }
 RandomVariable::operator Attribute () const
 {
-  return ClassValueHelperConvertTo<RandomVariable,RandomVariableValue> (this);
+  return Attribute::Create<RandomVariableValue> (*this);
 }
 
-Ptr<const AttributeChecker> 
-MakeRandomVariableChecker (void)
-{
-  return MakeSimpleAttributeChecker<RandomVariableValue> ();
-}
-
+ATTRIBUTE_VALUE_IMPLEMENT (RandomVariable);
+ATTRIBUTE_CHECKER_IMPLEMENT (RandomVariable);
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------

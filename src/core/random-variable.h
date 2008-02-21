@@ -27,7 +27,7 @@
 #include <istream>
 #include <ostream>
 #include "attribute.h"
-#include "class-value-helper.h"
+#include "value-helper.h"
 
 /**
  * \ingroup core
@@ -168,7 +168,6 @@ public:
   operator Attribute () const;
 
 private:
-  friend class RandomVariableValue;
   friend std::ostream &operator << (std::ostream &os, const RandomVariable &var);
   friend std::istream &operator >> (std::istream &os, RandomVariable &var);
 
@@ -664,36 +663,11 @@ public:
 std::ostream &operator << (std::ostream &os, const RandomVariable &var);
 std::istream &operator >> (std::istream &os, RandomVariable &var);
 
-
-class RandomVariableValue : public AttributeValue {};
-class RandomVariableAccessor : public AttributeAccessor {};
-
-template <typename T1>
-Ptr<const AttributeAccessor> MakeRandomVariableAccessor (T1 a1);
-template <typename T1, typename T2>
-Ptr<const AttributeAccessor> MakeRandomVariableAccessor (T1 a1, T2 a2);
-
-Ptr<const AttributeChecker> MakeRandomVariableChecker (void);
+ATTRIBUTE_VALUE_DEFINE (RandomVariable);
+ATTRIBUTE_CHECKER_DEFINE (RandomVariable);
+ATTRIBUTE_ACCESSOR_DEFINE (RandomVariable);
 
 }//namespace ns3
 
 
-namespace ns3 {
-
-template <typename T1>
-Ptr<const AttributeAccessor> MakeRandomVariableAccessor (T1 a1)
-{
-  return MakeClassValueHelperAccessor<RandomVariable, 
-    RandomVariableValue, RandomVariableAccessor> (a1);
-}
-
-template <typename T1, typename T2>
-Ptr<const AttributeAccessor> MakeRandomVariableAccessor (T1 a1, T2 a2)
-{
-  return MakeClassValueHelperAccessor<RandomVariable, 
-    RandomVariableValue,RandomVariableAccessor> (a1, a2);
-}
-
-
-} // namespace ns3
 #endif
