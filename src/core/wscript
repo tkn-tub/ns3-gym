@@ -55,7 +55,7 @@ def build(bld):
         'type-id-default-value.cc',
         'attribute.cc',
         'boolean-value.cc',
-        'value-test.cc',
+        'attribute-test.cc',
         'int-value.cc',
         'uint-value.cc',
         'enum-value.cc',
