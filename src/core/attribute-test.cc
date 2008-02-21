@@ -2,7 +2,7 @@
 #include "test.h"
 #include "object.h"
 #include "boolean.h"
-#include "int-value.h"
+#include "integer.h"
 #include "uint-value.h"
 #include "enum-value.h"
 #include "random-variable.h"

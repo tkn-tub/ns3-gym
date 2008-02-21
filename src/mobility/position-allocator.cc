@@ -20,7 +20,7 @@
 #include "position-allocator.h"
 #include "ns3/random-variable.h"
 #include "ns3/fp-value.h"
-#include "ns3/int-value.h"
+#include "ns3/integer.h"
 #include "ns3/enum-value.h"
 #include "ns3/log.h"
 #include <cmath>

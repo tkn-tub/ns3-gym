@@ -1,4 +1,4 @@
-#include "int-value.h"
+#include "integer.h"
 #include "fatal-error.h"
 #include <sstream>
 

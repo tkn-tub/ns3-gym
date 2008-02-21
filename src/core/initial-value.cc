@@ -1,7 +1,7 @@
 #include "initial-value.h"
 #include "fatal-error.h"
 #include "uint-value.h"
-#include "int-value.h"
+#include "integer.h"
 #include "fp-value.h"
 #include "enum-value.h"
 #include "object.h"
