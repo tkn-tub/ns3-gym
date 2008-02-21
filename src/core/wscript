@@ -108,7 +108,7 @@ def build(bld):
         'int-to-type.h',
         'type-id-default-value.h',
         'attribute.h',
-        'param-spec-helper.h',
+        'attribute-accessor-helper.h',
         'int-value.h',
         'uint-value.h',
         'fp-value.h',

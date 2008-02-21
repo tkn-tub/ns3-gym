@@ -1,5 +1,5 @@
-#ifndef PARAM_SPEC_HELPER_H
-#define PARAM_SPEC_HELPER_H
+#ifndef ATTRIBUTE_ACCESSOR_HELPER_H
+#define ATTRIBUTE_ACCESSOR_HELPER_H
 
 namespace ns3 {
 
@@ -189,4 +189,4 @@ MakeAccessorHelper (T1 a1, T2 a2)
 
 } // namespace ns3
 
-#endif /* PARAM_SPEC_HELPER_H */
+#endif /* ATTRIBUTE_ACCESSOR_HELPER_H */

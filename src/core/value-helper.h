@@ -1,7 +1,7 @@
 #ifndef VALUE_HELPER_H
 #define VALUE_HELPER_H
 
-#include "param-spec-helper.h"
+#include "attribute-accessor-helper.h"
 #include <sstream>
 #include "fatal-error.h"
 

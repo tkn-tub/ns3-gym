@@ -2,7 +2,7 @@
 #define ENUM_VALUE_H
 
 #include "attribute.h"
-#include "param-spec-helper.h"
+#include "attribute-accessor-helper.h"
 #include <list>
 
 namespace ns3 {
