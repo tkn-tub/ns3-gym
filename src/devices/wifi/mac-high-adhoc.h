@@ -49,7 +49,7 @@ public:
 
   void SetDevice (WifiNetDevice *device);
   void SetForwardCallback (ForwardCallback callback);
-  void SetDcaTxop (DcaTxop *dca);
+  void SetDcaTxop (Ptr<DcaTxop> dca);
   void SetStations (MacStations *stations);
   void SetPhy (Ptr<WifiPhy> phy);
 
@@ -60,7 +60,7 @@ public:
   /* invoked by the MacLows. */
   void Receive (Ptr<Packet> packet, WifiMacHeader const*hdr);
 private:
-  DcaTxop *m_dca;
+  Ptr<DcaTxop> m_dca;
   WifiNetDevice *m_device;
   ForwardCallback m_callback;
   MacStations *m_stations;

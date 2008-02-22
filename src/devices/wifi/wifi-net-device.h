@@ -106,8 +106,6 @@ private:
   virtual bool DoNeedsArp (void) const;
   virtual Ptr<Channel> DoGetChannel (void) const;
   virtual bool SendTo (Ptr<Packet> packet, const Address &to, uint16_t protocolNumber);
-  // inherited from Object
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   // defined for children
   virtual void NotifyAttached (void) = 0;
   virtual bool DoSendTo (Ptr<const Packet> packet, const Mac48Address &to) = 0;
@@ -117,17 +115,19 @@ private:
   CallbackTraceSource<Ptr<const Packet>, Mac48Address> m_rxLogger;
   CallbackTraceSource<Ptr<const Packet>, Mac48Address> m_txLogger;
 protected:
+  // inherited from Object
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   WifiNetDevice (Ptr<Node> node);
   WifiNetDevice (Ptr<Node> node, Mac48Address self);
   void DoForwardUp (Ptr<Packet> packet, const Mac48Address &from);
-  DcaTxop *CreateDca (uint32_t minCw, uint32_t maxCw, uint32_t aifsn) const;
+  Ptr<DcaTxop> CreateDca (uint32_t minCw, uint32_t maxCw, uint32_t aifsn) const;
   // inherited from Object
   virtual void DoDispose (void);
 
   Ptr<WifiChannel> m_channel;
   Ptr<WifiPhy> m_phy;
   MacStations *m_stations;
-  MacLow *m_low;
+  Ptr<MacLow> m_low;
   MacRxMiddle *m_rxMiddle;
   MacTxMiddle *m_txMiddle;
   MacParameters *m_parameters;
@@ -161,9 +161,10 @@ private:
   // inherited from WifiNetDefice
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyAttached (void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 
   Ssid m_ssid;
-  DcaTxop *m_dca;
+  Ptr<DcaTxop> m_dca;
   MacHighAdhoc *m_high;
 };
 
@@ -207,9 +208,10 @@ private:
   // inherited from WifiNetDefice
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyAttached (void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 
   Ssid m_ssid;
-  DcaTxop *m_dca;
+  Ptr<DcaTxop> m_dca;
   MacHighNqsta *m_high;
 };
 
@@ -243,10 +245,11 @@ private:
   // inherited from WifiNetDefice
   virtual bool DoSendTo (Ptr<const Packet> packet, Mac48Address const & to);
   virtual void NotifyAttached (void);
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 
   Ssid m_ssid;
-  DcaTxop *m_dca;
-  DcaTxop *m_beaconDca;
+  Ptr<DcaTxop> m_dca;
+  Ptr<DcaTxop> m_beaconDca;
   MacHighNqap *m_high;
 };
 

@@ -54,8 +54,8 @@ public:
   MacHighNqap ();
   ~MacHighNqap ();
 
-  void SetDcaTxop (DcaTxop *dca);
-  void SetBeaconDcaTxop (DcaTxop *dca);
+  void SetDcaTxop (Ptr<DcaTxop> dca);
+  void SetBeaconDcaTxop (Ptr<DcaTxop> dca);
   void SetDevice (WifiNetDevice *device);
   void SetStations (MacStations *stations);
   void SetPhy (Ptr<WifiPhy> phy);
@@ -79,8 +79,8 @@ private:
   void SendOneBeacon (void);
   SupportedRates GetSupportedRates (void) const;
 
-  DcaTxop *m_dca;
-  DcaTxop *m_beaconDca;
+  Ptr<DcaTxop> m_dca;
+  Ptr<DcaTxop> m_beaconDca;
   WifiNetDevice *m_device;
   MacStations *m_stations;
   Ptr<WifiPhy> m_phy;

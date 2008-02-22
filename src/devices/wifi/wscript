@@ -36,6 +36,7 @@ def build(bld):
         'dcf-manager-test.cc',
         'onoe-mac-stations.cc',
         'amrr-mac-stations.cc',
+	'wifi-trace.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
@@ -47,4 +48,5 @@ def build(bld):
         'wifi-preamble.h',
 	'wifi-phy-standard.h',
         'wifi-phy.h',
+	'wifi-trace.h',
         ]

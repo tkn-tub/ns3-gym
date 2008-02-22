@@ -35,6 +35,7 @@
 #include "mac-stations.h"
 #include "wifi-phy.h"
 #include "random-stream.h"
+#include "ns3/composite-trace-resolver.h"
 
 NS_LOG_COMPONENT_DEFINE ("DcaTxop");
 
@@ -125,7 +126,7 @@ DcaTxop::~DcaTxop ()
 }
 
 void 
-DcaTxop::SetLow (MacLow *low)
+DcaTxop::SetLow (Ptr<MacLow> low)
 {
   m_low = low;
 }
@@ -206,7 +207,7 @@ DcaTxop::StartAccessIfNeeded (void)
 }
 
 
-MacLow *
+Ptr<MacLow>
 DcaTxop::Low (void)
 {
   return m_low;
@@ -528,6 +529,23 @@ DcaTxop::Cancel (void)
    * update its <seq,ad> tupple for packets whose destination
    * address is a broadcast address.
    */
+}
+
+Ptr<TraceResolver> 
+DcaTxop::GetTraceResolver (void) const
+{
+  Ptr<CompositeTraceResolver> resolver =
+    Create<CompositeTraceResolver> ();
+  resolver->AddSource ("ackTimeout",
+                       TraceDoc ("ACK timeout",
+                                 "uint32_t", "Number of transmission attemps"),
+                       m_acktimeoutTrace);
+  resolver->AddSource ("ctsTimeout",
+                       TraceDoc ("CTS timeout",
+                                 "uint32_t", "Number of transmission attemps"),
+                       m_ctstimeoutTrace);
+  resolver->SetParentResolver (Object::GetTraceResolver ());
+  return resolver;
 }
 
 } // namespace ns3

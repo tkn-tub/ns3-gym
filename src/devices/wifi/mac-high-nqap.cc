@@ -47,14 +47,14 @@ MacHighNqap::~MacHighNqap ()
 }
 
 void 
-MacHighNqap::SetDcaTxop (DcaTxop *dca)
+MacHighNqap::SetDcaTxop (Ptr<DcaTxop> dca)
 {
   m_dca = dca;
   m_dca->SetTxOkCallback (MakeCallback (&MacHighNqap::TxOk, this));
   m_dca->SetTxFailedCallback (MakeCallback (&MacHighNqap::TxFailed, this));
 }
 void 
-MacHighNqap::SetBeaconDcaTxop (DcaTxop *dca)
+MacHighNqap::SetBeaconDcaTxop (Ptr<DcaTxop> dca)
 {
   // we do not need to be notified when a beacon has been transmitted
   // successfully or not.

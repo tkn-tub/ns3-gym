@@ -57,7 +57,7 @@ public:
   MacHighNqsta ();
   ~MacHighNqsta ();
 
-  void SetDcaTxop (DcaTxop *dca);
+  void SetDcaTxop (Ptr<DcaTxop> dca);
   void SetDevice (WifiNetDevice *device);
   void SetForwardCallback (ForwardCallback callback);
   void SetAssociatedCallback (AssociatedCallback callback);
@@ -122,7 +122,7 @@ private:
   ForwardCallback m_forward;
   AssociatedCallback m_associatedCallback;
   DisAssociatedCallback m_disAssociatedCallback;
-  DcaTxop *m_dca;
+  Ptr<DcaTxop> m_dca;
   EventId m_beaconWatchdog;
   Time m_beaconWatchdogEnd;
   Mac48Address m_bssid;

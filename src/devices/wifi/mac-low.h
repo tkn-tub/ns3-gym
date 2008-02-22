@@ -270,12 +270,12 @@ private:
 /**
  * \brief handle RTS/CTS/DATA/ACK transactions.
  */
-class MacLow {
+class MacLow : public Object {
 public:
   typedef Callback<void, Ptr<Packet> , WifiMacHeader const*> MacLowRxCallback;
 
   MacLow ();
-  ~MacLow ();
+  virtual ~MacLow ();
 
   void SetDevice (Ptr<WifiNetDevice> device);
   void SetPhy (Ptr<WifiPhy> phy);
@@ -340,6 +340,8 @@ public:
    */
   void ReceiveError (Ptr<Packet> packet, double rxSnr);
 private:
+  // Inherited from ns3::Object.
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
   uint32_t GetRtsSize (void) const;

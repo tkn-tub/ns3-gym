@@ -76,7 +76,7 @@ MacHighNqsta::~MacHighNqsta ()
 }
 
 void 
-MacHighNqsta::SetDcaTxop (DcaTxop *dca)
+MacHighNqsta::SetDcaTxop (Ptr<DcaTxop> dca)
 {
   m_dca = dca;
 }

@@ -49,7 +49,7 @@ MacHighAdhoc::SetForwardCallback (ForwardCallback callback)
   m_callback = callback;
 }
 void
-MacHighAdhoc::SetDcaTxop (DcaTxop *dca)
+MacHighAdhoc::SetDcaTxop (Ptr<DcaTxop> dca)
 {
   m_dca = dca;
 }

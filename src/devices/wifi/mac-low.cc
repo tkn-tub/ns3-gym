@@ -31,6 +31,7 @@
 #include "wifi-net-device.h"
 #include "mac-stations.h"
 #include "mac-parameters.h"
+#include "ns3/composite-trace-resolver.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 
@@ -1074,6 +1075,19 @@ MacLow::SendAckAfterData (Mac48Address source, Time duration, WifiMode dataTxMod
   packet->AddTag (tag);
 
   ForwardDown (packet, &ack, ackTxMode);
+}
+
+Ptr<TraceResolver> 
+MacLow::GetTraceResolver (void) const
+{
+  Ptr<CompositeTraceResolver> resolver =
+    Create<CompositeTraceResolver> ();
+  resolver->AddSource ("error",
+                       TraceDoc ("Receive a packet with errors",
+                                 "Packet", "the packet received"),
+                       m_dropError);
+  resolver->SetParentResolver (Object::GetTraceResolver ());
+  return resolver;
 }
 
 } // namespace ns3
