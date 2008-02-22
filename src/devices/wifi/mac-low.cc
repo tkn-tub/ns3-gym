@@ -687,7 +687,7 @@ MacLow::NotifyNav (const WifiMacHeader &hdr, WifiMode txMode, WifiPreamble pream
     }
   // XXX Note that we should also handle CF_END specially here
   // but we don't for now because we do not generate them.
-  else if (hdr.GetAddr1 () == m_device->GetSelfAddress ())
+  else if (hdr.GetAddr1 () != m_device->GetSelfAddress ())
     {
       // see section 9.2.5.4 802.11-1999
       bool navUpdated = DoNavStartNow (duration);
