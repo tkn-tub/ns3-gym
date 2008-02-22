@@ -42,6 +42,7 @@
 #include "cr-mac-stations.h"
 #include "onoe-mac-stations.h"
 #include "amrr-mac-stations.h"
+#include "rraa-mac-stations.h"
 
 namespace ns3 {
 
@@ -218,6 +219,9 @@ WifiNetDevice::Construct (void)
   } break;
   case WifiDefaultParameters::AMRR: {
     m_stations = new AmrrMacStations (m_phy->GetMode (0));
+  } break;
+  case WifiDefaultParameters::RRAA: {
+    m_stations = new RraaMacStations (m_phy->GetMode (0));
   } break;
   default:
     // NOTREACHED

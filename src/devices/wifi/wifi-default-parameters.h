@@ -36,7 +36,8 @@ enum RateControlAlgorithm {
   AARF,
   ONOE,
   AMRR,
-  IDEAL
+  IDEAL,
+  RRAA
 };
 enum PhyModeParameter {
   MODE_6MB = 6000000,
