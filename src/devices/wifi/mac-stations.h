@@ -30,6 +30,7 @@ namespace ns3 {
 
 class MacStation;
 class NonUnicastMacStation;
+class MacParameters;
 
 class MacStations 
 {
@@ -40,6 +41,7 @@ public:
 
   MacStations (WifiMode defaultTxMode);
   virtual ~MacStations ();
+  void SetParameters (MacParameters *parameters);
   
   // Invoked in a STA upon dis-association
   // or in an AP upon reboot
@@ -69,6 +71,7 @@ private:
   NonUnicastMacStation *m_nonUnicast;
   BasicModes m_basicModes;
   bool m_isLowLatency;
+  MacParameters *m_parameters;
 };
 
 } // namespace ns3
@@ -89,6 +92,7 @@ public:
   // The set of supported modes includes
   // the BSSBasicRateSet.
   void AddSupportedMode (WifiMode mode);
+  void SetParameters (MacParameters *parameters);
 
   bool IsBrandNew (void) const;
   bool IsAssociated (void) const;
@@ -112,6 +116,13 @@ public:
   virtual void ReportDataOk (double ackSnr, WifiMode ackMode, double dataSnr) = 0;
   virtual void ReportFinalRtsFailed (void) = 0;
   virtual void ReportFinalDataFailed (void) = 0;
+  virtual bool NeedRts (Ptr<const Packet> packet);
+  virtual uint32_t GetMaxSsrc (Ptr<const Packet> packet);
+  virtual uint32_t GetMaxSlrc (Ptr<const Packet> packet);
+  virtual bool NeedFragmentation (Ptr<const Packet> packet);
+  virtual uint32_t GetNFragments (Ptr<const Packet> packet);
+  virtual uint32_t GetFragmentSize (Ptr<const Packet> packet, uint32_t fragmentNumber);
+  virtual bool IsLastFragment (Ptr<const Packet> packet, uint32_t fragmentNumber);
 
   WifiMode GetCtsMode (WifiMode rtsMode);
   WifiMode GetAckMode (WifiMode dataMode);
@@ -134,6 +145,7 @@ private:
     GOT_ASSOC_TX_OK
   } m_state;
   SupportedModes m_modes;
+  MacParameters *m_parameters;
 };
 
 } // namespace ns3 

@@ -38,6 +38,7 @@ class MacLow;
 class MacParameters;
 class MacTxMiddle;
 class RandomStream;
+class MacStation;
 class MacStations;
 
 /**
@@ -135,9 +136,11 @@ private:
   bool NeedRts (void);
   bool NeedFragmentation (void);
   uint32_t GetNFragments (void);
-  uint32_t GetLastFragmentSize (void);
   uint32_t GetNextFragmentSize (void);
   uint32_t GetFragmentSize (void);
+  MacStation *GetStation (Mac48Address to) const;
+  uint32_t GetMaxSsrc (void) const;
+  uint32_t GetMaxSlrc (void) const;
   bool IsLastFragment (void);
   void NextFragment (void);
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);

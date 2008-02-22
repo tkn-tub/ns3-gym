@@ -177,6 +177,12 @@ DcaTxop::Queue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
   StartAccessIfNeeded ();
 }
 
+MacStation *
+DcaTxop::GetStation (Mac48Address ad) const
+{
+  return m_stations->Lookup (ad);
+}
+
 void
 DcaTxop::RestartAccessIfNeeded (void)
 {
@@ -216,34 +222,22 @@ DcaTxop::Parameters (void)
 bool
 DcaTxop::NeedRts (void)
 {
-  if (m_currentPacket->GetSize () > Parameters ()->GetRtsCtsThreshold ()) 
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
+  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  return station->NeedRts (m_currentPacket);
 }
 
 bool
 DcaTxop::NeedFragmentation (void)
 {
-  if (m_currentPacket->GetSize () > Parameters ()->GetFragmentationThreshold ()) 
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
+  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  return station->NeedFragmentation (m_currentPacket);
 }
 
 uint32_t
 DcaTxop::GetNFragments (void)
 {
-  uint32_t nFragments = m_currentPacket->GetSize () / Parameters ()->GetFragmentationThreshold () + 1;
-  return nFragments;
+  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  return station->GetNFragments (m_currentPacket);
 }
 void
 DcaTxop::NextFragment (void)
@@ -252,48 +246,23 @@ DcaTxop::NextFragment (void)
 }
 
 uint32_t
-DcaTxop::GetLastFragmentSize (void)
-{
-  uint32_t lastFragmentSize = m_currentPacket->GetSize () %
-    Parameters ()->GetFragmentationThreshold ();
-  return lastFragmentSize;
-}
-
-uint32_t
 DcaTxop::GetFragmentSize (void)
 {
-  return Parameters ()->GetFragmentationThreshold ();
+  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  return station->GetFragmentSize (m_currentPacket, m_fragmentNumber);
 }
 bool
 DcaTxop::IsLastFragment (void) 
 {
-  if (m_fragmentNumber == (GetNFragments () - 1)) 
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
+  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  return station->IsLastFragment (m_currentPacket, m_fragmentNumber);
 }
 
 uint32_t
 DcaTxop::GetNextFragmentSize (void) 
 {
-  if (IsLastFragment ()) 
-    {
-      return 0;
-    }
-  
-  uint32_t nextFragmentNumber = m_fragmentNumber + 1;
-  if (nextFragmentNumber == (GetNFragments () - 1)) 
-    {
-      return GetLastFragmentSize ();
-    } 
-  else 
-    {
-      return GetFragmentSize ();
-    }
+  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  return station->GetFragmentSize (m_currentPacket, m_fragmentNumber + 1);
 }
 
 Ptr<Packet>
@@ -306,16 +275,27 @@ DcaTxop::GetFragmentPacket (WifiMacHeader *hdr)
   if (IsLastFragment ()) 
     {
       hdr->SetNoMoreFragments ();
-      fragment = m_currentPacket->CreateFragment (startOffset, 
-                                                 GetLastFragmentSize ());
     } 
   else 
     {
       hdr->SetMoreFragments ();
-      fragment = m_currentPacket->CreateFragment (startOffset, 
-                                                 GetFragmentSize ());
     }
+  fragment = m_currentPacket->CreateFragment (startOffset, 
+                                             GetFragmentSize ());
   return fragment;
+}
+
+uint32_t
+DcaTxop::GetMaxSsrc (void) const
+{
+  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  return station->GetMaxSsrc (m_currentPacket);
+}
+uint32_t
+DcaTxop::GetMaxSlrc (void) const
+{
+  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  return station->GetMaxSlrc (m_currentPacket);
 }
 
 bool 
@@ -429,7 +409,7 @@ DcaTxop::MissedCts (void)
   MY_DEBUG ("missed cts");
   m_ssrc++;
   m_ctstimeoutTrace (m_ssrc);
-  if (m_ssrc > Parameters ()->GetMaxSsrc ()) 
+  if (m_ssrc > GetMaxSsrc ()) 
     {
       MacStation *station = m_stations->Lookup (m_currentHdr.GetAddr1 ());
       station->ReportFinalRtsFailed ();
@@ -476,7 +456,7 @@ DcaTxop::MissedAck (void)
   MY_DEBUG ("missed ack");
   m_slrc++;
   m_acktimeoutTrace (m_slrc);
-  if (m_slrc > Parameters ()->GetMaxSlrc ()) 
+  if (m_slrc > GetMaxSlrc ()) 
     {
       MacStation *station = m_stations->Lookup (m_currentHdr.GetAddr1 ());
       station->ReportFinalDataFailed ();

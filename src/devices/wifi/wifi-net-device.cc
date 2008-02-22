@@ -234,6 +234,7 @@ WifiNetDevice::Construct (void)
   Time ackDelay = m_phy->CalculateTxDuration (hdr.GetSize () + 4, m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
   parameters->Initialize (ctsDelay, ackDelay);
   m_parameters = parameters;
+  m_stations->SetParameters (m_parameters);
 
   // the MacLow
   MacLow *low = new MacLow ();

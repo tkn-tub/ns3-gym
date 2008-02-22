@@ -20,6 +20,7 @@
 
 #include "mac-stations.h"
 #include "wifi-default-parameters.h"
+#include "mac-parameters.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/tag.h"
@@ -151,6 +152,7 @@ MacStations::Lookup (Mac48Address address)
     }
   MacStation *station = CreateStation ();
   station->Reset ();
+  station->SetParameters (m_parameters);
   m_stations.push_back (std::make_pair (address, station));
   return station;
 }
@@ -215,6 +217,11 @@ bool
 MacStations::IsLowLatency (void) const
 {
   return m_isLowLatency;
+}
+void 
+MacStations::SetParameters (MacParameters *parameters)
+{
+  m_parameters = parameters;
 }
 
 
@@ -300,6 +307,12 @@ MacStation::MacStation ()
 {}
 MacStation::~MacStation ()
 {}
+
+void 
+MacStation::SetParameters (MacParameters *parameters)
+{
+  m_parameters = parameters;
+}
 
 bool
 MacStation::IsBrandNew (void) const
@@ -469,6 +482,80 @@ MacStation::GetRtsMode (Ptr<const Packet> packet)
   return tag.GetRtsMode ();
 }
 
+bool
+MacStation::NeedRts (Ptr<const Packet> packet)
+{
+  if (packet->GetSize () > m_parameters->GetRtsCtsThreshold ()) 
+    {
+      return true;
+    } 
+  else 
+    {
+      return false;
+    }
+}
+uint32_t 
+MacStation::GetMaxSsrc (Ptr<const Packet> packet)
+{
+  return m_parameters->GetMaxSsrc ();
+}
+
+uint32_t 
+MacStation::GetMaxSlrc (Ptr<const Packet> packet)
+{
+  return m_parameters->GetMaxSlrc ();
+}
+
+bool
+MacStation::NeedFragmentation (Ptr<const Packet> packet)
+{
+  if (packet->GetSize () > m_parameters->GetFragmentationThreshold ()) 
+    {
+      return true;
+    } 
+  else 
+    {
+      return false;
+    }
+}
+uint32_t
+MacStation::GetNFragments (Ptr<const Packet> packet)
+{
+  uint32_t nFragments = packet->GetSize () / m_parameters->GetFragmentationThreshold () + 1;
+  return nFragments;
+}
+
+uint32_t
+MacStation::GetFragmentSize (Ptr<const Packet> packet, uint32_t fragmentNumber)
+{
+  uint32_t nFragment = GetNFragments (packet);
+  if (fragmentNumber >= nFragment)
+    {
+      return 0;
+    }
+  if (fragmentNumber == nFragment - 1)
+    {
+      uint32_t lastFragmentSize = packet->GetSize () % m_parameters->GetFragmentationThreshold ();
+      return lastFragmentSize;
+    }
+  else
+    {
+      return m_parameters->GetFragmentationThreshold ();
+    }
+}
+
+bool
+MacStation::IsLastFragment (Ptr<const Packet> packet, uint32_t fragmentNumber) 
+{
+  if (fragmentNumber == (GetNFragments (packet) - 1)) 
+    {
+      return true;
+    } 
+  else 
+    {
+      return false;
+    }
+}
 
 } // namespace ns3
 
