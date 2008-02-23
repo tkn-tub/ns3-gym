@@ -1,10 +1,10 @@
-#include "initial-value.h"
+#include "global-value.h"
 #include "fatal-error.h"
 #include "object.h"
 
 namespace ns3 {
 
-InitialValue::InitialValue (std::string name, std::string help,
+GlobalValue::GlobalValue (std::string name, std::string help,
 			    Attribute initialValue,
 			    Ptr<const AttributeChecker> checker)
   : m_name (name),
@@ -20,28 +20,28 @@ InitialValue::InitialValue (std::string name, std::string help,
 }
 
 std::string 
-InitialValue::GetName (void) const
+GlobalValue::GetName (void) const
 {
   return m_name;
 }
 std::string 
-InitialValue::GetHelp (void) const
+GlobalValue::GetHelp (void) const
 {
   return m_help;
 }
 Attribute 
-InitialValue::GetValue (void) const
+GlobalValue::GetValue (void) const
 {
   return m_initialValue;
 }
 Ptr<const AttributeChecker> 
-InitialValue::GetChecker (void) const
+GlobalValue::GetChecker (void) const
 {
   return m_checker;
 }
   
 void 
-InitialValue::SetValue (Attribute value)
+GlobalValue::SetValue (Attribute value)
 {
   if (!m_checker->Check (value))
     {
@@ -51,7 +51,7 @@ InitialValue::SetValue (Attribute value)
 }
 
 void 
-InitialValue::Bind (std::string name, Attribute value)
+GlobalValue::Bind (std::string name, Attribute value)
 {
   for (Iterator i = Begin (); i != End (); i++)
     {
@@ -61,22 +61,22 @@ InitialValue::Bind (std::string name, Attribute value)
 	  return;
 	}
     }
-  // since we did not find a matching InitialValue,
+  // since we did not find a matching GlobalValue,
   // we attempt to configure the global parameters list.
   AttributeList::GetGlobal ()->Set (name, value);
 }
-InitialValue::Iterator 
-InitialValue::Begin (void)
+GlobalValue::Iterator 
+GlobalValue::Begin (void)
 {
   return GetVector ()->begin ();
 }
-InitialValue::Iterator 
-InitialValue::End (void)
+GlobalValue::Iterator 
+GlobalValue::End (void)
 {
   return GetVector ()->end ();
 }
-InitialValue::Vector *
-InitialValue::GetVector (void)
+GlobalValue::Vector *
+GlobalValue::GetVector (void)
 {
   static Vector vector;
   return &vector;
@@ -91,7 +91,7 @@ InitialValue::GetVector (void)
 
 namespace {
 
-static ns3::InitialValue g_uint = ns3::InitialValue ("TestUint", "help text",
+static ns3::GlobalValue g_uint = ns3::GlobalValue ("TestUint", "help text",
 						     ns3::Uinteger (10),
 						     ns3::MakeUintegerChecker<uint32_t> ());
 
@@ -99,20 +99,20 @@ static ns3::InitialValue g_uint = ns3::InitialValue ("TestUint", "help text",
 
 namespace ns3 {
 
-class InitialValueTests : public Test
+class GlobalValueTests : public Test
 {
 public:
-  InitialValueTests ();
+  GlobalValueTests ();
   virtual bool RunTests (void);
 private:
 };
 
 
-InitialValueTests::InitialValueTests ()
-  : Test ("InitialValue")
+GlobalValueTests::GlobalValueTests ()
+  : Test ("GlobalValue")
 {}
 bool 
-InitialValueTests::RunTests (void)
+GlobalValueTests::RunTests (void)
 {
   bool result = true;
 
@@ -121,7 +121,7 @@ InitialValueTests::RunTests (void)
   return result;
 }
 
-static InitialValueTests g_initialValueTests;
+static GlobalValueTests g_initialValueTests;
 
 } // namespace ns3
 

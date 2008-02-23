@@ -62,7 +62,7 @@ def build(bld):
         'double.cc',
         'object-factory.cc',
         'object-vector.cc',
-        'initial-value.cc',
+        'global-value.cc',
         'event-trace-source.cc',
         'trace-source-accessor.cc',
         ]
@@ -118,7 +118,7 @@ def build(bld):
         'enum.h',
         'object-factory.h',
         'attribute-helper.h',
-        'initial-value.h',
+        'global-value.h',
         'event-trace-source.h',
         'integer-trace-source.h',
         'trace-source-accessor.h',

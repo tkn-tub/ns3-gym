@@ -1,5 +1,5 @@
-#ifndef INITIAL_VALUE_H
-#define INITIAL_VALUE_H
+#ifndef GLOBAL_VALUE_H
+#define GLOBAL_VALUE_H
 
 #include <string>
 #include <vector>
@@ -9,13 +9,13 @@
 
 namespace ns3 {
 
-class InitialValue
+class GlobalValue
 {
-  typedef std::vector<InitialValue *> Vector;
+  typedef std::vector<GlobalValue *> Vector;
 public:
   typedef Vector::const_iterator Iterator;
 
-  InitialValue (std::string name, std::string help,
+  GlobalValue (std::string name, std::string help,
 		Attribute initialValue,
 		Ptr<const AttributeChecker> checker);
 
@@ -40,4 +40,4 @@ private:
 
 } // namespace ns3
 
-#endif /* INITIAL_VALUE_H */
+#endif /* GLOBAL_VALUE_H */
