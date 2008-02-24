@@ -13,6 +13,29 @@
 
 namespace ns3 {
 
+class ValueClassTest 
+{
+public:
+  ValueClassTest () {}
+  VALUE_HELPER_HEADER_1 (ValueClassTest);
+private:
+  int m_v;
+};
+bool operator != (const ValueClassTest &a, const ValueClassTest &b)
+{
+  return true;
+}
+std::ostream & operator << (std::ostream &os, ValueClassTest v)
+{
+  return os;
+}
+std::istream & operator >> (std::istream &is, ValueClassTest &v)
+{
+  return is;
+}
+VALUE_HELPER_HEADER_2 (ValueClassTest);
+VALUE_HELPER_CPP (ValueClassTest);
+
 class AttributeTest : public Test
 {
 public:
@@ -25,8 +48,12 @@ private:
   void NotifySource2 (double a, int b, float c) {
     m_got2 = a;
   }
+  void NotifySourceValue (ValueClassTest old, ValueClassTest n) {
+    m_gotValue = n;
+  }
   int64_t m_got1;
   double m_got2;
+  ValueClassTest m_gotValue;
 };
 
 class Derived : public Object
@@ -113,10 +140,16 @@ public:
 		     MakeIntegerAccessor (&AttributeObjectTest::DoSetIntSrc,
 					  &AttributeObjectTest::DoGetIntSrc),
 		     MakeIntegerChecker<int8_t> ())
+      .AddAttribute ("ValueClassSource", "help text",
+		     ValueClassTest (),
+		     MakeValueClassTestAccessor (&AttributeObjectTest::m_valueSrc),
+		     MakeValueClassTestChecker ())
       .AddTraceSource ("Source1", "help test",
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1))
       .AddTraceSource ("Source2", "help text",
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb))
+      .AddTraceSource ("ValueSource", "help text",
+		       MakeTraceSourceAccessor (&AttributeObjectTest::m_valueSrc))
       ;
         
     return tid;
@@ -173,6 +206,7 @@ private:
   ValueTraceSource<int8_t> m_intSrc1;
   ValueTraceSource<int8_t> m_intSrc2;
   EventTraceSource<double, int, float> m_cb;
+  ValueTraceSource<ValueClassTest> m_valueSrc;
 };
 
 
@@ -422,6 +456,8 @@ AttributeTest::RunTests (void)
   NS_TEST_ASSERT (p->TraceSourceDisconnect ("Source2", MakeCallback (&AttributeTest::NotifySource2, this)));
   p->InvokeCb (-1.0, -5, 0.0);
   NS_TEST_ASSERT_EQUAL (m_got2, 1.0);
+
+  NS_TEST_ASSERT (p->TraceSourceConnect ("ValueSource", MakeCallback (&AttributeTest::NotifySourceValue, this)));
   
 
 
