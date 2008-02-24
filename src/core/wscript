@@ -120,7 +120,7 @@ def build(bld):
         'attribute-helper.h',
         'global-value.h',
         'event-trace-source.h',
-        'integer-trace-source.h',
+        'value-trace-source.h',
         'trace-source-accessor.h',
         ]
 

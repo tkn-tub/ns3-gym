@@ -8,7 +8,7 @@
 #include "random-variable.h"
 #include "double.h"
 #include "object-vector.h"
-#include "integer-trace-source.h"
+#include "value-trace-source.h"
 #include "trace-source-accessor.h"
 
 namespace ns3 {
@@ -19,7 +19,7 @@ public:
   AttributeTest ();
   virtual bool RunTests (void);
 private:
-  void NotifySource1 (int64_t old, int64_t n) {
+  void NotifySource1 (int8_t old, int8_t n) {
     m_got1 = n;
   }
   void NotifySource2 (double a, int b, float c) {
@@ -115,7 +115,6 @@ public:
 		     MakeIntegerChecker<int8_t> ())
       .AddTraceSource ("Source1", "help test",
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_intSrc1))
-
       .AddTraceSource ("Source2", "help text",
 		       MakeTraceSourceAccessor (&AttributeObjectTest::m_cb))
       ;
@@ -171,8 +170,8 @@ private:
   RandomVariable m_random;
   std::vector<Ptr<Derived> > m_vector1;
   std::vector<Ptr<Derived> > m_vector2;
-  IntegerTraceSource<int8_t> m_intSrc1;
-  IntegerTraceSource<int8_t> m_intSrc2;
+  ValueTraceSource<int8_t> m_intSrc1;
+  ValueTraceSource<int8_t> m_intSrc2;
   EventTraceSource<double, int, float> m_cb;
 };
 
