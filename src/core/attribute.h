@@ -92,7 +92,7 @@ private:
   mutable uint32_t m_count;
 };
 
-template <typename T>
+template <typename T, typename BASE>
 Ptr<AttributeChecker>
 MakeSimpleAttributeChecker (void);
 
@@ -106,6 +106,13 @@ MakePtrAccessor (void (T::*setter) (Ptr<U>));
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
 MakePtrAccessor (Ptr<U> (T::*getter) (void) const);
+
+
+class PtrChecker : public AttributeChecker {};
+
+template <typename T>
+Ptr<AttributeChecker> MakePtrChecker (void);
+
 
 
 } // namespace ns3
@@ -342,7 +349,7 @@ template <typename T>
 Ptr<AttributeChecker>
 MakePtrChecker (void)
 {
-  struct PtrChecker : public AttributeChecker
+  struct APtrChecker : public PtrChecker
   {
     virtual bool Check (Attribute val) const {
       const PtrValueBase *value = val.DynCast<const PtrValueBase *> ();
@@ -361,15 +368,15 @@ MakePtrChecker (void)
         }
       return true;
     }
-  } *checker = new PtrChecker ();
+  } *checker = new APtrChecker ();
   return Ptr<AttributeChecker> (checker, false);
 }
 
-template <typename T>
+template <typename T, typename BASE>
 Ptr<AttributeChecker>
 MakeSimpleAttributeChecker (void)
 {
-  struct SimpleAttributeChecker : public AttributeChecker
+  struct SimpleAttributeChecker : public BASE
   {
     virtual bool Check (Attribute value) const {
       return value.DynCast<const T *> () != 0;

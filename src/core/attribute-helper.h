@@ -38,6 +38,7 @@
   operator Attribute () const;
 
 #define ATTRIBUTE_CHECKER_DEFINE(type)				\
+  class type##Checker : public AttributeChecker {};		\
   Ptr<const AttributeChecker> Make##type##Checker (void);	\
 
 #define ATTRIBUTE_VALUE_IMPLEMENT(type)					\
@@ -83,7 +84,7 @@
 #define ATTRIBUTE_CHECKER_IMPLEMENT(type)				\
   Ptr<const AttributeChecker> Make##type##Checker (void)		\
   {									\
-    return MakeSimpleAttributeChecker<type##Value> ();			\
+    return MakeSimpleAttributeChecker<type##Value,type##Checker> ();	\
   }									\
 
 #define ATTRIBUTE_CONVERTER_IMPLEMENT(type)				\

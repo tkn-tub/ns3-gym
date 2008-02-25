@@ -42,6 +42,7 @@ MakeObjectVectorAccessor (INDEX (T::*getN) (void) const,
 			   Ptr<U> (T::*get) (INDEX) const);
 
 
+class ObjectVectorChecker : public AttributeChecker {};
 Ptr<const AttributeChecker> MakeObjectVectorChecker (void);
 
 } // namespace ns3
