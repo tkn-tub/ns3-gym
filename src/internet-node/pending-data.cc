@@ -186,37 +186,27 @@ uint32_t PendingData::OffsetFromSeq (const SequenceNumber& f, const SequenceNumb
   return o - f;
 }
 
-PendingData* PendingData::CopyFromOffset (uint32_t s, uint32_t o)
+Ptr<Packet> PendingData::CopyFromOffset (uint32_t s, uint32_t o)
 { // Make a copy of data from starting position "o" for "s" bytes
   // Return NULL if results in zero length data
   uint32_t s1 = std::min (s, SizeFromOffset (o)); // Insure not beyond end of data
   if (s1 == 0)
     {
-      return NULL;   // No data requested
+      return 0;   // No data requested
     }
   if (data)
     { // Actual data exists, make copy and return it
-      uint8_t* d1 = new uint8_t[s1];  // Allocate memory for the copy
-      memcpy (d1, &data[o], s1); // Copy the data
-      PendingData* d = new PendingData (s1, d1, msgSize, responseSize);  // Return copy
-      return d;
+      return Create<Packet> (data+o, s1);
     }
   else
     { // No actual data, just return non-data pdu of correct size
-      return new PendingData (s1, 0, msgSize, responseSize);
+      return Create<Packet> (s1);
     }
 }
 
-PendingData* PendingData::CopyFromSeq (uint32_t s, const SequenceNumber& f, const SequenceNumber& o)
+Ptr<Packet> PendingData::CopyFromSeq (uint32_t s, const SequenceNumber& f, const SequenceNumber& o)
 {
-  PendingData* d = CopyFromOffset (s, OffsetFromSeq(f,o));
-  return d;
+  return CopyFromOffset (s, OffsetFromSeq(f,o));
 }
 
-}//namepsace ns3      
-  
-  
-
-
-
-
+}//namepsace ns3

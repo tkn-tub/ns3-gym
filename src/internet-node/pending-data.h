@@ -27,6 +27,8 @@
 
 #include "pending-data.h"
 #include "sequence-number.h"
+
+#include "ns3/ptr.h"
 namespace ns3
 {
 class Packet;
@@ -53,9 +55,9 @@ public:
   virtual uint32_t SizeFromOffset (uint32_t);
   // Available size from sequence difference 
   virtual uint32_t OffsetFromSeq (const SequenceNumber&, const SequenceNumber&);
-  virtual PendingData* CopyFromOffset (uint32_t, uint32_t);  // Size, offset, ret pointer
+  virtual Ptr<Packet> CopyFromOffset (uint32_t, uint32_t);  // Size, offset, ret packet
   // Copy data, size, offset specified by sequence difference
-  virtual PendingData* CopyFromSeq (uint32_t, const SequenceNumber&, const SequenceNumber&);
+  virtual Ptr<Packet> CopyFromSeq (uint32_t, const SequenceNumber&, const SequenceNumber&);
   PendingData*   Copy () const;          // Create a copy of this header
   PendingData*   CopyS (uint32_t);         // Copy with new size
   PendingData*   CopySD (uint32_t, uint8_t*); // Copy with new size, new data
