@@ -1165,6 +1165,12 @@ Object::TraceSourceDisconnect (std::string name, const CallbackBase &cb)
   return ok;
 }
 
+TypeId 
+Object::GetRealTypeId (void) const
+{
+  return m_tid;
+}
+
 
 Ptr<Object>
 Object::DoGetObject (TypeId tid) const

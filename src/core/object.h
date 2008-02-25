@@ -240,6 +240,18 @@ public:
                          std::string help,
                          Ptr<const TraceSourceAccessor> accessor);
 
+  struct AttributeInfo {
+    Ptr<const AttributeAccessor> accessor;
+    Attribute initialValue;
+    uint32_t flags;
+    Ptr<const AttributeChecker> checker;
+  };
+  /**
+   * \param name the name of the requested attribute
+   */
+  bool LookupAttributeByName (std::string name, struct AttributeInfo *info) const;
+
+
   // construct an invalid TypeId.
   TypeId ();
   ~TypeId ();
@@ -249,20 +261,9 @@ private:
   friend bool operator == (TypeId a, TypeId b);
   friend bool operator != (TypeId a, TypeId b);
 
-  struct AttributeInfo {
-    Ptr<const AttributeAccessor> accessor;
-    Attribute initialValue;
-    uint32_t flags;
-    Ptr<const AttributeChecker> checker;
-  };
 
   Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
 
-  /**
-   * \param name the name of the requested attribute
-   * \returns the Accessor associated to the requested attribute
-   */
-  bool LookupAttributeByName (std::string name, struct AttributeInfo *info) const;
   /**
    * \param i the position of the requested attribute
    * \returns the Accessor associated to the requested attribute
@@ -386,6 +387,8 @@ public:
 
   bool TraceSourceConnect (std::string name, const CallbackBase &cb);
   bool TraceSourceDisconnect (std::string name, const CallbackBase &cb);
+
+  TypeId GetRealTypeId (void) const;
 
   /**
    * Increment the reference count. This method should not be called
