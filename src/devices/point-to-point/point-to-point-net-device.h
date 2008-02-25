@@ -32,6 +32,7 @@
 #include "ns3/data-rate.h"
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
+#include "ns3/mac48-address.h"
 
 namespace ns3 {
 
@@ -74,7 +75,8 @@ private:
  * include a queue, data rate, and interframe transmission gap (the 
  * propagation delay is set in the PointToPointChannel).
  */
-class PointToPointNetDevice : public NetDevice {
+class PointToPointNetDevice : public NetDevice 
+{
 public:
   /**
    * Construct a PointToPointNetDevice
@@ -88,6 +90,7 @@ public:
    * @param rate (optional) DataRate object
    */
   PointToPointNetDevice (Ptr<Node> node,
+                         Mac48Address address,
                          const DataRate& rate = g_defaultRate.GetValue());
   /**
    * Destroy a PointToPointNetDevice
@@ -168,6 +171,28 @@ public:
    */
   void Receive (Ptr<Packet> p);
 
+  // inherited from NetDevice base class.
+  virtual void SetName(const std::string name);
+  virtual std::string GetName(void) const;
+  virtual void SetIfIndex(const uint32_t index);
+  virtual uint32_t GetIfIndex(void) const;
+  virtual Ptr<Channel> GetChannel (void) const;
+  virtual Address GetAddress (void) const;
+  virtual bool SetMtu (const uint16_t mtu);
+  virtual uint16_t GetMtu (void) const;
+  virtual bool IsLinkUp (void) const;
+  virtual void SetLinkChangeCallback (Callback<void> callback);
+  virtual bool IsBroadcast (void) const;
+  virtual Address GetBroadcast (void) const;
+  virtual bool IsMulticast (void) const;
+  virtual Address GetMulticast (void) const;
+  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+  virtual bool IsPointToPoint (void) const;
+  virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  virtual Ptr<Node> GetNode (void) const;
+  virtual bool NeedsArp (void) const;
+  virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+
 private:
   /**
    * Create a Trace Resolver for events in the net device.
@@ -188,16 +213,6 @@ private:
    */
   Ptr<Queue> GetQueue(void) const; 
 
-  /**
-   * Get a copy of the attached Channel
-   *
-   * This method is provided for any derived class that may need to get
-   * direct access to the connected channel
-   *
-   * @see PointToPointChannel
-   * @returns a pointer to the channel
-   */
-  virtual Ptr<Channel> DoGetChannel(void) const;
 
   /**
    * Set a new default data rate
@@ -224,21 +239,6 @@ private:
    */
   bool ProcessHeader(Ptr<Packet> p, uint16_t& param);
   /**
-   * Send a Packet Down the Wire.
-   *
-   * The SendTo method is defined as the standard way that the level three
-   * protocol uses to tell a NetDevice to send a packet.  SendTo is declared
-   * as abstract in the NetDevice class and we declare it here.
-   *
-   * @see NetDevice
-   * @param p a reference to the packet to send
-   * @param dest a reference to the Address of the destination device
-   * @param protocolNumber Protocol Number used to find protocol touse
-   * @returns true if success, false on failure
-   */
-  virtual bool SendTo (Ptr<Packet> p, const Address& dest, 
-                       uint16_t protocolNumber);
-  /**
    * Start Sending a Packet Down the Wire.
    *
    * The TransmitStart method is the method that is used internally in the
@@ -262,7 +262,8 @@ private:
    *
    */
   void TransmitComplete(void);
-  virtual bool DoNeedsArp (void) const;
+  void NotifyLinkUp (void);
+
   /**
    * Enumeration of the states of the transmit machine of the net device.
    */
@@ -327,6 +328,15 @@ private:
    * Error model for receive packet events
    */
   Ptr<ErrorModel> m_receiveErrorModel;
+
+  Ptr<Node> m_node;
+  Mac48Address m_address;
+  NetDevice::ReceiveCallback m_rxCallback;
+  uint32_t m_ifIndex;
+  std::string m_name;
+  bool m_linkUp;
+  Callback<void> m_linkChangeCallback;
+  uint16_t m_mtu;
 };
 
 }; // namespace ns3

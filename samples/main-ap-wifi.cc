@@ -73,6 +73,7 @@ CreateApNode (Ptr<WifiChannel> channel,
 {
   Ptr<Node> node = CreateObject<Node> ();  
   Ptr<NqapWifiNetDevice> device = CreateObject<NqapWifiNetDevice> (node, Mac48Address (macAddress));
+  node->AddDevice (device);
   device->SetSsid (ssid);
   Simulator::Schedule (at, &NqapWifiNetDevice::StartBeaconing, device);
   device->Attach (channel);
@@ -90,6 +91,7 @@ CreateStaNode (Ptr<WifiChannel> channel,
 {
   Ptr<Node> node = CreateObject<Node> ();  
   Ptr<NqstaWifiNetDevice> device = CreateObject<NqstaWifiNetDevice> (node, Mac48Address (macAddress));
+  node->AddDevice (device);
   Simulator::ScheduleNow (&NqstaWifiNetDevice::StartActiveAssociation, device, 
                           ssid);
   device->Attach (channel);
