@@ -54,12 +54,12 @@ NumericDefaultValue<uint32_t>       Tcp::defaultInitialCWnd
 NumericDefaultValue<uint32_t>       Tcp::defaultConnTimeout
 ("TcpDefaultConnTimeout",
 "Default TCP retransmission timeout when opening connection (seconds)",
-6);
+3);
 
 NumericDefaultValue<uint32_t>       Tcp::defaultConnCount
 ("TcpDefaultConnCount",
 "Default number of connection attempts (SYN retransmissions) before returning failure",
-3);
+6);
 
 NS_OBJECT_ENSURE_REGISTERED (Tcp);
 

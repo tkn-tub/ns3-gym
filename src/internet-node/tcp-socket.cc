@@ -471,6 +471,7 @@ void TcpSocket::SendEmptyPacket (uint8_t flags)
   if (flags & TcpHeader::SYN)
     {
       rto = m_cnTimeout;
+      m_cnTimeout = m_cnTimeout + m_cnTimeout;
       m_cnCount--;
     }
   if (m_retxEvent.IsExpired () ) //no outstanding timer
