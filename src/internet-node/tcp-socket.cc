@@ -98,7 +98,7 @@ TcpSocket::~TcpSocket ()
     }
   m_tcp = 0;
   delete m_pendingData; //prevents leak
-  m_retxEvent.Cancel ();
+  m_pendingData = 0;
 }
 
 enum Socket::SocketErrno
@@ -122,6 +122,7 @@ TcpSocket::Destroy (void)
   m_node = 0;
   m_endPoint = 0;
   m_tcp = 0;
+  m_retxEvent.Cancel ();
 }
 int
 TcpSocket::FinishBind (void)
@@ -946,7 +947,7 @@ void TcpSocket::CommonNewAck (SequenceNumber ack, bool skipTimer)
           delete m_pendingData;
           m_pendingData = 0;
           // Insure no re-tx timer
-          m_retxEvent.Cancel();
+          m_retxEvent.Cancel ();
         }
     }
   // Try to send more data
