@@ -1,12 +1,12 @@
 #include "global-value.h"
 #include "fatal-error.h"
-#include "object.h"
+#include "attribute.h"
 
 namespace ns3 {
 
 GlobalValue::GlobalValue (std::string name, std::string help,
-			    Attribute initialValue,
-			    Ptr<const AttributeChecker> checker)
+			  Attribute initialValue,
+			  Ptr<const AttributeChecker> checker)
   : m_name (name),
     m_help (help),
     m_initialValue (initialValue),
@@ -61,9 +61,6 @@ GlobalValue::Bind (std::string name, Attribute value)
 	  return;
 	}
     }
-  // since we did not find a matching GlobalValue,
-  // we attempt to configure the global parameters list.
-  AttributeList::GetGlobal ()->Set (name, value);
 }
 GlobalValue::Iterator 
 GlobalValue::Begin (void)
