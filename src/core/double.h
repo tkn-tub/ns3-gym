@@ -32,6 +32,9 @@ ATTRIBUTE_ACCESSOR_DEFINE (Double);
 template <typename T>
 Ptr<const AttributeChecker> MakeDoubleChecker (void);
 
+template <typename T>
+Ptr<const AttributeChecker> MakeDoubleChecker (double min);
+
 Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max);
 
 
@@ -43,6 +46,13 @@ template <typename T>
 Ptr<const AttributeChecker> MakeDoubleChecker (void)
 {
   return MakeDoubleChecker (-std::numeric_limits<T>::max (),
+			    std::numeric_limits<T>::max ());
+}
+
+template <typename T>
+Ptr<const AttributeChecker> MakeDoubleChecker (double min)
+{
+  return MakeDoubleChecker (min,
 			    std::numeric_limits<T>::max ());
 }
 
