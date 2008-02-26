@@ -601,9 +601,16 @@ ConfigTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (v.Get (), -16);
   v = d3->GetAttribute ("A");
   NS_TEST_ASSERT_EQUAL (v.Get (), -16);
+  Config::Set ("/NodeA/NodeB/NodesB/[0-1]|3/A", Integer (-16));
+  v = d0->GetAttribute ("A");
+  NS_TEST_ASSERT_EQUAL (v.Get (), -16);
+  v = d1->GetAttribute ("A");
+  NS_TEST_ASSERT_EQUAL (v.Get (), -15);
+  v = d2->GetAttribute ("A");
+  NS_TEST_ASSERT_EQUAL (v.Get (), -16);
+  v = d3->GetAttribute ("A");
+  NS_TEST_ASSERT_EQUAL (v.Get (), -16);
 
-  
-  
 
 
   return result;
