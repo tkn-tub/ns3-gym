@@ -110,13 +110,13 @@ TypeId RateErrorModel::GetTypeId (void)
   static TypeId tid = TypeId ("RateErrorModel")
     .SetParent<ErrorModel> ()
     .AddConstructor<RateErrorModel> ()
-    .AddAttribute ("Unit", "The error unit",
+    .AddAttribute ("ErrorUnit", "The error unit",
                    Enum (EU_BYTE),
                    MakeEnumAccessor (&RateErrorModel::m_unit),
                    MakeEnumChecker (EU_BYTE, "EU_BYTE",
                                     EU_PKT, "EU_PKT",
                                     EU_BIT, "EU_BIT"))
-    .AddAttribute ("Rate", "The error rate.",
+    .AddAttribute ("ErrorRate", "The error rate.",
                    Double (0.0),
                    MakeDoubleAccessor (&RateErrorModel::m_rate),
                    MakeDoubleChecker<double> ())
