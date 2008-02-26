@@ -32,6 +32,9 @@ ATTRIBUTE_ACCESSOR_DEFINE (Uinteger);
 template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker (void);
 
+template <typename T>
+Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min);
+
 Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max);
 
 } // namespace ns3
@@ -42,6 +45,13 @@ template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker (void)
 {
   return MakeUintegerChecker (std::numeric_limits<T>::min (),
+			      std::numeric_limits<T>::max ());
+}
+
+template <typename T>
+Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min)
+{
+  return MakeUintegerChecker (min,
 			      std::numeric_limits<T>::max ());
 }
 
