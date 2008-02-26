@@ -356,10 +356,6 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble pre
    */
   NS_ASSERT (!IsStateTx ());
 
-  if (IsStateSync ()) {
-    m_endSyncEvent.Cancel ();
-  }
-
   Time txDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
@@ -696,6 +692,8 @@ WifiPhy::SwitchToTx (Time txDuration)
      */
     m_syncing = false;
     m_stateLogger (m_startSync, now - m_startSync, WifiPhy::SYNC);
+    m_endSyncEvent.Cancel ();
+    m_endSync = now;
     break;
   case WifiPhy::CCA_BUSY: {
     Time ccaStart = Max (m_endSync, m_endTx);
