@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <ostream>
 #include "address.h"
+#include "ns3/attribute-helper.h"
 
 namespace ns3 {
 
@@ -141,6 +142,8 @@ public:
   static Ipv4Address GetAny (void);
   static Ipv4Address GetBroadcast (void);
   static Ipv4Address GetLoopback (void);
+
+  VALUE_HELPER_HEADER_1 (Ipv4Address);
 private:
   Address ConvertTo (void) const;
   static uint8_t GetType (void);
@@ -177,12 +180,19 @@ public:
 
   static Ipv4Mask GetLoopback (void);
   static Ipv4Mask GetZero (void);
+
+  VALUE_HELPER_HEADER_1 (Ipv4Mask);
 private:
   uint32_t m_mask;
 };
 
+VALUE_HELPER_HEADER_2 (Ipv4Address);
+VALUE_HELPER_HEADER_2 (Ipv4Mask);
+
 std::ostream& operator<< (std::ostream& os, Ipv4Address const& address);
 std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask);
+std::istream & operator >> (std::istream &is, Ipv4Address &address);
+std::istream & operator >> (std::istream &is, Ipv4Mask &mask);
 
 inline bool operator == (const Ipv4Address &a, const Ipv4Address &b)
 {
@@ -206,6 +216,6 @@ public:
 bool operator == (Ipv4Mask const &a, Ipv4Mask const &b);
 bool operator != (Ipv4Mask const &a, Ipv4Mask const &b);
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* IPV4_ADDRESS_H */
