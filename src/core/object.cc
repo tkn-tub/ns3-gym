@@ -447,7 +447,7 @@ TypeId::TypeId ()
   : m_tid (0)
 {}
 
-TypeId::TypeId (std::string name)
+TypeId::TypeId (const char * name)
 {
   uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
   NS_ASSERT (uid != 0);
@@ -494,7 +494,7 @@ TypeId::GetRegistered (uint32_t i)
 bool
 TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInfo *info) const
 {
-  TypeId tid = TypeId (0);
+  TypeId tid;
   TypeId nextTid = *this;
   do {
     tid = nextTid;
@@ -518,7 +518,7 @@ bool
 TypeId::LookupAttributeByPosition (uint32_t i, struct TypeId::AttributeInfo *info) const
 {
   uint32_t cur = 0;
-  TypeId tid = TypeId (0);
+  TypeId tid;
   TypeId nextTid = *this;
   do {
     tid = nextTid;
@@ -722,7 +722,7 @@ TypeId::AddTraceSource (std::string name,
 Ptr<const TraceSourceAccessor> 
 TypeId::LookupTraceSourceByName (std::string name) const
 {
-  TypeId tid = TypeId (0);
+  TypeId tid;
   TypeId nextTid = *this;
   do {
     tid = nextTid;
@@ -738,6 +738,22 @@ TypeId::LookupTraceSourceByName (std::string name) const
   } while (nextTid != tid);
   return 0;
 }
+
+std::ostream & operator << (std::ostream &os, TypeId tid)
+{
+  os << tid.GetName ();
+  return os;
+}
+std::istream & operator >> (std::istream &is, TypeId &tid)
+{
+  std::string tidString;
+  is >> tidString;
+  tid = TypeId::LookupByName (tidString);
+  return is;
+}
+
+
+VALUE_HELPER_CPP (TypeId);
 
 bool operator == (TypeId a, TypeId b)
 {

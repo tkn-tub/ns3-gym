@@ -28,6 +28,7 @@
 #include "callback.h"
 #include "attribute.h"
 #include "object-base.h"
+#include "attribute-helper.h"
 
 #define NS_OBJECT_ENSURE_REGISTERED(type)       \
   static struct X##type##RegistrationClass      \
@@ -93,7 +94,7 @@ public:
    *
    * No two instances can share the same name.
    */
-  TypeId (std::string name);
+  TypeId (const char * name);
 
   /**
    * \returns the parent of this TypeId
@@ -255,6 +256,8 @@ public:
   // construct an invalid TypeId.
   TypeId ();
   ~TypeId ();
+
+  VALUE_HELPER_HEADER_1 (TypeId);
 private:
   friend class Object;
   friend class AttributeList;
@@ -285,6 +288,10 @@ private:
   uint16_t m_tid;
 };
 
+std::ostream & operator << (std::ostream &os, TypeId tid);
+std::istream & operator >> (std::istream &is, TypeId &tid);
+
+VALUE_HELPER_HEADER_2 (TypeId);
 
 /**
  * \brief a container of attributes to be used during object's construction
@@ -752,12 +759,26 @@ Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
 template <typename T>
 Ptr<T> 
 CreateObjectWith (std::string n1 = "", Attribute v1 = Attribute (),
-                  std::string n2 = "", Attribute v2 = Attribute ())
+                  std::string n2 = "", Attribute v2 = Attribute (),
+                  std::string n3 = "", Attribute v3 = Attribute (),
+                  std::string n4 = "", Attribute v4 = Attribute (),
+                  std::string n5 = "", Attribute v5 = Attribute (),
+                  std::string n6 = "", Attribute v6 = Attribute (),
+                  std::string n7 = "", Attribute v7 = Attribute (),
+                  std::string n8 = "", Attribute v8 = Attribute (),
+                  std::string n9 = "", Attribute v9 = Attribute ())
               
 {
   AttributeList attributes;
   attributes.SetWithTid (T::GetTypeId (), n1, v1);
   attributes.SetWithTid (T::GetTypeId (), n2, v2);
+  attributes.SetWithTid (T::GetTypeId (), n3, v3);
+  attributes.SetWithTid (T::GetTypeId (), n4, v4);
+  attributes.SetWithTid (T::GetTypeId (), n5, v5);
+  attributes.SetWithTid (T::GetTypeId (), n6, v6);
+  attributes.SetWithTid (T::GetTypeId (), n7, v7);
+  attributes.SetWithTid (T::GetTypeId (), n8, v8);
+  attributes.SetWithTid (T::GetTypeId (), n9, v9);
   return CreateObject<T> (attributes);
 }
 
