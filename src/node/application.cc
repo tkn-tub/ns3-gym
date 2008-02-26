@@ -31,14 +31,26 @@ using namespace std;
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (Application);
+
 // Application Methods
 
-// \brief Application Constructor
-Application::Application(Ptr<Node> n) 
-    : m_node (n)
+TypeId 
+Application::GetTypeId (void)
 {
-  m_node->AddApplication (this);
+  static TypeId tid = TypeId ("Application")
+    .SetParent<Object> ()
+    .AddAttribute ("Node", "The on which this application resides",
+                   Ptr<Node> (0),
+                   MakePtrAccessor (&Application::m_node),
+                   MakePtrChecker<Node> ())
+    ;
+  return tid;
 }
+
+// \brief Application Constructor
+Application::Application()
+{}
   
 // \brief Application Destructor
 Application::~Application()

@@ -136,23 +136,26 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   // from n0 to n1
   NS_LOG_INFO ("Create Applications.");
-  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
-    n0, 
-    n0ToN1,
-    "Packet",
-    ConstantVariable(1), 
-    ConstantVariable(0));
+  Ptr<OnOffApplication> ooff = 
+    CreateObjectWith<OnOffApplication> (
+                                        "Node", n0, 
+                                        "Remote", Address (n0ToN1),
+                                        "Protocol", TypeId::LookupByName ("Packet"),
+                                        "OnTime", ConstantVariable(1), 
+                                        "OffTime", ConstantVariable(0));
+  n0->AddApplication (ooff);
   // Start the application
   ooff->Start(Seconds(1.0));
   ooff->Stop (Seconds(10.0));
 
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
-  ooff = CreateObject<OnOffApplication> (
-    n3, 
-    n3ToN0,
-    "Packet",
-    ConstantVariable(1), 
-    ConstantVariable(0));
+  ooff = CreateObjectWith<OnOffApplication> (
+                                             "Node", n3, 
+                                             "Remote", Address (n3ToN0),
+                                             "Protocol", TypeId::LookupByName ("Packet"),
+                                             "OnTime", ConstantVariable(1), 
+                                             "OffTime", ConstantVariable(0));
+  n3->AddApplication (ooff);
   // Start the application
   ooff->Start(Seconds(1.1));
   ooff->Stop (Seconds(10.0));

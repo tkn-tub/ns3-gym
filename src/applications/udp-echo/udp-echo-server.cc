@@ -24,43 +24,37 @@
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
+#include "ns3/uinteger.h"
 
 #include "udp-echo-server.h"
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("UdpEchoServerApplication");
+NS_OBJECT_ENSURE_REGISTERED (UdpEchoServer);
 
-UdpEchoServer::UdpEchoServer (
-  Ptr<Node> n,
-  uint16_t port)
-: 
-  Application(n)
+TypeId
+UdpEchoServer::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("UdpEchoServer")
+    .SetParent<Application> ()
+    .AddConstructor<UdpEchoServer> ()
+    .AddAttribute ("Port", "Client Port",
+                   Uinteger (0),
+                   MakeUintegerAccessor (&UdpEchoServer::m_port),
+                   MakeUintegerChecker<uint16_t> ())
+    ;
+  return tid;
+}
+
+UdpEchoServer::UdpEchoServer ()
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << n << port);
-
-  Construct (n, port);
 }
 
 UdpEchoServer::~UdpEchoServer()
 {
   NS_LOG_FUNCTION;
-}
-
-void
-UdpEchoServer::Construct (
-  Ptr<Node> n,
-  uint16_t port)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << n << port);
-
-  m_node = n;
-  m_port = port;
-
-  m_socket = 0;
-  m_local = InetSocketAddress (Ipv4Address::GetAny (), port);
 }
 
 void
@@ -81,7 +75,8 @@ UdpEchoServer::StartApplication (void)
       Ptr<SocketFactory> socketFactory = 
         GetNode ()->GetObject<SocketFactory> (tid);
       m_socket = socketFactory->CreateSocket ();
-      m_socket->Bind (m_local);
+      InetSocketAddress local = InetSocketAddress (Ipv4Address::GetAny (), m_port);
+      m_socket->Bind (local);
     }
 
   m_socket->SetRecvCallback(MakeCallback(&UdpEchoServer::Receive, this));

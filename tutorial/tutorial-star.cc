@@ -27,6 +27,8 @@
 #include "ns3/ascii-trace.h"
 #include "ns3/pcap-trace.h"
 #include "ns3/global-route-manager.h"
+#include "ns3/inet-socket-address.h"
+#include "ns3/uinteger.h"
 
 #include "point-to-point-ipv4-topology.h"
 
@@ -145,10 +147,19 @@ main (int argc, char *argv[])
 
   uint16_t port = 7;
 
-  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", 
-    port, 1, Seconds(1.), 1024);
+  Ptr<UdpEchoClient> client = 
+    CreateObjectWith<UdpEchoClient> ("Node", n0, 
+                                     "RemoteIpv4", Ipv4Address ("10.1.1.2"),
+                                     "RemotePort", Uinteger (port), 
+                                     "MaxPackets", Uinteger (1), 
+                                     "Interval", Seconds(1.), 
+                                     "PacketSize", Uinteger (1024));
+  n0->AddApplication (client);
 
-  Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
+  Ptr<UdpEchoServer> server = 
+    CreateObjectWith<UdpEchoServer> ("Node", n1, 
+                                     "Port", Uinteger (port));
+  n1->AddApplication (server);
 
   server->Start(Seconds(1.));
   client->Start(Seconds(2.));

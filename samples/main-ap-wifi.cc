@@ -172,10 +172,13 @@ int main (int argc, char *argv[])
   destination.SetProtocol (1);
   destination.SetSingleDevice (0);
   destination.SetPhysicalAddress (Mac48Address ("00:00:00:00:00:03"));
-  Ptr<Application> app = CreateObject<OnOffApplication> (b, destination, 
-                                                   "Packet", 
-                                                   ConstantVariable (42),
-                                                   ConstantVariable (0));
+  Ptr<Application> app = 
+    CreateObjectWith<OnOffApplication> ("Node", b, 
+                                        "Remote", Address (destination), 
+                                        "Protocol", TypeId::LookupByName ("Packet"),
+                                        "OnTime", ConstantVariable (42),
+                                        "OffTime", ConstantVariable (0));
+  b->AddApplication (app);
   app->Start (Seconds (0.5));
   app->Stop (Seconds (43.0));
 

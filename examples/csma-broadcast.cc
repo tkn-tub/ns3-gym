@@ -154,30 +154,36 @@ main (int argc, char *argv[])
   // Create the OnOff application to send UDP datagrams of size
   // 512 bytes (default) at a rate of 500 Kb/s (default) from n0
   NS_LOG_INFO ("Create Applications.");
-  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
-    n0, 
-    InetSocketAddress ("255.255.255.255", port), 
-    "Udp",
-    ConstantVariable(1), 
-    ConstantVariable(0));
+  Ptr<OnOffApplication> ooff = 
+    CreateObjectWith<OnOffApplication> (
+                                        "Node", n0, 
+                                        "Remote", Address (InetSocketAddress ("255.255.255.255", port)), 
+                                        "Protocol", TypeId::LookupByName ("Udp"),
+                                        "OnTime", ConstantVariable(1), 
+                                        "OffTime", ConstantVariable(0));
+  n0->AddApplication (ooff);
   // Start the application
   ooff->Start(Seconds(1.0));
   ooff->Stop (Seconds(10.0));
   
   // Create an optional packet sink to receive these packets
-  Ptr<PacketSink> sink = CreateObject<PacketSink> (
-    n1,
-    InetSocketAddress (Ipv4Address::GetAny (), port),
-    "Udp");
+  Ptr<PacketSink> sink = 
+    CreateObjectWith<PacketSink> (
+                                  "Node", n1,
+                                  "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
+                                  "Protocol", TypeId::LookupByName ("Udp"));
+  n1->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.0));
   sink->Stop (Seconds (10.0));
 
   // Create an optional packet sink to receive these packets
-  sink = CreateObject<PacketSink> (
-    n2,
-    InetSocketAddress (Ipv4Address::GetAny (), port),
-    "Udp");
+  sink = CreateObjectWith<PacketSink> (
+                                       "Node", n2,
+                                       "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
+                                       "Protocol", TypeId::LookupByName ("Udp"));
+  n2->AddApplication (sink);
+
   // Start the sink
   sink->Start (Seconds (1.0));
   sink->Stop (Seconds (10.0));

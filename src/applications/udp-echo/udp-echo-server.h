@@ -32,23 +32,21 @@ class Packet;
 class UdpEchoServer : public Application 
 {
 public:
-  UdpEchoServer (Ptr<Node> n, uint16_t clientPort);
+  static TypeId GetTypeId (void);
+  UdpEchoServer ();
   virtual ~UdpEchoServer ();
 
 protected:
   virtual void DoDispose (void);
 
 private:
-  void Construct (Ptr<Node> n, uint16_t clientPort);
 
   virtual void StartApplication (void);
   virtual void StopApplication (void);
 
   void Receive(Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
 
-  Ptr<Node> m_node;
   uint16_t m_port;
-
   Ptr<Socket> m_socket;
   Address m_local;
 };

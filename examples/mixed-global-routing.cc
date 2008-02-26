@@ -42,6 +42,7 @@
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
+#include "ns3/config.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -65,6 +66,7 @@
 #include "ns3/point-to-point-topology.h"
 #include "ns3/onoff-application.h"
 #include "ns3/global-route-manager.h"
+#include "ns3/uinteger.h"
 
 using namespace ns3;
 
@@ -110,10 +112,8 @@ main (int argc, char *argv[])
   // topology code
   DefaultValue::Bind ("Queue", "DropTailQueue");
 
-  DefaultValue::Bind ("OnOffApplicationPacketSize", "210");
-  DefaultValue::Bind ("OnOffApplicationDataRate", "448kb/s");
-
-  //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
+  Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
+  Config::SetDefault ("OnOffApplication::DataRate", MakeDataRate ("448kb/s"));
 
   // Allow the user to override any of the defaults and the above
   // Bind ()s at run-time, via command-line arguments
@@ -191,14 +191,16 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
-    n0, 
-    InetSocketAddress ("10.1.3.2", port), 
-    "Udp",
-    ConstantVariable (1), 
-    ConstantVariable (0),
-    DataRate("300bps"),
-    50);
+  Ptr<OnOffApplication> ooff = 
+    CreateObjectWith<OnOffApplication> (
+                                        "Node", n0, 
+                                        "Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
+                                        "Protocol", TypeId::LookupByName ("Udp"),
+                                        "OnTime", ConstantVariable (1), 
+                                        "OffTime", ConstantVariable (0),
+                                        "DataRate", MakeDataRate("300bps"),
+                                        "PacketSize", Uinteger (50));
+  n0->AddApplication (ooff);
   // Start the application
   ooff->Start (Seconds (1.0));
   ooff->Stop (Seconds (10.0));
