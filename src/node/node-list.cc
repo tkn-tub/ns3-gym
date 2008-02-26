@@ -22,7 +22,7 @@
 
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/simulator.h"
-#include "ns3/simulation-singleton.h"
+#include "ns3/object-vector.h"
 #include "node-list.h"
 #include "node.h"
 
@@ -60,9 +60,10 @@ NodeListIndex::GetTypeName (void) const
 /**
  * The private node list used by the static-based API
  */
-class NodeListPriv
+class NodeListPriv : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   NodeListPriv ();
   ~NodeListPriv ();
 
@@ -73,9 +74,49 @@ public:
   Ptr<Node> GetNode (uint32_t n);
   uint32_t GetNNodes (void);
 
+  static Ptr<NodeListPriv> Get (void);
+  
 private:
+  static Ptr<NodeListPriv> *DoGet (void);
+  static void Delete (void);
   std::vector<Ptr<Node> > m_nodes;
 };
+
+TypeId 
+NodeListPriv::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("NodeListPriv")
+    .SetParent<Object> ()
+    .AddAttribute ("NodeList", "The list of all nodes created during the simulation.",
+                   ObjectVector (),
+                   MakeObjectVectorAccessor (&NodeListPriv::m_nodes),
+                   MakeObjectVectorChecker ())
+    ;
+  return tid;
+}
+
+Ptr<NodeListPriv> 
+NodeListPriv::Get (void)
+{
+  return *DoGet ();
+}  
+Ptr<NodeListPriv> *
+NodeListPriv::DoGet (void)
+{
+  static Ptr<NodeListPriv> ptr = 0;
+  if (ptr == 0)
+    {
+      ptr = CreateObject<NodeListPriv> ();
+      Simulator::ScheduleDestroy (&NodeListPriv::Delete);
+    }
+  return &ptr;
+}
+void 
+NodeListPriv::Delete (void)
+{
+  (*DoGet ()) = 0;
+}
+
 
 NodeListPriv::NodeListPriv ()
 {}
@@ -143,42 +184,42 @@ namespace ns3 {
 uint32_t
 NodeList::Add (Ptr<Node> node)
 {
-  return SimulationSingleton<NodeListPriv>::Get ()->Add (node);
+  return NodeListPriv::Get ()->Add (node);
 }
 NodeList::Iterator 
 NodeList::Begin (void)
 {
-  return SimulationSingleton<NodeListPriv>::Get ()->Begin ();
+  return NodeListPriv::Get ()->Begin ();
 }
 NodeList::Iterator 
 NodeList::End (void)
 {
-  return SimulationSingleton<NodeListPriv>::Get ()->End ();
+  return NodeListPriv::Get ()->End ();
 }
 Ptr<Node>
 NodeList::GetNode (uint32_t n)
 {
-  return SimulationSingleton<NodeListPriv>::Get ()->GetNode (n);
+  return NodeListPriv::Get ()->GetNode (n);
 }
 
 void 
 NodeList::Connect (std::string name, const CallbackBase &cb)
 {
-  SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ()->Connect (name, cb, TraceContext ());
+  NodeListPriv::Get ()->GetTraceResolver ()->Connect (name, cb, TraceContext ());
 }
 void 
 NodeList::Disconnect (std::string name, const CallbackBase &cb)
 {
-  SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ()->Disconnect (name, cb);
+  NodeListPriv::Get ()->GetTraceResolver ()->Disconnect (name, cb);
 }
 void 
 NodeList::TraceAll (std::ostream &os)
 {
-  SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ()->TraceAll (os, TraceContext ());
+  NodeListPriv::Get ()->GetTraceResolver ()->TraceAll (os, TraceContext ());
 }
 Ptr<TraceResolver> 
 NodeList::GetTraceResolver (void)
 {
-  return SimulationSingleton<NodeListPriv>::Get ()->GetTraceResolver ();
+  return NodeListPriv::Get ()->GetTraceResolver ();
 }
 }//namespace ns3
