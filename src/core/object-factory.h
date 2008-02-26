@@ -19,11 +19,24 @@ public:
   TypeId GetTypeId (void) const;
 
   Ptr<Object> Create (void) const;
+  template <typename T>
+  Ptr<T> Create (void) const;
 
 private:
   TypeId m_tid;
   AttributeList m_parameters;
 };
+
+} // namespace ns3
+
+namespace ns3 {
+
+template <typename T>
+Ptr<T> 
+ObjectFactory::Create (void) const
+{
+  return Create ()->GetObject<T> ();
+}
 
 } // namespace ns3
 
