@@ -17,6 +17,11 @@ ObjectFactory::SetTypeId (std::string tid)
   m_tid = TypeId::LookupByName (tid);
 }
 void 
+ObjectFactory::SetTypeId (const char *tid)
+{
+  m_tid = TypeId::LookupByName (tid);
+}
+void 
 ObjectFactory::Set (std::string name, Attribute value)
 {
   m_parameters.SetWithTid (m_tid, name, value);
