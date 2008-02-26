@@ -26,6 +26,8 @@
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
+#include "ns3/object-vector.h"
+#include "ns3/uinteger.h"
 
 namespace ns3{
 
@@ -35,7 +37,21 @@ TypeId
 Node::GetTypeId (void)
 {
   static TypeId tid = TypeId ("Node")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddAttribute ("DeviceList", "The list of devices associated to this Node.",
+                   ObjectVector (),
+                   MakeObjectVectorAccessor (&Node::m_devices),
+                   MakeObjectVectorChecker ())
+    .AddAttribute ("ApplicationList", "The list of applications associated to this Node.",
+                   ObjectVector (),
+                   MakeObjectVectorAccessor (&Node::m_applications),
+                   MakeObjectVectorChecker ())
+    .AddAttribute ("Id", "The id (unique integer) of this Node.",
+                   TypeId::ATTR_GET, // allow only getting it.
+                   Uinteger (0),
+                   MakeUintegerAccessor (&Node::m_id),
+                   MakeUintegerChecker<uint32_t> ())
+    ;
   return tid;
 }
 
