@@ -27,24 +27,25 @@
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
-#include "ns3/default-value.h"
-#include "ns3/type-id-default-value.h"
+#include "ns3/boolean.h"
+#include "ns3/enum.h"
+#include "ns3/double.h"
 
 NS_LOG_COMPONENT_DEFINE ("ErrorModel");
 
 namespace ns3 {
-
-static TypeIdDefaultValue g_interfaceIdErrorModelDefaultValue ("ErrorModel",
-                                                                    "Error Model", 
-                                                                    ErrorModel::GetTypeId (), 
-                                                                    "RateErrorModel");
 
 NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
 
 TypeId ErrorModel::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("ErrorModel")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddAttribute ("IsEnabled", "Whether this ErrorModel is enabled or not.",
+                   Boolean (true),
+                   MakeBooleanAccessor (&ErrorModel::m_enable),
+                   MakeBooleanChecker ())
+    ;
   return tid;
 }
 
@@ -57,15 +58,6 @@ ErrorModel::ErrorModel () :
 ErrorModel::~ErrorModel ()
 {
   NS_LOG_FUNCTION;  
-}
-
-Ptr<ErrorModel>
-ErrorModel::CreateDefault (void)
-{ 
-  NS_LOG_FUNCTION;
-  TypeId interfaceId = g_interfaceIdErrorModelDefaultValue.GetValue ();
-  Ptr<ErrorModel> em = interfaceId.CreateObject ()->GetObject<ErrorModel> ();
-  return em;
 }
 
 bool
@@ -111,36 +103,35 @@ ErrorModel::IsEnabled (void) const
 // RateErrorModel
 //
 
-// Defaults for rate/size
-static NumericDefaultValue<double> g_defaultRateErrorModelErrorRate
-  ("RateErrorModelErrorRate", "The error rate for the error model", 0.0);
-
-static EnumDefaultValue<enum ErrorUnit> 
- g_defaultRateErrorModelErrorUnit ("RateErrorModelErrorUnit", 
- "The error unit for this error model",
-    EU_BYTE, "EU_BYTE",
-    EU_PKT, "EU_PKT",
-    EU_BIT, "EU_BIT", 
-    0, (void*)0);
-
 NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
 
 TypeId RateErrorModel::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("RateErrorModel")
     .SetParent<ErrorModel> ()
-    .AddConstructor<RateErrorModel> ();
+    .AddConstructor<RateErrorModel> ()
+    .AddAttribute ("Unit", "The error unit",
+                   Enum (EU_BYTE),
+                   MakeEnumAccessor (&RateErrorModel::m_unit),
+                   MakeEnumChecker (EU_BYTE, "EU_BYTE",
+                                    EU_PKT, "EU_PKT",
+                                    EU_BIT, "EU_BIT"))
+    .AddAttribute ("Rate", "The error rate.",
+                   Double (0.0),
+                   MakeDoubleAccessor (&RateErrorModel::m_rate),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("RanVar", "The decision variable attached to this error model.",
+                   UniformVariable (0.0, 1.0),
+                   MakeRandomVariableAccessor (&RateErrorModel::m_ranvar),
+                   MakeRandomVariableChecker ())
+    ;
   return tid;
 }
 
 
-RateErrorModel::RateErrorModel () : 
-  m_unit (g_defaultRateErrorModelErrorUnit.GetValue() ),
-  m_rate (g_defaultRateErrorModelErrorRate.GetValue() )
+RateErrorModel::RateErrorModel ()
 {
   NS_LOG_FUNCTION;
-  // Assume a uniform random variable if user does not specify
-  m_ranvar = UniformVariable ();
 }
 
 RateErrorModel::~RateErrorModel () 
@@ -248,7 +239,8 @@ TypeId ListErrorModel::GetTypeId (void)
 { 
   static TypeId tid = TypeId ("ListErrorModel")
     .SetParent<ErrorModel> ()
-    .AddConstructor<ListErrorModel> ();
+    .AddConstructor<ListErrorModel> ()
+    ;
   return tid;
 }
 

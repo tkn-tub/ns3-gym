@@ -64,6 +64,7 @@
 #include "ns3/onoff-application.h"
 #include "ns3/packet-sink.h"
 #include "ns3/error-model.h"
+#include "ns3/double.h"
 
 using namespace ns3;
 
@@ -200,16 +201,8 @@ main (int argc, char *argv[])
     (n3, channel2);
   // Create an ErrorModel based on the implementation (constructor)
   // specified by the default classId
-  Ptr<ErrorModel> em = ErrorModel::CreateDefault ();
-  NS_ASSERT (em != 0);
-  // Now, query interface on the resulting em pointer to see if a 
-  // RateErrorModel interface exists.  If so, set the packet error rate
-  Ptr<RateErrorModel> bem = em->GetObject<RateErrorModel> ();
-  if (bem)
-    { 
-      bem->SetRandomVariable (UniformVariable ());
-      bem->SetRate (0.001);
-    }
+  Ptr<RateErrorModel> em = CreateObjectWith<RateErrorModel> ("RanVar", UniformVariable (0.0, 1.0),
+                                                             "Rate", Double (0.001));
   nd3->AddReceiveErrorModel (em);
 
   // Now, let's use the ListErrorModel and explicitly force a loss
