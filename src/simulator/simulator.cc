@@ -124,6 +124,10 @@ SimulatorPrivate::~SimulatorPrivate ()
           ev->Invoke ();
         }
     }
+  while (!m_events->IsEmpty ())
+    {
+      EventId next = m_events->RemoveNext ();
+    }
   delete m_events;
   m_events = (Scheduler *)0xdeadbeaf;
 }
@@ -1059,7 +1063,11 @@ SimulatorTests::RunTests (void)
 
   Simulator::Run ();
   Simulator::Destroy ();
-  
+
+  Simulator::Schedule (Seconds (10.0), &SimulatorTests::baz1, this, 0);
+  Simulator::StopAt (Seconds (1.0));
+  Simulator::Run ();
+  Simulator::Destroy ();
 
   return result;
 }
