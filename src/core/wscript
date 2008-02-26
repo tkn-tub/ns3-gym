@@ -65,6 +65,7 @@ def build(bld):
         'global-value.cc',
         'event-trace-source.cc',
         'trace-source-accessor.cc',
+        'config.cc',
         ]
 
     if sys.platform == 'win32':
@@ -122,5 +123,6 @@ def build(bld):
         'event-trace-source.h',
         'value-trace-source.h',
         'trace-source-accessor.h',
+        'config.h',
         ]
 
