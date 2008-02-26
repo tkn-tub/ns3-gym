@@ -18,7 +18,7 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "event-trace-source.h"
+#include "traced-callback.h"
 
 #ifdef RUN_SELF_TESTS
 
@@ -26,11 +26,11 @@
 
 namespace ns3 {
 
-class EventTraceSourceTest : public Test 
+class TracedCallbackTest : public Test 
 {
 public:
-  EventTraceSourceTest ();
-  virtual ~EventTraceSourceTest ();
+  TracedCallbackTest ();
+  virtual ~TracedCallbackTest ();
   virtual bool RunTests (void);
 private:
   void CbOne (uint8_t a, double b);
@@ -40,50 +40,50 @@ private:
   bool m_two;
 };
 
-EventTraceSourceTest::EventTraceSourceTest ()
-  : Test ("EventTraceSource")
+TracedCallbackTest::TracedCallbackTest ()
+  : Test ("TracedCallback")
 {}
-EventTraceSourceTest::~EventTraceSourceTest ()
+TracedCallbackTest::~TracedCallbackTest ()
 {}
 void
-EventTraceSourceTest::CbOne (uint8_t a, double b)
+TracedCallbackTest::CbOne (uint8_t a, double b)
 {
   m_one = true;
 }
 void
-EventTraceSourceTest::CbTwo (uint8_t a, double b)
+TracedCallbackTest::CbTwo (uint8_t a, double b)
 {
   m_two = true;
 }
 bool 
-EventTraceSourceTest::RunTests (void)
+TracedCallbackTest::RunTests (void)
 {
   bool result = true;
 
-  EventTraceSource<uint8_t,double> trace;
-  trace.Connect (MakeCallback (&EventTraceSourceTest::CbOne, this));
-  trace.Connect (MakeCallback (&EventTraceSourceTest::CbTwo, this));
+  TracedCallback<uint8_t,double> trace;
+  trace.Connect (MakeCallback (&TracedCallbackTest::CbOne, this));
+  trace.Connect (MakeCallback (&TracedCallbackTest::CbTwo, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
   NS_TEST_ASSERT (m_one);
   NS_TEST_ASSERT (m_two);
 
-  trace.Disconnect (MakeCallback (&EventTraceSourceTest::CbOne, this));
+  trace.Disconnect (MakeCallback (&TracedCallbackTest::CbOne, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
   NS_TEST_ASSERT (!m_one);
   NS_TEST_ASSERT (m_two);
-  trace.Disconnect (MakeCallback (&EventTraceSourceTest::CbTwo, this));
+  trace.Disconnect (MakeCallback (&TracedCallbackTest::CbTwo, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
   NS_TEST_ASSERT (!m_one);
   NS_TEST_ASSERT (!m_two);
 
-  trace.Connect (MakeCallback (&EventTraceSourceTest::CbOne, this));
-  trace.Connect (MakeCallback (&EventTraceSourceTest::CbTwo, this));
+  trace.Connect (MakeCallback (&TracedCallbackTest::CbOne, this));
+  trace.Connect (MakeCallback (&TracedCallbackTest::CbTwo, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
@@ -93,7 +93,7 @@ EventTraceSourceTest::RunTests (void)
   return result;
 }
 
-static EventTraceSourceTest g_eventTraceTest;
+static TracedCallbackTest g_eventTraceTest;
 
 }//namespace ns3
 

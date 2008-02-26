@@ -19,8 +19,8 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#ifndef EVENT_TRACE_SOURCE_H
-#define EVENT_TRACE_SOURCE_H
+#ifndef TRACED_CALLBACK_H
+#define TRACED_CALLBACK_H
 
 #include <list>
 #include "callback.h"
@@ -36,10 +36,10 @@ namespace ns3 {
  */
 template<typename T1 = empty, typename T2 = empty, 
          typename T3 = empty, typename T4 = empty>
-class EventTraceSource 
+class TracedCallback 
 {
 public:
-  EventTraceSource ();
+  TracedCallback ();
   void Connect (const CallbackBase & callback);
   void Disconnect (const CallbackBase & callback);
   void operator() (void) const;
@@ -62,13 +62,13 @@ namespace ns3 {
 
 template<typename T1, typename T2, 
          typename T3, typename T4>
-EventTraceSource<T1,T2,T3,T4>::EventTraceSource ()
+TracedCallback<T1,T2,T3,T4>::TracedCallback ()
   : m_callbackList () 
 {}
 template<typename T1, typename T2, 
          typename T3, typename T4>
 void 
-EventTraceSource<T1,T2,T3,T4>::Connect (const CallbackBase & callback)
+TracedCallback<T1,T2,T3,T4>::Connect (const CallbackBase & callback)
 {
   Callback<void,T1,T2,T3,T4> cb;
   cb.Assign (callback);
@@ -77,7 +77,7 @@ EventTraceSource<T1,T2,T3,T4>::Connect (const CallbackBase & callback)
 template<typename T1, typename T2, 
          typename T3, typename T4>
 void 
-EventTraceSource<T1,T2,T3,T4>::Disconnect (const CallbackBase & callback)
+TracedCallback<T1,T2,T3,T4>::Disconnect (const CallbackBase & callback)
 {
   for (typename CallbackList::iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); /* empty */)
@@ -95,7 +95,7 @@ EventTraceSource<T1,T2,T3,T4>::Disconnect (const CallbackBase & callback)
 template<typename T1, typename T2, 
          typename T3, typename T4>
 void 
-EventTraceSource<T1,T2,T3,T4>::operator() (void) const
+TracedCallback<T1,T2,T3,T4>::operator() (void) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
@@ -106,7 +106,7 @@ EventTraceSource<T1,T2,T3,T4>::operator() (void) const
 template<typename T1, typename T2, 
          typename T3, typename T4>
 void 
-EventTraceSource<T1,T2,T3,T4>::operator() (T1 a1) const
+TracedCallback<T1,T2,T3,T4>::operator() (T1 a1) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
@@ -117,7 +117,7 @@ EventTraceSource<T1,T2,T3,T4>::operator() (T1 a1) const
 template<typename T1, typename T2, 
          typename T3, typename T4>
 void 
-EventTraceSource<T1,T2,T3,T4>::operator() (T1 a1, T2 a2) const
+TracedCallback<T1,T2,T3,T4>::operator() (T1 a1, T2 a2) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
@@ -128,7 +128,7 @@ EventTraceSource<T1,T2,T3,T4>::operator() (T1 a1, T2 a2) const
 template<typename T1, typename T2, 
          typename T3, typename T4>
 void 
-EventTraceSource<T1,T2,T3,T4>::operator() (T1 a1, T2 a2, T3 a3) const
+TracedCallback<T1,T2,T3,T4>::operator() (T1 a1, T2 a2, T3 a3) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
@@ -139,7 +139,7 @@ EventTraceSource<T1,T2,T3,T4>::operator() (T1 a1, T2 a2, T3 a3) const
 template<typename T1, typename T2, 
          typename T3, typename T4>
 void 
-EventTraceSource<T1,T2,T3,T4>::operator() (T1 a1, T2 a2, T3 a3, T4 a4) const
+TracedCallback<T1,T2,T3,T4>::operator() (T1 a1, T2 a2, T3 a3, T4 a4) const
 {
   for (typename CallbackList::const_iterator i = m_callbackList.begin ();
        i != m_callbackList.end (); i++)
@@ -150,4 +150,4 @@ EventTraceSource<T1,T2,T3,T4>::operator() (T1 a1, T2 a2, T3 a3, T4 a4) const
 
 }//namespace ns3
 
-#endif /* CALLBACK_TRACE_H */
+#endif /* TRACED_CALLBACK_H */

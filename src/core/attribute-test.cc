@@ -8,7 +8,7 @@
 #include "random-variable.h"
 #include "double.h"
 #include "object-vector.h"
-#include "value-trace-source.h"
+#include "traced-value.h"
 #include "trace-source-accessor.h"
 
 namespace ns3 {
@@ -203,10 +203,10 @@ private:
   RandomVariable m_random;
   std::vector<Ptr<Derived> > m_vector1;
   std::vector<Ptr<Derived> > m_vector2;
-  ValueTraceSource<int8_t> m_intSrc1;
-  ValueTraceSource<int8_t> m_intSrc2;
-  EventTraceSource<double, int, float> m_cb;
-  ValueTraceSource<ValueClassTest> m_valueSrc;
+  TracedValue<int8_t> m_intSrc1;
+  TracedValue<int8_t> m_intSrc2;
+  TracedCallback<double, int, float> m_cb;
+  TracedValue<ValueClassTest> m_valueSrc;
 };
 
 
