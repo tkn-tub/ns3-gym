@@ -124,5 +124,6 @@ def build(bld):
         'value-trace-source.h',
         'trace-source-accessor.h',
         'config.h',
+        'object-vector.h',
         ]
 
