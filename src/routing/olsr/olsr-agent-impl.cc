@@ -37,8 +37,9 @@
 #include "ns3/log.h"
 #include "ns3/random-variable.h"
 #include "ns3/inet-socket-address.h"
-#include "ns3/composite-trace-resolver.h"
-
+#include "ns3/boolean.h"
+#include "ns3/uinteger.h"
+#include "ns3/trace-source-accessor.h"
 
 /********** Useful macros **********/
 
@@ -153,19 +154,47 @@ NS_OBJECT_ENSURE_REGISTERED (AgentImpl);
 TypeId 
 AgentImpl::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("OlsrAgentImpl")
+  static TypeId tid = TypeId ("olsr::AgentImpl")
     .SetParent<Agent> ()
-    .AddConstructor<AgentImpl,Ptr<Node> > ();
+    .AddConstructor<AgentImpl> ()
+    .AddAttribute ("HelloInterval", "XXX",
+                   OLSR_HELLO_INTERVAL,
+                   MakeTimeAccessor (&AgentImpl::m_helloInterval),
+                   MakeTimeChecker ())
+    .AddAttribute ("TcInterval", "XXX",
+                   OLSR_TC_INTERVAL,
+                   MakeTimeAccessor (&AgentImpl::m_tcInterval),
+                   MakeTimeChecker ())
+    .AddAttribute ("MidInterval", "XXX",
+                   OLSR_MID_INTERVAL,
+                   MakeTimeAccessor (&AgentImpl::m_midInterval),
+                   MakeTimeChecker ())
+    .AddAttribute ("Willingness", "XXX",
+                   Uinteger (OLSR_WILL_ALWAYS),
+                   MakeUintegerAccessor (&AgentImpl::m_willingness),
+                   MakeUintegerChecker<uint8_t> ())
+    .AddAttribute ("UseL2Notifications", "XXX",
+                   Boolean (false),
+                   MakeBooleanAccessor (&AgentImpl::m_useL2Notifications),
+                   MakeBooleanChecker ())
+    .AddTraceSource ("Rx", "Receive OLSR packet.",
+                     MakeTraceSourceAccessor (&AgentImpl::m_rxPacketTrace))
+    .AddTraceSource ("Tx", "Send OLSR packet.",
+                     MakeTraceSourceAccessor (&AgentImpl::m_txPacketTrace))
+    ;
   return tid;
 }
 
 
-AgentImpl::AgentImpl (Ptr<Node> node)
+AgentImpl::AgentImpl ()
   :
-  m_useL2Notifications (false),
   m_helloTimer (Timer::CANCEL_ON_DESTROY),
   m_tcTimer (Timer::CANCEL_ON_DESTROY),
   m_midTimer (Timer::CANCEL_ON_DESTROY)
+{}
+
+void
+AgentImpl::SetNode (Ptr<Node> node)
 {
   NS_LOG_DEBUG ("Created olsr::AgentImpl");
   m_helloTimer.SetFunction (&AgentImpl::HelloTimerExpire, this);
@@ -173,17 +202,9 @@ AgentImpl::AgentImpl (Ptr<Node> node)
   m_midTimer.SetFunction (&AgentImpl::MidTimerExpire, this);
   m_queuedMessagesTimer.SetFunction (&AgentImpl::SendQueuedMessages, this);
 
-  // Aggregate with the Node, so that OLSR dies when the node is destroyed.
-  node->AggregateObject (this);
-
   m_packetSequenceNumber = OLSR_MAX_SEQ_NUM;
   m_messageSequenceNumber = OLSR_MAX_SEQ_NUM;
   m_ansn = OLSR_MAX_SEQ_NUM;
-
-  m_helloInterval = OLSR_HELLO_INTERVAL;
-  m_tcInterval = OLSR_TC_INTERVAL;
-  m_midInterval = OLSR_MID_INTERVAL;
-  m_willingness = OLSR_WILL_ALWAYS;
 
   m_linkTupleTimerFirstTime = true;
 
@@ -263,28 +284,6 @@ void AgentImpl::SetMainInterface (uint32_t interface)
 {
   m_mainAddress = m_ipv4->GetAddress (interface);
 }
-
-
-Ptr<TraceResolver> 
-AgentImpl::GetTraceResolver (void) const
-{
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddSource ("rx",
-                       TraceDoc ("receive OLSR packet",
-                                 "const olsr::PacketHeader &", "header of OLSR packet received",
-                                 "const olsr::MessageList &", "list of OLSR messages contained in the packet"
-                                 ),
-                       m_rxPacketTrace);
-  resolver->AddSource ("tx",
-                       TraceDoc ("send OLSR packet",
-                                 "const olsr::PacketHeader &", "header of OLSR packet sent",
-                                 "const olsr::MessageList &", "list of OLSR messages contained in the packet"
-                                 ),
-                       m_txPacketTrace);
-  resolver->SetParentResolver (Object::GetTraceResolver ());
-  return resolver;
-}
-
 
 //
 // \brief Processes an incoming %OLSR packet following RFC 3626 specification.

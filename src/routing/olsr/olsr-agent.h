@@ -47,7 +47,7 @@ class Agent : public Object
 public:
   static TypeId GetTypeId (void);
 
-  static Ptr<Agent> CreateDefault (Ptr<Node> node);
+  virtual void SetNode (Ptr<Node> node) = 0;
 
   /**
    * \brief Sets the main interface to be used by OLSR
@@ -73,7 +73,6 @@ public:
    */
   virtual void Start () = 0;
 };
-
 
 }} // namespace olsr, ns3
 

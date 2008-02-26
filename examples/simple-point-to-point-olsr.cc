@@ -61,7 +61,7 @@
 #include "ns3/point-to-point-topology.h"
 #include "ns3/onoff-application.h"
 #include "ns3/packet-sink.h"
-#include "ns3/olsr.h"
+#include "ns3/olsr-helper.h"
 
 using namespace ns3;
 
@@ -154,7 +154,8 @@ main (int argc, char *argv[])
 
   // Enable OLSR
   NS_LOG_INFO ("Enabling OLSR Routing.");
-  olsr::EnableAllNodes ();
+  OlsrHelper olsr;
+  olsr.EnableAll ();
 
 
   // Create the OnOff application to send UDP datagrams of size
