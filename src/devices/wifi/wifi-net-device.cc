@@ -158,14 +158,12 @@ private:
  ***************************************************************/
 
 
-WifiNetDevice::WifiNetDevice (Ptr<Node> node)
-  : NetDevice (node, Mac48Address::Allocate ())
-{
-  Construct ();
-}
 
 WifiNetDevice::WifiNetDevice (Ptr<Node> node, Mac48Address self)
-  : NetDevice (node, self)
+  : m_node (node),
+    m_address (self),
+    m_name (""),
+    m_linkUp (false)
 {
   Construct ();
 }
@@ -176,9 +174,7 @@ WifiNetDevice::~WifiNetDevice ()
 void
 WifiNetDevice::Construct (void)
 {
-  SetMtu (2300);
-  EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
-
+  m_mtu = 2300;
   // the physical layer.
   m_phy = Create<WifiPhy> (this);
 
@@ -307,21 +303,6 @@ WifiNetDevice::Attach (Ptr<WifiChannel> channel)
   m_phy->SetChannel (channel);
   NotifyAttached ();
 }
-bool
-WifiNetDevice::SendTo (Ptr<Packet> packet, const Address &to, uint16_t protocolNumber)
-{
-  NS_ASSERT (Mac48Address::IsMatchingType (to));
-
-  Mac48Address realTo = Mac48Address::ConvertFrom (to);
-
-  LlcSnapHeader llc;
-  llc.SetType (protocolNumber);
-  packet->AddHeader (llc);
-
-  m_txLogger (packet, realTo);
-
-  return DoSendTo (packet, realTo);
-}
 void 
 WifiNetDevice::DoForwardUp (Ptr<Packet> packet, const Mac48Address &from)
 {
@@ -329,7 +310,7 @@ WifiNetDevice::DoForwardUp (Ptr<Packet> packet, const Mac48Address &from)
 
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
-  NetDevice::ForwardUp (packet, llc.GetType (), from);
+  m_rxCallback (this, packet, llc.GetType (), from);
 }
 Mac48Address 
 WifiNetDevice::GetSelfAddress (void) const
@@ -338,22 +319,11 @@ WifiNetDevice::GetSelfAddress (void) const
   Mac48Address self = Mac48Address::ConvertFrom (GetAddress ());
   return self;
 }
-bool 
-WifiNetDevice::DoNeedsArp (void) const
-{
-  return true;
-}
-Ptr<Channel> 
-WifiNetDevice::DoGetChannel (void) const
-{
-  return m_channel;
-}
 void 
 WifiNetDevice::DoDispose (void)
 {
-  // chain up.
-  NetDevice::DoDispose ();
   // cleanup local
+  m_node = 0;
   m_channel = 0;
   delete m_stations;
   delete m_low;
@@ -369,6 +339,136 @@ WifiNetDevice::DoDispose (void)
   m_rxMiddle = 0;
   m_txMiddle = 0;
   m_parameters = 0;
+  // chain up.
+  NetDevice::DoDispose ();
+}
+
+void
+WifiNetDevice::NotifyLinkUp (void)
+{
+  m_linkUp = true;
+  if (!m_linkChangeCallback.IsNull ())
+    {
+      m_linkChangeCallback ();
+    }
+}
+void
+WifiNetDevice::NotifyLinkDown (void)
+{
+  m_linkUp = false;
+  m_linkChangeCallback ();
+}
+
+void 
+WifiNetDevice::SetName(const std::string name)
+{
+  m_name = name;
+}
+std::string 
+WifiNetDevice::GetName(void) const
+{
+  return m_name;
+}
+void 
+WifiNetDevice::SetIfIndex(const uint32_t index)
+{
+  m_ifIndex = index;
+}
+uint32_t 
+WifiNetDevice::GetIfIndex(void) const
+{
+  return m_ifIndex;
+}
+Ptr<Channel> 
+WifiNetDevice::GetChannel (void) const
+{
+  return m_channel;
+}
+Address 
+WifiNetDevice::GetAddress (void) const
+{
+  return m_address;
+}
+bool 
+WifiNetDevice::SetMtu (const uint16_t mtu)
+{
+  m_mtu = mtu;
+  return true;
+}
+uint16_t 
+WifiNetDevice::GetMtu (void) const
+{
+  return m_mtu;
+}
+bool 
+WifiNetDevice::IsLinkUp (void) const
+{
+  return m_linkUp;
+}
+void 
+WifiNetDevice::SetLinkChangeCallback (Callback<void> callback)
+{
+  m_linkChangeCallback = callback;
+}
+bool 
+WifiNetDevice::IsBroadcast (void) const
+{
+  return true;
+}
+Address
+WifiNetDevice::GetBroadcast (void) const
+{
+  return Mac48Address ("ff:ff:ff:ff:ff:ff");
+}
+bool 
+WifiNetDevice::IsMulticast (void) const
+{
+  return false;
+}
+Address 
+WifiNetDevice::GetMulticast (void) const
+{
+  return Mac48Address ("01:00:5e:00:00:00");
+}
+Address 
+WifiNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
+{
+  return Mac48Address ("01:00:5e:00:00:00");
+}
+bool 
+WifiNetDevice::IsPointToPoint (void) const
+{
+  return false;
+}
+bool 
+WifiNetDevice::Send(Ptr<Packet> packet, const Address& to, uint16_t protocolNumber)
+{
+  NS_ASSERT (Mac48Address::IsMatchingType (to));
+
+  Mac48Address realTo = Mac48Address::ConvertFrom (to);
+
+  LlcSnapHeader llc;
+  llc.SetType (protocolNumber);
+  packet->AddHeader (llc);
+
+  m_txLogger (packet, realTo);
+
+  return DoSendTo (packet, realTo);
+}
+Ptr<Node> 
+WifiNetDevice::GetNode (void) const
+{
+  return m_node;
+}
+bool 
+WifiNetDevice::NeedsArp (void) const
+{
+  return true;
+}
+void 
+WifiNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
+{
+  m_rxCallback = cb;
 }
 
 
@@ -376,11 +476,6 @@ WifiNetDevice::DoDispose (void)
  *            Adhoc code
  *****************************************************/
 
-AdhocWifiNetDevice::AdhocWifiNetDevice (Ptr<Node> node)
-  : WifiNetDevice (node)
-{
-  DoConstruct ();
-}
 AdhocWifiNetDevice::AdhocWifiNetDevice (Ptr<Node> node, Mac48Address self)
   : WifiNetDevice (node, self)
 {
@@ -449,11 +544,6 @@ AdhocWifiNetDevice::DoDispose (void)
  *            STA code
  *****************************************************/
 
-NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node)
-  : WifiNetDevice (node)
-{
-  DoConstruct ();
-}
 NqstaWifiNetDevice::NqstaWifiNetDevice (Ptr<Node> node, Mac48Address self)
   : WifiNetDevice (node, self)
 {
@@ -513,13 +603,13 @@ NqstaWifiNetDevice::NotifyAttached (void)
 void 
 NqstaWifiNetDevice::Associated (void)
 {
-  NetDevice::NotifyLinkUp ();
+  WifiNetDevice::NotifyLinkUp ();
 }
 
 void 
 NqstaWifiNetDevice::DisAssociated (void)
 {
-  NetDevice::NotifyLinkDown ();
+  WifiNetDevice::NotifyLinkDown ();
 }
 void 
 NqstaWifiNetDevice::DoDispose (void)
@@ -539,11 +629,6 @@ NqstaWifiNetDevice::DoDispose (void)
  *****************************************************/
 
 
-NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node)
-  : WifiNetDevice (node)
-{
-  DoConstruct ();
-}
 NqapWifiNetDevice::NqapWifiNetDevice (Ptr<Node> node, Mac48Address self)
   : WifiNetDevice (node, self)
 {

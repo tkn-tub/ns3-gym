@@ -98,7 +98,6 @@ enum CsmaEncapsulationMode {
   LLC,         /**< LLC packet encapsulation */  
 };
 
-  CsmaNetDevice (Ptr<Node> node);
   /**
    * Construct a CsmaNetDevice
    *
@@ -112,22 +111,6 @@ enum CsmaEncapsulationMode {
    */
   CsmaNetDevice (Ptr<Node> node, Mac48Address addr, CsmaEncapsulationMode pktType);
 
-  /**
-   * Construct a CsmaNetDevice
-   *
-   * This is the constructor for the CsmaNetDevice.  It takes as a
-   * parameter the Node to which this device is connected.  Ownership of the
-   * Node pointer is not implied and the node must not be deleted.
-   *
-   * \param node the Node to which this device is connected.
-   * \param addr The source MAC address of the net device.
-   * \param pktType the type of encapsulation
-   * \param sendEnable whether this device is able to send
-   * \param receiveEnable whether this device is able to receive
-   */
-  CsmaNetDevice (Ptr<Node> node, Mac48Address addr,
-                   CsmaEncapsulationMode pktType,
-                   bool sendEnable, bool receiveEnable);
   /**
    * Destroy a CsmaNetDevice
    *
@@ -216,6 +199,28 @@ enum CsmaEncapsulationMode {
    */
   void Receive (Ptr<Packet> p);
 
+  bool IsSendEnabled (void);
+  bool IsReceiveEnabled (void);
+
+  void SetSendEnable (bool);
+  void SetReceiveEnable (bool);
+
+
+  // inherited from NetDevice base class.
+  virtual void SetName(const std::string name);
+  virtual std::string GetName(void) const;
+  virtual void SetIfIndex(const uint32_t index);
+  virtual uint32_t GetIfIndex(void) const;
+  virtual Ptr<Channel> GetChannel (void) const;
+  virtual Address GetAddress (void) const;
+  virtual bool SetMtu (const uint16_t mtu);
+  virtual uint16_t GetMtu (void) const;
+  virtual bool IsLinkUp (void) const;
+  virtual void SetLinkChangeCallback (Callback<void> callback);
+  virtual bool IsBroadcast (void) const;
+  virtual Address GetBroadcast (void) const;
+  virtual bool IsMulticast (void) const;
+  virtual Address GetMulticast (void) const;
   /**
    * @brief Make and return a MAC multicast address using the provided
    *        multicast group
@@ -229,13 +234,6 @@ enum CsmaEncapsulationMode {
    * to an EUI-48-based CSMA device.  This MAC address is encapsulated in an
    *  abstract Address to avoid dependencies on the exact address format.
    *
-   * A default imlementation of MakeMulticastAddress is provided, but this
-   * method simply NS_ASSERTS.  In the case of net devices that do not support
-   * multicast, clients are expected to test NetDevice::IsMulticast and avoid
-   * attempting to map multicast packets.  Subclasses of NetDevice that do
-   * support multicasting are expected to override this method and provide an
-   * implementation appropriate to the particular device.
-   *
    * @param multicastGroup The IP address for the multicast group destination
    * of the packet.
    * @return The MAC multicast Address used to send packets to the provided
@@ -245,16 +243,14 @@ enum CsmaEncapsulationMode {
    * @see Mac48Address
    * @see Address
    */
-  Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
-
-  bool IsSendEnabled (void);
-  bool IsReceiveEnabled (void);
-
-  void SetSendEnable (bool);
-  void SetReceiveEnable (bool);
+  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+  virtual bool IsPointToPoint (void) const;
+  virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  virtual Ptr<Node> GetNode (void) const;
+  virtual bool NeedsArp (void) const;
+  virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
 protected:
-  virtual bool DoNeedsArp (void) const;
   virtual void DoDispose (void);
   /**
    * Create a Trace Resolver for events in the net device.
@@ -272,15 +268,6 @@ protected:
    * \return a pointer to the queue.
    */
   Ptr<Queue> GetQueue (void) const; 
-  /**
-   * Get a copy of the attached Channel
-   *
-   * This method is provided for any derived class that may need to get
-   * direct access to the connected channel
-   *
-   * \return a pointer to the channel
-   */
-  virtual Ptr<Channel> DoGetChannel (void) const;
   /**
    * Adds the necessary headers and trailers to a packet of data in order to
    * respect the packet type
@@ -312,22 +299,6 @@ private:
    * Initializes variablea when construction object.
    */
   void Init (bool sendEnable, bool receiveEnable);
-  /**
-   * Send a Packet on the Csma network
-   *
-   * This method does not use a destination address since all packets
-   * are broadcast to all NetDevices attached to the channel. Packet
-   * should contain all needed headers at this time.
-   *
-   * If the device is ready to transmit, the next packet is read off
-   * of the queue and stored locally until it has been transmitted.
-   *
-   * \param p a reference to the packet to send
-   * \param dest destination address
-   * \param protocolNumber -- this parameter is not used here
-   * \return true if success, false on failure
-   */
-  virtual bool SendTo (Ptr<Packet> p, const Address& dest, uint16_t protocolNumber);
 
   /**
    * Start Sending a Packet Down the Wire.
@@ -388,6 +359,7 @@ private:
    *
    */
   void TransmitAbort (void);
+  void NotifyLinkUp (void);
 
   /** 
    * Device ID returned by the attached functions. It is used by the
@@ -481,6 +453,14 @@ private:
   CallbackTraceSource<Ptr<const Packet> > m_rxTrace;
   CallbackTraceSource<Ptr<const Packet> > m_dropTrace;
 
+  Ptr<Node> m_node;
+  Mac48Address m_address;
+  NetDevice::ReceiveCallback m_rxCallback;
+  uint32_t m_ifIndex;
+  std::string m_name;
+  bool m_linkUp;
+  Callback<void> m_linkChangeCallback;
+  uint16_t m_mtu;
 };
 
 }; // namespace ns3

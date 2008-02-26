@@ -63,52 +63,53 @@ public:
   static TypeId GetTypeId (void);
   virtual ~NetDevice();
 
+  /**
+   * \param name name of the device (e.g. "eth0")
+   */
+  virtual void SetName(const std::string name) = 0;
+  /**
+   * \return name name of the device (e.g. "eth0")
+   */
+  virtual std::string GetName(void) const = 0;
+  /**
+   * \param index ifIndex of the device 
+   */
+  virtual void SetIfIndex(const uint32_t index) = 0;
+  /**
+   * \return index ifIndex of the device 
+   */
+  virtual uint32_t GetIfIndex(void) const = 0;
+
 
   /**
    * \return the channel this NetDevice is connected to. The value
    *         returned can be zero if the NetDevice is not yet connected
    *         to any channel.
    */
-  Ptr<Channel> GetChannel (void) const;
+  virtual Ptr<Channel> GetChannel (void) const = 0;
 
   /**
    * \return the current Address of this interface.
    */
-  Address GetAddress (void) const;
+  virtual Address GetAddress (void) const = 0;
   /**
    * \param mtu MTU value, in bytes, to set for the device
    * \return whether the MTU value was within legal bounds
    * 
    * Override for default MTU defined on a per-type basis.
    */
-  bool SetMtu (const uint16_t mtu);
+  virtual bool SetMtu (const uint16_t mtu) = 0;
   /**
    * \return the link-level MTU in bytes for this interface.
    * 
    * This value is typically used by the IP layer to perform
    * IP fragmentation when needed.
    */
-  uint16_t GetMtu (void) const;
-  /**
-   * \param name name of the device (e.g. "eth0")
-   */
-  void SetName(const std::string name); 
-  /**
-   * \return name name of the device (e.g. "eth0")
-   */
-  std::string GetName(void) const;
-  /**
-   * \param index ifIndex of the device 
-   */
-  void SetIfIndex(const uint32_t index);
-  /**
-   * \return index ifIndex of the device 
-   */
-  uint32_t GetIfIndex(void) const;
+  virtual uint16_t GetMtu (void) const = 0;
   /**
    * \return true if link is up; false otherwise
    */
-  bool IsLinkUp (void) const;
+  virtual bool IsLinkUp (void) const = 0;
   /**
    * \param callback the callback to invoke
    *
@@ -117,12 +118,12 @@ public:
    * by the IP/ARP layer to flush the ARP cache 
    * whenever the link goes up.
    */
-  void SetLinkChangeCallback (Callback<void> callback);
+  virtual void SetLinkChangeCallback (Callback<void> callback) = 0;
   /**
    * \return true if this interface supports a broadcast address,
    *         false otherwise.
    */
-  bool IsBroadcast (void) const;
+  virtual bool IsBroadcast (void) const = 0;
   /**
    * \return the broadcast address supported by
    *         this netdevice.
@@ -130,12 +131,12 @@ public:
    * Calling this method is invalid if IsBroadcast returns
    * not true.
    */
-  Address const &GetBroadcast (void) const;
+  virtual Address GetBroadcast (void) const = 0;
 
   /**
    * \return value of m_isMulticast flag
    */
-  bool IsMulticast (void) const;
+  virtual bool IsMulticast (void) const = 0;
 
   /**
    * \brief Return the MAC multicast base address used when mapping multicast
@@ -160,8 +161,8 @@ public:
    * The method NS_ASSERTs if the device is not a multicast device.
    * \see NetDevice::MakeMulticastAddress
    */
-  Address GetMulticast (void) const;
-
+  virtual Address GetMulticast (void) const = 0;
+  
   /**
    * \brief Make and return a MAC multicast address using the provided
    *        multicast group
@@ -192,12 +193,12 @@ public:
    * \see Address
    * \see NetDevice::IsMulticast
    */
-  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
-
+  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const = 0;
+  
   /**
    * \return value of m_isPointToPoint flag
    */
-  bool IsPointToPoint (void) const;
+  virtual bool IsPointToPoint (void) const = 0;
   /**
    * \param packet packet sent from above down to Network Device
    * \param dest mac address of the destination (already resolved)
@@ -210,7 +211,7 @@ public:
    * 
    * \return whether the Send operation succeeded 
    */
-  bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber) = 0;
   /**
    * \returns the node base class which contains this network
    *          interface.
@@ -219,7 +220,7 @@ public:
    * base class to print the nodeid for example, it can invoke
    * this method.
    */
-  Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode (void) const = 0;
 
   /**
    * \returns true if ARP is needed, false otherwise.
@@ -227,7 +228,7 @@ public:
    * Called by higher-layers to check if this NetDevice requires
    * ARP to be used.
    */
-  bool NeedsArp (void) const;
+  virtual bool NeedsArp (void) const = 0;
 
   /**
    * \param device a pointer to the net device which is calling this callback
@@ -246,116 +247,10 @@ public:
    *        be forwarded to the higher layers.
    *
    */
-  void SetReceiveCallback (ReceiveCallback cb);
+  virtual void SetReceiveCallback (ReceiveCallback cb) = 0;
 
- protected:
-  /**
-   * \param node base class node pointer of device's node 
-   * \param addr MAC address of this device.
-   */
-  NetDevice(Ptr<Node> node, const Address& addr);
-  /**
-   * Enable broadcast support. This method should be
-   * called by subclasses from their constructor
-   */
-  void EnableBroadcast (Address broadcast);
-  /**
-   * Set m_isBroadcast flag to false
-   */
-  void DisableBroadcast (void);
-  /**
-   * Enable multicast support. This method should be
-   * called by subclasses from their constructor
-   */
-  void EnableMulticast (Address multicast);
-  /**
-   * Set m_isMulticast flag to false
-   */
-  void DisableMulticast (void);
-  /**
-   * Set m_isPointToPoint flag to true
-   */
-  void EnablePointToPoint (void);
-  /**
-   * Set m_isPointToPoint flag to false
-   */
-  void DisablePointToPoint (void);
-  /**
-   * When a subclass notices that the link status has changed to up,
-   * it notifies its parent class by calling this method. This method
-   * is responsible for notifying any LinkUp callbacks. 
-   */
-  void NotifyLinkUp (void);
-  /**
-   * When a subclass notices that the link status has changed to 
-   * down, it notifies its parent class by calling this method.
-   */
-  void NotifyLinkDown (void);
-
-  /**
-   * \param p packet sent from below up to Network Device
-   * \param param Extra parameter extracted from header and needed by
-   * some protocols
-   * \param address the address of the sender of this packet.
-   * \returns true if the packet was forwarded successfully,
-   *          false otherwise.
-   *
-   * When a subclass gets a packet from the channel, it 
-   * forwards it to the higher layers by calling this method
-   * which is responsible for passing it up to the Rx callback.
-   */
-  bool ForwardUp (Ptr<Packet> p, uint16_t param, const Address &address);
-
-
-  /**
-   * The dispose method for this NetDevice class.
-   * Subclasses are expected to override this method _and_
-   * to chain up to it by calling NetDevice::DoDispose
-   * at the end of their own DoDispose method.
-   */
-  virtual void DoDispose (void);
-
- private:
-  /**
-   * \param p packet to send
-   * \param dest address of destination to which packet must be sent
-   * \param protocolNumber Number of the protocol (used with some protocols)
-   * \returns true if the packet could be sent successfully, false
-   *          otherwise.
-   *
-   * This is the private virtual target function of the public Send()
-   * method.  When the link is Up, this method is invoked to ask 
-   * subclasses to forward packets. Subclasses MUST override this method.
-   */
-  virtual bool SendTo (Ptr<Packet> p, const Address &dest, uint16_t protocolNumber) = 0;
-  /**
-   * \returns true if this NetDevice needs the higher-layers
-   *          to perform ARP over it, false otherwise.
-   *
-   * Subclasses must implement this method.
-   */
-  virtual bool DoNeedsArp (void) const = 0;
-  /**
-   * \returns the channel associated to this NetDevice.
-   *
-   * Subclasses must implement this method.
-   */
-  virtual Ptr<Channel> DoGetChannel (void) const = 0;
-
-  Ptr<Node>     m_node;
-  std::string   m_name;
-  uint16_t      m_ifIndex;
-  Address       m_address;
-  Address       m_broadcast;
-  Address       m_multicast;
-  uint16_t      m_mtu;
-  bool          m_isUp;
-  bool          m_isBroadcast;
-  bool          m_isMulticast;
-  bool          m_isPointToPoint;
-  Callback<void> m_linkChangeCallback;
-  ReceiveCallback m_receiveCallback;
 };
 
-}; // namespace ns3
-#endif
+} // namespace ns3
+
+#endif /* NET_DEVICE_H */

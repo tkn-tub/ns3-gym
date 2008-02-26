@@ -43,7 +43,8 @@ CsmaIpv4Topology::AddIpv4CsmaNetDevice(
 
   // assume full-duplex
   Ptr<CsmaNetDevice> nd = CreateObject<CsmaNetDevice> (node, addr, 
-    ns3::CsmaNetDevice::IP_ARP, true, true);
+                                                       ns3::CsmaNetDevice::IP_ARP);
+  node->AddDevice (nd);
 
   nd->AddQueue(q);
   nd->Attach (channel);
@@ -59,14 +60,18 @@ CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
   Ptr<Queue> q = Queue::CreateDefault ();
 
   Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> (n1, addr,
-                                                  ns3::CsmaNetDevice::LLC,
-                                                  true, false);
+                                                        ns3::CsmaNetDevice::LLC);
+  n1->AddDevice (nd0);
+  nd0->SetSendEnable (true);
+  nd0->SetReceiveEnable (false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
   Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> (n1, addr,
-                                                  ns3::CsmaNetDevice::LLC,
-                                                  false, true);
+                                                        ns3::CsmaNetDevice::LLC);
+  n1->AddDevice (nd1);
+  nd1->SetSendEnable (false);
+  nd1->SetReceiveEnable (true);
   nd1->AddQueue(q);
   nd1->Attach (ch);
 }
@@ -79,14 +84,19 @@ CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
   Ptr<Queue> q = Queue::CreateDefault ();
 
   Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> (n1, addr,
-                                                  ns3::CsmaNetDevice::RAW,
-                                                  true, false);
+                                                        ns3::CsmaNetDevice::RAW);
+  n1->AddDevice (nd0);
+  nd0->SetSendEnable (true);
+  nd0->SetReceiveEnable (false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
   Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> (n1, addr,
-                                                  ns3::CsmaNetDevice::RAW,
-                                                  false, true);
+                                                        ns3::CsmaNetDevice::RAW);
+  n1->AddDevice (nd1);
+  nd1->SetSendEnable (false);
+  nd1->SetReceiveEnable (true);
+
   nd1->AddQueue(q);
   nd1->Attach (ch);
 }
