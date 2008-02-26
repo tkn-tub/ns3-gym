@@ -35,14 +35,15 @@ private:
 
 namespace ns3 {
 
-template <typename InputIterator>
+template <typename T>
 void 
-OlsrHelper::Enable (InputIterator begin, InputIterator end)
+OlsrHelper::Enable (T begin, T end)
 {
-  for (InputIterator i = begin; i != end; i++)
+  for (T i = begin; i != end; i++)
     {
-      //Ptr<Node> node = (*i)->GetObject<Node> ();
-      //Enable (node);
+      Ptr<Object> obj = (*i);
+      Ptr<Node> node = obj->GetObject<Node> ();
+      Enable (node);
     }
 }
 
