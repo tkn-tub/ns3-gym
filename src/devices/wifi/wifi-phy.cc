@@ -935,8 +935,8 @@ WifiPhy::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
     {
       return GetFecBpskBer (snr, 
                             nbits,
-                            20000000, // signal spread
-                            6000000, // phy rate
+                            mode.GetBandwidth (), // signal spread
+                            mode.GetPhyRate (), // phy rate
                             10, // dFree
                             11 // adFree
                             );      
@@ -945,8 +945,8 @@ WifiPhy::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
     {
       return GetFecBpskBer (snr, 
                             nbits,
-                            20000000, // signal spread
-                            9000000, // phy rate
+                            mode.GetBandwidth (), // signal spread
+                            mode.GetPhyRate (), // phy rate
                             5, // dFree
                             8 // adFree
                             );
@@ -955,8 +955,8 @@ WifiPhy::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
     {
       return GetFecQamBer (snr, 
                            nbits,
-                           20000000, // signal spread
-                           12000000, // phy rate
+                           mode.GetBandwidth (), // signal spread
+                           mode.GetPhyRate (), // phy rate
                            4,  // m 
                            10, // dFree
                            11, // adFree
@@ -967,8 +967,8 @@ WifiPhy::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
     {
       return GetFecQamBer (snr, 
                            nbits,
-                           20000000, // signal spread
-                           18000000, // phy rate
+                           mode.GetBandwidth (), // signal spread
+                           mode.GetPhyRate (), // phy rate
                            4, // m
                            5, // dFree
                            8, // adFree
@@ -979,8 +979,8 @@ WifiPhy::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
     {
       return GetFecQamBer (snr, 
                            nbits,
-                           20000000, // signal spread
-                           24000000, // phy rate
+                           mode.GetBandwidth (), // signal spread
+                           mode.GetPhyRate (), // phy rate
                            16, // m
                            10, // dFree
                            11, // adFree
@@ -991,8 +991,8 @@ WifiPhy::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
     {
       return GetFecQamBer (snr, 
                            nbits,
-                           20000000, // signal spread
-                           36000000, // phy rate
+                           mode.GetBandwidth (), // signal spread
+                           mode.GetPhyRate (), // phy rate
                            16, // m
                            5,  // dFree
                            8,  // adFree
@@ -1003,8 +1003,8 @@ WifiPhy::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
     {
       return GetFecQamBer (snr, 
                            nbits,
-                           20000000, // signal spread
-                           48000000, // phy rate
+                           mode.GetBandwidth (), // signal spread
+                           mode.GetPhyRate (), // phy rate
                            64, // m
                            6,  // dFree
                            1,  // adFree
@@ -1015,8 +1015,8 @@ WifiPhy::GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const
     {
       return GetFecQamBer (snr, 
                            nbits,
-                           20000000, // signal spread
-                           54000000, // phy rate
+                           mode.GetBandwidth (), // signal spread
+                           mode.GetPhyRate (), // phy rate
                            64, // m
                            5,  // dFree
                            8,  // adFree
