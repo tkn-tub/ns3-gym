@@ -30,11 +30,22 @@ ATTRIBUTE_ACCESSOR_DEFINE(Integer);
 template <typename T>
 Ptr<const AttributeChecker> MakeIntegerChecker (void);
 
+template <typename T>
+Ptr<const AttributeChecker> MakeIntegerChecker (int64_t min);
+
 Ptr<const AttributeChecker> MakeIntegerChecker (int64_t min, int64_t max);
 
 } // namespace ns3
 
 namespace ns3 {
+
+template <typename T>
+Ptr<const AttributeChecker>
+MakeIntegerChecker (int64_t min)
+{
+  return MakeIntegerChecker (min,
+			     std::numeric_limits<T>::max ());
+}
 
 template <typename T>
 Ptr<const AttributeChecker>
