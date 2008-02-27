@@ -156,21 +156,25 @@ public:
   virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
 };
 
+} // namespace ns3
+
 /********************************************************
  *        Store the content of a Ptr<T> in a AttributeValue
  ********************************************************/
 
+namespace {
+
 template <typename T>
-class PtrValue : public PtrValueBase
+class PtrValue : public ns3::PtrValueBase
 {
 public:
-  PtrValue (Ptr<T> pointer) 
+  PtrValue (ns3::Ptr<T> pointer) 
     : m_pointer (pointer) {}
 
-  virtual ObjectBase *PeekObjectBase (void) const {
+  virtual ns3::ObjectBase *PeekObjectBase (void) const {
     return PeekPointer (m_pointer);
   }
-  virtual bool SetObjectBase (ObjectBase *object) {
+  virtual bool SetObjectBase (ns3::ObjectBase *object) {
     T *ptr = dynamic_cast<T *> (object);
     if (ptr == 0)
       {
@@ -179,18 +183,90 @@ public:
     m_pointer = ptr;
     return true;
   }
-  virtual Attribute Copy (void) const {
-    return Attribute::Create<PtrValue<T> > (*this);
+  virtual ns3::Attribute Copy (void) const {
+    return ns3::Attribute::Create<PtrValue<T> > (*this);
   }
 private:
-  Ptr<T> m_pointer;
+  ns3::Ptr<T> m_pointer;
 };
+
+template <typename T>
+class APtrChecker : public ns3::PtrChecker
+{
+  virtual bool Check (ns3::Attribute val) const {
+    const ns3::PtrValueBase *value = val.DynCast<const ns3::PtrValueBase *> ();
+    if (value == 0)
+      {
+	return false;
+      }
+    if (value->PeekObjectBase () == 0)
+      {
+	return true;
+      }
+    T *ptr = dynamic_cast<T*> (value->PeekObjectBase ());
+    if (ptr == 0)
+      {
+	return false;
+      }
+    return true;
+  }
+};
+
+/********************************************************
+ *              The Accessor associated to 
+ *               PtrValue<T>
+ ********************************************************/
+
+template <typename T, typename U>
+class PtrAccessor : public ns3::AttributeAccessor
+{
+public:
+  virtual ~PtrAccessor () {}
+  virtual bool Set (ns3::ObjectBase * object, ns3::Attribute val) const {
+      T *obj = dynamic_cast<T *> (object);
+      if (obj == 0)
+        {
+          return false;
+        }
+      const ns3::PtrValueBase *value = val.DynCast<const ns3::PtrValueBase *> ();
+      if (value == 0)
+        {
+          return false;
+        }
+      ns3::Ptr<U> ptr = dynamic_cast<U*> (value->PeekObjectBase ());
+      if (ptr == 0)
+        {
+          return false;
+        }
+      DoSet (obj, ptr);
+      return true;
+    }
+  virtual bool Get (const ns3::ObjectBase * object, ns3::Attribute val) const {
+      const T *obj = dynamic_cast<const T *> (object);
+      if (obj == 0)
+        {
+          return false;
+        }
+      ns3::PtrValueBase *value = val.DynCast<ns3::PtrValueBase *> ();
+      if (value == 0)
+        {
+          return false;
+        }
+      return value->SetObjectBase (PeekPointer (DoGet (obj)));
+    }
+private:
+  virtual void DoSet (T *object, ns3::Ptr<U> value) const = 0;
+  virtual ns3::Ptr<U> DoGet (const T *object) const = 0;
+};
+
+} // anonymous namespace
 
 /********************************************************
  *        The implementation of the Attribute 
  *          class template methods.
  ********************************************************/
 
+namespace ns3 {
 
 template <typename T>
 Attribute 
@@ -233,52 +309,6 @@ Attribute::operator Ptr<T> ()
   return obj;
 }
 
-/********************************************************
- *              The Accessor associated to 
- *               PtrValue<T>
- ********************************************************/
-
-template <typename T, typename U>
-class PtrAccessor : public AttributeAccessor
-{
-public:
-  virtual ~PtrAccessor () {}
-  virtual bool Set (ObjectBase * object, Attribute val) const {
-      T *obj = dynamic_cast<T *> (object);
-      if (obj == 0)
-        {
-          return false;
-        }
-      const PtrValueBase *value = val.DynCast<const PtrValueBase *> ();
-      if (value == 0)
-        {
-          return false;
-        }
-      Ptr<U> ptr = dynamic_cast<U*> (value->PeekObjectBase ());
-      if (ptr == 0)
-        {
-          return false;
-        }
-      DoSet (obj, ptr);
-      return true;
-    }
-    virtual bool Get (const ObjectBase * object, Attribute val) const {
-      const T *obj = dynamic_cast<const T *> (object);
-      if (obj == 0)
-        {
-          return false;
-        }
-      PtrValueBase *value = val.DynCast<PtrValueBase *> ();
-      if (value == 0)
-        {
-          return false;
-        }
-      return value->SetObjectBase (PeekPointer (DoGet (obj)));
-    }
-private:
-  virtual void DoSet (T *object, Ptr<U> value) const = 0;
-  virtual Ptr<U> DoGet (const T *object) const = 0;
-};
 
 
 template <typename T, typename U>
@@ -345,31 +375,12 @@ MakePtrAccessor (Ptr<U> (T::*getter) (void) const)
   return Ptr<const AttributeAccessor> (spec, false);
 }
 
+
 template <typename T>
 Ptr<AttributeChecker>
 MakePtrChecker (void)
 {
-  struct APtrChecker : public PtrChecker
-  {
-    virtual bool Check (Attribute val) const {
-      const PtrValueBase *value = val.DynCast<const PtrValueBase *> ();
-      if (value == 0)
-        {
-          return false;
-        }
-      if (value->PeekObjectBase () == 0)
-        {
-          return true;
-        }
-      T *ptr = dynamic_cast<T*> (value->PeekObjectBase ());
-      if (ptr == 0)
-        {
-          return false;
-        }
-      return true;
-    }
-  } *checker = new APtrChecker ();
-  return Ptr<AttributeChecker> (checker, false);
+  return Create<APtrChecker<T> > ();
 }
 
 template <typename T, typename BASE>
