@@ -21,7 +21,6 @@
 // Implementation of the InternetNode class for ns3.
 // George F. Riley, Georgia Tech, Fall 2006
 
-#include "ns3/composite-trace-resolver.h"
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
 
@@ -53,8 +52,8 @@ InternetNode::~InternetNode ()
 void
 InternetNode::Construct (void)
 {
-  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> (this);
-  Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> (this);
+  Ptr<Ipv4L3Protocol> ipv4 = CreateObjectWith<Ipv4L3Protocol> ("Node", Ptr<Node> (this));
+  Ptr<ArpL3Protocol> arp = CreateObjectWith<ArpL3Protocol> ("Node", Ptr<Node> (this));
   // XXX remove the PeekPointer below.
   RegisterProtocolHandler (MakeCallback (&Ipv4L3Protocol::Receive, PeekPointer (ipv4)), 
                            Ipv4L3Protocol::PROT_NUMBER, 0);
@@ -62,9 +61,9 @@ InternetNode::Construct (void)
                            ArpL3Protocol::PROT_NUMBER, 0);
 
 
-  Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObject<Ipv4L4Demux> (this);
-  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> (this);
-  Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> (this);
+  Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObjectWith<Ipv4L4Demux> ("Node", Ptr<Node> (this));
+  Ptr<UdpL4Protocol> udp = CreateObjectWith<UdpL4Protocol> ("Node", Ptr<Node> (this));
+  Ptr<TcpL4Protocol> tcp = CreateObjectWith<TcpL4Protocol> ("Node", Ptr<Node> (this));
 
   ipv4L4Demux->Insert (udp);
   ipv4L4Demux->Insert (tcp);
@@ -79,16 +78,6 @@ InternetNode::Construct (void)
   Object::AggregateObject (udpImpl);
   Object::AggregateObject (tcpImpl);
   Object::AggregateObject (ipv4L4Demux);
-}
-
-Ptr<TraceResolver>
-InternetNode::GetTraceResolver () const
-{
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  Ptr<Ipv4L3Protocol> ipv4 = GetObject<Ipv4L3Protocol> ();
-  resolver->AddComposite ("ipv4", ipv4);
-  resolver->SetParentResolver (Node::GetTraceResolver ());
-  return resolver;
 }
 
 void 

@@ -38,10 +38,23 @@ namespace ns3 {
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t UdpL4Protocol::PROT_NUMBER = 17;
 
-UdpL4Protocol::UdpL4Protocol (Ptr<Node> node)
-  : Ipv4L4Protocol (PROT_NUMBER, 2),
-    m_node (node),
-    m_endPoints (new Ipv4EndPointDemux ())
+TypeId 
+UdpL4Protocol::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("UdpL4Protocol")
+    .SetParent<Ipv4L4Protocol> ()
+    .AddConstructor<UdpL4Protocol> ()
+    .AddAttribute ("Node", "The node which contains this protocol.",
+                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
+                   Ptr<Node> (0),
+                   MakePtrAccessor (&UdpL4Protocol::m_node),
+                   MakePtrChecker<Node> ())
+    ;
+  return tid;
+}
+
+UdpL4Protocol::UdpL4Protocol ()
+  : m_endPoints (new Ipv4EndPointDemux ())
 {
   NS_LOG_FUNCTION;
 }
@@ -50,6 +63,18 @@ UdpL4Protocol::~UdpL4Protocol ()
 {
   NS_LOG_FUNCTION;
 }
+
+int 
+UdpL4Protocol::GetProtocolNumber (void) const
+{
+  return PROT_NUMBER;
+}
+int 
+UdpL4Protocol::GetVersion (void) const
+{
+  return 2;
+}
+
 
 void
 UdpL4Protocol::DoDispose (void)

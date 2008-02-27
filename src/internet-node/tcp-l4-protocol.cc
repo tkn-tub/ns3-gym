@@ -309,20 +309,42 @@ static TcpStateMachine tcpStateMachine; //only instance of a TcpStateMachine
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t TcpL4Protocol::PROT_NUMBER = 6;
 
-TcpL4Protocol::TcpL4Protocol (Ptr<Node> node)
-  : Ipv4L4Protocol (PROT_NUMBER, 2),
-    m_node (node),
-    m_endPoints (new Ipv4EndPointDemux ())
+TypeId 
+TcpL4Protocol::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("TcpL4Protocol")
+    .SetParent<Ipv4L4Protocol> ()
+    .AddAttribute ("Node", "The node to which this protocol is associated",
+                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
+                   Ptr<Node> (0),
+                   MakePtrAccessor (&TcpL4Protocol::m_node),
+                   MakePtrChecker<Node> ())
+    ;
+  return tid;
+}
+
+TcpL4Protocol::TcpL4Protocol ()
+  : m_endPoints (new Ipv4EndPointDemux ())
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << node);
   NS_LOG_LOGIC("Made a TcpL4Protocol "<<this);
 }
 
 TcpL4Protocol::~TcpL4Protocol ()
 {
   NS_LOG_FUNCTION;
- }
+}
+
+int 
+TcpL4Protocol::GetProtocolNumber (void) const
+{
+  return PROT_NUMBER;
+}
+int 
+TcpL4Protocol::GetVersion (void) const
+{
+  return 2;
+}
 
 void
 TcpL4Protocol::DoDispose (void)

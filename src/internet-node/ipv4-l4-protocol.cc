@@ -23,32 +23,28 @@
 // George F. Riley, Georgia Tech, Spring 2007
 
 #include "ipv4-l4-protocol.h"
+#include "ns3/uinteger.h"
 
 namespace ns3 {
 
+TypeId 
+Ipv4L4Protocol::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("Ipv4L4Protocol")
+    .SetParent<Object> ()
+    .AddAttribute ("ProtocolNumber", "The Ipv4 protocol number.",
+                   Uinteger (0),
+                   MakeUintegerAccessor (&Ipv4L4Protocol::GetProtocolNumber),
+                   MakeUintegerChecker<int> ())
+    .AddAttribute ("Version", "The version of the protocol.",
+                   Uinteger (0),
+                   MakeUintegerAccessor (&Ipv4L4Protocol::GetVersion),
+                   MakeUintegerChecker<int> ())
+    ;
+  return tid;
+}
 
-Ipv4L4Protocol::Ipv4L4Protocol(int protocolNumber, int version)
-  : m_protocolNumber (protocolNumber),
-    m_version (version)
-{}
 Ipv4L4Protocol::~Ipv4L4Protocol ()
 {}
-
-int 
-Ipv4L4Protocol::GetProtocolNumber (void) const
-{
-  return m_protocolNumber;
-}
-int 
-Ipv4L4Protocol::GetVersion() const
-{
-  return m_version;
-}
-
-void 
-Ipv4L4Protocol::DoDispose (void)
-{
-  Object::DoDispose ();
-}
 
 }//namespace ns3
