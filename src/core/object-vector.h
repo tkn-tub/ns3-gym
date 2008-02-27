@@ -93,7 +93,20 @@ MakeObjectVectorAccessor (U T::*memberVector)
     }
     virtual Ptr<Object> DoGet (const ObjectBase *object, uint32_t i) const {
       const T *obj = static_cast<const T *> (object);
-      return (obj->*m_memberVector)[i];
+      typename U::const_iterator begin = (obj->*m_memberVector).begin ();
+      typename U::const_iterator end = (obj->*m_memberVector).end ();
+      uint32_t k = 0;
+      for (typename U::const_iterator j = begin; j != end; j++, k++)
+	{
+	  if (k == i)
+	    {
+	      return *j;
+	      break;
+	    }
+	}
+      NS_ASSERT (false);
+      // quiet compiler.
+      return 0;
     }
     U T::*m_memberVector;
   } *spec = new MemberStdContainer ();
