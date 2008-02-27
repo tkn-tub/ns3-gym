@@ -27,10 +27,9 @@
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
-#include "ns3/callback-trace-source.h"
+#include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
-#include "ns3/default-value.h"
 #include "ns3/ptr.h"
 #include "ns3/mac48-address.h"
 
@@ -39,29 +38,6 @@ namespace ns3 {
 class Queue;
 class PointToPointChannel;
 class ErrorModel;
-
-/**
- * \brief hold in a TraceContext the type of trace source from a PointToPointNetDevice
- */
-class PointToPointTraceType : public TraceContextElement
-{
-public:
-  enum Type {
-    RX,
-    DROP
-  };
-  PointToPointTraceType (enum Type type);
-  PointToPointTraceType ();
-  void Print (std::ostream &os) const;
-  static uint16_t GetUid (void);
-  std::string GetTypeName (void) const;
-  /**
-   * \returns the type of the trace source which generated an event.
-   */
-  enum Type Get (void) const;
-private:
-  enum Type m_type;
-};
 
 /**
  * \class PointToPointNetDevice
@@ -78,6 +54,8 @@ private:
 class PointToPointNetDevice : public NetDevice 
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * Construct a PointToPointNetDevice
    *
@@ -86,12 +64,8 @@ public:
    * as well as an optional DataRate object.
    *
    * @see PointToPointTopology::AddPointToPointLink ()
-   * @param node the Node to which this device is connected.
-   * @param rate (optional) DataRate object
    */
-  PointToPointNetDevice (Ptr<Node> node,
-                         Mac48Address address,
-                         const DataRate& rate = g_defaultRate.GetValue());
+  PointToPointNetDevice ();
   /**
    * Destroy a PointToPointNetDevice
    *
@@ -194,12 +168,6 @@ public:
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
 private:
-  /**
-   * Create a Trace Resolver for events in the net device.
-   *
-   * @see class TraceResolver
-   */
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 
   virtual void DoDispose (void);
   /**
@@ -212,18 +180,6 @@ private:
    * @returns a pointer to the queue.
    */
   Ptr<Queue> GetQueue(void) const; 
-
-
-  /**
-   * Set a new default data rate
-   */
-  static void SetDefaultRate(const DataRate&);
-
-  /** 
-   * Get the current default rate.
-   * @returns a const reference to current default
-   */
-  static const DataRate& GetDefaultRate();
 
 private:
   /**
@@ -310,7 +266,7 @@ private:
    * @see class CallBackTraceSource
    * @see class TraceResolver
    */
-  CallbackTraceSource<Ptr<const Packet> > m_rxTrace;
+  TracedCallback<Ptr<const Packet> > m_rxTrace;
   /**
    * The trace source for the packet drop events that the device can
    * fire.
@@ -318,11 +274,7 @@ private:
    * @see class CallBackTraceSource
    * @see class TraceResolver
    */
-  CallbackTraceSource<Ptr<const Packet> > m_dropTrace;
-  /** 
-   * Default data rate.  Used for all newly created p2p net devices
-   */
-   static DataRateDefaultValue g_defaultRate;
+  TracedCallback<Ptr<const Packet> > m_dropTrace;
 
   /**
    * Error model for receive packet events
@@ -339,7 +291,7 @@ private:
   uint16_t m_mtu;
 };
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif // POINT_TO_POINT_NET_DEVICE_H
 

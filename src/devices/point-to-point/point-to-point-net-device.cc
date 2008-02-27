@@ -23,10 +23,10 @@
 #include "ns3/log.h"
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
-#include "ns3/composite-trace-resolver.h"
 #include "ns3/mac48-address.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/error-model.h"
+#include "ns3/trace-source-accessor.h"
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
 
@@ -34,77 +34,59 @@ NS_LOG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 namespace ns3 {
 
-DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
-           "PointToPointLinkDataRate", 
-           "The default data rate for point to point links",
-           MakeDataRate ("10Mb/s"));
+NS_OBJECT_ENSURE_REGISTERED (PointToPointNetDevice);
 
-PointToPointTraceType::PointToPointTraceType (enum Type type)
-  : m_type (type)
+TypeId 
+PointToPointNetDevice::GetTypeId (void)
 {
-  NS_LOG_FUNCTION;
-}
-PointToPointTraceType::PointToPointTraceType ()
-  : m_type (RX)
-{
-  NS_LOG_FUNCTION;
-}
+  static TypeId tid = TypeId ("PointToPointNetDevice")
+    .SetParent<NetDevice> ()
+    .AddConstructor<PointToPointNetDevice> ()
+    .AddAttribute ("Node", "The node with which this device is associated",
+                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
+                   Ptr<Node> (0),
+                   MakePtrAccessor (&PointToPointNetDevice::m_node),
+                   MakePtrChecker<Node> ())
+    .AddAttribute ("Address", "The address of this device.",
+                   Mac48Address ("ff:ff:ff:ff:ff:ff"),
+                   MakeMac48AddressAccessor (&PointToPointNetDevice::m_address),
+                   MakeMac48AddressChecker ())
+    .AddAttribute ("DataRate", "The default data rate for point to point links",
+                   DataRate ("10Mb/s"),
+                   MakeDataRateAccessor (&PointToPointNetDevice::m_bps),
+                   MakeDataRateChecker ())
+    .AddAttribute ("RxErrorModel", "XXX",
+                   Ptr<ErrorModel> (0),
+                   MakePtrAccessor (&PointToPointNetDevice::m_receiveErrorModel),
+                   MakePtrChecker<ErrorModel> ())
+    .AddAttribute ("TxQueue", "XXX",
+                   Ptr<Queue> (0),
+                   MakePtrAccessor (&PointToPointNetDevice::m_queue),
+                   MakePtrChecker<Queue> ())
+    .AddAttribute ("InterframeGap", "XXX",
+                   Seconds (0.0),
+                   MakeTimeAccessor (&PointToPointNetDevice::m_tInterframeGap),
+                   MakeTimeChecker ())
+    .AddTraceSource ("Rx", "Receive MAC packet.",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_rxTrace))
+    .AddTraceSource ("Drop", "Drop MAC packet.",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_dropTrace))
 
-void 
-PointToPointTraceType::Print (std::ostream &os) const
-{
-  switch (m_type) {
-  case RX:
-    os << "dev-rx";
-    break;
-  case DROP:
-    os << "dev-drop";
-    break;
-  }
-}
-
-uint16_t 
-PointToPointTraceType::GetUid (void)
-{
-  NS_LOG_FUNCTION;
-  static uint16_t uid = AllocateUid<PointToPointTraceType> ("PointToPointTraceType");
-  return uid;
-}
-
-std::string 
-PointToPointTraceType::GetTypeName (void) const
-{
-  NS_LOG_FUNCTION;
-  return "ns3::PointToPointTraceType";
+    ;
+  return tid;
 }
 
-enum PointToPointTraceType::Type
-PointToPointTraceType::Get (void) const
-{
-  NS_LOG_FUNCTION;
-  return m_type;
-}
 
-PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
-                                              Mac48Address address,
-                                              const DataRate& rate) 
+PointToPointNetDevice::PointToPointNetDevice () 
 : 
   m_txMachineState (READY),
-  m_bps (rate),
-  m_tInterframeGap (Seconds(0)),
   m_channel (0), 
-  m_queue (0),
-  m_rxTrace (),
-  m_dropTrace (),
-  m_receiveErrorModel (0),
-  m_node (node),
-  m_address (address),
   m_name (""),
   m_linkUp (false),
   m_mtu (0xffff)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << node);
+  NS_LOG_PARAMS (this);
 }
 
 PointToPointNetDevice::~PointToPointNetDevice ()
@@ -197,26 +179,6 @@ void PointToPointNetDevice::TransmitComplete (void)
       return; // Nothing to do at this point
     }
   TransmitStart(p);
-}
-
-Ptr<TraceResolver> 
-PointToPointNetDevice::GetTraceResolver (void) const
-{
-  NS_LOG_FUNCTION;
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddComposite ("queue", m_queue);
-  resolver->AddSource ("rx",
-                       TraceDoc ("receive MAC packet",
-                                 "Ptr<const Packet>", "packet received"),
-                       m_rxTrace,
-                       PointToPointTraceType (PointToPointTraceType::RX));
-  resolver->AddSource ("drop",
-                       TraceDoc ("drop MAC packet",
-                                 "Ptr<const Packet>", "packet dropped"),
-                       m_dropTrace,
-                       PointToPointTraceType (PointToPointTraceType::DROP));
-  resolver->SetParentResolver (NetDevice::GetTraceResolver ());
-  return resolver;
 }
 
 bool 

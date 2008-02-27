@@ -7,6 +7,7 @@
 #include "ns3/mobility-helper.h"
 #include "ns3/uinteger.h"
 #include "ns3/double.h"
+#include "ns3/string.h"
 
 using namespace ns3;
 
@@ -33,7 +34,7 @@ int main (int argc, char *argv[])
                                  "DeltaX", Double (5.0),
                                  "DeltaY", Double (20.0),
                                  "GridWidth", Uinteger (20),
-                                 "LayoutType", "RowFirst");
+                                 "LayoutType", String ("RowFirst"));
   // each object will be attached a static position.
   // i.e., once set by the "position allocator", the
   // position will never change.

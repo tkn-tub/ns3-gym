@@ -52,7 +52,7 @@ OnOffApplication::GetTypeId (void)
     .SetParent<Application> ()
     .AddConstructor<OnOffApplication> ()
     .AddAttribute ("DataRate", "The data rate in on state.",
-                   MakeDataRate ("500kb/s"),
+                   DataRate ("500kb/s"),
                    MakeDataRateAccessor (&OnOffApplication::m_cbrRate),
                    MakeDataRateChecker ())
     .AddAttribute ("PacketSize", "The size of packets sent in on state",

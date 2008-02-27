@@ -289,7 +289,7 @@ main (int argc, char *argv[])
                                         "Protocol", TypeId::LookupByName ("Udp"),
                                         "OnTime", ConstantVariable(1), 
                                         "OffTime", ConstantVariable(0),
-                                        "DataRate", MakeDataRate ("255b/s"),
+                                        "DataRate", DataRate ("255b/s"),
                                         "PacketSize", Uinteger (128));
   n0->AddApplication (ooff);
 //

@@ -7,6 +7,7 @@
 #include "ns3/queue.h"
 #include "ns3/mobility-model-notifier.h"
 #include "ns3/default-value.h"
+#include "ns3/string.h"
 
 using namespace ns3;
 
@@ -119,12 +120,13 @@ int main (int argc, char *argv[])
   Ptr<Node> node = CreateObject<InternetNode> ();
   node->AggregateObject (CreateObject<MobilityModelNotifier> ());
 
-  Ptr<PointToPointNetDevice> p2p = CreateObject<PointToPointNetDevice> (node, Mac48Address::Allocate ());
+  Ptr<PointToPointNetDevice> p2p = CreateObjectWith<PointToPointNetDevice> ("Node", node, 
+									    "Address", Mac48Address::Allocate ());
   node->AddDevice (p2p);
   p2p->AddQueue (Queue::CreateDefault ());
   Ptr<CsmaNetDevice> csma = CreateObjectWith<CsmaNetDevice> ("Node", node, 
 							     "Address", Mac48Address::Allocate (),
-							     "EncapsulationMode", "Llc");
+							     "EncapsulationMode", String ("Llc"));
   node->AddDevice (csma);
   csma->AddQueue (Queue::CreateDefault ());
 

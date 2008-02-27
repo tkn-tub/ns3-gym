@@ -113,14 +113,6 @@ Attribute::DeserializeFromString (std::string value, Ptr<const AttributeChecker>
   return m_value->DeserializeFromString (value, checker);
 }
 
-Attribute::Attribute (const char *value)
-  : m_value (new StringValue (value))
-{}
-Attribute::Attribute (std::string value)
-  : m_value (new StringValue (value))
-{}
-
-
 AttributeAccessor::AttributeAccessor ()
   : m_count (1)
 {}
@@ -160,53 +152,6 @@ AttributeChecker::Unref (void) const
 }
 AttributeChecker::~AttributeChecker ()
 {}
-
-StringValue::StringValue (const char *value)
-  : m_value (value)
-{}
-StringValue::StringValue (std::string value)
-  : m_value (value)
-{}
-void 
-StringValue::Set (std::string value)
-{
-  m_value = value;
-}
-std::string 
-StringValue::Get (void) const
-{
-  return m_value;
-}
-Attribute 
-StringValue::Copy (void) const
-{
-  return Attribute::Create<StringValue> (*this);
-}
-std::string 
-StringValue::SerializeToString (Ptr<const AttributeChecker> checker) const
-{
-  return m_value;
-}
-bool 
-StringValue::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker)
-{
-  m_value = value;
-  return true;
-}
-StringValue::StringValue (Attribute value)
-{
-  const StringValue *v = value.DynCast<const StringValue *> ();
-  if (v == 0)
-    {
-      NS_FATAL_ERROR ("Expected value of type String.");
-    }
-  m_value = v->Get ();
-}
-StringValue::operator Attribute () const
-{
-  return Attribute::Create<StringValue> (*this);
-}
-
 
 std::string 
 PtrValueBase::SerializeToString (Ptr<const AttributeChecker> checker) const

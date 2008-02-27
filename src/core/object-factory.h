@@ -15,7 +15,6 @@ public:
   void SetTypeId (std::string tid);
   void SetTypeId (const char *tid);
   void Set (std::string name, Attribute value);
-  void Set (std::string name, std::string value);
 
   TypeId GetTypeId (void) const;
 

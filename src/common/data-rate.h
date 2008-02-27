@@ -58,6 +58,7 @@ public:
    * non-trivial bitrate availiable.
    */
   DataRate (uint64_t bps);
+  DataRate (std::string rate);
     
   bool operator <  (const DataRate& rhs) const;
   bool operator <= (const DataRate& rhs) const;
@@ -86,8 +87,6 @@ private:
   uint64_t m_bps;
   static uint64_t Parse(const std::string);
 };
-
-DataRate MakeDataRate (std::string rate);
 
 std::ostream &operator << (std::ostream &os, const DataRate &rate);
 std::istream &operator >> (std::istream &is, DataRate &rate);

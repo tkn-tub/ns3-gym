@@ -53,8 +53,6 @@ public:
   template <typename T>
   operator Ptr<T> ();
 
-  Attribute (const char *value);
-  Attribute (std::string value);
 private:
   Attribute (AttributeValue *value);
   AttributeValue *m_value;
@@ -118,29 +116,6 @@ Ptr<AttributeChecker> MakePtrChecker (void);
 } // namespace ns3
 
 namespace ns3 {
-
-/********************************************************
- *   A class used to hold std::string values.
- ********************************************************/
-
-class StringValue : public AttributeValue
-{
-public:
-  StringValue (const char *value);
-  StringValue (std::string value);
-  void Set (std::string value);
-  std::string Get (void) const;
-
-  virtual Attribute Copy (void) const;
-  virtual std::string SerializeToString (Ptr<const AttributeChecker> checker) const;
-  virtual bool DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker);
-
-  StringValue (Attribute value);
-  operator Attribute () const;
-private:
-  std::string m_value;
-};
-
 
 /********************************************************
  *   The class used to access the pointer stored in a

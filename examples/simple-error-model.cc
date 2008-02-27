@@ -45,6 +45,7 @@
 #include "ns3/ptr.h"
 #include "ns3/config.h"
 #include "ns3/uinteger.h"
+#include "ns3/string.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -83,10 +84,10 @@ main (int argc, char *argv[])
 
   // Set a few parameters
   Config::SetDefault ("RateErrorModel::ErrorRate", Double (0.01));
-  Config::SetDefault ("RateErrorModel::ErrorUnit", "EU_PKT");
+  Config::SetDefault ("RateErrorModel::ErrorUnit", String ("EU_PKT"));
   
   Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
-  Config::SetDefault ("OnOffApplication::DataRate", MakeDataRate ("448kb/s"));
+  Config::SetDefault ("OnOffApplication::DataRate", DataRate ("448kb/s"));
 
 
   // Allow the user to override any of the defaults and the above

@@ -25,6 +25,7 @@
 #include "attribute.h"
 #include "trace-source-accessor.h"
 #include "log.h"
+#include "string.h"
 #include <vector>
 #include <sstream>
 
@@ -860,7 +861,7 @@ AttributeList::DoSet (struct TypeId::AttributeInfo *info, Attribute value)
         }
       // attempt to convert back to value.
       Attribute v = info->initialValue.Copy ();
-      ok = v.DeserializeFromString (str->Get (), info->checker);
+      ok = v.DeserializeFromString (str->Get ().Get (), info->checker);
       if (!ok)
         {
           return false;
@@ -1087,7 +1088,7 @@ Object::DoSet (Ptr<const AttributeAccessor> spec, Attribute initialValue,
         }
       // attempt to convert back from string.
       Attribute v = initialValue.Copy ();
-      ok = v.DeserializeFromString (str->Get (), checker);
+      ok = v.DeserializeFromString (str->Get ().Get (), checker);
       if (!ok)
         {
           return false;

@@ -5,6 +5,7 @@
 #include "integer.h"
 #include "uinteger.h"
 #include "enum.h"
+#include "string.h"
 #include "random-variable.h"
 #include "double.h"
 #include "object-vector.h"
@@ -239,12 +240,12 @@ AttributeTest::RunTests (void)
 
   AttributeList params;
   Ptr<AttributeObjectTest> p;
-  NS_TEST_ASSERT (params.Set ("AttributeObjectTest::TestBoolName", "false"));
+  NS_TEST_ASSERT (params.Set ("AttributeObjectTest::TestBoolName", String ("false")));
   p = CreateObject<AttributeObjectTest> (params);
   CHECK_GET_STR (p, "TestBoolName", "false");
   CHECK_GET_PARAM (p, "TestBoolName", Boolean, false);
 
-  NS_TEST_ASSERT (p->SetAttribute("TestBoolName", "true"));
+  NS_TEST_ASSERT (p->SetAttribute("TestBoolName", String ("true")));
   CHECK_GET_STR (p, "TestBoolName", "true");
   CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
 
@@ -252,7 +253,7 @@ AttributeTest::RunTests (void)
   CHECK_GET_STR (p, "TestBoolName", "false");
   CHECK_GET_PARAM (p, "TestBoolName", Boolean, false);
 
-  p = CreateObjectWith<AttributeObjectTest> ("TestBoolName", "true");
+  p = CreateObjectWith<AttributeObjectTest> ("TestBoolName", String ("true"));
   CHECK_GET_STR (p, "TestBoolName", "true");
   CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
 
@@ -260,11 +261,11 @@ AttributeTest::RunTests (void)
   CHECK_GET_STR (p, "TestBoolName", "true");
   CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
 
-  NS_TEST_ASSERT (p->SetAttribute("TestBoolA", "false"));
+  NS_TEST_ASSERT (p->SetAttribute("TestBoolA", String ("false")));
   CHECK_GET_STR (p, "TestBoolA", "false");
   CHECK_GET_PARAM (p, "TestBoolA", Boolean, false);
 
-  NS_TEST_ASSERT (p->SetAttribute("TestBoolA", "true"));
+  NS_TEST_ASSERT (p->SetAttribute("TestBoolA", String ("true")));
   CHECK_GET_STR (p, "TestBoolA", "true");
   CHECK_GET_PARAM (p, "TestBoolA", Boolean, true);
 
@@ -289,7 +290,7 @@ AttributeTest::RunTests (void)
   CHECK_GET_STR (p, "TestInt16", "-2");
   CHECK_GET_PARAM (p, "TestInt16", Integer, -2);
 
-  NS_TEST_ASSERT (p->SetAttribute("TestInt16", "-5"));
+  NS_TEST_ASSERT (p->SetAttribute("TestInt16", String ("-5")));
   CHECK_GET_STR (p, "TestInt16", "-5");
   CHECK_GET_PARAM (p, "TestInt16", Integer, -5);
 
@@ -341,13 +342,13 @@ AttributeTest::RunTests (void)
   NS_TEST_ASSERT (p->SetAttribute("TestUint8", Uinteger (255)));
   CHECK_GET_STR (p, "TestUint8", "255");
   CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
-  NS_TEST_ASSERT (p->SetAttribute("TestUint8", "255"));
+  NS_TEST_ASSERT (p->SetAttribute("TestUint8", String ("255")));
   CHECK_GET_STR (p, "TestUint8", "255");
   CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
-  NS_TEST_ASSERT (!p->SetAttribute("TestUint8", "256"));
+  NS_TEST_ASSERT (!p->SetAttribute("TestUint8", String ("256")));
   CHECK_GET_STR (p, "TestUint8", "255");
   CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
-  NS_TEST_ASSERT (!p->SetAttribute("TestUint8", "-1"));
+  NS_TEST_ASSERT (!p->SetAttribute("TestUint8", String ("-1")));
   CHECK_GET_STR (p, "TestUint8", "255");
   CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
   NS_TEST_ASSERT (!p->SetAttribute("TestUint8", Uinteger ((uint64_t)-1)));
@@ -363,10 +364,10 @@ AttributeTest::RunTests (void)
   NS_TEST_ASSERT (p->SetAttribute("TestEnum", Enum (AttributeObjectTest::TEST_C)));
   CHECK_GET_STR (p, "TestEnum", "TestC");
   CHECK_GET_PARAM (p, "TestEnum", Enum, AttributeObjectTest::TEST_C);
-  NS_TEST_ASSERT (p->SetAttribute("TestEnum", "TestB"));
+  NS_TEST_ASSERT (p->SetAttribute("TestEnum", String ("TestB")));
   CHECK_GET_STR (p, "TestEnum", "TestB");
   CHECK_GET_PARAM (p, "TestEnum", Enum, AttributeObjectTest::TEST_B);
-  NS_TEST_ASSERT (!p->SetAttribute("TestEnum", "TestD"));
+  NS_TEST_ASSERT (!p->SetAttribute("TestEnum", String ("TestD")));
   CHECK_GET_STR (p, "TestEnum", "TestB");
   CHECK_GET_PARAM (p, "TestEnum", Enum, AttributeObjectTest::TEST_B);
   NS_TEST_ASSERT (!p->SetAttribute("TestEnum", Enum (5)));
@@ -407,12 +408,12 @@ AttributeTest::RunTests (void)
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 2);
   }
 
-  NS_TEST_ASSERT (AttributeList::GetGlobal ()->Set ("AttributeObjectTest::TestBoolName", "true"));
+  NS_TEST_ASSERT (AttributeList::GetGlobal ()->Set ("AttributeObjectTest::TestBoolName", String ("true")));
   p = CreateObjectWith<AttributeObjectTest> ();
   Boolean boolV = p->GetAttribute ("TestBoolName");
   NS_TEST_ASSERT_EQUAL (boolV, Boolean (true));
 
-  NS_TEST_ASSERT (AttributeList::GetGlobal ()->Set ("AttributeObjectTest::TestBoolName", "false"));
+  NS_TEST_ASSERT (AttributeList::GetGlobal ()->Set ("AttributeObjectTest::TestBoolName", String ("false")));
   p = CreateObjectWith<AttributeObjectTest> ();
   boolV = p->GetAttribute ("TestBoolName");
   NS_TEST_ASSERT_EQUAL (boolV, Boolean (false));

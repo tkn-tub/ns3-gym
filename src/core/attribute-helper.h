@@ -1,6 +1,8 @@
 #ifndef VALUE_HELPER_H
 #define VALUE_HELPER_H
 
+#include "attribute.h"
+#include "object-base.h"
 #include "attribute-accessor-helper.h"
 #include <sstream>
 #include "fatal-error.h"

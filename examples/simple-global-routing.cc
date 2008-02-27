@@ -113,7 +113,7 @@ main (int argc, char *argv[])
   DefaultValue::Bind ("Queue", "DropTailQueue");
 
   Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
-  Config::SetDefault ("OnOffApplication::DataRate", MakeDataRate ("448kb/s"));
+  Config::SetDefault ("OnOffApplication::DataRate", DataRate ("448kb/s"));
 
   //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
 

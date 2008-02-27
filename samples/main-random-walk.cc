@@ -12,6 +12,7 @@
 #include "ns3/node.h"
 #include "ns3/node-list.h"
 #include "ns3/mobility-helper.h"
+#include "ns3/string.h"
 
 using namespace ns3;
 
@@ -44,14 +45,14 @@ int main (int argc, char *argv[])
   MobilityHelper mobility;
   mobility.EnableNotifier ();
   mobility.SetPositionAllocator ("RandomDiscPositionAllocator",
-                                 "X", "100.0",
-                                 "Y", "100.0",
-                                 "Rho", "Uniform:0:30");
+                                 "X", String ("100.0"),
+                                 "Y", String ("100.0"),
+                                 "Rho", String ("Uniform:0:30"));
   mobility.SetMobilityModel ("RandomWalk2dMobilityModel",
-                             "Mode", "Time",
-                             "Time", "2s",
-                             "Speed", "Constant:1.0",
-                             "Bounds", "0:200:0:100");
+                             "Mode", String ("Time"),
+                             "Time", String ("2s"),
+                             "Speed", String ("Constant:1.0"),
+                             "Bounds", String ("0:200:0:100"));
   mobility.Layout (NodeList::Begin (), NodeList::End ());
   NodeList::Connect ("/nodes/*/$MobilityModelNotifier/course-change", 
                      MakeCallback (&CourseChange));

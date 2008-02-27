@@ -27,12 +27,6 @@ ObjectFactory::Set (std::string name, Attribute value)
   m_parameters.SetWithTid (m_tid, name, value);
 }
 
-void 
-ObjectFactory::Set (std::string name, std::string value)
-{
-  m_parameters.SetWithTid (m_tid, name, value);
-}
-
 TypeId 
 ObjectFactory::GetTypeId (void) const
 {

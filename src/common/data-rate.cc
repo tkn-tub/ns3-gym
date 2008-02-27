@@ -175,15 +175,13 @@ uint64_t DataRate::GetBitRate() const
   return m_bps;
 }
 
-DataRate MakeDataRate (std::string rate)
+DataRate::DataRate (std::string rate)
 {
-  uint64_t bps;
-  bool ok = DoParse (rate, &bps);
+  bool ok = DoParse (rate, &m_bps);
   if (!ok)
     {
-      NS_FATAL_ERROR ("Could not parse rate.");
+      NS_FATAL_ERROR ("Could not parse rate: "<<rate);
     }
-  return DataRate (bps);
 }
 
 std::ostream &operator << (std::ostream &os, const DataRate &rate)

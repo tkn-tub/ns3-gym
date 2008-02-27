@@ -113,7 +113,7 @@ main (int argc, char *argv[])
   DefaultValue::Bind ("Queue", "DropTailQueue");
 
   Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
-  Config::SetDefault ("OnOffApplication::DataRate", MakeDataRate ("448kb/s"));
+  Config::SetDefault ("OnOffApplication::DataRate", DataRate ("448kb/s"));
 
   // Allow the user to override any of the defaults and the above
   // Bind ()s at run-time, via command-line arguments
@@ -198,7 +198,7 @@ main (int argc, char *argv[])
                                         "Protocol", TypeId::LookupByName ("Udp"),
                                         "OnTime", ConstantVariable (1), 
                                         "OffTime", ConstantVariable (0),
-                                        "DataRate", MakeDataRate("300bps"),
+                                        "DataRate", DataRate("300bps"),
                                         "PacketSize", Uinteger (50));
   n0->AddApplication (ooff);
   // Start the application

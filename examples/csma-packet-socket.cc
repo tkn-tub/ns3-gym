@@ -38,6 +38,7 @@
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
 #include "ns3/log.h"
+#include "ns3/string.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -63,7 +64,7 @@ CreateCsmaDevice (Ptr<Node> node, Ptr<CsmaChannel> channel)
 {
   Ptr<CsmaNetDevice> device = CreateObjectWith<CsmaNetDevice> ("Node", node, 
                                                                "Address", Mac48Address::Allocate (),
-                                                               "EncapsulationMode", "Llc");
+                                                               "EncapsulationMode", String ("Llc"));
   node->AddDevice (device);
   device->Attach (channel);
   Ptr<Queue> queue = Queue::CreateDefault ();

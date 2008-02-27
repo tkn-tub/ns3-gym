@@ -44,6 +44,7 @@
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
 #include "ns3/config.h"
+#include "ns3/string.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -78,8 +79,8 @@ main (int argc, char *argv[])
 
   // Set up some default values for the simulation.
 
-  Config::SetDefault ("OnOffApplication::PacketSize", "210");
-  Config::SetDefault ("OnOffApplication::DataRate", "448kb/s");
+  Config::SetDefault ("OnOffApplication::PacketSize", String ("210"));
+  Config::SetDefault ("OnOffApplication::DataRate", String ("448kb/s"));
 
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
