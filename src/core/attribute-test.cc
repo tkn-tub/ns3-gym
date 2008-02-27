@@ -350,7 +350,7 @@ AttributeTest::RunTests (void)
   NS_TEST_ASSERT (!p->SetAttribute("TestUint8", "-1"));
   CHECK_GET_STR (p, "TestUint8", "255");
   CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
-  NS_TEST_ASSERT (!p->SetAttribute("TestUint8", Uinteger (-1)));
+  NS_TEST_ASSERT (!p->SetAttribute("TestUint8", Uinteger ((uint64_t)-1)));
   CHECK_GET_STR (p, "TestUint8", "255");
   CHECK_GET_PARAM (p, "TestUint8", Uinteger, 255);
 
