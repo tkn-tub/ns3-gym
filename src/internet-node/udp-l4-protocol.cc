@@ -35,6 +35,8 @@ NS_LOG_COMPONENT_DEFINE ("UdpL4Protocol");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (UdpL4Protocol);
+
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t UdpL4Protocol::PROT_NUMBER = 17;
 

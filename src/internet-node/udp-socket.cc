@@ -388,7 +388,9 @@ UdpSocketTest::RunTests (void)
   
   // Receiver Node
   Ptr<Node> rxNode = CreateObject<InternetNode> ();
-  Ptr<PointToPointNetDevice> rxDev = CreateObject<PointToPointNetDevice> (rxNode, Mac48Address::Allocate ());
+  Ptr<PointToPointNetDevice> rxDev = 
+    CreateObjectWith<PointToPointNetDevice> ("Node", rxNode, 
+                                             "Address", Mac48Address::Allocate ());
   rxNode->AddDevice (rxDev);
   rxDev->AddQueue(CreateObject<DropTailQueue> ());
   Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
@@ -399,7 +401,9 @@ UdpSocketTest::RunTests (void)
 
   // Sender Node
   Ptr<Node> txNode = CreateObject<InternetNode> ();
-  Ptr<PointToPointNetDevice> txDev = CreateObject<PointToPointNetDevice> (txNode, Mac48Address::Allocate ());
+  Ptr<PointToPointNetDevice> txDev = 
+    CreateObjectWith<PointToPointNetDevice> ("Node", txNode, 
+                                             "Address", Mac48Address::Allocate ());
   txNode->AddDevice (txDev);
   txDev->AddQueue(CreateObject<DropTailQueue> ());
   ipv4 = txNode->GetObject<Ipv4> ();

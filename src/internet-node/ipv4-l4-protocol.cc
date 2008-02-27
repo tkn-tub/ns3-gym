@@ -27,6 +27,8 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (Ipv4L4Protocol);
+
 TypeId 
 Ipv4L4Protocol::GetTypeId (void)
 {

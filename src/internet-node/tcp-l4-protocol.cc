@@ -41,6 +41,8 @@ NS_LOG_COMPONENT_DEFINE ("TcpL4Protocol");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (TcpL4Protocol);
+
 //State Machine things --------------------------------------------------------
 TcpStateMachine::TcpStateMachine() 
   : aT (LAST_STATE, StateActionVec_t(LAST_EVENT)),
