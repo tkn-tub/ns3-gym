@@ -122,8 +122,9 @@ int main (int argc, char *argv[])
   Ptr<PointToPointNetDevice> p2p = CreateObject<PointToPointNetDevice> (node, Mac48Address::Allocate ());
   node->AddDevice (p2p);
   p2p->AddQueue (Queue::CreateDefault ());
-  Ptr<CsmaNetDevice> csma = CreateObject<CsmaNetDevice> (node, Mac48Address::Allocate (),
-							 CsmaNetDevice::LLC);
+  Ptr<CsmaNetDevice> csma = CreateObjectWith<CsmaNetDevice> ("Node", node, 
+							     "Address", Mac48Address::Allocate (),
+							     "EncapsulationMode", "Llc");
   node->AddDevice (csma);
   csma->AddQueue (Queue::CreateDefault ());
 

@@ -29,7 +29,7 @@
 #include "ns3/net-device.h"
 #include "ns3/callback.h"
 #include "ns3/packet.h"
-#include "ns3/callback-trace-source.h"
+#include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
 #include "ns3/data-rate.h"
 #include "ns3/ptr.h"
@@ -41,29 +41,6 @@ namespace ns3 {
 class Queue;
 class CsmaChannel;
 class ErrorModel;
-
-/**
- * \brief hold in a TraceContext the type of trace source from a CsmaNetDevice
- */
-class CsmaTraceType : public TraceContextElement
-{
-public:
-  enum Type {
-    RX, 
-    DROP
-  };
-  CsmaTraceType (enum Type type);
-  CsmaTraceType ();
-  void Print (std::ostream &os) const;
-  static uint16_t GetUid (void);
-  std::string GetTypeName (void) const;
-  /**
-   * \returns the type of the trace source which generated an event.
-   */
-  enum Type Get (void) const;
-private:
-  enum Type m_type;
-};
 
 /**
  * \class CsmaNetDevice
@@ -84,9 +61,10 @@ private:
  * devices
  *
  */
-class CsmaNetDevice : public NetDevice {
+class CsmaNetDevice : public NetDevice 
+{
 public:
-
+  static TypeId GetTypeId (void);
   /**
    * Enumeration of the types of packets supported in the class.
    *
@@ -105,11 +83,8 @@ enum CsmaEncapsulationMode {
    * parameter the Node to which this device is connected.  Ownership of the
    * Node pointer is not implied and the node must not be deleted.
    *
-   * \param node the Node to which this device is connected.
-   * \param addr The source MAC address of the net device.
-   * \param pktType the type of encapsulation
    */
-  CsmaNetDevice (Ptr<Node> node, Mac48Address addr, CsmaEncapsulationMode pktType);
+  CsmaNetDevice ();
 
   /**
    * Destroy a CsmaNetDevice
@@ -252,12 +227,6 @@ enum CsmaEncapsulationMode {
 
 protected:
   virtual void DoDispose (void);
-  /**
-   * Create a Trace Resolver for events in the net device.
-   * (NOT TESTED)
-   * @see class TraceResolver
-   */
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 
   /**
    * Get a copy of the attached Queue.
@@ -450,8 +419,8 @@ private:
    * @see class CallBackTraceSource
    * @see class TraceResolver
    */
-  CallbackTraceSource<Ptr<const Packet> > m_rxTrace;
-  CallbackTraceSource<Ptr<const Packet> > m_dropTrace;
+  TracedCallback<Ptr<const Packet> > m_rxTrace;
+  TracedCallback<Ptr<const Packet> > m_dropTrace;
 
   Ptr<Node> m_node;
   Mac48Address m_address;

@@ -22,80 +22,81 @@
 #include "ns3/log.h"
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
-#include "ns3/composite-trace-resolver.h"
-#include "csma-net-device.h"
-#include "csma-channel.h"
 #include "ns3/ethernet-header.h"
 #include "ns3/ethernet-trailer.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/error-model.h"
+#include "ns3/enum.h"
+#include "ns3/boolean.h"
+#include "ns3/trace-source-accessor.h"
+#include "csma-net-device.h"
+#include "csma-channel.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("CsmaNetDevice");
 
 namespace ns3 {
 
-CsmaTraceType::CsmaTraceType (enum Type type)
-  : m_type (type)
+TypeId 
+CsmaNetDevice::GetTypeId (void)
 {
-  NS_LOG_FUNCTION;
+  static TypeId tid = TypeId ("CsmaNetDevice")
+    .SetParent<NetDevice> ()
+    .AddConstructor<CsmaNetDevice> ()
+    .AddAttribute ("Node", "The node with which this device is associated",
+                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
+                   Ptr<Node> (0),
+                   MakePtrAccessor (&CsmaNetDevice::m_node),
+                   MakePtrChecker<Node> ())
+    .AddAttribute ("Address", "The address of this device.",
+                   Mac48Address ("ff:ff:ff:ff:ff:ff"),
+                   MakeMac48AddressAccessor (&CsmaNetDevice::m_address),
+                   MakeMac48AddressChecker ())
+    .AddAttribute ("EncapsulationMode", "The mode of link-layer encapsulation to use.",
+                   Enum (LLC),
+                   MakeEnumAccessor (&CsmaNetDevice::m_encapMode),
+                   MakeEnumChecker (ETHERNET_V1, "EthernetV1",
+                                    IP_ARP, "IpArp",
+                                    RAW, "Raw",
+                                    LLC, "Llc"))
+    .AddAttribute ("SendEnable", "should tx be enabled ?",
+                   Boolean (true),
+                   MakeBooleanAccessor (&CsmaNetDevice::m_sendEnable),
+                   MakeBooleanChecker ())
+    .AddAttribute ("ReceiveEnable", "should rx be enabled ?",
+                   Boolean (true),
+                   MakeBooleanAccessor (&CsmaNetDevice::m_receiveEnable),
+                   MakeBooleanChecker ())
+    .AddAttribute ("DataRate", "XXX",
+                   DataRate (0xffffffff),
+                   MakeDataRateAccessor (&CsmaNetDevice::m_bps),
+                   MakeDataRateChecker ())
+    .AddAttribute ("RxErrorModel", "XXX",
+                   Ptr<ErrorModel> (0),
+                   MakePtrAccessor (&CsmaNetDevice::m_receiveErrorModel),
+                   MakePtrChecker<ErrorModel> ())
+    .AddAttribute ("TxQueue", "XXX",
+                   Ptr<Queue> (0),
+                   MakePtrAccessor (&CsmaNetDevice::m_queue),
+                   MakePtrChecker<Queue> ())
+    .AddTraceSource ("Rx", "Receive MAC packet.",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_rxTrace))
+    .AddTraceSource ("Drop", "Drop MAC packet.",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_dropTrace))
+    ;
+  return tid;
 }
 
-CsmaTraceType::CsmaTraceType ()
-  : m_type (RX)
-{
-  NS_LOG_FUNCTION;
-}
-
-void 
-CsmaTraceType::Print (std::ostream &os) const
-{
-  switch (m_type) {
-  case RX:
-    os << "dev-rx";
-    break;
-  case DROP:
-    os << "dev-drop";
-    break;
-  }
-}
-
-uint16_t 
-CsmaTraceType::GetUid (void)
-{
-  NS_LOG_FUNCTION;
-  static uint16_t uid = AllocateUid<CsmaTraceType> ("CsmaTraceType");
-  return uid;
-}
-
-std::string 
-CsmaTraceType::GetTypeName (void) const
-{
-  NS_LOG_FUNCTION;
-  return "ns3::CsmaTraceType";
-}
-
-enum CsmaTraceType::Type 
-CsmaTraceType::Get (void) const
-{
-  NS_LOG_FUNCTION;
-  return m_type;
-}
-
-CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Mac48Address addr, 
-                              CsmaEncapsulationMode encapMode)
-  : m_bps (DataRate (0xffffffff)),
-    m_receiveErrorModel (0),
-    m_node (node),
-    m_address (addr),
-    m_name (""),
+CsmaNetDevice::CsmaNetDevice ()
+  : m_name (""),
     m_linkUp (false),
     m_mtu (0xffff)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << node);
-  m_encapMode = encapMode;
-
-  Init(true, true);
+  NS_LOG_PARAMS (this);
+  m_txMachineState = READY;
+  m_tInterframeGap = Seconds(0);
+  m_channel = 0; 
 }
 
 CsmaNetDevice::~CsmaNetDevice()
@@ -111,19 +112,6 @@ CsmaNetDevice::DoDispose ()
   m_channel = 0;
   m_node = 0;
   NetDevice::DoDispose ();
-}
-
-void 
-CsmaNetDevice::Init(bool sendEnable, bool receiveEnable)
-{
-  NS_LOG_FUNCTION;
-  m_txMachineState = READY;
-  m_tInterframeGap = Seconds(0);
-  m_channel = 0; 
-  m_queue = 0;
-
-  SetSendEnable (sendEnable);
-  SetReceiveEnable (receiveEnable);
 }
 
 void
@@ -394,26 +382,6 @@ CsmaNetDevice::TransmitReadyEvent (void)
     }
 }
 
-Ptr<TraceResolver>
-CsmaNetDevice::GetTraceResolver (void) const
-{
-  NS_LOG_FUNCTION;
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddComposite ("queue", m_queue);
-  resolver->AddSource ("rx",
-                       TraceDoc ("receive MAC packet",
-                                 "Ptr<const Packet>", "packet received"),
-                       m_rxTrace,
-                       CsmaTraceType (CsmaTraceType::RX));
-  resolver->AddSource ("drop",
-                       TraceDoc ("drop MAC packet",
-                                 "Ptr<const Packet>", "packet dropped"),
-                       m_dropTrace,
-                       CsmaTraceType (CsmaTraceType::DROP));
-  resolver->SetParentResolver (NetDevice::GetTraceResolver ());
-  return resolver;
-}
-
 bool
 CsmaNetDevice::Attach (Ptr<CsmaChannel> ch)
 {
@@ -448,7 +416,6 @@ void CsmaNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
   NS_LOG_PARAM ("(" << em << ")");
   
   m_receiveErrorModel = em; 
-  AggregateObject (em);
 }
 
 void

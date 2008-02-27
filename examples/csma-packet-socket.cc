@@ -61,8 +61,9 @@ NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
 static Ptr<CsmaNetDevice>
 CreateCsmaDevice (Ptr<Node> node, Ptr<CsmaChannel> channel)
 {
-  Ptr<CsmaNetDevice> device = CreateObject<CsmaNetDevice> (node, Mac48Address::Allocate (),
-                                                           CsmaNetDevice::LLC);
+  Ptr<CsmaNetDevice> device = CreateObjectWith<CsmaNetDevice> ("Node", node, 
+                                                               "Address", Mac48Address::Allocate (),
+                                                               "EncapsulationMode", "Llc");
   node->AddDevice (device);
   device->Attach (channel);
   Ptr<Queue> queue = Queue::CreateDefault ();
