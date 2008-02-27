@@ -19,7 +19,6 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/random-variable-default-value.h"
-#include "ns3/rectangle-default-value.h"
 #include "ns3/simulator.h"
 #include <algorithm>
 #include <cmath>
@@ -35,100 +34,37 @@ const double RandomDirection2dMobilityModel::PI = 3.14159265358979323846;
 NS_OBJECT_ENSURE_REGISTERED (RandomDirection2dMobilityModel);
 
 
-static RandomVariableDefaultValue 
-  g_speedVariable ("RandomDirection2dSpeed",
-		   "A random variable to control the speed of a RandomDirection2d mobility model.",
-		   "Uniform:1:2");
-
-static RandomVariableDefaultValue
-  g_pauseVariable ("RandomDirection2dPause",
-		   "A random variable to control the duration "
-                   "of the pause of a RandomDiretion mobility model.",
-		   "Constant:2");
-
-static RectangleDefaultValue
-  g_bounds ("RandomDirection2dArea",
-	       "The bounding area for the RandomDirection2d model.",
-	       -100, 100, -100, 100);
-
-
-RandomDirection2dMobilityModelParameters::RandomDirection2dMobilityModelParameters ()
-  : m_bounds (g_bounds.GetValue ()),
-    m_speedVariable (g_speedVariable.Get ()),
-    m_pauseVariable (g_pauseVariable.Get ())
-    
-{}
-RandomDirection2dMobilityModelParameters::RandomDirection2dMobilityModelParameters 
-(const Rectangle &bounds,
- const RandomVariable &speedVariable,
- const RandomVariable &pauseVariable)
-  : m_bounds (bounds),
-    m_speedVariable (speedVariable),
-    m_pauseVariable (pauseVariable)
-{}
-
-RandomDirection2dMobilityModelParameters::~RandomDirection2dMobilityModelParameters ()
-{}
-
-void 
-RandomDirection2dMobilityModelParameters::SetSpeed (const RandomVariable &speedVariable)
-{
-  m_speedVariable = speedVariable;
-}
-void 
-RandomDirection2dMobilityModelParameters::SetPause (const RandomVariable &pauseVariable)
-{
-  m_pauseVariable = pauseVariable;
-}
-void 
-RandomDirection2dMobilityModelParameters::SetBounds (const Rectangle &bounds)
-{
-  m_bounds = bounds;
-}
-
-Ptr<RandomDirection2dMobilityModelParameters> 
-RandomDirection2dMobilityModelParameters::GetCurrent (void)
-{
-  static Ptr<RandomDirection2dMobilityModelParameters> parameters = 0;
-  if (parameters == 0 ||
-      g_bounds.IsDirty () ||
-      g_speedVariable.IsDirty () ||
-      g_pauseVariable.IsDirty ())
-    {
-      parameters = CreateObject<RandomDirection2dMobilityModelParameters> ();
-      g_bounds.ClearDirtyFlag ();
-      g_speedVariable.ClearDirtyFlag ();
-      g_pauseVariable.ClearDirtyFlag ();
-    }
-  return parameters;
-}
-
 TypeId
 RandomDirection2dMobilityModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("RandomDirection2dMobilityModel")
     .SetParent<MobilityModel> ()
+    .SetGroupName ("Mobility")
     .AddConstructor<RandomDirection2dMobilityModel> ()
-    .AddConstructor<RandomDirection2dMobilityModel,Ptr<RandomDirection2dMobilityModelParameters> > ();
+    .AddAttribute ("bounds", "The 2d bounding area",
+                   Rectangle (-100, 100, -100, 100),
+                   MakeRectangleAccessor (&RandomDirection2dMobilityModel::m_bounds),
+                   MakeRectangleChecker ())
+    .AddAttribute ("speed", "A random variable to control the speed (m/s).",
+                   UniformVariable (1.0, 2.0),
+                   MakeRandomVariableAccessor (&RandomDirection2dMobilityModel::m_speed),
+                   MakeRandomVariableChecker ())
+    .AddAttribute ("pause", "A random variable to control the pause (s).",
+                   ConstantVariable (2.0),
+                   MakeRandomVariableAccessor (&RandomDirection2dMobilityModel::m_pause),
+                   MakeRandomVariableChecker ())
+    ;
   return tid;
 }
 
 
 RandomDirection2dMobilityModel::RandomDirection2dMobilityModel ()
-  : m_parameters (RandomDirection2dMobilityModelParameters::GetCurrent ())
-{
-  m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
-}
-RandomDirection2dMobilityModel::RandomDirection2dMobilityModel 
-(Ptr<RandomDirection2dMobilityModelParameters> parameters)
-  : m_parameters (parameters)
 {
   m_event = Simulator::ScheduleNow (&RandomDirection2dMobilityModel::Start, this);
 }
 void 
 RandomDirection2dMobilityModel::DoDispose (void)
 {
-  m_parameters = 0;
   // chain up.
   MobilityModel::DoDispose ();
 }
@@ -142,7 +78,7 @@ RandomDirection2dMobilityModel::Start (void)
 void
 RandomDirection2dMobilityModel::BeginPause (void)
 {
-  Time pause = Seconds (m_parameters->m_pauseVariable.GetValue ());
+  Time pause = Seconds (m_pause.GetValue ());
   m_helper.Pause ();
   m_event = Simulator::Schedule (pause, &RandomDirection2dMobilityModel::ResetDirectionAndSpeed, this);
   NotifyCourseChange ();
@@ -152,13 +88,13 @@ void
 RandomDirection2dMobilityModel::SetDirectionAndSpeed (double direction)
 {
   NS_LOG_FUNCTION;
-  double speed = m_parameters->m_speedVariable.GetValue ();
+  double speed = m_speed.GetValue ();
   const Vector vector (std::cos (direction) * speed,
                        std::sin (direction) * speed,
                        0.0);
-  Vector position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
+  Vector position = m_helper.GetCurrentPosition (m_bounds);
   m_helper.Reset (vector);
-  Vector next = m_parameters->m_bounds.CalculateIntersection (position, vector);
+  Vector next = m_bounds.CalculateIntersection (position, vector);
   Time delay = Seconds (CalculateDistance (position, next) / speed);
   m_event = Simulator::Schedule (delay,
 				 &RandomDirection2dMobilityModel::BeginPause, this);
@@ -169,8 +105,8 @@ RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
 {
   double direction = UniformVariable::GetSingleValue (0, PI);
   
-  Vector position = m_helper.GetCurrentPosition (m_parameters->m_bounds);
-  switch (m_parameters->m_bounds.GetClosestSide (position))
+  Vector position = m_helper.GetCurrentPosition (m_bounds);
+  switch (m_bounds.GetClosestSide (position))
     {
     case Rectangle::RIGHT:
       direction += PI / 2;
@@ -190,7 +126,7 @@ RandomDirection2dMobilityModel::ResetDirectionAndSpeed (void)
 Vector
 RandomDirection2dMobilityModel::DoGetPosition (void) const
 {
-  return m_helper.GetCurrentPosition (m_parameters->m_bounds);
+  return m_helper.GetCurrentPosition (m_bounds);
 }
 void
 RandomDirection2dMobilityModel::DoSetPosition (const Vector &position)

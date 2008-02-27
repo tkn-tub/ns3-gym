@@ -43,6 +43,8 @@
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
+#include "ns3/config.h"
+#include "ns3/string.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -75,16 +77,10 @@ main (int argc, char *argv[])
   LogComponentEnable ("SimplePointToPointExample", LOG_LEVEL_ALL);
 #endif
 
-  // Set up some default values for the simulation.  Use the Bind()
-  // technique to tell the system what subclass of Queue to use,
-  // and what the queue limit is
+  // Set up some default values for the simulation.
 
-  // The below Bind command tells the queue factory which class to
-  // instantiate, when the queue factory is invoked in the topology code
-  DefaultValue::Bind ("Queue", "DropTailQueue");
-
-  DefaultValue::Bind ("OnOffApplicationPacketSize", "210");
-  DefaultValue::Bind ("OnOffApplicationDataRate", "448kb/s");
+  Config::SetDefault ("OnOffApplication::PacketSize", String ("210"));
+  Config::SetDefault ("OnOffApplication::DataRate", String ("448kb/s"));
 
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
@@ -139,38 +135,44 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
-    n0, 
-    InetSocketAddress ("10.1.3.2", port), 
-    "Udp",
-    ConstantVariable(1), 
-    ConstantVariable(0));
+  Ptr<OnOffApplication> ooff = 
+    CreateObjectWith<OnOffApplication> (
+                                        "Node", n0, 
+                                        "Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
+                                        "Protocol", TypeId::LookupByName ("Udp"),
+                                        "OnTime", ConstantVariable(1), 
+                                        "OffTime", ConstantVariable(0));
+  n0->AddApplication (ooff);
   // Start the application
   ooff->Start (Seconds(1.0));
 
   // Create an optional packet sink to receive these packets
-  Ptr<PacketSink> sink = CreateObject<PacketSink> (
-    n3,
-    InetSocketAddress (Ipv4Address::GetAny (), port),
-    "Udp");
+  Ptr<PacketSink> sink = 
+    CreateObjectWith<PacketSink> (
+                                  "Node", n3,
+                                  "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
+                                  "Protocol", TypeId::LookupByName ("Udp"));
+  n3->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  ooff = CreateObject<OnOffApplication> (
-    n3, 
-    InetSocketAddress ("10.1.2.1", port), 
-    "Udp",
-    ConstantVariable(1), 
-    ConstantVariable(0));
+  ooff = CreateObjectWith<OnOffApplication> (
+                                             "Node", n3, 
+                                             "Remote", Address (InetSocketAddress ("10.1.2.1", port)), 
+                                             "Protocol", TypeId::LookupByName ("Udp"),
+                                             "OnTime", ConstantVariable(1), 
+                                             "OffTime", ConstantVariable(0));
+  n3->AddApplication (ooff);
   // Start the application
   ooff->Start(Seconds(1.1));
 
   // Create a packet sink to receive these packets
-  sink = CreateObject<PacketSink> (
-    n1,
-    InetSocketAddress (Ipv4Address::GetAny (), port),
-    "Udp");
+  sink = CreateObjectWith<PacketSink> (
+                                       "Node", n1,
+                                       "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
+                                       "Protocol", TypeId::LookupByName ("Udp"));
+  n1->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.1));
 
@@ -178,21 +180,23 @@ main (int argc, char *argv[])
   // Create a file transfer from n0 to n3, starting at time 1.2
   uint16_t servPort = 500;
 
-  ooff = CreateObject<OnOffApplication> (
-    n0, 
-    InetSocketAddress ("10.1.3.2", servPort), 
-    "Tcp",
-    ConstantVariable(1), 
-    ConstantVariable(0));
+  ooff = CreateObjectWith<OnOffApplication> (
+                                             "Node", n0, 
+                                             "Remote", Address (InetSocketAddress ("10.1.3.2", servPort)), 
+                                             "Protocol", TypeId::LookupByName ("Tcp"),
+                                             "OnTime", ConstantVariable(1), 
+                                             "OffTime", ConstantVariable(0));
+  n0->AddApplication (ooff);
   // Start the application
   ooff->Start (Seconds(1.2));
   ooff->Stop (Seconds(1.35));
 
   // Create a packet sink to receive these TCP packets
-  sink = Create<PacketSink> (
-    n3,
-    InetSocketAddress (Ipv4Address::GetAny (), servPort),
-    "Tcp");
+  sink = CreateObjectWith<PacketSink> (
+                                       "Node", n3,
+                                       "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), servPort)),
+                                       "Protocol", TypeId::LookupByName ("Tcp"));
+  n3->AddApplication (sink);
   sink->Start (Seconds (1.2));
 
   // Here, finish off packet routing configuration

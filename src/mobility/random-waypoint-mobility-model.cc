@@ -23,106 +23,49 @@
 #include "ns3/random-variable-default-value.h"
 #include "ns3/type-id-default-value.h"
 #include "random-waypoint-mobility-model.h"
-#include "random-position.h"
+#include "position-allocator.h"
 
 namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (RandomWaypointMobilityModel);
-
-static RandomVariableDefaultValue
-g_speed ("RandomWaypointSpeed",
-	 "A random variable used to pick the speed of a random waypoint model.",
-	 "Uniform:0.3:0.7");
-
-static RandomVariableDefaultValue
-g_pause ("RandomWaypointPause",
-	 "A random variable used to pick the pause of a random waypoint model.",
-	 "Constant:2");
-
-static TypeIdDefaultValue
-g_position ("RandomWaypointPosition",
-	    "A random position model used to pick the next waypoint position.",
-	    RandomPosition::GetTypeId (),
-	    "RandomRectanglePosition");
-
-
-RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters ()
-  : m_speed (g_speed.Get ()),
-    m_pause (g_pause.Get ())
-{
-  m_position = g_position.GetValue ().CreateObject ()->GetObject<RandomPosition> ();
-}
-RandomWaypointMobilityModelParameters::RandomWaypointMobilityModelParameters (Ptr<RandomPosition> randomPosition,
-									      const RandomVariable &speed,
-									      const RandomVariable &pause)
-  : m_speed (speed),
-    m_pause (pause),
-    m_position (randomPosition)
-{}
-void 
-RandomWaypointMobilityModelParameters::SetWaypointPositionModel (Ptr<RandomPosition> randomPosition)
-{
-  m_position = randomPosition;
-}
-void 
-RandomWaypointMobilityModelParameters::SetSpeed (const RandomVariable &speed)
-{
-  m_speed = speed;
-}
-void 
-RandomWaypointMobilityModelParameters::SetPause (const RandomVariable &pause)
-{
-  m_pause = pause;
-}
-void 
-RandomWaypointMobilityModelParameters::DoDispose (void)
-{
-  m_position = 0;
-}
-
-Ptr<RandomWaypointMobilityModelParameters>
-RandomWaypointMobilityModelParameters::GetCurrent (void)
-{
-  static Ptr<RandomWaypointMobilityModelParameters> parameters = 0;
-  if (parameters == 0 ||
-      g_position.IsDirty () ||
-      g_pause.IsDirty () ||
-      g_speed.IsDirty ())
-    {
-      parameters = CreateObject<RandomWaypointMobilityModelParameters> ();
-    }
-  return parameters;
-}
 
 TypeId
 RandomWaypointMobilityModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("RandomWaypointMobilityModel")
     .SetParent<MobilityModel> ()
+    .SetGroupName ("Mobility")
     .AddConstructor<RandomWaypointMobilityModel> ()
-    .AddConstructor<RandomWaypointMobilityModel,Ptr<RandomWaypointMobilityModelParameters> > ();
+    .AddAttribute ("speed",
+                   "A random variable used to pick the speed of a random waypoint model.",
+                   UniformVariable (0.3, 0.7),
+                   MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_speed),
+                   MakeRandomVariableChecker ())
+    .AddAttribute ("pause",
+                   "A random variable used to pick the pause of a random waypoint model.",
+                   ConstantVariable (2.0),
+                   MakeRandomVariableAccessor (&RandomWaypointMobilityModel::m_pause),
+                   MakeRandomVariableChecker ())
+    .AddAttribute ("position",
+                   "The position model used to pick a destination point.",
+                   Ptr<PositionAllocator> (0),
+                   MakePtrAccessor (&RandomWaypointMobilityModel::m_position),
+                   MakePtrChecker<PositionAllocator> ());
+  
   return tid;
 }
 
 RandomWaypointMobilityModel::RandomWaypointMobilityModel ()
-  : m_parameters (RandomWaypointMobilityModelParameters::GetCurrent ())
 {
   Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
-}
-
-RandomWaypointMobilityModel::RandomWaypointMobilityModel (Ptr<RandomWaypointMobilityModelParameters> parameters)
-  : m_parameters (parameters)
-{
-  Simulator::ScheduleNow (&RandomWaypointMobilityModel::Start, this);
-  NotifyCourseChange ();
 }
 
 void
 RandomWaypointMobilityModel::BeginWalk (void)
 {
   Vector m_current = m_helper.GetCurrentPosition ();
-  Vector destination = m_parameters->m_position->Get ();
-  double speed = m_parameters->m_speed.GetValue ();
+  Vector destination = m_position->GetNext ();
+  double speed = m_speed.GetValue ();
   double dx = (destination.x - m_current.x);
   double dy = (destination.y - m_current.y);
   double dz = (destination.z - m_current.z);
@@ -138,7 +81,7 @@ RandomWaypointMobilityModel::BeginWalk (void)
 void
 RandomWaypointMobilityModel::Start (void)
 {
-  Time pause = Seconds (m_parameters->m_pause.GetValue ());
+  Time pause = Seconds (m_pause.GetValue ());
   m_helper.Pause ();
   NotifyCourseChange ();
   m_event = Simulator::Schedule (pause, &RandomWaypointMobilityModel::BeginWalk, this);

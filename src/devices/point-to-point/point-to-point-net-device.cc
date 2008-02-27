@@ -23,10 +23,10 @@
 #include "ns3/log.h"
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
-#include "ns3/composite-trace-resolver.h"
 #include "ns3/mac48-address.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/error-model.h"
+#include "ns3/trace-source-accessor.h"
 #include "point-to-point-net-device.h"
 #include "point-to-point-channel.h"
 
@@ -34,91 +34,63 @@ NS_LOG_COMPONENT_DEFINE ("PointToPointNetDevice");
 
 namespace ns3 {
 
-DataRateDefaultValue PointToPointNetDevice::g_defaultRate(
-           "PointToPointLinkDataRate", 
-           "The default data rate for point to point links",
-           DataRate ("10Mb/s"));
+NS_OBJECT_ENSURE_REGISTERED (PointToPointNetDevice);
 
-PointToPointTraceType::PointToPointTraceType (enum Type type)
-  : m_type (type)
+TypeId 
+PointToPointNetDevice::GetTypeId (void)
 {
-  NS_LOG_FUNCTION;
-}
-PointToPointTraceType::PointToPointTraceType ()
-  : m_type (RX)
-{
-  NS_LOG_FUNCTION;
-}
+  static TypeId tid = TypeId ("PointToPointNetDevice")
+    .SetParent<NetDevice> ()
+    .AddConstructor<PointToPointNetDevice> ()
+    .AddAttribute ("Node", "The node with which this device is associated",
+                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
+                   Ptr<Node> (0),
+                   MakePtrAccessor (&PointToPointNetDevice::m_node),
+                   MakePtrChecker<Node> ())
+    .AddAttribute ("Address", "The address of this device.",
+                   Mac48Address ("ff:ff:ff:ff:ff:ff"),
+                   MakeMac48AddressAccessor (&PointToPointNetDevice::m_address),
+                   MakeMac48AddressChecker ())
+    .AddAttribute ("DataRate", "The default data rate for point to point links",
+                   DataRate ("10Mb/s"),
+                   MakeDataRateAccessor (&PointToPointNetDevice::m_bps),
+                   MakeDataRateChecker ())
+    .AddAttribute ("RxErrorModel", "XXX",
+                   Ptr<ErrorModel> (0),
+                   MakePtrAccessor (&PointToPointNetDevice::m_receiveErrorModel),
+                   MakePtrChecker<ErrorModel> ())
+    .AddAttribute ("TxQueue", "XXX",
+                   Ptr<Queue> (0),
+                   MakePtrAccessor (&PointToPointNetDevice::m_queue),
+                   MakePtrChecker<Queue> ())
+    .AddAttribute ("InterframeGap", "XXX",
+                   Seconds (0.0),
+                   MakeTimeAccessor (&PointToPointNetDevice::m_tInterframeGap),
+                   MakeTimeChecker ())
+    .AddTraceSource ("Rx", "Receive MAC packet.",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_rxTrace))
+    .AddTraceSource ("Drop", "Drop MAC packet.",
+                     MakeTraceSourceAccessor (&PointToPointNetDevice::m_dropTrace))
 
-void 
-PointToPointTraceType::Print (std::ostream &os) const
-{
-  switch (m_type) {
-  case RX:
-    os << "dev-rx";
-    break;
-  case DROP:
-    os << "dev-drop";
-    break;
-  }
-}
-
-uint16_t 
-PointToPointTraceType::GetUid (void)
-{
-  NS_LOG_FUNCTION;
-  static uint16_t uid = AllocateUid<PointToPointTraceType> ("PointToPointTraceType");
-  return uid;
-}
-
-std::string 
-PointToPointTraceType::GetTypeName (void) const
-{
-  NS_LOG_FUNCTION;
-  return "ns3::PointToPointTraceType";
+    ;
+  return tid;
 }
 
-enum PointToPointTraceType::Type
-PointToPointTraceType::Get (void) const
-{
-  NS_LOG_FUNCTION;
-  return m_type;
-}
 
-PointToPointNetDevice::PointToPointNetDevice (Ptr<Node> node,
-                                              const DataRate& rate) 
+PointToPointNetDevice::PointToPointNetDevice () 
 : 
-  NetDevice(node, Mac48Address::Allocate ()), 
   m_txMachineState (READY),
-  m_bps (rate),
-  m_tInterframeGap (Seconds(0)),
   m_channel (0), 
-  m_queue (0),
-  m_rxTrace (),
-  m_dropTrace (),
-  m_receiveErrorModel (0)
+  m_name (""),
+  m_linkUp (false),
+  m_mtu (0xffff)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << node);
-//
-// XXX BUGBUG
-//
-// You _must_ support broadcast to get any sort of packet from the ARP layer.
-//
-  EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
-//
-// We want to allow multicast packets to flow across this link
-//
-  EnableMulticast (Mac48Address ("01:00:5e:00:00:00"));
-  EnablePointToPoint();
+  NS_LOG_PARAMS (this);
 }
 
-PointToPointNetDevice::~PointToPointNetDevice()
-{
-  NS_LOG_FUNCTION;
-  m_queue = 0;
-  m_receiveErrorModel = 0;
-}
+PointToPointNetDevice::~PointToPointNetDevice ()
+{}
 
 void 
 PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
@@ -144,7 +116,9 @@ PointToPointNetDevice::ProcessHeader(Ptr<Packet> p, uint16_t& param)
 void PointToPointNetDevice::DoDispose()
 {
   NS_LOG_FUNCTION;
+  m_node = 0;
   m_channel = 0;
+  m_receiveErrorModel = 0;
   NetDevice::DoDispose ();
 }
 
@@ -163,40 +137,7 @@ void PointToPointNetDevice::SetInterframeGap(const Time& t)
   m_tInterframeGap = t;
 }
 
-bool PointToPointNetDevice::SendTo (Ptr<Packet> packet, const Address& dest, 
-                                    uint16_t protocolNumber)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
-  NS_LOG_LOGIC ("UID is " << packet->GetUid ());
-
-  // GFR Comment. Why is this an assertion? Can't a link legitimately
-  // "go down" during the simulation?  Shouldn't we just wait for it
-  // to come back up?
-  NS_ASSERT (IsLinkUp ());
-  AddHeader(packet, protocolNumber);
-
-//
-// This class simulates a point to point device.  In the case of a serial
-// link, this means that we're simulating something like a UART.
-//
-//
-// If there's a transmission in progress, we enque the packet for later
-// transmission; otherwise we send it now.
-  if (m_txMachineState == READY) 
-    {
-// We still enqueue and dequeue it to hit the tracing hooks
-      m_queue->Enqueue (packet);
-      packet = m_queue->Dequeue ();
-      return TransmitStart (packet);
-    }
-  else
-    {
-      return m_queue->Enqueue(packet);
-    }
-}
-
-  bool
+bool
 PointToPointNetDevice::TransmitStart (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION;
@@ -238,26 +179,6 @@ void PointToPointNetDevice::TransmitComplete (void)
       return; // Nothing to do at this point
     }
   TransmitStart(p);
-}
-
-Ptr<TraceResolver> 
-PointToPointNetDevice::GetTraceResolver (void) const
-{
-  NS_LOG_FUNCTION;
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddComposite ("queue", m_queue);
-  resolver->AddSource ("rx",
-                       TraceDoc ("receive MAC packet",
-                                 "Ptr<const Packet>", "packet received"),
-                       m_rxTrace,
-                       PointToPointTraceType (PointToPointTraceType::RX));
-  resolver->AddSource ("drop",
-                       TraceDoc ("drop MAC packet",
-                                 "Ptr<const Packet>", "packet dropped"),
-                       m_dropTrace,
-                       PointToPointTraceType (PointToPointTraceType::DROP));
-  resolver->SetParentResolver (NetDevice::GetTraceResolver ());
-  return resolver;
 }
 
 bool 
@@ -320,7 +241,7 @@ void PointToPointNetDevice::Receive (Ptr<Packet> packet)
     {
       m_rxTrace (packet);
       ProcessHeader(packet, protocol);
-      ForwardUp (packet, protocol, GetBroadcast ());
+      m_rxCallback (this, packet, protocol, GetBroadcast ());
     }
 }
 
@@ -330,16 +251,144 @@ Ptr<Queue> PointToPointNetDevice::GetQueue(void) const
   return m_queue;
 }
 
-Ptr<Channel> PointToPointNetDevice::DoGetChannel(void) const 
-{ 
-  NS_LOG_FUNCTION;
-  return m_channel;
+void
+PointToPointNetDevice::NotifyLinkUp (void)
+{
+  m_linkUp = true;
+  if (!m_linkChangeCallback.IsNull ())
+    {
+      m_linkChangeCallback ();
+    }
 }
 
-bool PointToPointNetDevice::DoNeedsArp (void) const
+void 
+PointToPointNetDevice::SetName(const std::string name)
 {
-  NS_LOG_FUNCTION;
+  m_name = name;
+}
+std::string 
+PointToPointNetDevice::GetName(void) const
+{
+  return m_name;
+}
+void 
+PointToPointNetDevice::SetIfIndex(const uint32_t index)
+{
+  m_ifIndex = index;
+}
+uint32_t 
+PointToPointNetDevice::GetIfIndex(void) const
+{
+  return m_ifIndex;
+}
+Ptr<Channel> 
+PointToPointNetDevice::GetChannel (void) const
+{
+  return m_channel;
+}
+Address 
+PointToPointNetDevice::GetAddress (void) const
+{
+  return m_address;
+}
+bool 
+PointToPointNetDevice::SetMtu (const uint16_t mtu)
+{
+  m_mtu = mtu;
+  return true;
+}
+uint16_t 
+PointToPointNetDevice::GetMtu (void) const
+{
+  return m_mtu;
+}
+bool 
+PointToPointNetDevice::IsLinkUp (void) const
+{
+  return m_linkUp;
+}
+void 
+PointToPointNetDevice::SetLinkChangeCallback (Callback<void> callback)
+{
+  m_linkChangeCallback = callback;
+}
+bool 
+PointToPointNetDevice::IsBroadcast (void) const
+{
+  return true;
+}
+Address
+PointToPointNetDevice::GetBroadcast (void) const
+{
+  return Mac48Address ("ff:ff:ff:ff:ff:ff");
+}
+bool 
+PointToPointNetDevice::IsMulticast (void) const
+{
   return false;
 }
+Address 
+PointToPointNetDevice::GetMulticast (void) const
+{
+  return Mac48Address ("01:00:5e:00:00:00");
+}
+Address 
+PointToPointNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
+{
+  return Mac48Address ("01:00:5e:00:00:00");
+}
+bool 
+PointToPointNetDevice::IsPointToPoint (void) const
+{
+  return true;
+}
+bool 
+PointToPointNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
+{
+    NS_LOG_FUNCTION;
+  NS_LOG_LOGIC ("p=" << packet << ", dest=" << &dest);
+  NS_LOG_LOGIC ("UID is " << packet->GetUid ());
+
+  // GFR Comment. Why is this an assertion? Can't a link legitimately
+  // "go down" during the simulation?  Shouldn't we just wait for it
+  // to come back up?
+  NS_ASSERT (IsLinkUp ());
+  AddHeader(packet, protocolNumber);
+
+//
+// This class simulates a point to point device.  In the case of a serial
+// link, this means that we're simulating something like a UART.
+//
+//
+// If there's a transmission in progress, we enque the packet for later
+// transmission; otherwise we send it now.
+  if (m_txMachineState == READY) 
+    {
+// We still enqueue and dequeue it to hit the tracing hooks
+      m_queue->Enqueue (packet);
+      packet = m_queue->Dequeue ();
+      return TransmitStart (packet);
+    }
+  else
+    {
+      return m_queue->Enqueue(packet);
+    }
+}
+Ptr<Node> 
+PointToPointNetDevice::GetNode (void) const
+{
+  return m_node;
+}
+bool 
+PointToPointNetDevice::NeedsArp (void) const
+{
+  return false;
+}
+void 
+PointToPointNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
+{
+  m_rxCallback = cb;
+}
+
 
 } // namespace ns3

@@ -52,6 +52,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/onoff-application.h"
 #include "ns3/packet-sink.h"
+#include "ns3/uinteger.h"
 
 using namespace ns3;
 
@@ -281,14 +282,16 @@ main (int argc, char *argv[])
 
   // Configure a multicast packet generator that generates a packet
   // every few seconds
-  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
-    n0, 
-    InetSocketAddress (multicastGroup, port), 
-    "Udp",
-    ConstantVariable(1), 
-    ConstantVariable(0),
-    DataRate ("255b/s"),
-    128);
+  Ptr<OnOffApplication> ooff = 
+    CreateObjectWith<OnOffApplication> (
+                                        "Node", n0, 
+                                        "Remote", Address (InetSocketAddress (multicastGroup, port)), 
+                                        "Protocol", TypeId::LookupByName ("Udp"),
+                                        "OnTime", ConstantVariable(1), 
+                                        "OffTime", ConstantVariable(0),
+                                        "DataRate", DataRate ("255b/s"),
+                                        "PacketSize", Uinteger (128));
+  n0->AddApplication (ooff);
 //
 // Tell the application when to start and stop.
 //
@@ -298,10 +301,12 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   // If you enable logging on this (above) it will print a log statement
   // for every packet received
-  Ptr<PacketSink> sink = CreateObject<PacketSink> (
-    n4,
-    InetSocketAddress (Ipv4Address::GetAny (), port),
-    "Udp");
+  Ptr<PacketSink> sink = 
+    CreateObjectWith<PacketSink> (
+                                  "Node", n4,
+                                  "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
+                                  "Protocol", TypeId::LookupByName ("Udp"));
+  n4->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.0));
   sink->Stop (Seconds (10.0));

@@ -24,6 +24,10 @@
 #include <vector>
 #include <algorithm>
 #include <stdint.h>
+#include <istream>
+#include <ostream>
+#include "attribute.h"
+#include "attribute-helper.h"
 
 /**
  * \ingroup core
@@ -68,7 +72,7 @@ public:
    * \brief Returns a random integer integer from the underlying distribution
    * \return  Integer cast of ::GetValue()
    */
-  uint32_t GetIntValue (void) const;
+  uint32_t GetInteger (void) const;
   
   /**
    * \brief Get the internal state of the RNG
@@ -158,11 +162,19 @@ public:
    * \endcode
    */
   static void SetRunNumber(uint32_t n);
+
+
+  RandomVariable (Attribute value);
+  operator Attribute () const;
+
 private:
+  friend std::ostream &operator << (std::ostream &os, const RandomVariable &var);
+  friend std::istream &operator >> (std::istream &os, RandomVariable &var);
+
   RandomVariableBase *m_variable;
 protected:
   RandomVariable (const RandomVariableBase &variable);
-  RandomVariableBase *Peek (void);
+  RandomVariableBase *Peek (void) const;
 };
 
 /**
@@ -648,5 +660,14 @@ public:
   static double GetSingleValue(double s, double l, double mean);
 };
 
+std::ostream &operator << (std::ostream &os, const RandomVariable &var);
+std::istream &operator >> (std::istream &os, RandomVariable &var);
+
+ATTRIBUTE_VALUE_DEFINE (RandomVariable);
+ATTRIBUTE_CHECKER_DEFINE (RandomVariable);
+ATTRIBUTE_ACCESSOR_DEFINE (RandomVariable);
+
 }//namespace ns3
+
+
 #endif

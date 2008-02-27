@@ -5,7 +5,7 @@
 #include "ns3/ptr.h"
 #include "ns3/mobility-model.h"
 #include "ns3/mobility-model-notifier.h"
-#include "ns3/random-topology.h"
+#include "ns3/position-allocator.h"
 #include "ns3/default-value.h"
 #include "ns3/command-line.h"
 #include "ns3/command-line.h"
@@ -15,6 +15,7 @@
 #include "ns3/node-list.h"
 #include "ns3/rectangle-default-value.h"
 #include "ns3/type-id-default-value.h"
+#include "ns3/mobility-helper.h"
 
 #include "mobility-visualizer.h"
 
@@ -89,20 +90,21 @@ int model_init (int argc, char *argv[], double *x1, double *y1, double *x2, doub
 
   CommandLine::Parse (argc, argv);
 
-  RandomTopology topology;
+  MobilityHelper mobility;
 
   for (uint32_t i = 0; i < g_numNodes; i++)
     {
       Ptr<Node> node = CreateObject<Node> ();
-      node->AggregateObject (CreateObject<MobilityModelNotifier> ());
     }
 
-  topology.Layout (NodeList::Begin (), NodeList::End ());
+  mobility.EnableNotifier ();
+  mobility.Layout (NodeList::Begin (), NodeList::End ());
 
   Simulator::Schedule (g_sampleInterval, Sample);
 
-  TypeId mobType = DefaultValueListGet<TypeIdDefaultValue> ("RandomTopologyMobilityType")->GetValue ();
-  if (mobType.GetName () == "RandomWalkMobilityModel")
+  // XXX: The following is not really going to work with the params.
+
+  if (mobility.GetMobilityModelType () == "RandomWalk2dMobilityModel")
     {
       Rectangle bounds = DefaultValueListGet<RectangleDefaultValue> ("RandomWalk2dBounds")->GetValue ();
       *x1 = bounds.xMin;
@@ -112,7 +114,7 @@ int model_init (int argc, char *argv[], double *x1, double *y1, double *x2, doub
       std::cout << "RECT " << bounds.xMin << " " << bounds.xMax << " "
                 << bounds.yMin << " " << bounds.yMax << std::endl;
     }
-  else if (mobType.GetName () == "RandomDirection2dMobilityModel")
+  else if (mobility.GetMobilityModelType () == "RandomDirection2dMobilityModel")
     {
       Rectangle bounds = DefaultValueListGet<RectangleDefaultValue> ("RandomDirection2dArea")->GetValue ();
       *x1 = bounds.xMin;
@@ -122,7 +124,7 @@ int model_init (int argc, char *argv[], double *x1, double *y1, double *x2, doub
       std::cout << "RECT " << bounds.xMin << " " << bounds.xMax << " "
                 << bounds.yMin << " " << bounds.yMax << std::endl;      
     }
-  else if (mobType.GetName () == "RandomWaypointMobilityModel")
+  else if (mobility.GetMobilityModelType () == "RandomWaypointMobilityModel")
     {
       std::cerr << "bounds for RandomWaypointMobilityModel not implemented" << std::endl;
       //ClassId posType = DefaultValueList::Get<ClassIdDefaultValue> ("RandomWaypointPosition")->GetValue ();
@@ -130,7 +132,7 @@ int model_init (int argc, char *argv[], double *x1, double *y1, double *x2, doub
     }
   else
     {
-      NS_FATAL_ERROR ("mobility type " << mobType.GetName () << " not supported");
+      NS_FATAL_ERROR ("mobility type " << mobility.GetMobilityModelType () << " not supported");
     }
 
   std::cerr << g_sampleInterval << std::endl;

@@ -22,100 +22,83 @@
 #include "ns3/log.h"
 #include "ns3/queue.h"
 #include "ns3/simulator.h"
-#include "ns3/composite-trace-resolver.h"
-#include "csma-net-device.h"
-#include "csma-channel.h"
 #include "ns3/ethernet-header.h"
 #include "ns3/ethernet-trailer.h"
 #include "ns3/llc-snap-header.h"
 #include "ns3/error-model.h"
+#include "ns3/enum.h"
+#include "ns3/boolean.h"
+#include "ns3/trace-source-accessor.h"
+#include "csma-net-device.h"
+#include "csma-channel.h"
+
 
 NS_LOG_COMPONENT_DEFINE ("CsmaNetDevice");
 
 namespace ns3 {
 
-CsmaTraceType::CsmaTraceType (enum Type type)
-  : m_type (type)
+NS_OBJECT_ENSURE_REGISTERED (CsmaNetDevice);
+
+TypeId 
+CsmaNetDevice::GetTypeId (void)
 {
-  NS_LOG_FUNCTION;
+  static TypeId tid = TypeId ("CsmaNetDevice")
+    .SetParent<NetDevice> ()
+    .AddConstructor<CsmaNetDevice> ()
+    .AddAttribute ("Node", "The node with which this device is associated",
+                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
+                   Ptr<Node> (0),
+                   MakePtrAccessor (&CsmaNetDevice::m_node),
+                   MakePtrChecker<Node> ())
+    .AddAttribute ("Address", "The address of this device.",
+                   Mac48Address ("ff:ff:ff:ff:ff:ff"),
+                   MakeMac48AddressAccessor (&CsmaNetDevice::m_address),
+                   MakeMac48AddressChecker ())
+    .AddAttribute ("EncapsulationMode", "The mode of link-layer encapsulation to use.",
+                   Enum (LLC),
+                   MakeEnumAccessor (&CsmaNetDevice::m_encapMode),
+                   MakeEnumChecker (ETHERNET_V1, "EthernetV1",
+                                    IP_ARP, "IpArp",
+                                    RAW, "Raw",
+                                    LLC, "Llc"))
+    .AddAttribute ("SendEnable", "should tx be enabled ?",
+                   Boolean (true),
+                   MakeBooleanAccessor (&CsmaNetDevice::m_sendEnable),
+                   MakeBooleanChecker ())
+    .AddAttribute ("ReceiveEnable", "should rx be enabled ?",
+                   Boolean (true),
+                   MakeBooleanAccessor (&CsmaNetDevice::m_receiveEnable),
+                   MakeBooleanChecker ())
+    .AddAttribute ("DataRate", "XXX",
+                   DataRate (0xffffffff),
+                   MakeDataRateAccessor (&CsmaNetDevice::m_bps),
+                   MakeDataRateChecker ())
+    .AddAttribute ("RxErrorModel", "XXX",
+                   Ptr<ErrorModel> (0),
+                   MakePtrAccessor (&CsmaNetDevice::m_receiveErrorModel),
+                   MakePtrChecker<ErrorModel> ())
+    .AddAttribute ("TxQueue", "XXX",
+                   Ptr<Queue> (0),
+                   MakePtrAccessor (&CsmaNetDevice::m_queue),
+                   MakePtrChecker<Queue> ())
+    .AddTraceSource ("Rx", "Receive MAC packet.",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_rxTrace))
+    .AddTraceSource ("Drop", "Drop MAC packet.",
+                     MakeTraceSourceAccessor (&CsmaNetDevice::m_dropTrace))
+    ;
+  return tid;
 }
 
-CsmaTraceType::CsmaTraceType ()
-  : m_type (RX)
+CsmaNetDevice::CsmaNetDevice ()
+  : m_name (""),
+    m_linkUp (false),
+    m_mtu (0xffff)
 {
   NS_LOG_FUNCTION;
-}
-
-void 
-CsmaTraceType::Print (std::ostream &os) const
-{
-  switch (m_type) {
-  case RX:
-    os << "dev-rx";
-    break;
-  case DROP:
-    os << "dev-drop";
-    break;
-  }
-}
-
-uint16_t 
-CsmaTraceType::GetUid (void)
-{
-  NS_LOG_FUNCTION;
-  static uint16_t uid = AllocateUid<CsmaTraceType> ("CsmaTraceType");
-  return uid;
-}
-
-std::string 
-CsmaTraceType::GetTypeName (void) const
-{
-  NS_LOG_FUNCTION;
-  return "ns3::CsmaTraceType";
-}
-
-enum CsmaTraceType::Type 
-CsmaTraceType::Get (void) const
-{
-  NS_LOG_FUNCTION;
-  return m_type;
-}
-
-CsmaNetDevice::CsmaNetDevice (Ptr<Node> node)
-  : NetDevice (node, Mac48Address::Allocate ()),
-    m_bps (DataRate (0xffffffff)),
-    m_receiveErrorModel (0)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << node);
-  m_encapMode = IP_ARP;
-  Init(true, true);
-}
-
-CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Mac48Address addr, 
-                              CsmaEncapsulationMode encapMode) 
-  : NetDevice(node, addr), 
-    m_bps (DataRate (0xffffffff)),
-    m_receiveErrorModel (0)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << node);
-  m_encapMode = encapMode;
-
-  Init(true, true);
-}
-
-CsmaNetDevice::CsmaNetDevice (Ptr<Node> node, Mac48Address addr, 
-                              CsmaEncapsulationMode encapMode,
-                              bool sendEnable, bool receiveEnable) 
-  : NetDevice(node, addr), 
-    m_bps (DataRate (0xffffffff))
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << node);
-  m_encapMode = encapMode;
-
-  Init(sendEnable, receiveEnable);
+  NS_LOG_PARAMS (this);
+  m_txMachineState = READY;
+  m_tInterframeGap = Seconds(0);
+  m_channel = 0; 
 }
 
 CsmaNetDevice::~CsmaNetDevice()
@@ -129,41 +112,8 @@ CsmaNetDevice::DoDispose ()
 {
   NS_LOG_FUNCTION;
   m_channel = 0;
+  m_node = 0;
   NetDevice::DoDispose ();
-}
-
-//
-// Assignment operator for CsmaNetDevice.
-//
-// This uses the non-obvious trick of taking the source net device passed by
-// value instead of by reference.  This causes the copy constructor to be
-// invoked (where the real work is done -- see above).  All we have to do
-// here is to return the newly constructed net device.
-//
-/*
-CsmaNetDevice&
-CsmaNetDevice::operator= (const CsmaNetDevice nd)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << &nd);
-  return *this;
-}
-*/
-
-void 
-CsmaNetDevice::Init(bool sendEnable, bool receiveEnable)
-{
-  NS_LOG_FUNCTION;
-  m_txMachineState = READY;
-  m_tInterframeGap = Seconds(0);
-  m_channel = 0; 
-  m_queue = 0;
-
-  EnableBroadcast (Mac48Address ("ff:ff:ff:ff:ff:ff"));
-  EnableMulticast (Mac48Address ("01:00:5e:00:00:00"));
-
-  SetSendEnable (sendEnable);
-  SetReceiveEnable (receiveEnable);
 }
 
 void
@@ -302,58 +252,6 @@ CsmaNetDevice::ProcessHeader (Ptr<Packet> p, uint16_t & param)
   return true;
 }
 
-bool
-CsmaNetDevice::DoNeedsArp (void) const
-{
-  NS_LOG_FUNCTION;
-  if ((m_encapMode == IP_ARP) || (m_encapMode == LLC))
-    {
-      return true;
-    } 
-  else 
-    {
-      return false;
-    }
-}
-
-bool
-CsmaNetDevice::SendTo (Ptr<Packet> packet, 
-                       const Address& dest, 
-                       uint16_t protocolNumber)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_LOGIC ("p=" << packet);
-  NS_LOG_LOGIC ("UID is " << packet->GetUid () << ")");
-
-  NS_ASSERT (IsLinkUp ());
-
-  // Only transmit if send side of net device is enabled
-  if (!IsSendEnabled())
-    return false;
-
-  Mac48Address destination = Mac48Address::ConvertFrom (dest);
-  AddHeader(packet, destination, protocolNumber);
-
-  // Place the packet to be sent on the send queue
-  if (m_queue->Enqueue(packet) == false )
-    {
-      return false;
-    }
-  // If the device is idle, we need to start a transmission. Otherwise,
-  // the transmission will be started when the current packet finished
-  // transmission (see TransmitCompleteEvent)
-  if (m_txMachineState == READY) 
-    {
-      // Store the next packet to be transmitted
-      m_currentPkt = m_queue->Dequeue ();
-      if (m_currentPkt != 0)
-        {
-          TransmitStart();
-        }
-    }
-  return true;
-}
-
 void
 CsmaNetDevice::TransmitStart ()
 {
@@ -486,26 +384,6 @@ CsmaNetDevice::TransmitReadyEvent (void)
     }
 }
 
-Ptr<TraceResolver>
-CsmaNetDevice::GetTraceResolver (void) const
-{
-  NS_LOG_FUNCTION;
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddComposite ("queue", m_queue);
-  resolver->AddSource ("rx",
-                       TraceDoc ("receive MAC packet",
-                                 "Ptr<const Packet>", "packet received"),
-                       m_rxTrace,
-                       CsmaTraceType (CsmaTraceType::RX));
-  resolver->AddSource ("drop",
-                       TraceDoc ("drop MAC packet",
-                                 "Ptr<const Packet>", "packet dropped"),
-                       m_dropTrace,
-                       CsmaTraceType (CsmaTraceType::DROP));
-  resolver->SetParentResolver (NetDevice::GetTraceResolver ());
-  return resolver;
-}
-
 bool
 CsmaNetDevice::Attach (Ptr<CsmaChannel> ch)
 {
@@ -540,7 +418,6 @@ void CsmaNetDevice::AddReceiveErrorModel (Ptr<ErrorModel> em)
   NS_LOG_PARAM ("(" << em << ")");
   
   m_receiveErrorModel = em; 
-  AggregateObject (em);
 }
 
 void
@@ -565,7 +442,7 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
 
   if (m_encapMode == RAW)
     {
-      ForwardUp (packet, 0, GetBroadcast ());
+      m_rxCallback (this, packet, 0, GetBroadcast ());
       m_dropTrace (packet);
       return;
     }
@@ -636,12 +513,100 @@ CsmaNetDevice::Receive (Ptr<Packet> packet)
           NS_ASSERT (false);
           break;
         }
-      ForwardUp (packet, protocol, header.GetSource ());
+      m_rxCallback (this, packet, protocol, header.GetSource ());
     }
 }
 
+Ptr<Queue>
+CsmaNetDevice::GetQueue(void) const 
+{ 
+  NS_LOG_FUNCTION;
+  return m_queue;
+}
+
+void
+CsmaNetDevice::NotifyLinkUp (void)
+{
+  m_linkUp = true;
+  if (!m_linkChangeCallback.IsNull ())
+    {
+      m_linkChangeCallback ();
+    }
+}
+
+void 
+CsmaNetDevice::SetName(const std::string name)
+{
+  m_name = name;
+}
+std::string 
+CsmaNetDevice::GetName(void) const
+{
+  return m_name;
+}
+void 
+CsmaNetDevice::SetIfIndex(const uint32_t index)
+{
+  m_ifIndex = index;
+}
+uint32_t 
+CsmaNetDevice::GetIfIndex(void) const
+{
+  return m_ifIndex;
+}
+Ptr<Channel> 
+CsmaNetDevice::GetChannel (void) const
+{
+  return m_channel;
+}
+Address 
+CsmaNetDevice::GetAddress (void) const
+{
+  return m_address;
+}
+bool 
+CsmaNetDevice::SetMtu (const uint16_t mtu)
+{
+  m_mtu = mtu;
+  return true;
+}
+uint16_t 
+CsmaNetDevice::GetMtu (void) const
+{
+  return m_mtu;
+}
+bool 
+CsmaNetDevice::IsLinkUp (void) const
+{
+  return m_linkUp;
+}
+void 
+CsmaNetDevice::SetLinkChangeCallback (Callback<void> callback)
+{
+  m_linkChangeCallback = callback;
+}
+bool 
+CsmaNetDevice::IsBroadcast (void) const
+{
+  return true;
+}
 Address
-CsmaNetDevice::MakeMulticastAddress(Ipv4Address multicastGroup) const
+CsmaNetDevice::GetBroadcast (void) const
+{
+  return Mac48Address ("ff:ff:ff:ff:ff:ff");
+}
+bool 
+CsmaNetDevice::IsMulticast (void) const
+{
+  return false;
+}
+Address 
+CsmaNetDevice::GetMulticast (void) const
+{
+  return Mac48Address ("01:00:5e:00:00:00");
+}
+Address 
+CsmaNetDevice::MakeMulticastAddress (Ipv4Address multicastGroup) const
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << multicastGroup);
@@ -692,20 +657,67 @@ CsmaNetDevice::MakeMulticastAddress(Ipv4Address multicastGroup) const
 
   return etherAddr;
 }
-
-Ptr<Queue>
-CsmaNetDevice::GetQueue(void) const 
-{ 
-  NS_LOG_FUNCTION;
-  return m_queue;
+bool 
+CsmaNetDevice::IsPointToPoint (void) const
+{
+  return false;
 }
-
-Ptr<Channel>
-CsmaNetDevice::DoGetChannel(void) const 
-{ 
+bool 
+CsmaNetDevice::Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber)
+{
   NS_LOG_FUNCTION;
-  return m_channel;
-}
+  NS_LOG_LOGIC ("p=" << packet);
+  NS_LOG_LOGIC ("UID is " << packet->GetUid () << ")");
 
+  NS_ASSERT (IsLinkUp ());
+
+  // Only transmit if send side of net device is enabled
+  if (!IsSendEnabled())
+    return false;
+
+  Mac48Address destination = Mac48Address::ConvertFrom (dest);
+  AddHeader(packet, destination, protocolNumber);
+
+  // Place the packet to be sent on the send queue
+  if (m_queue->Enqueue(packet) == false )
+    {
+      return false;
+    }
+  // If the device is idle, we need to start a transmission. Otherwise,
+  // the transmission will be started when the current packet finished
+  // transmission (see TransmitCompleteEvent)
+  if (m_txMachineState == READY) 
+    {
+      // Store the next packet to be transmitted
+      m_currentPkt = m_queue->Dequeue ();
+      if (m_currentPkt != 0)
+        {
+          TransmitStart();
+        }
+    }
+  return true;
+}
+Ptr<Node> 
+CsmaNetDevice::GetNode (void) const
+{
+  return m_node;
+}
+bool 
+CsmaNetDevice::NeedsArp (void) const
+{
+  if ((m_encapMode == IP_ARP) || (m_encapMode == LLC))
+    {
+      return true;
+    } 
+  else 
+    {
+      return false;
+    }
+}
+void 
+CsmaNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
+{
+  m_rxCallback = cb;
+}
 
 } // namespace ns3

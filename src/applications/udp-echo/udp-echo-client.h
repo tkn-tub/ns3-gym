@@ -32,8 +32,9 @@ class Packet;
 class UdpEchoClient : public Application 
 {
 public:
-  UdpEchoClient (Ptr<Node> n, Ipv4Address serverAddr, uint16_t serverPort,
-    uint32_t count, Time interval, uint32_t size);
+  static TypeId GetTypeId (void);
+
+  UdpEchoClient ();
 
   virtual ~UdpEchoClient ();
 
@@ -41,8 +42,6 @@ protected:
   virtual void DoDispose (void);
 
 private:
-  void Construct (Ptr<Node> n, Ipv4Address serverAddr, uint16_t serverPort,
-    uint32_t count, Time interval, uint32_t size);
 
   virtual void StartApplication (void);
   virtual void StopApplication (void);
@@ -52,16 +51,14 @@ private:
 
   void Receive(Ptr<Socket> socket, Ptr<Packet> packet, const Address &from);
 
-  Ptr<Node> m_node;
-  Ipv4Address m_serverAddress;
-  uint16_t m_serverPort;
   uint32_t m_count;
   Time m_interval;
   uint32_t m_size;
 
   uint32_t m_sent;
   Ptr<Socket> m_socket;
-  Address m_peer;
+  Ipv4Address m_peerAddress;
+  uint16_t m_peerPort;
   EventId m_sendEvent;
 
 };

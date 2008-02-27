@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include <ostream>
+#include "ns3/attribute.h"
+#include "ns3/attribute-helper.h"
 
 namespace ns3 {
 
@@ -151,6 +153,8 @@ public:
    * \returns a new type id.
    */
   static uint8_t Register (void);
+
+  VALUE_HELPER_HEADER_1 (Address);
 private:
   friend bool operator == (const Address &a, const Address &b);
   friend bool operator < (const Address &a, const Address &b);
@@ -161,12 +165,15 @@ private:
   uint8_t m_data[MAX_SIZE];
 };
 
+VALUE_HELPER_HEADER_2 (Address);
+
 bool operator == (const Address &a, const Address &b);
 bool operator != (const Address &a, const Address &b);
 bool operator < (const Address &a, const Address &b);
 std::ostream& operator<< (std::ostream& os, const Address & address);
+std::istream& operator>> (std::istream& is, Address & address);
+
 
 } // namespace ns3
-
 
 #endif /* ADDRESS_H */

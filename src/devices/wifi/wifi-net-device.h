@@ -98,14 +98,32 @@ public:
    */
   virtual Ssid GetSsid (void) const = 0;
 
+  // inherited from NetDevice base class.
+  virtual void SetName(const std::string name);
+  virtual std::string GetName(void) const;
+  virtual void SetIfIndex(const uint32_t index);
+  virtual uint32_t GetIfIndex(void) const;
+  virtual Ptr<Channel> GetChannel (void) const;
+  virtual Address GetAddress (void) const;
+  virtual bool SetMtu (const uint16_t mtu);
+  virtual uint16_t GetMtu (void) const;
+  virtual bool IsLinkUp (void) const;
+  virtual void SetLinkChangeCallback (Callback<void> callback);
+  virtual bool IsBroadcast (void) const;
+  virtual Address GetBroadcast (void) const;
+  virtual bool IsMulticast (void) const;
+  virtual Address GetMulticast (void) const;
+  virtual Address MakeMulticastAddress (Ipv4Address multicastGroup) const;
+  virtual bool IsPointToPoint (void) const;
+  virtual bool Send(Ptr<Packet> packet, const Address& dest, uint16_t protocolNumber);
+  virtual Ptr<Node> GetNode (void) const;
+  virtual bool NeedsArp (void) const;
+  virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
+
 private:
   class PhyListener;
   class NavListener;
 
-  // inherited from NetDevice
-  virtual bool DoNeedsArp (void) const;
-  virtual Ptr<Channel> DoGetChannel (void) const;
-  virtual bool SendTo (Ptr<Packet> packet, const Address &to, uint16_t protocolNumber);
   // defined for children
   virtual void NotifyAttached (void) = 0;
   virtual bool DoSendTo (Ptr<const Packet> packet, const Mac48Address &to) = 0;
@@ -115,14 +133,15 @@ private:
   CallbackTraceSource<Ptr<const Packet>, Mac48Address> m_rxLogger;
   CallbackTraceSource<Ptr<const Packet>, Mac48Address> m_txLogger;
 protected:
-  // inherited from Object
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
-  WifiNetDevice (Ptr<Node> node);
   WifiNetDevice (Ptr<Node> node, Mac48Address self);
   void DoForwardUp (Ptr<Packet> packet, const Mac48Address &from);
   Ptr<DcaTxop> CreateDca (uint32_t minCw, uint32_t maxCw, uint32_t aifsn) const;
+  void NotifyLinkUp (void);
+  void NotifyLinkDown (void);
   // inherited from Object
   virtual void DoDispose (void);
+  // inherited from Object
+  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 
   Ptr<WifiChannel> m_channel;
   Ptr<WifiPhy> m_phy;
@@ -134,6 +153,15 @@ protected:
   DcfManager *m_manager;
   PhyListener *m_phyListener;
   NavListener *m_navListener;
+
+  Ptr<Node> m_node;
+  Mac48Address m_address;
+  NetDevice::ReceiveCallback m_rxCallback;
+  uint32_t m_ifIndex;
+  std::string m_name;
+  bool m_linkUp;
+  Callback<void> m_linkChangeCallback;
+  uint16_t m_mtu;
 };
 
 /**
@@ -144,7 +172,6 @@ protected:
  */
 class AdhocWifiNetDevice : public WifiNetDevice {
 public:
-  AdhocWifiNetDevice (Ptr<Node> node);
   AdhocWifiNetDevice (Ptr<Node> node, Mac48Address self);
   virtual ~AdhocWifiNetDevice ();
 
@@ -184,7 +211,6 @@ public:
   /**
    * The ssid is initialized from \valueref{WifiSsid}.
    */
-  NqstaWifiNetDevice (Ptr<Node> node);
   NqstaWifiNetDevice (Ptr<Node> node, Mac48Address self);
   virtual ~NqstaWifiNetDevice ();
 

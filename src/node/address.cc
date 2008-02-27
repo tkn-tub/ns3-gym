@@ -107,6 +107,8 @@ Address::Register (void)
   return type;
 }
 
+VALUE_HELPER_CPP (Address);
+
 bool operator == (const Address &a, const Address &b)
 {
   NS_ASSERT (a.m_type == b.m_type || 
@@ -157,6 +159,12 @@ std::ostream& operator<< (std::ostream& os, const Address & address)
   os.setf (std::ios::dec, std::ios::basefield);
   os.fill(' ');
   return os;
+}
+
+std::istream& operator>> (std::istream& is, Address & address)
+{
+  // XXX: need to be able to parse this.
+  return is;
 }
 
 

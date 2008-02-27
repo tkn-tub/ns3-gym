@@ -25,6 +25,7 @@
 #include <list>
 #include "trace-context.h"
 #include "trace-doc.h"
+#include "object-base.h"
 
 namespace ns3 {
 
@@ -39,7 +40,7 @@ class CallbackBase;
  * subclasses, doing so is complicated so, it is recommended to use
  * the default implementation ns3::CompositeTraceResolver instead.
  */
-class TraceResolver
+class TraceResolver : public ObjectBase
 {
 public:
 

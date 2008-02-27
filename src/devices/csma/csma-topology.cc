@@ -46,10 +46,11 @@ Ptr<CsmaNetDevice>
 CsmaTopology::AddCsmaEthernetNode(
   Ptr<Node> n1,
   Ptr<CsmaChannel> ch,
-  MacAddress addr)
+  Mac48Address addr)
 {
-  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> (n1, addr, 
-                                                      ns3::CsmaNetDevice::ETHERNET_V1);
+  Ptr<CsmaNetDevice> nd1 = CreateObjectWith<CsmaNetDevice> ("Node", Ptr<Node> (n1), 
+                                                            "Address", addr, 
+                                                            "EncapsulationMode", "EthernetV1");
 
   Ptr<Queue> q = Queue::CreateDefault ();
   nd1->AddQueue(q);
@@ -60,8 +61,8 @@ CsmaTopology::AddCsmaEthernetNode(
 
 Ptr<PacketSocket>
 CsmaTopology::ConnectPacketSocket(Ptr<PacketSocketApp> app, 
-                                        Ptr<CsmaNetDevice> ndSrc,
-                                        Ptr<CsmaNetDevice> ndDest)
+                                  Ptr<CsmaNetDevice> ndSrc,
+                                  Ptr<CsmaNetDevice> ndDest)
 {
   Ptr<PacketSocket> socket = CreateObject<PacketSocket> ();
   socket->Bind(ndSrc);

@@ -20,6 +20,9 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include "ns3/attribute.h"
+#include "ns3/attribute-helper.h"
+
 namespace ns3 {
 
 /**
@@ -54,9 +57,16 @@ public:
    * z coordinate of vector vector
    */
   double z;
+
+  VALUE_HELPER_HEADER_1 (Vector);
 };
 
 double CalculateDistance (const Vector &a, const Vector &b);
+
+VALUE_HELPER_HEADER_2 (Vector);
+
+std::ostream &operator << (std::ostream &os, const Vector &vector);
+std::istream &operator >> (std::istream &is, Vector &vector);
 
 } // namespace ns3
 

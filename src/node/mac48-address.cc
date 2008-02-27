@@ -25,6 +25,8 @@
 
 namespace ns3 {
 
+VALUE_HELPER_CPP (Mac48Address);
+
 #define ASCII_a (0x41)
 #define ASCII_z (0x5a)
 #define ASCII_A (0x61)
@@ -149,6 +151,7 @@ Mac48Address::GetBroadcast (void)
   static Mac48Address broadcast = Mac48Address ("ff:ff:ff:ff:ff:ff");
   return broadcast;
 }
+
 bool operator == (const Mac48Address &a, const Mac48Address &b)
 {
   return memcmp (a.m_address, b.m_address, 6) == 0;
@@ -195,6 +198,12 @@ std::ostream& operator<< (std::ostream& os, const Mac48Address & address)
   os.setf (std::ios::dec, std::ios::basefield);
   os.fill(' ');
   return os;
+}
+
+std::istream& operator>> (std::istream& is, const Mac48Address & address)
+{
+  // XXX !
+  return is;
 }
 
 

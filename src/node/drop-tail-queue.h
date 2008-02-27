@@ -28,8 +28,6 @@ namespace ns3 {
 
 class TraceContainer;
 
-const int DTQ_NPACKETS_MAX_DEFAULT = 100;
-
 /**
  * \brief A FIFO packet queue that drops tail-end packets on overflow
  */
@@ -44,16 +42,6 @@ public:
   DropTailQueue ();
 
   virtual ~DropTailQueue();
-  /**
-   * \param npackets The maximum number of packets this queue will hold before
-   * dropping packets.
-   */
-  void SetMaxPackets (uint32_t npackets);
-  /**
-   * \return The maximum number of packets this queue will hold before dropping
-   * packets.
-   */
-  uint32_t GetMaxPackets (void);
 
 private:
   virtual bool DoEnqueue (Ptr<Packet> p);

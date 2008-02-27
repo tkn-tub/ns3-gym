@@ -23,6 +23,7 @@
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
+#include "object-base.h"
 
 namespace ns3 {
 
@@ -45,7 +46,7 @@ private:
 };
 
 
-class Base
+class Base : public ObjectBase
 {
 public:
   Base ();
@@ -286,7 +287,6 @@ PtrTest::RunTests (void)
     delete raw;
   }
 
-
   m_nDestroyed = 0;
   {
     Ptr<NoCount> p = Create<NoCount> (this);
@@ -317,12 +317,12 @@ PtrTest::RunTests (void)
   }
 #if 0
   {
-    Ptr<NoCount> p = CreateObject<NoCount> (cb);
+    Ptr<NoCount> p = Create<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
     callback ();
   }
   {
-    Ptr<const NoCount> p = CreateObject<NoCount> (cb);
+    Ptr<const NoCount> p = Create<NoCount> (cb);
     Callback<void> callback = MakeCallback (&NoCount::Nothing, p);
     callback ();
   }

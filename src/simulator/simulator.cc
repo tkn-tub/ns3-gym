@@ -572,7 +572,7 @@ static void cber5 (const int &, const int &, const int &, const int &, const int
 {}
   
 
-class SimulatorTests : public Test {
+class SimulatorTests : public Test, public ObjectBase {
 public:
   SimulatorTests ();
   // only here for testing of Ptr<>

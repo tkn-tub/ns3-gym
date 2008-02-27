@@ -23,58 +23,55 @@
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
+#include "ns3/uinteger.h"
 #include "udp-echo-client.h"
 
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("UdpEchoClientApplication");
+NS_OBJECT_ENSURE_REGISTERED (UdpEchoClient);
 
-UdpEchoClient::UdpEchoClient (
-  Ptr<Node> n,
-  Ipv4Address serverAddress,
-  uint16_t serverPort,
-  uint32_t count,
-  Time interval,
-  uint32_t size)
-: 
-  Application(n)
+TypeId
+UdpEchoClient::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("UdpEchoClient")
+    .SetParent<Application> ()
+    .AddConstructor<UdpEchoClient> ()
+    .AddAttribute ("MaxPackets", "XXX",
+                   Uinteger (100),
+                   MakeUintegerAccessor (&UdpEchoClient::m_count),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Interval", "XXX",
+                   Seconds (1.0),
+                   MakeTimeAccessor (&UdpEchoClient::m_interval),
+                   MakeTimeChecker ())
+    .AddAttribute ("RemoteIpv4", "XXX",
+                   Ipv4Address (),
+                   MakeIpv4AddressAccessor (&UdpEchoClient::m_peerAddress),
+                   MakeIpv4AddressChecker ())
+    .AddAttribute ("RemotePort", "XXX",
+                   Uinteger (0),
+                   MakeUintegerAccessor (&UdpEchoClient::m_peerPort),
+                   MakeUintegerChecker<uint16_t> ())
+    .AddAttribute ("PacketSize", "Size of packets generated",
+                   Uinteger (100),
+                   MakeUintegerAccessor (&UdpEchoClient::m_size),
+                   MakeUintegerChecker<uint32_t> ())
+    ;
+  return tid;
+}
+
+UdpEchoClient::UdpEchoClient ()
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << n << serverAddress << serverPort << count
-                 << interval << size);
-
-  Construct (n, serverAddress, serverPort, count, interval, size);
+  m_sent = 0;
+  m_socket = 0;
+  m_sendEvent = EventId ();
 }
 
 UdpEchoClient::~UdpEchoClient()
 {
   NS_LOG_FUNCTION;
-}
-
-void
-UdpEchoClient::Construct (
-  Ptr<Node> n,
-  Ipv4Address serverAddress,
-  uint16_t serverPort,
-  uint32_t count,
-  Time interval,
-  uint32_t size)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << n << serverAddress << serverPort
-                 << count << interval << size);
-
-  m_node = n;
-  m_serverAddress = serverAddress;
-  m_serverPort = serverPort;
-  m_count = count;
-  m_interval = interval;
-  m_size = size;
-
-  m_sent = 0;
-  m_socket = 0;
-  m_peer = InetSocketAddress (serverAddress, serverPort);
-  m_sendEvent = EventId ();
 }
 
 void
@@ -96,7 +93,7 @@ UdpEchoClient::StartApplication (void)
         GetNode ()->GetObject<SocketFactory> (tid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
-      m_socket->Connect (m_peer);
+      m_socket->Connect (InetSocketAddress (m_peerAddress, m_peerPort));
     }
 
   m_socket->SetRecvCallback(MakeCallback(&UdpEchoClient::Receive, this));
@@ -136,7 +133,7 @@ UdpEchoClient::Send (void)
   m_socket->Send (p);
   ++m_sent;
 
-  NS_LOG_INFO ("Sent " << m_size << " bytes to " << m_serverAddress);
+  NS_LOG_INFO ("Sent " << m_size << " bytes to " << m_peerAddress);
 
   if (m_sent < m_count) 
     {

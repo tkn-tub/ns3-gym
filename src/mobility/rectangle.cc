@@ -20,8 +20,10 @@
 #include "rectangle.h"
 #include "vector.h"
 #include "ns3/assert.h"
+#include "ns3/fatal-error.h"
 #include <cmath>
 #include <algorithm>
+#include <sstream> 
 
 namespace ns3 {
 
@@ -115,6 +117,28 @@ Rectangle::CalculateIntersection (const Vector &current, const Vector &speed) co
       return Vector (0.0, 0.0, 0.0);
     }
 
+}
+
+VALUE_HELPER_CPP (Rectangle);
+
+std::ostream &
+operator << (std::ostream &os, const Rectangle &rectangle)
+{
+  os << rectangle.xMin << "|" << rectangle.xMax << "|" << rectangle.yMin << "|" << rectangle.yMax;
+  return os;
+}
+std::istream &
+operator >> (std::istream &is, Rectangle &rectangle)
+ {
+  char c1, c2, c3;
+  is >> rectangle.xMin >> c1 >> rectangle.xMax >> c2 >> rectangle.yMin >> c3 >> rectangle.yMax;
+  if (c1 != '|' ||
+      c2 != '|' ||
+      c3 != '|')
+    {
+      is.setstate (std::ios_base::failbit);
+    }
+  return is;
 }
 
 

@@ -26,6 +26,8 @@
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
 #include "ns3/composite-trace-resolver.h"
+#include "ns3/object-vector.h"
+#include "ns3/uinteger.h"
 
 namespace ns3{
 
@@ -35,67 +37,23 @@ TypeId
 Node::GetTypeId (void)
 {
   static TypeId tid = TypeId ("Node")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddAttribute ("DeviceList", "The list of devices associated to this Node.",
+                   ObjectVector (),
+                   MakeObjectVectorAccessor (&Node::m_devices),
+                   MakeObjectVectorChecker ())
+    .AddAttribute ("ApplicationList", "The list of applications associated to this Node.",
+                   ObjectVector (),
+                   MakeObjectVectorAccessor (&Node::m_applications),
+                   MakeObjectVectorChecker ())
+    .AddAttribute ("Id", "The id (unique integer) of this Node.",
+                   TypeId::ATTR_GET, // allow only getting it.
+                   Uinteger (0),
+                   MakeUintegerAccessor (&Node::m_id),
+                   MakeUintegerChecker<uint32_t> ())
+    ;
   return tid;
 }
-
-NodeNetDeviceIndex::NodeNetDeviceIndex ()
-  : m_index (0)
-{}
-NodeNetDeviceIndex::NodeNetDeviceIndex (uint32_t index)
-  : m_index (index)
-{}
-uint32_t 
-NodeNetDeviceIndex::Get (void) const
-{
-  return m_index;
-}
-void 
-NodeNetDeviceIndex::Print (std::ostream &os) const
-{
-  os << "device=" << m_index;
-}
-uint16_t 
-NodeNetDeviceIndex::GetUid (void)
-{
-  static uint16_t uid = AllocateUid<NodeNetDeviceIndex> ("NodeNetDeviceIndex");
-  return uid;
-}
-std::string 
-NodeNetDeviceIndex::GetTypeName (void) const
-{
-  return "ns3::NodeNetDeviceIndex";
-}
-
-
-NodeApplicationIndex::NodeApplicationIndex ()
-  : m_index (0)
-{}
-NodeApplicationIndex::NodeApplicationIndex (uint32_t index)
-  : m_index (index)
-{}
-uint32_t 
-NodeApplicationIndex::Get (void) const
-{
-  return m_index;
-}
-void 
-NodeApplicationIndex::Print (std::ostream &os) const
-{
-  os << "device=" << m_index;
-}
-uint16_t 
-NodeApplicationIndex::GetUid (void)
-{
-  static uint16_t uid = AllocateUid<NodeApplicationIndex> ("NodeApplicationIndex");
-  return uid;
-}
-std::string 
-NodeApplicationIndex::GetTypeName (void) const
-{
-  return "ns3::NodeApplicationIndex";
-}
-
 
 Node::Node()
   : m_id(0), 
@@ -121,16 +79,6 @@ Node::Construct (void)
   
 Node::~Node ()
 {}
-
-Ptr<TraceResolver>
-Node::GetTraceResolver (void) const
-{
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddArray ("devices", m_devices.begin (), m_devices.end (), NodeNetDeviceIndex ());
-  resolver->AddArray ("applications", m_applications.begin (), m_applications.end (), NodeApplicationIndex ());
-  resolver->SetParentResolver (Object::GetTraceResolver ());
-  return resolver;
-}
 
 uint32_t 
 Node::GetId (void) const

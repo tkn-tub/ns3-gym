@@ -27,7 +27,19 @@ TypeId
 MobilityModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("MobilityModel")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddAttribute ("position", "The current position of the mobility model.",
+                   TypeId::ATTR_SGC,
+                   Vector (0.0, 0.0, 0.0),
+                   MakeVectorAccessor (&MobilityModel::SetPosition,
+                                        &MobilityModel::GetPosition),
+                   MakeVectorChecker ())
+    .AddAttribute ("velocity", "The current velocity of the mobility model.",
+                   TypeId::ATTR_GET,
+                   Vector (0.0, 0.0, 0.0), // ignored initial value.
+                   MakeVectorAccessor (&MobilityModel::GetVelocity),
+                   MakeVectorChecker ())
+    ;
   return tid;
 }
 

@@ -41,12 +41,17 @@ TypeId
 ArpL3Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ArpL3Protocol")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    .AddAttribute ("Node", "The node to which this protocol is associated.",
+                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
+                   Ptr<Node> (0),
+                   MakePtrAccessor (&ArpL3Protocol::m_node),
+                   MakePtrChecker<Node> ())
+    ;
   return tid;
 }
 
-ArpL3Protocol::ArpL3Protocol (Ptr<Node> node)
-  : m_node (node)
+ArpL3Protocol::ArpL3Protocol ()
 {
   NS_LOG_FUNCTION;
 }

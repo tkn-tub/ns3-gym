@@ -28,20 +28,11 @@ TypeId StaticSpeedMobilityModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("StaticSpeedMobilityModel")
     .SetParent<MobilityModel> ()
-    .AddConstructor<StaticSpeedMobilityModel> ()
-    .AddConstructor<StaticSpeedMobilityModel,const Vector &> ()
-    .AddConstructor<StaticSpeedMobilityModel,const Vector &,const Vector &> ();
+    .AddConstructor<StaticSpeedMobilityModel> ();
   return tid;
 }
 
 StaticSpeedMobilityModel::StaticSpeedMobilityModel ()
-{}
-StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Vector &position)
-  : m_helper (position)
-{}
-StaticSpeedMobilityModel::StaticSpeedMobilityModel (const Vector &position,
-                                                    const Vector &speed)
-  : m_helper (position, speed)
 {}
 
 StaticSpeedMobilityModel::~StaticSpeedMobilityModel ()

@@ -39,7 +39,7 @@
 #include "ns3/socket.h"
 #include "ns3/event-garbage-collector.h"
 #include "ns3/timer.h"
-#include "ns3/callback-trace-source.h"
+#include "ns3/traced-callback.h"
 
 
 namespace ns3 {
@@ -51,7 +51,9 @@ class AgentImpl : public Agent
 public:
   static TypeId GetTypeId (void);
 
-  AgentImpl (Ptr<Node> node);
+  AgentImpl ();
+
+  virtual void SetNode (Ptr<Node> node);
 
   virtual void Start ();
   virtual void SetMainInterface (uint32_t interface);
@@ -87,7 +89,6 @@ private:
 	
 protected:
   void DoDispose ();
-  Ptr<TraceResolver> GetTraceResolver (void) const;
 
   void SendPacket (Ptr<Packet> packet, const MessageList &containedMessages);
 	
@@ -183,11 +184,11 @@ protected:
   // HELLO messages arrive)
   std::map< Ptr<Socket>, Ipv4Address > m_socketAddresses;
 
-  CallbackTraceSource <const PacketHeader &,
-                       const MessageList &> m_rxPacketTrace;
-  CallbackTraceSource <const PacketHeader &,
-                       const MessageList &> m_txPacketTrace;
-  CallbackTraceSource <uint32_t> m_routingTableChanged;
+  TracedCallback <const PacketHeader &,
+                  const MessageList &> m_rxPacketTrace;
+  TracedCallback <const PacketHeader &,
+                  const MessageList &> m_txPacketTrace;
+  TracedCallback <uint32_t> m_routingTableChanged;
 
 };
 

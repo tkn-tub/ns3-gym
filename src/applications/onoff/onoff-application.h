@@ -29,8 +29,8 @@
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
 #include "ns3/data-rate.h"
-#include "ns3/callback-trace-source.h"
 #include "ns3/random-variable.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3 {
 
@@ -52,59 +52,13 @@ class Socket;
 class OnOffApplication : public Application 
 {
 public:
-  /**
-   * \param n node associated to this application
-   * \param remote remote ip address
-   * \param tid  TypeId of the socket factory to use. Note this
-   * factory should create sockets compatible with the specified
-   * remote address.
-   * \param ontime on time random variable
-   * \param offtime off time random variable
-   */
-  OnOffApplication(Ptr<Node> n,
-                   const Address &remote,
-                   std::string tid,
-                   const RandomVariable& ontime,
-                   const RandomVariable& offtime);
+  static TypeId GetTypeId (void);
 
-  /**
-   * \param n node associated to this application
-   * \param remote remote ip address
-   * \param tid  TypeId of the socket factory to use. Note this
-   * factory should create sockets compatible with the specified
-   * remote address.
-   * \param ontime on time random variable
-   * \param offtime off time random variable
-   * \param rate data rate when on
-   * \param size size of packets when sending data.
-   */
-  OnOffApplication(Ptr<Node> n,
-                   const Address &remote,
-                   std::string tid,
-                   const RandomVariable& ontime,
-                   const RandomVariable& offtime,
-                   DataRate  rate,
-                   uint32_t size);
+  OnOffApplication ();
 
   virtual ~OnOffApplication();
 
   void SetMaxBytes(uint32_t maxBytes);
-
-  /**
-   * \param r the data rate
-   *
-   * Set the data rate to use for every OnOffApplication for which
-   * the user does not specify an explicit data rate.
-   */
-  static void SetDefaultRate(const DataRate & r);
-
-  /**
-   * \param size the packet size
-   *
-   * Set the packet size to use for every OnOffApplication for
-   * which the user does not specify an explicit packet size.
-   */
-  static void SetDefaultSize (uint32_t size);
 
 protected:
   virtual void DoDispose (void);
@@ -129,8 +83,8 @@ private:
   Ptr<Socket>     m_socket;       // Associated socket
   Address         m_peer;         // Peer address
   bool            m_connected;    // True if connected
-  RandomVariable m_onTime;       // rng for On Time
-  RandomVariable m_offTime;      // rng for Off Time
+  RandomVariable  m_onTime;       // rng for On Time
+  RandomVariable  m_offTime;      // rng for Off Time
   DataRate        m_cbrRate;      // Rate that data is generated
   uint32_t        m_pktSize;      // Size of packets
   uint32_t        m_residualBits; // Number of generated, but not sent, bits
@@ -140,11 +94,10 @@ private:
   EventId         m_startStopEvent;     // Event id for next start or stop event
   EventId         m_sendEvent;    // Eventid of pending "send packet" event
   bool            m_sending;      // True if currently in sending state
-  std::string     m_tid;
-  CallbackTraceSource<Ptr<const Packet> > m_txTrace;
+  TypeId          m_tid;
+  TracedCallback<Ptr<const Packet> > m_txTrace;
   
 private:
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   void ScheduleNextTx();
   void ScheduleStartEvent();
   void ScheduleStopEvent();

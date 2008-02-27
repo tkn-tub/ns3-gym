@@ -25,7 +25,8 @@
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
 #include "ns3/packet.h"
-#include "ns3/composite-trace-resolver.h"
+#include "ns3/trace-source-accessor.h"
+#include "ns3/udp.h"
 #include "packet-sink.h"
 
 using namespace std;
@@ -33,25 +34,30 @@ using namespace std;
 namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("PacketSinkApplication");
+NS_OBJECT_ENSURE_REGISTERED (PacketSink);
 
-// Constructors
-
-PacketSink::PacketSink (Ptr<Node> n, 
-                        const Address &local,
-                        std::string tid)
-  :  Application(n)
+TypeId 
+PacketSink::GetTypeId (void)
 {
-  Construct (n, local, tid);
+  static TypeId tid = TypeId ("PacketSink")
+    .SetParent<Application> ()
+    .AddAttribute ("Local", "The Address on which to Bind the rx socket.",
+                   Address (),
+                   MakeAddressAccessor (&PacketSink::m_local),
+                   MakeAddressChecker ())
+    .AddAttribute ("Protocol", "The type id of the protocol to use for the rx socket.",
+                   Udp::GetTypeId (),
+                   MakeTypeIdAccessor (&PacketSink::m_tid),
+                   MakeTypeIdChecker ())
+    .AddTraceSource ("Rx", "A packet has been received",
+                     MakeTraceSourceAccessor (&PacketSink::m_rxTrace))
+    ;
+  return tid;
 }
 
-void
-PacketSink::Construct (Ptr<Node> n, 
-                       const Address &local,
-                       std::string tid)
+PacketSink::PacketSink ()
 {
   m_socket = 0;
-  m_local = local;
-  m_tid = tid;
 }
 
 PacketSink::~PacketSink()
@@ -73,9 +79,8 @@ void PacketSink::StartApplication()    // Called at time specified by Start
   // Create the socket if not already
   if (!m_socket)
     {
-      TypeId tid = TypeId::LookupByName (m_tid);
       Ptr<SocketFactory> socketFactory = 
-        GetNode ()->GetObject<SocketFactory> (tid);
+        GetNode ()->GetObject<SocketFactory> (m_tid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind (m_local);
       m_socket->Listen (0);
@@ -114,21 +119,6 @@ void PacketSink::Receive(Ptr<Socket> socket, Ptr<Packet> packet,
 void PacketSink::CloseConnection (Ptr<Socket> socket)
 {
   socket->Close ();
-}
-
-Ptr<TraceResolver> 
-PacketSink::GetTraceResolver (void) const
-{
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddSource ("rx",
-                       TraceDoc ("A new packet has been received",
-                                 "Ptr<const Packet>",
-                                 "The newly-received packet.",
-                                 "const Address &",
-                                 "The source address of the received packet."),
-                       m_rxTrace);
-  resolver->SetParentResolver (Application::GetTraceResolver ());
-  return resolver;
 }
 
 } // Namespace ns3

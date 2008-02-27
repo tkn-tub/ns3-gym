@@ -63,7 +63,6 @@ public:
 
 protected:
   virtual void DoDispose(void);
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 private:
   void Construct (void);
 };

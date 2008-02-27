@@ -47,6 +47,7 @@
 #include "ns3/ipv4-route.h"
 #include "ns3/udp-echo-client.h"
 #include "ns3/udp-echo-server.h"
+#include "ns3/uinteger.h"
 
 using namespace ns3;
 
@@ -167,7 +168,9 @@ main (int argc, char *argv[])
 //
   uint16_t port = 9;  // well-known echo port number
 
-  Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> (n1, port);
+  Ptr<UdpEchoServer> server = CreateObjectWith<UdpEchoServer> ("Node", n1, 
+                                                               "Port", Uinteger (port));
+  n1->AddApplication (server);
 //
 // Create a UdpEchoClient application to send UDP datagrams from node zero to
 // node one.
@@ -176,8 +179,14 @@ main (int argc, char *argv[])
   uint32_t maxPacketCount = 1;
   Time interPacketInterval = Seconds (1.);
 
-  Ptr<UdpEchoClient> client = CreateObject<UdpEchoClient> (n0, "10.1.1.2", port, 
-    maxPacketCount, interPacketInterval, packetSize);
+  Ptr<UdpEchoClient> client = 
+    CreateObjectWith<UdpEchoClient> ("Node", n0, 
+                                     "RemoteIpv4", Ipv4Address ("10.1.1.2"),
+                                     "RemotePort", Uinteger (port),
+                                     "MaxPackets", Uinteger (maxPacketCount), 
+                                     "Interval", interPacketInterval, 
+                                     "PacketSize", Uinteger (packetSize));
+  n0->AddApplication (client);
 //
 // Tell the applications when to start and stop.
 //

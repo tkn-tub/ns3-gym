@@ -125,25 +125,15 @@ DoParse (const std::string s, uint64_t *v)
 
 namespace ns3 {
 
+VALUE_HELPER_CPP (DataRate);
+
+DataRate::DataRate ()
+  : m_bps (0)
+{}
+
 DataRate::DataRate(uint64_t bps)
   :m_bps(bps)
-{
-}
-
-DataRate::DataRate (const std::string s)
-  : m_bps(DataRate::Parse(s))
-{
-}
-
-uint64_t DataRate::Parse(const std::string s)
-{
-  uint64_t v;
-  if (!DoParse (s, &v))
-    {
-      NS_FATAL_ERROR("Can't Parse data rate "<<s);
-    }
-  return v;
-}
+{}
 
 bool DataRate::operator < (const DataRate& rhs) const
 {
@@ -184,6 +174,36 @@ uint64_t DataRate::GetBitRate() const
 {
   return m_bps;
 }
+
+DataRate::DataRate (std::string rate)
+{
+  bool ok = DoParse (rate, &m_bps);
+  if (!ok)
+    {
+      NS_FATAL_ERROR ("Could not parse rate: "<<rate);
+    }
+}
+
+std::ostream &operator << (std::ostream &os, const DataRate &rate)
+{
+  os << rate.GetBitRate () << "bps";
+  return os;
+}
+std::istream &operator >> (std::istream &is, DataRate &rate)
+{
+  std::string value;
+  is >> value;
+  uint64_t v;
+  bool ok = DoParse (value, &v);
+  if (!ok)
+    {
+      is.setstate (std::ios_base::failbit);
+    }
+  rate = DataRate (v);
+  return is;
+}
+
+
 
 double operator*(const DataRate& lhs, const Time& rhs)
 {

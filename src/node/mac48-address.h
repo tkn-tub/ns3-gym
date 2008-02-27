@@ -17,11 +17,13 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef EUI48_ADDRESS_H
-#define EUI48_ADDRESS_H
+#ifndef MAC48_ADDRESS_H
+#define MAC48_ADDRESS_H
 
 #include <stdint.h>
 #include <ostream>
+#include "ns3/attribute.h"
+#include "ns3/attribute-helper.h"
 
 namespace ns3 {
 
@@ -93,6 +95,8 @@ public:
    * \returns the broadcast address
    */
   static Mac48Address GetBroadcast (void);
+
+  VALUE_HELPER_HEADER_1 (Mac48Address);
 private:
   /**
    * \returns a new Address instance
@@ -107,11 +111,14 @@ private:
   uint8_t m_address[6];
 };
 
+VALUE_HELPER_HEADER_2 (Mac48Address);
+
 bool operator == (const Mac48Address &a, const Mac48Address &b);
 bool operator != (const Mac48Address &a, const Mac48Address &b);
 bool operator < (const Mac48Address &a, const Mac48Address &b);
 std::ostream& operator<< (std::ostream& os, const Mac48Address & address);
+std::istream& operator>> (std::istream& is, const Mac48Address & address);
 
 } // namespace ns3
 
-#endif /* EUI48_ADDRESS_H */
+#endif /* MAC48_ADDRESS_H */

@@ -43,6 +43,8 @@
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
+#include "ns3/config.h"
+#include "ns3/uinteger.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -105,8 +107,8 @@ main (int argc, char *argv[])
   // instantiate, when the queue factory is invoked in the topology code
   DefaultValue::Bind ("Queue", "DropTailQueue");
 
-  DefaultValue::Bind ("OnOffApplicationPacketSize", "210");
-  DefaultValue::Bind ("OnOffApplicationDataRate", "300b/s");
+  Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
+  Config::SetDefault ("OnOffApplication::DataRate", DataRate ("300b/s"));
 
   // The below metric, if set to 3 or higher, will cause packets between
   // n1 and n3 to take the 2-hop route through n2
@@ -182,21 +184,25 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
 
   // Create a flow from n3 to n1, starting at time 1.1 seconds
-  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
-    n3, 
-    InetSocketAddress ("10.1.1.1", port),
-    "Udp",
-    ConstantVariable (1), 
-    ConstantVariable (0));
+  Ptr<OnOffApplication> ooff = 
+    CreateObjectWith<OnOffApplication> (
+                                        "Node", n3, 
+                                        "Remote", Address (InetSocketAddress ("10.1.1.1", port)),
+                                        "Protocol", TypeId::LookupByName ("Udp"),
+                                        "OnTime", ConstantVariable (1), 
+                                        "OffTime", ConstantVariable (0));
+  n3->AddApplication (ooff);
   // Start the application
   ooff->Start (Seconds (1.1));
   ooff->Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  Ptr<PacketSink> sink = CreateObject<PacketSink> (
-    n1, 
-    InetSocketAddress (Ipv4Address::GetAny (), port), 
-    "Udp");
+  Ptr<PacketSink> sink = 
+    CreateObjectWith<PacketSink> (
+                                  "Node", n1, 
+                                  "Remote", Address (InetSocketAddress (Ipv4Address::GetAny (), port)), 
+                                  "Protocol", TypeId::LookupByName ("Udp"));
+  n1->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.1));
   sink->Stop (Seconds (10.0));

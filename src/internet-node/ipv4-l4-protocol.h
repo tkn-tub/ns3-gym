@@ -44,17 +44,18 @@ class TraceContext;
 class Ipv4L4Protocol : public Object
 {
 public:
-  Ipv4L4Protocol(int protocolNumber, int version);
+  static TypeId GetTypeId (void);
+
   virtual ~Ipv4L4Protocol ();
 
   /**
    * \returns the protocol number of this protocol.
    */
-  int GetProtocolNumber (void) const;
+  virtual int GetProtocolNumber (void) const = 0;
   /**
    * \returns the version number of this protocol.
    */
-  int GetVersion() const;
+  virtual int GetVersion (void) const = 0;
 
   /**
    * \param p packet to forward up
@@ -69,11 +70,6 @@ public:
                        Ipv4Address const &source,
                        Ipv4Address const &destination,
                        Ptr<Ipv4Interface> incomingInterface) = 0;
-protected:
-  virtual void DoDispose (void);
-private:
-  int m_protocolNumber;
-  int m_version;
 };
 
 } // Namespace ns3

@@ -20,6 +20,9 @@
 #ifndef RECTANGLE_H
 #define RECTANGLE_H
 
+#include "ns3/attribute.h"
+#include "ns3/attribute-helper.h"
+
 namespace ns3 {
 
 class Vector;
@@ -58,7 +61,14 @@ public:
   double xMax;
   double yMin;
   double yMax;
+
+  VALUE_HELPER_HEADER_1 (Rectangle);
 };
+
+std::ostream &operator << (std::ostream &os, const Rectangle &rectangle);
+std::istream &operator >> (std::istream &is, Rectangle &rectangle);
+
+VALUE_HELPER_HEADER_2 (Rectangle);
 
 } // namespace ns3
 

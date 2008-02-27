@@ -33,6 +33,7 @@
 #include "ns3/socket-factory.h"
 #include "ns3/command-line.h"
 #include "ns3/gnuplot.h"
+#include "ns3/uinteger.h"
 
 
 #include <iostream>
@@ -47,6 +48,7 @@ CreateAdhocNode (Ptr<WifiChannel> channel,
 {
   Ptr<Node> node = CreateObject<Node> ();  
   Ptr<AdhocWifiNetDevice> device = CreateObject<AdhocWifiNetDevice> (node, Mac48Address (address));
+  node->AddDevice (device);
   device->Attach (channel);
   Ptr<MobilityModel> mobility = CreateObject<StaticMobilityModel> ();
   mobility->SetPosition (position);
@@ -121,12 +123,15 @@ RunOneExperiment (void)
   destination.SetProtocol (1);
   destination.SetSingleDevice (0);
   destination.SetPhysicalAddress (Mac48Address ("00:00:00:00:00:02"));
-  Ptr<Application> app = CreateObject<OnOffApplication> (a, destination, 
-                                                   "Packet", 
-                                                   ConstantVariable (250),
-                                                   ConstantVariable (0),
-                                                   DataRate (60000000),
-                                                   2000);
+  Ptr<Application> app = 
+    CreateObjectWith<OnOffApplication> ("Node", a, 
+                                        "Remote", Address (destination),
+                                        "Protocol", TypeId::LookupByName ("Packet"),
+                                        "OnTime", ConstantVariable (250),
+                                        "OffTime", ConstantVariable (0),
+                                        "DataRate", DataRate (60000000),
+                                        "PacketSize", Uinteger (2000));
+  a->AddApplication (app);
 
   app->Start (Seconds (0.5));
   app->Stop (Seconds (250.0));

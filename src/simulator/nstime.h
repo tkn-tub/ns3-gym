@@ -20,9 +20,11 @@
 #ifndef TIME_H
 #define TIME_H
 
+#include "ns3/assert.h"
+#include "ns3/attribute.h"
+#include "ns3/attribute-helper.h"
 #include <stdint.h>
 #include <math.h>
-#include "ns3/assert.h"
 #include <ostream>
 #include "high-precision.h"
 #include "cairo-wideint-private.h"
@@ -334,6 +336,8 @@ TimeUnit<N> Min (TimeUnit<N> const &ta, TimeUnit<N> const &tb)
 // additional methods that should not be available for N!=1
 // \class TimeUnit<1>
 
+class TimeValue;
+
 template <>
 class TimeUnit<1>
 {
@@ -431,6 +435,9 @@ public:
 
   static uint64_t UnitsToTimestep (uint64_t unitValue, 
                                    uint64_t unitFactor);
+
+  TimeUnit (Attribute value);
+  operator Attribute () const;
 private:
   HighPrecision m_data;
 
@@ -513,7 +520,8 @@ private:
 typedef TimeUnit<1> Time;
 
 
-std::ostream& operator<< (std::ostream& os, Time const& time);
+std::ostream& operator<< (std::ostream& os, const Time & time);
+std::istream& operator>> (std::istream& is, Time & time);
 
 /**
  * \brief create ns3::Time instances in units of seconds.
@@ -661,7 +669,10 @@ typedef TimeUnit<0> Scalar;
 typedef TimeUnit<-1> TimeInvert;
 typedef TimeUnit<2> TimeSquare;
 
+ATTRIBUTE_ACCESSOR_DEFINE (Time);
+ATTRIBUTE_VALUE_DEFINE (Time);
+ATTRIBUTE_CHECKER_DEFINE (Time);
 
-}; // namespace ns3
+} // namespace ns3
 
 #endif /* TIME_H */

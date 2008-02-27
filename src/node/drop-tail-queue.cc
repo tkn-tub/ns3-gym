@@ -18,6 +18,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/uinteger.h"
 #include "drop-tail-queue.h"
 
 NS_LOG_COMPONENT_DEFINE ("DropTailQueue");
@@ -30,14 +31,19 @@ TypeId DropTailQueue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("DropTailQueue")
     .SetParent<Queue> ()
-    .AddConstructor<DropTailQueue> ();
+    .AddConstructor<DropTailQueue> ()
+    .AddAttribute ("MaxPackets", "The maximum number of packets accepted by this DropTailQueue.",
+                   Uinteger (100),
+                   MakeUintegerAccessor (&DropTailQueue::m_maxPackets),
+                   MakeUintegerChecker<uint32_t> ())
+    ;
+  
   return tid;
 }
 
 DropTailQueue::DropTailQueue () :
   Queue (),
-  m_packets (),
-  m_maxPackets(DTQ_NPACKETS_MAX_DEFAULT)
+  m_packets ()
 {
   NS_LOG_FUNCTION;
 }
@@ -45,22 +51,6 @@ DropTailQueue::DropTailQueue () :
 DropTailQueue::~DropTailQueue ()
 {
   NS_LOG_FUNCTION;
-}
-
-void 
-DropTailQueue::SetMaxPackets (uint32_t npackets)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << npackets);
-  m_maxPackets = npackets;
-}
-
-uint32_t 
-DropTailQueue::GetMaxPackets (void)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_LOGIC ("returns " << m_maxPackets);
-  return m_maxPackets;
 }
 
 bool 
@@ -142,8 +132,8 @@ DropTailQueueTest::RunTests (void)
 {
   bool result = true;
 
-  DropTailQueue queue;
-  queue.SetMaxPackets (3);
+  Ptr<DropTailQueue> queue = CreateObject<DropTailQueue> ();
+  NS_TEST_ASSERT (queue->SetAttribute ("MaxPackets", Uinteger (3)));
   
   Ptr<Packet> p1, p2, p3, p4;
   p1 = Create<Packet> ();
@@ -151,34 +141,34 @@ DropTailQueueTest::RunTests (void)
   p3 = Create<Packet> ();
   p4 = Create<Packet> ();
 
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 0);
-  queue.Enqueue (p1);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 1);
-  queue.Enqueue (p2);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 2);
-  queue.Enqueue (p3);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 3);
-  queue.Enqueue (p4); // will be dropped
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 3);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 0);
+  queue->Enqueue (p1);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 1);
+  queue->Enqueue (p2);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 2);
+  queue->Enqueue (p3);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 3);
+  queue->Enqueue (p4); // will be dropped
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 3);
 
   Ptr<Packet> p;
 
-  p = queue.Dequeue ();
+  p = queue->Dequeue ();
   NS_TEST_ASSERT (p != 0);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 2);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 2);
   NS_TEST_ASSERT_EQUAL (p->GetUid (), p1->GetUid ());
 
-  p = queue.Dequeue ();
+  p = queue->Dequeue ();
   NS_TEST_ASSERT (p != 0);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 1);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 1);
   NS_TEST_ASSERT_EQUAL (p->GetUid (), p2->GetUid ());
 
-  p = queue.Dequeue ();
+  p = queue->Dequeue ();
   NS_TEST_ASSERT (p != 0);
-  NS_TEST_ASSERT_EQUAL (queue.GetNPackets (), 0);
+  NS_TEST_ASSERT_EQUAL (queue->GetNPackets (), 0);
   NS_TEST_ASSERT_EQUAL (p->GetUid (), p3->GetUid ());
 
-  p = queue.Dequeue ();
+  p = queue->Dequeue ();
   NS_TEST_ASSERT (p == 0);
 
   return result;

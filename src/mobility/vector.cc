@@ -18,9 +18,13 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "vector.h"
+#include "ns3/fatal-error.h"
 #include <cmath>
+#include <sstream>
 
 namespace ns3 {
+
+VALUE_HELPER_CPP (Vector);
 
 
 Vector::Vector (double _x, double _y, double _z)
@@ -43,6 +47,23 @@ CalculateDistance (const Vector &a, const Vector &b)
   double dz = b.z - a.z;
   double distance = std::sqrt (dx * dx + dy * dy + dz * dz);
   return distance;
+}
+
+std::ostream &operator << (std::ostream &os, const Vector &vector)
+{
+  os << vector.x << ":" << vector.y << ":" << vector.z;
+  return os;
+}
+std::istream &operator >> (std::istream &is, Vector &vector)
+{
+  char c1, c2;
+  is >> vector.x >> c1 >> vector.y >> c2 >> vector.z;
+  if (c1 != ':' ||
+      c2 != ':')
+    {
+      is.setstate (std::ios_base::failbit);
+    }
+  return is;
 }
 
 } // namespace ns3

@@ -28,31 +28,51 @@ TypeId
 HierarchicalMobilityModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("HierarchicalMobilityModel")
-    .SetParent<MobilityModel> ();
+    .SetParent<MobilityModel> ()
+    .AddConstructor<HierarchicalMobilityModel> ()
+    .AddAttribute ("child", "The child mobility model.",
+                   Ptr<MobilityModel> (0),
+                   MakePtrAccessor (&HierarchicalMobilityModel::SetChild),
+                   MakePtrChecker<MobilityModel> ())
+    .AddAttribute ("parent", "The parent mobility model.",
+                   Ptr<MobilityModel> (0),
+                   MakePtrAccessor (&HierarchicalMobilityModel::SetParent),
+                   MakePtrChecker<MobilityModel> ())
+    ;
   return tid;
 }
 
-HierarchicalMobilityModel::HierarchicalMobilityModel (Ptr<MobilityModel> child, Ptr<MobilityModel> parent)
-  : m_child (child),
-    m_parent (parent)
+HierarchicalMobilityModel::HierarchicalMobilityModel ()
+{}
+
+void 
+HierarchicalMobilityModel::SetChild (Ptr<MobilityModel> model)
 {
-  Ptr<MobilityModelNotifier> childNotifier = 
+  m_child = model;
+  Ptr<MobilityModelNotifier> notifier = 
     m_child->GetObject<MobilityModelNotifier> ();
-  Ptr<MobilityModelNotifier> parentNotifier = 
-    m_parent->GetObject<MobilityModelNotifier> ();
-  if (childNotifier == 0)
+  if (notifier == 0)
     {
-      childNotifier = CreateObject<MobilityModelNotifier> ();
-      child->AggregateObject (childNotifier);
+      notifier = CreateObject<MobilityModelNotifier> ();
+      m_child->AggregateObject (notifier);
     }
-  if (parentNotifier == 0)
-    {
-      parentNotifier = CreateObject<MobilityModelNotifier> ();
-      parent->AggregateObject (parentNotifier);
-    }
-  childNotifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
-  parentNotifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
+  notifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
 }
+
+void 
+HierarchicalMobilityModel::SetParent (Ptr<MobilityModel> model)
+{
+  m_parent = model;
+  Ptr<MobilityModelNotifier> notifier = 
+    m_parent->GetObject<MobilityModelNotifier> ();
+  if (notifier == 0)
+    {
+      notifier = CreateObject<MobilityModelNotifier> ();
+      m_parent->AggregateObject (notifier);
+    }
+  notifier->TraceConnect ("/course-changed", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
+}
+
 
 Ptr<MobilityModel> 
 HierarchicalMobilityModel::GetChild (void) const

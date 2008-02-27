@@ -4,13 +4,14 @@
 
 #include "ns3/ptr.h"
 #include "ns3/mobility-model.h"
-#include "ns3/mobility-model-notifier.h"
-#include "ns3/static-mobility-model.h"
-#include "ns3/random-topology.h"
 #include "ns3/default-value.h"
 #include "ns3/command-line.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
+#include "ns3/node.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/node-list.h"
+#include "ns3/string.h"
 
 using namespace ns3;
 
@@ -24,26 +25,27 @@ CourseChange (const TraceContext &context, Ptr<const MobilityModel> position)
 
 int main (int argc, char *argv[])
 {
-  DefaultValue::Bind ("RandomDiscPositionX", "100");
-  DefaultValue::Bind ("RandomDiscPositionY", "50");
-  DefaultValue::Bind ("RandomDiscPositionRho", "Uniform:0:30");
-
-  DefaultValue::Bind ("RandomTopologyPositionType", "RandomDiscPosition");
-  DefaultValue::Bind ("RandomTopologyMobilityType", "StaticMobilityModel");
 
   CommandLine::Parse (argc, argv);
 
-  RandomTopology topology;
 
   std::vector<Ptr<Object> > objects;
   for (uint32_t i = 0; i < 10000; i++)
     {
-      Ptr<MobilityModelNotifier> notifier = CreateObject<MobilityModelNotifier> ();
-      notifier->TraceConnect ("/course-change", MakeCallback (&CourseChange));
-      objects.push_back (notifier);
+      objects.push_back (CreateObject<Node> ());
     }
 
-  topology.Layout (objects.begin (), objects.end ());
+  MobilityHelper mobility;
+  mobility.EnableNotifier ();
+  mobility.SetPositionAllocator ("RandomDiscPositionAllocator",
+                                 "X", String ("100.0"),
+                                 "Y", String ("100.0"),
+                                 "Rho", String ("Uniform:0:30"));
+  mobility.SetMobilityModel ("StaticMobilityModel");
+  mobility.Layout (objects.begin (), objects.end ());
+
+  NodeList::Connect ("/nodes/*/$MobilityModelNotifier/course-change", 
+                     MakeCallback (&CourseChange));
 
   Simulator::StopAt (Seconds (100.0));
 

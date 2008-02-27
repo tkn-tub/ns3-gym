@@ -22,6 +22,7 @@
 #include "nstime.h"
 #include "ns3/fatal-error.h"
 #include "ns3/default-value.h"
+#include "ns3/object.h"
 #include <math.h>
 
 namespace ns3 {
@@ -188,7 +189,7 @@ TimeUnit<1>::GetTimeStep (void) const
 
 
 std::ostream& 
-operator<< (std::ostream& os, Time const& time)
+operator<< (std::ostream& os, const Time & time)
 {
   std::string unit;
   switch (TimeStepPrecision::Get ()) {
@@ -213,6 +214,60 @@ operator<< (std::ostream& os, Time const& time)
   }
   os << time.GetTimeStep () << unit;
   return os;
+}
+std::istream& operator>> (std::istream& is, Time & time)
+{
+  std::string value;
+  is >> value;
+  std::string::size_type n = value.find_first_not_of("0123456789.");
+  if (n == std::string::npos)
+    {
+      is.setstate (std::ios_base::failbit);
+      return is;
+    }
+  std::string trailer = value.substr(n, value.size ()-1-n);
+  std::istringstream iss;
+  iss.str (value.substr(0, n));
+
+  if (trailer == std::string("s"))
+    {
+      double v;
+      iss >> v;
+      time = Seconds (v);
+      return is;
+    }
+  uint64_t integer;
+  iss >> integer;
+  if (is.bad () || is.fail ())
+    {
+      is.setstate (std::ios_base::failbit);
+    }
+  else if (trailer == std::string("ms"))
+    {
+      time = MilliSeconds (integer);
+    }
+  else if (trailer == std::string("us"))
+    {
+      time = MicroSeconds (integer);
+    }
+  else if (trailer == std::string("ns"))
+    {
+      time = NanoSeconds (integer);
+    }
+  else if (trailer == std::string("ps"))
+    {
+      time = PicoSeconds (integer);
+    }
+  else if (trailer == std::string("fs"))
+    {
+      time = FemtoSeconds (integer);
+    }
+  else
+    {
+      is.setstate (std::ios_base::failbit);
+      // XXX: problem ?
+    }
+  return is;
 }
 
 Time Seconds (double seconds)
@@ -241,6 +296,23 @@ TimeUnit<1>::UnitsToTimestep (uint64_t unitValue,
   return unitValue;
 }
 
+TimeUnit<1>::TimeUnit (Attribute value)
+{
+  const TimeValue *v = value.DynCast<const TimeValue *> ();
+  if (v == 0)
+    {
+      NS_FATAL_ERROR ("Unexpected type of value. Expected \"TimeValue\"");
+    }
+  *this = v->Get ();
+}
+TimeUnit<1>::operator Attribute () const
+{
+  return Attribute::Create<TimeValue> (*this);
+}
+
+ATTRIBUTE_VALUE_IMPLEMENT (Time);
+ATTRIBUTE_CHECKER_IMPLEMENT (Time);
+
 Time MilliSeconds (uint64_t ms)
 {
   uint64_t ts = TimeUnit<1>::UnitsToTimestep(ms, TimeStepPrecision::MS_FACTOR);
@@ -268,6 +340,8 @@ Time FemtoSeconds (uint64_t fs)
   uint64_t ts = TimeUnit<1>::UnitsToTimestep(fs, TimeStepPrecision::FS_FACTOR);
   return TimeStep(ts);
 }
+
+
 /*
  * The timestep value passed to this function must be of the precision
  * of TimeStepPrecision::Get
@@ -287,7 +361,7 @@ TimeUnit<0>::GetDouble (void) const
   return GetHighPrecision ().GetDouble ();
 }
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #ifdef RUN_SELF_TESTS

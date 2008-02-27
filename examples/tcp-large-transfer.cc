@@ -196,10 +196,12 @@ int main (int argc, char *argv[])
   localSocket->Bind ();
 
   // Create a packet sink to receive these packets
-  Ptr<PacketSink> sink = Create<PacketSink> (
-    n2,
-    InetSocketAddress (Ipv4Address::GetAny (), servPort),
-    "Tcp");
+  Ptr<PacketSink> sink = 
+    CreateObjectWith<PacketSink> (
+                                  "Node", n2,
+                                  "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), servPort)),
+                                  "Protocol", TypeId::LookupByName ("Tcp"));
+  n2->AddApplication (sink);
   sink->Start (Seconds (0.0));
   sink->Stop (Seconds (100.0));
 

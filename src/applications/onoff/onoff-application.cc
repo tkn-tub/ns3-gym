@@ -31,10 +31,11 @@
 #include "ns3/socket.h"
 #include "ns3/simulator.h"
 #include "ns3/socket-factory.h"
-#include "ns3/default-value.h"
 #include "ns3/packet.h"
-#include "ns3/composite-trace-resolver.h"
+#include "ns3/uinteger.h"
+#include "ns3/trace-source-accessor.h"
 #include "onoff-application.h"
+#include "ns3/udp.h"
 
 NS_LOG_COMPONENT_DEFINE ("OnOffApplication");
 
@@ -42,63 +43,54 @@ using namespace std;
 
 namespace ns3 {
 
-// Defaults for rate/size
-static DataRateDefaultValue g_defaultRate ("OnOffApplicationDataRate", 
-                                           "The data rate in on state for OnOffApplication",
-                                           DataRate ("500kb/s"));
-static NumericDefaultValue<uint32_t> g_defaultSize ("OnOffApplicationPacketSize", 
-                                                    "The size of packets sent in on state for OnOffApplication",
-                                                    512, 1);
-// Constructors
+NS_OBJECT_ENSURE_REGISTERED (OnOffApplication);
 
-OnOffApplication::OnOffApplication(Ptr<Node> n, 
-                                   const Address &remote,
-                                   std::string tid,
-                                   const  RandomVariable& ontime,
-                                   const  RandomVariable& offtime)
-  :  Application(n),
-     m_cbrRate (g_defaultRate.GetValue ())
+TypeId
+OnOffApplication::GetTypeId (void)
 {
-  Construct (n, remote, tid,
-             ontime, offtime, 
-             g_defaultSize.GetValue ());
+  static TypeId tid = TypeId ("OnOffApplication")
+    .SetParent<Application> ()
+    .AddConstructor<OnOffApplication> ()
+    .AddAttribute ("DataRate", "The data rate in on state.",
+                   DataRate ("500kb/s"),
+                   MakeDataRateAccessor (&OnOffApplication::m_cbrRate),
+                   MakeDataRateChecker ())
+    .AddAttribute ("PacketSize", "The size of packets sent in on state",
+                   Uinteger (512),
+                   MakeUintegerAccessor (&OnOffApplication::m_pktSize),
+                   MakeUintegerChecker<uint32_t> (1))
+    .AddAttribute ("Remote", "The address of the destination",
+                   Address (),
+                   MakeAddressAccessor (&OnOffApplication::m_peer),
+                   MakeAddressChecker ())
+    .AddAttribute ("OnTime", "A RandomVariable used to pick the duration of the 'On' state.",
+                   ConstantVariable (1.0),
+                   MakeRandomVariableAccessor (&OnOffApplication::m_onTime),
+                   MakeRandomVariableChecker ())
+    .AddAttribute ("OffTime", "A RandomVariable used to pick the duration of the 'Off' state.",
+                   ConstantVariable (1.0),
+                   MakeRandomVariableAccessor (&OnOffApplication::m_offTime),
+                   MakeRandomVariableChecker ())
+    .AddAttribute ("Protocol", "The type of protocol to use.",
+                   Udp::GetTypeId (),
+                   MakeTypeIdAccessor (&OnOffApplication::m_tid),
+                   MakeTypeIdChecker ())
+    .AddTraceSource ("Tx", "A new packet is created and is sent",
+                     MakeTraceSourceAccessor (&OnOffApplication::m_txTrace))
+    ;
+  return tid;
 }
 
-OnOffApplication::OnOffApplication(Ptr<Node> n, 
-                                   const Address &remote,
-                                   std::string tid,
-                                   const  RandomVariable& ontime,
-                                   const  RandomVariable& offtime,
-                                   DataRate  rate,
-                                   uint32_t size)
-  :  Application(n),
-     m_cbrRate (rate)
+
+OnOffApplication::OnOffApplication ()
 {
   NS_LOG_FUNCTION;
-  Construct (n, remote, tid, ontime, offtime, size);
-}
-
-void
-OnOffApplication::Construct (Ptr<Node> n, 
-                             const Address &remote,
-                             std::string tid,
-                             const  RandomVariable& onTime,
-                             const  RandomVariable& offTime,
-                             uint32_t size)
-{
-  NS_LOG_FUNCTION;
-
   m_socket = 0;
-  m_peer = remote;
   m_connected = false;
-  m_onTime = onTime;
-  m_offTime = offTime;
-  m_pktSize = size;
   m_residualBits = 0;
   m_lastStartTime = Seconds (0);
   m_maxBytes = 0;
   m_totBytes = 0;
-  m_tid = tid;
 }
 
 OnOffApplication::~OnOffApplication()
@@ -114,21 +106,6 @@ OnOffApplication::SetMaxBytes(uint32_t maxBytes)
   m_maxBytes = maxBytes;
 }
 
-void
-OnOffApplication::SetDefaultRate (const DataRate &rate)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (&rate);
-  g_defaultRate.SetValue (rate);
-}
-
-void 
-OnOffApplication::SetDefaultSize (uint32_t size)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (size);
-  g_defaultSize.SetValue (size);
-}
 
 void
 OnOffApplication::DoDispose (void)
@@ -148,8 +125,7 @@ void OnOffApplication::StartApplication() // Called at time specified by Start
   // Create the socket if not already
   if (!m_socket)
     {
-      TypeId tid = TypeId::LookupByName (m_tid);
-      Ptr<SocketFactory> socketFactory = GetNode ()->GetObject<SocketFactory> (tid);
+      Ptr<SocketFactory> socketFactory = GetNode ()->GetObject<SocketFactory> (m_tid);
       m_socket = socketFactory->CreateSocket ();
       m_socket->Bind ();
       m_socket->Connect (m_peer);
@@ -189,7 +165,6 @@ void OnOffApplication::StopSending()
   NS_LOG_FUNCTION;
 
   Simulator::Cancel(m_sendEvent);
-  m_socket->Close ();
 }
 
 // Private helpers
@@ -257,19 +232,6 @@ void OnOffApplication::ConnectionFailed(Ptr<Socket>)
 {
   NS_LOG_FUNCTION;
   cout << "OnOffApplication, Connection Failed" << endl;
-}
-
-Ptr<TraceResolver> 
-OnOffApplication::GetTraceResolver (void) const
-{
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddSource ("tx",
-                       TraceDoc ("A new packet is created and is sent",
-                                 "Ptr<const Packet>",
-                                 "The newly-created packet."),
-                       m_txTrace);
-  resolver->SetParentResolver (Application::GetTraceResolver ());
-  return resolver;
 }
 
 } // Namespace ns3

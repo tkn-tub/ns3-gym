@@ -52,7 +52,8 @@ class RandomVariable;
 class Application : public Object
 {
 public:
-  Application(Ptr<Node>);
+  static TypeId GetTypeId (void);
+  Application();
   virtual ~Application();
   
   /**

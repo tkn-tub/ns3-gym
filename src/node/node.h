@@ -25,56 +25,16 @@
 
 #include "ns3/object.h"
 #include "ns3/callback.h"
-#include "ns3/trace-context-element.h"
 #include "ns3/ptr.h"
 
 namespace ns3 {
 
 class TraceContext;
-class TraceResolver;
 class NetDevice;
 class Application;
 class Packet;
 class Address;
-class CompositeTraceResolver;
 
-/**
- * \brief hold in a TraceContext the index of a NetDevice within a Node
- */
-class NodeNetDeviceIndex : public TraceContextElement
-{
-public:
-  NodeNetDeviceIndex ();
-  NodeNetDeviceIndex (uint32_t index);
-  /**
-   * \returns the index of the NetDevice within its container Node.
-   */
-  uint32_t Get (void) const;
-  void Print (std::ostream &os) const;
-  std::string GetTypeName (void) const;
-  static uint16_t GetUid (void);
-private:
-  uint32_t m_index;
-};
-
-/**
- * \brief hold in a TraceContext the index of an Application within a Node
- */
-class NodeApplicationIndex : public TraceContextElement
-{
-public:
-  NodeApplicationIndex ();
-  NodeApplicationIndex (uint32_t index);
-  /**
-   * \returns the index of the Application within its container Node.
-   */
-  uint32_t Get (void) const;
-  void Print (std::ostream &os) const;
-  std::string GetTypeName (void) const;
-  static uint16_t GetUid (void);
-private:
-  uint32_t m_index;
-};
 
 /**
  * \brief A network Node.
@@ -199,7 +159,6 @@ public:
   void UnregisterProtocolHandler (ProtocolHandler handler);
 
 protected:
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   /**
    * The dispose method. Subclasses must override this method
    * and must chain up to it by calling Node::DoDispose at the

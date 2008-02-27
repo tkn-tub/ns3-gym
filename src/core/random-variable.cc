@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>       
+#include <sstream>
 
 
 #include "assert.h"
@@ -51,7 +52,7 @@ public:
   RandomVariableBase (const RandomVariableBase &o);
   virtual ~RandomVariableBase();
   virtual double  GetValue() = 0;
-  virtual uint32_t GetIntValue();
+  virtual uint32_t GetInteger();
   virtual RandomVariableBase*   Copy(void) const = 0;
   virtual void GetSeed(uint32_t seed[6]);
 
@@ -126,7 +127,7 @@ RandomVariableBase::~RandomVariableBase()
   delete m_generator;
 }
 
-uint32_t RandomVariableBase::GetIntValue() 
+uint32_t RandomVariableBase::GetInteger() 
 {
   return (uint32_t)GetValue();
 }
@@ -249,6 +250,10 @@ RandomVariable::RandomVariable (const RandomVariableBase &variable)
 RandomVariable &
 RandomVariable::operator = (const RandomVariable &o)
 {
+  if (&o == this)
+    {
+      return *this;
+    }
   delete m_variable;
   m_variable = o.m_variable->Copy ();
   return *this;
@@ -264,9 +269,9 @@ RandomVariable::GetValue (void) const
 }
 
 uint32_t 
-RandomVariable::GetIntValue (void) const
+RandomVariable::GetInteger (void) const
 {
-  return m_variable->GetIntValue ();
+  return m_variable->GetInteger ();
 }
 void 
 RandomVariable::GetSeed(uint32_t seed[6]) const
@@ -290,11 +295,27 @@ RandomVariable::SetRunNumber(uint32_t n)
   RandomVariableBase::SetRunNumber (n);
 }
 RandomVariableBase *
-RandomVariable::Peek (void)
+RandomVariable::Peek (void) const
 {
   return m_variable;
 }
+RandomVariable::RandomVariable (Attribute value)
+  : m_variable (0)
+{
+  const RandomVariableValue *v = value.DynCast<const RandomVariableValue *> ();
+  if (v == 0)
+    {
+      NS_FATAL_ERROR ("Unexpected type of value. Expected \"RandomVariableValue\"");
+    }
+  *this = v->Get ();
+}
+RandomVariable::operator Attribute () const
+{
+  return Attribute::Create<RandomVariableValue> (*this);
+}
 
+ATTRIBUTE_VALUE_IMPLEMENT (RandomVariable);
+ATTRIBUTE_CHECKER_IMPLEMENT (RandomVariable);
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -316,6 +337,9 @@ public:
   UniformVariableImpl(double s, double l);
 
   UniformVariableImpl(const UniformVariableImpl& c);
+
+  double GetMin (void) const;
+  double GetMax (void) const;
   
   /**
    * \return A value between low and high values specified by the constructor
@@ -343,6 +367,18 @@ UniformVariableImpl::UniformVariableImpl(double s, double l)
 
 UniformVariableImpl::UniformVariableImpl(const UniformVariableImpl& c) 
   : RandomVariableBase(c), m_min(c.m_min), m_max(c.m_max) { }
+
+double 
+UniformVariableImpl::GetMin (void) const
+{
+  return m_min;
+}
+double 
+UniformVariableImpl::GetMax (void) const
+{
+  return m_max;
+}
+
 
 double UniformVariableImpl::GetValue()
 {
@@ -420,7 +456,7 @@ public:
    * \return The constant value specified
    */
   virtual double  GetValue();
-  virtual uint32_t GetIntValue();
+  virtual uint32_t GetInteger();
   virtual RandomVariableBase*   Copy(void) const;
 private:
   double m_const;
@@ -443,7 +479,7 @@ double ConstantVariableImpl::GetValue()
   return m_const;
 }
 
-uint32_t ConstantVariableImpl::GetIntValue()
+uint32_t ConstantVariableImpl::GetInteger()
 {
   return (uint32_t)m_const;
 }
@@ -1241,7 +1277,7 @@ public:
   /**
    * \return An integer value from this empirical distribution
    */
-  virtual uint32_t GetIntValue();
+  virtual uint32_t GetInteger();
 private:
   virtual double Interpolate(double, double, double, double, double);
 };
@@ -1249,7 +1285,7 @@ private:
 
 IntEmpiricalVariableImpl::IntEmpiricalVariableImpl() { }
 
-uint32_t IntEmpiricalVariableImpl::GetIntValue()
+uint32_t IntEmpiricalVariableImpl::GetInteger()
 {
   return (uint32_t)GetValue();
 }
@@ -1560,6 +1596,55 @@ double
 TriangularVariable::GetSingleValue(double s, double l, double mean)
 {
   return TriangularVariableImpl::GetSingleValue (s,l,mean);
+}
+
+
+std::ostream &operator << (std::ostream &os, const RandomVariable &var)
+{
+  RandomVariableBase *base = var.Peek ();
+  ConstantVariableImpl *constant = dynamic_cast<ConstantVariableImpl *> (base);
+  if (constant != 0)
+    {
+      os << "Constant:" << constant->GetValue ();
+      return os;
+    }
+  UniformVariableImpl *uniform = dynamic_cast<UniformVariableImpl *> (base);
+  if (uniform != 0)
+    {
+      os << "Uniform:" << uniform->GetMin () << ":" << uniform->GetMax ();
+      return os;
+    }
+  // XXX: support other distributions
+  os.setstate (std::ios_base::badbit);
+  return os;
+}
+std::istream &operator >> (std::istream &is, RandomVariable &var)
+{
+  std::string value;
+  is >> value;
+  std::string::size_type tmp;
+  tmp = value.find (":");
+  if (tmp == std::string::npos)
+    {
+      is.setstate (std::ios_base::badbit);
+      return is;
+    }
+  std::string type = value.substr (0, tmp);
+  if (value == "Constant")
+    {
+      // XXX parse
+      var = ConstantVariable ();
+    }
+  else if (value == "Uniform")
+    {
+      // XXX parse
+      var = UniformVariable ();
+    }
+  else
+    {
+      // XXX: support other distributions.
+    }
+  return is;
 }
 
 

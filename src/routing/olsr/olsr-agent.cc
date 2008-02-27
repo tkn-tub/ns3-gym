@@ -19,16 +19,9 @@
  */
 
 #include "olsr-agent.h"
-#include "ns3/type-id-default-value.h"
 
 namespace ns3 {
 namespace olsr {
-
-static TypeIdDefaultValue g_defaultImpl =
-  TypeIdDefaultValue ("OlsrAgentType",
-                           "The type of OlsrAgent implementation",
-                           Agent::GetTypeId (),
-                           "OlsrAgentImpl");
 
 NS_OBJECT_ENSURE_REGISTERED (Agent);
 
@@ -39,14 +32,5 @@ Agent::GetTypeId (void)
     .SetParent<Object> ();
   return tid;
 }
-
-Ptr<Agent> 
-Agent::CreateDefault (Ptr<Node> node)
-{
-  TypeId tid = g_defaultImpl.GetValue ();
-  Ptr<Agent> agent = tid.CreateObject (node)->GetObject<Agent> ();
-  return agent;
-}
-
 
 }}

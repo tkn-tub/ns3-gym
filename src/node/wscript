@@ -28,6 +28,8 @@ def build(bld):
         'tcp.cc',
         'ipv4.cc',
         'application.cc',
+        'node-container.cc',
+        'net-device-container.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -56,4 +58,6 @@ def build(bld):
         'tcp.h',
         'ipv4.h',
         'application.h',
+        'node-container.h',
+        'net-device-container.h',
         ]

@@ -23,52 +23,11 @@
 
 #include "static-speed-helper.h"
 #include "mobility-model.h"
-#include "random-position.h"
+#include "position-allocator.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
 
 namespace ns3 {
-
-/**
- * \brief the parameters which control the behavior of a random waypoint
- *        mobility model.
- */
-class RandomWaypointMobilityModelParameters : public Object
-{
-public:
-  /**
-   * Default parameters from \valueref{RandomWaypointPause},
-   * and, \valueref{RandomWaypointPosition}.
-   */
-  RandomWaypointMobilityModelParameters ();
-  /**
-   * \param randomPosition a random position model to choose the position of waypoints.
-   * \param speed a random variable to choose the speed
-   * \param pause a random variable to choose the pause delay
-   */
-  RandomWaypointMobilityModelParameters (Ptr<RandomPosition> randomPosition,
-                                         const RandomVariable &speed,
-                                         const RandomVariable &pause);
-  /**
-   * \param randomPosition a random position model to choose the position of waypoints.
-   */
-  void SetWaypointPositionModel (Ptr<RandomPosition> randomPosition);
-  /**
-   * \param speed a random variable to choose the speed
-   */
-  void SetSpeed (const RandomVariable &speed);
-  /**
-   * \param pause a random variable to choose the pause delay
-   */
-  void SetPause (const RandomVariable &pause);
-private:
-  friend class RandomWaypointMobilityModel;
-  static Ptr<RandomWaypointMobilityModelParameters> GetCurrent (void);
-  virtual void DoDispose (void);
-  RandomVariable m_speed;
-  RandomVariable m_pause;
-  Ptr<RandomPosition> m_position;
-};
 
 /**
  * \brief a random waypoint mobility model
@@ -86,15 +45,7 @@ class RandomWaypointMobilityModel : public MobilityModel
 {
 public:
   static TypeId GetTypeId (void);
-  /**
-   * Default parameters from \valueref{RandomWaypointPause},
-   * and, \valueref{RandomWaypointPosition}.
-   */
   RandomWaypointMobilityModel ();
-  /**
-   * \param parameters the parameters which control the behavior of this model.
-   */
-  RandomWaypointMobilityModel (Ptr<RandomWaypointMobilityModelParameters> parameters);
 private:
   void Start (void);
   void BeginWalk (void);
@@ -103,7 +54,9 @@ private:
   virtual Vector DoGetVelocity (void) const;
 
   StaticSpeedHelper m_helper;
-  Ptr<RandomWaypointMobilityModelParameters> m_parameters;
+  Ptr<PositionAllocator> m_position;
+  RandomVariable m_speed;
+  RandomVariable m_pause;
   EventId m_event;
 };
 

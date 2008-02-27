@@ -24,21 +24,34 @@
 #include "ns3/simulator.h"
 #include "ns3/node-list.h"
 #include "ns3/node.h"
-#include "ns2-mobility-file-topology.h"
+#include "ns2-mobility-helper.h"
 #include "static-speed-mobility-model.h"
+#include "mobility-model-notifier.h"
 
-NS_LOG_COMPONENT_DEFINE ("Ns2MobilityFileTopology");
+NS_LOG_COMPONENT_DEFINE ("Ns2MobilityHelper");
 
 namespace ns3 {
 
 
-Ns2MobilityFileTopology::Ns2MobilityFileTopology (std::string filename)
+Ns2MobilityHelper::Ns2MobilityHelper (std::string filename)
   : m_filename (filename)
 {}
 
+void 
+Ns2MobilityHelper::EnableNotifier (void)
+{
+  m_notifierEnabled = true;
+}
+void 
+Ns2MobilityHelper::DisableNotifier (void)
+{
+  m_notifierEnabled = false;
+}
+
+
 
 Ptr<StaticSpeedMobilityModel>
-Ns2MobilityFileTopology::GetMobilityModel (std::string idString, const ObjectStore &store) const
+Ns2MobilityHelper::GetMobilityModel (std::string idString, const ObjectStore &store) const
 {
   std::istringstream iss;
   iss.str (idString);
@@ -55,11 +68,17 @@ Ns2MobilityFileTopology::GetMobilityModel (std::string idString, const ObjectSto
       model = CreateObject<StaticSpeedMobilityModel> ();
       object->AggregateObject (model);
     }
+  Ptr<MobilityModelNotifier> notifier = object->GetObject<MobilityModelNotifier> ();
+  if (notifier == 0)
+    {
+      notifier = CreateObject<MobilityModelNotifier> ();
+      object->AggregateObject (notifier);
+    }
   return model;
 }
 
 double
-Ns2MobilityFileTopology::ReadDouble (std::string valueString) const
+Ns2MobilityHelper::ReadDouble (std::string valueString) const
 {
   std::istringstream iss;
   iss.str (valueString);
@@ -69,7 +88,7 @@ Ns2MobilityFileTopology::ReadDouble (std::string valueString) const
 }
 
 void 
-Ns2MobilityFileTopology::LayoutObjectStore (const ObjectStore &store) const
+Ns2MobilityHelper::LayoutObjectStore (const ObjectStore &store) const
 {
   std::ifstream file (m_filename.c_str (), std::ios::in);
   if (file.is_open())
@@ -136,7 +155,7 @@ Ns2MobilityFileTopology::LayoutObjectStore (const ObjectStore &store) const
 }
 
 void 
-Ns2MobilityFileTopology::Layout (void) const
+Ns2MobilityHelper::Layout (void) const
 {
   Layout (NodeList::Begin (), NodeList::End ());
 }

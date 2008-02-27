@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef EUI64_ADDRESS_H
-#define EUI64_ADDRESS_H
+#ifndef MAC64_ADDRESS_H
+#define MAC64_ADDRESS_H
 
 #include <stdint.h>
 #include <ostream>
@@ -95,4 +95,4 @@ std::ostream& operator<< (std::ostream& os, const Mac64Address & address);
 
 } // namespace ns3
 
-#endif /* EUI64_ADDRESS_H */
+#endif /* MAC64_ADDRESS_H */

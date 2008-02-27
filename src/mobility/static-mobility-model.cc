@@ -29,14 +29,11 @@ StaticMobilityModel::GetTypeId (void)
   static TypeId tid = TypeId ("StaticMobilityModel")
     .SetParent<MobilityModel> ()
     .AddConstructor<StaticMobilityModel> ()
-    .AddConstructor<StaticMobilityModel,const Vector &> ();
+    ;
   return tid;
 }
   
 StaticMobilityModel::StaticMobilityModel ()
-{}
-StaticMobilityModel::StaticMobilityModel (const Vector &position)
-  : m_position (position)
 {}
 StaticMobilityModel::~StaticMobilityModel ()
 {}

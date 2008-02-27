@@ -43,6 +43,9 @@
 #include "ns3/command-line.h"
 #include "ns3/default-value.h"
 #include "ns3/ptr.h"
+#include "ns3/config.h"
+#include "ns3/uinteger.h"
+#include "ns3/string.h"
 
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -64,6 +67,7 @@
 #include "ns3/onoff-application.h"
 #include "ns3/packet-sink.h"
 #include "ns3/error-model.h"
+#include "ns3/double.h"
 
 using namespace ns3;
 
@@ -78,15 +82,12 @@ main (int argc, char *argv[])
   LogComponentEnable ("SimplePointToPointExample", LOG_LEVEL_INFO);
 #endif
 
-  // Set up some default values for the simulation.  Use the Bind()
-  // technique to tell the system what subclass of ErrorModel to use
-  DefaultValue::Bind ("ErrorModel", "RateErrorModel");
   // Set a few parameters
-  DefaultValue::Bind ("RateErrorModelErrorRate", "0.01");
-  DefaultValue::Bind ("RateErrorModelErrorUnit", "EU_PKT");
-
-  DefaultValue::Bind ("OnOffApplicationPacketSize", "210");
-  DefaultValue::Bind ("OnOffApplicationDataRate", "448kb/s");
+  Config::SetDefault ("RateErrorModel::ErrorRate", Double (0.01));
+  Config::SetDefault ("RateErrorModel::ErrorUnit", String ("EU_PKT"));
+  
+  Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
+  Config::SetDefault ("OnOffApplication::DataRate", DataRate ("448kb/s"));
 
 
   // Allow the user to override any of the defaults and the above
@@ -142,41 +143,46 @@ main (int argc, char *argv[])
   // 210 bytes at a rate of 448 Kb/s
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
-  Ptr<OnOffApplication> ooff = CreateObject<OnOffApplication> (
-    n0, 
-    InetSocketAddress ("10.1.3.2", port), 
-    "Udp",
-    ConstantVariable(1), 
-    ConstantVariable(0));
+  Ptr<OnOffApplication> ooff = 
+    CreateObjectWith<OnOffApplication> (
+                                        "Node", n0, 
+                                        "Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
+                                        "Protocol", TypeId::LookupByName ("Udp"),
+                                        "OnTime", ConstantVariable(1), 
+                                        "OffTime", ConstantVariable(0));
+  n0->AddApplication (ooff);
   // Start the application
   ooff->Start(Seconds(1.0));
   ooff->Stop (Seconds(10.0));
 
   // Create an optional packet sink to receive these packets
-  Ptr<PacketSink> sink = CreateObject<PacketSink> (
-    n3,
-    InetSocketAddress (Ipv4Address::GetAny (), port),
-    "Udp");
+  Ptr<PacketSink> sink = CreateObjectWith<PacketSink> (
+                                                       "Node", n3,
+                                                       "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
+                                                       "Protocol", TypeId::LookupByName ("Udp"));
+  n3->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.0));
   sink->Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  ooff = CreateObject<OnOffApplication> (
-    n3, 
-    InetSocketAddress ("10.1.2.1", port), 
-    "Udp",
-    ConstantVariable(1), 
-    ConstantVariable(0));
+  ooff = CreateObjectWith<OnOffApplication> (
+                                         "Node", n3, 
+                                         "Remote", Address (InetSocketAddress ("10.1.2.1", port)), 
+                                         "Protocol", TypeId::LookupByName ("Udp"),
+                                         "OnTime", ConstantVariable(1), 
+                                         "OffTime", ConstantVariable(0));
+  n3->AddApplication (ooff);
   // Start the application
   ooff->Start(Seconds(1.1));
   ooff->Stop (Seconds(10.0));
 
   // Create a packet sink to receive these packets
-  sink = CreateObject<PacketSink> (
-    n1,
-    InetSocketAddress (Ipv4Address::GetAny (), port),
-    "Udp");
+  sink = CreateObjectWith<PacketSink> (
+                                   "Node", n1,
+                                   "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
+                                   "Protocol", TypeId::LookupByName ("Udp"));
+  n1->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.1));
   sink->Stop (Seconds (10.0));
@@ -200,16 +206,8 @@ main (int argc, char *argv[])
     (n3, channel2);
   // Create an ErrorModel based on the implementation (constructor)
   // specified by the default classId
-  Ptr<ErrorModel> em = ErrorModel::CreateDefault ();
-  NS_ASSERT (em != 0);
-  // Now, query interface on the resulting em pointer to see if a 
-  // RateErrorModel interface exists.  If so, set the packet error rate
-  Ptr<RateErrorModel> bem = em->GetObject<RateErrorModel> ();
-  if (bem)
-    { 
-      bem->SetRandomVariable (UniformVariable ());
-      bem->SetRate (0.001);
-    }
+  Ptr<RateErrorModel> em = CreateObjectWith<RateErrorModel> ("RanVar", UniformVariable (0.0, 1.0),
+                                                             "Rate", Double (0.001));
   nd3->AddReceiveErrorModel (em);
 
   // Now, let's use the ListErrorModel and explicitly force a loss

@@ -46,7 +46,7 @@ public:
    * \brief Constructor
    * \param node The node which this ARP object is associated with
    */
-  ArpL3Protocol (Ptr<Node> node);
+  ArpL3Protocol ();
   virtual ~ArpL3Protocol ();
   /**
    * \brief Recieve a packet

@@ -35,11 +35,7 @@ class HierarchicalMobilityModel : public MobilityModel
 public:
   static TypeId GetTypeId (void);
 
-  /**
-   * \param child the "relative" mobility model
-   * \param parent the "reference" mobility model
-   */
-  HierarchicalMobilityModel (Ptr<MobilityModel> child, Ptr<MobilityModel> parent);
+  HierarchicalMobilityModel ();
 
   /**
    * \returns the child mobility model.
@@ -62,6 +58,8 @@ private:
   virtual void DoSetPosition (const Vector &position);
   virtual Vector DoGetVelocity (void) const;
 
+  void SetChild (Ptr<MobilityModel> model);
+  void SetParent (Ptr<MobilityModel> model);
   void ParentChanged (const TraceContext &context, Ptr<const MobilityModel> model);
   void ChildChanged (const TraceContext &context, Ptr<const MobilityModel> model);
 

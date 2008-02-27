@@ -301,6 +301,21 @@ std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask)
   mask.Print (os);
   return os;
 }
+std::istream & operator >> (std::istream &is, Ipv4Address &address)
+{
+  std::string str;
+  is >> str;
+  address = Ipv4Address (str.c_str ());
+  return is;
+}
+std::istream & operator >> (std::istream &is, Ipv4Mask &mask)
+{
+  std::string str;
+  is >> str;
+  mask = Ipv4Mask (str.c_str ());
+  return is;
+}
+
 bool operator == (Ipv4Mask const &a, Ipv4Mask const &b)
 {
   return a.IsEqual (b);
@@ -310,5 +325,7 @@ bool operator != (Ipv4Mask const &a, Ipv4Mask const &b)
   return !a.IsEqual (b);
 }
 
+VALUE_HELPER_CPP (Ipv4Address);
+VALUE_HELPER_CPP (Ipv4Mask);
 
-}; // namespace ns3
+} // namespace ns3

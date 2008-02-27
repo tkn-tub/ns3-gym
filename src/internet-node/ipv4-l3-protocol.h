@@ -24,11 +24,10 @@
 
 #include <list>
 #include <stdint.h>
-#include "ns3/callback-trace-source.h"
-#include "ns3/trace-context-element.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
 #include "ns3/ipv4.h"
+#include "ns3/traced-callback.h"
 #include "ipv4-header.h"
 #include "ipv4-static-routing.h"
 
@@ -41,59 +40,6 @@ class Ipv4Address;
 class Ipv4Header;
 class Ipv4Route;
 class Node;
-class TraceResolver;
-class TraceContext;
-
-/**
- * \brief hold in a TraceContext the type of trace source used by this Ipv4L3Protocol
- */
-class Ipv4L3ProtocolTraceContextElement : public TraceContextElement
-{
-public:
-  enum Type {
-    TX,
-    RX,
-    DROP,
-  };
-  Ipv4L3ProtocolTraceContextElement ();
-  Ipv4L3ProtocolTraceContextElement (enum Type type);
-  /**
-   * \returns true if this is a tx event, false otherwise.
-   */
-  bool IsTx (void) const;
-  /**
-   * \returns true if this is a rx event, false otherwise.
-   */
-  bool IsRx (void) const;
-  /**
-   * \returns true if this is a drop event, false otherwise.
-   */
-  bool IsDrop (void) const;
-  void Print (std::ostream &os) const;
-  static uint16_t GetUid (void);
-  std::string GetTypeName (void) const;
-private:
-  enum Type m_type;
-};
-
-/**
- * \brief hold in a TraceContext the index of an Ipv4Interface within the ipv4 stack of a Node
- */
-class Ipv4L3ProtocolInterfaceIndex : public TraceContextElement
-{
-public:
-  Ipv4L3ProtocolInterfaceIndex ();
-  Ipv4L3ProtocolInterfaceIndex (uint32_t index);
-  /**
-   * \returns the index of the Ipv4Interface within a Node.
-   */
-  uint32_t Get (void) const;
-  void Print (std::ostream &os) const;
-  static uint16_t GetUid (void);
-  std::string GetTypeName (void) const;
-private:
-  uint32_t m_index;
-};
 
 
 class Ipv4L3Protocol : public Object
@@ -102,7 +48,7 @@ public:
   static TypeId GetTypeId (void);
   static const uint16_t PROT_NUMBER;
 
-  Ipv4L3Protocol(Ptr<Node> node);
+  Ipv4L3Protocol();
   virtual ~Ipv4L3Protocol ();
 
   /**
@@ -213,7 +159,6 @@ public:
 protected:
 
   virtual void DoDispose (void);
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 
 private:
   void Lookup (uint32_t ifIndex,
@@ -243,9 +188,9 @@ private:
   uint8_t m_defaultTtl;
   uint16_t m_identification;
   Ptr<Node> m_node;
-  CallbackTraceSource<Ptr<const Packet>, uint32_t> m_txTrace;
-  CallbackTraceSource<Ptr<const Packet>, uint32_t> m_rxTrace;
-  CallbackTraceSource<Ptr<const Packet> > m_dropTrace;
+  TracedCallback<Ptr<const Packet>, uint32_t> m_txTrace;
+  TracedCallback<Ptr<const Packet>, uint32_t> m_rxTrace;
+  TracedCallback<Ptr<const Packet> > m_dropTrace;
 
   Ipv4RoutingProtocolList m_routingProtocols;
 
