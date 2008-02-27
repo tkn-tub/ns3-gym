@@ -88,7 +88,7 @@ GridPositionAllocator::GridPositionAllocator ()
 Vector 
 GridPositionAllocator::GetNext (void) const
 {
-  double x, y;
+  double x = 0.0, y = 0.0;
   switch (m_layoutType) {
   case ROW_FIRST:
     x = m_xMin + m_deltaX * (m_current % m_n);
