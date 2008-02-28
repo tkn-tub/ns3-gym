@@ -8,7 +8,7 @@
 #include "double.h"
 #include "enum.h"
 
-#define TRACE(x)
+#define TRACED_VALUE_DEBUG(x)
 
 namespace ns3 {
 
@@ -26,7 +26,7 @@ public:
     return m_v;
   }
   TracedValue &operator = (const TracedValue &o) {
-    TRACE ("x=");
+    TRACED_VALUE_DEBUG ("x=");
     Set (o.m_v);
     return *this;
   }
@@ -67,21 +67,21 @@ public:
     return m_v;
   }
   TracedValue &operator++ () {
-    TRACE ("++x");
+    TRACED_VALUE_DEBUG ("++x");
     T tmp = Get ();
     ++tmp;
     Set (tmp);
     return *this;
   }
   TracedValue &operator-- () {
-    TRACE ("--x");
+    TRACED_VALUE_DEBUG ("--x");
     T tmp = Get ();
     --tmp;
     Set (tmp);
     return *this;
   }
   TracedValue operator++ (int) {
-    TRACE ("x++");
+    TRACED_VALUE_DEBUG ("x++");
     TracedValue old (*this);
     T tmp = Get ();
     tmp++;
@@ -89,7 +89,7 @@ public:
     return old;
   }
   TracedValue operator-- (int) {
-    TRACE ("x--");
+    TRACED_VALUE_DEBUG ("x--");
     TracedValue old (*this);
     T tmp = Get ();
     tmp--;
@@ -104,117 +104,117 @@ private:
 template <typename T, typename U>
 bool operator == (const TracedValue<T> &lhs, const TracedValue<U> &rhs)
 {
-  TRACE ("x==x");
+  TRACED_VALUE_DEBUG ("x==x");
   return lhs.Get () == rhs.Get ();
 }
 template <typename T, typename U>
 bool operator == (const TracedValue<T> &lhs, const U &rhs)
 {
-  TRACE ("x==");
+  TRACED_VALUE_DEBUG ("x==");
   return lhs.Get () == rhs;
 }
 template <typename T, typename U>
 bool operator == (const U &lhs, const TracedValue<T> &rhs)
 {
-  TRACE ("==x");
+  TRACED_VALUE_DEBUG ("==x");
   return lhs == rhs.Get ();
 }
 
 template <typename T, typename U>
 bool operator != (const TracedValue<T> &lhs, const TracedValue<U> &rhs)
 {
-  TRACE ("x!=x");
+  TRACED_VALUE_DEBUG ("x!=x");
   return lhs.Get () != rhs.Get ();
 }
 template <typename T, typename U>
 bool operator != (const TracedValue<T> &lhs, const U &rhs)
 {
-  TRACE ("x!=");
+  TRACED_VALUE_DEBUG ("x!=");
   return lhs.Get () != rhs;
 }
 template <typename T, typename U>
 bool operator != (const U &lhs, const TracedValue<T> &rhs)
 {
-  TRACE ("!=x");
+  TRACED_VALUE_DEBUG ("!=x");
   return lhs != rhs.Get ();
 }
 
 template <typename T, typename U>
 bool operator <= (const TracedValue<T> &lhs, const TracedValue<U> &rhs)
 {
-  TRACE ("x<=x");
+  TRACED_VALUE_DEBUG ("x<=x");
   return lhs.Get () <= rhs.Get ();
 }
 template <typename T, typename U>
 bool operator <= (const TracedValue<T> &lhs, const U &rhs)
 {
-  TRACE ("x<=");
+  TRACED_VALUE_DEBUG ("x<=");
   return lhs.Get () <= rhs;
 }
 template <typename T, typename U>
 bool operator <= (const U &lhs, const TracedValue<T> &rhs)
 {
-  TRACE ("<=x");
+  TRACED_VALUE_DEBUG ("<=x");
   return lhs <= rhs.Get ();
 }
 template <typename T, typename U>
 bool operator >= (const TracedValue<T> &lhs, const TracedValue<U> &rhs)
 {
-  TRACE ("x>=x");
+  TRACED_VALUE_DEBUG ("x>=x");
   return lhs.Get () >= rhs.Get ();
 }
 template <typename T, typename U>
 bool operator >= (const TracedValue<T> &lhs, const U &rhs)
 {
-  TRACE ("x>=");
+  TRACED_VALUE_DEBUG ("x>=");
   return lhs.Get () >= rhs;
 }
 template <typename T, typename U>
 bool operator >= (const U &lhs, const TracedValue<T> &rhs)
 {
-  TRACE (">=x");
+  TRACED_VALUE_DEBUG (">=x");
   return lhs >= rhs.Get ();
 }
 
 template <typename T, typename U>
 bool operator < (const TracedValue<T> &lhs, const TracedValue<U> &rhs)
 {
-  TRACE ("x<x");
+  TRACED_VALUE_DEBUG ("x<x");
   return lhs.Get () < rhs.Get ();
 }
 template <typename T, typename U>
 bool operator < (const TracedValue<T> &lhs, const U &rhs)
 {
-  TRACE ("x<");
+  TRACED_VALUE_DEBUG ("x<");
   return lhs.Get () < rhs;
 }
 template <typename T, typename U>
 bool operator < (const U &lhs, const TracedValue<T> &rhs)
 {
-  TRACE ("<x");
+  TRACED_VALUE_DEBUG ("<x");
   return lhs < rhs.Get ();
 }
 template <typename T, typename U>
 bool operator > (const TracedValue<T> &lhs, const TracedValue<U> &rhs)
 {
-  TRACE ("x>x");
+  TRACED_VALUE_DEBUG ("x>x");
   return lhs.Get () > rhs.Get ();
 }
 template <typename T, typename U>
 bool operator > (const TracedValue<T> &lhs, const U &rhs)
 {
-  TRACE ("x>");
+  TRACED_VALUE_DEBUG ("x>");
   return lhs.Get () > rhs;
 }
 template <typename T, typename U>
 bool operator > (const U &lhs, const TracedValue<T> &rhs)
 {
-  TRACE (">x");
+  TRACED_VALUE_DEBUG (">x");
   return lhs > rhs.Get ();
 }
 template <typename T, typename U>
 TracedValue<T> &operator += (TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x+=");
+  TRACED_VALUE_DEBUG ("x+=");
   T tmp = lhs.Get ();
   tmp += rhs;
   lhs.Set (tmp);
@@ -222,7 +222,7 @@ TracedValue<T> &operator += (TracedValue<T> &lhs, const U &rhs) {
 }
 template <typename T, typename U>
 TracedValue<T> &operator -= (TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x-=");
+  TRACED_VALUE_DEBUG ("x-=");
   T tmp = lhs.Get ();
   tmp -= rhs;
   lhs.Set (tmp);
@@ -230,7 +230,7 @@ TracedValue<T> &operator -= (TracedValue<T> &lhs, const U &rhs) {
 }
 template <typename T, typename U>
 TracedValue<T> &operator *= (TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x*=");
+  TRACED_VALUE_DEBUG ("x*=");
   T tmp = lhs.Get ();
   tmp *= rhs;
   lhs.Set (tmp);
@@ -238,7 +238,7 @@ TracedValue<T> &operator *= (TracedValue<T> &lhs, const U &rhs) {
 }
 template <typename T, typename U>
 TracedValue<T> &operator /= (TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x/=");
+  TRACED_VALUE_DEBUG ("x/=");
   T tmp = lhs.Get ();
   tmp /= rhs;
   lhs.Set (tmp);
@@ -246,7 +246,7 @@ TracedValue<T> &operator /= (TracedValue<T> &lhs, const U &rhs) {
 }
 template <typename T, typename U>
 TracedValue<T> &operator %= (TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x%=");
+  TRACED_VALUE_DEBUG ("x%=");
   T tmp = lhs.Get ();
   tmp %= rhs;
   lhs.Set (tmp);
@@ -254,7 +254,7 @@ TracedValue<T> &operator %= (TracedValue<T> &lhs, const U &rhs) {
 }
 template <typename T, typename U>
 TracedValue<T> &operator <<= (TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x<<=");
+  TRACED_VALUE_DEBUG ("x<<=");
   T tmp = lhs.Get ();
   tmp <<= rhs;
   lhs.Set (tmp);
@@ -262,7 +262,7 @@ TracedValue<T> &operator <<= (TracedValue<T> &lhs, const U &rhs) {
 }
 template <typename T, typename U>
 TracedValue<T> &operator >>= (TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x>>=");
+  TRACED_VALUE_DEBUG ("x>>=");
   T tmp = lhs.Get ();
   tmp >>= rhs;
   lhs.Set (tmp);
@@ -270,7 +270,7 @@ TracedValue<T> &operator >>= (TracedValue<T> &lhs, const U &rhs) {
 }
 template <typename T, typename U>
 TracedValue<T> &operator &= (TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x&=");
+  TRACED_VALUE_DEBUG ("x&=");
   T tmp = lhs.Get ();
   tmp &= rhs;
   lhs.Set (tmp);
@@ -278,7 +278,7 @@ TracedValue<T> &operator &= (TracedValue<T> &lhs, const U &rhs) {
 }
 template <typename T, typename U>
 TracedValue<T> &operator |= (TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x|=");
+  TRACED_VALUE_DEBUG ("x|=");
   T tmp = lhs.Get ();
   tmp |= rhs;
   lhs.Set (tmp);
@@ -286,7 +286,7 @@ TracedValue<T> &operator |= (TracedValue<T> &lhs, const U &rhs) {
 }
 template <typename T, typename U>
 TracedValue<T> &operator ^= (TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x^=");
+  TRACED_VALUE_DEBUG ("x^=");
   T tmp = lhs.Get ();
   tmp ^= rhs;
   lhs.Set (tmp);
@@ -294,183 +294,183 @@ TracedValue<T> &operator ^= (TracedValue<T> &lhs, const U &rhs) {
 }
 template <typename T, typename U>
 TracedValue<T> operator + (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
-  TRACE ("x+x");
+  TRACED_VALUE_DEBUG ("x+x");
   return TracedValue<T> (lhs.Get () + rhs.Get ());
 }
 template <typename T, typename U>
 TracedValue<T> operator + (const TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x+");
+  TRACED_VALUE_DEBUG ("x+");
   return TracedValue<T> (lhs.Get () + rhs);
 }
 template <typename T, typename U>
 TracedValue<T> operator + (const U &lhs, const TracedValue<T> &rhs) {
-  TRACE ("+x");
+  TRACED_VALUE_DEBUG ("+x");
   return TracedValue<T> (lhs + rhs.Get ());
 }
 
 template <typename T, typename U>
 TracedValue<T> operator - (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
-  TRACE ("x-x");
+  TRACED_VALUE_DEBUG ("x-x");
   return TracedValue<T> (lhs.Get () - rhs.Get ());
 }
 template <typename T, typename U>
 TracedValue<T> operator - (const TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x-");
+  TRACED_VALUE_DEBUG ("x-");
   return TracedValue<T> (lhs.Get () - rhs);
 }
 template <typename T, typename U>
 TracedValue<T> operator - (const U &lhs, const TracedValue<T> &rhs) {
-  TRACE ("-x");
+  TRACED_VALUE_DEBUG ("-x");
   return TracedValue<T> (lhs - rhs.Get ());
 }
 
 template <typename T, typename U>
 TracedValue<T> operator * (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
-  TRACE ("x*x");
+  TRACED_VALUE_DEBUG ("x*x");
   return TracedValue<T> (lhs.Get () * rhs.Get ());
 }
 template <typename T, typename U>
 TracedValue<T> operator * (const TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x*");
+  TRACED_VALUE_DEBUG ("x*");
   return TracedValue<T> (lhs.Get () * rhs);
 }
 template <typename T, typename U>
 TracedValue<T> operator * (const U &lhs, const TracedValue<T> &rhs) {
-  TRACE ("*x");
+  TRACED_VALUE_DEBUG ("*x");
   return TracedValue<T> (lhs - rhs.Get ());
 }
 
 template <typename T, typename U>
 TracedValue<T> operator / (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
-  TRACE ("x/x");
+  TRACED_VALUE_DEBUG ("x/x");
   return TracedValue<T> (lhs.Get () / rhs.Get ());
 }
 template <typename T, typename U>
 TracedValue<T> operator / (const TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x/");
+  TRACED_VALUE_DEBUG ("x/");
   return TracedValue<T> (lhs.Get () / rhs);
 }
 template <typename T, typename U>
 TracedValue<T> operator / (const U &lhs, const TracedValue<T> &rhs) {
-  TRACE ("/x");
+  TRACED_VALUE_DEBUG ("/x");
   return TracedValue<T> (lhs / rhs.Get ());
 }
 
 template <typename T, typename U>
 TracedValue<T> operator % (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
-  TRACE ("x%x");
+  TRACED_VALUE_DEBUG ("x%x");
   return TracedValue<T> (lhs.Get () % rhs.Get ());
 }
 template <typename T, typename U>
 TracedValue<T> operator % (const TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x%");
+  TRACED_VALUE_DEBUG ("x%");
   return TracedValue<T> (lhs.Get () % rhs);
 }
 template <typename T, typename U>
 TracedValue<T> operator % (const U &lhs, const TracedValue<T> &rhs) {
-  TRACE ("%x");
+  TRACED_VALUE_DEBUG ("%x");
   return TracedValue<T> (lhs % rhs.Get ());
 }
 
 template <typename T, typename U>
 TracedValue<T> operator ^ (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
-  TRACE ("x^x");
+  TRACED_VALUE_DEBUG ("x^x");
   return TracedValue<T> (lhs.Get () ^ rhs.Get ());
 }
 template <typename T, typename U>
 TracedValue<T> operator ^ (const TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x^");
+  TRACED_VALUE_DEBUG ("x^");
   return TracedValue<T> (lhs.Get () ^ rhs);
 }
 template <typename T, typename U>
 TracedValue<T> operator ^ (const U &lhs, const TracedValue<T> &rhs) {
-  TRACE ("^x");
+  TRACED_VALUE_DEBUG ("^x");
   return TracedValue<T> (lhs ^ rhs.Get ());
 }
 
 template <typename T, typename U>
 TracedValue<T> operator | (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
-  TRACE ("x|x");
+  TRACED_VALUE_DEBUG ("x|x");
   return TracedValue<T> (lhs.Get () | rhs.Get ());
 }
 template <typename T, typename U>
 TracedValue<T> operator | (const TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x|");
+  TRACED_VALUE_DEBUG ("x|");
   return TracedValue<T> (lhs.Get () | rhs);
 }
 template <typename T, typename U>
 TracedValue<T> operator | (const U &lhs, const TracedValue<T> &rhs) {
-  TRACE ("|x");
+  TRACED_VALUE_DEBUG ("|x");
   return TracedValue<T> (lhs | rhs.Get ());
 }
 
 template <typename T, typename U>
 TracedValue<T> operator & (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
-  TRACE ("x&x");
+  TRACED_VALUE_DEBUG ("x&x");
   return TracedValue<T> (lhs.Get () & rhs.Get ());
 }
 template <typename T, typename U>
 TracedValue<T> operator & (const TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x&");
+  TRACED_VALUE_DEBUG ("x&");
   return TracedValue<T> (lhs.Get () & rhs);
 }
 template <typename T, typename U>
 TracedValue<T> operator & (const U &lhs, const TracedValue<T> &rhs) {
-  TRACE ("&x");
+  TRACED_VALUE_DEBUG ("&x");
   return TracedValue<T> (lhs & rhs.Get ());
 }
 
 template <typename T, typename U>
 TracedValue<T> operator << (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
-  TRACE ("x<<x");
+  TRACED_VALUE_DEBUG ("x<<x");
   return TracedValue<T> (lhs.Get () << rhs.Get ());
 }
 template <typename T, typename U>
 TracedValue<T> operator << (const TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x<<");
+  TRACED_VALUE_DEBUG ("x<<");
   return TracedValue<T> (lhs.Get () << rhs);
 }
 template <typename T, typename U>
 TracedValue<T> operator << (const U &lhs, const TracedValue<T> &rhs) {
-  TRACE ("<<x");
+  TRACED_VALUE_DEBUG ("<<x");
   return TracedValue<T> (lhs << rhs.Get ());
 }
 
 template <typename T, typename U>
 TracedValue<T> operator >> (const TracedValue<T> &lhs, const TracedValue<U> &rhs) {
-  TRACE ("x>>x");
+  TRACED_VALUE_DEBUG ("x>>x");
   return TracedValue<T> (lhs.Get () >> rhs.Get ());
 }
 template <typename T, typename U>
 TracedValue<T> operator >> (const TracedValue<T> &lhs, const U &rhs) {
-  TRACE ("x>>");
+  TRACED_VALUE_DEBUG ("x>>");
   return TracedValue<T> (lhs.Get () >> rhs);
 }
 template <typename T, typename U>
 TracedValue<T> operator >> (const U &lhs, const TracedValue<T> &rhs) {
-  TRACE (">>x");
+  TRACED_VALUE_DEBUG (">>x");
   return TracedValue<T> (lhs >> rhs.Get ());
 }
 
 
 template <typename T>
 TracedValue<T> operator + (const TracedValue<T> &lhs) {
-  TRACE ("(+x)");
+  TRACED_VALUE_DEBUG ("(+x)");
   return TracedValue<T> (+lhs.Get ());
 }
 template <typename T>
 TracedValue<T> operator - (const TracedValue<T> &lhs) {
-  TRACE ("(-x)");
+  TRACED_VALUE_DEBUG ("(-x)");
   return TracedValue<T> (-lhs.Get ());
 }
 template <typename T>
 TracedValue<T> operator ~ (const TracedValue<T> &lhs) {
-  TRACE ("(~x)");
+  TRACED_VALUE_DEBUG ("(~x)");
   return TracedValue<T> (~lhs.Get ());
 }
 template <typename T>
 TracedValue<T> operator ! (const TracedValue<T> &lhs) {
-  TRACE ("(!x)");
+  TRACED_VALUE_DEBUG ("(!x)");
   return TracedValue<T> (!lhs.Get ());
 }
 
