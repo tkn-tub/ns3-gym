@@ -398,6 +398,9 @@ void Unregister (Ptr<Object> obj)
 
 #include "test.h"
 #include "integer.h"
+#include "traced-value.h"
+#include "trace-source-accessor.h"
+#include "callback.h"
 
 namespace ns3 {
 
@@ -422,6 +425,7 @@ private:
   Ptr<MyNode> m_nodeB;
   int8_t m_a;
   int8_t m_b;
+  TracedValue<int16_t> m_trace;
 };
 
 TypeId MyNode::GetTypeId (void)
@@ -452,6 +456,12 @@ TypeId MyNode::GetTypeId (void)
 		   Integer (9),
 		   MakeIntegerAccessor (&MyNode::m_b),
 		   MakeIntegerChecker<int8_t> ())
+    .AddAttribute ("Source", "XX",
+		   Integer (-1),
+		   MakeIntegerAccessor (&MyNode::m_trace),
+		   MakeIntegerChecker<int16_t> ())
+    .AddTraceSource ("Source", "XX",
+		     MakeTraceSourceAccessor (&MyNode::m_trace))
     ;
   return tid;
 }
@@ -493,6 +503,9 @@ class ConfigTest : public Test
 public:
   ConfigTest ();
   virtual bool RunTests (void);
+private:
+  void ChangeNotification (int16_t old, int16_t newValue);
+  int16_t m_traceNotification;
 };
 
 static ConfigTest g_configTestUnique;
@@ -500,6 +513,12 @@ static ConfigTest g_configTestUnique;
 ConfigTest::ConfigTest ()
   : Test ("Config")
 {}
+
+void
+ConfigTest::ChangeNotification (int16_t oldValue, int16_t newValue)
+{
+  m_traceNotification = newValue;
+}
 
 bool
 ConfigTest::RunTests (void)
@@ -601,6 +620,24 @@ ConfigTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (v.Get (), -15);
   v = d3->GetAttribute ("A");
   NS_TEST_ASSERT_EQUAL (v.Get (), -16);
+
+
+  Config::Connect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+		   MakeCallback (&ConfigTest::ChangeNotification, this));
+  m_traceNotification = 0;
+  // this should trigger no notification
+  d2->SetAttribute ("Source", Integer (-2));
+  NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
+  m_traceNotification = 0;
+  // this should trigger a notification
+  d1->SetAttribute ("Source", Integer (-3));
+  NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
+  Config::Disconnect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+		      MakeCallback (&ConfigTest::ChangeNotification, this));
+  m_traceNotification = 0;
+  // this should _not_ trigger a notification
+  d1->SetAttribute ("Source", Integer (-4));
+  NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
 
 
 
