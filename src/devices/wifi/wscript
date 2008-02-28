@@ -15,7 +15,7 @@ def build(bld):
         'aarf-mac-stations.cc',
         'wifi-mac-header.cc',
         'wifi-mac-trailer.cc',
-        'mac-parameters.cc',
+        'wifi-mac-parameters.cc',
         'mac-low.cc',
         'wifi-mac-queue.cc',
         'mac-tx-middle.cc',

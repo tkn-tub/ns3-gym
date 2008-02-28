@@ -30,7 +30,7 @@
 #include "wifi-mac-trailer.h"
 #include "wifi-net-device.h"
 #include "mac-stations.h"
-#include "mac-parameters.h"
+#include "wifi-mac-parameters.h"
 #include "ns3/composite-trace-resolver.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
@@ -320,7 +320,7 @@ MacLow::SetPhy (Ptr<WifiPhy> phy)
   m_phy = phy;
 }
 void 
-MacLow::SetParameters (MacParameters *parameters)
+MacLow::SetParameters (WifiMacParameters *parameters)
 {
   m_parameters = parameters;
 }

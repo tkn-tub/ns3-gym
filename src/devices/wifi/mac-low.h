@@ -40,7 +40,7 @@ class WifiPhy;
 class PacketLogger;
 class MacStations;
 class MacStation;
-class MacParameters;
+class WifiMacParameters;
 
 /**
  * \brief listen to events coming from ns3::MacLow.
@@ -280,7 +280,7 @@ public:
   void SetDevice (Ptr<WifiNetDevice> device);
   void SetPhy (Ptr<WifiPhy> phy);
   void SetStations (MacStations *stations);
-  void SetParameters (MacParameters *parameters);
+  void SetParameters (WifiMacParameters *parameters);
   Ptr<NetDevice> GetDevice (void) const;
   /**
    * \param callback the callback which receives every incoming packet.
@@ -389,7 +389,7 @@ private:
   Ptr<WifiNetDevice> m_device;
   Ptr<WifiPhy> m_phy;
   MacStations *m_stations;
-  MacParameters *m_parameters;
+  WifiMacParameters *m_parameters;
   MacLowRxCallback m_rxCallback;
   typedef std::vector<MacLowNavListener *>::const_iterator NavListenersCI;
   typedef std::vector<MacLowNavListener *> NavListeners;

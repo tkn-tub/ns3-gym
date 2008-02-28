@@ -20,7 +20,7 @@
 
 #include "mac-stations.h"
 #include "wifi-default-parameters.h"
-#include "mac-parameters.h"
+#include "wifi-mac-parameters.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
 #include "ns3/tag.h"
@@ -219,7 +219,7 @@ MacStations::IsLowLatency (void) const
   return m_isLowLatency;
 }
 void 
-MacStations::SetParameters (MacParameters *parameters)
+MacStations::SetParameters (WifiMacParameters *parameters)
 {
   m_parameters = parameters;
 }
@@ -309,7 +309,7 @@ MacStation::~MacStation ()
 {}
 
 void 
-MacStation::SetParameters (MacParameters *parameters)
+MacStation::SetParameters (WifiMacParameters *parameters)
 {
   m_parameters = parameters;
 }

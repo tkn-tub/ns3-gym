@@ -36,7 +36,7 @@ class MacStations;
 class MacLow;
 class MacRxMiddle;
 class MacTxMiddle;
-class MacParameters;
+class WifiMacParameters;
 class DcaTxop;
 class MacHighAdhoc;
 class MacHighNqsta;
@@ -149,7 +149,7 @@ protected:
   Ptr<MacLow> m_low;
   MacRxMiddle *m_rxMiddle;
   MacTxMiddle *m_txMiddle;
-  MacParameters *m_parameters;
+  WifiMacParameters *m_parameters;
   DcfManager *m_manager;
   PhyListener *m_phyListener;
   NavListener *m_navListener;

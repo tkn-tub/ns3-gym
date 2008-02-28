@@ -6,7 +6,7 @@
 #include <math.h>
 
 #include "dcf-manager.h"
-#include "mac-parameters.h"
+#include "wifi-mac-parameters.h"
 
 NS_LOG_COMPONENT_DEFINE ("DcfManager");
 

@@ -27,7 +27,7 @@
 
 #include "dca-txop.h"
 #include "dcf-manager.h"
-#include "mac-parameters.h"
+#include "wifi-mac-parameters.h"
 #include "mac-low.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
@@ -131,7 +131,7 @@ DcaTxop::SetLow (Ptr<MacLow> low)
   m_low = low;
 }
 void 
-DcaTxop::SetParameters (MacParameters *parameters)
+DcaTxop::SetParameters (WifiMacParameters *parameters)
 {
   m_parameters = parameters;
 }
@@ -213,7 +213,7 @@ DcaTxop::Low (void)
   return m_low;
 }
 
-MacParameters *
+WifiMacParameters *
 DcaTxop::Parameters (void)
 {
   return m_parameters;

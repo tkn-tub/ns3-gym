@@ -36,7 +36,7 @@ class DcfState;
 class DcfManager;
 class WifiMacQueue;
 class MacLow;
-class MacParameters;
+class WifiMacParameters;
 class MacTxMiddle;
 class RandomStream;
 class MacStation;
@@ -82,7 +82,7 @@ public:
   ~DcaTxop ();
 
   void SetLow (Ptr<MacLow> low);
-  void SetParameters (MacParameters *parameters);
+  void SetParameters (WifiMacParameters *parameters);
   void SetStations (MacStations *stations);
   void SetTxMiddle (MacTxMiddle *txMiddle);
   /**
@@ -119,7 +119,7 @@ private:
   // Inherited from ns3::Object
   virtual Ptr<TraceResolver> GetTraceResolver (void) const;  
   Ptr<MacLow> Low (void);
-  MacParameters *Parameters (void);
+  WifiMacParameters *Parameters (void);
 
   /* dcf notifications forwarded here */
   bool NeedsAccess (void) const;
@@ -156,7 +156,7 @@ private:
   MacTxMiddle *m_txMiddle;
   Ptr <MacLow> m_low;
   MacStations *m_stations;
-  MacParameters *m_parameters;
+  WifiMacParameters *m_parameters;
   TransmissionListener *m_transmissionListener;
   RandomStream *m_rng;
   

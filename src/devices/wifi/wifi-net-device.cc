@@ -27,7 +27,7 @@
 #include "wifi-channel.h"
 #include "mac-stations.h"
 #include "mac-low.h"
-#include "mac-parameters.h"
+#include "wifi-mac-parameters.h"
 #include "mac-rx-middle.h"
 #include "mac-tx-middle.h"
 #include "mac-high-adhoc.h"
@@ -225,8 +225,8 @@ WifiNetDevice::Construct (void)
     break;
   }
 
-  // MacParameters
-  MacParameters *parameters = new MacParameters ();
+  // WifiMacParameters
+  WifiMacParameters *parameters = new WifiMacParameters ();
   WifiMacHeader hdr;
   hdr.SetType (WIFI_MAC_CTL_CTS);
   Time ctsDelay = m_phy->CalculateTxDuration (hdr.GetSize () + 4, m_phy->GetMode (0), WIFI_PREAMBLE_LONG);

@@ -30,7 +30,7 @@ namespace ns3 {
 
 class MacStation;
 class NonUnicastMacStation;
-class MacParameters;
+class WifiMacParameters;
 
 class MacStations 
 {
@@ -41,7 +41,7 @@ public:
 
   MacStations (WifiMode defaultTxMode);
   virtual ~MacStations ();
-  void SetParameters (MacParameters *parameters);
+  void SetParameters (WifiMacParameters *parameters);
   
   // Invoked in a STA upon dis-association
   // or in an AP upon reboot
@@ -71,7 +71,7 @@ private:
   NonUnicastMacStation *m_nonUnicast;
   BasicModes m_basicModes;
   bool m_isLowLatency;
-  MacParameters *m_parameters;
+  WifiMacParameters *m_parameters;
 };
 
 } // namespace ns3
@@ -92,7 +92,7 @@ public:
   // The set of supported modes includes
   // the BSSBasicRateSet.
   void AddSupportedMode (WifiMode mode);
-  void SetParameters (MacParameters *parameters);
+  void SetParameters (WifiMacParameters *parameters);
 
   bool IsBrandNew (void) const;
   bool IsAssociated (void) const;
@@ -145,7 +145,7 @@ private:
     GOT_ASSOC_TX_OK
   } m_state;
   SupportedModes m_modes;
-  MacParameters *m_parameters;
+  WifiMacParameters *m_parameters;
 };
 
 } // namespace ns3 

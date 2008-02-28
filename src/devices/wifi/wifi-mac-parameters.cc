@@ -19,12 +19,12 @@
  */
 
 #include "ns3/assert.h"
-#include "mac-parameters.h"
+#include "wifi-mac-parameters.h"
 #include "wifi-default-parameters.h"
 
 namespace ns3 {
 
-MacParameters::MacParameters ()
+WifiMacParameters::WifiMacParameters ()
 {
   m_rtsCtsThreshold = WifiDefaultParameters::GetRtsCtsThreshold ();
   m_fragmentationThreshold = WifiDefaultParameters::GetFragmentationThreshold ();
@@ -41,7 +41,7 @@ MacParameters::MacParameters ()
   Initialize (delay, delay);
 }
 void 
-MacParameters::Initialize (Time ctsDelay, Time ackDelay)
+WifiMacParameters::Initialize (Time ctsDelay, Time ackDelay)
 {
   NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WIFI_PHY_STANDARD_80211a ||
              WifiDefaultParameters::GetPhyStandard () == WIFI_PHY_STANDARD_holland);
@@ -71,87 +71,87 @@ MacParameters::Initialize (Time ctsDelay, Time ackDelay)
 }
 
 void 
-MacParameters::SetSlotTime (Time slotTime)
+WifiMacParameters::SetSlotTime (Time slotTime)
 {
   m_slot = slotTime;
 }
 
 
 Time
-MacParameters::GetPifs (void) const
+WifiMacParameters::GetPifs (void) const
 {
   return m_pifs;
 }
 Time
-MacParameters::GetSifs (void) const
+WifiMacParameters::GetSifs (void) const
 {
   return m_sifs;
 }
 Time
-MacParameters::GetSlotTime (void) const
+WifiMacParameters::GetSlotTime (void) const
 {
   return m_slot;
 }
 Time
-MacParameters::GetCtsTimeout (void) const
+WifiMacParameters::GetCtsTimeout (void) const
 {
   return m_ctsTimeout;
 }
 Time
-MacParameters::GetAckTimeout (void) const
+WifiMacParameters::GetAckTimeout (void) const
 {
   return m_ackTimeout;
 }
 
 Time
-MacParameters::GetBeaconInterval (void) const
+WifiMacParameters::GetBeaconInterval (void) const
 {
   return Seconds (1);
 }
 uint32_t 
-MacParameters::GetMaxSsrc (void) const
+WifiMacParameters::GetMaxSsrc (void) const
 {
   return m_maxSsrc;
 }
 uint32_t 
-MacParameters::GetMaxSlrc (void) const
+WifiMacParameters::GetMaxSlrc (void) const
 {
   return m_maxSlrc;
 }
 uint32_t 
-MacParameters::GetRtsCtsThreshold (void) const
+WifiMacParameters::GetRtsCtsThreshold (void) const
 {
   return m_rtsCtsThreshold;
 }
 uint32_t 
-MacParameters::GetFragmentationThreshold (void) const
+WifiMacParameters::GetFragmentationThreshold (void) const
 {
   NS_ASSERT (GetMaxMsduSize () / 16 < m_fragmentationThreshold);
   return m_fragmentationThreshold;
 }
 Time
-MacParameters::GetMsduLifetime (void) const
+WifiMacParameters::GetMsduLifetime (void) const
 {
   return Seconds (10);
 }
 Time
-MacParameters::GetMaxPropagationDelay (void) const
+WifiMacParameters::GetMaxPropagationDelay (void) const
 {
   return m_maxPropagationDelay;
 }
 
 uint32_t 
-MacParameters::GetMaxMsduSize (void) const
+WifiMacParameters::GetMaxMsduSize (void) const
 {
   return 2304;
 }
 double 
-MacParameters::GetCapLimit (void) const
+WifiMacParameters::GetCapLimit (void) const
 {
   return 0.4;
 }
 double 
-MacParameters::GetMinEdcaTrafficProportion (void) const
+WifiMacParameters::GetMinEdcaTrafficProportion (void) const
 {
   return 0.4;
 }

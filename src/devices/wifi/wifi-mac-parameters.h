@@ -25,10 +25,10 @@
 
 namespace ns3 {
 
-class MacParameters 
+class WifiMacParameters 
 {
 public:
-  MacParameters ();
+  WifiMacParameters ();
 
   void Initialize (Time ctsDelay, Time ackDelay);
   void SetSlotTime (Time slotTime);

@@ -4,7 +4,7 @@
 #include "ns3/test.h"
 #include "ns3/simulator.h"
 #include "dcf-manager.h"
-#include "mac-parameters.h"
+#include "wifi-mac-parameters.h"
 
 
 namespace ns3 {
@@ -67,7 +67,7 @@ private:
   typedef std::vector<DcfStateTest *> DcfStates;
 
   DcfManager *m_dcfManager;
-  MacParameters *m_parameters;
+  WifiMacParameters *m_parameters;
   DcfStates m_dcfStates;
   bool m_result;
 };

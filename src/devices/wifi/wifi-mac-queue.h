@@ -28,7 +28,7 @@
 
 namespace ns3 {
 
-class MacParameters;
+class WifiMacParameters;
 
 /**
  * \brief a 802.11e-specific queue.
@@ -75,7 +75,7 @@ private:
   typedef std::deque<struct Item>::reverse_iterator PacketQueueRI;
   typedef std::deque<struct Item>::iterator PacketQueueI;
   PacketQueue m_queue;
-  MacParameters *m_parameters;
+  WifiMacParameters *m_parameters;
   uint32_t m_size;
   uint32_t m_maxSize;
   Time m_maxDelay;
