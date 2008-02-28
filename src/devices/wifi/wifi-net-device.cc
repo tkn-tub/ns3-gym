@@ -227,12 +227,6 @@ WifiNetDevice::Construct (void)
 
   // WifiMacParameters
   WifiMacParameters *parameters = new WifiMacParameters ();
-  WifiMacHeader hdr;
-  hdr.SetType (WIFI_MAC_CTL_CTS);
-  Time ctsDelay = m_phy->CalculateTxDuration (hdr.GetSize () + 4, m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
-  hdr.SetType (WIFI_MAC_CTL_ACK);
-  Time ackDelay = m_phy->CalculateTxDuration (hdr.GetSize () + 4, m_phy->GetMode (0), WIFI_PREAMBLE_LONG);
-  parameters->Initialize (ctsDelay, ackDelay);
   m_parameters = parameters;
   m_stations->SetParameters (m_parameters);
 

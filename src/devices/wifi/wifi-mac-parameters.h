@@ -22,15 +22,16 @@
 
 #include <stdint.h>
 #include "ns3/nstime.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
-class WifiMacParameters 
+class WifiMacParameters : public Object
 {
 public:
+  static TypeId GetTypeId (void);
   WifiMacParameters ();
 
-  void Initialize (Time ctsDelay, Time ackDelay);
   void SetSlotTime (Time slotTime);
 
   // XXX AP-specific
@@ -53,7 +54,11 @@ public:
   double GetCapLimit (void) const;
   double GetMinEdcaTrafficProportion (void) const;
 private:
-  void Initialize80211a (void);
+  static Time GetDefaultMaxPropagationDelay (void);
+  static Time GetDefaultSlot (void);
+  static Time GetDefaultSifs (void);
+  static Time GetDefaultCtsAckDelay (void);
+  static Time GetDefaultCtsAckTimeout (void);
   Time m_ctsTimeout;
   Time m_ackTimeout;
   Time m_sifs;

@@ -19,56 +19,101 @@
  */
 
 #include "ns3/assert.h"
+#include "ns3/uinteger.h"
 #include "wifi-mac-parameters.h"
-#include "wifi-default-parameters.h"
 
 namespace ns3 {
 
-WifiMacParameters::WifiMacParameters ()
+Time
+WifiMacParameters::GetDefaultMaxPropagationDelay (void)
 {
-  m_rtsCtsThreshold = WifiDefaultParameters::GetRtsCtsThreshold ();
-  m_fragmentationThreshold = WifiDefaultParameters::GetFragmentationThreshold ();
-  m_maxSsrc = WifiDefaultParameters::GetMaxSsrc ();
-  m_maxSlrc = WifiDefaultParameters::GetMaxSlrc ();
-
-  // ensure something not too stupid is set by default.
-  NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WIFI_PHY_STANDARD_80211a ||
-             WifiDefaultParameters::GetPhyStandard () == WIFI_PHY_STANDARD_holland);
-  uint32_t ctsAckSize = (2 + 2 + 6) * 8; // bits
-  double dataRate = (6e6 / 2); // mb/s
-  Time delay = Seconds (ctsAckSize / dataRate);
-
-  Initialize (delay, delay);
-}
-void 
-WifiMacParameters::Initialize (Time ctsDelay, Time ackDelay)
-{
-  NS_ASSERT (WifiDefaultParameters::GetPhyStandard () == WIFI_PHY_STANDARD_80211a ||
-             WifiDefaultParameters::GetPhyStandard () == WIFI_PHY_STANDARD_holland);
-
-  // these values are really 802.11a specific
-  m_sifs = MicroSeconds (16);
-  m_slot = MicroSeconds (9);
-
-
-  /* see section 9.2.10 ieee 802.11-1999 */
-  m_pifs = m_sifs + m_slot;
   // 1000m 
-  m_maxPropagationDelay = Seconds (1000.0 / 300000000.0);
+  return Seconds (1000.0 / 300000000.0);
+}
+Time
+WifiMacParameters::GetDefaultSlot (void)
+{
+  // 802.11-a specific
+  return MicroSeconds (9);
+}
+Time
+WifiMacParameters::GetDefaultSifs (void)
+{
+  // 802.11-a specific
+  return MicroSeconds (16);
+}
+Time
+WifiMacParameters::GetDefaultCtsAckDelay (void)
+{
+  // 802.11-a specific: 6mb/s
+  return MicroSeconds (44);
+}
+Time
+WifiMacParameters::GetDefaultCtsAckTimeout (void)
+{
   /* Cts_Timeout and Ack_Timeout are specified in the Annex C 
      (Formal description of MAC operation, see details on the 
      Trsp timer setting at page 346)
   */
-  m_ctsTimeout = m_sifs;
-  m_ctsTimeout += ctsDelay;
-  m_ctsTimeout += m_maxPropagationDelay * Scalar (2);
-  m_ctsTimeout += m_slot;
-
-  m_ackTimeout = m_sifs;
-  m_ackTimeout += ackDelay;
-  m_ackTimeout += m_maxPropagationDelay * Scalar (2);
-  m_ackTimeout += m_slot;
+  Time ctsTimeout = GetDefaultSifs ();
+  ctsTimeout += GetDefaultCtsAckDelay ();
+  ctsTimeout += GetDefaultMaxPropagationDelay () * Scalar (2);
+  ctsTimeout += GetDefaultSlot ();
+  return ctsTimeout;
 }
+
+TypeId 
+WifiMacParameters::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("WifiMacParameters")
+    .SetParent<Object> ()
+    .AddConstructor<WifiMacParameters> ()
+    .AddAttribute ("CtsTimeout", "XXX",
+                   GetDefaultCtsAckTimeout (),
+                   MakeTimeAccessor (&WifiMacParameters::m_ctsTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("AckTimeout", "XXX",
+                   GetDefaultCtsAckTimeout (),
+                   MakeTimeAccessor (&WifiMacParameters::m_ackTimeout),
+                   MakeTimeChecker ())
+    .AddAttribute ("Sifs", "XXX",
+                   GetDefaultSifs (),
+                   MakeTimeAccessor (&WifiMacParameters::m_sifs),
+                   MakeTimeChecker ())
+    .AddAttribute ("Slot", "XXX",
+                   GetDefaultSlot (),
+                   MakeTimeAccessor (&WifiMacParameters::m_slot),
+                   MakeTimeChecker ())
+    .AddAttribute ("Pifs", "XXX",
+                   GetDefaultSifs () + GetDefaultSlot (),
+                   MakeTimeAccessor (&WifiMacParameters::m_pifs),
+                   MakeTimeChecker ())
+    .AddAttribute ("MaxSsrc", "XXX",
+                   Uinteger (7),
+                   MakeUintegerAccessor (&WifiMacParameters::m_maxSsrc),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("MaxSlrc", "XXX",
+                   Uinteger (7),
+                   MakeUintegerAccessor (&WifiMacParameters::m_maxSlrc),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("RtsCtsThreshold", "XXX",
+                   Uinteger (1500),
+                   MakeUintegerAccessor (&WifiMacParameters::m_rtsCtsThreshold),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("FragmentationThreshold", "XXX",
+                   Uinteger (1500),
+                   MakeUintegerAccessor (&WifiMacParameters::m_fragmentationThreshold),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("MaxPropagationDelay", "XXX",
+                   GetDefaultMaxPropagationDelay (),
+                   MakeTimeAccessor (&WifiMacParameters::m_maxPropagationDelay),
+                   MakeTimeChecker ())
+    ;
+  return tid;
+}
+
+WifiMacParameters::WifiMacParameters ()
+{}
 
 void 
 WifiMacParameters::SetSlotTime (Time slotTime)
