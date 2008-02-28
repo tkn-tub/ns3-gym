@@ -289,9 +289,6 @@ MakePtrAccessor (Ptr<U> T::*memberVariable)
   struct MemberVariable : public internal::PtrAccessor<T,U>
   {
     Ptr<U> T::*m_memberVariable;
-    virtual MemberVariable *Copy (void) const {
-      return new MemberVariable (*this);
-    }
     virtual void DoSet (T *object, Ptr<U> value) const {
       (object->*m_memberVariable) = value;
     }
@@ -310,9 +307,6 @@ MakePtrAccessor (void (T::*setter) (Ptr<U>))
   struct MemberMethod : public internal::PtrAccessor<T,U>
   {
     void (T::*m_setter) (Ptr<U>);
-    virtual MemberMethod *Copy (void) const {
-      return new MemberMethod (*this);
-    }
     virtual void DoSet (T *object, Ptr<U> value) const {
       (object->*m_setter) (value);
     }
@@ -332,9 +326,6 @@ MakePtrAccessor (Ptr<U> (T::*getter) (void) const)
   struct MemberMethod : public internal::PtrAccessor<T,U>
   {
     void (T::*m_getter) (Ptr<U>);
-    virtual MemberMethod *Copy (void) const {
-      return new MemberMethod (*this);
-    }
     virtual void DoSet (T *object, Ptr<U> value) const {
       //(object->*m_setter) (value);
     }

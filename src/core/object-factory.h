@@ -35,7 +35,8 @@ template <typename T>
 Ptr<T> 
 ObjectFactory::Create (void) const
 {
-  return Create ()->GetObject<T> ();
+  Ptr<Object> object = Create ();
+  return object->GetObject<T> ();
 }
 
 } // namespace ns3
