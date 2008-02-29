@@ -125,10 +125,10 @@ DoMakeAccessorHelperOne (void (T::*setter) (U))
 	{}
     private:
       virtual bool DoSet (T *object, const V *v) const {
-	(object->*m_setter) (v->Get ());
+	(object->*m_setter) (U (v->Get ()));
 	return true;
       }
-      virtual void DoGet (const T *object, V *v) const {
+      virtual bool DoGet (const T *object, V *v) const {
 	return false;
       }
       void (T::*m_setter) (U);
