@@ -319,8 +319,8 @@ public:
    */
   bool Set (std::string name, Attribute value);
 
-  void SetWithTid (TypeId tid, std::string name, Attribute value);
-  void SetWithTid (TypeId tid, uint32_t position, Attribute value);
+  bool SetWithTid (TypeId tid, std::string name, Attribute value);
+  bool SetWithTid (TypeId tid, uint32_t position, Attribute value);
 
   /**
    * Clear the content of this instance.

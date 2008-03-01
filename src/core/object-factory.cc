@@ -24,7 +24,14 @@ ObjectFactory::SetTypeId (const char *tid)
 void 
 ObjectFactory::Set (std::string name, Attribute value)
 {
-  m_parameters.SetWithTid (m_tid, name, value);
+  if (name == "")
+    {
+      return;
+    }
+  if (!m_parameters.SetWithTid (m_tid, name, value))
+    {
+      NS_FATAL_ERROR ("Error setting attribute name="<<name);
+    }
 }
 
 TypeId 

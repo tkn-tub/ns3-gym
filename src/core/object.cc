@@ -809,19 +809,21 @@ AttributeList::Set (std::string name, Attribute value)
   bool ok = DoSet (&info, value);
   return ok;
 }
-void 
+bool
 AttributeList::SetWithTid (TypeId tid, std::string name, Attribute value)
 {
   struct TypeId::AttributeInfo info;
   tid.LookupAttributeByName (name, &info);
-  DoSet (&info, value);
+  bool ok = DoSet (&info, value);
+  return ok;
 }
-void 
+bool
 AttributeList::SetWithTid (TypeId tid, uint32_t position, Attribute value)
 {
   struct TypeId::AttributeInfo info;
   tid.LookupAttributeByPosition (position, &info);
-  DoSet (&info, value);
+  bool ok = DoSet (&info, value);
+  return ok;
 }
 
 void
