@@ -21,16 +21,17 @@
 #include "wifi-phy.h"
 #include "wifi-mode.h"
 #include "wifi-channel.h"
-#include "wifi-net-device.h"
 #include "wifi-preamble.h"
-#include "wifi-default-parameters.h"
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
 #include "ns3/random-variable.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/composite-trace-resolver.h"
 #include "ns3/object-base.h"
+#include "ns3/double.h"
+#include "ns3/uinteger.h"
+#include "ns3/enum.h"
+#include "ns3/trace-source-accessor.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("WifiPhy");
@@ -176,15 +177,71 @@ WifiPhy::NiChange::operator < (WifiPhy::NiChange const &o) const
  *       The actual WifiPhy class
  ****************************************************************/
 
-WifiPhy::WifiPhy (Ptr<WifiNetDevice> device)
-  : m_edThresholdW (DbmToW (WifiDefaultParameters::GetPhyEnergyDetectionThresholdDbm ())),
-    m_txGainDb (WifiDefaultParameters::GetPhyTxGainDb ()),
-    m_rxGainDb (WifiDefaultParameters::GetPhyRxGainDb ()),
-    m_rxNoiseRatio (DbToRatio (WifiDefaultParameters::GetPhyRxNoiseDb ())),
-    m_txPowerBaseDbm (WifiDefaultParameters::GetPhyTxPowerBaseDbm ()),
-    m_txPowerEndDbm (WifiDefaultParameters::GetPhyTxPowerEndDbm ()),
-    m_nTxPower (WifiDefaultParameters::GetPhyTxPowerLevels ()),
-    m_syncing (false),
+NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
+
+TypeId 
+WifiPhy::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("WifiPhy")
+    .SetParent<Object> ()
+    .AddConstructor<WifiPhy> ()
+    .AddAttribute ("EnergyDetectionThreshold",
+                   "The energy of a received signal should be higher than "
+                   "this threshold (dbm) to allow the PHY layer to detect the signal.",
+                   Double (-140.0),
+                   MakeDoubleAccessor (&WifiPhy::SetEdThreshold,
+                                       &WifiPhy::GetEdThreshold),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("TxGain",
+                   "Transmission gain (dB).",
+                   Double (1.0),
+                   MakeDoubleAccessor (&WifiPhy::SetTxGain,
+                                       &WifiPhy::GetTxGain),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("RxGain",
+                   "Reception gain (dB).",
+                   Double (1.0),
+                   MakeDoubleAccessor (&WifiPhy::SetRxGain,
+                                       &WifiPhy::GetRxGain),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("TxPowerLevels",
+                   "Number of transmission power levels available between "
+                   "TxPowerBase and TxPowerEnd included.",
+                   Uinteger (1),
+                   MakeUintegerAccessor (&WifiPhy::m_nTxPower),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TxPowerEnd",
+                   "Maximum available transmission level (dbm).",
+                   Double (16.0206),
+                   MakeDoubleAccessor (&WifiPhy::SetTxPowerEnd, 
+                                       &WifiPhy::GetTxPowerEnd),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("TxPowerStart",
+                   "Minimum available transmission level (dbm).",
+                   Double (16.0206),
+                   MakeDoubleAccessor (&WifiPhy::SetTxPowerStart, 
+                                       &WifiPhy::GetTxPowerStart),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("RxNoise",
+                   "Ratio of energy lost by receiver (dB).",
+                   Double (7),
+                   MakeDoubleAccessor (&WifiPhy::SetRxNoise,
+                                       &WifiPhy::GetRxNoise),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("Standard", "XXX",
+                   Enum (WIFI_PHY_STANDARD_80211a),
+                   MakeEnumAccessor (&WifiPhy::SetStandard),
+                   MakeEnumChecker (WIFI_PHY_STANDARD_80211a, "802.11a",
+                                    WIFI_PHY_STANDARD_holland, "holland"))
+    .AddTraceSource ("State",
+                     "The WifiPhy state",
+                     MakeTraceSourceAccessor (&WifiPhy::m_stateLogger))
+    ;
+  return tid;
+}
+
+WifiPhy::WifiPhy ()
+  : m_syncing (false),
     m_endTx (Seconds (0)),
     m_endSync (Seconds (0)),
     m_endCcaBusy (Seconds (0)),
@@ -192,12 +249,22 @@ WifiPhy::WifiPhy (Ptr<WifiNetDevice> device)
     m_startSync (Seconds (0)),
     m_startCcaBusy (Seconds (0)),
     m_previousStateChangeTime (Seconds (0)),
-    m_device (device),
     m_endSyncEvent (),
-    m_random (0.0, 1.0),
-    m_standard (WifiDefaultParameters::GetPhyStandard ())
+    m_random (0.0, 1.0)
+{}
+
+WifiPhy::~WifiPhy ()
 {
-  switch (m_standard) {
+  m_channel = 0;
+  m_events.clear ();
+  m_modes.clear ();
+}
+
+void
+WifiPhy::SetStandard (enum WifiPhyStandard standard)
+{
+  m_standard = standard;
+  switch (standard) {
   case WIFI_PHY_STANDARD_80211a:
     Configure80211a ();
     break;
@@ -210,40 +277,84 @@ WifiPhy::WifiPhy (Ptr<WifiNetDevice> device)
   }
 }
 
-WifiPhy::~WifiPhy ()
+
+void 
+WifiPhy::SetRxNoise (double db)
 {
-  m_channel = 0;
-  m_events.clear ();
-  m_modes.clear ();
+  m_rxNoiseRatio = DbToRatio (db);
+}
+void 
+WifiPhy::SetTxPowerStart (double start)
+{
+  m_txPowerBaseDbm = start;
+}
+void 
+WifiPhy::SetTxPowerEnd (double end)
+{
+  m_txPowerEndDbm = end;
+}
+void 
+WifiPhy::SetNTxPower (uint32_t n)
+{
+  m_nTxPower = n;
+}
+void 
+WifiPhy::SetTxGain (double gain)
+{
+  m_txGainDb = gain;
+}
+void 
+WifiPhy::SetRxGain (double gain)
+{
+  m_rxGainDb = gain;
+}
+void 
+WifiPhy::SetEdThreshold (double threshold)
+{
+  m_edThresholdW = DbmToW (threshold);
+}
+double 
+WifiPhy::GetRxNoise (void) const
+{
+  return RatioToDb (m_rxNoiseRatio);
+}
+double 
+WifiPhy::GetTxPowerStart (void) const
+{
+  return m_txPowerBaseDbm;
+}
+double 
+WifiPhy::GetTxPowerEnd (void) const
+{
+  return m_txPowerEndDbm;
+}
+double 
+WifiPhy::GetTxGain (void) const
+{
+  return m_txGainDb;
+}
+double 
+WifiPhy::GetRxGain (void) const
+{
+  return m_rxGainDb;
 }
 
-Ptr<WifiNetDevice> 
-WifiPhy::GetDevice (void) const
+double 
+WifiPhy::GetEdThreshold (void) const
 {
-  return m_device;
+  return WToDbm (m_edThresholdW);
 }
 
-Ptr<TraceResolver> 
-WifiPhy::GetTraceResolver (void) const
+Ptr<WifiChannel> 
+WifiPhy::GetChannel (void) const
 {
-  Ptr<CompositeTraceResolver> resolver =
-    Create<CompositeTraceResolver> ();
-  resolver->AddSource ("state",
-                       TraceDoc ("The WifiPhy state",
-                                 "Time", "start time",
-                                 "Time", "duration", 
-                                 "enum WifiPhy::State", "the state of the PHY layer."),
-                       m_stateLogger);
-  resolver->SetParentResolver (Object::GetTraceResolver ());
-  return resolver;
+  return m_channel;
 }
-
 
 void 
 WifiPhy::SetChannel (Ptr<WifiChannel> channel)
 {
   m_channel = channel;
-  m_channel->Add (m_device, MakeCallback (&WifiPhy::ReceivePacket, this));
 }
 
 void 
@@ -257,10 +368,10 @@ WifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
   m_syncErrorCallback = callback;
 }
 void 
-WifiPhy::ReceivePacket (Ptr<Packet> packet, 
-                        double rxPowerDbm,
-                        WifiMode txMode,
-                        enum WifiPreamble preamble)
+WifiPhy::StartReceivePacket (Ptr<Packet> packet, 
+                             double rxPowerDbm,
+                             WifiMode txMode,
+                             enum WifiPreamble preamble)
 {
   rxPowerDbm += m_rxGainDb;
   double rxPowerW = DbmToW (rxPowerDbm);
@@ -361,7 +472,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble pre
   Time txDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
-  m_channel->Send (m_device, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
+  m_channel->Send (this, packet, GetPowerDbm (txPower) + m_txGainDb, txMode, preamble);
 }
 
 uint32_t 
@@ -375,7 +486,7 @@ WifiPhy::GetMode (uint32_t mode) const
   return m_modes[mode];
 }
 uint32_t 
-WifiPhy::GetNTxpower (void) const
+WifiPhy::GetNTxPower (void) const
 {
   return m_nTxPower;
 }
@@ -608,6 +719,18 @@ WifiPhy::DbmToW (double dBm) const
 {
   double mW = pow(10.0,dBm/10.0);
   return mW / 1000.0;
+}
+
+double
+WifiPhy::WToDbm (double w) const
+{
+  return 10.0 * log10(w * 1000.0);
+}
+
+double
+WifiPhy::RatioToDb (double ratio) const
+{
+  return 10.0 * log10(ratio);
 }
 
 double
@@ -1113,7 +1236,7 @@ WifiPhy::CalculatePer (Ptr<const RxEvent> event, NiChanges *ni) const
   }
   Time plcpHeaderStart = (*j).GetTime () + MicroSeconds (plcpPreambleDelayUs);
   Time plcpPayloadStart = plcpHeaderStart + 
-    Seconds (m_plcpHeaderLength / headerMode.GetDataRate ());
+    Seconds ((m_plcpHeaderLength + 0.0) / headerMode.GetDataRate ());
   double noiseInterferenceW = (*j).GetDelta ();
   double powerW = event->GetRxPowerW ();
 

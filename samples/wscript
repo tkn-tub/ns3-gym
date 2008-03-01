@@ -39,9 +39,9 @@ def build(bld):
                                  ['core', 'simulator', 'mobility', 'wifi'])
     obj.source = 'main-adhoc-wifi.cc'
 
-    obj = bld.create_ns3_program('main-ap-wifi',
-                                 ['core', 'simulator', 'mobility', 'wifi'])
-    obj.source = 'main-ap-wifi.cc'
+#    obj = bld.create_ns3_program('main-ap-wifi',
+#                                 ['core', 'simulator', 'mobility', 'wifi'])
+#    obj.source = 'main-ap-wifi.cc'
     
     obj = bld.create_ns3_program('main-random-walk',
                                  ['core', 'simulator', 'mobility'])

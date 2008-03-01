@@ -31,6 +31,16 @@ std::ostream & operator << (std::ostream & os, const WifiMode &mode)
   os << mode.GetUniqueName ();
   return os;
 }
+std::istream & operator >> (std::istream &is, WifiMode &mode)
+{
+  std::string str;
+  is >> str;
+  if (!WifiModeFactory::GetFactory ()->Search (str, &mode))
+    {
+      is.setstate (std::ios_base::badbit);
+    }
+  return is;
+}
 
 uint32_t 
 WifiMode::GetBandwidth (void) const
@@ -98,6 +108,8 @@ WifiMode::WifiMode (uint32_t uid)
   : m_uid (uid)
 {}
 
+VALUE_HELPER_CPP (WifiMode);
+
 WifiModeFactory::WifiModeFactory ()
 {}
 
@@ -141,6 +153,23 @@ WifiModeFactory::CreateQam (std::string uniqueName,
   return WifiMode (uid);
 }
 
+bool 
+WifiModeFactory::Search (std::string name, WifiMode *mode)
+{
+  uint32_t j = 0;
+  for (WifiModeItemList::const_iterator i = m_itemList.begin ();
+       i != m_itemList.end (); i++)
+    {
+      if (i->uniqueUid == name)
+	{
+          *mode = WifiMode (j);
+	  return true;
+	}
+      j++;
+    }
+  return false;
+}
+
 uint32_t
 WifiModeFactory::AllocateUid (std::string uniqueUid)
 {
@@ -169,7 +198,13 @@ WifiModeFactory::Get (uint32_t uid)
 WifiModeFactory *
 WifiModeFactory::GetFactory (void)
 {
+  static bool isFirstTime = true;
   static WifiModeFactory factory;
+  if (isFirstTime)
+    {
+      factory.AllocateUid ("Invalid-WifiMode");
+      isFirstTime = false;
+    }
   return &factory;
 }
 

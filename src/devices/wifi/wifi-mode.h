@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 #include <ostream>
+#include "ns3/attribute-helper.h"
 
 namespace ns3 {
 
@@ -105,6 +106,8 @@ class WifiMode
    * its initialization.
    */
   WifiMode ();
+
+  VALUE_HELPER_HEADER_1 (WifiMode);
 private:
   friend class WifiModeFactory;
   WifiMode (uint32_t uid);
@@ -113,6 +116,9 @@ private:
 
 bool operator == (const WifiMode &a, const WifiMode &b);
 std::ostream & operator << (std::ostream & os, const WifiMode &mode);
+std::istream & operator >> (std::istream &is, WifiMode &mode);
+
+VALUE_HELPER_HEADER_2 (WifiMode);
 
 /**
  * \brief create WifiMode class instances and keep track of them.
@@ -159,8 +165,10 @@ public:
 			     uint32_t dataRate,
 			     uint32_t phyRate,
 			     uint8_t constellationSize);
+
 private:
   friend class WifiMode;  
+  friend std::istream & operator >> (std::istream &is, WifiMode &mode);
   static WifiModeFactory *GetFactory ();
   WifiModeFactory ();
 
@@ -179,6 +187,7 @@ private:
     bool isMandatory;
   };
 
+  bool Search (std::string name, WifiMode *mode);
   uint32_t AllocateUid (std::string uniqueName);
   WifiModeItem *Get (uint32_t uid);
 

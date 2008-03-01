@@ -6,7 +6,9 @@
 #include <math.h>
 
 #include "dcf-manager.h"
-#include "wifi-mac-parameters.h"
+#include "wifi-phy.h"
+#include "wifi-mac.h"
+#include "mac-low.h"
 
 NS_LOG_COMPONENT_DEFINE ("DcfManager");
 
@@ -22,6 +24,9 @@ namespace ns3 {
 DcfState::DcfState ()
   : m_backoffSlots (0),
     m_backoffStart (Seconds (0.0)),
+    m_cwMin (0),
+    m_cwMax (0),
+    m_cw (0),
     m_accessRequested (false)
 {}
 
@@ -33,13 +38,32 @@ DcfState::SetAifsn (uint32_t aifsn)
 {
   m_aifsn = aifsn;
 }
-
 void 
-DcfState::SetCwBounds (uint32_t minCw, uint32_t maxCw)
+DcfState::SetCwMin (uint32_t minCw)
 {
   m_cwMin = minCw;
+  ResetCw ();
+}
+void 
+DcfState::SetCwMax (uint32_t maxCw)
+{
   m_cwMax = maxCw;
   ResetCw ();
+}
+uint32_t 
+DcfState::GetAifsn (void) const
+{
+  return m_aifsn;
+}
+uint32_t
+DcfState::GetCwMin (void) const
+{
+  return m_cwMin;
+}
+uint32_t 
+DcfState::GetCwMax (void) const
+{
+  return m_cwMax;
 }
 
 void 
@@ -72,11 +96,6 @@ DcfState::StartBackoffNow (uint32_t nSlots)
   m_backoffStart = Simulator::Now ();
 }
 
-uint32_t 
-DcfState::GetAifsn (void) const
-{
-  return m_aifsn;
-}
 uint32_t
 DcfState::GetCw (void) const
 {
@@ -121,6 +140,53 @@ DcfState::NotifyInternalCollision (void)
 }
 
 
+/***************************************************************
+ *         Listener for Nav events. Forwards to DcfManager
+ ***************************************************************/
+
+class LowNavListener : public ns3::MacLowNavListener {
+public:
+  LowNavListener (ns3::DcfManager *dcf)
+    : m_dcf (dcf) {}
+  virtual ~LowNavListener () {}
+  virtual void NavStart (Time duration) {
+    m_dcf->NotifyNavStartNow (duration);
+  }
+  virtual void NavReset (Time duration) {
+    m_dcf->NotifyNavResetNow (duration);
+  }
+private:
+  ns3::DcfManager *m_dcf;
+};
+
+/***************************************************************
+ *         Listener for PHY events. Forwards to DcfManager
+ ***************************************************************/
+
+class PhyListener : public ns3::WifiPhyListener {
+public:
+  PhyListener (ns3::DcfManager *dcf)
+    : m_dcf (dcf) {}
+  virtual ~PhyListener () {}
+  virtual void NotifyRxStart (Time duration) {
+    m_dcf->NotifyRxStartNow (duration);
+  }
+  virtual void NotifyRxEndOk (void) {
+    m_dcf->NotifyRxEndOkNow ();
+  }
+  virtual void NotifyRxEndError (void) {
+    m_dcf->NotifyRxEndErrorNow ();
+  }
+  virtual void NotifyTxStart (Time duration) {
+    m_dcf->NotifyTxStartNow (duration);
+  }
+  virtual void NotifyCcaBusyStart (Time duration) {
+    m_dcf->NotifyCcaBusyStartNow (duration);
+  }
+private:
+  ns3::DcfManager *m_dcf;
+};
+
 /****************************************************************
  *      Implement the DCF manager of all DCF state holders
  ****************************************************************/
@@ -138,11 +204,34 @@ DcfManager::DcfManager ()
     m_lastBusyDuration (MicroSeconds (0)),
     m_rxing (false),
     m_slotTime (Seconds (0.0)),
-    m_sifs (Seconds (0.0))
+    m_sifs (Seconds (0.0)),
+    m_phyListener (0),
+    m_lowListener (0)
 {}
 
+DcfManager::~DcfManager ()
+{
+  delete m_phyListener;
+  delete m_lowListener;
+  m_phyListener = 0;
+  m_lowListener = 0;
+}
+
 void 
-DcfManager::SetSlotTime (Time slotTime)
+DcfManager::SetupPhyListener (Ptr<WifiPhy> phy)
+{
+  m_phyListener = new PhyListener (this);
+  phy->RegisterListener (m_phyListener);
+}
+void 
+DcfManager::SetupLowListener (Ptr<MacLow> low)
+{
+  m_lowListener = new LowNavListener (this);
+  low->RegisterNavListener (m_lowListener);
+}
+
+void 
+DcfManager::SetSlot (Time slotTime)
 {
   m_slotTime = slotTime;
 }
@@ -151,11 +240,10 @@ DcfManager::SetSifs (Time sifs)
 {
   m_sifs = sifs;
 }
-
 void 
-DcfManager::SetAckTxDuration (Time ackTxDuration)
+DcfManager::SetEifsNoDifs (Time eifsNoDifs)
 {
-  m_ackTxTime = ackTxDuration;
+  m_eifsNoDifs = eifsNoDifs;
 }
 
 void 
@@ -302,12 +390,15 @@ DcfManager::GetAccessGrantStart (void) const
   Time rxAccessStart;
   if (m_lastRxEnd >= m_lastRxStart) 
     {
-      rxAccessStart = m_lastRxEnd + m_sifs;
+      rxAccessStart = m_lastRxEnd;
       if (!m_lastRxReceivedOk)
         {
-          /* to handle EIFS */
-          rxAccessStart += m_ackTxTime;
-        } 
+          rxAccessStart += m_eifsNoDifs;
+        }
+      else
+        {
+          rxAccessStart += m_sifs;
+        }
     } 
   else 
     {

@@ -28,7 +28,7 @@
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
 #include "ns3/object.h"
-#include "ns3/callback-trace-source.h"
+#include "ns3/traced-callback.h"
 #include "ns3/nstime.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
@@ -120,17 +120,30 @@ public:
    */
   typedef Callback<void,Ptr<Packet>, double> SyncErrorCallback;
 
-  /**
-   * \param device the device which contains this PHY.
-   *
-   * Create a new PHY layer instance initialized with values
-   * coming from \valueref{WifiPhyEnergyDetectionThreshold},
-   * \valueref{WifiPhyRxNoise}, \valueref{WifiPhyTxPowerBase},
-   * \valueref{WifiPhyTxPowerEnd}, \valueref{WifiPhyTxPowerLevels},
-   * \valueref{WifiPhyTxGain}, and, \valueref{WifiPhyRxGain}
-   */
-  WifiPhy (Ptr<WifiNetDevice> device);
+  static TypeId GetTypeId (void);
+
+  WifiPhy ();
   virtual ~WifiPhy ();
+
+  void SetStandard (enum WifiPhyStandard standard);
+  void SetRxNoise (double ratio);
+  void SetTxPowerStart (double start);
+  void SetTxPowerEnd (double end);
+  void SetNTxPower (uint32_t n);
+  void SetTxGain (double gain);
+  void SetRxGain (double gain);
+  void SetEdThreshold (double threshold);
+  double GetRxNoise (void) const;
+  double GetTxPowerStart (void) const;
+  double GetTxPowerEnd (void) const;
+  /**
+   * \returns the number of tx power levels available for this PHY.
+   */
+  uint32_t GetNTxPower (void) const;
+  double GetTxGain (void) const;
+  double GetRxGain (void) const;
+  double GetEdThreshold (void) const;
+
 
   Ptr<WifiNetDevice> GetDevice (void) const;
 
@@ -219,10 +232,6 @@ public:
    * \returns the mode whose index is specified.
    */
   WifiMode GetMode (uint32_t mode) const;
-  /**
-   * \returns the number of tx power levels available for this PHY.
-   */
-  uint32_t GetNTxpower (void) const;
   /* return snr: W/W */
   /**
    * \param txMode the transmission mode
@@ -231,6 +240,14 @@ public:
    *          the requested ber for the specified transmission mode.
    */
   double CalculateSnr (WifiMode txMode, double ber) const;
+
+  /* rxPower unit is Watt */
+  void StartReceivePacket (Ptr<Packet> packet,
+                           double rxPowerDbm,
+                           WifiMode mode,
+                           WifiPreamble preamble);
+
+  Ptr<WifiChannel> GetChannel (void) const;
 
 private:
   class NiChange {
@@ -249,8 +266,6 @@ private:
   typedef std::vector <NiChange> NiChanges;
 
 private:
-  // inherited from ns3::Object.
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   void Configure80211aParameters (void);
   void PrintModes (void) const;
   void Configure80211a (void);
@@ -260,6 +275,8 @@ private:
   double GetEdThresholdW (void) const;
   double DbmToW (double dbm) const;
   double DbToRatio (double db) const;
+  double WToDbm (double w) const;
+  double RatioToDb (double ratio) const;
   Time GetMaxPacketDuration (void) const;
   void CancelRx (void);
   double GetPowerDbm (uint8_t power) const;
@@ -297,11 +314,6 @@ private:
                        uint32_t m, uint32_t dfree,
                        uint32_t adFree, uint32_t adFreePlusOne) const;
   double GetChunkSuccessRate (WifiMode mode, double snr, uint32_t nbits) const;
-  /* rxPower unit is Watt */
-  void ReceivePacket (Ptr<Packet> packet,
-                      double rxPowerDbm,
-                      WifiMode mode,
-                      WifiPreamble preamble);
 private:
   uint64_t m_txPrepareDelayUs;
   uint64_t m_plcpLongPreambleDelayUs;
@@ -330,7 +342,6 @@ private:
   Time m_previousStateChangeTime;
 
   Ptr<WifiChannel> m_channel;
-  Ptr<WifiNetDevice> m_device;
   SyncOkCallback m_syncOkCallback;
   SyncErrorCallback m_syncErrorCallback;
   Modes m_modes;
@@ -338,7 +349,7 @@ private:
   EventId m_endSyncEvent;
   Events m_events;
   UniformVariable m_random;
-  CallbackTraceSource<Time,Time,enum WifiPhy::State> m_stateLogger;
+  TracedCallback<Time,Time,enum WifiPhy::State> m_stateLogger;
   WifiPhyStandard m_standard;
 };
 

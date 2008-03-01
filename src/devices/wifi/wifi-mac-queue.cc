@@ -20,6 +20,7 @@
 
 #include "ns3/simulator.h"
 #include "ns3/packet.h"
+#include "ns3/uinteger.h"
 
 #include "wifi-mac-queue.h"
 
@@ -32,6 +33,24 @@ WifiMacQueue::Item::Item (Ptr<const Packet> packet,
                           Time tstamp)
   : packet (packet), hdr (hdr), tstamp (tstamp)
 {}
+
+TypeId 
+WifiMacQueue::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("WifiMacQueue")
+    .SetParent<Object> ()
+    .AddConstructor<WifiMacQueue> ()
+    .AddAttribute ("MaxPacketNumber", "XXX",
+                   Uinteger (400),
+                   MakeUintegerAccessor (&WifiMacQueue::m_maxSize),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("MaxDelay", "XXX",
+                   Seconds (10.0),
+                   MakeTimeAccessor (&WifiMacQueue::m_maxDelay),
+                   MakeTimeChecker ())
+    ;
+  return tid;
+}
 
 WifiMacQueue::WifiMacQueue ()
   : m_size (0)
@@ -52,6 +71,17 @@ WifiMacQueue::SetMaxDelay (Time delay)
 {
   m_maxDelay = delay;
 }
+uint32_t 
+WifiMacQueue::GetMaxSize (void) const
+{
+  return m_maxSize;
+}
+Time 
+WifiMacQueue::GetMaxDelay (void) const
+{
+  return m_maxDelay;
+}
+
 void 
 WifiMacQueue::Enqueue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
 {

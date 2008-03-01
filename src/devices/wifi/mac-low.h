@@ -26,9 +26,9 @@
 #include "wifi-mac-header.h"
 #include "wifi-mode.h"
 #include "wifi-preamble.h"
+#include "wifi-remote-station-manager.h"
 #include "ns3/mac48-address.h"
 #include "ns3/callback.h"
-#include "ns3/callback-trace-source.h"
 #include "ns3/event-id.h"
 #include "ns3/packet.h"
 #include "ns3/nstime.h"
@@ -37,10 +37,7 @@ namespace ns3 {
 
 class WifiNetDevice;
 class WifiPhy;
-class PacketLogger;
-class MacStations;
-class MacStation;
-class WifiMacParameters;
+class WifiMac;
 
 /**
  * \brief listen to events coming from ns3::MacLow.
@@ -277,18 +274,19 @@ public:
   MacLow ();
   virtual ~MacLow ();
 
-  void SetDevice (Ptr<WifiNetDevice> device);
   void SetPhy (Ptr<WifiPhy> phy);
-  void SetStations (MacStations *stations);
-  void SetParameters (WifiMacParameters *parameters);
-  Ptr<NetDevice> GetDevice (void) const;
+  void SetMac (Ptr<WifiMac> mac);
+  void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
+
+  Ptr<WifiMac> GetMac (void);
+
   /**
    * \param callback the callback which receives every incoming packet.
    *
    * This callback typically forwards incoming packets to
    * an instance of ns3::MacRxMiddle.
    */
-  void SetRxCallback (MacLowRxCallback callback);
+  void SetRxCallback (Callback<void,Ptr<Packet>,const WifiMacHeader *> callback);
   /**
    * \param listener listen to NAV events for every incoming
    *        and outgoing packet.
@@ -340,19 +338,18 @@ public:
    */
   void ReceiveError (Ptr<Packet> packet, double rxSnr);
 private:
-  // Inherited from ns3::Object.
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
   void CancelAllEvents (void);
   uint32_t GetAckSize (void) const;
   uint32_t GetRtsSize (void) const;
   uint32_t GetCtsSize (void) const;
   Time GetSifs (void) const;
   Time GetPifs (void) const;
+  Time GetSlotTime (void) const;
   Time GetAckTimeout (void) const;
   Time GetCtsTimeout (void) const;
   uint32_t GetSize (Ptr<const Packet> packet, const WifiMacHeader *hdr) const;
   Time NowUs (void) const;
-  MacStation *GetStation (Mac48Address to) const;
+  WifiRemoteStation *GetStation (Mac48Address to) const;
   void ForwardDown (Ptr<const Packet> packet, WifiMacHeader const *hdr, 
                     WifiMode txMode);
   Time CalculateOverallTxTime (Ptr<const Packet> packet,
@@ -386,10 +383,9 @@ private:
   void SendCurrentTxPacket (void);
   void StartDataTxTimers (void);
 
-  Ptr<WifiNetDevice> m_device;
   Ptr<WifiPhy> m_phy;
-  MacStations *m_stations;
-  WifiMacParameters *m_parameters;
+  Ptr<WifiMac> m_mac;
+  Ptr<WifiRemoteStationManager> m_stationManager;
   MacLowRxCallback m_rxCallback;
   typedef std::vector<MacLowNavListener *>::const_iterator NavListenersCI;
   typedef std::vector<MacLowNavListener *> NavListeners;
@@ -413,8 +409,6 @@ private:
 
   Time m_lastNavStart;
   Time m_lastNavDuration;
-
-  CallbackTraceSource<Ptr<const Packet> > m_dropError;
 };
 
 } // namespace ns3

@@ -6,6 +6,10 @@
 
 namespace ns3 {
 
+class WifiPhy;
+class WifiMac;
+class MacLow;
+
 /**
  * \brief keep track of the state needed for a single DCF 
  * function.
@@ -29,13 +33,11 @@ public:
    * Calling this method after DcfManager::Add has been called is not recommended.
    */
   void SetAifsn (uint32_t aifsn);
-  /**
-   * \param minCw the minimum value for the CW variable.
-   * \param maxCw the maximum value for the CW variable.
-   *
-   * Calling this method after DcfManager::Add has been called is not recommended.
-   */
-  void SetCwBounds (uint32_t minCw, uint32_t maxCw);
+  void SetCwMin (uint32_t minCw);
+  void SetCwMax (uint32_t maxCw);
+  uint32_t GetAifsn (void) const;
+  uint32_t GetCwMin (void) const;
+  uint32_t GetCwMax (void) const;
   /**
    * Update the value of the CW variable to take into account
    * a transmission success or a transmission abort (stop transmission
@@ -70,7 +72,6 @@ public:
 private:
   friend class DcfManager;
 
-  uint32_t GetAifsn (void) const;
   uint32_t GetBackoffSlots (void) const;
   Time GetBackoffStart (void) const;
   void UpdateBackoffSlotsNow (uint32_t nSlots, Time backoffUpdateBound);
@@ -139,6 +140,10 @@ class DcfManager
 {
 public:
   DcfManager ();
+  ~DcfManager ();
+
+  void SetupPhyListener (Ptr<WifiPhy> phy);
+  void SetupLowListener (Ptr<MacLow> low);
 
   /**
    * \param slotTime the duration of a slot.
@@ -146,7 +151,7 @@ public:
    * It is a bad idea to call this method after RequestAccess or
    * one of the Notify methods has been invoked.
    */
-  void SetSlotTime (Time slotTime);
+  void SetSlot (Time slotTime);
   /**
    * \param sifs the duration of a SIFS.
    *
@@ -156,13 +161,12 @@ public:
   void SetSifs (Time sifs);
 
   /**
-   * \param ackTxDuration time to transmit an ACK at the lowest mandatory rate
+   * \param eifsNoDifs the duration of a EIFS minus the duration of DIFS.
    *
-   * This value is used for the calculation of the EIFS duration.
    * It is a bad idea to call this method after RequestAccess or
    * one of the Notify methods has been invoked.
    */
-  void SetAckTxDuration (Time ackTxDuration);
+  void SetEifsNoDifs (Time eifsNoDifs);
 
   /**
    * \param dcf a new DcfState.
@@ -265,10 +269,12 @@ private:
   Time m_lastBusyDuration;
   bool m_rxing;
   bool m_sleeping;
-  Time m_ackTxTime;
+  Time m_eifsNoDifs;
   EventId m_accessTimeout;
   Time m_slotTime;
   Time m_sifs;
+  class PhyListener *m_phyListener;
+  class LowNavListener *m_lowListener;
 };
 
 } // namespace ns3

@@ -22,26 +22,23 @@
 #include "ns3/packet.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
-#include "ns3/net-device.h"
 #include "ns3/node.h"
+#include "ns3/uinteger.h"
+#include "ns3/trace-source-accessor.h"
 
 #include "dca-txop.h"
 #include "dcf-manager.h"
-#include "wifi-mac-parameters.h"
 #include "mac-low.h"
 #include "wifi-mac-queue.h"
 #include "mac-tx-middle.h"
 #include "wifi-mac-trailer.h"
-#include "mac-stations.h"
-#include "wifi-phy.h"
+#include "wifi-mac.h"
 #include "random-stream.h"
-#include "ns3/composite-trace-resolver.h"
 
 NS_LOG_COMPONENT_DEFINE ("DcaTxop");
 
 #define MY_DEBUG(x) \
-  NS_LOG_DEBUG (Simulator::Now () << " " << m_low->GetDevice ()->GetNode ()->GetId () << ":" << \
-                m_low->GetDevice ()->GetIfIndex () << " " << x)
+  NS_LOG_DEBUG (Simulator::Now () << " " << m_low->GetMac ()->GetAddress () << " " << x)
 
 
 namespace ns3 {
@@ -97,8 +94,37 @@ private:
   DcaTxop *m_txop;
 };
 
-DcaTxop::DcaTxop (uint32_t minCw, uint32_t maxCw, uint32_t aifsn, DcfManager *manager)
-  : m_manager (manager),
+TypeId 
+DcaTxop::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("DcaTxop")
+    .SetParent<Object> ()
+    .AddConstructor<DcaTxop> ()
+    .AddAttribute ("MinCw", "XXX",
+                   Uinteger (15),
+                   MakeUintegerAccessor (&DcaTxop::SetMinCw,
+                                         &DcaTxop::GetMinCw),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("MaxCw", "XXX",
+                   Uinteger (1023),
+                   MakeUintegerAccessor (&DcaTxop::SetMaxCw,
+                                         &DcaTxop::GetMaxCw),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("Aifsn", "XXX",
+                   Uinteger (2),
+                   MakeUintegerAccessor (&DcaTxop::SetAifsn,
+                                         &DcaTxop::GetAifsn),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddTraceSource ("Ssrc", "XXX",
+                     MakeTraceSourceAccessor (&DcaTxop::m_ssrc))
+    .AddTraceSource ("Slrc", "XXX",
+                     MakeTraceSourceAccessor (&DcaTxop::m_slrc))
+    ;
+  return tid;
+}
+
+DcaTxop::DcaTxop ()
+  : m_manager (0),
     m_currentPacket (0),
     m_ssrc (0),
     m_slrc (0)
@@ -106,23 +132,29 @@ DcaTxop::DcaTxop (uint32_t minCw, uint32_t maxCw, uint32_t aifsn, DcfManager *ma
 {
   m_transmissionListener = new DcaTxop::TransmissionListener (this);
   m_dcf = new DcaTxop::Dcf (this);
-  m_dcf->SetCwBounds (minCw, maxCw);
-  m_dcf->SetAifsn (aifsn);
-  m_manager->Add (m_dcf);
-  m_queue = new WifiMacQueue ();
+  m_queue = CreateObjectWith<WifiMacQueue> ();
   m_rng = new RealRandomStream ();
+  m_txMiddle = new MacTxMiddle ();
 }
 
 DcaTxop::~DcaTxop ()
 {
   delete m_transmissionListener;
-  delete m_queue;
   delete m_dcf;
   delete m_rng;
+  delete m_txMiddle;
   m_transmissionListener = 0;
   m_queue = 0;
   m_dcf = 0;
   m_rng = 0;
+  m_txMiddle = 0;
+}
+
+void
+DcaTxop::SetManager (DcfManager *manager)
+{
+  m_manager = manager;
+  m_manager->Add (m_dcf);
 }
 
 void 
@@ -131,19 +163,9 @@ DcaTxop::SetLow (Ptr<MacLow> low)
   m_low = low;
 }
 void 
-DcaTxop::SetParameters (WifiMacParameters *parameters)
+DcaTxop::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager)
 {
-  m_parameters = parameters;
-}
-void
-DcaTxop::SetStations (MacStations *stations)
-{
-  m_stations = stations;
-}
-void 
-DcaTxop::SetTxMiddle (MacTxMiddle *txMiddle)
-{
-  m_txMiddle = txMiddle;
+  m_stationManager = remoteManager;
 }
 void 
 DcaTxop::SetTxOkCallback (TxOk callback)
@@ -166,22 +188,52 @@ DcaTxop::SetMaxQueueDelay (Time delay)
 {
   m_queue->SetMaxDelay (delay);
 }
+void 
+DcaTxop::SetMinCw (uint32_t minCw)
+{
+  m_dcf->SetCwMin (minCw);
+}
+void 
+DcaTxop::SetMaxCw (uint32_t maxCw)
+{
+  m_dcf->SetCwMax (maxCw);
+}
+void 
+DcaTxop::SetAifsn (uint32_t aifsn)
+{
+  m_dcf->SetAifsn (aifsn);
+}
+uint32_t 
+DcaTxop::GetMinCw (void) const
+{
+  return m_dcf->GetCwMin ();
+}
+uint32_t 
+DcaTxop::GetMaxCw (void) const
+{
+  return m_dcf->GetCwMax ();
+}
+uint32_t 
+DcaTxop::GetAifsn (void) const
+{
+  return m_dcf->GetAifsn ();
+}
 
 void 
 DcaTxop::Queue (Ptr<const Packet> packet, WifiMacHeader const &hdr)
 {
   WifiMacTrailer fcs;
   uint32_t fullPacketSize = hdr.GetSerializedSize () + packet->GetSize () + fcs.GetSerializedSize ();
-  MacStation *station = m_stations->Lookup (hdr.GetAddr1 ());
+  WifiRemoteStation *station = GetStation (hdr.GetAddr1 ());
   station->PrepareForQueue (packet, fullPacketSize);
   m_queue->Enqueue (packet, hdr);
   StartAccessIfNeeded ();
 }
 
-MacStation *
+WifiRemoteStation *
 DcaTxop::GetStation (Mac48Address ad) const
 {
-  return m_stations->Lookup (ad);
+  return m_stationManager->Lookup (ad);
 }
 
 void
@@ -213,31 +265,24 @@ DcaTxop::Low (void)
   return m_low;
 }
 
-WifiMacParameters *
-DcaTxop::Parameters (void)
-{
-  return m_parameters;
-}
-
-
 bool
 DcaTxop::NeedRts (void)
 {
-  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
   return station->NeedRts (m_currentPacket);
 }
 
 bool
 DcaTxop::NeedFragmentation (void)
 {
-  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
   return station->NeedFragmentation (m_currentPacket);
 }
 
 uint32_t
 DcaTxop::GetNFragments (void)
 {
-  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
   return station->GetNFragments (m_currentPacket);
 }
 void
@@ -249,20 +294,20 @@ DcaTxop::NextFragment (void)
 uint32_t
 DcaTxop::GetFragmentSize (void)
 {
-  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
   return station->GetFragmentSize (m_currentPacket, m_fragmentNumber);
 }
 bool
 DcaTxop::IsLastFragment (void) 
 {
-  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
   return station->IsLastFragment (m_currentPacket, m_fragmentNumber);
 }
 
 uint32_t
 DcaTxop::GetNextFragmentSize (void) 
 {
-  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
   return station->GetFragmentSize (m_currentPacket, m_fragmentNumber + 1);
 }
 
@@ -289,13 +334,13 @@ DcaTxop::GetFragmentPacket (WifiMacHeader *hdr)
 uint32_t
 DcaTxop::GetMaxSsrc (void) const
 {
-  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
   return station->GetMaxSsrc (m_currentPacket);
 }
 uint32_t
 DcaTxop::GetMaxSlrc (void) const
 {
-  MacStation *station = GetStation (m_currentHdr.GetAddr1 ());
+  WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
   return station->GetMaxSlrc (m_currentPacket);
 }
 
@@ -409,10 +454,9 @@ DcaTxop::MissedCts (void)
 {
   MY_DEBUG ("missed cts");
   m_ssrc++;
-  m_ctstimeoutTrace (m_ssrc);
   if (m_ssrc > GetMaxSsrc ()) 
     {
-      MacStation *station = m_stations->Lookup (m_currentHdr.GetAddr1 ());
+      WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
       station->ReportFinalRtsFailed ();
       // to reset the dcf.
       m_currentPacket = 0;
@@ -456,10 +500,9 @@ DcaTxop::MissedAck (void)
 {
   MY_DEBUG ("missed ack");
   m_slrc++;
-  m_acktimeoutTrace (m_slrc);
   if (m_slrc > GetMaxSlrc ()) 
     {
-      MacStation *station = m_stations->Lookup (m_currentHdr.GetAddr1 ());
+      WifiRemoteStation *station = GetStation (m_currentHdr.GetAddr1 ());
       station->ReportFinalDataFailed ();
       // to reset the dcf.    
       m_currentPacket = 0;
@@ -529,23 +572,6 @@ DcaTxop::Cancel (void)
    * update its <seq,ad> tupple for packets whose destination
    * address is a broadcast address.
    */
-}
-
-Ptr<TraceResolver> 
-DcaTxop::GetTraceResolver (void) const
-{
-  Ptr<CompositeTraceResolver> resolver =
-    Create<CompositeTraceResolver> ();
-  resolver->AddSource ("ackTimeout",
-                       TraceDoc ("ACK timeout",
-                                 "uint32_t", "Number of transmission attemps"),
-                       m_acktimeoutTrace);
-  resolver->AddSource ("ctsTimeout",
-                       TraceDoc ("CTS timeout",
-                                 "uint32_t", "Number of transmission attemps"),
-                       m_ctstimeoutTrace);
-  resolver->SetParentResolver (Object::GetTraceResolver ());
-  return resolver;
 }
 
 } // namespace ns3

@@ -51,7 +51,7 @@ public:
 
 
 private:
-  void StartTest (uint64_t slotTime, uint64_t sifs, uint64_t ackTxDuration);
+  void StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs);
   void AddDcfState (uint32_t aifsn);
   void EndTest (void);
   void ExpectInternalCollision (uint64_t time, uint32_t from, uint32_t nSlots);
@@ -171,12 +171,12 @@ DcfManagerTest::ExpectCollision (uint64_t time, uint32_t nSlots, uint32_t from)
 }
 
 void
-DcfManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t ackTxDuration)
+DcfManagerTest::StartTest (uint64_t slotTime, uint64_t sifs, uint64_t eifsNoDifsNoSifs)
 {
   m_dcfManager = new DcfManager ();
-  m_dcfManager->SetSlotTime (MicroSeconds (slotTime));
+  m_dcfManager->SetSlot (MicroSeconds (slotTime));
   m_dcfManager->SetSifs (MicroSeconds (sifs));
-  m_dcfManager->SetAckTxDuration (MicroSeconds (ackTxDuration));
+  m_dcfManager->SetEifsNoDifs (MicroSeconds (eifsNoDifsNoSifs+sifs));
 }
 
 void

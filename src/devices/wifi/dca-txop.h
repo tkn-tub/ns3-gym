@@ -24,11 +24,12 @@
 #include <stdint.h>
 #include "ns3/callback.h"
 #include "ns3/packet.h"
-#include "ns3/callback-trace-source.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
+#include "ns3/traced-value.h"
 #include "wifi-mac-header.h"
 #include "wifi-mode.h"
+#include "wifi-remote-station-manager.h"
 
 namespace ns3 {
 
@@ -65,26 +66,18 @@ class MacStations;
 class DcaTxop : public Object
 {
 public:
+  static TypeId GetTypeId (void);
+
   typedef Callback <void, WifiMacHeader const&> TxOk;
   typedef Callback <void, WifiMacHeader const&> TxFailed;
 
-  /**
-   * \param cwMin forwarded to ns3::DcfState constructor
-   * \param cwMax forwarded to ns3::DcfState constructor
-   * \param aifsn forwarded to ns3::DcfState constructor
-   * \param manager the manager which will be responsible
-   *        for controlling access to this DcaTxop.
-   *
-   * Initialized from \valueref{WifiMaxSsrc}, \valueref{WifiMaxSlrc},
-   * \valueref{WifiRtsCtsThreshold}, and, \valueref{WifiFragmentationThreshold}.
-   */
-  DcaTxop (uint32_t cwMin, uint32_t cwMax, uint32_t aifsn, DcfManager *manager);
+  DcaTxop ();
   ~DcaTxop ();
 
   void SetLow (Ptr<MacLow> low);
-  void SetParameters (WifiMacParameters *parameters);
-  void SetStations (MacStations *stations);
-  void SetTxMiddle (MacTxMiddle *txMiddle);
+  void SetManager (DcfManager *manager);
+  void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> remoteManager);
+
   /**
    * \param callback the callback to invoke when a 
    * packet transmission was completed successfully.
@@ -98,6 +91,12 @@ public:
 
   void SetMaxQueueSize (uint32_t size);
   void SetMaxQueueDelay (Time delay);
+  void SetMinCw (uint32_t minCw);
+  void SetMaxCw (uint32_t maxCw);
+  void SetAifsn (uint32_t aifsn);
+  uint32_t GetMinCw (void) const;
+  uint32_t GetMaxCw (void) const;
+  uint32_t GetAifsn (void) const;
 
   /**
    * \param packet packet to send
@@ -117,9 +116,7 @@ private:
   friend class TransmissionListener;
 
   // Inherited from ns3::Object
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;  
   Ptr<MacLow> Low (void);
-  WifiMacParameters *Parameters (void);
 
   /* dcf notifications forwarded here */
   bool NeedsAccess (void) const;
@@ -141,7 +138,7 @@ private:
   uint32_t GetNFragments (void);
   uint32_t GetNextFragmentSize (void);
   uint32_t GetFragmentSize (void);
-  MacStation *GetStation (Mac48Address to) const;
+  WifiRemoteStation *GetStation (Mac48Address to) const;
   uint32_t GetMaxSsrc (void) const;
   uint32_t GetMaxSlrc (void) const;
   bool IsLastFragment (void);
@@ -152,11 +149,10 @@ private:
   DcfManager *m_manager;
   TxOk m_txOkCallback;
   TxFailed m_txFailedCallback;
-  WifiMacQueue *m_queue;
+  Ptr<WifiMacQueue> m_queue;
   MacTxMiddle *m_txMiddle;
   Ptr <MacLow> m_low;
-  MacStations *m_stations;
-  WifiMacParameters *m_parameters;
+  Ptr<WifiRemoteStationManager> m_stationManager;
   TransmissionListener *m_transmissionListener;
   RandomStream *m_rng;
   
@@ -164,18 +160,9 @@ private:
   bool m_accessOngoing;
   Ptr<const Packet> m_currentPacket;
   WifiMacHeader m_currentHdr;
-  uint32_t m_ssrc;
-  uint32_t m_slrc;
+  TracedValue<uint32_t> m_ssrc;
+  TracedValue<uint32_t> m_slrc;
   uint8_t m_fragmentNumber;
-
-  /* 80211-dca-acktimeout
-   * param1: slrc
-   */
-  CallbackTraceSource<uint32_t> m_acktimeoutTrace;
-  /* 80211-dca-ctstimeout
-   * param1: ssrc
-   */
-  CallbackTraceSource<uint32_t> m_ctstimeoutTrace;
 };
 
 } //namespace ns3
