@@ -43,7 +43,19 @@ public:
   virtual Vector GetNext (void) const = 0;
 };
 
-class GridPositionAllocator : public Object
+class ListPositionAllocator : public PositionAllocator
+{
+public:
+  static TypeId GetTypeId (void);
+  ListPositionAllocator ();
+  void Add (Vector v);
+  virtual Vector GetNext (void) const;
+private:
+  std::vector<Vector> m_positions;
+  mutable std::vector<Vector>::const_iterator m_current;
+};
+
+class GridPositionAllocator : public PositionAllocator
 {
 public:
   static TypeId GetTypeId (void);

@@ -46,6 +46,33 @@ PositionAllocator::PositionAllocator ()
 PositionAllocator::~PositionAllocator ()
 {}
 
+NS_OBJECT_ENSURE_REGISTERED (ListPositionAllocator);
+
+TypeId 
+ListPositionAllocator::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ListPositionAllocator")
+    .SetParent<PositionAllocator> ()
+    .AddConstructor<ListPositionAllocator> ()
+    ;
+  return tid;
+}
+ListPositionAllocator::ListPositionAllocator ()
+{}
+void 
+ListPositionAllocator::Add (Vector v)
+{
+  m_positions.push_back (v);
+  m_current = m_positions.begin ();
+}
+Vector 
+ListPositionAllocator::GetNext (void) const
+{
+  Vector v = *m_current;
+  m_current++;
+  return v;
+}
+
 TypeId 
 GridPositionAllocator::GetTypeId (void)
 {
