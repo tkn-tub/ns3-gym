@@ -46,6 +46,7 @@ public:
     XY
   };
 
+  GnuplotDataset ();
   GnuplotDataset (std::string title);
   void SetStyle (enum Style style);
   void SetErrorBars (enum ErrorBars errorBars);

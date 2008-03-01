@@ -23,6 +23,12 @@
 
 namespace ns3 {
 
+GnuplotDataset::GnuplotDataset ()
+  : m_title ("untitled"),
+    m_style (LINES),
+    m_errorBars (NONE)
+{}
+
 GnuplotDataset::GnuplotDataset (std::string title)
   : m_title (title),
     m_style (LINES),
