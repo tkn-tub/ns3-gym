@@ -43,7 +43,7 @@
   class type##Checker : public AttributeChecker {};		\
   Ptr<const AttributeChecker> Make##type##Checker (void);	\
 
-#define ATTRIBUTE_VALUE_IMPLEMENT(type)					\
+#define ATTRIBUTE_VALUE_IMPLEMENT_NO_SERIALIZE(type)			\
   type##Value::type##Value (const type &value)				\
   : m_value (value) {}							\
   void type##Value::Set (const type &v) {				\
@@ -55,19 +55,6 @@
   Attribute								\
   type##Value::Copy (void) const {					\
     return Attribute::Create<type##Value> (*this);			\
-  }									\
-  std::string								\
-  type##Value::SerializeToString (Ptr<const AttributeChecker> checker) const { \
-    std::ostringstream oss;						\
-    oss << m_value;							\
-    return oss.str ();							\
-  }									\
-  bool									\
-  type##Value::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) { \
-    std::istringstream iss;						\
-    iss.str (value);							\
-    iss >> m_value;							\
-    return !iss.bad () && !iss.fail ();					\
   }									\
   type##Value::type##Value (Attribute value)				\
   {									\
@@ -82,6 +69,22 @@
   {									\
     return Attribute::Create<type##Value> (*this);			\
   }
+
+#define ATTRIBUTE_VALUE_IMPLEMENT(type)					\
+  std::string								\
+  type##Value::SerializeToString (Ptr<const AttributeChecker> checker) const { \
+    std::ostringstream oss;						\
+    oss << m_value;							\
+    return oss.str ();							\
+  }									\
+  bool									\
+  type##Value::DeserializeFromString (std::string value, Ptr<const AttributeChecker> checker) { \
+    std::istringstream iss;						\
+    iss.str (value);							\
+    iss >> m_value;							\
+    return !iss.bad () && !iss.fail ();					\
+  }									\
+  ATTRIBUTE_VALUE_IMPLEMENT_NO_SERIALIZE (type)
 
 #define ATTRIBUTE_CHECKER_IMPLEMENT(type)				\
   Ptr<const AttributeChecker> Make##type##Checker (void)		\
