@@ -8,7 +8,10 @@ namespace ns3 {
 
 MobilityHelper::MobilityHelper ()
   : m_notifierEnabled (false)
-{}
+{
+  m_position = CreateObjectWith<RandomRectanglePositionAllocator> ("X", ConstantVariable (0.0),
+								   "Y", ConstantVariable (0.0));
+}
 void 
 MobilityHelper::EnableNotifier (void)
 {
