@@ -2,6 +2,19 @@
 
 namespace ns3 {
 
+NodeContainer::NodeContainer ()
+{}
+
+NodeContainer::NodeContainer (Ptr<Node> node)
+{
+  m_nodes.push_back (node);
+}
+NodeContainer::NodeContainer (const NodeContainer &a, const NodeContainer &b)
+{
+  Add (a);
+  Add (b);
+}
+
 NodeContainer::Iterator 
 NodeContainer::Begin (void) const
 {

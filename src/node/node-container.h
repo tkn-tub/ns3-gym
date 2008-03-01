@@ -12,6 +12,10 @@ class NodeContainer
 public:
   typedef std::vector<Ptr<Node> >::const_iterator Iterator;
 
+  NodeContainer ();
+  NodeContainer (Ptr<Node> node);
+  NodeContainer (const NodeContainer &a, const NodeContainer &b);
+
   Iterator Begin (void) const;
   Iterator End (void) const;
 
