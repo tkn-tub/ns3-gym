@@ -1068,7 +1068,7 @@ Object::Construct (const AttributeList &attributes)
             // No matching attribute value so we set the default value.
             paramSpec->Set (this, initial);
             NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                          tid.GetAttributeName (i)<<"\" from local");
+                          tid.GetAttributeName (i)<<"\" from initial value.");
           }
       }
     tid = tid.GetParent ();
