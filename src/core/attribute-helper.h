@@ -11,18 +11,19 @@
   template <typename T1>						\
   Ptr<const AttributeAccessor> Make##type##Accessor (T1 a1)		\
   {									\
-    return MakeAccessorHelper<type##Value> (a1);		\
+    return MakeAccessorHelper<type##Value> (a1);			\
   }									\
   template <typename T1, typename T2>					\
   Ptr<const AttributeAccessor> Make##type##Accessor (T1 a1, T2 a2)	\
   {									\
-    return MakeAccessorHelper<type##Value> (a1, a2);	\
+    return MakeAccessorHelper<type##Value> (a1, a2);			\
   }
 
 #define ATTRIBUTE_VALUE_DEFINE(type)					\
   class type##Value : public AttributeValue				\
   {									\
   public:								\
+    type##Value ();							\
     type##Value (const type &value);					\
     void Set (const type &value);					\
     type Get (void) const;						\
@@ -44,6 +45,8 @@
   Ptr<const AttributeChecker> Make##type##Checker (void);	\
 
 #define ATTRIBUTE_VALUE_IMPLEMENT_NO_SERIALIZE(type)			\
+  type##Value::type##Value ()						\
+    : m_value () {}							\
   type##Value::type##Value (const type &value)				\
   : m_value (value) {}							\
   void type##Value::Set (const type &v) {				\

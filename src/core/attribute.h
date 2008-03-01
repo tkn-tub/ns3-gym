@@ -86,6 +86,7 @@ public:
   void Unref (void) const;
   virtual ~AttributeChecker ();
   virtual bool Check (Attribute value) const = 0;
+  virtual Attribute Create (void) const = 0;
 private:
   mutable uint32_t m_count;
 };
@@ -141,6 +142,8 @@ template <typename T>
 class PtrValue : public PtrValueBase
 {
 public:
+  PtrValue () 
+    : m_pointer () {}
   PtrValue (Ptr<T> pointer) 
     : m_pointer (pointer) {}
 
@@ -182,6 +185,9 @@ class APtrChecker : public PtrChecker
 	return false;
       }
     return true;
+  }
+  virtual Attribute Create (void) const {
+    return Attribute::Create<PtrValue<T> > ();
   }
 };
 
@@ -353,6 +359,9 @@ MakeSimpleAttributeChecker (void)
   {
     virtual bool Check (Attribute value) const {
       return value.DynCast<const T *> () != 0;
+    }
+    virtual Attribute Create (void) const {
+      return Attribute::Create<T> ();
     }
   } *checker = new SimpleAttributeChecker ();
   return Ptr<AttributeChecker> (checker, false);

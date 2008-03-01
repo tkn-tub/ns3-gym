@@ -60,6 +60,9 @@ MakeIntegerChecker (int64_t min, int64_t max)
 	}
       return v->Get ().Get () >= m_minValue && v->Get ().Get() <= m_maxValue;
     }
+    virtual Attribute Create (void) const {
+      return Attribute::Create<IntegerValue> ();
+    }
     int64_t m_minValue;
     int64_t m_maxValue;
   } *checker = new IntegerChecker (min, max);

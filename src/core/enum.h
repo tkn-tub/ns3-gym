@@ -10,6 +10,7 @@ namespace ns3 {
 class Enum : public AttributeValue
 {
 public:
+  Enum ();
   Enum (int v);
   void Set (int v);
   int Get (void) const;
@@ -33,6 +34,7 @@ public:
   void Add (int v, std::string name);
 
   virtual bool Check (Attribute value) const;
+  virtual Attribute Create (void) const;
 
 private:
   friend class Enum;

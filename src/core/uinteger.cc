@@ -55,6 +55,9 @@ Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max)
 	}
       return v->Get ().Get () >= m_minValue && v->Get ().Get () <= m_maxValue;
     }
+    virtual Attribute Create (void) const {
+      return Attribute::Create<UintegerValue> ();
+    }
     uint64_t m_minValue;
     uint64_t m_maxValue;
   } *checker = new Checker (min, max);

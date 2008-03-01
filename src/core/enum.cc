@@ -4,7 +4,9 @@
 
 namespace ns3 {
 
-
+Enum::Enum ()
+  : m_v ()
+{}
 Enum::Enum (int v)
   : m_v (v)
 {}
@@ -103,6 +105,12 @@ EnumChecker::Check (Attribute value) const
     }
   return false;
 }
+Attribute 
+EnumChecker::Create (void) const
+{
+  return Attribute::Create<Enum> ();
+}
+
 
 Ptr<const AttributeChecker> 
 MakeEnumChecker (int v1, std::string n1,

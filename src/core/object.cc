@@ -860,7 +860,7 @@ AttributeList::DoSet (struct TypeId::AttributeInfo *info, Attribute value)
           return false;
         }
       // attempt to convert back to value.
-      Attribute v = info->initialValue.Copy ();
+      Attribute v = info->checker->Create ();
       ok = v.DeserializeFromString (str->Get ().Get (), info->checker);
       if (!ok)
         {
@@ -958,7 +958,7 @@ AttributeList::DeserializeFromString (std::string str)
                 value = str.substr (equal+1, next - (equal+1));
                 cur++;
               }
-            Attribute val = info.initialValue.Copy ();
+            Attribute val = info.checker->Create ();
             bool ok = val.DeserializeFromString (value, info.checker);
             if (!ok)
               {
@@ -1087,7 +1087,7 @@ Object::DoSet (Ptr<const AttributeAccessor> spec, Attribute initialValue,
           return false;
         }
       // attempt to convert back from string.
-      Attribute v = initialValue.Copy ();
+      Attribute v = checker->Create ();
       ok = v.DeserializeFromString (str->Get ().Get (), checker);
       if (!ok)
         {
@@ -1129,7 +1129,7 @@ Object::GetAttribute (std::string name, std::string &value) const
     {
       return false;
     }
-  Attribute v = info.initialValue.Copy ();
+  Attribute v = info.checker->Create ();
   bool ok = info.accessor->Get (this, v);
   if (ok)
     {
@@ -1150,7 +1150,7 @@ Object::GetAttribute (std::string name) const
     {
       return Attribute ();
     }
-  Attribute value = info.initialValue.Copy ();
+  Attribute value = info.checker->Create ();
   bool ok = info.accessor->Get (this, value);
   if (!ok)
     {

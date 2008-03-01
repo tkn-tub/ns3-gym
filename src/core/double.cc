@@ -54,6 +54,9 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max)
 	}
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
+    virtual Attribute Create (void) const {
+      return Attribute::Create<DoubleValue> ();
+    }
     double m_minValue;
     double m_maxValue;
   } *checker = new Checker (min, max);
