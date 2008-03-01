@@ -357,7 +357,7 @@ private:
       {
         NS_FATAL_ERROR ("Incompatible types. (feed to \"c++filt -t\")"
                         " got=" << typeid (*other).name () << 
-                        ", expected=" << typeid (*this).name ());
+                        ", expected=" << typeid (CallbackImpl<R,T1,T2,T3,T4,T5,T6> *).name ());
       }
     m_impl = const_cast<CallbackImplBase *> (PeekPointer (other));
   }
