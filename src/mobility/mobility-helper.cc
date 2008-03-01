@@ -3,8 +3,11 @@
 #include "mobility-model-notifier.h"
 #include "position-allocator.h"
 #include "hierarchical-mobility-model.h"
+#include "ns3/log.h"
 
 namespace ns3 {
+
+NS_LOG_COMPONENT_DEFINE ("MobilityHelper");
 
 MobilityHelper::MobilityHelper ()
   : m_notifierEnabled (false)
@@ -113,6 +116,7 @@ MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
 	    }
 	  if (m_mobilityStack.empty ())
 	    {
+	      NS_LOG_DEBUG ("node="<<object<<", mob="<<model);
 	      object->AggregateObject (model);
 	    }
 	  else
@@ -123,6 +127,7 @@ MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
 		CreateObjectWith<HierarchicalMobilityModel> ("child", model,
 							     "parent", parent);
 	      object->AggregateObject (hierarchical);
+	      NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
 	    }
 	}
       Vector position = m_position->GetNext ();
