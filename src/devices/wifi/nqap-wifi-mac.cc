@@ -50,19 +50,26 @@ NqapWifiMac::GetTypeId (void)
                    Seconds (1.0),
                    MakeTimeAccessor (&NqapWifiMac::m_beaconInterval),
                    MakeTimeChecker ())
+    .AddAttribute ("BeaconGeneration", "Whether or not beacons are generated.",
+                   Boolean (false),
+                   MakeBooleanAccessor (&NqapWifiMac::SetBeaconGeneration,
+                                        &NqapWifiMac::GetBeaconGeneration),
+                   MakeBooleanChecker ())
     ;
   return tid;
 }
 
 NqapWifiMac::NqapWifiMac ()
 {
-  m_dcfManager = new DcfManager ();
-
   m_rxMiddle = new MacRxMiddle ();
   m_rxMiddle->SetForwardCallback (MakeCallback (&NqapWifiMac::Receive, this));
 
   m_low = new MacLow ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
+  m_low->SetMac (this);
+
+  m_dcfManager = new DcfManager ();
+  m_dcfManager->SetupLowListener (m_low);
 
   m_dca = CreateObject<DcaTxop> ();
   m_dca->SetLow (m_low);
@@ -82,24 +89,69 @@ NqapWifiMac::DoDispose (void)
 {
   delete m_rxMiddle;
   delete m_low;
+  delete m_dcfManager;
   m_rxMiddle = 0;
   m_low = 0;
+  m_dcfManager = 0;
   m_phy = 0;
   m_dca = 0;
   m_beaconDca = 0;
+  m_beaconEvent.Cancel ();
   WifiMac::DoDispose ();
 }
 
+void
+NqapWifiMac::SetBeaconGeneration (bool enable)
+{
+  if (enable)
+    {
+      m_beaconEvent = Simulator::ScheduleNow (&NqapWifiMac::SendOneBeacon, this);
+    }
+  else
+    {
+      m_beaconEvent.Cancel ();
+    }
+}
+
+bool
+NqapWifiMac::GetBeaconGeneration (void) const
+{
+  return m_beaconEvent.IsRunning ();
+}
+
+void 
+NqapWifiMac::SetSlot (Time slotTime)
+{
+  m_dcfManager->SetSlot (slotTime);
+  WifiMac::SetSlot (slotTime);
+}
+void 
+NqapWifiMac::SetSifs (Time sifs)
+{
+  m_dcfManager->SetSifs (sifs);
+  WifiMac::SetSifs (sifs);
+}
+void 
+NqapWifiMac::SetEifsNoDifs (Time eifsNoDifs)
+{
+  m_dcfManager->SetEifsNoDifs (eifsNoDifs);
+  WifiMac::SetEifsNoDifs (eifsNoDifs);
+}
 
 void 
 NqapWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 {
   m_phy = phy;
+  m_dcfManager->SetupPhyListener (phy);
+  m_low->SetPhy (phy);
 }
 void 
 NqapWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager)
 {
   m_stationManager = stationManager;
+  m_dca->SetWifiRemoteStationManager (stationManager);
+  m_beaconDca->SetWifiRemoteStationManager (stationManager);
+  m_low->SetWifiRemoteStationManager (stationManager);
 }
 void 
 NqapWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback)
@@ -109,13 +161,14 @@ NqapWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address
 void 
 NqapWifiMac::SetLinkUpCallback (Callback<void> linkUp)
 {
-
+  if (!linkUp.IsNull ())
+    {
+      linkUp ();
+    }
 }
 void 
 NqapWifiMac::SetLinkDownCallback (Callback<void> linkDown)
-{
-
-}
+{}
 Mac48Address 
 NqapWifiMac::GetAddress (void) const
 {
@@ -261,7 +314,7 @@ NqapWifiMac::SendOneBeacon (void)
   packet->AddHeader (beacon);
 
   m_beaconDca->Queue (packet, hdr);
-  Simulator::Schedule (m_beaconInterval, &NqapWifiMac::SendOneBeacon, this);
+  m_beaconEvent = Simulator::Schedule (m_beaconInterval, &NqapWifiMac::SendOneBeacon, this);
 }
 void 
 NqapWifiMac::TxOk (WifiMacHeader const &hdr)

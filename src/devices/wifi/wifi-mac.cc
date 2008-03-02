@@ -89,6 +89,11 @@ WifiMac::GetTypeId (void)
 		   Uinteger (2304),
 		   MakeUintegerAccessor (&WifiMac::GetMaxMsduSize),
 		   MakeUintegerChecker (1,2304))
+    .AddAttribute ("Ssid", "XXX",
+		   Ssid ("default"),
+		   MakeSsidAccessor (&WifiMac::GetSsid,
+				     &WifiMac::SetSsid),
+		   MakeSsidChecker ())
     ;
   return tid;
 }

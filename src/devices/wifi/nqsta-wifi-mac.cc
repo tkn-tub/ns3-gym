@@ -79,6 +79,10 @@ NqstaWifiMac::GetTypeId (void)
                    Uinteger (10),
                    MakeUintegerAccessor (&NqstaWifiMac::m_maxMissedBeacons),
                    MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("ActiveProbing", "XXX",
+                   Boolean (false),
+                   MakeBooleanAccessor (&NqstaWifiMac::SetActiveProbing),
+                   MakeBooleanChecker ())
     ;
   return tid;
 }
@@ -97,6 +101,7 @@ NqstaWifiMac::NqstaWifiMac ()
 
   m_low = new MacLow ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
+  m_low->SetMac (this);
 
   m_dca = CreateObject<DcaTxop> ();
   m_dca->SetLow (m_low);
@@ -111,22 +116,47 @@ NqstaWifiMac::DoDispose (void)
 {
   delete m_rxMiddle;
   delete m_low;
+  delete m_dcfManager;
   m_rxMiddle = 0;
   m_low = 0;
+  m_dcfManager = 0;
   m_phy = 0;
   m_dca = 0;
   WifiMac::DoDispose ();
 }
 
 void 
+NqstaWifiMac::SetSlot (Time slotTime)
+{
+  m_dcfManager->SetSlot (slotTime);
+  WifiMac::SetSlot (slotTime);
+}
+void 
+NqstaWifiMac::SetSifs (Time sifs)
+{
+  m_dcfManager->SetSifs (sifs);
+  WifiMac::SetSifs (sifs);
+}
+void 
+NqstaWifiMac::SetEifsNoDifs (Time eifsNoDifs)
+{
+  m_dcfManager->SetEifsNoDifs (eifsNoDifs);
+  WifiMac::SetEifsNoDifs (eifsNoDifs);
+}
+
+void 
 NqstaWifiMac::SetWifiPhy (Ptr<WifiPhy> phy)
 {
   m_phy = phy;
+  m_dcfManager->SetupPhyListener (phy);
+  m_low->SetPhy (phy);
 }
 void 
 NqstaWifiMac::SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager)
 {
   m_stationManager = stationManager;
+  m_dca->SetWifiRemoteStationManager (stationManager);
+  m_low->SetWifiRemoteStationManager (stationManager);
 }
 void 
 NqstaWifiMac::SetForwardUpCallback (Callback<void,Ptr<Packet>, const Mac48Address &> upCallback)
@@ -201,6 +231,18 @@ void
 NqstaWifiMac::SetBssid (Mac48Address bssid)
 {
   m_bssid = bssid;
+}
+void 
+NqstaWifiMac::SetActiveProbing (bool enable)
+{
+  if (enable)
+    {
+      TryToEnsureAssociated ();
+    }
+  else
+    {
+      m_probeRequestEvent.Cancel ();
+    }
 }
 void 
 NqstaWifiMac::ForwardUp (Ptr<Packet> packet, const Mac48Address &address)
@@ -445,7 +487,10 @@ NqstaWifiMac::Receive (Ptr<Packet> packet, WifiMacHeader const *hdr)
                         }
                     }
                 }
-              m_linkUp ();
+              if (!m_linkUp.IsNull ())
+                {
+                  m_linkUp ();
+                }
             } 
           else 
             {

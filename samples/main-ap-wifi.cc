@@ -18,20 +18,26 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "ns3/wifi-net-device.h"
-#include "ns3/wifi-channel.h"
-#include "ns3/wifi-phy.h"
 
 #include "ns3/simulator.h"
 #include "ns3/callback.h"
 #include "ns3/ptr.h"
 #include "ns3/node.h"
 #include "ns3/onoff-application.h"
-#include "ns3/static-mobility-model.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/wifi-helper.h"
+#include "ns3/node-container.h"
 #include "ns3/random-variable.h"
 #include "ns3/packet-socket-address.h"
 #include "ns3/packet.h"
 #include "ns3/node-list.h"
+#include "ns3/ssid.h"
+#include "ns3/wifi-phy.h"
+#include "ns3/mobility-model.h"
+#include "ns3/config.h"
+#include "ns3/string.h"
+#include "ns3/wifi-channel.h"
+#include "ns3/boolean.h"
 
 
 #include <iostream>
@@ -39,14 +45,14 @@
 using namespace ns3;
 
 void
-WifiNetDeviceTrace (const TraceContext &context, Ptr<const Packet> p, Mac48Address address)
+WifiNetDeviceTrace (Ptr<const Packet> p, Mac48Address address)
 {
-  std::cout << context << " ad=" << address << " p: " << p << std::endl;
+  std::cout << " ad=" << address << " p: " << p << std::endl;
 }
 void
-WifiPhyStateTrace (const TraceContext &context, Time start, Time duration, enum WifiPhy::State state)
+WifiPhyStateTrace (Time start, Time duration, enum WifiPhy::State state)
 {
-  std::cout << context << " state=";
+  std::cout << " state=";
   switch (state) {
   case WifiPhy::TX:
     std::cout << "tx      ";
@@ -62,43 +68,6 @@ WifiPhyStateTrace (const TraceContext &context, Time start, Time duration, enum 
     break;
   }
   std::cout << " start="<<start<<" duration="<<duration<<std::endl;
-}
-
-static Ptr<Node>
-CreateApNode (Ptr<WifiChannel> channel,
-              Vector position, 
-              const char *macAddress,
-              Ssid ssid, 
-              Time at)
-{
-  Ptr<Node> node = CreateObject<Node> ();  
-  Ptr<NqapWifiNetDevice> device = CreateObject<NqapWifiNetDevice> (node, Mac48Address (macAddress));
-  node->AddDevice (device);
-  device->SetSsid (ssid);
-  Simulator::Schedule (at, &NqapWifiNetDevice::StartBeaconing, device);
-  device->Attach (channel);
-  Ptr<MobilityModel> mobility = CreateObject<StaticMobilityModel> ();
-  mobility->SetPosition (position);
-  node->AggregateObject (mobility);
-  return node;
-}
-
-static Ptr<Node>
-CreateStaNode (Ptr<WifiChannel> channel,
-               Vector position, 
-               const char *macAddress,
-               Ssid ssid)
-{
-  Ptr<Node> node = CreateObject<Node> ();  
-  Ptr<NqstaWifiNetDevice> device = CreateObject<NqstaWifiNetDevice> (node, Mac48Address (macAddress));
-  node->AddDevice (device);
-  Simulator::ScheduleNow (&NqstaWifiNetDevice::StartActiveAssociation, device, 
-                          ssid);
-  device->Attach (channel);
-  Ptr<MobilityModel> mobility = CreateObject<StaticMobilityModel> ();
-  mobility->SetPosition (position);
-  node->AggregateObject (mobility);
-  return node;
 }
 
 static void
@@ -138,47 +107,51 @@ int main (int argc, char *argv[])
 
   Packet::EnableMetadata ();
 
-  //Simulator::EnableLogTo ("80211.log");
-
-
   // enable rts cts all the time.
-  DefaultValue::Bind ("WifiRtsCtsThreshold", "0");
+  Config::SetDefault ("WifiRemoteStationManager::RtsCtsThreshold", String ("0"));
   // disable fragmentation
-  DefaultValue::Bind ("WifiFragmentationThreshold", "2200");
-  DefaultValue::Bind ("WifiRateControlAlgorithm", "Aarf");
-  //DefaultValue::Bind ("WifiRateControlAlgorithm", "Arf");
+  Config::SetDefault ("WifiRemoteStationManager::FragmentationThreshold", String ("2200"));
+
+  WifiHelper wifi;
+  MobilityHelper mobility;
+  NodeContainer stas;
+  NodeContainer ap;
+  NetDeviceContainer staDevs;
+
+  stas.Create (2);
+  ap.Create (1);
 
   Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
-  Ssid ssid = Ssid ("mathieu");
+  Ssid ssid = Ssid ("wifi-default");
+  wifi.SetPhy ("WifiPhy");
+  wifi.SetRemoteStationManager ("ArfWifiManager");
+  // setup ap.
+  wifi.SetMac ("NqstaWifiMac", "Ssid", ssid,
+               "ActiveProbing", Boolean (false));
+  staDevs = wifi.Build (stas, channel);
+  // setup stas.
+  wifi.SetMac ("NqapWifiMac", "Ssid", ssid,
+               "BeaconGeneration", Boolean (true),
+               "BeaconInterval", Seconds (2.5));
+  wifi.Build (ap, channel);
 
-  Ptr<Node> a = CreateApNode (channel, 
-                              Vector (5.0,0.0,0.0),
-                              "00:00:00:00:00:01",
-                              ssid, 
-                              Seconds (0.1));
-  Simulator::Schedule (Seconds (1.0), &AdvancePosition, a);
+  // mobility.
+  mobility.Layout (stas.Begin (), stas.End ());
+  mobility.Layout (ap.Begin (), ap.End ());
 
-  Ptr<Node> b = CreateStaNode (channel,
-                               Vector (0.0, 0.0, 0.0),
-                               "00:00:00:00:00:02",
-                               ssid);
-
-  Ptr<Node> c = CreateStaNode (channel,
-                               Vector (0.0, 0.0, 0.0),
-                               "00:00:00:00:00:03",
-                               ssid);
+  Simulator::Schedule (Seconds (1.0), &AdvancePosition, ap.Get (0));
 
   PacketSocketAddress destination = PacketSocketAddress ();
   destination.SetProtocol (1);
   destination.SetSingleDevice (0);
-  destination.SetPhysicalAddress (Mac48Address ("00:00:00:00:00:03"));
+  destination.SetPhysicalAddress (staDevs.Get(1)->GetAddress ());
   Ptr<Application> app = 
-    CreateObjectWith<OnOffApplication> ("Node", b, 
+    CreateObjectWith<OnOffApplication> ("Node", stas.Get (0), 
                                         "Remote", Address (destination), 
                                         "Protocol", TypeId::LookupByName ("Packet"),
                                         "OnTime", ConstantVariable (42),
                                         "OffTime", ConstantVariable (0));
-  b->AddApplication (app);
+  stas.Get (0)->AddApplication (app);
   app->Start (Seconds (0.5));
   app->Stop (Seconds (43.0));
 

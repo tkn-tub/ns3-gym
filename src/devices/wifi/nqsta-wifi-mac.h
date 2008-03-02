@@ -58,6 +58,9 @@ public:
   NqstaWifiMac ();
   ~NqstaWifiMac ();
 
+  virtual void SetSlot (Time slotTime);
+  virtual void SetSifs (Time sifs);
+  virtual void SetEifsNoDifs (Time eifsNoDifs);
   virtual void SetWifiPhy (Ptr<WifiPhy> phy);
   virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
@@ -98,6 +101,8 @@ public:
 
 private:
   void SetBssid (Mac48Address bssid);
+  void SetActiveProbing (bool enable);
+  bool GetActiveProbing (void) const;
   void ForwardUp (Ptr<Packet> packet, const Mac48Address &address);
   void Receive (Ptr<Packet> packet, WifiMacHeader const *hdr);
   Mac48Address GetBroadcastBssid (void);

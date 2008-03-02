@@ -67,8 +67,10 @@ AdhocWifiMac::DoDispose (void)
 {
   delete m_rxMiddle;
   delete m_low;
+  delete m_dcfManager;
   m_rxMiddle = 0;
   m_low = 0;
+  m_dcfManager = 0;
   m_phy = 0;
   WifiMac::DoDispose ();
 }

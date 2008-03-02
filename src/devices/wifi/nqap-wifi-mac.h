@@ -58,6 +58,9 @@ public:
   NqapWifiMac ();
   ~NqapWifiMac ();
 
+  virtual void SetSlot (Time slotTime);
+  virtual void SetSifs (Time sifs);
+  virtual void SetEifsNoDifs (Time eifsNoDifs);
   virtual void SetWifiPhy (Ptr<WifiPhy> phy);
   virtual void SetWifiRemoteStationManager (Ptr<WifiRemoteStationManager> stationManager);
   virtual void Enqueue (Ptr<const Packet> packet, Mac48Address to);
@@ -88,6 +91,8 @@ private:
   void SendAssocResp (Mac48Address to, bool success);
   void SendOneBeacon (void);
   SupportedRates GetSupportedRates (void) const;
+  void SetBeaconGeneration (bool enable);
+  bool GetBeaconGeneration (void) const;
   virtual void DoDispose (void);
 
   Ptr<DcaTxop> m_dca;
@@ -102,6 +107,7 @@ private:
   MacLow *m_low;
   Mac48Address m_address;
   Ssid m_ssid;
+  EventId m_beaconEvent;
 };
 
 } // namespace ns3

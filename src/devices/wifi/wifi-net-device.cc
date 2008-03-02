@@ -58,9 +58,9 @@ WifiNetDevice::Setup (Ptr<Node> node, Ptr<WifiMac> mac, Ptr<WifiPhy> phy,
   m_phy = phy;
   m_stationManager = manager;
 
-  manager->SetupPhy (phy);
+  m_stationManager->SetupPhy (m_phy);
 
-  m_mac->SetWifiRemoteStationManager (manager);
+  m_mac->SetWifiRemoteStationManager (m_stationManager);
   m_mac->SetWifiPhy (m_phy);
   m_mac->SetForwardUpCallback (MakeCallback (&WifiNetDevice::ForwardUp, this));
   m_mac->SetLinkUpCallback (MakeCallback (&WifiNetDevice::LinkUp, this));
@@ -68,8 +68,6 @@ WifiNetDevice::Setup (Ptr<Node> node, Ptr<WifiMac> mac, Ptr<WifiPhy> phy,
   channel->Add (this, m_phy);
 
   m_phy->SetChannel (channel);
-  //XXX
-  //m_stationManager->
 }
 Ptr<WifiMac> 
 WifiNetDevice::GetMac (void) const
