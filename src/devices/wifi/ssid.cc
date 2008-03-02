@@ -136,11 +136,21 @@ Ssid::Deserialize (Buffer::Iterator i)
   return i;
 }
 
+VALUE_HELPER_CPP (Ssid);
+
 std::ostream &
 operator << (std::ostream &os, const Ssid &ssid)
 {
   os << ssid.PeekString ();
   return os;
+}
+
+std::istream &operator >> (std::istream &is, Ssid &ssid)
+{
+  std::string str;
+  is >> str;
+  ssid = Ssid (str.c_str ());
+  return is;
 }
 
 
