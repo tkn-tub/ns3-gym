@@ -22,16 +22,17 @@
 
 #include <sstream>
 
-#include "ns3/node-list.h"
-#include "ns3/trace-context.h"
+#include "ns3/config.h"
 #include "ns3/callback.h"
 #include "ns3/pcap-writer.h"
 #include "ns3/node-list.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"
+#include "ns3/log.h"
 
 #include "ipv4-l3-protocol.h"
 
+NS_LOG_COMPONENT_DEFINE ("PcapTrace");
 
 namespace ns3 {
 
@@ -51,8 +52,10 @@ PcapTrace::~PcapTrace ()
 void 
 PcapTrace::TraceAllIp (void)
 {
-  NodeList::Connect ("/nodes/*/ipv4/(tx|rx)",
-                     MakeCallback (&PcapTrace::LogIp, this));
+  Config::ConnectWithContext ("/NodeList/*/$Ipv4L3Protocol/Tx",
+                              MakeCallback (&PcapTrace::LogTxIp, this));
+  Config::ConnectWithContext ("/NodeList/*/$Ipv4L3Protocol/Rx",
+                              MakeCallback (&PcapTrace::LogRxIp, this));
 }
 
 PcapWriter *
@@ -80,12 +83,33 @@ PcapTrace::GetStream (uint32_t nodeId, uint32_t interfaceId)
   return trace.writer;
 }
 
-void 
-PcapTrace::LogIp (TraceContext const &context, Ptr<const Packet> p, uint32_t interfaceIndex)
+uint32_t
+PcapTrace::GetNodeIndex (std::string context) const
 {
-  NodeListIndex nodeIndex;
-  context.GetElement (nodeIndex);
-  PcapWriter *writer = GetStream (nodeIndex.Get (), interfaceIndex);
+  std::string::size_type pos = context.find ("/NodeList/");
+  NS_ASSERT (pos == 0);
+  std::string::size_type afterNodeIndex = context.find ("/", 11);
+  NS_ASSERT (afterNodeIndex != std::string::npos);
+  std::string index = context.substr (10, afterNodeIndex - 10);
+  NS_LOG_DEBUG ("index="<<index);
+  std::istringstream iss;
+  iss.str (index);
+  uint32_t nodeIndex;
+  iss >> nodeIndex;
+  return nodeIndex;
+}  
+
+void 
+PcapTrace::LogTxIp (std::string context, Ptr<const Packet> p, uint32_t interfaceIndex)
+{
+  PcapWriter *writer = GetStream (GetNodeIndex (context), interfaceIndex);
+  writer->WritePacket (p);
+}
+
+void 
+PcapTrace::LogRxIp (std::string context, Ptr<const Packet> p, uint32_t interfaceIndex)
+{
+  PcapWriter *writer = GetStream (GetNodeIndex (context), interfaceIndex);
   writer->WritePacket (p);
 }
 

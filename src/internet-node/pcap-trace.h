@@ -40,7 +40,9 @@ public:
   void TraceAllIp (void);
 private:
   PcapWriter *GetStream (uint32_t nodeId, uint32_t interfaceId);
-  void LogIp (TraceContext const &context, Ptr<const Packet> p, uint32_t interfaceIndex);
+  void LogRxIp (std::string context, Ptr<const Packet> p, uint32_t interfaceIndex);
+  void LogTxIp (std::string context, Ptr<const Packet> p, uint32_t interfaceIndex);
+  uint32_t GetNodeIndex (std::string context) const;
   std::string m_filename;
   struct Trace {
     uint32_t nodeId;
