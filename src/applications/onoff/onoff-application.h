@@ -25,6 +25,7 @@
 #ifndef __onoff_application_h__
 #define __onoff_application_h__
 
+#include "ns3/address.h"
 #include "ns3/application.h"
 #include "ns3/event-id.h"
 #include "ns3/ptr.h"
