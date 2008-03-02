@@ -411,7 +411,7 @@ void RegisterRootNamespaceObject (Ptr<Object> obj)
   Singleton<ConfigImpl>::Get ()->RegisterRootNamespaceObject (obj);
 }
 
-void Unregister (Ptr<Object> obj)
+void UnregisterRootNamespaceObject (Ptr<Object> obj)
 {
   Singleton<ConfigImpl>::Get ()->UnregisterRootNamespaceObject (obj);
 }

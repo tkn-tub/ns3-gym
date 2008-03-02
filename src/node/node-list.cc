@@ -23,6 +23,7 @@
 #include "ns3/composite-trace-resolver.h"
 #include "ns3/simulator.h"
 #include "ns3/object-vector.h"
+#include "ns3/config.h"
 #include "node-list.h"
 #include "node.h"
 
@@ -107,6 +108,7 @@ NodeListPriv::DoGet (void)
   if (ptr == 0)
     {
       ptr = CreateObject<NodeListPriv> ();
+      Config::RegisterRootNamespaceObject (ptr);
       Simulator::ScheduleDestroy (&NodeListPriv::Delete);
     }
   return &ptr;
@@ -114,6 +116,7 @@ NodeListPriv::DoGet (void)
 void 
 NodeListPriv::Delete (void)
 {
+  Config::UnregisterRootNamespaceObject (Get ());
   (*DoGet ()) = 0;
 }
 

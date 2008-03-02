@@ -18,6 +18,7 @@ void Disconnect (std::string path, const CallbackBase &cb);
 void ConnectWithContext (std::string path, const CallbackBase &cb);
 
 void RegisterRootNamespaceObject (Ptr<Object> obj);
+void UnregisterRootNamespaceObject (Ptr<Object> obj);
 
 } // namespace Config
 
