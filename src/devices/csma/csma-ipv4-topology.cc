@@ -26,6 +26,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/queue.h"
+#include "ns3/drop-tail-queue.h"
 #include "ns3/string.h"
 
 #include "csma-channel.h"
@@ -40,7 +41,7 @@ CsmaIpv4Topology::AddIpv4CsmaNetDevice(
   Ptr<CsmaChannel> channel,
   Mac48Address addr)
 {
-  Ptr<Queue> q = Queue::CreateDefault ();
+  Ptr<Queue> q = CreateObjectWith<DropTailQueue> ();
 
   // assume full-duplex
   Ptr<CsmaNetDevice> nd = CreateObjectWith<CsmaNetDevice> ("Node", node, 
@@ -59,7 +60,7 @@ CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
                                      Ptr<CsmaChannel> ch,
                                      Mac48Address addr)
 {
-  Ptr<Queue> q = Queue::CreateDefault ();
+  Ptr<Queue> q = CreateObjectWith<DropTailQueue> ();
 
   Ptr<CsmaNetDevice> nd0 = CreateObjectWith<CsmaNetDevice> ("Node", n1, 
                                                             "Address", addr,
@@ -85,7 +86,7 @@ CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
                                      Ptr<CsmaChannel> ch,
                                      Mac48Address addr)
 {
-  Ptr<Queue> q = Queue::CreateDefault ();
+  Ptr<Queue> q = CreateObjectWith<DropTailQueue> ();
 
   Ptr<CsmaNetDevice> nd0 = CreateObjectWith<CsmaNetDevice> ("Node", n1, 
                                                             "Address", addr,

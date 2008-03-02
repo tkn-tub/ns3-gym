@@ -5,6 +5,7 @@
 #include "ns3/point-to-point-net-device.h"
 #include "ns3/csma-net-device.h"
 #include "ns3/queue.h"
+#include "ns3/drop-tail-queue.h"
 #include "ns3/mobility-model-notifier.h"
 #include "ns3/default-value.h"
 #include "ns3/string.h"
@@ -123,12 +124,12 @@ int main (int argc, char *argv[])
   Ptr<PointToPointNetDevice> p2p = CreateObjectWith<PointToPointNetDevice> ("Node", node, 
 									    "Address", Mac48Address::Allocate ());
   node->AddDevice (p2p);
-  p2p->AddQueue (Queue::CreateDefault ());
+  p2p->AddQueue (CreateObject<DropTailQueue> ());
   Ptr<CsmaNetDevice> csma = CreateObjectWith<CsmaNetDevice> ("Node", node, 
 							     "Address", Mac48Address::Allocate (),
 							     "EncapsulationMode", String ("Llc"));
   node->AddDevice (csma);
-  csma->AddQueue (Queue::CreateDefault ());
+  csma->AddQueue (CreateObject<DropTailQueue> ());
 
   TraceResolver::SourceCollection collection;
   NodeList::GetTraceResolver ()->CollectSources ("", TraceContext (), &collection);

@@ -104,13 +104,7 @@ main (int argc, char *argv[])
   LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
 #endif
   // Set up some default values for the simulation.  Use the Bind ()
-  // technique to tell the system what subclass of Queue to use,
-  // and what the queue limit is
 
-  // The below DefaultValue::Bind command tells the queue factory which 
-  // class to instantiate, when the queue factory is invoked in the 
-  // topology code
-  DefaultValue::Bind ("Queue", "DropTailQueue");
 
   Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
   Config::SetDefault ("OnOffApplication::DataRate", DataRate ("448kb/s"));

@@ -21,6 +21,7 @@
 #include "ns3/ipv4-address.h"
 #include "ns3/ipv4.h"
 #include "ns3/queue.h"
+#include "ns3/drop-tail-queue.h"
 
 #include "ns3/point-to-point-channel.h"
 #include "ns3/point-to-point-net-device.h"
@@ -47,7 +48,7 @@ PointToPointIpv4Topology::AddNetDevice (
     CreateObjectWith<PointToPointNetDevice> ("Node", node, 
                                              "Address", Mac48Address::Allocate ());
   node->AddDevice (nd);
-  Ptr<Queue> q = Queue::CreateDefault ();
+  Ptr<Queue> q = CreateObject<DropTailQueue> ();
   nd->AddQueue(q);
   nd->Attach (channel);
 

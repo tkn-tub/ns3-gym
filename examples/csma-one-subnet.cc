@@ -85,12 +85,6 @@ main (int argc, char *argv[])
   LogComponentEnable("UdpEchoServerApplication", LOG_LEVEL_ALL);
 #endif
 //
-// Set up default values for the simulation.  Use the DefaultValue::Bind()
-// technique to tell the system what subclass of Queue to use.  The Bind
-// command command tells the queue factory which class to instantiate when the
-// queue factory is invoked in the topology code
-//
-  DefaultValue::Bind ("Queue", "DropTailQueue");
 //
 // Allow the user to override any of the defaults and the above Bind() at
 // run-time, via command-line arguments

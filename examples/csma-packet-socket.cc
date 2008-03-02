@@ -54,6 +54,7 @@
 #include "ns3/socket.h"
 #include "ns3/onoff-application.h"
 #include "ns3/queue.h"
+#include "ns3/drop-tail-queue.h"
 
 using namespace ns3;
 
@@ -67,7 +68,7 @@ CreateCsmaDevice (Ptr<Node> node, Ptr<CsmaChannel> channel)
                                                                "EncapsulationMode", String ("Llc"));
   node->AddDevice (device);
   device->Attach (channel);
-  Ptr<Queue> queue = Queue::CreateDefault ();
+  Ptr<Queue> queue = CreateObject<DropTailQueue> ();
   device->AddQueue (queue);
   return device;
 }
