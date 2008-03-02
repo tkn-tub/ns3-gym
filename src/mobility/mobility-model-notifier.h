@@ -22,7 +22,7 @@
 
 #include "ns3/object.h"
 #include "ns3/callback.h"
-#include "ns3/callback-trace-source.h"
+#include "ns3/traced-callback.h"
 #include "mobility-model.h"
 
 namespace ns3 {
@@ -44,10 +44,8 @@ public:
    * \param position the position which just changed.
    */
   void Notify (Ptr<const MobilityModel> position) const;
-protected:
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 private:
-  CallbackTraceSource<Ptr<const MobilityModel> > m_trace;
+  TracedCallback<Ptr<const MobilityModel> > m_trace;
 };
 
 } // namespace ns3

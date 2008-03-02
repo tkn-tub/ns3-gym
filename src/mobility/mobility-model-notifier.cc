@@ -18,8 +18,7 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "mobility-model-notifier.h"
-#include "ns3/composite-trace-resolver.h"
-#include "ns3/trace-doc.h"
+#include "ns3/trace-source-accessor.h"
 
 namespace ns3 {
 
@@ -28,7 +27,11 @@ MobilityModelNotifier::GetTypeId (void)
 {
   static TypeId tid = TypeId ("MobilityModelNotifier")
     .SetParent<Object> ()
-    .AddConstructor<MobilityModelNotifier> ();
+    .AddConstructor<MobilityModelNotifier> ()
+    .AddTraceSource ("CourseChange", 
+                     "The value of the position and/or velocity vector changed",
+                     MakeTraceSourceAccessor (&MobilityModelNotifier::m_trace))
+    ;
   return tid;
 }
 
@@ -39,20 +42,6 @@ void
 MobilityModelNotifier::Notify (Ptr<const MobilityModel> position) const
 {
   m_trace (position);
-}
-
-Ptr<TraceResolver> 
-MobilityModelNotifier::GetTraceResolver (void) const
-{
-  Ptr<CompositeTraceResolver> resolver = 
-    Create<CompositeTraceResolver> ();
-  resolver->AddSource ("course-change", 
-                       TraceDoc ("The value of the position and/or velocity vector changed",
-                                 "Ptr<const MobilityModel>", 
-                                 "the mobility model whose course changed"),
-                       m_trace);
-  resolver->SetParentResolver (Object::GetTraceResolver ());
-  return resolver;
 }
 
 } // namespace ns3
