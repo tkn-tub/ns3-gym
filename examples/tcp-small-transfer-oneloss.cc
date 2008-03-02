@@ -59,6 +59,7 @@
 #include "ns3/packet-sink.h"
 #include "ns3/error-model.h"
 #include "ns3/node-list.h"
+#include "ns3/config.h"
 
 #include "ns3/tcp.h"
 
@@ -67,8 +68,8 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("TcpSmallTransferOneloss");
 
 void 
-ApplicationTraceSink (const TraceContext &context, Ptr<const Packet> packet,
-  const Address &addr)
+ApplicationTraceSink (Ptr<const Packet> packet,
+                      const Address &addr)
 {
 // g_log is not declared in optimized builds
 // should convert this to use of some other flag than the logging system
@@ -220,7 +221,7 @@ int main (int argc, char *argv[])
   PcapTrace pcaptrace ("tcp-small-transfer-oneloss.pcap");
   pcaptrace.TraceAllIp ();
 
-  NodeList::Connect ("/nodes/*/applications/*/rx", MakeCallback (&ApplicationTraceSink));
+  Config::Connect ("/NodeList/*/ApplicationList/*/Rx", MakeCallback (&ApplicationTraceSink));
 
   Simulator::StopAt (Seconds(1000));
   Simulator::Run ();

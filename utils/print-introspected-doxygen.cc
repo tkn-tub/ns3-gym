@@ -132,7 +132,7 @@ int main (int argc, char *argv[])
   csma->AddQueue (CreateObject<DropTailQueue> ());
 
   TraceResolver::SourceCollection collection;
-  NodeList::GetTraceResolver ()->CollectSources ("", TraceContext (), &collection);
+  //NodeList::GetTraceResolver ()->CollectSources ("", TraceContext (), &collection);
   PrintDoxygenText (&collection, std::cout);
 
 

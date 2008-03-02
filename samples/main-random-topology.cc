@@ -12,11 +12,12 @@
 #include "ns3/mobility-helper.h"
 #include "ns3/node-list.h"
 #include "ns3/string.h"
+#include "ns3/config.h"
 
 using namespace ns3;
 
 static void 
-CourseChange (const TraceContext &context, Ptr<const MobilityModel> position)
+CourseChange (std::string context, Ptr<const MobilityModel> position)
 {
   Vector pos = position->GetPosition ();
   std::cout << Simulator::Now () << ", pos=" << position << ", x=" << pos.x << ", y=" << pos.y
@@ -44,9 +45,9 @@ int main (int argc, char *argv[])
   mobility.SetMobilityModel ("StaticMobilityModel");
   mobility.Layout (objects.begin (), objects.end ());
 
-  NodeList::Connect ("/nodes/*/$MobilityModelNotifier/course-change", 
-                     MakeCallback (&CourseChange));
-
+  Config::ConnectWithContext ("/NodeList/*/$MobilityModelNotifier/CourseChange",
+                              MakeCallback (&CourseChange));
+  
   Simulator::StopAt (Seconds (100.0));
 
   Simulator::Run ();

@@ -13,6 +13,7 @@
 #include "ns3/node-list.h"
 #include "ns3/mobility-helper.h"
 #include "ns3/string.h"
+#include "ns3/config.h"
 
 using namespace ns3;
 
@@ -28,12 +29,10 @@ CourseChange (ns3::TraceContext const&, Ptr<const MobilityModel> mobility)
 
 int main (int argc, char *argv[])
 {
-  DefaultValue::Bind ("RandomWalk2dMode", "Time");
-  DefaultValue::Bind ("RandomWalk2dTime", "2s");
-  DefaultValue::Bind ("RandomWalk2dSpeed", "Constant:1.0");
-  DefaultValue::Bind ("RandomWalk2dBounds", "0:200:0:100");
-
-  DefaultValue::Bind ("RandomTopologyMobilityType", "RandomWalk2dMobilityModel");
+  Config::SetDefault ("RandomWalk2dMobilityModel::Mode", String ("Time"));
+  Config::SetDefault ("RandomWalk2dMobilityModel::Time", String ("2s"));
+  Config::SetDefault ("RandomWalk2dMobilityModel::Speed", String ("Constant:1.0"));
+  Config::SetDefault ("RandomWalk2dMobilityModel::Bounds", String ("0:200:0:100"));
 
   CommandLine::Parse (argc, argv);
 
@@ -54,8 +53,8 @@ int main (int argc, char *argv[])
                              "Speed", String ("Constant:1.0"),
                              "Bounds", String ("0:200:0:100"));
   mobility.Layout (NodeList::Begin (), NodeList::End ());
-  NodeList::Connect ("/nodes/*/$MobilityModelNotifier/course-change", 
-                     MakeCallback (&CourseChange));
+  Config::ConnectWithContext ("/NodeList/*/$MobilityModelNotifier/CourseChange",
+                              MakeCallback (&CourseChange));
 
   Simulator::StopAt (Seconds (100.0));
 
