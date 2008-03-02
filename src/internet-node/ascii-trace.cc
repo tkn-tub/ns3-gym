@@ -20,10 +20,10 @@
  */
 #include "ascii-trace.h"
 
+#include "ns3/config.h"
 #include "ns3/trace-context.h"
 #include "ns3/simulator.h"
 #include "ns3/node.h"
-#include "ns3/node-list.h"
 #include "ns3/packet.h"
 #include "ns3/queue.h"
 
@@ -41,61 +41,62 @@ void
 AsciiTrace::TraceAllQueues (void)
 {
   Packet::EnableMetadata ();
-  NodeList::Connect ("/nodes/*/devices/*/queue/enqueue",
-                      MakeCallback (&AsciiTrace::LogDevQueueEnqueue, this));
-  NodeList::Connect ("/nodes/*/devices/*/queue/dequeue",
-                      MakeCallback (&AsciiTrace::LogDevQueueDequeue, this));
-  NodeList::Connect ("/nodes/*/devices/*/queue/drop",
-                      MakeCallback (&AsciiTrace::LogDevQueueDrop, this));
+  Config::ConnectWithContext ("/NodeList/*/DeviceList/*/TxQueue/Enqueue",
+                              MakeCallback (&AsciiTrace::LogDevQueueEnqueue, this));
+  Config::ConnectWithContext ("/NodeList/*/DeviceList/*/TxQueue/Dequeue",
+                              MakeCallback (&AsciiTrace::LogDevQueueDequeue, this));
+  Config::ConnectWithContext ("/NodeList/*/DeviceList/*/TxQueue/Drop",
+                              MakeCallback (&AsciiTrace::LogDevQueueDrop, this));
 }
 void
 AsciiTrace::TraceAllNetDeviceRx (void)
 {
   Packet::EnableMetadata ();
-  NodeList::Connect ("/nodes/*/devices/*/rx",
-                     MakeCallback (&AsciiTrace::LogDevRx, this));
+  Config::ConnectWithContext ("/NodeList/*/DeviceList/*/Rx",
+                              MakeCallback (&AsciiTrace::LogDevRx, this));
 }
 
 void 
-AsciiTrace::LogDevQueueEnqueue (TraceContext const &context, 
+AsciiTrace::LogDevQueueEnqueue (std::string context,
                                 Ptr<const Packet> packet)
 {
   m_os << "+ ";
   m_os << Simulator::Now ().GetSeconds () << " ";
-  context.Print (m_os);
+  m_os << context;
   m_os << " pkt-uid=" << packet->GetUid () << " ";
   packet->Print (m_os);
   m_os << std::endl;
 }
 
 void 
-AsciiTrace::LogDevQueueDequeue (TraceContext const &context, 
+AsciiTrace::LogDevQueueDequeue (std::string context,
                                 Ptr<const Packet> packet)
 {
   m_os << "- ";
   m_os << Simulator::Now ().GetSeconds () << " ";
-  context.Print (m_os);
+  m_os << context;
   m_os << " pkt-uid=" << packet->GetUid () << " ";
   packet->Print (m_os);
   m_os << std::endl;
 }
 
 void 
-AsciiTrace::LogDevQueueDrop (TraceContext const &context, 
+AsciiTrace::LogDevQueueDrop (std::string context,
                              Ptr<const Packet> packet)
 {
   m_os << "d ";
   m_os << Simulator::Now ().GetSeconds () << " ";
-  context.Print (m_os);
+  m_os << context;
   m_os << " pkt-uid=" << packet->GetUid () << " ";
   packet->Print (m_os);
   m_os << std::endl;
 }
 void 
-AsciiTrace::LogDevRx (TraceContext const &context, Ptr<const Packet> p)
+AsciiTrace::LogDevRx (std::string context,
+                      Ptr<const Packet> p)
 {
   m_os << "r " << Simulator::Now ().GetSeconds () << " ";
-  context.Print (m_os);
+  m_os << context;
   m_os << " pkt-uid=" << p->GetUid () << " ";
   p->Print (m_os);
   m_os << std::endl;  

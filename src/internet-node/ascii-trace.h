@@ -38,10 +38,10 @@ public:
   void TraceAllQueues (void);
   void TraceAllNetDeviceRx (void);
 private:
-  void LogDevQueueEnqueue (TraceContext const &context, Ptr<const Packet> p);
-  void LogDevQueueDequeue (TraceContext const &context, Ptr<const Packet> p);
-  void LogDevQueueDrop (TraceContext const &context, Ptr<const Packet> p);
-  void LogDevRx (TraceContext const &context, Ptr<const Packet> p);
+  void LogDevQueueEnqueue (std::string context, Ptr<const Packet> p);
+  void LogDevQueueDequeue (std::string context, Ptr<const Packet> p);
+  void LogDevQueueDrop (std::string context, Ptr<const Packet> p);
+  void LogDevRx (std::string context, Ptr<const Packet> p);
   std::ofstream m_os;
 };
 

@@ -18,6 +18,7 @@
  */
 
 #include "ns3/log.h"
+#include "ns3/trace-source-accessor.h"
 #include "queue.h"
 
 NS_LOG_COMPONENT_DEFINE ("Queue");
@@ -31,6 +32,12 @@ Queue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("Queue")
     .SetParent<Object> ()
+    .AddTraceSource ("Enqueue", "XXX",
+                     MakeTraceSourceAccessor (&Queue::m_traceEnqueue))
+    .AddTraceSource ("Dequeue", "XXX",
+                     MakeTraceSourceAccessor (&Queue::m_traceDequeue))
+    .AddTraceSource ("Drop", "XXX",
+                     MakeTraceSourceAccessor (&Queue::m_traceDrop))
     ;
   return tid;
 }
