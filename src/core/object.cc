@@ -1173,6 +1173,17 @@ Object::TraceSourceConnect (std::string name, const CallbackBase &cb)
   return ok;
 }
 bool 
+Object::TraceSourceConnectWithContext (std::string name, std::string context, const CallbackBase &cb)
+{
+  Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
+  if (accessor == 0)
+    {
+      return false;
+    }
+  bool ok = accessor->ConnectWithContext (this, context, cb);
+  return ok;
+}
+bool 
 Object::TraceSourceDisconnect (std::string name, const CallbackBase &cb)
 {
   Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);

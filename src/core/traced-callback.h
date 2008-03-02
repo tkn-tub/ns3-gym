@@ -41,6 +41,7 @@ class TracedCallback
 public:
   TracedCallback ();
   void Connect (const CallbackBase & callback);
+  void ConnectWithContext (const CallbackBase & callback, std::string path);
   void Disconnect (const CallbackBase & callback);
   void operator() (void) const;
   void operator() (T1 a1) const;
@@ -48,7 +49,7 @@ public:
   void operator() (T1 a1, T2 a2, T3 a3) const;
   void operator() (T1 a1, T2 a2, T3 a3, T4 a4) const;
 
-private:
+private:  
   typedef std::list<Callback<void,T1,T2,T3,T4> > CallbackList;
   CallbackList m_callbackList;
 };
@@ -58,7 +59,6 @@ private:
 // implementation below.
 
 namespace ns3 {
-
 
 template<typename T1, typename T2, 
          typename T3, typename T4>
@@ -73,6 +73,16 @@ TracedCallback<T1,T2,T3,T4>::Connect (const CallbackBase & callback)
   Callback<void,T1,T2,T3,T4> cb;
   cb.Assign (callback);
   m_callbackList.push_back (cb);
+}
+template<typename T1, typename T2, 
+         typename T3, typename T4>
+void 
+TracedCallback<T1,T2,T3,T4>::ConnectWithContext (const CallbackBase & callback, std::string path)
+{
+  Callback<void,std::string,T1,T2,T3,T4> cb;
+  cb.Assign (callback);
+  Callback<void,T1,T2,T3,T4> realCb = cb.Bind (path);
+  m_callbackList.push_back (realCb);
 }
 template<typename T1, typename T2, 
          typename T3, typename T4>

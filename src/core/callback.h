@@ -237,6 +237,52 @@ private:
   MEM_PTR m_memPtr;
 };
 
+// an impl for Bound Functors:
+template <typename T, typename R, typename TX, typename T1, typename T2, typename T3, typename T4,typename T5>
+class BoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,empty> {
+public:
+  template <typename FUNCTOR, typename ARG>
+  BoundFunctorCallbackImpl (FUNCTOR functor, ARG a)
+      : m_functor (functor), m_a (a) {}
+  virtual ~BoundFunctorCallbackImpl () {}
+  R operator() (void) {
+      return m_functor (m_a);
+  }
+  R operator() (T1 a1) {
+      return m_functor (m_a,a1);
+  }
+  R operator() (T1 a1,T2 a2) {
+      return m_functor (m_a,a1,a2);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3) {
+      return m_functor (m_a,a1,a2,a3);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
+      return m_functor (m_a,a1,a2,a3,a4);
+  }
+  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
+      return m_functor (m_a,a1,a2,a3,a4,a5);
+  }
+  virtual bool IsEqual (Ptr<const CallbackImplBase> other) const {
+    BoundFunctorCallbackImpl<T,R,TX,T1,T2,T3,T4,T5> const *otherDerived = 
+      dynamic_cast<BoundFunctorCallbackImpl<T,R,TX,T1,T2,T3,T4,T5> const *> (PeekPointer (other));
+    if (otherDerived == 0)
+      {
+        return false;
+      }
+    else if (otherDerived->m_functor != m_functor ||
+             otherDerived->m_a != m_a)
+      {
+        return false;
+      }
+    return true;
+  }
+private:
+  T m_functor;
+  typename TypeTraits<TX>::ReferencedType m_a;
+};
+
+
 class CallbackBase {
 public:
   CallbackBase () : m_impl () {}
@@ -298,6 +344,16 @@ public:
   Callback (Ptr<CallbackImpl<R,T1,T2,T3,T4,T5,T6> > const &impl)
     : CallbackBase (impl)
   {}
+
+  template <typename T>
+  Callback<R,T2,T3,T4,T5,T6> Bind (T a) {
+    Ptr<CallbackImpl<R,T2,T3,T4,T5,T6,empty> > impl =
+      Ptr<CallbackImpl<R,T2,T3,T4,T5,T6,empty> > (
+                                            new BoundFunctorCallbackImpl<
+                                            Callback<R,T1,T2,T3,T4,T5,T6>,
+                                            R,T1,T2,T3,T4,T5,T6> (*this, a), false);
+    return Callback<R,T2,T3,T4,T5,T6> (impl);
+  }
 
   bool IsNull (void) const {
     return (DoPeekImpl () == 0)?true:false;
@@ -362,6 +418,15 @@ private:
     m_impl = const_cast<CallbackImplBase *> (PeekPointer (other));
   }
 };
+
+
+template <typename R, typename T1, typename T2,
+          typename T3, typename T4,
+          typename T5, typename T6>
+bool operator != (Callback<R,T1,T2,T3,T4,T5,T6> a, Callback<R,T1,T2,T3,T4,T5,T6> b)
+{
+  return !a.IsEqual (b);
+}
 
 /**
  * \ingroup core
@@ -645,50 +710,6 @@ Callback<R,T1,T2,T3,T4,T5,T6> MakeNullCallback (void) {
  * not yet determined whether or not it is really useful and whether
  * or not we really want to use it.
  */
-// an impl for Bound Functors:
-template <typename T, typename R, typename TX, typename T1, typename T2, typename T3, typename T4,typename T5>
-class BoundFunctorCallbackImpl : public CallbackImpl<R,T1,T2,T3,T4,T5,empty> {
-public:
-  template <typename FUNCTOR, typename ARG>
-  BoundFunctorCallbackImpl (FUNCTOR functor, ARG a)
-      : m_functor (functor), m_a (a) {}
-  virtual ~BoundFunctorCallbackImpl () {}
-  R operator() (void) {
-      return m_functor (m_a);
-  }
-  R operator() (T1 a1) {
-      return m_functor (m_a,a1);
-  }
-  R operator() (T1 a1,T2 a2) {
-      return m_functor (m_a,a1,a2);
-  }
-  R operator() (T1 a1,T2 a2,T3 a3) {
-      return m_functor (m_a,a1,a2,a3);
-  }
-  R operator() (T1 a1,T2 a2,T3 a3,T4 a4) {
-      return m_functor (m_a,a1,a2,a3,a4);
-  }
-  R operator() (T1 a1,T2 a2,T3 a3,T4 a4,T5 a5) {
-      return m_functor (m_a,a1,a2,a3,a4,a5);
-  }
-  virtual bool IsEqual (Ptr<const CallbackImplBase> other) const {
-    BoundFunctorCallbackImpl<T,R,TX,T1,T2,T3,T4,T5> const *otherDerived = 
-      dynamic_cast<BoundFunctorCallbackImpl<T,R,TX,T1,T2,T3,T4,T5> const *> (PeekPointer (other));
-    if (otherDerived == 0)
-      {
-        return false;
-      }
-    else if (otherDerived->m_functor != m_functor ||
-             otherDerived->m_a != m_a)
-      {
-        return false;
-      }
-    return true;
-  }
-private:
-  T m_functor;
-  typename TypeTraits<TX>::ReferencedType m_a;
-};
 
 template <typename R, typename TX, typename ARG>
 Callback<R> MakeBoundCallback (R (*fnPtr) (TX), ARG a) {

@@ -17,6 +17,7 @@ public:
   void Unref (void) const;
 
   virtual bool Connect (ObjectBase *obj, const CallbackBase &cb) const = 0;
+  virtual bool ConnectWithContext (ObjectBase *obj, std::string context, const CallbackBase &cb) const = 0;
   virtual bool Disconnect (ObjectBase *obj, const CallbackBase &cb) const = 0;
 private:
   mutable uint32_t m_count;
@@ -42,6 +43,15 @@ DoMakeTraceSourceAccessor (SOURCE T::*a)
 	  return false;
 	}
       (p->*m_source).Connect (cb);
+      return true;
+    }
+    virtual bool ConnectWithContext (ObjectBase *obj, std::string context, const CallbackBase &cb) const {
+      T *p = dynamic_cast<T*> (obj);
+      if (p == 0)
+	{
+	  return false;
+	}
+      (p->*m_source).ConnectWithContext (cb, context);
       return true;
     }
     virtual bool Disconnect (ObjectBase *obj, const CallbackBase &cb) const {

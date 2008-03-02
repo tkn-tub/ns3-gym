@@ -396,6 +396,7 @@ public:
   Attribute GetAttribute (std::string name) const;
 
   bool TraceSourceConnect (std::string name, const CallbackBase &cb);
+  bool TraceSourceConnectWithContext (std::string name, std::string context, const CallbackBase &cb);
   bool TraceSourceDisconnect (std::string name, const CallbackBase &cb);
 
   TypeId GetRealTypeId (void) const;

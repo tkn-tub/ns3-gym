@@ -109,7 +109,7 @@ private:
   void DoArrayResolve (std::string path, const ObjectVector &vector);
   void DoResolveOne (Ptr<Object> object, std::string name);
   std::string GetResolvedPath (std::string name) const;
-  virtual void DoOne (Ptr<Object> object, std::string name) = 0;
+  virtual void DoOne (Ptr<Object> object, std::string path, std::string name) = 0;
   std::vector<std::string> m_workStack;
   std::string m_path;
 };
@@ -142,7 +142,7 @@ void
 Resolver::DoResolveOne (Ptr<Object> object, std::string name)
 {
   NS_LOG_DEBUG ("resolved="<<GetResolvedPath (name));
-  DoOne (object, name);
+  DoOne (object, GetResolvedPath (name), name);
 }
 
 void
@@ -160,7 +160,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
     {
       std::string attributeName = path.substr (1, path.size ()-1);
       NS_LOG_DEBUG ("handle attr="<<attributeName);
-      DoOne (root, attributeName);
+      DoOne (root, GetResolvedPath (attributeName), attributeName);
       return;
     }
   std::string item = path.substr (1, next-1);
@@ -267,6 +267,7 @@ class ConfigImpl
 public:
   void Set (std::string path, Attribute value);
   void Connect (std::string path, const CallbackBase &cb);
+  void ConnectWithContext (std::string path, const CallbackBase &cb);
   void Disconnect (std::string path, const CallbackBase &cb);
 
   void RegisterRootNamespaceObject (Ptr<Object> obj);
@@ -287,7 +288,7 @@ ConfigImpl::Set (std::string path, Attribute value)
       : Resolver (path),
 	m_value (value) {}
   private:
-    virtual void DoOne (Ptr<Object> object, std::string name) {
+    virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
       object->SetAttribute (name, m_value);
     }
     Attribute m_value;
@@ -307,7 +308,7 @@ ConfigImpl::Connect (std::string path, const CallbackBase &cb)
       : Resolver (path),
 	m_cb (cb) {}
   private:
-    virtual void DoOne (Ptr<Object> object, std::string name) {
+    virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
       object->TraceSourceConnect (name, m_cb);
     }
     CallbackBase m_cb;
@@ -327,11 +328,31 @@ ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
       : Resolver (path),
 	m_cb (cb) {}
   private:
-    virtual void DoOne (Ptr<Object> object, std::string name) {
+    virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
       object->TraceSourceDisconnect (name, m_cb);
     }
     CallbackBase m_cb;
   } resolver = DisconnectResolver (path, cb);
+  for (Roots::const_iterator i = m_roots.begin (); i != m_roots.end (); i++)
+    {
+      resolver.Resolve (*i);
+    }
+}
+void 
+ConfigImpl::ConnectWithContext (std::string path, const CallbackBase &cb)
+{
+  class ConnectWithContextResolver : public Resolver 
+  {
+  public:
+    ConnectWithContextResolver (std::string path, const CallbackBase &cb)
+      : Resolver (path),
+	m_cb (cb) {}
+  private:
+    virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
+      object->TraceSourceConnectWithContext (name, path, m_cb);
+    }
+    CallbackBase m_cb;
+  } resolver = ConnectWithContextResolver (path, cb);
   for (Roots::const_iterator i = m_roots.begin (); i != m_roots.end (); i++)
     {
       resolver.Resolve (*i);
@@ -378,6 +399,11 @@ void Connect (std::string path, const CallbackBase &cb)
 void Disconnect (std::string path, const CallbackBase &cb)
 {
   Singleton<ConfigImpl>::Get ()->Disconnect (path, cb);
+}
+void 
+ConnectWithContext (std::string path, const CallbackBase &cb)
+{
+  Singleton<ConfigImpl>::Get ()->ConnectWithContext (path, cb);
 }
 
 void RegisterRootNamespaceObject (Ptr<Object> obj)
@@ -505,7 +531,9 @@ public:
   virtual bool RunTests (void);
 private:
   void ChangeNotification (int16_t old, int16_t newValue);
+  void ChangeNotificationWithPath (std::string path, int16_t old, int16_t newValue);
   int16_t m_traceNotification;
+  std::string m_tracePath;
 };
 
 static ConfigTest g_configTestUnique;
@@ -518,6 +546,13 @@ void
 ConfigTest::ChangeNotification (int16_t oldValue, int16_t newValue)
 {
   m_traceNotification = newValue;
+}
+
+void 
+ConfigTest::ChangeNotificationWithPath (std::string path, int16_t old, int16_t newValue)
+{
+  m_traceNotification = newValue;
+  m_tracePath = path;
 }
 
 bool
@@ -634,6 +669,34 @@ ConfigTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
   Config::Disconnect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
 		      MakeCallback (&ConfigTest::ChangeNotification, this));
+  m_traceNotification = 0;
+  // this should _not_ trigger a notification
+  d1->SetAttribute ("Source", Integer (-4));
+  NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
+
+  
+  Config::ConnectWithContext ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+			      MakeCallback (&ConfigTest::ChangeNotificationWithPath, this));
+  m_traceNotification = 0;
+  // this should trigger no notification
+  d2->SetAttribute ("Source", Integer (-2));
+  NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
+  m_traceNotification = 0;
+  m_tracePath = "";
+  // this should trigger a notification
+  d1->SetAttribute ("Source", Integer (-3));
+  NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
+  NS_TEST_ASSERT_EQUAL (m_tracePath, "/NodeA/NodeB/NodesB/1/Source")
+  m_traceNotification = 0;
+  m_tracePath = "";
+  // this should trigger a notification
+  d3->SetAttribute ("Source", Integer (-3));
+  NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
+  NS_TEST_ASSERT_EQUAL (m_tracePath, "/NodeA/NodeB/NodesB/3/Source");
+  // Yes, disconnection _cannot_ work with 'context-based connection.
+  // XXX: what do we do about this ?
+  Config::Disconnect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+		      MakeCallback (&ConfigTest::ChangeNotificationWithPath, this));
   m_traceNotification = 0;
   // this should _not_ trigger a notification
   d1->SetAttribute ("Source", Integer (-4));

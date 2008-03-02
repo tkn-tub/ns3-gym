@@ -53,6 +53,9 @@ public:
   void Connect (const CallbackBase &cb) {
     m_cb.Connect (cb);
   }
+  void ConnectWithContext (const CallbackBase &cb, std::string path) {
+    m_cb.ConnectWithContext (cb, path);
+  }
   void Disconnect (const CallbackBase &cb) {
     m_cb.Disconnect (cb);
   }

@@ -15,6 +15,7 @@ void SetDefault (std::string name, Attribute value);
 void SetGlobal (std::string name, Attribute value);
 void Connect (std::string path, const CallbackBase &cb);
 void Disconnect (std::string path, const CallbackBase &cb);
+void ConnectWithContext (std::string path, const CallbackBase &cb);
 
 void RegisterRootNamespaceObject (Ptr<Object> obj);
 
