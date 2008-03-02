@@ -29,46 +29,9 @@
 #include <list>
 #include "ns3/packet.h"
 #include "ns3/object.h"
-#include "ns3/callback-trace-source.h"
-#include "ns3/trace-resolver.h"
-#include "ns3/trace-context-element.h"
+#include "ns3/traced-callback.h"
 
 namespace ns3 {
-
-class StringEnumDefaultValue;
-
-/**
- * \brief hold in a TraceContext the type of a trace source 
- */
-class QueueTraceType : public TraceContextElement
-{
-public:
-  enum Type {
-    ENQUEUE,
-    DEQUEUE,
-    DROP
-  };
-  static uint16_t GetUid (void);
-  QueueTraceType ();
-  QueueTraceType (enum Type type);
-  /**
-   * \returns true if this is an enqueue event, false otherwise.
-   */
-  bool IsEnqueue (void) const;
-  /**
-   * \returns true if this is a dequeue event, false otherwise.
-   */
-  bool IsDequeue (void) const;
-  /**
-   * \returns true if this is a drop event, false otherwise.
-   */
-  bool IsDrop (void) const;
-  void Print (std::ostream &os) const;
-  std::string GetTypeName (void) const;
-private:
-  enum Type m_type;
-};
-
 
 /**
  * \brief Abstract base class for packet Queues
@@ -178,14 +141,13 @@ private:
   virtual Ptr<Packet> DoPeek (void) const = 0;
 
 protected:
-  Ptr<TraceResolver> GetTraceResolver (void) const;
   // called by subclasses to notify parent of packet drops.
   void Drop (Ptr<Packet> packet);
 
 private:
-  CallbackTraceSource<Ptr<const Packet> > m_traceEnqueue;
-  CallbackTraceSource<Ptr<const Packet> > m_traceDequeue;
-  CallbackTraceSource<Ptr<const Packet> > m_traceDrop;
+  TracedCallback<Ptr<const Packet> > m_traceEnqueue;
+  TracedCallback<Ptr<const Packet> > m_traceDequeue;
+  TracedCallback<Ptr<const Packet> > m_traceDrop;
 
   uint32_t m_nBytes;
   uint32_t m_nTotalReceivedBytes;
@@ -193,13 +155,6 @@ private:
   uint32_t m_nTotalReceivedPackets;
   uint32_t m_nTotalDroppedBytes;
   uint32_t m_nTotalDroppedPackets;
-
-public:
-  /**
-   * A factory method to generate a preconfigured default Queue for use
-   * \return a Queue smart pointer that is the default Queue type defined
-   */
-  static Ptr<Queue> CreateDefault (void);
 };
 
 }; // namespace ns3

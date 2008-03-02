@@ -18,91 +18,20 @@
  */
 
 #include "ns3/log.h"
-#include "ns3/composite-trace-resolver.h"
-#include "ns3/default-value.h"
-#include "ns3/type-id-default-value.h"
 #include "queue.h"
 
 NS_LOG_COMPONENT_DEFINE ("Queue");
 
 namespace ns3 {
 
-static TypeIdDefaultValue g_interfaceIdDefaultValue ("Queue", "Packet Queue",
-                                                          Queue::GetTypeId (), "DropTailQueue");
-
 NS_OBJECT_ENSURE_REGISTERED (Queue);
-
-
-std::string 
-QueueTraceType::GetTypeName (void) const
-{
-  NS_LOG_FUNCTION;
-  return "ns3::QueueTraceType";
-}
-
-uint16_t 
-QueueTraceType::GetUid (void)
-{
-  NS_LOG_FUNCTION;
-  static uint16_t uid = AllocateUid<QueueTraceType> ("QueueTraceType");
-  return uid;
-}
-
-QueueTraceType::QueueTraceType ()
-  : m_type (QueueTraceType::ENQUEUE)
-{
-  NS_LOG_FUNCTION;
-}
-
-QueueTraceType::QueueTraceType (enum Type type)
-  : m_type (type)
-{
-  NS_LOG_FUNCTION;
-}
-
-bool 
-QueueTraceType::IsEnqueue (void) const
-{
-  NS_LOG_FUNCTION;
-  return m_type == ENQUEUE;
-}
-
-bool 
-QueueTraceType::IsDequeue (void) const
-{
-  NS_LOG_FUNCTION;
-  return m_type == DEQUEUE;
-}
-
-bool 
-QueueTraceType::IsDrop (void) const
-{
-  NS_LOG_FUNCTION;
-  return m_type == DROP;
-}
-
-void 
-QueueTraceType::Print (std::ostream &os) const
-{
-  os << "queue-";
-  switch (m_type) {
-  case QueueTraceType::ENQUEUE:
-    os << "enqueue";
-    break;
-  case QueueTraceType::DEQUEUE:
-    os << "dequeue";
-    break;
-  case QueueTraceType::DROP:
-    os << "drop";
-    break;
-  }
-}
 
 TypeId 
 Queue::GetTypeId (void)
 {
   static TypeId tid = TypeId ("Queue")
-    .SetParent<Object> ();
+    .SetParent<Object> ()
+    ;
   return tid;
 }
 
@@ -122,26 +51,6 @@ Queue::~Queue()
   NS_LOG_FUNCTION;
 }
 
-Ptr<TraceResolver>
-Queue::GetTraceResolver (void) const
-{
-  NS_LOG_FUNCTION;
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  resolver->AddSource ("enqueue", 
-                       TraceDoc ("store packet in queue",
-                                 "Ptr<const Packet>", "packet queued"),
-                       m_traceEnqueue, QueueTraceType (QueueTraceType::ENQUEUE));
-  resolver->AddSource ("dequeue", 
-                       TraceDoc ("remove packet from queue",
-                                 "Ptr<const Packet>", "packet dequeued"),
-                       m_traceDequeue, QueueTraceType (QueueTraceType::DEQUEUE));
-  resolver->AddSource ("drop", 
-                       TraceDoc ("drop packet from queue", 
-                                 "Ptr<const Packet>", "packet dropped"),
-                       m_traceDrop, QueueTraceType (QueueTraceType::DROP));
-  resolver->SetParentResolver (Object::GetTraceResolver ());
-  return resolver;
-}
 
 bool 
 Queue::Enqueue (Ptr<Packet> p)
@@ -279,13 +188,4 @@ Queue::Drop (Ptr<Packet> p)
   m_traceDrop (p);
 }
 
-Ptr<Queue>
-Queue::CreateDefault (void)
-{
-  NS_LOG_FUNCTION;
-  TypeId interfaceId = g_interfaceIdDefaultValue.GetValue ();
-  Ptr<Queue> queue = interfaceId.CreateObject ()->GetObject<Queue> ();
-  return queue;
-}
-
-}; // namespace ns3
+} // namespace ns3
