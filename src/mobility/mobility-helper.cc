@@ -14,6 +14,7 @@ MobilityHelper::MobilityHelper ()
 {
   m_position = CreateObjectWith<RandomRectanglePositionAllocator> ("X", ConstantVariable (0.0),
 								   "Y", ConstantVariable (0.0));
+  m_mobility.SetTypeId ("StaticMobilityModel");
 }
 void 
 MobilityHelper::EnableNotifier (void)
