@@ -67,7 +67,7 @@ Ipv4L3Protocol::GetTypeId (void)
                      MakeTraceSourceAccessor (&Ipv4L3Protocol::m_rxTrace))
     .AddTraceSource ("Drop", "Drop ipv4 packet",
                      MakeTraceSourceAccessor (&Ipv4L3Protocol::m_dropTrace))
-    .AddAttribute ("Interfaces", "The set of Ipv4 interfaces associated to this Ipv4 stack.",
+    .AddAttribute ("InterfaceList", "The set of Ipv4 interfaces associated to this Ipv4 stack.",
                    ObjectVector (),
                    MakeObjectVectorAccessor (&Ipv4L3Protocol::m_interfaces),
                    MakeObjectVectorChecker ())
