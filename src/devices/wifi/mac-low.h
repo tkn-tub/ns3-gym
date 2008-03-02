@@ -382,6 +382,7 @@ private:
   void SendDataPacket (void);
   void SendCurrentTxPacket (void);
   void StartDataTxTimers (void);
+  virtual void DoDispose (void);
 
   Ptr<WifiPhy> m_phy;
   Ptr<WifiMac> m_mac;

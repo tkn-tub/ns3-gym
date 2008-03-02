@@ -78,6 +78,7 @@ public:
   virtual void SetReceiveCallback (NetDevice::ReceiveCallback cb);
 
 private:
+  virtual void DoDispose (void);
   void ForwardUp (Ptr<Packet> packet, const Mac48Address &from);
   void LinkUp (void);
   void LinkDown (void);

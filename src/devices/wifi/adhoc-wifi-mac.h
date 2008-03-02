@@ -79,7 +79,7 @@ private:
   Ptr<WifiPhy> m_phy;
   DcfManager *m_dcfManager;
   MacRxMiddle *m_rxMiddle;
-  MacLow *m_low;
+  Ptr<MacLow> m_low;
   Mac48Address m_address;
   Ssid m_ssid;
 };

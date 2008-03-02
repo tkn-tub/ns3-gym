@@ -238,9 +238,15 @@ MacLow::MacLow ()
 }
 
 MacLow::~MacLow ()
+{}
+
+void 
+MacLow::DoDispose (void)
 {
   CancelAllEvents ();
   m_phy = 0;
+  m_mac = 0;
+  m_stationManager = 0;
 }
 
 void

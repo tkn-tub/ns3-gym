@@ -48,7 +48,7 @@ AdhocWifiMac::AdhocWifiMac ()
   m_rxMiddle = new MacRxMiddle ();
   m_rxMiddle->SetForwardCallback (MakeCallback (&AdhocWifiMac::ForwardUp, this));
 
-  m_low = new MacLow ();
+  m_low = CreateObjectWith<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
   m_low->SetMac (this);
 
@@ -66,12 +66,13 @@ void
 AdhocWifiMac::DoDispose (void)
 {
   delete m_rxMiddle;
-  delete m_low;
   delete m_dcfManager;
   m_rxMiddle = 0;
-  m_low = 0;
   m_dcfManager = 0;
+  m_low = 0;
   m_phy = 0;
+  m_dca = 0;
+  m_stationManager = 0;
   WifiMac::DoDispose ();
 }
 

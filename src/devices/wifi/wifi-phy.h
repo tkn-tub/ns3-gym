@@ -266,6 +266,7 @@ private:
   typedef std::vector <NiChange> NiChanges;
 
 private:
+  virtual void DoDispose (void);
   void Configure80211aParameters (void);
   void PrintModes (void) const;
   void Configure80211a (void);

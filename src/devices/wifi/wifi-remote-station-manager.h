@@ -76,6 +76,8 @@ public:
 
   WifiRemoteStation *Lookup (Mac48Address address);
   WifiRemoteStation *LookupNonUnicast (void);
+protected:
+  virtual void DoDispose (void);
 private:
   typedef std::vector <std::pair<Mac48Address, WifiRemoteStation *> > Stations;
   virtual class WifiRemoteStation *CreateStation (void) = 0;

@@ -144,6 +144,7 @@ private:
   bool IsLastFragment (void);
   void NextFragment (void);
   Ptr<Packet> GetFragmentPacket (WifiMacHeader *hdr);
+  virtual void DoDispose (void);
 
   Dcf *m_dcf;
   DcfManager *m_manager;

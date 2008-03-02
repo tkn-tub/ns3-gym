@@ -155,6 +155,10 @@ WifiRemoteStationManager::WifiRemoteStationManager ()
 
 WifiRemoteStationManager::~WifiRemoteStationManager ()
 {
+}
+void 
+WifiRemoteStationManager::DoDispose (void)
+{
   for (Stations::const_iterator i = m_stations.begin (); i != m_stations.end (); i++) 
     {
       delete (*i).second;

@@ -254,6 +254,10 @@ WifiPhy::WifiPhy ()
 {}
 
 WifiPhy::~WifiPhy ()
+{}
+
+void
+WifiPhy::DoDispose (void)
 {
   m_channel = 0;
   m_events.clear ();

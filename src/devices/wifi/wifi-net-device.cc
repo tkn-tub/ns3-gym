@@ -47,6 +47,20 @@ WifiNetDevice::WifiNetDevice ()
 {}
 WifiNetDevice::~WifiNetDevice ()
 {}
+
+void
+WifiNetDevice::DoDispose (void)
+{
+  m_node = 0;
+  m_mac->Dispose ();
+  m_phy->Dispose ();
+  m_stationManager->Dispose ();
+  m_mac = 0;
+  m_phy = 0;
+  m_stationManager = 0;
+  // chain up.
+  NetDevice::DoDispose ();
+}
   
 void 
 WifiNetDevice::Setup (Ptr<Node> node, Ptr<WifiMac> mac, Ptr<WifiPhy> phy,
