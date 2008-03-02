@@ -1319,10 +1319,22 @@ Object::MaybeDelete (void) const
     current = current->m_next;
   } while (current != this);
 
+  // Ensure we are disposed.
+  Object *tmp = const_cast<Object *> (this);
+  const Object *end = this;
+  do {
+    NS_ASSERT (current != 0);
+    Object *next = tmp->m_next;
+    if (!tmp->m_disposed)
+      {
+        tmp->DoDispose ();
+      }
+    tmp = next;
+  } while (tmp != end);
+
   // all attached objects have a zero count so, 
   // we can delete all attached objects.
   current = this;
-  const Object *end = this;
   do {
     NS_ASSERT (current != 0);
     Object *next = current->m_next;
