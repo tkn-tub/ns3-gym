@@ -22,7 +22,6 @@
 
 #include "ns3/packet.h"
 #include "ns3/log.h"
-#include "ns3/composite-trace-resolver.h"
 #include "ns3/node.h"
 #include "ns3/net-device.h"
 #include "ns3/address.h"
@@ -45,19 +44,6 @@ ArpIpv4Interface::ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device)
 ArpIpv4Interface::~ArpIpv4Interface ()
 {
   NS_LOG_FUNCTION;
-}
-
-Ptr<TraceResolver>
-ArpIpv4Interface::GetTraceResolver (void) const
-{
-  NS_LOG_FUNCTION;
-  Ptr<CompositeTraceResolver> resolver = Create<CompositeTraceResolver> ();
-  if (GetDevice () != 0)
-    {
-      resolver->AddComposite ("netdevice", GetDevice ());
-    }
-  resolver->SetParentResolver (Ipv4Interface::GetTraceResolver ());
-  return resolver;
 }
 
 void 
