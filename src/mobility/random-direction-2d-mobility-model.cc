@@ -18,7 +18,6 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#include "ns3/random-variable-default-value.h"
 #include "ns3/simulator.h"
 #include <algorithm>
 #include <cmath>
