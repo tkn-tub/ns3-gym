@@ -315,7 +315,7 @@ ObjectFactory
 TcpL4Protocol::GetDefaultRttEstimatorFactory (void)
 {
   ObjectFactory factory;
-  factory.SetTypeId ("RttMeanDeviation");
+  factory.SetTypeId (RttMeanDeviation::GetTypeId ());
   return factory;
 }
 
