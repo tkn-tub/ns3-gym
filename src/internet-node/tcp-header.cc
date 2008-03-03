@@ -44,7 +44,7 @@ TcpHeader::TcpHeader ()
     m_ackNumber (0),
     m_length (5),
     m_flags (0),
-    m_windowSize (0),
+    m_windowSize (0xffff),
     m_checksum (0),
     m_urgentPointer (0)
 {}
