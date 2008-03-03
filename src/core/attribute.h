@@ -331,7 +331,7 @@ MakePtrAccessor (Ptr<U> (T::*getter) (void) const)
 {
   struct MemberMethod : public internal::PtrAccessor<T,U>
   {
-    void (T::*m_getter) (Ptr<U>);
+    Ptr<U> (T::*m_getter) (void) const;
     virtual void DoSet (T *object, Ptr<U> value) const {
       //(object->*m_setter) (value);
     }
