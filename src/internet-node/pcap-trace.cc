@@ -86,7 +86,8 @@ PcapTrace::GetStream (uint32_t nodeId, uint32_t interfaceId)
 uint32_t
 PcapTrace::GetNodeIndex (std::string context) const
 {
-  std::string::size_type pos = context.find ("/NodeList/");
+  std::string::size_type pos;
+  pos = context.find ("/NodeList/");
   NS_ASSERT (pos == 0);
   std::string::size_type afterNodeIndex = context.find ("/", 11);
   NS_ASSERT (afterNodeIndex != std::string::npos);
