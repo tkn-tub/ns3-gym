@@ -35,6 +35,22 @@ WifiNetDevice::GetTypeId (void)
 {
   static TypeId tid = TypeId ("WifiNetDevice")
     .SetParent<NetDevice> ()
+    .AddAttribute ("Channel", "XXX",
+                   Ptr<Channel> (0),
+                   MakePtrAccessor (&WifiNetDevice::GetChannel),
+                   MakePtrChecker<Channel> ())
+    .AddAttribute ("Phy", "XXX",
+                   Ptr<WifiPhy> (0),
+                   MakePtrAccessor (&WifiNetDevice::m_phy),
+                   MakePtrChecker<WifiPhy> ())
+    .AddAttribute ("Mac", "XXX",
+                   Ptr<WifiMac> (0),
+                   MakePtrAccessor (&WifiNetDevice::m_mac),
+                   MakePtrChecker<WifiMac> ())
+    .AddAttribute ("RemoteStationManager", "XXX",
+                   Ptr<WifiRemoteStationManager> (0),
+                   MakePtrAccessor (&WifiNetDevice::m_stationManager),
+                   MakePtrChecker<WifiRemoteStationManager> ())
     .AddTraceSource ("Rx", "XXX",
                      MakeTraceSourceAccessor (&WifiNetDevice::m_rxLogger))
     .AddTraceSource ("Tx", "XXX",
