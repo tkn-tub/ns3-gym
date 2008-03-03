@@ -56,7 +56,8 @@ TypeId
 ConstantSpeedPropagationDelayModel::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ConstantSpeedPropagationDelayModel")
-    .SetParent<ConstantSpeedPropagationDelayModel> ()
+    .SetParent<PropagationDelayModel> ()
+    .AddConstructor<ConstantSpeedPropagationDelayModel> ()
     .AddAttribute ("Speed", "The speed (m/s)",
                    Double (300000000.0),
                    MakeDoubleAccessor (&ConstantSpeedPropagationDelayModel::m_speed),
