@@ -42,6 +42,7 @@ OlsrHelper::Enable (Ptr<Node> node)
   Ptr<olsr::Agent> agent = m_agentFactory.Create<olsr::Agent> ();
   agent->SetNode (node);
   node->AggregateObject (agent);
+  agent->Start ();
 }
 void 
 OlsrHelper::EnableAll (void)
