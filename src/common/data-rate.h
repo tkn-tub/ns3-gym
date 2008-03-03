@@ -26,7 +26,6 @@
 #include <iostream>
 #include <stdint.h>
 #include "ns3/nstime.h"
-#include "ns3/default-value.h"
 #include "ns3/attribute.h"
 #include "ns3/attribute-helper.h"
 
@@ -100,22 +99,6 @@ VALUE_HELPER_HEADER_2 (DataRate);
  */
 double operator*(const DataRate& lhs, const TimeUnit<1>& rhs);
 double operator*(const TimeUnit<1>& lhs, const DataRate& rhs);
-
-class DataRateDefaultValue : public DefaultValueBase
-{
-public:
-  DataRateDefaultValue (std::string name,
-                        std::string help,
-                        DataRate defaultValue);
-  void SetValue (DataRate rate);
-  DataRate GetValue ();
-private:
-  virtual bool DoParseValue (const std::string &value);
-  virtual std::string DoGetType (void) const;
-  virtual std::string DoGetDefaultValue (void) const;
-  DataRate m_defaultValue;
-  DataRate m_value;
-};
 
 } //namespace ns3
 
