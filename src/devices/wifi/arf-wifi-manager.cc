@@ -18,7 +18,6 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 
-#include "mac-stations.h"
 #include "arf-wifi-manager.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
