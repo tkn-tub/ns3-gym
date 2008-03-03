@@ -4,7 +4,6 @@
 #include "ns3/test.h"
 #include "ns3/simulator.h"
 #include "dcf-manager.h"
-#include "wifi-mac-parameters.h"
 
 
 namespace ns3 {
@@ -67,7 +66,6 @@ private:
   typedef std::vector<DcfStateTest *> DcfStates;
 
   DcfManager *m_dcfManager;
-  WifiMacParameters *m_parameters;
   DcfStates m_dcfStates;
   bool m_result;
 };
@@ -204,7 +202,6 @@ DcfManagerTest::EndTest (void)
     }
   m_dcfStates.clear ();
   delete m_dcfManager;
-  delete m_parameters;
   if (!result)
     {
       m_result = result;
