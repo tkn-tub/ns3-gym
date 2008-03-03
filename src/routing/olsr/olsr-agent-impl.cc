@@ -1115,7 +1115,9 @@ AgentImpl::ProcessTc (const olsr::MessageHeader &msg,
           // Schedules topology tuple deletion
           m_events.Track (Simulator::Schedule (DELAY (topologyTuple.expirationTime),
                                                &AgentImpl::TopologyTupleTimerExpire,
-                                               this, topologyTuple));
+                                               this,
+                                               topologyTuple.destAddr,
+                                               topologyTuple.lastAddr));
         }
     }
 
@@ -1190,7 +1192,7 @@ AgentImpl::ProcessMid (const olsr::MessageHeader &msg,
           NS_LOG_LOGIC ("New IfaceAssoc added: " << tuple);
           // Schedules iface association tuple deletion
           Simulator::Schedule (DELAY (tuple.time),
-                               &AgentImpl::IfaceAssocTupleTimerExpire, this, tuple);
+                               &AgentImpl::IfaceAssocTupleTimerExpire, this, tuple.ifaceAddr);
         }
     }
 
@@ -1286,7 +1288,8 @@ AgentImpl::ForwardDefault (olsr::MessageHeader olsrMessage,
       AddDuplicateTuple (newDup);
       // Schedule dup tuple deletion
       Simulator::Schedule (OLSR_DUP_HOLD_TIME,
-                           &AgentImpl::DupTupleTimerExpire, this, newDup);
+                           &AgentImpl::DupTupleTimerExpire, this,
+                           newDup.address, newDup.sequenceNumber);
     }
 }
 
@@ -1670,7 +1673,8 @@ AgentImpl::LinkSensing (const olsr::MessageHeader &msg,
     {
       LinkTupleAdded (*link_tuple, hello.willingness);
       m_events.Track (Simulator::Schedule (DELAY (std::min (link_tuple->time, link_tuple->symTime)),
-                                           &AgentImpl::LinkTupleTimerExpire, this, *link_tuple));
+                                           &AgentImpl::LinkTupleTimerExpire, this,
+                                           link_tuple->neighborIfaceAddr));
     }
   NS_LOG_DEBUG ("@" << now.GetSeconds () << ": Olsr node " << m_mainAddress
                 << ": LinkSensing END");
@@ -1769,7 +1773,8 @@ AgentImpl::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
                       // Schedules nb2hop tuple deletion
                       m_events.Track (Simulator::Schedule (DELAY (new_nb2hop_tuple.expirationTime),
                                                            &AgentImpl::Nb2hopTupleTimerExpire, this,
-                                                           new_nb2hop_tuple));
+                                                           new_nb2hop_tuple.neighborMainAddr,
+                                                           new_nb2hop_tuple.twoHopNeighborAddr));
                     }
                   else
                     {
@@ -1839,7 +1844,7 @@ AgentImpl::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
                       m_events.Track (Simulator::Schedule
                                       (DELAY (mprsel_tuple.expirationTime),
                                        &AgentImpl::MprSelTupleTimerExpire, this,
-                                       mprsel_tuple));
+                                       mprsel_tuple.mainAddr));
                     }
                   else
                     {
@@ -2261,10 +2266,10 @@ AgentImpl::MidTimerExpire ()
 /// \param tuple The tuple which has expired.
 ///
 void
-AgentImpl::DupTupleTimerExpire (DuplicateTuple tuple_)
+AgentImpl::DupTupleTimerExpire (Ipv4Address address, uint16_t sequenceNumber)
 {
   DuplicateTuple *tuple =
-    m_state.FindDuplicateTuple (tuple_.address, tuple_.sequenceNumber);
+    m_state.FindDuplicateTuple (address, sequenceNumber);
   if (tuple == NULL)
     {
       return;
@@ -2277,7 +2282,7 @@ AgentImpl::DupTupleTimerExpire (DuplicateTuple tuple_)
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
                                            &AgentImpl::DupTupleTimerExpire, this,
-                                           *tuple));
+                                           address, sequenceNumber));
     }
 }
 
@@ -2293,12 +2298,12 @@ AgentImpl::DupTupleTimerExpire (DuplicateTuple tuple_)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::LinkTupleTimerExpire (LinkTuple tuple_)
+AgentImpl::LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr)
 {
   Time now = Simulator::Now ();
 
   // the tuple parameter may be a stale copy; get a newer version from m_state
-  LinkTuple *tuple = m_state.FindLinkTuple (tuple_.neighborIfaceAddr);
+  LinkTuple *tuple = m_state.FindLinkTuple (neighborIfaceAddr);
   if (tuple == NULL)
     {
       return;
@@ -2316,13 +2321,13 @@ AgentImpl::LinkTupleTimerExpire (LinkTuple tuple_)
 
       m_events.Track (Simulator::Schedule (DELAY (tuple->time),
                                            &AgentImpl::LinkTupleTimerExpire, this,
-                                           *tuple));
+                                           neighborIfaceAddr));
     }
   else
     {
       m_events.Track (Simulator::Schedule (DELAY (std::min (tuple->time, tuple->symTime)),
                                            &AgentImpl::LinkTupleTimerExpire, this,
-                                           *tuple));
+                                           neighborIfaceAddr));
     }
 }
 
@@ -2334,11 +2339,10 @@ AgentImpl::LinkTupleTimerExpire (LinkTuple tuple_)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple_)
+AgentImpl::Nb2hopTupleTimerExpire (Ipv4Address neighborMainAddr, Ipv4Address twoHopNeighborAddr)
 {
   TwoHopNeighborTuple *tuple;
-  tuple = m_state.FindTwoHopNeighborTuple (tuple_.neighborMainAddr,
-                                           tuple_.twoHopNeighborAddr);
+  tuple = m_state.FindTwoHopNeighborTuple (neighborMainAddr, twoHopNeighborAddr);
   if (tuple == NULL)
     {
       return;
@@ -2351,7 +2355,7 @@ AgentImpl::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple_)
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
                                            &AgentImpl::Nb2hopTupleTimerExpire,
-                                           this, *tuple));
+                                           this, neighborMainAddr, twoHopNeighborAddr));
     }
 }
 
@@ -2363,9 +2367,9 @@ AgentImpl::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple_)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::MprSelTupleTimerExpire (MprSelectorTuple tuple_)
+AgentImpl::MprSelTupleTimerExpire (Ipv4Address mainAddr)
 {
-  MprSelectorTuple *tuple = m_state.FindMprSelectorTuple (tuple_.mainAddr);
+  MprSelectorTuple *tuple = m_state.FindMprSelectorTuple (mainAddr);
   if (tuple == NULL)
     {
       return;
@@ -2378,7 +2382,7 @@ AgentImpl::MprSelTupleTimerExpire (MprSelectorTuple tuple_)
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
                                            &AgentImpl::MprSelTupleTimerExpire,
-                                           this, *tuple));
+                                           this, mainAddr));
     }
 }
 
@@ -2390,10 +2394,9 @@ AgentImpl::MprSelTupleTimerExpire (MprSelectorTuple tuple_)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::TopologyTupleTimerExpire (TopologyTuple tuple_)
+AgentImpl::TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address lastAddr)
 {
-  TopologyTuple *tuple = m_state.FindTopologyTuple (tuple_.destAddr,
-                                                    tuple_.lastAddr);
+  TopologyTuple *tuple = m_state.FindTopologyTuple (destAddr, lastAddr);
   if (tuple == NULL)
     {
       return;
@@ -2406,7 +2409,7 @@ AgentImpl::TopologyTupleTimerExpire (TopologyTuple tuple_)
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
                                            &AgentImpl::TopologyTupleTimerExpire,
-                                           this, *tuple));
+                                           this, tuple->destAddr, tuple->lastAddr));
     }
 }
 
@@ -2416,9 +2419,9 @@ AgentImpl::TopologyTupleTimerExpire (TopologyTuple tuple_)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple_)
+AgentImpl::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
 {
-  IfaceAssocTuple *tuple = m_state.FindIfaceAssocTuple (tuple_.ifaceAddr);
+  IfaceAssocTuple *tuple = m_state.FindIfaceAssocTuple (ifaceAddr);
   if (tuple == NULL)
     {
       return;
@@ -2431,7 +2434,7 @@ AgentImpl::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple_)
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->time),
                                            &AgentImpl::IfaceAssocTupleTimerExpire,
-                                           this, *tuple));
+                                           this, ifaceAddr));
     }
 }
 
