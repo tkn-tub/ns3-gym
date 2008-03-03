@@ -21,37 +21,44 @@
 #include "onoe-wifi-manager.h"
 #include "ns3/simulator.h"
 #include "ns3/log.h"
+#include "ns3/uinteger.h"
 
 NS_LOG_COMPONENT_DEFINE ("OnoeWifiRemoteStation");
 
 namespace ns3 {
 
-static TimeDefaultValue g_updatePeriod
-("WifiOnoeUpdatePeriod",
- "The interval between decisions about rate control changes",
- Seconds (1.0));
-static NumericDefaultValue<uint32_t> g_addCreditThreshold
-("WifiOnoeAddCreditThreshold",
- "Add credit threshold",
- 10);
-static NumericDefaultValue<uint32_t> g_raiseThreshold
-("WifiOnoeRaiseThreshold",
- "Raise threshold",
- 10);
+TypeId
+OnoeWifiManager::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("OnoeWifiManager")
+    .SetParent<WifiRemoteStationManager> ()
+    .AddConstructor<OnoeWifiManager> ()
+    .AddAttribute ("UpdatePeriod",
+                   "The interval between decisions about rate control changes",
+                   Seconds (1.0),
+                   MakeTimeAccessor (&OnoeWifiManager::m_updatePeriod),
+                   MakeTimeChecker ())
+    .AddAttribute ("RaiseThreshold", "XXX",
+                   Uinteger (10),
+                   MakeUintegerAccessor (&OnoeWifiManager::m_raiseThreshold),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("AddCreditThreshold", "Add credit threshold",
+                   Uinteger (10),
+                   MakeUintegerAccessor (&OnoeWifiManager::m_addCreditThreshold),
+                   MakeUintegerChecker<uint32_t> ())
+    ;
+  return tid;
+}
 
-OnoeWifiManager::OnoeWifiManager (WifiMode defaultTxMode)
-  : MacStations (defaultTxMode),
-    m_updatePeriod (g_updatePeriod.GetValue ()),
-    m_addCreditThreshold (g_addCreditThreshold.GetValue ()),
-    m_raiseThreshold (g_raiseThreshold.GetValue ())
+OnoeWifiManager::OnoeWifiManager ()
 {}
-MacStation *
+WifiRemoteStation *
 OnoeWifiManager::CreateStation (void)
 {
   return new OnoeWifiRemoteStation (this);
 }
 
-OnoeWifiRemoteStation::OnoeWifiRemoteStation (OnoeWifiManager *stations)
+OnoeWifiRemoteStation::OnoeWifiRemoteStation (Ptr<OnoeWifiManager> stations)
   : m_stations (stations),
     m_nextModeUpdate (Simulator::Now () + stations->m_updatePeriod),
     m_shortRetry (0),
@@ -171,8 +178,8 @@ OnoeWifiRemoteStation::UpdateMode (void)
 
 }
 
-OnoeWifiManager *
-OnoeWifiRemoteStation::GetStations (void) const
+Ptr<WifiRemoteStationManager>
+OnoeWifiRemoteStation::GetManager (void) const
 {
   return m_stations;
 }

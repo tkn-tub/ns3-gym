@@ -17,8 +17,8 @@
  *
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef ONOE_MAC_STATIONS_H
-#define ONOE_MAC_STATIONS_H
+#ifndef ONOE_WIFI_MANAGER_H
+#define ONOE_WIFI_MANAGER_H
 
 #include "wifi-remote-station-manager.h"
 #include "ns3/nstime.h"
@@ -28,6 +28,8 @@ namespace ns3 {
 class OnoeWifiManager : public WifiRemoteStationManager
 {
 public:
+  static TypeId GetTypeId (void);
+
   OnoeWifiManager ();
 
 private:
@@ -51,7 +53,7 @@ private:
 class OnoeWifiRemoteStation : public WifiRemoteStation
 {
 public:
-  OnoeWifiRemoteStation (OnoeWifiManager *stations);
+  OnoeWifiRemoteStation (Ptr<OnoeWifiManager> stations);
 
   virtual ~OnoeWifiRemoteStation ();
 
@@ -64,14 +66,14 @@ public:
   virtual void ReportFinalDataFailed (void);
 
 private:
-  virtual OnoeWifiManager *GetStations (void) const;
+  virtual Ptr<WifiRemoteStationManager> GetManager (void) const;
   virtual WifiMode DoGetDataMode (uint32_t size);
   virtual WifiMode DoGetRtsMode (void);
 
   void UpdateRetry (void);
   void UpdateMode (void);
 
-  OnoeWifiManager *m_stations;
+  Ptr<OnoeWifiManager> m_stations;
   Time m_nextModeUpdate;
   uint32_t m_shortRetry;
   uint32_t m_longRetry;
@@ -84,4 +86,4 @@ private:
 
 } // namespace ns3
 
-#endif /* ONOE_MAC_STATIONS_H */
+#endif /* ONOE_WIFI_MANAGER_H */
