@@ -60,6 +60,7 @@ WifiNetDevice::GetTypeId (void)
 }
 
 WifiNetDevice::WifiNetDevice ()
+  : m_mtu (0)
 {}
 WifiNetDevice::~WifiNetDevice ()
 {}
