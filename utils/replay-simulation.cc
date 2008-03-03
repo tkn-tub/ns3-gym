@@ -20,6 +20,9 @@
  */
 
 #include "ns3/simulator.h"
+#include "ns3/scheduler-list.h"
+#include "ns3/scheduler-map.h"
+#include "ns3/scheduler-heap.h"
 #include "ns3/nstime.h"
 #include "ns3/system-wall-clock-ms.h"
 #include <vector>
@@ -315,15 +318,15 @@ int main (int argc, char *argv[])
     {
       if (is_map)
         {
-          Simulator::SetStdMap ();
+          Simulator::SetScheduler (CreateObject<SchedulerMap> ());
         }
       else if (is_list)
         {
-          Simulator::SetLinkedList ();
+          Simulator::SetScheduler (CreateObject<SchedulerList> ());
         }
       else if (is_heap)
         {
-          Simulator::SetBinaryHeap ();
+          Simulator::SetScheduler (CreateObject<SchedulerHeap> ());
         }
       log.Run ();
       Simulator::Destroy ();

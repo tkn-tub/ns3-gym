@@ -103,8 +103,6 @@ AdvancePosition (Ptr<Node> node)
 
 int main (int argc, char *argv[])
 {
-  Simulator::SetLinkedList ();
-
   Packet::EnableMetadata ();
 
   // enable rts cts all the time.

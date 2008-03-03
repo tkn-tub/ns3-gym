@@ -25,6 +25,7 @@
 #include "event-id.h"
 #include "event-impl.h"
 #include "nstime.h"
+#include "scheduler.h"
 #include "ns3/type-traits.h"
 
 namespace ns3 {
@@ -58,29 +59,9 @@ public:
    */
   static void EnableParallelSimulation (void);
   /**
-   * Force the use of an event scheduler based on a linked-list.
-   * This method must be invoked before any other method exported
-   * by the Simulator class.
-   *   - insert: O(n)
-   *   - remove: O(1)
+   * XXX
    */
-  static void SetLinkedList (void);
-  /**
-   * Force the use of an event scheduler based on a binary heap.
-   * This method must be invoked before any other method exported
-   * by the Simulator class.
-   *   - insert: O(log(n))
-   *   - remove: O(log(n))
-   */
-  static void SetBinaryHeap (void);
-  /**
-   * Force the use of an event scheduler based on a std::map.
-   * This method must be invoked before any other method exported
-   * by the Simulator class.
-   *   - insert: O(log(n))
-   *   - remove: O(log(n))
-   */
-  static void SetStdMap (void);
+  static void SetScheduler (Ptr<Scheduler> scheduler);
 
   /**
    * Force the use of a user-provided event scheduler.

@@ -173,8 +173,6 @@ Experiment::Run (const WifiHelper &wifi)
 
 int main (int argc, char *argv[])
 {
-  Simulator::SetLinkedList ();
-
   // disable fragmentation
   Config::SetDefault ("WifiRemoteStationManager::FragmentationThreshold", String ("2200"));
   Config::SetDefault ("WifiRemoteStationManager::RtsCtsThreshold", String ("2200"));

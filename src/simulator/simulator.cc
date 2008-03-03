@@ -24,7 +24,6 @@
 
 #include "ns3/ptr.h"
 #include "ns3/assert.h"
-#include "ns3/default-value.h"
 
 
 #include <math.h>
@@ -50,9 +49,12 @@ std::cout << "SIMU TRACE " << x << std::endl;
 namespace ns3 {
 
 
-class SimulatorPrivate {
+class SimulatorPrivate : public Object
+{
 public:
-  SimulatorPrivate (Scheduler *events);
+  static TypeId GetTypeId (void);
+
+  SimulatorPrivate ();
   ~SimulatorPrivate ();
 
   void EnableLogTo (char const *filename);
@@ -72,6 +74,9 @@ public:
   Time GetDelayLeft (const EventId &id) const;
   Time GetMaximumSimulationTime (void) const;
 
+  void SetScheduler (Ptr<Scheduler> scheduler);
+  Ptr<Scheduler> GetScheduler (void) const;
+
 private:
   void ProcessOneEvent (void);
   uint64_t NextTs (void) const;
@@ -80,7 +85,7 @@ private:
   DestroyEvents m_destroyEvents;
   uint64_t m_stopAt;
   bool m_stop;
-  Scheduler *m_events;
+  Ptr<Scheduler> m_events;
   uint32_t m_uid;
   uint32_t m_currentUid;
   uint64_t m_currentTs;
@@ -93,13 +98,26 @@ private:
 };
 
 
+TypeId
+SimulatorPrivate::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("SimulatorPrivate")
+    .SetParent<Object> ()
+    .AddConstructor<SimulatorPrivate> ()
+    .AddAttribute ("Scheduler",
+                   "XXX",
+                   Ptr<Scheduler> (0),
+                   // XXX: allow getting the scheduler too.
+                   MakePtrAccessor (&SimulatorPrivate::SetScheduler),
+                   MakePtrChecker<Scheduler> ())
+    ;
+  return tid;
+}
 
-
-SimulatorPrivate::SimulatorPrivate (Scheduler *events)
+SimulatorPrivate::SimulatorPrivate ()
 {
   m_stop = false;
   m_stopAt = 0;
-  m_events = events;
   // uids are allocated from 4.
   // uid 0 is "invalid" events
   // uid 1 is "now" events
@@ -128,10 +146,28 @@ SimulatorPrivate::~SimulatorPrivate ()
     {
       EventId next = m_events->RemoveNext ();
     }
-  delete m_events;
-  m_events = (Scheduler *)0xdeadbeaf;
+  m_events = 0;
 }
 
+void
+SimulatorPrivate::SetScheduler (Ptr<Scheduler> scheduler)
+{
+  if (m_events != 0)
+    {
+      while (!m_events->IsEmpty ())
+        {
+          EventId next = m_events->RemoveNext ();
+          scheduler->Insert (next);
+        }
+    }
+  m_events = scheduler;
+}
+
+Ptr<Scheduler>
+SimulatorPrivate::GetScheduler (void) const
+{
+  return m_events;
+}
 
 void
 SimulatorPrivate::EnableLogTo (char const *filename)
@@ -361,22 +397,9 @@ namespace ns3 {
 
 SimulatorPrivate *Simulator::m_priv = 0;
 
-void Simulator::SetLinkedList (void)
+void Simulator::SetScheduler (Ptr<Scheduler> scheduler)
 {
-  DefaultValue::Bind ("Scheduler", "List");
-}
-void Simulator::SetBinaryHeap (void)
-{
-  DefaultValue::Bind ("Scheduler", "BinaryHeap");
-}
-void Simulator::SetStdMap (void)
-{
-  DefaultValue::Bind ("Scheduler", "Map");
-}
-void 
-Simulator::SetExternal (const std::string &external)
-{
-  DefaultValue::Bind ("Scheduler", external);
+  GetPriv ()->SetScheduler (scheduler);
 }
 void Simulator::EnableLogTo (char const *filename)
 {
@@ -389,8 +412,9 @@ Simulator::GetPriv (void)
 {
   if (m_priv == 0) 
     {
-      Scheduler *events = SchedulerFactory::CreateDefault ();
-      m_priv = new SimulatorPrivate (events);
+      m_priv = new SimulatorPrivate ();
+      Ptr<Scheduler> scheduler = CreateObject<SchedulerMap> ();
+      m_priv->SetScheduler (scheduler);
     }
   TRACE_S ("priv " << m_priv);
   return m_priv;
@@ -900,19 +924,19 @@ SimulatorTests::RunTests (void)
   bool result = true;
 
   Simulator::Destroy ();
-  Simulator::SetLinkedList ();
+  Simulator::SetScheduler (CreateObject<SchedulerList> ());
   if (!RunOneTest ()) 
     {
       result = false;
     }
   Simulator::Destroy ();
-  Simulator::SetBinaryHeap ();
+  Simulator::SetScheduler (CreateObject<SchedulerHeap> ());
   if (!RunOneTest ()) 
     {
       result = false;
     }
   Simulator::Destroy ();
-  Simulator::SetStdMap ();
+  Simulator::SetScheduler (CreateObject<SchedulerMap> ());
   if (!RunOneTest ()) 
     {
       result = false;

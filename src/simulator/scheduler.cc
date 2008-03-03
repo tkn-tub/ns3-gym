@@ -26,4 +26,13 @@ namespace ns3 {
 Scheduler::~Scheduler () 
 {}
 
-}; // namespace ns3
+TypeId 
+Scheduler::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("Scheduler")
+    .SetParent<Object> ()
+    ;
+  return tid;
+}
+
+} // namespace ns3

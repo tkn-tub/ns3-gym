@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include "event-id.h"
+#include "ns3/object.h"
 
 namespace ns3 {
 
@@ -47,8 +48,11 @@ namespace ns3 {
  * scheduler included in ns3: see the files 
  * src/simulator/scheduler-list.h and src/simulator/scheduler-list.cc
  */
-class Scheduler {
+class Scheduler : public Object
+{
  public:
+  static TypeId GetTypeId (void);
+
   struct EventKey {
       uint64_t m_ts;
       uint32_t m_uid;
