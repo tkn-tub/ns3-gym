@@ -21,7 +21,6 @@
 #include "ascii-trace.h"
 
 #include "ns3/config.h"
-#include "ns3/trace-context.h"
 #include "ns3/simulator.h"
 #include "ns3/node.h"
 #include "ns3/packet.h"

@@ -22,7 +22,6 @@
 #include "ipv4-interface.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/net-device.h"
-#include "ns3/trace-resolver.h"
 #include "ns3/log.h"
 #include "ns3/packet.h"
 

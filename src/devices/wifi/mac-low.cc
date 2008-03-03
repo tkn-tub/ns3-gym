@@ -31,7 +31,6 @@
 #include "wifi-mac.h"
 #include "mac-stations.h"
 #include "wifi-mac-parameters.h"
-#include "ns3/composite-trace-resolver.h"
 
 NS_LOG_COMPONENT_DEFINE ("MacLow");
 

@@ -21,7 +21,6 @@
 #include "object.h"
 #include "assert.h"
 #include "singleton.h"
-#include "trace-resolver.h"
 #include "attribute.h"
 #include "trace-source-accessor.h"
 #include "log.h"
@@ -373,72 +372,7 @@ IidManager::GetTraceSourceAccessor (uint16_t uid, uint32_t i) const
 
 } // anonymous namespace
 
-/*********************************************************************
- *         The TypeId TraceResolver
- *********************************************************************/
-
 namespace ns3 {
-
-class TypeIdTraceResolver : public TraceResolver
-{
-public:
-  TypeIdTraceResolver (Ptr<const Object> aggregate);
-  virtual void Connect (std::string path, CallbackBase const &cb, const TraceContext &context);
-  virtual void Disconnect (std::string path, CallbackBase const &cb);
-  virtual void CollectSources (std::string path, const TraceContext &context, 
-                               SourceCollection *collection);
-  virtual void TraceAll (std::ostream &os, const TraceContext &context);
-private:
-  Ptr<const Object> ParseForInterface (std::string path);
-  Ptr<const Object> m_aggregate;
-};
-
-TypeIdTraceResolver::TypeIdTraceResolver (Ptr<const Object> aggregate)
-  : m_aggregate (aggregate)
-{}
-Ptr<const Object>
-TypeIdTraceResolver::ParseForInterface (std::string path)
-{
-  std::string element = GetElement (path);
-  std::string::size_type dollar_pos = element.find ("$");
-  if (dollar_pos != 0)
-    {
-      return 0;
-    }
-  std::string interfaceName = element.substr (1, std::string::npos);
-  TypeId interfaceId = TypeId::LookupByName (interfaceName);
-  Ptr<Object> interface = m_aggregate->GetObject<Object> (interfaceId);
-  return interface;
-}
-void  
-TypeIdTraceResolver::Connect (std::string path, CallbackBase const &cb, const TraceContext &context)
-{
-  Ptr<const Object> interface = ParseForInterface (path);
-  if (interface != 0)
-    {
-      interface->GetTraceResolver ()->Connect (GetSubpath (path), cb, context);
-    }
-}
-void 
-TypeIdTraceResolver::Disconnect (std::string path, CallbackBase const &cb)
-{
-  Ptr<const Object> interface = ParseForInterface (path);
-  if (interface != 0)
-    {
-      interface->TraceDisconnect (GetSubpath (path), cb);
-    }
-}
-void 
-TypeIdTraceResolver::CollectSources (std::string path, const TraceContext &context, 
-                                          SourceCollection *collection)
-{
-  m_aggregate->DoCollectSources (path, context, collection);
-}
-void 
-TypeIdTraceResolver::TraceAll (std::ostream &os, const TraceContext &context)
-{
-  m_aggregate->DoTraceAll (os, context);
-}
 
 /*********************************************************************
  *         The TypeId class
@@ -1253,19 +1187,6 @@ Object::AggregateObject (Ptr<Object> o)
 }
 
 void 
-Object::TraceConnect (std::string path, const CallbackBase &cb) const
-{
-  NS_ASSERT (CheckLoose ());
-  GetTraceResolver ()->Connect (path, cb, TraceContext ());
-}
-void 
-Object::TraceDisconnect (std::string path, const CallbackBase &cb) const
-{
-  NS_ASSERT (CheckLoose ());
-  GetTraceResolver ()->Disconnect (path, cb);
-}
-
-void 
 Object::SetTypeId (TypeId tid)
 {
   NS_ASSERT (Check ());
@@ -1278,14 +1199,6 @@ Object::DoDispose (void)
   NS_ASSERT (!m_disposed);
 }
 
-Ptr<TraceResolver>
-Object::GetTraceResolver (void) const
-{
-  NS_ASSERT (CheckLoose ());
-  Ptr<TypeIdTraceResolver> resolver =
-    Create<TypeIdTraceResolver> (this);
-  return resolver;
-}
 
 bool 
 Object::Check (void) const
@@ -1354,77 +1267,12 @@ Object::MaybeDelete (void) const
   } while (current != end);
 }
 
-void 
-Object::DoCollectSources (std::string path, const TraceContext &context, 
-                          TraceResolver::SourceCollection *collection) const
-{
-  const Object *current;
-  current = this;
-  do {
-    if (current->m_collecting)
-      {
-        return;
-      }
-    current = current->m_next;
-  } while (current != this);
-
-  m_collecting = true;
-
-  current = this->m_next;
-  while (current != this)
-    {
-      NS_ASSERT (current != 0);
-      NS_LOG_LOGIC ("collect current=" << current);
-      TypeId cur = current->m_tid;
-      while (cur != Object::GetTypeId ())
-        {
-          std::string name = cur.GetName ();
-          std::string fullpath = path;
-          fullpath.append ("/$");
-          fullpath.append (name);
-          NS_LOG_LOGIC("collect: " << fullpath);
-          current->GetTraceResolver ()->CollectSources (fullpath, context, collection);
-          cur = cur.GetParent ();
-        }
-      current = current->m_next;
-    }
-
-  m_collecting = false;
-}
-void 
-Object::DoTraceAll (std::ostream &os, const TraceContext &context) const
-{
-  const Object *current;
-  current = this;
-  do {
-    if (current->m_collecting)
-      {
-        return;
-      }
-    current = current->m_next;
-  } while (current != this);
-
-  m_collecting = true;
-
-  current = this->m_next;
-  while (current != this)
-    {
-      NS_ASSERT (current != 0);
-      current->GetTraceResolver ()->TraceAll (os, context);
-      current = current->m_next;
-    }
-
-  m_collecting = false;
-}
-
 } // namespace ns3
 
 
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
-#include "sv-trace-source.h"
-#include "composite-trace-resolver.h"
 
 namespace {
 
@@ -1439,18 +1287,7 @@ public:
   }
   BaseA ()
   {}
-  void BaseGenerateTrace (int16_t v)
-  { m_source = v; }
   virtual void Dispose (void) {}
-  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void) const
-  {
-    ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
-      ns3::Create<ns3::CompositeTraceResolver> ();
-    resolver->AddSource ("basea-x", ns3::TraceDoc ("test source"), m_source);
-    resolver->SetParentResolver (Object::GetTraceResolver ());
-    return resolver;
-  }
-  ns3::SVTraceSource<int16_t> m_source;
 };
 
 class DerivedA : public BaseA
@@ -1464,20 +1301,9 @@ public:
   }
   DerivedA ()
   {}
-  void DerivedGenerateTrace (int16_t v)
-  { m_sourceDerived = v; }
   virtual void Dispose (void) {
     BaseA::Dispose ();
   }
-  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void) const
-  {
-    ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
-      ns3::Create<ns3::CompositeTraceResolver> ();
-    resolver->AddSource ("deriveda-x", ns3::TraceDoc ("test source"), m_sourceDerived);
-    resolver->SetParentResolver (BaseA::GetTraceResolver ());
-    return resolver;
-  }
-  ns3::SVTraceSource<int16_t> m_sourceDerived;
 };
 
 class BaseB : public ns3::Object
@@ -1491,18 +1317,7 @@ public:
   }
   BaseB ()
   {}
-  void BaseGenerateTrace (int16_t v)
-  { m_source = v; }
   virtual void Dispose (void) {}
-  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void) const
-  {
-    ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
-      ns3::Create<ns3::CompositeTraceResolver> ();
-    resolver->AddSource ("baseb-x", ns3::TraceDoc ("test source"), m_source);
-    resolver->SetParentResolver (Object::GetTraceResolver ());
-    return resolver;
-  }
-  ns3::SVTraceSource<int16_t> m_source;
 };
 
 class DerivedB : public BaseB
@@ -1516,20 +1331,9 @@ public:
   }
   DerivedB ()
   {}
-  void DerivedGenerateTrace (int16_t v)
-  { m_sourceDerived = v; }
   virtual void Dispose (void) {
     BaseB::Dispose ();
   }
-  virtual ns3::Ptr<ns3::TraceResolver> GetTraceResolver (void) const
-  {
-    ns3::Ptr<ns3::CompositeTraceResolver> resolver = 
-      ns3::Create<ns3::CompositeTraceResolver> ();
-    resolver->AddSource ("derivedb-x", ns3::TraceDoc ("test source"), m_sourceDerived);
-    resolver->SetParentResolver (BaseB::GetTraceResolver ());
-    return resolver;
-  }
-  ns3::SVTraceSource<int16_t> m_sourceDerived;
 };
 
 NS_OBJECT_ENSURE_REGISTERED (BaseA);
@@ -1546,41 +1350,11 @@ class ObjectTest : public Test
 public:
   ObjectTest ();
   virtual bool RunTests (void);
-private:
-  void BaseATrace (const TraceContext &context, int64_t oldValue, int64_t newValue);
-  void DerivedATrace (const TraceContext &context, int64_t oldValue, int64_t newValue);
-  void BaseBTrace (const TraceContext &context, int64_t oldValue, int64_t newValue);
-  void DerivedBTrace (const TraceContext &context, int64_t oldValue, int64_t newValue);
-
-  bool m_baseATrace;
-  bool m_derivedATrace;
-  bool m_baseBTrace;
-  bool m_derivedBTrace;
 };
 
 ObjectTest::ObjectTest ()
   : Test ("Object")
 {}
-void 
-ObjectTest::BaseATrace (const TraceContext &context, int64_t oldValue, int64_t newValue)
-{
-  m_baseATrace = true;
-}
-void 
-ObjectTest::DerivedATrace (const TraceContext &context, int64_t oldValue, int64_t newValue)
-{
-  m_derivedATrace = true;
-}
-void 
-ObjectTest::BaseBTrace (const TraceContext &context, int64_t oldValue, int64_t newValue)
-{
-  m_baseBTrace = true;
-}
-void 
-ObjectTest::DerivedBTrace (const TraceContext &context, int64_t oldValue, int64_t newValue)
-{
-  m_derivedBTrace = true;
-}
 
 bool 
 ObjectTest::RunTests (void)
@@ -1629,74 +1403,6 @@ ObjectTest::RunTests (void)
   baseA = 0;
   baseA = baseB->GetObject<BaseA> ();
 
-  baseA = CreateObject<BaseA> ();
-  baseA->TraceConnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
-  m_baseATrace = false;
-  baseA->BaseGenerateTrace (1);
-  NS_TEST_ASSERT (m_baseATrace);
-  baseA->TraceDisconnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
-
-  baseB = CreateObject<BaseB> ();
-  baseB->TraceConnect ("/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
-  m_baseBTrace = false;
-  baseB->BaseGenerateTrace (2);
-  NS_TEST_ASSERT (m_baseBTrace);
-  baseB->TraceDisconnect ("/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
-
-  baseA->AggregateObject (baseB);
-
-  baseA->TraceConnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
-  m_baseATrace = false;
-  baseA->BaseGenerateTrace (3);
-  NS_TEST_ASSERT (m_baseATrace);
-  baseA->TraceDisconnect ("/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
-
-  baseA->TraceConnect ("/$BaseB/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
-  m_baseBTrace = false;
-  baseB->BaseGenerateTrace (4);
-  NS_TEST_ASSERT (m_baseBTrace);
-  baseA->TraceDisconnect ("/$BaseB/baseb-x",  MakeCallback (&ObjectTest::BaseBTrace, this));
-  m_baseBTrace = false;
-  baseB->BaseGenerateTrace (5);
-  NS_TEST_ASSERT (!m_baseBTrace);
-
-  baseB->TraceConnect ("/$BaseA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
-  m_baseATrace = false;
-  baseA->BaseGenerateTrace (6);
-  NS_TEST_ASSERT (m_baseATrace);
-  baseB->TraceDisconnect ("/$BaseA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
-
-  baseA->TraceConnect ("/$BaseA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
-  m_baseATrace = false;
-  baseA->BaseGenerateTrace (7);
-  NS_TEST_ASSERT (m_baseATrace);
-  baseA->TraceDisconnect ("/$BaseA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
-
-  Ptr<DerivedA> derivedA;
-  derivedA = CreateObject<DerivedA> ();
-  baseB = CreateObject<BaseB> ();
-  derivedA->AggregateObject (baseB);
-  baseB->TraceConnect ("/$DerivedA/deriveda-x", MakeCallback (&ObjectTest::DerivedATrace, this));
-  baseB->TraceConnect ("/$DerivedA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
-  m_derivedATrace = false;
-  m_baseATrace = false;
-  derivedA->DerivedGenerateTrace (8);
-  derivedA->BaseGenerateTrace (9);
-  NS_TEST_ASSERT (m_derivedATrace);
-  NS_TEST_ASSERT (m_baseATrace);
-  baseB->TraceDisconnect ("/$DerivedA/deriveda-x", MakeCallback (&ObjectTest::BaseATrace, this));
-  baseB->TraceDisconnect ("/$DerivedA/basea-x", MakeCallback (&ObjectTest::BaseATrace, this));
-
-  baseB->TraceConnect ("/$DerivedA/*", MakeCallback (&ObjectTest::DerivedATrace, this));
-  m_derivedATrace = false;
-  derivedA->DerivedGenerateTrace (10);
-  NS_TEST_ASSERT (m_derivedATrace);
-  // here, we have connected the derived trace sink to all 
-  // trace sources, including the base trace source.
-  m_derivedATrace = false;
-  derivedA->BaseGenerateTrace (11);
-  NS_TEST_ASSERT (m_derivedATrace);
-  baseB->TraceDisconnect ("/$DerivedA/*", MakeCallback (&ObjectTest::BaseATrace, this));
 
   // Test the object creation code of TypeId
   Ptr<Object> a = BaseA::GetTypeId ().CreateObject ();

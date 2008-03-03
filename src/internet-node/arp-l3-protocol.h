@@ -32,7 +32,6 @@ class ArpCache;
 class NetDevice;
 class Node;
 class Packet;
-class TraceResolver;
 class TraceContext;
 /**
  * \brief An implementation of the ARP protocol

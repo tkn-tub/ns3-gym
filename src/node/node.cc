@@ -25,7 +25,6 @@
 #include "packet-socket-factory.h"
 #include "ns3/packet.h"
 #include "ns3/simulator.h"
-#include "ns3/composite-trace-resolver.h"
 #include "ns3/object-vector.h"
 #include "ns3/uinteger.h"
 

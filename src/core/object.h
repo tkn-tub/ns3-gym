@@ -23,8 +23,8 @@
 
 #include <stdint.h>
 #include <string>
+#include <vector>
 #include "ptr.h"
-#include "trace-resolver.h"
 #include "callback.h"
 #include "attribute.h"
 #include "object-base.h"
@@ -42,7 +42,6 @@
 
 namespace ns3 {
 
-class TraceContext;
 class CallbackBase;
 class Object;
 class AttributeAccessor;
@@ -444,29 +443,6 @@ public:
    */
   void AggregateObject (Ptr<Object> other);
 
-  /**
-   * \param path the path to match for the callback
-   * \param cb callback to connect
-   *
-   * Connect the input callback to all trace sources which
-   * match the input path.
-   *
-   */
-  void TraceConnect (std::string path, const CallbackBase &cb) const;
-  /**
-   * \param path the path to match for the callback
-   * \param cb callback to disconnect
-   *
-   * Disconnect the input callback from all trace sources which
-   * match the input path.
-   */
-  void TraceDisconnect (std::string path, const CallbackBase &cb) const;
-  /**
-   * \returns the trace resolver associated to this object.
-   *
-   * This method should be rarely called by users.
-   */
-  virtual Ptr<TraceResolver> GetTraceResolver (void) const;
 protected:
   /**
    * This method is called by Object::Dispose.
@@ -476,8 +452,6 @@ protected:
   virtual void DoDispose (void);
   virtual void NotifyConstructionCompleted (void);
 private:
-  friend class TypeIdTraceResolver;
-
   template <typename T>
   friend Ptr<T> CreateObject (const AttributeList &attributes);
 
@@ -502,9 +476,6 @@ private:
   bool DoSet (Ptr<const AttributeAccessor> spec, Attribute intialValue, 
               Ptr<const AttributeChecker> checker, Attribute value);
   Ptr<Object> DoGetObject (TypeId tid) const;
-  void DoCollectSources (std::string path, const TraceContext &context, 
-                         TraceResolver::SourceCollection *collection) const;
-  void DoTraceAll (std::ostream &os, const TraceContext &context) const;
   bool Check (void) const;
   bool CheckLoose (void) const;
   /**

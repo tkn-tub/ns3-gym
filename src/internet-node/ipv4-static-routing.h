@@ -25,8 +25,6 @@
 
 #include <list>
 #include <stdint.h>
-#include "ns3/callback-trace-source.h"
-#include "ns3/array-trace-resolver.h"
 #include "ns3/ipv4-address.h"
 #include "ipv4-header.h"
 #include "ns3/ptr.h"
@@ -41,8 +39,6 @@ class Ipv4Address;
 class Ipv4Header;
 class Ipv4Route;
 class Node;
-class TraceResolver;
-class TraceContext;
 
 
 /**

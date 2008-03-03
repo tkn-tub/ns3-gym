@@ -36,7 +36,6 @@
 namespace ns3 {
 
 class Node;
-class TraceResolver;
 class TraceContext;
 class Socket;
 class TcpHeader;
