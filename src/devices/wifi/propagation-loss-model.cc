@@ -18,98 +18,38 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "propagation-loss-model.h"
-#include "ns3/default-value.h"
-#include "ns3/random-variable-default-value.h"
 #include "ns3/log.h"
 #include "ns3/mobility-model.h"
 #include "ns3/static-mobility-model.h"
+#include "ns3/double.h"
 #include <math.h>
 
 NS_LOG_COMPONENT_DEFINE ("PropagationLossModel");
 
 namespace ns3 {
 
-enum ModelType {
-  FRIIS,
-  RANDOM,
-  LOG_DISTANCE
-};
-
-static EnumDefaultValue<enum ModelType> g_modelType
-("PropagationLossModelType",
- "The type of propagation loss model.",
- LOG_DISTANCE, "LogDistance",
- FRIIS, "Friis",
- RANDOM, "Random",
- 0, (void *)0);
-
-static NumericDefaultValue<double> g_friisLambda
-("FriisPropagationLossLambda",
- "The wavelength to use by default for every FriisPropagationLossModel (default is 5.15 GHz at 300 000 km/s).",
- 300000000.0 / 5.150e9);
-
-static NumericDefaultValue<double> g_friisSystemLoss
-("FriisPropagationLossSystemLoss",
- "The system loss to use by default for every FriisPropagationLossModel",
- 1.0);
-static NumericDefaultValue<double> g_friisPropagationLossMinDistance
-("FriisPropagationLossMinDistance",
- "The distance under which the propagation model refuses to give results (m)",
- 0.5);
-
-static RandomVariableDefaultValue g_random
-("RandomPropagationLossDistribution",
- "The distribution (in dbm) to choose the propagation loss.",
- "Constant:1.0");
-
-static NumericDefaultValue<double> g_logDistanceExponent
-("LogDistancePropagationLossExponent",
- "The exponent of the Path Loss propagation model",
- 3.0);
-
-static NumericDefaultValue<double> g_logDistanceReferenceDistance
-("LogDistancePropagationLossReferenceDistance",
- "The distance at which the reference loss is calculated (m)",
- 1.0);
-
-static EnumDefaultValue<enum ModelType> g_logDistanceReferenceType
-("LogDistancePropagationLossReferenceType",
- "The type of reference propagation model.",
- FRIIS, "Friis",
- RANDOM, "Random", 
- 0, (void *)0);
 
 const double FriisPropagationLossModel::PI = 3.1415;
 
 PropagationLossModel::~PropagationLossModel ()
 {}
 
-Ptr<PropagationLossModel> 
-PropagationLossModel::CreateDefault (void)
+TypeId 
+RandomPropagationLossModel::GetTypeId (void)
 {
-  switch (g_modelType.GetValue ()) {
-  case FRIIS:
-    return CreateObject<FriisPropagationLossModel> ();
-    break;
-  case RANDOM:
-    return CreateObject<RandomPropagationLossModel> ();
-    break;
-  case LOG_DISTANCE:
-    return CreateObject<LogDistancePropagationLossModel> ();
-    break;
-  default:
-    NS_ASSERT (false);
-    return 0;
-    break;
-  }
+  static TypeId tid = TypeId ("RandomPropagationLossModel")
+    .SetParent<PropagationLossModel> ()
+    .AddConstructor<RandomPropagationLossModel> ()
+    .AddAttribute ("Variable", "XXX",
+                   ConstantVariable (1.0),
+                   MakeRandomVariableAccessor (&RandomPropagationLossModel::m_variable),
+                   MakeRandomVariableChecker ())
+    ;
+  return tid;
 }
 RandomPropagationLossModel::RandomPropagationLossModel ()
-  : m_variable (g_random.Get ())
 {}
 
-RandomPropagationLossModel::RandomPropagationLossModel (const RandomVariable &variable)
-  : m_variable (variable)
-{}
 RandomPropagationLossModel::~RandomPropagationLossModel ()
 {}
 
@@ -123,10 +63,31 @@ RandomPropagationLossModel::GetRxPower (double txPowerDbm,
   return rxPower;
 }
 
+TypeId 
+FriisPropagationLossModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("FriisPropagationLossModel")
+    .SetParent<PropagationLossModel> ()
+    .AddConstructor<FriisPropagationLossModel> ()
+    .AddAttribute ("Lambda", 
+                   "The wavelength  (default is 5.15 GHz at 300 000 km/s).",
+                   Double (300000000.0 / 5.150e9),
+                   MakeDoubleAccessor (&FriisPropagationLossModel::m_lambda),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("SystemLoss", "The system loss",
+                   Double (1.0),
+                   MakeDoubleAccessor (&FriisPropagationLossModel::m_systemLoss),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("MinDistance", 
+                   "The distance under which the propagation model refuses to give results (m)",
+                   Double (0.5),
+                   MakeDoubleAccessor (&FriisPropagationLossModel::m_minDistance),
+                   MakeDoubleChecker<double> ())
+    ;
+  return tid;
+}
+
 FriisPropagationLossModel::FriisPropagationLossModel ()
-  : m_lambda (g_friisLambda.GetValue ()),
-    m_systemLoss (g_friisSystemLoss.GetValue ()),
-    m_minDistance (g_friisPropagationLossMinDistance.GetValue ())
 {}
 void 
 FriisPropagationLossModel::SetSystemLoss (double systemLoss)
@@ -216,11 +177,33 @@ FriisPropagationLossModel::GetRxPower (double txPowerDbm,
   return rxPowerDbm;
 }
 
+TypeId
+LogDistancePropagationLossModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("LogDistancePropagationLossModel")
+    .SetParent<PropagationLossModel> ()
+    .AddConstructor<LogDistancePropagationLossModel> ()
+    .AddAttribute ("Exponent",
+                   "The exponent of the Path Loss propagation model",
+                   Double (3.0),
+                   MakeDoubleAccessor (&LogDistancePropagationLossModel::m_exponent),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("ReferenceDistance",
+                   "The distance at which the reference loss is calculated (m)",
+                   Double (1.0),
+                   MakeDoubleAccessor (&LogDistancePropagationLossModel::m_referenceDistance),
+                   MakeDoubleChecker<double> ())
+    .AddAttribute ("ReferenceModel",
+                   "The reference model at the reference distance.",
+                   Ptr<PropagationLossModel> (0),
+                   MakePtrAccessor (&LogDistancePropagationLossModel::m_reference),
+                   MakePtrChecker<PropagationLossModel> ())
+    ;
+  return tid;
+                   
+}
 
 LogDistancePropagationLossModel::LogDistancePropagationLossModel ()
-  : m_exponent (g_logDistanceExponent.GetValue ()),
-    m_referenceDistance (g_logDistanceReferenceDistance.GetValue ()),
-    m_reference (CreateDefaultReference ())
 {}
 
 void 
@@ -242,24 +225,6 @@ double
 LogDistancePropagationLossModel::GetPathLossExponent (void) const
 {
   return m_exponent;
-}
-
-Ptr<PropagationLossModel>
-LogDistancePropagationLossModel::CreateDefaultReference (void)
-{
-  switch (g_logDistanceReferenceType.GetValue ()) {
-  case RANDOM:
-    return CreateObject<RandomPropagationLossModel> ();
-    break;
-  case FRIIS:
-    return CreateObject<FriisPropagationLossModel> ();
-    break;
-  case LOG_DISTANCE:
-  default:
-    NS_ASSERT (false);
-    return 0;
-    break;
-  }
 }
   
 double 

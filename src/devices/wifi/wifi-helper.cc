@@ -4,6 +4,8 @@
 #include "wifi-phy.h"
 #include "wifi-remote-station-manager.h"
 #include "wifi-channel.h"
+#include "propagation-delay-model.h"
+#include "propagation-loss-model.h"
 #include "ns3/mobility-model.h"
 #include "ns3/log.h"
 
@@ -91,6 +93,10 @@ NetDeviceContainer
 WifiHelper::Build (NodeContainer c) const
 {
   Ptr<WifiChannel> channel = CreateObjectWith<WifiChannel> ();
+  channel->SetPropagationDelayModel (CreateObjectWith<ConstantSpeedPropagationDelayModel> ());
+  Ptr<LogDistancePropagationLossModel> log = CreateObjectWith<LogDistancePropagationLossModel> ();
+  log->SetReferenceModel (CreateObjectWith<FriisPropagationLossModel> ());
+  channel->SetPropagationLossModel (log);
   return Build (c, channel);
 }
 NetDeviceContainer

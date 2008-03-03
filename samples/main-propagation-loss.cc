@@ -28,7 +28,10 @@ PrintOne (double minTxpower, double maxTxpower, double stepTxpower, double min, 
 {
   Ptr<StaticMobilityModel> a = CreateObject<StaticMobilityModel> ();
   Ptr<StaticMobilityModel> b = CreateObject<StaticMobilityModel> ();
-  Ptr<PropagationLossModel> model = PropagationLossModel::CreateDefault ();
+  Ptr<LogDistancePropagationLossModel> log = CreateObjectWith<LogDistancePropagationLossModel> ();
+  log->SetReferenceModel (CreateObjectWith<FriisPropagationLossModel> ());
+
+  Ptr<PropagationLossModel> model = log;
 
   a->SetPosition (Vector (0.0, 0.0, 0.0));
   for (double x = min; x < max; x+= step)

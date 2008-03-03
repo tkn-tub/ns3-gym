@@ -19,61 +19,30 @@
  */
 #include "propagation-delay-model.h"
 #include "ns3/random-variable.h"
-#include "ns3/default-value.h"
-#include "ns3/random-variable-default-value.h"
 #include "ns3/mobility-model.h"
+#include "ns3/double.h"
 
 namespace ns3 {
 
-enum ModelType
-{
-  RANDOM,
-  CONSTANT_SPEED
-};
-
-static EnumDefaultValue<enum ModelType> g_modelType
-("PropagationDelayModelType",
- "The type of propagation delay model to use.",
- CONSTANT_SPEED, "ConstantSpeed",
- RANDOM, "Random",
- 0, (void*)0);
-
-static NumericDefaultValue<double> g_speed
-("PropagationDelayConstantSpeed",
- "The speed (m/s) of propagation if a ConstantSpeed propagation delay model is used.",
- 300000000.0);
-
-static RandomVariableDefaultValue g_random
-("PropagationDelayRandomDistribution", 
- "The delay distribution to use if a Random propagation delay model is used.",
- "Uniform:0:1.0");
-
-
 PropagationDelayModel::~PropagationDelayModel ()
 {}
-Ptr<PropagationDelayModel> 
-PropagationDelayModel::CreateDefault (void)
+
+TypeId 
+RandomPropagationDelayModel::GetTypeId (void)
 {
-  switch (g_modelType.GetValue ()) {
-  case CONSTANT_SPEED:
-    return CreateObject<ConstantSpeedPropagationDelayModel> (g_speed.GetValue ());
-    break;
-  case RANDOM:
-    return CreateObject<RandomPropagationDelayModel> ();
-    break;
-  default:
-    NS_ASSERT (false);
-    return 0;
-    break;
-  }
+  static TypeId tid = TypeId ("RandomPropagationDelayModel")
+    .SetParent<PropagationDelayModel> ()
+    .AddConstructor<RandomPropagationDelayModel> ()
+    .AddAttribute ("Variable",
+                   "The random variable which generates random delays (s).",
+                   UniformVariable (0.0, 1.0),
+                   MakeRandomVariableAccessor (&RandomPropagationDelayModel::m_variable),
+                   MakeRandomVariableChecker ())
+    ;
+  return tid;
 }
 
 RandomPropagationDelayModel::RandomPropagationDelayModel ()
-  : m_variable (g_random.Get ())
-{}
-
-RandomPropagationDelayModel::RandomPropagationDelayModel (const RandomVariable &variable)
-  : m_variable (variable)
 {}
 RandomPropagationDelayModel::~RandomPropagationDelayModel ()
 {}
@@ -83,8 +52,20 @@ RandomPropagationDelayModel::GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> 
   return Seconds (m_variable.GetValue ());
 }
 
-ConstantSpeedPropagationDelayModel::ConstantSpeedPropagationDelayModel (double speed)
-  : m_speed (speed)
+TypeId
+ConstantSpeedPropagationDelayModel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ConstantSpeedPropagationDelayModel")
+    .SetParent<ConstantSpeedPropagationDelayModel> ()
+    .AddAttribute ("Speed", "The speed (m/s)",
+                   Double (300000000.0),
+                   MakeDoubleAccessor (&ConstantSpeedPropagationDelayModel::m_speed),
+                   MakeDoubleChecker<double> ())
+    ;
+  return tid;
+}
+
+ConstantSpeedPropagationDelayModel::ConstantSpeedPropagationDelayModel ()
 {}
 Time 
 ConstantSpeedPropagationDelayModel::GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const

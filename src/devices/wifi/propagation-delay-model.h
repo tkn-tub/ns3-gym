@@ -45,11 +45,6 @@ public:
    * source and destination.
    */
   virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const = 0;
-  /**
-   * \returns the default propagation loss model as specified
-   * by the PropagationDelayModelType ns3::DefaultValue.
-   */
-  static Ptr<PropagationDelayModel> CreateDefault (void);
 };
 
 /**
@@ -58,15 +53,12 @@ public:
 class RandomPropagationDelayModel : public PropagationDelayModel
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * Use the default parameters from PropagationDelayRandomDistribution.
    */
   RandomPropagationDelayModel ();
-  /**
-   * \param variable the random distribution to use for this
-   * instance
-   */
-  RandomPropagationDelayModel (const RandomVariable &variable);
   virtual ~RandomPropagationDelayModel ();
   virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
 private:
@@ -79,15 +71,12 @@ private:
 class ConstantSpeedPropagationDelayModel : public PropagationDelayModel
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * Use the default parameters from PropagationDelayConstantSpeed.
    */
   ConstantSpeedPropagationDelayModel ();
-  /**
-   * \param speed the speed (m/s) of the propagation to use for this
-   * instance
-   */
-  ConstantSpeedPropagationDelayModel (double speed);
   virtual Time GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> b) const;
   /**
    * \param speed the new speed (m/s)

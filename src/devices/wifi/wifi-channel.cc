@@ -31,9 +31,25 @@ NS_LOG_COMPONENT_DEFINE ("WifiChannel");
 
 namespace ns3 {
 
+TypeId 
+WifiChannel::GetTypdId (void)
+{
+  static TypeId tid = TypeId ("WifiChannel")
+    .SetParent<WifiChannel> ()
+    .AddConstructor<WifiChannel> ()
+    .AddAttribute ("PropagationLossModel", "XXX",
+                   Ptr<PropagationLossModel> (0),
+                   MakePtrAccessor (&WifiChannel::m_loss),
+                   MakePtrChecker<PropagationLossModel> ())
+    .AddAttribute ("PropagationDelayModel", "XXX",
+                   Ptr<PropagationDelayModel> (0),
+                   MakePtrAccessor (&WifiChannel::m_delay),
+                   MakePtrChecker<PropagationDelayModel> ())
+    ;
+  return tid;
+}
+
 WifiChannel::WifiChannel ()
-  : m_loss (PropagationLossModel::CreateDefault ()),
-    m_delay (PropagationDelayModel::CreateDefault ())
 {}
 WifiChannel::~WifiChannel ()
 {

@@ -48,6 +48,8 @@ class PropagationDelayModel;
 class WifiChannel : public Channel
 {
 public:
+  static TypeId GetTypdId (void);
+
   /**
    * arg1: the packet to receive
    * arg2: the rx power of the packet to receive (dbm)

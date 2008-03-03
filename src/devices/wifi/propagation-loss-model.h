@@ -46,12 +46,6 @@ public:
   virtual double GetRxPower (double txPowerDbm,
 			     Ptr<MobilityModel> a,
 			     Ptr<MobilityModel> b) const = 0;
-
-  /**
-   * \returns the default propagation loss model as specified
-   * by \valueref{PropagationLossModelType}.
-   */
-  static Ptr<PropagationLossModel> CreateDefault (void);
 };
 
 /**
@@ -60,15 +54,12 @@ public:
 class RandomPropagationLossModel : public PropagationLossModel
 {
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * Use the default parameters from \valueref{RandomPropagationLossDistribution}.
    */
   RandomPropagationLossModel ();
-  /**
-   * \param variable the RandomVariable to use for this
-   * instance.
-   */
-  RandomPropagationLossModel (const RandomVariable &variable);
   virtual ~RandomPropagationLossModel ();
 
   virtual double GetRxPower (double txPowerDbm,
@@ -114,6 +105,7 @@ private:
 class FriisPropagationLossModel : public PropagationLossModel
 {
 public:
+  static TypeId GetTypeId (void);
   /**
    * Use the default parameters from \valueref{FriisPropagationLossLambda},
    * \valueref{FriisPropagationLossSystemLoss}, and,
@@ -193,6 +185,7 @@ private:
 class LogDistancePropagationLossModel : public PropagationLossModel
 {
 public:
+  static TypeId GetTypeId (void);
   /**
    * Use the default parameters from
    * \valueref{LogDistancePropagationLossExponent}, and,
