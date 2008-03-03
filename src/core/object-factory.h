@@ -22,10 +22,16 @@ public:
   template <typename T>
   Ptr<T> Create (void) const;
 
+  VALUE_HELPER_HEADER_1 (ObjectFactory);
 private:
   TypeId m_tid;
   AttributeList m_parameters;
 };
+
+std::ostream & operator << (std::ostream &os, const ObjectFactory &factory);
+std::istream & operator >> (std::istream &is, ObjectFactory &factory);
+
+VALUE_HELPER_HEADER_2 (ObjectFactory);
 
 } // namespace ns3
 

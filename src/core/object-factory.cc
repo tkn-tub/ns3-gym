@@ -47,4 +47,16 @@ ObjectFactory::Create (void) const
   return object;
 }
 
+std::ostream & operator << (std::ostream &os, const ObjectFactory &factory)
+{
+  return os;
+}
+std::istream & operator >> (std::istream &is, ObjectFactory &factory)
+{
+  return is;
+}
+
+
+VALUE_HELPER_CPP (ObjectFactory);
+
 } // namespace ns3
