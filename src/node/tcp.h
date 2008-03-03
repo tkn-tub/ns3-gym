@@ -20,7 +20,6 @@
 #ifndef TCP_H
 #define TCP_H
 
-#include "ns3/default-value.h"
 #include "socket-factory.h"
 
 namespace ns3 {
@@ -48,18 +47,26 @@ public:
 
   virtual Ptr<Socket> CreateSocket (void) = 0;
 
-public:
-  static NumericDefaultValue<uint32_t>       defaultSegSize;  
-  static NumericDefaultValue<uint32_t>       defaultAdvWin;   
-  static NumericDefaultValue<uint32_t>       defaultSSThresh; 
-  static NumericDefaultValue<uint32_t>       defaultTxBuffer; 
-  static NumericDefaultValue<uint32_t>       defaultRxBuffer; 
-  static NumericDefaultValue<uint32_t>       defaultInitialCWnd; 
-  static NumericDefaultValue<uint32_t>       defaultConnTimeout;  
-  static NumericDefaultValue<uint32_t>       defaultConnCount;  
+  uint32_t GetDefaultSegSize (void) const;
+  uint32_t GetDefaultAdvWin (void) const;
+  uint32_t GetDefaultSsThresh (void) const;
+  uint32_t GetDefaultTxBuffer (void) const;
+  uint32_t GetDefaultRxBuffer (void) const;
+  uint32_t GetDefaultInitialCwnd (void) const;
+  uint32_t GetDefaultConnTimeout (void) const;
+  uint32_t GetDefaultConnCount (void) const;
+private:
+  uint32_t  m_defaultSegSize;  
+  uint32_t  m_defaultAdvWin;   
+  uint32_t  m_defaultSsThresh; 
+  uint32_t  m_defaultTxBuffer; 
+  uint32_t  m_defaultRxBuffer; 
+  uint32_t  m_defaultInitialCwnd; 
+  uint32_t  m_defaultConnTimeout;  
+  uint32_t  m_defaultConnCount;  
 
 };
 
 } // namespace ns3
 
-#endif /* UDP_H */
+#endif /* TCP_H */

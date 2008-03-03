@@ -18,48 +18,9 @@
  * Author: Raj Bhattacharjea <raj.b@gatech.edu>
  */
 #include "tcp.h"
+#include "ns3/uinteger.h"
 
 namespace ns3 {
-
-NumericDefaultValue<uint32_t>       Tcp::defaultSegSize
-("TcpDefaultSegmentSize",
-"Default TCP maximum segment size in bytes (may be adjusted based on MTU discovery)",
-536);
-
-NumericDefaultValue<uint32_t>       Tcp::defaultAdvWin
-("TcpDefaultAdvertisedWindowSize",
-"Default TCP advertised window size (bytes)",
-0xffff);
-
-NumericDefaultValue<uint32_t>       Tcp::defaultSSThresh
-("TcpDefaultSlowStartThreshold",
-"Default TCP slow start threshold (bytes)",
-0xffff);
-
-NumericDefaultValue<uint32_t>       Tcp::defaultTxBuffer
-("TcpDefaultTxBufferSize",
-"Default TCP maximum transmit buffer size (bytes)",
-0xffffffffl);
-
-NumericDefaultValue<uint32_t>       Tcp::defaultRxBuffer
-("TcpDefaultRxBufferSize",
-"Default TCP maximum receive buffer size (bytes)",
-0xffffffffl);
-
-NumericDefaultValue<uint32_t>       Tcp::defaultInitialCWnd
-("TcpDefaultInitialCongestionWindowSize",
-"Default TCP initial congestion window size (segments)",
-1);
-
-NumericDefaultValue<uint32_t>       Tcp::defaultConnTimeout
-("TcpDefaultConnTimeout",
-"Default TCP retransmission timeout when opening connection (seconds)",
-3);
-
-NumericDefaultValue<uint32_t>       Tcp::defaultConnCount
-("TcpDefaultConnCount",
-"Default number of connection attempts (SYN retransmissions) before returning failure",
-6);
 
 NS_OBJECT_ENSURE_REGISTERED (Tcp);
 
@@ -67,9 +28,90 @@ TypeId
 Tcp::GetTypeId (void)
 {
   static TypeId tid = TypeId ("Tcp")
-    .SetParent<SocketFactory> ();
+    .SetParent<SocketFactory> ()
+   .AddAttribute ("TcpDefaultSegmentSize",
+                  "Default TCP maximum segment size in bytes (may be adjusted based on MTU discovery)",
+                  Uinteger (536),
+                  MakeUintegerAccessor (&Tcp::m_defaultSegSize),
+                  MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TcpDefaultAdvertisedWindowSize",
+                   "Default TCP advertised window size (bytes)",
+                   Uinteger (0xffff),
+                   MakeUintegerAccessor (&Tcp::m_defaultAdvWin),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TcpDefaultSlowStartThreshold",
+                   "Default TCP slow start threshold (bytes)",
+                   Uinteger (0xffff),
+                   MakeUintegerAccessor (&Tcp::m_defaultSsThresh),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TcpDefaultTxBufferSize",
+                   "Default TCP maximum transmit buffer size (bytes)",
+                   Uinteger (0xffffffffl),
+                   MakeUintegerAccessor (&Tcp::m_defaultTxBuffer),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TcpDefaultRxBufferSize",
+                   "Default TCP maximum receive buffer size (bytes)",
+                   Uinteger (0xffffffffl),
+                   MakeUintegerAccessor (&Tcp::m_defaultRxBuffer),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TcpDefaultInitialCongestionWindowSize",
+                   "Default TCP initial congestion window size (segments)",
+                   Uinteger (1),
+                   MakeUintegerAccessor (&Tcp::m_defaultInitialCwnd),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TcpDefaultConnTimeout",
+                   "Default TCP retransmission timeout when opening connection (seconds)",
+                   Uinteger (3),
+                   MakeUintegerAccessor (&Tcp::m_defaultConnTimeout),
+                   MakeUintegerChecker<uint32_t> ())
+    .AddAttribute ("TcpDefaultConnCount",
+                   "Default number of connection attempts (SYN retransmissions) before returning failure",
+                   Uinteger (6),
+                   MakeUintegerAccessor (&Tcp::m_defaultConnCount),
+                   MakeUintegerChecker<uint32_t> ())
+     ;
   return tid;
 }
 
+uint32_t 
+Tcp::GetDefaultSegSize (void) const
+{
+  return m_defaultSegSize;
+}
+uint32_t 
+Tcp::GetDefaultAdvWin (void) const
+{
+  return m_defaultAdvWin;
+}
+uint32_t 
+Tcp::GetDefaultSsThresh (void) const
+{
+  return m_defaultSsThresh;
+}
+uint32_t 
+Tcp::GetDefaultTxBuffer (void) const
+{
+  return m_defaultTxBuffer;
+}
+uint32_t 
+Tcp::GetDefaultRxBuffer (void) const
+{
+  return m_defaultRxBuffer;
+}
+uint32_t 
+Tcp::GetDefaultInitialCwnd (void) const
+{
+  return m_defaultInitialCwnd;
+}
+uint32_t 
+Tcp::GetDefaultConnTimeout (void) const
+{
+  return m_defaultConnTimeout;
+}
+uint32_t 
+Tcp::GetDefaultConnCount (void) const
+{
+  return m_defaultConnCount;
+}
 
 } // namespace ns3

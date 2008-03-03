@@ -311,6 +311,14 @@ static TcpStateMachine tcpStateMachine; //only instance of a TcpStateMachine
 /* see http://www.iana.org/assignments/protocol-numbers */
 const uint8_t TcpL4Protocol::PROT_NUMBER = 6;
 
+ObjectFactory
+TcpL4Protocol::GetDefaultRttEstimatorFactory (void)
+{
+  ObjectFactory factory;
+  factory.SetTypeId ("RttMeanDeviation");
+  return factory;
+}
+
 TypeId 
 TcpL4Protocol::GetTypeId (void)
 {
@@ -321,6 +329,11 @@ TcpL4Protocol::GetTypeId (void)
                    Ptr<Node> (0),
                    MakePtrAccessor (&TcpL4Protocol::m_node),
                    MakePtrChecker<Node> ())
+    .AddAttribute ("RttEstimatorFactory",
+                   "How RttEstimator objects are created.",
+                   GetDefaultRttEstimatorFactory (),
+                   MakeObjectFactoryAccessor (&TcpL4Protocol::m_rttFactory),
+                   MakeObjectFactoryChecker ())
     ;
   return tid;
 }
@@ -365,7 +378,8 @@ Ptr<Socket>
 TcpL4Protocol::CreateSocket (void)
 {
   NS_LOG_FUNCTION;
-  Ptr<Socket> socket = Create<TcpSocket> (m_node, this);
+  Ptr<RttEstimator> rtt = m_rttFactory.Create<RttEstimator> ();
+  Ptr<Socket> socket = CreateObject<TcpSocket> (m_node, this, rtt);
   return socket;
 }
 

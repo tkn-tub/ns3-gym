@@ -45,7 +45,7 @@ public:
   /**
    * Create an unbound tcp socket.
    */
-  TcpSocket (Ptr<Node> node, Ptr<TcpL4Protocol> tcp);
+  TcpSocket (Ptr<Node> node, Ptr<TcpL4Protocol> tcp, Ptr<RttEstimator> rtt);
   virtual ~TcpSocket ();
 
   virtual enum SocketErrno GetErrno (void) const;

@@ -71,19 +71,12 @@ public:
 private:
   SequenceNumber        next;    // Next expected sequence to be sent
   RttHistory_t history; // List of sent packet
+  double m_maxMultiplier;
+  Time m_initialEstimate;
 public:
   Time       est;     // Current estimate
   uint32_t      nSamples;// Number of samples
   double       multiplier;   // RTO Multiplier
-public:
-  static void InitialEstimate(Time);
-  static Ptr<RttEstimator> CreateDefault();      // Retrieve current default
-
-  static TypeIdDefaultValue defaultTid;
-  static NumericDefaultValue<double> defaultMaxMultiplier;
-
-private:
-  static Time initialEstimate;       // Default initial estimate
 };
 
 // The "Mean-Deviation" estimator, as discussed by Van Jacobson
@@ -96,16 +89,8 @@ class RttMeanDeviation : public RttEstimator {
 public :
   static TypeId GetTypeId (void);
 
-    //Doc:Desc Constructor for {\tt RttMeanDeviation} specifying the gain factor for the
-    //Doc:Desc estimator.
-    //Doc:Arg1 Gain factor.
-  RttMeanDeviation (double g);
+  RttMeanDeviation ();
 
-    //Doc:Desc Constructor for {\tt RttMeanDeviation} specifying the gain factor
-    //Doc:Desc and the initial estimate.
-    //Doc:Arg1 Gain factor.
-    //Doc:Arg2 Initial estimate.
-  RttMeanDeviation (double g, Time e);
 
   //Doc:Method
   RttMeanDeviation (const RttMeanDeviation&); // Copy constructor

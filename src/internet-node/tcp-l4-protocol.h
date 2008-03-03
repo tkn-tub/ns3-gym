@@ -26,6 +26,7 @@
 #include "ns3/packet.h"
 #include "ns3/ipv4-address.h"
 #include "ns3/ptr.h"
+#include "ns3/object-factory.h"
 #include "ipv4-end-point-demux.h"
 #include "ipv4-l4-protocol.h"
 #include "ipv4-interface.h"
@@ -103,10 +104,12 @@ protected:
 private:
   Ptr<Node> m_node;
   Ipv4EndPointDemux *m_endPoints;
+  ObjectFactory m_rttFactory;
 private:
   friend class TcpSocket;
   void SendPacket (Ptr<Packet>, TcpHeader,
                   Ipv4Address, Ipv4Address);
+  static ObjectFactory GetDefaultRttEstimatorFactory (void);
 };
 
 }; // namespace ns3

@@ -44,11 +44,10 @@ TcpHeader::TcpHeader ()
     m_ackNumber (0),
     m_length (5),
     m_flags (0),
-    m_windowSize (Tcp::defaultAdvWin.GetValue ()),
+    m_windowSize (0),
     m_checksum (0),
     m_urgentPointer (0)
-{
-}
+{}
 
 TcpHeader::~TcpHeader ()
 {}
