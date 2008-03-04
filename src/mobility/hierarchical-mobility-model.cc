@@ -58,7 +58,7 @@ HierarchicalMobilityModel::SetChild (Ptr<MobilityModel> model)
       notifier = CreateObject<MobilityModelNotifier> ();
       m_child->AggregateObject (notifier);
     }
-  notifier->TraceSourceConnect ("CourseChanged", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
+  notifier->TraceSourceConnect ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ChildChanged, this));
 }
 
 void 
@@ -72,7 +72,7 @@ HierarchicalMobilityModel::SetParent (Ptr<MobilityModel> model)
       notifier = CreateObject<MobilityModelNotifier> ();
       m_parent->AggregateObject (notifier);
     }
-  notifier->TraceSourceConnect ("CourseChanged", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
+  notifier->TraceSourceConnect ("CourseChange", MakeCallback (&HierarchicalMobilityModel::ParentChanged, this));
 }
 
 
