@@ -125,8 +125,8 @@ MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
 	      // we need to setup a hierarchical mobility model
 	      Ptr<MobilityModel> parent = m_mobilityStack.back ();
 	      Ptr<MobilityModel> hierarchical = 
-		CreateObjectWith<HierarchicalMobilityModel> ("child", model,
-							     "parent", parent);
+		CreateObjectWith<HierarchicalMobilityModel> ("Child", model,
+							     "Parent", parent);
 	      object->AggregateObject (hierarchical);
 	      NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);
 	    }
