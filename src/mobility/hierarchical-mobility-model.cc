@@ -43,6 +43,8 @@ HierarchicalMobilityModel::GetTypeId (void)
 }
 
 HierarchicalMobilityModel::HierarchicalMobilityModel ()
+  : m_child (0),
+    m_parent (0)
 {}
 
 void 
@@ -98,6 +100,10 @@ HierarchicalMobilityModel::DoGetPosition (void) const
 void 
 HierarchicalMobilityModel::DoSetPosition (const Vector &position)
 {
+  if (m_parent == 0 || m_child == 0)
+    {
+      return;
+    }
   // This implementation of DoSetPosition is really an arbitraty choice.
   // anything else would have been ok.
   Vector parentPosition = m_parent->GetPosition ();
