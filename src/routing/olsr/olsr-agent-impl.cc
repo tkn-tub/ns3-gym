@@ -350,6 +350,8 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
 
   m_rxPacketTrace (olsrPacketHeader, messages);
 
+  m_state.SetModified (false);
+
   for (MessageList::const_iterator messageIter = messages.begin ();
        messageIter != messages.end (); messageIter++)
     {
@@ -446,7 +448,11 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
     }
 
   // After processing all OLSR messages, we must recompute the routing table
-  RoutingTableComputation ();
+  if (m_state.GetModified ())
+    {
+      RoutingTableComputation ();
+      m_state.SetModified (false);
+    }
 }
 
 ///
