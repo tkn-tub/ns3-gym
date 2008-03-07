@@ -1128,6 +1128,17 @@ Object::TraceSourceDisconnect (std::string name, const CallbackBase &cb)
   bool ok = accessor->Disconnect (this, cb);
   return ok;
 }
+bool 
+Object::TraceSourceDisconnectWithContext (std::string name, std::string context, const CallbackBase &cb)
+{
+  Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
+  if (accessor == 0)
+    {
+      return false;
+    }
+  bool ok = accessor->DisconnectWithContext (this, context, cb);
+  return ok;
+}
 
 TypeId 
 Object::GetRealTypeId (void) const

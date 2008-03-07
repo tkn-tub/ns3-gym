@@ -19,6 +19,7 @@ public:
   virtual bool Connect (ObjectBase *obj, const CallbackBase &cb) const = 0;
   virtual bool ConnectWithContext (ObjectBase *obj, std::string context, const CallbackBase &cb) const = 0;
   virtual bool Disconnect (ObjectBase *obj, const CallbackBase &cb) const = 0;
+  virtual bool DisconnectWithContext (ObjectBase *obj, std::string context, const CallbackBase &cb) const = 0;
 private:
   mutable uint32_t m_count;
 };
@@ -61,6 +62,15 @@ DoMakeTraceSourceAccessor (SOURCE T::*a)
 	  return false;
 	}
       (p->*m_source).Disconnect (cb);
+      return true;      
+    }
+    virtual bool DisconnectWithContext (ObjectBase *obj, std::string context, const CallbackBase &cb) const {
+      T *p = dynamic_cast<T*> (obj);
+      if (p == 0)
+	{
+	  return false;
+	}
+      (p->*m_source).DisconnectWithContext (cb, context);
       return true;      
     }
     SOURCE T::*m_source;

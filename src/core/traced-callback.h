@@ -43,6 +43,7 @@ public:
   void Connect (const CallbackBase & callback);
   void ConnectWithContext (const CallbackBase & callback, std::string path);
   void Disconnect (const CallbackBase & callback);
+  void DisconnectWithContext (const CallbackBase & callback, std::string path);
   void operator() (void) const;
   void operator() (T1 a1) const;
   void operator() (T1 a1, T2 a2) const;
@@ -101,6 +102,16 @@ TracedCallback<T1,T2,T3,T4>::Disconnect (const CallbackBase & callback)
 	  i++;
 	}
     }
+}
+template<typename T1, typename T2, 
+         typename T3, typename T4>
+void 
+TracedCallback<T1,T2,T3,T4>::DisconnectWithContext (const CallbackBase & callback, std::string path)
+{
+  Callback<void,std::string,T1,T2,T3,T4> cb;
+  cb.Assign (callback);
+  Callback<void,T1,T2,T3,T4> realCb = cb.Bind (path);
+  Disconnect (realCb);
 }
 template<typename T1, typename T2, 
          typename T3, typename T4>

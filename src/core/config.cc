@@ -269,6 +269,7 @@ public:
   void Connect (std::string path, const CallbackBase &cb);
   void ConnectWithContext (std::string path, const CallbackBase &cb);
   void Disconnect (std::string path, const CallbackBase &cb);
+  void DisconnectWithContext (std::string path, const CallbackBase &cb);
 
   void RegisterRootNamespaceObject (Ptr<Object> obj);
   void UnregisterRootNamespaceObject (Ptr<Object> obj);
@@ -359,6 +360,26 @@ ConfigImpl::ConnectWithContext (std::string path, const CallbackBase &cb)
     }
 }
 void 
+ConfigImpl::DisconnectWithContext (std::string path, const CallbackBase &cb)
+{
+  class DisconnectWithContextResolver : public Resolver 
+  {
+  public:
+    DisconnectWithContextResolver (std::string path, const CallbackBase &cb)
+      : Resolver (path),
+	m_cb (cb) {}
+  private:
+    virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
+      object->TraceSourceDisconnectWithContext (name, path, m_cb);
+    }
+    CallbackBase m_cb;
+  } resolver = DisconnectWithContextResolver (path, cb);
+  for (Roots::const_iterator i = m_roots.begin (); i != m_roots.end (); i++)
+    {
+      resolver.Resolve (*i);
+    }
+}
+void 
 ConfigImpl::RegisterRootNamespaceObject (Ptr<Object> obj)
 {
   m_roots.push_back (obj);
@@ -404,6 +425,11 @@ void
 ConnectWithContext (std::string path, const CallbackBase &cb)
 {
   Singleton<ConfigImpl>::Get ()->ConnectWithContext (path, cb);
+}
+void 
+DisconnectWithContext (std::string path, const CallbackBase &cb)
+{
+  Singleton<ConfigImpl>::Get ()->DisconnectWithContext (path, cb);
 }
 
 void RegisterRootNamespaceObject (Ptr<Object> obj)
@@ -693,10 +719,8 @@ ConfigTest::RunTests (void)
   d3->SetAttribute ("Source", Integer (-3));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
   NS_TEST_ASSERT_EQUAL (m_tracePath, "/NodeA/NodeB/NodesB/3/Source");
-  // Yes, disconnection _cannot_ work with 'context-based connection.
-  // XXX: what do we do about this ?
-  Config::Disconnect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
-		      MakeCallback (&ConfigTest::ChangeNotificationWithPath, this));
+  Config::DisconnectWithContext ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+				 MakeCallback (&ConfigTest::ChangeNotificationWithPath, this));
   m_traceNotification = 0;
   // this should _not_ trigger a notification
   d1->SetAttribute ("Source", Integer (-4));

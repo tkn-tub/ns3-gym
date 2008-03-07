@@ -59,6 +59,9 @@ public:
   void Disconnect (const CallbackBase &cb) {
     m_cb.Disconnect (cb);
   }
+  void DisconnectWithContext (const CallbackBase &cb, std::string path) {
+    m_cb.DisconnectWithContext (cb, path);
+  }
   void Set (const T &v) {
     if (m_v != v)
       {
