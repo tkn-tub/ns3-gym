@@ -32,6 +32,7 @@ public:
   static Iterator Begin (void);
   static Iterator End (void);
 private:
+  friend class GlobalValueTests;
   static Vector *GetVector (void);
   std::string m_name;
   std::string m_help;

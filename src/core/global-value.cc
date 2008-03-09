@@ -1,6 +1,7 @@
 #include "global-value.h"
 #include "fatal-error.h"
 #include "attribute.h"
+#include "string.h"
 
 namespace ns3 {
 
@@ -43,11 +44,30 @@ GlobalValue::GetChecker (void) const
 bool
 GlobalValue::SetValue (Attribute value)
 {
-  if (!m_checker->Check (value))
+  if (m_checker->Check (value))
+    {
+      m_initialValue = value;
+      return true;
+    }
+  // attempt to convert to string.
+  const StringValue *str = value.DynCast<const StringValue *> ();
+  if (str == 0)
     {
       return false;
     }
-  m_initialValue = value;
+  // attempt to convert back to value.
+  Attribute v = m_checker->Create ();
+  bool ok = v.DeserializeFromString (str->Get ().Get (), m_checker);
+  if (!ok)
+    {
+      return false;
+    }
+  ok = m_checker->Check (v);
+  if (!ok)
+    {
+      return false;
+    }
+  m_initialValue = v;
   return true;
 }
 
@@ -103,14 +123,6 @@ GlobalValue::GetVector (void)
 #include "test.h"
 #include "uinteger.h"
 
-namespace {
-
-static ns3::GlobalValue g_uint = ns3::GlobalValue ("TestUint", "help text",
-						     ns3::Uinteger (10),
-						     ns3::MakeUintegerChecker<uint32_t> ());
-
-}
-
 namespace ns3 {
 
 class GlobalValueTests : public Test
@@ -121,7 +133,6 @@ public:
 private:
 };
 
-
 GlobalValueTests::GlobalValueTests ()
   : Test ("GlobalValue")
 {}
@@ -129,8 +140,22 @@ bool
 GlobalValueTests::RunTests (void)
 {
   bool result = true;
+  GlobalValue uint = GlobalValue ("TestUint", "help text",
+				  Uinteger (10),
+				  MakeUintegerChecker<uint32_t> ());
 
-  NS_TEST_ASSERT_EQUAL (10, Uinteger (g_uint.GetValue ()).Get ());
+
+  NS_TEST_ASSERT_EQUAL (10, Uinteger (uint.GetValue ()).Get ());
+
+  GlobalValue::Vector *vector = GlobalValue::GetVector ();
+  for (GlobalValue::Vector::iterator i = vector->begin (); i != vector->end (); ++i)
+    {
+      if ((*i) == &uint)
+	{
+	  vector->erase (i);
+	  break;
+	}
+    }
 
   return result;
 }
