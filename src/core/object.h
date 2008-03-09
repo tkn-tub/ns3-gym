@@ -142,6 +142,7 @@ public:
    *          index is \i i.
    */
   std::string GetAttributeName (uint32_t i) const;
+  std::string GetAttributeHelp (uint32_t i) const;
   /**
    * \param i index into attribute array
    * \returns the full name associated to the attribute whose
@@ -150,6 +151,9 @@ public:
   std::string GetAttributeFullName (uint32_t i) const;
 
   Attribute GetAttributeInitialValue (uint32_t i) const;
+  uint32_t GetAttributeFlags (uint32_t i) const;
+  Ptr<const AttributeChecker> GetAttributeChecker (uint32_t i) const;
+
 
   uint32_t GetTraceSourceN (void) const;
   std::string GetTraceSourceName (uint32_t i) const;
@@ -291,8 +295,6 @@ private:
   void DoAddConstructor (CallbackBase callback, uint32_t nArguments);
   CallbackBase LookupConstructor (uint32_t nArguments) const;
   Ptr<const AttributeAccessor> GetAttributeAccessor (uint32_t i) const;
-  uint32_t GetAttributeFlags (uint32_t i) const;
-  Ptr<const AttributeChecker> GetAttributeChecker (uint32_t i) const;
   
   uint16_t m_tid;
 };

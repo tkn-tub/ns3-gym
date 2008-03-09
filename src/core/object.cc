@@ -63,6 +63,7 @@ public:
                      ns3::Ptr<const ns3::AttributeChecker> checker);
   uint32_t GetAttributeListN (uint16_t uid) const;
   std::string GetAttributeName (uint16_t uid, uint32_t i) const;
+  std::string GetAttributeHelp (uint16_t uid, uint32_t i) const;
   uint32_t GetAttributeFlags (uint16_t uid, uint32_t i) const;
   ns3::Attribute GetAttributeInitialValue (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::AttributeAccessor> GetAttributeAccessor (uint16_t uid, uint32_t i) const;
@@ -299,6 +300,13 @@ IidManager::GetAttributeName (uint16_t uid, uint32_t i) const
   struct IidInformation *information = LookupInformation (uid);
   NS_ASSERT (i < information->attributes.size ());
   return information->attributes[i].name;
+}
+std::string 
+IidManager::GetAttributeHelp (uint16_t uid, uint32_t i) const
+{
+  struct IidInformation *information = LookupInformation (uid);
+  NS_ASSERT (i < information->attributes.size ());
+  return information->attributes[i].help;
 }
 uint32_t
 IidManager::GetAttributeFlags (uint16_t uid, uint32_t i) const
@@ -606,6 +614,12 @@ TypeId::GetAttributeName (uint32_t i) const
 {
   std::string name = Singleton<IidManager>::Get ()->GetAttributeName (m_tid, i);
   return name;
+}
+std::string 
+TypeId::GetAttributeHelp (uint32_t i) const
+{
+  std::string help = Singleton<IidManager>::Get ()->GetAttributeHelp (m_tid, i);
+  return help;
 }
 std::string 
 TypeId::GetAttributeFullName (uint32_t i) const
