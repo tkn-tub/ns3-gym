@@ -57,6 +57,6 @@ std::istream & operator >> (std::istream &is, ObjectFactory &factory)
 }
 
 
-VALUE_HELPER_CPP (ObjectFactory);
+ATTRIBUTE_HELPER_CPP (ObjectFactory);
 
 } // namespace ns3

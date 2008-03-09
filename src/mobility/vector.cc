@@ -24,7 +24,7 @@
 
 namespace ns3 {
 
-VALUE_HELPER_CPP (Vector);
+ATTRIBUTE_HELPER_CPP (Vector);
 
 
 Vector::Vector (double _x, double _y, double _z)

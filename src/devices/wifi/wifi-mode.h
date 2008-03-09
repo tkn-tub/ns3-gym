@@ -107,7 +107,7 @@ class WifiMode
    */
   WifiMode ();
 
-  VALUE_HELPER_HEADER_1 (WifiMode);
+  ATTRIBUTE_HELPER_HEADER_1 (WifiMode);
 private:
   friend class WifiModeFactory;
   WifiMode (uint32_t uid);
@@ -118,7 +118,7 @@ bool operator == (const WifiMode &a, const WifiMode &b);
 std::ostream & operator << (std::ostream & os, const WifiMode &mode);
 std::istream & operator >> (std::istream &is, WifiMode &mode);
 
-VALUE_HELPER_HEADER_2 (WifiMode);
+ATTRIBUTE_HELPER_HEADER_2 (WifiMode);
 
 /**
  * \brief create WifiMode class instances and keep track of them.

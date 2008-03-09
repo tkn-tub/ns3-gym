@@ -81,7 +81,7 @@ public:
    */
   uint64_t GetBitRate() const;
 
-  VALUE_HELPER_HEADER_1 (DataRate);
+  ATTRIBUTE_HELPER_HEADER_1 (DataRate);
 private:
   uint64_t m_bps;
   static uint64_t Parse(const std::string);
@@ -90,7 +90,7 @@ private:
 std::ostream &operator << (std::ostream &os, const DataRate &rate);
 std::istream &operator >> (std::istream &is, DataRate &rate);
 
-VALUE_HELPER_HEADER_2 (DataRate);
+ATTRIBUTE_HELPER_HEADER_2 (DataRate);
 
 /**
  * \param lhs

@@ -143,7 +143,7 @@ public:
   static Ipv4Address GetBroadcast (void);
   static Ipv4Address GetLoopback (void);
 
-  VALUE_HELPER_HEADER_1 (Ipv4Address);
+  ATTRIBUTE_HELPER_HEADER_1 (Ipv4Address);
 private:
   Address ConvertTo (void) const;
   static uint8_t GetType (void);
@@ -181,13 +181,13 @@ public:
   static Ipv4Mask GetLoopback (void);
   static Ipv4Mask GetZero (void);
 
-  VALUE_HELPER_HEADER_1 (Ipv4Mask);
+  ATTRIBUTE_HELPER_HEADER_1 (Ipv4Mask);
 private:
   uint32_t m_mask;
 };
 
-VALUE_HELPER_HEADER_2 (Ipv4Address);
-VALUE_HELPER_HEADER_2 (Ipv4Mask);
+ATTRIBUTE_HELPER_HEADER_2 (Ipv4Address);
+ATTRIBUTE_HELPER_HEADER_2 (Ipv4Mask);
 
 std::ostream& operator<< (std::ostream& os, Ipv4Address const& address);
 std::ostream& operator<< (std::ostream& os, Ipv4Mask const& mask);

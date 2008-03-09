@@ -125,7 +125,7 @@ DoParse (const std::string s, uint64_t *v)
 
 namespace ns3 {
 
-VALUE_HELPER_CPP (DataRate);
+ATTRIBUTE_HELPER_CPP (DataRate);
 
 DataRate::DataRate ()
   : m_bps (0)

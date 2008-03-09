@@ -17,8 +17,8 @@
  *
  * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
-#ifndef VALUE_HELPER_H
-#define VALUE_HELPER_H
+#ifndef ATTRIBUTE_HELPER_H
+#define ATTRIBUTE_HELPER_H
 
 #include "attribute.h"
 #include "object-base.h"
@@ -130,19 +130,19 @@
   }
 
 
-#define VALUE_HELPER_HEADER_1(type) \
+#define ATTRIBUTE_HELPER_HEADER_1(type) \
   ATTRIBUTE_CONVERTER_DEFINE (type)
 
-#define VALUE_HELPER_HEADER_2(type)					\
+#define ATTRIBUTE_HELPER_HEADER_2(type)					\
   ATTRIBUTE_VALUE_DEFINE (type);					\
   ATTRIBUTE_ACCESSOR_DEFINE (type);					\
   ATTRIBUTE_CHECKER_DEFINE (type);
 
-#define VALUE_HELPER_CPP(type)						\
+#define ATTRIBUTE_HELPER_CPP(type)						\
   ATTRIBUTE_CHECKER_IMPLEMENT (type);					\
   ATTRIBUTE_CONVERTER_IMPLEMENT (type);					\
   ATTRIBUTE_VALUE_IMPLEMENT (type);
 
 
 
-#endif /* VALUE_HELPER_H */
+#endif /* ATTRIBUTE_HELPER_H */

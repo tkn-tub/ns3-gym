@@ -40,6 +40,6 @@ std::istream &operator >> (std::istream &is, String &value)
   return is;
 }
 
-VALUE_HELPER_CPP (String);
+ATTRIBUTE_HELPER_CPP (String);
 
 } // namespace ns3

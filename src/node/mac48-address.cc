@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-VALUE_HELPER_CPP (Mac48Address);
+ATTRIBUTE_HELPER_CPP (Mac48Address);
 
 #define ASCII_a (0x41)
 #define ASCII_z (0x5a)

@@ -107,7 +107,7 @@ Address::Register (void)
   return type;
 }
 
-VALUE_HELPER_CPP (Address);
+ATTRIBUTE_HELPER_CPP (Address);
 
 bool operator == (const Address &a, const Address &b)
 {

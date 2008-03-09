@@ -270,7 +270,7 @@ public:
   TypeId ();
   ~TypeId ();
 
-  VALUE_HELPER_HEADER_1 (TypeId);
+  ATTRIBUTE_HELPER_HEADER_1 (TypeId);
 private:
   friend class Object;
   friend class AttributeList;
@@ -302,7 +302,7 @@ private:
 std::ostream & operator << (std::ostream &os, TypeId tid);
 std::istream & operator >> (std::istream &is, TypeId &tid);
 
-VALUE_HELPER_HEADER_2 (TypeId);
+ATTRIBUTE_HELPER_HEADER_2 (TypeId);
 
 /**
  * \brief a container of attributes to be used during object's construction

@@ -119,7 +119,7 @@ Rectangle::CalculateIntersection (const Vector &current, const Vector &speed) co
 
 }
 
-VALUE_HELPER_CPP (Rectangle);
+ATTRIBUTE_HELPER_CPP (Rectangle);
 
 std::ostream &
 operator << (std::ostream &os, const Rectangle &rectangle)

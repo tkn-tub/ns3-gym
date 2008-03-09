@@ -16,7 +16,7 @@ public:
   void Set (const char *value);
   std::string Get (void) const;
 
-  VALUE_HELPER_HEADER_1 (String);
+  ATTRIBUTE_HELPER_HEADER_1 (String);
 private:
   std::string m_value;
 };
@@ -24,7 +24,7 @@ private:
 std::ostream & operator << (std::ostream &os, const String &value);
 std::istream &operator >> (std::istream &is, String &value);
 
-VALUE_HELPER_HEADER_2 (String);
+ATTRIBUTE_HELPER_HEADER_2 (String);
 
 } // namespace ns3
 

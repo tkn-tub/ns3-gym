@@ -108,7 +108,7 @@ WifiMode::WifiMode (uint32_t uid)
   : m_uid (uid)
 {}
 
-VALUE_HELPER_CPP (WifiMode);
+ATTRIBUTE_HELPER_CPP (WifiMode);
 
 WifiModeFactory::WifiModeFactory ()
 {}

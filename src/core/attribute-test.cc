@@ -37,7 +37,7 @@ class ValueClassTest
 {
 public:
   ValueClassTest () {}
-  VALUE_HELPER_HEADER_1 (ValueClassTest);
+  ATTRIBUTE_HELPER_HEADER_1 (ValueClassTest);
 private:
   int m_v;
 };
@@ -53,8 +53,8 @@ std::istream & operator >> (std::istream &is, ValueClassTest &v)
 {
   return is;
 }
-VALUE_HELPER_HEADER_2 (ValueClassTest);
-VALUE_HELPER_CPP (ValueClassTest);
+ATTRIBUTE_HELPER_HEADER_2 (ValueClassTest);
+ATTRIBUTE_HELPER_CPP (ValueClassTest);
 
 class AttributeTest : public Test
 {

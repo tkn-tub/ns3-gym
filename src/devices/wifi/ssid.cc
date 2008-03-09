@@ -136,7 +136,7 @@ Ssid::Deserialize (Buffer::Iterator i)
   return i;
 }
 
-VALUE_HELPER_CPP (Ssid);
+ATTRIBUTE_HELPER_CPP (Ssid);
 
 std::ostream &
 operator << (std::ostream &os, const Ssid &ssid)

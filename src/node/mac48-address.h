@@ -96,7 +96,7 @@ public:
    */
   static Mac48Address GetBroadcast (void);
 
-  VALUE_HELPER_HEADER_1 (Mac48Address);
+  ATTRIBUTE_HELPER_HEADER_1 (Mac48Address);
 private:
   /**
    * \returns a new Address instance
@@ -111,7 +111,7 @@ private:
   uint8_t m_address[6];
 };
 
-VALUE_HELPER_HEADER_2 (Mac48Address);
+ATTRIBUTE_HELPER_HEADER_2 (Mac48Address);
 
 bool operator == (const Mac48Address &a, const Mac48Address &b);
 bool operator != (const Mac48Address &a, const Mac48Address &b);

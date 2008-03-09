@@ -325,7 +325,7 @@ bool operator != (Ipv4Mask const &a, Ipv4Mask const &b)
   return !a.IsEqual (b);
 }
 
-VALUE_HELPER_CPP (Ipv4Address);
-VALUE_HELPER_CPP (Ipv4Mask);
+ATTRIBUTE_HELPER_CPP (Ipv4Address);
+ATTRIBUTE_HELPER_CPP (Ipv4Mask);
 
 } // namespace ns3

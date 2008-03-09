@@ -723,7 +723,7 @@ std::istream & operator >> (std::istream &is, TypeId &tid)
 }
 
 
-VALUE_HELPER_CPP (TypeId);
+ATTRIBUTE_HELPER_CPP (TypeId);
 
 bool operator == (TypeId a, TypeId b)
 {

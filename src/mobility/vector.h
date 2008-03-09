@@ -58,12 +58,12 @@ public:
    */
   double z;
 
-  VALUE_HELPER_HEADER_1 (Vector);
+  ATTRIBUTE_HELPER_HEADER_1 (Vector);
 };
 
 double CalculateDistance (const Vector &a, const Vector &b);
 
-VALUE_HELPER_HEADER_2 (Vector);
+ATTRIBUTE_HELPER_HEADER_2 (Vector);
 
 std::ostream &operator << (std::ostream &os, const Vector &vector);
 std::istream &operator >> (std::istream &is, Vector &vector);
