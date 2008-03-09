@@ -53,7 +53,6 @@ def build(bld):
         'time.cc',
         'event-id.cc',
         'scheduler.cc',
-        'scheduler-factory.cc',
         'scheduler-list.cc',
         'scheduler-heap.cc',
         'scheduler-map.cc',

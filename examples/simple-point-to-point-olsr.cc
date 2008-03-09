@@ -40,7 +40,6 @@
 
 #include "ns3/log.h"
 #include "ns3/command-line.h"
-#include "ns3/default-value.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
 #include "ns3/config.h"

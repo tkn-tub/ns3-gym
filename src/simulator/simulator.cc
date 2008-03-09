@@ -390,7 +390,6 @@ SimulatorPrivate::GetMaximumSimulationTime (void) const
 #include "scheduler-list.h"
 #include "scheduler-heap.h"
 #include "scheduler-map.h"
-#include "scheduler-factory.h"
 
 
 namespace ns3 {

@@ -30,7 +30,6 @@
 #include "sequence-number.h"
 #include "ns3/nstime.h"
 #include "ns3/object.h"
-#include "ns3/type-id-default-value.h"
 
 namespace ns3 {
 

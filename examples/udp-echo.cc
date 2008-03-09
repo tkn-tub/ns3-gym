@@ -26,7 +26,6 @@
 // - Tracing of queues and packet receptions to file "udp-echo.tr"
 
 #include "ns3/command-line.h"
-#include "ns3/default-value.h"
 #include "ns3/ptr.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"

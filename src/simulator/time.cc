@@ -21,8 +21,11 @@
  */
 #include "nstime.h"
 #include "ns3/fatal-error.h"
-#include "ns3/default-value.h"
+#include "ns3/global-value.h"
+#include "ns3/enum.h"
+#include "ns3/string.h"
 #include "ns3/object.h"
+#include "ns3/config.h"
 #include <math.h>
 
 namespace ns3 {
@@ -36,26 +39,28 @@ static const uint64_t PS_FACTOR = (uint64_t)pow(10,12);
 static const uint64_t FS_FACTOR = (uint64_t)pow(10,15);
 static uint64_t g_tsPrecFactor = NS_FACTOR;
 
-static EnumDefaultValue<enum precision_t> g_precisionDefaultValue ("TimeStepPrecision", 
-                                                                   "The time unit of the internal 64 bit integer time.",
-                                                                   NS, "NS",
-                                                                   S, "S",
-                                                                   MS, "MS",
-                                                                   US, "US",
-                                                                   PS, "PS",
-                                                                   FS, "FS",
-                                                                   0, (void *)0);
+static GlobalValue g_precisionDefaultValue ("TimeStepPrecision", 
+                                            "The time unit of the internal 64 bit integer time.",
+                                            Enum (NS),
+                                            MakeEnumChecker (NS, "NS",
+                                                             S, "S",
+                                                             MS, "MS",
+                                                             US, "US",
+                                                             PS, "PS",
+                                                             FS, "FS")
+                                            );
 
 precision_t
 Get (void)
 {
-  return g_precisionDefaultValue.GetValue ();
+  Enum v = g_precisionDefaultValue.GetValue ();
+  return (precision_t) v.Get ();
 }
 
 void 
 Set (precision_t precision)
 {
-  g_precisionDefaultValue.SetValue (precision);
+  g_precisionDefaultValue.SetValue (Enum (precision));
   g_tsPrecFactor = (uint64_t)pow(10, precision);
 }
 
@@ -486,12 +491,12 @@ bool TimeTests::RunTests (void)
 
   TimeStepPrecision::Set (TimeStepPrecision::NS);
 
-  DefaultValue::Bind ("TimeStepPrecision", "S");
-  DefaultValue::Bind ("TimeStepPrecision", "MS");
-  DefaultValue::Bind ("TimeStepPrecision", "US");
-  DefaultValue::Bind ("TimeStepPrecision", "NS");
-  DefaultValue::Bind ("TimeStepPrecision", "PS");
-  DefaultValue::Bind ("TimeStepPrecision", "FS");
+  Config::SetGlobal ("TimeStepPrecision", String ("S"));
+  Config::SetGlobal ("TimeStepPrecision", String ("MS"));
+  Config::SetGlobal ("TimeStepPrecision", String ("US"));
+  Config::SetGlobal ("TimeStepPrecision", String ("NS"));
+  Config::SetGlobal ("TimeStepPrecision", String ("PS"));
+  Config::SetGlobal ("TimeStepPrecision", String ("FS"));
 
 
   Time tooBig = TimeStep (0x8000000000000000LL);

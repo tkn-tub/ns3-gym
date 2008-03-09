@@ -18,8 +18,9 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "ns3/propagation-loss-model.h"
-#include "ns3/default-value.h"
 #include "ns3/static-mobility-model.h"
+#include "ns3/config.h"
+#include "ns3/string.h"
 
 using namespace ns3;
 
@@ -50,19 +51,8 @@ PrintOne (double minTxpower, double maxTxpower, double stepTxpower, double min, 
 int main (int argc, char *argv[])
 {
 
-#if 0
-  DefaultValue::Bind ("PropagationLossModelType", "Friis");
-  DefaultValue::Bind ("FriisPropagationLossLambda", "0.6");
-  DefaultValue::Bind ("FriisPropagationLossSystemLoss", "1.0");
-
-  PrintOne (-10, 20, 5, 0, 1000, 5);
-#endif
-
-  DefaultValue::Bind ("PropagationLossModelType", "LogDistance");
-  DefaultValue::Bind ("LogDistancePropagationLossReferenceDistance", "1.0");
-  DefaultValue::Bind ("LogDistancePropagationLossReferenceType", "Random");
-  DefaultValue::Bind ("RandomPropagationLossDistribution", "Constant:10");
-  DefaultValue::Bind ("LogDistancePropagationLossExponent", "4");
+  Config::SetGlobal ("LogDistancePropagationLossModel::ReferenceDistance", String ("1.0"));
+  Config::SetGlobal ("LogDistancePropagationLossModel::Exponent", String ("4"));
 
   PrintOne (-10, 20, 5, 0, 10000, 2);
 

@@ -30,7 +30,6 @@
 // - Node n4 listens for the data (actual listener not yet implementted)
 
 #include "ns3/command-line.h"
-#include "ns3/default-value.h"
 #include "ns3/ptr.h"
 #include "ns3/random-variable.h"
 #include "ns3/log.h"

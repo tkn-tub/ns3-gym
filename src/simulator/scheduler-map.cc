@@ -20,7 +20,6 @@
  */
 
 #include "scheduler-map.h"
-#include "scheduler-factory.h"
 #include "event-impl.h"
 #include "ns3/assert.h"
 #include <string>
@@ -37,21 +36,6 @@ std::cout << "MAP TRACE " << x << std::endl;
 
 
 namespace ns3 {
-
-static class SchedulerMapFactory : public SchedulerFactory 
-{
-public:
-  SchedulerMapFactory ()
-  {
-    SchedulerFactory::AddDefault (this, "Map");
-  }
-private:
-  virtual Scheduler *DoCreate (void) const
-  {
-    return new SchedulerMap ();
-  }
-} g_schedulerMapFactory;
-
 
 SchedulerMap::SchedulerMap ()
 {}

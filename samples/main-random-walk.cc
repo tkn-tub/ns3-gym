@@ -5,7 +5,6 @@
 #include "ns3/ptr.h"
 #include "ns3/mobility-model.h"
 #include "ns3/position-allocator.h"
-#include "ns3/default-value.h"
 #include "ns3/command-line.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
