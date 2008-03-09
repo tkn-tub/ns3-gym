@@ -31,6 +31,8 @@ def build(bld):
                                  ['internet-node', 'csma-cd', 'point-to-point'])
     obj.source = 'print-introspected-doxygen.cc'
 
+# XXX: disable mobility visualizer code temporarily.
+    env['ENABLE_MOBILITY_VISUALIZER'] = ''
     if env['ENABLE_MOBILITY_VISUALIZER']:
         obj = bld.create_ns3_program('mobility-visualizer',
                                      ['internet-node', 'mobility'])
