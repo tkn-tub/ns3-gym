@@ -240,7 +240,7 @@ AttributeTest::RunTests (void)
 
   AttributeList params;
   Ptr<AttributeObjectTest> p;
-  NS_TEST_ASSERT (params.Set ("AttributeObjectTest::TestBoolName", String ("false")));
+  NS_TEST_ASSERT (params.SetFailSafe ("AttributeObjectTest::TestBoolName", String ("false")));
   p = CreateObject<AttributeObjectTest> (params);
   CHECK_GET_STR (p, "TestBoolName", "false");
   CHECK_GET_PARAM (p, "TestBoolName", Boolean, false);
@@ -408,12 +408,12 @@ AttributeTest::RunTests (void)
     NS_TEST_ASSERT_EQUAL (vector.GetN (), 2);
   }
 
-  NS_TEST_ASSERT (AttributeList::GetGlobal ()->Set ("AttributeObjectTest::TestBoolName", String ("true")));
+  NS_TEST_ASSERT (AttributeList::GetGlobal ()->SetFailSafe ("AttributeObjectTest::TestBoolName", String ("true")));
   p = CreateObjectWith<AttributeObjectTest> ();
   Boolean boolV = p->GetAttribute ("TestBoolName");
   NS_TEST_ASSERT_EQUAL (boolV, Boolean (true));
 
-  NS_TEST_ASSERT (AttributeList::GetGlobal ()->Set ("AttributeObjectTest::TestBoolName", String ("false")));
+  NS_TEST_ASSERT (AttributeList::GetGlobal ()->SetFailSafe ("AttributeObjectTest::TestBoolName", String ("false")));
   p = CreateObjectWith<AttributeObjectTest> ();
   boolV = p->GetAttribute ("TestBoolName");
   NS_TEST_ASSERT_EQUAL (boolV, Boolean (false));

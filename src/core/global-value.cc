@@ -40,14 +40,15 @@ GlobalValue::GetChecker (void) const
   return m_checker;
 }
   
-void 
+bool
 GlobalValue::SetValue (Attribute value)
 {
   if (!m_checker->Check (value))
     {
-      NS_FATAL_ERROR ("Invalid new value.");
+      return false;
     }
   m_initialValue = value;
+  return true;
 }
 
 void 
@@ -57,10 +58,26 @@ GlobalValue::Bind (std::string name, Attribute value)
     {
       if ((*i)->GetName () == name)
 	{
-	  (*i)->SetValue (value);
+	  if (!(*i)->SetValue (value))
+	    {
+	      NS_FATAL_ERROR ("Invalid new value for global value: "<<name);
+	    }
 	  return;
 	}
     }
+  NS_FATAL_ERROR ("Non-existant global value: "<<name);
+}
+bool 
+GlobalValue::BindFailSafe (std::string name, Attribute value)
+{
+  for (Iterator i = Begin (); i != End (); i++)
+    {
+      if ((*i)->GetName () == name)
+	{
+	  return (*i)->SetValue (value);
+	}
+    }
+  return false;
 }
 GlobalValue::Iterator 
 GlobalValue::Begin (void)

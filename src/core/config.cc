@@ -409,9 +409,17 @@ void SetDefault (std::string name, Attribute value)
 {
   AttributeList::GetGlobal ()->Set (name, value);
 }
+bool SetDefaultFailSafe (std::string name, Attribute value)
+{
+  return AttributeList::GetGlobal ()->SetFailSafe (name, value);
+}
 void SetGlobal (std::string name, Attribute value)
 {
   GlobalValue::Bind (name, value);
+}
+bool SetGlobalFailSafe (std::string name, Attribute value)
+{
+  return GlobalValue::BindFailSafe (name, value);
 }
 void Connect (std::string path, const CallbackBase &cb)
 {

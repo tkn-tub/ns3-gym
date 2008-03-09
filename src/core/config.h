@@ -12,7 +12,9 @@ namespace Config {
 
 void Set (std::string path, Attribute value);
 void SetDefault (std::string name, Attribute value);
+bool SetDefaultFailSafe (std::string name, Attribute value);
 void SetGlobal (std::string name, Attribute value);
+bool SetGlobalFailSafe (std::string name, Attribute value);
 void Connect (std::string path, const CallbackBase &cb);
 void Disconnect (std::string path, const CallbackBase &cb);
 void ConnectWithContext (std::string path, const CallbackBase &cb);

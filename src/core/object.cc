@@ -403,6 +403,18 @@ TypeId::LookupByName (std::string name)
   return TypeId (uid);
 }
 bool
+TypeId::LookupByNameFailSafe (std::string name, TypeId *tid)
+{
+  uint16_t uid = Singleton<IidManager>::Get ()->GetUid (name);
+  if (uid == 0)
+    {
+      return false;
+    }
+  *tid = TypeId (uid);
+  return true;
+}
+
+bool
 TypeId::LookupAttributeByFullName (std::string fullName, struct TypeId::AttributeInfo *info)
 {
   std::string::size_type pos = fullName.find ("::");
@@ -412,7 +424,12 @@ TypeId::LookupAttributeByFullName (std::string fullName, struct TypeId::Attribut
     }
   std::string tidName = fullName.substr (0, pos);
   std::string paramName = fullName.substr (pos+2, fullName.size () - (pos+2));
-  TypeId tid = LookupByName (tidName);
+  TypeId tid;
+  bool ok = LookupByNameFailSafe (tidName, &tid);
+  if (!ok)
+    {
+      return false;
+    }
   return tid.LookupAttributeByName (paramName, info);
 }
 uint32_t 
@@ -683,7 +700,11 @@ std::istream & operator >> (std::istream &is, TypeId &tid)
 {
   std::string tidString;
   is >> tidString;
-  tid = TypeId::LookupByName (tidString);
+  bool ok = TypeId::LookupByNameFailSafe (tidString, &tid);
+  if (!ok)
+    {
+      is.setstate (std::ios_base::badbit);
+    }
   return is;
 }
 
@@ -735,8 +756,23 @@ AttributeList::~AttributeList ()
   Reset ();
 }
 
-bool 
+void
 AttributeList::Set (std::string name, Attribute value)
+{
+  struct TypeId::AttributeInfo info;
+  bool ok = TypeId::LookupAttributeByFullName (name, &info);
+  if (!ok)
+    {
+      NS_FATAL_ERROR ("Could not find attribute "<<name);
+    }
+  ok = DoSet (&info, value);
+  if (!ok)
+    {
+      NS_FATAL_ERROR ("Could not set value for attribute "<<name);
+    }
+}
+bool 
+AttributeList::SetFailSafe (std::string name, Attribute value)
 {
   struct TypeId::AttributeInfo info;
   TypeId::LookupAttributeByFullName (name, &info);

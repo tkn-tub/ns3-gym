@@ -24,9 +24,10 @@ public:
   Attribute GetValue (void) const;
   Ptr<const AttributeChecker> GetChecker (void) const;
   
-  void SetValue (Attribute value);
+  bool SetValue (Attribute value);
 
   static void Bind (std::string name, Attribute value);
+  static bool BindFailSafe (std::string name, Attribute value);
 
   static Iterator Begin (void);
   static Iterator End (void);

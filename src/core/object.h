@@ -69,7 +69,7 @@ public:
   };
 
   /**
-   * \param name the name of the requested interface
+   * \param name the name of the requested TypeId
    * \returns the unique id associated with the requested
    *          name. 
    *
@@ -77,6 +77,13 @@ public:
    * name is not a valid interface name.
    */
   static TypeId LookupByName (std::string name);
+  /**
+   * \param name the name of the requested TypeId
+   * \param tid a pointer to the TypeId instance where the 
+   *        result of this function should be stored.
+   * \returns true if the requested name was found, false otherwise.
+   */
+  static bool LookupByNameFailSafe (std::string name, TypeId *tid);
 
   /**
    * \returns the number of TypeId instances constructed
@@ -316,7 +323,8 @@ public:
    * value of that attribute. If any of these checks fails,
    * the program terminates with a message.
    */
-  bool Set (std::string name, Attribute value);
+  void Set (std::string name, Attribute value);
+  bool SetFailSafe (std::string name, Attribute value);
 
   bool SetWithTid (TypeId tid, std::string name, Attribute value);
   bool SetWithTid (TypeId tid, uint32_t position, Attribute value);
