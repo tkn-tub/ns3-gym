@@ -1075,8 +1075,25 @@ Object::DoSet (Ptr<const AttributeAccessor> spec, Attribute initialValue,
   ok = spec->Set (this, value);
   return ok;
 }
-bool
+void
 Object::SetAttribute (std::string name, Attribute value)
+{
+  struct TypeId::AttributeInfo info;
+  if (!m_tid.LookupAttributeByName (name, &info))
+    {
+      NS_FATAL_ERROR ("Attribute name="<<name<<" does not exist for this object: tid="<<m_tid.GetName ());
+    }
+  if (!(info.flags & TypeId::ATTR_SET))
+    {
+      NS_FATAL_ERROR ("Attribute name="<<name<<" is not settable for this object: tid="<<m_tid.GetName ());
+    }
+  if (!DoSet (info.accessor, info.initialValue, info.checker, value))
+    {
+      NS_FATAL_ERROR ("Attribute name="<<name<<" could not be set for this object: tid="<<m_tid.GetName ());
+    }
+}
+bool 
+Object::SetAttributeFailSafe (std::string name, Attribute value)
 {
   struct TypeId::AttributeInfo info;
   if (!m_tid.LookupAttributeByName (name, &info))

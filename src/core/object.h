@@ -384,9 +384,11 @@ public:
    * \param name the name of the attribute to set
    * \param value the name of the attribute to set
    *
-   * Set a single attribute.
+   * Set a single attribute. This cannot fail: if the input is invalid,
+   * it will crash immediately.
    */
-  bool SetAttribute (std::string name, Attribute value);
+  void SetAttribute (std::string name, Attribute value);
+  bool SetAttributeFailSafe (std::string name, Attribute value);
   /**
    * \param name the name of the attribute to read
    * \param value a reference to the string where the value of the 

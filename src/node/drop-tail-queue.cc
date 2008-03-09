@@ -133,7 +133,7 @@ DropTailQueueTest::RunTests (void)
   bool result = true;
 
   Ptr<DropTailQueue> queue = CreateObject<DropTailQueue> ();
-  NS_TEST_ASSERT (queue->SetAttribute ("MaxPackets", Uinteger (3)));
+  NS_TEST_ASSERT (queue->SetAttributeFailSafe ("MaxPackets", Uinteger (3)));
   
   Ptr<Packet> p1, p2, p3, p4;
   p1 = Create<Packet> ();
