@@ -96,7 +96,8 @@ main (int argc, char *argv[])
 
   // Allow the user to override any of the defaults and the above
   // Bind()s at run-time, via command-line arguments
-  CommandLine::Parse (argc, argv);
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
 
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.

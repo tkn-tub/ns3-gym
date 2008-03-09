@@ -34,7 +34,8 @@ int main (int argc, char *argv[])
   Config::SetDefault ("RandomWalk2dMobilityModel::Speed", String ("Constant:1.0"));
   Config::SetDefault ("RandomWalk2dMobilityModel::Bounds", String ("0:200:0:100"));
 
-  CommandLine::Parse (argc, argv);
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
 
   for (uint32_t i = 0; i < 100; i++)
     {

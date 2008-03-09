@@ -23,10 +23,6 @@ def build(bld):
                                  ['node', 'internet-node', 'onoff'])
     obj.source = 'main-simple.cc'
 
-    obj = bld.create_ns3_program('main-default-value',
-                                 ['core', 'simulator', 'node', 'point-to-point'])
-    obj.source = 'main-default-value.cc'
-
     obj = bld.create_ns3_program('main-grid-topology',
                                  ['core', 'simulator', 'mobility', 'internet-node'])
     obj.source = 'main-grid-topology.cc'

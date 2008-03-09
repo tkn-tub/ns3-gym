@@ -103,15 +103,14 @@ main (int argc, char *argv[])
   // DefaultValue::Bind () technique to tell the system what subclass of 
   // Queue to use, and what the queue limit is
 
-  // The below Bind command tells the queue factory which class to
-  // instantiate, when the queue factory is invoked in the topology code
-  DefaultValue::Bind ("Queue", "DropTailQueue");
 
   Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
   Config::SetDefault ("OnOffApplication::DataRate", DataRate ("300b/s"));
 
   // The below metric, if set to 3 or higher, will cause packets between
   // n1 and n3 to take the 2-hop route through n2
+
+  CommandLine cmd;
   // 
   // Additionally, we plumb this metric into the default value / command 
   // line argument system as well, for exemplary purposes.  This means 
@@ -119,13 +118,13 @@ main (int argc, char *argv[])
   // rather than recompiling
   // e.g. waf --run "simple-alternate-routing --AlternateCost=5"
   uint16_t sampleMetric = 1;
-  CommandLine::AddArgValue ("AlternateCost",
-    "This metric is used in the example script between n3 and n1 ", 
-    sampleMetric);
+  cmd.AddValue ("AlternateCost",
+                "This metric is used in the example script between n3 and n1 ", 
+                sampleMetric);
 
   // Allow the user to override any of the defaults and the above
   // DefaultValue::Bind ()s at run-time, via command-line arguments
-  CommandLine::Parse (argc, argv);
+  cmd.Parse (argc, argv);
 
   // Here, we will explicitly create four nodes.  In more sophisticated
   // topologies, we could configure a node factory.

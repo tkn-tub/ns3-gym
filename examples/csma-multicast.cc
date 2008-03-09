@@ -97,7 +97,8 @@ main (int argc, char *argv[])
 // Allow the user to override any of the defaults and the above Bind() at
 // run-time, via command-line arguments
 //
-  CommandLine::Parse (argc, argv);
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
 //
 // Explicitly create the nodes required by the topology (shown above).
 //

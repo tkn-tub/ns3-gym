@@ -177,7 +177,8 @@ int main (int argc, char *argv[])
   Config::SetDefault ("WifiRemoteStationManager::FragmentationThreshold", String ("2200"));
   Config::SetDefault ("WifiRemoteStationManager::RtsCtsThreshold", String ("2200"));
 
-  CommandLine::Parse (argc, argv);
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
 
   Gnuplot gnuplot = Gnuplot ("reference-rates.png");
 

@@ -111,7 +111,8 @@ main (int argc, char *argv[])
 
   // Allow the user to override any of the defaults and the above
   // Bind ()s at run-time, via command-line arguments
-  CommandLine::Parse (argc, argv);
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
 
   NS_LOG_INFO ("Create nodes.");
   Ptr<Node> n0 = CreateObject<InternetNode> ();

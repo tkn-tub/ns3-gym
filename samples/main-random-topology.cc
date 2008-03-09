@@ -4,7 +4,6 @@
 
 #include "ns3/ptr.h"
 #include "ns3/mobility-model.h"
-#include "ns3/default-value.h"
 #include "ns3/command-line.h"
 #include "ns3/simulator.h"
 #include "ns3/nstime.h"
@@ -26,8 +25,8 @@ CourseChange (std::string context, Ptr<const MobilityModel> position)
 
 int main (int argc, char *argv[])
 {
-
-  CommandLine::Parse (argc, argv);
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
 
 
   std::vector<Ptr<Object> > objects;

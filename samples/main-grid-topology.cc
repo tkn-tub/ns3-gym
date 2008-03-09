@@ -13,7 +13,8 @@ using namespace ns3;
 
 int main (int argc, char *argv[])
 {
-  CommandLine::Parse (argc, argv);
+  CommandLine cmd;
+  cmd.Parse (argc, argv);
 
   std::vector<Ptr<Object> > nodes;
 

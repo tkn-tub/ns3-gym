@@ -1,247 +1,309 @@
-/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-/*
- * Copyright (c) 2007 Georgia Tech University, INRIA
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation;
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * Authors: Raj Bhattacharjea <raj.b@gatech.edu>,
- *          Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
- */
-
 #include "command-line.h"
-#include <unistd.h>
+#include "log.h"
+#include "config.h"
+#include "global-value.h"
+#include "string.h"
+#include <stdlib.h>
+
+NS_LOG_COMPONENT_DEFINE ("CommandLine");
 
 namespace ns3 {
 
-CommandLine::List::~List ()
+CommandLine::~CommandLine ()
 {
-  for (iterator iter = begin (); iter != end (); iter++)
+  for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
     {
-      delete *iter;
+      delete *i;
     }
+  m_items.clear ();
 }
 
-
-CommandDefaultValue CommandLine::g_help ("help",
-                                         "Print Help text for all commands",
-                                         MakeCallback (&CommandLine::PrintHelp));
+CommandLine::Item::~Item ()
+{}
 
 void 
-CommandLine::AddArgCommand (const std::string &name,
-                            const std::string &help,
-                            Callback<void> cb)
+CommandLine::Parse (int &iargc, char *argv[]) const
 {
-  DefaultValueBase *base = 
-    new CommandDefaultValue (name, help, cb);
-  GetUserList ()->push_back (base);
-}
-
-CommandLine::List *
-CommandLine::GetUserList (void)
-{
-  static List list;
-  return &list;
-}
-
-void 
-CommandLine::PrintHelp (void)
-{
-  for (List::iterator i = GetUserList ()->begin ();
-       i != GetUserList ()->end (); i++)
-    {
-      DefaultValueBase *item = *i;
-      if (item->GetType () == "" &&
-          item->GetDefaultValue () == "")
-        {
-          std::cout << "--" << item->GetName () << "\t" << item->GetHelp () << std::endl;
-        }
-      else
-        {
-          std::cout << "--" << item->GetName () << "=[" << item->GetType () << ":"
-                    << item->GetDefaultValue () << "]\t" << item->GetHelp () << std::endl;
-        }
-    }
-  for (List::iterator i = DefaultValueList::Begin ();
-       i != DefaultValueList::End (); i++)
-    {
-      DefaultValueBase *item = *i;
-      if (item->GetType () == "" &&
-          item->GetDefaultValue () == "")
-        {
-          std::cout << "--" << item->GetName () << "\t" << item->GetHelp () << std::endl;
-        }
-      else
-        {
-          std::cout << "--" << item->GetName () << "=[" << item->GetType () << ":"
-                    << item->GetDefaultValue () << "]\t" << item->GetHelp () << std::endl;
-        }
-    }
-  // XXX on win32, do the right thing here.
-  exit (0);
-}
-
-void 
-CommandLine::Parse (int argc, char *argv[])
-{
+  int argc = iargc;
   for (argc--, argv++; argc > 0; argc--, argv++)
     {
       // remove "--" or "-" heading.
       std::string param = *argv;
       std::string::size_type cur = param.find ("--");
-      if (cur == std::string::npos)
-        {
-          cur = param.find ("-");
-          if (cur == std::string::npos)
-            {
-              // invalid argument. ignore it.
-              continue;
-            }
-        }
-      if (cur != 0)
-        {
-          // invalid argument. ignore it.
-          continue;
-        }
-      param = std::string (param, 2, param.size ());
+      if (cur == 0)
+	{
+	  param = param.substr (2, param.size () - 2);
+	}
+      else
+	{
+	  cur = param.find ("-");
+	  if (cur == 0)
+	    {
+	      param = param.substr (1, param.size () - 1);
+	    }
+	  else
+	    {
+	      // invalid argument. ignore.
+	      continue;
+	    }
+	}
       cur = param.find ("=");
       std::string name, value;
       if (cur == std::string::npos)
         {
-          if (argc == 1)
-            {
-              // invalid argument. ignore it.
-              continue;
-            }
-          argv++;
-          argc--;
-          name = param;
-          value = *argv;
+	  name = param;
+	  value = "";
         }
       else
         {
-          name = std::string (param, 0, cur);
-          value = std::string (param, cur + 1, std::string::npos);
+          name = param.substr (0, cur);
+          value = param.substr (cur + 1, param.size () - (cur+1));
         }
-      // try to find this argument in the user args.
-      for (List::iterator i = GetUserList ()->begin ();
-           i != GetUserList ()->end (); i++)
-        {
-          DefaultValueBase *item = *i;
-          if (item->GetName () == name)
-            {
-              if (!item->ParseValue (value))
-                {
-                  std::cerr << "Warning: failed to parse command line argument `"
-                            << name << "' of type '" << item->GetType ()
-                            << "' with value `" << value << "'." << std::endl;
-                }
-              continue;
-            }
-        }
-           
-      // try to find this argument in the default args.
-      for (List::iterator i = DefaultValueList::Begin ();
-           i != DefaultValueList::End (); i++)
-        {
-          DefaultValueBase *item = *i;
-          if (item->GetName () == name)
-            {
-              item->ParseValue (value);
-              continue;
-            }
-        }
+      HandleArgument (name, value);
     }
 }
 
-}//namespace ns3
+void
+CommandLine::PrintHelp (void) const
+{
+  std::cout << "--PrintHelp: Print this help message." << std::endl;
+  std::cout << "--PrintGroups: Print the list of groups." << std::endl;
+  std::cout << "--PrintTypeIds: Print all TypeIds." << std::endl;  
+  std::cout << "--PrintGroup=[group]: Print all TypeIds of group." << std::endl;
+  std::cout << "--PrintAttributes=[typeid]: Print all attributes of typeid." << std::endl;
+  std::cout << "--PrintGlobals: Print the list of globals." << std::endl;
+  if (!m_items.empty ())
+    {
+      std::cout << "User Arguments:" << std::endl;
+      for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
+	{
+	  std::cout << "    --" << (*i)->m_name << ": " << (*i)->m_help << std::endl;
+	}
+    }
+  exit (0);
+}
+
+void
+CommandLine::PrintGlobals (void) const
+{
+  for (GlobalValue::Iterator i = GlobalValue::Begin (); i != GlobalValue::End (); ++i)
+    {
+      std::cout << "    --" << (*i)->GetName () << "=[";
+      Ptr<const AttributeChecker> checker = (*i)->GetChecker ();
+      Attribute value = (*i)->GetValue ();
+      std::cout << value.SerializeToString (checker) << "]:  "
+		<< (*i)->GetHelp () << std::endl;      
+    }
+  exit (0);
+}
+
+void
+CommandLine::PrintAttributes (std::string type) const
+{
+  TypeId tid;
+  if (!TypeId::LookupByNameFailSafe (type, &tid))
+    {
+      NS_FATAL_ERROR ("Unknown type="<<type<<" in --PrintAttributes");
+    }
+  for (uint32_t i = 0; i < tid.GetAttributeListN (); ++i)
+    {
+      std::cout << "    --"<<tid.GetAttributeFullName (i)<<"=[";
+      Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
+      Attribute initial = tid.GetAttributeInitialValue (i);
+      std::cout << initial.SerializeToString (checker) << "]:  "
+		<< tid.GetAttributeHelp (i) << std::endl;
+    }
+  exit (0);
+}
 
 
+void
+CommandLine::PrintGroup (std::string group) const
+{
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+    {
+      TypeId tid = TypeId::GetRegistered (i);
+      if (tid.GetGroupName () == group)
+	{
+	  std::cout << "    --PrintAttributes=" <<tid.GetName ()<<std::endl;
+	}
+    }
+  exit (0);
+}
+
+void
+CommandLine::PrintTypeIds (void) const
+{
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+    {
+      TypeId tid = TypeId::GetRegistered (i);
+      std::cout << "    --PrintAttributes=" <<tid.GetName ()<<std::endl;
+    }
+  exit (0);
+}
+
+void
+CommandLine::PrintGroups (void) const
+{
+  std::list<std::string> groups;
+  for (uint32_t i = 0; i < TypeId::GetRegisteredN (); ++i)
+    {
+      TypeId tid = TypeId::GetRegistered (i);
+      std::string group = tid.GetGroupName ();
+      if (group == "")
+	{
+	  continue;
+	}
+      bool found = false;
+      for (std::list<std::string>::const_iterator j = groups.begin (); j != groups.end (); ++j)
+	{
+	  if (*j == group)
+	    {
+	      found = true;
+	      break;
+	    }
+	}
+      if (!found)
+	{
+	  groups.push_back (group);
+	}
+    }
+  for (std::list<std::string>::const_iterator k = groups.begin (); k != groups.end (); ++k)
+    {
+      std::cout << "    --PrintGroup="<<*k<<std::endl;
+    }
+  exit (0);
+}
+
+void
+CommandLine::HandleArgument (std::string name, std::string value) const
+{
+  NS_LOG_DEBUG ("Handle arg name="<<name<<" value="<<value);
+  if (name == "PrintHelp")
+    {
+      // method below never returns.
+      PrintHelp ();
+    }
+  if (name == "PrintGroups")
+    {
+      // method below never returns.
+      PrintGroups ();
+    }
+  if (name == "PrintTypeIds")
+    {
+      // method below never returns.
+      PrintTypeIds ();
+    }
+  if (name == "PrintGlobals")
+    {
+      // method below never returns.
+      PrintGlobals ();
+    }
+  if (name == "PrintGroup")
+    {
+      // method below never returns.
+      PrintGroup (value);
+    }
+  if (name == "PrintAttributes")
+    {
+      // method below never returns.
+      PrintAttributes (value);
+    }
+  for (Items::const_iterator i = m_items.begin (); i != m_items.end (); ++i)
+    {
+      if ((*i)->m_name == name)
+	{
+	  if (!(*i)->Parse (value))
+	    {
+	      std::cerr << "Invalid argument value: "<<name<<"="<<value << std::endl;
+	      return;
+	    }
+	  else
+	    {
+	      return;
+	    }
+	}
+    }
+  Config::SetGlobalFailSafe (name, String (value));
+  Config::SetDefaultFailSafe (name, String (value));
+  std::cerr << "Invalid command-line arguments: --"<<name<<"="<<value<<std::endl;
+  PrintHelp ();
+}
+
+} // namespace ns3
 
 #ifdef RUN_SELF_TESTS
+
 #include "test.h"
-#include <iostream>
-#include <sstream>
+#include <stdarg.h>
 
-namespace ns3 {
-
+using namespace ns3;
 
 class CommandLineTest : public Test
 {
 public:
-  CommandLineTest () : Test ("CommandLine") {}
-  virtual bool RunTests (void)
-  {
-    bool result = true;
-
-    // redirect stderr temporarily (else warnings appear during unit testing, which is not nice)
-    std::ostringstream nullout;
-    std::streambuf *origcerr = std::cerr.rdbuf (nullout.rdbuf ());
-    {
-      const char *argv[] = {"run-tests", "--loops", "bad-value", NULL};
-      int argc = sizeof (argv) / sizeof (argv[0]) - 1;
-      
-      uint32_t loops = 123;
-      CommandLine::AddArgValue ("loops","a test of the command line", loops);
-      CommandLine::Parse (argc, const_cast<char **> (argv));
-      
-      NS_TEST_ASSERT_EQUAL (loops, 123);
-    }
-
-    {
-      const char *argv[] = {"run-tests", "--loops=bad-value", NULL};
-      int argc = sizeof (argv) / sizeof (argv[0]) - 1;
-      
-      uint32_t loops = 123;
-      CommandLine::AddArgValue ("loops","a test of the command line", loops);
-      CommandLine::Parse (argc, const_cast<char **> (argv));
-      
-      NS_TEST_ASSERT_EQUAL (loops, 123);
-    }
-
-    {
-      const char *argv[] = {"run-tests", "--loops", "456", NULL};
-      int argc = sizeof (argv) / sizeof (argv[0]) - 1;
-      
-      uint32_t loops = 123;
-      CommandLine::AddArgValue ("loops","a test of the command line", loops);
-      CommandLine::Parse (argc, const_cast<char **> (argv));
-      
-      NS_TEST_ASSERT_EQUAL (loops, 456);
-    }
-
-    {
-      const char *argv[] = {"run-tests", "--loops=456", NULL};
-      int argc = sizeof (argv) / sizeof (argv[0]) - 1;
-      
-      uint32_t loops = 123;
-      CommandLine::AddArgValue ("loops","a test of the command line", loops);
-      CommandLine::Parse (argc, const_cast<char **> (argv));
-      
-      NS_TEST_ASSERT_EQUAL (loops, 456);
-    }
-
-    // unredirect cerr
-    std::cerr.rdbuf (origcerr);
-
-
-    return result;
-  }
+  CommandLineTest ();
+  virtual bool RunTests (void);
+private:
+  void Parse (const CommandLine &cmd, int n, ...);
 };
 
+CommandLineTest::CommandLineTest ()
+  : Test ("CommandLine")
+{}
+void
+CommandLineTest::Parse (const CommandLine &cmd, int n, ...)
+{
+  char **args = new char* [n+1];
+  args[0] = "Test";
+  va_list ap;
+  va_start (ap, n);
+  int i = 0;
+  while (i < n)
+    {
+      char *arg = va_arg (ap, char *);
+      args[i+1] = arg;
+      i++;
+    }
+  int argc = n + 1;
+  cmd.Parse (argc, args);
+  delete [] args;
+}
+bool 
+CommandLineTest::RunTests (void)
+{
+  bool result = true;
 
-static CommandLineTest g_commandLineTests;
+  bool myBool = false;
+  uint32_t myUint32 = 10;
+  std::string myStr = "MyStr";
+  int32_t myInt32 = -1;
+  CommandLine cmd;
 
-}//namespace ns3
+  cmd.AddValue ("my-bool", "help", myBool);
+  Parse (cmd, 1, "--my-bool=0");
+  NS_TEST_ASSERT_EQUAL (myBool, false);
+  Parse (cmd, 1, "--my-bool=1");
+  NS_TEST_ASSERT_EQUAL (myBool, true);
+
+  cmd.AddValue ("my-uint32", "help", myUint32);
+  Parse (cmd, 2, "--my-bool=0", "--my-uint32=9");
+  NS_TEST_ASSERT_EQUAL (myUint32, 9);
+
+  cmd.AddValue ("my-str", "help", myStr);
+  Parse (cmd, 2, "--my-bool=0", "--my-str=XX");
+  NS_TEST_ASSERT_EQUAL (myStr, "XX");
+
+  cmd.AddValue ("my-int32", "help", myInt32);
+  Parse (cmd, 2, "--my-bool=0", "--my-int32=-3");
+  NS_TEST_ASSERT_EQUAL (myInt32, -3);
+  Parse (cmd, 2, "--my-bool=0", "--my-int32=+2");
+  NS_TEST_ASSERT_EQUAL (myInt32, +2);
+
+  return result;
+}
+
+
+static CommandLineTest g_cmdLineTest;
 
 #endif /* RUN_SELF_TESTS */
