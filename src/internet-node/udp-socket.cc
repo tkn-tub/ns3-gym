@@ -426,6 +426,7 @@ UdpSocketTest::RunTests (void)
   Ptr<PointToPointNetDevice> txDev;
   {
     txDev = CreateObjectWith<PointToPointNetDevice> ("Node", txNode, "Address", Mac48Address::Allocate ());
+    txNode->AddDevice (txDev);
     txDev->AddQueue(CreateObject<DropTailQueue> ());
     Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (txDev);
