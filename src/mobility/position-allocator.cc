@@ -73,6 +73,8 @@ ListPositionAllocator::GetNext (void) const
   return v;
 }
 
+NS_OBJECT_ENSURE_REGISTERED (GridPositionAllocator);
+
 TypeId 
 GridPositionAllocator::GetTypeId (void)
 {
