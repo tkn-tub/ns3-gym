@@ -20,7 +20,7 @@
 #include "position-allocator.h"
 #include "ns3/random-variable.h"
 #include "ns3/double.h"
-#include "ns3/integer.h"
+#include "ns3/uinteger.h"
 #include "ns3/enum.h"
 #include "ns3/log.h"
 #include <cmath>
@@ -83,9 +83,9 @@ GridPositionAllocator::GetTypeId (void)
     .SetGroupName ("Mobility")
     .AddConstructor<GridPositionAllocator> ()
     .AddAttribute ("GridWidth", "The number of objects layed out on a line.",
-                   Integer (10),
-                   MakeIntegerAccessor (&GridPositionAllocator::m_n),
-                   MakeIntegerChecker<uint32_t> ())
+                   Uinteger (10),
+                   MakeUintegerAccessor (&GridPositionAllocator::m_n),
+                   MakeUintegerChecker<uint32_t> ())
     .AddAttribute ("MinX", "The x coordinate where the grid starts.",
                    Double (1.0),
                    MakeDoubleAccessor (&GridPositionAllocator::m_xMin),
