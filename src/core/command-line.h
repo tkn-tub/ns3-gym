@@ -1,5 +1,24 @@
-#ifndef CMD_LINE_H
-#define CMD_LINE_H
+/* -*- Mode:C++; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
+/*
+ * Copyright (c) 2008 INRIA
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation;
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * Authors: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
+ */
+#ifndef COMMAND_LINE_H
+#define COMMAND_LINE_H
 
 #include <string>
 #include <sstream>
@@ -75,4 +94,4 @@ CommandLine::UserItem<T>::Parse (std::string value)
 
 } // namespace ns3
 
-#endif /* CMD_LINE_H */
+#endif /* COMMAND_LINE_H */
