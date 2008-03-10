@@ -6,19 +6,52 @@
 
 namespace ns3 {
 
+/**
+ * \brief instantiate subclasses of ns3::Object.
+ *
+ * This class can also hold a set of attributes to set
+ * automatically during the object construction.
+ */
 class ObjectFactory
 {
 public:
   ObjectFactory ();
 
+  /**
+   * \param tid the TypeId of the object to instantiate.
+   */
   void SetTypeId (TypeId tid);
-  void SetTypeId (std::string tid);
+  /**
+   * \param tid the TypeId of the object to instantiate.
+   */  
   void SetTypeId (const char *tid);
+  /**
+   * \param tid the TypeId of the object to instantiate.
+   */  
+  void SetTypeId (std::string tid);
+  /**
+   * \param name the name of the attribute to set during object construction
+   * \param value the value of the attribute to set during object construction
+   */
   void Set (std::string name, Attribute value);
 
+  /**
+   * \returns the currently-selected TypeId to use to create an object
+   *          instance.
+   */
   TypeId GetTypeId (void) const;
 
+  /**
+   * \returns a new object instance.
+   */
   Ptr<Object> Create (void) const;
+  /**
+   * \returns a new object instance.
+   *
+   * This method performs an extra call to ns3::Object::GetObject before
+   * returning a pointer of the requested type to the user. This method
+   * is really syntactical sugar.
+   */
   template <typename T>
   Ptr<T> Create (void) const;
 

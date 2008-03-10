@@ -28,10 +28,7 @@ ObjectFactory::Set (std::string name, Attribute value)
     {
       return;
     }
-  if (!m_parameters.SetWithTid (m_tid, name, value))
-    {
-      NS_FATAL_ERROR ("Error setting attribute name="<<name);
-    }
+  m_parameters.SetWithTid (m_tid, name, value);
 }
 
 TypeId 
@@ -49,10 +46,12 @@ ObjectFactory::Create (void) const
 
 std::ostream & operator << (std::ostream &os, const ObjectFactory &factory)
 {
+  // XXX
   return os;
 }
 std::istream & operator >> (std::istream &is, ObjectFactory &factory)
 {
+  // XXX
   return is;
 }
 

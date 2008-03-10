@@ -30,6 +30,10 @@
 #include "object-base.h"
 #include "attribute-helper.h"
 
+/**
+ * This macro should be invoked once for every class which
+ * defines a new GetTypeId method.
+ */
 #define NS_OBJECT_ENSURE_REGISTERED(type)       \
   static struct X##type##RegistrationClass      \
   {                                             \
@@ -62,9 +66,21 @@ class TypeId
 {
 public:
   enum {
+    /**
+     * The attribute can be read
+     */
     ATTR_GET = 1<<0,
+    /**
+     * The attribute can be written
+     */
     ATTR_SET = 1<<1,
+    /**
+     * The attribute can be written at construction-time.
+     */
     ATTR_CONSTRUCT = 1<<2,
+    /**
+     * The attribute can be read, and written at any time.
+     */
     ATTR_SGC = ATTR_GET | ATTR_SET | ATTR_CONSTRUCT,
   };
 
@@ -74,7 +90,7 @@ public:
    *          name. 
    *
    * This method cannot fail: it will crash if the input 
-   * name is not a valid interface name.
+   * name is not a valid TypeId name.
    */
   static TypeId LookupByName (std::string name);
   /**
@@ -86,7 +102,7 @@ public:
   static bool LookupByNameFailSafe (std::string name, TypeId *tid);
 
   /**
-   * \returns the number of TypeId instances constructed
+   * \returns the number of TypeId instances registered.
    */
   static uint32_t GetRegisteredN (void);
   /**
@@ -98,7 +114,8 @@ public:
   /**
    * \param name the name of the interface to construct.
    *
-   * No two instances can share the same name.
+   * No two instances can share the same name. The name is expected to be
+   * the full c++ typename of associated c++ object.
    */
   TypeId (const char * name);
 
@@ -250,18 +267,36 @@ public:
                        Ptr<const AttributeAccessor> accessor,
                        Ptr<const AttributeChecker> checker);
 
+  /**
+   * \param name the name of the new trace source
+   * \param help some help text which describes the purpose of this
+   *        trace source.
+   * \param accessor a pointer to a TraceSourceAccessor which can be
+   *        used to connect/disconnect sinks to this trace source.
+   * \returns this TypeId instance.
+   */
   TypeId AddTraceSource (std::string name,
                          std::string help,
                          Ptr<const TraceSourceAccessor> accessor);
 
+  /**
+   * \brief store together a set of attribute properties.
+   */
   struct AttributeInfo {
+    // The accessor associated to the attribute.
     Ptr<const AttributeAccessor> accessor;
+    // The initial value associated to the attribute.
     Attribute initialValue;
+    // The set of access control flags associated to the attribute.
     uint32_t flags;
+    // The checker associated to the attribute.
     Ptr<const AttributeChecker> checker;
   };
   /**
    * \param name the name of the requested attribute
+   * \param info a pointer to the TypeId::AttributeInfo data structure
+   *        where the result value of this method will be stored.
+   * \returns true if the requested attribute could be found, false otherwise.
    */
   bool LookupAttributeByName (std::string name, struct AttributeInfo *info) const;
 
@@ -280,11 +315,6 @@ private:
 
   Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
 
-  /**
-   * \param i the position of the requested attribute
-   * \returns the Accessor associated to the requested attribute
-   */
-  bool LookupAttributeByPosition (uint32_t i, struct AttributeInfo *info) const;
   /**
    * \param fullName the full name of the requested attribute
    * \returns the Accessor associated to the requested attribute
@@ -317,7 +347,7 @@ public:
   AttributeList &operator = (const AttributeList &o);
   ~AttributeList ();
   /**
-   * \param name the name of the attribute to set
+   * \param name the full name of the attribute to set
    * \param value the value to set
    *
    * This method checks that a attribute with the requested
@@ -326,10 +356,24 @@ public:
    * the program terminates with a message.
    */
   void Set (std::string name, Attribute value);
+  /**
+   * \param name the full name of the attribute to set
+   * \param value the value to set
+   * \returns true if the requested attribute exists and could be
+   *          stored, false otherwise.
+   */
   bool SetFailSafe (std::string name, Attribute value);
-
-  bool SetWithTid (TypeId tid, std::string name, Attribute value);
-  bool SetWithTid (TypeId tid, uint32_t position, Attribute value);
+  /**
+   * \param tid the TypeId associated to this attribute
+   * \param name the name (not full!) of the attribute
+   * \param value the value to set
+   *
+   * This method checks that a attribute with the requested
+   * name exists and that the value specified is an acceptable
+   * value of that attribute. If any of these checks fails,
+   * the program terminates with a message.
+   */
+  void SetWithTid (TypeId tid, std::string name, Attribute value);
 
   /**
    * Clear the content of this instance.
@@ -348,6 +392,7 @@ public:
    */
   static AttributeList *GetGlobal (void);
 
+  // XXX: untested.
   std::string SerializeToString (void) const;
   bool DeserializeFromString (std::string value);
 private:
@@ -390,6 +435,12 @@ public:
    * it will crash immediately.
    */
   void SetAttribute (std::string name, Attribute value);
+  /**
+   * \param name the name of the attribute to set
+   * \param value the name of the attribute to set
+   * \returns true if the requested attribute exists and could be set, 
+   * false otherwise.
+   */
   bool SetAttributeFailSafe (std::string name, Attribute value);
   /**
    * \param name the name of the attribute to read
@@ -402,7 +453,8 @@ public:
    * \param name the name of the attribute to read
    * \param value a reference to the object where the value of the 
    *        attribute should be stored.
-   * \returns true if the requested attribute was found, false otherwise.
+   *
+   * If the input attribute name does not exist, this method crashes.
    */
   Attribute GetAttribute (std::string name) const;
 

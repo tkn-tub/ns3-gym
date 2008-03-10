@@ -390,7 +390,7 @@ TypeId::TypeId ()
   : m_tid (0)
 {}
 
-TypeId::TypeId (const char * name)
+TypeId::TypeId (const char *name)
 {
   uint16_t uid = Singleton<IidManager>::Get ()->AllocateUid (name);
   NS_ASSERT (uid != 0);
@@ -474,31 +474,6 @@ TypeId::LookupAttributeByName (std::string name, struct TypeId::AttributeInfo *i
   } while (nextTid != tid);
   return false;
 }
-bool
-TypeId::LookupAttributeByPosition (uint32_t i, struct TypeId::AttributeInfo *info) const
-{
-  uint32_t cur = 0;
-  TypeId tid;
-  TypeId nextTid = *this;
-  do {
-    tid = nextTid;
-    for (uint32_t j = 0; j < tid.GetAttributeListN (); j++)
-      {
-        if (cur == i)
-          {
-            info->accessor = tid.GetAttributeAccessor (j);
-            info->flags = tid.GetAttributeFlags (j);
-            info->initialValue = tid.GetAttributeInitialValue (j);
-            info->checker = tid.GetAttributeChecker (j);
-            return true;
-          }
-        cur++;
-      }
-    nextTid = tid.GetParent ();
-  } while (nextTid != tid);
-  return false;
-}
-
 
 TypeId 
 TypeId::SetParent (TypeId tid)
@@ -793,21 +768,20 @@ AttributeList::SetFailSafe (std::string name, Attribute value)
   bool ok = DoSet (&info, value);
   return ok;
 }
-bool
+void
 AttributeList::SetWithTid (TypeId tid, std::string name, Attribute value)
 {
   struct TypeId::AttributeInfo info;
-  tid.LookupAttributeByName (name, &info);
-  bool ok = DoSet (&info, value);
-  return ok;
-}
-bool
-AttributeList::SetWithTid (TypeId tid, uint32_t position, Attribute value)
-{
-  struct TypeId::AttributeInfo info;
-  tid.LookupAttributeByPosition (position, &info);
-  bool ok = DoSet (&info, value);
-  return ok;
+  bool ok = tid.LookupAttributeByName (name, &info);
+  if (!ok)
+    {
+      NS_FATAL_ERROR ("Could not find attribute "<<tid.GetName ()<<"::"<<name);
+    }
+  ok = DoSet (&info, value);
+  if (!ok)
+    {
+      NS_FATAL_ERROR ("Could not set value for attribute "<<tid.GetName ()<<"::"<<name);
+    }
 }
 
 void
