@@ -6,6 +6,12 @@
 
 namespace ns3 {
 
+/**
+ * \brief hold variables of type string
+ *
+ * This class can be used to hold variables of type string,
+ * that is, either char * or std::string.
+ */
 class String
 {
 public:

@@ -26,6 +26,12 @@
 
 namespace ns3 {
 
+/**
+ * \brief Hold an floating point type
+ *
+ * This class can be used to hold variables of floating point type
+ * such as 'double' or 'float'. The internal format is 'double'.
+ */
 class Double
 {
 public:

@@ -28,27 +28,81 @@
 
 namespace ns3 {
 
+/**
+ * \brief hold a so-called 'global value'.
+ *
+ * Instances of this class are expected to be allocated as static 
+ * global variables and should be used to store configurable global state.
+ */
 class GlobalValue
 {
   typedef std::vector<GlobalValue *> Vector;
 public:
   typedef Vector::const_iterator Iterator;
 
+  /**
+   * \param name the name of this global value.
+   * \param help some help text which describes the purpose of this
+   *        global value.
+   * \param initialValue the value to assign to this global value
+   *        during construction.
+   * \param checker a pointer to an AttributeChecker which can verify
+   *        that any user-supplied value to override the initial
+   *        value matches the requested type constraints.
+   */
   GlobalValue (std::string name, std::string help,
 		Attribute initialValue,
 		Ptr<const AttributeChecker> checker);
 
+  /**
+   * \returns the name of this GlobalValue.
+   */
   std::string GetName (void) const;
+  /**
+   * \returns the help text of this GlobalValue.
+   */
   std::string GetHelp (void) const;
+  /**
+   * \returns the current value of this GlobalValue.
+   */
   Attribute GetValue (void) const;
+  /**
+   * \returns the checker associated to this GlobalValue.
+   */
   Ptr<const AttributeChecker> GetChecker (void) const;
-  
+  /**
+   * \param value the new value to set in this GlobalValue.
+   */
   bool SetValue (Attribute value);
 
+  /**
+   * \param name the name of the global value
+   * \param value the value to set in the requested global value.
+   *
+   * Iterate over the set of GlobalValues until a matching name is found
+   * and then set its value with GlobalValue::SetValue.
+   *
+   * This method cannot fail. It will crash if the input is not valid.
+   */
   static void Bind (std::string name, Attribute value);
+  
+  /**
+   * \param name the name of the global value
+   * \param value the value to set in the requested global value.
+   * \returns true if the value could be set successfully, false otherwise.
+   *
+   * Iterate over the set of GlobalValues until a matching name is found
+   * and then set its value with GlobalValue::SetValue.
+   */
   static bool BindFailSafe (std::string name, Attribute value);
 
+  /**
+   * \returns an iterator which represents a pointer to the first GlobalValue registered.
+   */
   static Iterator Begin (void);
+  /**
+   * \returns an iterator which represents a pointer to the last GlobalValue registered.
+   */
   static Iterator End (void);
 private:
   friend class GlobalValueTests;

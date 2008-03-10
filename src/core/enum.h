@@ -26,6 +26,12 @@
 
 namespace ns3 {
 
+/**
+ * \brief hold variables of type 'enum'
+ *
+ * This class can be used to hold variables of any kind
+ * of enum.
+ */
 class Enum : public AttributeValue
 {
 public:

@@ -26,6 +26,13 @@
 
 namespace ns3 {
 
+/**
+ * \brief Hold a signed integer type
+ *
+ * This class can be used to hold variables of signed integer
+ * type such as int8_t, int16_t, int32_t, int64_t, or,
+ * int, etc.
+ */
 class Integer
 {
 public:

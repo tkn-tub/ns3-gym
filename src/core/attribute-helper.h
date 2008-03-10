@@ -26,6 +26,35 @@
 #include <sstream>
 #include "fatal-error.h"
 
+/**
+ * \defgroup AttributeHelper
+ *
+ * All these macros can be used to generate automatically the code
+ * for subclasses of AttributeValue, AttributeAccessor, and, AttributeChecker,
+ * which can be used to give attribute powers to a normal class. i.e.,
+ * the user class can then effectively be made an attribute.
+ *
+ * There are two kinds of helper macros:
+ *  1) The simple macros.
+ *  2) The more complex macros.
+ *
+ * The simple macros are implemented in terms of the complex
+ * macros and should generally be prefered over the complex macros:
+ *    - ATTRIBUTE_HELPER_HEADER_1,
+ *    - ATTRIBUTE_HELPER_HEADER_2, and,
+ *    - ATTRIBUTE_HELPER_CPP,
+ */
+
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class
+ *
+ * This macro defines and generates the code for the implementation 
+ * of the MakeXXXAccessor template functions. This macro is typically
+ * invoked in a class header to allow users of this class to view and
+ * use the template functions defined here. This macro is implemented
+ * through the helper templates functions ns3::MakeAccessorHelper<>.
+ */
 #define ATTRIBUTE_ACCESSOR_DEFINE(type)					\
   template <typename T1>						\
   Ptr<const AttributeAccessor> Make##type##Accessor (T1 a1)		\
@@ -38,6 +67,13 @@
     return MakeAccessorHelper<type##Value> (a1, a2);			\
   }
 
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class.
+ *
+ * This macro defines the class XXXValue associated to class XXX.
+ * This macro is typically invoked in a class header.
+ */
 #define ATTRIBUTE_VALUE_DEFINE(type)					\
   class type##Value : public AttributeValue				\
   {									\
@@ -55,14 +91,39 @@
     type m_value;							\
   };
 
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class
+ *
+ * This macro defines the conversion operators for class XXX to and
+ * from instances of type Attribute.
+ * Typically invoked from xxx.h.
+ */
 #define ATTRIBUTE_CONVERTER_DEFINE(type)	\
   type (Attribute value);			\
   operator Attribute () const;
 
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class
+ *
+ * This macro defines the XXXChecker class and the associated
+ * MakeXXXChecker function.
+ * Typically invoked from xxx.h.
+ */
 #define ATTRIBUTE_CHECKER_DEFINE(type)				\
   class type##Checker : public AttributeChecker {};		\
   Ptr<const AttributeChecker> Make##type##Checker (void);	\
 
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class
+ *
+ * This macro implements the XXXValue class (without the 
+ * XXXValue::SerializeToString and XXXValue::DeserializeFromString 
+ * methods).
+ * Typically invoked from xxx.cc.
+ */
 #define ATTRIBUTE_VALUE_IMPLEMENT_NO_SERIALIZE(type)			\
   type##Value::type##Value ()						\
     : m_value () {}							\
@@ -92,6 +153,15 @@
     return Attribute::Create<type##Value> (*this);			\
   }
 
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class.
+ *
+ * This macro implements the XXXValue class (including the 
+ * XXXValue::SerializeToString and XXXValue::DeserializeFromString 
+ * methods).
+ * Typically invoked from xxx.cc.
+ */
 #define ATTRIBUTE_VALUE_IMPLEMENT(type)					\
   std::string								\
   type##Value::SerializeToString (Ptr<const AttributeChecker> checker) const { \
@@ -108,12 +178,26 @@
   }									\
   ATTRIBUTE_VALUE_IMPLEMENT_NO_SERIALIZE (type)
 
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class
+ *
+ * This macro implements the MakeXXXChecker function.
+ * Typically invoked from xxx.cc.
+ */
 #define ATTRIBUTE_CHECKER_IMPLEMENT(type)				\
   Ptr<const AttributeChecker> Make##type##Checker (void)		\
   {									\
     return MakeSimpleAttributeChecker<type##Value,type##Checker> ();	\
   }									\
 
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class
+ *
+ * This macro implements the conversion operators to and from
+ * instances of type Attribute. Typically invoked from xxx.cc.
+ */
 #define ATTRIBUTE_CONVERTER_IMPLEMENT(type)				\
   type::type (Attribute value)						\
   {									\
@@ -130,15 +214,35 @@
   }
 
 
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class
+ *
+ * This macro should be invoked from a public section of the class
+ * declaration.
+ */
 #define ATTRIBUTE_HELPER_HEADER_1(type) \
   ATTRIBUTE_CONVERTER_DEFINE (type)
 
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class
+ *
+ * This macro should be invoked outside of the class
+ * declaration in its public header.
+ */
 #define ATTRIBUTE_HELPER_HEADER_2(type)					\
   ATTRIBUTE_VALUE_DEFINE (type);					\
   ATTRIBUTE_ACCESSOR_DEFINE (type);					\
   ATTRIBUTE_CHECKER_DEFINE (type);
 
-#define ATTRIBUTE_HELPER_CPP(type)						\
+/**
+ * \ingroup AttributeHelper
+ * \param type the name of the class
+ *
+ * This macro should be invoked from the class implementation file.
+ */
+#define ATTRIBUTE_HELPER_CPP(type)                                      \
   ATTRIBUTE_CHECKER_IMPLEMENT (type);					\
   ATTRIBUTE_CONVERTER_IMPLEMENT (type);					\
   ATTRIBUTE_VALUE_IMPLEMENT (type);

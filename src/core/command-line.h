@@ -26,16 +26,44 @@
 
 namespace ns3 {
 
+/**
+ * \brief parse command-line arguments
+ *
+ * Instances of this class can be used to parse command-line 
+ * arguments: users can register new arguments with
+ * CommandLine::AddValue but the most important functionality
+ * provided by this class is that it can be used to set the
+ * 'initial value' of every attribute in the system with the
+ * --TypeIdName::AttributeName=value syntax and it can be used
+ * to set the value of every GlobalValue in the system with
+ * the --GlobalValueName=value syntax.
+ */
 class CommandLine
 {
 public:
   ~CommandLine ();
 
+  /**
+   * \param name the name of the user-supplied argument
+   * \param help some help text used by --PrintHelp
+   * \param value a reference to the variable where the
+   *        value parsed will be stored (if no value
+   *        is parsed, this variable is not modified).
+   */
   template <typename T>
   void AddValue (const std::string &name,
 		 const std::string &help,
 		 T &value);
 
+  /**
+   * \param argc the 'argc' variable: number of arguments (including the
+   *        main program name as first element).
+   * \param argv the 'argv' variable: a null-terminated array of strings,
+   *        each of which identifies a command-line argument.
+   * 
+   * Obviously, this method will parse the input command-line arguments and
+   * will attempt to handle them all.
+   */
   void Parse (int &argc, char *argv[]) const;
 private:
   class Item 
