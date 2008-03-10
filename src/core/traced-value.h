@@ -12,6 +12,17 @@
 
 namespace ns3 {
 
+/**
+ * \brief trace classes with value semantics
+ *
+ * If you want to trace the change of value of a class or
+ * primitive type which have value semantics (they _must_
+ * support operator !=), you can wrap them in an instance of
+ * this template: this instance will behave just like
+ * the original class (if it did not export any special method),
+ * and will define Connect/Disconnect methods to work
+ * with an ns3::TraceSourceAccessor.
+ */
 template <typename T>
 class TracedValue
 {
