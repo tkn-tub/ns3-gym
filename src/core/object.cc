@@ -750,8 +750,12 @@ bool
 AttributeList::SetFailSafe (std::string name, Attribute value)
 {
   struct TypeId::AttributeInfo info;
-  TypeId::LookupAttributeByFullName (name, &info);
-  bool ok = DoSet (&info, value);
+  bool ok = TypeId::LookupAttributeByFullName (name, &info);
+  if (!ok)
+    {
+      return false;
+    }
+  ok = DoSet (&info, value);
   return ok;
 }
 void
