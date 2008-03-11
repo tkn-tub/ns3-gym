@@ -40,8 +40,11 @@ public:
   /**
    * Create an unbound udp socket.
    */
-  UdpSocket (Ptr<Node> node, Ptr<UdpL4Protocol> udp);
+  UdpSocket ();
   virtual ~UdpSocket ();
+
+  void SetNode (Ptr<Node> node);
+  void SetUdp (Ptr<UdpL4Protocol> udp);
 
   virtual enum SocketErrno GetErrno (void) const;
   virtual Ptr<Node> GetNode (void) const;

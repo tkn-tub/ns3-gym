@@ -149,7 +149,7 @@ main (int argc, char *argv[])
   // 512 bytes (default) at a rate of 500 Kb/s (default) from n0
   NS_LOG_INFO ("Create Applications.");
   Ptr<OnOffApplication> ooff = 
-    CreateObjectWith<OnOffApplication> (
+    CreateObject<OnOffApplication> (
                                         "Node", n0, 
                                         "Remote", Address (InetSocketAddress ("255.255.255.255", port)), 
                                         "Protocol", TypeId::LookupByName ("Udp"),
@@ -162,7 +162,7 @@ main (int argc, char *argv[])
   
   // Create an optional packet sink to receive these packets
   Ptr<PacketSink> sink = 
-    CreateObjectWith<PacketSink> (
+    CreateObject<PacketSink> (
                                   "Node", n1,
                                   "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
                                   "Protocol", TypeId::LookupByName ("Udp"));
@@ -172,7 +172,7 @@ main (int argc, char *argv[])
   sink->Stop (Seconds (10.0));
 
   // Create an optional packet sink to receive these packets
-  sink = CreateObjectWith<PacketSink> (
+  sink = CreateObject<PacketSink> (
                                        "Node", n2,
                                        "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
                                        "Protocol", TypeId::LookupByName ("Udp"));

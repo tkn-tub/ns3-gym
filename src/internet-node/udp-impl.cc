@@ -25,12 +25,18 @@
 
 namespace ns3 {
 
-UdpImpl::UdpImpl (Ptr<UdpL4Protocol> udp)
-  : m_udp (udp)
+UdpImpl::UdpImpl ()
+  : m_udp (0)
 {}
 UdpImpl::~UdpImpl ()
 {
   NS_ASSERT (m_udp == 0);
+}
+
+void 
+UdpImpl::SetUdp (Ptr<UdpL4Protocol> udp)
+{
+  m_udp = udp;
 }
 
 Ptr<Socket>

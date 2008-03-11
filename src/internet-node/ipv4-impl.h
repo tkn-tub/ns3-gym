@@ -31,9 +31,11 @@ class Ipv4L3Protocol;
 class Ipv4Impl : public Ipv4
 {
 public:
-  Ipv4Impl (Ptr<Ipv4L3Protocol> ipv4);
+  Ipv4Impl ();
 
   virtual ~Ipv4Impl ();
+
+  void SetIpv4 (Ptr<Ipv4L3Protocol> ipv4);
 
   virtual void AddRoutingProtocol (Ptr<Ipv4RoutingProtocol> routingProtocol,
                                    int16_t priority);

@@ -45,6 +45,8 @@ public:
   Ipv4L4Demux ();
   virtual ~Ipv4L4Demux();
 
+  void SetNode (Ptr<Node> node);
+
   /**
    * \param protocol a template for the protocol to add to this L4 Demux.
    * \returns the L4Protocol effectively added.

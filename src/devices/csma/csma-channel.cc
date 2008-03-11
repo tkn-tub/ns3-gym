@@ -45,48 +45,32 @@ CsmaDeviceRec::IsActive() {
   return active;
 }
 
+TypeId 
+CsmaChannel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("CsmaChannel")
+    .SetParent<Channel> ()
+    .AddConstructor<CsmaChannel> ()
+    .AddAttribute ("BitRate", "The maximum bitrate of the channel",
+                   DataRate (0xffffffff),
+                   MakeDataRateAccessor (&CsmaChannel::m_bps),
+                   MakeDataRateChecker ())
+    .AddAttribute ("Delay", "Transmission delay through the channel",
+                   Seconds (0),
+                   MakeTimeAccessor (&CsmaChannel::m_delay),
+                   MakeTimeChecker ())
+    ;
+  return tid;
+}
 
 //
 // By default, you get a channel with the name "Csma Channel" that 
 // has an "infitely" fast transmission speed and zero delay.
 CsmaChannel::CsmaChannel()
 : 
-  Channel ("Csma Channel"), 
-  m_bps (DataRate(0xffffffff)),
-  m_delay (Seconds(0))
+  Channel ("Csma Channel")
 {
   NS_LOG_FUNCTION;
-  Init();
-}
-
-CsmaChannel::CsmaChannel(
-  const DataRate& bps, 
-  const Time& delay)
-: 
-  Channel ("Csma Channel"), 
-  m_bps (bps),
-  m_delay (delay)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << Channel::GetName() << bps.GetBitRate() << delay);
-  Init();
-}
-
-CsmaChannel::CsmaChannel(
-  const std::string& name,
-  const DataRate& bps, 
-  const Time& delay)
-: 
-  Channel (name),
-  m_bps (bps), 
-  m_delay (delay)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << name << bps.GetBitRate() << delay);
-  Init();
-}
-
-void CsmaChannel::Init() {
   m_state = IDLE;
   m_deviceList.clear();
 }

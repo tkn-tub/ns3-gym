@@ -36,7 +36,7 @@ CsmaTopology::CreateCsmaChannel(
   const DataRate& bps,
   const Time& delay)
 {
-  Ptr<CsmaChannel> channel = CreateObject<CsmaChannel> (bps, delay);
+  Ptr<CsmaChannel> channel = CreateObject<CsmaChannel> ("BitRate", bps, "Delay", delay);
 
   return channel;
 }
@@ -48,7 +48,7 @@ CsmaTopology::AddCsmaEthernetNode(
   Ptr<CsmaChannel> ch,
   Mac48Address addr)
 {
-  Ptr<CsmaNetDevice> nd1 = CreateObjectWith<CsmaNetDevice> ("Node", Ptr<Node> (n1), 
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> ("Node", Ptr<Node> (n1), 
                                                             "Address", addr, 
                                                             "EncapsulationMode", "EthernetV1");
 

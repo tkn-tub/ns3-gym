@@ -62,9 +62,9 @@ NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
 static Ptr<CsmaNetDevice>
 CreateCsmaDevice (Ptr<Node> node, Ptr<CsmaChannel> channel)
 {
-  Ptr<CsmaNetDevice> device = CreateObjectWith<CsmaNetDevice> ("Node", node, 
-                                                               "Address", Mac48Address::Allocate (),
-                                                               "EncapsulationMode", String ("Llc"));
+  Ptr<CsmaNetDevice> device = CreateObject<CsmaNetDevice> ("Node", node, 
+                                                           "Address", Mac48Address::Allocate (),
+                                                           "EncapsulationMode", String ("Llc"));
   node->AddDevice (device);
   device->Attach (channel);
   Ptr<Queue> queue = CreateObject<DropTailQueue> ();
@@ -114,7 +114,8 @@ main (int argc, char *argv[])
 
   // create the shared medium used by all csma devices.
   NS_LOG_INFO ("Create channels.");
-  Ptr<CsmaChannel> channel = CreateObject<CsmaChannel> (DataRate(5000000), MilliSeconds(2));
+  Ptr<CsmaChannel> channel = CreateObject<CsmaChannel> ("BitRate", DataRate(5000000), 
+                                                        "Delay", MilliSeconds(2));
 
   // use a helper function to connect our nodes to the shared channel.
   NS_LOG_INFO ("Build Topology.");
@@ -140,7 +141,7 @@ main (int argc, char *argv[])
   // from n0 to n1
   NS_LOG_INFO ("Create Applications.");
   Ptr<OnOffApplication> ooff = 
-    CreateObjectWith<OnOffApplication> (
+    CreateObject<OnOffApplication> (
                                         "Node", n0, 
                                         "Remote", Address (n0ToN1),
                                         "Protocol", TypeId::LookupByName ("Packet"),
@@ -152,7 +153,7 @@ main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
 
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
-  ooff = CreateObjectWith<OnOffApplication> (
+  ooff = CreateObject<OnOffApplication> (
                                              "Node", n3, 
                                              "Remote", Address (n3ToN0),
                                              "Protocol", TypeId::LookupByName ("Packet"),

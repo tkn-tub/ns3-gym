@@ -41,10 +41,10 @@ CsmaIpv4Topology::AddIpv4CsmaNetDevice(
   Ptr<CsmaChannel> channel,
   Mac48Address addr)
 {
-  Ptr<Queue> q = CreateObjectWith<DropTailQueue> ();
+  Ptr<Queue> q = CreateObject<DropTailQueue> ();
 
   // assume full-duplex
-  Ptr<CsmaNetDevice> nd = CreateObjectWith<CsmaNetDevice> ("Node", node, 
+  Ptr<CsmaNetDevice> nd = CreateObject<CsmaNetDevice> ("Node", node, 
                                                            "Address", addr, 
                                                            "EncapsulationMode", String ("IpArp"));
   node->AddDevice (nd);
@@ -60,9 +60,9 @@ CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
                                      Ptr<CsmaChannel> ch,
                                      Mac48Address addr)
 {
-  Ptr<Queue> q = CreateObjectWith<DropTailQueue> ();
+  Ptr<Queue> q = CreateObject<DropTailQueue> ();
 
-  Ptr<CsmaNetDevice> nd0 = CreateObjectWith<CsmaNetDevice> ("Node", n1, 
+  Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> ("Node", n1, 
                                                             "Address", addr,
                                                             "EncapsulationMode", String ("Llc"));
   n1->AddDevice (nd0);
@@ -71,7 +71,7 @@ CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
-  Ptr<CsmaNetDevice> nd1 = CreateObjectWith<CsmaNetDevice> ("Node", n1, 
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> ("Node", n1, 
                                                             "Address", addr,
                                                             "EncapsulationMode", String ("Llc"));
   n1->AddDevice (nd1);
@@ -86,9 +86,9 @@ CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
                                      Ptr<CsmaChannel> ch,
                                      Mac48Address addr)
 {
-  Ptr<Queue> q = CreateObjectWith<DropTailQueue> ();
+  Ptr<Queue> q = CreateObject<DropTailQueue> ();
 
-  Ptr<CsmaNetDevice> nd0 = CreateObjectWith<CsmaNetDevice> ("Node", n1, 
+  Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> ("Node", n1, 
                                                             "Address", addr,
                                                             "EncapsulationMode", String ("Raw"));
   n1->AddDevice (nd0);
@@ -97,7 +97,7 @@ CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
-  Ptr<CsmaNetDevice> nd1 = CreateObjectWith<CsmaNetDevice> ("Node", n1, 
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> ("Node", n1, 
                                                             "Address", addr,
                                                             "EncapsulationMode", String ("Raw"));
   n1->AddDevice (nd1);

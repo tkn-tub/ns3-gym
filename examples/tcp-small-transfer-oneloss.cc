@@ -180,7 +180,7 @@ int main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   Ptr<PacketSink> sink = 
-    CreateObjectWith<PacketSink> (
+    CreateObject<PacketSink> (
                                   "Node", n2,
                                   "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), servPort)),
                                   "Protocol", TypeId::LookupByName ("Tcp"));

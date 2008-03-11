@@ -47,6 +47,9 @@ public:
    */
   ArpL3Protocol ();
   virtual ~ArpL3Protocol ();
+
+  void SetNode (Ptr<Node> node);
+
   /**
    * \brief Recieve a packet
    */

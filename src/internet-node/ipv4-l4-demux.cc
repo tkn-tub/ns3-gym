@@ -37,10 +37,6 @@ Ipv4L4Demux::GetTypeId (void)
 {
   static TypeId tid = TypeId ("Ipv4L4Demux")
     .SetParent<Object> ()
-    .AddAttribute ("Node", "The node to which this object is associated.",
-                   Ptr<Node> (0),
-                   MakePtrAccessor (&Ipv4L4Demux::m_node),
-                   MakePtrChecker<Node> ())
     .AddAttribute ("Protocols", "The set of protocols registered with this demux.",
                    ObjectVector (),
                    MakeObjectVectorAccessor (&Ipv4L4Demux::m_protocols),
@@ -54,6 +50,12 @@ Ipv4L4Demux::Ipv4L4Demux ()
 
 Ipv4L4Demux::~Ipv4L4Demux()
 {}
+
+void 
+Ipv4L4Demux::SetNode (Ptr<Node> node)
+{
+  m_node = node;
+}
 
 void
 Ipv4L4Demux::DoDispose (void)

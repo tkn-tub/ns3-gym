@@ -17,11 +17,11 @@ int main (int argc, char *argv[])
   Ptr<Node> node = CreateObject<InternetNode> ();
   node->AggregateObject (CreateObject<MobilityModelNotifier> ());
 
-  Ptr<PointToPointNetDevice> p2p = CreateObjectWith<PointToPointNetDevice> ("Node", node, 
+  Ptr<PointToPointNetDevice> p2p = CreateObject<PointToPointNetDevice> ("Node", node, 
 									    "Address", Mac48Address::Allocate ());
   node->AddDevice (p2p);
   p2p->AddQueue (CreateObject<DropTailQueue> ());
-  Ptr<CsmaNetDevice> csma = CreateObjectWith<CsmaNetDevice> ("Node", node, 
+  Ptr<CsmaNetDevice> csma = CreateObject<CsmaNetDevice> ("Node", node, 
 							     "Address", Mac48Address::Allocate (),
 							     "EncapsulationMode", String ("Llc"));
   node->AddDevice (csma);

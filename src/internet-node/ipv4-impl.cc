@@ -26,12 +26,17 @@
 
 namespace ns3 {
 
-Ipv4Impl::Ipv4Impl (Ptr<Ipv4L3Protocol> ipv4)
-  : m_ipv4 (ipv4)
+Ipv4Impl::Ipv4Impl ()
+  : m_ipv4 (0)
 {}
 Ipv4Impl::~Ipv4Impl ()
 {
   NS_ASSERT (m_ipv4 == 0);
+}
+void 
+Ipv4Impl::SetIpv4 (Ptr<Ipv4L3Protocol> ipv4)
+{
+  m_ipv4 = ipv4;
 }
 void 
 Ipv4Impl::DoDispose (void)

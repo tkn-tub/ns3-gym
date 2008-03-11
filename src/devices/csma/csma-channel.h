@@ -85,8 +85,10 @@ class CsmaNetDevice;
  * packet to the channel is really connected to this channel
  *
  */
-class CsmaChannel : public Channel {
+class CsmaChannel : public Channel 
+{
 public:
+  static TypeId GetTypeId (void);
   /**
    * \brief Create a CsmaChannel
    *
@@ -94,24 +96,6 @@ public:
    * has an "infitely" fast transmission speed and zero delay.
    */
   CsmaChannel ();
-  
-  /**
-   * \brief Create a CsmaChannel
-   *
-   * \param bps The bitrate of the channel
-   * \param delay Transmission delay through the channel
-   */  
-  CsmaChannel (const DataRate& bps, const Time& delay);
-  
-  /**
-   * \brief Create a CsmaChannel
-   *
-   * \param name the name of the channel for identification purposes
-   * \param bps The bitrate of the channel
-   * \param delay Transmission delay through the channel
-   */
-  CsmaChannel (const std::string& name,
-                     const DataRate& bps, const Time& delay);
 
   /**
    * \brief Attach a given netdevice to this channel
@@ -298,11 +282,6 @@ private:
    * Current state of the channel
    */
   WireState          m_state;
-  /**
-   * Initializes the channel when it is constructed. Resets the
-   * deviceList and sets the channel state to IDLE.
-   */
-  void Init (void);
 };
 
 } // namespace ns3

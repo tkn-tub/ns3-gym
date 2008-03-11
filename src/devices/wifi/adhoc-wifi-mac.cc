@@ -48,7 +48,7 @@ AdhocWifiMac::AdhocWifiMac ()
   m_rxMiddle = new MacRxMiddle ();
   m_rxMiddle->SetForwardCallback (MakeCallback (&AdhocWifiMac::ForwardUp, this));
 
-  m_low = CreateObjectWith<MacLow> ();
+  m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
   m_low->SetMac (this);
 

@@ -53,6 +53,8 @@ public:
   TcpL4Protocol ();
   virtual ~TcpL4Protocol ();
 
+  void SetNode (Ptr<Node> node);
+
   virtual int GetProtocolNumber (void) const;
   virtual int GetVersion (void) const;
 

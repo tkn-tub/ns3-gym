@@ -186,7 +186,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = 
-    CreateObjectWith<OnOffApplication> (
+    CreateObject<OnOffApplication> (
                                         "Node", n0, 
                                         "Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
                                         "Protocol", TypeId::LookupByName ("Udp"),

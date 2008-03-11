@@ -40,8 +40,10 @@ class UdpL4Protocol;
 class UdpImpl : public Udp
 {
 public:
-  UdpImpl (Ptr<UdpL4Protocol> udp);
+  UdpImpl ();
   virtual ~UdpImpl ();
+
+  void SetUdp (Ptr<UdpL4Protocol> udp);
 
   /**
    * \brief Implements a method to create a UdpImpl-based socket and return

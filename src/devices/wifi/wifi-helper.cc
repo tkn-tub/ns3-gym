@@ -92,10 +92,10 @@ WifiHelper::SetPhy (std::string type,
 NetDeviceContainer
 WifiHelper::Build (NodeContainer c) const
 {
-  Ptr<WifiChannel> channel = CreateObjectWith<WifiChannel> ();
-  channel->SetPropagationDelayModel (CreateObjectWith<ConstantSpeedPropagationDelayModel> ());
-  Ptr<LogDistancePropagationLossModel> log = CreateObjectWith<LogDistancePropagationLossModel> ();
-  log->SetReferenceModel (CreateObjectWith<FriisPropagationLossModel> ());
+  Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
+  channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
+  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
+  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
   channel->SetPropagationLossModel (log);
   return Build (c, channel);
 }

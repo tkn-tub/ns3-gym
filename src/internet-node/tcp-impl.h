@@ -42,8 +42,10 @@ class TcpL4Protocol;
 class TcpImpl : public Tcp
 {
 public:
-  TcpImpl (Ptr<TcpL4Protocol> tcp);
+  TcpImpl ();
   virtual ~TcpImpl ();
+
+  void SetTcp (Ptr<TcpL4Protocol> tcp);
 
   virtual Ptr<Socket> CreateSocket (void);
 

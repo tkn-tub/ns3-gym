@@ -39,12 +39,19 @@ class Node;
 class ArpIpv4Interface : public Ipv4Interface
 {
  public:
-  ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device);
+  ArpIpv4Interface ();
   virtual ~ArpIpv4Interface ();
+
+  void SetNode (Ptr<Node> node);
+  void SetDevice (Ptr<NetDevice> device);
+
+  virtual Ptr<NetDevice> GetDevice (void) const;
 
 private:
   virtual void SendTo (Ptr<Packet> p, Ipv4Address dest);
+  virtual void DoDispose (void);
   Ptr<Node> m_node;
+  Ptr<NetDevice> m_device;
 };
 
 }//namespace ns3

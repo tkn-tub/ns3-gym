@@ -160,7 +160,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = 
-    CreateObjectWith<OnOffApplication> (
+    CreateObject<OnOffApplication> (
                                         "Node", n0, 
                                         "Remote", Address (InetSocketAddress ("10.1.1.2", port)), 
                                         "Protocol", TypeId::LookupByName ("Udp"),
@@ -176,7 +176,7 @@ main (int argc, char *argv[])
 // 
 // Create a similar flow from n3 to n0, starting at time 1.1 seconds
 //
-  ooff = CreateObjectWith<OnOffApplication> (
+  ooff = CreateObject<OnOffApplication> (
                                              "Node", n3, 
                                              "Remote", Address (InetSocketAddress ("10.1.1.1", port)), 
                                              "Protocol", TypeId::LookupByName ("Udp"),

@@ -52,8 +52,10 @@ InternetNode::~InternetNode ()
 void
 InternetNode::Construct (void)
 {
-  Ptr<Ipv4L3Protocol> ipv4 = CreateObjectWith<Ipv4L3Protocol> ("Node", Ptr<Node> (this));
-  Ptr<ArpL3Protocol> arp = CreateObjectWith<ArpL3Protocol> ("Node", Ptr<Node> (this));
+  Ptr<Ipv4L3Protocol> ipv4 = CreateObject<Ipv4L3Protocol> ();
+  Ptr<ArpL3Protocol> arp = CreateObject<ArpL3Protocol> ();
+  ipv4->SetNode (this);
+  arp->SetNode (this);
   // XXX remove the PeekPointer below.
   RegisterProtocolHandler (MakeCallback (&Ipv4L3Protocol::Receive, PeekPointer (ipv4)), 
                            Ipv4L3Protocol::PROT_NUMBER, 0);
@@ -61,16 +63,24 @@ InternetNode::Construct (void)
                            ArpL3Protocol::PROT_NUMBER, 0);
 
 
-  Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObjectWith<Ipv4L4Demux> ("Node", Ptr<Node> (this));
-  Ptr<UdpL4Protocol> udp = CreateObjectWith<UdpL4Protocol> ("Node", Ptr<Node> (this));
-  Ptr<TcpL4Protocol> tcp = CreateObjectWith<TcpL4Protocol> ("Node", Ptr<Node> (this));
+  Ptr<Ipv4L4Demux> ipv4L4Demux = CreateObject<Ipv4L4Demux> ();
+  Ptr<UdpL4Protocol> udp = CreateObject<UdpL4Protocol> ();
+  Ptr<TcpL4Protocol> tcp = CreateObject<TcpL4Protocol> ();
+
+  ipv4L4Demux->SetNode (this);
+  udp->SetNode (this);
+  tcp->SetNode (this);
 
   ipv4L4Demux->Insert (udp);
   ipv4L4Demux->Insert (tcp);
 
-  Ptr<UdpImpl> udpImpl = CreateObject<UdpImpl> (udp);
-  Ptr<TcpImpl> tcpImpl = CreateObject<TcpImpl> (tcp);
-  Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> (ipv4);
+  Ptr<UdpImpl> udpImpl = CreateObject<UdpImpl> ();
+  Ptr<TcpImpl> tcpImpl = CreateObject<TcpImpl> ();
+  Ptr<Ipv4Impl> ipv4Impl = CreateObject<Ipv4Impl> ();
+
+  udpImpl->SetUdp (udp);
+  tcpImpl->SetTcp (tcp);
+  ipv4Impl->SetIpv4 (ipv4);
 
   Object::AggregateObject (ipv4);
   Object::AggregateObject (arp);

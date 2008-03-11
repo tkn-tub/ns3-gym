@@ -507,24 +507,6 @@ private:
   template <typename T>
   friend Ptr<T> CreateObject (const AttributeList &attributes);
 
-  template <typename T>
-  friend Ptr<T> CreateObject (void);
-  template <typename T, typename T1>
-  friend Ptr<T> CreateObject (T1 a1);
-  template <typename T, typename T1, typename T2>
-  friend Ptr<T> CreateObject (T1 a1, T2 a2);
-  template <typename T, typename T1, typename T2, typename T3>
-  friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3);
-  template <typename T, typename T1, typename T2, typename T3, typename T4>
-  friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4);
-  template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-  friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
-  template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-  friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6);
-  template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
-  friend Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7);
-
-
   bool DoSet (Ptr<const AttributeAccessor> spec, Attribute intialValue, 
               Ptr<const AttributeChecker> checker, Attribute value);
   Ptr<Object> DoGetObject (TypeId tid) const;
@@ -671,84 +653,17 @@ Ptr<T> CreateObject (const AttributeList &attributes)
 }
 
 template <typename T>
-Ptr<T> CreateObject (void)
-{
-  Ptr<T> p = Ptr<T> (new T (), false);
-  p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (AttributeList ());
-  return p;
-}
-
-template <typename T, typename T1>
-Ptr<T> CreateObject (T1 a1)
-{
-  Ptr<T> p = Ptr<T> (new T (a1), false);
-  p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (AttributeList ());
-  return p;
-}
-
-template <typename T, typename T1, typename T2>
-Ptr<T> CreateObject (T1 a1, T2 a2)
-{
-  Ptr<T> p = Ptr<T> (new T (a1, a2), false);
-  p->SetTypeId (T::GetTypeId ());
-  p->Object::Construct (AttributeList ());
-  return p;
-}
-template <typename T, typename T1, typename T2, typename T3>
-Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3)
-{
-  Ptr<T> p = Ptr<T> (new T (a1, a2, a3), false);
-  p->SetTypeId (T::GetTypeId ());
-  return p;
-}
-
-template <typename T, typename T1, typename T2, typename T3, typename T4>
-Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4)
-{
-  Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4), false);
-  p->SetTypeId (T::GetTypeId ());
-  return p;
-}
-
-template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5>
-Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
-{
-  Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5), false);
-  p->SetTypeId (T::GetTypeId ());
-  return p;
-}
-
-template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6>
-Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6)
-{
-  Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5, a6), false);
-  p->SetTypeId (T::GetTypeId ());
-  return p;
-}
-
-template <typename T, typename T1, typename T2, typename T3, typename T4, typename T5, typename T6, typename T7>
-Ptr<T> CreateObject (T1 a1, T2 a2, T3 a3, T4 a4, T5 a5, T6 a6, T7 a7)
-{
-  Ptr<T> p = Ptr<T> (new T (a1, a2, a3, a4, a5, a6, a7), false);
-  p->SetTypeId (T::GetTypeId ());
-  return p;
-}
-
-
-template <typename T>
 Ptr<T> 
-CreateObjectWith (std::string n1 = "", Attribute v1 = Attribute (),
-                  std::string n2 = "", Attribute v2 = Attribute (),
-                  std::string n3 = "", Attribute v3 = Attribute (),
-                  std::string n4 = "", Attribute v4 = Attribute (),
-                  std::string n5 = "", Attribute v5 = Attribute (),
-                  std::string n6 = "", Attribute v6 = Attribute (),
-                  std::string n7 = "", Attribute v7 = Attribute (),
-                  std::string n8 = "", Attribute v8 = Attribute (),
-                  std::string n9 = "", Attribute v9 = Attribute ())
-              
+CreateObject (std::string n1 = "", Attribute v1 = Attribute (),
+              std::string n2 = "", Attribute v2 = Attribute (),
+              std::string n3 = "", Attribute v3 = Attribute (),
+              std::string n4 = "", Attribute v4 = Attribute (),
+              std::string n5 = "", Attribute v5 = Attribute (),
+              std::string n6 = "", Attribute v6 = Attribute (),
+              std::string n7 = "", Attribute v7 = Attribute (),
+              std::string n8 = "", Attribute v8 = Attribute (),
+              std::string n9 = "", Attribute v9 = Attribute ())
+  
 {
   AttributeList attributes;
   if (n1 == "")

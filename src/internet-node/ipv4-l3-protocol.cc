@@ -56,11 +56,6 @@ Ipv4L3Protocol::GetTypeId (void)
                    Uinteger (64),
                    MakeUintegerAccessor (&Ipv4L3Protocol::m_defaultTtl),
                    MakeUintegerChecker<uint8_t> ())
-    .AddAttribute ("Node", "The node to which this l3 protocol is attached.",
-                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
-                   Ptr<Node> (0),
-                   MakePtrAccessor (&Ipv4L3Protocol::m_node),
-                   MakePtrChecker<Node> ())
     .AddTraceSource ("Tx", "Send ipv4 packet to outgoing interface.",
                    MakeTraceSourceAccessor (&Ipv4L3Protocol::m_txTrace))
     .AddTraceSource ("Rx", "Receive ipv4 packet from incoming interface.",
@@ -82,12 +77,18 @@ Ipv4L3Protocol::Ipv4L3Protocol()
   NS_LOG_FUNCTION;
   m_staticRouting = CreateObject<Ipv4StaticRouting> ();
   AddRoutingProtocol (m_staticRouting, 0);
-  SetupLoopback ();
 }
 
 Ipv4L3Protocol::~Ipv4L3Protocol ()
 {
   NS_LOG_FUNCTION;
+}
+
+void
+Ipv4L3Protocol::SetNode (Ptr<Node> node)
+{
+  m_node = node;
+  SetupLoopback ();
 }
 
 void 
@@ -106,7 +107,8 @@ Ipv4L3Protocol::SetupLoopback (void)
 {
   NS_LOG_FUNCTION;
 
-  Ptr<Ipv4LoopbackInterface> interface = CreateObject<Ipv4LoopbackInterface> (m_node);
+  Ptr<Ipv4LoopbackInterface> interface = CreateObject<Ipv4LoopbackInterface> ();
+  interface->SetNode (m_node);
   interface->SetAddress (Ipv4Address::GetLoopback ());
   interface->SetNetworkMask (Ipv4Mask::GetLoopback ());
   uint32_t index = AddIpv4Interface (interface);
@@ -328,7 +330,9 @@ Ipv4L3Protocol::AddInterface (Ptr<NetDevice> device)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << &device);
-  Ptr<Ipv4Interface> interface = CreateObject<ArpIpv4Interface> (m_node, device);
+  Ptr<ArpIpv4Interface> interface = CreateObject<ArpIpv4Interface> ();
+  interface->SetNode (m_node);
+  interface->SetDevice (device);
   return AddIpv4Interface (interface);
 }
 

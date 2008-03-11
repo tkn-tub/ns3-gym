@@ -74,11 +74,9 @@ class RoutingTable : public Ipv4RoutingProtocol
 public:
 	
   RoutingTable () {}
-  RoutingTable (Ptr<Ipv4> ipv4, const Ipv4Address &mainAddress)
-    :
-    m_ipv4 (ipv4),
-    m_mainAddress (mainAddress)
-  {}
+
+  void SetIpv4 (Ptr<Ipv4> ipv4) {m_ipv4 = ipv4;}
+  void SetMainAddress (Ipv4Address mainAddress) {m_mainAddress = mainAddress;}
 
   ~RoutingTable () {}
 

@@ -51,6 +51,8 @@ public:
   Ipv4L3Protocol();
   virtual ~Ipv4L3Protocol ();
 
+  void SetNode (Ptr<Node> node);
+
   /**
    * \param ttl default ttl to use
    *

@@ -160,7 +160,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = 
-    CreateObjectWith<OnOffApplication> ("Node", n0, 
+    CreateObject<OnOffApplication> ("Node", n0, 
                                         "Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
                                         "Protocol", TypeId::LookupByName ("Udp"),
                                         "OnTime", ConstantVariable (1), 
@@ -173,7 +173,7 @@ main (int argc, char *argv[])
   // Create a packet sink to receive these packets
   // The last argument "true" disables output from the Receive callback
   Ptr<PacketSink> sink = 
-    CreateObjectWith<PacketSink> ("Node", n3, 
+    CreateObject<PacketSink> ("Node", n3, 
                                   "Remote", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
                                   "Protocol", TypeId::LookupByName ("Udp"));
   n3->AddApplication (sink);
@@ -182,7 +182,7 @@ main (int argc, char *argv[])
   sink->Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  ooff = CreateObjectWith<OnOffApplication> (
+  ooff = CreateObject<OnOffApplication> (
                                              "Node", n3, 
                                              "Remote", Address (InetSocketAddress ("10.1.2.1", port)),
                                              "Protocol", TypeId::LookupByName ("Udp"),
@@ -194,7 +194,7 @@ main (int argc, char *argv[])
   ooff->Stop (Seconds (10.0));
 
   // Create a packet sink to receive these packets
-  sink = CreateObjectWith<PacketSink> ("Node", n1,
+  sink = CreateObject<PacketSink> ("Node", n1,
                                        "Remote", Address (InetSocketAddress (Ipv4Address::GetAny (), port)), 
                                        "Protocol", TypeId::LookupByName ("Udp"));
   n1->AddApplication (sink);

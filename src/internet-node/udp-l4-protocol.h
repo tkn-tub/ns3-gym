@@ -49,6 +49,8 @@ public:
   UdpL4Protocol ();
   virtual ~UdpL4Protocol ();
 
+  void SetNode (Ptr<Node> node);
+
   virtual int GetProtocolNumber (void) const;
   virtual int GetVersion (void) const;
 

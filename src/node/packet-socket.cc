@@ -29,21 +29,20 @@ NS_LOG_COMPONENT_DEFINE ("PacketSocket");
 
 namespace ns3 {
 
-PacketSocket::PacketSocket (Ptr<Node> node)
-  : m_node (node)
+PacketSocket::PacketSocket ()
 {
   NS_LOG_FUNCTION;
-  Init();
-}
-
-void 
-PacketSocket::Init()
-{
   NS_LOG_FUNCTION;
   m_state = STATE_OPEN;
   m_shutdownSend = false;
   m_shutdownRecv = false;
   m_errno = ERROR_NOTERROR;
+}
+
+void 
+PacketSocket::SetNode (Ptr<Node> node)
+{
+  m_node = node;
 }
 
 PacketSocket::~PacketSocket ()

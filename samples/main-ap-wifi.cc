@@ -144,7 +144,7 @@ int main (int argc, char *argv[])
   destination.SetSingleDevice (0);
   destination.SetPhysicalAddress (staDevs.Get(1)->GetAddress ());
   Ptr<Application> app = 
-    CreateObjectWith<OnOffApplication> ("Node", stas.Get (0), 
+    CreateObject<OnOffApplication> ("Node", stas.Get (0), 
                                         "Remote", Address (destination), 
                                         "Protocol", TypeId::LookupByName ("Packet"),
                                         "OnTime", ConstantVariable (42),

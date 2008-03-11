@@ -12,7 +12,7 @@ NS_LOG_COMPONENT_DEFINE ("MobilityHelper");
 MobilityHelper::MobilityHelper ()
   : m_notifierEnabled (false)
 {
-  m_position = CreateObjectWith<RandomRectanglePositionAllocator> ("X", ConstantVariable (0.0),
+  m_position = CreateObject<RandomRectanglePositionAllocator> ("X", ConstantVariable (0.0),
 								   "Y", ConstantVariable (0.0));
   m_mobility.SetTypeId ("StaticMobilityModel");
 }
@@ -125,7 +125,7 @@ MobilityHelper::Layout (const std::vector<Ptr<Object> > &objects)
 	      // we need to setup a hierarchical mobility model
 	      Ptr<MobilityModel> parent = m_mobilityStack.back ();
 	      Ptr<MobilityModel> hierarchical = 
-		CreateObjectWith<HierarchicalMobilityModel> ("Child", model,
+		CreateObject<HierarchicalMobilityModel> ("Child", model,
 							     "Parent", parent);
 	      object->AggregateObject (hierarchical);
 	      NS_LOG_DEBUG ("node="<<object<<", mob="<<hierarchical);

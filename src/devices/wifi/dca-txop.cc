@@ -132,7 +132,7 @@ DcaTxop::DcaTxop ()
 {
   m_transmissionListener = new DcaTxop::TransmissionListener (this);
   m_dcf = new DcaTxop::Dcf (this);
-  m_queue = CreateObjectWith<WifiMacQueue> ();
+  m_queue = CreateObject<WifiMacQueue> ();
   m_rng = new RealRandomStream ();
   m_txMiddle = new MacTxMiddle ();
 }

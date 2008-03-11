@@ -143,7 +143,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = 
-    CreateObjectWith<OnOffApplication> (
+    CreateObject<OnOffApplication> (
                                         "Node", n0, 
                                         "Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
                                         "Protocol", TypeId::LookupByName ("Udp"),
@@ -155,7 +155,7 @@ main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
 
   // Create an optional packet sink to receive these packets
-  Ptr<PacketSink> sink = CreateObjectWith<PacketSink> (
+  Ptr<PacketSink> sink = CreateObject<PacketSink> (
                                                        "Node", n3,
                                                        "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
                                                        "Protocol", TypeId::LookupByName ("Udp"));
@@ -165,7 +165,7 @@ main (int argc, char *argv[])
   sink->Stop (Seconds (10.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  ooff = CreateObjectWith<OnOffApplication> (
+  ooff = CreateObject<OnOffApplication> (
                                          "Node", n3, 
                                          "Remote", Address (InetSocketAddress ("10.1.2.1", port)), 
                                          "Protocol", TypeId::LookupByName ("Udp"),
@@ -177,7 +177,7 @@ main (int argc, char *argv[])
   ooff->Stop (Seconds(10.0));
 
   // Create a packet sink to receive these packets
-  sink = CreateObjectWith<PacketSink> (
+  sink = CreateObject<PacketSink> (
                                    "Node", n1,
                                    "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
                                    "Protocol", TypeId::LookupByName ("Udp"));
@@ -205,7 +205,7 @@ main (int argc, char *argv[])
     (n3, channel2);
   // Create an ErrorModel based on the implementation (constructor)
   // specified by the default classId
-  Ptr<RateErrorModel> em = CreateObjectWith<RateErrorModel> ("RanVar", UniformVariable (0.0, 1.0),
+  Ptr<RateErrorModel> em = CreateObject<RateErrorModel> ("RanVar", UniformVariable (0.0, 1.0),
                                                              "Rate", Double (0.001));
   nd3->AddReceiveErrorModel (em);
 

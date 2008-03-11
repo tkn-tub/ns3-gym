@@ -40,7 +40,8 @@ PacketSocketFactory::PacketSocketFactory ()
 Ptr<Socket> PacketSocketFactory::CreateSocket (void)
 {
   Ptr<Node> node = GetObject<Node> ();
-  Ptr<PacketSocket> socket = CreateObject<PacketSocket> (node);
+  Ptr<PacketSocket> socket = CreateObject<PacketSocket> ();
+  socket->SetNode (node);
   return socket;
 } 
 } // namespace ns3

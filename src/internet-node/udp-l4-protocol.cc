@@ -66,6 +66,12 @@ UdpL4Protocol::~UdpL4Protocol ()
   NS_LOG_FUNCTION;
 }
 
+void 
+UdpL4Protocol::SetNode (Ptr<Node> node)
+{
+  m_node = node;
+}
+
 int 
 UdpL4Protocol::GetProtocolNumber (void) const
 {
@@ -95,7 +101,9 @@ Ptr<Socket>
 UdpL4Protocol::CreateSocket (void)
 {
   NS_LOG_FUNCTION;
-  Ptr<Socket> socket = CreateObject<UdpSocket> (m_node, this);
+  Ptr<UdpSocket> socket = CreateObject<UdpSocket> ();
+  socket->SetNode (m_node);
+  socket->SetUdp (this);
   return socket;
 }
 

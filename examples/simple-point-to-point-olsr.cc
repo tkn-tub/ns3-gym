@@ -167,7 +167,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = 
-    CreateObjectWith<OnOffApplication> (
+    CreateObject<OnOffApplication> (
                                         "Node", n0, 
                                         "Remote", Address (InetSocketAddress ("10.1.4.2", port)), 
                                         "Protocol", TypeId::LookupByName ("Udp"),
@@ -179,7 +179,7 @@ main (int argc, char *argv[])
 
   // Create an optional packet sink to receive these packets
   Ptr<PacketSink> sink = 
-    CreateObjectWith<PacketSink> (
+    CreateObject<PacketSink> (
                                   "Node", n4,
                                   "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
                                   "Protocol", TypeId::LookupByName ("Udp"));
@@ -188,7 +188,7 @@ main (int argc, char *argv[])
   sink->Start (Seconds (1.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
-  ooff = CreateObjectWith<OnOffApplication> (
+  ooff = CreateObject<OnOffApplication> (
                                              "Node", n4, 
                                              "Remote", Address (InetSocketAddress ("10.1.2.1", port)), 
                                              "Protocol", TypeId::LookupByName ("Udp"),
@@ -199,7 +199,7 @@ main (int argc, char *argv[])
   ooff->Start (Seconds(1.1));
 
   // Create a packet sink to receive these packets
-  sink = CreateObjectWith<PacketSink> (
+  sink = CreateObject<PacketSink> (
                                        "Node", n1,
                                        "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
                                        "Protocol", TypeId::LookupByName ("Udp"));

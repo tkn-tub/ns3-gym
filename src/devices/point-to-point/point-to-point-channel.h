@@ -49,8 +49,11 @@ class Packet;
  * [0] wire to transmit on.  The second device gets the [1] wire.  There is a
  * state (IDLE, TRANSMITTING) associated with each wire.
  */
-class PointToPointChannel : public Channel {
+class PointToPointChannel : public Channel 
+{
 public:
+  static TypeId GetTypeId (void);
+
   /**
    * \brief Create a PointToPointChannel
    *
@@ -58,24 +61,6 @@ public:
    * has an "infitely" fast transmission speed and zero delay.
    */
   PointToPointChannel ();
-  
-  /**
-   * \brief Create a PointToPointChannel
-   *
-   * \param bps The maximum bitrate of the channel
-   * \param delay Transmission delay through the channel
-   */  
-  PointToPointChannel (const DataRate& bps, const Time& delay);
-  
-  /**
-   * \brief Create a PointToPointChannel
-   *
-   * \param name the name of the channel for identification purposes
-   * \param bps The maximum bitrate of the channel
-   * \param delay Transmission delay through the channel
-   */
-  PointToPointChannel (const std::string& name,
-                       const DataRate& bps, const Time& delay);
 
   /**
    * \brief Attach a given netdevice to this channel

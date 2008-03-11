@@ -278,7 +278,7 @@ main (int argc, char *argv[])
   // Configure a multicast packet generator that generates a packet
   // every few seconds
   Ptr<OnOffApplication> ooff = 
-    CreateObjectWith<OnOffApplication> (
+    CreateObject<OnOffApplication> (
                                         "Node", n0, 
                                         "Remote", Address (InetSocketAddress (multicastGroup, port)), 
                                         "Protocol", TypeId::LookupByName ("Udp"),
@@ -297,7 +297,7 @@ main (int argc, char *argv[])
   // If you enable logging on this (above) it will print a log statement
   // for every packet received
   Ptr<PacketSink> sink = 
-    CreateObjectWith<PacketSink> (
+    CreateObject<PacketSink> (
                                   "Node", n4,
                                   "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
                                   "Protocol", TypeId::LookupByName ("Udp"));

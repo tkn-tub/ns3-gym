@@ -24,12 +24,18 @@
 
 namespace ns3 {
 
-TcpImpl::TcpImpl (Ptr<TcpL4Protocol> tcp)
-  : m_tcp (tcp)
+TcpImpl::TcpImpl ()
+  : m_tcp (0)
 {}
 TcpImpl::~TcpImpl ()
 {
   NS_ASSERT (m_tcp == 0);
+}
+
+void 
+TcpImpl::SetTcp (Ptr<TcpL4Protocol> tcp)
+{
+  m_tcp = tcp;
 }
 
 Ptr<Socket>

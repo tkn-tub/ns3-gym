@@ -350,6 +350,12 @@ TcpL4Protocol::~TcpL4Protocol ()
   NS_LOG_FUNCTION;
 }
 
+void 
+TcpL4Protocol::SetNode (Ptr<Node> node)
+{
+  m_node = node;
+}
+
 int 
 TcpL4Protocol::GetProtocolNumber (void) const
 {
@@ -379,7 +385,10 @@ TcpL4Protocol::CreateSocket (void)
 {
   NS_LOG_FUNCTION;
   Ptr<RttEstimator> rtt = m_rttFactory.Create<RttEstimator> ();
-  Ptr<Socket> socket = CreateObject<TcpSocket> (m_node, this, rtt);
+  Ptr<TcpSocket> socket = CreateObject<TcpSocket> ();
+  socket->SetNode (m_node);
+  socket->SetTcp (this);
+  socket->SetRtt (rtt);
   return socket;
 }
 

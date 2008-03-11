@@ -272,11 +272,11 @@ AttributeTest::RunTests (void)
   CHECK_GET_STR (p, "TestBoolName", "false");
   CHECK_GET_PARAM (p, "TestBoolName", Boolean, false);
 
-  p = CreateObjectWith<AttributeObjectTest> ("TestBoolName", String ("true"));
+  p = CreateObject<AttributeObjectTest> ("TestBoolName", String ("true"));
   CHECK_GET_STR (p, "TestBoolName", "true");
   CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
 
-  p = CreateObjectWith<AttributeObjectTest> ("TestBoolName", Boolean (true));
+  p = CreateObject<AttributeObjectTest> ("TestBoolName", Boolean (true));
   CHECK_GET_STR (p, "TestBoolName", "true");
   CHECK_GET_PARAM (p, "TestBoolName", Boolean, true);
 
@@ -300,7 +300,7 @@ AttributeTest::RunTests (void)
   Ptr<AttributeObjectTest> x = p->GetAttribute ("TestPtr");
   NS_TEST_ASSERT (x == 0);
 
-  p = CreateObjectWith<AttributeObjectTest> ("TestPtr", Create<Derived> ());
+  p = CreateObject<AttributeObjectTest> ("TestPtr", Create<Derived> ());
   NS_TEST_ASSERT (p != 0);
   derived = 0;
   derived = p->GetAttribute ("TestPtr");
@@ -428,12 +428,12 @@ AttributeTest::RunTests (void)
   }
 
   NS_TEST_ASSERT (AttributeList::GetGlobal ()->SetFailSafe ("AttributeObjectTest::TestBoolName", String ("true")));
-  p = CreateObjectWith<AttributeObjectTest> ();
+  p = CreateObject<AttributeObjectTest> ();
   Boolean boolV = p->GetAttribute ("TestBoolName");
   NS_TEST_ASSERT_EQUAL (boolV, Boolean (true));
 
   NS_TEST_ASSERT (AttributeList::GetGlobal ()->SetFailSafe ("AttributeObjectTest::TestBoolName", String ("false")));
-  p = CreateObjectWith<AttributeObjectTest> ();
+  p = CreateObject<AttributeObjectTest> ();
   boolV = p->GetAttribute ("TestBoolName");
   NS_TEST_ASSERT_EQUAL (boolV, Boolean (false));
 

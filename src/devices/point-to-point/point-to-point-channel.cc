@@ -29,44 +29,33 @@ NS_LOG_COMPONENT_DEFINE ("PointToPointChannel");
 
 namespace ns3 {
 
+TypeId 
+PointToPointChannel::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("PointToPointChannel")
+    .SetParent<Channel> ()
+    .AddConstructor<PointToPointChannel> ()
+    .AddAttribute ("BitRate", "The maximum bitrate of the channel",
+                   DataRate (0xffffffff),
+                   MakeDataRateAccessor (&PointToPointChannel::m_bps),
+                   MakeDataRateChecker ())
+    .AddAttribute ("Delay", "Transmission delay through the channel",
+                   Seconds (0),
+                   MakeTimeAccessor (&PointToPointChannel::m_delay),
+                   MakeTimeChecker ())
+    ;
+  return tid;
+}
+
 //
 // By default, you get a channel with the name "PointToPoint Channel" that 
 // has an "infitely" fast transmission speed and zero delay.
 PointToPointChannel::PointToPointChannel()
 : 
   Channel ("PointToPoint Channel"), 
-  m_bps (DataRate(0xffffffff)),
-  m_delay (Seconds(0)),
   m_nDevices(0)
 {
   NS_LOG_FUNCTION;
-}
-
-PointToPointChannel::PointToPointChannel(
-  const DataRate& bps, 
-  const Time& delay)
-: 
-  Channel ("PointToPoint Channel"), 
-  m_bps (bps),
-  m_delay (delay),
-  m_nDevices(0)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << Channel::GetName() << bps.GetBitRate() << delay);
-}
-
-PointToPointChannel::PointToPointChannel(
-  const std::string& name,
-  const DataRate& bps, 
-  const Time& delay)
-: 
-  Channel (name),
-  m_bps (bps), 
-  m_delay (delay),
-  m_nDevices(0)
-{
-  NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << name << bps.GetBitRate() << delay);
 }
 
 void

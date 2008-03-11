@@ -71,8 +71,10 @@ class PacketSocketAddress;
 class PacketSocket : public Socket
 {
 public:
-  PacketSocket (Ptr<Node> node);
+  PacketSocket ();
   virtual ~PacketSocket ();
+
+  void SetNode (Ptr<Node> node);
 
   virtual enum SocketErrno GetErrno (void) const;
   virtual Ptr<Node> GetNode (void) const;
@@ -87,9 +89,6 @@ public:
 
 
 private:
-
-private:
-  void Init (void);
   void ForwardUp (Ptr<NetDevice> device, Ptr<Packet> packet, 
                   uint16_t protocol, const Address &from);
   int DoBind (const PacketSocketAddress &address);

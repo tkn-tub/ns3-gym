@@ -252,10 +252,10 @@ LogDistancePropagationLossModel::GetRxPower (double txPowerDbm,
    * rx = rx0(tx) - 10 * n * log (d/d0)
    */
   static Ptr<StaticMobilityModel> zero = 
-    CreateObjectWith<StaticMobilityModel> ("position", 
+    CreateObject<StaticMobilityModel> ("position", 
                                            Vector (0.0, 0.0, 0.0));
   static Ptr<StaticMobilityModel> reference = 
-    CreateObjectWith<StaticMobilityModel> ("position", 
+    CreateObject<StaticMobilityModel> ("position", 
                                            Vector (m_referenceDistance, 0.0, 0.0));
   double rx0 = m_reference->GetRxPower (txPowerDbm, zero, reference);
   double pathLossDb = 10 * m_exponent * log10 (distance / m_referenceDistance);

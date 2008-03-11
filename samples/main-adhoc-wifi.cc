@@ -136,7 +136,7 @@ Experiment::Run (const WifiHelper &wifi)
   NetDeviceContainer devices = wifi.Build (c);
 
   MobilityHelper mobility;
-  Ptr<ListPositionAllocator> positionAlloc = CreateObjectWith<ListPositionAllocator> ();
+  Ptr<ListPositionAllocator> positionAlloc = CreateObject<ListPositionAllocator> ();
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
   positionAlloc->Add (Vector (5.0, 0.0, 0.0));
   mobility.SetPositionAllocator (positionAlloc);
@@ -149,7 +149,7 @@ Experiment::Run (const WifiHelper &wifi)
   destination.SetSingleDevice (0);
   destination.SetPhysicalAddress (devices.Get (1)->GetAddress ());
   Ptr<Application> app = 
-    CreateObjectWith<OnOffApplication> ("Node", c.Get (0), 
+    CreateObject<OnOffApplication> ("Node", c.Get (0), 
                                         "Remote", Address (destination),
                                         "Protocol", TypeId::LookupByName ("Packet"),
                                         "OnTime", ConstantVariable (250),

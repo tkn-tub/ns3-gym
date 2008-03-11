@@ -34,9 +34,7 @@ NS_LOG_COMPONENT_DEFINE ("ArpIpv4Interface");
 
 namespace ns3 {
 
-ArpIpv4Interface::ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device)
-  : Ipv4Interface (device),
-    m_node (node)
+ArpIpv4Interface::ArpIpv4Interface ()
 {
   NS_LOG_FUNCTION;
 }
@@ -44,6 +42,30 @@ ArpIpv4Interface::ArpIpv4Interface (Ptr<Node> node, Ptr<NetDevice> device)
 ArpIpv4Interface::~ArpIpv4Interface ()
 {
   NS_LOG_FUNCTION;
+}
+
+void 
+ArpIpv4Interface::DoDispose (void)
+{
+  m_node = 0;
+  m_device = 0;
+}
+
+void 
+ArpIpv4Interface::SetNode (Ptr<Node> node)
+{
+  m_node = node;
+}
+void 
+ArpIpv4Interface::SetDevice (Ptr<NetDevice> device)
+{
+  m_device = device;
+}
+
+Ptr<NetDevice> 
+ArpIpv4Interface::GetDevice (void) const
+{
+  return m_device;
 }
 
 void 

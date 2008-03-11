@@ -29,8 +29,8 @@ PrintOne (double minTxpower, double maxTxpower, double stepTxpower, double min, 
 {
   Ptr<StaticMobilityModel> a = CreateObject<StaticMobilityModel> ();
   Ptr<StaticMobilityModel> b = CreateObject<StaticMobilityModel> ();
-  Ptr<LogDistancePropagationLossModel> log = CreateObjectWith<LogDistancePropagationLossModel> ();
-  log->SetReferenceModel (CreateObjectWith<FriisPropagationLossModel> ());
+  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
+  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
 
   Ptr<PropagationLossModel> model = log;
 

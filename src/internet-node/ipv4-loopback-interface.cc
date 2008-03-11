@@ -32,9 +32,8 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4LoopbackInterface");
 
 namespace ns3 {
 
-Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
-  : Ipv4Interface (0),
-    m_node (node)
+Ipv4LoopbackInterface::Ipv4LoopbackInterface ()
+  : m_node (0)
 {
   NS_LOG_FUNCTION;
 }
@@ -42,6 +41,19 @@ Ipv4LoopbackInterface::Ipv4LoopbackInterface (Ptr<Node> node)
 Ipv4LoopbackInterface::~Ipv4LoopbackInterface ()
 {
   NS_LOG_FUNCTION;
+  NS_ASSERT (m_node != 0);
+}
+
+Ptr<NetDevice> 
+Ipv4LoopbackInterface::GetDevice (void) const
+{
+  return 0;
+}
+
+void 
+Ipv4LoopbackInterface::SetNode (Ptr<Node> node)
+{
+  m_node = node;
 }
 
 void 

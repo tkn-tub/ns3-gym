@@ -34,12 +34,12 @@ class Node;
 class Ipv4LoopbackInterface : public Ipv4Interface 
 {
  public:
-  /**
-   * \brief Constructor
-   * \param node Pointer to a node associated with this IPv4 interface
-   */
-  Ipv4LoopbackInterface (Ptr<Node> node);
+  Ipv4LoopbackInterface ();
   virtual ~Ipv4LoopbackInterface ();
+
+  virtual Ptr<NetDevice> GetDevice (void) const;
+
+  void SetNode (Ptr<Node> node);
 
  private:
   virtual void SendTo (Ptr<Packet> p, Ipv4Address dest);
