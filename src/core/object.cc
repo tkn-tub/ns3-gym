@@ -1127,47 +1127,47 @@ Object::GetAttribute (std::string name) const
 }
 
 bool 
-Object::TraceConnect (std::string name, const CallbackBase &cb)
+Object::TraceConnectWithoutContext (std::string name, const CallbackBase &cb)
 {
   Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
   if (accessor == 0)
     {
       return false;
     }
-  bool ok = accessor->Connect (this, cb);
+  bool ok = accessor->ConnectWithoutContext (this, cb);
   return ok;
 }
 bool 
-Object::TraceConnectWithContext (std::string name, std::string context, const CallbackBase &cb)
+Object::TraceConnectWithoutContext (std::string name, std::string context, const CallbackBase &cb)
 {
   Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
   if (accessor == 0)
     {
       return false;
     }
-  bool ok = accessor->ConnectWithContext (this, context, cb);
+  bool ok = accessor->Connect (this, context, cb);
   return ok;
 }
 bool 
-Object::TraceDisconnect (std::string name, const CallbackBase &cb)
+Object::TraceDisconnectWithoutContext (std::string name, const CallbackBase &cb)
 {
   Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
   if (accessor == 0)
     {
       return false;
     }
-  bool ok = accessor->Disconnect (this, cb);
+  bool ok = accessor->DisconnectWithoutContext (this, cb);
   return ok;
 }
 bool 
-Object::TraceDisconnectWithContext (std::string name, std::string context, const CallbackBase &cb)
+Object::TraceDisconnectWithoutContext (std::string name, std::string context, const CallbackBase &cb)
 {
   Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
   if (accessor == 0)
     {
       return false;
     }
-  bool ok = accessor->DisconnectWithContext (this, context, cb);
+  bool ok = accessor->Disconnect (this, context, cb);
   return ok;
 }
 

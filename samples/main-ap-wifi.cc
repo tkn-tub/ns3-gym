@@ -155,8 +155,8 @@ int main (int argc, char *argv[])
 
   Simulator::StopAt (Seconds (44.0));
 
-  //NodeList::Connect ("/nodes/*/devices/*/*", MakeCallback (&WifiNetDeviceTrace));
-  //NodeList::Connect ("/nodes/*/devices/*/phy/state", MakeCallback (&WifiPhyStateTrace));
+  //NodeList::ConnectWithoutContext ("/nodes/*/devices/*/*", MakeCallback (&WifiNetDeviceTrace));
+  //NodeList::ConnectWithoutContext ("/nodes/*/devices/*/phy/state", MakeCallback (&WifiPhyStateTrace));
 
   Simulator::Run ();
 

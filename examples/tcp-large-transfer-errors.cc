@@ -239,7 +239,7 @@ int main (int argc, char *argv[])
   PcapTrace pcaptrace ("tcp-large-transfer-errors.pcap");
   pcaptrace.TraceAllIp ();
 
-  Config::Connect ("/NodeList/*/ApplicationList/*/Rx", MakeCallback (&ApplicationTraceSink));
+  Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/Rx", MakeCallback (&ApplicationTraceSink));
 
   Simulator::StopAt (Seconds(10000));
   Simulator::Run ();

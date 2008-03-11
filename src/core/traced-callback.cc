@@ -61,29 +61,29 @@ TracedCallbackTest::RunTests (void)
   bool result = true;
 
   TracedCallback<uint8_t,double> trace;
-  trace.Connect (MakeCallback (&TracedCallbackTest::CbOne, this));
-  trace.Connect (MakeCallback (&TracedCallbackTest::CbTwo, this));
+  trace.ConnectWithoutContext (MakeCallback (&TracedCallbackTest::CbOne, this));
+  trace.ConnectWithoutContext (MakeCallback (&TracedCallbackTest::CbTwo, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
   NS_TEST_ASSERT (m_one);
   NS_TEST_ASSERT (m_two);
 
-  trace.Disconnect (MakeCallback (&TracedCallbackTest::CbOne, this));
+  trace.DisconnectWithoutContext (MakeCallback (&TracedCallbackTest::CbOne, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
   NS_TEST_ASSERT (!m_one);
   NS_TEST_ASSERT (m_two);
-  trace.Disconnect (MakeCallback (&TracedCallbackTest::CbTwo, this));
+  trace.DisconnectWithoutContext (MakeCallback (&TracedCallbackTest::CbTwo, this));
   m_one = false;
   m_two = false;
   trace (1, 2);
   NS_TEST_ASSERT (!m_one);
   NS_TEST_ASSERT (!m_two);
 
-  trace.Connect (MakeCallback (&TracedCallbackTest::CbOne, this));
-  trace.Connect (MakeCallback (&TracedCallbackTest::CbTwo, this));
+  trace.ConnectWithoutContext (MakeCallback (&TracedCallbackTest::CbOne, this));
+  trace.ConnectWithoutContext (MakeCallback (&TracedCallbackTest::CbTwo, this));
   m_one = false;
   m_two = false;
   trace (1, 2);

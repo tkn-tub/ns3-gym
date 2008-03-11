@@ -459,25 +459,25 @@ AttributeTest::RunTests (void)
 
   m_got1 = -2;
   NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (-1)));
-  NS_TEST_ASSERT (p->TraceConnect ("Source1", MakeCallback (&AttributeTest::NotifySource1, this)));
+  NS_TEST_ASSERT (p->TraceConnectWithoutContext ("Source1", MakeCallback (&AttributeTest::NotifySource1, this)));
   NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (0)));
   NS_TEST_ASSERT_EQUAL (m_got1, 0);
-  NS_TEST_ASSERT (p->TraceDisconnect ("Source1", MakeCallback (&AttributeTest::NotifySource1, this)));
+  NS_TEST_ASSERT (p->TraceDisconnectWithoutContext ("Source1", MakeCallback (&AttributeTest::NotifySource1, this)));
   NS_TEST_ASSERT (p->SetAttributeFailSafe ("IntegerTraceSource1", Integer (1)));
   NS_TEST_ASSERT_EQUAL (m_got1, 0);
 
   m_got2 = 4.3;
   p->InvokeCb (1.0, -5, 0.0);
   NS_TEST_ASSERT_EQUAL (m_got2, 4.3);
-  NS_TEST_ASSERT (p->TraceConnect ("Source2", MakeCallback (&AttributeTest::NotifySource2, this)));
+  NS_TEST_ASSERT (p->TraceConnectWithoutContext ("Source2", MakeCallback (&AttributeTest::NotifySource2, this)));
   NS_TEST_ASSERT_EQUAL (m_got2, 4.3);
   p->InvokeCb (1.0, -5, 0.0);
   NS_TEST_ASSERT_EQUAL (m_got2, 1.0);
-  NS_TEST_ASSERT (p->TraceDisconnect ("Source2", MakeCallback (&AttributeTest::NotifySource2, this)));
+  NS_TEST_ASSERT (p->TraceDisconnectWithoutContext ("Source2", MakeCallback (&AttributeTest::NotifySource2, this)));
   p->InvokeCb (-1.0, -5, 0.0);
   NS_TEST_ASSERT_EQUAL (m_got2, 1.0);
 
-  NS_TEST_ASSERT (p->TraceConnect ("ValueSource", MakeCallback (&AttributeTest::NotifySourceValue, this)));
+  NS_TEST_ASSERT (p->TraceConnectWithoutContext ("ValueSource", MakeCallback (&AttributeTest::NotifySourceValue, this)));
   
 
 

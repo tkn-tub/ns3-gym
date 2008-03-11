@@ -44,24 +44,24 @@ public:
    * \param obj the object instance which contains the target trace source.
    * \param cb the callback to connect to the target trace source.
    */
-  virtual bool Connect (ObjectBase *obj, const CallbackBase &cb) const = 0;
+  virtual bool ConnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const = 0;
   /**
    * \param obj the object instance which contains the target trace source.
    * \param context the context to bind to the user callback.
    * \param cb the callback to connect to the target trace source.
    */
-  virtual bool ConnectWithContext (ObjectBase *obj, std::string context, const CallbackBase &cb) const = 0;
+  virtual bool Connect (ObjectBase *obj, std::string context, const CallbackBase &cb) const = 0;
   /**
    * \param obj the object instance which contains the target trace source.
    * \param cb the callback to disconnect from the target trace source.
    */
-  virtual bool Disconnect (ObjectBase *obj, const CallbackBase &cb) const = 0;
+  virtual bool DisconnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const = 0;
   /**
    * \param obj the object instance which contains the target trace source.
    * \param context the context which was bound to the user callback.
    * \param cb the callback to disconnect from the target trace source.
    */
-  virtual bool DisconnectWithContext (ObjectBase *obj, std::string context, const CallbackBase &cb) const = 0;
+  virtual bool Disconnect (ObjectBase *obj, std::string context, const CallbackBase &cb) const = 0;
 private:
   mutable uint32_t m_count;
 };
@@ -85,40 +85,40 @@ DoMakeTraceSourceAccessor (SOURCE T::*a)
 {
   struct Accessor : public TraceSourceAccessor
   {
-    virtual bool Connect (ObjectBase *obj, const CallbackBase &cb) const {
+    virtual bool ConnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const {
       T *p = dynamic_cast<T*> (obj);
       if (p == 0)
 	{
 	  return false;
 	}
-      (p->*m_source).Connect (cb);
+      (p->*m_source).ConnectWithoutContext (cb);
       return true;
     }
-    virtual bool ConnectWithContext (ObjectBase *obj, std::string context, const CallbackBase &cb) const {
+    virtual bool Connect (ObjectBase *obj, std::string context, const CallbackBase &cb) const {
       T *p = dynamic_cast<T*> (obj);
       if (p == 0)
 	{
 	  return false;
 	}
-      (p->*m_source).ConnectWithContext (cb, context);
+      (p->*m_source).Connect (cb, context);
       return true;
     }
-    virtual bool Disconnect (ObjectBase *obj, const CallbackBase &cb) const {
+    virtual bool DisconnectWithoutContext (ObjectBase *obj, const CallbackBase &cb) const {
       T *p = dynamic_cast<T*> (obj);
       if (p == 0)
 	{
 	  return false;
 	}
-      (p->*m_source).Disconnect (cb);
+      (p->*m_source).DisconnectWithoutContext (cb);
       return true;      
     }
-    virtual bool DisconnectWithContext (ObjectBase *obj, std::string context, const CallbackBase &cb) const {
+    virtual bool Disconnect (ObjectBase *obj, std::string context, const CallbackBase &cb) const {
       T *p = dynamic_cast<T*> (obj);
       if (p == 0)
 	{
 	  return false;
 	}
-      (p->*m_source).DisconnectWithContext (cb, context);
+      (p->*m_source).Disconnect (cb, context);
       return true;      
     }
     SOURCE T::*m_source;

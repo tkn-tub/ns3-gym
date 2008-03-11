@@ -52,9 +52,9 @@ PcapTrace::~PcapTrace ()
 void 
 PcapTrace::TraceAllIp (void)
 {
-  Config::ConnectWithContext ("/NodeList/*/$Ipv4L3Protocol/Tx",
+  Config::Connect ("/NodeList/*/$Ipv4L3Protocol/Tx",
                               MakeCallback (&PcapTrace::LogTxIp, this));
-  Config::ConnectWithContext ("/NodeList/*/$Ipv4L3Protocol/Rx",
+  Config::Connect ("/NodeList/*/$Ipv4L3Protocol/Rx",
                               MakeCallback (&PcapTrace::LogRxIp, this));
 }
 

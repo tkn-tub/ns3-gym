@@ -20,7 +20,7 @@ namespace ns3 {
  * support operator !=), you can wrap them in an instance of
  * this template: this instance will behave just like
  * the original class (if it did not export any special method),
- * and will define Connect/Disconnect methods to work
+ * and will define Connect/DisconnectWithoutContext methods to work
  * with an ns3::TraceSourceAccessor.
  */
 template <typename T>
@@ -61,17 +61,17 @@ public:
   operator Enum () const {
     return Enum (m_v);
   }
-  void Connect (const CallbackBase &cb) {
-    m_cb.Connect (cb);
+  void ConnectWithoutContext (const CallbackBase &cb) {
+    m_cb.ConnectWithoutContext (cb);
   }
-  void ConnectWithContext (const CallbackBase &cb, std::string path) {
-    m_cb.ConnectWithContext (cb, path);
+  void Connect (const CallbackBase &cb, std::string path) {
+    m_cb.Connect (cb, path);
   }
-  void Disconnect (const CallbackBase &cb) {
-    m_cb.Disconnect (cb);
+  void DisconnectWithoutContext (const CallbackBase &cb) {
+    m_cb.DisconnectWithoutContext (cb);
   }
-  void DisconnectWithContext (const CallbackBase &cb, std::string path) {
-    m_cb.DisconnectWithContext (cb, path);
+  void Disconnect (const CallbackBase &cb, std::string path) {
+    m_cb.Disconnect (cb, path);
   }
   void Set (const T &v) {
     if (m_v != v)

@@ -53,7 +53,7 @@ int main (int argc, char *argv[])
                              "Speed", String ("Constant:1.0"),
                              "Bounds", String ("0:200:0:100"));
   mobility.Layout (NodeList::Begin (), NodeList::End ());
-  Config::ConnectWithContext ("/NodeList/*/$MobilityModelNotifier/CourseChange",
+  Config::Connect ("/NodeList/*/$MobilityModelNotifier/CourseChange",
                               MakeCallback (&CourseChange));
 
   Simulator::StopAt (Seconds (100.0));

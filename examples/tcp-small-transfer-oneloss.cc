@@ -221,7 +221,7 @@ int main (int argc, char *argv[])
   PcapTrace pcaptrace ("tcp-small-transfer-oneloss.pcap");
   pcaptrace.TraceAllIp ();
 
-  Config::Connect ("/NodeList/*/ApplicationList/*/Rx", MakeCallback (&ApplicationTraceSink));
+  Config::ConnectWithoutContext ("/NodeList/*/ApplicationList/*/Rx", MakeCallback (&ApplicationTraceSink));
 
   Simulator::StopAt (Seconds(1000));
   Simulator::Run ();

@@ -285,10 +285,10 @@ class ConfigImpl
 {
 public:
   void Set (std::string path, Attribute value);
+  void ConnectWithoutContext (std::string path, const CallbackBase &cb);
   void Connect (std::string path, const CallbackBase &cb);
-  void ConnectWithContext (std::string path, const CallbackBase &cb);
+  void DisconnectWithoutContext (std::string path, const CallbackBase &cb);
   void Disconnect (std::string path, const CallbackBase &cb);
-  void DisconnectWithContext (std::string path, const CallbackBase &cb);
 
   void RegisterRootNamespaceObject (Ptr<Object> obj);
   void UnregisterRootNamespaceObject (Ptr<Object> obj);
@@ -319,7 +319,7 @@ ConfigImpl::Set (std::string path, Attribute value)
     }
 }
 void 
-ConfigImpl::Connect (std::string path, const CallbackBase &cb)
+ConfigImpl::ConnectWithoutContext (std::string path, const CallbackBase &cb)
 {
   class ConnectResolver : public Resolver 
   {
@@ -329,7 +329,7 @@ ConfigImpl::Connect (std::string path, const CallbackBase &cb)
 	m_cb (cb) {}
   private:
     virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
-      object->TraceConnect (name, m_cb);
+      object->TraceConnectWithoutContext (name, m_cb);
     }
     CallbackBase m_cb;
   } resolver = ConnectResolver (path, cb);
@@ -339,7 +339,7 @@ ConfigImpl::Connect (std::string path, const CallbackBase &cb)
     }
 }
 void 
-ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
+ConfigImpl::DisconnectWithoutContext (std::string path, const CallbackBase &cb)
 {
   class DisconnectResolver : public Resolver 
   {
@@ -349,7 +349,7 @@ ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
 	m_cb (cb) {}
   private:
     virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
-      object->TraceDisconnect (name, m_cb);
+      object->TraceDisconnectWithoutContext (name, m_cb);
     }
     CallbackBase m_cb;
   } resolver = DisconnectResolver (path, cb);
@@ -359,7 +359,7 @@ ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
     }
 }
 void 
-ConfigImpl::ConnectWithContext (std::string path, const CallbackBase &cb)
+ConfigImpl::Connect (std::string path, const CallbackBase &cb)
 {
   class ConnectWithContextResolver : public Resolver 
   {
@@ -369,7 +369,7 @@ ConfigImpl::ConnectWithContext (std::string path, const CallbackBase &cb)
 	m_cb (cb) {}
   private:
     virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
-      object->TraceConnectWithContext (name, path, m_cb);
+      object->TraceConnectWithoutContext (name, path, m_cb);
     }
     CallbackBase m_cb;
   } resolver = ConnectWithContextResolver (path, cb);
@@ -379,7 +379,7 @@ ConfigImpl::ConnectWithContext (std::string path, const CallbackBase &cb)
     }
 }
 void 
-ConfigImpl::DisconnectWithContext (std::string path, const CallbackBase &cb)
+ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
 {
   class DisconnectWithContextResolver : public Resolver 
   {
@@ -389,7 +389,7 @@ ConfigImpl::DisconnectWithContext (std::string path, const CallbackBase &cb)
 	m_cb (cb) {}
   private:
     virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
-      object->TraceDisconnectWithContext (name, path, m_cb);
+      object->TraceDisconnectWithoutContext (name, path, m_cb);
     }
     CallbackBase m_cb;
   } resolver = DisconnectWithContextResolver (path, cb);
@@ -440,23 +440,23 @@ bool SetGlobalFailSafe (std::string name, Attribute value)
 {
   return GlobalValue::BindFailSafe (name, value);
 }
-void Connect (std::string path, const CallbackBase &cb)
+void ConnectWithoutContext (std::string path, const CallbackBase &cb)
+{
+  Singleton<ConfigImpl>::Get ()->ConnectWithoutContext (path, cb);
+}
+void DisconnectWithoutContext (std::string path, const CallbackBase &cb)
+{
+  Singleton<ConfigImpl>::Get ()->DisconnectWithoutContext (path, cb);
+}
+void 
+Connect (std::string path, const CallbackBase &cb)
 {
   Singleton<ConfigImpl>::Get ()->Connect (path, cb);
 }
-void Disconnect (std::string path, const CallbackBase &cb)
+void 
+Disconnect (std::string path, const CallbackBase &cb)
 {
   Singleton<ConfigImpl>::Get ()->Disconnect (path, cb);
-}
-void 
-ConnectWithContext (std::string path, const CallbackBase &cb)
-{
-  Singleton<ConfigImpl>::Get ()->ConnectWithContext (path, cb);
-}
-void 
-DisconnectWithContext (std::string path, const CallbackBase &cb)
-{
-  Singleton<ConfigImpl>::Get ()->DisconnectWithContext (path, cb);
 }
 
 void RegisterRootNamespaceObject (Ptr<Object> obj)
@@ -710,7 +710,7 @@ ConfigTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (v.Get (), -16);
 
 
-  Config::Connect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+  Config::ConnectWithoutContext ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
 		   MakeCallback (&ConfigTest::ChangeNotification, this));
   m_traceNotification = 0;
   // this should trigger no notification
@@ -720,7 +720,7 @@ ConfigTest::RunTests (void)
   // this should trigger a notification
   d1->SetAttribute ("Source", Integer (-3));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
-  Config::Disconnect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+  Config::DisconnectWithoutContext ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
 		      MakeCallback (&ConfigTest::ChangeNotification, this));
   m_traceNotification = 0;
   // this should _not_ trigger a notification
@@ -728,7 +728,7 @@ ConfigTest::RunTests (void)
   NS_TEST_ASSERT_EQUAL (m_traceNotification, 0);
 
   
-  Config::ConnectWithContext ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+  Config::Connect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
 			      MakeCallback (&ConfigTest::ChangeNotificationWithPath, this));
   m_traceNotification = 0;
   // this should trigger no notification
@@ -746,7 +746,7 @@ ConfigTest::RunTests (void)
   d3->SetAttribute ("Source", Integer (-3));
   NS_TEST_ASSERT_EQUAL (m_traceNotification, -3);
   NS_TEST_ASSERT_EQUAL (m_tracePath, "/NodeA/NodeB/NodesB/3/Source");
-  Config::DisconnectWithContext ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
+  Config::Disconnect ("/NodeA/NodeB/NodesB/[0-1]|3/Source", 
 				 MakeCallback (&ConfigTest::ChangeNotificationWithPath, this));
   m_traceNotification = 0;
   // this should _not_ trigger a notification

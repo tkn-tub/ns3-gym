@@ -78,14 +78,14 @@ bool SetGlobalFailSafe (std::string name, Attribute value);
  * match the input path and will then connect the input callback
  * to them.
  */
-void Connect (std::string path, const CallbackBase &cb);
+void ConnectWithoutContext (std::string path, const CallbackBase &cb);
 /**
  * \param path a path to match trace sources.
  * \param cb the callback to disconnect to the matching trace sources.
  *
  * This function undoes the work of Config::Connect.
  */
-void Disconnect (std::string path, const CallbackBase &cb);
+void DisconnectWithoutContext (std::string path, const CallbackBase &cb);
 /**
  * \param path a path to match trace sources.
  * \param cb the callback to connect to the matching trace sources.
@@ -95,14 +95,14 @@ void Disconnect (std::string path, const CallbackBase &cb);
  * to them in such a way that the callback will receive an extra
  * context string upon trace event notification.
  */
-void ConnectWithContext (std::string path, const CallbackBase &cb);
+void Connect (std::string path, const CallbackBase &cb);
 /**
  * \param path a path to match trace sources.
  * \param cb the callback to connect to the matching trace sources.
  *
  * This function undoes the work of Config::ConnectWithContext.
  */
-void DisconnectWithContext (std::string path, const CallbackBase &cb);
+void Disconnect (std::string path, const CallbackBase &cb);
 
 /**
  * \param obj a new root object

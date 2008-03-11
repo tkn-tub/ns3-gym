@@ -44,7 +44,7 @@ int main (int argc, char *argv[])
   mobility.SetMobilityModel ("StaticMobilityModel");
   mobility.Layout (objects.begin (), objects.end ());
 
-  Config::ConnectWithContext ("/NodeList/*/$MobilityModelNotifier/CourseChange",
+  Config::Connect ("/NodeList/*/$MobilityModelNotifier/CourseChange",
                               MakeCallback (&CourseChange));
   
   Simulator::StopAt (Seconds (100.0));

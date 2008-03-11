@@ -47,7 +47,7 @@ void
 WifiTrace::TraceAllNetDeviceRx (void)
 {
   Packet::EnableMetadata ();
-  NodeList::Connect ("/nodes/*/devices/*/rx",
+  NodeList::ConnectWithoutContext ("/nodes/*/devices/*/rx",
                      MakeCallback (&WifiTrace::LogDevRx, this));
 }
 
@@ -55,7 +55,7 @@ void
 WifiTrace::TraceAllNetDeviceTx (void)
 {
   Packet::EnableMetadata ();
-  NodeList::Connect ("/nodes/*/devices/*/tx",
+  NodeList::ConnectWithoutContext ("/nodes/*/devices/*/tx",
                      MakeCallback (&WifiTrace::LogDevTx, this));
 }
 
@@ -63,7 +63,7 @@ void
 WifiTrace::TraceAllPhy (void)
 {
   Packet::EnableMetadata ();
-  NodeList::Connect ("/nodes/*/devices/*/*/state",
+  NodeList::ConnectWithoutContext ("/nodes/*/devices/*/*/state",
                      MakeCallback (&WifiTrace::LogPhy, this));
 }
 
@@ -71,7 +71,7 @@ void
 WifiTrace::TraceAllErrors (void)
 {
   Packet::EnableMetadata ();
-  NodeList::Connect ("/nodes/*/devices/*/*/error",
+  NodeList::ConnectWithoutContext ("/nodes/*/devices/*/*/error",
                      MakeCallback (&WifiTrace::LogErrors, this));
 }
 
@@ -79,7 +79,7 @@ void
 WifiTrace::TraceAckTimeouts (void)
 {
   Packet::EnableMetadata ();
-  NodeList::Connect ("/nodes/*/devices/*/*/ackTimeout",
+  NodeList::ConnectWithoutContext ("/nodes/*/devices/*/*/ackTimeout",
                      MakeCallback (&WifiTrace::LogAckTimeout, this));
 }
 
@@ -87,7 +87,7 @@ void
 WifiTrace::TraceCtsTimeouts (void)
 {
   Packet::EnableMetadata ();
-  NodeList::Connect ("/nodes/*/devices/*/*/ctsTimeout",
+  NodeList::ConnectWithoutContext ("/nodes/*/devices/*/*/ctsTimeout",
                      MakeCallback (&WifiTrace::LogCtsTimeout, this));
 }
 

@@ -40,18 +40,18 @@ void
 AsciiTrace::TraceAllQueues (void)
 {
   Packet::EnableMetadata ();
-  Config::ConnectWithContext ("/NodeList/*/DeviceList/*/TxQueue/Enqueue",
+  Config::Connect ("/NodeList/*/DeviceList/*/TxQueue/Enqueue",
                               MakeCallback (&AsciiTrace::LogDevQueueEnqueue, this));
-  Config::ConnectWithContext ("/NodeList/*/DeviceList/*/TxQueue/Dequeue",
+  Config::Connect ("/NodeList/*/DeviceList/*/TxQueue/Dequeue",
                               MakeCallback (&AsciiTrace::LogDevQueueDequeue, this));
-  Config::ConnectWithContext ("/NodeList/*/DeviceList/*/TxQueue/Drop",
+  Config::Connect ("/NodeList/*/DeviceList/*/TxQueue/Drop",
                               MakeCallback (&AsciiTrace::LogDevQueueDrop, this));
 }
 void
 AsciiTrace::TraceAllNetDeviceRx (void)
 {
   Packet::EnableMetadata ();
-  Config::ConnectWithContext ("/NodeList/*/DeviceList/*/Rx",
+  Config::Connect ("/NodeList/*/DeviceList/*/Rx",
                               MakeCallback (&AsciiTrace::LogDevRx, this));
 }
 

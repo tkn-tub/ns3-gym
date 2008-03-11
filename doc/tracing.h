@@ -159,7 +159,7 @@
  * \section TraceConnection Connecting Trace Sources to Trace Sinks
  * 
  * If a trace source is integrated in the ns-3 trace connection facility, a user 
- * should call the ns3::NodeList::Connect method to establish a connection between
+ * should call the ns3::NodeList::ConnectWithoutContext method to establish a connection between
  * a trace sink and a set of matching trace sources. The second argument to that
  * method is a callback to the user's trace sink.
  * That callback is easy to construct: call ns3::MakeCallback and you are done. The
@@ -178,7 +178,7 @@
  *   std::cout << "packet: " << packet->Print () << std::endl;
  * }
  * // connect the above sink to a matching trace source
- * NodeList::Connect ("/nodes/* /devices/* /rx", MakeCallback (&DoSomethingTraceSink));
+ * NodeList::ConnectWithoutContext ("/nodes/* /devices/* /rx", MakeCallback (&DoSomethingTraceSink));
  * \endcode
  *
  * The connection path string "/nodes/* /devices/* /rx" matches the "rx" trace source
