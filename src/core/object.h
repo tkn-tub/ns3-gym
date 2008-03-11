@@ -445,10 +445,10 @@ public:
    */
   Attribute GetAttribute (std::string name) const;
 
-  bool TraceSourceConnect (std::string name, const CallbackBase &cb);
-  bool TraceSourceConnectWithContext (std::string name, std::string context, const CallbackBase &cb);
-  bool TraceSourceDisconnect (std::string name, const CallbackBase &cb);
-  bool TraceSourceDisconnectWithContext (std::string name, std::string context, const CallbackBase &cb);
+  bool TraceConnect (std::string name, const CallbackBase &cb);
+  bool TraceConnectWithContext (std::string name, std::string context, const CallbackBase &cb);
+  bool TraceDisconnect (std::string name, const CallbackBase &cb);
+  bool TraceDisconnectWithContext (std::string name, std::string context, const CallbackBase &cb);
 
   TypeId GetRealTypeId (void) const;
 

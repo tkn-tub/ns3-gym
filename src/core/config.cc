@@ -329,7 +329,7 @@ ConfigImpl::Connect (std::string path, const CallbackBase &cb)
 	m_cb (cb) {}
   private:
     virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
-      object->TraceSourceConnect (name, m_cb);
+      object->TraceConnect (name, m_cb);
     }
     CallbackBase m_cb;
   } resolver = ConnectResolver (path, cb);
@@ -349,7 +349,7 @@ ConfigImpl::Disconnect (std::string path, const CallbackBase &cb)
 	m_cb (cb) {}
   private:
     virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
-      object->TraceSourceDisconnect (name, m_cb);
+      object->TraceDisconnect (name, m_cb);
     }
     CallbackBase m_cb;
   } resolver = DisconnectResolver (path, cb);
@@ -369,7 +369,7 @@ ConfigImpl::ConnectWithContext (std::string path, const CallbackBase &cb)
 	m_cb (cb) {}
   private:
     virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
-      object->TraceSourceConnectWithContext (name, path, m_cb);
+      object->TraceConnectWithContext (name, path, m_cb);
     }
     CallbackBase m_cb;
   } resolver = ConnectWithContextResolver (path, cb);
@@ -389,7 +389,7 @@ ConfigImpl::DisconnectWithContext (std::string path, const CallbackBase &cb)
 	m_cb (cb) {}
   private:
     virtual void DoOne (Ptr<Object> object, std::string path, std::string name) {
-      object->TraceSourceDisconnectWithContext (name, path, m_cb);
+      object->TraceDisconnectWithContext (name, path, m_cb);
     }
     CallbackBase m_cb;
   } resolver = DisconnectWithContextResolver (path, cb);
