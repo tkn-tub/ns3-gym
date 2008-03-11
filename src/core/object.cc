@@ -44,13 +44,13 @@ public:
   void SetParent (uint16_t uid, uint16_t parent);
   void SetTypeName (uint16_t uid, std::string typeName);
   void SetGroupName (uint16_t uid, std::string groupName);
-  void AddConstructor (uint16_t uid, ns3::CallbackBase callback, uint32_t nArguments);
+  void AddConstructor (uint16_t uid, ns3::CallbackBase callback);
   uint16_t GetUid (std::string name) const;
   std::string GetName (uint16_t uid) const;
   uint16_t GetParent (uint16_t uid) const;
   std::string GetTypeName (uint16_t uid) const;
   std::string GetGroupName (uint16_t uid) const;
-  ns3::CallbackBase GetConstructor (uint16_t uid, uint32_t nArguments);
+  ns3::CallbackBase GetConstructor (uint16_t uid);
   bool HasConstructor (uint16_t uid);
   uint32_t GetRegisteredN (void);
   uint16_t GetRegistered (uint32_t i);
@@ -78,10 +78,6 @@ public:
   ns3::Ptr<const ns3::TraceSourceAccessor> GetTraceSourceAccessor (uint16_t uid, uint32_t i) const;
 
 private:
-  struct ConstructorInformation {
-    ns3::CallbackBase cb;
-    uint32_t nArguments;
-  };
   struct AttributeInformation {
     std::string name;
     std::string help;
@@ -100,7 +96,8 @@ private:
     uint16_t parent;
     std::string typeName;
     std::string groupName;
-    std::vector<struct ConstructorInformation> constructors;
+    bool hasConstructor;
+    ns3::CallbackBase constructor;
     std::vector<struct AttributeInformation> attributes;
     std::vector<struct TraceSourceInformation> traceSources;
   };
@@ -132,6 +129,7 @@ IidManager::AllocateUid (std::string name)
   information.parent = 0;
   information.typeName = "";
   information.groupName = "";
+  information.hasConstructor = false;
   m_information.push_back (information);
   uint32_t uid = m_information.size ();
   NS_ASSERT (uid <= 0xffff);
@@ -166,22 +164,15 @@ IidManager::SetGroupName (uint16_t uid, std::string groupName)
 }
 
 void 
-IidManager::AddConstructor (uint16_t uid, ns3::CallbackBase callback, uint32_t nArguments)
+IidManager::AddConstructor (uint16_t uid, ns3::CallbackBase callback)
 {
   struct IidInformation *information = LookupInformation (uid);
-  struct ConstructorInformation constructor;
-  constructor.cb = callback;
-  constructor.nArguments = nArguments;
-  for (std::vector<struct ConstructorInformation>::const_iterator i = information->constructors.begin ();
-       i != information->constructors.end (); i++)
+  if (information->hasConstructor)
     {
-      if (i->nArguments == nArguments)
-        {
-          NS_FATAL_ERROR ("registered two constructors on the same type with the same number of arguments.");
-          break;
-        }
+      NS_FATAL_ERROR (information->name<<" already has a constructor.");
     }
-  information->constructors.push_back (constructor);
+  information->hasConstructor = true;
+  information->constructor = callback;
 }
 
 uint16_t 
@@ -225,26 +216,21 @@ IidManager::GetGroupName (uint16_t uid) const
 }
 
 ns3::CallbackBase 
-IidManager::GetConstructor (uint16_t uid, uint32_t nArguments)
+IidManager::GetConstructor (uint16_t uid)
 {
   struct IidInformation *information = LookupInformation (uid);
-  for (std::vector<struct ConstructorInformation>::const_iterator i = information->constructors.begin ();
-       i != information->constructors.end (); i++)
+  if (!information->hasConstructor)
     {
-      if (i->nArguments == nArguments)
-        {
-          return i->cb;
-        } 
+      NS_FATAL_ERROR ("Requested constructor for "<<information->name<<" but it does not have one.");
     }
-  NS_FATAL_ERROR ("Requested constructor with "<<nArguments<<" arguments not found");
-  return ns3::CallbackBase ();
+  return information->constructor;
 }
 
 bool 
 IidManager::HasConstructor (uint16_t uid)
 {
   struct IidInformation *information = LookupInformation (uid);
-  return !information->constructors.empty ();
+  return information->hasConstructor;
 }
 
 uint32_t 
@@ -527,9 +513,9 @@ TypeId::HasConstructor (void) const
 }
 
 void
-TypeId::DoAddConstructor (CallbackBase cb, uint32_t nArguments)
+TypeId::DoAddConstructor (CallbackBase cb)
 {
-  Singleton<IidManager>::Get ()->AddConstructor (m_tid, cb, nArguments);
+  Singleton<IidManager>::Get ()->AddConstructor (m_tid, cb);
 }
 
 TypeId 
@@ -557,9 +543,9 @@ TypeId::AddAttribute (std::string name,
 
 
 CallbackBase
-TypeId::LookupConstructor (uint32_t nArguments) const
+TypeId::LookupConstructor (void) const
 {
-  CallbackBase constructor = Singleton<IidManager>::Get ()->GetConstructor (m_tid, nArguments);
+  CallbackBase constructor = Singleton<IidManager>::Get ()->GetConstructor (m_tid);
   return constructor;
 }
 
@@ -571,7 +557,7 @@ TypeId::CreateObject (void) const
 Ptr<Object> 
 TypeId::CreateObject (const AttributeList &attributes) const
 {
-  CallbackBase cb = LookupConstructor (0);
+  CallbackBase cb = LookupConstructor ();
   Callback<Ptr<Object>,const AttributeList &> realCb;
   realCb.Assign (cb);
   Ptr<Object> object = realCb (attributes);

@@ -178,14 +178,7 @@ public:
   Ptr<const TraceSourceAccessor> GetTraceSourceAccessor (uint32_t i) const;
 
   Ptr<Object> CreateObject (const AttributeList &attributes) const;
-
-
   Ptr<Object> CreateObject (void) const;
-  template <typename T1>
-  Ptr<Object> CreateObject (T1 a1) const;
-  template <typename T1, typename T2>
-  Ptr<Object> CreateObject (T1 a1, T2 a2) const;
-
 
   /**
    * \param tid the TypeId of the base class.
@@ -227,12 +220,6 @@ public:
    * is accessible.
    */
   template <typename T>
-  TypeId AddConstructor (void);
-
-  template <typename T, typename T1>
-  TypeId AddConstructor (void);
-
-  template <typename T, typename T1, typename T2>
   TypeId AddConstructor (void);
 
   /**
@@ -322,8 +309,8 @@ private:
   static bool LookupAttributeByFullName (std::string fullName, struct AttributeInfo *info);
 
   explicit TypeId (uint16_t tid);
-  void DoAddConstructor (CallbackBase callback, uint32_t nArguments);
-  CallbackBase LookupConstructor (uint32_t nArguments) const;
+  void DoAddConstructor (CallbackBase callback);
+  CallbackBase LookupConstructor (void) const;
   Ptr<const AttributeAccessor> GetAttributeAccessor (uint32_t i) const;
   
   uint16_t m_tid;
@@ -621,54 +608,8 @@ TypeId::AddConstructor (void)
     }
   };
   CallbackBase cb = MakeCallback (&Maker::Create);
-  DoAddConstructor (cb, 0);
+  DoAddConstructor (cb);
   return *this;
-}
-template <typename T, typename T1>
-TypeId 
-TypeId::AddConstructor (void)
-{
-  struct Maker {
-    static Ptr<Object> Create (T1 a1) {
-      return ns3::CreateObject<T,T1> (a1);
-    }
-  };
-  CallbackBase cb = MakeCallback (&Maker::Create);
-  DoAddConstructor (cb, 1);
-  return *this;
-}
-template <typename T, typename T1, typename T2>
-TypeId 
-TypeId::AddConstructor (void)
-{
-  struct Maker {
-    static Ptr<Object> Create (T1 a1, T2 a2) {
-      return ns3::CreateObject<T,T1,T2> (a1, a2);
-    }
-  };
-  CallbackBase cb = MakeCallback (&Maker::Create);
-  DoAddConstructor (cb, 2);
-  return *this;
-}
-template <typename T1>
-Ptr<Object> 
-TypeId::CreateObject (T1 a1) const
-{
-  CallbackBase cb = LookupConstructor (1);
-  Callback<Ptr<Object>,T1> realCb;
-  realCb.Assign (cb);
-  Ptr<Object> object = realCb (a1);
-  return object;
-}
-template <typename T1, typename T2>
-Ptr<Object> 
-TypeId::CreateObject (T1 a1, T2 a2) const
-{
-  CallbackBase cb = LookupConstructor (2);
-  Callback<Ptr<Object>,T1,T2> realCb;
-  realCb.Assign (cb);
-  Ptr<Object> object = realCb (a1,a2);
-  return object;
 }
 
 /*************************************************************************
