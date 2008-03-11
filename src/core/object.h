@@ -751,15 +751,52 @@ CreateObjectWith (std::string n1 = "", Attribute v1 = Attribute (),
               
 {
   AttributeList attributes;
+  if (n1 == "")
+    {
+      goto end;
+    }
   attributes.SetWithTid (T::GetTypeId (), n1, v1);
+  if (n2 == "")
+    {
+      goto end;
+    }
   attributes.SetWithTid (T::GetTypeId (), n2, v2);
+  if (n3 == "")
+    {
+      goto end;
+    }
   attributes.SetWithTid (T::GetTypeId (), n3, v3);
+  if (n4 == "")
+    {
+      goto end;
+    }
   attributes.SetWithTid (T::GetTypeId (), n4, v4);
+  if (n5 == "")
+    {
+      goto end;
+    }
   attributes.SetWithTid (T::GetTypeId (), n5, v5);
+  if (n6 == "")
+    {
+      goto end;
+    }
   attributes.SetWithTid (T::GetTypeId (), n6, v6);
+  if (n7 == "")
+    {
+      goto end;
+    }
   attributes.SetWithTid (T::GetTypeId (), n7, v7);
+  if (n8 == "")
+    {
+      goto end;
+    }
   attributes.SetWithTid (T::GetTypeId (), n8, v8);
+  if (n9 == "")
+    {
+      goto end;
+    }
   attributes.SetWithTid (T::GetTypeId (), n9, v9);
+ end:
   return CreateObject<T> (attributes);
 }
 
