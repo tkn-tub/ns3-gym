@@ -79,6 +79,7 @@ private:
 
   virtual void Receive (Ptr<Socket> socket, Ptr<Packet> packet, const Address& from);
   virtual void CloseConnection (Ptr<Socket> socket);
+  virtual bool AcceptConnectionRequest (Ptr<Socket> socket, const Address &from);
 
   Ptr<Socket>     m_socket;       // Associated socket
   Address         m_local;        // Local address to bind to

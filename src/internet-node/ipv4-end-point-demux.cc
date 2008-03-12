@@ -185,10 +185,11 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
                            Ptr<Ipv4Interface> incomingInterface)
 {
   NS_LOG_FUNCTION;
-  uint32_t genericity = 3;
-  Ipv4EndPoint *generic = 0;
-  EndPoints retval;
-
+  EndPoints retval1; // Matches exact on local port, wildcards on others
+  EndPoints retval2; // Matches exact on local port/adder, wildcards on others
+  EndPoints retval3; // Matches all but local address
+  EndPoints retval4; // Exact match on all 4
+  
   //NS_LOG_PARAMS (this << daddr << dport << saddr << sport);
   NS_LOG_PARAMS_BEGIN ();
   NS_LOG_PARAM (this);
@@ -198,9 +199,106 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
   NS_LOG_PARAM (sport);
   NS_LOG_PARAM (incomingInterface);
   NS_LOG_PARAMS_END ();
-
+  NS_LOG_DEBUG ("Looking up endpoint for destination address " << daddr);
   for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
     {
+      Ipv4EndPoint* endP = *i;
+      NS_LOG_DEBUG ("Looking at endpoint dport=" << endP->GetLocalPort ()
+                    << " daddr=" << endP->GetLocalAddress ()
+                    << " sport=" << endP->GetPeerPort ()
+                    << " saddr=" << endP->GetPeerAddress ());
+      if (endP->GetLocalPort () != dport) 
+        {
+          NS_LOG_LOGIC ("Skipping endpoint " << &endP
+                        << " because endpoint dport "
+                        << endP->GetLocalPort ()
+                        << " does not match packet dport " << dport);
+          continue;
+        }
+      bool isBroadcast = (daddr.IsBroadcast () ||
+         daddr.IsSubnetDirectedBroadcast (
+             incomingInterface->GetNetworkMask ()));
+      Ipv4Address incomingInterfaceAddr = incomingInterface->GetAddress ();
+      NS_LOG_DEBUG ("dest addr " << daddr << " broadcast? " << isBroadcast
+                    << " localInterface="<< endP->GetLocalInterface ());
+      bool localAddressMatchesWildCard = 
+        (endP->GetLocalAddress() == Ipv4Address::GetAny()) &&
+        (endP->GetLocalInterface() == Ipv4Address::GetAny());
+      bool localAddressMatchesExact = endP->GetLocalAddress () == daddr;
+
+      if (isBroadcast)
+        {
+          std::cout  << "Found bcast, localaddr " << endP->GetLocalAddress() 
+                     << std::endl;
+        }
+
+      if (isBroadcast && (endP->GetLocalAddress() != Ipv4Address::GetAny()))
+        {
+          localAddressMatchesExact = (endP->GetLocalAddress () ==
+                                      incomingInterfaceAddr);
+        }
+      // if no match here, keep looking
+      if (!(localAddressMatchesExact || localAddressMatchesWildCard))
+        continue; 
+      bool remotePeerMatchesExact = endP->GetPeerPort () == sport;
+      bool remotePeerMatchesWildCard = endP->GetPeerPort() == 0;
+      bool remoteAddressMatchesExact = endP->GetPeerAddress () == saddr;
+      bool remoteAddressMatchesWildCard = endP->GetPeerAddress () ==
+        Ipv4Address::GetAny();
+      // If remote does not match either with exact or wildcard,
+      // skip this one
+      if (!(remotePeerMatchesExact || remotePeerMatchesWildCard))
+        continue;
+      if (!(remoteAddressMatchesExact || remoteAddressMatchesWildCard))
+        continue;
+      
+      // Now figure out which return list to add this one to
+      if (localAddressMatchesWildCard &&
+          remotePeerMatchesWildCard &&
+          remoteAddressMatchesWildCard)
+        { // Only local port matches exactly
+          retval1.push_back(endP);
+        }
+      if ((localAddressMatchesExact || ((isBroadcast && localAddressMatchesWildCard)))&&
+          remotePeerMatchesWildCard &&
+           remoteAddressMatchesWildCard)
+        { // Only local port and local address matches exactly
+          retval2.push_back(endP);
+        }
+      if (localAddressMatchesWildCard &&
+          remotePeerMatchesExact &&
+          remoteAddressMatchesExact)
+        { // All but local address
+          retval3.push_back(endP);
+        }
+      if (localAddressMatchesExact &&
+          remotePeerMatchesExact &&
+          remoteAddressMatchesExact)
+        { // All 4 match
+          retval4.push_back(endP);
+        }
+    }
+
+  // Here we find the most exact match
+  // first some debug
+#ifdef JUST_DEBUG
+  if (!retval4.empty()) std::cout << "Matches 4" << std::endl;
+  else if (!retval3.empty()) std::cout << "Matches 3" << std::endl;
+  else if (!retval2.empty()) std::cout << "Matches 2" << std::endl;
+  else if (!retval1.empty()) std::cout << "Matches 1" << std::endl;
+#endif
+  // end debug
+  if (!retval4.empty()) return retval4;
+  if (!retval3.empty()) return retval3;
+  if (!retval2.empty()) return retval2;
+  return retval1;  // might be empty if no matches
+  
+#ifdef REMOVE_FOR_TESTING  
+  uint32_t genericity = 3;
+  Ipv4EndPoint *generic = 0;
+  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
+    {
+      //Ipv4EndPoint* endP = *i;
       NS_LOG_DEBUG ("Looking at endpoint dport=" << (*i)->GetLocalPort ()
                     << " daddr=" << (*i)->GetLocalAddress ()
                     << " sport=" << (*i)->GetPeerPort ()
@@ -271,6 +369,7 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
       retval.push_back (generic);
     }
   return retval;
+#endif
 }
 
 uint16_t

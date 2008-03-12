@@ -36,6 +36,7 @@
 
 #include <vector>
 #include <sstream>
+#include <iomanip>
 
 NS_LOG_COMPONENT_DEFINE ("TcpL4Protocol");
 
@@ -177,7 +178,7 @@ TcpStateMachine::TcpStateMachine()
   aT[FIN_WAIT_2][APP_LISTEN]  = SA (CLOSED,      RST_TX);
   aT[FIN_WAIT_2][APP_CONNECT] = SA (CLOSED,      RST_TX);
   aT[FIN_WAIT_2][APP_SEND]    = SA (CLOSED,      RST_TX);
-  aT[FIN_WAIT_2][SEQ_RECV]    = SA (FIN_WAIT_2,  NO_ACT);
+  aT[FIN_WAIT_2][SEQ_RECV]    = SA (FIN_WAIT_2,  NEW_SEQ_RX);
   aT[FIN_WAIT_2][APP_CLOSE]   = SA (FIN_WAIT_2,  NO_ACT);
   aT[FIN_WAIT_2][TIMEOUT]     = SA (FIN_WAIT_2,  NO_ACT);
   aT[FIN_WAIT_2][ACK_RX]      = SA (FIN_WAIT_2,  NEW_ACK);
@@ -341,7 +342,7 @@ Ptr<Socket>
 TcpL4Protocol::CreateSocket (void)
 {
   NS_LOG_FUNCTION;
-  Ptr<Socket> socket = Create<TcpSocket> (m_node, this);
+  Ptr<Socket> socket = CreateObject<TcpSocket> (m_node, this);
   return socket;
 }
 
@@ -408,6 +409,11 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   TcpHeader tcpHeader;
   //these two do a peek, so that the packet can be forwarded up
   packet->RemoveHeader (tcpHeader);
+  NS_LOG_LOGIC("TcpL4Protocol " << this
+               << " receiving seq " << tcpHeader.GetSequenceNumber()
+               << " ack " << tcpHeader.GetAckNumber()
+               << " flags "<< std::hex << (int)tcpHeader.GetFlags() << std::dec
+               << " data size " << packet->GetSize());
   packet->AddHeader (tcpHeader); 
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" received a packet");
   Ipv4EndPointDemux::EndPoints endPoints =
@@ -463,6 +469,11 @@ void
 TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
                                Ipv4Address saddr, Ipv4Address daddr)
 {
+  NS_LOG_LOGIC("TcpL4Protocol " << this
+              << " sending seq " << outgoingHeader.GetSequenceNumber()
+              << " ack " << outgoingHeader.GetAckNumber()
+              << " flags " << std::hex << (int)outgoingHeader.GetFlags() << std::dec
+              << " data size " << packet->GetSize());
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << packet << saddr << daddr);
   // XXX outgoingHeader cannot be logged

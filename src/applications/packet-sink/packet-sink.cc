@@ -83,9 +83,9 @@ void PacketSink::StartApplication()    // Called at time specified by Start
 
   m_socket->SetRecvCallback (MakeCallback(&PacketSink::Receive, this));
   m_socket->SetAcceptCallback (
-            MakeNullCallback<bool, Ptr<Socket>, const Address &> (),
+            MakeCallback (&PacketSink::AcceptConnectionRequest, this),
             MakeNullCallback<void, Ptr<Socket>, const Address&> (),
-            MakeCallback(&PacketSink::CloseConnection, this) );
+            MakeCallback (&PacketSink::CloseConnection, this) );
 }
 
 void PacketSink::StopApplication()     // Called at time specified by Stop
@@ -114,6 +114,11 @@ void PacketSink::Receive(Ptr<Socket> socket, Ptr<Packet> packet,
 void PacketSink::CloseConnection (Ptr<Socket> socket)
 {
   socket->Close ();
+}
+
+bool PacketSink::AcceptConnectionRequest (Ptr<Socket> socket, const Address &from)
+{
+  return true;
 }
 
 Ptr<TraceResolver> 
