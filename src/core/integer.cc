@@ -62,15 +62,17 @@ std::istream &operator >> (std::istream &is, Integer &integer)
 
 ATTRIBUTE_CONVERTER_IMPLEMENT (Integer);
 
+namespace internal {
 
 Ptr<const AttributeChecker>
-MakeIntegerChecker (int64_t min, int64_t max)
+MakeIntegerChecker (int64_t min, int64_t max, std::string name)
 {
   struct IntegerChecker : public AttributeChecker
   {
-    IntegerChecker (int64_t minValue, int64_t maxValue)
+    IntegerChecker (int64_t minValue, int64_t maxValue, std::string name)
       : m_minValue (minValue),
-      m_maxValue (maxValue) {}
+        m_maxValue (maxValue),
+        m_name (name) {}
     virtual bool Check (Attribute value) const {
       const IntegerValue *v = value.DynCast<const IntegerValue *> ();
       if (v == 0)
@@ -79,14 +81,27 @@ MakeIntegerChecker (int64_t min, int64_t max)
 	}
       return v->Get ().Get () >= m_minValue && v->Get ().Get() <= m_maxValue;
     }
+    virtual std::string GetType (void) const {
+      return m_name;
+    }
+    virtual bool HasTypeConstraints (void) const {
+      return true;
+    }
+    virtual std::string GetTypeConstraints (void) const {
+      std::ostringstream oss;
+      oss << m_minValue << ":" << m_maxValue;
+      return oss.str ();
+    }
     virtual Attribute Create (void) const {
       return Attribute::Create<IntegerValue> ();
     }
     int64_t m_minValue;
     int64_t m_maxValue;
-  } *checker = new IntegerChecker (min, max);
+    std::string m_name;
+  } *checker = new IntegerChecker (min, max, name);
   return Ptr<AttributeChecker> (checker, false);
 }
 
+} // namespace internal
 
 } // namespace ns3

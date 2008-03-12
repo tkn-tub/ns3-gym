@@ -216,6 +216,9 @@ public:
    *          false otherwise.
    */
   virtual bool Check (Attribute value) const = 0;
+  virtual std::string GetType (void) const = 0;
+  virtual bool HasTypeConstraints (void) const = 0;
+  virtual std::string GetTypeConstraints (void) const = 0;
   /**
    * \returns a new instance of an AttributeValue (wrapper in an Attribute 
    *          instance) which matches the type of the underlying attribute.
@@ -227,10 +230,6 @@ public:
 private:
   mutable uint32_t m_count;
 };
-
-template <typename T, typename BASE>
-Ptr<AttributeChecker>
-MakeSimpleAttributeChecker (void);
 
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
@@ -322,6 +321,16 @@ class APtrChecker : public PtrChecker
 	return false;
       }
     return true;
+  }
+  virtual std::string GetType (void) const {
+    // XXX: we should be able to return better information
+    return "Ptr<>";
+  }
+  virtual bool HasTypeConstraints (void) const {
+    return false;
+  }
+  virtual std::string GetTypeConstraints (void) const {
+    return "";
   }
   virtual Attribute Create (void) const {
     return Attribute::Create<PtrValue<T> > ();
@@ -487,23 +496,6 @@ MakePtrChecker (void)
 {
   return Create<internal::APtrChecker<T> > ();
 }
-
-template <typename T, typename BASE>
-Ptr<AttributeChecker>
-MakeSimpleAttributeChecker (void)
-{
-  struct SimpleAttributeChecker : public BASE
-  {
-    virtual bool Check (Attribute value) const {
-      return value.DynCast<const T *> () != 0;
-    }
-    virtual Attribute Create (void) const {
-      return Attribute::Create<T> ();
-    }
-  } *checker = new SimpleAttributeChecker ();
-  return Ptr<AttributeChecker> (checker, false);
-}
-
 
 } // namespace ns3
 

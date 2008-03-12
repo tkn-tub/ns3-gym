@@ -118,7 +118,7 @@ public:
       .AddAttribute ("TestInt16WithBounds", "help text",
 		     Integer (-2),
 		     MakeIntegerAccessor (&AttributeObjectTest::m_int16WithBounds),
-		     MakeIntegerChecker (-5, 10))
+		     MakeIntegerChecker<int16_t> (-5, 10))
       .AddAttribute ("TestInt16SetGet", "help text",
 		     Integer (6),
 		     MakeIntegerAccessor (&AttributeObjectTest::DoSetInt16,

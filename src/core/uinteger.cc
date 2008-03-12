@@ -58,14 +58,16 @@ std::istream & operator >> (std::istream &is, Uinteger &uinteger)
 ATTRIBUTE_CONVERTER_IMPLEMENT(Uinteger);
 ATTRIBUTE_VALUE_IMPLEMENT(Uinteger);
 
+namespace internal {
 
-Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max)
+Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max, std::string name)
 {
   struct Checker : public AttributeChecker
   {
-    Checker (uint64_t minValue, uint64_t maxValue)
+    Checker (uint64_t minValue, uint64_t maxValue, std::string name)
       : m_minValue (minValue),
-      m_maxValue (maxValue) {}
+        m_maxValue (maxValue),
+        m_name (name) {}
     virtual bool Check (Attribute value) const {
       const UintegerValue *v = value.DynCast<const UintegerValue *> ();
       if (v == 0)
@@ -74,14 +76,27 @@ Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max)
 	}
       return v->Get ().Get () >= m_minValue && v->Get ().Get () <= m_maxValue;
     }
+    virtual std::string GetType (void) const {
+      return m_name;
+    }
+    virtual bool HasTypeConstraints (void) const {
+      return true;
+    }
+    virtual std::string GetTypeConstraints (void) const {
+      std::ostringstream oss;
+      oss << m_minValue << ":" << m_maxValue;
+      return oss.str ();
+    }
     virtual Attribute Create (void) const {
       return Attribute::Create<UintegerValue> ();
     }
     uint64_t m_minValue;
     uint64_t m_maxValue;
-  } *checker = new Checker (min, max);
+    std::string m_name;
+  } *checker = new Checker (min, max, name);
   return Ptr<const AttributeChecker> (checker, false);
 }
 
+} // namespace internal
 
 } // namespace ns3

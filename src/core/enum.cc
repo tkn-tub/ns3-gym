@@ -124,6 +124,31 @@ EnumChecker::Check (Attribute value) const
     }
   return false;
 }
+std::string 
+EnumChecker::GetType (void) const
+{
+  return "Enum";
+}
+bool 
+EnumChecker::HasTypeConstraints (void) const
+{
+  return true;
+}
+std::string 
+EnumChecker::GetTypeConstraints (void) const
+{
+  std::ostringstream oss;
+  for (ValueSet::const_iterator i = m_valueSet.begin (); i != m_valueSet.end ();)
+    {
+      oss << i->second;
+      i++;
+      if (i != m_valueSet.end ())
+        {
+          oss << "|";
+        }
+    }
+  return oss.str ();
+}
 Attribute 
 EnumChecker::Create (void) const
 {

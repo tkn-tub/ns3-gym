@@ -56,15 +56,18 @@ std::istream & operator >> (std::istream &is, Double &value)
 }
 
 ATTRIBUTE_VALUE_IMPLEMENT (Double);
-  ATTRIBUTE_CONVERTER_IMPLEMENT (Double);
+ATTRIBUTE_CONVERTER_IMPLEMENT (Double);
 
-Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max)
+namespace internal {
+
+Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::string name)
 {
   struct Checker : public AttributeChecker
   {
-    Checker (double minValue, double maxValue)
+    Checker (double minValue, double maxValue, std::string name)
       : m_minValue (minValue),
-      m_maxValue (maxValue) {}
+        m_maxValue (maxValue),
+        m_name (name) {}
     virtual bool Check (Attribute value) const {
       const DoubleValue *v = value.DynCast<const DoubleValue *> ();
       if (v == 0)
@@ -73,14 +76,27 @@ Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max)
 	}
       return v->Get () >= m_minValue && v->Get () <= m_maxValue;
     }
+    virtual std::string GetType (void) const {
+      return m_name;
+    }
+    virtual bool HasTypeConstraints (void) const {
+      return true;
+    }
+    virtual std::string GetTypeConstraints (void) const {
+      std::ostringstream oss;
+      oss << m_minValue << ":" << m_maxValue;
+      return oss.str ();
+    }
     virtual Attribute Create (void) const {
       return Attribute::Create<DoubleValue> ();
     }
     double m_minValue;
     double m_maxValue;
-  } *checker = new Checker (min, max);
+    std::string m_name;
+  } *checker = new Checker (min, max, name);
   return Ptr<const AttributeChecker> (checker, false);
 }
 
+} // namespace internal
 
 } // namespace ns3
