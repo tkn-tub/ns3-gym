@@ -24,12 +24,11 @@
 
 namespace ns3 {
 
-Ipv4EndPoint::Ipv4EndPoint (Ipv4Address address, uint16_t port, Ipv4Address localInterface)
+Ipv4EndPoint::Ipv4EndPoint (Ipv4Address address, uint16_t port)
   : m_localAddr (address), 
     m_localPort (port),
     m_peerAddr (Ipv4Address::GetAny ()),
-    m_peerPort (0),
-    m_localInterface (localInterface)
+    m_peerPort (0)
 {}
 Ipv4EndPoint::~Ipv4EndPoint ()
 {
@@ -49,17 +48,6 @@ void
 Ipv4EndPoint::SetLocalAddress (Ipv4Address address)
 {
   m_localAddr = address;
-}
-
-Ipv4Address Ipv4EndPoint::GetLocalInterface (void) const
-{
-  return m_localInterface;
-}
-
-void
-Ipv4EndPoint::SetLocalInterface (Ipv4Address localInterface)
-{
-  m_localInterface = localInterface;
 }
 
 uint16_t 

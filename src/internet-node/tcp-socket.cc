@@ -211,14 +211,6 @@ TcpSocket::Bind (const Address &address)
   InetSocketAddress transport = InetSocketAddress::ConvertFrom (address);
   Ipv4Address ipv4 = transport.GetIpv4 ();
   uint16_t port = transport.GetPort ();
-  Ipv4Address localInterface = Ipv4Address::GetAny ();
-  if (ipv4 != Ipv4Address::GetAny ())
-    {
-      Ptr<Ipv4> ipv4_api = m_node->GetObject<Ipv4> ();
-      // Assert that the given address matches an existing local interface
-      NS_ASSERT (ipv4_api->FindInterfaceForAddr (ipv4) != 0);
-      localInterface = ipv4;
-    }
   if (ipv4 == Ipv4Address::GetAny () && port == 0)
     {
       m_endPoint = m_tcp->Allocate ();
@@ -231,12 +223,12 @@ TcpSocket::Bind (const Address &address)
     }
   else if (ipv4 != Ipv4Address::GetAny () && port == 0)
     {
-      m_endPoint = m_tcp->Allocate (ipv4, localInterface);
+      m_endPoint = m_tcp->Allocate (ipv4);
       NS_LOG_LOGIC ("TcpSocket "<<this<<" got an endpoint: "<<m_endPoint);
     }
   else if (ipv4 != Ipv4Address::GetAny () && port != 0)
     {
-      m_endPoint = m_tcp->Allocate (ipv4, port, localInterface);
+      m_endPoint = m_tcp->Allocate (ipv4, port);
       NS_LOG_LOGIC ("TcpSocket "<<this<<" got an endpoint: "<<m_endPoint);
     }
 
@@ -762,9 +754,7 @@ void TcpSocket::CompleteFork(Ptr<Packet> p, const TcpHeader& h, const Address& f
   m_endPoint = m_tcp->Allocate (m_localAddress,
                                 m_localPort,
                                 m_remoteAddress,
-                                m_remotePort,
-                                Ipv4Address::GetAny()
-                                );
+                                m_remotePort);
   //the cloned socket with be in listen state, so manually change state
   m_state = SYN_RCVD;
   //equivalent to FinishBind
