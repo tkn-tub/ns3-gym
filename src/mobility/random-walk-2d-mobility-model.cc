@@ -33,7 +33,7 @@ NS_OBJECT_ENSURE_REGISTERED (RandomWalk2dMobilityModel);
 TypeId
 RandomWalk2dMobilityModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RandomWalkMobilityModel")
+  static TypeId tid = TypeId ("RandomWalk2dMobilityModel")
     .SetParent<MobilityModel> ()
     .SetGroupName ("Mobility")
     .AddConstructor<RandomWalk2dMobilityModel> ()
