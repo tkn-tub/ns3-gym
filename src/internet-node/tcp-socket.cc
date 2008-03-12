@@ -77,6 +77,59 @@ TcpSocket::TcpSocket (Ptr<Node> node, Ptr<TcpL4Protocol> tcp)
   NS_LOG_PARAMS (this<<node<<tcp);
 }
 
+TcpSocket::TcpSocket(const TcpSocket& sock)
+  : Socket(sock), //copy the base class callbacks
+    m_skipRetxResched (sock.m_skipRetxResched),
+    m_dupAckCount (sock.m_dupAckCount),
+    m_endPoint (0),
+    m_node (sock.m_node),
+    m_tcp (sock.m_tcp),
+    m_defaultAddress (sock.m_defaultAddress),
+    m_defaultPort (sock.m_defaultPort),
+    m_localAddress (sock.m_localAddress),
+    m_localPort (sock.m_localPort),
+    m_errno (sock.m_errno),
+    m_shutdownSend (sock.m_shutdownSend),
+    m_shutdownRecv (sock.m_shutdownRecv),
+    m_connected (sock.m_connected),
+    m_state (sock.m_state),
+    m_closeNotified (sock.m_closeNotified),
+    m_closeRequestNotified (sock.m_closeRequestNotified),
+    m_closeOnEmpty (sock.m_closeOnEmpty),
+    m_pendingClose (sock.m_pendingClose),
+    m_nextTxSequence (sock.m_nextTxSequence),
+    m_highTxMark (sock.m_highTxMark),
+    m_highestRxAck (sock.m_highestRxAck),
+    m_lastRxAck (sock.m_lastRxAck),
+    m_nextRxSequence (sock.m_nextRxSequence),
+    m_pendingData (0),
+    m_segmentSize (sock.m_segmentSize),
+    m_rxWindowSize (sock.m_rxWindowSize),
+    m_advertisedWindowSize (sock.m_advertisedWindowSize),
+    m_cWnd (sock.m_cWnd),
+    m_ssThresh (sock.m_ssThresh),
+    m_initialCWnd (sock.m_initialCWnd),
+    m_rtt (0),
+    m_lastMeasuredRtt (Seconds(0.0)),
+    m_cnTimeout (sock.m_cnTimeout),
+    m_cnCount (sock.m_cnCount)
+{
+  NS_LOG_FUNCTION;
+  NS_LOG_LOGIC("Invoked the copy constructor");
+  //copy the pending data if necessary
+  if(sock.m_pendingData)
+    {
+      m_pendingData = sock.m_pendingData->Copy();
+    }
+  //copy the rtt if necessary
+  if (sock.m_rtt)
+    {
+      m_rtt = sock.m_rtt->Copy();
+    }
+  //can't "copy" the endpoint just yes, must do this when we know the peer info
+  //too; this is in SYN_ACK_TX
+}
+
 TcpSocket::~TcpSocket ()
 {
   NS_LOG_FUNCTION;
@@ -134,6 +187,8 @@ TcpSocket::FinishBind (void)
     }
   m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, this));
   m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, this));
+  m_localAddress = m_endPoint->GetLocalAddress ();
+  m_localPort = m_endPoint->GetLocalPort ();
   return 0;
 }
 
@@ -427,6 +482,9 @@ Actions_t TcpSocket::ProcessEvent (Events_t e)
   NS_LOG_LOGIC ("TcpSocket " << this << " moved from state " << saveState 
     << " to state " <<m_state);
   NS_LOG_LOGIC ("TcpSocket " << this << " pendingData " << m_pendingData);
+
+  //extra event logic is here for RX events
+  //e = SYN_ACK_RX
   if (saveState == SYN_SENT && m_state == ESTABLISHED)
     // this means the application side has completed its portion of 
     // the handshaking
@@ -436,6 +494,7 @@ Actions_t TcpSocket::ProcessEvent (Events_t e)
       m_endPoint->SetPeer (m_defaultAddress, m_defaultPort);
       NS_LOG_LOGIC ("TcpSocket " << this << " Connected!");
     }
+
   if (needCloseNotify && !m_closeNotified)
     {
       NS_LOG_LOGIC ("TcpSocket " << this << " transition to CLOSED from " 
@@ -513,6 +572,8 @@ bool TcpSocket::ProcessAction (Actions_t a)
       break;
     case SYN_ACK_TX:
       NS_LOG_LOGIC ("TcpSocket " << this <<" Action SYN_ACK_TX");
+      // TCP SYN Flag consumes one byte
+      ++m_nextRxSequence;
       SendEmptyPacket (TcpHeader::SYN | TcpHeader::ACK);
       break;
     case FIN_TX:
@@ -564,7 +625,7 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
                                      const Address& fromAddress)
 {
   NS_LOG_FUNCTION;
-  NS_LOG_PARAMS (this << p << "tcpHeader " << fromAddress);
+  NS_LOG_PARAMS (this << a << p  << fromAddress);
   uint32_t localIfIndex;
   Ptr<Ipv4> ipv4 = m_node->GetObject<Ipv4> ();
   switch (a)
@@ -572,12 +633,46 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
     case SYN_ACK_TX:
       NS_LOG_LOGIC ("TcpSocket " << this <<" Action SYN_ACK_TX");
       m_defaultPort = InetSocketAddress::ConvertFrom (fromAddress).GetPort ();
-      m_defaultAddress = 
-        InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 ();
-      m_endPoint->SetPeer (m_defaultAddress, m_defaultPort);
+      m_defaultAddress = InetSocketAddress::ConvertFrom (fromAddress).GetIpv4 ();
       if (ipv4->GetIfIndexForDestination (m_defaultAddress, localIfIndex))
+	    {
+          m_localAddress = ipv4->GetAddress (localIfIndex);
+        }
+      if (m_state == LISTEN) //this means we should fork a new TcpSocket
         {
-          m_endPoint->SetLocalAddress (ipv4->GetAddress (localIfIndex));
+          //this isn't a smart pointer because if it were it'd go out of scope and
+          //get deleted; since execution will get back to this socket, it will
+          //eventually get passed back up to the application as a smart pointer
+          TcpSocket* newSock = new TcpSocket(*this);
+          //Ptr<TcpSocket> newSock = Create<TcpSocket>(*this);
+          NS_LOG_LOGIC ("Cloned a TcpSocket " << newSock);
+          //the cloned socket with be in listen state, so manually change state
+          newSock->m_state = SYN_RCVD;
+          //this listening socket should do nothing more
+          return newSock->ProcessPacketAction(SYN_ACK_TX, p, tcpHeader, fromAddress);
+        }
+
+      if (!m_endPoint) //no endpoint means this a cloned socket due to SYN_RX
+        {
+          //equivalent to Bind
+          m_endPoint = m_tcp->Allocate (m_localAddress,
+                                        m_localPort,
+                                        m_defaultAddress,
+                                        m_defaultPort,
+                                        Ipv4Address::GetAny()
+                                       );
+          //equivalent to FinishBind
+          m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, this));
+          m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, this));
+        }
+      else
+        {
+          m_endPoint->SetPeer (m_defaultAddress, m_defaultPort);
+          if (ipv4->GetIfIndexForDestination (m_defaultAddress, localIfIndex))
+            {
+			  m_localAddress = ipv4->GetAddress (localIfIndex);
+              m_endPoint->SetLocalAddress (m_localAddress);
+            }
         }
       // TCP SYN consumes one byte
       m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);

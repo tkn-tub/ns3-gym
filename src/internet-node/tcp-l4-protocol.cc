@@ -76,7 +76,7 @@ TcpStateMachine::TcpStateMachine()
   aT[LISTEN][APP_CLOSE]   = SA (CLOSED,   NO_ACT);
   aT[LISTEN][TIMEOUT]     = SA (LISTEN,   NO_ACT);
   aT[LISTEN][ACK_RX]      = SA (LISTEN,   NO_ACT);
-  aT[LISTEN][SYN_RX]      = SA (SYN_RCVD,   SYN_ACK_TX);  //XXX hacked for now, should stay in listen and replicate
+  aT[LISTEN][SYN_RX]      = SA (LISTEN,   SYN_ACK_TX);//stay in listen and fork
   aT[LISTEN][SYN_ACK_RX]  = SA (LISTEN,   NO_ACT);
   aT[LISTEN][FIN_RX]      = SA (LISTEN,   NO_ACT);
   aT[LISTEN][FIN_ACK_RX]  = SA (LISTEN,   NO_ACT);

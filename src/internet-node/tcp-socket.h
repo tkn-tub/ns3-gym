@@ -46,6 +46,7 @@ public:
    * Create an unbound tcp socket.
    */
   TcpSocket (Ptr<Node> node, Ptr<TcpL4Protocol> tcp);
+  TcpSocket (const TcpSocket& sock);
   virtual ~TcpSocket ();
 
   virtual enum SocketErrno GetErrno (void) const;
@@ -107,6 +108,10 @@ private:
   Ptr<TcpL4Protocol> m_tcp;
   Ipv4Address m_defaultAddress;
   uint16_t m_defaultPort;
+  //these two are so that the socket/endpoint cloning works
+  Ipv4Address m_localAddress;
+  uint16_t m_localPort;
+  //XXX Dead code?
   Callback<void, Ptr<Socket>, uint32_t, const Address &> m_dummyRxCallback;
   Callback<void, Ptr<Socket>, uint8_t const*, uint32_t, const Address &> 
     m_rxCallback;
