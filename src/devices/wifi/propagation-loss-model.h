@@ -56,9 +56,6 @@ class RandomPropagationLossModel : public PropagationLossModel
 public:
   static TypeId GetTypeId (void);
 
-  /**
-   * Use the default parameters from \valueref{RandomPropagationLossDistribution}.
-   */
   RandomPropagationLossModel ();
   virtual ~RandomPropagationLossModel ();
 
@@ -100,17 +97,12 @@ private:
  *
  * This model is invalid for small distance values.
  * The current implementation returns the txpower as the rxpower
- * for any distance smaller than \valueref{FriisPropagationLossMinDistance}.
+ * for any distance smaller than MinDistance.
  */
 class FriisPropagationLossModel : public PropagationLossModel
 {
 public:
   static TypeId GetTypeId (void);
-  /**
-   * Use the default parameters from \valueref{FriisPropagationLossLambda},
-   * \valueref{FriisPropagationLossSystemLoss}, and,
-   * \valueref{FriisPropagationLossMinDistance}.
-   */
   FriisPropagationLossModel ();
   /**
    * \param frequency (Hz)
@@ -186,12 +178,6 @@ class LogDistancePropagationLossModel : public PropagationLossModel
 {
 public:
   static TypeId GetTypeId (void);
-  /**
-   * Use the default parameters from
-   * \valueref{LogDistancePropagationLossExponent}, and,
-   * \valueref{LogDistancePropagationLossReferenceType}
-   * to create a new propagation loss model.
-   */
   LogDistancePropagationLossModel ();
 
   /**

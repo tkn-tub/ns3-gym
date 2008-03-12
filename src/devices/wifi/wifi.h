@@ -42,19 +42,12 @@
  * "Yet Another Network Simulator", available there: http://cutebugs.net/files/wns2-yans.pdf
  *
  * It also provides a set of Rate control algorithms:
- *   - ns3::ArfMacStations (initialized from \valueref{WifiArfTimerThreshold}, and,
- *     \valueref{WifiArfSuccessThreshold})
- *   - ns3::AArfMacStations (initialized from \valueref{WifiAarfMinSuccessThreshold},
- *     \valueref{WifiAarfMinTimerThreshold}, \valueref{WifiAarfSuccessK}, 
- *     \valueref{WifiAarfMaxSuccessThreshold}, and, \valueref{WifiAarfTimerK}
- *   - ns3::IdealMacStations (initialized from \valueref{WifiIdealRateControlBerThreshold})
- *   - ns3::CrMacStations (initialized from \valueref{WifiConstantDataRate}, and,
- *     \valueref{WifiConstantCtlRate}).
+ *   - ns3::ArfMacStations 
+ *   - ns3::AArfMacStations
+ *   - ns3::IdealMacStations
+ *   - ns3::CrMacStations
  *   - ns3::OnoeMacStations
  *   - ns3::AmrrMacStations
- *
- * The type of rate control algorithm is controlled through \valueref{WifiRateControlAlgorithm}.
- *
  *
  * \section Wifi Tutorial
  *

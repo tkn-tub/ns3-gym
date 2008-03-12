@@ -46,11 +46,6 @@ class RandomDirection2dMobilityModel : public MobilityModel
  public:
   static TypeId GetTypeId (void);
 
-  /**
-   * Create from \valueref{RandomDirection2dSpeed},
-   * \valueref{RandomDirection2dPause}, and,
-   * \valueref{RandomDirection2dArea}.
-   */
   RandomDirection2dMobilityModel ();
  private:
   void Start (void);

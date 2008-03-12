@@ -54,11 +54,6 @@ class PacketSink : public Application
 {
 public:
   static TypeId GetTypeId (void);
-  /**
-   * \param n node associated to this application
-   * \param local local address to bind to
-   * \param tid string to identify transport protocol of interest
-   */
   PacketSink ();
 
   virtual ~PacketSink ();

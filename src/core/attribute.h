@@ -185,7 +185,7 @@ public:
    * This method expects that the caller has checked that the input value is
    * valid with AttributeChecker::Check.
    */
-  virtual bool Get (const ObjectBase * object, Attribute value) const = 0;
+  virtual bool Get (const ObjectBase * object, Attribute attribute) const = 0;
 private:
   mutable uint32_t m_count;
 };

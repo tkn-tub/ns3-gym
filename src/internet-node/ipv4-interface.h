@@ -64,11 +64,6 @@ class TraceContext;
 class Ipv4Interface  : public Object
 {
 public:
-  /**
-   * \param nd the NetDevice associated to this Ipv4Interface.
-   *           This value can be zero in which case the MTU
-   *           of this interface will be 2^(16-1).
-   */
   Ipv4Interface ();
   virtual ~Ipv4Interface();
 

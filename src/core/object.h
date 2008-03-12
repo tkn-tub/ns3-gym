@@ -107,7 +107,7 @@ public:
   static uint32_t GetRegisteredN (void);
   /**
    * \param i index
-   * \returns the TypeId instance whose index is \i.
+   * \returns the TypeId instance whose index is i.
    */
   static TypeId GetRegistered (uint32_t i);
 
@@ -156,14 +156,14 @@ public:
   /**
    * \param i index into attribute array
    * \returns the name associated to the attribute whose
-   *          index is \i i.
+   *          index is i.
    */
   std::string GetAttributeName (uint32_t i) const;
   std::string GetAttributeHelp (uint32_t i) const;
   /**
    * \param i index into attribute array
    * \returns the full name associated to the attribute whose
-   *          index is \i i.
+   *          index is i.
    */
   std::string GetAttributeFullName (uint32_t i) const;
 
@@ -225,8 +225,10 @@ public:
   /**
    * \param name the name of the new attribute
    * \param help some help text which describes the purpose of this
-   *        attribute
-   * \param param an instance of the associated Accessor subclass
+   *        attribute.
+   * \param initialValue the initial value for this attribute.
+   * \param accessor an instance of the associated AttributeAccessor subclass.
+   * \param checker an instance of the associated AttributeChecker subclass.
    * \returns this TypeId instance
    *
    * Record in this TypeId the fact that a new attribute exists.
@@ -234,7 +236,7 @@ public:
   TypeId AddAttribute (std::string name,
                        std::string help, 
                        Attribute initialValue,
-                       Ptr<const AttributeAccessor> spec,
+                       Ptr<const AttributeAccessor> accessor,
                        Ptr<const AttributeChecker> checker);
 
   /**
@@ -242,7 +244,9 @@ public:
    * \param help some help text which describes the purpose of this
    *        attribute
    * \param flags flags which describe how this attribute can be read and/or written.
-   * \param param an instance of the associated Accessor subclass
+   * \param initialValue the initial value for this attribute.
+   * \param accessor an instance of the associated AttributeAccessor subclass.
+   * \param checker an instance of the associated AttributeChecker subclass.
    * \returns this TypeId instance
    *
    * Record in this TypeId the fact that a new attribute exists.
@@ -304,6 +308,8 @@ private:
 
   /**
    * \param fullName the full name of the requested attribute
+   * \param info a pointer to the TypeId::AttributeInfo data structure
+   *        where the result value of this method will be stored.
    * \returns the Accessor associated to the requested attribute
    */
   static bool LookupAttributeByFullName (std::string fullName, struct AttributeInfo *info);
@@ -438,8 +444,7 @@ public:
   bool GetAttribute (std::string name, std::string &value) const;
   /**
    * \param name the name of the attribute to read
-   * \param value a reference to the object where the value of the 
-   *        attribute should be stored.
+   * \returns the attribute read.
    *
    * If the input attribute name does not exist, this method crashes.
    */

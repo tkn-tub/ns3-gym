@@ -40,11 +40,6 @@ namespace ns3 {
  * either a fixed distance has been walked or until a fixed amount
  * of time.
  *
- * The parameters of the model can be specified either with the DefaultValue::Bind
- * function and the variables \valueref{RandomWalk2dSpeed}, \valueref{RandomWalk2dMode}, 
- * \valueref{RandomWalk2dDistance}, \valueref{RandomWalk2dTime}, and, \valueref{RandomWalk2dBounds} or
- * with an instance of the RandomWalk2dMobilityModelParameters class which
- * must be fed to the RandomWalk2dMobilityModel constructors.
  */
 class RandomWalk2dMobilityModel : public MobilityModel 
 {
@@ -56,15 +51,6 @@ class RandomWalk2dMobilityModel : public MobilityModel
     MODE_TIME
   };
 
-  /**
-   * Instantiate a set of RandomWalk parameters initialized
-   * with construction values from \valueref{RandomWalk2dMode},
-   * \valueref{RandomWalk2dDistance}, \valueref{RandomWalk2dTime},
-   * \valueref{RandomWalk2dSpeed}, \valueref{RandomWalk2dDirection},
-   * and, \valueref{RandomWalk2dBounds}.
-   *
-   * The default position is (0,0,0)
-   */
   RandomWalk2dMobilityModel ();
 
  private:

@@ -42,10 +42,7 @@ class UdpL4Protocol : public Ipv4L4Protocol {
 public:
   static TypeId GetTypeId (void);
   static const uint8_t PROT_NUMBER;
-  /**
-   * \brief Constructor
-   * \param node The node this protocol is associated with
-   */
+
   UdpL4Protocol ();
   virtual ~UdpL4Protocol ();
 

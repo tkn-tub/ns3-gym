@@ -41,10 +41,7 @@ class ArpL3Protocol : public Object
 public:
   static TypeId GetTypeId (void);
   static const uint16_t PROT_NUMBER;
-  /**
-   * \brief Constructor
-   * \param node The node which this ARP object is associated with
-   */
+
   ArpL3Protocol ();
   virtual ~ArpL3Protocol ();
 

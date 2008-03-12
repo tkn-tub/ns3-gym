@@ -50,13 +50,6 @@ class WifiChannel : public Channel
 public:
   static TypeId GetTypdId (void);
 
-  /**
-   * arg1: the packet to receive
-   * arg2: the rx power of the packet to receive (dbm)
-   * arg3: the tx mode of the packet to receive
-   * arg4: the preamble of the packet to receive
-   */
-  typedef Callback<void,Ptr<Packet>,double,WifiMode,WifiPreamble> ReceiveCallback;
   WifiChannel ();
   virtual ~WifiChannel ();
 
@@ -80,8 +73,8 @@ public:
   /**
    * \param device the device to add to the list of connected
    *        devices.
-   * \param callback the callback to invoke when a packet must
-   *        be received.
+   * \param phy the physical layer which will receive packets
+   *        on behalf of the device.
    *
    * This method should not be invoked by normal users. It is 
    * currently invoked only from WifiPhy::SetChannel.
