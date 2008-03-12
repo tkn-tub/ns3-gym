@@ -429,13 +429,11 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
     source.Print (oss);
     oss<<" source port: "<<tcpHeader.GetSourcePort ();
     NS_LOG_LOGIC (oss.str ());
+    return;
   }
-  for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
-       endPoint != endPoints.end (); endPoint++)
-    {
-      NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
-      (*endPoint)->ForwardUp (packet, source, tcpHeader.GetSourcePort ());
-    }
+  NS_ASSERT_MSG (endPoints.size() == 1 , "Demux returned more than one endpoint");
+  NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
+  (*endPoints.begin ())->ForwardUp (packet, source, tcpHeader.GetSourcePort ());
 }
 
 void

@@ -228,8 +228,7 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
 
       if (isBroadcast)
         {
-          std::cout  << "Found bcast, localaddr " << endP->GetLocalAddress() 
-                     << std::endl;
+          NS_LOG_DEBUG("Found bcast, localaddr " << endP->GetLocalAddress());
         }
 
       if (isBroadcast && (endP->GetLocalAddress() != Ipv4Address::GetAny()))
@@ -259,7 +258,7 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
         { // Only local port matches exactly
           retval1.push_back(endP);
         }
-      if ((localAddressMatchesExact || ((isBroadcast && localAddressMatchesWildCard)))&&
+      if ((localAddressMatchesExact || (isBroadcast && localAddressMatchesWildCard))&&
           remotePeerMatchesWildCard &&
            remoteAddressMatchesWildCard)
         { // Only local port and local address matches exactly
@@ -280,96 +279,10 @@ Ipv4EndPointDemux::Lookup (Ipv4Address daddr, uint16_t dport,
     }
 
   // Here we find the most exact match
-  // first some debug
-#ifdef JUST_DEBUG
-  if (!retval4.empty()) std::cout << "Matches 4" << std::endl;
-  else if (!retval3.empty()) std::cout << "Matches 3" << std::endl;
-  else if (!retval2.empty()) std::cout << "Matches 2" << std::endl;
-  else if (!retval1.empty()) std::cout << "Matches 1" << std::endl;
-#endif
-  // end debug
   if (!retval4.empty()) return retval4;
   if (!retval3.empty()) return retval3;
   if (!retval2.empty()) return retval2;
   return retval1;  // might be empty if no matches
-  
-#ifdef REMOVE_FOR_TESTING  
-  uint32_t genericity = 3;
-  Ipv4EndPoint *generic = 0;
-  for (EndPointsI i = m_endPoints.begin (); i != m_endPoints.end (); i++) 
-    {
-      //Ipv4EndPoint* endP = *i;
-      NS_LOG_DEBUG ("Looking at endpoint dport=" << (*i)->GetLocalPort ()
-                    << " daddr=" << (*i)->GetLocalAddress ()
-                    << " sport=" << (*i)->GetPeerPort ()
-                    << " saddr=" << (*i)->GetPeerAddress ());
-      if ((*i)->GetLocalPort () != dport) 
-        {
-          NS_LOG_LOGIC ("Skipping endpoint " << &(*i)
-                        << " because endpoint dport "
-                        << (*i)->GetLocalPort ()
-                        << " does not match packet dport " << dport);
-          continue;
-        }
-      bool isBroadcast = 
-        (daddr.IsBroadcast () ||
-         daddr.IsSubnetDirectedBroadcast (incomingInterface->GetNetworkMask ()));
-      Ipv4Address incomingInterfaceAddr = incomingInterface->GetAddress ();
-
-      NS_LOG_DEBUG ("dest addr " << daddr << " broadcast? " << isBroadcast
-                    << " localInterface="<< (*i)->GetLocalInterface ());
-      bool localAddressMatches;
-      if (isBroadcast)
-        {
-          if ((*i)->GetLocalInterface () == Ipv4Address::GetAny ())
-            {
-              localAddressMatches = true;
-            }
-          else
-            {
-              localAddressMatches = ((*i)->GetLocalInterface () == incomingInterfaceAddr);
-            }
-        }
-      else
-        {
-          localAddressMatches = ((*i)->GetLocalAddress () == daddr);
-        }
-      NS_LOG_LOGIC ("Local address matches: " << localAddressMatches);
-      NS_LOG_LOGIC ("Peer port matches: " << 
-        bool ((*i)->GetPeerPort () == sport || (*i)->GetPeerPort () == 0));
-      NS_LOG_LOGIC ("Peer address matches: " << 
-        bool ((*i)->GetPeerAddress () == saddr ||
-        (*i)->GetPeerAddress () == Ipv4Address::GetAny ()));
-      
-      if ( localAddressMatches
-           && ((*i)->GetPeerPort () == sport || (*i)->GetPeerPort () == 0)
-           && ((*i)->GetPeerAddress () == saddr || (*i)->GetPeerAddress () == Ipv4Address::GetAny ()))
-        {
-          NS_LOG_LOGIC ("MATCH");
-          /* this is an exact match. */
-          retval.push_back (*i);
-        }
-      uint32_t tmp = 0;
-      if ((*i)->GetLocalAddress () == Ipv4Address::GetAny ()) 
-        {
-          tmp ++;
-        }
-      if ((*i)->GetPeerAddress () == Ipv4Address::GetAny ()) 
-        {
-          tmp ++;
-        }
-      if (tmp < genericity) 
-        {
-          generic = (*i);
-          genericity = tmp;
-        }
-    }
-  if (retval.size () == 0 && generic != 0)
-    {
-      retval.push_back (generic);
-    }
-  return retval;
-#endif
 }
 
 uint16_t
