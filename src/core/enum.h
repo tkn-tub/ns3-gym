@@ -59,6 +59,9 @@ public:
   void Add (int v, std::string name);
 
   virtual bool Check (Attribute value) const;
+  virtual std::string GetType (void) const;
+  virtual bool HasTypeConstraints (void) const;
+  virtual std::string GetTypeConstraints (void) const;
   virtual Attribute Create (void) const;
 
 private:

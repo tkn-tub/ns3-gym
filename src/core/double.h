@@ -60,25 +60,44 @@ Ptr<const AttributeChecker> MakeDoubleChecker (void);
 template <typename T>
 Ptr<const AttributeChecker> MakeDoubleChecker (double min);
 
+template <typename T>
 Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max);
 
 
 } // namespace ns3
 
+#include "type-name.h"
+
 namespace ns3 {
+
+namespace internal {
+
+Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max, std::string name);
+
+} // namespace internal
 
 template <typename T>
 Ptr<const AttributeChecker> MakeDoubleChecker (void)
 {
-  return MakeDoubleChecker (-std::numeric_limits<T>::max (),
-			    std::numeric_limits<T>::max ());
+  return internal::MakeDoubleChecker (-std::numeric_limits<T>::max (),
+                                      std::numeric_limits<T>::max (),
+                                      TypeNameGet<T> ());
 }
 
 template <typename T>
 Ptr<const AttributeChecker> MakeDoubleChecker (double min)
 {
-  return MakeDoubleChecker (min,
-			    std::numeric_limits<T>::max ());
+  return internal::MakeDoubleChecker (min,
+                                      std::numeric_limits<T>::max (),
+                                      TypeNameGet<T> ());
+}
+
+template <typename T>
+Ptr<const AttributeChecker> MakeDoubleChecker (double min, double max)
+{
+  return internal::MakeDoubleChecker (min,
+                                      max,
+                                      TypeNameGet<T> ());
 }
 
 } // namespace ns3

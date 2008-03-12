@@ -26,6 +26,39 @@
 #include <sstream>
 #include "fatal-error.h"
 
+namespace ns3 {
+
+template <typename T, typename BASE>
+Ptr<AttributeChecker>
+MakeSimpleAttributeChecker (std::string name)
+{
+  struct SimpleAttributeChecker : public BASE
+  {
+    virtual bool Check (Attribute value) const {
+      return value.DynCast<const T *> () != 0;
+    }
+    virtual std::string GetType (void) const {
+      return m_type;
+    }
+    virtual bool HasTypeConstraints (void) const {
+      return false;
+    }
+    virtual std::string GetTypeConstraints (void) const {
+      return "";
+    }
+    virtual Attribute Create (void) const {
+      return Attribute::Create<T> ();
+    }
+    std::string m_type;
+  } *checker = new SimpleAttributeChecker ();
+  checker->m_type = name;
+  return Ptr<AttributeChecker> (checker, false);
+}
+
+}
+
+
+
 /**
  * \defgroup AttributeHelper
  *
@@ -188,7 +221,7 @@
 #define ATTRIBUTE_CHECKER_IMPLEMENT(type)				\
   Ptr<const AttributeChecker> Make##type##Checker (void)		\
   {									\
-    return MakeSimpleAttributeChecker<type##Value,type##Checker> ();	\
+    return MakeSimpleAttributeChecker<type##Value,type##Checker> (#type);	\
   }									\
 
 /**

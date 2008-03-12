@@ -61,24 +61,44 @@ Ptr<const AttributeChecker> MakeUintegerChecker (void);
 template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min);
 
+template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max);
 
 } // namespace ns3
 
+#include "type-name.h"
+
 namespace ns3 {
+
+namespace internal {
+
+Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max, std::string name);
+
+} // namespace internal
+
 
 template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker (void)
 {
-  return MakeUintegerChecker (std::numeric_limits<T>::min (),
-			      std::numeric_limits<T>::max ());
+  return internal::MakeUintegerChecker (std::numeric_limits<T>::min (),
+                                        std::numeric_limits<T>::max (),
+                                        TypeNameGet<T> ());
 }
 
 template <typename T>
 Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min)
 {
-  return MakeUintegerChecker (min,
-			      std::numeric_limits<T>::max ());
+  return internal::MakeUintegerChecker (min,
+                                        std::numeric_limits<T>::max (),
+                                        TypeNameGet<T> ());
+}
+
+template <typename T>
+Ptr<const AttributeChecker> MakeUintegerChecker (uint64_t min, uint64_t max)
+{
+  return internal::MakeUintegerChecker (min,
+                                        max, 
+                                        TypeNameGet<T> ());
 }
 
 } // namespace ns3

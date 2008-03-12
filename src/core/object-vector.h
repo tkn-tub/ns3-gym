@@ -5,6 +5,7 @@
 #include "object.h"
 #include "ptr.h"
 #include "attribute.h"
+#include "attribute-helper.h"
 
 namespace ns3 {
 
@@ -34,16 +35,15 @@ MakeObjectVectorAccessor (U T::*memberVector);
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (Ptr<U> (T::*get) (INDEX) const,
-			   INDEX (T::*getN) (void) const);
+			  INDEX (T::*getN) (void) const);
 
 template <typename T, typename U, typename INDEX>
 Ptr<const AttributeAccessor>
 MakeObjectVectorAccessor (INDEX (T::*getN) (void) const,
-			   Ptr<U> (T::*get) (INDEX) const);
+			  Ptr<U> (T::*get) (INDEX) const);
 
 
-class ObjectVectorChecker : public AttributeChecker {};
-Ptr<const AttributeChecker> MakeObjectVectorChecker (void);
+ATTRIBUTE_CHECKER_DEFINE (ObjectVector);
 
 } // namespace ns3
 
