@@ -115,8 +115,7 @@ public:
 
   // MPR
   bool FindMprAddress (const Ipv4Address &address);
-  void InsertMprAddress (const Ipv4Address &address);
-  void ClearMprSet ();
+  void SetMprSet (MprSet mprSet);
 
   // Duplicate
   DuplicateTuple* FindDuplicateTuple (const Ipv4Address &address,

@@ -246,15 +246,9 @@ OlsrState::FindMprAddress (Ipv4Address const &addr)
 }
 
 void
-OlsrState::InsertMprAddress (Ipv4Address const & addr)
+OlsrState::SetMprSet (MprSet mprSet)
 {
-  m_mprSet.insert (addr);
-}
-
-void
-OlsrState::ClearMprSet ()
-{
-  m_mprSet.clear ();
+  m_mprSet = mprSet;
 }
 
 /********** Duplicate Set Manipulation **********/
