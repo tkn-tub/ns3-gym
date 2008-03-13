@@ -46,10 +46,10 @@ public:
   WifiNetDevice ();
   virtual ~WifiNetDevice ();
 
-  
-  void Setup (Ptr<Node> node, Ptr<WifiMac> mac, Ptr<WifiPhy> phy,
-              Ptr<WifiRemoteStationManager> manager,
-              Ptr<WifiChannel> channel);
+  void SetMac (Ptr<WifiMac> mac);
+  void SetPhy (Ptr<WifiPhy> phy);
+  void SetRemoteStationManager (Ptr<WifiRemoteStationManager> manager);
+  void SetChannel (Ptr<WifiChannel> channel);
   Ptr<WifiMac> GetMac (void) const;
   Ptr<WifiPhy> GetPhy (void) const;
   Ptr<WifiRemoteStationManager> GetRemoteStationManager (void) const;
@@ -83,8 +83,10 @@ private:
   void ForwardUp (Ptr<Packet> packet, const Mac48Address &from);
   void LinkUp (void);
   void LinkDown (void);
+  void Setup (void);
   Ptr<Node> m_node;
   Ptr<WifiPhy> m_phy;
+  Ptr<WifiChannel> m_channel;
   Ptr<WifiMac> m_mac;
   Ptr<WifiRemoteStationManager> m_stationManager;
   Callback <bool,Ptr<NetDevice>,Ptr<Packet>,uint16_t,const Address &> m_forwardUp;

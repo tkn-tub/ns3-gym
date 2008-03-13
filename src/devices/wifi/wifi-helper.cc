@@ -110,7 +110,10 @@ WifiHelper::Build (NodeContainer c, Ptr<WifiChannel> channel) const
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
       Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
       Ptr<WifiPhy> phy = m_phy.Create<WifiPhy> ();
-      device->Setup (node, mac, phy, manager, channel);
+      device->SetMac (mac);
+      device->SetPhy (phy);
+      device->SetRemoteStationManager (manager);
+      device->SetChannel (channel);
       node->AddDevice (device);
       devices.Add (device);
       NS_LOG_DEBUG ("node="<<node<<", mob="<<node->GetObject<MobilityModel> ());
