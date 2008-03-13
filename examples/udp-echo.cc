@@ -161,8 +161,7 @@ main (int argc, char *argv[])
 //
   uint16_t port = 9;  // well-known echo port number
 
-  Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> ("Node", n1, 
-                                                               "Port", Uinteger (port));
+  Ptr<UdpEchoServer> server = CreateObject<UdpEchoServer> ("Port", Uinteger (port));
   n1->AddApplication (server);
 //
 // Create a UdpEchoClient application to send UDP datagrams from node zero to
@@ -173,12 +172,11 @@ main (int argc, char *argv[])
   Time interPacketInterval = Seconds (1.);
 
   Ptr<UdpEchoClient> client = 
-    CreateObject<UdpEchoClient> ("Node", n0, 
-                                     "RemoteIpv4", Ipv4Address ("10.1.1.2"),
-                                     "RemotePort", Uinteger (port),
-                                     "MaxPackets", Uinteger (maxPacketCount), 
-                                     "Interval", interPacketInterval, 
-                                     "PacketSize", Uinteger (packetSize));
+    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.1.2"),
+                                 "RemotePort", Uinteger (port),
+                                 "MaxPackets", Uinteger (maxPacketCount), 
+                                 "Interval", interPacketInterval, 
+                                 "PacketSize", Uinteger (packetSize));
   n0->AddApplication (client);
 //
 // Tell the applications when to start and stop.

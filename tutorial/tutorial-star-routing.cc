@@ -148,8 +148,7 @@ main (int argc, char *argv[])
   uint16_t port = 7;
 
   Ptr<UdpEchoClient> client = 
-    CreateObject<UdpEchoClient> ("Node", n4, 
-                                     "RemoteIpv4", Ipv4Address ("10.1.1.2"),
+    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.1.2"),
                                      "RemotePort", Uinteger (port), 
                                      "MaxPackets", Uinteger (1), 
                                      "Interval", Seconds(1.), 
@@ -157,8 +156,7 @@ main (int argc, char *argv[])
   n0->AddApplication (client);
 
   Ptr<UdpEchoServer> server = 
-    CreateObject<UdpEchoServer> ("Node", n1, 
-                                     "Port", Uinteger (port));
+    CreateObject<UdpEchoServer> ("Port", Uinteger (port));
   n1->AddApplication (server);
 
   server->Start(Seconds(1.));

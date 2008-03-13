@@ -102,6 +102,8 @@ public:
    * \returns the Node to which this Application object is attached.
    */
   Ptr<Node> GetNode() const;
+
+  void SetNode (Ptr<Node> node);
   
 private:
   /**

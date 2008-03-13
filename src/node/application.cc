@@ -40,10 +40,6 @@ Application::GetTypeId (void)
 {
   static TypeId tid = TypeId ("Application")
     .SetParent<Object> ()
-    .AddAttribute ("Node", "The on which this application resides",
-                   Ptr<Node> (0),
-                   MakePtrAccessor (&Application::m_node),
-                   MakePtrChecker<Node> ())
     ;
   return tid;
 }
@@ -90,6 +86,12 @@ void Application::Stop(const RandomVariable& stopVar)
 Ptr<Node> Application::GetNode() const
 {
   return m_node;
+}
+
+void 
+Application::SetNode (Ptr<Node> node)
+{
+  m_node = node;
 }
 
 // Protected methods

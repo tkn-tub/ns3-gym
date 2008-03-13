@@ -48,9 +48,8 @@ CsmaTopology::AddCsmaEthernetNode(
   Ptr<CsmaChannel> ch,
   Mac48Address addr)
 {
-  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> ("Node", Ptr<Node> (n1), 
-                                                            "Address", addr, 
-                                                            "EncapsulationMode", "EthernetV1");
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> ("Address", addr, 
+                                                        "EncapsulationMode", "EthernetV1");
 
   Ptr<Queue> q = Queue::CreateDefault ();
   nd1->AddQueue(q);

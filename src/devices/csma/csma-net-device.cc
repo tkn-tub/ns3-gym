@@ -45,11 +45,6 @@ CsmaNetDevice::GetTypeId (void)
   static TypeId tid = TypeId ("CsmaNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<CsmaNetDevice> ()
-    .AddAttribute ("Node", "The node with which this device is associated",
-                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
-                   Ptr<Node> (0),
-                   MakePtrAccessor (&CsmaNetDevice::m_node),
-                   MakePtrChecker<Node> ())
     .AddAttribute ("Address", "The address of this device.",
                    Mac48Address ("ff:ff:ff:ff:ff:ff"),
                    MakeMac48AddressAccessor (&CsmaNetDevice::m_address),
@@ -701,6 +696,11 @@ Ptr<Node>
 CsmaNetDevice::GetNode (void) const
 {
   return m_node;
+}
+void 
+CsmaNetDevice::SetNode (Ptr<Node> node)
+{
+  m_node = node;
 }
 bool 
 CsmaNetDevice::NeedsArp (void) const

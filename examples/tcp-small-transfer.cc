@@ -190,10 +190,8 @@ int main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   Ptr<PacketSink> sink = 
-    CreateObject<PacketSink> (
-                                  "Node", n2,
-                                  "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), servPort)),
-                                  "Protocol", TypeId::LookupByName ("Tcp"));
+    CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), servPort)),
+                              "Protocol", TypeId::LookupByName ("Tcp"));
   n2->AddApplication (sink);
   sink->Start (Seconds (0.0));
   sink->Stop (Seconds (100.0));

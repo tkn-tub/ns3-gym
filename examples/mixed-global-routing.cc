@@ -186,14 +186,12 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> (
-                                        "Node", n0, 
-                                        "Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
-                                        "Protocol", TypeId::LookupByName ("Udp"),
-                                        "OnTime", ConstantVariable (1), 
-                                        "OffTime", ConstantVariable (0),
-                                        "DataRate", DataRate("300bps"),
-                                        "PacketSize", Uinteger (50));
+    CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
+                                    "Protocol", TypeId::LookupByName ("Udp"),
+                                    "OnTime", ConstantVariable (1), 
+                                    "OffTime", ConstantVariable (0),
+                                    "DataRate", DataRate("300bps"),
+                                    "PacketSize", Uinteger (50));
   n0->AddApplication (ooff);
   // Start the application
   ooff->Start (Seconds (1.0));

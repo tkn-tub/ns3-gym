@@ -278,14 +278,12 @@ main (int argc, char *argv[])
   // Configure a multicast packet generator that generates a packet
   // every few seconds
   Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> (
-                                        "Node", n0, 
-                                        "Remote", Address (InetSocketAddress (multicastGroup, port)), 
-                                        "Protocol", TypeId::LookupByName ("Udp"),
-                                        "OnTime", ConstantVariable(1), 
-                                        "OffTime", ConstantVariable(0),
-                                        "DataRate", DataRate ("255b/s"),
-                                        "PacketSize", Uinteger (128));
+    CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress (multicastGroup, port)), 
+                                    "Protocol", TypeId::LookupByName ("Udp"),
+                                    "OnTime", ConstantVariable(1), 
+                                    "OffTime", ConstantVariable(0),
+                                    "DataRate", DataRate ("255b/s"),
+                                    "PacketSize", Uinteger (128));
   n0->AddApplication (ooff);
 //
 // Tell the application when to start and stop.
@@ -297,10 +295,8 @@ main (int argc, char *argv[])
   // If you enable logging on this (above) it will print a log statement
   // for every packet received
   Ptr<PacketSink> sink = 
-    CreateObject<PacketSink> (
-                                  "Node", n4,
-                                  "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                                  "Protocol", TypeId::LookupByName ("Udp"));
+    CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
+                              "Protocol", TypeId::LookupByName ("Udp"));
   n4->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.0));

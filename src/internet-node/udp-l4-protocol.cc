@@ -46,11 +46,6 @@ UdpL4Protocol::GetTypeId (void)
   static TypeId tid = TypeId ("UdpL4Protocol")
     .SetParent<Ipv4L4Protocol> ()
     .AddConstructor<UdpL4Protocol> ()
-    .AddAttribute ("Node", "The node which contains this protocol.",
-                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
-                   Ptr<Node> (0),
-                   MakePtrAccessor (&UdpL4Protocol::m_node),
-                   MakePtrChecker<Node> ())
     ;
   return tid;
 }

@@ -149,13 +149,12 @@ Experiment::Run (const WifiHelper &wifi)
   destination.SetSingleDevice (0);
   destination.SetPhysicalAddress (devices.Get (1)->GetAddress ());
   Ptr<Application> app = 
-    CreateObject<OnOffApplication> ("Node", c.Get (0), 
-                                        "Remote", Address (destination),
-                                        "Protocol", TypeId::LookupByName ("Packet"),
-                                        "OnTime", ConstantVariable (250),
-                                        "OffTime", ConstantVariable (0),
-                                        "DataRate", DataRate (60000000),
-                                        "PacketSize", Uinteger (2000));
+    CreateObject<OnOffApplication> ("Remote", Address (destination),
+                                    "Protocol", TypeId::LookupByName ("Packet"),
+                                    "OnTime", ConstantVariable (250),
+                                    "OffTime", ConstantVariable (0),
+                                    "DataRate", DataRate (60000000),
+                                    "PacketSize", Uinteger (2000));
   c.Get (0)->AddApplication (app);
 
   app->Start (Seconds (0.5));

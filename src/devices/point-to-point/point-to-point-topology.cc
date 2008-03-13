@@ -48,16 +48,14 @@ PointToPointTopology::AddPointToPointLink(
 {
   Ptr<PointToPointChannel> channel = CreateObject<PointToPointChannel> ("BitRate", bps, "Delay", delay);
 
-  Ptr<PointToPointNetDevice> net1 = CreateObject<PointToPointNetDevice> ("Node", n1, 
-                                                                         "Address", Mac48Address::Allocate ());
+  Ptr<PointToPointNetDevice> net1 = CreateObject<PointToPointNetDevice> ("Address", Mac48Address::Allocate ());
   n1->AddDevice (net1);
 
   Ptr<Queue> q = CreateObject<DropTailQueue> ();
   net1->AddQueue(q);
   net1->Attach (channel);
   
-  Ptr<PointToPointNetDevice> net2 = CreateObject<PointToPointNetDevice> ("Node", n2, 
-                                                                         "Address", Mac48Address::Allocate ());
+  Ptr<PointToPointNetDevice> net2 = CreateObject<PointToPointNetDevice> ("Address", Mac48Address::Allocate ());
   n2->AddDevice (net2);
 
   q = CreateObject<DropTailQueue> ();

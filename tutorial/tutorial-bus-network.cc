@@ -44,17 +44,16 @@ main (int argc, char *argv[])
 
   Ptr<Node> n0 = bus.GetNode (0);
   Ptr<UdpEchoClient> client =  
-    CreateObject<UdpEchoClient> ("Node", n0, 
-				     "RemoteIpv4", Ipv4Address ("10.1.0.1"),
-				     "RemotePort", Uinteger (port),
-				     "MaxPackets", Uinteger (1), 
-				     "Interval", Seconds(1.), 
-				     "PacketSize", Uinteger (1024));
+    CreateObject<UdpEchoClient> ("RemoteIpv4", Ipv4Address ("10.1.0.1"),
+				 "RemotePort", Uinteger (port),
+				 "MaxPackets", Uinteger (1), 
+				 "Interval", Seconds(1.), 
+				 "PacketSize", Uinteger (1024));
   n0->AddApplication (client);
 
   Ptr<Node> n1 = bus.GetNode (1);
   Ptr<UdpEchoServer> server = 
-    CreateObject<UdpEchoServer> ("Node", n1, "Port", Uinteger (port));
+    CreateObject<UdpEchoServer> ("Port", Uinteger (port));
   n1->AddApplication (server);
 
   server->Start(Seconds(1.));

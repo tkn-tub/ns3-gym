@@ -45,8 +45,7 @@ PointToPointIpv4Topology::AddNetDevice (
   NS_ASSERT (channel->GetNDevices () <= 1);
 
   Ptr<PointToPointNetDevice> nd = 
-    CreateObject<PointToPointNetDevice> ("Node", node, 
-                                             "Address", Mac48Address::Allocate ());
+    CreateObject<PointToPointNetDevice> ("Address", Mac48Address::Allocate ());
   node->AddDevice (nd);
   Ptr<Queue> q = CreateObject<DropTailQueue> ();
   nd->AddQueue(q);

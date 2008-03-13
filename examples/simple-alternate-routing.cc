@@ -183,12 +183,10 @@ main (int argc, char *argv[])
 
   // Create a flow from n3 to n1, starting at time 1.1 seconds
   Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> (
-                                        "Node", n3, 
-                                        "Remote", Address (InetSocketAddress ("10.1.1.1", port)),
-                                        "Protocol", TypeId::LookupByName ("Udp"),
-                                        "OnTime", ConstantVariable (1), 
-                                        "OffTime", ConstantVariable (0));
+    CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.1.1", port)),
+                                    "Protocol", TypeId::LookupByName ("Udp"),
+                                    "OnTime", ConstantVariable (1), 
+                                    "OffTime", ConstantVariable (0));
   n3->AddApplication (ooff);
   // Start the application
   ooff->Start (Seconds (1.1));
@@ -196,10 +194,8 @@ main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   Ptr<PacketSink> sink = 
-    CreateObject<PacketSink> (
-                                  "Node", n1, 
-                                  "Remote", Address (InetSocketAddress (Ipv4Address::GetAny (), port)), 
-                                  "Protocol", TypeId::LookupByName ("Udp"));
+    CreateObject<PacketSink> ("Remote", Address (InetSocketAddress (Ipv4Address::GetAny (), port)), 
+                              "Protocol", TypeId::LookupByName ("Udp"));
   n1->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.1));

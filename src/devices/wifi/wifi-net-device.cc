@@ -228,6 +228,11 @@ WifiNetDevice::GetNode (void) const
 {
   return m_node;
 }
+void 
+WifiNetDevice::SetNode (Ptr<Node> node)
+{
+  m_node = node;
+}
 bool 
 WifiNetDevice::NeedsArp (void) const
 {

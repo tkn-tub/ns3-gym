@@ -62,8 +62,7 @@ NS_LOG_COMPONENT_DEFINE ("CsmaPacketSocketExample");
 static Ptr<CsmaNetDevice>
 CreateCsmaDevice (Ptr<Node> node, Ptr<CsmaChannel> channel)
 {
-  Ptr<CsmaNetDevice> device = CreateObject<CsmaNetDevice> ("Node", node, 
-                                                           "Address", Mac48Address::Allocate (),
+  Ptr<CsmaNetDevice> device = CreateObject<CsmaNetDevice> ("Address", Mac48Address::Allocate (),
                                                            "EncapsulationMode", String ("Llc"));
   node->AddDevice (device);
   device->Attach (channel);
@@ -141,24 +140,20 @@ main (int argc, char *argv[])
   // from n0 to n1
   NS_LOG_INFO ("Create Applications.");
   Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> (
-                                        "Node", n0, 
-                                        "Remote", Address (n0ToN1),
-                                        "Protocol", TypeId::LookupByName ("Packet"),
-                                        "OnTime", ConstantVariable(1), 
-                                        "OffTime", ConstantVariable(0));
+    CreateObject<OnOffApplication> ("Remote", Address (n0ToN1),
+                                    "Protocol", TypeId::LookupByName ("Packet"),
+                                    "OnTime", ConstantVariable(1), 
+                                    "OffTime", ConstantVariable(0));
   n0->AddApplication (ooff);
   // Start the application
   ooff->Start(Seconds(1.0));
   ooff->Stop (Seconds(10.0));
 
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
-  ooff = CreateObject<OnOffApplication> (
-                                             "Node", n3, 
-                                             "Remote", Address (n3ToN0),
-                                             "Protocol", TypeId::LookupByName ("Packet"),
-                                             "OnTime", ConstantVariable(1), 
-                                             "OffTime", ConstantVariable(0));
+  ooff = CreateObject<OnOffApplication> ("Remote", Address (n3ToN0),
+                                         "Protocol", TypeId::LookupByName ("Packet"),
+                                         "OnTime", ConstantVariable(1), 
+                                         "OffTime", ConstantVariable(0));
   n3->AddApplication (ooff);
   // Start the application
   ooff->Start(Seconds(1.1));

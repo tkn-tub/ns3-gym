@@ -324,11 +324,6 @@ TcpL4Protocol::GetTypeId (void)
 {
   static TypeId tid = TypeId ("TcpL4Protocol")
     .SetParent<Ipv4L4Protocol> ()
-    .AddAttribute ("Node", "The node to which this protocol is associated",
-                   TypeId::ATTR_GET | TypeId::ATTR_CONSTRUCT,
-                   Ptr<Node> (0),
-                   MakePtrAccessor (&TcpL4Protocol::m_node),
-                   MakePtrChecker<Node> ())
     .AddAttribute ("RttEstimatorFactory",
                    "How RttEstimator objects are created.",
                    GetDefaultRttEstimatorFactory (),

@@ -44,9 +44,8 @@ CsmaIpv4Topology::AddIpv4CsmaNetDevice(
   Ptr<Queue> q = CreateObject<DropTailQueue> ();
 
   // assume full-duplex
-  Ptr<CsmaNetDevice> nd = CreateObject<CsmaNetDevice> ("Node", node, 
-                                                           "Address", addr, 
-                                                           "EncapsulationMode", String ("IpArp"));
+  Ptr<CsmaNetDevice> nd = CreateObject<CsmaNetDevice> ("Address", addr, 
+                                                       "EncapsulationMode", String ("IpArp"));
   node->AddDevice (nd);
 
   nd->AddQueue(q);
@@ -62,18 +61,16 @@ CsmaIpv4Topology::AddIpv4LlcCsmaNode(Ptr<Node> n1,
 {
   Ptr<Queue> q = CreateObject<DropTailQueue> ();
 
-  Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> ("Node", n1, 
-                                                            "Address", addr,
-                                                            "EncapsulationMode", String ("Llc"));
+  Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> ("Address", addr,
+                                                        "EncapsulationMode", String ("Llc"));
   n1->AddDevice (nd0);
   nd0->SetSendEnable (true);
   nd0->SetReceiveEnable (false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
-  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> ("Node", n1, 
-                                                            "Address", addr,
-                                                            "EncapsulationMode", String ("Llc"));
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> ("Address", addr,
+                                                        "EncapsulationMode", String ("Llc"));
   n1->AddDevice (nd1);
   nd1->SetSendEnable (false);
   nd1->SetReceiveEnable (true);
@@ -88,18 +85,16 @@ CsmaIpv4Topology::AddIpv4RawCsmaNode(Ptr<Node> n1,
 {
   Ptr<Queue> q = CreateObject<DropTailQueue> ();
 
-  Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> ("Node", n1, 
-                                                            "Address", addr,
-                                                            "EncapsulationMode", String ("Raw"));
+  Ptr<CsmaNetDevice> nd0 = CreateObject<CsmaNetDevice> ("Address", addr,
+                                                        "EncapsulationMode", String ("Raw"));
   n1->AddDevice (nd0);
   nd0->SetSendEnable (true);
   nd0->SetReceiveEnable (false);
   nd0->AddQueue(q);
   nd0->Attach (ch);
 
-  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> ("Node", n1, 
-                                                            "Address", addr,
-                                                            "EncapsulationMode", String ("Raw"));
+  Ptr<CsmaNetDevice> nd1 = CreateObject<CsmaNetDevice> ("Address", addr,
+                                                        "EncapsulationMode", String ("Raw"));
   n1->AddDevice (nd1);
   nd1->SetSendEnable (false);
   nd1->SetReceiveEnable (true);

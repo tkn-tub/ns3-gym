@@ -149,12 +149,10 @@ main (int argc, char *argv[])
   // 512 bytes (default) at a rate of 500 Kb/s (default) from n0
   NS_LOG_INFO ("Create Applications.");
   Ptr<OnOffApplication> ooff = 
-    CreateObject<OnOffApplication> (
-                                        "Node", n0, 
-                                        "Remote", Address (InetSocketAddress ("255.255.255.255", port)), 
-                                        "Protocol", TypeId::LookupByName ("Udp"),
-                                        "OnTime", ConstantVariable(1), 
-                                        "OffTime", ConstantVariable(0));
+    CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("255.255.255.255", port)), 
+                                    "Protocol", TypeId::LookupByName ("Udp"),
+                                    "OnTime", ConstantVariable(1), 
+                                    "OffTime", ConstantVariable(0));
   n0->AddApplication (ooff);
   // Start the application
   ooff->Start(Seconds(1.0));
@@ -162,20 +160,16 @@ main (int argc, char *argv[])
   
   // Create an optional packet sink to receive these packets
   Ptr<PacketSink> sink = 
-    CreateObject<PacketSink> (
-                                  "Node", n1,
-                                  "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                                  "Protocol", TypeId::LookupByName ("Udp"));
+    CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
+                              "Protocol", TypeId::LookupByName ("Udp"));
   n1->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.0));
   sink->Stop (Seconds (10.0));
 
   // Create an optional packet sink to receive these packets
-  sink = CreateObject<PacketSink> (
-                                       "Node", n2,
-                                       "Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                                       "Protocol", TypeId::LookupByName ("Udp"));
+  sink = CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
+                                   "Protocol", TypeId::LookupByName ("Udp"));
   n2->AddApplication (sink);
 
   // Start the sink
