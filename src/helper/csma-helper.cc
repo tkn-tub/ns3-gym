@@ -1,12 +1,17 @@
 #include "csma-helper.h"
+#include "ns3/object-factory.h"
+#include "ns3/queue.h"
+#include "ns3/csma-net-device.h"
+#include "ns3/csma-channel.h"
+#include <string>
 
 namespace ns3 {
 
 CsmaHelper::CsmaHelper ()
 {
-  m_queueFactory.SetTypeId ("DropTailQueue");
-  m_deviceFactory.SetTypeId ("CsmaNetDevice");
-  m_deviceChannel.SetTypeId ("CsmaChannel");
+  m_queueFactory.SetTypeId ("ns3::DropTailQueue");
+  m_deviceFactory.SetTypeId ("ns3::CsmaNetDevice");
+  m_channelFactory.SetTypeId ("ns3::CsmaChannel");
 }
 
 void 
@@ -23,10 +28,6 @@ CsmaHelper::SetQueue (std::string type,
   m_queueFactory.Set (n4, v4);
 }
 
-  /**
-   * Set these parameters on each PointToPointNetDevice created
-   * by this helper.
-   */
 void 
 CsmaHelper::SetDeviceParameter (std::string n1, Attribute v1)
 {
@@ -36,7 +37,7 @@ CsmaHelper::SetDeviceParameter (std::string n1, Attribute v1)
 void 
 CsmaHelper::SetChannelParameter (std::string n1, Attribute v1)
 {
-  m_csmaFactory.Set (n1, v1);
+  m_channelFactory.Set (n1, v1);
 }
 
 NetDeviceContainer 
@@ -49,10 +50,18 @@ CsmaHelper::Build (const NodeContainer &c)
 NetDeviceContainer 
 CsmaHelper::Build (const NodeContainer &c, Ptr<CsmaChannel> channel)
 {
+  NetDeviceContainer container;
   for (NodeContainer::Iterator i = c.Begin (); i != c.End (); i++)
     {
-      
+      Ptr<Node> node = *i;
+      Ptr<CsmaNetDevice> device = m_deviceFactory.Create<CsmaNetDevice> ();
+      node->AddDevice (device);
+      Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
+      device->AddQueue (queue);
+      device->Attach (channel);
+      container.Add (device);
     }
+  return container;
 }
 
 

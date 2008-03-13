@@ -1,0 +1,24 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    helper = bld.create_ns3_module('helper', ['internet-node', 'wifi', 'point-to-point', 'csma', 'olsr', 'global-routing', 'onoff', 'packet-sink', 'udp-echo'])
+    helper.source = [
+        'node-container.cc',
+        'net-device-container.cc',
+        'wifi-helper.cc',
+        'olsr-helper.cc',
+        'point-to-point-helper.cc',
+        'csma-helper.cc',
+        'mobility-helper.cc',
+        ]
+
+    headers = bld.create_obj('ns3header')
+    headers.source = [
+        'node-container.h',
+        'net-device-container.h',
+        'wifi-helper.h',
+        'olsr-helper.h',
+        'point-to-point-helper.h',
+        'csma-helper.h',
+        'mobility-helper.h',
+        ]

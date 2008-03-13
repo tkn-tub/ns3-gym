@@ -1,8 +1,8 @@
-#include "mobility-helper.h"
-#include "mobility-model.h"
-#include "mobility-model-notifier.h"
-#include "position-allocator.h"
-#include "hierarchical-mobility-model.h"
+#include "ns3/mobility-helper.h"
+#include "ns3/mobility-model.h"
+#include "ns3/mobility-model-notifier.h"
+#include "ns3/position-allocator.h"
+#include "ns3/hierarchical-mobility-model.h"
 #include "ns3/log.h"
 
 namespace ns3 {

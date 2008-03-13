@@ -20,20 +20,16 @@ public:
 		 std::string n3 = "", Attribute v3 = Attribute (),
 		 std::string n4 = "", Attribute v4 = Attribute ());
 
-  /**
-   * Set these parameters on each PointToPointNetDevice created
-   * by this helper.
-   */
-  void SetDeviceParameters (std::string n1, Attribute v1,
-			    std::string n2 = "", Attribute v2 = Attribute (),
-			    std::string n3 = "", Attribute v3 = Attribute (),
-			    std::string n4 = "", Attribute v4 = Attribute ());
+  void SetDeviceParameter (std::string name, Attribute value);
+  void SetChannelParameter (std::string name, Attribute value);
 
   NetDeviceContainer Build (NodeContainer c);
   NetDeviceContainer Build (Ptr<Node> a, Ptr<Node> b);
 
 private:
   ObjectFactory m_queueFactory;
+  ObjectFactory m_channelFactory;
+  ObjectFactory m_deviceFactory;
 };
 
 

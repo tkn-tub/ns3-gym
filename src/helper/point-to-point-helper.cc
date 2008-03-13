@@ -1,6 +1,6 @@
 #include "point-to-point-helper.h"
-#include "point-to-point-net-device.h"
-#include "point-to-point-channel.h"
+#include "ns3/point-to-point-net-device.h"
+#include "ns3/point-to-point-channel.h"
 #include "ns3/queue.h"
 
 namespace ns3 {
@@ -23,6 +23,19 @@ PointToPointHelper::SetQueue (std::string type,
   m_queueFactory.Set (n4, v4);
 }
 
+void 
+PointToPointHelper::SetDeviceParameter (std::string n1, Attribute v1)
+{
+  m_deviceFactory.Set (n1, v1);
+}
+
+void 
+PointToPointHelper::SetChannelParameter (std::string n1, Attribute v1)
+{
+  m_channelFactory.Set (n1, v1);
+}
+
+
 NetDeviceContainer 
 PointToPointHelper::Build (NodeContainer c)
 {
@@ -34,11 +47,13 @@ PointToPointHelper::Build (Ptr<Node> a, Ptr<Node> b)
 {
   NetDeviceContainer container;
 
-  Ptr<PointToPointNetDevice> devA = CreateObject<PointToPointNetDevice> (a);
-  Ptr<Queue> queueA = m_queueFactory.Create ()->GetObject<Queue> ();
+  Ptr<PointToPointNetDevice> devA = CreateObject<PointToPointNetDevice> ();
+  a->AddDevice (devA);
+  Ptr<Queue> queueA = m_queueFactory.Create<Queue> ();
   devA->AddQueue (queueA);
-  Ptr<PointToPointNetDevice> devB = CreateObject<PointToPointNetDevice> (b);
-  Ptr<Queue> queueB = m_queueFactory.Create ()->GetObject<Queue> ();
+  Ptr<PointToPointNetDevice> devB = CreateObject<PointToPointNetDevice> ();
+  b->AddDevice (devB);
+  Ptr<Queue> queueB = m_queueFactory.Create<Queue> ();
   devB->AddQueue (queueB);
   Ptr<PointToPointChannel> channel = CreateObject<PointToPointChannel> ();
   devA->Attach (channel);

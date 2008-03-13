@@ -1,6 +1,13 @@
 #ifndef CSMA_HELPER_H
 #define CSMA_HELPER_H
 
+#include <string>
+#include "ns3/attribute.h"
+#include "ns3/object-factory.h"
+#include "ns3/net-device-container.h"
+#include "ns3/node-container.h"
+#include "ns3/csma-channel.h"
+
 namespace ns3 {
 
 class CsmaHelper

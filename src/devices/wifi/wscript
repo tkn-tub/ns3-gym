@@ -36,10 +36,10 @@ def build(bld):
         'onoe-wifi-manager.cc',
         'rraa-wifi-manager.cc',
         'constant-rate-wifi-manager.cc',
-        'wifi-helper.cc',
         ]
     headers = bld.create_obj('ns3header')
     headers.source = [
+        'propagation-delay-model.h',
         'propagation-loss-model.h',
         'wifi-net-device.h',
         'wifi-channel.h',
@@ -62,5 +62,4 @@ def build(bld):
         'nqsta-wifi-mac.h',
         'nqap-wifi-mac.h',
         'wifi-phy.h',
-        'wifi-helper.h',
         ]

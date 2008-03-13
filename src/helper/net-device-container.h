@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 #include <vector>
-#include "net-device.h"
+#include "ns3/net-device.h"
 
 namespace ns3 {
 

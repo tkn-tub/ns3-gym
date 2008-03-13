@@ -1,5 +1,5 @@
 #include "olsr-helper.h"
-#include "olsr-agent.h"
+#include "ns3/olsr-agent.h"
 #include "ns3/node-list.h"
 
 namespace ns3 {

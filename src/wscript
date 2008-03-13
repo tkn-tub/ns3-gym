@@ -26,6 +26,7 @@ all_modules = (
     'routing/global-routing',
     'mobility',
     'devices/wifi',
+    'helper',
     )
 
 def set_options(opt):
