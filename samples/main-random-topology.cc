@@ -37,11 +37,11 @@ int main (int argc, char *argv[])
 
   MobilityHelper mobility;
   mobility.EnableNotifier ();
-  mobility.SetPositionAllocator ("RandomDiscPositionAllocator",
+  mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
                                  "X", String ("100.0"),
                                  "Y", String ("100.0"),
                                  "Rho", String ("Uniform:0:30"));
-  mobility.SetMobilityModel ("StaticMobilityModel");
+  mobility.SetMobilityModel ("ns3::StaticMobilityModel");
   mobility.Layout (objects.begin (), objects.end ());
 
   Config::Connect ("/NodeList/*/$MobilityModelNotifier/CourseChange",

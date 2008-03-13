@@ -279,7 +279,7 @@ main (int argc, char *argv[])
   // every few seconds
   Ptr<OnOffApplication> ooff = 
     CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress (multicastGroup, port)), 
-                                    "Protocol", TypeId::LookupByName ("Udp"),
+                                    "Protocol", TypeId::LookupByName ("ns3::Udp"),
                                     "OnTime", ConstantVariable(1), 
                                     "OffTime", ConstantVariable(0),
                                     "DataRate", DataRate ("255b/s"),
@@ -296,7 +296,7 @@ main (int argc, char *argv[])
   // for every packet received
   Ptr<PacketSink> sink = 
     CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                              "Protocol", TypeId::LookupByName ("Udp"));
+                              "Protocol", TypeId::LookupByName ("ns3::Udp"));
   n4->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.0));

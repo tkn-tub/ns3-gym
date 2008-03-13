@@ -42,7 +42,7 @@ NS_OBJECT_ENSURE_REGISTERED (CsmaNetDevice);
 TypeId 
 CsmaNetDevice::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("CsmaNetDevice")
+  static TypeId tid = TypeId ("ns3::CsmaNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<CsmaNetDevice> ()
     .AddAttribute ("Address", "The address of this device.",

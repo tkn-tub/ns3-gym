@@ -36,7 +36,7 @@ NS_OBJECT_ENSURE_REGISTERED (UdpEchoServer);
 TypeId
 UdpEchoServer::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("UdpEchoServer")
+  static TypeId tid = TypeId ("ns3::UdpEchoServer")
     .SetParent<Application> ()
     .AddConstructor<UdpEchoServer> ()
     .AddAttribute ("Port", "Client Port",
@@ -71,7 +71,7 @@ UdpEchoServer::StartApplication (void)
 
   if (!m_socket)
     {
-      TypeId tid = TypeId::LookupByName ("Udp");
+      TypeId tid = TypeId::LookupByName ("ns3::Udp");
       Ptr<SocketFactory> socketFactory = 
         GetNode ()->GetObject<SocketFactory> (tid);
       m_socket = socketFactory->CreateSocket ();

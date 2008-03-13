@@ -74,7 +74,7 @@ NS_OBJECT_ENSURE_REGISTERED (ConstantRateWifiManager);
 TypeId 
 ConstantRateWifiManager::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ConstantRateWifiManager")
+  static TypeId tid = TypeId ("ns3::ConstantRateWifiManager")
     .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<ConstantRateWifiManager> ()
     .AddAttribute ("DataMode", "XXX",

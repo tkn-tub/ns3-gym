@@ -35,7 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED (Node);
 TypeId 
 Node::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("Node")
+  static TypeId tid = TypeId ("ns3::Node")
     .SetParent<Object> ()
     .AddAttribute ("DeviceList", "The list of devices associated to this Node.",
                    ObjectVector (),

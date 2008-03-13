@@ -33,7 +33,7 @@ namespace ns3 {
 TypeId 
 WifiNetDevice::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("WifiNetDevice")
+  static TypeId tid = TypeId ("ns3::WifiNetDevice")
     .SetParent<NetDevice> ()
     .AddAttribute ("Channel", "XXX",
                    Ptr<Channel> (0),

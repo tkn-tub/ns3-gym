@@ -98,6 +98,7 @@ public:
   static TypeId GetTypeId (void) {
     static TypeId tid = TypeId ("AttributeObjectTest")
       .SetParent<Object> ()
+      .HideFromDocumentation ()
       .AddAttribute ("TestBoolName", "help text",
 		     Boolean (false),
 		     MakeBooleanAccessor (&AttributeObjectTest::m_boolTest),

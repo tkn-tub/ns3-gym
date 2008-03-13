@@ -39,7 +39,7 @@ NS_OBJECT_ENSURE_REGISTERED (PacketSink);
 TypeId 
 PacketSink::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("PacketSink")
+  static TypeId tid = TypeId ("ns3::PacketSink")
     .SetParent<Application> ()
     .AddAttribute ("Local", "The Address on which to Bind the rx socket.",
                    Address (),

@@ -39,7 +39,7 @@ NS_OBJECT_ENSURE_REGISTERED (PointToPointNetDevice);
 TypeId 
 PointToPointNetDevice::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("PointToPointNetDevice")
+  static TypeId tid = TypeId ("ns3::PointToPointNetDevice")
     .SetParent<NetDevice> ()
     .AddConstructor<PointToPointNetDevice> ()
     .AddAttribute ("Address", "The address of this device.",

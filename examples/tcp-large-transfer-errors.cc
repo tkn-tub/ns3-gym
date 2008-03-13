@@ -199,7 +199,7 @@ int main (int argc, char *argv[])
   // Create a packet sink to receive these packets
   Ptr<PacketSink> sink = 
     CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), servPort)),
-                              "Protocol", TypeId::LookupByName ("Tcp"));
+                              "Protocol", TypeId::LookupByName ("ns3::Tcp"));
   n2->AddApplication (sink);
   sink->Start (Seconds (0.0));
   sink->Stop (Seconds (10000.0));

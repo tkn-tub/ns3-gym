@@ -28,7 +28,7 @@ NS_OBJECT_ENSURE_REGISTERED (Agent);
 TypeId 
 Agent::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("OlsrAgent")
+  static TypeId tid = TypeId ("ns3::olsr::Agent")
     .SetParent<Object> ();
   return tid;
 }

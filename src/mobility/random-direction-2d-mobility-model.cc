@@ -36,7 +36,7 @@ NS_OBJECT_ENSURE_REGISTERED (RandomDirection2dMobilityModel);
 TypeId
 RandomDirection2dMobilityModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RandomDirection2dMobilityModel")
+  static TypeId tid = TypeId ("ns3::RandomDirection2dMobilityModel")
     .SetParent<MobilityModel> ()
     .SetGroupName ("Mobility")
     .AddConstructor<RandomDirection2dMobilityModel> ()

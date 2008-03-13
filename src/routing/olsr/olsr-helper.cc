@@ -6,7 +6,7 @@ namespace ns3 {
 
 OlsrHelper::OlsrHelper ()
 {
-  m_agentFactory.SetTypeId ("olsr::AgentImpl");
+  m_agentFactory.SetTypeId ("ns3::olsr::AgentImpl");
 }
 
 void 

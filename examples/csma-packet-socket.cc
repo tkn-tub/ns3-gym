@@ -141,7 +141,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   Ptr<OnOffApplication> ooff = 
     CreateObject<OnOffApplication> ("Remote", Address (n0ToN1),
-                                    "Protocol", TypeId::LookupByName ("Packet"),
+                                    "Protocol", TypeId::LookupByName ("ns3::PacketSocketFactory"),
                                     "OnTime", ConstantVariable(1), 
                                     "OffTime", ConstantVariable(0));
   n0->AddApplication (ooff);
@@ -151,7 +151,7 @@ main (int argc, char *argv[])
 
   // Create a similar flow from n3 to n0, starting at time 1.1 seconds
   ooff = CreateObject<OnOffApplication> ("Remote", Address (n3ToN0),
-                                         "Protocol", TypeId::LookupByName ("Packet"),
+                                         "Protocol", TypeId::LookupByName ("ns3::PacketSocketFactory"),
                                          "OnTime", ConstantVariable(1), 
                                          "OffTime", ConstantVariable(0));
   n3->AddApplication (ooff);

@@ -43,7 +43,7 @@ NS_OBJECT_ENSURE_REGISTERED (NqapWifiMac);
 TypeId 
 NqapWifiMac::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("NqapWifiMac")
+  static TypeId tid = TypeId ("ns3::NqapWifiMac")
     .SetParent<WifiMac> ()
     .AddConstructor<NqapWifiMac> ()
     .AddAttribute ("BeaconInterval", "Delay between two beacons",

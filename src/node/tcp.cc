@@ -27,7 +27,7 @@ NS_OBJECT_ENSURE_REGISTERED (Tcp);
 TypeId
 Tcp::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("Tcp")
+  static TypeId tid = TypeId ("ns3::Tcp")
     .SetParent<SocketFactory> ()
    .AddAttribute ("TcpDefaultSegmentSize",
                   "Default TCP maximum segment size in bytes (may be adjusted based on MTU discovery)",

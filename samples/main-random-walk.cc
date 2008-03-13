@@ -43,11 +43,11 @@ int main (int argc, char *argv[])
 
   MobilityHelper mobility;
   mobility.EnableNotifier ();
-  mobility.SetPositionAllocator ("RandomDiscPositionAllocator",
+  mobility.SetPositionAllocator ("ns3::RandomDiscPositionAllocator",
                                  "X", String ("100.0"),
                                  "Y", String ("100.0"),
                                  "Rho", String ("Uniform:0:30"));
-  mobility.SetMobilityModel ("RandomWalk2dMobilityModel",
+  mobility.SetMobilityModel ("ns3::RandomWalk2dMobilityModel",
                              "Mode", String ("Time"),
                              "Time", String ("2s"),
                              "Speed", String ("Constant:1.0"),

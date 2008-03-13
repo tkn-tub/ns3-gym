@@ -154,7 +154,7 @@ NS_OBJECT_ENSURE_REGISTERED (AgentImpl);
 TypeId 
 AgentImpl::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("olsr::AgentImpl")
+  static TypeId tid = TypeId ("ns3::olsr::AgentImpl")
     .SetParent<Agent> ()
     .AddConstructor<AgentImpl> ()
     .AddAttribute ("HelloInterval", "XXX",

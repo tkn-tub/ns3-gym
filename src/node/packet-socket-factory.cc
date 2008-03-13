@@ -29,7 +29,7 @@ NS_OBJECT_ENSURE_REGISTERED (PacketSocketFactory);
 TypeId 
 PacketSocketFactory::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("Packet")
+  static TypeId tid = TypeId ("ns3::PacketSocketFactory")
     .SetParent<SocketFactory> ();
   return tid;
 }

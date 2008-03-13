@@ -34,7 +34,7 @@ NS_OBJECT_ENSURE_REGISTERED (PositionAllocator);
 TypeId 
 PositionAllocator::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("PositionAllocator")
+  static TypeId tid = TypeId ("ns3::PositionAllocator")
     .SetParent<Object> ();
   return tid;
 }
@@ -51,7 +51,7 @@ NS_OBJECT_ENSURE_REGISTERED (ListPositionAllocator);
 TypeId 
 ListPositionAllocator::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ListPositionAllocator")
+  static TypeId tid = TypeId ("ns3::ListPositionAllocator")
     .SetParent<PositionAllocator> ()
     .AddConstructor<ListPositionAllocator> ()
     ;
@@ -78,7 +78,7 @@ NS_OBJECT_ENSURE_REGISTERED (GridPositionAllocator);
 TypeId 
 GridPositionAllocator::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("GridPositionAllocator")
+  static TypeId tid = TypeId ("ns3::GridPositionAllocator")
     .SetParent<PositionAllocator> ()
     .SetGroupName ("Mobility")
     .AddConstructor<GridPositionAllocator> ()
@@ -138,7 +138,7 @@ NS_OBJECT_ENSURE_REGISTERED (RandomRectanglePositionAllocator);
 TypeId
 RandomRectanglePositionAllocator::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RandomRectanglePositionAllocator")
+  static TypeId tid = TypeId ("ns3::RandomRectanglePositionAllocator")
     .SetParent<PositionAllocator> ()
     .SetGroupName ("Mobility")
     .AddConstructor<RandomRectanglePositionAllocator> ()
@@ -172,7 +172,7 @@ NS_OBJECT_ENSURE_REGISTERED (RandomDiscPositionAllocator);
 TypeId
 RandomDiscPositionAllocator::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RandomDiscPositionAllocator")
+  static TypeId tid = TypeId ("ns3::RandomDiscPositionAllocator")
     .SetParent<PositionAllocator> ()
     .SetGroupName ("Mobility")
     .AddConstructor<RandomDiscPositionAllocator> ()

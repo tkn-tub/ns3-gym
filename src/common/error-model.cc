@@ -39,7 +39,7 @@ NS_OBJECT_ENSURE_REGISTERED (ErrorModel);
 
 TypeId ErrorModel::GetTypeId (void)
 { 
-  static TypeId tid = TypeId ("ErrorModel")
+  static TypeId tid = TypeId ("ns3::ErrorModel")
     .SetParent<Object> ()
     .AddAttribute ("IsEnabled", "Whether this ErrorModel is enabled or not.",
                    Boolean (true),
@@ -107,7 +107,7 @@ NS_OBJECT_ENSURE_REGISTERED (RateErrorModel);
 
 TypeId RateErrorModel::GetTypeId (void)
 { 
-  static TypeId tid = TypeId ("RateErrorModel")
+  static TypeId tid = TypeId ("ns3::RateErrorModel")
     .SetParent<ErrorModel> ()
     .AddConstructor<RateErrorModel> ()
     .AddAttribute ("ErrorUnit", "The error unit",
@@ -237,7 +237,7 @@ NS_OBJECT_ENSURE_REGISTERED (ListErrorModel);
 
 TypeId ListErrorModel::GetTypeId (void)
 { 
-  static TypeId tid = TypeId ("ListErrorModel")
+  static TypeId tid = TypeId ("ns3::ListErrorModel")
     .SetParent<ErrorModel> ()
     .AddConstructor<ListErrorModel> ()
     ;

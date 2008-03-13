@@ -322,7 +322,7 @@ TcpL4Protocol::GetDefaultRttEstimatorFactory (void)
 TypeId 
 TcpL4Protocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("TcpL4Protocol")
+  static TypeId tid = TypeId ("ns3::TcpL4Protocol")
     .SetParent<Ipv4L4Protocol> ()
     .AddAttribute ("RttEstimatorFactory",
                    "How RttEstimator objects are created.",

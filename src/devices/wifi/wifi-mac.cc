@@ -52,7 +52,7 @@ WifiMac::GetDefaultCtsAckTimeout (void)
 TypeId 
 WifiMac::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("WifiMac")
+  static TypeId tid = TypeId ("ns3::WifiMac")
     .SetParent<Object> ()
     .AddAttribute ("CtsTimeout", "XXX",
                    GetDefaultCtsAckTimeout (),

@@ -33,7 +33,7 @@ NS_OBJECT_ENSURE_REGISTERED (AmrrWifiManager);
 TypeId
 AmrrWifiManager::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("AmrrWifiManager")
+  static TypeId tid = TypeId ("ns3::AmrrWifiManager")
     .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<AmrrWifiManager> ()
     .AddAttribute ("UpdatePeriod",

@@ -29,7 +29,7 @@ int main (int argc, char *argv[])
   // started from (-100,-100) with 20 objects per row, 
   // the x interval between each object is 5 meters
   // and the y interval between each object is 20 meters
-  mobility.SetPositionAllocator ("GridPositionAllocator",
+  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
                                  "MinX", Double (-100.0),
                                  "MinY", Double (-100.0),
                                  "DeltaX", Double (5.0),
@@ -39,7 +39,7 @@ int main (int argc, char *argv[])
   // each object will be attached a static position.
   // i.e., once set by the "position allocator", the
   // position will never change.
-  mobility.SetMobilityModel ("StaticMobilityModel");
+  mobility.SetMobilityModel ("ns3::StaticMobilityModel");
 
   // finalize the setup by attaching to each object
   // in the input array a position and initializing

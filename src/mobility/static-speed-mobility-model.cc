@@ -26,7 +26,7 @@ NS_OBJECT_ENSURE_REGISTERED (StaticSpeedMobilityModel);
 
 TypeId StaticSpeedMobilityModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("StaticSpeedMobilityModel")
+  static TypeId tid = TypeId ("ns3::StaticSpeedMobilityModel")
     .SetParent<MobilityModel> ()
     .AddConstructor<StaticSpeedMobilityModel> ();
   return tid;

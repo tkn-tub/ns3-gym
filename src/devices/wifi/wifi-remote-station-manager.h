@@ -33,6 +33,14 @@ class WifiRemoteStation;
 class NonUnicastWifiRemoteStation;
 class WifiPhy;
 
+/**
+ * \brief hold per-remote-station state.
+ *
+ * The state in this class is used to keep track
+ * of association status if we are in an infrastructure
+ * network and to perform the selection of tx parameters
+ * on a per-packet basis.
+ */
 class WifiRemoteStationManager : public Object
 {
 private:

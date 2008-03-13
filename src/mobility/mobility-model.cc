@@ -26,7 +26,7 @@ namespace ns3 {
 TypeId 
 MobilityModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("MobilityModel")
+  static TypeId tid = TypeId ("ns3::MobilityModel")
     .SetParent<Object> ()
     .AddAttribute ("Position", "The current position of the mobility model.",
                    TypeId::ATTR_SGC,

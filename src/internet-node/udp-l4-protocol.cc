@@ -43,7 +43,7 @@ const uint8_t UdpL4Protocol::PROT_NUMBER = 17;
 TypeId 
 UdpL4Protocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("UdpL4Protocol")
+  static TypeId tid = TypeId ("ns3::UdpL4Protocol")
     .SetParent<Ipv4L4Protocol> ()
     .AddConstructor<UdpL4Protocol> ()
     ;

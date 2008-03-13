@@ -49,7 +49,7 @@ NS_OBJECT_ENSURE_REGISTERED (Ipv4L3Protocol);
 TypeId 
 Ipv4L3Protocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("Ipv4L3Protocol")
+  static TypeId tid = TypeId ("ns3::Ipv4L3Protocol")
     .SetParent<Object> ()
     .AddConstructor<Ipv4L3Protocol> ()
     .AddAttribute ("DefaultTtl", "The TTL value set by default on all outgoing packets generated on this node.",

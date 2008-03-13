@@ -48,7 +48,7 @@ NS_OBJECT_ENSURE_REGISTERED (OnOffApplication);
 TypeId
 OnOffApplication::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("OnOffApplication")
+  static TypeId tid = TypeId ("ns3::OnOffApplication")
     .SetParent<Application> ()
     .AddConstructor<OnOffApplication> ()
     .AddAttribute ("DataRate", "The data rate in on state.",

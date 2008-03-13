@@ -34,7 +34,7 @@ NS_OBJECT_ENSURE_REGISTERED (UdpEchoClient);
 TypeId
 UdpEchoClient::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("UdpEchoClient")
+  static TypeId tid = TypeId ("ns3::UdpEchoClient")
     .SetParent<Application> ()
     .AddConstructor<UdpEchoClient> ()
     .AddAttribute ("MaxPackets", "XXX",
@@ -88,7 +88,7 @@ UdpEchoClient::StartApplication (void)
 
   if (!m_socket)
     {
-      TypeId tid = TypeId::LookupByName ("Udp");
+      TypeId tid = TypeId::LookupByName ("ns3::Udp");
       Ptr<SocketFactory> socketFactory = 
         GetNode ()->GetObject<SocketFactory> (tid);
       m_socket = socketFactory->CreateSocket ();

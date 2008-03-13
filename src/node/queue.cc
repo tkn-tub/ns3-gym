@@ -30,7 +30,7 @@ NS_OBJECT_ENSURE_REGISTERED (Queue);
 TypeId 
 Queue::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("Queue")
+  static TypeId tid = TypeId ("ns3::Queue")
     .SetParent<Object> ()
     .AddTraceSource ("Enqueue", "XXX",
                      MakeTraceSourceAccessor (&Queue::m_traceEnqueue))

@@ -33,7 +33,7 @@ NS_OBJECT_ENSURE_REGISTERED (AarfWifiManager);
 TypeId 
 AarfWifiManager::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("AarfWifiManager")
+  static TypeId tid = TypeId ("ns3::AarfWifiManager")
     .SetParent<ArfWifiManager> ()
     .AddConstructor<AarfWifiManager> ()
     .AddAttribute ("SuccessK", "Multiplication factor for the success threshold in the AARF algorithm.",

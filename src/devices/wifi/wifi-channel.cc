@@ -34,7 +34,7 @@ namespace ns3 {
 TypeId 
 WifiChannel::GetTypdId (void)
 {
-  static TypeId tid = TypeId ("WifiChannel")
+  static TypeId tid = TypeId ("ns3::WifiChannel")
     .SetParent<WifiChannel> ()
     .AddConstructor<WifiChannel> ()
     .AddAttribute ("PropagationLossModel", "XXX",

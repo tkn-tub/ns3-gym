@@ -23,7 +23,7 @@
 #include "ns3/log.h"
 #include "ns3/uinteger.h"
 
-NS_LOG_COMPONENT_DEFINE ("ArfWifiManager");
+NS_LOG_COMPONENT_DEFINE ("ns3::ArfWifiManager");
 
 
 namespace ns3 {
@@ -224,7 +224,7 @@ NS_OBJECT_ENSURE_REGISTERED (ArfWifiManager);
 TypeId 
 ArfWifiManager::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ArfWifiManager")
+  static TypeId tid = TypeId ("ns3::ArfWifiManager")
     .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<ArfWifiManager> ()
     .AddAttribute ("TimerThreshold", "The 'timer' threshold in the ARF algorithm.",

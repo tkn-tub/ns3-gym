@@ -45,6 +45,7 @@ public:
   void SetTypeName (uint16_t uid, std::string typeName);
   void SetGroupName (uint16_t uid, std::string groupName);
   void AddConstructor (uint16_t uid, ns3::CallbackBase callback);
+  void HideFromDocumentation (uint16_t uid);
   uint16_t GetUid (std::string name) const;
   std::string GetName (uint16_t uid) const;
   uint16_t GetParent (uint16_t uid) const;
@@ -76,6 +77,7 @@ public:
   std::string GetTraceSourceName (uint16_t uid, uint32_t i) const;
   std::string GetTraceSourceHelp (uint16_t uid, uint32_t i) const;
   ns3::Ptr<const ns3::TraceSourceAccessor> GetTraceSourceAccessor (uint16_t uid, uint32_t i) const;
+  bool MustHideFromDocumentation (uint16_t uid) const;
 
 private:
   struct AttributeInformation {
@@ -98,6 +100,7 @@ private:
     std::string groupName;
     bool hasConstructor;
     ns3::CallbackBase constructor;
+    bool mustHideFromDocumentation;
     std::vector<struct AttributeInformation> attributes;
     std::vector<struct TraceSourceInformation> traceSources;
   };
@@ -130,6 +133,7 @@ IidManager::AllocateUid (std::string name)
   information.typeName = "";
   information.groupName = "";
   information.hasConstructor = false;
+  information.mustHideFromDocumentation = false;
   m_information.push_back (information);
   uint32_t uid = m_information.size ();
   NS_ASSERT (uid <= 0xffff);
@@ -161,6 +165,12 @@ IidManager::SetGroupName (uint16_t uid, std::string groupName)
 {
   struct IidInformation *information = LookupInformation (uid);
   information->groupName = groupName;
+}
+void
+IidManager::HideFromDocumentation (uint16_t uid)
+{
+  struct IidInformation *information = LookupInformation (uid);
+  information->mustHideFromDocumentation = true;
 }
 
 void 
@@ -363,6 +373,12 @@ IidManager::GetTraceSourceAccessor (uint16_t uid, uint32_t i) const
   NS_ASSERT (i < information->traceSources.size ());
   return information->traceSources[i].accessor;
 }
+bool 
+IidManager::MustHideFromDocumentation (uint16_t uid) const
+{
+  struct IidInformation *information = LookupInformation (uid);
+  return information->mustHideFromDocumentation;
+}
 
 } // anonymous namespace
 
@@ -564,6 +580,13 @@ TypeId::CreateObject (const AttributeList &attributes) const
   return object;  
 }
 
+bool 
+TypeId::MustHideFromDocumentation (void) const
+{
+  bool mustHide = Singleton<IidManager>::Get ()->MustHideFromDocumentation (m_tid);
+  return mustHide;
+}
+
 uint32_t 
 TypeId::GetAttributeListN (void) const
 {
@@ -642,6 +665,13 @@ TypeId::AddTraceSource (std::string name,
                         Ptr<const TraceSourceAccessor> accessor)
 {
   Singleton<IidManager>::Get ()->AddTraceSource (m_tid, name, help, accessor);
+  return *this;
+}
+
+TypeId 
+TypeId::HideFromDocumentation (void)
+{
+  Singleton<IidManager>::Get ()->HideFromDocumentation (m_tid);
   return *this;
 }
 
@@ -936,7 +966,7 @@ NS_OBJECT_ENSURE_REGISTERED (Object);
 static TypeId
 GetObjectIid (void)
 {
-  TypeId tid = TypeId ("Object");
+  TypeId tid = TypeId ("ns3::Object");
   tid.SetParent (tid);
   return tid;
 }
@@ -1324,6 +1354,7 @@ public:
   static ns3::TypeId GetTypeId (void) {
     static ns3::TypeId tid = ns3::TypeId ("BaseA")
       .SetParent (Object::GetTypeId ())
+      .HideFromDocumentation ()
       .AddConstructor<BaseA> ();
     return tid;
   }
@@ -1338,6 +1369,7 @@ public:
   static ns3::TypeId GetTypeId (void) {
     static ns3::TypeId tid = ns3::TypeId ("DerivedA")
       .SetParent (BaseA::GetTypeId ())
+      .HideFromDocumentation ()
       .AddConstructor<DerivedA> ();
     return tid;
   }
@@ -1354,6 +1386,7 @@ public:
   static ns3::TypeId GetTypeId (void) {
     static ns3::TypeId tid = ns3::TypeId ("BaseB")
       .SetParent (Object::GetTypeId ())
+      .HideFromDocumentation ()
       .AddConstructor<BaseB> ();
     return tid;
   }
@@ -1368,6 +1401,7 @@ public:
   static ns3::TypeId GetTypeId (void) {
     static ns3::TypeId tid = ns3::TypeId ("DerivedB")
       .SetParent (BaseB::GetTypeId ())
+      .HideFromDocumentation ()
       .AddConstructor<DerivedB> ();
     return tid;
   }

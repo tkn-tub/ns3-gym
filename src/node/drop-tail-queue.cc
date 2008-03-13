@@ -29,7 +29,7 @@ NS_OBJECT_ENSURE_REGISTERED (DropTailQueue);
 
 TypeId DropTailQueue::GetTypeId (void) 
 {
-  static TypeId tid = TypeId ("DropTailQueue")
+  static TypeId tid = TypeId ("ns3::DropTailQueue")
     .SetParent<Queue> ()
     .AddConstructor<DropTailQueue> ()
     .AddAttribute ("MaxPackets", "The maximum number of packets accepted by this DropTailQueue.",

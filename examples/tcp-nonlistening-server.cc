@@ -162,7 +162,7 @@ int main (int argc, char *argv[])
   Ptr<PacketSink> sink = Create<PacketSink> (
     n2,
     InetSocketAddress (Ipv4Address::GetAny (), servPort),
-    "Tcp");
+    "ns3::Tcp");
   // Start the sink
   sink->Start (Seconds (0.0));
   sink->Stop (Seconds (10.0));

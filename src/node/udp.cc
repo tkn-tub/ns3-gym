@@ -26,7 +26,7 @@ NS_OBJECT_ENSURE_REGISTERED (Udp);
 
 TypeId Udp::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("Udp")
+  static TypeId tid = TypeId ("ns3::Udp")
     .SetParent<SocketFactory> ();
   return tid;
 }

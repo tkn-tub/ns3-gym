@@ -39,7 +39,7 @@ NS_OBJECT_ENSURE_REGISTERED (RttEstimator);
 TypeId 
 RttEstimator::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RttEstimator")
+  static TypeId tid = TypeId ("ns3::RttEstimator")
     .SetParent<Object> ()
     .AddAttribute ("MaxMultiplier", 
                    "XXX",
@@ -172,7 +172,7 @@ NS_OBJECT_ENSURE_REGISTERED (RttMeanDeviation);
 TypeId 
 RttMeanDeviation::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RttMeanDeviation")
+  static TypeId tid = TypeId ("ns3::RttMeanDeviation")
     .SetParent<RttEstimator> ()
     .AddConstructor<RttMeanDeviation> ()
     .AddAttribute ("Gain",

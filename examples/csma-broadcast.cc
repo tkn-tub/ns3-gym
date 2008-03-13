@@ -150,7 +150,7 @@ main (int argc, char *argv[])
   NS_LOG_INFO ("Create Applications.");
   Ptr<OnOffApplication> ooff = 
     CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("255.255.255.255", port)), 
-                                    "Protocol", TypeId::LookupByName ("Udp"),
+                                    "Protocol", TypeId::LookupByName ("ns3::Udp"),
                                     "OnTime", ConstantVariable(1), 
                                     "OffTime", ConstantVariable(0));
   n0->AddApplication (ooff);
@@ -161,7 +161,7 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   Ptr<PacketSink> sink = 
     CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                              "Protocol", TypeId::LookupByName ("Udp"));
+                              "Protocol", TypeId::LookupByName ("ns3::Udp"));
   n1->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.0));
@@ -169,7 +169,7 @@ main (int argc, char *argv[])
 
   // Create an optional packet sink to receive these packets
   sink = CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                                   "Protocol", TypeId::LookupByName ("Udp"));
+                                   "Protocol", TypeId::LookupByName ("ns3::Udp"));
   n2->AddApplication (sink);
 
   // Start the sink

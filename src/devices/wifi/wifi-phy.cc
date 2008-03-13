@@ -182,7 +182,7 @@ NS_OBJECT_ENSURE_REGISTERED (WifiPhy);
 TypeId 
 WifiPhy::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("WifiPhy")
+  static TypeId tid = TypeId ("ns3::WifiPhy")
     .SetParent<Object> ()
     .AddConstructor<WifiPhy> ()
     .AddAttribute ("EnergyDetectionThreshold",

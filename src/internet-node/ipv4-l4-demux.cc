@@ -35,7 +35,7 @@ NS_OBJECT_ENSURE_REGISTERED (Ipv4L4Demux);
 TypeId 
 Ipv4L4Demux::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("Ipv4L4Demux")
+  static TypeId tid = TypeId ("ns3::Ipv4L4Demux")
     .SetParent<Object> ()
     .AddAttribute ("Protocols", "The set of protocols registered with this demux.",
                    ObjectVector (),

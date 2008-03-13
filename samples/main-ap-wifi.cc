@@ -121,14 +121,14 @@ int main (int argc, char *argv[])
 
   Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
   Ssid ssid = Ssid ("wifi-default");
-  wifi.SetPhy ("WifiPhy");
-  wifi.SetRemoteStationManager ("ArfWifiManager");
+  wifi.SetPhy ("ns3::WifiPhy");
+  wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
   // setup ap.
-  wifi.SetMac ("NqstaWifiMac", "Ssid", ssid,
+  wifi.SetMac ("ns3::NqstaWifiMac", "Ssid", ssid,
                "ActiveProbing", Boolean (false));
   staDevs = wifi.Build (stas, channel);
   // setup stas.
-  wifi.SetMac ("NqapWifiMac", "Ssid", ssid,
+  wifi.SetMac ("ns3::NqapWifiMac", "Ssid", ssid,
                "BeaconGeneration", Boolean (true),
                "BeaconInterval", Seconds (2.5));
   wifi.Build (ap, channel);
@@ -145,7 +145,7 @@ int main (int argc, char *argv[])
   destination.SetPhysicalAddress (staDevs.Get(1)->GetAddress ());
   Ptr<Application> app = 
     CreateObject<OnOffApplication> ("Remote", Address (destination), 
-                                    "Protocol", TypeId::LookupByName ("Packet"),
+                                    "Protocol", TypeId::LookupByName ("ns3::PacketSocketFactory"),
                                     "OnTime", ConstantVariable (42),
                                     "OffTime", ConstantVariable (0));
   stas.Get (0)->AddApplication (app);

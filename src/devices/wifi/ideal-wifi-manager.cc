@@ -41,7 +41,7 @@ NS_OBJECT_ENSURE_REGISTERED (IdealWifiManager);
 TypeId 
 IdealWifiManager::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("IdealWifiManager")
+  static TypeId tid = TypeId ("ns3::IdealWifiManager")
     .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<IdealWifiManager> ()
     .AddAttribute ("BerThreshold",

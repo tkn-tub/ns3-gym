@@ -117,7 +117,7 @@ Experiment::ReceivePacket (Ptr<Socket> socket, Ptr<Packet> packet, const Address
 Ptr<Socket>
 Experiment::SetupPacketReceive (Ptr<Node> node)
 {
-  TypeId tid = TypeId::LookupByName ("Packet");
+  TypeId tid = TypeId::LookupByName ("ns3::PacketSocketFactory");
   Ptr<SocketFactory> socketFactory = node->GetObject<SocketFactory> (tid);
   Ptr<Socket> sink = socketFactory->CreateSocket ();
   sink->Bind ();
@@ -150,7 +150,7 @@ Experiment::Run (const WifiHelper &wifi)
   destination.SetPhysicalAddress (devices.Get (1)->GetAddress ());
   Ptr<Application> app = 
     CreateObject<OnOffApplication> ("Remote", Address (destination),
-                                    "Protocol", TypeId::LookupByName ("Packet"),
+                                    "Protocol", TypeId::LookupByName ("ns3::PacketSocketFactory"),
                                     "OnTime", ConstantVariable (250),
                                     "OffTime", ConstantVariable (0),
                                     "DataRate", DataRate (60000000),
@@ -185,61 +185,61 @@ int main (int argc, char *argv[])
   WifiHelper wifi;
   GnuplotDataset dataset;
 
-  wifi.SetMac ("AdhocWifiMac");
-  wifi.SetPhy ("WifiPhy");
+  wifi.SetMac ("ns3::AdhocWifiMac");
+  wifi.SetPhy ("ns3::WifiPhy");
 
   NS_LOG_DEBUG ("54");
   experiment = Experiment ("54mb");
-  wifi.SetRemoteStationManager ("ConstantRateWifiManager",
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", String ("wifia-54mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("48");
   experiment = Experiment ("48mb");
-  wifi.SetRemoteStationManager ("ConstantRateWifiManager",
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", String ("wifia-48mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("36");
   experiment = Experiment ("36mb");
-  wifi.SetRemoteStationManager ("ConstantRateWifiManager",
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", String ("wifia-36mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("24");
   experiment = Experiment ("24mb");
-  wifi.SetRemoteStationManager ("ConstantRateWifiManager",
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", String ("wifia-24mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("18");
   experiment = Experiment ("18mb");
-  wifi.SetRemoteStationManager ("ConstantRateWifiManager",
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", String ("wifia-18mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("12");
   experiment = Experiment ("12mb");
-  wifi.SetRemoteStationManager ("ConstantRateWifiManager",
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", String ("wifia-12mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("9");
   experiment = Experiment ("9mb");
-  wifi.SetRemoteStationManager ("ConstantRateWifiManager",
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", String ("wifia-9mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("6");
   experiment = Experiment ("6mb");
-  wifi.SetRemoteStationManager ("ConstantRateWifiManager",
+  wifi.SetRemoteStationManager ("ns3::ConstantRateWifiManager",
                                 "DataMode", String ("wifia-6mbs"));
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
@@ -254,19 +254,19 @@ int main (int argc, char *argv[])
 
   NS_LOG_DEBUG ("arf");
   experiment = Experiment ("arf");
-  wifi.SetRemoteStationManager ("ArfWifiManager");
+  wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("aarf");
   experiment = Experiment ("aarf");
-  wifi.SetRemoteStationManager ("AarfWifiManager");
+  wifi.SetRemoteStationManager ("ns3::AarfWifiManager");
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 
   NS_LOG_DEBUG ("ideal");
   experiment = Experiment ("ideal");
-  wifi.SetRemoteStationManager ("IdealWifiManager");
+  wifi.SetRemoteStationManager ("ns3::IdealWifiManager");
   dataset = experiment.Run (wifi);
   gnuplot.AddDataset (dataset);
 

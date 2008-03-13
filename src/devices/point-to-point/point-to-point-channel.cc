@@ -32,7 +32,7 @@ namespace ns3 {
 TypeId 
 PointToPointChannel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("PointToPointChannel")
+  static TypeId tid = TypeId ("ns3::PointToPointChannel")
     .SetParent<Channel> ()
     .AddConstructor<PointToPointChannel> ()
     .AddAttribute ("BitRate", "The maximum bitrate of the channel",

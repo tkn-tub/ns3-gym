@@ -48,7 +48,7 @@ CsmaDeviceRec::IsActive() {
 TypeId 
 CsmaChannel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("CsmaChannel")
+  static TypeId tid = TypeId ("ns3::CsmaChannel")
     .SetParent<Channel> ()
     .AddConstructor<CsmaChannel> ()
     .AddAttribute ("BitRate", "The maximum bitrate of the channel",

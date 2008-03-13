@@ -123,7 +123,7 @@ NS_OBJECT_ENSURE_REGISTERED (WifiRemoteStationManager);
 TypeId 
 WifiRemoteStationManager::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("WifiRemoteStationManager")
+  static TypeId tid = TypeId ("ns3::WifiRemoteStationManager")
     .SetParent<Object> ()
     .AddAttribute ("IsLowLatency", "XXX",
                    Boolean (true),

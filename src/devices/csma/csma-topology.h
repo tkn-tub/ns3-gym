@@ -106,7 +106,7 @@ static Ptr<PacketSocket> ConnectPacketSocket(Ptr<PacketSocketApp> app,
 
   /**
    * \param n1 Node from which socketfactory should be tested.
-   * \param tid_name Interface identifier ("Packet", in this case)
+   * \param tid_name Interface identifier ("ns3::PacketSocketFactory", in this case)
    *
    * This is a test function to make sure that a socket can be created
    * by using the socketfactory interface provided in the

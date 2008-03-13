@@ -161,7 +161,7 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = 
     CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.1.2", port)), 
-                                    "Protocol", TypeId::LookupByName ("Udp"),
+                                    "Protocol", TypeId::LookupByName ("ns3::Udp"),
                                     "OnTime", ConstantVariable(1), 
                                     "OffTime", ConstantVariable(0));
   n0->AddApplication (ooff);
@@ -175,7 +175,7 @@ main (int argc, char *argv[])
 // Create a similar flow from n3 to n0, starting at time 1.1 seconds
 //
   ooff = CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.1.1", port)), 
-                                         "Protocol", TypeId::LookupByName ("Udp"),
+                                         "Protocol", TypeId::LookupByName ("ns3::Udp"),
                                          "OnTime", ConstantVariable(1), 
                                          "OffTime", ConstantVariable(0));
   n3->AddApplication (ooff);

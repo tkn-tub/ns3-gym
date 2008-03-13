@@ -30,7 +30,7 @@ NS_OBJECT_ENSURE_REGISTERED (RandomWaypointMobilityModel);
 TypeId
 RandomWaypointMobilityModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RandomWaypointMobilityModel")
+  static TypeId tid = TypeId ("ns3::RandomWaypointMobilityModel")
     .SetParent<MobilityModel> ()
     .SetGroupName ("Mobility")
     .AddConstructor<RandomWaypointMobilityModel> ()

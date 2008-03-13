@@ -15,9 +15,9 @@ namespace ns3 {
 
 WifiHelper::WifiHelper ()
 {
-  m_stationManager.SetTypeId ("ArfWifiManager");
-  m_phy.SetTypeId ("WifiPhy");
-  m_mac.SetTypeId ("AdhocWifiMac");
+  m_stationManager.SetTypeId ("ns3::ArfWifiManager");
+  m_phy.SetTypeId ("ns3::WifiPhy");
+  m_mac.SetTypeId ("ns3::AdhocWifiMac");
 }
 
 void 

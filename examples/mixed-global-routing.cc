@@ -187,7 +187,7 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = 
     CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
-                                    "Protocol", TypeId::LookupByName ("Udp"),
+                                    "Protocol", TypeId::LookupByName ("ns3::Udp"),
                                     "OnTime", ConstantVariable (1), 
                                     "OffTime", ConstantVariable (0),
                                     "DataRate", DataRate("300bps"),

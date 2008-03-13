@@ -62,7 +62,7 @@ NS_OBJECT_ENSURE_REGISTERED (NqstaWifiMac);
 TypeId 
 NqstaWifiMac::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("NqstaWifiMac")
+  static TypeId tid = TypeId ("ns3::NqstaWifiMac")
     .SetParent<WifiMac> ()
     .AddConstructor<NqstaWifiMac> ()
     .AddAttribute ("ProbeRequestTimeout", "XXX",

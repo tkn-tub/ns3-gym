@@ -137,7 +137,7 @@ main (int argc, char *argv[])
   uint16_t port = 9;   // Discard port (RFC 863)
   Ptr<OnOffApplication> ooff = 
     CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.3.2", port)), 
-                                    "Protocol", TypeId::LookupByName ("Udp"),
+                                    "Protocol", TypeId::LookupByName ("ns3::Udp"),
                                     "OnTime", ConstantVariable(1), 
                                     "OffTime", ConstantVariable(0));
   n0->AddApplication (ooff);
@@ -147,14 +147,14 @@ main (int argc, char *argv[])
   // Create an optional packet sink to receive these packets
   Ptr<PacketSink> sink = 
     CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                              "Protocol", TypeId::LookupByName ("Udp"));
+                              "Protocol", TypeId::LookupByName ("ns3::Udp"));
   n3->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.0));
 
   // Create a similar flow from n3 to n1, starting at time 1.1 seconds
   ooff = CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.2.1", port)), 
-                                         "Protocol", TypeId::LookupByName ("Udp"),
+                                         "Protocol", TypeId::LookupByName ("ns3::Udp"),
                                          "OnTime", ConstantVariable(1), 
                                          "OffTime", ConstantVariable(0));
   n3->AddApplication (ooff);
@@ -163,7 +163,7 @@ main (int argc, char *argv[])
 
   // Create a packet sink to receive these packets
   sink = CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), port)),
-                                   "Protocol", TypeId::LookupByName ("Udp"));
+                                   "Protocol", TypeId::LookupByName ("ns3::Udp"));
   n1->AddApplication (sink);
   // Start the sink
   sink->Start (Seconds (1.1));
@@ -173,7 +173,7 @@ main (int argc, char *argv[])
   uint16_t servPort = 500;
 
   ooff = CreateObject<OnOffApplication> ("Remote", Address (InetSocketAddress ("10.1.3.2", servPort)), 
-                                         "Protocol", TypeId::LookupByName ("Tcp"),
+                                         "Protocol", TypeId::LookupByName ("ns3::Tcp"),
                                          "OnTime", ConstantVariable(1), 
                                          "OffTime", ConstantVariable(0));
   n0->AddApplication (ooff);
@@ -183,7 +183,7 @@ main (int argc, char *argv[])
 
   // Create a packet sink to receive these TCP packets
   sink = CreateObject<PacketSink> ("Local", Address (InetSocketAddress (Ipv4Address::GetAny (), servPort)),
-                                   "Protocol", TypeId::LookupByName ("Tcp"));
+                                   "Protocol", TypeId::LookupByName ("ns3::Tcp"));
   n3->AddApplication (sink);
   sink->Start (Seconds (1.2));
 

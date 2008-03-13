@@ -32,7 +32,7 @@ NS_OBJECT_ENSURE_REGISTERED (Ipv4L4Protocol);
 TypeId 
 Ipv4L4Protocol::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("Ipv4L4Protocol")
+  static TypeId tid = TypeId ("ns3::Ipv4L4Protocol")
     .SetParent<Object> ()
     .AddAttribute ("ProtocolNumber", "The Ipv4 protocol number.",
                    Uinteger (0),

@@ -38,7 +38,7 @@ NS_OBJECT_ENSURE_REGISTERED (Application);
 TypeId 
 Application::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("Application")
+  static TypeId tid = TypeId ("ns3::Application")
     .SetParent<Object> ()
     ;
   return tid;

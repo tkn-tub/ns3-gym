@@ -180,6 +180,8 @@ public:
   Ptr<Object> CreateObject (const AttributeList &attributes) const;
   Ptr<Object> CreateObject (void) const;
 
+  bool MustHideFromDocumentation (void) const;
+
   /**
    * \param tid the TypeId of the base class.
    * \return this TypeId instance.
@@ -269,6 +271,8 @@ public:
   TypeId AddTraceSource (std::string name,
                          std::string help,
                          Ptr<const TraceSourceAccessor> accessor);
+
+  TypeId HideFromDocumentation (void);
 
   /**
    * \brief store together a set of attribute properties.
