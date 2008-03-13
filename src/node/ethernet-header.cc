@@ -149,7 +149,7 @@ EthernetHeader::Serialize (Buffer::Iterator start) const
     }
   WriteTo (i, m_destination);
   WriteTo (i, m_source);
-  i.WriteU16 (m_lengthType);
+  i.WriteHtonU16 (m_lengthType);
 }
 uint32_t
 EthernetHeader::Deserialize (Buffer::Iterator start)
@@ -163,7 +163,7 @@ EthernetHeader::Deserialize (Buffer::Iterator start)
 
   ReadFrom (i, m_destination);
   ReadFrom (i, m_source);
-  m_lengthType = i.ReadU16 ();
+  m_lengthType = i.ReadNtohU16 ();
 
   return GetSerializedSize ();
 }

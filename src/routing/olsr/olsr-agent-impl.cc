@@ -170,7 +170,7 @@ AgentImpl::GetTypeId (void)
                    MakeTimeAccessor (&AgentImpl::m_midInterval),
                    MakeTimeChecker ())
     .AddAttribute ("Willingness", "XXX",
-                   Uinteger (OLSR_WILL_ALWAYS),
+                   Uinteger (OLSR_WILL_DEFAULT),
                    MakeUintegerAccessor (&AgentImpl::m_willingness),
                    MakeUintegerChecker<uint8_t> ())
     .AddTraceSource ("Rx", "Receive OLSR packet.",
@@ -346,6 +346,8 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
 
   m_rxPacketTrace (olsrPacketHeader, messages);
 
+  m_state.SetModified (false);
+
   for (MessageList::const_iterator messageIter = messages.begin ();
        messageIter != messages.end (); messageIter++)
     {
@@ -442,7 +444,11 @@ AgentImpl::RecvOlsr (Ptr<Socket> socket,
     }
 
   // After processing all OLSR messages, we must recompute the routing table
-  RoutingTableComputation ();
+  if (m_state.GetModified ())
+    {
+      RoutingTableComputation ();
+      m_state.SetModified (false);
+    }
 }
 
 ///
@@ -478,17 +484,19 @@ AgentImpl::MprComputation()
 {
   // MPR computation should be done for each interface. See section 8.3.1
   // (RFC 3626) for details.
+  MprSet mprSet;
 	
-  m_state.ClearMprSet ();
   
   // N is the subset of neighbors of the node, which are
   // neighbor "of the interface I"
   NeighborSet N;
-  for (NeighborSet::const_iterator it = m_state.GetNeighbors ().begin();
-       it != m_state.GetNeighbors ().end (); it++)
+  for (NeighborSet::const_iterator neighbor = m_state.GetNeighbors ().begin();
+       neighbor != m_state.GetNeighbors ().end (); neighbor++)
     {
-      if ((*it).status == NeighborTuple::STATUS_SYM) // I think that we need this check
-        N.push_back (*it);
+      if (neighbor->status == NeighborTuple::STATUS_SYM) // I think that we need this check
+        {
+          N.push_back (*neighbor);
+        }
     }
 	
   // N2 is the set of 2-hop neighbors reachable from "the interface
@@ -498,123 +506,122 @@ AgentImpl::MprComputation()
   // (iii) all the symmetric neighbors: the nodes for which there exists a symmetric
   //       link to this node on some interface.
   TwoHopNeighborSet N2;
-  for (TwoHopNeighborSet::const_iterator it = m_state.GetTwoHopNeighbors ().begin ();
-       it != m_state.GetTwoHopNeighbors ().end (); it++)
+  for (TwoHopNeighborSet::const_iterator twoHopNeigh = m_state.GetTwoHopNeighbors ().begin ();
+       twoHopNeigh != m_state.GetTwoHopNeighbors ().end (); twoHopNeigh++)
     {
-      TwoHopNeighborTuple const &twoHopNeigh = *it;
-      bool ok = true;
-      const NeighborTuple *nb_tuple = m_state.FindSymNeighborTuple (twoHopNeigh.neighborMainAddr);
-      if (nb_tuple == NULL)
+      // excluding:
+      // (ii)  the node performing the computation
+      if (twoHopNeigh->twoHopNeighborAddr == m_mainAddress)
         {
-          ok = false;
+          continue;
         }
-      else
+
+      //  excluding:
+      // (i)   the nodes only reachable by members of N with willingness WILL_NEVER      
+      bool ok = false;
+      for (NeighborSet::const_iterator neigh = N.begin ();
+           neigh != N.end (); neigh++)
         {
-          nb_tuple = m_state.FindNeighborTuple (twoHopNeigh.neighborMainAddr, OLSR_WILL_NEVER);
-          if (nb_tuple != NULL)
+          if (neigh->neighborMainAddr == twoHopNeigh->neighborMainAddr)
+            {
+              if (neigh->willingness == OLSR_WILL_NEVER)
+                {
+                  ok = false;
+                  break;
+                }
+              else
+                {
+                  ok = true;
+                  break;
+                }
+            }
+        }
+      if (!ok)
+        {
+          continue;
+        }
+      
+      // excluding:
+      // (iii) all the symmetric neighbors: the nodes for which there exists a symmetric
+      //       link to this node on some interface.
+      for (NeighborSet::const_iterator neigh = N.begin ();
+           neigh != N.end (); neigh++)
+        {
+          if (neigh->neighborMainAddr == twoHopNeigh->twoHopNeighborAddr)
             {
               ok = false;
-            }
-          else
-            {
-              nb_tuple = m_state.FindSymNeighborTuple (twoHopNeigh.neighborMainAddr);
-              if (nb_tuple != NULL)
-                ok = false;
+              break;
             }
         }
 
       if (ok)
-        N2.push_back (twoHopNeigh);
+        {
+          N2.push_back (*twoHopNeigh);
+        }
     }
-	
+
   // 1. Start with an MPR set made of all members of N with
   // N_willingness equal to WILL_ALWAYS
-  for (NeighborSet::const_iterator it = N.begin (); it != N.end (); it++)
+  for (NeighborSet::const_iterator neighbor = N.begin (); neighbor != N.end (); neighbor++)
     {
-      NeighborTuple const &nb_tuple = *it;
-      if (nb_tuple.willingness == OLSR_WILL_ALWAYS)
-        m_state.InsertMprAddress (nb_tuple.neighborMainAddr);
+      if (neighbor->willingness == OLSR_WILL_ALWAYS)
+        {
+          mprSet.insert (neighbor->neighborMainAddr);
+          // (not in RFC but I think is needed: remove the 2-hop
+          // neighbors reachable by the MPR from N2)
+          for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
+               twoHopNeigh != N2.end (); twoHopNeigh++)
+            {
+              if (twoHopNeigh->neighborMainAddr == neighbor->neighborMainAddr)
+                {
+                  twoHopNeigh = N2.erase (twoHopNeigh);
+                  twoHopNeigh--;
+                }
+            }
+        }
     }
   
   // 2. Calculate D(y), where y is a member of N, for all nodes in N.
-  // We will do this later.
-  // FIXME
+  // (we do this later)
 	
   // 3. Add to the MPR set those nodes in N, which are the *only*
-  // nodes to provide reachability to a node in N2. Remove the
-  // nodes from N2 which are now covered by a node in the MPR set.
-  MprSet foundset;
-  std::set<Ipv4Address> deleted_addrs;
-  for (TwoHopNeighborSet::iterator it = N2.begin (); it != N2.end (); it++)
+  // nodes to provide reachability to a node in N2.
+  std::set<Ipv4Address> coveredTwoHopNeighbors;
+  for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin (); twoHopNeigh != N2.end (); twoHopNeigh++)
     {
-      TwoHopNeighborTuple const &nb2hop_tuple1 = *it;
-		
-      MprSet::const_iterator pos = foundset.find (nb2hop_tuple1.twoHopNeighborAddr);
-      if (pos != foundset.end ())
-        continue;
-		
-      bool found = false;
-      for (NeighborSet::const_iterator it2 = N.begin ();
-           it2 != N.end (); it2++)
+      NeighborSet::const_iterator onlyNeighbor = N.end ();
+      
+      for (NeighborSet::const_iterator neighbor = N.begin ();
+           neighbor != N.end (); neighbor++)
         {
-          if ((*it2).neighborMainAddr == nb2hop_tuple1.neighborMainAddr) {
-            found = true;
-            break;
-          }
-        }
-      if (!found)
-        continue;
-		
-      found = false;
-      for (TwoHopNeighborSet::const_iterator it2 = it + 1;
-           it2 != N2.end (); it2++)
-        {
-          TwoHopNeighborTuple const &nb2hop_tuple2 = *it2;
-          if (nb2hop_tuple1.twoHopNeighborAddr == nb2hop_tuple2.twoHopNeighborAddr)
+          if (neighbor->neighborMainAddr == twoHopNeigh->neighborMainAddr)
             {
-              foundset.insert (nb2hop_tuple1.twoHopNeighborAddr);
-              found = true;
-              break;
-            }
-        }
-      if (!found)
-        {
-          m_state.InsertMprAddress (nb2hop_tuple1.neighborMainAddr);
-          
-          for (TwoHopNeighborSet::iterator it2 = it + 1; it2 != N2.end (); it2++)
-            {
-              TwoHopNeighborTuple const &nb2hop_tuple2 = *it2;
-              if (nb2hop_tuple1.neighborMainAddr == nb2hop_tuple2.neighborMainAddr)
+              if (onlyNeighbor == N.end ())
                 {
-                  deleted_addrs.insert (nb2hop_tuple2.twoHopNeighborAddr);
-                  it2 = N2.erase (it2);
-                  it2--;
+                  onlyNeighbor = neighbor;
                 }
-            }
-          it = N2.erase (it);
-          it--;
-        }
-		
-      for (std::set<Ipv4Address>::iterator it2 = deleted_addrs.begin ();
-           it2 != deleted_addrs.end ();
-           it2++)
-        {
-          for (TwoHopNeighborSet::iterator it3 = N2.begin ();
-               it3 != N2.end ();
-               it3++)
-            {
-              if ((*it3).twoHopNeighborAddr == *it2)
+              else
                 {
-                  it3 = N2.erase (it3);
-                  it3--;
-                  // I have to reset the external iterator because it
-                  // may have been invalidated by the latter deletion
-                  it = N2.begin ();
-                  it--;
+                  onlyNeighbor = N.end ();
+                  break;
                 }
             }
         }
-      deleted_addrs.clear ();
+      if (onlyNeighbor != N.end ())
+        {
+          mprSet.insert (onlyNeighbor->neighborMainAddr);
+          coveredTwoHopNeighbors.insert (twoHopNeigh->twoHopNeighborAddr);
+        }
+    }
+  // Remove the nodes from N2 which are now covered by a node in the MPR set.
+  for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
+       twoHopNeigh != N2.end (); twoHopNeigh++)
+    {
+      if (coveredTwoHopNeighbors.find (twoHopNeigh->twoHopNeighborAddr) != coveredTwoHopNeighbors.end ())
+        {
+          twoHopNeigh = N2.erase (twoHopNeigh);
+          twoHopNeigh--;
+        }
     }
 	
   // 4. While there exist nodes in N2 which are not covered by at
@@ -654,32 +661,32 @@ AgentImpl::MprComputation()
       for (std::set<int>::iterator it = rs.begin (); it != rs.end (); it++)
         {
           int r = *it;
-          if (r > 0)
+          if (r == 0)
             {
-              for (std::vector<const NeighborTuple *>::iterator it2 = reachability[r].begin ();
-                   it2 != reachability[r].end ();
-                   it2++)
+              continue;
+            }
+          for (std::vector<const NeighborTuple *>::iterator it2 = reachability[r].begin ();
+               it2 != reachability[r].end (); it2++)
+            {
+              const NeighborTuple *nb_tuple = *it2;
+              if (max == NULL || nb_tuple->willingness > max->willingness)
                 {
-                  const NeighborTuple *nb_tuple = *it2;
-                  if (max == NULL || nb_tuple->willingness > max->willingness)
+                  max = nb_tuple;
+                  max_r = r;
+                }
+              else if (nb_tuple->willingness == max->willingness)
+                {
+                  if (r > max_r)
                     {
                       max = nb_tuple;
                       max_r = r;
                     }
-                  else if (nb_tuple->willingness == max->willingness)
+                  else if (r == max_r)
                     {
-                      if (r > max_r)
+                      if (Degree (*nb_tuple) > Degree (*max))
                         {
                           max = nb_tuple;
                           max_r = r;
-                        }
-                      else if (r == max_r)
-                        {
-                          if (Degree (*nb_tuple) > Degree (*max))
-                            {
-                              max = nb_tuple;
-                              max_r = r;
-                            }
                         }
                     }
                 }
@@ -688,33 +695,21 @@ AgentImpl::MprComputation()
 
       if (max != NULL)
         {
-          m_state.InsertMprAddress (max->neighborMainAddr);
-          std::set<Ipv4Address> nb2hop_addrs;
-          for (TwoHopNeighborSet::iterator it = N2.begin ();
-               it != N2.end (); it++)
+          mprSet.insert (max->neighborMainAddr);
+          for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
+               twoHopNeigh != N2.end (); twoHopNeigh++)
             {
-              TwoHopNeighborTuple const &nb2hop_tuple = *it;
-              if (nb2hop_tuple.neighborMainAddr == max->neighborMainAddr)
+              if (twoHopNeigh->neighborMainAddr == max->neighborMainAddr)
                 {
-                  nb2hop_addrs.insert (nb2hop_tuple.twoHopNeighborAddr);
-                  it = N2.erase (it);
-                  it--;
-                }
-            }
-          for (TwoHopNeighborSet::iterator it = N2.begin ();
-               it != N2.end (); it++)
-            {
-              TwoHopNeighborTuple const &nb2hop_tuple = *it;
-              std::set<Ipv4Address>::iterator it2 =
-                nb2hop_addrs.find (nb2hop_tuple.twoHopNeighborAddr);
-              if (it2 != nb2hop_addrs.end ())
-                {
-                  it = N2.erase (it);
-                  it--;
+                  twoHopNeigh = N2.erase (twoHopNeigh);
+                  twoHopNeigh--;
                 }
             }
         }
     }
+
+  m_state.SetMprSet (mprSet);
+
 }
 
 ///
@@ -1111,7 +1106,9 @@ AgentImpl::ProcessTc (const olsr::MessageHeader &msg,
           // Schedules topology tuple deletion
           m_events.Track (Simulator::Schedule (DELAY (topologyTuple.expirationTime),
                                                &AgentImpl::TopologyTupleTimerExpire,
-                                               this, topologyTuple));
+                                               this,
+                                               topologyTuple.destAddr,
+                                               topologyTuple.lastAddr));
         }
     }
 
@@ -1186,7 +1183,7 @@ AgentImpl::ProcessMid (const olsr::MessageHeader &msg,
           NS_LOG_LOGIC ("New IfaceAssoc added: " << tuple);
           // Schedules iface association tuple deletion
           Simulator::Schedule (DELAY (tuple.time),
-                               &AgentImpl::IfaceAssocTupleTimerExpire, this, tuple);
+                               &AgentImpl::IfaceAssocTupleTimerExpire, this, tuple.ifaceAddr);
         }
     }
 
@@ -1282,7 +1279,8 @@ AgentImpl::ForwardDefault (olsr::MessageHeader olsrMessage,
       AddDuplicateTuple (newDup);
       // Schedule dup tuple deletion
       Simulator::Schedule (OLSR_DUP_HOLD_TIME,
-                           &AgentImpl::DupTupleTimerExpire, this, newDup);
+                           &AgentImpl::DupTupleTimerExpire, this,
+                           newDup.address, newDup.sequenceNumber);
     }
 }
 
@@ -1666,7 +1664,8 @@ AgentImpl::LinkSensing (const olsr::MessageHeader &msg,
     {
       LinkTupleAdded (*link_tuple, hello.willingness);
       m_events.Track (Simulator::Schedule (DELAY (std::min (link_tuple->time, link_tuple->symTime)),
-                                           &AgentImpl::LinkTupleTimerExpire, this, *link_tuple));
+                                           &AgentImpl::LinkTupleTimerExpire, this,
+                                           link_tuple->neighborIfaceAddr));
     }
   NS_LOG_DEBUG ("@" << now.GetSeconds () << ": Olsr node " << m_mainAddress
                 << ": LinkSensing END");
@@ -1765,7 +1764,8 @@ AgentImpl::PopulateTwoHopNeighborSet (const olsr::MessageHeader &msg,
                       // Schedules nb2hop tuple deletion
                       m_events.Track (Simulator::Schedule (DELAY (new_nb2hop_tuple.expirationTime),
                                                            &AgentImpl::Nb2hopTupleTimerExpire, this,
-                                                           new_nb2hop_tuple));
+                                                           new_nb2hop_tuple.neighborMainAddr,
+                                                           new_nb2hop_tuple.twoHopNeighborAddr));
                     }
                   else
                     {
@@ -1835,7 +1835,7 @@ AgentImpl::PopulateMprSelectorSet (const olsr::MessageHeader &msg,
                       m_events.Track (Simulator::Schedule
                                       (DELAY (mprsel_tuple.expirationTime),
                                        &AgentImpl::MprSelTupleTimerExpire, this,
-                                       mprsel_tuple));
+                                       mprsel_tuple.mainAddr));
                     }
                   else
                     {
@@ -2257,10 +2257,10 @@ AgentImpl::MidTimerExpire ()
 /// \param tuple The tuple which has expired.
 ///
 void
-AgentImpl::DupTupleTimerExpire (DuplicateTuple tuple_)
+AgentImpl::DupTupleTimerExpire (Ipv4Address address, uint16_t sequenceNumber)
 {
   DuplicateTuple *tuple =
-    m_state.FindDuplicateTuple (tuple_.address, tuple_.sequenceNumber);
+    m_state.FindDuplicateTuple (address, sequenceNumber);
   if (tuple == NULL)
     {
       return;
@@ -2273,7 +2273,7 @@ AgentImpl::DupTupleTimerExpire (DuplicateTuple tuple_)
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
                                            &AgentImpl::DupTupleTimerExpire, this,
-                                           *tuple));
+                                           address, sequenceNumber));
     }
 }
 
@@ -2289,12 +2289,12 @@ AgentImpl::DupTupleTimerExpire (DuplicateTuple tuple_)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::LinkTupleTimerExpire (LinkTuple tuple_)
+AgentImpl::LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr)
 {
   Time now = Simulator::Now ();
 
   // the tuple parameter may be a stale copy; get a newer version from m_state
-  LinkTuple *tuple = m_state.FindLinkTuple (tuple_.neighborIfaceAddr);
+  LinkTuple *tuple = m_state.FindLinkTuple (neighborIfaceAddr);
   if (tuple == NULL)
     {
       return;
@@ -2312,13 +2312,13 @@ AgentImpl::LinkTupleTimerExpire (LinkTuple tuple_)
 
       m_events.Track (Simulator::Schedule (DELAY (tuple->time),
                                            &AgentImpl::LinkTupleTimerExpire, this,
-                                           *tuple));
+                                           neighborIfaceAddr));
     }
   else
     {
       m_events.Track (Simulator::Schedule (DELAY (std::min (tuple->time, tuple->symTime)),
                                            &AgentImpl::LinkTupleTimerExpire, this,
-                                           *tuple));
+                                           neighborIfaceAddr));
     }
 }
 
@@ -2330,11 +2330,10 @@ AgentImpl::LinkTupleTimerExpire (LinkTuple tuple_)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple_)
+AgentImpl::Nb2hopTupleTimerExpire (Ipv4Address neighborMainAddr, Ipv4Address twoHopNeighborAddr)
 {
   TwoHopNeighborTuple *tuple;
-  tuple = m_state.FindTwoHopNeighborTuple (tuple_.neighborMainAddr,
-                                           tuple_.twoHopNeighborAddr);
+  tuple = m_state.FindTwoHopNeighborTuple (neighborMainAddr, twoHopNeighborAddr);
   if (tuple == NULL)
     {
       return;
@@ -2347,7 +2346,7 @@ AgentImpl::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple_)
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
                                            &AgentImpl::Nb2hopTupleTimerExpire,
-                                           this, *tuple));
+                                           this, neighborMainAddr, twoHopNeighborAddr));
     }
 }
 
@@ -2359,9 +2358,9 @@ AgentImpl::Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple_)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::MprSelTupleTimerExpire (MprSelectorTuple tuple_)
+AgentImpl::MprSelTupleTimerExpire (Ipv4Address mainAddr)
 {
-  MprSelectorTuple *tuple = m_state.FindMprSelectorTuple (tuple_.mainAddr);
+  MprSelectorTuple *tuple = m_state.FindMprSelectorTuple (mainAddr);
   if (tuple == NULL)
     {
       return;
@@ -2374,7 +2373,7 @@ AgentImpl::MprSelTupleTimerExpire (MprSelectorTuple tuple_)
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
                                            &AgentImpl::MprSelTupleTimerExpire,
-                                           this, *tuple));
+                                           this, mainAddr));
     }
 }
 
@@ -2386,10 +2385,9 @@ AgentImpl::MprSelTupleTimerExpire (MprSelectorTuple tuple_)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::TopologyTupleTimerExpire (TopologyTuple tuple_)
+AgentImpl::TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address lastAddr)
 {
-  TopologyTuple *tuple = m_state.FindTopologyTuple (tuple_.destAddr,
-                                                    tuple_.lastAddr);
+  TopologyTuple *tuple = m_state.FindTopologyTuple (destAddr, lastAddr);
   if (tuple == NULL)
     {
       return;
@@ -2402,7 +2400,7 @@ AgentImpl::TopologyTupleTimerExpire (TopologyTuple tuple_)
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->expirationTime),
                                            &AgentImpl::TopologyTupleTimerExpire,
-                                           this, *tuple));
+                                           this, tuple->destAddr, tuple->lastAddr));
     }
 }
 
@@ -2412,9 +2410,9 @@ AgentImpl::TopologyTupleTimerExpire (TopologyTuple tuple_)
 /// \param e The event which has expired.
 ///
 void
-AgentImpl::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple_)
+AgentImpl::IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr)
 {
-  IfaceAssocTuple *tuple = m_state.FindIfaceAssocTuple (tuple_.ifaceAddr);
+  IfaceAssocTuple *tuple = m_state.FindIfaceAssocTuple (ifaceAddr);
   if (tuple == NULL)
     {
       return;
@@ -2427,7 +2425,7 @@ AgentImpl::IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple_)
     {
       m_events.Track (Simulator::Schedule (DELAY (tuple->time),
                                            &AgentImpl::IfaceAssocTupleTimerExpire,
-                                           this, *tuple));
+                                           this, ifaceAddr));
     }
 }
 

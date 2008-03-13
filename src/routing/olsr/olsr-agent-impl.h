@@ -115,13 +115,13 @@ protected:
   Timer m_midTimer;
   void MidTimerExpire ();
 
-  void DupTupleTimerExpire (DuplicateTuple tuple);
+  void DupTupleTimerExpire (Ipv4Address address, uint16_t sequenceNumber);
   bool m_linkTupleTimerFirstTime;
-  void LinkTupleTimerExpire (LinkTuple tuple);
-  void Nb2hopTupleTimerExpire (TwoHopNeighborTuple tuple);
-  void MprSelTupleTimerExpire (MprSelectorTuple tuple);
-  void TopologyTupleTimerExpire (TopologyTuple tuple);
-  void IfaceAssocTupleTimerExpire (IfaceAssocTuple tuple);
+  void LinkTupleTimerExpire (Ipv4Address neighborIfaceAddr);
+  void Nb2hopTupleTimerExpire (Ipv4Address neighborMainAddr, Ipv4Address twoHopNeighborAddr);
+  void MprSelTupleTimerExpire (Ipv4Address mainAddr);
+  void TopologyTupleTimerExpire (Ipv4Address destAddr, Ipv4Address lastAddr);
+  void IfaceAssocTupleTimerExpire (Ipv4Address ifaceAddr);
 
   void IncrementAnsn ();
 

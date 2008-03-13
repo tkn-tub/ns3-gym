@@ -46,7 +46,28 @@ protected:
   DuplicateSet m_duplicateSet;	///< Duplicate Set (RFC 3626, section 3.4).
   IfaceAssocSet m_ifaceAssocSet;	///< Interface Association Set (RFC 3626, section 4.1).
 
+// m_modified is set to true when any of the following databases is modified:
+//      -    the link set,
+//      -    the neighbor set,
+//      -    the 2-hop neighbor set,
+//      -    the topology set,
+//      -    the Multiple Interface Association Information Base,
+  bool m_modified;
+
 public:
+
+  OlsrState ()
+    : m_modified (false)
+  {}
+  
+  bool GetModified () const
+  {
+    return m_modified;
+  }
+  void SetModified (bool modified)
+  {
+    m_modified = modified;
+  }
 
   // MPR selector
   const MprSelectorSet & GetMprSelectors () const
@@ -94,8 +115,7 @@ public:
 
   // MPR
   bool FindMprAddress (const Ipv4Address &address);
-  void InsertMprAddress (const Ipv4Address &address);
-  void ClearMprSet ();
+  void SetMprSet (MprSet mprSet);
 
   // Duplicate
   DuplicateTuple* FindDuplicateTuple (const Ipv4Address &address,
