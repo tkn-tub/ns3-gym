@@ -761,7 +761,6 @@ void TcpSocket::CompleteFork(Ptr<Packet> p, const TcpHeader& h, const Address& f
   m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, this));
   m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, this));
   ProcessPacketAction(SYN_ACK_TX, p, h, fromAddress);
-  NotifyNewConnectionCreated(this, fromAddress);
  }
 
 void TcpSocket::ConnectionSucceeded()
