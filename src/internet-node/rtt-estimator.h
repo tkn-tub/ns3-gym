@@ -62,7 +62,7 @@ public:
   virtual Time Estimate() = 0;
   virtual Time RetransmitTimeout() = 0;
   void Init(SequenceNumber s) { next = s;}
-  virtual RttEstimator* Copy() const = 0;
+  virtual Ptr<RttEstimator> Copy() const = 0;
   virtual void IncreaseMultiplier();
   virtual void ResetMultiplier();
   virtual void Reset();
@@ -100,7 +100,7 @@ public :
   Time Estimate () { return est;}
   Time Variance () { return variance;}
   Time RetransmitTimeout ();
-  RttEstimator* Copy () const;
+  Ptr<RttEstimator> Copy () const;
   void Reset ();
   void Gain (double g) { gain = g;}
 

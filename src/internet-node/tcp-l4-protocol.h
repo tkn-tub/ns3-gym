@@ -65,12 +65,11 @@ public:
   Ptr<Socket> CreateSocket (void);
 
   Ipv4EndPoint *Allocate (void);
-  Ipv4EndPoint *Allocate (Ipv4Address address, Ipv4Address localInterface);
+  Ipv4EndPoint *Allocate (Ipv4Address address);
   Ipv4EndPoint *Allocate (uint16_t port);
-  Ipv4EndPoint *Allocate (Ipv4Address address, uint16_t port, Ipv4Address localInterface);
+  Ipv4EndPoint *Allocate (Ipv4Address address, uint16_t port);
   Ipv4EndPoint *Allocate (Ipv4Address localAddress, uint16_t localPort,
-                          Ipv4Address peerAddress, uint16_t peerPort,
-                          Ipv4Address localInterface);
+                          Ipv4Address peerAddress, uint16_t peerPort);
 
   void DeAllocate (Ipv4EndPoint *endPoint);
 

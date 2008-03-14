@@ -46,6 +46,7 @@ public:
    * Create an unbound tcp socket.
    */
   TcpSocket ();
+  TcpSocket (const TcpSocket& sock);
   virtual ~TcpSocket ();
 
   void SetNode (Ptr<Node> node);
@@ -83,7 +84,9 @@ private:
                                        const Address& fromAddress);
   Actions_t ProcessEvent (Events_t e);
   bool SendPendingData(bool withAck = false);
-
+  void CompleteFork(Ptr<Packet>, const TcpHeader&, const Address& fromAddress);
+  void ConnectionSucceeded();
+  
   //methods for window management
   virtual uint32_t  UnAckDataCount(); // Return count of number of unacked bytes
   virtual uint32_t  BytesInFlight();  // Return total bytes in flight
@@ -93,6 +96,7 @@ private:
   // Manage data tx/rx
   void NewRx (Ptr<Packet>, const TcpHeader&, const Address&);
   // XXX This should be virtual and overridden
+  Ptr<TcpSocket> Copy ();
   void NewAck (SequenceNumber seq); 
   // XXX This should be virtual and overridden
   void DupAck (const TcpHeader& t, uint32_t count); 
@@ -109,8 +113,12 @@ private:
   Ipv4EndPoint *m_endPoint;
   Ptr<Node> m_node;
   Ptr<TcpL4Protocol> m_tcp;
-  Ipv4Address m_defaultAddress;
-  uint16_t m_defaultPort;
+  Ipv4Address m_remoteAddress;
+  uint16_t m_remotePort;
+  //these two are so that the socket/endpoint cloning works
+  Ipv4Address m_localAddress;
+  uint16_t m_localPort;
+  //XXX Dead code?
   Callback<void, Ptr<Socket>, uint32_t, const Address &> m_dummyRxCallback;
   Callback<void, Ptr<Socket>, uint8_t const*, uint32_t, const Address &> 
     m_rxCallback;

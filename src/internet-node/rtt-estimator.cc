@@ -221,9 +221,9 @@ Time RttMeanDeviation::RetransmitTimeout ()
   return (est + Scalar (4) * variance) * Scalar (multiplier); // As suggested by Jacobson
 }
 
-RttEstimator* RttMeanDeviation::Copy () const
+Ptr<RttEstimator> RttMeanDeviation::Copy () const
 {
-  return new RttMeanDeviation (*this);
+  return Create<RttMeanDeviation> (*this);
 }
 
 void RttMeanDeviation::Reset ()

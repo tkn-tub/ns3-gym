@@ -36,6 +36,7 @@
 
 #include <vector>
 #include <sstream>
+#include <iomanip>
 
 NS_LOG_COMPONENT_DEFINE ("TcpL4Protocol");
 
@@ -78,7 +79,7 @@ TcpStateMachine::TcpStateMachine()
   aT[LISTEN][APP_CLOSE]   = SA (CLOSED,   NO_ACT);
   aT[LISTEN][TIMEOUT]     = SA (LISTEN,   NO_ACT);
   aT[LISTEN][ACK_RX]      = SA (LISTEN,   NO_ACT);
-  aT[LISTEN][SYN_RX]      = SA (SYN_RCVD,   SYN_ACK_TX);  //XXX hacked for now, should stay in listen and replicate
+  aT[LISTEN][SYN_RX]      = SA (LISTEN,   SYN_ACK_TX);//stay in listen and fork
   aT[LISTEN][SYN_ACK_RX]  = SA (LISTEN,   NO_ACT);
   aT[LISTEN][FIN_RX]      = SA (LISTEN,   NO_ACT);
   aT[LISTEN][FIN_ACK_RX]  = SA (LISTEN,   NO_ACT);
@@ -179,7 +180,7 @@ TcpStateMachine::TcpStateMachine()
   aT[FIN_WAIT_2][APP_LISTEN]  = SA (CLOSED,      RST_TX);
   aT[FIN_WAIT_2][APP_CONNECT] = SA (CLOSED,      RST_TX);
   aT[FIN_WAIT_2][APP_SEND]    = SA (CLOSED,      RST_TX);
-  aT[FIN_WAIT_2][SEQ_RECV]    = SA (FIN_WAIT_2,  NO_ACT);
+  aT[FIN_WAIT_2][SEQ_RECV]    = SA (FIN_WAIT_2,  NEW_SEQ_RX);
   aT[FIN_WAIT_2][APP_CLOSE]   = SA (FIN_WAIT_2,  NO_ACT);
   aT[FIN_WAIT_2][TIMEOUT]     = SA (FIN_WAIT_2,  NO_ACT);
   aT[FIN_WAIT_2][ACK_RX]      = SA (FIN_WAIT_2,  NEW_ACK);
@@ -395,11 +396,11 @@ TcpL4Protocol::Allocate (void)
 }
 
 Ipv4EndPoint *
-TcpL4Protocol::Allocate (Ipv4Address address, Ipv4Address localInterface)
+TcpL4Protocol::Allocate (Ipv4Address address)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << address);
-  return m_endPoints->Allocate (address, localInterface);
+  return m_endPoints->Allocate (address);
 }
 
 Ipv4EndPoint *
@@ -411,23 +412,21 @@ TcpL4Protocol::Allocate (uint16_t port)
 }
 
 Ipv4EndPoint *
-TcpL4Protocol::Allocate (Ipv4Address address, uint16_t port, Ipv4Address localInterface)
+TcpL4Protocol::Allocate (Ipv4Address address, uint16_t port)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << address << port);
-  return m_endPoints->Allocate (address, port, localInterface);
+  return m_endPoints->Allocate (address, port);
 }
 
 Ipv4EndPoint *
 TcpL4Protocol::Allocate (Ipv4Address localAddress, uint16_t localPort,
-                         Ipv4Address peerAddress, uint16_t peerPort,
-                         Ipv4Address localInterface)
+                         Ipv4Address peerAddress, uint16_t peerPort)
 {
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << localAddress << localPort << peerAddress << peerPort);
   return m_endPoints->Allocate (localAddress, localPort,
-                                peerAddress, peerPort,
-                                localInterface);
+                                peerAddress, peerPort);
 }
 
 void 
@@ -450,6 +449,11 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
   TcpHeader tcpHeader;
   //these two do a peek, so that the packet can be forwarded up
   packet->RemoveHeader (tcpHeader);
+  NS_LOG_LOGIC("TcpL4Protocol " << this
+               << " receiving seq " << tcpHeader.GetSequenceNumber()
+               << " ack " << tcpHeader.GetAckNumber()
+               << " flags "<< std::hex << (int)tcpHeader.GetFlags() << std::dec
+               << " data size " << packet->GetSize());
   packet->AddHeader (tcpHeader); 
   NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" received a packet");
   Ipv4EndPointDemux::EndPoints endPoints =
@@ -465,13 +469,11 @@ TcpL4Protocol::Receive (Ptr<Packet> packet,
     source.Print (oss);
     oss<<" source port: "<<tcpHeader.GetSourcePort ();
     NS_LOG_LOGIC (oss.str ());
+    return;
   }
-  for (Ipv4EndPointDemux::EndPointsI endPoint = endPoints.begin ();
-       endPoint != endPoints.end (); endPoint++)
-    {
-      NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
-      (*endPoint)->ForwardUp (packet, source, tcpHeader.GetSourcePort ());
-    }
+  NS_ASSERT_MSG (endPoints.size() == 1 , "Demux returned more than one endpoint");
+  NS_LOG_LOGIC ("TcpL4Protocol "<<this<<" forwarding up to endpoint/socket");
+  (*endPoints.begin ())->ForwardUp (packet, source, tcpHeader.GetSourcePort ());
 }
 
 void
@@ -505,6 +507,11 @@ void
 TcpL4Protocol::SendPacket (Ptr<Packet> packet, TcpHeader outgoingHeader,
                                Ipv4Address saddr, Ipv4Address daddr)
 {
+  NS_LOG_LOGIC("TcpL4Protocol " << this
+              << " sending seq " << outgoingHeader.GetSequenceNumber()
+              << " ack " << outgoingHeader.GetAckNumber()
+              << " flags " << std::hex << (int)outgoingHeader.GetFlags() << std::dec
+              << " data size " << packet->GetSize());
   NS_LOG_FUNCTION;
   NS_LOG_PARAMS (this << packet << saddr << daddr);
   // XXX outgoingHeader cannot be logged
