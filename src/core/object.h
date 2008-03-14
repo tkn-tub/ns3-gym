@@ -515,6 +515,8 @@ protected:
 private:
   template <typename T>
   friend Ptr<T> CreateObject (const AttributeList &attributes);
+  template <typename T>
+  friend Ptr<T> CopyObject (Ptr<T> object);
 
   bool DoSet (Ptr<const AttributeAccessor> spec, Attribute intialValue, 
               Ptr<const AttributeChecker> checker, Attribute value);
@@ -650,6 +652,14 @@ Object::GetObject (TypeId tid) const
 /*************************************************************************
  *   The helper functions which need templates.
  *************************************************************************/
+
+template <typename T>
+Ptr<T> CopyObject (Ptr<T> o)
+{
+  Ptr<T> p = Ptr<T> (new T (*PeekPointer (o)), false);
+  p->SetTypeId (T::GetTypeId ());
+  return p;
+}
 
 
 template <typename T>
