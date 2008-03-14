@@ -182,7 +182,7 @@ AgentImpl::AgentImpl (Ptr<Node> node)
   m_helloInterval = OLSR_HELLO_INTERVAL;
   m_tcInterval = OLSR_TC_INTERVAL;
   m_midInterval = OLSR_MID_INTERVAL;
-  m_willingness = OLSR_WILL_ALWAYS;
+  m_willingness = OLSR_WILL_DEFAULT;
 
   m_linkTupleTimerFirstTime = true;
 
@@ -488,17 +488,19 @@ AgentImpl::MprComputation()
 {
   // MPR computation should be done for each interface. See section 8.3.1
   // (RFC 3626) for details.
+  MprSet mprSet;
 	
-  m_state.ClearMprSet ();
   
   // N is the subset of neighbors of the node, which are
   // neighbor "of the interface I"
   NeighborSet N;
-  for (NeighborSet::const_iterator it = m_state.GetNeighbors ().begin();
-       it != m_state.GetNeighbors ().end (); it++)
+  for (NeighborSet::const_iterator neighbor = m_state.GetNeighbors ().begin();
+       neighbor != m_state.GetNeighbors ().end (); neighbor++)
     {
-      if ((*it).status == NeighborTuple::STATUS_SYM) // I think that we need this check
-        N.push_back (*it);
+      if (neighbor->status == NeighborTuple::STATUS_SYM) // I think that we need this check
+        {
+          N.push_back (*neighbor);
+        }
     }
 	
   // N2 is the set of 2-hop neighbors reachable from "the interface
@@ -508,123 +510,122 @@ AgentImpl::MprComputation()
   // (iii) all the symmetric neighbors: the nodes for which there exists a symmetric
   //       link to this node on some interface.
   TwoHopNeighborSet N2;
-  for (TwoHopNeighborSet::const_iterator it = m_state.GetTwoHopNeighbors ().begin ();
-       it != m_state.GetTwoHopNeighbors ().end (); it++)
+  for (TwoHopNeighborSet::const_iterator twoHopNeigh = m_state.GetTwoHopNeighbors ().begin ();
+       twoHopNeigh != m_state.GetTwoHopNeighbors ().end (); twoHopNeigh++)
     {
-      TwoHopNeighborTuple const &twoHopNeigh = *it;
-      bool ok = true;
-      const NeighborTuple *nb_tuple = m_state.FindSymNeighborTuple (twoHopNeigh.neighborMainAddr);
-      if (nb_tuple == NULL)
+      // excluding:
+      // (ii)  the node performing the computation
+      if (twoHopNeigh->twoHopNeighborAddr == m_mainAddress)
         {
-          ok = false;
+          continue;
         }
-      else
+
+      //  excluding:
+      // (i)   the nodes only reachable by members of N with willingness WILL_NEVER      
+      bool ok = false;
+      for (NeighborSet::const_iterator neigh = N.begin ();
+           neigh != N.end (); neigh++)
         {
-          nb_tuple = m_state.FindNeighborTuple (twoHopNeigh.neighborMainAddr, OLSR_WILL_NEVER);
-          if (nb_tuple != NULL)
+          if (neigh->neighborMainAddr == twoHopNeigh->neighborMainAddr)
+            {
+              if (neigh->willingness == OLSR_WILL_NEVER)
+                {
+                  ok = false;
+                  break;
+                }
+              else
+                {
+                  ok = true;
+                  break;
+                }
+            }
+        }
+      if (!ok)
+        {
+          continue;
+        }
+      
+      // excluding:
+      // (iii) all the symmetric neighbors: the nodes for which there exists a symmetric
+      //       link to this node on some interface.
+      for (NeighborSet::const_iterator neigh = N.begin ();
+           neigh != N.end (); neigh++)
+        {
+          if (neigh->neighborMainAddr == twoHopNeigh->twoHopNeighborAddr)
             {
               ok = false;
-            }
-          else
-            {
-              nb_tuple = m_state.FindSymNeighborTuple (twoHopNeigh.neighborMainAddr);
-              if (nb_tuple != NULL)
-                ok = false;
+              break;
             }
         }
 
       if (ok)
-        N2.push_back (twoHopNeigh);
+        {
+          N2.push_back (*twoHopNeigh);
+        }
     }
-	
+
   // 1. Start with an MPR set made of all members of N with
   // N_willingness equal to WILL_ALWAYS
-  for (NeighborSet::const_iterator it = N.begin (); it != N.end (); it++)
+  for (NeighborSet::const_iterator neighbor = N.begin (); neighbor != N.end (); neighbor++)
     {
-      NeighborTuple const &nb_tuple = *it;
-      if (nb_tuple.willingness == OLSR_WILL_ALWAYS)
-        m_state.InsertMprAddress (nb_tuple.neighborMainAddr);
+      if (neighbor->willingness == OLSR_WILL_ALWAYS)
+        {
+          mprSet.insert (neighbor->neighborMainAddr);
+          // (not in RFC but I think is needed: remove the 2-hop
+          // neighbors reachable by the MPR from N2)
+          for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
+               twoHopNeigh != N2.end (); twoHopNeigh++)
+            {
+              if (twoHopNeigh->neighborMainAddr == neighbor->neighborMainAddr)
+                {
+                  twoHopNeigh = N2.erase (twoHopNeigh);
+                  twoHopNeigh--;
+                }
+            }
+        }
     }
   
   // 2. Calculate D(y), where y is a member of N, for all nodes in N.
-  // We will do this later.
-  // FIXME
+  // (we do this later)
 	
   // 3. Add to the MPR set those nodes in N, which are the *only*
-  // nodes to provide reachability to a node in N2. Remove the
-  // nodes from N2 which are now covered by a node in the MPR set.
-  MprSet foundset;
-  std::set<Ipv4Address> deleted_addrs;
-  for (TwoHopNeighborSet::iterator it = N2.begin (); it != N2.end (); it++)
+  // nodes to provide reachability to a node in N2.
+  std::set<Ipv4Address> coveredTwoHopNeighbors;
+  for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin (); twoHopNeigh != N2.end (); twoHopNeigh++)
     {
-      TwoHopNeighborTuple const &nb2hop_tuple1 = *it;
-		
-      MprSet::const_iterator pos = foundset.find (nb2hop_tuple1.twoHopNeighborAddr);
-      if (pos != foundset.end ())
-        continue;
-		
-      bool found = false;
-      for (NeighborSet::const_iterator it2 = N.begin ();
-           it2 != N.end (); it2++)
+      NeighborSet::const_iterator onlyNeighbor = N.end ();
+      
+      for (NeighborSet::const_iterator neighbor = N.begin ();
+           neighbor != N.end (); neighbor++)
         {
-          if ((*it2).neighborMainAddr == nb2hop_tuple1.neighborMainAddr) {
-            found = true;
-            break;
-          }
-        }
-      if (!found)
-        continue;
-		
-      found = false;
-      for (TwoHopNeighborSet::const_iterator it2 = it + 1;
-           it2 != N2.end (); it2++)
-        {
-          TwoHopNeighborTuple const &nb2hop_tuple2 = *it2;
-          if (nb2hop_tuple1.twoHopNeighborAddr == nb2hop_tuple2.twoHopNeighborAddr)
+          if (neighbor->neighborMainAddr == twoHopNeigh->neighborMainAddr)
             {
-              foundset.insert (nb2hop_tuple1.twoHopNeighborAddr);
-              found = true;
-              break;
-            }
-        }
-      if (!found)
-        {
-          m_state.InsertMprAddress (nb2hop_tuple1.neighborMainAddr);
-          
-          for (TwoHopNeighborSet::iterator it2 = it + 1; it2 != N2.end (); it2++)
-            {
-              TwoHopNeighborTuple const &nb2hop_tuple2 = *it2;
-              if (nb2hop_tuple1.neighborMainAddr == nb2hop_tuple2.neighborMainAddr)
+              if (onlyNeighbor == N.end ())
                 {
-                  deleted_addrs.insert (nb2hop_tuple2.twoHopNeighborAddr);
-                  it2 = N2.erase (it2);
-                  it2--;
+                  onlyNeighbor = neighbor;
                 }
-            }
-          it = N2.erase (it);
-          it--;
-        }
-		
-      for (std::set<Ipv4Address>::iterator it2 = deleted_addrs.begin ();
-           it2 != deleted_addrs.end ();
-           it2++)
-        {
-          for (TwoHopNeighborSet::iterator it3 = N2.begin ();
-               it3 != N2.end ();
-               it3++)
-            {
-              if ((*it3).twoHopNeighborAddr == *it2)
+              else
                 {
-                  it3 = N2.erase (it3);
-                  it3--;
-                  // I have to reset the external iterator because it
-                  // may have been invalidated by the latter deletion
-                  it = N2.begin ();
-                  it--;
+                  onlyNeighbor = N.end ();
+                  break;
                 }
             }
         }
-      deleted_addrs.clear ();
+      if (onlyNeighbor != N.end ())
+        {
+          mprSet.insert (onlyNeighbor->neighborMainAddr);
+          coveredTwoHopNeighbors.insert (twoHopNeigh->twoHopNeighborAddr);
+        }
+    }
+  // Remove the nodes from N2 which are now covered by a node in the MPR set.
+  for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
+       twoHopNeigh != N2.end (); twoHopNeigh++)
+    {
+      if (coveredTwoHopNeighbors.find (twoHopNeigh->twoHopNeighborAddr) != coveredTwoHopNeighbors.end ())
+        {
+          twoHopNeigh = N2.erase (twoHopNeigh);
+          twoHopNeigh--;
+        }
     }
 	
   // 4. While there exist nodes in N2 which are not covered by at
@@ -664,32 +665,32 @@ AgentImpl::MprComputation()
       for (std::set<int>::iterator it = rs.begin (); it != rs.end (); it++)
         {
           int r = *it;
-          if (r > 0)
+          if (r == 0)
             {
-              for (std::vector<const NeighborTuple *>::iterator it2 = reachability[r].begin ();
-                   it2 != reachability[r].end ();
-                   it2++)
+              continue;
+            }
+          for (std::vector<const NeighborTuple *>::iterator it2 = reachability[r].begin ();
+               it2 != reachability[r].end (); it2++)
+            {
+              const NeighborTuple *nb_tuple = *it2;
+              if (max == NULL || nb_tuple->willingness > max->willingness)
                 {
-                  const NeighborTuple *nb_tuple = *it2;
-                  if (max == NULL || nb_tuple->willingness > max->willingness)
+                  max = nb_tuple;
+                  max_r = r;
+                }
+              else if (nb_tuple->willingness == max->willingness)
+                {
+                  if (r > max_r)
                     {
                       max = nb_tuple;
                       max_r = r;
                     }
-                  else if (nb_tuple->willingness == max->willingness)
+                  else if (r == max_r)
                     {
-                      if (r > max_r)
+                      if (Degree (*nb_tuple) > Degree (*max))
                         {
                           max = nb_tuple;
                           max_r = r;
-                        }
-                      else if (r == max_r)
-                        {
-                          if (Degree (*nb_tuple) > Degree (*max))
-                            {
-                              max = nb_tuple;
-                              max_r = r;
-                            }
                         }
                     }
                 }
@@ -698,33 +699,21 @@ AgentImpl::MprComputation()
 
       if (max != NULL)
         {
-          m_state.InsertMprAddress (max->neighborMainAddr);
-          std::set<Ipv4Address> nb2hop_addrs;
-          for (TwoHopNeighborSet::iterator it = N2.begin ();
-               it != N2.end (); it++)
+          mprSet.insert (max->neighborMainAddr);
+          for (TwoHopNeighborSet::iterator twoHopNeigh = N2.begin ();
+               twoHopNeigh != N2.end (); twoHopNeigh++)
             {
-              TwoHopNeighborTuple const &nb2hop_tuple = *it;
-              if (nb2hop_tuple.neighborMainAddr == max->neighborMainAddr)
+              if (twoHopNeigh->neighborMainAddr == max->neighborMainAddr)
                 {
-                  nb2hop_addrs.insert (nb2hop_tuple.twoHopNeighborAddr);
-                  it = N2.erase (it);
-                  it--;
-                }
-            }
-          for (TwoHopNeighborSet::iterator it = N2.begin ();
-               it != N2.end (); it++)
-            {
-              TwoHopNeighborTuple const &nb2hop_tuple = *it;
-              std::set<Ipv4Address>::iterator it2 =
-                nb2hop_addrs.find (nb2hop_tuple.twoHopNeighborAddr);
-              if (it2 != nb2hop_addrs.end ())
-                {
-                  it = N2.erase (it);
-                  it--;
+                  twoHopNeigh = N2.erase (twoHopNeigh);
+                  twoHopNeigh--;
                 }
             }
         }
     }
+
+  m_state.SetMprSet (mprSet);
+
 }
 
 ///
