@@ -38,6 +38,8 @@
 #include "ns3/string.h"
 #include "ns3/wifi-channel.h"
 #include "ns3/boolean.h"
+#include "ns3/propagation-loss-model.h"
+#include "ns3/propagation-delay-model.h"
 
 
 #include <iostream>
@@ -120,6 +122,11 @@ int main (int argc, char *argv[])
   ap.Create (1);
 
   Ptr<WifiChannel> channel = CreateObject<WifiChannel> ();
+  channel->SetPropagationDelayModel (CreateObject<ConstantSpeedPropagationDelayModel> ());
+  Ptr<LogDistancePropagationLossModel> log = CreateObject<LogDistancePropagationLossModel> ();
+  log->SetReferenceModel (CreateObject<FriisPropagationLossModel> ());
+  channel->SetPropagationLossModel (log);
+
   Ssid ssid = Ssid ("wifi-default");
   wifi.SetPhy ("ns3::WifiPhy");
   wifi.SetRemoteStationManager ("ns3::ArfWifiManager");
