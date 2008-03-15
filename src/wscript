@@ -62,22 +62,30 @@ def create_ns3_module(bld, name, dependencies=()):
     module.name = 'ns3-' + name
     module.target = module.name
     module.add_objects = ['ns3-' + dep for dep in dependencies]
+    module.module_deps = list(dependencies)
     module.env.append_value('CXXFLAGS', module.env['shlib_CXXFLAGS'])
+    module.env.append_value('CXXDEFINES', "NS3_MODULE_COMPILATION")
     return module
     
 
 def build(bld):
     Object.register('ns3header', Ns3Header)
     Action.Action('ns3header', func=_ns3_headers_inst, color='BLUE')
+    Object.register('ns3-module-header', Ns3ModuleHeader)
+    Action.Action('gen-ns3-module-header', func=gen_ns3_module_header, color='BLUE')
     bld.create_ns3_module = types.MethodType(create_ns3_module, bld)
     
     bld.add_subdirs(list(all_modules))
+
+    for module in all_modules:
+        modheader = bld.create_obj('ns3-module-header')
+        modheader.module = module.split('/')[-1]
 
 
 class Ns3Header(Object.genobj):
     """A set of NS-3 header files"""
     def __init__(self, env=None):
-        Object.genobj.__init__(self, 'other')
+        Object.genobj.__init__(self, 'ns3header')
         self.inst_var = 'INCLUDEDIR'
         self.inst_dir = 'ns3'
         self.sub_dir = None # if not None, header files will be published as ns3/sub_dir/file.h
@@ -85,6 +93,9 @@ class Ns3Header(Object.genobj):
         self.env = env
         if not self.env:
             self.env = Params.g_build.m_allenvs['default']
+
+    def get_valid_types(self):
+        return ['ns3header']
 
     def apply(self):
         if self.module is None:
@@ -126,3 +137,74 @@ def _ns3_headers_inst(task):
         ## accidental modification
         os.chmod(dst, 0400)
     return 0
+
+
+def gen_ns3_module_header(task):
+    assert len(task.m_outputs) == 1
+    header_files = [os.path.basename(node.abspath(task.m_env)) for node in task.m_inputs]
+    outfile = file(task.m_outputs[0].bldpath(task.m_env), "w")
+    header_files.sort()
+
+    print >> outfile, """
+#ifdef NS3_MODULE_COMPILATION
+# error "Do not include ns3 module aggregator headers from other modules; these are meant only for end user scripts."
+#endif
+
+#ifndef NS3_MODULE_%s
+""" % (task.module.upper().replace('-', '_'),)
+
+    if task.module_deps:
+        print >> outfile, "// Module dependencies:"
+    for dep in task.module_deps:
+        print >> outfile, "#include \"%s-module.h\"" % dep
+
+    print >> outfile
+    print >> outfile, "// Module headers:"
+    for header in header_files:
+        print >> outfile, "#include \"%s\"" % (header,)
+
+    print >> outfile, "#endif"
+
+    outfile.close()
+    return 0
+
+
+class Ns3ModuleHeader(Object.genobj):
+    """
+    Generates a 'ns3/foo-module.h' header file that includes all
+    public ns3 headers of a certain module.
+    """
+    def __init__(self, env=None):
+        Object.genobj.__init__(self, 'other')
+        self.install_var = 0
+        self.env = env
+        if not self.env:
+            self.env = Params.g_build.m_allenvs['default'].copy()
+        self.module_name = None
+
+    def apply(self):
+        ## get all of the ns3 headers
+        ns3_dir_node = Params.g_build.m_srcnode.find_dir("ns3")
+        all_headers_inputs = []
+        for ns3headers in Object.g_allobjs:
+            if ns3headers.m_type == 'ns3header':
+                if ns3headers.module != self.module:
+                    continue
+                for source in ns3headers.to_list(ns3headers.source):
+                    source = os.path.basename(source)
+                    node = ns3_dir_node.find_build(os.path.basename(source))
+                    if node is None:
+                        fatal("missing header file %s" % (source,))
+                    all_headers_inputs.append(node)
+        assert all_headers_inputs
+        module_obj = Object.name_to_obj("ns3-" + self.module)
+        assert module_obj is not None
+        all_headers_outputs = [ns3_dir_node.find_build("%s-module.h" % self.module)]
+        task = self.create_task('gen-ns3-module-header', self.env, 4)
+        task.set_inputs(all_headers_inputs)
+        task.set_outputs(all_headers_outputs)
+        task.module = self.module
+        task.module_deps = module_obj.module_deps
+
+    def install(self):
+        pass
