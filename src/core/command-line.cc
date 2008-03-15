@@ -274,7 +274,7 @@ void
 CommandLineTest::Parse (const CommandLine &cmd, int n, ...)
 {
   char **args = new char* [n+1];
-  args[0] = "Test";
+  args[0] = (char *) "Test";
   va_list ap;
   va_start (ap, n);
   int i = 0;
