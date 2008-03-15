@@ -140,7 +140,7 @@ Experiment::Run (const WifiHelper &wifi)
   positionAlloc->Add (Vector (0.0, 0.0, 0.0));
   positionAlloc->Add (Vector (5.0, 0.0, 0.0));
   mobility.SetPositionAllocator (positionAlloc);
-  mobility.SetMobilityModel ("StaticMobilityModel");
+  mobility.SetMobilityModel ("ns3::StaticMobilityModel");
 
   mobility.Layout (c.Begin (), c.End ());
 
