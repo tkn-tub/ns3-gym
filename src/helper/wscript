@@ -13,6 +13,7 @@ def build(bld):
         ]
 
     headers = bld.create_obj('ns3header')
+    headers.module = 'helper'
     headers.source = [
         'node-container.h',
         'net-device-container.h',
