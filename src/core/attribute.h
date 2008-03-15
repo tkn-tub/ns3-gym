@@ -241,6 +241,15 @@ MakePtrAccessor (void (T::*setter) (Ptr<U>));
 template <typename T, typename U>
 Ptr<const AttributeAccessor>
 MakePtrAccessor (Ptr<U> (T::*getter) (void) const);
+template <typename T, typename U>
+Ptr<const AttributeAccessor>
+MakePtrAccessor (void (T::*setter) (Ptr<U>),
+                 Ptr<U> (T::*getter) (void) const);
+template <typename T, typename U>
+Ptr<const AttributeAccessor>
+MakePtrAccessor (Ptr<U> (T::*getter) (void) const,
+                 void (T::*setter) (Ptr<U>));
+
 
 
 class PtrChecker : public AttributeChecker {};
@@ -488,6 +497,34 @@ MakePtrAccessor (Ptr<U> (T::*getter) (void) const)
   spec->m_getter = getter;
   return Ptr<const AttributeAccessor> (spec, false);
 }
+template <typename T, typename U>
+Ptr<const AttributeAccessor>
+MakePtrAccessor (void (T::*setter) (Ptr<U>),
+                 Ptr<U> (T::*getter) (void) const)
+{
+  return MakePtrAccessor (getter, setter);
+}
+template <typename T, typename U>
+Ptr<const AttributeAccessor>
+MakePtrAccessor (Ptr<U> (T::*getter) (void) const,
+                 void (T::*setter) (Ptr<U>))
+{
+  struct MemberMethod : public internal::PtrAccessor<T,U>
+  {
+    void (T::*m_setter) (Ptr<U>);
+    Ptr<U> (T::*m_getter) (void) const;
+    virtual void DoSet (T *object, Ptr<U> value) const {
+      (object->*m_setter) (value);
+    }
+    virtual Ptr<U> DoGet (const T *object) const {
+      return (object->*m_getter) ();
+    }
+  } *spec = new MemberMethod ();
+  spec->m_setter = setter;
+  spec->m_getter = getter;
+  return Ptr<const AttributeAccessor> (spec, false);
+}
+
 
 
 template <typename T>
