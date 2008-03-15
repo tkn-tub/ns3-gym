@@ -81,11 +81,11 @@ main (int argc, char *argv[])
 #endif
 
   // Set a few parameters
-  Config::SetDefault ("RateErrorModel::ErrorRate", Double (0.01));
-  Config::SetDefault ("RateErrorModel::ErrorUnit", String ("EU_PKT"));
+  Config::SetDefault ("ns3::RateErrorModel::ErrorRate", Double (0.01));
+  Config::SetDefault ("ns3::RateErrorModel::ErrorUnit", String ("EU_PKT"));
   
-  Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
-  Config::SetDefault ("OnOffApplication::DataRate", DataRate ("448kb/s"));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", Uinteger (210));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRate ("448kb/s"));
 
 
   // Allow the user to override any of the defaults and the above

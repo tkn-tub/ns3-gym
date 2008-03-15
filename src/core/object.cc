@@ -427,7 +427,7 @@ TypeId::LookupByNameFailSafe (std::string name, TypeId *tid)
 bool
 TypeId::LookupAttributeByFullName (std::string fullName, struct TypeId::AttributeInfo *info)
 {
-  std::string::size_type pos = fullName.find ("::");
+  std::string::size_type pos = fullName.rfind ("::");
   if (pos == std::string::npos)
     {
       return 0;

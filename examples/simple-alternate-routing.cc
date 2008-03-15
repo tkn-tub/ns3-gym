@@ -103,8 +103,8 @@ main (int argc, char *argv[])
   // Queue to use, and what the queue limit is
 
 
-  Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
-  Config::SetDefault ("OnOffApplication::DataRate", DataRate ("300b/s"));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", Uinteger (210));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRate ("300b/s"));
 
   // The below metric, if set to 3 or higher, will cause packets between
   // n1 and n3 to take the 2-hop route through n2

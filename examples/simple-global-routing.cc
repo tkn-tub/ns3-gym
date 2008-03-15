@@ -105,8 +105,8 @@ main (int argc, char *argv[])
 #endif
   // Set up some default values for the simulation.  Use the 
 
-  Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
-  Config::SetDefault ("OnOffApplication::DataRate", DataRate ("448kb/s"));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", Uinteger (210));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRate ("448kb/s"));
 
   //DefaultValue::Bind ("DropTailQueue::m_maxPackets", 30);   
 

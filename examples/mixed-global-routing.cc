@@ -105,8 +105,8 @@ main (int argc, char *argv[])
   // Set up some default values for the simulation.  Use the Bind ()
 
 
-  Config::SetDefault ("OnOffApplication::PacketSize", Uinteger (210));
-  Config::SetDefault ("OnOffApplication::DataRate", DataRate ("448kb/s"));
+  Config::SetDefault ("ns3::OnOffApplication::PacketSize", Uinteger (210));
+  Config::SetDefault ("ns3::OnOffApplication::DataRate", DataRate ("448kb/s"));
 
   // Allow the user to override any of the defaults and the above
   // Bind ()s at run-time, via command-line arguments
