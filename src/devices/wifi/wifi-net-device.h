@@ -84,6 +84,7 @@ private:
   void LinkUp (void);
   void LinkDown (void);
   void Setup (void);
+  Ptr<WifiChannel> DoGetChannel (void) const;
   Ptr<Node> m_node;
   Ptr<WifiPhy> m_phy;
   Ptr<WifiChannel> m_channel;
