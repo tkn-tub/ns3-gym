@@ -173,8 +173,8 @@ Experiment::Run (const WifiHelper &wifi)
 int main (int argc, char *argv[])
 {
   // disable fragmentation
-  Config::SetDefault ("WifiRemoteStationManager::FragmentationThreshold", String ("2200"));
-  Config::SetDefault ("WifiRemoteStationManager::RtsCtsThreshold", String ("2200"));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", String ("2200"));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", String ("2200"));
 
   CommandLine cmd;
   cmd.Parse (argc, argv);

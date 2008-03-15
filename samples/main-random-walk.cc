@@ -28,10 +28,10 @@ CourseChange (ns3::TraceContext const&, Ptr<const MobilityModel> mobility)
 
 int main (int argc, char *argv[])
 {
-  Config::SetDefault ("RandomWalk2dMobilityModel::Mode", String ("Time"));
-  Config::SetDefault ("RandomWalk2dMobilityModel::Time", String ("2s"));
-  Config::SetDefault ("RandomWalk2dMobilityModel::Speed", String ("Constant:1.0"));
-  Config::SetDefault ("RandomWalk2dMobilityModel::Bounds", String ("0:200:0:100"));
+  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Mode", String ("Time"));
+  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Time", String ("2s"));
+  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Speed", String ("Constant:1.0"));
+  Config::SetDefault ("ns3::RandomWalk2dMobilityModel::Bounds", String ("0:200:0:100"));
 
   CommandLine cmd;
   cmd.Parse (argc, argv);
@@ -53,7 +53,7 @@ int main (int argc, char *argv[])
                              "Speed", String ("Constant:1.0"),
                              "Bounds", String ("0:200:0:100"));
   mobility.Layout (NodeList::Begin (), NodeList::End ());
-  Config::Connect ("/NodeList/*/$MobilityModelNotifier/CourseChange",
+  Config::Connect ("/NodeList/*/$ns3::MobilityModelNotifier/CourseChange",
                               MakeCallback (&CourseChange));
 
   Simulator::StopAt (Seconds (100.0));

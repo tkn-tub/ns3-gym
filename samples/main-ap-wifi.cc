@@ -106,9 +106,9 @@ int main (int argc, char *argv[])
   Packet::EnableMetadata ();
 
   // enable rts cts all the time.
-  Config::SetDefault ("WifiRemoteStationManager::RtsCtsThreshold", String ("0"));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::RtsCtsThreshold", String ("0"));
   // disable fragmentation
-  Config::SetDefault ("WifiRemoteStationManager::FragmentationThreshold", String ("2200"));
+  Config::SetDefault ("ns3::WifiRemoteStationManager::FragmentationThreshold", String ("2200"));
 
   WifiHelper wifi;
   MobilityHelper mobility;
