@@ -27,7 +27,8 @@
 namespace ns3 {
 
 /**
- * \brief choose a position at random.
+ * \brief allocate a set of positions. The allocation strategy is implemented
+ *        in subclasses.
  *
  * This is a pure abstract base class.
  */
@@ -38,16 +39,29 @@ public:
   PositionAllocator ();
   virtual ~PositionAllocator ();
   /**
-   * \returns the next randomly-choosen position.
+   * \returns the next chosen position.
+   *
+   * This method _must_ be implement in subclasses.
    */
   virtual Vector GetNext (void) const = 0;
 };
 
+/**
+ * \brief Allocate positions from a deterministic list specified by the user.
+ *
+ * The first call to ListPositionAllocator::GetNext  will return the
+ * first element of the list, the second call, the second element, and so on.
+ */
 class ListPositionAllocator : public PositionAllocator
 {
 public:
   static TypeId GetTypeId (void);
   ListPositionAllocator ();
+
+  /**
+   * \param v the position to append at the end of the list of 
+   *        positions to return from GetNext.
+   */
   void Add (Vector v);
   virtual Vector GetNext (void) const;
 private:
@@ -55,17 +69,85 @@ private:
   mutable std::vector<Vector>::const_iterator m_current;
 };
 
+/**
+ * \brief Allocate positions on a rectangular 2d grid.
+ */
 class GridPositionAllocator : public PositionAllocator
 {
 public:
   static TypeId GetTypeId (void);
 
+  /**
+   * Determine whether positions are allocated row first or column first.
+   */
   enum LayoutType {
+    /**
+     * In row-first mode, positions are allocated on the first row until
+     * N positions have been allocated. Then, the second row located a yMin + yDelta
+     * is used to allocate positions.
+     */
     ROW_FIRST,
+    /**
+     * In column-first mode, positions are allocated on the first column until
+     * N positions have been allocated. Then, the second column located a xMin + xDelta
+     * is used to allocate positions.
+     */
     COLUMN_FIRST
   };
 
   GridPositionAllocator ();
+
+  /**
+   * \param xMin the x coordinate where layout will start.
+   */
+  void SetMinX (double xMin);
+  /**
+   * \param yMin the y coordinate where layout will start
+   */
+  void SetMinY (double yMin);
+  /**
+   * \param deltaX the x interval between two x-consecutive positions.
+   */
+  void SetDeltaX (double deltaX);
+  /**
+   * \param deltaY the y interval between two y-consecutive positions.
+   */
+  void SetDeltaY (double deltaY);
+  /**
+   * \param n the number of positions allocated on each row (or each column)
+   *        before switching to the next column (or row).
+   */
+  void SetN (uint32_t n);
+  /**
+   * \param layoutType the type of layout to use (row first or column first).
+   */
+  void SetLayoutType (enum LayoutType layoutType);
+
+  /**
+   * \param returns the x coordinate of the first allocated position.
+   */
+  double GetMinX (void) const;
+  /**
+   * \param returns the y coordinate of the first allocated position.
+   */
+  double GetMinY (void) const;
+  /**
+   * \returns the x interval between two x-consecutive positions.
+   */
+  double GetDeltaX (void) const;
+  /**
+   * \returns the y interval between two y-consecutive positions.
+   */
+  double GetDeltaY (void) const;
+  /**
+   * \returns the number of positions to allocate on each row or each column.
+   */
+  uint32_t GetN (void) const;
+  /**
+   * \returns the currently-selected layout type.
+   */
+  enum LayoutType GetLayoutType (void) const;
+  
 
   virtual Vector GetNext (void) const;
 private:
@@ -88,6 +170,10 @@ public:
   static TypeId GetTypeId (void);
   RandomRectanglePositionAllocator ();
   virtual ~RandomRectanglePositionAllocator ();
+
+  void SetX (RandomVariable x);
+  void SetY (RandomVariable y);
+
   virtual Vector GetNext (void) const;
 private:
   RandomVariable m_x;
@@ -104,6 +190,12 @@ public:
   static TypeId GetTypeId (void);
   RandomDiscPositionAllocator ();
   virtual ~RandomDiscPositionAllocator ();
+
+  void SetTheta (RandomVariable theta);
+  void SetRho (RandomVariable rho);
+  void SetX (double x);
+  void SetY (double y);
+
   virtual Vector GetNext (void) const;
 private:
   RandomVariable m_theta;

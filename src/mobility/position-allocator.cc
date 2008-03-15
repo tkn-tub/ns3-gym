@@ -114,6 +114,68 @@ GridPositionAllocator::GridPositionAllocator ()
   : m_current (0)
 {}
 
+void 
+GridPositionAllocator::SetMinX (double xMin)
+{
+  m_xMin = xMin;
+}
+void 
+GridPositionAllocator::SetMinY (double yMin)
+{
+  m_yMin = yMin;
+}
+void 
+GridPositionAllocator::SetDeltaX (double deltaX)
+{
+  m_deltaX = deltaX;
+}
+void 
+GridPositionAllocator::SetDeltaY (double deltaY)
+{
+  m_deltaY = deltaY;
+}
+void 
+GridPositionAllocator::SetN (uint32_t n)
+{
+  m_n = n;
+}
+void 
+GridPositionAllocator::SetLayoutType (enum LayoutType layoutType)
+{
+  m_layoutType = layoutType;
+}
+
+double 
+GridPositionAllocator::GetMinX (void) const
+{
+  return m_xMin;
+}
+double 
+GridPositionAllocator::GetMinY (void) const
+{
+  return m_yMin;
+}
+double 
+GridPositionAllocator::GetDeltaX (void) const
+{
+  return m_deltaX;
+}
+double 
+GridPositionAllocator::GetDeltaY (void) const
+{
+  return m_deltaY;
+}
+uint32_t 
+GridPositionAllocator::GetN (void) const
+{
+  return m_n;
+}
+enum GridPositionAllocator::LayoutType 
+GridPositionAllocator::GetLayoutType (void) const
+{
+  return m_layoutType;
+}
+
 Vector 
 GridPositionAllocator::GetNext (void) const
 {
@@ -159,6 +221,18 @@ RandomRectanglePositionAllocator::RandomRectanglePositionAllocator ()
 {}
 RandomRectanglePositionAllocator::~RandomRectanglePositionAllocator ()
 {}
+
+void 
+RandomRectanglePositionAllocator::SetX (RandomVariable x)
+{
+  m_x = x;
+}
+void 
+RandomRectanglePositionAllocator::SetY (RandomVariable y)
+{
+  m_y = y;
+}
+
 Vector
 RandomRectanglePositionAllocator::GetNext (void) const
 {
@@ -204,6 +278,27 @@ RandomDiscPositionAllocator::RandomDiscPositionAllocator ()
 {}
 RandomDiscPositionAllocator::~RandomDiscPositionAllocator ()
 {}
+
+void 
+RandomDiscPositionAllocator::SetTheta (RandomVariable theta)
+{
+  m_theta = theta;
+}
+void 
+RandomDiscPositionAllocator::SetRho (RandomVariable rho)
+{
+  m_rho = rho;
+}
+void 
+RandomDiscPositionAllocator::SetX (double x)
+{
+  m_x = x;
+}
+void 
+RandomDiscPositionAllocator::SetY (double y)
+{
+  m_y = y;
+}
 Vector
 RandomDiscPositionAllocator::GetNext (void) const
 {
