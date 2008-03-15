@@ -94,14 +94,15 @@ NqstaWifiMac::NqstaWifiMac ()
     m_assocRequestEvent (),
     m_beaconWatchdogEnd (Seconds (0.0))
 {
-  m_dcfManager = new DcfManager ();
-
   m_rxMiddle = new MacRxMiddle ();
   m_rxMiddle->SetForwardCallback (MakeCallback (&NqstaWifiMac::Receive, this));
 
-  m_low = new MacLow ();
+  m_low = CreateObject<MacLow> ();
   m_low->SetRxCallback (MakeCallback (&MacRxMiddle::Receive, m_rxMiddle));
   m_low->SetMac (this);
+
+  m_dcfManager = new DcfManager ();
+  m_dcfManager->SetupLowListener (m_low);
 
   m_dca = CreateObject<DcaTxop> ();
   m_dca->SetLow (m_low);
@@ -115,7 +116,6 @@ void
 NqstaWifiMac::DoDispose (void)
 {
   delete m_rxMiddle;
-  delete m_low;
   delete m_dcfManager;
   m_rxMiddle = 0;
   m_low = 0;
