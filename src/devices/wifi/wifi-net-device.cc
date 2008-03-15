@@ -74,6 +74,7 @@ WifiNetDevice::DoDispose (void)
   m_stationManager->Dispose ();
   m_mac = 0;
   m_phy = 0;
+  m_channel = 0;
   m_stationManager = 0;
   // chain up.
   NetDevice::DoDispose ();
