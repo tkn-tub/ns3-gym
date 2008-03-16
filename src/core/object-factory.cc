@@ -59,7 +59,12 @@ ObjectFactory::GetTypeId (void) const
 Ptr<Object> 
 ObjectFactory::Create (void) const
 {
-  Ptr<Object> object = m_tid.CreateObject (m_parameters);
+  Callback<ObjectBase *> cb = m_tid.GetConstructor ();
+  ObjectBase *base = cb ();
+  Object *derived = dynamic_cast<Object *> (base);
+  derived->SetTypeId (m_tid);
+  derived->Construct (m_parameters);
+  Ptr<Object> object = Ptr<Object> (derived, false);
   return object;
 }
 

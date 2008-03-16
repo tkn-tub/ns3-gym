@@ -44,17 +44,17 @@ public:
   void SetParent (uint16_t uid, uint16_t parent);
   void SetTypeName (uint16_t uid, std::string typeName);
   void SetGroupName (uint16_t uid, std::string groupName);
-  void AddConstructor (uint16_t uid, ns3::CallbackBase callback);
+  void AddConstructor (uint16_t uid, ns3::Callback<ns3::ObjectBase *> callback);
   void HideFromDocumentation (uint16_t uid);
   uint16_t GetUid (std::string name) const;
   std::string GetName (uint16_t uid) const;
   uint16_t GetParent (uint16_t uid) const;
   std::string GetTypeName (uint16_t uid) const;
   std::string GetGroupName (uint16_t uid) const;
-  ns3::CallbackBase GetConstructor (uint16_t uid);
-  bool HasConstructor (uint16_t uid);
-  uint32_t GetRegisteredN (void);
-  uint16_t GetRegistered (uint32_t i);
+  ns3::Callback<ns3::ObjectBase *> GetConstructor (uint16_t uid) const;
+  bool HasConstructor (uint16_t uid) const;
+  uint32_t GetRegisteredN (void) const;
+  uint16_t GetRegistered (uint32_t i) const;
   void AddAttribute (uint16_t uid, 
                      std::string name,
                      std::string help, 
@@ -99,7 +99,7 @@ private:
     std::string typeName;
     std::string groupName;
     bool hasConstructor;
-    ns3::CallbackBase constructor;
+    ns3::Callback<ns3::ObjectBase *> constructor;
     bool mustHideFromDocumentation;
     std::vector<struct AttributeInformation> attributes;
     std::vector<struct TraceSourceInformation> traceSources;
@@ -174,7 +174,7 @@ IidManager::HideFromDocumentation (uint16_t uid)
 }
 
 void 
-IidManager::AddConstructor (uint16_t uid, ns3::CallbackBase callback)
+IidManager::AddConstructor (uint16_t uid, ns3::Callback<ns3::ObjectBase *> callback)
 {
   struct IidInformation *information = LookupInformation (uid);
   if (information->hasConstructor)
@@ -225,8 +225,8 @@ IidManager::GetGroupName (uint16_t uid) const
   return information->groupName;
 }
 
-ns3::CallbackBase 
-IidManager::GetConstructor (uint16_t uid)
+ns3::Callback<ns3::ObjectBase *> 
+IidManager::GetConstructor (uint16_t uid) const
 {
   struct IidInformation *information = LookupInformation (uid);
   if (!information->hasConstructor)
@@ -237,19 +237,19 @@ IidManager::GetConstructor (uint16_t uid)
 }
 
 bool 
-IidManager::HasConstructor (uint16_t uid)
+IidManager::HasConstructor (uint16_t uid) const
 {
   struct IidInformation *information = LookupInformation (uid);
   return information->hasConstructor;
 }
 
 uint32_t 
-IidManager::GetRegisteredN (void)
+IidManager::GetRegisteredN (void) const
 {
   return m_information.size ();
 }
 uint16_t 
-IidManager::GetRegistered (uint32_t i)
+IidManager::GetRegistered (uint32_t i) const
 {
   return i + 1;
 }
@@ -529,7 +529,7 @@ TypeId::HasConstructor (void) const
 }
 
 void
-TypeId::DoAddConstructor (CallbackBase cb)
+TypeId::DoAddConstructor (Callback<ObjectBase *> cb)
 {
   Singleton<IidManager>::Get ()->AddConstructor (m_tid, cb);
 }
@@ -557,27 +557,11 @@ TypeId::AddAttribute (std::string name,
   return *this;
 }
 
-
-CallbackBase
-TypeId::LookupConstructor (void) const
+Callback<ObjectBase *> 
+TypeId::GetConstructor (void) const
 {
-  CallbackBase constructor = Singleton<IidManager>::Get ()->GetConstructor (m_tid);
-  return constructor;
-}
-
-Ptr<Object> 
-TypeId::CreateObject (void) const
-{
-  return CreateObject (AttributeList ());
-}
-Ptr<Object> 
-TypeId::CreateObject (const AttributeList &attributes) const
-{
-  CallbackBase cb = LookupConstructor ();
-  Callback<Ptr<Object>,const AttributeList &> realCb;
-  realCb.Assign (cb);
-  Ptr<Object> object = realCb (attributes);
-  return object;  
+  Callback<ObjectBase *>  cb = Singleton<IidManager>::Get ()->GetConstructor (m_tid);
+  return cb;
 }
 
 bool 
@@ -1345,6 +1329,7 @@ Object::MaybeDelete (void) const
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
+#include "object-factory.h"
 
 namespace {
 
@@ -1481,11 +1466,14 @@ ObjectTest::RunTests (void)
 
 
   // Test the object creation code of TypeId
-  Ptr<Object> a = BaseA::GetTypeId ().CreateObject ();
+  ObjectFactory factory;
+  factory.SetTypeId (BaseA::GetTypeId ());
+  Ptr<Object> a = factory.Create ();
   NS_TEST_ASSERT_EQUAL (a->GetObject<BaseA> (), a);
   NS_TEST_ASSERT_EQUAL (a->GetObject<BaseA> (DerivedA::GetTypeId ()), 0);
   NS_TEST_ASSERT_EQUAL (a->GetObject<DerivedA> (), 0);
-  a = DerivedA::GetTypeId ().CreateObject ();
+  factory.SetTypeId (DerivedA::GetTypeId ());
+  a = factory.Create ();
   NS_TEST_ASSERT_EQUAL (a->GetObject<BaseA> (), a);
   NS_TEST_ASSERT_EQUAL (a->GetObject<BaseA> (DerivedA::GetTypeId ()), a);
   NS_TEST_ASSERT_UNEQUAL (a->GetObject<DerivedA> (), 0);

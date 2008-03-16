@@ -177,8 +177,7 @@ public:
   std::string GetTraceSourceHelp (uint32_t i) const;
   Ptr<const TraceSourceAccessor> GetTraceSourceAccessor (uint32_t i) const;
 
-  Ptr<Object> CreateObject (const AttributeList &attributes) const;
-  Ptr<Object> CreateObject (void) const;
+  Callback<ObjectBase *> GetConstructor (void) const;
 
   bool MustHideFromDocumentation (void) const;
 
@@ -319,8 +318,7 @@ private:
   static bool LookupAttributeByFullName (std::string fullName, struct AttributeInfo *info);
 
   explicit TypeId (uint16_t tid);
-  void DoAddConstructor (CallbackBase callback);
-  CallbackBase LookupConstructor (void) const;
+  void DoAddConstructor (Callback<ObjectBase *> callback);
   Ptr<const AttributeAccessor> GetAttributeAccessor (uint32_t i) const;
   
   uint16_t m_tid;
@@ -518,6 +516,8 @@ private:
   template <typename T>
   friend Ptr<T> CopyObject (Ptr<T> object);
 
+  friend class ObjectFactory;
+
   bool DoSet (Ptr<const AttributeAccessor> spec, Attribute intialValue, 
               Ptr<const AttributeChecker> checker, Attribute value);
   Ptr<Object> DoGetObject (TypeId tid) const;
@@ -596,11 +596,12 @@ TypeId
 TypeId::AddConstructor (void)
 {
   struct Maker {
-    static Ptr<Object> Create (const AttributeList &attributes) {
-      return ns3::CreateObject<T> (attributes);
+    static ObjectBase * Create () {
+      ObjectBase * base = new T ();
+      return base;
     }
   };
-  CallbackBase cb = MakeCallback (&Maker::Create);
+  Callback<ObjectBase *> cb = MakeCallback (&Maker::Create);
   DoAddConstructor (cb);
   return *this;
 }
