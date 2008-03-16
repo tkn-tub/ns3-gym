@@ -31,7 +31,6 @@
 #include "ns3/callback.h"
 #include "ns3/assert.h"
 #include "ns3/ptr.h"
-#include "ns3/object-base.h"
 
 namespace ns3 {
 

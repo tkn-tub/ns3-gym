@@ -27,7 +27,6 @@
 #include "ns3/random-variable.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/object-base.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
