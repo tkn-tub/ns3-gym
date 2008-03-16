@@ -49,7 +49,7 @@ GetObjectIid (void)
 TypeId 
 Object::GetInstanceTypeId (void) const
 {
-  return GetTypeId ();
+  return m_tid;
 }
 
 TypeId 
