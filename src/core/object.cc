@@ -64,7 +64,6 @@ Object::Object ()
   : m_count (1),
     m_tid (Object::GetTypeId ()),
     m_disposed (false),
-    m_collecting (false),
     m_next (this)
 {}
 Object::~Object () 

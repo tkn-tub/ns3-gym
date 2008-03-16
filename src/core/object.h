@@ -196,7 +196,6 @@ private:
    * has run, false otherwise.
    */
   bool m_disposed;
-  mutable bool m_collecting;
   /**
    * A pointer to the next aggregate object. This is a circular
    * linked list of aggregated objects: the last one points
