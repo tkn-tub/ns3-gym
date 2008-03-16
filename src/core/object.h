@@ -53,6 +53,8 @@ public:
   Object ();
   virtual ~Object ();
 
+  virtual TypeId GetInstanceTypeId (void) const;
+
   /**
    * \param name the name of the attribute to set
    * \param value the name of the attribute to set
@@ -87,8 +89,6 @@ public:
   bool TraceConnectWithoutContext (std::string name, std::string context, const CallbackBase &cb);
   bool TraceDisconnectWithoutContext (std::string name, const CallbackBase &cb);
   bool TraceDisconnectWithoutContext (std::string name, std::string context, const CallbackBase &cb);
-
-  TypeId GetRealTypeId (void) const;
 
   /**
    * Increment the reference count. This method should not be called

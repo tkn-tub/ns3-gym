@@ -21,18 +21,19 @@
 #define TRACE_SOURCE_ACCESSOR_H
 
 #include <stdint.h>
-#include "object-base.h"
 #include "callback.h"
 #include "ptr.h"
 
 namespace ns3 {
+
+class ObjectBase;
 
 /**
  * \brief control access to objects' trace sources
  *
  * This class abstracts the kind of trace source to which we want to connect.
  */
-class TraceSourceAccessor : public ObjectBase
+class TraceSourceAccessor
 {
 public:
   TraceSourceAccessor ();

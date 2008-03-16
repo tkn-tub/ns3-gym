@@ -47,6 +47,12 @@ GetObjectIid (void)
 }
 
 TypeId 
+Object::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
+
+TypeId 
 Object::GetTypeId (void)
 {
   static TypeId tid = GetObjectIid ();
@@ -275,13 +281,6 @@ Object::TraceDisconnectWithoutContext (std::string name, std::string context, co
   bool ok = accessor->Disconnect (this, context, cb);
   return ok;
 }
-
-TypeId 
-Object::GetRealTypeId (void) const
-{
-  return m_tid;
-}
-
 
 Ptr<Object>
 Object::DoGetObject (TypeId tid) const

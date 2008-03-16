@@ -28,6 +28,7 @@ class ObjectBase
 {
 public:
   virtual ~ObjectBase ();
+  virtual TypeId GetInstanceTypeId (void) const = 0;
 };
 
 } // namespace ns3
