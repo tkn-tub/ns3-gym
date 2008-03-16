@@ -1,6 +1,21 @@
 #ifndef OBJECT_BASE_H
 #define OBJECT_BASE_H
 
+#include "type-id.h"
+
+/**
+ * This macro should be invoked once for every class which
+ * defines a new GetTypeId method.
+ */
+#define NS_OBJECT_ENSURE_REGISTERED(type)       \
+  static struct X##type##RegistrationClass      \
+  {                                             \
+    X##type##RegistrationClass () {             \
+      ns3::TypeId tid = type::GetTypeId ();     \
+      tid.GetParent ();                         \
+    }                                           \
+} x_##type##RegistrationVariable
+
 namespace ns3 {
 
 /**

@@ -26,7 +26,6 @@
 #include "fatal-error.h"
 #include "empty.h"
 #include "type-traits.h"
-#include "object-base.h"
 
 namespace ns3 {
 

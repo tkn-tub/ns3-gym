@@ -23,13 +23,13 @@
 #include <string>
 #include <stdint.h>
 #include "ptr.h"
-#include "object-base.h"
 
 namespace ns3 {
 
 class AttributeAccessor;
 class AttributeChecker;
 class Attribute;
+class ObjectBase;
 
 /**
  * \brief Hold a value for an Attribute.
@@ -159,7 +159,7 @@ private:
  * of this base class are usually provided through the MakeAccessorHelper
  * template functions, hidden behind an ATTRIBUTE_HELPER_* macro.
  */
-class AttributeAccessor : public ObjectBase
+class AttributeAccessor
 {
 public:
   AttributeAccessor ();
@@ -202,7 +202,7 @@ private:
  * Most subclasses of this base class are implemented by the 
  * ATTRIBUTE_HELPER_* macros.
  */
-class AttributeChecker : public ObjectBase
+class AttributeChecker
 {
 public:
   AttributeChecker ();
