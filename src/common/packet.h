@@ -74,7 +74,8 @@ class PacketPrinter;
  * The performance aspects of the Packet API are discussed in 
  * \ref packetperf
  */
-class Packet : public ObjectBase {
+class Packet 
+{
 public:
   void Ref (void) const;
   void Unref (void) const;

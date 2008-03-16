@@ -71,7 +71,7 @@ struct CallbackTraits<T *>
   }
 };
 
-class CallbackImplBase : public ObjectBase 
+class CallbackImplBase
 {
 public:
   CallbackImplBase ()

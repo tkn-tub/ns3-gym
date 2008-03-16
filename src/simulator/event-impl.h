@@ -25,7 +25,7 @@
 
 namespace ns3 {
 
-class EventImpl : public ObjectBase 
+class EventImpl
 {
 public:
   EventImpl ();

@@ -78,7 +78,7 @@ WifiPhyListener::~WifiPhyListener ()
  *       Phy event class
  ****************************************************************/
 
-class RxEvent : public ObjectBase 
+class RxEvent
 {
 public:
   RxEvent (uint32_t size, WifiMode payloadMode, 
