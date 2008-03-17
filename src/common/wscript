@@ -10,6 +10,8 @@ def build(bld):
         'packet.cc',
         'tags.cc',
         'tag-registry.cc',
+        'header.cc',
+        'trailer.cc',
         'pcap-writer.cc',
         'data-rate.cc',
         'error-model.cc',

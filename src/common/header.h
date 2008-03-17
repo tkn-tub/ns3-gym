@@ -59,23 +59,6 @@ namespace ns3 {
  *   - a static method named GetUid: is used to uniquely identify
  *     the type of each header. This method shall return a unique
  *     integer allocated with Header::AllocateUid.
- *   - a method named Serialize: is used by Packet::AddHeader to
- *     store a header into the byte buffer of a packet.
- *     The input iterator points to the start of the byte buffer in
- *     which the header should write its data. The data written
- *     is expected to match bit-for-bit the representation of this
- *     header in a real network.
- *   - a method named GetSerializedSize: is used by Packet::AddHeader
- *     to store a header into the byte buffer of a packet. This method
- *     should return the number of bytes which are needed to store
- *     the full header data by Serialize.
- *   - a method named Deserialize: is used by Packet::RemoveHeader to
- *     re-create a header from the byte buffer of a packet. The input
- *     iterator points to the start of the byte buffer from which
- *     the header should read its data. The data read is expected to
- *     match bit-for-bit the representation of this header in real
- *     networks. This method shall return an integer which identifies
- *     the number of bytes read.
  *   - a method named Print: is used by Packet::Print to print the 
  *     content of a header as ascii data to a c++ output stream.
  *     Although the header is free to format its output as it
@@ -92,8 +75,42 @@ namespace ns3 {
  * Sample code which shows how to create a new type of Header, and how to use it, 
  * is shown in the sample file samples/main-packet-header.cc
  */
-class Header 
+class Header
 {
+public:
+  virtual ~Header ();
+  /**
+   * \returns the expected size of the header.
+   *
+   * This method is used by Packet::AddHeader
+   * to store a header into the byte buffer of a packet. This method
+   * should return the number of bytes which are needed to store
+   * the full header data by Serialize.
+   */
+  virtual uint32_t GetSerializedSize (void) const = 0;
+  /**
+   * \param start an iterator which points to where the header should
+   *        be written.
+   *
+   * This method is used by Packet::AddHeader to
+   * store a header into the byte buffer of a packet.
+   * The data written
+   * is expected to match bit-for-bit the representation of this
+   * header in a real network.
+   */
+  virtual void Serialize (Buffer::Iterator start) const = 0;
+  /**
+   * \param start an iterator which points to where the header should
+   *        written.
+   * \returns the number of bytes read.
+   *
+   * This method is used by Packet::RemoveHeader to
+   * re-create a header from the byte buffer of a packet. 
+   * The data read is expected to
+   * match bit-for-bit the representation of this header in real
+   * networks.
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator start) = 0;
 protected:
   template <typename T>
   static uint32_t AllocateUid (std::string uuid);

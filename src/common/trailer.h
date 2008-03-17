@@ -23,6 +23,8 @@
 #define TRAILER_H
 
 #include "chunk-registry.h"
+#include "buffer.h"
+#include <stdint.h>
 
 /**
  * \relates ns3::Trailer
@@ -58,26 +60,6 @@ namespace ns3 {
  *   - a static method named GetUid: is used to uniquely identify
  *     the type of each trailer. This method shall return a unique
  *     integer allocated with Trailer::AllocateUid.
- *   - a method named Serialize: is used by Packet::AddTrailer to
- *     store a trailer into the byte buffer of a packet.
- *     The input iterator points to the end of the byte buffer in
- *     which the trailer should write its data: the user is thus
- *     required to call Buffer::Iterator::Prev prior to writing
- *     any data in the buffer. The data written is expected to 
- *     match bit-for-bit the representation of this trailer in a 
- *     real network.
- *   - a method named GetSerializedSize: is used by Packet::AddTrailer
- *     to store a trailer into the byte buffer of a packet. This method
- *     should return the number of bytes which are needed to store
- *     the full trailer data by Serialize.
- *   - a method named Deserialize: is used by Packet::RemoveTrailer to
- *     re-create a trailer from the byte buffer of a packet. The input
- *     iterator points to the end of the byte buffer from which
- *     the trailer should read its data: the user is thus required to
- *     call Buffer::Iterator::Prev prior to reading any data from the
- *     buffer. The data read is expected to match bit-for-bit the 
- *     representation of this trailer in real networks. This method 
- *     shall return an integer which identifies the number of bytes read.
  *   - a method named Print: is used by Packet::Print to print the 
  *     content of a trailer as ascii data to a c++ output stream.
  *     Although the trailer is free to format its output as it
@@ -94,6 +76,44 @@ namespace ns3 {
  */
 class Trailer 
 {
+public:
+  virtual ~Trailer ();
+  /**
+   * \returns the expected size of the trailer.
+   *
+   * This method is used by Packet::AddTrailer
+   * to store a trailer into the byte buffer of a packet. This method
+   * should return the number of bytes which are needed to store
+   * the full trailer data by Serialize.
+   */
+  virtual uint32_t GetSerializedSize (void) const = 0;
+  /**
+   * \param start an iterator which points to where the trailer
+   *        should be written.
+   *
+   * This method is used by Packet::AddTrailer to
+   * store a header into the byte buffer of a packet.
+   * The data written is expected to match bit-for-bit the 
+   * representation of this trailer in real networks.
+   * The input iterator points to the end of the area where the 
+   * data shall be written. This method is thus expected to call
+   * Buffer::Iterator::Prev prior to actually writing any data.
+   */
+  virtual void Serialize (Buffer::Iterator start) const = 0;
+  /**
+   * \param start an iterator which points to where the trailer
+   *        should be read.
+   * \returns the number of bytes read.
+   *
+   * This method is used by Packet::RemoveTrailer to
+   * re-create a trailer from the byte buffer of a packet. 
+   * The data read is expected to match bit-for-bit the 
+   * representation of this trailer in real networks.
+   * The input iterator points to the end of the area where the 
+   * data shall be written. This method is thus expected to call
+   * Buffer::Iterator::Prev prio to actually reading any data.
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator end) = 0;
 protected:
   template <typename T>
   static uint32_t AllocateUid (std::string uidString);
