@@ -90,6 +90,8 @@ public:
    */
   TypeId GetParent (void) const;
 
+  bool IsChildOf (TypeId other) const;
+
   /**
    * \returns the name of the group associated to this TypeId.
    */

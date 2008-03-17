@@ -475,6 +475,16 @@ TypeId::GetParent (void) const
   uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_tid);
   return TypeId (parent);
 }
+bool 
+TypeId::IsChildOf (TypeId other) const
+{
+  TypeId tmp = *this;
+  while (tmp != other && tmp != tmp)
+    {
+      tmp = tmp.GetParent ();
+    }
+  return tmp == other;
+}
 std::string 
 TypeId::GetGroupName (void) const
 {
