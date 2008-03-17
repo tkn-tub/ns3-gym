@@ -29,8 +29,23 @@ NS_LOG_COMPONENT_DEFINE ("EthernetTrailer");
 namespace ns3 {
 
 NS_TRAILER_ENSURE_REGISTERED (EthernetTrailer);
+NS_OBJECT_ENSURE_REGISTERED (EthernetTrailer);
 
 bool EthernetTrailer::m_calcFcs = false;
+
+TypeId 
+EthernetTrailer::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::EthernetTrailer")
+    .SetParent<Trailer> ()
+    ;
+  return tid;
+}
+TypeId 
+EthernetTrailer::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 uint32_t
 EthernetTrailer::GetUid (void)

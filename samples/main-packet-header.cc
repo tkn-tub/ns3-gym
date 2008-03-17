@@ -19,11 +19,13 @@ public:
   void SetData (uint16_t data);
   uint16_t GetData (void) const;
 
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   std::string GetName (void) const;
   void Print (std::ostream &os) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
-  uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
+  virtual uint32_t GetSerializedSize (void) const;
 private:
   uint16_t m_data;
 };
@@ -35,6 +37,20 @@ MyHeader::MyHeader ()
 }
 MyHeader::~MyHeader ()
 {}
+
+TypeId 
+MyHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::MyHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+MyHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 uint32_t
 MyHeader::GetUid (void)

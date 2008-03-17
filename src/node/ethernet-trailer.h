@@ -39,6 +39,8 @@ class Packet;
 class EthernetTrailer : public Trailer 
 {
 public:
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   static uint32_t GetUid (void);
 
   /**

@@ -95,6 +95,8 @@ private:
   uint16_t m_packetSequenceNumber;
 
 public:  
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   static uint32_t GetUid (void);
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
@@ -200,6 +202,8 @@ private:
   uint16_t m_messageSize;
 
 public:  
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   static uint32_t GetUid (void);
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;

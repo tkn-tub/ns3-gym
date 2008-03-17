@@ -25,8 +25,23 @@
 namespace ns3 {
 
 NS_HEADER_ENSURE_REGISTERED (UdpHeader);
+NS_OBJECT_ENSURE_REGISTERED (UdpHeader);
 
 bool UdpHeader::m_calcChecksum = false;
+
+TypeId 
+UdpHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::UdpHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+UdpHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 uint32_t
 UdpHeader::GetUid (void)

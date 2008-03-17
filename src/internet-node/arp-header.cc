@@ -26,6 +26,21 @@
 namespace ns3 {
 
 NS_HEADER_ENSURE_REGISTERED (ArpHeader);
+NS_OBJECT_ENSURE_REGISTERED (ArpHeader);
+
+TypeId 
+ArpHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::ArpHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+ArpHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 uint32_t
 ArpHeader::GetUid (void)

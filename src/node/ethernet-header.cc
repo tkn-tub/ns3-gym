@@ -32,6 +32,21 @@ NS_LOG_COMPONENT_DEFINE ("EthernetHeader");
 namespace ns3 {
 
 NS_HEADER_ENSURE_REGISTERED (EthernetHeader);
+NS_OBJECT_ENSURE_REGISTERED (EthernetHeader);
+
+TypeId 
+EthernetHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::EthernetHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+EthernetHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 uint32_t
 EthernetHeader::GetUid (void)

@@ -34,6 +34,8 @@ namespace ns3 {
 class ArpHeader : public Header 
 {
 public:
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   static uint32_t GetUid (void);
 
   void SetRequest (Address sourceHardwareAddress,

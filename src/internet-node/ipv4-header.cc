@@ -29,8 +29,23 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4Header");
 namespace ns3 {
 
 NS_HEADER_ENSURE_REGISTERED (Ipv4Header);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4Header);
 
 bool Ipv4Header::m_calcChecksum = false;
+
+TypeId 
+Ipv4Header::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Ipv4Header")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+Ipv4Header::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 uint32_t
 Ipv4Header::GetUid (void)

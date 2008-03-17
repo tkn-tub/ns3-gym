@@ -22,11 +22,27 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (WifiMacTrailer);
+
 WifiMacTrailer::WifiMacTrailer ()
 {}
 
 WifiMacTrailer::~WifiMacTrailer ()
 {}
+
+TypeId 
+WifiMacTrailer::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::WifiMacTrailer")
+    .SetParent<Trailer> ()
+    ;
+  return tid;
+}
+TypeId 
+WifiMacTrailer::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 uint32_t
 WifiMacTrailer::GetUid (void)

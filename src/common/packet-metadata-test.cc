@@ -34,6 +34,8 @@ template <int N>
 class HistoryHeader : public Header
 {
 public:
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   static uint32_t GetUid (void);
   HistoryHeader ();
   bool IsOk (void) const;
@@ -45,6 +47,25 @@ public:
 private:
   bool m_ok;
 };
+
+template <int N>
+TypeId
+HistoryHeader<N>::GetTypeId (void)
+{
+  std::ostringstream oss;
+  oss << "ns3::HistoryHeader<"<<N<<">";
+  static TypeId tid = TypeId (oss.str ().c_str ())
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+
+template <int N>
+TypeId 
+HistoryHeader<N>::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 template <int N>
 uint32_t
@@ -114,6 +135,8 @@ template <int N>
 class HistoryTrailer : public Trailer
 {
 public:
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   static uint32_t GetUid (void);
   HistoryTrailer ();
   bool IsOk (void) const;
@@ -125,6 +148,26 @@ public:
 private:
   bool m_ok;
 };
+
+
+template <int N>
+TypeId
+HistoryTrailer<N>::GetTypeId (void)
+{
+  std::ostringstream oss;
+  oss << "ns3::HistoryTrailer<"<<N<<">";
+  static TypeId tid = TypeId (oss.str ().c_str ())
+    .SetParent<Trailer> ()
+    ;
+  return tid;
+}
+
+template <int N>
+TypeId 
+HistoryTrailer<N>::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 template <int N>
 uint32_t

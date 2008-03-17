@@ -27,8 +27,23 @@
 namespace ns3 {
 
 NS_HEADER_ENSURE_REGISTERED (TcpHeader);
+NS_OBJECT_ENSURE_REGISTERED (TcpHeader);
 
 bool TcpHeader::m_calcChecksum = false;
+
+TypeId 
+TcpHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::TcpHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+TcpHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 uint32_t
 TcpHeader::GetUid (void)

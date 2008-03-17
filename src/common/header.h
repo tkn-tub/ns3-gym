@@ -23,6 +23,7 @@
 #define HEADER_H
 
 #include "chunk-registry.h"
+#include "ns3/object-base.h"
 
 /**
  * \relates ns3::Header
@@ -75,9 +76,10 @@ namespace ns3 {
  * Sample code which shows how to create a new type of Header, and how to use it, 
  * is shown in the sample file samples/main-packet-header.cc
  */
-class Header
+class Header : public ObjectBase
 {
 public:
+  static TypeId GetTypeId (void);
   virtual ~Header ();
   /**
    * \returns the expected size of the header.

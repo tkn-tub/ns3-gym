@@ -32,6 +32,8 @@ namespace ns3 {
 class Ipv4Header : public Header 
 {
 public:
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   static uint32_t GetUid (void);
   /**
    * \brief Construct a null IPv4 header
@@ -142,9 +144,9 @@ public:
 
   std::string GetName (void) const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
 
   enum FlagsE {

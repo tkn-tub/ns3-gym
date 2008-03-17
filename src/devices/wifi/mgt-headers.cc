@@ -27,6 +27,8 @@ namespace ns3 {
  *          Probe Request
  ***********************************************************/
 
+NS_OBJECT_ENSURE_REGISTERED (MgtProbeRequestHeader);
+
 MgtProbeRequestHeader::~MgtProbeRequestHeader ()
 {}
 
@@ -58,6 +60,19 @@ MgtProbeRequestHeader::GetSerializedSize (void) const
   size += m_ssid.GetSerializedSize ();
   size += m_rates.GetSerializedSize ();
   return size;
+}
+TypeId 
+MgtProbeRequestHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::MgtProbeRequestHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+MgtProbeRequestHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
 }
 uint32_t
 MgtProbeRequestHeader::GetUid (void)
@@ -97,6 +112,8 @@ MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
  *          Probe Response
  ***********************************************************/
 
+NS_OBJECT_ENSURE_REGISTERED (MgtProbeResponseHeader);
+
 MgtProbeResponseHeader::MgtProbeResponseHeader ()
 {}
 MgtProbeResponseHeader::~MgtProbeResponseHeader ()
@@ -132,6 +149,19 @@ void
 MgtProbeResponseHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
+}
+TypeId 
+MgtProbeResponseHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::MgtProbeResponseHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+MgtProbeResponseHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
 }
 uint32_t
 MgtProbeResponseHeader::GetUid (void)
@@ -198,6 +228,11 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
+/***********************************************************
+ *          Assoc Request
+ ***********************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (MgtAssocRequestHeader);
 
 MgtAssocRequestHeader::MgtAssocRequestHeader ()
 {}
@@ -233,6 +268,20 @@ uint16_t
 MgtAssocRequestHeader::GetListenInterval (void) const
 {
   return m_listenInterval;
+}
+
+TypeId 
+MgtAssocRequestHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::MgtAssocRequestHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+MgtAssocRequestHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
 }
 uint32_t
 MgtAssocRequestHeader::GetUid (void)
@@ -281,6 +330,12 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
+/***********************************************************
+ *          Assoc Response
+ ***********************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (MgtAssocResponseHeader);
+
 MgtAssocResponseHeader::MgtAssocResponseHeader ()
 {}
 MgtAssocResponseHeader::~MgtAssocResponseHeader ()
@@ -307,6 +362,19 @@ MgtAssocResponseHeader::SetSupportedRates (SupportedRates rates)
   m_rates = rates;
 }
 
+TypeId 
+MgtAssocResponseHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::MgtAssocResponseHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+MgtAssocResponseHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 uint32_t
 MgtAssocResponseHeader::GetUid (void)
 {

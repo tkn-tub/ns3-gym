@@ -26,6 +26,21 @@
 namespace ns3 {
 
 NS_HEADER_ENSURE_REGISTERED (LlcSnapHeader);
+NS_OBJECT_ENSURE_REGISTERED (LlcSnapHeader);
+
+TypeId 
+LlcSnapHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::LlcSnapHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+LlcSnapHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 
 uint32_t
 LlcSnapHeader::GetUid (void)

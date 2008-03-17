@@ -34,6 +34,8 @@ std::Cout << "MAC80211HEADER " << x << std::Endl;
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (WifiMacHeader);
+
 enum {
   TYPE_MGT = 0,
   TYPE_CTL  = 1,
@@ -766,6 +768,19 @@ case WIFI_MAC_ ## x: \
   return "BIG_ERROR";
 }
 
+TypeId 
+WifiMacHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::WifiMacHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+WifiMacHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 uint32_t
 WifiMacHeader::GetUid (void)
 {

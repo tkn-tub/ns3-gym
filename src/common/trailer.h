@@ -22,6 +22,7 @@
 #ifndef TRAILER_H
 #define TRAILER_H
 
+#include "ns3/object-base.h"
 #include "chunk-registry.h"
 #include "buffer.h"
 #include <stdint.h>
@@ -74,9 +75,10 @@ namespace ns3 {
  *     single word as all capitalized letters.
  *
  */
-class Trailer 
+class Trailer : public ObjectBase
 {
 public:
+  static TypeId GetTypeId (void);
   virtual ~Trailer ();
   /**
    * \returns the expected size of the trailer.

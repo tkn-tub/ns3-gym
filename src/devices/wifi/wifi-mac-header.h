@@ -65,14 +65,18 @@ enum WifiMacType_e {
 class WifiMacHeader : public Header 
 {
 public:
+
   WifiMacHeader ();
   ~WifiMacHeader ();
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   static uint32_t GetUid (void);
   std::string GetName (void) const;
   void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 
 
   void SetAssocReq (void);
