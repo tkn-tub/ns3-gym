@@ -19,7 +19,6 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "packet.h"
-#include "packet-printer.h"
 #include "ns3/assert.h"
 
 namespace ns3 {

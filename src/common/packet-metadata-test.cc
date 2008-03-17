@@ -27,7 +27,6 @@
 #include "trailer.h"
 #include "packet.h"
 #include "packet-metadata.h"
-#include "packet-printer.h"
 
 namespace ns3 {
 
