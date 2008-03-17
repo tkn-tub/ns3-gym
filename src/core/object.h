@@ -56,41 +56,6 @@ public:
   virtual TypeId GetInstanceTypeId (void) const;
 
   /**
-   * \param name the name of the attribute to set
-   * \param value the name of the attribute to set
-   *
-   * Set a single attribute. This cannot fail: if the input is invalid,
-   * it will crash immediately.
-   */
-  void SetAttribute (std::string name, Attribute value);
-  /**
-   * \param name the name of the attribute to set
-   * \param value the name of the attribute to set
-   * \returns true if the requested attribute exists and could be set, 
-   * false otherwise.
-   */
-  bool SetAttributeFailSafe (std::string name, Attribute value);
-  /**
-   * \param name the name of the attribute to read
-   * \param value a reference to the string where the value of the 
-   *        attribute should be stored.
-   * \returns true if the requested attribute was found, false otherwise.
-   */
-  bool GetAttribute (std::string name, std::string &value) const;
-  /**
-   * \param name the name of the attribute to read
-   * \returns the attribute read.
-   *
-   * If the input attribute name does not exist, this method crashes.
-   */
-  Attribute GetAttribute (std::string name) const;
-
-  bool TraceConnectWithoutContext (std::string name, const CallbackBase &cb);
-  bool TraceConnectWithoutContext (std::string name, std::string context, const CallbackBase &cb);
-  bool TraceDisconnectWithoutContext (std::string name, const CallbackBase &cb);
-  bool TraceDisconnectWithoutContext (std::string name, std::string context, const CallbackBase &cb);
-
-  /**
    * Increment the reference count. This method should not be called
    * by user code. Object instances are expected to be used in conjunction
    * of the Ptr template which would make calling Ref unecessary and 
@@ -140,7 +105,6 @@ protected:
    * up to their parent's implementation once they are done.
    */
   virtual void DoDispose (void);
-  virtual void NotifyConstructionCompleted (void);
 private:
   template <typename T>
   friend Ptr<T> CreateObject (const AttributeList &attributes);
@@ -149,8 +113,6 @@ private:
 
   friend class ObjectFactory;
 
-  bool DoSet (Ptr<const AttributeAccessor> spec, Attribute intialValue, 
-              Ptr<const AttributeChecker> checker, Attribute value);
   Ptr<Object> DoGetObject (TypeId tid) const;
   bool Check (void) const;
   bool CheckLoose (void) const;
@@ -169,11 +131,11 @@ private:
    * keep track of the type of this object instance.
    */
   void SetTypeId (TypeId tid);
-  /**
+   /**
    * \param attributes the attribute values used to initialize 
    *        the member variables of this object's instance.
    *
-   * Invoked from ns3::CreateObject only.
+   * Invoked from ns3::ObjectFactory::Create and ns3::CreateObject only.
    * Initialize all the member variables which were
    * registered with the associated TypeId.
    */

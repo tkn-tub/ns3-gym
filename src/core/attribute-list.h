@@ -70,7 +70,7 @@ public:
   std::string SerializeToString (void) const;
   bool DeserializeFromString (std::string value);
 private:
-  friend class Object;
+  friend class ObjectBase;
   struct Attr {
     Ptr<const AttributeChecker> checker;
     Attribute value;

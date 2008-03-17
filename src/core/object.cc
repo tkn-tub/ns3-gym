@@ -38,14 +38,6 @@ namespace ns3 {
 
 NS_OBJECT_ENSURE_REGISTERED (Object);
 
-static TypeId
-GetObjectIid (void)
-{
-  TypeId tid = TypeId ("ns3::Object");
-  tid.SetParent (tid);
-  return tid;
-}
-
 TypeId 
 Object::GetInstanceTypeId (void) const
 {
@@ -55,7 +47,9 @@ Object::GetInstanceTypeId (void) const
 TypeId 
 Object::GetTypeId (void)
 {
-  static TypeId tid = GetObjectIid ();
+  static TypeId tid = TypeId ("ns3::Object")
+    .SetParent<ObjectBase> ()
+    ;
   return tid;
 }
 
@@ -73,212 +67,7 @@ Object::~Object ()
 void
 Object::Construct (const AttributeList &attributes)
 {
-  // loop over the inheritance tree back to the Object base class.
-  TypeId tid = m_tid;
-  do {
-    // loop over all attributes in object type
-    NS_LOG_DEBUG ("construct tid="<<tid.GetName ()<<", params="<<tid.GetAttributeListN ());
-    for (uint32_t i = 0; i < tid.GetAttributeListN (); i++)
-      {
-        Ptr<const AttributeAccessor> paramSpec = tid.GetAttributeAccessor (i);
-        Attribute initial = tid.GetAttributeInitialValue (i);
-        Ptr<const AttributeChecker> checker = tid.GetAttributeChecker (i);
-        NS_LOG_DEBUG ("try to construct \""<< tid.GetName ()<<"::"<<
-                      tid.GetAttributeName (i)<<"\"");
-        if (!(tid.GetAttributeFlags (i) & TypeId::ATTR_CONSTRUCT))
-          {
-            continue;
-          }
-        bool found = false;
-        // is this attribute stored in this AttributeList instance ?
-        for (AttributeList::Attrs::const_iterator j = attributes.m_attributes.begin ();
-             j != attributes.m_attributes.end (); j++)
-          {
-            if (j->checker == checker)
-              {
-                // We have a matching attribute value.
-                DoSet (paramSpec, initial, checker, j->value);
-                NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                              tid.GetAttributeName (i)<<"\"");
-                found = true;
-                break;
-              }
-          }
-        if (!found)
-          {
-            // is this attribute stored in the global instance instance ?
-            for (AttributeList::Attrs::const_iterator j = AttributeList::GetGlobal ()->m_attributes.begin ();
-                 j != AttributeList::GetGlobal ()->m_attributes.end (); j++)
-              {
-                if (j->checker == checker)
-                  {
-                    // We have a matching attribute value.
-                    DoSet (paramSpec, initial, checker, j->value);
-                    NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                                  tid.GetAttributeName (i)<<"\" from global");
-                    found = true;
-                    break;
-                  }
-              }
-          }
-        if (!found)
-          {
-            // No matching attribute value so we set the default value.
-            paramSpec->Set (this, initial);
-            NS_LOG_DEBUG ("construct \""<< tid.GetName ()<<"::"<<
-                          tid.GetAttributeName (i)<<"\" from initial value.");
-          }
-      }
-    tid = tid.GetParent ();
-  } while (tid != Object::GetTypeId ());
-  NotifyConstructionCompleted ();
-}
-bool
-Object::DoSet (Ptr<const AttributeAccessor> spec, Attribute initialValue, 
-               Ptr<const AttributeChecker> checker, Attribute value)
-{
-  bool ok = checker->Check (value);
-  if (!ok)
-    {
-      // attempt to convert to string
-      const StringValue *str = value.DynCast<const StringValue *> ();
-      if (str == 0)
-        {
-          return false;
-        }
-      // attempt to convert back from string.
-      Attribute v = checker->Create ();
-      ok = v.DeserializeFromString (str->Get ().Get (), checker);
-      if (!ok)
-        {
-          return false;
-        }
-      ok = checker->Check (v);
-      if (!ok)
-        {
-          return false;
-        }
-      value = v;
-    }
-  ok = spec->Set (this, value);
-  return ok;
-}
-void
-Object::SetAttribute (std::string name, Attribute value)
-{
-  struct TypeId::AttributeInfo info;
-  if (!m_tid.LookupAttributeByName (name, &info))
-    {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" does not exist for this object: tid="<<m_tid.GetName ());
-    }
-  if (!(info.flags & TypeId::ATTR_SET))
-    {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" is not settable for this object: tid="<<m_tid.GetName ());
-    }
-  if (!DoSet (info.accessor, info.initialValue, info.checker, value))
-    {
-      NS_FATAL_ERROR ("Attribute name="<<name<<" could not be set for this object: tid="<<m_tid.GetName ());
-    }
-}
-bool 
-Object::SetAttributeFailSafe (std::string name, Attribute value)
-{
-  struct TypeId::AttributeInfo info;
-  if (!m_tid.LookupAttributeByName (name, &info))
-    {
-      return false;
-    }
-  if (!(info.flags & TypeId::ATTR_SET))
-    {
-      return false;
-    }
-  return DoSet (info.accessor, info.initialValue, info.checker, value);
-}
-bool 
-Object::GetAttribute (std::string name, std::string &value) const
-{
-  struct TypeId::AttributeInfo info;
-  if (!m_tid.LookupAttributeByName (name, &info))
-    {
-      return false;
-    }
-  if (!(info.flags & TypeId::ATTR_GET))
-    {
-      return false;
-    }
-  Attribute v = info.checker->Create ();
-  bool ok = info.accessor->Get (this, v);
-  if (ok)
-    {
-      value = v.SerializeToString (info.checker);
-    }
-  return ok;
-}
-
-Attribute
-Object::GetAttribute (std::string name) const
-{
-  struct TypeId::AttributeInfo info;
-  if (!m_tid.LookupAttributeByName (name, &info))
-    {
-      return Attribute ();
-    }
-  if (!(info.flags & TypeId::ATTR_GET))
-    {
-      return Attribute ();
-    }
-  Attribute value = info.checker->Create ();
-  bool ok = info.accessor->Get (this, value);
-  if (!ok)
-    {
-      return Attribute ();
-    }
-  return value;
-}
-
-bool 
-Object::TraceConnectWithoutContext (std::string name, const CallbackBase &cb)
-{
-  Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
-  if (accessor == 0)
-    {
-      return false;
-    }
-  bool ok = accessor->ConnectWithoutContext (this, cb);
-  return ok;
-}
-bool 
-Object::TraceConnectWithoutContext (std::string name, std::string context, const CallbackBase &cb)
-{
-  Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
-  if (accessor == 0)
-    {
-      return false;
-    }
-  bool ok = accessor->Connect (this, context, cb);
-  return ok;
-}
-bool 
-Object::TraceDisconnectWithoutContext (std::string name, const CallbackBase &cb)
-{
-  Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
-  if (accessor == 0)
-    {
-      return false;
-    }
-  bool ok = accessor->DisconnectWithoutContext (this, cb);
-  return ok;
-}
-bool 
-Object::TraceDisconnectWithoutContext (std::string name, std::string context, const CallbackBase &cb)
-{
-  Ptr<const TraceSourceAccessor> accessor = m_tid.LookupTraceSourceByName (name);
-  if (accessor == 0)
-    {
-      return false;
-    }
-  bool ok = accessor->Disconnect (this, context, cb);
-  return ok;
+  ConstructSelf (attributes);
 }
 
 Ptr<Object>
@@ -313,9 +102,6 @@ Object::Dispose (void)
     current = current->m_next;
   } while (current != this);
 }
-void
-Object::NotifyConstructionCompleted (void)
-{}
 void 
 Object::AggregateObject (Ptr<Object> o)
 {
