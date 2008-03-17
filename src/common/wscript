@@ -5,7 +5,6 @@ def build(bld):
     common.source = [
         'buffer.cc',
         'chunk-registry.cc',
-        'packet-printer.cc',
         'packet-metadata.cc',
         'packet-metadata-test.cc',
         'packet.cc',
@@ -27,7 +26,6 @@ def build(bld):
         'tag-registry.h',
         'tag.h',
         'packet.h',
-        'packet-printer.h',
         'packet-metadata.h',
         'pcap-writer.h',
         'data-rate.h',

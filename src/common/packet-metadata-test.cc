@@ -202,135 +202,40 @@ public:
   bool CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...);
   virtual bool RunTests (void);
 private:
-  template <int N>
-  void PrintHeader (std::ostream &os, uint32_t packetUid, uint32_t size, const HistoryHeader<N> *header);
-  template <int N>
-  void PrintTrailer (std::ostream &os, uint32_t packetUid, uint32_t size, const HistoryTrailer<N> *trailer);
-  void PrintFragment (std::ostream &os,uint32_t packetUid,
-                      uint32_t size,std::string & name, 
-                      struct PacketPrinter::FragmentInformation info);
-  void PrintPayload (std::ostream &os,uint32_t packetUid,
-                     uint32_t size,
-                     struct PacketPrinter::FragmentInformation info);
-  template <int N>
-  void RegisterHeader (void);
-  template <int N>
-  void RegisterTrailer (void);
-  void CleanupPrints (void);
   Ptr<Packet> DoAddHeader (Ptr<Packet> p);
-  bool Check (const char *file, int line, std::list<int> expected);
-
-
-  bool m_headerError;
-  bool m_trailerError;
-  std::list<int> m_prints;
-  PacketPrinter m_printer;
 };
 
 PacketMetadataTest::PacketMetadataTest ()
   : Test ("PacketMetadata")
-{
-  m_printer.SetPayloadPrinter (MakeCallback (&PacketMetadataTest::PrintPayload, this));
-  m_printer.SetSeparator ("");
-}
+{}
 
 PacketMetadataTest::~PacketMetadataTest ()
 {}
 
-template <int N>
-void 
-PacketMetadataTest::RegisterHeader (void)
+bool 
+PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...)
 {
-  static bool registered = false;
-  if (!registered)
+  std::list<int> expected;
+  va_list ap;
+  va_start (ap, n);
+  for (uint32_t j = 0; j < n; j++)
     {
-      m_printer.SetHeaderPrinter (MakeCallback (&PacketMetadataTest::PrintHeader<N>, this),
-                                  MakeCallback (&PacketMetadataTest::PrintFragment, this));
-      registered = true;
+      int v = va_arg (ap, int);
+      expected.push_back (v);
     }
-}
+  va_end (ap);
 
-template <int N>
-void 
-PacketMetadataTest::RegisterTrailer (void)
-{
-  static bool registered = false;
-  if (!registered)
+  PacketMetadata::ItemIterator k = p->BeginItem ();
+  std::list<int> got;
+  while (k.HasNext ())
     {
-      m_printer.SetTrailerPrinter (MakeCallback (&PacketMetadataTest::PrintTrailer<N>, this),
-                                   MakeCallback (&PacketMetadataTest::PrintFragment, this));
-      registered = true;
+      struct PacketMetadata::Item item = k.Next ();
+      got.push_back (item.currentSize);
     }
-}
 
-
-template <int N>
-void 
-PacketMetadataTest::PrintHeader (std::ostream &os, uint32_t packetUid, uint32_t size, 
-                                const HistoryHeader<N> *header)
-{
-  if (!header->IsOk ())
-    {
-      m_headerError = true;
-    }
-  m_prints.push_back (N);
-}
-
-template <int N>
-void 
-PacketMetadataTest::PrintTrailer (std::ostream &os, uint32_t packetUid, uint32_t size, 
-                                 const HistoryTrailer<N> *trailer)
-{
-  if (!trailer->IsOk ())
-    {
-      m_trailerError = true;
-    }
-  m_prints.push_back (N);
-}
-void 
-PacketMetadataTest::PrintFragment (std::ostream &os,uint32_t packetUid,
-                                  uint32_t size,std::string & name, 
-                                  struct PacketPrinter::FragmentInformation info)
-{
-  m_prints.push_back (size - (info.end + info.start));
-}
-void 
-PacketMetadataTest::PrintPayload (std::ostream &os,uint32_t packetUid,
-                                 uint32_t size,
-                                 struct PacketPrinter::FragmentInformation info)
-{
-  m_prints.push_back (size - (info.end + info.start));
-}
-
-
-void 
-PacketMetadataTest::CleanupPrints (void)
-{
-  m_prints.clear ();
-}
-
-bool
-PacketMetadataTest::Check (const char *file, int line, std::list<int> expected)
-{
-  if (m_headerError)
-    {
-      Failure () << "PacketMetadata header error. file=" << file 
-                << ", line=" << line << std::endl;
-      return false;
-    }
-  if (m_trailerError)
-    {
-      Failure () << "PacketMetadata trailer error. file=" << file 
-                << ", line=" << line << std::endl;
-      return false;
-    }
-  if (expected.size () != m_prints.size ())
-    {
-      goto error;
-    }
-  for (std::list<int>::iterator i = m_prints.begin (),
+  for (std::list<int>::iterator i = got.begin (),
          j = expected.begin (); 
-       i != m_prints.end (); i++, j++)
+       i != got.end (); i++, j++)
     {
       NS_ASSERT (j != expected.end ());
       if (*j != *i)
@@ -342,8 +247,8 @@ PacketMetadataTest::Check (const char *file, int line, std::list<int> expected)
  error:
   Failure () << "PacketMetadata error. file="<< file 
             << ", line=" << line << ", got:\"";
-  for (std::list<int>::iterator i = m_prints.begin (); 
-       i != m_prints.end (); i++)
+  for (std::list<int>::iterator i = got.begin (); 
+       i != got.end (); i++)
     {
       Failure () << *i << ", ";
     }
@@ -357,60 +262,24 @@ PacketMetadataTest::Check (const char *file, int line, std::list<int> expected)
   return false;
 }
 
-bool 
-PacketMetadataTest::CheckHistory (Ptr<Packet> p, const char *file, int line, uint32_t n, ...)
-{
-  m_headerError = false;
-  m_trailerError = false;
-  std::list<int> expected;
-  va_list ap;
-  va_start (ap, n);
-  for (uint32_t j = 0; j < n; j++)
-    {
-      int v = va_arg (ap, int);
-      expected.push_back (v);
-    }
-  va_end (ap);
-
-  m_printer.PrintForward ();
-  p->Print (Failure (), m_printer);
-  bool ok = Check (file, line, expected);
-  CleanupPrints ();
-  if (!ok)
-    {
-      return false;
-    }
-
-  m_printer.PrintBackward ();
-  p->Print (Failure (), m_printer);
-  expected.reverse ();
-  ok = Check (file, line, expected);
-  CleanupPrints ();
-  return ok;
-}
-
 #define ADD_HEADER(p, n)                        \
   {                                             \
     HistoryHeader<n> header;                    \
-    RegisterHeader<n> ();                       \
     p->AddHeader (header);                      \
   }
 #define ADD_TRAILER(p, n)                       \
   {                                             \
     HistoryTrailer<n> trailer;                  \
-    RegisterTrailer<n> ();                      \
     p->AddTrailer (trailer);                    \
   }
 #define REM_HEADER(p, n)                        \
   {                                             \
     HistoryHeader<n> header;                    \
-    RegisterHeader<n> ();                       \
     p->RemoveHeader (header);                   \
   }
 #define REM_TRAILER(p, n)                       \
   {                                             \
     HistoryTrailer<n> trailer;                  \
-    RegisterTrailer<n> ();                      \
     p->RemoveTrailer (trailer);                 \
   }
 #define CHECK_HISTORY(p, ...)                   \

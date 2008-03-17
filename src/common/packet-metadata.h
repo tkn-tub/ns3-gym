@@ -25,7 +25,7 @@
 #include <vector>
 #include "ns3/callback.h"
 #include "ns3/assert.h"
-#include "packet-printer.h"
+#include "buffer.h"
 
 namespace ns3 {
 
@@ -72,8 +72,54 @@ class Buffer;
  * The variable-size 32 bit integers are stored using the uleb128
  * encoding.
  */
-class PacketMetadata {
+class PacketMetadata 
+{
 public:
+  struct Item 
+  {
+    enum {
+      PAYLOAD,
+      HEADER,
+      TRAILER
+    } type;
+    /* true: this is a fragmented header, trailer, or, payload.
+     * false: this is a whole header, trailer, or, payload.
+     */
+    bool isFragment;
+    /* uid of header or trailer. valid only if isPayload is false.
+     */
+    uint32_t uid;
+    /* size of item. If fragment, size of fragment. Otherwise, 
+     * size of original item. 
+     */
+    uint32_t currentSize;
+    /* how many bytes were trimed from the start of a fragment.
+     * if isFragment is true, this field is zero.
+     */
+    uint32_t currentTrimedFromStart;
+    /* how many bytes were trimed from the end of a fragment.
+     * if isFragment is true, this field is zero.
+     */
+    uint32_t currentTrimedFromEnd;
+    /* an iterator which can be fed to Deserialize. Valid only
+     * if isFragment and isPayload are false.
+     */
+    Buffer::Iterator current;
+  };
+  class ItemIterator 
+  {
+  public:
+    ItemIterator (const PacketMetadata *metadata, Buffer buffer);
+    bool HasNext (void) const;
+    Item Next (void);
+  private:
+    const PacketMetadata *m_metadata;
+    Buffer m_buffer;
+    uint16_t m_current;
+    uint32_t m_offset;
+    bool m_hasReadTail;
+  };
+
   static void Enable (void);
   static void SetOptOne (bool optOne);
 
@@ -100,13 +146,13 @@ public:
 
   uint32_t GetUid (void) const;
 
-  void Print (std::ostream &os, Buffer buffer, PacketPrinter const &printer) const;
-
   uint32_t GetSerializedSize (void) const;
   void Serialize (Buffer::Iterator i, uint32_t size) const;
   uint32_t Deserialize (Buffer::Iterator i);
 
   static void PrintStats (void);
+
+  ItemIterator BeginItem (Buffer buffer) const;
 
 private:
   struct Data {
@@ -192,6 +238,7 @@ private:
   };
 
   friend DataFreeList::~DataFreeList ();
+  friend class ItemIterator;
 
   PacketMetadata ();
   void DoAddHeader (uint32_t uid, uint32_t size);
@@ -219,10 +266,6 @@ private:
   void AppendValueExtra (uint32_t value, uint8_t *buffer);
   inline void Reserve (uint32_t n);
   void ReserveCopy (uint32_t n);
-  uint32_t DoPrint (const struct PacketMetadata::SmallItem *item,
-                    const struct PacketMetadata::ExtraItem *extraItem,
-                    Buffer data, uint32_t offset, const PacketPrinter &printer,
-                    std::ostream &os) const;
   uint32_t GetTotalSize (void) const;
   uint32_t ReadItems (uint16_t current, 
                       struct PacketMetadata::SmallItem *item,

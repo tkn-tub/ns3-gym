@@ -34,8 +34,6 @@
 
 namespace ns3 {
 
-class PacketPrinter;
-
 /**
  * \brief network packets
  *
@@ -287,20 +285,8 @@ public:
    * Trailer::DoPrint methods.
    */
   void Print (std::ostream &os) const;
-  /**
-   * \param os output stream in which the data should be printed.
-   * \param printer the output formatter to use to print
-   *        the content of this packet.
-   *
-   * Iterate over the headers and trailers present in this packet,
-   * either in the "forward" (first header to last trailer) or in
-   * the "backward" (last trailer to first header) direction, as
-   * specified by the PacketPrinter::PrintForward or the
-   * PacketPrinter::PrintBackward methods. For each header, trailer,
-   * or fragment of a header or a trailer, invoke the user-specified
-   * print callback stored in the specified PacketPrinter.
-   */
-  void Print (std::ostream &os, const PacketPrinter &printer) const;
+
+  PacketMetadata::ItemIterator BeginItem (void) const;
 
   /**
    * By default, packets do not keep around enough metadata to

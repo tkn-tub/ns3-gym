@@ -187,13 +187,13 @@ Packet::PrintTags (std::ostream &os) const
 void 
 Packet::Print (std::ostream &os) const
 {
-  m_metadata.Print (os, m_buffer, PacketPrinter ());
+  //XXX
 }
 
-void 
-Packet::Print (std::ostream &os, const PacketPrinter &printer) const
+PacketMetadata::ItemIterator 
+Packet::BeginItem (void) const
 {
-  m_metadata.Print (os, m_buffer, printer);
+  return m_metadata.BeginItem (m_buffer);
 }
 
 void
