@@ -24,31 +24,9 @@
 
 namespace ns3 {
 
-NS_HEADER_ENSURE_REGISTERED (UdpHeader);
 NS_OBJECT_ENSURE_REGISTERED (UdpHeader);
 
 bool UdpHeader::m_calcChecksum = false;
-
-TypeId 
-UdpHeader::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::UdpHeader")
-    .SetParent<Header> ()
-    ;
-  return tid;
-}
-TypeId 
-UdpHeader::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-UdpHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<UdpHeader> ("UdpHeader.ns3");
-  return uid;
-}
 
 /* The magic values below are used only for debugging.
  * They can be used to easily detect memory corruption
@@ -115,12 +93,19 @@ UdpHeader::InitializeChecksum (Ipv4Address source,
   m_initialChecksum = Ipv4ChecksumCalculate (0, buf, 12);
 }
 
-std::string 
-UdpHeader::GetName (void) const
+TypeId 
+UdpHeader::GetTypeId (void)
 {
-  return "UDP";
+  static TypeId tid = TypeId ("ns3::UdpHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
 }
-
+TypeId 
+UdpHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 void 
 UdpHeader::Print (std::ostream &os) const
 {

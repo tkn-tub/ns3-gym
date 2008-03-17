@@ -16,4 +16,10 @@ Header::GetTypeId (void)
   return tid;
 }
 
+std::ostream & operator << (std::ostream &os, const Header &header)
+{
+  header.Print (os);
+  return os;
+}
+
 } // namespace ns3

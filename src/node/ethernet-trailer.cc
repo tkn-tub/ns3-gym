@@ -28,31 +28,9 @@ NS_LOG_COMPONENT_DEFINE ("EthernetTrailer");
 
 namespace ns3 {
 
-NS_TRAILER_ENSURE_REGISTERED (EthernetTrailer);
 NS_OBJECT_ENSURE_REGISTERED (EthernetTrailer);
 
 bool EthernetTrailer::m_calcFcs = false;
-
-TypeId 
-EthernetTrailer::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::EthernetTrailer")
-    .SetParent<Trailer> ()
-    ;
-  return tid;
-}
-TypeId 
-EthernetTrailer::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-EthernetTrailer::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<EthernetTrailer> ("EthernetTrailer.ns3");
-  return uid;
-}
 
 EthernetTrailer::EthernetTrailer ()
 {
@@ -76,7 +54,9 @@ EthernetTrailer::CheckFcs (Ptr<Packet> p) const
   if (!m_calcFcs)
     {
       return true;
-    } else {
+    } 
+  else 
+    {
       NS_LOG_WARN ("FCS calculation is not yet enabled");
       return false;
     }
@@ -105,12 +85,20 @@ EthernetTrailer::GetTrailerSize (void) const
 {
   return GetSerializedSize();
 }
-std::string
-EthernetTrailer::GetName (void) const
-{
-  return "ETHERNET";
-}
 
+TypeId 
+EthernetTrailer::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::EthernetTrailer")
+    .SetParent<Trailer> ()
+    ;
+  return tid;
+}
+TypeId 
+EthernetTrailer::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 void 
 EthernetTrailer::Print (std::ostream &os) const
 {

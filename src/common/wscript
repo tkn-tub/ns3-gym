@@ -4,7 +4,6 @@ def build(bld):
     common = bld.create_ns3_module('common', ['core', 'simulator'])
     common.source = [
         'buffer.cc',
-        'chunk-registry.cc',
         'packet-metadata.cc',
         'packet-metadata-test.cc',
         'packet.cc',
@@ -21,7 +20,6 @@ def build(bld):
     headers.module = 'common'
     headers.source = [
         'buffer.h',
-        'chunk-registry.h',
         'header.h',
         'trailer.h',
         'tags.h',

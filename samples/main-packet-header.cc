@@ -11,7 +11,6 @@ using namespace ns3;
 class MyHeader : public Header 
 {
 public:
-  static uint32_t GetUid (void);
 
   MyHeader ();
   virtual ~MyHeader ();
@@ -21,8 +20,7 @@ public:
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
+  virtual void Print (std::ostream &os) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
   virtual uint32_t GetSerializedSize (void) const;
@@ -52,24 +50,6 @@ MyHeader::GetInstanceTypeId (void) const
   return GetTypeId ();
 }
 
-uint32_t
-MyHeader::GetUid (void)
-{
-  // This string is used by the internals of the packet
-  // code to keep track of the packet metadata.
-  // You need to make sure that this string is absolutely
-  // unique. The code will detect any duplicate string.
-  static uint32_t uid = AllocateUid<MyHeader> ("MyHeader.test.nsnam.org");
-  return uid;
-}
-
-std::string 
-MyHeader::GetName (void) const
-{
-  // This string is used to identify the type of 
-  // my header by the packet printing routines.
-  return "MYHEADER";
-}
 void 
 MyHeader::Print (std::ostream &os) const
 {

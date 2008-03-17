@@ -74,17 +74,6 @@ MgtProbeRequestHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-uint32_t
-MgtProbeRequestHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<MgtProbeRequestHeader> ("MgtProbeRequestHeader.ns3.inria.fr");
-  return uid;
-}
-std::string
-MgtProbeRequestHeader::GetName (void) const
-{
-  return "PROBEREQ";
-}
 void 
 MgtProbeRequestHeader::Print (std::ostream &os) const
 {
@@ -162,17 +151,6 @@ TypeId
 MgtProbeResponseHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
-}
-uint32_t
-MgtProbeResponseHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<MgtProbeResponseHeader> ("MgtProbeResponseHeader.ns3.inria.fr");
-  return uid;
-}
-std::string
-MgtProbeResponseHeader::GetName (void) const
-{
-  return "PROBERESP";
 }
 uint32_t
 MgtProbeResponseHeader::GetSerializedSize (void) const
@@ -283,17 +261,6 @@ MgtAssocRequestHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-uint32_t
-MgtAssocRequestHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<MgtAssocRequestHeader> ("MgtAssocRequestHeader.ns3.inria.fr");
-  return uid;
-}
-std::string
-MgtAssocRequestHeader::GetName (void) const
-{
-  return "ASSOCREQ";
-}
 uint32_t 
 MgtAssocRequestHeader::GetSerializedSize (void) const
 {
@@ -374,17 +341,6 @@ TypeId
 MgtAssocResponseHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
-}
-uint32_t
-MgtAssocResponseHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<MgtAssocResponseHeader> ("MgtAssocResponseHeader.ns3.inria.fr");
-  return uid;
-}
-std::string
-MgtAssocResponseHeader::GetName (void) const
-{
-  return "ASSOCRESP";
 }
 uint32_t
 MgtAssocResponseHeader::GetSerializedSize (void) const

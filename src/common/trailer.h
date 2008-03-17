@@ -23,30 +23,9 @@
 #define TRAILER_H
 
 #include "ns3/object-base.h"
-#include "chunk-registry.h"
 #include "buffer.h"
 #include <stdint.h>
 
-/**
- * \relates ns3::Trailer
- * \brief this macro should be instantiated exactly once for each
- *        new type of Trailer
- *
- * This macro will ensure that your new Trailer type is registered
- * within the packet trailer registry. In most cases, this macro
- * is not really needed but, for safety, please, use it all the
- * time.
- *
- * Note: This macro is _absolutely_ needed if you try to run a
- * distributed simulation.
- */
-#define NS_TRAILER_ENSURE_REGISTERED(x)          \
-static class thisisaveryverylongclassname ##x    \
-{                                                \
- public:                                         \
-  thisisaveryverylongclassname ##x ()            \
-    { uint32_t uid; uid = x::GetUid ();}         \
-} g_thisisanotherveryveryverylongname ##x;
 
 namespace ns3 {
 
@@ -58,22 +37,6 @@ namespace ns3 {
  * implement the following public methods:
  *   - a default constructor: is used by the internal implementation
  *     if the Packet class.
- *   - a static method named GetUid: is used to uniquely identify
- *     the type of each trailer. This method shall return a unique
- *     integer allocated with Trailer::AllocateUid.
- *   - a method named Print: is used by Packet::Print to print the 
- *     content of a trailer as ascii data to a c++ output stream.
- *     Although the trailer is free to format its output as it
- *     wishes, it is recommended to follow a few rules to integrate
- *     with the packet pretty printer: start with flags, small field 
- *     values located between a pair of parens. Values should be separated 
- *     by whitespace. Follow the parens with the important fields, 
- *     separated by whitespace.
- *     i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
- *   - a method named GetName: is used by Packet::Print to print
- *     trailer fragments. This method should return a user-readable
- *     single word as all capitalized letters.
- *
  */
 class Trailer : public ObjectBase
 {
@@ -116,22 +79,21 @@ public:
    * Buffer::Iterator::Prev prio to actually reading any data.
    */
   virtual uint32_t Deserialize (Buffer::Iterator end) = 0;
-protected:
-  template <typename T>
-  static uint32_t AllocateUid (std::string uidString);
+  /**
+   * This method is used by Packet::Print to print the 
+   * content of a trailer as ascii data to a c++ output stream.
+   * Although the trailer is free to format its output as it
+   * wishes, it is recommended to follow a few rules to integrate
+   * with the packet pretty printer: start with flags, small field 
+   * values located between a pair of parens. Values should be separated 
+   * by whitespace. Follow the parens with the important fields, 
+   * separated by whitespace.
+   * i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
+   */
+  virtual void Print (std::ostream &os) const = 0;
 };
 
-} // namespace ns3
-
-namespace ns3 {
-
-template <typename T>
-uint32_t 
-Trailer::AllocateUid (std::string uidString)
-{
-  return ChunkRegistry::RegisterTrailer<T> (uidString);
-}
-
+std::ostream & operator << (std::ostream &os, const Trailer &trailer);
 
 } // namespace ns3
 

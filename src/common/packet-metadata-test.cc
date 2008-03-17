@@ -34,19 +34,29 @@ template <int N>
 class HistoryHeader : public Header
 {
 public:
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  static uint32_t GetUid (void);
   HistoryHeader ();
   bool IsOk (void) const;
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
   bool m_ok;
 };
+
+template <int N>
+HistoryHeader<N>::HistoryHeader ()
+  : m_ok (false)
+{}
+
+template <int N>
+bool 
+HistoryHeader<N>::IsOk (void) const
+{
+  return m_ok;
+}
 
 template <int N>
 TypeId
@@ -66,38 +76,6 @@ HistoryHeader<N>::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-
-template <int N>
-uint32_t
-HistoryHeader<N>::GetUid (void)
-{
-  std::ostringstream oss;
-  oss << N << "HistoryHeader.ns3";
-  static uint32_t uid = AllocateUid<HistoryHeader<N> > (oss.str());
-  return uid;
-}
-
-template <int N>
-HistoryHeader<N>::HistoryHeader ()
-  : m_ok (false)
-{}
-
-template <int N>
-bool 
-HistoryHeader<N>::IsOk (void) const
-{
-  return m_ok;
-}
-
-template <int N>
-std::string 
-HistoryHeader<N>::GetName (void) const
-{
-  std::ostringstream oss;
-  oss << N;
-  return oss.str ();
-}
-
 template <int N>
 void 
 HistoryHeader<N>::Print (std::ostream &os) const
@@ -135,13 +113,12 @@ template <int N>
 class HistoryTrailer : public Trailer
 {
 public:
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  static uint32_t GetUid (void);
   HistoryTrailer ();
   bool IsOk (void) const;
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
+
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
@@ -149,6 +126,17 @@ private:
   bool m_ok;
 };
 
+template <int N>
+HistoryTrailer<N>::HistoryTrailer ()
+  : m_ok (false)
+{}
+
+template <int N>
+bool
+HistoryTrailer<N>::IsOk (void) const
+{
+  return m_ok;
+}
 
 template <int N>
 TypeId
@@ -167,38 +155,6 @@ TypeId
 HistoryTrailer<N>::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
-}
-
-template <int N>
-uint32_t
-HistoryTrailer<N>::GetUid (void)
-{
-  std::ostringstream oss;
-  oss << N << "HistoryTrailer.ns3";
-  static uint32_t uid = AllocateUid<HistoryTrailer<N> > (oss.str ());
-  return uid;
-}
-
-
-template <int N>
-HistoryTrailer<N>::HistoryTrailer ()
-  : m_ok (false)
-{}
-
-template <int N>
-bool
-HistoryTrailer<N>::IsOk (void) const
-{
-  return m_ok;
-}
-
-template <int N>
-std::string 
-HistoryTrailer<N>::GetName (void) const
-{
-  std::ostringstream oss;
-  oss << N;
-  return oss.str ();
 }
 template <int N>
 void 

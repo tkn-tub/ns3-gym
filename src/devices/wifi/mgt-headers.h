@@ -46,9 +46,7 @@ public:
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
-  static uint32_t GetUid (void);
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
@@ -73,9 +71,7 @@ public:
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
-  static uint32_t GetUid (void);
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
@@ -98,9 +94,7 @@ public:
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
-  static uint32_t GetUid (void);
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
@@ -125,9 +119,7 @@ public:
 
   static TypeId GetTypeId (void);
   virtual TypeId GetInstanceTypeId (void) const;
-  static uint32_t GetUid (void);
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
+  virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);

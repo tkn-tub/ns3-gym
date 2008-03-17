@@ -44,19 +44,6 @@ WifiMacTrailer::GetInstanceTypeId (void) const
   return GetTypeId ();
 }
 
-uint32_t
-WifiMacTrailer::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<WifiMacTrailer> ("WifiMacTrailer.ns3.inria.fr");
-  return uid;
-}
-
-std::string
-WifiMacTrailer::GetName (void) const
-{
-  return "802.11 FCS";
-}
-
 void 
 WifiMacTrailer::Print (std::ostream &os) const
 {}

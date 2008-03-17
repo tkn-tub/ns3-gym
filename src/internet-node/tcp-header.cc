@@ -26,31 +26,9 @@
 
 namespace ns3 {
 
-NS_HEADER_ENSURE_REGISTERED (TcpHeader);
 NS_OBJECT_ENSURE_REGISTERED (TcpHeader);
 
 bool TcpHeader::m_calcChecksum = false;
-
-TypeId 
-TcpHeader::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::TcpHeader")
-    .SetParent<Header> ()
-    ;
-  return tid;
-}
-TypeId 
-TcpHeader::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-TcpHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<TcpHeader> ("TcpHeader.ns3");
-  return uid;
-}
 
 TcpHeader::TcpHeader ()
   : m_sourcePort (0),
@@ -156,12 +134,19 @@ TcpHeader::InitializeChecksum (Ipv4Address source,
 //XXX requires peeking into IP to get length of the TCP segment
 }
 
-std::string 
-TcpHeader::GetName (void) const
+TypeId 
+TcpHeader::GetTypeId (void)
 {
-  return "TCP";
+  static TypeId tid = TypeId ("ns3::TcpHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
 }
-
+TypeId 
+TcpHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 void TcpHeader::Print (std::ostream &os)  const
 {
   //XXX

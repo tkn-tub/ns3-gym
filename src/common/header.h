@@ -22,30 +22,9 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-#include "chunk-registry.h"
 #include "ns3/object-base.h"
-
-/**
- * \relates ns3::Header
- * \brief this macro should be instantiated exactly once for each
- *        new type of Header
- *
- * This macro will ensure that your new Header type is registered
- * within the packet header registry. In most cases, this macro
- * is not really needed but, for safety, please, use it all the
- * time.
- *
- * Note: This macro is _absolutely_ needed if you try to run a
- * distributed simulation.
- */
-#define NS_HEADER_ENSURE_REGISTERED(x)         \
-static class thisisaveryverylongclassname ##x  \
-{                                              \
- public:                                       \
-  thisisaveryverylongclassname ##x ()          \
-    { uint32_t uid; uid = x::GetUid ();}       \
-} g_thisisanotherveryveryverylongname ## x;
-
+#include "buffer.h"
+#include <stdint.h>
 
 namespace ns3 {
 
@@ -57,21 +36,6 @@ namespace ns3 {
  * implement the following public methods:
  *   - a default constructor: is used by the internal implementation
  *     if the Packet class.
- *   - a static method named GetUid: is used to uniquely identify
- *     the type of each header. This method shall return a unique
- *     integer allocated with Header::AllocateUid.
- *   - a method named Print: is used by Packet::Print to print the 
- *     content of a header as ascii data to a c++ output stream.
- *     Although the header is free to format its output as it
- *     wishes, it is recommended to follow a few rules to integrate
- *     with the packet pretty printer: start with flags, small field 
- *     values located between a pair of parens. Values should be separated 
- *     by whitespace. Follow the parens with the important fields, 
- *     separated by whitespace.
- *     i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
- *   - a method named GetName: is used by Packet::Print to print
- *     header fragments. This method should return a user-readable
- *     single word as all capitalized letters.
  *
  * Sample code which shows how to create a new type of Header, and how to use it, 
  * is shown in the sample file samples/main-packet-header.cc
@@ -113,21 +77,21 @@ public:
    * networks.
    */
   virtual uint32_t Deserialize (Buffer::Iterator start) = 0;
-protected:
-  template <typename T>
-  static uint32_t AllocateUid (std::string uuid);
+  /**
+   * This method is used by Packet::Print to print the 
+   * content of a trailer as ascii data to a c++ output stream.
+   * Although the trailer is free to format its output as it
+   * wishes, it is recommended to follow a few rules to integrate
+   * with the packet pretty printer: start with flags, small field 
+   * values located between a pair of parens. Values should be separated 
+   * by whitespace. Follow the parens with the important fields, 
+   * separated by whitespace.
+   * i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
+   */
+  virtual void Print (std::ostream &os) const = 0;
 };
 
-} // namespace ns3
-
-namespace ns3 {
-
-template <typename T>
-uint32_t 
-Header::AllocateUid (std::string uuid)
-{
-  return ChunkRegistry::RegisterHeader<T> (uuid);
-}
+std::ostream & operator << (std::ostream &os, const Header &header);
 
 } // namespace ns3
 

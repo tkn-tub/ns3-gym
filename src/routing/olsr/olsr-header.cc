@@ -116,14 +116,6 @@ PacketHeader::GetInstanceTypeId (void) const
   return GetTypeId ();
 }
 
-uint32_t
-PacketHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<PacketHeader>
-    ("PacketHeader.nsnam.org");
-  return uid;
-}
-
 uint32_t 
 PacketHeader::GetSerializedSize (void) const
 {
@@ -177,14 +169,6 @@ TypeId
 MessageHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
-}
-
-uint32_t
-MessageHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<MessageHeader>
-    ("MessageHeader.nsnam.org");
-  return uid;
 }
 
 uint32_t

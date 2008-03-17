@@ -39,10 +39,6 @@ class Packet;
 class EthernetTrailer : public Trailer 
 {
 public:
-  static TypeId GetTypeId (void);
-  virtual TypeId GetInstanceTypeId (void) const;
-  static uint32_t GetUid (void);
-
   /**
    * \brief Construct a null ethernet trailer
    */
@@ -85,11 +81,12 @@ public:
    */ 
   uint32_t GetTrailerSize() const;
 
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator end) const;
-  uint32_t Deserialize (Buffer::Iterator end);
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator end) const;
+  virtual uint32_t Deserialize (Buffer::Iterator end);
 private:
 
   /**

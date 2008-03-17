@@ -16,4 +16,10 @@ Trailer::GetTypeId (void)
   return tid;
 }
 
+std::ostream & operator << (std::ostream &os, const Trailer &trailer)
+{
+  trailer.Print (os);
+  return os;
+}
+
 } // namespace ns3

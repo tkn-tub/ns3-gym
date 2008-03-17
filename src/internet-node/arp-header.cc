@@ -25,29 +25,7 @@
 
 namespace ns3 {
 
-NS_HEADER_ENSURE_REGISTERED (ArpHeader);
 NS_OBJECT_ENSURE_REGISTERED (ArpHeader);
-
-TypeId 
-ArpHeader::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::ArpHeader")
-    .SetParent<Header> ()
-    ;
-  return tid;
-}
-TypeId 
-ArpHeader::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-ArpHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<ArpHeader> ("ArpHeader.ns3");
-  return uid;
-}
 
 void 
 ArpHeader::SetRequest (Address sourceHardwareAddress,
@@ -104,12 +82,20 @@ ArpHeader::GetDestinationIpv4Address (void)
   return m_ipv4Dest;
 }
 
-std::string 
-ArpHeader::GetName (void) const
-{
-  return "ARP";
-}
 
+TypeId 
+ArpHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::ArpHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+TypeId 
+ArpHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 void 
 ArpHeader::Print (std::ostream &os) const
 {

@@ -25,29 +25,7 @@
 
 namespace ns3 {
 
-NS_HEADER_ENSURE_REGISTERED (LlcSnapHeader);
 NS_OBJECT_ENSURE_REGISTERED (LlcSnapHeader);
-
-TypeId 
-LlcSnapHeader::GetTypeId (void)
-{
-  static TypeId tid = TypeId ("ns3::LlcSnapHeader")
-    .SetParent<Header> ()
-    ;
-  return tid;
-}
-TypeId 
-LlcSnapHeader::GetInstanceTypeId (void) const
-{
-  return GetTypeId ();
-}
-
-uint32_t
-LlcSnapHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<LlcSnapHeader> ("LlcSnapHeader.ns3");
-  return uid;
-}
 
 LlcSnapHeader::LlcSnapHeader ()
 {}
@@ -69,12 +47,19 @@ LlcSnapHeader::GetSerializedSize (void) const
   return 1 + 1 + 1 + 3 + 2;
 }
 
-std::string
-LlcSnapHeader::GetName (void) const
+TypeId 
+LlcSnapHeader::GetTypeId (void)
 {
-  return "LLCSNAP";
+  static TypeId tid = TypeId ("ns3::LlcSnapHeader")
+    .SetParent<Header> ()
+    ;
+  return tid;
 }
-
+TypeId 
+LlcSnapHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 void 
 LlcSnapHeader::Print (std::ostream &os) const
 {

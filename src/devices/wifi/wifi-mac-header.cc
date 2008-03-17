@@ -781,18 +781,6 @@ WifiMacHeader::GetInstanceTypeId (void) const
 {
   return GetTypeId ();
 }
-uint32_t
-WifiMacHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<WifiMacHeader> ("WifiMacHeader.ns3.inria.fr");
-  return uid;
-}
-
-std::string
-WifiMacHeader::GetName (void) const
-{
-  return "802.11";
-}
 
 void 
 WifiMacHeader::PrintFrameControl (std::ostream &os) const
