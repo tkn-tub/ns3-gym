@@ -479,7 +479,7 @@ bool
 TypeId::IsChildOf (TypeId other) const
 {
   TypeId tmp = *this;
-  while (tmp != other && tmp != tmp)
+  while (tmp != other && tmp != tmp.GetParent ())
     {
       tmp = tmp.GetParent ();
     }

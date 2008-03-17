@@ -24,7 +24,8 @@
 #include "ns3/log.h"
 #include "packet-metadata.h"
 #include "buffer.h"
-#include "chunk-registry.h"
+#include "header.h"
+#include "trailer.h"
 
 NS_LOG_COMPONENT_DEFINE ("PacketMetadata");
 
@@ -696,6 +697,12 @@ PacketMetadata::CreateFragment (uint32_t start, uint32_t end) const
 }
 
 void 
+PacketMetadata::AddHeader (const Header &header, uint32_t size)
+{
+  uint32_t uid = header.GetInstanceTypeId ().GetUid () << 1;
+  DoAddHeader (uid, size);
+}
+void
 PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
 {
   if (!m_enable)
@@ -703,7 +710,7 @@ PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
       m_metadataSkipped = true;
       return;
     }
-  NS_LOG_PARAMS ("(uid=" << uid << ", size=" << size << ")");
+  NS_LOG_PARAMS ("uid=" << uid << "size=" << size << "");
 
   struct PacketMetadata::SmallItem item;
   item.next = m_head;
@@ -716,8 +723,9 @@ PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
   UpdateHead (written);
 }
 void 
-PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
+PacketMetadata::RemoveHeader (const Header &header, uint32_t size)
 {
+  uint32_t uid = header.GetInstanceTypeId ().GetUid () << 1;
   if (!m_enable) 
     {
       m_metadataSkipped = true;
@@ -753,13 +761,15 @@ PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
     }
 }
 void 
-PacketMetadata::DoAddTrailer (uint32_t uid, uint32_t size)
+PacketMetadata::AddTrailer (const Trailer &trailer, uint32_t size)
 {
+  uint32_t uid = trailer.GetInstanceTypeId ().GetUid () << 1;
   if (!m_enable)
     {
       m_metadataSkipped = true;
       return;
     }
+  NS_LOG_PARAMS ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   item.next = 0xffff;
   item.prev = m_tail;
@@ -771,13 +781,15 @@ PacketMetadata::DoAddTrailer (uint32_t uid, uint32_t size)
   UpdateTail (written);
 }
 void 
-PacketMetadata::DoRemoveTrailer (uint32_t uid, uint32_t size)
+PacketMetadata::RemoveTrailer (const Trailer &trailer, uint32_t size)
 {
+  uint32_t uid = trailer.GetInstanceTypeId ().GetUid () << 1;
   if (!m_enable) 
     {
       m_metadataSkipped = true;
       return;
     }
+  NS_LOG_PARAMS ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
   uint32_t read = ReadItems (m_tail, &item, &extraItem);
@@ -1065,11 +1077,13 @@ PacketMetadata::ItemIterator::Next (void)
     {
       item.isFragment = false;
     }
+  TypeId tid;
+  tid.SetUid (uid);
   if (uid == 0)
     {
       item.type = PacketMetadata::Item::PAYLOAD;
     }
-  else if (ChunkRegistry::IsHeader (uid))
+  else if (tid.IsChildOf (Header::GetTypeId ()))
     {
       item.type = PacketMetadata::Item::HEADER;
       if (!item.isFragment)
@@ -1079,7 +1093,7 @@ PacketMetadata::ItemIterator::Next (void)
           item.current = j;
         }
     }
-  else if (ChunkRegistry::IsTrailer (uid))
+  else if (tid.IsChildOf (Trailer::GetTypeId ()))
     {
       item.type = PacketMetadata::Item::TRAILER;
       if (!item.isFragment)
@@ -1119,7 +1133,9 @@ PacketMetadata::GetSerializedSize (void) const
         }
       else
         {
-          totalSize += 4 + ChunkRegistry::GetUidStringFromUid (uid).size ();
+          TypeId tid;
+          tid.SetUid (uid);
+          totalSize += 4 + tid.GetName ().size ();
         }
       totalSize += 1 + 4 + 2 + 4 + 4 + 4;
       if (current == m_tail)
@@ -1150,7 +1166,9 @@ PacketMetadata::Serialize (Buffer::Iterator i, uint32_t size) const
       uint32_t uid = (item.typeUid & 0xfffffffe) >> 1;
       if (uid != 0)
         {
-          std::string uidString = ChunkRegistry::GetUidStringFromUid (uid);
+          TypeId tid;
+          tid.SetUid (uid);
+          std::string uidString = tid.GetName ();
           i.WriteU32 (uidString.size ());
           bytesWritten += 4;
           i.Write ((uint8_t *)uidString.c_str (), uidString.size ());
@@ -1210,7 +1228,8 @@ PacketMetadata::Deserialize (Buffer::Iterator i)
               uidString.push_back (i.ReadU8 ());
               size --;
             }
-          uid = ChunkRegistry::GetUidFromUidString (uidString);
+          TypeId tid = TypeId::LookupByName (uidString);
+          uid = tid.GetUid ();
         }
       uint8_t isBig = i.ReadU8 ();
       size --;

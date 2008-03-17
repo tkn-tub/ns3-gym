@@ -31,6 +31,8 @@ namespace ns3 {
 
 class Chunk;
 class Buffer;
+class Header;
+class Trailer;
 
 /**
  * \internal
@@ -128,15 +130,11 @@ public:
   inline PacketMetadata &operator = (PacketMetadata const& o);
   inline ~PacketMetadata ();
 
-  template <typename T>
-  void AddHeader (T const &header, uint32_t size);
-  template <typename T>
-  void RemoveHeader (T const &header, uint32_t size);
+  void AddHeader (Header const &header, uint32_t size);
+  void RemoveHeader (Header const &header, uint32_t size);
 
-  template <typename T>
-  void AddTrailer (T const &trailer, uint32_t size);
-  template <typename T>
-  void RemoveTrailer (T const &trailer, uint32_t size);
+  void AddTrailer (Trailer const &trailer, uint32_t size);
+  void RemoveTrailer (Trailer const &trailer, uint32_t size);
 
   PacketMetadata CreateFragment (uint32_t start, uint32_t end) const;
   void AddAtEnd (PacketMetadata const&o);
@@ -241,10 +239,6 @@ private:
   friend class ItemIterator;
 
   PacketMetadata ();
-  void DoAddHeader (uint32_t uid, uint32_t size);
-  void DoRemoveHeader (uint32_t uid, uint32_t size);
-  void DoAddTrailer (uint32_t uid, uint32_t size);
-  void DoRemoveTrailer (uint32_t uid, uint32_t size);
 
   inline uint16_t AddSmall (const PacketMetadata::SmallItem *item);
   uint16_t AddBig (uint32_t head, uint32_t tail,
@@ -270,6 +264,7 @@ private:
   uint32_t ReadItems (uint16_t current, 
                       struct PacketMetadata::SmallItem *item,
                       struct PacketMetadata::ExtraItem *extraItem) const;
+  void DoAddHeader (uint32_t uid, uint32_t size);
 
 
   static struct PacketMetadata::Data *Create (uint32_t size);
@@ -303,33 +298,6 @@ private:
 }; // namespace ns3
 
 namespace ns3 {
-
-template <typename T>
-void 
-PacketMetadata::AddHeader (T const &header, uint32_t size)
-{
-  DoAddHeader (T::GetUid () << 1, size);
-}
-
-template <typename T>
-void 
-PacketMetadata::RemoveHeader (T const &header, uint32_t size)
-{
-  DoRemoveHeader (T::GetUid () << 1, size);
-}
-template <typename T>
-void 
-PacketMetadata::AddTrailer (T const &trailer, uint32_t size)
-{
-  DoAddTrailer (T::GetUid () << 1, size);
-}
-template <typename T>
-void 
-PacketMetadata::RemoveTrailer (T const &trailer, uint32_t size)
-{
-  DoRemoveTrailer (T::GetUid () << 1, size);
-}
-
 
 PacketMetadata::PacketMetadata (uint32_t uid, uint32_t size)
   : m_data (m_data = PacketMetadata::Create (10)),
