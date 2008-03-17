@@ -25,16 +25,13 @@
 #include <string>
 #include <vector>
 #include "ptr.h"
-#include "callback.h"
 #include "attribute.h"
 #include "object-base.h"
-#include "attribute-helper.h"
 #include "attribute-list.h"
 
 
 namespace ns3 {
 
-class CallbackBase;
 class Object;
 class AttributeAccessor;
 class AttributeValue;
@@ -171,32 +168,6 @@ private:
 } // namespace ns3
 
 namespace ns3 {
-
-/*************************************************************************
- *   The TypeId implementation which depends on templates
- *************************************************************************/
-
-template <typename T>
-TypeId 
-TypeId::SetParent (void)
-{
-  return SetParent (T::GetTypeId ());
-}
-
-template <typename T>
-TypeId 
-TypeId::AddConstructor (void)
-{
-  struct Maker {
-    static ObjectBase * Create () {
-      ObjectBase * base = new T ();
-      return base;
-    }
-  };
-  Callback<ObjectBase *> cb = MakeCallback (&Maker::Create);
-  DoAddConstructor (cb);
-  return *this;
-}
 
 /*************************************************************************
  *   The Object implementation which depends on templates

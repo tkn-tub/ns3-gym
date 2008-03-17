@@ -289,4 +289,34 @@ ATTRIBUTE_HELPER_HEADER_2 (TypeId);
 
 } // namespace ns3 
 
+namespace ns3 {
+
+/*************************************************************************
+ *   The TypeId implementation which depends on templates
+ *************************************************************************/
+
+template <typename T>
+TypeId 
+TypeId::SetParent (void)
+{
+  return SetParent (T::GetTypeId ());
+}
+
+template <typename T>
+TypeId 
+TypeId::AddConstructor (void)
+{
+  struct Maker {
+    static ObjectBase * Create () {
+      ObjectBase * base = new T ();
+      return base;
+    }
+  };
+  Callback<ObjectBase *> cb = MakeCallback (&Maker::Create);
+  DoAddConstructor (cb);
+  return *this;
+}
+
+} // namespace ns3
+
 #endif /* TYPE_ID_H */
