@@ -664,6 +664,17 @@ TypeId::LookupTraceSourceByName (std::string name) const
   return 0;
 }
 
+uint16_t 
+TypeId::GetUid (void) const
+{
+  return m_tid;
+}
+void 
+TypeId::SetUid (uint16_t tid)
+{
+  m_tid = tid;
+}
+
 std::ostream & operator << (std::ostream &os, TypeId tid)
 {
   os << tid.GetName ();

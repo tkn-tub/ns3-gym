@@ -258,6 +258,8 @@ public:
   bool LookupAttributeByName (std::string name, struct AttributeInfo *info) const;
   Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
 
+  uint16_t GetUid (void) const;
+  void SetUid (uint16_t tid);
 
   // construct an invalid TypeId.
   TypeId ();
