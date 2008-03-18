@@ -90,16 +90,21 @@ public:
    */
   TypeId GetParent (void) const;
 
+  /**
+   * \param other a parent TypeId
+   * \returns true if the input TypeId is really a parent
+   *          of this TypeId, false otherwise.
+   *
+   * Calling this method is roughly similar to calling dynamic_cast
+   * except that you do not need object instances: you can do the check
+   * with TypeId instances instead.
+   */
   bool IsChildOf (TypeId other) const;
 
   /**
    * \returns the name of the group associated to this TypeId.
    */
   std::string GetGroupName (void) const;
-  /**
-   * \returns the fully-qualified C++ typename of this TypeId.
-   */
-  std::string GetTypeName (void) const;
 
   /**
    * \returns the name of this interface.
@@ -121,6 +126,11 @@ public:
    *          index is i.
    */
   std::string GetAttributeName (uint32_t i) const;
+  /**
+   * \param i index into attribute array.
+   * \returns the help text associated to the attribute whose
+   *          index is i.
+   */
   std::string GetAttributeHelp (uint32_t i) const;
   /**
    * \param i index into attribute array
@@ -129,20 +139,62 @@ public:
    */
   std::string GetAttributeFullName (uint32_t i) const;
 
+  /**
+   * \param i index into attribute array.
+   * \returns the value with which the associated attribute 
+   *          is initialized.
+   */
   Attribute GetAttributeInitialValue (uint32_t i) const;
+  /**
+   * \param i index into attribute array.
+   * \returns the flags associated to the requested attribute.
+   */
   uint32_t GetAttributeFlags (uint32_t i) const;
+  /**
+   * \param i index into attribute array.
+   * \returns the checker associated to the requested attribute.
+   */
   Ptr<const AttributeChecker> GetAttributeChecker (uint32_t i) const;
-
-
-  uint32_t GetTraceSourceN (void) const;
-  std::string GetTraceSourceName (uint32_t i) const;
-  std::string GetTraceSourceHelp (uint32_t i) const;
-  Ptr<const TraceSourceAccessor> GetTraceSourceAccessor (uint32_t i) const;
+  /**
+   * \param i index into attribute array.
+   * \returns the accessor associated to the requested attribute.
+   */
   Ptr<const AttributeAccessor> GetAttributeAccessor (uint32_t i) const;
 
+  /**
+   * \returns a callback which can be used to instanciate an object
+   *          of this type.
+   */
   Callback<ObjectBase *> GetConstructor (void) const;
 
+  /**
+   * \returns true if this TypeId should be hidden from the user, 
+   *          false otherwise.
+   */
   bool MustHideFromDocumentation (void) const;
+
+
+  /**
+   * \returns the number of trace sources defined in this TypeId.
+   */
+  uint32_t GetTraceSourceN (void) const;
+  /**
+   * \param i index into trace source array.
+   * \returns the name of the requested trace source.
+   */
+  std::string GetTraceSourceName (uint32_t i) const;
+  /**
+   * \param i index into trace source array.
+   * \returns the help text of the requested trace source.
+   */
+  std::string GetTraceSourceHelp (uint32_t i) const;
+  /**
+   * \param i index into trace source array.
+   * \returns the accessor used to get access to the requested
+   *          trace source.
+   */
+  Ptr<const TraceSourceAccessor> GetTraceSourceAccessor (uint32_t i) const;
+
 
   /**
    * \param tid the TypeId of the base class.
@@ -170,12 +222,6 @@ public:
    * scheme.
    */
   TypeId SetGroupName (std::string groupName);
-  
-  /**
-   * \param typeName the fully-qualified C++ typename of this TypeId.
-   * \returns this TypeId instance.
-   */
-  TypeId SetTypeName (std::string typeName);
 
   /**
    * \returns this TypeId instance

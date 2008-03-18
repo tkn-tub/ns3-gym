@@ -31,7 +31,8 @@ class ObjectBase;
 /**
  * \brief control access to objects' trace sources
  *
- * This class abstracts the kind of trace source to which we want to connect.
+ * This class abstracts the kind of trace source to which we want to connect
+ * and provides services to Connect and Disconnect a sink to a trace source.
  */
 class TraceSourceAccessor
 {

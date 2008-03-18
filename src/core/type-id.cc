@@ -16,14 +16,12 @@ public:
   IidManager ();
   uint16_t AllocateUid (std::string name);
   void SetParent (uint16_t uid, uint16_t parent);
-  void SetTypeName (uint16_t uid, std::string typeName);
   void SetGroupName (uint16_t uid, std::string groupName);
   void AddConstructor (uint16_t uid, ns3::Callback<ns3::ObjectBase *> callback);
   void HideFromDocumentation (uint16_t uid);
   uint16_t GetUid (std::string name) const;
   std::string GetName (uint16_t uid) const;
   uint16_t GetParent (uint16_t uid) const;
-  std::string GetTypeName (uint16_t uid) const;
   std::string GetGroupName (uint16_t uid) const;
   ns3::Callback<ns3::ObjectBase *> GetConstructor (uint16_t uid) const;
   bool HasConstructor (uint16_t uid) const;
@@ -70,7 +68,6 @@ private:
   struct IidInformation {
     std::string name;
     uint16_t parent;
-    std::string typeName;
     std::string groupName;
     bool hasConstructor;
     ns3::Callback<ns3::ObjectBase *> constructor;
@@ -104,7 +101,6 @@ IidManager::AllocateUid (std::string name)
   struct IidInformation information;
   information.name = name;
   information.parent = 0;
-  information.typeName = "";
   information.groupName = "";
   information.hasConstructor = false;
   information.mustHideFromDocumentation = false;
@@ -127,12 +123,6 @@ IidManager::SetParent (uint16_t uid, uint16_t parent)
   NS_ASSERT (parent <= m_information.size ());
   struct IidInformation *information = LookupInformation (uid);
   information->parent = parent;
-}
-void 
-IidManager::SetTypeName (uint16_t uid, std::string typeName)
-{
-  struct IidInformation *information = LookupInformation (uid);
-  information->typeName = typeName;
 }
 void 
 IidManager::SetGroupName (uint16_t uid, std::string groupName)
@@ -185,12 +175,6 @@ IidManager::GetParent (uint16_t uid) const
 {
   struct IidInformation *information = LookupInformation (uid);
   return information->parent;
-}
-std::string 
-IidManager::GetTypeName (uint16_t uid) const
-{
-  struct IidInformation *information = LookupInformation (uid);
-  return information->typeName;
 }
 std::string 
 IidManager::GetGroupName (uint16_t uid) const
@@ -464,12 +448,6 @@ TypeId::SetGroupName (std::string groupName)
   return *this;
 }
 TypeId 
-TypeId::SetTypeName (std::string typeName)
-{
-  Singleton<IidManager>::Get ()->SetTypeName (m_tid, typeName);
-  return *this;
-}
-TypeId 
 TypeId::GetParent (void) const
 {
   uint16_t parent = Singleton<IidManager>::Get ()->GetParent (m_tid);
@@ -490,12 +468,6 @@ TypeId::GetGroupName (void) const
 {
   std::string groupName = Singleton<IidManager>::Get ()->GetGroupName (m_tid);
   return groupName;
-}
-std::string 
-TypeId::GetTypeName (void) const
-{
-  std::string typeName = Singleton<IidManager>::Get ()->GetTypeName (m_tid);
-  return typeName;
 }
 
 std::string 
