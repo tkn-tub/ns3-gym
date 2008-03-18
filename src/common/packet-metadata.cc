@@ -1065,7 +1065,7 @@ PacketMetadata::ItemIterator::Next (void)
     }
   m_current = smallItem.next;
   uint32_t uid = (smallItem.typeUid & 0xfffffffe) >> 1;
-  item.uid = uid;
+  item.tid.SetUid (uid);
   item.currentTrimedFromStart = extraItem.fragmentStart;
   item.currentTrimedFromEnd = extraItem.fragmentEnd - smallItem.size;
   item.currentSize = extraItem.fragmentEnd - extraItem.fragmentStart;

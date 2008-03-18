@@ -11,7 +11,7 @@ TypeId
 Header::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Header")
-    .SetParent<ObjectBase> ()
+    .SetParent<Chunk> ()
     ;
   return tid;
 }

@@ -187,6 +187,65 @@ void
 Packet::Print (std::ostream &os) const
 {
   //XXX
+  PacketMetadata::ItemIterator i = m_metadata.BeginItem (m_buffer);
+  while (i.HasNext ())
+    {
+      PacketMetadata::Item item = i.Next ();
+      if (item.isFragment)
+        {
+          switch (item.type) {
+          case PacketMetadata::Item::PAYLOAD:
+            os << "Payload";
+            break;
+          case PacketMetadata::Item::HEADER:
+          case PacketMetadata::Item::TRAILER:
+            os << item.tid.GetName ();
+            break;
+          }
+          os << " Fragment [" << item.currentTrimedFromStart<<":"
+             << (item.currentTrimedFromStart + item.currentSize) << "]";
+        }
+      else
+        {
+          switch (item.type) {
+          case PacketMetadata::Item::PAYLOAD:
+            os << "Payload (size=" << item.currentSize << ")";
+            break;
+          case PacketMetadata::Item::HEADER:
+          case PacketMetadata::Item::TRAILER:
+            os << item.tid.GetName () << "(";
+            {
+              NS_ASSERT (item.tid.HasConstructor ());
+              Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
+              NS_ASSERT (constructor.IsNull ());
+              ObjectBase *instance = constructor ();
+              NS_ASSERT (instance != 0);
+              Chunk *chunk = dynamic_cast<Chunk *> (instance);
+              NS_ASSERT (chunk != 0);
+              chunk->Deserialize (item.current);
+              for (uint32_t j = 0; j < item.tid.GetAttributeListN (); j++)
+                {
+                  std::string attrName = item.tid.GetAttributeName (j);
+                  std::string value;
+                  bool ok = chunk->GetAttribute (attrName, value);
+                  NS_ASSERT (ok);
+                  os << attrName << "=" << value;
+                  if ((j + 1) < item.tid.GetAttributeListN ())
+                    {
+                      os << ",";
+                    }
+                }
+            }
+            os << ")";
+            break;
+          }          
+        }
+      if (i.HasNext ())
+        {
+          os << " ";
+        }
+    }
+  
 }
 
 PacketMetadata::ItemIterator 

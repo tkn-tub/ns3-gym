@@ -22,7 +22,7 @@
 #ifndef HEADER_H
 #define HEADER_H
 
-#include "ns3/object-base.h"
+#include "chunk.h"
 #include "buffer.h"
 #include <stdint.h>
 
@@ -40,7 +40,7 @@ namespace ns3 {
  * Sample code which shows how to create a new type of Header, and how to use it, 
  * is shown in the sample file samples/main-packet-header.cc
  */
-class Header : public ObjectBase
+class Header : public Chunk
 {
 public:
   static TypeId GetTypeId (void);

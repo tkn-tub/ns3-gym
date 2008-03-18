@@ -22,7 +22,7 @@
 #ifndef TRAILER_H
 #define TRAILER_H
 
-#include "ns3/object-base.h"
+#include "chunk.h"
 #include "buffer.h"
 #include <stdint.h>
 
@@ -38,7 +38,7 @@ namespace ns3 {
  *   - a default constructor: is used by the internal implementation
  *     if the Packet class.
  */
-class Trailer : public ObjectBase
+class Trailer : public Chunk
 {
 public:
   static TypeId GetTypeId (void);

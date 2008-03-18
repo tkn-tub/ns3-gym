@@ -11,7 +11,7 @@ TypeId
 Trailer::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::Trailer")
-    .SetParent<ObjectBase> ()
+    .SetParent<Chunk> ()
     ;
   return tid;
 }

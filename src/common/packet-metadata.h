@@ -25,6 +25,7 @@
 #include <vector>
 #include "ns3/callback.h"
 #include "ns3/assert.h"
+#include "ns3/type-id.h"
 #include "buffer.h"
 
 namespace ns3 {
@@ -88,9 +89,10 @@ public:
      * false: this is a whole header, trailer, or, payload.
      */
     bool isFragment;
-    /* uid of header or trailer. valid only if isPayload is false.
+    /* TypeId of Header or Trailer. Valid only if type is 
+     * header or trailer.
      */
-    uint32_t uid;
+    TypeId tid;
     /* size of item. If fragment, size of fragment. Otherwise, 
      * size of original item. 
      */
