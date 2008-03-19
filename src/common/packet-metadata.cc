@@ -750,7 +750,7 @@ PacketMetadata::RemoveHeader (const Header &header, uint32_t size)
     {
       m_used = m_head;
     }
-  if (item.next == 0xffff)
+  if (m_head == m_tail)
     {
       m_head = 0xffff;
       m_tail = 0xffff;
@@ -808,7 +808,7 @@ PacketMetadata::RemoveTrailer (const Trailer &trailer, uint32_t size)
     {
       m_used = m_tail;
     }  
-  if (item.prev == 0xffff)
+  if (m_head == m_tail)
     {
       m_head = 0xffff;
       m_tail = 0xffff;
@@ -904,7 +904,15 @@ PacketMetadata::RemoveAtStart (uint32_t start)
       if (itemRealSize <= leftToRemove)
         {
           // remove from list.
-          m_head = item.next;
+          if (m_head == m_tail)
+            {
+              m_head = 0xffff;
+              m_tail = 0xffff;
+            }
+          else
+            {
+              m_head = item.next;
+            }
           leftToRemove -= itemRealSize;
         }
       else
@@ -962,7 +970,15 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
       if (itemRealSize <= leftToRemove)
         {
           // remove from list.
-          m_tail = item.prev;
+          if (m_head == m_tail)
+            {
+              m_head = 0xffff;
+              m_tail = 0xffff;
+            }
+          else
+            {
+              m_tail = item.prev;
+            }
           leftToRemove -= itemRealSize;
         }
       else
