@@ -237,12 +237,12 @@ WifiPhy::GetTypeId (void)
                      MakeTraceSourceAccessor (&WifiPhy::m_stateLogger))
     .AddTraceSource ("RxOk",
                      "A packet has been received successfully.",
-                     MakeTraceSourceAccessor (&WifiPhy::m_syncOkCallback))
+                     MakeTraceSourceAccessor (&WifiPhy::m_rxOkTrace))
     .AddTraceSource ("RxError",
                      "A packet has been received unsuccessfully.",
-                     MakeTraceSourceAccessor (&WifiPhy::m_syncErrorCallback))
+                     MakeTraceSourceAccessor (&WifiPhy::m_rxErrorTrace))
     .AddTraceSource ("Tx", "Packet transmission is starting.",
-                     MakeTraceSourceAccessor (&WifiPhy::m_txCallback))
+                     MakeTraceSourceAccessor (&WifiPhy::m_txTrace))
     ;
   return tid;
 }
@@ -371,12 +371,12 @@ WifiPhy::SetChannel (Ptr<WifiChannel> channel)
 void 
 WifiPhy::SetReceiveOkCallback (SyncOkCallback callback)
 {
-  m_syncOkCallback.ConnectWithoutContext (callback);
+  m_syncOkCallback = callback;
 }
 void 
 WifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
 {
-  m_syncErrorCallback.ConnectWithoutContext (callback);
+  m_syncErrorCallback = callback;
 }
 void 
 WifiPhy::StartReceivePacket (Ptr<Packet> packet, 
@@ -480,7 +480,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble pre
    */
   NS_ASSERT (!IsStateTx ());
 
-  m_txCallback (packet, txMode, preamble, txPower);
+  m_txTrace (packet, txMode, preamble, txPower);
   Time txDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
@@ -1350,6 +1350,7 @@ WifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
     {
       NotifySyncEndOk ();
       SwitchFromSync ();
+      m_rxOkTrace (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
       m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
     } 
   else 
@@ -1357,6 +1358,7 @@ WifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
       /* failure. */
       NotifySyncEndError ();
       SwitchFromSync ();
+      m_rxErrorTrace (packet, snr);
       m_syncErrorCallback (packet, snr);
     }
 }
