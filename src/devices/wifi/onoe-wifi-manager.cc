@@ -27,10 +27,12 @@ NS_LOG_COMPONENT_DEFINE ("OnoeWifiRemoteStation");
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (OnoeWifiManager);
+
 TypeId
 OnoeWifiManager::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("OnoeWifiManager")
+  static TypeId tid = TypeId ("ns3::OnoeWifiManager")
     .SetParent<WifiRemoteStationManager> ()
     .AddConstructor<OnoeWifiManager> ()
     .AddAttribute ("UpdatePeriod",
