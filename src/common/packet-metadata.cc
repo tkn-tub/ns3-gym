@@ -1069,7 +1069,7 @@ PacketMetadata::ItemIterator::Next (void)
   item.currentTrimedFromStart = extraItem.fragmentStart;
   item.currentTrimedFromEnd = extraItem.fragmentEnd - smallItem.size;
   item.currentSize = extraItem.fragmentEnd - extraItem.fragmentStart;
-  if (extraItem.fragmentStart != 0 || extraItem.fragmentEnd != 0)
+  if (extraItem.fragmentStart != 0 || extraItem.fragmentEnd != smallItem.size)
     {
       item.isFragment = true;
     }
