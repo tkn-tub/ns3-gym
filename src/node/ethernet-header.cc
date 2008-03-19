@@ -105,6 +105,7 @@ EthernetHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::EthernetHeader")
     .SetParent<Header> ()
+    .AddConstructor<EthernetHeader> ()
     ;
   return tid;
 }

@@ -66,6 +66,7 @@ MgtProbeRequestHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtProbeRequestHeader")
     .SetParent<Header> ()
+    .AddConstructor<MgtProbeRequestHeader> ()
     ;
   return tid;
 }
@@ -144,6 +145,7 @@ MgtProbeResponseHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtProbeResponseHeader")
     .SetParent<Header> ()
+    .AddConstructor<MgtProbeResponseHeader> ()
     ;
   return tid;
 }
@@ -253,6 +255,7 @@ MgtAssocRequestHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtAssocRequestHeader")
     .SetParent<Header> ()
+    .AddConstructor<MgtAssocRequestHeader> ()
     ;
   return tid;
 }
@@ -334,6 +337,7 @@ MgtAssocResponseHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::MgtAssocResponseHeader")
     .SetParent<Header> ()
+    .AddConstructor<MgtAssocResponseHeader> ()
     ;
   return tid;
 }

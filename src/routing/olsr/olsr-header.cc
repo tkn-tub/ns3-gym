@@ -107,6 +107,7 @@ PacketHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::olsr::PacketHeader")
     .SetParent<Header> ()
+    .AddConstructor<PacketHeader> ()
     ;
   return tid;
 }
@@ -162,6 +163,7 @@ MessageHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::olsr::MessageHeader")
     .SetParent<Header> ()
+    .AddConstructor<MessageHeader> ()
     ;
   return tid;
 }

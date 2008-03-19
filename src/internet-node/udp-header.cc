@@ -98,6 +98,7 @@ UdpHeader::GetTypeId (void)
 {
   static TypeId tid = TypeId ("ns3::UdpHeader")
     .SetParent<Header> ()
+    .AddConstructor<UdpHeader> ()
     ;
   return tid;
 }
