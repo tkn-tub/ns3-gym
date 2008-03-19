@@ -48,10 +48,12 @@ PointToPointHelper::Build (Ptr<Node> a, Ptr<Node> b)
   NetDeviceContainer container;
 
   Ptr<PointToPointNetDevice> devA = CreateObject<PointToPointNetDevice> ();
+  devA->SetAddress (Mac48Address::Allocate ());
   a->AddDevice (devA);
   Ptr<Queue> queueA = m_queueFactory.Create<Queue> ();
   devA->AddQueue (queueA);
   Ptr<PointToPointNetDevice> devB = CreateObject<PointToPointNetDevice> ();
+  devB->SetAddress (Mac48Address::Allocate ());
   b->AddDevice (devB);
   Ptr<Queue> queueB = m_queueFactory.Create<Queue> ();
   devB->AddQueue (queueB);

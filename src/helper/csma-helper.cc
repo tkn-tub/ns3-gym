@@ -55,6 +55,7 @@ CsmaHelper::Build (const NodeContainer &c, Ptr<CsmaChannel> channel)
     {
       Ptr<Node> node = *i;
       Ptr<CsmaNetDevice> device = m_deviceFactory.Create<CsmaNetDevice> ();
+      device->SetAddress (Mac48Address::Allocate ());
       node->AddDevice (device);
       Ptr<Queue> queue = m_queueFactory.Create<Queue> ();
       device->AddQueue (queue);
