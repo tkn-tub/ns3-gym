@@ -180,6 +180,8 @@ enum CsmaEncapsulationMode {
   void SetSendEnable (bool);
   void SetReceiveEnable (bool);
 
+  void SetAddress (Mac48Address self);
+
 
   // inherited from NetDevice base class.
   virtual void SetName(const std::string name);
