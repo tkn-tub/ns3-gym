@@ -186,7 +186,58 @@ Packet::PrintTags (std::ostream &os) const
 void 
 Packet::Print (std::ostream &os) const
 {
-  //XXX
+  PacketMetadata::ItemIterator i = m_metadata.BeginItem (m_buffer);
+  while (i.HasNext ())
+    {
+      PacketMetadata::Item item = i.Next ();
+      if (item.isFragment)
+        {
+          switch (item.type) {
+          case PacketMetadata::Item::PAYLOAD:
+            os << "Payload";
+            break;
+          case PacketMetadata::Item::HEADER:
+          case PacketMetadata::Item::TRAILER:
+            os << item.tid.GetName ();
+            break;
+          }
+          os << " Fragment [" << item.currentTrimedFromStart<<":"
+             << (item.currentTrimedFromStart + item.currentSize) << "]";
+        }
+      else
+        {
+          switch (item.type) {
+          case PacketMetadata::Item::PAYLOAD:
+            os << "Payload (size=" << item.currentSize << ")";
+            break;
+          case PacketMetadata::Item::HEADER:
+          case PacketMetadata::Item::TRAILER:
+            os << item.tid.GetName () << " (";
+            {
+              NS_ASSERT (item.tid.HasConstructor ());
+              Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
+              NS_ASSERT (!constructor.IsNull ());
+              ObjectBase *instance = constructor ();
+              NS_ASSERT (instance != 0);
+              Chunk *chunk = dynamic_cast<Chunk *> (instance);
+              NS_ASSERT (chunk != 0);
+              chunk->Deserialize (item.current);
+              chunk->Print (os);
+            }
+            os << ")";
+            break;
+          }          
+        }
+      if (i.HasNext ())
+        {
+          os << " ";
+        }
+    }
+#if 0
+  // The code below will work only if headers and trailers
+  // define the right attributes which is not the case for
+  // now. So, as a temporary measure, we use the 
+  // headers' and trailers' Print method as shown above.
   PacketMetadata::ItemIterator i = m_metadata.BeginItem (m_buffer);
   while (i.HasNext ())
     {
@@ -245,7 +296,7 @@ Packet::Print (std::ostream &os) const
           os << " ";
         }
     }
-  
+#endif   
 }
 
 PacketMetadata::ItemIterator 
