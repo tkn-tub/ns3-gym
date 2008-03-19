@@ -12,6 +12,7 @@ class Chunk : public ObjectBase
   static TypeId GetTypeId (void); 
 
   virtual uint32_t Deserialize (Buffer::Iterator start) = 0;
+  virtual void Print (std::ostream &os) const = 0;
 };
 
 } // namespace ns3
