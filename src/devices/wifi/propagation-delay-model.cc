@@ -27,10 +27,12 @@ namespace ns3 {
 PropagationDelayModel::~PropagationDelayModel ()
 {}
 
+NS_OBJECT_ENSURE_REGISTERED (RandomPropagationDelayModel);
+
 TypeId 
 RandomPropagationDelayModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("RandomPropagationDelayModel")
+  static TypeId tid = TypeId ("ns3::RandomPropagationDelayModel")
     .SetParent<PropagationDelayModel> ()
     .AddConstructor<RandomPropagationDelayModel> ()
     .AddAttribute ("Variable",
@@ -52,10 +54,12 @@ RandomPropagationDelayModel::GetDelay (Ptr<MobilityModel> a, Ptr<MobilityModel> 
   return Seconds (m_variable.GetValue ());
 }
 
+NS_OBJECT_ENSURE_REGISTERED (ConstantSpeedPropagationDelayModel);
+
 TypeId
 ConstantSpeedPropagationDelayModel::GetTypeId (void)
 {
-  static TypeId tid = TypeId ("ConstantSpeedPropagationDelayModel")
+  static TypeId tid = TypeId ("ns3::ConstantSpeedPropagationDelayModel")
     .SetParent<PropagationDelayModel> ()
     .AddConstructor<ConstantSpeedPropagationDelayModel> ()
     .AddAttribute ("Speed", "The speed (m/s)",
