@@ -121,7 +121,7 @@ WifiTest::RunTests (void)
   return result;
 }
 
-WifiTest g_wifiTest;
+static WifiTest g_wifiTest;
 
 
 } // namespace ns3
