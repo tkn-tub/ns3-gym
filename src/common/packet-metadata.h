@@ -356,7 +356,7 @@ PacketMetadata::~PacketMetadata ()
     }
 }
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* PACKET_METADATA_H */
