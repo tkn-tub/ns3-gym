@@ -126,8 +126,7 @@ public:
    *
    * \param header a reference to the header to add to this packet.
    */
-  template <typename T>
-  void AddHeader (T const &header);
+  void AddHeader (const Header & header);
   /**
    * Deserialize and remove the header from the internal buffer.
    * This method invokes Deserialize.
@@ -135,8 +134,7 @@ public:
    * \param header a reference to the header to remove from the internal buffer.
    * \returns the number of bytes removed from the packet.
    */
-  template <typename T>
-  uint32_t RemoveHeader (T &header);
+  uint32_t RemoveHeader (Header &header);
   /**
    * Add trailer to this packet. This method invokes the
    * GetSerializedSize and Serialize
@@ -145,8 +143,7 @@ public:
    *
    * \param trailer a reference to the trailer to add to this packet.
    */
-  template <typename T>
-  void AddTrailer (T const &trailer);
+  void AddTrailer (const Trailer &trailer);
   /**
    * Remove a deserialized trailer from the internal buffer.
    * This method invokes the Deserialize method.
@@ -154,8 +151,7 @@ public:
    * \param trailer a reference to the trailer to remove from the internal buffer.
    * \returns the number of bytes removed from the end of the packet.
    */
-  template <typename T>
-  uint32_t RemoveTrailer (T &trailer);
+  uint32_t RemoveTrailer (Trailer &trailer);
   /**
    * \param tag a pointer to the tag to attach to this packet.
    *
@@ -393,61 +389,6 @@ std::ostream& operator<< (std::ostream& os, const Packet &packet);
  *************************************************/
 
 namespace ns3 {
-
-template <typename T>
-void
-Packet::AddHeader (T const &header)
-{
-  const Header *testHeader;
-  // if the following assignment fails, it is because the 
-  // input to this function is not a subclass of the Header class
-  testHeader = &header;
-  uint32_t size = header.GetSerializedSize ();
-  m_buffer.AddAtStart (size);
-  header.Serialize (m_buffer.Begin ());
-  m_metadata.AddHeader (header, size);
-}
-template <typename T>
-uint32_t
-Packet::RemoveHeader (T &header)
-{
-  Header *testHeader;
-  // if the following assignment fails, it is because the 
-  // input to this function is not a subclass of the Header class
-  testHeader = &header;
-  uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
-  m_buffer.RemoveAtStart (deserialized);
-  m_metadata.RemoveHeader (header, deserialized);
-  return deserialized;
-}
-template <typename T>
-void
-Packet::AddTrailer (T const &trailer)
-{
-  const Trailer *testTrailer;
-  // if the following assignment fails, it is because the 
-  // input to this function is not a subclass of the Trailer class
-  testTrailer = &trailer;
-  uint32_t size = trailer.GetSerializedSize ();
-  m_buffer.AddAtEnd (size);
-  Buffer::Iterator end = m_buffer.End ();
-  trailer.Serialize (end);
-  m_metadata.AddTrailer (trailer, size);
-}
-template <typename T>
-uint32_t
-Packet::RemoveTrailer (T &trailer)
-{
-  Trailer *testTrailer;
-  // if the following assignment fails, it is because the 
-  // input to this function is not a subclass of the Trailer class
-  testTrailer = &trailer;
-  uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
-  m_buffer.RemoveAtEnd (deserialized);
-  m_metadata.RemoveTrailer (trailer, deserialized);
-  return deserialized;
-}
-
 
 template <typename T>
 void Packet::AddTag (T const& tag) const
