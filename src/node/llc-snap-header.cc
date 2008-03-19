@@ -64,11 +64,10 @@ LlcSnapHeader::GetInstanceTypeId (void) const
 void 
 LlcSnapHeader::Print (std::ostream &os) const
 {
-  os << "(type 0x";
+  os << "type 0x";
   os.setf (std::ios::hex, std::ios::basefield);
   os << m_etherType;
   os.setf (std::ios::dec, std::ios::basefield);
-  os << ")";
 }
 
 void

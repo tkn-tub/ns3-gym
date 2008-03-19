@@ -220,14 +220,13 @@ Ipv4Header::Print (std::ostream &os) const
     {
       flags = "XX";
     }
-  os << "("
-     << "tos 0x" << std::hex << m_tos << std::dec << " "
+  os << "tos 0x" << std::hex << m_tos << std::dec << " "
      << "ttl " << m_ttl << " "
      << "id " << m_identification << " "
      << "offset " << m_fragmentOffset << " "
      << "flags [" << flags << "] "
      << "length: " << (m_payloadSize + 5 * 4)
-     << ") "
+     << " " 
      << m_source << " > " << m_destination
     ;
 }

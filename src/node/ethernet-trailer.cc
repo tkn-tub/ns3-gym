@@ -103,7 +103,7 @@ EthernetTrailer::GetInstanceTypeId (void) const
 void 
 EthernetTrailer::Print (std::ostream &os) const
 {
-  os << " fcs=" << m_fcs;
+  os << "fcs=" << m_fcs;
 }
 uint32_t 
 EthernetTrailer::GetSerializedSize (void) const

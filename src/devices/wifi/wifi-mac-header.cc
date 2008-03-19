@@ -786,11 +786,10 @@ WifiMacHeader::GetInstanceTypeId (void) const
 void 
 WifiMacHeader::PrintFrameControl (std::ostream &os) const
 {
-  os << "("
-     << "ToDS=" << m_ctrlToDs << ", FromDS=" << m_ctrlFromDs 
+  os << "ToDS=" << m_ctrlToDs << ", FromDS=" << m_ctrlFromDs 
      << ", MoreFrag=" << m_ctrlMoreFrag << ", Retry=" << m_ctrlRetry 
      << ", MoreData=" << m_ctrlMoreData 
-     << ")";
+    ;
 }
 
 void 

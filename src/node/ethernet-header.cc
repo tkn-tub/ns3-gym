@@ -120,7 +120,7 @@ EthernetHeader::Print (std::ostream &os) const
   // ethernet, right ?
   if (m_enPreambleSfd)
     {
-      os << " preamble/sfd=" << m_preambleSfd << ",";
+      os << "preamble/sfd=" << m_preambleSfd << ",";
     }
 
   os << " length/type=0x" << std::hex << m_lengthType << std::dec

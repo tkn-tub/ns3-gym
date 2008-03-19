@@ -102,24 +102,20 @@ ArpHeader::Print (std::ostream &os) const
 {
   if (IsRequest ()) 
     {
-      os << "("
-         << "request "
+      os << "request "
          << "source mac: " << m_macSource << " "
          << "source ipv4: " << m_ipv4Source << " "
          << "dest ipv4: " << m_ipv4Dest
-         << ")"
         ;
     } 
   else 
     {
       NS_ASSERT (IsReply ());
-      os << "("
-         << "reply " 
+      os << "reply " 
          << "source mac: " << m_macSource << " "
          << "source ipv4: " << m_ipv4Source << " "
          << "dest mac: " << m_macDest << " "
          << "dest ipv4: " <<m_ipv4Dest
-         << ")"
         ;
     }
 }
