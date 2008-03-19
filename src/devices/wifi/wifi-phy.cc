@@ -235,6 +235,14 @@ WifiPhy::GetTypeId (void)
     .AddTraceSource ("State",
                      "The WifiPhy state",
                      MakeTraceSourceAccessor (&WifiPhy::m_stateLogger))
+    .AddTraceSource ("RxOk",
+                     "A packet has been received successfully.",
+                     MakeTraceSourceAccessor (&WifiPhy::m_syncOkCallback))
+    .AddTraceSource ("RxError",
+                     "A packet has been received unsuccessfully.",
+                     MakeTraceSourceAccessor (&WifiPhy::m_syncErrorCallback))
+    .AddTraceSource ("Tx", "Packet transmission is starting.",
+                     MakeTraceSourceAccessor (&WifiPhy::m_txCallback))
     ;
   return tid;
 }
@@ -363,12 +371,12 @@ WifiPhy::SetChannel (Ptr<WifiChannel> channel)
 void 
 WifiPhy::SetReceiveOkCallback (SyncOkCallback callback)
 {
-  m_syncOkCallback = callback;
+  m_syncOkCallback.ConnectWithoutContext (callback);
 }
 void 
 WifiPhy::SetReceiveErrorCallback (SyncErrorCallback callback)
 {
-  m_syncErrorCallback = callback;
+  m_syncErrorCallback.ConnectWithoutContext (callback);
 }
 void 
 WifiPhy::StartReceivePacket (Ptr<Packet> packet, 
@@ -472,6 +480,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble pre
    */
   NS_ASSERT (!IsStateTx ());
 
+  m_txCallback (packet, txMode, preamble, txPower);
   Time txDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
