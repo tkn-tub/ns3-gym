@@ -302,10 +302,10 @@ WifiNetDevice::SetReceiveCallback (NetDevice::ReceiveCallback cb)
 void
 WifiNetDevice::ForwardUp (Ptr<Packet> packet, const Mac48Address &from)
 {
+  m_rxLogger (packet, from);
   LlcSnapHeader llc;
   packet->RemoveHeader (llc);
   m_forwardUp (this, packet, llc.GetType (), from);
-  m_rxLogger (packet, from);
 }
 
 void
