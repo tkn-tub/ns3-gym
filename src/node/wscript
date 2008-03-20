@@ -28,6 +28,8 @@ def build(bld):
         'tcp.cc',
         'ipv4.cc',
         'application.cc',
+        'simple-channel.cc',
+        'simple-net-device.cc',
         ]
 
     headers = bld.create_obj('ns3header')
@@ -57,4 +59,6 @@ def build(bld):
         'tcp.h',
         'ipv4.h',
         'application.h',
+        'simple-channel.h',
+        'simple-net-device.h',
         ]

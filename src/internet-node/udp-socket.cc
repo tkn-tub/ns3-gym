@@ -356,8 +356,8 @@ UdpSocket::ForwardUp (Ptr<Packet> packet, Ipv4Address ipv4, uint16_t port)
 #include "ns3/socket-factory.h"
 #include "ns3/udp.h"
 #include "ns3/simulator.h"
-#include "ns3/point-to-point-channel.h"
-#include "ns3/point-to-point-net-device.h"
+#include "ns3/simple-channel.h"
+#include "ns3/simple-net-device.h"
 #include "ns3/drop-tail-queue.h"
 #include <string>
 
@@ -400,11 +400,11 @@ UdpSocketTest::RunTests (void)
   
   // Receiver Node
   Ptr<Node> rxNode = CreateObject<InternetNode> ();
-  Ptr<PointToPointNetDevice> rxDev1, rxDev2;
+  Ptr<SimpleNetDevice> rxDev1, rxDev2;
   { // first interface
-    rxDev1 = CreateObject<PointToPointNetDevice> ("Address", Mac48Address::Allocate ());
+    rxDev1 = CreateObject<SimpleNetDevice> ();
+    rxDev1->SetAddress (Mac48Address::Allocate ());
     rxNode->AddDevice (rxDev1);
-    rxDev1->AddQueue(CreateObject<DropTailQueue> ());
     Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (rxDev1);
     ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.1"));
@@ -413,9 +413,9 @@ UdpSocketTest::RunTests (void)
   }
 
   { // second interface
-    rxDev2 = CreateObject<PointToPointNetDevice> ("Address", Mac48Address::Allocate ());
+    rxDev2 = CreateObject<SimpleNetDevice> ();
+    rxDev2->SetAddress (Mac48Address::Allocate ());
     rxNode->AddDevice (rxDev2);
-    rxDev2->AddQueue(CreateObject<DropTailQueue> ());
     Ptr<Ipv4> ipv4 = rxNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (rxDev2);
     ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.1.1"));
@@ -425,11 +425,11 @@ UdpSocketTest::RunTests (void)
   
   // Sender Node
   Ptr<Node> txNode = CreateObject<InternetNode> ();
-  Ptr<PointToPointNetDevice> txDev;
+  Ptr<SimpleNetDevice> txDev;
   {
-    txDev = CreateObject<PointToPointNetDevice> ("Address", Mac48Address::Allocate ());
+    txDev = CreateObject<SimpleNetDevice> ();
+    txDev->SetAddress (Mac48Address::Allocate ());
     txNode->AddDevice (txDev);
-    txDev->AddQueue(CreateObject<DropTailQueue> ());
     Ptr<Ipv4> ipv4 = txNode->GetObject<Ipv4> ();
     uint32_t netdev_idx = ipv4->AddInterface (txDev);
     ipv4->SetAddress (netdev_idx, Ipv4Address ("10.0.0.2"));
@@ -438,9 +438,12 @@ UdpSocketTest::RunTests (void)
   }
 
   // link the two nodes
-  Ptr<PointToPointChannel> channel = CreateObject<PointToPointChannel> ();
-  rxDev1->Attach (channel);
-  txDev->Attach (channel);
+  Ptr<SimpleChannel> channel = CreateObject<SimpleChannel> ();
+  rxDev1->SetChannel (channel);
+  // XXX: I believe that it is a bug to not associate rxDev2 with the
+  // channel but the tests below fail if you do so.
+  //rxDev2->SetChannel (channel);
+  txDev->SetChannel (channel);
 
 
   // Create the UDP sockets
