@@ -125,6 +125,7 @@ TcpSocket::TcpSocket(const TcpSocket& sock)
 TcpSocket::~TcpSocket ()
 {
   NS_LOG_FUNCTION;
+  NS_LOG_PARAMS(this);
   m_node = 0;
   if (m_endPoint != 0)
     {
@@ -204,8 +205,8 @@ TcpSocket::FinishBind (void)
     {
       return -1;
     }
-  m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, this));
-  m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, this));
+  m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, Ptr<TcpSocket>(this)));
+  m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, Ptr<TcpSocket>(this)));
   m_localAddress = m_endPoint->GetLocalAddress ();
   m_localPort = m_endPoint->GetLocalPort ();
   return 0;
@@ -672,11 +673,11 @@ bool TcpSocket::ProcessPacketAction (Actions_t a, Ptr<Packet> p,
       NS_LOG_LOGIC ("TcpSocket " << this <<" Action ACK_TX_1");
       // TCP SYN consumes one byte
       m_nextRxSequence = tcpHeader.GetSequenceNumber() + SequenceNumber(1);
+      m_nextTxSequence = tcpHeader.GetAckNumber ();
       NS_LOG_DEBUG ("TcpSocket " << this << " ACK_TX_1" <<
                     " nextRxSeq " << m_nextRxSequence);
       SendEmptyPacket (TcpHeader::ACK);
       m_rxWindowSize = tcpHeader.GetWindowSize ();
-      m_nextTxSequence = tcpHeader.GetAckNumber ();
       if (tcpHeader.GetAckNumber () > m_highestRxAck)
       {
         m_highestRxAck = tcpHeader.GetAckNumber ();
@@ -777,8 +778,8 @@ void TcpSocket::CompleteFork(Ptr<Packet> p, const TcpHeader& h, const Address& f
   //the cloned socket with be in listen state, so manually change state
   m_state = SYN_RCVD;
   //equivalent to FinishBind
-  m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, this));
-  m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, this));
+  m_endPoint->SetRxCallback (MakeCallback (&TcpSocket::ForwardUp, Ptr<TcpSocket>(this)));
+  m_endPoint->SetDestroyCallback (MakeCallback (&TcpSocket::Destroy, Ptr<TcpSocket>(this)));
   ProcessPacketAction(SYN_ACK_TX, p, h, fromAddress);
  }
 
