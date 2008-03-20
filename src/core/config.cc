@@ -205,7 +205,7 @@ Resolver::DoResolve (std::string path, Ptr<Object> root)
   else 
     {
       // this is a normal attribute.
-      TypeId tid = root->GetRealTypeId ();
+      TypeId tid = root->GetInstanceTypeId ();
       struct TypeId::AttributeInfo info;
       if (!tid.LookupAttributeByName (item, &info))
 	{

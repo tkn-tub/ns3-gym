@@ -110,6 +110,7 @@ WifiHelper::Build (NodeContainer c, Ptr<WifiChannel> channel) const
       Ptr<WifiRemoteStationManager> manager = m_stationManager.Create<WifiRemoteStationManager> ();
       Ptr<WifiMac> mac = m_mac.Create<WifiMac> ();
       Ptr<WifiPhy> phy = m_phy.Create<WifiPhy> ();
+      mac->SetAddress (Mac48Address::Allocate ());
       device->SetMac (mac);
       device->SetPhy (phy);
       device->SetRemoteStationManager (manager);

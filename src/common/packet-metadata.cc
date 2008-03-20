@@ -24,7 +24,8 @@
 #include "ns3/log.h"
 #include "packet-metadata.h"
 #include "buffer.h"
-#include "chunk-registry.h"
+#include "header.h"
+#include "trailer.h"
 
 NS_LOG_COMPONENT_DEFINE ("PacketMetadata");
 
@@ -696,6 +697,12 @@ PacketMetadata::CreateFragment (uint32_t start, uint32_t end) const
 }
 
 void 
+PacketMetadata::AddHeader (const Header &header, uint32_t size)
+{
+  uint32_t uid = header.GetInstanceTypeId ().GetUid () << 1;
+  DoAddHeader (uid, size);
+}
+void
 PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
 {
   if (!m_enable)
@@ -703,7 +710,7 @@ PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
       m_metadataSkipped = true;
       return;
     }
-  NS_LOG_PARAMS ("(uid=" << uid << ", size=" << size << ")");
+  NS_LOG_PARAMS ("uid=" << uid << "size=" << size << "");
 
   struct PacketMetadata::SmallItem item;
   item.next = m_head;
@@ -716,8 +723,9 @@ PacketMetadata::DoAddHeader (uint32_t uid, uint32_t size)
   UpdateHead (written);
 }
 void 
-PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
+PacketMetadata::RemoveHeader (const Header &header, uint32_t size)
 {
+  uint32_t uid = header.GetInstanceTypeId ().GetUid () << 1;
   if (!m_enable) 
     {
       m_metadataSkipped = true;
@@ -742,7 +750,7 @@ PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
     {
       m_used = m_head;
     }
-  if (item.next == 0xffff)
+  if (m_head == m_tail)
     {
       m_head = 0xffff;
       m_tail = 0xffff;
@@ -753,13 +761,15 @@ PacketMetadata::DoRemoveHeader (uint32_t uid, uint32_t size)
     }
 }
 void 
-PacketMetadata::DoAddTrailer (uint32_t uid, uint32_t size)
+PacketMetadata::AddTrailer (const Trailer &trailer, uint32_t size)
 {
+  uint32_t uid = trailer.GetInstanceTypeId ().GetUid () << 1;
   if (!m_enable)
     {
       m_metadataSkipped = true;
       return;
     }
+  NS_LOG_PARAMS ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   item.next = 0xffff;
   item.prev = m_tail;
@@ -771,13 +781,15 @@ PacketMetadata::DoAddTrailer (uint32_t uid, uint32_t size)
   UpdateTail (written);
 }
 void 
-PacketMetadata::DoRemoveTrailer (uint32_t uid, uint32_t size)
+PacketMetadata::RemoveTrailer (const Trailer &trailer, uint32_t size)
 {
+  uint32_t uid = trailer.GetInstanceTypeId ().GetUid () << 1;
   if (!m_enable) 
     {
       m_metadataSkipped = true;
       return;
     }
+  NS_LOG_PARAMS ("(uid=" << uid << ", size=" << size << ")");
   struct PacketMetadata::SmallItem item;
   struct PacketMetadata::ExtraItem extraItem;
   uint32_t read = ReadItems (m_tail, &item, &extraItem);
@@ -796,7 +808,7 @@ PacketMetadata::DoRemoveTrailer (uint32_t uid, uint32_t size)
     {
       m_used = m_tail;
     }  
-  if (item.prev == 0xffff)
+  if (m_head == m_tail)
     {
       m_head = 0xffff;
       m_tail = 0xffff;
@@ -892,7 +904,15 @@ PacketMetadata::RemoveAtStart (uint32_t start)
       if (itemRealSize <= leftToRemove)
         {
           // remove from list.
-          m_head = item.next;
+          if (m_head == m_tail)
+            {
+              m_head = 0xffff;
+              m_tail = 0xffff;
+            }
+          else
+            {
+              m_head = item.next;
+            }
           leftToRemove -= itemRealSize;
         }
       else
@@ -950,7 +970,15 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
       if (itemRealSize <= leftToRemove)
         {
           // remove from list.
-          m_tail = item.prev;
+          if (m_head == m_tail)
+            {
+              m_head = 0xffff;
+              m_tail = 0xffff;
+            }
+          else
+            {
+              m_tail = item.prev;
+            }
           leftToRemove -= itemRealSize;
         }
       else
@@ -988,47 +1016,6 @@ PacketMetadata::RemoveAtEnd (uint32_t end)
     }
   NS_ASSERT (leftToRemove == 0);
 }
-
-uint32_t
-PacketMetadata::DoPrint (const struct PacketMetadata::SmallItem *item, 
-                         const struct PacketMetadata::ExtraItem *extraItem,
-                         Buffer data, uint32_t offset, const PacketPrinter &printer,
-                         std::ostream &os) const
-{
-  uint32_t uid = (item->typeUid & 0xfffffffe) >> 1;
-  if (uid == 0)
-    {
-      // payload.
-      printer.PrintPayload (os, extraItem->packetUid, item->size, 
-                            extraItem->fragmentStart, 
-                            item->size - extraItem->fragmentEnd);
-    }
-  else if (extraItem->fragmentStart != 0 ||
-           extraItem->fragmentEnd != item->size)
-    {
-      printer.PrintChunkFragment (uid, os, extraItem->packetUid, item->size, 
-                                  extraItem->fragmentStart, 
-                                  item->size - extraItem->fragmentEnd);
-    }
-  else if (ChunkRegistry::IsHeader (uid))
-    {
-      ns3::Buffer::Iterator j = data.Begin ();
-      j.Next (offset);
-      printer.PrintChunk (uid, j, os, extraItem->packetUid, item->size);
-    }
-  else if (ChunkRegistry::IsTrailer (uid))
-    {
-      ns3::Buffer::Iterator j = data.End ();
-      j.Prev (data.GetSize () - (offset + item->size));
-      printer.PrintChunk (uid, j, os, extraItem->packetUid, item->size);
-    }
-  else 
-    {
-      NS_ASSERT (false);
-    }
-  return extraItem->fragmentEnd - extraItem->fragmentStart;
-}
-
 uint32_t
 PacketMetadata::GetTotalSize (void) const
 {
@@ -1056,60 +1043,88 @@ PacketMetadata::GetUid (void) const
 {
   return m_packetUid;
 }
-
-void
-PacketMetadata::Print (std::ostream &os, Buffer data, const PacketPrinter &printer) const
+PacketMetadata::ItemIterator 
+PacketMetadata::BeginItem (Buffer buffer) const
 {
-  if (!m_enable) 
+  return ItemIterator (this, buffer);
+}
+PacketMetadata::ItemIterator::ItemIterator (const PacketMetadata *metadata, Buffer buffer)
+  : m_metadata (metadata),
+    m_buffer (buffer),
+    m_current (metadata->m_head),
+    m_offset (0),
+    m_hasReadTail (false)
+{}
+bool 
+PacketMetadata::ItemIterator::HasNext (void) const
+{
+  if (m_current == 0xffff)
     {
-      return;
+      return false;
     }
-  NS_ASSERT (m_data != 0);
-  NS_ASSERT (GetTotalSize () == data.GetSize ());
-  struct PacketMetadata::SmallItem item;
-  struct PacketMetadata::ExtraItem extraItem;
-  if (printer.m_forward)
+  if (m_hasReadTail)
     {
-      uint32_t current = m_head;
-      uint32_t offset = 0;
-      while (current != 0xffff)
-        {
-          ReadItems (current, &item, &extraItem);
-          uint32_t realSize = DoPrint (&item, &extraItem, data, offset, printer, os);
-          offset += realSize;
-          if (current == m_tail)
-            {
-              break;
-            }
-          if (item.next != 0xffff)
-            {
-              os << printer.m_separator;
-            }
-          NS_ASSERT (current != item.next);
-          current = item.next;
-        }
+      return false;
+    }
+  return true;
+}
+PacketMetadata::Item
+PacketMetadata::ItemIterator::Next (void)
+{
+  struct PacketMetadata::Item item;
+  struct PacketMetadata::SmallItem smallItem;
+  struct PacketMetadata::ExtraItem extraItem;
+  m_metadata->ReadItems (m_current, &smallItem, &extraItem);
+  if (m_current == m_metadata->m_tail)
+    {
+      m_hasReadTail = true;
+    }
+  m_current = smallItem.next;
+  uint32_t uid = (smallItem.typeUid & 0xfffffffe) >> 1;
+  item.tid.SetUid (uid);
+  item.currentTrimedFromStart = extraItem.fragmentStart;
+  item.currentTrimedFromEnd = extraItem.fragmentEnd - smallItem.size;
+  item.currentSize = extraItem.fragmentEnd - extraItem.fragmentStart;
+  if (extraItem.fragmentStart != 0 || extraItem.fragmentEnd != smallItem.size)
+    {
+      item.isFragment = true;
     }
   else
     {
-      uint32_t current = m_tail;
-      uint32_t offset = data.GetSize ();
-      while (current != 0xffff)
+      item.isFragment = false;
+    }
+  TypeId tid;
+  tid.SetUid (uid);
+  if (uid == 0)
+    {
+      item.type = PacketMetadata::Item::PAYLOAD;
+    }
+  else if (tid.IsChildOf (Header::GetTypeId ()))
+    {
+      item.type = PacketMetadata::Item::HEADER;
+      if (!item.isFragment)
         {
-          ReadItems (current, &item, &extraItem);
-          uint32_t realSize = DoPrint (&item, &extraItem, data, offset - item.size, printer, os);
-          offset -= realSize;
-          if (current == m_head)
-            {
-              break;
-            }
-          if (item.prev != 0xffff)
-            {
-              os << printer.m_separator;
-            }
-          NS_ASSERT (current != item.prev);
-          current = item.prev;
+          ns3::Buffer::Iterator j = m_buffer.Begin ();
+          j.Next (m_offset);
+          item.current = j;
         }
     }
+  else if (tid.IsChildOf (Trailer::GetTypeId ()))
+    {
+      item.type = PacketMetadata::Item::TRAILER;
+      if (!item.isFragment)
+        {
+          ns3::Buffer::Iterator j = m_buffer.End ();
+          j.Prev (m_buffer.GetSize () - (m_offset + smallItem.size));
+          item.current = j;
+        }
+    }
+  else 
+    {
+      NS_ASSERT (false);
+    }
+  m_offset += extraItem.fragmentEnd - extraItem.fragmentStart;
+  return item;
 }
 
 uint32_t 
@@ -1134,7 +1149,9 @@ PacketMetadata::GetSerializedSize (void) const
         }
       else
         {
-          totalSize += 4 + ChunkRegistry::GetUidStringFromUid (uid).size ();
+          TypeId tid;
+          tid.SetUid (uid);
+          totalSize += 4 + tid.GetName ().size ();
         }
       totalSize += 1 + 4 + 2 + 4 + 4 + 4;
       if (current == m_tail)
@@ -1165,7 +1182,9 @@ PacketMetadata::Serialize (Buffer::Iterator i, uint32_t size) const
       uint32_t uid = (item.typeUid & 0xfffffffe) >> 1;
       if (uid != 0)
         {
-          std::string uidString = ChunkRegistry::GetUidStringFromUid (uid);
+          TypeId tid;
+          tid.SetUid (uid);
+          std::string uidString = tid.GetName ();
           i.WriteU32 (uidString.size ());
           bytesWritten += 4;
           i.Write ((uint8_t *)uidString.c_str (), uidString.size ());
@@ -1225,7 +1244,8 @@ PacketMetadata::Deserialize (Buffer::Iterator i)
               uidString.push_back (i.ReadU8 ());
               size --;
             }
-          uid = ChunkRegistry::GetUidFromUidString (uidString);
+          TypeId tid = TypeId::LookupByName (uidString);
+          uid = tid.GetUid ();
         }
       uint8_t isBig = i.ReadU8 ();
       size --;

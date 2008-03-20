@@ -25,14 +25,7 @@
 
 namespace ns3 {
 
-NS_HEADER_ENSURE_REGISTERED (ArpHeader);
-
-uint32_t
-ArpHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<ArpHeader> ("ArpHeader.ns3");
-  return uid;
-}
+NS_OBJECT_ENSURE_REGISTERED (ArpHeader);
 
 void 
 ArpHeader::SetRequest (Address sourceHardwareAddress,
@@ -89,35 +82,40 @@ ArpHeader::GetDestinationIpv4Address (void)
   return m_ipv4Dest;
 }
 
-std::string 
-ArpHeader::GetName (void) const
-{
-  return "ARP";
-}
 
+TypeId 
+ArpHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::ArpHeader")
+    .SetParent<Header> ()
+    .AddConstructor<ArpHeader> ()
+    ;
+  return tid;
+}
+TypeId 
+ArpHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 void 
 ArpHeader::Print (std::ostream &os) const
 {
   if (IsRequest ()) 
     {
-      os << "("
-         << "request "
+      os << "request "
          << "source mac: " << m_macSource << " "
          << "source ipv4: " << m_ipv4Source << " "
          << "dest ipv4: " << m_ipv4Dest
-         << ")"
         ;
     } 
   else 
     {
       NS_ASSERT (IsReply ());
-      os << "("
-         << "reply " 
+      os << "reply " 
          << "source mac: " << m_macSource << " "
          << "source ipv4: " << m_ipv4Source << " "
          << "dest mac: " << m_macDest << " "
          << "dest ipv4: " <<m_ipv4Dest
-         << ")"
         ;
     }
 }

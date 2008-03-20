@@ -34,7 +34,6 @@ namespace ns3 {
 class UdpHeader : public Header 
 {
 public:
-  static uint32_t GetUid (void);
 
   /**
    * \brief Constructor
@@ -84,11 +83,12 @@ public:
                            Ipv4Address destination,
                            uint8_t protocol);
 
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
   uint16_t m_sourcePort;

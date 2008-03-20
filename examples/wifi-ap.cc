@@ -47,12 +47,32 @@
 using namespace ns3;
 
 void
-WifiNetDeviceTrace (Ptr<const Packet> p, Mac48Address address)
+DevTxTrace (std::string context, Ptr<const Packet> p, Mac48Address address)
 {
-  std::cout << " ad=" << address << " p: " << p << std::endl;
+  std::cout << " TX to=" << address << " p: " << *p << std::endl;
 }
 void
-WifiPhyStateTrace (Time start, Time duration, enum WifiPhy::State state)
+DevRxTrace (std::string context, Ptr<const Packet> p, Mac48Address address)
+{
+  std::cout << " RX from=" << address << " p: " << *p << std::endl;
+}
+void
+PhyRxOkTrace (std::string context, Ptr<const Packet> packet, double snr, WifiMode mode, enum WifiPreamble preamble)
+{
+  std::cout << "PHYRXOK mode=" << mode << " snr=" << snr << " " << *packet << std::endl;
+}
+void
+PhyRxErrorTrace (std::string context, Ptr<const Packet> packet, double snr)
+{
+  std::cout << "PHYRXERROR snr=" << snr << " " << *packet << std::endl;
+}
+void
+PhyTxTrace (std::string context, Ptr<const Packet> packet, WifiMode mode, WifiPreamble preamble, uint8_t txPower)
+{
+  std::cout << "PHYTX mode=" << mode << " " << *packet << std::endl;
+}
+void
+PhyStateTrace (std::string context, Time start, Time duration, enum WifiPhy::State state)
 {
   std::cout << " state=";
   switch (state) {
@@ -161,8 +181,12 @@ int main (int argc, char *argv[])
 
   Simulator::StopAt (Seconds (44.0));
 
-  //NodeList::ConnectWithoutContext ("/nodes/*/devices/*/*", MakeCallback (&WifiNetDeviceTrace));
-  //NodeList::ConnectWithoutContext ("/nodes/*/devices/*/phy/state", MakeCallback (&WifiPhyStateTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Tx", MakeCallback (&DevTxTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Rx", MakeCallback (&DevRxTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxOk", MakeCallback (&PhyRxOkTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/RxError", MakeCallback (&PhyRxErrorTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/Tx", MakeCallback (&PhyTxTrace));
+  Config::Connect ("/NodeList/*/DeviceList/*/Phy/State", MakeCallback (&PhyStateTrace));
 
   Simulator::Run ();
 

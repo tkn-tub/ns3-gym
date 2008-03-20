@@ -95,12 +95,12 @@ private:
   uint16_t m_packetSequenceNumber;
 
 public:  
-  static uint32_t GetUid (void);
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual std::string GetName (void) const { return "OlsrPacket"; }
 };
 
 
@@ -200,12 +200,12 @@ private:
   uint16_t m_messageSize;
 
 public:  
-  static uint32_t GetUid (void);
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
   virtual void Print (std::ostream &os) const;
   virtual uint32_t GetSerializedSize (void) const;
   virtual void Serialize (Buffer::Iterator start) const;
   virtual uint32_t Deserialize (Buffer::Iterator start);
-  virtual std::string GetName (void) const { return "OlsrMessage"; }
 
   // 5.1.  MID Message Format
   //

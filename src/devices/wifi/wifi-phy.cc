@@ -27,7 +27,6 @@
 #include "ns3/random-variable.h"
 #include "ns3/assert.h"
 #include "ns3/log.h"
-#include "ns3/object-base.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
 #include "ns3/enum.h"
@@ -78,7 +77,7 @@ WifiPhyListener::~WifiPhyListener ()
  *       Phy event class
  ****************************************************************/
 
-class RxEvent : public ObjectBase 
+class RxEvent
 {
 public:
   RxEvent (uint32_t size, WifiMode payloadMode, 
@@ -236,6 +235,14 @@ WifiPhy::GetTypeId (void)
     .AddTraceSource ("State",
                      "The WifiPhy state",
                      MakeTraceSourceAccessor (&WifiPhy::m_stateLogger))
+    .AddTraceSource ("RxOk",
+                     "A packet has been received successfully.",
+                     MakeTraceSourceAccessor (&WifiPhy::m_rxOkTrace))
+    .AddTraceSource ("RxError",
+                     "A packet has been received unsuccessfully.",
+                     MakeTraceSourceAccessor (&WifiPhy::m_rxErrorTrace))
+    .AddTraceSource ("Tx", "Packet transmission is starting.",
+                     MakeTraceSourceAccessor (&WifiPhy::m_txTrace))
     ;
   return tid;
 }
@@ -473,6 +480,7 @@ WifiPhy::SendPacket (Ptr<const Packet> packet, WifiMode txMode, WifiPreamble pre
    */
   NS_ASSERT (!IsStateTx ());
 
+  m_txTrace (packet, txMode, preamble, txPower);
   Time txDuration = CalculateTxDuration (packet->GetSize (), txMode, preamble);
   NotifyTxStart (txDuration);
   SwitchToTx (txDuration);
@@ -1342,6 +1350,7 @@ WifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
     {
       NotifySyncEndOk ();
       SwitchFromSync ();
+      m_rxOkTrace (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
       m_syncOkCallback (packet, snr, event->GetPayloadMode (), event->GetPreambleType ());
     } 
   else 
@@ -1349,6 +1358,7 @@ WifiPhy::EndSync (Ptr<Packet> packet, Ptr<RxEvent> event)
       /* failure. */
       NotifySyncEndError ();
       SwitchFromSync ();
+      m_rxErrorTrace (packet, snr);
       m_syncErrorCallback (packet, snr);
     }
 }

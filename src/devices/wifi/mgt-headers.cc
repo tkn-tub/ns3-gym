@@ -27,6 +27,8 @@ namespace ns3 {
  *          Probe Request
  ***********************************************************/
 
+NS_OBJECT_ENSURE_REGISTERED (MgtProbeRequestHeader);
+
 MgtProbeRequestHeader::~MgtProbeRequestHeader ()
 {}
 
@@ -59,16 +61,19 @@ MgtProbeRequestHeader::GetSerializedSize (void) const
   size += m_rates.GetSerializedSize ();
   return size;
 }
-uint32_t
-MgtProbeRequestHeader::GetUid (void)
+TypeId 
+MgtProbeRequestHeader::GetTypeId (void)
 {
-  static uint32_t uid = AllocateUid<MgtProbeRequestHeader> ("MgtProbeRequestHeader.ns3.inria.fr");
-  return uid;
+  static TypeId tid = TypeId ("ns3::MgtProbeRequestHeader")
+    .SetParent<Header> ()
+    .AddConstructor<MgtProbeRequestHeader> ()
+    ;
+  return tid;
 }
-std::string
-MgtProbeRequestHeader::GetName (void) const
+TypeId 
+MgtProbeRequestHeader::GetInstanceTypeId (void) const
 {
-  return "PROBEREQ";
+  return GetTypeId ();
 }
 void 
 MgtProbeRequestHeader::Print (std::ostream &os) const
@@ -96,6 +101,8 @@ MgtProbeRequestHeader::Deserialize (Buffer::Iterator start)
 /***********************************************************
  *          Probe Response
  ***********************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (MgtProbeResponseHeader);
 
 MgtProbeResponseHeader::MgtProbeResponseHeader ()
 {}
@@ -133,16 +140,19 @@ MgtProbeResponseHeader::SetSupportedRates (SupportedRates rates)
 {
   m_rates = rates;
 }
-uint32_t
-MgtProbeResponseHeader::GetUid (void)
+TypeId 
+MgtProbeResponseHeader::GetTypeId (void)
 {
-  static uint32_t uid = AllocateUid<MgtProbeResponseHeader> ("MgtProbeResponseHeader.ns3.inria.fr");
-  return uid;
+  static TypeId tid = TypeId ("ns3::MgtProbeResponseHeader")
+    .SetParent<Header> ()
+    .AddConstructor<MgtProbeResponseHeader> ()
+    ;
+  return tid;
 }
-std::string
-MgtProbeResponseHeader::GetName (void) const
+TypeId 
+MgtProbeResponseHeader::GetInstanceTypeId (void) const
 {
-  return "PROBERESP";
+  return GetTypeId ();
 }
 uint32_t
 MgtProbeResponseHeader::GetSerializedSize (void) const
@@ -198,6 +208,11 @@ MgtProbeResponseHeader::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
+/***********************************************************
+ *          Assoc Request
+ ***********************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (MgtAssocRequestHeader);
 
 MgtAssocRequestHeader::MgtAssocRequestHeader ()
 {}
@@ -234,16 +249,20 @@ MgtAssocRequestHeader::GetListenInterval (void) const
 {
   return m_listenInterval;
 }
-uint32_t
-MgtAssocRequestHeader::GetUid (void)
+
+TypeId 
+MgtAssocRequestHeader::GetTypeId (void)
 {
-  static uint32_t uid = AllocateUid<MgtAssocRequestHeader> ("MgtAssocRequestHeader.ns3.inria.fr");
-  return uid;
+  static TypeId tid = TypeId ("ns3::MgtAssocRequestHeader")
+    .SetParent<Header> ()
+    .AddConstructor<MgtAssocRequestHeader> ()
+    ;
+  return tid;
 }
-std::string
-MgtAssocRequestHeader::GetName (void) const
+TypeId 
+MgtAssocRequestHeader::GetInstanceTypeId (void) const
 {
-  return "ASSOCREQ";
+  return GetTypeId ();
 }
 uint32_t 
 MgtAssocRequestHeader::GetSerializedSize (void) const
@@ -281,6 +300,12 @@ MgtAssocRequestHeader::Deserialize (Buffer::Iterator start)
   return i.GetDistanceFrom (start);
 }
 
+/***********************************************************
+ *          Assoc Response
+ ***********************************************************/
+
+NS_OBJECT_ENSURE_REGISTERED (MgtAssocResponseHeader);
+
 MgtAssocResponseHeader::MgtAssocResponseHeader ()
 {}
 MgtAssocResponseHeader::~MgtAssocResponseHeader ()
@@ -307,16 +332,19 @@ MgtAssocResponseHeader::SetSupportedRates (SupportedRates rates)
   m_rates = rates;
 }
 
-uint32_t
-MgtAssocResponseHeader::GetUid (void)
+TypeId 
+MgtAssocResponseHeader::GetTypeId (void)
 {
-  static uint32_t uid = AllocateUid<MgtAssocResponseHeader> ("MgtAssocResponseHeader.ns3.inria.fr");
-  return uid;
+  static TypeId tid = TypeId ("ns3::MgtAssocResponseHeader")
+    .SetParent<Header> ()
+    .AddConstructor<MgtAssocResponseHeader> ()
+    ;
+  return tid;
 }
-std::string
-MgtAssocResponseHeader::GetName (void) const
+TypeId 
+MgtAssocResponseHeader::GetInstanceTypeId (void) const
 {
-  return "ASSOCRESP";
+  return GetTypeId ();
 }
 uint32_t
 MgtAssocResponseHeader::GetSerializedSize (void) const

@@ -22,23 +22,27 @@
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (WifiMacTrailer);
+
 WifiMacTrailer::WifiMacTrailer ()
 {}
 
 WifiMacTrailer::~WifiMacTrailer ()
 {}
 
-uint32_t
-WifiMacTrailer::GetUid (void)
+TypeId 
+WifiMacTrailer::GetTypeId (void)
 {
-  static uint32_t uid = AllocateUid<WifiMacTrailer> ("WifiMacTrailer.ns3.inria.fr");
-  return uid;
+  static TypeId tid = TypeId ("ns3::WifiMacTrailer")
+    .SetParent<Trailer> ()
+    .AddConstructor<WifiMacTrailer> ()
+    ;
+  return tid;
 }
-
-std::string
-WifiMacTrailer::GetName (void) const
+TypeId 
+WifiMacTrailer::GetInstanceTypeId (void) const
 {
-  return "802.11 FCS";
+  return GetTypeId ();
 }
 
 void 

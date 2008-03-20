@@ -145,6 +145,8 @@ public:
    */
   void Receive (Ptr<Packet> p);
 
+  void SetAddress (Mac48Address self);
+
   // inherited from NetDevice base class.
   virtual void SetName(const std::string name);
   virtual std::string GetName(void) const;

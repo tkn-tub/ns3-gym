@@ -33,13 +33,12 @@ public:
   BenchHeader ();
   bool IsOk (void) const;
 
-  static uint32_t GetUid (void);
-
-  static std::string GetName (void);
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
   bool m_ok;
 };
@@ -57,20 +56,21 @@ BenchHeader<N>::IsOk (void) const
 }
 
 template <int N>
-uint32_t 
-BenchHeader<N>::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<BenchHeader<N> > (GetName ());
-  return uid;
-}
-
-template <int N>
-std::string 
-BenchHeader<N>::GetName (void)
+TypeId 
+BenchHeader<N>::GetTypeId (void)
 {
   std::ostringstream oss;
-  oss << "BenchHeader" << N;
-  return oss.str ();
+  oss << "ns3::BenchHeader<"<<N<<">";
+  static TypeId tid = TypeId (oss.str ().c_str ())
+    .SetParent<Header> ()
+    ;
+  return tid;
+}
+template <int N>
+TypeId 
+BenchHeader<N>::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
 }
 
 template <int N>

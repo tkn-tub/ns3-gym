@@ -88,6 +88,12 @@ PointToPointNetDevice::~PointToPointNetDevice ()
 {}
 
 void 
+PointToPointNetDevice::SetAddress (Mac48Address self)
+{
+  m_address = self;
+}
+
+void 
 PointToPointNetDevice::AddHeader(Ptr<Packet> p, uint16_t protocolNumber)
 {
   NS_LOG_FUNCTION;

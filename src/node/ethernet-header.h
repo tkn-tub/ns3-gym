@@ -49,7 +49,6 @@ namespace ns3 {
 class EthernetHeader : public Header 
 {
 public:
-  static uint32_t GetUid (void);
 
   /**
    * \brief Construct a null ethernet header
@@ -103,11 +102,12 @@ public:
    */
   uint32_t GetHeaderSize() const;
 
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
   static const int PREAMBLE_SIZE = 8; /// size of the preamble_sfd header field
   static const int LENGTH_SIZE = 2;   /// size of the length_type header field

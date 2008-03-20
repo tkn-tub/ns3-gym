@@ -4,13 +4,14 @@ def build(bld):
     common = bld.create_ns3_module('common', ['core', 'simulator'])
     common.source = [
         'buffer.cc',
-        'chunk-registry.cc',
-        'packet-printer.cc',
         'packet-metadata.cc',
         'packet-metadata-test.cc',
         'packet.cc',
         'tags.cc',
         'tag-registry.cc',
+        'chunk.cc',
+        'header.cc',
+        'trailer.cc',
         'pcap-writer.cc',
         'data-rate.cc',
         'error-model.cc',
@@ -20,14 +21,13 @@ def build(bld):
     headers.module = 'common'
     headers.source = [
         'buffer.h',
-        'chunk-registry.h',
+        'chunk.h',
         'header.h',
         'trailer.h',
         'tags.h',
         'tag-registry.h',
         'tag.h',
         'packet.h',
-        'packet-printer.h',
         'packet-metadata.h',
         'pcap-writer.h',
         'data-rate.h',

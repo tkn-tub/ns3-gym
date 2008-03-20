@@ -34,6 +34,8 @@ std::Cout << "MAC80211HEADER " << x << std::Endl;
 
 namespace ns3 {
 
+NS_OBJECT_ENSURE_REGISTERED (WifiMacHeader);
+
 enum {
   TYPE_MGT = 0,
   TYPE_CTL  = 1,
@@ -766,27 +768,28 @@ case WIFI_MAC_ ## x: \
   return "BIG_ERROR";
 }
 
-uint32_t
-WifiMacHeader::GetUid (void)
+TypeId 
+WifiMacHeader::GetTypeId (void)
 {
-  static uint32_t uid = AllocateUid<WifiMacHeader> ("WifiMacHeader.ns3.inria.fr");
-  return uid;
+  static TypeId tid = TypeId ("ns3::WifiMacHeader")
+    .SetParent<Header> ()
+    .AddConstructor<WifiMacHeader> ()
+    ;
+  return tid;
 }
-
-std::string
-WifiMacHeader::GetName (void) const
+TypeId 
+WifiMacHeader::GetInstanceTypeId (void) const
 {
-  return "802.11";
+  return GetTypeId ();
 }
 
 void 
 WifiMacHeader::PrintFrameControl (std::ostream &os) const
 {
-  os << "("
-     << "ToDS=" << m_ctrlToDs << ", FromDS=" << m_ctrlFromDs 
+  os << "ToDS=" << m_ctrlToDs << ", FromDS=" << m_ctrlFromDs 
      << ", MoreFrag=" << m_ctrlMoreFrag << ", Retry=" << m_ctrlRetry 
      << ", MoreData=" << m_ctrlMoreData 
-     << ")";
+    ;
 }
 
 void 

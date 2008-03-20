@@ -25,12 +25,15 @@
 #include <vector>
 #include "ns3/callback.h"
 #include "ns3/assert.h"
-#include "packet-printer.h"
+#include "ns3/type-id.h"
+#include "buffer.h"
 
 namespace ns3 {
 
 class Chunk;
 class Buffer;
+class Header;
+class Trailer;
 
 /**
  * \internal
@@ -72,8 +75,55 @@ class Buffer;
  * The variable-size 32 bit integers are stored using the uleb128
  * encoding.
  */
-class PacketMetadata {
+class PacketMetadata 
+{
 public:
+  struct Item 
+  {
+    enum {
+      PAYLOAD,
+      HEADER,
+      TRAILER
+    } type;
+    /* true: this is a fragmented header, trailer, or, payload.
+     * false: this is a whole header, trailer, or, payload.
+     */
+    bool isFragment;
+    /* TypeId of Header or Trailer. Valid only if type is 
+     * header or trailer.
+     */
+    TypeId tid;
+    /* size of item. If fragment, size of fragment. Otherwise, 
+     * size of original item. 
+     */
+    uint32_t currentSize;
+    /* how many bytes were trimed from the start of a fragment.
+     * if isFragment is true, this field is zero.
+     */
+    uint32_t currentTrimedFromStart;
+    /* how many bytes were trimed from the end of a fragment.
+     * if isFragment is true, this field is zero.
+     */
+    uint32_t currentTrimedFromEnd;
+    /* an iterator which can be fed to Deserialize. Valid only
+     * if isFragment and isPayload are false.
+     */
+    Buffer::Iterator current;
+  };
+  class ItemIterator 
+  {
+  public:
+    ItemIterator (const PacketMetadata *metadata, Buffer buffer);
+    bool HasNext (void) const;
+    Item Next (void);
+  private:
+    const PacketMetadata *m_metadata;
+    Buffer m_buffer;
+    uint16_t m_current;
+    uint32_t m_offset;
+    bool m_hasReadTail;
+  };
+
   static void Enable (void);
   static void SetOptOne (bool optOne);
 
@@ -82,15 +132,11 @@ public:
   inline PacketMetadata &operator = (PacketMetadata const& o);
   inline ~PacketMetadata ();
 
-  template <typename T>
-  void AddHeader (T const &header, uint32_t size);
-  template <typename T>
-  void RemoveHeader (T const &header, uint32_t size);
+  void AddHeader (Header const &header, uint32_t size);
+  void RemoveHeader (Header const &header, uint32_t size);
 
-  template <typename T>
-  void AddTrailer (T const &trailer, uint32_t size);
-  template <typename T>
-  void RemoveTrailer (T const &trailer, uint32_t size);
+  void AddTrailer (Trailer const &trailer, uint32_t size);
+  void RemoveTrailer (Trailer const &trailer, uint32_t size);
 
   PacketMetadata CreateFragment (uint32_t start, uint32_t end) const;
   void AddAtEnd (PacketMetadata const&o);
@@ -100,13 +146,13 @@ public:
 
   uint32_t GetUid (void) const;
 
-  void Print (std::ostream &os, Buffer buffer, PacketPrinter const &printer) const;
-
   uint32_t GetSerializedSize (void) const;
   void Serialize (Buffer::Iterator i, uint32_t size) const;
   uint32_t Deserialize (Buffer::Iterator i);
 
   static void PrintStats (void);
+
+  ItemIterator BeginItem (Buffer buffer) const;
 
 private:
   struct Data {
@@ -192,12 +238,9 @@ private:
   };
 
   friend DataFreeList::~DataFreeList ();
+  friend class ItemIterator;
 
   PacketMetadata ();
-  void DoAddHeader (uint32_t uid, uint32_t size);
-  void DoRemoveHeader (uint32_t uid, uint32_t size);
-  void DoAddTrailer (uint32_t uid, uint32_t size);
-  void DoRemoveTrailer (uint32_t uid, uint32_t size);
 
   inline uint16_t AddSmall (const PacketMetadata::SmallItem *item);
   uint16_t AddBig (uint32_t head, uint32_t tail,
@@ -219,14 +262,11 @@ private:
   void AppendValueExtra (uint32_t value, uint8_t *buffer);
   inline void Reserve (uint32_t n);
   void ReserveCopy (uint32_t n);
-  uint32_t DoPrint (const struct PacketMetadata::SmallItem *item,
-                    const struct PacketMetadata::ExtraItem *extraItem,
-                    Buffer data, uint32_t offset, const PacketPrinter &printer,
-                    std::ostream &os) const;
   uint32_t GetTotalSize (void) const;
   uint32_t ReadItems (uint16_t current, 
                       struct PacketMetadata::SmallItem *item,
                       struct PacketMetadata::ExtraItem *extraItem) const;
+  void DoAddHeader (uint32_t uid, uint32_t size);
 
 
   static struct PacketMetadata::Data *Create (uint32_t size);
@@ -260,33 +300,6 @@ private:
 }; // namespace ns3
 
 namespace ns3 {
-
-template <typename T>
-void 
-PacketMetadata::AddHeader (T const &header, uint32_t size)
-{
-  DoAddHeader (T::GetUid () << 1, size);
-}
-
-template <typename T>
-void 
-PacketMetadata::RemoveHeader (T const &header, uint32_t size)
-{
-  DoRemoveHeader (T::GetUid () << 1, size);
-}
-template <typename T>
-void 
-PacketMetadata::AddTrailer (T const &trailer, uint32_t size)
-{
-  DoAddTrailer (T::GetUid () << 1, size);
-}
-template <typename T>
-void 
-PacketMetadata::RemoveTrailer (T const &trailer, uint32_t size)
-{
-  DoRemoveTrailer (T::GetUid () << 1, size);
-}
-
 
 PacketMetadata::PacketMetadata (uint32_t uid, uint32_t size)
   : m_data (m_data = PacketMetadata::Create (10)),
@@ -343,7 +356,7 @@ PacketMetadata::~PacketMetadata ()
     }
 }
 
-}; // namespace ns3
+} // namespace ns3
 
 
 #endif /* PACKET_METADATA_H */

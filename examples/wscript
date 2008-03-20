@@ -66,4 +66,11 @@ def build(bld):
         ['point-to-point', 'internet-node'])
     obj.source = 'tcp-small-transfer-oneloss.cc'
 
+    obj = bld.create_ns3_program('wifi-adhoc',
+                                 ['core', 'simulator', 'mobility', 'wifi'])
+    obj.source = 'wifi-adhoc.cc'
+
+    obj = bld.create_ns3_program('wifi-ap',
+                                 ['core', 'simulator', 'mobility', 'wifi'])
+    obj.source = 'wifi-ap.cc'
 

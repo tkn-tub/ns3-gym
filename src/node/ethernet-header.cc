@@ -31,14 +31,7 @@ NS_LOG_COMPONENT_DEFINE ("EthernetHeader");
 
 namespace ns3 {
 
-NS_HEADER_ENSURE_REGISTERED (EthernetHeader);
-
-uint32_t
-EthernetHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<EthernetHeader> ("EthernetHeader.ns3");
-  return uid;
-}
+NS_OBJECT_ENSURE_REGISTERED (EthernetHeader);
 
 EthernetHeader::EthernetHeader (bool hasPreamble)
   : m_enPreambleSfd (hasPreamble),
@@ -106,19 +99,28 @@ EthernetHeader::GetHeaderSize (void) const
   return GetSerializedSize();
 }
 
-std::string
-EthernetHeader::GetName (void) const
-{
-  return "ETHERNET";
-}
 
+TypeId 
+EthernetHeader::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::EthernetHeader")
+    .SetParent<Header> ()
+    .AddConstructor<EthernetHeader> ()
+    ;
+  return tid;
+}
+TypeId 
+EthernetHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 void 
 EthernetHeader::Print (std::ostream &os) const
 {
   // ethernet, right ?
   if (m_enPreambleSfd)
     {
-      os << " preamble/sfd=" << m_preambleSfd << ",";
+      os << "preamble/sfd=" << m_preambleSfd << ",";
     }
 
   os << " length/type=0x" << std::hex << m_lengthType << std::dec

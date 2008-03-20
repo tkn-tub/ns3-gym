@@ -21,7 +21,6 @@
 #define ATTRIBUTE_HELPER_H
 
 #include "attribute.h"
-#include "object-base.h"
 #include "attribute-accessor-helper.h"
 #include <sstream>
 #include "fatal-error.h"
@@ -56,8 +55,6 @@ MakeSimpleAttributeChecker (std::string name)
 }
 
 }
-
-
 
 /**
  * \defgroup AttributeHelper
@@ -279,7 +276,6 @@ MakeSimpleAttributeChecker (std::string name)
   ATTRIBUTE_CHECKER_IMPLEMENT (type);					\
   ATTRIBUTE_CONVERTER_IMPLEMENT (type);					\
   ATTRIBUTE_VALUE_IMPLEMENT (type);
-
 
 
 #endif /* ATTRIBUTE_HELPER_H */

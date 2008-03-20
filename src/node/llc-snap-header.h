@@ -31,18 +31,17 @@ namespace ns3 {
 class LlcSnapHeader : public Header 
 {
 public:
-  static uint32_t GetUid (void);
-
   LlcSnapHeader ();
 
   void SetType (uint16_t type);
   uint16_t GetType (void);
 
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 private:
   uint16_t m_etherType;
 };

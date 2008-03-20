@@ -19,7 +19,6 @@
  * Author: Mathieu Lacage <mathieu.lacage@sophia.inria.fr>
  */
 #include "packet.h"
-#include "packet-printer.h"
 #include "ns3/assert.h"
 
 namespace ns3 {
@@ -124,6 +123,40 @@ Packet::GetSize (void) const
   return m_buffer.GetSize ();
 }
 
+void
+Packet::AddHeader (const Header &header)
+{
+  uint32_t size = header.GetSerializedSize ();
+  m_buffer.AddAtStart (size);
+  header.Serialize (m_buffer.Begin ());
+  m_metadata.AddHeader (header, size);
+}
+uint32_t
+Packet::RemoveHeader (Header &header)
+{
+  uint32_t deserialized = header.Deserialize (m_buffer.Begin ());
+  m_buffer.RemoveAtStart (deserialized);
+  m_metadata.RemoveHeader (header, deserialized);
+  return deserialized;
+}
+void
+Packet::AddTrailer (const Trailer &trailer)
+{
+  uint32_t size = trailer.GetSerializedSize ();
+  m_buffer.AddAtEnd (size);
+  Buffer::Iterator end = m_buffer.End ();
+  trailer.Serialize (end);
+  m_metadata.AddTrailer (trailer, size);
+}
+uint32_t
+Packet::RemoveTrailer (Trailer &trailer)
+{
+  uint32_t deserialized = trailer.Deserialize (m_buffer.End ());
+  m_buffer.RemoveAtEnd (deserialized);
+  m_metadata.RemoveTrailer (trailer, deserialized);
+  return deserialized;
+}
+
 void 
 Packet::AddAtEnd (Ptr<const Packet> packet)
 {
@@ -187,13 +220,123 @@ Packet::PrintTags (std::ostream &os) const
 void 
 Packet::Print (std::ostream &os) const
 {
-  m_metadata.Print (os, m_buffer, PacketPrinter ());
+  PacketMetadata::ItemIterator i = m_metadata.BeginItem (m_buffer);
+  while (i.HasNext ())
+    {
+      PacketMetadata::Item item = i.Next ();
+      if (item.isFragment)
+        {
+          switch (item.type) {
+          case PacketMetadata::Item::PAYLOAD:
+            os << "Payload";
+            break;
+          case PacketMetadata::Item::HEADER:
+          case PacketMetadata::Item::TRAILER:
+            os << item.tid.GetName ();
+            break;
+          }
+          os << " Fragment [" << item.currentTrimedFromStart<<":"
+             << (item.currentTrimedFromStart + item.currentSize) << "]";
+        }
+      else
+        {
+          switch (item.type) {
+          case PacketMetadata::Item::PAYLOAD:
+            os << "Payload (size=" << item.currentSize << ")";
+            break;
+          case PacketMetadata::Item::HEADER:
+          case PacketMetadata::Item::TRAILER:
+            os << item.tid.GetName () << " (";
+            {
+              NS_ASSERT (item.tid.HasConstructor ());
+              Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
+              NS_ASSERT (!constructor.IsNull ());
+              ObjectBase *instance = constructor ();
+              NS_ASSERT (instance != 0);
+              Chunk *chunk = dynamic_cast<Chunk *> (instance);
+              NS_ASSERT (chunk != 0);
+              chunk->Deserialize (item.current);
+              chunk->Print (os);
+            }
+            os << ")";
+            break;
+          }          
+        }
+      if (i.HasNext ())
+        {
+          os << " ";
+        }
+    }
+#if 0
+  // The code below will work only if headers and trailers
+  // define the right attributes which is not the case for
+  // now. So, as a temporary measure, we use the 
+  // headers' and trailers' Print method as shown above.
+  PacketMetadata::ItemIterator i = m_metadata.BeginItem (m_buffer);
+  while (i.HasNext ())
+    {
+      PacketMetadata::Item item = i.Next ();
+      if (item.isFragment)
+        {
+          switch (item.type) {
+          case PacketMetadata::Item::PAYLOAD:
+            os << "Payload";
+            break;
+          case PacketMetadata::Item::HEADER:
+          case PacketMetadata::Item::TRAILER:
+            os << item.tid.GetName ();
+            break;
+          }
+          os << " Fragment [" << item.currentTrimedFromStart<<":"
+             << (item.currentTrimedFromStart + item.currentSize) << "]";
+        }
+      else
+        {
+          switch (item.type) {
+          case PacketMetadata::Item::PAYLOAD:
+            os << "Payload (size=" << item.currentSize << ")";
+            break;
+          case PacketMetadata::Item::HEADER:
+          case PacketMetadata::Item::TRAILER:
+            os << item.tid.GetName () << "(";
+            {
+              NS_ASSERT (item.tid.HasConstructor ());
+              Callback<ObjectBase *> constructor = item.tid.GetConstructor ();
+              NS_ASSERT (constructor.IsNull ());
+              ObjectBase *instance = constructor ();
+              NS_ASSERT (instance != 0);
+              Chunk *chunk = dynamic_cast<Chunk *> (instance);
+              NS_ASSERT (chunk != 0);
+              chunk->Deserialize (item.current);
+              for (uint32_t j = 0; j < item.tid.GetAttributeListN (); j++)
+                {
+                  std::string attrName = item.tid.GetAttributeName (j);
+                  std::string value;
+                  bool ok = chunk->GetAttribute (attrName, value);
+                  NS_ASSERT (ok);
+                  os << attrName << "=" << value;
+                  if ((j + 1) < item.tid.GetAttributeListN ())
+                    {
+                      os << ",";
+                    }
+                }
+            }
+            os << ")";
+            break;
+          }          
+        }
+      if (i.HasNext ())
+        {
+          os << " ";
+        }
+    }
+#endif   
 }
 
-void 
-Packet::Print (std::ostream &os, const PacketPrinter &printer) const
+PacketMetadata::ItemIterator 
+Packet::BeginItem (void) const
 {
-  m_metadata.Print (os, m_buffer, printer);
+  return m_metadata.BeginItem (m_buffer);
 }
 
 void

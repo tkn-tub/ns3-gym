@@ -21,11 +21,10 @@
 #define EVENT_IMPL_H
 
 #include <stdint.h>
-#include "ns3/object-base.h"
 
 namespace ns3 {
 
-class EventImpl : public ObjectBase 
+class EventImpl
 {
 public:
   EventImpl ();

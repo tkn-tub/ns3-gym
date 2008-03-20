@@ -30,10 +30,9 @@
 
 namespace ns3 {
 
-class TcpHeader : public Header {
+class TcpHeader : public Header 
+{
 public:
-  static uint32_t GetUid (void);
-
   TcpHeader ();
   virtual ~TcpHeader ();
 
@@ -136,11 +135,12 @@ public:
   typedef enum { NONE = 0, FIN = 1, SYN = 2, RST = 4, PSH = 8, ACK = 16, 
     URG = 32} Flags_t;
 
-  std::string GetName (void) const;
-  void Print (std::ostream &os) const;
-  uint32_t GetSerializedSize (void) const;
-  void Serialize (Buffer::Iterator start) const;
-  uint32_t Deserialize (Buffer::Iterator start);
+  static TypeId GetTypeId (void);
+  virtual TypeId GetInstanceTypeId (void) const;
+  virtual void Print (std::ostream &os) const;
+  virtual uint32_t GetSerializedSize (void) const;
+  virtual void Serialize (Buffer::Iterator start) const;
+  virtual uint32_t Deserialize (Buffer::Iterator start);
 
 private:
   uint16_t m_sourcePort;

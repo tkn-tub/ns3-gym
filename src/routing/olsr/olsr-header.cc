@@ -33,7 +33,6 @@ namespace olsr {
 
 NS_LOG_COMPONENT_DEFINE("OlsrHeader");
 
-
 /// Scaling factor used in RFC 3626.
 #define OLSR_C 0.0625
 
@@ -95,18 +94,27 @@ EmfToSeconds (uint8_t olsrFormat)
 
 // ---------------- OLSR Packet -------------------------------
 
+NS_OBJECT_ENSURE_REGISTERED (PacketHeader);
+
 PacketHeader::PacketHeader ()
 {}
 
 PacketHeader::~PacketHeader ()
 {}
 
-uint32_t
-PacketHeader::GetUid (void)
+TypeId
+PacketHeader::GetTypeId (void)
 {
-  static uint32_t uid = AllocateUid<PacketHeader>
-    ("PacketHeader.nsnam.org");
-  return uid;
+  static TypeId tid = TypeId ("ns3::olsr::PacketHeader")
+    .SetParent<Header> ()
+    .AddConstructor<PacketHeader> ()
+    ;
+  return tid;
+}
+TypeId
+PacketHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
 }
 
 uint32_t 
@@ -141,6 +149,8 @@ PacketHeader::Deserialize (Buffer::Iterator start)
 
 // ---------------- OLSR Message -------------------------------
 
+NS_OBJECT_ENSURE_REGISTERED (MessageHeader);
+
 MessageHeader::MessageHeader ()
   : m_messageType (MessageHeader::MessageType (0))
 {}
@@ -148,12 +158,19 @@ MessageHeader::MessageHeader ()
 MessageHeader::~MessageHeader ()
 {}
 
-uint32_t
-MessageHeader::GetUid (void)
+TypeId
+MessageHeader::GetTypeId (void)
 {
-  static uint32_t uid = AllocateUid<MessageHeader>
-    ("MessageHeader.nsnam.org");
-  return uid;
+  static TypeId tid = TypeId ("ns3::olsr::MessageHeader")
+    .SetParent<Header> ()
+    .AddConstructor<MessageHeader> ()
+    ;
+  return tid;
+}
+TypeId
+MessageHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
 }
 
 uint32_t

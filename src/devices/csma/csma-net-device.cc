@@ -111,6 +111,12 @@ CsmaNetDevice::DoDispose ()
   NetDevice::DoDispose ();
 }
 
+void 
+CsmaNetDevice::SetAddress (Mac48Address self)
+{
+  m_address = self;
+}
+
 void
 CsmaNetDevice::SetSendEnable (bool sendEnable)
 {

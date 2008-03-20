@@ -25,14 +25,7 @@
 
 namespace ns3 {
 
-NS_HEADER_ENSURE_REGISTERED (LlcSnapHeader);
-
-uint32_t
-LlcSnapHeader::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<LlcSnapHeader> ("LlcSnapHeader.ns3");
-  return uid;
-}
+NS_OBJECT_ENSURE_REGISTERED (LlcSnapHeader);
 
 LlcSnapHeader::LlcSnapHeader ()
 {}
@@ -54,20 +47,27 @@ LlcSnapHeader::GetSerializedSize (void) const
   return 1 + 1 + 1 + 3 + 2;
 }
 
-std::string
-LlcSnapHeader::GetName (void) const
+TypeId 
+LlcSnapHeader::GetTypeId (void)
 {
-  return "LLCSNAP";
+  static TypeId tid = TypeId ("ns3::LlcSnapHeader")
+    .SetParent<Header> ()
+    .AddConstructor<LlcSnapHeader> ()
+    ;
+  return tid;
 }
-
+TypeId 
+LlcSnapHeader::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 void 
 LlcSnapHeader::Print (std::ostream &os) const
 {
-  os << "(type 0x";
+  os << "type 0x";
   os.setf (std::ios::hex, std::ios::basefield);
   os << m_etherType;
   os.setf (std::ios::dec, std::ios::basefield);
-  os << ")";
 }
 
 void

@@ -345,6 +345,9 @@ private:
   Ptr<WifiChannel> m_channel;
   SyncOkCallback m_syncOkCallback;
   SyncErrorCallback m_syncErrorCallback;
+  TracedCallback<Ptr<const Packet>, double, WifiMode, enum WifiPreamble> m_rxOkTrace;
+  TracedCallback<Ptr<const Packet>, double> m_rxErrorTrace;
+  TracedCallback<Ptr<const Packet>,WifiMode,WifiPreamble,uint8_t> m_txTrace;
   Modes m_modes;
   Listeners m_listeners;
   EventId m_endSyncEvent;

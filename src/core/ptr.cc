@@ -23,7 +23,6 @@
 #ifdef RUN_SELF_TESTS
 
 #include "test.h"
-#include "object-base.h"
 
 namespace ns3 {
 
@@ -46,7 +45,7 @@ private:
 };
 
 
-class Base : public ObjectBase
+class Base
 {
 public:
   Base ();

@@ -28,16 +28,9 @@ NS_LOG_COMPONENT_DEFINE ("Ipv4Header");
 
 namespace ns3 {
 
-NS_HEADER_ENSURE_REGISTERED (Ipv4Header);
+NS_OBJECT_ENSURE_REGISTERED (Ipv4Header);
 
 bool Ipv4Header::m_calcChecksum = false;
-
-uint32_t
-Ipv4Header::GetUid (void)
-{
-  static uint32_t uid = AllocateUid<Ipv4Header> ("Ipv4Header.ns3");
-  return uid;
-}
 
 Ipv4Header::Ipv4Header ()
   : m_payloadSize (0),
@@ -186,12 +179,21 @@ Ipv4Header::IsChecksumOk (void) const
   return m_goodChecksum;
 }
 
-std::string 
-Ipv4Header::GetName (void) const
-{
-  return "IPV4";
-}
 
+TypeId 
+Ipv4Header::GetTypeId (void)
+{
+  static TypeId tid = TypeId ("ns3::Ipv4Header")
+    .SetParent<Header> ()
+    .AddConstructor<Ipv4Header> ()
+    ;
+  return tid;
+}
+TypeId 
+Ipv4Header::GetInstanceTypeId (void) const
+{
+  return GetTypeId ();
+}
 void 
 Ipv4Header::Print (std::ostream &os) const
 {
@@ -218,14 +220,13 @@ Ipv4Header::Print (std::ostream &os) const
     {
       flags = "XX";
     }
-  os << "("
-     << "tos 0x" << std::hex << m_tos << std::dec << " "
+  os << "tos 0x" << std::hex << m_tos << std::dec << " "
      << "ttl " << m_ttl << " "
      << "id " << m_identification << " "
      << "offset " << m_fragmentOffset << " "
      << "flags [" << flags << "] "
      << "length: " << (m_payloadSize + 5 * 4)
-     << ") "
+     << " " 
      << m_source << " > " << m_destination
     ;
 }

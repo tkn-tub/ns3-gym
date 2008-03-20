@@ -22,28 +22,10 @@
 #ifndef TRAILER_H
 #define TRAILER_H
 
-#include "chunk-registry.h"
+#include "chunk.h"
+#include "buffer.h"
+#include <stdint.h>
 
-/**
- * \relates ns3::Trailer
- * \brief this macro should be instantiated exactly once for each
- *        new type of Trailer
- *
- * This macro will ensure that your new Trailer type is registered
- * within the packet trailer registry. In most cases, this macro
- * is not really needed but, for safety, please, use it all the
- * time.
- *
- * Note: This macro is _absolutely_ needed if you try to run a
- * distributed simulation.
- */
-#define NS_TRAILER_ENSURE_REGISTERED(x)          \
-static class thisisaveryverylongclassname ##x    \
-{                                                \
- public:                                         \
-  thisisaveryverylongclassname ##x ()            \
-    { uint32_t uid; uid = x::GetUid ();}         \
-} g_thisisanotherveryveryverylongname ##x;
 
 namespace ns3 {
 
@@ -55,61 +37,63 @@ namespace ns3 {
  * implement the following public methods:
  *   - a default constructor: is used by the internal implementation
  *     if the Packet class.
- *   - a static method named GetUid: is used to uniquely identify
- *     the type of each trailer. This method shall return a unique
- *     integer allocated with Trailer::AllocateUid.
- *   - a method named Serialize: is used by Packet::AddTrailer to
- *     store a trailer into the byte buffer of a packet.
- *     The input iterator points to the end of the byte buffer in
- *     which the trailer should write its data: the user is thus
- *     required to call Buffer::Iterator::Prev prior to writing
- *     any data in the buffer. The data written is expected to 
- *     match bit-for-bit the representation of this trailer in a 
- *     real network.
- *   - a method named GetSerializedSize: is used by Packet::AddTrailer
- *     to store a trailer into the byte buffer of a packet. This method
- *     should return the number of bytes which are needed to store
- *     the full trailer data by Serialize.
- *   - a method named Deserialize: is used by Packet::RemoveTrailer to
- *     re-create a trailer from the byte buffer of a packet. The input
- *     iterator points to the end of the byte buffer from which
- *     the trailer should read its data: the user is thus required to
- *     call Buffer::Iterator::Prev prior to reading any data from the
- *     buffer. The data read is expected to match bit-for-bit the 
- *     representation of this trailer in real networks. This method 
- *     shall return an integer which identifies the number of bytes read.
- *   - a method named Print: is used by Packet::Print to print the 
- *     content of a trailer as ascii data to a c++ output stream.
- *     Although the trailer is free to format its output as it
- *     wishes, it is recommended to follow a few rules to integrate
- *     with the packet pretty printer: start with flags, small field 
- *     values located between a pair of parens. Values should be separated 
- *     by whitespace. Follow the parens with the important fields, 
- *     separated by whitespace.
- *     i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
- *   - a method named GetName: is used by Packet::Print to print
- *     trailer fragments. This method should return a user-readable
- *     single word as all capitalized letters.
- *
  */
-class Trailer 
+class Trailer : public Chunk
 {
-protected:
-  template <typename T>
-  static uint32_t AllocateUid (std::string uidString);
+public:
+  static TypeId GetTypeId (void);
+  virtual ~Trailer ();
+  /**
+   * \returns the expected size of the trailer.
+   *
+   * This method is used by Packet::AddTrailer
+   * to store a trailer into the byte buffer of a packet. This method
+   * should return the number of bytes which are needed to store
+   * the full trailer data by Serialize.
+   */
+  virtual uint32_t GetSerializedSize (void) const = 0;
+  /**
+   * \param start an iterator which points to where the trailer
+   *        should be written.
+   *
+   * This method is used by Packet::AddTrailer to
+   * store a header into the byte buffer of a packet.
+   * The data written is expected to match bit-for-bit the 
+   * representation of this trailer in real networks.
+   * The input iterator points to the end of the area where the 
+   * data shall be written. This method is thus expected to call
+   * Buffer::Iterator::Prev prior to actually writing any data.
+   */
+  virtual void Serialize (Buffer::Iterator start) const = 0;
+  /**
+   * \param start an iterator which points to where the trailer
+   *        should be read.
+   * \returns the number of bytes read.
+   *
+   * This method is used by Packet::RemoveTrailer to
+   * re-create a trailer from the byte buffer of a packet. 
+   * The data read is expected to match bit-for-bit the 
+   * representation of this trailer in real networks.
+   * The input iterator points to the end of the area where the 
+   * data shall be written. This method is thus expected to call
+   * Buffer::Iterator::Prev prio to actually reading any data.
+   */
+  virtual uint32_t Deserialize (Buffer::Iterator end) = 0;
+  /**
+   * This method is used by Packet::Print to print the 
+   * content of a trailer as ascii data to a c++ output stream.
+   * Although the trailer is free to format its output as it
+   * wishes, it is recommended to follow a few rules to integrate
+   * with the packet pretty printer: start with flags, small field 
+   * values located between a pair of parens. Values should be separated 
+   * by whitespace. Follow the parens with the important fields, 
+   * separated by whitespace.
+   * i.e.: (field1 val1 field2 val2 field3 val3) field4 val4 field5 val5
+   */
+  virtual void Print (std::ostream &os) const = 0;
 };
 
-} // namespace ns3
-
-namespace ns3 {
-
-template <typename T>
-uint32_t 
-Trailer::AllocateUid (std::string uidString)
-{
-  return ChunkRegistry::RegisterTrailer<T> (uidString);
-}
-
+std::ostream & operator << (std::ostream &os, const Trailer &trailer);
 
 } // namespace ns3
 
