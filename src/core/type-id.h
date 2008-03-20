@@ -304,7 +304,22 @@ public:
   bool LookupAttributeByName (std::string name, struct AttributeInfo *info) const;
   Ptr<const TraceSourceAccessor> LookupTraceSourceByName (std::string name) const;
 
+  /**
+   * \returns the internal integer which uniquely identifies this
+   *          TypeId.
+   *
+   * This is really an internal method which users are not expected
+   * to use.
+   */
   uint16_t GetUid (void) const;
+  /**
+   * \param tid the internal integer which uniquely identifies 
+   *        this TypeId.
+   *
+   * This method is even more internal than TypeId::GetUid. Use
+   * at your own risk and don't be surprised that it eats raw 
+   * babies on full-moon nights.
+   */
   void SetUid (uint16_t tid);
 
   // construct an invalid TypeId.

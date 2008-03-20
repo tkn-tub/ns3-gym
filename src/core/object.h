@@ -50,6 +50,9 @@ public:
   Object ();
   virtual ~Object ();
 
+  /*
+   * Implement the GetInstanceTypeId method defined in ObjectBase.
+   */
   virtual TypeId GetInstanceTypeId (void) const;
 
   /**
@@ -184,12 +187,51 @@ private:
   Object *m_next;
 };
 
+/**
+ * \param o a pointer to the object to copy.
+ * \returns a copy of the input object.
+ *
+ * This method invoke the copy constructor of the input object
+ * and returns the new instance.
+ */
 template <typename T>
 Ptr<T> CopyObject (Ptr<T> o);
 
+/**
+ * \param attributes a list of attributes to set on the 
+ *        object during construction.
+ * \returns a pointer to a newly allocated object.
+ *
+ * This allocates an object on the heap and initializes
+ * it with a set of attributes.
+ */
 template <typename T>
 Ptr<T> CreateObject (const AttributeList &attributes);
 
+/**
+ * \param n1 name of attribute
+ * \param v1 value of attribute
+ * \param n2 name of attribute
+ * \param v2 value of attribute
+ * \param n3 name of attribute
+ * \param v3 value of attribute
+ * \param n4 name of attribute
+ * \param v4 value of attribute
+ * \param n5 name of attribute
+ * \param v5 value of attribute
+ * \param n6 name of attribute
+ * \param v6 value of attribute
+ * \param n7 name of attribute
+ * \param v7 value of attribute
+ * \param n8 name of attribute
+ * \param v8 value of attribute
+ * \param n9 name of attribute
+ * \param v9 value of attribute
+ * \returns a pointer to a newly allocated object.
+ *
+ * This allocates an object on the heap and initializes
+ * it with a set of attributes.
+ */
 template <typename T>
 Ptr<T> 
 CreateObject (std::string n1 = "", Attribute v1 = Attribute (),
